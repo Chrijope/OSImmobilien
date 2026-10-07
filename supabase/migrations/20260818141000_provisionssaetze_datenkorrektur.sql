@@ -1,3 +1,9 @@
+-- OSImmobilien: einmalige Datenkorrektur am Bestand des Ursprungsprojekts, setzt 20260818150000 voraus.
+-- Auf einer frischen Datenbank fehlt hier noch public.investment_partner_id(uuid); dann wird dieser Block
+-- uebersprungen; auf leerer Datenbank gibt es nichts zu korrigieren.
+DO $osi_rahmen$ BEGIN
+IF to_regprocedure('public.investment_partner_id(uuid)') IS NOT NULL THEN
+EXECUTE $osi_paket$
 -- ===========================================================================
 -- Einmalige Datenkorrektur: Provisionssaetze festschreiben und 3-%-Kollision
 -- ===========================================================================
@@ -129,4 +135,7 @@ BEGIN
   RAISE NOTICE 'Datenkorrektur: % Investments von 3 auf % Prozent korrigiert, % user_settings festgeschrieben.',
     _anzahl_investments, _lead_partner_satz, _anzahl_settings;
 END;
-$$;
+$$
+$osi_paket$;
+END IF;
+END $osi_rahmen$;

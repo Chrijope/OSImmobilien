@@ -1,3 +1,9 @@
+-- OSImmobilien: Kopie von 20260804120000 (inhaltsgleich), im Ursprung nach buchung_grundlage eingespielt.
+-- Auf einer frischen Datenbank fehlt hier noch public.buchungen; dann wird dieser Block
+-- uebersprungen und die benannten Einzelmigrationen spielen denselben Inhalt ein.
+DO $osi_rahmen$ BEGIN
+IF to_regclass('public.buchungen') IS NOT NULL THEN
+EXECUTE $osi_paket$
 CREATE TABLE IF NOT EXISTS public.termin_erinnerungen (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   aktivitaet_id uuid NOT NULL REFERENCES public.aktivitaeten(id) ON DELETE CASCADE,
@@ -36,4 +42,7 @@ SELECT cron.schedule(
     timeout_milliseconds := 15000
   );
   $$
-);
+)
+$osi_paket$;
+END IF;
+END $osi_rahmen$;

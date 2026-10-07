@@ -2,7 +2,7 @@
 -- Absicherung Stufe 0: Rechte zurueckschneiden, ohne sichtbare Aenderung
 -- ===========================================================================
 --
--- GRUNDSATZ (Christian, 29.09.2026)
+-- GRUNDSATZ (GL, 29.09.2026)
 --
 -- Direkt in die Datenbank schreiben duerfen nur Admin und Inhaber, alle
 -- anderen Rollen nur ueber gepruefte Functions und RPCs. Was heute
@@ -89,7 +89,7 @@ DECLARE
     'public.videoraeume_aufraeumen()',
     'public.kennzahlen_tagesstand_lauf()',
     'public.kennzahlen_tagesstand_zusatz()',
-    'public.kennzahlen_gespraeche_woche()',
+    -- OSImmobilien: kennzahlen_gespraeche_woche() wird nicht per Migration angelegt
     'public.kennzahl_schreiben(date,text,text,numeric)',
     'public.nachtpruefung_bericht()',
     'public.nachtpruefung_haengende_raeume(timestamp with time zone)',
@@ -97,7 +97,7 @@ DECLARE
     'public.nachtpruefung_raeume_nach_termin(timestamp with time zone)',
     'public.nachtpruefung_reservierung_ohne_bonitaet(timestamp with time zone)',
     -- Mailversand (Edge Function process-email-queue, Dienstschluessel)
-    'public.email_queue_dispatch()',
+    -- OSImmobilien: email_queue_dispatch() wird nicht per Migration angelegt
     'public.meeting_mail_claim()',
     'public.meeting_mail_fertig(uuid,uuid,boolean,text)',
     -- interne Schritte der Buchungs- und Bewerberablaeufe
@@ -166,7 +166,7 @@ BEGIN
   -- Die Sicherung darf niemand mehr lesen. Liest sie inzwischen etwas, halt.
   IF to_regclass('public.objekte_sicherung_20260922') IS NOT NULL AND (
        EXISTS (SELECT 1 FROM pg_depend d JOIN pg_rewrite r ON r.oid = d.objid
-                WHERE d.refobjid = 'public.objekte_sicherung_20260922'::regclass
+                WHERE d.refobjid = to_regclass('public.objekte_sicherung_20260922') -- OSImmobilien: ohne Fehler, wenn die Tabelle fehlt
                   AND r.ev_class <> d.refobjid)
     OR EXISTS (SELECT 1 FROM pg_proc p
                 WHERE p.pronamespace NOT IN ('pg_catalog'::regnamespace, 'information_schema'::regnamespace)
@@ -209,14 +209,16 @@ REVOKE ALL ON FUNCTION public.rotate_audit_log() FROM PUBLIC, anon, authenticate
 REVOKE ALL ON FUNCTION public.videoraeume_aufraeumen() FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.kennzahlen_tagesstand_lauf() FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.kennzahlen_tagesstand_zusatz() FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION public.kennzahlen_gespraeche_woche() FROM PUBLIC, anon, authenticated;
+-- OSImmobilien: nur wenn die Funktion existiert (wird nicht per Migration angelegt)
+DO $osi$ BEGIN IF to_regprocedure('public.kennzahlen_gespraeche_woche()') IS NOT NULL THEN EXECUTE $q$REVOKE ALL ON FUNCTION public.kennzahlen_gespraeche_woche() FROM PUBLIC, anon, authenticated$q$; END IF; END $osi$;
 REVOKE ALL ON FUNCTION public.kennzahl_schreiben(date,text,text,numeric) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.nachtpruefung_bericht() FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.nachtpruefung_haengende_raeume(timestamp with time zone) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.nachtpruefung_kontakt_ohne_zustaendigen(timestamp with time zone) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.nachtpruefung_raeume_nach_termin(timestamp with time zone) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.nachtpruefung_reservierung_ohne_bonitaet(timestamp with time zone) FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION public.email_queue_dispatch() FROM PUBLIC, anon, authenticated;
+-- OSImmobilien: nur wenn die Funktion existiert (wird nicht per Migration angelegt)
+DO $osi$ BEGIN IF to_regprocedure('public.email_queue_dispatch()') IS NOT NULL THEN EXECUTE $q$REVOKE ALL ON FUNCTION public.email_queue_dispatch() FROM PUBLIC, anon, authenticated$q$; END IF; END $osi$;
 REVOKE ALL ON FUNCTION public.meeting_mail_claim() FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.meeting_mail_fertig(uuid,uuid,boolean,text) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.buchung_pipeline_vorwaerts(uuid,text) FROM PUBLIC, anon, authenticated;
@@ -237,6 +239,8 @@ REVOKE ALL ON FUNCTION public.run_security_self_check() FROM PUBLIC, anon, authe
 
 -- Edge Functions rufen mit dem Dienstschluessel. Das Recht hat service_role
 -- heute schon ausdruecklich, hier wird es nur festgehalten.
+-- OSImmobilien: die zwei nicht per Migration angelegten Funktionen stehen
+-- weiter unten bedingt.
 GRANT EXECUTE ON FUNCTION
   public.bewerber_formular_aufraeumen(),
   public.cleanup_activation_tokens(),
@@ -249,14 +253,12 @@ GRANT EXECUTE ON FUNCTION
   public.videoraeume_aufraeumen(),
   public.kennzahlen_tagesstand_lauf(),
   public.kennzahlen_tagesstand_zusatz(),
-  public.kennzahlen_gespraeche_woche(),
   public.kennzahl_schreiben(date,text,text,numeric),
   public.nachtpruefung_bericht(),
   public.nachtpruefung_haengende_raeume(timestamp with time zone),
   public.nachtpruefung_kontakt_ohne_zustaendigen(timestamp with time zone),
   public.nachtpruefung_raeume_nach_termin(timestamp with time zone),
   public.nachtpruefung_reservierung_ohne_bonitaet(timestamp with time zone),
-  public.email_queue_dispatch(),
   public.meeting_mail_claim(),
   public.meeting_mail_fertig(uuid,uuid,boolean,text),
   public.buchung_pipeline_vorwaerts(uuid,text),
@@ -275,6 +277,8 @@ GRANT EXECUTE ON FUNCTION
   public.detect_audit_anomalies(),
   public.run_security_self_check()
 TO service_role;
+DO $osi$ BEGIN IF to_regprocedure('public.kennzahlen_gespraeche_woche()') IS NOT NULL THEN EXECUTE $q$GRANT EXECUTE ON FUNCTION public.kennzahlen_gespraeche_woche() TO service_role$q$; END IF; END $osi$;
+DO $osi$ BEGIN IF to_regprocedure('public.email_queue_dispatch()') IS NOT NULL THEN EXECUTE $q$GRANT EXECUTE ON FUNCTION public.email_queue_dispatch() TO service_role$q$; END IF; END $osi$;
 
 -- ---------------------------------------------------------------------------
 -- 3. Tabellen und Views in public: anon schreibt nirgends, TRUNCATE niemand

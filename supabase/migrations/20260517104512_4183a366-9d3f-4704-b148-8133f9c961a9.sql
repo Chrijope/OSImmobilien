@@ -24,7 +24,8 @@ REVOKE EXECUTE ON FUNCTION public.get_user_role(uuid) FROM anon, public;
 REVOKE EXECUTE ON FUNCTION public.enqueue_email(text, jsonb) FROM anon, public, authenticated;
 REVOKE EXECUTE ON FUNCTION public.delete_email(text, bigint) FROM anon, public, authenticated;
 REVOKE EXECUTE ON FUNCTION public.read_email_batch(text, integer, integer) FROM anon, public, authenticated;
-REVOKE EXECUTE ON FUNCTION public.purge_email_queue(text) FROM anon, public, authenticated;
+-- OSImmobilien: nur wenn die Funktion existiert (wird nicht per Migration angelegt)
+DO $osi$ BEGIN IF to_regprocedure('public.purge_email_queue(text)') IS NOT NULL THEN EXECUTE $q$REVOKE EXECUTE ON FUNCTION public.purge_email_queue(text) FROM anon, public, authenticated$q$; END IF; END $osi$;
 REVOKE EXECUTE ON FUNCTION public.move_to_dlq(text, text, bigint, jsonb) FROM anon, public, authenticated;
 REVOKE EXECUTE ON FUNCTION public.cleanup_email_artifacts() FROM anon, public, authenticated;
 

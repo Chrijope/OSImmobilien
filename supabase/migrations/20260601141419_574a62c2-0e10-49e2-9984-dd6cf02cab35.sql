@@ -38,7 +38,8 @@ REVOKE EXECUTE ON FUNCTION public.merge_user_settings(uuid, jsonb) FROM anon, pu
 REVOKE EXECUTE ON FUNCTION public.mfa_recovery_codes_status(uuid) FROM anon, public;
 REVOKE EXECUTE ON FUNCTION public.move_to_dlq(text, text, bigint, jsonb) FROM anon, public;
 REVOKE EXECUTE ON FUNCTION public.notify_admins_neue_einreichung() FROM anon, public;
-REVOKE EXECUTE ON FUNCTION public.purge_email_queue(text) FROM anon, public;
+-- OSImmobilien: nur wenn die Funktion existiert (wird nicht per Migration angelegt)
+DO $osi$ BEGIN IF to_regprocedure('public.purge_email_queue(text)') IS NOT NULL THEN EXECUTE $q$REVOKE EXECUTE ON FUNCTION public.purge_email_queue(text) FROM anon, public$q$; END IF; END $osi$;
 REVOKE EXECUTE ON FUNCTION public.read_email_batch(text, integer, integer) FROM anon, public;
 REVOKE EXECUTE ON FUNCTION public.record_auth_attempt(text, boolean, text, integer, integer, integer) FROM anon, public;
 REVOKE EXECUTE ON FUNCTION public.register_unterlage_upload(uuid, text, text) FROM anon, public;

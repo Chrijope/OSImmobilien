@@ -1,3 +1,9 @@
+-- OSImmobilien: Kopie von 20260804130000 (inhaltsgleich), im Ursprung nach buchung_grundlage eingespielt.
+-- Auf einer frischen Datenbank fehlt hier noch public.buchungen; dann wird dieser Block
+-- uebersprungen und die benannten Einzelmigrationen spielen denselben Inhalt ein.
+DO $osi_rahmen$ BEGIN
+IF to_regclass('public.buchungen') IS NOT NULL THEN
+EXECUTE $osi_paket$
 CREATE OR REPLACE FUNCTION public.buchung_termin_belegt(
   _mitarbeiter uuid,
   _von timestamptz,
@@ -352,4 +358,7 @@ $$;
 REVOKE ALL ON FUNCTION public.buchung_freie_zeiten(text, uuid, date, date) FROM public;
 REVOKE ALL ON FUNCTION public.buchung_anlegen(text, uuid, timestamptz, text, text, text, text) FROM public;
 GRANT EXECUTE ON FUNCTION public.buchung_freie_zeiten(text, uuid, date, date) TO anon, authenticated;
-GRANT EXECUTE ON FUNCTION public.buchung_anlegen(text, uuid, timestamptz, text, text, text, text) TO anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.buchung_anlegen(text, uuid, timestamptz, text, text, text, text) TO anon, authenticated
+$osi_paket$;
+END IF;
+END $osi_rahmen$;

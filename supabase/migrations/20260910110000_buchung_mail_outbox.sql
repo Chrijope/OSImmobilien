@@ -91,7 +91,8 @@ DO $$ BEGIN
  IF EXISTS(SELECT 1 FROM pg_extension WHERE extname='pg_cron') AND EXISTS(SELECT 1 FROM pg_extension WHERE extname='pg_net') THEN
    PERFORM cron.schedule('buchung-mail-ausliefern','*/5 * * * *','SELECT public.buchung_mail_ausliefern()');
    -- Activate only after both updated Edge Functions have been deployed and tested.
-   UPDATE cron.job SET active=false WHERE jobname='buchung-mail-ausliefern';
+   -- OSImmobilien: ueber cron.alter_job statt direktem UPDATE auf cron.job (fehlende Rechte)
+   PERFORM cron.alter_job((SELECT jobid FROM cron.job WHERE jobname='buchung-mail-ausliefern'), active := false);
  ELSE RAISE WARNING 'Buchungsmail-Wiederholung benötigt pg_cron und pg_net. Vor Freigabe einrichten.';
  END IF;
 END $$;

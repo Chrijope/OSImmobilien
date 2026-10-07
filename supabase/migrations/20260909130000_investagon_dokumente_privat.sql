@@ -3,6 +3,7 @@ INSERT INTO storage.buckets (id, name, public)
 VALUES ('investagon-dokumente', 'investagon-dokumente', false)
 ON CONFLICT (id) DO NOTHING;
 
+DROP POLICY IF EXISTS "Investagon Dokumente intern lesen" ON storage.objects; -- OSImmobilien: wiederholbar
 CREATE POLICY "Investagon Dokumente intern lesen" ON storage.objects
 FOR SELECT TO authenticated
 USING (
@@ -16,7 +17,7 @@ USING (
 -- Schreiben erfolgt ausschließlich durch den Import mit service_role.
 
 -- Detailabrufe großer Projekte über mehrere Laufzeitfenster fortsetzen.
-CREATE TABLE public.investagon_import_details (
+CREATE TABLE IF NOT EXISTS public.investagon_import_details ( -- OSImmobilien: wiederholbar
   schluessel text PRIMARY KEY,
   version text NOT NULL,
   roh jsonb NOT NULL,

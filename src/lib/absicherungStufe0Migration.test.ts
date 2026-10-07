@@ -65,10 +65,20 @@ describe("Migration absicherung_stufe0", () => {
 
   it("entzieht genau die Funktionen aus dem Waechter und gibt sie service_role", () => {
     const liste = waechterListe();
-    expect(liste).toHaveLength(36);
+    expect(liste).toHaveLength(34);
     expect(entzogen()).toEqual(liste);
     const grant = CODE.slice(CODE.indexOf("GRANT EXECUTE ON FUNCTION"), CODE.indexOf("TO service_role;"));
     for (const f of liste) expect(grant).toContain(f);
+    // OSImmobilien: Diese zwei werden in keiner Migration angelegt. Auf einer
+    // frischen Datenbank fehlen sie, deshalb stehen sie ausserhalb des
+    // Waechters und werden nur behandelt, wenn es sie gibt.
+    for (const f of ["public.kennzahlen_gespraeche_woche()", "public.email_queue_dispatch()"]) {
+      expect(liste).not.toContain(f);
+      expect(CODE).toContain(
+        `IF to_regprocedure('${f}') IS NOT NULL THEN EXECUTE $q$REVOKE ALL ON FUNCTION ${f} FROM PUBLIC, anon, authenticated$q$`,
+      );
+      expect(CODE).toContain(`$q$GRANT EXECUTE ON FUNCTION ${f} TO service_role$q$`);
+    }
     // Die Hintergrundfunktionen aus dem Auftrag sind dabei.
     for (const n of [
       "buchung_pipeline_vorwaerts",

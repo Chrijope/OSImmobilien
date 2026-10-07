@@ -35,6 +35,7 @@ UPDATE public.profiles
 
 ALTER TABLE public.partner_unterlagen ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Eigene Unterlagen und Leitung duerfen lesen" ON public.partner_unterlagen; -- OSImmobilien: wiederholbar
 CREATE POLICY "Eigene Unterlagen und Leitung duerfen lesen"
   ON public.partner_unterlagen FOR SELECT
   TO authenticated
@@ -46,17 +47,20 @@ CREATE POLICY "Eigene Unterlagen und Leitung duerfen lesen"
     OR public.has_role(auth.uid(), 'vertriebsleiter')
   );
 
+DROP POLICY IF EXISTS "Nur eigene Unterlagen anlegen" ON public.partner_unterlagen; -- OSImmobilien: wiederholbar
 CREATE POLICY "Nur eigene Unterlagen anlegen"
   ON public.partner_unterlagen FOR INSERT
   TO authenticated
   WITH CHECK (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "Nur eigene Unterlagen ersetzen" ON public.partner_unterlagen; -- OSImmobilien: wiederholbar
 CREATE POLICY "Nur eigene Unterlagen ersetzen"
   ON public.partner_unterlagen FOR UPDATE
   TO authenticated
   USING (user_id = auth.uid())
   WITH CHECK (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "Nur die Leitung darf loeschen" ON public.partner_unterlagen; -- OSImmobilien: wiederholbar
 CREATE POLICY "Nur die Leitung darf loeschen"
   ON public.partner_unterlagen FOR DELETE
   TO authenticated
@@ -64,6 +68,7 @@ CREATE POLICY "Nur die Leitung darf loeschen"
     public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'inhaber')
   );
 
+DROP POLICY IF EXISTS "Partnerunterlagen lesen" ON storage.objects; -- OSImmobilien: wiederholbar
 CREATE POLICY "Partnerunterlagen lesen"
   ON storage.objects FOR SELECT
   TO authenticated
@@ -78,6 +83,7 @@ CREATE POLICY "Partnerunterlagen lesen"
     )
   );
 
+DROP POLICY IF EXISTS "Partnerunterlagen hochladen" ON storage.objects; -- OSImmobilien: wiederholbar
 CREATE POLICY "Partnerunterlagen hochladen"
   ON storage.objects FOR INSERT
   TO authenticated
@@ -86,6 +92,7 @@ CREATE POLICY "Partnerunterlagen hochladen"
     AND (storage.foldername(name))[1] = auth.uid()::text
   );
 
+DROP POLICY IF EXISTS "Eigene Partnerunterlagen ersetzen" ON storage.objects; -- OSImmobilien: wiederholbar
 CREATE POLICY "Eigene Partnerunterlagen ersetzen"
   ON storage.objects FOR UPDATE
   TO authenticated
@@ -94,6 +101,7 @@ CREATE POLICY "Eigene Partnerunterlagen ersetzen"
     AND (storage.foldername(name))[1] = auth.uid()::text
   );
 
+DROP POLICY IF EXISTS "Partnerunterlagen loeschen nur Leitung" ON storage.objects; -- OSImmobilien: wiederholbar
 CREATE POLICY "Partnerunterlagen loeschen nur Leitung"
   ON storage.objects FOR DELETE
   TO authenticated

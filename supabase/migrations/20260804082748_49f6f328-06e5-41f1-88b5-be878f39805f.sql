@@ -1,3 +1,9 @@
+-- OSImmobilien: Kopie von 20260804150000 (inhaltsgleich), im Ursprung nach buchung_grundlage eingespielt.
+-- Auf einer frischen Datenbank fehlt hier noch public.buchungen; dann wird dieser Block
+-- uebersprungen und die benannten Einzelmigrationen spielen denselben Inhalt ein.
+DO $osi_rahmen$ BEGIN
+IF to_regclass('public.buchungen') IS NOT NULL THEN
+EXECUTE $osi_paket$
 UPDATE public.profiles p
 SET telefon = NULLIF(btrim(us.einstellungen -> 'profil' ->> 'telefon'), '')
 FROM public.user_settings us
@@ -79,4 +85,7 @@ BEGIN
 END;
 $$;
 REVOKE ALL ON FUNCTION public.buchung_zugang(text) FROM public;
-GRANT EXECUTE ON FUNCTION public.buchung_zugang(text) TO anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.buchung_zugang(text) TO anon, authenticated
+$osi_paket$;
+END IF;
+END $osi_rahmen$;
