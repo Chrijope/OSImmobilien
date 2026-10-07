@@ -6,7 +6,16 @@
 -- ---------- Punkt 1: Realtime-Kanäle absichern ----------
 -- Erlaube SELECT auf realtime.messages nur für interne Rollen
 -- ODER wenn der Topic die eigene auth.uid() des Kunden enthält.
-ALTER TABLE realtime.messages ENABLE ROW LEVEL SECURITY;
+-- In der Supabase-Cloud gehört realtime.messages Supabase selbst, RLS ist
+-- dort schon eingeschaltet. Ohne Eigentum darf die Migration das nicht
+-- setzen, deshalb nur versuchen (OSImmobilien).
+DO $realtime_rls$
+BEGIN
+  ALTER TABLE realtime.messages ENABLE ROW LEVEL SECURITY;
+EXCEPTION WHEN insufficient_privilege THEN
+  RAISE NOTICE 'realtime.messages: RLS wird von Supabase verwaltet';
+END
+$realtime_rls$;
 
 DROP POLICY IF EXISTS "realtime_internal_or_own_topic" ON realtime.messages;
 CREATE POLICY "realtime_internal_or_own_topic"
