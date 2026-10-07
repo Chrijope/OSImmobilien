@@ -9,7 +9,7 @@
 -- Teilnehmer stand. Sass in einer Gruppe bereits irgendjemand, blieb sie
 -- unberuehrt, auch wenn genau der Berater fehlte.
 --
--- Genau dieser Fall lag bei Otto Hans vor, und er erklaert drei Symptome auf
+-- Genau dieser Fall lag bei einem Testkunden vor, und er erklaert drei Symptome auf
 -- einmal:
 --
 --   1. Der Berater konnte nicht antworten. Die Schreibregel auf

@@ -336,7 +336,7 @@ BEGIN
      * Kein Kontakt. Auch dann nicht, wenn am persoenlichen Link einer haengt:
      * Ein Bewerbergespraech gehoert dem Bewerber, und zwar auf jedem Weg. Das
      * ist die Anweisung vom 16.09.2026, wortwoertlich "alles, was ueber
-     * Sarahs Buchungslink laeuft, immer dem Bewerber im Bewerberprozess
+     * der Buchungslink der HR-Kollegin laeuft, immer dem Bewerber im Bewerberprozess
      * zugeordnet".
      *
      * Gesucht wird ueber die E-Mail. Sind es mehrere Bewerbungen zur selben
@@ -601,7 +601,7 @@ COMMENT ON FUNCTION public.buchung_anlegen(text, uuid, timestamptz, text, text, 
 -- Er loescht keinen Kontakt. Die falsch angelegten Kontakte bleiben stehen und
 -- werden am Ende als Hinweis ausgegeben. An ihnen koennen inzwischen
 -- Aktivitaeten, Aufgaben oder Notizen haengen, und ein geloeschter Kontakt
--- laesst sich nicht zurueckholen. Ueber jeden einzelnen entscheidet Christian.
+-- laesst sich nicht zurueckholen. Ueber jeden einzelnen entscheidet GL.
 --
 -- Findet sich zu einer Buchung keine Bewerbung, bleibt sie unangetastet und
 -- wird ebenfalls gemeldet. Ihren Kontakt zu loesen waere hier schlimmer als

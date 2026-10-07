@@ -2,7 +2,7 @@
 -- Kundenportal-Sperre: wirkt auf dem Server, nicht nur im Browser
 -- ===========================================================================
 --
--- WARUM (Christians Freigabe vom 23.09.2026, drei Sicherheitsbefunde)
+-- WARUM (GL-Freigabe vom 23.09.2026, drei Sicherheitsbefunde)
 --
 --   1. „Portal sperren“ wirkte nur im Browser. Gespeichert wurde
 --      `kontakte.meta.portalGesperrt`, und nur die Portalseite des Kunden

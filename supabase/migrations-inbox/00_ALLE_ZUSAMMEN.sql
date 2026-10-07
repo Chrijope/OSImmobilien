@@ -85,7 +85,7 @@
 -- Steht fuer sich, Reihenfolge egal, keine Function auszurollen, aendert
 -- keine Daten, wiederholbar.
 --
--- Christian am 30.09.2026: Admin, Inhaber und Objektpartner entscheiden per
+-- GL am 30.09.2026: Admin, Inhaber und Objektpartner entscheiden per
 -- Klick auf den Punkt der Objektkachel, ob ein aus Investagon uebernommenes
 -- Objekt fuer die Vertriebspartner sichtbar ist (gruen) oder nicht (orange).
 --
@@ -1701,7 +1701,7 @@ ON CONFLICT DO NOTHING;
 -- Kundenportal: Empfehlungsprogramm anfragen
 -- ===========================================================================
 --
--- Christians Vorgabe vom 04.10.2026: Fragt ein Kunde im Portal das
+-- GL-Vorgabe vom 04.10.2026: Fragt ein Kunde im Portal das
 -- Empfehlungsprogramm an, bekommt der zustaendige Partner eine Aufgabe und
 -- eine Glocke, die auf diese Aufgabe zeigt. Ohne Zustaendigen gehen beide an
 -- Admin, Inhaber und Vertriebsleitung (Glockenregel vom 29.09.2026), jede
@@ -2396,11 +2396,11 @@ COMMIT;
 -- WARUM
 --
 -- daily-backup hatte nie einen Zeitplan, die Sicherung lief also nie.
--- Christian hat am 04.10.2026 zugestimmt, dass sie jede Nacht laeuft.
+-- GL hat am 04.10.2026 zugestimmt, dass sie jede Nacht laeuft.
 -- daily-backup prueft seit dem 04.10.2026 automatikSchutz im strengen Modus:
 -- Ohne den Kopf x-internal-secret mit dem Geheimwort weist es ab.
 --
--- DER PAPIERKORB BLEIBT (Entscheidung Christian, 04.10.2026)
+-- DER PAPIERKORB BLEIBT (Entscheidung GL, 04.10.2026)
 --
 -- auto-purge-papierkorb bekommt bewusst KEINEN Zeitplan. Es wuerde Kontakte
 -- nach 90 Tagen im Papierkorb endgueltig loeschen, samt Investments. Nichts
@@ -2521,7 +2521,7 @@ $zeitplan$;
 --
 -- WARUM ES DIESE MIGRATION GIBT
 --
---   Christian, 05.10.2026: Im Fenster „Kundenlink senden“ wählt er bei der
+--   GL, 05.10.2026: Im Fenster „Kundenlink senden“ wählt er bei der
 --   Objektübersicht, welche freien Wohnungen des Hauses der Kunde über den
 --   Link sieht. Die Einschränkung muss auf dem Server gelten, nicht nur in
 --   der Oberfläche: `get-kundenansicht` gibt nur die gewählten Wohnungen
@@ -2732,7 +2732,7 @@ SELECT EXISTS (
 -- Provisionsfelder aus Investagon nur für Admin, Inhaber und Buchhaltung
 -- ===========================================================================
 --
--- Vorgabe Christian vom 05.10.2026: Vertriebspartner und alle anderen Rollen
+-- Vorgabe GL vom 05.10.2026: Vertriebspartner und alle anderen Rollen
 -- sehen keine Provisionsangaben aus den Investagon-Objektdaten, weder in der
 -- Oberfläche noch über die Datenbank. Lesen dürfen Admin, Inhaber und
 -- Buchhaltung.
@@ -2741,7 +2741,7 @@ SELECT EXISTS (
 -- dort lag der ganze Investagon-Datensatz (`meta.investagonRaw`) mit
 -- Provision, Provisionsvermerk, Käuferprovision und Vertriebsmakler.
 --
--- Nicht betroffen (Korrektur Christian vom selben Tag): Die
+-- Nicht betroffen (Korrektur GL vom selben Tag): Die
 -- Eigenprovisionsvereinbarungen (Kategorie „intern“, 15 Unterlagen) gehören
 -- dem Käufer und bleiben für alle Objektrollen sichtbar, samt Eintrag in
 -- `meta.investagonRaw.files`. Ebenfalls nicht verlegt, weil Kaufpreis und
@@ -3261,7 +3261,7 @@ SELECT
 -- Weekly Sales Call: zwei Calls am Montag, Punkte je Call getrennt
 -- ===========================================================================
 --
--- Vorgabe Christian vom 05.10.2026: Montags 19:00 Uhr der Call fuer die
+-- Vorgabe GL vom 05.10.2026: Montags 19:00 Uhr der Call fuer die
 -- Lead-Berater, 19:30 Uhr der Call fuer die Vertriebspartner ohne diese
 -- Variante. Admin, Inhaber und Vertriebsleitung betreuen beide. Zoom-Link und
 -- Wochenschnitt (20:30, `weekly_call_woche()`) bleiben fuer beide gleich.

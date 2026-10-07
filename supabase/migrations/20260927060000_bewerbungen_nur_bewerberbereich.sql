@@ -4,7 +4,7 @@
 --
 -- WORUM ES GEHT
 --
--- Christian hat am 27.09.2026 entschieden: Bewerbungen und der
+-- GL hat am 27.09.2026 entschieden: Bewerbungen und der
 -- Bewerberprozess sind nur noch für die Rollen hr, admin, inhaber und
 -- backoffice zugänglich. Bisher durfte jede interne Rolle
 -- (`is_internal_role`, darunter Vertriebspartner, Vertriebsleitung,

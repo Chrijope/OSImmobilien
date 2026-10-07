@@ -14,7 +14,7 @@
 -- denied"; der Aftersales-Dialog der alten Fassung legt Anfragen direkt an
 -- und scheitert.
 --
--- FREIGABE (Christian, 29.09.2026, "ganz wichtig")
+-- FREIGABE (GL, 29.09.2026, "ganz wichtig")
 --
 -- Kein Partner darf Unterschriftsanfragen direkt in der Datenbank anlegen
 -- oder aendern, an den vorgesehenen Ablaeufen vorbei. Angelegt und geaendert

@@ -2,7 +2,7 @@
 -- Handbuch-Seite: Partner-Schalter auch auf dem Server, gesperrte Kürzel
 -- ===========================================================================
 --
--- Zwei Befunde der Codex-Prüfung vom 26.09.2026, von Christian freigegeben.
+-- Zwei Befunde der Codex-Prüfung vom 26.09.2026, von GL freigegeben.
 -- Baut auf 20260926180000_handbuch_stand_und_leitung.sql auf und muss
 -- DANACH laufen.
 --

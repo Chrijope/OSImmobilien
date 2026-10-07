@@ -4,7 +4,7 @@
 -- uns nichts zurück, deshalb trug die HR-Managerin Datum und Uhrzeit bisher von
 -- Hand im CRM nach.
 --
--- Christian hat entschieden, diesen Schritt dem Bewerber zu geben: Er bucht auf
+-- GL hat entschieden, diesen Schritt dem Bewerber zu geben: Er bucht auf
 -- einer Seite im Hausstil, in der Calendly eingebettet ist, und trägt darunter
 -- die gebuchte Zeit zur Bestätigung ein. Das spart der HR-Managerin das
 -- Nachtragen.

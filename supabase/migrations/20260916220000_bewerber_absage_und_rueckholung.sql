@@ -5,7 +5,7 @@
 --
 -- WARUM
 --
--- Zwei Entscheidungen von Christian am 16.09.2026, beide im Anschluss an
+-- Zwei Entscheidungen von GL am 16.09.2026, beide im Anschluss an
 -- 20260916210000 ("Wer sich selbst einen Gespraechstermin bucht, steht danach
 -- im Closing"):
 --
@@ -151,7 +151,7 @@ COMMENT ON FUNCTION public.bewerber_stufe_closing(uuid) IS
 -- 3. Die Absage laesst die Stufe in Ruhe, und das ist Absicht
 -- ─────────────────────────────────────────────────────────────────────────────
 --
--- Keine Aenderung am Verhalten, nur der Kommentar. Er haelt Christians Vorgabe
+-- Keine Aenderung am Verhalten, nur der Kommentar. Er haelt GL-Vorgabe
 -- an der Funktion selbst fest, damit sie nicht spaeter "vervollstaendigt" wird.
 
 DO $$
@@ -159,7 +159,7 @@ BEGIN
   IF to_regprocedure('public.bewerber_termin_absagen(text, text)') IS NOT NULL THEN
     EXECUTE $c$
       COMMENT ON FUNCTION public.bewerber_termin_absagen(text, text) IS
-        'Sagt den Gespraechstermin des Bewerbers ab und raeumt Datum und Uhrzeit in der Akte, wenn dort noch genau dieser Termin steht. Die Pipelinestufe bleibt bewusst unberuehrt: Ein abgesagter Bewerber bleibt im Closing und bekommt in der Liste nur das Abzeichen "Abgesagt" (Entscheidung Christian, 16.09.2026). Das Abzeichen liest buchungen.status, nicht das meta der Bewerbung.'
+        'Sagt den Gespraechstermin des Bewerbers ab und raeumt Datum und Uhrzeit in der Akte, wenn dort noch genau dieser Termin steht. Die Pipelinestufe bleibt bewusst unberuehrt: Ein abgesagter Bewerber bleibt im Closing und bekommt in der Liste nur das Abzeichen "Abgesagt" (Entscheidung GL, 16.09.2026). Das Abzeichen liest buchungen.status, nicht das meta der Bewerbung.'
     $c$;
   ELSE
     RAISE NOTICE 'bewerber_termin_absagen fehlt (Migration 20260906120000 nie gelaufen), Kommentar uebersprungen.';

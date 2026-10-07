@@ -2,7 +2,7 @@
 --
 -- WARUM
 --
--- Christian nimmt am 22.09.2026 die einzelnen Bautraeger-Zugaenge aus Lovable
+-- GL nimmt am 22.09.2026 die einzelnen Bautraeger-Zugaenge aus Lovable
 -- heraus und behaelt nur den eigenen MORE-Immo-Schluessel. Damit liefern diese
 -- Zugaenge keine Objektkennungen mehr.
 --

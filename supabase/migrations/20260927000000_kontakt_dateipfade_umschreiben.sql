@@ -8,7 +8,7 @@
 -- neueren Kontakts in seinen Ordnern liegen, etwa
 -- `kundenordner/<neuerer>/…` oder `reservierung/<neuerer>/…`. Die Leseregeln
 -- des Kundenportals hängen am Ordnernamen. Wer den Portalzugang vom neueren
--- übernahm, sah diese Dateien nicht. Christian (26.09.2026): Die Dateien
+-- übernahm, sah diese Dateien nicht. GL (26.09.2026): Die Dateien
 -- wandern beim Zusammenführen mit.
 --
 -- Das Verschieben macht die Edge Function `kontakte-zusammenfuehren-dateien`

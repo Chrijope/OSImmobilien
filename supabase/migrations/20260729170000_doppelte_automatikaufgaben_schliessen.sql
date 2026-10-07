@@ -38,7 +38,7 @@ WHERE a.id = rang.id
 
 -- Und die Spuren im Protokoll aufraeumen.
 --
--- Jede angelegte Aufgabe erzeugt einen Eintrag in activity_log. Bei Otto Hans
+-- Jede angelegte Aufgabe erzeugt einen Eintrag in activity_log. Bei einem Testkunden
 -- standen dadurch acht identische Zeilen "Aufgabe angelegt: Kaufpreis-
 -- faelligkeit pruefen" im Kundenprofil, alle vom selben Tag.
 --

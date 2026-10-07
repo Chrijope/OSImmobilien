@@ -7,7 +7,7 @@
 -- im CRM steht nichts. Der Partner trug den Termin bisher von Hand nach, oder
 -- er vergass es.
 --
--- Christian hat am 21.09.2026 dieselbe Loesung wie beim Bewerber bestellt: eine
+-- GL hat am 21.09.2026 dieselbe Loesung wie beim Bewerber bestellt: eine
 -- eigene Seite im Hausstil, in der der fremde Kalender eingebettet steckt, und
 -- darunter bestaetigt der Kunde die Zeit, die er gerade gebucht hat. Damit steht
 -- der Termin sofort in der Kundenakte.

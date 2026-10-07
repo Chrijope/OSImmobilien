@@ -6,8 +6,8 @@
 --
 -- Der Trigger `trg_investments_provisionssatz_festschreiben` aus
 -- 20260818140000_provisionssatz_serverseitig_festschreiben.sql soll beim
--- Anlegen eines Investments den Provisionssatz serverseitig einfrieren. In
--- Christians Datenbank gezaehlt:
+-- Anlegen eines Investments den Provisionssatz serverseitig einfrieren. In der
+-- Datenbank gezaehlt:
 --
 --   2095 Investments seit dem 18.08.2026
 --   davon mit meta->>'lockedProvisionRateQuelle' = 'serverseitig': 0
@@ -70,7 +70,7 @@
 --
 -- NICHT Teil dieser Migration: eine Korrektur der Altdaten. Ob und wie die
 -- 2095 Investments seit dem 18.08.2026 nachtraeglich einen Satz bekommen,
--- entscheidet Christian. Die Zahlen dafuer liefert
+-- entscheidet GL. Die Zahlen dafuer liefert
 -- supabase/migrations-inbox/97_PROVISIONSSAETZE_PRUEFEN.sql, sie aendert
 -- nichts.
 

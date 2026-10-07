@@ -4,7 +4,7 @@
 --
 -- WARUM
 --
--- Freigegeben von Christian am 28.09.2026. Drei Befunde:
+-- Freigegeben von GL am 28.09.2026. Drei Befunde:
 --
 -- 1. Datenverlust. Der Browser las die Nachrichtenliste aus seinem
 --    Zwischenspeicher, haengte an und schrieb die ganze Liste zurueck

@@ -32,7 +32,7 @@
 -- KEINE KORREKTUR
 --
 -- Hier wird nichts vorgeschlagen und nichts geaendert. Ob und wie
--- Provisionsdaten rueckwirkend angefasst werden, entscheidet Christian, und
+-- Provisionsdaten rueckwirkend angefasst werden, entscheidet GL, und
 -- zwar mit Wissen der Buchhaltung. Die Spalte `davon_abgerechnet_oder_zu`
 -- steht deshalb mit dabei: In diesen Faellen ist die Provision bereits
 -- abgerechnet oder der Vorgang geschlossen, eine stille nachtraegliche

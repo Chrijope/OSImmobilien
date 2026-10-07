@@ -2,7 +2,7 @@
 -- Zoom-Anbindung: Tabelle zoom_connections und Spalte profiles.zoom_link weg
 -- ===========================================================================
 --
--- ENTSCHEIDUNG (Christian, 29.09.2026)
+-- ENTSCHEIDUNG (GL, 29.09.2026)
 --
 -- Zoom verschwindet aus dem CRM. Einzige Ausnahme ist der Weekly Sales Call,
 -- dessen Link fest im Code steht und nichts aus der Datenbank liest. Die

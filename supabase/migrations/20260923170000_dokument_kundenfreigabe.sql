@@ -2,7 +2,7 @@
 -- Dokumenten-Ampel: Freigabe je Unterlage fuer Kunden
 -- ===========================================================================
 --
--- WAS DIESE MIGRATION TUT (Christians Freigaben vom 23.09.2026)
+-- WAS DIESE MIGRATION TUT (GL-Freigaben vom 23.09.2026)
 --
 --   Welche Unterlage ein Kunde sieht, entscheidet die Ampel im Code
 --   (`supabase/functions/_shared/dokument-freigabe.ts`): Gruen geht von

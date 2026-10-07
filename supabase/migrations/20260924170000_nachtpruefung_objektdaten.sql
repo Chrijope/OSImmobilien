@@ -4,7 +4,7 @@
 --
 -- WARUM
 --
--- Christian am 24.09.2026: Unstimmigkeiten in den Objektdaten sollen jeden
+-- GL am 24.09.2026: Unstimmigkeiten in den Objektdaten sollen jeden
 -- Morgen automatisch im Morgenbericht stehen, zugeordnet zu Objektmanagement
 -- (OBJ, Tobias Ammann), Finanzierung (FIN, Fabian Kortmann) und Aftersales
 -- (AS, Sophie Lindner). Anlass war ein Stichprobenabruf: Beim Objekt
@@ -1309,7 +1309,7 @@ BEGIN
     im ersten Teil des Laufs jede Pruefzeile mit Treffern. Die Objektbefunde
     gehoeren aber zu OBJ, FIN und AS und stehen dort schon als eigene Zahl;
     bei Miriam haetten sie ihren Wert einmalig um bis zu 15 erhoeht, ohne dass
-    ein Ablauf haengt. Entschieden von Christian am 24.09.2026. Dieser dritte
+    ein Ablauf haengt. Entschieden von GL am 24.09.2026. Dieser dritte
     Teil laeuft nach dem ersten und ueberschreibt die Zahl desselben Tages.
   */
   BEGIN

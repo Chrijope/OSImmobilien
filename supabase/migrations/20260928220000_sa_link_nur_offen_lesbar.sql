@@ -2,7 +2,7 @@
 -- Selbstauskunfts-Link: gespeicherter Stand nur, solange der Link offen ist
 -- ===========================================================================
 --
--- Christians Freigabe vom 28.09.2026, Leseluecke Stufe 1.
+-- GL-Freigabe vom 28.09.2026, Leseluecke Stufe 1.
 --
 -- `get_sa_fill_token` gab jedem mit einem Selbstauskunfts-Link den ganzen
 -- gespeicherten Stand heraus (`prefill_data` mit allen Angaben, dazu Name und

@@ -2,7 +2,7 @@
 -- Die Glocke gegen gefaelschte Meldungen abdichten
 -- ===========================================================================
 --
--- Freigegeben von Christian am 28.09.2026.
+-- Freigegeben von GL am 28.09.2026.
 --
 -- WARUM
 --

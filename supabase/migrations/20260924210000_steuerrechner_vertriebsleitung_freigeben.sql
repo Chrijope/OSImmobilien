@@ -2,7 +2,7 @@
 -- Den Steuerrechner fuer die Vertriebsleitung freigeben
 -- ===========================================================================
 --
--- Christian hat am 24.09.2026 entschieden: Die Vertriebsleitung bekommt einen
+-- GL hat am 24.09.2026 entschieden: Die Vertriebsleitung bekommt einen
 -- eigenen Steuerrechner-Link. Ein Lead darueber wird ihr zugeordnet, und sie
 -- bekommt die Glocke. Den Link holt sie sich auf der Seite Steuerrechner.
 --

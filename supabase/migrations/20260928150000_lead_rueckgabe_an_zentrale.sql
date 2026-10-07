@@ -9,7 +9,7 @@
 --   2) claim_lead nur noch fuer die Rollen, die die Lead-Verwaltung nutzen.
 --
 -- Eine Sperre nach Stufe oder Investment ist bewusst NICHT enthalten
--- (Christians Entscheidung vom 28.09.2026, Variante A): Jeder gibt eigene
+-- (GL-Entscheidung vom 28.09.2026, Variante A): Jeder gibt eigene
 -- Kontakte jederzeit zurueck. Ab Reservierung warnt die Oberflaeche vorab,
 -- und Admin, Inhaber und Backoffice bekommen eine Glocke.
 --

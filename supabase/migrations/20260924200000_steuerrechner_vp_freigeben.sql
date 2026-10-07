@@ -2,7 +2,7 @@
 -- Den Steuerrechner fuer Vertriebspartner freigeben
 -- ===========================================================================
 --
--- Christian hat am 24.09.2026 entschieden: Jeder Vertriebspartner sieht den
+-- GL hat am 24.09.2026 entschieden: Jeder Vertriebspartner sieht den
 -- Steuerrechner links unter Tools, gleich auf welcher Karrierestufe. Jeder
 -- Partner teilt ihn ueber seinen persoenlichen Link, Interessenten landen als
 -- neuer Lead nur bei ihm.

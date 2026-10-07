@@ -2,7 +2,7 @@
 -- Pixel-Nachweise bei wiederholten Anfragen: geschuetzte Liste am Kontakt
 -- ===========================================================================
 --
--- AUSGANGSLAGE (Christian, 27.09.2026, Punkt 9; Codex-Pruefung DS-002)
+-- AUSGANGSLAGE (GL, 27.09.2026, Punkt 9; Codex-Pruefung DS-002)
 --
 -- Kommt eine Anfrage zu einem bestehenden Kontakt (Dublette), legte
 -- `submit-lead` den Nachweis der Pixel-Einwilligung bisher nur unter

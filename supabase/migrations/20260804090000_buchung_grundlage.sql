@@ -31,7 +31,7 @@
 
 CREATE TABLE IF NOT EXISTS public.buchung_einstellungen (
   mitarbeiter_id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  -- Kuerzel des offenen Links, etwa "christian-peetz". Nur gesetzt, wenn der
+  -- Kuerzel des offenen Links, etwa "vorname-nachname". Nur gesetzt, wenn der
   -- Mitarbeiter einen oeffentlichen Link haben will.
   slug text UNIQUE,
   -- Der offene Link muss abschaltbar sein. Ist er aus, fuehrt das Kuerzel ins

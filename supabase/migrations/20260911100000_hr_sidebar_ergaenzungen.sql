@@ -4,8 +4,8 @@
 --
 -- WARUM
 --
--- Wunsch von Christian am 11.09.2026. Die Rolle hr gehoert Jana Kirchner im
--- HR-Management, im Alltag arbeitet Sarah damit. Sie braucht neben dem
+-- Wunsch von GL am 11.09.2026. Die Rolle hr gehoert Jana Kirchner im
+-- HR-Management, im Alltag arbeitet die HR-Kollegin damit. Sie braucht neben dem
 -- Bewerberprozess ein paar Punkte, die bisher nur der Vertrieb sah.
 --
 -- WAS SICH AENDERT

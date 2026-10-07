@@ -2,7 +2,7 @@
 -- Zwei-Faktor-Anmeldung fuer Kunden: freiwillig, aber verbindlich, wenn an
 -- ===========================================================================
 --
--- WARUM (Entscheidung Christian vom 25.09.2026)
+-- WARUM (Entscheidung GL vom 25.09.2026)
 --
 --   Jeder Kunde entscheidet selbst, ob er die Zwei-Faktor-Anmeldung
 --   einschaltet. Wer sie eingeschaltet hat, muss den Code beim Anmelden aber

@@ -2,7 +2,7 @@
 -- Terminseite: Gesprächsarten und Eintragungen mit echten Umlauten
 -- ===========================================================================
 --
--- FREIGABE (Christian, 29.09.2026)
+-- FREIGABE (GL, 29.09.2026)
 --
 -- `partnertermin_zugang` und `partnertermin_bestaetigen` (Terminseite
 -- /terminwahl/:token) hatten die vier Gespraechsarten fest im Code, aber in

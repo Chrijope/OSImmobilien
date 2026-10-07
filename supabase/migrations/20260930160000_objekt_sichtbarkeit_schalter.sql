@@ -5,7 +5,7 @@
 -- Steht fuer sich, Reihenfolge egal, keine Function auszurollen, aendert
 -- keine Daten, wiederholbar.
 --
--- Christian am 30.09.2026: Admin, Inhaber und Objektpartner entscheiden per
+-- GL am 30.09.2026: Admin, Inhaber und Objektpartner entscheiden per
 -- Klick auf den Punkt der Objektkachel, ob ein aus Investagon uebernommenes
 -- Objekt fuer die Vertriebspartner sichtbar ist (gruen) oder nicht (orange).
 --

@@ -17,7 +17,7 @@
 -- Der oeffentliche Eimer "objekt-medien" bleibt unangetastet, sonst brechen
 -- die Exposés. Diese Migration verschiebt auch keine einzige vorhandene
 -- Datei: Was heute im oeffentlichen Eimer liegt, bleibt dort und bleibt
--- erreichbar. Ueber den Umzug entscheidet Christian gesondert.
+-- erreichbar. Ueber den Umzug entscheidet GL gesondert.
 --
 -- Mehrfach ausfuehrbar.
 

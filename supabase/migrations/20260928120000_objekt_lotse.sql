@@ -2,7 +2,7 @@
 -- MORE Lotse, Stufe 1: Zustimmung, Verlauf, Unterlagenauszüge, Aufräumen
 -- ===========================================================================
 --
--- Freigegeben von Christian am 28.09.2026 (Bauplan MORE Lotse, Stufe 1). Der
+-- Freigegeben von GL am 28.09.2026 (Bauplan MORE Lotse, Stufe 1). Der
 -- Lotse ist ein KI-Chat auf der Einheitenseite (Edge Function
 -- `objekt-lotse`). Diese Migration legt vier Tabellen, zwei Funktionen
 -- und einen Zeitplan an:

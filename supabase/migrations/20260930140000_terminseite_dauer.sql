@@ -2,7 +2,7 @@
 -- Terminseite: feste Dauer fuer Erstgespraech und Beratungsgespraech
 -- ===========================================================================
 --
--- FREIGABE (Christian, 29.09.2026)
+-- FREIGABE (GL, 29.09.2026)
 --
 -- Auf der Terminseite /terminwahl/:token stand beim Erstgespraech 30 Minuten
 -- und beim Beratungsgespraech bei einem Partner 15 Minuten. Die 30 waren der

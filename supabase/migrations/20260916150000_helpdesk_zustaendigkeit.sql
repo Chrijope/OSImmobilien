@@ -11,7 +11,7 @@
 -- standen darin Name, Mailadresse, Telefonnummer, Anschrift, Geburtsdatum,
 -- Objekt und Kaufpreis eines Kunden.
 --
--- Zwei Entscheidungen von Christian am 16.09.2026:
+-- Zwei Entscheidungen von GL am 16.09.2026:
 --
 -- 1. **Die Rolle hr verliert die Seite.** Das Bewerbermanagement ist fuer
 --    Stoerungen im Vertrieb nicht zustaendig, und die Kundendaten im Anhang

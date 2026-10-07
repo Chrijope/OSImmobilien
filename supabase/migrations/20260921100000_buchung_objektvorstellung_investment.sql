@@ -10,7 +10,7 @@
 -- src/lib/kontaktPipeline.ts). Der Kunde saß also im Termin zur
 -- Objektvorstellung, und sein Vorgang stand weiter auf einer früheren Stufe.
 --
--- Christian hat am 21.09.2026 entschieden, dass das Investment mitspringen
+-- GL hat am 21.09.2026 entschieden, dass das Investment mitspringen
 -- soll.
 --
 -- WARUM NUR BEI GENAU EINEM INVESTMENT
@@ -31,7 +31,7 @@
 -- Selbstauskunft verhindert (src/lib/objektauswahlWaechter.ts). Hier gilt er
 -- nicht, und das ist Absicht: Wer einen Termin zur Objektvorstellung bucht,
 -- ist bei der Objektauswahl, ob die Unterlagen vollständig sind oder nicht.
--- Christian hat das ausdrücklich so entschieden.
+-- GL hat das ausdrücklich so entschieden.
 --
 -- Die Folge gehört dazu: Ein solcher Vorgang kann in der Objektauswahl stehen,
 -- ohne dass eine Selbstauskunft unterschrieben ist. Die Karte für die

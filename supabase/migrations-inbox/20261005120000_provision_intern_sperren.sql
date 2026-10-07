@@ -2,7 +2,7 @@
 -- Provisionsfelder aus Investagon nur für Admin, Inhaber und Buchhaltung
 -- ===========================================================================
 --
--- Vorgabe Christian vom 05.10.2026: Vertriebspartner und alle anderen Rollen
+-- Vorgabe GL vom 05.10.2026: Vertriebspartner und alle anderen Rollen
 -- sehen keine Provisionsangaben aus den Investagon-Objektdaten, weder in der
 -- Oberfläche noch über die Datenbank. Lesen dürfen Admin, Inhaber und
 -- Buchhaltung.
@@ -11,7 +11,7 @@
 -- dort lag der ganze Investagon-Datensatz (`meta.investagonRaw`) mit
 -- Provision, Provisionsvermerk, Käuferprovision und Vertriebsmakler.
 --
--- Nicht betroffen (Korrektur Christian vom selben Tag): Die
+-- Nicht betroffen (Korrektur GL vom selben Tag): Die
 -- Eigenprovisionsvereinbarungen (Kategorie „intern“, 15 Unterlagen) gehören
 -- dem Käufer und bleiben für alle Objektrollen sichtbar, samt Eintrag in
 -- `meta.investagonRaw.files`. Ebenfalls nicht verlegt, weil Kaufpreis und

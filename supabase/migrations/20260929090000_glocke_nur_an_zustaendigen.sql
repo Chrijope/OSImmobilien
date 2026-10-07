@@ -2,7 +2,7 @@
 -- Glocke nur an den Zustaendigen (Teil 2 zur Regel vom 29.09.2026)
 -- ===========================================================================
 --
--- Christians Regel vom 29.09.2026: Jede Rolle bekommt Glocken nur zu Leads
+-- GL-Regel vom 29.09.2026: Jede Rolle bekommt Glocken nur zu Leads
 -- und Kontakten, die ihr tatsaechlich zugewiesen sind. Massgeblich ist der
 -- aktuell hinterlegte Zustaendige (kontakte.zustaendig_id).
 --
@@ -22,7 +22,7 @@
 -- 2) Die Vertretung bleibt, wie sie ist: Der Trigger
 -- trg_benachrichtigung_an_vertretung kopiert Glocken zu Kundenprofilen weiter
 -- an die Vertretung eines abwesenden Partners. Die Vertretung kann den Lead
--- oeffnen (Christians Entscheidung vom 29.09.2026, zuerst war das Entfernen
+-- oeffnen (GL-Entscheidung vom 29.09.2026, zuerst war das Entfernen
 -- geplant). Diese Migration fasst den Trigger deshalb nicht an.
 --
 -- Zu 1: Der uebrige Rumpf ist wortgleich zur Fassung aus 20260928230000 (Teil 1 im

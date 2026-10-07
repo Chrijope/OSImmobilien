@@ -5,11 +5,11 @@
 -- WARUM
 --
 -- daily-backup hatte nie einen Zeitplan, die Sicherung lief also nie.
--- Christian hat am 04.10.2026 zugestimmt, dass sie jede Nacht laeuft.
+-- GL hat am 04.10.2026 zugestimmt, dass sie jede Nacht laeuft.
 -- daily-backup prueft seit dem 04.10.2026 automatikSchutz im strengen Modus:
 -- Ohne den Kopf x-internal-secret mit dem Geheimwort weist es ab.
 --
--- DER PAPIERKORB BLEIBT (Entscheidung Christian, 04.10.2026)
+-- DER PAPIERKORB BLEIBT (Entscheidung GL, 04.10.2026)
 --
 -- auto-purge-papierkorb bekommt bewusst KEINEN Zeitplan. Es wuerde Kontakte
 -- nach 90 Tagen im Papierkorb endgueltig loeschen, samt Investments. Nichts

@@ -1,6 +1,6 @@
 -- Die Terminseite nennt dem Partner den Kunden
 --
--- Christian am 21.09.2026: In der Partneransicht steht links die Karte "Dein
+-- GL am 21.09.2026: In der Partneransicht steht links die Karte "Dein
 -- Ansprechpartner" mit dem eigenen Bild. Fuer den Partner ist das sinnlos, er
 -- kennt sich selbst. Dort soll stattdessen stehen, mit wem er den Termin macht:
 -- Name, E-Mail und Telefon des Kunden, ohne Bild.

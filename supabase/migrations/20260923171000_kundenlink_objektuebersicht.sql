@@ -5,13 +5,13 @@
 -- WARUM ES DIESE MIGRATION GIBT
 --
 --   Seit dem 23.09.2026 gibt es einen Knopf „Kundenlink senden“ (Bauplan
---   Kundenansicht, Teil 2, Freigabe von Christian). Im Fenster wählt man:
+--   Kundenansicht, Teil 2, Freigabe von GL). Im Fenster wählt man:
 --     - „Objektübersicht mit allen freien Wohnungen“ (Standard): EIN Link je
 --       Kunde, Investment und Haus. Er öffnet die Wohnung, aus der er
 --       gesendet wurde, und der Kunde kann alle freien Wohnungen des Hauses
---       ansehen. Adresse: https://portal.more.immo/immobilie/<token>
+--       ansehen. Adresse: https://DEINE-DOMAIN/immobilie/<token>
 --     - „nur Exposé dieser Wohnung“: wie bisher je Einheit,
---       https://portal.more.immo/expose/<objekt>/wohnung/<einheit>?token=…
+--       https://DEINE-DOMAIN/expose/<objekt>/wohnung/<einheit>?token=…
 --   Beides liegt in derselben Tabelle `objekt_exposes`, damit Versand, Liste
 --   „Gesendete Links“, Frist, Zähler, Glocke und Zurückziehen nur einmal
 --   existieren.

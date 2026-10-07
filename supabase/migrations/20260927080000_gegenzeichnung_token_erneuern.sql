@@ -19,8 +19,8 @@
 --    Ohne diesen Verweis lehnt `finalize-vertrag` seither ab.
 -- 2. Jede offene Gegenzeichnung bekommt einen neuen Token
 --    (`token` ist text). Der alte Link ist damit tot, auch der in der Glocke
---    an Christian Kurz. Den neuen Link verschickt HR ueber den Knopf
---    „Erneut an Kurz erinnern“ im Vertrags-Reiter; er liest den Token beim
+--    an zweite GL. Den neuen Link verschickt HR ueber den Knopf
+--    „Erneut an … erinnern“ im Vertrags-Reiter; er liest den Token beim
 --    Klick frisch. Vermerk `sa_data.tokenErneuertAm`, damit ein zweiter Lauf
 --    nichts mehr aendert.
 -- 3. `vertragKurzAnfrageToken` verschwindet aus allen Bewerbungen.

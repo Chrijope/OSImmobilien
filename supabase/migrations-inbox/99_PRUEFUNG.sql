@@ -248,7 +248,7 @@ SELECT '7.1 Eintrag reservierung_unterschrieben_empfaenger',
             WHEN (SELECT jsonb_typeof(wert) FROM public.app_config WHERE schluessel = 'reservierung_unterschrieben_empfaenger') <> 'array'
               THEN 'fehlt (Wert ist keine Liste)'
             WHEN (SELECT jsonb_array_length(wert) FROM public.app_config WHERE schluessel = 'reservierung_unterschrieben_empfaenger') < 2
-              THEN 'ja, aber Christian Kurz fehlt noch in der Liste'
+              THEN 'ja, aber zweite GL fehlt noch in der Liste'
             ELSE 'ja' END
 
 -- ─────────────────────────────────────────────────────────────────────────────

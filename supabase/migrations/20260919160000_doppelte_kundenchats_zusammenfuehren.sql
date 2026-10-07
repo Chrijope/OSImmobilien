@@ -4,7 +4,7 @@
 --
 -- WAS PASSIERT IST
 --
--- Bei Otto Hans zeigte der Reiter "Kommunikation" die Zahl 2, der Kundenchat
+-- Bei einem Testkunden zeigte der Reiter "Kommunikation" die Zahl 2, der Kundenchat
 -- darunter war aber leer, und der Berater bekam beim Senden die Meldung, die
 -- Nachricht sei nicht gesendet worden. Im Kundenportal standen gleichzeitig
 -- zwei Nachrichten des Kunden, die er selbst geschrieben hatte.
@@ -138,7 +138,7 @@ COMMIT;
 --
 -- Erwartet: keine Zeile.
 --
--- Und wie sieht der Chat von Otto Hans jetzt aus?
+-- Und wie sieht der Chat von einem Testkunden jetzt aus?
 --
 --     select g.id, g.erstellt_am,
 --            (select count(*) from chat_teilnehmer t where t.chat_id = g.id) as teilnehmer,

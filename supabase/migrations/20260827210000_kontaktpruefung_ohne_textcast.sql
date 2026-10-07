@@ -1,4 +1,4 @@
--- Aktivitaeten-Ladefehler bei Vertriebspartnern beheben (Hermann Vogl, 27.08.2026).
+-- Aktivitaeten-Ladefehler bei Vertriebspartnern beheben (Partnermeldung, 27.08.2026).
 --
 -- Die Sichtbarkeitsfunktion kontakt_visible_to_internal (Migration 20260517090623)
 -- verglich bisher `k.id::text = _kunde_id_text`. Der Cast auf der Spaltenseite

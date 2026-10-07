@@ -9,7 +9,7 @@
 -- Edge Function `send-kunden-expose`, die Kontaktzugriff, Empfänger und Frist
 -- selbst bestimmt.
 --
--- Entscheidungen von Christian:
+-- Entscheidungen von GL:
 --   - Der Kundenlink rechnet mit NEUTRALEN Annahmen, nie mit Werten aus der
 --     Selbstauskunft. Der Link kann weitergeleitet werden. Die Spalte
 --     `annahmen` wird deshalb für den Link gar nicht gelesen.

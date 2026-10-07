@@ -4,7 +4,7 @@
 --
 -- AUSGANGSLAGE
 --
--- Christians Entscheidung vom 26.09.2026 (Variante A): Ein eigenes Meta Pixel
+-- GL-Entscheidung vom 26.09.2026 (Variante A): Ein eigenes Meta Pixel
 -- auf den Partnerseiten setzt Anlage 4 zum Vertriebspartnervertrag voraus
 -- (gemeinsame Verantwortlichkeit nach Art. 26 DSGVO, Vertragsfassung
 -- 2026-09-26). Bestandspartner bekommen keine Zusatzvereinbarung. Wer vor

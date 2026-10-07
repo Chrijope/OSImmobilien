@@ -11,7 +11,7 @@
 --   Globalobjekt verspricht aber genau das (Punkt 2 a und b). Ohne diese
 --   Migration geht deshalb keine Reservierung eines Globalobjekts hinaus.
 --
--- WAS DIESE MIGRATION TUT (Christians Regeln vom 23.09.2026, fuers Haus)
+-- WAS DIESE MIGRATION TUT (GL-Regeln vom 23.09.2026, fuers Haus)
 --
 --   1. Neue Spalten an `objekte`:
 --        Belegung:   `belegung` (frei, reserviert, verkauft; Vorgabe frei),

@@ -6,7 +6,7 @@
 --
 -- Im Formular „Neuen Kontakt empfehlen“ bestätigt der Tippgeber jetzt per
 -- Pflicht-Häkchen, dass die empfohlene Person mit der Weitergabe ihrer
--- Kontaktdaten an MOREImmo einverstanden ist (Christian, 27.09.2026). Bisher
+-- Kontaktdaten an MOREImmo einverstanden ist (GL, 27.09.2026). Bisher
 -- stand darunter nur ein Satz „Mit dem Absenden bestätigst du …“, und
 -- gespeichert wurde nichts.
 --

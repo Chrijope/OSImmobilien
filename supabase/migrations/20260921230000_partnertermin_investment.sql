@@ -8,7 +8,7 @@
 --
 -- Folge: Der bestaetigte Termin stand in der Kundenakte, aber im Investment
 -- blieben die Kaesten "Naechste Aktion" und "Naechster Schritt" leer. Genau das
--- hat Christian am 21.09.2026 gemeldet.
+-- hat GL am 21.09.2026 gemeldet.
 --
 -- ## Was jetzt passiert
 --

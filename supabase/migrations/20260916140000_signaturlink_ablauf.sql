@@ -89,7 +89,7 @@
 --   `send-reservation-signature` (Reservierung)     10 Jahre
 -- Die zehn Jahre sind so gewollt, weil die Spalte NOT NULL ist und ueber
 -- `send-reservierung-eskalation` nachgefasst wird. Welche Frist fuer eine
--- Reservierung fachlich richtig ist, entscheidet Christian. Diese Pruefung
+-- Reservierung fachlich richtig ist, entscheidet GL. Diese Pruefung
 -- wirkt deshalb sofort fuer Selbstauskuenfte und fuer Reservierungen erst
 -- dann, wenn dort eine kuerzere Frist gesetzt wird.
 --

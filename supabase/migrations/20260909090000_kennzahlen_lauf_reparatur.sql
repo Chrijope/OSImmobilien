@@ -53,7 +53,7 @@
 --   e) Am Ende laeuft die Funktion einmal, danach steht die Zaehlung je
 --      Bereich im Editor.
 --
--- Die Migration von gestern bleibt unangetastet. Sie ist bei Christian
+-- Die Migration von gestern bleibt unangetastet. Sie ist bei GL
 -- gelaufen, und die Historie soll zeigen, was war und was repariert wurde.
 -- Geaendert wird allein die Funktion `kennzahlen_tagesstand_lauf()` per
 -- CREATE OR REPLACE. Tabelle, Hilfsfunktionen, Lesefunktion und Zeitplan
@@ -925,7 +925,7 @@ BEGIN
     RAISE NOTICE 'VA: va_partner_fortschritt gibt es in dieser Datenbank nicht, zwei Kennzahlen ausgelassen.';
   END IF;
 
-  -- Diese Tabelle fehlt in Christians Datenbank (Stand 09.09.2026). Die
+  -- Diese Tabelle fehlt in der Datenbank der GL (Stand 09.09.2026). Die
   -- Migration 20260727080000_va_aufgaben_ergebnisse.sql steht im Repo, ist
   -- aber nie im SQL-Editor gelaufen.
   IF to_regclass('public.va_aufgaben_ergebnisse') IS NOT NULL THEN

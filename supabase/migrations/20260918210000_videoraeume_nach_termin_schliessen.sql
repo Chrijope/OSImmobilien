@@ -5,7 +5,7 @@
 --
 -- ## Der Befund
 --
--- Christian sieht unter "Meine Gespräche" hunderte offener Räume, obwohl die
+-- GL sieht unter "Meine Gespräche" hunderte offener Räume, obwohl die
 -- Termine längst vorbei sind. Der Umschalter "Geplant & laufend" gegen
 -- "Beendet" arbeitet dabei richtig: Er zeigt nur `offen` und `laufend`.
 -- Das Problem liegt eine Stufe darunter. Ein Raum kommt auf drei Wegen nach
@@ -159,7 +159,7 @@ BEGIN
    * Schwere bewusst immer "hinweis", auch wenn etwas geschlossen wurde.
    *
    * Das ist der Normalfall und kein Befund. Die Morgenmail nimmt nur
-   * "warnung" und "fehler" auf; so bekommt Christian nicht jeden Morgen eine
+   * "warnung" und "fehler" auf; so bekommt GL nicht jeden Morgen eine
    * Mail darüber, dass gestern Termine stattgefunden haben.
    */
   INSERT INTO public.nachtpruefung_befunde (lauf_at, pruefung, schwere, anzahl, meldung, beispiele)
@@ -271,7 +271,7 @@ COMMENT ON FUNCTION public.nachtpruefung_haengende_raeume(timestamptz) IS
 -- ---------------------------------------------------------------------------
 --
 -- Ohne das wirkt die Reparatur erst ab heute, und die hunderte alten Räume,
--- wegen denen Christian schreibt, blieben genau dort stehen, wo sie sind.
+-- wegen denen GL schreibt, blieben genau dort stehen, wo sie sind.
 -- Derselbe Aufruf wie in der Nacht, nur einmal von Hand. Der Befund landet
 -- unter dem heutigen Datum im Bericht, dort steht dann die Anzahl.
 

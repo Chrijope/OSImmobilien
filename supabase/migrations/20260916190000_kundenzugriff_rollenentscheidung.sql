@@ -10,7 +10,7 @@
 -- ein, die mit Kunden gar nichts zu tun haben, etwa das Objektmanagement,
 -- die Hausverwaltung, das Marketing und das Bewerbermanagement.
 --
--- Christian hat am 16.09.2026 entschieden, wer kuenftig Kunden sehen darf.
+-- GL hat am 16.09.2026 entschieden, wer kuenftig Kunden sehen darf.
 -- Diese Migration setzt genau diese Entscheidung um, Wort fuer Wort.
 --
 -- DIE ENTSCHEIDUNG
@@ -53,7 +53,7 @@
 -- vertriebsleiter. Sie entscheidet ueber Aktivitaeten, Follow-ups,
 -- Kommunikation und das Aenderungsprotokoll, also ueber die Vorgeschichte
 -- eines Kunden. Damit galten im Haus zwei verschiedene Regeln fuer dieselbe
--- Frage. Genau das soll es nach Christians Wunsch nicht mehr geben, deshalb
+-- Frage. Genau das soll es nach GL-Wunsch nicht mehr geben, deshalb
 -- verweist die Funktion ab hier auf die neue gemeinsame Regel.
 --
 -- Zwei Folgen, in beide Richtungen:

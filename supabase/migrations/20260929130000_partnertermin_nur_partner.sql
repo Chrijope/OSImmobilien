@@ -2,7 +2,7 @@
 -- Terminseite nur noch fuer den Partner, dem der Link gehoert
 -- ===========================================================================
 --
--- FREIGABE (Christian, 29.09.2026)
+-- FREIGABE (GL, 29.09.2026)
 --
 -- Die Terminseite /terminwahl/:token ist ausschliesslich fuer den
 -- angemeldeten Vertriebspartner, dem der Link gehoert

@@ -4,7 +4,7 @@
  *
  * Das kehrt 20260824160000_weekly_call_nur_eigene_punkte.sql um. Dort war
  * gewollt, dass die Partner sich untereinander gar nicht lesen. Am 26.08.2026
- * hat Christian ausdruecklich das Gegenteil verlangt: Wer einen Punkt
+ * hat GL ausdruecklich das Gegenteil verlangt: Wer einen Punkt
  * eintraegt, soll ihn allgemein sichtbar machen, damit alle vor dem Call
  * wissen, worum es geht. Das ist eine bewusste Entscheidung und kein
  * versehentlicher Rueckschritt.

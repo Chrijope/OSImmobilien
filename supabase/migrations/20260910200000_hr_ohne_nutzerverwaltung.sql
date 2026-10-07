@@ -9,7 +9,7 @@
 -- Bewerber bis zum unterschriebenen Vertrag; wer danach den Zugang einrichtet,
 -- ist eine getrennte Entscheidung.
 --
--- Entscheidung von Christian am 10.09.2026.
+-- Entscheidung von GL am 10.09.2026.
 --
 -- WAS SICH AENDERT UND WAS NICHT
 --

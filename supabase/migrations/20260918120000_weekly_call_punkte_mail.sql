@@ -46,7 +46,7 @@
 -- die neue Adresse. Zeile anpassen und ausfuehren:
 --
 --     update public.app_config
---        set wert = '["c.peetz@more.immo","c.kurz@more.immo"]'::jsonb,
+--        set wert = '["name@example.org","zweite@example.org"]'::jsonb,
 --            aktualisiert_am = now()
 --      where schluessel = 'weekly_call_punkte_empfaenger';
 --

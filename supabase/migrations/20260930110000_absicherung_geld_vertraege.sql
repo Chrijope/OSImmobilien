@@ -467,7 +467,7 @@ COMMENT ON FUNCTION public.investment_sa_pdf_vermerken(uuid, text, text) IS
 -- Regel aus KundenDetail, jetzt in der Datenbank: Admin, Inhaber und
 -- Backoffice immer, der zustaendige Vertriebspartner ab dem Notartermin.
 -- Kaufpreiseingang, Provisionsrechnung und Auszahlung (je Haken und Datum)
--- setzen nur Admin, Inhaber und Backoffice (Christians Entscheidung vom
+-- setzen nur Admin, Inhaber und Backoffice (GL-Entscheidung vom
 -- 30.09.2026); vom Partner bleibt dort der gespeicherte Stand. Faelligkeit,
 -- Grundbuch, Uebergabe und Anmerkungen pflegt er weiter. Nur die bekannten
 -- Felder werden uebernommen; fuenf davon stehen zusaetzlich flach im meta,
@@ -702,7 +702,7 @@ BEFORE UPDATE OF meta, berater ON public.kontakte
 FOR EACH ROW
 EXECUTE FUNCTION public.kontakt_zuordnung_namen_schuetzen();
 
--- Endgueltig loeschen: Admin, Inhaber, Vertriebsleitung (Christians
+-- Endgueltig loeschen: Admin, Inhaber, Vertriebsleitung (GLs
 -- Entscheidung vom 26.09.2026, dieselbe Liste wie dsgvo-hard-delete und
 -- darfEndgueltigLoeschen im Frontend). Alle anderen verschieben in den
 -- Papierkorb (UPDATE geloescht) oder beantragen die Loeschung.

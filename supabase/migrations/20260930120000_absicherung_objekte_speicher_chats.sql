@@ -19,7 +19,7 @@
 -- Objekttexte fuer alle ausser Admin und Inhaber nicht mehr und erzeugt sie
 -- beim naechsten Aufruf erneut (kostet KI-Laeufe).
 --
--- GRUNDSATZ (Christian, 29.09.2026)
+-- GRUNDSATZ (GL, 29.09.2026)
 --
 -- Nur Admin und Inhaber schreiben direkt. Alle anderen nur ueber gepruefte
 -- Ablaeufe. Was heute funktioniert, muss weiter funktionieren.

@@ -13,7 +13,7 @@
 -- gesetzt, und an diesem Partner haengt der festgeschriebene Provisionssatz.
 --
 -- Das ist derselbe Fehler zum dritten Mal. Er traf schon die Suche nach
--- Hermann Vogl (gesucht wurde "hermann vogel") und die Einladungsmail, die
+-- eines Partners (gesucht wurde eine falsche Schreibweise) und die Einladungsmail, die
 -- Nutzer ueber `u.name === e.berater` zuordnete. Beides ist behoben. Ein
 -- Kontakt traegt den Partner zweimal: als Text in `berater` und als echte
 -- Kennung in `zustaendig_id`. Die Kennung ist verlaesslich, der Name nicht.
@@ -42,7 +42,7 @@
 -- beliebig oft wiederholbar. Bereits festgeschriebene Provisionssaetze
 -- bleiben unveraendert stehen; der Trigger wirkt nur beim Anlegen eines
 -- Investments. Ob im Altbestand etwas rueckwirkend zu berichtigen ist,
--- entscheidet Christian nach dem Ergebnis von
+-- entscheidet GL nach dem Ergebnis von
 -- `supabase/migrations-inbox/95_BERATERNAMEN_PRUEFEN.sql`.
 --
 -- Diese Datei setzt die uuid-Fassung aus 20260909120000 voraus und ersetzt
@@ -198,7 +198,7 @@ $$;
 --     JOIN pg_namespace n ON n.oid = p.pronamespace
 --    WHERE n.nspname = 'public' AND p.proname = 'investment_partner_id';
 --
---   SELECT public.berater_name_normal('  Hermann   VOGL ') = 'hermann vogl'
+--   SELECT public.berater_name_normal('  Max   MUSTERMANN ') = 'max mustermann'
 --          AS normalisierung_greift;
 --
 -- Danach lohnt der Prueflauf `95_BERATERNAMEN_PRUEFEN.sql` ein zweites Mal:

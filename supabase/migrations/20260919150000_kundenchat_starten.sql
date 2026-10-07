@@ -4,7 +4,7 @@
 --
 -- WAS PASSIERT IST
 --
--- Otto Hans bekam in seinem Portal beim Klick auf "Chat mit Christian
+-- einem Testkunden bekam in seinem Portal beim Klick auf "Chat mit GL
 -- starten" die Meldung:
 --
 --     new row violates row-level security policy for table "chat_teilnehmer"

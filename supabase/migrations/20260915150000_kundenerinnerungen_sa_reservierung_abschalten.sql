@@ -2,7 +2,7 @@
 -- Kundenerinnerungen zur Selbstauskunft und Reservierung abschalten
 -- ===========================================================================
 --
--- Entscheidung Christians vom 15.09.2026: Der Kunde bekommt nach der Einladung
+-- Entscheidung GL vom 15.09.2026: Der Kunde bekommt nach der Einladung
 -- zur Selbstauskunft, nach dem Unterschriftslink zur Selbstauskunft und nach
 -- dem Unterschriftslink zur Reservierungsvereinbarung keine automatische
 -- Erinnerung mehr. Die Erstversaende bleiben, die internen Erinnerungen an

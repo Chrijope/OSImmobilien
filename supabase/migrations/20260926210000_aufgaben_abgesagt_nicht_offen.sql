@@ -8,7 +8,7 @@
 --
 -- Seit dem 26.09.2026 schließt das CRM die Aufgabe „Objekt-Vorstellungstermin
 -- vereinbaren“ als „abgesagt“, wenn ein Handbuch-Lead zurück in den Pool geht
--- (Christian). Bei der nächsten Zuteilung soll sie neu entstehen, auch wenn
+-- (GL). Bei der nächsten Zuteilung soll sie neu entstehen, auch wenn
 -- derselbe Partner den Lead wieder bekommt. Mit dem alten Index scheiterte
 -- genau dieser Fall an der Sperre.
 --

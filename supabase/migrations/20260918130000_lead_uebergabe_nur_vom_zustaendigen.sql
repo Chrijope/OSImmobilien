@@ -47,7 +47,7 @@
 -- durchlaesst, also auch backoffice, finanzierungspartner, buchhaltung,
 -- setterin, individuell und testaccount. Der Knopf sehen nur drei Rollen.
 -- Dass beides auseinanderfaellt, ist ein gemeldeter Befund und eine
--- Entscheidung fuer Christian, keine stille Aenderung hier.
+-- Entscheidung fuer GL, keine stille Aenderung hier.
 --
 -- Wiederholbar: ein zweiter Lauf aendert nichts.
 -- ===========================================================================

@@ -12,7 +12,7 @@
 --   nie gesetzt. Deshalb zeigte die Kachel "Globalobjekt 2" unter den
 --   Anlageklassen und unter der Vermarktungsart kein einziges.
 --
---   Christians Entscheidung vom 23.09.2026: Der Schalter ist die eine
+--   GL-Entscheidung vom 23.09.2026: Der Schalter ist die eine
 --   Wahrheit. Anlageklasse "Globalobjekt" und Schalter stimmen immer ueberein.
 --   Fuer neue Aenderungen sorgen ab jetzt die Objektanlage und der Import
 --   (Edge Function investagon-import, muss dafuer ausgerollt sein). Diese

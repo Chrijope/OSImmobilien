@@ -433,7 +433,7 @@ EXECUTE FUNCTION public.kontakte_provisionssatz_partnerwechsel();
 -- e) Provisionseinstellungen nur durch Admin und Inhaber
 -- ---------------------------------------------------------------------------
 --
--- Christians Grundsatz: Provisionssaetze setzen nur Admin und Inhaber. Bisher
+-- GL-Grundsatz: Provisionssaetze setzen nur Admin und Inhaber. Bisher
 -- erlaubte die Regel "Users update own settings" jedem, in seiner eigenen
 -- Zeile custom_provision_rate, _eigen, _setter, karriere_override und
 -- provision_locked direkt zu aendern, und merge_user_settings liess es zu,

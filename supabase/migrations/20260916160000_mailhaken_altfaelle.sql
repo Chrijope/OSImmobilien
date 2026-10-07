@@ -4,7 +4,7 @@
 --
 -- WARUM
 --
--- Christian meldet am 16.09.2026, dass in der Bewerberliste der Haken neben
+-- GL meldet am 16.09.2026, dass in der Bewerberliste der Haken neben
 -- dem Briefumschlag weiterhin fehlt, und zwar bei Bewerbern, die einen Bogen
 -- nachweislich ausgefuellt haben. Auf seinem Bild traegt ein Bewerber vom
 -- 15.09.2026 den Haken, alle vom 08.09.2026 und aelter nicht.
@@ -40,14 +40,14 @@
 --      `antworten` durch die geprueften Angaben, und `bogen` steht in deren
 --      Schema nicht. Eine eingereichte Zeile traegt das Kennzeichen also gar
 --      nicht mehr.
---   3. Und vor allem: Die Bewerber auf Christians Bild haben ueberhaupt nicht
+--   3. Und vor allem: Die Bewerber auf dem Bild der GL haben ueberhaupt nicht
 --      den Kennenlernbogen ausgefuellt, sondern den frueheren VORABBOGEN aus
 --      `send-bewerber-formular`, den es seit dem 19.08.2026 gibt. Der traegt
 --      weder `bogen` noch `weg` und fiel damit durch jeden bisherigen Filter.
 --
 -- WAS JETZT GILT
 --
--- Christians Vorgabe vom 16.09.2026, woertlich: „wenn einer der beiden bogen
+-- GL-Vorgabe vom 16.09.2026, woertlich: „wenn einer der beiden bogen
 -- schon ausgefuellt ist, bitte den haken anzeigen."
 --
 -- Der Grund traegt fuer beide Boegen gleichermassen: Der Link zum Bogen steht
@@ -193,7 +193,7 @@ END $nachtrag$;
 --   davor_ohne_haken          Wie viele davon haetten OHNE den Vorabbogen
 --                             keinen Haken bekommen, weil ihre Zeilen weder
 --                             `bogen` noch `weg` tragen? Das ist die Zahl der
---                             Altfaelle, also genau die, die Christian
+--                             Altfaelle, also genau die, die GL
 --                             gefehlt haben.
 --   jetzt_noch_offen          Wie viele haben nach dem Lauf noch keinen
 --                             Oeffnungsvermerk? Erwartet wird 0.

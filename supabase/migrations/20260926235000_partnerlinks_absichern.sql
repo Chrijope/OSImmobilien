@@ -2,7 +2,7 @@
 -- Partnerlinks absichern: Kürzel geschützt, Sperre wirkt, Tippgeber eindeutig
 -- ===========================================================================
 --
--- Befunde der Codex-Prüfung vom 26.09.2026, von Christian freigegeben. Die
+-- Befunde der Codex-Prüfung vom 26.09.2026, von GL freigegeben. Die
 -- Namen in den Partnerlinks bleiben, geschlossen werden diese Lücken:
 --
 -- F03  Partner konnten `profiles.vp_slug` direkt aus dem Browser ändern oder

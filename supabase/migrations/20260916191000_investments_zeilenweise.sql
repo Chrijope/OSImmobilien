@@ -2,7 +2,7 @@
 -- Investments und Finanzierungen zeilenweise eingrenzen
 -- ===========================================================================
 --
--- VORGABE (Christian, 15.09.2026)
+-- VORGABE (GL, 15.09.2026)
 --
 --   "Ein Vertriebspartner darf auch ueber die Konsole nur seine eigenen
 --    Investments abfragen koennen, also die Investments der ihm zugeordneten
@@ -41,7 +41,7 @@
 -- Diese Datei war am 15.09.2026 vorbereitet, aber nie ausgefuehrt. Sie trug
 -- damals die alte Regel "is_admin_role ODER (is_internal_role UND NICHT
 -- vertriebspartner)" in einer eigenen Funktion `hat_breiten_investmentzugriff`.
--- Christians Entscheidung vom 16.09.2026 ersetzt diese Regel. Die Datei ist
+-- GL-Entscheidung vom 16.09.2026 ersetzt diese Regel. Die Datei ist
 -- deshalb auf `darf_alle_kunden_sehen` umgestellt und von 20260915200000 auf
 -- 20260916191000 umnummeriert worden, damit sie nach der Entscheidung laeuft.
 -- Eine eigene Investmentregel gibt es nicht mehr, sonst haetten wir wieder

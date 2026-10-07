@@ -2,7 +2,7 @@
 --
 -- WOZU DAS DA IST
 --
--- Migrationen werden in diesem Projekt nicht automatisch angewendet, Christian
+-- Migrationen werden in diesem Projekt nicht automatisch angewendet, GL
 -- führt sie im Supabase-SQL-Editor aus. Bleibt eine liegen, merkt es niemand:
 -- Der Code steht im Repo, die Tabelle fehlt in der Datenbank, und was auf sie
 -- zugreift, schlägt still fehl. Zweimal ist das schon passiert:

@@ -2,7 +2,7 @@
 -- Reservieren aus der Einheitsseite: 60 Minuten Vormerkung
 -- ===========================================================================
 --
--- WAS DIESE MIGRATION TUT (Christians Regeln vom 23.09.2026)
+-- WAS DIESE MIGRATION TUT (GL-Regeln vom 23.09.2026)
 --
 --   1. Neue Spalten an `wohnungen`: `vorgemerkt_bis`, `vorgemerkt_kunde_id`
 --      (Verweis auf kontakte, beim Loeschen leer), `vorgemerkt_kunde_name`,

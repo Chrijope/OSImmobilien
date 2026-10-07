@@ -5,13 +5,13 @@
 -- Bis heute stand am Verlauf eines Kunden nur fuer Admin, Inhaber und
 -- Vertriebsleiter ein Papierkorb, und die Regel
 -- "Leitung loescht Aktivitaeten" (20260728140000) hat das auch technisch
--- durchgesetzt. Christian hat am 16.09.2026 entschieden, dass auch der
+-- durchgesetzt. GL hat am 16.09.2026 entschieden, dass auch der
 -- Vertriebspartner seine Notizen, Aufgaben und Termine wieder entfernen kann.
 --
 -- Der Grund der alten Regel bleibt gueltig: Ein Aktivitaetseintrag ist oft der
 -- einzige Nachweis darueber, was mit einem Kunden besprochen wurde. Wer seine
 -- eigene Historie beliebig bereinigen kann, macht den Verlauf als Nachweis
--- wertlos. Deshalb der engste Schnitt, der Christians Wunsch erfuellt:
+-- wertlos. Deshalb der engste Schnitt, der GL-Wunsch erfuellt:
 --
 --   * Die Leitung entfernt wie bisher jeden sichtbaren Eintrag. Diese Regel
 --     bleibt unveraendert stehen, sie steht neben der neuen.

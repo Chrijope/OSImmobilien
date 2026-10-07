@@ -2,7 +2,7 @@
 -- Finanzierung erst ab unterschriebener Reservierung, auch serverseitig
 -- ===========================================================================
 --
--- WORUM ES GEHT (Christian, 25.09.2026)
+-- WORUM ES GEHT (GL, 25.09.2026)
 --
 -- Im Kundenprofil ist die Finanzierung offen ab der Reservierung, sobald die
 -- Reservierung unterschrieben ist und ein Objekt am Investment steht, und

@@ -2,7 +2,7 @@
 -- Weekly Sales Call: zwei Calls am Montag, Punkte je Call getrennt
 -- ===========================================================================
 --
--- Vorgabe Christian vom 05.10.2026: Montags 19:00 Uhr der Call fuer die
+-- Vorgabe GL vom 05.10.2026: Montags 19:00 Uhr der Call fuer die
 -- Lead-Berater, 19:30 Uhr der Call fuer die Vertriebspartner ohne diese
 -- Variante. Admin, Inhaber und Vertriebsleitung betreuen beide. Zoom-Link und
 -- Wochenschnitt (20:30, `weekly_call_woche()`) bleiben fuer beide gleich.

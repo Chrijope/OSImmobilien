@@ -54,7 +54,7 @@
 --
 -- WER HAT ENTSCHIEDEN
 --
--- Christian, am 16.09.2026, nach dem Befund. Die drei berechtigten Gruppen
+-- GL, am 16.09.2026, nach dem Befund. Die drei berechtigten Gruppen
 -- und die Einschraenkung der Vertriebsleitung auf das eigene Team sind seine
 -- Vorgabe.
 --

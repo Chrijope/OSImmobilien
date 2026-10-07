@@ -28,7 +28,7 @@
 -- Die Teilnehmer selbst kommen weiterhin ueber Regel 1 hinein. An ihr wird
 -- nichts angefasst.
 --
--- Christians Vorgabe vom 19.09.2026: "Die Chat-Anhaenge sollen nur die lesen
+-- GL-Vorgabe vom 19.09.2026: "Die Chat-Anhaenge sollen nur die lesen
 -- koennen, die eben auch diesem Chat als Teilnehmer hinzugefuegt sind. Oder
 -- eben Admin, der kann in alle Chats und Chatverlaeufe reinschauen."
 --

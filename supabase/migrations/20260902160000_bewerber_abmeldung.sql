@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS public.bewerber_abmeldung (
   -- Gesetzt heißt: Der Bewerber hat auf der Seite bestätigt.
   verwendet_am timestamptz,
   -- Nach 90 Tagen ist der Link nicht mehr gültig. Wer sich dann noch
-  -- abmelden will, schreibt an office@more.immo, die Seite sagt das.
+  -- abmelden will, schreibt an office@example.org, die Seite sagt das.
   expires_at timestamptz NOT NULL DEFAULT (now() + interval '90 days')
 );
 

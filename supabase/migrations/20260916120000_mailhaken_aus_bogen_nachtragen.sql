@@ -9,7 +9,7 @@
 -- `mark_bewerber_mail_opened_aus_bogen` und traegt in einem DO-Block den
 -- Vermerk fuer den Altbestand nach.
 --
--- Christian meldet am 16.09.2026: In der Bewerberliste fehlt der Haken neben
+-- GL meldet am 16.09.2026: In der Bewerberliste fehlt der Haken neben
 -- dem Briefumschlag weiterhin bei Bewerbern, die den Kennenlernbogen
 -- nachweislich ausgefuellt und abgeschickt haben.
 --

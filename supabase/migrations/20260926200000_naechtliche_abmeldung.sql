@@ -2,7 +2,7 @@
 -- Nächtliche Abmeldung und Sitzungen beenden, die wirklich enden
 -- ===========================================================================
 --
--- Christian am 26.09.2026, alle fünf Punkte freigegeben:
+-- GL am 26.09.2026, alle fünf Punkte freigegeben:
 --
 -- 1. Jede Nacht um 03:30 Uhr deutscher Zeit werden alle Konten abgemeldet,
 --    außer Kunden und Bewerbern. Also auch Admin, Inhaber und Testkonten.

@@ -11,7 +11,7 @@
 -- Portalzugang blieben am Kontakt im Papierkorb hängen und waren aus Sicht
 -- des behaltenen Kontakts verschwunden.
 --
--- DIE NEUE REGEL (Christian, 26.09.2026)
+-- DIE NEUE REGEL (GL, 26.09.2026)
 --
 --   1. Es bleibt immer der ÄLTERE Kontakt (früheres erstellt_am, bei
 --      Gleichstand die kleinere MORE-Nummer, zuletzt die Kennung).

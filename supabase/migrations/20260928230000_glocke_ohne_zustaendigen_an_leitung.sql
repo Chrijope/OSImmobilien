@@ -2,7 +2,7 @@
 -- Glocke ohne Zustaendigen: auch an die Vertriebsleitung
 -- ===========================================================================
 --
--- Christians Entscheidung vom 28.09.2026: Prozess-Glocken fuer einen Kunden
+-- GL-Entscheidung vom 28.09.2026: Prozess-Glocken fuer einen Kunden
 -- ohne Zustaendigen gehen an Admin, Inhaber und Vertriebsleitung (Rollen
 -- admin, inhaber, vertriebsleiter), nie an alle Vertriebspartner, jede Person
 -- nur einmal. Mit Zustaendigem aendert sich nichts.

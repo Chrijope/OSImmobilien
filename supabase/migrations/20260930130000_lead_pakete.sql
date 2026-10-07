@@ -2,7 +2,7 @@
 -- Leadpakete: welcher Lead aus welchem Paket geliefert wurde
 -- ===========================================================================
 --
--- Christians Auftrag vom 29.09.2026. Bisher lag ein Leadpaket nur als
+-- GL-Auftrag vom 29.09.2026. Bisher lag ein Leadpaket nur als
 -- { betrag, anzahl } in bewerbungen.meta, kein Kontakt war einem Paket
 -- zugeordnet. Im Streit muss die Gesellschaft belegen, welche Leads aus
 -- welchem Paket geliefert wurden, wann gezahlt und wann freigeschaltet wurde
@@ -17,11 +17,11 @@
 --      spaeter umgehaengt wird.
 --   3) Lesen: Admin, Inhaber, Vertriebsleitung alles, Partner nur die
 --      eigenen Pakete. Schreiben nur ueber die Funktionen unten
---      (Christians Grundsatz: direkt schreiben nur Admin und Inhaber, hier
+--      (GL-Grundsatz: direkt schreiben nur Admin und Inhaber, hier
 --      nicht einmal die, damit jede Aenderung durch dieselbe Pruefung geht).
 --      Wer selbst Partner eines Pakets ist, vermerkt und reklamiert darin
 --      nichts, ausser er ist Admin oder Inhaber.
---   4) Paket aus der Bewerbung (Christians Entscheidung vom 29.09.2026):
+--   4) Paket aus der Bewerbung (GL-Entscheidung vom 29.09.2026):
 --      Mit dem bestaetigten Zahlungseingang entsteht das Paket automatisch,
 --      sobald das Nutzerkonto verknuepft ist und seine E-Mail zur Bewerbung
 --      passt; sonst beim Anlegen des Nutzers. Nie doppelt (bewerbung_id
@@ -513,12 +513,12 @@ REVOKE EXECUTE ON FUNCTION public.lead_paket_aus_bewerbung_intern(uuid) FROM ano
 
 -- Aufruf aus dem Browser nach Zahlungsbestaetigung und Nutzeranlage.
 -- Rechte wie beim Bearbeiten von Bewerbungen (darf_bewerberbereich: HR,
--- Admin, Inhaber, Backoffice; Christians Entscheidung vom 29.09.2026). Das
+-- Admin, Inhaber, Backoffice; GL-Entscheidung vom 29.09.2026). Das
 -- ist vertretbar, weil der Aufrufer nur die Bewerbung nennt: Alle Werte
 -- liest die Funktion selbst aus der Bewerbung, dazu die E-Mail-Pruefung.
 --
 -- Legt jemand ausser Admin und Inhaber ein Paket neu an, bekommen alle mit
--- Rolle admin oder inhaber eine Glocke (Christians Entscheidung vom
+-- Rolle admin oder inhaber eine Glocke (GL-Entscheidung vom
 -- 29.09.2026, Variante b: keine Kontobindung an die Einladung, dafuer
 -- Nachkontrolle). Nicht an den Ausloeser selbst. Namen ueber die Kennung
 -- aus profiles, nie ueber eine Namenssuche.

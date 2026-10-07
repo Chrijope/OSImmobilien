@@ -2,7 +2,7 @@
 -- Kundenportal: Empfehlungsprogramm anfragen
 -- ===========================================================================
 --
--- Christians Vorgabe vom 04.10.2026: Fragt ein Kunde im Portal das
+-- GL-Vorgabe vom 04.10.2026: Fragt ein Kunde im Portal das
 -- Empfehlungsprogramm an, bekommt der zustaendige Partner eine Aufgabe und
 -- eine Glocke, die auf diese Aufgabe zeigt. Ohne Zustaendigen gehen beide an
 -- Admin, Inhaber und Vertriebsleitung (Glockenregel vom 29.09.2026), jede

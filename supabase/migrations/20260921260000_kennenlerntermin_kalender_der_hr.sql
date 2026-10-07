@@ -2,7 +2,7 @@
 --
 -- Bisher stand die Kalenderadresse als feste Zeile im Quelltext der Seite
 -- (`KOOPERATION_KALENDER_URL`). Wechselt die Person, die die Kennenlerngespräche
--- führt, müsste jemand den Quelltext ändern und neu ausrollen. Christian hat am
+-- führt, müsste jemand den Quelltext ändern und neu ausrollen. GL hat am
 -- 21.09.2026 entschieden: Es soll der persönliche Buchungslink derjenigen sein,
 -- die den Bewerberprozess tatsächlich betreut.
 --

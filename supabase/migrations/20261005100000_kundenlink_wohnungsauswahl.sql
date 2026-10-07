@@ -4,7 +4,7 @@
 --
 -- WARUM ES DIESE MIGRATION GIBT
 --
---   Christian, 05.10.2026: Im Fenster „Kundenlink senden“ wählt er bei der
+--   GL, 05.10.2026: Im Fenster „Kundenlink senden“ wählt er bei der
 --   Objektübersicht, welche freien Wohnungen des Hauses der Kunde über den
 --   Link sieht. Die Einschränkung muss auf dem Server gelten, nicht nur in
 --   der Oberfläche: `get-kundenansicht` gibt nur die gewählten Wohnungen

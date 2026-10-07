@@ -2,7 +2,7 @@
 -- Umgebung automatisch messen: Zeitplan für `standort-nachholen`
 -- ===========================================================================
 --
--- Christian am 24.09.2026: Jedes Objekt hat eine Adresse, also wird die
+-- GL am 24.09.2026: Jedes Objekt hat eine Adresse, also wird die
 -- Umgebung für jedes Objekt automatisch gemessen, ohne Knopf. Die Edge
 -- Function `standort-nachholen` misst je Lauf höchstens zwei Objekte, die
 -- noch keine Messung haben, deren Adresse sich geändert hat oder deren

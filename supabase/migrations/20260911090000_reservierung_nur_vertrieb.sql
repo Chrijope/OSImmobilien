@@ -9,7 +9,7 @@
 -- "reserviert" setzen oder eine fremde Reservierung wieder aufheben. Im
 -- Browser fehlte die Pruefung ganz.
 --
--- Entscheidung Christians vom 11.09.2026: Reservieren duerfen genau vier
+-- Entscheidung GL vom 11.09.2026: Reservieren duerfen genau vier
 -- Rollen. Die uebrigen internen Rollen duerfen Wohnungsdaten weiter pflegen,
 -- nur der Reservierungsstand ist ihnen entzogen. Deshalb kein Umbau der
 -- Policy, sondern ein Ausloeser, der genau die drei Felder bewacht.

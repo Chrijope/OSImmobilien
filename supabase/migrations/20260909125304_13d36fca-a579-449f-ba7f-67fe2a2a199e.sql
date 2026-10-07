@@ -1,1 +1,0 @@
-ALTER TABLE public.investagon_sync_queue RENAME COLUMN updated_at TO aktualisiert_am;
