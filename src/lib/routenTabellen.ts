@@ -225,6 +225,8 @@ export const ROUTEN_TABELLEN: Record<string, readonly string[]> = {
   // (Immorechner, Musterkalkulation, Kalkulation 1, Team Pro Q, Kalkulator-Beispiele).
   "/immorechner": [],
   "/investmentrechner": [...KONTAKT_TABELLEN, ...OBJEKT_TABELLEN],
+  // Ankaufstool rechnet nur mit Eingaben, laedt keine Daten.
+  "/ankaufstool": [],
   "/musterkalkulation": [],
   "/kalkulation-1": [],
   "/kalkulation-team-pro-q": [],

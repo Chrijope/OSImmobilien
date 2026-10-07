@@ -339,3 +339,14 @@ describe("Individuelle Berechtigungen nur in internen Rollen", () => {
     expect(isUrlAllowedForRole("/videocall/buchungen", "kunde", ["/videocall/buchungen"])).toBe(false);
   });
 });
+
+describe("Ankaufstool", () => {
+  it("steht der Hausleitung und der Vertriebsleitung offen, sonst niemandem", () => {
+    for (const rolle of ["admin", "inhaber", "vertriebsleiter"] as const) {
+      expect(isUrlAllowedForRole("/ankaufstool", rolle)).toBe(true);
+    }
+    for (const rolle of ["vertriebspartner", "backoffice", "objektpartner", "kunde", "tippgeber"] as const) {
+      expect(isUrlAllowedForRole("/ankaufstool", rolle)).toBe(false);
+    }
+  });
+});

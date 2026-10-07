@@ -11,6 +11,14 @@ import {
 import { darfHandbuchSeite, istHandbuchSeiteRoute } from "@/lib/handbuch/zugang";
 import { getAppConfig } from "@/lib/appConfigStore";
 
+/**
+ * Ankaufstool (Bauträger-Kalkulator), seit dem 07.10.2026. Ein internes
+ * Werkzeug der Hausleitung: Admin und Inhaber haben ohnehin Vollzugriff, dazu
+ * die Vertriebsleitung, die auch die Objektseite sieht.
+ */
+export const ANKAUFSTOOL_ROUTE = "/ankaufstool";
+const ANKAUFSTOOL_ROLLEN: readonly string[] = ["admin", "inhaber", "vertriebsleiter"];
+
 // Roles that see everything
 // New routes: /follow-ups, /empfehlungen, /einheitenspiegel, /afa-rechner
 const FULL_ACCESS_ROLES: UserRole[] = ["inhaber", "admin", "individuell", "testaccount"];
@@ -615,6 +623,8 @@ export function isUrlAllowedForRole(
   // der Datenbank, weil die Rollenfreigaben dort gepflegt werden und eine
   // Freischaltung im Code sonst nicht ankaeme.
   if (cleanUrl === INVESTMENTRECHNER_ROUTE && canAccessInvestmentrechner(role)) return true;
+  // Das Ankaufstool ebenso im Code, damit es ohne Migration ankommt.
+  if (cleanUrl === ANKAUFSTOOL_ROUTE && ANKAUFSTOOL_ROLLEN.includes(role)) return true;
   if (customPermissions?.includes(url) || customPermissions?.includes(cleanUrl)) return true;
   const allowed = getAllowedUrlsFor(role);
   if (!allowed) return false; // unknown role → deny by default

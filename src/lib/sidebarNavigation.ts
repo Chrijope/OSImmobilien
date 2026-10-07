@@ -30,7 +30,7 @@ import type { UserRole } from "@/types/user";
 import { HANDBUCH_SEITE_ROUTE } from "@/lib/handbuch/zugang";
 import { isDraftRoute } from "@/lib/draftRoutes";
 import {
-  greiftAdminRiegel, isUrlAllowedForRole, isKundeRole, isTippgeberRole, objekteTestFreigabe, type NutzerIdentitaet,
+  ANKAUFSTOOL_ROUTE, greiftAdminRiegel, isUrlAllowedForRole, isKundeRole, isTippgeberRole, objekteTestFreigabe, type NutzerIdentitaet,
 } from "@/lib/sidebarPermissions";
 
 /** Wonach Menschen die Einstellungen suchen. Steht hier, weil zwei Einträge sie brauchen. */
@@ -75,6 +75,9 @@ const immobilienItems = [
     tooltip: "Die eigene Objektverwaltung mit dem Investagon-Import. Fuer die Pflege, im Vertrieb wird der Eintrag darueber genutzt." },
   { title: "Objekt Akquise", url: "/objekt-akquise", icon: Search, adminOnly: true, suchbegriffe: ["ankauf", "einkauf", "neue objekte"] },
   { title: "Objekt Einreichungen", url: "/objekt-einreichungen", icon: ClipboardList, adminOnly: true, suchbegriffe: ["eingereicht", "vorschlaege"] },
+  /* Bauträger-Kalkulator aus Ankaufstool.xlsx. Wer ihn sieht, steht in
+     `ANKAUFSTOOL_ROLLEN` (sidebarPermissions.ts). */
+  { title: "Ankaufstool", url: ANKAUFSTOOL_ROUTE, icon: Calculator, adminOnly: true, auchFuer: ["vertriebsleiter"], suchbegriffe: ["ankauf", "bautraeger", "kalkulator", "lohnt sich", "marge", "go no go", "aufteilung"] },
 ];
 
 const auswertungItems = [
