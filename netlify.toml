@@ -4,7 +4,7 @@
   publish = "dist"
 
 [build.environment]
-  NODE_VERSION = "20"
+  NODE_VERSION = "22"
 
 # Die App steuert ihre Seiten selbst (React Router). Jede Adresse ohne
 # eigene Datei geht deshalb an index.html, sonst gäbe es beim Neuladen 404.
