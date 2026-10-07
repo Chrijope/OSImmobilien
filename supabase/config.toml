@@ -349,8 +349,10 @@ verify_jwt = false
 [functions.kundenportal-sperre]
 verify_jwt = true
 
-# Bisher ohne Eintrag (Standard: Anmeldung noetig). Die Supabase-GitHub-
-# Integration veroeffentlicht nur Functions, die hier stehen.
+# Nachgetragen fuer die Supabase-GitHub-Integration, die nur Functions
+# veroeffentlicht, die hier stehen. Ohne Anmeldung (false) nur, was Besucher
+# ohne Login oder externe Dienste aufrufen; diese Functions pruefen selbst
+# (oeffentliches Kuerzel, Formular, Geheimwort des Webhooks, OAuth-state).
 
 [functions.admin-unlock-account]
 verify_jwt = true
@@ -422,16 +424,16 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.get-tippgeber-vp-slug]
-verify_jwt = true
+verify_jwt = false
 
 [functions.get-vp-microsite]
-verify_jwt = true
+verify_jwt = false
 
 [functions.google-calendar]
-verify_jwt = true
+verify_jwt = false
 
 [functions.handle-email-suppression]
-verify_jwt = true
+verify_jwt = false
 
 [functions.handle-email-unsubscribe]
 verify_jwt = true
@@ -524,13 +526,13 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.sipgate-webhook]
-verify_jwt = true
+verify_jwt = false
 
 [functions.storage-audit]
 verify_jwt = true
 
 [functions.submit-lead]
-verify_jwt = true
+verify_jwt = false
 
 [functions.submit-sa-signature]
 verify_jwt = true
@@ -545,4 +547,4 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.zapier-bewerber-webhook]
-verify_jwt = true
+verify_jwt = false

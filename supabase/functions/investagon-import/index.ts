@@ -52,6 +52,7 @@ import {
   leererBildBericht,
   uebernimmBilder,
 } from "./bilder.ts";
+import { ausUebergabe } from "./uebergabe.ts";
 import { logActivityFromEdge } from "../_shared/activity-log.ts";
 import { checkEdgeRateLimit } from "../_shared/edge-rate-limit.ts";
 import {
@@ -176,7 +177,7 @@ function objektTexteAnstossen(): void {
 }
 
 interface Bericht {
-  quelle: "api" | "daten";
+  quelle: "api" | "daten" | "uebergabe";
   angelegt: string[];
   aktualisiert: string[];
   einheiten: number;
@@ -942,7 +943,7 @@ Deno.serve(async (req: Request) => {
 
   let trockenlauf = false;
   let roh = false;
-  let quelleWunsch: "api" | "daten" = "api";
+  let quelleWunsch: "api" | "daten" | "uebergabe" = "api";
 
   const db = createClient(SUPABASE_URL, SERVICE_ROLE);
 
@@ -993,6 +994,8 @@ Deno.serve(async (req: Request) => {
     trockenlauf = body?.trockenlauf === true;
     roh = body?.roh === true;
     if (body?.quelle === "daten") quelleWunsch = "daten";
+    // Uebergabe-Paket aus der Investagon-Oberflaeche, siehe `uebergabe.ts`.
+    if (body?.quelle === "uebergabe") quelleWunsch = "uebergabe";
   }
 
   /*
@@ -1227,7 +1230,7 @@ Deno.serve(async (req: Request) => {
   }
 
   let projekte: ImportProjekt[] = PROJEKTE;
-  let quelle: "api" | "daten" = "daten";
+  let quelle: "api" | "daten" | "uebergabe" = "daten";
   let bildQuellen = new Map<string, BildQuelle>();
   const fehler: string[] = [];
 
@@ -1247,6 +1250,22 @@ Deno.serve(async (req: Request) => {
         error:
           "Investagon konnte nicht geladen werden. Kein Datenbestand wurde verändert.",
         ...(sync ? {} : { details: grund }),
+      }, 502);
+    }
+  }
+  if (quelleWunsch === "uebergabe") {
+    try {
+      const ergebnis = await ausUebergabe(db);
+      projekte = ergebnis.projekte;
+      quelle = "uebergabe";
+      bildQuellen = ergebnis.bildQuellen;
+      fehler.push(...ergebnis.hinweise);
+    } catch (e) {
+      const grund = e instanceof Error ? e.message : String(e);
+      console.error("investagon-import: Übergabe nicht nutzbar:", grund);
+      return json({
+        error: "Übergabepaket nicht lesbar. Kein Datenbestand wurde verändert.",
+        details: grund,
       }, 502);
     }
   }
@@ -1724,6 +1743,8 @@ Deno.serve(async (req: Request) => {
           einzelwohnung: p.einheiten.length === 1,
           importQuelle: quelle === "api"
             ? "investagon-api"
+            : quelle === "uebergabe"
+            ? "investagon-uebergabe"
             : "investagon-berateransicht",
           importStand: new Date().toISOString().slice(0, 10),
         },

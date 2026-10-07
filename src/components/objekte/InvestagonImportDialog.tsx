@@ -197,6 +197,9 @@ export function InvestagonImportDialog() {
 
   // Echtlauf
   const [bilderMitladen, setBilderMitladen] = useState(true);
+  // Ohne API-Schluessel: Daten aus dem Uebergabe-Paket im Speicher, siehe
+  // supabase/functions/investagon-import/uebergabe.ts.
+  const [ausUebergabe, setAusUebergabe] = useState(false);
   const [bestaetigungOffen, setBestaetigungOffen] = useState(false);
   const [echtLaeuft, setEchtLaeuft] = useState(false);
   const [echtBericht, setEchtBericht] = useState<Bericht | null>(null);
@@ -248,7 +251,7 @@ export function InvestagonImportDialog() {
         angeboten wird, wird ausgeblendet, niemals gelöscht.
       */
       const { data, error } = await supabase.functions.invoke("investagon-import", {
-        body: { bilder: bilderMitladen, aufraeumen: false },
+        body: { bilder: bilderMitladen, aufraeumen: false, ...(ausUebergabe ? { quelle: "uebergabe" } : {}) },
       });
       if (error) {
         setEchtFehler(await fehlerVon(error));
@@ -274,7 +277,7 @@ export function InvestagonImportDialog() {
     setBericht(null);
     try {
       const { data, error } = await supabase.functions.invoke("investagon-import", {
-        body: { trockenlauf: true },
+        body: { trockenlauf: true, ...(ausUebergabe ? { quelle: "uebergabe" } : {}) },
       });
       if (error) {
         setFehler(await fehlerVon(error));
@@ -380,6 +383,18 @@ export function InvestagonImportDialog() {
                 disabled={echtLaeuft}
               />
               Bilder und Unterlagen mitladen
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <Checkbox
+                checked={ausUebergabe}
+                onCheckedChange={(wert) => {
+                  setAusUebergabe(wert === true);
+                  // Ein Trockenlauf gilt nur fuer die Quelle, mit der er lief.
+                  setBericht(null);
+                }}
+                disabled={laeuft || echtLaeuft}
+              />
+              Aus Übergabe-Paket (ohne API-Schlüssel)
             </label>
             <Button
               onClick={() => setBestaetigungOffen(true)}

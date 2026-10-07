@@ -297,10 +297,10 @@ export async function handbuchNachLeadAnlegen(
     if (error) throw error;
     investment = waehleInvestment((data || []) as any[]);
     if (!investment) {
-      // Wie der Trigger: ein leeres Investment in der Stufe Erstgespraech.
+      // Wie der Trigger: ein leeres Investment in der Stufe Neuer Lead.
       const { data: neu, error: neuFehler } = await supabase
         .from("investments")
-        .insert({ kunde_id: e.kontaktId, meta: { nummer: 1, label: "Investment 1", pipelineStufe: "erstgespraech" } })
+        .insert({ kunde_id: e.kontaktId, meta: { nummer: 1, label: "Investment 1", pipelineStufe: "neuer_lead" } })
         .select("id")
         .single();
       if (neuFehler) throw neuFehler;
