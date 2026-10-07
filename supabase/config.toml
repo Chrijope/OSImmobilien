@@ -348,3 +348,201 @@ verify_jwt = false
 # Vertriebspartner klickt, und sperrt dann auch die Anmeldung des Kunden.
 [functions.kundenportal-sperre]
 verify_jwt = true
+
+# Bisher ohne Eintrag (Standard: Anmeldung noetig). Die Supabase-GitHub-
+# Integration veroeffentlicht nur Functions, die hier stehen.
+
+[functions.admin-unlock-account]
+verify_jwt = true
+
+[functions.ai-analyze-pdf-berechnungen]
+verify_jwt = true
+
+[functions.ai-compare-berechnungen]
+verify_jwt = true
+
+[functions.analyze-objekt-pdfs]
+verify_jwt = true
+
+[functions.apple-calendar]
+verify_jwt = true
+
+[functions.auto-purge-papierkorb]
+verify_jwt = true
+
+[functions.create-test-accounts]
+verify_jwt = true
+
+[functions.daily-backup]
+verify_jwt = true
+
+[functions.dsgvo-purge-expired]
+verify_jwt = true
+
+[functions.dsgvo-storage-cleanup]
+verify_jwt = true
+
+[functions.ensure-vp-slug]
+verify_jwt = true
+
+[functions.erstgespraech-zusammenfassung]
+verify_jwt = true
+
+[functions.extract-lead-from-photo]
+verify_jwt = true
+
+[functions.extract-loan-terms]
+verify_jwt = true
+
+[functions.fetch-email-body]
+verify_jwt = true
+
+[functions.fetch-url-pdfs]
+verify_jwt = true
+
+[functions.finalize-reservierung]
+verify_jwt = true
+
+[functions.finalize-selbstauskunft]
+verify_jwt = true
+
+[functions.finalize-vertrag]
+verify_jwt = true
+
+[functions.follow-up-eskalation]
+verify_jwt = true
+
+[functions.generate-standortanalyse]
+verify_jwt = true
+
+[functions.get-expose]
+verify_jwt = true
+
+[functions.get-objektvorstellung]
+verify_jwt = true
+
+[functions.get-tippgeber-vp-slug]
+verify_jwt = true
+
+[functions.get-vp-microsite]
+verify_jwt = true
+
+[functions.google-calendar]
+verify_jwt = true
+
+[functions.handle-email-suppression]
+verify_jwt = true
+
+[functions.handle-email-unsubscribe]
+verify_jwt = true
+
+[functions.investmentrechner-unterlagen]
+verify_jwt = true
+
+[functions.invite-user]
+verify_jwt = true
+
+[functions.ki-assistant]
+verify_jwt = true
+
+[functions.list-email-folders]
+verify_jwt = true
+
+[functions.manage-mfa]
+verify_jwt = true
+
+[functions.manage-sessions]
+verify_jwt = true
+
+[functions.meta-lead]
+verify_jwt = true
+
+[functions.preview-transactional-email]
+verify_jwt = true
+
+[functions.process-scheduled-notifications]
+verify_jwt = true
+
+[functions.save-expose-pdf]
+verify_jwt = true
+
+[functions.secure-login]
+verify_jwt = true
+
+[functions.security-cockpit]
+verify_jwt = true
+
+[functions.send-erstgespraech-reminders]
+verify_jwt = true
+
+[functions.send-lead-partner-mail]
+verify_jwt = true
+
+[functions.send-mahnung]
+verify_jwt = true
+
+[functions.send-reservation-signature]
+verify_jwt = true
+
+[functions.send-review-result]
+verify_jwt = true
+
+[functions.send-sa-abbrecher-reminder]
+verify_jwt = true
+
+[functions.send-sa-invitation]
+verify_jwt = true
+
+[functions.send-selbstauskunft]
+verify_jwt = true
+
+[functions.send-signature-request]
+verify_jwt = true
+
+[functions.send-transactional-email]
+verify_jwt = true
+
+[functions.send-vertrag-signature]
+verify_jwt = true
+
+[functions.send-vp-bewertung-einladungen]
+verify_jwt = true
+
+[functions.send-web-push]
+verify_jwt = true
+
+[functions.send-weekly-summary]
+verify_jwt = true
+
+[functions.send-weekly-vp-summary]
+verify_jwt = true
+
+[functions.setup-admin]
+verify_jwt = true
+
+[functions.signatur-link-erinnern]
+verify_jwt = true
+
+[functions.sipgate-webhook]
+verify_jwt = true
+
+[functions.storage-audit]
+verify_jwt = true
+
+[functions.submit-lead]
+verify_jwt = true
+
+[functions.submit-sa-signature]
+verify_jwt = true
+
+[functions.sync-emails]
+verify_jwt = true
+
+[functions.update-sa-signature-data]
+verify_jwt = true
+
+[functions.vp-marketing]
+verify_jwt = true
+
+[functions.zapier-bewerber-webhook]
+verify_jwt = true
