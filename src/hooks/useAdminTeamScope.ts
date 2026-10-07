@@ -5,7 +5,7 @@ import { getJuniorsForRecruiter } from "@/lib/juniorOverrideLogic";
 import { isAdminScopeRole } from "@/lib/kontaktOwnership";
 
 /**
- * Liefert für Admin/Inhaber die 3-stufige Sicht (Eigen / Eigenes Team / Team MOREImmo).
+ * Liefert für Admin/Inhaber die 3-stufige Sicht (Eigen / Eigenes Team / Team OS Immobilien).
  * Für andere Rollen ist `splitTeamCompany` immer false.
  * Vertriebspartner mit eigener Downline (z.B. Karrierestufe „Team Lead") erhalten
  * eine 2-stufige Sicht (Eigen / Eigenes Team) über `vpTeamView`.

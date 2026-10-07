@@ -102,7 +102,7 @@ describe("Datenschutzerklärung, Texte", () => {
     expect(enText.length).toBe(ANLAGE_4_BETROFFENEN_TEXT.length);
     ANLAGE_4_BETROFFENEN_TEXT.forEach((absatz, i) => {
       for (const pfad of absatz.match(/\/[a-z]+\//g) ?? []) expect(enText[i], `Absatz ${i + 1}: ${pfad}`).toContain(pfad);
-      for (const fest of ["Wendelsteinstraße 19", "datenschutz@more.immo", "Art. 26"]) {
+      for (const fest of ["Am Ostbahnhof 1", "os@os-immobilien.com", "Art. 26"]) {
         if (absatz.includes(fest)) expect(enText[i], `Absatz ${i + 1}: ${fest}`).toContain(fest);
       }
     });
@@ -135,7 +135,7 @@ describe("Datenschutzerklärung, Texte", () => {
   it("nennt die zuständige Aufsichtsbehörde und die Adresse für Datenschutzanfragen", () => {
     const text = alleTexte(de).join("\n");
     expect(text).toContain("Bayerisches Landesamt für Datenschutzaufsicht");
-    expect(text).toContain("datenschutz@more.immo");
-    expect(text).toContain("Wendelsteinstraße 19");
+    expect(text).toContain("os@os-immobilien.com");
+    expect(text).toContain("Am Ostbahnhof 1");
   });
 });

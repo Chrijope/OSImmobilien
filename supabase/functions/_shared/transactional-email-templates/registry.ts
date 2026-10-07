@@ -16,12 +16,12 @@ export interface TemplateEntry {
    */
   sprachen?: readonly MailSprache[]
   /**
-   * Wer als Absender erscheint. Fehlt die Angabe: "MOREImmo".
+   * Wer als Absender erscheint. Fehlt die Angabe: "OS Immobilien".
    *
    * `zustaendiger-partner`: send-transactional-email liest
    * `kontakte.zustaendig_id` zum mitgegebenen Kontakt und setzt daraus
    * Absendername, Antwortadresse, Unterschrift und Buchungslink, egal wer den
-   * Versand ausgeloest hat. Ist niemand zustaendig, das MOREImmo Team mit
+   * Versand ausgeloest hat. Ist niemand zustaendig, das OS Immobilien Team mit
    * office@. Siehe _shared/zustaendiger-absender.ts.
    */
   absender?: 'zustaendiger-partner'

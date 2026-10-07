@@ -511,7 +511,7 @@ const App = () => (
                 <Route path="/beratungspraesentation" element={<PraesentationGuard><Beratungspraesentation /></PraesentationGuard>} />
                 <Route path="/beratungspraesentation-moreimmo" element={<PraesentationGuard><BeratungspraesentationHV /></PraesentationGuard>} />
                 {/* Alte URLs bleiben gültig und leiten inklusive Kundenkontext (Query) weiter.
-                    "-neu" war eine ältere Fassung der MOREImmo-Präsentation, die Seite ist entfernt. */}
+                    "-neu" war eine ältere Fassung der OS Immobilien-Präsentation, die Seite ist entfernt. */}
                 <Route path="/beratungspraesentation-hv" element={<Navigate to={`/beratungspraesentation-moreimmo${window.location.search}`} replace />} />
                 <Route path="/beratungspraesentation-neu" element={<Navigate to={`/beratungspraesentation-moreimmo${window.location.search}`} replace />} />
                 <Route path="/beratungspraesentation-wg" element={<PraesentationGuard><BeratungspraesentationWG /></PraesentationGuard>} />

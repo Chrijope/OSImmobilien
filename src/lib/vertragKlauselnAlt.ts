@@ -325,7 +325,7 @@ export function renderHauptvertragAlt(t: KlauselTools, ctx: KlauselKontext): voi
   h1("§ 4 Leistungsumfang der Gesellschaft");
   p("(1) Die Gesellschaft stellt dem Vertriebspartner eine vollständige Vertriebsinfrastruktur für die Vermittlung von Kapitalanlageimmobilien bereit. Diese umfasst insbesondere:");
   bullet([
-    "CRM-System more.immo inkl. Pipeline-, Lead- und Kundenverwaltung",
+    "CRM-System osimmobilien.netlify.app inkl. Pipeline-, Lead- und Kundenverwaltung",
     "Objektzugänge (eigene und Drittobjekte)",
     "Academy mit Schulungen, Webinaren und Pflichtmodulen",
     "Verkaufsskripte, Beratungsleitfäden und Vorlagen",
@@ -340,7 +340,7 @@ export function renderHauptvertragAlt(t: KlauselTools, ctx: KlauselKontext): voi
     p("(3) Die Nutzung des CRM-Systems ist während der gesamten aktiven Zusammenarbeit vollständig abgedeckt; monatliche oder laufende CRM-Folgekosten entstehen ausdrücklich nicht.");
     p("(4) Ein Anspruch auf eine bestimmte Lead-, Objekt- oder Schulungsmenge sowie auf bestimmte Umsätze oder Abschlüsse besteht ausdrücklich nicht.");
   } else {
-    p(`(3) Der Vertriebspartner erhält für die Dauer dieses Vertrags ein nicht-ausschließliches, nicht übertragbares Nutzungsrecht am MOREImmo-CRM-System (more.immo) inkl. der vereinbarten Module, Automatisierungen, Hosting und Wartung („CRM-Leistungen"). Hierfür entrichtet er eine monatliche CRM-Systemgebühr in Höhe von ${formatPreis(paket.monatlich)} brutto/Monat inkl. der jeweils gültigen gesetzlichen Umsatzsteuer.${paket.preis > 0 ? " Diese Gebühr ist unabhängig von der einmaligen Onboardinggebühr gemäß § 5." : ""}`);
+    p(`(3) Der Vertriebspartner erhält für die Dauer dieses Vertrags ein nicht-ausschließliches, nicht übertragbares Nutzungsrecht am OS Immobilien-CRM-System (osimmobilien.netlify.app) inkl. der vereinbarten Module, Automatisierungen, Hosting und Wartung („CRM-Leistungen"). Hierfür entrichtet er eine monatliche CRM-Systemgebühr in Höhe von ${formatPreis(paket.monatlich)} brutto/Monat inkl. der jeweils gültigen gesetzlichen Umsatzsteuer.${paket.preis > 0 ? " Diese Gebühr ist unabhängig von der einmaligen Onboardinggebühr gemäß § 5." : ""}`);
     // Eine Laufzeit: Die CRM-Nutzung hat keine eigene Mindestlaufzeit und keine
     // eigene Kündigung mehr, sie hängt am Vertrag (§ 14). Vorher standen zwei
     // getrennte, gleich lange Laufzeiten im Vertrag.
@@ -369,14 +369,14 @@ export function renderHauptvertragAlt(t: KlauselTools, ctx: KlauselKontext): voi
     h1("§ 5 CRM-Systemgebühr (keine Onboardinggebühr)");
     p(`(1) Im Paket "${paket.titel}" wird keine einmalige Onboardinggebühr erhoben. Es fällt ausschließlich die in § 4 (3) bis (7) geregelte monatliche CRM-Systemgebühr in Höhe von ${formatPreis(paket.monatlich)} brutto/Monat inkl. USt. an${mindestlaufzeit > 0 ? `; die Mindestlaufzeit nach § 14 beträgt ${mindestlaufzeit} Monate` : "; eine Mindestlaufzeit besteht nicht (individuell vereinbart)"}.`);
     p(mindestlaufzeit > 0
-      ? "(2) Laufzeit, Mindestlaufzeit und Kündigung gelten einheitlich für diesen Vertrag und die CRM-Nutzung und richten sich abschließend nach § 14; nach Ablauf der Mindestlaufzeit läuft der Vertrag auf unbestimmte Zeit weiter und ist mit einer Frist von einem Monat zum Monatsende in Textform an office@more.immo kündbar."
-      : "(2) Laufzeit und Kündigung gelten einheitlich für diesen Vertrag und die CRM-Nutzung und richten sich abschließend nach § 14; der Vertrag läuft auf unbestimmte Zeit und ist jederzeit mit einer Frist von einem Monat zum Monatsende in Textform an office@more.immo kündbar.");
+      ? "(2) Laufzeit, Mindestlaufzeit und Kündigung gelten einheitlich für diesen Vertrag und die CRM-Nutzung und richten sich abschließend nach § 14; nach Ablauf der Mindestlaufzeit läuft der Vertrag auf unbestimmte Zeit weiter und ist mit einer Frist von einem Monat zum Monatsende in Textform an os@os-immobilien.com kündbar."
+      : "(2) Laufzeit und Kündigung gelten einheitlich für diesen Vertrag und die CRM-Nutzung und richten sich abschließend nach § 14; der Vertrag läuft auf unbestimmte Zeit und ist jederzeit mit einer Frist von einem Monat zum Monatsende in Textform an os@os-immobilien.com kündbar.");
     p("(3) Die Abrechnung der CRM-Systemgebühr erfolgt monatlich im Voraus. Die jeweils aktuellen Konditionen ergeben sich aus Anlage 2.");
   } else {
     h1("§ 5 Keine Onboarding- und keine CRM-Systemgebühr");
     p(`(1) Für das Paket "${paket.titel}" wurde individuell vereinbart, dass weder eine einmalige Onboardinggebühr noch eine monatliche CRM-Systemgebühr erhoben wird.`);
     p("(2) Die monatliche CRM-Systemgebühr entfällt für diesen Vertriebspartner. Die Bereitstellung von CRM, Pipeline, Academy und Support erfolgt unentgeltlich.");
-    p("(3) Die Nutzung des CRM-Systems more.immo sowie der übrigen in § 4 (1) genannten Vertriebsinfrastruktur ist während der gesamten aktiven Zusammenarbeit vollständig abgedeckt; laufende oder wiederkehrende Gebühren entstehen ausdrücklich nicht.");
+    p("(3) Die Nutzung des CRM-Systems osimmobilien.netlify.app sowie der übrigen in § 4 (1) genannten Vertriebsinfrastruktur ist während der gesamten aktiven Zusammenarbeit vollständig abgedeckt; laufende oder wiederkehrende Gebühren entstehen ausdrücklich nicht.");
     p("(4) Die Vergütung des Vertriebspartners erfolgt ausschließlich erfolgsabhängig gemäß § 8 dieses Vertrages und Anlage 4 (Provisionsordnung).");
     // Ohne Gebühr keine Bindung: Das ist die ausdrückliche Folge des Schalters.
     p("(5) Da keine laufende Gebühr geschuldet ist, wird der Vertriebspartner auch nicht an eine Mindestlaufzeit gebunden; der Vertrag läuft nach § 14 auf unbestimmte Zeit und ist monatlich kündbar.");
@@ -547,7 +547,7 @@ export function renderHauptvertragAlt(t: KlauselTools, ctx: KlauselKontext): voi
 
   // ─── §12 Marke ───
   h1("§ 12 Marken- und Nutzungsrechte");
-  p('(1) Die Gesellschaft gestattet dem Vertriebspartner während der Vertragslaufzeit die Nutzung der Marke "MORE Immo" ausschließlich für vertragsgemäße Zwecke.');
+  p('(1) Die Gesellschaft gestattet dem Vertriebspartner während der Vertragslaufzeit die Nutzung der Marke "OS Immobilien" ausschließlich für vertragsgemäße Zwecke.');
   p("(2) Nach Vertragsende endet das Nutzungsrecht sofort.");
 
   // ─── §13 Haftung ───
@@ -574,10 +574,10 @@ export function renderHauptvertragAlt(t: KlauselTools, ctx: KlauselKontext): voi
   p("(1) Der Vertrag beginnt mit Unterzeichnung.");
   if (mindestlaufzeit === 0) {
     p("(2) Der Vertrag wird auf unbestimmte Zeit geschlossen; eine Mindestlaufzeit besteht nicht (individuell vereinbart).");
-    p("(3) Der Vertrag kann von beiden Parteien jederzeit monatlich mit einer Frist von einem Monat zum Monatsende in Textform (§ 126b BGB, z. B. per E-Mail an office@more.immo) ordentlich gekündigt werden. Eine automatische Verlängerung um feste weitere Zeiträume findet nicht statt.");
+    p("(3) Der Vertrag kann von beiden Parteien jederzeit monatlich mit einer Frist von einem Monat zum Monatsende in Textform (§ 126b BGB, z. B. per E-Mail an os@os-immobilien.com) ordentlich gekündigt werden. Eine automatische Verlängerung um feste weitere Zeiträume findet nicht statt.");
   } else {
     p(`(2) Die Mindestlaufzeit beträgt ${mindestlaufzeit} Monate. Innerhalb der Mindestlaufzeit ist eine ordentliche Kündigung ausgeschlossen.`);
-    p(`(3) Nach Ablauf der Mindestlaufzeit von ${mindestlaufzeit} Monaten verlängert sich der Vertrag auf unbestimmte Zeit und kann von beiden Parteien mit einer Frist von einem Monat zum Monatsende in Textform (§ 126b BGB, z. B. per E-Mail an office@more.immo) ordentlich gekündigt werden. Eine automatische Verlängerung um feste weitere Zeiträume findet nicht statt.`);
+    p(`(3) Nach Ablauf der Mindestlaufzeit von ${mindestlaufzeit} Monaten verlängert sich der Vertrag auf unbestimmte Zeit und kann von beiden Parteien mit einer Frist von einem Monat zum Monatsende in Textform (§ 126b BGB, z. B. per E-Mail an os@os-immobilien.com) ordentlich gekündigt werden. Eine automatische Verlängerung um feste weitere Zeiträume findet nicht statt.`);
   }
   p("(4) Das Recht zur außerordentlichen Kündigung aus wichtigem Grund (§ 314 BGB, § 89a HGB) bleibt für beide Parteien unberührt.");
   p(mindestlaufzeit === 0
@@ -621,7 +621,7 @@ export function renderAnlage1AgbAlt(t: KlauselTools, ctx: KlauselKontext): void 
   const { paket, bewerber } = ctx;
 
   h1("§ 1 Geltungsbereich");
-  p('(1) Diese AGB gelten für sämtliche Geschäftsbeziehungen zwischen MOREImmo / ehemals Immosparplan ("Gesellschaft") und deren Vertriebspartnern, Tippgebern sowie Untervertriebspartnern.');
+  p('(1) Diese AGB gelten für sämtliche Geschäftsbeziehungen zwischen OS Immobilien / ehemals Immosparplan ("Gesellschaft") und deren Vertriebspartnern, Tippgebern sowie Untervertriebspartnern.');
   p("(2) Abweichende Bedingungen des Vertriebspartners gelten nur bei ausdrücklicher schriftlicher Zustimmung der Gesellschaft.");
   p("(3) Diese AGB sind Bestandteil des Handelsvertretervertrages. Bei Widersprüchen gehen der Hauptvertrag und seine Anlagen 2 bis 9 diesen AGB vor.");
 
@@ -630,7 +630,7 @@ export function renderAnlage1AgbAlt(t: KlauselTools, ctx: KlauselKontext): void 
     ? "Die Gesellschaft stellt dem Vertriebspartner gemäß Anlage 2 insbesondere folgende Leistungen zur Verfügung:"
     : "Die Gesellschaft stellt, je nach gebuchtem Paket gemäß Anlage 2, insbesondere folgende Leistungen zur Verfügung:");
   bullet([
-    "CRM-System (more.immo)",
+    "CRM-System (osimmobilien.netlify.app)",
     "Vertriebsinfrastruktur & Closing-Support",
     "Schulungen, Academy & Webinare",
     "Objektzugänge (eigene und Drittobjekte)",
@@ -686,7 +686,7 @@ export function renderAnlage1AgbAlt(t: KlauselTools, ctx: KlauselKontext): void 
 
   h1("§ 10 Schlussbestimmungen");
   p("(1) Es gilt deutsches Recht unter Ausschluss des UN-Kaufrechts.");
-  p("(2) Gerichtsstand ist, soweit zulässig, der Sitz der Gesellschaft (Bad Feilnbach).");
+  p("(2) Gerichtsstand ist, soweit zulässig, der Sitz der Gesellschaft (Mittenwalde).");
   p("(3) Sollten einzelne Bestimmungen unwirksam sein, bleibt die Wirksamkeit der übrigen unberührt.");
 }
 
@@ -755,8 +755,8 @@ export function renderAnlage2LeistungAlt(t: KlauselTools, ctx: KlauselKontext): 
           : "§ 3 Investition: keine laufenden Kosten",
   );
   const laufzeitSatz = mindestlaufzeit > 0
-    ? `Die Mindestlaufzeit beträgt ${mindestlaufzeit} Monate ab Vertragsbeginn; sie gilt einheitlich für den Vertrag und die CRM-Nutzung (§ 14 des Hauptvertrages). Nach Ablauf der Mindestlaufzeit läuft der Vertrag auf unbestimmte Zeit weiter und kann von beiden Parteien mit einer Frist von einem Monat zum Monatsende in Textform (§ 126b BGB, z. B. per E-Mail an office@more.immo) ordentlich gekündigt werden. Eine automatische Verlängerung um feste weitere Zeiträume findet nicht statt.`
-    : "Eine Mindestlaufzeit besteht nicht (individuell vereinbart). Der Vertrag und mit ihm die CRM-Nutzung laufen auf unbestimmte Zeit und können von beiden Parteien jederzeit mit einer Frist von einem Monat zum Monatsende in Textform (§ 126b BGB, z. B. per E-Mail an office@more.immo) ordentlich gekündigt werden (§ 14 des Hauptvertrages).";
+    ? `Die Mindestlaufzeit beträgt ${mindestlaufzeit} Monate ab Vertragsbeginn; sie gilt einheitlich für den Vertrag und die CRM-Nutzung (§ 14 des Hauptvertrages). Nach Ablauf der Mindestlaufzeit läuft der Vertrag auf unbestimmte Zeit weiter und kann von beiden Parteien mit einer Frist von einem Monat zum Monatsende in Textform (§ 126b BGB, z. B. per E-Mail an os@os-immobilien.com) ordentlich gekündigt werden. Eine automatische Verlängerung um feste weitere Zeiträume findet nicht statt.`
+    : "Eine Mindestlaufzeit besteht nicht (individuell vereinbart). Der Vertrag und mit ihm die CRM-Nutzung laufen auf unbestimmte Zeit und können von beiden Parteien jederzeit mit einer Frist von einem Monat zum Monatsende in Textform (§ 126b BGB, z. B. per E-Mail an os@os-immobilien.com) ordentlich gekündigt werden (§ 14 des Hauptvertrages).";
   if (paket.preis > 0) {
     const zw = ZAHLUNGSWEISEN.find((z) => z.id === ctx.zahlungsweise) ?? ZAHLUNGSWEISEN[0];
     const raten = berechneRaten(paket.preis, zw.id);
@@ -790,7 +790,7 @@ export function renderAnlage2LeistungAlt(t: KlauselTools, ctx: KlauselKontext): 
   } else {
     p(`(1) Im Paket "${paket.titel}" werden für diesen Vertrag individuell keine Gebühren erhoben, weder einmalig noch laufend.`);
     p("(2) Die monatliche CRM-Systemgebühr entfällt für diesen Vertriebspartner. Die Bereitstellung von CRM, Pipeline, Academy und Support erfolgt unentgeltlich.");
-    p("(3) Die Nutzung des CRM-Systems more.immo sowie der in § 4 (1) des Hauptvertrages genannten Vertriebsinfrastruktur ist während der gesamten aktiven Zusammenarbeit vollständig abgedeckt; laufende oder wiederkehrende Gebühren entstehen ausdrücklich nicht.");
+    p("(3) Die Nutzung des CRM-Systems osimmobilien.netlify.app sowie der in § 4 (1) des Hauptvertrages genannten Vertriebsinfrastruktur ist während der gesamten aktiven Zusammenarbeit vollständig abgedeckt; laufende oder wiederkehrende Gebühren entstehen ausdrücklich nicht.");
     p("(4) Die Vergütung des Vertriebspartners erfolgt ausschließlich erfolgsabhängig gemäß Anlage 4 (Provisionsordnung).");
     p("(5) Eine Ratenwahl entfällt mangels Einmalbetrag.");
     p("(6) Eine Mindestlaufzeit besteht nicht; der Vertrag läuft nach § 14 des Hauptvertrages auf unbestimmte Zeit und ist monatlich kündbar.");
@@ -838,7 +838,7 @@ const NUTZUNGSBESCHRAENKUNGEN = [
   "Kopieren von Schulungen, Skripten und Vorlagen ist untersagt",
   "Vertrieb außerhalb genehmigter Strukturen ist untersagt",
   "Reverse Engineering von Prozessen und Software ist untersagt",
-  "Nutzung der Marke MOREImmo nach Vertragsende ist untersagt",
+  "Nutzung der Marke OS Immobilien nach Vertragsende ist untersagt",
 ];
 
 /* ── Anlage 3: AVV inkl. Verschwiegenheitserklärung ───────────────────── */
@@ -849,7 +849,7 @@ export function renderAnlage3AvvAlt(t: KlauselTools, ctx: KlauselKontext): void 
   const vpName = [bewerber.vorname, bewerber.nachname].filter(Boolean).join(" ") || "[Vertriebspartner]";
 
   h1("Präambel");
-  p("Die Parteien schließen diese Vereinbarung gemäß Art. 28 DSGVO zur Verarbeitung personenbezogener Daten im Rahmen der Vermittlung von Kapitalanlageimmobilien. Verantwortlicher im Sinne der DSGVO ist die MOREImmo; der Vertriebspartner wird als Auftragsverarbeiter tätig, soweit er personenbezogene Daten der Gesellschaft im Auftrag verarbeitet. Für seine Eigenkontakte ist der Vertriebspartner selbst Verantwortlicher (§ 1).");
+  p("Die Parteien schließen diese Vereinbarung gemäß Art. 28 DSGVO zur Verarbeitung personenbezogener Daten im Rahmen der Vermittlung von Kapitalanlageimmobilien. Verantwortlicher im Sinne der DSGVO ist die OS Immobilien; der Vertriebspartner wird als Auftragsverarbeiter tätig, soweit er personenbezogene Daten der Gesellschaft im Auftrag verarbeitet. Für seine Eigenkontakte ist der Vertriebspartner selbst Verantwortlicher (§ 1).");
 
   h1("§ 1 Gegenstand, Dauer und Rollenverteilung");
   p("Gegenstand: Verarbeitung von Interessenten-, Kunden- und Investmentdaten zur Vermittlung von Kapitalanlageimmobilien sowie zur Nutzung des CRM-Systems der Gesellschaft.");
@@ -905,7 +905,7 @@ export function renderAnlage3AvvAlt(t: KlauselTools, ctx: KlauselKontext): void 
   p(`Verpflichtete Person: ${vpName}`);
 
   h1("§ 9 Verpflichtung zur Verschwiegenheit");
-  p("(1) Die verpflichtete Person verpflichtet sich, über sämtliche im Rahmen der Tätigkeit für die MOREImmo bekannt gewordenen Informationen Stillschweigen zu bewahren. Dies umfasst insbesondere personenbezogene Daten von Kunden, Interessenten, Mitarbeitenden und Empfehlungsgebern, Betriebs- und Geschäftsgeheimnisse, Geschäftsstrategien, Konditionen, Provisionsstrukturen, Objektpipelines, Eigentümerdaten, Kalkulationen, CRM-Inhalte sowie sämtliche Schulungs- und Vertriebsunterlagen.");
+  p("(1) Die verpflichtete Person verpflichtet sich, über sämtliche im Rahmen der Tätigkeit für die OS Immobilien bekannt gewordenen Informationen Stillschweigen zu bewahren. Dies umfasst insbesondere personenbezogene Daten von Kunden, Interessenten, Mitarbeitenden und Empfehlungsgebern, Betriebs- und Geschäftsgeheimnisse, Geschäftsstrategien, Konditionen, Provisionsstrukturen, Objektpipelines, Eigentümerdaten, Kalkulationen, CRM-Inhalte sowie sämtliche Schulungs- und Vertriebsunterlagen.");
   p("(2) Die Verpflichtung gilt für Geschäftsgeheimnisse zeitlich unbeschränkt und besteht auch nach Beendigung der Tätigkeit fort; im Übrigen gilt § 11 (2) des Hauptvertrages.");
   p("(3) Eine Weitergabe vertraulicher Informationen an Dritte, auch innerhalb derselben Unternehmensgruppe oder an Familienangehörige, ist ohne vorherige schriftliche Zustimmung der Gesellschaft untersagt.");
 
@@ -1017,7 +1017,7 @@ export function renderAnlage5CrmAlt(t: KlauselTools, ctx: KlauselKontext): void 
   const schutzMonate = paket.partnerHonorar ? SCHUTZFRIST_MONATE_PARTNER : SCHUTZFRIST_MONATE;
 
   h1("§ 1 Geltungsbereich");
-  p("Diese Bedingungen regeln die Nutzung des CRM-Systems more.immo, der Kundendaten, der Leads, der Kommunikationssysteme und der Vertriebsinfrastruktur durch den Vertriebspartner.");
+  p("Diese Bedingungen regeln die Nutzung des CRM-Systems osimmobilien.netlify.app, der Kundendaten, der Leads, der Kommunikationssysteme und der Vertriebsinfrastruktur durch den Vertriebspartner.");
   h1("§ 2 Eigentum");
   p("Sämtliche CRM-Systeme, Datenbanken, Leads, Kontakte der Gesellschaft, Automationen, Prozesse, Vorlagen und Vertriebsdaten bleiben ausschließlich Eigentum der Gesellschaft, auch nach Vertragsende. Dem Vertriebspartner wird lediglich ein widerrufliches, nicht übertragbares Nutzungsrecht eingeräumt. Eigenkontakte des Vertriebspartners (§ 9a Absatz 3 des Hauptvertrages) sind und bleiben sein Eigentum, auch nach Vertragsende.");
   h1("§ 3 Leaddefinition");
@@ -1033,7 +1033,7 @@ export function renderAnlage5CrmAlt(t: KlauselTools, ctx: KlauselKontext): void 
     "Finanzierungsanfragen",
   ]);
   h1("§ 4 Nutzung der Leads");
-  p("Leads dürfen ausschließlich zur Vermittlung von Kapitalanlageimmobilien innerhalb des MOREImmo Systems genutzt werden. Untersagt sind insbesondere:");
+  p("Leads dürfen ausschließlich zur Vermittlung von Kapitalanlageimmobilien innerhalb des OS Immobilien Systems genutzt werden. Untersagt sind insbesondere:");
   bullet([
     "Weitergabe an Dritte",
     "Verkauf oder Vermietung von Lead-Daten",
@@ -1117,7 +1117,7 @@ export function renderAnlage6ComplianceAlt(t: KlauselTools): void {
   h1("§ 4 Werberichtlinien");
   p('Unzulässig sind insbesondere Aussagen wie "garantierte Rendite", "risikofrei", "steuerfrei", "sichere Gewinne", "Spitzenrendite ohne Risiko". Sämtliche Werbeaussagen müssen sachlich richtig und nachprüfbar sein (§§ 3, 5 UWG).');
   h1("§ 5 Social-Media-Richtlinien");
-  p("Werbematerialien, Reels, Posts und Social-Media-Anzeigen, die das MOREImmo-System, Objekte oder Provisionsstrukturen darstellen, dürfen nur nach vorheriger schriftlicher Freigabe durch die Gesellschaft veröffentlicht werden. Verstöße können zur sofortigen Sperrung führen.");
+  p("Werbematerialien, Reels, Posts und Social-Media-Anzeigen, die das OS Immobilien-System, Objekte oder Provisionsstrukturen darstellen, dürfen nur nach vorheriger schriftlicher Freigabe durch die Gesellschaft veröffentlicht werden. Verstöße können zur sofortigen Sperrung führen.");
   h1("§ 6 Geldwäscheprävention (GwG)");
   p("Der Vertriebspartner unterstützt die Gesellschaft bei der Erfüllung ihrer Pflichten nach dem Geldwäschegesetz (Identifizierung, Mittelherkunft, PEP-Prüfung) und meldet auffällige Sachverhalte unverzüglich an die Geschäftsleitung.");
   h1("§ 7 Sanktionen bei Verstößen");
@@ -1143,7 +1143,7 @@ export function renderAnlage7StrukturAlt(t: KlauselTools): void {
   h1("§ 4 Overhead-Provision");
   p("Für jeden Abschluss eines selbst geworbenen und aktiv geführten Vertriebspartners erhält der Team Lead bzw. Lizenzpartner eine Overhead-Provision in Höhe von 1,5 (Team Lead) bzw. 2,0 (Lizenzpartner) Prozentpunkten auf den notariellen Kaufpreis. Die Auszahlung erfolgt jeweils gemeinsam mit der regulären Provisionsabrechnung. Höhe und Bedingungen sind abschließend in der Provisionsordnung (Anlage 4 § 6) sowie in § 8 des Hauptvertrages geregelt; eine darüber hinausgehende Untervertriebs- oder Sub-Provision entsteht nicht.");
   h1("§ 5 Abwerbeverbot");
-  p(`Vertriebspartner dürfen nicht außerhalb der bestehenden MOREImmo-Struktur aktiv abgeworben werden. Das Abwerbeverbot gilt während der Vertragslaufzeit sowie für ${SCHUTZFRIST_MONATE} Monate nach Vertragsende. Für schuldhafte Verstöße gilt § 9e des Hauptvertrages.`);
+  p(`Vertriebspartner dürfen nicht außerhalb der bestehenden OS Immobilien-Struktur aktiv abgeworben werden. Das Abwerbeverbot gilt während der Vertragslaufzeit sowie für ${SCHUTZFRIST_MONATE} Monate nach Vertragsende. Für schuldhafte Verstöße gilt § 9e des Hauptvertrages.`);
   h1("§ 6 Compliance & Kündigung");
   p("Bei schweren Verstößen innerhalb der Struktur (Beratungsfehler, DSGVO-Verstöße, Geldwäscheverdacht) kann die Gesellschaft Unterpartner sperren, Provisionen einfrieren oder die gesamte Struktur außerordentlich kündigen.");
 }

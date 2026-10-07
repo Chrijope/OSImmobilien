@@ -23,7 +23,7 @@ function zxcvbnBereit(): Promise<ZxcvbnModul> {
         dictionary: {
           ...common.dictionary,
           ...en.dictionary,
-          userInputs: ["moreimmo", "more.immo", "more immo", "immobilie", "immobilien"],
+          userInputs: ["moreimmo", "osimmobilien.netlify.app", "more immo", "immobilie", "immobilien"],
         },
       });
       merkeZxcvbnTexte(en.translations);

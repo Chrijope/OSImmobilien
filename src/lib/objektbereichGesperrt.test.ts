@@ -82,11 +82,11 @@ describe("objektbereichGesperrt", () => {
 describe("Glocken in den Objektbereich", () => {
   // So ruft die Glocke in `HeaderBar.tsx` das Ziel ab.
   const ziel = (link: string, rolle: string) =>
-    benachrichtigungZiel(link, "portal.more.immo", (pfad) => objektbereichGesperrt(pfad, { rolle }));
+    benachrichtigungZiel(link, "osimmobilien.netlify.app", (pfad) => objektbereichGesperrt(pfad, { rolle }));
 
   it("„Wohnung exklusiv zugewiesen“ verlinkt für Vertriebspartner nicht mehr auf das Objekt", () => {
     expect(ziel("/objekte/o1", "vertriebspartner")).toEqual({ art: "keins" });
-    expect(ziel("https://portal.more.immo/objekte/o1", "vertriebspartner")).toEqual({ art: "keins" });
+    expect(ziel("https://osimmobilien.netlify.app/objekte/o1", "vertriebspartner")).toEqual({ art: "keins" });
     expect(ziel("/einheitenspiegel", "vertriebspartner")).toEqual({ art: "keins" });
   });
 

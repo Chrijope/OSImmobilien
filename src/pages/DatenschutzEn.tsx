@@ -38,7 +38,7 @@ export default function DatenschutzEn() {
         <DatenschutzInhalt fassung={fassung} sprache="en" />
 
         <div className="border-t mt-12 pt-6 text-xs text-muted-foreground text-center flex flex-wrap justify-center gap-x-4 gap-y-1">
-          <span>© {new Date().getFullYear()} MOREImmo · Sole proprietorship Christian Kurz</span>
+          <span>© {new Date().getFullYear()} OS Immobilien Holding GmbH</span>
           <Link to="/impressum?lang=en" className="hover:underline">Legal notice</Link>
           <CookieEinstellungenLink sprache="en" className="hover:underline" />
           <span>Version {DATENSCHUTZ_FASSUNG_EN}</span>

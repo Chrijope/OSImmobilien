@@ -64,17 +64,17 @@ beforeEach(() => {
 describe("Link und Status", () => {
   it("baut denselben Link wie die Function, und die Vorschau zählt nicht", () => {
     expect(store.kundenExposeLink("o1", "w7", "ab")).toBe(gemeinsam.kundenExposeLink("o1", "w7", "ab"));
-    expect(store.kundenExposeLink("o1", null, "ab")).toBe("https://portal.more.immo/expose/o1?token=ab");
-    expect(store.kundenExposeVorschauLink("o1", "w7", "ab")).toBe("https://portal.more.immo/expose/o1/wohnung/w7?token=ab&vorschau=1");
+    expect(store.kundenExposeLink("o1", null, "ab")).toBe("https://osimmobilien.netlify.app/expose/o1?token=ab");
+    expect(store.kundenExposeVorschauLink("o1", "w7", "ab")).toBe("https://osimmobilien.netlify.app/expose/o1/wohnung/w7?token=ab&vorschau=1");
   });
 
   it("baut den Link je Art: Objektübersicht auf /immobilie, Vorschau zählt nicht", () => {
     const uebersicht = { art: "objektuebersicht" as const, objekt_id: "o1", wohnung_id: null, einstieg_wohnung_id: "w7", token: "ab" };
     const expose = { art: "expose" as const, objekt_id: "o1", wohnung_id: "w7", einstieg_wohnung_id: null, token: "ab" };
-    expect(store.kundenlinkDesEintrags(uebersicht)).toBe("https://portal.more.immo/immobilie/ab");
-    expect(store.kundenlinkVorschauDesEintrags(uebersicht)).toBe("https://portal.more.immo/immobilie/ab?vorschau=1");
-    expect(store.kundenlinkDesEintrags(expose)).toBe("https://portal.more.immo/expose/o1/wohnung/w7?token=ab");
-    expect(store.kundenlinkVorschauDesEintrags(expose)).toBe("https://portal.more.immo/expose/o1/wohnung/w7?token=ab&vorschau=1");
+    expect(store.kundenlinkDesEintrags(uebersicht)).toBe("https://osimmobilien.netlify.app/immobilie/ab");
+    expect(store.kundenlinkVorschauDesEintrags(uebersicht)).toBe("https://osimmobilien.netlify.app/immobilie/ab?vorschau=1");
+    expect(store.kundenlinkDesEintrags(expose)).toBe("https://osimmobilien.netlify.app/expose/o1/wohnung/w7?token=ab");
+    expect(store.kundenlinkVorschauDesEintrags(expose)).toBe("https://osimmobilien.netlify.app/expose/o1/wohnung/w7?token=ab&vorschau=1");
     expect(store.wohnungDesLinks(uebersicht)).toBe("w7");
     expect(store.wohnungDesLinks(expose)).toBe("w7");
   });
@@ -167,7 +167,7 @@ describe("zurückziehen", () => {
 
 describe("senden über send-kunden-expose", () => {
   it("schickt keine Empfängeradresse mit", async () => {
-    db.invoke = { data: { ok: true, link: "https://portal.more.immo/expose/o1/wohnung/w7?token=t", gueltigBis: "2026-11-22T10:00:00Z" }, error: null };
+    db.invoke = { data: { ok: true, link: "https://osimmobilien.netlify.app/expose/o1/wohnung/w7?token=t", gueltigBis: "2026-11-22T10:00:00Z" }, error: null };
     const erg = await store.sendeKundenExpose({ modus: "mail", kontaktId: "k1", investmentId: "i1", objektId: "o1", wohnungId: "w7" });
     expect(erg.ok).toBe(true);
     expect(erg.link).toContain("token=t");
@@ -179,7 +179,7 @@ describe("senden über send-kunden-expose", () => {
   });
 
   it("fragt vor dem Mailversand einmal nach der Kundensprache, beim Link nicht", async () => {
-    db.invoke = { data: { ok: true, link: "https://portal.more.immo/expose/o1?token=t" }, error: null };
+    db.invoke = { data: { ok: true, link: "https://osimmobilien.netlify.app/expose/o1?token=t" }, error: null };
     await store.sendeKundenExpose({ modus: "mail", kontaktId: "k1", investmentId: "i1", objektId: "o1", wohnungId: null });
     expect(db.sprachRueckfrage).toEqual(["k1"]);
     await store.sendeKundenExpose({ modus: "link", kontaktId: "k1", investmentId: "i1", objektId: "o1", wohnungId: null });
@@ -187,7 +187,7 @@ describe("senden über send-kunden-expose", () => {
   });
 
   it("schickt die Art mit", async () => {
-    db.invoke = { data: { ok: true, art: "objektuebersicht", link: "https://portal.more.immo/immobilie/t", gueltigBis: "2026-11-22T10:00:00Z" }, error: null };
+    db.invoke = { data: { ok: true, art: "objektuebersicht", link: "https://osimmobilien.netlify.app/immobilie/t", gueltigBis: "2026-11-22T10:00:00Z" }, error: null };
     await store.sendeKundenExpose({ modus: "link", art: "objektuebersicht", kontaktId: "k1", investmentId: "i1", objektId: "o1", wohnungId: "w7" });
     expect((db.invokeArgs[1] as { body: Record<string, unknown> }).body).toMatchObject({ art: "objektuebersicht", wohnungId: "w7" });
   });
@@ -257,14 +257,14 @@ describe("Link kopieren, alle Wege zu einer 404", () => {
 
   it("erkennt die alte Fassung der Function, die aus der Objektübersicht still ein Exposé macht", async () => {
     // Die Fassung vor dem 23.09.2026 antwortet ohne `art`, mit einem Exposé-Link.
-    db.invoke = { data: { ok: true, link: "https://portal.more.immo/expose/o1/wohnung/w7?token=t", gueltigBis: "2026-11-22T10:00:00Z" }, error: null };
+    db.invoke = { data: { ok: true, link: "https://osimmobilien.netlify.app/expose/o1/wohnung/w7?token=t", gueltigBis: "2026-11-22T10:00:00Z" }, error: null };
     const erg = await store.sendeKundenExpose(LINK_AUFTRAG);
     expect(erg).toMatchObject({ ok: false, link: null, fehler: store.KUNDENLINK_FUNCTION_VERALTET });
     expect(erg.fehler).toContain("Roll sie in Lovable neu aus");
   });
 
   it("erkennt die Fassung vor der Wohnungsauswahl, die eine Auswahl still übergeht", async () => {
-    const link = `https://portal.more.immo/immobilie/${"a".repeat(64)}`;
+    const link = `https://osimmobilien.netlify.app/immobilie/${"a".repeat(64)}`;
     db.invoke = { data: { ok: true, art: "objektuebersicht", link, gueltigBis: "2026-11-22T10:00:00Z" }, error: null };
     const erg = await store.sendeKundenExpose({ ...LINK_AUFTRAG, wohnungAuswahl: ["w7"] });
     expect((db.invokeArgs[1] as { body: Record<string, unknown> }).body.wohnungAuswahl).toEqual(["w7"]);
@@ -282,21 +282,21 @@ describe("Link kopieren, alle Wege zu einer 404", () => {
   });
 
   it("nimmt den Link der neuen Fassung an, die Objektübersicht auf /immobilie/<token>", async () => {
-    const link = `https://portal.more.immo/immobilie/${"a".repeat(64)}`;
+    const link = `https://osimmobilien.netlify.app/immobilie/${"a".repeat(64)}`;
     db.invoke = { data: { ok: true, art: "objektuebersicht", link, gueltigBis: "2026-11-22T10:00:00Z" }, error: null };
     const erg = await store.sendeKundenExpose(LINK_AUFTRAG);
     expect(erg).toMatchObject({ ok: true, link, fehler: null });
   });
 
   it("lässt „nur Exposé“ auch ohne Art in der Antwort durch, dafür braucht es die Migration 20260923171000 nicht", async () => {
-    const link = "https://portal.more.immo/expose/o1/wohnung/w7?token=t";
+    const link = "https://osimmobilien.netlify.app/expose/o1/wohnung/w7?token=t";
     db.invoke = { data: { ok: true, link, gueltigBis: null }, error: null };
     const erg = await store.sendeKundenExpose({ ...LINK_AUFTRAG, art: "expose" });
     expect(erg).toMatchObject({ ok: true, link });
   });
 
   it("erkennt, ob das CRM gerade auf der Adresse des Links läuft", () => {
-    expect(store.kundenlinkAufDieserAdresse("portal.more.immo")).toBe(true);
+    expect(store.kundenlinkAufDieserAdresse("osimmobilien.netlify.app")).toBe(true);
     expect(store.kundenlinkAufDieserAdresse("id-preview--abc.lovable.app")).toBe(false);
     expect(store.kundenlinkAufDieserAdresse("localhost")).toBe(false);
   });

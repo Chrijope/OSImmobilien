@@ -10,7 +10,7 @@ describe("MIKROSEITE_ABSCHLUSS_TEXTE", () => {
 
   it("Englisch ist wirklich übersetzt und nicht der deutsche Wortlaut", () => {
     // Ortsnamen, „Portfolio“, die Platzhalter „Bank 1“ bis „Bank 3“, die Marke
-    // MOREImmo und der schon englische Fußsatz sind in beiden Sprachen gleich.
+    // OS Immobilien und der schon englische Fußsatz sind in beiden Sprachen gleich.
     const gewollt =
       /^kundenstimmen\.orte\[|^prozess\.schritte\[5\]\.kurzHandy$|^prozess\.grafik\.finanzierungBanken\[|^vergleich\.spalten\[2\]$|^fuss\.gemacht$/;
     expect(gleicheTexte(MIKROSEITE_ABSCHLUSS_TEXTE).filter((p) => !gewollt.test(p))).toEqual([]);

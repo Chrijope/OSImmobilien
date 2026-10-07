@@ -1,5 +1,5 @@
 /**
- * Gemeinsamer Adapter: MOREImmo-Investment (Tabelle investments plus
+ * Gemeinsamer Adapter: OS Immobilien-Investment (Tabelle investments plus
  * Finanzierung) → ExternesInvestment-Shape fuer die Kundenportal-Karten
  * (Steuer-Cockpit, Marktwert, Tilgungsplan, Cashflow-Forecast).
  *
@@ -99,7 +99,7 @@ export function adaptMoreImmoInvestment(
 
   return {
     id: activeInv.id,
-    bezeichnung: activeInv.objekt || activeInv.wohnung || "MOREImmo Investment",
+    bezeichnung: activeInv.objekt || activeInv.wohnung || "OS Immobilien Investment",
     kaufpreis,
     kaufdatum: activeInv.kaufdatum || meta?.kaufdatum || meta?.notarTermin || null,
     baujahr,

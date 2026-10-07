@@ -149,7 +149,7 @@ export function SchwebendeKacheln() {
         <button
           type="button"
           onClick={zurueckInsVollbild}
-          className="flex h-8 items-center gap-1.5 rounded-lg bg-[#087AC7] px-2.5 text-[11px] font-semibold transition-colors hover:brightness-110"
+          className="flex h-8 items-center gap-1.5 rounded-lg bg-[#15724F] px-2.5 text-[11px] font-semibold transition-colors hover:brightness-110"
         >
           <Maximize2 className="h-4 w-4" />
           <span>Zurück</span>

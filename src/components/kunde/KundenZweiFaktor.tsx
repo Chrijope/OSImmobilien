@@ -92,7 +92,7 @@ export function KundenZweiFaktor() {
   const einrichtungStarten = async () => {
     setBusy(true);
     try {
-      const data = await callMfa({ action: "enroll", friendlyName: "MOREImmo Kundenportal" });
+      const data = await callMfa({ action: "enroll", friendlyName: "OS Immobilien Kundenportal" });
       setEinrichtung({ factorId: data.factorId, qrCode: data.qrCode, secret: data.secret });
       setCode("");
     } catch (e) {

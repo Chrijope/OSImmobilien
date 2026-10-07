@@ -66,7 +66,7 @@ export default function MietvertragErstellen() {
   const today = new Date().toISOString().split("T")[0];
 
   const [form, setForm] = useState<VertragFormData>({
-    vermieterName: "MOREImmo",
+    vermieterName: "OS Immobilien",
     vermieterAdresse: "Musterstraße 1",
     vermieterOrt: "80331 München",
     mieterAnrede: "Herr",

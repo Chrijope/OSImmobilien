@@ -68,7 +68,7 @@ export default function SaMobileSign() {
   };
 
   useEffect(() => {
-    document.title = saText("Unterschrift – MOREImmo", sprache);
+    document.title = saText("Unterschrift – OS Immobilien", sprache);
     const html = document.documentElement;
     const vorher = html.lang;
     html.lang = sprache;

@@ -130,7 +130,7 @@ describe("ErstgespraechsTab: Kopfkarte und Start", () => {
     expect(station().getAttribute("data-schritt")).toBe("p1");
     expect(within(station()).getByText("Einstieg und Rahmen")).toBeInTheDocument();
     expect(within(station()).getByText(/Teil 1 · Punkt 1 von 10/)).toBeInTheDocument();
-    expect(screen.getByText(/Hallo Max, hier ist Christian von MOREImmo/)).toBeInTheDocument();
+    expect(screen.getByText(/Hallo Max, hier ist Christian von OS Immobilien/)).toBeInTheDocument();
 
     // Leiste: zehn Punkte, Punkt 1 aktuell, der Rest offen, Punkt 10 nicht durchgestrichen
     for (let n = 1; n <= 10; n++) expect(screen.getByTestId(`leiste-p${n}`)).toBeInTheDocument();

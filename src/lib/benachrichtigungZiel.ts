@@ -3,9 +3,9 @@
  *
  * Die Glocke ruft `navigate(link)`. Das erwartet einen Pfad wie
  * `/bewerberprozess?openBewerber=abc`. Steht in der Tabelle aber eine volle
- * Adresse wie `https://portal.more.immo/bewerberprozess?...`, haengt der
+ * Adresse wie `https://osimmobilien.netlify.app/bewerberprozess?...`, haengt der
  * Router sie als relativen Pfad an die aktuelle Seite: Daraus wird
- * `/https:/portal.more.immo/...`, dafuer gibt es keine Route, und der Nutzer
+ * `/https:/osimmobilien.netlify.app/...`, dafuer gibt es keine Route, und der Nutzer
  * landet auf der 404-Seite. Genau das ist Christian am 14.09.2026 beim Klick
  * auf "Neuer Bewerber: Eric Schoof" passiert.
  *
@@ -17,7 +17,7 @@
  */
 
 /** Die Hosts, die zum Haus gehoeren. Ein Pfad darauf wird intern geoeffnet. */
-const EIGENE_HOSTS = ["portal.more.immo", "more.immo"];
+const EIGENE_HOSTS = ["osimmobilien.netlify.app", "osimmobilien.netlify.app"];
 
 export type BenachrichtigungZiel =
   /** Im Router oeffnen, mit diesem Pfad. */

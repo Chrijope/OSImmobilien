@@ -61,7 +61,7 @@ const Mail = ({
   zeitVertriebspartner = '19:30',
   punkte = [],
   anzahlAelter = 0,
-  link = 'https://portal.more.immo/weekly-call',
+  link = 'https://osimmobilien.netlify.app/weekly-call',
 }: Props) => {
   const vorname = name ? name.split(' ')[0] : ''
   const anzahl = punkte.length
@@ -150,7 +150,7 @@ export const template = {
     zeitLeadBerater: '19:00',
     zeitVertriebspartner: '19:30',
     anzahlAelter: 2,
-    link: 'https://portal.more.immo/weekly-call',
+    link: 'https://osimmobilien.netlify.app/weekly-call',
     punkte: [
       {
         text: 'Die Selbstauskunft bricht bei Kunden mit zwei Arbeitgebern ab, ich musste sie zweimal von Hand nacherfassen.',

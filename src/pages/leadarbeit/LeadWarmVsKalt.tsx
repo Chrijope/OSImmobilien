@@ -9,7 +9,7 @@ const WA_VORLAGEN: { titel: string; zweck: string; text: string }[] = [
   {
     titel: "Vorlage 1 – Erstkontakt / Wiedererkennung",
     zweck: "Direkt nach Lead-Eingang, wenn telefonisch nicht erreicht.",
-    text: `Hallo {{vorname}}, hier ist {{vpName}} von MOREImmo. Du hattest dich zum Thema Vermögensaufbau mit Immobilien bei uns informiert. Ich wollte dir kurz persönlich Hallo sagen und schauen, wann es bei dir für ein 15-Minuten-Telefonat passt. Antworte einfach kurz hier – ich melde mich dann zuverlässig. 👋`,
+    text: `Hallo {{vorname}}, hier ist {{vpName}} von OS Immobilien. Du hattest dich zum Thema Vermögensaufbau mit Immobilien bei uns informiert. Ich wollte dir kurz persönlich Hallo sagen und schauen, wann es bei dir für ein 15-Minuten-Telefonat passt. Antworte einfach kurz hier – ich melde mich dann zuverlässig. 👋`,
   },
   {
     titel: "Vorlage 2 – Nutzen-Hook (Mehrwert vor Termin)",
@@ -19,7 +19,7 @@ const WA_VORLAGEN: { titel: string; zweck: string; text: string }[] = [
   {
     titel: "Vorlage 3 – Reaktivierung (alter / kalter Lead)",
     zweck: "Für Leads > 7 Tage oder nach mehreren Nichterreichbar-Versuchen.",
-    text: `Hallo {{vorname}}, du hattest dich vor einiger Zeit bei MOREImmo zum Thema Kapitalanlage-Immobilien gemeldet. Vieles hat sich seitdem am Markt verändert (Zinsen, Förderungen, AfA). Soll ich dir kurz zeigen, was das aktuell konkret für dich bedeuten würde? Eine kurze "ja" reicht. 👍`,
+    text: `Hallo {{vorname}}, du hattest dich vor einiger Zeit bei OS Immobilien zum Thema Kapitalanlage-Immobilien gemeldet. Vieles hat sich seitdem am Markt verändert (Zinsen, Förderungen, AfA). Soll ich dir kurz zeigen, was das aktuell konkret für dich bedeuten würde? Eine kurze "ja" reicht. 👍`,
   },
   {
     titel: "Vorlage 4 – Letzter Versuch (Soft-Close)",

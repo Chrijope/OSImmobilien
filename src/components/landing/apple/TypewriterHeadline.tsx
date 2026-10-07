@@ -169,7 +169,7 @@ export function TypewriterHeadline({ varianten, className, style, ausrichtung = 
             height: "0.82em",
             marginLeft: "0.06em",
             transform: "translateY(0.06em)",
-            background: "hsl(212 100% 52%)",
+            background: "hsl(157 75% 33%)",
             borderRadius: "1px",
             animation: pausiert ? "tw-blink 1.05s steps(1,end) infinite" : "none",
             opacity: aktiv ? 1 : 0,

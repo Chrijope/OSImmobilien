@@ -8,16 +8,16 @@ const corsHeaders = {
 };
 
 const TEST_ACCOUNTS = [
-  { email: "test.inhaber@more.immo", name: "Test Inhaber", role: "inhaber" },
-  { email: "test.admin@more.immo", name: "Test Admin", role: "admin" },
-  { email: "test.vertriebspartner@more.immo", name: "Test Vertriebspartner", role: "vertriebspartner" },
-  { email: "test.objektpartner@more.immo", name: "Test Objektpartner", role: "objektpartner" },
-  { email: "test.finanzierungspartner@more.immo", name: "Test Finanzierungspartner", role: "finanzierungspartner" },
-  { email: "test.hausverwaltung@more.immo", name: "Test Hausverwaltung", role: "hausverwaltung" },
-  { email: "test.buchhaltung@more.immo", name: "Test Buchhaltung", role: "buchhaltung" },
-  { email: "test.setterin@more.immo", name: "Test Setterin", role: "setterin" },
-  { email: "test.kunde@more.immo", name: "Test Kunde", role: "kunde" },
-  { email: "test.testaccount@more.immo", name: "Test Testaccount", role: "testaccount" },
+  { email: "test.inhaber@os-immobilien.com", name: "Test Inhaber", role: "inhaber" },
+  { email: "test.admin@os-immobilien.com", name: "Test Admin", role: "admin" },
+  { email: "test.vertriebspartner@os-immobilien.com", name: "Test Vertriebspartner", role: "vertriebspartner" },
+  { email: "test.objektpartner@os-immobilien.com", name: "Test Objektpartner", role: "objektpartner" },
+  { email: "test.finanzierungspartner@os-immobilien.com", name: "Test Finanzierungspartner", role: "finanzierungspartner" },
+  { email: "test.hausverwaltung@os-immobilien.com", name: "Test Hausverwaltung", role: "hausverwaltung" },
+  { email: "test.buchhaltung@os-immobilien.com", name: "Test Buchhaltung", role: "buchhaltung" },
+  { email: "test.setterin@os-immobilien.com", name: "Test Setterin", role: "setterin" },
+  { email: "test.kunde@os-immobilien.com", name: "Test Kunde", role: "kunde" },
+  { email: "test.testaccount@os-immobilien.com", name: "Test Testaccount", role: "testaccount" },
 ];
 
 Deno.serve(async (req) => {

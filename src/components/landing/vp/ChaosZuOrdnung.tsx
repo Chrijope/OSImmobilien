@@ -178,7 +178,7 @@ function Kopfzeile({ fortschritt }: { fortschritt: number }) {
         className="absolute inset-x-0 top-0 transition-opacity duration-500"
         style={{ opacity: gedreht ? 1 : 0 }}
       >
-        <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[#88CFFF]">
+        <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[#30E19E]">
           So ist es bei uns
         </span>
         <span className="mt-2 block text-lg font-bold text-white sm:text-xl">
@@ -269,7 +269,7 @@ function Karte({
       <div
         className="flex min-h-[80px] items-center gap-4 rounded-xl border p-4 transition-colors duration-500 sm:p-5"
         style={{
-          borderColor: gedreht ? "rgba(136,207,255,0.35)" : "rgba(255,255,255,0.16)",
+          borderColor: gedreht ? "rgba(48,225,158,0.35)" : "rgba(255,255,255,0.16)",
           background: gedreht ? "hsl(214 40% 17%)" : "hsl(220 24% 18%)",
           // Im Haufen ein tiefer Schatten: Ohne ihn verschwimmen die Karten
           // auf dem dunklen Grund zu einer einzigen grauen Flaeche.
@@ -281,7 +281,7 @@ function Karte({
         <span
           aria-hidden
           className="h-10 w-1 shrink-0 rounded-full transition-colors duration-500"
-          style={{ background: gedreht ? "#88CFFF" : "hsl(0 72% 51%)" }}
+          style={{ background: gedreht ? "#30E19E" : "hsl(0 72% 51%)" }}
         />
 
         {/*

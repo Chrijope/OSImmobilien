@@ -3,7 +3,7 @@
  *
  * Der Reiter Videocall und die Moderation zeigen am Ende dasselbe:
  *
- *   1. **Die Entscheidung von MOREImmo.** Drei Möglichkeiten, wie auf der
+ *   1. **Die Entscheidung von OS Immobilien.** Drei Möglichkeiten, wie auf der
  *      letzten Folie. „Nicht möglich" verlangt einen Grund.
  *   2. **Den Wunsch des Bewerbers.** Die drei Türen derselben Folie. Sie sind
  *      ausdrücklich getrennt von der Entscheidung des Hauses und können anders

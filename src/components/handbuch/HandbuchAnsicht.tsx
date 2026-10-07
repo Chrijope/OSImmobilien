@@ -11,8 +11,8 @@ import { QRCodeSVG } from "qrcode.react";
 import type { Block, Handbuch } from "@/lib/handbuch/bausteine";
 import { Diagramm, Symbol } from "./teile";
 
-const WEG_FARBEN = ["#0F1621", "#0467A9", "#087CC9"];
-const TRICHTER_FARBEN = ["#0F1621", "#073150", "#0467A9", "#087CC9", "#3D8FE6"];
+const WEG_FARBEN = ["#0F1621", "#13704D", "#19885E"];
+const TRICHTER_FARBEN = ["#0F1621", "#0C3526", "#13704D", "#19885E", "#2A9E72"];
 
 /** Die zwei festen Wörter der Ansicht, nach der Sprache des Handbuchs. */
 const FEST = {

@@ -131,7 +131,7 @@ export function AnsprechpartnerKarte({
         <div className="relative shrink-0">
         <span
           aria-hidden
-          className={`vr-anwesend pointer-events-none absolute inset-0 ${gross ? "rounded-[26px]" : "rounded-[20px]"} border border-[#88CFFF]/50`}
+          className={`vr-anwesend pointer-events-none absolute inset-0 ${gross ? "rounded-[26px]" : "rounded-[20px]"} border border-[#30E19E]/50`}
         />
         <div className={`${bildGroesse} overflow-hidden bg-gradient-to-br from-[#2b3d50] to-[#1a2634]`}>
           {gastgeber.bild ? (
@@ -143,7 +143,7 @@ export function AnsprechpartnerKarte({
         </div>
         <div className="min-w-0">
           <h3 className={`font-bold tracking-[-0.02em] ${gross ? "text-[23px]" : "text-[19px]"}`}>{gastgeber.name}</h3>
-          {bezeichnung && <div className="mt-0.5 text-[12.5px] text-[#88CFFF]">{bezeichnung}</div>}
+          {bezeichnung && <div className="mt-0.5 text-[12.5px] text-[#30E19E]">{bezeichnung}</div>}
         </div>
       </div>
 
@@ -208,7 +208,7 @@ export function Schalter({
       </span>
       <span
         aria-hidden
-        className={`relative h-[22px] w-[38px] shrink-0 rounded-full transition-colors ${an && !gesperrt ? "bg-[#087AC7]" : "bg-white/15"}`}
+        className={`relative h-[22px] w-[38px] shrink-0 rounded-full transition-colors ${an && !gesperrt ? "bg-[#15724F]" : "bg-white/15"}`}
       >
         <span className={`absolute top-[3px] h-4 w-4 rounded-full bg-white transition-all ${an && !gesperrt ? "right-[3px]" : "left-[3px]"}`} />
       </span>
@@ -317,7 +317,7 @@ export function AgendaListe({
     <div className="flex flex-col">
       {agenda.map((punkt, i) => (
         <div key={i} className={`flex gap-4 py-4 ${i > 0 ? "border-t border-white/[0.06]" : ""}`}>
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[9px] bg-[#88CFFF]/[0.13] text-xs font-bold text-[#88CFFF]">
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[9px] bg-[#30E19E]/[0.13] text-xs font-bold text-[#30E19E]">
             {i + 1}
           </span>
           <div className="min-w-0">
@@ -335,7 +335,7 @@ export function AgendaListe({
 
 function Hinweisblock({ text }: { text: string }) {
   return (
-    <div className={`mt-5 rounded-[14px] border border-[#88CFFF]/15 ${FLAECHE_HINWEIS} p-4`}>
+    <div className={`mt-5 rounded-[14px] border border-[#30E19E]/15 ${FLAECHE_HINWEIS} p-4`}>
       <p className="text-[12.5px] leading-relaxed text-white/60">{text}</p>
     </div>
   );
@@ -391,10 +391,10 @@ function ObjektKarte({
   const wohnflaeche = textOderNichts(objekt.wohnflaeche);
   const zimmer = textOderNichts(objekt.zimmer);
   const rendite = textOderNichts(objekt.rendite);
-  if (kaufpreis) eckdaten.push({ icon: <Euro className="h-3.5 w-3.5 text-[#88CFFF]" />, wert: kaufpreis, label: t.kaufpreis });
-  if (wohnflaeche) eckdaten.push({ icon: <Ruler className="h-3.5 w-3.5 text-[#88CFFF]" />, wert: wohnflaeche, label: t.wohnflaeche });
-  if (zimmer) eckdaten.push({ icon: <Home className="h-3.5 w-3.5 text-[#88CFFF]" />, wert: zimmer, label: t.zimmer });
-  if (rendite) eckdaten.push({ icon: <TrendingUp className="h-3.5 w-3.5 text-[#88CFFF]" />, wert: rendite, label: t.rendite });
+  if (kaufpreis) eckdaten.push({ icon: <Euro className="h-3.5 w-3.5 text-[#30E19E]" />, wert: kaufpreis, label: t.kaufpreis });
+  if (wohnflaeche) eckdaten.push({ icon: <Ruler className="h-3.5 w-3.5 text-[#30E19E]" />, wert: wohnflaeche, label: t.wohnflaeche });
+  if (zimmer) eckdaten.push({ icon: <Home className="h-3.5 w-3.5 text-[#30E19E]" />, wert: zimmer, label: t.zimmer });
+  if (rendite) eckdaten.push({ icon: <TrendingUp className="h-3.5 w-3.5 text-[#30E19E]" />, wert: rendite, label: t.rendite });
 
   return (
     <Karte>
@@ -461,7 +461,7 @@ function SchritteKarte({ schritte, t }: { schritte: string[]; t: VideoraumGastTe
       <div className="flex flex-col gap-4">
         {schritte.map((schritt, i) => (
           <div key={i} className="flex gap-3">
-            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-[#88CFFF]/[0.13] text-[11px] font-bold text-[#88CFFF]">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-[#30E19E]/[0.13] text-[11px] font-bold text-[#30E19E]">
               {i + 1}
             </span>
             <span className="text-[13.5px] leading-snug text-white/60">{schritt}</span>

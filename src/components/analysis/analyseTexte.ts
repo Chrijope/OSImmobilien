@@ -14,7 +14,7 @@
  * - Gespeicherte Antwortwerte (`angestellt`, `50k_80k` …) bleiben unverändert,
  *   übersetzt werden nur die Beschriftungen, Schlüssel ist der Wert.
  * - Der Berater heißt im Englischen nie „advisor“, sondern „your contact
- *   person at MOREImmo“ bzw. „your contact“ (Entscheidung 16).
+ *   person at OS Immobilien“ bzw. „your contact“ (Entscheidung 16).
  * - Keine Gedankenstriche, in keiner der beiden Sprachen.
  */
 import { SPRACH_LOCALE, euroText, type FormatSprache } from "@/lib/sprachFormat";
@@ -213,11 +213,11 @@ const de = {
     meldetSichName: (name: string) => `${name} meldet sich bei Dir`,
     meldetSichAllgemein: "Dein Ansprechpartner meldet sich bei Dir",
     datenschutzRest:
-      ", um die Auswertung mit Dir durchzugehen. Deine Angaben werden dafür gespeichert und außerhalb von MOREImmo und Deinem Ansprechpartner an niemanden weitergegeben. Du kannst der Nutzung jederzeit widersprechen.",
+      ", um die Auswertung mit Dir durchzugehen. Deine Angaben werden dafür gespeichert und außerhalb von OS Immobilien und Deinem Ansprechpartner an niemanden weitergegeben. Du kannst der Nutzung jederzeit widersprechen.",
   },
 
   ergebnis: {
-    eyebrow: "MOREImmo · Analyse",
+    eyebrow: "OS Immobilien · Analyse",
     titel: "Deine Analyse­ergebnisse.",
     untertitel: "Ein klarer Blick auf Dein persönliches Vermögens­szenario: transparent berechnet, individuell für Dich.",
     hinweisTitel: "Hinweis · Beispielergebnis",
@@ -552,13 +552,13 @@ const en: AnalyseTexte = {
     laeuft: "One moment",
     absenden: "View result",
     meldetSichName: (name: string) => `${name} will get in touch with you`,
-    meldetSichAllgemein: "Your contact person at MOREImmo will get in touch with you",
+    meldetSichAllgemein: "Your contact person at OS Immobilien will get in touch with you",
     datenschutzRest:
-      " to go through the result with you. Your details are stored for this purpose and are not passed on to anyone outside MOREImmo and your contact. You can object to their use at any time.",
+      " to go through the result with you. Your details are stored for this purpose and are not passed on to anyone outside OS Immobilien and your contact. You can object to their use at any time.",
   },
 
   ergebnis: {
-    eyebrow: "MOREImmo · Analysis",
+    eyebrow: "OS Immobilien · Analysis",
     titel: "Your analysis results.",
     untertitel: "A clear view of your personal wealth scenario: transparently calculated, individually for you.",
     hinweisTitel: "Note · Sample result",
@@ -625,13 +625,13 @@ const en: AnalyseTexte = {
       "The sample calculation above shows the order of magnitude. At the first meeting, we'll convert it to your figures: your property, your terms, your tax situation.",
     bereitOhneRechnung: "Let's talk together about what's possible in your situation.",
     kostenlos: "The meeting is free of charge and without obligation.",
-    persoenlicherVertriebspartner: "Your contact person at MOREImmo",
-    persoenlicherAnsprechpartner: "Your contact person at MOREImmo",
+    persoenlicherVertriebspartner: "Your contact person at OS Immobilien",
+    persoenlicherAnsprechpartner: "Your contact person at OS Immobilien",
     erstgespraech: "Book a first meeting",
     anrufen: "Call",
     email: "Email",
     interesseTitel: "I'm interested",
-    interesseText: "Enter your details and your contact person at MOREImmo will get in touch.",
+    interesseText: "Enter your details and your contact person at OS Immobilien will get in touch.",
     absenden: "Send",
     vertraulich: "Your data is treated confidentially.",
     dankeTitel: "Thank you!",

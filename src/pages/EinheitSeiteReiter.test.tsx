@@ -128,7 +128,7 @@ describe("Einheitsseite auf dem Handy (Handyprüfung vom 23.09.2026)", () => {
 
   it("zeigt die sechs Reiter auf dem Handy zu zweit, ab sm zu dritt, ab lg nebeneinander", () => {
     // Bei 768 px steht die Seitenleiste daneben, dort passte „Investmentkalkulation“ nicht in ein Viertel.
-    // Seit dem 28.09.2026 kommt für Admin und Inhaber der Reiter „MORE Lotse“ dazu, seit dem 01.10.2026 die Karte.
+    // Seit dem 28.09.2026 kommt für Admin und Inhaber der Reiter „OS Lotse“ dazu, seit dem 01.10.2026 die Karte.
     zeigeSeite();
     const leiste = screen.getByRole("tablist");
     expect(leiste.className).toContain("grid-cols-2");
@@ -161,19 +161,19 @@ describe("Reiter Karte (seit dem 01.10.2026)", () => {
     stand.rolle = "vertriebspartner";
     try {
       zeigeSeite();
-      expect(screen.getAllByRole("tab").map((t) => t.textContent?.trim()).slice(-2)).toEqual(["Karte", "MORE Lotse KI"]);
+      expect(screen.getAllByRole("tab").map((t) => t.textContent?.trim()).slice(-2)).toEqual(["Karte", "OS Lotse KI"]);
     } finally {
       stand.rolle = "admin";
     }
   });
 });
 
-describe("Reiter MORE Lotse (seit dem 28.09.2026)", () => {
+describe("Reiter OS Lotse (seit dem 28.09.2026)", () => {
   it("steht nach Investmentkalkulation und Karte, mit KI-Abzeichen", () => {
     zeigeSeite();
     const namen = screen.getAllByRole("tab").map((t) => t.textContent?.trim());
     // Die Karte sitzt seit dem 01.10.2026 oben zwischen Investmentkalkulation und Lotse, ein Reiter „Fotos“ fehlt bewusst.
-    expect(namen).toEqual(["Übersicht", "Dokumente", "Finanzen", "Investmentkalkulation", "Karte", "MORE Lotse KI"]);
+    expect(namen).toEqual(["Übersicht", "Dokumente", "Finanzen", "Investmentkalkulation", "Karte", "OS Lotse KI"]);
   });
 
   it("richtet sich nach der aktiven Rolle", () => {

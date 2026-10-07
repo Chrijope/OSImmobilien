@@ -92,7 +92,7 @@ describe("ExpatsRechner: die Strecke", () => {
     render(<ExpatsRechner />);
     bisZumKontakt();
     fuelleKontakt();
-    fireEvent.click(screen.getByLabelText(/I agree that MOREImmo/));
+    fireEvent.click(screen.getByLabelText(/I agree that OS Immobilien/));
     fireEvent.click(screen.getByRole("button", { name: "Show my result" }));
 
     await waitFor(() => expect(sendeExpatsLead).toHaveBeenCalledTimes(1));
@@ -122,7 +122,7 @@ describe("ExpatsRechner: die Strecke", () => {
     render(<ExpatsRechner />);
     bisZumKontakt();
     fuelleKontakt();
-    fireEvent.click(screen.getByLabelText(/I agree that MOREImmo/));
+    fireEvent.click(screen.getByLabelText(/I agree that OS Immobilien/));
     fireEvent.click(screen.getByRole("button", { name: "Show my result" }));
     await waitFor(() => expect(sendeExpatsLead).toHaveBeenCalledTimes(1));
 

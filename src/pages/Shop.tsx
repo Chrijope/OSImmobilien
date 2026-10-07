@@ -56,7 +56,7 @@ export default function Shop() {
     <DashboardLayout>
       <PageHeader
         title="Shop"
-        subtitle="MOREImmo Lead-Pakete – vorqualifizierte Kontakte inkl. Marketing-Budget & CRM-Zuweisung"
+        subtitle="OS Immobilien Lead-Pakete – vorqualifizierte Kontakte inkl. Marketing-Budget & CRM-Zuweisung"
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">

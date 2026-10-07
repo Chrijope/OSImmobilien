@@ -44,11 +44,11 @@ export function meetingKalender(j: MeetingMailJob, organizerEmail: string, now =
   const d = j.daten, start = new Date(d.start), end = new Date(start.getTime() + d.dauer * 60000)
   if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime())) throw new Error('Ungültige Terminzeit')
   const email = (s: string) => s.replace(/[\r\n";,:]/g, '')
-  return ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//MOREImmo//Closing//DE', 'CALSCALE:GREGORIAN',
+  return ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//OS Immobilien//Closing//DE', 'CALSCALE:GREGORIAN',
     `METHOD:${j.art === 'absage' ? 'CANCEL' : 'REQUEST'}`, 'BEGIN:VEVENT', `UID:${escape(d.icsUid)}`,
     `SEQUENCE:${j.revision}`, `DTSTAMP:${stamp(now)}`, `DTSTART:${stamp(start)}`, `DTEND:${stamp(end)}`,
     `SUMMARY:${escape(d.titel)}`, `LOCATION:${escape(d.modus === 'vor_ort' ? d.treffpunkt || t.vorOrt : d.modus === 'telefon' ? t.telefon : d.zugangUrl || t.online)}`,
-    `ORGANIZER:mailto:${email(organizerEmail || 'noreply@more.immo')}`, `ATTENDEE:mailto:${email(j.email)}`,
+    `ORGANIZER:mailto:${email(organizerEmail || 'noreply@os-immobilien.com')}`, `ATTENDEE:mailto:${email(j.email)}`,
     `STATUS:${j.art === 'absage' ? 'CANCELLED' : 'CONFIRMED'}`, 'END:VEVENT', 'END:VCALENDAR'].map(fold).join('\r\n') + '\r\n'
 }
 export function meetingMailAuftrag(j: MeetingMailJob, organizerEmail: string, sprache: 'de' | 'en' = 'de') {

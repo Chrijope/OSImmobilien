@@ -103,7 +103,7 @@ describe("Der Verwendungszweck", () => {
   });
 
   it("bleibt unter den 140 Zeichen einer SEPA-Ueberweisung", () => {
-    const zweck = verwendungszweck("Wendelsteinstraße 19", "14", "Sommerfeld-Hinterhuber");
+    const zweck = verwendungszweck("Am Ostbahnhof 1", "14", "Sommerfeld-Hinterhuber");
     expect(zweck.length).toBeLessThanOrEqual(140);
   });
 

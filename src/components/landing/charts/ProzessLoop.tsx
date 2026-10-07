@@ -173,7 +173,7 @@ export default function ProzessLoop({
         fontSize={m.marke}
         fontWeight="600"
       >
-        MOREImmo
+        OS Immobilien
       </text>
       <text
         x={MITTE_X}

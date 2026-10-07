@@ -87,7 +87,7 @@ function reservierung(extra: Partial<ReservierungData> = {}): ReservierungData {
     email: "emily.carter@example.org", gueterstand: "", iban: "",
     hatPerson2: false, p2Vorname: "", p2Nachname: "", p2Geburtsdatum: "", p2Staatsangehoerigkeit: "",
     p2Strasse: "", p2Hausnummer: "", p2Plz: "", p2Ort: "", p2Telefon: "", p2Email: "",
-    wohneinheit: "6", objStrasse: "Beispielstraße 1", objPlz: "83075", objOrt: "Bad Feilnbach", gesamtpreis: "289.000",
+    wohneinheit: "6", objStrasse: "Beispielstraße 1", objPlz: "83075", objOrt: "Mittenwalde", gesamtpreis: "289.000",
     vkName: "Muster GmbH", vkStrasse: "", vkPlz: "", vkOrt: "",
     erklaerungAkzeptiert: true, widerrufWahl: "sofort", textFassung: TEXT_FASSUNG, abgeschlossen: true,
     ...extra,

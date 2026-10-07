@@ -8,12 +8,12 @@ const PAGE_W = 210;
 const PAGE_H = 297;
 const CONTENT_W = PAGE_W - MARGIN * 2;
 
-// MOREImmo CI: dunkles Marineblau als Grundton, Blau 600 als Akzent.
+// OS Immobilien CI: dunkles Marineblau als Grundton, Blau 600 als Akzent.
 // Vorher stand hier ein Goldton (180/155/100) samt cremefarbener Fläche.
 // Gold gehört nicht mehr zur Marke, deshalb liegen Linien und Flächen
 // jetzt auf derselben Blaufamilie wie das übrige Haus.
 const BRAND_DARK: [number, number, number] = [20, 30, 50];
-const BRAND_ACCENT: [number, number, number] = [8, 122, 199]; // #087AC7, Blau 600
+const BRAND_ACCENT: [number, number, number] = [21, 114, 79]; // #15724F, Blau 600
 const TEXT_PRIMARY: [number, number, number] = [30, 30, 30];
 const TEXT_SECONDARY: [number, number, number] = [100, 100, 100];
 const BG_LIGHT: [number, number, number] = [248, 248, 248];
@@ -113,7 +113,7 @@ async function loadLogoAsBase64(): Promise<string | null> {
 
 let pageNum = 0;
 /** Die Wörter der Fußzeile, je Lauf aus der Sprache gesetzt wie `pageNum`. */
-let fussTexte = { seite: (n: number) => `Seite ${n}`, vertraulich: "MOREImmo  •  Vertraulich" };
+let fussTexte = { seite: (n: number) => `Seite ${n}`, vertraulich: "OS Immobilien  •  Vertraulich" };
 
 function addFooter(doc: jsPDF) {
   pageNum++;
@@ -314,7 +314,7 @@ export interface AnalyseTexte {
 
 const ANALYSE_TEXTE_DE: AnalyseTexte = {
   seite: (n) => `Seite ${n}`,
-  vertraulich: "MOREImmo  •  Vertraulich",
+  vertraulich: "OS Immobilien  •  Vertraulich",
   titel: "INVESTMENT-ANALYSE",
   umlageLabel: "Umlagefähiger Anteil:",
   untertitelWe: (objekt, we) => `${objekt}, Wohneinheit ${we}`,
@@ -403,7 +403,7 @@ const ANALYSE_TEXTE_DE: AnalyseTexte = {
 
 const ANALYSE_TEXTE_EN: AnalyseTexte = {
   seite: (n) => `Page ${n}`,
-  vertraulich: "MOREImmo  •  Confidential",
+  vertraulich: "OS Immobilien  •  Confidential",
   titel: "INVESTMENT ANALYSIS",
   umlageLabel: "Recoverable share:",
   untertitelWe: (objekt, we) => `${objekt}, unit ${we}`,

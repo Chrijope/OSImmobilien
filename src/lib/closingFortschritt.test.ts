@@ -51,7 +51,7 @@ describe("berechneClosingFortschritt", () => {
   it("c: Adressen vollständig und Startfahrplan versendet, Vertrag ist der nächste Schritt", () => {
     const f = berechneClosingFortschritt(bewerber({
       status: "Paketwahl", closingEntscheidung: "ja", paketwahl: "junior",
-      vertragsAdresse: "Max Muster\nMusterstraße 12\n83075 Bad Feilnbach",
+      vertragsAdresse: "Max Muster\nMusterstraße 12\n15749 Mittenwalde",
       rechnungsAdresse: "Muster GmbH\nGewerbepark 3\n83022 Rosenheim",
       paketUebersichtSentAt: "2026-09-01T13:12:00.000Z",
     }));
@@ -223,7 +223,7 @@ describe("berechneClosingFortschritt", () => {
       bewerber({ closingEntscheidung: "nein" }),
       bewerber({
         closingEntscheidung: "ja", paketwahl: "junior",
-        vertragsAdresse: "Max Muster\nMusterstraße 12\n83075 Bad Feilnbach",
+        vertragsAdresse: "Max Muster\nMusterstraße 12\n15749 Mittenwalde",
         rechnungsAdresse: "Muster GmbH\nGewerbepark 3\n83022 Rosenheim",
         paketUebersichtSentAt: "2026-09-02T07:14:00.000Z",
         paketBestaetigtAm: "2026-09-03T08:15:00.000Z", vertragStatus: "gesendet", vertragVersion: 1,

@@ -77,6 +77,6 @@ export const template = {
     unterschriebenAm: '26.08.2026, 14:02',
     naechsterSchritt:
       'Bitte kontaktieren und den Onboarding-Termin vereinbaren. Die Aufgabe dazu liegt in der Inbox.',
-    bewerberLink: 'https://portal.more.immo/bewerberprozess?openBewerber=beispiel',
+    bewerberLink: 'https://osimmobilien.netlify.app/bewerberprozess?openBewerber=beispiel',
   },
 } satisfies TemplateEntry

@@ -46,7 +46,7 @@
 export interface MailFelder {
   /**
    * Interne Meldung: Der Nachweis zur Kaufpreisfaelligkeit liegt im
-   * Kundenordner. Geht ans Büro (office@more.immo), nicht an den Kunden.
+   * Kundenordner. Geht ans Büro (os@os-immobilien.com), nicht an den Kunden.
    */
   "faelligkeit-hochgeladen": {
     /** Vor- und Nachname des Kunden, um den es geht. */

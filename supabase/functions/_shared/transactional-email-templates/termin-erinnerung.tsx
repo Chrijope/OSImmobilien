@@ -141,12 +141,12 @@ export const template = {
     terminUhrzeit: '15:00',
     terminDauer: 45,
     terminTitel: 'Beratungsgespräch',
-    zugangUrl: 'https://portal.more.immo/raum/abc123',
+    zugangUrl: 'https://osimmobilien.netlify.app/raum/abc123',
     berater: {
       name: 'Christian Peetz',
       rolle: 'Senior Berater',
-      telefon: '+49 1515 0275108',
-      email: 'c.peetz@more.immo',
+      telefon: '+49 30 863289210',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

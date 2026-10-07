@@ -36,7 +36,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const APP_BASE_URL = 'https://portal.more.immo'
+const APP_BASE_URL = 'https://osimmobilien.netlify.app'
 
 /**
  * Wer den Bericht bekommt.

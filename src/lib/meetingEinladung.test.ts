@@ -22,8 +22,8 @@ const STANDARD_NUTZER = {
   id: "u-1",
   name: "Christian Peetz",
   rollen: ["vertriebspartner"],
-  email: "c.peetz@more.immo",
-  telefon: "+49 1515 0275108",
+  email: "os@os-immobilien.com",
+  telefon: "+49 30 863289210",
   bildUrl:
     "https://irwdgutegmivbtgmftyc.supabase.co/storage/v1/object/public/avatars/u-1/avatar.jpg?t=1",
 };
@@ -62,7 +62,7 @@ describe("versendeMeetingEinladung", () => {
   it("übergibt beim Videoraum Modus, Link und Ereignis-Dauer", async () => {
     const ok = await versendeMeetingEinladung({
       ...basis,
-      meetingLink: "https://crm.more.immo/raum/abc",
+      meetingLink: "https://crm.osimmobilien.netlify.app/raum/abc",
       dauerMinuten: 90,
       modus: "video",
     });
@@ -70,24 +70,24 @@ describe("versendeMeetingEinladung", () => {
     const body = letzterAufruf();
     expect(body.templateName).toBe("zoom-meeting-einladung");
     expect(body.templateData.terminModus).toBe("video");
-    expect(body.templateData.zoomJoinUrl).toBe("https://crm.more.immo/raum/abc");
+    expect(body.templateData.zoomJoinUrl).toBe("https://crm.osimmobilien.netlify.app/raum/abc");
     expect(body.templateData.terminDauer).toBe(90);
     // Kalenderdateien tragen den Link als Ort.
-    expect(body.templateData.icsUrl).toContain(encodeURIComponent("https://crm.more.immo/raum/abc"));
+    expect(body.templateData.icsUrl).toContain(encodeURIComponent("https://crm.osimmobilien.netlify.app/raum/abc"));
   });
 
   it("übergibt beim Treffen vor Ort den Treffpunkt als Kalender-Ort", async () => {
     await versendeMeetingEinladung({
       ...basis,
       modus: "vor_ort",
-      treffpunkt: "Wendelsteinstraße 19, 83075 Bad Feilnbach",
+      treffpunkt: "Am Ostbahnhof 1, 15749 Mittenwalde",
     });
     const body = letzterAufruf();
     expect(body.templateData.terminModus).toBe("vor_ort");
-    expect(body.templateData.treffpunkt).toBe("Wendelsteinstraße 19, 83075 Bad Feilnbach");
+    expect(body.templateData.treffpunkt).toBe("Am Ostbahnhof 1, 15749 Mittenwalde");
     expect(body.templateData.zoomJoinUrl).toBeUndefined();
-    expect(body.templateData.icsUrl).toContain(encodeURIComponent("Wendelsteinstraße 19, 83075 Bad Feilnbach"));
-    expect(body.templateData.googleCalendarUrl).toContain(encodeURIComponent("Wendelsteinstraße 19, 83075 Bad Feilnbach"));
+    expect(body.templateData.icsUrl).toContain(encodeURIComponent("Am Ostbahnhof 1, 15749 Mittenwalde"));
+    expect(body.templateData.googleCalendarUrl).toContain(encodeURIComponent("Am Ostbahnhof 1, 15749 Mittenwalde"));
   });
 
   it("übergibt beim Telefontermin die Kundennummer und keinen Link", async () => {
@@ -106,12 +106,12 @@ describe("versendeMeetingEinladung", () => {
   it("reicht ohne Modus den Link unverändert an die Vorlage", async () => {
     await versendeMeetingEinladung({
       ...basis,
-      meetingLink: "https://crm.more.immo/raum/xyz",
+      meetingLink: "https://crm.osimmobilien.netlify.app/raum/xyz",
       dauerMinuten: 60,
     });
     const body = letzterAufruf();
     expect(body.templateData.terminModus).toBeUndefined();
-    expect(body.templateData.zoomJoinUrl).toBe("https://crm.more.immo/raum/xyz");
+    expect(body.templateData.zoomJoinUrl).toBe("https://crm.osimmobilien.netlify.app/raum/xyz");
   });
 
   it("verhindert Doppelversand über denselben Idempotenzschlüssel", async () => {
@@ -141,7 +141,7 @@ describe("versendeGastEinladungen", () => {
     datum: "2026-09-02",
     uhrzeit: "14:00",
     modus: "video" as const,
-    meetingLink: "https://crm.more.immo/raum/abc",
+    meetingLink: "https://crm.osimmobilien.netlify.app/raum/abc",
   };
 
   it("versendet je Gast eine eigene Mail mit persönlicher Anrede und eigenem Schlüssel", async () => {
@@ -203,7 +203,7 @@ it("meldet unterdrückte E-Mails nicht als versendet", async () => {
  * Der Namensvergleich war der eigentliche Fehler: Fand er nichts, blieben
  * Adresse, Bezeichnung und Bild leer, und die Vorlage unterschrieb mit der
  * allgemeinen Firmenadresse. Aufgefallen ist es erst, als in einer Einladung
- * "Ansprechpartner bei MOREImmo" und office@more.immo standen.
+ * "Ansprechpartner bei OS Immobilien" und os@os-immobilien.com standen.
  */
 describe("Berater in der Einladung", () => {
   it("findet den Berater über die Kennung, auch wenn der Name abweicht", async () => {
@@ -211,7 +211,7 @@ describe("Berater in der Einladung", () => {
     const daten = letzterAufruf().templateData;
     expect(daten.beraterUserId).toBe("u-1");
     expect(daten.beraterName).toBe("Christian Peetz");
-    expect(daten.beraterEmail).toBe("c.peetz@more.immo");
+    expect(daten.beraterEmail).toBe("os@os-immobilien.com");
     expect(daten.beraterPosition).toBe("Immobilienberater");
     expect(daten.berater.bildUrl).toContain("/avatars/u-1/avatar.jpg");
     expect(verlaufMock).not.toHaveBeenCalled();
@@ -222,7 +222,7 @@ describe("Berater in der Einladung", () => {
     const daten = letzterAufruf().templateData;
     expect(daten.beraterUserId).toBe("u-1");
     expect(daten.beraterName).toBe("Christian Peetz");
-    expect(daten.beraterTelefon).toBe("+49 1515 0275108");
+    expect(daten.beraterTelefon).toBe("+49 30 863289210");
     expect(daten.berater.rolle).toBe("Immobilienberater");
   });
 
@@ -232,8 +232,8 @@ describe("Berater in der Einladung", () => {
     expect(daten.berater).toEqual({
       name: "Christian Peetz",
       rolle: "Immobilienberater",
-      telefon: "+49 1515 0275108",
-      email: "c.peetz@more.immo",
+      telefon: "+49 30 863289210",
+      email: "os@os-immobilien.com",
       bildUrl: STANDARD_NUTZER.bildUrl,
     });
     // Flach darf die Bildadresse nicht reisen: dort bliebe sie ungezeichnet.
@@ -264,7 +264,7 @@ describe("Berater in der Einladung", () => {
 
   it("greift bei zwei gleichnamigen Nutzern lieber nicht daneben", async () => {
     const warnung = vi.spyOn(console, "warn").mockImplementation(() => {});
-    nutzerliste.push({ ...STANDARD_NUTZER, id: "u-2", email: "zweiter@more.immo" });
+    nutzerliste.push({ ...STANDARD_NUTZER, id: "u-2", email: "os@os-immobilien.com" });
     await versendeMeetingEinladung({ ...basis, kundeId: "k-doppelt" });
     const daten = letzterAufruf().templateData;
     expect(daten.beraterEmail).toBe("");

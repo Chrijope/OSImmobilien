@@ -118,7 +118,7 @@ const PortalAktivieren = () => {
   return (
     <div data-lg="seite" data-portal={portal} className="portal-ui portal-activation min-h-screen flex items-center justify-center bg-background p-8">
       <div className="w-full max-w-md space-y-6 text-center">
-        <img src={logoImg} alt="MOREImmo" className="h-10 mx-auto" />
+        <img src={logoImg} alt="OS Immobilien" className="h-10 mx-auto" />
         <div className="space-y-2">
           <h1 className="text-2xl font-bold text-foreground font-serif">
             {resolvedName

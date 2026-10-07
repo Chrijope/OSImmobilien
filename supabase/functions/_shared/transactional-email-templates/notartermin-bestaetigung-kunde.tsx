@@ -92,9 +92,9 @@ export const template = {
     notarAdresse: 'Königstraße 4, 90402 Nürnberg',
     berater: {
       name: 'Christian Peetz',
-      rolle: 'Ihr Ansprechpartner bei MOREImmo',
+      rolle: 'Ihr Ansprechpartner bei OS Immobilien',
       telefon: '08061 000000',
-      email: 'christian@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

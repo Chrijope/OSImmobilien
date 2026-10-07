@@ -171,10 +171,10 @@ export const template = {
     terminTitel: 'Bewerbergespräch',
     themen: ['Vergütung und Rechenwege', 'Zeit und Vereinbarkeit'],
     eigeneFrage: 'Wie viele Kontakte bekomme ich in den ersten drei Monaten?',
-    bewerberUrl: 'https://portal.more.immo/bewerberprozess?bewerber=1',
+    bewerberUrl: 'https://osimmobilien.netlify.app/bewerberprozess?bewerber=1',
     // Die Gastgeberansicht, nicht der Warteraum. Die Vorschau zeigte bis zum
     // 14.09.2026 den Gastlink und widersprach damit dem, was
     // `send-bewerber-termin` tatsaechlich verschickt.
-    zugangUrl: 'https://portal.more.immo/videocall/raum/11111111-2222-3333-4444-555555555555',
+    zugangUrl: 'https://osimmobilien.netlify.app/videocall/raum/11111111-2222-3333-4444-555555555555',
   },
 } satisfies TemplateEntry

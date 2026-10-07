@@ -27,7 +27,7 @@ vi.mock("@/lib/buchungStore", async (original) => ({
   ladeLinks: async () => [],
   erstelleLink: m.erstelleLink,
   setzeLinkAktiv: vi.fn(),
-  buchungUrl: (t: string) => `https://portal.more.immo/termin/${t}`,
+  buchungUrl: (t: string) => `https://osimmobilien.netlify.app/termin/${t}`,
 }));
 vi.mock("@/lib/buchungslinkMail", () => ({ versendeBuchungslinkMail: m.mail }));
 vi.mock("@/hooks/use-toast", () => ({ useToast: () => ({ toast: m.toast }), toast: m.toast }));

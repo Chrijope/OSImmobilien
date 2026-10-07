@@ -148,7 +148,7 @@ export const template: TemplateEntry = {
     dauer: 60,
     alteZeit: '2026-12-08 14:30',
     modus: 'video',
-    zugangUrl: 'https://portal.more.immo/raum/beispiel',
+    zugangUrl: 'https://osimmobilien.netlify.app/raum/beispiel',
     berater: {},
   },
 }

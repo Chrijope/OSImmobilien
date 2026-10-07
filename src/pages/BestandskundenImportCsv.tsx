@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { addKontakt, getKontakte } from "@/lib/kundenStore";
 import { findPotentialDuplicates } from "@/lib/duplikatCheck";
 
-const TEMPLATE_URL = "/dokumente/MOREImmo_Bestandskunden_Import_Vorlage.csv";
+const TEMPLATE_URL = "/dokumente/OS-Immobilien_Bestandskunden_Import_Vorlage.csv";
 const HEADERS = [
   "anrede","vorname","nachname","email","telefon","strasse","plz","ort","geburtsdatum","beruf",
   "person2_anrede","person2_vorname","person2_nachname","person2_email","person2_telefon","person2_geburtsdatum",

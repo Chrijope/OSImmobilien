@@ -45,7 +45,7 @@ const { gedankenstrichFrei, textdateiLuecken } = await import("@/lib/seitenSprac
 /** So antwortet `partnertermin_zugang` (Migration 20260921250000). */
 function zugang(teil: Record<string, unknown> = {}) {
   return {
-    berater: { name: "Hermann Vogl", email: "hermann@more.immo" },
+    berater: { name: "Hermann Vogl", email: "os@os-immobilien.com" },
     zeitzone: "Europe/Berlin",
     vorname: "Max",
     anlaesse: [

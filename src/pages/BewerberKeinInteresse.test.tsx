@@ -83,7 +83,7 @@ describe("BewerberKeinInteresse", () => {
     await oeffne();
 
     expect(screen.getByRole("heading", { name: "Dieser Link ist uns unbekannt" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "office@more.immo" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "os@os-immobilien.com" })).toBeInTheDocument();
     expect(invoke).not.toHaveBeenCalled();
   });
 
@@ -99,7 +99,7 @@ describe("BewerberKeinInteresse", () => {
     rpc.mockResolvedValue({ data: [{ vorname: "Max", status: "abgelaufen" }], error: null });
     await oeffne();
     expect(screen.getByRole("heading", { name: "Dieser Link ist nicht mehr gültig" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "office@more.immo" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "os@os-immobilien.com" })).toBeInTheDocument();
     expect(invoke).not.toHaveBeenCalled();
   });
 

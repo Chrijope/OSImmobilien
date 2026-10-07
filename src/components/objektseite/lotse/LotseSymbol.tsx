@@ -2,7 +2,7 @@ import { useId } from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * Das Symbol des MORE Lotsen: ein Hausdach über einem Kompass, die Nadel
+ * Das Symbol des OS Lotsen: ein Hausdach über einem Kompass, die Nadel
  * sucht und kommt zur Ruhe, drei Funken glimmen. Nach der Vorschau vom
  * 28.09.2026. Die Bewegung steht in `src/index.css` (`.lotse-nadel` und
  * Verwandte) und ruht bei `prefers-reduced-motion`. `ruhig` schaltet sie für
@@ -15,7 +15,7 @@ export function LotseSymbol({ className, ruhig = false }: { className?: string; 
     <svg viewBox="0 0 64 64" className={cn("h-12 w-12 shrink-0", className)} aria-hidden="true" focusable="false">
       <defs>
         <linearGradient id={verlauf} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#1b8ae6" />
+          <stop offset="0" stopColor="#26986D" />
           <stop offset="1" stopColor="#6a4df0" />
         </linearGradient>
       </defs>

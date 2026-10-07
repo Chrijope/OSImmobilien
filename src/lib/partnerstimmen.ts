@@ -54,6 +54,6 @@ export const PARTNERSTIMMEN: Partnerstimme[] = [
     name: "Dr. Stefan K.",
     rolle: "Senior Partner seit 2023",
     vorher: "Vorher: 20 Jahre Bankenvertrieb, am Ende ausgebrannt und desillusioniert. Wollte alles hinwerfen.",
-    jetzt: "Heute: MOREImmo ist mein Hauptstandbein. Qualität der Objekte und die Kultur im Team haben mich zurückgeholt.",
+    jetzt: "Heute: OS Immobilien ist mein Hauptstandbein. Qualität der Objekte und die Kultur im Team haben mich zurückgeholt.",
   },
 ];

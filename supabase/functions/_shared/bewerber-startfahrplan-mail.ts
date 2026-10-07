@@ -44,7 +44,7 @@
  * Zahl in diesem Text steht so im Code; der Test hält sie daran fest.
  */
 
-export const STARTFAHRPLAN_BETREFF = 'Dein Startfahrplan bei MOREImmo'
+export const STARTFAHRPLAN_BETREFF = 'Dein Startfahrplan bei OS Immobilien'
 export const STARTFAHRPLAN_AUGENBRAUE = 'Nach unserem Gespräch'
 export const STARTFAHRPLAN_TITEL = 'Dein Startfahrplan'
 export const STARTFAHRPLAN_VORSCHAU =

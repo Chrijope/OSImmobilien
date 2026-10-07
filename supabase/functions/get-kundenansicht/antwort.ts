@@ -459,7 +459,7 @@ const WOHNUNG_SPALTEN = ["id", "objekt_id", "we_nr", "etage", "lage", "groesse",
 const WOHNUNG_SPALTEN_GLOBAL = ["id", "objekt_id", "we_nr", "etage", "lage", "groesse", "zimmer", "miete_gesamt", "vermietet"] as const;
 
 // Die Positivliste für `meta` steht seit dem 28.09.2026 in `_shared/kunden-meta.ts`,
-// weil auch der MORE Lotse sie nutzt. Unverändert, hier nur weitergereicht.
+// weil auch der OS Lotse sie nutzt. Unverändert, hier nur weitergereicht.
 
 /** Das Objekt für die Antwort. */
 export function kundenObjekt(row: Record<string, unknown>, struktur: Struktur): Record<string, unknown> {

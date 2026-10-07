@@ -93,10 +93,10 @@ describe("Gespraech", () => {
     const knopf = screen.getByLabelText("Teilen");
 
     act(() => { verbindung.meldeTeilen(true); });
-    expect(knopf.className).toContain("#88CFFF");
+    expect(knopf.className).toContain("#30E19E");
 
     act(() => { verbindung.meldeTeilen(false); });
-    expect(knopf.className).not.toContain("#88CFFF");
+    expect(knopf.className).not.toContain("#30E19E");
   });
 
   it("sperrt das Teilen, solange der Gastgeber es nicht freigegeben hat", async () => {
@@ -723,7 +723,7 @@ describe("Gespraech, Bildschirmteilen", () => {
     const verbindung = zeichne({ lokalerStream: strom("kamera") });
     act(() => { verbindung.meldeTeilen(true, strom("bildschirm")); });
 
-    expect(flaeche()?.className).toContain("border-[#88CFFF]");
+    expect(flaeche()?.className).toContain("border-[#30E19E]");
     expect(flaeche()?.querySelector("video")?.className).toContain("object-contain");
   });
 

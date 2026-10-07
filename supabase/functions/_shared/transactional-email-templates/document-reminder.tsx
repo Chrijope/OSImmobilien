@@ -75,13 +75,13 @@ export const template = {
   sprachen: DE_EN,
   previewData: {
     kundeName: 'Max',
-    portalUrl: 'https://portal.more.immo/kunde/unterlagen',
+    portalUrl: 'https://osimmobilien.netlify.app/kunde/unterlagen',
     fehlend: ['Gehaltsnachweise der letzten drei Monate', 'Schufa-Selbstauskunft', 'Kopie des Personalausweises'],
     berater: {
       name: 'Christian Peetz',
-      rolle: 'Dein Ansprechpartner bei MOREImmo',
+      rolle: 'Dein Ansprechpartner bei OS Immobilien',
       telefon: '08061 000000',
-      email: 'christian@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

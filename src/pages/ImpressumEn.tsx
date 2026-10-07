@@ -32,16 +32,16 @@ export default function ImpressumEn() {
 
         <div className="prose prose-sm max-w-none space-y-6 text-foreground">
           <div>
-            <p className="font-semibold">MOREImmo</p>
-            <p className="text-sm text-muted-foreground">Sole proprietorship · Owner: Christian Kurz</p>
-            <p>Wendelsteinstraße 19<br />83075 Bad Feilnbach<br />Germany</p>
+            <p className="font-semibold">OS Immobilien</p>
+            <p className="text-sm text-muted-foreground">OS Immobilien Holding GmbH</p>
+            <p>Am Ostbahnhof 1<br />15749 Mittenwalde<br />Germany</p>
             {IMPRESSUM_TELEFON && <p>Telephone: <a href={`tel:${IMPRESSUM_TELEFON.replace(/\s/g, "")}`} className="text-primary hover:underline">{IMPRESSUM_TELEFON}</a></p>}
             <p>
               Email: <a href={`mailto:${IMPRESSUM_EMAIL}`} className="text-primary hover:underline">{IMPRESSUM_EMAIL}</a>
             </p>
             <p>Tax number: 134 | 178 | 41478</p>
             <p>&nbsp;</p>
-            <p>VAT identification number under Section 27a of the German VAT Act (UStG):&nbsp;&nbsp;DE461593843</p>
+            <p>VAT identification number under Section 27a of the German VAT Act (UStG):&nbsp;&nbsp;DEINE-UST-ID</p>
             <p>Responsible for content under Section 55(2) of the German Interstate Broadcasting Treaty (RStV): Christian Kurz</p>
           </div>
 
@@ -75,7 +75,7 @@ export default function ImpressumEn() {
         </div>
 
         <div className="border-t mt-12 pt-6 text-xs text-muted-foreground text-center space-x-4">
-          <span>© {new Date().getFullYear()} MOREImmo · Sole proprietorship Christian Kurz</span>
+          <span>© {new Date().getFullYear()} OS Immobilien Holding GmbH</span>
           <Link to="/datenschutz?lang=en" className="hover:underline">Privacy policy</Link>
         </div>
       </div>

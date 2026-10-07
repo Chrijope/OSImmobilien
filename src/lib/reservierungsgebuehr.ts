@@ -51,7 +51,7 @@ export const GEBUEHR_GESAMTOBJEKT_LABEL = "Reservierungsgebühr für ein Gesamto
 export const GEBUEHR_FRIST_TAGE = 7;
 
 /** Die Bankverbindung, auf die die Gebühr geht. */
-export const GEBUEHR_KONTOINHABER = "MOREImmo";
+export const GEBUEHR_KONTOINHABER = "OS Immobilien";
 export const GEBUEHR_IBAN = "DE89 2022 0800 0059 3599 49";
 /*
  * BIC und Bankname sind seit dem Rechtsentwurf vom 15.09.2026 vorgesehen,

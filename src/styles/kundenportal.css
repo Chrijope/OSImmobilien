@@ -11,16 +11,16 @@
   --foreground: 216 19% 11%;
   --card: 0 0% 100%;
   --card-foreground: 216 19% 11%;
-  --primary: 204 92% 41%;
+  --primary: 157 69% 32%;
   --primary-foreground: 0 0% 100%;
   --border: 214 25% 88%;
   --input: 213 22% 78%;
   --muted: 214 30% 95%;
   --muted-foreground: 216 12% 40%;
   --radius: 0.75rem;
-  --portal-akzent: 204 92% 41%;
+  --portal-akzent: 157 69% 32%;
   --portal-akzent-soft: 206 69% 96%;
-  --portal-akzent-deep: 204 86% 32%;
+  --portal-akzent-deep: 157 64% 25%;
   --portal-card-shadow: 0 2px 6px hsl(215 35% 20% / 0.025);
   --portal-soft-shadow: 0 1px 0 hsl(214 25% 88% / 0.65);
   background: hsl(var(--background));
@@ -129,7 +129,7 @@
 }
 .portal-ui[data-portal="kunde"] .portal-next-step {
   background: hsl(var(--portal-akzent-soft));
-  border: 1px solid hsl(205 60% 85%);
+  border: 1px solid hsl(157 45% 80%);
   border-left: 4px solid hsl(var(--primary));
   border-radius: 16px;
   box-shadow: none;
@@ -429,7 +429,7 @@
    their intended visual emphasis without duplicating nested padding. */
 .portal-ui[data-portal="kunde"] .portal-content .portal-step-summary {
   background: hsl(var(--portal-akzent-soft));
-  border-color: hsl(205 60% 85%);
+  border-color: hsl(157 45% 80%);
   border-left: 4px solid hsl(var(--primary));
 }
 .portal-ui[data-portal="kunde"] .portal-content :is(details.portal-card, .portal-card.p-0) {
@@ -471,14 +471,14 @@ body:has(.portal-ui[data-portal="kunde"]) :is([role="dialog"], [role="alertdialo
   --background: 0 0% 100%;
   --foreground: 216 19% 11%;
   --card: 0 0% 100%;
-  --primary: 204 92% 41%;
+  --primary: 157 69% 32%;
   --primary-foreground: 0 0% 100%;
   --popover: 0 0% 100%;
   --popover-foreground: 216 19% 11%;
   --border: 214 25% 88%;
   --muted: 214 30% 95%;
   --muted-foreground: 216 12% 40%;
-  --ring: 204 92% 41%;
+  --ring: 157 69% 32%;
 }
 body:has(.portal-ui[data-portal="kunde"]) :is([role="dialog"], [role="alertdialog"]) {
   border-radius: 16px;

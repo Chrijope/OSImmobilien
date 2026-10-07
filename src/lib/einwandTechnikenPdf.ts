@@ -8,7 +8,7 @@ import { generateSimpleDocPdf } from "./simpleDocPdf";
 export const generateBumerangTechnikPDF = () => generateSimpleDocPdf({
   title: "Bumerang-Technik",
   subtitle: "Einwände in Kaufargumente verwandeln",
-  filename: "MOREImmo_Technik_Bumerang.pdf",
+  filename: "OS-Immobilien_Technik_Bumerang.pdf",
   deckblatt: { kennung: "Einwandtechnik", titel: "Bumerang-Technik", untertitel: "Einwände in Kaufargumente verwandeln", nummer: "EIN-01" },
   blocks: [
     { type: "h2", text: "Was ist die Bumerang-Technik?" },
@@ -41,7 +41,7 @@ export const generateBumerangTechnikPDF = () => generateSimpleDocPdf({
 export const generateKontextwechselPDF = () => generateSimpleDocPdf({
   title: "Kontextwechsel-Technik",
   subtitle: "Einwände durch Perspektivwechsel entkräften",
-  filename: "MOREImmo_Technik_Kontextwechsel.pdf",
+  filename: "OS-Immobilien_Technik_Kontextwechsel.pdf",
   deckblatt: { kennung: "Einwandtechnik", titel: "Kontextwechsel-Technik", untertitel: "Einwände durch Perspektivwechsel entkräften", nummer: "EIN-02" },
   blocks: [
     { type: "h2", text: "Was ist die Kontextwechsel-Technik?" },
@@ -69,7 +69,7 @@ export const generateKontextwechselPDF = () => generateSimpleDocPdf({
 export const generateHypothetischeFragePDF = () => generateSimpleDocPdf({
   title: "Hypothetische-Frage-Technik",
   subtitle: "Einwände mit Konjunktiv ausräumen",
-  filename: "MOREImmo_Technik_Hypothetische_Frage.pdf",
+  filename: "OS-Immobilien_Technik_Hypothetische_Frage.pdf",
   deckblatt: { kennung: "Einwandtechnik", titel: "Hypothetische-Frage-Technik", untertitel: "Einwände mit Konjunktiv ausräumen", nummer: "EIN-03" },
   blocks: [
     { type: "h2", text: "Die Macht des 'Angenommen…'" },
@@ -94,7 +94,7 @@ export const generateHypothetischeFragePDF = () => generateSimpleDocPdf({
 export const generateVorwegnahmePDF = () => generateSimpleDocPdf({
   title: "Vorwegnahme-Technik",
   subtitle: "Einwände entwaffnen, bevor sie ausgesprochen werden",
-  filename: "MOREImmo_Technik_Vorwegnahme.pdf",
+  filename: "OS-Immobilien_Technik_Vorwegnahme.pdf",
   deckblatt: { kennung: "Einwandtechnik", titel: "Vorwegnahme-Technik", untertitel: "Einwände entwaffnen, bevor sie ausgesprochen werden", nummer: "EIN-04" },
   blocks: [
     { type: "h2", text: "Was ist die Vorwegnahme?" },
@@ -122,7 +122,7 @@ export const generateVorwegnahmePDF = () => generateSimpleDocPdf({
 export const generateIsolierendeFragePDF = () => generateSimpleDocPdf({
   title: "Isolierende-Frage-Technik",
   subtitle: "Den echten Einwand finden",
-  filename: "MOREImmo_Technik_Isolierende_Frage.pdf",
+  filename: "OS-Immobilien_Technik_Isolierende_Frage.pdf",
   deckblatt: { kennung: "Einwandtechnik", titel: "Isolierende-Frage-Technik", untertitel: "Den echten Einwand finden", nummer: "EIN-05" },
   blocks: [
     { type: "h2", text: "Warum isolieren?" },
@@ -148,7 +148,7 @@ export const generateIsolierendeFragePDF = () => generateSimpleDocPdf({
 export const generateReferenzTechnikPDF = () => generateSimpleDocPdf({
   title: "Referenz-Technik",
   subtitle: "Einwände mit sozialem Beweis entkräften",
-  filename: "MOREImmo_Technik_Referenz.pdf",
+  filename: "OS-Immobilien_Technik_Referenz.pdf",
   deckblatt: { kennung: "Einwandtechnik", titel: "Referenz-Technik", untertitel: "Einwände mit sozialem Beweis entkräften", nummer: "EIN-06" },
   blocks: [
     { type: "h2", text: "Warum Referenzen wirken" },
@@ -181,7 +181,7 @@ export const generateReferenzTechnikPDF = () => generateSimpleDocPdf({
 export const generateGegenfragePDF = () => generateSimpleDocPdf({
   title: "Gegenfrage-Technik",
   subtitle: "Den Einwand mit einer klugen Frage zurückspielen",
-  filename: "MOREImmo_Technik_Gegenfrage.pdf",
+  filename: "OS-Immobilien_Technik_Gegenfrage.pdf",
   deckblatt: { kennung: "Einwandtechnik", titel: "Gegenfrage-Technik", untertitel: "Den Einwand mit einer klugen Frage zurückspielen", nummer: "EIN-07" },
   blocks: [
     { type: "h2", text: "Wer fragt, der führt." },
@@ -204,7 +204,7 @@ export const generateGegenfragePDF = () => generateSimpleDocPdf({
 export const generateZerlegungsTechnikPDF = () => generateSimpleDocPdf({
   title: "Zerlegungs-Technik",
   subtitle: "Pauschale Einwände in Einzelteile zerlegen",
-  filename: "MOREImmo_Technik_Zerlegung.pdf",
+  filename: "OS-Immobilien_Technik_Zerlegung.pdf",
   deckblatt: { kennung: "Einwandtechnik", titel: "Zerlegungs-Technik", untertitel: "Pauschale Einwände in Einzelteile zerlegen", nummer: "EIN-08" },
   blocks: [
     { type: "h2", text: "Pauschale Einwände sind selten echt" },
@@ -228,7 +228,7 @@ export const generateZerlegungsTechnikPDF = () => generateSimpleDocPdf({
 export const generateZeitumkehrPDF = () => generateSimpleDocPdf({
   title: "Zeitumkehr-Technik",
   subtitle: "Den Einwand aus Sicht des zukünftigen Ich betrachten",
-  filename: "MOREImmo_Technik_Zeitumkehr.pdf",
+  filename: "OS-Immobilien_Technik_Zeitumkehr.pdf",
   deckblatt: { kennung: "Einwandtechnik", titel: "Zeitumkehr-Technik", untertitel: "Den Einwand aus Sicht des zukünftigen Ich betrachten", nummer: "EIN-09" },
   blocks: [
     { type: "h2", text: "Vom Heute ins Morgen springen" },
@@ -251,7 +251,7 @@ export const generateZeitumkehrPDF = () => generateSimpleDocPdf({
 export const generateZahlenZerlegungPDF = () => generateSimpleDocPdf({
   title: "Zahlen-Zerlegungs-Technik",
   subtitle: "Mit konkreten Zahlen Wirklichkeit schaffen",
-  filename: "MOREImmo_Technik_Zahlen.pdf",
+  filename: "OS-Immobilien_Technik_Zahlen.pdf",
   deckblatt: { kennung: "Einwandtechnik", titel: "Zahlen-Zerlegungs-Technik", untertitel: "Mit konkreten Zahlen Wirklichkeit schaffen", nummer: "EIN-10" },
   blocks: [
     { type: "h2", text: "Zahlen schlagen Meinungen" },
@@ -276,7 +276,7 @@ export const generateZahlenZerlegungPDF = () => generateSimpleDocPdf({
 export const generateAlleTechnikenPDF = () => generateSimpleDocPdf({
   title: "Alle 10 Einwandbehandlungs-Techniken",
   subtitle: "Das komplette Toolkit für den Vertrieb von Kapitalanlage-Immobilien",
-  filename: "MOREImmo_Alle_10_Techniken.pdf",
+  filename: "OS-Immobilien_Alle_10_Techniken.pdf",
   deckblatt: { kennung: "Einwandtechnik", titel: "Alle 10 Einwandbehandlungs-Techniken", untertitel: "Das komplette Toolkit für den Vertrieb von Kapitalanlage-Immobilien", nummer: "EIN-11" },
   blocks: [
     { type: "h2", text: "Vorwort" },

@@ -8,7 +8,7 @@ import { InfoTooltip } from "@/components/ui/info-tooltip";
 
 const ACT_COLORS: Record<string, string> = {
   anruf: "hsl(210 40% 55%)",
-  anruf_protokoll: "hsl(210 55% 45%)",
+  anruf_protokoll: "hsl(157 41% 35%)",
   email: "hsl(280 45% 55%)",
   meeting: "hsl(38 92% 50%)",
   meeting_protokoll: "hsl(43 70% 55%)",

@@ -220,9 +220,9 @@ describe("Altes Deck in der Übung: nur Teil 2", () => {
 
   it("hat die zusammengelegten und gestrichenen Folien nicht mehr", () => {
     zeichneDeck(2);
-    for (const weg of [/Das Betriebssystem/, /Unsere Mission/, /Warum MOREImmo/, /Produktwelten/,
+    for (const weg of [/Das Betriebssystem/, /Unsere Mission/, /Warum OS Immobilien/, /Produktwelten/,
       /Vom Profil zum Investment/, /Der Preis des Wartens/, /Dein eigener Leadkanal/,
-      /Die große Vision/, /Der MOREImmo Partner/, /Ehrlich gefragt/]) {
+      /Die große Vision/, /Der OS Immobilien Partner/, /Ehrlich gefragt/]) {
       expect(screen.queryByLabelText(weg)).not.toBeInTheDocument();
     }
     expect(screen.getByLabelText(/Du machst Vertrieb, wir den Rest/)).toBeInTheDocument();
@@ -231,7 +231,7 @@ describe("Altes Deck in der Übung: nur Teil 2", () => {
 
   it("zeigt auf der System-Folie die Ersparnis je Baustein, ohne Klick", () => {
     zeichneDeck(2);
-    fireEvent.click(screen.getByLabelText(/Das MOREImmo System/));
+    fireEvent.click(screen.getByLabelText(/Das OS Immobilien System/));
     expect(screen.getAllByText(/^Spart dir:/)).toHaveLength(8);
     expect(screen.getByText(/Spart dir: teure Software-Lizenzen und Entwicklungskosten/)).toBeInTheDocument();
     expect(screen.getByText(/Spart dir: den Start bei null/)).toBeInTheDocument();
@@ -280,7 +280,7 @@ describe("Altes Deck in der Übung: nur Teil 2", () => {
     fireEvent.click(screen.getByLabelText(/Dein Start/));
     expect(screen.getByText(/Gewerbeerlaubnis nach Paragraf 34c/)).toBeInTheDocument();
     expect(screen.getByText(/Vertrag kommt digital zur Unterschrift/)).toBeInTheDocument();
-    expect(screen.getByText(/Deine eigene MOREImmo E-Mail-Adresse/)).toBeInTheDocument();
+    expect(screen.getByText(/Deine eigene OS Immobilien E-Mail-Adresse/)).toBeInTheDocument();
   });
 });
 
@@ -359,7 +359,7 @@ describe("Altes Deck in der Übung: das ganze Deck ab Teil 1", () => {
     for (let i = 0; i < TEIL_1; i++) {
       expect(screen.queryByText(/Regie:/)).not.toBeInTheDocument();
       expect(screen.queryByText(/Punkten/)).not.toBeInTheDocument();
-      expect(screen.queryByText(/hier ist .* von MOREImmo/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/hier ist .* von OS Immobilien/)).not.toBeInTheDocument();
       expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
       weiter();
     }

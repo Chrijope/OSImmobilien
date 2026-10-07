@@ -55,7 +55,7 @@ type SeitenStatus = "laedt" | "bereit" | "unbekannt" | "fehler";
  * die Ansprechpartnerin, der Rahmen zum Nachlesen und der Ausstieg.
  *
  * **Wer am Zug ist, kommt aus dem Vorgang und nicht aus der Pipelinestufe.**
- * Eine offene Rückfrage macht MOREImmo zum Zugführer, obwohl der Bewerber
+ * Eine offene Rückfrage macht OS Immobilien zum Zugführer, obwohl der Bewerber
  * formal in der Stufe Eingang steht. Die Herleitung steht in
  * `src/lib/bewerberSeite.ts` und wird dort geprüft; diese Datei ist nur die
  * Bühne.
@@ -148,12 +148,12 @@ export default function BewerberSeite() {
     return (
       <Seite><Karte>
         <div className="text-center space-y-3 py-4">
-          <img src={logo} alt="MOREImmo" className="h-[26px] sm:h-[34px] mx-auto mb-5" />
+          <img src={logo} alt="OS Immobilien" className="h-[26px] sm:h-[34px] mx-auto mb-5" />
           <AlertTriangle className="h-8 w-8 mx-auto text-amber-500" aria-hidden />
           <h1 className="text-2xl" style={{ color: FARBE_DUNKEL }}>Diesen Link kennen wir nicht</h1>
           <p className="text-[15px] leading-relaxed" style={{ color: "#6E6E73" }}>
             Kein Problem. Schreib uns kurz an{" "}
-            <a href="mailto:office@more.immo" className="underline underline-offset-[3px]" style={{ color: FARBE_BLAU }}>office@more.immo</a>,
+            <a href="mailto:os@os-immobilien.com" className="underline underline-offset-[3px]" style={{ color: FARBE_BLAU }}>os@os-immobilien.com</a>,
             dann bekommst du einen neuen.
           </p>
         </div>
@@ -171,7 +171,7 @@ export default function BewerberSeite() {
   return (
     <Seite>
       <div className="w-full max-w-[1040px]">
-        <img src={logo} alt="MOREImmo" className="h-[26px] sm:h-[30px] mb-6" />
+        <img src={logo} alt="OS Immobilien" className="h-[26px] sm:h-[30px] mb-6" />
 
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:gap-5 lg:items-start">
           <div className="space-y-4">
@@ -223,7 +223,7 @@ export default function BewerberSeite() {
                     <Hauptknopf breit>Kennenlernen beginnen</Hauptknopf>
                   </Link>
                 ) : (
-                  <p className="rounded-2xl px-4 py-3 text-[14.5px] leading-relaxed" style={{ background: "#EEF5FD", color: "#0A5BB5" }}>
+                  <p className="rounded-2xl px-4 py-3 text-[14.5px] leading-relaxed" style={{ background: "#EEF5FD", color: "#156949" }}>
                     Dein Zugang zum Kennenlernen ist unterwegs. Er kommt per Mail, meist innerhalb
                     weniger Minuten.
                   </p>
@@ -376,7 +376,7 @@ export default function BewerberSeite() {
                     <p className="text-[15px] leading-relaxed" style={{ color: "#5A5F66" }}>
                       Von uns kommt keine weitere Nachricht. Wenn du es dir anders überlegst,
                       schreib uns gern an{" "}
-                      <a href="mailto:office@more.immo" className="underline underline-offset-[3px]" style={{ color: FARBE_BLAU }}>office@more.immo</a>.
+                      <a href="mailto:os@os-immobilien.com" className="underline underline-offset-[3px]" style={{ color: FARBE_BLAU }}>os@os-immobilien.com</a>.
                     </p>
                   </div>
                 </div>
@@ -508,7 +508,7 @@ export default function BewerberSeite() {
               <p className="text-[14px]" style={{ color: "#8A8F98" }}>{BERUF_HR}</p>
               <p className="text-[14.5px] leading-relaxed mt-2.5" style={{ color: "#5A5F66" }}>
                 Eine Person, von der ersten Minute bis zu deiner Entscheidung. Schreib ihr direkt an{" "}
-                <a href="mailto:office@more.immo" className="underline underline-offset-[3px]" style={{ color: FARBE_BLAU }}>office@more.immo</a>,
+                <a href="mailto:os@os-immobilien.com" className="underline underline-offset-[3px]" style={{ color: FARBE_BLAU }}>os@os-immobilien.com</a>,
                 das landet nicht in einem Sammelpostfach.
               </p>
             </Karte>
@@ -657,7 +657,7 @@ function Seite({ children }: { children: ReactNode }) {
       <div
         aria-hidden
         className="absolute inset-x-0 top-0 h-[300px] sm:h-[460px] pointer-events-none"
-        style={{ background: "radial-gradient(ellipse 55% 70% at 50% -12%, rgba(10,110,219,.16), transparent 66%)" }}
+        style={{ background: "radial-gradient(ellipse 55% 70% at 50% -12%, rgba(24,127,88,.16), transparent 66%)" }}
       />
       <div className="relative px-3.5 pt-4 pb-7 sm:px-6 sm:pt-11 sm:pb-16 flex flex-col items-center">
         {children}
@@ -686,7 +686,7 @@ function StationsZeile({ station }: { station: Station }) {
       className="flex items-start gap-3 rounded-2xl border px-4 py-3"
       style={{
         background: erledigt ? "#F4FAF6" : dran ? "#F3F8FE" : "#fff",
-        borderColor: erledigt ? "#DCEDE3" : dran ? "#D6E6F9" : "#EEF0F3",
+        borderColor: erledigt ? "#DCEDE3" : dran ? "#C1EEDD" : "#EEF0F3",
       }}
     >
       <span className="shrink-0 mt-0.5">
@@ -710,7 +710,7 @@ function StationsZeile({ station }: { station: Station }) {
         className="shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide"
         style={{
           background: erledigt ? "#DCEDE3" : dran ? "#DEEBFA" : "#F1F2F4",
-          color: erledigt ? "#1E7A45" : dran ? "#0A5BB5" : "#8A8F98",
+          color: erledigt ? "#1E7A45" : dran ? "#156949" : "#8A8F98",
         }}
       >
         {erledigt ? "erledigt" : dran ? "du bist dran" : "danach"}
@@ -728,7 +728,7 @@ function kopfAugenbraue(zustand: SeitenZustand): string {
     case "entscheidung": return "Das Gespräch ist gelaufen";
     case "start": return "Willkommen";
     case "beendet": return "Deine Bewerbung";
-    default: return "Deine Bewerbung bei MOREImmo";
+    default: return "Deine Bewerbung bei OS Immobilien";
   }
 }
 
@@ -811,7 +811,7 @@ const RAHMEN: { titel: string; text: string }[] = [
 const START_STATIONEN: { titel: string; text: string }[] = [
   {
     titel: "Zugang einrichten",
-    text: `${HR_ANSPRECHPARTNERIN}. CRM, Objektzugänge und deine MOREImmo-Adresse.`,
+    text: `${HR_ANSPRECHPARTNERIN}. CRM, Objektzugänge und deine OS Immobilien-Adresse.`,
   },
   {
     titel: "Pflichttraining",

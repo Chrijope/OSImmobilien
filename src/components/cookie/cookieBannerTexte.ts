@@ -41,11 +41,11 @@ const de = {
   partner: {
     titel: (name: string) => `Meta Pixel von ${name}`,
     text: (name: string, anschrift: string) =>
-      `Auf dieser Seite möchte ${name}, ${anschrift}, das Meta Pixel laden und deine Anfrage an Meta melden, um den Erfolg eigener Anzeigen auf Facebook und Instagram zu messen. Dafür sind ${name} und MOREImmo gemeinsam verantwortlich. Dabei gehen Daten an Meta Platforms Ireland. Deine Erlaubnis gilt nur für diesen Partner.`,
+      `Auf dieser Seite möchte ${name}, ${anschrift}, das Meta Pixel laden und deine Anfrage an Meta melden, um den Erfolg eigener Anzeigen auf Facebook und Instagram zu messen. Dafür sind ${name} und OS Immobilien gemeinsam verantwortlich. Dabei gehen Daten an Meta Platforms Ireland. Deine Erlaubnis gilt nur für diesen Partner.`,
   },
   /** Der kurze Hinweis im Fuß einer Partnerseite mit Meta Pixel. */
   fussHinweis: (name: string, anschrift: string) =>
-    `Gemeinsam verantwortlich für das Meta Pixel auf dieser Seite: ${name}, ${anschrift}, und MOREImmo.`,
+    `Gemeinsam verantwortlich für das Meta Pixel auf dieser Seite: ${name}, ${anschrift}, und OS Immobilien.`,
   fussLink: "Cookie-Einstellungen",
 };
 
@@ -80,10 +80,10 @@ const en: CookieBannerTexte = {
   partner: {
     titel: (name: string) => `Meta Pixel of ${name}`,
     text: (name: string, anschrift: string) =>
-      `On this page, ${name}, ${anschrift}, would like to load the Meta Pixel and report your enquiry to Meta in order to measure the performance of their own advertisements on Facebook and Instagram. ${name} and MOREImmo are joint controllers for this. Data is transferred to Meta Platforms Ireland. Your permission applies to this partner only.`,
+      `On this page, ${name}, ${anschrift}, would like to load the Meta Pixel and report your enquiry to Meta in order to measure the performance of their own advertisements on Facebook and Instagram. ${name} and OS Immobilien are joint controllers for this. Data is transferred to Meta Platforms Ireland. Your permission applies to this partner only.`,
   },
   fussHinweis: (name: string, anschrift: string) =>
-    `Joint controllers for the Meta Pixel on this page: ${name}, ${anschrift}, and MOREImmo.`,
+    `Joint controllers for the Meta Pixel on this page: ${name}, ${anschrift}, and OS Immobilien.`,
   fussLink: "Cookie settings",
 };
 

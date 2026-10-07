@@ -23,8 +23,8 @@ const de = {
     laden: "Seite wird geladen",
     nichtGefundenTitel: "Vertriebspartner nicht gefunden",
     nichtGefundenText: "Diese Seite existiert nicht oder wurde deaktiviert.",
-    nichtGefundenLink: "Weiter zu more.immo",
-    seoTitel: (name: string) => `${name}: Vermögensaufbau mit Immobilien | MOREImmo`,
+    nichtGefundenLink: "Weiter zu osimmobilien.netlify.app",
+    seoTitel: (name: string) => `${name}: Vermögensaufbau mit Immobilien | OS Immobilien`,
     seoBeschreibung: (name: string) =>
       `Persönliche Beratung von ${name}: Vermögen aufbauen, Steuern sparen und finanzielle Freiheit erreichen. Jetzt kostenloses Erstgespräch sichern.`,
   },
@@ -49,7 +49,7 @@ const de = {
       "Ich habe lange gezögert, in Immobilien zu investieren, zu komplex, dachte ich. Christian hat mir das Thema so klar erklärt, dass ich endlich Sicherheit hatte. Keine leeren Versprechen, sondern ehrliche Beratung mit Plan. Klare Empfehlung!",
       "Als Unternehmer war für mich klar, dass Immobilien ins Portfolio gehören. Aber das alleine stemmen? Keine Chance. Christian und sein Team haben den gesamten Prozess für mich übernommen, von der Objektauswahl bis zum Notar. Ich war beeindruckt, wie reibungslos alles lief.",
       "Eine Freundin hat es empfohlen und ich bin so froh, dass ich den Schritt gegangen bin. In weniger als sechs Wochen war ich Eigentümerin. Das Team war immer erreichbar und hat mich durch jeden Schritt geführt. Besser geht es nicht.",
-      "Ich habe schon mehrere Investments getätigt, aber die Qualität der Betreuung bei MOREImmo ist außergewöhnlich. Alles durchdacht, jede Frage beantwortet, kein Detail vergessen. Wer ernsthaft in Immobilien investieren möchte, ist hier genau richtig.",
+      "Ich habe schon mehrere Investments getätigt, aber die Qualität der Betreuung bei OS Immobilien ist außergewöhnlich. Alles durchdacht, jede Frage beantwortet, kein Detail vergessen. Wer ernsthaft in Immobilien investieren möchte, ist hier genau richtig.",
       "Ich habe den Schritt erst Ende 40 gewagt, und bereue nur, nicht früher angefangen zu haben. Die Steueroptimierung war ein Game Changer. Und das Beste: Ich muss mich um nichts kümmern. Es läuft einfach.",
     ],
     /** In der Reihenfolge der Zahlen in `SocialProofSection`. */
@@ -145,7 +145,7 @@ const de = {
     einleitung:
       "Andere verkaufen einzelne Produkte. Wir begleiten dich strategisch beim Aufbau eines ganzen Immobilien-Portfolios. Steueroptimiert, finanziert und verwaltet.",
     leistung: "Leistung",
-    spalten: ["Klassischer Makler", "Banking-Berater", "MOREImmo"],
+    spalten: ["Klassischer Makler", "Banking-Berater", "OS Immobilien"],
     empfohlen: "Empfohlen",
     /** In der Reihenfolge der Zeilen in `ComparisonSection`. */
     zeilen: [
@@ -238,7 +238,7 @@ const de = {
     rechtliches: "Rechtliches",
     impressum: "Impressum",
     datenschutz: "Datenschutz",
-    rechte: (jahr: number) => `© ${jahr} MOREImmo · Einzelunternehmen Christian Kurz. Alle Rechte vorbehalten.`,
+    rechte: (jahr: number) => `© ${jahr} OS Immobilien Holding GmbH. Alle Rechte vorbehalten.`,
     gemacht: "Made with care in Germany.",
   },
 };
@@ -250,8 +250,8 @@ const en: MikroseiteAbschlussTexte = {
     laden: "Loading page",
     nichtGefundenTitel: "Sales partner not found",
     nichtGefundenText: "This page does not exist or has been deactivated.",
-    nichtGefundenLink: "Continue to more.immo",
-    seoTitel: (name: string) => `${name}: Building wealth with property | MOREImmo`,
+    nichtGefundenLink: "Continue to osimmobilien.netlify.app",
+    seoTitel: (name: string) => `${name}: Building wealth with property | OS Immobilien`,
     seoBeschreibung: (name: string) =>
       `A personal consultation with ${name}: build wealth, save tax and work towards financial freedom. Book your free initial consultation now.`,
   },
@@ -275,7 +275,7 @@ const en: MikroseiteAbschlussTexte = {
       "I hesitated for a long time to invest in property; too complex, I thought. Christian explained it so clearly that I finally felt confident. No empty promises, just honest guidance with a plan. Highly recommended!",
       "As a business owner, it was clear to me that property belongs in my portfolio. But handling it all on my own? No chance. Christian and his team took over the entire process for me, from choosing the property to the notary. I was impressed by how smoothly everything went.",
       "A friend recommended it and I'm so glad I took the step. In less than six weeks I was a property owner. The team was always available and guided me through every step. It doesn't get any better.",
-      "I've made several investments before, but the quality of support at MOREImmo is exceptional. Everything well thought through, every question answered, no detail forgotten. If you're serious about investing in property, this is the right place.",
+      "I've made several investments before, but the quality of support at OS Immobilien is exceptional. Everything well thought through, every question answered, no detail forgotten. If you're serious about investing in property, this is the right place.",
       "I only took the plunge in my late forties, and my only regret is not starting sooner. The tax optimisation was a game changer. And the best part: I don't have to take care of anything. It just runs.",
     ],
     kennzahlen: ["Investors supported", "Units brokered", "Sales partners and staff", "Bank partners"],
@@ -370,7 +370,7 @@ const en: MikroseiteAbschlussTexte = {
     einleitung:
       "Others sell individual products. We support you strategically as you build an entire property portfolio. Tax-optimised, financed and managed.",
     leistung: "Service",
-    spalten: ["Traditional estate agent", "Bank consultant", "MOREImmo"],
+    spalten: ["Traditional estate agent", "Bank consultant", "OS Immobilien"],
     empfohlen: "Recommended",
     zeilen: [
       "Personal contact person for years",
@@ -427,7 +427,7 @@ const en: MikroseiteAbschlussTexte = {
   },
 
   schwebend: {
-    kopf: "Your contact person at MOREImmo",
+    kopf: "Your contact person at OS Immobilien",
     schliessen: "Close",
     buchen: "Book an initial call",
     mehr: "Find out more",
@@ -461,7 +461,7 @@ const en: MikroseiteAbschlussTexte = {
     impressum: "Legal notice (Impressum)",
     datenschutz: "Privacy policy",
     rechte: (jahr: number) =>
-      `© ${jahr} MOREImmo · Christian Kurz, sole proprietor (Einzelunternehmen). All rights reserved.`,
+      `© ${jahr} OS Immobilien Holding GmbH. All rights reserved.`,
     gemacht: "Made with care in Germany.",
   },
 };

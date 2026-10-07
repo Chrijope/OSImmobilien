@@ -239,17 +239,17 @@ describe("Die Zählmarke am persönlichen Link", () => {
   const TOKEN = "3f2a1b4c-5d6e-4f70-8192-a3b4c5d6e7f8";
 
   it("hängt die Marke an und lässt einen vorhandenen Parameter stehen", () => {
-    expect(mitZaehlmarke("https://portal.more.immo/kennenlernen/abc", TOKEN)).toBe(
-      `https://portal.more.immo/kennenlernen/abc?m=${TOKEN}`,
+    expect(mitZaehlmarke("https://osimmobilien.netlify.app/kennenlernen/abc", TOKEN)).toBe(
+      `https://osimmobilien.netlify.app/kennenlernen/abc?m=${TOKEN}`,
     );
-    expect(mitZaehlmarke("https://portal.more.immo/kennenlernen/abc?weg=2", TOKEN)).toBe(
-      `https://portal.more.immo/kennenlernen/abc?weg=2&m=${TOKEN}`,
+    expect(mitZaehlmarke("https://osimmobilien.netlify.app/kennenlernen/abc?weg=2", TOKEN)).toBe(
+      `https://osimmobilien.netlify.app/kennenlernen/abc?weg=2&m=${TOKEN}`,
     );
   });
 
   it("lässt den Link ohne gültige Marke unverändert", () => {
-    expect(mitZaehlmarke("https://portal.more.immo/x", undefined)).toBe("https://portal.more.immo/x");
-    expect(mitZaehlmarke("https://portal.more.immo/x", "kein-token")).toBe("https://portal.more.immo/x");
+    expect(mitZaehlmarke("https://osimmobilien.netlify.app/x", undefined)).toBe("https://osimmobilien.netlify.app/x");
+    expect(mitZaehlmarke("https://osimmobilien.netlify.app/x", "kein-token")).toBe("https://osimmobilien.netlify.app/x");
   });
 
   describe("meldeLinkAufruf", () => {
@@ -282,9 +282,9 @@ describe("Die Zählmarke am persönlichen Link", () => {
 describe("Weiterleitung nur auf eigene Adressen", () => {
   const SUPA = "https://irwdgutegmivbtgmftyc.supabase.co";
 
-  it("erlaubt more.immo, das Portal, die eigene Vorschau und den eigenen Speicher", () => {
-    expect(istEigenesWeiterleitungsziel("https://more.immo/", SUPA)).toBe(true);
-    expect(istEigenesWeiterleitungsziel("https://portal.more.immo/kennenlernen/x", SUPA)).toBe(true);
+  it("erlaubt osimmobilien.netlify.app, das Portal, die eigene Vorschau und den eigenen Speicher", () => {
+    expect(istEigenesWeiterleitungsziel("https://osimmobilien.netlify.app/", SUPA)).toBe(true);
+    expect(istEigenesWeiterleitungsziel("https://osimmobilien.netlify.app/kennenlernen/x", SUPA)).toBe(true);
     expect(
       istEigenesWeiterleitungsziel("https://id-preview-88ce1801--cd62347b-9ef0-43fe-a989-4d4a53a8c4ef.lovable.app/x", SUPA),
     ).toBe(true);
@@ -296,10 +296,10 @@ describe("Weiterleitung nur auf eigene Adressen", () => {
   it("weist fremde und getarnte Ziele ab", () => {
     for (const ziel of [
       "https://boese.example/",
-      "https://more.immo.boese.example/",
+      "https://osimmobilien.netlify.app.boese.example/",
       "https://boesemore.immo/",
-      "http://portal.more.immo/",
-      "https://portal.more.immo@boese.example/",
+      "http://osimmobilien.netlify.app/",
+      "https://osimmobilien.netlify.app@boese.example/",
       "https://fremd.lovable.app/",
       "https://x-cd62347b-9ef0-43fe-a989-4d4a53a8c4ef.lovable.app.boese.example/",
       `${SUPA}/functions/v1/track-bewerber-mail`,

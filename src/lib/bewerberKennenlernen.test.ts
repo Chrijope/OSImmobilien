@@ -173,7 +173,7 @@ describe("Der Aufbau des Bogens", () => {
      * Firma, bevor nach dem Beruf gefragt wird, und die Begründung für die
      * Frage, die unmittelbar folgt.
      */
-    expect(eins.absaetze?.[0]).toBe("MOREImmo ist ein Kapitalanlage-Vertrieb aus Rosenheim.");
+    expect(eins.absaetze?.[0]).toBe("OS Immobilien ist ein Kapitalanlage-Vertrieb aus Rosenheim.");
     expect(text).toContain("Als Erstes fragen wir dich, wo du herkommst.");
   });
 

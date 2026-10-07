@@ -8,7 +8,7 @@
  * ruft. Sie las `bewerberId` und `stage` aus dem Koerper und baute sofort
  * einen Client mit dem Dienstschluessel, der alle Zugriffsregeln der Datenbank
  * umgeht. Der Token der Gegenzeichnung wurde zwar in Stufe A erzeugt und per
- * Mail an `office@more.immo` verschickt, in Stufe B aber nie wieder angesehen.
+ * Mail an `os@os-immobilien.com` verschickt, in Stufe B aber nie wieder angesehen.
  *
  * Damit konnte jeder, der eine Bewerbungs-Id kannte, mit dem oeffentlichen
  * anon-Schluessel aus dem ausgelieferten Frontend-Code:

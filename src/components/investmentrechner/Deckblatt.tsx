@@ -50,7 +50,7 @@ function Kopf({ input, marke, sprache }: Pick<DeckblattProps, "input" | "marke" 
   return (
     <div className="expose-brand-row">
       <div className="brand-lockup dark-text">
-        <img className="brand-logo expose-logo" src={logoImg} alt="MORE Immo" />
+        <img className="brand-logo expose-logo" src={logoImg} alt="OS Immobilien" />
       </div>
       <div className="client-block">
         {name && <strong>{d.fuer(name)}</strong>}

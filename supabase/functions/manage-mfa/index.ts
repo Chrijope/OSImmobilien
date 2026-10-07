@@ -137,7 +137,7 @@ Deno.serve(async (req) => {
         // zu lassen. Der Text sagt zusätzlich, was ohne Code zu tun ist.
         return new Response(JSON.stringify({
           code: "mfa_bereits_aktiv",
-          error: "Die Zwei-Faktor-Authentifizierung ist für dieses Konto bereits aktiviert. Bitte gib den 6-stelligen Code aus deiner Authenticator-App ein. Wenn du keinen Code erzeugen kannst, weil dir das Handy oder die App fehlt, löse auf dem Codebildschirm unter \"Kein Code zur Hand?\" einen deiner Wiederherstellungscodes ein. Hast du auch den nicht mehr, melde dich bitte bei deinem Ansprechpartner bei MORE Immo.",
+          error: "Die Zwei-Faktor-Authentifizierung ist für dieses Konto bereits aktiviert. Bitte gib den 6-stelligen Code aus deiner Authenticator-App ein. Wenn du keinen Code erzeugen kannst, weil dir das Handy oder die App fehlt, löse auf dem Codebildschirm unter \"Kein Code zur Hand?\" einen deiner Wiederherstellungscodes ein. Hast du auch den nicht mehr, melde dich bitte bei deinem Ansprechpartner bei OS Immobilien.",
         }), {
           status: 409,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -160,7 +160,7 @@ Deno.serve(async (req) => {
 
       const { data, error } = await userClient.auth.mfa.enroll({
         factorType: "totp",
-        friendlyName: body.friendlyName || "MOREImmo CRM",
+        friendlyName: body.friendlyName || "OS Immobilien CRM",
       });
       if (error) {
         console.error("manage-mfa enroll: enroll failed", error.message);
@@ -505,7 +505,7 @@ Deno.serve(async (req) => {
       if (fehlgeschlagen > 0 && entfernt === 0) {
         return new Response(JSON.stringify({
           code: "mfa_reset_fehlgeschlagen",
-          error: "Der Code war gültig, die Zwei-Faktor-Authentifizierung konnte aber nicht zurückgesetzt werden. Bitte melde dich bei deinem Ansprechpartner bei MORE Immo.",
+          error: "Der Code war gültig, die Zwei-Faktor-Authentifizierung konnte aber nicht zurückgesetzt werden. Bitte melde dich bei deinem Ansprechpartner bei OS Immobilien.",
         }), {
           status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });

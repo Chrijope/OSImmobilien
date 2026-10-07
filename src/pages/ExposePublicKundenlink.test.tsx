@@ -94,7 +94,7 @@ describe("abgelaufener oder zurückgezogener Link", () => {
   it("zeigt ohne Partner die allgemeine Adresse, nie eine Sackgasse", async () => {
     t.antwort = { status: 410, body: { abgelaufen: true } };
     renderMit(`/expose/o1?token=${TOKEN}`);
-    expect(await screen.findByTestId("abgelaufen-email")).toHaveAttribute("href", "mailto:office@more.immo");
+    expect(await screen.findByTestId("abgelaufen-email")).toHaveAttribute("href", "mailto:os@os-immobilien.com");
   });
 });
 

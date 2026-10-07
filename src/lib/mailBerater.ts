@@ -5,7 +5,7 @@
  * seinen Namen gesucht, jede auf eigene Weise. Ging der Vergleich ins Leere,
  * blieben Adresse, Bezeichnung und Bild leer, und die Vorlage unterschrieb
  * mit der allgemeinen Firmenadresse. Christian bekam so eine Einladung, unter
- * der "Ansprechpartner bei MOREImmo" und office@more.immo standen, obwohl er
+ * der "Ansprechpartner bei OS Immobilien" und os@os-immobilien.com standen, obwohl er
  * selbst der Berater war.
  *
  * Der Name ist dafuer die falsche Quelle und hat im Projekt schon dreimal

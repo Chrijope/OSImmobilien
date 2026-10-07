@@ -222,7 +222,7 @@ Deno.serve(async (req) => {
 
   // Die oeffentliche Adresse der Anwendung. Sie steht als Geheimnis, damit eine
   // andere Umgebung nicht auf das Portal zeigt.
-  const basisAdresse = (Deno.env.get('APP_BASE_URL') || 'https://portal.more.immo').trim()
+  const basisAdresse = (Deno.env.get('APP_BASE_URL') || 'https://osimmobilien.netlify.app').trim()
 
   const supabase = createClient(supabaseUrl, serviceKey)
 

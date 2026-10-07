@@ -1,7 +1,7 @@
 /**
  * Grundgebühr-Pakete für das Bewerbungsmanagement.
  *
- * Diese Pakete sind das B2B-Verkaufsmodell der MOREImmo-Plattform an
+ * Diese Pakete sind das B2B-Verkaufsmodell der OS Immobilien-Plattform an
  * selbständige Vertriebspartner. Sie sind UNABHÄNGIG von den internen Karrierestufen
  * (Tippgeber / Vertriebspartner / Manager / Vertriebsfirma) der eigenen VPs.
  *
@@ -315,7 +315,7 @@ export const LIZENZ_PAKETE: LizenzPaket[] = [
     monatlich: ALT_CRM_MONATLICH_EUR,
     laufzeitMonate: ALT_CRM_LAUFZEIT_MONATE,
     emoji: "👑",
-    kurz: "Eigene Vertriebsfirma unter MOREImmo",
+    kurz: "Eigene Vertriebsfirma unter OS Immobilien",
     zielgruppe: "Etablierte Vertriebsstrukturen",
     provisionssatz: 5,
     // Strukturvergütung nur, solange die Overhead-Provision aktiv ist.

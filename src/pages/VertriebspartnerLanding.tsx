@@ -183,7 +183,7 @@ const ChatAnimation = () => {
     <div ref={ref} className="mx-auto max-w-md rounded-2xl border border-border/60 bg-card p-5 shadow-xl">
       <div className="mb-4 flex items-center gap-2 border-b border-border/40 pb-3">
         <div className="h-3 w-3 animate-pulse rounded-full bg-emerald-500" />
-        <span className="text-sm font-semibold text-foreground">MOREImmo Team Chat</span>
+        <span className="text-sm font-semibold text-foreground">OS Immobilien Team Chat</span>
         <span className="ml-auto text-xs text-muted-foreground">Ohne Warteschleife</span>
       </div>
       <div className="min-h-[280px] space-y-3">
@@ -486,12 +486,12 @@ const ZufriedenheitsRing = () => {
           <circle cx="60" cy="60" r="52" fill="none" stroke="hsl(215 16% 28%)" strokeWidth="7" />
           <circle
             cx="60" cy="60" r="52" fill="none"
-            stroke="#88CFFF" strokeWidth="7" strokeLinecap="round"
+            stroke="#30E19E" strokeWidth="7" strokeLinecap="round"
             pathLength={100} className="vp-ring-bogen"
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span ref={ref} className="text-3xl font-bold text-[#88CFFF]">{display}</span>
+          <span ref={ref} className="text-3xl font-bold text-[#30E19E]">{display}</span>
         </div>
       </div>
       <div className="mt-2 text-sm text-slate-400">Partnerzufriedenheit</div>
@@ -536,15 +536,15 @@ const SchnittAbschnitt = ({ lesart }: { lesart: Lesart }) => {
           </Badge>
           <h2 className={`text-3xl font-bold tracking-tight transition-colors duration-200 md:text-4xl ${hell ? "text-foreground" : "text-white"}`}>
             {istTG ? (
-              <>Empfehlen kannst Du schon. <span className="bg-gradient-to-r from-[#0466A9] to-[#0C99F9] bg-clip-text text-transparent">Ab jetzt lohnt es sich.</span></>
+              <>Empfehlen kannst Du schon. <span className="bg-gradient-to-r from-[#13704D] to-[#1CA873] bg-clip-text text-transparent">Ab jetzt lohnt es sich.</span></>
             ) : (
-              <>Es liegt nicht an Dir. <span className="bg-gradient-to-r from-[#0466A9] to-[#0C99F9] bg-clip-text text-transparent">Es liegt am System.</span></>
+              <>Es liegt nicht an Dir. <span className="bg-gradient-to-r from-[#13704D] to-[#1CA873] bg-clip-text text-transparent">Es liegt am System.</span></>
             )}
           </h2>
           <p className={`mt-4 leading-relaxed transition-colors duration-200 ${hell ? "text-muted-foreground" : "text-slate-400"}`}>
             {istTG
               ? "Deine Empfehlungen haben immer schon Wert geschaffen. Ab jetzt fließt ein Teil davon zu Dir zurück."
-              : "Dieselbe Person, dieselbe Arbeit, ein anderes System. Und damit ein anderes Ergebnis. Genau dafür haben wir MOREImmo gebaut."}
+              : "Dieselbe Person, dieselbe Arbeit, ein anderes System. Und damit ein anderes Ergebnis. Genau dafür haben wir OS Immobilien gebaut."}
           </p>
         </div>
 
@@ -810,7 +810,7 @@ const VertriebspartnerLanding = () => {
         name: "Dr. Stefan K.",
         rolle: "Senior Partner seit 2023",
         vorher: "Vorher: 20 Jahre Bankenvertrieb, am Ende ausgebrannt und desillusioniert. Wollte alles hinwerfen.",
-        jetzt: "Heute: MOREImmo ist mein Hauptstandbein. Qualität der Objekte und Kultur im Team haben mich zurückgeholt.",
+        jetzt: "Heute: OS Immobilien ist mein Hauptstandbein. Qualität der Objekte und Kultur im Team haben mich zurückgeholt.",
       },
       {
         id: "anna",
@@ -980,7 +980,7 @@ const VertriebspartnerLanding = () => {
       <header data-lg="kopfscheibe" className="sticky top-0 z-30 border-b border-border/40 bg-background/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-6 py-4">
           <Link to="/karriere" className="flex shrink-0 items-center gap-3">
-            <img src={logoImg} alt="MOREImmo" className="h-9 object-contain" />
+            <img src={logoImg} alt="OS Immobilien" className="h-9 object-contain" />
           </Link>
           <div className="flex min-w-0 items-center gap-2">
             {gewaehlt && (
@@ -1040,7 +1040,7 @@ const VertriebspartnerLanding = () => {
                   <Worte
                     text="Verdiene mit."
                     offset={220}
-                    className="bg-gradient-to-r from-[#0466A9] to-[#0C99F9] bg-clip-text text-transparent"
+                    className="bg-gradient-to-r from-[#13704D] to-[#1CA873] bg-clip-text text-transparent"
                   />
                 </>
               )}
@@ -1050,7 +1050,7 @@ const VertriebspartnerLanding = () => {
                   <Worte
                     text="Jetzt fehlt das richtige System."
                     offset={260}
-                    className="bg-gradient-to-r from-[#0466A9] to-[#0C99F9] bg-clip-text text-transparent"
+                    className="bg-gradient-to-r from-[#13704D] to-[#1CA873] bg-clip-text text-transparent"
                   />
                 </>
               )}
@@ -1060,7 +1060,7 @@ const VertriebspartnerLanding = () => {
                   <Worte
                     text="Dein Einstieg in Immobilien."
                     offset={300}
-                    className="bg-gradient-to-r from-[#0466A9] to-[#0C99F9] bg-clip-text text-transparent"
+                    className="bg-gradient-to-r from-[#13704D] to-[#1CA873] bg-clip-text text-transparent"
                   />
                 </>
               )}
@@ -1070,7 +1070,7 @@ const VertriebspartnerLanding = () => {
                   <Worte
                     text="Vertriebspartner"
                     offset={120}
-                    className="bg-gradient-to-r from-[#0466A9] to-[#0C99F9] bg-clip-text text-transparent"
+                    className="bg-gradient-to-r from-[#13704D] to-[#1CA873] bg-clip-text text-transparent"
                   />{" "}
                   <Worte text="für Immobilien." offset={240} />
                 </>
@@ -1169,7 +1169,7 @@ const VertriebspartnerLanding = () => {
             <Badge variant="outline" className="mb-3 border-red-400/40 text-red-300">Kennst Du das?</Badge>
             <h2 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
               {isTG ? "Was Du dabei verschenkst." : "Was Dich in diesem System hält."}{" "}
-              <span className="text-[#88CFFF]">
+              <span className="text-[#30E19E]">
                 {isTG ? "Und an wen." : "Und was es Dich kostet."}
               </span>
             </h2>
@@ -1241,7 +1241,7 @@ const VertriebspartnerLanding = () => {
                 <Badge variant="outline" className="mb-3">Das System</Badge>
                 <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
                   Das ist unser System. Es fängt bei der{" "}
-                  <span className="bg-gradient-to-r from-[#0466A9] to-[#0C99F9] bg-clip-text text-transparent">Immobilie</span> an.
+                  <span className="bg-gradient-to-r from-[#13704D] to-[#1CA873] bg-clip-text text-transparent">Immobilie</span> an.
                 </h2>
                 <p className="mt-4 leading-relaxed text-muted-foreground">
                   Wir vermitteln nicht, was gerade am Markt ist. Entweder kaufen wir ein Objekt selbst an und
@@ -1279,9 +1279,9 @@ const VertriebspartnerLanding = () => {
             <Badge variant="outline" className="mb-3">{isTG ? "So einfach ist es" : "Arbeitsteilung"}</Badge>
             <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
               {isTG ? (
-                <>Du gibst den Tipp. <span className="bg-gradient-to-r from-[#0466A9] to-[#0C99F9] bg-clip-text text-transparent">Alles danach machen wir.</span></>
+                <>Du gibst den Tipp. <span className="bg-gradient-to-r from-[#13704D] to-[#1CA873] bg-clip-text text-transparent">Alles danach machen wir.</span></>
               ) : (
-                <>Du verkaufst. <span className="bg-gradient-to-r from-[#0466A9] to-[#0C99F9] bg-clip-text text-transparent">Wir räumen Dir den Tisch frei.</span></>
+                <>Du verkaufst. <span className="bg-gradient-to-r from-[#13704D] to-[#1CA873] bg-clip-text text-transparent">Wir räumen Dir den Tisch frei.</span></>
               )}
             </h2>
           </Reveal>
@@ -1317,7 +1317,7 @@ const VertriebspartnerLanding = () => {
                 <Badge variant="outline" className="mb-3">Vergleich</Badge>
                 <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
                   Allein stolpern. Oder{" "}
-                  <span className="bg-gradient-to-r from-[#0466A9] to-[#0C99F9] bg-clip-text text-transparent">im System ankommen.</span>
+                  <span className="bg-gradient-to-r from-[#13704D] to-[#1CA873] bg-clip-text text-transparent">im System ankommen.</span>
                 </h2>
               </Reveal>
               <div className="mx-auto grid max-w-5xl gap-6 md:grid-cols-2">
@@ -1356,7 +1356,7 @@ const VertriebspartnerLanding = () => {
                   <Card className="h-full border-primary/30 bg-card/60 p-7 ring-2 ring-primary/20">
                     <div className="mb-5 flex items-center gap-2">
                       <CheckCircle className="h-6 w-6 text-primary" />
-                      <h3 className="text-lg font-bold text-primary">Mit MOREImmo · Der direkte Weg</h3>
+                      <h3 className="text-lg font-bold text-primary">Mit OS Immobilien · Der direkte Weg</h3>
                     </div>
                     <ul className="space-y-3">
                       {[
@@ -1395,7 +1395,7 @@ const VertriebspartnerLanding = () => {
               ) : (
                 <>
                   Vom ersten Tag bis zum{" "}
-                  <span className="bg-gradient-to-r from-[#0466A9] to-[#0C99F9] bg-clip-text text-transparent">eigenen Kundenstamm</span>.
+                  <span className="bg-gradient-to-r from-[#13704D] to-[#1CA873] bg-clip-text text-transparent">eigenen Kundenstamm</span>.
                 </>
               )}
             </h2>
@@ -1544,7 +1544,7 @@ const VertriebspartnerLanding = () => {
             <Badge variant="outline" className="mb-3">Match-Check</Badge>
             <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
               Passen wir{" "}
-              <span className="bg-gradient-to-r from-[#0466A9] to-[#0C99F9] bg-clip-text text-transparent">zusammen?</span>
+              <span className="bg-gradient-to-r from-[#13704D] to-[#1CA873] bg-clip-text text-transparent">zusammen?</span>
             </h2>
             <p className="mt-3 text-muted-foreground">
               Wir suchen niemanden, der Druck macht, sondern Menschen mit Substanz und klarer Sprache.
@@ -1616,7 +1616,7 @@ const VertriebspartnerLanding = () => {
               <WortRevealBeiSicht
                 text="ob es passt."
                 offset={180}
-                className="bg-gradient-to-r from-[#0466A9] to-[#0C99F9] bg-clip-text text-transparent"
+                className="bg-gradient-to-r from-[#13704D] to-[#1CA873] bg-clip-text text-transparent"
               />
             </h2>
             <p className="mx-auto mb-4 max-w-xl leading-relaxed text-muted-foreground">
@@ -1648,7 +1648,7 @@ const VertriebspartnerLanding = () => {
           <div className="mb-10 text-center">
             <Badge variant="outline" className="mb-3">Jetzt bewerben</Badge>
             <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-              {isTG ? "Werde Tippgeber bei MOREImmo" : "Werde selbstständiger Vertriebspartner bei MOREImmo"}
+              {isTG ? "Werde Tippgeber bei OS Immobilien" : "Werde selbstständiger Vertriebspartner bei OS Immobilien"}
             </h2>
             <p className="mt-3 text-muted-foreground">
               {isTG
@@ -1707,12 +1707,12 @@ const VertriebspartnerLanding = () => {
       {/* Footer */}
       <footer className="border-t border-border/40 bg-card/40 backdrop-blur-sm">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-8 sm:flex-row">
-          <img src={logoImg} alt="MOREImmo" className="h-7 object-contain opacity-60" />
+          <img src={logoImg} alt="OS Immobilien" className="h-7 object-contain opacity-60" />
           <div className="flex items-center gap-5 text-xs text-muted-foreground">
             <Link to="/impressum" className="hover:text-foreground">Impressum</Link>
             <Link to="/datenschutz" className="hover:text-foreground">Datenschutz</Link>
             <CookieEinstellungenLink className="hover:text-foreground" />
-            <span>© {new Date().getFullYear()} MOREImmo · Einzelunternehmen Christian Kurz</span>
+            <span>© {new Date().getFullYear()} OS Immobilien Holding GmbH</span>
           </div>
         </div>
       </footer>

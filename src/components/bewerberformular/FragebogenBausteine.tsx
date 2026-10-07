@@ -27,13 +27,13 @@ export type BausteinFrage = {
  *
  * Vorbild ist der Lead-Funnel der Landingpage: Segmentbalken, Kacheln mit
  * kräftigem Rand, dunkler Weiter-Knopf, Zurück als Textlink. Farben sind die
- * Hausfarben #0F1621 und #0A6EDB, mobil zuerst. Alle Bausteine sind mit der
+ * Hausfarben #0F1621 und #187F58, mobil zuerst. Alle Bausteine sind mit der
  * Tastatur bedienbar: Kacheln sind Knöpfe mit Radio- oder Checkbox-Rolle.
  */
 
 export const FARBE_DUNKEL = "#0F1621";
-export const FARBE_BLAU = "#0A6EDB";
-const FARBE_ZUSATZ = "#8FC3F5";
+export const FARBE_BLAU = "#187F58";
+const FARBE_ZUSATZ = "#47D59F";
 const FARBE_OFFEN = "#E4E6EB";
 
 /** Ein Segment je sichtbarer Frage. Bedingte Zusatzfragen erscheinen hellblau, bis sie dran sind. */
@@ -67,7 +67,7 @@ export function Fortschritt({
             className="h-1.5 flex-1 rounded-full transition-all duration-300"
             style={{
               background: erledigt || aktuell ? FARBE_BLAU : zusatz ? FARBE_ZUSATZ : FARBE_OFFEN,
-              boxShadow: aktuell ? "0 0 0 3px rgba(10,110,219,.18)" : undefined,
+              boxShadow: aktuell ? "0 0 0 3px rgba(24,127,88,.18)" : undefined,
             }}
           />
         );
@@ -88,9 +88,9 @@ export function Eyebrow({ children }: { children: ReactNode }) {
 
 const KACHEL_BASIS =
   "flex items-center gap-3 w-full text-left rounded-2xl border-2 px-4 py-3 min-h-[56px] text-[15px] font-medium leading-snug transition-all duration-200 " +
-  "focus:outline-none focus-visible:ring-4 focus-visible:ring-[#0A6EDB]/20";
-const KACHEL_AN = "border-[#0A6EDB] bg-[#F0F7FF] shadow-[0_6px_16px_-8px_rgba(10,110,219,.45)]";
-const KACHEL_AUS = "border-[#E4E6EB] bg-white hover:border-[#0A6EDB]/40 hover:bg-[#F5F5F7]";
+  "focus:outline-none focus-visible:ring-4 focus-visible:ring-[#187F58]/20";
+const KACHEL_AN = "border-[#187F58] bg-[#F0F7FF] shadow-[0_6px_16px_-8px_rgba(24,127,88,.45)]";
+const KACHEL_AUS = "border-[#E4E6EB] bg-white hover:border-[#187F58]/40 hover:bg-[#F5F5F7]";
 
 /** Zwei Spalten, wenn alle Beschriftungen kurz sind. Lange Sätze bleiben einspaltig. */
 function zweiSpaltig(optionen: BausteinOption[]): boolean {
@@ -275,7 +275,7 @@ export function Skala({
         className="fb-regler mt-5 w-full"
         style={{
           background: gesetzt
-            ? `linear-gradient(90deg, #5CB0FF 0%, ${FARBE_BLAU} ${anteil}%, ${FARBE_OFFEN} ${anteil}%, ${FARBE_OFFEN} 100%)`
+            ? `linear-gradient(90deg, #1CC283 0%, ${FARBE_BLAU} ${anteil}%, ${FARBE_OFFEN} ${anteil}%, ${FARBE_OFFEN} 100%)`
             : FARBE_OFFEN,
         }}
         data-gesetzt={gesetzt ? "ja" : "nein"}
@@ -289,7 +289,7 @@ export function Skala({
               key={o.value}
               type="button"
               onClick={() => onWaehle(o.value)}
-              className="rounded-lg px-0.5 py-1 text-center text-[12px] sm:text-[13px] leading-tight transition-colors focus:outline-none focus-visible:ring-4 focus-visible:ring-[#0A6EDB]/20"
+              className="rounded-lg px-0.5 py-1 text-center text-[12px] sm:text-[13px] leading-tight transition-colors focus:outline-none focus-visible:ring-4 focus-visible:ring-[#187F58]/20"
               style={{ color: aktiv ? FARBE_BLAU : "#8A8F98", fontWeight: aktiv ? 600 : 500 }}
             >
               {o.label}
@@ -303,8 +303,8 @@ export function Skala({
           type="button"
           aria-pressed={wert === extra.value}
           onClick={() => onWaehle(extra.value)}
-          className={`mt-5 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border-[1.5px] text-sm font-medium transition-colors focus:outline-none focus-visible:ring-4 focus-visible:ring-[#0A6EDB]/20 ${
-            wert === extra.value ? "border-[#0A6EDB] bg-[#F0F7FF]" : "border-dashed border-[#C9CED6] hover:bg-[#F5F5F7]"
+          className={`mt-5 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border-[1.5px] text-sm font-medium transition-colors focus:outline-none focus-visible:ring-4 focus-visible:ring-[#187F58]/20 ${
+            wert === extra.value ? "border-[#187F58] bg-[#F0F7FF]" : "border-dashed border-[#C9CED6] hover:bg-[#F5F5F7]"
           }`}
           style={{ color: wert === extra.value ? FARBE_DUNKEL : "#6E6E73" }}
         >
@@ -321,12 +321,12 @@ export function Skala({
       */}
       <style>{`
 .fb-regler { -webkit-appearance: none; appearance: none; height: 8px; border-radius: 999px; outline: none; cursor: pointer; }
-.fb-regler::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 28px; height: 28px; border-radius: 999px; background: #fff; border: 4px solid ${FARBE_BLAU}; box-shadow: 0 2px 10px -2px rgba(10,110,219,.55); cursor: grab; transition: transform .15s ease; }
-.fb-regler::-moz-range-thumb { width: 28px; height: 28px; border-radius: 999px; background: #fff; border: 4px solid ${FARBE_BLAU}; box-shadow: 0 2px 10px -2px rgba(10,110,219,.55); cursor: grab; }
+.fb-regler::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 28px; height: 28px; border-radius: 999px; background: #fff; border: 4px solid ${FARBE_BLAU}; box-shadow: 0 2px 10px -2px rgba(24,127,88,.55); cursor: grab; transition: transform .15s ease; }
+.fb-regler::-moz-range-thumb { width: 28px; height: 28px; border-radius: 999px; background: #fff; border: 4px solid ${FARBE_BLAU}; box-shadow: 0 2px 10px -2px rgba(24,127,88,.55); cursor: grab; }
 .fb-regler[data-gesetzt="nein"]::-webkit-slider-thumb { border-color: #C9CED6; box-shadow: none; }
 .fb-regler[data-gesetzt="nein"]::-moz-range-thumb { border-color: #C9CED6; box-shadow: none; }
-.fb-regler:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 6px rgba(10,110,219,.22); }
-.fb-regler:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 6px rgba(10,110,219,.22); }
+.fb-regler:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 6px rgba(24,127,88,.22); }
+.fb-regler:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 6px rgba(24,127,88,.22); }
 .fb-regler:active::-webkit-slider-thumb { transform: scale(1.08); }
 @media (prefers-reduced-motion: reduce) { .fb-regler::-webkit-slider-thumb { transition: none; } }
       `}</style>
@@ -336,7 +336,7 @@ export function Skala({
 
 const FELD_BASIS =
   "w-full rounded-2xl border-2 border-[#E4E6EB] bg-white px-4 py-3.5 text-base leading-normal transition-all " +
-  "placeholder:text-[#9AA0A8] focus:outline-none focus:border-[#0A6EDB] focus:shadow-[0_0_0_4px_rgba(10,110,219,.12)]";
+  "placeholder:text-[#9AA0A8] focus:outline-none focus:border-[#187F58] focus:shadow-[0_0_0_4px_rgba(24,127,88,.12)]";
 
 /** Einzeiliges Feld. Enter geht weiter, wenn etwas drinsteht. Schrift 16px, damit das Handy nicht zoomt. */
 export function Kurztext({
@@ -411,7 +411,7 @@ export function Freitext({
 
 const KNOPF_BASIS =
   "inline-flex items-center justify-center gap-2 rounded-[14px] text-white " +
-  "transition-all duration-200 disabled:opacity-40 focus:outline-none focus-visible:ring-4 focus-visible:ring-[#0A6EDB]/30";
+  "transition-all duration-200 disabled:opacity-40 focus:outline-none focus-visible:ring-4 focus-visible:ring-[#187F58]/30";
 
 /**
  * Der Hauptknopf, volle Breite auf dem Handy.
@@ -455,8 +455,8 @@ export function Hauptknopf({
         (blau ? "hover:brightness-[1.06] hover:-translate-y-px" : "")
       }
       style={{
-        background: blau ? `linear-gradient(180deg, #2E8AE8 0%, ${FARBE_BLAU} 100%)` : FARBE_DUNKEL,
-        boxShadow: blau ? "0 14px 30px -14px rgba(10,110,219,.75)" : undefined,
+        background: blau ? `linear-gradient(180deg, #26996D 0%, ${FARBE_BLAU} 100%)` : FARBE_DUNKEL,
+        boxShadow: blau ? "0 14px 30px -14px rgba(24,127,88,.75)" : undefined,
       }}
     >
       {children}
@@ -485,7 +485,7 @@ export function EinfahrKasten({
 }) {
   const farben = ton === "bernstein"
     ? { hintergrund: "#FDF6E7", text: "#8A5B08", titel: "#6B4405" }
-    : { hintergrund: "#EEF5FD", text: "#0A5BB5", titel: "#08498F" };
+    : { hintergrund: "#EEF5FD", text: "#156949", titel: "#11543A" };
   return (
     <div
       role="status"
@@ -533,7 +533,7 @@ export function SchrittFuss({
       <button
         type="button"
         onClick={onZurueck}
-        className="inline-flex items-center justify-center gap-1.5 text-[15px] font-medium rounded-lg py-1 transition-colors hover:text-[#0F1621] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#0A6EDB]/20"
+        className="inline-flex items-center justify-center gap-1.5 text-[15px] font-medium rounded-lg py-1 transition-colors hover:text-[#0F1621] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#187F58]/20"
         style={{ color: "#6E6E73" }}
       >
         <ArrowLeft className="w-4 h-4" aria-hidden /> Zurück
@@ -543,7 +543,7 @@ export function SchrittFuss({
           <button
             type="button"
             onClick={onUeberspringen}
-            className="text-sm underline underline-offset-[3px] text-center rounded-lg py-1 transition-colors hover:text-[#0F1621] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#0A6EDB]/20"
+            className="text-sm underline underline-offset-[3px] text-center rounded-lg py-1 transition-colors hover:text-[#0F1621] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#187F58]/20"
             style={{ color: "#6E6E73" }}
           >
             {ueberspringenText}

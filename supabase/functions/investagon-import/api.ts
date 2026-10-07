@@ -52,7 +52,7 @@ const BAUTRAEGER: Record<string, string> = {
   "_3": "Erfolg mit...",
   "_4": "Immoheld",
   "_5": "Solidum",
-  "_6": "More Immo (eigener Bestand)",
+  "_6": "OS Immobilien (eigener Bestand)",
 };
 
 /**
@@ -69,10 +69,10 @@ const BAUTRAEGER: Record<string, string> = {
  *   Slot 3 (_3)          = Erfolg mit... (Token + Org-ID)
  *   Slot 4 (_4)          = Immoheld      (Token + Org-ID)
  *   Slot 5 (_5)          = Solidum       (Token + Org-ID)
- *   Slot 6 (_6)          = More Immo     (Token + Org-ID), der eigene Bestand
+ *   Slot 6 (_6)          = OS Immobilien     (Token + Org-ID), der eigene Bestand
  *
  * Slot 6 kam am 16.09.2026 dazu. Anlass: In der Investagon-Organisation von
- * More Immo stehen die Projekte der Bautraeger ohnehin nebeneinander, auch die
+ * OS Immobilien stehen die Projekte der Bautraeger ohnehin nebeneinander, auch die
  * von Lehner und Solidum, deren eigene Zugaenge abgewiesen werden, und
  * zusaetzlich die von FMD Invest und Dinglreiter Heise, fuer die es gar keinen
  * Platz gibt. Der eigene Zugang fehlte als einziger. Ob er die Fremdzugaenge

@@ -479,7 +479,7 @@ export function VertragsTab({ bewerber: b, canEdit, hrName, onRefresh }: Props) 
       // Wortlaut in _shared/lead-paket-rechnung-mail.ts; finalize-vertrag
       // liest beide für den digitalen Weg.
       try {
-        const CHRISTIAN_PEETZ_EMAIL = "c.peetz@more.immo";
+        const CHRISTIAN_PEETZ_EMAIL = "os@os-immobilien.com";
         const templateData = leadPaketRechnungDaten({
           bewerberName: `${b.vorname} ${b.nachname}`.trim(),
           bewerberEmail: b.email || "",
@@ -822,7 +822,7 @@ export function VertragsTab({ bewerber: b, canEdit, hrName, onRefresh }: Props) 
                 </>
               )}
               {b.vertragStatus === "wartet_auf_kurz" && (
-                <>Bewerber hat unterschrieben – wartet auf Gegenzeichnung durch Christian Kurz (MOREImmo)</>
+                <>Bewerber hat unterschrieben – wartet auf Gegenzeichnung durch Christian Kurz (OS Immobilien)</>
               )}
               {b.vertragStatus === "unterschrieben" && "Unterschrieben & in der Akte"}
               {b.vertragStatus === "abgelehnt" && "Vom Bewerber abgelehnt"}
@@ -830,7 +830,7 @@ export function VertragsTab({ bewerber: b, canEdit, hrName, onRefresh }: Props) 
           </div>
           {b.vertragStatus === "gesendet" && <Badge className="bg-yellow-500 text-white">Warte auf Unterschrift</Badge>}
           {b.vertragStatus === "wartet_auf_kurz" && (
-            <Badge className="bg-blue-500 text-white">Wartet auf Gegenzeichnung MOREImmo</Badge>
+            <Badge className="bg-blue-500 text-white">Wartet auf Gegenzeichnung OS Immobilien</Badge>
           )}
           {b.vertragStatus === "unterschrieben" && (
             <Badge className="bg-green-500 text-white"><PenLine className="h-3 w-3 mr-1" />Unterschrieben</Badge>
@@ -893,7 +893,7 @@ export function VertragsTab({ bewerber: b, canEdit, hrName, onRefresh }: Props) 
               })}
             </ul>
             <p className="text-[10px] text-muted-foreground">
-              Jede Anlage wird als eigenständiges, MOREImmo-gebrandetes PDF geöffnet. Alle Anlagen sind zusätzlich im Gesamt-PDF des Handelsvertretervertrages enthalten.
+              Jede Anlage wird als eigenständiges, OS Immobilien-gebrandetes PDF geöffnet. Alle Anlagen sind zusätzlich im Gesamt-PDF des Handelsvertretervertrages enthalten.
             </p>
           </div>
         )}
@@ -1021,7 +1021,7 @@ export function VertragsTab({ bewerber: b, canEdit, hrName, onRefresh }: Props) 
               autoFocus
               value={testEmail}
               onChange={(e) => setTestEmail(e.target.value)}
-              placeholder="name@more.immo"
+              placeholder="name@os-immobilien.com"
             />
           </form>
 
@@ -1108,8 +1108,8 @@ function KurzReminderBlock({ bewerberId, bewerberName, paketTitel }: { bewerberI
     // Auf dem Handy untereinander, sonst schiebt der Knopf den Text aus dem Kasten.
     <div className="flex flex-col gap-3 rounded-md border border-dashed p-3 bg-blue-500/5 border-blue-500/30 sm:flex-row sm:items-center sm:justify-between">
       <div className="min-w-0 text-xs text-muted-foreground space-y-1">
-        <p className="font-medium text-foreground">Wartet auf Gegenzeichnung MOREImmo</p>
-        <p>Der Bewerber hat bereits unterschrieben. Christian Kurz wurde per E-Mail an <span className="font-medium">office@more.immo</span> zur Gegenzeichnung aufgefordert.</p>
+        <p className="font-medium text-foreground">Wartet auf Gegenzeichnung OS Immobilien</p>
+        <p>Der Bewerber hat bereits unterschrieben. Christian Kurz wurde per E-Mail an <span className="font-medium">os@os-immobilien.com</span> zur Gegenzeichnung aufgefordert.</p>
         {info.created_at && (
           <p>Anfrage erstellt am {new Date(info.created_at).toLocaleString("de-DE")}</p>
         )}

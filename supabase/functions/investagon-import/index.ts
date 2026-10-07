@@ -1383,7 +1383,7 @@ Deno.serve(async (req: Request) => {
    * ── Zweite Wiedererkennung ueber die Adresse ──
    *
    * Der Import erkennt ein Objekt bisher nur an seiner Investagon-Kennung.
-   * Als am 16.09.2026 der eigene Zugang von More Immo dazukam, waren dessen
+   * Als am 16.09.2026 der eigene Zugang von OS Immobilien dazukam, waren dessen
    * Kopien derselben Haeuser fuer ihn fremd, und 35 Objekte lagen doppelt im
    * CRM. Das Verzeichnis unten schlaegt zusaetzlich ueber Adresse, PLZ und
    * Titel nach. Warum der Titel dazugehoert, steht im Kopf von `dubletten.ts`.

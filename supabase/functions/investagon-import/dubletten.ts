@@ -3,7 +3,7 @@
  *
  * Der Import erkennt ein bereits vorhandenes Objekt bisher nur an seiner
  * Investagon-Kennung (`meta.investagonSlug`). Am 16.09.2026 kam mit Platz 6
- * der eigene Investagon-Zugang von More Immo dazu. Diese Organisation fuehrt
+ * der eigene Investagon-Zugang von OS Immobilien dazu. Diese Organisation fuehrt
  * eigene Kopien derselben Projekte, mit neuen Kennungen. Fuer den Import waren
  * das fremde Haeuser: 35 Objekte mit rund 194 Einheiten lagen danach doppelt
  * im CRM.

@@ -19,8 +19,8 @@ import { BEWERBER_ANZAHL_FRAGEN } from '../bewerber-eingangsmail.ts'
 const STANDARD: Ansprechpartner = {
   name: 'Christian Kurz',
   rolle: 'Ansprechpartner Vertriebspartnerschaften',
-  telefon: '+49 176 60995539',
-  email: 'office@more.immo',
+  telefon: '+49 30 863289210',
+  email: 'os@os-immobilien.com',
 }
 
 interface Props {
@@ -106,7 +106,7 @@ export const template = {
   displayName: 'Bewerber Fragebogen Erinnerung',
   previewData: {
     bewerberName: 'Max Mustermann',
-    formularLink: 'https://portal.more.immo/bewerberfragen/beispiel-token',
+    formularLink: 'https://osimmobilien.netlify.app/bewerberfragen/beispiel-token',
     ablaufdatum: '2. September 2026',
     berater: STANDARD,
   },

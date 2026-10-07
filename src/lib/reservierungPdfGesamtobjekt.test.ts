@@ -77,7 +77,7 @@ beforeEach(() => { zeilen.length = 0; });
 describe("Abschnitt 2 und 4 beim ganzen Haus", () => {
   it("nennt den Kaufgegenstand statt einer Wohneinheit, dazu Anzahl, Grundbuch, Aufteilung und Stellplätze", async () => {
     await generateReservierungPDF(haus());
-    expect(enthaelt("als Ganzes über MOREImmo zu erwerben")).toBe(true);
+    expect(enthaelt("als Ganzes über OS Immobilien zu erwerben")).toBe(true);
     expect(zeilen).toContain("Kaufgegenstand");
     expect(enthaelt("Gesamtobjekt (Grundstück mit Gebäude und sämtlichen Einheiten)")).toBe(true);
     expect(zeilen).toContain("8 Einheiten");

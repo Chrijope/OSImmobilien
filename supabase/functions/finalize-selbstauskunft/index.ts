@@ -685,7 +685,7 @@ Deno.serve(async (req) => {
 
       const notifTitle = `Selbstauskunft unterschrieben: ${kundeName}`;
       const notifMsg = `Alle ${stand.anzahlGesamt} Unterschriften für die Selbstauskunft von ${kundeName} sind eingegangen. Das PDF liegt im Investment unter „Bonität und Bankprüfung“.`;
-      const kundeLink = `https://portal.more.immo/kunden/${kontaktId}`;
+      const kundeLink = `https://osimmobilien.netlify.app/kunden/${kontaktId}`;
 
       // VP-Benachrichtigung NUR wenn die SA per Email an den Kunden zum Ausfüllen verschickt wurde.
       // Erkennung: existiert ein sa_fill_tokens-Eintrag für dieses investment/kontakt?

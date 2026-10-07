@@ -43,7 +43,7 @@ const corsHeaders = {
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-// Links in Bewerbermails zeigen immer auf portal.more.immo, nie auf eine
+// Links in Bewerbermails zeigen immer auf osimmobilien.netlify.app, nie auf eine
 // per Umgebungsvariable eingetragene andere Adresse (seit 26.09.2026).
 const APP_BASE_URL = BEWERBER_MAIL_BASIS;
 

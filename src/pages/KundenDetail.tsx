@@ -9073,7 +9073,7 @@ export default function KundenDetail() {
               <p className="text-sm text-muted-foreground mb-4">
                 Öffne die interaktive Beratungsseite für den Kunden. Über den CTA am Ende der Präsentation kann auch direkt ein neuer Kontakt angelegt werden.
               </p>
-              {/* Es gibt nur noch die eine MOREImmo-Praesentation, sichtbar
+              {/* Es gibt nur noch die eine OS Immobilien-Praesentation, sichtbar
                   fuer alle Rollen. Die frueheren Varianten wurden entfernt. */}
               <div className="flex flex-wrap gap-2">
                 <Button
@@ -9087,7 +9087,7 @@ export default function KundenDetail() {
                     window.open(`/beratungspraesentation-moreimmo?${params.toString()}`, "_blank");
                   }}
                 >
-                  <ExternalLink className="h-4 w-4 mr-1" /> Beratungspräsentation MOREImmo
+                  <ExternalLink className="h-4 w-4 mr-1" /> Beratungspräsentation OS Immobilien
                 </Button>
                 <span className="relative inline-flex">
                   <Button
@@ -9103,7 +9103,7 @@ export default function KundenDetail() {
                 </span>
               </div>
               <p className="text-xs text-muted-foreground mt-2">
-                Im besten Fall die Beratungspräsentation MOREImmo (Webfassung) nutzen. Die PDF ist
+                Im besten Fall die Beratungspräsentation OS Immobilien (Webfassung) nutzen. Die PDF ist
                 zum Herunterladen und Präsentieren gedacht.
               </p>
             </Card>
@@ -11925,7 +11925,7 @@ export default function KundenDetail() {
                                               berater: {
                                                 name: user.name,
                                                 // Notar ist Gruppe F und siezt, auch in der Unterschriftszeile.
-                                                rolle: "Ihr Ansprechpartner bei MOREImmo",
+                                                rolle: "Ihr Ansprechpartner bei OS Immobilien",
                                               },
                                             },
                                           },
@@ -14941,9 +14941,9 @@ export default function KundenDetail() {
               gemarkung: existingData.gemarkung || invGb.gemarkung || "",
               blatt: existingData.blatt || invGb.blatt || "",
               flnr: existingData.flnr || invGb.flurstueck || "",
-              // Vermittler (MOREImmo)
-              makler_name: existingData.makler_name || "MOREImmo (Einzelunternehmen, Inhaber Christian Kurz)",
-              makler_anschrift: existingData.makler_anschrift || "Wendelsteinstraße 19, 83075 Bad Feilnbach",
+              // Vermittler (OS Immobilien)
+              makler_name: existingData.makler_name || "OS Immobilien Holding GmbH",
+              makler_anschrift: existingData.makler_anschrift || "Am Ostbahnhof 1, 15749 Mittenwalde",
               // Hausverwaltung
               hv_name: existingData.hv_name || ed?.hausverwaltung || (objekt?.meta as any)?.hausverwaltung || "",
             };

@@ -126,6 +126,6 @@ describe("Prüfhelfer für Textdateien", () => {
 
   it("ein vollständiges Paar ergibt keine Befunde", () => {
     expect(pruefeTexteVollstaendig({ de: { a: "Hallo", n: (x: number) => `${x}` }, en: { a: "Hello", n: (x: number) => `${x}` } })).toEqual([]);
-    expect(gleicheTexte({ de: { a: "MOREImmo", b: "Hallo" }, en: { a: "MOREImmo", b: "Hello" } })).toEqual(["a"]);
+    expect(gleicheTexte({ de: { a: "OS Immobilien", b: "Hallo" }, en: { a: "OS Immobilien", b: "Hello" } })).toEqual(["a"]);
   });
 });

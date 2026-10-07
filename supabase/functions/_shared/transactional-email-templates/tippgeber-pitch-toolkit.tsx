@@ -23,8 +23,8 @@ const Mail = ({
   tippgeberVorname,
   vpFullName,
   landingpageUrl,
-  portalUrl = 'https://portal.more.immo/tippgeber-portal',
-  loginUrl = 'https://portal.more.immo/auth',
+  portalUrl = 'https://osimmobilien.netlify.app/tippgeber-portal',
+  loginUrl = 'https://osimmobilien.netlify.app/auth',
   berater,
 }: Props) => {
   const links: Array<{ text: string; href?: string }> = []
@@ -65,13 +65,13 @@ export const template = {
   previewData: {
     tippgeberVorname: 'Max',
     vpFullName: 'Sandra Mustermann',
-    landingpageUrl: 'https://portal.more.immo/vp/sandra-mustermann?tg=abc123',
-    portalUrl: 'https://portal.more.immo/tippgeber-portal?tab=pitches',
-    loginUrl: 'https://portal.more.immo/auth',
+    landingpageUrl: 'https://osimmobilien.netlify.app/vp/sandra-mustermann?tg=abc123',
+    portalUrl: 'https://osimmobilien.netlify.app/tippgeber-portal?tab=pitches',
+    loginUrl: 'https://osimmobilien.netlify.app/auth',
     berater: {
       name: 'Sandra Mustermann',
-      rolle: 'Deine Ansprechpartnerin bei MOREImmo',
-      email: 'sandra@more.immo',
+      rolle: 'Deine Ansprechpartnerin bei OS Immobilien',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

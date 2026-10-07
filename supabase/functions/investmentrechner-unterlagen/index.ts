@@ -12,7 +12,7 @@
 //
 // Mietvertrag und Grundbuch nennen Personen. Sie gehen nicht mehr als Volltext
 // mit Freitextantwort an das Modell. Ein Mietvertrag läuft über denselben
-// Faktenauszug wie der MORE Lotse (`_shared/lotse-faktenauszug.ts`): festes
+// Faktenauszug wie der OS Lotse (`_shared/lotse-faktenauszug.ts`): festes
 // Schema, Prüfung, daraus Kaltmiete, Wohnfläche und Zimmer. Quelle und Hinweis
 // sind feste Texte. Liegt die Datei in der Objektablage, lädt die Function sie
 // selbst und nutzt den gespeicherten Auszug des Lotsen, wenn er passt; sonst

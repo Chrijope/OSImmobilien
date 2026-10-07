@@ -164,7 +164,7 @@ Deno.serve(async (req) => {
       }
 
       // Analyse-URL mit Berater-Kontext
-      let analyseUrl = "https://portal.more.immo/analyse?source=reminder";
+      let analyseUrl = "https://osimmobilien.netlify.app/analyse?source=reminder";
       if (beraterAnzeigeName) {
         const beraterPayload = btoa(
           unescape(

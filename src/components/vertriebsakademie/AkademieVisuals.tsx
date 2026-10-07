@@ -138,7 +138,7 @@ function BarChartBlock({ c }: { c: AkademieBarchart }) {
   );
 }
 
-const DONUT_PALETTE = ["hsl(var(--primary))", "hsl(217 91% 60%)", "hsl(160 84% 39%)", "hsl(38 92% 50%)", "hsl(340 82% 52%)", "hsl(262 83% 58%)"];
+const DONUT_PALETTE = ["hsl(var(--primary))", "hsl(157 68% 36%)", "hsl(160 84% 39%)", "hsl(38 92% 50%)", "hsl(340 82% 52%)", "hsl(262 83% 58%)"];
 
 function DonutBlock({ d }: { d: AkademieDonut }) {
   const total = d.daten.reduce((s, x) => s + x.wert, 0);

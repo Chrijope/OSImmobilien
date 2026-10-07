@@ -126,7 +126,7 @@ describe("Lead aus dem Analysetool", () => {
     await sendeAnalyseLead({ ...EINGABE, einwilligung: true }, ERGEBNIS, DATEN);
     const nachweis = letzterAufruf?.body.dsgvo_consent as Record<string, unknown>;
     expect(nachweis?.erteilt).toBe(true);
-    expect(String(nachweis?.text)).toContain("MOREImmo");
+    expect(String(nachweis?.text)).toContain("OS Immobilien");
     expect(nachweis?.am).toBeTruthy();
     expect(nachweis?.werbung).toBeUndefined();
   });

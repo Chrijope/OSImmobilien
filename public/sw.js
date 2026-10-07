@@ -1,4 +1,4 @@
-// MOREImmo CRM Service Worker — Web Push only (no caching)
+// OS Immobilien CRM Service Worker — Web Push only (no caching)
 const CACHE_NAME = "moreimmo-push-v1";
 
 self.addEventListener("install", (event) => {
@@ -16,10 +16,10 @@ self.addEventListener("push", (event) => {
   try {
     payload = event.data.json();
   } catch {
-    payload = { title: "MOREImmo", body: event.data.text() };
+    payload = { title: "OS Immobilien", body: event.data.text() };
   }
 
-  const title = payload.title || "MOREImmo";
+  const title = payload.title || "OS Immobilien";
   const options = {
     body: payload.body || "",
     icon: payload.icon || "/favicon.png",

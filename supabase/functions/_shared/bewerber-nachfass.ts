@@ -27,7 +27,7 @@ export const NACHFASS_KEIN_INTERESSE_HINWEIS = 'Dann melden wir uns nicht mehr.'
  * erst der Knopf darauf schickt das Token an `bewerber-kein-interesse`.
  * Mail-Scanner öffnen Links vorab, deshalb darf ein GET keine Wirkung haben.
  */
-export const KEIN_INTERESSE_BASIS_URL = 'https://portal.more.immo/bewerbung/kein-interesse'
+export const KEIN_INTERESSE_BASIS_URL = 'https://osimmobilien.netlify.app/bewerbung/kein-interesse'
 
 export function keinInteresseLink(token: string): string {
   return `${KEIN_INTERESSE_BASIS_URL}/${token}`
@@ -269,7 +269,7 @@ export function abmeldungsGlocke(
 // erfährt nur, was ihn erwartet und warum es sich lohnt.
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const KL_NACHFASS_BETREFF = 'Kurze Nachfrage zu deiner Bewerbung bei MOREImmo'
+export const KL_NACHFASS_BETREFF = 'Kurze Nachfrage zu deiner Bewerbung bei OS Immobilien'
 
 export const KL_NACHFASS_AUGENBRAUE = 'Deine Bewerbung'
 

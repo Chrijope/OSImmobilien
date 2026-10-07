@@ -50,6 +50,6 @@ export const template = {
     empfaengerName: 'Max Mustermann',
     ticketNummer: 1042,
     betreff: 'Frage zur Provisionsabrechnung',
-    ticketUrl: 'https://portal.more.immo/support-kontaktieren?ticket=00000000-0000-0000-0000-000000000000',
+    ticketUrl: 'https://osimmobilien.netlify.app/support-kontaktieren?ticket=00000000-0000-0000-0000-000000000000',
   },
 } satisfies TemplateEntry

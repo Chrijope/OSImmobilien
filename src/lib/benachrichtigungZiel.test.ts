@@ -23,11 +23,11 @@ describe("Eine volle Adresse auf das Haus wird zum Pfad", () => {
   /* Der Fall von Eric Schoof: volle Adresse in der Tabelle, Seite laeuft in
      der Lovable-Vorschau unter einer anderen Domain. */
   it("kuerzt die Portaladresse auf den Pfad, auch in der Vorschau", () => {
-    expect(benachrichtigungZiel("https://portal.more.immo/bewerberprozess?openBewerber=abc", HOST))
+    expect(benachrichtigungZiel("https://osimmobilien.netlify.app/bewerberprozess?openBewerber=abc", HOST))
       .toEqual({ art: "intern", pfad: "/bewerberprozess?openBewerber=abc" });
   });
   it("behaelt Suchteil und Anker", () => {
-    expect(benachrichtigungZiel("https://portal.more.immo/kunden/1?tab=x#oben", HOST))
+    expect(benachrichtigungZiel("https://osimmobilien.netlify.app/kunden/1?tab=x#oben", HOST))
       .toEqual({ art: "intern", pfad: "/kunden/1?tab=x#oben" });
   });
   it("erkennt auch den eigenen Host der laufenden Seite", () => {

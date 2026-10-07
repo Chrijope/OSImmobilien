@@ -31,7 +31,7 @@ interface Props {
   kundeAnrede?: string
 }
 
-const FORMULAR_URL_RUECKFALL = 'https://portal.more.immo/dokumente/selbstauskunft-formular.pdf'
+const FORMULAR_URL_RUECKFALL = 'https://osimmobilien.netlify.app/dokumente/selbstauskunft-formular.pdf'
 
 /** Gruppe F: Deutsch in der Sie-Form, Englisch foermlich (Plan 4.4). */
 const DE = {
@@ -72,7 +72,7 @@ const TEXTE: Zweisprachig<typeof DE> = {
     fuss: 'The self-disclosure contains personal data. Please keep it safe accordingly.',
     einleitung: 'As discussed, please find your self-disclosure form (Selbstauskunft) as a fillable PDF.',
     nurDeutsch:
-      'Please note that the form itself is currently only available in German. Your contact person at MOREImmo will be glad to go through it with you.',
+      'Please note that the form itself is currently only available in German. Your contact person at OS Immobilien will be glad to go through it with you.',
     vorbelegtFett: 'The attachment to this email contains your self-disclosure, already pre-filled.',
     vorbelegtText: (investment?: number) =>
       `We have taken over the details from your self-disclosure${investment ? ` for investment ${investment}` : ' for your last purchase'}, so that you do not have to write everything again. The fields we have filled in are highlighted in light yellow.`,
@@ -158,7 +158,7 @@ export const template = {
       name: 'Christian Peetz',
       rolle: BERUF_IMMOBILIENBERATER,
       telefon: '08061 000000',
-      email: 'c.peetz@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

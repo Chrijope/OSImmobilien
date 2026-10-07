@@ -23,7 +23,7 @@ interface Props {
 
 const DE = {
   betreff: (kritisch: boolean) =>
-    kritisch ? 'Verdächtiger Login auf deinem MOREImmo-Konto' : 'Neuer Login auf deinem MOREImmo-Konto',
+    kritisch ? 'Verdächtiger Login auf deinem OS Immobilien-Konto' : 'Neuer Login auf deinem OS Immobilien-Konto',
   augenbraue: 'Sicherheitshinweis',
   titel: (kritisch: boolean) => (kritisch ? 'Verdächtiger Login auf deinem Konto' : 'Neuer Login auf deinem Konto'),
   vorschauRueckfall: 'Ein Login weicht von deinem üblichen Muster ab.',
@@ -46,7 +46,7 @@ const TEXTE: Zweisprachig<typeof DE> = {
   de: DE,
   en: {
     betreff: (kritisch: boolean) =>
-      kritisch ? 'Suspicious sign-in to your MOREImmo account' : 'New sign-in to your MOREImmo account',
+      kritisch ? 'Suspicious sign-in to your OS Immobilien account' : 'New sign-in to your OS Immobilien account',
     augenbraue: 'Security notice',
     titel: (kritisch: boolean) => (kritisch ? 'Suspicious sign-in to your account' : 'New sign-in to your account'),
     vorschauRueckfall: 'A sign-in differs from your usual pattern.',
@@ -107,7 +107,7 @@ const Mail = ({
 
       <Handlung
         sprache={sprache}
-        href="https://portal.more.immo/einstellungen"
+        href="https://osimmobilien.netlify.app/einstellungen"
         text={t.knopf}
         hinweis={t.hinweisKnopf}
       />

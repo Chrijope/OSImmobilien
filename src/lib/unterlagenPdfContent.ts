@@ -89,7 +89,7 @@ export function checklisteBonitaetEnglisch(): Parameters<typeof generateSimpleDo
   return {
     title: "Checklist of credit check documents",
     subtitle: "Complete overview for the bank's credit check",
-    filename: "MOREImmo_Checklist_credit_check_documents.pdf",
+    filename: "OS-Immobilien_Checklist_credit_check_documents.pdf",
     deckblatt: {
       sprache: "en",
       kennung: "Checklist",
@@ -143,7 +143,7 @@ export function checklisteBonitaetEnglisch(): Parameters<typeof generateSimpleDo
 const checklisteBonitaetDeutsch = () => generateSimpleDocPdf({
   title: "Checkliste Bonitätsunterlagen",
   subtitle: "Vollständige Übersicht für Bank- und Bonitätsprüfung",
-  filename: "MOREImmo_Checkliste_Bonitaetsunterlagen.pdf",
+  filename: "OS-Immobilien_Checkliste_Bonitaetsunterlagen.pdf",
   deckblatt: { kennung: "Checkliste", titel: "Checkliste Bonitätsunterlagen", untertitel: "Vollständige Übersicht für Bank- und Bonitätsprüfung", nummer: "BON-01" },
   blocks: [
     { type: "p", text: "Diese Checkliste hilft dir, alle erforderlichen Unterlagen für die Bonitätsprüfung deiner Bank vollständig zusammenzustellen. Eine vollständige Akte beschleunigt die Finanzierungszusage erheblich." },
@@ -193,7 +193,7 @@ const checklisteBonitaetDeutsch = () => generateSimpleDocPdf({
 export const generateLohnsteueroptimierungPDF = () => generateSimpleDocPdf({
   title: "Lohnsteueroptimierung durch Immobilien",
   subtitle: "Mehr Netto vom Brutto durch Eintrag des Freibetrags",
-  filename: "MOREImmo_Lohnsteueroptimierung.pdf",
+  filename: "OS-Immobilien_Lohnsteueroptimierung.pdf",
   deckblatt: { kennung: "Steuerwissen", titel: "Lohnsteueroptimierung durch Immobilien", untertitel: "Mehr Netto vom Brutto durch Eintrag des Freibetrags", nummer: "STE-01" },
   blocks: [
     { type: "h2", text: "Das Prinzip" },
@@ -233,7 +233,7 @@ export const generateLohnsteueroptimierungPDF = () => generateSimpleDocPdf({
 export const generateEhegattenschaukelPDF = () => generateSimpleDocPdf({
   title: "Ehegattenschaukel & Verkauf an Kinder",
   subtitle: "Steuersmarte Übertragungsstrategien nach Ablauf der 10-Jahres-Frist",
-  filename: "MOREImmo_Ehegattenschaukel.pdf",
+  filename: "OS-Immobilien_Ehegattenschaukel.pdf",
   deckblatt: { kennung: "Steuerwissen", titel: "Ehegattenschaukel & Verkauf an Kinder", untertitel: "Steuersmarte Übertragungsstrategien nach Ablauf der 10-Jahres-Frist", nummer: "STE-02" },
   blocks: [
     { type: "h2", text: "Was ist die Ehegattenschaukel?" },
@@ -270,7 +270,7 @@ export const generateEhegattenschaukelPDF = () => generateSimpleDocPdf({
 export const generateVerkaufKinderPDF = () => generateSimpleDocPdf({
   title: "Verkauf & Übertragung an Kinder",
   subtitle: "Vermögensübertragung mit maximaler Steuerersparnis – Schenkung, Verkauf oder Nießbrauch",
-  filename: "MOREImmo_Verkauf_Uebertragung_Kinder.pdf",
+  filename: "OS-Immobilien_Verkauf_Uebertragung_Kinder.pdf",
   deckblatt: { kennung: "Steuerwissen", titel: "Verkauf & Übertragung an Kinder", untertitel: "Vermögensübertragung mit maximaler Steuerersparnis – Schenkung, Verkauf oder Nießbrauch", nummer: "STE-03" },
   blocks: [
     { type: "h2", text: "Drei Wege, drei Strategien" },
@@ -338,7 +338,7 @@ export const generateVerkaufKinderPDF = () => generateSimpleDocPdf({
 export const generateChecklisteSteuerersparnisPDF = () => generateSimpleDocPdf({
   title: "Checkliste maximale Steuerersparnis",
   subtitle: "Schritt-für-Schritt zur optimalen Steueroptimierung mit Immobilien",
-  filename: "MOREImmo_Checkliste_Steuerersparnis.pdf",
+  filename: "OS-Immobilien_Checkliste_Steuerersparnis.pdf",
   deckblatt: { kennung: "Checkliste", titel: "Checkliste maximale Steuerersparnis", untertitel: "Schritt-für-Schritt zur optimalen Steueroptimierung mit Immobilien", nummer: "STE-04" },
   blocks: [
     { type: "h2", text: "Vor dem Kauf" },
@@ -361,7 +361,7 @@ export const generateChecklisteSteuerersparnisPDF = () => generateSimpleDocPdf({
     { type: "checkbox", text: "Denkmal-AfA-Objekte ergänzend ins Portfolio aufgenommen" },
     { type: "checkbox", text: "Energetische Sanierung mit § 35c EStG / BEG-Förderung kombiniert" },
     { type: "checkbox", text: "GmbH-Struktur für >5 Objekte geprüft (Reinvestitionsrücklage)" },
-    { type: "callout", variant: "info", text: "Diese Checkliste ersetzt keine Steuerberatung. Sie ist die Grundlage für das Gespräch mit deinem Steuerberater oder dem Steuerexperten von MOREImmo." },
+    { type: "callout", variant: "info", text: "Diese Checkliste ersetzt keine Steuerberatung. Sie ist die Grundlage für das Gespräch mit deinem Steuerberater oder dem Steuerexperten von OS Immobilien." },
   ],
 });
 
@@ -371,7 +371,7 @@ export const generateChecklisteSteuerersparnisPDF = () => generateSimpleDocPdf({
 export const generateElsterAnleitungPDF = () => generateSimpleDocPdf({
   title: "Lohnsteuer senken – Elster-Anleitung",
   subtitle: "Schritt-für-Schritt zur Eintragung des Freibetrags",
-  filename: "MOREImmo_Elster_Anleitung.pdf",
+  filename: "OS-Immobilien_Elster_Anleitung.pdf",
   deckblatt: { kennung: "Anleitung", titel: "Lohnsteuer senken – Elster-Anleitung", untertitel: "Schritt-für-Schritt zur Eintragung des Freibetrags", nummer: "STE-05" },
   blocks: [
     { type: "h2", text: "Voraussetzungen" },
@@ -405,10 +405,10 @@ export const generateElsterAnleitungPDF = () => generateSimpleDocPdf({
 export const generateAftersalesBeratungPDF = () => generateSimpleDocPdf({
   title: "Aftersales-Beratungsdokument",
   subtitle: "Pflicht-Dokument zwischen Vertriebspartner und Kunde nach Verkaufsabschluss",
-  filename: "MOREImmo_Aftersales_Beratung.pdf",
+  filename: "OS-Immobilien_Aftersales_Beratung.pdf",
   deckblatt: { kennung: "Beratungsdokument", titel: "Aftersales-Beratungsdokument", untertitel: "Pflicht-Dokument zwischen Vertriebspartner und Kunde nach Verkaufsabschluss", nummer: "AFT-01" },
   blocks: [
-    { type: "p", text: "Dieses Dokument dokumentiert das vereinbarte Aftersales-Programm zwischen dem Vertriebspartner und dem Kunden im Anschluss an den Immobilienkauf bei MOREImmo." },
+    { type: "p", text: "Dieses Dokument dokumentiert das vereinbarte Aftersales-Programm zwischen dem Vertriebspartner und dem Kunden im Anschluss an den Immobilienkauf bei OS Immobilien." },
     { type: "h2", text: "Vertragspartner" },
     { type: "kv", label: "Kunde", value: "" },
     { type: "kv", label: "Anschrift", value: "" },
@@ -441,15 +441,15 @@ export const generateAftersalesBeratungPDF = () => generateSimpleDocPdf({
 });
 
 // ─────────────────────────────────────────
-// 7. MOREImmo Vertriebs- & Karriereplan
+// 7. OS Immobilien Vertriebs- & Karriereplan
 // ─────────────────────────────────────────
 export const generateKarriereplanPDF = () => generateSimpleDocPdf({
-  title: "MOREImmo Vertriebs- & Karriereplan",
+  title: "OS Immobilien Vertriebs- & Karriereplan",
   subtitle: "Stufenmodell und Provisionssystem für Vertriebspartner",
-  filename: "MOREImmo_Karriereplan.pdf",
-  deckblatt: { kennung: "Vertriebspartner", titel: "MOREImmo Vertriebs- & Karriereplan", untertitel: "Stufenmodell und Provisionssystem für Vertriebspartner", nummer: "VP-01" },
+  filename: "OS-Immobilien_Karriereplan.pdf",
+  deckblatt: { kennung: "Vertriebspartner", titel: "OS Immobilien Vertriebs- & Karriereplan", untertitel: "Stufenmodell und Provisionssystem für Vertriebspartner", nummer: "VP-01" },
   blocks: [
-    { type: "p", text: "Der MOREImmo Karriereplan ist auf langfristigen Erfolg, Teamwachstum und passive Einkommensströme ausgelegt. Mit jeder Karrierestufe steigen Provision, Override-Anteile und exklusive Boni." },
+    { type: "p", text: "Der OS Immobilien Karriereplan ist auf langfristigen Erfolg, Teamwachstum und passive Einkommensströme ausgelegt. Mit jeder Karrierestufe steigen Provision, Override-Anteile und exklusive Boni." },
     { type: "h2", text: "Karrierestufen" },
     { type: "table",
       head: ["Stufe", "Voraussetzung", "Eigenprovision", "Override Team"],
@@ -486,12 +486,12 @@ export const generateKarriereplanPDF = () => generateSimpleDocPdf({
 // ─────────────────────────────────────────
 export const generateVpAgbPDF = () => generateSimpleDocPdf({
   title: "Allgemeine Geschäftsbedingungen Vertriebspartner",
-  subtitle: "MOREImmo",
-  filename: "MOREImmo_VP_AGB.pdf",
-  deckblatt: { kennung: "Vertragsunterlage", titel: "Allgemeine Geschäftsbedingungen Vertriebspartner", untertitel: "MOREImmo", nummer: "VP-02" },
+  subtitle: "OS Immobilien",
+  filename: "OS-Immobilien_VP_AGB.pdf",
+  deckblatt: { kennung: "Vertragsunterlage", titel: "Allgemeine Geschäftsbedingungen Vertriebspartner", untertitel: "OS Immobilien", nummer: "VP-02" },
   blocks: [
     { type: "h2", text: "§ 1 Geltungsbereich" },
-    { type: "p", text: "Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für die Zusammenarbeit zwischen der MOREImmo, Wendelsteinstraße 19, 83075 Bad Feilnbach (nachfolgend „MOREImmo\") und freien Vertriebspartnern (nachfolgend „VP\") im Rahmen der Vermittlung von Immobilienanlagen." },
+    { type: "p", text: "Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für die Zusammenarbeit zwischen der OS Immobilien Holding GmbH, Am Ostbahnhof 1, 15749 Mittenwalde (nachfolgend „OS Immobilien\") und freien Vertriebspartnern (nachfolgend „VP\") im Rahmen der Vermittlung von Immobilienanlagen." },
     { type: "h2", text: "§ 2 Status des Vertriebspartners" },
     { type: "list", items: [
       "Der VP ist selbstständiger Handelsvertreter im Sinne des § 84 HGB.",
@@ -500,14 +500,14 @@ export const generateVpAgbPDF = () => generateSimpleDocPdf({
     ]},
     { type: "h2", text: "§ 3 Aufgaben und Pflichten" },
     { type: "list", items: [
-      "Aktive Vermittlung von Immobilienanlagen aus dem MOREImmo-Portfolio.",
+      "Aktive Vermittlung von Immobilienanlagen aus dem OS Immobilien-Portfolio.",
       "Ordnungsgemäße Beratung gemäß §§ 16, 17 FinVermV.",
       "Vollständige und korrekte Dokumentation aller Beratungsgespräche.",
       "Verschwiegenheitspflicht über Geschäfts- und Kundendaten.",
       "Teilnahme an mindestens 2 Schulungen pro Jahr.",
     ]},
     { type: "h2", text: "§ 4 Provisionen" },
-    { type: "p", text: "Die Provisionssätze richten sich nach dem aktuellen MOREImmo-Karriereplan in der jeweils gültigen Fassung. Provisionsanspruch entsteht mit notarieller Beurkundung des Kaufvertrags und vollständiger Kaufpreiszahlung." },
+    { type: "p", text: "Die Provisionssätze richten sich nach dem aktuellen OS Immobilien-Karriereplan in der jeweils gültigen Fassung. Provisionsanspruch entsteht mit notarieller Beurkundung des Kaufvertrags und vollständiger Kaufpreiszahlung." },
     { type: "h2", text: "§ 5 Wettbewerbsverbot" },
     { type: "p", text: "Der VP verpflichtet sich, während der Vertragslaufzeit keine Konkurrenztätigkeit für andere Anbieter denkmalgeschützter Sanierungsobjekte oder Renditeimmobilien im B/C-Lagen-Segment auszuüben. Andere Anlageklassen (Versicherungen, Aktien, Beteiligungen) sind ausdrücklich erlaubt." },
     { type: "h2", text: "§ 6 Vertragsdauer und Kündigung" },
@@ -531,12 +531,12 @@ export const generateVpAgbPDF = () => generateSimpleDocPdf({
 // geht als Link in der Zugangsdaten-Mail an Bewerber ohne CRM-Zugang. Nach
 // einer Aenderung hier neu erzeugen, siehe src/lib/mailAnleitungPdf.test.ts.
 export const generateMailSetupPDF = () => generateSimpleDocPdf({
-  title: "MOREImmo Mail einrichten",
+  title: "OS Immobilien Mail einrichten",
   subtitle: "Schritt-für-Schritt für Apple iPhone, Apple MacBook und Outlook (one.com)",
-  filename: "MOREImmo_Mail_Setup.pdf",
-  deckblatt: { kennung: "Anleitung", titel: "MOREImmo Mail einrichten", untertitel: "Schritt-für-Schritt für Apple iPhone, Apple MacBook und Outlook (one.com)", nummer: "ORG-01" },
+  filename: "OS-Immobilien_Mail_Setup.pdf",
+  deckblatt: { kennung: "Anleitung", titel: "OS Immobilien Mail einrichten", untertitel: "Schritt-für-Schritt für Apple iPhone, Apple MacBook und Outlook (one.com)", nummer: "ORG-01" },
   blocks: [
-    { type: "p", text: "Diese Anleitung zeigt dir Schritt für Schritt, wie du deine MOREImmo-E-Mail-Adresse (one.com) auf deinem iPhone, deinem MacBook und in Outlook (Windows oder Mac) einrichtest." },
+    { type: "p", text: "Diese Anleitung zeigt dir Schritt für Schritt, wie du deine OS Immobilien-E-Mail-Adresse (one.com) auf deinem iPhone, deinem MacBook und in Outlook (Windows oder Mac) einrichtest." },
     { type: "h2", text: "Allgemeine Server-Daten (one.com)" },
     { type: "table",
       head: ["Einstellung", "Wert"],
@@ -571,7 +571,7 @@ export const generateMailSetupPDF = () => generateSimpleDocPdf({
       "Name: dein Name",
       "E-Mail: deine vollständige E-Mail-Adresse",
       "Passwort: dein E-Mail-Passwort",
-      "Beschreibung: z. B. „MOREImmo“",
+      "Beschreibung: z. B. „OS Immobilien“",
     ]},
     { type: "p", text: "Dann auf „Weiter“ tippen." },
 
@@ -605,13 +605,13 @@ export const generateMailSetupPDF = () => generateSimpleDocPdf({
       "„Mail“ aktivieren.",
       "Auf „Sichern“ tippen.",
     ]},
-    { type: "callout", variant: "success", text: "Dein MOREImmo-E-Mail-Konto ist nun eingerichtet und synchronisiert sich mit deinem iPhone." },
+    { type: "callout", variant: "success", text: "Dein OS Immobilien-E-Mail-Konto ist nun eingerichtet und synchronisiert sich mit deinem iPhone." },
 
     { type: "pageBreak" },
 
     // ───────── Apple MacBook ─────────
     { type: "h2", text: "Apple MacBook (Apple Mail unter macOS)" },
-    { type: "p", text: "So richtest du deine MOREImmo-E-Mail-Adresse in Apple Mail auf deinem MacBook ein." },
+    { type: "p", text: "So richtest du deine OS Immobilien-E-Mail-Adresse in Apple Mail auf deinem MacBook ein." },
 
     { type: "h2", text: "1. Apple Mail öffnen" },
     { type: "list", ordered: true, items: [
@@ -655,13 +655,13 @@ export const generateMailSetupPDF = () => generateSimpleDocPdf({
 
     { type: "h2", text: "5. Apps auswählen" },
     { type: "p", text: "Aktiviere „Mail“ (und optional „Notizen“) und klicke auf „Fertig“." },
-    { type: "callout", variant: "success", text: "Apple Mail synchronisiert nun deinen MOREImmo-Posteingang automatisch." },
+    { type: "callout", variant: "success", text: "Apple Mail synchronisiert nun deinen OS Immobilien-Posteingang automatisch." },
 
     { type: "pageBreak" },
 
     // ───────── Outlook ─────────
     { type: "h2", text: "Microsoft Outlook (Windows & Mac)" },
-    { type: "p", text: "So fügst du deine MOREImmo-E-Mail-Adresse in Outlook hinzu." },
+    { type: "p", text: "So fügst du deine OS Immobilien-E-Mail-Adresse in Outlook hinzu." },
 
     { type: "h2", text: "1. Outlook öffnen und Konto hinzufügen" },
     { type: "list", ordered: true, items: [
@@ -696,9 +696,9 @@ export const generateMailSetupPDF = () => generateSimpleDocPdf({
       ],
     },
     { type: "p", text: "Bestätige die Eingaben und schließe die Einrichtung ab." },
-    { type: "callout", variant: "success", text: "Outlook synchronisiert nun deinen MOREImmo-Posteingang automatisch." },
+    { type: "callout", variant: "success", text: "Outlook synchronisiert nun deinen OS Immobilien-Posteingang automatisch." },
 
-    { type: "callout", variant: "info", text: "Bei Problemen: Support-Ticket im CRM unter „Support kontaktieren“ öffnen oder direkt an it@more.immo schreiben." },
+    { type: "callout", variant: "info", text: "Bei Problemen: Support-Ticket im CRM unter „Support kontaktieren“ öffnen oder direkt an os@os-immobilien.com schreiben." },
   ],
 });
 
@@ -708,7 +708,7 @@ export const generateMailSetupPDF = () => generateSimpleDocPdf({
 export const generateLeitfadenKaltakquisePDF = () => generateSimpleDocPdf({
   title: "Leitfaden Kaltakquise",
   subtitle: "Verkaufspsychologisch aufgebaute Gesprächsführung für Erstkontakte",
-  filename: "MOREImmo_Leitfaden_Kaltakquise.pdf",
+  filename: "OS-Immobilien_Leitfaden_Kaltakquise.pdf",
   deckblatt: { kennung: "Gesprächsleitfaden", titel: "Leitfaden Kaltakquise", untertitel: "Verkaufspsychologisch aufgebaute Gesprächsführung für Erstkontakte", nummer: "LTF-01" },
   blocks: [
     { type: "h2", text: "Mindset vor dem Anruf" },
@@ -719,7 +719,7 @@ export const generateLeitfadenKaltakquisePDF = () => generateSimpleDocPdf({
       "Stehe auf, halte aufrechte Körperhaltung – das verändert deine Stimme.",
     ]},
     { type: "h2", text: "Phase 1: Einstieg (10 Sekunden)" },
-    { type: "callout", text: "„Hallo [Vorname], hier ist [dein Name] von MOREImmo in München. Ich rufe an, weil [konkreter Anlass / Empfehlung / Recherche]. Hast du 2 Minuten?\"" },
+    { type: "callout", text: "„Hallo [Vorname], hier ist [dein Name] von OS Immobilien in München. Ich rufe an, weil [konkreter Anlass / Empfehlung / Recherche]. Hast du 2 Minuten?\"" },
     { type: "p", text: "Wichtig: Konkreter Anlass = Vertrauen. Z. B. 'Du hast dir auf unserer Website das Analysetool angeschaut' oder 'Du wurdest uns von Herrn X empfohlen'." },
     { type: "h2", text: "Phase 2: Bedarfsanalyse (offene Fragen)" },
     { type: "list", items: [
@@ -749,7 +749,7 @@ export const generateLeitfadenKaltakquisePDF = () => generateSimpleDocPdf({
 export const generateLeitfadenWarmkontaktePDF = () => generateSimpleDocPdf({
   title: "Leitfaden Warmkontakte & Empfehlungen",
   subtitle: "Authentische Eröffnung für Empfehlungs-Gespräche",
-  filename: "MOREImmo_Leitfaden_Warmkontakte.pdf",
+  filename: "OS-Immobilien_Leitfaden_Warmkontakte.pdf",
   deckblatt: { kennung: "Gesprächsleitfaden", titel: "Leitfaden Warmkontakte & Empfehlungen", untertitel: "Authentische Eröffnung für Empfehlungs-Gespräche", nummer: "LTF-02" },
   blocks: [
     { type: "h2", text: "Der Unterschied zu Kalt" },
@@ -791,7 +791,7 @@ export const generateLeitfadenWarmkontaktePDF = () => generateSimpleDocPdf({
 export const generateSteuerwissenPDF = () => generateSimpleDocPdf({
   title: "Steuerwissen kompakt",
   subtitle: "Der Leitfaden zur Kapitalanlage-Immobilie",
-  filename: "MOREImmo_Steuerwissen_Kompakt.pdf",
+  filename: "OS-Immobilien_Steuerwissen_Kompakt.pdf",
   deckblatt: { kennung: "Steuerwissen", titel: "Steuerwissen kompakt", untertitel: "Der Leitfaden zur Kapitalanlage-Immobilie", nummer: "STE-06" },
   blocks: [
     { type: "p", text: "Eine vermietete Immobilie ist eines der steuerlich attraktivsten Investments in Deutschland. Dieser Leitfaden fasst die wichtigsten steuerlichen Hebel zusammen – von der Anschaffung über die Haltephase bis zum steuerfreien Verkauf nach 10 Jahren." },
@@ -867,7 +867,7 @@ export const generateSteuerwissenPDF = () => generateSimpleDocPdf({
 export const generateSteuersaetzePDF = () => generateSimpleDocPdf({
   title: "Steuersätze nach Einkommenshöhe",
   subtitle: "Übersicht 2025 mit Beispielrechnungen",
-  filename: "MOREImmo_Steuersaetze_Einkommenshoehe.pdf",
+  filename: "OS-Immobilien_Steuersaetze_Einkommenshoehe.pdf",
   deckblatt: { kennung: "Steuerwissen", titel: "Steuersätze nach Einkommenshöhe", untertitel: "Übersicht 2025 mit Beispielrechnungen", nummer: "STE-07" },
   blocks: [
     { type: "p", text: "Die deutsche Einkommensteuer ist progressiv aufgebaut. Diese Übersicht zeigt, wie hoch dein Grenzsteuersatz tatsächlich ist – und wie viel eine vermietete Immobilie an Steuern spart." },
@@ -932,7 +932,7 @@ export const generateSteuersaetzePDF = () => generateSimpleDocPdf({
 export const generateEinwandbehandlungPDF = () => generateSimpleDocPdf({
   title: "Einwandbehandlung Kapitalanlage-Immobilie",
   subtitle: "Antworten auf typische Einwände im Immobilienvertrieb",
-  filename: "MOREImmo_Einwandbehandlung.pdf",
+  filename: "OS-Immobilien_Einwandbehandlung.pdf",
   deckblatt: { kennung: "Gesprächsleitfaden", titel: "Einwandbehandlung Kapitalanlage-Immobilie", untertitel: "Antworten auf typische Einwände im Immobilienvertrieb", nummer: "LTF-03" },
   blocks: [
     { type: "p", text: "Einwände sind ein Zeichen von Interesse. Wer keine Einwände hat, hat meist auch keine Kaufabsicht. Antworten ehrlich, sachlich und mit Zahlen – nie defensiv." },

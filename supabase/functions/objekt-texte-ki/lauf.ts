@@ -808,7 +808,7 @@ async function merkeEinordnung(
  * nächste rückt nach, bis `MAX_UNTERLAGEN` beisammen sind.
  *
  * Seit dem 28.09.2026 läuft vor dem Anhängen dieselbe Einordnung wie im
- * MORE Lotsen (LOTSE-R6-003): Name und Kategorie nur Richtung rot, angehängt
+ * OS Lotsen (LOTSE-R6-003): Name und Kategorie nur Richtung rot, angehängt
  * wird nur, was der Einordnungsaufruf als „sonstiges“ meldet. Rot und unklar
  * bleiben draußen. Eine gespeicherte Einordnung derselben Dateiversion
  * (`lotse_unterlagen_auszug`) gilt, eine neue wird gemerkt. Schon erzeugte

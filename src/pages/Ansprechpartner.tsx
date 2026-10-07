@@ -58,14 +58,14 @@ const initialAbteilungen: Abteilung[] = [
     id: "1",
     name: "Geschäftsführung",
     kontakte: [
-      { id: "k1", name: "Christian Kurz", position: "CEO & Founder", beschreibung: "Geschäftsführung, Strategie, Unternehmensentwicklung", email: "office@more.immo", telefon: "", avatarColor: "bg-blue-500", chatErlaubt: true },
+      { id: "k1", name: "Christian Kurz", position: "CEO & Founder", beschreibung: "Geschäftsführung, Strategie, Unternehmensentwicklung", email: "os@os-immobilien.com", telefon: "", avatarColor: "bg-blue-500", chatErlaubt: true },
     ],
   },
   {
     id: "2",
     name: "Vertrieb & Partnermanagement",
     kontakte: [
-      { id: "k2", name: "Christian Peetz", position: "COO", beschreibung: "Skalierung & Strukturierung, CRM Management, Partnerbetreuung, Vertriebssteuerung, HR", email: "c.peetz@more.immo", telefon: "", avatarColor: "bg-emerald-500", chatErlaubt: true },
+      { id: "k2", name: "Christian Peetz", position: "COO", beschreibung: "Skalierung & Strukturierung, CRM Management, Partnerbetreuung, Vertriebssteuerung, HR", email: "os@os-immobilien.com", telefon: "", avatarColor: "bg-emerald-500", chatErlaubt: true },
     ],
   },
   { id: "3", name: "Finanzierungspartner", kontakte: [] },

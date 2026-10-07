@@ -14,7 +14,7 @@ import {
 describe("Lead ohne zugeordneten Partner", () => {
   it("hat keinen Ansprechpartner, also faellt der Unterschriftsblock weg", () => {
     // `undefined` heisst fuer die Vorlage `ohneUnterschrift`. Der Platzhalter
-    // "MOREImmo Team" mit der allgemeinen Nummer soll gerade nicht erscheinen.
+    // "OS Immobilien Team" mit der allgemeinen Nummer soll gerade nicht erscheinen.
     expect(auswertungPerson({})).toBeUndefined();
     expect(auswertungPerson({ beraterName: "" })).toBeUndefined();
     expect(auswertungPerson({ beraterName: "   " })).toBeUndefined();
@@ -38,14 +38,14 @@ describe("Lead mit Partner", () => {
   it("behaelt seinen Unterschriftsblock", () => {
     const person = auswertungPerson({
       beraterName: "Christian Peetz",
-      beraterEmail: "c.peetz@more.immo",
-      beraterTelefon: "+49 1515 0275108",
+      beraterEmail: "os@os-immobilien.com",
+      beraterTelefon: "+49 30 863289210",
     });
     expect(person).toEqual({
       name: "Christian Peetz",
-      rolle: "Dein Ansprechpartner bei MOREImmo",
-      telefon: "+49 1515 0275108",
-      email: "c.peetz@more.immo",
+      rolle: "Dein Ansprechpartner bei OS Immobilien",
+      telefon: "+49 30 863289210",
+      email: "os@os-immobilien.com",
       bildUrl: undefined,
     });
   });
@@ -65,7 +65,7 @@ describe("Lead mit Partner", () => {
     const person = auswertungPerson({
       berater: { name: "Hermann Vogl", rolle: "Vertriebspartner" },
     });
-    expect(person?.rolle).toBe("Dein Ansprechpartner bei MOREImmo");
+    expect(person?.rolle).toBe("Dein Ansprechpartner bei OS Immobilien");
   });
 
   it("nennt den Partner in der Zeile 'Wie es weitergeht'", () => {

@@ -119,7 +119,7 @@ export function buildProvisionsBescheidPdf(a: Provisionsabrechnung): Blob {
   // Footer
   const H = doc.internal.pageSize.getHeight();
   doc.setFontSize(8); doc.setTextColor(120);
-  doc.text("MOREImmo · Provisionsbescheid · Dieser Bescheid ist computergeneriert und ohne Unterschrift gültig.", W / 2, H - 30, { align: "center" });
+  doc.text("OS Immobilien · Provisionsbescheid · Dieser Bescheid ist computergeneriert und ohne Unterschrift gültig.", W / 2, H - 30, { align: "center" });
 
   return doc.output("blob");
 }

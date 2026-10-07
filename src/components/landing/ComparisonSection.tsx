@@ -5,7 +5,7 @@ import { MIKROSEITE_ABSCHLUSS_TEXTE } from "./mikroseiteAbschlussTexte";
 type Cell = "yes" | "no" | "partial";
 
 /**
- * Die Bewertung je Zeile: klassischer Makler, Banking-Berater, MOREImmo.
+ * Die Bewertung je Zeile: klassischer Makler, Banking-Berater, OS Immobilien.
  * Die Beschriftungen stehen in `mikroseiteAbschlussTexte.ts` (`vergleich.zeilen`),
  * Zeile für Zeile in derselben Reihenfolge.
  */

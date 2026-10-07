@@ -92,7 +92,7 @@ describe("Tabelle A: gilt bei jedem Globalobjekt", () => {
   it("grenzt in der Einleitung das Haus als Ganzes ab", () => {
     expect(objektEinleitung({ gesamtobjekt: true })).toBe(OBJEKT_EINLEITUNG_GESAMTOBJEKT);
     expect(OBJEKT_EINLEITUNG_GESAMTOBJEKT).toBe(
-      "Ich/Wir beabsichtige/n, das nachfolgend bezeichnete Objekt als Ganzes über MOREImmo zu erwerben, also das Grundstück mit dem Gebäude und sämtlichen darin befindlichen Einheiten. Der Erwerb einzelner Einheiten ist nicht Gegenstand dieser Vereinbarung.",
+      "Ich/Wir beabsichtige/n, das nachfolgend bezeichnete Objekt als Ganzes über OS Immobilien zu erwerben, also das Grundstück mit dem Gebäude und sämtlichen darin befindlichen Einheiten. Der Erwerb einzelner Einheiten ist nicht Gegenstand dieser Vereinbarung.",
     );
   });
 
@@ -144,7 +144,7 @@ describe("Tabelle A: gilt bei jedem Globalobjekt", () => {
       "zahlung", "rueckzahlung", "verfall", "wirksamkeit", "dolmetscher",
     ]);
     expect(text(HAUS, "bestand")).toBe(
-      "Das Objekt wird mit den bestehenden Miet- und Pachtverhältnissen erworben, soweit der Kaufvertrag nichts anderes bestimmt. Angaben zu Einheiten, Flächen, Mieten und Mietverhältnissen stammen vom Verkäufer; sie sind keine Zusicherung und keine Beschaffenheitsangabe von MOREImmo. Maßgeblich für Kaufgegenstand, Beschaffenheit und Kaufpreis ist allein der notarielle Kaufvertrag.",
+      "Das Objekt wird mit den bestehenden Miet- und Pachtverhältnissen erworben, soweit der Kaufvertrag nichts anderes bestimmt. Angaben zu Einheiten, Flächen, Mieten und Mietverhältnissen stammen vom Verkäufer; sie sind keine Zusicherung und keine Beschaffenheitsangabe von OS Immobilien. Maßgeblich für Kaufgegenstand, Beschaffenheit und Kaufpreis ist allein der notarielle Kaufvertrag.",
     );
   });
 
@@ -183,13 +183,13 @@ describe("Tabelle A: gilt bei jedem Globalobjekt", () => {
 describe("Tabelle C: Punkt 1 ergänzt und die Benennungsklausel", () => {
   it("nennt die Prüfung der Objekt- und Mietunterlagen", () => {
     expect(text(HAUS, "zeitraum")).toBe(
-      "Um dem Kaufinteressenten einen angemessenen Zeitraum für die Kaufentscheidung, die Prüfung der Objekt- und Mietunterlagen, die Kreditbeschaffung und andere Vorbereitungen zu gewähren, reserviert MOREImmo das Objekt ab dem Tag der Unterzeichnung dieser Vereinbarung bis zum vereinbarten Notartermin.",
+      "Um dem Kaufinteressenten einen angemessenen Zeitraum für die Kaufentscheidung, die Prüfung der Objekt- und Mietunterlagen, die Kreditbeschaffung und andere Vorbereitungen zu gewähren, reserviert OS Immobilien das Objekt ab dem Tag der Unterzeichnung dieser Vereinbarung bis zum vereinbarten Notartermin.",
     );
   });
 
   it("enthält die Benennungsklausel wörtlich", () => {
     expect(text(HAUS, "benennung")).toBe(
-      "Der Kaufinteressent kann MOREImmo bis spätestens zehn Tage vor dem Notartermin in Textform eine Gesellschaft benennen, an der er beteiligt ist und die an seiner Stelle den Kaufvertrag schließen soll. MOREImmo wirkt darauf hin, dass der Verkäufer mit der benannten Gesellschaft abschließt. Die Rechte und Pflichten aus dieser Vereinbarung gehen mit der Benennung auf die Gesellschaft über; der Kaufinteressent haftet für die Pflichten aus dieser Vereinbarung neben ihr fort.",
+      "Der Kaufinteressent kann OS Immobilien bis spätestens zehn Tage vor dem Notartermin in Textform eine Gesellschaft benennen, an der er beteiligt ist und die an seiner Stelle den Kaufvertrag schließen soll. OS Immobilien wirkt darauf hin, dass der Verkäufer mit der benannten Gesellschaft abschließt. Die Rechte und Pflichten aus dieser Vereinbarung gehen mit der Benennung auf die Gesellschaft über; der Kaufinteressent haftet für die Pflichten aus dieser Vereinbarung neben ihr fort.",
     );
   });
 });
@@ -207,7 +207,7 @@ describe("Tabelle B: die Käuferin ist eine Gesellschaft", () => {
   });
 
   it("lässt in Punkt 3 nur den ersten Satz stehen", () => {
-    expect(text(HAUS_GMBH, "pflichtbeginn")).toBe("Die Pflichten von MOREImmo beginnen mit Zahlung der Reservierungsgebühr.");
+    expect(text(HAUS_GMBH, "pflichtbeginn")).toBe("Die Pflichten von OS Immobilien beginnen mit Zahlung der Reservierungsgebühr.");
   });
 
   it("ergänzt die Versicherung der Vertretungsbefugnis", () => {

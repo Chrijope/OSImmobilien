@@ -13,7 +13,7 @@ const lies = (pfad: string) => readFileSync(resolve(__dirname, "..", "..", pfad)
 describe("Erinnerung „Deine Unterlagen fehlen noch“", () => {
   it("führt zur Bonität genau dieses Investments, mit Hervorhebung", () => {
     const url = new URL(bonitaetUrlFuerInvestment("inv-123"));
-    expect(url.origin).toBe("https://portal.more.immo");
+    expect(url.origin).toBe("https://osimmobilien.netlify.app");
     expect(url.pathname).toBe("/kunde/investments");
     expect(url.searchParams.get("tab")).toBe("moreimmo");
     expect(url.searchParams.get("inv")).toBe("inv-123");
@@ -32,7 +32,7 @@ describe("Erinnerung „Deine Unterlagen fehlen noch“", () => {
     const code = lies("supabase/functions/check-document-reminders/index.ts");
     // Kein Link und keine Adresse mehr auf die Profilseite (Kommentare zählen nicht).
     expect(code).not.toMatch(/(link:|portalUrl =)[^\n]*kunde\/profil/);
-    expect(code).not.toMatch(/portal\.more\.immo\/kunde\/profil/);
+    expect(code).not.toMatch(/osimmobilien\.netlify\.app\/kunde\/profil/);
     expect(code).toMatch(/const portalUrl = bonitaetUrlFuerInvestment\(inv\.id\)/);
     expect(code).toMatch(/link: bonitaetPfadFuerInvestment\(inv\.id\)/);
   });

@@ -502,7 +502,7 @@ function objektteil(l: Lauf, objekt: BerechnungPdfObjekt, bilder: Bild[], marke?
   const letztes = result.years[result.years.length - 1];
   const kach = k.kacheln;
 
-  l.kopf = `MORE Immo · ${t.kopf.investmentkalkulation}${marke ? ` · ${marke}` : ""}`;
+  l.kopf = `OS Immobilien · ${t.kopf.investmentkalkulation}${marke ? ` · ${marke}` : ""}`;
   neueSeite(l);
 
   // Objekt und Überblick
@@ -893,7 +893,7 @@ function objektteil(l: Lauf, objekt: BerechnungPdfObjekt, bilder: Bild[], marke?
 function vergleichsseite(l: Lauf, a: BerechnungPdfObjekt, b: BerechnungPdfObjekt) {
   const { sprache } = l;
   const t = l.t.vergleich;
-  l.kopf = `MORE Immo · ${l.t.kopf.investmentkalkulation} · ${t.marke}`;
+  l.kopf = `OS Immobilien · ${l.t.kopf.investmentkalkulation} · ${t.marke}`;
   neueSeite(l);
   const alle = vergleicheObjekte({ eingabe: a.input, ergebnis: a.result }, { eingabe: b.input, ergebnis: b.result });
   const zeilen = VERGLEICHSSEITE_KENNZAHLEN.map((bez) => alle.find((z) => z.bezeichnung === bez)).filter(

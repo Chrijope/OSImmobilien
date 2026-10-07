@@ -146,7 +146,7 @@ describe("Kundenportal: Sprache aus dem Profil", () => {
     await waitFor(() => expect(i18n.resolvedLanguage).toBe("en"));
     expect(document.documentElement.lang).toBe("en");
     expect(await screen.findByTestId("sprachwechsel-hinweis")).toHaveTextContent(
-      "Emails and documents: English. To change this, ask your contact at MOREImmo.",
+      "Emails and documents: English. To change this, ask your contact at OS Immobilien.",
     );
   });
 

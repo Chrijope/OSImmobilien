@@ -42,7 +42,7 @@ const Mail = ({
   const zeilen: Array<[string, string]> = []
   if (paketTitel) zeilen.push(['Vertrag als', paketTitel])
   if (signedAt) zeilen.push(['Deine Unterschrift', signedAt])
-  if (kurzSignedAt) zeilen.push(['MOREImmo', kurzSignedAt])
+  if (kurzSignedAt) zeilen.push(['OS Immobilien', kurzSignedAt])
 
   return (
     <EmailLayout
@@ -97,7 +97,7 @@ export const template = {
     hrKontakt: {
       name: 'Sarah Kaiser-Thom',
       rolle: berufsbezeichnung('hr'),
-      email: 's.kaiser-thom@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

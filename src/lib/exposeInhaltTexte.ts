@@ -254,11 +254,11 @@ export const EXPOSE_INHALT_TEXTE: ZweiSprachen<ExposeInhaltTexte> = {
       },
       {
         titel: "Vermittlung und Vergütung",
-        text: "MOREImmo vermittelt diese Wohnung im Auftrag des Verkäufers. Für dich als Käufer fällt keine Maklerprovision an, sofern im Abschnitt Wirtschaftlichkeit nichts anderes ausgewiesen ist. MOREImmo erhält vom Verkäufer eine Vergütung.",
+        text: "OS Immobilien vermittelt diese Wohnung im Auftrag des Verkäufers. Für dich als Käufer fällt keine Maklerprovision an, sofern im Abschnitt Wirtschaftlichkeit nichts anderes ausgewiesen ist. OS Immobilien erhält vom Verkäufer eine Vergütung.",
       },
       {
         titel: "Haftung",
-        text: "Für unrichtige oder unvollständige Angaben haftet MOREImmo nur bei Vorsatz oder grober Fahrlässigkeit. Die Haftung für Schäden aus der Verletzung von Leben, Körper oder Gesundheit bleibt davon unberührt. Für das Eintreten einer bestimmten wirtschaftlichen oder steuerlichen Entwicklung übernehmen wir keine Gewähr.",
+        text: "Für unrichtige oder unvollständige Angaben haftet OS Immobilien nur bei Vorsatz oder grober Fahrlässigkeit. Die Haftung für Schäden aus der Verletzung von Leben, Körper oder Gesundheit bleibt davon unberührt. Für das Eintreten einer bestimmten wirtschaftlichen oder steuerlichen Entwicklung übernehmen wir keine Gewähr.",
       },
       {
         titel: "Persönlicher Link und Datenschutz",
@@ -266,7 +266,7 @@ export const EXPOSE_INHALT_TEXTE: ZweiSprachen<ExposeInhaltTexte> = {
       },
       {
         titel: "Widerruf",
-        text: "Kommt ein Vertrag mit MOREImmo über Fernkommunikationsmittel zustande, etwa eine Reservierungsvereinbarung, steht dir ein gesetzliches Widerrufsrecht zu. Die Belehrung erhältst du mit dem jeweiligen Vertrag.",
+        text: "Kommt ein Vertrag mit OS Immobilien über Fernkommunikationsmittel zustande, etwa eine Reservierungsvereinbarung, steht dir ein gesetzliches Widerrufsrecht zu. Die Belehrung erhältst du mit dem jeweiligen Vertrag.",
       },
     ],
     marktQuelle: "Aus der Marktanalyse, Quelle und Stand je Aussage.",
@@ -500,11 +500,11 @@ export const EXPOSE_INHALT_TEXTE: ZweiSprachen<ExposeInhaltTexte> = {
       },
       {
         titel: "Brokerage and remuneration",
-        text: "MOREImmo brokers this apartment on behalf of the seller. As the buyer, you do not pay a broker’s commission unless stated otherwise in the Financials section. MOREImmo receives remuneration from the seller.",
+        text: "OS Immobilien brokers this apartment on behalf of the seller. As the buyer, you do not pay a broker’s commission unless stated otherwise in the Financials section. OS Immobilien receives remuneration from the seller.",
       },
       {
         titel: "Liability",
-        text: "MOREImmo is liable for incorrect or incomplete information only in cases of intent or gross negligence. This does not affect liability for damage resulting from injury to life, body or health. We accept no liability for any particular economic or tax development occurring.",
+        text: "OS Immobilien is liable for incorrect or incomplete information only in cases of intent or gross negligence. This does not affect liability for damage resulting from injury to life, body or health. We accept no liability for any particular economic or tax development occurring.",
       },
       {
         titel: "Personal link and data protection",
@@ -512,7 +512,7 @@ export const EXPOSE_INHALT_TEXTE: ZweiSprachen<ExposeInhaltTexte> = {
       },
       {
         titel: "Right of withdrawal",
-        text: "If a contract with MOREImmo is concluded by means of distance communication, such as a reservation agreement, you have a statutory right of withdrawal. You will receive the information on this right with the respective contract.",
+        text: "If a contract with OS Immobilien is concluded by means of distance communication, such as a reservation agreement, you have a statutory right of withdrawal. You will receive the information on this right with the respective contract.",
       },
     ],
     marktQuelle: "From the market analysis, with source and date for each statement.",

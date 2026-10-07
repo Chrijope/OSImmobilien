@@ -199,10 +199,10 @@ export function Zeitauswahl({
                             onClick={() => aufWahl(zeit)}
                             aria-pressed={aktiv}
                             aria-label={beschriftungZeitKnopf(zeit, zeitzone, sprache)}
-                            className={`h-9 rounded-[10px] border text-[13px] font-semibold tabular-nums transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#88CFFF] ${
+                            className={`h-9 rounded-[10px] border text-[13px] font-semibold tabular-nums transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#30E19E] ${
                               aktiv
-                                ? "border-[#087AC7] bg-[#087AC7] text-white"
-                                : `border-white/12 ${FLAECHE_FELD_KNOPF} text-white/80 hover:border-[#88CFFF]/50`
+                                ? "border-[#15724F] bg-[#15724F] text-white"
+                                : `border-white/12 ${FLAECHE_FELD_KNOPF} text-white/80 hover:border-[#30E19E]/50`
                             }`}
                           >
                             {uhrzeitInZone(zeit, zeitzone)}
@@ -258,7 +258,7 @@ function BlaetterKnopf({
       onClick={aufKlick}
       disabled={gesperrt}
       aria-label={beschriftung}
-      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/12 ${FLAECHE_FELD_KNOPF} text-white/70 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#88CFFF] disabled:opacity-30`}
+      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/12 ${FLAECHE_FELD_KNOPF} text-white/70 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#30E19E] disabled:opacity-30`}
     >
       {zurueck ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
     </button>

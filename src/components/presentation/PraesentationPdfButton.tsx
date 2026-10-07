@@ -59,7 +59,7 @@ export function PraesentationPdfButton({
   const localNameRef = useRef<string | null>(null);
 
   const storagePath = preset
-    ? `${preset}/${PDF_VERSION}/${filename || `MOREImmo_${preset}.pdf`}`
+    ? `${preset}/${PDF_VERSION}/${filename || `OS-Immobilien_${preset}.pdf`}`
     : null;
 
   const getFreshSignedUrl = async () => {
@@ -152,7 +152,7 @@ export function PraesentationPdfButton({
         const url = (await getFreshSignedUrl()) || remoteUrlRef.current;
         if (url) {
           remoteUrlRef.current = url;
-          const name = filename || `MOREImmo_${preset ?? "praesentation"}.pdf`;
+          const name = filename || `OS-Immobilien_${preset ?? "praesentation"}.pdf`;
           triggerRemoteDownload(url, name);
           toast({ title: "PDF heruntergeladen ✓" });
           setStatus("ready");

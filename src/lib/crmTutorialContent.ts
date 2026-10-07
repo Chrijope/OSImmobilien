@@ -180,7 +180,7 @@ export const CRM_TUTORIAL_CONTENT: Record<string, Omit<CrmTutorialStep, "url">> 
   "/aftersales": { titel: "After-Sales", kurz: "Betreuung nach Kauf.", erklaerung: "Prozesse und Materialien für die Betreuung deiner Kunden nach Kaufabschluss." },
   "/bonitaet": { titel: "Bonitäts-Ordner", kurz: "Bonitätsunterlagen-Checkliste.", erklaerung: "Was gehört in die Bonitätsunterlagen? Hier findest du die vollständige Checkliste." },
   "/chat": { titel: "Chat", kurz: "Team-Chat.", erklaerung: "Interner Chat mit deinen Kollegen – pinne bis zu 3 wichtige Chats." },
-  "/support-kontaktieren": { titel: "Support", kurz: "Hilfe & Support.", erklaerung: "Direkter Draht zum MOREImmo-Support bei Fragen oder Problemen." },
+  "/support-kontaktieren": { titel: "Support", kurz: "Hilfe & Support.", erklaerung: "Direkter Draht zum OS Immobilien-Support bei Fragen oder Problemen." },
   "/helpdesk": { titel: "Helpdesk", kurz: "Support-Tickets bearbeiten.", erklaerung: "Backoffice-Ansicht der eingehenden Support-Tickets." },
   "/ansprechpartner": { titel: "Ansprechpartner", kurz: "Team-Kontakte.", erklaerung: "Alle internen Ansprechpartner mit Zuständigkeiten und Kontaktdaten." },
   "/teampartner": { titel: "Teampartner", kurz: "Dein Vertriebsteam.", erklaerung: "Übersicht deiner Teampartner mit Rollen, Karrierestufen und Leistungen." },

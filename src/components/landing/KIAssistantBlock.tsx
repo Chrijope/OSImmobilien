@@ -111,17 +111,17 @@ export default function KIAssistantBlock({
           className="flex items-center justify-center rounded-2xl shrink-0"
           style={{
             width: 48, height: 48,
-            background: "hsl(207, 90%, 55%)",
+            background: "hsl(157, 68%, 39%)",
             color: "#fff",
-            boxShadow: "0 8px 24px -8px hsla(207, 90%, 55%, 0.5)",
+            boxShadow: "0 8px 24px -8px hsla(157, 68%, 39%, 0.5)",
           }}
         >
           <Sparkles className="w-5 h-5" strokeWidth={2.5} />
         </div>
         <div className="flex-1 min-w-0">
           <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full mb-2"
-            style={{ background: "hsl(207, 90%, 68%, 0.12)" }}>
-            <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "hsl(207, 90%, 55%)" }}>
+            style={{ background: "hsl(157, 68%, 46%, 0.12)" }}>
+            <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "hsl(157, 68%, 39%)" }}>
               {badge}
             </span>
           </div>
@@ -154,7 +154,7 @@ export default function KIAssistantBlock({
           aria-label="Senden"
           className="absolute right-3 bottom-3 w-9 h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:scale-105"
           style={{
-            background: input.trim() && !loading ? "hsl(207, 90%, 55%)" : "#9ca3af",
+            background: input.trim() && !loading ? "hsl(157, 68%, 39%)" : "#9ca3af",
             color: "#fff",
           }}
         >
@@ -185,7 +185,7 @@ export default function KIAssistantBlock({
       {/* CTA hint */}
       {!answer && !loading && !error && (
         <p className={`text-[11px] mt-3 flex items-center gap-1.5 ${isDark ? "text-white/50" : "text-[hsl(220,10%,46%)]"}`}>
-          <Sparkles className="w-3 h-3" style={{ color: "hsl(207, 90%, 55%)" }} />
+          <Sparkles className="w-3 h-3" style={{ color: "hsl(157, 68%, 39%)" }} />
           {ctaLabel} . Cmd/Ctrl + Enter zum Senden.
         </p>
       )}
@@ -200,7 +200,7 @@ export default function KIAssistantBlock({
       {/* Loading */}
       {loading && !answer && (
         <div className={`mt-5 flex items-center gap-2 text-sm ${isDark ? "text-white/50" : "text-[hsl(220,10%,46%)]"}`}>
-          <Loader2 className="w-4 h-4 animate-spin" style={{ color: "hsl(207, 90%, 55%)" }} />
+          <Loader2 className="w-4 h-4 animate-spin" style={{ color: "hsl(157, 68%, 39%)" }} />
           KI analysiert deine Eingabe...
         </div>
       )}

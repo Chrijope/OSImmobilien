@@ -58,7 +58,7 @@ export interface RateAnteile {
  */
 export const RATE_EINGANG = {
   /**
-   * Sanierter Bestand der Beratungspräsentation MOREImmo
+   * Sanierter Bestand der Beratungspräsentation OS Immobilien
    * (`src/pages/BeratungspraesentationHV.tsx`, Musterrechnung `bestand`):
    * 1.400 € Kaltmiete, 1.604 € Zins und Tilgung, 150 € nicht umlagefähig,
    * 126 € Entlastung und 228 € Eigenbeitrag ab dem zweiten Jahr.

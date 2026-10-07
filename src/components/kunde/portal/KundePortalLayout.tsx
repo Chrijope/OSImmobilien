@@ -15,7 +15,7 @@ import { uebernimmProfilsprache, useHtmlLang, portalSprache } from "@/i18n/porta
 import { datumText } from "@/lib/sprachFormat";
 import { SPRACH_NAMEN, type Sprache } from "@/lib/kundenSprache";
 import logoImg from "@/assets/moreimmo-logo.png";
-import logoImgDarkAsset from "@/assets/moreimmo-logo-dark.png.asset.json";
+import logoImgDark from "@/assets/moreimmo-logo-dark.png";
 import { useUser } from "@/contexts/UserContext";
 import { useUngeleseneChats } from "./useUngeleseneChats";
 import { ROLES, type UserRole } from "@/types/user";
@@ -29,7 +29,6 @@ import { cn } from "@/lib/utils";
 import { confirmDialog } from "@/lib/confirm";
 
 // Das helle Logo fuer den Dunkelmodus, wie in der Seitenleiste des CRM (`AppSidebar.tsx`).
-const logoImgDark = logoImgDarkAsset.url;
 
 const NAV = [
   { to: "/kunde/stammdaten", icon: User, key: "uebersicht" },
@@ -264,8 +263,8 @@ export function KundePortalLayout({ children }: { children?: ReactNode }) {
       {/* Header */}
       <header className="portal-header sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
         <div className="portal-header-inner mx-auto w-full max-w-none flex items-center gap-3 sm:gap-6 px-4 sm:px-6 h-16">
-          <img src={logoImg} alt="MOREImmo" className="h-9 sm:h-10 w-auto object-contain shrink-0 dark:hidden" />
-          <img src={logoImgDark} alt="MOREImmo" className="h-9 sm:h-10 w-auto object-contain shrink-0 hidden dark:block" />
+          <img src={logoImg} alt="OS Immobilien" className="h-9 sm:h-10 w-auto object-contain shrink-0 dark:hidden" />
+          <img src={logoImgDark} alt="OS Immobilien" className="h-9 sm:h-10 w-auto object-contain shrink-0 hidden dark:block" />
           <div className="hidden sm:block min-w-0 flex-1">
             <div className="text-[11px] uppercase tracking-[0.18em] text-foreground/45">{t("portal.header.label")}</div>
             <div className="text-sm font-medium truncate">{greeting}</div>

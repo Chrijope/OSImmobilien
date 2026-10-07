@@ -1,5 +1,5 @@
 /**
- * Kostenbremse und gemeinsame Auszüge des MORE Lotsen (Runde 2, 28.09.2026).
+ * Kostenbremse und gemeinsame Auszüge des OS Lotsen (Runde 2, 28.09.2026).
  *
  * Bewiesen wird:
  *   1. Ein Sperrvermerk wird per INSERT gewonnen: Von zwei gleichzeitigen
@@ -353,7 +353,7 @@ describe("Kundendaten in der Frage (LOTSE3-002)", () => {
       "Wie hoch ist die Bruttorendite bei 289.000 €?",
       "Lohnt sich die Sanierung von 2019?",
       "Die Frau des Mieters zahlt 850 €, stimmt das?",
-      "Was verdient MOREImmo an den 289.000 €?",
+      "Was verdient OS Immobilien an den 289.000 €?",
       "Welche Unterlagen liegen vor, welche fehlen?",
       // Runde 3: Objektfragen mit Beträgen je Zeitraum
       "Kaltmiete netto 850 € im Monat?",

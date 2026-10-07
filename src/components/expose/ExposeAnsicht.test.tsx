@@ -252,7 +252,7 @@ describe("Farben: kein Orange an Zahlen und Hervorhebungen", () => {
     expect(text).toContain("--akzent:#BD550A");
     expect(rechnerCss()).not.toMatch(/akzent|#BD550A|#A34A08|189,\s*85,\s*10/i);
     // Kaufpreis und Rendite: Symbol blau, die Zahl erbt die dunkle Textfarbe.
-    expect(regel(text, ".premium-expose .stat-preis .round,.premium-expose .stat-rendite .round")).toBe("background:var(--pale);color:#0466a9");
+    expect(regel(text, ".premium-expose .stat-preis .round,.premium-expose .stat-rendite .round")).toBe("background:var(--pale);color:#13704D");
     expect(text).not.toMatch(/\.stat-preis strong|\.stat-rendite strong/);
   });
 
@@ -262,9 +262,9 @@ describe("Farben: kein Orange an Zahlen und Hervorhebungen", () => {
     const hinter = zahlung.match(/background:(#[0-9a-f]{6})/i)![1];
     const schrift = zahlung.match(/;color:(#[0-9a-f]{6})/i)![1];
     expect(kontrast(schrift, hinter)).toBeGreaterThanOrEqual(4.5);
-    // Standortnummern und die betonte Abschreibung: #0466a9 auf dem hellen Blau --pale (#edf7fd).
-    expect(kontrast("#0466a9", "#edf7fd")).toBeGreaterThanOrEqual(4.5);
-    expect(regel(text, ".premium-expose .argument-nr")).toContain("background:var(--pale);color:#0466a9");
+    // Standortnummern und die betonte Abschreibung: #13704D auf dem hellen Blau --pale (#edf7fd).
+    expect(kontrast("#13704D", "#edf7fd")).toBeGreaterThanOrEqual(4.5);
+    expect(regel(text, ".premium-expose .argument-nr")).toContain("background:var(--pale);color:#13704D");
   });
 });
 

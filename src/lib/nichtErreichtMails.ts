@@ -127,7 +127,7 @@ export function planeNichtErreichtMail(e: MailPlanEingabe): MailPlan {
  * Büro, von dort wird weitergegeben. Dieselben Werte stehen serverseitig in
  * supabase/functions/_shared/zustaendiger-absender.ts.
  */
-export const TEAM_ABSENDER = { name: "MOREImmo Team", email: "office@more.immo" } as const;
+export const TEAM_ABSENDER = { name: "OS Immobilien Team", email: "os@os-immobilien.com" } as const;
 
 export interface MailAnfrageEingabe {
   kontaktId: string;

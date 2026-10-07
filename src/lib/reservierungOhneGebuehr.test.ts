@@ -147,7 +147,7 @@ describe("Die Reservierung ohne Gebühr", () => {
     const punkt3 = ohne.ziffern.find((z) => z.kennung === "pflichtbeginn")!;
     expect(punkt3.nummer).toBe("3.");
     expect(punkt3.text).toBe(
-      "Die Pflichten von MOREImmo beginnen mit Unterzeichnung dieser Vereinbarung. "
+      "Die Pflichten von OS Immobilien beginnen mit Unterzeichnung dieser Vereinbarung. "
       + "Für diese Reservierung wird keine Reservierungsgebühr erhoben.",
     );
   });

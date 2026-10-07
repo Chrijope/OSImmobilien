@@ -24,7 +24,7 @@ import {
  * Bewerbung auf der Partnerseite vorbehalten.
  */
 
-const BEWERBUNG_MAIL = "bewerbung@more.immo";
+const BEWERBUNG_MAIL = "os@os-immobilien.com";
 
 /** Feines Karo wie auf den PDF-Deckblättern, nach aussen auslaufend. */
 function KaroFlaeche() {
@@ -60,7 +60,7 @@ function Kopf({ dunkel = false, rechts }: { dunkel?: boolean; rechts?: React.Rea
         <Link to="/karriere" aria-label="Zur Karriereübersicht">
           <img
             src={logoImg}
-            alt="MOREImmo"
+            alt="OS Immobilien"
             className={`h-8 object-contain ${dunkel ? "brightness-0 invert" : ""}`}
           />
         </Link>
@@ -116,18 +116,18 @@ const KarrierePage = () => {
           <div
             aria-hidden
             className="pointer-events-none absolute -left-40 -top-52 h-[520px] w-[520px] rounded-full"
-            style={{ background: "radial-gradient(circle, rgba(8,122,199,.45) 0%, rgba(8,122,199,0) 65%)" }}
+            style={{ background: "radial-gradient(circle, rgba(21,114,79,.45) 0%, rgba(21,114,79,0) 65%)" }}
           />
           <KaroFlaeche />
           <div className="relative mx-auto max-w-5xl px-6 pb-16 pt-32">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#88CFFF]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#88CFFF]" />
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#30E19E]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#30E19E]" />
               Bewerbungen offen
             </span>
             <h1 className="mt-6 max-w-3xl text-4xl font-bold leading-[1.1] tracking-tight md:text-5xl">
               {stelle.titel}
             </h1>
-            <div aria-hidden className="mt-5 h-[3px] w-11 rounded-full bg-[#087AC7]" />
+            <div aria-hidden className="mt-5 h-[3px] w-11 rounded-full bg-[#15724F]" />
             <div className="mt-7 flex flex-wrap items-center gap-2.5 text-sm text-white/70">
               {[
                 { icon: Building2, wert: stelle.abteilung },
@@ -140,7 +140,7 @@ const KarrierePage = () => {
                     key={m.wert}
                     className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1.5"
                   >
-                    <m.icon className="h-3.5 w-3.5 text-[#88CFFF]" />
+                    <m.icon className="h-3.5 w-3.5 text-[#30E19E]" />
                     {m.wert}
                   </span>
                 ))}
@@ -212,23 +212,23 @@ const KarrierePage = () => {
         <div
           aria-hidden
           className="pointer-events-none absolute left-1/2 -top-56 h-[620px] w-[900px] -translate-x-1/2 rounded-full"
-          style={{ background: "radial-gradient(ellipse, rgba(8,122,199,.42) 0%, rgba(8,122,199,0) 68%)" }}
+          style={{ background: "radial-gradient(ellipse, rgba(21,114,79,.42) 0%, rgba(21,114,79,0) 68%)" }}
         />
         <div
           aria-hidden
           className="pointer-events-none absolute -bottom-52 -right-32 h-[460px] w-[460px] rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(136,207,255,.16) 0%, rgba(136,207,255,0) 66%)" }}
+          style={{ background: "radial-gradient(circle, rgba(48,225,158,.16) 0%, rgba(48,225,158,0) 66%)" }}
         />
         <KaroFlaeche />
 
         <div className="relative mx-auto max-w-3xl px-6 pb-24 pt-36 text-center">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#88CFFF]">Karriere</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#30E19E]">Karriere</p>
           <h1 className="mt-6 text-4xl font-bold leading-[1.08] tracking-tight md:text-6xl">
             Werde Teil eines
             <br />
-            <span className="text-[#88CFFF]">exklusiven Teams.</span>
+            <span className="text-[#30E19E]">exklusiven Teams.</span>
           </h1>
-          <div aria-hidden className="mx-auto mt-7 h-[3px] w-11 rounded-full bg-[#087AC7]" />
+          <div aria-hidden className="mx-auto mt-7 h-[3px] w-11 rounded-full bg-[#15724F]" />
           <p className="mx-auto mt-7 max-w-xl leading-relaxed text-white/70">
             Wir suchen außergewöhnliche Persönlichkeiten, die mit uns den deutschen
             Immobilien-Kapitalanlagemarkt prägen.
@@ -391,9 +391,9 @@ function Fuss() {
   return (
     <footer className="border-t border-border bg-card/40">
       <div className="mx-auto max-w-5xl px-6 py-10 text-center">
-        <img src={logoImg} alt="MOREImmo" className="mx-auto mb-4 h-7 object-contain opacity-60" />
+        <img src={logoImg} alt="OS Immobilien" className="mx-auto mb-4 h-7 object-contain opacity-60" />
         <p className="text-xs text-muted-foreground">
-          © {new Date().getFullYear()} MOREImmo · Einzelunternehmen Christian Kurz. Alle Rechte
+          © {new Date().getFullYear()} OS Immobilien Holding GmbH. Alle Rechte
           vorbehalten.
         </p>
       </div>

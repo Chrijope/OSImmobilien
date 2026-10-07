@@ -217,7 +217,7 @@ export function KalenderKonten({ kompakt = false, aufAenderung }: Props) {
                   </a>
                 </li>
                 <li>Unter „Anmeldung und Sicherheit" auf „App-spezifische Passwörter"</li>
-                <li>Ein neues Passwort mit dem Namen „MOREImmo CRM" erstellen</li>
+                <li>Ein neues Passwort mit dem Namen „OS Immobilien CRM" erstellen</li>
                 <li>Das erzeugte Passwort hier einfügen</li>
               </ol>
             </div>

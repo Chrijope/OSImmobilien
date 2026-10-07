@@ -15,7 +15,7 @@
  * ────────────────────────────────────────────────────────────────────────────
  * ACHTUNG, WERBERECHT: Die Vorlage wirbt an zwei Stellen mit Zahlen ("1,000+
  * investors", fuenf Sterne, "1,000+ expats already use this with us"). Solche
- * Angaben duerfen wir nur zeigen, wenn sie fuer MORE Immo stimmen und belegbar
+ * Angaben duerfen wir nur zeigen, wenn sie fuer OS Immobilien stimmen und belegbar
  * sind. Eine erfundene Bewertung oder Nutzerzahl ist irrefuehrende Werbung und
  * nach dem UWG angreifbar, dazu kaeme der Bildrechtsaerger bei fremden
  * Gesichtern. Deshalb stehen hier zwei Konstanten, die absichtlich `null` sind.
@@ -25,7 +25,7 @@
  *
  * STAND 17.09.2026: Christian hat ausdruecklich entschieden, die Angaben der
  * Vorlage zu uebernehmen. Die Warnung oben bleibt deshalb wortwoertlich
- * stehen, denn sie gilt weiter: Die beiden Angaben muessen fuer MORE Immo
+ * stehen, denn sie gilt weiter: Die beiden Angaben muessen fuer OS Immobilien
  * belegbar sein. Wer den Beleg nicht fuehren kann, setzt die betreffende
  * Konstante wieder auf `null`, dann steht dort der Platzhalter statt einer
  * Zahl, und sonst aendert sich nichts.
@@ -98,7 +98,7 @@ function Platzhalter({ text, aufDunkel }: { text: string; aufDunkel?: boolean })
  * Fuenf Sterne als Umriss, rein dekorativ.
  *
  * Gefuellt im hellen Blau `--info` statt im Primaerblau: Das Primaerblau
- * (#087AC7) liegt auf dem Marineton fast auf der Flaeche und verschwindet.
+ * (#15724F) liegt auf dem Marineton fast auf der Flaeche und verschwindet.
  */
 function Sterne({ sterne }: { sterne: number }) {
   return (
@@ -179,7 +179,7 @@ export function ExpatsKopfbereich({
         <header className="flex items-center justify-between gap-3">
           <img
             src={logoImg}
-            alt="MORE Immo"
+            alt="OS Immobilien"
             className="h-6 w-auto object-contain brightness-0 invert sm:h-7 lg:h-9"
           />
           {BEWERTUNG ? (
@@ -287,7 +287,7 @@ export function ExpatsFusszeile() {
         gibt. Die Seite selbst bleibt fest englisch.
       */}
       <p className="mt-3 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center text-[11px] text-muted-foreground lg:mt-4 lg:text-xs">
-        <span>© {new Date().getFullYear()} MOREImmo</span>
+        <span>© {new Date().getFullYear()} OS Immobilien</span>
         <a
           href={mitSeitenSprache("/impressum", "en")}
           target="_blank"

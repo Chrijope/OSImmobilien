@@ -1,5 +1,5 @@
 /**
- * Die Regeln des MORE Lotsen (`supabase/functions/_shared/lotse-regeln.ts`).
+ * Die Regeln des OS Lotsen (`supabase/functions/_shared/lotse-regeln.ts`).
  *
  * Bewiesen wird:
  *   1. Nur die freigegebenen Rollen, nie die Rolle Tippgeber. Die
@@ -287,7 +287,7 @@ describe("Antwort mit Provisionsangabe wird ersetzt (Vorgabe vom 28.09.2026)", (
   it("erkennt Begriff mit Zahl oder Prozentsatz", () => {
     expect(antwortNenntProvision("Die Provision beträgt 3 % vom Kaufpreis.")).toBe(true);
     expect(antwortNenntProvision("Die Courtage liegt bei drei Prozent.")).toBe(true);
-    expect(antwortNenntProvision("MOREImmo erhält eine Vergütung von 4000 Euro.")).toBe(true);
+    expect(antwortNenntProvision("OS Immobilien erhält eine Vergütung von 4000 Euro.")).toBe(true);
     expect(antwortNenntProvision(`${LOTSE_PROVISION_TEXT} Wende dich dazu bitte an deinen Ansprechpartner in der Geschäftsleitung.`)).toBe(false);
     expect(antwortNenntProvision("Das Hausgeld liegt bei 210 Euro.")).toBe(false);
     expect(nenntVerguetungsbegriff("Die Marge ist")).toBe(true);
@@ -295,7 +295,7 @@ describe("Antwort mit Provisionsangabe wird ersetzt (Vorgabe vom 28.09.2026)", (
 
   it("englische Begriffe zählen genauso (LOTSE-R8-003)", () => {
     for (const satz of [
-      "MOREImmo receives a commission of 6 percent.",
+      "OS Immobilien receives a commission of 6 percent.",
       "The developer pays a margin of 12 %.",
       "A finder's fee of EUR 5,000 applies.",
       "Brokerage fee: 3.57 % of the purchase price.",
@@ -333,7 +333,7 @@ describe("Antwort erst ganz lesen, dann prüfen (LOTSE-R8-001)", () => {
       },
     });
   }
-  const mitBetragZuerst = [zeile("MOREImmo erhält 6 % des Kaufpreises"), zeile(" als Provision."), zeile(null, "stop"), "data: [DONE]\n"].join("");
+  const mitBetragZuerst = [zeile("OS Immobilien erhält 6 % des Kaufpreises"), zeile(" als Provision."), zeile(null, "stop"), "data: [DONE]\n"].join("");
   const normal = [zeile("Das Hausgeld liegt bei 210 Euro.\nQUELLEN: Objektdaten"), zeile(null, "stop"), "data: [DONE]\n"].join("");
 
   it("der Betrag vor dem Provisionsbegriff wird erkannt, bei jeder Stückgrenze", async () => {
@@ -402,10 +402,10 @@ describe("Kosten der Verwaltung sind keine Provision", () => {
 });
 
 describe("Provision ohne das Wort Provision (LOTSE-R9-001)", () => {
-  it("ersetzt Antworten mit Vertrieb oder MOREImmo als Empfänger", () => {
+  it("ersetzt Antworten mit Vertrieb oder OS Immobilien als Empfänger", () => {
     expect(antwortNenntProvision("Der Vertrieb erhält 6 % vom Kaufpreis.")).toBe(true);
-    expect(antwortNenntProvision("MOREImmo erhält vom Bauträger ein Vermittlungshonorar von 10.000 Euro.")).toBe(true);
-    expect(ohneVerguetungsangaben("Baujahr 2020. MOREImmo erhält vom Bauträger 10.000 Euro.")).toBe("Baujahr 2020.");
+    expect(antwortNenntProvision("OS Immobilien erhält vom Bauträger ein Vermittlungshonorar von 10.000 Euro.")).toBe(true);
+    expect(ohneVerguetungsangaben("Baujahr 2020. OS Immobilien erhält vom Bauträger 10.000 Euro.")).toBe("Baujahr 2020.");
   });
 
   it("lässt normale Kosten- und Mietangaben stehen", () => {
@@ -415,16 +415,16 @@ describe("Provision ohne das Wort Provision (LOTSE-R9-001)", () => {
   });
 });
 
-describe("Zahlung an Vertrieb oder MOREImmo (LOTSE-R10)", () => {
+describe("Zahlung an Vertrieb oder OS Immobilien (LOTSE-R10)", () => {
   it("erkennt Empfänger in jeder Reihenfolge und Beträge mit Tausenderpunkt", () => {
-    expect(antwortNenntProvision("Der Bauträger zahlt 6 % an MOREImmo.")).toBe(true);
+    expect(antwortNenntProvision("Der Bauträger zahlt 6 % an OS Immobilien.")).toBe(true);
     expect(antwortNenntProvision("Der Vertrieb erhält 10.000 Euro.")).toBe(true);
     expect(antwortNenntProvision("Der Makler bekommt 3,57 % vom Kaufpreis.")).toBe(true);
-    expect(ohneVerguetungsangaben("Baujahr 2020. Der Bauträger zahlt 6 % an MOREImmo.")).toBe("Baujahr 2020.");
+    expect(ohneVerguetungsangaben("Baujahr 2020. Der Bauträger zahlt 6 % an OS Immobilien.")).toBe("Baujahr 2020.");
   });
 
-  it("lässt Kaufpreis, Miete und Hauskosten mit MOREImmo oder Makler im Satz stehen", () => {
-    const satz = "Das von MOREImmo angebotene Objekt kostet 289.000 Euro.";
+  it("lässt Kaufpreis, Miete und Hauskosten mit OS Immobilien oder Makler im Satz stehen", () => {
+    const satz = "Das von OS Immobilien angebotene Objekt kostet 289.000 Euro.";
     expect(antwortNenntProvision(satz)).toBe(false);
     expect(ohneVerguetungsangaben(satz)).toBe(satz);
     expect(antwortNenntProvision("Laut Makler-Exposé beträgt die Kaltmiete 850 €.")).toBe(false);
@@ -435,21 +435,21 @@ describe("Zahlung an Vertrieb oder MOREImmo (LOTSE-R10)", () => {
 describe("Zahlung in Worten und Quelle statt Empfänger (LOTSE-R11)", () => {
   it("erkennt Prozent in Worten und Währung vor dem Betrag", () => {
     expect(antwortNenntProvision("Der Vertrieb erhält sechs Prozent vom Kaufpreis.")).toBe(true);
-    expect(antwortNenntProvision("MOREImmo erhält EUR 10.000 vom Bauträger.")).toBe(true);
+    expect(antwortNenntProvision("OS Immobilien erhält EUR 10.000 vom Bauträger.")).toBe(true);
     expect(ohneVerguetungsangaben("Baujahr 2020. Der Vertrieb erhält sechs Prozent vom Kaufpreis.")).toBe("Baujahr 2020.");
   });
 
-  it("lässt Angaben mit MOREImmo oder Makler als Quelle stehen", () => {
+  it("lässt Angaben mit OS Immobilien oder Makler als Quelle stehen", () => {
     for (const satz of [
-      "Laut MOREImmo zahlt der Mieter 850 € Kaltmiete.",
+      "Laut OS Immobilien zahlt der Mieter 850 € Kaltmiete.",
       "Laut Makler-Exposé zahlt der Mieter 850 € im Monat.",
-      "Das von MOREImmo angebotene Objekt kostet 289.000 Euro, der Mieter zahlt 850 €.",
+      "Das von OS Immobilien angebotene Objekt kostet 289.000 Euro, der Mieter zahlt 850 €.",
     ]) {
       expect(antwortNenntProvision(satz)).toBe(false);
       expect(ohneVerguetungsangaben(satz)).toBe(satz);
     }
-    // Quelle genannt, aber trotzdem eine Zahlung an MOREImmo: fällt.
-    expect(antwortNenntProvision("Laut Exposé zahlt der Bauträger 6 % an MOREImmo.")).toBe(true);
+    // Quelle genannt, aber trotzdem eine Zahlung an OS Immobilien: fällt.
+    expect(antwortNenntProvision("Laut Exposé zahlt der Bauträger 6 % an OS Immobilien.")).toBe(true);
   });
 });
 
@@ -499,8 +499,8 @@ describe("Nur Vergütungssätze fallen, nicht die ganze Antwort (Fehler vom 28.0
 
   it("entfernt den Absatz mit der Provision, eigene Absätze und die Quellen bleiben (Runde 5)", () => {
     // Im selben Absatz fällt seit Runde 5 der ganze Absatz.
-    expect(antwortOhneVerguetung(`Das Hausgeld liegt bei 210 €. Der Bauträger zahlt 6 % Provision an MOREImmo. Die Kaltmiete beträgt 850 €.\n${QUELLEN}`)).toBe("");
-    const roh = `Das Hausgeld liegt bei 210 €.\n\nDer Bauträger zahlt 6 % Provision an MOREImmo.\n\nDie Kaltmiete beträgt 850 €.\n${QUELLEN}`;
+    expect(antwortOhneVerguetung(`Das Hausgeld liegt bei 210 €. Der Bauträger zahlt 6 % Provision an OS Immobilien. Die Kaltmiete beträgt 850 €.\n${QUELLEN}`)).toBe("");
+    const roh = `Das Hausgeld liegt bei 210 €.\n\nDer Bauträger zahlt 6 % Provision an OS Immobilien.\n\nDie Kaltmiete beträgt 850 €.\n${QUELLEN}`;
     expect(antwortOhneVerguetung(roh)).toBe(`Das Hausgeld liegt bei 210 €.\n\nDie Kaltmiete beträgt 850 €.\n${QUELLEN}`);
     expect(lotseErgebnis(fertig(roh))).toEqual({ art: "antwort", text: `Das Hausgeld liegt bei 210 €.\n\nDie Kaltmiete beträgt 850 €.\n${QUELLEN}` });
     // Eine Liste ist ein Block und fällt ganz.
@@ -508,7 +508,7 @@ describe("Nur Vergütungssätze fallen, nicht die ganze Antwort (Fehler vom 28.0
   });
 
   it("Provision und Zahl in zwei Sätzen, oder neben einer Käuferangabe, fallen trotzdem", () => {
-    expect(antwortOhneVerguetung("Baujahr 2020.\n\nMOREImmo erhält eine Provision. Sie beträgt 6 % vom Kaufpreis.\n\nLift vorhanden."))
+    expect(antwortOhneVerguetung("Baujahr 2020.\n\nOS Immobilien erhält eine Provision. Sie beträgt 6 % vom Kaufpreis.\n\nLift vorhanden."))
       .toBe("Baujahr 2020.\n\nLift vorhanden.");
     expect(antwortOhneVerguetung("Baujahr 2020.\n\nKeine Käuferprovision, der Bauträger zahlt 6 %.")).toBe("Baujahr 2020.");
     expect(antwortOhneVerguetung("Baujahr 2020.\n\nFür dich provisionsfrei, der Vertrieb erhält 6 % Provision.")).toBe("Baujahr 2020.");
@@ -531,11 +531,11 @@ describe("Frage nach Provision: fester Text ohne Modell (Vorgabe vom 28.09.2026)
   it("erkennt Fragen nach Provision, Vergütung des Vertriebs und Verdienst", () => {
     for (const frage of [
       "Wie hoch ist die Provision?",
-      "Was verdient MOREImmo an der Wohnung?",
+      "Was verdient OS Immobilien an der Wohnung?",
       "What commission does the sales team get?",
       "Wie viel bekommt der Vertrieb?",
       "Wie viel Prozent gehen an den Vertrieb?",
-      "Wie hoch ist der Verdienst von MORE Immo?",
+      "Wie hoch ist der Verdienst von OS Immobilien?",
       "Welche Courtage fällt an?",
       "Wie hoch ist die Marge des Bauträgers?",
       "Was bekommt der Makler vom Bauträger?",
@@ -568,7 +568,7 @@ describe("Nachbarsätze und Zahlungsrichtung (Runde 2, LOTSE2-001, 006, 008)", (
     expect(antwortOhneVerguetung("Baujahr 2020.\n\n6 % vom Kaufpreis.\n\nDas ist die Innenprovision.\n\nLift vorhanden."))
       .toBe("Baujahr 2020.\n\nLift vorhanden.");
     // Im selben Absatz fällt ohnehin der ganze Absatz.
-    expect(antwortOhneVerguetung("Baujahr 2020.\n\n- 6 % vom Kaufpreis\n- Das ist die Innenprovision von MOREImmo.\n\nLift vorhanden."))
+    expect(antwortOhneVerguetung("Baujahr 2020.\n\n- 6 % vom Kaufpreis\n- Das ist die Innenprovision von OS Immobilien.\n\nLift vorhanden."))
       .toBe("Baujahr 2020.\n\nLift vorhanden.");
     // Und in der anderen Richtung.
     expect(antwortOhneVerguetung("Die Innenprovision ist vereinbart.\n\nSie beträgt 6 % vom Kaufpreis.\n\nLift vorhanden.")).toBe("Lift vorhanden.");
@@ -586,10 +586,10 @@ describe("Nachbarsätze und Zahlungsrichtung (Runde 2, LOTSE2-001, 006, 008)", (
 
   it("Zahlungsrichtung ist eine Provisionsfrage, die Vergütung der Verwaltung nicht", () => {
     for (const frage of [
-      "Wie viel zahlt der Bauträger an MOREImmo?",
+      "Wie viel zahlt der Bauträger an OS Immobilien?",
       "Wie viel zahlt der Bauträger an den Vertrieb?",
       "Was bezahlt der Bauträger an den Makler?",
-      "Überweist der Bauträger etwas an MORE Immo?",
+      "Überweist der Bauträger etwas an OS Immobilien?",
       "Wie viel fließt an den Vertrieb?",
       "Welche Vergütung erhält die Hausverwaltung und welche der Vertrieb?",
     ]) expect(frageNachProvision(frage), frage).toBe(true);
@@ -606,7 +606,7 @@ describe("Nachbarsätze und Zahlungsrichtung (Runde 2, LOTSE2-001, 006, 008)", (
 
 describe("Blöcke: Tabellen, Listen, Überschriften (REVIEW-002)", () => {
   it("eine Tabelle unter einer Provisionsüberschrift fällt ganz, der Rest bleibt", () => {
-    const roh = "Das Hausgeld liegt bei 210 €.\n\nInnenprovision:\n| Empfänger | Anteil |\n| --- | --- |\n| MOREImmo | 6 % |\n\nLift vorhanden.";
+    const roh = "Das Hausgeld liegt bei 210 €.\n\nInnenprovision:\n| Empfänger | Anteil |\n| --- | --- |\n| OS Immobilien | 6 % |\n\nLift vorhanden.";
     expect(antwortOhneVerguetung(roh)).toBe("Das Hausgeld liegt bei 210 €.\n\nLift vorhanden.");
   });
 
@@ -616,7 +616,7 @@ describe("Blöcke: Tabellen, Listen, Überschriften (REVIEW-002)", () => {
   });
 
   it("eine Überschrift allein nimmt den Folgeabsatz mit", () => {
-    const roh = "Baujahr 2020.\n\n## Innenprovision\n\nMOREImmo: 6 %, Vertrieb: 4 %.\n\nLift vorhanden.";
+    const roh = "Baujahr 2020.\n\n## Innenprovision\n\nOS Immobilien: 6 %, Vertrieb: 4 %.\n\nLift vorhanden.";
     expect(antwortOhneVerguetung(roh)).toBe("Baujahr 2020.\n\nLift vorhanden.");
   });
 
@@ -651,15 +651,15 @@ describe("Runde 3: Verlauf, Verwaltung, Zahlungsrichtung, Quellenbezeichnung (RE
       expect(ohneVerguetungsangaben(roh), roh).toBe(roh);
     }
     expect(antwortOhneVerguetung("Baujahr 2020.\n\nDie SEV und der Vertrieb erhalten eine Vergütung von 6 %.")).toBe("Baujahr 2020.");
-    expect(ohneVerguetungsangaben("Baujahr 2020.\n\nDie Verwaltung von MOREImmo erhält eine Vergütung von 6 %.")).toBe("Baujahr 2020.");
+    expect(ohneVerguetungsangaben("Baujahr 2020.\n\nDie Verwaltung von OS Immobilien erhält eine Vergütung von 6 %.")).toBe("Baujahr 2020.");
   });
 
   it("Zahlung ohne „an“, im Passiv und für den Verkauf ist eine Provisionsfrage (REVIEW-005)", () => {
     for (const frage of [
-      "Wie viel zahlt der Bauträger MOREImmo für den Verkauf?",
+      "Wie viel zahlt der Bauträger OS Immobilien für den Verkauf?",
       "Was zahlt der Bauträger dem Vertrieb?",
       "Wie viel wird an den Vertrieb gezahlt?",
-      "Was wird MOREImmo gezahlt?",
+      "Was wird OS Immobilien gezahlt?",
       "Was bekommt man für die Vermittlung?",
       "How much does the developer pay the broker?",
     ]) expect(frageNachProvision(frage), frage).toBe(true);
@@ -679,7 +679,7 @@ describe("Runde 3: Verlauf, Verwaltung, Zahlungsrichtung, Quellenbezeichnung (RE
 
 describe("Runde 4: Rückbezug, Kalkulationsfassung, Quelle in der Frage", () => {
   it("„Sie beträgt 6 % und wird beim Notartermin gezahlt“ fällt mit dem Provisionssatz", () => {
-    expect(antwortOhneVerguetung("Baujahr 2020. MOREImmo erhält eine Innenprovision. Sie beträgt 6 % und wird beim Notartermin gezahlt. Lift vorhanden."))
+    expect(antwortOhneVerguetung("Baujahr 2020. OS Immobilien erhält eine Innenprovision. Sie beträgt 6 % und wird beim Notartermin gezahlt. Lift vorhanden."))
       .toBe("");
     // Über Absatzgrenzen gilt die Rückbezugsregel: Rückbezug schlägt Kostenwort.
     expect(antwortOhneVerguetung("Die Innenprovision ist vereinbart.\nDavon gehen 2 % in die Instandhaltungsrücklage.\n\nLift vorhanden.")).toBe("Lift vorhanden.");
@@ -700,10 +700,10 @@ describe("Runde 4: Rückbezug, Kalkulationsfassung, Quelle in der Frage", () => 
     expect(prompt).not.toContain("54321");
   });
 
-  it("MOREImmo als Quelle in der Frage ist keine Provisionsfrage", () => {
-    expect(frageNachProvision("Was zahlt der Mieter laut MOREImmo?")).toBe(false);
+  it("OS Immobilien als Quelle in der Frage ist keine Provisionsfrage", () => {
+    expect(frageNachProvision("Was zahlt der Mieter laut OS Immobilien?")).toBe(false);
     expect(frageNachProvision("Wie viel Miete zahlt der Mieter laut Makler-Exposé?")).toBe(false);
-    expect(frageNachProvision("Wie viel zahlt der Bauträger laut Exposé an MOREImmo?")).toBe(true);
+    expect(frageNachProvision("Wie viel zahlt der Bauträger laut Exposé an OS Immobilien?")).toBe(true);
   });
 });
 
@@ -720,15 +720,15 @@ describe("Runde 5: strenge Absatzregel, Kundenkontext, Quelle vor Ausnahme, nach
   });
 
   it("Quellenangabe zuerst entfernen, dann die Verwaltungs-Ausnahme (LOTSE-004)", () => {
-    expect(frageNachProvision("Welche Vergütung erhält die SEV laut MOREImmo?")).toBe(false);
+    expect(frageNachProvision("Welche Vergütung erhält die SEV laut OS Immobilien?")).toBe(false);
     expect(frageNachProvision("Welche Vergütung erhält der Verwalter laut Makler-Exposé?")).toBe(false);
-    expect(frageNachProvision("Welche Vergütung erhalten die SEV und MOREImmo?")).toBe(true);
+    expect(frageNachProvision("Welche Vergütung erhalten die SEV und OS Immobilien?")).toBe(true);
   });
 });
 
 describe("Runde 6: Satztrennung und Absatzregel im Kontext", () => {
-  it("der Tausenderpunkt trennt keinen Satz: MOREImmo im selben Satz hebt die Verwaltungs-Ausnahme auf", () => {
-    const satz = "Die SEV erhält eine Vergütung von 1.000 € jährlich, MOREImmo 6 % vom Kaufpreis.";
+  it("der Tausenderpunkt trennt keinen Satz: OS Immobilien im selben Satz hebt die Verwaltungs-Ausnahme auf", () => {
+    const satz = "Die SEV erhält eine Vergütung von 1.000 € jährlich, OS Immobilien 6 % vom Kaufpreis.";
     expect(antwortOhneVerguetung(`Baujahr 2020.\n\n${satz}`)).toBe("Baujahr 2020.");
     expect(ohneVerguetungsangaben(`Baujahr 2020.\n\n${satz}`)).toBe("Baujahr 2020.");
     // Ohne Vertrieb bleibt die Vergütung der SEV mit Tausenderpunkt stehen.
@@ -741,16 +741,16 @@ describe("Runde 6: Satztrennung und Absatzregel im Kontext", () => {
       heute: "2026-09-28T10:00:00Z",
       objekt: {
         id: "o1",
-        beschreibung: "Ruhige Lage.\n\nInnenprovision:\nMOREImmo: 6 % vom Kaufpreis.",
-        meta: { objekttexteKi: { kurzbeschreibung: "Helle Wohnung.\n\nInnenprovision:\nMOREImmo: 6 % vom Kaufpreis." } },
+        beschreibung: "Ruhige Lage.\n\nInnenprovision:\nOS Immobilien: 6 % vom Kaufpreis.",
+        meta: { objekttexteKi: { kurzbeschreibung: "Helle Wohnung.\n\nInnenprovision:\nOS Immobilien: 6 % vom Kaufpreis." } },
       },
       kalkulation: null,
-      unterlagen: [{ bezeichnung: "Exposé.pdf", ampel: "gruen", auszug: { text: "Baujahr 1995.\n\nInnenprovision:\nMOREImmo: 6 % vom Kaufpreis." } }],
+      unterlagen: [{ bezeichnung: "Exposé.pdf", ampel: "gruen", auszug: { text: "Baujahr 1995.\n\nInnenprovision:\nOS Immobilien: 6 % vom Kaufpreis." } }],
       nichtGelesen: {},
     });
     for (const erlaubt of ["Ruhige Lage.", "Baujahr 1995."]) expect(prompt).toContain(erlaubt);
-    for (const gesperrt of ["Innenprovision", "6 % vom Kaufpreis", "MOREImmo: 6"]) expect(prompt).not.toContain(gesperrt);
-    expect(ohneVerguetungsangaben("Innenprovision:\n\nMOREImmo: 6 % vom Kaufpreis.\n\nAufzug vorhanden.")).toBe("Aufzug vorhanden.");
+    for (const gesperrt of ["Innenprovision", "6 % vom Kaufpreis", "OS Immobilien: 6"]) expect(prompt).not.toContain(gesperrt);
+    expect(ohneVerguetungsangaben("Innenprovision:\n\nOS Immobilien: 6 % vom Kaufpreis.\n\nAufzug vorhanden.")).toBe("Aufzug vorhanden.");
   });
 });
 

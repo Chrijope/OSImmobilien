@@ -213,7 +213,7 @@
 /*
   Blau als Schrift: Blau 700 wie `.text-primary` in der Glasschicht.
   `.beratung-apple` schreibt Augenbrauen, Akzentwoerter der Ueberschriften
-  und die Vergleichszeilen in einem hellen Blau (204 100% 50%, auf Glas
+  und die Vergleichszeilen in einem hellen Blau (157 75% 38%, auf Glas
   unter 3:1) oder in Blau 600 (3,5:1). Der dunkle Kontaktabschnitt behaelt
   sein helles Blau, das dort auf dunklem Grund steht, ebenso jede andere
   dunkle oder kraeftig blaue Flaeche (`bg-foreground`, `bg-primary`, feste
@@ -232,8 +232,8 @@
 }
 
 /*
-  Die hervorgehobene Spalte der Vergleichstabelle (Moreimmo, "Warum
-  Immobilie") schreibt ihr Blau als Inline-Stil (#0A6EDB). Auf Glas ueber
+  Die hervorgehobene Spalte der Vergleichstabelle (OS Immobilien, "Warum
+  Immobilie") schreibt ihr Blau als Inline-Stil (#187F58). Auf Glas ueber
   zwei Wolken reicht es nicht ganz fuer 4,5:1, schon auf Weiss lag der Kopf
   darunter. Die Zellen nehmen Blau 700.
 */
@@ -260,10 +260,10 @@
   ihr helles Blau zurueck.
 */
 [data-glas="liquid"].dark [data-praesentation="beratung"] .beratung-apple {
-  --lg-schrift-blau: 204 95% 34%;
+  --lg-schrift-blau: 157 71% 25%;
 }
 [data-glas="liquid"].dark [data-praesentation="beratung"] .beratung-apple :is(.beratung-dark, #kontakt) {
-  --lg-schrift-blau: 204 100% 77%;
+  --lg-schrift-blau: 157 75% 55%;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

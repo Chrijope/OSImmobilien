@@ -58,7 +58,7 @@ const corsHeaders = {
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const PORTAL_URL = "https://portal.more.immo";
+const PORTAL_URL = "https://osimmobilien.netlify.app";
 
 /** Nach so vielen Tagen verfällt der Signaturlink. */
 const LINK_GUELTIG_TAGE = 30;
@@ -77,11 +77,11 @@ const STATUS_AUSGESCHIEDEN = new Set(["KeinInteresse", "Abgelehnt"]);
 
 /**
  * Christian Kurz gegenzeichnet jeden Handelsvertretervertrag. Die Anfrage
- * liegt in seinem Postfach office@more.immo (siehe finalize-vertrag). Sein
+ * liegt in seinem Postfach os@os-immobilien.com (siehe finalize-vertrag). Sein
  * Konto wird über diese Adresse gesucht, die feste ID ist nur der Rückfall,
  * falls das Profil die Adresse einmal nicht trägt.
  */
-const CHRISTIAN_KURZ_EMAIL = "office@more.immo";
+const CHRISTIAN_KURZ_EMAIL = "os@os-immobilien.com";
 const CHRISTIAN_KURZ_USER_ID = "df8190e9-b5f2-4519-8343-293688ff062d";
 
 /**

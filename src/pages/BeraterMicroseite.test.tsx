@@ -44,12 +44,12 @@ it("öffnet Empfehlungslinks mit PostgREST-Thenables und übergibt die Zuordnung
   expect(klicks()).toHaveLength(1);
 });
 
-it("zeigt bei gesperrtem oder unbekanntem Partner keine Daten und verweist auf more.immo", async () => {
+it("zeigt bei gesperrtem oder unbekanntem Partner keine Daten und verweist auf osimmobilien.netlify.app", async () => {
   // get-vp-microsite antwortet für einen gesperrten Partner wie für ein unbekanntes Kürzel.
   vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 404, json: async () => ({ error: "Berater nicht gefunden" }) }));
   render(<Seite />);
   // Die Seitensprache folgt dem Browser, im Test ist das Englisch.
   expect(await screen.findByText(/Vertriebspartner nicht gefunden|Sales partner not found/)).toBeInTheDocument();
-  expect(screen.getByRole("link", { name: /more\.immo/ })).toHaveAttribute("href", "https://more.immo");
+  expect(screen.getByRole("link", { name: /osimmobilien\.netlify\.app/ })).toHaveAttribute("href", "https://osimmobilien.netlify.app");
   expect(screen.queryByRole("button", { name: "Beratung öffnen" })).not.toBeInTheDocument();
 });

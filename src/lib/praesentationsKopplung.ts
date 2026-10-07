@@ -15,7 +15,7 @@
  *   Präsentation an Moderation: "folie" (ich zeige jetzt diese Folie, auch
  *     wenn jemand direkt im Präsentationsfenster geblättert hat), "regler"
  *     (die Reglerwerte des Rechners), "umschalter" (Stand eines Umschalters
- *     auf einer Folie, etwa Alleine/Mit MOREImmo auf der Chaos-Folie),
+ *     auf einer Folie, etwa Alleine/Mit OS Immobilien auf der Chaos-Folie),
  *     "anfrage" (ich bin neu da, wo stehen wir?), "pong".
  *   Nur in der Übungsansicht (praesentationsUebung.ts), Moderation an
  *     Präsentation: "stand" (Ablauf, Einstieg, Weg, Module und Folie auf

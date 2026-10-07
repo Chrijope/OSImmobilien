@@ -93,7 +93,7 @@ describe("Handbuch-Strecke siezt (Ausnahme vom 27.09.2026)", () => {
             vorname: "Erika",
             nachname: "Muster",
             datum: "27.09.2026",
-            saLink: i % 2 ? null : "https://portal.more.immo/sa/x",
+            saLink: i % 2 ? null : "https://osimmobilien.netlify.app/sa/x",
             partner: partner[i % partner.length],
             sprache: "de",
           });

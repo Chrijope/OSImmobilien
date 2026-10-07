@@ -2,7 +2,7 @@
  * Die Positivliste für `meta` an Objekt und Wohnung, wie sie Kunden sehen.
  *
  * Bis zum 28.09.2026 stand sie in `get-kundenansicht/antwort.ts`. Seitdem
- * nutzt auch der MORE Lotse sie (Befund LOTSE-R7-002), deshalb liegt sie
+ * nutzt auch der OS Lotse sie (Befund LOTSE-R7-002), deshalb liegt sie
  * hier, unverändert. Jedes erlaubte Objekt und jede Liste wird aus geprüften
  * Einzelfeldern neu aufgebaut: kein Beleg, keine Provision, kein Name, kein
  * unbekannter Unterschlüssel.

@@ -314,8 +314,8 @@ describe("die erlaubten Sonderwege bleiben offen", () => {
   });
 
   it("lässt gewöhnliche öffentliche Adressen durch", () => {
-    expect(erlaubt("https://www.more.immo/expose.pdf")).toBe(true);
-    expect(erlaubt("https://portal.more.immo/dokumente/haus.pdf")).toBe(true);
+    expect(erlaubt("https://osimmobilien.netlify.app/expose.pdf")).toBe(true);
+    expect(erlaubt("https://osimmobilien.netlify.app/dokumente/haus.pdf")).toBe(true);
     expect(erlaubt("http://93.184.216.34/datei.pdf")).toBe(true);
     expect(erlaubt("https://[2606:4700:4700::1111]/datei.pdf")).toBe(true);
   });

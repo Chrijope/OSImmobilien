@@ -48,7 +48,7 @@ describe("Investagon Vollständige Detailantwort", () => {
     expect(zugaenge(env).map((z) => ({ name: z.name, platz: z.platz, slot: z.slot })))
       .toEqual([
         { name: "Lehner", platz: 1, slot: "" },
-        { name: "More Immo (eigener Bestand)", platz: 6, slot: "_6" },
+        { name: "OS Immobilien (eigener Bestand)", platz: 6, slot: "_6" },
       ]);
   });
 });

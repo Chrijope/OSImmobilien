@@ -3,7 +3,7 @@ import { useEffect } from "react";
 /**
  * Titel des Browsertabs fuer die oeffentlichen Seiten.
  *
- * In `index.html` steht "MOREImmo CRM". Das ist der Name eures internen
+ * In `index.html` steht "OS Immobilien CRM". Das ist der Name eures internen
  * Werkzeugs und hat auf einer Seite, die ein Kunde sieht, nichts zu suchen.
  * Wer einen Termin bucht oder im Warteraum sitzt, hat oft mehrere Tabs offen
  * und findet den richtigen ueber diesen Titel wieder.
@@ -22,6 +22,6 @@ export function useSeitentitel(titel: string | null | undefined): void {
 
 /** Einheitliche Schreibweise, damit nicht jede Seite ihre eigene erfindet. */
 export function oeffentlicherTitel(bereich: string, zusatz?: string | null): string {
-  const teile = [zusatz?.trim(), bereich, "MOREImmo"].filter(Boolean);
+  const teile = [zusatz?.trim(), bereich, "OS Immobilien"].filter(Boolean);
   return teile.join(" · ");
 }

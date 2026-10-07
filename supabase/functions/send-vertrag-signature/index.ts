@@ -10,7 +10,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SIGNATURE_BASE_URL = "https://portal.more.immo/signatur";
+const SIGNATURE_BASE_URL = "https://osimmobilien.netlify.app/signatur";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -138,7 +138,7 @@ Deno.serve(async (req) => {
     // Rolle `hr` aus dem Profil, siehe hr-ansprechpartner.ts. Der Versand
     // laeuft mit dem Service-Schluessel, deshalb kann send-transactional-email
     // den Absender nicht aus dem JWT ableiten; ohne diese Angabe stand
-    // "MOREImmo Team, office@more.immo" darunter.
+    // "OS Immobilien Team, os@os-immobilien.com" darunter.
     const hrKontakt = await hrAnsprechpartner(supabase as never);
 
     // Rueckfall, falls niemand die HR-Rolle traegt: der Closing-Berater aus

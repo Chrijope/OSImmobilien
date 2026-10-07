@@ -25,7 +25,7 @@ describe("Wortlaut des Einverständnisses", () => {
   it("nennt den Vornamen, sonst die empfohlene Person", () => {
     expect(einverstaendnisWortlaut(" Max ")).toMatch(/^Ich bestätige, dass Max mit der Weitergabe/);
     expect(einverstaendnisWortlaut("")).toMatch(/^Ich bestätige, dass die empfohlene Person mit der Weitergabe/);
-    expect(einverstaendnisWortlaut("Max")).toContain("an MOREImmo");
+    expect(einverstaendnisWortlaut("Max")).toContain("an OS Immobilien");
   });
 
   it("enthält keinen Gedankenstrich", () => {

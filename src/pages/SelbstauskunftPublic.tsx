@@ -7,11 +7,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { SelbstauskunftForm, SelbstauskunftHinweise, loescheLokalenSaEntwurf } from "@/components/selbstauskunft/SelbstauskunftForm";
 import { normalisiereSprache, type Sprache } from "@/lib/kundenSprache";
 import { saText } from "@/lib/selbstauskunftTexte";
-import logoAsset from "@/assets/moreimmo-logo-black.png.asset.json";
+import logo from "@/assets/moreimmo-logo.png";
 import { zaehleHandbuch } from "@/lib/handbuch/ereignisse";
 import { spracheAusAdresse } from "@/lib/seitenSprache";
 import { nameAusLink } from "@/lib/saNameAusLink";
-const logo = logoAsset.url;
 
 /**
  * `unbekannt`: Den Link gibt es nicht (nie gegeben, oder schon aufgeräumt).
@@ -75,7 +74,7 @@ function Fusszeile({ className = "", sprache }: { className?: string; sprache: S
           {saText("Datenschutzerklärung", sprache)}
         </a>
       </p>
-      <p className="mt-1">MOREImmo, Wendelsteinstraße 19, 83075 Bad Feilnbach</p>
+      <p className="mt-1">OS Immobilien Holding GmbH, Am Ostbahnhof 1, 15749 Mittenwalde</p>
     </footer>
   );
 }
@@ -326,7 +325,7 @@ export default function SelbstauskunftPublic({ weg }: { weg?: "handbuch" } = {})
           {/* Linke Spalte: Logo, Begruessung, Datenschutz. Sie bleibt stehen,
               das wirkt auf grossen Bildschirmen ruhiger als mitlaufen. */}
           <aside className="flex w-full shrink-0 flex-col gap-4 xl:w-[280px] xl:overflow-y-auto 2xl:w-[300px]">
-            <img src={logo} alt="MOREImmo" className="h-12 self-center object-contain xl:self-start" />
+            <img src={logo} alt="OS Immobilien" className="h-12 self-center object-contain xl:self-start" />
 
             <Card className="border-primary/20 bg-primary/5 p-6">
               <h1 className="mb-2 text-xl font-bold">{t("Willkommen, {name}", { name: tokenData.name ?? "" })}</h1>
@@ -370,7 +369,7 @@ export default function SelbstauskunftPublic({ weg }: { weg?: "handbuch" } = {})
         </div>
       ) : (
         <div className="mx-auto flex w-full max-w-md flex-1 flex-col items-center gap-6 p-4 sm:p-6">
-          <img src={logo} alt="MOREImmo" className="h-14 object-contain" />
+          <img src={logo} alt="OS Immobilien" className="h-14 object-contain" />
 
           {status === "loading" && (
             <Card className="flex w-full flex-col items-center gap-4 p-8">
@@ -447,7 +446,7 @@ export default function SelbstauskunftPublic({ weg }: { weg?: "handbuch" } = {})
               <AlertTriangle className="h-10 w-10 text-destructive" />
               <h2 className="text-lg font-bold">{t("Link nicht mehr gültig")}</h2>
               <p className="text-sm text-muted-foreground">
-                {t("Dieser Link wurde durch einen neueren ersetzt. Bitte nutzen Sie den Link aus Ihrer neuesten E-Mail von MOREImmo oder wenden Sie sich an Ihren Berater.")}
+                {t("Dieser Link wurde durch einen neueren ersetzt. Bitte nutzen Sie den Link aus Ihrer neuesten E-Mail von OS Immobilien oder wenden Sie sich an Ihren Berater.")}
               </p>
             </Card>
           )}
@@ -467,7 +466,7 @@ export default function SelbstauskunftPublic({ weg }: { weg?: "handbuch" } = {})
               <AlertTriangle className="h-10 w-10 text-destructive" />
               <h2 className="text-lg font-bold">{t("Link nicht bekannt")}</h2>
               <p className="text-sm text-muted-foreground">
-                {t("Dieser Link ist nicht bekannt. Bitte nutzen Sie den Link aus Ihrer neuesten E-Mail von MOREImmo oder wenden Sie sich an Ihren Berater.")}
+                {t("Dieser Link ist nicht bekannt. Bitte nutzen Sie den Link aus Ihrer neuesten E-Mail von OS Immobilien oder wenden Sie sich an Ihren Berater.")}
               </p>
               {handbuchWeg && (
                 <a href={sprache === "en" ? "/handbuch/selbstauskunft?lang=en" : "/handbuch/selbstauskunft"} className="btn-brand inline-flex items-center rounded-md px-4 py-2 text-sm font-semibold no-underline">

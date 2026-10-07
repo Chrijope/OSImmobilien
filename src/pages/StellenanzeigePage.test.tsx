@@ -148,7 +148,7 @@ describe("Die Seite", () => {
     expect(within(inhalt).getByText(BERATER.aufgaben[0])).toBeInTheDocument();
     // Am Ende steht der Knopf, keine Mailadresse.
     expect(within(inhalt).getByRole("button", { name: /Jetzt bewerben/ })).toBeInTheDocument();
-    expect(within(inhalt).queryByText(/@more\.immo/)).toBeNull();
+    expect(within(inhalt).queryByText(/@osimmobilien\.netlify\.app/)).toBeNull();
 
     fireEvent.click(kachel(BERATER.titel));
     expect(kachel(BERATER.titel)).toHaveAttribute("aria-expanded", "false");
@@ -214,7 +214,7 @@ describe("Nach dem Absenden", () => {
     expect(await screen.findByText(/Schau bitte in dein Postfach, dort liegt dein Kennenlernbogen/)).toBeInTheDocument();
     expect(screen.queryByText(/^Kennenlernbogen /)).toBeNull();
     // Die Mail kommt, also auch der Hinweis auf Absender und Spam-Ordner.
-    expect(screen.getByTestId("spam-hinweis")).toHaveTextContent("Unsere Mail kommt von noreply@more.immo.");
+    expect(screen.getByTestId("spam-hinweis")).toHaveTextContent("Unsere Mail kommt von noreply@os-immobilien.com.");
   });
 
   it("folgt keinem verbogenen Schlüssel", async () => {

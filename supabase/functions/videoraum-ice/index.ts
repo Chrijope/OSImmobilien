@@ -7,7 +7,7 @@
  * duerfen nicht im ausgelieferten Programm stehen, deshalb dieser Umweg.
  *
  * Erwartete Geheimnisse (optional, fehlen sie, bleibt es bei STUN):
- *   TURN_URLS    z. B. "turn:turn.more.immo:3478,turns:turn.more.immo:5349"
+ *   TURN_URLS    z. B. "turn:turn.os-immobilien.com:3478,turns:turn.os-immobilien.com:5349"
  *   TURN_SECRET  gemeinsames Geheimnis des coturn-Servers (static-auth-secret)
  *   TURN_USER    fester Benutzer, falls kein Geheimnis genutzt wird
  *   TURN_PASS    festes Passwort dazu

@@ -51,7 +51,7 @@ describe("KundenportalLockGuard", () => {
     await i18n.changeLanguage("en");
     render(<KundenportalLockGuard><p>Inhalt</p></KundenportalLockGuard>);
     expect(await screen.findByText("Customer portal locked")).toBeTruthy();
-    expect(screen.getByText("Your access is currently locked. Please get in touch with your contact person at MOREImmo.")).toBeTruthy();
+    expect(screen.getByText("Your access is currently locked. Please get in touch with your contact person at OS Immobilien.")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Sign out" })).toBeTruthy();
     expect(screen.queryByText("Inhalt")).toBeNull();
   });

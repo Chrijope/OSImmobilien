@@ -31,8 +31,8 @@ interface Props {
 }
 
 const DE = {
-  betreff: (berater: string) => (berater ? `Deine Anfrage bei MOREImmo, ${berater} meldet sich` : 'Deine Anfrage bei MOREImmo'),
-  augenbraue: 'Willkommen bei MOREImmo',
+  betreff: (berater: string) => (berater ? `Deine Anfrage bei OS Immobilien, ${berater} meldet sich` : 'Deine Anfrage bei OS Immobilien'),
+  augenbraue: 'Willkommen bei OS Immobilien',
   titel: 'Danke für deine Anfrage',
   vorschau: 'Bis zum ersten Gespräch kannst du schon mit deinen eigenen Zahlen rechnen.',
   gruss: (berater: string) =>
@@ -52,8 +52,8 @@ const DE = {
 const TEXTE: Zweisprachig<typeof DE> = {
   de: DE,
   en: {
-    betreff: (berater: string) => (berater ? `Your enquiry at MOREImmo: ${berater} will be in touch` : 'Your enquiry at MOREImmo'),
-    augenbraue: 'Welcome to MOREImmo',
+    betreff: (berater: string) => (berater ? `Your enquiry at OS Immobilien: ${berater} will be in touch` : 'Your enquiry at OS Immobilien'),
+    augenbraue: 'Welcome to OS Immobilien',
     titel: 'Thank you for your enquiry',
     vorschau: 'Until our first conversation, you can already calculate with your own figures.',
     gruss: (berater: string) =>
@@ -102,13 +102,13 @@ export const template = {
   absender: 'zustaendiger-partner',
   previewData: {
     kundeName: 'Max Mustermann',
-    konfiguratorLink: 'https://portal.more.immo/handbuch/christian-peetz/konfigurator?utm_source=mail&utm_medium=email&utm_campaign=willkommen',
-    handbuchLink: 'https://portal.more.immo/handbuch/christian-peetz?utm_source=mail&utm_medium=email&utm_campaign=willkommen',
+    konfiguratorLink: 'https://osimmobilien.netlify.app/handbuch/christian-peetz/konfigurator?utm_source=mail&utm_medium=email&utm_campaign=willkommen',
+    handbuchLink: 'https://osimmobilien.netlify.app/handbuch/christian-peetz?utm_source=mail&utm_medium=email&utm_campaign=willkommen',
     berater: {
       name: 'Christian Peetz',
-      rolle: 'Dein Ansprechpartner bei MOREImmo',
+      rolle: 'Dein Ansprechpartner bei OS Immobilien',
       telefon: '+49 151 00000000',
-      email: 'christian@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

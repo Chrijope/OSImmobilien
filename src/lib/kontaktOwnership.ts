@@ -14,7 +14,7 @@ export function isTeamWideKontaktRole(role?: string | null): boolean {
 
 /**
  * Rollen, die eine 3-stufige Bucket-Differenzierung sehen sollen:
- * Eigen / Eigenes Team (Downline) / Team MOREImmo (alles andere).
+ * Eigen / Eigenes Team (Downline) / Team OS Immobilien (alles andere).
  */
 export function isAdminScopeRole(role?: string | null): boolean {
   return ADMIN_SCOPE_ROLES.has(role || "");

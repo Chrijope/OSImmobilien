@@ -75,7 +75,7 @@ export const template = {
     prioritaet: 'hoch',
     betreff: 'Speichern-Knopf reagiert nicht',
     beschreibung: 'Wenn ich auf "Speichern" klicke, passiert nichts.\n\nBrowser: Safari auf dem iPad.',
-    url: 'https://portal.more.immo/kunden/123',
+    url: 'https://osimmobilien.netlify.app/kunden/123',
     bilder: [],
     ticketId: 'abc-123',
   },

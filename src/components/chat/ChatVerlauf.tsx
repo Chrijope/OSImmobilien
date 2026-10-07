@@ -936,7 +936,7 @@ export const ChatVerlauf = forwardRef<ChatVerlaufHandle, ChatVerlaufProps>(funct
 
             /*
              * Rechts steht die Seite des Lesenden: im Kundenchat also jede
-             * Nachricht von MOREImmo, auch die des Partners, wenn Christian
+             * Nachricht von OS Immobilien, auch die des Partners, wenn Christian
              * mitliest. Die Primaerfarbe haengt an der Seite und nicht an
              * "selbst geschrieben", sonst stuende rechts eine graue Blase und
              * man koennte sie links fuer den Kunden halten. Wer genau

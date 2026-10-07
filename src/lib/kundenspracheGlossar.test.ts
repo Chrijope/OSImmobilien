@@ -25,6 +25,6 @@ describe("Kundensprache-Glossar", () => {
     for (const e of KUNDENSPRACHE_GLOSSAR) {
       expect(`${e.en} ${e.ersterAuftritt ?? ""}`.toLowerCase()).not.toContain("advisor");
     }
-    expect(glossarEnglisch("Ansprechpartner", true)).toBe("your contact person at MOREImmo");
+    expect(glossarEnglisch("Ansprechpartner", true)).toBe("your contact person at OS Immobilien");
   });
 });

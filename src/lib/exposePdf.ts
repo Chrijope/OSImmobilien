@@ -18,8 +18,8 @@ const CONTENT_W = PAGE_W - MARGIN * 2;
 const fmt = (v: number) =>
   new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(v);
 
-// ── CI Farben (Projekt-CI: Hellblau #7DBAE6) ──
-const ACCENT = BRAND.accent;          // [125,186,230] CI-Blau
+// ── CI Farben (Projekt-CI: Hellblau #55C79C) ──
+const ACCENT = BRAND.accent;          // [85,199,156] CI-Blau
 const ACCENT_DARK = BRAND.accentDark; // [86,150,198]
 const DARK = [28, 28, 28] as const;   // body / Headlines
 const GRAY = [120, 130, 140] as const;
@@ -107,7 +107,7 @@ export interface ExposeData {
 function addPageFooter(doc: jsPDF, pageNum: number) {
   doc.setFontSize(8);
   doc.setTextColor(...GRAY);
-  doc.text("MOREImmo – Exposé", MARGIN, PAGE_H - 8);
+  doc.text("OS Immobilien – Exposé", MARGIN, PAGE_H - 8);
   doc.text(`Seite ${pageNum}`, PAGE_W - MARGIN, PAGE_H - 8, { align: "right" });
   doc.text(new Date().toLocaleDateString("de-DE"), PAGE_W / 2, PAGE_H - 8, { align: "center" });
 }
@@ -242,7 +242,7 @@ export async function generateExposePdf(data: ExposeData): Promise<Blob> {
     doc.setFontSize(16);
     doc.setTextColor(...WHITE);
     doc.setFont(PDF_FONT, "bold");
-    doc.text("MOREIMMO", MARGIN, 203);
+    doc.text("OS IMMOBILIEN", MARGIN, 203);
   }
   doc.setFontSize(8);
   doc.setTextColor(180, 180, 180);
@@ -304,7 +304,7 @@ export async function generateExposePdf(data: ExposeData): Promise<Blob> {
   }
   doc.setFontSize(8);
   doc.setTextColor(180, 180, 180);
-  doc.text("Exklusiv präsentiert von MOREImmo", PAGE_W - MARGIN, 14, { align: "right" });
+  doc.text("Exklusiv präsentiert von OS Immobilien", PAGE_W - MARGIN, 14, { align: "right" });
   y = 38;
 
   // Heading
@@ -319,7 +319,7 @@ export async function generateExposePdf(data: ExposeData): Promise<Blob> {
 
   // Intro paragraph
   const introCity = obj.ort || "deiner Wunschregion";
-  const introText = `Wir freuen uns, dir mit diesem Exposé ein ausgewähltes Immobilien-Investment in ${introCity} zu präsentieren. MOREImmo begleitet dich als persönlicher Investment-Partner durch den gesamten Prozess, von der ersten Information über die Reservierung und Finanzierung bis zur notariellen Beurkundung und darüber hinaus.`;
+  const introText = `Wir freuen uns, dir mit diesem Exposé ein ausgewähltes Immobilien-Investment in ${introCity} zu präsentieren. OS Immobilien begleitet dich als persönlicher Investment-Partner durch den gesamten Prozess, von der ersten Information über die Reservierung und Finanzierung bis zur notariellen Beurkundung und darüber hinaus.`;
   doc.setFontSize(10.5);
   doc.setFont(PDF_FONT, "normal");
   doc.setTextColor(74, 74, 74);
@@ -673,7 +673,7 @@ export async function generateExposePdf(data: ExposeData): Promise<Blob> {
               { c: ACCENT_DARK, label: "Objekt" },
               { c: [37, 99, 235] as const, label: "Arbeitgeber / ÖPNV" },
               { c: [16, 152, 122] as const, label: "Versorgung & Freizeit" },
-              { c: [136, 207, 255] as const, label: "Bildung" },
+              { c: [48, 225, 158] as const, label: "Bildung" },
             ];
             doc.setFontSize(8);
             doc.setFont(PDF_FONT, "normal");
@@ -1054,7 +1054,7 @@ export async function generateExposePdf(data: ExposeData): Promise<Blob> {
     doc.setFontSize(22);
     doc.setFont(PDF_FONT, "bold");
     doc.setTextColor(...WHITE);
-    doc.text("MOREIMMO", PAGE_W / 2, 45, { align: "center" });
+    doc.text("OS IMMOBILIEN", PAGE_W / 2, 45, { align: "center" });
   }
 
   // Akzentlinie
@@ -1084,13 +1084,13 @@ export async function generateExposePdf(data: ExposeData): Promise<Blob> {
   doc.setFontSize(14);
   doc.setFont(PDF_FONT, "bold");
   doc.setTextColor(...WHITE);
-  doc.text("MOREImmo", PAGE_W / 2, cardY + 14, { align: "center" });
+  doc.text("OS Immobilien", PAGE_W / 2, cardY + 14, { align: "center" });
 
   doc.setFontSize(10);
   doc.setFont(PDF_FONT, "normal");
   doc.setTextColor(180, 180, 180);
-  doc.text("Wendelsteinstraße 19", PAGE_W / 2, cardY + 24, { align: "center" });
-  doc.text("83075 Bad Feilnbach", PAGE_W / 2, cardY + 30, { align: "center" });
+  doc.text("Am Ostbahnhof 1", PAGE_W / 2, cardY + 24, { align: "center" });
+  doc.text("15749 Mittenwalde", PAGE_W / 2, cardY + 30, { align: "center" });
 
   doc.setDrawColor(...ACCENT);
   doc.setLineWidth(0.3);
@@ -1099,10 +1099,10 @@ export async function generateExposePdf(data: ExposeData): Promise<Blob> {
   doc.setFontSize(11);
   doc.setFont(PDF_FONT, "bold");
   doc.setTextColor(...ACCENT);
-  doc.text("www.more.immo", PAGE_W / 2, cardY + 48, { align: "center" });
+  doc.text("osimmobilien.netlify.app", PAGE_W / 2, cardY + 48, { align: "center" });
   doc.setFont(PDF_FONT, "normal");
   doc.setTextColor(210, 210, 210);
-  doc.text("info@more.immo", PAGE_W / 2, cardY + 55, { align: "center" });
+  doc.text("os@os-immobilien.com", PAGE_W / 2, cardY + 55, { align: "center" });
 
   // Disclaimer
   doc.setFontSize(8);

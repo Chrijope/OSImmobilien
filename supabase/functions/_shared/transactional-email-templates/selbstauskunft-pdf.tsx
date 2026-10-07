@@ -33,9 +33,9 @@ export const template = {
     kundenName: 'Herr Mustermann',
     berater: {
       name: 'Christian Peetz',
-      rolle: 'Ihr Ansprechpartner bei MOREImmo',
+      rolle: 'Ihr Ansprechpartner bei OS Immobilien',
       telefon: '08061 000000',
-      email: 'c.peetz@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

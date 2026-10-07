@@ -23,7 +23,7 @@ import { NachfassMailDialog } from "./NachfassMailDialog";
 const VORSCHAU = {
   ok: true,
   modus: "vorschau",
-  betreff: "Kurze Nachfrage zu deiner Bewerbung bei MOREImmo",
+  betreff: "Kurze Nachfrage zu deiner Bewerbung bei OS Immobilien",
   empfaenger: [
     { id: "1", name: "Max Mustermann", email: "max@test.de" },
     { id: "2", name: "Erika Beispiel", email: "erika@test.de" },
@@ -59,7 +59,7 @@ describe("NachfassMailDialog", () => {
     expect(invoke).toHaveBeenCalledTimes(1);
     expect(invoke).toHaveBeenCalledWith("send-bewerber-nachfass", { body: { modus: "vorschau" } });
 
-    expect(await screen.findByText("Kurze Nachfrage zu deiner Bewerbung bei MOREImmo")).toBeInTheDocument();
+    expect(await screen.findByText("Kurze Nachfrage zu deiner Bewerbung bei OS Immobilien")).toBeInTheDocument();
     expect(screen.getByText("Hallo Max,")).toBeInTheDocument();
     // Die Vorschau zeigt die Sammelmail zum Kennenlernen, nicht mehr die
     // alte zur Terminbuchung. Geprueft wird der Satz, der den Bogen begruendet.

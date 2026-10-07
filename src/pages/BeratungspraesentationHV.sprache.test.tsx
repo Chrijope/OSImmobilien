@@ -5,7 +5,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import BeratungspraesentationHV from "./BeratungspraesentationHV";
 
 /*
- * Sprachwechsel der Beratungspräsentation MOREImmo.
+ * Sprachwechsel der Beratungspräsentation OS Immobilien.
  *
  * Die Präsentation erscheint an zwei Stellen: unter Unterlagen und
  * Präsentation ohne Kunden und im Kundenprofil beim Investment mit Kunde,
@@ -141,20 +141,20 @@ describe("Sprachwechsel der Beratungspräsentation", () => {
     expect(ueberschrift("Was machen wir heute?")).toBeInTheDocument();
   });
 
-  it("zeigt in Abschnitt 02 die Partnerlogos MORE Immo und MORE Finance in beiden Sprachen", () => {
+  it("zeigt in Abschnitt 02 die Partnerlogos OS Immobilien und MORE Finance in beiden Sprachen", () => {
     zeige(KUNDENPROFIL);
     const partner = () => screen.getAllByTestId("partner-logo");
     expect(partner()).toHaveLength(2);
-    expect(within(partner()[0]).getByAltText("MORE Immo")).toBeInTheDocument();
+    expect(within(partner()[0]).getByAltText("OS Immobilien")).toBeInTheDocument();
     expect(partner()[0]).toHaveTextContent("Objektpartner");
-    expect(partner()[0]).toHaveTextContent("Über MORE Immo vertreiben wir die Objekte und Einheiten.");
+    expect(partner()[0]).toHaveTextContent("Über OS Immobilien vertreiben wir die Objekte und Einheiten.");
     expect(within(partner()[1]).getByAltText("MORE Finance")).toBeInTheDocument();
     expect(partner()[1]).toHaveTextContent("Finanzierungspartner");
     expect(partner()[1]).toHaveTextContent("MORE Finance übernimmt die Finanzierung.");
 
     schalteAuf("English");
     expect(partner()[0]).toHaveTextContent("Property partner");
-    expect(partner()[0]).toHaveTextContent("We market the properties and units through MORE Immo.");
+    expect(partner()[0]).toHaveTextContent("We market the properties and units through OS Immobilien.");
     expect(partner()[1]).toHaveTextContent("Financing partner");
     expect(partner()[1]).toHaveTextContent("MORE Finance handles the financing.");
   });

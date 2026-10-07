@@ -9,7 +9,7 @@
  * ein Raum- oder Buchungstoken funktioniert auf der veroeffentlichten
  * Adresse deshalb immer.
  */
-export const OEFFENTLICHE_BASIS = "https://portal.more.immo";
+export const OEFFENTLICHE_BASIS = "https://osimmobilien.netlify.app";
 
 /** Haengt einen absoluten Pfad an die veroeffentlichte Adresse. */
 export function oeffentlicheAdresse(pfad: string): string {

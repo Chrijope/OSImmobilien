@@ -33,7 +33,7 @@ import { antwortFrist, pruefeAnfrage, type SeitenAktion } from "../_shared/bewer
  *               Tag 11 dauerhaft ab.
  *   weiter      hebt die Pause wieder auf.
  *   frage       meta.kennenlernen.frage = { gestelltAm, text, bisAm }
- *               Damit ist MOREImmo am Zug, obwohl der Bewerber formal in der
+ *               Damit ist OS Immobilien am Zug, obwohl der Bewerber formal in der
  *               Stufe Eingang steht. Glocke an HR.
  *   kein_anruf  meta.kennenlernen.anrufWidersprochen = true
  *               Der sechste Stopp. Er wurde in der Erinnerungskette gelesen
@@ -198,7 +198,7 @@ Deno.serve(async (req) => {
        * vorhandene Anzeige im Bewerbermanagement greift, aber mit einem
        * eigenen Grund und einem eigenen Autor. Die Herkunft bleibt damit
        * sichtbar: „Der selbst gewählte Ausstieg gehört nicht in denselben
-       * Endstatus wie eine Absage durch MOREImmo."
+       * Endstatus wie eine Absage durch OS Immobilien."
        */
       const skript = (meta.erstgespraechSkript && typeof meta.erstgespraechSkript === "object"
         ? meta.erstgespraechSkript

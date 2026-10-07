@@ -112,7 +112,7 @@ const NAECHSTE_SCHRITTE: { t: string; d: string }[] = [
   },
   {
     t: "Onboarding-Termin",
-    d: "Sobald der unterschriebene Vertrag vorliegt: Wir schalten deine Zugänge frei und richten deine persönliche MOREImmo E-Mail-Adresse ein.",
+    d: "Sobald der unterschriebene Vertrag vorliegt: Wir schalten deine Zugänge frei und richten deine persönliche OS Immobilien E-Mail-Adresse ein.",
   },
   {
     t: "Start",
@@ -134,15 +134,15 @@ export interface PaketUebersichtBerater {
  */
 export const STANDARD_BERATER: PaketUebersichtBerater = {
   name: "Christian Peetz",
-  email: "c.peetz@more.immo",
-  telefon: "+49 1515 0275108",
+  email: "os@os-immobilien.com",
+  telefon: "+49 30 863289210",
 };
 
 /**
  * Erzeugt den "Startfahrplan" für einen Bewerber.
  *
  * Das Dokument fasst nach dem Closing-Gespräch kurz und bündig zusammen, was
- * in Erstgespräch und Closing-Präsentation besprochen wurde: wer MOREImmo ist,
+ * in Erstgespräch und Closing-Präsentation besprochen wurde: wer OS Immobilien ist,
  * welche Immobilientypen es gibt, wie die vertriebliche Zusammenarbeit
  * aussieht, wie ein Deal abläuft, was der Partner bekommt, was es kostet und
  * wie es weitergeht.
@@ -388,7 +388,7 @@ export async function buildPaketUebersichtPdf(opts: {
     kennung: "Für Vertriebspartner",
     titel: "Dein Startfahrplan",
     untertitel:
-      "MOREImmo auf einen Blick: wer wir sind, wie wir arbeiten und wie dein Start aussieht.",
+      "OS Immobilien auf einen Blick: wer wir sind, wie wir arbeiten und wie dein Start aussieht.",
     empfaenger: vollerName || undefined,
     datum: heute,
     fusszeile: "Unverbindliche Information. Verbindlich ist allein der Vertriebspartnervertrag.",
@@ -413,7 +413,7 @@ export async function buildPaketUebersichtPdf(opts: {
   abschnitt("Wer wir sind", 34);
 
   absatz(
-    "MOREImmo ist ein Vertrieb für Kapitalanlageimmobilien. Unsere Kunden sind besser verdienende Menschen: Unternehmer, Ärzte und High Experts, typischerweise mit 80.000 bis 100.000 Euro Jahreseinkommen und mehr und sehr guter Bonität.",
+    "OS Immobilien ist ein Vertrieb für Kapitalanlageimmobilien. Unsere Kunden sind besser verdienende Menschen: Unternehmer, Ärzte und High Experts, typischerweise mit 80.000 bis 100.000 Euro Jahreseinkommen und mehr und sehr guter Bonität.",
   );
   y += 2;
   absatz(
@@ -440,7 +440,7 @@ export async function buildPaketUebersichtPdf(opts: {
   abschnitt("Wie die Zusammenarbeit aussieht", 44);
 
   absatz(
-    "Du arbeitest als selbständiger Vertriebspartner mit der kompletten Infrastruktur von MOREImmo im Rücken. Was das im Einzelnen bedeutet:",
+    "Du arbeitest als selbständiger Vertriebspartner mit der kompletten Infrastruktur von OS Immobilien im Rücken. Was das im Einzelnen bedeutet:",
     GR.klein,
     BRAND.muted,
     ZEILE_KLEIN,

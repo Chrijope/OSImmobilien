@@ -109,7 +109,7 @@ describe("Fall 3: Es ist noch nichts eingetragen", () => {
 
   it("fällt beim Namen auf eine neutrale Bezeichnung zurück", () => {
     const a = adaptMoreImmoInvestment({ id: "inv-1", objekt: null, wohnung: null, kaufpreis: 0 }, {}, null);
-    expect(a.bezeichnung).toBe("MOREImmo Investment");
+    expect(a.bezeichnung).toBe("OS Immobilien Investment");
   });
 
   it("stürzt nicht ab, wenn meta fehlt", () => {

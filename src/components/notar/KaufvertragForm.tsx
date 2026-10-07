@@ -989,7 +989,7 @@ export function KaufvertragForm({ initialData, onSave, readOnly = false, kundeNa
       <Card className="p-4">
         <h4 className="font-bold text-sm mb-3 text-primary">Vermittlerangaben</h4>
         <div className="grid grid-cols-2 gap-3">
-          {renderField("Firmierung", "makler_name", "text", "z.B. MOREImmo", false, "Vermittlernachweis im Kaufvertrag")}
+          {renderField("Firmierung", "makler_name", "text", "z.B. OS Immobilien", false, "Vermittlernachweis im Kaufvertrag")}
           {renderField("Anschrift", "makler_anschrift", "text", "Straße Nr., PLZ Ort", true, "Steht bereits voreingetragen")}
         </div>
       </Card>

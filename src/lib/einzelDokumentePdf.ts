@@ -18,7 +18,7 @@ import { BRAND, loadLogo, loadIcon, addCoverPage, addBrandedHeader, addBrandedFo
 
 /**
  * Erzeugt jede Anlage sowie den Vertragsentwurf selbst als eigenständiges,
- * vollständig MOREImmo-gebrandetes PDF, jeweils mit eigenem Kopf, Fußzeile
+ * vollständig OS Immobilien-gebrandetes PDF, jeweils mit eigenem Kopf, Fußzeile
  * und (beim Hauptvertrag) Unterschriftsblock.
  *
  * Der Text kommt ausschließlich aus vertragKlauseln.ts, aus denselben
@@ -54,16 +54,16 @@ export interface EinzelDokumentCtx {
   kurzSignatureDataUrl?: string;
   /** ISO-Zeitstempel der Kurz-Unterschrift. */
   kurzSignedAt?: string;
-  /** Ort der Kurz-Unterschrift (fällt zurück auf "Bad Feilnbach"). */
+  /** Ort der Kurz-Unterschrift (fällt zurück auf "Mittenwalde"). */
   kurzSignedOrt?: string;
 }
 
 const GESELLSCHAFT = {
-  name: "MOREImmo",
-  rechtsform: "Einzelunternehmen",
-  zusatz: "ehemals Immosparplan",
-  adresse: "Wendelsteinstraße 19, 83075 Bad Feilnbach",
-  vertretenDurch: "Christian Kurz, Inhaber (Einzelunternehmen)",
+  name: "OS Immobilien Holding GmbH",
+  rechtsform: "GmbH",
+  zusatz: "",
+  adresse: "Am Ostbahnhof 1, 15749 Mittenwalde",
+  vertretenDurch: "die Geschäftsführung",
 };
 
 // Derselbe Textfilter wie im Gesamt-PDF, damit beide Dokumente Zeichen für
@@ -305,9 +305,9 @@ function renderMetaBlock(t: Tools, bewerber: Bewerber, paket: ReturnType<typeof 
   const rightX = M + colW + colGap + 6;
 
   const leftLines = [
-    `${GESELLSCHAFT.rechtsform} (${GESELLSCHAFT.zusatz})`,
+    GESELLSCHAFT.zusatz ? `${GESELLSCHAFT.rechtsform} (${GESELLSCHAFT.zusatz})` : GESELLSCHAFT.rechtsform,
     GESELLSCHAFT.adresse,
-    `Inhaber: ${GESELLSCHAFT.vertretenDurch}`,
+    `vertreten durch ${GESELLSCHAFT.vertretenDurch}`,
   ];
   const rightLines = [
     ...vertragsAnschriftZeilen(bewerber),
@@ -532,7 +532,7 @@ export async function buildEinzelDokumentPdf(
       if (!iso) return "";
       try { return new Date(iso).toLocaleDateString("de-DE"); } catch { return ""; }
     };
-    const kurzOrt = ctx.kurzSignedOrt || "Bad Feilnbach";
+    const kurzOrt = ctx.kurzSignedOrt || "Mittenwalde";
     const bewOrt = ctx.bewerberSignedOrt || ctx.bewerber.ort || "";
     t.signatures({
       hinweis: akzeptanzHinweisText(klauselCtx),
@@ -559,7 +559,7 @@ export async function buildEinzelDokumentPdf(
   // Kennung ("Anlage 3") und der volle Titel stammen aus dem Anlagenverzeichnis
   // des Vertrages, nicht aus einer zweiten Liste: Ein Deckblatt mit einer
   // anderen Nummer als das Verzeichnis in § 14 waere schlimmer als keines.
-  const gesellschaftKurz = `${GESELLSCHAFT.name}, ${GESELLSCHAFT.rechtsform}`;
+  const gesellschaftKurz = GESELLSCHAFT.name;
   const fassungText = klauselCtx.konditionen?.fassungKennung
     ?? (klauselCtx.konditionen?.fassung === "alt" ? VERTRAGS_FASSUNG_ALT : VERTRAGS_FASSUNG);
   addCoverPage(doc, await loadIcon(), {

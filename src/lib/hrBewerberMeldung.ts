@@ -123,7 +123,7 @@ export async function meldeNeuenBewerberAnHr(b: HandBewerber): Promise<void> {
             quelle: b.quelle || "Manuell",
             stelleTitel: b.stelleTitel || "",
             eingegangenAm: jetzt.toLocaleString("de-DE", { dateStyle: "medium", timeStyle: "short" }),
-            bewerberLink: `https://portal.more.immo${link}`,
+            bewerberLink: `https://osimmobilien.netlify.app${link}`,
           },
         },
       });
@@ -184,7 +184,7 @@ export async function meldeVertragUnterschriebenAnHr(v: UnterschriebenerVertrag)
             paketTitel: v.paketTitel || "",
             unterschriebenAm: jetzt.toLocaleString("de-DE", { dateStyle: "medium", timeStyle: "short" }),
             naechsterSchritt,
-            bewerberLink: `https://portal.more.immo${link}`,
+            bewerberLink: `https://osimmobilien.netlify.app${link}`,
           },
         },
       });

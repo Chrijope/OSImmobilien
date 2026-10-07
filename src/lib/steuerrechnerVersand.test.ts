@@ -11,7 +11,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const baueSteuerAuswertungPdf = vi.hoisted(() =>
   vi.fn(async () => ({
     blob: new Blob(["%PDF-1.4 abc"], { type: "application/pdf" }),
-    dateiname: "MOREImmo-Steuerauswertung-2026-09-08.pdf",
+    dateiname: "OS Immobilien-Steuerauswertung-2026-09-08.pdf",
   })),
 );
 
@@ -28,7 +28,7 @@ const EINGABE = { vorname: " Max ", nachname: "Mustermann", email: " max@example
 const BERATER: BeraterInfo = {
   name: "Christian Peetz",
   telefon: "0171 1111111",
-  email: "cp@more.immo",
+  email: "os@os-immobilien.com",
   position: "Vertriebspartner",
   userId: "u-1",
 };

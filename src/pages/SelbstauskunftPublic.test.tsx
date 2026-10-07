@@ -96,7 +96,7 @@ describe("Kundenseite der Selbstauskunft", () => {
     tokenZeile = { id: "t1", kontakt_id: "k1", status: "pending", expires_at: vergangenheit, name: "Jane Doe", sprache: "en" };
     zeige();
     await screen.findByText("Link expired");
-    expect(screen.getByText(/Your contact person at MOREImmo can send you a new link/)).toBeTruthy();
+    expect(screen.getByText(/Your contact person at OS Immobilien can send you a new link/)).toBeTruthy();
     expect(screen.getByRole("button", { name: "Request a new link" })).toBeTruthy();
   });
 
@@ -223,7 +223,7 @@ describe("Kundenseite der Selbstauskunft", () => {
     tokenZeile = null;
     zeige();
     await screen.findByText("Link nicht bekannt");
-    expect(screen.getByText("Dieser Link ist nicht bekannt. Bitte nutzen Sie den Link aus Ihrer neuesten E-Mail von MOREImmo oder wenden Sie sich an Ihren Berater.")).toBeTruthy();
+    expect(screen.getByText("Dieser Link ist nicht bekannt. Bitte nutzen Sie den Link aus Ihrer neuesten E-Mail von OS Immobilien oder wenden Sie sich an Ihren Berater.")).toBeTruthy();
     expect(document.body.textContent).not.toContain("ungültig");
   });
 

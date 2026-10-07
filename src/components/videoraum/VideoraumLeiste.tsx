@@ -268,7 +268,7 @@ export function VideoraumLeiste() {
               aria-label={chat.offen ? "Chat schließen" : "Chat öffnen"}
               aria-expanded={chat.offen}
               className={`relative flex h-7 items-center gap-1 rounded-lg px-2 transition-colors ${
-                chat.offen ? "bg-[#88CFFF]/20 text-[#CDE9FF]" : "bg-white/10 hover:bg-white/15"
+                chat.offen ? "bg-[#30E19E]/20 text-[#AEF3D9]" : "bg-white/10 hover:bg-white/15"
               }`}
             >
               <MessageSquare className="h-3.5 w-3.5" />
@@ -316,7 +316,7 @@ export function VideoraumLeiste() {
             <button
               type="button"
               onClick={zurueckInsVollbild}
-              className="flex h-7 items-center gap-1.5 rounded-lg bg-[#087AC7] px-2.5 text-[11px] font-semibold transition-colors hover:brightness-110"
+              className="flex h-7 items-center gap-1.5 rounded-lg bg-[#15724F] px-2.5 text-[11px] font-semibold transition-colors hover:brightness-110"
             >
               <Maximize2 className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Vollbild</span>

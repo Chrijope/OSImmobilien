@@ -1,5 +1,5 @@
 /**
- * Die Erklärung hinter der Quelle „Kalkulation“ im MORE Lotsen: Die Zeilen
+ * Die Erklärung hinter der Quelle „Kalkulation“ im OS Lotsen: Die Zeilen
  * ergeben das Ergebnis des Rechenkerns, fehlende Posten fallen weg, der
  * Schlusssatz folgt den Annahmen.
  */

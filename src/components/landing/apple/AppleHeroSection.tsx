@@ -75,7 +75,7 @@ const AppleHeroSection = ({ berater, onOpenFunnel }: Props) => {
             varianten={t.titelVarianten}
             style={{
               background:
-                "linear-gradient(135deg, hsl(212 100% 60%), hsl(212 100% 45%))",
+                "linear-gradient(135deg, hsl(157 75% 37%), hsl(157 75% 29%))",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",

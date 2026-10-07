@@ -36,7 +36,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-const PORTAL = "https://portal.more.immo";
+const PORTAL = "https://osimmobilien.netlify.app";
 const LEITUNG = new Set(["admin", "inhaber", "vertriebsleiter"]);
 const KAMPAGNE = "utm_source=mail&utm_medium=email&utm_campaign=willkommen";
 

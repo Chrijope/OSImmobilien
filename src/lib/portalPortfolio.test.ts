@@ -90,7 +90,7 @@ describe("eigenePosition", () => {
 });
 
 describe("berechnePortfolioKennzahlen", () => {
-  it("zaehlt MOREImmo und eigene Positionen getrennt", () => {
+  it("zaehlt OS Immobilien und eigene Positionen getrennt", () => {
     const kz = berechnePortfolioKennzahlen([
       pos({ quelle: "moreimmo" }),
       pos({ quelle: "moreimmo" }),

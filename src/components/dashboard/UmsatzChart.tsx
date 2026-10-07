@@ -84,7 +84,7 @@ export function UmsatzChart() {
   const labelFor = (k: string) =>
     k === "eigen" ? "Eigenumsatz"
     : k === "team" ? "Eigenes Team"
-    : k === "company" ? "Team MOREImmo"
+    : k === "company" ? "Team OS Immobilien"
     : k;
 
   return (
@@ -102,7 +102,7 @@ export function UmsatzChart() {
             </CardTitle>
             {(showCompany || hasTeam) && (
               <p className="mt-0.5 text-[11px] text-muted-foreground/70">
-                {showCompany ? "Eigen + Team + MOREImmo" : "Eigen + Team"}
+                {showCompany ? "Eigen + Team + OS Immobilien" : "Eigen + Team"}
               </p>
             )}
           </div>
@@ -122,7 +122,7 @@ export function UmsatzChart() {
             )}
             {showCompany && (
               <span className="whitespace-nowrap text-muted-foreground">
-                MOREImmo <span className="ml-1.5 font-medium tabular-nums">{totalCompany} T€</span>
+                OS Immobilien <span className="ml-1.5 font-medium tabular-nums">{totalCompany} T€</span>
               </span>
             )}
           </div>

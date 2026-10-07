@@ -207,7 +207,7 @@ describe("Anmeldemails: das gemeinsame Layout greift", () => {
     for (const datei of dateien) {
       const inhalt = lies(join(ORDNER, datei));
       if (!/\bintern\b/.test(inhalt)) fehler.push(`${datei}: ohne "intern", Abmeldelink bliebe roh stehen.`);
-      if (!/\bohneUnterschrift\b/.test(inhalt)) fehler.push(`${datei}: ohne "ohneUnterschrift", es erschiene der Platzhalter "MOREImmo Team".`);
+      if (!/\bohneUnterschrift\b/.test(inhalt)) fehler.push(`${datei}: ohne "ohneUnterschrift", es erschiene der Platzhalter "OS Immobilien Team".`);
     }
     expect(fehler, fehler.join("\n")).toEqual([]);
   });

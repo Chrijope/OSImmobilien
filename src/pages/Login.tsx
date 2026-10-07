@@ -21,13 +21,13 @@ type MfaStep = "login" | "enroll" | "verify";
 /**
  * Rechtliche Verweise in der Fußzeile.
  *
- * Sie zeigen bewusst auf die Website more.immo und nicht auf die
+ * Sie zeigen bewusst auf die Website osimmobilien.netlify.app und nicht auf die
  * CRM-eigenen Seiten /impressum und /datenschutz. Die maßgeblichen Fassungen
  * stehen auf der Website, das CRM ist nur das Werkzeug dahinter.
  */
-const IMPRESSUM_URL = "https://more.immo/impressum";
-const DATENSCHUTZ_URL = "https://more.immo/datenschutz";
-const SUPPORT_EMAIL = "support@more.immo";
+const IMPRESSUM_URL = "https://osimmobilien.netlify.app/impressum";
+const DATENSCHUTZ_URL = "https://osimmobilien.netlify.app/datenschutz";
+const SUPPORT_EMAIL = "os@os-immobilien.com";
 
 /**
  * Die beiden Wege ohne Konto, wie sie unter dem Formular angeboten werden.
@@ -61,6 +61,8 @@ function anmeldeMeldung(meldung: unknown, t: (k: string) => string): string {
  * würde auf der dunklen Bühne verschwinden.
  */
 const BILDMARKE_URL = "/images/moreimmo-icon-blau.png";
+// Fuer den dunklen Bildteil: dunkles Gruen der Bildmarke als Weiss.
+const BILDMARKE_HELL_URL = "/images/os-bildmarke-hell.png";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -418,7 +420,7 @@ const Login = () => {
           <Input
             id="email"
             type="email"
-            placeholder="name@more.immo"
+            placeholder="name@os-immobilien.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="h-12 rounded-[10px] bg-white dark:bg-background border-border"
@@ -459,7 +461,7 @@ const Login = () => {
         <Button
           type="submit"
           disabled={loading}
-          className="w-full h-12 text-[15px] font-medium rounded-[10px] bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-[0_1px_2px_rgba(0,0,0,0.04),0_4px_12px_-4px_rgba(0,113,227,0.35)]"
+          className="w-full h-12 text-[15px] font-medium rounded-[10px] bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-[0_1px_2px_rgba(0,0,0,0.04),0_4px_12px_-4px_rgba(19,132,88,0.35)]"
         >
           {loading ? t("auth.login.absenden_laeuft") : t("auth.login.absenden")}
         </Button>
@@ -584,11 +586,8 @@ const Login = () => {
             Auf hellem Grund ist der Schriftzug dunkel, nicht weiss wie rechts.
           */}
           <div className="mb-9 flex items-center gap-2.5 lg:hidden">
-            <img src={BILDMARKE_URL} alt="" className="h-[26px] w-[26px] object-contain" />
-            <span className="text-[19px] tracking-[-0.01em]">
-              <span className="font-bold text-foreground">MORE</span>
-              <span className="font-light text-muted-foreground">Immo</span>
-            </span>
+            <img src={BILDMARKE_URL} alt="" className="h-[26px] w-auto object-contain" />
+            <span className="text-[19px] font-semibold tracking-[-0.01em] text-foreground">Immobilien</span>
           </div>
 
           {/*
@@ -636,7 +635,7 @@ const Login = () => {
           className="login-licht-b pointer-events-none absolute -bottom-[330px] -right-[300px] h-[760px] w-[760px] rounded-full"
           style={{
             background:
-              "radial-gradient(circle, hsl(204 100% 74% / 0.28) 0%, hsl(204 100% 74% / 0) 64%)",
+              "radial-gradient(circle, hsl(157 75% 49% / 0.28) 0%, hsl(157 75% 49% / 0) 64%)",
           }}
         />
         {/* Feines Raster. Der Rahmen ist absichtlich größer als die Fläche,
@@ -663,11 +662,8 @@ const Login = () => {
 
         {/* Marke oben rechts: blaue Bildmarke plus hell gesetzter Schriftzug. */}
         <div className="absolute right-14 top-11 z-10 flex items-center gap-2.5">
-          <img src={BILDMARKE_URL} alt="" className="h-[26px] w-[26px] object-contain" />
-          <span className="text-[19px] tracking-[-0.01em]">
-            <span className="font-bold text-white">MORE</span>
-            <span className="font-light text-white/70">Immo</span>
-          </span>
+          <img src={BILDMARKE_HELL_URL} alt="" className="h-[26px] w-auto object-contain" />
+          <span className="text-[19px] font-semibold tracking-[-0.01em] text-white">Immobilien</span>
         </div>
 
         <div className="relative z-10 max-w-[430px]">
@@ -675,7 +671,7 @@ const Login = () => {
               dunklen Fläche zu kontrastarm. Der Wert ist derselbe, den
               pdfBranding als accentLight und index.css in .beratung-dark
               für Blau auf Dunkel verwenden. */}
-          <p className="mb-5 text-[11.5px] uppercase tracking-[0.18em] text-[hsl(204_100%_74%)]">
+          <p className="mb-5 text-[11.5px] uppercase tracking-[0.18em] text-[hsl(157_75%_49%)]">
             {t("auth.login.buehne.augenbraue")}
           </p>
           <p className="mb-4 text-[44px] font-semibold leading-[1.14] tracking-[-0.028em]">

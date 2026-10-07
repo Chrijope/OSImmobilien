@@ -89,9 +89,9 @@ export const template = {
     pdfUrl: 'https://example.com/muster-vertrag.pdf',
     berater: {
       name: 'Christian Peetz',
-      rolle: 'Dein Ansprechpartner bei MOREImmo',
-      telefon: '+49 1515 0275108',
-      email: 'c.peetz@more.immo',
+      rolle: 'Dein Ansprechpartner bei OS Immobilien',
+      telefon: '+49 30 863289210',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

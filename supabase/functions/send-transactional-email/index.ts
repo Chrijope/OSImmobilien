@@ -26,9 +26,9 @@ import {
 } from '../_shared/mail-zugang.ts'
 
 // Configuration baked in at scaffold time
-const SITE_NAME = "MOREImmo"
-const SENDER_DOMAIN = "notify.more.immo"
-const FROM_DOMAIN = "more.immo"
+const SITE_NAME = "OS Immobilien"
+const SENDER_DOMAIN = "notify.os-immobilien.com"
+const FROM_DOMAIN = "osimmobilien.netlify.app"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -353,7 +353,7 @@ Deno.serve(async (req) => {
     // ein Bounce darf diese ausdruecklich ausgeloeste Zustellung nicht stumm
     // blockieren. Nur die Spam-Beschwerde sperrt weiterhin (siehe oben).
     'anlage-v-aufstellung',
-    // Zugangsdaten der neuen persoenlichen @more.immo-Adresse an die private
+    // Zugangsdaten der neuen persoenlichen @os-immobilien.com-Adresse an die private
     // Bewerber-Adresse. Der Partner braucht diese Mail zwingend fuer den
     // Start; eine alte Abmeldung oder ein Bounce darf sie nicht stumm
     // blockieren. Nur die Spam-Beschwerde sperrt weiterhin (siehe oben).
@@ -581,7 +581,7 @@ Deno.serve(async (req) => {
    * beliebigen Namen in den Absender schreiben.
    *
    * Ist niemand zustaendig oder laesst es sich nicht nachsehen, schreibt das
-   * MOREImmo Team mit office@ als Antwortadresse. Eine Antwort an eine
+   * OS Immobilien Team mit office@ als Antwortadresse. Eine Antwort an eine
    * Setterin, die den Lead danach nie wieder sieht, waere verloren.
    */
   let absenderAnzeige = SITE_NAME
@@ -620,10 +620,10 @@ Deno.serve(async (req) => {
   /*
    * 3b3. Mails an Bewerber kommen von der HR-Ansprechpartnerin.
    *
-   * Seit dem 26.09.2026, gegen den Spamordner: "Sarah … | MOREImmo" statt
-   * "MOREImmo", und eine Antwort landet bei ihr statt bei noreply@. Dieselbe
+   * Seit dem 26.09.2026, gegen den Spamordner: "Sarah … | OS Immobilien" statt
+   * "OS Immobilien", und eine Antwort landet bei ihr statt bei noreply@. Dieselbe
    * Person wie im Kasten unter der Mail (3b), ermittelt ueber die Kennung.
-   * Ohne HR-Person: "MOREImmo" mit office@ als Antwortadresse. Eine vom
+   * Ohne HR-Person: "OS Immobilien" mit office@ als Antwortadresse. Eine vom
    * Aufrufer ausdruecklich gesetzte Antwortadresse bleibt stehen.
    *
    * Interne Meldungen an HR (bewerber-neu-intern usw.) sind ausgenommen,

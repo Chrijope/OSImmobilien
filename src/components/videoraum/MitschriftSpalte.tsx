@@ -189,7 +189,7 @@ export function MitschriftSpalte({
             />
             <span
               aria-hidden
-              className="mt-[1px] flex h-[15px] w-[15px] shrink-0 items-center justify-center rounded-[4px] border border-white/25 bg-white/[0.06] text-[#0B1119] peer-checked:border-[#88CFFF] peer-checked:bg-[#88CFFF] peer-focus-visible:ring-2 peer-focus-visible:ring-[#88CFFF]/40"
+              className="mt-[1px] flex h-[15px] w-[15px] shrink-0 items-center justify-center rounded-[4px] border border-white/25 bg-white/[0.06] text-[#0B1119] peer-checked:border-[#30E19E] peer-checked:bg-[#30E19E] peer-focus-visible:ring-2 peer-focus-visible:ring-[#30E19E]/40"
             >
               <Check className={`h-[11px] w-[11px] ${zugestimmt ? "" : "opacity-0"}`} strokeWidth={3} />
             </span>
@@ -214,7 +214,7 @@ export function MitschriftSpalte({
               type="button"
               onClick={() => void starten()}
               disabled={!zugestimmt}
-              className="flex items-center gap-1.5 rounded-lg bg-[#087AC7] px-3 py-1.5 text-[12px] font-semibold text-white disabled:opacity-40"
+              className="flex items-center gap-1.5 rounded-lg bg-[#15724F] px-3 py-1.5 text-[12px] font-semibold text-white disabled:opacity-40"
             >
               <Play className="h-3 w-3" /> Mitschrift starten
             </button>
@@ -241,7 +241,7 @@ export function MitschriftSpalte({
             {zeilen.map((z, i) => (
               <div key={`${z.zeitpunkt}-${i}`} className="text-[12.5px] leading-relaxed">
                 <span className="mr-1.5 tabular-nums text-white/30">{formatiereZeit(z.zeitpunkt)}</span>
-                <span className="font-semibold text-[#88CFFF]">{z.sprecher}:</span>{" "}
+                <span className="font-semibold text-[#30E19E]">{z.sprecher}:</span>{" "}
                 <span className="text-white/75">{z.text}</span>
               </div>
             ))}

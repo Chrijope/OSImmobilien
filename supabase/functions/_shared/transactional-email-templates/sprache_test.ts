@@ -51,7 +51,7 @@ for (const name of kundenvorlagen) {
       if (w.length > 2) text = text.split(w).join(' ')
     }
     // Die feste Anschrift im Fuß ist ein Eigenname.
-    text = text.replace(/Wendelsteinstraße 19, 83075 Bad Feilnbach/g, '')
+    text = text.replace(/Am Ostbahnhof 1, 15749 Mittenwalde/g, '')
     const treffer = text.match(new RegExp(DEUTSCH, 'g'))
     if (treffer) throw new Error(`${name}: deutsche Wörter im Englischen: ${[...new Set(treffer)].join(', ')}\n${text}`)
   })

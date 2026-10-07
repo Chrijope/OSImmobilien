@@ -431,7 +431,7 @@ export const SA_UI_EN: Readonly<Record<string, string>> = {
   "Unterschrift konnte nicht gespeichert werden.": "The signature could not be saved.",
   "Die E-Mail an Person 2 ging nicht hinaus": "The email to Person 2 could not be sent",
   "Ihre Unterschrift ist gespeichert, daran geht nichts verloren. Nur die E-Mail mit dem Unterschriftslink an {name} konnte nicht versendet werden.\n\nBitte melden Sie sich kurz bei Ihrem Berater und geben Sie diesen Grund weiter: {grund}\n\nEr kann die Anfrage dann von Hand erneut verschicken.":
-    "Your signature has been saved and nothing has been lost. Only the email with the signature link to {name} could not be sent.\n\nPlease contact your contact person at MOREImmo and pass on the following reason: {grund}\n\nYour contact can then send the request again manually.",
+    "Your signature has been saved and nothing has been lost. Only the email with the signature link to {name} could not be sent.\n\nPlease contact your contact person at OS Immobilien and pass on the following reason: {grund}\n\nYour contact can then send the request again manually.",
   "kein Grund vom Server erhalten": "no reason received from the server",
   "die zweite Person": "the second person",
   Verstanden: "Understood",
@@ -720,39 +720,39 @@ export const SA_UI_EN: Readonly<Record<string, string>> = {
   "Selbstauskunft ohne persönlichen Link ausfüllen": "Complete the self-disclosure without a personal link",
   // Fester Link je Investment und Person, seit dem 07.10.2026.
   "Dieser Link ist nicht mehr gültig. Ihr Berater kann Ihnen einen neuen Link senden, Ihre bisherigen Angaben bleiben erhalten.":
-    "This link is no longer valid. Your contact person at MOREImmo can send you a new link, and the information you have entered so far will be kept.",
+    "This link is no longer valid. Your contact person at OS Immobilien can send you a new link, and the information you have entered so far will be kept.",
   "Neuen Link anfordern": "Request a new link",
   "Ihr Berater ist benachrichtigt und sendet Ihnen einen neuen Link.":
-    "Your contact person at MOREImmo has been notified and will send you a new link.",
+    "Your contact person at OS Immobilien has been notified and will send you a new link.",
   "Sie haben bereits einen neuen Link angefordert. Ihr Berater meldet sich bei Ihnen.":
-    "You have already requested a new link. Your contact person at MOREImmo will be in touch with you.",
+    "You have already requested a new link. Your contact person at OS Immobilien will be in touch with you.",
   "Die Anfrage konnte gerade nicht gesendet werden. Bitte wenden Sie sich direkt an Ihren Berater.":
-    "The request could not be sent just now. Please contact your contact person at MOREImmo directly.",
+    "The request could not be sent just now. Please contact your contact person at OS Immobilien directly.",
   "Sie werden zu Ihrem aktuellen Link weitergeleitet…": "You are being redirected to your current link…",
   "Bereits ausgefüllt": "Already completed",
   "Diese Selbstauskunft wurde bereits ausgefüllt und eingereicht. Bei Fragen wenden Sie sich bitte an Ihren Berater.":
-    "This self-disclosure has already been completed and submitted. If you have any questions, please contact your contact person at MOREImmo.",
+    "This self-disclosure has already been completed and submitted. If you have any questions, please contact your contact person at OS Immobilien.",
   "Gemeinsame Selbstauskunft": "Joint self-disclosure",
   "Bitte füllen Sie die Selbstauskunft gemeinsam über den Link von Person 1 aus.":
     "Please complete the self-disclosure together using the link sent to Person 1.",
   "Link nicht mehr gültig": "Link no longer valid",
-  "Dieser Link wurde durch einen neueren ersetzt. Bitte nutzen Sie den Link aus Ihrer neuesten E-Mail von MOREImmo oder wenden Sie sich an Ihren Berater.":
-    "This link has been replaced by a newer one. Please use the link from your most recent email from MOREImmo or contact your contact person at MOREImmo.",
+  "Dieser Link wurde durch einen neueren ersetzt. Bitte nutzen Sie den Link aus Ihrer neuesten E-Mail von OS Immobilien oder wenden Sie sich an Ihren Berater.":
+    "This link has been replaced by a newer one. Please use the link from your most recent email from OS Immobilien or contact your contact person at OS Immobilien.",
   "Link nicht bekannt": "Link not recognised",
-  "Dieser Link ist nicht bekannt. Bitte nutzen Sie den Link aus Ihrer neuesten E-Mail von MOREImmo oder wenden Sie sich an Ihren Berater.":
-    "This link is not recognised. Please use the link from your most recent email from MOREImmo or contact your contact person at MOREImmo.",
+  "Dieser Link ist nicht bekannt. Bitte nutzen Sie den Link aus Ihrer neuesten E-Mail von OS Immobilien oder wenden Sie sich an Ihren Berater.":
+    "This link is not recognised. Please use the link from your most recent email from OS Immobilien or contact your contact person at OS Immobilien.",
   "Kurze Störung": "Temporary problem",
   "Die Seite konnte gerade nicht geladen werden. Bitte versuchen Sie es in einem Moment erneut.":
     "The page could not be loaded just now. Please try again in a moment.",
   "Erneut versuchen": "Try again",
   "Vielen Dank!": "Thank you very much!",
   "Ihre Selbstauskunft wurde erfolgreich eingereicht und digital unterschrieben. Ihr persönlicher Berater meldet sich zeitnah bei Ihnen mit den weiteren Schritten und schaltet im Anschluss Ihr persönliches Kundenportal frei.":
-    "Your self-disclosure has been submitted successfully and signed digitally. Your contact person at MOREImmo will be in touch with you shortly regarding the next steps and will then activate your personal customer portal.",
+    "Your self-disclosure has been submitted successfully and signed digitally. Your contact person at OS Immobilien will be in touch with you shortly regarding the next steps and will then activate your personal customer portal.",
   "Sie können dieses Fenster jetzt schließen.": "You may now close this window.",
 
   /* ── Handy-Unterschrift /sa-mobile-sign (SaMobileSign.tsx) ── */
   Unterschrift: "Signature",
-  "Unterschrift – MOREImmo": "Signature | MOREImmo",
+  "Unterschrift – OS Immobilien": "Signature | OS Immobilien",
   "Ungültiger Link.": "Invalid link.",
   "Unterschrift übertragen|Überschrift": "Signature transferred",
   "Unterschrift übertragen|Knopf": "Transfer signature",

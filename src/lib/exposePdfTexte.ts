@@ -357,7 +357,7 @@ export const EXPOSE_PDF_TEXTE_DE: ExposePdfTexte = {
   kontaktText: "Dein Ansprechpartner geht das Exposé mit dir durch und beantwortet alle Fragen, ohne Verpflichtung.",
   kontaktRolleFallback: "Wir melden uns mit deinem persönlichen Ansprechpartner.",
   ansprechpartnerVertrieb: "Dein Ansprechpartner im Vertrieb",
-  kontaktMoreImmo: "Dein Kontakt zu MOREImmo",
+  kontaktMoreImmo: "Dein Kontakt zu OS Immobilien",
   erstelltAm: (datum, fuer, von) =>
     `Dieses Exposé wurde am ${datum}${fuer ? ` für ${fuer}` : ""}${von ? ` von ${von}` : ""} erstellt. Es gibt den Stand des Online-Exposés zu diesem Zeitpunkt wieder, mit den dort eingestellten Annahmen.`,
   fussPreisstand: (firma, datum) => `${firma} · Preisstand ${datum}`,
@@ -540,8 +540,8 @@ export const EXPOSE_PDF_TEXTE_EN: ExposePdfTexte = {
   naechsterSchritt: "Ready for the next step?",
   kontaktText: "Your contact will go through the exposé with you and answer all your questions, without obligation.",
   kontaktRolleFallback: "We will get in touch with your personal contact.",
-  ansprechpartnerVertrieb: "Your contact person at MOREImmo",
-  kontaktMoreImmo: "Your contact at MOREImmo",
+  ansprechpartnerVertrieb: "Your contact person at OS Immobilien",
+  kontaktMoreImmo: "Your contact at OS Immobilien",
   erstelltAm: (datum, fuer, von) =>
     `This exposé was prepared on ${datum}${fuer ? ` for ${fuer}` : ""}${von ? ` by ${von}` : ""}. It reflects the online exposé at that time, with the assumptions set there.`,
   fussPreisstand: (firma, datum) => `${firma} · Prices as of ${datum}`,

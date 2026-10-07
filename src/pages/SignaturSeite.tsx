@@ -39,8 +39,7 @@ import type { ReservierungUnterschrift } from "@/lib/reservierungPdf";
 import type { ReservierungData } from "@/components/reservierung/ReservierungsForm";
 import { Input } from "@/components/ui/input";
 import logoLight from "@/assets/moreimmo-logo.png";
-import logoDarkAsset from "@/assets/moreimmo-logo-dark.png.asset.json";
-const logoDark = logoDarkAsset.url;
+import logoDark from "@/assets/moreimmo-logo-dark.png";
 import { Download } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { SelbstauskunftForm, loescheLokalenSaEntwurf } from "@/components/selbstauskunft/SelbstauskunftForm";
@@ -73,7 +72,7 @@ export default function SignaturSeite() {
   const [consent, setConsent] = useState(false);
   /**
    * Der Ort der Unterschrift, nur bei der Reservierungsvereinbarung und
-   * freiwillig. Bei einer Unterschrift im Browser kennt MOREImmo den Ort
+   * freiwillig. Bei einer Unterschrift im Browser kennt OS Immobilien den Ort
    * nicht; wer ihn angibt, sieht ihn im PDF neben dem Datum.
    */
   const [ort, setOrt] = useState("");
@@ -687,8 +686,8 @@ export default function SignaturSeite() {
       <div className="w-full max-w-2xl">
         {/* Logo – Original (schwarze Schrift) im Light Mode, weiße Variante im Dark Mode */}
         <div className="flex justify-center mb-6">
-          <img src={logoLight} alt="MOREImmo" className="h-14 object-contain block dark:hidden" />
-          <img src={logoDark} alt="MOREImmo" className="h-14 object-contain hidden dark:block" />
+          <img src={logoLight} alt="OS Immobilien" className="h-14 object-contain block dark:hidden" />
+          <img src={logoDark} alt="OS Immobilien" className="h-14 object-contain hidden dark:block" />
         </div>
 
         {status === "loading" && (
@@ -1664,7 +1663,7 @@ function VertragSignaturen({
 }
 
 /**
- * Mobile-only Signaturerfassung: einfache, MOREImmo-gebrandete Ansicht.
+ * Mobile-only Signaturerfassung: einfache, OS Immobilien-gebrandete Ansicht.
  * Sendet die Unterschrift per Realtime-Broadcast an den Desktop-Tab,
  * der den QR-Code geöffnet hat.
  */
@@ -1950,7 +1949,7 @@ function VertragKurzSignatur({
     try {
       const kurzSignatureDataUrl = canvasRef.current.toDataURL("image/png");
       const kurzSignedAt = new Date().toISOString();
-      const kurzSignedOrt = "Bad Feilnbach";
+      const kurzSignedOrt = "Mittenwalde";
 
       // Finale PDFs mit BEIDEN Unterschriften bauen
       const { buildEinzelDokumentPdf } = await import("@/lib/einzelDokumentePdf");
@@ -2025,7 +2024,7 @@ function VertragKurzSignatur({
   return (
     <Card className="p-6 space-y-5">
       <div className="text-center">
-        <p className="text-[11px] uppercase tracking-widest text-primary font-semibold">MOREImmo · Gegenzeichnung</p>
+        <p className="text-[11px] uppercase tracking-widest text-primary font-semibold">OS Immobilien · Gegenzeichnung</p>
         <h1 className="text-lg font-bold">Handelsvertretervertrag gegenzeichnen</h1>
         <p className="text-sm text-muted-foreground mt-1">
           Vertriebspartner: <strong>{bewerberName}</strong>
@@ -2115,7 +2114,7 @@ function VertragKurzSignatur({
         <Checkbox id="consent-kurz" checked={consent} onCheckedChange={(c) => setConsent(c === true)} className="mt-0.5" />
         <label htmlFor="consent-kurz" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
           Ich, Christian Kurz, gegenzeichne hiermit den Handelsvertretervertrag mit {bewerberName} samt
-          allen Anlagen rechtsverbindlich für MOREImmo. Mit meiner Unterschrift wird der Vertrag beidseitig
+          allen Anlagen rechtsverbindlich für OS Immobilien. Mit meiner Unterschrift wird der Vertrag beidseitig
           rechtswirksam, die finalen PDFs werden im System abgelegt und dem Vertriebspartner per E-Mail zugestellt.
         </label>
       </div>

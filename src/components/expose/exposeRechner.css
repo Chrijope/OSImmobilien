@@ -31,7 +31,7 @@
   --wk-neutral: #e8edf2;
   --wk-positiv: var(--positiv, #187745);
   --wk-positiv-hell: var(--positiv-hell, #EAF6EF);
-  --wk-blau: var(--blue, #087ac7);
+  --wk-blau: var(--blue, #15724F);
   --wk-blau-hell: var(--pale, #edf7fd);
   /*
    * Das Exposé ist immer hell. Läuft das CRM im dunklen Modus, würden Regler,
@@ -42,16 +42,16 @@
   --foreground: 220 9% 12%;
   --card: 0 0% 100%;
   --card-foreground: 220 9% 12%;
-  --primary: 204 92% 41%;
+  --primary: 157 69% 32%;
   --primary-foreground: 0 0% 100%;
   --secondary: 240 5% 92%;
   --muted: 240 5% 94%;
   --muted-foreground: 215 20% 32%;
-  --accent: 204 100% 97%;
-  --accent-foreground: 204 95% 34%;
+  --accent: 157 75% 95%;
+  --accent-foreground: 157 71% 26%;
   --border: 240 5% 88%;
   --input: 240 5% 80%;
-  --ring: 204 92% 41%;
+  --ring: 157 69% 32%;
   display: flex;
   flex-direction: column;
   gap: 30px;

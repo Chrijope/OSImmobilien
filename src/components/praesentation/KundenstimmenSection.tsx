@@ -95,7 +95,7 @@ export function KundenstimmenSection() {
 
           <div className="border-l-2 border-primary pl-4 py-1">
             <div className="flex items-center gap-1 text-xs uppercase tracking-wider text-primary font-semibold mb-1">
-              <Quote className="h-3 w-3" /> Wie MOREImmo geholfen hat
+              <Quote className="h-3 w-3" /> Wie OS Immobilien geholfen hat
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">{current.hilfe}</p>
           </div>

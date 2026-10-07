@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { meetingKalender, meetingMailAuftrag, verarbeiteMeetingMails, type MeetingMailJob } from '../../supabase/functions/_shared/meeting-mail';
-const job: MeetingMailJob = { id:'job', meeting_id:'meeting',kontakt_id:'customer',benutzer_id:'host',revision:2,art:'aenderung',email:'gast@example.test',lease_id:'lease',daten:{name:'Gast',titel:'Beratung',datum:'2026-12-10',uhrzeit:'10:00',dauer:45,start:'2026-12-10T09:00:00Z',alteZeit:'2026-12-09 10:00',zugangUrl:'https://portal.more.immo/raum/test',modus:'video',icsUid:'meeting-original'} };
+const job: MeetingMailJob = { id:'job', meeting_id:'meeting',kontakt_id:'customer',benutzer_id:'host',revision:2,art:'aenderung',email:'gast@example.test',lease_id:'lease',daten:{name:'Gast',titel:'Beratung',datum:'2026-12-10',uhrzeit:'10:00',dauer:45,start:'2026-12-10T09:00:00Z',alteZeit:'2026-12-09 10:00',zugangUrl:'https://osimmobilien.netlify.app/raum/test',modus:'video',icsUid:'meeting-original'} };
 describe('Automatischer Versand manueller Terminänderungen',()=>{
  it('aktualisiert denselben Kalendereintrag mit neuer Sequenz und Berliner Winterzeit',()=>{
   const ics=meetingKalender(job,'host@example.test');

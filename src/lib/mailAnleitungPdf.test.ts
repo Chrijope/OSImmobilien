@@ -5,8 +5,8 @@ import { PDFDocument } from "pdf-lib";
 import { MAIL_ANLEITUNG_PFAD } from "../../supabase/functions/_shared/bewerber-zugangsdaten.ts";
 
 /*
- * Die Anleitung "MOREImmo Mail einrichten" geht als Link in der Mail
- * "Deine persönliche MOREImmo Adresse" an Bewerber, die noch keinen
+ * Die Anleitung "OS Immobilien Mail einrichten" geht als Link in der Mail
+ * "Deine persönliche OS Immobilien Adresse" an Bewerber, die noch keinen
  * CRM-Zugang haben. Deshalb liegt sie als feste Datei unter public/ und wird
  * nicht erst im Browser erzeugt wie unter Unterlagen.
  *

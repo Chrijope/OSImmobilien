@@ -37,7 +37,7 @@ export function bewerberFragebogenHinweis(anzahlFragen: number, gueltigTage: num
 /** Der Dank samt kurzer Vorstellung, direkt nach der Anrede. */
 export const BEWERBER_EINGANG_DANKE =
   'vielen Dank für dein Interesse an einer vertrieblichen Zusammenarbeit mit ' +
-  'MOREImmo. Wir sind ein Kapitalanlage-Vertrieb aus Rosenheim und erweitern ' +
+  'OS Immobilien. Wir sind ein Kapitalanlage-Vertrieb aus Rosenheim und erweitern ' +
   'gerade unser Vertriebsteam.'
 
 /** Die Zusage des Anrufs und die Terminbuchung als Alternative. */

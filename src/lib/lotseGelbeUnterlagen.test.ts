@@ -1,5 +1,5 @@
 /**
- * MORE Lotse, Stufe 2: gelbe Unterlagen (05.10.2026, rechtliche Vorgaben B bis F).
+ * OS Lotse, Stufe 2: gelbe Unterlagen (05.10.2026, rechtliche Vorgaben B bis F).
  *
  * Bewiesen wird:
  *   - die Kundenampel bleibt für jede gelbe Unterlage, wie sie war,

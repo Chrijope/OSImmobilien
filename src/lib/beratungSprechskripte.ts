@@ -1,4 +1,4 @@
-// Sprechskripte zur Beratungspräsentation MOREImmo.
+// Sprechskripte zur Beratungspräsentation OS Immobilien.
 //
 // Eine Quelle für zwei Ansichten: das Trainings-Cockpit in der
 // Vertriebsakademie (Präsentation links, Skript rechts, scrollsynchron)
@@ -13,7 +13,7 @@
 // gesagt und bedient hat, verteidigt er später.
 
 export interface BeratungSprechskript {
-  /** Section-ID in der Beratungspräsentation MOREImmo (BeratungspraesentationHV.tsx) */
+  /** Section-ID in der Beratungspräsentation OS Immobilien (BeratungspraesentationHV.tsx) */
   id: string;
   /** Anzeigename der Station */
   station: string;
@@ -85,7 +85,7 @@ export const BERATUNG_SPRECHSKRIPTE: BeratungSprechskript[] = [
   },
   {
     id: "ueberuns",
-    station: "Station 02: MORE Immo in einem Satz",
+    station: "Station 02: OS Immobilien in einem Satz",
     ueberleitung:
       "Damit Sie einschätzen können, ob unsere Arbeitsweise zu Ihnen passt, kurz wer hier eigentlich vor Ihnen sitzt.",
     ueberleitungDu:

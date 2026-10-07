@@ -478,7 +478,7 @@ describe("Abgelaufene und unbekannte Links", () => {
  * Termin nicht verloren geht.
  */
 const ZUGANG = {
-  gastgeber: { name: "Sarah Kaiser-Thom", email: "sarah@more.immo" },
+  gastgeber: { name: "Sarah Kaiser-Thom", email: "os@os-immobilien.com" },
   zeitzone: "Europe/Berlin",
   dauer_minuten: 30,
   bezeichnung: "Bewerbergespräch",
@@ -535,7 +535,7 @@ describe("Der Abschluss ohne Terminwahl", () => {
     expect(text).not.toMatch(/\d+ Minuten/);
     expect(kalendertage()).toHaveLength(0);
     // Die Zusammenfassung geht per Mail hinaus, deshalb der Hinweis auf Absender und Spam-Ordner.
-    expect(screen.getByTestId("spam-hinweis")).toHaveTextContent("Unsere Mail kommt von noreply@more.immo.");
+    expect(screen.getByTestId("spam-hinweis")).toHaveTextContent("Unsere Mail kommt von noreply@os-immobilien.com.");
   });
 
   it("hält einen schon gebuchten Termin und führt zum Verschieben in die Buchungsstrecke", async () => {

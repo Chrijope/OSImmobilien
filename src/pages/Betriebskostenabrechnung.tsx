@@ -25,7 +25,7 @@ export default function BetriebskostenabrechnungPage() {
 
   const handleExportPdf = (erg: BKAErgebnis) => {
     if (!selectedBKA) return;
-    const doc = generateBKAPDF(selectedBKA, erg, "MOREImmo", "Wendelsteinstraße 19, 83075 Bad Feilnbach");
+    const doc = generateBKAPDF(selectedBKA, erg, "OS Immobilien", "Am Ostbahnhof 1, 15749 Mittenwalde");
     doc.save(`BKA_${selectedBKA.abrechnungsJahr}_${erg.mieterName.replace(/\s/g, "_")}.pdf`);
     toast({ title: "BKA als PDF exportiert", description: `Für ${erg.mieterName}` });
   };
@@ -33,7 +33,7 @@ export default function BetriebskostenabrechnungPage() {
   const handleExportAll = () => {
     if (!selectedBKA || ergebnisse.length === 0) return;
     ergebnisse.forEach(erg => {
-      const doc = generateBKAPDF(selectedBKA, erg, "MOREImmo", "Wendelsteinstraße 19, 83075 Bad Feilnbach");
+      const doc = generateBKAPDF(selectedBKA, erg, "OS Immobilien", "Am Ostbahnhof 1, 15749 Mittenwalde");
       doc.save(`BKA_${selectedBKA.abrechnungsJahr}_${erg.mieterName.replace(/\s/g, "_")}.pdf`);
     });
     toast({ title: `${ergebnisse.length} BKA-PDFs exportiert` });

@@ -29,7 +29,7 @@ const corsHeaders = {
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const FORMULAR_BASIS_URL = "https://portal.more.immo/bewerberfragen";
+const FORMULAR_BASIS_URL = "https://osimmobilien.netlify.app/bewerberfragen";
 const ERINNERUNG_NACH_TAGEN = 3;
 
 /**

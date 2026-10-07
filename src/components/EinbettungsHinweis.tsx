@@ -27,7 +27,7 @@ export function EinbettungsHinweis({ adresse = window.location.href }: { adresse
         <div className="mb-3 h-1 w-8 bg-primary" />
         <div className="mb-4 flex items-center gap-2">
           <ShieldCheck className="h-5 w-5 text-primary" aria-hidden />
-          <h1 className="text-lg font-bold">Das MOREImmo Portal öffnet sich nur im eigenen Fenster</h1>
+          <h1 className="text-lg font-bold">Das OS Immobilien Portal öffnet sich nur im eigenen Fenster</h1>
         </div>
         <p className="mb-5 text-sm text-muted-foreground">
           Diese Seite wurde in eine andere Website eingebettet. Zu deinem Schutz zeigen wir das Portal
@@ -45,7 +45,7 @@ export function EinbettungsHinweis({ adresse = window.location.href }: { adresse
         </p>
 
         <div lang="en" className="mt-6 border-t pt-4 text-xs text-muted-foreground">
-          <p className="mb-1 font-medium text-foreground">The MOREImmo portal only opens in its own window</p>
+          <p className="mb-1 font-medium text-foreground">The OS Immobilien portal only opens in its own window</p>
           <p className="mb-2">
             This page has been embedded in another website. To protect you, the portal is not shown
             there, because a third party page could otherwise intercept your clicks.

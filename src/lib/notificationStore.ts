@@ -160,7 +160,7 @@ function getLinkForType(type: NotifType, data: any): string {
  *
  * Genau das hat Christian am 17.09.2026 gemeldet: „Reservierung versandt:
  * Jonas Lins" tauchte bei ihm immer wieder auf, obwohl die Meldung an
- * p.pintat@more.immo zugestellt war und er sie mehrfach als gelesen markiert
+ * os@os-immobilien.com zugestellt war und er sie mehrfach als gelesen markiert
  * hatte.
  *
  * Die Liste der uebrigen Meldungen in `HeaderBar` filtert seit jeher richtig,

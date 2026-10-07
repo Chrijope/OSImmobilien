@@ -4,7 +4,7 @@ import { EmailLayout, Absatz, Handlung, type Ansprechpartner } from './_layout.t
 import { hallo } from './_anrede.ts'
 import { DE_EN, type MailSprache, mitSprache, texteFuer, type Zweisprachig } from './_sprache.ts'
 
-const VP_LANDING_URL = 'https://portal.more.immo/vp/christian-peetz'
+const VP_LANDING_URL = 'https://osimmobilien.netlify.app/vp/christian-peetz'
 
 interface Props {
   kundeName?: string
@@ -82,9 +82,9 @@ export const template = {
     landingUrl: VP_LANDING_URL,
     berater: {
       name: 'Anna Berater',
-      rolle: 'Deine Ansprechpartnerin bei MOREImmo',
+      rolle: 'Deine Ansprechpartnerin bei OS Immobilien',
       telefon: '08061 000000',
-      email: 'beraterin@more.immo',
+      email: 'beraterin@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

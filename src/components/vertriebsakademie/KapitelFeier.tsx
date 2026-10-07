@@ -111,12 +111,12 @@ interface Teilchen {
 
 /** Hausfarben: Markenblau aus den Design-Tokens, dazu Hellblau, Grün, Bernstein, Weiß. */
 function farben(): string[] {
-  let primary = "204 92% 41%";
+  let primary = "157 69% 32%";
   try {
     const wert = getComputedStyle(document.documentElement).getPropertyValue("--primary").trim();
     if (wert) primary = wert;
   } catch { /* ohne Stylesheet bleibt der Standard */ }
-  return [`hsl(${primary})`, "hsl(204 100% 77%)", "rgb(16 185 129)", "#F59E0B", "#FFFFFF"];
+  return [`hsl(${primary})`, "hsl(157 75% 55%)", "rgb(16 185 129)", "#F59E0B", "#FFFFFF"];
 }
 
 function Konfetti({ anzahl, dauerMs }: { anzahl: number; dauerMs: number }) {

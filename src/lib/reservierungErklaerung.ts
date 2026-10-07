@@ -56,7 +56,7 @@ import {
  * das Muster-Widerrufsformular ist entfallen. Wer einen Satz ändern will,
  * hebt danach `TEXT_FASSUNG` an.
  *
- * Bewusste Abweichungen vom Branchenmuster: MOREImmo ist Vermittler, nicht
+ * Bewusste Abweichungen vom Branchenmuster: OS Immobilien ist Vermittler, nicht
  * Verkäufer, deshalb „hinwirken" statt „veräußern" und ein dritter Beteiligter
  * in Punkt 4. Keine Frist in Wochen, die Reservierung läuft bis zum
  * vereinbarten Notartermin. Die Finanzierungsabsage ist in Punkt 7 geregelt,
@@ -168,7 +168,7 @@ export function beschriftungEn(de: string): string {
 }
 
 /** Der Unternehmer, wie er in der Widerrufsbelehrung genannt wird. */
-export const UNTERNEHMER = "MOREImmo, Inhaber Christian Kurz, Wendelsteinstraße 19, 83075 Bad Feilnbach";
+export const UNTERNEHMER = "OS Immobilien Holding GmbH, Am Ostbahnhof 1, 15749 Mittenwalde";
 export const UNTERNEHMER_EMAIL = IMPRESSUM_EMAIL;
 
 /**
@@ -196,12 +196,12 @@ export const WIDERRUF_ENTFAELLT_OHNE_GEBUEHR = true;
  * dieses Objekt zu erwerben. Ohne ihn ist Abschnitt 2 eine Liste von Angaben
  * ohne Aussage.
  *
- * Geschrieben steht dort „MOREImmo", wie im übrigen Dokument. Das Papier
- * schreibt „MORE Immo" mit Leerzeichen; zwei Schreibweisen des eigenen Namens
+ * Geschrieben steht dort „OS Immobilien", wie im übrigen Dokument. Das Papier
+ * schreibt „OS Immobilien" mit Leerzeichen; zwei Schreibweisen des eigenen Namens
  * in einem Vertrag sehen nach Unachtsamkeit aus.
  */
 export const OBJEKT_EINLEITUNG =
-  "Ich/Wir beabsichtige/n, das nachfolgend bezeichnete Objekt über MOREImmo zu erwerben.";
+  "Ich/Wir beabsichtige/n, das nachfolgend bezeichnete Objekt über OS Immobilien zu erwerben.";
 
 /**
  * Derselbe Satz beim Globalobjekt (Tabelle A).
@@ -210,7 +210,7 @@ export const OBJEKT_EINLEITUNG =
  * dass jemand aus der Reservierung eines Hauses eine einzelne Wohnung ableitet.
  */
 export const OBJEKT_EINLEITUNG_GESAMTOBJEKT =
-  "Ich/Wir beabsichtige/n, das nachfolgend bezeichnete Objekt als Ganzes über MOREImmo zu erwerben, also das Grundstück mit dem Gebäude und sämtlichen darin befindlichen Einheiten. Der Erwerb einzelner Einheiten ist nicht Gegenstand dieser Vereinbarung.";
+  "Ich/Wir beabsichtige/n, das nachfolgend bezeichnete Objekt als Ganzes über OS Immobilien zu erwerben, also das Grundstück mit dem Gebäude und sämtlichen darin befindlichen Einheiten. Der Erwerb einzelner Einheiten ist nicht Gegenstand dieser Vereinbarung.";
 
 /** Die Einleitung über den Objektdaten, die zu diesem Fall gehört. */
 export function objektEinleitung(opt: VertragsOptionen = {}, sprache: VertragsSprache = "de"): string {
@@ -310,7 +310,7 @@ const ABSCHNITTE_VORLAGE: AbschnittVorlage[] = [
  * Gebührenrechnung des Notariats sind am 15.09.2026 entfallen.
  */
 export const NOTAR_HINWEIS =
-  "Die Beurkundung des Kaufvertrags erfolgt in der Regel bei dem Notariat, das der Verkäufer für dieses Objekt vorgesehen hat und mit dem MOREImmo bereits zusammenarbeitet. Ein anderes Notariat kann nach vorheriger Absprache mit MOREImmo und Zustimmung des Verkäufers beauftragt werden. Die Kosten der Beurkundung trägt der Kaufinteressent (§ 448 Abs. 2 BGB).";
+  "Die Beurkundung des Kaufvertrags erfolgt in der Regel bei dem Notariat, das der Verkäufer für dieses Objekt vorgesehen hat und mit dem OS Immobilien bereits zusammenarbeitet. Ein anderes Notariat kann nach vorheriger Absprache mit OS Immobilien und Zustimmung des Verkäufers beauftragt werden. Die Kosten der Beurkundung trägt der Kaufinteressent (§ 448 Abs. 2 BGB).";
 
 /* ─── 4. Reservierungsgebühr ─── */
 
@@ -325,7 +325,7 @@ export const GEBUEHR_EINLEITUNG =
 
 /** Der Satz über den Punkten, der die Parteien benennt. */
 export const VEREINBARUNG_EINLEITUNG =
-  "MOREImmo und der Kaufinteressent vereinbaren hinsichtlich des Kaufobjekts:";
+  "OS Immobilien und der Kaufinteressent vereinbaren hinsichtlich des Kaufobjekts:";
 
 /** Ein Punkt der Vereinbarung. `punkte` trägt die Aufzählung a) bis d) in Punkt 2. */
 export interface VereinbarungZiffer {
@@ -368,7 +368,7 @@ interface ZifferVorlage {
 
 /**
  * Die Punkte des Abschnitts „Reservierungsvereinbarung", seit dem 15.09.2026
- * nach dem Vorbild eines Branchenmusters, aber mit MOREImmo als Vermittler
+ * nach dem Vorbild eines Branchenmusters, aber mit OS Immobilien als Vermittler
  * statt Verkäufer.
  *
  * Kennung und Text sind getrennt von der Nummer, damit Schirm und PDF die
@@ -378,17 +378,17 @@ const ZIFFERN_VORLAGE: ZifferVorlage[] = [
   {
     kennung: "zeitraum",
     // Keine Frist in Wochen, Entscheidung Christians vom 15.09.2026.
-    text: "Um dem Kaufinteressenten einen angemessenen Zeitraum für die Kaufentscheidung, die Kreditbeschaffung und andere Vorbereitungen zu gewähren, reserviert MOREImmo das Objekt ab dem Tag der Unterzeichnung dieser Vereinbarung bis zum vereinbarten Notartermin.",
-    // Tabelle C: beschreibt, wofür ein Hauskäufer die Zeit braucht. MOREImmo
+    text: "Um dem Kaufinteressenten einen angemessenen Zeitraum für die Kaufentscheidung, die Kreditbeschaffung und andere Vorbereitungen zu gewähren, reserviert OS Immobilien das Objekt ab dem Tag der Unterzeichnung dieser Vereinbarung bis zum vereinbarten Notartermin.",
+    // Tabelle C: beschreibt, wofür ein Hauskäufer die Zeit braucht. OS Immobilien
     // muss dadurch keine Unterlagen liefern.
-    textGesamtobjekt: "Um dem Kaufinteressenten einen angemessenen Zeitraum für die Kaufentscheidung, die Prüfung der Objekt- und Mietunterlagen, die Kreditbeschaffung und andere Vorbereitungen zu gewähren, reserviert MOREImmo das Objekt ab dem Tag der Unterzeichnung dieser Vereinbarung bis zum vereinbarten Notartermin.",
+    textGesamtobjekt: "Um dem Kaufinteressenten einen angemessenen Zeitraum für die Kaufentscheidung, die Prüfung der Objekt- und Mietunterlagen, die Kreditbeschaffung und andere Vorbereitungen zu gewähren, reserviert OS Immobilien das Objekt ab dem Tag der Unterzeichnung dieser Vereinbarung bis zum vereinbarten Notartermin.",
   },
   {
     kennung: "pflichten",
-    text: "Während dieses Zeitraums verpflichtet sich MOREImmo,",
+    text: "Während dieses Zeitraums verpflichtet sich OS Immobilien,",
     punkte: [
       "a) das Objekt nicht anderen Interessenten anzubieten und mit ihnen nicht über das Objekt zu verhandeln;",
-      // Nur hinwirken, nicht versprechen: MOREImmo ist nicht Eigentümer.
+      // Nur hinwirken, nicht versprechen: OS Immobilien ist nicht Eigentümer.
       "b) darauf hinzuwirken, dass der Verkäufer das Objekt während der Reservierungsdauer nicht anderweitig veräußert;",
       "c) auf einen baldigen Vertragsabschluss zwischen Kaufinteressent und Verkäufer hinzuwirken;",
       "d) die notwendigen Vorbereitungen für den Vertragsabschluss (Reservierung eines Notartermins; gegebenenfalls Vorlage eines Vertragsentwurfs) durchzuführen und den Kaufinteressenten bei der Vorbereitung des Kaufs zu unterstützen.",
@@ -396,7 +396,7 @@ const ZIFFERN_VORLAGE: ZifferVorlage[] = [
     /*
      * Tabelle A: Beim aufgeteilten Haus wäre sonst offen, ob der Verkauf einer
      * einzelnen Wohnung gegen die Reservierung verstößt. „Hinwirken“ bleibt,
-     * weil MOREImmo nicht Eigentümer ist.
+     * weil OS Immobilien nicht Eigentümer ist.
      */
     punkteGesamtobjekt: [
       "a) das Objekt nicht anderen Interessenten anzubieten und mit ihnen nicht über das Objekt zu verhandeln, weder als Ganzes noch über einzelne Einheiten daraus;",
@@ -407,10 +407,10 @@ const ZIFFERN_VORLAGE: ZifferVorlage[] = [
   },
   {
     kennung: "pflichtbeginn",
-    text: "Die Pflichten von MOREImmo beginnen mit Zahlung der Reservierungsgebühr. Hat der Kaufinteressent nach Abschnitt {{abschnitt:widerruf}} gewählt, das Ende der Widerrufsfrist abzuwarten, beginnen sie frühestens mit deren Ablauf.",
+    text: "Die Pflichten von OS Immobilien beginnen mit Zahlung der Reservierungsgebühr. Hat der Kaufinteressent nach Abschnitt {{abschnitt:widerruf}} gewählt, das Ende der Widerrufsfrist abzuwarten, beginnen sie frühestens mit deren Ablauf.",
     // Tabelle B: Ohne Widerrufsbelehrung zeigte der zweite Satz ins Leere,
     // und `vertragsAufbau` bräche absichtlich ab.
-    textGesellschaft: "Die Pflichten von MOREImmo beginnen mit Zahlung der Reservierungsgebühr.",
+    textGesellschaft: "Die Pflichten von OS Immobilien beginnen mit Zahlung der Reservierungsgebühr.",
     /*
      * Der Beginn der Pflichten ohne Reservierungsgebühr, im Wortlaut von
      * Christians Entscheidung vom 22.09.2026.
@@ -422,11 +422,11 @@ const ZIFFERN_VORLAGE: ZifferVorlage[] = [
      * schlicht nichts steht, lässt den Leser fragen, ob etwas vergessen
      * wurde. Bitte nicht kürzen.
      */
-    textOhneGebuehr: "Die Pflichten von MOREImmo beginnen mit Unterzeichnung dieser Vereinbarung. Für diese Reservierung wird keine Reservierungsgebühr erhoben.",
+    textOhneGebuehr: "Die Pflichten von OS Immobilien beginnen mit Unterzeichnung dieser Vereinbarung. Für diese Reservierung wird keine Reservierungsgebühr erhoben.",
   },
   {
     kennung: "abschlussfreiheit",
-    text: "Weder der Kaufinteressent noch MOREImmo noch der Verkäufer sind verpflichtet, den in Aussicht gestellten Kaufvertrag abzuschließen. Die Entscheidung bleibt bis zum Abschluss des notariellen Vertrags beiderseits frei. Der Kaufinteressent informiert MOREImmo unverzüglich von einer eventuellen Aufgabe der Kaufabsicht.",
+    text: "Weder der Kaufinteressent noch OS Immobilien noch der Verkäufer sind verpflichtet, den in Aussicht gestellten Kaufvertrag abzuschließen. Die Entscheidung bleibt bis zum Abschluss des notariellen Vertrags beiderseits frei. Der Kaufinteressent informiert OS Immobilien unverzüglich von einer eventuellen Aufgabe der Kaufabsicht.",
   },
   {
     kennung: "bestand",
@@ -434,10 +434,10 @@ const ZIFFERN_VORLAGE: ZifferVorlage[] = [
     /*
      * Tabelle A, neuer Punkt nach dem vorigen. Wer ein ganzes Haus kauft,
      * kauft vor allem Mieteinnahmen. Die Reservierung ist das einzige
-     * Dokument, das MOREImmo selbst mit ihm schließt, und darf sich nicht wie
+     * Dokument, das OS Immobilien selbst mit ihm schließt, und darf sich nicht wie
      * eine Ertragszusage lesen (Frage 5 an den Anwalt).
      */
-    text: "Das Objekt wird mit den bestehenden Miet- und Pachtverhältnissen erworben, soweit der Kaufvertrag nichts anderes bestimmt. Angaben zu Einheiten, Flächen, Mieten und Mietverhältnissen stammen vom Verkäufer; sie sind keine Zusicherung und keine Beschaffenheitsangabe von MOREImmo. Maßgeblich für Kaufgegenstand, Beschaffenheit und Kaufpreis ist allein der notarielle Kaufvertrag.",
+    text: "Das Objekt wird mit den bestehenden Miet- und Pachtverhältnissen erworben, soweit der Kaufvertrag nichts anderes bestimmt. Angaben zu Einheiten, Flächen, Mieten und Mietverhältnissen stammen vom Verkäufer; sie sind keine Zusicherung und keine Beschaffenheitsangabe von OS Immobilien. Maßgeblich für Kaufgegenstand, Beschaffenheit und Kaufpreis ist allein der notarielle Kaufvertrag.",
   },
   {
     kennung: "benennung",
@@ -448,14 +448,14 @@ const ZIFFERN_VORLAGE: ZifferVorlage[] = [
      * gegründet wird (Frage 3 an den Anwalt). Sie steht hinter dem Bestand,
      * weil beide den späteren Kaufvertrag betreffen.
      */
-    text: "Der Kaufinteressent kann MOREImmo bis spätestens zehn Tage vor dem Notartermin in Textform eine Gesellschaft benennen, an der er beteiligt ist und die an seiner Stelle den Kaufvertrag schließen soll. MOREImmo wirkt darauf hin, dass der Verkäufer mit der benannten Gesellschaft abschließt. Die Rechte und Pflichten aus dieser Vereinbarung gehen mit der Benennung auf die Gesellschaft über; der Kaufinteressent haftet für die Pflichten aus dieser Vereinbarung neben ihr fort.",
+    text: "Der Kaufinteressent kann OS Immobilien bis spätestens zehn Tage vor dem Notartermin in Textform eine Gesellschaft benennen, an der er beteiligt ist und die an seiner Stelle den Kaufvertrag schließen soll. OS Immobilien wirkt darauf hin, dass der Verkäufer mit der benannten Gesellschaft abschließt. Die Rechte und Pflichten aus dieser Vereinbarung gehen mit der Benennung auf die Gesellschaft über; der Kaufinteressent haftet für die Pflichten aus dieser Vereinbarung neben ihr fort.",
   },
   {
     kennung: "zahlung",
     nurMitGebuehr: true,
-    text: "Der Kaufinteressent bezahlt die in Abschnitt {{abschnitt:gebuehr}} nach dem Kaufpreis bestimmte Reservierungsgebühr an das dort angegebene Konto. Die Zahlung ist innerhalb von sieben Tagen nach Unterzeichnung dieser Vereinbarung fällig. Die Gebühr umfasst die in Punkt {{punkt:pflichten}} genannten Tätigkeiten von MOREImmo, das Reservierungsrisiko (eventueller Verlust durch Stillstand anderweitiger Vermittlungsbemühungen) und deckt den Mehraufwand ab, der durch die Neuaufnahme der Vermittlungsbemühungen entsteht.",
+    text: "Der Kaufinteressent bezahlt die in Abschnitt {{abschnitt:gebuehr}} nach dem Kaufpreis bestimmte Reservierungsgebühr an das dort angegebene Konto. Die Zahlung ist innerhalb von sieben Tagen nach Unterzeichnung dieser Vereinbarung fällig. Die Gebühr umfasst die in Punkt {{punkt:pflichten}} genannten Tätigkeiten von OS Immobilien, das Reservierungsrisiko (eventueller Verlust durch Stillstand anderweitiger Vermittlungsbemühungen) und deckt den Mehraufwand ab, der durch die Neuaufnahme der Vermittlungsbemühungen entsteht.",
     // Variante A: ein fester Betrag für das Gesamtobjekt, keine Staffel.
-    textGesamtobjekt: "Der Kaufinteressent bezahlt die in Abschnitt {{abschnitt:gebuehr}} für das Gesamtobjekt bestimmte Reservierungsgebühr an das dort angegebene Konto. Die Zahlung ist innerhalb von sieben Tagen nach Unterzeichnung dieser Vereinbarung fällig. Die Gebühr umfasst die in Punkt {{punkt:pflichten}} genannten Tätigkeiten von MOREImmo, das Reservierungsrisiko (eventueller Verlust durch Stillstand anderweitiger Vermittlungsbemühungen) und deckt den Mehraufwand ab, der durch die Neuaufnahme der Vermittlungsbemühungen entsteht.",
+    textGesamtobjekt: "Der Kaufinteressent bezahlt die in Abschnitt {{abschnitt:gebuehr}} für das Gesamtobjekt bestimmte Reservierungsgebühr an das dort angegebene Konto. Die Zahlung ist innerhalb von sieben Tagen nach Unterzeichnung dieser Vereinbarung fällig. Die Gebühr umfasst die in Punkt {{punkt:pflichten}} genannten Tätigkeiten von OS Immobilien, das Reservierungsrisiko (eventueller Verlust durch Stillstand anderweitiger Vermittlungsbemühungen) und deckt den Mehraufwand ab, der durch die Neuaufnahme der Vermittlungsbemühungen entsteht.",
   },
   {
     kennung: "rueckzahlung",
@@ -466,7 +466,7 @@ const ZIFFERN_VORLAGE: ZifferVorlage[] = [
      * fehlenden Bankverbindung deshalb selbst, statt sich auf ein Pflichtfeld
      * zu verlassen, das es nicht mehr gibt.
      */
-    text: "Kommt der Kaufvertrag zustande, wird die Reservierungsgebühr am Tag der notariellen Beurkundung vollständig zurücküberwiesen, und zwar auf das in Abschnitt {{abschnitt:kaeufer}} angegebene Konto des Kaufinteressenten. Ist dort kein Konto angegeben, teilt der Kaufinteressent MOREImmo die Bankverbindung vor der Beurkundung mit; die Rückzahlung erfolgt dann unverzüglich nach Eingang dieser Mitteilung.",
+    text: "Kommt der Kaufvertrag zustande, wird die Reservierungsgebühr am Tag der notariellen Beurkundung vollständig zurücküberwiesen, und zwar auf das in Abschnitt {{abschnitt:kaeufer}} angegebene Konto des Kaufinteressenten. Ist dort kein Konto angegeben, teilt der Kaufinteressent OS Immobilien die Bankverbindung vor der Beurkundung mit; die Rückzahlung erfolgt dann unverzüglich nach Eingang dieser Mitteilung.",
   },
   {
     kennung: "verfall",
@@ -483,10 +483,10 @@ const ZIFFERN_VORLAGE: ZifferVorlage[] = [
   },
   {
     kennung: "wirksamkeit",
-    text: "Die Reservierungsvereinbarung wird mit Unterzeichnung durch den Kaufinteressenten rechtswirksam; eine Gegenzeichnung durch MOREImmo ist nicht erforderlich. Die Unterzeichnung erfolgt elektronisch.",
+    text: "Die Reservierungsvereinbarung wird mit Unterzeichnung durch den Kaufinteressenten rechtswirksam; eine Gegenzeichnung durch OS Immobilien ist nicht erforderlich. Die Unterzeichnung erfolgt elektronisch.",
     // Tabelle B: Es wird elektronisch unterschrieben, niemand prüft die
     // Vertretungsbefugnis (Frage 8 an den Anwalt).
-    textGesellschaft: "Die Reservierungsvereinbarung wird mit Unterzeichnung durch den Kaufinteressenten rechtswirksam; eine Gegenzeichnung durch MOREImmo ist nicht erforderlich. Die Unterzeichnung erfolgt elektronisch. Wer diese Vereinbarung für eine Gesellschaft unterzeichnet, versichert, zu ihrer Vertretung berechtigt zu sein, und weist dies auf Verlangen durch einen aktuellen Registerauszug oder eine Vollmacht nach.",
+    textGesellschaft: "Die Reservierungsvereinbarung wird mit Unterzeichnung durch den Kaufinteressenten rechtswirksam; eine Gegenzeichnung durch OS Immobilien ist nicht erforderlich. Die Unterzeichnung erfolgt elektronisch. Wer diese Vereinbarung für eine Gesellschaft unterzeichnet, versichert, zu ihrer Vertretung berechtigt zu sein, und weist dies auf Verlangen durch einen aktuellen Registerauszug oder eine Vollmacht nach.",
   },
   {
     kennung: "dolmetscher",
@@ -648,11 +648,11 @@ function zifferVorlageEn(z: ZifferVorlage): ZifferVorlage {
  * dieselben Sätze.
  */
 const WAHL_SOFORT_SATZ =
-  "Ich verlange ausdrücklich, dass MOREImmo mit der Reservierung und den Leistungen nach Punkt {{punkt:pflichten}} sofort, also vor Ablauf der Widerrufsfrist, beginnt.";
+  "Ich verlange ausdrücklich, dass OS Immobilien mit der Reservierung und den Leistungen nach Punkt {{punkt:pflichten}} sofort, also vor Ablauf der Widerrufsfrist, beginnt.";
 const WAHL_SOFORT_ERLAEUTERUNG =
   "Mir ist bekannt, dass ich bei einem Widerruf für die bis dahin erbrachten Leistungen einen anteiligen Betrag zu zahlen habe und dass mein Widerrufsrecht erlischt, wenn die Reservierung vollständig erbracht ist, bevor ich widerrufe (§ 356 Abs. 4 BGB).";
 const WAHL_ABWARTEN_SATZ =
-  "Ich wünsche, dass MOREImmo mit der Reservierung erst nach Ablauf der Widerrufsfrist beginnt.";
+  "Ich wünsche, dass OS Immobilien mit der Reservierung erst nach Ablauf der Widerrufsfrist beginnt.";
 const WAHL_ABWARTEN_ERLAEUTERUNG =
   "Mir ist bekannt, dass die Wohnung bis zum Ablauf der Widerrufsfrist nicht für mich reserviert ist und in dieser Zeit anderen Kaufinteressenten angeboten und von diesen reserviert werden kann. Kommt eine anderweitige Reservierung zustande, entfällt diese Vereinbarung, und eine bereits gezahlte Reservierungsgebühr wird vollständig zurückgezahlt.";
 /*
@@ -663,7 +663,7 @@ const WAHL_ABWARTEN_ERLAEUTERUNG =
 const WAHL_ABWARTEN_ERLAEUTERUNG_GESAMTOBJEKT =
   "Mir ist bekannt, dass das Objekt bis zum Ablauf der Widerrufsfrist nicht für mich reserviert ist und in dieser Zeit anderen Kaufinteressenten angeboten und von diesen reserviert werden kann. Kommt eine anderweitige Reservierung zustande, entfällt diese Vereinbarung, und eine bereits gezahlte Reservierungsgebühr wird vollständig zurückgezahlt.";
 const AUFLOESENDE_BEDINGUNG_VORLAGE =
-  "Wählt der Kaufinteressent das Abwarten, ist das Objekt bis zum Ablauf der Widerrufsfrist nicht für ihn reserviert; MOREImmo bietet es in dieser Zeit weiterhin auch anderen Kaufinteressenten an. Schließt MOREImmo in dieser Zeit mit einem anderen Kaufinteressenten eine Reservierungsvereinbarung ab oder kommt ein Kaufvertrag über das Objekt zustande, endet diese Vereinbarung ohne weitere Erklärung (auflösende Bedingung). Eine bereits gezahlte Reservierungsgebühr wird in diesem Fall unverzüglich, spätestens binnen vierzehn Tagen, vollständig zurückgezahlt. Die Widerrufsfrist beginnt mit dem Tag des Vertragsabschlusses, bei mehreren Kaufinteressenten mit dem Tag der letzten Unterschrift (Punkt {{punkt:wirksamkeit}}).";
+  "Wählt der Kaufinteressent das Abwarten, ist das Objekt bis zum Ablauf der Widerrufsfrist nicht für ihn reserviert; OS Immobilien bietet es in dieser Zeit weiterhin auch anderen Kaufinteressenten an. Schließt OS Immobilien in dieser Zeit mit einem anderen Kaufinteressenten eine Reservierungsvereinbarung ab oder kommt ein Kaufvertrag über das Objekt zustande, endet diese Vereinbarung ohne weitere Erklärung (auflösende Bedingung). Eine bereits gezahlte Reservierungsgebühr wird in diesem Fall unverzüglich, spätestens binnen vierzehn Tagen, vollständig zurückgezahlt. Die Widerrufsfrist beginnt mit dem Tag des Vertragsabschlusses, bei mehreren Kaufinteressenten mit dem Tag der letzten Unterschrift (Punkt {{punkt:wirksamkeit}}).";
 
 /**
  * Das Dokument für einen Fall zusammensetzen.
@@ -826,7 +826,7 @@ export const GEBUEHR_RUECKZAHLUNG: string[] = MIT_GEBUEHR.ziffern
  * hat beide durch diesen einen Absatz nach dem Branchenmuster ersetzt.
  */
 export const DATENSCHUTZ_EINVERSTAENDNIS =
-  "Ich/Wir bin/sind damit einverstanden, dass meine/unsere Daten elektronisch verarbeitet, gespeichert, genutzt und im Zusammenhang mit der Geschäftsabwicklung an berechtigte Dritte (zum Beispiel Verkäufer, Notariat, finanzierendes Kreditinstitut, betreuender Vertriebspartner, Hausverwaltung) weitergegeben beziehungsweise übermittelt und dort ebenfalls zu diesen Zwecken verarbeitet, gespeichert und genutzt werden. Ich/Wir bin/sind zudem darauf hingewiesen worden, dass die Erhebung, Verarbeitung und Nutzung meiner/unserer Daten auf freiwilliger Basis erfolgt. Die Datenschutzerklärung von MOREImmo ist unter portal.more.immo/datenschutz abrufbar.";
+  "Ich/Wir bin/sind damit einverstanden, dass meine/unsere Daten elektronisch verarbeitet, gespeichert, genutzt und im Zusammenhang mit der Geschäftsabwicklung an berechtigte Dritte (zum Beispiel Verkäufer, Notariat, finanzierendes Kreditinstitut, betreuender Vertriebspartner, Hausverwaltung) weitergegeben beziehungsweise übermittelt und dort ebenfalls zu diesen Zwecken verarbeitet, gespeichert und genutzt werden. Ich/Wir bin/sind zudem darauf hingewiesen worden, dass die Erhebung, Verarbeitung und Nutzung meiner/unserer Daten auf freiwilliger Basis erfolgt. Die Datenschutzerklärung von OS Immobilien ist unter osimmobilien.netlify.app/datenschutz abrufbar.";
 
 /* ─── 7. Widerrufsbelehrung ─── */
 
@@ -921,7 +921,7 @@ export const WIDERRUF_WAHL_ABWARTEN: WiderrufWahl = {
 export const WIDERRUF_WAHLEN: WiderrufWahl[] = [WIDERRUF_WAHL_SOFORT, WIDERRUF_WAHL_ABWARTEN];
 
 /**
- * Was beim Abwarten gilt: MOREImmo bleibt bis zum Fristablauf frei, und die
+ * Was beim Abwarten gilt: OS Immobilien bleibt bis zum Fristablauf frei, und die
  * Frist läuft ab der letzten Unterschrift, denn erst damit ist der Vertrag
  * geschlossen (Punkt 8).
  */

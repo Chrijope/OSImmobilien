@@ -107,14 +107,14 @@ describe("avatarUrlFuerMail", () => {
 
 describe("avatarUrlFuerMail macht jede Adresse mailfest, egal von wo versendet wird", () => {
   it("hängt einen relativen Pfad an die veröffentlichte Adresse", () => {
-    expect(avatarUrlFuerMail("/bilder/team.jpg")).toBe("https://portal.more.immo/bilder/team.jpg");
+    expect(avatarUrlFuerMail("/bilder/team.jpg")).toBe("https://osimmobilien.netlify.app/bilder/team.jpg");
   });
 
   it("ersetzt die Lovable-Vorschau durch die veröffentlichte Adresse", () => {
     expect(avatarUrlFuerMail("https://id-preview--abc.lovable.app/__l5e/assets-v1/x/foto.png?v=2")).toBe(
-      "https://portal.more.immo/__l5e/assets-v1/x/foto.png?v=2",
+      "https://osimmobilien.netlify.app/__l5e/assets-v1/x/foto.png?v=2",
     );
-    expect(avatarUrlFuerMail("https://abc.lovableproject.com/foto.png")).toBe("https://portal.more.immo/foto.png");
+    expect(avatarUrlFuerMail("https://abc.lovableproject.com/foto.png")).toBe("https://osimmobilien.netlify.app/foto.png");
   });
 
   it("macht aus einer signierten Avatar-Adresse die dauerhafte öffentliche", () => {
@@ -125,12 +125,12 @@ describe("avatarUrlFuerMail macht jede Adresse mailfest, egal von wo versendet w
 
   it("lässt data:, blob: und Unlesbares weg, dann stehen die Initialen da", () => {
     expect(avatarUrlFuerMail("data:image/png;base64,AAAA")).toBeUndefined();
-    expect(avatarUrlFuerMail("blob:https://portal.more.immo/123")).toBeUndefined();
+    expect(avatarUrlFuerMail("blob:https://osimmobilien.netlify.app/123")).toBeUndefined();
     expect(avatarUrlFuerMail("avatar.jpg")).toBeUndefined();
   });
 
   it("das Logo ist ein PNG unter der festen Adresse und liegt im public-Ordner", () => {
-    expect(MAIL_LOGO_URL).toBe("https://portal.more.immo/moreimmo-logo-mail.png");
+    expect(MAIL_LOGO_URL).toBe("https://osimmobilien.netlify.app/moreimmo-logo-mail.png");
     const datei = readFileSync(resolve(__dirname, "../../public/moreimmo-logo-mail.png"));
     // PNG-Signatur, kein SVG und kein WebP
     expect(datei.subarray(0, 4).toString("hex")).toBe("89504e47");

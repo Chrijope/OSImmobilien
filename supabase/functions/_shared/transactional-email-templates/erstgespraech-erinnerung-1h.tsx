@@ -5,7 +5,7 @@ import { ERINNERUNG_TEXTE, erinnerungZeilen, type ErinnerungProps } from './erst
 import { hallo } from './_anrede.ts'
 import { DE_EN, mitSprache, texteFuer, zeitraumFuer } from './_sprache.ts'
 
-const ANALYSE_BASIS_URL = 'https://portal.more.immo/analyse'
+const ANALYSE_BASIS_URL = 'https://osimmobilien.netlify.app/analyse'
 
 /**
  * Eine Stunde vorher. Kuerzer als die anderen Erinnerungen: wer gleich im
@@ -72,12 +72,12 @@ export const template = {
     terminDatum: '25.03.2026',
     terminUhrzeit: '15:00',
     vorText: 'in einer Stunde',
-    analyseUrl: 'https://portal.more.immo/analyse?source=reminder',
+    analyseUrl: 'https://osimmobilien.netlify.app/analyse?source=reminder',
     berater: {
       name: 'Christian Peetz',
       rolle: 'Senior Berater',
       telefon: '+49 89 123456',
-      email: 'c.peetz@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

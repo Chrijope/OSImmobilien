@@ -48,7 +48,7 @@ describe("Buchungsmails: Link auf get-ics", () => {
     id: "b1", mitarbeiter_id: "m1", kontakt_id: "k1", absage_token: "a".repeat(64),
     start_at: "2026-10-15T08:00:00Z", ende_at: "2026-10-15T08:30:00Z", email: "k@example.com",
   };
-  const optionen = { supabaseUrl: "https://x.supabase.co", basisAdresse: "https://portal.more.immo" };
+  const optionen = { supabaseUrl: "https://x.supabase.co", basisAdresse: "https://osimmobilien.netlify.app" };
 
   it("hängt lang=en an und nennt den Termin ohne Terminart Appointment", async () => {
     const k = await ladeBuchungKontext(client({ kontakte: { vorname: "Erika", nachname: "Muster", meta: { kundenSprache: "en" } } }), buchung, optionen);

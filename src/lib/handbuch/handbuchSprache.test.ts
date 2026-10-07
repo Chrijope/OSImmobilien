@@ -33,7 +33,7 @@ function texte(h: Handbuch): string[] {
 }
 
 const bau = (antworten: HandbuchAntworten, sprache: "de" | "en") =>
-  baueHandbuch({ antworten, vorname: "Erika", nachname: "Muster", datum: "26.09.2026", saLink: "https://portal.more.immo/sa/x", sprache });
+  baueHandbuch({ antworten, vorname: "Erika", nachname: "Muster", datum: "26.09.2026", saLink: "https://osimmobilien.netlify.app/sa/x", sprache });
 
 describe("gemeinsam veranlagt: Splittingtarif aus dem Rechenkern", () => {
   it("senkt den Grenzsteuersatz und damit die Entlastung, vor Steuer bleibt alles gleich", () => {
@@ -142,7 +142,7 @@ describe("Einwilligung und Sprache am Lead", () => {
     expect(de.version).toBe("2026-09-handbuch-v1");
     expect(en.version).toBe("2026-09-handbuch-v1-en");
     expect(handbuchEinwilligungTexte("en", "sa").version).toBe("2026-09-handbuch-sa-v1-en");
-    expect(en.text).toContain("datenschutz@more.immo");
+    expect(en.text).toContain("os@os-immobilien.com");
     expect(en.text).not.toMatch(/advisor/i);
   });
 

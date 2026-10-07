@@ -71,6 +71,6 @@ export const template = {
     leadEmail: 'maja@example.de',
     leadQuelle: 'Meta Ads',
     leadOrt: 'München',
-    profilUrl: 'https://portal.more.immo/kunden/00000000-0000-0000-0000-000000000000',
+    profilUrl: 'https://osimmobilien.netlify.app/kunden/00000000-0000-0000-0000-000000000000',
   },
 } satisfies TemplateEntry

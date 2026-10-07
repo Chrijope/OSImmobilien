@@ -3,7 +3,7 @@
  *
  * Energieausweis, Erhaltungsrücklage, Sanierungshistorie und Dokumentart
  * werden per regulären Ausdrücken aus dem Text der Unterlagen gezogen. Die
- * Muster sind eins zu eins aus der Web-App „MORE Immo Investmentrechner"
+ * Muster sind eins zu eins aus der Web-App „OS Immobilien Investmentrechner"
  * übernommen. Alles läuft lokal im Browser, es wird nichts hochgeladen.
  */
 

@@ -16,7 +16,7 @@ const A: HandbuchAntworten = { ziel: "steuer", beruf: "angestellt", brutto: "80_
 const B: HandbuchAntworten = { ziel: "vermoegen", beruf: "selbststaendig", brutto: "ueber_120", ueberschuss: "ueber_1500", eigenkapital: "ueber_60", start: "sofort" };
 const C: HandbuchAntworten = { ziel: "alter", beruf: "beamter", brutto: "50_80", ueberschuss: "500_1000", eigenkapital: "unter_10", start: "spaeter" };
 
-function angaben(antworten: HandbuchAntworten, saLink: string | null = "https://portal.more.immo/handbuch/selbstauskunft/x"): HandbuchAngaben {
+function angaben(antworten: HandbuchAntworten, saLink: string | null = "https://osimmobilien.netlify.app/handbuch/selbstauskunft/x"): HandbuchAngaben {
   return { antworten, vorname: "Erika", nachname: "Muster", datum: "26.09.2026", saLink };
 }
 
@@ -102,13 +102,13 @@ describe("Zusammensetzung je Profil", () => {
 
   it("der nächste Schritt trägt den persönlichen Link, ohne Link einen Ersatztext", () => {
     const mit = seite(baueHandbuch(angaben(A)), "naechster-schritt").bloecke.find((b) => b.typ === "naechsterSchritt");
-    expect(mit && mit.typ === "naechsterSchritt" && mit.link).toBe("https://portal.more.immo/handbuch/selbstauskunft/x");
+    expect(mit && mit.typ === "naechsterSchritt" && mit.link).toBe("https://osimmobilien.netlify.app/handbuch/selbstauskunft/x");
     const ohne = seite(baueHandbuch(angaben(A, null)), "naechster-schritt").bloecke.find((b) => b.typ === "naechsterSchritt");
     expect(ohne && ohne.typ === "naechsterSchritt" && ohne.link).toBeNull();
   });
 
   it("nennt den Partner, wenn es einen gibt", () => {
-    const h = baueHandbuch({ ...angaben(A), partner: { name: "Maria Beispiel", buchungslink: "https://portal.more.immo/buchen/maria" } });
+    const h = baueHandbuch({ ...angaben(A), partner: { name: "Maria Beispiel", buchungslink: "https://osimmobilien.netlify.app/buchen/maria" } });
     expect(JSON.stringify(seite(h, "naechster-schritt").bloecke)).toContain("Termin mit Maria Beispiel");
   });
 });

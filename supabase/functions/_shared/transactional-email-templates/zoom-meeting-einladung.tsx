@@ -210,7 +210,7 @@ export const template = {
     terminDatum: '25.03.2026',
     terminUhrzeit: '15:00',
     terminDauer: 60,
-    zoomJoinUrl: 'https://portal.more.immo/raum/beispiel',
+    zoomJoinUrl: 'https://osimmobilien.netlify.app/raum/beispiel',
     icsUrl: 'https://example.com/invite.ics',
     googleCalendarUrl: 'https://calendar.google.com/calendar/render?action=TEMPLATE',
     outlookCalendarUrl: 'https://outlook.live.com/calendar/0/deeplink/compose',
@@ -218,8 +218,8 @@ export const template = {
     berater: {
       name: 'Christian Peetz',
       rolle: 'Senior Berater',
-      telefon: '+49 1515 0275108',
-      email: 'c.peetz@more.immo',
+      telefon: '+49 30 863289210',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

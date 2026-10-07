@@ -64,8 +64,8 @@ type StufenSchluessel = keyof typeof STUFEN
 const STANDARD: Ansprechpartner = {
   name: 'Christian Kurz',
   rolle: 'Ansprechpartner Vertriebspartnerschaften',
-  telefon: '+49 176 60995539',
-  email: 'office@more.immo',
+  telefon: '+49 30 863289210',
+  email: 'os@os-immobilien.com',
 }
 
 interface Props {
@@ -121,7 +121,7 @@ export const template = {
   previewData: {
     stufe: '1',
     bewerberName: 'Max Mustermann',
-    terminLink: 'https://portal.more.immo/kennenlernen/beispiel-token',
+    terminLink: 'https://osimmobilien.netlify.app/kennenlernen/beispiel-token',
     dauerMinuten: 30,
     berater: STANDARD,
   },

@@ -301,13 +301,13 @@ export default function BuchungPublic() {
                 schlicht nichts.
               */}
               {ergebnis.raumToken && (
-                <div className={`mt-6 rounded-[14px] border border-[#88CFFF]/15 ${FLAECHE_HINWEIS} p-4`}>
+                <div className={`mt-6 rounded-[14px] border border-[#30E19E]/15 ${FLAECHE_HINWEIS} p-4`}>
                   <p className="text-[12.5px] leading-relaxed text-white/60">
                     {t.videoraumHinweis}
                   </p>
                   <a
                     href={`/raum/${ergebnis.raumToken}`}
-                    className="mt-2.5 inline-flex items-center gap-2 text-[13px] font-semibold text-[#88CFFF] hover:underline"
+                    className="mt-2.5 inline-flex items-center gap-2 text-[13px] font-semibold text-[#30E19E] hover:underline"
                   >
                     {t.zumVideoraum} <ArrowRight className="h-3.5 w-3.5" />
                   </a>
@@ -318,7 +318,7 @@ export default function BuchungPublic() {
               </p>
               <a
                 href={verwaltenUrl(absageUrl(ergebnis.absageToken, token))}
-                className="mt-3 inline-flex items-center gap-2 text-[13px] font-semibold text-[#88CFFF] hover:underline"
+                className="mt-3 inline-flex items-center gap-2 text-[13px] font-semibold text-[#30E19E] hover:underline"
               >
                 {t.terminVerwalten} <ArrowRight className="h-3.5 w-3.5" />
               </a>
@@ -332,7 +332,7 @@ export default function BuchungPublic() {
               <div className="flex flex-col gap-4">
                 {danke.ablauf.map((schritt, i) => (
                   <div key={i} className="flex gap-3">
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-[#88CFFF]/[0.13] text-[11px] font-bold text-[#88CFFF]">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-[#30E19E]/[0.13] text-[11px] font-bold text-[#30E19E]">
                       {i + 1}
                     </span>
                     <span className="text-[13.5px] leading-snug text-white/60">{schritt}</span>
@@ -346,7 +346,7 @@ export default function BuchungPublic() {
               <ul className="flex flex-col gap-3">
                 {danke.vorbereitung.map((punkt, i) => (
                   <li key={i} className="flex gap-3 text-[13.5px] leading-snug text-white/60">
-                    <span aria-hidden className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-[#88CFFF]" />
+                    <span aria-hidden className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-[#30E19E]" />
                     {punkt}
                   </li>
                 ))}
@@ -355,13 +355,13 @@ export default function BuchungPublic() {
           </div>
 
           {zugang?.hinweis && (
-            <div className={`mt-6 rounded-[14px] border border-[#88CFFF]/15 ${FLAECHE_HINWEIS} p-4`}>
+            <div className={`mt-6 rounded-[14px] border border-[#30E19E]/15 ${FLAECHE_HINWEIS} p-4`}>
               <p className="text-[12.5px] leading-relaxed text-white/60">{zugang.hinweis}</p>
             </div>
           )}
 
           <p className="mt-10 text-center text-[11px] text-white/25">
-            MOREImmo · Wendelsteinstraße 19, 83075 Bad Feilnbach
+            OS Immobilien · Am Ostbahnhof 1, 15749 Mittenwalde
             <span aria-hidden className="mx-2 text-white/20">·</span>
             <a href="/impressum" className="hover:text-white/60 hover:underline">{t.impressum}</a>
             <span aria-hidden className="mx-2 text-white/20">·</span>
@@ -417,7 +417,7 @@ export default function BuchungPublic() {
               <AnsprechpartnerKarte gastgeber={berater} sprache={sprache} />
             )}
             {zugang?.hinweis && (
-              <div className={`rounded-[14px] border border-[#88CFFF]/15 ${FLAECHE_HINWEIS} p-4`}>
+              <div className={`rounded-[14px] border border-[#30E19E]/15 ${FLAECHE_HINWEIS} p-4`}>
                 <p className="text-[12.5px] leading-relaxed text-white/60">{zugang.hinweis}</p>
               </div>
             )}
@@ -435,10 +435,10 @@ export default function BuchungPublic() {
                       type="button"
                       onClick={() => waehleArt(art.id)}
                       aria-pressed={art.id === terminartId}
-                      className={`rounded-[14px] border p-4 text-left transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#88CFFF] ${
+                      className={`rounded-[14px] border p-4 text-left transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#30E19E] ${
                         art.id === terminartId
-                          ? "border-[#087AC7] bg-[#087AC7]/15"
-                          : `border-white/12 ${FLAECHE_FELD_KNOPF} hover:border-[#88CFFF]/40`
+                          ? "border-[#15724F] bg-[#15724F]/15"
+                          : `border-white/12 ${FLAECHE_FELD_KNOPF} hover:border-[#30E19E]/40`
                       }`}
                     >
                       <div className="flex items-baseline justify-between gap-4">
@@ -584,9 +584,9 @@ export default function BuchungPublic() {
                     <button
                       type="button"
                       onClick={() => setBegleitungOffen(true)}
-                      className={`flex items-center gap-2 rounded-[14px] border border-white/12 ${FLAECHE_FELD_KNOPF} px-4 py-3.5 text-left text-[14px] font-semibold transition-colors hover:border-[#88CFFF]/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#88CFFF]`}
+                      className={`flex items-center gap-2 rounded-[14px] border border-white/12 ${FLAECHE_FELD_KNOPF} px-4 py-3.5 text-left text-[14px] font-semibold transition-colors hover:border-[#30E19E]/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#30E19E]`}
                     >
-                      <UserPlus className="h-4 w-4 text-[#88CFFF]" />
+                      <UserPlus className="h-4 w-4 text-[#30E19E]" />
                       {t.begleitungHinzufuegen}
                       <span className="font-normal text-white/30">{texteFuer(BUCHUNG_BAUSTEIN_TEXTE, sprache).optional}</span>
                     </button>
@@ -594,7 +594,7 @@ export default function BuchungPublic() {
                     <div className={`rounded-[14px] border border-white/12 ${FLAECHE_FELD} p-4`}>
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex items-center gap-2 text-[14px] font-semibold">
-                          <UserPlus className="h-4 w-4 text-[#88CFFF]" />
+                          <UserPlus className="h-4 w-4 text-[#30E19E]" />
                           {t.deineBegleitperson}
                         </div>
                         <button
@@ -606,7 +606,7 @@ export default function BuchungPublic() {
                             setFeldFehler((f) => ({ ...f, begleitungName: undefined, begleitungEmail: undefined }));
                           }}
                           aria-label={t.begleitungEntfernen}
-                          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-white/40 transition-colors hover:bg-white/10 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#88CFFF]"
+                          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-white/40 transition-colors hover:bg-white/10 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#30E19E]"
                         >
                           <X className="h-4 w-4" />
                         </button>
@@ -658,7 +658,7 @@ export default function BuchungPublic() {
         </div>
 
         <p className="mt-10 text-center text-[10.5px] text-white/30">
-          MOREImmo · Wendelsteinstraße 19, 83075 Bad Feilnbach
+          OS Immobilien · Am Ostbahnhof 1, 15749 Mittenwalde
           <span aria-hidden className="mx-2 text-white/20">·</span>
           <a href="/impressum" className="hover:text-white/60 hover:underline">{t.impressum}</a>
           <span aria-hidden className="mx-2 text-white/20">·</span>
@@ -682,7 +682,7 @@ function Zeile({
 }) {
   return (
     <div className="flex items-start gap-3">
-      <span className="mt-0.5 flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-lg bg-[#88CFFF]/[0.13] text-[#88CFFF]">
+      <span className="mt-0.5 flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-lg bg-[#30E19E]/[0.13] text-[#30E19E]">
         {icon}
       </span>
       <span className="min-w-0">

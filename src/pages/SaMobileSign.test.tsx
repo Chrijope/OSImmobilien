@@ -37,7 +37,7 @@ describe("Handy-Unterschrift", () => {
     expect(screen.getByText(/Please sign below with your finger/)).toBeTruthy();
     expect(screen.getByRole("button", { name: /Transfer signature/ })).toBeTruthy();
     expect(screen.getByRole("button", { name: /Clear/ })).toBeTruthy();
-    expect(document.title).toBe("Signature | MOREImmo");
+    expect(document.title).toBe("Signature | OS Immobilien");
     expect(document.documentElement.lang).toBe("en");
   });
 
@@ -46,7 +46,7 @@ describe("Handy-Unterschrift", () => {
     expect(screen.getByText("Unterschrift Person 1")).toBeTruthy();
     expect(screen.getByText(/Unterschreiben Sie unten mit dem Finger/)).toBeTruthy();
     expect(screen.getByRole("button", { name: /Unterschrift übertragen/ })).toBeTruthy();
-    expect(document.title).toBe("Unterschrift – MOREImmo");
+    expect(document.title).toBe("Unterschrift – OS Immobilien");
   });
 
   it("unbekannte Sprache fällt auf Deutsch zurück, fehlende Beschriftung wird übersetzt", () => {

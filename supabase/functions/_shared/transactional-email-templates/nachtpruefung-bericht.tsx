@@ -89,7 +89,7 @@ const Mail = ({
   warnungen = [],
   hinweise = [],
   objektdaten = [],
-  berichtLink = 'https://portal.more.immo/nachtpruefung',
+  berichtLink = 'https://osimmobilien.netlify.app/nachtpruefung',
 }: Props) => {
   const anzahlFehler = fehler.length
   const anzahlWarnungen = warnungen.length
@@ -165,7 +165,7 @@ export const template = {
   displayName: 'Nachtprüfung, Morgenbericht',
   previewData: {
     nacht: 'Freitag, 07.08.2026',
-    berichtLink: 'https://portal.more.immo/nachtpruefung',
+    berichtLink: 'https://osimmobilien.netlify.app/nachtpruefung',
     fehler: [
       {
         meldung: '2 anstehende Termine verweisen auf einen Videoraum, den es nicht mehr gibt. Diese Kunden kommen nicht hinein.',
@@ -194,7 +194,7 @@ export const template = {
           {
             text: 'Musterweg 1, 12345 Musterstadt: PLZ im Titel weicht vom Feld ab',
             unter: 'Titel nennt PLZ 12345, im Feld steht 12354. In Investagon korrigieren. Eine Änderung im CRM überschreibt der nächste Abgleich.',
-            href: 'https://portal.more.immo/objekte/00000000-0000-0000-0000-000000000000',
+            href: 'https://osimmobilien.netlify.app/objekte/00000000-0000-0000-0000-000000000000',
           },
         ],
         neuWeitere: 0,

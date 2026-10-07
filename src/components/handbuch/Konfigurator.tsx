@@ -230,7 +230,7 @@ export default function Konfigurator({ beraterSlug, beraterId, onFertig, ohneBuc
       <div className={`hb-konfig hb-karte ${ohneBuch ? "" : "mit-buch"}`} id="konfigurator">
         {!ohneBuch && (
           <div className="hb-buch-mini" aria-hidden="true">
-            MOREImmo<b>{K.buchMini}</b>
+            OS Immobilien<b>{K.buchMini}</b>
             <i />
           </div>
         )}

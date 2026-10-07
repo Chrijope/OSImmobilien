@@ -4,7 +4,7 @@ import { darfEingeblendetWerden } from "./benachrichtigungAnzeige";
 /**
  * Der Fall, der den Fehler sichtbar gemacht hat: Christian (Inhaber) bekam
  * „Reservierung versandt: Jonas Lins" eingeblendet, obwohl die Meldung an
- * p.pintat@more.immo zugestellt war. In seiner Glocke stand sie nicht, denn
+ * os@os-immobilien.com zugestellt war. In seiner Glocke stand sie nicht, denn
  * die Liste filtert korrekt. Nur die Einblendung tat es nicht.
  */
 const christian = "uid-christian";

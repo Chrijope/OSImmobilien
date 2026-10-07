@@ -297,13 +297,13 @@ describe("KennenlernenKarte", () => {
     it("erzeugt bei „Link kopieren“ still einen neuen Kennenlern-Link, ohne Mail", async () => {
       formularZeilen = [VORABBOGEN];
       invokeAntwort = {
-        data: { ok: true, link: "https://portal.more.immo/kennenlernen/neu-1" },
+        data: { ok: true, link: "https://osimmobilien.netlify.app/kennenlernen/neu-1" },
         error: null,
       };
       const geschrieben = zwischenablage();
       render(<KennenlernenKarte bewerber={bewerber()} canEdit />);
       fireEvent.click(await screen.findByRole("button", { name: /Link kopieren/ }));
-      await waitFor(() => expect(geschrieben).toEqual(["https://portal.more.immo/kennenlernen/neu-1"]));
+      await waitFor(() => expect(geschrieben).toEqual(["https://osimmobilien.netlify.app/kennenlernen/neu-1"]));
       expect(invokeAufrufe[0].name).toBe("send-bewerber-kennenlernen");
       expect(invokeAufrufe[0].args.body).toEqual({ bewerbungId: "b-1", nurLink: true, ohneMail: true });
       expect(letzterHinweis()).toMatch(/Neuer Link erzeugt/);
@@ -320,7 +320,7 @@ describe("KennenlernenKarte", () => {
       const geschrieben = zwischenablage();
       render(<KennenlernenKarte bewerber={bewerber()} canEdit />);
       fireEvent.click(await screen.findByRole("button", { name: /Link kopieren/ }));
-      await waitFor(() => expect(geschrieben).toEqual(["https://portal.more.immo/kennenlernen/kl-1"]));
+      await waitFor(() => expect(geschrieben).toEqual(["https://osimmobilien.netlify.app/kennenlernen/kl-1"]));
       expect(invokeAufrufe).toHaveLength(0);
     });
 

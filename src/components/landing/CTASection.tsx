@@ -72,17 +72,17 @@ const CTASection = ({ onOpenFunnel }: CTASectionProps) => {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 md:gap-10">
             {/* Brand */}
             <div className="col-span-2 md:col-span-3 lg:col-span-2">
-              <img src={logo} alt="MOREImmo" className="h-7 md:h-8 mb-5 brightness-0 invert" />
+              <img src={logo} alt="OS Immobilien" className="h-7 md:h-8 mb-5 brightness-0 invert" />
               <p className="text-sm text-[hsl(210,20%,65%)] leading-relaxed max-w-xs">
                 {f.marke}
               </p>
               <div className="flex items-center gap-3 mt-6">
                 <a
-                  href="mailto:info@more.immo"
+                  href="mailto:os@os-immobilien.com"
                   aria-label={f.mailBeschriftung}
                   className="text-sm text-[hsl(210,20%,70%)] hover:text-primary transition-colors"
                 >
-                  info@more.immo
+                  os@os-immobilien.com
                 </a>
               </div>
             </div>
@@ -100,8 +100,8 @@ const CTASection = ({ onOpenFunnel }: CTASectionProps) => {
             <div>
               <h4 className="text-xs uppercase tracking-[0.25em] text-[hsl(210,20%,55%)] mb-4">{f.unternehmen}</h4>
               <ul className="space-y-2.5 text-sm">
-                <li><a href="https://more.immo" target="_blank" rel="noopener noreferrer" className="text-[hsl(210,20%,80%)] hover:text-primary transition-colors">more.immo</a></li>
-                <li><a href="mailto:info@more.immo" className="text-[hsl(210,20%,80%)] hover:text-primary transition-colors">{f.kontakt}</a></li>
+                <li><a href="https://osimmobilien.netlify.app" target="_blank" rel="noopener noreferrer" className="text-[hsl(210,20%,80%)] hover:text-primary transition-colors">osimmobilien.netlify.app</a></li>
+                <li><a href="mailto:os@os-immobilien.com" className="text-[hsl(210,20%,80%)] hover:text-primary transition-colors">{f.kontakt}</a></li>
                 <li>
                   <button onClick={onOpenFunnel} className="text-[hsl(210,20%,80%)] hover:text-primary transition-colors text-left">
                     {f.erstgespraech}

@@ -33,7 +33,7 @@ const KONTAKT = {
 };
 
 const PARTNER = {
-  id: "u-partner", name: "Paula Partner", telefon: "0171 234567", email: "paula@more.immo",
+  id: "u-partner", name: "Paula Partner", telefon: "0171 234567", email: "os@os-immobilien.com",
   avatar_url: "https://cdn.example/paula.jpg",
   rolle: "GIFT Rolle", buchungslink: "https://GIFT.example/buchen", beratungslink: "https://GIFT.example/beratung",
   iban: "GIFT DE00", meta: { investagonRaw: { commission: 8.403 } },
@@ -83,7 +83,7 @@ describe("get-objektvorstellung: nur noch der Partner", () => {
     expect(status).toBe(410);
     expect(body).toEqual({
       nichtMehrVerfuegbar: true,
-      ansprechpartner: { name: "Paula Partner", telefon: "0171 234567", email: "paula@more.immo", bild: "https://cdn.example/paula.jpg" },
+      ansprechpartner: { name: "Paula Partner", telefon: "0171 234567", email: "os@os-immobilien.com", bild: "https://cdn.example/paula.jpg" },
       sprache: "de",
     });
     const text = JSON.stringify(body);
@@ -123,7 +123,7 @@ describe("get-objektvorstellung: nur noch der Partner", () => {
     const { body } = await vorstellungsAntwort(db, TOKEN);
     expect(body).toEqual({
       nichtMehrVerfuegbar: true,
-      ansprechpartner: { name: "Paula Partner", telefon: "0171 234567", email: "paula@more.immo" },
+      ansprechpartner: { name: "Paula Partner", telefon: "0171 234567", email: "os@os-immobilien.com" },
       sprache: "de",
     });
   });

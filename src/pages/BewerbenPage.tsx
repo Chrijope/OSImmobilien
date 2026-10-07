@@ -169,7 +169,7 @@ const BewerbenPage = () => {
     <div data-lg="seite" className="min-h-screen bg-gradient-to-br from-muted/30 to-background">
       <header data-lg="kopfscheibe" className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-6 py-4 flex items-center justify-between">
-          <img src={logoImg} alt="MOREImmo" className="h-10 object-contain" />
+          <img src={logoImg} alt="OS Immobilien" className="h-10 object-contain" />
           <Link to={`/karriere/${stelleId}`}>
             <Button variant="ghost" size="sm"><ArrowLeft className="h-4 w-4 mr-1" />Zurück</Button>
           </Link>
@@ -256,10 +256,10 @@ const BewerbenPage = () => {
                 className="mt-0.5"
               />
               <span className="leading-snug">
-                Ich bin einverstanden, dass MOREImmo meine Angaben zur Bearbeitung meiner
+                Ich bin einverstanden, dass OS Immobilien meine Angaben zur Bearbeitung meiner
                 Bewerbung speichert und verwendet. Meine Angaben sind freiwillig. Ich kann
                 mein Einverständnis jederzeit formlos widerrufen, zum Beispiel per Mail an
-                datenschutz@more.immo. Weitere Informationen in der{" "}
+                os@os-immobilien.com. Weitere Informationen in der{" "}
                 <Link to="/datenschutz" className="underline">Datenschutzerklärung</Link>.
               </span>
             </label>

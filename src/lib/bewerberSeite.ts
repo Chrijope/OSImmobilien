@@ -6,7 +6,7 @@
  * nicht in `src` greifen kann. Hier wird sie nur weitergereicht, damit die
  * Herleitung des Zustands genau einmal existiert. Eine zweite, leicht
  * abweichende Fassung wäre der sichere Weg dahin, dass die Seite „du bist
- * dran“ anzeigt, während der Server längst MOREImmo am Zug sieht.
+ * dran“ anzeigt, während der Server längst OS Immobilien am Zug sieht.
  *
  * Gleiches Muster wie `kennenlernenErinnerungen.ts`.
  */

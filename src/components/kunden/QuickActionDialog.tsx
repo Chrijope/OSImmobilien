@@ -1656,7 +1656,7 @@ export function QuickActionDialog({
                     <Input
                       value={treffpunkt}
                       onChange={(e) => setTreffpunkt(e.target.value)}
-                      placeholder="z.B. Wendelsteinstraße 19, 83075 Bad Feilnbach"
+                      placeholder="z.B. Am Ostbahnhof 1, 15749 Mittenwalde"
                       className="mt-1"
                     />
                     <p className="text-xs text-muted-foreground mt-1">

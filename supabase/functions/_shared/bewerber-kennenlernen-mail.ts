@@ -10,7 +10,7 @@
  */
 
 /** Die öffentliche Adresse des Kennenlernens. */
-export const KENNENLERNEN_BASIS_URL = 'https://portal.more.immo/kennenlernen'
+export const KENNENLERNEN_BASIS_URL = 'https://osimmobilien.netlify.app/kennenlernen'
 
 /** Gültigkeit des persönlichen Links in Tagen. Wie beim Vorabbogen. */
 /*
@@ -152,7 +152,7 @@ export function gueltigkeitText(tage: number): string {
  * Sie steht hier und nicht in der Vorlage, damit Mailtext, Reply-To und Test
  * dieselbe Zeichenkette lesen.
  */
-export const HR_SAMMEL_EMAIL = 'office@more.immo'
+export const HR_SAMMEL_EMAIL = 'os@os-immobilien.com'
 
 /**
  * Der letzte Absatz der Eingangsmail, in zwei Teilen um die Adresse herum.

@@ -13,7 +13,7 @@
  *   bei jeder neuen Zeile in der Tabelle, gleich fuer wen sie bestimmt war.
  *
  * Christian bekam deshalb die Meldung „Reservierung versandt: Jonas Lins",
- * obwohl sie an p.pintat@more.immo zugestellt war, und fand in seiner Glocke
+ * obwohl sie an os@os-immobilien.com zugestellt war, und fand in seiner Glocke
  * nichts dazu. Genau dieses Muster, Anzeige und Daten gehen auseinander, hatte
  * das Projekt einen Tag zuvor schon einmal.
  *

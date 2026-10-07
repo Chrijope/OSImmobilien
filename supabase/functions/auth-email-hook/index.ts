@@ -28,10 +28,10 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "MOREImmo"
-const SENDER_DOMAIN = "notify.more.immo"
-const ROOT_DOMAIN = "more.immo"
-const FROM_DOMAIN = "more.immo" // Domain shown in From address (may be root or sender subdomain)
+const SITE_NAME = "OS Immobilien"
+const SENDER_DOMAIN = "notify.os-immobilien.com"
+const ROOT_DOMAIN = "osimmobilien.netlify.app"
+const FROM_DOMAIN = "osimmobilien.netlify.app" // Domain shown in From address (may be root or sender subdomain)
 
 /**
  * Die Betreffzeilen.
@@ -41,7 +41,7 @@ const FROM_DOMAIN = "more.immo" // Domain shown in From address (may be root or 
  * sieht man zuerst den Betreff, also fiel gerade der auf.
  *
  * Kurz gehalten: Postfaecher zeigen etwa 60 Zeichen, und der Absendername
- * lautet ohnehin schon MOREImmo.
+ * lautet ohnehin schon OS Immobilien.
  */
 const EMAIL_SUBJECTS: Record<Sprache, Record<string, string>> = {
   de: {

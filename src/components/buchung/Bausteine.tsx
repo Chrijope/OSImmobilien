@@ -89,7 +89,7 @@ export function Feld({
     "aria-required": pflicht || undefined,
     "aria-invalid": fehler ? true : undefined,
     "aria-describedby": fehler ? `${id}-fehler` : undefined,
-    className: `mt-2 w-full rounded-xl border ${FLAECHE_FELD} px-4 text-[15px] text-white outline-none placeholder:text-white/25 focus:border-[#88CFFF] ${
+    className: `mt-2 w-full rounded-xl border ${FLAECHE_FELD} px-4 text-[15px] text-white outline-none placeholder:text-white/25 focus:border-[#30E19E] ${
       fehler ? "border-[#E5372B]" : "border-white/15"
     } ${mehrzeilig ? "min-h-[92px] py-3" : "h-[48px]"}`,
   };
@@ -199,7 +199,7 @@ export function Hauptknopf({
       type={art === "submit" ? "submit" : "button"}
       onClick={aufKlick}
       disabled={gesperrt || laedt}
-      className="flex h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-[#087AC7] text-[14.5px] font-semibold text-white shadow-[0_8px_24px_-10px_rgba(8,122,199,.7)] transition-opacity hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#88CFFF] disabled:opacity-40"
+      className="flex h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-[#15724F] text-[14.5px] font-semibold text-white shadow-[0_8px_24px_-10px_rgba(21,114,79,.7)] transition-opacity hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#30E19E] disabled:opacity-40"
     >
       {laedt ? <Loader2 className="h-4 w-4 animate-spin" aria-label={texteFuer(BUCHUNG_BAUSTEIN_TEXTE, sprache).bitteWarten} /> : children}
     </button>
@@ -221,7 +221,7 @@ export function Nebenknopf({
       type="button"
       onClick={aufKlick}
       disabled={gesperrt}
-      className={`flex h-[48px] w-full items-center justify-center gap-2 rounded-xl border border-white/15 ${FLAECHE_FELD_KNOPF} text-[14.5px] font-semibold text-white/80 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#88CFFF] disabled:opacity-40`}
+      className={`flex h-[48px] w-full items-center justify-center gap-2 rounded-xl border border-white/15 ${FLAECHE_FELD_KNOPF} text-[14.5px] font-semibold text-white/80 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#30E19E] disabled:opacity-40`}
     >
       {children}
     </button>
@@ -259,9 +259,9 @@ export function Schrittleiste({
               aria-hidden
               className={`flex h-[22px] w-[22px] items-center justify-center rounded-lg text-[11px] font-bold ${
                 istAktiv
-                  ? "bg-[#087AC7] text-white"
+                  ? "bg-[#15724F] text-white"
                   : erledigt
-                    ? "bg-[#88CFFF]/[0.18] text-[#88CFFF]"
+                    ? "bg-[#30E19E]/[0.18] text-[#30E19E]"
                     : "bg-white/10 text-white/40"
               }`}
             >

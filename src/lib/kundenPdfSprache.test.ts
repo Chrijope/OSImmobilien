@@ -133,13 +133,13 @@ describe("Checkliste Bonitätsunterlagen", () => {
     expect(texte).not.toMatch(/Arbeitsvertrag|falls vorhanden|Gehaltsabrechnungen/);
     await generateChecklisteBonitaetPDF("en");
     expect(alle()).toContain("For everyone");
-    expect(mitschnitt.gespeichert[0]).toBe("MOREImmo_Checklist_credit_check_documents.pdf");
+    expect(mitschnitt.gespeichert[0]).toBe("OS-Immobilien_Checklist_credit_check_documents.pdf");
   });
 
   it("bleibt ohne Sprache deutsch", async () => {
     await generateChecklisteBonitaetPDF();
     expect(alle()).toContain("Für alle");
-    expect(mitschnitt.gespeichert[0]).toBe("MOREImmo_Checkliste_Bonitaetsunterlagen.pdf");
+    expect(mitschnitt.gespeichert[0]).toBe("OS-Immobilien_Checkliste_Bonitaetsunterlagen.pdf");
   });
 });
 

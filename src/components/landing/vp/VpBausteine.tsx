@@ -235,7 +235,7 @@ export const HeroVideo = () => {
         loop
         playsInline
         preload="metadata"
-        aria-label="Persönliche MOREImmo Beratung"
+        aria-label="Persönliche OS Immobilien Beratung"
         className="h-full w-full object-cover"
       />
       {zeigeKnopf && (
@@ -248,7 +248,7 @@ export const HeroVideo = () => {
           className="absolute inset-0 flex items-center justify-center bg-black/20"
         >
           <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 shadow-lg">
-            <svg viewBox="0 0 24 24" className="ml-1 h-7 w-7 fill-[hsl(204_75%_35%)]" aria-hidden="true">
+            <svg viewBox="0 0 24 24" className="ml-1 h-7 w-7 fill-[hsl(157_56%_28%)]" aria-hidden="true">
               <path d="M8 5v14l11-7z" />
             </svg>
           </span>
@@ -264,21 +264,21 @@ export const HeroBuehne = () => (
   <svg viewBox="0 0 640 640" className="h-full w-full" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Abstrakte Stadtsilhouette mit Partnernetz">
     <defs>
       <linearGradient id="vpHimmel" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="hsl(204 75% 22%)" />
-        <stop offset="55%" stopColor="hsl(204 70% 32%)" />
-        <stop offset="100%" stopColor="hsl(204 62% 44%)" />
+        <stop offset="0%" stopColor="hsl(157 56% 17%)" />
+        <stop offset="55%" stopColor="hsl(157 52% 26%)" />
+        <stop offset="100%" stopColor="hsl(157 46% 36%)" />
       </linearGradient>
       <linearGradient id="vpStadtFern" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="hsl(204 45% 36%)" />
-        <stop offset="100%" stopColor="hsl(204 50% 28%)" />
+        <stop offset="0%" stopColor="hsl(157 34% 31%)" />
+        <stop offset="100%" stopColor="hsl(157 38% 24%)" />
       </linearGradient>
       <linearGradient id="vpStadtNah" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="hsl(207 45% 20%)" />
-        <stop offset="100%" stopColor="hsl(210 45% 13%)" />
+        <stop offset="0%" stopColor="hsl(157 34% 17%)" />
+        <stop offset="100%" stopColor="hsl(157 34% 10%)" />
       </linearGradient>
       <radialGradient id="vpGlanz" cx="0.5" cy="0.32" r="0.6">
-        <stop offset="0%" stopColor="hsl(199 90% 72% / 0.5)" />
-        <stop offset="100%" stopColor="hsl(199 90% 72% / 0)" />
+        <stop offset="0%" stopColor="hsl(157 68% 58% / 0.5)" />
+        <stop offset="100%" stopColor="hsl(157 68% 58% / 0)" />
       </radialGradient>
     </defs>
 
@@ -306,7 +306,7 @@ export const HeroBuehne = () => (
       <rect
         key={i}
         x={x} y={y} width="9" height="12" rx="1.5"
-        fill="hsl(199 90% 72%)"
+        fill="hsl(157 68% 58%)"
         className="vp-netz-punkt"
         style={{ animationDelay: `${-(i * 0.9)}s` }}
       />
@@ -323,7 +323,7 @@ export const HeroBuehne = () => (
       <line
         key={i}
         x1={x1} y1={y1} x2={x2} y2={y2}
-        stroke="hsl(199 90% 78%)" strokeOpacity="0.35" strokeWidth="1.2"
+        stroke="hsl(157 68% 68%)" strokeOpacity="0.35" strokeWidth="1.2"
         className="vp-netz-linie"
         style={{ animationDelay: `${-(i * 0.8)}s` }}
       />
@@ -334,7 +334,7 @@ export const HeroBuehne = () => (
       <circle
         key={i}
         cx={x} cy={y} r={i % 2 === 0 ? 4 : 3}
-        fill="hsl(199 90% 82%)"
+        fill="hsl(157 68% 74%)"
         className="vp-netz-punkt"
         style={{ animationDelay: `${-(i * 0.6)}s` }}
       />
@@ -396,7 +396,7 @@ export const TippWanderung = ({ rueckfluss = false }: { rueckfluss?: boolean }) 
     {rueckfluss && (
       <>
         {/* Vergütungsimpuls zurück zu Dir */}
-        <circle cx="450" cy="105" r="4.5" fill="hsl(199 90% 60%)" className="vp-tipp-zurueck" />
+        <circle cx="450" cy="105" r="4.5" fill="hsl(157 68% 47%)" className="vp-tipp-zurueck" />
         <circle cx="95" cy="185" r="12" fill="none" stroke="hsl(var(--primary))" strokeWidth="1.8" className="vp-tipp-ankunft" />
       </>
     )}
@@ -408,7 +408,7 @@ export const TippWanderung = ({ rueckfluss = false }: { rueckfluss?: boolean }) 
 export const ZeitSchleife = () => (
   <svg viewBox="0 0 120 120" className="mx-auto h-24 w-24">
     <circle cx="60" cy="60" r="52" fill="none" stroke="hsl(215 16% 32%)" strokeWidth="2" />
-    <circle cx="60" cy="60" r="52" fill="none" stroke="#88CFFF" strokeWidth="1.5" className="vp-ring-puls" />
+    <circle cx="60" cy="60" r="52" fill="none" stroke="#30E19E" strokeWidth="1.5" className="vp-ring-puls" />
     {Array.from({ length: 12 }).map((_, i) => (
       <line
         key={i}
@@ -421,9 +421,9 @@ export const ZeitSchleife = () => (
       <line x1="60" y1="60" x2="60" y2="34" stroke="hsl(215 16% 60%)" strokeWidth="3.5" strokeLinecap="round" />
     </g>
     <g className="vp-zeiger-schnell" style={{ transformOrigin: "60px 60px" }}>
-      <line x1="60" y1="60" x2="60" y2="23" stroke="#88CFFF" strokeWidth="2.5" strokeLinecap="round" />
+      <line x1="60" y1="60" x2="60" y2="23" stroke="#30E19E" strokeWidth="2.5" strokeLinecap="round" />
     </g>
-    <circle cx="60" cy="60" r="3.5" fill="#88CFFF" />
+    <circle cx="60" cy="60" r="3.5" fill="#30E19E" />
   </svg>
 );
 
@@ -432,7 +432,7 @@ export const ZeitSchleife = () => (
    Der Bleiben-Pfad hört einfach auf, der Wechseln-Pfad läuft aus dem Bild. */
 export const ZweiPfade = () => (
   <svg viewBox="0 0 560 280" className="mx-auto w-full max-w-xl">
-    <circle cx="70" cy="150" r="5" fill="#88CFFF" />
+    <circle cx="70" cy="150" r="5" fill="#30E19E" />
     <text x="70" y="184" textAnchor="middle" fontSize="13" fill="hsl(215 16% 62%)">Heute</text>
     <path
       d="M70 150 C 180 152, 280 158, 400 166"
@@ -442,10 +442,10 @@ export const ZweiPfade = () => (
     <text x="418" y="171" fontSize="13" fill="hsl(215 16% 62%)">bleiben</text>
     <path
       d="M70 150 C 180 138, 300 96, 420 48 C 470 29, 520 14, 556 6"
-      fill="none" stroke="#88CFFF" strokeWidth="3" strokeLinecap="round"
+      fill="none" stroke="#30E19E" strokeWidth="3" strokeLinecap="round"
       pathLength={100} className="vp-pfad" style={{ transitionDelay: "0.35s" }}
     />
-    <text x="410" y="34" fontSize="13" fill="#88CFFF">wechseln</text>
+    <text x="410" y="34" fontSize="13" fill="#30E19E">wechseln</text>
   </svg>
 );
 
@@ -481,14 +481,14 @@ export const JahrInFeldern = ({ tippgeber = false }: { tippgeber?: boolean }) =>
       Zwölf Monate, und jeder sieht aus wie der davor.
     </text>
 
-    <text x="12" y="146" fontSize="13" fill="#88CFFF">
+    <text x="12" y="146" fontSize="13" fill="#30E19E">
       {tippgeber ? "Abrechnen lassen" : "Wechseln"}
     </text>
     {Array.from({ length: 12 }).map((_, i) => (
       <rect
         key={`w${i}`}
         x={12 + i * 45} y={158} width={36} height={36} rx={6}
-        fill="#88CFFF" stroke="#88CFFF" strokeWidth="1"
+        fill="#30E19E" stroke="#30E19E" strokeWidth="1"
         className="vp-feld"
         style={{ transitionDelay: `${0.25 + i * 0.09}s` } as React.CSSProperties}
       />

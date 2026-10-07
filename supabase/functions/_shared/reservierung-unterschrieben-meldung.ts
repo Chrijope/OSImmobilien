@@ -63,7 +63,7 @@ export const RV_PDF_LINK_GUELTIG_TAGE = 7
 /** Die Vorlage, bereits registriert und im gemeinsamen Layout. */
 export const RV_MELDUNG_VORLAGE = 'reservierung-unterschrieben'
 
-const CRM_BASIS = 'https://portal.more.immo'
+const CRM_BASIS = 'https://osimmobilien.netlify.app'
 
 const UUID_MUSTER = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 const MAIL_MUSTER = /^[^\s@]+@[^\s@]+\.[^\s@]+$/

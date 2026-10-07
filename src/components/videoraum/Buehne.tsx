@@ -79,19 +79,19 @@ export function Buehne({ children, schlank = false }: { children: React.ReactNod
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
         <div
           className="vr-atmen absolute left-1/2 top-[-330px] h-[660px] w-[1000px] -translate-x-1/2"
-          style={{ background: "radial-gradient(ellipse, rgba(8,122,199,.42) 0%, rgba(8,122,199,0) 68%)" }}
+          style={{ background: "radial-gradient(ellipse, rgba(21,114,79,.42) 0%, rgba(21,114,79,0) 68%)" }}
         />
         <div
           className="vr-atmen-klein absolute bottom-[-260px] right-[-200px] h-[520px] w-[520px] rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(136,207,255,.14) 0%, rgba(136,207,255,0) 66%)" }}
+          style={{ background: "radial-gradient(circle, rgba(48,225,158,.14) 0%, rgba(48,225,158,0) 66%)" }}
         />
         <KaroFlaeche />
       </div>
 
       {!schlank && (
         <div className="absolute left-6 top-6 z-20 sm:left-11 sm:top-8">
-          <Link to="/" aria-label="MOREImmo">
-            <img src={logoImg} alt="MOREImmo" className="h-6 object-contain brightness-0 invert sm:h-7" />
+          <Link to="/" aria-label="OS Immobilien">
+            <img src={logoImg} alt="OS Immobilien" className="h-6 object-contain brightness-0 invert sm:h-7" />
           </Link>
         </div>
       )}
@@ -106,7 +106,7 @@ export function Balken({ className = "" }: { className?: string }) {
   return (
     <div
       aria-hidden
-      className={`relative h-[3px] w-11 overflow-hidden rounded-full bg-[#087AC7] ${className}`}
+      className={`relative h-[3px] w-11 overflow-hidden rounded-full bg-[#15724F] ${className}`}
     >
       {/* Ein Glanzlicht laeuft hin und wieder darueber. Kein Blinken, nur Leben. */}
       <span
@@ -119,6 +119,6 @@ export function Balken({ className = "" }: { className?: string }) {
 
 export function Kennung({ children }: { children: React.ReactNode }) {
   return (
-    <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#88CFFF]">{children}</div>
+    <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#30E19E]">{children}</div>
   );
 }

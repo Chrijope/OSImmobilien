@@ -32,8 +32,8 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const PORTAL_URL = "https://portal.more.immo";
-const CHRISTIAN_KURZ_EMAIL = "office@more.immo";
+const PORTAL_URL = "https://osimmobilien.netlify.app";
+const CHRISTIAN_KURZ_EMAIL = "os@os-immobilien.com";
 
 function antwort(status: number, body: Record<string, unknown>): Response {
   return new Response(JSON.stringify(body), {

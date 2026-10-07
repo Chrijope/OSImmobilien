@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 
 /**
- * Der Kundenkontext, mit dem der Investmentrechner und der MORE Lotse
+ * Der Kundenkontext, mit dem der Investmentrechner und der OS Lotse
  * arbeiten.
  *
  * Zwei Dinge werden hier geprüft:

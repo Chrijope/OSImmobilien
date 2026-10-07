@@ -6,7 +6,7 @@ import { useTranslation, Trans } from "react-i18next";
 /**
  * Hinweiskarte für Rental-One – externer Verwaltungs-Service für selbst-
  * verwaltete Immobilien. Wird im Kundenportal sowohl bei den Investments
- * über MOREImmo (Hinweis) als auch bei den eigenen Investments angezeigt.
+ * über OS Immobilien (Hinweis) als auch bei den eigenen Investments angezeigt.
  */
 export function RentalOneHinweisCard({ compact = false }: { compact?: boolean }) {
   const { t } = useTranslation();

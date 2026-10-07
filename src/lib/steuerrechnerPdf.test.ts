@@ -81,9 +81,9 @@ describe("Die Auswertung als PDF", () => {
       ERGEBNIS,
       ANTWORTEN,
       { vorname: "Max", nachname: "Mustermann" },
-      { name: "Christian Peetz", telefon: "0171 1111111", email: "cp@more.immo", userId: "u-1" },
+      { name: "Christian Peetz", telefon: "0171 1111111", email: "os@os-immobilien.com", userId: "u-1" },
     );
-    expect(dateiname).toMatch(/^MOREImmo-Steuerauswertung-\d{4}-\d{2}-\d{2}\.pdf$/);
+    expect(dateiname).toMatch(/^OS Immobilien-Steuerauswertung-\d{4}-\d{2}-\d{2}\.pdf$/);
     expect(blob).toBeInstanceOf(Blob);
     expect(gespeichert).toEqual([]);
   });
@@ -141,12 +141,12 @@ describe("Die Auswertung als PDF", () => {
       ERGEBNIS,
       ANTWORTEN,
       { vorname: "Max", nachname: "M" },
-      { name: "Hermann Vogl", telefon: "0171 2222222", email: "hv@more.immo", userId: "u-2" },
+      { name: "Hermann Vogl", telefon: "0171 2222222", email: "os@os-immobilien.com", userId: "u-2" },
     );
     const alles = texte.join(" | ");
     expect(alles).toContain("Hermann Vogl");
     expect(alles).toContain("0171 2222222");
-    expect(alles).toContain("hv@more.immo");
+    expect(alles).toContain("os@os-immobilien.com");
   });
 
   it("sagt ausdruecklich, dass es eine Modellrechnung und keine Steuerberatung ist", async () => {
@@ -159,7 +159,7 @@ describe("Die Auswertung als PDF", () => {
 describe("Die Auswertung auf Englisch (Plan Kundensprache, D20)", () => {
   it("hat einen englischen Dateinamen ohne Umlaute", async () => {
     const { dateiname } = await baueSteuerAuswertungPdf(ERGEBNIS, ANTWORTEN, { vorname: "Max", nachname: "M" }, undefined, "en");
-    expect(dateiname).toMatch(/^MOREImmo-Tax-Analysis-[\w-]+\.pdf$/);
+    expect(dateiname).toMatch(/^OS Immobilien-Tax-Analysis-[\w-]+\.pdf$/);
   });
 
   it("sagt, dass sie auf deutschem Steuerrecht beruht, und schreibt Beträge englisch", async () => {

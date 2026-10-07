@@ -1,4 +1,4 @@
-// MOREImmo Kultur-Modul
+// OS Immobilien Kultur-Modul
 //
 // Zentrale Quelle für Werte, Standards, Glaubenssätze, Feindbilder und Vision.
 // Jede Stelle im CRM liest von hier: die Kulturseite, das Kultur-Kapitel der
@@ -7,7 +7,7 @@
 // Wert, ändert er sich überall.
 //
 // Grundlage: die Kultur-Säule aus dem Vertriebssystem der Marktführer,
-// zugeschnitten auf MOREImmo. Vier Werte statt acht, denn wer acht Werte hat,
+// zugeschnitten auf OS Immobilien. Vier Werte statt acht, denn wer acht Werte hat,
 // hat keine. Feindbilder richten sich gegen Verhalten, nie gegen Menschen;
 // dazu kommen zwei äußere Gegner, gegen die wir für unsere Kunden antreten.
 
@@ -149,7 +149,7 @@ export const KULTUR_VISION = {
   entwurf: true,
   satz: "Wir machen den Aufbau von Vermögen mit Immobilien für Menschen erreichbar, die keine Millionen mitbringen: ehrlich gerechnet, persönlich begleitet und in Jahrzehnten gedacht statt in Abschlüssen.",
   warum:
-    "Über Geld wird selten offen gesprochen, und wer sich nicht auskennt, traut sich am wenigsten zu fragen. MOREImmo gibt es, damit gute Beratung nicht davon abhängt, wie viel jemand schon besitzt. Ehrliche Beratung im Immobilienvertrieb soll der Normalfall sein und nicht die Ausnahme.",
+    "Über Geld wird selten offen gesprochen, und wer sich nicht auskennt, traut sich am wenigsten zu fragen. OS Immobilien gibt es, damit gute Beratung nicht davon abhängt, wie viel jemand schon besitzt. Ehrliche Beratung im Immobilienvertrieb soll der Normalfall sein und nicht die Ausnahme.",
   ziele: [
     "Jeder Kunde versteht seine eigene Rechnung vollständig, auch die unbequemen Zahlen darin.",
     "Niemand unterschreibt bei uns etwas, das er nicht selbst erklären könnte.",

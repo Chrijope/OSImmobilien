@@ -13,11 +13,11 @@
  * `COMPANY_LINE` weiter.
  *
  * Festgelegt von Christian am 15.09.2026. Vorher stand im CRM
- * office@moreimmo.de, auf der Website office@more.immo; jetzt gilt überall
+ * os@os-immobilien.com, auf der Website os@os-immobilien.com; jetzt gilt überall
  * die Adresse der Website. Wird die Nummer leer gelassen, lassen alle Stellen
  * die Telefonzeile weg, statt etwas zu erfinden.
  */
-export const IMPRESSUM_TELEFON = "+49 176 60995539";
+export const IMPRESSUM_TELEFON = "+49 30 863289210";
 
 /**
  * Die Firmenzeile in Fußzeilen und im Kontaktblock des Exposés. Aus demselben
@@ -25,8 +25,8 @@ export const IMPRESSUM_TELEFON = "+49 176 60995539";
  * auf Seiten, die jsPDF erst beim Klick auf „Exposé herunterladen“ laden
  * sollen (Kundenansicht, öffentliches Exposé).
  */
-export const COMPANY_LINE = "MOREImmo, Wendelsteinstraße 19, 83075 Bad Feilnbach";
-export const IMPRESSUM_EMAIL = "office@more.immo";
+export const COMPANY_LINE = "OS Immobilien Holding GmbH, Am Ostbahnhof 1, 15749 Mittenwalde";
+export const IMPRESSUM_EMAIL = "os@os-immobilien.com";
 
 /**
  * Das Büro als Empfänger interner Meldungen (Notartermin, Kaufvertrag,

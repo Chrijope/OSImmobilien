@@ -822,7 +822,7 @@ export type AnschlussStelle = "vorsatz" | "anschluss" | "unten";
  * wörtlich gleich bleibt.
  *
  * Die Leitregel des Umbaus: Tatsachen sind für alle gleich, der Anschluss ist
- * individuell. Was über MOREImmo, die Kunden, die Objekte und die Provision
+ * individuell. Was über OS Immobilien, die Kunden, die Objekte und die Provision
  * gesagt wird, liest jede Gruppe identisch; nur der Satz, der sagt, was das
  * für diese Person bedeutet, wechselt. Deshalb steht der Anschluss als
  * eigenes, kleines Feld neben den festen Absätzen und nicht als fünfte Fassung
@@ -993,7 +993,7 @@ const ANSICHTEN_ROH: Omit<Ansicht, "nummer">[] = [
        * Bewerber die Frage nach seinem Beruf, ohne die Firma benannt bekommen
        * zu haben.
        */
-      "MOREImmo ist ein Kapitalanlage-Vertrieb aus Rosenheim.",
+      "OS Immobilien ist ein Kapitalanlage-Vertrieb aus Rosenheim.",
       "Das hier ist eine selbstständige Tätigkeit auf Provision und keine Anstellung. Das sagen wir " +
         "gleich am Anfang, damit du weißt, worum es geht.",
       "Die nächsten Minuten gehören dir: Klick dich durch, und wo wir dich etwas fragen, antworte so, " +

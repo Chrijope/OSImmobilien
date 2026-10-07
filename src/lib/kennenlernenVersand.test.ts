@@ -367,7 +367,7 @@ describe("Was der Versand tatsächlich mitschickt", () => {
     // Und der Titel kommt aus dem gemeinsamen Wortlaut, nicht aus der
     // Terminart. Dort steht bis heute „Bewerbergespräch".
     expect(terminVersand).toContain("titel: KALENDER_TITEL");
-    expect(terminVersand).not.toContain('"Videocall mit MOREImmo"');
+    expect(terminVersand).not.toContain('"Videocall mit OS Immobilien"');
   });
 
   it("schickt den Knopf in den eigenen Kalender mit", () => {

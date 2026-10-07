@@ -4,8 +4,8 @@ import CountUp from "./CountUp";
 import { useSeitenTexte } from "@/components/SeitenSprache";
 import { MIKROSEITE_ABSCHLUSS_TEXTE } from "./mikroseiteAbschlussTexte";
 
-// Echte Personenfotos von more.immo (Marken-konsistent)
-const MI = "https://more.immo/assets";
+// Echte Personenfotos von osimmobilien.netlify.app (Marken-konsistent)
+const MI = "https://osimmobilien.netlify.app/assets";
 const julianImg = `${MI}/person-julian-CWeaPJ4D.webp`;
 const sandraImg = `${MI}/person-sandra-D5AeWa2J.webp`;
 const thomasImg = `${MI}/person-thomas-DdmKLRIx.webp`;

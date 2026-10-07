@@ -14,8 +14,8 @@ import { EmailLayout, Absatz, Angaben, Hinweis, type Ansprechpartner } from './_
 const STANDARD: Ansprechpartner = {
   name: 'Christian Peetz',
   rolle: 'Ansprechpartner Vertriebspartnerschaften',
-  telefon: '+49 1515 0275108',
-  email: 'c.peetz@more.immo',
+  telefon: '+49 30 863289210',
+  email: 'os@os-immobilien.com',
 }
 
 interface Props {
@@ -67,7 +67,7 @@ const Mail = ({
   // Wer anruft, ist der Gespraechspartner und nicht die HR-Managerin.
   /* STANDARD.name ist als optional typisiert, deshalb kann die Kette
      undefined ergeben. Die Zeile verlangt aber einen Text. */
-  const gespraechspartner = berater?.name || beraterName || STANDARD.name || 'MOREImmo'
+  const gespraechspartner = berater?.name || beraterName || STANDARD.name || 'OS Immobilien'
   zeilen.push(['Wir rufen an', gespraechspartner])
 
   return (

@@ -44,7 +44,7 @@ const {
 
 const ZUGANG = {
   art: "persoenlich",
-  berater: { name: "Hermann Vogl", email: "hermann@more.immo", telefon: null, bild: null },
+  berater: { name: "Hermann Vogl", email: "os@os-immobilien.com", telefon: null, bild: null },
   zeitzone: "Europe/Berlin",
   begruessung: null,
   hinweis: null,

@@ -64,7 +64,7 @@ export default function Lead24hRegel() {
         <div className="bg-primary/5 border border-primary/20 rounded p-4 mt-3 text-sm">
           <div className="text-[10px] font-bold uppercase tracking-wider text-primary mb-2">WhatsApp-Vorlage „Brücke"</div>
           <p className="italic text-foreground/90 whitespace-pre-line">
-            „Hallo {`{Vorname}`}, hier ist {`{VP-Vorname}`} von MOREImmo. Ich habe gerade deine Anfrage zur
+            „Hallo {`{Vorname}`}, hier ist {`{VP-Vorname}`} von OS Immobilien. Ich habe gerade deine Anfrage zur
             Kapitalanlage-Immobilie erhalten – vielen Dank für dein Interesse! Es ist jetzt etwas spät für einen Anruf,
             ich melde mich morgen früh zwischen 9 und 10 Uhr bei dir. Passt das so für dich? – Beste Grüße,
             {`{VP-Vorname}`}"
@@ -87,7 +87,7 @@ export default function Lead24hRegel() {
       <SectionCard title="Anrufbeantworter-Skript (15-Sekunden-Voicemail)" icon={<Phone className="h-5 w-5" />}>
         <p>Wenn der Lead nicht abnimmt, hinterlässt du in <strong>maximal 15 Sekunden</strong> Folgendes:</p>
         <div className="bg-muted/40 border-l-4 border-primary/40 rounded p-4 mt-3 text-sm italic">
-          „Hallo {`{Vorname}`}, hier ist {`{VP-Vorname}`} von MOREImmo. Du hattest dich zur Kapitalanlage-Immobilie
+          „Hallo {`{Vorname}`}, hier ist {`{VP-Vorname}`} von OS Immobilien. Du hattest dich zur Kapitalanlage-Immobilie
           informiert – vielen Dank dafür. Ich versuche es gleich noch einmal, ansonsten freue ich mich, wenn du
           zurückrufst unter {`{Rufnummer}`}. Beste Grüße!"
         </div>

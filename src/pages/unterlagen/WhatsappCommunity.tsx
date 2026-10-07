@@ -5,7 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 
 /**
- * Zeigt den Beitritts-QR-Code der MOREImmo-WhatsApp-Community auf einer
+ * Zeigt den Beitritts-QR-Code der OS Immobilien-WhatsApp-Community auf einer
  * eigenen Seite, damit der Partner ihn im Onboarding-Termin direkt vom
  * Bildschirm scannen kann. Aufgerufen aus der Bewerber-Aktivierung,
  * der Zurueck-Knopf fuehrt dorthin zurueck.
@@ -27,7 +27,7 @@ export default function WhatsappCommunityPage() {
 
         <Card className="p-6 flex flex-col items-center gap-4">
           <div className="text-center">
-            <h1 className="text-lg font-bold">MOREImmo WhatsApp-Community</h1>
+            <h1 className="text-lg font-bold">OS Immobilien WhatsApp-Community</h1>
             <p className="text-sm text-muted-foreground">
               Der Partner scannt den Code mit der Kamera in WhatsApp und tritt
               der Community bei. Die passenden Untergruppen werden danach vom
@@ -36,7 +36,7 @@ export default function WhatsappCommunityPage() {
           </div>
           <img
             src="/community/whatsapp-community-qr.png"
-            alt="QR-Code zum Beitritt in die MOREImmo WhatsApp-Community"
+            alt="QR-Code zum Beitritt in die OS Immobilien WhatsApp-Community"
             className="w-full max-w-md rounded-xl border"
           />
         </Card>

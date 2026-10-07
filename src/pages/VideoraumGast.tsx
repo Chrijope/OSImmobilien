@@ -123,7 +123,7 @@ export default function VideoraumGast() {
   // sonst den Freigabestand von damals.
   const teilenErlaubtRef = useRef(false);
 
-  // Der Kunde hat waehrend des Gespraechs oft mehrere Tabs offen. "MOREImmo
+  // Der Kunde hat waehrend des Gespraechs oft mehrere Tabs offen. "OS Immobilien
   // CRM" waere hier ausserdem der Name eines internen Werkzeugs.
   useSeitentitel(oeffentlicherTitel(seite.seitentitel));
 
@@ -897,17 +897,17 @@ export default function VideoraumGast() {
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:mt-8">
             <div className="flex items-center gap-3 text-sm text-white/60">
-              <span className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-lg bg-[#88CFFF]/[0.13]"><User className="h-3.5 w-3.5" /></span>
+              <span className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-lg bg-[#30E19E]/[0.13]"><User className="h-3.5 w-3.5" /></span>
               <span>{seite.mit} <b className="font-semibold text-white">{gastgeber.name}</b>{gastgeberBezeichnung ? `, ${gastgeberBezeichnung}` : ""}</span>
             </div>
             {ansicht?.termin_at && (
               <div className="flex items-center gap-3 text-sm text-white/60">
-                <span className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-lg bg-[#88CFFF]/[0.13]"><Calendar className="h-3.5 w-3.5" /></span>
+                <span className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-lg bg-[#30E19E]/[0.13]"><Calendar className="h-3.5 w-3.5" /></span>
                 <span><b className="font-semibold text-white">{uhrzeit(ansicht.termin_at, sprache)}</b> · {mitWerten(seite.minuten, { minuten: ansicht.dauer_minuten })}</span>
               </div>
             )}
             <div className="flex items-center gap-3 text-sm text-white/60">
-              <span className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-lg bg-[#88CFFF]/[0.13]"><Lock className="h-3.5 w-3.5" /></span>
+              <span className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-lg bg-[#30E19E]/[0.13]"><Lock className="h-3.5 w-3.5" /></span>
               {/*
                 Vorher stand hier zusaetzlich "Server in der EU". Bild und Ton
                 gehen direkt von Browser zu Browser, aber die Vermittlung laeuft
@@ -985,7 +985,7 @@ export default function VideoraumGast() {
             autoComplete="name"
             autoCapitalize="words"
             enterKeyHint="go"
-            className={`mt-2 h-[52px] w-full rounded-xl border border-[#88CFFF]/40 ${FLAECHE_FELD} px-4 text-[16px] text-white outline-none placeholder:text-white/25 focus:border-[#88CFFF] sm:h-[50px] sm:text-[15px]`}
+            className={`mt-2 h-[52px] w-full rounded-xl border border-[#30E19E]/40 ${FLAECHE_FELD} px-4 text-[16px] text-white outline-none placeholder:text-white/25 focus:border-[#30E19E] sm:h-[50px] sm:text-[15px]`}
           />
 
           {/*
@@ -1002,13 +1002,13 @@ export default function VideoraumGast() {
             ref={beitretenRef}
             onClick={() => void betreten()}
             disabled={!name.trim() || betreteGerade}
-            className="mt-4 flex h-[52px] w-full items-center justify-center gap-2 rounded-xl bg-[#087AC7] text-[15px] font-semibold text-white shadow-[0_8px_24px_-10px_rgba(8,122,199,.7)] transition-opacity hover:brightness-110 disabled:opacity-40 sm:mt-5 sm:h-[46px] sm:text-[14.5px]"
+            className="mt-4 flex h-[52px] w-full items-center justify-center gap-2 rounded-xl bg-[#15724F] text-[15px] font-semibold text-white shadow-[0_8px_24px_-10px_rgba(21,114,79,.7)] transition-opacity hover:brightness-110 disabled:opacity-40 sm:mt-5 sm:h-[46px] sm:text-[14.5px]"
           >
             {betreteGerade ? <Loader2 className="h-4 w-4 animate-spin" /> : <>{seite.betreten} <ArrowRight className="h-4 w-4" /></>}
           </button>
 
           <p className="mt-4 text-center text-[10.5px] text-white/30">
-            MOREImmo · Wendelsteinstraße 19, 83075 Bad Feilnbach
+            OS Immobilien · Am Ostbahnhof 1, 15749 Mittenwalde
           </p>
         </div>
       </div>

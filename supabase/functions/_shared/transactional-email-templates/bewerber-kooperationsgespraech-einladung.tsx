@@ -44,8 +44,8 @@ import {
 const STANDARD: Ansprechpartner = {
   name: 'Christian Kurz',
   rolle: 'Ansprechpartner Vertriebspartnerschaften',
-  telefon: '+49 176 60995539',
-  email: 'office@more.immo',
+  telefon: '+49 30 863289210',
+  email: 'os@os-immobilien.com',
 }
 
 interface Props {
@@ -94,7 +94,7 @@ export const template = {
   displayName: 'Bewerber, Einladung zum persönlichen Gespräch',
   previewData: {
     bewerberName: 'Max Mustermann',
-    buchungsLink: 'https://portal.more.immo/kooperationsgespraech/beispiel-token',
+    buchungsLink: 'https://osimmobilien.netlify.app/kooperationsgespraech/beispiel-token',
     berater: STANDARD,
   },
 } satisfies TemplateEntry

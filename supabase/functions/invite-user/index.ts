@@ -252,7 +252,7 @@ Deno.serve(async (req) => {
     // Feste Basisadresse statt Origin-Kopf: Den Kopf setzt der Aufrufer
     // selbst, damit liesse sich der Aktivierungslink auf eine fremde Seite
     // lenken, die den Token abgreift.
-    const origin = (Deno.env.get("APP_BASE_URL") || "https://portal.more.immo").trim().replace(/\/+$/, "");
+    const origin = (Deno.env.get("APP_BASE_URL") || "https://osimmobilien.netlify.app").trim().replace(/\/+$/, "");
 
     /*
      * Die Sprache aus dem Kundenprofil (Plan Kundensprache, Etappe 1, M29).

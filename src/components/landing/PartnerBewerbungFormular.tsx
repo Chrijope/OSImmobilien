@@ -253,7 +253,7 @@ export function PartnerBewerbungFormular({
         <Textarea
           placeholder={isTG
             ? "Erzähl uns kurz, warum Du als Tippgeber starten möchtest..."
-            : "Warum möchtest Du Vertriebspartner bei MOREImmo werden?"
+            : "Warum möchtest Du Vertriebspartner bei OS Immobilien werden?"
           }
           rows={4}
           value={form.motivation}
@@ -307,9 +307,9 @@ export function PartnerBewerbungFormular({
           className="mt-0.5"
         />
         <span className="leading-snug">
-          Ich bin einverstanden, dass MOREImmo meine Angaben zur Bearbeitung meiner Bewerbung
+          Ich bin einverstanden, dass OS Immobilien meine Angaben zur Bearbeitung meiner Bewerbung
           speichert und verwendet. Meine Angaben sind freiwillig. Ich kann mein Einverständnis
-          jederzeit formlos widerrufen, zum Beispiel per Mail an datenschutz@more.immo.{" "}
+          jederzeit formlos widerrufen, zum Beispiel per Mail an os@os-immobilien.com.{" "}
           Weitere Informationen in der{" "}
           <Link to="/datenschutz" className="text-primary hover:underline">Datenschutzerklärung</Link>.
         </span>

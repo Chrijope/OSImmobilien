@@ -21,15 +21,15 @@ export const LEAD_EINWILLIGUNG_VERSION = "2026-09-v1";
 
 /** Pflichthaken. Ohne ihn laesst sich das Formular nicht absenden. */
 export const LEAD_EINWILLIGUNG_TEXT =
-  "Ich bin einverstanden, dass MOREImmo meine Angaben speichert und verwendet, " +
+  "Ich bin einverstanden, dass OS Immobilien meine Angaben speichert und verwendet, " +
   "um meine Auswertung zu erstellen und mich dazu zu kontaktieren. Dafür darf " +
-  "MOREImmo meine Angaben an den für mich zuständigen Ansprechpartner " +
+  "OS Immobilien meine Angaben an den für mich zuständigen Ansprechpartner " +
   "weitergeben. Ich kann mein Einverständnis jederzeit formlos widerrufen, zum " +
-  "Beispiel per Mail an datenschutz@more.immo.";
+  "Beispiel per Mail an os@os-immobilien.com.";
 
 /** Freiwilliger Haken. Er darf das Absenden nicht blockieren. */
 export const LEAD_WERBUNG_TEXT =
-  "Zusätzlich und freiwillig: MOREImmo darf mich per E-Mail und Telefon zu " +
+  "Zusätzlich und freiwillig: OS Immobilien darf mich per E-Mail und Telefon zu " +
   "weiteren Angeboten rund um Kapitalanlage-Immobilien informieren. Diese " +
   "Zustimmung kann ich getrennt und jederzeit widerrufen.";
 
@@ -66,13 +66,13 @@ export const LEAD_EINWILLIGUNG_FEHLT =
 export const LEAD_EINWILLIGUNG_VERSION_EN = "2026-09-v1-en";
 
 export const LEAD_EINWILLIGUNG_TEXT_EN =
-  "I agree that MOREImmo may store and use the details I provided in order to " +
+  "I agree that OS Immobilien may store and use the details I provided in order to " +
   "prepare my result and contact me about it, and may pass them on to the " +
   "adviser responsible for me. I can withdraw this consent at any time, " +
-  "informally, for example by email to datenschutz@more.immo.";
+  "informally, for example by email to os@os-immobilien.com.";
 
 export const LEAD_WERBUNG_TEXT_EN =
-  "Optional: MOREImmo may also contact me by email and phone about further " +
+  "Optional: OS Immobilien may also contact me by email and phone about further " +
   "offers relating to investment property. I can withdraw this second consent " +
   "separately and at any time.";
 
@@ -145,11 +145,11 @@ export function baueLeadEinwilligung(
 export const HANDBUCH_EINWILLIGUNG_VERSION = "2026-09-handbuch-v1";
 
 export const HANDBUCH_EINWILLIGUNG_TEXT =
-  "Ich möchte mein persönliches Immobilienhandbuch erhalten. MOREImmo darf meine Angaben " +
+  "Ich möchte mein persönliches Immobilienhandbuch erhalten. OS Immobilien darf meine Angaben " +
   "speichern und verwenden, um das Handbuch zu erstellen, es mir per E-Mail zu schicken und " +
-  "mich dazu per E-Mail oder Telefon zu kontaktieren. Dafür darf MOREImmo meine Angaben an " +
+  "mich dazu per E-Mail oder Telefon zu kontaktieren. Dafür darf OS Immobilien meine Angaben an " +
   "den für mich zuständigen Immobilienberater weitergeben. Ich kann mein Einverständnis " +
-  "jederzeit formlos widerrufen, zum Beispiel per Mail an datenschutz@more.immo.";
+  "jederzeit formlos widerrufen, zum Beispiel per Mail an os@os-immobilien.com.";
 
 /** Der freiwillige Haken, wortgleich mit den übrigen Formularen. */
 export const HANDBUCH_WERBUNG_TEXT = LEAD_WERBUNG_TEXT;
@@ -163,7 +163,7 @@ export const HANDBUCH_EINWILLIGUNG_FEHLT =
  * direkt darunter und bleibt der Text, der gespeichert wird.
  */
 export const HANDBUCH_EINWILLIGUNG_KURZ =
-  "Ja, schicken Sie mir mein Handbuch per E-Mail, und MOREImmo oder mein Berater dürfen mich dazu kontaktieren. Jederzeit widerrufbar.";
+  "Ja, schicken Sie mir mein Handbuch per E-Mail, und OS Immobilien oder mein Berater dürfen mich dazu kontaktieren. Jederzeit widerrufbar.";
 
 /*
  * Die offene Selbstauskunft der Handbuch-Seite (seit dem 26.09.2026). Eigener
@@ -177,14 +177,14 @@ export const HANDBUCH_EINWILLIGUNG_KURZ =
 export const HANDBUCH_SA_EINWILLIGUNG_VERSION = "2026-09-handbuch-sa-v1";
 
 export const HANDBUCH_SA_EINWILLIGUNG_TEXT =
-  "Ich möchte meine Selbstauskunft ausfüllen. MOREImmo darf meine Angaben speichern und " +
+  "Ich möchte meine Selbstauskunft ausfüllen. OS Immobilien darf meine Angaben speichern und " +
   "verwenden, um mir den Zugang zur Selbstauskunft zu geben und mich dazu per E-Mail oder " +
-  "Telefon zu kontaktieren. Dafür darf MOREImmo meine Angaben an den für mich zuständigen " +
+  "Telefon zu kontaktieren. Dafür darf OS Immobilien meine Angaben an den für mich zuständigen " +
   "Immobilienberater weitergeben. Ich kann mein Einverständnis jederzeit formlos widerrufen, " +
-  "zum Beispiel per Mail an datenschutz@more.immo.";
+  "zum Beispiel per Mail an os@os-immobilien.com.";
 
 export const HANDBUCH_SA_EINWILLIGUNG_KURZ =
-  "Ja, MOREImmo oder mein Berater dürfen mich zu meiner Selbstauskunft kontaktieren. Jederzeit widerrufbar.";
+  "Ja, OS Immobilien oder mein Berater dürfen mich zu meiner Selbstauskunft kontaktieren. Jederzeit widerrufbar.";
 
 export const HANDBUCH_SA_EINWILLIGUNG_FEHLT =
   "Bitte bestätigen Sie die Einwilligung, sonst dürfen wir Ihre Selbstauskunft nicht anlegen.";
@@ -199,13 +199,13 @@ export const HANDBUCH_SA_EINWILLIGUNG_FEHLT =
 export const HANDBUCH_EINWILLIGUNG_VERSION_EN = "2026-09-handbuch-v1-en";
 
 export const HANDBUCH_EINWILLIGUNG_TEXT_EN =
-  "I would like to receive my personal property handbook. MOREImmo may store and use my details " +
+  "I would like to receive my personal property handbook. OS Immobilien may store and use my details " +
   "to prepare the handbook, send it to me by email and contact me about it by email or phone. For " +
-  "this purpose, MOREImmo may pass my details on to the contact person responsible for me. I can " +
-  "withdraw this consent at any time, informally, for example by email to datenschutz@more.immo.";
+  "this purpose, OS Immobilien may pass my details on to the contact person responsible for me. I can " +
+  "withdraw this consent at any time, informally, for example by email to os@os-immobilien.com.";
 
 export const HANDBUCH_EINWILLIGUNG_KURZ_EN =
-  "Yes, send me my handbook by email, and MOREImmo or my contact person may get in touch with me about it. Can be withdrawn at any time.";
+  "Yes, send me my handbook by email, and OS Immobilien or my contact person may get in touch with me about it. Can be withdrawn at any time.";
 
 export const HANDBUCH_EINWILLIGUNG_FEHLT_EN =
   "Please confirm your consent, otherwise we are not allowed to send you your handbook.";
@@ -213,13 +213,13 @@ export const HANDBUCH_EINWILLIGUNG_FEHLT_EN =
 export const HANDBUCH_SA_EINWILLIGUNG_VERSION_EN = "2026-09-handbuch-sa-v1-en";
 
 export const HANDBUCH_SA_EINWILLIGUNG_TEXT_EN =
-  "I would like to complete my self-disclosure. MOREImmo may store and use my details to give me " +
+  "I would like to complete my self-disclosure. OS Immobilien may store and use my details to give me " +
   "access to the self-disclosure and to contact me about it by email or phone. For this purpose, " +
-  "MOREImmo may pass my details on to the contact person responsible for me. I can withdraw this " +
-  "consent at any time, informally, for example by email to datenschutz@more.immo.";
+  "OS Immobilien may pass my details on to the contact person responsible for me. I can withdraw this " +
+  "consent at any time, informally, for example by email to os@os-immobilien.com.";
 
 export const HANDBUCH_SA_EINWILLIGUNG_KURZ_EN =
-  "Yes, MOREImmo or my contact person may get in touch with me about my self-disclosure. Can be withdrawn at any time.";
+  "Yes, OS Immobilien or my contact person may get in touch with me about my self-disclosure. Can be withdrawn at any time.";
 
 export const HANDBUCH_SA_EINWILLIGUNG_FEHLT_EN =
   "Please confirm your consent, otherwise we are not allowed to set up your self-disclosure.";

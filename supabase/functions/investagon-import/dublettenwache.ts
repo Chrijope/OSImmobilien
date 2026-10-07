@@ -6,7 +6,7 @@
  * Adresse, Postleitzahl und Titel nach und uebernimmt das vorhandene Objekt.
  *
  * Was dort fehlt, ist der Blick auf das, was schon liegt. Am 16.09.2026 kam
- * der eigene Investagon-Zugang von More Immo dazu, und weil dessen Kopien
+ * der eigene Investagon-Zugang von OS Immobilien dazu, und weil dessen Kopien
  * derselben Haeuser fremde Kennungen tragen, lagen danach 35 Objekte doppelt
  * im CRM. Diese Datei sieht nach jedem Lauf den gesamten Bestand durch,
  * meldet jeden Fund und entfernt, wenn der Schalter es erlaubt, unter engen

@@ -23,7 +23,7 @@
  * wer zufällig geklickt hat. office@ liest das Büro. Dieselben Werte stehen im
  * Browser in src/lib/nichtErreichtMails.ts.
  */
-export const TEAM_ABSENDER = { name: 'MOREImmo Team', email: 'office@more.immo' } as const
+export const TEAM_ABSENDER = { name: 'OS Immobilien Team', email: 'os@os-immobilien.com' } as const
 
 export interface ZustaendigerPartner {
   id: string
@@ -39,11 +39,11 @@ function sauber(wert: unknown): string {
 const EINFACHE_ADRESSE = /^[^\s@<>",;]+@[^\s@<>",;]+\.[^\s@<>",;]+$/
 
 /**
- * Der Anzeigename im Absender: "Christian Peetz | MOREImmo".
+ * Der Anzeigename im Absender: "Christian Peetz | OS Immobilien".
  *
  * Zeichen, die im Kopf einer Mail eine Bedeutung haben (spitze Klammern,
  * Anführungszeichen, Komma, Semikolon, Zeilenumbruch), fliegen raus. Ohne
- * Partner: "MOREImmo Team". Der Strich statt "von" passt in beiden Sprachen.
+ * Partner: "OS Immobilien Team". Der Strich statt "von" passt in beiden Sprachen.
  */
 export function absenderName(partner: { name?: string } | null | undefined): string {
   const name = sauber(partner?.name)
@@ -51,7 +51,7 @@ export function absenderName(partner: { name?: string } | null | undefined): str
     .replace(/\s+/g, ' ')
     .trim()
     .slice(0, 60)
-  return name ? `${name} | MOREImmo` : TEAM_ABSENDER.name
+  return name ? `${name} | OS Immobilien` : TEAM_ABSENDER.name
 }
 
 /** Die Antwortadresse: die des Partners, sonst office@. */

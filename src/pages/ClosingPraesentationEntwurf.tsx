@@ -15,7 +15,7 @@
  *     (erstgespraechFolien.ts), Folie 7 ist die Überleitung zu Teil 2.
  *   Teil 2, Präsentation über uns (Folie 8 bis 22): das freigegebene
  *     Drehbuch in fünf Phasen: Identifikation, Vision, System, Warum
- *     MOREImmo, wirtschaftliche Chance, dann die Entscheidung.
+ *     OS Immobilien, wirtschaftliche Chance, dann die Entscheidung.
  *
  * Reihenfolge, Ids, Kopfzeilentitel und Phase stehen in
  * praesentationsDeck.ts, das auch das Skript der Übung liest. Hier liegt
@@ -26,7 +26,7 @@
  * Die Dramaturgie des Drehbuchs steckt in der Reihenfolge: erst das
  * Ja-genau-Gefühl (Chaos gegen System), dann Vision und Substanz, dann die
  * Zahlen mit den Sätzen des Bewerbers, dann die Qualifizierungs-Umkehr
- * (Selbst-Check, "Wir prüfen auch, ob du zu MOREImmo passt"), erst danach der
+ * (Selbst-Check, "Wir prüfen auch, ob du zu OS Immobilien passt"), erst danach der
  * Preis, und zum Schluss die Risikominderung (Start-Zeitplan) und der
  * Abschluss-Knopf.
  *
@@ -87,17 +87,17 @@ import { deckFuerEinstieg, type DeckTeil } from "@/lib/praesentationsDeck";
  * Die ganze Präsentation läuft dunkel, weil sie im Termin als Bühne wirkt
  * und nicht wie eine weitere CRM-Seite aussehen soll.
  */
-const AKZENT = "#7CBEFF";
-const AKZENT_STARK = "#4DA3FF";
-const VERLAUF = "linear-gradient(90deg, #5CB0FF 0%, #0A6EDB 100%)";
+const AKZENT = "#1ED28D";
+const AKZENT_STARK = "#1AB57A";
+const VERLAUF = "linear-gradient(90deg, #1CC283 0%, #187F58 100%)";
 const RAND = "1px solid rgba(255,255,255,0.12)";
 const GEDIMMT = "rgba(246,248,252,0.6)";
 const GEDIMMTER = "rgba(246,248,252,0.45)";
 /** Weiche Kartenfläche ohne Rahmen: dezenter Verlauf statt Kästchen-Optik. */
 const FLAECHE = "linear-gradient(160deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)";
-const FLAECHE_AKTIV = "linear-gradient(160deg, rgba(92,176,255,0.18) 0%, rgba(10,110,219,0.08) 100%)";
+const FLAECHE_AKTIV = "linear-gradient(160deg, rgba(28,194,131,0.18) 0%, rgba(24,127,88,0.08) 100%)";
 /** Glanz-Verlauf für das eine Schlüsselwort jeder Folie. */
-const GLANZ_VERLAUF = "linear-gradient(105deg, #C4E1FF 0%, #7CBEFF 45%, #3E8EF0 100%)";
+const GLANZ_VERLAUF = "linear-gradient(105deg, #92EFCC 0%, #1ED28D 45%, #239F70 100%)";
 
 /**
  * Schlüsselwort im hellen Blauverlauf statt in flacher Akzentfarbe. Pro Folie
@@ -420,7 +420,7 @@ const START_SCHRITTE = [
   { wann: "Danach", was: "Vertrag kommt digital zur Unterschrift" },
   { wann: "Tag 1", was: "Onboarding" },
   { wann: "Woche 1", was: "Systemzugang, CRM und Investagon" },
-  { wann: "Woche 1", was: "Deine eigene MOREImmo E-Mail-Adresse" },
+  { wann: "Woche 1", was: "Deine eigene OS Immobilien E-Mail-Adresse" },
   { wann: "Woche 1", was: "Persönliche Erfolgsstrategie mit Zielplanung" },
   { wann: "Woche 1", was: "Produkt- und Beratungstraining" },
   { wann: "Woche 2", was: "Erste Kundenfälle" },
@@ -442,7 +442,7 @@ export interface FolienKontext {
   kaufpreis: number;
   setKaufpreis: (v: number) => void;
   /**
-   * Umschalter Alleine/Mit MOREImmo auf der Chaos-Folie. Lebt wie die
+   * Umschalter Alleine/Mit OS Immobilien auf der Chaos-Folie. Lebt wie die
    * Reglerwerte im Deck, damit die Moderation ihn in der Vorschau spiegeln
    * kann (praesentationsKopplung.ts, Nachricht "umschalter").
    */
@@ -495,7 +495,7 @@ function FolieCover({ ctx }: { ctx: FolienKontext }) {
       <Einblendung delay={500}>
         <p className="mt-8 text-lg md:text-2xl" style={{ color: GEDIMMT }}>
           Wir haben uns kennengelernt. Jetzt siehst du im Detail,
-          wie eine Zusammenarbeit mit MOREImmo aussieht.
+          wie eine Zusammenarbeit mit OS Immobilien aussieht.
         </p>
       </Einblendung>
       <Einblendung delay={800}>
@@ -577,7 +577,7 @@ function FolieChaos({ ctx }: { ctx: FolienKontext }) {
         >
           {([
             [false, "Alleine"],
-            [true, "Mit MOREImmo"],
+            [true, "Mit OS Immobilien"],
           ] as const).map(([wertMitMore, label]) => (
             <button
               key={label}
@@ -690,7 +690,7 @@ function FolieVision({ ctx }: { ctx: FolienKontext }) {
       </div>
       <Einblendung delay={2300}>
         <p className="mt-10 text-2xl md:text-4xl font-semibold">
-          <Glanz>MOREImmo baut alles drumherum.</Glanz>
+          <Glanz>OS Immobilien baut alles drumherum.</Glanz>
         </p>
       </Einblendung>
       <Einblendung delay={2700}>
@@ -781,7 +781,7 @@ function FolieSystem() {
   const [offen, setOffen] = useState<string | null>(null);
   return (
     <Folie breit>
-      <Kicker>Das MOREImmo System</Kicker>
+      <Kicker>Das OS Immobilien System</Kicker>
       <Einblendung delay={150}>
         <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">
           Alles, was du für deinen Vertrieb brauchst.
@@ -952,7 +952,7 @@ function FolieObjekteStandorte() {
               <path
                 d={bayern}
                 className="cp-karte-element"
-                fill="rgba(92,176,255,0.16)"
+                fill="rgba(28,194,131,0.16)"
                 stroke={AKZENT}
                 strokeWidth={1.4}
                 strokeLinejoin="round"
@@ -964,7 +964,7 @@ function FolieObjekteStandorte() {
                   className="cp-karte-element"
                   style={{ animation: `cpKarteElement 0.6s ease-out ${1.7 + i * 0.3}s both` }}
                 >
-                  {s.gross && <circle cx={s.x} cy={s.y} r={9} fill="rgba(77,163,255,0.25)" />}
+                  {s.gross && <circle cx={s.x} cy={s.y} r={9} fill="rgba(26,181,122,0.25)" />}
                   <circle
                     cx={s.x}
                     cy={s.y}
@@ -990,7 +990,7 @@ function FolieObjekteStandorte() {
                 style={{ animation: "cpKarteElement 0.8s ease-out 2.8s both" }}
               >
                 {weitere.map((p, i) => (
-                  <circle key={i} cx={p.x} cy={p.y} r={2.5} fill="rgba(124,190,255,0.4)" />
+                  <circle key={i} cx={p.x} cy={p.y} r={2.5} fill="rgba(30,210,141,0.4)" />
                 ))}
               </g>
             </svg>
@@ -1057,7 +1057,7 @@ function FolieDealProzess() {
               d={pfad}
               className="cp-pfad"
               fill="none"
-              stroke="rgba(124,190,255,0.4)"
+              stroke="rgba(30,210,141,0.4)"
               strokeWidth={2.5}
               strokeLinecap="round"
               pathLength={1}
@@ -1076,14 +1076,14 @@ function FolieDealProzess() {
                   style={{ animation: `cpStationAuftauchen 0.6s ease-out ${350 + i * 260}ms both` }}
                 >
                   {letzte && (
-                    <circle cx={p.x} cy={p.y} r={22} fill="rgba(77,163,255,0.25)" />
+                    <circle cx={p.x} cy={p.y} r={22} fill="rgba(26,181,122,0.25)" />
                   )}
                   <circle
                     cx={p.x}
                     cy={p.y}
                     r={13}
                     fill={letzte ? AKZENT_STARK : "#0E1C33"}
-                    stroke={letzte ? AKZENT : "rgba(124,190,255,0.7)"}
+                    stroke={letzte ? AKZENT : "rgba(30,210,141,0.7)"}
                     strokeWidth={1.5}
                   />
                   <text
@@ -1197,7 +1197,7 @@ function FoliePartnerstimmen() {
 }
 
 /**
- * MOREImmo in Zahlen. Die Folie erscheint NUR, wenn in
+ * OS Immobilien in Zahlen. Die Folie erscheint NUR, wenn in
  * closingPraesentationZahlen.ts mindestens ein echter Wert gepflegt ist, und
  * zeigt dann ausschließlich die gepflegten.
  *
@@ -1209,7 +1209,7 @@ function FoliePartnerstimmen() {
 function FolieZahlen() {
   return (
     <Folie breit>
-      <Kicker>MOREImmo in Zahlen</Kicker>
+      <Kicker>OS Immobilien in Zahlen</Kicker>
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {CLOSING_KENNZAHLEN_GEPFLEGT.map((k, i) => (
           <Einblendung key={k.label} delay={250 + i * 150}>
@@ -1296,8 +1296,8 @@ function FolieEchterFall({ ctx }: { ctx: FolienKontext }) {
               </p>
               <p className="mt-2 text-sm" style={{ color: GEDIMMT }}>
                 {gleich
-                  ? `mit ${ctx.leadSatz.toLocaleString("de-DE")} %, egal ob MOREImmo Lead oder eigener Kunde`
-                  : `bei ${ctx.leadSatz.toLocaleString("de-DE")} % über MOREImmo Leads`}
+                  ? `mit ${ctx.leadSatz.toLocaleString("de-DE")} %, egal ob OS Immobilien Lead oder eigener Kunde`
+                  : `bei ${ctx.leadSatz.toLocaleString("de-DE")} % über OS Immobilien Leads`}
                 {gleich && ctx.verhandelt ? ", mit deinem vereinbarten Satz gerechnet" : ""}
               </p>
             </div>
@@ -1389,7 +1389,7 @@ export function FolieRechner({ ctx }: { ctx: FolienKontext }) {
               step={1}
               value={ctx.abschluesse}
               onChange={(e) => ctx.setAbschluesse(parseFloat(e.target.value))}
-              className="w-full mt-3 accent-[#4DA3FF] cursor-pointer"
+              className="w-full mt-3 accent-[#1AB57A] cursor-pointer"
             />
             <div className="flex justify-between text-[11px] mt-2" style={{ color: GEDIMMTER }}>
               <span>1</span>
@@ -1415,7 +1415,7 @@ export function FolieRechner({ ctx }: { ctx: FolienKontext }) {
               step={10000}
               value={ctx.kaufpreis}
               onChange={(e) => ctx.setKaufpreis(parseInt(e.target.value, 10))}
-              className="w-full mt-3 accent-[#4DA3FF] cursor-pointer"
+              className="w-full mt-3 accent-[#1AB57A] cursor-pointer"
             />
             <div className="flex justify-between text-[11px] mt-2" style={{ color: GEDIMMTER }}>
               <span>200.000 €</span>
@@ -1446,7 +1446,7 @@ export function FolieRechner({ ctx }: { ctx: FolienKontext }) {
                   </span>
                   <span className="inline-flex items-center gap-1.5">
                     <span className="h-[3px] w-5 rounded-full" style={{ background: "rgba(246,248,252,0.45)" }} />
-                    MOREImmo Leads · {ctx.leadSatz.toLocaleString("de-DE")} %
+                    OS Immobilien Leads · {ctx.leadSatz.toLocaleString("de-DE")} %
                   </span>
                 </>
               )}
@@ -1479,7 +1479,7 @@ export function FolieRechner({ ctx }: { ctx: FolienKontext }) {
                 {/* Die senkrechte Linie ist der Tempo-Regler im Diagramm. */}
                 <ReferenceLine
                   x={ctx.abschluesse}
-                  stroke="rgba(124,190,255,0.5)"
+                  stroke="rgba(30,210,141,0.5)"
                   strokeDasharray="4 4"
                   label={{
                     value: `${ctx.abschluesse.toLocaleString("de-DE", { maximumFractionDigits: 0 })} / Monat · ${formatPreis(ctx.kaufpreis)}`,
@@ -1580,7 +1580,7 @@ export function FolieRechner({ ctx }: { ctx: FolienKontext }) {
             </div>
             <div className="rounded-3xl p-5" style={{ background: FLAECHE }}>
               <p className="text-[11px] uppercase tracking-[0.15em] font-semibold" style={{ color: GEDIMMTER }}>
-                Pro Jahr · MOREImmo Leads
+                Pro Jahr · OS Immobilien Leads
               </p>
               <p className="mt-2 text-xl md:text-2xl font-semibold tabular-nums">
                 <HochlaufZahl wert={leadJahr} dauer={600} suffix=" €" />
@@ -1628,13 +1628,13 @@ function FolieZweiWege({ ctx }: { ctx: FolienKontext }) {
         <Einblendung delay={250}>
           <div className="h-full rounded-3xl p-6" style={{ background: FLAECHE }}>
             <p className="text-xs uppercase tracking-[0.25em] font-semibold" style={{ color: GEDIMMT }}>
-              MOREImmo Leads
+              OS Immobilien Leads
             </p>
             <p className="mt-3 text-5xl font-semibold tabular-nums">
               {ctx.leadSatz.toLocaleString("de-DE")} %
             </p>
             <p className="mt-4 text-sm leading-relaxed" style={{ color: GEDIMMT }}>
-              Leads aus dem gemeinsamen Marketingsystem. MOREImmo bringt die Infrastruktur,
+              Leads aus dem gemeinsamen Marketingsystem. OS Immobilien bringt die Infrastruktur,
               du machst Beratung und Closing.
             </p>
           </div>
@@ -1648,7 +1648,7 @@ function FolieZweiWege({ ctx }: { ctx: FolienKontext }) {
               {ctx.eigenSatz.toLocaleString("de-DE")} %
             </p>
             <p className="mt-4 text-sm leading-relaxed" style={{ color: GEDIMMT }}>
-              Du bringst den Kunden aus deinem Netzwerk. MOREImmo liefert Produkte,
+              Du bringst den Kunden aus deinem Netzwerk. OS Immobilien liefert Produkte,
               Finanzierung, System, Backoffice und Dealstruktur.
             </p>
           </div>
@@ -1685,7 +1685,7 @@ function FolieZweiWege({ ctx }: { ctx: FolienKontext }) {
 }
 
 /**
- * Einwand-Vorwegnahme vor dem Preis: was MOREImmo nicht ist, was es kostet
+ * Einwand-Vorwegnahme vor dem Preis: was OS Immobilien nicht ist, was es kostet
  * und was alles gestellt wird. Erst wenn der Bewerber gedanklich gekauft
  * hat, kommt die Zahl, so will es das Drehbuch. Die zwei Preisflächen
  * trennen sauber das gestellte System vom optionalen Lead-Kauf; beide
@@ -1713,7 +1713,7 @@ function FoliePreis({ ctx }: { ctx: FolienKontext }) {
                 <>Kein laufendes Entgelt, kein Einmalbetrag.</>,
                 <><strong>Keine Mindestlaufzeit</strong>, der Vertrag läuft auf unbestimmte Zeit.</>,
                 <>Der Anlauf dauert <strong>zwei bis drei Monate</strong>; so lange investieren wir beide: du Zeit, wir System und Begleitung.</>,
-                <>Enthalten ist das gesamte MOREImmo System: {system.join(", ")}.</>,
+                <>Enthalten ist das gesamte OS Immobilien System: {system.join(", ")}.</>,
                 <>Dazu {GESTELLT_ZUSATZ_KURZ}.</>,
                 <>Keine eigene Infrastruktur, keine jahrelange Aufbauphase.</>,
               ]}
@@ -1864,7 +1864,7 @@ function FolieSelbstCheck({ ctx }: { ctx: FolienKontext }) {
 
       <Einblendung delay={800}>
         <p className="text-xs uppercase tracking-[0.25em] font-semibold mt-8 mb-3" style={{ color: GEDIMMTER }}>
-          Und ganz bewusst: MOREImmo passt nicht zu dir, wenn ...
+          Und ganz bewusst: OS Immobilien passt nicht zu dir, wenn ...
         </p>
         <div className="flex flex-wrap justify-center gap-2 max-w-3xl mx-auto">
           {PASST_NICHT_ZU_DIR.map((punkt) => (
@@ -1883,7 +1883,7 @@ function FolieSelbstCheck({ ctx }: { ctx: FolienKontext }) {
       {/* Der beste Satz der frueheren Partner-Folie, die hier aufgegangen ist. */}
       <Einblendung delay={1000}>
         <p className="mt-10 text-2xl md:text-3xl font-semibold tracking-tight leading-[1.2]">
-          MOREImmo gibt dir die Plattform.{" "}
+          OS Immobilien gibt dir die Plattform.{" "}
           <Glanz>Was du daraus machst, liegt bei dir.</Glanz>
         </p>
       </Einblendung>
@@ -1895,7 +1895,7 @@ function FolieSelbstCheck({ ctx }: { ctx: FolienKontext }) {
 function FolieStart({ ctx }: { ctx: FolienKontext }) {
   return (
     <Folie>
-      <Kicker>Dein Start bei MOREImmo</Kicker>
+      <Kicker>Dein Start bei OS Immobilien</Kicker>
       <Einblendung delay={150}>
         <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">
           {ctx.vorname ? `So sehen deine ersten Wochen aus, ${ctx.vorname}.` : "So sehen deine ersten Wochen aus."}
@@ -2178,7 +2178,7 @@ function AbschlussFormular({ ctx, fertig }: { ctx: FolienKontext; fertig: () => 
                       onClick={() => setPaket(p.id)}
                       className="rounded-2xl px-4 py-3 text-left transition-all"
                       style={gewaehlt
-                        ? { background: "rgba(77,163,255,0.14)", border: "1px solid rgba(77,163,255,0.7)", boxShadow: "0 0 24px rgba(77,163,255,0.25)" }
+                        ? { background: "rgba(26,181,122,0.14)", border: "1px solid rgba(26,181,122,0.7)", boxShadow: "0 0 24px rgba(26,181,122,0.25)" }
                         : { background: FLAECHE, border: RAND }}
                     >
                       <div className="text-sm font-semibold">{p.titel}</div>
@@ -2205,7 +2205,7 @@ function AbschlussFormular({ ctx, fertig }: { ctx: FolienKontext; fertig: () => 
                         onClick={() => setZw(z.id)}
                         className="flex-1 rounded-xl px-4 py-2.5 text-sm transition-all"
                         style={zw === z.id
-                          ? { background: "rgba(77,163,255,0.14)", border: "1px solid rgba(77,163,255,0.7)" }
+                          ? { background: "rgba(26,181,122,0.14)", border: "1px solid rgba(26,181,122,0.7)" }
                           : { background: FLAECHE, border: RAND, color: GEDIMMT }}
                       >
                         {z.label}
@@ -2232,7 +2232,7 @@ function AbschlussFormular({ ctx, fertig }: { ctx: FolienKontext; fertig: () => 
             <div className="grid gap-4 sm:grid-cols-2">
               <Feld label="Straße und Hausnummer" wert={vaStrasse} setzen={setVaStrasse} pflicht breit platzhalter="Musterstraße 12" />
               <Feld label="PLZ" wert={vaPlz} setzen={(v) => setVaPlz(v.replace(/[^\d]/g, "").slice(0, 5))} pflicht modus="numeric" platzhalter="83075" />
-              <Feld label="Ort" wert={vaOrt} setzen={setVaOrt} pflicht platzhalter="Bad Feilnbach" />
+              <Feld label="Ort" wert={vaOrt} setzen={setVaOrt} pflicht platzhalter="Mittenwalde" />
             </div>
           </div>
 
@@ -2299,7 +2299,7 @@ function AbschlussFormular({ ctx, fertig }: { ctx: FolienKontext; fertig: () => 
                   />
                 </button>
                 <span className="text-sm" style={{ color: GEDIMMT }}>
-                  Exklusive Zusammenarbeit mit MOREImmo
+                  Exklusive Zusammenarbeit mit OS Immobilien
                 </span>
               </label>
               {!exklusiv && (
@@ -2331,8 +2331,8 @@ function AbschlussFormular({ ctx, fertig }: { ctx: FolienKontext; fertig: () => 
               size="lg"
               onClick={speichern}
               disabled={speichert}
-              className="rounded-full h-14 px-10 text-base font-semibold text-white border-0 transition-shadow hover:shadow-[0_0_50px_rgba(77,163,255,0.5)] disabled:opacity-60"
-              style={{ background: VERLAUF, boxShadow: "0 0 35px rgba(77,163,255,0.35)" }}
+              className="rounded-full h-14 px-10 text-base font-semibold text-white border-0 transition-shadow hover:shadow-[0_0_50px_rgba(26,181,122,0.5)] disabled:opacity-60"
+              style={{ background: VERLAUF, boxShadow: "0 0 35px rgba(26,181,122,0.35)" }}
             >
               {speichert ? "Wird gespeichert ..." : "Angaben speichern"}
               <ArrowRight className="ml-2 h-5 w-5" />
@@ -2367,11 +2367,11 @@ function FolieAbschluss({ ctx }: { ctx: FolienKontext }) {
             <span
               aria-hidden
               className="absolute inset-0 rounded-full motion-safe:animate-ping"
-              style={{ background: "rgba(77,163,255,0.28)", animationDuration: "2.6s" }}
+              style={{ background: "rgba(26,181,122,0.28)", animationDuration: "2.6s" }}
             />
             <div
               className="relative flex h-full w-full items-center justify-center rounded-full motion-safe:animate-in motion-safe:zoom-in-50 motion-safe:duration-700"
-              style={{ background: VERLAUF, boxShadow: "0 0 90px rgba(77,163,255,0.45)" }}
+              style={{ background: VERLAUF, boxShadow: "0 0 90px rgba(26,181,122,0.45)" }}
             >
               <Handshake className="h-20 w-20 md:h-28 md:w-28 text-white" />
             </div>
@@ -2379,7 +2379,7 @@ function FolieAbschluss({ ctx }: { ctx: FolienKontext }) {
         </Einblendung>
         <Einblendung delay={600}>
           <h2 className="mt-10 text-4xl md:text-6xl font-semibold tracking-tight leading-[1.1]">
-            Willkommen bei MOREImmo{ctx.vorname ? `, ${ctx.vorname}` : ""}.
+            Willkommen bei OS Immobilien{ctx.vorname ? `, ${ctx.vorname}` : ""}.
           </h2>
         </Einblendung>
         <Einblendung delay={1100}>
@@ -2392,7 +2392,7 @@ function FolieAbschluss({ ctx }: { ctx: FolienKontext }) {
             und der nächsten Schritte.
           </p>
           <p className="mt-10 text-xs uppercase tracking-[0.3em] font-semibold" style={{ color: GEDIMMTER }}>
-            MOREImmo · Performance. Verantwortung. Partnerschaft.
+            OS Immobilien · Performance. Verantwortung. Partnerschaft.
           </p>
         </Einblendung>
       </Folie>
@@ -2430,8 +2430,8 @@ function FolieAbschluss({ ctx }: { ctx: FolienKontext }) {
         <Button
           size="lg"
           onClick={() => setSchritt("formular")}
-          className="mt-12 rounded-full h-14 px-10 text-base font-semibold text-white border-0 transition-shadow hover:shadow-[0_0_50px_rgba(77,163,255,0.5)]"
-          style={{ background: VERLAUF, boxShadow: "0 0 35px rgba(77,163,255,0.35)" }}
+          className="mt-12 rounded-full h-14 px-10 text-base font-semibold text-white border-0 transition-shadow hover:shadow-[0_0_50px_rgba(26,181,122,0.5)]"
+          style={{ background: VERLAUF, boxShadow: "0 0 35px rgba(26,181,122,0.35)" }}
         >
           <Handshake className="mr-2 h-5 w-5" />
           Partnerschaft starten
@@ -2735,7 +2735,7 @@ export function Buehne({
     <div
       className={`${eingebettet ? "absolute" : "fixed"} inset-0 flex flex-col text-[#F6F8FC] font-sans`}
       style={{
-        background: "radial-gradient(1200px 700px at 50% -10%, #14243F 0%, #0B1526 45%, #070D1A 100%)",
+        background: "radial-gradient(1200px 700px at 50% -10%, #122820 0%, #0B1526 45%, #070D1A 100%)",
       }}
     >
       {/* Lichtbühne: zwei weiche, sehr langsam driftende Lichtflächen hinter
@@ -2763,7 +2763,7 @@ export function Buehne({
           className="cp-licht absolute rounded-full"
           style={{
             top: "-22%", left: "6%", width: "58vw", height: "58vw",
-            background: "radial-gradient(circle, rgba(38,102,190,0.17) 0%, transparent 62%)",
+            background: "radial-gradient(circle, rgba(39,116,87,0.17) 0%, transparent 62%)",
             filter: "blur(60px)",
             animation: "cpLichtA 28s ease-in-out infinite",
           }}
@@ -2772,7 +2772,7 @@ export function Buehne({
           className="cp-licht absolute rounded-full"
           style={{
             bottom: "-28%", right: "-4%", width: "50vw", height: "50vw",
-            background: "radial-gradient(circle, rgba(92,176,255,0.11) 0%, transparent 62%)",
+            background: "radial-gradient(circle, rgba(28,194,131,0.11) 0%, transparent 62%)",
             filter: "blur(70px)",
             animation: "cpLichtB 34s ease-in-out infinite",
           }}
@@ -2791,7 +2791,7 @@ export function Buehne({
           die Bühne gehört den Folien. */}
       <header className="relative shrink-0 h-14 px-5 md:px-8 flex items-center justify-between" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
         <div className="flex items-center gap-3">
-          <img src={logo} alt="MOREImmo" className="h-7 w-auto brightness-0 invert" />
+          <img src={logo} alt="OS Immobilien" className="h-7 w-auto brightness-0 invert" />
           <span className="text-xs uppercase tracking-[0.3em] font-semibold hidden sm:inline" style={{ color: GEDIMMTER }}>
             Partner
           </span>

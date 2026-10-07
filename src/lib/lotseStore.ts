@@ -1,5 +1,5 @@
 /**
- * Datenzugriff des MORE Lotsen (Reiter auf der Einheitenseite).
+ * Datenzugriff des OS Lotsen (Reiter auf der Einheitenseite).
  *
  * Hier stehen alle Wege zur Datenbank und zur Function `objekt-lotse`, die
  * Komponenten rufen Supabase nicht selbst auf:
@@ -148,7 +148,7 @@ const MELDUNGEN: Record<string, string> = {
   migration_fehlt: "Der Lotse wird gerade eingerichtet. Bitte versuch es später noch einmal.",
   zustimmung_fehlt: "Bitte lies zuerst den Hinweis zum Umgang mit KI und bestätige ihn.",
   tageslimit: "Du hast heute schon alle Fragen gestellt. Morgen geht es weiter.",
-  rolle_nicht_erlaubt: "Der MORE Lotse ist für deine Rolle nicht freigeschaltet.",
+  rolle_nicht_erlaubt: "Der OS Lotse ist für deine Rolle nicht freigeschaltet.",
   nicht_angemeldet: "Bitte melde dich neu an.",
   abgebrochen: "Abgebrochen.",
   unvollstaendig: "Die Antwort ist unvollständig, bitte frag noch einmal.",

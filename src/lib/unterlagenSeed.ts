@@ -64,7 +64,7 @@ export const ENTFERNTE_DOKUMENT_IDS: string[] = [
   "b-haushalt",
   // Unsere Kultur ist in den eigenen Abschnitt "kultur" umgezogen (neue Id k-kultur).
   "p-kultur",
-  // Abgeloeste Beratungspraesentationen. Es bleibt nur die MOREImmo-Fassung.
+  // Abgeloeste Beratungspraesentationen. Es bleibt nur die OS Immobilien-Fassung.
   "p-beratung-neu",
   "p-beratung",
   "p-beratung-wg",
@@ -107,7 +107,7 @@ export function seedUnterlagen(): UnterlagenAbschnitt[] {
         // Die aktuelle Fassung steht oben und ist die einzige, die alle sehen.
         {
           id: "p-beratung-hv",
-          name: "Beratungspräsentation MOREImmo",
+          name: "Beratungspräsentation OS Immobilien",
           beschreibung: "Der aktuelle Gesprächsablauf mit Fragenblock, drei durchgerechneten Objekten und der Selbstauskunft am Ende",
           aktion: "internal-link",
           interneRoute: "/beratungspraesentation-moreimmo",
@@ -115,11 +115,11 @@ export function seedUnterlagen(): UnterlagenAbschnitt[] {
         {
           id: "p-beratung-pdf",
           name: "Beratungspräsentation als PDF",
-          beschreibung: "Zum Herunterladen und Präsentieren, mit ausfüllbaren Feldern. Im Termin bevorzugt die Webfassung (Beratungspräsentation MOREImmo) nutzen",
+          beschreibung: "Zum Herunterladen und Präsentieren, mit ausfüllbaren Feldern. Im Termin bevorzugt die Webfassung (Beratungspräsentation OS Immobilien) nutzen",
           aktion: "external-link",
           url: "/dokumente/beratungspraesentation.pdf",
         },
-        // Nur noch die aktuelle MOREImmo-Fassung. Die abgeloesten Varianten
+        // Nur noch die aktuelle OS Immobilien-Fassung. Die abgeloesten Varianten
         // wurden entfernt, damit ueberall dieselbe Praesentation steht.
       ],
     },
@@ -375,7 +375,7 @@ export function seedUnterlagen(): UnterlagenAbschnitt[] {
       dokumente: [
         {
           id: "m-logo",
-          name: "MOREImmo Logo (Download)",
+          name: "OS Immobilien Logo (Download)",
           beschreibung: "Klick auf die Vorschau lädt das Logo ohne Hintergrund herunter",
           aktion: "external-link",
           url: "/images/moreimmo-logo.png",
@@ -384,7 +384,7 @@ export function seedUnterlagen(): UnterlagenAbschnitt[] {
         },
         {
           id: "m-logo-wortmarke",
-          name: "MOREImmo Logo – Wortmarke (Icon + Schriftzug)",
+          name: "OS Immobilien Logo – Wortmarke (Icon + Schriftzug)",
           beschreibung: "Vollständiges Logo mit Bildmarke und Schriftzug „Immo\" – ideal für Briefköpfe, Präsentationen und Werbemittel",
           aktion: "external-link",
           url: "/images/moreimmo-logo-wortmarke.png",
@@ -393,7 +393,7 @@ export function seedUnterlagen(): UnterlagenAbschnitt[] {
         },
         {
           id: "m-icon",
-          name: "MOREImmo Bildmarke – Icon (nur Haus)",
+          name: "OS Immobilien Bildmarke – Icon (nur Haus)",
           beschreibung: "Reines Icon ohne Schriftzug – ideal für Social Media, Favicons und Avatare",
           aktion: "external-link",
           url: "/images/moreimmo-icon.png",
@@ -483,7 +483,7 @@ export function seedUnterlagen(): UnterlagenAbschnitt[] {
       dokumente: [
         {
           id: "o-mail-anleitung",
-          name: "Anleitung MOREImmo Mail einrichten",
+          name: "Anleitung OS Immobilien Mail einrichten",
           beschreibung: "Komplette Anleitung für Apple iPhone, Apple MacBook und Outlook (one.com) – PDF zum Download",
           aktion: "pdf-download",
           pdfKey: "mail-setup-anleitung",
@@ -498,7 +498,7 @@ export function seedUnterlagen(): UnterlagenAbschnitt[] {
         {
           id: "o-email-signatur",
           name: "E-Mail-Signatur für Apple Mail",
-          beschreibung: "Einheitliche MOREImmo-Signatur mit deinen persönlichen Daten + Schritt-für-Schritt-Anleitung",
+          beschreibung: "Einheitliche OS Immobilien-Signatur mit deinen persönlichen Daten + Schritt-für-Schritt-Anleitung",
           aktion: "internal-link",
           interneRoute: "/unterlagen/email-signatur",
         },

@@ -33,7 +33,7 @@ const HeroSection = ({ onOpenFunnel }: HeroSectionProps) => {
       </div>
 
       <div className="absolute top-4 md:top-6 left-1/2 -translate-x-1/2 z-20">
-        <img src={logo} alt="MOREImmo" className="h-8 md:h-14 brightness-0 invert" />
+        <img src={logo} alt="OS Immobilien" className="h-8 md:h-14 brightness-0 invert" />
       </div>
 
       <div className="relative z-10 container mx-auto px-4 md:px-6 text-center max-w-4xl" style={{ textShadow: "0 2px 24px rgba(0,0,0,0.85)" }}>

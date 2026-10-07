@@ -152,7 +152,7 @@ export function trefferText(t: ObjektdatenTreffer): string {
 }
 
 /** Die Adresse der Objektseite im CRM. */
-export function objektLink(objektId: string, basis = "https://portal.more.immo"): string {
+export function objektLink(objektId: string, basis = "https://osimmobilien.netlify.app"): string {
   return `${basis.replace(/\/+$/, "")}/objekte/${encodeURIComponent(objektId)}`;
 }
 

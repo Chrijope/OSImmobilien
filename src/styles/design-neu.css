@@ -37,9 +37,9 @@
   --border: 213 24% 91%;            /* Linie    #E3E8EE, die Haarlinie */
   --input: 213 24% 91%;
 
-  --accent: 204 100% 97%;           /* Blau 50  #F0F9FF */
-  --accent-foreground: 204 95% 34%; /* Blau 700 #0466A9 */
-  --ring: 204 95% 51%;              /* Blau 500 #0C99F9, der Fokusring */
+  --accent: 157 75% 95%;           /* Blau 50  #F0F9FF */
+  --accent-foreground: 157 71% 26%; /* Blau 700 #13704D */
+  --ring: 157 71% 39%;              /* Blau 500 #1CA873, der Fokusring */
 
   /*
     Die Bedeutungsfarben. Sie sind in Etappe 1 durchgerutscht, deshalb stehen
@@ -74,8 +74,8 @@
   --sidebar-background: 0 0% 100%;
   --sidebar-foreground: 215 17% 20%;
   --sidebar-border: 213 24% 91%;
-  --sidebar-accent: 204 100% 97%;
-  --sidebar-accent-foreground: 204 95% 34%;
+  --sidebar-accent: 157 75% 95%;
+  --sidebar-accent-foreground: 157 71% 26%;
 }
 
 /*
@@ -99,9 +99,9 @@
   --border: 215 18% 22%;            /* Weiss mit 15 Prozent, als Ton gerechnet */
   --input: 215 18% 24%;
 
-  --accent: 204 60% 18%;
-  --accent-foreground: 204 100% 77%;
-  --ring: 204 95% 51%;
+  --accent: 157 45% 15%;
+  --accent-foreground: 157 75% 55%;
+  --ring: 157 71% 39%;
 
   /*
     Dunkel: dieselben Farben, aber aufgehellt. Ein Gruen mit 28 Prozent
@@ -122,8 +122,8 @@
     als Flaeche unter Blau 700 als Schrift, etwa 2,7:1. Dieselben Toene wie
     `--accent` im Dunkeln, gerechnet in `design-liquid.test.ts`.
   */
-  --sidebar-accent: 204 60% 18%;
-  --sidebar-accent-foreground: 204 100% 77%;
+  --sidebar-accent: 157 45% 15%;
+  --sidebar-accent-foreground: 157 75% 55%;
 }
 
 /*

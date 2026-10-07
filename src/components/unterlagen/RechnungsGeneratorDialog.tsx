@@ -105,13 +105,13 @@ const isBicValid = (raw: string) => {
 };
 
 const EMPFAENGER = {
-  firma: "MOREImmo",
-  ansprechpartner: "Geschäftsführer Christian Kurz",
-  strasse: "Wendelsteinstraße 19",
-  plzOrt: "83075 Bad Feilnbach",
+  firma: "OS Immobilien Holding GmbH",
+  ansprechpartner: "Geschäftsführung",
+  strasse: "Am Ostbahnhof 1",
+  plzOrt: "15749 Mittenwalde",
   land: "Deutschland",
-  email: "office@more.immo",
-  ustId: "USt-IdNr.: DE461593843",
+  email: "os@os-immobilien.com",
+  ustId: "USt-IdNr.: DEINE-UST-ID",
 };
 
 export function RechnungsGeneratorDialog({ open = true, onOpenChange, asPage = false }: Props) {
@@ -454,7 +454,7 @@ export function RechnungsGeneratorDialog({ open = true, onOpenChange, asPage = f
       doc.text(`IBAN: ${formatIban(absenderIban)}`, cx3, cy); cy += 4;
       if (absenderBic) { doc.text(`BIC: ${formatBic(absenderBic)}`, cx3, cy); }
 
-      const filename = `Rechnung_${finalRechnungsnummer}_MOREImmo.pdf`;
+      const filename = `Rechnung_${finalRechnungsnummer}_OS-Immobilien.pdf`;
       doc.save(filename);
       // Stammdaten automatisch persistieren, damit sie beim nächsten Mal vorausgefüllt sind
       try {
@@ -588,7 +588,7 @@ export function RechnungsGeneratorDialog({ open = true, onOpenChange, asPage = f
             <FileText className="h-6 w-6" /> Rechnungs-Generator für Partner
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Erstelle eine fertige Rechnung an die MOREImmo. Felder ausfüllen, PDF herunterladen, an die Buchhaltung senden.
+            Erstelle eine fertige Rechnung an die OS Immobilien. Felder ausfüllen, PDF herunterladen, an die Buchhaltung senden.
           </p>
         </div>
         {body}
@@ -612,7 +612,7 @@ export function RechnungsGeneratorDialog({ open = true, onOpenChange, asPage = f
             <FileText className="h-5 w-5" /> Rechnungs-Generator für Partner
           </DialogTitle>
           <DialogDescription>
-            Erstelle eine fertige Rechnung an die MOREImmo. Felder ausfüllen, PDF herunterladen, an die Buchhaltung senden.
+            Erstelle eine fertige Rechnung an die OS Immobilien. Felder ausfüllen, PDF herunterladen, an die Buchhaltung senden.
           </DialogDescription>
         </DialogHeader>
         {body}

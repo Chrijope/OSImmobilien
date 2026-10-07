@@ -374,7 +374,7 @@ export function EigenfinanzierungSection({ investmentId, kundeId, kundeName, ber
       {!state.aktiv && canActivate && (
         <div className="space-y-3">
           <p className="text-xs text-muted-foreground">
-            Aktiviere diesen Modus, wenn der Kunde seine Finanzierung über eine eigene Bank abwickelt. Der Standard-more.immo-Flow bleibt parallel verfügbar, falls du auf ein Gegenangebot umschwenken willst (Hybrid).
+            Aktiviere diesen Modus, wenn der Kunde seine Finanzierung über eine eigene Bank abwickelt. Der Standard-osimmobilien.netlify.app-Flow bleibt parallel verfügbar, falls du auf ein Gegenangebot umschwenken willst (Hybrid).
           </p>
           <Button size="sm" onClick={() => setConfirmActivate(true)} className={`${UMBRECHENDER_KNOPF} max-w-full`}>
             <Banknote className="h-3.5 w-3.5" /> Kunde finanziert selbst aktivieren
@@ -500,10 +500,10 @@ export function EigenfinanzierungSection({ investmentId, kundeId, kundeName, ber
             </div>
           </div>
 
-          {/* Gegenangebot more.immo (Hybrid) */}
+          {/* Gegenangebot osimmobilien.netlify.app (Hybrid) */}
           {(state.gegenAngebot || state.gegenDarlehensvertrag || canUploadGegen) && (
             <div className="border rounded p-3 bg-background space-y-3">
-              <h5 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Gegenangebot more.immo (optional)</h5>
+              <h5 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Gegenangebot osimmobilien.netlify.app (optional)</h5>
               {(["gegenFA","gegenDV"] as const).map((slot) => {
                 const isDV = slot === "gegenDV";
                 const ang = isDV ? state.gegenDarlehensvertrag : state.gegenAngebot;
@@ -584,7 +584,7 @@ export function EigenfinanzierungSection({ investmentId, kundeId, kundeName, ber
             </AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-3 text-sm">
-                <p>Der Kunde übernimmt die Finanzierung selbst über eine externe Bank. Die Standard-more.immo-Finanzierung läuft parallel weiter und kann jederzeit reaktiviert werden (Hybrid für Gegenangebot).</p>
+                <p>Der Kunde übernimmt die Finanzierung selbst über eine externe Bank. Die Standard-osimmobilien.netlify.app-Finanzierung läuft parallel weiter und kann jederzeit reaktiviert werden (Hybrid für Gegenangebot).</p>
                 <p className="text-xs text-muted-foreground">Kunde, Finanzierungspartner und Admin werden informiert. Aufgabe „Angebot hochladen" geht an den Kunden.</p>
                 <div className="space-y-1.5 pt-2">
                   <Label htmlFor="ef-hinweis" className="text-xs">Hinweis (optional)</Label>
@@ -605,7 +605,7 @@ export function EigenfinanzierungSection({ investmentId, kundeId, kundeName, ber
           <AlertDialogHeader>
             <AlertDialogTitle>Eigenfinanzierung aufheben?</AlertDialogTitle>
             <AlertDialogDescription>
-              Der Modus wird deaktiviert und die Finanzierung läuft wieder regulär über more.immo. Bisher hochgeladene Dokumente bleiben erhalten.
+              Der Modus wird deaktiviert und die Finanzierung läuft wieder regulär über osimmobilien.netlify.app. Bisher hochgeladene Dokumente bleiben erhalten.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

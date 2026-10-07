@@ -48,7 +48,7 @@ export const EIGENE_INVESTMENTS_TEXTE = {
     return sprache === "en"
       ? {
         titel: "Ready for your next property?",
-        nachricht: `Your last purchase was ${monate} months ago. Ask your contact at MOREImmo about new properties.`,
+        nachricht: `Your last purchase was ${monate} months ago. Ask your contact at OS Immobilien about new properties.`,
       }
       : {
         titel: "Bereit für die nächste Immobilie?",

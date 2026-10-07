@@ -13,7 +13,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SA_FILL_BASE_URL = "https://portal.more.immo/sa";
+const SA_FILL_BASE_URL = "https://osimmobilien.netlify.app/sa";
 
 const BERLIN_TAG = new Intl.DateTimeFormat("sv-SE", {
   timeZone: "Europe/Berlin",
@@ -239,7 +239,7 @@ Deno.serve(async (req) => {
      * Gefunden ueber den Fall Kai Laube in send-signature-request.
      */
     // Zustaendigen Partner als Unterschrift mitgeben, sonst zeigt die Mail den
-    // Platzhalter "MOREImmo Team".
+    // Platzhalter "OS Immobilien Team".
     const berater = await zustaendigerAnsprechpartner(supabase, kontaktId);
 
     // Kein Zaehlpixel mehr (seit 26.09.2026): Ein Oeffnungspixel braucht nach

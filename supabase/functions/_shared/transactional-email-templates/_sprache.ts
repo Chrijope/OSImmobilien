@@ -164,7 +164,7 @@ export const LAYOUT_TEXTE = {
     impressum: 'Impressum',
     datenschutz: 'Datenschutz',
     abmelden: 'Abmelden',
-    rolleRueckfall: 'Ansprechpartner bei MOREImmo',
+    rolleRueckfall: 'Ansprechpartner bei OS Immobilien',
     linkFehlt:
       'Der Link zu diesem Schritt fehlt leider in dieser Nachricht. Eine kurze Antwort auf diese E-Mail genügt, dann kommt er sofort.',
     anhang: 'Anhang',
@@ -174,7 +174,7 @@ export const LAYOUT_TEXTE = {
     datenschutz: 'Privacy policy',
     abmelden: 'Unsubscribe',
     // Entscheidung 16: nie „advisor“, das klingt nach Anlageberatung.
-    rolleRueckfall: 'Your contact at MOREImmo',
+    rolleRueckfall: 'Your contact at OS Immobilien',
     linkFehlt:
       'Unfortunately, the link for this step is missing from this message. Simply reply to this email and we will send it to you right away.',
     anhang: 'Attachment',
@@ -186,7 +186,7 @@ export const LAYOUT_TEXTE = {
  *
  * Im CRM steht dort eine deutsche Berufsbezeichnung, meist
  * „Immobilienberater“, manchmal ein selbst gepflegtes Positionsfeld. Eine
- * englische Mail bekommt einheitlich „Your contact at MOREImmo“: Das Glossar
+ * englische Mail bekommt einheitlich „Your contact at OS Immobilien“: Das Glossar
  * verbietet „advisor“ (Entscheidung 16), und ein frei gepflegtes deutsches
  * Positionsfeld lässt sich nicht verlässlich übersetzen.
  */

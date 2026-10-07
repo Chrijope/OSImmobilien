@@ -31,9 +31,9 @@ import type { AssessmentAntworten, AssessmentPfad } from "./assessmentSkript";
 export const EINWILLIGUNG_VERSION = "2026-08-v1";
 
 export const EINWILLIGUNG_TEXT =
-  "Ich bin einverstanden, dass MOREImmo meine Angaben zur Bearbeitung meiner Bewerbung " +
+  "Ich bin einverstanden, dass OS Immobilien meine Angaben zur Bearbeitung meiner Bewerbung " +
   "speichert und verwendet. Meine Angaben sind freiwillig. Ich kann mein Einverständnis " +
-  "jederzeit formlos widerrufen, zum Beispiel per Mail an datenschutz@more.immo.";
+  "jederzeit formlos widerrufen, zum Beispiel per Mail an os@os-immobilien.com.";
 
 /** Gültigkeit des persönlichen Links in Tagen. */
 export const FORMULAR_GUELTIG_TAGE = 14;
@@ -336,7 +336,7 @@ export const FORMULAR_FRAGEN: FormularFrage[] = [
 
   // ── Block 4: Erwartung und Einsatz ──
   //
-  // Ersetzt die frühere Frage "Was hat dich an MOREImmo gereizt?". Beide
+  // Ersetzt die frühere Frage "Was hat dich an OS Immobilien gereizt?". Beide
   // Antworten zusammen zeigen die Erwartungshaltung, bevor jemand Zeit im
   // Telefonat verbrennt. Wer beim Einsatz nur "Motivation" schreibt, ist ein
   // anderer Fall als jemand, der drei feste Abende nennt.

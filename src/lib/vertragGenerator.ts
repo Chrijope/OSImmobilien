@@ -68,11 +68,11 @@ const sRoh = (t: string) => (t ?? "")
 const s = (t: string) => sanitizePdfText(sRoh(t));
 
 const GESELLSCHAFT = {
-  name: "MOREImmo",
-  rechtsform: "Einzelunternehmen",
-  zusatz: "ehemals Immosparplan",
-  adresse: "Wendelsteinstraße 19, 83075 Bad Feilnbach",
-  vertretenDurch: "Christian Kurz, Inhaber (Einzelunternehmen)",
+  name: "OS Immobilien Holding GmbH",
+  rechtsform: "GmbH",
+  zusatz: "",
+  adresse: "Am Ostbahnhof 1, 15749 Mittenwalde",
+  vertretenDurch: "die Geschäftsführung",
 };
 
 /**
@@ -286,9 +286,9 @@ export async function buildVertragPdf({ bewerber, paketId, zahlungsweise, hrName
   const rightX = M + colW + colGap + 6;
 
   const leftLines = [
-    `${GESELLSCHAFT.rechtsform} (${GESELLSCHAFT.zusatz})`,
+    GESELLSCHAFT.zusatz ? `${GESELLSCHAFT.rechtsform} (${GESELLSCHAFT.zusatz})` : GESELLSCHAFT.rechtsform,
     GESELLSCHAFT.adresse,
-    `Inhaber: ${GESELLSCHAFT.vertretenDurch}`,
+    `vertreten durch ${GESELLSCHAFT.vertretenDurch}`,
     '— nachfolgend "Gesellschaft" genannt —',
   ];
   const rightLines = [

@@ -15,8 +15,8 @@ import { DE_EN, type MailSprache, texteFuer, type Zweisprachig } from './_sprach
  * Seite und zusätzlich per Mail (Auftrag vom 26.09.2026).
  *
  * Absender, Antwortadresse und Unterschrift setzt send-transactional-email
- * über `absender: 'zustaendiger-partner'`: mit Partnerlink „Name | MOREImmo“
- * und Antworten an den Partner, ohne Partner das MOREImmo Team mit office@.
+ * über `absender: 'zustaendiger-partner'`: mit Partnerlink „Name | OS Immobilien“
+ * und Antworten an den Partner, ohne Partner das OS Immobilien Team mit office@.
  *
  * Aufgerufen von `_shared/handbuch-anlage.ts`.
  *
@@ -69,7 +69,7 @@ const DE = {
   knopfSa: 'Selbstauskunft starten',
   schluss: 'Fragen zum Handbuch? Antworten Sie einfach auf diese Mail.',
   hinweisModell: 'Alle Zahlen im Handbuch sind Modellrechnungen mit offengelegten Annahmen, keine Zusage und keine Steuer- oder Rechtsberatung.',
-  fuss: 'Sie haben das Handbuch auf der Handbuch-Seite von MOREImmo angefordert.',
+  fuss: 'Sie haben das Handbuch auf der Handbuch-Seite von OS Immobilien angefordert.',
 }
 
 const TEXTE: Zweisprachig<typeof DE> = {
@@ -97,7 +97,7 @@ const TEXTE: Zweisprachig<typeof DE> = {
     knopfSa: 'Start self-disclosure',
     schluss: 'Questions about the handbook? Simply reply to this email.',
     hinweisModell: 'All figures in the handbook are model calculations with disclosed assumptions, not a commitment and not tax or legal advice.',
-    fuss: 'You requested the handbook on the MOREImmo handbook page.',
+    fuss: 'You requested the handbook on the OS Immobilien handbook page.',
   },
 }
 
@@ -142,17 +142,17 @@ export const template = {
   absender: 'zustaendiger-partner',
   previewData: {
     name: 'Erika Muster',
-    handbuchLink: 'https://portal.more.immo/handbuch/ergebnis/beispiel',
-    saLink: 'https://portal.more.immo/sa/beispiel',
+    handbuchLink: 'https://osimmobilien.netlify.app/handbuch/ergebnis/beispiel',
+    saLink: 'https://osimmobilien.netlify.app/sa/beispiel',
     ausgang: 'passt',
     rahmenVon: 158000,
     rahmenBis: 222000,
     gueltigTage: 30,
     berater: {
       name: 'Christian Peetz',
-      rolle: 'Ihr Ansprechpartner bei MOREImmo',
+      rolle: 'Ihr Ansprechpartner bei OS Immobilien',
       telefon: '+49 151 00000000',
-      email: 'office@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

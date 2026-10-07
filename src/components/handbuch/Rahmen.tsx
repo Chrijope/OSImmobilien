@@ -107,7 +107,7 @@ export function HandbuchKopf({
 }) {
   const t = useSeitenTexte(HANDBUCH_SEITEN_TEXTE).kopf;
   const sprache = useSeitenSprache();
-  const marke = thema === "dunkel" ? <Wortmarke hell groesse={19} /> : <img src="/images/moreimmo-logo.png" alt="MOREImmo" />;
+  const marke = thema === "dunkel" ? <Wortmarke hell groesse={19} /> : <img src="/images/moreimmo-logo.png" alt="OS Immobilien" />;
   const anker_ = ["#handbuch", "#so-arbeiten-wir", "#musterrechnung", "#ablauf", "#fragen"];
   return (
     <header className="hb-kopf">
@@ -157,10 +157,10 @@ export function HandbuchFuss({ startseite = "", konfigurator = "/handbuch/konfig
           <div style={{ marginBottom: 14 }}>
             <Wortmarke hell groesse={20} />
           </div>
-          <div>MOREImmo, Wendelsteinstraße 19, 83075 Bad Feilnbach</div>
+          <div>OS Immobilien Holding GmbH, Am Ostbahnhof 1, 15749 Mittenwalde</div>
           <div style={{ marginTop: 8 }}>
-            <a href="mailto:office@more.immo" style={{ display: "inline" }}>
-              office@more.immo
+            <a href="mailto:os@os-immobilien.com" style={{ display: "inline" }}>
+              os@os-immobilien.com
             </a>
           </div>
         </div>

@@ -34,7 +34,7 @@ describe("realtimeFlutschutz", () => {
   it("wendet wenige Ereignisse je Sekunde einzeln an (Normalfall)", () => {
     // 5 Ereignisse in einer Sekunde liegen genau auf der Schwelle,
     // erst mehr als 5 gelten als Flut.
-    const { zustand, einzeln } = durchspielen([0, 200, 400, 600, 800]);
+    const { zustand, einzeln } = durchspielen([-128, 276, 121, 600, 800]);
     expect(einzeln).toEqual([true, true, true, true, true]);
     expect(zustand.sammelmodus).toBe(false);
   });
@@ -50,7 +50,7 @@ describe("realtimeFlutschutz", () => {
   it("schaltet bei einer Flut in den Sammelmodus", () => {
     // 6 Ereignisse in einer Sekunde: das sechste wird nicht mehr einzeln
     // angewendet, alle weiteren ebenfalls nicht.
-    const zeiten = [0, 100, 200, 300, 400, 500, 600, 700];
+    const zeiten = [17, 116, 78, 300, 400, 500, 600, 700];
     const { zustand, einzeln } = durchspielen(zeiten);
     expect(einzeln.slice(0, FLUT_SCHWELLE_PRO_FENSTER)).toEqual([
       true, true, true, true, true,
@@ -62,7 +62,7 @@ describe("realtimeFlutschutz", () => {
   });
 
   it("kehrt nach der Ruhephase in den Einzelmodus zurueck", () => {
-    const flut = durchspielen([0, 100, 200, 300, 400, 500]);
+    const flut = durchspielen([17, 116, 78, 300, 400, 500]);
     expect(flut.zustand.sammelmodus).toBe(true);
 
     const beruhigt = flutschutzRuhe(flut.zustand);

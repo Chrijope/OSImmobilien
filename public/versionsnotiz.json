@@ -150,7 +150,7 @@
     "kurztext": "Ein Lead, den ihr telefonisch nicht erreicht, bekommt nur noch nach dem 1., 4. und 10. Versuch eine Mail, immer im Namen des zuständigen Partners. Die automatische Bestätigungsmail an neue Leads entfällt.",
     "wasHeisstDasFuerDich": [
       "Bei allen anderen Versuchen geht keine Mail raus, ab dem Beratungsgespräch gar keine.",
-      "Absender und Unterschrift ist immer der zuständige Partner, auch wenn die Setterin anruft. Antworten und Terminwünsche landen bei ihm. Ohne Partner schreibt das MOREImmo Team.",
+      "Absender und Unterschrift ist immer der zuständige Partner, auch wenn die Setterin anruft. Antworten und Terminwünsche landen bei ihm. Ohne Partner schreibt das OS Immobilien Team.",
       "Hinterlege deinen Buchungslink in den Einstellungen, dann steht er in der ersten Mail.",
       "Wechselt der Partner, beginnt die Folge für den Lead von vorn.",
       "Bei der Zuweisung und beim Eingang über deine Mikroseite bekommt der Lead keine automatische Mail mehr. Glocke und Mail an dich bleiben."
@@ -355,7 +355,7 @@
     "wasHeisstDasFuerDich": [
       "Hinterlege im Profil unter Gewerbedaten Straße, PLZ und Ort. Ohne Firmenadresse lädt dein Pixel nicht, in den Einstellungen unter Meta Pixel steht dann ein Hinweis.",
       "Eine allgemeine Zustimmung auf anderen Seiten zählt für dein Pixel nicht. Besucher werden auf deiner Seite einmal neu gefragt, deshalb kann die Zahl der gemeldeten Besuche anfangs sinken.",
-      "Im Fuß deiner Mikroseite und deiner Handbuch-Seite steht, dass du und MOREImmo gemeinsam für das Pixel verantwortlich seid.",
+      "Im Fuß deiner Mikroseite und deiner Handbuch-Seite steht, dass du und OS Immobilien gemeinsam für das Pixel verantwortlich seid.",
       "An Meta gemeldet wird nur auf deinen eigenen Seiten. Das Ergebnis des Handbuchs und die Selbstauskunft mit persönlichem Link bleiben ohne Pixel."
     ],
     "soFindestDuEs": "Einstellungen, Profil, Gewerbedaten und Einstellungen, Meta Pixel",
@@ -489,7 +489,7 @@
       "vertriebsleiter",
       "vertriebspartner"
     ],
-    "kurztext": "Die Handbuch-Seite, der Fragebogen, das Ergebnis, das PDF-Handbuch und die Mail dazu siezen jetzt, passend zur Website more.immo. Die Grafik zeigt das Handbuch als gebundenes Heft.",
+    "kurztext": "Die Handbuch-Seite, der Fragebogen, das Ergebnis, das PDF-Handbuch und die Mail dazu siezen jetzt, passend zur Website osimmobilien.netlify.app. Die Grafik zeigt das Handbuch als gebundenes Heft.",
     "wasHeisstDasFuerDich": [
       "Wer deinen Handbuch-Link öffnet, wird durchgehend mit Sie angesprochen.",
       "Im CRM selbst bleibt es beim Du."
@@ -649,7 +649,7 @@
       "Neue Antworten erscheinen sofort im offenen Ticket, du musst es nicht neu öffnen.",
       "Tickets mit ungelesener Antwort sind unter „Meine Tickets“ markiert. Sobald du das Ticket öffnest, gilt es als gelesen.",
       "Pro Ticket kommt höchstens eine Mail in 15 Minuten, auch wenn der Support mehrmals schreibt.",
-      "Für Backoffice und Geschäftsleitung: Antworten stehen jetzt als „MOREImmo Support“ mit deinem Vornamen im Ticket. Mit „Antwort erneut melden“ im Helpdesk meldest du eine frühere Antwort nachträglich.",
+      "Für Backoffice und Geschäftsleitung: Antworten stehen jetzt als „OS Immobilien Support“ mit deinem Vornamen im Ticket. Mit „Antwort erneut melden“ im Helpdesk meldest du eine frühere Antwort nachträglich.",
       "Gleichzeitige Nachrichten gehen nicht mehr verloren."
     ],
     "soFindestDuEs": "Seitenleiste, Support kontaktieren",
@@ -1492,7 +1492,7 @@
       "inhaber",
       "hr"
     ],
-    "kurztext": "Unter portal.more.immo/partner-werden können sich Finanzberater, Versicherungsmakler, Vertriebler und Immobilienvertriebe in rund einer Minute eintragen. Jeder Eintrag erscheint als neuer Lead im Bewerberprozess.",
+    "kurztext": "Unter osimmobilien.netlify.app/partner-werden können sich Finanzberater, Versicherungsmakler, Vertriebler und Immobilienvertriebe in rund einer Minute eintragen. Jeder Eintrag erscheint als neuer Lead im Bewerberprozess.",
     "wasHeisstDasFuerDich": [
       "Neue Leads stehen im Eingang mit der Quelle „Partner werden“ und der gewählten Rolle in der Spalte Stelle.",
       "In der Akte siehst du links die Antworten aus dem Wizard, dazu Firma und Kampagne, falls vorhanden.",
@@ -1877,7 +1877,7 @@
       "admin",
       "inhaber"
     ],
-    "kurztext": "In der Beratungspräsentation siehst du im Abschnitt 02 jetzt unsere Partner: MORE Immo als Objektpartner und MORE Finance als Finanzierungspartner.",
+    "kurztext": "In der Beratungspräsentation siehst du im Abschnitt 02 jetzt unsere Partner: OS Immobilien als Objektpartner und MORE Finance als Finanzierungspartner.",
     "wasHeisstDasFuerDich": [
       "So zeigst du deinem Kunden gleich, wer die Objekte vertreibt und wer die Finanzierung übernimmt.",
       "Die Hinweise gibt es auf Deutsch und Englisch, passend zur gewählten Sprache der Präsentation."
@@ -2275,7 +2275,7 @@
       "admin",
       "inhaber"
     ],
-    "kurztext": "Die Mail mit der persönlichen MOREImmo Adresse enthält jetzt einen Link zur Einrichtungsanleitung als PDF und bestätigt den Onboarding-Termin aus Schritt 1.",
+    "kurztext": "Die Mail mit der persönlichen OS Immobilien Adresse enthält jetzt einen Link zur Einrichtungsanleitung als PDF und bestätigt den Onboarding-Termin aus Schritt 1.",
     "wasHeisstDasFuerDich": [
       "Die Anleitung öffnet sich ohne CRM-Zugang, der neue Partner kann sein Postfach also sofort einrichten.",
       "Im Reiter Aktivierung findest du den Postfach-Haken und eine Vorschau der Anleitung jetzt direkt in Schritt 2."
@@ -2477,7 +2477,7 @@
     "kurztext": "Der MORE Lotse liest jetzt die Eigenprovisionsvereinbarung der Einheit und beantwortet Fragen dazu: Höhe, Prozentsatz, Bedingungen und Auszahlung. Provisionsangaben aus den Investagon-Daten sehen nur noch Admin, Inhaber und Buchhaltung.",
     "wasHeisstDasFuerDich": [
       "Frag zum Beispiel: Wie hoch ist die Eigenprovision, und wann wird sie ausgezahlt?",
-      "Fragen zur Provision von MORE Immo, des Vertriebs oder zu deinem Provisionssatz beantwortet der Lotse weiter nicht.",
+      "Fragen zur Provision von OS Immobilien, des Vertriebs oder zu deinem Provisionssatz beantwortet der Lotse weiter nicht.",
       "Kunden sehen die Eigenprovisionsvereinbarung nur, wenn sie ausdrücklich für Kunden freigegeben ist."
     ],
     "soFindestDuEs": "Einheitenseite, Reiter MORE Lotse.",

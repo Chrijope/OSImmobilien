@@ -24,13 +24,13 @@
 }
 /* Hover nur bei echter Maus: Auf dem Handy bliebe der Zustand nach dem Tippen hängen. */
 @media (hover: hover) and (pointer: fine) {
-  .pw-weg:hover { border-color: #8AD0FF; background: rgba(138, 208, 255, .12); }
+  .pw-weg:hover { border-color: #36E2A0; background: rgba(54, 226, 160, .12); }
   .pw-weg:hover b svg { transform: translateX(3px); }
 }
 .pw-weg:active { transform: scale(.98); }
 .pw-weg .wer { font-size: 14px; color: #C3CEDC; line-height: 1.4; }
 .pw-weg b { font-size: 20px; line-height: 1.2; display: inline-flex; align-items: center; gap: 8px; color: #fff; }
-.pw-weg b svg { width: 20px; height: 20px; color: #8AD0FF; transition: transform var(--hb-dauer) var(--hb-ease); }
+.pw-weg b svg { width: 20px; height: 20px; color: #36E2A0; transition: transform var(--hb-dauer) var(--hb-ease); }
 .pw-weg .text { font-size: 14.5px; color: #A9B6C8; line-height: 1.45; }
 
 .pw-haken { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px 18px; }
@@ -46,21 +46,21 @@
 
 /* Standorte */
 .pw-karte-raster { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 34px; align-items: start; }
-/* Die Karte steht wie auf more.immo in einer hellen Karte, auch im dunklen
+/* Die Karte steht wie auf osimmobilien.netlify.app in einer hellen Karte, auch im dunklen
    Thema: Die dunklen Länder brauchen den hellen Grund. Die Glasschicht liest
    dieselben Variablen, deshalb genügt es, sie hier zu setzen. */
 .hb .pw-karte {
   margin: 0; padding: 22px 22px 16px;
   --hb-karte: #FFFFFF; --hb-glas: rgba(255, 255, 255, .97); --hb-glas-dicht: #FFFFFF;
   --hb-glas-kante: rgba(255, 255, 255, .9); --hb-glas-kante-oben: #FFFFFF; --hb-linie: #E3E9F0; --hb-muted: #56657A;
-  --hb-licht: rgba(84, 185, 252, .9);
+  --hb-licht: rgba(32, 200, 136, .9);
   --hb-schatten: 0 28px 68px -18px rgba(15, 22, 33, .3), 0 10px 24px -10px rgba(15, 22, 33, .16);
   --hb-schatten-hoch: 0 34px 80px -18px rgba(15, 22, 33, .36), 0 12px 28px -10px rgba(15, 22, 33, .18);
 }
 .pw-karte svg { width: 100%; height: auto; display: block; max-height: 460px; }
 .pw-karte figcaption { text-align: center; font-style: italic; margin: 12px 0 0; color: var(--hb-muted); }
 
-/* Die Nadeln: einfallen, wenn die Karte ins Bild kommt (wie auf more.immo). */
+/* Die Nadeln: einfallen, wenn die Karte ins Bild kommt (wie auf osimmobilien.netlify.app). */
 @keyframes pw-pin-fallen { from { opacity: 0; transform: translateY(-40px) scale(.4); } }
 @keyframes pw-pin-puls { 0%, 100% { transform: scale(.65); opacity: .9; } 50% { transform: scale(1.3); opacity: .1; } }
 .pw-pin { cursor: pointer; outline: none; transform-box: fill-box; transform-origin: 50% 100%; transition: opacity .3s ease; }
@@ -100,9 +100,9 @@
 .pw-teamfoto {
   min-height: 380px; border-radius: 26px; display: flex; flex-direction: column; gap: 12px; align-items: center; justify-content: center;
   color: #C3CEDC; font-weight: 700; box-shadow: var(--hb-schatten-gross);
-  background: radial-gradient(ellipse 70% 60% at 20% 0%, rgba(8, 124, 201, .5), transparent 70%), linear-gradient(135deg, #0F1621, #073150);
+  background: radial-gradient(ellipse 70% 60% at 20% 0%, rgba(25, 136, 94, .5), transparent 70%), linear-gradient(135deg, #0F1621, #0C3526);
 }
-.pw-teamfoto svg { width: 52px; height: 52px; color: #8AD0FF; }
+.pw-teamfoto svg { width: 52px; height: 52px; color: #36E2A0; }
 
 /* Laufband der Kundenstimmen. `lp-marquee-track` (index.css) schiebt die Spur
    um die Hälfte nach links und hält bei Maus darüber an. Abstand als rechter
@@ -168,10 +168,10 @@
    Seite, über dem bewegten Grund, unter dem Inhalt. Nur bei echter Maus. */
 .hb.pw::after {
   content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0;
-  background: radial-gradient(520px circle at var(--hb-mx, 50%) var(--hb-my, 30%), rgba(84, 185, 252, .16), transparent 65%);
+  background: radial-gradient(520px circle at var(--hb-mx, 50%) var(--hb-my, 30%), rgba(32, 200, 136, .16), transparent 65%);
   transition: opacity .5s ease;
 }
-.hb.pw[data-thema="dunkel"]::after { background: radial-gradient(520px circle at var(--hb-mx, 50%) var(--hb-my, 30%), rgba(84, 185, 252, .12), transparent 65%); }
+.hb.pw[data-thema="dunkel"]::after { background: radial-gradient(520px circle at var(--hb-mx, 50%) var(--hb-my, 30%), rgba(32, 200, 136, .12), transparent 65%); }
 .hb.pw[data-hb-licht]::after { opacity: 1; }
 .hb.pw { isolation: isolate; }
 @media print { .hb.pw::after { display: none; } }

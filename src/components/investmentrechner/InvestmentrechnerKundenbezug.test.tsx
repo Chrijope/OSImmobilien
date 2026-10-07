@@ -1,7 +1,7 @@
 /**
  * Der Kundenbezug bleibt kleben (REVIEW-001): Nach „Kunden entfernen“ stehen
  * Eigenkapital und Anteil des Kunden noch im Rechner, deshalb darf die
- * Rechnung nicht als kundenfrei an den MORE Lotsen gehen. Erst „Auf
+ * Rechnung nicht als kundenfrei an den OS Lotsen gehen. Erst „Auf
  * Objektdaten zurücksetzen“ macht sie wieder kundenfrei.
  */
 import { fireEvent, render, screen } from "@testing-library/react";

@@ -126,7 +126,7 @@ function AnalysePublicInhalt() {
         <div className="text-center mb-6">
           <img
             src={moreimmoLogo}
-            alt="MOREImmo"
+            alt="OS Immobilien"
             className="mx-auto h-10 md:h-12 w-auto object-contain"
           />
           {loadingSlug && (

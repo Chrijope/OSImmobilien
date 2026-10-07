@@ -172,7 +172,7 @@ describe("AktivierungTab: Anleitung geht mit der persönlichen Mail", () => {
 
   it("Block 2 zeigt die mitgeschickte PDF mit Vorschau auf die öffentliche Datei", () => {
     zeige(offen, true, true);
-    expect(screen.getByText("Anleitung MOREImmo Mail einrichten (PDF)")).toBeInTheDocument();
+    expect(screen.getByText("Anleitung OS Immobilien Mail einrichten (PDF)")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Vorschau öffnen/ })).toHaveAttribute(
       "href",
       "/dokumente/moreimmo-mail-einrichten.pdf",

@@ -20,7 +20,7 @@ vi.mock("@/integrations/supabase/client", () => ({
 const { default: ObjektvorstellungPublic } = await import("./ObjektvorstellungPublic");
 
 const TOKEN = "0123456789abcdef0123456789abcdef";
-const PARTNER = { name: "Paula Partner", telefon: "0171 234567", email: "paula@more.immo", bild: "https://cdn.example/paula.jpg" };
+const PARTNER = { name: "Paula Partner", telefon: "0171 234567", email: "os@os-immobilien.com", bild: "https://cdn.example/paula.jpg" };
 
 let antwort: { status: number; body: unknown } | "netzfehler" = { status: 410, body: {} };
 const aufrufe: string[] = [];
@@ -58,7 +58,7 @@ describe("ObjektvorstellungPublic", () => {
     expect(seite).toHaveTextContent("Dein Ansprechpartner schickt dir gern die aktuelle Objektübersicht.");
     expect(screen.getByTestId("abgelaufen-ansprechpartner")).toHaveTextContent("Paula Partner");
     expect(screen.getByTestId("abgelaufen-telefon")).toHaveAttribute("href", "tel:0171234567");
-    expect(screen.getByTestId("abgelaufen-email")).toHaveAttribute("href", "mailto:paula@more.immo");
+    expect(screen.getByTestId("abgelaufen-email")).toHaveAttribute("href", "mailto:os@os-immobilien.com");
     expect(screen.getByRole("img", { name: "Paula Partner" })).toHaveAttribute("src", "https://cdn.example/paula.jpg");
 
     expect(aufrufe).toHaveLength(1);
@@ -78,7 +78,7 @@ describe("ObjektvorstellungPublic", () => {
         wohnungen: [{ we_nr: "GIFT WE", kunde_name: "GIFT Käufer" }],
         dokumente: [{ name: "GIFT.pdf", url: "https://GIFT.example/signiert.pdf" }],
         finanz: { sumEinkuenfte: 4000 },
-        ansprechpartner: { id: "u-GIFT", name: "Paula Partner", email: "paula@more.immo", telefon: "0171 234567", buchungslink: "https://GIFT.example" },
+        ansprechpartner: { id: "u-GIFT", name: "Paula Partner", email: "os@os-immobilien.com", telefon: "0171 234567", buchungslink: "https://GIFT.example" },
       },
     };
     const { container } = oeffne(TOKEN);
@@ -95,7 +95,7 @@ describe("ObjektvorstellungPublic", () => {
 
     await screen.findByTestId("link-nicht-mehr-gueltig");
     expect(screen.queryByTestId("abgelaufen-ansprechpartner")).toBeNull();
-    expect(screen.getByTestId("abgelaufen-email")).toHaveAttribute("href", "mailto:office@more.immo");
+    expect(screen.getByTestId("abgelaufen-email")).toHaveAttribute("href", "mailto:os@os-immobilien.com");
   });
 
   it("zeigt den Hinweis auch bei einem Netzfehler", async () => {
@@ -103,7 +103,7 @@ describe("ObjektvorstellungPublic", () => {
     oeffne(TOKEN);
 
     await screen.findByTestId("link-nicht-mehr-gueltig");
-    expect(screen.getByTestId("abgelaufen-email")).toHaveAttribute("href", "mailto:office@more.immo");
+    expect(screen.getByTestId("abgelaufen-email")).toHaveAttribute("href", "mailto:os@os-immobilien.com");
   });
 
   it("fragt bei einem kaputten Token gar nicht erst den Server", async () => {

@@ -288,7 +288,7 @@ export default function BewerberFormularPublic() {
             </h1>
             <p className="text-[15px] leading-relaxed" style={{ color: "#6E6E73" }}>
               Kein Problem. Melde dich kurz unter{" "}
-              <a href="mailto:office@more.immo" className="underline underline-offset-[3px]" style={{ color: FARBE_BLAU }}>office@more.immo</a>,
+              <a href="mailto:os@os-immobilien.com" className="underline underline-offset-[3px]" style={{ color: FARBE_BLAU }}>os@os-immobilien.com</a>,
               dann schicken wir dir einen neuen. Wir rufen dich ohnehin an, der Fragebogen ist freiwillig.
             </p>
           </div>
@@ -416,7 +416,7 @@ export default function BewerberFormularPublic() {
                 placeholder="Deine Telefonnummer"
                 maxLength={50}
                 autoComplete="tel"
-                className="w-full rounded-2xl border-2 border-[#E4E6EB] bg-white pl-11 pr-4 py-3.5 text-base transition-all placeholder:text-[#9AA0A8] focus:outline-none focus:border-[#0A6EDB] focus:shadow-[0_0_0_4px_rgba(10,110,219,.12)]"
+                className="w-full rounded-2xl border-2 border-[#E4E6EB] bg-white pl-11 pr-4 py-3.5 text-base transition-all placeholder:text-[#9AA0A8] focus:outline-none focus:border-[#187F58] focus:shadow-[0_0_0_4px_rgba(24,127,88,.12)]"
                 style={{ color: "#1D1D1F" }}
               />
             </label>
@@ -444,7 +444,7 @@ export default function BewerberFormularPublic() {
                 onChange={(e) => { setEinwilligung(e.target.checked); setEinwilligungFehlt(false); }}
                 className="peer sr-only"
               />
-              <label htmlFor={einwilligungId} className="mt-0.5 cursor-pointer rounded-md peer-focus-visible:ring-4 peer-focus-visible:ring-[#0A6EDB]/30">
+              <label htmlFor={einwilligungId} className="mt-0.5 cursor-pointer rounded-md peer-focus-visible:ring-4 peer-focus-visible:ring-[#187F58]/30">
                 <Kaestchen aktiv={einwilligung} />
               </label>
               <span>
@@ -584,7 +584,7 @@ function Seite({ children }: { children: ReactNode }) {
       <div
         aria-hidden
         className="absolute inset-x-0 top-0 h-[300px] sm:h-[460px] pointer-events-none"
-        style={{ background: "radial-gradient(ellipse 55% 70% at 50% -12%, rgba(10,110,219,.16), transparent 66%)" }}
+        style={{ background: "radial-gradient(ellipse 55% 70% at 50% -12%, rgba(24,127,88,.16), transparent 66%)" }}
       />
       <div className="relative px-3.5 pt-4 pb-7 sm:px-6 sm:pt-11 sm:pb-16 flex flex-col items-center">
         {children}
@@ -605,13 +605,13 @@ function Karte({ children }: { children: ReactNode }) {
 }
 
 function Logo() {
-  return <img src={logo} alt="MOREImmo" className="h-[26px] sm:h-[34px] mx-auto mb-5 sm:mb-6" />;
+  return <img src={logo} alt="OS Immobilien" className="h-[26px] sm:h-[34px] mx-auto mb-5 sm:mb-6" />;
 }
 
 function SchrittKopf({ rechts }: { rechts: ReactNode }) {
   return (
     <div className="flex items-center justify-between mb-3">
-      <img src={logo} alt="MOREImmo" className="h-[26px]" />
+      <img src={logo} alt="OS Immobilien" className="h-[26px]" />
       {rechts}
     </div>
   );
@@ -619,7 +619,7 @@ function SchrittKopf({ rechts }: { rechts: ReactNode }) {
 
 function Chip({ icon, children }: { icon: ReactNode; children: ReactNode }) {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] font-medium" style={{ background: "#EEF5FD", color: "#0A5BB5" }}>
+    <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] font-medium" style={{ background: "#EEF5FD", color: "#156949" }}>
       {icon}
       {children}
     </span>
@@ -700,7 +700,7 @@ function DankeSeite({
           href={BEWERBER_BUCHUNGSLINK}
           target="_blank"
           rel="noreferrer"
-          className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-[14px] px-7 py-[15px] text-base font-medium border-[1.5px] transition-colors hover:bg-[#F5F5F7] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#0A6EDB]/20"
+          className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-[14px] px-7 py-[15px] text-base font-medium border-[1.5px] transition-colors hover:bg-[#F5F5F7] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#187F58]/20"
           style={{ color: FARBE_DUNKEL, borderColor: "#D9DDE3", background: "#fff" }}
         >
           Gesprächstermin buchen

@@ -163,7 +163,7 @@ function Beitrag({ beitrag, du }: { beitrag: ChatBeitrag; du: string }) {
       <div
         className={`max-w-[85%] rounded-2xl px-3 py-2 ${
           beitrag.eigen
-            ? "bg-[#88CFFF]/15 text-[#E6F4FF]"
+            ? "bg-[#30E19E]/15 text-[#E6F4FF]"
             : "bg-white/[0.07] text-white"
         }`}
       >
@@ -275,7 +275,7 @@ export function ChatFenster({
               chat.senden();
             }
           }}
-          className="min-h-[44px] w-full flex-1 resize-none rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-[13px] text-white outline-none placeholder:text-white/25 focus:border-[#88CFFF]/50 disabled:opacity-40"
+          className="min-h-[44px] w-full flex-1 resize-none rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-[13px] text-white outline-none placeholder:text-white/25 focus:border-[#30E19E]/50 disabled:opacity-40"
         />
         <button
           type="button"
@@ -283,7 +283,7 @@ export function ChatFenster({
           onClick={chat.senden}
           disabled={chat.gesperrt || !chat.entwurf.trim()}
           aria-label={t.senden}
-          className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-xl bg-[#087AC7] text-white transition-colors enabled:hover:brightness-110 disabled:opacity-40"
+          className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-xl bg-[#15724F] text-white transition-colors enabled:hover:brightness-110 disabled:opacity-40"
         >
           <SendHorizonal aria-hidden className="h-4 w-4" />
         </button>

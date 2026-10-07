@@ -102,7 +102,7 @@ function immobilienNrFuerPdf(verweis: string | undefined): string {
 }
 
 export const SA_FORMULAR_PFAD = "/dokumente/selbstauskunft-formular.pdf";
-export const SA_FORMULAR_DATEINAME = "Selbstauskunft-MOREImmo.pdf";
+export const SA_FORMULAR_DATEINAME = "Selbstauskunft-OS Immobilien.pdf";
 
 /*
  * Die englische Fassung (Plan Kundensprache, Etappe 4, D7). Erzeugt mit
@@ -112,7 +112,7 @@ export const SA_FORMULAR_DATEINAME = "Selbstauskunft-MOREImmo.pdf";
  * Erklärung auf der letzten Seite steht zweisprachig, Deutsch maßgeblich.
  */
 export const SA_FORMULAR_PFAD_EN = "/dokumente/selbstauskunft-formular-en.pdf";
-export const SA_FORMULAR_DATEINAME_EN = "Self-Disclosure-MOREImmo.pdf";
+export const SA_FORMULAR_DATEINAME_EN = "Self-Disclosure-OS Immobilien.pdf";
 
 /** Die Formular-PDF in der Sprache des Kunden. Ohne Angabe die deutsche. */
 export function saFormularDatei(sprache?: Sprache | null): { pfad: string; dateiname: string } {
@@ -444,7 +444,7 @@ export function saDeckblattText(ausInvestment: number, sprache: Sprache = "de"):
         "Please go through every page and change anything that is no longer correct today: income, expenses, current loans, assets and your personal details. On paper, please cross out the old value and write today's value next to it.",
         "Please cross out anything that no longer applies and add anything that is missing.",
         "Only with your signature on the last page do you confirm that all details in this document are correct and complete today. Your bank assesses the financing on this basis.",
-        "If you are unsure, we will be happy to complete the self-disclosure together with you. Simply contact your contact person at MOREImmo.",
+        "If you are unsure, we will be happy to complete the self-disclosure together with you. Simply contact your contact person at OS Immobilien.",
       ],
     };
   }
@@ -557,7 +557,7 @@ export async function fuelleSaFormularPdf(
   let y = 760;
 
   seite.drawRectangle({ x: 0, y: 800, width: 595.28, height: 42, color: navy });
-  seite.drawText("MOREImmo", { x: rand, y: 814, size: 14, font: fett, color: rgb(1, 1, 1) });
+  seite.drawText("OS Immobilien", { x: rand, y: 814, size: 14, font: fett, color: rgb(1, 1, 1) });
 
   seite.drawText(titel, { x: rand, y, size: 15, font: fett, color: navy });
   y -= 32;
@@ -580,7 +580,7 @@ export async function fuelleSaFormularPdf(
     x: rand + 8, y: y + 2, size: 9.5, font: normal, color: rgb(0.1, 0.1, 0.1),
   });
 
-  seite.drawText("MOREImmo, Wendelsteinstraße 19, 83075 Bad Feilnbach", {
+  seite.drawText("OS Immobilien Holding GmbH, Am Ostbahnhof 1, 15749 Mittenwalde", {
     x: rand, y: 42, size: 6.5, font: normal, color: rgb(0.45, 0.45, 0.45),
   });
 

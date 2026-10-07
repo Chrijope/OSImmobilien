@@ -29,7 +29,7 @@ type Datenzugriff = {
 
 import { metaScore, type MetaAngaben } from './bewerber-meta-score.ts'
 
-export const PORTAL_URL = 'https://portal.more.immo'
+export const PORTAL_URL = 'https://osimmobilien.netlify.app'
 
 /**
  * Der Weg in die Bewerberakte.
@@ -46,7 +46,7 @@ export function bewerberPfad(bewerbungId: string): string {
  *
  * In die Glocke gehoert der Pfad, nie die volle Adresse: Die Glocke ruft
  * `navigate(link)`, und der Router haengt eine volle Adresse als relativen
- * Pfad an die aktuelle Seite. Daraus wird `/https:/portal.more.immo/...`,
+ * Pfad an die aktuelle Seite. Daraus wird `/https:/osimmobilien.netlify.app/...`,
  * und dafuer gibt es keine Route. Genau so landete Christian am 14.09.2026
  * beim Klick auf "Neuer Bewerber: Eric Schoof" auf der 404-Seite.
  *

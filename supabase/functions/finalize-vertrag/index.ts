@@ -23,13 +23,13 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SIGNATURE_BASE_URL = "https://portal.more.immo/signatur";
+const SIGNATURE_BASE_URL = "https://osimmobilien.netlify.app/signatur";
 const CHRISTIAN_KURZ_USER_ID = "df8190e9-b5f2-4519-8343-293688ff062d";
-const CHRISTIAN_KURZ_EMAIL = "office@more.immo";
+const CHRISTIAN_KURZ_EMAIL = "os@os-immobilien.com";
 // Nur noch die Adresse: Die Glocken an sein Konto sind entfallen, das
 // Bewerbermanagement meldet ausschliesslich an die HR-Rolle. Die Mail zur
 // Rechnungsstellung bleibt.
-const CHRISTIAN_PEETZ_EMAIL = "c.peetz@more.immo";
+const CHRISTIAN_PEETZ_EMAIL = "os@os-immobilien.com";
 
 function base64ToUint8(b64: string): Uint8Array {
   const clean = b64.replace(/^data:application\/pdf;base64,/, "").replace(/\s/g, "");
@@ -46,7 +46,7 @@ function safeName(name: string): string {
 /**
  * 2-Stufen-Workflow:
  *   stage="bewerber" (default): Bewerber hat unterschrieben → Signatur-Anfrage
- *     für Christian Kurz anlegen, E-Mail an office@more.immo, Status
+ *     für Christian Kurz anlegen, E-Mail an os@os-immobilien.com, Status
  *     "wartet_auf_kurz". Es wird noch NICHTS in der Dokumentenakte abgelegt.
  *   stage="kurz": Christian Kurz hat gegengezeichnet → finale PDFs
  *     (vom Client base64-codiert mitgeliefert) in Storage hochladen,
@@ -66,7 +66,7 @@ Deno.serve(async (req) => {
     const finalDocuments: Array<{ key: string; name: string; base64: string }> =
       Array.isArray(body.finalDocuments) ? body.finalDocuments : [];
     const kurzSignatureDataUrl: string = body.kurzSignatureDataUrl || "";
-    const kurzSignedOrt: string = body.kurzSignedOrt || "Bad Feilnbach";
+    const kurzSignedOrt: string = body.kurzSignedOrt || "Mittenwalde";
     const signatureToken: unknown = body.signatureToken;
 
     if (!bewerberId) {
@@ -580,7 +580,7 @@ Deno.serve(async (req) => {
       ort: currentMeta.ort || "",
       leadPaket: currentMeta.leadPaket,
       signedAt: new Date(signedAt).toLocaleString("de-DE"),
-      bewerberLink: `https://portal.more.immo/bewerberprozess?bewerber=${bewerberId}`,
+      bewerberLink: `https://osimmobilien.netlify.app/bewerberprozess?bewerber=${bewerberId}`,
     });
     if (templateData) {
       try {

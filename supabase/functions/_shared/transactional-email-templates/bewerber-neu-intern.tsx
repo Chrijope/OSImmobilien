@@ -158,7 +158,7 @@ export const template = {
     quelle: 'Meta (Zapier)',
     stelleTitel: 'Vertriebspartner',
     eingegangenAm: '26.08.2026, 09:14',
-    bewerberLink: 'https://portal.more.immo/bewerberprozess?openBewerber=beispiel',
+    bewerberLink: 'https://osimmobilien.netlify.app/bewerberprozess?openBewerber=beispiel',
     einschaetzung: {
       wert: 78,
       stufe: 'B',

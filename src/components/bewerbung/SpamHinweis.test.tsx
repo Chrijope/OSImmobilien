@@ -13,7 +13,7 @@ describe("SpamHinweis", () => {
     render(<SpamHinweis />);
     const hinweis = screen.getByTestId("spam-hinweis");
     expect(hinweis.textContent).toBe(
-      "Unsere Mail kommt von noreply@more.immo. Schau bitte auch im Spam-Ordner nach und markiere sie als ‚Kein Spam‘.",
+      "Unsere Mail kommt von noreply@os-immobilien.com. Schau bitte auch im Spam-Ordner nach und markiere sie als ‚Kein Spam‘.",
     );
     expect(hinweis).toHaveAttribute("role", "note");
   });
@@ -26,6 +26,6 @@ describe("SpamHinweis", () => {
   });
 
   it("stimmt mit dem Absender von send-transactional-email überein", () => {
-    expect(MAIL_ABSENDER).toBe("noreply@more.immo");
+    expect(MAIL_ABSENDER).toBe("noreply@os-immobilien.com");
   });
 });

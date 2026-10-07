@@ -24,7 +24,7 @@
  * ── Wer am Zug ist ──
  *
  * Wird aus dem tatsächlichen Vorgang abgeleitet und nicht aus der
- * Pipelinestufe. Eine offene Rückfrage macht MOREImmo zum Zugführer, obwohl
+ * Pipelinestufe. Eine offene Rückfrage macht OS Immobilien zum Zugführer, obwohl
  * der Bewerber formal in der Stufe Eingang steht. Genau darum bekommt diese
  * Datei die Stufe gar nicht erst zu sehen.
  */
@@ -240,7 +240,7 @@ export type AmZug = "bewerber" | "moreimmo" | "niemand";
 /**
  * Wer am Zug ist, abgeleitet aus dem Vorgang und nicht aus der Stufe.
  *
- * Der Satz aus der Abstimmungsfassung, in Code: „Deshalb kann MOREImmo am Zug
+ * Der Satz aus der Abstimmungsfassung, in Code: „Deshalb kann OS Immobilien am Zug
  * sein, obwohl der Bewerber formal noch in der Stufe Eingang steht." Genau das
  * passiert hier, wenn eine Frage offen ist.
  */
@@ -382,7 +382,7 @@ export function stationen(stand: BewerberSeiteStand, jetzt: Date = new Date()): 
  *
  * Keine davon ist eine Absage, auch die letzte nicht: Sie ist der selbst
  * gewählte Ausstieg und bekommt einen eigenen Weg, nicht denselben wie eine
- * Absage durch MOREImmo.
+ * Absage durch OS Immobilien.
  */
 export type PausenWahl = "woche" | "monat" | "ohne" | "beenden";
 
@@ -540,7 +540,7 @@ export async function sorgeFuerBewerberSeite(
 }
 
 /** Die öffentliche Adresse der persönlichen Seite. */
-export const BEWERBER_SEITE_BASIS_URL = "https://portal.more.immo/deine-bewerbung";
+export const BEWERBER_SEITE_BASIS_URL = "https://osimmobilien.netlify.app/deine-bewerbung";
 
 export function bewerberSeiteLink(token: string): string {
   return `${BEWERBER_SEITE_BASIS_URL}/${token}`;

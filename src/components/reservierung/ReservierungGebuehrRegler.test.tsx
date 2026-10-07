@@ -104,7 +104,7 @@ describe("Mit umgelegtem Regler", () => {
     expect(text()).not.toContain("Widerrufsrecht");
     expect(text()).not.toContain("Folgen des Widerrufs");
     expect(text()).not.toContain("auflösende Bedingung");
-    expect(screen.queryByText("Ich wünsche, dass MOREImmo mit der Reservierung erst nach Ablauf der Widerrufsfrist beginnt.")).toBeNull();
+    expect(screen.queryByText("Ich wünsche, dass OS Immobilien mit der Reservierung erst nach Ablauf der Widerrufsfrist beginnt.")).toBeNull();
     /*
      * „Widerrufsbelehrung" steht weiterhin einmal auf der Seite: im
      * Erklärtext des Reglers, der aufzählt, was er ausblendet. Das ist

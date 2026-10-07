@@ -132,12 +132,12 @@ export const template = {
   displayName: 'Bewerber: Sammelmail zum Kennenlernen',
   previewData: {
     bewerberName: 'Max Mustermann',
-    kennenlernenLink: 'https://portal.more.immo/kennenlernen/beispiel-token',
+    kennenlernenLink: 'https://osimmobilien.netlify.app/kennenlernen/beispiel-token',
     keinInteresseLink: keinInteresseLink('beispiel-token'),
     hrKontakt: {
       name: 'Sarah Kaiser-Thom',
       rolle: berufsbezeichnung('hr'),
-      email: 's.kaiser-thom@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

@@ -446,13 +446,13 @@ export async function baueSteuerAuswertungPdf(
   doc.setFont(PDF_FONT, "bold");
   doc.setFontSize(13);
   setColor(doc, BRAND.white);
-  doc.text(sanitizePdfText(berater?.name || "MOREImmo"), MARGIN + 8, y + 19);
+  doc.text(sanitizePdfText(berater?.name || "OS Immobilien"), MARGIN + 8, y + 19);
 
   doc.setFont(PDF_FONT, "normal");
   doc.setFontSize(9);
   doc.setTextColor(212, 220, 232);
   const kontakt = [berater?.telefon, berater?.email].filter(Boolean).join("   ·   ");
-  doc.text(sanitizePdfText(kontakt || "kontakt@more.immo"), MARGIN + 8, y + 27);
+  doc.text(sanitizePdfText(kontakt || "os@os-immobilien.com"), MARGIN + 8, y + 27);
   doc.setFontSize(8);
   const start = antworten.startzeitpunkt ? kennung.startzeitpunkt[antworten.startzeitpunkt]?.titel : "";
   const schluss = doc.splitTextToSize(

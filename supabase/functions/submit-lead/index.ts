@@ -1116,10 +1116,10 @@ Deno.serve(async (req) => {
           eventId: metaEventId.trim(),
           eventTime: Date.now() / 1000,
           eventSourceUrl: hbWeg
-            ? `https://portal.more.immo/handbuch${zuordnungsWeg.weg === "link_kuerzel" ? `/${encodeURIComponent(zuordnungsWeg.kuerzel)}` : ""}${hbSaOffen ? "/selbstauskunft" : ""}`
+            ? `https://osimmobilien.netlify.app/handbuch${zuordnungsWeg.weg === "link_kuerzel" ? `/${encodeURIComponent(zuordnungsWeg.kuerzel)}` : ""}${hbSaOffen ? "/selbstauskunft" : ""}`
             : microSlug
-              ? `https://portal.more.immo/vp/${encodeURIComponent(microSlug)}`
-              : "https://portal.more.immo/",
+              ? `https://osimmobilien.netlify.app/vp/${encodeURIComponent(microSlug)}`
+              : "https://osimmobilien.netlify.app/",
           email,
           telefon,
         });

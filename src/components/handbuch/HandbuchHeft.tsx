@@ -1,7 +1,7 @@
 /**
  * Das Handbuch als gebundenes Heft auf der Handbuch-Seite (seit dem
  * 27.09.2026, ersetzt die Magazin-Grafik; dieselbe Komposition wie im
- * Handbuch-Abschnitt der Website more.immo).
+ * Handbuch-Abschnitt der Website osimmobilien.netlify.app).
  *
  * Vorn das Heft mit dem echten Deckblatt, leicht gedreht, mit Buchrücken und
  * Kantenlicht; dahinter die Seiten zu Kapitel 4, 5 und 8, nach rechts hinten

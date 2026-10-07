@@ -626,7 +626,7 @@ export const ClosingDirektTeil = ({
               <div className="space-y-1">
                 <Label className="text-xs">Ort</Label>
                 <Input value={vaOrt} onChange={(e) => setVaOrt(e.target.value)} onBlur={speichereAdressen}
-                  disabled={!canEdit} placeholder="Bad Feilnbach" className="h-9 text-sm" />
+                  disabled={!canEdit} placeholder="Mittenwalde" className="h-9 text-sm" />
               </div>
             </div>
           </div>
@@ -701,7 +701,7 @@ export const ClosingDirektTeil = ({
                 }}
                 disabled={!canEdit}
               />
-              <span className="text-xs font-medium">Exklusive Zusammenarbeit mit MOREImmo</span>
+              <span className="text-xs font-medium">Exklusive Zusammenarbeit mit OS Immobilien</span>
             </label>
             {!exklusiv && (
               <div className="space-y-1">

@@ -164,7 +164,7 @@ export default function BewerberKennenlerntermin() {
                 bewusst da: Eine Mail eines fremden Kalenderdienstes landet dort
                 häufiger als unsere eigene.
               */}
-              <div className={`mt-6 rounded-[14px] border border-[#88CFFF]/15 ${FLAECHE_HINWEIS} p-4`}>
+              <div className={`mt-6 rounded-[14px] border border-[#30E19E]/15 ${FLAECHE_HINWEIS} p-4`}>
                 <p className="text-[12.5px] leading-relaxed text-white/60">
                   Den Zugang zum Videocall hast du bereits per E-Mail bekommen, zusammen mit der
                   Terminbestätigung. Schau bitte kurz in deinem Posteingang nach, und wenn dort
@@ -178,7 +178,7 @@ export default function BewerberKennenlerntermin() {
               <button
                 type="button"
                 onClick={() => setKorrigiert(true)}
-                className="mt-3 inline-flex items-center gap-2 text-[13px] font-semibold text-[#88CFFF] hover:underline"
+                className="mt-3 inline-flex items-center gap-2 text-[13px] font-semibold text-[#30E19E] hover:underline"
               >
                 Zeit korrigieren <ArrowRight className="h-3.5 w-3.5" />
               </button>
@@ -301,7 +301,7 @@ export default function BewerberKennenlerntermin() {
                       value={datum}
                       min={heuteBerlinIso()}
                       onChange={(e) => { setDatum(e.target.value); setFehler(null); }}
-                      className={`mt-2 h-[48px] w-full rounded-xl border border-white/15 ${FLAECHE_FELD} px-4 text-[15px] text-white outline-none focus:border-[#88CFFF]`}
+                      className={`mt-2 h-[48px] w-full rounded-xl border border-white/15 ${FLAECHE_FELD} px-4 text-[15px] text-white outline-none focus:border-[#30E19E]`}
                     />
                   </div>
                   <div>
@@ -313,7 +313,7 @@ export default function BewerberKennenlerntermin() {
                       type="time"
                       value={uhrzeit}
                       onChange={(e) => { setUhrzeit(e.target.value); setFehler(null); }}
-                      className={`mt-2 h-[48px] w-full rounded-xl border border-white/15 ${FLAECHE_FELD} px-4 text-[15px] text-white outline-none focus:border-[#88CFFF]`}
+                      className={`mt-2 h-[48px] w-full rounded-xl border border-white/15 ${FLAECHE_FELD} px-4 text-[15px] text-white outline-none focus:border-[#30E19E]`}
                     />
                   </div>
                 </div>
@@ -357,7 +357,7 @@ export default function BewerberKennenlerntermin() {
 function Fussleiste() {
   return (
     <p className="mt-10 text-center text-[10.5px] text-white/30">
-      MOREImmo · Wendelsteinstraße 19, 83075 Bad Feilnbach
+      OS Immobilien · Am Ostbahnhof 1, 15749 Mittenwalde
       <span aria-hidden className="mx-2 text-white/20">·</span>
       <a href="/impressum" className="hover:text-white/60 hover:underline">Impressum</a>
       <span aria-hidden className="mx-2 text-white/20">·</span>
@@ -379,7 +379,7 @@ function Zeile({
 }) {
   return (
     <div className="flex items-start gap-3">
-      <span className="mt-0.5 flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-lg bg-[#88CFFF]/[0.13] text-[#88CFFF]">
+      <span className="mt-0.5 flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-lg bg-[#30E19E]/[0.13] text-[#30E19E]">
         {icon}
       </span>
       <span className="min-w-0">

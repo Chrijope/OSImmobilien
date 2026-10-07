@@ -35,10 +35,10 @@ Deno.serve((req) => {
   const end = url.searchParams.get('end') || ''
   const location = url.searchParams.get('loc') || ''
   const description = url.searchParams.get('desc') || ''
-  const orgName = url.searchParams.get('org') || 'MOREImmo'
-  const orgEmail = url.searchParams.get('orgEmail') || 'noreply@more.immo'
+  const orgName = url.searchParams.get('org') || 'OS Immobilien'
+  const orgEmail = url.searchParams.get('orgEmail') || 'noreply@os-immobilien.com'
   const attendee = url.searchParams.get('att') || ''
-  const uid = url.searchParams.get('uid') || `${Date.now()}@more.immo`
+  const uid = url.searchParams.get('uid') || `${Date.now()}@os-immobilien.com`
   // Wird ein Termin verschoben, geht dieselbe UID mit neuer Zeit hinaus. Ohne
   // hoehere SEQUENCE behandeln Apple Kalender und Outlook das als Wiederholung
   // und lassen den alten Eintrag stehen. Der Aufrufer schickt deshalb eine
@@ -56,7 +56,7 @@ Deno.serve((req) => {
   const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//MOREImmo//Closing//DE',
+    'PRODID:-//OS Immobilien//Closing//DE',
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     'BEGIN:VEVENT',

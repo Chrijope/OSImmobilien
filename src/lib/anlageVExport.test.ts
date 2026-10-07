@@ -12,8 +12,8 @@ const vollInv = (over: Partial<AnlageVInvestment> = {}): AnlageVInvestment => ({
   id: "t1",
   bezeichnung: "Testwohnung",
   adresse: "Musterweg 1",
-  plz: "83075",
-  ort: "Bad Feilnbach",
+  plz: "15749",
+  ort: "Mittenwalde",
   kaufpreis: 300000,
   kaufdatum: "2024-05-15",
   baujahr: 1990,
@@ -79,7 +79,7 @@ describe("baueAnlageVAufstellung, vollstaendiges Investment", () => {
     const werte = Object.fromEntries(a.objekt.map((o) => [o.label, o.wert]));
     expect(werte["Bezeichnung"]).toBe("Testwohnung");
     expect(werte["Adresse"]).toContain("Musterweg 1");
-    expect(werte["Adresse"]).toContain("83075 Bad Feilnbach");
+    expect(werte["Adresse"]).toContain("15749 Mittenwalde");
     expect(werte["Wohnfläche"]).toBe("60 m²");
     expect(werte["Miteigentumsanteil"]).toContain("100 %");
   });

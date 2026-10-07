@@ -413,7 +413,7 @@ describe("Schrift auf der blauen Taste", () => {
   });
 
   it("nimmt fuer gefuellte Flaechen nie --primary selbst als oberen Stopp", () => {
-    // --primary rundet heller als #087AC7 und traegt nur 4,45:1.
+    // --primary rundet heller als #15724F und traegt nur 4,45:1.
     expect(regelwerk).not.toMatch(/linear-gradient\(180deg,\s*hsl\(var\(--primary\)\)/);
   });
 });

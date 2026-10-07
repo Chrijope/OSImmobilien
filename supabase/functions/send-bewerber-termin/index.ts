@@ -139,7 +139,7 @@ const THEMEN_LABELS: Record<string, string> = {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
-  // Links in Bewerbermails zeigen immer auf portal.more.immo, nie auf eine
+  // Links in Bewerbermails zeigen immer auf osimmobilien.netlify.app, nie auf eine
   // per Umgebungsvariable eingetragene andere Adresse (seit 26.09.2026).
   const basisAdresse = BEWERBER_MAIL_BASIS;
   const admin = createClient(SUPABASE_URL, SERVICE_ROLE, { auth: { persistSession: false } });
@@ -224,7 +224,7 @@ Deno.serve(async (req) => {
      * Der Gastgeber wird jetzt immer geladen, nicht nur ersatzweise.
      *
      * Sein Name und seine Adresse stehen in der Kalenderdatei des Bewerbers als
-     * ORGANIZER. Ohne sie steht dort „MOREImmo" ohne Person, und wer im
+     * ORGANIZER. Ohne sie steht dort „OS Immobilien" ohne Person, und wer im
      * Kalender nachsieht, weiss nicht, mit wem er spricht.
      */
     let gastgeberName = "";
@@ -362,7 +362,7 @@ Deno.serve(async (req) => {
         raumUrl ? `Videoraum: ${raumUrl}` : "",
         tagesordnung.length > 0 ? `Das besprechen wir zuerst: ${tagesordnung.join(", ")}` : "",
       ].filter(Boolean).join("\n");
-      const icsUid = `bewerber-termin-${buchung.id}@more.immo`;
+      const icsUid = `bewerber-termin-${buchung.id}@os-immobilien.com`;
 
       /*
        * Auch die Absage bekommt eine Kalenderdatei, nur eben eine, die absagt.
@@ -381,8 +381,8 @@ Deno.serve(async (req) => {
         ort: raumUrl || "Online",
         uid: icsUid,
         sequenz,
-        organisator: gastgeberName || "MOREImmo",
-        organisatorEmail: gastgeberEmail || "office@more.immo",
+        organisator: gastgeberName || "OS Immobilien",
+        organisatorEmail: gastgeberEmail || "os@os-immobilien.com",
         teilnehmerEmail: bewerber.email,
         absage: vorgang === "abgesagt",
       });
@@ -406,8 +406,8 @@ Deno.serve(async (req) => {
               ort: raumUrl || "Online",
               uid: icsUid,
               sequenz,
-              organisator: gastgeberName || "MOREImmo",
-              organisatorEmail: gastgeberEmail || "office@more.immo",
+              organisator: gastgeberName || "OS Immobilien",
+              organisatorEmail: gastgeberEmail || "os@os-immobilien.com",
             });
 
       const bewerberVersand = await sendeVorlage(admin, {

@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
 /**
- * Der Hinweis „Umgang mit KI“ vor dem MORE Lotsen, als Pflichtschranke.
+ * Der Hinweis „Umgang mit KI“ vor dem OS Lotsen, als Pflichtschranke.
  *
  * Beim ersten Öffnen liegt er über dem Chat: Text zum Scrollen, darunter fest
  * das Häkchen und „Verstanden und akzeptiert“, der Knopf erst mit Häkchen.
@@ -39,7 +39,7 @@ export function LotseHinweis({
       data-testid="lotse-hinweis"
     >
       <div className="px-4 pb-2 pt-4 sm:px-5">
-        <h3 id={titel} className="text-base font-semibold tracking-tight text-foreground">Bevor du den MORE Lotsen nutzt</h3>
+        <h3 id={titel} className="text-base font-semibold tracking-tight text-foreground">Bevor du den OS Lotsen nutzt</h3>
         <p className="mt-1 text-xs text-muted-foreground">
           Einmal lesen und bestätigen. Du findest diesen Hinweis jederzeit wieder über das i oben rechts.
         </p>
@@ -52,15 +52,15 @@ export function LotseHinweis({
         <section>
           <h4 className="font-semibold">Du sprichst mit einer KI</h4>
           <p>
-            Der MORE Lotse ist eine künstliche Intelligenz (Google Gemini über das Lovable AI Gateway). Er antwortet nur
+            Der OS Lotse ist eine künstliche Intelligenz (Google Gemini über das Lovable AI Gateway). Er antwortet nur
             aus den Objektdaten, der Investmentkalkulation, der Karte und den Unterlagen im CRM. Er kann sich trotzdem irren.
           </p>
         </section>
         <section>
           <h4 className="font-semibold">Was seine Antworten sind, und was nicht</h4>
           <ul className="list-disc space-y-0.5 pl-5">
-            <li>Eine Arbeitshilfe für dich, keine geprüfte Auskunft von MOREImmo.</li>
-            <li>Keine Steuer-, Rechts- oder Anlageberatung. MOREImmo vermittelt Immobilien und berät nicht zu Geldanlage, Versicherung oder Steuern.</li>
+            <li>Eine Arbeitshilfe für dich, keine geprüfte Auskunft von OS Immobilien.</li>
+            <li>Keine Steuer-, Rechts- oder Anlageberatung. OS Immobilien vermittelt Immobilien und berät nicht zu Geldanlage, Versicherung oder Steuern.</li>
             <li>Zins und Tilgung in der Kalkulation sind Rechenannahmen, kein Finanzierungsangebot.</li>
             <li>Er rechnet nicht selbst, er zitiert die Kalkulation mit deinen Annahmen.</li>
             <li>Er macht keine Prognosen und sagt nicht, ob ein Objekt zu einem bestimmten Kunden passt.</li>

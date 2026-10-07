@@ -75,7 +75,7 @@ describe("Reservierung auf Englisch", () => {
     await oeffne();
     expect(await screen.findByText("Sign the reservation agreement")).toBeTruthy();
     expect(screen.getByText("Start of the reservation")).toBeTruthy();
-    expect(screen.getByText(/I expressly request that MOREImmo begin the reservation/)).toBeTruthy();
+    expect(screen.getByText(/I expressly request that OS Immobilien begin the reservation/)).toBeTruthy();
     expect(screen.getAllByText("Show German original (legally binding)").length).toBeGreaterThan(0);
     expect(screen.getByText(/In case of discrepancies, the German version shall prevail/)).toBeTruthy();
     expect(screen.getByText(/notarial purchase contract \(Kaufvertragsurkunde\) is drawn up in German/)).toBeTruthy();

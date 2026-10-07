@@ -81,7 +81,7 @@ describe("buildStartfahrplanErweitertPdf (erweiterter Startfahrplan)", () => {
     for (const titel of [
       "Warum die meisten Einzelkämpfer nicht am Verkaufen scheitern",
       "Das Gegenbild: Du machst Vertrieb, wir den Rest",
-      "Wofür MOREImmo steht",
+      "Wofür OS Immobilien steht",
       "Das System: was du bekommst und was es dir spart",
       "Echte Objekte an starken Standorten",
       "Vom Kunden zur Provision: der Deal-Prozess",
@@ -118,7 +118,7 @@ describe("buildStartfahrplanErweitertPdf (erweiterter Startfahrplan)", () => {
     expect(alles).not.toContain("die hast du im Gespräch schon getroffen");
     // (b) Der Schluss ist der ruhige Satz, kein vorweggenommenes Willkommen.
     expect(alles).toContain("Wir freuen uns auf die Zusammenarbeit.");
-    expect(alles).not.toContain("Willkommen bei MOREImmo");
+    expect(alles).not.toContain("Willkommen bei OS Immobilien");
   });
 
   it("personalisiert das Abschlusstempo aus Teil 2 und rechnet mit dem gekennzeichneten Beispielwert", async () => {
@@ -205,17 +205,17 @@ describe("buildStartfahrplanErweitertPdf (erweiterter Startfahrplan)", () => {
     await buildStartfahrplanErweitertPdf();
     let alles = texte.join("\n");
     expect(alles).toContain("Christian Peetz");
-    expect(alles).toContain("c.peetz@more.immo");
+    expect(alles).toContain("os@os-immobilien.com");
 
     texte.length = 0;
     deckblaetter.length = 0;
     await buildStartfahrplanErweitertPdf({
-      berater: { name: "Sarah Kaiser-Thom", email: "s.kaiser-thom@more.immo", telefon: "+49 151 1234567" },
+      berater: { name: "Sarah Kaiser-Thom", email: "s.kaiser-thom@os-immobilien.com", telefon: "+49 151 1234567" },
     });
     alles = texte.join("\n");
     expect(alles).toContain("Sarah Kaiser-Thom");
-    expect(alles).toContain("s.kaiser-thom@more.immo");
-    expect(alles).not.toContain("c.peetz@more.immo");
+    expect(alles).toContain("s.kaiser-thom@os-immobilien.com");
+    expect(alles).not.toContain("os@os-immobilien.com");
   });
 
   it("Overhead-Provision, Altpakete und Tippgeber kommen nicht vor", async () => {

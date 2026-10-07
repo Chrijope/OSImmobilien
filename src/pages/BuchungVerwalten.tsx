@@ -346,9 +346,9 @@ export default function BuchungVerwalten() {
           <div className="flex flex-col gap-6">
             <AnsprechpartnerKarte gastgeber={berater} sprache={sprache} />
             {(berater.telefon || berater.email) && (
-              <div className={`rounded-[14px] border border-[#88CFFF]/15 ${FLAECHE_HINWEIS} p-4`}>
+              <div className={`rounded-[14px] border border-[#30E19E]/15 ${FLAECHE_HINWEIS} p-4`}>
                 <p className="flex items-start gap-2.5 text-[12.5px] leading-relaxed text-white/60">
-                  <Phone className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#88CFFF]" />
+                  <Phone className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#30E19E]" />
                   {t.anrufHinweis}
                 </p>
               </div>
@@ -357,7 +357,7 @@ export default function BuchungVerwalten() {
         </div>
 
         <p className="mt-10 text-center text-[10.5px] text-white/30">
-          MOREImmo · Wendelsteinstraße 19, 83075 Bad Feilnbach
+          OS Immobilien · Am Ostbahnhof 1, 15749 Mittenwalde
         </p>
       </div>
     </Buehne>
@@ -375,7 +375,7 @@ function Zeile({
 }) {
   return (
     <div className="flex items-start gap-3">
-      <span className="mt-0.5 flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-lg bg-[#88CFFF]/[0.13] text-[#88CFFF]">
+      <span className="mt-0.5 flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-lg bg-[#30E19E]/[0.13] text-[#30E19E]">
         {icon}
       </span>
       <span className="min-w-0">

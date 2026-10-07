@@ -1,7 +1,7 @@
 {
-  "name": "MOREImmo CRM",
-  "short_name": "MOREImmo",
-  "description": "MOREImmo CRM - Kontakte, Deals und Kundenprozesse",
+  "name": "OS Immobilien CRM",
+  "short_name": "OS Immobilien",
+  "description": "OS Immobilien CRM - Kontakte, Deals und Kundenprozesse",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0F172A",

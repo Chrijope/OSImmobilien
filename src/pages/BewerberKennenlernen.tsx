@@ -351,7 +351,7 @@ export default function BewerberKennenlernen() {
           </h1>
           <p className="text-[15px] leading-relaxed" style={{ color: "#6E6E73" }}>
             Kein Problem. Schreib uns kurz an{" "}
-            <a href="mailto:office@more.immo" className="underline underline-offset-[3px]" style={{ color: FARBE_BLAU }}>office@more.immo</a>,
+            <a href="mailto:os@os-immobilien.com" className="underline underline-offset-[3px]" style={{ color: FARBE_BLAU }}>os@os-immobilien.com</a>,
             dann bekommst du einen neuen.
           </p>
         </div>
@@ -388,7 +388,7 @@ export default function BewerberKennenlernen() {
               placeholder={AUSSTIEG_TEXTE.platzhalter}
               maxLength={AUSSTIEG_GRUND_MAX}
               rows={4}
-              className="w-full rounded-2xl border-2 border-[#E4E6EB] bg-white px-4 py-3.5 text-base leading-normal transition-all placeholder:text-[#9AA0A8] focus:outline-none focus:border-[#0A6EDB] focus:shadow-[0_0_0_4px_rgba(10,110,219,.12)] resize-y min-h-[120px]"
+              className="w-full rounded-2xl border-2 border-[#E4E6EB] bg-white px-4 py-3.5 text-base leading-normal transition-all placeholder:text-[#9AA0A8] focus:outline-none focus:border-[#187F58] focus:shadow-[0_0_0_4px_rgba(24,127,88,.12)] resize-y min-h-[120px]"
               style={{ color: "#1D1D1F" }}
             />
             <p className="text-right text-[12.5px] mt-1.5" style={{ color: "#8A8F98" }}>
@@ -439,7 +439,7 @@ export default function BewerberKennenlernen() {
           <p className="text-[15px] leading-relaxed" style={{ color: "#6E6E73" }}>
             Du hast das Kennenlernen beendet. Von uns kommt keine weitere Nachricht. Wenn du es dir
             anders überlegst, schreib uns gern an{" "}
-            <a href="mailto:office@more.immo" className="underline underline-offset-[3px]" style={{ color: FARBE_BLAU }}>office@more.immo</a>.
+            <a href="mailto:os@os-immobilien.com" className="underline underline-offset-[3px]" style={{ color: FARBE_BLAU }}>os@os-immobilien.com</a>.
           </p>
         </div>
       </Karte></Seite>
@@ -599,7 +599,7 @@ export default function BewerberKennenlernen() {
       <MotivStil />
       <Karte>
         <div className="flex items-start justify-between gap-3 mb-4">
-          <img src={logo} alt="MOREImmo" className="h-[26px]" />
+          <img src={logo} alt="OS Immobilien" className="h-[26px]" />
           <span className="text-right text-[12px] font-medium leading-tight" style={{ color: "#8A8F98" }}>
             {kapitelZeile(ansicht.kapitel)}
             <span className="block">Ansicht {ansicht.nummer} von {letzte.nummer}</span>
@@ -709,7 +709,7 @@ export default function BewerberKennenlernen() {
         )}
 
         {ansicht.fuss && (
-          <p className="mt-5 rounded-2xl px-4 py-3 text-[14.5px] leading-relaxed" style={{ background: "#EEF5FD", color: "#0A5BB5" }}>
+          <p className="mt-5 rounded-2xl px-4 py-3 text-[14.5px] leading-relaxed" style={{ background: "#EEF5FD", color: "#156949" }}>
             {ansicht.fuss}
           </p>
         )}
@@ -828,7 +828,7 @@ function Seite({ children }: { children: ReactNode }) {
       <div
         aria-hidden
         className="absolute inset-x-0 top-0 h-[300px] sm:h-[460px] pointer-events-none"
-        style={{ background: "radial-gradient(ellipse 55% 70% at 50% -12%, rgba(10,110,219,.16), transparent 66%)" }}
+        style={{ background: "radial-gradient(ellipse 55% 70% at 50% -12%, rgba(24,127,88,.16), transparent 66%)" }}
       />
       <div className="relative px-3.5 pt-4 pb-7 sm:px-6 sm:pt-11 sm:pb-16 flex flex-col items-center">
         {children}
@@ -849,7 +849,7 @@ function Karte({ children }: { children: ReactNode }) {
 }
 
 function Logo() {
-  return <img src={logo} alt="MOREImmo" className="h-[26px] sm:h-[34px] mx-auto mb-5 sm:mb-6" />;
+  return <img src={logo} alt="OS Immobilien" className="h-[26px] sm:h-[34px] mx-auto mb-5 sm:mb-6" />;
 }
 
 /** Ein Segment je Ansicht. Bewusst schlicht, es sind zwanzig davon. */
@@ -1160,7 +1160,7 @@ function Abschlussbildschirm({
           Buchen und Wochen vor dem Termin, und führte in einen leeren Raum.
           Der Weg hinein ist die Mail zur richtigen Zeit.
         */}
-        <div className="mt-4 flex items-start gap-2.5 rounded-2xl px-4 py-3.5 text-[14.5px] leading-relaxed" style={{ background: "#EEF5FD", color: "#0A5BB5" }}>
+        <div className="mt-4 flex items-start gap-2.5 rounded-2xl px-4 py-3.5 text-[14.5px] leading-relaxed" style={{ background: "#EEF5FD", color: "#156949" }}>
           <Mail className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
           <span>
             Den Link zum Videoraum bekommst du per E-Mail, zusammen mit einer Kalenderdatei.
@@ -1256,7 +1256,7 @@ function Einwilligung({
           type="checkbox"
           checked={wert}
           onChange={(e) => onAendere(e.target.checked)}
-          className="mt-0.5 h-[18px] w-[18px] shrink-0 accent-[#0A6EDB]"
+          className="mt-0.5 h-[18px] w-[18px] shrink-0 accent-[#187F58]"
         />
         <span className="text-[13.5px] leading-relaxed" style={{ color: "#5A5F66" }}>{EINWILLIGUNG_TEXT}</span>
       </label>

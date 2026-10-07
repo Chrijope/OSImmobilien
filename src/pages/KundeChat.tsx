@@ -506,7 +506,7 @@ export default function KundeChat() {
 
   /*
    * Seitenregel wie im CRM (`src/lib/chatSeite.ts`), hier aus Sicht des
-   * Kunden: Die Kundenseite ist er selbst, sie steht rechts, MOREImmo links.
+   * Kunden: Die Kundenseite ist er selbst, sie steht rechts, OS Immobilien links.
    */
   const kundenSeite = useMemo(() => new Set(authUser?.id ? [authUser.id] : []), [authUser?.id]);
 

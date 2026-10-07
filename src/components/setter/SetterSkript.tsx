@@ -58,7 +58,7 @@ const SKRIPT_SCHRITTE = [
   {
     id: "begruessung",
     titel: "1. Begrüßung & Rapport",
-    text: `„Hallo [Vorname], hier ist [dein Name] von MOREImmo. Du hast dich für unser Investment-Programm interessiert – das freut mich! Hast du gerade 5 Minuten Zeit?"`,
+    text: `„Hallo [Vorname], hier ist [dein Name] von OS Immobilien. Du hast dich für unser Investment-Programm interessiert – das freut mich! Hast du gerade 5 Minuten Zeit?"`,
     tipp: "Tonlage: Freundlich, professionell, nicht zu formell. Spiegele die Energie des Gegenübers.",
   },
   {
@@ -611,7 +611,7 @@ export function SetterSkript({ kunde, onUpdate }: SetterSkriptProps) {
                   </TooltipTrigger>
                   <TooltipContent side="top" className="max-w-xs text-xs">
                     <div className="flex items-center gap-1.5 font-semibold mb-1"><Mail className="h-3 w-3" /> Automatische E-Mail an Kunde</div>
-                    „Vielleicht zu einem späteren Zeitpunkt" – freundliche Abschiedsmail mit Link zur VP-Landingpage (portal.more.immo/vp/christian-peetz), falls das Thema später wieder relevant wird.
+                    „Vielleicht zu einem späteren Zeitpunkt" – freundliche Abschiedsmail mit Link zur VP-Landingpage (osimmobilien.netlify.app/vp/christian-peetz), falls das Thema später wieder relevant wird.
                   </TooltipContent>
                 </Tooltip>
               </div>

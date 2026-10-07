@@ -9,7 +9,7 @@ import { lotseUnterlagenAuswerten } from "@/lib/lotseStore";
 /**
  * „Lotse: Unterlagen auswerten“ für Admin und Inhaber (05.10.2026).
  *
- * Wertet die Unterlagen aller Objekte und Einheiten für den MORE Lotsen aus,
+ * Wertet die Unterlagen aller Objekte und Einheiten für den OS Lotsen aus,
  * Abschnitt für Abschnitt (ein Objekt oder eine Einheit). Ruft die Function
  * so lange auf, bis alle Abschnitte geprüft sind; je Aufruf höchstens acht
  * Unterlagen. Abbrechen ist jederzeit möglich, ein neuer Start macht vorn
@@ -75,7 +75,7 @@ export function LotseUnterlagenDialog() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Unterlagen für den MORE Lotsen auswerten</DialogTitle>
+          <DialogTitle>Unterlagen für den OS Lotsen auswerten</DialogTitle>
           <DialogDescription>
             Der Lotse liest alle Unterlagen aller Objekte und Einheiten einmal: freigegebene als Zusammenfassung,
             Mietverträge und Grundbuch nur als Faktenauszug ohne Namen. Interne Unterlagen und Vertriebsvereinbarungen

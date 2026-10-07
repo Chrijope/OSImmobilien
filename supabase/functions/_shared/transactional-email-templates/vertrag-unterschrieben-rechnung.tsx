@@ -104,6 +104,6 @@ export const template = {
     leadPaketBetragFormatiert: formatiereLeadPaketBetrag(VORSCHAU_LEAD_PAKET.betrag),
     leadAnzahl: VORSCHAU_LEAD_PAKET.anzahl,
     signedAt: '31.05.2026 14:22',
-    bewerberLink: 'https://portal.more.immo/bewerberprozess?bewerber=example-id',
+    bewerberLink: 'https://osimmobilien.netlify.app/bewerberprozess?bewerber=example-id',
   },
 } satisfies TemplateEntry

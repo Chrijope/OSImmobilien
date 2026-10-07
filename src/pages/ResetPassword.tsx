@@ -401,7 +401,7 @@ const ResetPassword = () => {
     return (
       <div data-lg="seite" className="min-h-screen flex items-center justify-center bg-background p-8">
         <div className="text-center space-y-4">
-          <img src={logoImg} alt="MOREImmo" className="h-10 mx-auto" />
+          <img src={logoImg} alt="OS Immobilien" className="h-10 mx-auto" />
           <h1 className="text-xl font-bold text-foreground">{t("auth.reset.link_pruefen_titel")}</h1>
           <p className="text-muted-foreground">{t("auth.reset.link_pruefen_text")}</p>
         </div>
@@ -448,7 +448,7 @@ const ResetPassword = () => {
     return (
       <div data-lg="seite" className="min-h-screen flex items-center justify-center bg-background p-8">
         <div className="text-center space-y-4 max-w-md">
-          <img src={logoImg} alt="MOREImmo" className="h-10 mx-auto" />
+          <img src={logoImg} alt="OS Immobilien" className="h-10 mx-auto" />
           <h1 className="text-xl font-bold text-foreground">{t("auth.reset.nicht_gueltig_titel")}</h1>
           <p className="text-muted-foreground">
             {linkError || t("auth.reset.ungueltig")}
@@ -488,7 +488,7 @@ const ResetPassword = () => {
     <div data-lg="seite" className="min-h-screen flex items-center justify-center bg-background p-8">
       <div className="w-full max-w-md space-y-8">
         <div className="flex justify-center">
-          <img src={logoImg} alt="MOREImmo" className="h-10" />
+          <img src={logoImg} alt="OS Immobilien" className="h-10" />
         </div>
 
         <div className="text-center">

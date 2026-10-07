@@ -210,7 +210,7 @@ export function KundenFuss({ stand }: { stand: Date }) {
     <footer className="mt-8 border-t border-border/60 py-6 text-xs leading-relaxed text-muted-foreground" data-testid="kunden-fuss">
       <p>{t.fuss.stand(zeit)} {t.fuss.haftung}</p>
       {/* Auf dem Handy sind die beiden Links 40 px hohe Tippflächen statt einer Textzeile. */}
-      <p className="mt-2 flex flex-wrap items-center gap-x-1">MOREImmo · <Link to={`/impressum${lang}`} className="inline-flex min-h-[40px] items-center underline-offset-2 hover:underline sm:min-h-0">{t.fuss.impressum}</Link> · <Link to={`/datenschutz${lang}`} className="inline-flex min-h-[40px] items-center underline-offset-2 hover:underline sm:min-h-0">{t.fuss.datenschutz}</Link> · <CookieEinstellungenLink sprache={sprache} className="inline-flex min-h-[40px] items-center underline-offset-2 hover:underline sm:min-h-0" /></p>
+      <p className="mt-2 flex flex-wrap items-center gap-x-1">OS Immobilien · <Link to={`/impressum${lang}`} className="inline-flex min-h-[40px] items-center underline-offset-2 hover:underline sm:min-h-0">{t.fuss.impressum}</Link> · <Link to={`/datenschutz${lang}`} className="inline-flex min-h-[40px] items-center underline-offset-2 hover:underline sm:min-h-0">{t.fuss.datenschutz}</Link> · <CookieEinstellungenLink sprache={sprache} className="inline-flex min-h-[40px] items-center underline-offset-2 hover:underline sm:min-h-0" /></p>
     </footer>
   );
 }

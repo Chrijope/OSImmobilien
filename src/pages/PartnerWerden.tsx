@@ -512,7 +512,7 @@ function Kopf({ onAufruf }: { onAufruf: (() => void) | null }) {
     <header className="hb-kopf">
       <div className="hb-kopf-marke">
         <a href="/partner-werden" aria-label="Zum Anfang der Seite" style={{ display: "inline-flex", color: "inherit", textDecoration: "none" }}>
-          {thema === "dunkel" ? <Wortmarke hell groesse={19} /> : <img src="/images/moreimmo-logo.png" alt="MOREImmo" />}
+          {thema === "dunkel" ? <Wortmarke hell groesse={19} /> : <img src="/images/moreimmo-logo.png" alt="OS Immobilien" />}
         </a>
       </div>
       {onAufruf && (
@@ -543,10 +543,10 @@ function Fuss({ anker }: { anker: boolean }) {
           <div style={{ marginBottom: 14 }}>
             <Wortmarke hell groesse={20} />
           </div>
-          <div>MOREImmo, Wendelsteinstraße 19, 83075 Bad Feilnbach</div>
+          <div>OS Immobilien Holding GmbH, Am Ostbahnhof 1, 15749 Mittenwalde</div>
           <div style={{ marginTop: 8 }}>
-            <a href="mailto:office@more.immo" className="pw-fuss-mail">
-              office@more.immo
+            <a href="mailto:os@os-immobilien.com" className="pw-fuss-mail">
+              os@os-immobilien.com
             </a>
           </div>
         </div>

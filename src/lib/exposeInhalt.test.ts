@@ -125,7 +125,7 @@ describe("Exposé-Inhalt", () => {
     expect(inhalt.rechtliches.entwurf).toBe(true);
     expect(inhalt.rechtliches.energieausweis.find((k) => k.label === "Effizienzklasse")?.wert).toBe("D");
     expect(inhalt.kontakt.vertrieb?.name).toBe("Max Mustermann");
-    expect(inhalt.kontakt.firma).toContain("MOREImmo");
+    expect(inhalt.kontakt.firma).toContain("OS Immobilien");
     expect(inhalt.standort.kennzahlen).toEqual([]);
     expect(inhalt.wirtschaftlichkeit.objektdaten.kaufpreis).toBe(232000);
   });
@@ -214,13 +214,13 @@ describe("Seit dem 23.09.2026", () => {
     expect(inhalt.mikrolage.analyse).toBeUndefined();
   });
 
-  it("hat im Kontakt nur den Vertrieb, sonst Telefon und E-Mail von MOREImmo", () => {
+  it("hat im Kontakt nur den Vertrieb, sonst Telefon und E-Mail von OS Immobilien", () => {
     const mit = baueExposeInhalt({ objekt, wohnung: w, heute, ersteller: { name: "Max Mustermann", rolle: "Vertriebspartner" } });
     expect(mit.kontakt.vertrieb?.name).toBe("Max Mustermann");
     expect(mit.kontakt).not.toHaveProperty("objektpartner");
     const ohne = baueExposeInhalt({ objekt, wohnung: w, heute });
     expect(ohne.kontakt.vertrieb).toBeUndefined();
-    expect(ohne.kontakt.email).toBe("office@more.immo");
+    expect(ohne.kontakt.email).toBe("os@os-immobilien.com");
     expect(ohne.kontakt.telefon).toBeTruthy();
   });
 

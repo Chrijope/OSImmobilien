@@ -6,7 +6,7 @@ import { MemoryRouter, Routes, Route } from "react-router-dom";
  * Der öffentliche Kundenlink: Der Kasten „Dein Ansprechpartner“ über den
  * Bildern erscheint nur, wenn `get-expose` zu einem gültigen Token eines
  * Kunden-Exposés einen Partner nennt. Ohne Token bleibt er weg, und der
- * Kontakt unten zeigt den Weg zu MOREImmo statt „Nicht hinterlegt“.
+ * Kontakt unten zeigt den Weg zu OS Immobilien statt „Nicht hinterlegt“.
  */
 
 beforeAll(() => {
@@ -102,7 +102,7 @@ describe("Öffentliches Exposé", () => {
     await screen.findByTestId("abschnitt-start");
     expect(screen.queryByTestId("kunden-ansprechpartner")).not.toBeInTheDocument();
     expect(aufrufe[0]).not.toContain("token=");
-    await waitFor(() => expect(screen.getByTestId("kontakt-firma")).toHaveTextContent("office@more.immo"));
+    await waitFor(() => expect(screen.getByTestId("kontakt-firma")).toHaveTextContent("os@os-immobilien.com"));
     expect(screen.getByTestId("abschnitt-kontakt")).not.toHaveTextContent("Nicht hinterlegt");
   });
 

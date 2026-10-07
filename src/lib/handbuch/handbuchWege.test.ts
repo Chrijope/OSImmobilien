@@ -92,20 +92,20 @@ describe("Öffentliche Seiten und Cookie-Banner", () => {
   });
 
   it("Links zeigen auf die Live-Adresse", () => {
-    expect(buildHandbuchUrl("maria")).toBe("https://portal.more.immo/handbuch/maria");
-    expect(buildHandbuchUrl(null)).toBe("https://portal.more.immo/handbuch");
-    expect(handbuchLink("t")).toBe("https://portal.more.immo/handbuch/ergebnis/t");
+    expect(buildHandbuchUrl("maria")).toBe("https://osimmobilien.netlify.app/handbuch/maria");
+    expect(buildHandbuchUrl(null)).toBe("https://osimmobilien.netlify.app/handbuch");
+    expect(handbuchLink("t")).toBe("https://osimmobilien.netlify.app/handbuch/ergebnis/t");
     // Dieselbe Selbstauskunft wie „An Kunde senden“ (send-sa-invitation).
-    expect(saLinkHandbuch("s")).toBe("https://portal.more.immo/sa/s");
+    expect(saLinkHandbuch("s")).toBe("https://osimmobilien.netlify.app/sa/s");
     // Englisch: Die Sprache steckt im Mail-Link.
-    expect(handbuchLink("t", "en")).toBe("https://portal.more.immo/handbuch/ergebnis/t?lang=en");
-    expect(saLinkHandbuch("s", "en")).toBe("https://portal.more.immo/sa/s?lang=en");
-    expect(saLinkHandbuch("s", "de")).toBe("https://portal.more.immo/sa/s");
+    expect(handbuchLink("t", "en")).toBe("https://osimmobilien.netlify.app/handbuch/ergebnis/t?lang=en");
+    expect(saLinkHandbuch("s", "en")).toBe("https://osimmobilien.netlify.app/sa/s?lang=en");
+    expect(saLinkHandbuch("s", "de")).toBe("https://osimmobilien.netlify.app/sa/s");
   });
 
   it("der Kampagnenlink hängt die Kennung sauber an", () => {
-    expect(mitKampagne("https://portal.more.immo/handbuch", "meta", "paid_social", "Handbuch Herbst!")).toBe(
-      "https://portal.more.immo/handbuch?utm_source=meta&utm_medium=paid_social&utm_campaign=handbuch_herbst",
+    expect(mitKampagne("https://osimmobilien.netlify.app/handbuch", "meta", "paid_social", "Handbuch Herbst!")).toBe(
+      "https://osimmobilien.netlify.app/handbuch?utm_source=meta&utm_medium=paid_social&utm_campaign=handbuch_herbst",
     );
   });
 });

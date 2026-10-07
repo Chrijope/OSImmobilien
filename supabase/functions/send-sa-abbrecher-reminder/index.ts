@@ -16,7 +16,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-const SA_FILL_BASE_URL = "https://portal.more.immo/sa";
+const SA_FILL_BASE_URL = "https://osimmobilien.netlify.app/sa";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -76,7 +76,7 @@ Deno.serve(async (req) => {
           .maybeSingle();
 
         // Zustaendigen Partner als Unterschrift mitgeben, sonst zeigt die
-        // Erinnerung den Platzhalter "MOREImmo Team".
+        // Erinnerung den Platzhalter "OS Immobilien Team".
         const berater = await zustaendigerAnsprechpartner(supabase, t.kontakt_id);
 
         await supabase.functions.invoke("send-transactional-email", {

@@ -23,6 +23,6 @@ describe("LinkNichtMehrGueltig", () => {
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Diese Objektvorstellung ist nicht mehr verfügbar");
     expect(seite).toHaveTextContent("Dein Ansprechpartner schickt dir gern die aktuelle Objektübersicht.");
     expect(seite).not.toHaveTextContent("abgelaufen");
-    expect(screen.getByTestId("abgelaufen-email")).toHaveAttribute("href", "mailto:office@more.immo");
+    expect(screen.getByTestId("abgelaufen-email")).toHaveAttribute("href", "mailto:os@os-immobilien.com");
   });
 });

@@ -411,7 +411,7 @@ export function entferneMetaCookies(): void {
   const ablauf = "expires=Thu, 01 Jan 1970 00:00:00 GMT";
   const host = typeof window !== "undefined" ? window.location.hostname : "";
   const teile = host.split(".");
-  // Meta setzt die Cookies auf die Hauptdomain (".more.immo"), manchmal auf
+  // Meta setzt die Cookies auf die Hauptdomain (".osimmobilien.netlify.app"), manchmal auf
   // den Host selbst. Beide Varianten und ohne Domain werden geloescht.
   const domains = ["", host, teile.length > 2 ? `.${teile.slice(-2).join(".")}` : `.${host}`];
   for (const name of ["_fbp", "_fbc"]) {

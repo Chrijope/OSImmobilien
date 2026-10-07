@@ -47,7 +47,7 @@ const Mail = ({
       titel={betreff || 'Ausstehende Mietzahlung'}
       vorschau={betreff || 'Ausstehende Mietzahlung'}
       anrede={mieterName ? `Sehr geehrte/r ${mieterName},` : 'Sehr geehrte Damen und Herren,'}
-      person={{ name: absenderFirma || 'MOREImmo', rolle: 'Hausverwaltung' }}
+      person={{ name: absenderFirma || 'OS Immobilien', rolle: 'Hausverwaltung' }}
     >
       <Absatz letzter>{textIntro}</Absatz>
 
@@ -79,7 +79,7 @@ export const template = {
     gezahltFormatted: '0,00 €',
     ausstehendFormatted: '1.250,00 €',
     fristDatum: '07.07.2026',
-    absenderFirma: 'MOREImmo',
+    absenderFirma: 'OS Immobilien',
     titel: 'Zahlungserinnerung',
   },
 } satisfies TemplateEntry

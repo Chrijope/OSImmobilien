@@ -121,9 +121,9 @@ describe("Die Einladung zum persönlichen Gespräch", () => {
  */
 describe("Der Link der Einladung", () => {
   it("führt auf unsere eigene Terminseite, mit dem Token des Bewerbers", () => {
-    expect(KOOPERATION_BASIS_URL).toBe("https://portal.more.immo/kennenlerngespraech");
+    expect(KOOPERATION_BASIS_URL).toBe("https://osimmobilien.netlify.app/kennenlerngespraech");
     expect(kooperationsBuchungsLink("abc123")).toBe(
-      "https://portal.more.immo/kennenlerngespraech/abc123",
+      "https://osimmobilien.netlify.app/kennenlerngespraech/abc123",
     );
   });
 
@@ -139,8 +139,8 @@ describe("Der Link der Einladung", () => {
   });
 
   it("verträgt eine Basisadresse mit Schrägstrich am Ende", () => {
-    expect(kooperationsBuchungsLink("t1", "https://portal.more.immo/kennenlerngespraech/")).toBe(
-      "https://portal.more.immo/kennenlerngespraech/t1",
+    expect(kooperationsBuchungsLink("t1", "https://osimmobilien.netlify.app/kennenlerngespraech/")).toBe(
+      "https://osimmobilien.netlify.app/kennenlerngespraech/t1",
     );
   });
 

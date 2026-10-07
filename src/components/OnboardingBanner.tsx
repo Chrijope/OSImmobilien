@@ -223,7 +223,7 @@ export function OnboardingBanner({ onNavigateTab, liveSettings, liveAvatarUrl, l
   return (
     <Card className="p-6 mb-6 border-primary/20 bg-card">
       <div className="mb-5">
-        <h3 className="text-base font-semibold text-foreground">Willkommen bei MOREImmo!</h3>
+        <h3 className="text-base font-semibold text-foreground">Willkommen bei OS Immobilien!</h3>
         <p className="text-sm text-muted-foreground">
           In {steps.length} Schritten zum freigeschalteten Backoffice – schließe einen Schritt ab, um zum nächsten zu gelangen.
         </p>

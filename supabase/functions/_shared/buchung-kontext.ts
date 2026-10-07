@@ -261,7 +261,7 @@ export async function ladeBuchungKontext(
       `&end=${encodeURIComponent(ende.toISOString())}` +
       `&desc=${encodeURIComponent(beschreibung)}` +
       `&loc=${encodeURIComponent(zugangUrl || 'Online')}` +
-      `&org=${encodeURIComponent(String(profil?.name || 'MOREImmo'))}` +
+      `&org=${encodeURIComponent(String(profil?.name || 'OS Immobilien'))}` +
       `&orgEmail=${encodeURIComponent(String(profil?.email || ''))}` +
       `&att=${encodeURIComponent(String(buchung.email || ''))}` +
       `&uid=${encodeURIComponent(`buchung-${buchung.id}`)}` +

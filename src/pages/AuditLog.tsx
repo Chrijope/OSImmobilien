@@ -69,7 +69,7 @@ export default function AuditLog() {
     const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
     const w = doc.internal.pageSize.getWidth();
     doc.setFontSize(14);
-    doc.text("Audit-Log Export – MOREImmo CRM", 40, 40);
+    doc.text("Audit-Log Export – OS Immobilien CRM", 40, 40);
     doc.setFontSize(9);
     doc.text(`Erstellt: ${new Date().toLocaleString("de-DE")} • Zeitraum: letzte ${range} Tage • ${filtered.length} Einträge`, 40, 58);
     let y = 84;

@@ -68,12 +68,12 @@ export const template = {
   displayName: 'Vertrag, erste Erinnerung an Tag 5',
   previewData: {
     name: 'Max Mustermann',
-    signatureUrl: 'https://portal.more.immo/signatur?token=example&type=vertrag',
+    signatureUrl: 'https://osimmobilien.netlify.app/signatur?token=example&type=vertrag',
     tageOffen: 5,
     hrKontakt: {
       name: 'Sarah Kaiser-Thom',
       rolle: berufsbezeichnung('hr'),
-      email: 's.kaiser-thom@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

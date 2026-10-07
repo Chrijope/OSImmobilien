@@ -52,7 +52,7 @@ describe("Handbuch-Seite im CRM", () => {
         <HandbuchSeiteVerwaltung />
       </MemoryRouter>,
     );
-    expect(await screen.findByText(/portal\.more\.immo\/handbuch\/test-partner/)).toBeInTheDocument();
+    expect(await screen.findByText(/osimmobilien\.netlify\.app\/handbuch\/test-partner/)).toBeInTheDocument();
     expect(await screen.findByText("So sehen Interessenten dich als Ansprechpartner")).toBeInTheDocument();
     expect(await screen.findByText("Test Partner")).toBeInTheDocument();
     expect(screen.getByText(/fehlen noch dein Profilbild und deine Telefonnummer/)).toBeInTheDocument();

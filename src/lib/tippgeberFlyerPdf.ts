@@ -100,7 +100,7 @@ export async function generateTippgeberFlyerPdf(ctx: PitchContext): Promise<jsPD
     const x = MARGIN + i * (cardW + gap);
     setFill(doc, [247, 250, 253]);
     doc.roundedRect(x, y, cardW, cardH, 2.5, 2.5, "F");
-    setDraw(doc, [220, 232, 244]);
+    setDraw(doc, [211, 236, 227]);
     doc.setLineWidth(0.3);
     doc.roundedRect(x, y, cardW, cardH, 2.5, 2.5, "S");
     doc.setFontSize(13);
@@ -134,7 +134,7 @@ export async function generateTippgeberFlyerPdf(ctx: PitchContext): Promise<jsPD
   const boxH = qrSize + 30;
   setFill(doc, [243, 248, 252]);
   doc.roundedRect(MARGIN, y, CONTENT_W, boxH, 3, 3, "F");
-  setDraw(doc, [217, 232, 243]);
+  setDraw(doc, [211, 235, 226]);
   doc.setLineWidth(0.4);
   doc.roundedRect(MARGIN, y, CONTENT_W, boxH, 3, 3, "S");
   setFill(doc, BRAND.accent);
@@ -183,7 +183,7 @@ export async function generateTippgeberFlyerPdf(ctx: PitchContext): Promise<jsPD
   doc.text("Oder im Browser öffnen:", MARGIN, y);
   doc.setFontSize(10);
   doc.setFont(PDF_FONT, "bold");
-  setColor(doc, [15, 90, 138]);
+  setColor(doc, [24, 97, 69]);
   const linkLines = doc.splitTextToSize(ctx.landingpageUrl, CONTENT_W);
   doc.text(linkLines, MARGIN, y + 6);
 

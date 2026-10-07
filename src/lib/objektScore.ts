@@ -11,7 +11,7 @@ const rahmenMitte = (r: Rahmen) => (r.von + r.bis) / 2;
  * Christian hat die Strategie am 04.10.2026 freigegeben. Der Score ist eine
  * INTERNE SORTIERHILFE für Berater und Verwaltung. Er wird nur zur Anzeige
  * gerechnet, nirgends gespeichert, steht in keiner Adresse und geht weder an
- * den MORE Lotsen noch an eine KI. Er erscheint nie dort, wo ein Kunde
+ * den OS Lotsen noch an eine KI. Er erscheint nie dort, wo ein Kunde
  * hinsieht: Exposé, Kundenlink, Portal, PDF, Mails, Kundenansicht.
  *
  * Diese Datei ist die reine Rechenregel: keine Datenbank, kein

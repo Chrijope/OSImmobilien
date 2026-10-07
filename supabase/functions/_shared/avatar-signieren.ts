@@ -49,7 +49,7 @@ export const AVATAR_BUCKET = 'avatars'
  * Anmeldung nicht erreichbar, ein Bild von dort lädt beim Kunden nie.
  * Gegenstück im Browser ist `src/lib/oeffentlicheBasis.ts`.
  */
-export const MAIL_BASIS = 'https://portal.more.immo'
+export const MAIL_BASIS = 'https://osimmobilien.netlify.app'
 
 /**
  * Das Logo jeder Mail. PNG, weil viele Mailprogramme kein SVG zeigen; die

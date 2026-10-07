@@ -1,5 +1,5 @@
 /**
- * Gespeicherte Unterlagenauszüge des MORE Lotsen (`lotse_unterlagen_auszug`),
+ * Gespeicherte Unterlagenauszüge des OS Lotsen (`lotse_unterlagen_auszug`),
  * gemeinsam für `objekt-lotse` und `investmentrechner-unterlagen`.
  *
  * Seit dem 28.09.2026, zweite Runde:

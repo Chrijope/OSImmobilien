@@ -38,8 +38,8 @@ describe("kopiereText", () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     setzeZwischenablage(writeText);
 
-    await expect(kopiereText("https://portal.more.immo/raum/abc")).resolves.toBe("kopiert");
-    expect(writeText).toHaveBeenCalledWith("https://portal.more.immo/raum/abc");
+    await expect(kopiereText("https://osimmobilien.netlify.app/raum/abc")).resolves.toBe("kopiert");
+    expect(writeText).toHaveBeenCalledWith("https://osimmobilien.netlify.app/raum/abc");
   });
 
   it("gibt auf, wenn die Zwischenablage nie antwortet, statt stehenzubleiben", async () => {
@@ -49,7 +49,7 @@ describe("kopiereText", () => {
     setzeZwischenablage(() => new Promise(() => { /* antwortet nie */ }));
     setzeAltenWeg(false);
 
-    const ergebnis = await kopiereText("https://portal.more.immo/raum/abc", 20);
+    const ergebnis = await kopiereText("https://osimmobilien.netlify.app/raum/abc", 20);
     expect(ergebnis).toBe("gescheitert");
   });
 

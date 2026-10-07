@@ -50,7 +50,7 @@ const NAV = [
 const AGENDA: { id: string; label: string }[] = [
   { id: "warum",       label: "Warum Immobilien als Vermögenshebel" },
   { id: "problem",     label: "Das Problem klassischer Kapitalanleger" },
-  { id: "ansatz",      label: "Der MOREImmo Ansatz und die Investmentmodelle" },
+  { id: "ansatz",      label: "Der OS Immobilien Ansatz und die Investmentmodelle" },
   { id: "erwartung",   label: "Cashflow oder Qualität — Erwartungsmanagement" },
   { id: "vergleich",   label: "Eigenheim vs. Kapitalanlage" },
   { id: "rechnung",    label: "Steuerliche Hebel und Beispielrechnung" },
@@ -382,7 +382,7 @@ export default function Beratungspraesentation() {
       <header data-lg="kopfscheibe" className="sticky top-0 z-50 backdrop-blur-xl bg-background/80 border-b border-border/60">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link to="/beratungspraesentation" className="flex items-center gap-3">
-            <img src={logo} alt="MOREImmo" className="h-8 w-auto" />
+            <img src={logo} alt="OS Immobilien" className="h-8 w-auto" />
           </Link>
           <nav className="hidden md:flex items-center gap-7">
             {NAV.map((n) => (
@@ -399,8 +399,8 @@ export default function Beratungspraesentation() {
             <PraesentationPdfButton
               containerRef={pageRef}
               title="Beratungspräsentation · Neubau"
-              subtitle={kundenName ? `Für ${kundenName}` : "MOREImmo · Investment für Kapitalanleger"}
-              filename="MOREImmo_Beratungspraesentation_Neubau.pdf"
+              subtitle={kundenName ? `Für ${kundenName}` : "OS Immobilien · Investment für Kapitalanleger"}
+              filename="OS-Immobilien_Beratungspraesentation_Neubau.pdf"
               preset="neubau"
             />
             <Button onClick={() => scrollTo("kontakt")} className="rounded-full px-5">
@@ -459,14 +459,14 @@ export default function Beratungspraesentation() {
               <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-muted flex items-center justify-center p-8 md:p-12">
                 <img
                   src={logo}
-                  alt="MOREImmo"
+                  alt="OS Immobilien"
                   className="max-h-full max-w-full object-contain"
                 />
               </div>
               <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-muted">
                 <img
                   src={beratungSzene}
-                  alt="Persönliche MOREImmo Beratung"
+                  alt="Persönliche OS Immobilien Beratung"
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -474,7 +474,7 @@ export default function Beratungspraesentation() {
 
             <div className="text-center">
               <div className="text-xs tracking-[0.3em] uppercase text-muted-foreground font-semibold mb-5">
-                MOREImmo · Premium Real Estate Investment
+                OS Immobilien · Premium Real Estate Investment
               </div>
               {kundenName && (
                 <div className="mb-6 text-2xl md:text-3xl font-medium text-foreground">
@@ -484,7 +484,7 @@ export default function Beratungspraesentation() {
               <h1 className="text-4xl md:text-6xl font-light leading-[1.1] tracking-tight">
                 Strategischer Immobilien-Portfolioaufbau
                 <br />
-                <span className="italic font-bold text-primary">mit MOREImmo.</span>
+                <span className="italic font-bold text-primary">mit OS Immobilien.</span>
               </h1>
               <p className="mt-7 text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                 Steueroptimiert. Renditestark. Professionell begleitet.
@@ -1105,7 +1105,7 @@ export default function Beratungspraesentation() {
         id="vertrauen"
         eyebrow="08 · Vertrauen"
         lead="Warum Investoren mit"
-        accent="MOREImmo arbeiten."
+        accent="OS Immobilien arbeiten."
         className="bg-muted/30"
       >
         <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-10">
@@ -1138,7 +1138,7 @@ export default function Beratungspraesentation() {
         </div>
         <div className="rounded-2xl border border-border bg-card p-8 w-full">
           <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-            <strong className="text-foreground">Aus Immosparplan wurde MOREImmo.</strong>{" "}
+            <strong className="text-foreground">Aus Immosparplan wurde OS Immobilien.</strong>{" "}
             Spezialisierung auf renditestarke Konzepte und Begleitung von der Analyse
             bis zur Verwaltung — mit einem festen Ansprechpartner pro Investor.
           </p>
@@ -1151,19 +1151,19 @@ export default function Beratungspraesentation() {
         eyebrow="09 · Referenzen"
         lead="Was unsere"
         accent="Investoren sagen."
-        subtitle="Echte Strategien. Echte Standorte. Messbare Ergebnisse — direkt von Investoren, die mit MOREImmo Vermögen aufbauen."
+        subtitle="Echte Strategien. Echte Standorte. Messbare Ergebnisse — direkt von Investoren, die mit OS Immobilien Vermögen aufbauen."
       >
         {(() => {
-          const MI = "https://more.immo/assets";
+          const MI = "https://osimmobilien.netlify.app/assets";
           const testimonials = [
             { name: "Julian B.", role: "München", text: "Ich arbeite selbst in der Finanzbranche und habe selten einen so sauberen, strukturierten Prozess gesehen. Die Strategie war auf meine Situation zugeschnitten — keine Pauschalempfehlung. Auch steuerlich optimal geplant.", stars: 5, image: `${MI}/person-julian-CWeaPJ4D.webp` },
             { name: "Sandra W.", role: "Nürnberg", text: "Ich hatte schon mit anderen Anbietern gesprochen — vieles wirkte vage. Hier war es ganz anders: kein Verkaufsdruck, sondern echtes Interesse an meiner Situation. Die perfekte Mischung aus persönlicher Begleitung und digitaler Effizienz.", stars: 5, image: `${MI}/person-sandra-D5AeWa2J.webp` },
-            { name: "Thomas F.", role: "Augsburg", text: "Was MOREImmo aufgebaut hat, ist nicht nur ein System, sondern ein echtes Vertrauensgerüst. Ich wusste an jedem Punkt, was als Nächstes passiert. Ich war nicht nur Kunde — ich war Teil einer durchdachten Strategie.", stars: 5, image: `${MI}/person-thomas-DdmKLRIx.webp` },
-            { name: "Stefan L.", role: "Regensburg", text: "Meine erste Kapitalanlage-Wohnung über MOREImmo — und ich hätte mir keinen besseren Start wünschen können. Ehrlich, transparent und ohne typisches Maklergerede.", stars: 5, image: `${MI}/person-stefan-BSeKq4tz.webp` },
-            { name: "Miriam K.", role: "Würzburg", text: "Ich habe lange gezögert, in Immobilien zu investieren — zu komplex, dachte ich. MOREImmo hat mir das Thema so klar erklärt, dass ich endlich Sicherheit hatte. Klare Empfehlung!", stars: 5, image: `${MI}/person-miriam-abCR9oNV.webp` },
-            { name: "Markus H.", role: "Ingolstadt", text: "Als Unternehmer war für mich klar, dass Immobilien ins Portfolio gehören — alleine stemmen? Keine Chance. MOREImmo hat den gesamten Prozess für mich übernommen, von der Objektauswahl bis zum Notar.", stars: 5, image: `${MI}/person-markus-Dx8ljg0O.webp` },
+            { name: "Thomas F.", role: "Augsburg", text: "Was OS Immobilien aufgebaut hat, ist nicht nur ein System, sondern ein echtes Vertrauensgerüst. Ich wusste an jedem Punkt, was als Nächstes passiert. Ich war nicht nur Kunde — ich war Teil einer durchdachten Strategie.", stars: 5, image: `${MI}/person-thomas-DdmKLRIx.webp` },
+            { name: "Stefan L.", role: "Regensburg", text: "Meine erste Kapitalanlage-Wohnung über OS Immobilien — und ich hätte mir keinen besseren Start wünschen können. Ehrlich, transparent und ohne typisches Maklergerede.", stars: 5, image: `${MI}/person-stefan-BSeKq4tz.webp` },
+            { name: "Miriam K.", role: "Würzburg", text: "Ich habe lange gezögert, in Immobilien zu investieren — zu komplex, dachte ich. OS Immobilien hat mir das Thema so klar erklärt, dass ich endlich Sicherheit hatte. Klare Empfehlung!", stars: 5, image: `${MI}/person-miriam-abCR9oNV.webp` },
+            { name: "Markus H.", role: "Ingolstadt", text: "Als Unternehmer war für mich klar, dass Immobilien ins Portfolio gehören — alleine stemmen? Keine Chance. OS Immobilien hat den gesamten Prozess für mich übernommen, von der Objektauswahl bis zum Notar.", stars: 5, image: `${MI}/person-markus-Dx8ljg0O.webp` },
             { name: "Anna T.", role: "Erlangen", text: "Eine Freundin hat es empfohlen und ich bin froh, dass ich den Schritt gegangen bin. In weniger als sechs Wochen war ich Eigentümerin. Das Team war immer erreichbar.", stars: 5, image: `${MI}/person-anna-D47p2u_g.webp` },
-            { name: "Daniel R.", role: "Bamberg", text: "Ich habe schon mehrere Investments getätigt, aber die Qualität der Betreuung bei MOREImmo ist außergewöhnlich. Alles durchdacht, jede Frage beantwortet, kein Detail vergessen.", stars: 5, image: `${MI}/person-daniel-KOfH_w8O.webp` },
+            { name: "Daniel R.", role: "Bamberg", text: "Ich habe schon mehrere Investments getätigt, aber die Qualität der Betreuung bei OS Immobilien ist außergewöhnlich. Alles durchdacht, jede Frage beantwortet, kein Detail vergessen.", stars: 5, image: `${MI}/person-daniel-KOfH_w8O.webp` },
             { name: "Claudia B.", role: "Fürth", text: "Ich habe den Schritt erst Ende 40 gewagt — und bereue nur, nicht früher angefangen zu haben. Die Steueroptimierung war ein Game Changer. Es läuft einfach.", stars: 5, image: `${MI}/person-claudia-D_zu2clz.webp` },
           ];
           const marquee = [...testimonials, ...testimonials];
@@ -1332,17 +1332,17 @@ export default function Beratungspraesentation() {
               </p>
               <div className="flex flex-wrap justify-center gap-3 animate-scale-in">
                 <a
-                  href="mailto:info@more.immo?subject=Strategiegespräch%20MOREImmo"
+                  href="mailto:os@os-immobilien.com?subject=Strategiegespräch%20MOREImmo"
                   className="inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-7 h-12 font-semibold hover:opacity-90 hover-scale transition shadow-lg shadow-primary/30"
                 >
                   Strategiegespräch vereinbaren
                   <ArrowRight className="h-4 w-4" />
                 </a>
                 <a
-                  href="mailto:info@more.immo"
+                  href="mailto:os@os-immobilien.com"
                   className="inline-flex items-center gap-2 rounded-full border border-background/30 text-background px-7 h-12 hover:bg-background/10 hover-scale transition"
                 >
-                  info@more.immo
+                  os@os-immobilien.com
                 </a>
               </div>
             </>
@@ -1357,9 +1357,9 @@ export default function Beratungspraesentation() {
       <footer className="bg-background border-t border-border py-10 px-6">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <img src={logo} alt="MOREImmo" className="h-7 w-auto" />
+            <img src={logo} alt="OS Immobilien" className="h-7 w-auto" />
             <span className="text-xs text-muted-foreground">
-              Strategischer Vermögensaufbau mit Immobilien · more.immo
+              Strategischer Vermögensaufbau mit Immobilien · osimmobilien.netlify.app
             </span>
           </div>
           <div className="text-xs text-muted-foreground flex gap-5">
@@ -1374,7 +1374,7 @@ export default function Beratungspraesentation() {
           tatsächlichen Entwicklung abweichen. Steuerliche Effekte hängen von der
           individuellen Situation des Investors ab und sind durch einen Steuerberater
           zu prüfen. Wertentwicklungen der Vergangenheit sind kein Indikator für
-          zukünftige Ergebnisse. Stand: 2026 · MOREImmo · info@more.immo
+          zukünftige Ergebnisse. Stand: 2026 · OS Immobilien · os@os-immobilien.com
         </p>
       </footer>
     </div>

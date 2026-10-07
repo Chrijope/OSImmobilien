@@ -98,7 +98,7 @@ import { ObjektHinzufuegen, Objektleiste, Vergleichsansicht } from "@/components
 import "@/styles/investmentrechner.css";
 
 /*
- * Investmentrechner: Kopie der Web-App „MORE Immo Investmentrechner" im CRM.
+ * Investmentrechner: Kopie der Web-App „OS Immobilien Investmentrechner" im CRM.
  * Aufbau, Felder, Texte und Berechnungen entsprechen dem Original, nur
  * Farben, Schrift und Logo folgen dem CI des CRM. Die Topbar des Originals
  * ist hier der PageHeader mit denselben Aktionen. Alles ist lokaler
@@ -140,7 +140,7 @@ interface Objektzustand {
   /**
    * Ein über „Objekt hinzufügen“ angelegtes Vergleichsobjekt, nicht die
    * Einheit, mit der der Rechner gestartet ist. Nur deren Berechnung geht an
-   * den MORE Lotsen (`onErgebnis`, Befund LOTSE-R3-002).
+   * den OS Lotsen (`onErgebnis`, Befund LOTSE-R3-002).
    */
   vergleich?: boolean;
 }
@@ -306,7 +306,7 @@ export interface InvestmentrechnerInhaltProps {
   start?: Rechnerstart;
   /**
    * Meldet Eingabe und Ergebnis des eigenen Objekts (nicht eines
-   * Vergleichsobjekts) nach jeder Änderung nach oben. Der MORE Lotse auf der
+   * Vergleichsobjekts) nach jeder Änderung nach oben. Der OS Lotse auf der
    * Einheitenseite zitiert damit dieselben Zahlen (seit dem 28.09.2026).
    * `kundenbezogen`: ein Kunde ist gewählt oder Zahlen aus seiner
    * Selbstauskunft sind übernommen. Dann nimmt der Lotse diese Rechnung nicht.

@@ -44,13 +44,13 @@ export const template = {
   displayName: 'Selbstauskunft-Abbrecher',
   previewData: {
     kundeName: 'Herr Mustermann',
-    fillUrl: 'https://portal.more.immo/sa/example-token',
+    fillUrl: 'https://osimmobilien.netlify.app/sa/example-token',
     gueltigBis: '5. August 2026',
     berater: {
       name: 'Christian Peetz',
-      rolle: 'Ihr Ansprechpartner bei MOREImmo',
+      rolle: 'Ihr Ansprechpartner bei OS Immobilien',
       telefon: '08061 000000',
-      email: 'christian@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

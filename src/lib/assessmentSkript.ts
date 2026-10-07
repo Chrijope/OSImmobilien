@@ -369,7 +369,7 @@ export const ASSESSMENT_STATIONEN: AssessmentStation[] = [
     titel: "Einstieg und Rahmen",
     kurz: "Einstieg und Rahmen",
     sprechtext:
-      "Hallo {vorname}, hier ist {beraterName} von MOREImmo, schön dass es klappt. Passt es gerade für 15 bis 30 Minuten? ... Sehr gut. Dieses Erstgespräch dient dazu, dass wir uns beide kennenlernen: Du weißt aktuell ja noch nicht viel über uns, deshalb wirst du im Laufe des Gesprächs erfahren, wer wir sind, was wir machen und was wir dir in einer vertrieblichen Zusammenarbeit bieten. Genauso wichtig ist für uns aber auch, wer du bist, woher du kommst und was du bisher gemacht hast. Ich sage dir ganz offen: Wir führen aktuell viele dieser Gespräche und arbeiten am Ende nur mit wenigen zusammen. Deshalb schauen wir heute in Ruhe, ob es auf beiden Seiten passt, und am Ende sage ich dir ehrlich, wie es weitergeht. Einverstanden?",
+      "Hallo {vorname}, hier ist {beraterName} von OS Immobilien, schön dass es klappt. Passt es gerade für 15 bis 30 Minuten? ... Sehr gut. Dieses Erstgespräch dient dazu, dass wir uns beide kennenlernen: Du weißt aktuell ja noch nicht viel über uns, deshalb wirst du im Laufe des Gesprächs erfahren, wer wir sind, was wir machen und was wir dir in einer vertrieblichen Zusammenarbeit bieten. Genauso wichtig ist für uns aber auch, wer du bist, woher du kommst und was du bisher gemacht hast. Ich sage dir ganz offen: Wir führen aktuell viele dieser Gespräche und arbeiten am Ende nur mit wenigen zusammen. Deshalb schauen wir heute in Ruhe, ob es auf beiden Seiten passt, und am Ende sage ich dir ehrlich, wie es weitergeht. Einverstanden?",
     felder: [
       { key: "ersteindruck", label: "Notiz Ersteindruck", typ: "notiz", placeholder: "Stimme, Energie, Gesprächsbereitschaft, Umfeld ..." },
     ],
@@ -377,14 +377,14 @@ export const ASSESSMENT_STATIONEN: AssessmentStation[] = [
     // Erstgespräch.
     folie: {
       id: "einstieg",
-      kopfzeile: "Dein Gespräch mit MOREImmo",
-      kicker: "Dein Gespräch mit MOREImmo",
+      kopfzeile: "Dein Gespräch mit OS Immobilien",
+      kicker: "Dein Gespräch mit OS Immobilien",
       titel: "Schön, dass es klappt.",
       glanz: "klappt",
       anrede: true,
       deckblatt: true,
       untertitel:
-        "Zwei Teile, ein Gespräch. Erst lernen wir dich kennen: wo du stehst und wohin du willst. Dann zeigst du uns, ob es passt, und wir zeigen dir, wie eine Zusammenarbeit mit MOREImmo konkret aussieht.",
+        "Zwei Teile, ein Gespräch. Erst lernen wir dich kennen: wo du stehst und wohin du willst. Dann zeigst du uns, ob es passt, und wir zeigen dir, wie eine Zusammenarbeit mit OS Immobilien konkret aussieht.",
       karten: [
         { ueber: "Teil 1 · Über dich", text: "Deine Ausgangslage. Dein Profil. Deine Ziele. Deine Motivation. Deine Fragen.", aktiv: true },
         { ueber: "Teil 2 · Über uns", text: "System. Produkte. Ein echter Deal. Deine Zahlen. Konditionen. Dein Start.", ueberGedimmt: true },
@@ -404,7 +404,7 @@ export const ASSESSMENT_STATIONEN: AssessmentStation[] = [
         // Das Feld meint den Einstiegswunsch aus der Bewerbung, nicht die
         // aktuelle Taetigkeit. Der Sprechtext stellt die Frage ausdruecklich,
         // damit im Gespraech nicht die Ausgangslage eingetragen wird.
-        key: "beschaeftigungsart", label: "Gewünschte Zusammenarbeit mit MOREImmo", typ: "auswahl",
+        key: "beschaeftigungsart", label: "Gewünschte Zusammenarbeit mit OS Immobilien", typ: "auswahl",
         frage: "Und wie stellst du dir die mögliche Zusammenarbeit mit uns vor: eher nebenberuflich oder hauptberuflich?",
         optionen: BESCHAEFTIGUNGSARTEN.map((a) => ({ value: a.id, label: a.label })),
       },
@@ -465,7 +465,7 @@ export const ASSESSMENT_STATIONEN: AssessmentStation[] = [
       schmal: true,
       stichworte: ["Umsatz", "Karriere", "Lebensstil"],
       gross: "Beruflich. Finanziell. *Konkret.*",
-      satz: "Je klarer dein Ziel, desto ehrlicher können wir dir sagen, ob der Weg über MOREImmo dorthin führt.",
+      satz: "Je klarer dein Ziel, desto ehrlicher können wir dir sagen, ob der Weg über OS Immobilien dorthin führt.",
     },
   },
   {
@@ -474,7 +474,7 @@ export const ASSESSMENT_STATIONEN: AssessmentStation[] = [
     titel: "Motivation",
     kurz: "Motivation",
     sprechtext:
-      "Was hat dich konkret an MOREImmo gereizt? Warum hast du dich gerade bei uns gemeldet und nicht woanders? Und was erhoffst du dir von einer Zusammenarbeit mit uns?",
+      "Was hat dich konkret an OS Immobilien gereizt? Warum hast du dich gerade bei uns gemeldet und nicht woanders? Und was erhoffst du dir von einer Zusammenarbeit mit uns?",
     felder: [
       { key: "antrieb", label: "Motivation", typ: "notiz", placeholder: "Was treibt ihn oder sie wirklich an?" },
       {
@@ -491,10 +491,10 @@ export const ASSESSMENT_STATIONEN: AssessmentStation[] = [
       id: "motivation",
       kopfzeile: "Motivation",
       kicker: "Motivation",
-      titel: "Warum MOREImmo, warum jetzt?",
+      titel: "Warum OS Immobilien, warum jetzt?",
       glanz: "warum jetzt",
       karten: [
-        { ueber: "Der Reiz", titel: "Was hat dich an MOREImmo gereizt?" },
+        { ueber: "Der Reiz", titel: "Was hat dich an OS Immobilien gereizt?" },
         { ueber: "Die Wahl", titel: "Warum bei uns und nicht woanders?" },
         { ueber: "Die Erwartung", titel: "Was erhoffst du dir von der Zusammenarbeit?" },
       ],
@@ -509,7 +509,7 @@ export const ASSESSMENT_STATIONEN: AssessmentStation[] = [
     titel: "Wer wir sind und wie eine Zusammenarbeit aussieht",
     kurz: "Wer wir sind und wie die Zusammenarbeit aussieht",
     sprechtexte: [
-      "Bevor wir konkret werden, hole ich dich kurz ab: wer wir sind, was wir machen und wie eine Zusammenarbeit mit uns aussehen kann. MOREImmo ist ein Kapitalanlage-Vertrieb. Wir sprechen die besser verdienenden Menschen in Deutschland an, also Unternehmer, Ärzte, High Experts, und zeigen ihnen über ein Immobilien-Investment die Möglichkeit, ihre Steuer zu optimieren und Vermögen aufzubauen.",
+      "Bevor wir konkret werden, hole ich dich kurz ab: wer wir sind, was wir machen und wie eine Zusammenarbeit mit uns aussehen kann. OS Immobilien ist ein Kapitalanlage-Vertrieb. Wir sprechen die besser verdienenden Menschen in Deutschland an, also Unternehmer, Ärzte, High Experts, und zeigen ihnen über ein Immobilien-Investment die Möglichkeit, ihre Steuer zu optimieren und Vermögen aufzubauen.",
       "Unsere Zielgruppe verdient typischerweise 80.000, 90.000, 100.000 Euro und mehr und bringt eine sehr gute Bonität mit. Bei den Objekten sind wir stark auf Bayern fokussiert, München und Umland, Augsburg und Nürnberg, haben aber auch ausgewählte Objekte deutschlandweit. Wir decken dabei drei Assetklassen ab: sanierten Bestand, meist mit erhöhtem Restnutzungsdauer-Gutachten und Erhaltungsaufwand, WG- und Co-Living-Konzepte, und Neubau im KfW-40-QNG-Standard mit KfW-Kredit, bester Energieeffizienz und Nachhaltigkeit. Am Ende entscheidet immer der Kunde mit seinen Zielen, welche Strategie zu ihm passt.",
       "Da wir unser Vertriebsteam erweitern, suchen wir motivierte, lernwillige und erfolgshungrige Partner, gern mit Know-how aus dem Immobilien- oder Finanzbereich. Und du bist bei uns nicht auf dich allein gestellt, sondern bekommst ein komplettes System an die Hand:",
     ],
@@ -617,7 +617,7 @@ export const ASSESSMENT_STATIONEN: AssessmentStation[] = [
     kurz: "Nächster Schritt und Verabschiedung",
     sprechtexte: [
       "{vorname}, ich habe einen guten Eindruck von dir. Der nächste Schritt wäre unser persönliches Gespräch. Da gehen wir alles nochmal in der Tiefe und im Detail durch: Wie die Zusammenarbeit bei uns konkret aussieht, wir rechnen mit deinen Zahlen, du siehst wie ein Deal bei uns von der ersten Anfrage bis zur Provision abläuft, und wir sprechen über die nächsten Schritte für dich persönlich.",
-      "Damit du weißt, wie es danach weitergeht: Der Vertrag wird erst nach diesem Folgetermin ausgestellt, wenn für uns beide klar ist, dass es passt. Sobald er uns unterschrieben vorliegt, vereinbaren wir deinen Onboarding-Termin. Da schalten wir deine Zugänge frei, richten deine persönliche MOREImmo E-Mail-Adresse ein, und dann kann es losgehen.",
+      "Damit du weißt, wie es danach weitergeht: Der Vertrag wird erst nach diesem Folgetermin ausgestellt, wenn für uns beide klar ist, dass es passt. Sobald er uns unterschrieben vorliegt, vereinbaren wir deinen Onboarding-Termin. Da schalten wir deine Zugänge frei, richten deine persönliche OS Immobilien E-Mail-Adresse ein, und dann kann es losgehen.",
       "Ich buche dich direkt ein. Was passt dir besser, {vorschlagA} oder {vorschlagB}? ... Perfekt, du bekommst die Einladung per Mail. Bereite gern zwei, drei Fragen vor, die dir wichtig sind. Danke für das offene Gespräch, {vorname}, wir sehen uns am {datum}. Bis dahin!",
     ],
   },
@@ -694,7 +694,7 @@ export const ASSESSMENT_EINWAENDE: AssessmentEinwand[] = [
     id: "eigeneKunden",
     einwand: "Was ist mit den Kunden, die ich selbst mitbringe?",
     antwort:
-      "Gute und wichtige Frage, die kläre ich gerne sofort. Die bleiben deine. Wir unterscheiden im Vertrag klar zwischen zwei Sorten Kontakten: Alles, was aus unseren Leads, unserem Marketing oder unserem Bestand kommt, gehört zu MOREImmo. Und alles, was du selbst mitbringst oder ohne unsere Mittel gewinnst, bleibt bei dir, auch wenn wir irgendwann nicht mehr zusammenarbeiten. Du kennzeichnest solche Kontakte im CRM einfach als Eigenkontakt, und was du schon vorher hattest, kannst du uns am Anfang als Liste geben. Solange du sie über uns vermittelst, laufen sie natürlich durch unser System, sonst könnten wir dir keine Provision abrechnen. Aber der Kunde selbst wandert nicht in unseren Besitz.",
+      "Gute und wichtige Frage, die kläre ich gerne sofort. Die bleiben deine. Wir unterscheiden im Vertrag klar zwischen zwei Sorten Kontakten: Alles, was aus unseren Leads, unserem Marketing oder unserem Bestand kommt, gehört zu OS Immobilien. Und alles, was du selbst mitbringst oder ohne unsere Mittel gewinnst, bleibt bei dir, auch wenn wir irgendwann nicht mehr zusammenarbeiten. Du kennzeichnest solche Kontakte im CRM einfach als Eigenkontakt, und was du schon vorher hattest, kannst du uns am Anfang als Liste geben. Solange du sie über uns vermittelst, laufen sie natürlich durch unser System, sonst könnten wir dir keine Provision abrechnen. Aber der Kunde selbst wandert nicht in unseren Besitz.",
   },
   {
     id: "gebiet",

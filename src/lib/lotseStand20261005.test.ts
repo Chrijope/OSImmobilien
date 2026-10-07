@@ -1,5 +1,5 @@
 /**
- * MORE Lotse, Stand vom 05.10.2026: Namen in der Frage, feste Zahlen der
+ * OS Lotse, Stand vom 05.10.2026: Namen in der Frage, feste Zahlen der
  * Einheit (Hausgeld gesamt, Rücklage, Steuer- und Neubauangaben), „fehlt“
  * statt 0 in der Kalkulation, Rendite wie im Exposé, Sanierungsstand,
  * Stand des ganzen Hauses und der Eingangskorb der Warteschlange.
@@ -108,7 +108,7 @@ describe("Kalkulation: fehlt statt 0, keine zweite Rendite", () => {
   it("Rendite heißt die der Einheit wie im Exposé, dazu die Hinweise zu Beratung und Zins", () => {
     const text = prompt();
     expect(text).toContain("Rendite heißt die Rendite der Einheit wie im Exposé");
-    expect(text).toContain("MOREImmo vermittelt Immobilien und berät nicht zu Geldanlage, Versicherung oder Steuern");
+    expect(text).toContain("OS Immobilien vermittelt Immobilien und berät nicht zu Geldanlage, Versicherung oder Steuern");
     expect(text).toContain("Zins und Tilgung in der Rechnung sind Rechenannahmen, kein Finanzierungsangebot");
     expect(text).toContain("Objekttexten");
   });

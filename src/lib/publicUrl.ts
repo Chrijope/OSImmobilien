@@ -4,7 +4,7 @@
  * Teilbare Tippgeber-/VP-Links nutzen IMMER die Produktiv-Domain, damit Vorschau-/
  * Preview-Hosts nicht versehentlich an Endkunden rausgehen.
  */
-const PRIMARY_DOMAIN = "https://portal.more.immo";
+const PRIMARY_DOMAIN = "https://osimmobilien.netlify.app";
 
 export function getPublicBaseUrl(): string {
   if (typeof window === "undefined") return PRIMARY_DOMAIN;

@@ -8,7 +8,7 @@
  * dort ist es der einzige Hinweis, dass der Rechner englisch ist.
  */
 const de = {
-  dokumentTitel: "MOREImmo | Webseite und Rechner",
+  dokumentTitel: "OS Immobilien | Webseite und Rechner",
   titel: "Immobilie als Kapitalanlage",
   untertitel: "Zum Nachrechnen und Nachlesen. Kostenlos und ohne Anmeldung.",
   gruppen: {
@@ -29,7 +29,7 @@ const de = {
 export type LinksTexte = typeof de;
 
 const en: LinksTexte = {
-  dokumentTitel: "MOREImmo | Website and calculators",
+  dokumentTitel: "OS Immobilien | Website and calculators",
   titel: "Property as an investment",
   untertitel: "To calculate and read up on. Free of charge and without registration.",
   gruppen: {

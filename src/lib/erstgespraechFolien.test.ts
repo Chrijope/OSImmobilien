@@ -42,7 +42,7 @@ describe("erstgespraechFolien: Ableitung aus dem Skript", () => {
   it("Folie 1 ist das Deckblatt des Gesamtdecks mit beiden Teilen", () => {
     const f = getErstgespraechFolie("einstieg")!;
     expect(f.folie.deckblatt).toBe(true);
-    expect(f.folie.kicker).toBe("Dein Gespräch mit MOREImmo");
+    expect(f.folie.kicker).toBe("Dein Gespräch mit OS Immobilien");
     expect(f.folie.karten?.map((k) => k.ueber)).toEqual(["Teil 1 · Über dich", "Teil 2 · Über uns"]);
   });
 

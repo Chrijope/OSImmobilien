@@ -208,8 +208,8 @@ export function ProvisionChart() {
                 <stop offset="100%" stopColor="hsl(var(--chart-provision))" stopOpacity={0} />
               </linearGradient>
               <linearGradient id="provPrognoseFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="hsl(204 100% 70%)" stopOpacity={0.3} />
-                <stop offset="100%" stopColor="hsl(204 100% 70%)" stopOpacity={0} />
+                <stop offset="0%" stopColor="hsl(157 75% 47%)" stopOpacity={0.3} />
+                <stop offset="100%" stopColor="hsl(157 75% 47%)" stopOpacity={0} />
               </linearGradient>
               <linearGradient id="provDiffFill" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="hsl(var(--chart-b2b))" stopOpacity={0.3} />
@@ -244,7 +244,7 @@ export function ProvisionChart() {
               }
             />
             <Area type="monotone" dataKey="festgeschrieben" stackId="a" stroke="hsl(var(--chart-provision))" strokeWidth={2.5} fill="url(#provFestFill)" dot={{ r: 3, strokeWidth: 2, fill: "hsl(var(--background))" }} activeDot={{ r: 5 }} />
-            <Area type="monotone" dataKey="prognose" stackId="a" stroke="hsl(204 100% 70%)" strokeWidth={2} fill="url(#provPrognoseFill)" dot={{ r: 2.5, strokeWidth: 2, fill: "hsl(var(--background))" }} />
+            <Area type="monotone" dataKey="prognose" stackId="a" stroke="hsl(157 75% 47%)" strokeWidth={2} fill="url(#provPrognoseFill)" dot={{ r: 2.5, strokeWidth: 2, fill: "hsl(var(--background))" }} />
             {zeigeDifferenz && (
               <Area type="monotone" dataKey="differenz" stackId="a" stroke="hsl(var(--chart-b2b))" strokeWidth={2} fill="url(#provDiffFill)" dot={{ r: 2.5, strokeWidth: 2, fill: "hsl(var(--background))" }} />
             )}

@@ -102,7 +102,7 @@ async function istExposeLink(supabase: SupabaseClient, id: string): Promise<bool
  * Telefon und E-Mail eines beliebigen Nutzers abfragen.
  *
  * Jeder Fehler endet still als „ohne“. Das Exposé selbst soll daran nicht
- * scheitern; die Seite zeigt dann den Weg zu MOREImmo.
+ * scheitern; die Seite zeigt dann den Weg zu OS Immobilien.
  */
 async function pruefeKundenlink(
   supabase: SupabaseClient,

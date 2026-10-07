@@ -54,6 +54,6 @@ export const template = {
     objektTitel: 'Breitscheidstraße 18, Wohnung 12',
     kaufpreis: '132.000 €',
     reserviertAm: '29. Juli 2026',
-    kundeLink: 'https://portal.more.immo/kunden/123',
+    kundeLink: 'https://osimmobilien.netlify.app/kunden/123',
   },
 } satisfies TemplateEntry

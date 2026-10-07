@@ -11,10 +11,8 @@ import {
 } from "@/lib/sidebarNavigation";
 import { NavLink } from "@/components/NavLink";
 import logoImg from "@/assets/moreimmo-logo.png";
-import logoImgDarkAsset from "@/assets/moreimmo-logo-dark.png.asset.json";
-import iconAsset from "@/assets/moreimmo-icon.png.asset.json";
-const logoImgDark = logoImgDarkAsset.url;
-const iconImg = iconAsset.url;
+import logoImgDark from "@/assets/moreimmo-logo-dark.png";
+import iconImg from "@/assets/moreimmo-icon.png";
 import { SidebarRoleSelector } from "@/components/SidebarRoleSelector";
 import { getUnreadChatCount } from "@/lib/chatStore";
 import { useLiveVersion } from "@/hooks/useLiveData";
@@ -814,11 +812,11 @@ export function AppSidebar() {
          <div className="hidden md:flex h-20 items-center justify-center px-2 border-b border-sidebar-border">
             {!collapsed ? (
               <>
-                <img src={logoImg} alt="MOREImmo" className="w-full h-full object-contain block dark:hidden" />
-                <img src={logoImgDark} alt="MOREImmo" className="w-full h-full object-contain hidden dark:block" />
+                <img src={logoImg} alt="OS Immobilien" className="w-full h-full object-contain block dark:hidden" />
+                <img src={logoImgDark} alt="OS Immobilien" className="w-full h-full object-contain hidden dark:block" />
               </>
             ) : (
-              <img src={iconImg} alt="MOREImmo" className="h-8 w-8 object-contain" />
+              <img src={iconImg} alt="OS Immobilien" className="h-8 w-8 object-contain" />
             )}
          </div>
         <SidebarContent className="px-2 py-2 flex-1">
@@ -838,11 +836,11 @@ export function AppSidebar() {
         <div className="hidden md:flex h-20 items-center justify-center px-2 border-b border-sidebar-border">
           {!collapsed ? (
             <>
-              <img src={logoImg} alt="MOREImmo" className="w-full h-full object-contain block dark:hidden" />
-              <img src={logoImgDark} alt="MOREImmo" className="w-full h-full object-contain hidden dark:block" />
+              <img src={logoImg} alt="OS Immobilien" className="w-full h-full object-contain block dark:hidden" />
+              <img src={logoImgDark} alt="OS Immobilien" className="w-full h-full object-contain hidden dark:block" />
             </>
           ) : (
-            <img src={iconImg} alt="MOREImmo" className="h-8 w-8 object-contain" />
+            <img src={iconImg} alt="OS Immobilien" className="h-8 w-8 object-contain" />
           )}
         </div>
         <SidebarContent className="px-2 py-2 flex-1">
@@ -885,11 +883,11 @@ export function AppSidebar() {
        <div className="hidden md:flex h-20 items-center justify-center px-2 border-b border-sidebar-border">
           {!collapsed ? (
             <>
-              <img src={logoImg} alt="MOREImmo" className="w-full h-full object-contain block dark:hidden" />
-              <img src={logoImgDark} alt="MOREImmo" className="w-full h-full object-contain hidden dark:block" />
+              <img src={logoImg} alt="OS Immobilien" className="w-full h-full object-contain block dark:hidden" />
+              <img src={logoImgDark} alt="OS Immobilien" className="w-full h-full object-contain hidden dark:block" />
             </>
           ) : (
-            <img src={iconImg} alt="MOREImmo" className="h-8 w-8 object-contain" />
+            <img src={iconImg} alt="OS Immobilien" className="h-8 w-8 object-contain" />
           )}
        </div>
       <SidebarContent className="px-2 py-2 flex-1">

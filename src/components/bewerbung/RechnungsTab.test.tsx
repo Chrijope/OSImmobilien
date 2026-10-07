@@ -187,7 +187,7 @@ describe("RechnungsTab (Zahlungsstatus)", () => {
     const mails = folgemails();
     expect(mails).toHaveLength(1);
     const body = (mails[0][1] as { body: { recipientEmail: string; templateData: Record<string, unknown> } }).body;
-    expect(body.recipientEmail).toBe("c.peetz@more.immo");
+    expect(body.recipientEmail).toBe("os@os-immobilien.com");
     expect(body.templateData.leadPaketBetragFormatiert).toMatch(/^2\.500\s€$/);
     expect(body.templateData.leadAnzahl).toBe(20);
   });

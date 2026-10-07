@@ -437,7 +437,7 @@ export function provisionsSaetze(
   const hatRestfall = hasOverride && iv === null && !kontaktartVollstaendig && !objektartVollstaendig;
 
   const saetzeListe: string[] = [];
-  if (lv !== null) saetzeListe.push(`Lead-Satz ${lv}% (bei über MOREImmo zugewiesenen Leads)`);
+  if (lv !== null) saetzeListe.push(`Lead-Satz ${lv}% (bei über OS Immobilien zugewiesenen Leads)`);
   if (ev !== null) saetzeListe.push(`Eigen-Satz ${ev}% (bei eigenem Netzwerk / eigenen Kontakten)`);
   if (bv !== null) saetzeListe.push(`Bestandsobjekte ${bv}% (auf den notariellen Kaufpreis)`);
   if (nv !== null) saetzeListe.push(`Neubauobjekte ${nv}% (auf den notariellen Kaufpreis)`);

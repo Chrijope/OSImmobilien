@@ -238,7 +238,7 @@ export function darfSupportAntworten(rolle: string | undefined | null): boolean 
 /** Anzeigename einer Support-Antwort, gleich gebaut wie in der Datenbankfunktion. */
 export function supportAbsenderName(name: string | undefined | null): string {
   const vorname = String(name || "").trim().split(/\s+/)[0] || "";
-  return vorname ? `MOREImmo Support (${vorname})` : "MOREImmo Support";
+  return vorname ? `OS Immobilien Support (${vorname})` : "OS Immobilien Support";
 }
 
 function glockeLink(ticketId: string): string {

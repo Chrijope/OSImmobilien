@@ -82,11 +82,11 @@ export const template = {
     partnerVorname: 'Julian',
     anzahl: 5,
     leads: [
-      { name: 'Maja Mustermann', url: 'https://portal.more.immo/kunden/00000000-0000-0000-0000-000000000001' },
-      { name: 'Bernd Beispiel', url: 'https://portal.more.immo/kunden/00000000-0000-0000-0000-000000000002' },
-      { name: 'Carla Conrad', url: 'https://portal.more.immo/kunden/00000000-0000-0000-0000-000000000003' },
+      { name: 'Maja Mustermann', url: 'https://osimmobilien.netlify.app/kunden/00000000-0000-0000-0000-000000000001' },
+      { name: 'Bernd Beispiel', url: 'https://osimmobilien.netlify.app/kunden/00000000-0000-0000-0000-000000000002' },
+      { name: 'Carla Conrad', url: 'https://osimmobilien.netlify.app/kunden/00000000-0000-0000-0000-000000000003' },
     ],
     weitere: 2,
-    uebersichtUrl: 'https://portal.more.immo/kontakte',
+    uebersichtUrl: 'https://osimmobilien.netlify.app/kontakte',
   },
 } satisfies TemplateEntry

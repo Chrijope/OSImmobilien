@@ -6,7 +6,7 @@
  * überarbeitet nach der Gegenlesung durch Dr. Hellwig (Muss-Liste) und
  * Christians Entscheidungen vom 26. und 27.09.2026. Die Fassung für den Anwalt mit
  * Fragen und Code-Belegen je Abschnitt liegt als Markdown bei Christian
- * (Datenschutzerklaerung_Entwurf_MOREImmo.md). Dieser Vermerk steht bewusst
+ * (Datenschutzerklaerung_Entwurf_OS-Immobilien.md). Dieser Vermerk steht bewusst
  * nur hier im Code und nicht auf der Seite.
  *
  * WARUM ALS DATENSTRUKTUR
@@ -44,7 +44,7 @@ import { ANLAGE_4_BETROFFENEN_TEXT, ANLAGE_4_BETROFFENEN_TITEL } from "./vertrag
 export const DATENSCHUTZ_FASSUNG = "2026-09-27e";
 
 /** Adresse für Datenschutzanfragen, so auch in den Einwilligungstexten der Formulare. */
-export const DATENSCHUTZ_EMAIL = "datenschutz@more.immo";
+export const DATENSCHUTZ_EMAIL = "os@os-immobilien.com";
 
 /** Markierung für fehlende Angaben. Darf nie veröffentlicht werden, siehe Test. */
 export const PLATZHALTER = { de: "[Angabe ergänzen]", en: "[to be completed]" } as const;
@@ -89,13 +89,13 @@ const de: DatenschutzFassung = {
       id: "verantwortlicher",
       titel: "Verantwortlicher und Kontakt",
       inhalt: [
-        "Verantwortlich für die Verarbeitung Ihrer personenbezogenen Daten auf dieser Website (portal.more.immo), im Kundenportal und in den damit verbundenen Abläufen ist:",
+        "Verantwortlich für die Verarbeitung Ihrer personenbezogenen Daten auf dieser Website (osimmobilien.netlify.app), im Kundenportal und in den damit verbundenen Abläufen ist:",
         {
           zeilen: [
-            "MOREImmo",
-            "Einzelunternehmen, Inhaber: Christian Kurz",
-            "Wendelsteinstraße 19",
-            "83075 Bad Feilnbach",
+            "OS Immobilien",
+            "Holding GmbH",
+            "Am Ostbahnhof 1",
+            "15749 Mittenwalde",
             "Deutschland",
             ...(IMPRESSUM_TELEFON ? [`Telefon: ${IMPRESSUM_TELEFON}`] : []),
             `E-Mail: ${IMPRESSUM_EMAIL}`,
@@ -108,7 +108,7 @@ const de: DatenschutzFassung = {
       id: "ueberblick",
       titel: "Überblick und Rechtsgrundlagen",
       inhalt: [
-        "Diese Erklärung informiert Besucherinnen und Besucher unserer Website, Interessenten, Kundinnen und Kunden, Bewerberinnen und Bewerber sowie Tippgeber darüber, welche personenbezogenen Daten wir verarbeiten, zu welchem Zweck, auf welcher Rechtsgrundlage, an wen wir sie weitergeben und wie lange wir sie speichern. Die Marketing-Website more.immo ist ein eigenes Angebot mit eigener Datenschutzerklärung.",
+        "Diese Erklärung informiert Besucherinnen und Besucher unserer Website, Interessenten, Kundinnen und Kunden, Bewerberinnen und Bewerber sowie Tippgeber darüber, welche personenbezogenen Daten wir verarbeiten, zu welchem Zweck, auf welcher Rechtsgrundlage, an wen wir sie weitergeben und wie lange wir sie speichern. Die Marketing-Website osimmobilien.netlify.app ist ein eigenes Angebot mit eigener Datenschutzerklärung.",
         "Wir verarbeiten Daten auf folgenden Rechtsgrundlagen:",
         {
           liste: [
@@ -405,7 +405,7 @@ const de: DatenschutzFassung = {
         },
         "Die Verarbeitung dient der Prüfung, ob und wie ein Immobilienkauf für Sie finanzierbar ist, und der Vorbereitung einer Finanzierung (Art. 6 Abs. 1 lit. b DSGVO). Nach der Unterschrift übernehmen wir Ihre Stammdaten in Ihr Kundenprofil und erstellen ein PDF der Selbstauskunft.",
         "Die Angabe, ob Sie kirchensteuerpflichtig sind, ist eine Pflichtangabe der Selbstauskunft. Banken benötigen sie, um bei der Finanzierungsprüfung Ihr verfügbares Nettoeinkommen und Ihre Steuerbelastung zu berechnen. Wir fragen nur ab, ob Kirchensteuer anfällt, nicht Ihre Konfession. Weil die Angabe Rückschlüsse auf eine Religionszugehörigkeit zulassen kann, verwenden wir sie ausschließlich für die Prüfung und Vorbereitung Ihrer Finanzierung und geben sie nur an den für Sie zuständigen Vertriebspartner, unseren Finanzierungspartner und die finanzierende Bank weiter. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO.",
-        "Ihre Selbstauskunft und Unterlagen sehen der für Sie zuständige Vertriebspartner und, sobald Ihre Bonitätsunterlagen freigegeben sind, unser Finanzierungspartner, der Ihre Finanzierung vorbereitet. An ein finanzierendes Kreditinstitut oder einen Finanzierungsvermittler geben wir Ihre Daten weiter, soweit Sie uns mit der Vorbereitung Ihrer Finanzierung beauftragen (Art. 6 Abs. 1 lit. b DSGVO). Die in der Selbstauskunft enthaltene SCHUFA-Klausel berechtigt allein die finanzierende Bank, Daten an die SCHUFA zu übermitteln und Auskünfte einzuholen; MOREImmo selbst holt keine SCHUFA-Auskunft ein.",
+        "Ihre Selbstauskunft und Unterlagen sehen der für Sie zuständige Vertriebspartner und, sobald Ihre Bonitätsunterlagen freigegeben sind, unser Finanzierungspartner, der Ihre Finanzierung vorbereitet. An ein finanzierendes Kreditinstitut oder einen Finanzierungsvermittler geben wir Ihre Daten weiter, soweit Sie uns mit der Vorbereitung Ihrer Finanzierung beauftragen (Art. 6 Abs. 1 lit. b DSGVO). Die in der Selbstauskunft enthaltene SCHUFA-Klausel berechtigt allein die finanzierende Bank, Daten an die SCHUFA zu übermitteln und Auskünfte einzuholen; OS Immobilien selbst holt keine SCHUFA-Auskunft ein.",
         "Den persönlichen Link zum Ausfüllen löschen wir sieben Tage nach seinem Ablauf. Klicken Sie auf „Zwischenspeichern“, bleibt der Zwischenstand in Ihrem Browser, bis Sie die Website-Daten löschen. Nutzen Sie dafür bitte kein fremdes oder gemeinsam genutztes Gerät.",
       ],
     },
@@ -470,7 +470,7 @@ const de: DatenschutzFassung = {
           id: "kundenportal-chat",
           titel: "Chat und Benachrichtigungen",
           inhalt: [
-            "Im Portal können Sie mit Ihrem Ansprechpartner chatten und Dateien bis 20 MB anhängen. Nachrichten und Anhänge sehen die Teilnehmenden des Chats sowie die Administratoren von MOREImmo. Über neue Nachrichten informieren wir die Teilnehmenden im Portal, per E-Mail mit einem kurzen Auszug und, wenn Sie das im Browser erlaubt haben, per Push-Benachrichtigung. Push-Nachrichten stellt der Push-Dienst Ihres Browserherstellers zu; wir speichern dafür die Adresse Ihres Push-Abonnements und die Browserkennung. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO, für Push-Benachrichtigungen Ihre Einwilligung (Art. 6 Abs. 1 lit. a DSGVO), die Sie in den Browsereinstellungen widerrufen können.",
+            "Im Portal können Sie mit Ihrem Ansprechpartner chatten und Dateien bis 20 MB anhängen. Nachrichten und Anhänge sehen die Teilnehmenden des Chats sowie die Administratoren von OS Immobilien. Über neue Nachrichten informieren wir die Teilnehmenden im Portal, per E-Mail mit einem kurzen Auszug und, wenn Sie das im Browser erlaubt haben, per Push-Benachrichtigung. Push-Nachrichten stellt der Push-Dienst Ihres Browserherstellers zu; wir speichern dafür die Adresse Ihres Push-Abonnements und die Browserkennung. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO, für Push-Benachrichtigungen Ihre Einwilligung (Art. 6 Abs. 1 lit. a DSGVO), die Sie in den Browsereinstellungen widerrufen können.",
           ],
         },
         {
@@ -506,7 +506,7 @@ const de: DatenschutzFassung = {
           id: "email-versand",
           titel: "Versand unserer E-Mails",
           inhalt: [
-            "Unsere automatischen E-Mails (etwa Bestätigungen, Links, Erinnerungen und Anmeldemails) versenden wir über den E-Mail-Dienst von Lovable, der dafür den Versanddienst Mailgun nutzt (Mailgun Technologies, Inc., USA). Absender ist eine Adresse unter more.immo, technisch über die Subdomain notify.more.immo.",
+            "Unsere automatischen E-Mails (etwa Bestätigungen, Links, Erinnerungen und Anmeldemails) versenden wir über den E-Mail-Dienst von Lovable, der dafür den Versanddienst Mailgun nutzt (Mailgun Technologies, Inc., USA). Absender ist eine Adresse unter osimmobilien.netlify.app, technisch über die Subdomain notify.os-immobilien.com.",
             "Über jede Mail führen wir ein Versandprotokoll mit Empfängeradresse, Art der Mail, Zeitpunkt und Status. Einträge zu versandten Mails löschen wir nach 14 Tagen, zu fehlgeschlagenen oder abgewiesenen Mails nach drei Tagen. Rechtsgrundlage ist die jeweilige Grundlage der Mail, für das Protokoll unser berechtigtes Interesse an einem nachvollziehbaren Versand (Art. 6 Abs. 1 lit. f DSGVO).",
           ],
         },
@@ -582,12 +582,12 @@ const de: DatenschutzFassung = {
       id: "empfaenger",
       titel: "Empfänger und Auftragsverarbeiter",
       inhalt: [
-        "Innerhalb von MOREImmo greifen unsere Mitarbeitenden und Vertriebspartner über Rollen im CRM auf Ihre Daten zu. Vertriebspartner bearbeiten Kontakte, die über uns kommen, als unsere Auftragsverarbeiter (siehe „Bearbeitung durch unsere Vertriebspartner“). Darüber hinaus geben wir Daten nur weiter, wenn es gesetzlich erlaubt ist, Sie eingewilligt haben oder es für die Vertragserfüllung nötig ist. Empfänger sind die in den Abschnitten genannten Finanzierungspartner, Kreditinstitute, Verkäufer, Notariate und Hausverwaltungen sowie folgende Dienstleister:",
+        "Innerhalb von OS Immobilien greifen unsere Mitarbeitenden und Vertriebspartner über Rollen im CRM auf Ihre Daten zu. Vertriebspartner bearbeiten Kontakte, die über uns kommen, als unsere Auftragsverarbeiter (siehe „Bearbeitung durch unsere Vertriebspartner“). Darüber hinaus geben wir Daten nur weiter, wenn es gesetzlich erlaubt ist, Sie eingewilligt haben oder es für die Vertragserfüllung nötig ist. Empfänger sind die in den Abschnitten genannten Finanzierungspartner, Kreditinstitute, Verkäufer, Notariate und Hausverwaltungen sowie folgende Dienstleister:",
         {
           tabelle: {
             kopf: ["Empfänger", "Zweck"],
             zeilen: [
-              ["Vertriebspartner von MOREImmo (Auftragsverarbeiter)", "Beratung und Betreuung von Kontakten, die über uns kommen"],
+              ["Vertriebspartner von OS Immobilien (Auftragsverarbeiter)", "Beratung und Betreuung von Kontakten, die über uns kommen"],
               ["Lovable.dev", "Hosting, serverseitige Funktionen, E-Mail-Versand, KI-Gateway"],
               ["Supabase, Inc. (Lovable Cloud)", "Datenbank, Anmeldung, Dateiablage"],
               ["Mailgun Technologies, Inc. (über Lovable)", "Versand unserer E-Mails"],
@@ -710,13 +710,13 @@ const en: DatenschutzFassung = {
       id: "verantwortlicher",
       titel: "Controller and contact",
       inhalt: [
-        "The controller responsible for processing your personal data on this website (portal.more.immo), in the customer portal and in the related processes is:",
+        "The controller responsible for processing your personal data on this website (osimmobilien.netlify.app), in the customer portal and in the related processes is:",
         {
           zeilen: [
-            "MOREImmo",
+            "OS Immobilien",
             "Sole proprietorship, owner: Christian Kurz",
-            "Wendelsteinstraße 19",
-            "83075 Bad Feilnbach",
+            "Am Ostbahnhof 1",
+            "15749 Mittenwalde",
             "Germany",
             ...(IMPRESSUM_TELEFON ? [`Phone: ${IMPRESSUM_TELEFON}`] : []),
             `Email: ${IMPRESSUM_EMAIL}`,
@@ -729,7 +729,7 @@ const en: DatenschutzFassung = {
       id: "ueberblick",
       titel: "Overview and legal bases",
       inhalt: [
-        "This policy informs visitors to our website, prospective customers, customers, applicants and referrers about which personal data we process, for what purpose, on which legal basis, to whom we disclose it and how long we keep it. The marketing website more.immo is a separate service with its own privacy policy.",
+        "This policy informs visitors to our website, prospective customers, customers, applicants and referrers about which personal data we process, for what purpose, on which legal basis, to whom we disclose it and how long we keep it. The marketing website osimmobilien.netlify.app is a separate service with its own privacy policy.",
         "We process data on the following legal bases:",
         {
           liste: [
@@ -839,11 +839,11 @@ const en: DatenschutzFassung = {
           id: "meta-gemeinsame-verantwortung",
           titel: "Joint controllership for the Meta Pixel on our sales partners' pages",
           inhalt: [
-            "On the personal pages of our sales partners (their page under /vp/ and their handbook page under /handbuch/ including the configurator, each with the partner's identifier in the address), the relevant sales partner may use the Meta Pixel. No pixel loads on the self-disclosure of the handbook page or on pages opened via a personal link. With it, the partner measures whether their own advertisements on Facebook and Instagram are successful. MOREImmo and the sales partner whose page you visit are joint controllers for this under Art. 26 GDPR. You will find the sales partner's name and address in the privacy notice on their page.",
+            "On the personal pages of our sales partners (their page under /vp/ and their handbook page under /handbuch/ including the configurator, each with the partner's identifier in the address), the relevant sales partner may use the Meta Pixel. No pixel loads on the self-disclosure of the handbook page or on pages opened via a personal link. With it, the partner measures whether their own advertisements on Facebook and Instagram are successful. OS Immobilien and the sales partner whose page you visit are joint controllers for this under Art. 26 GDPR. You will find the sales partner's name and address in the privacy notice on their page.",
             "We are jointly responsible for two steps. First, for loading the Meta Pixel after you have consented and for transmitting your usage data to Meta Platforms Ireland Ltd., such as IP address, browser information, page visited, page view and the submission of an enquiry. Second, for reporting a submitted enquiry from our server to Meta (Conversions API). In doing so, your email address and phone number are only transmitted as a hash value. Meta thus does not receive the plain text, but can match the hash value with its own data and thereby assign your enquiry to an account. We do not transmit any further details from your enquiry. Without your consent, neither step takes place.",
-            "What happens at Meta after the transmission is the responsibility of the sales partner and Meta, not MOREImmo. Details can be found in Meta's privacy policy. This may involve a transfer to the USA.",
-            "The tasks are divided as follows: MOREImmo operates the pages, obtains your consent, informs you about the processing and is your central point of contact. The sales partner is responsible for their advertising account at Meta, keeps the settings of their pixel data-minimising and uses the data only to measure the success of their advertisements.",
-            "You can exercise your rights of access, rectification, erasure, restriction of processing, data portability and objection against each of us. The quickest way is via MOREImmo, Wendelsteinstraße 19, 83075 Bad Feilnbach, datenschutz@more.immo. Where necessary, we forward your request to the sales partner. You can withdraw your consent at any time with effect for the future via the “Cookie settings” link in the footer of every page. You can also lodge a complaint with a data protection supervisory authority.",
+            "What happens at Meta after the transmission is the responsibility of the sales partner and Meta, not OS Immobilien. Details can be found in Meta's privacy policy. This may involve a transfer to the USA.",
+            "The tasks are divided as follows: OS Immobilien operates the pages, obtains your consent, informs you about the processing and is your central point of contact. The sales partner is responsible for their advertising account at Meta, keeps the settings of their pixel data-minimising and uses the data only to measure the success of their advertisements.",
+            "You can exercise your rights of access, rectification, erasure, restriction of processing, data portability and objection against each of us. The quickest way is via OS Immobilien Holding GmbH, Am Ostbahnhof 1, 15749 Mittenwalde, os@os-immobilien.com. Where necessary, we forward your request to the sales partner. You can withdraw your consent at any time with effect for the future via the “Cookie settings” link in the footer of every page. You can also lodge a complaint with a data protection supervisory authority.",
           ],
         },
       ],
@@ -1032,7 +1032,7 @@ const en: DatenschutzFassung = {
         },
         "Processing serves to assess whether and how a property purchase can be financed for you and to prepare financing (Art. 6(1)(b) GDPR). After you sign, we transfer your master data to your customer profile and create a PDF of the self-disclosure.",
         "Whether you are liable to pay church tax is a mandatory item of the self-disclosure. Banks need it to calculate your disposable net income and your tax burden when assessing financing. We only ask whether church tax applies, not your denomination. Because the information may allow conclusions about a religious affiliation, we use it exclusively to assess and prepare your financing and only pass it to the sales partner responsible for you, our financing partner and the financing bank. The legal basis is Art. 6(1)(b) GDPR.",
-        "Your self-disclosure and documents can be seen by the sales partner responsible for you and, once your creditworthiness documents have been released, by our financing partner, who prepares your financing. We pass your data to a financing bank or a financing intermediary to the extent you instruct us to prepare your financing (Art. 6(1)(b) GDPR). The SCHUFA clause contained in the self-disclosure only entitles the financing bank to transmit data to SCHUFA and to obtain information; MOREImmo itself does not obtain SCHUFA reports.",
+        "Your self-disclosure and documents can be seen by the sales partner responsible for you and, once your creditworthiness documents have been released, by our financing partner, who prepares your financing. We pass your data to a financing bank or a financing intermediary to the extent you instruct us to prepare your financing (Art. 6(1)(b) GDPR). The SCHUFA clause contained in the self-disclosure only entitles the financing bank to transmit data to SCHUFA and to obtain information; OS Immobilien itself does not obtain SCHUFA reports.",
         "We delete the personal link for completing the form seven days after it expires. If you click “Save for later”, the progress remains in your browser until you delete the site data. Please do not use a shared or third party device for this.",
       ],
     },
@@ -1097,7 +1097,7 @@ const en: DatenschutzFassung = {
           id: "kundenportal-chat",
           titel: "Chat and notifications",
           inhalt: [
-            "In the portal you can chat with your adviser and attach files of up to 20 MB. Messages and attachments can be seen by the chat participants and by MOREImmo administrators. We inform participants of new messages in the portal, by email with a short excerpt and, if you have allowed it in your browser, by push notification. Push notifications are delivered by the push service of your browser vendor; for this we store the address of your push subscription and the browser identifier. The legal basis is Art. 6(1)(b) GDPR, for push notifications your consent (Art. 6(1)(a) GDPR), which you can withdraw in your browser settings.",
+            "In the portal you can chat with your adviser and attach files of up to 20 MB. Messages and attachments can be seen by the chat participants and by OS Immobilien administrators. We inform participants of new messages in the portal, by email with a short excerpt and, if you have allowed it in your browser, by push notification. Push notifications are delivered by the push service of your browser vendor; for this we store the address of your push subscription and the browser identifier. The legal basis is Art. 6(1)(b) GDPR, for push notifications your consent (Art. 6(1)(a) GDPR), which you can withdraw in your browser settings.",
           ],
         },
         {
@@ -1133,7 +1133,7 @@ const en: DatenschutzFassung = {
           id: "email-versand",
           titel: "Sending our emails",
           inhalt: [
-            "We send our automatic emails (for example confirmations, links, reminders and sign in emails) via Lovable's email service, which uses the delivery service Mailgun for this (Mailgun Technologies, Inc., USA). The sender is an address under more.immo, technically via the subdomain notify.more.immo.",
+            "We send our automatic emails (for example confirmations, links, reminders and sign in emails) via Lovable's email service, which uses the delivery service Mailgun for this (Mailgun Technologies, Inc., USA). The sender is an address under osimmobilien.netlify.app, technically via the subdomain notify.os-immobilien.com.",
             "We keep a delivery log for every email with recipient address, type of email, time and status. We delete entries for delivered emails after 14 days and for failed or rejected emails after three days. The legal basis is the respective basis of the email, for the log our legitimate interest in traceable delivery (Art. 6(1)(f) GDPR).",
           ],
         },
@@ -1209,12 +1209,12 @@ const en: DatenschutzFassung = {
       id: "empfaenger",
       titel: "Recipients and processors",
       inhalt: [
-        "Within MOREImmo, our staff and sales partners access your data through roles in the CRM. Sales partners handle contacts that come through us as our processors (see “Handling by our sales partners”). Beyond that, we only disclose data where permitted by law, where you have consented or where it is necessary to perform a contract. Recipients are the financing partners, banks, sellers, notaries and property managers named in the sections above, as well as the following service providers:",
+        "Within OS Immobilien, our staff and sales partners access your data through roles in the CRM. Sales partners handle contacts that come through us as our processors (see “Handling by our sales partners”). Beyond that, we only disclose data where permitted by law, where you have consented or where it is necessary to perform a contract. Recipients are the financing partners, banks, sellers, notaries and property managers named in the sections above, as well as the following service providers:",
         {
           tabelle: {
             kopf: ["Recipient", "Purpose"],
             zeilen: [
-              ["MOREImmo sales partners (processors)", "Advising and supporting contacts that come through us"],
+              ["OS Immobilien sales partners (processors)", "Advising and supporting contacts that come through us"],
               ["Lovable.dev", "Hosting, server functions, email delivery, AI gateway"],
               ["Supabase, Inc. (Lovable Cloud)", "Database, sign in, file storage"],
               ["Mailgun Technologies, Inc. (via Lovable)", "Delivery of our emails"],

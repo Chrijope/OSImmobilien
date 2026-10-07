@@ -79,7 +79,7 @@ describe("oeffneSchwebendesFenster", () => {
     // Ohne die Vorlage wirkt im neuen Dokument keine einzige Klasse.
     expect(fenster.document.head.querySelectorAll("style").length).toBeGreaterThan(1);
     expect(fenster.document.head.textContent).toContain("color: red");
-    expect(fenster.document.title).toContain("MORE Immo");
+    expect(fenster.document.title).toContain("OS Immobilien");
 
     stil.remove();
   });

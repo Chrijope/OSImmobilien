@@ -17,7 +17,7 @@ vi.mock('@/lib/buchungslinkMail',()=>({versendeBuchungslinkMail:vi.fn()}));
 vi.mock('@/lib/kontaktPipeline',()=>({istTerminInZukunft:()=>true,heuteIso:()=> '2026-09-09',TERMIN_ZUKUNFT_MELDUNG:'Zukunft'}));
 vi.mock('@/integrations/supabase/client',()=>({supabase:{auth:{getUser:async()=>({data:{user:null}})}}}));
 import { QuickActionDialog } from './QuickActionDialog';
-beforeEach(()=>{vi.clearAllMocks();const storage=new Map<string,string>();vi.stubGlobal("localStorage",{getItem:(k:string)=>storage.get(k)??null,setItem:(k:string,v:string)=>storage.set(k,v),removeItem:(k:string)=>storage.delete(k)});m.invite.mockResolvedValue(true);m.save.mockResolvedValue('https://portal.more.immo/raum/test');});
+beforeEach(()=>{vi.clearAllMocks();const storage=new Map<string,string>();vi.stubGlobal("localStorage",{getItem:(k:string)=>storage.get(k)??null,setItem:(k:string,v:string)=>storage.set(k,v),removeItem:(k:string)=>storage.delete(k)});m.invite.mockResolvedValue(true);m.save.mockResolvedValue('https://osimmobilien.netlify.app/raum/test');});
 afterEach(cleanup);
 async function anzeigen(){await act(async()=>{render(<QuickActionDialog art="meeting" kundeId="kunde" kundeName="Testkunde" kundeEmail="kunde@example.test" kundeTelefon="" berater="Berater" onClose={m.close} onSaved={m.saved}/>);});}
 function eingeben(){fireEvent.change(screen.getByLabelText('Meeting-Titel'),{target:{value:'Beratung'}});fireEvent.change(screen.getByLabelText('Teilnehmer'),{target:{value:'Berater, Testkunde'}});}
@@ -32,8 +32,8 @@ describe('Meeting aus dem Kundenprofil',()=>{
   let fertig!:(s:string)=>void;m.save.mockReturnValue(new Promise<string>(r=>{fertig=r}));await anzeigen();eingeben();
   const btn=screen.getByRole('button',{name:'Meeting erstellen & einladen'});fireEvent.click(btn);fireEvent.click(btn);
   expect(m.save).toHaveBeenCalledTimes(1);expect(m.invite).not.toHaveBeenCalled();
-  fertig('https://portal.more.immo/raum/test');await waitFor(()=>expect(m.close).toHaveBeenCalledTimes(1));
-  expect(m.invite).toHaveBeenCalledWith(expect.objectContaining({meetingLink:'https://portal.more.immo/raum/test',kundeEmail:'kunde@example.test'}));
+  fertig('https://osimmobilien.netlify.app/raum/test');await waitFor(()=>expect(m.close).toHaveBeenCalledTimes(1));
+  expect(m.invite).toHaveBeenCalledWith(expect.objectContaining({meetingLink:'https://osimmobilien.netlify.app/raum/test',kundeEmail:'kunde@example.test'}));
  });
  it('begrenzt die zusätzlichen Gäste auf zwei',async()=>{
   await anzeigen();const btn=screen.getByRole('button',{name:'Gast hinzufügen'});fireEvent.click(btn);fireEvent.click(btn);

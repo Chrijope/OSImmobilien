@@ -48,7 +48,7 @@ beforeAll(async () => {
   setze("verm1_1", "Depot");
   setze("verm1_3", "25000");
   setze("im1_eigentuemer", "Max Mustermann");
-  setze("im1_adresse", "Musterweg 1, 83075 Bad Feilnbach");
+  setze("im1_adresse", "Musterweg 1, 15749 Mittenwalde");
   setze("im1_nutzung", "vermietet");
   setze("im1_marktwert", "300000");
   setze("p2_vorname", "Erika");

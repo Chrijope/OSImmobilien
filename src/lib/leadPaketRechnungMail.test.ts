@@ -66,7 +66,7 @@ const eingabe = (leadPaket: unknown): LeadPaketRechnungEingabe => ({
   ort: "80331 München",
   leadPaket,
   signedAt: "23.09.2026, 10:00:00",
-  bewerberLink: "https://portal.more.immo/bewerberprozess?bewerber=beispiel",
+  bewerberLink: "https://osimmobilien.netlify.app/bewerberprozess?bewerber=beispiel",
 });
 
 describe("Rechnungsmail: sie kommt nur mit Lead-Paket", () => {
@@ -211,7 +211,7 @@ describe("Folgemail: die Zahlung für das Lead-Paket ist eingegangen", () => {
     bewerberName: wer,
     leadPaket: { betrag: LEAD_PAKET_PREIS, anzahl: LEAD_PAKET_ANZAHL },
     karriereStufe: "vertriebspartner",
-    bewerberLink: "https://portal.more.immo/bewerberprozess?bewerber=beispiel",
+    bewerberLink: "https://osimmobilien.netlify.app/bewerberprozess?bewerber=beispiel",
   })!;
 
   const GANZ = [

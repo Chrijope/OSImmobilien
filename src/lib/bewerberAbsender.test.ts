@@ -4,7 +4,7 @@
  * Geprüft wird die reine Entscheidung (welche Vorlage an Bewerber geht, welcher
  * Absender und welche Antwortadresse), dass send-transactional-email sie
  * anwendet, und dass die Linkadresse der Bewerber-Functions fest auf
- * portal.more.immo steht. Die Edge Functions laufen in Deno, dort wird am
+ * osimmobilien.netlify.app steht. Die Edge Functions laufen in Deno, dort wird am
  * Quelltext geprüft. Das echte Rendern prüft
  * supabase/functions/_shared/transactional-email-templates/bewerbermail_test.ts.
  */
@@ -56,28 +56,28 @@ describe("istBewerbermail", () => {
 
 describe("bewerberAbsender", () => {
   it("setzt Namen der HR-Ansprechpartnerin und ihre Adresse", () => {
-    expect(bewerberAbsender({ name: "Sarah Kaiser-Thom", email: "s.kaiser-thom@more.immo" })).toEqual({
-      anzeige: "Sarah Kaiser-Thom | MOREImmo",
-      antwortAn: "s.kaiser-thom@more.immo",
+    expect(bewerberAbsender({ name: "Sarah Kaiser-Thom", email: "os@os-immobilien.com" })).toEqual({
+      anzeige: "Sarah Kaiser-Thom | OS Immobilien",
+      antwortAn: "os@os-immobilien.com",
     });
   });
 
-  it("fällt ohne Person auf MOREImmo und office@ zurück", () => {
+  it("fällt ohne Person auf OS Immobilien und office@ zurück", () => {
     for (const hr of [undefined, null, {}, { name: "  " }]) {
-      expect(bewerberAbsender(hr)).toEqual({ anzeige: BEWERBER_ABSENDER_RUECKFALL, antwortAn: "office@more.immo" });
+      expect(bewerberAbsender(hr)).toEqual({ anzeige: BEWERBER_ABSENDER_RUECKFALL, antwortAn: "os@os-immobilien.com" });
     }
-    expect(BEWERBER_ABSENDER_RUECKFALL).toBe("MOREImmo");
+    expect(BEWERBER_ABSENDER_RUECKFALL).toBe("OS Immobilien");
   });
 
   it("antwortet an office@, wenn die Person keine brauchbare Adresse hat", () => {
-    expect(bewerberAbsender({ name: "Sarah Kaiser-Thom", email: "keine adresse" }).antwortAn).toBe("office@more.immo");
-    expect(bewerberAbsender({ name: "Sarah Kaiser-Thom" }).anzeige).toBe("Sarah Kaiser-Thom | MOREImmo");
+    expect(bewerberAbsender({ name: "Sarah Kaiser-Thom", email: "keine adresse" }).antwortAn).toBe("os@os-immobilien.com");
+    expect(bewerberAbsender({ name: "Sarah Kaiser-Thom" }).anzeige).toBe("Sarah Kaiser-Thom | OS Immobilien");
   });
 
   it("entfernt Zeichen, die den Mailkopf brechen würden", () => {
-    const { anzeige } = bewerberAbsender({ name: 'Sarah "X" <evil@x.de>', email: "s@more.immo" });
+    const { anzeige } = bewerberAbsender({ name: 'Sarah "X" <evil@x.de>', email: "os@os-immobilien.com" });
     expect(anzeige).not.toMatch(/[<>"]/);
-    expect(anzeige.endsWith(" | MOREImmo")).toBe(true);
+    expect(anzeige.endsWith(" | OS Immobilien")).toBe(true);
   });
 });
 
@@ -108,9 +108,9 @@ describe("send-transactional-email wendet den Bewerber-Absender an", () => {
   });
 });
 
-describe("Links in Bewerbermails zeigen auf portal.more.immo", () => {
+describe("Links in Bewerbermails zeigen auf osimmobilien.netlify.app", () => {
   it("die Basis ist fest", () => {
-    expect(BEWERBER_MAIL_BASIS).toBe("https://portal.more.immo");
+    expect(BEWERBER_MAIL_BASIS).toBe("https://osimmobilien.netlify.app");
   });
 
   it("die Bewerber-Functions lesen keine Basisadresse aus der Umgebung", () => {

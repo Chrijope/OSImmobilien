@@ -165,7 +165,7 @@ function EinladungsLink({ link }: { link: string }) {
             value={link}
             aria-label="Einladungslink zum Markieren"
             onFocus={(e) => e.currentTarget.select()}
-            className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-[12px] text-white outline-none focus:border-[#88CFFF]/50"
+            className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-[12px] text-white outline-none focus:border-[#30E19E]/50"
           />
         </div>
       )}

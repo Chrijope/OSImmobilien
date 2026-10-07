@@ -97,7 +97,7 @@ describe("vertragsZusammenfassung", () => {
     );
     // Wortgleich mit provisionsSaetze() aus vertragKlauseln.ts (§ 8 (1a)).
     expect(wert(z, "Provision")).toBe(
-      "Lead-Satz 3% (bei über MOREImmo zugewiesenen Leads) · Eigen-Satz 5% (bei eigenem Netzwerk / eigenen Kontakten)",
+      "Lead-Satz 3% (bei über OS Immobilien zugewiesenen Leads) · Eigen-Satz 5% (bei eigenem Netzwerk / eigenen Kontakten)",
     );
     expect(z?.find((x) => x.label === "Provision")?.individuell).toBe(true);
     // Seit Fassung 2026-09-29 mit Paketpreis, Einsatz und Nachlieferung.

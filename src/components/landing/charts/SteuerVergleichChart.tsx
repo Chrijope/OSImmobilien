@@ -16,7 +16,7 @@ import { MIKROSEITE_TEXTE } from "@/components/landing/mikroseiteTexte";
  */
 
 const STEUER = "#8a8f98"; // Kontext-Grau
-const EIGENTUM = "#1A85FF"; // Markenblau, die Aussage
+const EIGENTUM = "#169967"; // Markenblau, die Aussage
 
 const SteuerVergleichChart = () => {
   const t = useSeitenTexte(MIKROSEITE_TEXTE).steuerVergleich;

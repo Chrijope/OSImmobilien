@@ -39,7 +39,7 @@ export const EINVERSTAENDNIS_FEHLT =
 /** Der Satz am Häkchen, mit dem Vornamen, sobald einer eingetragen ist. */
 export function einverstaendnisWortlaut(vorname: string): string {
   const wer = vorname.trim() || "die empfohlene Person";
-  return `Ich bestätige, dass ${wer} mit der Weitergabe der hier eingetragenen Kontaktdaten an MOREImmo und mit einer Kontaktaufnahme zur Immobilienberatung einverstanden ist.`;
+  return `Ich bestätige, dass ${wer} mit der Weitergabe der hier eingetragenen Kontaktdaten an OS Immobilien und mit einer Kontaktaufnahme zur Immobilienberatung einverstanden ist.`;
 }
 
 type RpcAufruf = (

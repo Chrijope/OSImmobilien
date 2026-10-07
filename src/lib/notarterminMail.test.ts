@@ -37,7 +37,7 @@ const eintrag = (extra: Partial<NotarterminEintrag> = {}): NotarterminEintrag =>
   notarEmail: "berger@notariat.example",
   objektName: "Breitscheidstraße 18",
   wohnungName: "WE 12",
-  portalUrl: "https://portal.more.immo/kunde/investments",
+  portalUrl: "https://osimmobilien.netlify.app/kunde/investments",
   vp: { userId: "vp-1", name: "Julia Partner", email: "julia@example.com" },
   bestaetigterTermin: null,
   ...extra,
@@ -59,16 +59,16 @@ describe("lesbaresNotarDatum", () => {
 
 describe("interneNotarEmpfaenger", () => {
   it("nennt Vertriebspartner und Büro", () => {
-    expect(interneNotarEmpfaenger("julia@example.com", "max@example.com")).toEqual(["julia@example.com", "office@more.immo"]);
+    expect(interneNotarEmpfaenger("julia@example.com", "max@example.com")).toEqual(["julia@example.com", "os@os-immobilien.com"]);
   });
   it("führt das Büro nur einmal, auch wenn der Partner dieselbe Adresse hat", () => {
-    expect(interneNotarEmpfaenger("Office@More.Immo", "max@example.com")).toEqual(["office@more.immo"]);
+    expect(interneNotarEmpfaenger("os@os-immobilien.com", "max@example.com")).toEqual(["os@os-immobilien.com"]);
   });
   it("schickt die interne Meldung nie an den Kunden", () => {
-    expect(interneNotarEmpfaenger("max@example.com", "MAX@example.com")).toEqual(["office@more.immo"]);
+    expect(interneNotarEmpfaenger("max@example.com", "MAX@example.com")).toEqual(["os@os-immobilien.com"]);
   });
   it("kommt ohne Partner mit dem Büro aus", () => {
-    expect(interneNotarEmpfaenger(undefined, undefined)).toEqual(["office@more.immo"]);
+    expect(interneNotarEmpfaenger(undefined, undefined)).toEqual(["os@os-immobilien.com"]);
   });
 });
 
@@ -94,7 +94,7 @@ describe("notarterminMailsVersenden", () => {
   it("schickt Partner und Büro die interne Meldung, dem Kunden nicht", async () => {
     await notarterminMailsVersenden(eintrag());
     const intern = gesendet.filter((m) => m.vorlage === "notartermin-benachrichtigung");
-    expect(intern.map((m) => m.empfaenger)).toEqual(["julia@example.com", "office@more.immo"]);
+    expect(intern.map((m) => m.empfaenger)).toEqual(["julia@example.com", "os@os-immobilien.com"]);
     expect(intern[0].felder).toMatchObject({ terminDatum: "Donnerstag, 15. Oktober 2026", terminUhrzeit: "10:30", vertriebspartner: "Julia Partner" });
     expect(gesendet).toHaveLength(3);
   });
@@ -117,7 +117,7 @@ describe("notarterminMailsVersenden", () => {
     expect(gesendet.map((m) => m.idempotenzSchluessel)).toEqual([
       `notartermin-geplant:inv-1:${stand}`,
       `notartermin-intern:inv-1:${stand}:julia@example.com`,
-      `notartermin-intern:inv-1:${stand}:office@more.immo`,
+      `notartermin-intern:inv-1:${stand}:os@os-immobilien.com`,
     ]);
   });
 
@@ -177,7 +177,7 @@ describe("notarterminFreigabeMails: Versand bei der Freigabe", () => {
     expect(gesendet.map((m) => [m.vorlage, m.empfaenger])).toEqual([
       ["notartermin-geplant", "max@example.com"],
       ["notartermin-benachrichtigung", "julia@example.com"],
-      ["notartermin-benachrichtigung", "office@more.immo"],
+      ["notartermin-benachrichtigung", "os@os-immobilien.com"],
     ]);
     expect(gesendet.every((m) => !("geaendert" in m.felder))).toBe(true);
     expect(ergebnis.merken).toBe(notarterminStandSchluessel(eintrag()));
@@ -200,7 +200,7 @@ describe("notarterminFreigabeMails: Versand bei der Freigabe", () => {
     const geaendert = eintrag({ uhrzeit: "14:00" });
     const zweite = await notarterminFreigabeMails(geaendert, erste.merken);
     expect(zweite.anlass).toBe("geaendert");
-    expect(gesendet.map((m) => m.empfaenger)).toEqual(["max@example.com", "julia@example.com", "office@more.immo"]);
+    expect(gesendet.map((m) => m.empfaenger)).toEqual(["max@example.com", "julia@example.com", "os@os-immobilien.com"]);
     expect(gesendet.every((m) => m.felder.geaendert === true)).toBe(true);
     expect(gesendet[0].felder).toMatchObject({ uhrzeit: "14:00" });
     for (const m of gesendet) expect(alteSchluessel).not.toContain(m.idempotenzSchluessel);
@@ -250,7 +250,7 @@ describe("notarterminBestaetigungIntern: Kunde bestätigt im Portal", () => {
     uhrzeit: "10:30",
     vpName: "Julia Partner",
     vpEmail: "julia@example.com",
-    kundeLink: "https://portal.more.immo/kunden/k-1",
+    kundeLink: "https://osimmobilien.netlify.app/kunden/k-1",
     ...extra,
   });
 
@@ -258,7 +258,7 @@ describe("notarterminBestaetigungIntern: Kunde bestätigt im Portal", () => {
     await notarterminBestaetigungIntern(bestaetigung());
     expect(gesendet.map((m) => [m.vorlage, m.empfaenger])).toEqual([
       ["notartermin-bestaetigt", "julia@example.com"],
-      ["notartermin-bestaetigt", "office@more.immo"],
+      ["notartermin-bestaetigt", "os@os-immobilien.com"],
     ]);
     expect(gesendet[0].felder).toMatchObject({ vpName: "Julia Partner", datum: "Donnerstag, 15. Oktober 2026", uhrzeit: "10:30" });
     // Das Büro bekommt keine Anrede mit dem Vornamen des Partners.
@@ -267,17 +267,17 @@ describe("notarterminBestaetigungIntern: Kunde bestätigt im Portal", () => {
 
   it("schickt dem Büro die Meldung auch ohne zuständigen Partner", async () => {
     await notarterminBestaetigungIntern(bestaetigung({ vpName: "", vpEmail: undefined }));
-    expect(gesendet.map((m) => m.empfaenger)).toEqual(["office@more.immo"]);
+    expect(gesendet.map((m) => m.empfaenger)).toEqual(["os@os-immobilien.com"]);
   });
 
   it("schickt jeder Adresse die Meldung nur einmal je Termin", async () => {
-    await notarterminBestaetigungIntern(bestaetigung({ vpEmail: "OFFICE@more.immo" }));
-    expect(gesendet.map((m) => m.empfaenger)).toEqual(["office@more.immo"]);
+    await notarterminBestaetigungIntern(bestaetigung({ vpEmail: "os@os-immobilien.com" }));
+    expect(gesendet.map((m) => m.empfaenger)).toEqual(["os@os-immobilien.com"]);
     gesendet.length = 0;
     await notarterminBestaetigungIntern(bestaetigung());
     expect(gesendet.map((m) => m.idempotenzSchluessel)).toEqual([
       "notartermin-bestaetigt:inv-1:2026-10-15:10:30:julia@example.com",
-      "notartermin-bestaetigt:inv-1:2026-10-15:10:30:office@more.immo",
+      "notartermin-bestaetigt:inv-1:2026-10-15:10:30:os@os-immobilien.com",
     ]);
   });
 });

@@ -24,7 +24,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SIGNATURE_BASE_URL = "https://portal.more.immo/signatur";
+const SIGNATURE_BASE_URL = "https://osimmobilien.netlify.app/signatur";
 
 /**
  * Stufen, aus denen der Versand einer Selbstauskunft nach vorne schiebt.
@@ -349,7 +349,7 @@ Deno.serve(async (req) => {
           // Seit der echten Frist sagt die Mail, bis wann der Link gilt. Die
           // Vorlage kann das Feld seit jeher, bekam es aber nie.
           gueltigBis: signaturAblaufText(expiresAt),
-          // Ohne diesen Wert unterschreibt "MOREImmo Team" statt des
+          // Ohne diesen Wert unterschreibt "OS Immobilien Team" statt des
           // Betreuers. Fehlt der Betreuer, faellt die Vorlage selbst zurueck.
           ...(berater ? { berater } : {}),
         },

@@ -46,11 +46,11 @@ export const template = {
   component: Mail,
   subject: (d: any) => `Vertrag gegenzeichnen: ${d?.bewerberName || 'Vertriebspartner'}`,
   displayName: 'Vertrag, Gegenzeichnung Kurz',
-  to: 'office@more.immo',
+  to: 'os@os-immobilien.com',
   previewData: {
     bewerberName: 'Hermann Jürgen Vogl',
     paketTitel: 'Lead Berater',
-    signatureUrl: 'https://portal.more.immo/signatur?token=example&type=vertrag_kurz',
+    signatureUrl: 'https://osimmobilien.netlify.app/signatur?token=example&type=vertrag_kurz',
     signedAt: '16.06.2026, 09:14',
   },
 } satisfies TemplateEntry

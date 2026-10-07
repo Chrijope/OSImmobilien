@@ -1,7 +1,7 @@
 /**
  * Der Faktenauszug aus roten Unterlagen (`_shared/lotse-faktenauszug.ts`).
  *
- * Das ist die Datenschutzzusage des MORE Lotsen: Aus Mietvertrag und
+ * Das ist die Datenschutzzusage des OS Lotsen: Aus Mietvertrag und
  * Grundbuch kommt nur heraus, was die Prüfung übersteht. Der Test beweist,
  * dass Namen, Freitext, unbekannte Schlüssel und unplausible Zahlen
  * wegfallen, auch wenn das Modell sie liefert.

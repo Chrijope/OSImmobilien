@@ -1,11 +1,11 @@
 /*
- * Investmentrechner: Styles der Web-App „MORE Immo Investmentrechner",
+ * Investmentrechner: Styles der Web-App „OS Immobilien Investmentrechner",
  * eins zu eins übernommen und vollständig unter .investmentrechner gescoped,
  * damit die Originalklassen (.field, .button, table, .metric-card usw.) nicht
  * ins restliche CRM leaken.
  *
  * Bewusste Abweichungen vom Original:
- * - Farbvariablen folgen dem CI des CRM (Haus-Primär #0F1621, Akzent #0A6EDB),
+ * - Farbvariablen folgen dem CI des CRM (Haus-Primär #0F1621, Akzent #187F58),
  *   Erfolgs- und Fehlerfarben kommen aus den Tokens --success und --destructive.
  * - Keine Schriftfamilie: es gilt die Projektschrift (Tailwind sans-Stack).
  * - Die Topbar-Regeln entfallen, die Aktionen sitzen im PageHeader.
@@ -81,18 +81,18 @@
   --schalter-knopf: #fff;
 
   /* Blau, die Akzentfarbe des Rechners. */
-  --gold: #0A6EDB;
-  --gold-hover: #0862C4;
-  --gold-tief: #0466A9;
+  --gold: #187F58;
+  --gold-hover: #15724F;
+  --gold-tief: #13704D;
   --gold-soft: #E6F0FB;
   --gold-zart: #EFF5FC;
-  --gold-soft-hover: #D9E8FA;
-  --gold-linie: #C5D9F0;
+  --gold-soft-hover: #C5EFDF;
+  --gold-linie: #B1E1CF;
   --auf-akzent: #fff;
-  --blau-hell: #8AD0FF;
+  --blau-hell: #36E2A0;
   --balken-eigenkapital: #22304A;
   /* Die Deckblätter seit dem 07.10.2026: Balken Immobilienwert und der eigene Beitrag in Orange. */
-  --balken-wert: #8EC5EE;
+  --balken-wert: #64D2A8;
   --orange-beitrag: #C8662B;
 
   /* Grün und Rot. Die Grundtöne kommen aus den Tokens des Haus-Designs. */
@@ -165,12 +165,12 @@
     Weiß auf Hellblau.
   */
   --gold: hsl(var(--primary));
-  --gold-hover: hsl(204 100% 86%);
-  --gold-tief: hsl(204 85% 78%);
-  --gold-soft: hsl(204 42% 21%);
-  --gold-zart: hsl(204 38% 18%);
-  --gold-soft-hover: hsl(204 42% 27%);
-  --gold-linie: hsl(204 32% 36%);
+  --gold-hover: hsl(157 75% 75%);
+  --gold-tief: hsl(157 64% 64%);
+  --gold-soft: hsl(157 32% 18%);
+  --gold-zart: hsl(157 29% 16%);
+  --gold-soft-hover: hsl(157 32% 23%);
+  --gold-linie: hsl(157 24% 32%);
   --auf-akzent: hsl(var(--primary-foreground));
   --balken-eigenkapital: hsl(212 32% 68%);
 

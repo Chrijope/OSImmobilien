@@ -277,7 +277,7 @@ export function AktivierungTab({ bewerber: b, canEdit, currentUserName, currentU
       void leadPaketNachBewerbung(b.id, gespeichert).catch((e) => console.warn("Leadpaket aus Bewerbung", e));
       addNotification(b.id, {
         typ: "status",
-        titel: "Willkommen bei MOREImmo",
+        titel: "Willkommen bei OS Immobilien",
         nachricht: `Dein Account wurde angelegt. Bitte prüfe Dein E-Mail-Postfach (${fEmail}) und setze Dein Passwort.`,
       });
       toast({
@@ -403,7 +403,7 @@ export function AktivierungTab({ bewerber: b, canEdit, currentUserName, currentU
 
   // ───── Block 2: Zugangsdaten senden ─────
   const persMailGueltig = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(persMail.trim()) &&
-    persMail.trim().toLowerCase().endsWith("@more.immo");
+    persMail.trim().toLowerCase().endsWith("@os-immobilien.com");
   const kannZugangsdatenSenden = !!b.email && persMailGueltig && !!passwort.trim() && !sendingZugangsdaten;
 
   const handleZugangsdatenSenden = async () => {
@@ -592,7 +592,7 @@ export function AktivierungTab({ bewerber: b, canEdit, currentUserName, currentU
             <div>
               <h3 className="font-bold">2. Persönliche E-Mail mitteilen</h3>
               <p className="text-xs text-muted-foreground">
-                Neue @more.immo-Adresse anlegen und die Zugangsdaten samt Einrichtungsanleitung an die private Adresse schicken.
+                Neue @os-immobilien.com-Adresse anlegen und die Zugangsdaten samt Einrichtungsanleitung an die private Adresse schicken.
               </p>
             </div>
           </div>
@@ -639,11 +639,11 @@ export function AktivierungTab({ bewerber: b, canEdit, currentUserName, currentU
                 className="mt-1 h-9 text-sm"
                 value={persMail}
                 onChange={(e) => setPersMail(e.target.value)}
-                placeholder="v.nachname@more.immo"
+                placeholder="v.nachname@os-immobilien.com"
                 disabled={!canEdit}
               />
               {persMail.trim() !== "" && !persMailGueltig && (
-                <p className="text-[10px] text-destructive mt-0.5">Die Adresse muss auf @more.immo enden.</p>
+                <p className="text-[10px] text-destructive mt-0.5">Die Adresse muss auf @os-immobilien.com enden.</p>
               )}
             </div>
             <div>
@@ -767,7 +767,7 @@ export function AktivierungTab({ bewerber: b, canEdit, currentUserName, currentU
             </Button>
             <p className="text-xs text-muted-foreground">
               Die Investagon-Zugangsdaten werden persönlich übergeben und nicht im CRM hinterlegt.
-              Die Einladung wartet nach der Freischaltung im neuen @more.immo-Postfach des Partners.
+              Die Einladung wartet nach der Freischaltung im neuen @os-immobilien.com-Postfach des Partners.
             </p>
           </div>
         </OnboardingSchrittCard>

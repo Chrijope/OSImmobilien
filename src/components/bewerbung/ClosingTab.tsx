@@ -706,7 +706,7 @@ export const ClosingTab = ({
         title: ergebnis?.fassung === "erweitert"
           ? "Startfahrplan (erweiterte Fassung) versendet"
           : "Startfahrplan versendet",
-        description: `Dein Startfahrplan bei MOREImmo (PDF) wurde an ${b.email} geschickt.`,
+        description: `Dein Startfahrplan bei OS Immobilien (PDF) wurde an ${b.email} geschickt.`,
       });
     } catch (e) {
       toast({
@@ -1514,8 +1514,8 @@ export const ClosingTab = ({
                           den Standardsatz des Pakets ({aktiv.provisionssatz}%) im Vertrag & den Anlagen und werden bei
                           der späteren Aktivierung 1:1 in die Nutzerverwaltung übertragen.
                           <br />
-                          <strong>Individueller Satz</strong>: gleicher %-Wert für Leads (über MOREImmo) & Eigenkontakte.
-                          <strong> Lead Satz</strong>: nur bei Leads aus MOREImmo.
+                          <strong>Individueller Satz</strong>: gleicher %-Wert für Leads (über OS Immobilien) & Eigenkontakte.
+                          <strong> Lead Satz</strong>: nur bei Leads aus OS Immobilien.
                           <strong> Eigen Satz</strong>: bei Interessenten/Leads aus dem eigenen Netzwerk.
                         </p>
                         <div className="grid sm:grid-cols-3 gap-3">
@@ -1541,7 +1541,7 @@ export const ClosingTab = ({
                               placeholder="z. B. 3"
                               disabled={!canEdit || !!satzIndividuell.trim()}
                             />
-                            <p className="text-[10px] text-muted-foreground mt-0.5">Bei Leads aus MOREImmo</p>
+                            <p className="text-[10px] text-muted-foreground mt-0.5">Bei Leads aus OS Immobilien</p>
                           </div>
                           <div>
                             <Label className="text-xs font-medium">Eigen Satz (%)</Label>
@@ -1868,7 +1868,7 @@ export const ClosingTab = ({
                     <Label className="text-xs">Ort <span className="text-destructive">*</span></Label>
                     <Input
                       value={vaOrt} onChange={(e) => setVaOrt(e.target.value)}
-                      disabled={!canEdit} placeholder="Bad Feilnbach"
+                      disabled={!canEdit} placeholder="Mittenwalde"
                       className={!vaOrt.trim() ? "border-destructive/60" : ""}
                     />
                   </div>
@@ -1931,7 +1931,7 @@ export const ClosingTab = ({
                     <Label className="text-xs">Ort <span className="text-destructive">*</span></Label>
                     <Input
                       value={raOrt} onChange={(e) => setRaOrt(e.target.value)}
-                      disabled={!canEdit} placeholder="Bad Feilnbach"
+                      disabled={!canEdit} placeholder="Mittenwalde"
                       className={!raOrt.trim() ? "border-destructive/60" : ""}
                     />
                   </div>
@@ -1968,7 +1968,7 @@ export const ClosingTab = ({
                  der Verfolgungseintrag: Der entsteht schon vor dem Absenden. */
             >
               <p className="text-xs text-muted-foreground">
-                Unverbindlich: der persönliche <strong>Startfahrplan bei MOREImmo</strong> als PDF per E-Mail
+                Unverbindlich: der persönliche <strong>Startfahrplan bei OS Immobilien</strong> als PDF per E-Mail
                 (Einleitung, der Weg als Vertriebspartner, der optionale Leadkanal und die nächsten Schritte).
                 {" "}Jetzt geht die{" "}
                 <strong>{startfahrplanFassung === "erweitert" ? "erweiterte Fassung" : "kompakte Fassung"}</strong>
@@ -1984,7 +1984,7 @@ export const ClosingTab = ({
                   variant="outline"
                   onClick={handlePaketUebersichtSenden}
                   disabled={!canEdit || sendingUebersicht || !b.email}
-                  title={!b.email ? "Bewerber-E-Mail fehlt" : "Startfahrplan bei MOREImmo (PDF) per E-Mail an den Bewerber schicken"}
+                  title={!b.email ? "Bewerber-E-Mail fehlt" : "Startfahrplan bei OS Immobilien (PDF) per E-Mail an den Bewerber schicken"}
                   className="gap-1.5"
                 >
                   <Mail className="h-3.5 w-3.5" />

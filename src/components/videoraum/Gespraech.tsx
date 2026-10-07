@@ -209,7 +209,7 @@ function Knopf({
   const grund = gefahr
     ? "bg-[#E5372B] border-[#E5372B] text-white"
     : an
-      ? "bg-[#88CFFF]/15 border-[#88CFFF]/35 text-[#88CFFF]"
+      ? "bg-[#30E19E]/15 border-[#30E19E]/35 text-[#30E19E]"
       : "bg-white/[0.07] border-white/10 text-white";
   return (
     <button
@@ -344,7 +344,7 @@ function BildschirmFlaeche({
     <div
       data-pruefung="bildschirm-flaeche"
       className={`relative overflow-hidden rounded-2xl bg-black ${
-        eigen ? "border-2 border-[#88CFFF] shadow-[0_0_0_4px_rgba(136,207,255,.12)]" : "border border-white/[0.07]"
+        eigen ? "border-2 border-[#30E19E] shadow-[0_0_0_4px_rgba(48,225,158,.12)]" : "border border-white/[0.07]"
       } ${className}`}
     >
       {geteilt.stream ? (
@@ -357,7 +357,7 @@ function BildschirmFlaeche({
       )}
       <div
         className={`absolute left-3 top-3 flex items-center gap-2 rounded-xl px-2.5 py-1 text-[12.5px] backdrop-blur ${
-          eigen ? "bg-[#88CFFF]/20 font-semibold text-[#CDE9FF]" : "bg-[#0B1119]/70 text-white/80"
+          eigen ? "bg-[#30E19E]/20 font-semibold text-[#AEF3D9]" : "bg-[#0B1119]/70 text-white/80"
         }`}
       >
         <MonitorUp className="h-3.5 w-3.5 shrink-0" />
@@ -797,7 +797,7 @@ export function Gespraech({
         className={`flex ${rahmen === "flaeche" ? "h-full" : "h-[100dvh]"} min-h-0 flex-col overflow-hidden bg-[#0B1119] text-white`}
       >
       <header className="flex h-[62px] shrink-0 items-center gap-4 border-b border-white/[0.07] bg-[#0F1621]/70 px-4 sm:px-6">
-        <img src={logoImg} alt="MOREImmo" className="h-[22px] object-contain brightness-0 invert" />
+        <img src={logoImg} alt="OS Immobilien" className="h-[22px] object-contain brightness-0 invert" />
         <span className="hidden text-[13px] text-white/60 sm:inline">{titel}</span>
         {kopfHinweis}
         {/* `shrink-0`: Ein langer Hinweis daneben darf die Uhr nicht zerquetschen. */}

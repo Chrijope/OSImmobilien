@@ -440,7 +440,7 @@ export function darfEinheitInvestmentrechner(role: UserRole | string | undefined
 }
 
 /**
- * Darf die aktive Rolle den MORE Lotsen nutzen (Reiter auf der
+ * Darf die aktive Rolle den OS Lotsen nutzen (Reiter auf der
  * Einheitenseite, freigegeben am 28.09.2026)?
  *
  * Erlaubt sind Admin, Inhaber, Vertriebsleiter, Vertriebspartner (jede

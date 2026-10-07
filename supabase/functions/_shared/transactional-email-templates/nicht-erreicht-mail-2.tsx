@@ -101,12 +101,12 @@ export const template = {
   absender: 'zustaendiger-partner',
   previewData: {
     name: 'Max Mustermann',
-    buchungsLink: 'https://portal.more.immo/buchen/beispiel',
+    buchungsLink: 'https://osimmobilien.netlify.app/buchen/beispiel',
     berater: {
       name: 'Christian Peetz',
-      rolle: 'Dein Ansprechpartner bei MOREImmo',
+      rolle: 'Dein Ansprechpartner bei OS Immobilien',
       telefon: '+49 151 00000000',
-      email: 'office@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

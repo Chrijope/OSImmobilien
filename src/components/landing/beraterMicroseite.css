@@ -1,6 +1,6 @@
 /* Freigegebenes Layout der Berater-Microseite. Ausschließlich im Inhaltsbereich wirksam. */
 .lp-theme .berater-mikroseite {
-  --primary:204 92% 41%;
+  --primary:157 69% 32%;
   --background:0 0% 100%;
   --foreground:220 14% 9%;
   --muted-foreground:220 7% 41%;
@@ -58,14 +58,14 @@
 }
 .lp-theme .berater-mikroseite .lp-text-gradient {
   background:none!important;
-  color:#087ac7!important;
-  -webkit-text-fill-color:#087ac7!important
+  color:#15724F!important;
+  -webkit-text-fill-color:#15724F!important
 }
 .lp-theme .berater-mikroseite .lp-cta {
-  background:#087ac7!important;
+  background:#15724F!important;
   color:white!important;
   box-shadow:none!important;
-  border:1px solid #087ac7!important
+  border:1px solid #15724F!important
 }
 .lp-theme .berater-mikroseite [class*="shadow-"] {
   box-shadow:none!important
@@ -81,7 +81,7 @@
 }
 .lp-theme .berater-mikroseite span.uppercase,
 .lp-theme .berater-mikroseite p.uppercase {
-  color:#087ac7!important;
+  color:#15724F!important;
   font-size:11px!important;
   letter-spacing:.13em!important
 }
@@ -145,8 +145,8 @@
 }
 .lp-theme .berater-mikroseite .hero-copy h1 span {
   background:none!important;
-  -webkit-text-fill-color:#087ac7!important;
-  color:#087ac7!important;
+  -webkit-text-fill-color:#15724F!important;
+  color:#15724F!important;
   text-align:left!important
 }
 .lp-theme .berater-mikroseite .hero-copy>p {
@@ -191,7 +191,7 @@
 }
 .lp-theme .berater-mikroseite .hero-copy>div:nth-last-child(2)>button {
   background:white!important;
-  color:#087ac7!important
+  color:#15724F!important
 }
 .lp-theme .berater-mikroseite .hero-copy>div:last-child {
   margin-top:30px!important;
@@ -399,8 +399,8 @@
   color:#f2f6fa!important
 }
 .lp-theme .berater-mikroseite .micro-abschnitt-16 section h2 .lp-text-gradient {
-  -webkit-text-fill-color:#79c5f8!important;
-  color:#79c5f8!important
+  -webkit-text-fill-color:#2BD694!important;
+  color:#2BD694!important
 }
 .lp-theme .berater-mikroseite .micro-abschnitt-16 section>.container>.text-center {
   text-align:center!important;
@@ -620,8 +620,8 @@
 
 /* Der Beraterkasten im Hero wurde am 16.09.2026 entfernt, seine Regeln entfallen damit. */
 .lp-theme .berater-mikroseite .portrait-card strong { overflow-wrap: anywhere; }
-.lp-theme .berater-mikroseite .portrait-card .portrait-initials { display: grid; place-items: center; height: 252px; padding: 0; background: #eaf4fb; color: #087ac7; font-size: 100px; }
-.lp-theme .berater-mikroseite :is(a,button,input,[tabindex="0"]):focus-visible { outline: 3px solid #087ac7; outline-offset: 4px; }
+.lp-theme .berater-mikroseite .portrait-card .portrait-initials { display: grid; place-items: center; height: 252px; padding: 0; background: #eaf4fb; color: #15724F; font-size: 100px; }
+.lp-theme .berater-mikroseite :is(a,button,input,[tabindex="0"]):focus-visible { outline: 3px solid #15724F; outline-offset: 4px; }
 .lp-theme .berater-mikroseite .investment-card { border: 1px solid #dce5eb !important; }
 
 /* Fünf zusammengehörige Bildmotive im freigegebenen asymmetrischen Raster. */
@@ -629,7 +629,7 @@
 .lp-theme .berater-mikroseite .leistung-card > img { display: block; width: 100%; height: 145px; object-fit: cover; }
 .lp-theme .berater-mikroseite .leistung-card-large > img { height: 325px; }
 .lp-theme .berater-mikroseite .leistung-copy { padding: 24px 28px 28px; }
-.lp-theme .berater-mikroseite .leistung-eyebrow { color: #087ac7; font-size: 12px; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 10px; }
+.lp-theme .berater-mikroseite .leistung-eyebrow { color: #15724F; font-size: 12px; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 10px; }
 .lp-theme .berater-mikroseite .leistung-card h3 { font-size: 23px; font-weight: 600; letter-spacing: -.02em; }
 .lp-theme .berater-mikroseite .leistung-card-large h3 { font-size: 32px; }
 .lp-theme .berater-mikroseite .leistung-card p { font-size: 15px; margin-top: 10px; color: #626973; }
@@ -643,7 +643,7 @@
 .lp-theme .berater-mikroseite .kundenstimmen-group > div { width: 340px; border: 1px solid #e0e8ee !important; padding: 26px; }
 .lp-theme .berater-mikroseite .kundenstimmen-group > div > svg { display: none; }
 .lp-theme .berater-mikroseite .kundenstimmen-window:is(:hover,:focus-within) .kundenstimmen-track { animation-play-state: paused; }
-.lp-theme .berater-mikroseite .kundenstimmen-pause { display: block; margin: 0 0 12px auto; padding: 10px 0; font-size: 13px; color: #087ac7; text-decoration: underline; text-underline-offset: 4px; }
+.lp-theme .berater-mikroseite .kundenstimmen-pause { display: block; margin: 0 0 12px auto; padding: 10px 0; font-size: 13px; color: #15724F; text-decoration: underline; text-underline-offset: 4px; }
 @media (max-width: 1023px) and (min-width: 768px) {
   .lp-theme .berater-mikroseite .design-hero { gap: 26px; }
   .lp-theme .berater-mikroseite .hero-copy h1 { font-size: 44px !important; overflow-wrap: anywhere; }
@@ -662,7 +662,7 @@
 }
 
 /* Die Beschriftung auf der dunklen Ergebnisfläche benötigt einen hellen Kontrast. */
-.lp-theme .berater-mikroseite .micro-abschnitt-3 .bg-gradient-to-br > span.uppercase { color: #79c5f8 !important; }
+.lp-theme .berater-mikroseite .micro-abschnitt-3 .bg-gradient-to-br > span.uppercase { color: #2BD694 !important; }
 
 /* Vier gleichwertige Profilkarten mit ruhigem Rahmen und klarer Symbolzeile. */
 .lp-theme .berater-mikroseite .investor-profile-card {

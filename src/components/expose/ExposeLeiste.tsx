@@ -56,7 +56,7 @@ export function ExposeLeiste({ aktiv, onSpringen, titel, adresse, rechts, obenLi
     <>
       {/* Desktop: feste Leiste links */}
       <aside aria-label="Abschnitte" className="fixed bottom-0 left-0 top-0 z-30 hidden w-60 flex-col border-r border-border/60 bg-card px-3 py-5 lg:flex">
-        <img src={logoImg} alt="MOREImmo" className="mb-2 ml-2 h-7 w-auto self-start" />
+        <img src={logoImg} alt="OS Immobilien" className="mb-2 ml-2 h-7 w-auto self-start" />
         {obenLinks && <div className="mb-3 ml-2">{obenLinks}</div>}
         <nav className="mt-2 flex-1 space-y-0.5 overflow-y-auto">
           {EXPOSE_ABSCHNITTE.map((a) => {

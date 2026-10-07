@@ -28,7 +28,7 @@ describe("Wege der Handbuch-Seite", () => {
     expect(handbuchStartseite("maria")).toBe("/handbuch/maria");
     // Seit dem 26.09.2026 dieselbe Seite wie „An Kunde senden“.
     expect(saTokenPfad("abc")).toBe("/sa/abc");
-    expect(offenerSaLink("maria")).toBe("https://portal.more.immo/handbuch/maria/selbstauskunft");
+    expect(offenerSaLink("maria")).toBe("https://osimmobilien.netlify.app/handbuch/maria/selbstauskunft");
   });
 
   it("die festen Unterseiten sind als Partnerkürzel gesperrt", () => {

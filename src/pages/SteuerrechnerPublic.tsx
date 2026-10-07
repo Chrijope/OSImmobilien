@@ -178,7 +178,7 @@ function SteuerrechnerSeite() {
           <div className="steuer-public-header">
             <img
               src={moreimmoLogo}
-              alt="MOREImmo"
+              alt="OS Immobilien"
               className="h-10 w-auto object-contain md:h-12"
             />
             <p className="mt-8 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">

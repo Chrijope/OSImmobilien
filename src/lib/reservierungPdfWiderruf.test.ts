@@ -124,7 +124,7 @@ describe("Fassung, Datenschutz und Unterschrift im PDF", () => {
     expect(zeilen).toContain("6. Datenschutzerklärung");
     expect(enthaelt("Ich/Wir bin/sind damit einverstanden")).toBe(true);
     expect(enthaelt("finanzierendes Kreditinstitut")).toBe(true);
-    expect(enthaelt("portal.more.immo/datenschutz")).toBe(true);
+    expect(enthaelt("osimmobilien.netlify.app/datenschutz")).toBe(true);
   });
 
   /*

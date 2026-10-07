@@ -134,7 +134,7 @@ export const STELLENANZEIGEN: Stellenanzeige[] = [
     merkmale: MERKMALE,
     // Objektarten: vertragKlauseln.ts § 1 Absatz 1.
     werWirSind:
-      "MOREImmo vermittelt Kapitalanlageimmobilien: sanierte Bestandswohnungen, WG- und Co-Living-Konzepte " +
+      "OS Immobilien vermittelt Kapitalanlageimmobilien: sanierte Bestandswohnungen, WG- und Co-Living-Konzepte " +
       "und energieeffiziente Neubauprojekte. Unsere Kunden wollen mit Immobilien langfristig Vermögen aufbauen. " +
       "Wir rechnen ihnen ehrlich vor, was eine Wohnung kostet und was sie leisten kann, erklären so lange, bis sie " +
       "ihre Entscheidung selbst begründen können, und bleiben auch nach dem Notartermin ansprechbar.",
@@ -201,7 +201,7 @@ export const STELLENANZEIGEN: Stellenanzeige[] = [
       "Du stellst den Kontakt her, alles Weitere übernehmen wir.",
     merkmale: MERKMALE,
     werWirSind:
-      "MOREImmo vermittelt Kapitalanlageimmobilien an Menschen, die mit Immobilien langfristig Vermögen aufbauen " +
+      "OS Immobilien vermittelt Kapitalanlageimmobilien an Menschen, die mit Immobilien langfristig Vermögen aufbauen " +
       "wollen. Beratung, Objektauswahl, Finanzierung und Abwicklung liegen bei uns in einer Hand. Wir rechnen ehrlich, " +
       "erklären verständlich und bleiben nach dem Notartermin ansprechbar. Wer uns einen Kontakt anvertraut, kann sich " +
       "darauf verlassen, dass wir sorgfältig mit ihm umgehen.",
@@ -268,7 +268,7 @@ export const STELLENANZEIGEN: Stellenanzeige[] = [
     merkmale: MERKMALE,
     // „Der Baustein, der im Depot fehlt": bewerberKennenlernen.ts, Weg 2.
     werWirSind:
-      "MOREImmo vermittelt Kapitalanlageimmobilien: sanierte Bestandswohnungen, WG- und Co-Living-Konzepte " +
+      "OS Immobilien vermittelt Kapitalanlageimmobilien: sanierte Bestandswohnungen, WG- und Co-Living-Konzepte " +
       "und energieeffiziente Neubauprojekte. Für viele Kunden aus der Finanzberatung ist die vermietete Immobilie " +
       "genau der Baustein, der im Depot noch fehlt. Wir rechnen ehrlich, erklären verständlich und bleiben auch " +
       "nach dem Notartermin ansprechbar.",
@@ -355,11 +355,11 @@ export const STELLENANZEIGE_WERTE: { titel: string; text: string }[] = [
 
 /** Die Texte im Kopf der Seite. Eigene Stelle, damit der Wortwächter sie mitprüft. */
 export const STELLENANZEIGE_KOPF = {
-  marke: "Partner werden bei MOREImmo",
+  marke: "Partner werden bei OS Immobilien",
   titelZeile1: "Dein eigenes Geschäft.",
   titelZeile2: "Mit echten Objekten und uns im Rücken.",
   einleitung:
-    "MOREImmo vermittelt Kapitalanlageimmobilien an Menschen, die mit Immobilien Vermögen aufbauen wollen. " +
+    "OS Immobilien vermittelt Kapitalanlageimmobilien an Menschen, die mit Immobilien Vermögen aufbauen wollen. " +
     "Dafür suchen wir selbstständige Partner, die so beraten und empfehlen, wie wir arbeiten: ehrlich, verständlich " +
     "und auf lange Sicht.",
   // Belegt: vertragKlauseln.ts § 1 Absatz 2 und 4, § 2 Absatz 2.

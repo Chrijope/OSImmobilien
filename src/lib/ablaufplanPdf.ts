@@ -306,5 +306,5 @@ export async function generateAblaufplanPDF(): Promise<void> {
     addBrandedFooter(doc, i - 1, total - 1);
   }
 
-  doc.save(`MOREImmo-Ablaufplan-${new Date().toISOString().slice(0, 10)}.pdf`);
+  doc.save(`OS Immobilien-Ablaufplan-${new Date().toISOString().slice(0, 10)}.pdf`);
 }

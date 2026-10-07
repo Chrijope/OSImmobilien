@@ -35,14 +35,14 @@ describe("Die Fassung des Vertragstextes", () => {
 describe("Der Satz über den Objektdaten", () => {
   it("steht im Wortlaut der Vorlage", () => {
     expect(OBJEKT_EINLEITUNG).toBe(
-      "Ich/Wir beabsichtige/n, das nachfolgend bezeichnete Objekt über MOREImmo zu erwerben.",
+      "Ich/Wir beabsichtige/n, das nachfolgend bezeichnete Objekt über OS Immobilien zu erwerben.",
     );
   });
 
   /*
    * Zwei Schreibweisen des eigenen Namens in einem Vertrag sehen nach
-   * Unachtsamkeit aus. Das Papier schreibt „MORE Immo", das System durchgehend
-   * „MOREImmo"; hier gilt die des Systems, weil der übrige Text sie trägt.
+   * Unachtsamkeit aus. Das Papier schreibt „OS Immobilien", das System durchgehend
+   * „OS Immobilien"; hier gilt die des Systems, weil der übrige Text sie trägt.
    */
   it("schreibt den Firmennamen überall wie der übrige Text", () => {
     const alles = [
@@ -50,13 +50,14 @@ describe("Der Satz über den Objektdaten", () => {
       ...VEREINBARUNG_ZIFFERN.map((z) => z.text), DATENSCHUTZ_EINVERSTAENDNIS,
       ...WIDERRUFSBELEHRUNG.flatMap((b) => b.absaetze), WIDERRUF_AUFLOESENDE_BEDINGUNG,
     ].join(" ");
+    expect(alles).not.toContain("MOREImmo");
     expect(alles).not.toContain("MORE Immo");
   });
 });
 
 describe("Abschnitt 3, Notar und Abwicklung", () => {
   it("schreibt kein hartes „ausschließlich bei unserem Notariat", () => {
-    // MOREImmo hat diese Steuerung nicht; deshalb „in der Regel" und
+    // OS Immobilien hat diese Steuerung nicht; deshalb „in der Regel" und
     // „Zustimmung des Verkäufers".
     expect(NOTAR_HINWEIS).toContain("in der Regel");
     expect(NOTAR_HINWEIS).toContain("Zustimmung des Verkäufers");
@@ -74,8 +75,8 @@ describe("Abschnitt 5, die neun Punkte der Vereinbarung", () => {
 
   const punkt = (n: string) => VEREINBARUNG_ZIFFERN.find((z) => z.nummer === n)!;
 
-  it("nennt MOREImmo und den Kaufinteressenten als Parteien", () => {
-    expect(VEREINBARUNG_EINLEITUNG).toBe("MOREImmo und der Kaufinteressent vereinbaren hinsichtlich des Kaufobjekts:");
+  it("nennt OS Immobilien und den Kaufinteressenten als Parteien", () => {
+    expect(VEREINBARUNG_EINLEITUNG).toBe("OS Immobilien und der Kaufinteressent vereinbaren hinsichtlich des Kaufobjekts:");
   });
 
   /*
@@ -90,7 +91,7 @@ describe("Abschnitt 5, die neun Punkte der Vereinbarung", () => {
 
   it("hat in Punkt 2 die vier Pflichten a) bis d)", () => {
     expect(punkt("2.").punkte?.map((p) => p.slice(0, 2))).toEqual(["a)", "b)", "c)", "d)"]);
-    // Nur hinwirken, nicht versprechen: MOREImmo ist nicht Eigentümer.
+    // Nur hinwirken, nicht versprechen: OS Immobilien ist nicht Eigentümer.
     expect(punkt("2.").punkte?.[1]).toContain("darauf hinzuwirken, dass der Verkäufer");
     expect(punkt("2.").punkte?.[1]).not.toMatch(/^b\) das Objekt .* nicht anderweitig zu veräußern/);
   });
@@ -101,7 +102,7 @@ describe("Abschnitt 5, die neun Punkte der Vereinbarung", () => {
   });
 
   it("nennt die Abschlussfreiheit für alle drei Beteiligten, das Gegenmittel zu § 311b BGB", () => {
-    expect(punkt("4.").text).toContain("Weder der Kaufinteressent noch MOREImmo noch der Verkäufer");
+    expect(punkt("4.").text).toContain("Weder der Kaufinteressent noch OS Immobilien noch der Verkäufer");
     expect(punkt("4.").text).toContain("beiderseits frei");
   });
 
@@ -143,7 +144,7 @@ describe("Abschnitt 5, die neun Punkte der Vereinbarung", () => {
   });
 
   it("wird ohne Gegenzeichnung wirksam und wird elektronisch unterzeichnet", () => {
-    expect(punkt("8.").text).toContain("Gegenzeichnung durch MOREImmo ist nicht erforderlich");
+    expect(punkt("8.").text).toContain("Gegenzeichnung durch OS Immobilien ist nicht erforderlich");
     expect(punkt("8.").text).toContain("elektronisch");
   });
 
@@ -174,7 +175,7 @@ describe("Abschnitt 6, Datenschutzerklärung", () => {
       expect(DATENSCHUTZ_EINVERSTAENDNIS).toContain(empfaenger);
     }
     expect(DATENSCHUTZ_EINVERSTAENDNIS).toContain("auf freiwilliger Basis");
-    expect(DATENSCHUTZ_EINVERSTAENDNIS).toContain("portal.more.immo/datenschutz");
+    expect(DATENSCHUTZ_EINVERSTAENDNIS).toContain("osimmobilien.netlify.app/datenschutz");
   });
 });
 

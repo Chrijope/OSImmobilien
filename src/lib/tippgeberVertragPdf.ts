@@ -18,11 +18,11 @@ import { BRAND, loadLogo, addBrandedHeader, addBrandedFooter, PDF_FONT, ensureUn
  */
 
 const GESELLSCHAFT = {
-  name: "MOREImmo",
-  rechtsform: "Einzelunternehmen",
-  zusatz: "ehemals Immosparplan",
-  adresse: "Wendelsteinstraße 19, 83075 Bad Feilnbach",
-  vertretenDurch: "Christian Kurz, Inhaber (Einzelunternehmen)",
+  name: "OS Immobilien Holding GmbH",
+  rechtsform: "GmbH",
+  zusatz: "",
+  adresse: "Am Ostbahnhof 1, 15749 Mittenwalde",
+  vertretenDurch: "die Geschäftsführung",
 };
 
 const s = (t: string) =>
@@ -132,7 +132,7 @@ function makeTools(doc: jsPDF, logo: string | null, title: string, subtitle: str
     if (o.rightSig) { try { doc.addImage(o.rightSig, "PNG", rx + 3, yLine - 16, 40, 15); } catch {} }
     doc.setFontSize(8);
     doc.setTextColor(...BRAND.muted);
-    doc.text(s(`${GESELLSCHAFT.name}, ${o.leftOrt || "Bad Feilnbach"}${o.leftDate ? ", " + o.leftDate : ""}`), lx, yLine + 5);
+    doc.text(s(`${GESELLSCHAFT.name}, ${o.leftOrt || "Mittenwalde"}${o.leftDate ? ", " + o.leftDate : ""}`), lx, yLine + 5);
     doc.text(s(`${o.rightName || "Tippgeber"}${o.rightOrt ? ", " + o.rightOrt : ""}${o.rightDate ? ", " + o.rightDate : ""}`), rx, yLine + 5);
     doc.setFontSize(7);
     doc.text("Für die Gesellschaft", lx, yLine + 10);
@@ -177,9 +177,9 @@ function renderParteien(t: Tools, bewerber: Bewerber) {
   const lx = M + 6;
   const rx = M + colW + colGap + 6;
   const leftLines = [
-    `${GESELLSCHAFT.rechtsform} (${GESELLSCHAFT.zusatz})`,
+    GESELLSCHAFT.zusatz ? `${GESELLSCHAFT.rechtsform} (${GESELLSCHAFT.zusatz})` : GESELLSCHAFT.rechtsform,
     GESELLSCHAFT.adresse,
-    `Inhaber: ${GESELLSCHAFT.vertretenDurch}`,
+    `vertreten durch ${GESELLSCHAFT.vertretenDurch}`,
     '— nachfolgend "Gesellschaft" genannt —',
   ];
   const rightLines = [...vpAdrLines, ...vpKontakt, '— nachfolgend "Tippgeber" genannt —'];
@@ -241,8 +241,8 @@ function renderVertrag(t: Tools, bewerber: Bewerber) {
   p("(3) Der Tippgeber wird ausdrücklich nicht als Handelsvertreter, Makler i.S.d. §§ 34c/34f GewO oder Anlagevermittler tätig.");
 
   h1("§ 2 Tätigkeit des Tippgebers");
-  p("(1) Der Tippgeber übermittelt geeignete Kontakte ausschließlich über das ihm bereitgestellte Tippgeberportal von MOREImmo (nachfolgend \"Portal\").");
-  p("(2) Die Tätigkeit beschränkt sich auf eine erste Vorqualifizierung (Ansprache, Erhebung von Basisdaten wie Name, Kontakt, grober Investitionsrahmen, Zeitfenster) sowie die Einholung des ausdrücklichen Einverständnisses des Kontakts zur Weitergabe der Daten an MOREImmo.");
+  p("(1) Der Tippgeber übermittelt geeignete Kontakte ausschließlich über das ihm bereitgestellte Tippgeberportal von OS Immobilien (nachfolgend \"Portal\").");
+  p("(2) Die Tätigkeit beschränkt sich auf eine erste Vorqualifizierung (Ansprache, Erhebung von Basisdaten wie Name, Kontakt, grober Investitionsrahmen, Zeitfenster) sowie die Einholung des ausdrücklichen Einverständnisses des Kontakts zur Weitergabe der Daten an OS Immobilien.");
   p("(3) Dem Tippgeber ist es ausdrücklich untersagt,");
   bullet([
     "eigenständig Beratung zu Immobilien, Kapitalanlagen, Steuern, Finanzierungen oder Rechtsfragen zu erbringen",
@@ -270,7 +270,7 @@ function renderVertrag(t: Tools, bewerber: Bewerber) {
 
   h1("§ 5 Datenweitergabe & Einwilligung");
   p("(1) Der Tippgeber darf personenbezogene Daten eines Kontakts nur mit dessen ausdrücklicher, dokumentierter Einwilligung zur Weitergabe an die Gesellschaft übermitteln.");
-  p("(2) Der Tippgeber informiert den Kontakt vor der Weitergabe transparent darüber, dass die Daten an MOREImmo zur weiteren Beratung übermittelt werden.");
+  p("(2) Der Tippgeber informiert den Kontakt vor der Weitergabe transparent darüber, dass die Daten an OS Immobilien zur weiteren Beratung übermittelt werden.");
   p("(3) Die Details der datenschutzrechtlichen Zusammenarbeit ergeben sich aus Anlage 1 (DSGVO-Auftragsverarbeitungsvereinbarung inkl. Verschwiegenheitserklärung).");
 
   h1("§ 6 Pflichten des Tippgebers");
@@ -324,7 +324,7 @@ function renderAnlage1AVV(t: Tools, bewerber: Bewerber) {
   const { h1, p, bullet } = t;
   const name = [bewerber.vorname, bewerber.nachname].filter(Boolean).join(" ") || "[Tippgeber]";
   h1("Präambel");
-  p(`Die Parteien schließen diese Auftragsverarbeitungsvereinbarung (AVV) gemäß Art. 28 DSGVO im Rahmen der Zusammenarbeit als Tippgeber gemäß der Tippgebervereinbarung zwischen MOREImmo und ${name}. MOREImmo ist Verantwortlicher; der Tippgeber wird als Auftragsverarbeiter tätig, soweit er personenbezogene Daten der Gesellschaft im Portal verarbeitet oder Daten von Kontakten für die Gesellschaft erhebt.`);
+  p(`Die Parteien schließen diese Auftragsverarbeitungsvereinbarung (AVV) gemäß Art. 28 DSGVO im Rahmen der Zusammenarbeit als Tippgeber gemäß der Tippgebervereinbarung zwischen OS Immobilien und ${name}. OS Immobilien ist Verantwortlicher; der Tippgeber wird als Auftragsverarbeiter tätig, soweit er personenbezogene Daten der Gesellschaft im Portal verarbeitet oder Daten von Kontakten für die Gesellschaft erhebt.`);
 
   h1("§ 1 Gegenstand & Dauer");
   p("Gegenstand: Erhebung, Übermittlung und portalseitige Verarbeitung personenbezogener Daten von Interessenten für Kapitalanlageimmobilien.");
@@ -333,7 +333,7 @@ function renderAnlage1AVV(t: Tools, bewerber: Bewerber) {
   h1("§ 2 Art & Zweck der Verarbeitung");
   bullet([
     "Erhebung von Basiskontaktdaten (Name, Kontakt, Investitionsinteresse)",
-    "Übermittlung der Kontakte an MOREImmo über das Tippgeberportal",
+    "Übermittlung der Kontakte an OS Immobilien über das Tippgeberportal",
     "Statusanzeige der eingereichten Kontakte im Portal",
   ]);
 
@@ -381,7 +381,7 @@ function renderAnlage2Portal(t: Tools) {
 
   h1("§ 2 Einreichen von Kontakten");
   bullet([
-    "Es sind ausschließlich Kontakte einzureichen, die einer Kontaktaufnahme durch MOREImmo nachweislich zugestimmt haben.",
+    "Es sind ausschließlich Kontakte einzureichen, die einer Kontaktaufnahme durch OS Immobilien nachweislich zugestimmt haben.",
     "Pflichtangaben je Kontakt: Vor- und Nachname, E-Mail und/oder Telefon, kurze Notiz zum Interesse.",
     "Doppel-Einreichungen sowie bereits laufende Kontakte werden vom System automatisch geprüft.",
     "Erfundene, generierte oder in irgendeiner Form gekaufte Kontakte sind ausdrücklich untersagt.",
@@ -391,21 +391,21 @@ function renderAnlage2Portal(t: Tools) {
   bullet([
     "Kontakt hat grundsätzliches Interesse an Kapitalanlageimmobilien geäußert",
     "realistische Bonitätsgrundlage (Einkommen / Eigenkapital / Zeitfenster) wurde grob erfragt",
-    "Kontakt weiß, dass MOREImmo sich melden wird",
+    "Kontakt weiß, dass OS Immobilien sich melden wird",
   ]);
   p("Kontakte, die diesen Kriterien nicht entsprechen, können ohne Vergütungsanspruch abgelehnt werden.");
 
   h1("§ 4 Statusverfolgung");
-  p("Im Portal sieht der Tippgeber jederzeit den aktuellen Status seiner eingereichten Kontakte (z.B. Neuer Lead / Kontaktiert / Erstgespräch / Follow-Up / Abgeschlossen / Verloren). Beratung und Kommunikation mit dem Kontakt liegen ausschließlich bei MOREImmo.");
+  p("Im Portal sieht der Tippgeber jederzeit den aktuellen Status seiner eingereichten Kontakte (z.B. Neuer Lead / Kontaktiert / Erstgespräch / Follow-Up / Abgeschlossen / Verloren). Beratung und Kommunikation mit dem Kontakt liegen ausschließlich bei OS Immobilien.");
 
   h1("§ 5 Sanktionen");
   p("Bei Verstößen gegen § 1 - § 3 (insbesondere gefakte Kontakte, unzulässige Werbung, fehlende Einwilligungen) kann die Gesellschaft den Portalzugang mit sofortiger Wirkung sperren und die Zusammenarbeit außerordentlich beenden. Bereits entstandene, aber noch nicht abgerechnete Vergütungsansprüche können bei nachweislichen Verstößen entfallen.");
 
   h1("§ 6 Marke & Kommunikation");
-  p("Der Tippgeber darf die Marke \"MOREImmo\" nur im Rahmen der internen Kontaktansprache erwähnen (z.B. \"Ich kenne bei MOREImmo jemanden, der sich bei Dir meldet\"). Eigene Werbung mit dem Logo, eigenen Landing Pages oder Ads unter der Marke ist ohne schriftliche Freigabe untersagt.");
+  p("Der Tippgeber darf die Marke \"OS Immobilien\" nur im Rahmen der internen Kontaktansprache erwähnen (z.B. \"Ich kenne bei OS Immobilien jemanden, der sich bei Dir meldet\"). Eigene Werbung mit dem Logo, eigenen Landing Pages oder Ads unter der Marke ist ohne schriftliche Freigabe untersagt.");
 
   h1("§ 7 Änderungen");
-  p("MOREImmo kann diese Portal- & Qualitätsrichtlinie mit einer Ankündigungsfrist von 4 Wochen anpassen. Die jeweils aktuelle Fassung ist im Portal einsehbar.");
+  p("OS Immobilien kann diese Portal- & Qualitätsrichtlinie mit einer Ankündigungsfrist von 4 Wochen anpassen. Die jeweils aktuelle Fassung ist im Portal einsehbar.");
 }
 
 function finalize(doc: jsPDF): Blob {
@@ -426,7 +426,7 @@ export async function buildTippgeberVertragPdf(opts: {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   await ensureUnicodeFont(doc);
 
-  const t1 = makeTools(doc, logo, "Tippgebervereinbarung", "Reine Nachweistätigkeit · MOREImmo");
+  const t1 = makeTools(doc, logo, "Tippgebervereinbarung", "Reine Nachweistätigkeit · OS Immobilien");
   renderVertrag(t1, opts.bewerber);
   t1.signatures({
     rightName: [opts.bewerber.vorname, opts.bewerber.nachname].filter(Boolean).join(" ") || "Tippgeber",
@@ -455,12 +455,12 @@ export async function buildTippgeberEinzelPdf(
   // Einzeldokumente des Tippgebers in Helvetica.
   await ensureUnicodeFont(doc);
   if (key === "vertrag") {
-    const t = makeTools(doc, logo, "Tippgebervereinbarung", "Reine Nachweistätigkeit · MOREImmo");
+    const t = makeTools(doc, logo, "Tippgebervereinbarung", "Reine Nachweistätigkeit · OS Immobilien");
     renderVertrag(t, ctx.bewerber);
     const fmtDate = (iso?: string) => { if (!iso) return ""; try { return new Date(iso).toLocaleDateString("de-DE"); } catch { return ""; } };
     t.signatures({
       rightName: [ctx.bewerber.vorname, ctx.bewerber.nachname].filter(Boolean).join(" ") || "Tippgeber",
-      leftOrt: ctx.kurzSignedOrt || "Bad Feilnbach",
+      leftOrt: ctx.kurzSignedOrt || "Mittenwalde",
       leftDate: fmtDate(ctx.kurzSignedAt),
       leftSig: ctx.kurzSignatureDataUrl,
       rightOrt: ctx.bewerberSignedOrt || ctx.bewerber.ort || "",

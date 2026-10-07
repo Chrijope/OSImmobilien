@@ -134,11 +134,11 @@ describe("Empfängerliste aus app_config", () => {
 describe("Empfänger zusammenstellen", () => {
   it("nimmt den Partner zuerst und jede Adresse nur einmal", () => {
     const liste = empfaengerZusammenstellen(
-      { email: "c.peetz@more.immo", name: "Christian Peetz" },
-      [{ email: "C.Peetz@more.immo" }, { email: "kurz@firma.test", name: "Christian Kurz" }],
+      { email: "os@os-immobilien.com", name: "Christian Peetz" },
+      [{ email: "os@os-immobilien.com" }, { email: "kurz@firma.test", name: "Christian Kurz" }],
     );
     expect(liste).toEqual([
-      { email: "c.peetz@more.immo", name: "Christian Peetz", art: "partner" },
+      { email: "os@os-immobilien.com", name: "Christian Peetz", art: "partner" },
       { email: "kurz@firma.test", name: "Christian Kurz", art: "geschaeftsfuehrung" },
     ]);
   });
@@ -168,7 +168,7 @@ describe("Inhalt der Mail", () => {
     expect(daten).toMatchObject({
       vpName: "Paula Partner",
       kundeName: "Anna Beispiel",
-      kundeLink: "https://portal.more.immo/kunden/k-1",
+      kundeLink: "https://osimmobilien.netlify.app/kunden/k-1",
       objektTitel: "Musterweg 1, Wohnung 3",
       unterschriebenAm: "24.09.2026",
       pdfUrl: "https://speicher.test/x.pdf",
@@ -261,8 +261,8 @@ describe("Versand der Meldung", () => {
       ...STANDARD,
       kontakt: { zustaendig_id: null, berater: "Christian Peetz" },
       profile: [
-        { id: "a1111111-2222-4333-8444-555555555555", name: "Christian Peetz", email: "c.peetz@more.immo" },
-        { id: "b1111111-2222-4333-8444-555555555555", name: "christian  peetz", email: "c.peetz@more.immo" },
+        { id: "a1111111-2222-4333-8444-555555555555", name: "Christian Peetz", email: "os@os-immobilien.com" },
+        { id: "b1111111-2222-4333-8444-555555555555", name: "christian  peetz", email: "os@os-immobilien.com" },
       ],
       config: { wert: ["gf@firma.test"] },
     });

@@ -145,13 +145,13 @@ export const template = {
       { datum: 'Mittwoch, 13. August 2026', uhrzeit: '14:30' },
       { datum: 'Freitag, 15. August 2026', uhrzeit: '09:00' },
     ],
-    portalUrl: 'https://portal.more.immo/kunde/investments',
+    portalUrl: 'https://osimmobilien.netlify.app/kunde/investments',
     bitteBis: '5. August 2026',
     berater: {
       name: 'Julian Meyer',
-      rolle: 'Ihr Ansprechpartner bei MOREImmo',
+      rolle: 'Ihr Ansprechpartner bei OS Immobilien',
       telefon: '08061 000000',
-      email: 'julian@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

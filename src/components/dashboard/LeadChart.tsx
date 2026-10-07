@@ -91,7 +91,7 @@ export function LeadChart() {
   const labelFor = (k: string) =>
     k === "eigen" ? "Eigen"
     : k === "team" ? "Eigenes Team"
-    : k === "company" ? "Team MOREImmo"
+    : k === "company" ? "Team OS Immobilien"
     : k === "lead" ? "Lead"
     : k;
 
@@ -115,7 +115,7 @@ export function LeadChart() {
             )}
             {showCompany && (
               <span className="text-muted-foreground">
-                MOREImmo <span className="font-medium tabular-nums ml-1">{totalCompany}</span>
+                OS Immobilien <span className="font-medium tabular-nums ml-1">{totalCompany}</span>
               </span>
             )}
             <span className="text-muted-foreground">

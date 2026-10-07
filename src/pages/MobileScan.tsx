@@ -421,7 +421,7 @@ export default function MobileScan() {
     return (
       <div data-lg="seite" className="min-h-screen bg-background flex flex-col items-center justify-between p-6">
         <div className="flex-1 flex flex-col items-center justify-center w-full max-w-sm text-center space-y-6">
-          <img src={moreimmoLogo} alt="MOREImmo" className="h-16 w-auto object-contain" />
+          <img src={moreimmoLogo} alt="OS Immobilien" className="h-16 w-auto object-contain" />
           <div className="space-y-2">
             <h1 className="text-2xl font-bold tracking-tight">{t.titel}</h1>
             <p className="text-sm text-muted-foreground">

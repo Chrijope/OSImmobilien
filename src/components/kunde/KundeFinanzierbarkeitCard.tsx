@@ -35,7 +35,7 @@ function AnimatedEuro({ value, className }: { value: number; className?: string 
 
 /**
  * Concierge-Card „Deine Finanzierbarkeit" für das Kundenportal.
- * Zeigt animierte Grafik im MOREImmo-Portal-CI (portal-akzent) und
+ * Zeigt animierte Grafik im OS Immobilien-Portal-CI (portal-akzent) und
  * eine transparente Aufschlüsselung der Berechnung.
  */
 export default function KundeFinanzierbarkeitCard({ investmentId, saSigned = true, investmentLabel, className = "" }: Props) {

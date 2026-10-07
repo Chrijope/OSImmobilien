@@ -430,8 +430,8 @@ export function ImportExportButton({ kontakte, onImportDone, exportFilename = "k
 
   const handleDownloadTemplate = () => {
     const a = document.createElement("a");
-    a.href = "/dokumente/MOREImmo_Import_Vorlage.csv";
-    a.download = "MOREImmo_Import_Vorlage.csv";
+    a.href = "/dokumente/OS-Immobilien_Import_Vorlage.csv";
+    a.download = "OS-Immobilien_Import_Vorlage.csv";
     a.click();
   };
 

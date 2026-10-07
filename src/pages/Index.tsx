@@ -272,7 +272,7 @@ const Index = () => {
       <div className="pointer-events-none absolute -right-12 -top-20 h-60 w-60 rounded-full bg-primary/5 blur-3xl" aria-hidden="true" />
       <div className="relative flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="mb-2 text-xs font-medium text-primary">Dein Platz bei MOREImmo</p>
+          <p className="mb-2 text-xs font-medium text-primary">Dein Platz bei OS Immobilien</p>
           <h1 className="text-[28px] md:text-[36px] font-semibold tracking-tight leading-tight">
             {greeting}, {firstName}.
           </h1>

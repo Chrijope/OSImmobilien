@@ -25,7 +25,7 @@ import { datumFuer, DE_EN, type MailSprache, texteFuer, type Zweisprachig } from
  */
 
 /** Die Investments-Seite des Kundenportals, dort steht der Abschnitt Reservierung. */
-export const KUNDENPORTAL_INVESTMENTS_URL = 'https://portal.more.immo/kunde/investments'
+export const KUNDENPORTAL_INVESTMENTS_URL = 'https://osimmobilien.netlify.app/kunde/investments'
 
 interface Props {
   name?: string
@@ -80,7 +80,7 @@ const DE = {
   vergeben: (gesamt: boolean) =>
     `Leider war ${gesamt ? 'das Objekt' : 'die Wohnung'} zum Zeitpunkt Ihrer Unterschrift bereits an einen anderen Kaufinteressenten vergeben. Die Reservierung ist deshalb nicht zustande gekommen. Bitte zahlen Sie keine Reservierungsgebühr; eine bereits gezahlte Gebühr erhalten Sie vollständig zurück. Ihr persönlicher Ansprechpartner meldet sich bei Ihnen.`,
   ohneGebuehr:
-    'Für diese Reservierung wird keine Reservierungsgebühr erhoben. Die Reservierung und die Leistungen von MOREImmo beginnen mit der Unterzeichnung dieser Vereinbarung.',
+    'Für diese Reservierung wird keine Reservierungsgebühr erhoben. Die Reservierung und die Leistungen von OS Immobilien beginnen mit der Unterzeichnung dieser Vereinbarung.',
   abwarten: (ab: string, gesamt: boolean) =>
     `Sie haben gewählt, das Ende der Widerrufsfrist abzuwarten. Die Reservierung beginnt deshalb am ${ab}. Bis dahin ist ${gesamt ? 'das Objekt' : 'die Wohnung'} nicht für Sie reserviert und kann anderen Kaufinteressenten angeboten werden; kommt es dazu, erhalten Sie eine bereits gezahlte Reservierungsgebühr vollständig zurück.`,
   portal:
@@ -102,11 +102,11 @@ const TEXTE: Zweisprachig<typeof DE> = {
     einleitung: (objekt: string, mitWiderruf: boolean) =>
       `Please find attached your reservation agreement${objekt ? ` for ${objekt}` : ''} as a PDF. It has been signed digitally by all prospective buyers${mitWiderruf ? ' and contains the information on your right of withdrawal (Widerrufsbelehrung)' : ''}. Please keep this document.`,
     nurDeutsch:
-      'The attached agreement is drawn up in German. Your contact person at MOREImmo will be glad to explain any part of it to you.',
+      'The attached agreement is drawn up in German. Your contact person at OS Immobilien will be glad to explain any part of it to you.',
     vergeben: (gesamt: boolean) =>
       `Unfortunately, at the time of your signature the ${gesamt ? 'property' : 'apartment'} had already been allocated to another prospective buyer. The reservation has therefore not come into effect. Please do not pay a reservation fee; any fee you have already paid will be refunded in full. Your personal contact person will get in touch with you.`,
     ohneGebuehr:
-      'No reservation fee is charged for this reservation. The reservation and the services of MOREImmo begin when this agreement is signed.',
+      'No reservation fee is charged for this reservation. The reservation and the services of OS Immobilien begin when this agreement is signed.',
     abwarten: (ab: string, gesamt: boolean) =>
       `You have chosen to wait until the end of the withdrawal period. The reservation therefore begins on ${ab}. Until then, the ${gesamt ? 'property' : 'apartment'} is not reserved for you and may be offered to other prospective buyers; should this happen, any reservation fee you have already paid will be refunded in full.`,
     portal:
@@ -170,9 +170,9 @@ export const template = {
     portalZugang: true,
     berater: {
       name: 'Christian Peetz',
-      rolle: 'Persönlicher Ansprechpartner bei MOREImmo',
+      rolle: 'Persönlicher Ansprechpartner bei OS Immobilien',
       telefon: '08061 000000',
-      email: 'christian@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

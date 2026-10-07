@@ -1,6 +1,6 @@
 /**
  * Hilfsfunktionen für die kundenbezogene Vorbelegung der Rechner
- * (Investmentrechner, MORE Lotse).
+ * (Investmentrechner, OS Lotse).
  *
  * Quelle der Selbstauskunft ist `eigeneSaDataFuerInvestmentRow` aus
  * `saQuelle.ts`, also ausschließlich die SA des betrachteten Investments.

@@ -145,7 +145,7 @@ export const template = {
   sprachen: DE_EN,
   previewData: {
     name: 'Herr Mustermann',
-    signUrl: 'https://portal.more.immo/signatur?token=beispiel&type=reservierung',
+    signUrl: 'https://osimmobilien.netlify.app/signatur?token=beispiel&type=reservierung',
     objektTitel: 'Musterstraße 12, WE 4',
     stufe: 1,
   },

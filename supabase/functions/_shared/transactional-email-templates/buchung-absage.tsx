@@ -135,12 +135,12 @@ export const template = {
     terminDatum: 'Donnerstag, 6. August 2026',
     terminUhrzeit: '10:15',
     terminTitel: 'Telefonisches Erstgespräch',
-    neuBuchenUrl: 'https://portal.more.immo/termin/christian-peetz',
+    neuBuchenUrl: 'https://osimmobilien.netlify.app/termin/christian-peetz',
     berater: {
       name: 'Christian Peetz',
       rolle: 'Senior Berater',
-      telefon: '+49 1515 0275108',
-      email: 'c.peetz@more.immo',
+      telefon: '+49 30 863289210',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

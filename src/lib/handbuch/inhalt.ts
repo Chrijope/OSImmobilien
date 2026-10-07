@@ -1,7 +1,7 @@
 /**
  * Das persönliche Immobilienhandbuch, Seite für Seite.
  *
- * Vorlage ist Teil B der Strategie „Handbuch-Funnel für MOREImmo“ vom
+ * Vorlage ist Teil B der Strategie „Handbuch-Funnel für OS Immobilien“ vom
  * 26.09.2026 (handbuch.py). Die Texte sind von dort übernommen, mit diesen
  * bewussten Abweichungen:
  *
@@ -271,7 +271,7 @@ function diagrammVermietungsergebnis(a: HandbuchAuswertung): Zeichnung {
 function inhaltListe(): Array<{ nr: string; titel: string; seitenId: string }> {
   return [
     { nr: "1", titel: tx("Warum die Wohnung zum Schluss kommt", "Why the flat comes last"), seitenId: "kapitel-1" },
-    { nr: "2", titel: tx("So arbeitet MOREImmo", "How MOREImmo works"), seitenId: "kapitel-2" },
+    { nr: "2", titel: tx("So arbeitet OS Immobilien", "How OS Immobilien works"), seitenId: "kapitel-2" },
     { nr: "3", titel: tx("Geld, das still an Wert verliert", "Money that quietly loses value"), seitenId: "kapitel-3" },
     { nr: "4", titel: tx("Wie eine Bank entscheidet", "How a bank decides"), seitenId: "kapitel-4" },
     { nr: "5", titel: tx("Ihr Rahmen", "Your budget"), seitenId: "kapitel-5" },
@@ -855,7 +855,7 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
   seiten.push({
     id: "kapitel-2",
     kapitel: kapitel(2),
-    titel: tx("So arbeitet MOREImmo", "How MOREImmo works"),
+    titel: tx("So arbeitet OS Immobilien", "How OS Immobilien works"),
     bloecke: [
       {
         typ: "lead",
@@ -879,7 +879,7 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
         typ: "absatz",
         text: tx(
           "Sie haben einen festen Immobilienberater. Er begleitet Sie vom ersten Gespräch bis zum Notar und darüber hinaus. Die Selbstauskunft verpflichtet Sie zu nichts; sie macht nur aus einer Schätzung eine belastbare Rechnung.",
-          "You have one fixed contact person at MOREImmo. They accompany you from the first conversation to the notary and beyond. The self-disclosure does not commit you to anything; it simply turns an estimate into a reliable calculation.",
+          "You have one fixed contact person at OS Immobilien. They accompany you from the first conversation to the notary and beyond. The self-disclosure does not commit you to anything; it simply turns an estimate into a reliable calculation.",
         ),
       },
       { typ: "h2", text: tx("Drei Konzepte", "Three concepts") },
@@ -918,7 +918,7 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
           "Our focus is Bavaria. We add selected flats across Germany when the location and the numbers are right.",
         ),
       },
-      { typ: "h2", text: tx("Was Sie MOREImmo kostet", "What MOREImmo costs you") },
+      { typ: "h2", text: tx("Was Sie OS Immobilien kostet", "What OS Immobilien costs you") },
       {
         typ: "absatz",
         text: tx(
@@ -2015,12 +2015,12 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
           [
             tx("Wer sieht meine Angaben?", "Who sees my details?"),
             tx(
-              "MOREImmo und der Immobilienberater, der Sie betreut. An eine Bank gehen Ihre Daten erst, wenn Sie sich für eine Finanzierung entscheiden.",
-              "MOREImmo and your contact person who looks after you. Your data only goes to a bank once you decide on a financing.",
+              "OS Immobilien und der Immobilienberater, der Sie betreut. An eine Bank gehen Ihre Daten erst, wenn Sie sich für eine Finanzierung entscheiden.",
+              "OS Immobilien and your contact person who looks after you. Your data only goes to a bank once you decide on a financing.",
             ),
           ],
           [
-            tx("Was kostet mich MOREImmo?", "What does MOREImmo cost me?"),
+            tx("Was kostet mich OS Immobilien?", "What does OS Immobilien cost me?"),
             tx(
               "Wir vermitteln im Auftrag des Verkäufers. Für Sie fällt keine Maklerprovision an, sofern im Exposé nichts anderes ausgewiesen ist.",
               "We act on behalf of the seller. You pay no agent's commission unless the property listing states otherwise.",
@@ -2080,8 +2080,8 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
           [
             tx("Was passiert mit meinen Daten, wenn ich nicht weitermache?", "What happens to my data if I do not continue?"),
             tx(
-              "Sie können jederzeit verlangen, dass wir Ihre Angaben löschen, zum Beispiel per Mail an datenschutz@more.immo.",
-              "You can ask us to delete your details at any time, for example by email to datenschutz@more.immo.",
+              "Sie können jederzeit verlangen, dass wir Ihre Angaben löschen, zum Beispiel per Mail an os@os-immobilien.com.",
+              "You can ask us to delete your details at any time, for example by email to os@os-immobilien.com.",
             ),
           ],
         ]),
@@ -2195,8 +2195,8 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
         ton: "dich",
         titel: tx("Ihre Daten", "Your data"),
         text: tx(
-          "Ihre Angaben sehen nur MOREImmo und Ihr Berater. An eine Bank gehen sie erst, wenn Sie sich für eine Finanzierung entscheiden und zustimmen.",
-          "Only MOREImmo and your contact see your details. They only go to a bank once you decide on a financing and consent.",
+          "Ihre Angaben sehen nur OS Immobilien und Ihr Berater. An eine Bank gehen sie erst, wenn Sie sich für eine Finanzierung entscheiden und zustimmen.",
+          "Only OS Immobilien and your contact see your details. They only go to a bank once you decide on a financing and consent.",
         ),
       },
     ],
@@ -2212,8 +2212,8 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
       {
         typ: "fussnote",
         text: tx(
-          `${annahmenText(kp)} Gerechnet wie im MOREImmo-Investmentrechner: Kaufnebenkosten auf den gesamten Kaufpreis, Gebäudeanteil einschließlich anteiliger Nebenkosten als Grundlage der Abschreibung, Finanzierungsnebenkosten 0,2 % des Darlehens im ersten Jahr als Werbungskosten, Rücklage im Cashflow, aber nicht steuerlich abgezogen, Steuer nach der Differenzmethode, jedes Jahr als volles Jahr.`,
-          `${annahmenText(kp)} Calculated as in the MOREImmo investment calculator: purchase costs on the full purchase price, building share including pro rata purchase costs as the basis for depreciation, financing costs of 0.2% of the loan as deductible expenses in the first year, reserve included in the cash flow but not deducted for tax, tax by the difference method, each year as a full year.`,
+          `${annahmenText(kp)} Gerechnet wie im OS Immobilien-Investmentrechner: Kaufnebenkosten auf den gesamten Kaufpreis, Gebäudeanteil einschließlich anteiliger Nebenkosten als Grundlage der Abschreibung, Finanzierungsnebenkosten 0,2 % des Darlehens im ersten Jahr als Werbungskosten, Rücklage im Cashflow, aber nicht steuerlich abgezogen, Steuer nach der Differenzmethode, jedes Jahr als volles Jahr.`,
+          `${annahmenText(kp)} Calculated as in the OS Immobilien investment calculator: purchase costs on the full purchase price, building share including pro rata purchase costs as the basis for depreciation, financing costs of 0.2% of the loan as deductible expenses in the first year, reserve included in the cash flow but not deducted for tax, tax by the difference method, each year as a full year.`,
         ),
       },
       {
@@ -2239,8 +2239,8 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
       {
         typ: "absatz",
         text: tx(
-          "MOREImmo, Wendelsteinstraße 19, 83075 Bad Feilnbach. Kontakt: office@more.immo. Impressum und Datenschutz: portal.more.immo/impressum und portal.more.immo/datenschutz.",
-          "MOREImmo, Wendelsteinstraße 19, 83075 Bad Feilnbach, Germany. Contact: office@more.immo. Legal notice and privacy policy: portal.more.immo/impressum and portal.more.immo/datenschutz.",
+          "OS Immobilien Holding GmbH, Am Ostbahnhof 1, 15749 Mittenwalde. Kontakt: os@os-immobilien.com. Impressum und Datenschutz: osimmobilien.netlify.app/impressum und osimmobilien.netlify.app/datenschutz.",
+          "OS Immobilien Holding GmbH, Am Ostbahnhof 1, 15749 Mittenwalde, Germany. Contact: os@os-immobilien.com. Legal notice and privacy policy: osimmobilien.netlify.app/impressum and osimmobilien.netlify.app/datenschutz.",
         ),
       },
     ],

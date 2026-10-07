@@ -126,7 +126,7 @@ describe("Liquid Glass auf den Bewerberseiten: Lesbarkeit", () => {
    * fuenf Seiten und `bewerberformular/FragebogenBausteine.tsx`). Nicht dabei:
    * Weiss auf den blauen Knoepfen und das Grau ausgegrauter Kalendertage.
    */
-  const SCHRIFT = ["#0F1621", "#1D1D1F", "#3A3A3F", "#4B5057", "#5A5F66", "#6E6E73", "#0A6EDB", "#0A5BB5", "#B23A2B", "#1E7A45", "#6B5636", "#3F5A4A", "#B91C1C", "#991B1B", "#C62828", "#DC2626"];
+  const SCHRIFT = ["#0F1621", "#1D1D1F", "#3A3A3F", "#4B5057", "#5A5F66", "#6E6E73", "#187F58", "#156949", "#B23A2B", "#1E7A45", "#6B5636", "#3F5A4A", "#B91C1C", "#991B1B", "#C62828", "#DC2626"];
 
   it.each([
     ["am Schreibtisch, mit Weichzeichnung", true],

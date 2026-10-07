@@ -18,14 +18,14 @@ describe("Handbuch-PDF", () => {
       vorname: "Erika",
       nachname: "Muster",
       datum: "26.09.2026",
-      saLink: "https://portal.more.immo/handbuch/selbstauskunft/abc",
+      saLink: "https://osimmobilien.netlify.app/handbuch/selbstauskunft/abc",
     });
     const doc = await erzeugeHandbuchPdf(h);
     const seiten = doc.getNumberOfPages();
     expect(seiten).toBeGreaterThanOrEqual(19);
     expect(seiten).toBeLessThanOrEqual(24);
     const roh = doc.output();
-    expect(roh).toContain("https://portal.more.immo/handbuch/selbstauskunft/abc");
+    expect(roh).toContain("https://osimmobilien.netlify.app/handbuch/selbstauskunft/abc");
   }, 30000);
 
   it("entsteht auf Englisch mit englischen festen Wörtern und demselben Umfang", async () => {
@@ -34,7 +34,7 @@ describe("Handbuch-PDF", () => {
       vorname: "Erika",
       nachname: "Muster",
       datum: "26 Sep 2026",
-      saLink: "https://portal.more.immo/sa/abc?lang=en",
+      saLink: "https://osimmobilien.netlify.app/sa/abc?lang=en",
       sprache: "en",
     });
     const doc = await erzeugeHandbuchPdf(h);
@@ -42,13 +42,13 @@ describe("Handbuch-PDF", () => {
     const roh = doc.output();
     // Der Seitentext ist komprimiert; lesbar bleiben Titel und Links.
     expect(roh).toContain("Your personal property handbook for Erika Muster");
-    expect(roh).toContain("https://portal.more.immo/sa/abc?lang=en");
+    expect(roh).toContain("https://osimmobilien.netlify.app/sa/abc?lang=en");
   }, 30000);
 
   it("baut einen sauberen Dateinamen", () => {
-    expect(handbuchDateiname("Jörg Müller-Lüdenscheidt")).toBe("MOREImmo_Immobilienhandbuch_Jorg_Muller_Ludenscheidt.pdf");
-    expect(handbuchDateiname("")).toBe("MOREImmo_Immobilienhandbuch.pdf");
-    expect(handbuchDateiname("Erika Muster", "en")).toBe("MOREImmo_Property_Handbook_Erika_Muster.pdf");
+    expect(handbuchDateiname("Jörg Müller-Lüdenscheidt")).toBe("OS-Immobilien_Immobilienhandbuch_Jorg_Muller_Ludenscheidt.pdf");
+    expect(handbuchDateiname("")).toBe("OS-Immobilien_Immobilienhandbuch.pdf");
+    expect(handbuchDateiname("Erika Muster", "en")).toBe("OS-Immobilien_Property_Handbook_Erika_Muster.pdf");
   });
 });
 

@@ -1,7 +1,7 @@
 /**
  * Sichtbare Texte der Referenzen, auf Deutsch und Englisch.
  *
- * Die Beratungspräsentation MOREImmo zeigt diesen Abschnitt in ihrer gewählten
+ * Die Beratungspräsentation OS Immobilien zeigt diesen Abschnitt in ihrer gewählten
  * Sprache. Alle anderen Aufrufer übergeben keine Sprache und bleiben deutsch.
  * Die Projekte stehen in derselben Reihenfolge wie die Bilder in `projects`
  * aus `src/components/landing/BeforeAfterSection.tsx`.

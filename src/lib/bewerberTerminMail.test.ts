@@ -31,9 +31,9 @@ const ANGABEN = {
   titel: KALENDER_TITEL,
   startIso: "2026-09-15T08:00:00.000Z",
   endeIso: "2026-09-15T08:45:00.000Z",
-  uid: "bewerber-termin-abc@more.immo",
+  uid: "os@os-immobilien.com",
   organisator: "Christian Kurz",
-  organisatorEmail: "office@more.immo",
+  organisatorEmail: "os@os-immobilien.com",
   teilnehmerEmail: "max@example.com",
 };
 
@@ -54,7 +54,7 @@ describe("Die Kalenderdatei", () => {
     expect(ics).toContain("DTEND:20260915T084500Z");
     expect(ics).toContain(`UID:${ANGABEN.uid}`);
     expect(ics).toContain(`SUMMARY:${KALENDER_TITEL}`);
-    expect(ics).toContain("ORGANIZER;CN=Christian Kurz:mailto:office@more.immo");
+    expect(ics).toContain("ORGANIZER;CN=Christian Kurz:mailto:os@os-immobilien.com");
     expect(ics).toContain("mailto:max@example.com");
   });
 
@@ -154,7 +154,7 @@ describe("Der Wortlaut der Bestätigung", () => {
  * Mail, und die ist nach zwei Wochen Posteingang nicht mehr zu finden.
  */
 describe("Der Videoraum im Kalendereintrag", () => {
-  const RAUM = "https://portal.more.immo/raum/abc123";
+  const RAUM = "https://osimmobilien.netlify.app/raum/abc123";
 
   it("steht sowohl im Ort als auch in der Beschreibung", () => {
     const ics = baueIcs({ ...ANGABEN, ort: RAUM, beschreibung: `Videoraum: ${RAUM}` });
@@ -178,13 +178,13 @@ describe("Der Knopf in den eigenen Kalender", () => {
   const BASIS = "https://beispiel.supabase.co";
 
   it("führt auf die vorhandene Function get-ics", () => {
-    const url = kalenderLink({ ...ANGABEN, supabaseUrl: BASIS, ort: "https://portal.more.immo/raum/abc" });
+    const url = kalenderLink({ ...ANGABEN, supabaseUrl: BASIS, ort: "https://osimmobilien.netlify.app/raum/abc" });
     expect(url.startsWith(`${BASIS}/functions/v1/get-ics?`)).toBe(true);
     const abfrage = new URL(url).searchParams;
     expect(abfrage.get("title")).toBe(KALENDER_TITEL);
     expect(abfrage.get("start")).toBe("2026-09-15T08:00:00.000Z");
     expect(abfrage.get("end")).toBe("2026-09-15T08:45:00.000Z");
-    expect(abfrage.get("loc")).toBe("https://portal.more.immo/raum/abc");
+    expect(abfrage.get("loc")).toBe("https://osimmobilien.netlify.app/raum/abc");
     expect(abfrage.get("uid")).toBe(ANGABEN.uid);
   });
 

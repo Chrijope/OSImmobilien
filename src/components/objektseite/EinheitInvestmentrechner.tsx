@@ -66,7 +66,7 @@ export interface EinheitInvestmentrechnerProps {
   wohnung: ObjektWohnung;
   /** Nur für Tests: fester Stichtag. */
   heute?: Date;
-  /** Stand des Rechners nach oben, für den MORE Lotsen. */
+  /** Stand des Rechners nach oben, für den OS Lotsen. */
   onErgebnis?: InvestmentrechnerInhaltProps["onErgebnis"];
   /** Ist der Reiter gerade zu sehen? Siehe `InvestmentrechnerInhaltProps.sichtbar`. */
   sichtbar?: boolean;

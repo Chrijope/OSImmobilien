@@ -15,9 +15,9 @@ import { MIKROSEITE_TEXTE } from "../mikroseiteTexte";
  * Aussage ist die Form, nicht der Wert — deshalb steht unter der Grafik
  * „Schematische Darstellung, keine Prognose."
  *
- * Farben: Das Vorbild auf more.immo ist dunkel, die Microseite ist hell.
+ * Farben: Das Vorbild auf osimmobilien.netlify.app ist dunkel, die Microseite ist hell.
  * Deshalb hier eigene Werte, alle gegen Weiß geprüft:
- *   Einkommen  hsl(var(--primary)) = #087ac7   4,55:1
+ *   Einkommen  hsl(var(--primary)) = #15724F   4,55:1
  *   Vermögen   hsl(220 10% 46%)    = #6a7181   4,89:1
  *   Lücke      hsl(18 88% 40%)     = #c2400c   5,18:1
  * Die Achsen sind reine Zierlinien und deshalb bewusst hell.

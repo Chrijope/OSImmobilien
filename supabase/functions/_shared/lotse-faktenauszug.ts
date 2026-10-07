@@ -4,10 +4,10 @@
  * WARUM ES IHN GIBT
  *
  * Rote Unterlagen nennen Personen: Mieter, Eigentümer, Berechtigte,
- * Gläubiger, oft mit Anschrift, Geburtsdatum oder Konto. Der MORE Lotse soll
+ * Gläubiger, oft mit Anschrift, Geburtsdatum oder Konto. Der OS Lotse soll
  * trotzdem sagen können, was im Mietvertrag steht (Miete, Beginn, Kaution)
  * und welche Lasten im Grundbuch eingetragen sind. Freigegeben von Christian
- * am 28.09.2026 (Bauplan MORE Lotse, Stufe 1):
+ * am 28.09.2026 (Bauplan OS Lotse, Stufe 1):
  *
  *   1. Das PDF geht genau einmal an das Modell, mit einem festen Schema über
  *      den Werkzeugaufruf. Das Schema hat KEIN Feld für eine Person und kein
@@ -620,7 +620,7 @@ export function wohnungAusMietvertrag(auszug: Record<string, unknown>): Record<s
 
 /*
  * Der Lotse gibt NIE Auskunft über Provisionen, vor allem nicht über die, die
- * MORE Immo von Bauträgern bekommt. Dreifach abgesichert:
+ * OS Immobilien von Bauträgern bekommt. Dreifach abgesichert:
  *   1. Unterlagen: Vertriebs-, Makler-, Courtage-, Provisions- und
  *      Tippgebervereinbarungen und Provisionslisten werden nie ausgewertet
  *      (`vorabGesperrt`, Einordnung „vertriebsvereinbarung“).
@@ -682,11 +682,11 @@ export function vorabGesperrt(h: { name?: string; text?: string }): boolean {
 /*
  * „Die SEV erhält eine Vergütung von 35 €“, „der Verwalter berechnet eine
  * Gebühr“ (REVIEW-004). Nur, wenn im selben Satz kein Vertrieb, Makler oder
- * MOREImmo steht: Dann bleibt der Satz eine mögliche Vergütungsangabe.
+ * OS Immobilien steht: Dann bleibt der Satz eine mögliche Vergütungsangabe.
  */
 const VERWALTUNG_ERHAELT =
   /(\bsev\b|\w*verwalt(er|ung)\w*).{0,40}?\b(erhaelt|erhalten|bekommt|bekommen|berechnet|berechnen|verlangt|verlangen)\b.{0,40}?(verguetung|gebuehr)\w*/g;
-const VERTRIEB_IM_SATZ = /vertrieb|makler|vermittl|tippgeber|moreimmo|more immo|broker|\bagent/;
+const VERTRIEB_IM_SATZ = /vertrieb|makler|vermittl|tippgeber|moreimmo|more immo|os immobilien|os-immobilien|broker|\bagent/;
 
 /** Satzgrenze: Satzzeichen mit folgendem Leerraum oder Zeilenumbruch. „1.000 €“ und „3,57 %“ bleiben ganz (LOTSE-R10-002). */
 const SATZGRENZE = /((?<=[.!?;])\s+|\n+)/;
@@ -701,7 +701,7 @@ function ohneVerwaltungsverguetung(t: string): string {
  * sie ausgezahlt, etwa für die Kaufnebenkosten. Sie ist keine Vergütung des
  * Vertriebs. In einem Satz, der sie nennt, fallen das Wort und die Verben der
  * Auszahlung („zahlt“, „ausgezahlt“) aus den Prüfungen, nicht aber „erhält“
- * oder „verdient“ neben MOREImmo oder dem Vertrieb und jede andere
+ * oder „verdient“ neben OS Immobilien oder dem Vertrieb und jede andere
  * Provisionsart (Innen-, Vertriebs-, Maklerprovision, Courtage).
  */
 const EIGENPROVISION = /eigenprovision\w*/g;
@@ -726,7 +726,7 @@ export function ohneErlaubteKostenbegriffe(t: string): string {
 
 /**
  * Ein Satz mit Vergütungsbezug: das Vokabular, oder ein Prozentsatz oder
- * Betrag zusammen mit Vertrieb, Makler, Vermittler oder MOREImmo als
+ * Betrag zusammen mit Vertrieb, Makler, Vermittler oder OS Immobilien als
  * Empfänger („Der Vertrieb erhält 6 % vom Kaufpreis“, LOTSE-R9-001).
  * Gilt für Kontext, Auszüge und die fertige Antwort gleichermaßen.
  */
@@ -734,24 +734,24 @@ export function ohneErlaubteKostenbegriffe(t: string): string {
 export const BETRAG =
   "(\\d[\\d.,]*\\s*(%|prozent|percent|€|euro|eur\\b|usd|\\$)|(€|eur|euro|usd|\\$)\\s*\\d|\\b(ein|eins|einen|zwei|drei|vier|fuenf|sechs|sieben|acht|neun|zehn|elf|zwoelf|halbe?|one|two|three|four|five|six|seven|eight|nine|ten)[\\s-]*(prozent|percent))";
 export const ZAHLUNG_AN_VERTRIEB = new RegExp(
-  "^(?=.*(vertrieb|makler|vermittl|broker|\\bagent|moreimmo|more immo|berater|tippgeber))" +
+  "^(?=.*(vertrieb|makler|vermittl|broker|\\bagent|moreimmo|more immo|os immobilien|os-immobilien|berater|tippgeber))" +
     "(?=.*(erhaelt|erhalten|erhielt|bekommt|bekommen|verdient|verdienen|zahlt|zahlst|zahlen|gezahlt|ausgezahlt|ausschuettet|verguetet|fliess|geht an|gehen an|receives?|earns?|paid|pays))" +
     `(?=.*${BETRAG})`,
 );
 
 /**
- * Nennungen als Quelle, nicht als Empfänger: „Laut MOREImmo zahlt der Mieter
+ * Nennungen als Quelle, nicht als Empfänger: „Laut OS Immobilien zahlt der Mieter
  * 850 €“ ist eine Mietangabe (LOTSE-R11-002). Sie werden vor der
- * Zahlungsprüfung entfernt. Ein Satz, der daneben an Vertrieb oder MOREImmo
+ * Zahlungsprüfung entfernt. Ein Satz, der daneben an Vertrieb oder OS Immobilien
  * zahlt, fällt trotzdem.
  */
 export function ohneQuellenangabe(t: string): string {
   return t
-    .replace(/\b(laut|lt\.?|gemaess|nach angaben (von|des|der)|according to|per)\s+(dem |der |des )?(moreimmo|more immo|makler\w*|vertrieb\w*|vermittler\w*|berater\w*)/g, " ")
-    .replace(/(moreimmo|more immo|makler|vertriebs?)[- ]?(expose|exposes|preisliste|angebot|unterlage\w*)/g, " ")
-    .replace(/(von|by) (moreimmo|more immo|dem makler|dem vertrieb) (angeboten\w*|vermittelt\w*|offered|listed)/g, " ");
+    .replace(/\b(laut|lt\.?|gemaess|nach angaben (von|des|der)|according to|per)\s+(dem |der |des )?(moreimmo|more immo|os immobilien|os-immobilien|makler\w*|vertrieb\w*|vermittler\w*|berater\w*)/g, " ")
+    .replace(/(moreimmo|more immo|os immobilien|os-immobilien|makler|vertriebs?)[- ]?(expose|exposes|preisliste|angebot|unterlage\w*)/g, " ")
+    .replace(/(von|by) (moreimmo|more immo|os immobilien|os-immobilien|dem makler|dem vertrieb) (angeboten\w*|vermittelt\w*|offered|listed)/g, " ");
 }
-/** Ein Satz mit Vergütungsbezug: das Vokabular oder eine Zahlung an Vertrieb, Makler, Vermittler oder MOREImmo. */
+/** Ein Satz mit Vergütungsbezug: das Vokabular oder eine Zahlung an Vertrieb, Makler, Vermittler oder OS Immobilien. */
 export function istVerguetungssatz(satz: string): boolean {
   const t = ohneErlaubteKostenbegriffe(fuerSuche(satz));
   return VERGUETUNG_BEGRIFF.test(t) || ZAHLUNG_AN_VERTRIEB.test(ohneQuellenangabe(t));

@@ -30,7 +30,7 @@
  */
 
 /** Die veröffentlichte Adresse. Fest, nie die Vorschau-Adresse von Lovable. */
-export const KUNDEN_EXPOSE_BASIS = "https://portal.more.immo";
+export const KUNDEN_EXPOSE_BASIS = "https://osimmobilien.netlify.app";
 
 /** So lange gilt ein gesendeter Link. */
 export const KUNDEN_EXPOSE_GUELTIG_TAGE = 60;

@@ -7,7 +7,7 @@ import { join, relative, resolve } from "node:path";
  *
  * Der Score ist eine interne Sortierhilfe. Er erscheint nie im Exposé, im
  * Kundenlink, im Portal, in PDFs, Mails, der Kundenansicht oder dem
- * Präsentationsmodus, geht nicht an den MORE Lotsen oder eine KI, wird
+ * Präsentationsmodus, geht nicht an den OS Lotsen oder eine KI, wird
  * nirgends gespeichert und steht in keiner Adresse. Dieser Test hält fest,
  * wer die Score-Module einbinden darf, und durchsucht die übrigen Stellen.
  */

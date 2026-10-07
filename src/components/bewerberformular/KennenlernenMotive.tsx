@@ -35,26 +35,26 @@ import type { MotivId } from "@/lib/bewerberKennenlernen";
 /** Verläufe und Schatten. Je Motiv ein eigener Schlüssel für eindeutige Kennungen. */
 const defs = (k: string) => `<defs>
 <linearGradient id="${k}p" x1="0" y1="0" x2="0.8" y2="1"><stop offset="0" stop-color="#FCFDFF"/><stop offset="1" stop-color="#E6F0FC"/></linearGradient>
-<linearGradient id="${k}g" x1="0" y1="0" x2="1" y2="0.85"><stop offset="0" stop-color="#C4E1FF"/><stop offset="0.45" stop-color="#7CBEFF"/><stop offset="1" stop-color="#3E8EF0"/></linearGradient>
-<linearGradient id="${k}b" x1="0" y1="0" x2="0.55" y2="1"><stop offset="0" stop-color="#2E8AE8"/><stop offset="1" stop-color="#0A5BB5"/></linearGradient>
-<linearGradient id="${k}d" x1="0" y1="0" x2="0.55" y2="1"><stop offset="0" stop-color="#0A6EDB"/><stop offset="1" stop-color="#084A94"/></linearGradient>
+<linearGradient id="${k}g" x1="0" y1="0" x2="1" y2="0.85"><stop offset="0" stop-color="#92EFCC"/><stop offset="0.45" stop-color="#1ED28D"/><stop offset="1" stop-color="#239F70"/></linearGradient>
+<linearGradient id="${k}b" x1="0" y1="0" x2="0.55" y2="1"><stop offset="0" stop-color="#26996D"/><stop offset="1" stop-color="#156949"/></linearGradient>
+<linearGradient id="${k}d" x1="0" y1="0" x2="0.55" y2="1"><stop offset="0" stop-color="#187F58"/><stop offset="1" stop-color="#11553B"/></linearGradient>
 <linearGradient id="${k}w" x1="0" y1="0" x2="0.4" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#EAF3FD"/></linearGradient>
 <linearGradient id="${k}h" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".85"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>
-<filter id="${k}s" x="-45%" y="-45%" width="190%" height="210%"><feDropShadow dx="0" dy="2.4" stdDeviation="2.4" flood-color="#0A3E7A" flood-opacity="0.20"/></filter>
-<filter id="${k}t" x="-45%" y="-45%" width="190%" height="210%"><feDropShadow dx="0" dy="1.1" stdDeviation="1.2" flood-color="#0A3E7A" flood-opacity="0.16"/></filter>
+<filter id="${k}s" x="-45%" y="-45%" width="190%" height="210%"><feDropShadow dx="0" dy="2.4" stdDeviation="2.4" flood-color="#104732" flood-opacity="0.20"/></filter>
+<filter id="${k}t" x="-45%" y="-45%" width="190%" height="210%"><feDropShadow dx="0" dy="1.1" stdDeviation="1.2" flood-color="#104732" flood-opacity="0.16"/></filter>
 </defs>`;
 
 /** Rahmen eines Motivs: weiche Grundfläche, darauf der Inhalt. */
 const M = (k: string, alt: string, inner: string) =>
   `<svg width="150" height="110" viewBox="0 0 150 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${alt}">${defs(k)}` +
   `<rect x="0" y="0" width="150" height="110" rx="16" fill="url(#${k}p)"/>` +
-  `<rect x="0.5" y="0.5" width="149" height="109" rx="15.5" fill="none" stroke="#DCE8F6"/>` +
+  `<rect x="0.5" y="0.5" width="149" height="109" rx="15.5" fill="none" stroke="#D0EDE2"/>` +
   `<path d="M0 16 A16 16 0 0 1 16 0 H134 A16 16 0 0 1 150 16 V44 Q75 66 0 44 Z" fill="url(#${k}h)" opacity=".55"/>` +
   `${inner}</svg>`;
 
 /** Weicher Bodenschatten unter einem Körper. */
 const boden = (cx: number, cy: number, rx: number, ry = 3.2, o = 0.14) =>
-  `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="#0A3E7A" opacity="${o}"/>`;
+  `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="#104732" opacity="${o}"/>`;
 
 /**
  * Isometrischer Quader (2:1). fx,fy ist die vordere untere Ecke,
@@ -121,12 +121,12 @@ const pfad = (() => {
   const d = "M18 90 C29 88 27 84 37 81 C47 78 47 76 56 73 C67 69 65 64 75 60 C85 56 85 55 94 51 C105 47 103 42 113 37 C123 32 124 30 133 25";
   const punkte = pts.map(([x, y], i) => {
     if (i === 0) {
-      return `<circle class="mv-puls" cx="${x}" cy="${y}" r="12" fill="#0A6EDB" opacity=".13"/><circle cx="${x}" cy="${y}" r="8" fill="url(#Ag)" filter="url(#At)"/><circle cx="${x - 2}" cy="${y - 2.5}" r="2.4" fill="#FFFFFF" opacity=".7"/>`;
+      return `<circle class="mv-puls" cx="${x}" cy="${y}" r="12" fill="#187F58" opacity=".13"/><circle cx="${x}" cy="${y}" r="8" fill="url(#Ag)" filter="url(#At)"/><circle cx="${x - 2}" cy="${y - 2.5}" r="2.4" fill="#FFFFFF" opacity=".7"/>`;
     }
     if (i === 6) {
       return `<g ${rasten(6)}><circle cx="${x}" cy="${y}" r="7" fill="url(#Ag)" filter="url(#At)"/><path d="M${x - 3} ${y} l2.2 2.4 l4 -5" stroke="#FFFFFF" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>`;
     }
-    return `<g ${rasten(i)}><circle cx="${x}" cy="${y}" r="5.2" fill="#FFFFFF" filter="url(#At)"/><circle cx="${x}" cy="${y}" r="5.2" fill="none" stroke="#7CBEFF" stroke-width="1.8"/></g>`;
+    return `<g ${rasten(i)}><circle cx="${x}" cy="${y}" r="5.2" fill="#FFFFFF" filter="url(#At)"/><circle cx="${x}" cy="${y}" r="5.2" fill="none" stroke="#1ED28D" stroke-width="1.8"/></g>`;
   }).join("");
   return M("A", "Sieben Etappen auf einem Pfad, die erste leuchtet",
     `<path d="${d}" stroke="url(#Ag)" stroke-width="11" stroke-linecap="round" fill="none" opacity=".22"/>
@@ -137,10 +137,10 @@ const pfad = (() => {
 // 2 Wer wir sind: drei gestapelte Zielkarten, die oberste hebt sich.
 const zielkarten = M("B", "Drei gestapelte Zielkarten, die oberste hebt sich",
   `${boden(75, 98, 46, 4, 0.1)}
-   <rect x="30" y="62" width="90" height="30" rx="9" fill="#CFE3F8"/>
-   <rect x="25" y="50" width="100" height="32" rx="10" fill="url(#Bw)" stroke="#D6E6F7"/>
-   <rect x="30" y="58" width="26" height="3.4" rx="1.7" fill="#B9D4F0"/>
-   <rect x="30" y="65" width="46" height="3.4" rx="1.7" fill="#D3E4F5"/>
+   <rect x="30" y="62" width="90" height="30" rx="9" fill="#BAEBD9"/>
+   <rect x="25" y="50" width="100" height="32" rx="10" fill="url(#Bw)" stroke="#C7ECDE"/>
+   <rect x="30" y="58" width="26" height="3.4" rx="1.7" fill="#9FDEC6"/>
+   <rect x="30" y="65" width="46" height="3.4" rx="1.7" fill="#C5EADC"/>
    <g class="mv-hebt" filter="url(#Bs)">
      <rect x="18" y="20" width="114" height="42" rx="12" fill="url(#Bg)"/>
      <path d="M18 32 A12 12 0 0 1 30 20 H120 A12 12 0 0 1 132 32 V38 Q75 52 18 38 Z" fill="#FFFFFF" opacity=".22"/>
@@ -185,10 +185,10 @@ const haeuser = M("D", "Drei isometrische Häuser, darüber ein durchgestrichene
    <rect x="110" y="72" width="4" height="5" rx="1" fill="#FFFFFF" opacity=".6"/>
    <rect x="110" y="81" width="4" height="5" rx="1" fill="#FFFFFF" opacity=".6"/></g>
    <g filter="url(#Dt)">
-     <rect x="46" y="12" width="58" height="30" rx="7" fill="#FFFFFF" stroke="#D6E6F7"/>
-     <path d="M46 20 A7 7 0 0 1 53 12 H97 A7 7 0 0 1 104 20 V22 H46 Z" fill="#DCEAF9"/>
-     <circle cx="52" cy="17" r="1.6" fill="#A9C9EA"/><circle cx="57" cy="17" r="1.6" fill="#A9C9EA"/>
-     <rect x="52" y="28" width="30" height="3" rx="1.5" fill="#CFE0F3"/>
+     <rect x="46" y="12" width="58" height="30" rx="7" fill="#FFFFFF" stroke="#C7ECDE"/>
+     <path d="M46 20 A7 7 0 0 1 53 12 H97 A7 7 0 0 1 104 20 V22 H46 Z" fill="#CDF0E3"/>
+     <circle cx="52" cy="17" r="1.6" fill="#8CD4B8"/><circle cx="57" cy="17" r="1.6" fill="#8CD4B8"/>
+     <rect x="52" y="28" width="30" height="3" rx="1.5" fill="#BEE7D7"/>
      <rect x="52" y="34" width="20" height="3" rx="1.5" fill="#E0EBF7"/>
    </g>
    <path class="mv-streicht" d="M40 47 L110 7" stroke="url(#Dg)" stroke-width="4.5" stroke-linecap="round"/>`);
@@ -196,28 +196,28 @@ const haeuser = M("D", "Drei isometrische Häuser, darüber ein durchgestrichene
 // 5 Die Weiche: fünf Wege aus einem Punkt, die sich rechts wieder treffen.
 const wege = (() => {
   const bahn = (dy: number, aktiv: boolean) =>
-    `<path d="M24 55 C56 55 52 ${55 + dy} 75 ${55 + dy} C98 ${55 + dy} 94 55 126 55" fill="none" stroke="${aktiv ? "url(#Eg)" : "#B7D5F2"}" stroke-width="${aktiv ? 5 : 2.4}" stroke-linecap="round"/>`;
+    `<path d="M24 55 C56 55 52 ${55 + dy} 75 ${55 + dy} C98 ${55 + dy} 94 55 126 55" fill="none" stroke="${aktiv ? "url(#Eg)" : "#9BDFC5"}" stroke-width="${aktiv ? 5 : 2.4}" stroke-linecap="round"/>`;
   return M("E", "Fünf Wege, die aus einem Punkt auseinanderlaufen und sich wieder treffen",
     `${bahn(-34, false)}<g class="mv-leuchtet">${bahn(-17, true)}</g>${bahn(0, false)}${bahn(17, false)}${bahn(34, false)}
-     <circle class="mv-puls" cx="24" cy="55" r="12" fill="#0A6EDB" opacity=".12"/>
+     <circle class="mv-puls" cx="24" cy="55" r="12" fill="#187F58" opacity=".12"/>
      <circle cx="24" cy="55" r="8" fill="url(#Eg)" filter="url(#Et)"/>
-     <circle cx="126" cy="55" r="12" fill="#0A6EDB" opacity=".12"/>
+     <circle cx="126" cy="55" r="12" fill="#187F58" opacity=".12"/>
      <circle cx="126" cy="55" r="8" fill="url(#Eg)" filter="url(#Et)"/>
      <circle cx="75" cy="38" r="6.5" fill="#FFFFFF" filter="url(#Et)"/>
-     <path d="M72 38 l2.2 2.4 l4.2 -5.2" stroke="#0A6EDB" stroke-width="1.9" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`);
+     <path d="M72 38 l2.2 2.4 l4.2 -5.2" stroke="#187F58" stroke-width="1.9" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`);
 })();
 
 // Abschlusszähler mit steigenden Balken.
 const zaehler = M("F", "Abschlusszähler mit steigenden Balken",
   `${boden(75, 98, 44, 4, 0.1)}
-   <g filter="url(#Fs)"><rect x="20" y="20" width="110" height="70" rx="13" fill="url(#Fw)" stroke="#DCE8F6"/></g>
-   <rect x="30" y="30" width="42" height="4" rx="2" fill="#CFE0F3"/>
-   ${txt(51, 66, 30, "10", { f: "#0A5BB5", w: 700 })}
+   <g filter="url(#Fs)"><rect x="20" y="20" width="110" height="70" rx="13" fill="url(#Fw)" stroke="#D0EDE2"/></g>
+   <rect x="30" y="30" width="42" height="4" rx="2" fill="#BEE7D7"/>
+   ${txt(51, 66, 30, "10", { f: "#156949", w: 700 })}
    <rect x="30" y="74" width="42" height="3.4" rx="1.7" fill="#E1ECF8"/>
-   <g ${rasten(0)}><rect x="84" y="62" width="10" height="18" rx="3" fill="#BFDBF7"/></g>
-   <g ${rasten(1)}><rect x="99" y="50" width="10" height="30" rx="3" fill="#7CBEFF"/></g>
+   <g ${rasten(0)}><rect x="84" y="62" width="10" height="18" rx="3" fill="#A0E6CB"/></g>
+   <g ${rasten(1)}><rect x="99" y="50" width="10" height="30" rx="3" fill="#1ED28D"/></g>
    <g ${rasten(2)}><rect x="114" y="36" width="10" height="44" rx="3" fill="url(#Fg)"/></g>
-   <path class="mv-zeichnet" d="M84 44 l14 -8 l12 -7 l14 -9" stroke="#0A6EDB" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="4 4" opacity=".55"/>`);
+   <path class="mv-zeichnet" d="M84 44 l14 -8 l12 -7 l14 -9" stroke="#187F58" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="4 4" opacity=".55"/>`);
 
 // Sanduhr, der Sand rieselt.
 const sanduhr = M("G", "Sanduhr, der Sand rieselt nach unten",
@@ -225,12 +225,12 @@ const sanduhr = M("G", "Sanduhr, der Sand rieselt nach unten",
    <rect x="46" y="16" width="58" height="6" rx="3" fill="url(#Gb)"/>
    <rect x="46" y="88" width="58" height="6" rx="3" fill="url(#Gb)"/>
    <g filter="url(#Gt)">
-     <path d="M53 22 h44 c0 16 -17 22 -17 33 s17 17 17 33 h-44 c0 -16 17 -18 17 -33 s-17 -17 -17 -33 z" fill="#FFFFFF" opacity=".9" stroke="#CFE0F3"/>
+     <path d="M53 22 h44 c0 16 -17 22 -17 33 s17 17 17 33 h-44 c0 -16 17 -18 17 -33 s-17 -17 -17 -33 z" fill="#FFFFFF" opacity=".9" stroke="#BEE7D7"/>
    </g>
    <path d="M56 25 h38 c0 11 -13 16 -16 24 h-6 c-3 -8 -16 -13 -16 -24 z" fill="url(#Gg)"/>
    <path d="M60 85 h34 c0 -9 -11 -13 -14 -19 h-6 c-3 6 -14 10 -14 19 z" fill="url(#Gg)" opacity=".85"/>
-   <path class="mv-rieselt" d="M75 56 v20" stroke="#3E8EF0" stroke-width="2" stroke-linecap="round" stroke-dasharray="2 4"/>
-   <circle cx="75" cy="80" r="2" fill="#3E8EF0"/>`);
+   <path class="mv-rieselt" d="M75 56 v20" stroke="#239F70" stroke-width="2" stroke-linecap="round" stroke-dasharray="2 4"/>
+   <circle cx="75" cy="80" r="2" fill="#239F70"/>`);
 
 // Beratungstisch: zwei Figuren an einem isometrischen Tisch.
 const beratungstisch = M("H", "Zwei Figuren an einem isometrischen Beratungstisch",
@@ -238,20 +238,20 @@ const beratungstisch = M("H", "Zwei Figuren an einem isometrischen Beratungstisc
    ${figur("H", 30, 52, 1.05)}
    ${figur("H", 120, 52, 1.05, true)}
    <g filter="url(#Ht)">
-     <path d="M75 92 L36 72 L75 52 L114 72 Z" fill="url(#Hw)" stroke="#D6E6F7"/>
-     <path d="M36 72 L36 77 L75 97 L114 77 L114 72 L75 92 Z" fill="#C7DEF6"/>
+     <path d="M75 92 L36 72 L75 52 L114 72 Z" fill="url(#Hw)" stroke="#C7ECDE"/>
+     <path d="M36 72 L36 77 L75 97 L114 77 L114 72 L75 92 Z" fill="#B0E7D2"/>
    </g>
    <path d="M75 66 L58 74 L70 80 L87 72 Z" fill="url(#Hg)"/>
    <path d="M64 73 l8 4 M70 70 l8 4" stroke="#FFFFFF" stroke-opacity=".6" stroke-width="1.3" stroke-linecap="round"/>
    <g class="mv-hakt"><circle cx="96" cy="74" r="5" fill="#FFFFFF" opacity=".9"/>
-   <path d="M93.5 74 l1.8 2 l3.4 -4" stroke="#0A6EDB" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>`);
+   <path d="M93.5 74 l1.8 2 l3.4 -4" stroke="#187F58" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>`);
 
 // Fächer aus vier Beratungskarten.
 const faecher = M("I", "Ein Fächer aus vier Beratungskarten",
   `${boden(75, 98, 40, 4, 0.1)}
-   <g ${rasten(0)}><g transform="rotate(-24 75 96)"><rect x="58" y="30" width="34" height="60" rx="8" fill="#CFE3F8" filter="url(#It)"/></g></g>
-   <g ${rasten(1)}><g transform="rotate(-8 75 96)"><rect x="58" y="26" width="34" height="64" rx="8" fill="#9CC9F3" filter="url(#It)"/></g></g>
-   <g ${rasten(2)}><g transform="rotate(8 75 96)"><rect x="58" y="26" width="34" height="64" rx="8" fill="#5FAEF6" filter="url(#It)"/></g></g>
+   <g ${rasten(0)}><g transform="rotate(-24 75 96)"><rect x="58" y="30" width="34" height="60" rx="8" fill="#BAEBD9" filter="url(#It)"/></g></g>
+   <g ${rasten(1)}><g transform="rotate(-8 75 96)"><rect x="58" y="26" width="34" height="64" rx="8" fill="#6BD8AE" filter="url(#It)"/></g></g>
+   <g ${rasten(2)}><g transform="rotate(8 75 96)"><rect x="58" y="26" width="34" height="64" rx="8" fill="#26BF84" filter="url(#It)"/></g></g>
    <g ${rasten(3)}><g transform="rotate(24 75 96)" filter="url(#Is)">
      <rect x="58" y="22" width="34" height="68" rx="8" fill="url(#Ig)"/>
      <rect x="64" y="32" width="22" height="3.2" rx="1.6" fill="#FFFFFF" opacity=".7"/>
@@ -263,13 +263,13 @@ const faecher = M("I", "Ein Fächer aus vier Beratungskarten",
 // Netz: Punkte, die sich verbinden.
 const netz = (() => {
   const n: [number, number][] = [[26, 30], [124, 26], [20, 82], [128, 84], [75, 16], [75, 96]];
-  const linien = n.map(([x, y]) => `<path class="mv-zeichnet" d="M75 56 L${x} ${y}" stroke="#A8CBEE" stroke-width="1.8" stroke-linecap="round"/>`).join("")
-    + `<path d="M26 30 L75 16 L124 26" stroke="#CBE0F5" stroke-width="1.4" fill="none"/>`
-    + `<path d="M20 82 L75 96 L128 84" stroke="#CBE0F5" stroke-width="1.4" fill="none"/>`;
-  const knoten = n.map(([x, y], i) => `<g ${rasten(i)}><circle cx="${x}" cy="${y}" r="7" fill="#FFFFFF" filter="url(#Jt)"/><circle cx="${x}" cy="${y}" r="7" fill="none" stroke="${i < 3 ? "#0A6EDB" : "#7CBEFF"}" stroke-width="2"/></g>`).join("");
+  const linien = n.map(([x, y]) => `<path class="mv-zeichnet" d="M75 56 L${x} ${y}" stroke="#86D7B8" stroke-width="1.8" stroke-linecap="round"/>`).join("")
+    + `<path d="M26 30 L75 16 L124 26" stroke="#B7E8D5" stroke-width="1.4" fill="none"/>`
+    + `<path d="M20 82 L75 96 L128 84" stroke="#B7E8D5" stroke-width="1.4" fill="none"/>`;
+  const knoten = n.map(([x, y], i) => `<g ${rasten(i)}><circle cx="${x}" cy="${y}" r="7" fill="#FFFFFF" filter="url(#Jt)"/><circle cx="${x}" cy="${y}" r="7" fill="none" stroke="${i < 3 ? "#187F58" : "#1ED28D"}" stroke-width="2"/></g>`).join("");
   return M("J", "Ein Netz aus Punkten, das sich verbindet",
     `${linien}${knoten}
-     <circle class="mv-puls" cx="75" cy="56" r="16" fill="#0A6EDB" opacity=".12"/>
+     <circle class="mv-puls" cx="75" cy="56" r="16" fill="#187F58" opacity=".12"/>
      <circle cx="75" cy="56" r="11.5" fill="url(#Jg)" filter="url(#Jt)"/>
      <circle cx="71" cy="52" r="3.2" fill="#FFFFFF" opacity=".55"/>`);
 })();
@@ -278,12 +278,12 @@ const netz = (() => {
 const produktkarten = M("K", "Zwei Produktkarten, die ineinandergreifen",
   `${boden(75, 98, 46, 4, 0.1)}
    <g ${rasten(0)} filter="url(#Ks)">
-     <rect x="14" y="26" width="66" height="58" rx="11" fill="url(#Kw)" stroke="#DCE8F6"/>
+     <rect x="14" y="26" width="66" height="58" rx="11" fill="url(#Kw)" stroke="#D0EDE2"/>
    </g>
    <g ${rasten(0)}>
      <path d="M32 60 V46 l15 -11 l15 11 v14 z" fill="url(#Kg)"/>
      <rect x="42" y="50" width="10" height="10" rx="1.5" fill="#FFFFFF" opacity=".55"/>
-     <rect x="26" y="68" width="42" height="3.4" rx="1.7" fill="#DDE9F6"/>
+     <rect x="26" y="68" width="42" height="3.4" rx="1.7" fill="#D0EDE2"/>
      <rect x="26" y="75" width="28" height="3.4" rx="1.7" fill="#E9F1FA"/>
    </g>
    <g ${rasten(2)}>
@@ -294,7 +294,7 @@ const produktkarten = M("K", "Zwei Produktkarten, die ineinandergreifen",
      <path d="M103 48 c-9 0 -14 6 -14 13 c0 9 8 14 14 19 c6 -5 14 -10 14 -19 c0 -7 -5 -13 -14 -13 z" fill="#FFFFFF" opacity=".72"/>
      <rect x="82" y="82" width="30" height="3.4" rx="1.7" fill="#FFFFFF" opacity=".5"/>
    </g>
-   <path d="M74 62 h6 a5.5 5.5 0 0 1 0 11 h-6" stroke="#0A5BB5" stroke-width="2.4" fill="none" stroke-linecap="round"/>`);
+   <path d="M74 62 h6 a5.5 5.5 0 0 1 0 11 h-6" stroke="#156949" stroke-width="2.4" fill="none" stroke-linecap="round"/>`);
 
 // Ein Aktenkoffer mit Anhänger.
 const koffer = M("L", "Ein Aktenkoffer mit Anhänger",
@@ -305,11 +305,11 @@ const koffer = M("L", "Ein Aktenkoffer mit Anhänger",
      <path d="M22 44 A10 10 0 0 1 32 34 H118 A10 10 0 0 1 128 44 V52 Q75 68 22 52 Z" fill="#FFFFFF" opacity=".2"/>
    </g>
    <rect x="62" y="54" width="26" height="12" rx="3" fill="#FFFFFF" opacity=".82"/>
-   <rect x="68" y="58" width="14" height="4" rx="2" fill="#0A6EDB" opacity=".45"/>
+   <rect x="68" y="58" width="14" height="4" rx="2" fill="#187F58" opacity=".45"/>
    <path d="M22 62 h106" stroke="#FFFFFF" stroke-opacity=".35" stroke-width="1.4"/>
    <g class="mv-schwingt" filter="url(#Lt)">
      <path d="M104 78 l14 -6 l10 10 l-14 6 z" fill="#FFFFFF"/>
-     <circle cx="112" cy="79" r="2" fill="#7CBEFF"/>
+     <circle cx="112" cy="79" r="2" fill="#1ED28D"/>
    </g>`);
 
 // Rohbau mit Kran.
@@ -317,20 +317,20 @@ const baustelle = M("N", "Ein Rohbau mit Kran",
   `${boden(78, 99, 52, 5, 0.09)}
    <path d="M118 96 V22 h4 V96 z" fill="url(#Nb)"/>
    <g class="mv-kran">
-     <rect x="56" y="23.5" width="66" height="5" rx="2.5" fill="#2E8AE8"/>
-     <path d="M120 26 L134 40" stroke="#7CBEFF" stroke-width="2.4" stroke-linecap="round"/>
-     <path d="M76 26 v18" stroke="#0A5BB5" stroke-width="1.8"/>
+     <rect x="56" y="23.5" width="66" height="5" rx="2.5" fill="#26996D"/>
+     <path d="M120 26 L134 40" stroke="#1ED28D" stroke-width="2.4" stroke-linecap="round"/>
+     <path d="M76 26 v18" stroke="#156949" stroke-width="1.8"/>
      <rect x="69" y="44" width="15" height="13" rx="2.5" fill="url(#Ng)"/>
    </g>
    ${quader("N", 52, 92, 22, 20, 34)}
    <path d="M30 82 h44 M30 72 h44" stroke="#FFFFFF" stroke-opacity=".38" stroke-width="1.6"/>
    <path d="M52 92 v-34" stroke="#FFFFFF" stroke-opacity=".3" stroke-width="1.6"/>
-   <path d="M96 96 l10 -22 h9 l-10 22 z" fill="#CFE3F8"/>
-   <path d="M20 96 h116" stroke="#B7D5F2" stroke-width="2" stroke-linecap="round"/>`);
+   <path d="M96 96 l10 -22 h9 l-10 22 z" fill="#BAEBD9"/>
+   <path d="M20 96 h116" stroke="#9BDFC5" stroke-width="2" stroke-linecap="round"/>`);
 
 // Eine Schranke, die sich hebt.
 const bremse = M("O", "Eine Schranke, die sich hebt",
-  `<path d="M14 92 C50 92 60 78 96 78 C120 78 130 74 138 70" stroke="#C6DDF5" stroke-width="10" fill="none" stroke-linecap="round"/>
+  `<path d="M14 92 C50 92 60 78 96 78 C120 78 130 74 138 70" stroke="#AFE6D1" stroke-width="10" fill="none" stroke-linecap="round"/>
    <path class="mv-zeichnet" d="M14 92 C50 92 60 78 96 78 C120 78 130 74 138 70" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-dasharray="6 8" stroke-linecap="round"/>
    ${boden(38, 96, 16, 3.6, 0.12)}
    <rect x="32" y="46" width="10" height="48" rx="4" fill="url(#Ob)"/>
@@ -338,35 +338,35 @@ const bremse = M("O", "Eine Schranke, die sich hebt",
      <rect x="38" y="46" width="86" height="11" rx="5" fill="url(#Og)"/>
      <path d="M52 46 l-8 11 M70 46 l-8 11 M88 46 l-8 11 M106 46 l-8 11" stroke="#FFFFFF" stroke-opacity=".65" stroke-width="4"/>
    </g>
-   <circle cx="37" cy="49" r="4.5" fill="#FFFFFF" stroke="#7CBEFF" stroke-width="2"/>
-   <path d="M112 22 a8 8 0 1 1 8 8 v4" stroke="#7CBEFF" stroke-width="3" fill="none" stroke-linecap="round"/>
-   <circle cx="120" cy="40" r="2.2" fill="#7CBEFF"/>`);
+   <circle cx="37" cy="49" r="4.5" fill="#FFFFFF" stroke="#1ED28D" stroke-width="2"/>
+   <path d="M112 22 a8 8 0 1 1 8 8 v4" stroke="#1ED28D" stroke-width="3" fill="none" stroke-linecap="round"/>
+   <circle cx="120" cy="40" r="2.2" fill="#1ED28D"/>`);
 
 // Ein Kompass, dessen Nadel einrastet.
 const kompass = M("P", "Ein Kompass, dessen Nadel einrastet",
   `${boden(75, 98, 34, 4, 0.11)}
-   <circle cx="75" cy="54" r="42" fill="#0A6EDB" opacity=".08"/>
-   <g filter="url(#Ps)"><circle cx="75" cy="54" r="34" fill="url(#Pw)" stroke="#D6E6F7"/></g>
-   <circle cx="75" cy="54" r="27" fill="none" stroke="#D9E8F7" stroke-width="1.4" stroke-dasharray="2 5"/>
-   ${["0", "90", "180", "270"].map((a) => `<path d="M75 22 v6" stroke="#A8CBEE" stroke-width="2" stroke-linecap="round" transform="rotate(${a} 75 54)"/>`).join("")}
+   <circle cx="75" cy="54" r="42" fill="#187F58" opacity=".08"/>
+   <g filter="url(#Ps)"><circle cx="75" cy="54" r="34" fill="url(#Pw)" stroke="#C7ECDE"/></g>
+   <circle cx="75" cy="54" r="27" fill="none" stroke="#CCEDE1" stroke-width="1.4" stroke-dasharray="2 5"/>
+   ${["0", "90", "180", "270"].map((a) => `<path d="M75 22 v6" stroke="#86D7B8" stroke-width="2" stroke-linecap="round" transform="rotate(${a} 75 54)"/>`).join("")}
    <g class="mv-nadel">
      <path d="M75 54 L96 32 L84 60 Z" fill="url(#Pg)"/>
-     <path d="M75 54 L54 76 L66 48 Z" fill="#C7DEF6"/>
+     <path d="M75 54 L54 76 L66 48 Z" fill="#B0E7D2"/>
    </g>
-   <circle cx="75" cy="54" r="4.4" fill="#FFFFFF" stroke="#0A6EDB" stroke-width="2"/>
+   <circle cx="75" cy="54" r="4.4" fill="#FFFFFF" stroke="#187F58" stroke-width="2"/>
    <path class="mv-funkelt" d="M112 20 l2.6 5.6 l6 0.8 l-4.4 4.2 l1.1 6 l-5.3 -2.9 l-5.3 2.9 l1.1 -6 l-4.4 -4.2 l6 -0.8 z" fill="url(#Pg)"/>`);
 
 // Eine Waage, die sich einpendelt.
 const waage = M("Q", "Eine Waage, die sich einpendelt",
   `${boden(75, 99, 34, 4.5, 0.12)}
-   <rect x="60" y="93" width="30" height="5" rx="2.5" fill="#0A5BB5"/>
-   <rect x="71" y="32" width="8" height="62" rx="3" fill="#1A78DD"/>
+   <rect x="60" y="93" width="30" height="5" rx="2.5" fill="#156949"/>
+   <rect x="71" y="32" width="8" height="62" rx="3" fill="#238862"/>
    <g class="mv-pendelt">
-     <rect x="26" y="29.5" width="98" height="5.5" rx="2.75" fill="#2E8AE8"/>
-     <rect x="31" y="33" width="2" height="10" fill="#A8CBEE"/>
-     <rect x="117" y="33" width="2" height="10" fill="#A8CBEE"/>
-     <g filter="url(#Qt)"><path d="M16 42 h32 l-8 16 h-16 z" fill="url(#Qw)" stroke="#D6E6F7"/></g>
-     <g filter="url(#Qt)"><path d="M102 42 h32 l-8 16 h-16 z" fill="url(#Qw)" stroke="#D6E6F7"/></g>
+     <rect x="26" y="29.5" width="98" height="5.5" rx="2.75" fill="#26996D"/>
+     <rect x="31" y="33" width="2" height="10" fill="#86D7B8"/>
+     <rect x="117" y="33" width="2" height="10" fill="#86D7B8"/>
+     <g filter="url(#Qt)"><path d="M16 42 h32 l-8 16 h-16 z" fill="url(#Qw)" stroke="#C7ECDE"/></g>
+     <g filter="url(#Qt)"><path d="M102 42 h32 l-8 16 h-16 z" fill="url(#Qw)" stroke="#C7ECDE"/></g>
    </g>
    <g class="mv-hakt"><circle cx="75" cy="30" r="7.5" fill="url(#Qg)" filter="url(#Qt)"/>
    <path d="M71.5 30 l2.4 2.6 l4.6 -5.4" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>`);
@@ -375,12 +375,12 @@ const waage = M("Q", "Eine Waage, die sich einpendelt",
 const buch = M("R", "Ein aufgeschlagenes Buch, in dem geblättert wird",
   `${boden(75, 96, 50, 5, 0.11)}
    <g filter="url(#Rs)">
-     <path d="M75 34 C62 24 40 24 22 30 v52 c18 -6 40 -6 53 4 z" fill="url(#Rw)" stroke="#D9E7F6"/>
+     <path d="M75 34 C62 24 40 24 22 30 v52 c18 -6 40 -6 53 4 z" fill="url(#Rw)" stroke="#CDECE0"/>
      <path d="M75 34 C88 24 110 24 128 30 v52 c-18 -6 -40 -6 -53 4 z" fill="url(#Rg)"/>
    </g>
-   <path d="M30 42 h34 M30 50 h34 M30 58 h28 M30 66 h34" stroke="#CDDFF2" stroke-width="2.4" stroke-linecap="round"/>
+   <path d="M30 42 h34 M30 50 h34 M30 58 h28 M30 66 h34" stroke="#BDE5D6" stroke-width="2.4" stroke-linecap="round"/>
    <path d="M86 42 h34 M86 50 h30 M86 58 h34 M86 66 h22" stroke="#FFFFFF" stroke-opacity=".6" stroke-width="2.4" stroke-linecap="round"/>
-   <path d="M75 34 v52" stroke="#B7D5F2" stroke-width="2"/>
+   <path d="M75 34 v52" stroke="#9BDFC5" stroke-width="2"/>
    <path class="mv-blaettert" d="M75 34 C90 28 104 30 112 34 c-10 12 -22 26 -37 38 z" fill="#FFFFFF" opacity=".55"/>`);
 
 // Der Staffelstab wandert von links nach rechts.
@@ -388,14 +388,14 @@ const staffelstab = M("S", "Zwei Figuren, ein Staffelstab wandert von links nach
   `${boden(34, 98, 18, 4, 0.11)}${boden(116, 98, 18, 4, 0.11)}
    ${figur("S", 34, 74, 1.5)}
    ${figur("S", 116, 74, 1.5, true)}
-   <path d="M48 54 C70 40 82 40 104 54" stroke="#B7D5F2" stroke-width="2" fill="none" stroke-dasharray="4 5"/>
+   <path d="M48 54 C70 40 82 40 104 54" stroke="#9BDFC5" stroke-width="2" fill="none" stroke-dasharray="4 5"/>
    <g class="mv-staffel">
      <g transform="rotate(-16 75 46)" filter="url(#St)">
        <rect x="55" y="41" width="40" height="10" rx="5" fill="url(#Sg)"/>
        <rect x="60" y="43.6" width="12" height="4.8" rx="2.4" fill="#FFFFFF" opacity=".55"/>
      </g>
    </g>
-   <path d="M100 46 l7 5 l-7 5" stroke="#0A6EDB" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`);
+   <path d="M100 46 l7 5 l-7 5" stroke="#187F58" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`);
 
 // Die Werkzeugwand, deren zehn Felder nacheinander einrasten.
 const werkzeugwand = (() => {
@@ -410,25 +410,25 @@ const werkzeugwand = (() => {
     }
   }
   return M("T", "Eine Werkzeugwand, deren zehn Felder nacheinander einrasten",
-    `<rect x="8" y="16" width="134" height="80" rx="12" fill="#FFFFFF" opacity=".55" stroke="#DCE8F6"/>
+    `<rect x="8" y="16" width="134" height="80" rx="12" fill="#FFFFFF" opacity=".55" stroke="#D0EDE2"/>
      ${Array.from({ length: 9 }, (_, i) => `<path d="M${16 + i * 15} 20 v72" stroke="#EAF1FA" stroke-width="1"/>`).join("")}
      ${felder.join("")}`);
 })();
 
 // Drei Uhren, deren Zeiger unterschiedlich schnell laufen, darunter fällt eine Münze.
 const uhren = (() => {
-  const uhr = (x: number, klasse: string) => `<g filter="url(#Ut)"><circle cx="${x}" cy="40" r="17" fill="url(#Uw)" stroke="#D6E6F7"/></g>
+  const uhr = (x: number, klasse: string) => `<g filter="url(#Ut)"><circle cx="${x}" cy="40" r="17" fill="url(#Uw)" stroke="#C7ECDE"/></g>
     <circle cx="${x}" cy="40" r="12.5" fill="none" stroke="#E3EDF8" stroke-width="1.2"/>
-    <path d="M${x} 40 V30" stroke="#0A5BB5" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M${x} 40 V30" stroke="#156949" stroke-width="2.4" stroke-linecap="round"/>
     <g class="${klasse}" style="transform-origin:${x}px 40px"><path d="M${x} 40 V26" stroke="url(#Ug)" stroke-width="2.8" stroke-linecap="round"/></g>
-    <circle cx="${x}" cy="40" r="2.4" fill="#0A6EDB"/>`;
+    <circle cx="${x}" cy="40" r="2.4" fill="#187F58"/>`;
   return M("U", "Drei Uhren, darunter fällt eine Münze",
-    `<path d="M14 40 H136" stroke="#DCE8F6" stroke-width="2" stroke-dasharray="4 5"/>
+    `<path d="M14 40 H136" stroke="#D0EDE2" stroke-width="2" stroke-dasharray="4 5"/>
      ${uhr(30, "mv-uhr1")}${uhr(75, "mv-uhr2")}${uhr(120, "mv-uhr3")}
      ${boden(75, 98, 22, 3.6, 0.12)}
-     <path d="M75 62 v14" stroke="#B7D5F2" stroke-width="2" stroke-dasharray="3 4" stroke-linecap="round"/>
-     <g class="mv-muenze"><g filter="url(#Ut)"><ellipse cx="75" cy="86" rx="19" ry="8" fill="url(#Ug)"/><ellipse cx="75" cy="83.5" rx="19" ry="8" fill="#9BCBFA"/><ellipse cx="75" cy="83.5" rx="12" ry="5" fill="#FFFFFF" opacity=".35"/></g>
-     ${txt(75, 87, 9, "€", { f: "#0A5BB5", w: 700 })}</g>`);
+     <path d="M75 62 v14" stroke="#9BDFC5" stroke-width="2" stroke-dasharray="3 4" stroke-linecap="round"/>
+     <g class="mv-muenze"><g filter="url(#Ut)"><ellipse cx="75" cy="86" rx="19" ry="8" fill="url(#Ug)"/><ellipse cx="75" cy="83.5" rx="19" ry="8" fill="#50DDA7"/><ellipse cx="75" cy="83.5" rx="12" ry="5" fill="#FFFFFF" opacity=".35"/></g>
+     ${txt(75, 87, 9, "€", { f: "#156949", w: 700 })}</g>`);
 })();
 
 // Ein Wochenraster, in dem Stunden aufgefüllt werden.
@@ -447,7 +447,7 @@ const wochenraster = (() => {
     }
   }
   return M("V", "Ein Wochenraster, in dem Stunden aufgefüllt werden",
-    `<g filter="url(#Vt)"><rect x="10" y="16" width="130" height="84" rx="12" fill="url(#Vw)" stroke="#DCE8F6"/></g>
+    `<g filter="url(#Vt)"><rect x="10" y="16" width="130" height="84" rx="12" fill="url(#Vw)" stroke="#D0EDE2"/></g>
      ${["Mo", "Di", "Mi", "Do", "Fr"].map((d, i) => txt(27.5 + i * 23.6, 30, 8, d, { f: "#7E93AB", w: 600 })).join("")}
      ${zellen.join("")}`);
 })();
@@ -455,43 +455,43 @@ const wochenraster = (() => {
 // Ein Kalenderblatt, das umblättert.
 const kalenderblatt = M("W", "Ein Kalenderblatt, das umblättert",
   `${boden(75, 99, 46, 4.4, 0.1)}
-   <g filter="url(#Ws)"><rect x="20" y="22" width="110" height="74" rx="12" fill="url(#Ww)" stroke="#DCE8F6"/></g>
+   <g filter="url(#Ws)"><rect x="20" y="22" width="110" height="74" rx="12" fill="url(#Ww)" stroke="#D0EDE2"/></g>
    <path d="M20 34 A12 12 0 0 1 32 22 H118 A12 12 0 0 1 130 34 V42 H20 Z" fill="url(#Wg)"/>
-   <rect x="42" y="14" width="7" height="16" rx="3.5" fill="#0A5BB5"/>
-   <rect x="101" y="14" width="7" height="16" rx="3.5" fill="#0A5BB5"/>
+   <rect x="42" y="14" width="7" height="16" rx="3.5" fill="#156949"/>
+   <rect x="101" y="14" width="7" height="16" rx="3.5" fill="#156949"/>
    ${[0, 1, 2].map((r) => [0, 1, 2, 3, 4].map((s) => {
     const x = 30 + s * 19.4;
     const y = 50 + r * 15;
     const jetzt = r === 1 && s === 2;
     return jetzt
       ? `<rect class="mv-hakt" x="${x}" y="${y}" width="14" height="11" rx="3.5" fill="url(#Wg)"/>`
-      : `<rect x="${x}" y="${y}" width="14" height="11" rx="3.5" fill="#D7E6F7"/>`;
+      : `<rect x="${x}" y="${y}" width="14" height="11" rx="3.5" fill="#C7ECDE"/>`;
   }).join("")).join("")}
    <g class="mv-blaettert">
-     <path d="M118 96 C136 88 138 60 130 40 l0 44 a12 12 0 0 1 -12 12 z" fill="#FFFFFF" stroke="#D6E6F7"/>
-     <path d="M130 40 C142 62 136 86 118 96" stroke="#B7D5F2" stroke-width="1.6" fill="none"/>
+     <path d="M118 96 C136 88 138 60 130 40 l0 44 a12 12 0 0 1 -12 12 z" fill="#FFFFFF" stroke="#C7ECDE"/>
+     <path d="M130 40 C142 62 136 86 118 96" stroke="#9BDFC5" stroke-width="1.6" fill="none"/>
    </g>`);
 
 // Ein Dokument mit Siegel, das aufgedrückt wird.
 const siegel = M("X", "Ein Dokument mit Siegel, das aufgedrückt wird",
   `${boden(70, 99, 40, 4.4, 0.1)}
    <g filter="url(#Xs)">
-     <path d="M28 16 h56 l24 24 v56 a6 6 0 0 1 -6 6 H34 a6 6 0 0 1 -6 -6 z" fill="url(#Xw)" stroke="#DCE8F6"/>
-     <path d="M84 16 l24 24 h-24 z" fill="#D3E4F6"/>
+     <path d="M28 16 h56 l24 24 v56 a6 6 0 0 1 -6 6 H34 a6 6 0 0 1 -6 -6 z" fill="url(#Xw)" stroke="#D0EDE2"/>
+     <path d="M84 16 l24 24 h-24 z" fill="#C2EADB"/>
    </g>
-   <path d="M40 46 h34 M40 55 h44 M40 64 h30" stroke="#D3E2F1" stroke-width="3" stroke-linecap="round"/>
+   <path d="M40 46 h34 M40 55 h44 M40 64 h30" stroke="#C8E7DB" stroke-width="3" stroke-linecap="round"/>
    <g class="mv-siegel" filter="url(#Xs)">
      <circle cx="98" cy="76" r="19" fill="url(#Xg)"/>
      <circle cx="98" cy="76" r="13" fill="none" stroke="#FFFFFF" stroke-opacity=".55" stroke-width="1.6" stroke-dasharray="3 3"/>
      <path d="M92 76 l4 4.4 l8 -9.4" stroke="#FFFFFF" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
    </g>
-   <path d="M98 44 v10" stroke="#B7D5F2" stroke-width="2" stroke-dasharray="3 4" stroke-linecap="round"/>`);
+   <path d="M98 44 v10" stroke="#9BDFC5" stroke-width="2" stroke-dasharray="3 4" stroke-linecap="round"/>`);
 
 // Sprechblasen, die aufsteigen.
 const sprechblasen = M("Y", "Sprechblasen, die aufsteigen",
   `<g ${rasten(0)} filter="url(#Yt)">
-     <path d="M14 62 h52 a9 9 0 0 1 9 9 v14 a9 9 0 0 1 -9 9 h-32 l-11 8 v-8 h-9 a9 9 0 0 1 -9 -9 v-14 a9 9 0 0 1 9 -9 z" fill="url(#Yw)" stroke="#DCE8F6"/>
-     <path d="M22 72 h34 M22 80 h22" stroke="#CFDFF0" stroke-width="3" stroke-linecap="round"/>
+     <path d="M14 62 h52 a9 9 0 0 1 9 9 v14 a9 9 0 0 1 -9 9 h-32 l-11 8 v-8 h-9 a9 9 0 0 1 -9 -9 v-14 a9 9 0 0 1 9 -9 z" fill="url(#Yw)" stroke="#D0EDE2"/>
+     <path d="M22 72 h34 M22 80 h22" stroke="#C2E4D7" stroke-width="3" stroke-linecap="round"/>
    </g>
    <g ${rasten(2)}>
      <g filter="url(#Ys)">
@@ -499,16 +499,16 @@ const sprechblasen = M("Y", "Sprechblasen, die aufsteigen",
      </g>
      <path d="M88 30 h38 M88 38 h26" stroke="#FFFFFF" stroke-opacity=".62" stroke-width="3" stroke-linecap="round"/>
    </g>
-   <circle class="mv-steigt" cx="120" cy="72" r="6" fill="#BFDBF7"/><circle class="mv-steigt" cx="134" cy="86" r="4" fill="#D8E9F9"/>`);
+   <circle class="mv-steigt" cx="120" cy="72" r="6" fill="#A0E6CB"/><circle class="mv-steigt" cx="134" cy="86" r="4" fill="#C9EFE1"/>`);
 
 // Eine Liste, die sich selbst abhakt.
 const abhakliste = (() => {
   const zeilen = [0, 1, 2, 3].map((i) => {
     const y = 28 + i * 19;
     return `<g filter="url(#Zt)"><rect x="18" y="${y}" width="114" height="15" rx="6" fill="#FFFFFF" stroke="#E4EDF7"/></g>
-      <circle cx="29" cy="${y + 7.5}" r="5.6" fill="#FFFFFF" stroke="#C3DAF2" stroke-width="1.8"/>
+      <circle cx="29" cy="${y + 7.5}" r="5.6" fill="#FFFFFF" stroke="#ADE2CE" stroke-width="1.8"/>
       <g ${rasten(i)}><circle cx="29" cy="${y + 7.5}" r="5.6" fill="url(#Zg)"/><path d="M26.4 ${y + 7.4} l2 2.2 l3.8 -4.4" stroke="#FFFFFF" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
-      <rect x="40" y="${y + 4}" width="${[56, 72, 48, 64][i]}" height="3.4" rx="1.7" fill="#CBDEF2"/>
+      <rect x="40" y="${y + 4}" width="${[56, 72, 48, 64][i]}" height="3.4" rx="1.7" fill="#BAE5D5"/>
       <rect x="40" y="${y + 10}" width="${[34, 28, 40, 30][i]}" height="2.6" rx="1.3" fill="#EAF1F9"/>`;
   }).join("");
   return M("Z", "Eine Liste, die sich selbst abhakt", zeilen);
@@ -518,18 +518,18 @@ const abhakliste = (() => {
 const bildschirme = M("aa", "Zwei Bildschirme, die sich verbinden",
   `${boden(38, 96, 24, 4, 0.1)}${boden(112, 96, 24, 4, 0.1)}
    <g filter="url(#aat)">
-     <rect x="8" y="26" width="60" height="44" rx="8" fill="url(#aaw)" stroke="#DCE8F6"/>
-     <rect x="32" y="70" width="12" height="8" fill="#D3E4F6"/><rect x="24" y="78" width="28" height="4" rx="2" fill="#C3DAF2"/>
+     <rect x="8" y="26" width="60" height="44" rx="8" fill="url(#aaw)" stroke="#D0EDE2"/>
+     <rect x="32" y="70" width="12" height="8" fill="#C2EADB"/><rect x="24" y="78" width="28" height="4" rx="2" fill="#ADE2CE"/>
    </g>
    ${figur("aa", 38, 52, 0.8)}
    <g filter="url(#aas)">
      <rect x="82" y="26" width="60" height="44" rx="8" fill="url(#aag)"/>
-     <rect x="106" y="70" width="12" height="8" fill="#9BCBFA"/><rect x="98" y="78" width="28" height="4" rx="2" fill="#8CC2F8"/>
+     <rect x="106" y="70" width="12" height="8" fill="#50DDA7"/><rect x="98" y="78" width="28" height="4" rx="2" fill="#32D597"/>
    </g>
    <g transform="translate(112 52)"><path d="M-11 20 c0 -12 5 -17 11 -17 s11 5 11 17 z" fill="#FFFFFF" opacity=".85"/><circle cx="0" cy="-6" r="7.5" fill="#FFFFFF" opacity=".85"/></g>
-   <path class="mv-rieselt" d="M68 48 h14" stroke="#7CBEFF" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 6"/>
+   <path class="mv-rieselt" d="M68 48 h14" stroke="#1ED28D" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 6"/>
    <g class="mv-hakt"><circle cx="75" cy="48" r="8" fill="#FFFFFF" filter="url(#aat)"/>
-   <path d="M71.5 48 l2.4 2.6 l5 -6" stroke="#0A6EDB" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>`);
+   <path d="M71.5 48 l2.4 2.6 l5 -6" stroke="#187F58" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>`);
 
 // Ein Monatskalender mit hervorgehobenen buchbaren Tagen.
 const monat = (() => {
@@ -546,11 +546,11 @@ const monat = (() => {
       : `<rect x="${x}" y="${y}" width="16" height="9" rx="3" fill="#EDF3FA"/>`);
   }
   return M("bb", "Ein Monatskalender mit hervorgehobenen buchbaren Tagen",
-    `<g filter="url(#bbs)"><rect x="12" y="16" width="126" height="80" rx="12" fill="url(#bbw)" stroke="#DCE8F6"/></g>
-     <rect x="24" y="26" width="42" height="5" rx="2.5" fill="#C6DBF2"/>
+    `<g filter="url(#bbs)"><rect x="12" y="16" width="126" height="80" rx="12" fill="url(#bbw)" stroke="#D0EDE2"/></g>
+     <rect x="24" y="26" width="42" height="5" rx="2.5" fill="#B2E3D1"/>
      <circle cx="118" cy="28.5" r="5" fill="#EDF3FA"/><circle cx="104" cy="28.5" r="5" fill="#EDF3FA"/>
-     <path d="M103 28.5 l2 -2 M103 28.5 l2 2" stroke="#8FB4DA" stroke-width="1.4" fill="none" stroke-linecap="round"/>
-     <path d="M119 28.5 l-2 -2 M119 28.5 l-2 2" stroke="#8FB4DA" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+     <path d="M103 28.5 l2 -2 M103 28.5 l2 2" stroke="#72BFA2" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+     <path d="M119 28.5 l-2 -2 M119 28.5 l-2 2" stroke="#72BFA2" stroke-width="1.4" fill="none" stroke-linecap="round"/>
      ${zellen.join("")}`);
 })();
 
@@ -558,11 +558,11 @@ const monat = (() => {
 const lupe = M("cc", "Eine Lupe über einer Produktkarte",
   `${boden(70, 98, 40, 4, 0.1)}
    <g filter="url(#ccs)">
-     <rect x="18" y="24" width="80" height="62" rx="12" fill="url(#ccw)" stroke="#DCE8F6"/>
+     <rect x="18" y="24" width="80" height="62" rx="12" fill="url(#ccw)" stroke="#D0EDE2"/>
    </g>
-   <rect x="28" y="36" width="46" height="4" rx="2" fill="#C6DBF2"/>
-   <rect x="28" y="46" width="34" height="4" rx="2" fill="#DDE9F6"/>
-   <rect x="28" y="56" width="42" height="4" rx="2" fill="#DDE9F6"/>
+   <rect x="28" y="36" width="46" height="4" rx="2" fill="#B2E3D1"/>
+   <rect x="28" y="46" width="34" height="4" rx="2" fill="#D0EDE2"/>
+   <rect x="28" y="56" width="42" height="4" rx="2" fill="#D0EDE2"/>
    <rect x="28" y="66" width="26" height="4" rx="2" fill="#EAF1FA"/>
    <g class="mv-lupe">
      <rect x="86" y="70" width="34" height="9" rx="4.5" fill="url(#ccg)" transform="rotate(45 103 74.5)"/>

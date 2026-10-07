@@ -76,7 +76,7 @@ describe("KundenZweiFaktor: einschalten", () => {
 
     expect(await screen.findByAltText("QR-Code für die Authenticator-App")).toBeInTheDocument();
     expect(screen.getByText("JBSWY3DPEHPK3PXP")).toBeInTheDocument();
-    expect(mocks.invoke).toHaveBeenCalledWith("manage-mfa", { body: { action: "enroll", friendlyName: "MOREImmo Kundenportal" } });
+    expect(mocks.invoke).toHaveBeenCalledWith("manage-mfa", { body: { action: "enroll", friendlyName: "OS Immobilien Kundenportal" } });
 
     // Nach der sechsten Ziffer wird von selbst abgesendet, ohne Klick.
     fireEvent.change(screen.getByLabelText("Code aus der Authenticator-App"), { target: { value: "123456" } });

@@ -37,7 +37,7 @@ const DE = {
   vorstellung: (team: boolean, name: string) =>
     team
       ? 'wir haben gerade versucht, dich anzurufen. Du hattest dich bei uns gemeldet, und wir wollten uns kurz persönlich bei dir melden.'
-      : `ich bin ${name} von MOREImmo und habe gerade versucht, dich anzurufen. Du hattest dich bei uns gemeldet, und ich wollte mich kurz persönlich bei dir vorstellen.`,
+      : `ich bin ${name} von OS Immobilien und habe gerade versucht, dich anzurufen. Du hattest dich bei uns gemeldet, und ich wollte mich kurz persönlich bei dir vorstellen.`,
   nummer: (team: boolean, tel: string) =>
     team
       ? `Falls du zurückrufen magst: Du erreichst uns unter ${tel}.`
@@ -76,7 +76,7 @@ const TEXTE: Zweisprachig<typeof DE> = {
     vorstellung: (team: boolean, name: string) =>
       team
         ? 'We just tried to call you. You got in touch with us, and we wanted to say hello in person.'
-        : `I am ${name} from MOREImmo and I just tried to call you. You got in touch with us, and I wanted to introduce myself in person.`,
+        : `I am ${name} from OS Immobilien and I just tried to call you. You got in touch with us, and I wanted to introduce myself in person.`,
     nummer: (team: boolean, tel: string) =>
       team
         ? `If you would like to call back, you can reach us on ${tel}.`
@@ -165,12 +165,12 @@ export const template = {
   absender: 'zustaendiger-partner',
   previewData: {
     name: 'Max Mustermann',
-    buchungsLink: 'https://portal.more.immo/buchen/beispiel',
+    buchungsLink: 'https://osimmobilien.netlify.app/buchen/beispiel',
     berater: {
       name: 'Christian Peetz',
-      rolle: 'Dein Ansprechpartner bei MOREImmo',
+      rolle: 'Dein Ansprechpartner bei OS Immobilien',
       telefon: '+49 151 00000000',
-      email: 'office@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

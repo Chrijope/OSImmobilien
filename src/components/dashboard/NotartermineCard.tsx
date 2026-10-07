@@ -103,7 +103,7 @@ export function NotartermineCard() {
           <div className="flex items-center gap-2">
             <CardTitle className="text-[13px] font-medium text-muted-foreground tracking-wide uppercase">
               {showCompany
-                ? "Notartermine (Eigen + Team + MOREImmo)"
+                ? "Notartermine (Eigen + Team + OS Immobilien)"
                 : hasTeam
                 ? "Notartermine (Eigen + Team)"
                 : "Notartermine"}
@@ -124,7 +124,7 @@ export function NotartermineCard() {
             )}
             {showCompany && (
               <span className="text-muted-foreground">
-                MOREImmo <span className="font-medium tabular-nums ml-1">{totalAbgCompany}</span> beurk. ·{" "}
+                OS Immobilien <span className="font-medium tabular-nums ml-1">{totalAbgCompany}</span> beurk. ·{" "}
                 <span className="font-medium tabular-nums">{totalGepCompany}</span> gepl.
               </span>
             )}
@@ -182,8 +182,8 @@ export function NotartermineCard() {
             )}
             {showCompany && (
               <>
-                <Area type="monotone" dataKey="abgCompany" name="Abgeschlossen (MOREImmo)" stackId="company" stroke="hsl(var(--chart-provision))" strokeWidth={2} fill="url(#notarAbgCompanyFill)" dot={{ r: 2.5, strokeWidth: 2, fill: "hsl(var(--background))" }} />
-                <Area type="monotone" dataKey="gepCompany" name="Geplant (MOREImmo)" stackId="company" stroke="hsl(var(--chart-provision))" strokeOpacity={0.6} strokeWidth={2} strokeDasharray="4 3" fill="url(#notarGepCompanyFill)" dot={{ r: 2.5, strokeWidth: 2, fill: "hsl(var(--background))" }} />
+                <Area type="monotone" dataKey="abgCompany" name="Abgeschlossen (OS Immobilien)" stackId="company" stroke="hsl(var(--chart-provision))" strokeWidth={2} fill="url(#notarAbgCompanyFill)" dot={{ r: 2.5, strokeWidth: 2, fill: "hsl(var(--background))" }} />
+                <Area type="monotone" dataKey="gepCompany" name="Geplant (OS Immobilien)" stackId="company" stroke="hsl(var(--chart-provision))" strokeOpacity={0.6} strokeWidth={2} strokeDasharray="4 3" fill="url(#notarGepCompanyFill)" dot={{ r: 2.5, strokeWidth: 2, fill: "hsl(var(--background))" }} />
               </>
             )}
           </AreaChart>

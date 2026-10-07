@@ -48,7 +48,7 @@ import {
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 const ANON = Deno.env.get('SUPABASE_ANON_KEY')!
-const BASIS = (Deno.env.get('APP_BASE_URL') || 'https://portal.more.immo').trim().replace(/\/+$/, '')
+const BASIS = (Deno.env.get('APP_BASE_URL') || 'https://osimmobilien.netlify.app').trim().replace(/\/+$/, '')
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',

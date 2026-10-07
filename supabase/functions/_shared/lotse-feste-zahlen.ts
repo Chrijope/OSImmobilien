@@ -1,5 +1,5 @@
 /**
- * Feste Zahlen der Einheit für den MORE Lotsen (05.10.2026).
+ * Feste Zahlen der Einheit für den OS Lotsen (05.10.2026).
  *
  * Das Hausgeld gesamt rechnet das CRM, nicht die KI: umlagefähig plus nicht
  * umlagefähig plus Rücklage, nur wenn alle drei erfasst sind. Dazu die

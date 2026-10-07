@@ -563,7 +563,7 @@ export default function VideoraumGastgeber() {
                 value={notiz}
                 onChange={(e) => aendereNotiz(e.target.value)}
                 placeholder="Was im Gespräch wichtig war…"
-                className="min-h-[64px] w-full flex-1 resize-none rounded-xl border border-white/10 bg-white/[0.04] p-3 text-[13px] text-white outline-none placeholder:text-white/25 focus:border-[#88CFFF]/50"
+                className="min-h-[64px] w-full flex-1 resize-none rounded-xl border border-white/10 bg-white/[0.04] p-3 text-[13px] text-white outline-none placeholder:text-white/25 focus:border-[#30E19E]/50"
               />
               <p className="mt-2 shrink-0 text-[11px] text-white/35">{notizHinweis}</p>
             </div>
@@ -605,7 +605,7 @@ export default function VideoraumGastgeber() {
                           aria-pressed={regie.teilenErlaubt}
                           className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11.5px] font-semibold transition-colors disabled:opacity-40 ${
                             regie.teilenErlaubt
-                              ? "bg-[#88CFFF]/15 text-[#88CFFF]"
+                              ? "bg-[#30E19E]/15 text-[#30E19E]"
                               : "bg-white/[0.07] text-white enabled:hover:bg-white/[0.12]"
                           }`}
                         >
@@ -638,7 +638,7 @@ export default function VideoraumGastgeber() {
                       onClick={() => void einlassen(t)}
                       disabled={voll}
                       title={voll ? VOLL_HINWEIS : undefined}
-                      className="shrink-0 rounded-lg bg-[#087AC7] px-2.5 py-1 text-[11px] font-semibold disabled:opacity-40"
+                      className="shrink-0 rounded-lg bg-[#15724F] px-2.5 py-1 text-[11px] font-semibold disabled:opacity-40"
                     >
                       Einlassen
                     </button>

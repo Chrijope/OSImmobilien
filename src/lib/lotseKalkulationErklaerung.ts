@@ -1,5 +1,5 @@
 /**
- * Die Erklärung hinter der Quelle „Kalkulation“ im MORE Lotsen (Christian,
+ * Die Erklärung hinter der Quelle „Kalkulation“ im OS Lotsen (Christian,
  * 28.09.2026).
  *
  * Entsteht im Browser aus genau den Zahlen, die der Lotse bekommt

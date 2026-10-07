@@ -247,10 +247,10 @@ export function lesbareAntworten(weg: PartnerWeg, antworten: Record<string, stri
 export const PARTNER_EINWILLIGUNG_VERSION = "2026-09-partner-v2";
 
 const EINWILLIGUNG_V1_TEXT =
-  "Ich möchte mit MOREImmo über eine Zusammenarbeit als Partner sprechen. MOREImmo darf meine " +
+  "Ich möchte mit OS Immobilien über eine Zusammenarbeit als Partner sprechen. OS Immobilien darf meine " +
   "Angaben speichern und verwenden, um meine Anfrage zu bearbeiten und mich dazu per E-Mail oder " +
   "Telefon zu kontaktieren. Ich kann mein Einverständnis jederzeit formlos widerrufen, zum " +
-  "Beispiel per Mail an datenschutz@more.immo.";
+  "Beispiel per Mail an os@os-immobilien.com.";
 
 /**
  * Fassung v2 (Rechtsbefund G6): mit Speicherdauer. Die Monatszahl klärt die
@@ -272,7 +272,7 @@ const PARTNER_EINWILLIGUNG_FASSUNGEN: Record<string, string> = {
 };
 
 export const PARTNER_EINWILLIGUNG_KURZ =
-  "Ja, MOREImmo darf mich zu meiner Anfrage per E-Mail oder Telefon kontaktieren. Jederzeit widerrufbar.";
+  "Ja, OS Immobilien darf mich zu meiner Anfrage per E-Mail oder Telefon kontaktieren. Jederzeit widerrufbar.";
 
 export const PARTNER_EINWILLIGUNG_FEHLT =
   "Bitte bestätige die Einwilligung, sonst dürfen wir deine Anfrage nicht speichern.";

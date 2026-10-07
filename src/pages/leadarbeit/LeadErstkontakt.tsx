@@ -39,7 +39,7 @@ export default function LeadErstkontakt() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3 text-sm">
           <div className="rounded-lg border bg-muted/30 p-3">
             <div className="font-bold text-primary mb-1">B – Budget</div>
-            <p>Haushaltsnetto, vorhandenes Eigenkapital, freie Rate – passt das Volumen zu einer MOREImmo-Wohnung?</p>
+            <p>Haushaltsnetto, vorhandenes Eigenkapital, freie Rate – passt das Volumen zu einer OS Immobilien-Wohnung?</p>
           </div>
           <div className="rounded-lg border bg-muted/30 p-3">
             <div className="font-bold text-primary mb-1">A – Authority</div>

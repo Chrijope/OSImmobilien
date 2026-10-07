@@ -144,7 +144,7 @@ function drawDisclaimerPage(doc: jsPDF, logo: string | null, title: string) {
     "Immobilien-Kapitalanlagen sind langfristige Investments und mit Risiken verbunden (u. a. Marktrisiko, Leerstandsrisiko, Zinsänderungsrisiko, Instandhaltungsrisiko, Liquiditätsrisiko, Klumpenrisiko). Ein Totalverlust des eingesetzten Eigenkapitals ist grundsätzlich möglich.",
     "Steuerliche Effekte (u. a. AfA, Werbungskosten, § 35a EStG) wurden vereinfacht dargestellt. Die tatsächliche steuerliche Behandlung hängt von der persönlichen Situation ab und ist ausschließlich durch einen Steuerberater zu prüfen.",
     "Für die Richtigkeit und Vollständigkeit der Angaben wird trotz sorgfältiger Prüfung keine Haftung übernommen. Verbindlich sind ausschließlich die im Einzelfall zur Verfügung gestellten Vertrags- und Objektunterlagen (Kaufvertrag, Teilungserklärung, Grundbuchauszug, Exposé, Finanzierungsangebot).",
-    "Diese Präsentation ist urheberrechtlich geschützt. Weitergabe, Vervielfältigung oder Veröffentlichung – auch auszugsweise – nur mit ausdrücklicher schriftlicher Zustimmung der MOREImmo.",
+    "Diese Präsentation ist urheberrechtlich geschützt. Weitergabe, Vervielfältigung oder Veröffentlichung – auch auszugsweise – nur mit ausdrücklicher schriftlicher Zustimmung der OS Immobilien.",
   ];
 
   doc.setFont(PDF_FONT, "normal");
@@ -174,11 +174,11 @@ function drawImpressumPage(doc: jsPDF, logo: string | null, title: string) {
 
   const year = new Date().getFullYear();
   const lines = [
-    ["Herausgeber", "MOREImmo"],
-    ["Anschrift", "Wendelsteinstraße 19, 83075 Bad Feilnbach"],
-    ["Kontakt", "hallo@more.immo · https://more.immo"],
-    ["Copyright", `© ${year} MOREImmo. Alle Rechte vorbehalten.`],
-    ["Bildquellen", "MOREImmo, Adobe Stock, Unsplash (lizenzfrei)"],
+    ["Herausgeber", "OS Immobilien"],
+    ["Anschrift", "Am Ostbahnhof 1, 15749 Mittenwalde"],
+    ["Kontakt", "os@os-immobilien.com · https://osimmobilien.netlify.app"],
+    ["Copyright", `© ${year} OS Immobilien. Alle Rechte vorbehalten.`],
+    ["Bildquellen", "OS Immobilien, Adobe Stock, Unsplash (lizenzfrei)"],
     ["Stand", new Date().toLocaleDateString("de-DE")],
   ];
   doc.setFontSize(10);
@@ -196,7 +196,7 @@ function drawImpressumPage(doc: jsPDF, logo: string | null, title: string) {
   doc.setFontSize(8);
   doc.setTextColor(...BRAND.muted);
   const note =
-    "Diese Präsentation und ihr Inhalt sind geistiges Eigentum der MOREImmo. Jede Vervielfältigung, Weitergabe an Dritte, Veröffentlichung oder Nutzung – auch auszugsweise – ist ohne schriftliche Zustimmung untersagt. Verstöße können zivil- und strafrechtlich verfolgt werden.";
+    "Diese Präsentation und ihr Inhalt sind geistiges Eigentum der OS Immobilien. Jede Vervielfältigung, Weitergabe an Dritte, Veröffentlichung oder Nutzung – auch auszugsweise – ist ohne schriftliche Zustimmung untersagt. Verstöße können zivil- und strafrechtlich verfolgt werden.";
   const wrapped = doc.splitTextToSize(sanitizePdfText(note), CONTENT_W);
   doc.text(wrapped, MARGIN_X, y);
   doc.setTextColor(0, 0, 0);
@@ -242,7 +242,7 @@ function drawCover(doc: jsPDF, logo: string | null, title: string, subtitle?: st
   // Unten
   doc.setFontSize(8);
   doc.text(COMPANY_LINE, PAGE_W / 2, PAGE_H - 12, { align: "center" });
-  doc.text("more.immo", PAGE_W / 2, PAGE_H - 7, { align: "center" });
+  doc.text("osimmobilien.netlify.app", PAGE_W / 2, PAGE_H - 7, { align: "center" });
   doc.setTextColor(0, 0, 0);
 }
 
@@ -472,7 +472,7 @@ export async function exportPraesentationAsPdf(
 
   const safeTitle = title.replace(/[^a-z0-9]+/gi, "_").slice(0, 60);
   const date = new Date().toISOString().slice(0, 10);
-  const finalName = filename || `MOREImmo_${safeTitle}_${date}.pdf`;
+  const finalName = filename || `OS-Immobilien_${safeTitle}_${date}.pdf`;
   if (opts.returnBlob) {
     return { blob: doc.output("blob"), filename: finalName };
   }

@@ -13,7 +13,7 @@
  * `src` sucht. Getestet wird in src/lib/unterlagenErinnerungLink.test.ts.
  */
 
-export const PORTAL_BASIS_URL = 'https://portal.more.immo'
+export const PORTAL_BASIS_URL = 'https://osimmobilien.netlify.app'
 
 /** Der Abschnitt auf /kunde/investments, gleicher Schlüssel wie in portalNaechsteSchritte.ts. */
 export const BONITAET_ABSCHNITT = 'bonitaetsunterlagen'

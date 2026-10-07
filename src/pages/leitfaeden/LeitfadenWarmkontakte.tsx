@@ -131,7 +131,7 @@ export default function LeitfadenWarmkontakte() {
           <PhaseStep
             num={1}
             titel="Eröffnung mit Empfehlung (20 Sekunden)"
-            text={`„Hallo [Vorname], hier ist [dein Name] von MOREImmo. Ich melde mich, weil mir [Empfehlungsgeber] erzählt hat, dass du dich aktuell mit dem Thema Vermögensaufbau beschäftigst und an Kapitalanlage-Immobilien interessiert bist. Passt es dir gerade kurz?"\n\nWichtig: Nie sagen „Dein Freund hat mir deine Nummer gegeben, damit ich dir etwas verkaufe." Das zerstört die Wärme.`}
+            text={`„Hallo [Vorname], hier ist [dein Name] von OS Immobilien. Ich melde mich, weil mir [Empfehlungsgeber] erzählt hat, dass du dich aktuell mit dem Thema Vermögensaufbau beschäftigst und an Kapitalanlage-Immobilien interessiert bist. Passt es dir gerade kurz?"\n\nWichtig: Nie sagen „Dein Freund hat mir deine Nummer gegeben, damit ich dir etwas verkaufe." Das zerstört die Wärme.`}
           />
           <PhaseStep
             num={2}
@@ -164,7 +164,7 @@ export default function LeitfadenWarmkontakte() {
       <SectionCard title="Komplett-Skript Warmkontakt" icon={<MessageSquare className="h-5 w-5" />}>
         <div className="bg-primary/5 border border-primary/20 rounded p-4 text-sm leading-relaxed space-y-3">
           <p>
-            <strong>Du:</strong> „Hallo [Vorname], hier ist [dein Name] von MOREImmo in München."
+            <strong>Du:</strong> „Hallo [Vorname], hier ist [dein Name] von OS Immobilien in München."
           </p>
           <p>
             <strong>Du:</strong> „Ich melde mich, weil mir [Empfehlungsgeber] erzählt hat, dass du aktuell darüber

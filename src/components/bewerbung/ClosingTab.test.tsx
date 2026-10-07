@@ -73,7 +73,7 @@ function baueBewerber(teil: Partial<Bewerber> = {}): Bewerber {
 }
 
 const ADRESSEN = {
-  vertragsAdresse: "Max Muster\nMusterstraße 12\n83075 Bad Feilnbach",
+  vertragsAdresse: "Max Muster\nMusterstraße 12\n15749 Mittenwalde",
   rechnungsAdresse: "Muster Consulting GmbH\nGewerbepark 3\n83022 Rosenheim\nUSt-IdNr.: DE123456789",
 };
 
@@ -463,7 +463,7 @@ describe("ClosingTab, Zustand c: Adressen vollständig", () => {
   it("Karte 4 ist eingeklappt, Karte 6 offen mit dem Erzeugen-Knopf", async () => {
     await renderTab(baueBewerber({ status: "Paketwahl", closingEntscheidung: "ja", paketwahl: "junior", ...ADRESSEN }));
     expect(zustandVon(4)).toBe("kompakt");
-    expect(screen.getByTestId("closing-seitenleiste-fortschritt")).toHaveTextContent("Musterstraße 12, 83075 Bad Feilnbach");
+    expect(screen.getByTestId("closing-seitenleiste-fortschritt")).toHaveTextContent("Musterstraße 12, 15749 Mittenwalde");
     expect(zustandVon(6)).toBe("offen");
     expect(screen.getByRole("button", { name: /Paket bestätigen & Vertrag erstellen/ })).toBeEnabled();
     expect(screen.getByTestId("closing-naechster-schritt")).toHaveTextContent("Paket bestätigen und Vertrag erstellen");

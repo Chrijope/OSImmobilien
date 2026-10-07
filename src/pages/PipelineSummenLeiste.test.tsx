@@ -303,7 +303,7 @@ describe("Unterkante der Kunden-Pipeline", () => {
    * unter dem Scrollbereich ein 56px hoher Platzhalter fuer den schwebenden
    * Bearbeitungsbalken von Lovable, gemessen lag die Scrollleiste dadurch
    * rund 50px ueber der Seitenleiste. In der Vorschau gilt jetzt derselbe
-   * Abstand wie auf portal.more.immo.
+   * Abstand wie auf osimmobilien.netlify.app.
    */
   it("hat in der Lovable-Vorschau keinen Sonderabstand unter der Scrollleiste", () => {
     stand.kontakte = [kontakt("k1", "neuer_lead")];

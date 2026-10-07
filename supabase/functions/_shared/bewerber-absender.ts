@@ -2,10 +2,10 @@
  * Absender, Antwortadresse und Linkadresse der Mails an Bewerber.
  *
  * Seit dem 26.09.2026 kommt jede Mail an einen Bewerber persönlich von der
- * HR-Ansprechpartnerin: "Sarah … | MOREImmo <noreply@more.immo>", und eine
+ * HR-Ansprechpartnerin: "Sarah … | OS Immobilien <noreply@os-immobilien.com>", und eine
  * Antwort landet bei ihr. Anlass waren Bewerbermails im Spamordner. Ein
  * Absender mit Menschennamen und eine Antwortadresse, die jemand liest, sehen
- * für Mailprogramme weniger nach Massenversand aus als "MOREImmo" von noreply@.
+ * für Mailprogramme weniger nach Massenversand aus als "OS Immobilien" von noreply@.
  *
  * Vorbild ist `zustaendiger-absender.ts` für die Mails an nicht erreichte
  * Leads. Wer die Ansprechpartnerin ist, entscheidet allein
@@ -22,17 +22,17 @@ import { absenderName, TEAM_ABSENDER } from './zustaendiger-absender.ts'
  * Die öffentliche Adresse für Links in Bewerbermails.
  *
  * Fest und nicht aus einer Umgebungsvariable: Links in Mails sollen nur auf
- * more.immo zeigen, auch wenn jemand für Tests eine andere Basis einträgt.
+ * osimmobilien.netlify.app zeigen, auch wenn jemand für Tests eine andere Basis einträgt.
  */
-export const BEWERBER_MAIL_BASIS = 'https://portal.more.immo'
+export const BEWERBER_MAIL_BASIS = 'https://osimmobilien.netlify.app'
 
 /** Der Absender, wenn keine HR-Ansprechpartnerin gefunden wird. */
-export const BEWERBER_ABSENDER_RUECKFALL = 'MOREImmo'
+export const BEWERBER_ABSENDER_RUECKFALL = 'OS Immobilien'
 
 /**
  * `bewerber-*`-Vorlagen, die NICHT an den Bewerber gehen, sondern an HR oder
  * die Geschäftsleitung. Sie behalten den neutralen Absender: Eine Meldung an
- * Sarah, die von "Sarah | MOREImmo" kommt, wäre verwirrend.
+ * Sarah, die von "Sarah | OS Immobilien" kommt, wäre verwirrend.
  */
 export const BEWERBER_INTERNE_VORLAGEN: ReadonlySet<string> = new Set([
   'bewerber-termin-hr',
@@ -67,7 +67,7 @@ export function istBewerbermail(vorlage: string): boolean {
 const EINFACHE_ADRESSE = /^[^\s@<>",;]+@[^\s@<>",;]+\.[^\s@<>",;]+$/
 
 export interface BewerberAbsender {
-  /** Der Anzeigename vor `<noreply@more.immo>`. */
+  /** Der Anzeigename vor `<noreply@os-immobilien.com>`. */
   anzeige: string
   /** Die Reply-To-Adresse. */
   antwortAn: string
@@ -76,9 +76,9 @@ export interface BewerberAbsender {
 /**
  * Absender und Antwortadresse aus der HR-Ansprechpartnerin.
  *
- *   mit Name und Adresse   "Sarah Kaiser-Thom | MOREImmo", Antwort an sie
- *   mit Name, ohne Adresse "Sarah Kaiser-Thom | MOREImmo", Antwort an office@
- *   ohne Person            "MOREImmo", Antwort an office@
+ *   mit Name und Adresse   "Sarah Kaiser-Thom | OS Immobilien", Antwort an sie
+ *   mit Name, ohne Adresse "Sarah Kaiser-Thom | OS Immobilien", Antwort an office@
+ *   ohne Person            "OS Immobilien", Antwort an office@
  *
  * office@ statt gar keiner Antwortadresse: Sonst landet eine Antwort bei
  * noreply@, und dieses Postfach liest niemand.

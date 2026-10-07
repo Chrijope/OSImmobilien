@@ -228,7 +228,7 @@ describe("Auf der Seite eines Partners mit Pixel (A4-09)", () => {
     setzePartnerPixelKontext(KONTEXT);
     render(<PartnerPixelHinweis sprache="en" />);
     const text = screen.getByTestId("partner-pixel-hinweis").textContent ?? "";
-    expect(text).toContain("Joint controllers for the Meta Pixel on this page: Muster Immobilien, Hauptstraße 1, 80331 München, and MOREImmo.");
+    expect(text).toContain("Joint controllers for the Meta Pixel on this page: Muster Immobilien, Hauptstraße 1, 80331 München, and OS Immobilien.");
     expect(screen.getByRole("link", { name: "privacy policy" }).getAttribute("href")).toContain("/datenschutz");
     fireEvent.click(screen.getByRole("button", { name: "Cookie settings" }));
   });

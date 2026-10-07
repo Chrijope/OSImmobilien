@@ -63,12 +63,9 @@ export function Diagramm({ zeichnung, className }: { zeichnung: Zeichnung; class
 /** Bildmarke plus Schriftzug, wie auf dem Deckblatt: auf hellem wie dunklem Grund lesbar. */
 export function Wortmarke({ hell = false, groesse = 22 }: { hell?: boolean; groesse?: number }) {
   return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: 9, fontSize: groesse, lineHeight: 1 }} aria-label="MOREImmo">
-      <img src="/images/moreimmo-icon-blau.png" alt="" style={{ width: groesse * 1.35, height: groesse * 1.35 }} />
-      <span>
-        <b style={{ color: hell ? "#fff" : "var(--hb-tinte)", fontWeight: 700 }}>MORE</b>
-        <span style={{ color: hell ? "#88CFFF" : "var(--hb-muted)", fontWeight: 400 }}>Immo</span>
-      </span>
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 9, fontSize: groesse, lineHeight: 1 }} aria-label="OS Immobilien">
+      <img src={hell ? "/images/os-bildmarke-hell.png" : "/images/moreimmo-icon-blau.png"} alt="" style={{ height: groesse * 1.35, width: "auto" }} />
+      <b style={{ color: hell ? "#fff" : "var(--hb-tinte)", fontWeight: 700 }}>Immobilien</b>
     </span>
   );
 }

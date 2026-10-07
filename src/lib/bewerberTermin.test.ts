@@ -160,7 +160,7 @@ describe("Die Dauer folgt derselben Regel wie im Browser", () => {
 // ────────────────────────────── Die Anzeige ───────────────────────────────
 
 const ROH = {
-  gastgeber: { name: "Sarah Kaiser-Thom", email: "s@more.immo", telefon: "+49 1", bild: "", position: "HR" },
+  gastgeber: { name: "Sarah Kaiser-Thom", email: "os@os-immobilien.com", telefon: "+49 1", bild: "", position: "HR" },
   zeitzone: "Europe/Berlin",
   dauer_minuten: 45,
   bezeichnung: "Bewerbergespräch",

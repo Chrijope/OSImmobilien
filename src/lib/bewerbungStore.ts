@@ -118,7 +118,7 @@ export type StatusNotification = { id: string; typ: "status" | "termin" | "vertr
 export type ErstgespraechSkript = {
   ausgangslage: string;       // aktuelle Situation
   ziele: string;              // konkrete Ziele 1-3 Jahre
-  motivation: string;         // warum MOREImmo
+  motivation: string;         // warum OS Immobilien
   vorErfahrung: string;       // bisherige Vertriebs-/Immo-Erfahrung
   einwand: string;            // Bedenken / offene Fragen
   budget: string;             // verfügbares Investment für die Lizenz
@@ -313,7 +313,7 @@ export type Bewerber = {
    * - satzBestand: bei Bestandsobjekten
    * - satzNeubau: bei Neubauprojekten
    * Werden nur berücksichtigt, wenn kein `satzIndividuell` gesetzt ist.
-   * Ergänzen (nicht ersetzen) den optionalen `satzLead` (Leads über MOREImmo).
+   * Ergänzen (nicht ersetzen) den optionalen `satzLead` (Leads über OS Immobilien).
    */
   satzBestand?: string;
   satzNeubau?: string;
@@ -399,7 +399,7 @@ export type Bewerber = {
    * Christian Peetz' Kalender.
    */
   onboardingTerminGebucht?: boolean;
-  /** Persönliche @more.immo-Adresse des Partners (das Passwort wird bewusst NICHT gespeichert) */
+  /** Persönliche @os-immobilien.com-Adresse des Partners (das Passwort wird bewusst NICHT gespeichert) */
   persoenlicheEmail?: string;
   /** ISO-Zeitstempel des letzten Zugangsdaten-Mailversands */
   zugangsdatenGesendetAm?: string;
@@ -1515,7 +1515,7 @@ export const DOK_STATUS_COLOR: Record<string, string> = {
 export const VERTRAG_STATUS_LABELS: Record<VertragStatus, string> = {
   "nicht_gesendet": "Nicht gesendet",
   "gesendet": "Gesendet",
-  "wartet_auf_kurz": "Wartet auf Gegenzeichnung MOREImmo",
+  "wartet_auf_kurz": "Wartet auf Gegenzeichnung OS Immobilien",
   "unterschrieben": "Unterschrieben",
   "abgelehnt": "Abgelehnt",
 };

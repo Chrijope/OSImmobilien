@@ -67,15 +67,15 @@ describe("Bewerberprozess, die Freigabeliste", () => {
    * Bewerberprozess nicht, eine Kennung auch nicht.
    */
   it("oeffnet den Bewerberprozess nicht mehr ueber Adresse oder Kennung", () => {
-    expect(darfBewerberprozess({ email: "s.kaiser-thom@more.immo" })).toBe(false);
+    expect(darfBewerberprozess({ email: "s.kaiser-thom@osimmobilien.netlify.app" })).toBe(false);
     expect(darfBewerberprozess(CHRISTIAN)).toBe(false);
-    expect(darfBewerberprozess({ email: "c.peetz@more.immo" })).toBe(false);
+    expect(darfBewerberprozess({ email: "c.peetz@osimmobilien.netlify.app" })).toBe(false);
     expect(darfBewerberprozess({ email: "C.Peetz@MORE.immo" })).toBe(false);
   });
 
   it("laesst niemanden hinein, solange keine Rolle mitkommt", () => {
     expect(darfBewerberprozess()).toBe(false);
-    expect(darfBewerberprozess({ email: "irgendwer@more.immo" })).toBe(false);
+    expect(darfBewerberprozess({ email: "irgendwer@osimmobilien.netlify.app" })).toBe(false);
     expect(darfBewerberprozess({ userId: "00000000-0000-0000-0000-000000000000" })).toBe(false);
   });
 
@@ -151,14 +151,14 @@ describe("Videocall, nur Christian Peetz als admin", () => {
    * Funktion, an der Seitenleiste und Routenschutz haengen, und die Regel
    * selbst, die auch `useVideocallFreigabe` fragt.
    */
-  const KURZ = { email: "c.kurz@more.immo" };
+  const KURZ = { email: "c.kurz@osimmobilien.netlify.app" };
   const VOGL = { email: "h.vogl@vundp24.de", userId: "7a0e03f6-6614-4f47-830a-5ed454e4979d" };
-  const ANDERER_ADMIN = { email: "irgendwer@more.immo", userId: "00000000-0000-0000-0000-000000000001" };
+  const ANDERER_ADMIN = { email: "irgendwer@osimmobilien.netlify.app", userId: "00000000-0000-0000-0000-000000000001" };
   const ROUTEN = ["/videocall", "/videocall/buchungen", "/videocall/einstellungen", "/videocall/raum/abc", "/videoraum"];
 
   it("ist fuer Christian in der Rolle admin offen", () => {
     expect(darfVideocallBereich({ ...CHRISTIAN, rolle: "admin" })).toBe(true);
-    expect(darfVideocallBereich({ email: "C.Peetz@more.immo", rolle: "admin" })).toBe(true);
+    expect(darfVideocallBereich({ email: "C.Peetz@osimmobilien.netlify.app", rolle: "admin" })).toBe(true);
     for (const url of ROUTEN) {
       expect(isUrlAllowedForRole(url, "admin", undefined, null, CHRISTIAN), url).toBe(true);
     }
@@ -186,7 +186,7 @@ describe("Videocall, nur Christian Peetz als admin", () => {
     expect(isUrlAllowedForRole("/videocall", "admin")).toBe(false);
     expect(isUrlAllowedForRole("/videocall", "inhaber")).toBe(false);
     expect(isUrlAllowedForRole("/videocall/buchungen", "hr")).toBe(false);
-    expect(isUrlAllowedForRole("/videocall", "hr", undefined, null, { email: "sarah.kaiser-thom@more.immo" })).toBe(false);
+    expect(isUrlAllowedForRole("/videocall", "hr", undefined, null, { email: "sarah.kaiser-thom@osimmobilien.netlify.app" })).toBe(false);
   });
 
   it("laesst sich durch keine individuelle Berechtigung oeffnen", () => {
@@ -219,7 +219,7 @@ describe("Bewerberprozess, die Positivliste vom 21.09.2026", () => {
     for (const rolle of DRAUSSEN) {
       expect(isUrlAllowedForRole(BEWERBERPROZESS_ROUTE, rolle as never, undefined, null, CHRISTIAN), rolle).toBe(false);
       expect(
-        isUrlAllowedForRole(BEWERBERPROZESS_ROUTE, rolle as never, undefined, null, { email: "c.peetz@more.immo" }),
+        isUrlAllowedForRole(BEWERBERPROZESS_ROUTE, rolle as never, undefined, null, { email: "c.peetz@osimmobilien.netlify.app" }),
         rolle,
       ).toBe(false);
       expect(istRouteGesperrt(BEWERBERPROZESS_ROUTE, rolle as never, CHRISTIAN), rolle).toBe(true);
@@ -280,7 +280,7 @@ describe("Bewerberprozess, die Rolle vertriebspartner", () => {
     expect(isUrlAllowedForRole(BEWERBERPROZESS_ROUTE, "vertriebspartner", undefined, null, CHRISTIAN)).toBe(false);
     expect(
       isUrlAllowedForRole(BEWERBERPROZESS_ROUTE, "vertriebspartner", undefined, null, {
-        email: "c.peetz@more.immo",
+        email: "c.peetz@osimmobilien.netlify.app",
       }),
     ).toBe(false);
     expect(istRouteGesperrt(BEWERBERPROZESS_ROUTE, "vertriebspartner", CHRISTIAN)).toBe(true);

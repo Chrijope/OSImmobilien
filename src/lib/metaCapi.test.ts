@@ -84,7 +84,7 @@ describe("baueMetaLeadEvent", () => {
     const event = await baueMetaLeadEvent({
       eventId: "event-123",
       eventTime: 1756725000.9,
-      eventSourceUrl: "https://portal.more.immo/vp/max-mustermann",
+      eventSourceUrl: "https://osimmobilien.netlify.app/vp/max-mustermann",
       email: " Max@Example.com ",
       telefon: "0170 1234567",
     });
@@ -92,7 +92,7 @@ describe("baueMetaLeadEvent", () => {
     expect(event.action_source).toBe("website");
     expect(event.event_id).toBe("event-123");
     expect(event.event_time).toBe(1756725000);
-    expect(event.event_source_url).toBe("https://portal.more.immo/vp/max-mustermann");
+    expect(event.event_source_url).toBe("https://osimmobilien.netlify.app/vp/max-mustermann");
     expect(event.user_data.em).toEqual([await sha256Hex("max@example.com")]);
     expect(event.user_data.ph).toEqual([await sha256Hex("491701234567")]);
     // Klartext darf nirgends im Ereignis stehen.
@@ -106,7 +106,7 @@ describe("baueMetaLeadEvent", () => {
     const event = await baueMetaLeadEvent({
       eventId: "event-456",
       eventTime: 1756725000,
-      eventSourceUrl: "https://portal.more.immo/",
+      eventSourceUrl: "https://osimmobilien.netlify.app/",
       email: "",
       telefon: "123",
     });
@@ -120,7 +120,7 @@ describe("sendeMetaLeadEvent", () => {
     event_name: "Lead" as const,
     event_time: 1756725000,
     action_source: "website" as const,
-    event_source_url: "https://portal.more.immo/vp/max",
+    event_source_url: "https://osimmobilien.netlify.app/vp/max",
     event_id: "event-789",
     user_data: {},
   };

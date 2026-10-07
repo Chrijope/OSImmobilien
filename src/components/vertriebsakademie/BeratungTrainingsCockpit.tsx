@@ -1,4 +1,4 @@
-// Trainings-Cockpit für die Beratungspräsentation MOREImmo.
+// Trainings-Cockpit für die Beratungspräsentation OS Immobilien.
 //
 // Links läuft die echte Präsentation als Vorschau, rechts steht das
 // Sprechskript. Beim Scrollen in der Präsentation erkennt das Cockpit die
@@ -177,7 +177,7 @@ export function BeratungTrainingsCockpit() {
           <iframe
             ref={iframeRef}
             src={PRAESENTATION_URL}
-            title="Beratungspräsentation MOREImmo"
+            title="Beratungspräsentation OS Immobilien"
             loading="lazy"
             className="w-full block"
             style={{ height: "720px" }}

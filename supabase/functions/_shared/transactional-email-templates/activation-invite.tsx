@@ -25,23 +25,23 @@ interface Props {
 
 const TEXTE = {
   de: {
-    betreff: 'Dein Zugang zu MOREImmo',
+    betreff: 'Dein Zugang zu OS Immobilien',
     augenbraue: 'Willkommen',
-    titel: 'Dein Zugang zu MOREImmo',
+    titel: 'Dein Zugang zu OS Immobilien',
     vorschau: 'Richte deinen Zugang ein, es dauert zwei Minuten.',
     absatz:
-      'du wurdest zu MOREImmo eingeladen. Über den Knopf unten richtest du dein Passwort ein und kannst sofort loslegen.',
+      'du wurdest zu OS Immobilien eingeladen. Über den Knopf unten richtest du dein Passwort ein und kannst sofort loslegen.',
     knopf: 'Zugang einrichten',
     hinweis: (gueltigBis?: string) =>
       `Etwa 2 Minuten${gueltigBis ? `  ·  Link gültig bis ${gueltigBis}` : '  ·  Link 7 Tage gültig'}`,
   },
   en: {
-    betreff: 'Your access to MOREImmo',
+    betreff: 'Your access to OS Immobilien',
     augenbraue: 'Welcome',
-    titel: 'Your access to MOREImmo',
+    titel: 'Your access to OS Immobilien',
     vorschau: 'Set up your access, it only takes two minutes.',
     absatz:
-      "you've been invited to MOREImmo. Use the button below to set your password, and you can get started straight away.",
+      "you've been invited to OS Immobilien. Use the button below to set your password, and you can get started straight away.",
     knopf: 'Set up access',
     hinweis: (gueltigBis?: string) =>
       `About 2 minutes${gueltigBis ? `  ·  Link valid until ${gueltigBis}` : '  ·  Link valid for 7 days'}`,
@@ -78,7 +78,7 @@ export const template = {
   sprachen: DE_EN,
   previewData: {
     name: 'Julian Meyer',
-    activationUrl: 'https://portal.more.immo/activate/example',
+    activationUrl: 'https://osimmobilien.netlify.app/activate/example',
     gueltigBis: '5. August 2026',
   },
 } satisfies TemplateEntry

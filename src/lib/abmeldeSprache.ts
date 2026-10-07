@@ -16,7 +16,7 @@ export const ABMELDE_TEXTE = {
   de: {
     pruefen: "Wird überprüft...",
     titel: "E-Mail-Benachrichtigungen abbestellen",
-    frage: "Möchtest du wirklich keine E-Mails mehr von MOREImmo erhalten?",
+    frage: "Möchtest du wirklich keine E-Mails mehr von OS Immobilien erhalten?",
     knopf: "Abbestellen bestätigen",
     fertigTitel: "Erfolgreich abbestellt",
     fertigText: "Du erhältst ab sofort keine E-Mails mehr von uns.",
@@ -28,7 +28,7 @@ export const ABMELDE_TEXTE = {
   en: {
     pruefen: "Checking...",
     titel: "Unsubscribe from email notifications",
-    frage: "Do you really no longer want to receive emails from MOREImmo?",
+    frage: "Do you really no longer want to receive emails from OS Immobilien?",
     knopf: "Confirm unsubscribe",
     fertigTitel: "Successfully unsubscribed",
     fertigText: "You will no longer receive any emails from us.",

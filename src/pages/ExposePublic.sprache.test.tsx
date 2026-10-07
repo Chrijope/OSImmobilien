@@ -78,7 +78,7 @@ describe("Sprache vom Server", () => {
     expect(rechner).toHaveAttribute("lang", "en");
     expect(within(rechner).getByTestId("finanzierungsparameter")).toHaveTextContent("Financing parameters");
     expect(within(rechner).getByTestId("business-case-titel")).toHaveTextContent(/^Business case, [\d.]+% financing$/);
-    expect(screen.getByTestId("abschnitt-kontakt")).toHaveTextContent("Your contact person at MOREImmo");
+    expect(screen.getByTestId("abschnitt-kontakt")).toHaveTextContent("Your contact person at OS Immobilien");
     expect(screen.getByTestId("abschnitt-rechtliches")).toHaveTextContent("German version prevails");
     expect(document.documentElement.getAttribute("lang")).toBe("en");
     // Keine deutschen Abschnittsüberschriften mehr.

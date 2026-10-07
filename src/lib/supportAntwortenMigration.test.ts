@@ -122,7 +122,7 @@ describe("Mailregeln der Function support-antwort-mail", () => {
   });
 
   it("Knopf fuehrt direkt aufs Ticket, Schluessel je beanspruchtem Fenster", () => {
-    expect(supportTicketAdresse("https://portal.more.immo/", "abc")).toBe("https://portal.more.immo/support-kontaktieren?ticket=abc");
+    expect(supportTicketAdresse("https://osimmobilien.netlify.app/", "abc")).toBe("https://osimmobilien.netlify.app/support-kontaktieren?ticket=abc");
     expect(supportMailSchluessel("abc", "2026-09-28T10:00:00.000Z")).not.toBe(supportMailSchluessel("abc", "2026-09-28T10:15:00.000Z"));
   });
 

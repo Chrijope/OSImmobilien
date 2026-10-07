@@ -699,7 +699,7 @@ export async function ladeKundenlinkAuswahl(kontaktId: string, investmentId: str
 /**
  * Liegt der Link auf der veröffentlichten Adresse, auf der gerade auch das
  * CRM läuft? In der Lovable-Vorschau nicht: Der Link führt dann auf
- * portal.more.immo, und dort gibt es neue Seiten erst nach dem
+ * osimmobilien.netlify.app, und dort gibt es neue Seiten erst nach dem
  * Veröffentlichen.
  */
 export function kundenlinkAufDieserAdresse(hostname: string): boolean {

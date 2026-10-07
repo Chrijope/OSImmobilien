@@ -10,7 +10,7 @@
  *     Objekt, ohne `wohnung_id`. Die Wohnung, aus der gesendet wird, steht in
  *     `einstieg_wohnung_id`. Erneut senden, auch aus einer anderen Wohnung,
  *     nimmt dieselbe Zeile, setzt nur die Einstiegswohnung neu und verlängert
- *     die Frist. Link: https://portal.more.immo/immobilie/<token>.
+ *     die Frist. Link: https://osimmobilien.netlify.app/immobilie/<token>.
  *     Senden dürfen das seit dem 05.10.2026 Admin, Inhaber, Vertriebsleitung
  *     und Vertriebspartner, Partner nur für eigene und vertretene Kunden.
  *   - `expose`: wie bisher eine Zeile je Einheit (oder ganzes Objekt).

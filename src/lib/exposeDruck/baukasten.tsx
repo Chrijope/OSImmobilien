@@ -187,7 +187,7 @@ export function Foto({ bild, hoehe, breite, radius = 0, style, enthalten = false
 }
 
 export function Logo({ bild, hoehe }: { bild?: DruckBild | null; hoehe: number }) {
-  if (!bild) return <Text style={{ fontSize: hoehe * 0.8, fontWeight: 700 }}>MOREImmo</Text>;
+  if (!bild) return <Text style={{ fontSize: hoehe * 0.8, fontWeight: 700 }}>OS Immobilien</Text>;
   return <Image src={bild.src} style={{ height: hoehe, width: (hoehe * bild.breite) / bild.hoehe }} />;
 }
 

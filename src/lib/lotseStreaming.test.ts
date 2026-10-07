@@ -1,5 +1,5 @@
 /**
- * Blockweises Streaming des MORE Lotsen (28.09.2026).
+ * Blockweises Streaming des OS Lotsen (28.09.2026).
  *
  * Bewiesen wird: Der Server gibt nur Blöcke frei, die dieselbe Prüfung wie
  * die fertige Antwort bestanden haben, und erst, wenn der Folgeblock da ist.
@@ -62,7 +62,7 @@ describe("Blockfreigabe (freigabeBloecke)", () => {
   });
 
   it("eine Überschrift mit Doppelpunkt wartet auf ihren Folgeblock und fällt mit ihm", () => {
-    const text = `Baujahr 2020.\n\nInnenprovision:\n\nMOREImmo: 6 % vom Kaufpreis.\n\nLift vorhanden.\n\nDas Hausgeld liegt bei 210 €.\n${QUELLEN}`;
+    const text = `Baujahr 2020.\n\nInnenprovision:\n\nOS Immobilien: 6 % vom Kaufpreis.\n\nLift vorhanden.\n\nDas Hausgeld liegt bei 210 €.\n${QUELLEN}`;
     for (const schnitt of SCHNITTE) {
       const frei = streame(text, schnitt);
       expect(frei).toEqual(["Baujahr 2020.", "Lift vorhanden."]);
@@ -70,7 +70,7 @@ describe("Blockfreigabe (freigabeBloecke)", () => {
     }
     // Die Überschrift wartet auf den ganzen Folgeblock, auch wenn dessen erste Zeile schon steht.
     expect(freigabeBloecke("Baujahr 2020.\n\nInnenprovision:\n\n", 0).bloecke).toEqual(["Baujahr 2020."]);
-    expect(freigabeBloecke("Baujahr 2020.\n\nInnenprovision:\n\nMOREImmo: 6 % vom Kaufpreis.\n", 1)).toEqual({ bloecke: [], frei: 1 });
+    expect(freigabeBloecke("Baujahr 2020.\n\nInnenprovision:\n\nOS Immobilien: 6 % vom Kaufpreis.\n", 1)).toEqual({ bloecke: [], frei: 1 });
     expect(freigabeBloecke("Baujahr 2020.\n\nKosten:\n\nDas Hausgeld liegt bei 210 €.\n", 1)).toEqual({ bloecke: [], frei: 1 });
     expect(freigabeBloecke("Baujahr 2020.\n\nKosten:\n\nDas Hausgeld liegt bei 210 €.\n\n", 1)).toEqual({ bloecke: ["Kosten:"], frei: 2 });
     pruefeTeilmenge(text);
@@ -97,11 +97,11 @@ describe("Blockfreigabe (freigabeBloecke)", () => {
 
   it("jede freigegebene Stelle steht auch in der fertigen Antwort, für bekannte Provisionsfälle", () => {
     for (const text of [
-      "Das Hausgeld liegt bei 210 €.\n\nDer Bauträger zahlt 6 % Provision an MOREImmo.\n\nDie Kaltmiete beträgt 850 €.\n\nLift vorhanden.",
+      "Das Hausgeld liegt bei 210 €.\n\nDer Bauträger zahlt 6 % Provision an OS Immobilien.\n\nDie Kaltmiete beträgt 850 €.\n\nLift vorhanden.",
       "Die Innenprovision ist vereinbart.\n\nSie beträgt 6 % vom Kaufpreis.\n\nLift vorhanden.\n\nBaujahr 2020.",
-      "Das Hausgeld liegt bei 210 €.\n\nInnenprovision:\n| Empfänger | Anteil |\n| --- | --- |\n| MOREImmo | 6 % |\n\nLift vorhanden.\n\nBaujahr 2020.",
+      "Das Hausgeld liegt bei 210 €.\n\nInnenprovision:\n| Empfänger | Anteil |\n| --- | --- |\n| OS Immobilien | 6 % |\n\nLift vorhanden.\n\nBaujahr 2020.",
       "Baujahr 2020.\n\n**Vergütung Vertrieb**\n- Anteil Bauträger\n- 6 % vom Kaufpreis\n\nLift vorhanden.\n\nKeller vorhanden.",
-      "Baujahr 2020.\n\n## Innenprovision\n\nMOREImmo: 6 %, Vertrieb: 4 %.\n\nLift vorhanden.\n\nKeller vorhanden.",
+      "Baujahr 2020.\n\n## Innenprovision\n\nOS Immobilien: 6 %, Vertrieb: 4 %.\n\nLift vorhanden.\n\nKeller vorhanden.",
       "Zur Provision liegt keine Angabe vor.\n\nDie SEV-Vergütung beträgt 35 € monatlich.\n\nLift vorhanden.",
       "\n\n  Baujahr 2020.\r\n\r\nDie Courtage liegt bei drei Prozent.\r\n\r\nLift vorhanden.\r\n\r\nKeller.",
     ]) {

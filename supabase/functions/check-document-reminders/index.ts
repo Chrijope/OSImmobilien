@@ -131,7 +131,7 @@ Deno.serve(async (req) => {
             // wie der Knopf "Jetzt fortfahren" (unterlagen-erinnerung-link.ts).
             const portalUrl = bonitaetUrlFuerInvestment(inv.id);
             // Zustaendigen Partner als Unterschrift mitgeben, sonst zeigt die
-            // Erinnerung den Platzhalter "MOREImmo Team".
+            // Erinnerung den Platzhalter "OS Immobilien Team".
             const beraterSignatur = await zustaendigerAnsprechpartner(supabase, kontakt.id);
             await supabase.functions.invoke("send-transactional-email", {
               body: {

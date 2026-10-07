@@ -39,15 +39,15 @@ import { findeFolienIndex, oeffneKanal, type KopplungsNachricht } from "@/lib/pr
    Dieselben Töne wie das bestehende Deck. Die Präsentation läuft dunkel, weil
    sie im Termin als Bühne wirkt und nicht wie eine weitere CRM-Seite
    aussehen soll. */
-const AKZENT = "#7CBEFF";
-const VERLAUF = "linear-gradient(90deg, #5CB0FF 0%, #0A6EDB 100%)";
+const AKZENT = "#1ED28D";
+const VERLAUF = "linear-gradient(90deg, #1CC283 0%, #187F58 100%)";
 const GEDIMMT = "rgba(246,248,252,0.6)";
 const GEDIMMTER = "rgba(246,248,252,0.45)";
 const FLAECHE = "linear-gradient(160deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)";
 const FLAECHE_WARNUNG = "linear-gradient(160deg, rgba(255,196,120,0.14) 0%, rgba(255,196,120,0.03) 100%)";
 const RAND = "1px solid rgba(255,255,255,0.10)";
 /** Glanz-Verlauf für das eine Schlüsselwort jeder Folie, wie im Closing-Deck. */
-const GLANZ_VERLAUF = "linear-gradient(105deg, #C4E1FF 0%, #7CBEFF 45%, #3E8EF0 100%)";
+const GLANZ_VERLAUF = "linear-gradient(105deg, #92EFCC 0%, #1ED28D 45%, #239F70 100%)";
 
 /**
  * Schlüsselwort im hellen Blauverlauf statt in flacher Akzentfarbe.
@@ -180,7 +180,7 @@ function Block({ block }: { block: FolienBlock }) {
               <li key={i} className="flex gap-3 items-start">
                 <span
                   className="shrink-0 rounded-md px-2 py-0.5 text-[10px] uppercase tracking-[0.12em] font-semibold"
-                  style={{ background: "rgba(124,190,255,0.14)", color: AKZENT }}
+                  style={{ background: "rgba(30,210,141,0.14)", color: AKZENT }}
                 >
                   {s.wer}
                 </span>
@@ -329,7 +329,7 @@ function Block({ block }: { block: FolienBlock }) {
               <li key={i} className="flex gap-3 items-start">
                 <span
                   className="shrink-0 rounded-md px-2 py-0.5 text-[10px] uppercase tracking-[0.12em] font-semibold"
-                  style={{ background: "rgba(124,190,255,0.14)", color: AKZENT }}
+                  style={{ background: "rgba(30,210,141,0.14)", color: AKZENT }}
                 >
                   {s.wann}
                 </span>
@@ -413,7 +413,7 @@ function OhneKennenlernen({ titel, text }: { titel: string; text?: string }) {
   return (
     <div className="h-full w-full flex items-center justify-center px-6 text-center">
       <div className="max-w-lg">
-        <img src={logo} alt="MOREImmo" className="h-8 w-auto mx-auto mb-6 brightness-0 invert" />
+        <img src={logo} alt="OS Immobilien" className="h-8 w-auto mx-auto mb-6 brightness-0 invert" />
         <p className="text-lg font-semibold">{titel}</p>
         <p className="mt-3 text-sm" style={{ color: GEDIMMT }}>
           {text ||
@@ -444,7 +444,7 @@ export function BewerberVideocallBuehne({
     <div
       className={`${eingebettet ? "absolute" : "fixed"} inset-0 flex flex-col text-[#F6F8FC] font-sans`}
       style={{
-        background: "radial-gradient(1200px 700px at 50% -10%, #14243F 0%, #0B1526 45%, #070D1A 100%)",
+        background: "radial-gradient(1200px 700px at 50% -10%, #122820 0%, #0B1526 45%, #070D1A 100%)",
       }}
     >
       <div aria-hidden className="absolute top-0 left-0 right-0 h-[2px] z-20" style={{ background: "rgba(255,255,255,0.06)" }}>
@@ -459,7 +459,7 @@ export function BewerberVideocallBuehne({
         style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}
       >
         <div className="flex items-center gap-3">
-          <img src={logo} alt="MOREImmo" className="h-7 w-auto brightness-0 invert" />
+          <img src={logo} alt="OS Immobilien" className="h-7 w-auto brightness-0 invert" />
           <span className="text-xs uppercase tracking-[0.3em] font-semibold hidden sm:inline" style={{ color: GEDIMMTER }}>
             Partner
           </span>
@@ -597,7 +597,7 @@ export default function BewerberVideocallPraesentation() {
     return (
       <div
         className="fixed inset-0 text-[#F6F8FC] font-sans"
-        style={{ background: "radial-gradient(1200px 700px at 50% -10%, #14243F 0%, #0B1526 45%, #070D1A 100%)" }}
+        style={{ background: "radial-gradient(1200px 700px at 50% -10%, #122820 0%, #0B1526 45%, #070D1A 100%)" }}
       >
         {/* Der Befund sagt, woran es liegt. Der Teil „was zu tun ist" bleibt
             bewusst draußen: Dieser Bildschirm wird geteilt. */}

@@ -119,7 +119,7 @@ const BEKOMMST_DU = [
 const START_SCHRITTE: { wann: string; was: string }[] = [
   { wann: "Heute", was: "Deine Entscheidung." },
   { wann: "Danach", was: "Dein Vertrag kommt digital per Mail zur Unterschrift." },
-  { wann: "Tag 1", was: "Onboarding: Zugänge werden freigeschaltet, deine persönliche MOREImmo E-Mail-Adresse wird eingerichtet." },
+  { wann: "Tag 1", was: "Onboarding: Zugänge werden freigeschaltet, deine persönliche OS Immobilien E-Mail-Adresse wird eingerichtet." },
   { wann: "Woche 1", was: "Systemzugang, CRM und Investagon. Deine persönliche Erfolgsstrategie mit Zielplanung. Produkt- und Beratungstraining." },
   { wann: "Woche 2", was: "Erste Kundenfälle, begleitet von deinem Ansprechpartner." },
   { wann: "Danach", was: "Der laufende Prozess: Beratung, Objekt, Finanzierung, Notar." },
@@ -559,7 +559,7 @@ export async function buildStartfahrplanErweitertPdf(opts: {
   y += 8;
 
   absatz(
-    "wir haben in unserem Gespräch alles durchgesprochen, was für deine Entscheidung zählt: warum der Alleingang so schwer ist, wie das MOREImmo System dich trägt, wie ein echter Deal läuft, deine eigenen Zahlen und deine Konditionen. Hier steht das alles noch einmal Schwarz auf Weiß, in derselben Reihenfolge. Am Ende bleibt nur noch ein Schritt offen, und der ist bewusst klein.",
+    "wir haben in unserem Gespräch alles durchgesprochen, was für deine Entscheidung zählt: warum der Alleingang so schwer ist, wie das OS Immobilien System dich trägt, wie ein echter Deal läuft, deine eigenen Zahlen und deine Konditionen. Hier steht das alles noch einmal Schwarz auf Weiß, in derselben Reihenfolge. Am Ende bleibt nur noch ein Schritt offen, und der ist bewusst klein.",
   );
   y += 6;
 
@@ -575,7 +575,7 @@ export async function buildStartfahrplanErweitertPdf(opts: {
 
   abschnitt("Das Gegenbild: Du machst Vertrieb, wir den Rest", 36);
   absatz(
-    "Bei MOREImmo konzentrierst du dich auf die drei Dinge, für die es dich wirklich braucht: Du gewinnst Kunden. Du berätst. Du schließt ab. Alles andere baut MOREImmo um dich herum:",
+    "Bei OS Immobilien konzentrierst du dich auf die drei Dinge, für die es dich wirklich braucht: Du gewinnst Kunden. Du berätst. Du schließt ab. Alles andere baut OS Immobilien um dich herum:",
   );
   y += 2;
   chipWand(BAUSTEINE);
@@ -585,7 +585,7 @@ export async function buildStartfahrplanErweitertPdf(opts: {
   );
   y += 6;
 
-  abschnitt("Wofür MOREImmo steht", 44);
+  abschnitt("Wofür OS Immobilien steht", 44);
   absatz(
     "Wir wollen Immobilieninvestment einfacher, transparenter und erfolgreicher machen. Dahinter stehen fünf Werte, an denen du uns messen kannst:",
     GR.klein,
@@ -598,7 +598,7 @@ export async function buildStartfahrplanErweitertPdf(opts: {
 
   abschnitt("Das System: was du bekommst und was es dir spart", 44);
   absatz(
-    "Du arbeitest als selbständiger Vertriebspartner mit der kompletten Infrastruktur von MOREImmo im Rücken:",
+    "Du arbeitest als selbständiger Vertriebspartner mit der kompletten Infrastruktur von OS Immobilien im Rücken:",
     GR.klein,
     BRAND.muted,
     ZEILE_KLEIN,
@@ -769,7 +769,7 @@ export async function buildStartfahrplanErweitertPdf(opts: {
     "Was du von uns bekommst",
     ERWARTEN_WIR.map((e, i) => ({ links: e, rechts: BEKOMMST_DU[i] })),
   );
-  absatz("MOREImmo gibt dir die Plattform. Was du daraus machst, liegt bei dir.", GR.text, BRAND.accentDark);
+  absatz("OS Immobilien gibt dir die Plattform. Was du daraus machst, liegt bei dir.", GR.text, BRAND.accentDark);
   y += 6;
 
   // Der Wochenplan ist das Kernstück und bleibt ungeteilt auf einer Seite.

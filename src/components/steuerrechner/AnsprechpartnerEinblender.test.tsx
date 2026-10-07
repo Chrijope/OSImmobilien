@@ -22,9 +22,9 @@ import AnsprechpartnerEinblender from "./AnsprechpartnerEinblender";
 
 const VOLL = {
   name: "Christian Peetz",
-  position: "Dein Ansprechpartner bei MOREImmo",
-  telefon: "+49 1515 0275108",
-  email: "c.peetz@more.immo",
+  position: "Dein Ansprechpartner bei OS Immobilien",
+  telefon: "+49 30 863289210",
+  email: "os@os-immobilien.com",
   bild: "https://example.com/bild.png",
   userId: "auth-4711",
 };
@@ -44,14 +44,14 @@ describe("Der Einblender mit dem Ansprechpartner", () => {
   it("zeigt Name, Position, Bild, Mail und Telefon des Partners aus dem Link", () => {
     zeige(VOLL);
     expect(screen.getByText(/Christian Peetz meldet sich zeitnah bei dir/)).toBeTruthy();
-    expect(screen.getByText("Dein Ansprechpartner bei MOREImmo")).toBeTruthy();
-    expect(screen.getByRole("link", { name: /\+49 1515 0275108/ })).toHaveAttribute(
+    expect(screen.getByText("Dein Ansprechpartner bei OS Immobilien")).toBeTruthy();
+    expect(screen.getByRole("link", { name: /\+49 30 863289210/ })).toHaveAttribute(
       "href",
-      "tel:+4915150275108",
+      "tel:+4930863289210",
     );
-    expect(screen.getByRole("link", { name: /c\.peetz@more\.immo/ })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /os@os-immobilien\.com/ })).toHaveAttribute(
       "href",
-      "mailto:c.peetz@more.immo",
+      "mailto:os@os-immobilien.com",
     );
   });
 
@@ -93,15 +93,15 @@ describe("Der Einblender mit dem Ansprechpartner", () => {
   /* ── Keine leeren Felder ─────────────────────────────────────────────── */
 
   it("laesst die Telefonzeile weg, wenn keine Nummer hinterlegt ist", () => {
-    zeige({ name: "Christian Peetz", email: "c.peetz@more.immo" });
-    expect(screen.getByRole("link", { name: /c\.peetz@more\.immo/ })).toBeTruthy();
+    zeige({ name: "Christian Peetz", email: "os@os-immobilien.com" });
+    expect(screen.getByRole("link", { name: /os@os-immobilien\.com/ })).toBeTruthy();
     expect(screen.queryByRole("link", { name: /^\+/ })).toBeNull();
     // Und keine Zeile fuer eine Position, die es nicht gibt.
     expect(screen.getAllByRole("link")).toHaveLength(1);
   });
 
   it("zeigt ohne Bild die Initialen statt einer leeren Flaeche", () => {
-    zeige({ name: "Christian Peetz", email: "c.peetz@more.immo" });
+    zeige({ name: "Christian Peetz", email: "os@os-immobilien.com" });
     expect(screen.getByText("CP")).toBeTruthy();
   });
 });

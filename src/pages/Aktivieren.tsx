@@ -209,7 +209,7 @@ const Aktivieren = () => {
   return (
     <div data-lg="seite" className="min-h-screen flex items-center justify-center bg-background p-6">
       <div className="w-full max-w-md space-y-6 text-center">
-        <img src={logoImg} alt="MOREImmo" className="h-10 mx-auto" />
+        <img src={logoImg} alt="OS Immobilien" className="h-10 mx-auto" />
 
         {loadingInfo ? (
           <div className="flex items-center justify-center gap-2 text-muted-foreground py-12">

@@ -1,5 +1,5 @@
 /**
- * Sprechskripte zur Beratungspräsentation MOREImmo als PDF.
+ * Sprechskripte zur Beratungspräsentation OS Immobilien als PDF.
  *
  * Bewusst ohne Abbildungen aus der Präsentation. Die Vorgängerfassung arbeitete
  * mit Bildschirmfotos aus einem laufenden Vorschaufenster, war dadurch langsam,
@@ -43,7 +43,7 @@ const NR_SPALTE = 16;
 const TEXT_X = RAND + NR_SPALTE;
 const TEXT_B = SEITE_B - RAND - TEXT_X;
 
-export const SKRIPT_PDF_DATEINAME = "MOREImmo_Sprechskripte_Beratung.pdf";
+export const SKRIPT_PDF_DATEINAME = "OS-Immobilien_Sprechskripte_Beratung.pdf";
 
 export async function buildBeratungSkriptPdf(): Promise<{ blob: Blob; dateiname: string }> {
   const doc = new jsPDF({ unit: "mm", format: "a4" });

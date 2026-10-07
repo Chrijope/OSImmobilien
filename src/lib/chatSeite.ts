@@ -4,16 +4,16 @@
  * Bis zum 26.09.2026 hing die Seite allein daran, ob eine Nachricht vom
  * angemeldeten Nutzer stammt. Liest Christian einen Kundenchat mit, in dem
  * Kunde und Partner schreiben, stand dadurch ALLES links, und man sah nicht,
- * wer Kunde und wer MOREImmo ist.
+ * wer Kunde und wer OS Immobilien ist.
  *
  * Die Regel jetzt:
  *
  * - Chats mit einer Aussenseite (Kundenkommunikation, Tippgeber-Chat): Es gibt
- *   zwei Seiten, die Aussenseite (Kunde bzw. Tippgeber) und MOREImmo. Rechts
+ *   zwei Seiten, die Aussenseite (Kunde bzw. Tippgeber) und OS Immobilien. Rechts
  *   steht immer die Seite, auf der der Lesende selbst sitzt. Im CRM liest
- *   MOREImmo, also stehen Partner, Admin und Backoffice rechts und der Kunde
+ *   OS Immobilien, also stehen Partner, Admin und Backoffice rechts und der Kunde
  *   links, egal wer von ihnen gerade liest. Im Portal liest der Kunde, dort
- *   steht er rechts und MOREImmo links.
+ *   steht er rechts und OS Immobilien links.
  * - Interne Chats (nur Mitarbeiter): eigene Nachrichten rechts, alle anderen
  *   links, wie bisher.
  *

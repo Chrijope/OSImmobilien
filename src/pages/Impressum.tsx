@@ -26,9 +26,9 @@ export default function Impressum() {
 
         <div className="prose prose-sm max-w-none space-y-6 text-foreground">
           <div>
-             <p className="font-semibold">MOREImmo</p>
-             <p className="text-sm text-muted-foreground">Einzelunternehmen · Inhaber: Christian Kurz</p>
-             <p>Wendelsteinstraße 19<br />83075 Bad Feilnbach</p>
+             <p className="font-semibold">OS Immobilien</p>
+             <p className="text-sm text-muted-foreground">OS Immobilien Holding GmbH</p>
+             <p>Am Ostbahnhof 1<br />15749 Mittenwalde</p>
             {/* Telefon und Mail stehen in `impressumKontakt.ts`, sie gehören auch in die Widerrufsbelehrung. Leere Nummer heißt: keine Zeile. */}
             {IMPRESSUM_TELEFON && <p>Telefon: <a href={`tel:${IMPRESSUM_TELEFON.replace(/\s/g, "")}`} className="text-primary hover:underline">{IMPRESSUM_TELEFON}</a></p>}
             <p>
@@ -36,7 +36,7 @@ export default function Impressum() {
             </p>
             <p>Steuernummer: 134 | 178 | 41478</p>
             <p>&nbsp;</p>
-            <p>Umsatzsteuer-ID gemäß § 27 a UStG:&nbsp;&nbsp;DE461593843</p>
+            <p>Umsatzsteuer-ID gemäß § 27 a UStG:&nbsp;&nbsp;DEINE-UST-ID</p>
             <p>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV: Christian Kurz</p>
           </div>
 
@@ -70,7 +70,7 @@ export default function Impressum() {
         </div>
 
         <div className="border-t mt-12 pt-6 text-xs text-muted-foreground text-center space-x-4">
-          <span>© {new Date().getFullYear()} MOREImmo · Einzelunternehmen Christian Kurz</span>
+          <span>© {new Date().getFullYear()} OS Immobilien Holding GmbH</span>
           <Link to="/datenschutz" className="hover:underline">Datenschutz</Link>
         </div>
       </div>

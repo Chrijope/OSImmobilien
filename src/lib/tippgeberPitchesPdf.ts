@@ -115,7 +115,7 @@ function drawCoverPage(doc: jsPDF, logo: string | null, ctx: PitchContext) {
   const linkBoxH = 36;
   setFill(doc, [243, 248, 252]);
   doc.roundedRect(MARGIN, linkBoxY, CONTENT_W, linkBoxH, 3, 3, "F");
-  setDraw(doc, [217, 232, 243]);
+  setDraw(doc, [211, 235, 226]);
   doc.setLineWidth(0.3);
   doc.roundedRect(MARGIN, linkBoxY, CONTENT_W, linkBoxH, 3, 3, "S");
   // Left accent
@@ -128,7 +128,7 @@ function drawCoverPage(doc: jsPDF, logo: string | null, ctx: PitchContext) {
   doc.text("DEIN PERSÖNLICHER EMPFEHLUNGS-LINK", MARGIN + 7, linkBoxY + 8, { charSpace: 0.6 });
   doc.setFontSize(11);
   doc.setFont(PDF_FONT, "normal");
-  setColor(doc, [15, 90, 138]);
+  setColor(doc, [24, 97, 69]);
   const urlLines = doc.splitTextToSize(ctx.landingpageUrl, CONTENT_W - 14);
   doc.text(urlLines, MARGIN + 7, linkBoxY + 16);
   doc.setFontSize(8);
@@ -309,7 +309,7 @@ function drawPitchPage(
   doc.text("ENTHALTENER LINK", MARGIN + 6, y + 6.5, { charSpace: 0.5 });
   doc.setFontSize(9);
   doc.setFont(PDF_FONT, "normal");
-  setColor(doc, [15, 90, 138]);
+  setColor(doc, [24, 97, 69]);
   const linkLines = doc.splitTextToSize(ctx.landingpageUrl, CONTENT_W - 12);
   doc.text(linkLines, MARGIN + 6, y + 13);
   y += linkH + 8;

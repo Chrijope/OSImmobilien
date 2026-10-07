@@ -129,13 +129,13 @@ describe("Datum und Uhrzeit, die deutsch ankommen", () => {
 
 describe("Layout und Links", () => {
   it("die Rolle heißt englisch nie advisor", () => {
-    expect(rolleFuer("Immobilienberater", "en")).toBe("Your contact at MOREImmo");
+    expect(rolleFuer("Immobilienberater", "en")).toBe("Your contact at OS Immobilien");
     expect(rolleFuer("Immobilienberater", "de")).toBe("Immobilienberater");
-    expect(rolleFuer("", "de")).toBe("Ansprechpartner bei MOREImmo");
+    expect(rolleFuer("", "de")).toBe("Ansprechpartner bei OS Immobilien");
   });
 
   it("hängt lang=en an, auch an den Abmeldeplatzhalter", () => {
-    expect(mitSprache("https://portal.more.immo/datenschutz", "en")).toBe("https://portal.more.immo/datenschutz?lang=en");
+    expect(mitSprache("https://osimmobilien.netlify.app/datenschutz", "en")).toBe("https://osimmobilien.netlify.app/datenschutz?lang=en");
     expect(mitSprache("https://x.de/a?b=1", "en")).toBe("https://x.de/a?b=1&lang=en");
     expect(mitSprache("{{unsubscribe_url}}", "en")).toBe("{{unsubscribe_url}}&lang=en");
     expect(mitSprache("{{unsubscribe_url}}", "de")).toBe("{{unsubscribe_url}}");

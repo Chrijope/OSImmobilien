@@ -4,7 +4,7 @@ import { EmailLayout, Absatz, Handlung, Angaben, Liste, Hinweis, type Ansprechpa
 import { hallo } from './_anrede.ts'
 import { DE_EN, type MailSprache, texteFuer, type Zweisprachig } from './_sprache.ts'
 
-const PORTAL_URL = 'https://portal.more.immo/login'
+const PORTAL_URL = 'https://osimmobilien.netlify.app/login'
 
 interface DocResult {
   name: string
@@ -155,9 +155,9 @@ export const template = {
     ],
     berater: {
       name: 'Christian Peetz',
-      rolle: 'Dein Ansprechpartner bei MOREImmo',
-      telefon: '+49 1515 0275108',
-      email: 'c.peetz@more.immo',
+      rolle: 'Dein Ansprechpartner bei OS Immobilien',
+      telefon: '+49 30 863289210',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

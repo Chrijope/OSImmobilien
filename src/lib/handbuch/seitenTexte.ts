@@ -33,7 +33,7 @@ const DE = {
   },
   vertrauen: ["Keine Schufa-Abfrage", "Rund zwei Minuten", "Kostenlos und unverbindlich"],
   landing: {
-    titel: (name: string) => (name ? `Ihr persönliches Immobilienhandbuch mit ${name} | MOREImmo` : "Ihr persönliches Immobilienhandbuch | MOREImmo"),
+    titel: (name: string) => (name ? `Ihr persönliches Immobilienhandbuch mit ${name} | OS Immobilien` : "Ihr persönliches Immobilienhandbuch | OS Immobilien"),
     beschreibung:
       "Sechs kurze Fragen, dann sehen Sie Ihren Rahmen als Modellrechnung und bekommen ein Handbuch mit Ihren Zahlen: wie die Bank rechnet und was die Steuer beiträgt.",
     augenbraue: "Kostenloses Immobilienhandbuch",
@@ -96,7 +96,7 @@ const DE = {
       augenbraue: "Wer dahinter steht",
       stimmenTitel: "Was Kunden über uns sagen",
       stimme: "Kundenstimme",
-      stimmenFuss: "Kundenstimmen, wie sie auf more.immo veröffentlicht sind.",
+      stimmenFuss: "Kundenstimmen, wie sie auf osimmobilien.netlify.app veröffentlicht sind.",
       deinBerater: "Ihr Immobilienberater",
       inhaberHinweis: "Nach Ihrer Anfrage bekommen Sie einen festen Berater, der Sie vom ersten Gespräch bis nach dem Notar begleitet.",
     },
@@ -131,7 +131,7 @@ const DE = {
       zwischenUnter: "Sechs Fragen, dann sehen Sie Ihren Rahmen.",
     },
     arbeit: {
-      augenbraue: "So arbeitet MOREImmo",
+      augenbraue: "So arbeitet OS Immobilien",
       h2: "Ein Berater, vom ersten Gespräch bis nach dem Notar.",
       lead: "Wir sind Kapitalanlagevermittler, kein Makler. Sie haben einen festen Immobilienberater, der Sie durch jeden Schritt begleitet.",
       modelle: [
@@ -170,7 +170,7 @@ const DE = {
         `Nach 30 Jahren im Modell: Vermögen in der Wohnung ${vermoegen}. Eingesetzt haben Sie bis dahin rund ${eingesetzt} (Eigenkapital, Finanzierungsnebenkosten und der laufende Eigenaufwand nach Steuer). Keine Zusage, Wertsteigerung nicht garantiert.`,
       annahmen: "Annahmen:",
       annahmenZusatz:
-        "Jahresbrutto 100.000 €, Grundtarif. Rechenweg wie im MOREImmo-Investmentrechner. Die Rücklage zahlen Sie laufend, steuerlich zählt sie erst, wenn sie ausgegeben wird.",
+        "Jahresbrutto 100.000 €, Grundtarif. Rechenweg wie im OS Immobilien-Investmentrechner. Die Rücklage zahlen Sie laufend, steuerlich zählt sie erst, wenn sie ausgegeben wird.",
       zwischenTitel: "Diese Rechnung mit Ihren Zahlen?",
       zwischenUnter: "Ihr Handbuch rechnet eine Wohnung in Ihrem Rahmen, mit Ihrem Steuersatz.",
     },
@@ -225,7 +225,7 @@ const DE = {
         ],
         ["Ist mein Rahmen eine Finanzierungszusage?", "Nein. Er ist eine Modellrechnung. Eine Zusage gibt nur eine Bank, nachdem sie Sie und die Wohnung geprüft hat."],
         ["Fragen Sie bei der Schufa an?", "Nein, weder im Konfigurator noch in der Selbstauskunft. Eine Schufa-Auskunft holt erst die finanzierende Bank ein, und nur mit Ihrer Zustimmung."],
-        ["Wer sieht meine Angaben?", "MOREImmo und der Immobilienberater, der Sie betreut. An eine Bank gehen Ihre Daten erst, wenn Sie sich für eine Finanzierung entscheiden."],
+        ["Wer sieht meine Angaben?", "OS Immobilien und der Immobilienberater, der Sie betreut. An eine Bank gehen Ihre Daten erst, wenn Sie sich für eine Finanzierung entscheiden."],
         ["Kann ich über meine Hausbank finanzieren?", "Ja. Sie können über Ihren eigenen Berater, Ihre Hausbank oder unseren Finanzierungspartner finanzieren, auch parallel anfragen."],
         ["Muss ich schon eine Wohnung im Blick haben?", "Nein, im Gegenteil. Erst klären wir Ihre Ziele und Ihren Rahmen, danach zeigen wir Ihnen nur Wohnungen, die zu beidem passen."],
         ["Ersetzt das Handbuch meinen Steuerberater?", "Nein. Es zeigt Ihnen die Mechanik. Die verbindliche Beurteilung Ihrer Steuer gehört zu Ihrem Steuerberater."],
@@ -236,7 +236,7 @@ const DE = {
     },
   },
   wizard: {
-    titel: (name: string) => (name ? `Ihr Handbuch in sechs Fragen, mit ${name} | MOREImmo` : "Ihr Handbuch in sechs Fragen | MOREImmo"),
+    titel: (name: string) => (name ? `Ihr Handbuch in sechs Fragen, mit ${name} | OS Immobilien` : "Ihr Handbuch in sechs Fragen | OS Immobilien"),
     beschreibung: "Sechs kurze Fragen, dann bekommen Sie Ihr persönliches Immobilienhandbuch mit Ihrem Rahmen als Modellrechnung.",
     augenbraue: "Ihr persönliches Immobilienhandbuch",
     h1: "Sechs Fragen bis zu Ihrem Rahmen.",
@@ -301,7 +301,7 @@ const DE = {
     fehlerAllgemein: "Das hat nicht geklappt. Bitte versuchen Sie es noch einmal.",
   },
   ergebnis: {
-    titel: "Ihr persönliches Immobilienhandbuch | MOREImmo",
+    titel: "Ihr persönliches Immobilienhandbuch | OS Immobilien",
     laedt: "Ihr Handbuch wird geladen",
     abgelaufenAugenbraue: "Link abgelaufen",
     abgelaufenTitel: (vorname: string) => `Dieser Link gilt nicht mehr${vorname ? `, ${vorname}` : ""}.`,
@@ -347,7 +347,7 @@ const DE = {
     kapitelLabel: "Kapitel des Handbuchs",
   },
   saOffen: {
-    titel: "Selbstauskunft ausfüllen | MOREImmo",
+    titel: "Selbstauskunft ausfüllen | OS Immobilien",
     augenbraue: "Selbstauskunft",
     h1: "Aus der Schätzung wird eine Rechnung.",
     lead: "Mit der Selbstauskunft rechnen wir Ihren Rahmen genau. Sie verpflichtet Sie zu nichts und fragt nicht bei der Schufa an.",
@@ -364,7 +364,7 @@ const DE = {
     ersteFragen: "Erst die sechs Fragen beantworten",
   },
   saStart: {
-    titel: "Selbstauskunft | MOREImmo",
+    titel: "Selbstauskunft | OS Immobilien",
     augenbraue: "Selbstauskunft",
     laedt: "Ihre Selbstauskunft wird vorbereitet",
     liegtVorTitel: "Ihre Selbstauskunft liegt uns schon vor.",
@@ -399,7 +399,7 @@ export const HANDBUCH_SEITEN_TEXTE: ZweiSprachen<typeof DE> = {
     },
     vertrauen: ["No Schufa credit check", "About two minutes", "Free and non-binding"],
     landing: {
-      titel: (name: string) => (name ? `Your personal property handbook with ${name} | MOREImmo` : "Your personal property handbook | MOREImmo"),
+      titel: (name: string) => (name ? `Your personal property handbook with ${name} | OS Immobilien` : "Your personal property handbook | OS Immobilien"),
       beschreibung:
         "Six short questions, then you see your budget as a model calculation and receive a handbook with your own figures: how the bank calculates and what tax contributes.",
       augenbraue: "Free property handbook",
@@ -460,7 +460,7 @@ export const HANDBUCH_SEITEN_TEXTE: ZweiSprachen<typeof DE> = {
         augenbraue: "Who is behind it",
         stimmenTitel: "What customers say about us",
         stimme: "Customer review",
-        stimmenFuss: "Customer reviews as published on more.immo. Original in German.",
+        stimmenFuss: "Customer reviews as published on osimmobilien.netlify.app. Original in German.",
         deinBerater: "Your contact person",
         inhaberHinweis: "After your request you get one fixed contact person who accompanies you from the first conversation until after the notary.",
       },
@@ -495,7 +495,7 @@ export const HANDBUCH_SEITEN_TEXTE: ZweiSprachen<typeof DE> = {
         zwischenUnter: "Six questions, then you see your budget.",
       },
       arbeit: {
-        augenbraue: "How MOREImmo works",
+        augenbraue: "How OS Immobilien works",
         h2: "One contact person, from the first conversation until after the notary.",
         lead: "We are an investment property intermediary, not an estate agent. You have one fixed contact person who accompanies you through every step.",
         modelle: [
@@ -534,7 +534,7 @@ export const HANDBUCH_SEITEN_TEXTE: ZweiSprachen<typeof DE> = {
           `After 30 years in the model: equity in the flat ${vermoegen}. By then you will have put in about ${eingesetzt} (equity, financing costs and your ongoing contribution after tax). Not a commitment, increase in value not guaranteed.`,
         annahmen: "Assumptions:",
         annahmenZusatz:
-          "Gross annual income €100,000, basic tariff. Calculated as in the MOREImmo investment calculator. You pay the reserve continuously; for tax purposes it only counts once it is spent.",
+          "Gross annual income €100,000, basic tariff. Calculated as in the OS Immobilien investment calculator. You pay the reserve continuously; for tax purposes it only counts once it is spent.",
         zwischenTitel: "This calculation with your figures?",
         zwischenUnter: "Your handbook calculates a flat within your budget, at your tax rate.",
       },
@@ -589,7 +589,7 @@ export const HANDBUCH_SEITEN_TEXTE: ZweiSprachen<typeof DE> = {
           ],
           ["Is my budget a financing commitment?", "No. It is a model calculation. Only a bank can give a commitment, after assessing you and the flat."],
           ["Do you run a Schufa credit check?", "No, neither in the configurator nor in the self-disclosure. Only the financing bank requests a Schufa report, and only with your consent."],
-          ["Who sees my details?", "MOREImmo and your contact person who looks after you. Your data only goes to a bank once you decide on a financing."],
+          ["Who sees my details?", "OS Immobilien and your contact person who looks after you. Your data only goes to a bank once you decide on a financing."],
           ["Can I finance through my own bank?", "Yes. You can finance through your own adviser, your own bank or our financing partner, and ask in parallel."],
           ["Do I need to have a flat in mind already?", "No, quite the opposite. First we clarify your goals and your budget, then we only show you flats that fit both."],
           ["Does the handbook replace my tax adviser?", "No. It shows you the mechanics. The binding assessment of your tax is a matter for your tax adviser."],
@@ -600,7 +600,7 @@ export const HANDBUCH_SEITEN_TEXTE: ZweiSprachen<typeof DE> = {
       },
     },
     wizard: {
-      titel: (name: string) => (name ? `Your handbook in six questions, with ${name} | MOREImmo` : "Your handbook in six questions | MOREImmo"),
+      titel: (name: string) => (name ? `Your handbook in six questions, with ${name} | OS Immobilien` : "Your handbook in six questions | OS Immobilien"),
       beschreibung: "Six short questions, then you receive your personal property handbook with your budget as a model calculation.",
       augenbraue: "Your personal property handbook",
       h1: "Six questions to your budget.",
@@ -665,7 +665,7 @@ export const HANDBUCH_SEITEN_TEXTE: ZweiSprachen<typeof DE> = {
       fehlerAllgemein: "That did not work. Please try again.",
     },
     ergebnis: {
-      titel: "Your personal property handbook | MOREImmo",
+      titel: "Your personal property handbook | OS Immobilien",
       laedt: "Loading your handbook",
       abgelaufenAugenbraue: "Link expired",
       abgelaufenTitel: (vorname: string) => `This link is no longer valid${vorname ? `, ${vorname}` : ""}.`,
@@ -711,7 +711,7 @@ export const HANDBUCH_SEITEN_TEXTE: ZweiSprachen<typeof DE> = {
       kapitelLabel: "Chapters of the handbook",
     },
     saOffen: {
-      titel: "Complete your self-disclosure | MOREImmo",
+      titel: "Complete your self-disclosure | OS Immobilien",
       augenbraue: "Self-disclosure",
       h1: "The estimate becomes a calculation.",
       lead: "With the self-disclosure (Selbstauskunft) we calculate your budget precisely. It does not commit you to anything and does not involve a Schufa check.",
@@ -728,7 +728,7 @@ export const HANDBUCH_SEITEN_TEXTE: ZweiSprachen<typeof DE> = {
       ersteFragen: "Answer the six questions first",
     },
     saStart: {
-      titel: "Self-disclosure | MOREImmo",
+      titel: "Self-disclosure | OS Immobilien",
       augenbraue: "Self-disclosure",
       laedt: "Preparing your self-disclosure",
       liegtVorTitel: "We already have your self-disclosure.",

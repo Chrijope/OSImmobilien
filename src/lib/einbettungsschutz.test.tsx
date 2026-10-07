@@ -9,7 +9,7 @@ import {
 } from "@/lib/einbettungsschutz";
 import { EinbettungsHinweis } from "@/components/EinbettungsHinweis";
 
-const PORTAL = "https://portal.more.immo";
+const PORTAL = "https://osimmobilien.netlify.app";
 const VORSCHAU = "https://id-preview--cd62347b-9ef0-43fe-a989-4d4a53a8c4ef.lovable.app";
 
 function lage(teil: Partial<RahmenLage>): RahmenLage {
@@ -54,9 +54,9 @@ describe("Einbettungsschutz", () => {
     expect(beurteileRahmen(lage({ vorfahren: [PORTAL, "https://boese.example"] })).erlaubt).toBe(false);
   });
 
-  it("die Website more.immo darf einbetten", () => {
-    expect(beurteileRahmen(lage({ vorfahren: ["https://more.immo"] })).erlaubt).toBe(true);
-    expect(beurteileRahmen(lage({ referrer: "https://www.more.immo/steuer" })).erlaubt).toBe(true);
+  it("die Website osimmobilien.netlify.app darf einbetten", () => {
+    expect(beurteileRahmen(lage({ vorfahren: ["https://osimmobilien.netlify.app"] })).erlaubt).toBe(true);
+    expect(beurteileRahmen(lage({ referrer: "https://osimmobilien.netlify.app/steuer" })).erlaubt).toBe(true);
   });
 
   it("fremde Lovable-Apps dürfen das Live-Portal nicht einbetten, nur die Vorschau", () => {
@@ -76,7 +76,7 @@ describe("Einbettungsschutz", () => {
     expect(istVorschauHost(new URL(VORSCHAU).hostname)).toBe(true);
     expect(istVorschauHost("preview--moreimmo.lovable.app")).toBe(true);
     expect(istVorschauHost("moreimmo.lovable.app")).toBe(false);
-    expect(istVorschauHost("portal.more.immo")).toBe(false);
+    expect(istVorschauHost("osimmobilien.netlify.app")).toBe(false);
   });
 });
 
@@ -105,17 +105,17 @@ describe("einbettungErlaubt liest das echte Fenster", () => {
 
 describe("Hinweisseite", () => {
   it("zeigt den Link in ein eigenes Fenster, deutsch und englisch", () => {
-    render(<EinbettungsHinweis adresse="https://portal.more.immo/login" />);
+    render(<EinbettungsHinweis adresse="https://osimmobilien.netlify.app/login" />);
     const link = screen.getByRole("link", { name: /In neuem Fenster öffnen/ });
-    expect(link).toHaveAttribute("href", "https://portal.more.immo/login");
+    expect(link).toHaveAttribute("href", "https://osimmobilien.netlify.app/login");
     expect(link).toHaveAttribute("target", "_blank");
     expect(link).toHaveAttribute("rel", "noopener noreferrer");
     expect(screen.getByRole("link", { name: "Open in new window" })).toBeInTheDocument();
-    expect(screen.getAllByText("portal.more.immo").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("osimmobilien.netlify.app").length).toBeGreaterThan(0);
   });
 
   it("enthält keine Gedankenstriche", () => {
-    const { container } = render(<EinbettungsHinweis adresse="https://portal.more.immo/" />);
+    const { container } = render(<EinbettungsHinweis adresse="https://osimmobilien.netlify.app/" />);
     expect(container.textContent).not.toMatch(/[–—]/);
   });
 });

@@ -75,7 +75,7 @@ export interface EigenfinanzierungState {
   kundenDarlehensvertrag?: EigenfinanzierungAngebot;
   /** Alle vom Kunden hochgeladenen unterschriebenen Darlehensvertraege. */
   kundenDarlehensvertraege?: EigenfinanzierungAngebot[];
-  gegenDarlehensvertrag?: EigenfinanzierungAngebot;  // Gegenangebot more.immo: Darlehensvertrag
+  gegenDarlehensvertrag?: EigenfinanzierungAngebot;  // Gegenangebot osimmobilien.netlify.app: Darlehensvertrag
   vpBestaetigt?: EigenfinanzierungBestaetigung;
   deaktiviertAm?: string;
   deaktiviertVonName?: string;

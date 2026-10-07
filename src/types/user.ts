@@ -37,10 +37,10 @@ export interface RoleConfig {
 export const ROLES: RoleConfig[] = [
   { id: "inhaber", label: "Inhaber", color: "hsl(142, 70%, 45%)", badgeCount: 15 },
   { id: "admin", label: "Admin", color: "hsl(0, 84%, 60%)", badgeCount: 15 },
-  { id: "vertriebsleiter", label: "Vertriebsleiter", color: "hsl(220, 80%, 50%)", badgeCount: 15 },
+  { id: "vertriebsleiter", label: "Vertriebsleiter", color: "hsl(157, 60%, 29%)", badgeCount: 15 },
   { id: "vertriebspartner", label: "Vertriebspartner", color: "hsl(262, 60%, 50%)", badgeCount: 15 },
   { id: "objektpartner", label: "Objektpartner", color: "hsl(30, 80%, 50%)", badgeCount: 15 },
-  { id: "finanzierungspartner", label: "Finanzierungspartner", color: "hsl(200, 70%, 50%)", badgeCount: 15 },
+  { id: "finanzierungspartner", label: "Finanzierungspartner", color: "hsl(157, 52%, 43%)", badgeCount: 15 },
   { id: "hausverwaltung", label: "Hausverwaltung", color: "hsl(35, 70%, 50%)", badgeCount: 15 },
   { id: "buchhaltung", label: "Buchhaltung", color: "hsl(220, 10%, 46%)" },
   { id: "backoffice", label: "Backoffice", color: "hsl(170, 60%, 40%)", badgeCount: 15 },

@@ -52,10 +52,10 @@ export const ABSCHNITT_TITEL_EN: Record<AbschnittKennung, string> = {
 };
 
 export const OBJEKT_EINLEITUNG_EN =
-  "I/We intend to acquire the property described below through MOREImmo.";
+  "I/We intend to acquire the property described below through OS Immobilien.";
 
 export const OBJEKT_EINLEITUNG_GESAMTOBJEKT_EN =
-  "I/We intend to acquire the property described below as a whole through MOREImmo, that is, the plot of land with the building and all units contained in it. The acquisition of individual units is not the subject of this agreement.";
+  "I/We intend to acquire the property described below as a whole through OS Immobilien, that is, the plot of land with the building and all units contained in it. The acquisition of individual units is not the subject of this agreement.";
 
 export const KAUFGEGENSTAND_GESAMTOBJEKT_EN = "Entire property (plot of land with building and all units)";
 
@@ -65,13 +65,13 @@ export const AUFTEILUNG_TEXT_EN = {
 } as const;
 
 export const NOTAR_HINWEIS_EN =
-  "As a rule, the purchase contract is notarised at the notary's office that the seller has designated for this property and with which MOREImmo already works. Another notary's office may be instructed after prior consultation with MOREImmo and with the seller's consent. The costs of notarisation are borne by the prospective buyer (Section 448 (2) of the German Civil Code, BGB).";
+  "As a rule, the purchase contract is notarised at the notary's office that the seller has designated for this property and with which OS Immobilien already works. Another notary's office may be instructed after prior consultation with OS Immobilien and with the seller's consent. The costs of notarisation are borne by the prospective buyer (Section 448 (2) of the German Civil Code, BGB).";
 
 export const GEBUEHR_EINLEITUNG_EN =
   "To confirm the reservation, the following reservation fee is to be transferred to the account below within seven days of signing:";
 
 export const VEREINBARUNG_EINLEITUNG_EN =
-  "MOREImmo and the prospective buyer agree as follows with regard to the property:";
+  "OS Immobilien and the prospective buyer agree as follows with regard to the property:";
 
 /** Ein Punkt der Vereinbarung auf Englisch, mit denselben Fassungen wie im Deutschen. */
 export interface ZifferTexteEn {
@@ -87,22 +87,22 @@ const PUNKT_C_EN = "c) to work towards the prompt conclusion of a contract betwe
 const PUNKT_D_EN = "d) to carry out the preparations necessary for concluding the contract (reserving a notary appointment; where applicable, providing a draft contract) and to support the prospective buyer in preparing the purchase.";
 
 const ZAHLUNG_ZWEITER_TEIL_EN =
-  " Payment is due within seven days of signing this agreement. The fee covers the activities of MOREImmo set out in point {{punkt:pflichten}}, the reservation risk (possible loss caused by suspending other brokerage efforts) and the additional effort incurred by resuming the brokerage efforts.";
+  " Payment is due within seven days of signing this agreement. The fee covers the activities of OS Immobilien set out in point {{punkt:pflichten}}, the reservation risk (possible loss caused by suspending other brokerage efforts) and the additional effort incurred by resuming the brokerage efforts.";
 
 const VERFALL_EN =
   "The reservation fee will not be refunded if the purchase contract is not concluded for reasons for which the prospective buyer is solely or predominantly responsible. If the financing credit institution declines the financing, the fee will be refunded in full upon presentation of the written rejection, provided that the prospective buyer has submitted the documents required for the financing assessment completely and truthfully.";
 
 const WIRKSAMKEIT_EN =
-  "The reservation agreement becomes legally effective upon signature by the prospective buyer; countersignature by MOREImmo is not required. Signing takes place electronically.";
+  "The reservation agreement becomes legally effective upon signature by the prospective buyer; countersignature by OS Immobilien is not required. Signing takes place electronically.";
 
 /** Die Punkte der Vereinbarung, je Kennung. */
 export const ZIFFERN_EN: Record<ZifferKennung, ZifferTexteEn> = {
   zeitraum: {
-    text: "In order to grant the prospective buyer a reasonable period for the purchase decision, for obtaining a loan and for other preparations, MOREImmo reserves the property from the day on which this agreement is signed until the agreed notary appointment.",
-    textGesamtobjekt: "In order to grant the prospective buyer a reasonable period for the purchase decision, for reviewing the property and tenancy documents, for obtaining a loan and for other preparations, MOREImmo reserves the property from the day on which this agreement is signed until the agreed notary appointment.",
+    text: "In order to grant the prospective buyer a reasonable period for the purchase decision, for obtaining a loan and for other preparations, OS Immobilien reserves the property from the day on which this agreement is signed until the agreed notary appointment.",
+    textGesamtobjekt: "In order to grant the prospective buyer a reasonable period for the purchase decision, for reviewing the property and tenancy documents, for obtaining a loan and for other preparations, OS Immobilien reserves the property from the day on which this agreement is signed until the agreed notary appointment.",
   },
   pflichten: {
-    text: "During this period, MOREImmo undertakes",
+    text: "During this period, OS Immobilien undertakes",
     punkte: [
       "a) not to offer the property to other interested parties and not to negotiate with them about the property;",
       "b) to work towards ensuring that the seller does not sell the property to anyone else during the reservation period;",
@@ -117,25 +117,25 @@ export const ZIFFERN_EN: Record<ZifferKennung, ZifferTexteEn> = {
     ],
   },
   pflichtbeginn: {
-    text: "The obligations of MOREImmo commence upon payment of the reservation fee. If the prospective buyer has chosen under section {{abschnitt:widerruf}} to wait until the end of the withdrawal period, they commence at the earliest upon its expiry.",
-    textGesellschaft: "The obligations of MOREImmo commence upon payment of the reservation fee.",
-    textOhneGebuehr: "The obligations of MOREImmo commence upon signature of this agreement. No reservation fee is charged for this reservation.",
+    text: "The obligations of OS Immobilien commence upon payment of the reservation fee. If the prospective buyer has chosen under section {{abschnitt:widerruf}} to wait until the end of the withdrawal period, they commence at the earliest upon its expiry.",
+    textGesellschaft: "The obligations of OS Immobilien commence upon payment of the reservation fee.",
+    textOhneGebuehr: "The obligations of OS Immobilien commence upon signature of this agreement. No reservation fee is charged for this reservation.",
   },
   abschlussfreiheit: {
-    text: "Neither the prospective buyer nor MOREImmo nor the seller is obliged to conclude the envisaged purchase contract. Both sides remain free in their decision until the notarial contract has been concluded. The prospective buyer shall inform MOREImmo without undue delay if they abandon their intention to purchase.",
+    text: "Neither the prospective buyer nor OS Immobilien nor the seller is obliged to conclude the envisaged purchase contract. Both sides remain free in their decision until the notarial contract has been concluded. The prospective buyer shall inform OS Immobilien without undue delay if they abandon their intention to purchase.",
   },
   bestand: {
-    text: "The property is acquired subject to the existing tenancies and leases, unless the purchase contract provides otherwise. Information on units, areas, rents and tenancies originates from the seller; it is neither a warranty nor a statement of quality (Beschaffenheitsangabe) by MOREImmo. The notarial purchase contract alone is authoritative for the object of purchase, its condition and the purchase price.",
+    text: "The property is acquired subject to the existing tenancies and leases, unless the purchase contract provides otherwise. Information on units, areas, rents and tenancies originates from the seller; it is neither a warranty nor a statement of quality (Beschaffenheitsangabe) by OS Immobilien. The notarial purchase contract alone is authoritative for the object of purchase, its condition and the purchase price.",
   },
   benennung: {
-    text: "No later than ten days before the notary appointment, the prospective buyer may name to MOREImmo, in text form (Textform), a company in which they hold an interest and which is to conclude the purchase contract in their place. MOREImmo will work towards the seller concluding the contract with the named company. Upon being named, the company assumes the rights and obligations under this agreement; the prospective buyer remains liable for the obligations under this agreement alongside the company.",
+    text: "No later than ten days before the notary appointment, the prospective buyer may name to OS Immobilien, in text form (Textform), a company in which they hold an interest and which is to conclude the purchase contract in their place. OS Immobilien will work towards the seller concluding the contract with the named company. Upon being named, the company assumes the rights and obligations under this agreement; the prospective buyer remains liable for the obligations under this agreement alongside the company.",
   },
   zahlung: {
     text: `The prospective buyer shall pay the reservation fee determined by reference to the purchase price in section {{abschnitt:gebuehr}} into the account specified there.${ZAHLUNG_ZWEITER_TEIL_EN}`,
     textGesamtobjekt: `The prospective buyer shall pay the reservation fee determined for the entire property in section {{abschnitt:gebuehr}} into the account specified there.${ZAHLUNG_ZWEITER_TEIL_EN}`,
   },
   rueckzahlung: {
-    text: "If the purchase contract is concluded, the reservation fee will be refunded in full on the day of notarisation, namely to the prospective buyer's account specified in section {{abschnitt:kaeufer}}. If no account is specified there, the prospective buyer shall inform MOREImmo of their bank details before notarisation; the refund will then be made without undue delay after receipt of this information.",
+    text: "If the purchase contract is concluded, the reservation fee will be refunded in full on the day of notarisation, namely to the prospective buyer's account specified in section {{abschnitt:kaeufer}}. If no account is specified there, the prospective buyer shall inform OS Immobilien of their bank details before notarisation; the refund will then be made without undue delay after receipt of this information.",
   },
   verfall: {
     text: VERFALL_EN,
@@ -153,17 +153,17 @@ export const ZIFFERN_EN: Record<ZifferKennung, ZifferTexteEn> = {
 /* ─── Widerruf ─── */
 
 export const WAHL_SOFORT_SATZ_EN =
-  "I expressly request that MOREImmo begin the reservation and the services under point {{punkt:pflichten}} immediately, that is, before the withdrawal period has expired.";
+  "I expressly request that OS Immobilien begin the reservation and the services under point {{punkt:pflichten}} immediately, that is, before the withdrawal period has expired.";
 export const WAHL_SOFORT_ERLAEUTERUNG_EN =
   "I am aware that, if I withdraw, I must pay a proportionate amount for the services provided up to that point, and that my right of withdrawal expires if the reservation has been fully performed before I withdraw (Section 356 (4) BGB).";
 export const WAHL_ABWARTEN_SATZ_EN =
-  "I wish MOREImmo to begin the reservation only after the withdrawal period has expired.";
+  "I wish OS Immobilien to begin the reservation only after the withdrawal period has expired.";
 export const WAHL_ABWARTEN_ERLAEUTERUNG_EN =
   "I am aware that the apartment is not reserved for me until the withdrawal period has expired and that, during this time, it may be offered to and reserved by other prospective buyers. If another reservation is concluded, this agreement lapses, and any reservation fee already paid will be refunded in full.";
 export const WAHL_ABWARTEN_ERLAEUTERUNG_GESAMTOBJEKT_EN =
   "I am aware that the property is not reserved for me until the withdrawal period has expired and that, during this time, it may be offered to and reserved by other prospective buyers. If another reservation is concluded, this agreement lapses, and any reservation fee already paid will be refunded in full.";
 export const AUFLOESENDE_BEDINGUNG_EN =
-  "If the prospective buyer chooses to wait, the property is not reserved for them until the withdrawal period has expired; during this time, MOREImmo will continue to offer it to other prospective buyers as well. If, during this time, MOREImmo concludes a reservation agreement with another prospective buyer or a purchase contract for the property is concluded, this agreement ends without any further declaration (condition subsequent, auflösende Bedingung). In this case, any reservation fee already paid will be refunded in full without undue delay, at the latest within fourteen days. The withdrawal period begins on the day on which the contract is concluded; where there are several prospective buyers, on the day of the last signature (point {{punkt:wirksamkeit}}).";
+  "If the prospective buyer chooses to wait, the property is not reserved for them until the withdrawal period has expired; during this time, OS Immobilien will continue to offer it to other prospective buyers as well. If, during this time, OS Immobilien concludes a reservation agreement with another prospective buyer or a purchase contract for the property is concluded, this agreement ends without any further declaration (condition subsequent, auflösende Bedingung). In this case, any reservation fee already paid will be refunded in full without undue delay, at the latest within fourteen days. The withdrawal period begins on the day on which the contract is concluded; where there are several prospective buyers, on the day of the last signature (point {{punkt:wirksamkeit}}).";
 
 export const WIDERRUF_WAHL_TITEL_EN = "Start of the reservation";
 export const WIDERRUF_WAHL_EINLEITUNG_EN =
@@ -175,7 +175,7 @@ export const WIDERRUF_WAHL_EINLEITUNG_EN =
  * dieselben Angaben wie im Deutschen.
  */
 const BELEHRUNG_UNTERNEHMER_EN =
-  `MOREImmo, owner Christian Kurz, Wendelsteinstraße 19, 83075 Bad Feilnbach, Germany${IMPRESSUM_TELEFON ? `, telephone ${IMPRESSUM_TELEFON}` : ""}, email ${IMPRESSUM_EMAIL}`;
+  `OS Immobilien, owner Christian Kurz, Am Ostbahnhof 1, 15749 Mittenwalde, Germany${IMPRESSUM_TELEFON ? `, telephone ${IMPRESSUM_TELEFON}` : ""}, email ${IMPRESSUM_EMAIL}`;
 
 /**
  * Die Widerrufsbelehrung auf Englisch.
@@ -207,7 +207,7 @@ export const WIDERRUFSBELEHRUNG_EN: { ueberschrift: string; absaetze: string[] }
 /* ─── Datenschutz und Unterschriften ─── */
 
 export const DATENSCHUTZ_EINVERSTAENDNIS_EN =
-  "I/We agree that my/our data may be processed electronically, stored and used and, in connection with the handling of the transaction, passed on or transmitted to authorised third parties (for example the seller, the notary's office, the financing credit institution, the supervising sales partner, the property management), where it will likewise be processed, stored and used for these purposes. I/We have also been informed that the collection, processing and use of my/our data is voluntary. The MOREImmo privacy policy is available at portal.more.immo/datenschutz (English version: portal.more.immo/datenschutz?lang=en).";
+  "I/We agree that my/our data may be processed electronically, stored and used and, in connection with the handling of the transaction, passed on or transmitted to authorised third parties (for example the seller, the notary's office, the financing credit institution, the supervising sales partner, the property management), where it will likewise be processed, stored and used for these purposes. I/We have also been informed that the collection, processing and use of my/our data is voluntary. The OS Immobilien privacy policy is available at osimmobilien.netlify.app/datenschutz (English version: osimmobilien.netlify.app/datenschutz?lang=en).";
 
 export const UNTERSCHRIFT_BESTAETIGUNG_EN =
   "I/We confirm that I/we have read this agreement in full, including the information on the right of withdrawal, before signing and that I/we will receive a copy on a durable medium.";

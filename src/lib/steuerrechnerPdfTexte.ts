@@ -44,7 +44,7 @@ const eurEn = eurFuer("en");
 const zEn = zahlFuer("en");
 
 const de = {
-  dateiname: (datum: string) => `MOREImmo-Steuerauswertung-${datum}.pdf`,
+  dateiname: (datum: string) => `OS Immobilien-Steuerauswertung-${datum}.pdf`,
   betrag: (n: number) => eurDe(n),
   spanne: (von: number, bis: number) => `${eurDe(von)} bis ${eurDe(bis)}`,
 
@@ -190,7 +190,7 @@ export type SteuerPdfTexte = typeof de;
 
 const en: SteuerPdfTexte = {
   // Englisch ohne Umlaute, Plan K4.
-  dateiname: (datum: string) => `MOREImmo-Tax-Analysis-${datum}.pdf`,
+  dateiname: (datum: string) => `OS Immobilien-Tax-Analysis-${datum}.pdf`,
   betrag: (n: number) => eurEn(n),
   spanne: (von: number, bis: number) => `${eurEn(von)} to ${eurEn(bis)}`,
 

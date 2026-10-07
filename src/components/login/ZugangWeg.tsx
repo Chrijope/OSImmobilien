@@ -89,7 +89,7 @@ function wegeFuer(t: TFunction): Record<ZugangsArt, Weg> {
       ],
       aufruf: {
         text: t("auth.zugang.kunde.aufruf"),
-        ziel: "https://more.immo/kontakt",
+        ziel: "https://osimmobilien.netlify.app/kontakt",
         extern: true,
         danach: t("auth.zugang.kunde.danach"),
       },

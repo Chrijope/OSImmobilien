@@ -36,7 +36,7 @@ vi.mock("@/lib/buchungStore", () => ({
   speichereEinstellungen: async () => ({ daten: null, kuerzelVergeben: false, fehler: null }),
   setzeBuchungStatus: async () => ({ ok: true, fehler: null }),
   normalisiereSlug: (t: string | null) => t || null,
-  buchungUrl: (slug: string) => `https://portal.more.immo/termin/${slug}`,
+  buchungUrl: (slug: string) => `https://osimmobilien.netlify.app/termin/${slug}`,
 }));
 
 vi.mock("@/lib/confirm", () => ({

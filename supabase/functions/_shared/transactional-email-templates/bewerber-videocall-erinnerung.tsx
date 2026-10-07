@@ -28,8 +28,8 @@ import {
 const STANDARD: Ansprechpartner = {
   name: 'Christian Kurz',
   rolle: 'Ansprechpartner Vertriebspartnerschaften',
-  telefon: '+49 176 60995539',
-  email: 'office@more.immo',
+  telefon: '+49 30 863289210',
+  email: 'os@os-immobilien.com',
 }
 
 interface Props {
@@ -125,8 +125,8 @@ export const template = {
     terminUhrzeit: '10:00',
     terminDauer: 45,
     beraterName: 'Christian Kurz',
-    zugangUrl: 'https://portal.more.immo/raum/beispiel-token',
-    verwaltenUrl: 'https://portal.more.immo/kennenlernen/beispiel-token',
+    zugangUrl: 'https://osimmobilien.netlify.app/raum/beispiel-token',
+    verwaltenUrl: 'https://osimmobilien.netlify.app/kennenlernen/beispiel-token',
     berater: STANDARD,
   },
 } satisfies TemplateEntry

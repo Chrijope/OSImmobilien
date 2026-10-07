@@ -44,7 +44,7 @@ describe("Kundenchat im CRM", () => {
     expect(stehtRechts(ADMIN, PARTNER, aussen)).toBe(true);
   });
 
-  it("aus Kundensicht umgekehrt: eigene rechts, MOREImmo links", () => {
+  it("aus Kundensicht umgekehrt: eigene rechts, OS Immobilien links", () => {
     expect(stehtRechts(KUNDE, KUNDE, aussen)).toBe(true);
     expect(stehtRechts(PARTNER, KUNDE, aussen)).toBe(false);
     expect(stehtRechts(ADMIN, KUNDE, aussen)).toBe(false);
@@ -64,7 +64,7 @@ describe("Kundenchat im CRM", () => {
     expect(ids && [...ids]).toEqual([KUNDE]);
   });
 
-  it("ein Mitarbeiter, der zusaetzlich die Kundenrolle traegt, bleibt auf der MOREImmo-Seite", () => {
+  it("ein Mitarbeiter, der zusaetzlich die Kundenrolle traegt, bleibt auf der OS Immobilien-Seite", () => {
     const userRoles = [
       { user_id: PARTNER, role: "kunde" },
       { user_id: PARTNER, role: "vertriebspartner" },
@@ -93,13 +93,13 @@ describe("Tippgeber-Chat", () => {
   };
   const aussen = aussenKennungen(chat);
 
-  it("im CRM: Tippgeber links, MOREImmo rechts, auch wenn der Admin liest", () => {
+  it("im CRM: Tippgeber links, OS Immobilien rechts, auch wenn der Admin liest", () => {
     expect(stehtRechts(TIPPGEBER, ADMIN, aussen)).toBe(false);
     expect(stehtRechts(PARTNER, ADMIN, aussen)).toBe(true);
     expect(stehtRechts(PARTNER, PARTNER, aussen)).toBe(true);
   });
 
-  it("im Tippgeber-Portal: eigene rechts, MOREImmo links", () => {
+  it("im Tippgeber-Portal: eigene rechts, OS Immobilien links", () => {
     expect(stehtRechts(TIPPGEBER, TIPPGEBER, aussen)).toBe(true);
     expect(stehtRechts(PARTNER, TIPPGEBER, aussen)).toBe(false);
   });

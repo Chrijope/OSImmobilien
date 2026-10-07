@@ -34,7 +34,7 @@ export default function Mieterhoehung() {
       neueMiete: Number(form.neueKaltmiete),
       erhoehungAb: form.wirksamAb || new Date().toISOString().slice(0, 10),
       begruendung: form.begruendung,
-      absenderFirma: "MOREImmo",
+      absenderFirma: "OS Immobilien",
       absenderAdresse: "Musterstraße 1, 80000 München",
     });
     doc.save(`Mieterhoehung_${m.nachname}.pdf`);

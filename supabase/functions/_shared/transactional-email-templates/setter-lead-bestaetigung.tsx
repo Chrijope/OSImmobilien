@@ -34,7 +34,7 @@ const TEXTE: Zweisprachig<typeof DE> = {
     titel: 'Great to have spoken with you',
     vorschau: 'The key points from our phone call and what happens next.',
     text: (berater: string) =>
-      `Thank you for the phone call. As agreed, ${berater || 'your contact person at MOREImmo'} will get in touch with you to go through calmly what is possible in your situation.`,
+      `Thank you for the phone call. As agreed, ${berater || 'your contact person at OS Immobilien'} will get in touch with you to go through calmly what is possible in your situation.`,
     schritteTitel: 'What happens next',
     schritte: [
       'A detailed initial consultation, usually by video call, about 45 minutes.',
@@ -72,9 +72,9 @@ export const template = {
     beraterName: 'Christian Peetz',
     berater: {
       name: 'Christian Peetz',
-      rolle: 'Dein Ansprechpartner bei MOREImmo',
+      rolle: 'Dein Ansprechpartner bei OS Immobilien',
       telefon: '08061 000000',
-      email: 'christian@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

@@ -61,11 +61,11 @@ export default function Kultur() {
             className="absolute inset-0 pointer-events-none"
             style={{
               background:
-                "radial-gradient(ellipse 70% 55% at 50% -5%, rgba(0,122,255,0.28) 0%, transparent 62%)",
+                "radial-gradient(ellipse 70% 55% at 50% -5%, rgba(21,144,97,0.28) 0%, transparent 62%)",
             }}
           />
           <div className="relative">
-            <p className="text-[11px] uppercase tracking-[0.24em] font-semibold" style={{ color: "#7CBEFF" }}>
+            <p className="text-[11px] uppercase tracking-[0.24em] font-semibold" style={{ color: "#1ED28D" }}>
               Glaubenssatz des Tages
             </p>
             <p className="mt-4 text-2xl md:text-4xl font-light leading-snug tracking-tight max-w-3xl">

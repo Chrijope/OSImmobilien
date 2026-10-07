@@ -313,9 +313,9 @@ Deno.serve(async (req) => {
             .eq("token", kundeSig.token);
         }
         if (kundeSig?.token && kontakt?.email) {
-          const signatureUrl = `https://portal.more.immo/signatur?token=${kundeSig.token}&type=aftersales_kunde`;
+          const signatureUrl = `https://osimmobilien.netlify.app/signatur?token=${kundeSig.token}&type=aftersales_kunde`;
           // Zustaendigen Partner als Unterschrift mitgeben, sonst zeigt die
-          // Mail den Platzhalter "MOREImmo Team".
+          // Mail den Platzhalter "OS Immobilien Team".
           const berater = await zustaendigerAnsprechpartner(supabase, kontaktId);
           await supabase.functions.invoke("send-transactional-email", {
             body: {

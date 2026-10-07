@@ -380,7 +380,7 @@ const en: SteuerrechnerTexte = {
         kurz: "Start",
         titel: "When would you like to start?",
         hinweis:
-          "The last question. It has no effect on the calculation, it only decides how your contact person at MOREImmo approaches you.",
+          "The last question. It has no effect on the calculation, it only decides how your contact person at OS Immobilien approaches you.",
         knopf: "Calculate result",
       },
     },
@@ -395,7 +395,7 @@ const en: SteuerrechnerTexte = {
     wozuTitel: "Why this detail?",
     weiterTitel: "What happens next",
     weiterText:
-      "Complete your details and enter your contact details. You'll then get your analysis as a PDF by email, and your contact person at MOREImmo will get in touch with you.",
+      "Complete your details and enter your contact details. You'll then get your analysis as a PDF by email, and your contact person at OS Immobilien will get in touch with you.",
     rechnungTitel: "What does the calculation show?",
     rechnungText:
       "A simplified model calculation with transparent assumptions. Your actual figures may differ.",
@@ -485,9 +485,9 @@ const en: SteuerrechnerTexte = {
     hinweisAblage: "Your analysis is ready. Sending it by email didn't work, so please open it here.",
     hinweisDownload: "Your analysis is in your downloads folder. Sending it by email didn't work.",
     hinweisNichtZugestellt:
-      "Your request has arrived. We couldn't deliver your analysis just now, your contact person at MOREImmo will send it to you.",
+      "Your request has arrived. We couldn't deliver your analysis just now, your contact person at OS Immobilien will send it to you.",
     hinweisNichtErstellt:
-      "Your request has arrived. We couldn't create your analysis just now, your contact person at MOREImmo will send it to you.",
+      "Your request has arrived. We couldn't create your analysis just now, your contact person at OS Immobilien will send it to you.",
     fertigTitel: "Your analysis is on its way",
     fertigTitelHinweis: "Your request has arrived",
     fertigGeschickt: (email: string) =>
@@ -495,15 +495,15 @@ const en: SteuerrechnerTexte = {
     meldetSichName: (name: string) =>
       `${name} will get in touch with you soon for an initial conversation and will calculate the exact figures for your case.`,
     meldetSich:
-      "Your contact person at MOREImmo will get in touch with you soon for an initial conversation and will calculate the exact figures for your case.",
+      "Your contact person at OS Immobilien will get in touch with you soon for an initial conversation and will calculate the exact figures for your case.",
     auswertungOeffnen: "Open analysis",
     wieWeiter: "What happens next",
     ergebnisAnsehen: "View result",
   },
 
   hilfe: {
-    ansprechpartnerWer: "your contact person at MOREImmo",
-    ansprechpartnerWen: "your contact person at MOREImmo",
+    ansprechpartnerWer: "your contact person at OS Immobilien",
+    ansprechpartnerWen: "your contact person at OS Immobilien",
     soGehtEsTitel: "It's that simple",
     ausfuellenTitel: "Fill in the calculator",
     ausfuellenText:

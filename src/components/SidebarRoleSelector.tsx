@@ -256,7 +256,7 @@ export function SidebarRoleSelector() {
       <div className="px-3 py-2">
         {!collapsed ? (
           <p className="text-[10px] text-sidebar-foreground/50 text-center">
-            © 2026 MOREImmo · Einzelunternehmen Christian Kurz
+            © 2026 OS Immobilien Holding GmbH
           </p>
         ) : (
           <p className="text-[10px] text-sidebar-foreground/50 text-center leading-tight">

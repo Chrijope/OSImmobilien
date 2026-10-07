@@ -196,9 +196,9 @@ const EigeneInvestmentsTab = ({ onZurUebersicht }: EigeneInvestmentsTabProps = {
       .select("*")
       .order("erstellt_am", { ascending: false });
     if (!error && data) {
-      // "Über MOREImmo" Investments laufen über den anderen Tab (Tabelle `investments`).
+      // "Über OS Immobilien" Investments laufen über den anderen Tab (Tabelle `investments`).
       // In "Eigene Investments" werden ausschließlich Immobilien angezeigt, die NICHT
-      // über MOREImmo erworben wurden.
+      // über OS Immobilien erworben wurden.
       const filtered = (data as any[]).filter(i => (i.meta?.quelle || "extern") !== "moreimmo");
       // Einmalig: Bodenwert- und Verwaltungsanteil aus meta.steuerCockpit in
       // die Dialogfelder uebernehmen, danach gilt nur noch der Dialogwert.

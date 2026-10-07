@@ -256,7 +256,7 @@ describe("Liquid Glass auf den Praesentationen: PDF-Export", () => {
             <div class="rounded-2xl border bg-primary/5">Getoent</div>
             <div class="bg-primary/10 text-center">Zeile</div>
             <p class="text-muted-foreground/70">Quelle</p>
-            <table><tr><td style="color: rgb(10, 110, 219);">Blau</td></tr></table>
+            <table><tr><td style="color: rgb(24, 127, 88);">Blau</td></tr></table>
           </section>
           <section class="beratung-dark"><div class="rounded-2xl border border-border bg-card">Dunkel</div></section>
         </div>

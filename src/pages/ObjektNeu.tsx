@@ -3201,7 +3201,7 @@ export default function ObjektNeu() {
                                 const s = (gespeicherteEinheit(w.id)?.status ?? (w.status as string)) || "frei";
                                 const cfg: Record<string, { label: string; cls: string }> = {
                                   frei: { label: "Frei", cls: "bg-[hsl(120,100%,40%)]/10 text-[hsl(120,100%,40%)] border-[hsl(120,100%,40%)]/30" },
-                                  reserviert: { label: "Reserviert", cls: "bg-[hsl(220,90%,55%)]/10 text-[hsl(220,90%,55%)] border-[hsl(220,90%,55%)]/30" },
+                                  reserviert: { label: "Reserviert", cls: "bg-[hsl(157,68%,31%)]/10 text-[hsl(157,68%,31%)] border-[hsl(157,68%,31%)]/30" },
                                   verkauft: { label: "Verkauft", cls: "bg-[hsl(0,100%,50%)]/10 text-[hsl(0,100%,50%)] border-[hsl(0,100%,50%)]/30" },
                                 };
                                 const c = cfg[s] || cfg.frei;

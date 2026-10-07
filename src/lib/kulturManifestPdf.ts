@@ -1,4 +1,4 @@
-// Das MOREImmo Kultur-PDF: Unsere Kultur.
+// Das OS Immobilien Kultur-PDF: Unsere Kultur.
 //
 // Gleiche Aufmachung wie die übrigen System-PDFs (simpleDocPdf mit Logo,
 // Kopf- und Fußzeile). Die Inhalte kommen aus dem zentralen Kultur-Modul,
@@ -160,14 +160,14 @@ export const generateKulturManifestPDF = () => {
       type: "poster",
       text: satz,
       nummer: String(i + 1).padStart(2, "0"),
-      untertitel: `Glaubenssatz ${i + 1} von ${KULTUR_GLAUBENSSAETZE.length}  ·  MOREImmo`,
+      untertitel: `Glaubenssatz ${i + 1} von ${KULTUR_GLAUBENSSAETZE.length}  ·  OS Immobilien`,
     });
   });
 
   return generateSimpleDocPdf({
     title: "Unsere Kultur",
     subtitle: "Werte, Standards, Glaubenssätze und wogegen wir antreten",
-    filename: "MOREImmo_Unsere_Kultur.pdf",
+    filename: "OS-Immobilien_Unsere_Kultur.pdf",
     deckblatt: {
       kennung: "Unternehmenskultur",
       titel: "Unsere Kultur",

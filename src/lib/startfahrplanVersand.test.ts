@@ -27,7 +27,7 @@ vi.mock("./bewerbungStore", () => ({
 vi.mock("./bewerberKontaktversuch", () => ({
   ladeHrAnsprechpartner: vi.fn().mockResolvedValue({
     name: "Sarah Kaiser-Thom",
-    email: "s.kaiser-thom@more.immo",
+    email: "os@os-immobilien.com",
     telefon: "+49 151 1234567",
   }),
 }));

@@ -83,7 +83,7 @@ const Mail = ({
           zeilen={[
             ['Anlass', 'Start in die Finanzierung'],
             ['Vertriebspartner', whatsappVertriebspartner || 'Vertriebspartner nicht zugeordnet'],
-            ['MORE Immo Leitung', 'Christian Peetz, Christian Kurz'],
+            ['OS Immobilien Leitung', 'Christian Peetz, Christian Kurz'],
             ['Finanzierer', whatsappFinanzierer || 'Finanzierer noch nicht zugeordnet'],
           ]}
         />
@@ -117,7 +117,7 @@ export const template = {
   previewData: {
     vpName: 'Julian Meyer',
     kundeName: 'Max Mustermann',
-    kundeLink: 'https://portal.more.immo/kunden/123',
+    kundeLink: 'https://osimmobilien.netlify.app/kunden/123',
     objektTitel: 'Breitscheidstraße 18, Wohnung 12',
     unterschriebenAm: '24.09.2026',
     pdfUrl: 'https://example.invalid/reservierungsvereinbarung.pdf',

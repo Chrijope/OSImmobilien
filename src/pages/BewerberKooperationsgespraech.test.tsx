@@ -83,7 +83,7 @@ describe("Die Startseite vor dem Kalender", () => {
     zugang = null;
     render(<BewerberKooperationsgespraech />);
     expect(await screen.findByText(/Gerade geht das hier nicht/)).toBeInTheDocument();
-    expect(screen.getByText(/office@more.immo/)).toBeInTheDocument();
+    expect(screen.getByText(/os@os-immobilien.com/)).toBeInTheDocument();
   });
 });
 

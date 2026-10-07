@@ -7,7 +7,7 @@
  * `bewerber_formular`: der frühere Vorabbogen (`send-bewerber-formular`) und
  * der aktuelle Kennenlernbogen (`send-bewerber-kennenlernen`). Die Karte im
  * Reiter Übersicht nahm bis zum 15.09.2026 die jüngste Zeile, gleich welcher
- * Art, und baute daraus `portal.more.immo/kennenlernen/<token>`. Bei allen
+ * Art, und baute daraus `osimmobilien.netlify.app/kennenlernen/<token>`. Bei allen
  * Bewerbern, die früher nur den Vorabbogen bekommen hatten, war das der Token
  * des Vorabbogens, längst abgelaufen oder ersetzt. „Link kopieren" und „So
  * sieht es aus" liefen deshalb auf „Dieser Link ist abgelaufen".
@@ -25,7 +25,7 @@
  */
 
 /** Die öffentliche Adresse des Kennenlernens, wie sie in der Mail steht. */
-export const KENNENLERNEN_BASIS = "https://portal.more.immo/kennenlernen";
+export const KENNENLERNEN_BASIS = "https://osimmobilien.netlify.app/kennenlernen";
 
 /** Eine Zeile aus `bewerber_formular`, so wie die Abfrage sie liefert. */
 export type KennenlernLinkZeile = {

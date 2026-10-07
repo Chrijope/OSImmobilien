@@ -107,7 +107,7 @@ Deno.serve(async (req) => {
       data.ausgangslage && `Aktuelle Situation/Branche: ${data.ausgangslage}`,
       data.ausgangslageNotiz && `Notizen Ausgangslage: ${data.ausgangslageNotiz}`,
       data.ziele && `Ziele (1–3 Jahre): ${data.ziele}`,
-      data.motivation && `Motivation MOREImmo: ${data.motivation}`,
+      data.motivation && `Motivation OS Immobilien: ${data.motivation}`,
       data.erfahrung && `Vertriebserfahrung: ${data.erfahrung}`,
       data.vorErfahrung && `Details Erfahrung: ${data.vorErfahrung}`,
       data.vorteileNotiz && `Reaktion auf Vorstellung: ${data.vorteileNotiz}`,
@@ -146,7 +146,7 @@ Deno.serve(async (req) => {
           {
             role: "system",
             content: istKunde
-              ? "Du fasst Erstgespräche mit Kapitalanlage-Interessenten von MOREImmo prägnant auf Deutsch zusammen. " +
+              ? "Du fasst Erstgespräche mit Kapitalanlage-Interessenten von OS Immobilien prägnant auf Deutsch zusammen. " +
                 "Die Zusammenfassung beschreibt den Kunden bzw. die Kundin aus Sicht eines Beobachters in der dritten Person " +
                 "(z. B. 'Marc verdient …', 'sie möchte …'). Verwende konsequent den Vornamen, KEINE Du-Form, KEINE direkte Ansprache. " +
                 "Stil: knapp, sachlich, in Stichpunkten. Maximal 6 bis 8 Bullet Points. " +
@@ -155,7 +155,7 @@ Deno.serve(async (req) => {
                 "**Einwände & offene Punkte**, **Einschätzung**. " +
                 "Nimm ausdrücklich auch die freien Notizen des Beraters auf, sie enthalten oft das Wichtigste. " +
                 "Erwähne nur, was wirklich in den Daten steht. Gib NUR die Zusammenfassung zurück, keine Einleitung."
-              : "Du fasst Erstgespräche aus dem MOREImmo-Vertriebs-Recruiting prägnant auf Deutsch zusammen. " +
+              : "Du fasst Erstgespräche aus dem OS Immobilien-Vertriebs-Recruiting prägnant auf Deutsch zusammen. " +
               "Die Zusammenfassung ist IMMER auf den/die Bewerbende/n bezogen und beschreibt diese Person aus Sicht eines Beobachters " +
               "in der dritten Person (z. B. 'Max bringt …', 'sie verfügt über …'). Verwende konsequent den Vornamen bzw. " +
               "wenn nicht vorhanden 'die Bewerberin/der Bewerber'. KEINE Du-Form, KEINE direkte Ansprache, KEINE Ich-Form. " +

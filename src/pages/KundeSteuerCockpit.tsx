@@ -154,7 +154,7 @@ export default function KundeSteuerCockpit() {
     setSearchParams(next, { replace: true });
   };
   // Eigene (externe) Investments vollstaendig laden, damit die Uebersicht
-  // dieselben Kennzahlen wie die Investments-Seite zeigt (MOREImmo + eigene).
+  // dieselben Kennzahlen wie die Investments-Seite zeigt (OS Immobilien + eigene).
   const [externeInvestments, setExterneInvestments] = useState<any[]>([]);
   useEffect(() => {
     if (!authUser) return;
@@ -192,7 +192,7 @@ export default function KundeSteuerCockpit() {
 
   // ─── Dashboard-Übersicht ───
   if (tabFromUrl === null) {
-    // Gleiche Basis wie die Investments-Uebersicht: MOREImmo + eigene
+    // Gleiche Basis wie die Investments-Uebersicht: OS Immobilien + eigene
     // Investments. Rendite nur ueber Positionen mit belegter Miete.
     const positionen = [
       ...investments.map((inv) =>

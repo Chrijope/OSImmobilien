@@ -90,7 +90,7 @@ describe("Was die Seite in jedem Zustand beantwortet", () => {
 });
 
 describe("Wer am Zug ist, kommt aus dem Vorgang", () => {
-  it("zeigt MOREImmo als am Zug, obwohl der Bewerber formal im Eingang steht", async () => {
+  it("zeigt OS Immobilien als am Zug, obwohl der Bewerber formal im Eingang steht", async () => {
     antwort = stand({
       frage: {
         gestelltAm: "2026-09-18T09:00:00.000Z",
@@ -189,7 +189,7 @@ describe("Die weiteren Zustaende", () => {
     expect(document.body.textContent).not.toMatch(/Kalenderwoche/);
   });
 
-  it("trennt den selbst gewaehlten Ausstieg von der Absage durch MOREImmo", async () => {
+  it("trennt den selbst gewaehlten Ausstieg von der Absage durch OS Immobilien", async () => {
     antwort = stand({ beendet: true, beendet_durch: "bewerber" });
     await oeffne();
     expect(screen.getByRole("heading", { name: /Danke für deine Offenheit/ })).toBeInTheDocument();

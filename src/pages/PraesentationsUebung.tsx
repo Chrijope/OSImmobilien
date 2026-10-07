@@ -227,7 +227,7 @@ function druckTitel(auftrag: DruckAuftrag): { titel: string; untertitel: string;
     return {
       titel: "Der Rechner aus dem Vorabbogen",
       untertitel: "Deine Zahlen, eigenständig. Übungsfassung ohne Bewerberdaten.",
-      datei: "MOREImmo_Rechner.pdf",
+      datei: "OS-Immobilien_Rechner.pdf",
     };
   }
   if (auftrag.art === "kennenlernbogen") {
@@ -236,13 +236,13 @@ function druckTitel(auftrag: DruckAuftrag): { titel: string; untertitel: string;
     return {
       titel: `Kennenlernbogen, Weg ${n}`,
       untertitel: `${strecke?.label ?? ""}. Folien des Videocalls, Übungsfassung ohne Bewerberdaten.`,
-      datei: `MOREImmo_Kennenlernbogen_Weg${n}.pdf`,
+      datei: `OS-Immobilien_Kennenlernbogen_Weg${n}.pdf`,
     };
   }
   return {
     titel: auftrag.teil === 2 ? "Vorabbogen, nur Teil 2" : "Vorabbogen, ab Teil 1",
     untertitel: "Folien des Bewerbergesprächs, Übungsfassung ohne Bewerberdaten.",
-    datei: `MOREImmo_Vorabbogen_Teil${auftrag.teil === 2 ? "2" : "1"}.pdf`,
+    datei: `OS-Immobilien_Vorabbogen_Teil${auftrag.teil === 2 ? "2" : "1"}.pdf`,
   };
 }
 
@@ -263,7 +263,7 @@ function Druckstapel({ satz, stapelRef }: { satz: FolienSatz; stapelRef: React.R
     >
       <style>{`
         [data-druckstapel] .animate-in { animation: none !important; opacity: 1 !important; transform: none !important; }
-        [data-druckstapel] .cp-glanz { background: none !important; color: #7CBEFF !important; -webkit-text-fill-color: #7CBEFF; }
+        [data-druckstapel] .cp-glanz { background: none !important; color: #1ED28D !important; -webkit-text-fill-color: #1ED28D; }
         [data-druckstapel] .cp-licht { display: none !important; }
         [data-druckstapel] header img { visibility: hidden; }
       `}</style>

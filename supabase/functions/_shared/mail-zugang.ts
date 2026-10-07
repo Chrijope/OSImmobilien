@@ -4,7 +4,7 @@
  * Bis zum 26.09.2026 verliess sich die Function auf die JWT-Pruefung am
  * Gateway. Die laesst aber auch den oeffentlichen anon-Schluessel durch, und
  * der steht in jedem Browser. Damit konnte jeder beliebige Vorlagen mit
- * eigenen Links an beliebige Adressen ueber notify.more.immo schicken, also
+ * eigenen Links an beliebige Adressen ueber notify.os-immobilien.com schicken, also
  * Phishing in unserem Namen.
  *
  * Seitdem gilt:
@@ -55,7 +55,7 @@ export const EXTERNE_VORLAGEN: Readonly<Record<string, "eigene" | "team">> = {
  * das Buero (BUERO_EMAIL), c.peetz@imondu.de der Standard-Empfaenger der
  * Fehlermeldungen (BugReportDialog).
  */
-export const TEAM_POSTFAECHER: readonly string[] = ["office@more.immo", "c.peetz@imondu.de"];
+export const TEAM_POSTFAECHER: readonly string[] = ["os@os-immobilien.com", "c.peetz@imondu.de"];
 
 /** Mengenbremse je Nutzer und Stunde beziehungsweise Tag. */
 export const MAIL_BREMSE = {

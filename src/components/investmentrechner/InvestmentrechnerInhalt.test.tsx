@@ -59,7 +59,7 @@ describe("Darstellung", () => {
   });
 });
 
-describe("Stand für den MORE Lotsen (LOTSE-R3-002)", () => {
+describe("Stand für den OS Lotsen (LOTSE-R3-002)", () => {
   it("meldet, ob die Rechnung kundenbezogen ist (LOTSE2-002)", () => {
     const ohne = vi.fn();
     const erste = zeige(<InvestmentrechnerInhalt vorbelegung={vorbelegung} mitUeberschrift={false} onErgebnis={ohne} />);

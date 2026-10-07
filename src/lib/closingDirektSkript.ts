@@ -7,7 +7,7 @@
  *
  * Die Gesprächsabschnitte folgen Folie für Folie der Closing-Präsentation
  * (src/pages/ClosingPraesentationEntwurf.tsx), in derselben Reihenfolge und
- * Dramaturgie. Die Folie „MOREImmo in Zahlen" fehlt bewusst: Sie erscheint
+ * Dramaturgie. Die Folie „OS Immobilien in Zahlen" fehlt bewusst: Sie erscheint
  * auch in der Präsentation nur mit gepflegten Kennzahlen
  * (closingPraesentationZahlen.ts), und solange dort nichts gepflegt ist,
  * gehört sie auch nicht ins Skript.
@@ -51,7 +51,7 @@ export const DIREKT_JAHR_PROVISION_EUR = BEISPIEL_PROVISION_EUR * 12;
 export const DIREKT_PAKETE: LizenzPaket[] = WAEHLBARE_LIZENZ_PAKETE.filter((p) => !p.istTippgeber);
 
 /**
- * Buchungslink für den Folge-Call bei Geschäftsführer Christian Kurz. In dem
+ * Buchungslink für den Folge-Call bei Geschäftsführung. In dem
  * Termin wird abgestimmt, ob ein Partner Leads GESTELLT bekommt, ohne dafür
  * zu zahlen. Der Leadkauf selbst braucht keinen Call, er steht jedem Partner
  * offen. Eine Quelle für alle Stellen: den Lead-Paket-Kasten im ClosingTab
@@ -280,7 +280,7 @@ export const CLOSING_DIREKT_ABSCHNITTE: ClosingDirektAbschnitt[] = [
     titel: "Der Direktvorschlag",
     sprechtexte: [
       "{vorname}, eigentlich wäre jetzt der Punkt, an dem wir einen zweiten Termin ausmachen. Ich sage dir aber ehrlich: Das Gespräch mit dir hat mich überzeugt, und ich merke, dass du gerade voll im Thema bist. Wenn du noch etwa 30 Minuten Zeit hast, gehen wir jetzt alles im Detail und in der Tiefe miteinander durch, und am Ende des Gesprächs sehen wir gemeinsam, wie die Reise bei uns weitergeht. Passt das für dich?",
-      "Sehr gut. Dann legen wir los: Du siehst, wie eine Zusammenarbeit mit MOREImmo konkret aussieht, wir rechnen mit deinen Zahlen, und am Ende sprechen wir offen darüber, ob wir gemeinsam starten.",
+      "Sehr gut. Dann legen wir los: Du siehst, wie eine Zusammenarbeit mit OS Immobilien konkret aussieht, wir rechnen mit deinen Zahlen, und am Ende sprechen wir offen darüber, ob wir gemeinsam starten.",
     ],
     hinweis:
       "Regie: Den Direktweg nur anbieten, wenn der Bewerber wirklich Zeit hat und warm ist. Wirkt er gehetzt oder zögerlich, lieber wie gewohnt über Punkt 10 den Closing-Termin buchen. Ein gutes zweites Gespräch schlägt ein gehetztes erstes.",
@@ -307,7 +307,7 @@ export const CLOSING_DIREKT_ABSCHNITTE: ClosingDirektAbschnitt[] = [
     folieTitel: "Du machst Vertrieb, wir den Rest",
     titel: "Das Gegenbild",
     sprechtexte: [
-      "Jetzt dreh das Bild einmal um. Stell dir vor, du machst nur noch die drei Dinge, für die es dich wirklich braucht: Du gewinnst Kunden. Du berätst. Du schließt ab. Alles andere baut MOREImmo um dich herum, also Produkte, Finanzierung, Technologie, Marketing, Backoffice und Vertriebs-Know-how. Das heißt für dich: Du musst keine eigene Firma mit fünfzehn verschiedenen Dienstleistern hochziehen. Du steigst in ein laufendes System ein und fängst dort an, wo andere erst nach Jahren ankommen.",
+      "Jetzt dreh das Bild einmal um. Stell dir vor, du machst nur noch die drei Dinge, für die es dich wirklich braucht: Du gewinnst Kunden. Du berätst. Du schließt ab. Alles andere baut OS Immobilien um dich herum, also Produkte, Finanzierung, Technologie, Marketing, Backoffice und Vertriebs-Know-how. Das heißt für dich: Du musst keine eigene Firma mit fünfzehn verschiedenen Dienstleistern hochziehen. Du steigst in ein laufendes System ein und fängst dort an, wo andere erst nach Jahren ankommen.",
     ],
     felder: [
       { key: "visionNotiz", label: "Reaktion auf das Bild", typ: "notiz", placeholder: "Was hat gezündet? Welche Rückfragen kamen?" },
@@ -328,7 +328,7 @@ export const CLOSING_DIREKT_ABSCHNITTE: ClosingDirektAbschnitt[] = [
   {
     key: "system",
     folieId: "system",
-    folieTitel: "Das MOREImmo System",
+    folieTitel: "Das OS Immobilien System",
     titel: "Das System im Detail",
     sprechtexte: [
       "Konkret bekommst du von uns ein komplettes System an die Hand: ein CRM für Kunden, Leads, Pipeline und Follow-ups. Investagon, um Investmentcases professionell zu berechnen und zu präsentieren. Zugang zu ausgewählten Kapitalanlageimmobilien. Finanzierungspartner und passende Banklösungen. Ein Backoffice, das dich bei Dokumenten, Reservierung, Finanzierung und Notar unterstützt. Fertige Vertriebsunterlagen, also Präsentationen, Exposés und Kalkulationen. Trainings für Produkt, Finanzierung und Sales. Und eine Community, die dich bei konkreten Kundenfällen unterstützt. Wir kennen den Verkaufsprozess, nicht nur das Objekt. Was davon ist für dich am wichtigsten?",
@@ -469,7 +469,7 @@ export const CLOSING_DIREKT_ABSCHNITTE: ClosingDirektAbschnitt[] = [
     titel: "Erwartungen auf Augenhöhe",
     sprechtexte: [
       "Bevor wir zur Entscheidung kommen, einmal Klartext auf Augenhöhe, denn die Zusammenarbeit trägt nur, wenn beide Seiten liefern. Was wir von dir erwarten: Du betreibst den Vertrieb ernsthaft, nebenberuflich oder im besten Fall hauptberuflich. Du gewinnst aktiv Kunden und wartest nicht auf Zuteilung. Du arbeitest mit unseren Prozessen und im CRM. Und du übernimmst Verantwortung für deine Ergebnisse. Was du dafür von uns bekommst: System, Produktzugang und Finanzierungspartner ab Tag eins. Backoffice und Support für Abwicklung und Papierkram. Trainings und Begleitung für deine Beratung. Und klare Vergütungssätze, schriftlich im Vertrag.",
-      "Und genauso ehrlich: MOREImmo passt nicht zu dir, wenn du ein passives Einkommen ohne Arbeit suchst, wenn du erwartest, dass Leads automatisch zu Abschlüssen werden, oder wenn du nur kurz etwas ausprobieren willst. Deshalb meine Frage an dich, in deinen Worten: Was willst du hier für dich erreichen?",
+      "Und genauso ehrlich: OS Immobilien passt nicht zu dir, wenn du ein passives Einkommen ohne Arbeit suchst, wenn du erwartest, dass Leads automatisch zu Abschlüssen werden, oder wenn du nur kurz etwas ausprobieren willst. Deshalb meine Frage an dich, in deinen Worten: Was willst du hier für dich erreichen?",
     ],
     felder: [
       { key: "erwartungenZiele", label: "Seine Ziele in seinen Worten", typ: "notiz", placeholder: "Wörtlich mitschreiben, das ist der Stoff für den Abschluss ..." },
@@ -482,7 +482,7 @@ export const CLOSING_DIREKT_ABSCHNITTE: ClosingDirektAbschnitt[] = [
     folieTitel: "Dein Start",
     titel: "Der Startfahrplan",
     sprechtexte: [
-      "Und damit du genau weißt, wie es weitergeht, hier dein Startfahrplan: Im Anschluss an unser Gespräch senden wir dir noch einmal eine Zusammenfassung von allem, was wir gemeinsam besprochen haben. Und sobald du startest, sieht dein Weg so aus: Der Vertrag kommt digital zur Unterschrift. An Tag eins folgt dein Onboarding. In der ersten Woche bekommst du Systemzugang, CRM und Investagon, deine eigene MOREImmo E-Mail-Adresse, deine persönliche Erfolgsstrategie mit Zielplanung und das Produkt- und Beratungstraining. In Woche zwei arbeitest du an den ersten Kundenfällen, und danach läuft der Prozess: Beratung, Objekt, Finanzierung, Notar. Du weißt also genau, was nach deiner Unterschrift passiert. Zwei Dinge brauchst du formal, das hatten wir vorhin schon: dein eigenes Gewerbe und die Erlaubnis nach Paragraf 34c. Falls davon noch etwas fehlt, ist das kein Hindernis, wir unterstützen dich beim Antrag.",
+      "Und damit du genau weißt, wie es weitergeht, hier dein Startfahrplan: Im Anschluss an unser Gespräch senden wir dir noch einmal eine Zusammenfassung von allem, was wir gemeinsam besprochen haben. Und sobald du startest, sieht dein Weg so aus: Der Vertrag kommt digital zur Unterschrift. An Tag eins folgt dein Onboarding. In der ersten Woche bekommst du Systemzugang, CRM und Investagon, deine eigene OS Immobilien E-Mail-Adresse, deine persönliche Erfolgsstrategie mit Zielplanung und das Produkt- und Beratungstraining. In Woche zwei arbeitest du an den ersten Kundenfällen, und danach läuft der Prozess: Beratung, Objekt, Finanzierung, Notar. Du weißt also genau, was nach deiner Unterschrift passiert. Zwei Dinge brauchst du formal, das hatten wir vorhin schon: dein eigenes Gewerbe und die Erlaubnis nach Paragraf 34c. Falls davon noch etwas fehlt, ist das kein Hindernis, wir unterstützen dich beim Antrag.",
     ],
     hinweis:
       "Regie: Spür hier hin, wie heiß der Bewerber ist, und wähle unten die Weiche. Will er direkt starten, geh ohne Umweg weiter zur Entscheidung, ein Versand ist dann nicht nötig. Möchte er es sich überlegen und bittet um Unterlagen, versende den Startfahrplan und vereinbare sofort ein Follow-up mit festem Datum und fester Uhrzeit, an dem du anrufst und nach der Entscheidung fragst.",
@@ -533,7 +533,7 @@ export const CLOSING_DIREKT_ABSCHNITTE: ClosingDirektAbschnitt[] = [
         key: "ja",
         titel: "Bei Ja: Vertrag kommt per Mail",
         sprechtext:
-          "Dann machen wir es fest, {vorname}. Willkommen bei MOREImmo, ich freue mich wirklich auf die Zusammenarbeit mit dir. So geht es jetzt weiter: Ich erstelle im Nachgang deinen Vertrag mit genau den Konditionen, die wir gerade besprochen haben, und sende ihn dir per Mail zu. Du schaust in Ruhe drüber und unterschreibst digital, da drängt dich niemand. Sobald uns deine Unterschrift vorliegt, melden wir uns wegen deines Onboarding-Termins, und dann starten wir gemeinsam deinen Startfahrplan: Zugänge, deine MOREImmo E-Mail-Adresse, deine Erfolgsstrategie und dein erstes Training. Wenn dir beim Lesen des Vertrags eine Frage kommt, ruf mich einfach an. Danke dir für das offene Gespräch, wir lesen und hören uns!",
+          "Dann machen wir es fest, {vorname}. Willkommen bei OS Immobilien, ich freue mich wirklich auf die Zusammenarbeit mit dir. So geht es jetzt weiter: Ich erstelle im Nachgang deinen Vertrag mit genau den Konditionen, die wir gerade besprochen haben, und sende ihn dir per Mail zu. Du schaust in Ruhe drüber und unterschreibst digital, da drängt dich niemand. Sobald uns deine Unterschrift vorliegt, melden wir uns wegen deines Onboarding-Termins, und dann starten wir gemeinsam deinen Startfahrplan: Zugänge, deine OS Immobilien E-Mail-Adresse, deine Erfolgsstrategie und dein erstes Training. Wenn dir beim Lesen des Vertrags eine Frage kommt, ruf mich einfach an. Danke dir für das offene Gespräch, wir lesen und hören uns!",
       },
       {
         key: "unterlagen",

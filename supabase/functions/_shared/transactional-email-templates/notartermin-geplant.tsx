@@ -118,12 +118,12 @@ export const template = {
     uhrzeit: '10:00',
     notarName: 'Notariat Dr. Berger',
     notarAdresse: 'Königstraße 4, 90402 Nürnberg',
-    portalUrl: 'https://portal.more.immo/kunde/investments',
+    portalUrl: 'https://osimmobilien.netlify.app/kunde/investments',
     berater: {
       name: 'Christian Peetz',
-      rolle: 'Ihr Ansprechpartner bei MOREImmo',
+      rolle: 'Ihr Ansprechpartner bei OS Immobilien',
       telefon: '08061 000000',
-      email: 'christian@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

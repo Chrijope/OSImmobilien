@@ -4,7 +4,7 @@ import { EmailLayout, Absatz, Handlung, Schritte, type Ansprechpartner } from '.
 import { hallo } from './_anrede.ts'
 import { DE_EN, type MailSprache, texteFuer, type Zweisprachig } from './_sprache.ts'
 
-const PORTAL_URL = 'https://portal.more.immo/kunde/vp-bewertung'
+const PORTAL_URL = 'https://osimmobilien.netlify.app/kunde/vp-bewertung'
 
 /**
  * Interne Bewertung des Vertriebspartners, eine Stunde nach dem Notartermin.
@@ -106,9 +106,9 @@ export const template = {
     portalUrl: PORTAL_URL,
     berater: {
       name: 'Christian Peetz',
-      rolle: 'Dein Ansprechpartner bei MOREImmo',
+      rolle: 'Dein Ansprechpartner bei OS Immobilien',
       telefon: '08061 000000',
-      email: 'christian@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

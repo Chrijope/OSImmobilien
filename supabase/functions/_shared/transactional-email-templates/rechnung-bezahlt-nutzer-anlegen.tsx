@@ -74,6 +74,6 @@ export const template = {
     leadPaketBetragFormatiert: formatiereLeadPaketBetrag(VORSCHAU_LEAD_PAKET.betrag),
     leadAnzahl: VORSCHAU_LEAD_PAKET.anzahl,
     karriereStufe: 'vertriebspartner',
-    bewerberLink: 'https://portal.more.immo/bewerberprozess?bewerber=example-id',
+    bewerberLink: 'https://osimmobilien.netlify.app/bewerberprozess?bewerber=example-id',
   },
 } satisfies TemplateEntry

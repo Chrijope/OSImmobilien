@@ -126,13 +126,13 @@ export const KUNDENSPRACHE_GLOSSAR: readonly GlossarEintrag[] = [
   {
     de: "Ansprechpartner",
     en: "your contact",
-    ersterAuftritt: "your contact person at MOREImmo",
-    hinweis: "Nie „advisor“. Langform „your contact person at MOREImmo“, danach „your contact“.",
+    ersterAuftritt: "your contact person at OS Immobilien",
+    hinweis: "Nie „advisor“. Langform „your contact person at OS Immobilien“, danach „your contact“.",
   },
   {
     de: "Berater",
     en: "your contact",
-    ersterAuftritt: "your contact person at MOREImmo",
+    ersterAuftritt: "your contact person at OS Immobilien",
     hinweis: "Wie „Ansprechpartner“. Nie „advisor“.",
   },
   {

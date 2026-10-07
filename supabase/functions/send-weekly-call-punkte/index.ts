@@ -28,7 +28,7 @@ import { istWeeklyCallLeitung } from '../_shared/weekly-call-runden.ts'
  * vollständige neue Liste eintragen, im Supabase SQL-Editor:
  *
  *     update public.app_config
- *        set wert = '["c.peetz@more.immo","c.kurz@more.immo"]'::jsonb,
+ *        set wert = '["os@os-immobilien.com","os@os-immobilien.com"]'::jsonb,
  *            aktualisiert_am = now()
  *      where schluessel = 'weekly_call_punkte_empfaenger';
  *
@@ -100,7 +100,7 @@ const WOCHENTAG_BERLIN = 1
 const ZEIT_LEAD_BERATER = '19:00'
 const ZEIT_VERTRIEBSPARTNER = '19:30'
 
-const PORTAL = 'https://portal.more.immo'
+const PORTAL = 'https://osimmobilien.netlify.app'
 
 /**
  * Was diese Function vom Supabase-Client wirklich braucht.
@@ -265,7 +265,7 @@ async function ladeEmpfaenger(db: Datenbank): Promise<EmpfaengerErgebnis> {
       uebersprungen: [],
       grund:
         `Der Eintrag "${EMPFAENGER_SCHLUESSEL}" in public.app_config ist kein JSON-Array, ` +
-        `sondern ${typeof roh}. Erwartet wird zum Beispiel ["c.peetz@more.immo"].`,
+        `sondern ${typeof roh}. Erwartet wird zum Beispiel ["os@os-immobilien.com"].`,
     }
   }
 

@@ -190,7 +190,7 @@ function EinheitAnsicht({ objekt, wohnung: w }: { objekt: ObjektData; wohnung: O
   // Die strengere der beiden Regeln, siehe `darfEinheitInvestmentrechner`.
   const darfRechner = darfEinheitInvestmentrechner(user.role);
   /*
-   * Der MORE Lotse (seit dem 28.09.2026) allein nach der aktiven Rolle. Der
+   * Der OS Lotse (seit dem 28.09.2026) allein nach der aktiven Rolle. Der
    * Reiter ist nur Anzeige, die Function `objekt-lotse` prüft Rolle und
    * Zustimmung selbst.
    */
@@ -630,7 +630,7 @@ function EinheitAnsicht({ objekt, wohnung: w }: { objekt: ObjektData; wohnung: O
           <TabsTrigger value="karte" className={reiterKlasse}>Karte</TabsTrigger>
           {darfLotse && (
             <TabsTrigger value="lotse" className={reiterKlasse} data-testid="reiter-lotse">
-              <span className="inline-flex items-center gap-1.5"><LotseSymbol ruhig className="h-4 w-4" /> MORE Lotse <KiMarke /></span>
+              <span className="inline-flex items-center gap-1.5"><LotseSymbol ruhig className="h-4 w-4" /> OS Lotse <KiMarke /></span>
             </TabsTrigger>
           )}
         </TabsList>

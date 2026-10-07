@@ -44,7 +44,7 @@ const ANSICHT = {
   anlass: "beratung",
   name: "Max Muster",
   email: "max@example.com",
-  berater: { name: "Hermann Vogl", email: "hermann@more.immo", telefon: "+49 170 1234567" },
+  berater: { name: "Hermann Vogl", email: "os@os-immobilien.com", telefon: "+49 170 1234567" },
   zeitzone: "Europe/Berlin",
 };
 

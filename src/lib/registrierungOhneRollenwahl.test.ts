@@ -121,7 +121,7 @@ describe("invite-user: kein Recovery-Link, feste Basisadresse", () => {
 
   it("baut Links nicht aus dem Origin-Kopf", () => {
     expect(code).not.toMatch(/headers\.get\(["']origin["']\)/i);
-    expect(code).toContain('Deno.env.get("APP_BASE_URL") || "https://portal.more.immo"');
+    expect(code).toContain('Deno.env.get("APP_BASE_URL") || "https://osimmobilien.netlify.app"');
   });
 
   it("das Frontend ruft send-recovery nicht auf", () => {

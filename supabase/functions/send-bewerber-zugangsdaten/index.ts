@@ -1,5 +1,5 @@
 /**
- * Versendet die Zugangsdaten der neuen persoenlichen @more.immo-Adresse an
+ * Versendet die Zugangsdaten der neuen persoenlichen @os-immobilien.com-Adresse an
  * die private Adresse eines Bewerbers. Aufgerufen aus dem Aktivierungs-Tab
  * des Bewerbungsmanagements (Block "Persoenliche E-Mail mitteilen").
  *

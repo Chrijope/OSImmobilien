@@ -309,7 +309,7 @@ function Stromzeile({
 /* ── Die Seite ──────────────────────────────────────────────────────────── */
 
 export default function ExpatsRechner() {
-  /* Im Browsertab stand bisher "MOREImmo CRM" aus der `index.html`. Das ist
+  /* Im Browsertab stand bisher "OS Immobilien CRM" aus der `index.html`. Das ist
      der Name des internen Werkzeugs, deutsch, und auf einer oeffentlichen
      englischen Anzeigenseite falsch. Derselbe Helfer wie bei den anderen
      oeffentlichen Seiten, siehe `seitentitel.ts`. */

@@ -6,8 +6,8 @@
  * das man bekommt. Der Einstieg ist der Umschlag (Tintenblau mit dem Schein
  * des Deckblatts im PDF), darunter Papier mit ruhigen Karten.
  *
- * Seit dem 26.09.2026 in der CI der Firmenwebsite more.immo: deren Blau
- * #087CC9 (Tiefblau #0467A9, Hellblau #8AD0FF), Überschriften #1B2432 eng
+ * Seit dem 26.09.2026 in der CI der Firmenwebsite osimmobilien.netlify.app: deren Blau
+ * #19885E (Tiefblau #13704D, Hellblau #36E2A0), Überschriften #1B2432 eng
  * gesetzt, Pillenknöpfe, Karten mit 22 px Rundung, weiche Schatten, Fuß in
  * #1B212D. Die Hauptknöpfe bleiben im Orange des Projekts (--brand-orange),
  * wie auf der Website ein Orange-Verlauf mit Glanzkante. Schrift wie dort
@@ -29,13 +29,13 @@
 
 .hb {
   --hb-tinte: #1B2432;
-  --hb-akzent: #087CC9;
-  --hb-akzent-tief: #0467A9;
-  --hb-akzent-hell: #8AD0FF;
-  --hb-akzent-text: #0467A9;
+  --hb-akzent: #19885E;
+  --hb-akzent-tief: #13704D;
+  --hb-akzent-hell: #36E2A0;
+  --hb-akzent-text: #13704D;
   --hb-akzent-flaeche: #E6F4FF;
-  --hb-knopf: #087CC9;
-  --hb-knopf-hover: #0467A9;
+  --hb-knopf: #19885E;
+  --hb-knopf-hover: #13704D;
   --hb-grund: #F5F7FA;
   --hb-grund-2: #EDF2F7;
   --hb-karte: #FFFFFF;
@@ -53,12 +53,12 @@
   --hb-gelb: #8A5A00;
   --hb-gelb-flaeche: #FFF6DE;
   --hb-grau: #C9D3DF;
-  /* Schatten wie more.immo (--shadow-lg und --shadow-xl der Website). */
+  /* Schatten wie osimmobilien.netlify.app (--shadow-lg und --shadow-xl der Website). */
   --hb-schatten: 0 16px 40px -10px rgba(15, 22, 33, .11), 0 5px 14px -5px rgba(15, 22, 33, .06);
   --hb-schatten-hoch: 0 28px 68px -18px rgba(15, 22, 33, .18), 0 10px 24px -10px rgba(15, 22, 33, .09);
   --hb-schatten-gross: 0 30px 70px -24px rgba(8, 24, 54, .45);
-  --hb-ring: rgba(8, 124, 201, .2);
-  --hb-licht: rgba(138, 208, 255, .95);
+  --hb-ring: rgba(25, 136, 94, .2);
+  --hb-licht: rgba(54, 226, 160, .95);
   --hb-radius: 22px;
   /* Bewegung: die Kurve der Website (weich auslaufend), kurze Dauern. */
   --hb-ease: cubic-bezier(.16, 1, .3, 1);
@@ -80,11 +80,11 @@
 }
 .hb[data-thema="dunkel"] {
   --hb-tinte: #F1F5FA;
-  --hb-akzent: #54B9FC;
-  --hb-akzent-tief: #0B9AF9;
-  --hb-akzent-hell: #8AD0FF;
-  --hb-akzent-text: #8AD0FF;
-  --hb-akzent-flaeche: rgba(138, 208, 255, .12);
+  --hb-akzent: #20C888;
+  --hb-akzent-tief: #1CA873;
+  --hb-akzent-hell: #36E2A0;
+  --hb-akzent-text: #36E2A0;
+  --hb-akzent-flaeche: rgba(54, 226, 160, .12);
   --hb-grund: #0B1119;
   --hb-grund-2: #0E1520;
   --hb-karte: #141C27;
@@ -104,8 +104,8 @@
   --hb-grau: #3A4A5E;
   --hb-schatten: 0 1px 2px rgba(0, 0, 0, .3), 0 18px 40px -18px rgba(0, 0, 0, .6);
   --hb-schatten-hoch: 0 1px 2px rgba(0, 0, 0, .3), 0 28px 56px -18px rgba(0, 0, 0, .75);
-  --hb-ring: rgba(138, 208, 255, .24);
-  --hb-licht: rgba(184, 225, 255, .75);
+  --hb-ring: rgba(54, 226, 160, .24);
+  --hb-licht: rgba(139, 238, 201, .75);
   color-scheme: dark;
 }
 
@@ -121,19 +121,19 @@
 .hb-wrap { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
 .hb-abschnitt { padding: 96px 0; scroll-margin-top: 90px; }
 .hb-abschnitt.hb-zweiter { background: var(--hb-grund-2); }
-/* Augenbraue wie auf more.immo: klein, weit gesperrt, grau statt blau. */
+/* Augenbraue wie auf osimmobilien.netlify.app: klein, weit gesperrt, grau statt blau. */
 .hb-augenbraue { font-size: 12px; font-weight: 700; letter-spacing: .28em; text-transform: uppercase; color: var(--hb-text2); margin-bottom: 14px; display: block; }
 .hb-h2 { font-size: clamp(32px, 4vw, 50px); line-height: 1.06; margin-bottom: 18px !important; }
 .hb-lead { font-size: 20px; line-height: 1.55; color: var(--hb-text2); max-width: 760px; }
 .hb-klein { font-size: 14px; color: var(--hb-muted); }
 .hb-fussnote { font-size: 13px; color: var(--hb-muted); line-height: 1.5; margin-top: 12px; }
 
-/* Knöpfe: Pillenform wie auf more.immo (`.btn-primary-brand`). */
+/* Knöpfe: Pillenform wie auf osimmobilien.netlify.app (`.btn-primary-brand`). */
 .hb-knopf {
   display: inline-flex; align-items: center; justify-content: center; gap: 10px; border: 0; cursor: pointer;
   background: var(--hb-knopf); color: #fff; font-weight: 700; font-size: 17px; line-height: 1.2;
   border-radius: 999px; padding: 16px 30px; text-decoration: none;
-  box-shadow: 0 12px 26px -12px rgba(8, 124, 201, .75);
+  box-shadow: 0 12px 26px -12px rgba(25, 136, 94, .75);
   transition: background-color var(--hb-dauer-kurz) ease, box-shadow var(--hb-dauer) var(--hb-ease), transform var(--hb-dauer) var(--hb-ease), filter var(--hb-dauer-kurz) ease;
 }
 .hb-knopf:hover { background: var(--hb-knopf-hover); }
@@ -184,8 +184,8 @@
 .hb-umschlag {
   position: relative; overflow: hidden; padding: 150px 0 104px; color: #D4DCE8;
   background:
-    radial-gradient(ellipse 70% 55% at 22% -8%, rgba(8, 124, 201, .62), rgba(8, 124, 201, 0) 70%),
-    radial-gradient(ellipse 50% 50% at 104% 104%, rgba(136, 207, 255, .16), rgba(136, 207, 255, 0) 70%),
+    radial-gradient(ellipse 70% 55% at 22% -8%, rgba(25, 136, 94, .62), rgba(25, 136, 94, 0) 70%),
+    radial-gradient(ellipse 50% 50% at 104% 104%, rgba(48, 225, 158, .16), rgba(48, 225, 158, 0) 70%),
     #0F1621;
 }
 .hb-umschlag::before {
@@ -199,16 +199,16 @@
 .hb-umschlag h1 { color: #fff; font-size: clamp(38px, 4.4vw, 58px); line-height: 1.04; letter-spacing: -.035em; margin: 14px 0 22px; }
 /* Die zweite Zeile im Hellblau-Verlauf der Website (`.text-gradient-cine-blue`). */
 .hb-verlauf {
-  background: linear-gradient(135deg, #B8E1FF, #8AD0FF 45%, #2B86EE);
-  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: #8AD0FF;
+  background: linear-gradient(135deg, #8BEEC9, #36E2A0 45%, #21976A);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: #36E2A0;
   -webkit-box-decoration-break: clone; box-decoration-break: clone; padding-bottom: .06em;
 }
 .hb-umschlag .hb-augenbraue { color: var(--hb-akzent-hell); }
 .hb-umschlag .hb-lead { color: #C3CEDC; }
-.hb-akzentlinie { width: 64px; height: 5px; border-radius: 4px; background: #8AD0FF; margin: 0 0 22px; }
+.hb-akzentlinie { width: 64px; height: 5px; border-radius: 4px; background: #36E2A0; margin: 0 0 22px; }
 .hb-nutzen { list-style: none; padding: 0; margin: 26px 0 30px; }
 .hb-nutzen li { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; font-size: 18px; color: #fff; }
-.hb-nutzen li svg { color: #8AD0FF; flex: none; margin-top: 3px; width: 22px; height: 22px; }
+.hb-nutzen li svg { color: #36E2A0; flex: none; margin-top: 3px; width: 22px; height: 22px; }
 .hb-knoepfe { display: flex; gap: 14px; flex-wrap: wrap; }
 .hb-umschlag .hb-knopf.hb-zweit { background: rgba(255, 255, 255, .06); color: #fff; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .22); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
 .hb-vertrauen { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 24px; font-size: 14px; color: #A9B6C8; }
@@ -252,7 +252,7 @@
   box-shadow: 0 18px 30px -10px rgba(15, 22, 33, .55); pointer-events: none;
 }
 .hb-buch-mini b { display: block; font-size: 13px; margin-top: 40px; }
-.hb-buch-mini i { display: block; width: 26px; height: 3px; background: #8AD0FF; border-radius: 2px; margin-top: 8px; }
+.hb-buch-mini i { display: block; width: 26px; height: 3px; background: #36E2A0; border-radius: 2px; margin-top: 8px; }
 .hb-pill { display: inline-flex; gap: 8px; align-items: center; border-radius: 999px; padding: 6px 14px; font-size: 14px; font-weight: 700; }
 .hb-pill svg { width: 16px; height: 16px; }
 .hb-pill.gruen { background: var(--hb-gruen-flaeche); color: var(--hb-gruen); }
@@ -266,7 +266,7 @@
 .hb-pruefliste .kreis.acht { background: var(--hb-gelb-flaeche); color: var(--hb-gelb); }
 .hb-buchkarte { display: flex; gap: 14px; align-items: center; padding: 14px; border-radius: 16px; border: 1px solid var(--hb-linie); margin-bottom: 18px; }
 .hb-buchkarte .mini { width: 52px; height: 70px; border-radius: 5px; background: linear-gradient(160deg, #1B2A40, #0F1621); flex: none; position: relative; }
-.hb-buchkarte .mini::after { content: ""; position: absolute; left: 8px; right: 14px; top: 32px; height: 3px; background: #8AD0FF; border-radius: 2px; }
+.hb-buchkarte .mini::after { content: ""; position: absolute; left: 8px; right: 14px; top: 32px; height: 3px; background: #36E2A0; border-radius: 2px; }
 
 /* Formular */
 .hb-felder { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -277,7 +277,7 @@
   height: 50px; border-radius: 12px; border: 1.5px solid var(--hb-linie); background: var(--hb-karte); color: var(--hb-tinte);
   padding: 0 14px; font-size: 16px;
 }
-.hb-feld input:focus { outline: none; border-color: var(--hb-akzent); box-shadow: 0 0 0 3px rgba(8, 124, 201, .18); }
+.hb-feld input:focus { outline: none; border-color: var(--hb-akzent); box-shadow: 0 0 0 3px rgba(25, 136, 94, .18); }
 .hb-feld input[aria-invalid="true"] { border-color: var(--hb-rot-f); }
 .hb-feld .fehler { font-size: 13px; color: var(--hb-rot); }
 .hb-haken { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; line-height: 1.5; color: var(--hb-text2); margin: 10px 0; cursor: pointer; }
@@ -292,7 +292,7 @@
 /* ─── Handbuch-Vorschau ────────────────────────────────────────────── */
 .hb-vorschau .hb-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
 /* Das Handbuch als gebundenes Heft (HandbuchHeft.tsx), dieselbe Komposition
-   wie auf more.immo. Nicht `.hb-buch`: die Klasse gehört dem Handbuch auf
+   wie auf osimmobilien.netlify.app. Nicht `.hb-buch`: die Klasse gehört dem Handbuch auf
    der Ergebnisseite. Das Papier bleibt in beiden Themen hell. */
 .hb-heft { position: relative; }
 .hb-heft-buehne { position: relative; width: 100%; aspect-ratio: 10 / 9; }
@@ -308,7 +308,7 @@
   box-shadow: 0 30px 46px -26px rgba(8, 24, 54, .5), 0 10px 20px -12px rgba(8, 24, 54, .35);
 }
 /* Im dunklen Thema hebt ein feiner Rand das dunkle Deckblatt vom Grund ab. */
-.hb[data-thema="dunkel"] .hb-heft-deckel img { outline: 1px solid rgba(138, 208, 255, .22); outline-offset: -1px; }
+.hb[data-thema="dunkel"] .hb-heft-deckel img { outline: 1px solid rgba(54, 226, 160, .22); outline-offset: -1px; }
 .hb-heft-ruecken {
   position: absolute; top: 0; bottom: 0; right: 100%; width: 7%; transform-origin: 100% 50%; transform: rotateY(-90deg);
   background: linear-gradient(90deg, #0B1422 0%, #1A2B44 45%, #0E1827 100%);
@@ -353,8 +353,8 @@
 .hb-schritt { padding: 30px 28px 26px; }
 .hb-schritt .zahl { width: 54px; height: 54px; border-radius: 16px; background: #0F1621; color: #fff; font-size: 24px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
 .hb[data-thema="dunkel"] .hb-schritt .zahl { background: #26364C; }
-.hb-schritt:nth-child(2) .zahl { background: #0467A9; }
-.hb-schritt:nth-child(3) .zahl { background: #087CC9; }
+.hb-schritt:nth-child(2) .zahl { background: #13704D; }
+.hb-schritt:nth-child(3) .zahl { background: #19885E; }
 .hb-schritt .unter { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; color: var(--hb-muted); margin-bottom: 6px; }
 .hb-schritt h3 { font-size: 22px; margin-bottom: 8px; }
 .hb-schritt p { font-size: 16px; color: var(--hb-text2); }
@@ -380,8 +380,8 @@
 .hb-kachel-karte h3 { font-size: 19px; margin: 14px 0 6px; }
 .hb-kachel-karte p { font-size: 15.5px; color: var(--hb-text2); margin: 0; }
 .hb-prozess { display: grid; grid-template-columns: repeat(6, 1fr); margin: 40px 0 34px; position: relative; }
-.hb-prozess::before { content: ""; position: absolute; left: 8%; right: 8%; top: 29px; height: 3px; background: linear-gradient(90deg, #0F1621, #087CC9); border-radius: 3px; }
-.hb[data-thema="dunkel"] .hb-prozess::before { background: linear-gradient(90deg, #26364C, #54B9FC); }
+.hb-prozess::before { content: ""; position: absolute; left: 8%; right: 8%; top: 29px; height: 3px; background: linear-gradient(90deg, #0F1621, #19885E); border-radius: 3px; }
+.hb[data-thema="dunkel"] .hb-prozess::before { background: linear-gradient(90deg, #26364C, #20C888); }
 .hb-pz { text-align: center; padding: 0 10px; position: relative; }
 .hb-pz .p { width: 60px; height: 60px; margin: 0 auto 14px; border-radius: 50%; background: var(--hb-karte); border: 3px solid var(--hb-akzent); display: flex; align-items: center; justify-content: center; color: var(--hb-akzent); position: relative; z-index: 1; }
 .hb-pz b { display: block; color: var(--hb-tinte); font-size: 16px; margin-bottom: 4px; }
@@ -404,9 +404,9 @@
 .hb-ergebnis span { font-size: 13px; color: var(--hb-muted); }
 .hb-annahmen { margin-top: 22px; padding: 18px 22px; border-radius: 16px; background: var(--hb-karte); border: 1px solid var(--hb-linie); font-size: 14px; color: var(--hb-text2); line-height: 1.55; }
 .hb-zeit { display: grid; grid-template-columns: repeat(7, 1fr); margin-top: 44px; position: relative; }
-.hb-zeit::before { content: ""; position: absolute; left: 0; right: 0; top: 22px; height: 4px; background: linear-gradient(90deg, #8AD0FF, #087CC9, #0F1621); border-radius: 4px; }
+.hb-zeit::before { content: ""; position: absolute; left: 0; right: 0; top: 22px; height: 4px; background: linear-gradient(90deg, #36E2A0, #19885E, #0F1621); border-radius: 4px; }
 .hb-zp { padding: 0 12px 0 0; position: relative; }
-.hb-zp .punkt { width: 48px; height: 48px; border-radius: 50%; background: var(--hb-karte); box-shadow: 0 6px 16px -6px rgba(15, 40, 80, .35); display: flex; align-items: center; justify-content: center; color: var(--hb-akzent); position: relative; z-index: 1; margin-bottom: 16px; }
+.hb-zp .punkt { width: 48px; height: 48px; border-radius: 50%; background: var(--hb-karte); box-shadow: 0 6px 16px -6px rgba(15, 46, 34, .35); display: flex; align-items: center; justify-content: center; color: var(--hb-akzent); position: relative; z-index: 1; margin-bottom: 16px; }
 .hb-zp .punkt svg { width: 20px; height: 20px; }
 .hb-zp .dauer { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--hb-akzent-text); margin-bottom: 4px; }
 .hb-zp b { display: block; color: var(--hb-tinte); font-size: 16px; line-height: 1.3; margin-bottom: 6px; }
@@ -415,12 +415,12 @@
 .hb-berater img, .hb-berater .av { width: 76px; height: 76px; border-radius: 50%; object-fit: cover; flex: none; background: var(--hb-akzent-flaeche); display: flex; align-items: center; justify-content: center; color: var(--hb-akzent); }
 .hb-berater .kontakt { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; margin-top: 6px; }
 .hb-cta { padding: 48px 56px; display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px; align-items: center; border-radius: 28px; color: #D4DCE8;
-  background: radial-gradient(ellipse 70% 80% at 0% 0%, rgba(8, 124, 201, .45), transparent 70%), linear-gradient(135deg, #0F1621, #073150); }
+  background: radial-gradient(ellipse 70% 80% at 0% 0%, rgba(25, 136, 94, .45), transparent 70%), linear-gradient(135deg, #0F1621, #0C3526); }
 .hb-cta h2 { color: #fff; }
-.hb-cta .hb-augenbraue { color: #8AD0FF; }
+.hb-cta .hb-augenbraue { color: #36E2A0; }
 .hb-danach { display: grid; gap: 12px; }
 .hb-danach > div { display: flex; gap: 16px; align-items: center; background: rgba(255, 255, 255, .08); border-radius: 16px; padding: 16px 18px; color: #fff; }
-.hb-danach .n { width: 40px; height: 40px; border-radius: 12px; background: #087CC9; display: flex; align-items: center; justify-content: center; font-weight: 700; flex: none; }
+.hb-danach .n { width: 40px; height: 40px; border-radius: 12px; background: #19885E; display: flex; align-items: center; justify-content: center; font-weight: 700; flex: none; }
 .hb-danach span { display: block; font-size: 14px; color: #A9B6C8; }
 .hb-faq { display: grid; grid-template-columns: .8fr 1.2fr; gap: 48px; }
 /* Nur zweispaltig (ab 981 px) laufen Ansprechpartner und Fragen-Kopf beim
@@ -441,12 +441,12 @@
 .hb-frage p { margin: 0; padding: 0 24px 20px; font-size: 16px; color: var(--hb-text2); }
 .hb-hinweise { font-size: 14px; color: var(--hb-muted); line-height: 1.6; padding: 26px 30px; border-radius: 20px; background: var(--hb-karte); border: 1px solid var(--hb-linie); margin-top: 40px; }
 .hb-hinweise b { color: var(--hb-text2); }
-/* Fuß wie auf more.immo: Schiefer #1B212D mit leisem Farbnebel, Spaltentitel
+/* Fuß wie auf osimmobilien.netlify.app: Schiefer #1B212D mit leisem Farbnebel, Spaltentitel
    klein und gesperrt, Links gedämpft und beim Überfahren weiß. */
 .hb-fuss {
   color: rgba(255, 255, 255, .55); padding: 56px 0 44px; font-size: 14px;
   background:
-    radial-gradient(60% 50% at 80% 20%, rgba(138, 208, 255, .06), transparent 60%),
+    radial-gradient(60% 50% at 80% 20%, rgba(54, 226, 160, .06), transparent 60%),
     radial-gradient(50% 60% at 10% 80%, rgba(51, 85, 153, .08), transparent 60%),
     #1B212D;
 }
@@ -458,15 +458,15 @@
 
 /* ─── Ergebnis und Handbuch online ─────────────────────────────────── */
 .hb-ergebnis-kopf { padding: 130px 0 64px; color: #D4DCE8;
-  background: radial-gradient(ellipse 70% 60% at 20% -10%, rgba(8, 124, 201, .6), transparent 70%), #0F1621; }
+  background: radial-gradient(ellipse 70% 60% at 20% -10%, rgba(25, 136, 94, .6), transparent 70%), #0F1621; }
 .hb-ergebnis-kopf h1 { color: #fff; font-size: clamp(34px, 4.4vw, 54px); line-height: 1.08; margin: 12px 0 16px; }
-.hb-ergebnis-kopf .hb-augenbraue { color: #8AD0FF; }
+.hb-ergebnis-kopf .hb-augenbraue { color: #36E2A0; }
 .hb-ergebnis-raster { display: grid; grid-template-columns: 1.1fr .9fr; gap: 28px; align-items: start; margin-top: 30px; }
 .hb-rahmen-karte { padding: 26px; }
 .hb-rahmen-karte .gross { font-size: clamp(28px, 3.4vw, 38px); font-weight: 700; color: var(--hb-tinte); line-height: 1.1; margin: 6px 0; }
-.hb-sa-karte { padding: 28px; border-radius: 22px; color: #D4DCE8; background: linear-gradient(135deg, #0F1621, #073150); border: 1px solid rgba(136, 207, 255, .18); }
+.hb-sa-karte { padding: 28px; border-radius: 22px; color: #D4DCE8; background: linear-gradient(135deg, #0F1621, #0C3526); border: 1px solid rgba(48, 225, 158, .18); }
 .hb-sa-karte h2 { color: #fff; font-size: 26px; margin: 6px 0 10px !important; }
-.hb-sa-karte .hb-augenbraue { color: #8AD0FF; margin: 0; }
+.hb-sa-karte .hb-augenbraue { color: #36E2A0; margin: 0; }
 
 .hb-buch { max-width: 900px; margin: 0 auto; }
 .hb-buch-seite { background: var(--hb-karte); border: 1px solid var(--hb-linie); border-radius: 22px; padding: 44px 48px; margin: 0 0 24px; box-shadow: var(--hb-schatten); scroll-margin-top: 100px; }
@@ -537,7 +537,7 @@
 .hb-bk-trichter .bal { height: 38px; border-radius: 10px; color: #fff; display: flex; align-items: center; padding: 0 14px; font-weight: 700; font-size: 14px; flex: none; width: calc(46% - var(--hb-stufe, 0) * 6%); }
 .hb-bk-trichter span { font-size: 14px; color: var(--hb-text2); line-height: 1.4; }
 .hb-bk-zeit { position: relative; margin: 16px 0; }
-.hb-bk-zeit::before { content: ""; position: absolute; left: 19px; top: 8px; bottom: 8px; width: 3px; background: linear-gradient(180deg, #8AD0FF, var(--hb-akzent), var(--hb-tinte)); border-radius: 2px; }
+.hb-bk-zeit::before { content: ""; position: absolute; left: 19px; top: 8px; bottom: 8px; width: 3px; background: linear-gradient(180deg, #36E2A0, var(--hb-akzent), var(--hb-tinte)); border-radius: 2px; }
 .hb-bk-zeit .zs { display: grid; grid-template-columns: 40px 170px 1fr; gap: 14px; align-items: start; margin-bottom: 12px; position: relative; }
 .hb-bk-zeit .pk { width: 40px; height: 40px; border-radius: 50%; background: var(--hb-karte); border: 3px solid var(--hb-akzent); color: var(--hb-akzent); display: flex; align-items: center; justify-content: center; }
 .hb-bk-zeit .pk svg { width: 18px; height: 18px; }
@@ -555,7 +555,7 @@
 .hb-bk-angaben { background: var(--hb-akzent-flaeche); border-radius: 18px; padding: 18px 20px; margin: 18px 0; }
 .hb-bk-angaben .gt { font-weight: 700; color: var(--hb-tinte); margin-bottom: 8px; }
 .hb-bk-angaben .raster { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }
-.hb-bk-angaben .raster div { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid rgba(8, 124, 201, .16); font-size: 15px; }
+.hb-bk-angaben .raster div { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid rgba(25, 136, 94, .16); font-size: 15px; }
 .hb-bk-angaben span { color: var(--hb-muted); }
 .hb-bk-angaben b { color: var(--hb-tinte); text-align: right; }
 .hb-bk-inhalt { margin: 12px 0; }
@@ -568,8 +568,8 @@
 .hb-status.g { background: var(--hb-gruen-flaeche); color: var(--hb-gruen); }
 .hb-status.y { background: var(--hb-gelb-flaeche); color: var(--hb-gelb); }
 .hb-status.r { background: var(--hb-rot-flaeche); color: var(--hb-rot); }
-.hb-bk-naechster { border-radius: 22px; padding: 28px; margin: 18px 0; color: #D4DCE8; background: linear-gradient(135deg, #0F1621, #073150); display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; }
-.hb-bk-naechster .fuer { font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #8AD0FF; }
+.hb-bk-naechster { border-radius: 22px; padding: 28px; margin: 18px 0; color: #D4DCE8; background: linear-gradient(135deg, #0F1621, #0C3526); display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; }
+.hb-bk-naechster .fuer { font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #36E2A0; }
 .hb-bk-naechster h3 { color: #fff; font-size: 24px; margin: 6px 0 10px; }
 .hb-bk-naechster p { color: #D4DCE8; }
 .hb-bk-naechster .qr { background: #fff; border-radius: 14px; padding: 8px; width: 140px; height: 140px; }
@@ -692,7 +692,7 @@
 .hb-mobil-cta { display: none; }
 
 /* Wizard-Seite und offene Selbstauskunft */
-.hb-wizard-seite { padding: 120px 0 72px; min-height: 80vh; min-height: 80svh; background: radial-gradient(ellipse 60% 40% at 50% -10%, rgba(8, 124, 201, .16), transparent 70%), var(--hb-grund); }
+.hb-wizard-seite { padding: 120px 0 72px; min-height: 80vh; min-height: 80svh; background: radial-gradient(ellipse 60% 40% at 50% -10%, rgba(25, 136, 94, .16), transparent 70%), var(--hb-grund); }
 .hb-wizard-seite .hb-wrap { max-width: 800px; }
 .hb-wizard-seite .einleitung { text-align: center; margin-bottom: 22px; }
 .hb-wizard-seite .einleitung h1 { font-size: clamp(28px, 3.6vw, 38px); line-height: 1.12; margin: 6px 0 8px; }
@@ -778,7 +778,7 @@
   .hb-prozess { grid-template-columns: repeat(3, 1fr); gap: 22px 0; }
   .hb-prozess::before { display: none; }
   .hb-zeit { grid-template-columns: 1fr; gap: 18px; }
-  .hb-zeit::before { left: 22px; right: auto; width: 4px; top: 0; bottom: 0; height: auto; background: linear-gradient(180deg, #8AD0FF, #087CC9, #0F1621); }
+  .hb-zeit::before { left: 22px; right: auto; width: 4px; top: 0; bottom: 0; height: auto; background: linear-gradient(180deg, #36E2A0, #19885E, #0F1621); }
   .hb-zp { display: grid; grid-template-columns: 48px 1fr; gap: 0 16px; padding: 0; }
   .hb-zp .punkt { grid-row: span 3; margin: 0; }
   .hb-buch-mini { display: none; }
@@ -923,8 +923,8 @@
 .hb-ein-wartet { opacity: 0; transform: translate3d(0, 16px, 0); }
 
 @media (hover: hover) and (pointer: fine) {
-  .hb-kachel:hover { box-shadow: 0 14px 28px -18px rgba(8, 124, 201, .6); }
-  .hb-kachel[aria-pressed="true"]:hover { box-shadow: 0 0 0 3px var(--hb-ring), 0 14px 28px -18px rgba(8, 124, 201, .6); }
+  .hb-kachel:hover { box-shadow: 0 14px 28px -18px rgba(25, 136, 94, .6); }
+  .hb-kachel[aria-pressed="true"]:hover { box-shadow: 0 0 0 3px var(--hb-ring), 0 14px 28px -18px rgba(25, 136, 94, .6); }
   .hb-frage summary:hover { color: var(--hb-akzent-text); }
   .hb-kapitel-auswahl li:hover { border-color: var(--hb-akzent); }
   .hb :is(.hb-kachel-karte, .hb-stimme, .hb-berater, .hb-diagramm, .hb-bankband, .hb-zwischen, .hb-rahmen-karte):hover { --hb-karte-schatten: var(--hb-schatten-hoch); }

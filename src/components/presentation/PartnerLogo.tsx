@@ -14,7 +14,7 @@ import moreFinanceLogo from "@/assets/morefinance-logo.svg";
  * So stehen beide Schriftzüge gleich groß.
  */
 const LOGOS: Record<string, { src: string; hoehe: string }> = {
-  "MORE Immo": { src: moreImmoLogo, hoehe: "h-[30px] -my-1" },
+  "OS Immobilien": { src: moreImmoLogo, hoehe: "h-[30px] -my-1" },
   "MORE Finance": { src: moreFinanceLogo, hoehe: "h-5" },
 };
 

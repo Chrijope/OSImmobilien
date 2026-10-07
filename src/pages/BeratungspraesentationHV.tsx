@@ -381,8 +381,8 @@ function VermoegensChart({
                     // Das Jahr, das oben als große Zahl steht, bekommt hier
                     // seinen Platz. Sonst nennt die Überschrift zehn Jahre
                     // und das Auge landet bei zwanzig.
-                    backgroundColor: sichtbar ? "rgba(0,122,255,0.10)" : "transparent",
-                    outline: sichtbar ? "1px solid rgba(124,190,255,0.28)" : "none",
+                    backgroundColor: sichtbar ? "rgba(21,144,97,0.10)" : "transparent",
+                    outline: sichtbar ? "1px solid rgba(30,210,141,0.28)" : "none",
                   }
                 : undefined
             }
@@ -409,7 +409,7 @@ function VermoegensChart({
                   className="text-[10px] md:text-xs font-semibold tabular-nums mb-1.5 transition-opacity duration-700"
                   style={{
                     opacity: sichtbar ? 1 : 0,
-                    color: "#7CBEFF",
+                    color: "#1ED28D",
                     transitionDelay: `${i * 130 + 800}ms`,
                   }}
                 >
@@ -420,8 +420,8 @@ function VermoegensChart({
                   style={{
                     height: sichtbar ? `${(d.tilgung / max) * 100}%` : "0%",
                     transitionDelay: `${i * 130 + 90}ms`,
-                    background: "linear-gradient(180deg, #5CB0FF 0%, #0A6EDB 100%)",
-                    boxShadow: "0 -6px 28px -6px rgba(0,122,255,0.55)",
+                    background: "linear-gradient(180deg, #1CC283 0%, #187F58 100%)",
+                    boxShadow: "0 -6px 28px -6px rgba(21,144,97,0.55)",
                   }}
                 />
               </div>
@@ -430,7 +430,7 @@ function VermoegensChart({
               className="mt-3 mb-1.5 text-center text-[11px] md:text-xs whitespace-nowrap"
               style={
                 d.jahr === betontesJahr
-                  ? { color: "#7CBEFF", fontWeight: 600 }
+                  ? { color: "#1ED28D", fontWeight: 600 }
                   : { opacity: 0.55 }
               }
             >
@@ -445,7 +445,7 @@ function VermoegensChart({
           {t("Ihr eingezahlter Beitrag", "Dein eingezahlter Beitrag")}
         </span>
         <span className="inline-flex items-center gap-2">
-          <span className="h-2.5 w-2.5 rounded-sm" style={{ background: "linear-gradient(180deg,#5CB0FF,#0A6EDB)" }} />
+          <span className="h-2.5 w-2.5 rounded-sm" style={{ background: "linear-gradient(180deg,#1CC283,#187F58)" }} />
           {t("Getilgtes Darlehen, also Ihr Vermögen", "Getilgtes Darlehen, also dein Vermögen")}
         </span>
       </div>
@@ -470,12 +470,12 @@ function WirkungsBalken({
             <span className="text-sm font-medium">{p.label}</span>
             <span
               className="text-lg md:text-xl font-semibold tabular-nums"
-              style={{ color: p.ton === "stark" ? "#0A6EDB" : undefined }}
+              style={{ color: p.ton === "stark" ? "#187F58" : undefined }}
             >
               <ZahlAnimiert wert={p.wert} euro />
             </span>
           </div>
-          <div className="h-3 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(10,110,219,0.09)" }}>
+          <div className="h-3 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(24,127,88,0.09)" }}>
             <div
               className="h-full rounded-full transition-all duration-[1300ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
               style={{
@@ -483,8 +483,8 @@ function WirkungsBalken({
                 transitionDelay: `${i * 200}ms`,
                 background:
                   p.ton === "stark"
-                    ? "linear-gradient(90deg, #5CB0FF 0%, #0A6EDB 100%)"
-                    : "linear-gradient(90deg, rgba(10,110,219,0.35) 0%, rgba(10,110,219,0.22) 100%)",
+                    ? "linear-gradient(90deg, #1CC283 0%, #187F58 100%)"
+                    : "linear-gradient(90deg, rgba(24,127,88,0.35) 0%, rgba(24,127,88,0.22) 100%)",
               }}
             />
           </div>
@@ -532,7 +532,7 @@ function Immobilienschere({
     <div ref={ref}>
       <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.28em] font-semibold mb-3" style={{ color: "#7CBEFF" }}>
+          <p className="text-[11px] uppercase tracking-[0.28em] font-semibold mb-3" style={{ color: "#1ED28D" }}>
             {a(tx.schere.kicker)}
           </p>
           <p className="text-2xl md:text-4xl font-semibold tracking-tight leading-[1.12]">
@@ -540,7 +540,7 @@ function Immobilienschere({
           </p>
         </div>
         <div className="text-right">
-          <p className="text-3xl md:text-5xl font-semibold tracking-tight" style={{ color: "#7CBEFF" }}>
+          <p className="text-3xl md:text-5xl font-semibold tracking-tight" style={{ color: "#1ED28D" }}>
             <ZahlAnimiert wert={vermoegen} euro dauer={900} />
           </p>
           <p className="text-xs mt-1" style={{ color: "rgba(246,248,252,0.55)" }}>
@@ -557,7 +557,7 @@ function Immobilienschere({
       <div className="grid md:grid-cols-[minmax(0,1fr)_120px_minmax(0,1fr)] gap-6 md:gap-4 items-center">
         <div className="space-y-4">
           <div className="rounded-2xl px-5 py-4" style={{ border: "1px solid rgba(255,255,255,0.14)" }}>
-            <p className="text-[11px] uppercase tracking-[0.2em]" style={{ color: "#7CBEFF" }}>
+            <p className="text-[11px] uppercase tracking-[0.2em]" style={{ color: "#1ED28D" }}>
               {a(tx.schere.kaufpreis)}
             </p>
             <p className="text-2xl md:text-3xl font-semibold tabular-nums mt-1">{fmt.euro(kaufpreis)}</p>
@@ -582,7 +582,7 @@ function Immobilienschere({
         >
           {[
             { d: "M2,50 L98,10", farbe: "rgba(255,255,255,0.3)", verzoegerung: 0 },
-            { d: "M2,50 L98,50", farbe: "#4DA3FF", verzoegerung: 220 },
+            { d: "M2,50 L98,50", farbe: "#1AB57A", verzoegerung: 220 },
             { d: "M2,50 L98,90", farbe: "rgba(255,255,255,0.3)", verzoegerung: 440 },
           ].map((l) => (
             <path
@@ -613,14 +613,14 @@ function Immobilienschere({
           <div
             className="rounded-2xl px-5 py-4"
             style={{
-              backgroundColor: "rgba(0,122,255,0.16)",
-              border: "1px solid rgba(124,190,255,0.4)",
+              backgroundColor: "rgba(21,144,97,0.16)",
+              border: "1px solid rgba(30,210,141,0.4)",
             }}
           >
-            <p className="text-[11px] uppercase tracking-[0.2em]" style={{ color: "#7CBEFF" }}>
+            <p className="text-[11px] uppercase tracking-[0.2em]" style={{ color: "#1ED28D" }}>
               {a(tx.schere.vermoegen)}
             </p>
-            <p className="text-3xl md:text-4xl font-semibold tabular-nums mt-1" style={{ color: "#7CBEFF" }}>
+            <p className="text-3xl md:text-4xl font-semibold tabular-nums mt-1" style={{ color: "#1ED28D" }}>
               <ZahlAnimiert wert={vermoegen} euro dauer={900} />
             </p>
           </div>
@@ -642,7 +642,7 @@ function Immobilienschere({
           <label htmlFor="wertsteigerung" className="text-sm font-medium">
             {a(tx.schere.regler)}
           </label>
-          <span className="text-2xl font-semibold tabular-nums" style={{ color: "#7CBEFF" }}>
+          <span className="text-2xl font-semibold tabular-nums" style={{ color: "#1ED28D" }}>
             {fmt.prozent(wertsteigerung, 1)}
           </span>
         </div>
@@ -654,7 +654,7 @@ function Immobilienschere({
           step={0.5}
           value={wertsteigerung}
           onChange={(e) => onWertsteigerung(parseFloat(e.target.value))}
-          className="w-full accent-[#4DA3FF] cursor-pointer"
+          className="w-full accent-[#1AB57A] cursor-pointer"
         />
         <div className="flex justify-between text-[11px] mt-2" style={{ color: "rgba(246,248,252,0.45)" }}>
           <span>{fmt.prozent(0, 0)}</span>
@@ -663,7 +663,7 @@ function Immobilienschere({
         </div>
         <p className="text-xs mt-5 leading-relaxed" style={{ color: "rgba(246,248,252,0.6)" }}>
           {a(tx.schere.reglerNull)} {a(tx.schere.selbstDann)}{" "}
-          <span className="font-semibold" style={{ color: "#7CBEFF" }}>
+          <span className="font-semibold" style={{ color: "#1ED28D" }}>
             {fmt.euro(kaufpreis - restschuld)}
           </span>{" "}
           {a(tx.schere.selbstDannRest)}
@@ -837,7 +837,7 @@ function Posten({
       </span>
       <span
         className="text-[9px] font-semibold tabular-nums whitespace-nowrap"
-        style={{ color: betont ? "#7CBEFF" : "rgba(246,248,252,0.9)" }}
+        style={{ color: betont ? "#1ED28D" : "rgba(246,248,252,0.9)" }}
       >
         {wert}
       </span>
@@ -880,7 +880,7 @@ function Mockup({ art, zahlen }: { art: MockupArt; zahlen?: UebernommeneZahlen }
             <div className="flex justify-end mockup-blase-rechts">
               <div
                 className="rounded-lg rounded-tr-sm px-2 py-1.5 text-[9px] leading-snug"
-                style={{ backgroundColor: "rgba(0,122,255,0.42)", color: "#FFFFFF" }}
+                style={{ backgroundColor: "rgba(21,144,97,0.42)", color: "#FFFFFF" }}
               >
                 {a(tx.mockup.antwort)}
               </div>
@@ -890,7 +890,7 @@ function Mockup({ art, zahlen }: { art: MockupArt; zahlen?: UebernommeneZahlen }
                 <span
                   key={i}
                   className="h-1 w-1 rounded-full inline-block"
-                  style={{ backgroundColor: "rgba(124,190,255,0.85)" }}
+                  style={{ backgroundColor: "rgba(30,210,141,0.85)" }}
                 />
               ))}
             </div>
@@ -944,13 +944,13 @@ function Mockup({ art, zahlen }: { art: MockupArt; zahlen?: UebernommeneZahlen }
                       animationDelay: `${i * 0.22}s`,
                       background:
                         i === 2
-                          ? "linear-gradient(180deg,#5CB0FF,#0A6EDB)"
+                          ? "linear-gradient(180deg,#1CC283,#187F58)"
                           : "rgba(255,255,255,0.14)",
                     }}
                   />
                   <span
                     className="text-[6.5px] whitespace-nowrap"
-                    style={{ color: i === 2 ? "#7CBEFF" : "rgba(246,248,252,0.4)" }}
+                    style={{ color: i === 2 ? "#1ED28D" : "rgba(246,248,252,0.4)" }}
                   >
                     {k.name}
                   </span>
@@ -983,7 +983,7 @@ function Mockup({ art, zahlen }: { art: MockupArt; zahlen?: UebernommeneZahlen }
                   folgt und nicht aus einer Preisliste. */}
               <span
                 className="relative text-[8px] font-semibold px-1.5 py-0.5 rounded mockup-preis"
-                style={{ backgroundColor: "rgba(0,122,255,0.85)", color: "#FFFFFF" }}
+                style={{ backgroundColor: "rgba(21,144,97,0.85)", color: "#FFFFFF" }}
               >
                 {zahlen?.rahmen || fmt.euro(350000)}
               </span>
@@ -1018,9 +1018,9 @@ function Mockup({ art, zahlen }: { art: MockupArt; zahlen?: UebernommeneZahlen }
             </div>
             <div
               className="h-8 w-8 rounded-full shrink-0 flex items-center justify-center mockup-stempel"
-              style={{ border: "1.5px solid rgba(124,190,255,0.6)" }}
+              style={{ border: "1.5px solid rgba(30,210,141,0.6)" }}
             >
-              <CheckCircle2 className="h-3.5 w-3.5" style={{ color: "#7CBEFF" }} />
+              <CheckCircle2 className="h-3.5 w-3.5" style={{ color: "#1ED28D" }} />
             </div>
           </div>
         );
@@ -1033,8 +1033,8 @@ function Mockup({ art, zahlen }: { art: MockupArt; zahlen?: UebernommeneZahlen }
             <svg viewBox="0 0 120 40" className="w-full h-[40px]" preserveAspectRatio="none">
               <defs>
                 <linearGradient id="mockupVerlauf" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#5CB0FF" stopOpacity="0.45" />
-                  <stop offset="100%" stopColor="#5CB0FF" stopOpacity="0" />
+                  <stop offset="0%" stopColor="#1CC283" stopOpacity="0.45" />
+                  <stop offset="100%" stopColor="#1CC283" stopOpacity="0" />
                 </linearGradient>
               </defs>
               <path
@@ -1047,7 +1047,7 @@ function Mockup({ art, zahlen }: { art: MockupArt; zahlen?: UebernommeneZahlen }
               <polyline
                 points="0,34 24,28 48,30 72,18 96,12 120,4"
                 fill="none"
-                stroke="rgba(124,190,255,0.3)"
+                stroke="rgba(30,210,141,0.3)"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -1056,14 +1056,14 @@ function Mockup({ art, zahlen }: { art: MockupArt; zahlen?: UebernommeneZahlen }
                 className="mockup-kurve"
                 points="0,34 24,28 48,30 72,18 96,12 120,4"
                 fill="none"
-                stroke="#7CBEFF"
+                stroke="#1ED28D"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
             </svg>
             <div className="flex items-center gap-1.5">
-              <KeyRound className="h-3 w-3 shrink-0" style={{ color: "#7CBEFF" }} />
+              <KeyRound className="h-3 w-3 shrink-0" style={{ color: "#1ED28D" }} />
               <span className="text-[8px]" style={{ color: "rgba(246,248,252,0.5)" }}>
                 {a(tx.mockup.vermietet)}
               </span>
@@ -1086,7 +1086,7 @@ function Mockup({ art, zahlen }: { art: MockupArt; zahlen?: UebernommeneZahlen }
           <span
             key={i}
             className="h-1.5 w-1.5 rounded-full"
-            style={{ backgroundColor: i === 0 ? "rgba(124,190,255,0.55)" : "rgba(255,255,255,0.18)" }}
+            style={{ backgroundColor: i === 0 ? "rgba(30,210,141,0.55)" : "rgba(255,255,255,0.18)" }}
           />
         ))}
       </div>
@@ -1277,7 +1277,7 @@ function Station({
             className="absolute inset-0 pointer-events-none"
             style={{
               background:
-                "radial-gradient(ellipse 70% 55% at 50% -5%, rgba(0,122,255,0.28) 0%, transparent 62%)",
+                "radial-gradient(ellipse 70% 55% at 50% -5%, rgba(21,144,97,0.28) 0%, transparent 62%)",
             }}
           />
           <div
@@ -1297,7 +1297,7 @@ function Station({
           <div className="flex items-baseline gap-4 mb-3">
             <span
               className="text-sm font-semibold tabular-nums tracking-[0.3em] uppercase"
-              style={{ color: dunkel ? "#7CBEFF" : undefined }}
+              style={{ color: dunkel ? "#1ED28D" : undefined }}
             >
               <span className={dunkel ? "" : "text-primary"}>
                 {typeof nummer === "number" ? String(nummer).padStart(2, "0") : nummer}
@@ -1338,7 +1338,7 @@ function Station({
                 // dann fehlt der Strich vollstaendig.
                 opacity: dunkel ? 0.85 : 0.5,
                 borderTop: dunkel
-                  ? "1px solid rgb(124,190,255)"
+                  ? "1px solid rgb(30,210,141)"
                   : "1px solid hsl(var(--muted-foreground))",
               }}
             />
@@ -1894,8 +1894,8 @@ function ProzessBahn({ zahlen }: { zahlen?: UebernommeneZahlen }) {
           data-sichtbar={bahnSichtbar}
           style={{
             background:
-              "linear-gradient(90deg, rgba(124,190,255,0.25) 0%, #4DA3FF 18%, #4DA3FF 82%, rgba(124,190,255,0.25) 100%)",
-            boxShadow: "0 0 24px rgba(0,122,255,0.55)",
+              "linear-gradient(90deg, rgba(30,210,141,0.25) 0%, #1AB57A 18%, #1AB57A 82%, rgba(30,210,141,0.25) 100%)",
+            boxShadow: "0 0 24px rgba(21,144,97,0.55)",
           }}
         />
 
@@ -1933,13 +1933,13 @@ function ProzessBahn({ zahlen }: { zahlen?: UebernommeneZahlen }) {
                     style={
                       jetztDran
                         ? {
-                            background: "linear-gradient(180deg, #5CB0FF 0%, #0A6EDB 100%)",
+                            background: "linear-gradient(180deg, #1CC283 0%, #187F58 100%)",
                             color: "#FFFFFF",
                           }
                         : {
                             backgroundColor: "#0E131C",
-                            color: "#7CBEFF",
-                            border: "1px solid rgba(124,190,255,0.32)",
+                            color: "#1ED28D",
+                            border: "1px solid rgba(30,210,141,0.32)",
                           }
                     }
                   >
@@ -1949,7 +1949,7 @@ function ProzessBahn({ zahlen }: { zahlen?: UebernommeneZahlen }) {
 
                 <p
                   className="mt-5 text-center text-[10px] tracking-[0.18em] uppercase font-semibold"
-                  style={{ color: jetztDran ? "#7CBEFF" : "rgba(246,248,252,0.4)" }}
+                  style={{ color: jetztDran ? "#1ED28D" : "rgba(246,248,252,0.4)" }}
                 >
                   {s.marke}
                 </p>
@@ -1975,13 +1975,13 @@ function ProzessBahn({ zahlen }: { zahlen?: UebernommeneZahlen }) {
           className="mt-14 rounded-3xl p-8 md:p-12 text-center relative overflow-hidden beratung-schimmer"
           style={{
             background:
-              "linear-gradient(135deg, rgba(0,122,255,0.22) 0%, rgba(255,255,255,0.05) 60%, rgba(0,122,255,0.1) 100%)",
-            border: "1px solid rgba(124,190,255,0.28)",
+              "linear-gradient(135deg, rgba(21,144,97,0.22) 0%, rgba(255,255,255,0.05) 60%, rgba(21,144,97,0.1) 100%)",
+            border: "1px solid rgba(30,210,141,0.28)",
           }}
         >
           <p className="text-xl md:text-3xl font-light leading-snug tracking-tight">
             {a(tx.prozess.fazit)}{" "}
-            <span className="font-semibold" style={{ color: "#7CBEFF" }}>
+            <span className="font-semibold" style={{ color: "#1ED28D" }}>
               {a(tx.prozess.fazitBetont)}
             </span>
           </p>
@@ -2411,7 +2411,7 @@ export default function BeratungspraesentationHV() {
       <header data-lg="kopfscheibe" className="sticky top-0 z-50 backdrop-blur-xl bg-background/80 border-b border-border/60">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link to="/beratungspraesentation-moreimmo" className="flex items-center gap-3">
-            <img src={logo} alt="MOREImmo" className="h-8 w-auto" />
+            <img src={logo} alt="OS Immobilien" className="h-8 w-auto" />
           </Link>
           <nav className="hidden md:flex items-center gap-7">
             {NAV_IDS.map((id) => (
@@ -2482,7 +2482,7 @@ export default function BeratungspraesentationHV() {
           <div className="rounded-3xl bg-card border border-border shadow-2xl p-6 md:p-12">
             <div className="grid grid-cols-2 gap-3 md:gap-5 mb-10">
               <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-muted flex items-center justify-center p-8 md:p-12">
-                <img src={logo} alt="MOREImmo" className="max-h-full max-w-full object-contain" />
+                <img src={logo} alt="OS Immobilien" className="max-h-full max-w-full object-contain" />
               </div>
               {/* Video statt Standbild. Es laeuft stumm und in Schleife, damit
                   es im Gespraech nebenher laufen kann, ohne zu stoeren. Die
@@ -2619,11 +2619,11 @@ export default function BeratungspraesentationHV() {
 
             <Reveal delay={140}>
               <div className="rounded-2xl border border-border bg-card p-7 h-full">
-                <TrendingUp className="h-6 w-6 mb-4" style={{ color: "#7CBEFF" }} />
+                <TrendingUp className="h-6 w-6 mb-4" style={{ color: "#1ED28D" }} />
                 <p className="text-sm uppercase tracking-widest text-muted-foreground font-semibold mb-3">
                   {a(tx.nichtstun.papier)}
                 </p>
-                <p className="text-3xl md:text-4xl font-semibold tracking-tight" style={{ color: "#7CBEFF" }}>
+                <p className="text-3xl md:text-4xl font-semibold tracking-tight" style={{ color: "#1ED28D" }}>
                   <ZahlAnimiert wert={SPARKONTO.nominal} euro />
                 </p>
                 <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
@@ -2659,13 +2659,13 @@ export default function BeratungspraesentationHV() {
               className="mt-12 rounded-3xl p-8 md:p-12 text-center relative overflow-hidden beratung-schimmer"
               style={{
                 background:
-                  "linear-gradient(135deg, rgba(0,122,255,0.2) 0%, rgba(255,255,255,0.05) 60%, rgba(0,122,255,0.1) 100%)",
-                border: "1px solid rgba(124,190,255,0.28)",
+                  "linear-gradient(135deg, rgba(21,144,97,0.2) 0%, rgba(255,255,255,0.05) 60%, rgba(21,144,97,0.1) 100%)",
+                border: "1px solid rgba(30,210,141,0.28)",
               }}
             >
               <p className="text-xl md:text-3xl font-light leading-snug tracking-tight max-w-3xl mx-auto">
                 {a(tx.nichtstun.fazit)}{" "}
-                <span className="font-semibold" style={{ color: "#7CBEFF" }}>
+                <span className="font-semibold" style={{ color: "#1ED28D" }}>
                   {a(tx.nichtstun.fazitFrage)}
                 </span>
               </p>
@@ -3076,7 +3076,7 @@ export default function BeratungspraesentationHV() {
                 className="absolute inset-0 pointer-events-none"
                 style={{
                   background:
-                    "radial-gradient(ellipse 55% 70% at 78% 20%, rgba(0,122,255,0.3) 0%, transparent 65%)",
+                    "radial-gradient(ellipse 55% 70% at 78% 20%, rgba(21,144,97,0.3) 0%, transparent 65%)",
                 }}
               />
               {/* Die Aufteilung ist hier die Botschaft, deshalb steht die
@@ -3087,7 +3087,7 @@ export default function BeratungspraesentationHV() {
                 <div className="max-w-3xl">
                   <p
                     className="text-[11px] uppercase tracking-[0.28em] font-semibold mb-4"
-                    style={{ color: "#7CBEFF" }}
+                    style={{ color: "#1ED28D" }}
                   >
                     {a(tx.funktion.kicker)}
                   </p>
@@ -3108,19 +3108,19 @@ export default function BeratungspraesentationHV() {
                       label: a(tx.funktion.mieter),
                       wert: fmt.prozent(RATE_ANTEILE_BESTAND.mieter, 0),
                       text: a(tx.funktion.mieterText),
-                      hg: "linear-gradient(160deg, rgba(0,122,255,0.34), rgba(0,122,255,0.10))",
-                      rand: "rgba(124,190,255,0.38)",
+                      hg: "linear-gradient(160deg, rgba(21,144,97,0.34), rgba(21,144,97,0.10))",
+                      rand: "rgba(30,210,141,0.38)",
                       wertFarbe: "#fff",
-                      labelFarbe: "#7CBEFF",
+                      labelFarbe: "#1ED28D",
                     },
                     {
                       label: a(tx.funktion.finanzamt),
                       wert: fmt.prozent(RATE_ANTEILE_BESTAND.finanzamt, 0),
                       text: a(tx.funktion.finanzamtText),
-                      hg: "rgba(0,122,255,0.14)",
+                      hg: "rgba(21,144,97,0.14)",
                       rand: "rgba(255,255,255,0.14)",
                       wertFarbe: "#DCEBFF",
-                      labelFarbe: "#7CBEFF",
+                      labelFarbe: "#1ED28D",
                     },
                     {
                       label: a(tx.funktion.selbst),
@@ -3169,12 +3169,12 @@ export default function BeratungspraesentationHV() {
                     {
                       label: "Mieter",
                       breite: `${RATE_ANTEILE_BESTAND.mieter}%`,
-                      hg: "linear-gradient(180deg,#5CB0FF,#0A6EDB)",
+                      hg: "linear-gradient(180deg,#1CC283,#187F58)",
                     },
                     {
                       label: "Finanzamt",
                       breite: `${RATE_ANTEILE_BESTAND.finanzamt}%`,
-                      hg: "rgba(0,122,255,0.32)",
+                      hg: "rgba(21,144,97,0.32)",
                     },
                     {
                       label: "Kunde",
@@ -3235,7 +3235,7 @@ export default function BeratungspraesentationHV() {
                       <th className="text-left font-semibold p-4">{a(tx.vergleich.kopf[0])}</th>
                       <th
                         className="text-left font-semibold p-4"
-                        style={{ color: "#0A6EDB", backgroundColor: "rgba(10,110,219,0.09)" }}
+                        style={{ color: "#187F58", backgroundColor: "rgba(24,127,88,0.09)" }}
                       >
                         {a(tx.vergleich.kopf[1])}
                       </th>
@@ -3249,7 +3249,7 @@ export default function BeratungspraesentationHV() {
                         <td className="p-4 font-medium">{eigenschaft}</td>
                         <td
                           className="p-4 font-semibold"
-                          style={{ color: "#0A6EDB", backgroundColor: "rgba(10,110,219,0.05)" }}
+                          style={{ color: "#187F58", backgroundColor: "rgba(24,127,88,0.05)" }}
                         >
                           {immo}
                         </td>
@@ -3564,14 +3564,14 @@ export default function BeratungspraesentationHV() {
                 ))}
                 <div
                   className="flex items-center justify-between gap-4 px-6 py-6"
-                  style={{ backgroundColor: "rgba(0,122,255,0.16)" }}
+                  style={{ backgroundColor: "rgba(21,144,97,0.16)" }}
                 >
                   <span className="text-base md:text-lg font-semibold">
                     {a(tx.rechnung.beitragVorSteuer)}
                   </span>
                   <span
                     className="text-2xl md:text-3xl font-semibold tabular-nums"
-                    style={{ color: "#7CBEFF" }}
+                    style={{ color: "#1ED28D" }}
                   >
                     {rechnung.beitragVorSteuer}
                   </span>
@@ -3595,12 +3595,12 @@ export default function BeratungspraesentationHV() {
                 <div
                   className="rounded-2xl p-6"
                   style={{
-                    backgroundColor: "rgba(0,122,255,0.14)",
-                    border: "1px solid rgba(124,190,255,0.34)",
+                    backgroundColor: "rgba(21,144,97,0.14)",
+                    border: "1px solid rgba(30,210,141,0.34)",
                   }}
                 >
                   <p className="text-sm leading-relaxed">
-                    <span className="font-semibold" style={{ color: "#7CBEFF" }}>
+                    <span className="font-semibold" style={{ color: "#1ED28D" }}>
                       {rechnung.spaeter.titel}:
                     </span>{" "}
                     {rechnung.spaeter.text}
@@ -3724,11 +3724,11 @@ export default function BeratungspraesentationHV() {
                   className="absolute inset-0 pointer-events-none"
                   style={{
                     background:
-                      "radial-gradient(ellipse 70% 70% at 80% 0%, rgba(0,122,255,0.32) 0%, transparent 65%)",
+                      "radial-gradient(ellipse 70% 70% at 80% 0%, rgba(21,144,97,0.32) 0%, transparent 65%)",
                   }}
                 />
                 <div className="relative h-full flex flex-col">
-                  <Banknote className="h-6 w-6 mb-4" style={{ color: "#7CBEFF" }} />
+                  <Banknote className="h-6 w-6 mb-4" style={{ color: "#1ED28D" }} />
                   <p className="text-xl md:text-2xl font-semibold tracking-tight">
                     {rechnung.spaeter.titel}
                   </p>
@@ -3760,7 +3760,7 @@ export default function BeratungspraesentationHV() {
                       </p>
                       <p
                         className="mt-2 text-4xl md:text-5xl font-semibold tracking-tight tabular-nums leading-none"
-                        style={{ color: "#7CBEFF" }}
+                        style={{ color: "#1ED28D" }}
                       >
                         {rechnung.spaeter.beitragMonat}
                       </p>
@@ -3912,7 +3912,7 @@ export default function BeratungspraesentationHV() {
             className="absolute inset-0 pointer-events-none"
             style={{
               background:
-                "radial-gradient(ellipse 70% 55% at 50% -5%, rgba(0,122,255,0.34) 0%, transparent 62%)",
+                "radial-gradient(ellipse 70% 55% at 50% -5%, rgba(21,144,97,0.34) 0%, transparent 62%)",
             }}
           />
           <div
@@ -3930,7 +3930,7 @@ export default function BeratungspraesentationHV() {
               <div className="flex items-baseline gap-4 mb-3">
                 <span
                   className="text-sm font-semibold tabular-nums tracking-[0.3em]"
-                  style={{ color: "#7CBEFF" }}
+                  style={{ color: "#1ED28D" }}
                 >
                   14
                 </span>
@@ -3940,7 +3940,7 @@ export default function BeratungspraesentationHV() {
                     alignSelf: "center",
                     minWidth: "48px",
                     height: 0,
-                    borderTop: "1px solid rgba(124,190,255,0.45)",
+                    borderTop: "1px solid rgba(30,210,141,0.45)",
                   }}
                 />
               </div>
@@ -3965,7 +3965,7 @@ export default function BeratungspraesentationHV() {
                   <ul className="space-y-2.5">
                     {tx.schritt.inhalt.map((w) => a(w)).map((s, i) => (
                       <li key={i} className="flex items-start gap-3 text-sm md:text-base">
-                        <CheckCircle2 className="h-4 w-4 shrink-0 mt-1" style={{ color: "#7CBEFF" }} />
+                        <CheckCircle2 className="h-4 w-4 shrink-0 mt-1" style={{ color: "#1ED28D" }} />
                         <span style={{ color: "rgba(246,248,252,0.88)" }}>{s}</span>
                       </li>
                     ))}
@@ -3979,7 +3979,7 @@ export default function BeratungspraesentationHV() {
                     border: "1px solid rgba(255,255,255,0.14)",
                   }}
                 >
-                  <ClipboardList className="h-6 w-6 mb-4" style={{ color: "#7CBEFF" }} />
+                  <ClipboardList className="h-6 w-6 mb-4" style={{ color: "#1ED28D" }} />
                   <p className="text-lg font-semibold" style={{ color: "#F6F8FC" }}>{a(tx.schritt.warum)}</p>
                   <p className="text-sm mt-2.5 leading-relaxed" style={{ color: "rgba(246,248,252,0.75)" }}>
                     {a(tx.schritt.warumText)}
@@ -3987,7 +3987,7 @@ export default function BeratungspraesentationHV() {
                   <button
                     onClick={oeffneSelbstauskunft}
                     className="mt-6 w-full rounded-full h-12 text-base font-semibold inline-flex items-center justify-center gap-2 transition-transform hover:scale-[1.02]"
-                    style={{ backgroundColor: "#087AC7", color: "#FFFFFF" }}
+                    style={{ backgroundColor: "#15724F", color: "#FFFFFF" }}
                   >
                     <ClipboardList className="h-5 w-5" />
                     {a(tx.schritt.knopf)}
@@ -4005,11 +4005,11 @@ export default function BeratungspraesentationHV() {
               <div
                 className="mt-10 rounded-2xl p-6 md:p-7 flex items-start gap-4"
                 style={{
-                  backgroundColor: "rgba(0,122,255,0.14)",
-                  border: "1px solid rgba(77,163,255,0.45)",
+                  backgroundColor: "rgba(21,144,97,0.14)",
+                  border: "1px solid rgba(26,181,122,0.45)",
                 }}
               >
-                <Calculator className="h-5 w-5 shrink-0 mt-0.5" style={{ color: "#7CBEFF" }} />
+                <Calculator className="h-5 w-5 shrink-0 mt-0.5" style={{ color: "#1ED28D" }} />
                 <p className="text-sm md:text-base leading-relaxed" style={{ color: "rgba(246,248,252,0.92)" }}>
                   {a(tx.schritt.grundlage)}
                 </p>
@@ -4073,7 +4073,7 @@ export default function BeratungspraesentationHV() {
         {/* Fuß */}
         <footer className="px-6 py-14 border-t border-border">
           <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5">
-            <img src={logo} alt="MOREImmo" className="h-7 w-auto opacity-70" />
+            <img src={logo} alt="OS Immobilien" className="h-7 w-auto opacity-70" />
             <p className="text-xs text-muted-foreground text-center md:text-right max-w-2xl leading-relaxed">
               {a(tx.fuss.haftung)}
             </p>

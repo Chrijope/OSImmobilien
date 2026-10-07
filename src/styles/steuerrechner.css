@@ -1,4 +1,4 @@
-/* MOREImmo Steuerrechner: approved design, scoped to public and advisor views. */
+/* OS Immobilien Steuerrechner: approved design, scoped to public and advisor views. */
 /* `--steuer-frage-hoehe` ist die Mindesthoehe des Fragenkastens, siehe die
    ausfuehrliche Begruendung weiter unten bei `.steuer-question-column >
    .steuer-frage`. Sie steht in Pixeln und nicht in `rem`, weil `index.css`

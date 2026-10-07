@@ -13,7 +13,7 @@
  * das Problem kommt vor dem Produkt, drei Ablaufdarstellungen sind eine
  * Zeitleiste. Zahlen nur aus dem Rechenkern (`lib/handbuch/modell.ts`), immer
  * als Beispiel oder Modell beschriftet. Kennzahlen und Kundenstimmen nur so,
- * wie sie auf more.immo veröffentlicht sind.
+ * wie sie auf osimmobilien.netlify.app veröffentlicht sind.
  *
  * Zweisprachig seit dem 26.09.2026: Texte in `lib/handbuch/seitenTexte.ts`,
  * Zahlen und Diagramme in der Sprache der Seite (`inSprache`). Die
@@ -690,7 +690,7 @@ function MobilerAufruf({ wizard, knopf }: { wizard: string; knopf: string }) {
  * Mikroseite, `get-vp-microsite`). Ohne Partner der Inhaber mit seinem
  * Foto (fest im Projekt, `assets/handbuch/christian-kurz.webp`), ohne
  * Telefon und E-Mail.
- * Kennzahlen und Kundenstimmen nur so, wie sie auf more.immo stehen
+ * Kennzahlen und Kundenstimmen nur so, wie sie auf osimmobilien.netlify.app stehen
  * (`lib/handbuch/firma.ts`). Die Kundenstimmen bleiben auch auf Englisch im
  * deutschen Wortlaut, weil es Zitate sind.
  */
@@ -704,7 +704,7 @@ function WerDahinterSteht({ berater }: { berater: HandbuchBerater | null }) {
         <div className="hb-zwei gleich hb-wer">
           <div>
             <span className="hb-augenbraue">{W.augenbraue}</span>
-            <h2 className="hb-h2">MOREImmo.</h2>
+            <h2 className="hb-h2">OS Immobilien.</h2>
             {(en ? MOREIMMO_WARUM_EN : MOREIMMO_WARUM).map((satz) => (
               <p key={satz} style={{ fontSize: 17, color: "var(--hb-text2)" }}>
                 {satz}

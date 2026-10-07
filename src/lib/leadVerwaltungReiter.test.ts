@@ -20,7 +20,7 @@ describe("Quellen-Filter der Lead-Verwaltung", () => {
     expect(gruppe("Analysetool")).toBe("rechner");
     expect(gruppe("Steuerrechner")).toBe("rechner");
     expect(gruppe("EXPATS Calculator")).toBe("rechner");
-    expect(gruppe("Website more.immo")).toBe("website");
+    expect(gruppe("Website osimmobilien.netlify.app")).toBe("website");
     expect(gruppe("Microseite Beispiel")).toBe("website");
     expect(gruppe("", "website")).toBe("website");
     expect(gruppe("Instagram")).toBe("sonstige");

@@ -90,7 +90,7 @@ export const AKTIVIERUNG_ONBOARDING_SCHRITTE: OnboardingSchritt[] = [
     nummer: 3,
     titel: "WhatsApp-Community beitreten",
     beschreibung:
-      "Partner ueber den QR-Code in die MOREImmo-Community einladen und den zur Rolle passenden Untergruppen direkt hinzufuegen.",
+      "Partner ueber den QR-Code in die OS Immobilien-Community einladen und den zur Rolle passenden Untergruppen direkt hinzufuegen.",
     icon: MessageCircle,
   },
   {
@@ -130,7 +130,7 @@ export const AKTIVIERUNG_ONBOARDING_SCHRITTE: OnboardingSchritt[] = [
   {
     id: "whatsapp",
     nummer: 8,
-    titel: 'WhatsApp-Gruppe „MOREImmo Sales"',
+    titel: 'WhatsApp-Gruppe „OS Immobilien Sales"',
     beschreibung:
       "Partner zur Sales-Gruppe hinzufügen – für Fragen, Bugs und offene Punkte.",
     icon: MessageCircle,

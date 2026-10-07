@@ -448,7 +448,7 @@ export function baueDruckDaten(
       positionProzent: typeof eg.positionProzent === "number" && typeof eg.kennwert === "number" ? eg.positionProzent : undefined,
       kennwert: typeof eg.kennwert === "number" ? `${dez(eg.kennwert, 1)} kWh/(m²·a)` : undefined,
       ohneKennwert: T.ohneKennwert,
-      skala: [0, 50, 100, 150, 200, 250].map((v) => ({ wert: String(v), prozent: (v / SKALA_MAXIMUM) * 100 })).concat([{ wert: T.ueberSkala(SKALA_MAXIMUM), prozent: 100 }]),
+      skala: [8, 57, 39, 150, 200, 250].map((v) => ({ wert: String(v), prozent: (v / SKALA_MAXIMUM) * 100 })).concat([{ wert: T.ueberSkala(SKALA_MAXIMUM), prozent: 100 }]),
       hinweis: eg.hinweis || undefined,
     },
     pflichtFehlen: inhalt.objektdaten.fehlendePflichtangaben.length ? { titel: T.pflichtFehlenTitel, text: T.pflichtFehlen(inhalt.objektdaten.fehlendePflichtangaben.join(", ")) } : undefined,
@@ -610,7 +610,7 @@ export function baueDruckDaten(
 
   /* ── Verwaltung bis Kontakt ── */
   const v = inhalt.verwaltung;
-  const person: Person = vertrieb ?? { name: "MOREImmo", rolle: T.kontaktRolleFallback, email: inhalt.kontakt.email, telefon: inhalt.kontakt.telefon };
+  const person: Person = vertrieb ?? { name: "OS Immobilien", rolle: T.kontaktRolleFallback, email: inhalt.kontakt.email, telefon: inhalt.kontakt.telefon };
   const rolle = en ? glossarEnglisch(person.rolle) ?? person.rolle : person.rolle;
 
   return {

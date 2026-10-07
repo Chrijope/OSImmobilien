@@ -10,7 +10,7 @@
  *
  *   - kein eigener Abmeldelink, den setzt Lovable selbst
  *   - keine Geldwörter wie „verdienen"
- *   - Links nur auf more.immo, bis auf die ausdrücklich erlaubten Ausnahmen
+ *   - Links nur auf osimmobilien.netlify.app, bis auf die ausdrücklich erlaubten Ausnahmen
  */
 import * as React from 'npm:react@18.3.1'
 import { renderAsync } from 'npm:@react-email/components@0.0.22'
@@ -20,7 +20,7 @@ import { istBewerbermail } from '../bewerber-absender.ts'
 const GELDWOERTER = /verdien|geld verdienen|bis zur ersten provision/i
 
 /**
- * Adressen außerhalb von more.immo, die in Bewerbermails noch stehen dürfen,
+ * Adressen außerhalb von osimmobilien.netlify.app, die in Bewerbermails noch stehen dürfen,
  * jeweils mit Grund. Wer hier etwas ergänzt, schreibt den Grund dazu.
  */
 const ERLAUBTE_FREMDADRESSEN: Array<{ muster: RegExp; grund: string }> = [
@@ -29,13 +29,13 @@ const ERLAUBTE_FREMDADRESSEN: Array<{ muster: RegExp; grund: string }> = [
   // src/lib/mailVorschauOhneZaehlpixel.test.ts.
   { muster: /\.supabase\.co\/functions\/v1\/track-bewerber-mail\?.*mode=click/, grund: 'Linkzählung Startfahrplan' },
   // Die Kalenderdatei kommt aus der Function get-ics. Lovable-Hosting kann
-  // Pfade unter portal.more.immo nicht an eine Function weiterreichen.
+  // Pfade unter osimmobilien.netlify.app nicht an eine Function weiterreichen.
   { muster: /\.supabase\.co\/functions\/v1\/get-ics/, grund: 'Kalenderdatei' },
   // Profilbild der Ansprechpartnerin aus dem öffentlichen Speicher, aus
-  // demselben Grund nicht über portal.more.immo auslieferbar.
+  // demselben Grund nicht über osimmobilien.netlify.app auslieferbar.
   { muster: /\.supabase\.co\/storage\/v1\/object\/public\/avatars\//, grund: 'Profilbild' },
   // Der Buchungskalender der HR-Managerin im alten Ablauf. Eine Buchungsseite
-  // ohne persönlichen Link gibt es unter portal.more.immo noch nicht.
+  // ohne persönlichen Link gibt es unter osimmobilien.netlify.app noch nicht.
   { muster: /^https:\/\/calendly\.com\/sarah-kaiser-thom-more\//, grund: 'Buchungskalender alter Ablauf' },
   // Platzhalter in den Vorschaudaten, geht nie hinaus.
   { muster: /^https:\/\/example\.com\//, grund: 'Vorschaudaten' },
@@ -44,7 +44,7 @@ const ERLAUBTE_FREMDADRESSEN: Array<{ muster: RegExp; grund: string }> = [
 function istMoreImmo(url: string): boolean {
   try {
     const host = new URL(url).hostname
-    return host === 'more.immo' || host.endsWith('.more.immo')
+    return host === 'osimmobilien.netlify.app' || host.endsWith('.osimmobilien.netlify.app')
   } catch {
     return false
   }
@@ -61,7 +61,7 @@ Deno.test('es gibt Bewerbermails zu prüfen', () => {
 })
 
 for (const name of bewerbermails) {
-  Deno.test(`${name}: ohne eigenen Abmeldelink, ohne Geldwörter, Links auf more.immo`, async () => {
+  Deno.test(`${name}: ohne eigenen Abmeldelink, ohne Geldwörter, Links auf osimmobilien.netlify.app`, async () => {
     const eintrag = TEMPLATES[name]
     const daten = { ...(eintrag.previewData || {}), sprache: 'de' }
     const html = await renderAsync(React.createElement(eintrag.component, daten))
@@ -78,7 +78,7 @@ for (const name of bewerbermails) {
       if (!/^https?:/.test(url)) continue // mailto:, tel:, Platzhalter
       if (istMoreImmo(url)) continue
       if (ERLAUBTE_FREMDADRESSEN.some((a) => a.muster.test(url))) continue
-      throw new Error(`${name}: Link außerhalb von more.immo: ${url}`)
+      throw new Error(`${name}: Link außerhalb von osimmobilien.netlify.app: ${url}`)
     }
   })
 }
@@ -89,7 +89,7 @@ Deno.test('bewerber-nicht-erreicht: unterschreibt die HR-Ansprechpartnerin aus h
     bewerberName: 'Max Mustermann',
     versuch: 5,
     // So kommt es von send-transactional-email, ermittelt über die Kennung.
-    hrKontakt: { name: 'Sarah Kaiser-Thom', rolle: 'HR-Managerin', email: 's.kaiser-thom@more.immo' },
+    hrKontakt: { name: 'Sarah Kaiser-Thom', rolle: 'HR-Managerin', email: 'os@os-immobilien.com' },
     // Was ein alter Aufrufer mitschickt, verliert gegen hrKontakt.
     beraterName: 'Jana Anruferin',
   }

@@ -33,7 +33,7 @@ function baueIcs(params: {
   const zeilen = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//MOREImmo//CRM//DE",
+    "PRODID:-//OS Immobilien//CRM//DE",
     "CALSCALE:GREGORIAN",
     "BEGIN:VEVENT",
     `UID:${params.uid}`,

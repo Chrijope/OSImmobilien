@@ -129,7 +129,7 @@ describe("Die Seite selbst braucht keine Anmeldung", () => {
     expect(screen.queryByText(/Admin only/i)).toBeNull();
   });
 
-  it("setzt einen eigenen Titel im Browsertab statt 'MOREImmo CRM'", () => {
+  it("setzt einen eigenen Titel im Browsertab statt 'OS Immobilien CRM'", () => {
     render(<ExpatsRechner />);
     expect(document.title).toContain("EXPATS Calculator");
     expect(document.title).not.toContain("CRM");

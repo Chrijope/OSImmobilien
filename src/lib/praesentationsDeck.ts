@@ -112,7 +112,7 @@ type Teil2Eintrag = Pick<DeckFolie, "id" | "titel" | "phase"> &
 
 /**
  * Teil 2 in der Dramaturgie des Drehbuchs: Identifikation, Vision, System,
- * Warum MOREImmo, wirtschaftliche Chance, Entscheidung. Die Ids sind die
+ * Warum OS Immobilien, wirtschaftliche Chance, Entscheidung. Die Ids sind die
  * folieIds aus closingDirektSkript.ts. Nicht umsortieren ohne Grund.
  */
 const TEIL_2_EINTRAEGE: Teil2Eintrag[] = [
@@ -121,7 +121,7 @@ const TEIL_2_EINTRAEGE: Teil2Eintrag[] = [
   { id: "vision", titel: "Du machst Vertrieb, wir den Rest", phase: "Vision" },
   { id: "werte", titel: "Wofür wir stehen", phase: "Vision" },
   {
-    id: "system", titel: "Das MOREImmo System", phase: "System",
+    id: "system", titel: "Das OS Immobilien System", phase: "System",
     // Sprechtext 3 von Station 6 ("du bekommst ein komplettes System") passt
     // hierher, dazu die Notiz Reaktion der Station.
     ergaenzung: { stationKey: "werWirSind", sprechtexte: [2] },
@@ -132,8 +132,8 @@ const TEIL_2_EINTRAEGE: Teil2Eintrag[] = [
     ergaenzung: { stationKey: "werWirSind", sprechtexte: [0, 1] },
   },
   { id: "dealprozess", titel: "Vom Kunden zur Provision", phase: "System" },
-  { id: "partnerstimmen", titel: "Partnerstimmen", phase: "Warum MOREImmo", bedingung: "partnerstimmen" },
-  { id: "zahlen", titel: "MOREImmo in Zahlen", phase: "Warum MOREImmo", bedingung: "kennzahlen" },
+  { id: "partnerstimmen", titel: "Partnerstimmen", phase: "Warum OS Immobilien", bedingung: "partnerstimmen" },
+  { id: "zahlen", titel: "OS Immobilien in Zahlen", phase: "Warum OS Immobilien", bedingung: "kennzahlen" },
   { id: "echter-fall", titel: "Ein echter Deal", phase: "Wirtschaftliche Chance" },
   { id: "rechner", titel: "Deine Zahlen", phase: "Wirtschaftliche Chance" },
   {

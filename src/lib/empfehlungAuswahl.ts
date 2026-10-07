@@ -146,7 +146,7 @@ export function kundenRueckwegAusSuche(suche: string): string | null {
 /**
  * Trägt die Adresse irgendeinen Kundenkontext? Anders als
  * `kundenbezugAusSuche` zählt schon das Vorhandensein der Parameter, auch wenn
- * der Kontakt (noch) nicht im Zwischenspeicher steht. Für den MORE Lotsen: Mit
+ * der Kontakt (noch) nicht im Zwischenspeicher steht. Für den OS Lotsen: Mit
  * Kundenkontext geht nur die kundenfreie Standardrechnung hinaus (Runde 6).
  */
 export function hatKundenParameter(suche: string): boolean {

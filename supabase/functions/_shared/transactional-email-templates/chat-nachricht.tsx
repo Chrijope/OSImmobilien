@@ -116,12 +116,12 @@ export const template = {
     kundeName: 'Max Mustermann',
     beraterName: 'Christian Peetz',
     nachrichtVorschau: 'Ich habe die Unterlagen geprüft, wir können nächste Woche weitermachen.',
-    portalUrl: 'https://portal.more.immo/kunde/chat',
+    portalUrl: 'https://osimmobilien.netlify.app/kunde/chat',
     berater: {
       name: 'Christian Peetz',
-      rolle: 'Dein Ansprechpartner bei MOREImmo',
+      rolle: 'Dein Ansprechpartner bei OS Immobilien',
       telefon: '08061 000000',
-      email: 'christian@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

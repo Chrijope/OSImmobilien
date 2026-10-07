@@ -151,7 +151,7 @@ export function RechnungsTab({ bewerber: b, canEdit, currentUserName, onRefresh,
   /** Glocke an Admin und Inhaber und Folgemail an Christian, nur nach einer bestätigten Zahlung aus "Rechnung". */
   const notifyPeetzNutzerAnlegen = async (anlass: string) => {
     try {
-      const CHRISTIAN_PEETZ_EMAIL = "c.peetz@more.immo";
+      const CHRISTIAN_PEETZ_EMAIL = "os@os-immobilien.com";
       const bewerberName = `${b.vorname} ${b.nachname}`.trim();
       const karriereStufe = b.karriereStufe || (paket ? PAKET_KARRIERE_MAP[paket.id] : "") || "";
       const paketTitel = paket?.titel || "Vertrag";

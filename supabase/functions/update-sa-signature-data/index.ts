@@ -8,7 +8,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SIGNATURE_BASE_URL = "https://portal.more.immo/signatur";
+const SIGNATURE_BASE_URL = "https://osimmobilien.netlify.app/signatur";
 
 /** Felder, die der Kunde nicht ueber die Korrektur veraendern darf (Identitaet des Signaturvorgangs). */
 const GESPERRTE_FELDER = new Set(["versionen", "abgeschlossen"]);
@@ -182,7 +182,7 @@ Deno.serve(async (req) => {
 
     // 5) Bereits geleistete Unterschriften erneut anfordern
     // Zustaendigen Partner als Unterschrift mitgeben, sonst zeigt die Mail den
-    // Platzhalter "MOREImmo Team".
+    // Platzhalter "OS Immobilien Team".
     const beraterSignatur = await zustaendigerAnsprechpartner(supabase, anfrage.kontakt_id);
     for (const person of zurueckgesetzt) {
       try {

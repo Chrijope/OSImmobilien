@@ -23,7 +23,7 @@ import { MIKROSEITE_TEXTE } from "@/components/landing/mikroseiteTexte";
  * eine kleinere, korrekte Zahl als eine große, die jemand nachrechnet.
  */
 
-const TILGUNG = "#1A85FF"; // Markenblau
+const TILGUNG = "#169967"; // Markenblau
 const WERT = "#1baf7a"; // Aqua, validiert gegen Blau (ΔE 22,9 normal)
 const EINSATZ = 30800;
 

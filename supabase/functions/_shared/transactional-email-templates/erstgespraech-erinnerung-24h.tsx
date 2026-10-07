@@ -13,12 +13,12 @@ export const template = {
     terminDatum: '25.03.2026',
     terminUhrzeit: '15:00',
     vorText: 'in 24 Stunden',
-    analyseUrl: 'https://portal.more.immo/analyse?source=reminder',
+    analyseUrl: 'https://osimmobilien.netlify.app/analyse?source=reminder',
     berater: {
       name: 'Christian Peetz',
       rolle: 'Senior Berater',
       telefon: '+49 89 123456',
-      email: 'c.peetz@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

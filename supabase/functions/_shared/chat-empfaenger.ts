@@ -70,7 +70,7 @@ export function chatZiel(chatId: string, empfaenger: Pick<ChatEmpfaenger, "istTi
   return `/chat?id=${encodeURIComponent(chatId)}`;
 }
 
-/** Die volle Adresse fuer die Mail, auf dem CRM unter portal.more.immo. */
+/** Die volle Adresse fuer die Mail, auf dem CRM unter osimmobilien.netlify.app. */
 export function chatZielAdresse(basis: string, pfad: string): string {
   return `${basis.trim().replace(/\/+$/, "")}${pfad}`;
 }

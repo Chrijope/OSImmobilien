@@ -800,7 +800,7 @@ describe("Lead- und Eigensatz: gleiches Wording bei beiden Vertragsarten", () =>
     expect(s.ev).toBe(5);
     // Wortgleich in beiden Paketen: Der Text hängt an den Sätzen, nicht am Paket.
     expect(s.saetzeListe).toEqual([
-      "Lead-Satz 3% (bei über MOREImmo zugewiesenen Leads)",
+      "Lead-Satz 3% (bei über OS Immobilien zugewiesenen Leads)",
       "Eigen-Satz 5% (bei eigenem Netzwerk / eigenen Kontakten)",
     ]);
     expect(s.anwendungsregel).toContain("Der Lead-Satz gilt für Abschlüsse mit Leads, die dem Vertriebspartner von der Gesellschaft zugewiesen wurden (Gesellschaftskontakte nach § 7 Absatz 2).");
@@ -808,7 +808,7 @@ describe("Lead- und Eigensatz: gleiches Wording bei beiden Vertragsarten", () =>
 
     const zeilen = konditionenblattZeilen(konditionenAus(b, { paket })!);
     const provision = zeilen.find((z) => z.label === "Provision")!.wert;
-    expect(provision).toContain("Individuell vereinbart: Lead-Satz 3% (bei über MOREImmo zugewiesenen Leads) · Eigen-Satz 5% (bei eigenem Netzwerk / eigenen Kontakten)");
+    expect(provision).toContain("Individuell vereinbart: Lead-Satz 3% (bei über OS Immobilien zugewiesenen Leads) · Eigen-Satz 5% (bei eigenem Netzwerk / eigenen Kontakten)");
     expect(zeilen.map((z) => z.label)).toContain("Rangfolge der Sätze");
 
     const t = hauptvertrag(b, paket);
@@ -822,7 +822,7 @@ describe("Lead- und Eigensatz: gleiches Wording bei beiden Vertragsarten", () =>
   ])("%s: andere Zahlen, gleiches Wording", (_titel, paket) => {
     const s = provisionsSaetze(paket, mitSaetzen("2,5", "4"));
     expect(s.saetzeListe).toEqual([
-      "Lead-Satz 2.5% (bei über MOREImmo zugewiesenen Leads)",
+      "Lead-Satz 2.5% (bei über OS Immobilien zugewiesenen Leads)",
       "Eigen-Satz 4% (bei eigenem Netzwerk / eigenen Kontakten)",
     ]);
   });
@@ -1034,7 +1034,7 @@ describe("Restfall: Standardsatz des Pakets neben den individuellen Sätzen", ()
     const b = bewerberStub({ satzLead: "3" });
     const s = provisionsSaetze(junior, b);
     expect(s.saetzeListe).toEqual([
-      "Lead-Satz 3% (bei über MOREImmo zugewiesenen Leads)",
+      "Lead-Satz 3% (bei über OS Immobilien zugewiesenen Leads)",
       "Standardsatz des Pakets 4% (für alle Abschlüsse ohne eigenen Satz)",
     ]);
     expect(s.anwendungsregel).toBe(
@@ -1539,7 +1539,7 @@ describe("Anlage 4: Meta Pixel nach Art. 26 DSGVO", () => {
     );
     expect(text).not.toMatch(/\[Anwalt|\[E-Mail|\[den Link/);
     expect(text).not.toMatch(/[–—]/);
-    expect(text).toContain("datenschutz@more.immo");
+    expect(text).toContain("os@os-immobilien.com");
     expect(text).toContain("über den Link „Cookie-Einstellungen“ im Fuß jeder Seite");
     // § 2 Absatz 4: Verbot ohne Ausnahme durch spätere Textänderung.
     const p24 = ANLAGE_4_PARAGRAPHEN[1].absaetze.find((a) => a.startsWith("(4)"))!;

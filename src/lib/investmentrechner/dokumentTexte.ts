@@ -359,7 +359,7 @@ export const DOKUMENT_TEXTE_DE: DokumentTexte = {
     investmentkalkulation: "Investmentkalkulation",
     persoenlicheKalkulation: "Persönliche Investmentkalkulation",
     investmentobjekt: "Investmentobjekt",
-    fusszeile: "© MORE Immo · Investmentkalkulation",
+    fusszeile: "© OS Immobilien · Investmentkalkulation",
     seite: (nr) => `Seite ${nr}`,
   },
   deckblatt: {
@@ -718,7 +718,7 @@ export const DOKUMENT_TEXTE_EN: DokumentTexte = {
     investmentkalkulation: "Investment calculation",
     persoenlicheKalkulation: "Personal investment calculation",
     investmentobjekt: "Investment property",
-    fusszeile: "© MORE Immo · Investment calculation",
+    fusszeile: "© OS Immobilien · Investment calculation",
     seite: (nr) => `Page ${nr}`,
   },
   deckblatt: {

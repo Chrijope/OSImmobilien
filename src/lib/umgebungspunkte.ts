@@ -121,7 +121,7 @@ export const PUNKTE_JE_TEILLISTE = 5;
  */
 export const UMGEBUNG_KATEGORIEN: KategorieVorgabe[] = [
   {
-    id: "einkaufen", titel: "Einkaufen", farbe: "#087ac7", ebene: "mikro",
+    id: "einkaufen", titel: "Einkaufen", farbe: "#15724F", ebene: "mikro",
     listen: [{ id: "einkaufen", titel: "Einkaufen", quellen: ["einkaufen"], max: PUNKTE_JE_KATEGORIE, art: "Einkaufen" }],
   },
   {

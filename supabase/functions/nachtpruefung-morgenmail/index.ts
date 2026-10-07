@@ -42,7 +42,7 @@ import {
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
-const BERICHT_LINK = 'https://portal.more.immo/nachtpruefung'
+const BERICHT_LINK = 'https://osimmobilien.netlify.app/nachtpruefung'
 
 /**
  * Ab wann gilt der letzte Nachtlauf als ausgefallen.

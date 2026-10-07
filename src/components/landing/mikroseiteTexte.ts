@@ -6,7 +6,7 @@
  * die Texte der Abschnitte von oben bis zu den Referenzen: Hero, Leistungen,
  * Steuer- und Eignungscheck, Problem (Schere), Investmentkonzepte,
  * Steuervorteile, Musterrechnung Neubau samt Diagrammen, Investorenprofile
- * und „Warum MOREImmo“. Die Referenzen selbst stehen in
+ * und „Warum OS Immobilien“. Die Referenzen selbst stehen in
  * `src/lib/referenzenTexte.ts`, die übrigen Abschnitte in eigenen Dateien.
  *
  * Aufbau:
@@ -20,7 +20,7 @@
  * - Englisch ist britisch, Fachbegriffe nach `kundenspracheGlossar.ts`,
  *   deutsche Steuerbegriffe beim ersten Auftreten mit dem deutschen Wort in
  *   Klammern. Der Berater heißt nie „advisor“, sondern „your contact person
- *   at MOREImmo“, kurz „your contact“.
+ *   at OS Immobilien“, kurz „your contact“.
  * - Keine Gedankenstriche, in keiner der beiden Sprachen.
  *
  * Ohne `SeitenSpracheProvider` (CRM, Vorschau) gilt immer Deutsch.
@@ -486,7 +486,7 @@ const de = {
       {
         kicker: "Gutverdiener",
         titel: "Du verdienst überdurchschnittlich.",
-        text: "Du arbeitest erfolgreich, zahlst hohe Steuern und hast wenig Zeit, dich selbst um Objektauswahl, Finanzierung und Strategie zu kümmern. MOREImmo hilft dir, deine Bonität gezielt für ein Immobilienportfolio einzusetzen.",
+        text: "Du arbeitest erfolgreich, zahlst hohe Steuern und hast wenig Zeit, dich selbst um Objektauswahl, Finanzierung und Strategie zu kümmern. OS Immobilien hilft dir, deine Bonität gezielt für ein Immobilienportfolio einzusetzen.",
         punkte: [
           "Starke Bonität als Investmentvorteil nutzen",
           "Immobilienstrategie mit Steuerfokus entwickeln",
@@ -508,7 +508,7 @@ const de = {
       {
         kicker: "Angestellte",
         titel: "Du bist festangestellt und willst strukturiert starten.",
-        text: "Stabiles Einkommen und gute Bonität sind ideale Voraussetzungen für den Einstieg in deine erste Kapitalanlage-Immobilie. MOREImmo hilft dir, Finanzierung sauber zu planen und Steuervorteile sinnvoll zu nutzen.",
+        text: "Stabiles Einkommen und gute Bonität sind ideale Voraussetzungen für den Einstieg in deine erste Kapitalanlage-Immobilie. OS Immobilien hilft dir, Finanzierung sauber zu planen und Steuervorteile sinnvoll zu nutzen.",
         punkte: [
           "Erste Kapitalanlage sicher und planbar angehen",
           "Einkommen und Bonität gezielt einsetzen",
@@ -520,11 +520,11 @@ const de = {
   },
 
   unternehmen: {
-    kicker: "Warum MOREImmo",
+    kicker: "Warum OS Immobilien",
     titelVor: "Strategisches Immobilienwachstum mit Struktur,",
     titelBetont: "Substanz und System",
     intro:
-      "MOREImmo verbindet langjährige Markterfahrung, geprüfte Investmentstrategien und ein starkes Partnernetzwerk für anspruchsvolle Investoren.",
+      "OS Immobilien verbindet langjährige Markterfahrung, geprüfte Investmentstrategien und ein starkes Partnernetzwerk für anspruchsvolle Investoren.",
     vorteile: [
       {
         titel: "Fokus Bayern + Top-Lagen",
@@ -582,7 +582,7 @@ const en: MikroseiteTexte = {
     kennzahlen: ["350+ investors supported", "450+ units brokered", "700+ partner banks", "20+ sales partners & staff"],
     rechnerLink: "Calculate my tax relief",
     gebaeudeAlt: "Modern residential property",
-    portraetUeber: "Your contact person at MOREImmo",
+    portraetUeber: "Your contact person at OS Immobilien",
     beruf: "Sales partner",
     weiter: "Scroll",
   },
@@ -986,7 +986,7 @@ const en: MikroseiteTexte = {
       {
         kicker: "High earners",
         titel: "You earn above average.",
-        text: "You're successful at work, pay high taxes and have little time to handle property selection, financing and strategy yourself. MOREImmo helps you use your creditworthiness specifically for a property portfolio.",
+        text: "You're successful at work, pay high taxes and have little time to handle property selection, financing and strategy yourself. OS Immobilien helps you use your creditworthiness specifically for a property portfolio.",
         punkte: [
           "Use strong creditworthiness as an investment advantage",
           "Develop a property strategy with a tax focus",
@@ -1008,7 +1008,7 @@ const en: MikroseiteTexte = {
       {
         kicker: "Employees",
         titel: "You're permanently employed and want a structured start.",
-        text: "A stable income and good creditworthiness are ideal for getting into your first investment property. MOREImmo helps you plan financing properly and use tax advantages sensibly.",
+        text: "A stable income and good creditworthiness are ideal for getting into your first investment property. OS Immobilien helps you plan financing properly and use tax advantages sensibly.",
         punkte: [
           "Approach your first investment safely and predictably",
           "Use income and creditworthiness purposefully",
@@ -1020,11 +1020,11 @@ const en: MikroseiteTexte = {
   },
 
   unternehmen: {
-    kicker: "Why MOREImmo",
+    kicker: "Why OS Immobilien",
     titelVor: "Strategic property growth with structure,",
     titelBetont: "substance and system",
     intro:
-      "MOREImmo combines many years of market experience, vetted investment strategies and a strong partner network for discerning investors.",
+      "OS Immobilien combines many years of market experience, vetted investment strategies and a strong partner network for discerning investors.",
     vorteile: [
       {
         titel: "Focus on Bavaria + top locations",

@@ -133,7 +133,7 @@ describe("einheitenText", () => {
 
 describe("objektLink", () => {
   it("zeigt auf die Objektseite im CRM", () => {
-    expect(objektLink(GERMERING)).toBe(`https://portal.more.immo/objekte/${GERMERING}`);
+    expect(objektLink(GERMERING)).toBe(`https://osimmobilien.netlify.app/objekte/${GERMERING}`);
     expect(objektLink(GERMERING, "https://beispiel.test/")).toBe(`https://beispiel.test/objekte/${GERMERING}`);
   });
 });
@@ -154,7 +154,7 @@ describe("objektdatenFuerMail", () => {
     expect(obj.neu[0].text).toBe("13. Landsbergerstraße 22a, 82210 Germering: PLZ im Titel weicht vom Feld ab");
     expect(obj.neu[0].unter).toContain("im Feld steht 82110");
     expect(obj.neu[0].unter).toContain("In Investagon korrigieren");
-    expect(obj.neu[0].href).toBe(`https://portal.more.immo/objekte/${GERMERING}`);
+    expect(obj.neu[0].href).toBe(`https://osimmobilien.netlify.app/objekte/${GERMERING}`);
     expect(obj.bestehend).toBe(1);
     expect(hatNeueObjektdaten(bereiche)).toBe(true);
   });

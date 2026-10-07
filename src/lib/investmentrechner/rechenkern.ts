@@ -1,7 +1,7 @@
 /**
  * Rechenkern des Investmentrechners.
  *
- * Eins zu eins aus der Web-App „MORE Immo Investmentrechner" übernommen.
+ * Eins zu eins aus der Web-App „OS Immobilien Investmentrechner" übernommen.
  * Die Feldnamen im Eingabe- und Ergebnisobjekt sind bewusst die englischen
  * Originalnamen, damit die Referenzwerte in rechenkern.golden.json direkt
  * vergleichbar bleiben. Nur die Funktionsnamen sind deutsch.

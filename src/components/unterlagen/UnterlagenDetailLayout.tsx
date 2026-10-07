@@ -19,7 +19,7 @@ export interface MagazineHeroProps {
   image: string;
   /** Kleines Label oberhalb des Titels, z. B. "Kapitel 01 · Geschwindigkeit" */
   kicker?: string;
-  /** Ausgaben-Label, z. B. "MOREImmo Lead Playbook · Ausgabe 2026/01" */
+  /** Ausgaben-Label, z. B. "OS Immobilien Lead Playbook · Ausgabe 2026/01" */
   issue?: string;
   /** Optionale Bildunterschrift / Credit */
   caption?: string;
@@ -158,7 +158,7 @@ function MagazineCover({
         {/* Top stripe with issue line */}
         {(hero.issue || badge) && (
           <div className="absolute top-0 inset-x-0 px-5 sm:px-8 py-4 flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.25em] text-white/70">
-            <span>{hero.issue || "MOREImmo · Lead Playbook"}</span>
+            <span>{hero.issue || "OS Immobilien · Lead Playbook"}</span>
             {badge && <span className="hidden sm:inline">{badge}</span>}
           </div>
         )}

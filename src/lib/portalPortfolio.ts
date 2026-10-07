@@ -1,7 +1,7 @@
 /**
  * Portfolio-Kennzahlen fuer das Kundenportal (Stufe 4 der Sanierung).
  *
- * Rechnet MOREImmo-Investments (Tabelle investments) und eigene Investments
+ * Rechnet OS Immobilien-Investments (Tabelle investments) und eigene Investments
  * (Tabelle externe_investments) in eine gemeinsame Positionsliste um und
  * liefert daraus die Kennzahlen der Uebersichtsseiten sowie die
  * Vermoegensuebersicht. Grundsatz: keine stillen Schaetzwerte. Fehlt eine
@@ -40,7 +40,7 @@ function letzterWert(historie: MarktwertPunkt[]): number | null {
   return historie.length > 0 ? historie[historie.length - 1].wert : null;
 }
 
-/** MOREImmo-Investment (Zeile aus `investments` plus Finanzierung) als Position. */
+/** OS Immobilien-Investment (Zeile aus `investments` plus Finanzierung) als Position. */
 export function moreImmoPosition(inv: any, finanzierung: any): PortfolioPosition {
   const meta = inv?.meta || {};
   const adapted = adaptMoreImmoInvestment(inv, meta, finanzierung);

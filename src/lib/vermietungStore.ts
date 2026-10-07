@@ -16,7 +16,7 @@ const LS_KEY = "mi_vermietung";
 
 export const VERMIETUNG_STUFEN: { value: VermietungStufe; label: string; color: string }[] = [
   { value: "leerstehend", label: "Leerstehend", color: "hsl(0, 70%, 55%)" }, { value: "inseriert", label: "Inseriert", color: "hsl(30, 80%, 50%)" },
-  { value: "besichtigung", label: "Besichtigung", color: "hsl(45, 80%, 50%)" }, { value: "pruefung", label: "Prüfung", color: "hsl(200, 60%, 50%)" },
+  { value: "besichtigung", label: "Besichtigung", color: "hsl(45, 80%, 50%)" }, { value: "pruefung", label: "Prüfung", color: "hsl(157, 45%, 43%)" },
   { value: "zusage", label: "Zusage", color: "hsl(160, 60%, 45%)" }, { value: "mietvertrag", label: "Mietvertrag", color: "hsl(142, 60%, 45%)" },
   { value: "uebergabe", label: "Übergabe", color: "hsl(262, 50%, 55%)" }, { value: "vermietet", label: "Vermietet", color: "hsl(142, 70%, 40%)" },
 ];

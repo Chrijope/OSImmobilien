@@ -29,7 +29,7 @@ import { CookieEinstellungenLink } from "@/components/cookie/CookieEinstellungen
 /**
  * Die öffentliche Stellenanzeige, `/karriere/stellenanzeige`.
  *
- * Aufbau nach Christians Vorgabe vom 24.09.2026: oben kurz, wer MOREImmo ist
+ * Aufbau nach Christians Vorgabe vom 24.09.2026: oben kurz, wer OS Immobilien ist
  * und wofür das Haus steht, darunter die offenen Partnerschaften als Kacheln.
  * Eine Kachel klappt auf, ihr Inhalt steht am Schreibtisch über die ganze
  * Breite unter den Kacheln, am Handy direkt unter der eigenen Kachel. Es ist
@@ -70,7 +70,7 @@ const STELLEN_SYMBOL: Record<Stellenanzeige["weg"], typeof MapPin> = {
  * Weichzeichnung: Die Glasschicht erlaubt Weichzeichnung nur über ihre Tokens.
  */
 const STELLEN_SCHEIN: Record<Stellenanzeige["weg"], string> = {
-  vertriebspartner: "radial-gradient(circle at center, hsl(204 92% 51% / .28), transparent 68%)",
+  vertriebspartner: "radial-gradient(circle at center, hsl(157 69% 39% / .28), transparent 68%)",
   tippgeber: "radial-gradient(circle at center, hsl(22 95% 60% / .24), transparent 68%)",
   finanzdienstleister: "radial-gradient(circle at center, hsl(160 70% 42% / .24), transparent 68%)",
 };
@@ -329,7 +329,7 @@ const StellenanzeigePage = () => {
       <header className="relative z-10">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-5 sm:px-6">
           <Link to="/karriere" aria-label="Zur Karriereübersicht">
-            <img src={logoImg} alt="MOREImmo" className="h-8 object-contain dark:brightness-0 dark:invert" />
+            <img src={logoImg} alt="OS Immobilien" className="h-8 object-contain dark:brightness-0 dark:invert" />
           </Link>
           <Link to="/partner-werden" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
             Mehr zur Partnerschaft
@@ -349,7 +349,7 @@ const StellenanzeigePage = () => {
           <div
             aria-hidden
             className="pointer-events-none absolute left-1/2 top-[-18rem] h-[36rem] w-[60rem] -translate-x-1/2 rounded-full"
-            style={{ background: "radial-gradient(ellipse at center, hsl(204 92% 51% / .16), transparent 66%)" }}
+            style={{ background: "radial-gradient(ellipse at center, hsl(157 69% 39% / .16), transparent 66%)" }}
           />
           <div className="relative mx-auto max-w-4xl px-4 pb-16 pt-10 text-center sm:px-6 md:pb-20 md:pt-16">
             <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-primary">{kopf.marke}</p>
@@ -447,12 +447,12 @@ const StellenanzeigePage = () => {
 
       <footer className="border-t border-border/40">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 py-8 sm:flex-row sm:px-6">
-          <img src={logoImg} alt="MOREImmo" className="h-7 object-contain opacity-60 dark:brightness-0 dark:invert" />
+          <img src={logoImg} alt="OS Immobilien" className="h-7 object-contain opacity-60 dark:brightness-0 dark:invert" />
           <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
             <Link to="/impressum" className="hover:text-foreground">Impressum</Link>
             <Link to="/datenschutz" className="hover:text-foreground">Datenschutz</Link>
             <CookieEinstellungenLink className="hover:text-foreground" />
-            <span>© {new Date().getFullYear()} MOREImmo · Einzelunternehmen Christian Kurz</span>
+            <span>© {new Date().getFullYear()} OS Immobilien Holding GmbH</span>
           </div>
         </div>
       </footer>

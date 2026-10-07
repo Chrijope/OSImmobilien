@@ -34,7 +34,7 @@ const UEBERSCHRIFTEN: Record<number, string> = {
 }
 
 const TEXTE: Record<number, string> = {
-  1: 'vielen Dank für dein Interesse an einer vertrieblichen Zusammenarbeit mit MOREImmo. Wir haben gerade versucht, dich telefonisch zu erreichen, leider ohne Erfolg. Wir versuchen es zeitnah erneut.',
+  1: 'vielen Dank für dein Interesse an einer vertrieblichen Zusammenarbeit mit OS Immobilien. Wir haben gerade versucht, dich telefonisch zu erreichen, leider ohne Erfolg. Wir versuchen es zeitnah erneut.',
   2: 'wir haben erneut versucht, dich telefonisch zu erreichen, leider wieder ohne Erfolg. Kein Problem, das liegt meistens einfach am Timing. Wir versuchen es zeitnah noch einmal.',
   3: 'auch unser dritter Anruf hat dich leider nicht erreicht. Wir versuchen es zeitnah erneut. Wenn dir eine bestimmte Uhrzeit besser passt, schreib uns gerne kurz.',
   4: 'wir haben es erneut versucht und dich telefonisch leider nicht erreicht. Wir bleiben dran und melden uns zeitnah wieder.',
@@ -107,9 +107,9 @@ export const template = {
     versuch: 1,
     berater: {
       name: 'Sarah Kaiser-Thom',
-      rolle: 'Dein Kontakt bei MOREImmo',
+      rolle: 'Dein Kontakt bei OS Immobilien',
       telefon: '+49 151 12345678',
-      email: 's.kaiser-thom@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

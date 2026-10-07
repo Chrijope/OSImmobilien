@@ -341,7 +341,7 @@ function PersonKarte({ person, titel }: { person: Person; titel: string }) {
           hier dunkle Schrift auf Blau. `kontakt-termin` setzt beide Farben
           fest, Regel in `premiumExpose.css`.
         */}
-        {person.buchungslink && <Button asChild size="sm" className="kontakt-termin gap-1.5 bg-[#0466a9] text-white hover:bg-[#03558d]"><a href={person.buchungslink} target="_blank" rel="noreferrer" data-testid="kontakt-termin"><CalendarDays className="h-3.5 w-3.5" /> {t.termin}</a></Button>}
+        {person.buchungslink && <Button asChild size="sm" className="kontakt-termin gap-1.5 bg-[#13704D] text-white hover:bg-[#0F5D40]"><a href={person.buchungslink} target="_blank" rel="noreferrer" data-testid="kontakt-termin"><CalendarDays className="h-3.5 w-3.5" /> {t.termin}</a></Button>}
       </div>
       {/* Im Druck sind Knöpfe nutzlos, dort stehen Adresse und Nummer als Text. */}
       {(person.email || person.telefon) && <p className="print-only mt-2 text-sm">{[person.telefon, person.email].filter(Boolean).join(" · ")}</p>}
@@ -355,7 +355,7 @@ function PersonKarte({ person, titel }: { person: Person; titel: string }) {
  * Der Objektpartner stand bis zum 23.09.2026 daneben. Christian will ihn im
  * Exposé nicht mehr sehen: Der Kunde hat einen Ansprechpartner, nicht zwei.
  * Ist kein Vertriebspartner bekannt (etwa im allgemeinen Kundenlink), steht
- * statt eines „Nicht hinterlegt“ der Weg zu MOREImmo selbst da.
+ * statt eines „Nicht hinterlegt“ der Weg zu OS Immobilien selbst da.
  */
 export function AbschnittKontakt({ kontakt }: { kontakt: ExposeInhalt["kontakt"] }) {
   const t = exposeSeitenTexte(useAnzeigeSprache());

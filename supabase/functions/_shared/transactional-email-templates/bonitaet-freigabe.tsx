@@ -48,6 +48,6 @@ export const template = {
   previewData: {
     name: 'Stefan Kurz',
     kundeName: 'Kai Laube-Richtsteiger',
-    link: 'https://portal.more.immo/kunden/beispiel?tab=investments',
+    link: 'https://osimmobilien.netlify.app/kunden/beispiel?tab=investments',
   },
 } satisfies TemplateEntry

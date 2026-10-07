@@ -30,7 +30,7 @@ import { LotseSymbol } from "./LotseSymbol";
 import { festeZahlenEinheit, HAUSGELD_GESAMT, RUECKLAGE } from "../../../../supabase/functions/_shared/lotse-feste-zahlen";
 
 /**
- * Der MORE Lotse: KI-Chat zu einer Einheit und ihrem Objekt (Stufe 1,
+ * Der OS Lotse: KI-Chat zu einer Einheit und ihrem Objekt (Stufe 1,
  * freigegeben am 28.09.2026).
  *
  * Geschnitten für zwei Orte: heute als Reiter der Einheitenseite, später
@@ -89,7 +89,7 @@ Frag mich alles, was du wissen willst. Ich antworte mit Quelle und Stand, und we
 /** Das kleine „KI“-Abzeichen an Reiter und Chatkopf. */
 export function KiMarke() {
   return (
-    <span className="rounded-md bg-gradient-to-r from-[#0b6fc4] to-[#7b5cf0] px-1.5 py-0.5 text-[10px] font-extrabold tracking-wider text-white">
+    <span className="rounded-md bg-gradient-to-r from-[#197C56] to-[#7b5cf0] px-1.5 py-0.5 text-[10px] font-extrabold tracking-wider text-white">
       KI
     </span>
   );
@@ -308,7 +308,7 @@ export function ObjektLotse({ objektId, wohnungId = null, bezeichnung, kalkulati
 
   return (
     <section
-      aria-label="Chat mit dem MORE Lotsen"
+      aria-label="Chat mit dem OS Lotsen"
       className={cn(
         "relative flex h-[75vh] min-h-[480px] flex-col overflow-hidden rounded-2xl border border-border/60 bg-card shadow-[0_1px_2px_rgba(0,0,0,0.04)] lg:h-[680px]",
         className,
@@ -318,7 +318,7 @@ export function ObjektLotse({ objektId, wohnungId = null, bezeichnung, kalkulati
       <div className="flex items-center gap-3 border-b border-border/60 px-4 py-3 sm:px-5">
         <LotseSymbol className="h-11 w-11" />
         <div className="min-w-0 flex-1">
-          <h2 className="flex items-center gap-2 text-base font-semibold tracking-tight text-foreground">MORE Lotse <KiMarke /></h2>
+          <h2 className="flex items-center gap-2 text-base font-semibold tracking-tight text-foreground">OS Lotse <KiMarke /></h2>
           <p className="truncate text-xs text-muted-foreground">Dein KI-Objektmanager für {bezeichnung}</p>
         </div>
         <span className="hidden shrink-0 items-center gap-1.5 rounded-full bg-[hsl(var(--success))]/10 px-2.5 py-1 text-[11px] text-[hsl(var(--success))] md:inline-flex">
@@ -454,7 +454,7 @@ export function ObjektLotse({ objektId, wohnungId = null, bezeichnung, kalkulati
         )}
       </div>
       <p className="px-4 pb-3 text-[11px] leading-snug text-muted-foreground sm:px-5">
-        Der MORE Lotse ist eine KI. Er antwortet nur aus Objektdaten, Kalkulation, Karte und Unterlagen im CRM und kann sich
+        Der OS Lotse ist eine KI. Er antwortet nur aus Objektdaten, Kalkulation, Karte und Unterlagen im CRM und kann sich
         trotzdem irren. Seine Antworten sind eine Arbeitshilfe, keine geprüfte Auskunft und keine Steuer-, Rechts- oder
         Anlageberatung. Gib an Kunden nur freigegebene Unterlagen weiter, nicht den Text des Lotsen, und gib hier keine Daten
         deiner Kunden ein.

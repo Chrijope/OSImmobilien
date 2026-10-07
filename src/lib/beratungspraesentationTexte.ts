@@ -1,5 +1,5 @@
 /**
- * Alle sichtbaren Texte der Beratungspräsentation MOREImmo
+ * Alle sichtbaren Texte der Beratungspräsentation OS Immobilien
  * (`src/pages/BeratungspraesentationHV.tsx`, Route `/beratungspraesentation-moreimmo`),
  * auf Deutsch und auf Englisch.
  *
@@ -90,11 +90,11 @@ const de = {
   },
 
   hero: {
-    videoLabel: "Persönliche MOREImmo Beratung",
-    kicker: "MOREImmo · Premium Real Estate Investment",
+    videoLabel: "Persönliche OS Immobilien Beratung",
+    kicker: "OS Immobilien · Premium Real Estate Investment",
     willkommen: "Herzlich Willkommen",
     titel: "Strategischer Immobilien-Portfolioaufbau",
-    schreibmaschine: "mit MOREImmo.",
+    schreibmaschine: "mit OS Immobilien.",
     claim: "Steueroptimiert. Renditestark. Professionell begleitet.",
     start: "Beratung starten",
     konzepte: "Konzepte ansehen",
@@ -207,7 +207,7 @@ const de = {
   },
 
   ueberUns: {
-    titel: "MORE Immo in einem Satz",
+    titel: "OS Immobilien in einem Satz",
     vorspann:
       "Unser Ziel ist nicht der Kauf einer einzelnen Immobilie, sondern der systematische Aufbau eines Immobilienportfolios.",
     leistungen: [
@@ -217,9 +217,9 @@ const de = {
         text: "Für jede Immobilie gelten dieselben Qualitäts- und Auswahlkriterien.",
         // Die Marke steht in beiden Sprachen gleich, sie wählt auch das Logo.
         partner: {
-          marke: "MORE Immo",
+          marke: "OS Immobilien",
           rolle: "Objektpartner",
-          satz: "Über MORE Immo vertreiben wir die Objekte und Einheiten.",
+          satz: "Über OS Immobilien vertreiben wir die Objekte und Einheiten.",
         },
       },
       {
@@ -1049,11 +1049,11 @@ const en: BeratungTexte = {
   },
 
   hero: {
-    videoLabel: "Personal MOREImmo consultation",
-    kicker: "MOREImmo · Premium Real Estate Investment",
+    videoLabel: "Personal OS Immobilien consultation",
+    kicker: "OS Immobilien · Premium Real Estate Investment",
     willkommen: "Welcome",
     titel: "Strategic property portfolios",
-    schreibmaschine: "with MOREImmo.",
+    schreibmaschine: "with OS Immobilien.",
     claim: "Tax-optimised. Strong returns. Professionally guided.",
     start: "Start consultation",
     konzepte: "View concepts",
@@ -1136,7 +1136,7 @@ const en: BeratungTexte = {
   },
 
   ueberUns: {
-    titel: "MORE Immo in one sentence",
+    titel: "OS Immobilien in one sentence",
     vorspann:
       "Our goal is not the purchase of a single property, but the systematic building of a real estate portfolio.",
     leistungen: [
@@ -1145,9 +1145,9 @@ const en: BeratungTexte = {
         titel: "Vetted properties",
         text: "Every property is held to the same quality and selection criteria.",
         partner: {
-          marke: "MORE Immo",
+          marke: "OS Immobilien",
           rolle: "Property partner",
-          satz: "We market the properties and units through MORE Immo.",
+          satz: "We market the properties and units through OS Immobilien.",
         },
       },
       {

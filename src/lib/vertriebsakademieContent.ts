@@ -146,7 +146,7 @@ export interface AkademieSection {
     oeffnenLabel?: string;
   };
   /**
-   * Trainings-Cockpit für die Beratungspräsentation MOREImmo:
+   * Trainings-Cockpit für die Beratungspräsentation OS Immobilien:
    * Vorschau links, scrollsynchrones Sprechskript rechts.
    */
   trainingsCockpit?: boolean;
@@ -966,7 +966,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           {
             "titel": "Die 24-Stunden-Antwort, wenn du noch keine Antwort hast",
             "kontext": "Eine Anfrage ist gestern Abend eingegangen, du hast das Objekt noch nicht geprüft und willst den Standard trotzdem halten",
-            "text": "Hallo {Vorname}, hier ist ... von MOREImmo, du hast dich gestern Abend bei uns gemeldet. Ich rufe an, obwohl ich dir noch nichts Fertiges sagen kann, weil du nicht warten sollst. Zwei Fragen, damit ich in die richtige Richtung suche, dann melde ich mich bis morgen Nachmittag mit etwas Konkretem.",
+            "text": "Hallo {Vorname}, hier ist ... von OS Immobilien, du hast dich gestern Abend bei uns gemeldet. Ich rufe an, obwohl ich dir noch nichts Fertiges sagen kann, weil du nicht warten sollst. Zwei Fragen, damit ich in die richtige Richtung suche, dann melde ich mich bis morgen Nachmittag mit etwas Konkretem.",
             "warumTitel": "Warum ein Anruf ohne Ergebnis besser ist als ein späterer mit",
             "warum": "Der Satz löst drei Dinge auf einmal. Erstens erfüllt er den Standard: Es geht um die Meldung, nicht um die Lösung, und der Kunde erlebt am ersten Tag, dass hier jemand zurückruft. Zweitens nimmt der offene Halbsatz, dass du noch nichts Fertiges hast, dem Anruf jede Peinlichkeit. Wer stattdessen so tut, als hätte er schon etwas, muss den Rest des Gesprächs improvisieren. Drittens macht er aus dem Anruf ein Erstgespräch im Kleinen, denn die beiden Fragen bringen dir genau die Information, die du für die Suche brauchst. Und der Termin am Ende ist kein Höflichkeitsfloskel, sondern eine Zusage, für die ab sofort der dritte Wert gilt: Sie findet statt."
           }
@@ -1468,7 +1468,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "intro": "Menschen wollen Teil von etwas sein, das größer ist als der nächste Abschluss. Ohne ein Warum bleibt jede Kultur ein Poster. Am Ende dieses Abschnitts steht eine Zahl, die du selbst in der Hand hast.",
         "absaetze": [
           "Unsere Vision, ausdrücklich als Entwurfsfassung der Geschäftsführung gekennzeichnet und auf der Kulturseite auch so ausgewiesen: Wir machen den Aufbau von Vermögen mit Immobilien für Menschen erreichbar, die keine Millionen mitbringen, ehrlich gerechnet, persönlich begleitet und in Jahrzehnten gedacht statt in Abschlüssen.",
-          "Warum es MOREImmo gibt: Über Geld wird selten offen gesprochen, und wer sich nicht auskennt, traut sich am wenigsten zu fragen. Gute Beratung soll nicht davon abhängen, wie viel jemand schon besitzt. Ehrliche Beratung im Immobilienvertrieb soll der Normalfall sein und nicht die Ausnahme.",
+          "Warum es OS Immobilien gibt: Über Geld wird selten offen gesprochen, und wer sich nicht auskennt, traut sich am wenigsten zu fragen. Gute Beratung soll nicht davon abhängen, wie viel jemand schon besitzt. Ehrliche Beratung im Immobilienvertrieb soll der Normalfall sein und nicht die Ausnahme.",
           "Und jetzt du. Das Funkengespräch heißt so, weil es genau eine Aufgabe hat: einmal zu Beginn den Funken setzen, mit drei Fragen. Warum das trägt, ist einfach zu begründen. In den ersten Monaten hört jeder im Vertrieb häufiger ein Nein als ein Ja, und in diesen Monaten entscheidet nicht das Können darüber, wer bleibt, sondern die Antwort auf die Frage, wofür man das eigentlich macht. Wer sie schon einmal aufgeschrieben hat, muss sie an einem schlechten Dienstag nicht neu erfinden, sondern nur nachlesen. Beantworte die drei Fragen deshalb schriftlich und ehrlich, niemand außer dir bewertet die Antworten. Lies sie wieder, wenn eine Woche nicht läuft.",
           "Die dritte Frage, was du erreichen willst, verlangt eine Zahl, und Zahlen aus dem Bauch sind hier wertlos. Übersetze dein Jahresziel deshalb rückwärts in eine Wochenaktivität. Die Rechnung darunter zeigt, wie das geht: Am Ende steht eine einzige Zahl pro Woche, die du selbst beeinflussen kannst. Die Quoten in der Rechnung sind ausdrücklich Beispielwerte, damit der Weg sichtbar wird, und keine Zielvorgabe des Hauses. Deine eigenen Quoten stehen nach wenigen Wochen in deiner Pipeline, dort siehst du, wie viele Kontakte zu Erstgesprächen, wie viele Erstgespräche zu Beratungen und wie viele Beratungen zu Abschlüssen geworden sind. Ersetze die Beispielwerte, sobald du eigene hast.",
           "Auch die 46 Arbeitswochen sind eine Annahme und keine Vorgabe: 52 Wochen im Jahr abzüglich Urlaub und Feiertage. Wer sechs Wochen Urlaub nimmt, rechnet mit 46, wer vier nimmt, mit 48. Setz deine eigene Zahl ein, sonst rechnest du dir eine Wochenzahl aus, die du nie erreichen wolltest.",
@@ -2012,7 +2012,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "sprungZuAbschnitt": "so-startest-du"
         },
         {
-          "frage": "Welche drei Produktwelten macht MORE Immo?",
+          "frage": "Welche drei Produktwelten macht OS Immobilien?",
           "optionen": [
             "Bestandswohnung, Pflegeimmobilie und das Denkmalobjekt mit hohem Sanierungsanteil",
             "Eigentumswohnung im sanierten Bestand, Neubau-Eigentumswohnung, WG und Co-Living",
@@ -2084,7 +2084,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Drei Dinge musst du sicher können, bevor du zum ersten Mal mit einem Interessenten sprichst, und nur drei. Erstens: Von der Monatsrate ist nur der Zinsanteil steuerlich absetzbar, die Tilgung nicht, denn sie ist kein Aufwand, sondern Vermögensaufbau. Zweitens: Abgeschrieben wird nur der Gebäudeanteil, nie der Grund und Boden, also nie der volle Kaufpreis. Drittens: Kaufnebenkosten von rund 8 bis 12 Prozent kommen zum Kaufpreis dazu und werden meist nicht mitfinanziert. Wer diese drei Sätze sicher hat, redet in keinem Erstgespräch Unsinn. Alles andere kannst du nachschlagen.",
           "Eine Regel für alle Zahlen in diesem Kapitel: Zu jeder Zahl gehört, worauf sie sich bezieht und von wann sie ist. Ein Abschreibungssatz gilt auf den Gebäudeanteil und nicht auf den Kaufpreis. Ein Grunderwerbsteuersatz gilt für ein bestimmtes Bundesland und für einen bestimmten Stichtag, denn die Länder ändern ihre Sätze. Ein Steuervorteil gilt für einen bestimmten Grenzsteuersatz und für ein bestimmtes Jahr, denn er sinkt mit dem Zinsanteil. Wo eine Zahl in diesem Kapitel eine Annahme des Hauses ist und keine Vorschrift, steht das ausdrücklich dabei.",
           "Zur Rechtslage gehört ein Punkt, der nicht warten sollte, weil er eine Erlaubnis betrifft. Wer als selbstständiger Vertriebspartner mehr tut, als Kontakte herzustellen, also selbst Objekte vorstellt, Zahlen erklärt und zum Kauf hinführt, braucht eine eigene Erlaubnis nach § 34c Gewerbeordnung. Die Erlaubnis der Gesellschaft deckt dich dabei nicht ab. Wo genau die Grenze zur reinen Tippgebung verläuft und wie der Antrag abläuft, steht ausführlich in Kapitel 1. Dieses Kapitel wiederholt es bewusst nicht, weil eine zweite Darstellung derselben Regel früher oder später von der ersten abweicht. Eine gute Nachricht dazu: Die Weiterbildungspflicht für Immobilienmakler ist zum 24. Juli 2026 entfallen, durch das Gesetz zum Bürokratierückbau in der Gewerbeordnung und im Energieverbrauchskennzeichnungsgesetz (BGBl. 2026 I Nr. 215). Bestehen bleibt sie nur für Wohnimmobilienverwalter.",
-          "Und wo die Objekte stehen, auf die sich alle Rechenbeispiele dieses Kapitels beziehen: Unsere Objektplattform heißt Investagon. Dort liegt der Bestand mit allen Projekten und Einheiten, dort siehst du Preis, Fläche, Miete und ob eine Einheit frei, reserviert oder verkauft ist, und dort suchst du später das Objekt für deinen Kunden heraus. Im CRM erreichst du sie über den Eintrag Objekte in der Seitenleiste unter Immobilien, sie öffnet in einem eigenen Tab und hat eine eigene Anmeldung. Der Zugang gehört zu deiner Freischaltung, genauso wie der CRM-Zugang und deine MOREImmo-Mailadresse.",
+          "Und wo die Objekte stehen, auf die sich alle Rechenbeispiele dieses Kapitels beziehen: Unsere Objektplattform heißt Investagon. Dort liegt der Bestand mit allen Projekten und Einheiten, dort siehst du Preis, Fläche, Miete und ob eine Einheit frei, reserviert oder verkauft ist, und dort suchst du später das Objekt für deinen Kunden heraus. Im CRM erreichst du sie über den Eintrag Objekte in der Seitenleiste unter Immobilien, sie öffnet in einem eigenen Tab und hat eine eigene Anmeldung. Der Zugang gehört zu deiner Freischaltung, genauso wie der CRM-Zugang und deine OS Immobilien-Mailadresse.",
           "Wenn du nicht nur für dieses Kapitel eine Reihenfolge suchst, sondern für die ganze Akademie: Kapitel 12 ist genau dafür gebaut. Das 90-Tage-Programm legt dir die ersten drei Monate als Wochenplan aus, mit den Abschnitten dieses Kapitels auf den ersten Tagen, und es sagt dir bei jedem Schritt, woran du merkst, dass er sitzt. Wer den Plan einmal aufgeschlagen hat, muss die Frage nach dem Was heute nicht mehr selbst beantworten.",
           "Zuletzt ein Wort zu den beiden Lernpfaden. Oben auf dieser Seite kannst du zwischen Quereinsteiger und Profi wechseln. Im Quereinsteiger-Pfad bekommst du zusätzliche Erklärboxen für Fachbegriffe und leichtere Aufgabenvarianten. Im Profi-Pfad verschwinden die Erklärboxen und dafür erscheinen Gold-Nuggets, Profi-Tipps und die schwereren Aufgaben. Der Abschlusstest am Ende des Kapitels wird nie gefiltert: Jede Antwort steht im gemeinsamen Text, den beide Pfade sehen. Du kannst also jederzeit wechseln, ohne etwas Prüfungsrelevantes zu verpassen."
         ],
@@ -2462,8 +2462,8 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             }
           }
         ],
-        "ueberschrift": "Unser Fokus bei MORE Immo: worauf wir spezialisiert sind",
-        "intro": "Wir sind bewusst kein Bauchladen. Bei MORE Immo konzentrieren wir uns auf drei klar definierte Produktwelten, genau die, in denen wir langjährige Erfahrung, feste Partner und die besten Prozesse haben.",
+        "ueberschrift": "Unser Fokus bei OS Immobilien: worauf wir spezialisiert sind",
+        "intro": "Wir sind bewusst kein Bauchladen. Bei OS Immobilien konzentrieren wir uns auf drei klar definierte Produktwelten, genau die, in denen wir langjährige Erfahrung, feste Partner und die besten Prozesse haben.",
         "bullets": [
           "Eigentumswohnungen im sanierten Bestand, unser Klassiker: hochwertig sanierte Eigentumswohnungen in etablierten Lagen, planbare Miete, oft attraktiver Einstiegspreis, sofortige Vermietbarkeit.",
           "Neubau-Eigentumswohnungen: Neubauprojekte mit der Sonderabschreibung nach § 7b Einkommensteuergesetz, sofern förderfähig, Erstbezug, minimale Instandhaltung, geeignet für Kunden mit langem Anlagehorizont und Fokus auf Wertsteigerung.",
@@ -2473,7 +2473,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Beim Neubau steht im Exposé regelmäßig der Zusatz mit § 7b Sonder-AfA, falls förderfähig. Diese drei Wörter sind kein Vorbehalt der Rechtsabteilung, sondern eine echte Bedingung. § 7b Einkommensteuergesetz knüpft die zusätzlichen 5 Prozent an vier Voraussetzungen, die alle zugleich erfüllt sein müssen: den Zeitpunkt des Bauantrags, eine Baukostenobergrenze, einen Deckel auf die geförderte Bemessungsgrundlage und einen Energiestandard. Dazu kommt die Pflicht, die Wohnung zehn Jahre lang zu Wohnzwecken zu vermieten. Die vier Voraussetzungen stehen ausführlich im Steuerabschnitt dieses Kapitels.",
           "Für das Gespräch heißt das: Sag beim Neubau nie, dass die Sonderabschreibung gilt, sondern dass sie bei diesem Objekt gilt, wenn der Bauträger die Voraussetzungen bestätigt hat. Lass dir Bauantragsdatum, Quadratmeterpreis und Energiestandard schriftlich geben, bevor du eine Zahl rechnest. Ein Kunde, der die Sonderabschreibung eingeplant hat und sie nicht bekommt, verliert vier Jahre lang die zusätzlichen 5 Prozent: Bei einer geförderten Bemessungsgrundlage von 200.000 Euro sind das 10.000 Euro Abschreibung im Jahr und bei 42 Prozent Grenzsteuersatz rund 4.200 Euro Steuerentlastung, jedes Jahr.",
           "Beim sanierten Bestand ist die entsprechende Frage nicht die Förderfähigkeit, sondern der Umfang der Sanierung. Er entscheidet zweierlei: ob die Mietpreisbremse bei der ersten Vermietung nach der Sanierung entfällt (§ 556f Bürgerliches Gesetzbuch) und wie viel Instandhaltung in den nächsten Jahren zu erwarten ist. Beim WG- und Co-Living-Konzept ist die entscheidende Frage der Betreiber, denn die höhere Miete entsteht durch die Zimmervermietung und die wird nur mit einem funktionierenden Konzept dauerhaft erzielt.",
-          "Und wo diese drei Produktwelten stehen: Unsere Objektplattform ist Investagon. Dort liegt der Bestand mit allen Projekten und Einheiten, dort suchst du später das Objekt für deinen Kunden heraus, und dort siehst du, was frei, reserviert oder verkauft ist. Du erreichst sie im CRM über den Eintrag Objekte in der Seitenleiste unter Immobilien, sie öffnet in einem eigenen Tab. Der Zugang gehört zu deiner Freischaltung, genauso wie der CRM-Zugang und deine MOREImmo-Mailadresse. Wie aus den drei Produktwelten und den Zahlen eines Kunden ein konkreter Vorschlag wird, steht in Kapitel 6."
+          "Und wo diese drei Produktwelten stehen: Unsere Objektplattform ist Investagon. Dort liegt der Bestand mit allen Projekten und Einheiten, dort suchst du später das Objekt für deinen Kunden heraus, und dort siehst du, was frei, reserviert oder verkauft ist. Du erreichst sie im CRM über den Eintrag Objekte in der Seitenleiste unter Immobilien, sie öffnet in einem eigenen Tab. Der Zugang gehört zu deiner Freischaltung, genauso wie der CRM-Zugang und deine OS Immobilien-Mailadresse. Wie aus den drei Produktwelten und den Zahlen eines Kunden ein konkreter Vorschlag wird, steht in Kapitel 6."
         ],
         "quereinsteigerHinweis": "Produktwelt heißt bei uns nichts anderes als Objektart mit einem eigenen Kundentyp. Drei Sätze zum Merken. Sanierter Bestand: fertig, vermietet, Miete fließt ab dem ersten Monat, dafür schwächerer Steuerhebel. Neubau: stärkster Steuerhebel in den ersten Jahren, teurer je Quadratmeter, und bei einem Objekt in Bau fließt die Miete erst nach der Fertigstellung. WG und Co-Living: höchste Miete je Quadratmeter, weil nach Zimmern vermietet wird, dafür hängt viel am Betreiber. Wenn dich jemand fragt, was ihr macht, ist das die Antwort, mehr braucht es am Anfang nicht. Und wenn dich jemand fragt, wo diese Objekte denn stehen: in Investagon, unserer Objektplattform. Im CRM findest du sie unter Immobilien und Objekte in der Seitenleiste, Investagon selbst ist ein eigenes System mit eigener Anmeldung und öffnet in einem eigenen Tab.",
         "profiTipp": "Kommuniziere unsere Spezialisierung selbstbewusst: Wir machen genau drei Dinge, und die richtig gut. Kunden wollen keinen Generalisten, sie wollen jemanden, der sein Produkt kennt. Der Profi-Punkt liegt aber woanders, nämlich beim Wort förderfähig. Prüfe bei jedem Neubauobjekt selbst, ob die Sonderabschreibung nach § 7b tatsächlich greift, und rechne sie nur auf höchstens 4.000 Euro je Quadratmeter Wohnfläche. Bei einem Quadratmeterpreis von 5.000 Euro liegt die geförderte Bemessungsgrundlage rund 20 Prozent unter dem Kaufpreis, und wer das übersieht, nennt eine Steuerentlastung, die um denselben Anteil zu hoch ist. Das ist der häufigste Rechenfehler beim Neubau und er fällt erst beim Steuerbescheid des Kunden auf.",
@@ -4198,7 +4198,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               {
                 "label": "Pflege und Denkmal",
                 "wert": "über 25.000 € Steuerlast",
-                "hinweis": "geringer Managementwunsch, bei MORE Immo aktuell nicht im Fokus",
+                "hinweis": "geringer Managementwunsch, bei OS Immobilien aktuell nicht im Fokus",
                 "farbe": "amber"
               }
             ]
@@ -4293,7 +4293,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Bestands-Eigentumswohnung im sanierten Altbau: planbare Miete, überschaubares Risiko, guter Einstieg. Passt für konservative Angestellte von 35 bis 55 Jahren mit einer Steuerlast von 8.000 bis 15.000 Euro und einem Sicherheitsbedürfnis.",
           "Neubau-Eigentumswohnung mit Sonderabschreibung nach § 7b: Erstbezug, wenig Instandhaltung, starker Steuerhebel in den ersten vier Jahren. Passt für eine Steuerlast über 15.000 Euro, Fokus auf Wertsteigerung und einen Horizont von 20 Jahren und mehr.",
           "WG und Co-Living: höchste Mietrendite, aktiveres Konzept. Passt für renditeorientierte Kunden, jüngere Käufer von 30 bis 45 Jahren, offen für Betreibermodelle.",
-          "Pflege und Denkmal: nur Zielgruppen mit sehr hoher Steuerlast über 25 Tausend Euro und geringem Managementwunsch. Bei MORE Immo aktuell nicht im Fokus, du solltest die Logik aber kennen.",
+          "Pflege und Denkmal: nur Zielgruppen mit sehr hoher Steuerlast über 25 Tausend Euro und geringem Managementwunsch. Bei OS Immobilien aktuell nicht im Fokus, du solltest die Logik aber kennen.",
           "Die drei Schwellen sind keine Vorschrift, sondern das Ergebnis einer Rechnung: Eine Abschreibung wirkt nur so weit, wie überhaupt Steuer gezahlt wird. Wer 10.000 Euro Steuern zahlt, kann keine Entlastung von 12.000 Euro nutzen."
         ],
         "absaetze": [
@@ -4309,11 +4309,11 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           {
             "id": "moreimmo-pitch",
             "titel": "3-Produkte-Pitch schreiben",
-            "beschreibung": "Formuliere in eigenen Worten (max. 60 Sekunden Sprechzeit): Welche 3 Produktwelten macht MORE Immo, für wen ist welches Produkt ideal, und warum sind wir darin stark?",
+            "beschreibung": "Formuliere in eigenen Worten (max. 60 Sekunden Sprechzeit): Welche 3 Produktwelten macht OS Immobilien, für wen ist welches Produkt ideal, und warum sind wir darin stark?",
             "xp": 30,
             "antwortTyp": "textarea",
             "antwortLabel": "Dein 3-Produkte-Pitch",
-            "antwortPlaceholder": "Wir bei MORE Immo sind auf drei Produktwelten spezialisiert: 1) …",
+            "antwortPlaceholder": "Wir bei OS Immobilien sind auf drei Produktwelten spezialisiert: 1) …",
             "mindestZeichen": 250
           },
           {
@@ -5177,7 +5177,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "warum": "Die ehrliche Antwort ist hier die stärkere. Wer ausweicht, macht aus einer bekannten Tatsache ein Geheimnis. Der zweite Satz dreht das Erfolgshonorar in einen Vorteil des Kunden, ohne etwas zu beschönigen. Der dritte ist der eigentliche Beweis, denn er kündigt ein mögliches Nein an, und ein Verkäufer, der ein Nein ankündigt, wird glaubwürdig. Das ist zugleich der Wert Ehrlich rechnen aus Kapitel K in einem Satz."
           }
         ],
-        "quereinsteigerHinweis": "Die Geldfrage einmal ganz einfach: Der Kunde zahlt den Kaufpreis, sonst nichts. Aus diesem Kaufpreis zahlt der Verkäufer oder Bauträger eine Provision an MORE Immo, und MORE Immo zahlt davon deinen Anteil. Du stellst dem Kunden nie eine Rechnung. Und du bekommst dein Geld nicht am Tag des Notartermins: Erst muss beurkundet sein, und dann muss das Geld beim Verkäufer und von dort bei der Gesellschaft angekommen sein. Zwischen Notartermin und Auszahlung liegen deshalb regelmäßig einige Wochen. Rechne von Anfang an damit, sonst planst du mit Geld, das noch nicht fällig ist.",
+        "quereinsteigerHinweis": "Die Geldfrage einmal ganz einfach: Der Kunde zahlt den Kaufpreis, sonst nichts. Aus diesem Kaufpreis zahlt der Verkäufer oder Bauträger eine Provision an OS Immobilien, und OS Immobilien zahlt davon deinen Anteil. Du stellst dem Kunden nie eine Rechnung. Und du bekommst dein Geld nicht am Tag des Notartermins: Erst muss beurkundet sein, und dann muss das Geld beim Verkäufer und von dort bei der Gesellschaft angekommen sein. Zwischen Notartermin und Auszahlung liegen deshalb regelmäßig einige Wochen. Rechne von Anfang an damit, sonst planst du mit Geld, das noch nicht fällig ist.",
         "profiTipp": "Stelle die Geldfrage selbst, bevor der Kunde sie stellt, und zwar am besten direkt nach dem ersten Objektvorschlag. Das ist der Moment, in dem sie ohnehin gedacht wird. Der Nutzen ist doppelt: Du nimmst dem Thema die Spannung und du erfährst gleichzeitig, ob dein Gegenüber überhaupt schon an einen Kauf denkt, denn wer die Frage interessiert weiterverfolgt, ist gedanklich weiter, als er sagt. Zweite Feinheit: Trenne im Kopf sauber zwischen Anspruch und Auszahlung. Der Anspruch entsteht mit Beurkundung und Provisionseingang bei der Gesellschaft, die Auszahlung folgt nach Abrechnungsmitteilung und deiner Rechnung. Bei Bauträgerobjekten mit Zahlung nach Baufortschritt fließt dein Anteil anteilig zu jeder Teilzahlung (§ 4 Absatz 3b des Vertriebspartnervertrags). Wer das nicht weiß, plant ein Neubauprojekt wie einen Bestandsabschluss und liegt bei der eigenen Liquiditätsplanung um Monate daneben.",
         "goldNugget": {
           "titel": "Der Satz, der den Steuerberater des Kunden neutralisiert",
@@ -7893,7 +7893,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "sprungZuAbschnitt": "skript"
         },
         {
-          "frage": "Warum steht die Vorstellung von MOREImmo erst im letzten Schritt?",
+          "frage": "Warum steht die Vorstellung von OS Immobilien erst im letzten Schritt?",
           "optionen": [
             "Weil sie sonst die 15 bis 20 Minuten des Erstgesprächs sprengen würde",
             "Weil erst der Lead erzählt und dann wir, das erzeugt Reziprozität",
@@ -8213,7 +8213,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                     "beschreibung": "Cashflow oder Qualität. Die Erwartung festhalten, bevor sie im Beratungstermin kippt."
                   },
                   {
-                    "label": "Dank + Wer ist MOREImmo?",
+                    "label": "Dank + Wer ist OS Immobilien?",
                     "dauer": "Schritt 16",
                     "beschreibung": "Kurz, wer wir sind, und am Ende eine Frage statt eines Monologs."
                   },
@@ -8276,7 +8276,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 "13. Schufa",
                 "14. Ziele",
                 "15. Erwartungsrahmen, Cashflow gegen Qualität",
-                "16. Dank + Wer ist MOREImmo?",
+                "16. Dank + Wer ist OS Immobilien?",
                 "17. Pattern Interrupt, Einwand vorwegnehmen",
                 "18. Verbindlichkeit, Skala 1 bis 10",
                 "19. Terminvereinbarung",
@@ -8373,7 +8373,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           {
             "titel": "Schritt 1 · Einleitung & Begrüßung",
             "kontext": "Erster Baustein des Einstiegs. Erstkontakt, deshalb noch im Sie.",
-            "text": "\"Guten Tag [Vorname] [Nachname], hier ist [dein Name] von MOREImmo, gut, dass ich Sie erreiche. Sie haben sich über unsere Social-Ads-Anzeige für Immobilien als Kapitalanlage interessiert. Ich brauche fünfzehn Minuten für das, was ich mit Ihnen durchgehen möchte. Haben Sie die jetzt, oder passt Ihnen heute Abend gegen 18 Uhr besser?\"",
+            "text": "\"Guten Tag [Vorname] [Nachname], hier ist [dein Name] von OS Immobilien, gut, dass ich Sie erreiche. Sie haben sich über unsere Social-Ads-Anzeige für Immobilien als Kapitalanlage interessiert. Ich brauche fünfzehn Minuten für das, was ich mit Ihnen durchgehen möchte. Haben Sie die jetzt, oder passt Ihnen heute Abend gegen 18 Uhr besser?\"",
             "warum": "Drei Dinge stecken in diesem Satz. Der Kontext-Anker, also der Hinweis auf die Anzeige, holt den Aha-Moment: Ach ja, stimmt. Ohne ihn verbringt der Lead die ersten dreißig Sekunden damit, sich zu fragen, wer da anruft, und hört nicht zu. Dann der ehrliche Zeitrahmen. Früher stand hier ein paar Minuten, und das war schlicht nicht wahr: Das Skript braucht die Viertelstunde wirklich, und ein Abbruch mitten in der Qualifizierung kostet den Termin ganz. Und drittens die Alternativfrage. Sie macht aus einem Nein einen Rückruftermin statt eines vagen ich melde mich. Wer jetzt keine Zeit hat, hört sofort einen zweiten Vorschlag. Im Skript liegt dafür in diesem Punkt der Knopf Erstgespräch Termin vereinbaren: Er legt den Rückruf als Aufgabe mit Datum und Uhrzeit an und schiebt den Lead nach Follow-Up, damit er nicht in einer Notiz versandet. Zur Sprechweise: Energie in die Stimme, nicht abgelesen klingen. Und qualifizierst du als Vertriebspartner deinen eigenen Lead, zeigt das Skript statt des Anzeigen-Bezugs die allgemeinere Fassung, weil ein selbst angelegter Lead aus jeder Quelle stammen kann."
           },
           {
@@ -8467,7 +8467,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "warum": "Das ist Einwand-Vorwegnahme in Reinform. Der klassische Killer-Einwand im Beratungsgespräch, nämlich warum kostet mich das im Monat etwas, wird hier schon entschärft. Der Berater kann später auf diese Rahmensetzung verweisen, und der Lead hat sie selbst mitbekommen. Das ist das Bogen-Prinzip: Wer den Bogen früh und ruhig spannt, trifft am Ende präzise. Wichtig ist, dass alle drei Hebel ihren Preis mitgenannt bekommen, sonst klingt der Satz wie ein Angebot statt wie eine Abwägung. Die hohe Rendite-Lage kostet Marktbreite, also Wiederverkaufbarkeit und Mieternachfrage. Das Mietkonzept kostet Aufwand, nämlich mehrere Mietverhältnisse, Möblierung, mehr Wechsel und eine Verwaltung, die das beherrschen muss. Und der günstige Einkauf über Sanierungsstau kostet Geld und Zeit nach dem Kauf, denn die aufgeschobene Instandhaltung verschwindet nicht, sie wandert in die Sonderumlage. Dazu kommt eine steuerliche Falle, die genau hier zuschlägt: Wer in den ersten drei Jahren mehr als 15 Prozent der Gebäude-Anschaffungskosten in Instandsetzung steckt, verliert nach § 6 Absatz 1 Nummer 1a Einkommensteuergesetz den sofortigen Abzug für den gesamten Betrag. Wer Sanierungsstau als reine Chance verkauft, verkauft die halbe Wahrheit. Im Skript hältst du darunter mit einem Klick fest, was dem Lead wichtiger ist, also Cashflow, Qualität oder ein Mix. Der Wert landet in der Zusammenfassung des Erstgesprächs, damit der Berater die Erwartung kennt. Und daneben liegt zugeklappt die ausführliche Einwand-Behandlung mit allen drei Hebeln und ihren Abwägungen, falls der Lead nachhakt."
           },
           {
-            "titel": "Schritt 16 · Dank + Wer ist MOREImmo?",
+            "titel": "Schritt 16 · Dank + Wer ist OS Immobilien?",
             "kontext": "Der Vertrauensanker, und zwar erst jetzt. Notizfeld Reaktion auf die Vorstellung.",
             "text": "\"Danke, [Vorname], dass du mir so offen von dir erzählt hast. Kurz, wer wir sind:\n\n• Wir machen ausschließlich Immobilien als Kapitalanlage, kein Eigenheim.\n• Unsere Kunden sind Angestellte, Beamte und Selbstständige mit gutem Einkommen.\n• Wir arbeiten in wachstumsstarken deutschen A- und B-Lagen, mit saniertem Bestand, Neubau im KfW-40-Standard und Co-Living.\n• Wir begleiten dich von der Strategie über die Finanzierung bis nach dem Notar, alles aus einer Hand.\n• Seit [X] Jahren, [Y] begleitete Kunden.\n\nWas davon klingt für dich am ehesten nach dem, was du vorhin beschrieben hast?\"",
             "warum": "Die Reihenfolge ist der ganze Punkt: Erst erzählt der Lead, dann erzählen wir. Das ist Reziprozität. Er hat sich geöffnet, jetzt öffnen wir uns. Umgekehrt, also erst pitchen und dann fragen, wirkt es wie eine Verkaufsshow, und danach antwortet niemand mehr offen auf die Frage nach dem Netto. Zwei Dinge sind gegenüber früher bewusst anders. Erstens ist der Block halb so lang, denn neunzig Sekunden Monolog sind genau der Punkt, an dem ein Zuhörer aussteigt. Zweitens endet er mit einer Frage statt mit einem Punkt, damit aus dem Vortrag wieder ein Gespräch wird. Was der Lead darauf antwortet, gehört in die Notiz, es ist die beste Vorlage für den Einstieg ins Beratungsgespräch. Zwei Warnungen. Die Zeile mit [X] und [Y] ersetzt du durch eure echten Zahlen, und wenn du sie nicht belegen kannst, streichst du die Zeile ersatzlos, statt zu schätzen. Und die dritte Zeile enthält Fachwörter, die der Lead nicht kennt; du solltest sie in einem Halbsatz auflösen können. Sanierter Bestand heißt: eine ältere Wohnung, die vor dem Verkauf umfassend instand gesetzt wurde. KfW 40 ist der Effizienzhaus-Standard der Kreditanstalt für Wiederaufbau, das Gebäude braucht also nur rund 40 Prozent der Energie eines gesetzlichen Referenzgebäudes. Co-Living meint möblierte Wohnungen, deren Zimmer einzeln vermietet werden, jedes mit eigenem Mietvertrag. Sag im Zweifel die deutsche Fassung und nicht die Abkürzung: Dieser Block soll Vertrauen aufbauen und nicht Fachkenntnis beweisen."
@@ -8482,7 +8482,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "titel": "Schritt 18 · Verbindlichkeit (Skala 1–10)",
             "kontext": "Bei jedem fragen, nicht nur im Zweifel. Klick-Skala im Skript.",
             "text": "\"Auf einer Skala von 1 bis 10 – wie ernst ist es dir, das Thema Immobilieninvestment jetzt wirklich anzugehen? 1 = nur mal informieren, 10 = ich will starten, sobald es Sinn ergibt.\"",
-            "warum": "Früher galt diese Frage als Werkzeug für lauwarme Fälle. Das hat sich geändert, und zwar aus einem einfachen Grund: Nur wer bei allen fragt, hat einen Vergleichswert, und ohne Vergleichswert ist eine 6 einfach nur eine Zahl. Werte ab 7 stehen für eine deutlich höhere Show-Wahrscheinlichkeit, Werte von 4 und darunter dafür, offen zu klären, ob ein Termin überhaupt Sinn ergibt oder ein Follow-up in einigen Monaten passender ist. Woher die Schwellen kommen, solltest du wissen, sonst wirken sie willkürlich. Die Skalenfrage stammt aus der motivierenden Gesprächsführung, wo sie als Readiness Ruler eingesetzt wird, um Veränderungsbereitschaft messbar zu machen (Miller und Rollnick, Motivational Interviewing). Die 7 ist dort kein magischer Wert, sondern die Grenze, ab der eine Antwort eindeutig in der oberen Hälfte liegt: Wer 5 oder 6 sagt, meint in aller Regel unentschlossen, wer 7 sagt, hat sich innerlich schon auf ja zubewegt. Die MOREImmo-Schwellen sind ein Erfahrungswert des Hauses und keine Statistik, behandle sie als Gesprächshilfe und nicht als Messgerät. Der stärkste Zug kommt ohnehin nach der Zahl: Frag bei jeder Antwort unter 10 nach, warum es nicht eine Zahl niedriger ist. Dann begründet der Lead seine eigene Motivation, statt dass du sie behauptest."
+            "warum": "Früher galt diese Frage als Werkzeug für lauwarme Fälle. Das hat sich geändert, und zwar aus einem einfachen Grund: Nur wer bei allen fragt, hat einen Vergleichswert, und ohne Vergleichswert ist eine 6 einfach nur eine Zahl. Werte ab 7 stehen für eine deutlich höhere Show-Wahrscheinlichkeit, Werte von 4 und darunter dafür, offen zu klären, ob ein Termin überhaupt Sinn ergibt oder ein Follow-up in einigen Monaten passender ist. Woher die Schwellen kommen, solltest du wissen, sonst wirken sie willkürlich. Die Skalenfrage stammt aus der motivierenden Gesprächsführung, wo sie als Readiness Ruler eingesetzt wird, um Veränderungsbereitschaft messbar zu machen (Miller und Rollnick, Motivational Interviewing). Die 7 ist dort kein magischer Wert, sondern die Grenze, ab der eine Antwort eindeutig in der oberen Hälfte liegt: Wer 5 oder 6 sagt, meint in aller Regel unentschlossen, wer 7 sagt, hat sich innerlich schon auf ja zubewegt. Die OS Immobilien-Schwellen sind ein Erfahrungswert des Hauses und keine Statistik, behandle sie als Gesprächshilfe und nicht als Messgerät. Der stärkste Zug kommt ohnehin nach der Zahl: Frag bei jeder Antwort unter 10 nach, warum es nicht eine Zahl niedriger ist. Dann begründet der Lead seine eigene Motivation, statt dass du sie behauptest."
           },
           {
             "titel": "Schritt 19 · Terminvereinbarung",
@@ -8805,7 +8805,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "absaetze": [
           "Die 60 Minuten sind kein Wettbewerb, sie haben einen praktischen Grund: In dieser Stunde weißt du noch, was der Lead wörtlich gesagt hat. Der Auslöser, die Formulierung beim Motiv, der Nebensatz über die Partnerin. Genau diese Wörter braucht der Berater, und genau sie verschwinden zuerst. Was du eine Stunde später notierst, ist eine Zusammenfassung. Was du am Abend notierst, ist eine Erinnerung an eine Zusammenfassung.",
           "Die 60 Minuten sind nicht dasselbe wie die 24-Stunden-Regel, und die beiden widersprechen sich nicht. Die 24-Stunden-Regel gilt für den Erstkontakt zu einem neuen Lead, also für die Zeit zwischen Anfrage und erstem Anruf. Die 60 Minuten gelten für deine eigene Nachbereitung nach einem geführten Gespräch. Die eine Frist schützt den Lead vor dem Vergessenwerden, die andere schützt das Gespräch vor dem Verblassen. Wenn beide zusammenfallen, geht die Nachbereitung vor: Ein sauber dokumentierter Lead ist mehr wert als ein schnell angerufener zweiter.",
-          "Und damit steht die Beratung. Das nächste Kapitel ist dieser Termin: die Beratungspräsentation MOREImmo, Station für Station, mit den zehn Überleitungen und den Momenten, an denen die Zahlen fallen."
+          "Und damit steht die Beratung. Das nächste Kapitel ist dieser Termin: die Beratungspräsentation OS Immobilien, Station für Station, mit den zehn Überleitungen und den Momenten, an denen die Zahlen fallen."
         ],
         "quereinsteigerHinweis": "Zwei Dinge, die im ersten Monat oft durcheinandergehen. Der Buchungslink ist eine Adresse zu deinem eigenen Kalender: Der Lead klickt sie an und wählt selbst einen freien Termin, deshalb hinterlegst du sie einmalig in den Einstellungen und musst danach nie wieder Termine hin und her schieben. Und ein Follow-up-Task ist eine Aufgabe mit Datum im CRM, keine Notiz. Der Unterschied ist entscheidend: Eine Notiz liest niemand wieder, eine Aufgabe erscheint am gesetzten Tag in deiner Liste. Setz sie immer auf ein konkretes Datum, nicht auf demnächst.",
         "profiTipp": "Die Nachbereitung entscheidet über den No-Show, nicht die Terminvereinbarung. Drei Feinheiten dazu. Erstens die Notiz: Schreib mindestens einen Satz wörtlich mit, in den Worten des Leads, nicht in deinen. Der Berater greift ihn im Beratungsgespräch auf, und der Lead erkennt seinen eigenen Satz sofort wieder. Eine Notiz wie Motiv Steuer nützt niemandem, eine Notiz wie Ich zahle jedes Jahr 14.000 Euro Steuern und sehe nichts davon trägt den ganzen nächsten Termin. Zweitens der Kalendereintrag: Die Prüfung im Postfach im letzten Schritt ist die halbe Miete, die andere Hälfte ist der Kalender selbst. Frag ausdrücklich, ob der Termin jetzt im Kalender steht, nicht nur, ob die Mail angekommen ist. Drittens die Übergabe: Wenn ein anderer Berater den Termin führt, schreib ihm in einem Satz, was du an der Stelle machen würdest, an der es kippen könnte. Damit gibst du nicht nur Daten weiter, sondern eine Einschätzung, und genau die fehlt in den meisten Übergaben.",
@@ -8848,15 +8848,15 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
     "nummer": "5",
     "icon": "presentation",
     "titel": "Beratungsgespräch",
-    "kicker": "Die Beratungspräsentation MOREImmo",
-    "teaser": "Wie du die Beratungspräsentation MOREImmo mit ihren 15 Stationen führst, an jeder Station weißt, was du sagst, und das Gespräch zur gemeinsam ausgefüllten Selbstauskunft bringst.",
-    "ziel": "Du kennst alle 15 Stationen und die drei Einschübe der Beratungspräsentation MOREImmo, sprichst die zehn Überleitungen frei, rechnest Finanzierungsrahmen und Musterrechnung live vor und füllst am Ende die Selbstauskunft gemeinsam mit dem Kunden aus.",
+    "kicker": "Die Beratungspräsentation OS Immobilien",
+    "teaser": "Wie du die Beratungspräsentation OS Immobilien mit ihren 15 Stationen führst, an jeder Station weißt, was du sagst, und das Gespräch zur gemeinsam ausgefüllten Selbstauskunft bringst.",
+    "ziel": "Du kennst alle 15 Stationen und die drei Einschübe der Beratungspräsentation OS Immobilien, sprichst die zehn Überleitungen frei, rechnest Finanzierungsrahmen und Musterrechnung live vor und füllst am Ende die Selbstauskunft gemeinsam mit dem Kunden aus.",
     "abschlusstest": {
       "bestehensquote": 70,
       "anzahl": 10,
       "fragen": [
         {
-          "frage": "Was ist das Ziel der gesamten Beratungspräsentation MOREImmo?",
+          "frage": "Was ist das Ziel der gesamten Beratungspräsentation OS Immobilien?",
           "optionen": [
             "Der Kunde entscheidet sich heute für eines der drei gezeigten Objekte",
             "Die gemeinsam ausgefüllte Selbstauskunft in Station 14",
@@ -9012,7 +9012,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         {
           "frage": "Wen zeigt die Beraterkarte in Station 02?",
           "optionen": [
-            "Immer die Geschäftsführung von MOREImmo, damit die Firma im Vordergrund steht",
+            "Immer die Geschäftsführung von OS Immobilien, damit die Firma im Vordergrund steht",
             "Den angemeldeten Nutzer, also dich, der die Präsentation gerade hält",
             "Einen zufällig gewählten Berater aus dem Team, das Foto wechselt je Aufruf"
           ],
@@ -9048,7 +9048,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
       {
         "id": "ueberblick-dramaturgie",
         "ueberschrift": "Eine Präsentation, 15 Stationen, ein Ziel",
-        "intro": "Im Vertrieb gibt es nur noch eine Präsentation: die Beratungspräsentation MOREImmo. Die drei früheren Fassungen tragen ein Alt-Badge und dienen der Leitung als Nachschlagewerk. Du arbeitest ausschließlich mit der aktuellen.",
+        "intro": "Im Vertrieb gibt es nur noch eine Präsentation: die Beratungspräsentation OS Immobilien. Die drei früheren Fassungen tragen ein Alt-Badge und dienen der Leitung als Nachschlagewerk. Du arbeitest ausschließlich mit der aktuellen.",
         "absaetze": [
           "Die Präsentation ist nach der Gesprächsvorlage aufgebaut: 15 nummerierte Stationen plus drei Einschübe ohne Nummer, nämlich der Preis des Nichtstuns, die Referenzen und Deine Angaben. Die Spannung wächst bewusst: erst Sicherheit geben, denn heute wird nichts entschieden. Dann verstehen. Dann den Preis des Nichtstuns spürbar machen. Dann den Weg zeigen. Ziel ist Station 14, die gemeinsam ausgefüllte Selbstauskunft.",
           "Zwischen den Stationen stehen zehn Überleitungen. Sie sind kein Dekor, sondern die Brücke von einem Gedanken zum nächsten. Ohne sie ist eine Präsentation eine Aneinanderreihung von Folien, mit ihnen wird sie ein Gespräch. Die Überleitungen sind dein Gesprächsgerüst: Wer sie frei sprechen kann, kann die ganze Präsentation frei führen.",
@@ -9062,7 +9062,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "visuals": [
           {
             "timeline": {
-              "titel": "Der rote Faden der Beratungspräsentation MOREImmo",
+              "titel": "Der rote Faden der Beratungspräsentation OS Immobilien",
               "schritte": [
                 {
                   "label": "Heute fällt keine Kaufentscheidung",
@@ -9079,7 +9079,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 {
                   "label": "Wer sitzt hier vor dir",
                   "dauer": "Station 02",
-                  "beschreibung": "MORE Immo in einem Satz, dann du als Person mit Foto und Kontakt."
+                  "beschreibung": "OS Immobilien in einem Satz, dann du als Person mit Foto und Kontakt."
                 },
                 {
                   "label": "Die fünf Fragen an den Kunden",
@@ -9124,7 +9124,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "quereinsteigerHinweis": "Merk dir den Ablauf als Geschichte, nicht als Liste: Sicherheit geben, Nichtstun kostet, wer wir sind, deine fünf Antworten, unser Weg, so verdient die Immobilie Geld, warum nicht Aktien, drei Konzepte, drei Rechnungen, was ein Sparplan leisten müsste, deine Steuer, echte Projekte, unsere Prüfung, deine Worte zurück, Selbstauskunft, Ausblick. Wenn du die Geschichte erzählen kannst, brauchst du keine Folien auswendig zu lernen.",
         "goldNugget": {
           "titel": "Immer aus dem Kundenprofil öffnen",
-          "text": "Der Knopf Beratungspräsentation MOREImmo im Kundenprofil hängt Kundenname, Kunden-ID und Investment-ID an die Adresse. Nur dann werden die Antworten aus Station 03 am Kunden gespeichert und die Selbstauskunft öffnet direkt mit dem richtigen Kunden und Investment. Wer die Präsentation ohne Kontext öffnet, verschenkt genau die Daten, die den zweiten Termin stark machen.",
+          "text": "Der Knopf Beratungspräsentation OS Immobilien im Kundenprofil hängt Kundenname, Kunden-ID und Investment-ID an die Adresse. Nur dann werden die Antworten aus Station 03 am Kunden gespeichert und die Selbstauskunft öffnet direkt mit dem richtigen Kunden und Investment. Wer die Präsentation ohne Kontext öffnet, verschenkt genau die Daten, die den zweiten Termin stark machen.",
           "bullets": [
             "Mit Kontext: Antworten überleben den Termin und stehen beim Folgetermin noch da.",
             "Mit Kontext: Der Selbstauskunft-Knopf übergibt Kunde und Investment automatisch.",
@@ -9158,7 +9158,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "punkte": 15,
             "schritte": [
               "Der Preis des Nichtstuns",
-              "MORE Immo in einem Satz und die Beraterkarte",
+              "OS Immobilien in einem Satz und die Beraterkarte",
               "Die fünf Fragen mit Finanzierungsrahmen",
               "Der gemeinsame Weg in sechs Schritten",
               "Immobilie, Aktien, Tagesgeld im Vergleich",
@@ -9236,7 +9236,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "warum": "Die Formulierung macht aus der Firmenvorstellung eine Passungsfrage. Der Kunde prüft uns, nicht umgekehrt. Das senkt die Abwehr und erhöht die Aufmerksamkeit."
           },
           {
-            "titel": "Station 02: MORE Immo in einem Satz und du als Person",
+            "titel": "Station 02: OS Immobilien in einem Satz und du als Person",
             "kontext": "Sechs Leistungskacheln, darunter deine Beraterkarte mit Foto und Kontakt.",
             "text": "\"Wir begleiten Kunden beim strategischen Vermögensaufbau mit Immobilien. Nicht bei einem Kauf, sondern beim Aufbau. Von der Investmentstrategie über geprüfte Immobilien, Finanzierung und steuerliche Gestaltung bis zu Vermietung und Verwaltung. Und damit du weißt, mit wem du es zu tun hast: Das bin ich. Du hast ab heute einen festen Ansprechpartner, keine Hotline. Vom Erstgespräch bis lange nach dem Notartermin.\"",
             "warumTitel": "Warum die Karte mit deinem Gesicht entscheidend ist",
@@ -10588,7 +10588,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 "optionen": [
                   "Nichts, die Bank verrechnet die Entlastung mit der Rate",
                   "Einen Lohnsteuer-Freibetrag, den er beim Finanzamt beantragt",
-                  "Eine Bescheinigung von MORE Immo für den Arbeitgeber"
+                  "Eine Bescheinigung von OS Immobilien für den Arbeitgeber"
                 ],
                 "korrekt": 1,
                 "aufloesung": "Ohne Freibetrag kommt die Entlastung erst mit dem Steuerbescheid. Der Freibetrag nach § 39a EStG macht aus einer Entlastung auf dem Papier mehr Geld auf dem Konto."
@@ -10961,7 +10961,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 "frage": "Welche Funktion hat der Satz: Ein Nein zum falschen Objekt ist uns lieber als ein Ja, das du in zwei Jahren bereust?",
                 "optionen": [
                   "Er senkt den Widerstand gegen die Selbstauskunft, weil der Ausstieg erlaubt bleibt",
-                  "Er bereitet den Kunden auf eine Absage durch MORE Immo vor",
+                  "Er bereitet den Kunden auf eine Absage durch OS Immobilien vor",
                   "Er ist eine rechtliche Pflichtangabe"
                 ],
                 "korrekt": 0,
@@ -11057,7 +11057,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "hinweis": "Mit eingeblendeten Sprechskripten unter jeder Station, zum Üben"
           },
           {
-            "label": "Beratungspräsentation MOREImmo",
+            "label": "Beratungspräsentation OS Immobilien",
             "to": "/beratungspraesentation-moreimmo",
             "hinweis": "Ohne Skripte, so wie der Kunde sie sieht"
           }
@@ -11477,7 +11477,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "ueberschrift": "Wie wir Objekte auswählen und aussortieren",
         "intro": "Kapitel 5 sagt dem Kunden, ein Vorschlag von uns sei bereits ein Filterergebnis. Dieser Abschnitt füllt diesen Satz mit den Filtern, die es tatsächlich gibt. Fünf Stufen in fester Reihenfolge, weil jede Stufe mehr Arbeit kostet als die davor.",
         "absaetze": [
-          "Bevor gefiltert wird, die Frage, die das Kapitel bisher offen lässt: Wo liegen die Objekte eigentlich? Unsere Objektplattform ist Investagon. Dort steht der Bestand, den wir anbieten, Projekt für Projekt und Einheit für Einheit, mit Kaufpreis, Wohnfläche, Zimmerzahl, Miete und dem Status frei, reserviert oder verkauft. Du erreichst sie im CRM über den Eintrag Objekte in der Seitenleiste unter Immobilien. Der öffnet eine Karte mit dem Knopf Bei Investagon anmelden, und Investagon startet in einem eigenen Tab, während das CRM daneben stehen bleibt. Investagon ist ein eigenständiges System mit eigener Anmeldung, den Zugang bekommst du bei deiner Freischaltung zusammen mit dem CRM-Zugang und deiner MOREImmo-Mailadresse.",
+          "Bevor gefiltert wird, die Frage, die das Kapitel bisher offen lässt: Wo liegen die Objekte eigentlich? Unsere Objektplattform ist Investagon. Dort steht der Bestand, den wir anbieten, Projekt für Projekt und Einheit für Einheit, mit Kaufpreis, Wohnfläche, Zimmerzahl, Miete und dem Status frei, reserviert oder verkauft. Du erreichst sie im CRM über den Eintrag Objekte in der Seitenleiste unter Immobilien. Der öffnet eine Karte mit dem Knopf Bei Investagon anmelden, und Investagon startet in einem eigenen Tab, während das CRM daneben stehen bleibt. Investagon ist ein eigenständiges System mit eigener Anmeldung, den Zugang bekommst du bei deiner Freischaltung zusammen mit dem CRM-Zugang und deiner OS Immobilien-Mailadresse.",
           "Und die Arbeitsteilung dahinter, weil sie den ganzen Rest dieses Kapitels ordnet: Investagon ist die Quelle, das CRM ist die Akte. Gesucht, verglichen und aussortiert wird in Investagon. Geführt wird der Kunde im CRM. Sobald feststeht, welche Einheit du vorschlägst, trägst du sie im Kundenprofil unter Objektauswahl ein, mit Anschrift, Wohneinheit, Kaufpreis, Fläche, Zimmern, Etage und Miete. Ab diesem Moment rechnet das CRM damit. Die Wirtschaftlichkeitsberechnung, der Cashflow, das Steuer-Cockpit deines Kunden, die Reservierungsvereinbarung und der Notar-Aufnahmebogen lesen alle aus dieser einen Eintragung, statt dieselbe Adresse ein zweites und drittes Mal abzufragen. Deshalb lohnt es sich, sie einmal vollständig zu machen statt dreimal halb.",
           "Filter 1, die Hartfilter. Kaufpreiskorridor und Konzept aus dem Suchprofil, dazu die Ausschlüsse des Kunden. Was hier durchfällt, wird nicht diskutiert und nicht gezeigt. In Investagon sind das die Filter über der Objektliste, und die Werte, die du dort einträgst, sind genau die Zahlen aus dem Suchprofil. Diese Stufe kostet Sekunden und nimmt neunzig Prozent der Arbeit weg.",
           "Filter 2, der Standort. Makro heißt Stadt und Region: Einwohnerentwicklung, Arbeitsmarkt, Leerstandsquote, Mietniveau im Verhältnis zum Kaufpreis. Mikro heißt Straße und Haus: Anbindung, Lärm, Nachbarschaft, Blick, Erdgeschoss oder viertes Obergeschoss ohne Aufzug. Und Mikro schlägt Makro. Eine gute Stadt mit einer schlechten Straße bleibt eine schlechte Adresse, umgekehrt gilt das nicht. Prüfbar wird die angesetzte Miete über den Mietspiegel der Gemeinde, den es als einfachen und als qualifizierten Mietspiegel gibt (§ 558c und § 558d Bürgerliches Gesetzbuch). Liegt die angesetzte Miete deutlich über der ortsüblichen Vergleichsmiete, trägt die Rendite nicht die Wohnung, sondern eine Annahme.",
@@ -11592,7 +11592,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "warum": "Wer anbietet, den Fund des Kunden ernsthaft zu prüfen, kann nicht mehr im Verdacht stehen, nur die eigene Ware zu verteidigen. Und du gewinnst die Rechnung fast immer, weil du sie vollständig führst, mit Nebenkosten, Rücklage und Nettorendite, während das Portal nur einen Preis zeigt."
           }
         ],
-        "quereinsteigerHinweis": "Investagon ist unsere Objektplattform, also das Programm, in dem die Objekte stehen, die wir verkaufen. Es gehört nicht zum CRM, sondern ist ein eigenes System mit eigener Anmeldung, und du bekommst den Zugang bei deiner Freischaltung zusammen mit dem CRM und deiner MOREImmo-Mailadresse. Du erreichst es im CRM über Immobilien und Objekte in der Seitenleiste, ein Knopf bringt dich hin, das CRM bleibt in seinem Tab geöffnet. Dort findest du die Projekte mit ihren Einheiten, also Kaufpreis, Wohnfläche, Zimmerzahl, Miete und den Status frei, reserviert oder verkauft. Einen zweiten Weg dorthin gibt es unter Präsentation im Register Objektbeispiele, dort steht der Link zu Investagon direkt neben den aktuellen Objekten im CRM. Merksatz für den Anfang: Objekte suchst du in Investagon, Kunden führst du im CRM. Makrolage ist die Stadt oder Region, Mikrolage die konkrete Straße und die Lage im Haus. Der Mietspiegel ist eine Übersicht der Gemeinde über die ortsüblichen Mieten, nach Baujahr, Größe und Ausstattung geordnet, und er ist die Grundlage für jede Mieterhöhung. Leerstandsquote heißt: Anteil der Wohnungen am Ort, die niemand mietet. Unter zwei Prozent gilt ein Markt als angespannt, über fünf Prozent wird es für Vermieter unangenehm. Die Beschlusssammlung ist eine fortlaufende Liste aller Beschlüsse der Eigentümergemeinschaft, sie liegt beim Verwalter und ist die einzige Stelle, an der du siehst, was schon entschieden ist. Und Sonderumlage bedeutet: Die Gemeinschaft braucht mehr Geld als in der Rücklage liegt und fordert es von allen Eigentümern nach Anteilen ein.",
+        "quereinsteigerHinweis": "Investagon ist unsere Objektplattform, also das Programm, in dem die Objekte stehen, die wir verkaufen. Es gehört nicht zum CRM, sondern ist ein eigenes System mit eigener Anmeldung, und du bekommst den Zugang bei deiner Freischaltung zusammen mit dem CRM und deiner OS Immobilien-Mailadresse. Du erreichst es im CRM über Immobilien und Objekte in der Seitenleiste, ein Knopf bringt dich hin, das CRM bleibt in seinem Tab geöffnet. Dort findest du die Projekte mit ihren Einheiten, also Kaufpreis, Wohnfläche, Zimmerzahl, Miete und den Status frei, reserviert oder verkauft. Einen zweiten Weg dorthin gibt es unter Präsentation im Register Objektbeispiele, dort steht der Link zu Investagon direkt neben den aktuellen Objekten im CRM. Merksatz für den Anfang: Objekte suchst du in Investagon, Kunden führst du im CRM. Makrolage ist die Stadt oder Region, Mikrolage die konkrete Straße und die Lage im Haus. Der Mietspiegel ist eine Übersicht der Gemeinde über die ortsüblichen Mieten, nach Baujahr, Größe und Ausstattung geordnet, und er ist die Grundlage für jede Mieterhöhung. Leerstandsquote heißt: Anteil der Wohnungen am Ort, die niemand mietet. Unter zwei Prozent gilt ein Markt als angespannt, über fünf Prozent wird es für Vermieter unangenehm. Die Beschlusssammlung ist eine fortlaufende Liste aller Beschlüsse der Eigentümergemeinschaft, sie liegt beim Verwalter und ist die einzige Stelle, an der du siehst, was schon entschieden ist. Und Sonderumlage bedeutet: Die Gemeinschaft braucht mehr Geld als in der Rücklage liegt und fordert es von allen Eigentümern nach Anteilen ein.",
         "profiTipp": "Die Erhaltungsrücklage ist die am häufigsten falsch gelesene Zahl der ganzen Auswahl, und zwar in beide Richtungen. Ein hoher Stand kann heißen, dass gut gewirtschaftet wurde, oder dass seit zwölf Jahren nichts gemacht wurde und alles noch bevorsteht. Deshalb liest du den Stand nie allein, sondern immer neben dem letzten Beschluss über eine Maßnahme und neben dem Baujahr der teuersten Bauteile, also Dach, Fenster, Heizung, Leitungen und Fassade. Zwei Feinheiten dazu, die im Kundengespräch auffallen, weil sie fast niemand kennt. Erstens gehört die Rücklage der Gemeinschaft, nicht dem Käufer, denn die Gemeinschaft ist selbst rechtsfähig (§ 9a Absatz 1 Wohnungseigentumsgesetz), und die angemessene Erhaltungsrücklage ist ihr seit der Reform ausdrücklich vorgeschrieben (§ 19 Absatz 2 Nummer 4 Wohnungseigentumsgesetz). Der Käufer erwirbt also keinen Geldbetrag, sondern einen Anteil an einem Vermögen, über das er nicht allein verfügt. Zweitens hat der Bundesfinanzhof mit Urteil vom 16. September 2020 (Aktenzeichen II R 49/17) entschieden, dass der auf die Rücklage entfallende Kaufpreisanteil die Bemessungsgrundlage der Grunderwerbsteuer nicht mindert. Die frühere Praxis, ihn herauszurechnen, gilt damit nicht mehr. Wenn ein Steuerberater das im Termin anders sagt, kennst du das Datum. Und drei Gewohnheiten für die Suche selbst. Erstens: Filtere zuerst über den Preis, erst danach über alles andere. Der Kaufpreiskorridor nimmt in einem Schritt den größten Teil weg, und jeder weitere Filter arbeitet danach auf einer kurzen Liste statt auf dem gesamten Bestand. Zweitens: Notiere dir zu jeder Einheit, die in die engere Wahl kommt, das Projekt und die Bezeichnung der Wohneinheit im Wortlaut. Du brauchst beide dreimal wieder, beim Eintrag im CRM, in der Reservierungsvereinbarung und bei der Bank, und ein Projekt mit zwölf ähnlich geschnittenen Einheiten verzeiht keine ungefähre Angabe. Drittens die Feinheit, die trügt: Die Angaben auf einer Objektplattform sind so gut wie das, was der Anbieter dort eingetragen hat, nicht besser. Der Umfang an Bildern und Unterlagen ist von Objekt zu Objekt völlig verschieden, Bezeichnungen von Wohneinheiten fehlen manchmal ganz, und auch eine Postleitzahl ist schon einmal falsch gewesen. Prüf Anschrift und Einheitenbezeichnung an einer zweiten Quelle, bevor sie in ein Dokument wandern, das der Kunde unterschreibt. Eine falsche Postleitzahl setzt das Objekt auf jeder Karte in eine andere Stadt, und dem Kunden fällt das vor dir auf.",
         "goldNugget": {
           "titel": "Der Filter, den niemand einbaut: der Wiederverkauf",
@@ -17981,7 +17981,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Pipeline-Volumen und Umsatzpotenzial in den Statistiken: Leads in Pipeline ist die Anzahl der offenen Kontakte, Gesamtpotenzial die Summe ihrer Kaufpreise, Gewichteter Forecast dieselbe Summe multipliziert mit der Wahrscheinlichkeit der jeweiligen Stufe, etwa 70 Prozent bei Reservierung und 90 Prozent beim Notartermin.",
           "Conversion Rates in den Statistiken: der Funnel Lead bis Abschluss zeigt je Stufe die Conversion zur vorherigen Stufe. Das ist die Größe, die im Vertrieb Beratungsquote heißt.",
           "Closing-Rate: Anteil der Kontakte, die Reservierung oder Notartermin erreicht haben. Das ist die Größe, die im Vertrieb Notarquote heißt. Daneben steht die SA-Rate, der Anteil mit unterschriebener Selbstauskunft.",
-          "Setter-Performance: Auf der Setter-Kachel im Dashboard ist Conversion der Anteil der Leads mit gebuchtem Termin an allen Leads, also Termine geteilt durch Leads. In den Conversion Rates zeigt die Spalte Setter zusätzlich, von welcher Setterin die Leads eines Beraters stammen. Setterin ist dabei eine Rolle im CRM und keine Stelle im Haus: MOREImmo arbeitet derzeit ohne eigene Setter, in der Regel steht dort dein eigener Name. Wann sich eine eigene Setterin rechnet, steht in Kapitel 16.",
+          "Setter-Performance: Auf der Setter-Kachel im Dashboard ist Conversion der Anteil der Leads mit gebuchtem Termin an allen Leads, also Termine geteilt durch Leads. In den Conversion Rates zeigt die Spalte Setter zusätzlich, von welcher Setterin die Leads eines Beraters stammen. Setterin ist dabei eine Rolle im CRM und keine Stelle im Haus: OS Immobilien arbeitet derzeit ohne eigene Setter, in der Regel steht dort dein eigener Name. Wann sich eine eigene Setterin rechnet, steht in Kapitel 16.",
           "Auswertungen: aggregierte Ansicht für den Team-Kontext und historische Vergleiche.",
           "Zielplanung: dein aktueller Zielstatus für Monat, Quartal und Jahr.",
           "Wettbewerb: Ranking im Team, motiviert und zeigt, wo es sich lohnt nachzufragen."
@@ -20784,7 +20784,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "frage": "Wie viele Beratungspräsentationen klickst du in Woche 4 bis 6 durch?",
           "optionen": [
             "Drei verschiedene Präsentationen, je eine für sanierten Bestand, WG und Co-Living und Neubau KfW 40 QNG",
-            "Eine, die Beratungspräsentation MOREImmo, dafür in allen drei Stellungen des Umschalters in Station 09",
+            "Eine, die Beratungspräsentation OS Immobilien, dafür in allen drei Stellungen des Umschalters in Station 09",
             "Fünf, eine je Konzept, weil jedes Konzept eine eigene Musterrechnung mitbringt"
           ],
           "korrekt": 1,
@@ -21373,7 +21373,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "ueberschrift": "Woche 4 bis 6, erste Beratungen",
         "intro": "Drei Wochen, ein Ziel: Du führst die Beratungspräsentation, statt von ihr geführt zu werden.",
         "absaetze": [
-          "Zur Zahl der Präsentationen, die dieses Kapitel bisher falsch geführt hat. Im Vertrieb gibt es nur noch eine Präsentation, die Beratungspräsentation MOREImmo. Die drei früheren Fassungen tragen ein Alt-Kennzeichen und dienen der Leitung als Nachschlagewerk. Was es dreimal gibt, ist etwas anderes: der Umschalter in Station 09 mit den drei Stellungen Sanierter Bestand, WG und Co-Living sowie Neubau KfW 40 QNG. Alle drei gehören einmal komplett durchgeklickt, weil jede eine eigene, vollständig durchgerechnete Wohnung hat.",
+          "Zur Zahl der Präsentationen, die dieses Kapitel bisher falsch geführt hat. Im Vertrieb gibt es nur noch eine Präsentation, die Beratungspräsentation OS Immobilien. Die drei früheren Fassungen tragen ein Alt-Kennzeichen und dienen der Leitung als Nachschlagewerk. Was es dreimal gibt, ist etwas anderes: der Umschalter in Station 09 mit den drei Stellungen Sanierter Bestand, WG und Co-Living sowie Neubau KfW 40 QNG. Alle drei gehören einmal komplett durchgeklickt, weil jede eine eigene, vollständig durchgerechnete Wohnung hat.",
           "Die fünf Kern-Slides waren bisher nirgends benannt. Es sind die, an denen der Kunde selbst denkt oder spricht: der Preis des Nichtstuns, Station 03 mit den fünf Fragen, Station 04 mit dem gemeinsamen Weg, Station 10 mit der Immobilienschere und dem Regler und Station 14 mit der Selbstauskunft. Vier davon sind die dunklen Abschnitte, die Kapitel 5 ausdrücklich als Höhepunkte des Gesprächs benennt. Die fünfte ist Station 03, weil dort der Kunde antwortet und nicht du.",
           "Und die Aufgabe, die in diesem Kapitel nie erfüllbar war: Die Top 10 Einwände aus Kapitel 5 gibt es nicht. Kapitel 5 enthält fünf Standardfragen, im Abschnitt Station 13: Was, wenn der Mieter nicht zahlt? Was, wenn ich meinen Job verliere? Was, wenn ich verkaufen muss? Wer zahlt das Dach? Was, wenn die Immobilie an Wert verliert? Sie folgen alle demselben Muster: erst das echte Risiko zugeben, dann die konkrete Absicherung zeigen, im Zweifel abraten. Genau dieses Muster sollst du können, nicht die fünf Antworten auswendig. Die sechzehn Einwände zur Objektauswahl stehen in Kapitel 6 und kommen erst in Woche 7."
         ],
@@ -21391,7 +21391,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Durchgehend in allen drei Wochen: täglich drei Ansprachen nach der 3-2-1-Regel, davon mindestens drei neue warme Erstansprachen je Woche"
         ],
         "bullets": [
-          "Eine Präsentation, die Beratungspräsentation MOREImmo. Die drei alten Fassungen sind gekennzeichnet und nicht für den Vertrieb.",
+          "Eine Präsentation, die Beratungspräsentation OS Immobilien. Die drei alten Fassungen sind gekennzeichnet und nicht für den Vertrieb.",
           "Drei Stellungen im Umschalter der Station 09: Sanierter Bestand, WG und Co-Living, Neubau KfW 40 QNG. Alle drei einmal komplett durchklicken.",
           "Die fünf Kern-Slides: Preis des Nichtstuns, Station 03 die fünf Fragen, Station 04 der gemeinsame Weg, Station 10 die Immobilienschere mit dem Regler, Station 14 die Selbstauskunft.",
           "Kapitel 5 enthält fünf Standardfragen, keine Top 10. Sie stehen im Abschnitt Station 13.",
@@ -21409,7 +21409,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               {
                 "label": "Beratungspräsentation",
                 "wert": "genau 1",
-                "hinweis": "die Beratungspräsentation MOREImmo, 15 Stationen plus drei Einschübe",
+                "hinweis": "die Beratungspräsentation OS Immobilien, 15 Stationen plus drei Einschübe",
                 "farbe": "primary"
               },
               {
@@ -21452,7 +21452,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "hinweis": "Mit Sprechskript unter jeder Station, zum Üben allein"
           },
           {
-            "label": "Beratungspräsentation MOREImmo",
+            "label": "Beratungspräsentation OS Immobilien",
             "to": "/beratungspraesentation-moreimmo"
           },
           {
@@ -25866,12 +25866,12 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         {
           "frage": "Wessen Modell beschreibt dieses Kapitel?",
           "optionen": [
-            "Den Ablauf, mit dem MOREImmo intern arbeitet und den das CRM für alle Setter so vorsieht",
+            "Den Ablauf, mit dem OS Immobilien intern arbeitet und den das CRM für alle Setter so vorsieht",
             "Eine Möglichkeit für dein eigenes Geschäft, auf deine Rechnung und dein eigenes Risiko",
             "Eine Vorgabe, die jeder Vertriebspartner ab einer bestimmten Größe umsetzen muss"
           ],
           "korrekt": 1,
-          "aufloesung": "Kapitel 16 beschreibt keinen Ablauf der Gesellschaft. MOREImmo arbeitet derzeit ohne Setter. Was hier steht, ist eine Empfehlung dafür, wie du dein eigenes Geschäft über deine eigene Arbeitszeit hinaus aufstellen kannst. Vertrag, Lohn, Haftung und Risiko liegen bei dir.",
+          "aufloesung": "Kapitel 16 beschreibt keinen Ablauf der Gesellschaft. OS Immobilien arbeitet derzeit ohne Setter. Was hier steht, ist eine Empfehlung dafür, wie du dein eigenes Geschäft über deine eigene Arbeitszeit hinaus aufstellen kannst. Vertrag, Lohn, Haftung und Risiko liegen bei dir.",
           "sprungZuAbschnitt": "wann-skalieren"
         },
         {
@@ -26006,7 +26006,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
     "icon": "rocket",
     "titel": "Skalierung und Team-Aufbau (Profi)",
     "kicker": "Vom Einzelkämpfer zum Team-Leader",
-    "teaser": "So könnte es aussehen, wenn du dein Geschäft über deine eigene Arbeitszeit hinaus wachsen lässt. Alles hier ist eine Möglichkeit für dich als Unternehmer, keine Vorgabe der Gesellschaft: MOREImmo arbeitet derzeit ohne Setter. Wer hier jemanden einstellt, bist du, auf eigene Rechnung und eigenes Risiko.",
+    "teaser": "So könnte es aussehen, wenn du dein Geschäft über deine eigene Arbeitszeit hinaus wachsen lässt. Alles hier ist eine Möglichkeit für dich als Unternehmer, keine Vorgabe der Gesellschaft: OS Immobilien arbeitet derzeit ohne Setter. Wer hier jemanden einstellt, bist du, auf eigene Rechnung und eigenes Risiko.",
     "ziel": "Du kannst einschätzen, ob und wann sich eine eigene Stelle für dich rechnet, du weißt, was sie wirklich kostet, du kennst die Regeln, die für Beschäftigte gelten, und du kannst unterscheiden, ob eine Setterin unterperformt oder ob ihr schlicht die Leads fehlen.",
     "sections": [
       {
@@ -26136,7 +26136,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           }
         ],
         "ueberschrift": "Woran du merkst, dass es Zeit für Unterstützung ist",
-        "intro": "Vorweg die Einordnung für das ganze Kapitel: Was hier steht, ist kein Ablauf der Gesellschaft, sondern eine Möglichkeit für dein eigenes Geschäft. MOREImmo arbeitet derzeit ohne Setter. Wenn du jemanden einstellst, bist du der Arbeitgeber, mit allem, was daran hängt.",
+        "intro": "Vorweg die Einordnung für das ganze Kapitel: Was hier steht, ist kein Ablauf der Gesellschaft, sondern eine Möglichkeit für dein eigenes Geschäft. OS Immobilien arbeitet derzeit ohne Setter. Wenn du jemanden einstellst, bist du der Arbeitgeber, mit allem, was daran hängt.",
         "absaetze": [
           "Skalieren beginnt nicht mit einer Einstellung, sondern mit einer Rechnung. Eine Vollzeitstelle kostet rund 4.250 Euro im Monat, und das ist die Zahl einschließlich Arbeitgeberanteil, nicht der Bruttolohn. Damit diese Stelle eine schwache Phase übersteht, soll sie höchstens ein Drittel des laufenden Provisions-Cashflows binden. Daraus folgen die 15.000 Euro, und daraus folgt auch, warum eine gute Zahl in zwei Monaten nicht genügt: Die Provision fließt nach Kaufpreisfälligkeit, der Lohn dagegen jeden Monat.",
           "Der zweite Grund für die 80 Prozent Auslastung ist derselbe: Das Onboarding kostet rund vier Wochen. In dieser Zeit bringt die Stelle nichts ein und du investierst täglich Zeit. Wer erst bei 100 Prozent einstellt, hat diese Zeit nicht und macht aus der Einarbeitung eine Formalie."
@@ -26467,7 +26467,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           }
         ],
         "ueberschrift": "Eine eigene Setterin, so könnte es aussehen",
-        "intro": "Kurz und ohne Anspruch auf Vollständigkeit: Was eine eigene Setterin täte, was sie kostet und worauf du achtest. Nichts davon ist ein Ablauf der Gesellschaft, MOREImmo arbeitet derzeit ohne Setter. Es ist ein Vorschlag für deinen eigenen Betrieb, und du entscheidest, ob und wie du ihn zuschneidest.",
+        "intro": "Kurz und ohne Anspruch auf Vollständigkeit: Was eine eigene Setterin täte, was sie kostet und worauf du achtest. Nichts davon ist ein Ablauf der Gesellschaft, OS Immobilien arbeitet derzeit ohne Setter. Es ist ein Vorschlag für deinen eigenen Betrieb, und du entscheidest, ob und wie du ihn zuschneidest.",
         "absaetze": [
           "Die Aufgabe ist eng und deshalb überhaupt delegierbar: Sie ruft deine eigenen Leads an, prüft im Gespräch, ob Interesse und Grundvoraussetzungen da sind, und setzt den Termin für dein Beratungsgespräch. Sie berät nicht, sie stellt keine Objekte vor und sie nennt keine Zahlen zu Kaufpreis, Miete, Rendite oder Steuer. Genau diese Enge ist der Grund, warum die Rolle mit einem Skript beschreibbar ist und warum sie in wenigen Wochen einzuarbeiten ist.",
           "Woher die Leads kommen, bleibt deine Aufgabe. Das ist der Punkt, an dem die meisten Erwartungen scheitern: Eine Setterin macht aus vorhandenen Leads Termine, sie erzeugt keine neuen. Was das in Zahlen heißt, steht im nächsten Abschnitt.",
@@ -27336,7 +27336,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "KPI: Key Performance Indicator, eine Kennzahl, an der Leistung gemessen wird.",
           "StB: Steuerberater. vv-GmbH: vermögensverwaltende GmbH.",
           "T€: Tausend Euro. p. a.: pro Jahr. i. d. R.: in der Regel.",
-          "Setterin oder Setter: die Person, die Kontakte anspricht, vorqualifiziert und Termine für die Beratung bucht. Sie berät nicht und verkauft nicht. Das ist eine Rolle im CRM, keine Stelle im Haus: MOREImmo arbeitet derzeit ohne eigene Setter, in der Regel übernimmt der Vertriebspartner die Rolle selbst.",
+          "Setterin oder Setter: die Person, die Kontakte anspricht, vorqualifiziert und Termine für die Beratung bucht. Sie berät nicht und verkauft nicht. Das ist eine Rolle im CRM, keine Stelle im Haus: OS Immobilien arbeitet derzeit ohne eigene Setter, in der Regel übernimmt der Vertriebspartner die Rolle selbst.",
           "Ops: Kurzform von Operations, die Person im Team für Dokumente, Bonität und Terminkoordination.",
           "Investagon: kein Kürzel, sondern der Name unserer Objektplattform. Das eigenständige System mit dem Objektbestand, im CRM erreichbar über Immobilien und Objekte in der Seitenleiste."
         ],
@@ -27991,7 +27991,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 "aufloesung": "3,0 mal 1,19 ergibt 3,57. Einen gesetzlichen Satz gibt es nicht, die Courtage ist frei vereinbar."
               },
               {
-                "aussage": "Bei MOREImmo-Objekten fällt für den Käufer meist keine Courtage an.",
+                "aussage": "Bei OS Immobilien-Objekten fällt für den Käufer meist keine Courtage an.",
                 "stimmt": true,
                 "aufloesung": "Deshalb rechnest du beim Kunden in der Regel mit der Spanne ohne Makler."
               },
@@ -28057,7 +28057,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Notar: rund 1,5 Prozent vom Kaufpreis, einschließlich Beurkundung, Vollzug, Betreuung und Grundschuldbestellung. Grundlage ist das Gerichts- und Notarkostengesetz, die Gebühr richtet sich nach dem Geschäftswert.",
           "Grundbuch: rund 0,5 Prozent vom Kaufpreis, für Auflassungsvormerkung, Eigentumsumschreibung und Grundschuldeintragung.",
           "Zusammen rund 2,0 Prozent als grobe Rechengröße. Der Prozentsatz sinkt mit steigendem Kaufpreis, weil die Gebührentabelle unterproportional steigt.",
-          "Makler: 3,57 Prozent, nämlich 3,0 Prozent Courtage plus 19 Prozent Umsatzsteuer. Ein gesetzlicher Satz existiert nicht, die Courtage ist frei vereinbar. Bei MOREImmo-Objekten fällt sie für den Käufer meist nicht an.",
+          "Makler: 3,57 Prozent, nämlich 3,0 Prozent Courtage plus 19 Prozent Umsatzsteuer. Ein gesetzlicher Satz existiert nicht, die Courtage ist frei vereinbar. Bei OS Immobilien-Objekten fällt sie für den Käufer meist nicht an.",
           "Kaufnebenkosten OHNE Makler: 5,5 bis 8,5 Prozent, je nach Bundesland.",
           "Kaufnebenkosten MIT Makler: 9,1 bis 12,1 Prozent. Nur für diesen Fall gilt die oft genannte Faustregel von 8 bis 12 Prozent.",
           "Beim Verbraucherkauf einer Wohnung oder eines Einfamilienhauses: Textform des Maklervertrags (§ 656a BGB), hälftige Teilung bei Doppeltätigkeit (§ 656c BGB), Begrenzung der Übernahme durch den Käufer (§ 656d BGB).",
@@ -28658,7 +28658,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Nebenstufen: EG NoShow und BG NoShow. Sie sind kein Fortschritt und bleiben beim zugehörigen Gespräch. BG NoShow heilt sich selbst, sobald wieder ein Beratungstermin in der Zukunft steht.",
           "Sonderzustände: Bestandskunden Import, Archiviert, Verloren. Kein laufender Vorgang, keine Automatik fasst sie an.",
           "Auslöser Erstgespräch: Die Setterin klickt „Erstgespräch gebucht und Lead an Vertriebspartner zuweisen“, oder der Anruf wird mit dem Ergebnis „Erstgespräch vereinbart“ samt Termin protokolliert.",
-          "Setterin heißt hier die Rolle im CRM, nicht eine Stelle im Haus. MOREImmo arbeitet derzeit ohne eigene Setter, die Rolle übernimmt in der Regel der Vertriebspartner selbst. Er klickt dann denselben Knopf. Wer sich eine eigene Setterin leistet, findet die Rechnung dazu in Kapitel 16.",
+          "Setterin heißt hier die Rolle im CRM, nicht eine Stelle im Haus. OS Immobilien arbeitet derzeit ohne eigene Setter, die Rolle übernimmt in der Regel der Vertriebspartner selbst. Er klickt dann denselben Knopf. Wer sich eine eigene Setterin leistet, findet die Rechnung dazu in Kapitel 16.",
           "Auslöser Beratungsgespräch: Der Termin wird in der Karte „Beratungsgespräch vereinbaren“ im Investment-Reiter eingetragen. Nach dem Termin das Ergebnis setzen: erschienen, No-Show oder verschoben.",
           "Auslöser Selbstauskunft: Die Selbstauskunft liegt beim Kunden zur Unterschrift.",
           "Auslöser Objektauswahl: Die Selbstauskunft ist unterschrieben. Nicht die Bonitätsfreigabe.",

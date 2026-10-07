@@ -200,7 +200,7 @@ export const MOBILE_SCAN_TEXTE: ZweiSprachen<MobileScanTexte> = {
     introPunkte: [
       "Photograph each document directly with your phone camera",
       "Documents with several pages are automatically merged into one PDF",
-      "Everything is sent securely and in real time to your contact at MOREImmo",
+      "Everything is sent securely and in real time to your contact at OS Immobilien",
     ],
     scanStarten: "Start scan",
     sicher: "Secure connection · Session valid for 1 hour",

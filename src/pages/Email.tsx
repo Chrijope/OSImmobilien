@@ -297,7 +297,7 @@ const EmailSeite = () => {
     const newEmail: Omit<Email, "benutzer_id"> = {
       id: `sent-${Date.now()}`,
       absender_name: "Christian Peetz",
-      absender_email: "c.peetz@moreimmo.de",
+      absender_email: "os@os-immobilien.com",
       betreff: composeSubject,
       inhalt: composeBody,
       vorschau: composeBody.slice(0, 80) + "...",
@@ -315,7 +315,7 @@ const EmailSeite = () => {
     const draft: Omit<Email, "benutzer_id"> = {
       id: `draft-${Date.now()}`,
       absender_name: "Christian Peetz",
-      absender_email: "c.peetz@moreimmo.de",
+      absender_email: "os@os-immobilien.com",
       betreff: composeSubject || "(Kein Betreff)",
       inhalt: composeBody,
       vorschau: composeBody.slice(0, 80) || "(Leerer Entwurf)",
@@ -630,7 +630,7 @@ const EmailSeite = () => {
           <div className="space-y-3 mt-2">
             <div className="flex items-center gap-2">
               <Label className="w-12 text-xs text-muted-foreground">Von</Label>
-              <Input value="c.peetz@moreimmo.de" disabled className="bg-muted/30 text-sm" />
+              <Input value="os@os-immobilien.com" disabled className="bg-muted/30 text-sm" />
             </div>
             <div className="flex items-center gap-2">
               <Label className="w-12 text-xs text-muted-foreground">An</Label>

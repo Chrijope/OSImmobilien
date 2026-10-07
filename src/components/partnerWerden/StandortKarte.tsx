@@ -1,6 +1,6 @@
 /**
  * Die Deutschlandkarte mit unseren Standorten, übernommen von der Website
- * more.immo (`MOREImmo-Website/src/components/StandortSection.tsx`, gelesen am
+ * osimmobilien.netlify.app (`OS Immobilien-Website/src/components/StandortSection.tsx`, gelesen am
  * 30.09.2026): dunkle Bundesländer mit Verlauf und Glanz, Bayern in Blau mit
  * Leuchten, Nadeln hell auf Bayern und dunkel außerhalb, dazu Namensschilder.
  * Die Pfade stehen in `assets/deutschlandLaender.ts`, die Punkte in
@@ -95,31 +95,31 @@ export default function StandortKarte({
             <stop offset="100%" stopColor="white" stopOpacity="0" />
           </linearGradient>
           <linearGradient id={`${id}-bayern`} x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="hsl(210 95% 65%)" />
-            <stop offset="55%" stopColor="hsl(214 90% 50%)" />
-            <stop offset="100%" stopColor="hsl(220 80% 35%)" />
+            <stop offset="0%" stopColor="hsl(157 71% 42%)" />
+            <stop offset="55%" stopColor="hsl(157 68% 31%)" />
+            <stop offset="100%" stopColor="hsl(157 60% 20%)" />
           </linearGradient>
           <linearGradient id={`${id}-bayern-glanz`} x1="0%" y1="0%" x2="0%" y2="60%">
             <stop offset="0%" stopColor="white" stopOpacity="0.5" />
             <stop offset="100%" stopColor="white" stopOpacity="0" />
           </linearGradient>
           <radialGradient id={`${id}-nadel-hell`} cx="50%" cy="30%" r="65%">
-            <stop offset="0%" stopColor="#B8E2FF" />
-            <stop offset="100%" stopColor="#88CFFF" />
+            <stop offset="0%" stopColor="#8BEEC9" />
+            <stop offset="100%" stopColor="#30E19E" />
           </radialGradient>
           <radialGradient id={`${id}-nadel-dunkel`} cx="50%" cy="30%" r="65%">
             <stop offset="0%" stopColor="hsl(220 25% 14%)" />
             <stop offset="100%" stopColor="hsl(220 30% 8%)" />
           </radialGradient>
           <radialGradient id={`${id}-nadel-aktiv`} cx="50%" cy="30%" r="65%">
-            <stop offset="0%" stopColor="hsl(210 95% 70%)" />
-            <stop offset="100%" stopColor="hsl(220 80% 40%)" />
+            <stop offset="0%" stopColor="hsl(157 71% 45%)" />
+            <stop offset="100%" stopColor="hsl(157 60% 23%)" />
           </radialGradient>
           <filter id={`${id}-schatten`} x="-50%" y="-50%" width="200%" height="200%">
             <feDropShadow dx="0" dy="3" stdDeviation="2.2" floodColor="#000" floodOpacity="0.4" />
           </filter>
           <filter id={`${id}-leuchten`} x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="6" stdDeviation="6" floodColor="hsl(214 90% 45%)" floodOpacity="0.7" />
+            <feDropShadow dx="0" dy="6" stdDeviation="6" floodColor="hsl(157 68% 28%)" floodOpacity="0.7" />
           </filter>
         </defs>
 
@@ -131,7 +131,7 @@ export default function StandortKarte({
                 <path
                   d={land.d}
                   fill={`url(#${id}-${bayern ? "bayern" : "land"})`}
-                  stroke={bayern ? "hsl(210 100% 82%)" : "hsl(210 80% 78% / 0.55)"}
+                  stroke={bayern ? "hsl(157 75% 60%)" : "hsl(157 60% 61% / 0.55)"}
                   strokeWidth={bayern ? 1.4 : 0.8}
                   strokeLinejoin="round"
                 />
@@ -179,7 +179,7 @@ export default function StandortKarte({
             >
               <g transform={`translate(${s.x} ${s.y}) scale(${GROESSE})`}>
                 <ellipse cx={0} cy={0} rx={4} ry={1.4} fill="#000" opacity={0.3} />
-                {an && <circle className="pw-pin-puls" cx={0} cy={-14} r={14} fill="none" stroke="hsl(210 95% 65%)" strokeWidth={1.6} />}
+                {an && <circle className="pw-pin-puls" cx={0} cy={-14} r={14} fill="none" stroke="hsl(157 71% 42%)" strokeWidth={1.6} />}
                 <g filter={`url(#${id}-schatten)`}>
                   <path d={NADEL} fill={`url(#${id}-${fuellung})`} stroke="white" strokeWidth={1} strokeOpacity={0.95} />
                   <circle cx={0} cy={-14.5} r={2.8} fill="white" />
@@ -192,9 +192,9 @@ export default function StandortKarte({
                     width={sch.breite}
                     height={sch.hoehe}
                     rx={7}
-                    fill={an ? "hsl(214 90% 50%)" : "white"}
+                    fill={an ? "hsl(157 68% 31%)" : "white"}
                     fillOpacity={0.97}
-                    stroke={an ? "hsl(210 100% 80%)" : "hsl(220 30% 20% / 0.15)"}
+                    stroke={an ? "hsl(157 75% 54%)" : "hsl(220 30% 20% / 0.15)"}
                     strokeWidth={0.6}
                   />
                   <text

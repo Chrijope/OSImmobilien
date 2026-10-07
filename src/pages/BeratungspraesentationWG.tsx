@@ -35,7 +35,7 @@ import { MarktlageStyles, MARKTLAGE_VISUALS } from "@/components/presentation/Ma
 import "@/styles/praesentation-liquid.css";
 
 const NAV = [
-  { id: "ueber", label: "Über MOREImmo" },
+  { id: "ueber", label: "Über OS Immobilien" },
   { id: "konzept", label: "Konzept" },
   { id: "coliving", label: "Co-Living" },
   { id: "portfolio", label: "Portfolio" },
@@ -55,7 +55,7 @@ function BoldHeading({
   );
 }
 
-// Partnerhinweise aus den Texten der MOREImmo-Präsentation. Diese Seite kennt
+// Partnerhinweise aus den Texten der OS Immobilien-Präsentation. Diese Seite kennt
 // keinen Sprachschalter und spricht immer Deutsch, in Du-Form.
 const partnerVon = (marke: string) => {
   for (const l of BERATUNG_TEXTE.de.ueberUns.leistungen) {
@@ -65,7 +65,7 @@ const partnerVon = (marke: string) => {
   }
   return undefined;
 };
-const PARTNER_IMMO = partnerVon("MORE Immo");
+const PARTNER_IMMO = partnerVon("OS Immobilien");
 const PARTNER_FINANCE = partnerVon("MORE Finance");
 
 function Section({
@@ -187,7 +187,7 @@ export default function BeratungspraesentationWG() {
       <header data-lg="kopfscheibe" className="sticky top-0 z-50 backdrop-blur-xl bg-background/80 border-b border-border/60">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link to="/beratungspraesentation-wg" className="flex items-center gap-3">
-            <img src={logo} alt="MOREImmo" className="h-8 w-auto" />
+            <img src={logo} alt="OS Immobilien" className="h-8 w-auto" />
             <span className="hidden md:inline text-xs tracking-[0.25em] uppercase text-muted-foreground font-semibold">
               WG · Co-Living
             </span>
@@ -207,8 +207,8 @@ export default function BeratungspraesentationWG() {
             <PraesentationPdfButton
               containerRef={pageRef}
               title="Beratungspräsentation · Co-Living / WG"
-              subtitle={kundenName ? `Für ${kundenName}` : "MOREImmo · Investment für Kapitalanleger"}
-              filename="MOREImmo_Beratungspraesentation_WG.pdf"
+              subtitle={kundenName ? `Für ${kundenName}` : "OS Immobilien · Investment für Kapitalanleger"}
+              filename="OS-Immobilien_Beratungspraesentation_WG.pdf"
               preset="wg"
             />
             <Button onClick={() => scrollTo("kontakt")} className="rounded-full px-5">
@@ -259,16 +259,16 @@ export default function BeratungspraesentationWG() {
           <div className="rounded-3xl bg-card border border-border shadow-2xl p-6 md:p-12">
             <div className="grid grid-cols-2 gap-3 md:gap-5 mb-10">
               <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-muted flex items-center justify-center p-8 md:p-12">
-                <img src={logo} alt="MOREImmo" className="max-h-full max-w-full object-contain" />
+                <img src={logo} alt="OS Immobilien" className="max-h-full max-w-full object-contain" />
               </div>
               <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-muted">
-                <img src={modellWg} alt="WG & Co-Living mit MOREImmo" className="w-full h-full object-cover" />
+                <img src={modellWg} alt="WG & Co-Living mit OS Immobilien" className="w-full h-full object-cover" />
               </div>
             </div>
 
             <div className="text-center">
               <div className="text-xs tracking-[0.3em] uppercase text-primary font-semibold mb-5">
-                MOREImmo · WG &amp; Co-Living Investment
+                OS Immobilien · WG &amp; Co-Living Investment
               </div>
               {kundenName && (
                 <div className="mb-6 text-2xl md:text-3xl font-medium text-foreground">
@@ -283,7 +283,7 @@ export default function BeratungspraesentationWG() {
               <p className="mt-7 text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                 Co-Living verbindet die gesellschaftliche Antwort auf knappen Wohnraum mit
                 der profitabelsten Asset-Klasse der letzten Jahre — professionell strukturiert
-                und steueroptimiert über MOREImmo.
+                und steueroptimiert über OS Immobilien.
               </p>
               <div className="mt-9 flex flex-wrap justify-center gap-3">
                 <Button size="lg" onClick={() => scrollTo("kontakt")} className="rounded-full px-7 h-12">
@@ -301,11 +301,11 @@ export default function BeratungspraesentationWG() {
 
       <div className="beratung-apple">
 
-      {/* ─── ÜBER MOREImmo ─── */}
+      {/* ─── ÜBER OS Immobilien ─── */}
       <Section
         id="ueber"
         eyebrow="01 · Über uns"
-        lead="Über MOREImmo"
+        lead="Über OS Immobilien"
         accent="Real Estate."
         subtitle="Wir sind spezialisiert auf renditestarke Kapitalanlagen in deutschen Wachstumsregionen — mit klarem Fokus auf WG- und Co-Living-Konzepte."
       >
@@ -345,7 +345,7 @@ export default function BeratungspraesentationWG() {
       {/* ─── KONZEPT ─── */}
       <Section
         id="konzept"
-        eyebrow="02 · MOREImmo Konzept"
+        eyebrow="02 · OS Immobilien Konzept"
         lead="Alles aus einer Hand —"
         accent="vom Erstgespräch bis zur Verwaltung."
         className="bg-muted/30"
@@ -353,7 +353,7 @@ export default function BeratungspraesentationWG() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
           {[
             { icon: Sparkles,   title: "Consulting",        text: "Individuelle Strategieanalyse, Bonitätsprüfung und steueroptimierte Konzeption deines Investments." },
-            { icon: Building2,  title: "MOREImmo Immobilie",text: "Geprüfte Co-Living-Objekte in deutschen A- und B-Lagen mit nachgewiesener Mieternachfrage.", partner: PARTNER_IMMO },
+            { icon: Building2,  title: "OS Immobilien Immobilie",text: "Geprüfte Co-Living-Objekte in deutschen A- und B-Lagen mit nachgewiesener Mieternachfrage.", partner: PARTNER_IMMO },
             { icon: Banknote,   title: "Finanzierung",      text: "Zugang zu 700+ Bankpartnern — wir holen für dich die besten Konditionen.", partner: PARTNER_FINANCE },
             { icon: KeyRound,   title: "Verwaltung",        text: "Sonderverwaltung übernimmt Mieterkontakt, Abrechnung und Erstvermietungsgarantie." },
           ].map((c, i) => (
@@ -828,7 +828,7 @@ export default function BeratungspraesentationWG() {
               <div className="absolute left-1/2 top-0 -translate-x-1/2 translate-y-2 w-28 h-28 md:w-36 md:h-36 rounded-full bg-card border-2 border-primary/40 flex flex-col items-center justify-center text-center px-3 shadow-xl ring-4 ring-background">
                 <div className="text-2xl md:text-3xl text-foreground leading-none mb-1.5">⚙</div>
                 <div className="text-[10px] md:text-[11px] text-muted-foreground leading-tight">
-                  Verwaltung übernimmt<br/>MOREImmo
+                  Verwaltung übernimmt<br/>OS Immobilien
                 </div>
               </div>
 
@@ -869,7 +869,7 @@ export default function BeratungspraesentationWG() {
           {[
             {
               icon: Clock, title: "Zeitaufwand",
-              points: ["Sonderverwaltung übernimmt Mieterkontakt", "Erstvermietungsgarantie", "Komplette Abwicklung durch MOREImmo"],
+              points: ["Sonderverwaltung übernimmt Mieterkontakt", "Erstvermietungsgarantie", "Komplette Abwicklung durch OS Immobilien"],
             },
             {
               icon: Shield, title: "Sicherheit",
@@ -1153,7 +1153,7 @@ export default function BeratungspraesentationWG() {
                 </defs>
 
                 {/* Horizontale Grid-Linien */}
-                {[80, 140, 200, 260, 320].map((y) => (
+                {[66, 151, 119, 260, 320].map((y) => (
                   <line key={y} x1="60" y1={y} x2="760" y2={y} stroke="currentColor" strokeOpacity="0.08" strokeDasharray="2 4" />
                 ))}
 
@@ -1499,7 +1499,7 @@ export default function BeratungspraesentationWG() {
         id="stimmen"
         eyebrow="15 · Stimmen"
         lead="„Hervorragende Entscheidung —"
-        accent="ich empfehle MOREImmo weiter."
+        accent="ich empfehle OS Immobilien weiter."
       >
         {/* Haupt-Stimme */}
         <div className="rounded-3xl border border-border bg-card p-8 md:p-12">
@@ -1507,7 +1507,7 @@ export default function BeratungspraesentationWG() {
           <p className="text-lg md:text-2xl leading-relaxed text-foreground italic">
             „Als selbstständiger Zahnarzt fehlt mir schlicht die Zeit, mich um Mieter,
             Handwerker oder Nebenkostenabrechnungen zu kümmern. Genau deshalb hat mich
-            das Co-Living-Modell von MOREImmo überzeugt: mehrere Mietverträge pro
+            das Co-Living-Modell von OS Immobilien überzeugt: mehrere Mietverträge pro
             Wohnung sorgen dafür, dass ein einzelner Ausfall meinen Cashflow nicht
             gefährdet, und die Sondereigentumsverwaltung nimmt mir den kompletten
             operativen Teil ab. Die Nettomietrendite liegt spürbar über dem, was mir
@@ -1548,12 +1548,12 @@ export default function BeratungspraesentationWG() {
               r: "Ingenieur-Ehepaar · Stuttgart · Co-Living Leipzig",
             },
             {
-              t: "Ich bin Anfang 30 und wollte mit kleinem Eigenkapital starten. MOREImmo hat mir gezeigt, dass das mit einem WG-Objekt realistisch ist — höhere Mieteinnahmen pro m² als bei normaler Vermietung, und die Kaufnebenkosten waren mit Förderkredit überschaubar. Heute habe ich meine erste Wohnung und plane die zweite.",
+              t: "Ich bin Anfang 30 und wollte mit kleinem Eigenkapital starten. OS Immobilien hat mir gezeigt, dass das mit einem WG-Objekt realistisch ist — höhere Mieteinnahmen pro m² als bei normaler Vermietung, und die Kaufnebenkosten waren mit Förderkredit überschaubar. Heute habe ich meine erste Wohnung und plane die zweite.",
               n: "Daniel K.",
               r: "Software-Entwickler · Köln · Co-Living Dresden",
             },
             {
-              t: "Als Ärztin habe ich keine Zeit, mich um Mieter, Anzeigen oder Nebenkostenabrechnungen zu kümmern. Die Sonderverwaltung von MOREImmo regelt wirklich alles — von der Möblierung bis zur Mieterauswahl. Ich bekomme einmal im Monat eine saubere Abrechnung, mehr nicht.",
+              t: "Als Ärztin habe ich keine Zeit, mich um Mieter, Anzeigen oder Nebenkostenabrechnungen zu kümmern. Die Sonderverwaltung von OS Immobilien regelt wirklich alles — von der Möblierung bis zur Mieterauswahl. Ich bekomme einmal im Monat eine saubere Abrechnung, mehr nicht.",
               n: "Dr. Katharina H.",
               r: "Fachärztin · Hamburg · Co-Living Hannover",
             },
@@ -1568,12 +1568,12 @@ export default function BeratungspraesentationWG() {
               r: "Geschäftsführer Mittelstand · Frankfurt · Co-Living Berlin",
             },
             {
-              t: "Für mich war wichtig, dass meine Immobilie auch in 10 Jahren noch verkäuflich ist. MOREImmo hat das Objekt auf eine klassische Familienwohnung zurückbaubar geplant — beste Lage, gute Verkehrsanbindung. So habe ich heute starke Rendite und später volle Flexibilität.",
+              t: "Für mich war wichtig, dass meine Immobilie auch in 10 Jahren noch verkäuflich ist. OS Immobilien hat das Objekt auf eine klassische Familienwohnung zurückbaubar geplant — beste Lage, gute Verkehrsanbindung. So habe ich heute starke Rendite und später volle Flexibilität.",
               n: "Julia M.",
               r: "Marketing-Direktorin · Düsseldorf · Co-Living Köln",
             },
             {
-              t: "Ehrliche Beratung war mir am wichtigsten. Bei MOREImmo wurde mir auch klar gesagt, wo die Risiken liegen und welche Objekte für mich nicht passen. Das war ein anderer Stil als bei den üblichen Vertrieben — und genau deshalb habe ich unterschrieben.",
+              t: "Ehrliche Beratung war mir am wichtigsten. Bei OS Immobilien wurde mir auch klar gesagt, wo die Risiken liegen und welche Objekte für mich nicht passen. Das war ein anderer Stil als bei den üblichen Vertrieben — und genau deshalb habe ich unterschrieben.",
               n: "Andreas P.",
               r: "Selbstständiger Unternehmer · München · Co-Living Augsburg",
             },
@@ -1610,7 +1610,7 @@ export default function BeratungspraesentationWG() {
             { q: "Wer kümmert sich um die Mieter?",          a: "Eine spezialisierte Sonderverwaltung übernimmt Mieterkontakt, Abrechnungen und Auszüge — du hast keinen operativen Aufwand." },
             { q: "Wie hoch ist mein Eigenkapital­bedarf?",   a: "Üblicherweise reichen die Kaufnebenkosten (5,5–10 %) — abhängig von Bundesland und Bonität. In vielen Fällen ist sogar eine 100 %-Finanzierung möglich." },
             { q: "Was ist mit der Wiederverkaufbarkeit?",    a: "Nach 10 Jahren ist der Gewinn steuerfrei. Wir prüfen jedes Objekt vorab auf marktgängige Standorte und Grundrisse." },
-            { q: "Wie viel Zeit muss ich investieren?",      a: "Im Schnitt 3–4 Termine bis zum Notar. Alles danach übernehmen MOREImmo und unsere Verwaltungspartner." },
+            { q: "Wie viel Zeit muss ich investieren?",      a: "Im Schnitt 3–4 Termine bis zum Notar. Alles danach übernehmen OS Immobilien und unsere Verwaltungspartner." },
           ].map((f, i) => (
             <details key={i} className="group rounded-2xl border border-border bg-card p-6 hover:border-primary/40 transition open:border-primary/40">
               <summary className="cursor-pointer flex items-center justify-between gap-4 list-none">
@@ -1680,17 +1680,17 @@ export default function BeratungspraesentationWG() {
               </p>
               <div className="flex flex-wrap justify-center gap-3 animate-scale-in">
                 <a
-                  href="mailto:info@more.immo?subject=WG%20Co-Living%20Beratung%20MOREImmo"
+                  href="mailto:os@os-immobilien.com?subject=WG%20Co-Living%20Beratung%20MOREImmo"
                   className="inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-7 h-12 font-semibold hover:opacity-90 hover-scale transition shadow-lg shadow-primary/30"
                 >
                   Beratungstermin vereinbaren
                   <ArrowRight className="h-4 w-4" />
                 </a>
                 <a
-                  href="mailto:info@more.immo"
+                  href="mailto:os@os-immobilien.com"
                   className="inline-flex items-center gap-2 rounded-full border border-background/30 text-background px-7 h-12 hover:bg-background/10 hover-scale transition"
                 >
-                  info@more.immo
+                  os@os-immobilien.com
                 </a>
               </div>
             </>
@@ -1704,9 +1704,9 @@ export default function BeratungspraesentationWG() {
       <footer className="bg-background border-t border-border py-10 px-6">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <img src={logo} alt="MOREImmo" className="h-7 w-auto" />
+            <img src={logo} alt="OS Immobilien" className="h-7 w-auto" />
             <span className="text-xs text-muted-foreground">
-              WG &amp; Co-Living Investments mit MOREImmo · more.immo
+              WG &amp; Co-Living Investments mit OS Immobilien · osimmobilien.netlify.app
             </span>
           </div>
           <div className="text-xs text-muted-foreground flex gap-5">
@@ -1721,7 +1721,7 @@ export default function BeratungspraesentationWG() {
           tatsächlichen Entwicklung abweichen. Steuerliche Effekte hängen von der
           individuellen Situation des Investors ab und sind durch einen Steuerberater
           zu prüfen. Wertentwicklungen der Vergangenheit sind kein Indikator für
-          zukünftige Ergebnisse. Stand: 2026 · MOREImmo · info@more.immo
+          zukünftige Ergebnisse. Stand: 2026 · OS Immobilien · os@os-immobilien.com
         </p>
       </footer>
     </div>

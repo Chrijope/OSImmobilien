@@ -36,8 +36,8 @@ export const ERLAUBTE_EINBETTER: ReadonlyArray<{
   { host: "gptengineer.app", unterdomains: true, warum: "früherer Name des Lovable-Editors" },
   { host: "lovable.app", unterdomains: true, nurVorschau: true, warum: "Lovable-Vorschau, falls der Editor sie verschachtelt" },
   { host: "lovableproject.com", unterdomains: true, nurVorschau: true, warum: "Lovable-Vorschau, falls der Editor sie verschachtelt" },
-  { host: "more.immo", unterdomains: false, warum: "eigene Website" },
-  { host: "www.more.immo", unterdomains: false, warum: "eigene Website" },
+  { host: "osimmobilien.netlify.app", unterdomains: false, warum: "eigene Website" },
+  { host: "osimmobilien.netlify.app", unterdomains: false, warum: "eigene Website" },
 ];
 
 /** Läuft das Portal selbst gerade in einer Lovable-Vorschau? */

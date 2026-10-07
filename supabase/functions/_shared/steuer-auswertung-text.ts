@@ -11,7 +11,7 @@
  * Seit der Steuerrechner ohne Kuerzel in bezahlter Werbung laeuft, kommen
  * Leads an, denen noch kein Vertriebspartner zugeteilt ist. Er wird erst
  * spaeter vergeben. Dann darf die Mail keinen Unterschriftsblock tragen: Der
- * Platzhalter "MOREImmo Team" mit der allgemeinen Nummer sieht aus wie ein
+ * Platzhalter "OS Immobilien Team" mit der allgemeinen Nummer sieht aus wie ein
  * persoenlicher Ansprechpartner, ist aber keiner.
  *
  * Und die Zeile "Wie es weitergeht" muss anders lauten. Die Zusage bleibt, es
@@ -61,7 +61,7 @@ export function auswertungPerson(
     rolle:
       nurEchteBezeichnung(eingabe.berater?.rolle) ||
       nurEchteBezeichnung(eingabe.beraterPosition) ||
-      "Dein Ansprechpartner bei MOREImmo",
+      "Dein Ansprechpartner bei OS Immobilien",
     telefon: eingabe.berater?.telefon || eingabe.beraterTelefon,
     email: eingabe.berater?.email || eingabe.beraterEmail,
     bildUrl: eingabe.berater?.bildUrl,

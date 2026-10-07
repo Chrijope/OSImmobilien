@@ -142,15 +142,15 @@ describe("Absender ist immer der zuständige Partner", () => {
     });
   });
 
-  it("ohne zuständigen Partner schreibt das MOREImmo Team, nicht wer geklickt hat", () => {
+  it("ohne zuständigen Partner schreibt das OS Immobilien Team, nicht wer geklickt hat", () => {
     const body = nichtErreichtMailAnfrage({ kontaktId: "k1", email: "a@b.de", kundeName: "", partnerId: "", vorlage: "nicht-erreicht-mail-1" });
-    expect(body.templateData).toEqual({ name: "", berater: { name: "MOREImmo Team", email: "office@more.immo" } });
+    expect(body.templateData).toEqual({ name: "", berater: { name: "OS Immobilien Team", email: "os@os-immobilien.com" } });
     expect(body.idempotencyKey).toBe("nicht-erreicht-mail-1-k1-team");
     // Browser und Server nennen dasselbe Haus.
     expect(TEAM_ABSENDER).toEqual(TEAM_ABSENDER_SERVER);
     // Auch der mailto-Rückfall in Mail 1 zeigt auf office@.
-    expect(antwortAn(null)).toBe("office@more.immo");
-    expect(antwortAn({ name: "Christian Peetz", email: "christian@more.immo" })).toBe("christian@more.immo");
+    expect(antwortAn(null)).toBe("os@os-immobilien.com");
+    expect(antwortAn({ name: "Christian Peetz", email: "os@os-immobilien.com" })).toBe("os@os-immobilien.com");
   });
 
   it("klickt eine Setterin, geht die Mail trotzdem im Namen des Partners", async () => {
@@ -181,14 +181,14 @@ describe("Absender ist immer der zuständige Partner", () => {
   });
 
   it("der Server nimmt Name und Adresse des Partners, sonst das Team", () => {
-    expect(absenderName({ name: "Christian Peetz" })).toBe("Christian Peetz | MOREImmo");
-    expect(absenderName(null)).toBe("MOREImmo Team");
-    expect(absenderName({ name: "  " })).toBe("MOREImmo Team");
+    expect(absenderName({ name: "Christian Peetz" })).toBe("Christian Peetz | OS Immobilien");
+    expect(absenderName(null)).toBe("OS Immobilien Team");
+    expect(absenderName({ name: "  " })).toBe("OS Immobilien Team");
     // Zeichen, die den Mailkopf aufbrechen könnten, fliegen raus.
     expect(absenderName({ name: 'Eve <evil@x.de>\r\nBcc: a@b' })).not.toMatch(/[<>\r\n]/);
-    expect(antwortAdresse({ email: "partner@more.immo" })).toBe("partner@more.immo");
-    expect(antwortAdresse({ email: "kaputt" })).toBe("office@more.immo");
-    expect(antwortAdresse(null)).toBe("office@more.immo");
+    expect(antwortAdresse({ email: "os@os-immobilien.com" })).toBe("os@os-immobilien.com");
+    expect(antwortAdresse({ email: "kaputt" })).toBe("os@os-immobilien.com");
+    expect(antwortAdresse(null)).toBe("os@os-immobilien.com");
   });
 
   it("send-transactional-email liest den Partner selbst und setzt Absender und Antwortadresse", () => {

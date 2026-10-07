@@ -58,7 +58,7 @@ function LeistenKnopf({
    * ohnehin eigenes Geruest.
    */
   const grund = an
-    ? "bg-[#88CFFF]/15 border-[#88CFFF]/35 text-[#88CFFF]"
+    ? "bg-[#30E19E]/15 border-[#30E19E]/35 text-[#30E19E]"
     : "bg-white/[0.07] border-white/10 text-white";
   return (
     <button

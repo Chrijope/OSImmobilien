@@ -4,7 +4,7 @@ import { ANLAGE_ZIELE_EN, BERATUNG_TEXTE, inAnrede } from "@/lib/beratungspraese
 import { REFERENZ_TEXTE } from "@/lib/referenzenTexte";
 
 /*
- * Die Übersetzungen der Beratungspräsentation MOREImmo.
+ * Die Übersetzungen der Beratungspräsentation OS Immobilien.
  *
  * Geprüft wird die Form, nicht der Wortlaut: Jeder deutsche Eintrag hat ein
  * englisches Gegenstück und umgekehrt, Listen sind gleich lang, Funktionen

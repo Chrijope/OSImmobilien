@@ -9,7 +9,7 @@
  * meldet die Marke an `track-bewerber-mail` (`mode=click`), und die Datenbank
  * setzt `clicked_at`.
  *
- * Der Link bleibt dabei auf portal.more.immo. Eine Weiterleitung über die
+ * Der Link bleibt dabei auf osimmobilien.netlify.app. Eine Weiterleitung über die
  * Supabase-Adresse wäre der andere Weg, aber dann stünde in jeder Mail ein
  * fremder Knopf, und genau den haben wir am 26.09.2026 aus den Bewerbermails
  * genommen.
@@ -54,7 +54,7 @@ const LOVABLE_VORSCHAU = new RegExp(
  * Umleiter: Jeder könnte einen Link auf unsere Supabase-Adresse bauen, der
  * auf eine fremde Seite springt, und ihn mit unserem Namen verschicken.
  *
- * Erlaubt sind more.immo samt Unterdomains (also auch portal.more.immo), die
+ * Erlaubt sind osimmobilien.netlify.app samt Unterdomains (also auch osimmobilien.netlify.app), die
  * Lovable-Vorschau genau dieses Projekts und der Dateispeicher des eigenen
  * Supabase-Projekts (dort liegt das PDF des Startfahrplans).
  */
@@ -67,7 +67,7 @@ export function istEigenesWeiterleitungsziel(ziel: string, supabaseUrl?: string)
   }
   if (u.protocol !== 'https:' || u.username || u.password) return false
   const host = u.hostname.toLowerCase()
-  if (host === 'more.immo' || host.endsWith('.more.immo')) return true
+  if (host === 'osimmobilien.netlify.app' || host.endsWith('.osimmobilien.netlify.app')) return true
   if (LOVABLE_VORSCHAU.test(host)) return true
   if (supabaseUrl) {
     try {

@@ -67,7 +67,7 @@ describe("Knopf „Handbuch als PDF“", () => {
       vorname: "Erika",
       nachname: "Muster",
       datum: "26 Sep 2026",
-      saLink: `https://portal.more.immo/handbuch/ergebnis/${TOKEN}/selbstauskunft?lang=en`,
+      saLink: `https://osimmobilien.netlify.app/handbuch/ergebnis/${TOKEN}/selbstauskunft?lang=en`,
       partner: { name: "Max Partner", email: "max@example.org", telefon: "0123", buchungslink: "https://example.org/termin" },
       sprache: "en",
     });
@@ -94,6 +94,6 @@ describe("gesperrter Zuständiger", () => {
     fireEvent.click(screen.getByRole("button", { name: /Handbuch als PDF/ }));
     await waitFor(() => expect(ladeHandbuchPdfHerunter).toHaveBeenCalledTimes(1));
     expect(ladeBeraterAusKuerzel).not.toHaveBeenCalled();
-    expect(baueHandbuch.mock.calls[0][0]).toMatchObject({ partner: null, saLink: `https://portal.more.immo/handbuch/ergebnis/${TOKEN}/selbstauskunft` });
+    expect(baueHandbuch.mock.calls[0][0]).toMatchObject({ partner: null, saLink: `https://osimmobilien.netlify.app/handbuch/ergebnis/${TOKEN}/selbstauskunft` });
   });
 });

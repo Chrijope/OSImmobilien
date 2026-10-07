@@ -35,7 +35,7 @@ const EINGABE = {
 const BERATER: BeraterInfo = {
   name: "Christian Peetz",
   telefon: "0171 1111111",
-  email: "cp@more.immo",
+  email: "os@os-immobilien.com",
   userId: "11111111-2222-3333-4444-555555555555",
 };
 
@@ -144,7 +144,7 @@ describe("Die Einwilligung", () => {
     await sendeSteuerLead({ ...EINGABE, einwilligung: true }, ANTWORTEN, ERGEBNIS);
     const nachweis = letzterAufruf?.body.dsgvo_consent as Record<string, unknown>;
     expect(nachweis?.erteilt).toBe(true);
-    expect(String(nachweis?.text)).toContain("MOREImmo");
+    expect(String(nachweis?.text)).toContain("OS Immobilien");
     expect(nachweis?.am).toBeTruthy();
     expect(nachweis?.werbung).toBeUndefined();
   });

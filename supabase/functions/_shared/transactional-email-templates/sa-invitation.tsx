@@ -16,7 +16,7 @@ interface SaInvitationProps {
 
 /** Gruppe F: Deutsch in der Sie-Form, Englisch foermlich (Plan 4.4). */
 const DE = {
-  betreff: 'Ihre Selbstauskunft für MOREImmo',
+  betreff: 'Ihre Selbstauskunft für OS Immobilien',
   augenbraue: 'Nächster Schritt',
   titel: 'Ihre Selbstauskunft',
   vorschau: 'Damit wir Ihnen eine belastbare Empfehlung geben können, brauchen wir ein vollständiges Bild Ihrer Situation.',
@@ -36,7 +36,7 @@ const DE = {
 const TEXTE: Zweisprachig<typeof DE> = {
   de: DE,
   en: {
-    betreff: 'Your self-disclosure for MOREImmo',
+    betreff: 'Your self-disclosure for OS Immobilien',
     augenbraue: 'Next step',
     titel: 'Your self-disclosure',
     vorschau: 'In order to give you a sound recommendation, we need a complete picture of your situation.',
@@ -87,13 +87,13 @@ export const template = {
   sprachen: DE_EN,
   previewData: {
     kundeName: 'Herr Mustermann',
-    fillUrl: 'https://portal.more.immo/sa/example-token',
+    fillUrl: 'https://osimmobilien.netlify.app/sa/example-token',
     gueltigBis: '5. August 2026',
     berater: {
       name: 'Christian Peetz',
-      rolle: 'Ihr Ansprechpartner bei MOREImmo',
+      rolle: 'Ihr Ansprechpartner bei OS Immobilien',
       telefon: '08061 000000',
-      email: 'christian@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

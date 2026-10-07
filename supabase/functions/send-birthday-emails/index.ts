@@ -95,7 +95,7 @@ Deno.serve(async (req) => {
         .maybeSingle()
       if (kontakt) {
         // Zustaendigen Partner als Unterschrift mitgeben, sonst gratuliert
-        // der Platzhalter "MOREImmo Team".
+        // der Platzhalter "OS Immobilien Team".
         const berater = await zustaendigerAnsprechpartner(supabase, kontakt.id)
         templateData = {
           name: kontakt.vorname || templateData.name,
@@ -180,7 +180,7 @@ Deno.serve(async (req) => {
 
     try {
       // Zustaendigen Partner als Unterschrift mitgeben, sonst gratuliert der
-      // Platzhalter "MOREImmo Team".
+      // Platzhalter "OS Immobilien Team".
       const berater = await zustaendigerAnsprechpartner(supabase, kunde.id)
       await supabase.functions.invoke('send-transactional-email', {
         body: {

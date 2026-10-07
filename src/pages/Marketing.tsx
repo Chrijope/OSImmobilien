@@ -30,13 +30,13 @@ type Standort = {
 
 const FILTER_CONFIG: { typ: StandortTyp; label: string; color: string; markerColor: string }[] = [
   { typ: "kunde", label: "Kunden", color: "bg-green-500", markerColor: "#22c55e" },
-  { typ: "partner", label: "Partner", color: "bg-blue-500", markerColor: "#3b82f6" },
+  { typ: "partner", label: "Partner", color: "bg-blue-500", markerColor: "#1C9768" },
   { typ: "objekt", label: "Objekte", color: "bg-amber-500", markerColor: "#f59e0b" },
 ];
 
 const markerColorMap: Record<StandortTyp, string> = {
   kunde: "#22c55e",
-  partner: "#3b82f6",
+  partner: "#1C9768",
   objekt: "#f59e0b",
 };
 

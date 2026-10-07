@@ -173,7 +173,7 @@ const ImageSlideshow = ({
 };
 
 /**
- * Die Sprache kommt vom Aufrufer (Beratungspräsentation MOREImmo) oder, wenn
+ * Die Sprache kommt vom Aufrufer (Beratungspräsentation OS Immobilien) oder, wenn
  * keiner sie nennt, von der öffentlichen Seite (`SeitenSpracheProvider`).
  * Ohne beides bleibt es Deutsch, wie in der Beratungspräsentation und im CRM.
  */

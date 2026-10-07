@@ -31,7 +31,7 @@ interface Props {
   onCompleted?: () => void;
 }
 
-/** Leistungen wortgleich aus dem MOREImmo-Aftersales-Beratungsdokument */
+/** Leistungen wortgleich aus dem OS Immobilien-Aftersales-Beratungsdokument */
 const LEISTUNGEN = [
   { key: "mieterwechsel", label: "Begleitung beim ersten Mieterwechsel. Die objekteigene Hausverwaltung (sofern beauftragt) unterstützt zusätzlich beim Übergabeprotokoll" },
   { key: "mieterhoehung", label: "Beratung zu Mieterhöhungen nach §§ 558, 559 BGB. Sie wird von der Hausverwaltung übernommen, die Sie hierzu laufend betreut" },
@@ -172,7 +172,7 @@ export function AftersalesBeratungDialog({
           <div className="space-y-4">
             <p className="text-[11px] text-muted-foreground">
               Pflicht-Dokument zwischen Vertriebspartner und Kunde nach Verkaufsabschluss.
-              Dieses Dokument dokumentiert das vereinbarte Aftersales-Programm im Anschluss an den Immobilienkauf bei MOREImmo.
+              Dieses Dokument dokumentiert das vereinbarte Aftersales-Programm im Anschluss an den Immobilienkauf bei OS Immobilien.
             </p>
 
             <Card className="p-4 space-y-3">

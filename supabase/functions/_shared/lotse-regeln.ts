@@ -1,7 +1,7 @@
 /**
- * Die Regeln des MORE Lotsen, gemeinsam für Browser und Server.
+ * Die Regeln des OS Lotsen, gemeinsam für Browser und Server.
  *
- * Freigegeben von Christian am 28.09.2026 (Bauplan MORE Lotse, Stufe 1). Hier
+ * Freigegeben von Christian am 28.09.2026 (Bauplan OS Lotse, Stufe 1). Hier
  * steht alles, was an beiden Enden gleich entschieden werden muss:
  *
  *   - wer den Lotsen nutzen darf (`darfLotseNutzen`), nach der AKTIVEN Rolle,
@@ -388,7 +388,7 @@ export function nenntVerguetungsbegriff(text: string): boolean {
 /** Eine Zahl, ein Prozentsatz oder ein Betrag, auch in Worten („drei Prozent“). */
 const ZAHL = /\d|%|€|\$|prozent|promille|euro|percent|\beur\b|\busd\b/;
 
-const VERTRIEB_ODER_BAUTRAEGER = /bautraeger|developer|vertrieb|vermittl|makler|moreimmo|more immo/;
+const VERTRIEB_ODER_BAUTRAEGER = /bautraeger|developer|vertrieb|vermittl|makler|moreimmo|more immo|os immobilien|os-immobilien/;
 
 /** Ein Betrag oder Prozentsatz mit Einheit, nicht jede Ziffer: „Baujahr 2020“ zählt nicht. */
 const BETRAG_RE = new RegExp(BETRAG);
@@ -526,7 +526,7 @@ export function freigabeBloecke(text: string, schonFrei: number): { bloecke: str
  *
  * Entfernt wird ein Satz, der eine Vergütungsangabe ist: Vergütungsbegriff
  * und Zahl im selben Satz, oder eine Zahlung an Vertrieb, Makler, Vermittler
- * oder MOREImmo (`istVerguetungssatz`). Nennt ein Satz einen
+ * oder OS Immobilien (`istVerguetungssatz`). Nennt ein Satz einen
  * Vergütungsbegriff, fallen außerdem der vorige und der nächste Satz, wenn
  * sie einen Betrag oder Prozentsatz tragen und keine erkennbare Kostenangabe
  * sind, und mit ihnen der Satz selbst („6 % vom Kaufpreis. Das ist die
@@ -557,13 +557,13 @@ export function antwortNenntProvision(text: string): boolean {
 
 // Wer an einem Verkauf verdienen könnte, und wie danach gefragt wird. „Bekommen“ zählt nur mit „was“ oder „wie viel“,
 // damit „Welche Unterlagen bekommt der Vertrieb?“ eine normale Frage bleibt.
-const EMPFAENGER = "(moreimmo|more immo|vertrieb\\w*|makler\\w*|vermittler\\w*|berater\\w*|tippgeber\\w*|sales( team)?|broker\\w*|agent\\w*|agency)";
+const EMPFAENGER = "(moreimmo|more immo|os immobilien|os-immobilien|vertrieb\\w*|makler\\w*|vermittler\\w*|berater\\w*|tippgeber\\w*|sales( team)?|broker\\w*|agent\\w*|agency)";
 const nahBeieinander = (a: string, b: string, abstand = 4) =>
   new RegExp(`${a}\\W+(\\w+\\W+){0,${abstand}}${b}\\b|${b}\\W+(\\w+\\W+){0,${abstand}}${a}\\b`);
 const VERDIENT = nahBeieinander("(verdien\\w*|kassier\\w*|earn\\w*)", EMPFAENGER);
 const BEKOMMT = nahBeieinander("(bekommt|bekommen|erhaelt|erhalten|kriegt|kriegen|geht an|gehen an|fliesst an|fliessen an|gets?|receives?|makes?|paid)", EMPFAENGER);
 const FRAGEWORT = /\b(wie ?viel\w*|was|how much|what)\b/;
-// Zahlungsrichtung (LOTSE2-006, REVIEW-005): „zahlt der Bauträger an MOREImmo“, „zahlt der Bauträger MOREImmo“,
+// Zahlungsrichtung (LOTSE2-006, REVIEW-005): „zahlt der Bauträger an OS Immobilien“, „zahlt der Bauträger OS Immobilien“,
 // „wird an den Vertrieb gezahlt“, auch englisch.
 const ZAHLT_AN = nahBeieinander(
   "(zahlt|zahlen|bezahlt|bezahlen|gezahlt|ueberweist|ueberweisen|ueberwiesen|fliesst|fliessen|pays?|paid|transfers?)",
@@ -580,16 +580,16 @@ const EMPFAENGER_RE = new RegExp(`${EMPFAENGER}\\b`);
 
 /**
  * Fragt die Nutzerfrage nach Provision, Vergütung des Vertriebs oder dem
- * Verdienst von MOREImmo? Dann antwortet die Function sofort mit
+ * Verdienst von OS Immobilien? Dann antwortet die Function sofort mit
  * `LOTSE_PROVISION_TEXT`, ohne das Modell (Vorgabe vom 28.09.2026). Dasselbe
- * Vokabular wie überall, dazu Frageformen wie „Was verdient MOREImmo?“.
+ * Vokabular wie überall, dazu Frageformen wie „Was verdient OS Immobilien?“.
  * Kosten der Verwaltung und „provisionsfrei“ lösen nicht aus.
  */
 export function frageNachProvision(frage: string): boolean {
-  // Zuerst die Quelle entfernen (LOTSE-004): MOREImmo oder Makler als Quelle, nicht als Empfänger,
-  // „Was zahlt der Mieter laut MOREImmo?“, „Welche Vergütung erhält die SEV laut MOREImmo?“.
+  // Zuerst die Quelle entfernen (LOTSE-004): OS Immobilien oder Makler als Quelle, nicht als Empfänger,
+  // „Was zahlt der Mieter laut OS Immobilien?“, „Welche Vergütung erhält die SEV laut OS Immobilien?“.
   let t = ohneQuellenangabe(ohneErlaubteKostenbegriffe(fuerSuche(frage)));
-  // Die Verwaltungs-Ausnahme nur, wenn daneben kein Vertrieb, Makler oder MOREImmo steht.
+  // Die Verwaltungs-Ausnahme nur, wenn daneben kein Vertrieb, Makler oder OS Immobilien steht.
   if (!EMPFAENGER_RE.test(t)) t = t.replace(VERWALTUNG_VERGUETUNG, " ");
   return VERGUETUNG_BEGRIFF.test(t) || VERDIENT.test(t) || ZAHLT_AN.test(t) || FUER_VERKAUF.test(t) || (FRAGEWORT.test(t) && BEKOMMT.test(t));
 }
@@ -785,13 +785,13 @@ export function baueLotsePrompt(k: LotseKontext): string {
     : null;
   const heute = datumDe(k.heute);
 
-  return `Du bist der MORE Lotse, der KI-Objektmanager im CRM von MOREImmo. Du beantwortest Fragen interner Nutzer zu genau diesem Objekt${einheit ? " und dieser Einheit" : ""}.
+  return `Du bist der OS Lotse, der KI-Objektmanager im CRM von OS Immobilien. Du beantwortest Fragen interner Nutzer zu genau diesem Objekt${einheit ? " und dieser Einheit" : ""}.
 
 REGELN, OHNE AUSNAHME:
 - Antworte nur aus dem Kontext unten. Fehlt etwas, sag „liegt nicht vor“ und rate nicht.
 - Nenne zu jeder Zahl die Quelle und den Stand.
 - Keine Prognosen zu Wertentwicklung oder Miete. Keine Aussage, ob das Objekt zu einem bestimmten Kunden passt. Keine Steuerberechnung für Personen. Keine Rechts-, Steuer- oder Anlageberatung.
-- MOREImmo vermittelt Immobilien und berät nicht zu Geldanlage, Versicherung oder Steuern. Sag das, wenn eine Frage in diese Richtung geht.
+- OS Immobilien vermittelt Immobilien und berät nicht zu Geldanlage, Versicherung oder Steuern. Sag das, wenn eine Frage in diese Richtung geht.
 - Zins und Tilgung in der Rechnung sind Rechenannahmen, kein Finanzierungsangebot. Sag das, wenn du sie nennst.
 - Rendite heißt die Rendite der Einheit wie im Exposé: Jahreskaltmiete der Wohnung durch Kaufpreis der Wohnung (Feld „rendite“ der Einheit, beim Objekt „rendite_von“). Nenne keine andere Zahl als Rendite. Die Nettomietrendite der Kalkulation nennst du nur, wenn ausdrücklich danach gefragt wird, und immer mit genau diesem Namen.
 - Hausgeld gesamt, umlagefähiges und nicht umlagefähiges Hausgeld und Rücklage nennst du nur aus FESTE ZAHLEN DER EINHEIT. Rechne sie nie selbst zusammen. Steht dort „fehlt“, sag „liegt nicht vor“. Ein Hausgeld-Soll aus einem Wirtschaftsplan nennst du höchstens zusätzlich, mit dem Wirtschaftsplan als Quelle und seinem Pflichthinweis.
@@ -803,8 +803,8 @@ REGELN, OHNE AUSNAHME:
 - Fragt der Nutzer nach dem Eigenanteil, dem Steuereffekt, dem Überschuss oder der Belastung eines bestimmten Kunden, antworte nur: „${LOTSE_KUNDENRECHNUNG_TEXT}“ Keine Empfehlung für einen Kunden, kein „lohnt sich“ oder „passt zu ihm“, keine Vergleiche oder Rangfolgen für einen Kunden, nichts zur Tragfähigkeit, keine Gestaltungstipps (Steuerklasse, Sonder-AfA, Veranlagung), keine Zusagen.
 - Nenne keine Personen.
 - Kosten der Verwaltung sind normale Kosten des Eigentümers und gehören in jede Kostenrechnung: Hausgeld, WEG-Verwaltung, Sondereigentumsverwaltung (SEV), Mietverwaltung, jeweils mit ihrer Vergütung oder Gebühr. Nenne sie, wenn sie zur Frage gehören.
-- Die Eigenprovision des Käufers aus einer Eigenprovisionsvereinbarung ist keine Provision des Vertriebs: Zu Höhe, Prozentsatz, Bedingungen und Auszahlung gibst du Auskunft, mit der Vereinbarung als Quelle. Was MOREImmo, der Vertrieb oder ein Partner daran verdient, bleibt gesperrt.
-- Zu Provisionen, Courtagen, Margen und Vergütungen des Vertriebs gibst du keine Auskunft, auch nicht zu der Provision, die MOREImmo von Bauträgern erhält. Das gilt auch auf Nachfrage, in Umschreibung, als Prozentsatz, als Differenz oder als Schätzung. Nur wenn direkt danach gefragt wird, antworte ausschließlich: „${LOTSE_PROVISION_TEXT} Wende dich dazu bitte an deinen Ansprechpartner in der Geschäftsleitung.“ Sonst sprich das Thema nicht an und beantworte die Frage direkt.
+- Die Eigenprovision des Käufers aus einer Eigenprovisionsvereinbarung ist keine Provision des Vertriebs: Zu Höhe, Prozentsatz, Bedingungen und Auszahlung gibst du Auskunft, mit der Vereinbarung als Quelle. Was OS Immobilien, der Vertrieb oder ein Partner daran verdient, bleibt gesperrt.
+- Zu Provisionen, Courtagen, Margen und Vergütungen des Vertriebs gibst du keine Auskunft, auch nicht zu der Provision, die OS Immobilien von Bauträgern erhält. Das gilt auch auf Nachfrage, in Umschreibung, als Prozentsatz, als Differenz oder als Schätzung. Nur wenn direkt danach gefragt wird, antworte ausschließlich: „${LOTSE_PROVISION_TEXT} Wende dich dazu bitte an deinen Ansprechpartner in der Geschäftsleitung.“ Sonst sprich das Thema nicht an und beantworte die Frage direkt.
 - Miete immer mit dem Zusatz „laut Verkäuferangabe beziehungsweise Mietvertrag, nicht geprüft“.
 - Rechne nicht selbst. Zitiere Werte der Kalkulation nur so, wie sie unten stehen, und sag, mit welchen Annahmen sie entstanden sind.
 - Nenne Risiken und Lücken immer. Widersprechen sich zwei Quellen, nenne beide Werte mit ihrer Quelle.

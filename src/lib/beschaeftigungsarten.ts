@@ -14,5 +14,5 @@
  */
 export const BESCHAEFTIGUNGSARTEN = [
   { id: "nebenberuflich", label: "Nebenberuflich", beschreibung: "Neben Deinem aktuellen Job eine zweite Einkommensquelle aufbauen." },
-  { id: "hauptberuflich", label: "Hauptberuflich", beschreibung: "Voll auf die Arbeit mit MOREImmo konzentrieren." },
+  { id: "hauptberuflich", label: "Hauptberuflich", beschreibung: "Voll auf die Arbeit mit OS Immobilien konzentrieren." },
 ];

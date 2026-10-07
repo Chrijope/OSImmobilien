@@ -127,16 +127,16 @@ export const BRAND = {
   /** Überschriften und Deckblatt. Fast schwarz mit einem Stich ins Blaue. */
   primary: [15, 22, 33] as [number, number, number],
   /** Der einzige Akzent: Linien, Ziffern, Hervorhebungen. */
-  accent: [10, 110, 219] as [number, number, number],
+  accent: [24, 127, 88] as [number, number, number],
   /** Dunklere Variante für feine Unterstriche auf Weiß. */
-  accentDark: [8, 88, 176] as [number, number, number],
+  accentDark: [19, 102, 71] as [number, number, number],
   /**
    * Helles Blau, nur auf dunklem Grund. Das ist der gemessene Ton der
-   * Bildmarke (#88CFFF). Vorher stand hier #7CBEFF, Farbton 210, der einzige
+   * Bildmarke (#30E19E). Vorher stand hier #1ED28D, Farbton 210, der einzige
    * helle Blauton, der nicht auf der Linie des Logos lag. Auf der dunklen
    * Hausfläche erreicht er 10,73:1, auf Weiß wäre er unbrauchbar.
    */
-  accentLight: [136, 207, 255] as [number, number, number],
+  accentLight: [48, 225, 158] as [number, number, number],
   /** Beschriftungen, Fußzeilen, alles Zweitrangige. */
   muted: [122, 133, 148] as [number, number, number],
   /** Flächiger Hintergrund für Kästen und Tabellenköpfe. */

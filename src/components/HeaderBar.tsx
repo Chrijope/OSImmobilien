@@ -479,7 +479,7 @@ export function HeaderBar() {
          * Benachrichtigungen lesen darf, wurde deshalb bei jeder Meldung an
          * jeden Mitarbeiter gestoert und fand in seiner Glocke nichts dazu.
          * Aufgefallen an „Reservierung versandt: Jonas Lins", zugestellt an
-         * p.pintat@more.immo, eingeblendet bei Christian.
+         * os@os-immobilien.com, eingeblendet bei Christian.
          *
          * Der alte Kommentar rechtfertigte das Nichtfiltern mit Meldungen
          * ueber `ziel_rolle`. Das Argument traegt nicht: Solche Meldungen

@@ -62,15 +62,15 @@
   --border: 213 30% 84%;
 
   /* Blau 600 traegt als Schrift auf Glas nur 3,5:1. Schrift nimmt Blau 700. */
-  --lg-schrift-blau: 204 95% 34%;     /* Blau 700 #0466A9 */
+  --lg-schrift-blau: 157 71% 25%;     /* Blau 700 #13704D */
   /*
     Die Verlaufsstopps gefuellter blauer Knoepfe. Oben nicht `--primary`
-    selbst: Dessen HSL-Wert (204 92% 41%) rundet heller als #087AC7 und
+    selbst: Dessen HSL-Wert (157 69% 32%) rundet heller als #15724F und
     traegt mit weisser Schrift nur 4,45:1. Ein Prozentpunkt dunkler sind
     es 4,64:1.
   */
-  --lg-primaer-hoch: 204 92% 40%;
-  --lg-primaer-tief: 204 95% 34%;
+  --lg-primaer-hoch: 157 69% 31%;
+  --lg-primaer-tief: 157 71% 26%;
 
   /* Der Grund ist die Flaeche aus der Markenrichtlinie, #F4F7FA. */
   --lg-grund: 210 37% 97%;
@@ -97,7 +97,7 @@
   --lg-kante-oben: hsl(0 0% 100% / .95);
   --lg-kante-unten: hsl(0 0% 100% / .28);
   --lg-rand: hsl(0 0% 100% / .55);    /* Lichtbrechung am Rand, innen */
-  --lg-tiefe: hsl(204 60% 40% / .12); /* die Unterkante bricht das Licht farbig */
+  --lg-tiefe: hsl(157 45% 33% / .12); /* die Unterkante bricht das Licht farbig */
   --lg-haarlinie: hsl(214 35% 25% / .10);
   --lg-licht: hsl(0 0% 100% / .9);
   --lg-glanz: hsl(0 0% 100% / .30);    /* weicher Glanz unter dem Zeiger, auf der Flaeche */
@@ -114,16 +114,16 @@
     0 0 0 .5px var(--lg-haarlinie),
     0 1px 2px hsl(215 40% 20% / .05),
     0 10px 28px -12px hsl(215 40% 20% / .16),
-    0 30px 60px -32px hsl(204 92% 41% / .22);
+    0 30px 60px -32px hsl(157 69% 32% / .22);
   --lg-schatten-hoch:
     0 0 0 .5px var(--lg-haarlinie),
     0 2px 4px hsl(215 40% 20% / .06),
     0 20px 44px -16px hsl(215 40% 20% / .22),
-    0 44px 80px -36px hsl(204 92% 41% / .30);
+    0 44px 80px -36px hsl(157 69% 32% / .30);
   --lg-schatten-schwebend:
     0 0 0 .5px var(--lg-haarlinie),
-    0 12px 28px -12px hsl(215 50% 15% / .22),
-    0 36px 90px -24px hsl(215 50% 15% / .38);
+    0 12px 28px -12px hsl(157 38% 11% / .22),
+    0 36px 90px -24px hsl(157 38% 11% / .38);
 
   --lg-radius: 22px;
   --lg-radius-einlage: 16px;
@@ -139,9 +139,9 @@
   --warning: 36 80% 64%;
   --border: 214 25% 26%;
 
-  --lg-schrift-blau: 204 100% 77%;    /* Blau 300, wie heute im Dunkeln */
-  --lg-primaer-hoch: 204 100% 77%;    /* = --primary im Dunkeln, dunkle Schrift darauf */
-  --lg-primaer-tief: 204 100% 69%;
+  --lg-schrift-blau: 157 75% 55%;    /* Blau 300, wie heute im Dunkeln */
+  --lg-primaer-hoch: 157 75% 55%;    /* = --primary im Dunkeln, dunkle Schrift darauf */
+  --lg-primaer-tief: 157 75% 47%;
 
   --lg-grund: 214 39% 7%;             /* #0B1119 */
   --lg-glas: 214 30% 14%;             /* #18212D */
@@ -153,11 +153,11 @@
   --lg-kante: hsl(0 0% 100% / .10);
   --lg-kante-oben: hsl(0 0% 100% / .22);
   --lg-kante-unten: hsl(0 0% 100% / .04);
-  --lg-rand: hsl(204 100% 80% / .12);
+  --lg-rand: hsl(157 75% 62% / .12);
   --lg-tiefe: hsl(0 0% 0% / .35);
   --lg-haarlinie: hsl(0 0% 0% / .5);
-  --lg-licht: hsl(204 100% 88% / .7);
-  --lg-glanz: hsl(204 100% 80% / .08);
+  --lg-licht: hsl(157 75% 79% / .7);
+  --lg-glanz: hsl(157 75% 62% / .08);
   --lg-glanz-oben: hsl(0 0% 100% / .035);
   --lg-toenung: .08;
 
@@ -169,7 +169,7 @@
     0 0 0 .5px var(--lg-haarlinie),
     0 2px 6px hsl(0 0% 0% / .4),
     0 26px 52px -18px hsl(0 0% 0% / .7),
-    0 0 40px -12px hsl(204 92% 50% / .25);
+    0 0 40px -12px hsl(157 69% 39% / .25);
   --lg-schatten-schwebend:
     0 0 0 .5px var(--lg-haarlinie),
     0 40px 100px -24px hsl(0 0% 0% / .75);
@@ -209,18 +209,18 @@
   position: absolute;
   inset: -18%;
   background:
-    radial-gradient(36% 40% at 14% 20%, hsl(204 95% 51% / .06), transparent 70%),
-    radial-gradient(34% 40% at 86% 14%, hsl(204 100% 77% / .22), transparent 70%),
-    radial-gradient(40% 44% at 76% 84%, hsl(199 94% 67% / .14), transparent 70%),
+    radial-gradient(36% 40% at 14% 20%, hsl(157 71% 39% / .06), transparent 70%),
+    radial-gradient(34% 40% at 86% 14%, hsl(157 75% 55% / .22), transparent 70%),
+    radial-gradient(40% 44% at 76% 84%, hsl(157 70% 49% / .14), transparent 70%),
     radial-gradient(30% 34% at 24% 88%, hsl(22 95% 72% / .20), transparent 70%);
   animation: lg-wolken 48s ease-in-out infinite alternate;
   will-change: transform;
 }
 [data-glas="liquid"].dark .lg-grund-wolken {
   background:
-    radial-gradient(38% 42% at 14% 18%, hsl(204 92% 41% / .30), transparent 70%),
-    radial-gradient(34% 40% at 86% 14%, hsl(204 95% 51% / .16), transparent 70%),
-    radial-gradient(40% 44% at 76% 86%, hsl(199 94% 67% / .12), transparent 70%),
+    radial-gradient(38% 42% at 14% 18%, hsl(157 69% 32% / .30), transparent 70%),
+    radial-gradient(34% 40% at 86% 14%, hsl(157 71% 39% / .16), transparent 70%),
+    radial-gradient(40% 44% at 76% 86%, hsl(157 70% 49% / .12), transparent 70%),
     radial-gradient(30% 34% at 22% 90%, hsl(22 95% 58% / .14), transparent 70%);
 }
 

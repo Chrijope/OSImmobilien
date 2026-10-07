@@ -3,7 +3,7 @@ import { addBrandedHeader, addBrandedFooter, brandedSectionTitle, BRAND, loadLog
 
 /**
  * Generiert eine leere Mietfreibestätigung als Download-PDF.
- * Stil: angelehnt an selbstauskunft.de, mit MOREImmo Branding.
+ * Stil: angelehnt an selbstauskunft.de, mit OS Immobilien Branding.
  */
 export async function generateMietfreibestaetigungPDF(): Promise<void> {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
@@ -69,7 +69,7 @@ export async function generateMietfreibestaetigungPDF(): Promise<void> {
   // Footer
   addBrandedFooter(doc, 1, 1);
 
-  doc.save("Mietfreibestaetigung_MOREImmo_Offices.pdf");
+  doc.save("Mietfreibestaetigung_OS-Immobilien_Offices.pdf");
 }
 
 function drawField(doc: jsPDF, label: string, x: number, y: number, w: number): number {

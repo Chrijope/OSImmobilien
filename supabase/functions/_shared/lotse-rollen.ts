@@ -1,5 +1,5 @@
 /**
- * Wer den MORE Lotsen nutzen darf, gemeinsam für Browser und Server.
+ * Wer den OS Lotsen nutzen darf, gemeinsam für Browser und Server.
  *
  * Eine eigene kleine Datei ohne weitere Importe, weil
  * `src/lib/sidebarPermissions.ts` sie einbindet und damit in jedem Seitenaufruf

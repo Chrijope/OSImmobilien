@@ -18,7 +18,7 @@ import {
 } from "recharts";
 
 /** Farben für die überlagerten Profile. Bewusst gut unterscheidbar. */
-const PROFIL_FARBEN = ["#0A6EDB", "#059669", "#D97706", "#DC2626"];
+const PROFIL_FARBEN = ["#187F58", "#059669", "#D97706", "#DC2626"];
 
 function nfmt(n: number, digits = 0) {
   return new Intl.NumberFormat("de-DE", { maximumFractionDigits: digits }).format(n);

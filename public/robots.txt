@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://portal.more.immo/sitemap.xml
+Sitemap: https://osimmobilien.netlify.app/sitemap.xml

@@ -49,7 +49,7 @@ const GRUEN: RGB = [27, 110, 55];
 const ROT: RGB = [180, 35, 24];
 
 const KASTEN: Record<KastenTon, { grund: RGB; balken: RGB; titel: RGB }> = {
-  dich: { grund: AKZENT_FLAECHE, balken: AKZENT, titel: [8, 88, 176] },
+  dich: { grund: AKZENT_FLAECHE, balken: AKZENT, titel: [19, 102, 71] },
   gut: { grund: [234, 246, 238], balken: GRUEN, titel: GRUEN },
   ok: { grund: [234, 246, 238], balken: GRUEN, titel: GRUEN },
   acht: { grund: [255, 246, 222], balken: [138, 90, 0], titel: [138, 90, 0] },
@@ -70,9 +70,9 @@ const KASTEN: Record<KastenTon, { grund: RGB; balken: RGB; titel: RGB }> = {
  * ausschalten, sind davon nicht berührt.
  */
 const WOLKEN: Array<{ x: number; y: number; r: number; farbe: RGB; deckkraft: number }> = [
-  { x: 18, y: 40, r: 70, farbe: [10, 110, 219], deckkraft: 0.018 },
-  { x: 196, y: 120, r: 80, farbe: [136, 207, 255], deckkraft: 0.05 },
-  { x: 60, y: 262, r: 76, farbe: [136, 207, 255], deckkraft: 0.04 },
+  { x: 18, y: 40, r: 70, farbe: [24, 127, 88], deckkraft: 0.018 },
+  { x: 196, y: 120, r: 80, farbe: [48, 225, 158], deckkraft: 0.05 },
+  { x: 60, y: 262, r: 76, farbe: [48, 225, 158], deckkraft: 0.04 },
   { x: 176, y: 286, r: 46, farbe: [189, 85, 10], deckkraft: 0.018 },
 ];
 
@@ -91,7 +91,7 @@ function zeichneGlasGrund(doc: jsPDF) {
 /** Eine Glaskarte: zarter Schatten, halbtransparentes Weiß, feine helle Kante. */
 function glasKarte(doc: jsPDF, x: number, y: number, b: number, h: number, r = 2.6) {
   doc.setGState(new GState({ opacity: 0.06 }));
-  doc.setFillColor(15, 40, 80);
+  doc.setFillColor(15, 46, 34);
   doc.roundedRect(x, y + 0.7, b, h, r, r, "F");
   doc.setGState(new GState({ opacity: 0.78 }));
   doc.setFillColor(255, 255, 255);
@@ -341,7 +341,7 @@ class Setzer {
         const hoehen = b.schritte.map((s) => pad * 2 + 10 + this.text(s.titel, 0, 0, bb - pad * 2, 10.4, TINTE, { fett: true, zeichnen: false }) + 1 + this.text(s.text, 0, 0, bb - pad * 2, 8.4, TEXT2, { zeichnen: false }));
         const h = Math.max(...hoehen);
         if (zeichnen) {
-          const farben: RGB[] = [TINTE, [8, 88, 176], AKZENT];
+          const farben: RGB[] = [TINTE, [19, 102, 71], AKZENT];
           b.schritte.forEach((s, i) => {
             const bx = x + i * (bb + pf);
             glasKarte(doc, bx, y, bb, h, 2.6);
@@ -419,7 +419,7 @@ class Setzer {
         return h + 2;
       }
       case "trichter": {
-        const farben: RGB[] = [TINTE, [18, 58, 107], [8, 88, 176], AKZENT, [90, 174, 240]];
+        const farben: RGB[] = [TINTE, [20, 65, 48], [19, 102, 71], AKZENT, [44, 189, 134]];
         const zh = 8.6;
         const maxB = 96;
         if (zeichnen) {
@@ -452,7 +452,7 @@ class Setzer {
         );
         const h = hoehen.reduce((s, v) => s + v + 1.5, 0);
         if (zeichnen) {
-          doc.setDrawColor(136, 207, 255);
+          doc.setDrawColor(48, 225, 158);
           doc.setLineWidth(0.8);
           doc.line(x + 4.3, y + 3, x + 4.3, y + h - 6);
           let ey = y;
@@ -623,7 +623,7 @@ class Setzer {
           doc.setFillColor(...TINTE);
           doc.roundedRect(x, y, breite, h, 4, 4, "F");
           let cy = y + pad;
-          this.text(`${this.k.en ? "FOR" : "FÜR"} ${b.fuer.toUpperCase()}`, x + pad, cy, tb, 7, [136, 207, 255], { fett: true, zeichnen });
+          this.text(`${this.k.en ? "FOR" : "FÜR"} ${b.fuer.toUpperCase()}`, x + pad, cy, tb, 7, [48, 225, 158], { fett: true, zeichnen });
           cy += kopfH;
           cy += this.text(b.titel, x + pad, cy, tb, 17, [255, 255, 255], { fett: true, zeichnen, faktor: 1.2 }) + 2;
           cy += this.text(b.text, x + pad, cy, tb, 10, [212, 220, 232], { zeichnen }) + 3;
@@ -821,8 +821,8 @@ async function setze(handbuch: Handbuch, seitenNummern: Map<string, number>, qr:
     empfaenger: handbuch.erstelltFuer,
     datum: handbuch.datum,
     fusszeile: en
-      ? "Model calculations with disclosed assumptions, not a commitment. MOREImmo, Wendelsteinstraße 19, 83075 Bad Feilnbach, Germany"
-      : "Modellrechnungen mit offengelegten Annahmen, keine Zusage. MOREImmo, Wendelsteinstraße 19, 83075 Bad Feilnbach",
+      ? "Model calculations with disclosed assumptions, not a commitment. OS Immobilien Holding GmbH, Am Ostbahnhof 1, 15749 Mittenwalde, Germany"
+      : "Modellrechnungen mit offengelegten Annahmen, keine Zusage. OS Immobilien Holding GmbH, Am Ostbahnhof 1, 15749 Mittenwalde",
     sprache: handbuch.sprache,
   });
   const setzer = new Setzer({ doc, en, logo, qr, seitenNummern });
@@ -834,7 +834,7 @@ async function setze(handbuch: Handbuch, seitenNummern: Map<string, number>, qr:
   }
   doc.setProperties({
     title: `${handbuch.titel} ${en ? "for" : "für"} ${handbuch.erstelltFuer}`,
-    author: "MOREImmo",
+    author: "OS Immobilien",
     subject: en ? "Model calculations, not a commitment" : "Modellrechnungen, keine Zusage",
   });
   return doc;
@@ -848,14 +848,14 @@ export async function erzeugeHandbuchPdf(handbuch: Handbuch): Promise<jsPDF> {
   return setze(handbuch, nummern, qr, logo, icon);
 }
 
-/** Der Dateiname, etwa „MOREImmo_Immobilienhandbuch_Erika_Muster.pdf“, englisch „MOREImmo_Property_Handbook_…“. */
+/** Der Dateiname, etwa „OS-Immobilien_Immobilienhandbuch_Erika_Muster.pdf“, englisch „OS-Immobilien_Property_Handbook_…“. */
 export function handbuchDateiname(name: string, sprache: "de" | "en" = "de"): string {
   const sauber = name
     .normalize("NFKD")
     .replace(/[̀-ͯ]/g, "")
     .replace(/[^A-Za-z0-9]+/g, "_")
     .replace(/^_+|_+$/g, "");
-  return `MOREImmo_${sprache === "en" ? "Property_Handbook" : "Immobilienhandbuch"}${sauber ? `_${sauber}` : ""}.pdf`;
+  return `OS-Immobilien_${sprache === "en" ? "Property_Handbook" : "Immobilienhandbuch"}${sauber ? `_${sauber}` : ""}.pdf`;
 }
 
 export async function ladeHandbuchPdfHerunter(handbuch: Handbuch): Promise<void> {

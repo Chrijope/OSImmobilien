@@ -87,7 +87,7 @@ describe("umgebungsKartenbild", () => {
     expect(aufrufe.texte).toContain(KARTEN_NAMENSNENNUNG);
     expect(KARTEN_NAMENSNENNUNG).toBe("© OpenStreetMap-Mitwirkende");
     // Farben aus UMGEBUNG_KATEGORIEN: Einkaufen blau, Bus und Bahn violett, Grün grün; die Nadel dunkel.
-    expect(aufrufe.fuellfarben).toEqual(expect.arrayContaining(["#087ac7", "#5f3dc4", "#2e9468", "#182c3d"]));
+    expect(aufrufe.fuellfarben).toEqual(expect.arrayContaining(["#15724F", "#5f3dc4", "#2e9468", "#182c3d"]));
     // Seit dem 24.09.2026 abends gehen die Arztpraxen mit, ihre Farbe ist die der Einrichtungen.
     expect(aufrufe.fuellfarben).toContain("#c77d12");
   });

@@ -118,7 +118,7 @@ export async function oeffneSchwebendesFenster(
   if (api.window) return api.window;
   try {
     const fenster = await api.requestWindow({ width: breite, height: hoehe });
-    fenster.document.title = "MORE Immo Videogespräch";
+    fenster.document.title = "OS Immobilien Videogespräch";
     const grund = fenster.document.createElement("style");
     grund.textContent = GRUNDSTIL;
     fenster.document.head.appendChild(grund);

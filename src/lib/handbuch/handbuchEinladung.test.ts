@@ -35,8 +35,8 @@ describe("Helfer für den persönlichen Link", () => {
   });
 
   it("baut den Link außerhalb von /handbuch/:slug, mit Kampagnenkennung", () => {
-    expect(einladungsLink("https://portal.more.immo", "abc", "utm_source=mail")).toBe(
-      "https://portal.more.immo/handbuch-einladung/abc?utm_source=mail",
+    expect(einladungsLink("https://osimmobilien.netlify.app", "abc", "utm_source=mail")).toBe(
+      "https://osimmobilien.netlify.app/handbuch-einladung/abc?utm_source=mail",
     );
   });
 });

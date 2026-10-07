@@ -1,5 +1,5 @@
 // Die Bundesländer als SVG-Pfade, übernommen am 30.09.2026 unverändert aus dem
-// Website-Projekt (MOREImmo-Website/src/assets/germany-states.ts). Dort
+// Website-Projekt (OS Immobilien-Website/src/assets/germany-states.ts). Dort
 // entnommen aus Wikimedia Commons "Karte_Deutschland.svg" (gemeinfrei).
 export const DE_VIEWBOX = '0 0 591.504 800.504';
 

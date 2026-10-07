@@ -48,7 +48,7 @@ beforeEach(() => {
     removeItem: (k: string) => storage.delete(k),
   });
   m.invite.mockResolvedValue(true);
-  m.save.mockResolvedValue('https://portal.more.immo/raum/test');
+  m.save.mockResolvedValue('https://osimmobilien.netlify.app/raum/test');
 });
 afterEach(() => { cleanup(); vi.useRealTimers(); });
 

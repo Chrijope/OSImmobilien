@@ -94,7 +94,7 @@ const defaultSettings: EinstellungenData = {
   profil: { vorname: "", nachname: "", telefon: "", position: "", strasse: "", hausnummer: "", plz: "", ort: "", land: "Deutschland" },
   email: {
     passwort: "",
-    signatur: { aktiv: true, html: `<p>Mit freundlichen Grüßen</p>\n<p><strong>Christian Peetz</strong></p>\n<p>Vertriebsberater | MOREImmo</p>\n<p>📞 +49 170 1234567</p>\n<p>✉ c.peetz@moreimmo.de</p>\n<p>🌐 www.moreimmo.de</p>` },
+    signatur: { aktiv: true, html: `<p>Mit freundlichen Grüßen</p>\n<p><strong>Christian Peetz</strong></p>\n<p>Vertriebsberater | OS Immobilien</p>\n<p>📞 +49 170 1234567</p>\n<p>✉ os@os-immobilien.com</p>\n<p>🌐 www.moreimmo.de</p>` },
     zusatzKonten: [],
     syncOptionen: { autoSync: false, intervall: "15", nurUngelesen: false, maxAnzahl: 50, ordnerSync: ["INBOX"] },
   },
@@ -909,7 +909,7 @@ const Einstellungen = () => {
         if (activeTab === "profil" && profilComplete && gewerbeComplete) {
           await markOnboardingComplete();
           window.dispatchEvent(new CustomEvent("onboarding-complete"));
-          toast.success("🎉 Willkommen! Wir wünschen dir viel Freude bei der Nutzung des CRM von MOREImmo!", { duration: 5000 });
+          toast.success("🎉 Willkommen! Wir wünschen dir viel Freude bei der Nutzung des CRM von OS Immobilien!", { duration: 5000 });
           navigate("/", { replace: true });
           return;
         }
@@ -2328,7 +2328,7 @@ function MetaPixelSection({
           <Info className="h-3 w-3 mt-0.5 shrink-0" />
           <span>
             Trage hier ausschließlich Deine eigene Pixel-ID aus Deinem Meta Events Manager ein. Die ID ist eine reine Zahlenfolge. Besucher Deiner Landingpage werden dann an Deinen Meta-Account gemeldet, allerdings erst, nachdem sie auf der Landingpage eingewilligt haben. Zum Entfernen das Feld leeren und speichern.
-            {" "}Dein Firmenname und Deine Firmenadresse aus dem Profil (Gewerbedaten) stehen dann auf Deiner Partnerseite im Datenschutzhinweis, denn für das Pixel sind Du und MOREImmo gemeinsam verantwortlich.
+            {" "}Dein Firmenname und Deine Firmenadresse aus dem Profil (Gewerbedaten) stehen dann auf Deiner Partnerseite im Datenschutzhinweis, denn für das Pixel sind Du und OS Immobilien gemeinsam verantwortlich.
           </span>
         </p>
         {savedMetaPixelId && !pixelVerantwortlicherAus(settings.gewerbedaten, `${settings.profil?.vorname ?? ""} ${settings.profil?.nachname ?? ""}`) && (

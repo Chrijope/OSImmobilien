@@ -15,12 +15,12 @@ interface Props {
 const Mail = ({ vorname }: Props) => (
   <EmailLayout
     titel="Danke für deine Zeit"
-    vorschau="Danke für dein Interesse an MOREImmo."
+    vorschau="Danke für dein Interesse an OS Immobilien."
     anrede={vorname ? `Hallo ${vorname},` : 'Hallo,'}
     ohneUnterschrift
   >
     <Absatz>
-      danke für deine Zeit und dein Interesse an MOREImmo. Nach unserem Gespräch sind wir zu
+      danke für deine Zeit und dein Interesse an OS Immobilien. Nach unserem Gespräch sind wir zu
       dem Schluss gekommen, dass es aktuell nicht passt.
     </Absatz>
     <Absatz letzter>Wir wünschen dir für deinen Weg alles Gute.</Absatz>
@@ -29,7 +29,7 @@ const Mail = ({ vorname }: Props) => (
 
 export const template = {
   component: Mail,
-  subject: 'Deine Bewerbung bei MOREImmo',
+  subject: 'Deine Bewerbung bei OS Immobilien',
   displayName: 'Bewerber-Absage (wertschätzend)',
   previewData: {
     vorname: 'Max',

@@ -4,7 +4,7 @@ import { EmailLayout, Absatz, Angaben, Handlung, Hinweis, Nebenhandlung } from '
 import { MAIL_ANLEITUNG_URL, onboardingTerminSatz } from '../bewerber-zugangsdaten.ts'
 
 /**
- * Zugangsdaten der neuen persoenlichen @more.immo-Adresse an die private
+ * Zugangsdaten der neuen persoenlichen @os-immobilien.com-Adresse an die private
  * Bewerber-Adresse. Bewusst ohne Unterschrifts- und Ansprechpartner-Block
  * (neutrale Systemmail) und ohne Abmeldelink (kein Newsletter). Das Passwort
  * steht nur in dieser Mail, im CRM wird es nicht gespeichert.
@@ -29,14 +29,14 @@ const Mail = ({ vorname, persoenlicheEmail, passwort, onboardingDatum, onboardin
   return (
     <EmailLayout
       augenbraue="Willkommen an Bord"
-      titel="Deine persönliche MOREImmo Adresse"
-      vorschau="Deine persönliche MOREImmo E-Mail-Adresse ist bereit."
+      titel="Deine persönliche OS Immobilien Adresse"
+      vorschau="Deine persönliche OS Immobilien E-Mail-Adresse ist bereit."
       anrede={vorname ? `Hallo ${vorname},` : 'Hallo,'}
       ohneUnterschrift
       intern
     >
       <Absatz>
-        willkommen an Bord! Deine persönliche MOREImmo E-Mail-Adresse ist eingerichtet und
+        willkommen an Bord! Deine persönliche OS Immobilien E-Mail-Adresse ist eingerichtet und
         ab sofort einsatzbereit.
       </Absatz>
 
@@ -77,11 +77,11 @@ const Mail = ({ vorname, persoenlicheEmail, passwort, onboardingDatum, onboardin
 
 export const template = {
   component: Mail,
-  subject: 'Deine persönliche MOREImmo E-Mail-Adresse ist bereit',
+  subject: 'Deine persönliche OS Immobilien E-Mail-Adresse ist bereit',
   displayName: 'Bewerber-Zugangsdaten (persönliche Mailadresse)',
   previewData: {
     vorname: 'Max',
-    persoenlicheEmail: 'm.mustermann@more.immo',
+    persoenlicheEmail: 'm.mustermann@os-immobilien.com',
     passwort: 'Beispiel-Startpasswort',
     onboardingDatum: '24.08.2026',
     onboardingUhrzeit: '10:00',

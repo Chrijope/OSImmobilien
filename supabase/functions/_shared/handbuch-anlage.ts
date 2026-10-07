@@ -18,8 +18,8 @@
  *      ohne weiter: Der Besucher sieht sein Handbuch trotzdem sofort, nur der
  *      Link in der Mail fehlt, und die Mail geht deshalb nicht raus;
  *   4. verschickt die Zustellmail „handbuch-zustellung“. Absender ist der
- *      zuständige Partner („Name | MOREImmo“, Antworten an ihn), ohne Partner
- *      das MOREImmo Team. Das regelt `send-transactional-email` selbst über
+ *      zuständige Partner („Name | OS Immobilien“, Antworten an ihn), ohne Partner
+ *      das OS Immobilien Team. Das regelt `send-transactional-email` selbst über
  *      `absender: 'zustaendiger-partner'`.
  *
  * Bei der offenen Selbstauskunft (ohne Handbuch) geht statt der Zustellmail
@@ -49,7 +49,7 @@ import { zustaendigerAnsprechpartner } from "./zustaendiger-ansprechpartner.ts";
 import { kundenSprache } from "./kunden-sprache.ts";
 
 /** Die öffentliche Adresse für Links in Mails. Wie `SA_FILL_BASE_URL` in send-sa-invitation. */
-export const HANDBUCH_BASIS_URL = "https://portal.more.immo";
+export const HANDBUCH_BASIS_URL = "https://osimmobilien.netlify.app";
 
 /** `?lang=en` für englische Links, damit die Seite in der Sprache der Mail öffnet. */
 function sprachZusatz(sprache?: string | null): string {

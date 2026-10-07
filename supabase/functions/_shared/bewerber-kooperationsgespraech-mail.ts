@@ -45,7 +45,7 @@ export const KOOPERATION_KALENDER_URL = 'https://calendly.com/sarah-kaiser-thom-
  * bestätigen, damit sie ohne Nachtragen im CRM steht. Calendly meldet uns
  * nichts zurück, unsere eigene Seite kann die Bestätigung entgegennehmen.
  */
-export const KOOPERATION_BASIS_URL = 'https://portal.more.immo/kennenlerngespraech'
+export const KOOPERATION_BASIS_URL = 'https://osimmobilien.netlify.app/kennenlerngespraech'
 
 /**
  * Der alte Weg über die eigene Buchungsstrecke mit Videoraum, eingeklammert.
@@ -53,7 +53,7 @@ export const KOOPERATION_BASIS_URL = 'https://portal.more.immo/kennenlerngesprae
  * Er steht hier nur noch, damit nachvollziehbar bleibt, was der Link vorher
  * war. Die Route gibt es weiter, verlinkt wird sie nicht mehr.
  */
-export const KOOPERATION_PORTAL_URL_ALT = 'https://portal.more.immo/kooperationsgespraech'
+export const KOOPERATION_PORTAL_URL_ALT = 'https://osimmobilien.netlify.app/kooperationsgespraech'
 
 /**
  * Der Link für einen Bewerber, mit seinem Token.
@@ -182,7 +182,7 @@ export const EINLADUNG_FUSS_HINWEIS =
  * er den Textbaustein. Deshalb zwei Fassungen. Der Versandweg bleibt derselbe,
  * beide liegen in `src/lib/bewerberAbsageMail.ts`.
  */
-export const ABSAGE_BETREFF = 'Deine Bewerbung bei MOREImmo'
+export const ABSAGE_BETREFF = 'Deine Bewerbung bei OS Immobilien'
 export const ABSAGE_TITEL = 'Danke für deine Antworten'
 export const ABSAGE_VORSCHAU = 'Wir haben uns dein Kennenlernen angesehen.'
 

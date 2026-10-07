@@ -78,7 +78,7 @@ Deno.serve(async (req) => {
     return antwort({ error: 'Missing env' }, 500)
   }
 
-  const basisAdresse = (Deno.env.get('APP_BASE_URL') || 'https://portal.more.immo').trim()
+  const basisAdresse = (Deno.env.get('APP_BASE_URL') || 'https://osimmobilien.netlify.app').trim()
 
   // Ohne Anmeldung erreichbar, deshalb eine Ratenbremse je Absender.
   const bremse = await checkEdgeRateLimit({

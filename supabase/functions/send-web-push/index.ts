@@ -42,7 +42,7 @@ Deno.serve(async (req) => {
 
   try {
     const privateKey = Deno.env.get("VAPID_PRIVATE_KEY");
-    const subject = Deno.env.get("VAPID_SUBJECT") || "mailto:admin@more.immo";
+    const subject = Deno.env.get("VAPID_SUBJECT") || "mailto:os@os-immobilien.com";
 
     if (!privateKey) {
       return new Response(JSON.stringify({ error: "VAPID_PRIVATE_KEY missing" }), {

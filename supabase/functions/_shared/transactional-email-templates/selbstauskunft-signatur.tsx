@@ -84,13 +84,13 @@ export const template = {
   previewData: {
     name: 'Herr Mustermann',
     vpName: 'Christian Peetz',
-    signUrl: 'https://portal.more.immo/sign/example',
+    signUrl: 'https://osimmobilien.netlify.app/sign/example',
     gueltigBis: '5. August 2026',
     berater: {
       name: 'Christian Peetz',
-      rolle: 'Ihr Ansprechpartner bei MOREImmo',
+      rolle: 'Ihr Ansprechpartner bei OS Immobilien',
       telefon: '08061 000000',
-      email: 'christian@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

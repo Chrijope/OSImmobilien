@@ -85,6 +85,6 @@ export const template = {
     wohnungName: 'Wohnung 12',
     dokumentUrl: 'https://example.com/faelligkeit.pdf',
     hochgeladenVon: 'Backoffice',
-    crmUrl: 'https://portal.more.immo/kunden/1234',
+    crmUrl: 'https://osimmobilien.netlify.app/kunden/1234',
   },
 } satisfies TemplateEntry

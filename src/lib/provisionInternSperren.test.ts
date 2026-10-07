@@ -2,7 +2,7 @@
  * Provisionsfelder aus Investagon nur für Admin, Inhaber und Buchhaltung, die
  * Eigenprovisionsvereinbarungen des Käufers dagegen für alle Objektrollen
  * (Vorgabe und Korrektur Christian vom 05.10.2026): Migration 20261005120000,
- * Eingangskorb, Kundenweg, Grundrisse und MORE Lotse.
+ * Eingangskorb, Kundenweg, Grundrisse und OS Lotse.
  */
 import { describe, it, expect } from "vitest";
 import { existsSync, readFileSync } from "node:fs";
@@ -152,7 +152,7 @@ describe("Eigenprovisionsvereinbarung: Objektrollen ja, Kunde nur mit Freigabe",
   });
 });
 
-describe("MORE Lotse: Eigenprovision ja, Vertriebsprovision nein", () => {
+describe("OS Lotse: Eigenprovision ja, Vertriebsprovision nein", () => {
   it.each([
     "Wie hoch ist die Eigenprovision?",
     "Wie viel Prozent Eigenprovision bekommt der Käufer?",
@@ -164,21 +164,21 @@ describe("MORE Lotse: Eigenprovision ja, Vertriebsprovision nein", () => {
   });
 
   it.each([
-    "Welche Provision bekommt MORE Immo?",
+    "Welche Provision bekommt OS Immobilien?",
     "Wie hoch ist die Innenprovision?",
     "Was verdient der Vertrieb an der Wohnung?",
     "Wie hoch ist die Courtage?",
     "Wie hoch ist mein Provisionssatz als Partner?",
-    "Wie hoch ist die Eigenprovision und was verdient MORE Immo daran?",
-    "Was zahlt der Bauträger an MOREImmo?",
+    "Wie hoch ist die Eigenprovision und was verdient OS Immobilien daran?",
+    "Was zahlt der Bauträger an OS Immobilien?",
   ])("sperrt weiter: %s", (frage) => {
     expect(frageNachProvision(frage)).toBe(true);
   });
 
-  it("lässt die Eigenprovision in der Antwort stehen, nicht aber, was MORE Immo oder der Vertrieb bekommt", () => {
+  it("lässt die Eigenprovision in der Antwort stehen, nicht aber, was OS Immobilien oder der Vertrieb bekommt", () => {
     expect(antwortNenntProvision("Laut Eigenprovisionsvereinbarung erhältst du eine Eigenprovision von 3 % des Kaufpreises. Sie wird nach Zahlung des Kaufpreises ausgezahlt.\nQUELLEN: Eigenprovisionsvereinbarung WE 3")).toBe(false);
-    expect(antwortNenntProvision("MOREImmo zahlt dem Käufer eine Eigenprovision von 3.000 €.")).toBe(false);
-    expect(antwortNenntProvision("MOREImmo erhält 6 % vom Kaufpreis, davon gehen 3 % als Eigenprovision an den Käufer.")).toBe(true);
+    expect(antwortNenntProvision("OS Immobilien zahlt dem Käufer eine Eigenprovision von 3.000 €.")).toBe(false);
+    expect(antwortNenntProvision("OS Immobilien erhält 6 % vom Kaufpreis, davon gehen 3 % als Eigenprovision an den Käufer.")).toBe(true);
     expect(antwortNenntProvision("Die Eigenprovision ist Teil der Innenprovision von 6 %.")).toBe(true);
     expect(antwortNenntProvision("Der Vertrieb erhält 6 % vom Kaufpreis.")).toBe(true);
   });

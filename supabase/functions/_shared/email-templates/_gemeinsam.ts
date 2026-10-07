@@ -37,7 +37,7 @@
  *
  *   `ohneUnterschrift` laesst den Ansprechpartner weg. Der Hook kennt keinen:
  *   Er weiss nur, welche Adresse sich anmeldet. Uebrig bliebe der Platzhalter
- *   "MOREImmo Team", und der ist schlechter als nichts.
+ *   "OS Immobilien Team", und der ist schlechter als nichts.
  *
  * Warum die Vorlagen an ihrem Platz bleiben
  * -----------------------------------------

@@ -108,7 +108,7 @@ function Fusszeile({ seite, sprache }: { seite: number; sprache: FormatSprache }
 function Seitenkopf({ clientName, marke, sprache }: { clientName: string; marke?: string; sprache: FormatSprache }) {
   return (
     <div className="expose-page-heading">
-      <span>MORE Immo · {dokumentTexteFuer(sprache).kopf.investmentkalkulation}{marke ? ` · ${marke}` : ""}</span>
+      <span>OS Immobilien · {dokumentTexteFuer(sprache).kopf.investmentkalkulation}{marke ? ` · ${marke}` : ""}</span>
       <strong>{clientName}</strong>
     </div>
   );

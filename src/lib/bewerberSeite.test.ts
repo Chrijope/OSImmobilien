@@ -116,7 +116,7 @@ describe("Wer am Zug ist", () => {
     expect(werAmZug(stand(), JETZT)).toBe("bewerber");
   });
 
-  it("ist MOREImmo, sobald eine Frage offen ist, obwohl der Bewerber im Eingang steht", () => {
+  it("ist OS Immobilien, sobald eine Frage offen ist, obwohl der Bewerber im Eingang steht", () => {
     // Genau der Satz aus der Abstimmungsfassung: abgeleitet aus dem Vorgang
     // und nicht aus der Pipelinestufe.
     const s = stand({
@@ -139,7 +139,7 @@ describe("Wer am Zug ist", () => {
     expect(werAmZug(s, JETZT)).toBe("bewerber");
   });
 
-  it("ist MOREImmo nach dem Gespraech, solange die Zusammenfassung nicht freigegeben ist", () => {
+  it("ist OS Immobilien nach dem Gespraech, solange die Zusammenfassung nicht freigegeben ist", () => {
     const ohne = stand({ termin: { datum: "2026-09-18", gefuehrt_am: "2026-09-18T14:30:00.000Z" } });
     expect(werAmZug(ohne, JETZT)).toBe("moreimmo");
 

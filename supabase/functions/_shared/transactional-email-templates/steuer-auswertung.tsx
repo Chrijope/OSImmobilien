@@ -24,7 +24,7 @@ import { auswertungPerson, naechsterSchrittZeile } from '../steuer-auswertung-te
  *
  * Seit der Rechner ohne Kuerzel fuer bezahlte Werbung laeuft, kommen Leads an,
  * denen noch kein Vertriebspartner zugeteilt ist. Dann traegt die Mail keinen
- * Unterschriftsblock: Der Platzhalter "MOREImmo Team" mit der allgemeinen
+ * Unterschriftsblock: Der Platzhalter "OS Immobilien Team" mit der allgemeinen
  * Nummer sieht aus wie ein persoenlicher Ansprechpartner, ist aber keiner. Das
  * Layout kennt dafuer `ohneUnterschrift`, so wie die neutralen Systemmails.
  *
@@ -113,7 +113,7 @@ const Mail = ({
 
 export const template = {
   component: Mail,
-  subject: 'Deine Steuerauswertung von MOREImmo',
+  subject: 'Deine Steuerauswertung von OS Immobilien',
   displayName: 'Steuerauswertung (öffentlicher Steuerrechner)',
   previewData: {
     kundeName: 'Max Mustermann',
@@ -121,9 +121,9 @@ export const template = {
     beraterName: 'Christian Peetz',
     berater: {
       name: 'Christian Peetz',
-      rolle: 'Dein Ansprechpartner bei MOREImmo',
-      telefon: '+49 1515 0275108',
-      email: 'c.peetz@more.immo',
+      rolle: 'Dein Ansprechpartner bei OS Immobilien',
+      telefon: '+49 30 863289210',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

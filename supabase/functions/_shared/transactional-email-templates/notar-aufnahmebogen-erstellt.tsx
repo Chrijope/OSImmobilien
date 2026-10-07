@@ -45,6 +45,6 @@ export const template = {
     objektName: 'Breitscheidstraße 18',
     wohnungName: 'Wohnung 12',
     erstelltVon: 'Julian Meyer',
-    kundeLink: 'https://portal.more.immo/kunden/123',
+    kundeLink: 'https://osimmobilien.netlify.app/kunden/123',
   },
 } satisfies TemplateEntry

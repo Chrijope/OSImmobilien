@@ -2,7 +2,7 @@
  * Den zuständigen Vertriebspartner eines Kontakts für die Mailsignatur laden.
  *
  * Anlass: Otto Hans bekam die Selbstauskunft zur Unterschrift, und darunter
- * stand "MOREImmo Team, Ihr Ansprechpartner bei MOREImmo, office@more.immo".
+ * stand "OS Immobilien Team, Ihr Ansprechpartner bei OS Immobilien, os@os-immobilien.com".
  * Betreut wird er von Christian Peetz. Für den Kunden sieht eine Mail von
  * einem Sammelpostfach nach Massenversand aus, und auf Rückfragen antwortet
  * niemand persönlich.
@@ -68,7 +68,7 @@ export async function zustaendigerAnsprechpartner(
       // Neutral ohne Anrede: Dieser Helfer unterschreibt sowohl die Du-Mails
       // (Geburtstag, Unterlagen, Bewertung) als auch die formellen Bankmails
       // (Selbstauskunft, Reservierung), und die Profile kennen kein Geschlecht.
-      rolle: 'Persönlicher Ansprechpartner bei MOREImmo',
+      rolle: 'Persönlicher Ansprechpartner bei OS Immobilien',
       // Leere Felder weglassen, damit die Vorlage auf die allgemeine Angabe
       // zurückfällt, statt eine leere Zeile zu zeigen.
       ...(p.telefon?.trim() ? { telefon: p.telefon.trim() } : {}),

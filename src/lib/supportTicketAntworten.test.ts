@@ -75,7 +75,7 @@ async function wieDieDatenbank(name: string, args: any) {
   const neu = {
     id: `n${Object.keys(z.meta.nachrichten).length + 1}`,
     absender: args.p_als === "support" ? "backoffice" : "nutzer",
-    absenderName: args.p_als === "support" ? "MOREImmo Support (Testname)" : "Testperson",
+    absenderName: args.p_als === "support" ? "OS Immobilien Support (Testname)" : "Testperson",
     inhalt: args.p_inhalt,
     timestamp: new Date().toISOString(),
   };
@@ -154,7 +154,7 @@ describe("Rueckfall ohne Migration", () => {
     expect(cacheUpdateAufrufe).toHaveLength(1);
     const liste = cacheUpdateAufrufe[0].updates.meta.nachrichten;
     expect(liste.map((n: any) => n.inhalt)).toEqual(["Hallo", "Antwort"]);
-    expect(liste[1].absenderName).toBe("MOREImmo Support (Testname)");
+    expect(liste[1].absenderName).toBe("OS Immobilien Support (Testname)");
     expect(notifyUser).toHaveBeenCalledWith("ersteller-1", expect.objectContaining({
       link: "/support-kontaktieren?ticket=t1",
     }));

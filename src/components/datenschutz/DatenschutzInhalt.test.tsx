@@ -37,7 +37,7 @@ describe("Datenschutzseite", () => {
   it("zeigt keine Platzhalter und verlinkt Mailadressen", () => {
     zeige("/datenschutz");
     expect(document.querySelectorAll("mark").length).toBe(0);
-    expect(document.querySelector("a[href='mailto:datenschutz@more.immo']")).not.toBeNull();
+    expect(document.querySelector("a[href='mailto:os@os-immobilien.com']")).not.toBeNull();
   });
 
   it("zeigt mit ?lang=en die englische Fassung mit denselben Sprungmarken", () => {

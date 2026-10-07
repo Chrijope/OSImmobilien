@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
  * Zwei Fehler sind hier moeglich, und beide fallen erst im Postfach auf:
  * Anrede und Betreff vertauscht, weil die Vorlagenfelder `kundeName` und
  * `beraterName` heissen, aber Empfaenger und Absender bedeuten. Und eine
- * Unterschrift, die auf "Ansprechpartner bei MOREImmo" mit office@more.immo
+ * Unterschrift, die auf "Ansprechpartner bei OS Immobilien" mit os@os-immobilien.com
  * zurueckfaellt, weil der Berater nur ueber seinen Namen gesucht wurde.
  */
 
@@ -15,8 +15,8 @@ const PARTNER = {
   id: "u-1",
   name: "Christian Peetz",
   rollen: ["vertriebspartner"],
-  email: "c.peetz@more.immo",
-  telefon: "+49 1515 0275108",
+  email: "os@os-immobilien.com",
+  telefon: "+49 30 863289210",
   bildUrl:
     "https://irwdgutegmivbtgmftyc.supabase.co/storage/v1/object/public/avatars/u-1/avatar.jpg?t=1",
 };
@@ -35,7 +35,7 @@ describe("chatBenachrichtigungDaten", () => {
       absenderName: "Christian Peetz",
       absenderId: "u-1",
       nachricht: "Die Unterlagen sind geprüft.",
-      portalUrl: "https://portal.more.immo/kunde/chat",
+      portalUrl: "https://osimmobilien.netlify.app/kunde/chat",
     });
     // kundeName ist die Anrede des Empfaengers.
     expect(daten.kundeName).toBe("Otto Hans");
@@ -49,7 +49,7 @@ describe("chatBenachrichtigungDaten", () => {
       empfaengerName: "Christian Peetz",
       absenderName: "Otto Hans",
       nachricht: "Kurze Rückfrage zur Wohnung.",
-      portalUrl: "https://portal.more.immo/chat?id=1",
+      portalUrl: "https://osimmobilien.netlify.app/chat?id=1",
       anPartner: true,
     });
     expect(daten.kundeName).toBe("Christian Peetz");
@@ -67,11 +67,11 @@ describe("chatBenachrichtigungDaten", () => {
       absenderName: "Christian Peez",
       absenderId: "u-1",
       nachricht: "Test",
-      portalUrl: "https://portal.more.immo/kunde/chat",
+      portalUrl: "https://osimmobilien.netlify.app/kunde/chat",
     });
     expect(daten.beraterUserId).toBe("u-1");
     expect(daten.beraterName).toBe("Christian Peetz");
-    expect(daten.beraterEmail).toBe("c.peetz@more.immo");
+    expect(daten.beraterEmail).toBe("os@os-immobilien.com");
     expect(daten.beraterPosition).toBe("Immobilienberater");
     expect(daten.berater).toMatchObject({ bildUrl: PARTNER.bildUrl });
   });
@@ -82,7 +82,7 @@ describe("chatBenachrichtigungDaten", () => {
       empfaengerName: "Otto Hans",
       absenderName: "Hermann Vogel",
       nachricht: "Test",
-      portalUrl: "https://portal.more.immo/kunde/chat",
+      portalUrl: "https://osimmobilien.netlify.app/kunde/chat",
     });
     expect(daten.beraterName).toBe("Hermann Vogel");
     expect(daten.berater).toBeUndefined();

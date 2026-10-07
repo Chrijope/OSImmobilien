@@ -22,9 +22,9 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 9% 12%;
 
-    /* Blau 600 #087AC7 der Markenrichtlinie. Vorher Apple-Systemblau
-       #007AFF, das mit weisser Schrift nur 4,02:1 erreichte. */
-    --primary: 204 92% 41%;
+    /* Blau 600 #15724F der Markenrichtlinie. Vorher Apple-Systemblau
+       #159061, das mit weisser Schrift nur 4,02:1 erreichte. */
+    --primary: 157 69% 32%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 240 5% 94%;
@@ -33,15 +33,15 @@
     --muted: 240 5% 94%;
     --muted-foreground: 240 4% 46%;
 
-    --accent: 204 100% 97%;        /* Blau 50  #F0F9FF */
-    --accent-foreground: 204 95% 34%; /* Blau 700 #0466A9 */
+    --accent: 157 75% 95%;        /* Blau 50  #F0F9FF */
+    --accent-foreground: 157 71% 26%; /* Blau 700 #13704D */
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 240 5% 88%;
     --input: 240 5% 84%;
-    --ring: 204 92% 41%;
+    --ring: 157 69% 32%;
 
     --radius: 0.75rem;
 
@@ -56,17 +56,17 @@
     /* Apple-style Sidebar – sehr helles Grau, blauer Akzent */
     --sidebar-background: 240 6% 98%;
     --sidebar-foreground: 220 9% 18%;
-    --sidebar-primary: 204 92% 41%;
+    --sidebar-primary: 157 69% 32%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 5% 92%;
     --sidebar-accent-foreground: 220 9% 12%;
     --sidebar-border: 240 5% 90%;
-    --sidebar-ring: 204 92% 41%;
+    --sidebar-ring: 157 69% 32%;
     --sidebar-muted: 240 4% 46%;
 
-    --chart-b2c: 204 95% 34%;        /* Blau 700 */
-    --chart-b2b: 204 95% 51%;        /* Blau 500 */
-    --chart-provision: 204 100% 77%; /* Blau 300 */
+    --chart-b2c: 157 71% 26%;        /* Blau 700 */
+    --chart-b2b: 157 71% 39%;        /* Blau 500 */
+    --chart-provision: 157 75% 55%; /* Blau 300 */
 
     /* Apple System Colors */
     --success: 142 71% 45%;  /* #34C759 */
@@ -78,7 +78,7 @@
     --fortschritt-aktiv: 30 96% 50%; /* #F98007 */
 
     --olive: 142 71% 45%;
-    --sand: 204 92% 41%;
+    --sand: 157 69% 32%;
 
     /* Alert status colors - vibrant */
     --alert-red: 4 100% 59%;    /* #FF3B30 */
@@ -86,7 +86,7 @@
     --alert-green: 142 71% 45%;  /* #34C759 */
 
     /*
-      Marken-Orange der Website more.immo, nur fuer die eine Hauptaktion
+      Marken-Orange der Website osimmobilien.netlify.app, nur fuer die eine Hauptaktion
       einer Seite. Bewusst NICHT der Originalwert #FA792E: weisse Schrift
       erreicht darauf nur 2,68:1 und faellt damit weit unter die 4,5:1,
       die dieses Projekt beim Blau ausdruecklich eingehalten hat.
@@ -100,7 +100,7 @@
     --brand-orange-foreground: 0 0% 100%;
 
     /*
-      Tiefes Marineblau #0C2340 fuer den Kopfbereich der englischen
+      Tiefes Logo-Gruen #0C3828 fuer den Kopfbereich der englischen
       Anzeigenseite /expats-calculator.
 
       WARUM EIN NEUER TOKEN: Es gab keinen dunklen Flaechenton im Projekt.
@@ -110,17 +110,17 @@
       aussehen, hell wie dunkel, deshalb ein eigener, modusfester Wert.
 
       WARUM ER IM DUNKELMODUS NICHT UMDEFINIERT WIRD: Weisse Schrift
-      erreicht auf #0C2340 ein Kontrastverhaeltnis von 15,8:1. Das gilt in
+      erreicht auf #0C3828 ein Kontrastverhaeltnis von 13:1. Das gilt in
       jedem Modus, weil beide Farben feststehen. Damit kann die Kombination
       "dunkler Kopf plus Dunkelmodus" gar nicht erst unlesbar werden. Die
       hellblaue Hervorhebung darin kommt aus dem vorhandenen --info
       (#5AC8FA, 8,3:1 auf dem Marineton), dafuer braucht es keinen zweiten
       neuen Token.
     */
-    --expats-marine: 213 68% 15%;       /* #0C2340 */
+    --expats-marine: 158 65% 13%;       /* #0C3828 */
 
     /* Apple System Color tokens (für Sidebar-Icon-Tints und Akzente) */
-    --apple-blue: 204 92% 41%;
+    --apple-blue: 157 69% 32%;
     --apple-green: 142 71% 45%;
     --apple-indigo: 240 60% 60%;
     --apple-orange: 33 100% 50%;
@@ -153,7 +153,7 @@
     --popover: 210 12% 14%;
     --popover-foreground: 200 15% 91%;
 
-    --primary: 204 100% 77%;
+    --primary: 157 75% 55%;
     --primary-foreground: 210 15% 10%;
 
     --secondary: 210 10% 18%;
@@ -162,8 +162,8 @@
     --muted: 210 10% 18%;
     --muted-foreground: 0 0% 60%;
 
-    --accent: 204 30% 25%;
-    --accent-foreground: 204 50% 80%;
+    --accent: 157 22% 22%;
+    --accent-foreground: 157 38% 75%;
 
     --destructive: 0 62% 35%;
     --destructive-foreground: 0 0% 95%;
@@ -172,16 +172,16 @@
 
     --border: 210 10% 22%;
     --input: 210 10% 28%;
-    --ring: 204 100% 55%;
+    --ring: 157 75% 40%;
 
     --sidebar-background: 210 12% 12%;
     --sidebar-foreground: 200 15% 80%;
-    --sidebar-primary: 204 100% 77%;
+    --sidebar-primary: 157 75% 55%;
     --sidebar-primary-foreground: 210 15% 10%;
-    --sidebar-accent: 204 25% 20%;
-    --sidebar-accent-foreground: 204 50% 80%;
+    --sidebar-accent: 157 19% 18%;
+    --sidebar-accent-foreground: 157 38% 75%;
     --sidebar-border: 210 10% 20%;
-    --sidebar-ring: 204 100% 55%;
+    --sidebar-ring: 157 75% 40%;
     --sidebar-muted: 0 0% 55%;
 
     --alert-red: 0 70% 55%;
@@ -288,11 +288,11 @@
   --popover-foreground: 220 15% 10%;
 
   /* CI-Blau als Primary/Accent/Ring */
-  --primary: 204 92% 41%;
+  --primary: 157 69% 32%;
   --primary-foreground: 0 0% 100%;
   --accent: 220 14% 96%;
   --accent-foreground: 220 15% 10%;
-  --ring: 204 92% 41%;
+  --ring: 157 69% 32%;
 
   /* Dezente neutrale Sekundärflächen */
   --secondary: 220 14% 96%;
@@ -308,13 +308,13 @@
   --portal-soft-shadow: 0 1px 0 hsl(220 13% 91% / 0.8);
 
   /* Akzent-Aliase (für Bestandskomponenten beibehalten) */
-  --portal-akzent: 204 100% 52%;
+  --portal-akzent: 157 75% 39%;
   --portal-akzent-soft: 220 14% 96%;
-  --portal-akzent-deep: 204 100% 32%;
+  --portal-akzent-deep: 157 75% 24%;
   --portal-warm-from:  220 14% 98%;
   --portal-warm-mid:   220 14% 96%;
   --portal-warm-to:    220 13% 91%;
-  --portal-warm-deep:  204 100% 32%;
+  --portal-warm-deep:  157 75% 24%;
   --portal-badge-done:        142 71% 45%;
   --portal-badge-done-soft:   142 60% 96%;
   --portal-badge-done-text:   142 71% 22%;
@@ -553,7 +553,7 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, hsl(204 100% 72% / 0.4), transparent);
+    background: linear-gradient(90deg, transparent, hsl(157 75% 48% / 0.4), transparent);
     animation: shine 2s ease-in-out infinite;
   }
 
@@ -767,9 +767,9 @@
        sind bewusst dunkler als das ursprüngliche Apple-Grau. */
     --b-ink-muted: 220 9% 42%;
     --b-hairline: 220 13% 86%;
-    --b-accent: 204 100% 50%;
+    --b-accent: 157 75% 38%;
     background:
-      radial-gradient(ellipse 80% 50% at 50% 0%, hsl(204 100% 96%) 0%, transparent 55%),
+      radial-gradient(ellipse 80% 50% at 50% 0%, hsl(157 75% 93%) 0%, transparent 55%),
       linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(220 14% 99%) 40%, hsl(220 14% 98%) 100%);
     color: hsl(var(--b-ink));
     font-feature-settings: "ss01", "cv11", "tnum";
@@ -912,7 +912,7 @@
 
   /* Kontakt-CTA (dunkles Statement-Panel) — bleibt dark, aber weicher */
   .beratung-apple #kontakt {
-    background: linear-gradient(160deg, hsl(220 30% 10%) 0%, hsl(220 25% 14%) 60%, hsl(204 35% 18%) 100%) !important;
+    background: linear-gradient(160deg, hsl(220 30% 10%) 0%, hsl(220 25% 14%) 60%, hsl(157 26% 16%) 100%) !important;
     border-radius: 32px;
     margin: 5rem 1.5rem;
     box-shadow:
@@ -920,7 +920,7 @@
       0 30px 80px -30px hsl(220 30% 10% / 0.4);
   }
   .beratung-apple #kontakt h2 .italic {
-    background: linear-gradient(180deg, #ffffff 0%, hsl(204 100% 88%) 100%);
+    background: linear-gradient(180deg, #ffffff 0%, hsl(157 75% 79%) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -968,7 +968,7 @@
     color: rgb(var(--bd-ink) / 0.62) !important;
   }
   .beratung-apple .beratung-dark .text-primary {
-    color: #7cbeff !important;
+    color: #1ED28D !important;
   }
   .beratung-apple .beratung-dark .bg-card,
   .beratung-apple .beratung-dark [class*="rounded-2xl"][class*="border"],
@@ -1204,7 +1204,7 @@
     --la-ink-soft: 220 9% 35%;
     --la-ink-muted: 220 6% 55%;
     --la-hairline: 220 13% 91%;
-    --la-accent: 204 92% 41%;
+    --la-accent: 157 69% 32%;
     color: hsl(var(--la-ink));
     font-feature-settings: "ss01", "cv11", "tnum";
     -webkit-font-smoothing: antialiased;
@@ -1218,9 +1218,9 @@
     padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1.75rem, 5vw, 3.5rem);
     margin-bottom: 2rem;
     background:
-      radial-gradient(ellipse 60% 90% at 15% 0%, hsl(204 100% 55% / 0.32) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 80% at 100% 100%, hsl(204 100% 70% / 0.25) 0%, transparent 65%),
-      linear-gradient(160deg, hsl(220 30% 10%) 0%, hsl(220 25% 14%) 60%, hsl(204 35% 18%) 100%);
+      radial-gradient(ellipse 60% 90% at 15% 0%, hsl(157 75% 40% / 0.32) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 100% 100%, hsl(157 75% 47% / 0.25) 0%, transparent 65%),
+      linear-gradient(160deg, hsl(220 30% 10%) 0%, hsl(220 25% 14%) 60%, hsl(157 26% 16%) 100%);
     color: hsl(0 0% 98%);
     box-shadow:
       0 1px 2px hsl(220 13% 9% / 0.1),
@@ -1243,7 +1243,7 @@
     font-size: 11px;
     letter-spacing: .22em;
     text-transform: uppercase;
-    color: hsl(204 100% 88%);
+    color: hsl(157 75% 79%);
     backdrop-filter: blur(8px);
     margin-bottom: 1.25rem;
   }
@@ -1252,7 +1252,7 @@
     line-height: 1.02;
     letter-spacing: -0.035em;
     font-weight: 600;
-    background: linear-gradient(180deg, #ffffff 0%, hsl(204 100% 88%) 100%);
+    background: linear-gradient(180deg, #ffffff 0%, hsl(157 75% 79%) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -1387,7 +1387,7 @@
   .library-apple .la-add-pill:hover { transform: translateY(-1px); border-color: hsl(220 13% 70%); }
 
   /* ═══════════════════════════════════════════════════════════════
-   * MORE Lotse (seit dem 28.09.2026): das Symbol lebt ein wenig. Die
+   * OS Lotse (seit dem 28.09.2026): das Symbol lebt ein wenig. Die
    * Kompassnadel sucht und kommt zur Ruhe, drei Funken glimmen, ein
    * Schimmer liegt über der oberen Hälfte. Ohne Bewegungswunsch steht
    * alles still, die Funken bleiben sichtbar.
@@ -1451,8 +1451,8 @@
 
 /* CTA Pulse-Glow */
 @keyframes ctaPulseGlow {
-  0%, 100% { box-shadow: 0 0 24px hsl(204 100% 50% / 0.35), 0 0 0 0 hsl(204 100% 50% / 0.4); }
-  50% { box-shadow: 0 0 38px hsl(204 100% 50% / 0.55), 0 0 0 8px hsl(204 100% 50% / 0); }
+  0%, 100% { box-shadow: 0 0 24px hsl(157 75% 38% / 0.35), 0 0 0 0 hsl(157 75% 38% / 0.4); }
+  50% { box-shadow: 0 0 38px hsl(157 75% 38% / 0.55), 0 0 0 8px hsl(157 75% 38% / 0); }
 }
 .analyse-cta-glow {
   animation: ctaPulseGlow 2.4s ease-in-out infinite;
@@ -1518,15 +1518,15 @@
   --muted-foreground:  220 9% 42%;        /* #6E6E73 */
   --border:            220 13% 91%;
   --input:             220 13% 91%;
-  --primary:           204 92% 41%;       /* Blau 600 #087AC7 */
+  --primary:           157 69% 32%;       /* Blau 600 #15724F */
   --primary-foreground:0 0% 100%;
-  --accent:            204 92% 41%;
+  --accent:            157 69% 32%;
   --accent-foreground: 0 0% 100%;
-  --ring:              204 92% 41%;
+  --ring:              157 69% 32%;
   --brand-dark:        220 14% 9%;
   --brand-charcoal:    220 9% 18%;
-  --brand-blue:        204 92% 41%;
-  --brand-blue-light:  204 95% 51%;
+  --brand-blue:        157 69% 32%;
+  --brand-blue-light:  157 71% 39%;
   --hero-overlay: linear-gradient(135deg, rgba(255,255,255,0.0), rgba(255,255,255,0.0));
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter Tight', 'Inter', system-ui, sans-serif;
   color: hsl(var(--foreground));
@@ -1607,7 +1607,7 @@
 .lp-section-light { background: hsl(var(--background)); }
 .lp-section-alt   { background: hsl(var(--muted)); }
 
-/* Einheitlicher Haupt-CTA — dasselbe Orange wie auf more.immo */
+/* Einheitlicher Haupt-CTA — dasselbe Orange wie auf osimmobilien.netlify.app */
 .lp-theme .lp-cta {
   background: linear-gradient(135deg, rgb(250, 121, 46), rgb(242, 66, 13));
   color: #fff;
@@ -1628,15 +1628,15 @@
 /* Dunkle Sektionen jetzt hell + warm (Apple-Stil) */
 .lp-section-dark {
   background:
-    radial-gradient(80% 60% at 20% 0%, hsl(204 100% 96%) 0%, transparent 60%),
-    radial-gradient(60% 50% at 90% 100%, hsl(204 100% 97%) 0%, transparent 60%),
+    radial-gradient(80% 60% at 20% 0%, hsl(157 75% 93%) 0%, transparent 60%),
+    radial-gradient(60% 50% at 90% 100%, hsl(157 75% 95%) 0%, transparent 60%),
     hsl(0 0% 100%);
   color: hsl(var(--foreground));
 }
 
 /* Sanfter Blau-Verlauf für Highlight-Text */
 .lp-text-gradient {
-  background: linear-gradient(135deg, hsl(204 95% 51%) 0%, hsl(204 95% 34%) 100%);
+  background: linear-gradient(135deg, hsl(157 71% 39%) 0%, hsl(157 71% 26%) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

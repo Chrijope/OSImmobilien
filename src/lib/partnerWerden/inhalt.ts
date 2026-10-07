@@ -11,8 +11,8 @@
  * Belegt und deshalb ohne Platzhalter:
  *   - „20+ Partner“ (Angabe von Christian, 30.09.2026),
  *   - „über 10 Jahre Immobilienerfahrung“ und „rund 20 Spezialisten“, wörtlich
- *     von more.immo (`lib/handbuch/firma.ts`),
- *   - die Kundenstimmen, wörtlich von more.immo.
+ *     von osimmobilien.netlify.app (`lib/handbuch/firma.ts`),
+ *   - die Kundenstimmen, wörtlich von osimmobilien.netlify.app.
  *
  * Aufbau nach der Seite eines Wettbewerbers, nur Reihenfolge und Zweck der
  * Abschnitte. Texte eigen, Zahlen des Wettbewerbers nicht übernommen.
@@ -52,8 +52,8 @@ export const VERGUETUNG_FAELLIG =
   "Deine Vergütung wird fällig, wenn der Kauf beurkundet ist und die Provision des Verkäufers bei uns eingegangen ist. Wie und wann wir auszahlen, steht in deiner schriftlichen Vereinbarung.";
 
 export const HERO = {
-  augenbraue: "MOREImmo · Partnerprogramm",
-  h1a: "MOREImmo, dein starker Partner",
+  augenbraue: "OS Immobilien · Partnerprogramm",
+  h1a: "OS Immobilien, dein starker Partner",
   h1b: "für Kapitalanlage-Immobilien",
   lead:
     "Schwerpunkt Bayern, ausgewählte Objekte und ein Team, das dich begleitet. Ob du nur Kontakte weitergibst, deine Kunden selbst betreust oder mit deinem Vertrieb arbeitest: Du wählst den Weg, der zu dir passt.",
@@ -92,7 +92,7 @@ export const HERO = {
 
 /**
  * Unsere Standorte. `x` und `y` sind Punkte in der Deutschlandkarte von
- * more.immo (`assets/deutschlandLaender.ts`, viewBox 591.5 × 800.5), dort
+ * osimmobilien.netlify.app (`assets/deutschlandLaender.ts`, viewBox 591.5 × 800.5), dort
  * übernommen für München, Nürnberg, Augsburg und Leipzig. Hof ist aus
  * Länge und Breite gerechnet (11,92° O, 50,31° N) mit derselben Umrechnung,
  * die die vier übernommenen Punkte ergeben: x = 270 + 60,9 · (Länge − 10),
@@ -197,7 +197,7 @@ export const UEBER_UNS = {
   augenbraue: "Über uns",
   h2: "Das Bindeglied zwischen Bauträger und Anleger",
   absaetze: [
-    "MOREImmo bringt Objekte von Bauträgern und Eigentümern mit Menschen zusammen, die Vermögen aufbauen wollen. Wir wählen die Objekte aus, rechnen sie für den einzelnen Kunden durch und begleiten den Kauf bis nach dem Notartermin.",
+    "OS Immobilien bringt Objekte von Bauträgern und Eigentümern mit Menschen zusammen, die Vermögen aufbauen wollen. Wir wählen die Objekte aus, rechnen sie für den einzelnen Kunden durch und begleiten den Kauf bis nach dem Notartermin.",
     "Für Partner heißt das: Als Tippgeber musst du kein Immobilienprofi sein, du gibst nur den Kontakt weiter. Als Vertriebspartner oder Vertrieb bekommst du Objekte, Unterlagen und Werkzeuge für deine eigenen Gespräche.",
   ],
   kennzahlen: [
@@ -214,7 +214,7 @@ export const UEBER_UNS = {
 
 /**
  * Stimmen unserer Kunden, also von Käufern, nicht von Partnern. Wörtlich von
- * more.immo (`MOREImmo-Website/src/components/TestimonialsSection.tsx`,
+ * osimmobilien.netlify.app (`OS Immobilien-Website/src/components/TestimonialsSection.tsx`,
  * gelesen am 30.09.2026), mit Namenskürzel und Ort wie dort. Ausgewählt sind
  * Stimmen ohne Steuer- oder Tempoversprechen, wie auf der Handbuch-Seite.
  */
@@ -237,7 +237,7 @@ export const STIMMEN_TEXTE = {
   augenbraue: "Unsere Kunden",
   h2: "Das sagen unsere Kunden",
   lead: "Wem du uns empfiehlst, der soll gut aufgehoben sein. So erleben Käufer die Zusammenarbeit mit uns.",
-  fuss: "Stimmen von Kunden, die über MOREImmo eine Immobilie gekauft haben, von more.immo, teils gekürzt. Es sind keine Stimmen von Partnern.",
+  fuss: "Stimmen von Kunden, die über OS Immobilien eine Immobilie gekauft haben, von osimmobilien.netlify.app, teils gekürzt. Es sind keine Stimmen von Partnern.",
 };
 
 export const ABLAUF = {
@@ -306,8 +306,8 @@ export const FAQ = {
       a: "Bei guter Bonität finanzieren manche Banken den Kaufpreis und einen Teil der Nebenkosten. Ob und zu welchen Bedingungen, entscheidet allein die Bank nach Prüfung der Unterlagen. Eine Finanzierung ohne Eigenkapital erhöht Rate und Risiko. Wir begleiten die Anfrage mit unseren Finanzierungspartnern, eine Zusage können wir nicht geben.",
     },
     {
-      f: "Wie lange gibt es MORE Immo schon?",
-      a: `Hinter MOREImmo stehen über 10 Jahre Immobilienerfahrung und ein Team von rund 20 Spezialisten. Am Markt sind wir seit ${ZAHLEN.amMarktSeit}.`,
+      f: "Wie lange gibt es OS Immobilien schon?",
+      a: `Hinter OS Immobilien stehen über 10 Jahre Immobilienerfahrung und ein Team von rund 20 Spezialisten. Am Markt sind wir seit ${ZAHLEN.amMarktSeit}.`,
     },
   ],
 };
@@ -320,8 +320,8 @@ export const ABSCHLUSS = {
 };
 
 export const SEITE = {
-  titel: "Partner werden bei MOREImmo",
-  beschreibung: "Als Tippgeber, Vertriebspartner oder Portfolio-Partner mit MOREImmo zusammenarbeiten: ausgewählte Objekte, Schwerpunkt Bayern, ein fester Ansprechpartner.",
+  titel: "Partner werden bei OS Immobilien",
+  beschreibung: "Als Tippgeber, Vertriebspartner oder Portfolio-Partner mit OS Immobilien zusammenarbeiten: ausgewählte Objekte, Schwerpunkt Bayern, ein fester Ansprechpartner.",
   kopfKnopf: "Partner werden",
 };
 

@@ -463,7 +463,7 @@ export async function generateReservierungPDF(
   /*
    * Das Konto für die Rückzahlung der Gebühr. Auf dieses Konto verweist der
    * Punkt zur Rückzahlung; deshalb steht es hier bei den Käuferdaten und
-   * nicht im Gebührenabschnitt, wo das Konto von MOREImmo steht.
+   * nicht im Gebührenabschnitt, wo das Konto von OS Immobilien steht.
    *
    * Ohne Gebühr gibt es nichts zurückzuzahlen, dann fällt die Zeile weg. Seit
    * dem 22.09.2026 ist die IBAN außerdem freiwillig; bleibt sie leer, steht
@@ -753,7 +753,7 @@ export async function generateReservierungPDF(
     if (gesetzt) {
       doc.setTextColor(0, 128, 0);
       // Ort nur, wenn der Unterzeichner einen angegeben hat. Bei einer
-      // Unterschrift im Browser kennt MOREImmo den Ort sonst nicht.
+      // Unterschrift im Browser kennt OS Immobilien den Ort sonst nicht.
       const ortWort = zwei ? `Ort / ${UNTERSCHRIFT_WOERTER_EN.ort}` : "Ort";
       doc.text(`${ortWort}: ${sanitizePdfText(sig?.ort?.trim() || "–")}`, x, sigLineY + 12);
       const bestaetigt = zwei ? `Digital bestätigt am / ${UNTERSCHRIFT_WOERTER_EN.bestaetigt} ` : "Digital bestätigt am ";

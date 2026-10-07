@@ -55,7 +55,7 @@ const TEXTE: Zweisprachig<typeof DE> = {
     text: (objekt: string, vp: string) =>
       `The reservation agreement${objekt ? ` for ${objekt}` : ''} has been prepared${vp ? ` and has already been signed by ${vp}` : ''}. With your signature, the unit is reserved for you and will not be offered to anyone else.`,
     nurDeutsch:
-      'Please note that the agreement itself is currently only available in German. Your contact person at MOREImmo will be glad to go through it with you before you sign.',
+      'Please note that the agreement itself is currently only available in German. Your contact person at OS Immobilien will be glad to go through it with you before you sign.',
     knopf: 'Review and sign the reservation',
     hinweis: (bis: string) => `About 3 minutes${bis ? `  ·  Link valid until ${bis}` : ''}`,
   },
@@ -95,13 +95,13 @@ export const template = {
     name: 'Herr Mustermann',
     vpName: 'Christian Peetz',
     objektTitel: 'Breitscheidstraße 18, Wohnung 12',
-    signUrl: 'https://portal.more.immo/sign/example',
+    signUrl: 'https://osimmobilien.netlify.app/sign/example',
     gueltigBis: '5. August 2026',
     berater: {
       name: 'Christian Peetz',
-      rolle: 'Ihr Ansprechpartner bei MOREImmo',
+      rolle: 'Ihr Ansprechpartner bei OS Immobilien',
       telefon: '08061 000000',
-      email: 'christian@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

@@ -112,12 +112,12 @@ describe("saErinnerungStoppen", () => {
 
 describe("tokenAusFillUrl", () => {
   it("zieht den Token aus der Ausfüll-Adresse", () => {
-    expect(tokenAusFillUrl("https://portal.more.immo/sa/abc123def")).toBe("abc123def");
+    expect(tokenAusFillUrl("https://osimmobilien.netlify.app/sa/abc123def")).toBe("abc123def");
   });
 
   it("liefert nichts, wenn keine Adresse oder keine passende vorliegt", () => {
     expect(tokenAusFillUrl(null)).toBeNull();
     expect(tokenAusFillUrl("")).toBeNull();
-    expect(tokenAusFillUrl("https://portal.more.immo/kunden/123")).toBeNull();
+    expect(tokenAusFillUrl("https://osimmobilien.netlify.app/kunden/123")).toBeNull();
   });
 });

@@ -204,24 +204,24 @@ const EIGENFINANZIERUNG_AN: Texte = {
 const EIGENFINANZIERUNG_AUS: Texte = {
   de: () => ({
     titel: "Eigenfinanzierung aufgehoben",
-    nachricht: "Der Eigenfinanzierungs-Modus wurde aufgehoben. Die Finanzierung läuft wieder über more.immo.",
+    nachricht: "Der Eigenfinanzierungs-Modus wurde aufgehoben. Die Finanzierung läuft wieder über osimmobilien.netlify.app.",
   }),
   en: () => ({
     titel: "Own financing cancelled",
-    nachricht: "Own financing has been cancelled. Your financing will be arranged through MOREImmo again.",
+    nachricht: "Own financing has been cancelled. Your financing will be arranged through OS Immobilien again.",
   }),
 };
 
 const GEGENANGEBOT: Texte<[string]> = {
   de: (label) => ({
-    titel: `Gegenangebot ${label} von more.immo`,
+    titel: `Gegenangebot ${label} von osimmobilien.netlify.app`,
     nachricht: `Wir haben dir ein Gegenangebot (${label}) zur Finanzierung bereitgestellt. Bitte prüfe es in deinem Kundenportal.`,
   }),
   // `label` ist „Darlehensvertrag“ oder „Finanzierungsangebot“.
   en: (label) => {
     const art = dokumentAnzeigeName(label, "en");
     return {
-      titel: `Counter-offer from MOREImmo: ${art}`,
+      titel: `Counter-offer from OS Immobilien: ${art}`,
       nachricht: `We've provided a counter-offer (${art.toLowerCase()}) for your financing. Please review it in your customer portal.`,
     };
   },

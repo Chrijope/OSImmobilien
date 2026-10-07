@@ -535,7 +535,7 @@ async function mitschnitt(name: string, fn: () => Promise<unknown>): Promise<Mit
 
 const norm = (t: string) => t.replace(/\s+/g, " ").trim();
 /** Parteienblock, Stand-Zeile und Hinweise gehören zum Rahmen, nicht zum Vertragstext. */
-const RAHMEN = /^(Handelsvertretervertrag$|Vertriebspartner Kapitalanlageimmobilien|Stand: |Einzelunternehmen|Wendelsteinstraße|Inhaber:|Musterstraße|80331|max\.mustermann|Tel\.:|- nachfolgend|Mit Unterzeichnung dieses Hauptvertrages|Ort, Datum)/;
+const RAHMEN = /^(Handelsvertretervertrag$|Vertriebspartner Kapitalanlageimmobilien|Stand: |Einzelunternehmen|Am Ostbahnhof|Inhaber:|Musterstraße|80331|max\.mustermann|Tel\.:|- nachfolgend|Mit Unterzeichnung dieses Hauptvertrages|Ort, Datum)/;
 
 /**
  * Seiten je Konstellation, Deckblatt mitgezählt; K13 ist der Maximalfall.

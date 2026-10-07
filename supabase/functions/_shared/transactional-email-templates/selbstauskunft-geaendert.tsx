@@ -67,13 +67,13 @@ export const template = {
   sprachen: DE_EN,
   previewData: {
     name: 'Herr Mustermann',
-    signUrl: 'https://portal.more.immo/signatur?token=example',
+    signUrl: 'https://osimmobilien.netlify.app/signatur?token=example',
     geaendertVon: 'Frau Mustermann',
     berater: {
       name: 'Christian Peetz',
-      rolle: 'Ihr Ansprechpartner bei MOREImmo',
+      rolle: 'Ihr Ansprechpartner bei OS Immobilien',
       telefon: '08061 000000',
-      email: 'christian@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

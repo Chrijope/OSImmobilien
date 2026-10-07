@@ -12,7 +12,7 @@ import {
  * nicht zwei Abfragen laufen und beide dieselbe Wahrheit sehen.
  *
  * Wen es NICHT betrifft: Kunden und Tippgeber. Die Pflicht gilt für Partner,
- * die für MOREImmo vermitteln, nicht für jeden, der sich anmelden kann.
+ * die für OS Immobilien vermitteln, nicht für jeden, der sich anmelden kann.
  */
 
 /** Rollen, für die die Pflichtunterlagen gelten. */

@@ -1,5 +1,5 @@
 /**
- * Die Pflichtschranke des MORE Lotsen: Ohne gespeicherte Zustimmung zum
+ * Die Pflichtschranke des OS Lotsen: Ohne gespeicherte Zustimmung zum
  * Hinweis „Umgang mit KI“ ist die Eingabe gesperrt, der Knopf erst mit
  * Häkchen aktiv. Fehlt die Migration, steht „wird gerade eingerichtet“.
  */
@@ -219,7 +219,7 @@ describe("ObjektLotse, Pflichtschranke", () => {
     zeige();
     const feld = await screen.findByLabelText("Frage an den Lotsen");
     await waitFor(() => expect(feld).toBeEnabled());
-    fireEvent.change(feld, { target: { value: "Was verdient MOREImmo an der Einheit?" } });
+    fireEvent.change(feld, { target: { value: "Was verdient OS Immobilien an der Einheit?" } });
     fireEvent.click(screen.getByRole("button", { name: "Senden" }));
     expect(await screen.findByText("Zu Provisionen gibt der Lotse keine Auskunft.")).toBeInTheDocument();
     expect(screen.queryByText(/Die Provision liegt bei 3/)).toBeNull();

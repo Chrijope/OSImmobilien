@@ -925,7 +925,7 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
               <p className="text-sm text-muted-foreground mt-1">
                 {isBuchhaltung
                   ? `${p.name} stellt uns eine Rechnung über die fälligen Provisionen.`
-                  : <>Du stellst MOREImmo eine <strong>Rechnung</strong> über deine fälligen Provisionen. Die Auszahlung erfolgt nach Rechnungseingang.</>
+                  : <>Du stellst OS Immobilien eine <strong>Rechnung</strong> über deine fälligen Provisionen. Die Auszahlung erfolgt nach Rechnungseingang.</>
                 }
               </p>
               <div className="mt-4">
@@ -1022,7 +1022,7 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               {gesamtRechnung > 0 ? (
                 <p className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Info className="h-3 w-3" /> Stelle diesen Betrag nach Kaufpreisfälligkeit an MOREImmo in Rechnung.
+                  <Info className="h-3 w-3" /> Stelle diesen Betrag nach Kaufpreisfälligkeit an OS Immobilien in Rechnung.
                 </p>
               ) : <span />}
               <Button

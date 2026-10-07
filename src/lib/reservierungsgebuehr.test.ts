@@ -2,7 +2,7 @@
  * Das Schulungsmaterial und die Reservierungsvereinbarung müssen dasselbe
  * sagen.
  *
- * Bis zum 14.09.2026 erhob MOREImmo keine Reservierungsgebühr, und die
+ * Bis zum 14.09.2026 erhob OS Immobilien keine Reservierungsgebühr, und die
  * Vertriebsakademie lehrte das an neunzehn Stellen: in Kapiteltexten, in zwei
  * wörtlichen Einwandskripten, in drei Prüfungsfragen und in einer
  * Entscheidungsübung. Mit der neuen Vereinbarung gilt das Gegenteil.

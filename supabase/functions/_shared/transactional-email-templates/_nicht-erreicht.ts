@@ -11,7 +11,7 @@
 import { vornameAus } from './_anrede.ts'
 import { mailSprache } from './_sprache.ts'
 
-export const TEAM_ADRESSE = 'office@more.immo'
+export const TEAM_ADRESSE = 'os@os-immobilien.com'
 
 export interface Absender {
   name?: string
@@ -46,8 +46,8 @@ export function antwortLink(an: string, betreff: string, text?: string): string 
   return `mailto:${an}?${teile.join('&')}`
 }
 
-/** "Christian von MOREImmo: kurz verpasst", beim Haus "MOREImmo: kurz verpasst". */
+/** "Christian von OS Immobilien: kurz verpasst", beim Haus "OS Immobilien: kurz verpasst". */
 export function betreffMitAbsender(vorname: string, rest: string, sprache?: unknown): string {
-  if (!vorname) return `MOREImmo: ${rest}`
-  return mailSprache(sprache) === 'en' ? `${vorname} from MOREImmo: ${rest}` : `${vorname} von MOREImmo: ${rest}`
+  if (!vorname) return `OS Immobilien: ${rest}`
+  return mailSprache(sprache) === 'en' ? `${vorname} from OS Immobilien: ${rest}` : `${vorname} von OS Immobilien: ${rest}`
 }

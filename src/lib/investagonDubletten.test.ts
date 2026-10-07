@@ -198,17 +198,17 @@ describe("Dublettenschutz: echte Dubletten", () => {
 describe("Zweitkennung", () => {
   it("laesst die Hauptkennung stehen und haengt die neue daneben", () => {
     const meta = { investagonSlug: "lehner-7", anlageklasse: "Eigentumswohnung" };
-    const ergaenzt = mitZweitkennung(meta, "moreimmo-7", "More Immo (eigener Bestand)");
+    const ergaenzt = mitZweitkennung(meta, "moreimmo-7", "OS Immobilien (eigener Bestand)");
     expect(ergaenzt.investagonSlugsWeitere).toEqual(["moreimmo-7"]);
     expect(ergaenzt.investagonSlug).toBeUndefined();
     expect((ergaenzt.investagonZweitkennungen as any)["moreimmo-7"]).toMatchObject({
-      bautraeger: "More Immo (eigener Bestand)",
+      bautraeger: "OS Immobilien (eigener Bestand)",
     });
   });
 
   it("traegt dieselbe Kennung kein zweites Mal ein", () => {
     const meta = { investagonSlug: "lehner-7", investagonSlugsWeitere: ["moreimmo-7"] };
-    expect(mitZweitkennung(meta, "moreimmo-7", "More Immo").investagonSlugsWeitere)
+    expect(mitZweitkennung(meta, "moreimmo-7", "OS Immobilien").investagonSlugsWeitere)
       .toEqual(["moreimmo-7"]);
     expect(mitZweitkennung(meta, "lehner-7", "Lehner").investagonSlugsWeitere)
       .toEqual(["moreimmo-7"]);

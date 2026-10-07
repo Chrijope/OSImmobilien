@@ -117,13 +117,13 @@ export const template = {
     name: 'Martina Brandl',
     bezeichnung: 'Wohnung 7, Parkstraße 8, Augsburg',
     mitWohnungen: true,
-    link: 'https://portal.more.immo/immobilie/0000000000000000000000000000000000000000000000000000000000000000',
+    link: 'https://osimmobilien.netlify.app/immobilie/0000000000000000000000000000000000000000000000000000000000000000',
     gueltigBis: '22. November 2026',
     berater: {
       name: 'Christian Peetz',
-      rolle: 'Dein Ansprechpartner bei MOREImmo',
+      rolle: 'Dein Ansprechpartner bei OS Immobilien',
       telefon: '08061 000000',
-      email: 'christian@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

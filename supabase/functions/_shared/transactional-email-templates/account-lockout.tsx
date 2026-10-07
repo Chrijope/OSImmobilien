@@ -21,7 +21,7 @@ interface Props {
 
 const DE = {
   betreff: (admin: boolean, ziel: string) =>
-    admin ? `Konto gesperrt: ${ziel || 'unbekannt'}` : 'Dein MOREImmo-Konto wurde vorübergehend gesperrt',
+    admin ? `Konto gesperrt: ${ziel || 'unbekannt'}` : 'Dein OS Immobilien-Konto wurde vorübergehend gesperrt',
   augenbraue: 'Sicherheitshinweis',
   titel: (admin: boolean) => (admin ? 'Ein Konto wurde gesperrt' : 'Dein Konto ist vorübergehend gesperrt'),
   vorschau: (admin: boolean, ziel: string) =>
@@ -51,7 +51,7 @@ const TEXTE: Zweisprachig<typeof DE> = {
   de: DE,
   en: {
     betreff: (admin: boolean, ziel: string) =>
-      admin ? `Account locked: ${ziel || 'unknown'}` : 'Your MOREImmo account has been temporarily locked',
+      admin ? `Account locked: ${ziel || 'unknown'}` : 'Your OS Immobilien account has been temporarily locked',
     augenbraue: 'Security notice',
     titel: (admin: boolean) => (admin ? 'An account has been locked' : 'Your account is temporarily locked'),
     vorschau: (admin: boolean, ziel: string) =>
@@ -120,7 +120,7 @@ const Mail = ({
       {!adminAlert && (
         <Handlung
           sprache={sprache}
-          href="https://portal.more.immo/login"
+          href="https://osimmobilien.netlify.app/login"
           text={t.knopf}
           hinweis={t.hinweisKnopf}
         />

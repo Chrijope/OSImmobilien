@@ -32,6 +32,6 @@ export const template = {
   previewData: {
     vpName: 'Julian Meyer',
     kundeName: 'Max Mustermann',
-    kundeLink: 'https://portal.more.immo/kunden/123',
+    kundeLink: 'https://osimmobilien.netlify.app/kunden/123',
   },
 } satisfies TemplateEntry

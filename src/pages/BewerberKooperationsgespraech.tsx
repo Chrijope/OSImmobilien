@@ -240,11 +240,11 @@ export default function BewerberKooperationsgespraech() {
             Wir können dir im Moment keine Zeiten anbieten. Antworte einfach auf unsere Mail, dann
             melden wir uns mit einem Vorschlag. Oder schreib uns an{" "}
             <a
-              href="mailto:office@more.immo"
+              href="mailto:os@os-immobilien.com"
               className="underline underline-offset-[3px]"
               style={{ color: FARBE_BLAU }}
             >
-              office@more.immo
+              os@os-immobilien.com
             </a>
             .
           </p>
@@ -291,7 +291,7 @@ export default function BewerberKooperationsgespraech() {
             */}
             <div
               className="mt-4 flex items-start gap-2.5 rounded-2xl px-4 py-3.5 text-[14.5px] leading-relaxed"
-              style={{ background: "#EEF5FD", color: "#0A5BB5" }}
+              style={{ background: "#EEF5FD", color: "#156949" }}
             >
               <Mail className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
               <span>
@@ -521,7 +521,7 @@ function Seite({ children }: { children: ReactNode }) {
       <div
         aria-hidden
         className="absolute inset-x-0 top-0 h-[300px] sm:h-[460px] pointer-events-none"
-        style={{ background: "radial-gradient(ellipse 55% 70% at 50% -12%, rgba(10,110,219,.16), transparent 66%)" }}
+        style={{ background: "radial-gradient(ellipse 55% 70% at 50% -12%, rgba(24,127,88,.16), transparent 66%)" }}
       />
       <div className="relative px-3.5 pt-4 pb-7 sm:px-6 sm:pt-11 sm:pb-16 flex flex-col items-center">
         {children}
@@ -542,7 +542,7 @@ function Karte({ children }: { children: ReactNode }) {
 }
 
 function Logo() {
-  return <img src={logo} alt="MOREImmo" className="h-[26px] sm:h-[34px] mx-auto mb-5 sm:mb-6" />;
+  return <img src={logo} alt="OS Immobilien" className="h-[26px] sm:h-[34px] mx-auto mb-5 sm:mb-6" />;
 }
 
 /**
@@ -657,7 +657,7 @@ function Monatskalender({
                   aktiv
                     ? { borderColor: FARBE_BLAU, background: FARBE_BLAU, color: "#fff" }
                     : buchbar
-                    ? { borderColor: "#BBD9F8", background: "#F0F7FF", color: "#0A5BB5" }
+                    ? { borderColor: "#96E5C7", background: "#F0F7FF", color: "#156949" }
                     : { borderColor: "transparent", background: "transparent", color: k.imMonat ? "#C9CED6" : "#EAECEF" }
                 }
               >
@@ -691,7 +691,7 @@ function Monatskalender({
                 onClick={() => onWaehle(zeit)}
                 disabled={arbeitet}
                 aria-label={beschriftungZeitKnopf(zeit, zeitzone)}
-                className="rounded-xl border-2 px-3.5 py-2 text-[15px] font-medium transition-colors hover:border-[#0A6EDB] hover:bg-[#F0F7FF] disabled:opacity-50"
+                className="rounded-xl border-2 px-3.5 py-2 text-[15px] font-medium transition-colors hover:border-[#187F58] hover:bg-[#F0F7FF] disabled:opacity-50"
                 style={{ borderColor: "#E4E6EB", color: FARBE_DUNKEL, background: "#fff" }}
               >
                 {uhrzeitInZone(zeit, zeitzone)}

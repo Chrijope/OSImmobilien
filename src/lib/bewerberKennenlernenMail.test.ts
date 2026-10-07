@@ -64,7 +64,7 @@ import { KENNENLERNEN_GUELTIG_TAGE as CRM_GUELTIG } from "@/lib/bewerberKennenle
 
 describe("Die Eingangsmail des Kennenlernens", () => {
   it("führt auf die eigene Seite und nicht auf einen fremden Kalender", () => {
-    expect(KENNENLERNEN_BASIS_URL).toBe("https://portal.more.immo/kennenlernen");
+    expect(KENNENLERNEN_BASIS_URL).toBe("https://osimmobilien.netlify.app/kennenlernen");
     const ganzeMail = [
       KENNENLERNEN_DANKE,
       KENNENLERNEN_EINLADUNG,
@@ -150,11 +150,11 @@ describe("Die Eingangsmail des Kennenlernens", () => {
      * noch an. Dass eine Antwort trotzdem bei ihr landet, sichert das
      * Reply-To der Mail, nicht dieser Text.
      */
-    const text = kennenlernenHinweis("sarah@more.immo");
+    const text = kennenlernenHinweis("os@os-immobilien.com");
     expect(text).toMatch(/melde dich gerne/);
     expect(text).toMatch(/Kontaktdaten/);
     expect(text).not.toMatch(/antworte einfach auf diese Mail/);
-    expect(text).not.toContain("sarah@more.immo");
+    expect(text).not.toContain("os@os-immobilien.com");
   });
 
   it("weist unter der Unterschrift auf den Weg zur Absage hin", () => {
@@ -165,13 +165,13 @@ describe("Die Eingangsmail des Kennenlernens", () => {
   });
 
   it("fällt ohne Ansprechpartnerin auf die Sammeladresse zurück", () => {
-    expect(HR_SAMMEL_EMAIL).toBe("office@more.immo");
+    expect(HR_SAMMEL_EMAIL).toBe("os@os-immobilien.com");
     expect(kennenlernenAntwortAdresse(undefined)).toBe(HR_SAMMEL_EMAIL);
     expect(kennenlernenAntwortAdresse("")).toBe(HR_SAMMEL_EMAIL);
     expect(kennenlernenAntwortAdresse("   ")).toBe(HR_SAMMEL_EMAIL);
     // Was keine Adresse ist, wird auch nicht als eine ausgegeben.
     expect(kennenlernenAntwortAdresse("Sarah")).toBe(HR_SAMMEL_EMAIL);
-    expect(kennenlernenAntwortAdresse(" sarah@more.immo ")).toBe("sarah@more.immo");
+    expect(kennenlernenAntwortAdresse(" os@os-immobilien.com ")).toBe("os@os-immobilien.com");
     // Die Adresse steht nicht mehr im Satz, sondern nur noch im Reply-To und
     // im Block der Ansprechpartnerin. Geprüft wird deshalb der Rückfall
     // selbst, nicht mehr der Text.

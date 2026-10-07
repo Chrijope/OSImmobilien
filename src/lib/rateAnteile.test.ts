@@ -82,18 +82,18 @@ describe("Die Anteile der einzelnen Musterwohnungen", () => {
 });
 
 describe("Die Musterrechnungen der Präsentationen tragen dieselben Zahlen", () => {
-  it("MOREImmo, sanierter Bestand: Miete, Rate und nicht umlagefähige Kosten", () => {
+  it("OS Immobilien, sanierter Bestand: Miete, Rate und nicht umlagefähige Kosten", () => {
     expect(moreimmoTexte).toContain('{ pos: "Kaltmiete", betrag: "+1.400 €" }');
     expect(moreimmoTexte).toContain('{ pos: "Zins und Tilgung", betrag: "−1.604 €" }');
     expect(moreimmoTexte).toContain('{ pos: "Nicht umlagefähige Kosten", betrag: "−150 €" }');
   });
 
-  it("MOREImmo, sanierter Bestand: Entlastung und Eigenbeitrag ab dem zweiten Jahr", () => {
+  it("OS Immobilien, sanierter Bestand: Entlastung und Eigenbeitrag ab dem zweiten Jahr", () => {
     expect(moreimmoTexte).toContain('entlastungMonat: "126 €"');
     expect(moreimmoTexte).toContain('beitragMonat: "−228 €"');
   });
 
-  it("MOREImmo, WG: Miete, Rate, Kosten, Entlastung und Eigenbeitrag", () => {
+  it("OS Immobilien, WG: Miete, Rate, Kosten, Entlastung und Eigenbeitrag", () => {
     expect(moreimmoTexte).toContain('{ pos: "Kaltmiete", betrag: "+1.600 €" }');
     expect(moreimmoTexte).toContain('{ pos: "Zins und Tilgung", betrag: "−1.895 €" }');
     expect(moreimmoTexte).toContain('{ pos: "Nicht umlagefähige Kosten", betrag: "−73 €" }');
@@ -131,7 +131,7 @@ describe("Die Folien rechnen, statt Zahlen zu tippen", () => {
   });
 
   it("das Sprechskript nennt dieselben Zahlen wie die Folie", () => {
-    // Das Skript gehört zur MOREImmo-Präsentation, also zum sanierten Bestand.
+    // Das Skript gehört zur OS Immobilien-Präsentation, also zum sanierten Bestand.
     expect(sprechskripte).not.toContain("Der Mieter 62 Prozent");
     expect(sprechskripte).toContain("das sind 78 Prozent");
     expect(sprechskripte).toContain("das sind 8 Prozent");

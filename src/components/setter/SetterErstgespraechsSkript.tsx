@@ -242,8 +242,8 @@ const SCHRITTE: Schritt[] = [
   { id: "einleitung", nr: 1, titel: "Einleitung & Begrüßung",
     special: "einleitung",
     text: {
-      du:  `"Guten Tag [Vorname] [Nachname], hier ist [dein Name] von MOREImmo, gut, dass ich Sie erreiche. Sie haben sich über unsere Social-Ads-Anzeige für Immobilien als Kapitalanlage interessiert. Ich brauche fünfzehn Minuten für das, was ich mit Ihnen durchgehen möchte. Haben Sie die jetzt, oder passt Ihnen heute Abend gegen 18 Uhr besser?"`,
-      sie: `"Guten Tag [Vorname] [Nachname], hier ist [dein Name] von MOREImmo, gut, dass ich Sie erreiche. Sie haben sich über unsere Social-Ads-Anzeige für Immobilien als Kapitalanlage interessiert. Ich brauche fünfzehn Minuten für das, was ich mit Ihnen durchgehen möchte. Haben Sie die jetzt, oder passt Ihnen heute Abend gegen 18 Uhr besser?"`,
+      du:  `"Guten Tag [Vorname] [Nachname], hier ist [dein Name] von OS Immobilien, gut, dass ich Sie erreiche. Sie haben sich über unsere Social-Ads-Anzeige für Immobilien als Kapitalanlage interessiert. Ich brauche fünfzehn Minuten für das, was ich mit Ihnen durchgehen möchte. Haben Sie die jetzt, oder passt Ihnen heute Abend gegen 18 Uhr besser?"`,
+      sie: `"Guten Tag [Vorname] [Nachname], hier ist [dein Name] von OS Immobilien, gut, dass ich Sie erreiche. Sie haben sich über unsere Social-Ads-Anzeige für Immobilien als Kapitalanlage interessiert. Ich brauche fünfzehn Minuten für das, was ich mit Ihnen durchgehen möchte. Haben Sie die jetzt, oder passt Ihnen heute Abend gegen 18 Uhr besser?"`,
     },
     tipp: `Ehrlicher Zeitrahmen plus Alternativfrage. Auch ein Nein wird so zum Rückruftermin.`,
     tippMehr: `Energie in die Stimme, nicht abgelesen klingen. Der Social-Ads-Hook holt den Aha-Moment: "Ach ja, stimmt!". Fuenfzehn Minuten sind ehrlich, "ein paar Minuten" war es nicht: Das Skript braucht sie wirklich, und ein Abbruch mitten in der Qualifizierung kostet den Termin ganz. Wer jetzt keine Zeit hat, bekommt sofort die Alternative genannt statt eines vagen "melde mich".` },
@@ -416,8 +416,8 @@ const SCHRITTE: Schritt[] = [
     tippMehr: `Diesen Schritt IMMER lesen, wenn der Lead bei "Zielen" oder "2 wichtigsten Punkten" Cashflow / "soll nichts kosten" / "selbsttragend" genannt hat. Der Toggle unten haelt die Erwartung des Leads fest. Sie ist im Beratungsgespraech sichtbar und steuert die Objektauswahl.`,
     notiz: true },
 
-  // Dank + MOREImmo-Vorstellung (vor Terminvereinbarung)
-  { id: "moreimmo_vorstellung", nr: 16, titel: "Dank + Wer ist MOREImmo?",
+  // Dank + OS Immobilien-Vorstellung (vor Terminvereinbarung)
+  { id: "moreimmo_vorstellung", nr: 16, titel: "Dank + Wer ist OS Immobilien?",
     special: "moreimmoVorstellung",
     text: {
       du:  `"Danke, [Vorname], dass du mir so offen von dir erzählt hast. Kurz, wer wir sind:\n\n• Wir machen ausschließlich Immobilien als Kapitalanlage, kein Eigenheim.\n• Unsere Kunden sind Angestellte, Beamte und Selbstständige mit gutem Einkommen.\n• Wir arbeiten in wachstumsstarken deutschen A- und B-Lagen, mit saniertem Bestand, Neubau im KfW-40-Standard und Co-Living.\n• Wir begleiten dich von der Strategie über die Finanzierung bis nach dem Notar, alles aus einer Hand.\n• Seit [X] Jahren, [Y] begleitete Kunden.\n\nWas davon klingt für dich am ehesten nach dem, was du vorhin beschrieben hast?"`,
@@ -653,7 +653,7 @@ export const ERSTGESPRAECH_WIZARD_UEBERSICHT: {
  * Wording-Overrides für den Modus "vertriebspartner".
  *
  * Das Grundskript oben ist inzwischen selbst in der Ich-Form geschrieben, weil
- * bei MOREImmo derselbe Berater das Erstgespräch führt, der anschließend auch
+ * bei OS Immobilien derselbe Berater das Erstgespräch führt, der anschließend auch
  * berät. Ein "der Berater" in dritter Person wäre falsch, wenn dieselbe Person
  * am Telefon sitzt. Deshalb sind die früheren Overrides für Beruf, Netto,
  * Schufa, Vorabschluss, Termin, Einladung, offene Fragen und Verabschiedung
@@ -671,8 +671,8 @@ const VP_TEXT_OVERRIDES: Record<string, LocText> = {
   // 1) Einleitung – allgemein halten, da manuell angelegte Leads aus
   //    verschiedenen Quellen stammen können, nicht nur aus Social Ads.
   einleitung: {
-    du:  `"Guten Tag [Vorname] [Nachname], hier ist [dein Name] von MOREImmo, gut, dass ich Sie erreiche. Sie hatten vor Kurzem Interesse am Thema Immobilien als Kapitalanlage. Ich brauche fünfzehn Minuten für das, was ich mit Ihnen durchgehen möchte. Haben Sie die jetzt, oder passt Ihnen heute Abend gegen 18 Uhr besser?"`,
-    sie: `"Guten Tag [Vorname] [Nachname], hier ist [dein Name] von MOREImmo, gut, dass ich Sie erreiche. Sie hatten vor Kurzem Interesse am Thema Immobilien als Kapitalanlage. Ich brauche fünfzehn Minuten für das, was ich mit Ihnen durchgehen möchte. Haben Sie die jetzt, oder passt Ihnen heute Abend gegen 18 Uhr besser?"`,
+    du:  `"Guten Tag [Vorname] [Nachname], hier ist [dein Name] von OS Immobilien, gut, dass ich Sie erreiche. Sie hatten vor Kurzem Interesse am Thema Immobilien als Kapitalanlage. Ich brauche fünfzehn Minuten für das, was ich mit Ihnen durchgehen möchte. Haben Sie die jetzt, oder passt Ihnen heute Abend gegen 18 Uhr besser?"`,
+    sie: `"Guten Tag [Vorname] [Nachname], hier ist [dein Name] von OS Immobilien, gut, dass ich Sie erreiche. Sie hatten vor Kurzem Interesse am Thema Immobilien als Kapitalanlage. Ich brauche fünfzehn Minuten für das, was ich mit Ihnen durchgehen möchte. Haben Sie die jetzt, oder passt Ihnen heute Abend gegen 18 Uhr besser?"`,
   },
 };
 
@@ -838,7 +838,7 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
   const { toast } = useToast();
   const { user } = useUser();
   // Vorname des angemeldeten Nutzers für die Personalisierung des Skripts
-  // ("Hallo …, hier ist [dein Name] von MOREImmo …" → echter Name).
+  // ("Hallo …, hier ist [dein Name] von OS Immobilien …" → echter Name).
   const callerFullName = (user?.name || "").trim();
   const callerVorname = callerFullName.split(/\s+/)[0] || callerFullName || "";
   const isVpMode = mode === "vertriebspartner";

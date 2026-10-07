@@ -292,7 +292,7 @@ describe("Teilnehmerliste", () => {
   });
 
   it("bekommt der Gast auch, aber ohne den Einladungslink", () => {
-    const { gastgeber, gast } = zeichneRaum({ einladungsLink: "https://portal.more.immo/raum/abc" });
+    const { gastgeber, gast } = zeichneRaum({ einladungsLink: "https://osimmobilien.netlify.app/raum/abc" });
 
     fireEvent.click(within(gast).getByLabelText("Teilnehmer"));
     expect(within(gast).getByText("Teilnehmer (2)")).toBeInTheDocument();
@@ -313,13 +313,13 @@ describe("Einladungslink kopieren", () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
 
-    const { gastgeber } = zeichneRaum({ einladungsLink: "https://portal.more.immo/raum/abc" });
+    const { gastgeber } = zeichneRaum({ einladungsLink: "https://osimmobilien.netlify.app/raum/abc" });
     fireEvent.click(within(gastgeber).getByLabelText("Teilnehmer"));
     await act(async () => {
       fireEvent.click(within(gastgeber).getByText("Link kopieren"));
     });
 
-    expect(writeText).toHaveBeenCalledWith("https://portal.more.immo/raum/abc");
+    expect(writeText).toHaveBeenCalledWith("https://osimmobilien.netlify.app/raum/abc");
     expect(within(gastgeber).getByText("Link kopiert")).toBeInTheDocument();
   });
 
@@ -332,14 +332,14 @@ describe("Einladungslink kopieren", () => {
     });
     Object.defineProperty(document, "execCommand", { configurable: true, value: () => false });
 
-    const { gastgeber } = zeichneRaum({ einladungsLink: "https://portal.more.immo/raum/abc" });
+    const { gastgeber } = zeichneRaum({ einladungsLink: "https://osimmobilien.netlify.app/raum/abc" });
     fireEvent.click(within(gastgeber).getByLabelText("Teilnehmer"));
     await act(async () => {
       fireEvent.click(within(gastgeber).getByText("Link kopieren"));
     });
 
     const feld = within(gastgeber).getByLabelText("Einladungslink zum Markieren");
-    expect(feld).toHaveValue("https://portal.more.immo/raum/abc");
+    expect(feld).toHaveValue("https://osimmobilien.netlify.app/raum/abc");
     expect(within(gastgeber).getByText(/nicht zugelassen/)).toBeInTheDocument();
   });
 });

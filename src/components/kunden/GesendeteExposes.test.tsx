@@ -129,7 +129,7 @@ describe("Gesendete Links", () => {
     const open = vi.spyOn(window, "open").mockReturnValue(null);
     render(<GesendeteExposes anfangsOffen kontaktId="k1" investmentId="i1" />);
     fireEvent.click(await screen.findByRole("button", { name: /Öffnen/ }));
-    expect(open).toHaveBeenCalledWith("https://portal.more.immo/expose/o1/wohnung/w7?token=tok&vorschau=1", "_blank", "noopener");
+    expect(open).toHaveBeenCalledWith("https://osimmobilien.netlify.app/expose/o1/wohnung/w7?token=tok&vorschau=1", "_blank", "noopener");
     open.mockRestore();
   });
 
@@ -137,13 +137,13 @@ describe("Gesendete Links", () => {
     t.eintraege = [zeile()];
     render(<GesendeteExposes anfangsOffen kontaktId="k1" investmentId="i1" />);
     fireEvent.click(await screen.findByRole("button", { name: /Link kopieren/ }));
-    await waitFor(() => expect(t.kopieren).toHaveBeenCalledWith("https://portal.more.immo/expose/o1/wohnung/w7?token=tok"));
+    await waitFor(() => expect(t.kopieren).toHaveBeenCalledWith("https://osimmobilien.netlify.app/expose/o1/wohnung/w7?token=tok"));
     expect(t.senden).not.toHaveBeenCalled();
   });
 
   it("erneuert einen abgelaufenen Link, bevor er kopiert wird", async () => {
     t.eintraege = [zeile({ gueltig_bis: GESTERN })];
-    t.senden.mockResolvedValue({ ok: true, link: "https://portal.more.immo/expose/o1/wohnung/w7?token=tok", gueltigBis: IN_60_TAGEN, migrationFehlt: false, fehler: null });
+    t.senden.mockResolvedValue({ ok: true, link: "https://osimmobilien.netlify.app/expose/o1/wohnung/w7?token=tok", gueltigBis: IN_60_TAGEN, migrationFehlt: false, fehler: null });
     render(<GesendeteExposes anfangsOffen kontaktId="k1" investmentId="i1" />);
     expect(await screen.findByText("Abgelaufen")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Link kopieren/ }));
@@ -202,10 +202,10 @@ describe("Gesendete Links", () => {
     const open = vi.spyOn(window, "open").mockReturnValue(null);
     render(<GesendeteExposes anfangsOffen kontaktId="k1" investmentId="i1" />);
     fireEvent.click(await screen.findByRole("button", { name: /Öffnen/ }));
-    expect(open).toHaveBeenCalledWith("https://portal.more.immo/immobilie/tok?vorschau=1", "_blank", "noopener");
+    expect(open).toHaveBeenCalledWith("https://osimmobilien.netlify.app/immobilie/tok?vorschau=1", "_blank", "noopener");
     open.mockRestore();
     fireEvent.click(screen.getByRole("button", { name: /Link kopieren/ }));
-    await waitFor(() => expect(t.kopieren).toHaveBeenCalledWith("https://portal.more.immo/immobilie/tok"));
+    await waitFor(() => expect(t.kopieren).toHaveBeenCalledWith("https://osimmobilien.netlify.app/immobilie/tok"));
     expect(t.senden).not.toHaveBeenCalled();
   });
 

@@ -4,7 +4,7 @@ import { EmailLayout, Absatz, Handlung, Angaben, type Ansprechpartner } from './
 import { hallo } from './_anrede.ts'
 import { DE_EN, type MailSprache, texteFuer, type Zweisprachig } from './_sprache.ts'
 
-const RUECKFALL_MAIL = 'info@more.immo'
+const RUECKFALL_MAIL = 'os@os-immobilien.com'
 
 interface Props {
   kundeName?: string
@@ -87,12 +87,12 @@ export const template = {
   previewData: {
     kundeName: 'Max Mustermann',
     telefon: '+49 89 0000000',
-    ansprechpartnerEmail: 'beraterin@more.immo',
+    ansprechpartnerEmail: 'beraterin@os-immobilien.com',
     berater: {
       name: 'Anna Berater',
-      rolle: 'Deine Ansprechpartnerin bei MOREImmo',
+      rolle: 'Deine Ansprechpartnerin bei OS Immobilien',
       telefon: '08061 000000',
-      email: 'beraterin@more.immo',
+      email: 'beraterin@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

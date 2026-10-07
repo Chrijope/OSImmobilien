@@ -93,7 +93,7 @@
 }
 
 .premium-expose .plan-document .plan-seiten:focus-visible {
-  outline: 3px solid #087ac7;
+  outline: 3px solid #15724F;
   outline-offset: 3px;
 }
 
@@ -160,7 +160,7 @@
 }
 
 .premium-expose .grundriss-streifen .streifen-bahn:focus-visible {
-  outline: 3px solid #087ac7;
+  outline: 3px solid #15724F;
   outline-offset: 3px;
 }
 

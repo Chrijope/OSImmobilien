@@ -24,7 +24,7 @@ interface Props {
 
 const DE = {
   betreff: (vorname: string) => betreffMitAbsender(vorname, 'soll ich das Thema schließen?', 'de'),
-  betreffTeam: 'MOREImmo: sollen wir das Thema schließen?',
+  betreffTeam: 'OS Immobilien: sollen wir das Thema schließen?',
   augenbraue: 'Kurze Frage',
   titel: (team: boolean) => (team ? 'Sollen wir das Thema schließen?' : 'Soll ich das Thema schließen?'),
   vorschau: (team: boolean) => `Ein Klick genügt, dann ${team ? 'wissen wir' : 'weiß ich'} Bescheid.`,
@@ -56,7 +56,7 @@ const TEXTE: Zweisprachig<typeof DE> = {
   de: DE,
   en: {
     betreff: (vorname: string) => betreffMitAbsender(vorname, 'shall I close this?', 'en'),
-    betreffTeam: 'MOREImmo: shall we close this?',
+    betreffTeam: 'OS Immobilien: shall we close this?',
     augenbraue: 'Quick question',
     titel: (team: boolean) => (team ? 'Shall we close this?' : 'Shall I close this?'),
     vorschau: (team: boolean) => `One click is enough and ${team ? 'we' : 'I'} will know where we stand.`,
@@ -126,9 +126,9 @@ export const template = {
     name: 'Max Mustermann',
     berater: {
       name: 'Christian Peetz',
-      rolle: 'Dein Ansprechpartner bei MOREImmo',
+      rolle: 'Dein Ansprechpartner bei OS Immobilien',
       telefon: '+49 151 00000000',
-      email: 'office@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

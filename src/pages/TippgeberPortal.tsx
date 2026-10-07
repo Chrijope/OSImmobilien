@@ -287,7 +287,7 @@ export default function TippgeberPortal() {
         <header data-lg="kopfscheibe" className="sticky top-0 z-40 border-b bg-background/85 backdrop-blur">
           <div className="mx-auto max-w-6xl flex items-center justify-between gap-3 px-4 py-3">
             <div className="flex items-center gap-2.5">
-              <img src={logoImg} alt="MOREImmo" className="h-8 w-auto" />
+              <img src={logoImg} alt="OS Immobilien" className="h-8 w-auto" />
               <div className="hidden sm:block">
                 <div className="text-xs font-semibold uppercase tracking-widest text-primary">Tippgeber-Portal</div>
                 <div className="text-[11px] text-muted-foreground -mt-0.5">
@@ -1039,7 +1039,7 @@ function ChatTab({ vpName }: { vpName: string }) {
                   </p>
                 ) : messages.map(m => {
                   // Seitenregel wie im CRM (`src/lib/chatSeite.ts`), aus Sicht
-                  // des Tippgebers: seine Seite rechts, MOREImmo links.
+                  // des Tippgebers: seine Seite rechts, OS Immobilien links.
                   const own = stehtRechts(m.absender_id, authUser?.id, new Set(authUser?.id ? [authUser.id] : []));
                   return (
                     <div key={m.id} className={`flex ${own ? "justify-end" : "justify-start"}`}>
@@ -1256,7 +1256,7 @@ function PitchesTab({
   }, [tippgeberId]);
 
   const tgParam = tippgeberSlug || tippgeberId;
-  const landingUrl = slug ? `${buildVpUrl(slug)}?tg=${tgParam}` : `https://portal.more.immo/?tg=${tgParam}`;
+  const landingUrl = slug ? `${buildVpUrl(slug)}?tg=${tgParam}` : `https://osimmobilien.netlify.app/?tg=${tgParam}`;
   const vpVorname = vpFullName.split(" ")[0] || vpFullName;
   const ctx: PitchContext = { tippgeberVorname, vpVorname, vpFullName, landingpageUrl: landingUrl };
 

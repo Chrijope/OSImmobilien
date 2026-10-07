@@ -30,7 +30,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SIGNATURE_BASE_URL = "https://portal.more.immo/signatur";
+const SIGNATURE_BASE_URL = "https://osimmobilien.netlify.app/signatur";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -255,7 +255,7 @@ Deno.serve(async (req) => {
     }
 
     // Zustaendigen Partner als Unterschrift mitgeben, sonst zeigt die Mail
-    // den Platzhalter "MOREImmo Team".
+    // den Platzhalter "OS Immobilien Team".
     const berater = await zustaendigerAnsprechpartner(supabase, kontaktId);
 
     /*

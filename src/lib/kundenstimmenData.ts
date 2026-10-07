@@ -9,7 +9,7 @@ export interface KundenstimmeFull {
   ort: string;
   vorher: string;
   nachher: string;
-  hilfe: string; // "Wie hat MOREImmo geholfen"
+  hilfe: string; // "Wie hat OS Immobilien geholfen"
   rating: number; // 1-5
 }
 
@@ -32,7 +32,7 @@ export const KUNDENSTIMMEN_FULL: KundenstimmeFull[] = [
     nachher:
       "Heute besitze ich zwei vermietete Wohnungen in Memmingen mit zusammen 145 m². Die Mieten decken die Finanzierung komplett, ich baue jeden Monat steuerbegünstigt Vermögen auf.",
     hilfe:
-      "MOREImmo hat mir gezeigt, dass die Kaufnebenkosten (rund 9 %) immer aus Eigenkapital kommen müssen – das war für mich neu. Mit den restlichen 65.000 € konnten wir die Investition optimal hebeln. Die Bonitätsprüfung war in zwei Wochen durch.",
+      "OS Immobilien hat mir gezeigt, dass die Kaufnebenkosten (rund 9 %) immer aus Eigenkapital kommen müssen – das war für mich neu. Mit den restlichen 65.000 € konnten wir die Investition optimal hebeln. Die Bonitätsprüfung war in zwei Wochen durch.",
     rating: 5,
   },
   {
@@ -46,7 +46,7 @@ export const KUNDENSTIMMEN_FULL: KundenstimmeFull[] = [
     nachher:
       "Ich habe ein 92-m²-Apartment in einem denkmalgeschützten Stadthaus gekauft. Allein die Sonder-AfA spart mir die ersten acht Jahre über 7.000 € Steuern – pro Jahr.",
     hilfe:
-      "Was mich überzeugt hat: MOREImmo hat mir die Sanierungskosten transparent aufgeschlüsselt und das Finanzamt-Anerkennungsschreiben der Denkmalbehörde **vor** dem Kauf vorgelegt. Die Kaufnebenkosten habe ich aus meinem Eigenkapital gezahlt – das war von Anfang an klar kommuniziert.",
+      "Was mich überzeugt hat: OS Immobilien hat mir die Sanierungskosten transparent aufgeschlüsselt und das Finanzamt-Anerkennungsschreiben der Denkmalbehörde **vor** dem Kauf vorgelegt. Die Kaufnebenkosten habe ich aus meinem Eigenkapital gezahlt – das war von Anfang an klar kommuniziert.",
     rating: 5,
   },
   {
@@ -60,7 +60,7 @@ export const KUNDENSTIMMEN_FULL: KundenstimmeFull[] = [
     nachher:
       "Drei vermietete Wohnungen in unserem Portfolio, alle in B-Lagen mit guten Mietsteigerungen. Cashflow-positiv ab Jahr 4, wir planen Wohnung Nr. 4 für 2027.",
     hilfe:
-      "MOREImmo hat uns einen Stufenplan über 10 Jahre erstellt – inklusive der jeweils benötigten Eigenkapital-Tranchen für die Kaufnebenkosten. Ohne diese klare Roadmap hätten wir uns nie an Wohnung Nr. 2 getraut.",
+      "OS Immobilien hat uns einen Stufenplan über 10 Jahre erstellt – inklusive der jeweils benötigten Eigenkapital-Tranchen für die Kaufnebenkosten. Ohne diese klare Roadmap hätten wir uns nie an Wohnung Nr. 2 getraut.",
     rating: 5,
   },
   {
@@ -74,7 +74,7 @@ export const KUNDENSTIMMEN_FULL: KundenstimmeFull[] = [
     nachher:
       "Ich besitze eine vollvermietete 3-Zimmer-Wohnung in Sanierungsqualität A++. Die Bank hat 100 % des Kaufpreises finanziert, ich habe nur die Kaufnebenkosten beigesteuert.",
     hilfe:
-      "Was den Unterschied macht: MOREImmo hat mir den Standort persönlich gezeigt, alle Mietverträge offengelegt und ein unabhängiges Wertgutachten eingeholt. Die Eigenkapitalquote für die Nebenkosten wurde von Anfang an realistisch kommuniziert.",
+      "Was den Unterschied macht: OS Immobilien hat mir den Standort persönlich gezeigt, alle Mietverträge offengelegt und ein unabhängiges Wertgutachten eingeholt. Die Eigenkapitalquote für die Nebenkosten wurde von Anfang an realistisch kommuniziert.",
     rating: 5,
   },
   {
@@ -88,7 +88,7 @@ export const KUNDENSTIMMEN_FULL: KundenstimmeFull[] = [
     nachher:
       "Ich habe meine erste Eigentumswohnung – vermietet, 68 m², in einem B-Standort mit 7,2 % Bruttorendite. Mein monatlicher Aufwand nach Steuern: 90 €. Dafür baue ich Eigenkapital auf.",
     hilfe:
-      "MOREImmo hat mich Schritt für Schritt durch den Prozess geführt. Besonders wichtig war die ehrliche Aufklärung: 'Du brauchst rund 28.000 € Eigenkapital für die Kaufnebenkosten – die kommen nie aus der Bankfinanzierung.' Diese Klarheit hat mir geholfen, gezielt zu sparen.",
+      "OS Immobilien hat mich Schritt für Schritt durch den Prozess geführt. Besonders wichtig war die ehrliche Aufklärung: 'Du brauchst rund 28.000 € Eigenkapital für die Kaufnebenkosten – die kommen nie aus der Bankfinanzierung.' Diese Klarheit hat mir geholfen, gezielt zu sparen.",
     rating: 5,
   },
 ];
@@ -102,13 +102,13 @@ const NACHNAME_INITIALEN = ["S.", "M.", "K.", "B.", "L.", "W.", "H.", "F.", "G."
 const KURZ_TEXTE = [
   "Endlich verstanden, wie Kapitalanlage wirklich funktioniert. Top Team!",
   "Transparente Beratung, keine versteckten Kosten. Kann ich nur empfehlen.",
-  "Habe meine erste Wohnung gekauft – stressfrei dank MOREImmo.",
+  "Habe meine erste Wohnung gekauft – stressfrei dank OS Immobilien.",
   "Beste Beratung seit Jahren. Hat mich aus der Niedrigzins-Falle geholt.",
   "Alle Zahlen wurden offen gelegt, auch die Kaufnebenkosten.",
   "Schnelle Bonitätsprüfung, klare Antworten – läuft.",
   "Mein Steuerberater war beeindruckt von der Denkmal-AfA-Konstruktion.",
   "Nach drei Jahren immer noch top betreut. Wie versprochen.",
-  "Habe verglichen – MOREImmo war fairer als drei andere Anbieter.",
+  "Habe verglichen – OS Immobilien war fairer als drei andere Anbieter.",
   "Realistische Renditeberechnungen, keine Schönrederei.",
   "Persönlicher Vertriebspartner, der wirklich erreichbar ist.",
   "Vom ersten Gespräch bis zum Notartermin perfekt durchgeplant.",

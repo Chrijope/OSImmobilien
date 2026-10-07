@@ -27,10 +27,10 @@ describe("useVideocallFreigabe", () => {
   });
 
   it("sperrt Kurz, Vogl und jeden anderen Admin", () => {
-    expect(als("admin", { id: "x-1", email: "c.kurz@more.immo" }).darf).toBe(false);
+    expect(als("admin", { id: "x-1", email: "os@os-immobilien.com" }).darf).toBe(false);
     expect(als("admin", { id: "7a0e03f6-6614-4f47-830a-5ed454e4979d", email: "h.vogl@vundp24.de" }).darf).toBe(false);
-    expect(als("admin", { id: "x-2", email: "irgendwer@more.immo" }).darf).toBe(false);
-    expect(als("hr", { id: "x-3", email: "sarah.kaiser-thom@more.immo" }).darf).toBe(false);
+    expect(als("admin", { id: "x-2", email: "os@os-immobilien.com" }).darf).toBe(false);
+    expect(als("hr", { id: "x-3", email: "os@os-immobilien.com" }).darf).toBe(false);
   });
 
   it("meldet laedt, solange die Anmeldung fehlt", () => {

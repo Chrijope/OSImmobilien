@@ -29,7 +29,7 @@ import {
  * SQL-Editor diese Zeile aus und trägt die vollständige neue Liste ein:
  *
  *     update public.app_config
- *        set wert = '["c.peetz@more.immo","zweite.adresse@more.immo"]'::jsonb,
+ *        set wert = '["os@os-immobilien.com","zweite.adresse@os-immobilien.com"]'::jsonb,
  *            aktualisiert_am = now()
  *      where schluessel = 'tagesbriefing_empfaenger';
  *
@@ -71,7 +71,7 @@ import {
  * ── DATENSCHUTZ ─────────────────────────────────────────────────────────
  *
  * Das Modell wird über den Lovable AI Gateway angesprochen. Der steht im
- * Auftragsverarbeitungsvertrag (`public/dokumente/AVV-Template-MOREImmo.md`),
+ * Auftragsverarbeitungsvertrag (`public/dokumente/AVV-Template-OS Immobilien.md`),
  * Anthropic steht dort nicht. Deshalb dieser Weg und kein anderer.
  * Hinausgereicht werden ausschließlich Zahlen: keine Namen, keine Adressen,
  * keine Kennungen. `kennzahlen_tagesstand` enthält nichts anderes.
@@ -235,7 +235,7 @@ async function ladeEmpfaenger(db: Datenbank): Promise<EmpfaengerErgebnis> {
       uebersprungen: [],
       grund:
         `Der Eintrag "${EMPFAENGER_SCHLUESSEL}" in public.app_config ist kein JSON-Array, ` +
-        `sondern ${typeof roh}. Erwartet wird zum Beispiel ["c.peetz@more.immo"].`,
+        `sondern ${typeof roh}. Erwartet wird zum Beispiel ["os@os-immobilien.com"].`,
     }
   }
 

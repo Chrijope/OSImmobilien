@@ -2174,7 +2174,7 @@ export type VideocallErfassung = {
   absprachen?: string[];
   /** Welche der fünf Merkmale im Gespräch bestätigt wurden. */
   bestaetigt?: MerkmalId[];
-  /** Die Entscheidung von MOREImmo. Die des Bewerbers steht auf seiner Seite. */
+  /** Die Entscheidung von OS Immobilien. Die des Bewerbers steht auf seiner Seite. */
   entscheidung?: "" | "moeglich" | "klaerung" | "nicht_moeglich";
   /** Pflichtgrund, wenn die Entscheidung „nicht möglich" lautet. */
   entscheidungGrund?: string;

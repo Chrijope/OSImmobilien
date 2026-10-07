@@ -678,7 +678,7 @@ export default function Nutzerverwaltung() {
                           onChange={e => setFormCustomRateSetter(e.target.value)}
                         />
                         <p className="text-[10px] text-muted-foreground">
-                          Provision für Leads, die dem Nutzer über MOREImmo zugewiesen werden.
+                          Provision für Leads, die dem Nutzer über OS Immobilien zugewiesen werden.
                         </p>
                       </div>
                       <div className="space-y-1 col-span-2">
@@ -695,7 +695,7 @@ export default function Nutzerverwaltung() {
                       </div>
                     </div>
                     <p className="text-[10px] text-muted-foreground mt-3">
-                      💡 <strong>Individueller Satz</strong> gilt für Lead- und Eigenkontakte gemeinsam. Wenn du differenzieren willst, lass ihn leer und trage stattdessen <strong>Lead Satz</strong> (Leads über MOREImmo) und <strong>Eigen Satz</strong> (eigenes Netzwerk) ein. Priorität: Individueller Satz → Lead/Eigen → Karrierestufe → Standard 3 %.
+                      💡 <strong>Individueller Satz</strong> gilt für Lead- und Eigenkontakte gemeinsam. Wenn du differenzieren willst, lass ihn leer und trage stattdessen <strong>Lead Satz</strong> (Leads über OS Immobilien) und <strong>Eigen Satz</strong> (eigenes Netzwerk) ein. Priorität: Individueller Satz → Lead/Eigen → Karrierestufe → Standard 3 %.
                     </p>
                   </div>
                   )}
@@ -974,7 +974,7 @@ export default function Nutzerverwaltung() {
                               <span className="text-xs">{stufe.emoji} {stufe.titel}</span>
                               {hasSplit ? (
                                 <>
-                                  <Badge variant="outline" className="text-[10px] px-1.5 py-0 font-bold" title="Lead Satz (Leads über MOREImmo)">
+                                  <Badge variant="outline" className="text-[10px] px-1.5 py-0 font-bold" title="Lead Satz (Leads über OS Immobilien)">
                                     Lead {setterRate ?? rate} %
                                   </Badge>
                                   <Badge variant="outline" className="text-[10px] px-1.5 py-0 font-bold" title="Eigen Satz (eigenes Netzwerk)">

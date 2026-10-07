@@ -122,7 +122,7 @@ export function weeklyCallIcs(runden: CallRunde[], jetzt: Date = new Date()): st
     const titel = `Weekly Sales Call ${gruppe}`;
     return [
       "BEGIN:VEVENT",
-      `UID:weekly-sales-call-${runde}-${datum}@more.immo`,
+      `UID:weekly-sales-call-${runde}-${datum}@os-immobilien.com`,
       `DTSTAMP:${utc(new Date())}`,
       `DTSTART;TZID=Europe/Berlin:${datum}T${zwei(zeit.stunde)}${zwei(zeit.minute)}00`,
       `DTEND;TZID=Europe/Berlin:${datum}T${zwei(Math.floor(endeMinuten / 60))}${zwei(endeMinuten % 60)}00`,
@@ -146,7 +146,7 @@ export function weeklyCallIcs(runden: CallRunde[], jetzt: Date = new Date()): st
   return [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//MOREImmo//Weekly Sales Call//DE",
+    "PRODID:-//OS Immobilien//Weekly Sales Call//DE",
     ...ICS_ZEITZONE,
     ...events,
     "END:VCALENDAR",

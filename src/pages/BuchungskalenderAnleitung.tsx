@@ -258,7 +258,7 @@ Wir vermitteln die Finanzierung nicht selbst, sondern bereiten sie mit dir vor u
           <h2 className="text-lg font-bold flex items-center gap-2"><Calendar className="h-5 w-5 text-primary" /> Schritt 6: Links übernehmen</h2>
           <ol className="text-sm space-y-2 list-decimal pl-5">
             <li>Öffne dein Buchungstool und kopiere die öffentliche Adresse deines jeweiligen Events.</li>
-            <li>Gehe in MOREImmo zu <strong>Einstellungen, Profil, Buchungskalender-Links</strong>.</li>
+            <li>Gehe in OS Immobilien zu <strong>Einstellungen, Profil, Buchungskalender-Links</strong>.</li>
             <li>Füge jeden Link in das Feld mit dem passenden Namen ein, von oben nach unten: Erstgespräch, Beratungsgespräch, Objektgespräch, Finanzierungsgespräch.</li>
             <li>Speichern. Die Setterin sieht ab sofort deinen Erstgesprächs-Link, im Erstgesprächs-Skript erscheint dein Beratungsgesprächs-Link, und im Kundenprofil stehen alle vier unter „Meeting erstellen".</li>
           </ol>

@@ -22,7 +22,7 @@ import { CookieEinstellungenLink } from "@/components/cookie/CookieEinstellungen
  * Ein Dienst wie Linktree sieht jeden Klick unserer Interessenten, mit
  * Zeitpunkt, Gerät und Herkunft. Das sind personenbezogene Daten auf einem
  * fremden Server, für den es einen Auftragsverarbeitungsvertrag bräuchte. Bei
- * einer eigenen Seite unter more.immo stellt sich die Frage nicht.
+ * einer eigenen Seite unter osimmobilien.netlify.app stellt sich die Frage nicht.
  *
  * WIE DIE KENNUNG WEITERGEREICHT WIRD
  *
@@ -64,7 +64,7 @@ const KENNUNGSFELDER = [
  * dunkles Grün auf dunklem Grund, und niemand sähe mehr etwas.
  */
 const FARBEN = {
-  blau: "text-[#087AC7] bg-[#F0F9FF] dark:text-[#8AD0FF] dark:bg-[#123349]",
+  blau: "text-[#15724F] bg-[#F0F9FF] dark:text-[#36E2A0] dark:bg-[#153629]",
   gruen: "text-[#187745] bg-[#E6F6EC] dark:text-[#45C47E] dark:bg-[#14281E]",
   teal: "text-[#0f7a86] bg-[#e6f4f5] dark:text-[#5fc9d3] dark:bg-[#12262a]",
 } as const;
@@ -112,8 +112,8 @@ function gruppen(t: LinksTexte, sprache: Sprache): { ueberschrift: string; ziele
     ueberschrift: t.gruppen.webseite,
     ziele: [
       {
-        titel: "more.immo",
-        url: "https://more.immo",
+        titel: "osimmobilien.netlify.app",
+        url: "https://osimmobilien.netlify.app",
         icon: Globe,
         farbe: "blau",
         extern: true,
@@ -193,7 +193,7 @@ function LinksPublicInhalt() {
           <SeitenSprachUmschalter />
         </div>
         <div className="mx-auto w-full max-w-md text-center">
-          <img src={logoImg} alt="MOREImmo" className="h-9 object-contain mx-auto mb-6" />
+          <img src={logoImg} alt="OS Immobilien" className="h-9 object-contain mx-auto mb-6" />
           <h1 className="text-2xl font-bold tracking-tight">{t.titel}</h1>
           {/*
             Der einzige erklärende Satz der Seite. Er gilt für alles darunter,
@@ -258,7 +258,7 @@ function LinksPublicInhalt() {
 
       <footer className="border-t border-border px-5 py-6">
         <div className="mx-auto flex w-full max-w-md flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[12px] text-muted-foreground">
-          <span>MOREImmo</span>
+          <span>OS Immobilien</span>
           <a href={mitSeitenSprache("/impressum", sprache)} className="transition-colors hover:text-foreground">
             {t.impressum}
           </a>

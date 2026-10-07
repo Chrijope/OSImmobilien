@@ -60,7 +60,7 @@ export function getDefaultProtokollData(mieter: Mieter, typ: "einzug" | "auszug"
     allgemeinzustand: "",
     maengelListe: "",
     vereinbarungen: "",
-    vermieterName: "MOREImmo",
+    vermieterName: "OS Immobilien",
     vermieterVertreter: "",
   };
 }

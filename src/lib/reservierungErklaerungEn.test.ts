@@ -143,7 +143,7 @@ describe("Englische Fassung der Reservierungsvereinbarung", () => {
 
   it("die Widerrufsbelehrung hat dieselben Blöcke und Absätze wie das Muster", () => {
     expect(WIDERRUFSBELEHRUNG_EN.map((b) => b.absaetze.length)).toEqual(WIDERRUFSBELEHRUNG.map((b) => b.absaetze.length));
-    expect(WIDERRUFSBELEHRUNG_EN[0].absaetze[2]).toContain("office@more.immo");
+    expect(WIDERRUFSBELEHRUNG_EN[0].absaetze[2]).toContain("os@os-immobilien.com");
     expect(reservierungTexte("en").widerrufsbelehrung).toBe(WIDERRUFSBELEHRUNG_EN);
     expect(reservierungTexte("de").widerrufsbelehrung).toBe(WIDERRUFSBELEHRUNG);
   });

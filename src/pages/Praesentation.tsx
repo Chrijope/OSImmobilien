@@ -62,7 +62,7 @@ function seedAbschnitte(): Abschnitt[] {
         // gearbeitet wird, und traegt deshalb den schlichten Namen.
         {
           id: "1hv",
-          name: "Beratungspräsentation MOREImmo",
+          name: "Beratungspräsentation OS Immobilien",
           url: "/beratungspraesentation-moreimmo",
           typ: "link",
           action: "internal-link",
@@ -76,7 +76,7 @@ function seedAbschnitte(): Abschnitt[] {
           url: "/dokumente/beratungspraesentation.pdf",
           typ: "link",
         },
-        // Nur noch die aktuelle MOREImmo-Fassung. Die abgeloesten Varianten
+        // Nur noch die aktuelle OS Immobilien-Fassung. Die abgeloesten Varianten
         // wurden entfernt, damit ueberall dieselbe Praesentation steht.
       ],
     },
@@ -139,7 +139,7 @@ function seedAbschnitte(): Abschnitt[] {
 const ENTFALLENE_DOKUMENT_IDS = [
   // Haushaltsrechner / Bonitätsrechner: die Seite gibt es nicht mehr.
   "2f",
-  // Abgeloeste Beratungspraesentationen. Es bleibt nur die MOREImmo-Fassung.
+  // Abgeloeste Beratungspraesentationen. Es bleibt nur die OS Immobilien-Fassung.
   "1n",
   "1a",
   "1b",
@@ -153,7 +153,7 @@ const ENTFALLENE_DOKUMENT_IDS = [
  * enthalten. Wie ein Eintrag aus dem Seed heisst und wohin er zeigt, entscheidet
  * dagegen der Code. Vorher wurde ein einmal gespeicherter Eintrag nie wieder
  * angefasst: Die HV-Fassung hiess deshalb bei Hermann Vogl weiter
- * "Beratungspraesentation MOREImmo HV", obwohl sie im Code laengst umbenannt war.
+ * "Beratungspraesentation OS Immobilien HV", obwohl sie im Code laengst umbenannt war.
  */
 function ausSeedAktualisiert<T extends { id: string }>(gespeichert: T, ausSeed?: T): T {
   if (!ausSeed) return gespeichert;
@@ -425,7 +425,7 @@ export default function Praesentation() {
       <div className="library-apple">
         {/* Apple Hero */}
         <header className="la-hero">
-          <span className="la-eyebrow relative">MOREImmo · Vertriebsraum</span>
+          <span className="la-eyebrow relative">OS Immobilien · Vertriebsraum</span>
           <h1 className="la-display">Alles, was du fürs Gespräch brauchst.</h1>
           <p className="la-subtitle relative">
             Vertriebsmaterialien, Tools und Wissenswertes — kuratiert für deine Kundengespräche.

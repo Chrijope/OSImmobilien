@@ -76,7 +76,7 @@ describe("Portal nutzt dieselbe Restschuld", () => {
     expect(p.restschuld).toBeGreaterThan(0);
   });
 
-  it("MOREImmo-Investment: ohne gepflegte Restschuld wird das Darlehen fortgeschrieben", () => {
+  it("OS Immobilien-Investment: ohne gepflegte Restschuld wird das Darlehen fortgeschrieben", () => {
     const fin = {
       akzeptiertes_angebot_id: "a",
       angebote: [{ id: "a", darlehensbetrag: 200000, zinssatz: 3 }],

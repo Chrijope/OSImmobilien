@@ -42,13 +42,13 @@ const I = "44444444-4444-4444-8444-444444444444";
 
 describe("der Kundenlink", () => {
   it("zeigt auf die veröffentlichte Adresse, mit Einheit oder für das ganze Objekt", () => {
-    expect(kundenExposeLink("o1", "w7", "ab")).toBe("https://portal.more.immo/expose/o1/wohnung/w7?token=ab");
-    expect(kundenExposeLink("o1", null, "ab")).toBe("https://portal.more.immo/expose/o1?token=ab");
+    expect(kundenExposeLink("o1", "w7", "ab")).toBe("https://osimmobilien.netlify.app/expose/o1/wohnung/w7?token=ab");
+    expect(kundenExposeLink("o1", null, "ab")).toBe("https://osimmobilien.netlify.app/expose/o1?token=ab");
   });
 
   it("führt bei der Objektübersicht auf /immobilie/<token>, ohne Wohnung in der Adresse", () => {
-    expect(kundenansichtLink("ab")).toBe("https://portal.more.immo/immobilie/ab");
-    expect(kundenlinkFuer("objektuebersicht", "o1", "w7", "ab")).toBe("https://portal.more.immo/immobilie/ab");
+    expect(kundenansichtLink("ab")).toBe("https://osimmobilien.netlify.app/immobilie/ab");
+    expect(kundenlinkFuer("objektuebersicht", "o1", "w7", "ab")).toBe("https://osimmobilien.netlify.app/immobilie/ab");
     expect(kundenlinkFuer("expose", "o1", "w7", "ab")).toBe(kundenExposeLink("o1", "w7", "ab"));
     expect(KUNDENLINK_ART_STANDARD).toBe("objektuebersicht");
   });

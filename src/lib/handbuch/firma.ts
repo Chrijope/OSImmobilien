@@ -1,10 +1,10 @@
 /**
- * Was die Handbuch-Seite über MOREImmo selbst sagt (Abschnitt „Wer dahinter
+ * Was die Handbuch-Seite über OS Immobilien selbst sagt (Abschnitt „Wer dahinter
  * steht“, Westmont-Analyse Punkt 4, Auftrag vom 26.09.2026).
  *
  * Regeln:
- *   - Kennzahlen nur so, wie sie auf https://more.immo stehen (Abschnitt
- *     „Über MOREImmo“, gelesen am 26.09.2026). Keine eigenen Zahlen.
+ *   - Kennzahlen nur so, wie sie auf https://osimmobilien.netlify.app stehen (Abschnitt
+ *     „Über OS Immobilien“, gelesen am 26.09.2026). Keine eigenen Zahlen.
  *   - Kundenstimmen wörtlich und mit der Namensform der Website, nichts
  *     ergänzt. Ausgewählt sind Stimmen ohne Steuer- oder Tempoversprechen.
  *   - Das Zitat des Inhabers ist ein ENTWURF: Auf der Website steht keins.
@@ -34,14 +34,14 @@ export const FIRMEN_ANSPRECHPARTNER_EN = {
     "With us, the numbers come before the flat. If the figures do not suit you, we tell you openly, even if that means no purchase for now.",
 };
 
-/** Warum es MOREImmo gibt, zwei Sätze. */
+/** Warum es OS Immobilien gibt, zwei Sätze. */
 export const MOREIMMO_WARUM = [
-  "MOREImmo gibt es, weil viele Menschen eine Wohnung kaufen, bevor sie wissen, was sie sich leisten können und was die Wohnung für sie leisten soll.",
+  "OS Immobilien gibt es, weil viele Menschen eine Wohnung kaufen, bevor sie wissen, was sie sich leisten können und was die Wohnung für sie leisten soll.",
   "Wir drehen die Reihenfolge um: erst Ihre Zahlen, dann die Bank, dann das Objekt, persönlich, transparent und langfristig gedacht.",
 ];
 
 export const MOREIMMO_WARUM_EN = [
-  "MOREImmo exists because many people buy a flat before they know what they can afford and what the flat should do for them.",
+  "OS Immobilien exists because many people buy a flat before they know what they can afford and what the flat should do for them.",
   "We reverse the order: your figures first, then the bank, then the property. Personal, transparent and with the long term in mind.",
 ];
 
@@ -52,7 +52,7 @@ export const MOREIMMO_WERTE =
 export const MOREIMMO_WERTE_EN =
   "We disclose every calculation and tell you when a flat does not suit you. After the notary we stay by your side, through handover, letting and your first tax year.";
 
-/** Wörtlich von more.immo, Abschnitt „Über MOREImmo“. */
+/** Wörtlich von osimmobilien.netlify.app, Abschnitt „Über OS Immobilien“. */
 export const FIRMEN_KENNZAHLEN: Array<{ wert: string; text: string }> = [
   { wert: "über 10 Jahre", text: "Immobilienerfahrung" },
   { wert: "rund 20", text: "Spezialisten im Team" },
@@ -63,7 +63,7 @@ export const FIRMEN_KENNZAHLEN_EN: Array<{ wert: string; text: string }> = [
   { wert: "around 20", text: "specialists in the team" },
 ];
 
-/** Wörtlich von more.immo, Abschnitt „Was unsere Kunden sagen“, gelesen am 26.09.2026. */
+/** Wörtlich von osimmobilien.netlify.app, Abschnitt „Was unsere Kunden sagen“, gelesen am 26.09.2026. */
 export const KUNDENSTIMMEN: Array<{ name: string; ort: string; text: string }> = [
   {
     name: "Stefan L.",

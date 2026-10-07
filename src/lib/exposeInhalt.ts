@@ -228,7 +228,7 @@ export interface MikrolageGruppe {
 
 /** Die drei Listen der Vorlage, gefüllt aus der Standortmessung (OpenStreetMap). */
 export const MIKROLAGE_GRUPPEN: MikrolageGruppe[] = [
-  { id: "einkaufen", titel: EXPOSE_INHALT_TEXTE.de.mikrolageGruppen.einkaufen, kategorien: ["supermarket", "bakery", "pharmacy", "doctor", "bank"], analyse: ["einkaufen", "apotheken", "aerzte"], farbe: "#087ac7" },
+  { id: "einkaufen", titel: EXPOSE_INHALT_TEXTE.de.mikrolageGruppen.einkaufen, kategorien: ["supermarket", "bakery", "pharmacy", "doctor", "bank"], analyse: ["einkaufen", "apotheken", "aerzte"], farbe: "#15724F" },
   // Parks stehen seit der Messfassung 3 in einer eigenen Liste, gehören hier aber weiter zur Erholung.
   { id: "freizeit", titel: EXPOSE_INHALT_TEXTE.de.mikrolageGruppen.freizeit, kategorien: ["park", "sports"], analyse: ["freizeit", "parks"], farbe: "#2e9468" },
   { id: "infrastruktur", titel: EXPOSE_INHALT_TEXTE.de.mikrolageGruppen.infrastruktur, kategorien: ["transit", "station", "kindergarten", "school", "hospital", "motorway"], analyse: ["oepnv", "kindergaerten", "schulen"], farbe: "#c77d12" },

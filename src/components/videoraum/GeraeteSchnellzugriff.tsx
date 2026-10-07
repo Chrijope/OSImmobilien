@@ -70,7 +70,7 @@ function Auswahl({
         id={id}
         value={wert && geraete.some((g) => g.deviceId === wert) ? wert : ""}
         onChange={(e) => { if (e.target.value) aufWechsel(e.target.value); }}
-        className="h-9 w-full rounded-lg border border-white/10 bg-[#18222e] px-2.5 text-[12.5px] text-white outline-none focus:border-[#88CFFF]/60"
+        className="h-9 w-full rounded-lg border border-white/10 bg-[#18222e] px-2.5 text-[12.5px] text-white outline-none focus:border-[#30E19E]/60"
       >
         <option value="">{standard}</option>
         {geraete.map((g, i) => (
@@ -134,7 +134,7 @@ export function GeraeteSchnellzugriff({
   const pille = (aktivPille: boolean) =>
     `rounded-lg border px-2.5 py-1.5 text-[11.5px] font-semibold transition-colors ${
       aktivPille
-        ? "border-[#88CFFF]/45 bg-[#88CFFF]/15 text-[#88CFFF]"
+        ? "border-[#30E19E]/45 bg-[#30E19E]/15 text-[#30E19E]"
         : "border-white/10 bg-white/[0.06] text-white/70 hover:bg-white/[0.1]"
     }`;
 
@@ -202,7 +202,7 @@ export function GeraeteSchnellzugriff({
                 onClick={() => waehle(bild.pfad, { art: "bild", bildPfad: bild.pfad })}
                 className={`relative aspect-[16/10] overflow-hidden rounded-lg border transition-colors ${
                   hintergrund.art === "bild" && hintergrund.bildPfad === bild.pfad
-                    ? "border-[#88CFFF]"
+                    ? "border-[#30E19E]"
                     : "border-white/10 hover:border-white/30"
                 }`}
               >

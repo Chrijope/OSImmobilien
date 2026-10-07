@@ -9,7 +9,7 @@ import { EmailLayout, Absatz, Angaben, Textblock, Hinweis } from './_layout.tsx'
  * Zwei bewusste Abweichungen vom ueblichen Kundenmail-Aufbau:
  *
  *   Kein Ansprechpartner-Block (ohneUnterschrift): Die Mail geht im Namen des
- *   Kunden an dessen Steuerberater. Ein MOREImmo-Vertriebskontakt unter einer
+ *   Kunden an dessen Steuerberater. Ein OS Immobilien-Vertriebskontakt unter einer
  *   fremden Steuerunterlage waere fehl am Platz. Deshalb fuehrt previewData
  *   auch KEIN berater-Feld, sonst wuerde send-transactional-email den
  *   Ansprechpartner aus dem JWT ergaenzen (siehe ansprechpartnerErgaenzen).
@@ -38,7 +38,7 @@ const Mail = ({ kundenName, kundenEmail, investmentBezeichnung, jahr, dateiname,
     anrede="Guten Tag,"
     ohneUnterschrift
     intern
-    fussHinweis="Diese E-Mail wurde über das MOREImmo Kundenportal versendet. Antworten gehen direkt an den Absender."
+    fussHinweis="Diese E-Mail wurde über das OS Immobilien Kundenportal versendet. Antworten gehen direkt an den Absender."
   >
     <Absatz>
       {kundenName ? `${kundenName} übersendet Ihnen` : 'anbei erhalten Sie'} die Aufstellung zur

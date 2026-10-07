@@ -260,13 +260,13 @@ export const template = {
     anlass: 'erstgespraech',
     terminartName: 'Telefonisches Erstgespräch',
     dauerMinuten: 30,
-    buchungUrl: 'https://portal.more.immo/termin/abc123',
+    buchungUrl: 'https://osimmobilien.netlify.app/termin/abc123',
     gueltigBis: '30. September 2026',
     berater: {
       name: 'Christian Peetz',
       rolle: 'Senior Berater',
-      telefon: '+49 1515 0275108',
-      email: 'c.peetz@more.immo',
+      telefon: '+49 30 863289210',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

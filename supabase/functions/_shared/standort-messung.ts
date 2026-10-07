@@ -378,7 +378,7 @@ const echterAbruf: Abruf = (url, init) => fetch(url, init);
  * eigene Kopf bei Photon eine CORS-Vorabfrage aus, und die Adresssuche für die
  * Kartennadel (`findeAdresse`) läuft auch dort.
  */
-export const KENNUNG = "MORE-Immo-CRM/1.0 (Standortmessung; https://portal.more.immo)";
+export const KENNUNG = "MORE-Immo-CRM/1.0 (Standortmessung; https://osimmobilien.netlify.app)";
 
 /** Höchstwartezeit für eine Adresssuche. Photon antwortet sonst in unter einer Sekunde. */
 export const PHOTON_FRIST_MS = 8_000;

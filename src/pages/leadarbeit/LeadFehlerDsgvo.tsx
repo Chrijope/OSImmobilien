@@ -15,7 +15,7 @@ export default function LeadFehlerDsgvo() {
     >
       <SectionCard title="Unsere Zielgruppe ist B2C – das ändert alles" icon={<Users className="h-5 w-5" />}>
         <p>
-          MOREImmo-Leads sind <strong>Privatpersonen</strong>. Bei B2C gelten die DSGVO und das UWG deutlich strenger
+          OS Immobilien-Leads sind <strong>Privatpersonen</strong>. Bei B2C gelten die DSGVO und das UWG deutlich strenger
           als bei B2B. Werbliche Kontaktaufnahme ist <strong>nur mit dokumentierter Einwilligung</strong> zulässig.
         </p>
         <PullQuote author="DSGVO Art. 6">
@@ -33,7 +33,7 @@ export default function LeadFehlerDsgvo() {
           <li><strong>Keine Cold-E-Mails ohne Opt-In.</strong> Nicht von privaten Kontakten oder anderen Quellen E-Mail-Adressen ins CRM einspielen und anschreiben.</li>
           <li><strong>Keine Cold-Calls bei Privatpersonen ohne ausdrückliche Einwilligung</strong> (§ 7 UWG).</li>
           <li><strong>Keine Lead-Daten extern speichern</strong> – nicht in private Notizen, nicht in eigene Excel-Listen, nicht in private E-Mail-Postfächer.</li>
-          <li><strong>Keine Weitergabe</strong> von Lead-Daten an Dritte (auch nicht an Familie, Bekannte oder andere Berater außerhalb von MOREImmo).</li>
+          <li><strong>Keine Weitergabe</strong> von Lead-Daten an Dritte (auch nicht an Familie, Bekannte oder andere Berater außerhalb von OS Immobilien).</li>
           <li><strong>Keine Excel-Exports</strong> ohne konkreten geschäftlichen Anlass – generell läuft alles im CRM.</li>
         </ul>
       </SectionCard>

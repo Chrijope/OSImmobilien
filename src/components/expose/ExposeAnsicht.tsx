@@ -233,7 +233,7 @@ export function ExposeAnsicht(p: ExposeAnsichtProps) {
   const nurDeutsch = c.nurDeutsch ?? { beschreibung: false, standortargumente: false, marktargumente: false };
 
   return <div className="premium-expose" ref={root}>
-    <header><img src="/images/moreimmo-logo.png" alt="MOREImmo" /><span>{t.slogan}</span><button type="button" className="btn primary" onClick={pdfLaden} disabled={pdfLaeuft} aria-busy={pdfLaeuft} data-testid="expose-pdf"><PdfSymbol size={14} className={pdfLaeuft ? "animate-spin" : undefined} /> {pdfText}</button></header>
+    <header><img src="/images/moreimmo-logo.png" alt="OS Immobilien" /><span>{t.slogan}</span><button type="button" className="btn primary" onClick={pdfLaden} disabled={pdfLaeuft} aria-busy={pdfLaeuft} data-testid="expose-pdf"><PdfSymbol size={14} className={pdfLaeuft ? "animate-spin" : undefined} /> {pdfText}</button></header>
     {(p.leisteObenLinks || p.kopfRechts) && <div className="expose-editor-bar">{p.leisteObenLinks}{p.kopfRechts}</div>}
     <nav aria-label={t.navLabel}>{abschnitte.map((a, i) => { const Icon = icons[i]; if (!sichtbareAbschnitte.includes(a)) return null; return <button key={a.id} className={aktiv === a.id ? "active" : ""} aria-current={aktiv === a.id ? "location" : undefined} aria-label={a.titel} title={a.titel} onClick={() => springeZuAbschnitt(a.id)}><Icon size={19} /><span className="nav-tip">{a.titel}</span></button>; })}<button type="button" title={pdfText} aria-label={pdfText} onClick={pdfLaden} disabled={pdfLaeuft} data-testid="expose-pdf-leiste"><PdfSymbol size={18} className={pdfLaeuft ? "animate-spin" : undefined} /></button></nav>
     <span className="sr-only" data-testid="leiste-zaehler">{nr} / {sichtbareAbschnitte.length}</span>
@@ -243,7 +243,7 @@ export function ExposeAnsicht(p: ExposeAnsichtProps) {
         <div className={`photos ${bilder.length < 2 ? "single-photo" : ""}`}>
           {aktuell ? <img src={resolveImageUrl(aktuell.url)} alt={aktuell.alt || c.kopf.adresse} fetchPriority="high" /> : <div className="no-photo"><Building2 size={48} /><span>{t.keinBild}</span></div>}
           {bilder.length > 1 && <img src={resolveImageUrl(next.url)} alt={next.alt || c.kopf.titel} />}
-          {bilder.length > 0 && <><div className="image-label"><b>MOREImmo</b> · {t.ansichtenDerImmobilie}</div><div className="image-counter">{String(idx % bilder.length + 1).padStart(2, "0")} / {String(bilder.length).padStart(2, "0")}</div></>}
+          {bilder.length > 0 && <><div className="image-label"><b>OS Immobilien</b> · {t.ansichtenDerImmobilie}</div><div className="image-counter">{String(idx % bilder.length + 1).padStart(2, "0")} / {String(bilder.length).padStart(2, "0")}</div></>}
           {bilder.length > 1 && <><button className="prev" aria-label={t.vorherigesBild} onClick={() => setIdx((idx - 1 + bilder.length) % bilder.length)}><ChevronLeft size={18} /></button><button className="next" aria-label={t.naechstesBild} onClick={() => setIdx((idx + 1) % bilder.length)}><ChevronRight size={18} /></button></>}
         </div>
         <div className="hero-card">
@@ -346,7 +346,7 @@ export function ExposeAnsicht(p: ExposeAnsichtProps) {
       <section className="section alt" id={abschnittAnker("rechtliches")} data-testid="abschnitt-rechtliches">{header("rechtliches")}<div className="card data">{c.rechtliches.entwurf && <p data-testid="rechtliches-entwurf"><b>{t.entwurf}</b></p>}{c.rechtliches.hinweise.map(h => <div key={h.titel}><h3>{h.titel}</h3><p>{h.text}</p></div>)}</div></section>
       <section className="section contact" id={abschnittAnker("kontakt")} data-testid="abschnitt-kontakt">{header("kontakt")}<AbschnittKontakt kontakt={c.kontakt} /></section>
     </main>
-    <footer><span>MOREImmo · {[c.kopf.adresse, c.kopf.titel].filter(Boolean).join(" · ")}</span><span>{t.stand(sprache === "en" ? datumText(new Date(), sprache) : new Date().toLocaleDateString("de-DE"))}{p.fussText ? ` · ${p.fussText}` : ""}<br/><Link to="/impressum">{t.impressum}</Link> · <Link to="/datenschutz">{t.datenschutz}</Link></span></footer>
+    <footer><span>OS Immobilien · {[c.kopf.adresse, c.kopf.titel].filter(Boolean).join(" · ")}</span><span>{t.stand(sprache === "en" ? datumText(new Date(), sprache) : new Date().toLocaleDateString("de-DE"))}{p.fussText ? ` · ${p.fussText}` : ""}<br/><Link to="/impressum">{t.impressum}</Link> · <Link to="/datenschutz">{t.datenschutz}</Link></span></footer>
     <dialog ref={dialog} onClose={() => setLightbox(null)}><button aria-label={t.bildSchliessen} onClick={() => setLightbox(null)}><X size={20}/></button>{lightbox && <img src={lightbox.url} alt={lightbox.alt}/>}</dialog>
   </div>;
 }

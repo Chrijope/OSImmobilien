@@ -2,7 +2,7 @@
  * Anlage-V-Export (Stufe 3 der Kundenportal-Sanierung).
  *
  * Baut aus einem Investment (eigenes ODER ueber den kundePortalInvestment-
- * Adapter abgebildetes MOREImmo-Investment) plus Steuerjahr eine strukturierte
+ * Adapter abgebildetes OS Immobilien-Investment) plus Steuerjahr eine strukturierte
  * Aufstellung zur Vorbereitung der Anlage V: Objektangaben, Einnahmen,
  * Werbungskosten, Ergebnis und die Liste der fehlenden Angaben.
  *
@@ -162,12 +162,12 @@ export function baueAnlageVAufstellung(
   );
 
   // Datenherkunft: eigene Investments erfasst der Kunde selbst, bei
-  // MOREImmo-Investments kommen die Werte aus dem CRM-Datensatz.
+  // OS Immobilien-Investments kommen die Werte aus dem CRM-Datensatz.
   const eigen = opt.herkunft === "eigen";
-  const qErfasst = eigen ? "erfasst vom Kunden" : "aus dem MOREImmo-Investment";
+  const qErfasst = eigen ? "erfasst vom Kunden" : "aus dem OS Immobilien-Investment";
   const qSteuerangaben = eigen
     ? "aus den Steuerangaben des Investments"
-    : "aus dem MOREImmo-Investment";
+    : "aus dem OS Immobilien-Investment";
   const qFinanzierung = eigen
     ? "berechnet aus Restschuld und Zinssatz, erfasst vom Kunden"
     : "berechnet aus Restschuld und Zinssatz des Finanzierungsangebots";

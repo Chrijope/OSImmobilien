@@ -23,7 +23,7 @@ import { BUCHUNG_BAUSTEIN_TEXTE } from "./buchungTexte";
 const FELD =
   `mt-2 flex h-[48px] w-full items-center justify-between gap-3 rounded-xl border border-white/15 ${FLAECHE_FELD} ` +
   "px-4 text-left text-[15px] text-white outline-none transition-colors " +
-  "focus-visible:border-[#88CFFF] focus-visible:ring-2 focus-visible:ring-[#88CFFF]/40 data-[state=open]:border-[#88CFFF]";
+  "focus-visible:border-[#30E19E] focus-visible:ring-2 focus-visible:ring-[#30E19E]/40 data-[state=open]:border-[#30E19E]";
 
 const FENSTER =
   "w-auto rounded-2xl border border-white/12 bg-[#151E2B] p-2 text-white shadow-[0_20px_60px_rgba(0,0,0,0.55)]";
@@ -71,7 +71,7 @@ export function DatumFeld({
           <span className={gewaehlt ? "" : "text-white/35"}>
             {gewaehlt ? datumAnzeige(wert) : t.datumPlatzhalter}
           </span>
-          <CalendarDays className="h-4 w-4 shrink-0 text-[#88CFFF]" aria-hidden />
+          <CalendarDays className="h-4 w-4 shrink-0 text-[#30E19E]" aria-hidden />
         </button>
       </PopoverTrigger>
       <PopoverContent align="start" className={FENSTER}>
@@ -98,15 +98,15 @@ export function DatumFeld({
             nav_button:
               "inline-flex h-8 w-8 items-center justify-center rounded-lg text-white/60 transition-colors " +
               "hover:bg-white/10 hover:text-white disabled:opacity-20 disabled:hover:bg-transparent " +
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#88CFFF]",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#30E19E]",
             head_cell: "w-10 text-[11px] font-medium uppercase tracking-wide text-white/40",
             row: "mt-1 flex w-full",
             cell: "relative h-10 w-10 p-0 text-center text-[14px]",
             day:
               "h-10 w-10 rounded-xl p-0 font-normal text-white/85 transition-colors hover:bg-white/10 " +
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#88CFFF]",
-            day_today: "border border-[#88CFFF]/60 font-semibold text-[#88CFFF]",
-            day_selected: "!bg-[#087AC7] font-semibold !text-white hover:!bg-[#087AC7]",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#30E19E]",
+            day_today: "border border-[#30E19E]/60 font-semibold text-[#30E19E]",
+            day_selected: "!bg-[#15724F] font-semibold !text-white hover:!bg-[#15724F]",
             day_disabled: "cursor-not-allowed !text-white/20 hover:!bg-transparent",
           }}
         />
@@ -176,8 +176,8 @@ function Spalte({
           aria-pressed={w === gewaehlt}
           data-wert={w}
           onClick={() => aufWahl(w)}
-          className={`h-10 shrink-0 rounded-xl text-[15px] tabular-nums transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#88CFFF] ${
-            w === gewaehlt ? "bg-[#087AC7] font-semibold text-white" : "text-white/80 hover:bg-white/10"
+          className={`h-10 shrink-0 rounded-xl text-[15px] tabular-nums transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#30E19E] ${
+            w === gewaehlt ? "bg-[#15724F] font-semibold text-white" : "text-white/80 hover:bg-white/10"
           }`}
         >
           {w}
@@ -224,7 +224,7 @@ export function UhrzeitFeld({
       <PopoverTrigger asChild>
         <button id={id} type="button" className={FELD}>
           <span className={wert ? "tabular-nums" : "text-white/35"}>{wert || t.uhrzeitPlatzhalter}</span>
-          <Clock className="h-4 w-4 shrink-0 text-[#88CFFF]" aria-hidden />
+          <Clock className="h-4 w-4 shrink-0 text-[#30E19E]" aria-hidden />
         </button>
       </PopoverTrigger>
       <PopoverContent

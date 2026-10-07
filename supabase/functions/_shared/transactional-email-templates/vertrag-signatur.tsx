@@ -75,7 +75,7 @@ export const template = {
   displayName: 'Vertrag Signatur-Anfrage',
   previewData: {
     name: 'Max Mustermann',
-    signatureUrl: 'https://portal.more.immo/signatur?token=example&type=vertrag',
+    signatureUrl: 'https://osimmobilien.netlify.app/signatur?token=example&type=vertrag',
     paketTitel: 'Vertriebspartner',
     documents: [
       { name: 'Handelsvertretervertrag' },
@@ -91,7 +91,7 @@ export const template = {
     hrKontakt: {
       name: 'Sarah Kaiser-Thom',
       rolle: berufsbezeichnung('hr'),
-      email: 's.kaiser-thom@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

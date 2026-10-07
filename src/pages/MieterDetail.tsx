@@ -180,8 +180,8 @@ export default function MieterDetail() {
     toast({ title: "Zahlung gelöscht" });
   };
 
-  const ABSENDER_FIRMA = "MOREImmo";
-  const ABSENDER_ADRESSE = "Wendelsteinstraße 19, 83075 Bad Feilnbach";
+  const ABSENDER_FIRMA = "OS Immobilien";
+  const ABSENDER_ADRESSE = "Am Ostbahnhof 1, 15749 Mittenwalde";
 
   const openMahnung = (z: MieterZahlung) => {
     setMahnungZahlung(z);

@@ -157,7 +157,7 @@ export function Fusszeile() {
   const t = useSeitenTexte(STEUERRECHNER_TEXTE).hilfe;
   return (
     <footer className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 pb-2 text-xs text-muted-foreground">
-      <span>© {new Date().getFullYear()} MOREImmo</span>
+      <span>© {new Date().getFullYear()} OS Immobilien</span>
       <a
         href={mitSeitenSprache("/impressum", sprache)}
         target="_blank"

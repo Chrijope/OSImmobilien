@@ -13,7 +13,7 @@ import { DE_EN, type MailSprache, texteFuer, type Zweisprachig } from './_sprach
  *
  * Gruppe F (Selbstauskunft): Deutsch in der Sie-Form, Englisch förmlich,
  * wie `sa-invitation`. Bis zum 26.09.2026 duzte die Mail wie die
- * Handbuch-Seite. Absender wie bei `sa-invitation`: MOREImmo, der
+ * Handbuch-Seite. Absender wie bei `sa-invitation`: OS Immobilien, der
  * zuständige Partner als Unterschrift.
  *
  * Verschickt von `_shared/handbuch-anlage.ts`.
@@ -33,7 +33,7 @@ const DE = {
   titel: 'Ihre Selbstauskunft liegt vor',
   vorschau: 'Möchten Sie etwas ändern, meldet sich Ihr Berater bei Ihnen.',
   text: 'Ihre Selbstauskunft liegt uns bereits vor. Möchten Sie etwas ändern, meldet sich Ihr Berater bei Ihnen.',
-  fuss: 'Sie haben die Selbstauskunft auf der Handbuch-Seite von MOREImmo angefordert.',
+  fuss: 'Sie haben die Selbstauskunft auf der Handbuch-Seite von OS Immobilien angefordert.',
 }
 
 const TEXTE: Zweisprachig<typeof DE> = {
@@ -44,7 +44,7 @@ const TEXTE: Zweisprachig<typeof DE> = {
     titel: 'Your self-disclosure is on file',
     vorschau: 'Should you wish to make any changes, your contact person will get in touch with you.',
     text: 'We already have your self-disclosure form (Selbstauskunft) on file. Should you wish to make any changes, your contact person will get in touch with you.',
-    fuss: 'You requested the self-disclosure on the MOREImmo handbook page.',
+    fuss: 'You requested the self-disclosure on the OS Immobilien handbook page.',
   },
 }
 
@@ -74,9 +74,9 @@ export const template = {
     name: 'Erika Muster',
     berater: {
       name: 'Christian Peetz',
-      rolle: 'Ihr Ansprechpartner bei MOREImmo',
+      rolle: 'Ihr Ansprechpartner bei OS Immobilien',
       telefon: '+49 151 00000000',
-      email: 'office@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

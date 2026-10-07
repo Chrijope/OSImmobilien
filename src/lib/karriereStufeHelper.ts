@@ -152,7 +152,7 @@ export function getEffectiveRate(userId?: string | null, fallbackStufe?: Karrier
  *  4. Fallback → getEffectiveRate (custom_provision_rate / Karrierestufe)
  *
  * Was ein eigener Kontakt ist, entschied bisher allein das Feld `setter`, also
- * der Name einer Setterin. Bei MOREImmo gibt es aber keine Setterinnen: die
+ * der Name einer Setterin. Bei OS Immobilien gibt es aber keine Setterinnen: die
  * Leads werden den Vertriebspartnern zugewiesen, und die setten selbst im
  * Erstgespräch. Das Feld blieb deshalb praktisch immer leer, womit rechnerisch
  * jeder Kontakt als eigener galt und der Lead-Satz nie zur Anwendung kam.

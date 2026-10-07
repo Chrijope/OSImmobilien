@@ -318,7 +318,7 @@ const BeraterMicroseiteInhalt = () => {
         <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4 text-center">
           <h1 className="text-2xl font-semibold mb-2">{rahmen.nichtGefundenTitel}</h1>
           <p className="text-muted-foreground">{rahmen.nichtGefundenText}</p>
-          <a href="https://more.immo" className="mt-4 text-primary hover:underline font-medium">
+          <a href="https://osimmobilien.netlify.app" className="mt-4 text-primary hover:underline font-medium">
             {rahmen.nichtGefundenLink}
           </a>
         </div>

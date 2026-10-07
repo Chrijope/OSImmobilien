@@ -7,7 +7,7 @@
 //
 // Bewusste Entscheidungen:
 //
-//   Die persoenliche Adresse MUSS auf @more.immo enden. Die Mail teilt dem
+//   Die persoenliche Adresse MUSS auf @os-immobilien.com enden. Die Mail teilt dem
 //   neuen Partner seine Firmenadresse samt Passwort mit; eine fremde Domain
 //   waere immer ein Tippfehler oder ein Missbrauchsversuch.
 //
@@ -22,11 +22,11 @@
 
 import { BEWERBER_MAIL_BASIS } from "./bewerber-absender.ts";
 
-/** Pfad der Anleitung "MOREImmo Mail einrichten" unter public/. */
+/** Pfad der Anleitung "OS Immobilien Mail einrichten" unter public/. */
 export const MAIL_ANLEITUNG_PFAD = "/dokumente/moreimmo-mail-einrichten.pdf";
 /** Name, unter dem HR die Anleitung im Aktivierungsreiter sieht. */
-export const MAIL_ANLEITUNG_NAME = "Anleitung MOREImmo Mail einrichten (PDF)";
-/** Absolute Adresse fuer die Mail, immer auf portal.more.immo. */
+export const MAIL_ANLEITUNG_NAME = "Anleitung OS Immobilien Mail einrichten (PDF)";
+/** Absolute Adresse fuer die Mail, immer auf osimmobilien.netlify.app. */
 export const MAIL_ANLEITUNG_URL = `${BEWERBER_MAIL_BASIS}${MAIL_ANLEITUNG_PFAD}`;
 
 /** "2026-10-07" oder "07.10.2026" wird "07.10.2026"; Unbekanntes bleibt stehen. */
@@ -54,7 +54,7 @@ export interface ZugangsdatenAuftrag {
   /** Private Bewerber-Adresse, an die die Zugangsdaten gehen. */
   empfaengerEmail: string;
   vorname: string;
-  /** Neue persoenliche Adresse, muss auf @more.immo enden. */
+  /** Neue persoenliche Adresse, muss auf @os-immobilien.com enden. */
   persoenlicheEmail: string;
   passwort: string;
   /** Optional: gebuchter Onboarding-Termin (TT.MM.JJJJ). */
@@ -80,10 +80,10 @@ export function pruefeZugangsdatenAuftrag(
   const persoenlicheEmail =
     typeof b.persoenlicheEmail === "string" ? b.persoenlicheEmail.trim().toLowerCase() : "";
   if (!persoenlicheEmail || persoenlicheEmail.length > 254 || !EMAIL_MUSTER.test(persoenlicheEmail)) {
-    return { ok: false, fehler: "Bitte die persönliche MOREImmo-Adresse angeben." };
+    return { ok: false, fehler: "Bitte die persönliche OS Immobilien-Adresse angeben." };
   }
-  if (!persoenlicheEmail.endsWith("@more.immo")) {
-    return { ok: false, fehler: "Die persönliche Adresse muss auf @more.immo enden." };
+  if (!persoenlicheEmail.endsWith("@os-immobilien.com")) {
+    return { ok: false, fehler: "Die persönliche Adresse muss auf @os-immobilien.com enden." };
   }
 
   const passwort = typeof b.passwort === "string" ? b.passwort : "";

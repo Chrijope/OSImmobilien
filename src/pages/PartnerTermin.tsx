@@ -387,7 +387,7 @@ export default function PartnerTermin() {
               </div>
 
               {/* Den Zugang verschickt der Kalender des Partners selbst, nicht wir. */}
-              <div className={`mt-6 rounded-[14px] border border-[#88CFFF]/15 ${FLAECHE_HINWEIS} p-4`}>
+              <div className={`mt-6 rounded-[14px] border border-[#30E19E]/15 ${FLAECHE_HINWEIS} p-4`}>
                 <p className="text-[12.5px] leading-relaxed text-white/60">
                   {t.eingetragenHinweis}
                 </p>
@@ -408,7 +408,7 @@ export default function PartnerTermin() {
                       setKorrigiert(true);
                       setSchritt(1);
                     }}
-                    className="mt-3 inline-flex items-center gap-2 text-[13px] font-semibold text-[#88CFFF] hover:underline"
+                    className="mt-3 inline-flex items-center gap-2 text-[13px] font-semibold text-[#30E19E] hover:underline"
                   >
                     {t.zeitKorrigieren} <ArrowRight className="h-3.5 w-3.5" />
                   </button>
@@ -485,10 +485,10 @@ export default function PartnerTermin() {
                     type="button"
                     onClick={() => waehle(a)}
                     aria-pressed={a.anlass === anlass}
-                    className={`rounded-[14px] border p-4 text-left transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#88CFFF] ${
+                    className={`rounded-[14px] border p-4 text-left transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#30E19E] ${
                       a.anlass === anlass
-                        ? "border-[#087AC7] bg-[#087AC7]/15"
-                        : `border-white/12 ${FLAECHE_FELD_KNOPF} hover:border-[#88CFFF]/40`
+                        ? "border-[#15724F] bg-[#15724F]/15"
+                        : `border-white/12 ${FLAECHE_FELD_KNOPF} hover:border-[#30E19E]/40`
                     }`}
                   >
                     <div className="flex items-baseline justify-between gap-4">
@@ -618,7 +618,7 @@ export default function PartnerTermin() {
                         id="partnertermin-investment"
                         value={investmentId}
                         onChange={(e) => { setInvestmentId(e.target.value); setFehler(null); }}
-                        className={`mt-2 h-[48px] w-full rounded-xl border border-white/15 ${FLAECHE_FELD} px-4 text-[15px] text-white outline-none focus:border-[#88CFFF]`}
+                        className={`mt-2 h-[48px] w-full rounded-xl border border-white/15 ${FLAECHE_FELD} px-4 text-[15px] text-white outline-none focus:border-[#30E19E]`}
                       >
                         <option value="">{t.bitteWaehlen}</option>
                         {zugang.investments.map((inv, i) => (
@@ -734,7 +734,7 @@ function KundenKarte({ kunde, sprache }: { kunde: PartnerKunde; sprache: Sprache
         {kunde.telefon && (
           <KontaktZeile
             href={`tel:${(kunde.telefon.trim().startsWith("+") ? "+" : "") + kunde.telefon.replace(/\D/g, "")}`}
-            icon={<Phone className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#88CFFF]" />}
+            icon={<Phone className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#30E19E]" />}
             wert={kunde.telefon}
             kopierBeschriftung={t.telefonKopieren}
             kopiert={t.kopiert}
@@ -743,7 +743,7 @@ function KundenKarte({ kunde, sprache }: { kunde: PartnerKunde; sprache: Sprache
         {kunde.email && (
           <KontaktZeile
             href={`mailto:${kunde.email}`}
-            icon={<Mail className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#88CFFF]" />}
+            icon={<Mail className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#30E19E]" />}
             wert={kunde.email}
             kopierBeschriftung={t.emailKopieren}
             kopiert={t.kopiert}
@@ -794,7 +794,7 @@ function KontaktZeile({
         onClick={() => void kopieren()}
         aria-label={erledigt ? kopiert : kopierBeschriftung}
         title={erledigt ? kopiert : kopierBeschriftung}
-        className="shrink-0 rounded-md p-1 text-white/40 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#88CFFF]"
+        className="shrink-0 rounded-md p-1 text-white/40 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#30E19E]"
       >
         {erledigt ? <Check className="h-3.5 w-3.5 text-[#7EE29B]" /> : <Copy className="h-3.5 w-3.5" />}
       </button>
@@ -805,7 +805,7 @@ function KontaktZeile({
 function Fussleiste({ t, sprache }: { t: PartnerTerminTexte; sprache: Sprache }) {
   return (
     <p className="mt-10 text-center text-[10.5px] text-white/30">
-      MOREImmo · Wendelsteinstraße 19, 83075 Bad Feilnbach
+      OS Immobilien · Am Ostbahnhof 1, 15749 Mittenwalde
       <span aria-hidden className="mx-2 text-white/20">·</span>
       <a href="/impressum" className="hover:text-white/60 hover:underline">{t.impressum}</a>
       <span aria-hidden className="mx-2 text-white/20">·</span>
@@ -827,7 +827,7 @@ function Zeile({
 }) {
   return (
     <div className="flex items-start gap-3">
-      <span className="mt-0.5 flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-lg bg-[#88CFFF]/[0.13] text-[#88CFFF]">
+      <span className="mt-0.5 flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-lg bg-[#30E19E]/[0.13] text-[#30E19E]">
         {icon}
       </span>
       <span className="min-w-0">

@@ -45,7 +45,7 @@ const TEXTE: Zweisprachig<typeof DE> = {
     vorschau: 'The consultation record is ready for your signature.',
     fuss: 'The signature is given digitally and is legally binding.',
     text: (vp: string) =>
-      `${vp || 'Your contact person at MOREImmo'} has completed and already signed the consultation record for your notary appointment (Notartermin). Please check that everything reflects your conversation and confirm it with your signature.`,
+      `${vp || 'Your contact person at OS Immobilien'} has completed and already signed the consultation record for your notary appointment (Notartermin). Please check that everything reflects your conversation and confirm it with your signature.`,
     knopf: 'Review and sign the record',
     hinweis: 'About 3 minutes',
   },
@@ -78,12 +78,12 @@ export const template = {
   previewData: {
     name: 'Herr Mustermann',
     vpName: 'Christian Peetz',
-    signUrl: 'https://portal.more.immo/sign/example',
+    signUrl: 'https://osimmobilien.netlify.app/sign/example',
     berater: {
       name: 'Christian Peetz',
-      rolle: 'Ihr Ansprechpartner bei MOREImmo',
+      rolle: 'Ihr Ansprechpartner bei OS Immobilien',
       telefon: '08061 000000',
-      email: 'christian@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

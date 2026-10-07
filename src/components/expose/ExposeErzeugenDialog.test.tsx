@@ -113,16 +113,16 @@ describe("Kundenlink senden", () => {
   });
 
   it("sendet die Objektübersicht mit der Wohnung als Einstieg", async () => {
-    t.senden.mockResolvedValue({ ok: true, link: "https://portal.more.immo/immobilie/t", gueltigBis: "2026-11-22T10:00:00Z", migrationFehlt: false, fehler: null });
+    t.senden.mockResolvedValue({ ok: true, link: "https://osimmobilien.netlify.app/immobilie/t", gueltigBis: "2026-11-22T10:00:00Z", migrationFehlt: false, fehler: null });
     oeffnen();
     await kundeWaehlen();
     fireEvent.click(screen.getByRole("button", { name: /Link kopieren/ }));
     await waitFor(() => expect(t.senden).toHaveBeenCalledWith({ modus: "link", art: "objektuebersicht", kontaktId: "k1", investmentId: "i1", objektId: MUSTER_OBJEKT.id, wohnungId: MUSTER_WE7.id }));
-    await waitFor(() => expect(t.kopieren).toHaveBeenCalledWith("https://portal.more.immo/immobilie/t"));
+    await waitFor(() => expect(t.kopieren).toHaveBeenCalledWith("https://osimmobilien.netlify.app/immobilie/t"));
   });
 
   it("sendet nach der Wahl „nur Exposé“ das Exposé dieser Wohnung", async () => {
-    t.senden.mockResolvedValue({ ok: true, link: "https://portal.more.immo/expose/x?token=t", gueltigBis: null, migrationFehlt: false, fehler: null });
+    t.senden.mockResolvedValue({ ok: true, link: "https://osimmobilien.netlify.app/expose/x?token=t", gueltigBis: null, migrationFehlt: false, fehler: null });
     oeffnen();
     nurExposeWaehlen();
     await kundeWaehlen();
@@ -150,7 +150,7 @@ describe("Kundenlink senden", () => {
   });
 
   it("schickt per Mail ohne Empfängeradresse und schließt mit Rückmeldung", async () => {
-    t.senden.mockResolvedValue({ ok: true, link: "https://portal.more.immo/expose/x?token=t", gueltigBis: "2026-11-22T10:00:00Z", migrationFehlt: false, fehler: null });
+    t.senden.mockResolvedValue({ ok: true, link: "https://osimmobilien.netlify.app/expose/x?token=t", gueltigBis: "2026-11-22T10:00:00Z", migrationFehlt: false, fehler: null });
     const { onOpenChange } = oeffnen();
     await kundeWaehlen();
     fireEvent.click(screen.getByRole("button", { name: /Per Mail senden/ }));
@@ -163,7 +163,7 @@ describe("Kundenlink senden", () => {
   });
 
   it("kopiert den Link, zeigt ihn an und legt beim zweiten Klick keinen zweiten Versand an", async () => {
-    const link = "https://portal.more.immo/expose/o/wohnung/w?token=abc";
+    const link = "https://osimmobilien.netlify.app/expose/o/wohnung/w?token=abc";
     t.senden.mockResolvedValue({ ok: true, link, gueltigBis: "2026-11-22T10:00:00Z", migrationFehlt: false, fehler: null });
     oeffnen();
     await kundeWaehlen();
@@ -210,7 +210,7 @@ describe("Kundenlink senden", () => {
   });
 
   it("sendet beim ganzen Objekt ohne Einheit, als Objektübersicht oder Exposé", async () => {
-    t.senden.mockResolvedValue({ ok: true, link: "https://portal.more.immo/expose/o?token=t", gueltigBis: null, migrationFehlt: false, fehler: null });
+    t.senden.mockResolvedValue({ ok: true, link: "https://osimmobilien.netlify.app/expose/o?token=t", gueltigBis: null, migrationFehlt: false, fehler: null });
     oeffnen({ ganzesObjekt: true, vorgewaehlteWohnungId: undefined, vorgewaehlterKundeId: "k1" });
     expect(screen.getByText(/Ganzes Objekt/)).toBeInTheDocument();
     expect(screen.queryByLabelText("Einheit")).not.toBeInTheDocument();
@@ -321,7 +321,7 @@ describe("Kundenlink senden, die Breite", () => {
  * Christian am 23.09.2026: „Link kopieren“ brachte eine 404. Der Dialog zeigt
  * jetzt den Satz, den `sendeKundenExpose` liefert, und kopiert dann nichts.
  * Und: Ein aus der Lovable-Vorschau kopierter Link zur Objektübersicht führt
- * auf portal.more.immo, wo die Seite erst nach dem Veröffentlichen existiert.
+ * auf osimmobilien.netlify.app, wo die Seite erst nach dem Veröffentlichen existiert.
  */
 describe("Kundenlink senden, wenn es hakt", () => {
   it("zeigt „nicht ausgerollt“ statt einer 404 und kopiert nichts", async () => {
@@ -336,19 +336,19 @@ describe("Kundenlink senden, wenn es hakt", () => {
   });
 
   it("sagt unter einem Link zur Objektübersicht, dass er erst nach dem Veröffentlichen öffnet", async () => {
-    // Der Test läuft auf localhost, also wie in der Lovable-Vorschau nicht auf portal.more.immo.
-    t.senden.mockResolvedValue({ ok: true, link: "https://portal.more.immo/immobilie/t", gueltigBis: null, migrationFehlt: false, fehler: null });
+    // Der Test läuft auf localhost, also wie in der Lovable-Vorschau nicht auf osimmobilien.netlify.app.
+    t.senden.mockResolvedValue({ ok: true, link: "https://osimmobilien.netlify.app/immobilie/t", gueltigBis: null, migrationFehlt: false, fehler: null });
     oeffnen();
     await kundeWaehlen();
     fireEvent.click(screen.getByRole("button", { name: /Link kopieren/ }));
     const hinweis = await screen.findByTestId("expose-link-veroeffentlichen");
-    expect(hinweis).toHaveTextContent("portal.more.immo");
+    expect(hinweis).toHaveTextContent("osimmobilien.netlify.app");
     expect(hinweis).toHaveTextContent("veröffentlicht");
     expect(hinweis.textContent).not.toMatch(/ – | — /);
   });
 
-  it("braucht den Hinweis beim Exposé nicht, dessen Seite gibt es auf portal.more.immo schon", async () => {
-    t.senden.mockResolvedValue({ ok: true, link: "https://portal.more.immo/expose/o/wohnung/w?token=t", gueltigBis: null, migrationFehlt: false, fehler: null });
+  it("braucht den Hinweis beim Exposé nicht, dessen Seite gibt es auf osimmobilien.netlify.app schon", async () => {
+    t.senden.mockResolvedValue({ ok: true, link: "https://osimmobilien.netlify.app/expose/o/wohnung/w?token=t", gueltigBis: null, migrationFehlt: false, fehler: null });
     oeffnen();
     nurExposeWaehlen();
     await kundeWaehlen();
@@ -366,7 +366,7 @@ describe("Kundenlink senden, wenn es hakt", () => {
  * internen Exposé.
  */
 describe("Kundenlink senden an einen englischen Kunden", () => {
-  const erfolg = { ok: true, link: "https://portal.more.immo/immobilie/t", gueltigBis: null, migrationFehlt: false, fehler: null };
+  const erfolg = { ok: true, link: "https://osimmobilien.netlify.app/immobilie/t", gueltigBis: null, migrationFehlt: false, fehler: null };
   const englisch = { kundenSprache: "en", kundenSpracheGesetztAm: "2026-09-25T10:00:00Z" };
 
   it("holt die englische Fassung der Objekttexte nach, wenn sie fehlt", async () => {
@@ -422,7 +422,7 @@ describe("Kundenlink senden: Wohnungsauswahl", () => {
   const WE8 = { ...MUSTER_WE7, id: "11111111-1111-4111-8111-000000000008", weNr: "WE 8" };
   const WE9 = { ...MUSTER_WE7, id: "11111111-1111-4111-8111-000000000009", weNr: "WE 9" };
   const HAUS = { ...MUSTER_OBJEKT, wohnungen: [MUSTER_WE7, WE8, WE9] };
-  const OK = { ok: true, link: "https://portal.more.immo/immobilie/t", gueltigBis: null, migrationFehlt: false, fehler: null };
+  const OK = { ok: true, link: "https://osimmobilien.netlify.app/immobilie/t", gueltigBis: null, migrationFehlt: false, fehler: null };
 
   function oeffnenHaus() {
     render(<ExposeErzeugenDialog objekt={HAUS} vorgewaehlteWohnungId={WE8.id} offen onOpenChange={vi.fn()} />);
@@ -494,7 +494,7 @@ describe("Kundenlink senden: Wohnungsauswahl", () => {
   });
 
   it("zeigt die Auswahl nicht beim Exposé und schickt dort keine mit", async () => {
-    t.senden.mockResolvedValue({ ...OK, link: "https://portal.more.immo/expose/x?token=t" });
+    t.senden.mockResolvedValue({ ...OK, link: "https://osimmobilien.netlify.app/expose/x?token=t" });
     oeffnenHaus();
     nurExposeWaehlen();
     expect(screen.queryByTestId("kundenlink-wohnungen")).not.toBeInTheDocument();
@@ -517,7 +517,7 @@ describe("Kundenlink senden: Wohnungsauswahl", () => {
 describe("Kundenlink senden: Wohnungsauswahl, Nachprüfung", () => {
   const WE8 = { ...MUSTER_WE7, id: "11111111-1111-4111-8111-000000000008", weNr: "WE 8" };
   const WE9 = { ...MUSTER_WE7, id: "11111111-1111-4111-8111-000000000009", weNr: "WE 9" };
-  const OK = { ok: true, link: "https://portal.more.immo/immobilie/t", gueltigBis: null, migrationFehlt: false, fehler: null };
+  const OK = { ok: true, link: "https://osimmobilien.netlify.app/immobilie/t", gueltigBis: null, migrationFehlt: false, fehler: null };
 
   it("sperrt Kästchen und Senden, bis die gespeicherte Auswahl geladen ist", async () => {
     let fertig: (v: { vorhanden: boolean; auswahl: string[] | null }) => void = () => undefined;

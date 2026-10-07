@@ -30,7 +30,7 @@ import { saWege } from "./wege";
 import { istHandbuchToken, pruefeAntworten } from "../../../supabase/functions/_shared/handbuch-funnel.ts";
 
 /** Wie `HANDBUCH_BASIS_URL` der Functions: Links im PDF zeigen immer aufs Portal, nie auf die Vorschau. */
-const PORTAL = "https://portal.more.immo";
+const PORTAL = "https://osimmobilien.netlify.app";
 
 /** Wie `datumText` auf der Ergebnisseite. */
 function datumText(iso: string | null, sprache: Sprache): string {

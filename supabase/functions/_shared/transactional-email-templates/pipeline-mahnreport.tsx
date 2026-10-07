@@ -51,7 +51,7 @@ const Mail = ({
   vpName = '',
   rotGruppen = [],
   orangeGruppen = [],
-  pipelineLink = 'https://portal.more.immo/pipeline',
+  pipelineLink = 'https://osimmobilien.netlify.app/pipeline',
   totalRot = 0,
   totalOrange = 0,
   totalKritisch = 0,
@@ -139,13 +139,13 @@ export const template = {
     totalRot: 2,
     totalOrange: 3,
     totalKritisch: 5,
-    pipelineLink: 'https://portal.more.immo/pipeline',
+    pipelineLink: 'https://osimmobilien.netlify.app/pipeline',
     rotGruppen: [
       {
         stufeLabel: 'Erstgespräch',
         leads: [
-          { id: '1', name: 'Anna Beispiel', pipelineStufe: 'erstgespraech', stufeLabel: 'Erstgespräch', daysInactive: 12, isRed: true, link: 'https://portal.more.immo/kunden/1' },
-          { id: '2', name: 'Bernd Demo', pipelineStufe: 'erstgespraech', stufeLabel: 'Erstgespräch', daysInactive: 8, isRed: true, link: 'https://portal.more.immo/kunden/2' },
+          { id: '1', name: 'Anna Beispiel', pipelineStufe: 'erstgespraech', stufeLabel: 'Erstgespräch', daysInactive: 12, isRed: true, link: 'https://osimmobilien.netlify.app/kunden/1' },
+          { id: '2', name: 'Bernd Demo', pipelineStufe: 'erstgespraech', stufeLabel: 'Erstgespräch', daysInactive: 8, isRed: true, link: 'https://osimmobilien.netlify.app/kunden/2' },
         ],
       },
     ],
@@ -153,14 +153,14 @@ export const template = {
       {
         stufeLabel: 'Bonitätsunterlagen',
         leads: [
-          { id: '3', name: 'Clara Test', pipelineStufe: 'bonitaetsunterlagen', stufeLabel: 'Bonitätsunterlagen', daysInactive: 8, isRed: false, link: 'https://portal.more.immo/kunden/3' },
+          { id: '3', name: 'Clara Test', pipelineStufe: 'bonitaetsunterlagen', stufeLabel: 'Bonitätsunterlagen', daysInactive: 8, isRed: false, link: 'https://osimmobilien.netlify.app/kunden/3' },
         ],
       },
       {
         stufeLabel: 'Reservierung',
         leads: [
-          { id: '4', name: 'Doreen Probe', pipelineStufe: 'reservierung', stufeLabel: 'Reservierung', daysInactive: 13, isRed: false, link: 'https://portal.more.immo/kunden/4' },
-          { id: '5', name: 'Erik Sample', pipelineStufe: 'reservierung', stufeLabel: 'Reservierung', daysInactive: 11, isRed: false, link: 'https://portal.more.immo/kunden/5' },
+          { id: '4', name: 'Doreen Probe', pipelineStufe: 'reservierung', stufeLabel: 'Reservierung', daysInactive: 13, isRed: false, link: 'https://osimmobilien.netlify.app/kunden/4' },
+          { id: '5', name: 'Erik Sample', pipelineStufe: 'reservierung', stufeLabel: 'Reservierung', daysInactive: 11, isRed: false, link: 'https://osimmobilien.netlify.app/kunden/5' },
         ],
       },
     ],

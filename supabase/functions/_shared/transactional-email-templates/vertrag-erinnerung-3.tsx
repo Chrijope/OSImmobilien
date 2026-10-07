@@ -61,7 +61,7 @@ export const template = {
     hrKontakt: {
       name: 'Sarah Kaiser-Thom',
       rolle: berufsbezeichnung('hr'),
-      email: 's.kaiser-thom@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

@@ -46,7 +46,7 @@ describe("generateAblaufplanPDF", () => {
   it("erzeugt das PDF ohne Fehler und speichert es unter dem Datumsnamen", async () => {
     await expect(generateAblaufplanPDF()).resolves.toBeUndefined();
     expect(gespeichert).toHaveLength(1);
-    expect(gespeichert[0]).toMatch(/^MOREImmo-Ablaufplan-\d{4}-\d{2}-\d{2}\.pdf$/);
+    expect(gespeichert[0]).toMatch(/^OS Immobilien-Ablaufplan-\d{4}-\d{2}-\d{2}\.pdf$/);
   });
 });
 

@@ -24,7 +24,7 @@ import {
   Gift, Key, Wrench, ClipboardList,
   Shield, Gauge, Banknote, MessageSquare, TrendingUp, Clock, ClipboardCheck,
   Trash2, ScrollText, ShieldAlert, Video, CalendarPlus, Star,
-  ShoppingBag, Settings, MapPinned, Heart, Moon, Route, Handshake,
+  ShoppingBag, Settings, Heart, Moon, Route, Handshake,
 } from "lucide-react";
 import type { UserRole } from "@/types/user";
 import { HANDBUCH_SEITE_ROUTE } from "@/lib/handbuch/zugang";
@@ -84,7 +84,6 @@ const auswertungItems = [
   { title: "Abrechnungen", url: "/abrechnungen", icon: Receipt, suchbegriffe: ["provision", "provisionen", "geld", "auszahlung", "rechnung", "verdienst"] },
   { title: "Zielplanung", url: "/zielplanung", icon: Target, suchbegriffe: ["ziele", "planung", "soll", "jahresziel"] },
   { title: "Wettbewerb", url: "/wettbewerb", icon: Trophy, suchbegriffe: ["ranking", "wettkampf", "bestenliste", "podium"] },
-  { title: "Marktanalyse", url: "/marktanalyse", icon: MapPinned, suchbegriffe: ["markt", "standort", "lage", "vergleich"] },
 ];
 
 const toolsItems = [

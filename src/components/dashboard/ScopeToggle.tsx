@@ -6,7 +6,7 @@ const OPTIONS: { value: DashboardScope; label: string }[] = [
   { value: "all", label: "Alle" },
   { value: "eigen", label: "Eigen" },
   { value: "team", label: "Eigenes Team" },
-  { value: "company", label: "Team MOREImmo" },
+  { value: "company", label: "Team OS Immobilien" },
 ];
 
 export const VP_TEAM_OPTIONS: { value: DashboardScope; label: string }[] = [

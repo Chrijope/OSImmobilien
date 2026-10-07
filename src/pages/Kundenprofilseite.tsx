@@ -232,7 +232,7 @@ export default function Kundenprofilseite() {
             <Building2 className="h-5 w-5 text-primary-foreground" />
           </div>
           <div className="flex-1">
-            <h1 className="font-bold text-lg">MOREImmo</h1>
+            <h1 className="font-bold text-lg">OS Immobilien</h1>
             <p className="text-xs text-muted-foreground">Kundenportal</p>
           </div>
           <div className="text-right">
@@ -355,7 +355,7 @@ export default function Kundenprofilseite() {
         <div className="text-center text-xs text-muted-foreground space-x-4 pb-8 pt-4">
           <span className="hover:underline cursor-pointer">Impressum</span>
           <span className="hover:underline cursor-pointer">Datenschutz</span>
-          <span>© {new Date().getFullYear()} MOREImmo · Einzelunternehmen Christian Kurz</span>
+          <span>© {new Date().getFullYear()} OS Immobilien Holding GmbH</span>
         </div>
       </div>
     </div>
@@ -1177,7 +1177,7 @@ function InvestmentView({ inv, kunde }: { inv: Investment; kunde: ReturnType<typ
                 </div>
                 {(eigenFin.gegenAngebot || eigenFin.gegenDarlehensvertrag) && (
                   <div className="mt-3 border-t pt-3 space-y-2">
-                    <p className="text-xs font-semibold">Gegenangebot von more.immo</p>
+                    <p className="text-xs font-semibold">Gegenangebot von osimmobilien.netlify.app</p>
                     {eigenFin.gegenAngebot && (
                       <Button size="sm" variant="outline" className="text-xs gap-1.5 h-8 w-full justify-start" onClick={() => openUnterlage(eigenFin.gegenAngebot!.storagePath)}>
                         <Download className="h-3 w-3" /> Finanzierungsangebot: {eigenFin.gegenAngebot.fileName}

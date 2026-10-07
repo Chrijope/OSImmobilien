@@ -20,9 +20,9 @@ afterEach(() => vi.restoreAllMocks());
 
 describe("LinkTeilenKnoepfe", () => {
   it("kopiert den Link und öffnet die Vorschau", async () => {
-    render(<LinkTeilenKnoepfe url="https://portal.more.immo/handbuch/maria" vorschauUrl="http://localhost/handbuch/maria" />);
+    render(<LinkTeilenKnoepfe url="https://osimmobilien.netlify.app/handbuch/maria" vorschauUrl="http://localhost/handbuch/maria" />);
     fireEvent.click(screen.getByRole("button", { name: /Link kopieren/ }));
-    await waitFor(() => expect(schreiben).toHaveBeenCalledWith("https://portal.more.immo/handbuch/maria"));
+    await waitFor(() => expect(schreiben).toHaveBeenCalledWith("https://osimmobilien.netlify.app/handbuch/maria"));
     expect(await screen.findByText("Kopiert!")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Vorschau/ }));
     expect(window.open).toHaveBeenCalledWith("http://localhost/handbuch/maria", "_blank", "noopener");

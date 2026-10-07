@@ -76,14 +76,14 @@ export const template = {
   displayName: 'Vertrag, zweite Erinnerung an Tag 7',
   previewData: {
     name: 'Max Mustermann',
-    signatureUrl: 'https://portal.more.immo/signatur?token=example&type=vertrag',
+    signatureUrl: 'https://osimmobilien.netlify.app/signatur?token=example&type=vertrag',
     tageOffen: 7,
     gueltigBis: '30.10.2026',
     abschlussAm: '14.10.2026',
     hrKontakt: {
       name: 'Sarah Kaiser-Thom',
       rolle: berufsbezeichnung('hr'),
-      email: 's.kaiser-thom@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

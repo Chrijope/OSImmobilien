@@ -60,8 +60,8 @@ export function chatBenachrichtigungDaten(angaben: ChatMailAngaben): Record<stri
 
   // Der Absender ist ein Berater und unterschreibt die Mail. Gesucht wird er
   // ueber die Kennung, nicht ueber den Namen: Ging der Namensvergleich ins
-  // Leere, unterschrieb die Vorlage still mit "Ansprechpartner bei MOREImmo"
-  // und office@more.immo.
+  // Leere, unterschrieb die Vorlage still mit "Ansprechpartner bei OS Immobilien"
+  // und os@os-immobilien.com.
   const absender = findeBerater(angaben.absenderId, angaben.absenderName);
   if (!absender) {
     console.warn(

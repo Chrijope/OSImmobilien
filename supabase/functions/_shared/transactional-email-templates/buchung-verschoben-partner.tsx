@@ -103,7 +103,7 @@ export const template = {
     terminDauer: 15,
     terminTitel: 'Telefonisches Erstgespräch',
     alteZeit: 'Donnerstag, 6. August 2026, 10:15 Uhr',
-    kundeUrl: 'https://portal.more.immo/kunden/00000000-0000-0000-0000-000000000000',
-    zugangUrl: 'https://portal.more.immo/raum/abc123',
+    kundeUrl: 'https://osimmobilien.netlify.app/kunden/00000000-0000-0000-0000-000000000000',
+    zugangUrl: 'https://osimmobilien.netlify.app/raum/abc123',
   },
 } satisfies TemplateEntry

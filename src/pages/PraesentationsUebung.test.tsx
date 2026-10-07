@@ -535,7 +535,7 @@ describe("PraesentationsUebung: PDF", () => {
     await waitFor(() => expect(exportPraesentationAsPdf).toHaveBeenCalledTimes(1), { timeout: 20000 });
     const optionen = exportPraesentationAsPdf.mock.calls[0][0] as Record<string, unknown>;
     expect(optionen.title).toBe("Kennenlernbogen, Weg 3");
-    expect(optionen.filename).toBe("MOREImmo_Kennenlernbogen_Weg3.pdf");
+    expect(optionen.filename).toBe("OS-Immobilien_Kennenlernbogen_Weg3.pdf");
     expect(optionen.hinweisSeiten).toBe(false);
     expect((optionen.root as HTMLElement).querySelectorAll("section[data-druckseite]").length).toBe(7);
     // Der Stapel zeichnet alle Folien des Wegs auf einmal und wartet auf die

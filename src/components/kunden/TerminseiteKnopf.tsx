@@ -156,9 +156,9 @@ export function TerminseiteKnopf({
 
       /*
         Die Seite oeffnet auf der Adresse, auf der der Partner gerade
-        angemeldet ist, nicht auf portal.more.immo: Sie verlangt seit dem
+        angemeldet ist, nicht auf osimmobilien.netlify.app: Sie verlangt seit dem
         29.09.2026 die Anmeldung als Besitzer des Links. Aus der
-        Lovable-Vorschau heraus fehlte sie auf portal.more.immo.
+        Lovable-Vorschau heraus fehlte sie auf osimmobilien.netlify.app.
 
         In die Zwischenablage kommt nichts mehr: Die Seite ist nur noch fuer
         den Partner selbst, eine Adresse zum Weitergeben gibt es nicht.

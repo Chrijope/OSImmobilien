@@ -190,7 +190,7 @@ function PublicDokument({ objekt, wohnungId, beraterId, einheitenRoh, plaene, ku
      * Ohne Token bleibt es beim bisherigen Weg über `?berater=`. Die Sicht
      * `profiles_public` läuft mit den Rechten des Aufrufers und ist für einen
      * nicht angemeldeten Besucher leer; der Kontakt zeigt dann den Weg zu
-     * MOREImmo selbst. Mit Token kommt der Partner aus `get-expose`.
+     * OS Immobilien selbst. Mit Token kommt der Partner aus `get-expose`.
      */
     if (kundenAnsprechpartner || !beraterId) return () => { active = false; };
     void supabase.from("profiles_public" as any).select("name, email, avatar_url, buchungslink").eq("id", beraterId).maybeSingle().then(({data}) => {

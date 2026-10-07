@@ -21,18 +21,18 @@ import {
  */
 
 const NACHT = "#0F1621";
-const HELLBLAU = "#88CFFF";
+const HELLBLAU = "#30E19E";
 const S: Stil = {
   tinte: NACHT,
   text: "#33414F",
   leise: "#6F7D8E",
   linie: "#E4EAF0",
   flaeche: "#F3F6F9",
-  akzent: "#087AC7",
+  akzent: "#15724F",
   akzentWeich: "#EDF7FD",
   zahl: NACHT,
   karte: { grund: "#ffffff", radius: 14, polster: 16, tablett: "#E7EDF3" },
-  zahlung: { grund: "#E6F2FB", schrift: "#04669F", rand: "#9CCBEB" },
+  zahlung: { grund: "#E6F2FB", schrift: "#136F4C", rand: "#82D5B6" },
 };
 const GRUND = "#F5F7FA";
 const RAND = 38;
@@ -99,7 +99,7 @@ export function H3Nachtblau({ d }: { d: DruckDaten }) {
   const f = d.finanzen;
   const halb = <T,>(l: T[]): [T[], T[]] => [l.slice(0, Math.ceil(l.length / 2)), l.slice(Math.ceil(l.length / 2))];
   return (
-    <Document title={d.meta.dokumentTitel} author="MOREImmo" language={d.sprache}>
+    <Document title={d.meta.dokumentTitel} author="OS Immobilien" language={d.sprache}>
       <Deckblatt d={d} />
       <Page size="A4" style={{ fontFamily: SCHRIFT, backgroundColor: GRUND, paddingTop: 58, paddingBottom: 54, paddingHorizontal: RAND, color: S.text }}>
         <View fixed style={{ position: "absolute", top: 22, left: RAND, right: RAND, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
@@ -243,7 +243,7 @@ export function H3Nachtblau({ d }: { d: DruckDaten }) {
               <>
                 <K>
                   <Titel s={S}>{f.vermoegen.titel}</Titel>
-                  <VermoegenDiagramm s={S} v={f.vermoegen} breite={BREITE - 38} hoehe={150} farben={["#B8E2FF", NACHT, S.akzent]} />
+                  <VermoegenDiagramm s={S} v={f.vermoegen} breite={BREITE - 38} hoehe={150} farben={["#8BEEC9", NACHT, S.akzent]} />
                   <View style={{ marginTop: 10 }}><TabelleBlock s={S} t={f.vermoegen.tabelle} groesse={6.9} /></View>
                 </K>
                 <K>

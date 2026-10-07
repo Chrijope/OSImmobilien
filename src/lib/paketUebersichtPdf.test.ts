@@ -99,7 +99,7 @@ describe("buildPaketUebersichtPdf (Startfahrplan)", () => {
     const dbl = deckblaetter[0];
     expect(dbl.kennung).toBe("Für Vertriebspartner");
     expect(dbl.titel).toBe("Dein Startfahrplan");
-    expect(dbl.untertitel).toContain("MOREImmo auf einen Blick");
+    expect(dbl.untertitel).toContain("OS Immobilien auf einen Blick");
     expect(dbl.empfaenger).toBe("Max Muster");
     expect(dbl.datum).toBeTruthy();
   });
@@ -143,20 +143,20 @@ describe("buildPaketUebersichtPdf (Startfahrplan)", () => {
     // Naechste Schritte
     expect(alles).toContain("Persönliches Gespräch");
     expect(alles).toContain("Onboarding-Termin");
-    expect(alles).toContain("c.peetz@more.immo");
+    expect(alles).toContain("os@os-immobilien.com");
   });
 
   it("zeigt den uebergebenen Ansprechpartner statt der Standard-Kontaktdaten", async () => {
     await buildPaketUebersichtPdf({
-      berater: { name: "Sarah Kaiser-Thom", email: "s.kaiser-thom@more.immo", telefon: "+49 151 1234567" },
+      berater: { name: "Sarah Kaiser-Thom", email: "s.kaiser-thom@os-immobilien.com", telefon: "+49 151 1234567" },
     });
     const alles = texte.join("\n");
     expect(alles).toContain("Sarah Kaiser-Thom");
-    expect(alles).toContain("s.kaiser-thom@more.immo");
+    expect(alles).toContain("s.kaiser-thom@os-immobilien.com");
     expect(alles).toContain("+49 151 1234567");
     // Die frueher fest verdrahteten Kontaktdaten duerfen nicht mehr auftauchen.
-    expect(alles).not.toContain("c.peetz@more.immo");
-    expect(alles).not.toContain("+49 1515 0275108");
+    expect(alles).not.toContain("os@os-immobilien.com");
+    expect(alles).not.toContain("+49 30 863289210");
   });
 
   it("laesst fehlende Kontaktangaben des Ansprechpartners weg", async () => {
@@ -164,16 +164,16 @@ describe("buildPaketUebersichtPdf (Startfahrplan)", () => {
     const alles = texte.join("\n");
     expect(alles).toContain("Sarah Kaiser-Thom");
     // Keine fremden Kontaktdaten als Lueckenfueller.
-    expect(alles).not.toContain("c.peetz@more.immo");
-    expect(alles).not.toContain("+49 1515 0275108");
+    expect(alles).not.toContain("os@os-immobilien.com");
+    expect(alles).not.toContain("+49 30 863289210");
   });
 
   it("faellt ohne Ansprechpartner auf den Standardkontakt zurueck", async () => {
     await buildPaketUebersichtPdf();
     const alles = texte.join("\n");
     expect(alles).toContain("Christian Peetz");
-    expect(alles).toContain("c.peetz@more.immo");
-    expect(alles).toContain("+49 1515 0275108");
+    expect(alles).toContain("os@os-immobilien.com");
+    expect(alles).toContain("+49 30 863289210");
   });
 
   it("enthaelt den Vier-Pakete-Vergleich nicht mehr", async () => {

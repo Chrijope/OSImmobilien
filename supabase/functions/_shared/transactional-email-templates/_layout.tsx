@@ -1,6 +1,6 @@
 /// <reference types="npm:@types/react@18.3.1" />
 /**
- * Das gemeinsame Aussehen aller MOREImmo-Mails.
+ * Das gemeinsame Aussehen aller OS Immobilien-Mails.
  *
  * Bis hierher gab es kein gemeinsames Layout. Jede der 68 Vorlagen schrieb
  * Kopfbereich, Logo, Schrift, Knopf, Trennlinie und Fusszeile neu und legte
@@ -52,7 +52,7 @@ import { avatarUrlFuerMail, MAIL_LOGO_URL } from '../avatar-signieren.ts'
 // ── Marke ────────────────────────────────────────────────────────────────
 
 export const MARKE = {
-  name: 'MOREImmo',
+  name: 'OS Immobilien',
   /**
    * Eigene Fassung fuer den Mailversand, nicht das Original aus der App.
    *
@@ -90,26 +90,26 @@ export const MARKE = {
   logo: MAIL_LOGO_URL,
   logoBreite: 160,
   logoHoehe: 27,
-  anschrift: 'MOREImmo, Wendelsteinstraße 19, 83075 Bad Feilnbach',
-  impressum: 'https://portal.more.immo/impressum',
-  datenschutz: 'https://portal.more.immo/datenschutz',
+  anschrift: 'OS Immobilien Holding GmbH, Am Ostbahnhof 1, 15749 Mittenwalde',
+  impressum: 'https://osimmobilien.netlify.app/impressum',
+  datenschutz: 'https://osimmobilien.netlify.app/datenschutz',
   telefon: '',
-  mail: 'office@more.immo',
+  mail: 'os@os-immobilien.com',
 } as const
 
 /**
- * Farben und Groessen, nach dem Hausstil von MOREImmo.
+ * Farben und Groessen, nach dem Hausstil von OS Immobilien.
  *
- * Bis hierher stand hier das Aussehen von Apple: Systemblau #007AFF, die
+ * Bis hierher stand hier das Aussehen von Apple: Systemblau #159061, die
  * Systemschrift SF Pro, Radien von 16 Pixeln, neutrale Grautoene. Der Hausstil
  * ist ein anderer, und er ist im Projekt an drei Stellen festgehalten:
  * `src/index.css` (die Tokens des CRM), `EmailSignaturDialog.tsx` (die
  * Signatur, Abschnitt 3 und 9 der Markenrichtlinie) und die PDF-Erzeugung in
  * `src/lib/`. Die Werte hier sind von dort uebernommen, nicht neu erfunden.
  *
- *   Blau 600 #087AC7   Knopf, Balken. Entspricht --primary im CRM. Mit weisser
- *                      Schrift 4,51:1; das alte #007AFF kam nur auf 4,02:1.
- *   Blau 700 #0466A9   Verweise. Auf Weiss 6,05:1.
+ *   Blau 600 #15724F   Knopf, Balken. Entspricht --primary im CRM. Mit weisser
+ *                      Schrift 4,51:1; das alte #159061 kam nur auf 4,02:1.
+ *   Blau 700 #13704D   Verweise. Auf Weiss 6,05:1.
  *   Tinte    #131720   Fliesstext und Ueberschriften, 17,9:1.
  *   Linie    #E3E7EC   Haarlinien.
  *
@@ -135,12 +135,12 @@ export const MARKE = {
  * mehr. Das Logo-PNG ist passend dazu auf Weiss gesetzt (siehe MARKE.logo).
  */
 export const T = {
-  blau: '#087AC7',
-  blauDunkel: '#0466A9',
+  blau: '#15724F',
+  blauDunkel: '#13704D',
   /** Fuer Verweise auf hellem Grund. Dasselbe Blau 700 wie in der Signatur. */
-  blauLink: '#0466A9',
+  blauLink: '#13704D',
   /** Nur fuer den Dunkelmodus. Entspricht --primary im dunklen CRM. */
-  blauHell: '#8AD0FF',
+  blauHell: '#36E2A0',
   text: '#131720',
   textLeise: '#4A5261',
   textStumm: '#565D6C',
@@ -199,8 +199,8 @@ const DUNKELMODUS_CSS = `
   .mi-kreis   { background-color: #35383B !important; color: #B9C0C7 !important; }
   .mi-rahmen  { border-color: #35383B !important; }
   .mi-platte  { background-color: #FFFFFF !important; }
-  .mi-link    { color: #8AD0FF !important; }
-  .mi-balken  { background-color: #8AD0FF !important; }
+  .mi-link    { color: #36E2A0 !important; }
+  .mi-balken  { background-color: #36E2A0 !important; }
   .mi-gut     { color: #4ADE80 !important; }
   .mi-warn    { color: #FFB020 !important; }
   .mi-fehler  { color: #FF6B60 !important; }
@@ -270,7 +270,7 @@ const logoPlatte = {
  * Voreinstellung gar nicht, Apple Mail unterdrueckt sie bei aktiviertem
  * Datenschutz, und viele Firmenpostfaecher blockieren sie grundsaetzlich. Wer
  * eine solche Mail oeffnet, sah bisher oben links einen leeren Kasten mit dem
- * blossen Wort „MOREImmo" darin, gesetzt in der Standardschrift des Programms.
+ * blossen Wort „OS Immobilien" darin, gesetzt in der Standardschrift des Programms.
  *
  * Ein Mailprogramm zeichnet den Alternativtext eines blockierten Bildes aber
  * mit den Schriftangaben, die am `img` selbst stehen. Deshalb tragen sie hier
@@ -994,14 +994,14 @@ export interface Ansprechpartner {
 /**
  * Der Mensch, der unterschreibt.
  *
- * Vorher endete jede Mail mit "Ihr MOREImmo Team" in elf Pixel Hellgrau. Wenn
+ * Vorher endete jede Mail mit "Ihr OS Immobilien Team" in elf Pixel Hellgrau. Wenn
  * die Angaben des zuständigen Vertriebspartners fehlen, fällt es auf die
  * allgemeine Adresse zurück.
  */
 function Unterschrift({ person, sprache }: { person?: Ansprechpartner; sprache: MailSprache }) {
   const name = person?.name?.trim() || `${MARKE.name} Team`
   // Die Rolle kommt deutsch aus dem CRM. Englisch steht einheitlich
-  // "Your contact at MOREImmo", siehe rolleFuer in _sprache.ts.
+  // "Your contact at OS Immobilien", siehe rolleFuer in _sprache.ts.
   const rolle = rolleFuer(person?.rolle, sprache)
   const mail = person?.email?.trim() || MARKE.mail
   const tel = person?.telefon?.trim() || MARKE.telefon
@@ -1145,7 +1145,7 @@ export interface LayoutProps {
   /**
    * Ohne Unterschriftsblock. Für interne Meldungen und neutrale Systemmails:
    * dort wirkt ein persönlicher Ansprechpartner fehl am Platz, und der
-   * Platzhalter "MOREImmo Team" erst recht.
+   * Platzhalter "OS Immobilien Team" erst recht.
    */
   ohneUnterschrift?: boolean
   /**

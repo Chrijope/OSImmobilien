@@ -146,7 +146,7 @@ export default function LeitfadenKaltakquise() {
           <PhaseStep
             num={1}
             titel="Eröffnung (15 Sekunden)"
-            text={`„Hallo [Vorname], hier ist [dein Name] von MOREImmo in München.\n\nIch rufe an, weil du bei uns auf der Webseite Interesse an unserer Kapitalanlage-Berechnung gezeigt hast."\n\nWichtig: Klar, ruhig, langsam. Keine entschuldigende Stimme. Sofort der Anlass.`}
+            text={`„Hallo [Vorname], hier ist [dein Name] von OS Immobilien in München.\n\nIch rufe an, weil du bei uns auf der Webseite Interesse an unserer Kapitalanlage-Berechnung gezeigt hast."\n\nWichtig: Klar, ruhig, langsam. Keine entschuldigende Stimme. Sofort der Anlass.`}
           />
           <PhaseStep
             num={2}
@@ -174,7 +174,7 @@ export default function LeitfadenKaltakquise() {
       <SectionCard title="Komplett-Skript für den Erst-Anruf" icon={<MessageSquare className="h-5 w-5" />}>
         <div className="bg-primary/5 border border-primary/20 rounded p-4 text-sm leading-relaxed space-y-3">
           <p>
-            <strong>Du:</strong> „Hallo [Vorname], hier ist [dein Name] von MOREImmo in München."
+            <strong>Du:</strong> „Hallo [Vorname], hier ist [dein Name] von OS Immobilien in München."
           </p>
           <p>
             <strong>Du:</strong> „Ich rufe an, weil du dir am [Datum] auf unserer Webseite unsere kostenlose

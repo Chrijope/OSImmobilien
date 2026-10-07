@@ -386,11 +386,11 @@ export function SteuerCockpitCard({ inv, invMeta, kontakt, kontaktMeta, finanzie
     share: zahl(gebaeudeAnteilProz * 100, 0),
   });
 
-  // Anlage-V-Aufstellung fuer dieses MOREImmo-Investment: ueber den
+  // Anlage-V-Aufstellung fuer dieses OS Immobilien-Investment: ueber den
   // gemeinsamen Adapter in das ExternesInvestment-Shape gebracht und dann mit
   // derselben Rechenlogik wie bei eigenen Investments gerechnet. Die in der
   // Karte aufgeloesten Werte (Live-Expose-Fallbacks) werden uebernommen, damit
-  // PDF und Karte dieselben Zahlen zeigen. Posten, die der MOREImmo-Datensatz
+  // PDF und Karte dieselben Zahlen zeigen. Posten, die der OS Immobilien-Datensatz
   // nicht kennt (Grundsteuer, Versicherung, Verwaltung, Umlagen), erscheinen
   // im PDF ausdruecklich als "Angabe fehlt".
   const baueAufstellung = () => {

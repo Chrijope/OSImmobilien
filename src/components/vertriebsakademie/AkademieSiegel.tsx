@@ -118,7 +118,7 @@ function Siegel({ badge, tier }: { badge: VaBadge; tier: Tier }) {
           fill={locked ? "#374151" : c.text}
           opacity="0.8"
         >
-          MOREImmo
+          OS Immobilien
         </text>
         {locked && (
           <g transform="translate(42, 60)">

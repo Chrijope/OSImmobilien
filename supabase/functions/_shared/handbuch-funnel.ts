@@ -1,7 +1,7 @@
 /**
  * Der Handbuch-Funnel: sechs Fragen, drei Ausgänge, ein Rahmen.
  *
- * Grundlage ist die Strategie „Handbuch-Funnel für MOREImmo“ vom 26.09.2026,
+ * Grundlage ist die Strategie „Handbuch-Funnel für OS Immobilien“ vom 26.09.2026,
  * Teil A, Kapitel 3. Diese Datei ist die einzige Stelle, an der die Fragen,
  * ihre Antworten und die Regeln für den Ausgang stehen. Sie wird gelesen von
  *

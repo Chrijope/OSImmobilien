@@ -68,7 +68,7 @@ describe("Link der Glocke (für alle Schreibwege)", () => {
       "https://fremd.example/login", "http://fremd.example", "//fremd.example/login",
       "/\\fremd.example", "/\t/fremd.example", "/\n/fremd.example",
       "javascript:alert(1)", "data:text/html,<b>x</b>", "kunden/1", " /kunden/1",
-      "https://portal.more.immo/kunden/1",
+      "https://osimmobilien.netlify.app/kunden/1",
     ]) {
       expect(erlaubt(link), JSON.stringify(link)).toBe(false);
     }

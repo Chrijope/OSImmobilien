@@ -1,12 +1,12 @@
-# MOREImmo
+# OS Immobilien
 
-> CRM-Portal von MOREImmo für B2C-Immobilieninvestments. Das Portal selbst ist nur für eingeloggte Nutzer zugänglich; öffentlich sind ausschließlich Karriere-, Impressums- und Datenschutzseiten.
+> CRM-Portal von OS Immobilien für B2C-Immobilieninvestments. Das Portal selbst ist nur für eingeloggte Nutzer zugänglich; öffentlich sind ausschließlich Karriere-, Impressums- und Datenschutzseiten.
 
 ## Pages
 
-- [Karriere](/karriere): Offene Stellen und Bewerbungsmöglichkeiten bei MOREImmo.
+- [Karriere](/karriere): Offene Stellen und Bewerbungsmöglichkeiten bei OS Immobilien.
 - [Vertriebspartner werden](/karriere/vertriebspartner-immobilien): Werde freier Vertriebspartner für Immobilieninvestments.
-- [Partner werden](/partner-werden): Einstieg als Partner bei MOREImmo.
+- [Partner werden](/partner-werden): Einstieg als Partner bei OS Immobilien.
 - [Impressum](/impressum): Anbieterkennzeichnung gemäß § 5 TMG.
 - [Datenschutz](/datenschutz): Datenschutzerklärung gemäß DSGVO.
 - [Login](/login): Zugang für bestehende Nutzer (interner Bereich).

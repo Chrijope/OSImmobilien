@@ -20,7 +20,7 @@ const DE = {
     vorname ? `Herzlichen Glückwunsch zum Geburtstag, ${vorname}` : 'Herzlichen Glückwunsch zum Geburtstag',
   augenbraue: 'Von uns allen',
   titel: 'Herzlichen Glückwunsch zum Geburtstag',
-  vorschau: 'Alles Gute zu deinem Geburtstag von MOREImmo.',
+  vorschau: 'Alles Gute zu deinem Geburtstag von OS Immobilien.',
   heute: 'heute ist dein Geburtstag, und wir möchten die Gelegenheit nutzen, dir persönlich zu gratulieren.',
   wunsch:
     'Wir wünschen dir ein gutes neues Lebensjahr, Gesundheit und Zeit für die Dinge, die dir wichtig sind. Vielen Dank für dein Vertrauen.',
@@ -32,7 +32,7 @@ const TEXTE: Zweisprachig<typeof DE> = {
     betreff: (vorname: string) => (vorname ? `Happy birthday, ${vorname}` : 'Happy birthday'),
     augenbraue: 'From all of us',
     titel: 'Happy birthday',
-    vorschau: 'Best wishes on your birthday from MOREImmo.',
+    vorschau: 'Best wishes on your birthday from OS Immobilien.',
     heute: 'Today is your birthday, and we would like to take this opportunity to congratulate you personally.',
     wunsch:
       'We wish you a wonderful year ahead, good health and time for the things that matter to you. Thank you for your trust.',
@@ -67,9 +67,9 @@ export const template = {
     nachname: 'Mustermann',
     berater: {
       name: 'Christian Peetz',
-      rolle: 'Dein Ansprechpartner bei MOREImmo',
+      rolle: 'Dein Ansprechpartner bei OS Immobilien',
       telefon: '08061 000000',
-      email: 'christian@more.immo',
+      email: 'os@os-immobilien.com',
     },
   },
 } satisfies TemplateEntry

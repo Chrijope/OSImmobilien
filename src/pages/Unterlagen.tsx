@@ -401,7 +401,7 @@ export default function Unterlagen() {
       <div className="library-apple">
         {/* Apple Hero */}
         <header className="la-hero">
-          <span className="la-eyebrow relative">MOREImmo · Dokumente</span>
+          <span className="la-eyebrow relative">OS Immobilien · Dokumente</span>
           <h1 className="la-display">Deine komplette Bibliothek.</h1>
           <p className="la-subtitle relative">
             Alle Vertriebsmaterialien, Tools, Steuer-Strategien und Vorlagen — kuratiert und an einem Ort.

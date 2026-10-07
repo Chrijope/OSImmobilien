@@ -385,7 +385,7 @@ export default function KundeInvestments() {
 
   const tabParam = searchParams.get("tab");
   const invParam = searchParams.get("inv");
-  // Wenn ?inv=ID gesetzt ist (z. B. Sprung aus dem Steuer-Cockpit), automatisch in MOREImmo-Detailansicht
+  // Wenn ?inv=ID gesetzt ist (z. B. Sprung aus dem Steuer-Cockpit), automatisch in OS Immobilien-Detailansicht
   const tabFromUrl: "moreimmo" | "eigene" | null =
     tabParam === "eigene" ? "eigene" : tabParam === "moreimmo" || invParam ? "moreimmo" : null;
   const handleTabChange = (val: string | null) => {
@@ -529,7 +529,7 @@ export default function KundeInvestments() {
 
   // ─── Dashboard-Übersicht (Default-Ansicht beim Klick auf „Investments") ───
   if (tabFromUrl === null) {
-    // Aggregierte Kennzahlen über MOREImmo + eigene Investments.
+    // Aggregierte Kennzahlen über OS Immobilien + eigene Investments.
     // Die Rendite wird nur über Investments mit belegter Miete gerechnet,
     // damit fehlende Angaben das Ergebnis nicht still verwässern.
     const positionen = [
@@ -645,7 +645,7 @@ export default function KundeInvestments() {
     );
   }
 
-  // ─── Eigene Investments (eigener Tab, ohne MOREImmo-Hülle) ───
+  // ─── Eigene Investments (eigener Tab, ohne OS Immobilien-Hülle) ───
   if (tabFromUrl === "eigene") {
     return (
       <DashboardLayout>
@@ -658,7 +658,7 @@ export default function KundeInvestments() {
     );
   }
 
-  // ─── MOREImmo: keine Investments vorhanden ───
+  // ─── OS Immobilien: keine Investments vorhanden ───
   if (investments.length === 0) {
     return (
       <DashboardLayout>

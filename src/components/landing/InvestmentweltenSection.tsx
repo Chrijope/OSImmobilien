@@ -6,7 +6,7 @@ import { MIKROSEITE_TEXTE } from "@/components/landing/mikroseiteTexte";
 
 /**
  * Die drei Investmentkonzepte als eigener Abschnitt.
- * Bisher tauchten sie nur als Nebensatz unter „Warum MOREImmo" auf.
+ * Bisher tauchten sie nur als Nebensatz unter „Warum OS Immobilien" auf.
  * Aufbau je Karte bewusst identisch, damit sie vergleichbar bleiben.
  */
 /** Symbol und Clip je Konzept, in derselben Reihenfolge wie die Texte. */

@@ -245,7 +245,7 @@ export function baueIcs(angaben: IcsAngaben): string {
   const zeilen = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//MOREImmo//Bewerberprozess//DE",
+    "PRODID:-//OS Immobilien//Bewerberprozess//DE",
     "CALSCALE:GREGORIAN",
     angaben.absage ? "METHOD:CANCEL" : "METHOD:PUBLISH",
     "BEGIN:VEVENT",
@@ -308,7 +308,7 @@ export function kalenderAnhang(ics: string): Array<{ filename: string; content: 
  * Terminart umzubenennen wäre eine Migration und träfe zugleich die Anzeige im
  * CRM; hier geht es nur um den Eintrag in seinem Kalender.
  */
-export const KALENDER_TITEL = `${GESPRAECH_NAME} mit MOREImmo`;
+export const KALENDER_TITEL = `${GESPRAECH_NAME} mit OS Immobilien`;
 
 /** Woraus sich der Kalenderlink zusammensetzt. Dieselben Angaben wie die Datei. */
 export type KalenderLinkAngaben = {
@@ -349,7 +349,7 @@ export function kalenderLink(angaben: KalenderLinkAngaben): string {
     ["end", (Number.isNaN(ende.getTime()) ? start : ende).toISOString()],
     ["desc", angaben.beschreibung || ""],
     ["loc", angaben.ort || "Online"],
-    ["org", angaben.organisator || "MOREImmo"],
+    ["org", angaben.organisator || "OS Immobilien"],
     ["orgEmail", angaben.organisatorEmail || ""],
     ["uid", angaben.uid],
   ];

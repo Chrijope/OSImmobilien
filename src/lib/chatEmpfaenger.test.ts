@@ -66,9 +66,9 @@ describe("Wohin Glocke und Mail fuehren", () => {
     expect(chatZiel("chat-1", { istTippgeber: true })).toBe("/tippgeber-portal?tab=chat");
   });
 
-  it("baut die volle Adresse auf portal.more.immo, auch mit Schraegstrich am Ende", () => {
-    expect(chatZielAdresse("https://portal.more.immo/", "/chat?id=chat-1")).toBe(
-      "https://portal.more.immo/chat?id=chat-1",
+  it("baut die volle Adresse auf osimmobilien.netlify.app, auch mit Schraegstrich am Ende", () => {
+    expect(chatZielAdresse("https://osimmobilien.netlify.app/", "/chat?id=chat-1")).toBe(
+      "https://osimmobilien.netlify.app/chat?id=chat-1",
     );
   });
 });
@@ -152,12 +152,12 @@ describe("Die Mail an den Partner", () => {
       absenderName: "Otto Hans",
       chatName: "Otto Hans",
       text: "Kurze Rückfrage zur Wohnung.",
-      portalUrl: "https://portal.more.immo/chat?id=chat-1",
+      portalUrl: "https://osimmobilien.netlify.app/chat?id=chat-1",
     });
     // kundeName ist in der Vorlage die Anrede des Empfaengers, beraterName der Absender.
     expect(d.kundeName).toBe("Bea Beispiel");
     expect(d.beraterName).toBe("Otto Hans");
-    expect(d.portalUrl).toBe("https://portal.more.immo/chat?id=chat-1");
+    expect(d.portalUrl).toBe("https://osimmobilien.netlify.app/chat?id=chat-1");
     expect(d.anPartner).toBe(true);
   });
 

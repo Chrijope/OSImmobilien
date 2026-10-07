@@ -27,7 +27,7 @@ interface Props { berater: BeraterInfo | null; onOpenFunnel: () => void; }
 export default function BeraterMicrositeContent({ berater, onOpenFunnel }: Props) {
   return <div className="berater-mikroseite">
     {/* Der Umschalter DE/EN sitzt rechts neben dem Logo. Ohne SeitenSpracheProvider zeigt er nichts. */}
-    <header className="brand-header"><img src={logo} alt="MOREImmo" width="172" height="34" /><SeitenSprachUmschalter className="brand-header-sprache" /></header>
+    <header className="brand-header"><img src={logo} alt="OS Immobilien" width="172" height="34" /><SeitenSprachUmschalter className="brand-header-sprache" /></header>
     <div className="micro-abschnitt micro-abschnitt-1">{berater && <AppleHeroSection berater={berater} onOpenFunnel={onOpenFunnel} />}</div>
     <div className="micro-abschnitt micro-abschnitt-2"><SteuerlastSection onOpenFunnel={onOpenFunnel} /></div>
     <div className="micro-abschnitt micro-abschnitt-3"><AppleSteuerRechner onOpenFunnel={onOpenFunnel} /></div>

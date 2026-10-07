@@ -23,7 +23,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const PORTAL = "https://portal.more.immo";
+const PORTAL = "https://osimmobilien.netlify.app";
 
 /** Ab dieser Zahl noch offener Kontakte wird gebuendelt statt einzeln gemailt. */
 const SAMMEL_SCHWELLE = 3;

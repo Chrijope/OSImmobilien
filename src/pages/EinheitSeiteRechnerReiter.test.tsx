@@ -7,7 +7,7 @@ import type { ObjektData, ObjektWohnung } from "@/lib/objekteStore";
 /**
  * Der Reiter „Investmentkalkulation“ bleibt nach dem ersten Öffnen
  * eingehängt (Befund LOTSE-R3-004). Vorher verlor der Rechner beim
- * Reiterwechsel seine Eingaben und meldete dem MORE Lotsen danach wieder die
+ * Reiterwechsel seine Eingaben und meldete dem OS Lotsen danach wieder die
  * Anfangswerte. Beim Wechsel der Einheit fängt er neu an.
  *
  * Der Rechner selbst ist hier ein Stellvertreter mit eigenem Zustand: Geprüft

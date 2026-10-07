@@ -1,5 +1,5 @@
 /**
- * Kennzahlen für die Folie "MOREImmo in Zahlen" der Closing-Präsentation.
+ * Kennzahlen für die Folie "OS Immobilien in Zahlen" der Closing-Präsentation.
  *
  * HIER PFLEGT CHRISTIAN DIE ECHTEN ZAHLEN.
  *

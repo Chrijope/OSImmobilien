@@ -62,7 +62,7 @@ const ProblemSection = ({ onOpenFunnel }: ProblemSectionProps) => {
           {problems.map((problem, i) => (
             <div
               key={i}
-              className="group relative flex flex-col p-7 md:p-8 rounded-2xl border border-[hsl(220,15%,88%)] bg-white shadow-[0_4px_24px_-12px_hsla(220,30%,20%,0.08)] transition-all duration-300 hover:border-primary/40 hover:shadow-[0_12px_40px_-12px_hsla(207,90%,55%,0.18)] hover:-translate-y-1"
+              className="group relative flex flex-col p-7 md:p-8 rounded-2xl border border-[hsl(220,15%,88%)] bg-white shadow-[0_4px_24px_-12px_hsla(220,30%,20%,0.08)] transition-all duration-300 hover:border-primary/40 hover:shadow-[0_12px_40px_-12px_hsla(157,68%,39%,0.18)] hover:-translate-y-1"
             >
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-11 h-11 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center">

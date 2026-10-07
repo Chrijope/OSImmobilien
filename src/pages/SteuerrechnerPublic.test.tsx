@@ -64,7 +64,7 @@ beforeEach(() => {
         userId: "11111111-2222-3333-4444-555555555555",
         name: "Christian Peetz",
         telefon: "0171 1111111",
-        email: "cp@more.immo",
+        email: "os@os-immobilien.com",
       }),
     })),
   );

@@ -487,12 +487,12 @@ export function ExposeErzeugenDialog({
               <Label htmlFor="expose-link">Persönlicher Link</Label>
               <Input id="expose-link" readOnly value={erzeugterLink} onFocus={(e) => e.currentTarget.select()} data-testid="expose-link" />
               {/* Christian am 23.09.2026, „404“ nach „Link kopieren“: Der Link
-                  führt immer auf portal.more.immo. Aus der Lovable-Vorschau
+                  führt immer auf osimmobilien.netlify.app. Aus der Lovable-Vorschau
                   kopiert, gibt es die Seite der Objektübersicht dort erst nach
                   dem Veröffentlichen, bis dahin zeigt sie „404“. */}
               {uebersicht && !kundenlinkAufDieserAdresse(window.location.hostname) && (
                 <p className="text-xs text-muted-foreground" data-testid="expose-link-veroeffentlichen">
-                  Der Link führt auf portal.more.immo. Dort öffnet die Objektübersicht erst, wenn der aktuelle Stand in Lovable veröffentlicht ist, vorher zeigt sie „404“. Zum Prüfen davor nimm „Vorschau öffnen“.
+                  Der Link führt auf osimmobilien.netlify.app. Dort öffnet die Objektübersicht erst, wenn der aktuelle Stand in Lovable veröffentlicht ist, vorher zeigt sie „404“. Zum Prüfen davor nimm „Vorschau öffnen“.
                 </p>
               )}
             </div>

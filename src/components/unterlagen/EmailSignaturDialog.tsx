@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/contexts/UserContext";
 import { Copy, Download, Mail, CheckCircle2, ArrowLeft } from "lucide-react";
-import moreimmoLogo from "@/assets/moreimmo-logo-full.png.asset.json";
+const LOGO_PFAD = "/images/moreimmo-logo.png";
 import { cacheGet } from "@/lib/dataCache";
 import { OEFFENTLICHE_BASIS } from "@/lib/oeffentlicheBasis";
 
@@ -37,15 +37,15 @@ const splitName = (full: string): { vorname: string; nachname: string } => {
    nicht entsteht. Fest auf die veroeffentlichte Seite statt
    die Herkunft des Browsers: Aus der Lovable-Vorschau heraus stand sonst deren
    Adresse in jeder Mail, und die laedt ohne Anmeldung kein Bild. */
-const absoluteLogoUrl = () => new URL(moreimmoLogo.url, OEFFENTLICHE_BASIS).href;
+const absoluteLogoUrl = () => new URL(LOGO_PFAD, OEFFENTLICHE_BASIS).href;
 
 /* Farben der Markenrichtlinie, Abschnitt 3. Bewusst als feste Hexwerte und
    nicht als CSS-Variable: die Signatur landet in fremden Mailprogrammen, dort
    gibt es unsere Tokens nicht. */
 const SIG_TINTE = "#131720";
 const SIG_LEISE = "#6A7181";
-const SIG_BLAU_600 = "#087AC7"; // Balken
-const SIG_BLAU_700 = "#0466A9"; // Verweise, 6,04:1 auf Weiß
+const SIG_BLAU_600 = "#15724F"; // Balken
+const SIG_BLAU_700 = "#13704D"; // Verweise, 6,04:1 auf Weiß
 const SIG_LINIE = "#E3E7EC";
 /* Christians Vorgabe vom 03.08.2026: Helvetica in 12. Helvetica steht deshalb
    vorn, nicht die Systemschrift, damit die Signatur in jedem Mailprogramm
@@ -97,12 +97,12 @@ const buildSignaturHtml = (p: {
   <table cellpadding="0" cellspacing="0" border="0" style="margin-top: 14px; border-collapse: collapse;">
     <tr>
       <td valign="top" style="padding-right: 18px;">
-        <img src="${p.logoUrl}" alt="MOREImmo" width="${LOGO_BREITE}" style="display:block; border:0; outline:none; max-width:${LOGO_BREITE}px; height:auto;" />
+        <img src="${p.logoUrl}" alt="OS Immobilien" width="${LOGO_BREITE}" style="display:block; border:0; outline:none; max-width:${LOGO_BREITE}px; height:auto;" />
       </td>
       <td valign="top" style="font-family: ${SIG_FONT}; font-size: 12px; color: ${SIG_TINTE}; line-height: 1.5;">
         ${p.telefon ? `Telefon <a href="tel:${telHref}" style="color:${SIG_TINTE}; text-decoration:none;">${p.telefon}</a><br/>` : ""}
         <a href="mailto:${p.email}" style="color:${SIG_BLAU_700}; text-decoration:none;">${p.email}</a><br/>
-        <a href="https://www.more.immo" style="color:${SIG_BLAU_700}; text-decoration:none;">more.immo</a>
+        <a href="https://osimmobilien.netlify.app" style="color:${SIG_BLAU_700}; text-decoration:none;">osimmobilien.netlify.app</a>
       </td>
     </tr>
   </table>
@@ -110,10 +110,10 @@ const buildSignaturHtml = (p: {
   <div style="margin-top: 16px; border-top: 1px solid ${SIG_LINIE}; font-size: 0; line-height: 0;">&nbsp;</div>
 
   <div style="margin-top: 10px; font-size: 10px; color: ${SIG_LEISE};">
-    MOREImmo, Wendelsteinstraße 19, 83075 Bad Feilnbach &middot; USt-IdNr.: DE461593843
+    OS Immobilien Holding GmbH, Am Ostbahnhof 1, 15749 Mittenwalde &middot; USt-IdNr.: DEINE-UST-ID
   </div>
   <div style="margin-top: 8px; font-size: 10px; color: ${SIG_LEISE}; line-height: 1.45;">
-    Datenschutzhinweis: Soweit Sie mit uns per E-Mail kommunizieren, werden dabei Daten erhoben und verarbeitet. Informationen dazu, welche Daten zu welchen Zwecken und auf welcher gesetzlichen Grundlage erhoben werden sowie über Ihre diesbezüglichen Rechte finden Sie auf unserer Webseite in der Datenschutzerklärung unter <a href="https://www.more.immo/datenschutz" style="color:${SIG_BLAU_700}; text-decoration:none;">www.more.immo/datenschutz</a>.
+    Datenschutzhinweis: Soweit Sie mit uns per E-Mail kommunizieren, werden dabei Daten erhoben und verarbeitet. Informationen dazu, welche Daten zu welchen Zwecken und auf welcher gesetzlichen Grundlage erhoben werden sowie über Ihre diesbezüglichen Rechte finden Sie auf unserer Webseite in der Datenschutzerklärung unter <a href="https://osimmobilien.netlify.app/datenschutz" style="color:${SIG_BLAU_700}; text-decoration:none;">osimmobilien.netlify.app/datenschutz</a>.
   </div>
 </div>`;
 };
@@ -219,7 +219,7 @@ export function EmailSignaturDialog({ open = true, onOpenChange, asPage = false,
 
   useEffect(() => {
     // Zum Einbetten die eigene Herkunft lesen, sonst sperrt CORS das Canvas.
-    imageToDataUri(moreimmoLogo.url).then(setLogoDataUri);
+    imageToDataUri(LOGO_PFAD).then(setLogoDataUri);
   }, []);
 
   const logoUrl = useMemo(
@@ -273,7 +273,7 @@ export function EmailSignaturDialog({ open = true, onOpenChange, asPage = false,
 
   const downloadHtml = () => {
     const blob = new Blob([
-      `<!DOCTYPE html><html><head><meta charset="utf-8"><title>MOREImmo Signatur – ${vorname} ${nachname}</title></head><body>${html}</body></html>`,
+      `<!DOCTYPE html><html><head><meta charset="utf-8"><title>OS Immobilien Signatur – ${vorname} ${nachname}</title></head><body>${html}</body></html>`,
     ], { type: "text/html" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -306,7 +306,7 @@ export function EmailSignaturDialog({ open = true, onOpenChange, asPage = false,
                 </div>
                 <div className="mt-2">
                   <Label htmlFor="sig-mail">E-Mail-Adresse</Label>
-                  <Input id="sig-mail" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="vorname.nachname@more.immo" />
+                  <Input id="sig-mail" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="vorname.nachname@os-immobilien.com" />
                 </div>
                 <div className="mt-2">
                   <Label htmlFor="sig-tel">Telefon</Label>
@@ -341,9 +341,9 @@ export function EmailSignaturDialog({ open = true, onOpenChange, asPage = false,
                   <li>Klicke oben auf <strong>„Signatur kopieren (formatiert)"</strong>.</li>
                   <li>Öffne <strong>Mail</strong> auf deinem Mac.</li>
                   <li>Menü <strong>Mail → Einstellungen</strong> (oder <kbd>⌘ ,</kbd>) → Reiter <strong>Signaturen</strong>.</li>
-                  <li>Wähle links dein <strong>MOREImmo E-Mail-Konto</strong> aus.</li>
+                  <li>Wähle links dein <strong>OS Immobilien E-Mail-Konto</strong> aus.</li>
                   <li>Klicke unten auf das <strong>„+"</strong>-Symbol — eine neue Signatur erscheint.</li>
-                  <li>Benenne sie z. B. <em>„MOREImmo Standard"</em>.</li>
+                  <li>Benenne sie z. B. <em>„OS Immobilien Standard"</em>.</li>
                   <li>Klicke ins rechte Vorschaufenster und füge mit <kbd>⌘ V</kbd> die Signatur ein.</li>
                   <li>
                     Deaktiviere unten die Option
@@ -380,7 +380,7 @@ export function EmailSignaturDialog({ open = true, onOpenChange, asPage = false,
         </Button>
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Mail className="h-6 w-6" /> MOREImmo E-Mail-Signatur
+            <Mail className="h-6 w-6" /> OS Immobilien E-Mail-Signatur
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
             Einheitliche Signatur mit deinen persönlichen Daten — direkt in Apple Mail übernehmbar.
@@ -396,7 +396,7 @@ export function EmailSignaturDialog({ open = true, onOpenChange, asPage = false,
       <DialogContent className="max-w-5xl p-0 max-h-[90vh] overflow-y-auto">
         <DialogHeader className="px-6 pt-6 pb-2">
           <DialogTitle className="flex items-center gap-2 text-lg">
-            <Mail className="h-5 w-5" /> MOREImmo E-Mail-Signatur
+            <Mail className="h-5 w-5" /> OS Immobilien E-Mail-Signatur
           </DialogTitle>
           <DialogDescription>
             Einheitliche Signatur mit deinen persönlichen Daten — direkt in Apple Mail übernehmbar.

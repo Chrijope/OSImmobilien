@@ -88,7 +88,7 @@ export const template = {
     versendetAm: '12.08.2026',
     stufe: 'Stufe 2 von 4',
     handlung: 'Bitte einmal persönlich anrufen und fragen, ob beim Lesen etwas unklar war.',
-    profilLink: 'https://portal.more.immo/bewerbung/beispiel',
+    profilLink: 'https://osimmobilien.netlify.app/bewerbung/beispiel',
     restTage: 23,
   },
 } satisfies TemplateEntry
