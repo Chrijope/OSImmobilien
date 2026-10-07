@@ -15,7 +15,7 @@ import { meetingZeitISO } from "./meetingZeit";
 import { supabase } from "@/integrations/supabase/client";
 import { beraterMailFelder, findeBerater } from "./mailBerater";
 
-const ICS_BASIS = "https://DEIN-SUPABASE-PROJEKT.supabase.co/functions/v1/get-ics";
+const ICS_BASIS = "https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/get-ics";
 
 export interface MeetingEinladung {
   kundeId: string;

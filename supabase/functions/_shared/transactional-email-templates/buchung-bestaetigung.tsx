@@ -223,7 +223,7 @@ export const template = {
     terminBeschreibung:
       'In einem kurzen Gespräch klären wir, was du dir von einer Immobilie als Kapitalanlage versprichst und ob wir dafür der richtige Partner sind.\n\nDu brauchst nichts vorzubereiten. Bring einfach deine Fragen mit, alles Weitere besprechen wir gemeinsam.',
     zugangUrl: 'https://portal.more.immo/raum/abc123',
-    icsUrl: 'https://DEIN-SUPABASE-PROJEKT.supabase.co/functions/v1/get-ics?title=Telefonisches%20Erstgespr%C3%A4ch',
+    icsUrl: 'https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/get-ics?title=Telefonisches%20Erstgespr%C3%A4ch',
     googleCalendarUrl: 'https://calendar.google.com/calendar/render?action=TEMPLATE',
     verwaltenUrl: 'https://portal.more.immo/termin/verwalten/abc123',
     berater: {

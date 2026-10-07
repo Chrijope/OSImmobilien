@@ -176,7 +176,7 @@ export const template = {
     zugangUrl: 'https://portal.more.immo/raum/beispiel-token',
     verwaltenUrl: 'https://portal.more.immo/kooperationsgespraech/beispiel-token',
     kalenderUrl:
-      'https://DEIN-SUPABASE-PROJEKT.supabase.co/functions/v1/get-ics?title=Kooperationsgespr%C3%A4ch%20mit%20MOREImmo',
+      'https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/get-ics?title=Kooperationsgespr%C3%A4ch%20mit%20MOREImmo',
     themen: ['Vergütung und Rechenwege', 'Leads und Kundengewinnung'],
     eigeneFrage: 'Wie läuft die Einarbeitung neben dem Hauptberuf?',
     berater: STANDARD,

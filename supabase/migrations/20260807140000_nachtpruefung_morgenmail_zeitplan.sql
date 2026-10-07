@@ -32,7 +32,7 @@ BEGIN
       '30 4 * * *',
       $cron$
       SELECT net.http_post(
-        url := 'https://DEIN-SUPABASE-PROJEKT.supabase.co/functions/v1/nachtpruefung-morgenmail',
+        url := 'https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/nachtpruefung-morgenmail',
         headers := '{"Content-Type": "application/json"}'::jsonb,
         body := '{}'::jsonb
       );

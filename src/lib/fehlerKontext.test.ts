@@ -55,7 +55,7 @@ describe("istAuthLockKonflikt", () => {
   it("erkennt den Sperren-Timeout von Supabase Auth", () => {
     expect(
       istAuthLockKonflikt(
-        'Acquiring an exclusive Navigator LockManager lock "lock:sb-DEIN-SUPABASE-PROJEKT-auth-token" immediately failed',
+        'Acquiring an exclusive Navigator LockManager lock "lock:sb-irwdgutegmivbtgmftyc-auth-token" immediately failed',
       ),
     ).toBe(true);
     expect(istAuthLockKonflikt("NavigatorLockAcquireTimeoutError: acquire timeout")).toBe(true);

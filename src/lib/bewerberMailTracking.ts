@@ -44,7 +44,7 @@ import { ZAEHL_PARAMETER, istZaehlmarke, mitZaehlmarke } from "../../supabase/fu
  */
 const PROJEKT_URL =
   (import.meta.env?.VITE_SUPABASE_URL as string | undefined) ||
-  "https://DEIN-SUPABASE-PROJEKT.supabase.co";
+  "https://irwdgutegmivbtgmftyc.supabase.co";
 const FN_BASIS = `${PROJEKT_URL.replace(/\/+$/, "")}/functions/v1`;
 
 /** Die Eingangsmail mit dem Kennenlernbogen. */

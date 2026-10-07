@@ -26,7 +26,7 @@ import {
   MAIL_LOGO_URL,
 } from "../../supabase/functions/_shared/avatar-signieren.ts";
 
-const BASIS = "https://DEIN-SUPABASE-PROJEKT.supabase.co/storage/v1/object/public/avatars";
+const BASIS = "https://irwdgutegmivbtgmftyc.supabase.co/storage/v1/object/public/avatars";
 
 describe("avatarSpeicherpfad", () => {
   it("gewinnt den Pfad aus der öffentlichen Adresse mit Zeitstempel zurück", () => {
@@ -48,14 +48,14 @@ describe("avatarSpeicherpfad", () => {
   it("fasst einen anderen Bucket nicht an", () => {
     expect(
       avatarSpeicherpfad(
-        "https://DEIN-SUPABASE-PROJEKT.supabase.co/storage/v1/object/public/objekt-medien/x.jpg",
+        "https://irwdgutegmivbtgmftyc.supabase.co/storage/v1/object/public/objekt-medien/x.jpg",
       ),
     ).toBeNull();
   });
 
   it("erkennt eine bereits signierte Adresse nicht als öffentlichen Pfad", () => {
     const signiert =
-      "https://DEIN-SUPABASE-PROJEKT.supabase.co/storage/v1/object/sign/avatars/1d6f60b0/avatar.jpg?token=abc";
+      "https://irwdgutegmivbtgmftyc.supabase.co/storage/v1/object/sign/avatars/1d6f60b0/avatar.jpg?token=abc";
     expect(avatarSpeicherpfad(signiert)).toBeNull();
   });
 
@@ -119,7 +119,7 @@ describe("avatarUrlFuerMail macht jede Adresse mailfest, egal von wo versendet w
 
   it("macht aus einer signierten Avatar-Adresse die dauerhafte öffentliche", () => {
     const signiert =
-      "https://DEIN-SUPABASE-PROJEKT.supabase.co/storage/v1/object/sign/avatars/1d6f60b0/avatar.jpg?token=abc";
+      "https://irwdgutegmivbtgmftyc.supabase.co/storage/v1/object/sign/avatars/1d6f60b0/avatar.jpg?token=abc";
     expect(avatarUrlFuerMail(signiert)).toBe(`${BASIS}/1d6f60b0/avatar.jpg`);
   });
 

@@ -11,7 +11,7 @@ BEGIN
     'investagon-sync-taeglich',
     '*/15 * * * *',
     $cron$SELECT net.http_post(
-      url := 'https://DEIN-SUPABASE-PROJEKT.supabase.co/functions/v1/investagon-import',
+      url := 'https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/investagon-import',
       headers := '{"Content-Type":"application/json"}'::jsonb,
       body := '{"sync":true,"bilder":true}'::jsonb
     );$cron$

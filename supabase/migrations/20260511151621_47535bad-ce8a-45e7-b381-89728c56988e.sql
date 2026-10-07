@@ -5,7 +5,7 @@ SET meta = meta || jsonb_build_object(
   'pipelineStufe', 'abgeschlossen',
   'rvSigned', true,
   'rvSignedAt', '2026-03-15T10:00:00Z',
-  'kaufvertragPdf', 'https://DEIN-SUPABASE-PROJEKT.supabase.co/storage/v1/object/public/unterlagen/demo/kaufvertrag.pdf',
+  'kaufvertragPdf', 'https://irwdgutegmivbtgmftyc.supabase.co/storage/v1/object/public/unterlagen/demo/kaufvertrag.pdf',
   'finanzierungsStatus', 'bestaetigt',
   'finanzierungsBank', 'Münchener Hypothekenbank',
   'finanzierungsSumme', 388000,
@@ -42,7 +42,7 @@ SET meta = meta || jsonb_build_object(
   'objekt', 'MOREImmo Stadthaus München-Schwabing',
   'rvSigned', true,
   'rvSignedAt', '2026-03-20T11:00:00Z',
-  'kaufvertragPdf', 'https://DEIN-SUPABASE-PROJEKT.supabase.co/storage/v1/object/public/unterlagen/demo/kaufvertrag.pdf',
+  'kaufvertragPdf', 'https://irwdgutegmivbtgmftyc.supabase.co/storage/v1/object/public/unterlagen/demo/kaufvertrag.pdf',
   'finanzierungsStatus', 'bestaetigt',
   'finanzierungsBank', 'DKB Deutsche Kreditbank',
   'finanzierungsSumme', 412000,
@@ -70,10 +70,10 @@ SET meta = meta || jsonb_build_object(
   'saSigned', true,
   'saSignedAt', '2026-02-15T10:00:00Z',
   'docFileUrls', COALESCE(meta->'docFileUrls', '{}'::jsonb) || jsonb_build_object(
-    'Reservierungsvertrag', 'https://DEIN-SUPABASE-PROJEKT.supabase.co/storage/v1/object/public/unterlagen/demo/reservierung.pdf',
-    'Kaufvertrag', 'https://DEIN-SUPABASE-PROJEKT.supabase.co/storage/v1/object/public/unterlagen/demo/kaufvertrag.pdf',
-    'Grundschuld', 'https://DEIN-SUPABASE-PROJEKT.supabase.co/storage/v1/object/public/unterlagen/demo/grundschuld.pdf',
-    'Darlehensvertrag', 'https://DEIN-SUPABASE-PROJEKT.supabase.co/storage/v1/object/public/unterlagen/demo/darlehen.pdf'
+    'Reservierungsvertrag', 'https://irwdgutegmivbtgmftyc.supabase.co/storage/v1/object/public/unterlagen/demo/reservierung.pdf',
+    'Kaufvertrag', 'https://irwdgutegmivbtgmftyc.supabase.co/storage/v1/object/public/unterlagen/demo/kaufvertrag.pdf',
+    'Grundschuld', 'https://irwdgutegmivbtgmftyc.supabase.co/storage/v1/object/public/unterlagen/demo/grundschuld.pdf',
+    'Darlehensvertrag', 'https://irwdgutegmivbtgmftyc.supabase.co/storage/v1/object/public/unterlagen/demo/darlehen.pdf'
   ),
   'docStatuses', COALESCE(meta->'docStatuses', '{}'::jsonb) || jsonb_build_object(
     'Personalausweis', 'approved',
@@ -108,9 +108,9 @@ VALUES
        'monatsrate', 1761,
        'akzeptiert', true,
        'dokumente', jsonb_build_array(
-         jsonb_build_object('name', 'Finanzierungsangebot', 'status', 'signed', 'fileUrl', 'https://DEIN-SUPABASE-PROJEKT.supabase.co/storage/v1/object/public/unterlagen/demo/finanzierungsangebot.pdf'),
-         jsonb_build_object('name', 'Darlehensvertrag', 'status', 'signed', 'fileUrl', 'https://DEIN-SUPABASE-PROJEKT.supabase.co/storage/v1/object/public/unterlagen/demo/darlehen.pdf'),
-         jsonb_build_object('name', 'Grundschuld', 'status', 'signed', 'fileUrl', 'https://DEIN-SUPABASE-PROJEKT.supabase.co/storage/v1/object/public/unterlagen/demo/grundschuld.pdf')
+         jsonb_build_object('name', 'Finanzierungsangebot', 'status', 'signed', 'fileUrl', 'https://irwdgutegmivbtgmftyc.supabase.co/storage/v1/object/public/unterlagen/demo/finanzierungsangebot.pdf'),
+         jsonb_build_object('name', 'Darlehensvertrag', 'status', 'signed', 'fileUrl', 'https://irwdgutegmivbtgmftyc.supabase.co/storage/v1/object/public/unterlagen/demo/darlehen.pdf'),
+         jsonb_build_object('name', 'Grundschuld', 'status', 'signed', 'fileUrl', 'https://irwdgutegmivbtgmftyc.supabase.co/storage/v1/object/public/unterlagen/demo/grundschuld.pdf')
        )
      )
    )),
@@ -126,9 +126,9 @@ VALUES
        'monatsrate', 2079,
        'akzeptiert', true,
        'dokumente', jsonb_build_array(
-         jsonb_build_object('name', 'Finanzierungsangebot', 'status', 'signed', 'fileUrl', 'https://DEIN-SUPABASE-PROJEKT.supabase.co/storage/v1/object/public/unterlagen/demo/finanzierungsangebot.pdf'),
-         jsonb_build_object('name', 'Darlehensvertrag', 'status', 'signed', 'fileUrl', 'https://DEIN-SUPABASE-PROJEKT.supabase.co/storage/v1/object/public/unterlagen/demo/darlehen.pdf'),
-         jsonb_build_object('name', 'Grundschuld', 'status', 'signed', 'fileUrl', 'https://DEIN-SUPABASE-PROJEKT.supabase.co/storage/v1/object/public/unterlagen/demo/grundschuld.pdf')
+         jsonb_build_object('name', 'Finanzierungsangebot', 'status', 'signed', 'fileUrl', 'https://irwdgutegmivbtgmftyc.supabase.co/storage/v1/object/public/unterlagen/demo/finanzierungsangebot.pdf'),
+         jsonb_build_object('name', 'Darlehensvertrag', 'status', 'signed', 'fileUrl', 'https://irwdgutegmivbtgmftyc.supabase.co/storage/v1/object/public/unterlagen/demo/darlehen.pdf'),
+         jsonb_build_object('name', 'Grundschuld', 'status', 'signed', 'fileUrl', 'https://irwdgutegmivbtgmftyc.supabase.co/storage/v1/object/public/unterlagen/demo/grundschuld.pdf')
        )
      )
    ));

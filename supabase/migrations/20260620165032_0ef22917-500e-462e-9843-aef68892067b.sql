@@ -50,7 +50,7 @@ BEGIN
   END IF;
 
   PERFORM net.http_post(
-    url := 'https://DEIN-SUPABASE-PROJEKT.supabase.co/functions/v1/send-web-push',
+    url := 'https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/send-web-push',
     headers := jsonb_build_object(
       'Content-Type', 'application/json',
       'apikey', 'DEIN-ANON-KEY'

@@ -1,4 +1,4 @@
-project_id = "DEIN-SUPABASE-PROJEKT"
+project_id = "irwdgutegmivbtgmftyc"
 
 [functions.estimate-marktwert]
 verify_jwt = true

@@ -40,7 +40,7 @@ export interface HandbuchLeadErgebnis {
 export function projektUrl(): string {
   const id =
     (import.meta as unknown as { env?: Record<string, string> }).env?.VITE_SUPABASE_PROJECT_ID ||
-    "DEIN-SUPABASE-PROJEKT";
+    "irwdgutegmivbtgmftyc";
   return `https://${id}.supabase.co/functions/v1`;
 }
 

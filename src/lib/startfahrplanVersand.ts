@@ -32,7 +32,7 @@ import { istClosingDirektKomplett } from "./closingDirektSkript";
 import { istTeil1Abgeschlossen } from "./erstgespraechStand";
 import { ladeHrAnsprechpartner } from "./bewerberKontaktversuch";
 
-const SUPABASE_FN_BASE = "https://DEIN-SUPABASE-PROJEKT.supabase.co/functions/v1";
+const SUPABASE_FN_BASE = "https://irwdgutegmivbtgmftyc.supabase.co/functions/v1";
 
 /** Die zwei Fassungen des Startfahrplans. */
 export type StartfahrplanFassung = "standard" | "erweitert";

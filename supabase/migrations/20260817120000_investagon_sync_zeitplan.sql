@@ -24,7 +24,7 @@
 DO $$
 DECLARE
   _alt RECORD;
-  _url text := 'https://DEIN-SUPABASE-PROJEKT.supabase.co/functions/v1/investagon-import';
+  _url text := 'https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/investagon-import';
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_cron') THEN
     RAISE NOTICE 'pg_cron ist nicht installiert, der Investagon-Zeitplan wurde nicht gesetzt.';

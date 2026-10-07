@@ -28,7 +28,7 @@
 DO $$
 DECLARE
   _alt RECORD;
-  _url text := 'https://DEIN-SUPABASE-PROJEKT.supabase.co/functions/v1/standort-nachholen';
+  _url text := 'https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/standort-nachholen';
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_cron')
      OR NOT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_net') THEN

@@ -111,7 +111,7 @@ export async function sendeSteuerAuswertung(
   const meldung = MELDUNGEN[sprache === "en" ? "en" : "de"];
   const projectId =
     (import.meta as unknown as { env?: Record<string, string> }).env?.VITE_SUPABASE_PROJECT_ID ||
-    "DEIN-SUPABASE-PROJEKT";
+    "irwdgutegmivbtgmftyc";
 
   let blob: Blob;
   let dateiname: string;

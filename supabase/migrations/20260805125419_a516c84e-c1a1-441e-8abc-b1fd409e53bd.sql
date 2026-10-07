@@ -10,7 +10,7 @@ BEGIN
       '5 * * * *',
       $cron$
       SELECT net.http_post(
-        url := 'https://DEIN-SUPABASE-PROJEKT.supabase.co/functions/v1/mail-nachzuegler',
+        url := 'https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/mail-nachzuegler',
         headers := '{"Content-Type": "application/json"}'::jsonb,
         body := '{}'::jsonb
       );

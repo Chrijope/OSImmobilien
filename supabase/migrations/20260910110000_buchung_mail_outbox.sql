@@ -80,7 +80,7 @@ BEGIN
  FOR _a IN SELECT a.*,b.absage_token FROM public.buchung_mail_auftraege a JOIN public.buchungen b ON b.id=a.buchung_id
    WHERE a.status='wartet' AND a.naechster_versuch<=now() ORDER BY a.created_at LIMIT 2 FOR UPDATE OF a SKIP LOCKED LOOP
    SELECT net.http_post(
-     url := 'https://DEIN-SUPABASE-PROJEKT.supabase.co/functions/v1/send-buchung-' || CASE WHEN _a.art='bestaetigung' THEN 'bestaetigung' ELSE 'aenderung' END,
+     url := 'https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/send-buchung-' || CASE WHEN _a.art='bestaetigung' THEN 'bestaetigung' ELSE 'aenderung' END,
      headers := '{"Content-Type":"application/json"}'::jsonb,
      body := jsonb_build_object('absageToken',_a.absage_token)) INTO _id;
    UPDATE public.buchung_mail_auftraege SET status='arbeitet',request_id=_id,versuche=versuche+1,naechster_versuch=now()+interval '5 minutes' WHERE id=_a.id;

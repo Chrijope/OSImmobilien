@@ -10,7 +10,7 @@ BEGIN
       '20 6 * * *',
       $cron$
       SELECT net.http_post(
-        url := 'https://DEIN-SUPABASE-PROJEKT.supabase.co/functions/v1/signatur-erinnerung',
+        url := 'https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/signatur-erinnerung',
         headers := '{"Content-Type": "application/json"}'::jsonb,
         body := '{}'::jsonb
       );

@@ -84,7 +84,7 @@ CREATE TRIGGER trg_lotse_auswertung_einheit
 
 DO $zeitplan$
 DECLARE
-  _url text := 'https://DEIN-SUPABASE-PROJEKT.supabase.co/functions/v1/objekt-lotse';
+  _url text := 'https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/objekt-lotse';
   _anon text;
   _kandidat text;
   _teil text;

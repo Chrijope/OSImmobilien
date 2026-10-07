@@ -25,7 +25,7 @@ const STANDARD_NUTZER = {
   email: "c.peetz@more.immo",
   telefon: "+49 1515 0275108",
   bildUrl:
-    "https://DEIN-SUPABASE-PROJEKT.supabase.co/storage/v1/object/public/avatars/u-1/avatar.jpg?t=1",
+    "https://irwdgutegmivbtgmftyc.supabase.co/storage/v1/object/public/avatars/u-1/avatar.jpg?t=1",
 };
 vi.mock("./loadAllUsers", () => ({ loadAllUsers: () => nutzerliste }));
 

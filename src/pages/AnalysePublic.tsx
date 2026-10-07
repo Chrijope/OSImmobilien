@@ -79,7 +79,7 @@ function AnalysePublicInhalt() {
         // Zuständigkeit im offenen Pool, und der Partner sah seinen eigenen
         // Interessenten nirgends. Die Function arbeitet mit Service-Rolle und
         // löst über den dauerhaft vergebenen `vp_slug` auf.
-        const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID || "DEIN-SUPABASE-PROJEKT";
+        const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID || "irwdgutegmivbtgmftyc";
         const res = await fetch(
           `https://${projectId}.supabase.co/functions/v1/get-vp-microsite?slug=${encodeURIComponent(slug.toLowerCase())}`,
         );

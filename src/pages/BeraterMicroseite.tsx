@@ -147,7 +147,7 @@ const BeraterMicroseiteInhalt = () => {
       // Public Slug-View → Edge Function Lookup
       if (publicSlug) {
         try {
-          const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID || "DEIN-SUPABASE-PROJEKT";
+          const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID || "irwdgutegmivbtgmftyc";
           const res = await fetch(
             `https://${projectId}.supabase.co/functions/v1/get-vp-microsite?slug=${encodeURIComponent(publicSlug)}`,
           );

@@ -30,7 +30,7 @@ SELECT cron.schedule(
   '20 * * * *',
   $$
   SELECT net.http_post(
-    url := 'https://DEIN-SUPABASE-PROJEKT.supabase.co/functions/v1/send-termin-erinnerungen',
+    url := 'https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/send-termin-erinnerungen',
     headers := '{"Content-Type": "application/json", "Authorization": "Bearer DEIN-ANON-KEY"}'::jsonb,
     body := '{}'::jsonb,
     timeout_milliseconds := 15000

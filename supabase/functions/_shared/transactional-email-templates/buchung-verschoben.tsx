@@ -190,7 +190,7 @@ export const template = {
     terminTitel: 'Telefonisches Erstgespräch',
     alteZeit: 'Donnerstag, 6. August 2026, 10:15 Uhr',
     zugangUrl: 'https://portal.more.immo/raum/abc123',
-    icsUrl: 'https://DEIN-SUPABASE-PROJEKT.supabase.co/functions/v1/get-ics?title=Telefonisches%20Erstgespr%C3%A4ch&seq=1786000000',
+    icsUrl: 'https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/get-ics?title=Telefonisches%20Erstgespr%C3%A4ch&seq=1786000000',
     googleCalendarUrl: 'https://calendar.google.com/calendar/render?action=TEMPLATE',
     verwaltenUrl: 'https://portal.more.immo/termin/verwalten/abc123',
     berater: {

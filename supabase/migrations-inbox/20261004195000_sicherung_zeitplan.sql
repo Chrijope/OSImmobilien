@@ -55,7 +55,7 @@
 
 DO $zeitplan$
 DECLARE
-  _url text := 'https://DEIN-SUPABASE-PROJEKT.supabase.co/functions/v1/daily-backup';
+  _url text := 'https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/daily-backup';
   _anon text;
   _kandidat text;
   _teil text;

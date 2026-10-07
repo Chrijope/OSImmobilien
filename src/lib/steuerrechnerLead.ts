@@ -127,7 +127,7 @@ export async function sendeSteuerLead(
 ): Promise<SteuerLeadErgebnis> {
   const projectId =
     (import.meta as unknown as { env?: Record<string, string> }).env?.VITE_SUPABASE_PROJECT_ID ||
-    "DEIN-SUPABASE-PROJEKT";
+    "irwdgutegmivbtgmftyc";
 
   const notiz = leadNotiz(antworten, ergebnis);
   const kampagne = kampagneFuerLead();

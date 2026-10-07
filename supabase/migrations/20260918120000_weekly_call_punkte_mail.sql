@@ -92,7 +92,7 @@ DO $$
 DECLARE
   _eintrag RECORD;
   _alt RECORD;
-  _url text := 'https://DEIN-SUPABASE-PROJEKT.supabase.co/functions/v1/send-weekly-call-punkte';
+  _url text := 'https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/send-weekly-call-punkte';
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_cron') THEN
     RAISE NOTICE 'pg_cron ist nicht installiert, der Zeitplan wurde nicht gesetzt.';

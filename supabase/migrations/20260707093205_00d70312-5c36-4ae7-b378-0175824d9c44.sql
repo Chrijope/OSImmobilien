@@ -48,7 +48,7 @@ SELECT cron.schedule(
   '* * * * *',
   $$
   SELECT net.http_post(
-    url := 'https://DEIN-SUPABASE-PROJEKT.supabase.co/functions/v1/process-scheduled-notifications',
+    url := 'https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/process-scheduled-notifications',
     headers := '{"Content-Type":"application/json","apikey":"DEIN-ANON-KEY"}'::jsonb,
     body := jsonb_build_object('time', now())
   );

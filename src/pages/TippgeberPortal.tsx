@@ -1103,7 +1103,7 @@ function LandingpageCard({
         const { data } = await (supabase as any).rpc("get_or_create_tippgeber_vp_chat");
         // Slug separat aus public-Profil-Endpoint
         const res = await fetch(
-          `https://DEIN-SUPABASE-PROJEKT.supabase.co/functions/v1/get-tippgeber-vp-slug`,
+          `https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/get-tippgeber-vp-slug`,
           { method: "POST", headers: { "Content-Type": "application/json", apikey: (supabase as any).supabaseKey || "" }, body: JSON.stringify({ tippgeberId }) },
         ).catch(() => null);
         if (res && res.ok) {
@@ -1243,7 +1243,7 @@ function PitchesTab({
     (async () => {
       try {
         const res = await fetch(
-          `https://DEIN-SUPABASE-PROJEKT.supabase.co/functions/v1/get-tippgeber-vp-slug`,
+          `https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/get-tippgeber-vp-slug`,
           { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tippgeberId }) },
         ).catch(() => null);
         if (res && res.ok) {

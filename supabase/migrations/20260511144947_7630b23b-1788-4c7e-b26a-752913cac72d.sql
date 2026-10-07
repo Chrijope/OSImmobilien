@@ -8,7 +8,7 @@ SELECT cron.schedule(
   '15 8 * * *',
   $$
   SELECT net.http_post(
-    url := 'https://DEIN-SUPABASE-PROJEKT.supabase.co/functions/v1/eigene-investments-reminders',
+    url := 'https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/eigene-investments-reminders',
     headers := '{"Content-Type": "application/json"}'::jsonb,
     body := '{}'::jsonb
   );

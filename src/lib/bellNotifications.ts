@@ -102,7 +102,7 @@ function triggerPushForCurrentUser(targetUserId: string, params: NotifyParams) {
   try {
     // Only the user themselves can trigger their own browser push (other tabs/sessions do their own)
     // We check via supabase client if active session matches
-    const sessionRaw = typeof localStorage !== "undefined" ? localStorage.getItem("sb-DEIN-SUPABASE-PROJEKT-auth-token") : null;
+    const sessionRaw = typeof localStorage !== "undefined" ? localStorage.getItem("sb-irwdgutegmivbtgmftyc-auth-token") : null;
     if (!sessionRaw) return;
     const session = JSON.parse(sessionRaw);
     const currentUserId = session?.user?.id || session?.currentSession?.user?.id;

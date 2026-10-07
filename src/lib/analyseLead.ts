@@ -78,7 +78,7 @@ export async function sendeAnalyseLead(
   const linkKuerzel = (berater?.slug || "").trim();
   const projectId =
     (import.meta as unknown as { env?: Record<string, string> }).env?.VITE_SUPABASE_PROJECT_ID ||
-    "DEIN-SUPABASE-PROJEKT";
+    "irwdgutegmivbtgmftyc";
 
   try {
     const res = await fetch(`https://${projectId}.supabase.co/functions/v1/submit-lead`, {

@@ -18,7 +18,7 @@ SELECT cron.schedule(
   '35 6 * * *',
   $$
   SELECT net.http_post(
-    url := 'https://DEIN-SUPABASE-PROJEKT.supabase.co/functions/v1/send-birthday-emails',
+    url := 'https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/send-birthday-emails',
     headers := '{"Content-Type": "application/json", "Authorization": "Bearer DEIN-ANON-KEY"}'::jsonb,
     body := '{}'::jsonb,
     timeout_milliseconds := 15000

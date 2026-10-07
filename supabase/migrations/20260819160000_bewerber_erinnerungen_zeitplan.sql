@@ -46,7 +46,7 @@ BEGIN
       ('bewerber-closing-erinnerungen',       'send-bewerber-closing-reminders',       '*/10 * * * *')
     ) AS t(jobname, function_name, plan)
   LOOP
-    _url := 'https://DEIN-SUPABASE-PROJEKT.supabase.co/functions/v1/' || _dienst.function_name;
+    _url := 'https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/' || _dienst.function_name;
 
     FOR _alt IN
       SELECT jobname FROM cron.job

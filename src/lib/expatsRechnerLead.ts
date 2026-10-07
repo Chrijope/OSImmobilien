@@ -135,7 +135,7 @@ export async function sendeExpatsLead(
 ): Promise<ExpatsLeadErgebnis> {
   const projectId =
     (import.meta as unknown as { env?: Record<string, string> }).env?.VITE_SUPABASE_PROJECT_ID ||
-    "DEIN-SUPABASE-PROJEKT";
+    "irwdgutegmivbtgmftyc";
 
   const notiz = expatsLeadNotiz(eingabe, ergebnis);
   const kampagne = kampagneFuerLead();

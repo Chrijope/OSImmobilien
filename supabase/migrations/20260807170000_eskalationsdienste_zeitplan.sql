@@ -64,7 +64,7 @@ BEGIN
       ('pipeline-mahnreport-montags',     'weekly-pipeline-mahnreport',   '30 6 * * 1')
     ) AS t(jobname, function_name, plan)
   LOOP
-    _url := 'https://DEIN-SUPABASE-PROJEKT.supabase.co/functions/v1/' || _dienst.function_name;
+    _url := 'https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/' || _dienst.function_name;
 
     -- Alles wegräumen, was schon auf diese Function zeigt, egal wie es heißt.
     -- Das deckt sowohl einen früheren Lauf dieser Migration ab als auch einen

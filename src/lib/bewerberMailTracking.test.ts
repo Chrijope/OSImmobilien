@@ -280,7 +280,7 @@ describe("Die Zählmarke am persönlichen Link", () => {
  * wäre die Function ein offener Umleiter mit unserem Namen davor.
  */
 describe("Weiterleitung nur auf eigene Adressen", () => {
-  const SUPA = "https://DEIN-SUPABASE-PROJEKT.supabase.co";
+  const SUPA = "https://irwdgutegmivbtgmftyc.supabase.co";
 
   it("erlaubt more.immo, das Portal, die eigene Vorschau und den eigenen Speicher", () => {
     expect(istEigenesWeiterleitungsziel("https://more.immo/", SUPA)).toBe(true);

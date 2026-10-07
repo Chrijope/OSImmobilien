@@ -33,7 +33,7 @@ SELECT cron.schedule(
   '0 7 * * 4',
   $$
   SELECT net.http_post(
-    url := 'https://DEIN-SUPABASE-PROJEKT.supabase.co/functions/v1/send-teamcall-emails',
+    url := 'https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/send-teamcall-emails',
     headers := '{"Content-Type": "application/json"}'::jsonb,
     body := '{"mode":"thursday-reminder"}'::jsonb
   );
@@ -45,7 +45,7 @@ SELECT cron.schedule(
   '0 17 * * 0',
   $$
   SELECT net.http_post(
-    url := 'https://DEIN-SUPABASE-PROJEKT.supabase.co/functions/v1/send-teamcall-emails',
+    url := 'https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/send-teamcall-emails',
     headers := '{"Content-Type": "application/json"}'::jsonb,
     body := '{"mode":"sunday-summary"}'::jsonb
   );
@@ -57,7 +57,7 @@ SELECT cron.schedule(
   '0 16 * * 1',
   $$
   SELECT net.http_post(
-    url := 'https://DEIN-SUPABASE-PROJEKT.supabase.co/functions/v1/send-teamcall-emails',
+    url := 'https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/send-teamcall-emails',
     headers := '{"Content-Type": "application/json"}'::jsonb,
     body := '{"mode":"monday-reminder"}'::jsonb
   );
