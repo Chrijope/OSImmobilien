@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS public.objekt_exposes (
   objekt_id uuid NOT NULL REFERENCES public.objekte(id) ON DELETE CASCADE,
   kontakt_id uuid REFERENCES public.kontakte(id) ON DELETE SET NULL,
   erstellt_von uuid REFERENCES auth.users(id) ON DELETE SET NULL,
-  token text NOT NULL UNIQUE DEFAULT encode(gen_random_bytes(32), 'hex'),
+  token text NOT NULL UNIQUE DEFAULT encode(extensions.gen_random_bytes(32), 'hex'),
   annahmen jsonb NOT NULL DEFAULT '{}'::jsonb,
   annahmen_gesperrt boolean NOT NULL DEFAULT false,
   sichtbare_abschnitte jsonb NOT NULL DEFAULT '[]'::jsonb,

@@ -26,7 +26,7 @@
 CREATE TABLE IF NOT EXISTS public.bewerber_formular (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   -- 32 Byte Zufall, hexadezimal. Nicht ableitbar, ohne Bezug zur Person.
-  token text NOT NULL UNIQUE DEFAULT encode(gen_random_bytes(32), 'hex'),
+  token text NOT NULL UNIQUE DEFAULT encode(extensions.gen_random_bytes(32), 'hex'),
   bewerbung_id uuid NOT NULL REFERENCES public.bewerbungen(id) ON DELETE CASCADE,
   -- Nur der Vorname, für die Begrüßung auf der öffentlichen Seite.
   -- Bewusst kein Nachname und keine Adresse: Was nicht gebraucht wird,

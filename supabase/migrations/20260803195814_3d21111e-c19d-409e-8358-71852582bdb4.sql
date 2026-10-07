@@ -199,7 +199,7 @@ BEGIN
     RAISE EXCEPTION 'Zu viele Beitritte, bitte spaeter erneut versuchen';
   END IF;
 
-  _gast_token := encode(gen_random_bytes(16), 'hex');
+  _gast_token := encode(extensions.gen_random_bytes(16), 'hex');
 
   INSERT INTO public.videoraum_teilnehmer (raum_id, gast_token, name, rolle, status, transkript_zustimmung, technik)
   VALUES (_raum.id, _gast_token, _name_sauber, 'gast', 'wartet', COALESCE(_transkript, false), COALESCE(_technik, '{}'::jsonb))

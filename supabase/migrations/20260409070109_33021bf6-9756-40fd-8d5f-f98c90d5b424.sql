@@ -2,7 +2,7 @@
 -- Table for SA fill invitation tokens
 CREATE TABLE public.sa_fill_tokens (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
-  token TEXT NOT NULL UNIQUE DEFAULT encode(gen_random_bytes(32), 'hex'),
+  token TEXT NOT NULL UNIQUE DEFAULT encode(extensions.gen_random_bytes(32), 'hex'),
   kontakt_id TEXT NOT NULL,
   investment_id TEXT NOT NULL,
   email TEXT NOT NULL,

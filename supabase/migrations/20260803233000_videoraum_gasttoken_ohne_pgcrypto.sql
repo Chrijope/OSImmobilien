@@ -1,4 +1,4 @@
--- Beitreten scheiterte mit "function gen_random_bytes(integer) does not exist".
+-- Beitreten scheiterte mit "function extensions.gen_random_bytes(integer) does not exist".
 --
 -- `gen_random_bytes` steckt in der Erweiterung `pgcrypto`, die in diesem
 -- Projekt nicht aktiv ist. `gen_random_uuid()` dagegen bringt Postgres seit

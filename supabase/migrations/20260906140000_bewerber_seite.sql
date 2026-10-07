@@ -38,7 +38,7 @@
 
 CREATE TABLE IF NOT EXISTS public.bewerber_seite (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  token text NOT NULL UNIQUE DEFAULT encode(gen_random_bytes(32), 'hex'),
+  token text NOT NULL UNIQUE DEFAULT encode(extensions.gen_random_bytes(32), 'hex'),
   bewerbung_id uuid NOT NULL UNIQUE REFERENCES public.bewerbungen(id) ON DELETE CASCADE,
   erstellt_am timestamptz NOT NULL DEFAULT now(),
   letzter_zugriff_am timestamptz,

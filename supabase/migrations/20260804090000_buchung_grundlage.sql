@@ -22,7 +22,7 @@
 -- freigegeben ist, werden genau diese INSERT-Policies erweitert.
 --
 -- Zufallstoken entstehen aus `gen_random_uuid()`, nicht aus
--- `gen_random_bytes()`. Die Erweiterung pgcrypto ist in diesem Projekt nicht
+-- `extensions.gen_random_bytes()`. Die Erweiterung pgcrypto ist in diesem Projekt nicht
 -- aktiv, siehe 20260803233000_videoraum_gasttoken_ohne_pgcrypto.sql.
 
 -- ---------------------------------------------------------------------------

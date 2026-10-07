@@ -77,8 +77,8 @@ BEGIN
   END IF;
 
   -- Hashes für Nachweis (SHA-256)
-  _email_hash := encode(digest(lower(coalesce(_kontakt.email, '')), 'sha256'), 'hex');
-  _name_hash := encode(digest(lower(_expected_name), 'sha256'), 'hex');
+  _email_hash := encode(extensions.digest(lower(coalesce(_kontakt.email, '')), 'sha256'), 'hex');
+  _name_hash := encode(extensions.digest(lower(_expected_name), 'sha256'), 'hex');
 
   SELECT name INTO _actor_name FROM public.profiles WHERE id = auth.uid();
 
