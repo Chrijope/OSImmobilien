@@ -13,7 +13,7 @@ DECLARE
   file_url TEXT;
   updated BOOLEAN;
   doc_map JSONB := '{"wd1":"Wohnfläche","wd2":"Grundriss","wd4":"Wohnungsbilder","wd5":"Renovierung WE","wd6":"Mietvertrag","wd7":"Wirtschaftsplan","wd8":"Hausgeld","wd9":"GBA Wohnung"}'::jsonb;
-  base_url TEXT := 'https://wyuckimzyvkrtyupkvdk.supabase.co/storage/v1/object/public/unterlagen/';
+  base_url TEXT := 'https://irwdgutegmivbtgmftyc.supabase.co/storage/v1/object/public/unterlagen/';
 BEGIN
   FOR w_row IN 
     SELECT w.id, w.objekt_id, w.meta

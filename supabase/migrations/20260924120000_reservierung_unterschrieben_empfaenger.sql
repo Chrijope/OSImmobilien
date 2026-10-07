@@ -2,10 +2,10 @@
 -- Reservierung unterschrieben: feste Empfaenger der internen Meldung
 -- ===========================================================================
 --
--- Auftrag Christians vom 24.09.2026: Sobald ein Kunde die
+-- Auftrag GL vom 24.09.2026: Sobald ein Kunde die
 -- Reservierungsvereinbarung unterschrieben hat, geht eine Mail mit einem
 -- Download-Knopf fuer die unterschriebene PDF an den zustaendigen
--- Vertriebspartner, an Christian Peetz und an Christian Kurz. Verschickt wird
+-- Vertriebspartner, an GL und an zweite GL. Verschickt wird
 -- sie von `finalize-reservierung`, der Rueckfall liegt in
 -- `send-reservierung-eskalation`, die Logik in
 -- `supabase/functions/_shared/reservierung-unterschrieben-meldung.ts`.
@@ -14,18 +14,18 @@
 -- steht hier, in `public.app_config` unter dem Schluessel
 -- `reservierung_unterschrieben_empfaenger`, als JSON-Liste. Jeder Eintrag ist
 -- ENTWEDER die Kennung eines Nutzers (profiles.id, dann gilt die Adresse aus
--- seinem Profil) ODER eine Mailadresse. Bewusst keine Namen: Es gibt zwei
--- Profile mit dem Namen Christian Peetz.
+-- seinem Profil) ODER eine Mailadresse. Bewusst keine Namen: Zwei Profile
+-- koennen denselben Namen tragen.
 --
--- Vorbelegt sind c.peetz@more.immo (Christian Peetz, dieselbe Adresse wie
--- im Tagesbriefing) und office@more.immo (Christian Kurz, von Christian am
--- 24.09.2026 so benannt).
+-- Im Ursprungsprojekt waren hier zwei Adressen der Geschaeftsleitung
+-- vorbelegt. OSImmobilien legt die Liste leer an; Empfaenger per Kennung oder
+-- Adresse nachtragen (siehe unten).
 --
 -- SO AENDERT MAN DIE LISTE: Die vollstaendige Liste eintragen, mit Kennungen
 -- oder Adressen. Zeile anpassen und ausfuehren:
 --
 --     update public.app_config
---        set wert = '["c.peetz@more.immo","office@more.immo"]'::jsonb,
+--        set wert = '["name@example.org","office@example.org"]'::jsonb,
 --            aktualisiert_am = now()
 --      where schluessel = 'reservierung_unterschrieben_empfaenger';
 --
@@ -43,7 +43,7 @@
 -- wieder auf die Vorbelegung zuruecksetzen.
 
 INSERT INTO public.app_config (schluessel, wert)
-VALUES ('reservierung_unterschrieben_empfaenger', '["c.peetz@more.immo","office@more.immo"]'::jsonb)
+VALUES ('reservierung_unterschrieben_empfaenger', '[]'::jsonb)
 ON CONFLICT (schluessel) DO NOTHING;
 
 -- Kontrolle: eine Zeile mit der Liste.

@@ -9,7 +9,7 @@ DECLARE
   new_bilder JSONB;
   file_url TEXT;
   bild_id TEXT;
-  base_url TEXT := 'https://wyuckimzyvkrtyupkvdk.supabase.co/storage/v1/object/public/unterlagen/';
+  base_url TEXT := 'https://irwdgutegmivbtgmftyc.supabase.co/storage/v1/object/public/unterlagen/';
   idx INT;
 BEGIN
   FOR w_row IN 

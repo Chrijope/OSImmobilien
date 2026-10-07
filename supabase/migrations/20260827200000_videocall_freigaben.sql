@@ -2,8 +2,8 @@
 --
 -- Der Videocall-Bereich war bis zur Erprobungsfreigabe komplett auf
 -- admin/inhaber begrenzt, auch in den Datenbank-Regeln. Jetzt sollen
--- einzelne Vertriebspartner ihn nutzen (Start: Hermann Vogel und
--- Christian Kurz), alle anderen weiterhin nicht.
+-- einzelne Vertriebspartner ihn nutzen (Start: zwei
+-- ausgewaehlte Partner), alle anderen weiterhin nicht.
 --
 -- Eine Freigabetabelle statt Namen im Code: Wer darin steht, darf. Ein
 -- weiterer Nutzer ist damit ein INSERT im SQL-Editor, kein Deploy.
@@ -94,14 +94,10 @@ CREATE POLICY "Buchung Terminarten loeschen" ON public.buchung_terminarten
   USING (public.is_admin_role(auth.uid()));
 
 -- ---------------------------------------------------------------------------
--- 4) Hermann Vogel und Christian Kurz freischalten
+-- 4) Freigaben fuer einzelne Personen
 -- ---------------------------------------------------------------------------
 
-INSERT INTO public.videocall_freigaben (user_id)
-SELECT p.id
-FROM public.profiles p
-WHERE btrim(lower(p.name)) IN ('hermann vogel', 'christian kurz')
-ON CONFLICT (user_id) DO NOTHING;
+-- Datenanweisung des Ursprungsprojekts entfernt (OSImmobilien)
 
 -- ---------------------------------------------------------------------------
 -- 5) Grundausstattung fuer alle Freigegebenen: Einstellungszeile und die

@@ -542,11 +542,8 @@ BEGIN
      WHERE coalesce(k.archiviert, false) = false
        AND coalesce(k.geloescht, false) = false
        AND coalesce(k.meta->>'_excludeFromStats', '') <> 'true'
-       AND coalesce(k.meta->>'_testData', '') <> 'true'
-       AND k.id NOT IN (
-             '086acaeb-0ff9-4577-b114-3b973797d635'::uuid,
-             '9d2957d5-f165-41d5-8e25-c0b4655169b2'::uuid
-           );
+       AND coalesce(k.meta->>'_testData', '') <> 'true';
+       -- Ausschluss zweier Testkontakte des Ursprungsprojekts entfernt (OSImmobilien)
     IF v_nenner > 0 THEN
       PERFORM public.kennzahl_schreiben(v_tag, 'VL', 'conversion_lead_termin',
                                         round(v_zahl::numeric * 100 / v_nenner));

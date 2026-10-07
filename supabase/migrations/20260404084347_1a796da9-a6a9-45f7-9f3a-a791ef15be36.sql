@@ -1,1 +1,1 @@
-select us.user_id, p.name, us.einstellungen->>'karriere_override' as karriere_override, us.einstellungen->>'custom_provision_rate' as custom_provision_rate, us.einstellungen->'zielplanung'->>'karrierestufe' as zielplanung_karrierestufe from public.user_settings us join public.profiles p on p.id = us.user_id where p.name ilike '%Michael Obler%' or p.email ilike '%michael-obler%';
+-- Datenanweisung des Ursprungsprojekts entfernt (OSImmobilien)

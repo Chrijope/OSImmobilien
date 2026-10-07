@@ -3,10 +3,10 @@
 -- externer Kalender fuer alle getrennt davon
 -- ===========================================================================
 --
--- ENTSCHEIDUNG (Christian, 27.09.2026)
+-- ENTSCHEIDUNG (GL, 27.09.2026)
 --
 -- Den internen Videocall (Videoraum, Buchungskalender mit eigenen Zeiten und
--- Terminarten, interne Buchungslinks) nutzt nur noch Christian Peetz, und nur
+-- Terminarten, interne Buchungslinks) nutzt nur noch GL, und nur
 -- in der Rolle admin. Niemand sonst: nicht Inhaber, nicht hr, nicht die
 -- bisher einzeln freigeschalteten Personen. Bewerber buchen inzwischen ueber
 -- einen externen Kalender, der Videoraum fuer Bewerber wird nicht gebraucht.
@@ -86,10 +86,9 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
   SELECT _uid IS NOT NULL
-     AND _uid = ANY (ARRAY[
-           '27ccfbab-f949-4484-90b1-7dffca6a65c9',
-           'e81f0a13-0578-4456-9960-07be014d869c'
-         ]::uuid[])
+     -- Kennungen des Ursprungsprojekts entfernt (OSImmobilien). Eigene
+     -- Geschaeftsfuehrer-Kennungen hier eintragen.
+     AND _uid = ANY (ARRAY[]::uuid[])
      AND public.has_role(_uid, 'admin')
 $$;
 

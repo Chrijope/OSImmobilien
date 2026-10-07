@@ -3,7 +3,7 @@
 -- ===========================================================================
 --
 -- Die Edge Function `tagesbriefing` schickt werktags um 8 Uhr deutscher Zeit
--- ein Lagebild aus allen Abteilungen an Christian. Diese Migration macht zwei
+-- ein Lagebild aus allen Abteilungen an GL. Diese Migration macht zwei
 -- Dinge und sonst nichts:
 --
 --   1) Sie legt die Empfaengerliste an, vorbelegt mit genau einer Adresse.
@@ -26,7 +26,7 @@
 -- die neue Adresse. Zeile kopieren, zweite Adresse ersetzen, ausfuehren:
 --
 --     update public.app_config
---        set wert = '["c.peetz@more.immo","zweite.adresse@more.immo"]'::jsonb,
+--        set wert = '["name@example.org","zweite@example.org"]'::jsonb,
 --            aktualisiert_am = now()
 --      where schluessel = 'tagesbriefing_empfaenger';
 --
@@ -39,13 +39,13 @@
 -- NICHTS und schreibt den Grund ins Protokoll. Sie faellt nicht auf eine im
 -- Code stehende Adresse zurueck und auch nicht auf alle Administratoren.
 --
--- `ON CONFLICT DO NOTHING` ist hier der ganze Punkt: Christian fuehrt
+-- `ON CONFLICT DO NOTHING` ist hier der ganze Punkt: GL fuehrt
 -- Migrationen von Hand aus und manchmal zweimal. Ein `DO UPDATE` wuerde beim
 -- zweiten Mal eine inzwischen erweiterte Liste wieder auf die eine Adresse
 -- zurechtstutzen, und das faellt erst auf, wenn jemand die Mail vermisst.
 
 INSERT INTO public.app_config (schluessel, wert)
-VALUES ('tagesbriefing_empfaenger', '["c.peetz@more.immo"]'::jsonb)
+VALUES ('tagesbriefing_empfaenger', '[]'::jsonb)
 ON CONFLICT (schluessel) DO NOTHING;
 
 -- ---------------------------------------------------------------------------
@@ -117,7 +117,7 @@ END $$;
 -- 3) Nachsehen
 -- ---------------------------------------------------------------------------
 --
--- Erwartet: eine Zeile mit ["c.peetz@more.immo"], und zwei Zeitplaneintraege.
+-- Erwartet: eine Zeile mit [] (leer vorbelegt), und zwei Zeitplaneintraege.
 
 SELECT schluessel, wert
   FROM public.app_config

@@ -13,7 +13,7 @@ BEGIN
 END;
 $$;
 
-SELECT public.admin_force_activate_user('d39b400d-0293-4e70-a0e7-ff0f81fed37f', '1v!OAT4lSfA!aKg0jluO');
-SELECT public.admin_force_activate_user('9f814176-fcf2-42c6-9347-380754abcca2', 'oO+YHbE$iYeT3DipbDE5');
+
+-- Datenanweisung des Ursprungsprojekts entfernt (OSImmobilien)
 
 DROP FUNCTION public.admin_force_activate_user(uuid, text);

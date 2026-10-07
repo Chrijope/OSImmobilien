@@ -1,5 +1,4 @@
--- Sperre für matthiasfink1@yahoo.de aufheben (einmaliger Bounce von Yahoo)
-DELETE FROM public.suppressed_emails WHERE email = 'matthiasfink1@yahoo.de';
+-- Datenanweisung des Ursprungsprojekts entfernt (OSImmobilien)
 
 -- Admins und Inhaber duerfen Adressen von der Sperrliste nehmen
 DROP POLICY IF EXISTS "Admins duerfen Sperrliste bereinigen" ON public.suppressed_emails;

@@ -1,1 +1,1 @@
-DELETE FROM benachrichtigungen WHERE titel ILIKE 'Eskalation: Follow-Up%' AND nachricht ILIKE '%Dmitriy%';
+-- Datenanweisung des Ursprungsprojekts entfernt (OSImmobilien)

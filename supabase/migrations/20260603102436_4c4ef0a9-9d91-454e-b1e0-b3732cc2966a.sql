@@ -1,1 +1,1 @@
-DELETE FROM public.user_roles WHERE user_id = '956b8f8f-1ddc-4af7-b48b-cd55df3b6533' AND role = 'vertriebspartner';
+-- Datenanweisung des Ursprungsprojekts entfernt (OSImmobilien)

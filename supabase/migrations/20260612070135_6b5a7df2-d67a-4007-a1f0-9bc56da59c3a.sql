@@ -1,1 +1,1 @@
-DELETE FROM public.kontakte WHERE id IN ('d04542de-af92-4e7f-9767-c317e494a0a7','8cf2cd75-0872-4689-a606-4d5e57c943b8','5c65144d-419b-433f-a367-0ab9488e5b60');
+-- Datenanweisung des Ursprungsprojekts entfernt (OSImmobilien)
