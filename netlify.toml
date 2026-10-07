@@ -5,6 +5,9 @@
 
 [build.environment]
   NODE_VERSION = "22"
+  # Der Build ist groß (über 4.000 Dateien). Ohne mehr Speicher bricht Node
+  # auf Netlify mit Exit-Code 134 ab (Speicher voll).
+  NODE_OPTIONS = "--max-old-space-size=6144"
 
 # Die App steuert ihre Seiten selbst (React Router). Jede Adresse ohne
 # eigene Datei geht deshalb an index.html, sonst gäbe es beim Neuladen 404.
