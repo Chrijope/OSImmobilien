@@ -130,6 +130,7 @@ function Eingabe({ feld, eingaben, setze }: { feld: Feld; eingaben: AnkaufEingab
         value={wert}
         suffix={feld.einheit === "Stück" ? "" : feld.einheit}
         maxFractionDigits={istProzent ? 4 : 2}
+        sofort
         onChange={(v) => setze(feld.key, istProzent ? v / 100 : v)}
       />
       {feld.hinweis && <p className="text-xs text-muted-foreground">{feld.hinweis}</p>}

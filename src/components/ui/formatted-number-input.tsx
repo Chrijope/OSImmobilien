@@ -14,6 +14,8 @@ interface FormattedNumberInputProps {
   placeholder?: string;
   readOnly?: boolean;
   maxFractionDigits?: number;
+  /** Wert schon beim Tippen melden, nicht erst beim Verlassen des Felds. */
+  sofort?: boolean;
 }
 
 export const formatNumberDisplay = (value: number, maxFractionDigits = 2) => {
@@ -63,6 +65,7 @@ export function FormattedNumberInput({
   placeholder = "0",
   readOnly = false,
   maxFractionDigits = 2,
+  sofort = false,
 }: FormattedNumberInputProps) {
   const [focused, setFocused] = useState(false);
   const [displayValue, setDisplayValue] = useState(() => formatNumberDisplay(value, maxFractionDigits));
@@ -93,6 +96,7 @@ export function FormattedNumberInput({
 
     if (/^[\d.,-]*$/.test(nextValue)) {
       setDisplayValue(nextValue);
+      if (sofort) onChange?.(parseLocalizedNumber(nextValue));
     }
   };
 
