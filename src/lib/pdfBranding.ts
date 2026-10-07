@@ -3,8 +3,8 @@ import { COMPANY_LINE } from "./impressumKontakt";
 import { datumText, type FormatSprache } from "./sprachFormat";
 
 const LOGO_URL = "/images/moreimmo-logo.png";
-/** Nur die Bildmarke, funktioniert auch auf dunklem Grund. */
-const ICON_URL = "/images/moreimmo-icon-blau.png";
+/** Nur die Bildmarke in Weiß und Gold, für dunklen Grund (Deckblatt). */
+const ICON_URL = "/images/os-bildmarke-hell.png";
 
 // Active PDF font family. Defaults to built-in Helvetica (no Unicode support).
 // Call ensureUnicodeFont(doc) to switch to embedded Noto Sans (full Unicode incl. Umlaute).
@@ -197,12 +197,12 @@ function wortmarke(doc: jsPDF, x: number, y: number, groesse: number, hell: bool
   doc.setFont(PDF_FONT, "bold");
   doc.setFontSize(groesse);
   doc.setTextColor(...(hell ? BRAND.white : BRAND.primary));
-  doc.text("MORE", x, y);
-  const breite = doc.getTextWidth("MORE");
+  doc.text("OS", x, y);
+  const breite = doc.getTextWidth("OS");
   doc.setFont(PDF_FONT, "normal");
   doc.setTextColor(...(hell ? BRAND.accentLight : BRAND.muted));
-  doc.text("Immo", x + breite + 0.8, y);
-  return breite + 0.8 + doc.getTextWidth("Immo");
+  doc.text("Immobilien", x + breite + 1.2, y);
+  return breite + 1.2 + doc.getTextWidth("Immobilien");
 }
 
 /**
@@ -372,8 +372,10 @@ export function addCoverPage(
     try {
       // "FAST" packt die Bilddaten (Flate). Ohne Angabe legt jsPDF ein PNG
       // unkomprimiert ab, allein die Wortmarke wog so über drei Megabyte.
-      doc.addImage(icon, "PNG", MARGIN, y - 9, 12, 12, undefined, "FAST");
-      wortmarke(doc, MARGIN + 16, y, 17, true);
+      const bild = doc.getImageProperties(icon);
+      const iconB = (11 * bild.width) / bild.height;
+      doc.addImage(icon, "PNG", MARGIN, y - 9, iconB, 11, undefined, "FAST");
+      wortmarke(doc, MARGIN + iconB + 4, y, 17, true);
     } catch {
       wortmarke(doc, MARGIN, y, 17, true);
     }
@@ -490,12 +492,15 @@ export function addBrandedHeader(
   // Oben links steht das Originallogo, nicht mehr der nachgebaute Schriftzug.
   // Der Schriftzug bleibt nur als Rueckfallebene, falls die Bilddatei nicht
   // geladen werden konnte, etwa in einem Testlauf ohne Netz.
-  const LOGO_H = 6;
-  const LOGO_B = 20; // Seitenverhaeltnis der Datei ist 1920 zu 575
+  // Breite aus dem Seitenverhaeltnis der Datei, damit ein neues Logo nicht
+  // verzerrt wird.
+  const LOGO_H = 5;
   let markeBreite = 0;
   if (logo) {
     try {
-      doc.addImage(logo, "PNG", MARGIN, y - 5.2, LOGO_B, LOGO_H, undefined, "FAST");
+      const bild = doc.getImageProperties(logo);
+      const LOGO_B = (LOGO_H * bild.width) / bild.height;
+      doc.addImage(logo, "PNG", MARGIN, y - 4.6, LOGO_B, LOGO_H, undefined, "FAST");
       markeBreite = LOGO_B;
     } catch {
       markeBreite = wortmarke(doc, MARGIN, y, 10, false);

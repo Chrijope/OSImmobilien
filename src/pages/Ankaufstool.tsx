@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { FileDown, RotateCcw } from "lucide-react";
+import { FileDown, RotateCcw, Save, Trash2 } from "lucide-react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -12,14 +12,18 @@ import {
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
-  ANKAUF_STANDARD, anteilAmErloes, berechneAnkauf, type AnkaufEingaben, type AnkaufErgebnis,
+  ANKAUF_STANDARD, ANKAUF_VERSIONEN_SCHLUESSEL, anteilAmErloes, berechneAnkauf, eingabenAusVersion, versionSpeichern,
+  type AnkaufEingaben, type AnkaufErgebnis, type AnkaufVersion,
 } from "@/lib/ankaufstool";
+import { getUserSetting, setUserSettingSicher } from "@/lib/userSettingsCache";
+import { useLiveVersion } from "@/hooks/useLiveData";
 import { ANKAUF_HINWEIS, buildAnkaufstoolPdf, eur, prozent } from "@/lib/ankaufstoolPdf";
 
 /*
  * Seite /ankaufstool: der Bauträger-Kalkulator aus Ankaufstool.xlsx.
- * Gerechnet wird ausschließlich in `src/lib/ankaufstool.ts`. Gespeichert wird
- * nichts, das PDF ist der Weg, eine Rechnung festzuhalten.
+ * Gerechnet wird ausschließlich in `src/lib/ankaufstool.ts`. Rechnungen lassen
+ * sich als Versionen speichern; sie liegen je Nutzer in `user_settings`
+ * (Schlüssel `ankaufstool_versionen`), sichtbar nur für die Person selbst.
  */
 
 type Feld = { key: keyof AnkaufEingaben; label: string; einheit: "€" | "%" | "m²" | "€/m²" | "Monate" | "Stück"; hinweis?: string };
@@ -119,6 +123,12 @@ const URTEIL_STIL: Record<AnkaufErgebnis["urteil"], string> = {
   "LOHNT SICH NICHT": "bg-red-600 text-white",
 };
 
+const URTEIL_PUNKT: Record<AnkaufErgebnis["urteil"], string> = {
+  "LOHNT SICH": "bg-green-600",
+  GRENZWERTIG: "bg-amber-500",
+  "LOHNT SICH NICHT": "bg-red-600",
+};
+
 function Eingabe({ feld, eingaben, setze }: { feld: Feld; eingaben: AnkaufEingaben; setze: (k: keyof AnkaufEingaben, v: number) => void }) {
   // Prozentfelder rechnen intern als Anteil (0,05), angezeigt wird 5.
   const istProzent = feld.einheit === "%";
@@ -174,6 +184,56 @@ const Ankaufstool = () => {
   const r = useMemo(() => berechneAnkauf(eingaben), [eingaben]);
   const setze = (k: keyof AnkaufEingaben, v: number) => setEingaben((alt) => ({ ...alt, [k]: v }));
 
+  // Gespeicherte Versionen. Die Einstellungen kommen mit dem Cache nach,
+  // deshalb hängt die Liste an dessen Version.
+  const cacheStand = useLiveVersion(["user_settings"]);
+  const [gespeichertStand, setGespeichertStand] = useState(0);
+  const [aktiveVersion, setAktiveVersion] = useState<string | null>(null);
+  const [speichertGerade, setSpeichertGerade] = useState(false);
+  const versionen = useMemo(
+    () => getUserSetting<AnkaufVersion[]>(ANKAUF_VERSIONEN_SCHLUESSEL, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [cacheStand, gespeichertStand],
+  );
+  const versionenSchreiben = async (liste: AnkaufVersion[]) => {
+    await setUserSettingSicher(ANKAUF_VERSIONEN_SCHLUESSEL, liste);
+    setGespeichertStand((n) => n + 1);
+  };
+
+  const versionSichern = async () => {
+    const jetzt = new Date();
+    const name = objektName.trim() || `Rechnung vom ${jetzt.toLocaleDateString("de-DE")} ${jetzt.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}`;
+    const neu: AnkaufVersion = { id: crypto.randomUUID(), name, gespeichertAm: jetzt.toISOString(), eingaben };
+    setSpeichertGerade(true);
+    try {
+      await versionenSchreiben(versionSpeichern(versionen, neu));
+      setAktiveVersion(neu.id);
+      toast.success(`Version „${name}“ gespeichert.`);
+    } catch (err) {
+      console.error(err);
+      toast.error("Die Version konnte nicht gespeichert werden.");
+    } finally {
+      setSpeichertGerade(false);
+    }
+  };
+
+  const versionLaden = (v: AnkaufVersion) => {
+    setEingaben(eingabenAusVersion(v));
+    setObjektName(v.name.startsWith("Rechnung vom ") ? "" : v.name);
+    setAktiveVersion(v.id);
+  };
+
+  const versionLoeschen = async (v: AnkaufVersion) => {
+    if (!window.confirm(`Version „${v.name}“ löschen?`)) return;
+    try {
+      await versionenSchreiben(versionen.filter((x) => x.id !== v.id));
+      if (aktiveVersion === v.id) setAktiveVersion(null);
+    } catch (err) {
+      console.error(err);
+      toast.error("Die Version konnte nicht gelöscht werden.");
+    }
+  };
+
   const pdfSpeichern = async () => {
     setPdfLaeuft(true);
     try {
@@ -207,7 +267,7 @@ const Ankaufstool = () => {
     <DashboardLayout>
       <div className="space-y-6 w-full">
         <PageHeader title="Ankaufstool" subtitle="Bauträger-Kalkulator: Lohnt sich das Objekt? Grobe Go/No-Go-Rechnung vor Steuern.">
-          <Button variant="outline" size="sm" onClick={() => setEingaben(ANKAUF_STANDARD)}>
+          <Button variant="outline" size="sm" onClick={() => { setEingaben(ANKAUF_STANDARD); setObjektName(""); setAktiveVersion(null); }}>
             <RotateCcw className="h-4 w-4 mr-1" /> Zurücksetzen
           </Button>
           <Button size="sm" onClick={pdfSpeichern} disabled={pdfLaeuft}>
@@ -219,12 +279,48 @@ const Ankaufstool = () => {
           <div className="space-y-6 min-w-0">
             <SectionCard>
               <SectionCardHeader>
-                <SectionCardTitle>Objekt</SectionCardTitle>
-                <SectionCardDescription>Optional, erscheint im PDF.</SectionCardDescription>
+                <SectionCardTitle>Objekt & Versionen</SectionCardTitle>
+                <SectionCardDescription>
+                  Die Bezeichnung erscheint im PDF und ist der Name der Version. Gleicher Name überschreibt die Version.
+                </SectionCardDescription>
               </SectionCardHeader>
-              <SectionCardContent className="space-y-1">
-                <Label htmlFor="ankauf-objekt">Objektbezeichnung</Label>
-                <Input id="ankauf-objekt" value={objektName} onChange={(ev) => setObjektName(ev.target.value)} placeholder="z. B. Musterstraße 1, Berlin" />
+              <SectionCardContent className="space-y-4">
+                <div className="space-y-1">
+                  <Label htmlFor="ankauf-objekt">Objektbezeichnung</Label>
+                  <div className="flex gap-2">
+                    <Input id="ankauf-objekt" value={objektName} onChange={(ev) => setObjektName(ev.target.value)} placeholder="z. B. Musterstraße 1, Berlin" />
+                    <Button variant="outline" onClick={versionSichern} disabled={speichertGerade} className="shrink-0">
+                      <Save className="h-4 w-4 mr-1" /> {speichertGerade ? "Speichert …" : "Version speichern"}
+                    </Button>
+                  </div>
+                </div>
+                {versionen.length > 0 && (
+                  <ul className="divide-y divide-border/60 rounded-xl border border-border/60">
+                    {versionen.map((v) => {
+                      const urteil = berechneAnkauf(eingabenAusVersion(v)).urteil;
+                      return (
+                        <li key={v.id} className={cn("flex items-center gap-2 pr-2", aktiveVersion === v.id && "bg-muted/50")}>
+                          <button
+                            type="button"
+                            onClick={() => versionLaden(v)}
+                            className="flex flex-1 min-w-0 items-center gap-3 px-3 py-2 text-left hover:bg-muted/40 rounded-l-xl"
+                          >
+                            <span className={cn("h-2.5 w-2.5 shrink-0 rounded-full", URTEIL_PUNKT[urteil])} title={urteil} />
+                            <span className="min-w-0 flex-1">
+                              <span className="block truncate text-sm font-medium">{v.name}</span>
+                              <span className="block text-xs text-muted-foreground">
+                                {new Date(v.gespeichertAm).toLocaleString("de-DE", { dateStyle: "medium", timeStyle: "short" })}
+                              </span>
+                            </span>
+                          </button>
+                          <Button variant="ghost" size="icon" aria-label={`Version ${v.name} löschen`} onClick={() => versionLoeschen(v)}>
+                            <Trash2 className="h-4 w-4 text-muted-foreground" />
+                          </Button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
               </SectionCardContent>
             </SectionCard>
 

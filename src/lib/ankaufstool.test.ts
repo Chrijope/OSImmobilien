@@ -1,5 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { ANKAUF_STANDARD, anteilAmErloes, berechneAnkauf } from "./ankaufstool";
+import {
+  ANKAUF_STANDARD, anteilAmErloes, berechneAnkauf, eingabenAusVersion, versionSpeichern, type AnkaufVersion,
+} from "./ankaufstool";
 
 /*
  * Erwartete Werte: die gecachten Ergebnisse aus Ankaufstool.xlsx, Blatt
@@ -69,5 +71,20 @@ describe("berechneAnkauf: Ampel und Randfälle", () => {
 
   it("keine negative Mietsubvention, wenn die Marktmiete höher ist", () => {
     expect(berechneAnkauf({ ...ANKAUF_STANDARD, marktmieteProQm: 15 }).mietsubvention).toBe(0);
+  });
+});
+
+describe("Versionen", () => {
+  const version = (id: string, name: string): AnkaufVersion => ({ id, name, gespeichertAm: "", eingaben: { kaufpreis: 1 } });
+
+  it("ersetzt eine Version gleichen Namens und stellt die neue nach vorn", () => {
+    const liste = versionSpeichern([version("a", "Objekt A"), version("b", "Objekt B")], version("c", " objekt b "));
+    expect(liste.map((v) => v.id)).toEqual(["c", "a"]);
+  });
+
+  it("ergänzt fehlende Felder aus der Vorlage", () => {
+    const e = eingabenAusVersion(version("a", "A"));
+    expect(e.kaufpreis).toBe(1);
+    expect(e.wohnflaeche).toBe(ANKAUF_STANDARD.wohnflaeche);
   });
 });

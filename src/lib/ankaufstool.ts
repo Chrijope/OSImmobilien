@@ -179,3 +179,27 @@ export function berechneAnkauf(e: AnkaufEingaben): AnkaufErgebnis {
 export function anteilAmErloes(betrag: number, erloes: number): number {
   return teile(betrag, erloes);
 }
+
+/** Eine gespeicherte Rechnung. Liegt je Nutzer in `user_settings`. */
+export interface AnkaufVersion {
+  id: string;
+  name: string;
+  gespeichertAm: string;
+  eingaben: Partial<AnkaufEingaben>;
+}
+
+export const ANKAUF_VERSIONEN_SCHLUESSEL = "ankaufstool_versionen";
+
+/** Eingaben einer Version; Felder, die es beim Speichern noch nicht gab, kommen aus der Vorlage. */
+export function eingabenAusVersion(v: AnkaufVersion): AnkaufEingaben {
+  return { ...ANKAUF_STANDARD, ...v.eingaben };
+}
+
+/**
+ * Version in die Liste legen, neueste zuerst. Eine Version gleichen Namens
+ * wird ersetzt, so lässt sich eine Rechnung unter ihrem Namen fortschreiben.
+ */
+export function versionSpeichern(liste: AnkaufVersion[], neu: AnkaufVersion): AnkaufVersion[] {
+  const name = neu.name.trim().toLowerCase();
+  return [neu, ...liste.filter((v) => v.name.trim().toLowerCase() !== name)];
+}
