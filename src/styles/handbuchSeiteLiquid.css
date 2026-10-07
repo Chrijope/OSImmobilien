@@ -1,0 +1,168 @@
+/*
+  Die Handbuch-Seite in Liquid Glass (Auftrag vom 26.09.2026).
+
+  Wie bei der Berater-Mikroseite (`components/landing/beraterMicroseiteLiquid.css`)
+  eine eigene Datei direkt neben der Seite: Die Handbuch-Seite malt ihren
+  Grund und ihre Karten selbst (`handbuchSeite.css`) und deckt damit den
+  bewegten Grund zu, den `lib/designSchalter.ts` an den `body` hängt. Die
+  gemeinsame Schicht `styles/design-liquid.css` bleibt unberührt.
+
+  Geschaltet wird genau wie überall: nur unter `[data-glas="liquid"]`. Seit
+  dem 23.09.2026 ist Liquid Glass für alle an (`LIQUID_GLASS_STANDARD`), mit
+  `?design=heute` sieht man das vorige Aussehen.
+
+  Anders als die Mikroseite kennt die Handbuch-Seite hell und dunkel selbst
+  (`data-thema` an `.hb`, auch ohne dunkles CRM). Deshalb malt sie ihren
+  bewegten Grund selbst, in den Markenfarben Tinte, Blau, Hellblau und einem
+  Hauch Orange, und hat eigene Glaswerte je Thema. Die Gestaltung der Seite
+  (Farben, Schrift, orange Hauptknöpfe, dunkler Einstieg) bleibt; das Glas
+  liegt als Schicht darüber.
+
+  Entscheidungen vom 23.09.2026: keine Neigung, bewegter Grund, schwebende
+  Kopfleiste, Glas auf allen Karten, am Handy ohne Weichzeichnung, bei
+  „weniger Bewegung“ steht der Grund, bei „weniger Transparenz“ deckend.
+  Alles in `@media screen`: Gedruckt wird wie bisher.
+*/
+
+@keyframes hb-wolken {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(-3%, 2%, 0) scale(1.05); }
+  100% { transform: translate3d(2%, -2%, 0) scale(1.02); }
+}
+
+@media screen {
+
+[data-glas="liquid"] .hb {
+  --hb-glas: rgba(255, 255, 255, .62);
+  --hb-glas-dicht: rgba(255, 255, 255, .9);
+  --hb-glas-kante: rgba(255, 255, 255, .72);
+  --hb-glas-kante-oben: rgba(255, 255, 255, .95);
+  --hb-glas-filter: blur(22px) saturate(170%);
+  --hb-glas-leiste: rgba(255, 255, 255, .82);
+  position: relative;
+  isolation: isolate;
+}
+[data-glas="liquid"] .hb[data-thema="dunkel"] {
+  --hb-glas: rgba(18, 27, 39, .62);
+  --hb-glas-dicht: rgba(18, 27, 39, .92);
+  --hb-glas-kante: rgba(255, 255, 255, .09);
+  --hb-glas-kante-oben: rgba(255, 255, 255, .18);
+  --hb-glas-leiste: rgba(18, 27, 39, .6);
+}
+
+/* 1. Der bewegte Grund, fest hinter der ganzen Seite. */
+[data-glas="liquid"] .hb::before {
+  content: "";
+  position: fixed;
+  inset: -12%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(38% 32% at 14% 18%, rgba(8, 124, 201, .20), transparent 70%),
+    radial-gradient(34% 30% at 86% 28%, rgba(136, 207, 255, .38), transparent 70%),
+    radial-gradient(40% 34% at 62% 88%, hsl(var(--brand-orange) / .10), transparent 70%),
+    radial-gradient(30% 26% at 28% 72%, rgba(136, 207, 255, .22), transparent 70%);
+  animation: hb-wolken 40s ease-in-out infinite alternate;
+}
+[data-glas="liquid"] .hb[data-thema="dunkel"]::before {
+  background:
+    radial-gradient(38% 32% at 14% 18%, rgba(8, 124, 201, .30), transparent 70%),
+    radial-gradient(34% 30% at 86% 28%, rgba(84, 185, 252, .18), transparent 70%),
+    radial-gradient(40% 34% at 62% 88%, hsl(var(--brand-orange) / .10), transparent 70%),
+    radial-gradient(30% 26% at 28% 72%, rgba(136, 207, 255, .10), transparent 70%);
+}
+
+/* Helle Abschnitte werden durchsichtig, der zweite Ton nur noch ein Hauch. */
+[data-glas="liquid"] .hb .hb-abschnitt { background: transparent; }
+[data-glas="liquid"] .hb .hb-abschnitt.hb-zweiter { background: rgba(255, 255, 255, .22); }
+[data-glas="liquid"] .hb[data-thema="dunkel"] .hb-abschnitt.hb-zweiter { background: rgba(255, 255, 255, .02); }
+[data-glas="liquid"] .hb .hb-wizard-seite { background: transparent; }
+
+/* 2. Schwebende Kopfleiste: eine eigene Scheibe. */
+[data-glas="liquid"] .hb .hb-kopf {
+  background: var(--hb-glas-leiste);
+  border-color: var(--hb-glas-kante);
+  box-shadow: inset 0 1px 0 var(--hb-glas-kante-oben), 0 14px 34px -16px rgba(15, 30, 60, .35);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  backdrop-filter: blur(30px) saturate(180%);
+}
+
+/* 3. Glas auf allen Karten auf hellem Grund. Karten im dunklen Einstieg
+      (Beispielkarte, Wizard-Karte) bekommen dasselbe Glas, aber dichter,
+      damit die Schrift über dem Foto sicher lesbar bleibt. */
+[data-glas="liquid"] .hb .hb-karte,
+[data-glas="liquid"] .hb .hb-agenda .block,
+[data-glas="liquid"] .hb .hb-agenda-handy > summary,
+[data-glas="liquid"] .hb .hb-agenda-handy .block,
+[data-glas="liquid"] .hb .hb-annahmen,
+[data-glas="liquid"] .hb .hb-hinweise,
+[data-glas="liquid"] .hb .hb-buch-seite,
+[data-glas="liquid"] .hb .hb-zwischen {
+  background: var(--hb-glas);
+  border-color: var(--hb-glas-kante);
+  -webkit-backdrop-filter: var(--hb-glas-filter);
+  backdrop-filter: var(--hb-glas-filter);
+  box-shadow: inset 0 1px 0 var(--hb-glas-kante-oben), var(--hb-karte-schatten, var(--hb-schatten));
+}
+/* Karten auf dem dunklen Einstieg (Beispielkarte, Rahmenkarte der
+   Ergebnisseite): dichtes Glas, sonst wird helle Fläche über Tintenblau grau
+   und die graue Schrift darauf zu schwach. */
+[data-glas="liquid"] .hb .hb-beispiel.hb-karte,
+[data-glas="liquid"] .hb .hb-ergebnis-kopf .hb-karte { background: var(--hb-glas-dicht); }
+
+/* Das Fensterlicht wie im CRM (`design-liquid.css`): ein Lichtring auf der
+   Kante, am hellsten beim Mauszeiger. `lib/glasLicht.ts` setzt Position und
+   `data-lg-nah` nur an der einen Karte unter dem Zeiger, bei Touch und
+   „weniger Bewegung“ gar nicht. Farbe je Thema über `--hb-licht`. */
+:where([data-glas="liquid"] .hb .hb-karte) { position: relative; }
+[data-glas="liquid"] .hb .hb-karte[data-lg-nah]::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: 3;
+  border-radius: inherit;
+  padding: 1.5px;
+  pointer-events: none;
+  background: radial-gradient(200px circle at var(--lx, 16%) var(--ly, 0%), var(--hb-licht), transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: .8;
+  animation: lg-licht-an .35s ease-out;
+}
+
+/* 4. Am Handy ohne Weichzeichnung, dafür dichter (Leistung). */
+@media (max-width: 767px) {
+  [data-glas="liquid"] .hb .hb-karte,
+  [data-glas="liquid"] .hb .hb-agenda-handy > summary,
+  [data-glas="liquid"] .hb .hb-agenda-handy .block,
+  [data-glas="liquid"] .hb .hb-annahmen,
+  [data-glas="liquid"] .hb .hb-hinweise,
+  [data-glas="liquid"] .hb .hb-buch-seite,
+  [data-glas="liquid"] .hb .hb-zwischen,
+  [data-glas="liquid"] .hb .hb-kopf {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: var(--hb-glas-dicht);
+  }
+}
+
+/* 5. Weniger Bewegung: Der Grund steht. */
+@media (prefers-reduced-motion: reduce) {
+  [data-glas="liquid"] .hb::before { animation: none; }
+}
+
+/* 6. Weniger Transparenz: deckend. */
+@media (prefers-reduced-transparency: reduce) {
+  [data-glas="liquid"] .hb .hb-karte,
+  [data-glas="liquid"] .hb .hb-buch-seite,
+  [data-glas="liquid"] .hb .hb-zwischen,
+  [data-glas="liquid"] .hb .hb-kopf {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: var(--hb-karte);
+  }
+}
+
+}

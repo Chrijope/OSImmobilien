@@ -1,0 +1,1 @@
+ALTER TABLE public.benachrichtigungen ADD COLUMN ziel_rolle text DEFAULT NULL;

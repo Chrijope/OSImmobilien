@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.va_team_average() FROM PUBLIC, anon;

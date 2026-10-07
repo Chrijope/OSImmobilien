@@ -1,0 +1,334 @@
+/*
+  Das Kundenportal in Liquid Glass, hell und dunkel.
+
+  Warum eine eigene Datei und nicht `styles/design-liquid.css`:
+  `kundenportal.css` malt das Portal deckend an. Es setzt eigene Farbtokens
+  auf die Huelle `.portal-ui[data-portal="kunde"]`, eine deckende Flaeche
+  darunter und eine Kartenregel, die staerker ist als die Glasregel der
+  Schicht. Dazu kommt, dass `kundenportal.css` erst mit der Portalseite
+  nachgeladen wird und damit NACH der Schicht steht: Bei gleicher Staerke
+  gewinnt es. Die Ausnahmen stehen deshalb hier, direkt neben der Datei, die
+  sie ueberstimmen, und werden nach ihr geladen.
+
+  Der Weg ist derselbe wie bei der Berater-Mikroseite
+  (`components/landing/beraterMicroseiteLiquid.css`):
+    * Jede Regel haengt an `data-glas="liquid"`. Ohne Liquid Glass sieht das
+      Portal aus wie bisher.
+    * Farben kommen aus den Tokens der Schicht oder sind Werte, die dort schon
+      stehen. So gelten deren Ruecksichten von selbst mit: am Handy keine
+      Weichzeichnung und dichtere Karten, ohne `backdrop-filter` fast deckend,
+      bei "weniger Transparenz" deckend, bei "weniger Bewegung" steht der Grund.
+    * Keine Neigung, keine mitwandernde Zahl (Entscheidung vom 23.09.2026).
+    * Alles in `@media screen`, gedruckt wird wie bisher.
+
+  Durchsichtig wird die Huelle nicht hier, sondern ueber die allgemeine
+  Regel der Schicht fuer Vollbild-Huellen: `KundePortalLayout.tsx` und
+  `PortalAktivieren.tsx` tragen dafuer den Haken `data-lg="seite"`.
+
+  Was die internen Rollen schon sehen: Dieselben Seiten liegen fuer sie im
+  CRM-Geruest und tragen dort die Tokens des CRM. Genau die holt Abschnitt 0
+  zurueck, statt eigene Werte hinzuschreiben. Damit bekommt das Portal auch
+  den Dunkelmodus des CRM (Entscheidung Christian, 24.09.2026). Den Schalter
+  dafuer traegt die Kopfleiste des Portals (`KundePortalLayout.tsx`).
+*/
+
+@media screen {
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   0. Tokens: die des CRM statt der eigenen
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  `inherit` holt jeden Wert vom Wurzelelement, also aus `index.css`,
+  `design-neu.css` und der Glasschicht, hell wie dunkel. Die eigenen Werte
+  des Portals waren fuer eine weisse Flaeche gerechnet: Das Grau (216 12% 40%)
+  reicht auf Glas nicht fuer 4,5:1, und im Dunkeln blieben sie hell.
+
+  Nur das Eingabefeld behaelt im Hellen seinen kraeftigeren Rand aus dem
+  Portal, damit Felder auf Glas klar als Felder zu erkennen sind.
+*/
+[data-glas="liquid"] .portal-ui[data-portal="kunde"] {
+  --background: inherit;
+  --foreground: inherit;
+  --card: inherit;
+  --card-foreground: inherit;
+  --popover: inherit;
+  --popover-foreground: inherit;
+  --primary: inherit;
+  --primary-foreground: inherit;
+  --secondary: inherit;
+  --secondary-foreground: inherit;
+  --muted: inherit;
+  --muted-foreground: inherit;
+  --accent: inherit;
+  --accent-foreground: inherit;
+  --border: inherit;
+  --ring: inherit;
+  /* Die Akzente des Portals folgen dem Blau der Schicht. Schrift in Blau 700. */
+  --portal-akzent: var(--primary);
+  --portal-akzent-deep: var(--lg-schrift-blau);
+}
+
+/*
+  Dunkel: auch das Eingabefeld und die helle Akzentflaeche. Sie liegt hinter
+  vielen Symbolen in Blau (Kreise, Kacheln); hell bliebe dort helles Blau auf
+  fast weissem Kreis. `--accent` ist im Dunkeln ein tiefes Blau.
+*/
+[data-glas="liquid"].dark .portal-ui[data-portal="kunde"] {
+  --input: inherit;
+  --portal-akzent-soft: var(--accent);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   1. Kopfleiste und Menue am Handy: schwebende Scheiben wie im CRM
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+[data-glas="liquid"] .portal-ui[data-portal="kunde"] .portal-header {
+  top: 10px;
+  margin: 10px 12px 0;
+  border: 1px solid var(--lg-kante);
+  border-radius: 20px;
+  background: linear-gradient(180deg,
+    hsl(var(--lg-glas) / calc(var(--lg-deckkraft-leiste) + .08)),
+    hsl(var(--lg-glas) / var(--lg-deckkraft-leiste)));
+  -webkit-backdrop-filter: var(--lg-filter-leiste);
+  backdrop-filter: var(--lg-filter-leiste);
+  box-shadow: var(--lg-innen), var(--lg-schatten);
+}
+/* Die Reiter liegen in derselben Scheibe, getrennt durch eine Haarlinie. */
+[data-glas="liquid"] .portal-ui[data-portal="kunde"] .portal-desktop-nav {
+  border-top-color: var(--lg-haarlinie);
+}
+[data-glas="liquid"] .portal-ui[data-portal="kunde"] .portal-desktop-nav a {
+  border-radius: 10px 10px 0 0;
+}
+[data-glas="liquid"] .portal-ui[data-portal="kunde"] .portal-desktop-nav a[aria-current="page"],
+[data-glas="liquid"] .portal-ui[data-portal="kunde"] .portal-desktop-nav a:hover {
+  color: hsl(var(--lg-schrift-blau));
+}
+[data-glas="liquid"] .portal-ui[data-portal="kunde"] .portal-desktop-nav a[aria-current="page"] {
+  border-bottom-color: hsl(var(--lg-schrift-blau));
+}
+[data-glas="liquid"] .portal-ui[data-portal="kunde"] .portal-desktop-nav a:hover {
+  background: hsl(var(--lg-glas) / .55);
+}
+
+/*
+  Die blasse Zeile "Dein Portal" und die nicht gewaehlten Menuepunkte am
+  Handy stehen als Schwarz mit 45 und 55 Prozent Deckkraft. Das kam schon auf
+  Weiss nur auf rund 3:1, auf Glas darunter. Sie nehmen das Grau der Schicht.
+*/
+[data-glas="liquid"] .portal-ui[data-portal="kunde"] :is(.portal-header, .portal-mobile-greeting) .text-foreground\/45,
+[data-glas="liquid"] .portal-ui[data-portal="kunde"] .portal-mobile-nav a:not([aria-current="page"]) {
+  color: hsl(var(--muted-foreground));
+}
+
+/* Das Menue am Handy schwebt als Scheibe ueber dem unteren Rand. */
+[data-glas="liquid"] .portal-ui[data-portal="kunde"] .portal-mobile-nav {
+  left: 8px;
+  right: 8px;
+  bottom: calc(8px + env(safe-area-inset-bottom));
+  padding-bottom: 0;
+  border: 1px solid var(--lg-kante);
+  border-radius: 20px;
+  background: linear-gradient(180deg,
+    hsl(var(--lg-glas) / calc(var(--lg-deckkraft-leiste) + .08)),
+    hsl(var(--lg-glas) / var(--lg-deckkraft-leiste)));
+  -webkit-backdrop-filter: var(--lg-filter-leiste);
+  backdrop-filter: var(--lg-filter-leiste);
+  box-shadow: var(--lg-innen), var(--lg-schatten);
+}
+/*
+  Im Chat liegt das Menue im Fluss (`kundenportal.css`, "Chat im Vollbild").
+  Dort greifen left, right und bottom nicht; dieselben Abstaende kommen als
+  Aussenabstand, damit die Scheibe genauso schwebt.
+*/
+[data-glas="liquid"] .portal-ui[data-portal="kunde"][data-vollbild="chat"] .portal-mobile-nav {
+  margin: 0 8px calc(8px + env(safe-area-inset-bottom));
+}
+/* Der gewaehlte Punkt: getoent wie getoente Karten, Schrift in Blau 700. */
+[data-glas="liquid"] .portal-ui[data-portal="kunde"] .portal-mobile-nav a[aria-current="page"],
+[data-glas="liquid"] .portal-ui[data-portal="kunde"] .portal-mobile-nav a[aria-current="page"] svg {
+  color: hsl(var(--lg-schrift-blau));
+}
+[data-glas="liquid"] .portal-ui[data-portal="kunde"] .portal-mobile-nav a[aria-current="page"] {
+  background: hsl(var(--primary) / var(--lg-toenung));
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   2. Karten
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Welche Flaeche Karte ist, steht ausdruecklich hier (Stand 24.09.2026):
+    * `.portal-card`, die Karte des Portals (index.css, kundenportal.css),
+    * die Karten aus `ui/card.tsx` und alles, was `kundenportal.css` als Karte
+      behandelt (`.rounded-2xl.border.bg-card`),
+    * die Phasen auf der Investmentseite, das Chatfenster, die Flaeche der
+      Einstellungen, der naechste Schritt und die Aktivierungskarte.
+  Der Seitenkopf (`.portal-page-heading`) bleibt ohne Flaeche, wie bisher.
+
+  Staerke: Die Kartenregel in `kundenportal.css` zaehlt wie drei Klassen im
+  `:is()` (wegen `.rounded-2xl.border.bg-card`). Deshalb steht dieselbe
+  Alternative auch hier im `:is()`, dazu `.portal-content` davor: So ist diese
+  Regel sicher staerker und haengt nicht an der Ladereihenfolge.
+*/
+[data-glas="liquid"] .portal-ui[data-portal="kunde"] .portal-content :is(.portal-card, .portal-phase, .portal-chat-panel, .portal-next-step, .portal-settings [role="tabpanel"], .rounded-2xl.border.bg-card),
+[data-glas="liquid"] .portal-ui[data-portal="kunde"].portal-activation > div {
+  background-color: hsl(var(--lg-glas) / var(--lg-deckkraft));
+  background-image:
+    linear-gradient(var(--lg-ton-flaeche, transparent), var(--lg-ton-flaeche, transparent)),
+    radial-gradient(420px circle at var(--lx, 12%) var(--ly, -30%), var(--lg-glanz), transparent 62%),
+    linear-gradient(180deg, var(--lg-glanz-oben), transparent 38%);
+  -webkit-backdrop-filter: var(--lg-filter-karte);
+  backdrop-filter: var(--lg-filter-karte);
+  border-top-color: var(--lg-ton-rand, var(--lg-kante));
+  border-right-color: var(--lg-ton-rand, var(--lg-kante));
+  border-bottom-color: var(--lg-ton-rand, var(--lg-kante));
+  border-left-color: var(--lg-ton-links, var(--lg-ton-rand, var(--lg-kante)));
+  border-radius: var(--lg-radius);
+  box-shadow: var(--lg-innen), var(--lg-schatten);
+}
+
+/*
+  Getoent in Blau: der naechste Schritt und die Zusammenfassung auf der
+  Uebersicht. Wie getoente Karten in der Schicht, die Flaeche schwach, die
+  Kante deutlicher. Der blaue Streifen links bleibt in Blau.
+*/
+[data-glas="liquid"] .portal-ui[data-portal="kunde"] .portal-content :is(.portal-next-step, .portal-step-summary) {
+  --lg-ton-flaeche: hsl(var(--primary) / var(--lg-toenung));
+  --lg-ton-rand: hsl(var(--primary) / .35);
+  --lg-ton-links: hsl(var(--primary));
+}
+
+/*
+  Glas in Glas: keine zweite Weichzeichnung, eine leichtere Einlage mit
+  Lichtkante. Dieselbe Regel wie in der Schicht. Innen nur Karten mit dem
+  Grundton; eine dunkle oder farbige Karte behaelt ihre Flaeche.
+*/
+[data-glas="liquid"] .portal-ui[data-portal="kunde"] .portal-content :is(.portal-card, .portal-phase, .portal-chat-panel, .portal-next-step, .portal-settings [role="tabpanel"], .rounded-2xl.border.bg-card, [data-ui="card"]) :is(.portal-card, [data-ui="card"].bg-card, .rounded-2xl.border.bg-card) {
+  background-color: hsl(var(--lg-glas) / var(--lg-deckkraft-einlage));
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-radius: var(--lg-radius-einlage);
+  box-shadow: inset 0 1px 0 var(--lg-kante-oben), 0 0 0 .5px var(--lg-haarlinie), 0 6px 16px -10px hsl(215 40% 20% / .18);
+}
+
+/*
+  Weichzeichnung macht eine Karte zum Bezugsrahmen fuer alles darin, was
+  `position: fixed` traegt. Solche Karten bleiben ohne Weichzeichnung und
+  werden fast deckend, wie in der Schicht.
+*/
+[data-glas="liquid"] .portal-ui[data-portal="kunde"] .portal-content :is(.portal-card, .portal-phase, .portal-chat-panel, .portal-next-step, .portal-settings [role="tabpanel"], .rounded-2xl.border.bg-card):has(.fixed) {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background-color: hsl(var(--lg-glas) / .92);
+}
+
+/* Im Chatfenster liegen Verlauf und Eingabezeile auf der Scheibe selbst. */
+[data-glas="liquid"] .portal-ui[data-portal="kunde"] .portal-chat-messages:not(.bg-primary\/10) {
+  background: transparent;
+}
+[data-glas="liquid"] .portal-ui[data-portal="kunde"] .portal-chat-compose {
+  background: transparent;
+  border-color: var(--lg-haarlinie);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   3. Reiter
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* `kundenportal.css` malt die Spur deckend grau. Hier wieder die Spur aus Glas der Schicht. */
+[data-glas="liquid"] .portal-ui[data-portal="kunde"] .portal-content [role="tablist"] {
+  background-color: hsl(var(--lg-glas) / .34);
+  box-shadow: inset 0 1px 2px hsl(215 40% 20% / .08);
+}
+[data-glas="liquid"] .portal-ui[data-portal="kunde"] .portal-content [role="tab"][data-state="active"] {
+  background-color: hsl(var(--lg-glas) / .95);
+  color: hsl(var(--lg-schrift-blau));
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / .9), 0 0 0 .5px var(--lg-haarlinie), 0 3px 8px -3px hsl(215 40% 20% / .25);
+}
+[data-glas="liquid"].dark .portal-ui[data-portal="kunde"] .portal-content [role="tablist"] {
+  background-color: hsl(0 0% 0% / .2);
+  box-shadow: inset 0 1px 2px hsl(0 0% 0% / .4);
+}
+[data-glas="liquid"].dark .portal-ui[data-portal="kunde"] .portal-content [role="tab"][data-state="active"] {
+  background-color: hsl(214 25% 30% / .9);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / .14), 0 3px 10px -3px hsl(0 0% 0% / .6);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   4. Knoepfe
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Gefuellt: die gewoelbte blaue Taste der Schicht. `kundenportal.css` nimmt
+  gefuellten Knoepfen den Schatten; hier kommt die Lichtkante zurueck. Den
+  Verlauf setzt die Schicht selbst auf `[data-ui="button"]`.
+*/
+[data-glas="liquid"] .portal-ui[data-portal="kunde"] .portal-content [data-ui="button"].bg-primary {
+  border-radius: 12px;
+  box-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / .32),
+    inset 0 -1px 0 hsl(0 0% 0% / .12),
+    0 6px 16px -8px hsl(var(--primary) / .7);
+}
+
+/*
+  Der Knopf der Aktivierung ist kein `ui/button`-Knopf und bekommt den
+  Verlauf deshalb hier. Weisse Schrift haelt auf beiden Stopps 4,5:1, im
+  Dunkeln die dunkle Schrift der Schicht. Der Aufruf im naechsten Schritt
+  ist seit dem 25.09.2026 die orange Hauptaktion (`btn-brand`) und steht
+  deshalb nicht mehr hier.
+  Gegen den Knopf der Aktivierung steht in `kundenportal.css` ein `!important`.
+*/
+[data-glas="liquid"] .portal-ui[data-portal="kunde"].portal-activation button[style] {
+  background: linear-gradient(180deg, hsl(var(--lg-primaer-hoch)), hsl(var(--lg-primaer-tief))) !important;
+  color: hsl(var(--primary-foreground));
+  border-radius: 12px;
+  box-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / .32),
+    inset 0 -1px 0 hsl(0 0% 0% / .12),
+    0 6px 16px -8px hsl(var(--primary) / .7);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   5. Dialoge, Menues und Popover des Portals
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Radix legt sie ausserhalb der Huelle an den `body`. `kundenportal.css` gibt
+  ihnen dort feste helle Tokens. Die Schicht macht dieselben Flaechen zu Glas,
+  im Dunkeln zu dunklem Glas, und darauf stuende dann dunkle Schrift. Deshalb
+  auch hier die Tokens des CRM, und der Schatten der schwebenden Flaechen.
+*/
+[data-glas="liquid"] body:has(.portal-ui[data-portal="kunde"]) :is([role="dialog"], [role="alertdialog"], [data-radix-popper-content-wrapper]) {
+  --background: inherit;
+  --foreground: inherit;
+  --card: inherit;
+  --primary: inherit;
+  --primary-foreground: inherit;
+  --popover: inherit;
+  --popover-foreground: inherit;
+  --border: inherit;
+  --muted: inherit;
+  --muted-foreground: inherit;
+  --ring: inherit;
+}
+[data-glas="liquid"] body:has(.portal-ui[data-portal="kunde"]) :is([role="dialog"], [role="alertdialog"]):is(.bg-card, .bg-background, .bg-popover) {
+  box-shadow: var(--lg-innen), var(--lg-schatten-schwebend);
+}
+[data-glas="liquid"] body:has(.portal-ui[data-portal="kunde"]) [data-ui="dialog"]:is(.bg-card, .bg-background, .bg-popover) {
+  border-radius: 24px;
+}
+
+} /* Ende @media screen */
+
+/* Am Handy liegt die Kopfleiste naeher am Rand, wie im CRM. */
+@media screen and (max-width: 639px) {
+  [data-glas="liquid"] .portal-ui[data-portal="kunde"] .portal-header {
+    top: 8px;
+    margin: 8px 8px 0;
+    border-radius: 18px;
+  }
+}

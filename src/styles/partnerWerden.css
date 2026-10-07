@@ -1,0 +1,252 @@
+/*
+  Die Seite „Partner werden“ (/partner-werden). Sie nutzt die Gestaltung der
+  Handbuch-Seite (`handbuchSeite.css`, `handbuchSeiteLiquid.css`) und ergänzt
+  hier nur, was es dort nicht gibt: die beiden Auswahlkarten im Einstieg, die
+  Standortkarte, die Kennzahlen, den Umschalter im Ablauf, das Teamfoto als
+  Platzhalter und die gelbe Markierung ungeprüfter Zahlen.
+  Farben nur über die Tokens `--hb-*`, damit hell und dunkel stimmen.
+*/
+
+/* Ungeprüfte Zahl: gelb und nicht zu übersehen. */
+.hb mark.pw-pruefen {
+  background: #FFE36E; color: #3D2E00; border-radius: 6px; padding: 0 .25em;
+  -webkit-text-fill-color: #3D2E00; font-weight: 700; box-decoration-break: clone; -webkit-box-decoration-break: clone;
+}
+
+/* Die drei Wege im Einstieg, untereinander: nebeneinander wären sie neben dem Bild zu schmal. */
+.pw-wege { display: grid; grid-template-columns: 1fr; gap: 12px; margin: 28px 0 22px; }
+.pw-weg {
+  display: flex; flex-direction: column; gap: 6px; text-align: left; cursor: pointer;
+  padding: 16px 20px 15px; border-radius: 20px; color: #fff;
+  background: rgba(255, 255, 255, .07); border: 1.5px solid rgba(255, 255, 255, .22);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  transition: border-color var(--hb-dauer-kurz) ease, background-color var(--hb-dauer-kurz) ease, transform var(--hb-dauer) var(--hb-ease);
+}
+/* Hover nur bei echter Maus: Auf dem Handy bliebe der Zustand nach dem Tippen hängen. */
+@media (hover: hover) and (pointer: fine) {
+  .pw-weg:hover { border-color: #8AD0FF; background: rgba(138, 208, 255, .12); }
+  .pw-weg:hover b svg { transform: translateX(3px); }
+}
+.pw-weg:active { transform: scale(.98); }
+.pw-weg .wer { font-size: 14px; color: #C3CEDC; line-height: 1.4; }
+.pw-weg b { font-size: 20px; line-height: 1.2; display: inline-flex; align-items: center; gap: 8px; color: #fff; }
+.pw-weg b svg { width: 20px; height: 20px; color: #8AD0FF; transition: transform var(--hb-dauer) var(--hb-ease); }
+.pw-weg .text { font-size: 14.5px; color: #A9B6C8; line-height: 1.45; }
+
+.pw-haken { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px 18px; }
+.pw-haken li { display: flex; gap: 10px; align-items: flex-start; font-size: 15px; color: #C3CEDC; line-height: 1.45; }
+.pw-haken li b { color: #fff; }
+.pw-haken svg { width: 20px; height: 20px; color: #6FD08F; flex: none; margin-top: 1px; }
+
+.pw-held-bild { min-height: 560px; }
+.pw-held-zahlen { position: absolute; left: 18px; right: 18px; bottom: 18px; z-index: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pw-held-zahlen > div { padding: 16px 18px; }
+.pw-held-zahlen b { display: block; font-size: 26px; line-height: 1.1; color: var(--hb-tinte); }
+.pw-held-zahlen span { font-size: 13.5px; color: var(--hb-muted); }
+
+/* Standorte */
+.pw-karte-raster { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 34px; align-items: start; }
+/* Die Karte steht wie auf more.immo in einer hellen Karte, auch im dunklen
+   Thema: Die dunklen Länder brauchen den hellen Grund. Die Glasschicht liest
+   dieselben Variablen, deshalb genügt es, sie hier zu setzen. */
+.hb .pw-karte {
+  margin: 0; padding: 22px 22px 16px;
+  --hb-karte: #FFFFFF; --hb-glas: rgba(255, 255, 255, .97); --hb-glas-dicht: #FFFFFF;
+  --hb-glas-kante: rgba(255, 255, 255, .9); --hb-glas-kante-oben: #FFFFFF; --hb-linie: #E3E9F0; --hb-muted: #56657A;
+  --hb-licht: rgba(84, 185, 252, .9);
+  --hb-schatten: 0 28px 68px -18px rgba(15, 22, 33, .3), 0 10px 24px -10px rgba(15, 22, 33, .16);
+  --hb-schatten-hoch: 0 34px 80px -18px rgba(15, 22, 33, .36), 0 12px 28px -10px rgba(15, 22, 33, .18);
+}
+.pw-karte svg { width: 100%; height: auto; display: block; max-height: 460px; }
+.pw-karte figcaption { text-align: center; font-style: italic; margin: 12px 0 0; color: var(--hb-muted); }
+
+/* Die Nadeln: einfallen, wenn die Karte ins Bild kommt (wie auf more.immo). */
+@keyframes pw-pin-fallen { from { opacity: 0; transform: translateY(-40px) scale(.4); } }
+@keyframes pw-pin-puls { 0%, 100% { transform: scale(.65); opacity: .9; } 50% { transform: scale(1.3); opacity: .1; } }
+.pw-pin { cursor: pointer; outline: none; transform-box: fill-box; transform-origin: 50% 100%; transition: opacity .3s ease; }
+.pw-karte:not([data-sichtbar]) .pw-pin { opacity: 0; }
+.pw-karte[data-sichtbar] .pw-pin { animation: pw-pin-fallen .7s cubic-bezier(.34, 1.56, .64, 1) backwards; animation-delay: calc(var(--pw-i, 0) * 80ms); }
+.pw-pin.gedimmt { opacity: .45; }
+.pw-pin-name { font-weight: 700; letter-spacing: .2px; }
+.pw-pin-puls { transform-box: fill-box; transform-origin: center; animation: pw-pin-puls 1.8s ease-in-out infinite; }
+.pw-pin:focus-visible rect { stroke: var(--hb-akzent); stroke-width: 1.6; }
+
+.pw-standorte { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.pw-standort { padding: 18px 20px; scroll-margin: 90px; transition: box-shadow var(--hb-dauer) var(--hb-ease), transform var(--hb-dauer) var(--hb-ease), border-color var(--hb-dauer-kurz) ease; }
+/* Auf der Karte gewählt: blauer Rahmen, wie das aktive Schild. */
+.hb .pw-standort.aktiv { border-color: var(--hb-akzent); box-shadow: 0 0 0 3px var(--hb-ring), var(--hb-schatten-hoch); }
+.pw-standort .kopf { display: flex; gap: 12px; align-items: center; margin-bottom: 8px; }
+.pw-standort h3 { font-size: 19px; }
+.pw-standort .anzahl { font-size: 14px; color: var(--hb-akzent-text); font-weight: 700; }
+.pw-standort .anzahl.laedt { color: var(--hb-muted); font-weight: 400; }
+.pw-standort p { font-size: 15px; color: var(--hb-text2); margin: 0; line-height: 1.5; }
+.pw-weitere { background: var(--hb-akzent-flaeche); border-style: dashed; }
+.pw-weitere h3 { margin-bottom: 6px; }
+
+/* Kennzahlen */
+.pw-zahlen { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin: 30px 0 28px; }
+.pw-zahlen > div { padding: 20px 18px; text-align: center; }
+.pw-zahlen b { display: block; font-size: clamp(26px, 2.6vw, 34px); line-height: 1.1; color: var(--hb-tinte); margin-bottom: 6px; }
+.pw-zahlen span { font-size: 14px; color: var(--hb-muted); }
+.pw-mitte { display: flex; justify-content: center; margin-top: 8px; }
+
+/* Die Liste nutzt `hb-nutzen`, das für den dunklen Einstieg weiß schreibt.
+   Mit `.hb` davor gewinnt diese Regel sicher, egal in welcher Reihenfolge
+   die Stylesheets geladen werden. Sonst stünde weiße Schrift auf hellem Grund. */
+.hb .pw-punkte li { color: var(--hb-text); font-size: 16px; }
+.hb .pw-punkte li svg { color: var(--hb-gruen-f); }
+
+/* Teamfoto als Platzhalter */
+.pw-teamfoto {
+  min-height: 380px; border-radius: 26px; display: flex; flex-direction: column; gap: 12px; align-items: center; justify-content: center;
+  color: #C3CEDC; font-weight: 700; box-shadow: var(--hb-schatten-gross);
+  background: radial-gradient(ellipse 70% 60% at 20% 0%, rgba(8, 124, 201, .5), transparent 70%), linear-gradient(135deg, #0F1621, #073150);
+}
+.pw-teamfoto svg { width: 52px; height: 52px; color: #8AD0FF; }
+
+/* Laufband der Kundenstimmen. `lp-marquee-track` (index.css) schiebt die Spur
+   um die Hälfte nach links und hält bei Maus darüber an. Abstand als rechter
+   Rand statt `gap`, damit beide Hälften genau gleich breit sind. */
+.pw-laufband {
+  margin: 30px -24px 0; padding: 10px 0 18px; overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 64px, #000 calc(100% - 64px), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 64px, #000 calc(100% - 64px), transparent 100%);
+}
+.pw-laufband-satz { display: flex; }
+.pw-laufband .hb-stimme { width: 340px; flex: none; margin: 0 18px 0 0; }
+/* Anhalten nur bei echter Maus. Auf Touch bliebe `:hover` nach einem Tippen
+   stehen und das Band dauerhaft angehalten, auch die Regel aus index.css. */
+@media (hover: hover) and (pointer: fine) {
+  .pw-laufband:hover .lp-marquee-track { animation-play-state: paused; }
+}
+@media (hover: none) {
+  .pw-laufband .lp-marquee-track:hover { animation-play-state: running; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pw-laufband { overflow-x: auto; -webkit-mask-image: none; mask-image: none; scroll-snap-type: x mandatory; }
+  .pw-laufband-satz[aria-hidden] { display: none; }
+  .pw-laufband .hb-stimme { scroll-snap-align: start; }
+  .pw-laufband .hb-stimme:first-child { margin-left: 24px; }
+}
+
+/* Ablauf mit Umschalter */
+.pw-umschalter { display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px; background: var(--hb-karte); border: 1px solid var(--hb-linie); margin: 10px 0 26px; }
+.pw-umschalter button { border: 0; background: transparent; padding: 10px 18px; border-radius: 999px; font-weight: 700; font-size: 15px; color: var(--hb-text2); cursor: pointer; transition: background-color var(--hb-dauer-kurz) ease, color var(--hb-dauer-kurz) ease; }
+.pw-umschalter button[aria-pressed="true"] { background: var(--hb-knopf); color: #fff; }
+.pw-schritte { list-style: none; padding: 0; margin: 0 0 28px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 36px; }
+.pw-schritte li { padding: 24px 22px; position: relative; }
+
+/* Pfeil zwischen zwei Schritten: mitten im Abstand, stupst dezent nach vorn.
+   Am Handy stehen die Schritte untereinander, der Pfeil zeigt nach unten. */
+@keyframes pw-pfeil-stupsen { 0%, 100% { transform: translate(0, 0) rotate(var(--pw-dreh, 0deg)); } 50% { transform: translate(var(--pw-weg-x, 4px), var(--pw-weg-y, 0)) rotate(var(--pw-dreh, 0deg)); } }
+.pw-pfeil {
+  position: absolute; z-index: 4; top: 50%; right: -32px; width: 28px; height: 28px; margin-top: -14px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center; pointer-events: none;
+  background: var(--hb-karte); color: var(--hb-akzent); box-shadow: 0 0 0 1px var(--hb-linie), var(--hb-schatten);
+}
+.pw-pfeil svg { width: 16px; height: 16px; animation: pw-pfeil-stupsen 1.8s var(--hb-ease) infinite; transform: rotate(var(--pw-dreh, 0deg)); }
+.pw-schritte .zahl { width: 46px; height: 46px; border-radius: 14px; background: var(--hb-knopf); color: #fff; font-weight: 700; font-size: 20px; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+.pw-schritte h3 { font-size: 19px; margin-bottom: 6px; }
+.pw-schritte p { font-size: 15.5px; color: var(--hb-text2); margin: 0; }
+
+/* Wegwahl im Wizard: Name und ein Satz darunter. */
+.pw-kachel-text { display: flex; flex-direction: column; gap: 3px; font-weight: 700; }
+.pw-kachel-text small { font-weight: 400; font-size: 14px; color: var(--hb-text2); line-height: 1.4; }
+
+/* Karten heben sich wie auf der Handbuch-Seite, nur bei echter Maus. */
+@media (hover: hover) and (pointer: fine) {
+  .hb :is(.pw-standort, .pw-schritte li, .pw-zahlen > div, .pw-karte):hover { --hb-karte-schatten: var(--hb-schatten-hoch); }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .hb :is(.pw-standort, .pw-schritte li, .pw-zahlen > div):hover { transform: translateY(-3px); }
+  .hb :is(.pw-standort):hover .hb-rund { transform: translateY(-2px) scale(1.05); }
+  .pw-zahlen > div { transition: transform var(--hb-dauer) var(--hb-ease), box-shadow var(--hb-dauer) var(--hb-ease); }
+  .pw-schritte li { transition: transform var(--hb-dauer) var(--hb-ease), box-shadow var(--hb-dauer) var(--hb-ease); }
+}
+
+/* Der Lichtkegel hinter dem Mauszeiger (`useMausLicht`): fest hinter der
+   Seite, über dem bewegten Grund, unter dem Inhalt. Nur bei echter Maus. */
+.hb.pw::after {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0;
+  background: radial-gradient(520px circle at var(--hb-mx, 50%) var(--hb-my, 30%), rgba(84, 185, 252, .16), transparent 65%);
+  transition: opacity .5s ease;
+}
+.hb.pw[data-thema="dunkel"]::after { background: radial-gradient(520px circle at var(--hb-mx, 50%) var(--hb-my, 30%), rgba(84, 185, 252, .12), transparent 65%); }
+.hb.pw[data-hb-licht]::after { opacity: 1; }
+.hb.pw { isolation: isolate; }
+@media print { .hb.pw::after { display: none; } }
+
+.hb-rund b { font-size: 18px; }
+.hb-kachel-symbol b { font-size: 16px; }
+
+@media (max-width: 980px) {
+  .pw-karte-raster { grid-template-columns: 1fr; }
+  .pw-karte svg { max-height: 520px; }
+  .pw-zahlen { grid-template-columns: repeat(3, 1fr); }
+  /* Untereinander, damit jeder Pfeil zum nächsten Schritt zeigt. */
+  .pw-schritte { grid-template-columns: 1fr; gap: 34px; max-width: 640px; }
+  .pw-pfeil { top: auto; right: auto; left: 50%; bottom: -31px; margin: 0 0 0 -14px; --pw-dreh: 90deg; --pw-weg-x: 0; --pw-weg-y: 3px; }
+  .pw-held-bild { min-height: 420px; }
+}
+@media (max-width: 700px) {
+  .pw-haken, .pw-standorte { grid-template-columns: 1fr; }
+  .pw-laufband { margin: 24px -16px 0; }
+  .pw-laufband .hb-stimme { width: 280px; }
+  .pw-zahlen { grid-template-columns: 1fr 1fr; }
+  .pw-zahlen > div:last-child { grid-column: 1 / -1; }
+  .pw-weg b { font-size: 18px; }
+  .pw-held-bild { min-height: 320px; }
+  .pw-held-zahlen { left: 10px; right: 10px; bottom: 10px; gap: 8px; }
+  .pw-held-zahlen > div { padding: 12px 12px; }
+  .pw-held-zahlen b { font-size: 21px; }
+  .pw-teamfoto { min-height: 240px; border-radius: 20px; }
+  .pw-umschalter { display: flex; }
+  .pw-umschalter button { flex: 1; padding: 9px 6px; font-size: 13.5px; line-height: 1.25; }
+}
+
+/* Platzhalter in großen Zahlen kleiner, sonst bricht er in drei Zeilen. */
+.pw-zahlen mark.pw-pruefen, .pw-held-zahlen mark.pw-pruefen, .hb-ergebnis mark.pw-pruefen { font-size: .55em; vertical-align: middle; }
+/* Bricht er doch um, dann als ein gelber Block statt zweier Schnipsel. */
+.pw-zahlen mark.pw-pruefen { display: inline-block; line-height: 1.35; }
+
+/* Die Unterzeilen der Kennzahlen stehen als eigene Zeile, sonst erbt der
+   Umbruch die große Zeilenhöhe der Zahl darüber. */
+.pw-held-zahlen span, .pw-zahlen span { display: block; line-height: 1.4; }
+
+/* Fuß: E-Mail steht als eigene Zeile, aber nur so breit wie der Text. */
+.hb-fuss a.pw-fuss-mail { display: inline-block; margin-bottom: 0; }
+
+/* Karte: Tippfläche und Schild. Die Fläche ist unsichtbar, fängt aber den
+   Finger. Das Schild wächst um seinen Ankerpunkt, die Nadelspitze. */
+.pw-pin-flaeche { pointer-events: all; }
+.pw-pin-schild { transform-box: view-box; transform-origin: 0 0; }
+
+/*
+ * Handy, Durchsicht vom 30.09.2026 (360 bis 414 px). Die globale Handy-Politur
+ * in index.css verkleinert jeden Knopf auf 0,85rem und setzt 40 px Mindesthöhe,
+ * jeweils mit !important. Für diese öffentliche Seite gelten eigene Größen,
+ * deshalb hier ebenfalls !important. Alles unter `.hb.pw`, damit die
+ * Handbuch-Seite unberührt bleibt, auch wenn dieses Stylesheet geladen ist.
+ */
+@media (max-width: 767px) {
+  .hb.pw .pw-umschalter button { font-size: 14px !important; min-height: 48px !important; }
+  .hb.pw .hb-konfig-fuss .hb-link-knopf { min-height: 44px !important; }
+  /* Kein Weichzeichner hinter jeder Wegkarte, die Fläche wird dafür etwas dichter (Leistung). */
+  .pw-weg { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(255, 255, 255, .09); }
+  /* Die Karte bekommt mehr Breite, Schilder werden lesbar (rund 12 statt 9 px). */
+  .hb .pw-karte { padding: 14px 10px 12px; }
+  .pw-pin-schild { transform: scale(1.35); }
+  /* Kleinste Schrift im Fließtext 14 px. */
+  .pw-held-zahlen span, .hb.pw .hb-ergebnis span, .hb.pw .hb-stimme figcaption span, .hb.pw .hb-fussnote, .hb.pw .hb-einwilligung-voll { font-size: 14px; }
+  /* Der feste Knopf blendet sich am Fuß aus, der Freiraum darunter entfällt.
+     Der Fuß hält dafür Abstand zum Home-Balken. */
+  .hb.pw.hb-mit-mobil-cta { padding-bottom: 0; }
+  .hb.pw .hb-fuss { padding-bottom: calc(44px + env(safe-area-inset-bottom, 0px)); }
+}
+/* Tippflächen im Kopf und Fuß: auf jedem Touch-Gerät mindestens 44 px, auch am Tablet. */
+@media (max-width: 767px), (pointer: coarse) {
+  /* Negativer Rand: größere Tippfläche, ohne die Kopfleiste höher zu machen. */
+  .hb.pw .hb-kopf-marke > a { min-height: 44px; margin: -9px 0; align-items: center; }
+  .hb.pw .hb-fuss a, .hb.pw .hb-fuss button.hb-fuss-link { display: flex; align-items: center; min-height: 44px; padding: 0; margin-bottom: 0; font-size: 14px !important; }
+  .hb.pw .hb-fuss a.pw-fuss-mail { display: inline-flex; }
+}

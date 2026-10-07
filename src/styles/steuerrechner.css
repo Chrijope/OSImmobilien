@@ -1,0 +1,318 @@
+/* MOREImmo Steuerrechner: approved design, scoped to public and advisor views. */
+/* `--steuer-frage-hoehe` ist die Mindesthoehe des Fragenkastens, siehe die
+   ausfuehrliche Begruendung weiter unten bei `.steuer-question-column >
+   .steuer-frage`. Sie steht in Pixeln und nicht in `rem`, weil `index.css`
+   unterhalb von 768 Pixeln die Wurzelgroesse auf 14 Pixel setzt und `1rem`
+   dort eben nicht 16 Pixel waere. */
+.steuer-flaeche { --steuer-gap: clamp(1rem, 2.5vw, 2rem); --steuer-frage-hoehe: 580px; color: hsl(var(--foreground)); }
+.steuer-flaeche *, .steuer-flaeche *::before, .steuer-flaeche *::after { box-sizing: border-box; }
+.steuer-flaeche :is(input, button, [role="combobox"]) { max-width: 100%; }
+.steuer-flaeche :is(button, a, input, summary, [role="combobox"]):focus-visible { outline: 2px solid hsl(var(--primary)); outline-offset: 4px; }
+/* Der Kopfbereich steht auf allen Breiten mittig. Vorher galt das nur auf dem
+   Handy, am Schreibtisch stand alles links und die Ueberschrift lief gegen den
+   rechten Rand ins Leere. Christian hat die mittige Fassung entschieden. */
+.steuer-public-header { padding: 0 .25rem; text-align: center; }
+.steuer-public-header img { margin-inline: auto; }
+.steuer-public-header h1 { font-size: clamp(1.9rem, 4vw, 3.1rem); max-width: 950px; margin-inline: auto; }
+.steuer-public-header p { font-size: 1.05rem; margin-inline: auto; }
+.steuer-hero-pillen { justify-content: center; }
+.steuer-hero-aktionen { justify-content: center; }
+
+/* ── Der Kopfbereich der oeffentlichen Seite ──────────────────────────────
+   Eine Flaeche, kein Kasten: der Verlauf geht von Blau 50 in das Seitengrau
+   darunter ueber, damit der Uebergang zum Rechner nicht als Kante wirkt.
+   Beide Farben sind vorhandene Token. */
+.steuer-hero { background: linear-gradient(180deg, hsl(var(--accent)) 0%, hsl(var(--muted) / .3) 100%); }
+.steuer-hero-pillen { list-style: none; padding: 0; margin: 1.75rem 0 0; display: flex; flex-wrap: wrap; gap: .6rem; }
+.steuer-hero-pillen li { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: 999px; padding: .5rem 1rem; font-size: .9rem; color: hsl(var(--foreground)); }
+.steuer-hero-aktionen { margin-top: 2rem; display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.75rem; }
+.steuer-workspace { display: grid; grid-template-columns: 180px minmax(0, 1fr) 230px; gap: var(--steuer-gap); padding: clamp(1rem, 3vw, 2.5rem); border: 1px solid hsl(var(--border)); border-radius: 24px; background: hsl(var(--card)); align-items: start; }
+.steuer-navigation h2, .steuer-context h2 { font-size: 1.15rem; font-weight: 600; margin: 0 0 1rem; }
+.steuer-navigation ol { list-style: none; padding: 0; display: grid; gap: .45rem; }
+.steuer-navigation li { display: flex; align-items: center; gap: .6rem; padding: .7rem .6rem; color: hsl(var(--muted-foreground)); border-radius: 10px; font-size: .9rem; }
+.steuer-navigation li[aria-current] { color: hsl(var(--accent-foreground)); background: hsl(var(--accent)); font-weight: 600; }
+.steuer-step-number { font-variant-numeric: tabular-nums; opacity: .75; font-size: .8rem; }
+.steuer-navigation p { font-size: .9rem; line-height: 1.6; color: hsl(var(--muted-foreground)); }
+.steuer-navigation p.steuer-navigation-note { margin: 2rem 0 .5rem; font-weight: 600; color: hsl(var(--accent-foreground)); }
+.steuer-question-column { min-width: 0; }
+.steuer-question-column > .steuer-eintritt { background: hsl(var(--background)); box-shadow: none; border: 0; border-radius: 18px; }
+.steuer-question-column > .steuer-eintritt > [aria-hidden] { display: none; }
+
+/* ── Der Kasten mit der Schrittzaehlung ──────────────────────────────────────
+   Er steht ueber dem Fragenkasten und sieht aus wie er, nur flacher. Damit
+   liest sich die Spalte in der Reihenfolge, in der man sie durchlaeuft: erst
+   wo man steht, dann die Frage, danach das Ergebnis. */
+.steuer-schrittkasten { background: hsl(var(--background)); border-radius: 18px; padding: 1rem 1.5rem; margin-bottom: .75rem; }
+.steuer-schrittkasten > * { margin-bottom: 0; }
+/* Die noch offenen Abschnitte des Balkens tragen `bg-muted`, und `--muted` ist
+   in diesem Farbsatz derselbe Wert wie `--background`. Auf der weissen Karte
+   war das noch zu ahnen, im neuen Kasten verschwanden sie vollstaendig und der
+   Balken sah aus wie ein einzelner kurzer Strich. Hier bekommen sie deshalb
+   eine eigene, gedaempfte Tuenche. */
+.steuer-schrittkasten [role="progressbar"] > div { background: hsl(var(--muted-foreground) / .2); }
+
+/* ── Die feste Hoehe des Fragenkastens ───────────────────────────────────────
+   Der Weiter-Knopf soll auf jedem Schritt an derselben Stelle stehen. Vorher
+   wanderte er um mehrere hundert Pixel, weil eine Frage mit fuenf Kacheln
+   deutlich hoeher ist als eine mit fuenf kleinen Zahlenknoepfen.
+
+   Die Hoehe ist nach dem hoechsten Schritt bemessen, nachgemessen im Browser
+   an der jeweils ENGSTEN Stelle der Layoutstufe, denn je schmaler die Spalte,
+   desto oefter brechen Ueberschrift und Kacheltexte um:
+
+       drei Spalten, ab 1101 Pixel:   573 Pixel (gemessen bei 1101)  ->  580
+       zwei Spalten, 761 bis 1100:    654 Pixel (gemessen bei 780)   ->  660
+       Handy, bis 760 Pixel:          siehe die Begruendung dort     ->    0
+
+   Es ist eine MINDESThoehe. Waechst ein Schritt spaeter doch darueber hinaus,
+   bricht nichts, er wird dann eben hoeher. Der Knopf haengt an der Unterkante
+   (`mt-auto` am Fussfach in `bausteine.tsx`), der Zwischenraum darueber dehnt
+   sich. */
+.steuer-question-column > .steuer-frage { min-height: var(--steuer-frage-hoehe, 0px); }
+.steuer-question-column h2 { font-size: clamp(1.4rem, 2.2vw, 1.85rem); }
+.steuer-question-column .text-sm, .steuer-question-column input { font-size: 1.05rem; }
+.steuer-question-column .text-xs { font-size: .92rem; }
+.steuer-question-column button.rounded-full, .steuer-result button.rounded-full { border-radius: 12px; }
+.steuer-context { padding-top: .3rem; }
+.steuer-context p { color: hsl(var(--muted-foreground)); font-size: 1rem; line-height: 1.7; }
+.steuer-context hr { margin: 1.8rem 0; }
+.steuer-context details { margin-top: 1.5rem; }
+.steuer-context summary, .steuer-mobile-help summary { color: hsl(var(--accent-foreground)); cursor: pointer; font-size: .95rem; padding: .5rem 0; }
+.steuer-mobile-help { display: none; }
+.steuer-focus-region:focus, .steuer-question-column:focus { outline: none; }
+.steuer-result { display: grid; gap: 1.5rem; }
+.steuer-result-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; }
+.steuer-result-heading h2 { font-size: clamp(1.6rem, 3vw, 2.25rem); font-weight: 600; letter-spacing: -.025em; }
+.steuer-result-heading > span { color: hsl(var(--accent-foreground)); background: hsl(var(--accent)); border-radius: 10px; padding: .6rem .9rem; font-size: .85rem; }
+.steuer-result-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 340px); gap: var(--steuer-gap); align-items: start; }
+.steuer-result-main { display: grid; min-width: 0; gap: 1.5rem; }
+.steuer-result-hero { border: 1px solid hsl(var(--primary) / .12); }
+.steuer-result-hero .steuer-range-value { color: hsl(var(--accent-foreground)); }
+.steuer-result-sidebar { position: sticky; top: 1.5rem; display: grid; gap: 1rem; min-width: 0; }
+.steuer-result-sidebar > div { background: hsl(var(--card)); box-shadow: none; }
+.steuer-result-sidebar button { text-align: left; }
+.steuer-result-sidebar > button { text-align: center; line-height: 1.5; }
+.steuer-details { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: 16px; padding: 1.25rem; min-width: 0; }
+.steuer-details > summary { cursor: pointer; padding: .25rem 0; font-size: 1.05rem; font-weight: 600; color: hsl(var(--foreground)); }
+.steuer-details > p { font-size: 1rem; line-height: 1.7; }
+.steuer-form-layout { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(1.5rem, 4vw, 4rem); }
+.steuer-form-intro h3 { font-size: 1.8rem; line-height: 1.2; }
+.steuer-form-intro p { font-size: 1.05rem; line-height: 1.7; }
+.steuer-form-benefits { margin-top: 2rem; padding: 1.5rem; border-radius: 16px; background: hsl(var(--accent)); }
+.steuer-form-benefits h4 { font-size: 1.15rem; font-weight: 600; margin-bottom: .7rem; }
+.steuer-form-label { display: block; font-weight: 600; font-size: .95rem; margin-bottom: .5rem; }
+.steuer-form-layout input, .steuer-form-layout [role="combobox"] { min-height: 48px; font-size: 16px; }
+.steuer-form-layout input[type="checkbox"] { min-height: auto; }
+.steuer-field-error { color: hsl(var(--destructive)); font-size: .9rem; margin-top: .5rem; }
+@media (max-width: 1100px) {
+ .steuer-workspace { grid-template-columns: 160px minmax(0, 1fr); }
+ .steuer-context { display: none; }
+ .steuer-mobile-help { display: block; margin: -1rem 0 1.2rem; }
+ .steuer-mobile-help p { font-size: 1rem; line-height: 1.7; color: hsl(var(--muted-foreground)); padding: .5rem 0; }
+ /* Zwei Spalten statt drei, dafuer kommt der Hinweis „Warum fragen wir das?“
+    in die Karte. Der hoechste Schritt misst hier 654 Pixel, gemessen bei
+    780 Pixeln Fensterbreite, der engsten Stelle dieser Stufe. */
+ .steuer-flaeche { --steuer-frage-hoehe: 660px; }
+}
+@media (max-width: 760px) {
+ /* Mittig steht der Kopf jetzt ueberall, siehe oben. Auf dem Handy kommt
+    dazu, dass der Knopf ueber die volle Breite geht, sonst sieht er neben der
+    grossen Ueberschrift verloren aus. */
+ .steuer-hero-aktionen { flex-direction: column; align-items: stretch; gap: 1rem; }
+ .steuer-hero-aktionen > a { text-align: center; }
+ .steuer-workspace { display: block; padding: 1rem; border-radius: 18px; }
+ .steuer-navigation { display: none; }
+ .steuer-question-column > .steuer-eintritt > div { padding: 1.25rem 1rem; }
+ .steuer-schrittkasten { padding: .9rem 1rem; margin-bottom: .6rem; }
+
+ /* ── Warum der Fragenkasten auf dem Handy KEINE feste Hoehe bekommt ────────
+    Auf dem Handy waere eine feste Hoehe eine Verschlimmbesserung. Gemessen
+    bei 375 Pixeln Breite reicht der niedrigste Schritt (Kinder) 467 Pixel
+    und der hoechste (Steuerklasse, fuenf Kacheln) 796 Pixel; bei 320 Pixeln
+    sind es 423 gegen 940. Der Kasten beginnt dort erst 344 Pixel unter dem
+    Seitenanfang, auf einen Bildschirm passt also ohnehin nur ein Kasten von
+    rund 470 Pixeln.
+
+    Eine Hoehe nach dem hoechsten Schritt haette den Knopf damit auf JEDEM
+    Schritt aus dem Bild geschoben, auch auf den beiden, auf denen er heute
+    gerade noch zu sehen ist. Eine Hoehe nach dem verfuegbaren Platz wiederum
+    traefe nur zwei der sieben Schritte und aenderte praktisch nichts.
+
+    Der uebliche Ausweg, den Knopf mit `position: sticky` an den unteren
+    Bildrand zu heften, traegt hier ebenfalls nicht: `src/App.tsx` legt eine
+    `<main>`-Klammer mit `overflow-y: auto` um alle Routen. Sie ist damit der
+    naechste Rollkasten, rollt aber selbst nie, und ein klebender Knopf darin
+    klebt an ihrem unteren Ende statt am Bildrand. Nachgemessen, er bleibt
+    genau dort stehen, wo er ohne die Regel auch staende.
+
+    Deshalb bleibt es hier beim natuerlichen Mass. Ein fest stehender Balken
+    am unteren Bildrand waere der richtige naechste Schritt, das ist aber
+    eine Gestaltungsentscheidung und keine Korrektur. */
+ .steuer-flaeche { --steuer-frage-hoehe: 0px; }
+ .steuer-result-grid, .steuer-form-layout { grid-template-columns: minmax(0, 1fr); }
+ .steuer-result-sidebar { position: static; }
+ .steuer-result-hero > div { padding: 1.4rem; }
+ .steuer-result-hero .steuer-range-top { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+ .steuer-result-hero .steuer-range-top > div { text-align: left; }
+ .steuer-result-hero .steuer-range-mobile-label { display: block; font-size: .9rem; margin-top: .3rem; color: hsl(var(--muted-foreground)); }
+ .steuer-result-hero .steuer-range-bar, .steuer-result-hero .steuer-range-labels { display: none; }
+ .steuer-form-benefits { margin-top: 1rem; }
+}
+@media (min-width: 761px) { .steuer-range-mobile-label { display: none; } }
+@media (prefers-reduced-motion: reduce) { .steuer-flaeche *, .steuer-flaeche *::before, .steuer-flaeche *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; } }
+@media (max-width: 760px) {
+ .steuer-flaeche .steuer-result-hero .steuer-result-hero .steuer-range-mobile-label { display: block; }
+ .steuer-result-main .flex.items-baseline.justify-between { flex-wrap: wrap; }
+ .steuer-result-hero .inline-flex { display: block; border-radius: 12px; line-height: 1.6; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Die Handy-Huelle der OEFFENTLICHEN Seite: `.steuer-mobil-gross`
+
+   Wunsch der Geschaeftsleitung: Auf dem Handy soll `/steuer` alles mittig und
+   zwei Schriftgroessen groesser zeigen.
+
+   Die Klasse steht ausschliesslich auf `/steuer` (SteuerrechnerPublic.tsx).
+   Die interne Seite `/steuerrechner` traegt sie nicht und aendert sich damit
+   um kein Pixel, obwohl beide Seiten dieselben Bausteine benutzen. Genau
+   deshalb liegt die Aenderung hier im Stylesheet und nicht in den Bausteinen:
+   In den Bausteinen waere sie automatisch auch innen sichtbar.
+
+   Alles hier steht unter `max-width: 767.98px`, also genau unterhalb der
+   Tailwind-Grenze `md` (768 Pixel). Ab 768 Pixel aufwaerts greift keine
+   einzige dieser Regeln.
+   Hinweis: Diese Datei schaltet ihr eigenes Handy-Layout schon bei 760 Pixel
+   um. Zwischen 761 und 767 Pixeln gilt also kurz das zweispaltige Layout mit
+   der groesseren, mittigen Schrift. Das ist ein Fenster von sieben Pixeln
+   Breite und faellt in der Praxis nicht auf.
+   ═════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 767.98px) {
+
+  /* ── 1 Groessere Schrift ──────────────────────────────────────────────────
+     Warum das ueberhaupt noetig ist: `index.css` verkleinert unterhalb von
+     768 Pixeln die ganze Anwendung. Dort steht `html, body { font-size: 14px }`
+     und darunter eine Reihe von Regeln mit `!important`, die `text-base`,
+     `text-lg`, `text-xl`, Eingabefelder, Beschriftungen, runde Knoepfe und
+     Tabellenzellen noch einmal kleiner machen. Aus `text-xs` werden so
+     10,5 Pixel. Das ist die Schrift, die der Geschaeftsfuehrer als zu klein
+     gemeldet hat.
+
+     Daraus folgen drei Dinge:
+
+     Erstens stehen die Groessen hier in PIXELN und nicht in `rem`. Bei einer
+     Wurzelgroesse von 14 Pixeln waere `1rem` naemlich nicht 16, sondern 14
+     Pixel, und die Rechnung waere fuer jeden Leser irrefuehrend.
+
+     Zweitens tragen sie `!important`. Gegen eine fremde `!important`-Regel
+     hilft keine noch so genaue Auswahl.
+
+     Drittens steht die Klasse in jeder Zeile doppelt. Das ist kein Tippfehler:
+     Eine doppelt genannte Klasse waehlt genau dasselbe aus, zaehlt aber
+     schwerer. Erst damit gewinnt die Leiter gegen die staerksten Regeln der
+     globalen Datei, etwa gegen `button[class*="rounded-full"]:not(...)`. Ohne
+     die Verdopplung waere der Knopf „Weiter" das einzige Element auf der
+     Seite geblieben, das klein bleibt.
+
+     Alle drei Kniffe zusammen ersparen einen Eingriff in `index.css`, der
+     jede andere Seite der Anwendung mitveraendern wuerde.
+
+     Die Umrechnung steht an dieser EINEN Stelle. Links die Stufe, in der
+     Mitte, was heute davon auf dem Handy ankommt, rechts, was daraus wird:
+
+         text-[10px], text-[11px]              10 - 11  ->  14 Pixel
+         text-xs                               10,5     ->  15 Pixel
+         text-sm                               12,25    ->  16 Pixel
+         text-base, text-[15px], text-[17px]   12 - 15  ->  18 Pixel
+         text-lg                               13,3     ->  20 Pixel
+         text-xl                               14,7     ->  22 Pixel
+         text-2xl                              15,4     ->  24 Pixel
+         text-3xl und groesser                          ->  unveraendert
+
+     Die Zeilenhoehe waechst immer mit, sonst kleben die Zeilen aneinander.
+     Bei 24 Pixeln ist Schluss, das ist die Obergrenze. Ohne sie wuerde eine
+     Ueberschrift ins Absurde wachsen und auf einem schmalen Bildschirm nicht
+     mehr in eine Zeile passen.
+
+     Die ganz kleinen Versalienzeilen (`text-[10px]`, `text-[11px]`) bekommen
+     bewusst einen Pixel weniger als `text-xs`. Sie sind weit gesperrt
+     gesetzt, und gesperrte Grossbuchstaben brauchen mehr Platz je Zeichen. */
+  .steuer-mobil-gross.steuer-mobil-gross .text-\[10px\],
+  .steuer-mobil-gross.steuer-mobil-gross .text-\[11px\] { font-size: 14px !important; line-height: 20px !important; }
+
+  .steuer-mobil-gross.steuer-mobil-gross .text-xs { font-size: 15px !important; line-height: 22px !important; }
+
+  .steuer-mobil-gross.steuer-mobil-gross .text-sm { font-size: 16px !important; line-height: 24px !important; }
+
+  .steuer-mobil-gross.steuer-mobil-gross .text-base,
+  .steuer-mobil-gross.steuer-mobil-gross .text-\[15px\],
+  .steuer-mobil-gross.steuer-mobil-gross .text-\[17px\] { font-size: 18px !important; line-height: 26px !important; }
+
+  .steuer-mobil-gross.steuer-mobil-gross .text-lg { font-size: 20px !important; line-height: 28px !important; }
+  .steuer-mobil-gross.steuer-mobil-gross .text-xl { font-size: 22px !important; line-height: 30px !important; }
+  .steuer-mobil-gross.steuer-mobil-gross .text-2xl { font-size: 24px !important; line-height: 32px !important; }
+
+  /* Das grosse Betragsfeld fuer das Jahresbrutto. Es ist als `!text-3xl`
+     ausgezeichnet, wird von `index.css` aber wie jedes andere Eingabefeld auf
+     12,25 Pixel gedrueckt und war damit kleiner als der Text daneben. Hier
+     bekommt es die Groesse, die es laut Auszeichnung haben soll. */
+  .steuer-mobil-gross.steuer-mobil-gross .\!text-3xl { font-size: 30px !important; line-height: 36px !important; }
+
+  /* Dieselbe Leiter fuer die Stellen, die weiter oben in dieser Datei eine
+     feste Groesse bekommen und gar keine Tailwind-Klasse tragen. Ohne sie
+     bliebe genau dieser Teil der Seite klein, waehrend alles daneben waechst. */
+  .steuer-mobil-gross.steuer-mobil-gross .steuer-result-heading > span { font-size: 15px !important; line-height: 22px !important; }
+  .steuer-mobil-gross.steuer-mobil-gross .steuer-mobile-help summary,
+  .steuer-mobil-gross.steuer-mobil-gross .steuer-mobile-help p,
+  .steuer-mobil-gross.steuer-mobil-gross .steuer-details > p,
+  .steuer-mobil-gross.steuer-mobil-gross .steuer-form-label,
+  .steuer-mobil-gross.steuer-mobil-gross .steuer-field-error { font-size: 16px !important; line-height: 24px !important; }
+  .steuer-mobil-gross.steuer-mobil-gross .steuer-details > summary,
+  .steuer-mobil-gross.steuer-mobil-gross .steuer-form-benefits h4 { font-size: 18px !important; line-height: 26px !important; }
+  .steuer-mobil-gross.steuer-mobil-gross .steuer-result-heading h2 { font-size: 24px !important; line-height: 32px !important; }
+  /* Die Ueberschrift ueber dem Kontaktformular ist mit 1.8rem schon groesser
+     als die Leiter. Sie steht hier eigens, damit sie nicht schrumpft. */
+  .steuer-mobil-gross.steuer-mobil-gross .steuer-form-intro h3 { font-size: 26px !important; line-height: 32px !important; }
+
+  /* Groessere Schrift bricht leichter aus ihrem Kasten aus. Lange Woerter
+     duerfen deshalb umbrechen statt ueber den Rand zu laufen. */
+  .steuer-mobil-gross { overflow-wrap: break-word; }
+
+  /* ── 2 Zentrierung ───────────────────────────────────────────────────────
+     Eine Zeile stellt Ueberschriften, Fliesstext, Knopfbeschriftungen und die
+     Bloecke selbst in die Mitte. Elemente mit eigener Ausrichtung, etwa die
+     Antwortkacheln mit `text-left`, behalten ihre. */
+  .steuer-mobil-gross { text-align: center; }
+
+  /* Bewusste Ausnahmen. Mittig waeren sie schlechter lesbar, nicht besser:
+     Zahlenkolonnen kann man mittig nicht mehr vergleichen, eine Eingabe
+     beginnt dort, wo ihr Text beginnt, und eine Beschriftung gehoert an den
+     Anfang ihres Feldes. Listenpunkte stehen neben ihrer Nummer oder ihrem
+     Punkt und wuerden sonst von ihm wegruecken. */
+  .steuer-mobil-gross :where(li, th, td, input, textarea, select, label) { text-align: left; }
+  /* Betragsspalten bleiben rechtsbuendig, damit die Stellen untereinander
+     stehen. Ohne diese Zeile wuerde die Ausnahme darueber sie nach links
+     ziehen. */
+  .steuer-mobil-gross :where(th, td).text-right { text-align: right; }
+
+  /* Zwei Zeilen verteilen ihre beiden Teile auf die Aussenkanten. Sobald sie
+     auf dem Handy umbrechen, stehen beide Teile linksbuendig untereinander und
+     stechen aus der mittigen Seite heraus. Hier gehoeren sie in die Mitte.
+     Die uebrigen Zeilen dieser Bauart, etwa Bezeichnung links und Betrag
+     rechts, bleiben ausdruecklich unberuehrt: dort ist das Auseinanderziehen
+     die Aussage. */
+  .steuer-mobil-gross .steuer-result-heading,
+  .steuer-mobil-gross .steuer-result-hero .flex-wrap { justify-content: center; }
+
+  /* Die beiden grossen Betraege der Messlatte stehen auf dem Handy
+     untereinander. Auf einer mittigen Seite gehoeren sie in die Mitte, sonst
+     zieht die Regel weiter oben in dieser Datei sie nach links. */
+  .steuer-mobil-gross .steuer-result-hero .steuer-range-top > div { text-align: center; }
+
+  /* Das Logo ist ein Block und laesst sich deshalb nicht ueber die Textmitte
+     ausrichten, sondern nur ueber seine eigenen Raender. */
+  .steuer-mobil-gross .steuer-public-header img { margin-left: auto; margin-right: auto; }
+
+  /* Absaetze mit eigener Hoechstbreite klebten sonst am linken Rand, waehrend
+     ihr Text mittig steht. */
+  .steuer-mobil-gross :where(.max-w-md, .max-w-lg, .max-w-2xl) { margin-left: auto; margin-right: auto; }
+}

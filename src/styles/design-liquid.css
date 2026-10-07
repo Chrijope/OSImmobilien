@@ -1,0 +1,833 @@
+/*
+  Liquid Glass: die dritte Designschicht.
+
+  Aufgebaut wie `design-glas.css`, nur mit einem anderen Merkmal: Alles hier
+  haengt an `data-glas="liquid"` am Wurzelelement. Dort steht heute `"an"`,
+  die zweite Schicht. Erst `lib/designSchalter.ts` tauscht den Wert, seit dem
+  23.09.2026 fuer alle (abschaltbar mit `?design=heute` an der Adresse).
+  Fehlt das Merkmal, greift keine einzige Zeile dieser Datei.
+
+  Farben und Schriften kommen weiter aus `index.css` und `design-neu.css`.
+  Diese Datei aendert, WORAUF die Flaechen liegen (ein farbiger, langsam
+  bewegter Grund), WIE Licht auf ihre Kanten faellt und in welcher Tiefe sie
+  stehen. Wo sie Farben anfasst, dann nur, damit Text auf Glas lesbar bleibt.
+
+  Unterschied zur zweiten Schicht (`data-glas="an"`):
+    * Dort tragen nur Seitenleiste, Kopfleiste und Dialoge Weichzeichnung.
+      Hier tragen sie am Schreibtisch auch alle Karten (Entscheidung
+      Christian, 23.09.2026). Am Handy bleiben Karten ohne, der Leistung wegen.
+    * Seitenleiste und Kopfleiste schweben als eigene Scheiben, der Inhalt
+      laeuft unter der Kopfleiste durch.
+    * Der Grund bewegt sich langsam. Bei "Bewegung reduzieren", am Handy und
+      waehrend eines Videogespraechs steht er still.
+
+  Alles steht in `@media screen`. Gedruckt wird ohne diese Schicht, also so
+  wie bisher.
+
+  Lesbarkeit ist gerechnet, nicht geschaetzt: `design-liquid.test.ts` liest
+  die Werte aus dieser Datei und prueft Text auf Glas und Text direkt auf dem
+  Grund gegen 4,5:1, im unguenstigsten Fall (zwei Wolken uebereinander, mit
+  der Saettigungsanhebung hinter dem Glas).
+*/
+
+@keyframes lg-wolken {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
+  50%  { transform: translate3d(3%, -2.5%, 0) rotate(5deg) scale(1.06); }
+  100% { transform: translate3d(-3%, 2%, 0) rotate(-4deg) scale(1.02); }
+}
+/* Das Fensterlicht blendet weich ein, statt aufzuspringen. */
+@keyframes lg-licht-an {
+  from { opacity: 0; }
+}
+
+@media screen {
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   0. Tokens
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+[data-glas="liquid"] {
+  /*
+    Schrift auf Glas eine Stufe dunkler als im Hausdesign. Der Grund darunter
+    ist nie reines Weiss, deshalb reicht das Grau aus `design-neu.css`
+    (#677281) hier nicht fuer 4,5:1.
+  */
+  --foreground: 215 30% 15%;          /* #1A2330 */
+  --card-foreground: 215 30% 15%;
+  --popover-foreground: 215 30% 15%;
+  --muted-foreground: 215 16% 35%;    /* #4A5667 */
+  --success: 148 69% 25%;             /* #146B3D statt #187745 */
+  --destructive: 4 75% 40%;           /* #B3241A statt #C0261B */
+  --warning: 36 100% 26%;             /* #855000 statt #9A5B00 */
+  --border: 213 30% 84%;
+
+  /* Blau 600 traegt als Schrift auf Glas nur 3,5:1. Schrift nimmt Blau 700. */
+  --lg-schrift-blau: 204 95% 34%;     /* Blau 700 #0466A9 */
+  /*
+    Die Verlaufsstopps gefuellter blauer Knoepfe. Oben nicht `--primary`
+    selbst: Dessen HSL-Wert (204 92% 41%) rundet heller als #087AC7 und
+    traegt mit weisser Schrift nur 4,45:1. Ein Prozentpunkt dunkler sind
+    es 4,64:1.
+  */
+  --lg-primaer-hoch: 204 92% 40%;
+  --lg-primaer-tief: 204 95% 34%;
+
+  /* Der Grund ist die Flaeche aus der Markenrichtlinie, #F4F7FA. */
+  --lg-grund: 210 37% 97%;
+  --lg-glas: 0 0% 100%;
+
+  /* Deckkraft der Glasflaechen. Der Waechtertest rechnet mit genau diesen Zahlen. */
+  --lg-deckkraft: .48;                /* Karten */
+  --lg-deckkraft-leiste: .46;         /* Seitenleiste, Kopfleiste */
+  --lg-deckkraft-schwebend: .78;      /* Dialoge, Menues, Hinweise, Bannerstapel */
+  --lg-deckkraft-einlage: .46;        /* Karte in der Karte, ohne eigene Weichzeichnung */
+
+  /*
+    Die Weichzeichnung als Token. So schalten die Ruecksichten weiter unten
+    (Handy, weniger Transparenz, Browser ohne Unterstuetzung) sie an einer
+    einzigen Stelle ab, statt jede Flaeche einzeln zu ueberschreiben.
+    `saturate` gehoert dazu: Ohne sie wirkt alles hinter der Scheibe
+    ausgewaschen. Apple nennt das Vibrancy.
+  */
+  --lg-filter-karte: blur(22px) saturate(180%);
+  --lg-filter-leiste: blur(30px) saturate(180%);
+  --lg-filter-schwebend: blur(40px) saturate(180%);
+
+  --lg-kante: hsl(0 0% 100% / .62);
+  --lg-kante-oben: hsl(0 0% 100% / .95);
+  --lg-kante-unten: hsl(0 0% 100% / .28);
+  --lg-rand: hsl(0 0% 100% / .55);    /* Lichtbrechung am Rand, innen */
+  --lg-tiefe: hsl(204 60% 40% / .12); /* die Unterkante bricht das Licht farbig */
+  --lg-haarlinie: hsl(214 35% 25% / .10);
+  --lg-licht: hsl(0 0% 100% / .9);
+  --lg-glanz: hsl(0 0% 100% / .30);    /* weicher Glanz unter dem Zeiger, auf der Flaeche */
+  --lg-glanz-oben: hsl(0 0% 100% / .12);  /* die helle Oberkante jeder Scheibe */
+  /* Staerke der Toenung getoenter Karten (Hinweis, Warnung, Erfolg) ueber dem Glas. */
+  --lg-toenung: .08;
+
+  --lg-innen:
+    inset 0 1px 0 var(--lg-kante-oben),
+    inset 0 -1px 0 var(--lg-kante-unten),
+    inset 0 -10px 18px -14px var(--lg-tiefe),
+    inset 0 0 22px -8px var(--lg-rand);
+  --lg-schatten:
+    0 0 0 .5px var(--lg-haarlinie),
+    0 1px 2px hsl(215 40% 20% / .05),
+    0 10px 28px -12px hsl(215 40% 20% / .16),
+    0 30px 60px -32px hsl(204 92% 41% / .22);
+  --lg-schatten-hoch:
+    0 0 0 .5px var(--lg-haarlinie),
+    0 2px 4px hsl(215 40% 20% / .06),
+    0 20px 44px -16px hsl(215 40% 20% / .22),
+    0 44px 80px -36px hsl(204 92% 41% / .30);
+  --lg-schatten-schwebend:
+    0 0 0 .5px var(--lg-haarlinie),
+    0 12px 28px -12px hsl(215 50% 15% / .22),
+    0 36px 90px -24px hsl(215 50% 15% / .38);
+
+  --lg-radius: 22px;
+  --lg-radius-einlage: 16px;
+}
+
+[data-glas="liquid"].dark {
+  --foreground: 212 39% 93%;          /* #E8EEF5 */
+  --card-foreground: 212 39% 93%;
+  --popover-foreground: 212 39% 93%;
+  --muted-foreground: 213 18% 71%;    /* #A7B3C2 */
+  --success: 146 50% 57%;
+  --destructive: 4 83% 75%;           /* #F4938C */
+  --warning: 36 80% 64%;
+  --border: 214 25% 26%;
+
+  --lg-schrift-blau: 204 100% 77%;    /* Blau 300, wie heute im Dunkeln */
+  --lg-primaer-hoch: 204 100% 77%;    /* = --primary im Dunkeln, dunkle Schrift darauf */
+  --lg-primaer-tief: 204 100% 69%;
+
+  --lg-grund: 214 39% 7%;             /* #0B1119 */
+  --lg-glas: 214 30% 14%;             /* #18212D */
+  --lg-deckkraft: .52;
+  --lg-deckkraft-leiste: .46;
+  --lg-deckkraft-schwebend: .84;
+  --lg-deckkraft-einlage: .5;
+
+  --lg-kante: hsl(0 0% 100% / .10);
+  --lg-kante-oben: hsl(0 0% 100% / .22);
+  --lg-kante-unten: hsl(0 0% 100% / .04);
+  --lg-rand: hsl(204 100% 80% / .12);
+  --lg-tiefe: hsl(0 0% 0% / .35);
+  --lg-haarlinie: hsl(0 0% 0% / .5);
+  --lg-licht: hsl(204 100% 88% / .7);
+  --lg-glanz: hsl(204 100% 80% / .08);
+  --lg-glanz-oben: hsl(0 0% 100% / .035);
+  --lg-toenung: .08;
+
+  --lg-schatten:
+    0 0 0 .5px var(--lg-haarlinie),
+    0 1px 2px hsl(0 0% 0% / .35),
+    0 16px 36px -16px hsl(0 0% 0% / .6);
+  --lg-schatten-hoch:
+    0 0 0 .5px var(--lg-haarlinie),
+    0 2px 6px hsl(0 0% 0% / .4),
+    0 26px 52px -18px hsl(0 0% 0% / .7),
+    0 0 40px -12px hsl(204 92% 50% / .25);
+  --lg-schatten-schwebend:
+    0 0 0 .5px var(--lg-haarlinie),
+    0 40px 100px -24px hsl(0 0% 0% / .75);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   1. Der Grund
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Vier weiche Farbwolken in Markenfarben: Blau 500, Blau 300, das helle
+  Systemblau und ein Hauch Website-Orange als Abendlicht. Sie sind deutlich
+  zarter als im Muster, und das ist gerechnet: Seitentitel, Grautexte und
+  Verweise stehen oft direkt auf dem Grund, ohne Glas dazwischen. Liegen zwei
+  Wolken uebereinander, muss auch dort noch 4,5:1 herauskommen. Mit den
+  Staerken des Musters waren es an der unguenstigsten Stelle 3,2:1 (Blau 700
+  auf zwei Wolken), jetzt sind es 4,54:1.
+
+  Die Wolken liegen auf einer eigenen, fest stehenden Ebene hinter allem.
+  Sie wird von `lib/designSchalter.ts` direkt an den `body` gehaengt.
+  Ihre Ebene ist -1, nicht 0: Mit 0 laege sie VOR jedem Block ohne eigene
+  Positionierung, das ist der Fehler vom 14.09.2026, siehe `design-glas.css`.
+  Bewegt wird nur `transform`, das erledigt die Grafikkarte.
+*/
+[data-glas="liquid"] body { background-color: hsl(var(--lg-grund)); }
+
+[data-glas="liquid"] .lg-grund {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background-color: hsl(var(--lg-grund));
+}
+[data-glas="liquid"] .lg-grund-wolken {
+  position: absolute;
+  inset: -18%;
+  background:
+    radial-gradient(36% 40% at 14% 20%, hsl(204 95% 51% / .06), transparent 70%),
+    radial-gradient(34% 40% at 86% 14%, hsl(204 100% 77% / .22), transparent 70%),
+    radial-gradient(40% 44% at 76% 84%, hsl(199 94% 67% / .14), transparent 70%),
+    radial-gradient(30% 34% at 24% 88%, hsl(22 95% 72% / .20), transparent 70%);
+  animation: lg-wolken 48s ease-in-out infinite alternate;
+  will-change: transform;
+}
+[data-glas="liquid"].dark .lg-grund-wolken {
+  background:
+    radial-gradient(38% 42% at 14% 18%, hsl(204 92% 41% / .30), transparent 70%),
+    radial-gradient(34% 40% at 86% 14%, hsl(204 95% 51% / .16), transparent 70%),
+    radial-gradient(40% 44% at 76% 86%, hsl(199 94% 67% / .12), transparent 70%),
+    radial-gradient(30% 34% at 22% 90%, hsl(22 95% 58% / .14), transparent 70%);
+}
+
+/*
+  Waehrend eines Videogespraechs steht der Grund still. Das Gespraech braucht
+  die Grafikkarte fuer die Videos, und eine Bewegung im Augenwinkel lenkt ab.
+  Erkannt wird das Gespraech an den Merkmalen, die der Videoraum ohnehin
+  setzt: die Leiste eines minimierten Gespraechs, die Kacheln, das eigene
+  Bild und die Gastseite. Der Videoraum selbst wird dafuer nicht angefasst.
+*/
+[data-glas="liquid"]:has(:is([data-pruefung="leisten-zeile"], [data-pruefung="teilnehmer-kachel"], [data-pruefung="eigenes-bild"], [data-gastseite])) .lg-grund-wolken {
+  animation-play-state: paused;
+}
+
+/* Die grossen Flaechen darueber duerfen nicht mehr deckend sein. */
+[data-glas="liquid"] main.flex-1 { background-color: transparent; }
+
+/*
+  Vollbildseiten ausserhalb des CRM-Geruests (Anmeldung, Passwort,
+  Aktivierung, Karriere, Signatur, Selbstauskunft, Impressum und so weiter)
+  tragen an ihrer aeussersten Huelle den Haken `data-lg="seite"`. Die Huelle
+  brachte eine deckende Flaeche mit (`bg-background`, `bg-white`,
+  `bg-muted`, ein Verlauf bis `bg-background`) und legte sie ueber den
+  bewegten Grund. Hier wird nur diese eine Huelle durchsichtig.
+
+  Bewusst NICHT global ueber `bg-background`: Das ist auch die Farbe von
+  Eingabefeldern und Knoepfen, und die bleiben deckend.
+
+  Das `body` im Selektor ist Absicht: `kundenportal.css` wird erst mit der
+  Aktivierungsseite nachgeladen und setzt an `.portal-ui` gleich gewichtet
+  einen Hintergrund. Ohne die eine Stufe mehr gewaenne sie, nur weil sie
+  spaeter kommt.
+*/
+[data-glas="liquid"] body [data-lg="seite"] {
+  background-color: transparent;
+  background-image: none;
+}
+
+/*
+  Die klebenden Kopfleisten dieser Seiten (Haken `data-lg="kopfscheibe"`)
+  werden Glasscheiben statt deckender Balken. Sie laufen ueber die volle
+  Breite, und unter ihnen scrollt der Inhalt durch, auch dunkle Bildflaechen.
+  Deshalb die dichtere Deckkraft der schwebenden Flaechen, nicht die der
+  Seitenleiste: Die Schrift in der Leiste bleibt auch ueber einem Foto lesbar.
+*/
+[data-glas="liquid"] [data-lg="kopfscheibe"] {
+  background-color: hsl(var(--lg-glas) / var(--lg-deckkraft-schwebend));
+  background-image: linear-gradient(180deg, var(--lg-glanz-oben), transparent);
+  -webkit-backdrop-filter: var(--lg-filter-leiste);
+  backdrop-filter: var(--lg-filter-leiste);
+  border-bottom-color: var(--lg-haarlinie);
+  box-shadow: inset 0 1px 0 var(--lg-kante-oben), 0 0 0 .5px var(--lg-haarlinie);
+}
+[data-glas="liquid"].dark [data-lg="kopfscheibe"] { border-bottom-color: hsl(0 0% 100% / .06); }
+/*
+  Wie beim Bannerstapel: Weichzeichnung machte die Leiste zum Bezugsrahmen
+  fuer alles darin mit `position: fixed` (etwa ein aufgeklapptes Handymenue).
+  Solange so etwas darin steht, wird sie fast deckend statt weich.
+*/
+[data-glas="liquid"] [data-lg="kopfscheibe"]:has(.fixed) {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background-color: hsl(var(--lg-glas) / .94);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   2. Das Geruest: schwebende Kopfleiste, Banner, Inhalt darunter
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Die Haken stehen in `DashboardLayout.tsx`: `spalte` ist die Spalte rechts
+  der Seitenleiste, `kopfbereich` fasst Kopfleiste und Banner zusammen,
+  `bannerstapel` die Banner allein. Ohne Liquid Glass sind die beiden Kaesten
+  `contents` und haben keine Wirkung.
+
+  Hier wird der Kopfbereich aus dem Fluss genommen und schwebt mit Abstand
+  ueber dem Inhalt. Der Inhalt beginnt dadurch oben an der Spalte und laeuft
+  beim Scrollen unter der Kopfleiste durch. Damit oben nichts verdeckt ist,
+  bekommt er so viel Luft, wie der Kopfbereich hoch ist. Die Zahl misst
+  `components/Kopfbereich.tsx` und schreibt sie als `--lg-kopf-unterkante`
+  an die Spalte. Der Rueckfallwert gilt nur fuer den ersten Bildaufbau.
+*/
+[data-glas="liquid"] [data-lg="spalte"] { position: relative; }
+
+/*
+  Ebene 40: ueber dem Inhalt und der Seitenleiste (10), aber UNTER Dialogen,
+  Menues und Schubladen (50 und hoeher). Heute liegt die Kopfleiste auf 60
+  und damit ueber jedem Dialog. Ohne Glas faellt das nicht auf; mit Glas
+  bliebe sie als einzige Flaeche scharf ueber einem offenen Dialog stehen.
+*/
+[data-glas="liquid"] [data-lg="kopfbereich"] {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  right: 12px;
+  z-index: 40;
+  /* Die Luecke zwischen Kopfleiste und Bannern faengt keine Klicks ab. */
+  pointer-events: none;
+}
+[data-glas="liquid"] [data-lg="kopfbereich"] > * { pointer-events: auto; }
+
+/* Die Kopfleiste: eine eigene Scheibe mit Lichtkante. */
+[data-glas="liquid"] [data-lg="kopfbereich"] > header {
+  height: 64px;
+  border: 1px solid var(--lg-kante);
+  border-radius: 20px;
+  background: linear-gradient(180deg,
+    hsl(var(--lg-glas) / calc(var(--lg-deckkraft-leiste) + .08)),
+    hsl(var(--lg-glas) / var(--lg-deckkraft-leiste)));
+  -webkit-backdrop-filter: var(--lg-filter-leiste);
+  backdrop-filter: var(--lg-filter-leiste);
+  box-shadow: var(--lg-innen), var(--lg-schatten);
+}
+
+/* Suchfeld: eine eingelassene Mulde im Glas. */
+[data-glas="liquid"] [data-lg="kopfbereich"] > header [data-ui="field"] {
+  border-radius: 12px;
+  border-color: var(--lg-kante);
+  background-color: hsl(var(--lg-glas) / .5);
+  box-shadow: inset 0 1px 2px hsl(215 40% 20% / .10), inset 0 -1px 0 var(--lg-kante-oben);
+}
+[data-glas="liquid"].dark [data-lg="kopfbereich"] > header [data-ui="field"] {
+  background-color: hsl(0 0% 0% / .22);
+  box-shadow: inset 0 1px 2px hsl(0 0% 0% / .4), inset 0 -1px 0 hsl(0 0% 100% / .06);
+}
+
+/*
+  Die Banner (Vorfuehrmodus, Fokus, Zwei-Faktor, Weekly Call,
+  Akademie) liegen gemeinsam auf EINER Scheibe unter der Kopfleiste. Sie
+  bringen durchscheinende Toenungen mit (`bg-primary/5` und aehnlich). Auf
+  der Scheibe liegt die Toenung ueber dem Glas und bleibt zu sehen; einzeln
+  ueber dem durchlaufenden Inhalt waere sie zu duenn, um darauf zu lesen.
+*/
+[data-glas="liquid"] [data-lg="bannerstapel"] {
+  display: block;
+  overflow: hidden;
+  border: 1px solid var(--lg-kante);
+  border-radius: 16px;
+  background-color: hsl(var(--lg-glas) / var(--lg-deckkraft-schwebend));
+  -webkit-backdrop-filter: var(--lg-filter-schwebend);
+  backdrop-filter: var(--lg-filter-schwebend);
+  box-shadow: var(--lg-innen), var(--lg-schatten);
+}
+[data-glas="liquid"] [data-lg="bannerstapel"]:empty { display: none; }
+[data-glas="liquid"] [data-lg="bannerstapel"] > :last-child { border-bottom-width: 0; }
+/*
+  Weichzeichnung macht eine Flaeche zum Bezugsrahmen fuer alles, was darin
+  `position: fixed` traegt. Der Vorfuehrmodus legt so einen Rahmen um das
+  ganze Fenster; mit Weichzeichnung saesse er nur um den Stapel. Solange er
+  da ist, wird die Scheibe fast deckend statt weich.
+*/
+[data-glas="liquid"] [data-lg="bannerstapel"]:has(.fixed) {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background-color: hsl(var(--lg-glas) / .94);
+}
+
+/*
+  Der Inhalt: oben Luft in Hoehe des Kopfbereichs.
+
+  Klebende Elemente im Inhalt (`sticky top-0`, die Spalten im Kundenprofil,
+  die Anrufleiste) brauchen dafuer keine eigene Regel. Sie haften nicht an
+  der Kante des Scrollbereichs, sondern an seinem Innenabstand: Heute kleben
+  sie 1,5rem unter der Oberkante, mit Liquid Glass 1,5rem unter der
+  schwebenden Kopfleiste. Gemessen am 23.09.2026 in Chrome.
+
+  Anders ist es bei Spruengen zu einem Anker (`scrollIntoView`): Die landen
+  an der Kante selbst und damit unter der Kopfleiste. `scroll-padding-top`
+  laesst sie darunter landen.
+*/
+[data-glas="liquid"] [data-lg="spalte"] > main {
+  padding-top: calc(var(--lg-kopf-unterkante, 74px) + 1.5rem);
+  scroll-padding-top: calc(var(--lg-kopf-unterkante, 74px) + 8px);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   3. Die Seitenleiste: eine schwebende Scheibe
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+[data-glas="liquid"] [data-sidebar="sidebar"] {
+  background: linear-gradient(180deg,
+    hsl(var(--lg-glas) / calc(var(--lg-deckkraft-leiste) + .1)),
+    hsl(var(--lg-glas) / var(--lg-deckkraft-leiste)));
+  -webkit-backdrop-filter: var(--lg-filter-leiste);
+  backdrop-filter: var(--lg-filter-leiste);
+  border: 1px solid var(--lg-kante);
+  border-radius: 24px;
+  box-shadow: var(--lg-innen), var(--lg-schatten);
+  overflow: hidden;
+}
+/* Die Trennlinie unter dem Logo wird zur Haarlinie. */
+[data-glas="liquid"] [data-sidebar="sidebar"] > .border-b { border-bottom-color: var(--lg-haarlinie); }
+[data-glas="liquid"].dark [data-sidebar="sidebar"] > .border-b { border-bottom-color: hsl(0 0% 100% / .06); }
+
+[data-glas="liquid"] [data-sidebar="menu-button"] {
+  border-radius: 11px;
+  transition: background-color .2s ease, box-shadow .2s ease, color .2s ease;
+}
+[data-glas="liquid"] [data-sidebar="menu-button"]:hover {
+  background-color: hsl(var(--lg-glas) / .62);
+  box-shadow: inset 0 1px 0 var(--lg-kante-oben), 0 0 0 .5px var(--lg-haarlinie);
+}
+[data-glas="liquid"].dark [data-sidebar="menu-button"]:hover { background-color: hsl(0 0% 100% / .07); }
+/*
+  Der aktive Eintrag bleibt vollflaechig blau (Entscheidung vom 12.09.2026),
+  wird aber zur gewoelbten Taste: Verlauf von Blau 600 nach Blau 700, damit
+  die weisse Schrift an keiner Stelle unter 4,5:1 faellt (siehe Tokens). Erkannt wird er an
+  `bg-primary` aus `activeClasses` in `AppSidebar.tsx`.
+*/
+[data-glas="liquid"] [data-sidebar="menu-button"].bg-primary,
+[data-glas="liquid"] [data-sidebar="menu-button"].bg-primary:hover {
+  background: linear-gradient(180deg, hsl(var(--lg-primaer-hoch)), hsl(var(--lg-primaer-tief)));
+  color: hsl(var(--primary-foreground));
+  box-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / .35),
+    inset 0 -1px 0 hsl(0 0% 0% / .12),
+    0 6px 16px -8px hsl(var(--primary) / .75);
+}
+
+/*
+  Das Handymenue ist dieselbe Scheibe, nur dichter: Dahinter liegt die
+  Seite, nicht der ruhige Grund.
+*/
+[data-glas="liquid"] [data-sidebar="sidebar"][data-mobile="true"] {
+  background: hsl(var(--lg-glas) / .86);
+  -webkit-backdrop-filter: var(--lg-filter-schwebend);
+  backdrop-filter: var(--lg-filter-schwebend);
+}
+[data-glas="liquid"].dark [data-sidebar="sidebar"][data-mobile="true"] { background: hsl(var(--lg-glas) / .88); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   4. Abdunklungen
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Dialoge bleiben, wie die Projektregel es verlangt: kein Abdunkeln, kein
+  Weichzeichner dahinter (`ui/dialog.tsx`, `ui/alert-dialog.tsx`). Hier steht
+  deshalb keine Regel fuer sie.
+
+  Die Schublade (`ui/sheet.tsx`, auch das Handymenue) dunkelt heute mit
+  Schwarz zu 80 Prozent ab. Darunter saehe jede Glasscheibe grau und trueb
+  aus. Hier wird daraus ein heller Schleier, ohne Weichzeichner, wie es die
+  Projektregel fuer Popups verlangt (abgestimmt am 23.09.2026).
+*/
+[data-glas="liquid"] [data-ui="abdunklung"] {
+  background-color: hsl(215 40% 15% / .18);
+}
+[data-glas="liquid"].dark [data-ui="abdunklung"] { background-color: hsl(0 0% 0% / .45); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   5. Karten
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Welche Karte Glas wird, entscheidet ihr Hintergrund:
+
+    * Schlichte Karten (`bg-card`, die Grundfarbe aus `ui/card.tsx`, dazu
+      Flaeche, Weiss, Akzent) werden Glas.
+    * Getoente Karten (Hinweis in Blau, Warnung in Rot oder Orange, Erfolg in
+      Gruen, jeweils hell oder durchscheinend) werden Glas mit ihrer Toenung
+      darueber, damit die Bedeutung erhalten bleibt.
+    * Alles andere behaelt seinen eigenen Hintergrund: Verlaeufe, dunkle
+      Karten mit heller Schrift, kraeftige Farben. Das ist die sichere Seite:
+      Eine unbekannte Karte bleibt, wie sie ist.
+
+  Die Liste der Toenungen ist ausdruecklich und nicht geraten: genau die
+  Klassen, die im Projekt an Karten vorkommen (Stand 23.09.2026).
+*/
+
+/*
+  Relativ positioniert, damit die Lichtkante (weiter unten) an der Karte
+  sitzt. Mit Spezifitaet null: Eine Karte mit `sticky` oder `absolute`
+  behaelt ihre Positionierung.
+*/
+:where([data-glas="liquid"] [data-ui="card"]) { position: relative; }
+
+[data-glas="liquid"] [data-ui="card"] { border-radius: var(--lg-radius); }
+
+[data-glas="liquid"] [data-ui="card"]:is(.bg-card, .bg-background, .bg-white, [class*="bg-card/"], [class*="bg-muted"], [class*="bg-secondary"], [class*="bg-accent"], [class*="bg-primary/"], .bg-blue-50, [class*="bg-blue-50/"], [class*="bg-blue-500/"], [class*="bg-blue-950/"], .bg-sky-50, [class*="bg-destructive/"], .bg-red-50, [class*="bg-red-50/"], [class*="bg-red-500/"], [class*="bg-red-950/"], .bg-rose-50, [class*="bg-warning/"], [class*="--warning))]/"], .bg-amber-50, [class*="bg-amber-50/"], [class*="bg-amber-500/"], [class*="bg-amber-950/"], .bg-orange-50, [class*="bg-orange-500/"], [class*="bg-orange-950/"], .bg-yellow-50, [class*="bg-yellow-500/"], [class*="bg-success/"], [class*="--success))]/"], .bg-green-50, [class*="bg-green-50/"], [class*="bg-green-500/"], [class*="bg-green-950/"], .bg-emerald-50, [class*="bg-emerald-500/"]) {
+  background-color: hsl(var(--lg-glas) / var(--lg-deckkraft));
+  -webkit-backdrop-filter: var(--lg-filter-karte);
+  backdrop-filter: var(--lg-filter-karte);
+  border-color: var(--lg-ton-rand, var(--lg-kante));
+  box-shadow: var(--lg-innen), var(--lg-schatten);
+}
+/*
+  Die Flaeche: ganz oben die Toenung (nur bei getoenten Karten), darunter der
+  weiche Glanz unter dem Zeiger und die helle Oberkante. Eine Karte mit
+  eigenem Verlauf (`bg-gradient-*`) behaelt ihren Verlauf.
+*/
+[data-glas="liquid"] [data-ui="card"]:is(.bg-card, .bg-background, .bg-white, [class*="bg-card/"], [class*="bg-muted"], [class*="bg-secondary"], [class*="bg-accent"], [class*="bg-primary/"], .bg-blue-50, [class*="bg-blue-50/"], [class*="bg-blue-500/"], [class*="bg-blue-950/"], .bg-sky-50, [class*="bg-destructive/"], .bg-red-50, [class*="bg-red-50/"], [class*="bg-red-500/"], [class*="bg-red-950/"], .bg-rose-50, [class*="bg-warning/"], [class*="--warning))]/"], .bg-amber-50, [class*="bg-amber-50/"], [class*="bg-amber-500/"], [class*="bg-amber-950/"], .bg-orange-50, [class*="bg-orange-500/"], [class*="bg-orange-950/"], .bg-yellow-50, [class*="bg-yellow-500/"], [class*="bg-success/"], [class*="--success))]/"], .bg-green-50, [class*="bg-green-50/"], [class*="bg-green-500/"], [class*="bg-green-950/"], .bg-emerald-50, [class*="bg-emerald-500/"]):not([class*="bg-gradient"]) {
+  background-image:
+    linear-gradient(var(--lg-ton-flaeche, transparent), var(--lg-ton-flaeche, transparent)),
+    radial-gradient(420px circle at var(--lx, 12%) var(--ly, -30%), var(--lg-glanz), transparent 62%),
+    linear-gradient(180deg, var(--lg-glanz-oben), transparent 38%);
+}
+
+/*
+  Die Toenungen. Die Flaeche traegt den Ton so schwach, dass Text darauf
+  4,5:1 behaelt (im Dunkeln ist er deshalb kaum zu sehen). Die Kante traegt
+  ihn deutlicher; sie beruehrt keinen Text.
+*/
+[data-glas="liquid"] [data-ui="card"]:is([class*="bg-primary/"], .bg-blue-50, [class*="bg-blue-50/"], [class*="bg-blue-500/"], [class*="bg-blue-950/"], .bg-sky-50) {
+  --lg-ton-flaeche: hsl(var(--primary) / var(--lg-toenung));
+  --lg-ton-rand: hsl(var(--primary) / .35);
+}
+[data-glas="liquid"] [data-ui="card"]:is([class*="bg-destructive/"], .bg-red-50, [class*="bg-red-50/"], [class*="bg-red-500/"], [class*="bg-red-950/"], .bg-rose-50) {
+  --lg-ton-flaeche: hsl(var(--destructive) / var(--lg-toenung));
+  --lg-ton-rand: hsl(var(--destructive) / .35);
+}
+[data-glas="liquid"] [data-ui="card"]:is([class*="bg-warning/"], [class*="--warning))]/"], .bg-amber-50, [class*="bg-amber-50/"], [class*="bg-amber-500/"], [class*="bg-amber-950/"], .bg-orange-50, [class*="bg-orange-500/"], [class*="bg-orange-950/"], .bg-yellow-50, [class*="bg-yellow-500/"]) {
+  --lg-ton-flaeche: hsl(var(--warning) / var(--lg-toenung));
+  --lg-ton-rand: hsl(var(--warning) / .35);
+}
+[data-glas="liquid"] [data-ui="card"]:is([class*="bg-success/"], [class*="--success))]/"], .bg-green-50, [class*="bg-green-50/"], [class*="bg-green-500/"], [class*="bg-green-950/"], .bg-emerald-50, [class*="bg-emerald-500/"]) {
+  --lg-ton-flaeche: hsl(var(--success) / var(--lg-toenung));
+  --lg-ton-rand: hsl(var(--success) / .35);
+}
+
+/* Anklickbare Karten kommen beim Ueberfahren naeher: dichter und hoeher. */
+[data-glas="liquid"] :is([data-ui="card"].cursor-pointer, a > [data-ui="card"], button > [data-ui="card"]):is(.bg-card, .bg-background, .bg-white, [class*="bg-card/"], [class*="bg-muted"], [class*="bg-secondary"], [class*="bg-accent"], [class*="bg-primary/"], .bg-blue-50, [class*="bg-blue-50/"], [class*="bg-blue-500/"], [class*="bg-blue-950/"], .bg-sky-50, [class*="bg-destructive/"], .bg-red-50, [class*="bg-red-50/"], [class*="bg-red-500/"], [class*="bg-red-950/"], .bg-rose-50, [class*="bg-warning/"], [class*="--warning))]/"], .bg-amber-50, [class*="bg-amber-50/"], [class*="bg-amber-500/"], [class*="bg-amber-950/"], .bg-orange-50, [class*="bg-orange-500/"], [class*="bg-orange-950/"], .bg-yellow-50, [class*="bg-yellow-500/"], [class*="bg-success/"], [class*="--success))]/"], .bg-green-50, [class*="bg-green-50/"], [class*="bg-green-500/"], [class*="bg-green-950/"], .bg-emerald-50, [class*="bg-emerald-500/"]):hover {
+  background-color: hsl(var(--lg-glas) / calc(var(--lg-deckkraft) + .14));
+  box-shadow: var(--lg-innen), var(--lg-schatten-hoch);
+}
+
+/*
+  Glas in Glas: keine zweite Weichzeichnung. Sie saehe ohnehin nur die Scheibe
+  darueber und kostet trotzdem einen Durchgang je Bild. Die innere Karte wird
+  eine leichtere Einlage mit Lichtkante. Dasselbe gilt fuer Karten in
+  Dialogen, Schubladen, Menues und in der Seitenleiste.
+*/
+[data-glas="liquid"] :is([data-ui="card"], [data-ui="dialog"], [data-ui="sheet"], [data-sidebar="sidebar"], [data-radix-popper-content-wrapper]) [data-ui="card"] {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-radius: var(--lg-radius-einlage);
+  box-shadow: inset 0 1px 0 var(--lg-kante-oben), 0 0 0 .5px var(--lg-haarlinie), 0 6px 16px -10px hsl(215 40% 20% / .18);
+}
+[data-glas="liquid"] :is([data-ui="card"], [data-ui="dialog"], [data-ui="sheet"], [data-sidebar="sidebar"], [data-radix-popper-content-wrapper]) [data-ui="card"]:is(.bg-card, .bg-background, .bg-white, [class*="bg-card/"], [class*="bg-muted"], [class*="bg-secondary"], [class*="bg-accent"], [class*="bg-primary/"], .bg-blue-50, [class*="bg-blue-50/"], [class*="bg-blue-500/"], [class*="bg-blue-950/"], .bg-sky-50, [class*="bg-destructive/"], .bg-red-50, [class*="bg-red-50/"], [class*="bg-red-500/"], [class*="bg-red-950/"], .bg-rose-50, [class*="bg-warning/"], [class*="--warning))]/"], .bg-amber-50, [class*="bg-amber-50/"], [class*="bg-amber-500/"], [class*="bg-amber-950/"], .bg-orange-50, [class*="bg-orange-500/"], [class*="bg-orange-950/"], .bg-yellow-50, [class*="bg-yellow-500/"], [class*="bg-success/"], [class*="--success))]/"], .bg-green-50, [class*="bg-green-50/"], [class*="bg-green-500/"], [class*="bg-green-950/"], .bg-emerald-50, [class*="bg-emerald-500/"]) {
+  background-color: hsl(var(--lg-glas) / var(--lg-deckkraft-einlage));
+}
+[data-glas="liquid"].dark :is([data-ui="card"], [data-ui="dialog"], [data-ui="sheet"], [data-sidebar="sidebar"], [data-radix-popper-content-wrapper]) [data-ui="card"] {
+  box-shadow: inset 0 1px 0 var(--lg-kante-oben), 0 0 0 .5px var(--lg-haarlinie), 0 8px 18px -10px hsl(0 0% 0% / .6);
+}
+
+/*
+  Weichzeichnung macht eine Karte zum Bezugsrahmen fuer alles darin, was
+  `position: fixed` traegt, etwa die Blaetterleiste `StickyPagination` oder
+  die Rechenueberlagerung der Rechner. Die saessen dann in der Karte statt am
+  Fenster. Solche Karten bleiben ohne Weichzeichnung und werden dafuer fast
+  deckend (Entscheidung vom 23.09.2026).
+*/
+[data-glas="liquid"] [data-ui="card"]:is(.bg-card, .bg-background, .bg-white, [class*="bg-card/"], [class*="bg-muted"], [class*="bg-secondary"], [class*="bg-accent"], [class*="bg-primary/"], .bg-blue-50, [class*="bg-blue-50/"], [class*="bg-blue-500/"], [class*="bg-blue-950/"], .bg-sky-50, [class*="bg-destructive/"], .bg-red-50, [class*="bg-red-50/"], [class*="bg-red-500/"], [class*="bg-red-950/"], .bg-rose-50, [class*="bg-warning/"], [class*="--warning))]/"], .bg-amber-50, [class*="bg-amber-50/"], [class*="bg-amber-500/"], [class*="bg-amber-950/"], .bg-orange-50, [class*="bg-orange-500/"], [class*="bg-orange-950/"], .bg-yellow-50, [class*="bg-yellow-500/"], [class*="bg-success/"], [class*="--success))]/"], .bg-green-50, [class*="bg-green-50/"], [class*="bg-green-500/"], [class*="bg-green-950/"], .bg-emerald-50, [class*="bg-emerald-500/"]):has(.fixed) {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background-color: hsl(var(--lg-glas) / .92);
+}
+
+/*
+  Die Kapitelliste der Vertriebsakademie (`akademie-neu.css`): Zeilen, die
+  zusammen wie EINE Karte aussehen, oben und unten gerundet. Als einzelne
+  Glaskarten zerfiele die Gruppe, und jede Zeile zeichnete weich. Sie werden
+  deshalb eine leichte Einlage ohne Weichzeichnung, wie eine Karte in der
+  Karte. Das Ueberfahren behaelt sein Blau 50 aus `akademie-neu.css`.
+*/
+[data-glas="liquid"] .an-root .an-kapitel {
+  background-color: hsl(var(--lg-glas) / var(--lg-deckkraft-einlage));
+  border-color: var(--lg-kante);
+}
+[data-glas="liquid"] .an-root .an-kapitel:hover { background-color: hsl(var(--accent)); }
+
+/*
+  Eine Karte mit Weichzeichnung ist eine eigene Ebene. Ein Auswahlfeld, das
+  darin aufklappt, ohne in ein Portal zu wandern, laege sonst unter der
+  naechsten Karte. Solange der Fokus in der Karte ist, liegt sie oben.
+*/
+[data-glas="liquid"] [data-ui="card"]:focus-within { z-index: 1; }
+
+/*
+  Das Fensterlicht (Signatur, dezent): ein Lichtring genau auf der Kante,
+  am hellsten dort, wo der Mauszeiger steht. `lib/glasLicht.ts` setzt die
+  Position und `data-lg-nah` nur an der EINEN Karte unter dem Zeiger, das
+  Pseudoelement gibt es also nur dort. Die Maske laesst nur den Ring stehen.
+  Keine Neigung, keine mitwandernde Zahl (Entscheidung vom 23.09.2026).
+*/
+[data-glas="liquid"] [data-ui="card"][data-lg-nah]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  padding: 1.5px;
+  pointer-events: none;
+  background: radial-gradient(180px circle at var(--lx, 16%) var(--ly, 0%), var(--lg-licht), transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: .7;
+  animation: lg-licht-an .35s ease-out;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   6. Knoepfe und Schrift in Blau
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+[data-glas="liquid"] [data-ui="button"] { border-radius: 12px; }
+
+/* Gefuellt: eine gewoelbte blaue Taste. Ueberfahren dunkelt sie ab, so steigt der Kontrast statt zu fallen. */
+[data-glas="liquid"] [data-ui="button"].bg-primary {
+  background-image: linear-gradient(180deg, hsl(var(--lg-primaer-hoch)), hsl(var(--lg-primaer-tief)));
+  box-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / .32),
+    inset 0 -1px 0 hsl(0 0% 0% / .12),
+    0 6px 16px -8px hsl(var(--primary) / .7);
+}
+[data-glas="liquid"] [data-ui="button"].bg-primary:hover { filter: brightness(.94); }
+
+/* Umrandet: eine helle Scheibe, ohne eigene Weichzeichnung (davon gibt es viele). */
+[data-glas="liquid"] [data-ui="button"].bg-card {
+  background-color: hsl(var(--lg-glas) / .55);
+  border-color: var(--lg-kante);
+  box-shadow: inset 0 1px 0 var(--lg-kante-oben), 0 0 0 .5px var(--lg-haarlinie), 0 2px 6px -3px hsl(215 40% 20% / .14);
+}
+[data-glas="liquid"] [data-ui="button"].bg-card:hover { background-color: hsl(var(--lg-glas) / .85); color: hsl(var(--foreground)); }
+[data-glas="liquid"].dark [data-ui="button"].bg-card { background-color: hsl(0 0% 100% / .06); }
+[data-glas="liquid"].dark [data-ui="button"].bg-card:hover { background-color: hsl(0 0% 100% / .12); }
+[data-glas="liquid"] [data-ui="button"].hover\:bg-accent:not(.bg-card):hover { background-color: hsl(var(--lg-glas) / .55); }
+[data-glas="liquid"].dark [data-ui="button"].hover\:bg-accent:not(.bg-card):hover { background-color: hsl(0 0% 100% / .08); }
+
+/* Die Hauptaktion in Marken-Orange behaelt ihren Verlauf und bekommt die Lichtkante. */
+[data-glas="liquid"] .btn-brand {
+  border-radius: 12px;
+  box-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / .32),
+    inset 0 -1px 0 hsl(0 0% 0% / .16),
+    0 10px 24px -10px hsl(var(--brand-orange) / .65);
+}
+
+/*
+  Schrift in Blau auf Glas: Blau 700 statt Blau 600. Blau 600 kommt als
+  Schrift auf Glas nur auf 3,5:1. Im Dunkeln ist es ohnehin Blau 300.
+*/
+[data-glas="liquid"] .text-primary { color: hsl(var(--lg-schrift-blau)); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   7. Schwebend: Dialoge, Schubladen, Menues, Popover, Tooltips, Hinweise
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Nur, was den Grundton der Bausteine traegt. Ein Dialog mit eigener Farbe,
+  etwa ein schwarzer Bildbetrachter, bleibt, wie er ist. Abgedunkelt wird
+  dahinter nichts, siehe Abschnitt 4.
+*/
+[data-glas="liquid"] :is([data-ui="dialog"], [data-ui="sheet"]):is(.bg-card, .bg-background, .bg-popover),
+[data-glas="liquid"] [data-radix-popper-content-wrapper] > :is(.bg-popover, .bg-background, .bg-card),
+[data-glas="liquid"] .toaster [data-sonner-toast],
+[data-glas="liquid"] [data-ui="toast"]:not(.destructive) {
+  background-color: hsl(var(--lg-glas) / var(--lg-deckkraft-schwebend));
+  -webkit-backdrop-filter: var(--lg-filter-schwebend);
+  backdrop-filter: var(--lg-filter-schwebend);
+  border-color: var(--lg-kante);
+  box-shadow: var(--lg-innen), var(--lg-schatten-schwebend);
+}
+[data-glas="liquid"] [data-ui="dialog"]:is(.bg-card, .bg-background, .bg-popover) { border-radius: 24px; }
+[data-glas="liquid"] [data-radix-popper-content-wrapper] > :is(.bg-popover, .bg-background, .bg-card) { border-radius: 14px; }
+[data-glas="liquid"] :is(.toaster [data-sonner-toast], [data-ui="toast"]:not(.destructive)) { border-radius: 16px; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   8. Reiter und Tabellen
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Reiter wie ein Segmentschalter bei Apple: eine Spur aus Glas, das Gewaehlte
+  als helle Scheibe darauf. Angesprochen ueber die Radix-Rollen, wie in
+  `design-neu.css`.
+*/
+[data-glas="liquid"] [role="tablist"] {
+  background-color: hsl(var(--lg-glas) / .34);
+  border-color: var(--lg-kante);
+  border-radius: 13px;
+  box-shadow: inset 0 1px 2px hsl(215 40% 20% / .08);
+}
+[data-glas="liquid"].dark [role="tablist"] { background-color: hsl(0 0% 0% / .2); box-shadow: inset 0 1px 2px hsl(0 0% 0% / .4); }
+[data-glas="liquid"] [role="tab"] { border-radius: 10px; }
+[data-glas="liquid"] [role="tab"][data-state="active"] {
+  background-color: hsl(var(--lg-glas) / .95);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / .9), 0 0 0 .5px var(--lg-haarlinie), 0 3px 8px -3px hsl(215 40% 20% / .25);
+}
+[data-glas="liquid"].dark [role="tab"][data-state="active"] {
+  background-color: hsl(214 25% 30% / .9);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / .14), 0 3px 10px -3px hsl(0 0% 0% / .6);
+}
+
+/*
+  Tabellen bleiben ruhig: keine Scheibe je Zeile, keine Weichzeichnung. Der
+  Kopf wird eine helle Einlage, die Zeile unter dem Zeiger hellt auf. Gelesen
+  wird in den Zeilen, deshalb steht der Kopf dicht genug, dass beim Scrollen
+  darunter nichts mitgelesen wird.
+*/
+[data-glas="liquid"] table thead tr { background-color: hsl(var(--lg-glas) / .72); border-bottom-color: var(--lg-haarlinie); }
+[data-glas="liquid"].dark table thead tr { background-color: hsl(var(--lg-glas) / .8); border-bottom-color: hsl(0 0% 100% / .06); }
+[data-glas="liquid"] table tbody tr { border-bottom-color: var(--lg-haarlinie); }
+[data-glas="liquid"].dark table tbody tr { border-bottom-color: hsl(0 0% 100% / .06); }
+[data-glas="liquid"] table tbody tr:hover { background-color: hsl(var(--lg-glas) / .55); }
+[data-glas="liquid"].dark table tbody tr:hover { background-color: hsl(0 0% 100% / .05); }
+
+} /* Ende @media screen */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   9. Handy und Tablet: Glas sparsam
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Auf Geraeten ohne Maus: keine Weichzeichnung auf Karten, dichtere Toenung
+  (.80, siehe Waechtertest), stehender Grund. Weichzeichnung bleibt nur fuer
+  die wenigen schwebenden Flaechen: Kopfleiste, Menue, Dialog.
+*/
+@media screen and (max-width: 767px), screen and (hover: none) {
+  [data-glas="liquid"] {
+    --lg-deckkraft: .8;
+    --lg-filter-karte: none;
+    --lg-filter-leiste: blur(18px) saturate(180%);
+    --lg-radius: 18px;
+  }
+  [data-glas="liquid"].dark { --lg-deckkraft: .78; }
+  [data-glas="liquid"] .lg-grund-wolken { animation: none; }
+}
+@media screen and (max-width: 767px) {
+  [data-glas="liquid"] [data-lg="kopfbereich"] { top: 8px; left: 8px; right: 8px; gap: 6px; }
+  [data-glas="liquid"] [data-lg="kopfbereich"] > header { height: 60px; border-radius: 18px; }
+  /*
+    Das Handymenue beginnt heute bei 5rem, direkt unter der 80 Pixel hohen
+    Kopfleiste. Die schwebende Kopfleiste endet bei 68 Pixeln; mit 76
+    steht zwischen beiden derselbe Abstand wie ueber ihr.
+  */
+  [data-glas="liquid"] [data-sidebar="sidebar"][data-mobile="true"] { top: calc(76px + var(--leisten-hoehe, 0px)); }
+}
+@media screen and (max-width: 639px) {
+  /* `p-3` statt `sm:p-6`: Die Luft ueber dem Inhalt folgt dem Abstand ringsum. */
+  [data-glas="liquid"] [data-lg="spalte"] > main { padding-top: calc(var(--lg-kopf-unterkante, 68px) + .75rem); }
+}
+/*
+  Am Schreibtisch loest sich die Seitenleiste vom Fensterrand.
+
+  Der Abstand nach unten steht als `--seitenleiste-abstand-unten` an der
+  Wurzel, weil die Kunden-Pipeline ihre Summenleiste genau auf diese Kante
+  setzt (Christian, 25.09.2026, Regel in `index.css`). Ohne Liquid Glass
+  reicht die Leiste bis an den Fensterrand, der Rueckfallwert dort ist 0.
+*/
+@media screen and (min-width: 768px) {
+  [data-glas="liquid"] { --seitenleiste-abstand-unten: 10px; }
+  [data-glas="liquid"] [data-variant="sidebar"] > .fixed {
+    padding: 10px 0 var(--seitenleiste-abstand-unten) 10px;
+    border-width: 0;
+  }
+  /*
+    Eingeklappt ist die Leiste nur 3rem breit. Mit Abstand und Rand bliebe
+    fuer die Symbole zu wenig Platz, deshalb faellt dort der Innenabstand
+    der Leiste weg, und der Abstand zum Fensterrand wird schmaler.
+  */
+  [data-glas="liquid"] [data-variant="sidebar"][data-collapsible="icon"] > .fixed { padding-left: 4px; }
+  [data-glas="liquid"] [data-collapsible="icon"] [data-sidebar="sidebar"] :is([data-sidebar="content"], [data-sidebar="sidebar"] > .border-b) { padding-inline: 0; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   10. Ruecksichtnahmen
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Browser ohne `backdrop-filter`: fast deckende Flaechen. Sonst laege ein
+  Schleier ohne Weichzeichnung ueber dem Inhalt, und die Schrift darunter
+  laese sich mit.
+*/
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  @media screen {
+    [data-glas="liquid"],
+    [data-glas="liquid"].dark {
+      --lg-deckkraft: .94;
+      --lg-deckkraft-leiste: .94;
+      --lg-deckkraft-schwebend: .94;
+      --lg-deckkraft-einlage: .94;
+    }
+  }
+}
+
+/*
+  Transparenz reduzieren: jede Flaeche wird deckend, die Form bleibt, der
+  Grund verschwindet. Alles ueber die Tokens, ohne `!important`.
+*/
+@media screen and (prefers-reduced-transparency: reduce) {
+  [data-glas="liquid"],
+  [data-glas="liquid"].dark {
+    --lg-deckkraft: 1;
+    --lg-deckkraft-leiste: 1;
+    --lg-deckkraft-schwebend: 1;
+    --lg-deckkraft-einlage: 1;
+    --lg-filter-karte: none;
+    --lg-filter-leiste: none;
+    --lg-filter-schwebend: none;
+  }
+  [data-glas="liquid"] .lg-grund-wolken { display: none; }
+}
+
+/* Bewegung reduzieren: Der Grund steht. */
+@media screen and (prefers-reduced-motion: reduce) {
+  [data-glas="liquid"] .lg-grund-wolken { animation: none; }
+}

@@ -1,0 +1,181 @@
+/* ─────────────────────────────────────────────────────────────
+ * Das Bewerberprofil, nach dem Vorbild des Kundenprofils
+ *
+ * Aufbau und Masse sind bewusst dieselben wie in
+ * `components/kunden/profil/kundenprofil.css`: drei Spalten, die
+ * aeusseren stehen fest, die mittlere rollt, und alles bricht ueber
+ * Containerabfragen auf schmale Bildschirme herunter. Zwei
+ * verschiedene Verfahren fuer dieselbe Sache waeren die schlechtere
+ * Loesung, auch wenn jedes fuer sich funktioniert.
+ *
+ * Eigene Datei und eigene Klassennamen, damit eine Aenderung am
+ * Kundenprofil nicht ungefragt das Bewerberprofil verschiebt und
+ * umgekehrt. Die Zahlen stimmen ueberein, die Dateien haengen aber
+ * nicht aneinander.
+ * ───────────────────────────────────────────────────────────── */
+
+/* Containerbreiten beruecksichtigen die CRM-Seitenleiste, auch bei Browserzoom. */
+.bewerberprofil { container-type: inline-size; min-width: 0; }
+.bewerberprofil-layout { display: grid; grid-template-columns: 320px minmax(0, 1fr) 340px; gap: 18px; align-items: start; }
+.bewerberprofil-layout[data-aktivitaeten="zu"] { grid-template-columns: 320px minmax(0, 1fr) 44px; }
+.bewerberprofil-layout[data-aktivitaeten="ohne"] { grid-template-columns: 320px minmax(0, 1fr); }
+.bewerberprofil-person, .bewerberprofil-aktivitaeten { position: sticky; top: 0; min-width: 0; max-height: calc(100dvh - 115px); overflow-y: auto; scrollbar-width: thin; }
+.bewerberprofil-mitte { min-width: 0; container-type: inline-size; container-name: bewerberprofil-mitte; }
+.bewerberprofil-mitte > * { min-width: 0; max-width: 100%; }
+
+/* ── Linke Spalte: die Person ────────────────────────────────── */
+.bewerberprofil-personkarte { padding: 20px; }
+.bewerberprofil-felder { margin-top: 8px; }
+.bewerberprofil-felder > div { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 8px; padding: 10px 0; border-bottom: 1px solid hsl(var(--border) / .6); font-size: 12px; }
+.bewerberprofil-felder > div:last-child { border-bottom: 0; }
+.bewerberprofil-felder dt { color: hsl(var(--muted-foreground)); }
+.bewerberprofil-felder dd { overflow-wrap: anywhere; font-weight: 500; }
+
+/*
+ * Die fuenf runden Knoepfe: Erstgespraech, Videocall, Follow-up, Anrufen,
+ * Notiz.
+ *
+ * Rundes, farbiges Sinnbild mit dem Wort darunter, in denselben Massen
+ * wie die Leiste im Kundenprofil: 40 Pixel Kreis, 10 Pixel Schrift. Die
+ * Antippflaeche ist der ganze Knopf und bleibt mit Kreis und Wort ueber
+ * den im Projekt ueblichen 44 Pixeln.
+ *
+ * `auto-fit` statt fester Spalten: In der schmalen Spalte auf dem iPad
+ * reichen vier nicht, seit dem 17.09.2026 sind es ohnehin fuenf. Die
+ * ueberzaehligen rutschen in die naechste Zeile, statt enger zu werden.
+ *
+ * Trennung statt Bruch mitten im Wort: `hyphens: auto` bei `lang="de"`
+ * trennt „Erst-gespraech" an der richtigen Stelle. `overflow-wrap:
+ * break-word` bleibt als Notnagel fuer Browser ohne deutsche
+ * Trennmuster, greift aber erst, wenn sonst gar nichts mehr passt.
+ */
+/* Zwei Zeilen: oben Anrufen und Notiz, darunter die drei Termine.
+   Linksbuendig, beide Zeilen an derselben Kante.
+   Flex statt Raster, weil die beiden oberen Knoepfe entfallen koennen,
+   wenn jemand nicht verwalten darf. Eine feste Spaltenzahl haette dann
+   eine Luecke hinterlassen. */
+.bewerberprofil-schnellaktionen-block { display: flex; flex-direction: column; gap: 8px; }
+.bewerberprofil-schnellaktionen { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 8px 4px; }
+.bewerberprofil-schnellaktion { min-width: 0; }
+.bewerberprofil-schnellaktion > button { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 56px; padding: 4px 0; border-radius: 8px; }
+.bewerberprofil-schnellaktion > button:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
+.bewerberprofil-schnellaktion-kreis { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 999px; transition: transform .15s ease; }
+.bewerberprofil-schnellaktion-kreis svg { width: 18px; height: 18px; }
+.bewerberprofil-schnellaktion > button:hover .bewerberprofil-schnellaktion-kreis { transform: scale(1.05); }
+.bewerberprofil-schnellaktion > button:active .bewerberprofil-schnellaktion-kreis { transform: scale(.95); }
+.bewerberprofil-schnellaktion-wort { font-size: 10px; line-height: 1.2; text-align: center; color: hsl(var(--muted-foreground)); overflow-wrap: break-word; hyphens: auto; }
+.bewerberprofil-schnellaktion > button:hover .bewerberprofil-schnellaktion-wort { color: hsl(var(--foreground)); }
+/* Steht ein Termin oder liegt schon eine Notiz vor, traegt das Wort mehr Gewicht. */
+.bewerberprofil-schnellaktion[data-gesetzt="ja"] .bewerberprofil-schnellaktion-wort { color: hsl(var(--foreground)); font-weight: 600; }
+
+/* Die Meta-Bewerberfragen stehen untereinander, die Spalte ist schmal. */
+.bewerberprofil-metafragen > div { padding: 8px 0; border-bottom: 1px solid hsl(var(--border) / .6); }
+.bewerberprofil-metafragen > div:last-child { border-bottom: 0; }
+
+/* Der Loeschknopf steht abgesetzt am Fuss der Spalte. */
+.bewerberprofil-verwaltung { margin-top: 16px; padding-top: 16px; border-top: 1px solid hsl(var(--border)); }
+.bewerberprofil-verwaltung button { width: 100%; height: auto; min-height: 36px; white-space: normal; }
+
+/* ── Rechte Spalte: die Aktivitaeten ─────────────────────────── */
+.bewerberprofil-verlauf { padding: 16px; }
+.bewerberprofil-verlauf-kopf { display: flex; align-items: center; gap: 8px; }
+.bewerberprofil-verlauf[data-offen="false"] { padding: 6px; }
+.bewerberprofil-verlauf[data-offen="false"] .bewerberprofil-verlauf-kopf { flex-direction: column; }
+/* Eingeklappt stehen beide Woerter senkrecht untereinander, der Pfeil oben. */
+.bewerberprofil-verlauf[data-offen="false"] .bewerberprofil-verlauf-marke { writing-mode: vertical-rl; padding: 8px 0; font-size: 11px; font-weight: 600; letter-spacing: .06em; color: hsl(var(--muted-foreground)); white-space: nowrap; }
+.bewerberprofil-verlauf[data-offen="false"] .bewerberprofil-verlauf-kopf > button { order: -1; margin-left: 0; }
+
+/*
+ * Die Zeitleiste. Senkrechte Linie mit einem Punkt je Eintrag, die
+ * Farbe des Punktes sagt die Art. Alle Farben kommen aus den
+ * vorhandenen Tokens in `index.css`, es entsteht keine neue.
+ */
+.bewerberprofil-zeitleiste { position: relative; padding-left: 18px; }
+.bewerberprofil-zeitleiste::before { content: ""; position: absolute; left: 4px; top: 6px; bottom: 6px; width: 1px; background: hsl(var(--border)); }
+.bewerberprofil-eintrag { position: relative; padding-bottom: 16px; min-width: 0; }
+.bewerberprofil-eintrag::before { content: ""; position: absolute; left: -18px; top: 5px; width: 9px; height: 9px; border-radius: 50%; background: hsl(var(--card)); border: 2px solid hsl(var(--muted-foreground)); }
+.bewerberprofil-eintrag[data-art="mail"]::before { border-color: hsl(var(--primary)); }
+.bewerberprofil-eintrag[data-art="termin"]::before { border-color: hsl(var(--brand-orange)); }
+.bewerberprofil-eintrag[data-art="bogen"]::before { border-color: hsl(var(--success)); }
+.bewerberprofil-eintrag[data-art="schritt"]::before { border-color: hsl(var(--muted-foreground)); }
+.bewerberprofil-eintrag-kopf { display: flex; align-items: baseline; gap: 8px; }
+.bewerberprofil-eintrag-titel { font-size: 13px; font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+.bewerberprofil-eintrag-zeit { margin-left: auto; font-size: 11px; white-space: nowrap; color: hsl(var(--muted-foreground)); }
+.bewerberprofil-eintrag-text { margin-top: 2px; font-size: 12px; color: hsl(var(--muted-foreground)); overflow-wrap: anywhere; }
+.bewerberprofil-marken { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+.bewerberprofil-tag { margin: 14px 0 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: hsl(var(--muted-foreground)); }
+.bewerberprofil-tag:first-child { margin-top: 0; }
+
+/* ── iPad und kleiner ────────────────────────────────────────── */
+@container (max-width: 1399px) {
+  .bewerberprofil-layout { grid-template-columns: 240px minmax(0, 1fr) 300px; gap: 12px; }
+  .bewerberprofil-layout[data-aktivitaeten="zu"] { grid-template-columns: 240px minmax(0, 1fr) 44px; }
+  .bewerberprofil-layout[data-aktivitaeten="ohne"] { grid-template-columns: 240px minmax(0, 1fr); }
+  .bewerberprofil-personkarte { padding: 14px; }
+  .bewerberprofil-felder > div { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+}
+@container (max-width: 999px) {
+  .bewerberprofil-layout, .bewerberprofil-layout[data-aktivitaeten="zu"] { grid-template-columns: 240px minmax(0, 1fr) 44px; }
+  .bewerberprofil-aktivitaeten { grid-column: 3; grid-row: 1; }
+  /* Offen schwebt der Verlauf ueber dem Inhalt, sonst bliebe fuer die
+     Arbeitsspalte nichts uebrig. */
+  .bewerberprofil-layout[data-aktivitaeten="offen"] .bewerberprofil-aktivitaeten { overflow: visible; min-height: 44px; max-height: none; z-index: 40; }
+  .bewerberprofil-layout[data-aktivitaeten="offen"] .bewerberprofil-verlauf { position: absolute; top: 0; right: 0; width: min(340px, calc(100vw - 60px)); max-height: calc(100dvh - 115px); overflow-y: auto; scrollbar-width: thin; box-shadow: -8px 8px 30px hsl(var(--foreground) / .12); }
+}
+@container (max-width: 899px) {
+  .bewerberprofil-layout, .bewerberprofil-layout[data-aktivitaeten="zu"] { grid-template-columns: minmax(0, 1fr) 44px; gap: 10px; }
+  .bewerberprofil-layout[data-aktivitaeten="ohne"] { grid-template-columns: minmax(0, 1fr); }
+  .bewerberprofil-person { grid-column: 1; position: static; max-height: none; overflow: visible; }
+  .bewerberprofil-mitte { grid-column: 1; }
+  .bewerberprofil-aktivitaeten { grid-column: 2; grid-row: 1 / span 2; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * HANDY (Profilcontainer schmaler als 600 Pixel)
+ *
+ * Eine Spalte: Person, Arbeitsbereich, Verlauf. Wie im Kundenprofil
+ * darf der Verlauf hier nicht mehr ueber dem Inhalt schweben, denn
+ * er ist standardmaessig offen und haette sonst sofort den halben
+ * Bildschirm.
+ * ───────────────────────────────────────────────────────────── */
+@container (max-width: 599px) {
+  .bewerberprofil-layout,
+  .bewerberprofil-layout[data-aktivitaeten="zu"],
+  .bewerberprofil-layout[data-aktivitaeten="ohne"] { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .bewerberprofil-person { grid-column: 1; grid-row: auto; }
+  .bewerberprofil-mitte { grid-column: 1; grid-row: auto; }
+  .bewerberprofil-aktivitaeten { grid-column: 1; grid-row: auto; position: static; max-height: none; overflow: visible; }
+  .bewerberprofil-layout[data-aktivitaeten="offen"] .bewerberprofil-verlauf { position: static; width: auto; max-height: none; overflow: visible; box-shadow: none; }
+  /* Eingeklappt ist der Verlauf eine waagerechte Zeile statt einer
+     schmalen Leiste mit senkrecht gestelltem Wort. */
+  .bewerberprofil-verlauf[data-offen="false"] { padding: 8px 12px; }
+  .bewerberprofil-verlauf[data-offen="false"] .bewerberprofil-verlauf-kopf { flex-direction: row; }
+  .bewerberprofil-verlauf[data-offen="false"] .bewerberprofil-verlauf-marke { writing-mode: horizontal-tb; order: 0; padding: 0; font-size: 14px; letter-spacing: normal; }
+  .bewerberprofil-verlauf[data-offen="false"] .bewerberprofil-verlauf-kopf > button { order: 0; margin-left: auto; }
+  /* Der Pfeil zeigt hier nach oben und unten, denn der Verlauf klappt
+     nach unten auf und nicht zur Seite. */
+  .bewerberprofil-verlauf .bewerberprofil-verlauf-kopf > button svg { transform: rotate(-90deg); }
+  .bewerberprofil-verlauf { padding: 12px; }
+  .bewerberprofil-personkarte { padding: 16px; }
+  /* Volle Breite: Beschriftung und Wert passen wieder nebeneinander. */
+  .bewerberprofil-felder > div { grid-template-columns: 96px minmax(0, 1fr); gap: 8px; padding: 9px 0; }
+  /* Der Eintragstext ist das, was man liest. 12 Pixel sind dafuer zu klein. */
+  .bewerberprofil-eintrag-text { font-size: 13px; }
+}
+
+/*
+ * Karten im Arbeitsbereich tragen durchweg `p-6`, also 24 Pixel Rand
+ * auf jeder Seite. Auf dem Telefon reichen 14 und geben 20 zurueck.
+ */
+@container bewerberprofil-mitte (max-width: 599px) {
+  .bewerberprofil-mitte .p-6 { padding: 0.875rem; }
+}
+@container bewerberprofil-mitte (max-width: 850px) {
+  .bewerberprofil-mitte .md\:grid-cols-3,
+  .bewerberprofil-mitte .md\:grid-cols-2,
+  .bewerberprofil-mitte .lg\:grid-cols-2,
+  .bewerberprofil-mitte .lg\:grid-cols-3 { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Der mobile Seitenrahmen darf fuer die rechte Leiste keinen eigenen Scrollbereich erzeugen. */
+main:has(> .bewerberprofil) { overflow-x: clip; }

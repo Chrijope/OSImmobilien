@@ -1,0 +1,1 @@
+DELETE FROM public.news WHERE kategorie = 'system';

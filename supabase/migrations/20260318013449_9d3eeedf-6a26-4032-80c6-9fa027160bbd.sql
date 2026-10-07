@@ -1,0 +1,1 @@
+DELETE FROM user_roles WHERE user_id = '27ccfbab-f949-4484-90b1-7dffca6a65c9' AND role = 'kunde';

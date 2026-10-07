@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1790182435064,
+      "tag": "0000_dokument_kundenfreigabe",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790614063909,
+      "tag": "0001_lead_rueckgabe_an_zentrale",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791108354147,
+      "tag": "0002_kennzahlen_nordstern_vl",
+      "breakpoints": true
+    }
+  ]
+}

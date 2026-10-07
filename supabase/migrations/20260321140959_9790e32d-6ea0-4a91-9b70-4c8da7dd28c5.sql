@@ -1,0 +1,1 @@
+ALTER TABLE public.chat_nachrichten ADD COLUMN IF NOT EXISTS gelesen_von jsonb DEFAULT '[]'::jsonb;

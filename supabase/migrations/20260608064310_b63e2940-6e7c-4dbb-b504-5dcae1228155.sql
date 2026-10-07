@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "avatars owner or admin read" ON storage.objects;

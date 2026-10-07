@@ -1,0 +1,311 @@
+/*
+  Die Berater-Mikroseite in Liquid Glass.
+
+  Warum eine eigene Datei und nicht `styles/design-liquid.css`:
+  Die Mikroseite malt ihre Flaechen in `beraterMicroseite.css` und in
+  `.lp-theme` (index.css) fest und mit `!important` an: weisse Seite,
+  Streifen in Weiss und Hellblau, weisse Karten, eigenes Blau. Damit deckt sie
+  den bewegten Grund vollstaendig zu, den `lib/designSchalter.ts` auf jeder
+  Seite an den `body` haengt. Gegen `!important` hilft nur `!important`, und
+  die gemeinsame Schicht darf das nicht (Waechter in `design-liquid.test.ts`).
+  Deshalb stehen die Ausnahmen hier, direkt neben der Datei, die sie
+  ueberstimmen, und nur fuer die Mikroseite.
+
+  Farben kommen ausschliesslich aus den Tokens der Glasschicht
+  (`--lg-glas`, `--lg-deckkraft`, `--lg-filter-karte`, `--lg-innen`,
+  `--lg-schatten`, `--lg-schrift-blau`, `--lg-primaer-*` und so weiter).
+  Damit gelten deren Ruecksichten von selbst mit: am Handy keine
+  Weichzeichnung und dichtere Karten, ohne `backdrop-filter` fast deckend,
+  bei "weniger Transparenz" deckend, bei "weniger Bewegung" steht der Grund.
+
+  Nur hell. Besucher sehen die Seite immer hell, die Seite kennt keinen
+  Dunkelmodus. Dunkel wird sie nur als Vorschau im CRM
+  (`/berater-microseite`), wenn dort jemand auf dunkel schaltet. Dann bleibt
+  sie, was sie ist: ein Abbild der hellen oeffentlichen Seite, deckend wie
+  bisher (siehe Abschnitt 6).
+
+  Keine Neigung, keine mitwandernde Zahl (Entscheidung vom 23.09.2026).
+  Alles in `@media screen`, gedruckt wird wie bisher.
+*/
+
+@media screen {
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   1. Der Grund scheint durch
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Die Huelle `.lp-theme` und die Seite selbst werden durchsichtig, ebenso
+  jeder Abschnitt. Der Schlussabschnitt mit Fusszeile bleibt dunkel: Eine
+  dunkle Flaeche mit heller Schrift behaelt auch in der Glasschicht ihren
+  eigenen Hintergrund.
+
+  Grauschrift auf dem Grund braucht die dunklere Stufe der Glasschicht
+  (215 16% 35%), sonst reicht es ueber zwei Wolken nicht fuer 4,5:1.
+  `.lp-theme` und die Mikroseite setzen ihr eigenes, helleres Grau;
+  `inherit` holt den Wert der Glasschicht vom Wurzelelement zurueck, statt
+  ihn hier ein zweites Mal hinzuschreiben.
+*/
+[data-glas="liquid"]:not(.dark) .lp-theme:has(> .berater-mikroseite) {
+  --muted-foreground: inherit;
+  background: transparent;
+}
+[data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite {
+  --muted-foreground: inherit;
+  background: transparent !important;
+}
+[data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite .micro-abschnitt:not(.micro-abschnitt-16) section {
+  background: transparent !important;
+}
+/* Die Trennlinien zwischen den Abschnitten werden zur Haarlinie der Glasschicht. */
+[data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite .micro-abschnitt-2 section {
+  border-top-color: var(--lg-haarlinie);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   2. Kopfleiste: eine eigene Scheibe
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Wie die Kopfleiste im CRM, aber nicht klebend: Die Seite verhaelt sich wie bisher. */
+[data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite .brand-header {
+  width: calc(100% - 24px);
+  margin: 12px auto 0;
+  padding: 18px 28px;
+  border: 1px solid var(--lg-kante);
+  border-radius: 20px;
+  background: linear-gradient(180deg,
+    hsl(var(--lg-glas) / calc(var(--lg-deckkraft-leiste) + .08)),
+    hsl(var(--lg-glas) / var(--lg-deckkraft-leiste)));
+  -webkit-backdrop-filter: var(--lg-filter-leiste);
+  backdrop-filter: var(--lg-filter-leiste);
+  box-shadow: var(--lg-innen), var(--lg-schatten);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   3. Karten
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Welche Flaeche Karte ist, steht ausdruecklich hier und ist nicht geraten
+  (Stand 24.09.2026, gemessen an der gerenderten Seite):
+    * weisse, gerundete Kaesten der Abschnitte (`bg-white` plus `rounded-*`),
+      ohne runde Symbolkreise (`rounded-full`),
+    * die Prozesskarten (`bg-[hsl(210,33%,98%)]`) und der Rechenkasten im
+      Neubaubeispiel (`bg-[hsl(40,20%,98%)]`),
+    * die benannten Karten aus `beraterMicroseite.css`: Portrait, Anlegerprofil,
+      Leistung, Investmentkonzept.
+  Die dunkle Ergebniskarte im Steuerrechner (Verlauf) bleibt, wie sie ist.
+*/
+[data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite :is(
+  .micro-abschnitt :is(div, article).bg-white[class*="rounded-"]:not([class*="rounded-full"]),
+  [class*="bg-[hsl(210,33%,98%)]"],
+  [class*="bg-[hsl(40,20%,98%)]"],
+  .portrait-card,
+  .investor-profile-card,
+  .leistung-card,
+  .investment-card
+) {
+  background-color: hsl(var(--lg-glas) / var(--lg-deckkraft)) !important;
+  background-image:
+    radial-gradient(420px circle at 12% -30%, var(--lg-glanz), transparent 62%),
+    linear-gradient(180deg, var(--lg-glanz-oben), transparent 38%) !important;
+  -webkit-backdrop-filter: var(--lg-filter-karte) !important;
+  backdrop-filter: var(--lg-filter-karte) !important;
+  border-color: var(--lg-kante) !important;
+  border-radius: var(--lg-radius) !important;
+  box-shadow: var(--lg-innen), var(--lg-schatten) !important;
+}
+
+/*
+  Glas in Glas: keine zweite Weichzeichnung, eine leichtere Einlage mit
+  Lichtkante. Dieselbe Regel wie in der Glasschicht.
+*/
+[data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite .micro-abschnitt :is(div, article).bg-white[class*="rounded-"]:not([class*="rounded-full"]) :is(div, article).bg-white[class*="rounded-"]:not([class*="rounded-full"]) {
+  background-color: hsl(var(--lg-glas) / var(--lg-deckkraft-einlage)) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  border-radius: var(--lg-radius-einlage) !important;
+  box-shadow: inset 0 1px 0 var(--lg-kante-oben), 0 0 0 .5px var(--lg-haarlinie), 0 6px 16px -10px hsl(215 40% 20% / .18) !important;
+}
+
+/*
+  Der Rahmen um das Portrait ist Teil der Scheibe, nicht mehr weiss. Die
+  Karte liegt als einzige ueber einem Foto statt ueber dem ruhigen Grund,
+  deshalb nimmt sie die dichtere Stufe der schwebenden Flaechen: Unter
+  Name und Position darf das Bild nicht mitlesen.
+*/
+[data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite .portrait-card {
+  background-color: hsl(var(--lg-glas) / var(--lg-deckkraft-schwebend)) !important;
+  border-color: transparent !important;
+  border-radius: var(--lg-radius-einlage) !important;
+  box-shadow: var(--lg-innen), var(--lg-schatten-hoch) !important;
+}
+[data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite .portrait-card > img,
+[data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite .portrait-card .portrait-initials {
+  border-radius: 10px;
+}
+[data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite .portrait-card .portrait-initials {
+  /* Einlage mit blauer Toenung, wie getoente Karten in der Glasschicht. */
+  background:
+    linear-gradient(hsl(var(--primary) / var(--lg-toenung)), hsl(var(--primary) / var(--lg-toenung))),
+    hsl(var(--lg-glas) / var(--lg-deckkraft-einlage));
+}
+
+/* Das Foto oben in der Konzeptkarte folgt der groesseren Rundung. */
+[data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite .micro-abschnitt-4 .investment-photo {
+  border-radius: calc(var(--lg-radius) - 1px) calc(var(--lg-radius) - 1px) 0 0;
+}
+
+/* Der Platzhalter fuer das Rechenergebnis bekommt dieselbe Rundung, sein Bild bleibt. */
+[data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite .micro-abschnitt-3 .border-dashed {
+  border-radius: var(--lg-radius) !important;
+}
+
+/*
+  Die Vergleichstabelle: wie Tabellen in der Glasschicht. Der Kopf ist eine
+  helle Einlage, die Zeilen liegen auf der Karte, die Zeile unter dem Zeiger
+  hellt auf.
+*/
+[data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite .micro-abschnitt-13 [class*="bg-[hsl(220,20%,98%)]"]:not(.transition-colors) {
+  background-color: hsl(var(--lg-glas) / .72);
+  border-bottom-color: var(--lg-haarlinie);
+}
+[data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite .micro-abschnitt-13 .transition-colors[class*="bg-[hsl(220,20%,98%)]"] {
+  background-color: transparent;
+}
+[data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite .micro-abschnitt-13 .transition-colors[class*="bg-[hsl(220,20%,98%)]"]:hover {
+  background-color: hsl(var(--lg-glas) / .55);
+}
+
+/*
+  Die Bankpartner stehen als flaches Raster aus Zellen mit Unterstrich, nicht
+  als Karten. Sie liegen deshalb direkt auf dem Grund.
+*/
+[data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite .micro-abschnitt-14 section > .container > .flex.flex-wrap > div {
+  background: transparent !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  border-bottom-color: var(--lg-haarlinie) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   4. Knoepfe
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Gefuellt: die gewoelbte blaue Taste der Glasschicht, Verlauf von
+  `--lg-primaer-hoch` nach `--lg-primaer-tief`. Weisse Schrift haelt dort an
+  beiden Stopps 4,5:1 (gerechnet in `design-liquid.test.ts`). Dazu zaehlen
+  der Hauptaufruf `.lp-cta`, der erste Knopf im Hero und der schwebende
+  Ansprechpartner.
+*/
+[data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite :is(.lp-cta, .hero-copy > div:nth-last-child(2) > a),
+[data-glas="liquid"]:not(.dark) .lp-theme:has(> .berater-mikroseite) > button.fixed.bg-primary {
+  background: linear-gradient(180deg, hsl(var(--lg-primaer-hoch)), hsl(var(--lg-primaer-tief))) !important;
+  border-color: transparent !important;
+  color: hsl(var(--primary-foreground)) !important;
+  box-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / .32),
+    inset 0 -1px 0 hsl(0 0% 0% / .12),
+    0 6px 16px -8px hsl(var(--primary) / .7) !important;
+}
+[data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite :is(.lp-cta, .hero-copy > div:nth-last-child(2) > a):hover,
+[data-glas="liquid"]:not(.dark) .lp-theme:has(> .berater-mikroseite) > button.fixed.bg-primary:hover {
+  filter: brightness(.94);
+  opacity: 1;
+}
+
+/* Umrandet: die helle Scheibe der Glasschicht, Schrift in Blau 700. */
+[data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite .hero-copy > div:nth-last-child(2) > button {
+  background: hsl(var(--lg-glas) / .55) !important;
+  border-color: var(--lg-kante) !important;
+  color: hsl(var(--lg-schrift-blau)) !important;
+  box-shadow: inset 0 1px 0 var(--lg-kante-oben), 0 0 0 .5px var(--lg-haarlinie), 0 2px 6px -3px hsl(215 40% 20% / .14) !important;
+}
+[data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite .hero-copy > div:nth-last-child(2) > button:hover {
+  background: hsl(var(--lg-glas) / .85) !important;
+}
+/* Die beiden Hero-Knoepfe tragen die Rundung der Knoepfe im CRM. */
+[data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite .hero-copy > div:nth-last-child(2) > * {
+  border-radius: 12px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   5. Schrift auf Glas und Grund
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Blau als Schrift: Blau 700 statt Blau 600, wie `.text-primary` in der
+  Glasschicht. Blau 600 kommt auf Glas ueber den Wolken nur auf 3,5:1.
+  Ausgenommen sind die hellblauen Beschriftungen auf dunklem Grund
+  (Ergebniskarte, Schlussabschnitt) und die orange "Luecke".
+*/
+[data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite .micro-abschnitt:not(.micro-abschnitt-16) :is(span.uppercase, p.uppercase):not(.luecken-eyebrow):not(.bg-gradient-to-br > *),
+[data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite .micro-abschnitt:not(.micro-abschnitt-16) .lp-text-gradient,
+[data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite .micro-abschnitt:not(.micro-abschnitt-16) h2 span[style*="--primary"],
+[data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite .hero-copy h1 span {
+  color: hsl(var(--lg-schrift-blau)) !important;
+  -webkit-text-fill-color: hsl(var(--lg-schrift-blau)) !important;
+}
+[data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite :is(.leistung-eyebrow, .kundenstimmen-pause, .portrait-initials) {
+  color: hsl(var(--lg-schrift-blau));
+}
+
+/*
+  Grau als Schrift: Die Abschnitte schreiben ihr Grau fest in die Klassen
+  (`text-[hsl(220,10%,40%)]` bis `...60%)]`). Die helleren Stufen reichen
+  schon auf Weiss nicht fuer 4,5:1, auf dem Grund erst recht nicht. Sie
+  nehmen das Grau der Glasschicht. Dunkle Flaechen verwenden andere Toene
+  (`hsl(210,20%,…)`, `text-white`) und bleiben unberuehrt.
+*/
+[data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite .micro-abschnitt:not(.micro-abschnitt-16) :is([class*="text-[hsl(220,10%,4"], [class*="text-[hsl(220,10%,5"], [class*="text-[hsl(220,10%,6"]),
+[data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite :is(.portrait-card small, .portrait-card span, .leistung-card p) {
+  color: hsl(var(--muted-foreground));
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   6. Dunkel: die Vorschau bleibt ein Abbild der hellen Seite
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Im Dunkeln bleibt die Mikroseite deckend hell wie bisher. Die Glasschicht
+  faerbt `.text-primary` aber im Dunkeln hellblau (Blau 300), gedacht fuer
+  dunkles Glas. Auf der weissen Seite waeren das 1,9:1. Hier gilt deshalb
+  das Blau der Seite selbst.
+*/
+[data-glas="liquid"].dark .lp-theme:has(> .berater-mikroseite) .text-primary {
+  color: hsl(var(--primary));
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   7. Schwebend: das Fenster des Ansprechpartners
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+[data-glas="liquid"]:not(.dark) .lp-theme:has(> .berater-mikroseite) > .fixed.bg-card {
+  background-color: hsl(var(--lg-glas) / var(--lg-deckkraft-schwebend));
+  -webkit-backdrop-filter: var(--lg-filter-schwebend);
+  backdrop-filter: var(--lg-filter-schwebend);
+  border-color: var(--lg-kante);
+  border-radius: 24px !important;
+  box-shadow: var(--lg-innen), var(--lg-schatten-schwebend) !important;
+}
+
+} /* Ende @media screen */
+
+/* Am Handy liegt die Kopfleiste naeher am Rand, wie im CRM. */
+@media screen and (max-width: 767px) {
+  [data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite .brand-header {
+    width: calc(100% - 16px);
+    margin-top: 8px;
+    padding: 16px 20px;
+    border-radius: 18px;
+  }
+  /*
+    Am Handy sitzt das Foto der Konzeptkarte 8 Pixel unter deren Oberkante
+    (Innenabstand 28, Gegenzug 20, aus `beraterMicroseite.css`). Auf Weiss
+    war der Streifen unsichtbar, auf Glas steht er als Kante ueber dem Bild.
+  */
+  [data-glas="liquid"]:not(.dark) .lp-theme .berater-mikroseite .micro-abschnitt-4 .investment-photo {
+    margin-top: -28px;
+  }
+}

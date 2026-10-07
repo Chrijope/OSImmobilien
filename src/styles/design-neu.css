@@ -1,0 +1,427 @@
+/*
+  Das neue Aussehen, Etappe 1: die Tokenschicht.
+
+  WARUM DIESE DATEI GETRENNT STEHT
+
+  Das neue Aussehen wird ausschliesslich **zusaetzlich** gebaut, nie an die
+  Stelle des alten. Alles hier haengt an `[data-design="neu"]` am
+  Wurzelelement. Steht das Merkmal nicht da, greift keine einzige Zeile, und
+  das CRM sieht aus wie immer. Entfernen heisst deshalb: diese Datei loeschen
+  und ihre Einbindung. Am bestehenden Aussehen wird dabei nichts angefasst,
+  es kann also auch nichts kaputtgehen.
+
+  WOHER DIE WERTE STAMMEN
+
+  Aus der Markenrichtlinie 1.2, Abschnitt 3.2 und 3.3, gerechnet und nicht
+  geschaetzt. Hinter jedem Wert steht sein Name aus dem Heft.
+
+  Was hier **nicht** geaendert wird, weil es schon stimmt: `--primary`. Das
+  CRM steht bereits auf Blau 600 im Hellen und Blau 300 im Dunklen, genau wie
+  es die Richtlinie verlangt.
+*/
+
+[data-design="neu"] {
+  /* Neutraltoene, Markenrichtlinie 3.3 */
+  --background: 210 37% 97%;        /* Flaeche  #F4F7FA */
+  --foreground: 215 17% 20%;        /* Text     #2B323C, nie reines Schwarz */
+  --card: 0 0% 100%;                /* Weiss */
+  --card-foreground: 215 17% 20%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 215 17% 20%;
+
+  --secondary: 210 37% 97%;
+  --secondary-foreground: 215 17% 20%;
+  --muted: 210 37% 97%;
+  --muted-foreground: 215 11% 46%;  /* Grau     #677281 */
+
+  --border: 213 24% 91%;            /* Linie    #E3E8EE, die Haarlinie */
+  --input: 213 24% 91%;
+
+  --accent: 204 100% 97%;           /* Blau 50  #F0F9FF */
+  --accent-foreground: 204 95% 34%; /* Blau 700 #0466A9 */
+  --ring: 204 95% 51%;              /* Blau 500 #0C99F9, der Fokusring */
+
+  /*
+    Die Bedeutungsfarben. Sie sind in Etappe 1 durchgerutscht, deshalb stehen
+    sie hier nachgetragen. Die Richtlinie setzt sie deutlich gedeckter als der
+    Bestand: Erfolg #187745 statt des knalligen #34C759, Fehler #C0261B statt
+    eines hellen Rot. Der Grund ist derselbe wie bei den Schatten. Eine Farbe,
+    die schreit, verliert ihre Wirkung, sobald zwei davon nebeneinander
+    stehen.
+
+    Orange ist im CRM ausschliesslich Achtung. Gehandelt wird in Blau 600.
+  */
+  --success: 147 66% 28%;           /* Erfolg   #187745 */
+  --success-foreground: 0 0% 100%;
+  --warning: 36 100% 30%;           /* Achtung  #9A5B00 */
+  --warning-foreground: 0 0% 100%;
+  --destructive: 4 76% 43%;         /* Fehler   #C0261B */
+  --destructive-foreground: 0 0% 100%;
+
+  /*
+    Schatten. Die Richtlinie verlangt weich, mehrschichtig und fast farblos:
+    "Ein harter, dunkler Schatten wirkt billig." Drei Stufen, mehr nicht:
+    ruhend, angehoben, schwebend.
+  */
+  --shadow-xs: 0 1px 1px rgba(15, 22, 33, .03);
+  --shadow-sm: 0 1px 2px rgba(15, 22, 33, .04), 0 1px 1px rgba(15, 22, 33, .03);
+  --shadow-md: 0 6px 16px -4px rgba(15, 22, 33, .07), 0 2px 5px -2px rgba(15, 22, 33, .04);
+  --shadow-lg: 0 16px 40px -10px rgba(15, 22, 33, .11), 0 5px 14px -5px rgba(15, 22, 33, .06);
+  --shadow-xl: 0 28px 68px -18px rgba(15, 22, 33, .16), 0 10px 24px -10px rgba(15, 22, 33, .08);
+  --hairline: rgba(15, 22, 33, .07);
+
+  /* Die Seitenleiste traegt Weiss, nicht Grau: Der Grund liegt daneben. */
+  --sidebar-background: 0 0% 100%;
+  --sidebar-foreground: 215 17% 20%;
+  --sidebar-border: 213 24% 91%;
+  --sidebar-accent: 204 100% 97%;
+  --sidebar-accent-foreground: 204 95% 34%;
+}
+
+/*
+  Dunkel. Die Richtlinie haelt fest: "Das CRM behaelt seinen dunklen Modus."
+  Der Grund ist Tinte, die Flaechen darueber sind zwei Stufen heller, damit
+  Karten sich vom Grund abheben, ohne zu leuchten.
+*/
+[data-design="neu"].dark {
+  --background: 217 38% 9%;         /* Tinte    #0F1621 */
+  --foreground: 210 25% 92%;
+  --card: 215 25% 13%;
+  --card-foreground: 210 25% 92%;
+  --popover: 215 25% 13%;
+  --popover-foreground: 210 25% 92%;
+
+  --secondary: 215 22% 17%;
+  --secondary-foreground: 210 25% 92%;
+  --muted: 215 22% 17%;
+  --muted-foreground: 215 14% 60%;  /* Grau hell #8B97A7, die dunkle Fassung */
+
+  --border: 215 18% 22%;            /* Weiss mit 15 Prozent, als Ton gerechnet */
+  --input: 215 18% 24%;
+
+  --accent: 204 60% 18%;
+  --accent-foreground: 204 100% 77%;
+  --ring: 204 95% 51%;
+
+  /*
+    Dunkel: dieselben Farben, aber aufgehellt. Ein Gruen mit 28 Prozent
+    Helligkeit ist auf dunklem Grund nicht mehr lesbar.
+  */
+  --success: 147 52% 52%;
+  --success-foreground: 217 38% 9%;
+  --warning: 36 85% 58%;
+  --warning-foreground: 217 38% 9%;
+  --destructive: 4 72% 62%;
+  --destructive-foreground: 217 38% 9%;
+
+  --sidebar-background: 217 38% 9%;
+  --sidebar-foreground: 210 25% 92%;
+  --sidebar-border: 215 18% 22%;
+  /*
+    Ohne diese beiden erbte der Dunkelmodus die hellen Werte von oben: Blau 50
+    als Flaeche unter Blau 700 als Schrift, etwa 2,7:1. Dieselben Toene wie
+    `--accent` im Dunkeln, gerechnet in `design-liquid.test.ts`.
+  */
+  --sidebar-accent: 204 60% 18%;
+  --sidebar-accent-foreground: 204 100% 77%;
+}
+
+/*
+  Zwei Regeln, die ueberall gelten und nichts umbauen.
+
+  Erstens: Zahlen fluchten. Die Richtlinie verlangt Tabellenziffern
+  "in Tabellen, Preisen und Kennzahlen". Das laesst sich global setzen, ohne
+  eine einzige Seite anzufassen.
+
+  Zweitens: der Fokusring. Er ist 2 px Blau 500 mit 2 px Abstand und wird nie
+  entfernt, "auch nicht, wenn er stoert".
+*/
+[data-design="neu"] table,
+[data-design="neu"] .tabular-nums,
+[data-design="neu"] [class*="text-2xl"],
+[data-design="neu"] [class*="text-3xl"],
+[data-design="neu"] [class*="text-4xl"] {
+  font-variant-numeric: tabular-nums;
+}
+
+[data-design="neu"] :focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Etappe 2: die Bausteine und die Huelle.
+
+   Alles hier haengt weiterhin an `[data-design="neu"]`. Angefasst werden nur
+   Form, Abstand und Ton, nie der Aufbau einer Seite: Jede Karte, jeder Knopf
+   und jede Tabelle steht danach an derselben Stelle wie vorher und zeigt
+   denselben Inhalt. Es wird nichts gestrichen.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Karten. Die Richtlinie ist an dieser Stelle eindeutig: "Karten tragen
+  entweder Rahmen oder Schatten, nie beides zugleich." Im Bestand tragen sie
+  beides, und das ist der Hauptgrund, warum die Oberflaeche unruhig wirkt: Auf
+  einem Dashboard mit zwoelf Karten liegen zwoelf Schlagschatten.
+
+  Neu: ruhende Karten tragen die Haarlinie, keinen Schatten.
+
+  Zum Radius eine Warnung fuer spaeter: Er aendert sich hier NICHT. Das
+  Projekt setzt `html { font-size: 90% }`, damit ist 1rem gleich 14,4 px und
+  Tailwinds `rounded-2xl` trifft den Wert der Formtabelle bereits von selbst.
+  Die Zeile steht trotzdem hier, damit der Wert nicht still kippt, wenn
+  jemand den Basisgrad anfasst.
+*/
+[data-design="neu"] [data-ui="card"] {
+  border-radius: 14.4px;
+  border-color: hsl(var(--border));
+  box-shadow: none;
+}
+/*
+  Angehoben wird nur, was auch anklickbar ist. Eine reine Anzeigekarte darf
+  sich beim Ueberfahren nicht bewegen, sonst verspricht die Oberflaeche eine
+  Handlung, die es nicht gibt.
+*/
+[data-design="neu"] [data-ui="card"].cursor-pointer:hover,
+[data-design="neu"] a > [data-ui="card"]:hover,
+[data-design="neu"] button > [data-ui="card"]:hover {
+  box-shadow: var(--shadow-sm);
+  border-color: hsl(var(--ring) / .35);
+}
+
+/*
+  Knoepfe. Radius 10,8 px nach der Formtabelle, aus demselben Grund wie bei
+  der Karte nur festgeschrieben und nicht geaendert: `rounded-xl` ergibt bei
+  90 Prozent Basisgrad bereits 10,8 px. Der weisse Lichtrand innen oben
+  bleibt, er ist laut Richtlinie ein Erkennungsmerkmal des Hauses.
+
+  Was sich hier wirklich aendert, steht eine Regel weiter unten.
+*/
+[data-design="neu"] [data-ui="button"] {
+  border-radius: 10.8px;
+}
+/*
+  Das Zusammenschrumpfen beim Klick nimmt die Richtlinie nicht auf, und es
+  laesst ein Werkzeug spielerisch wirken. Statt der Groesse aendert sich die
+  Tiefe.
+*/
+[data-design="neu"] [data-ui="button"]:active {
+  transform: none;
+  box-shadow: inset 0 1px 3px rgba(15, 22, 33, .14);
+}
+
+/*
+  Eingabefelder: derselbe Radius wie der Knopf, Haarlinie statt Rahmen, und
+  kein eigener Schatten. Im Bestand tragen Feld, Auswahlfeld und Textfeld
+  einen leichten Schlagschatten; auf einem Formular mit zwanzig Feldern wird
+  daraus Unruhe. Die Tiefe entsteht neu allein aus dem Ton der Flaeche.
+*/
+[data-design="neu"] [data-ui="field"] {
+  border-radius: 10.8px;
+  border-color: hsl(var(--border));
+  box-shadow: none;
+}
+[data-design="neu"] [data-ui="field"]:focus-visible,
+[data-design="neu"] [data-ui="field"]:focus-within {
+  box-shadow: none;
+}
+
+/* Abzeichen sind Chips: 4 px Radius nach der Formtabelle, nie Pillenform. */
+[data-design="neu"] [data-ui="badge"] {
+  border-radius: 4px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+/*
+  Tabellen. Der Kopf steht auf der Flaeche statt auf Weiss, die Zeilen trennt
+  die Haarlinie, und Zahlen fluchten. Das ist der Unterschied zwischen einer
+  Liste und einer Tabelle, die man lesen kann.
+*/
+[data-design="neu"] table thead tr {
+  background: hsl(var(--muted));
+}
+/*
+  Der Kopf ist eine Versalzeile wie die Beschriftung einer Kennzahlkachel,
+  und zwar mit denselben Werten: 11 px, fett, .18em gesperrt. Der Bestand
+  setzt bereits 11 px und Versalien, aber nur .025em gesperrt. Gesperrte
+  Grossbuchstaben lesen sich deutlich besser als ungesperrte, und weil
+  Beschriftung und Tabellenkopf dieselbe Aufgabe haben, sollen sie auch
+  gleich aussehen.
+*/
+[data-design="neu"] table thead th {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  color: hsl(var(--muted-foreground));
+}
+[data-design="neu"] table tbody tr {
+  border-color: hsl(var(--border));
+}
+
+/*
+  Die Seitenleiste. Sie steht auf Weiss, der Arbeitsbereich daneben auf der
+  Flaeche: So entsteht die Trennung ueber den Ton und nicht ueber eine Kante.
+
+  Der AKTIVE Eintrag wird hier bewusst nicht angefasst, und das ist eine
+  Entscheidung und kein Versehen.
+
+  Bis zum 12.09.2026 stand hier eine Regel, die ihn zart toenen sollte, Blau 50
+  als Flaeche und Blau 700 als Schrift. Sie hat nie gewirkt: Sie zielt auf
+  `[data-active="true"]`, und `AppSidebar.tsx` uebergibt `isActive` an keiner
+  Stelle an `SidebarMenuButton`. Auf jedem Knopf steht deshalb
+  `data-active="false"`. Die Farbe kommt stattdessen aus `activeClasses` in
+  `AppSidebar.tsx`, einer eigenen Klassenzeile mit `bg-primary`.
+
+  Christian hat am 12.09.2026 entschieden, dass der aktive Eintrag vollflaechig
+  blau bleibt. Die Regel ist deshalb entfernt worden, statt sie zum Wirken zu
+  bringen. Wer sie spaeter doch will, braucht zwei Dinge: `isActive` an
+  `SidebarMenuButton` uebergeben, und `activeClasses` entfernen. Die
+  Spezifitaet reicht dann aus, drei Attributselektoren schlagen eine
+  Tailwind-Klasse.
+*/
+[data-design="neu"] [data-sidebar="sidebar"] {
+  border-right: 1px solid hsl(var(--border));
+}
+[data-design="neu"] [data-sidebar="menu-button"] {
+  border-radius: 8px;
+  font-weight: 400;
+}
+[data-design="neu"] [data-sidebar="group-label"] {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+}
+
+/*
+  Ueberschriften. Die Groessenskala der Richtlinie verlangt negative
+  Laufweite, je groesser der Grad, desto enger der Satz. Im Bestand steht sie
+  nur an einzelnen Stellen.
+*/
+[data-design="neu"] h1 { letter-spacing: -.030em; }
+[data-design="neu"] h2 { letter-spacing: -.025em; }
+[data-design="neu"] h3 { letter-spacing: -.020em; }
+
+/*
+  Dialoge und Ueberlagerungen sind die dritte Schattenstufe, "schwebend".
+  Nur hier ist ein deutlicher Schatten richtig.
+*/
+[data-design="neu"] [role="dialog"] {
+  border-radius: 14.4px;
+  box-shadow: var(--shadow-xl);
+}
+
+/*
+  Reiter. Die Leiste ist eine Spur in der Flaeche, das aktive Blatt liegt
+  darauf. Radius aussen 10,8 px, innen 8 px, damit die Kanten parallel
+  laufen statt sich zu schneiden. Angesprochen ueber die Radix-Rollen, die
+  Bausteindatei bleibt unangetastet.
+*/
+[data-design="neu"] [role="tablist"] {
+  border-radius: 10.8px;
+  background: hsl(var(--muted));
+  border: 1px solid hsl(var(--border));
+}
+[data-design="neu"] [role="tab"] {
+  border-radius: 8px;
+  font-weight: 500;
+}
+[data-design="neu"] [role="tab"][data-state="active"] {
+  box-shadow: var(--shadow-xs);
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Etappe 3: die Muster, die auf jedem Bildschirm wiederkehren.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Die Kennzahlkachel. Drei Zeilen, jede mit einer eigenen Aufgabe:
+
+  Die Beschriftung wird zur Versalzeile, Stufe 11 px der Groessenskala. Sie
+  tritt damit hinter die Zahl zurueck, statt mit ihr um Aufmerksamkeit zu
+  ringen.
+
+  Die Zahl wird groesser und steht **immer in Tinte**, auch wenn sie eine
+  Warnung meldet. Der Grund steht im Baustein: Acht farbige Zahlen auf einem
+  Dashboard sind acht Zahlen ohne Farbinformation.
+
+  Die Bewertung traegt die Farbe, und weil sie dann die einzige Farbe auf der
+  Kachel ist, sieht man sie zuverlaessiger als vorher die eingefaerbte Zahl.
+*/
+[data-design="neu"] [data-ui="kennzahl-label"] {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  line-height: 1.3;
+}
+[data-design="neu"] [data-ui="kennzahl-wert"] {
+  margin-top: 10px;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -.03em;
+  line-height: 1.12;
+  color: hsl(var(--foreground));
+}
+[data-design="neu"] [data-ui="kennzahl-zusatz"] {
+  margin-top: 4px;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+[data-design="neu"] [data-ton="warn"] [data-ui="kennzahl-zusatz"] {
+  color: hsl(var(--destructive));
+}
+[data-design="neu"] [data-ton="gut"] [data-ui="kennzahl-zusatz"] {
+  color: hsl(var(--success));
+}
+/*
+  Die Pfeilsymbole entfallen. Die Farbe sagt bereits, in welche Richtung es
+  geht, und ein Pfeil neben einem Satz wie "keine ueberfaellig" behauptet eine
+  Bewegung, die es gar nicht gibt.
+*/
+[data-design="neu"] [data-ui="kennzahl-zusatz"] > svg:first-child {
+  display: none;
+}
+
+/*
+  Die kompakte Kachel.
+
+  Im CRM stehen Kennzahlen nicht nur einzeln, sondern auch zu fuenft oder zu
+  sechst in einer Reihe: die Setter-Kennzahlen, die Hausverwaltung, die
+  Teamuebersicht. Dort ist die Kachel zentriert, traegt ein Symbol, und die
+  Beschriftung steht teils ueber, teils unter der Zahl.
+
+  Diese Anordnung bleibt, wie sie ist. Angeglichen wird nur die Typografie,
+  damit eine Zahl im CRM ueberall gleich aussieht, egal in welcher Kachel sie
+  steht. Die Zahl faellt dabei kleiner aus als in der grossen Kachel, weil
+  sechs Kacheln nebeneinander sonst nicht mehr in eine Zeile passen.
+
+  Die Abstaende kommen hier aus dem Gitter der Kachel selbst (gap, space-y),
+  deshalb werden die eigenen Abstaende der Kennzahlzeilen zurueckgenommen.
+  Sonst addieren sich beide und die Kachel geht auseinander.
+*/
+[data-design="neu"] [data-anordnung="kompakt"] [data-ui="kennzahl-wert"] {
+  margin-top: 0;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -.025em;
+  line-height: 1.15;
+  color: hsl(var(--foreground));
+}
+[data-design="neu"] [data-anordnung="kompakt"] [data-ui="kennzahl-zusatz"] {
+  margin-top: 0;
+}
+/*
+  Steht die Beschriftung unter der Zahl, bleibt sie eine normale Zeile statt
+  einer Versalzeile. Gesperrte Grossbuchstaben unter einer Zahl lesen sich als
+  Fussnote, und in einer Reihe aus sechs Kacheln braechen sie zu haeufig um.
+*/
+[data-design="neu"] [data-anordnung="kompakt"] [data-ui="kennzahl-wert"] ~ [data-ui="kennzahl-label"] {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}

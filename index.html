@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="de" data-design="neu" data-glas="an">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MOREImmo CRM</title>
+    <meta name="description" content="MOREImmo — Vermögensaufbau mit Immobilien. Persönliche Beratung, steueroptimiert investieren, Cashflow aufbauen und finanzielle Freiheit erreichen.">
+    <meta name="author" content="Lovable" />
+    <link rel="canonical" href="https://portal.more.immo/" />
+    <meta name="google-site-verification" content="fGfljct90tW7yXA4SsBrYIaaAkZ6UFOC4_6CFFv51x4" />
+
+    <!--
+      Content-Security-Policy: Diese Zeile ist die EINZIGE Stelle der Richtlinie.
+      Lovable wertet public/_headers nicht aus (die Live-Seite sendet keinen
+      CSP-Header, /_headers wird nur als Datei ausgeliefert, geprüft am
+      26.09.2026). Deshalb steht dort bewusst keine zweite Fassung, sonst gälte
+      bei einem Hosting, das _headers auswertet, nur die strengere Schnittmenge.
+      Skripte: reCAPTCHA (google/gstatic, nur /recaptcha/), Meta-Pixel
+      (connect.facebook.net, erst nach Einwilligung), cdn.gpteng.co (Lovable).
+      Bilder, Verbindungen und Frames bleiben auf https: offen, weil Objektbilder,
+      Kalender-Links, Akademie-Videos und Dokumentvorschauen frei eingetragene
+      Adressen laden. Keine Google-Fonts-Quelle: Die Seite nutzt Systemschriften,
+      Exposé und PDF die lokale Plus Jakarta Sans unter /fonts/.
+      frame-ancestors fehlt absichtlich: Im meta-Tag ignoriert der Browser es
+      und meldet einen Konsolenfehler. Test: src/lib/sicherheitsrichtlinie.test.ts
+    -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.gpteng.co https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://connect.facebook.net; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https:; connect-src 'self' https: wss: blob:; frame-src 'self' https: blob: data:; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta name="permissions-policy" content="camera=(), microphone=(), geolocation=(self), payment=()">
+
+    <!-- DNS prefetch for Supabase -->
+    <link rel="dns-prefetch" href="https://DEIN-SUPABASE-PROJEKT.supabase.co">
+    <link rel="preconnect" href="https://DEIN-SUPABASE-PROJEKT.supabase.co" crossorigin>
+
+    <!-- OG Tags -->
+    <meta property="og:type" content="website" />
+    
+    
+    <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d1eedabe-3f7a-4207-8444-62bcb491abe3/id-preview-88ce1801--cd62347b-9ef0-43fe-a989-4d4a53a8c4ef.lovable.app-1777968244252.png">
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@Lovable" />
+    
+    
+    <meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d1eedabe-3f7a-4207-8444-62bcb491abe3/id-preview-88ce1801--cd62347b-9ef0-43fe-a989-4d4a53a8c4ef.lovable.app-1777968244252.png">
+    
+  
+  
+  
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "MOREImmo",
+      "url": "https://portal.more.immo",
+      "logo": "https://portal.more.immo/favicon.png"
+    }
+  </script>
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#0F172A" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="MOREImmo" />
+  <meta property="og:title" content="MOREImmo CRM">
+  <meta name="twitter:title" content="MOREImmo CRM">
+  <meta property="og:description" content="MOREImmo — Vermögensaufbau mit Immobilien. Persönliche Beratung, steueroptimiert investieren, Cashflow aufbauen und finanzielle Freiheit erreichen.">
+  <meta name="twitter:description" content="MOREImmo — Vermögensaufbau mit Immobilien. Persönliche Beratung, steueroptimiert investieren, Cashflow aufbauen und finanzielle Freiheit erreichen.">
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

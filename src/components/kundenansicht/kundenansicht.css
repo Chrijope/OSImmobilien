@@ -1,0 +1,82 @@
+/*
+ * Kundenansicht: Partnerkasten und Lagekarte kommen aus dem Exposé und sind
+ * über `.premium-expose` gestaltet. Hier stehen sie in einem Rahmen mit
+ * dieser Klasse, ohne den Seitengrund und die Abstände des Exposés.
+ */
+.premium-expose.kundenansicht-einbettung {
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  line-height: 1.6;
+}
+
+.premium-expose.kundenansicht-einbettung .kunden-partner {
+  margin: 0;
+}
+
+.premium-expose.kundenansicht-einbettung .mikro-grid {
+  max-width: none;
+}
+
+/*
+ * Handy (unter 640 px, 24.09.2026): Der Ansprechpartner füllte mit zwei
+ * untereinander gestellten, breiten Knöpfen fast den ganzen ersten
+ * Bildschirm. Hier wird er kompakt: kleineres Bild, beide Wege
+ * nebeneinander, eine zu lange Adresse endet mit Auslassungspunkten. Die
+ * Knöpfe bleiben 44 px hoch, damit sie sich sicher treffen lassen.
+ */
+@media (max-width: 639px) {
+  .premium-expose.kundenansicht-einbettung .kunden-partner {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+  .premium-expose.kundenansicht-einbettung .kp-person {
+    gap: 10px;
+  }
+  .premium-expose.kundenansicht-einbettung .kp-bild {
+    width: 40px;
+    height: 40px;
+  }
+  .premium-expose.kundenansicht-einbettung .kp-initialen {
+    font-size: 14px;
+  }
+  .premium-expose.kundenansicht-einbettung .kp-person strong {
+    font-size: 15px;
+  }
+  .premium-expose.kundenansicht-einbettung .kp-wege {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+  .premium-expose.kundenansicht-einbettung .kp-wege .btn {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+    min-height: 44px;
+    padding: 8px 10px;
+    overflow: hidden;
+  }
+  .premium-expose.kundenansicht-einbettung .kp-wege .kp-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+/*
+ * Info-Symbole in der Kundenansicht: mindestens 32 px Tippfläche am Element
+ * selbst (vorher 12 px Symbol mit einer unsichtbaren Erweiterung). Der
+ * negative Rand hält die Zeile so hoch wie vorher.
+ */
+[data-testid="kundenansicht"] button[aria-label="Erklärung"] {
+  min-width: 32px;
+  min-height: 32px;
+  margin: -10px;
+}
+
+@media print {
+  .kundenansicht-ohne-druck {
+    display: none !important;
+  }
+}

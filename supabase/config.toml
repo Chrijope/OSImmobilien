@@ -1,0 +1,350 @@
+project_id = "DEIN-SUPABASE-PROJEKT"
+
+[functions.estimate-marktwert]
+verify_jwt = true
+
+[functions.eigene-investments-reminders]
+verify_jwt = false
+
+# Wird vom täglichen Cron-Job aufgerufen, wie die anderen Reminder-Functions.
+[functions.send-birthday-emails]
+verify_jwt = false
+
+[functions.process-email-queue]
+verify_jwt = true
+
+[functions.lead-eskalation-check]
+verify_jwt = false
+
+[functions.system-health-check]
+verify_jwt = false
+
+[functions.recompute-pipeline]
+verify_jwt = false
+
+[functions.check-document-reminders]
+verify_jwt = false
+
+[functions.track-vertrag-email]
+verify_jwt = false
+
+[functions.track-bewerber-mail]
+verify_jwt = false
+
+# Zaehlpixel in den Selbstauskunft-Mails. Wird vom Mailclient des Kunden
+# geladen, also ohne Anmeldung.
+[functions.track-sa-email]
+verify_jwt = false
+
+[functions.redeem-activation-token]
+verify_jwt = false
+
+[functions.get-ics]
+verify_jwt = false
+
+[functions.send-bewerber-closing-reminders]
+verify_jwt = false
+
+[functions.sync-destatis]
+verify_jwt = true
+
+[functions.sync-osm-mikrolage]
+verify_jwt = true
+
+[functions.send-bewerber-erstgespraech-reminders]
+verify_jwt = false
+
+[functions.submit-bewerbung]
+verify_jwt = false
+
+[functions.dsgvo-hard-delete]
+verify_jwt = true
+
+# Verschiebt nach dem Zusammenfuehren die Dateien des aufgeloesten Kontakts
+# (20260927000000_kontakt_dateipfade_umschreiben.sql).
+[functions.kontakte-zusammenfuehren-dateien]
+verify_jwt = true
+
+# Der angemeldete Nutzer aendert sein eigenes Passwort aus dem CRM heraus,
+# deshalb mit Anmeldepruefung. Dieser Abschnitt stand bis zum 16.09.2026
+# zweimal in der Datei (Audit-Befund F15). Ein TOML-Parser bricht bei einem
+# doppelten Abschnittsnamen ab. Der andere Eintrag lag zwischen den
+# Cron- und Zaehlpixel-Functions und wurde entfernt, dieser bleibt bei den
+# angemeldeten Konto-Aktionen stehen.
+[functions.update-password]
+verify_jwt = true
+
+# Ruft der Admin aus dem CRM heraus auf, deshalb mit Anmeldung.
+# Ruft der Vertriebspartner aus dem CRM heraus auf, deshalb mit Anmeldung.
+[functions.bonitaet-freigabe-mail]
+verify_jwt = true
+
+# Ruft der Absender einer Chatnachricht auf, im CRM wie im Kundenportal.
+# Deshalb mit Anmeldung; die Function prueft zusaetzlich, dass der Aufrufer
+# der Absender genau dieser Nachricht ist.
+[functions.chat-benachrichtigung]
+verify_jwt = true
+
+# Ruft der Support nach einer Antwort im Helpdesk auf. Mit Anmeldung; die
+# Function prueft zusaetzlich die Rolle (admin, inhaber, backoffice).
+[functions.support-antwort-mail]
+verify_jwt = true
+
+# Prueft ihre Aufrufer selbst: Admin und Inhaber per Token im Code, der
+# taegliche Sync-Aufruf von pg_cron kommt ohne Token und bekommt nur
+# Stueckzahlen, begrenzt auf vier Laeufe je Stunde.
+[functions.investagon-import]
+verify_jwt = false
+
+[functions.investagon-webhook]
+verify_jwt = false
+
+[functions.send-aftersales-beratung-reminders]
+verify_jwt = false
+
+[functions.finalize-aftersales-beratung]
+verify_jwt = false
+
+[functions.auth-email-hook]
+verify_jwt = false
+
+[functions.enrich-arbeitgeber]
+verify_jwt = true
+
+[functions.sync-boris]
+verify_jwt = true
+
+# Der Kunde ist nicht angemeldet, wenn er den Warteraum betritt.
+[functions.videoraum-ice]
+verify_jwt = false
+
+# Wird stuendlich vom Cron-Job aufgerufen, wie die anderen Erinnerungen.
+[functions.send-termin-erinnerungen]
+verify_jwt = false
+
+# Der Buchende hat kein Konto. Das Geheimnis ist der Absagetoken, den nur er
+# und die Datenbank kennen.
+[functions.send-buchung-bestaetigung]
+verify_jwt = false
+
+# Absage und Verschiebung. Derselbe Grund wie oben: Der Kunde ist nicht
+# angemeldet, sein Ausweis ist der Absagetoken.
+[functions.send-buchung-aenderung]
+verify_jwt = false
+
+# Laeuft ueber pg_cron, nicht aus dem Browser. Kein Anmeldetoken noetig.
+[functions.signatur-erinnerung]
+verify_jwt = false
+
+# Zweiter Versuch fuer fehlgeschlagene Buchungsbestaetigungen, ebenfalls per Zeitplan.
+[functions.mail-nachzuegler]
+verify_jwt = false
+
+# Morgenbericht des Nachtwaechters. Laeuft ueber pg_cron, nicht aus dem
+# Browser. Empfaenger holt sie sich selbst aus den Rollen.
+[functions.nachtpruefung-morgenmail]
+verify_jwt = false
+
+# Die drei folgenden Eskalationsdienste hatten bis heute weder einen Zeitplan
+# noch einen Eintrag hier. Ohne Eintrag gilt verify_jwt = true, und pg_cron
+# ruft ohne Anmeldetoken auf: Der neue Zeitplan aus
+# 20260807170000_eskalationsdienste_zeitplan.sql waere jede Nacht an einem 401
+# haengengeblieben. Sie nehmen keine Daten von aussen entgegen, sondern holen
+# sich Kontakte und Empfaenger selbst mit dem Service-Key.
+[functions.weekly-pipeline-mahnreport]
+verify_jwt = false
+
+[functions.send-sla-inactivity-nudges]
+verify_jwt = false
+
+[functions.send-followup-overdue-nudges]
+verify_jwt = false
+
+# Willkommensmail an den Lead nach der internen Zuweisung (seit 30.09.2026,
+# vom 26. bis 30.09. stillgelegt). Wird aus dem Browser gerufen, deshalb mit
+# Anmeldepruefung; die Function prueft zusaetzlich Zustaendigkeit oder Leitung.
+[functions.send-lead-zuweisung-mail]
+verify_jwt = true
+
+# Kunde verschickt seine Anlage-V-Aufstellung aus dem Portal, deshalb mit Anmeldung.
+[functions.send-anlage-v]
+verify_jwt = true
+
+# Exposé für Kunden per Mail senden oder den persoenlichen Link erzeugen.
+# Mit Anmeldung; die Function prueft zusaetzlich interne Rolle und Zugriff auf
+# genau diesen Kontakt, der Empfaenger kommt nur aus dem Kontakt.
+[functions.send-kunden-expose]
+verify_jwt = true
+
+# Die Kundenansicht (Objektuebersicht). Der Kundenlink kommt ohne Anmeldung,
+# der Schutz liegt im Schluessel, in der Positivliste und in der Mengenbremse.
+# Die Vorschau „Als Kunde ansehen“ prueft Anmeldung und Rolle (admin/inhaber)
+# im Code.
+[functions.get-kundenansicht]
+verify_jwt = false
+
+# HR verschickt aus dem Aktivierungs-Tab die Zugangsdaten der neuen
+# persoenlichen @more.immo-Adresse an die private Bewerber-Adresse.
+# Mit Anmeldung; die Function prueft zusaetzlich die Rolle (admin/inhaber).
+[functions.send-bewerber-zugangsdaten]
+verify_jwt = true
+
+# Der Bewerber fuellt seinen Vorab-Fragebogen ohne Anmeldung aus. Der Schutz
+# liegt im Token, im Honigtopf und darin, dass die Function ausschliesslich
+# bekannte Antwortschluessel annimmt.
+[functions.submit-bewerber-formular]
+verify_jwt = false
+
+# Laeuft ueber pg_cron ohne Anmeldung. Verschickt die eine Erinnerung an den
+# Fragebogen, aber nur solange das Erstgespraech noch nicht gefuehrt wurde.
+[functions.send-bewerber-formular-erinnerungen]
+verify_jwt = false
+
+# Legt das Formular-Token an und verschickt die Einladung. Wird von
+# submit-bewerbung und dem Zapier-Webhook mit der Service-Rolle gerufen und aus
+# dem Bewerberprofil von einem angemeldeten Mitarbeiter.
+[functions.send-bewerber-formular]
+verify_jwt = true
+
+# Der neue Bewerberprozess: legt das Token an und verschickt die Einladung zum
+# Kennenlernen. Wird ausschliesslich aus dem Bereich /bewerberprozess von einem
+# angemeldeten Mitarbeiter gerufen, deshalb mit Anmeldung.
+[functions.send-bewerber-kennenlernen]
+# Die Funktion prueft selbst: entweder das interne Geheimnis oder ein
+# angemeldeter Nutzer mit HR-Rolle. Das Tor davor war doppelt und hat den
+# automatischen Aufruf aus Zapier moeglicherweise abgewiesen, bevor die
+# Funktion ueberhaupt startete. Wie bei submit-bewerbung.
+verify_jwt = false
+
+# Der Bewerber meldet sich ueber den Link aus der Nachfass-Mail ab, ohne
+# Anmeldung. Der Schutz liegt im Token (64 Hex), im Honigtopf, im Rate-Limit
+# und darin, dass nur ein POST etwas aendert. Verschickt selbst keine Mail.
+[functions.bewerber-kein-interesse]
+verify_jwt = false
+
+# Die einmalige Nachfass-Mail an alle im Eingang, mit Vorschau- und
+# Versandmodus. Mit Anmeldung; die Function prueft zusaetzlich die Rolle
+# (inhaber, admin, hr).
+[functions.send-bewerber-nachfass]
+verify_jwt = true
+
+# Meldet HR taeglich, wenn ein versendeter Vertrag unsigniert liegen bleibt.
+# Laeuft ueber pg_cron ohne Anmeldung.
+[functions.send-vertrag-hr-eskalation]
+verify_jwt = false
+
+# Eskalation bei offenen Reservierungsvereinbarungen. Laeuft taeglich ueber
+# pg_cron ohne Anmeldung.
+[functions.send-reservierung-eskalation]
+verify_jwt = false
+
+# Die Erinnerungskette des neuen Bewerberprozesses: Tag 3 und Tag 11 als Mail an
+# den Bewerber (Tag 8 entfiel am 26.09.2026). Laeuft taeglich ueber pg_cron ohne
+# Anmeldung. Ein zusaetzlicher Aufruf von aussen verschickt nichts doppelt: Die
+# Stufe in meta.kennenlernen steigt mit jeder Nachricht, und der
+# Idempotenzschluessel je Bewerber und Stufe faengt den Rest ab.
+[functions.send-bewerber-kennenlernen-erinnerungen]
+verify_jwt = false
+
+# Der Bewerber meldet aus dem Kennenlernen heraus, dass er seinen Termin
+# gebucht, verschoben oder abgesagt hat. Ohne Anmeldung, denn er hat kein
+# Konto. Der Schutz liegt im Token (64 Hex), im Rate-Limit und darin, dass der
+# Empfaenger nicht aus dem Aufruf kommt, sondern aus der Rolle `hr`
+# beziehungsweise aus dem Kalender, in dem der Termin liegt.
+[functions.send-bewerber-termin]
+verify_jwt = false
+
+# Die persoenliche Bewerberseite: Pause, Ausstieg, Rueckfrage und der
+# Widerspruch gegen den Anruf. Ohne Anmeldung, denn der Bewerber hat kein
+# Konto. Der Schutz liegt im Token (64 Hex), im Honigtopf, im Rate-Limit je
+# Absender und darin, dass nur ein POST etwas aendert. Verschickt keine Mail.
+[functions.bewerber-seite]
+verify_jwt = false
+
+# Legt die Steuerauswertung des oeffentlichen Rechners ab und verschickt die
+# Mail mit dem Knopf darauf. Ohne Anmeldung, denn der Interessent hat kein
+# Konto. Der Schutz liegt im Rate-Limit je Absender, in der Groessengrenze, in
+# der Pruefung auf ein echtes PDF und darin, dass der Eimer nicht oeffentlich
+# ist: Herausgegeben wird nur eine signierte Adresse mit begrenzter Laufzeit.
+[functions.steuer-auswertung-versand]
+verify_jwt = false
+
+# MCP-Server fuer claude.ai: Liefert ausschliesslich die Firmenkennzahlen ueber
+# die Datenbankfunktion public.kennzahlen_verlauf. Die Absicherung uebernimmt
+# das Geheimnis KENNZAHLEN_MCP_SECRET im Header, deshalb ohne JWT.
+[functions.kennzahlen-mcp]
+verify_jwt = false
+
+# Das Tagesbriefing der Geschaeftsleitung, werktags um 8 Uhr deutscher Zeit.
+# pg_cron ruft ohne Anmeldetoken, deshalb ohne JWT. Die Function verschickt nur
+# an die in public.app_config gepflegte Empfaengerliste und gibt ohne
+# Service-Key keine Firmenzahlen zurueck.
+[functions.tagesbriefing]
+verify_jwt = false
+
+# Die Punkte des Weekly Sales Call, montags um 17 Uhr an die Leitung.
+# pg_cron ruft ohne Anmeldetoken, deshalb ohne JWT. Die Function verschickt nur
+# an die in public.app_config gepflegte Empfaengerliste und gibt ohne
+# Service-Key den Wortlaut der Punkte nicht zurueck.
+[functions.send-weekly-call-punkte]
+verify_jwt = false
+
+# Die Objekteinreichung ueber den offenen Link /objekt-akquise. Ohne Anmeldung,
+# denn der Einreicher hat kein Konto. Der Schutz liegt im Honigtopf und im
+# Kontingent je Anschluss. Sie loest damit den direkten Schreibzugriff des
+# Formulars auf public.objekt_einreichungen ab (Sicherheitsbefund 18.09.2026).
+[functions.submit-objekt-einreichung]
+verify_jwt = false
+
+# Der Zaehler der beiden oeffentlichen Rechner, Analysetool und Steuerrechner.
+# Ohne Anmeldung, denn die Rechner sind oeffentlich. Der Schutz liegt im
+# Kontingent je Anschluss. Sie loest den direkten Schreibzugriff des Browsers
+# auf public.analysetool_ereignisse ab (Sicherheitsbefund 18.09.2026).
+[functions.analyse-ereignis]
+verify_jwt = false
+
+# Kurzbeschreibung und fuenf Standortargumente zu einem Objekt. Nur fuer
+# Angemeldete: Die Function liest und schreibt mit dem Token des Aufrufers,
+# damit die Regeln auf public.objekte und auf dem Eimer objekt-dokumente
+# entscheiden, wer das darf.
+[functions.objekt-texte-ki]
+verify_jwt = true
+
+# Misst die Umgebung aller Objekte nach, gedrosselt. Laeuft ueber pg_cron
+# ohne Anmeldetoken (20260924190000_standort_nachholen_zeitplan.sql), gibt nur
+# Zahlen zurueck und hat eine eigene Mengenbremse.
+[functions.standort-nachholen]
+verify_jwt = false
+
+# Der MORE Lotse, KI-Chat auf der Einheitenseite. Nur fuer Angemeldete; Rolle,
+# Zustimmung und Tageslimit prueft die Function zusaetzlich selbst.
+[functions.objekt-lotse]
+verify_jwt = true
+
+# Persoenlicher Handbuch-Link aus der Willkommensmail (seit 30.09.2026).
+# Oeffentlich, der Lead ist nicht angemeldet. Geprueft werden Token, Ablauf,
+# Antworten, Einwilligung und Bremsen je IP und je Kontakt.
+[functions.handbuch-einladung]
+verify_jwt = false
+
+# Die oeffentliche Seite "Partner werden" (seit 30.09.2026). Ohne Anmeldung.
+# Geschuetzt durch Bremse je IP, Honigtopf, Zeitfalle und eine feste Liste
+# erlaubter Antworten; die Einwilligung prueft die Function selbst. Legt nur
+# einen Lead im Bewerberprozess an und laeutet die Glocke der HR-Rolle.
+[functions.submit-partner-werden]
+verify_jwt = false
+
+# Die Seite "Partner werden" zeigt je Standort, wie viele Objekte im Angebot
+# stehen (seit 30.09.2026). Ohne Anmeldung, gibt nur fuenf Zahlen heraus,
+# Bremse je IP, Antwort zehn Minuten im Zwischenspeicher.
+[functions.partner-standorte]
+verify_jwt = false
+
+[functions.jarvis-kennzahlen]
+verify_jwt = false
+
+# Kundenportal sperren und entsperren (seit 23.09.2026). Nur fuer Angemeldete.
+# Die Function prueft selbst, ob Admin, Inhaber oder der zustaendige
+# Vertriebspartner klickt, und sperrt dann auch die Anmeldung des Kunden.
+[functions.kundenportal-sperre]
+verify_jwt = true

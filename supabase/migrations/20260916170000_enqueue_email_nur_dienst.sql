@@ -1,0 +1,116 @@
+-- ===========================================================================
+-- enqueue_email darf nur noch der Dienst aufrufen, nicht jeder Angemeldete
+-- ===========================================================================
+--
+-- WARUM
+--
+-- `public.enqueue_email(text, jsonb)` legt eine fertig gerenderte Mail in die
+-- Versandwarteschlange (pgmq). Was dort liegt, wird vom Versender
+-- `process-email-queue` genommen und ueber Resend tatsaechlich verschickt.
+-- Empfaenger, Absender, Betreff, HTML-Text und Anhaenge stehen vollstaendig in
+-- der Nutzlast, die der Aufrufer uebergibt. Wer die Funktion aufrufen darf,
+-- darf also faktisch beliebige Mails unter der Absenderadresse des Hauses
+-- verschicken.
+--
+-- WAS WAR DER FEHLER
+--
+-- Die Rechtevergabe ist ueber fuenf Migrationen gewandert, und am Ende blieb
+-- `authenticated` uebrig. Der Verlauf:
+--
+--   20260315140218_email_infra.sql:161   GRANT an service_role
+--   20260517104512_...sql:24             REVOKE von anon, public, authenticated
+--   20260517155943_email_infra.sql:196   GRANT an service_role
+--   20260525080225_...sql:83             GRANT an service_role UND authenticated
+--   20260601141419_...sql:24             REVOKE von anon, public
+--
+-- Massgeblich ist je Empfaenger die zeitlich letzte Regel. Der REVOKE vom
+-- 01.06.2026 nennt nur `anon` und `public`, nicht `authenticated`. Die
+-- Vergabe vom 25.05.2026 stand damit unangetastet weiter. `authenticated`
+-- meint in Supabase jeden angemeldeten Nutzer, also nicht nur Mitarbeiter,
+-- sondern auch jeden Kunden im Portal. Externes Audit vom 15.09.2026,
+-- Befund F05.
+--
+-- Der Zusatz `authenticated` in der Migration vom 25.05.2026 war
+-- hoechstwahrscheinlich ein Versehen: In derselben Zeile stehen die
+-- Nachbarfunktionen `delete_email`, `read_email_batch` und `move_to_dlq`
+-- ausschliesslich auf `service_role`. Nur `enqueue_email` bekam den Zusatz.
+--
+-- WARUM DER ENTZUG NICHTS ABSCHNEIDET
+--
+-- Es gibt genau zwei Aufrufer, beide in Edge Functions, beide mit dem
+-- Service-Key und damit als `service_role`:
+--
+--   supabase/functions/send-transactional-email/index.ts:399
+--   supabase/functions/auth-email-hook/index.ts:265
+--
+-- Kein Aufruf aus dem Browser: Weder `src/` noch eine der Store-Dateien ruft
+-- `enqueue_email` auf, und auch keine Datenbankfunktion und kein Trigger tut
+-- es. Der einzige Treffer in `src/` ist der generierte Typ in
+-- `src/integrations/supabase/types.ts`, also eine Beschreibung, kein Aufruf.
+-- Die Seiten im CRM verschicken Mail ausschliesslich ueber
+-- `send-transactional-email`, und diese Function legt mit dem Service-Key
+-- ab. Die Abarbeitung laeuft ebenfalls nur ueber den Dienst:
+-- `process-email-queue` liest mit `read_email_batch`, loescht mit
+-- `delete_email` und schiebt Fehlschlaege mit `move_to_dlq` weg, alle drei
+-- schon heute nur fuer `service_role`.
+--
+-- WAS SICH AENDERT
+--
+-- `authenticated` verliert das Ausfuehrungsrecht. `service_role` behaelt es.
+-- Fuer `anon` und `public` wird der Entzug sicherheitshalber wiederholt,
+-- damit die Funktion nach diesem Lauf nachweislich nur noch dem Dienst
+-- offensteht.
+--
+-- Wiederholbar: REVOKE und GRANT sind wiederholbar, ein zweiter Lauf aendert
+-- nichts.
+-- ===========================================================================
+
+REVOKE EXECUTE ON FUNCTION public.enqueue_email(text, jsonb)
+  FROM authenticated, anon, public;
+
+GRANT EXECUTE ON FUNCTION public.enqueue_email(text, jsonb)
+  TO service_role;
+
+COMMENT ON FUNCTION public.enqueue_email(text, jsonb) IS
+  'Legt eine fertig gerenderte Mail in die Versandwarteschlange. Nur fuer service_role. Aufrufer sind ausschliesslich die Edge Functions send-transactional-email und auth-email-hook. Audit-Befund F05 vom 15.09.2026: authenticated hatte das Recht seit dem 25.05.2026 versehentlich behalten.';
+
+-- ===========================================================================
+-- PRUEFLAUF fuer den SQL-Editor
+-- ===========================================================================
+--
+-- 1. Wer darf enqueue_email jetzt noch ausfuehren? Erwartet wird genau eine
+--    Zeile mit service_role. Kein authenticated, kein anon, kein PUBLIC.
+--
+--   select r.rolname as empfaenger
+--     from pg_proc p
+--     join pg_namespace n on n.oid = p.pronamespace
+--    cross join lateral aclexplode(p.proacl) a
+--     join pg_roles r on r.oid = a.grantee
+--    where n.nspname = 'public'
+--      and p.proname = 'enqueue_email'
+--      and a.privilege_type = 'EXECUTE'
+--    order by r.rolname;
+--
+-- 2. Gegenprobe zu den Nachbarfunktionen der Warteschlange. Alle vier sollen
+--    dasselbe Bild zeigen, naemlich nur service_role.
+--
+--   select p.proname, r.rolname as empfaenger
+--     from pg_proc p
+--     join pg_namespace n on n.oid = p.pronamespace
+--    cross join lateral aclexplode(p.proacl) a
+--     join pg_roles r on r.oid = a.grantee
+--    where n.nspname = 'public'
+--      and p.proname in ('enqueue_email', 'delete_email',
+--                        'read_email_batch', 'move_to_dlq')
+--      and a.privilege_type = 'EXECUTE'
+--    order by p.proname, r.rolname;
+--
+-- 3. Laeuft der Versand weiter? Nach dem naechsten Mailversand aus dem CRM
+--    soll hier eine frische Zeile mit status 'sent' stehen.
+--
+--   select template_name, recipient_email, status, created_at
+--     from public.email_send_log
+--    where created_at > now() - interval '1 day'
+--    order by created_at desc
+--    limit 20;
+-- ===========================================================================

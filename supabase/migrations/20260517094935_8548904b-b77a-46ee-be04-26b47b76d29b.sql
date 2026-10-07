@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles RENAME COLUMN hpo_id TO more_id;

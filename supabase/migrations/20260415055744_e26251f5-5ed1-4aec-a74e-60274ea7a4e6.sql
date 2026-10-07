@@ -1,0 +1,1 @@
+ALTER TABLE public.sa_fill_tokens ADD COLUMN IF NOT EXISTS prefill_data jsonb DEFAULT '{}'::jsonb;

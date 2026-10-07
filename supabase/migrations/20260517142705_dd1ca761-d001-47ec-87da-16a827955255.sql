@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "unterlagen_auth_write" ON storage.objects;

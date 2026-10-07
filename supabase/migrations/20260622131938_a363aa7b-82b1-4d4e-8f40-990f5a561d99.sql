@@ -1,0 +1,1 @@
+CREATE POLICY "Interne Rollen erstellen Aufgaben fuer andere" ON public.aufgaben FOR INSERT TO authenticated WITH CHECK (is_internal_role(auth.uid()));

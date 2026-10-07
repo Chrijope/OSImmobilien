@@ -1,0 +1,1 @@
+DELETE FROM user_roles WHERE user_id = 'dd9cf160-5a0f-4f4e-acfd-c5a0a6dd05d7'; DELETE FROM profiles WHERE id = 'dd9cf160-5a0f-4f4e-acfd-c5a0a6dd05d7';

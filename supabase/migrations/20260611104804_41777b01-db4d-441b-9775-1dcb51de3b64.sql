@@ -1,0 +1,1 @@
+UPDATE public.benachrichtigungen SET link = '/bewerbungsmanagement' WHERE link = '/bewerbermanagement';

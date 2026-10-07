@@ -1,0 +1,105 @@
+/*
+  Die Bewerberseiten in Liquid Glass.
+
+  Gemeint sind genau die fuenf Seiten, die Bewerber ueber ihren Link oeffnen:
+  `/bewerberfragen`, `/kennenlernen`, `/kooperationsgespraech`,
+  `/deine-bewerbung` und `/bewerbung/kein-interesse`. Ihre Huelle traegt
+  `.lp-theme` und dazu `.bewerber-seite`, ihre eine Karte `.bewerber-karte`.
+
+  Abgegrenzt wird ueber `.bewerber-seite`, nie ueber `.lp-theme` allein:
+  `.lp-theme` traegt auch die Berater-Mikroseite, und die hat ihre eigene
+  Glasdatei (`components/landing/beraterMicroseiteLiquid.css`).
+
+  Der Grund: Die Huelle ist deckend (`.lp-theme` in index.css). Durchsichtig
+  wird sie ueber die allgemeine Regel fuer Vollbild-Huellen in der Schicht,
+  `data-lg="seite"`. Den Haken tragen die Huellen, die Regel selbst steht in
+  `styles/design-liquid.css` und wird hier nicht ein zweites Mal angelegt.
+
+  Warum hier `!important` steht: Die Karte und einige Schriften tragen ihre
+  Farbe als Inline-Stil (`style={{ background: "#fff" }}`), die
+  Rundung setzt `.lp-theme [class*="rounded-3xl"]` mit `!important`. Gegen
+  beides hilft nur `!important`. An jeder anderen Stelle steht keines.
+
+  Farben kommen aus den Tokens der Schicht. Damit gelten deren Ruecksichten
+  von selbst mit: am Handy keine Weichzeichnung, ohne `backdrop-filter` fast
+  deckend, bei "weniger Transparenz" deckend, bei "weniger Bewegung" steht
+  der Grund.
+
+  Nur hell. Die Seiten kennen keinen Dunkelmodus; im Dunkeln bleiben sie,
+  wie sie sind. Keine Neigung (Entscheidung vom 23.09.2026). Alles in
+  `@media screen`, gedruckt wird wie bisher.
+*/
+
+@media screen {
+
+/*
+  Die Huelle holt das dunklere Grau der Schicht zurueck (215 16% 35%).
+  `.lp-theme` setzt ein eigenes, helleres, das auf dem Grund nicht fuer
+  4,5:1 reicht. Wie auf der Mikroseite.
+*/
+[data-glas="liquid"]:not(.dark) .lp-theme.bewerber-seite {
+  --muted-foreground: inherit;
+}
+
+/*
+  Der blaue Schein oben auf der Seite weicht dem Grund. Der Grund bringt
+  seine eigenen Wolken mit, und nur mit denen ist die Lesbarkeit gerechnet.
+*/
+[data-glas="liquid"]:not(.dark) .lp-theme.bewerber-seite > div[aria-hidden]:first-child {
+  display: none;
+}
+
+/*
+  Die eine Karte der Seite. Sie traegt den ganzen Inhalt, Fragen, Felder und
+  Knoepfe, und ihre Schriftfarben sind fuer Weiss gewaehlt. Deshalb nimmt sie
+  die dichtere Stufe der schwebenden Flaechen (`--lg-deckkraft-schwebend`):
+  Mit der Kartenstufe fiele das Grau der Seiten (#6E6E73) auf 4,4:1, mit
+  dieser bleibt es ueber 4,5:1 (gerechnet in `lp-theme-liquid.test.ts`).
+*/
+[data-glas="liquid"]:not(.dark) .lp-theme.bewerber-seite .bewerber-karte {
+  background-color: hsl(var(--lg-glas) / var(--lg-deckkraft-schwebend)) !important;
+  background-image:
+    radial-gradient(420px circle at 12% -30%, var(--lg-glanz), transparent 62%),
+    linear-gradient(180deg, var(--lg-glanz-oben), transparent 38%) !important;
+  -webkit-backdrop-filter: var(--lg-filter-karte);
+  backdrop-filter: var(--lg-filter-karte);
+  border-color: var(--lg-kante) !important;
+  border-radius: var(--lg-radius) !important;
+  box-shadow: var(--lg-innen), var(--lg-schatten-hoch) !important;
+}
+
+/*
+  Glas in Glas: Die weissen Kacheln und Felder in der Karte bleiben deckend
+  und gut lesbar, bekommen aber keine zweite Weichzeichnung. `.lp-theme`
+  gibt jedem `.bg-white` eine eigene.
+*/
+[data-glas="liquid"]:not(.dark) .lp-theme.bewerber-seite .bewerber-karte .bg-white {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+/*
+  Die beiden hellsten Grautoene der Seiten (#8A8F98 und #9AA0A8) kamen schon
+  auf Weiss nur auf 3,3:1 und 2,6:1, auf Glas noch darunter. Sie stehen als
+  Inline-Stil in der Seite und nehmen hier das Grau der Schicht. Ebenso das
+  Orange der Hinweiszeilen (#A9640F, auf Glas 4,4:1): Es nimmt das Achtung
+  der Schicht. Der Browser schreibt Inline-Farben als `rgb(...)` in das
+  Attribut, danach wird gesucht, und nur am Anfang oder nach einem
+  Semikolon, damit `border-color` und `background-color` nicht mitzaehlen.
+*/
+[data-glas="liquid"]:not(.dark) .lp-theme.bewerber-seite .bewerber-karte :is(
+  [style^="color: rgb(138, 143, 152)"],
+  [style*="; color: rgb(138, 143, 152)"],
+  [style^="color: rgb(154, 160, 168)"],
+  [style*="; color: rgb(154, 160, 168)"]
+) {
+  color: hsl(var(--muted-foreground)) !important;
+}
+[data-glas="liquid"]:not(.dark) .lp-theme.bewerber-seite .bewerber-karte :is(
+  [style^="color: rgb(169, 100, 15)"],
+  [style*="; color: rgb(169, 100, 15)"]
+) {
+  color: hsl(var(--warning)) !important;
+}
+
+} /* Ende @media screen */

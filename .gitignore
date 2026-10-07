@@ -1,0 +1,53 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# TypeScript-Zwischenstand von "tsc -b". Reines Bauwerkzeug, aendert sich bei
+# jedem Lauf und gehoert nicht ins Repository.
+*.tsbuildinfo
+
+# Kundenunterlagen. Personenbezogene Daten wie Ausweise, Steuerbescheide,
+# Darlehensvertraege oder Gehaltsabrechnungen duerfen NIE ins Repository und
+# damit auf GitHub gelangen. Solche Ordner liegen nur lokal.
+/Daniel Wied/
+/Kundenunterlagen/
+/WG Konzept/
+.nachtwaechter/
+
+# Vertrauliche Unternehmensunterlagen. Businessplan, Rentabilitaetsplanung und
+# alles, was an Investoren geht, liegt nur lokal. Am 03.09.2026 lagen der
+# Investor-Businessplan und die Rentabilitaetsrechnung unbemerkt im
+# Arbeitsverzeichnis und waeren bei einem "git add -A" auf GitHub gelandet.
+/Businessplan/
+
+# Die Markenrichtlinie und die Logodateien. Sie sind nicht geheim, gehoeren aber
+# der Marke und nicht dem Quellcode. Lena Brandt liest sie hier, sie muessen
+# dafuer nicht nach GitHub.
+/Marke/
+MOREImmo_Investor_Businessplan*
+MOREImmo_Rentabilitaetsrechnung*
+*.numbers
+
+.env
+.env.local

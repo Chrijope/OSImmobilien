@@ -1,0 +1,392 @@
+/*
+ * Karte und Lagekasten der Umgebung (`Umgebungsansicht.tsx`, 24.09.2026).
+ *
+ * Zwei Varianten mit denselben Klassen:
+ *   .umgebung-expose  Exposé und Kundenansicht. Die Grundregeln für
+ *                     `mikro-*` stehen dort in premiumExpose.css, hier nur,
+ *                     was neu ist (Legende, Teillisten, Genauigkeit).
+ *   .umgebung-crm     Objekt- und Einheitenseite. Hier steht alles, mit den
+ *                     Farben aus index.css, also hell und dunkel. Das Glas
+ *                     kommt von der Karte (`ui/card`) darum.
+ *
+ * Die Farben der Kategorien stehen im Code (`umgebungspunkte.ts`), weil sie
+ * Daten tragen: Dieselbe Farbe steht auf der Karte, in der Legende und vor
+ * jedem Eintrag der Liste.
+ */
+
+.umgebung-ansicht {
+  --u-text: hsl(var(--foreground));
+  --u-name: hsl(var(--foreground));
+  --u-leise: hsl(var(--muted-foreground));
+  --u-rand: hsl(var(--border));
+  --u-rand-zart: hsl(var(--border) / 0.6);
+  --u-weg: hsl(var(--primary));
+  --u-symbol: hsl(var(--muted));
+  --u-legende: hsl(var(--card) / 0.92);
+  --u-hinweis: hsl(var(--warning, 38 92% 50%) / 0.12);
+  --u-hinweis-rand: hsl(var(--warning, 38 92% 50%) / 0.35);
+}
+
+/* Im Exposé gilt dessen feste, helle Farbwelt, auch im Dunkelmodus der Seite darum. */
+.premium-expose .umgebung-ansicht {
+  --u-text: #192635;
+  --u-name: #243d4f;
+  --u-leise: #6b7f8f;
+  --u-rand: #e3e9ed;
+  --u-rand-zart: #eef2f5;
+  --u-weg: #5385a5;
+  --u-symbol: #f3f7fa;
+  --u-legende: rgba(255, 255, 255, 0.94);
+  --u-hinweis: #fff7e6;
+  --u-hinweis-rand: #f3dca8;
+}
+
+/* ── Legende auf der Karte ─────────────────────────────────────────────── */
+
+/*
+ * Oben rechts: Links oben stehen die Zoomknöpfe, unten rechts der Hinweis
+ * auf OpenStreetMap. Über den Punkten (Leaflet-Ebene 600), unter einem
+ * geöffneten Popup (700), damit Name und Entfernung nie verdeckt sind.
+ */
+.umgebung-ansicht .umgebung-legende {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 650;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-width: min(60%, 220px);
+  margin: 0;
+  padding: 8px 10px;
+  list-style: none;
+  border-radius: 10px;
+  background: var(--u-legende);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.18);
+  color: var(--u-text);
+  font-size: 11px;
+  line-height: 1.35;
+  pointer-events: none;
+}
+
+.umgebung-ansicht .umgebung-legende li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.umgebung-ansicht .umgebung-legende-punkt {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
+}
+
+.umgebung-ansicht .umgebung-legende-nadel {
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+  border-radius: 6px 6px 6px 1px;
+  transform: rotate(-45deg);
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
+}
+
+/* Auf dem Handy nebeneinander und kleiner, damit die Legende die Karte nicht zudeckt. */
+@media (max-width: 640px) {
+  .umgebung-ansicht .umgebung-legende {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 3px 9px;
+    max-width: calc(100% - 64px);
+    padding: 6px 8px;
+    font-size: 10.5px;
+  }
+}
+
+/* Die Tippfläche eines Punkts ist größer als der Punkt, ohne Hintergrund. */
+.umgebung-ansicht .leaflet-marker-icon.umgebung-punkt {
+  background: transparent;
+  border: 0;
+}
+
+/*
+ * Die Kartenbilder sind immer hell, also auch Zoomknöpfe und Popups. Im
+ * Dunkelmodus erbten die Knöpfe sonst die helle Schrift der Seite und waren
+ * auf Weiß kaum zu sehen.
+ */
+.umgebung-ansicht .leaflet-bar a,
+.umgebung-ansicht .leaflet-popup-content-wrapper,
+.umgebung-ansicht .leaflet-popup-tip {
+  background: #fff;
+  color: #192635;
+}
+
+.umgebung-ansicht .leaflet-popup-content {
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* ── Neu im Kasten, beide Varianten ────────────────────────────────────── */
+
+.umgebung-ansicht .mikro-liste .umgebung-genauigkeit {
+  margin: 0 0 14px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--u-hinweis-rand);
+  background: var(--u-hinweis);
+  color: var(--u-text);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.umgebung-ansicht .mikro-liste .umgebung-teilliste + .umgebung-teilliste {
+  margin-top: 10px;
+}
+
+.umgebung-ansicht .mikro-liste .umgebung-teilliste h4 {
+  margin: 0 0 2px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--u-leise);
+}
+
+.umgebung-ansicht .mikro-liste .umgebung-zusatz {
+  margin-top: 10px;
+}
+
+/* ── CRM: alles, was im Exposé premiumExpose.css regelt ────────────────── */
+
+/*
+ * Nebeneinander erst, wenn die Ansicht selbst breit genug ist, nicht der
+ * Bildschirm: Auf der Objektseite steht sie neben der Seitenleiste, auf der
+ * Einheitenseite in einer halben Spalte, im Dialog über die volle Breite.
+ */
+.umgebung-crm {
+  container-type: inline-size;
+  color: var(--u-text);
+}
+
+.umgebung-crm .mikro-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+.umgebung-crm .mikro-karte {
+  position: relative;
+  isolation: isolate;
+  z-index: 0;
+  min-height: min(var(--u-karte-hoehe, 340px), 300px);
+  overflow: hidden;
+  border: 1px solid var(--u-rand);
+  border-radius: 12px;
+  background: hsl(var(--muted));
+}
+
+.umgebung-crm .mikro-karte-feld {
+  position: absolute;
+  inset: 0;
+}
+
+.umgebung-crm .mikro-karte-ersatz {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--u-leise);
+}
+
+.umgebung-crm .mikro-karte-ersatz p {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  max-width: 340px;
+  margin: 0;
+}
+
+.umgebung-crm .mikro-karte-ersatz a {
+  color: hsl(var(--primary));
+  font-weight: 600;
+}
+
+.umgebung-crm .mikro-liste {
+  max-height: 420px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 14px 16px;
+  border: 1px solid var(--u-rand);
+  border-radius: 12px;
+}
+
+.umgebung-crm .mikro-liste:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+@container (min-width: 720px) {
+  .umgebung-crm .mikro-grid {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .umgebung-crm .mikro-karte {
+    min-height: var(--u-karte-hoehe, 340px);
+  }
+
+  .umgebung-crm .mikro-liste {
+    max-height: var(--u-karte-hoehe, 340px);
+  }
+}
+
+.umgebung-crm .mikro-ebene {
+  margin: 0 0 10px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--u-leise);
+}
+
+.umgebung-crm .mikro-ebene-block {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--u-rand);
+}
+
+.umgebung-crm .mikro-gruppe + .mikro-gruppe {
+  margin-top: 16px;
+}
+
+.umgebung-crm .mikro-gruppe h3,
+.umgebung-crm .mikro-ersatz h3 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 6px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--u-rand);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.umgebung-crm .mikro-symbol {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--u-symbol);
+}
+
+.umgebung-crm .mikro-ersatz .mikro-symbol,
+.umgebung-crm .mikro-karte-ersatz .mikro-symbol {
+  color: hsl(var(--primary));
+}
+
+.umgebung-crm .mikro-gruppe ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.umgebung-crm .mikro-gruppe li {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--u-rand-zart);
+  font-size: 12px;
+}
+
+.umgebung-crm .mikro-gruppe li:last-child {
+  border-bottom: 0;
+}
+
+.umgebung-crm .mikro-punkt {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  transform: translateY(-1px);
+}
+
+.umgebung-crm .mikro-punkt-makro {
+  background: #6d5fb3;
+}
+
+.umgebung-crm .mikro-ebene-block .mikro-symbol {
+  color: #6d5fb3;
+}
+
+.umgebung-crm .mikro-name {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.umgebung-crm .mikro-name b {
+  font-weight: 600;
+  color: var(--u-name);
+}
+
+.umgebung-crm .mikro-name small {
+  display: block;
+  font-size: 10.5px;
+  color: var(--u-leise);
+}
+
+.umgebung-crm .mikro-weg {
+  white-space: nowrap;
+  font-size: 11px;
+  color: var(--u-weg);
+  font-variant-numeric: tabular-nums;
+}
+
+.umgebung-crm .mikro-leer {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--u-leise);
+}
+
+.umgebung-crm .mikro-adresse {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--u-name);
+}
+
+.umgebung-crm .mikro-quelle {
+  margin: 16px 0 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--u-leise);
+}
+
+/* Die Druckzeile gibt es nur im Exposé. */
+.umgebung-crm .print-only {
+  display: none;
+}
+
+/* Größere Zoomknöpfe auf dem Handy, wie im Exposé. */
+@media (max-width: 800px) {
+  .umgebung-crm .mikro-karte .leaflet-bar a {
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    font-size: 22px;
+  }
+}

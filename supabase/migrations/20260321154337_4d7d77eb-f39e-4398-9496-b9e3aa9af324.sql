@@ -1,0 +1,12 @@
+ALTER PUBLICATION supabase_realtime ADD TABLE public.investments;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.follow_ups;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.aktivitaeten;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.objekte;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.aufgaben;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.bewerbungen;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.empfehlungen;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.hv_tickets;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.finanzierungen;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.objekt_einreichungen;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.benachrichtigungen;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.profiles;

@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Public update by token" ON public.mobile_scan_sessions;

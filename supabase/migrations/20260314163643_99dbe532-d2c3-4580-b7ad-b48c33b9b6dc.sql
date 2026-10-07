@@ -1,0 +1,1 @@
+CREATE POLICY "Auth loeschen Kontakte" ON public.kontakte FOR DELETE TO authenticated USING (true);

@@ -1,0 +1,955 @@
+/*
+ * Die Handbuch-Seite: Landingpage, Konfigurator, Ergebnis mit Handbuch.
+ *
+ * Eigene Gestaltung, bewusst nicht der Look der Berater-Mikroseite
+ * (Christian, 26.09.2026). Die Idee: Die Seite sieht aus wie das Handbuch,
+ * das man bekommt. Der Einstieg ist der Umschlag (Tintenblau mit dem Schein
+ * des Deckblatts im PDF), darunter Papier mit ruhigen Karten.
+ *
+ * Seit dem 26.09.2026 in der CI der Firmenwebsite more.immo: deren Blau
+ * #087CC9 (Tiefblau #0467A9, Hellblau #8AD0FF), Überschriften #1B2432 eng
+ * gesetzt, Pillenknöpfe, Karten mit 22 px Rundung, weiche Schatten, Fuß in
+ * #1B212D. Die Hauptknöpfe bleiben im Orange des Projekts (--brand-orange),
+ * wie auf der Website ein Orange-Verlauf mit Glanzkante. Schrift wie dort
+ * Plus Jakarta Sans; die Website setzt Überschriften in 800, lokal liegen nur
+ * 400 und 700, daher 700 mit engerer Laufweite.
+ *
+ * Bewegung: kurz und weich (--hb-ease, 150 bis 400 ms), Karten heben sich
+ * beim Überfahren um 3 px, keine Neigung (Entscheidung vom 23.09.2026).
+ * Hover nur bei echter Maus, bei „weniger Bewegung“ steht alles.
+ *
+ * Alles hängt an der Klasse `.hb`, nichts wirkt nach außen. Hell und dunkel
+ * über `data-thema` am Wurzelelement, gesetzt von `useHandbuchThema`.
+ * Maße in px, weil das CRM die Wurzelschrift auf 90 % setzt.
+ */
+@font-face { font-family: "HB Jakarta"; src: url("/fonts/PlusJakartaSans-Regular.ttf") format("truetype"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "HB Jakarta"; src: url("/fonts/PlusJakartaSans-Bold.ttf") format("truetype"); font-weight: 700; font-display: swap; }
+/* Handschrift für die Notiz am Heft, selbst gehostet (Caveat, SIL Open Font License), kein Abruf bei Google. */
+@font-face { font-family: "HB Caveat"; src: url("/fonts/caveat-600-latin.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+
+.hb {
+  --hb-tinte: #1B2432;
+  --hb-akzent: #087CC9;
+  --hb-akzent-tief: #0467A9;
+  --hb-akzent-hell: #8AD0FF;
+  --hb-akzent-text: #0467A9;
+  --hb-akzent-flaeche: #E6F4FF;
+  --hb-knopf: #087CC9;
+  --hb-knopf-hover: #0467A9;
+  --hb-grund: #F5F7FA;
+  --hb-grund-2: #EDF2F7;
+  --hb-karte: #FFFFFF;
+  --hb-linie: #E3E7EE;
+  --hb-text: #2A323C;
+  --hb-text2: #4B5768;
+  --hb-muted: #687382;
+  --hb-diagramm-flaeche: #EEF2F6;
+  --hb-gruen: #1B6E37;
+  --hb-gruen-f: #3BA55C;
+  --hb-gruen-flaeche: #EAF6EE;
+  --hb-rot: #B42318;
+  --hb-rot-f: #E5484D;
+  --hb-rot-flaeche: #FDEFEF;
+  --hb-gelb: #8A5A00;
+  --hb-gelb-flaeche: #FFF6DE;
+  --hb-grau: #C9D3DF;
+  /* Schatten wie more.immo (--shadow-lg und --shadow-xl der Website). */
+  --hb-schatten: 0 16px 40px -10px rgba(15, 22, 33, .11), 0 5px 14px -5px rgba(15, 22, 33, .06);
+  --hb-schatten-hoch: 0 28px 68px -18px rgba(15, 22, 33, .18), 0 10px 24px -10px rgba(15, 22, 33, .09);
+  --hb-schatten-gross: 0 30px 70px -24px rgba(8, 24, 54, .45);
+  --hb-ring: rgba(8, 124, 201, .2);
+  --hb-licht: rgba(138, 208, 255, .95);
+  --hb-radius: 22px;
+  /* Bewegung: die Kurve der Website (weich auslaufend), kurze Dauern. */
+  --hb-ease: cubic-bezier(.16, 1, .3, 1);
+  --hb-dauer: .3s;
+  --hb-dauer-kurz: .18s;
+
+  font-family: "HB Jakarta", "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--hb-text);
+  background: var(--hb-grund);
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100dvh;
+  /* Die öffentlichen Seiten stehen in App.tsx in einem <main> mit
+     `flex h-screen`. Ohne `flex: none` schrumpft die Seite dort auf
+     Fensterhöhe, und ab der zweiten Bildschirmhöhe fehlt ihr Hintergrund. */
+  flex: none;
+  font-variant-numeric: lining-nums;
+}
+.hb[data-thema="dunkel"] {
+  --hb-tinte: #F1F5FA;
+  --hb-akzent: #54B9FC;
+  --hb-akzent-tief: #0B9AF9;
+  --hb-akzent-hell: #8AD0FF;
+  --hb-akzent-text: #8AD0FF;
+  --hb-akzent-flaeche: rgba(138, 208, 255, .12);
+  --hb-grund: #0B1119;
+  --hb-grund-2: #0E1520;
+  --hb-karte: #141C27;
+  --hb-linie: #2A374A;
+  --hb-text: #D6DEE8;
+  --hb-text2: #B3BFCC;
+  --hb-muted: #95A2B3;
+  --hb-diagramm-flaeche: #1B2636;
+  --hb-gruen: #6FD08F;
+  --hb-gruen-f: #45B36A;
+  --hb-gruen-flaeche: rgba(69, 179, 106, .14);
+  --hb-rot: #FF8A80;
+  --hb-rot-f: #F0626A;
+  --hb-rot-flaeche: rgba(240, 98, 106, .14);
+  --hb-gelb: #F3C969;
+  --hb-gelb-flaeche: rgba(243, 201, 105, .12);
+  --hb-grau: #3A4A5E;
+  --hb-schatten: 0 1px 2px rgba(0, 0, 0, .3), 0 18px 40px -18px rgba(0, 0, 0, .6);
+  --hb-schatten-hoch: 0 1px 2px rgba(0, 0, 0, .3), 0 28px 56px -18px rgba(0, 0, 0, .75);
+  --hb-ring: rgba(138, 208, 255, .24);
+  --hb-licht: rgba(184, 225, 255, .75);
+  color-scheme: dark;
+}
+
+.hb *, .hb *::before, .hb *::after { box-sizing: border-box; }
+.hb h1, .hb h2, .hb h3, .hb h4 { color: var(--hb-tinte); margin: 0; letter-spacing: -.02em; font-weight: 700; }
+.hb h1, .hb h2 { letter-spacing: -.03em; text-wrap: balance; }
+.hb p { margin: 0 0 14px; }
+.hb a { color: var(--hb-akzent-text); }
+.hb button { font: inherit; }
+.hb :focus-visible { outline: 3px solid var(--hb-akzent-hell); outline-offset: 3px; border-radius: 6px; }
+.hb svg text { font-family: "HB Jakarta", "Plus Jakarta Sans", system-ui, sans-serif; }
+
+.hb-wrap { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+.hb-abschnitt { padding: 96px 0; scroll-margin-top: 90px; }
+.hb-abschnitt.hb-zweiter { background: var(--hb-grund-2); }
+/* Augenbraue wie auf more.immo: klein, weit gesperrt, grau statt blau. */
+.hb-augenbraue { font-size: 12px; font-weight: 700; letter-spacing: .28em; text-transform: uppercase; color: var(--hb-text2); margin-bottom: 14px; display: block; }
+.hb-h2 { font-size: clamp(32px, 4vw, 50px); line-height: 1.06; margin-bottom: 18px !important; }
+.hb-lead { font-size: 20px; line-height: 1.55; color: var(--hb-text2); max-width: 760px; }
+.hb-klein { font-size: 14px; color: var(--hb-muted); }
+.hb-fussnote { font-size: 13px; color: var(--hb-muted); line-height: 1.5; margin-top: 12px; }
+
+/* Knöpfe: Pillenform wie auf more.immo (`.btn-primary-brand`). */
+.hb-knopf {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px; border: 0; cursor: pointer;
+  background: var(--hb-knopf); color: #fff; font-weight: 700; font-size: 17px; line-height: 1.2;
+  border-radius: 999px; padding: 16px 30px; text-decoration: none;
+  box-shadow: 0 12px 26px -12px rgba(8, 124, 201, .75);
+  transition: background-color var(--hb-dauer-kurz) ease, box-shadow var(--hb-dauer) var(--hb-ease), transform var(--hb-dauer) var(--hb-ease), filter var(--hb-dauer-kurz) ease;
+}
+.hb-knopf:hover { background: var(--hb-knopf-hover); }
+.hb-knopf:active { transform: scale(.97); }
+.hb-knopf:disabled { opacity: .6; cursor: not-allowed; }
+.hb-knopf svg { width: 20px; height: 20px; transition: transform var(--hb-dauer) var(--hb-ease); }
+.hb-knopf.hb-zweit { background: var(--hb-karte); color: var(--hb-tinte); box-shadow: inset 0 0 0 1.5px var(--hb-linie); }
+.hb-knopf.hb-zweit:hover { box-shadow: inset 0 0 0 1.5px var(--hb-akzent); }
+.hb-knopf.hb-klein-knopf { padding: 11px 20px; font-size: 15px; }
+.hb-link-knopf { background: none; border: 0; padding: 0; color: var(--hb-akzent-text); font-weight: 700; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; display: inline-flex; align-items: center; gap: 4px; }
+/* Links, die wie Knöpfe aussehen, behalten ihre Knopffarbe. `.hb a` wäre sonst stärker. */
+.hb a.hb-knopf { color: #fff; }
+.hb a.hb-knopf.hb-zweit { color: var(--hb-tinte); }
+
+/* Karten. Der Schatten läuft über eine Variable, damit das Überfahren ihn
+   auch in der Liquid-Schicht anheben kann (`handbuchSeiteLiquid.css`). */
+.hb-karte {
+  background: var(--hb-karte); border: 1px solid var(--hb-linie); border-radius: var(--hb-radius);
+  box-shadow: var(--hb-karte-schatten, var(--hb-schatten));
+  transition: transform var(--hb-dauer) var(--hb-ease), box-shadow var(--hb-dauer) var(--hb-ease), border-color var(--hb-dauer-kurz) ease;
+}
+
+/* ─── Kopfleiste ───────────────────────────────────────────────────── */
+.hb-kopf {
+  position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 30; margin: 0; width: min(1240px, calc(100% - 24px));
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  padding: 12px 14px 12px 24px; border-radius: 20px;
+  background: rgba(255, 255, 255, .86); border: 1px solid rgba(255, 255, 255, .7);
+  backdrop-filter: saturate(1.4) blur(14px); -webkit-backdrop-filter: saturate(1.4) blur(14px);
+  box-shadow: 0 10px 30px -14px rgba(15, 30, 60, .35);
+}
+.hb[data-thema="dunkel"] .hb-kopf { background: rgba(18, 27, 39, .82); border-color: rgba(255, 255, 255, .06); }
+.hb-kopf img { height: 30px; display: block; }
+.hb-kopf nav { display: flex; gap: 26px; font-size: 15px; }
+.hb-kopf nav a { color: var(--hb-text2); text-decoration: none; font-weight: 400; transition: color var(--hb-dauer-kurz) ease; }
+.hb-kopf nav a:hover { color: var(--hb-tinte); }
+.hb-kopf-marke { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.hb-kopf-berater { font-size: 13px; color: var(--hb-muted); padding-left: 12px; border-left: 1px solid var(--hb-linie); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Rechts in der Kopfleiste: Aufruf und Sprachumschalter DE/EN (seit 26.09.2026). */
+.hb-kopf-rechts { display: flex; align-items: center; gap: 10px; flex-shrink: 0; margin-left: auto; }
+.hb-kopf nav + .hb-kopf-rechts { margin-left: 0; }
+.hb .hb-sprache { height: 38px; padding: 0 12px; background: transparent; color: var(--hb-text2); border-color: var(--hb-linie); box-shadow: none; }
+.hb .hb-sprache:hover { color: var(--hb-tinte); }
+/* Das Globus-Symbol trägt sonst das Grau des CRM und verschwindet im dunklen Thema. */
+.hb .hb-sprache svg { color: currentColor; }
+
+/* ─── Einstieg (Umschlag) ──────────────────────────────────────────── */
+.hb-umschlag {
+  position: relative; overflow: hidden; padding: 150px 0 104px; color: #D4DCE8;
+  background:
+    radial-gradient(ellipse 70% 55% at 22% -8%, rgba(8, 124, 201, .62), rgba(8, 124, 201, 0) 70%),
+    radial-gradient(ellipse 50% 50% at 104% 104%, rgba(136, 207, 255, .16), rgba(136, 207, 255, 0) 70%),
+    #0F1621;
+}
+.hb-umschlag::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: linear-gradient(rgba(255, 255, 255, .06) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .06) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(ellipse 60% 55% at 35% 45%, #000 0%, transparent 100%);
+  mask-image: radial-gradient(ellipse 60% 55% at 35% 45%, #000 0%, transparent 100%);
+}
+.hb-umschlag .hb-wrap { position: relative; display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: center; }
+.hb-umschlag h1 { color: #fff; font-size: clamp(38px, 4.4vw, 58px); line-height: 1.04; letter-spacing: -.035em; margin: 14px 0 22px; }
+/* Die zweite Zeile im Hellblau-Verlauf der Website (`.text-gradient-cine-blue`). */
+.hb-verlauf {
+  background: linear-gradient(135deg, #B8E1FF, #8AD0FF 45%, #2B86EE);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: #8AD0FF;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone; padding-bottom: .06em;
+}
+.hb-umschlag .hb-augenbraue { color: var(--hb-akzent-hell); }
+.hb-umschlag .hb-lead { color: #C3CEDC; }
+.hb-akzentlinie { width: 64px; height: 5px; border-radius: 4px; background: #8AD0FF; margin: 0 0 22px; }
+.hb-nutzen { list-style: none; padding: 0; margin: 26px 0 30px; }
+.hb-nutzen li { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; font-size: 18px; color: #fff; }
+.hb-nutzen li svg { color: #8AD0FF; flex: none; margin-top: 3px; width: 22px; height: 22px; }
+.hb-knoepfe { display: flex; gap: 14px; flex-wrap: wrap; }
+.hb-umschlag .hb-knopf.hb-zweit { background: rgba(255, 255, 255, .06); color: #fff; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .22); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+.hb-vertrauen { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 24px; font-size: 14px; color: #A9B6C8; }
+.hb-vertrauen span { display: inline-flex; gap: 8px; align-items: center; white-space: nowrap; }
+.hb-vertrauen svg { width: 18px; height: 18px; color: #6FD08F; }
+
+/* ─── Konfigurator ─────────────────────────────────────────────────── */
+.hb-konfig { position: relative; padding: 30px 30px 26px; color: var(--hb-text); scroll-margin-top: 100px; }
+.hb-umschlag .hb-konfig { box-shadow: var(--hb-schatten-gross); border-color: transparent; }
+.hb-konfig-kopf { display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: var(--hb-muted); gap: 12px; }
+.hb-konfig-kopf b { color: var(--hb-tinte); }
+.hb-konfig.mit-buch .hb-konfig-kopf { padding-right: 92px; }
+.hb-balken { height: 6px; background: var(--hb-linie); border-radius: 6px; margin: 12px 0 22px; overflow: hidden; }
+.hb-balken i { display: block; height: 100%; background: linear-gradient(90deg, var(--hb-akzent-tief), var(--hb-akzent)); border-radius: 6px; transition: width .4s var(--hb-ease); }
+.hb-konfig h3 { font-size: 25px; line-height: 1.25; margin-bottom: 8px; padding-right: 72px; }
+.hb-warum { display: flex; gap: 8px; font-size: 15px; color: var(--hb-text2); margin-bottom: 18px; line-height: 1.45; }
+.hb-warum svg { width: 18px; height: 18px; color: var(--hb-akzent); margin-top: 2px; flex: none; }
+.hb-kacheln { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.hb-kachel {
+  display: flex; gap: 12px; align-items: center; min-height: 74px; padding: 14px 16px; text-align: left;
+  border: 1.5px solid var(--hb-linie); background: var(--hb-karte); border-radius: 18px; cursor: pointer;
+  font-weight: 700; color: var(--hb-tinte); font-size: 16px; line-height: 1.3;
+  transition: border-color var(--hb-dauer-kurz) ease, box-shadow var(--hb-dauer) var(--hb-ease), transform var(--hb-dauer) var(--hb-ease), background-color var(--hb-dauer-kurz) ease;
+}
+.hb-kachel:hover { border-color: var(--hb-akzent); }
+.hb-kachel:active { transform: scale(.98); }
+.hb-kachel[aria-pressed="true"] { border-color: var(--hb-akzent); background: var(--hb-akzent-flaeche); box-shadow: 0 0 0 3px var(--hb-ring); }
+.hb-kachel-symbol { width: 40px; height: 40px; border-radius: 12px; background: var(--hb-akzent-flaeche); color: var(--hb-akzent); display: flex; align-items: center; justify-content: center; flex: none; transition: transform var(--hb-dauer) var(--hb-ease), background-color var(--hb-dauer-kurz) ease, color var(--hb-dauer-kurz) ease; }
+/* Gewählt: das Symbol wird zur blauen Marke mit Haken und federt einmal. */
+.hb-kachel[aria-pressed="true"] .hb-kachel-symbol { background: var(--hb-akzent); color: #fff; animation: hb-gewaehlt .32s var(--hb-ease); }
+.hb-kachel-symbol svg { width: 20px; height: 20px; }
+.hb-stufen { display: flex; gap: 3px; align-items: flex-end; height: 18px; }
+.hb-stufen i { width: 5px; border-radius: 2px; background: var(--hb-grau); }
+.hb-stufen i.an { background: var(--hb-akzent); }
+.hb-schalter { display: flex; gap: 12px; align-items: center; margin-top: 14px; font-size: 15px; color: var(--hb-text2); cursor: pointer; }
+.hb-schalter input { width: 20px; height: 20px; accent-color: var(--hb-knopf); }
+.hb-konfig-fuss { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; font-size: 14px; color: var(--hb-muted); gap: 12px; }
+.hb-buch-mini {
+  position: absolute; right: -30px; top: -44px; width: 112px; height: 152px; border-radius: 8px; transform: rotate(8deg);
+  background: linear-gradient(160deg, #1B2A40, #0F1621); color: #fff; padding: 14px 12px; font-size: 10px; line-height: 1.3;
+  box-shadow: 0 18px 30px -10px rgba(15, 22, 33, .55); pointer-events: none;
+}
+.hb-buch-mini b { display: block; font-size: 13px; margin-top: 40px; }
+.hb-buch-mini i { display: block; width: 26px; height: 3px; background: #8AD0FF; border-radius: 2px; margin-top: 8px; }
+.hb-pill { display: inline-flex; gap: 8px; align-items: center; border-radius: 999px; padding: 6px 14px; font-size: 14px; font-weight: 700; }
+.hb-pill svg { width: 16px; height: 16px; }
+.hb-pill.gruen { background: var(--hb-gruen-flaeche); color: var(--hb-gruen); }
+.hb-pill.gelb { background: var(--hb-gelb-flaeche); color: var(--hb-gelb); }
+.hb-pill.blau { background: var(--hb-akzent-flaeche); color: var(--hb-akzent-text); }
+.hb-pruefliste { list-style: none; padding: 16px 18px; margin: 16px 0; border-radius: 16px; background: var(--hb-grund); }
+.hb-pruefliste li { display: flex; gap: 12px; align-items: flex-start; font-size: 15px; line-height: 1.45; padding: 6px 0; color: var(--hb-text); }
+.hb-pruefliste .kreis { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex: none; }
+.hb-pruefliste .kreis svg { width: 14px; height: 14px; }
+.hb-pruefliste .kreis.gut { background: var(--hb-gruen-flaeche); color: var(--hb-gruen); }
+.hb-pruefliste .kreis.acht { background: var(--hb-gelb-flaeche); color: var(--hb-gelb); }
+.hb-buchkarte { display: flex; gap: 14px; align-items: center; padding: 14px; border-radius: 16px; border: 1px solid var(--hb-linie); margin-bottom: 18px; }
+.hb-buchkarte .mini { width: 52px; height: 70px; border-radius: 5px; background: linear-gradient(160deg, #1B2A40, #0F1621); flex: none; position: relative; }
+.hb-buchkarte .mini::after { content: ""; position: absolute; left: 8px; right: 14px; top: 32px; height: 3px; background: #8AD0FF; border-radius: 2px; }
+
+/* Formular */
+.hb-felder { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.hb-feld { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.hb-feld label { font-size: 14px; font-weight: 700; color: var(--hb-tinte); }
+.hb-feld label span { font-weight: 400; color: var(--hb-muted); }
+.hb-feld input {
+  height: 50px; border-radius: 12px; border: 1.5px solid var(--hb-linie); background: var(--hb-karte); color: var(--hb-tinte);
+  padding: 0 14px; font-size: 16px;
+}
+.hb-feld input:focus { outline: none; border-color: var(--hb-akzent); box-shadow: 0 0 0 3px rgba(8, 124, 201, .18); }
+.hb-feld input[aria-invalid="true"] { border-color: var(--hb-rot-f); }
+.hb-feld .fehler { font-size: 13px; color: var(--hb-rot); }
+.hb-haken { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; line-height: 1.5; color: var(--hb-text2); margin: 10px 0; cursor: pointer; }
+.hb-haken input { width: 20px; height: 20px; margin-top: 1px; accent-color: var(--hb-knopf); flex: none; }
+.hb-haken.fehlt { color: var(--hb-rot); }
+.hb-pflicht { color: var(--hb-rot); font-weight: 700; }
+.hb .hb-feld label .hb-pflicht { color: var(--hb-rot); font-weight: 700; }
+.hb-pflicht-hinweis { margin: -2px 0 6px; }
+.hb-honig { position: absolute !important; left: -10000px !important; width: 1px; height: 1px; overflow: hidden; }
+.hb-meldung { border-radius: 12px; padding: 12px 14px; font-size: 14px; background: var(--hb-rot-flaeche); color: var(--hb-rot); margin: 10px 0; }
+
+/* ─── Handbuch-Vorschau ────────────────────────────────────────────── */
+.hb-vorschau .hb-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+/* Das Handbuch als gebundenes Heft (HandbuchHeft.tsx), dieselbe Komposition
+   wie auf more.immo. Nicht `.hb-buch`: die Klasse gehört dem Handbuch auf
+   der Ergebnisseite. Das Papier bleibt in beiden Themen hell. */
+.hb-heft { position: relative; }
+.hb-heft-buehne { position: relative; width: 100%; aspect-ratio: 10 / 9; }
+.hb-heft-stapel { position: absolute; top: 5%; left: 40%; width: 44%; aspect-ratio: 900 / 1272; perspective: 1600px; }
+.hb-heft-seite {
+  position: absolute; bottom: 3%; height: auto; border-radius: 3px; background: #fff; transform-origin: 0 100%;
+  box-shadow: 0 24px 40px -18px rgba(8, 24, 54, .35), 0 2px 6px -2px rgba(8, 24, 54, .18);
+}
+/* Leicht zur Seite gedreht, damit der Buchrücken sichtbar wird. */
+.hb-heft-deckel { position: absolute; inset: 0; transform-style: preserve-3d; transform: rotateY(22deg) rotateX(3deg); }
+.hb-heft-deckel img {
+  position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 0 4px 4px 0;
+  box-shadow: 0 30px 46px -26px rgba(8, 24, 54, .5), 0 10px 20px -12px rgba(8, 24, 54, .35);
+}
+/* Im dunklen Thema hebt ein feiner Rand das dunkle Deckblatt vom Grund ab. */
+.hb[data-thema="dunkel"] .hb-heft-deckel img { outline: 1px solid rgba(138, 208, 255, .22); outline-offset: -1px; }
+.hb-heft-ruecken {
+  position: absolute; top: 0; bottom: 0; right: 100%; width: 7%; transform-origin: 100% 50%; transform: rotateY(-90deg);
+  background: linear-gradient(90deg, #0B1422 0%, #1A2B44 45%, #0E1827 100%);
+}
+/* Kantenlicht und Falz der Bindung */
+.hb-heft-licht {
+  position: absolute; inset: 0; border-radius: 0 4px 4px 0; pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, .35) 0%, rgba(255, 255, 255, .14) 1.2%, rgba(0, 0, 0, 0) 3%, rgba(0, 0, 0, .28) 5.2%, rgba(255, 255, 255, .10) 6%, rgba(0, 0, 0, 0) 8%),
+    linear-gradient(115deg, rgba(255, 255, 255, .16) 0%, rgba(255, 255, 255, 0) 30%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), inset -1px 0 0 rgba(255, 255, 255, .12);
+}
+.hb-heft-plakette {
+  position: absolute; top: 0; right: 0; font-size: 12px; font-weight: 700; line-height: 1; letter-spacing: .02em;
+  padding: 6px 10px; border-radius: 999px; background: var(--hb-akzent-flaeche); color: var(--hb-akzent-text);
+}
+.hb-heft-notiz { position: absolute; left: 0; bottom: 0; display: flex; align-items: flex-end; gap: 4px; transform: rotate(-4deg); color: var(--hb-akzent-text); }
+.hb-heft-notiz p { margin: 0; font-family: "HB Caveat", cursive; font-weight: 600; font-size: 27px; line-height: 1; }
+.hb-heft-notiz svg { width: 64px; height: auto; margin-bottom: -4px; flex: none; }
+.hb-heft-kacheln { list-style: none; margin: 0; padding: 0; position: absolute; left: 0; top: 24%; width: 42%; max-width: 230px; display: grid; gap: 12px; }
+.hb-heft-kacheln li {
+  display: flex; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 12px; background: var(--hb-karte);
+  box-shadow: 0 18px 36px -18px rgba(8, 24, 54, .35), 0 0 0 1px rgba(15, 22, 33, .05);
+}
+.hb-heft-kacheln .sym { width: 36px; height: 36px; flex: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--hb-akzent-flaeche); color: var(--hb-akzent-text); }
+.hb-heft-kacheln .sym svg { width: 18px; height: 18px; }
+.hb-heft-kacheln b { display: block; font-size: 14.5px; line-height: 1.25; color: var(--hb-tinte); }
+.hb-heft-kacheln .unter { display: block; font-size: 12.5px; line-height: 1.35; color: var(--hb-muted); }
+@media (max-width: 639px) {
+  .hb-heft-stapel { left: 22%; }
+  .hb-heft-notiz p { font-size: 20px; }
+  .hb-heft-notiz svg { width: 48px; }
+  .hb-heft-kacheln { position: static; width: auto; max-width: none; margin-top: 24px; gap: 10px; }
+}
+.hb-kapitel { columns: 2; column-gap: 28px; padding: 0; list-style: none; margin: 22px 0 26px; }
+.hb-kapitel li { break-inside: avoid; display: flex; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--hb-linie); font-size: 16px; color: var(--hb-tinte); }
+.hb-kapitel b { color: var(--hb-akzent-text); min-width: 24px; }
+
+/* ─── Abschnitte ───────────────────────────────────────────────────── */
+.hb-drei { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 40px; position: relative; }
+.hb-vier { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin: 36px 0 28px; }
+.hb-schritt { padding: 30px 28px 26px; }
+.hb-schritt .zahl { width: 54px; height: 54px; border-radius: 16px; background: #0F1621; color: #fff; font-size: 24px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
+.hb[data-thema="dunkel"] .hb-schritt .zahl { background: #26364C; }
+.hb-schritt:nth-child(2) .zahl { background: #0467A9; }
+.hb-schritt:nth-child(3) .zahl { background: #087CC9; }
+.hb-schritt .unter { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; color: var(--hb-muted); margin-bottom: 6px; }
+.hb-schritt h3 { font-size: 22px; margin-bottom: 8px; }
+.hb-schritt p { font-size: 16px; color: var(--hb-text2); }
+.hb-schritt ul { margin: 12px 0 0; padding: 0; list-style: none; font-size: 15px; }
+.hb-schritt li { display: flex; gap: 8px; margin-bottom: 6px; color: var(--hb-tinte); }
+.hb-schritt li svg { width: 18px; height: 18px; color: var(--hb-akzent); margin-top: 3px; flex: none; }
+.hb-umweg { margin-top: 26px; display: flex; gap: 14px; align-items: center; font-size: 16px; color: var(--hb-text2); padding: 18px 24px; border-radius: 18px; background: var(--hb-rot-flaeche); }
+.hb-umweg svg { color: var(--hb-rot); flex: none; }
+.hb-zwei { display: grid; grid-template-columns: .9fr 1.1fr; gap: 48px; align-items: start; }
+.hb-zwei.gleich { grid-template-columns: 1fr 1fr; }
+.hb-diagramm { padding: 26px 26px 18px; }
+.hb-diagramm .titel { font-weight: 700; color: var(--hb-tinte); font-size: 17px; margin-bottom: 4px; }
+.hb-diagramm .unter { font-size: 14px; color: var(--hb-muted); margin-bottom: 10px; }
+.hb-diagramm svg { width: 100%; height: auto; display: block; }
+.hb-nur-handy { display: none; }
+.hb-punkte { list-style: none; padding: 0; margin: 22px 0; }
+.hb-punkte li { display: flex; gap: 14px; margin-bottom: 16px; }
+.hb-rund { width: 46px; height: 46px; border-radius: 14px; background: var(--hb-akzent-flaeche); color: var(--hb-akzent); display: flex; align-items: center; justify-content: center; flex: none; }
+.hb-rund svg { width: 22px; height: 22px; }
+.hb-punkte b { color: var(--hb-tinte); display: block; }
+.hb-punkte span { font-size: 16px; color: var(--hb-text2); }
+.hb-kachel-karte { padding: 24px 22px; }
+.hb-kachel-karte h3 { font-size: 19px; margin: 14px 0 6px; }
+.hb-kachel-karte p { font-size: 15.5px; color: var(--hb-text2); margin: 0; }
+.hb-prozess { display: grid; grid-template-columns: repeat(6, 1fr); margin: 40px 0 34px; position: relative; }
+.hb-prozess::before { content: ""; position: absolute; left: 8%; right: 8%; top: 29px; height: 3px; background: linear-gradient(90deg, #0F1621, #087CC9); border-radius: 3px; }
+.hb[data-thema="dunkel"] .hb-prozess::before { background: linear-gradient(90deg, #26364C, #54B9FC); }
+.hb-pz { text-align: center; padding: 0 10px; position: relative; }
+.hb-pz .p { width: 60px; height: 60px; margin: 0 auto 14px; border-radius: 50%; background: var(--hb-karte); border: 3px solid var(--hb-akzent); display: flex; align-items: center; justify-content: center; color: var(--hb-akzent); position: relative; z-index: 1; }
+.hb-pz b { display: block; color: var(--hb-tinte); font-size: 16px; margin-bottom: 4px; }
+.hb-pz span { font-size: 14px; color: var(--hb-text2); line-height: 1.4; display: block; }
+.hb-bankband { margin-top: 30px; padding: 30px 34px; display: grid; grid-template-columns: 1.1fr 1fr; gap: 36px; align-items: center; }
+.hb-wege { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.hb-wege div { background: var(--hb-grund); border-radius: 16px; padding: 16px; font-size: 15px; color: var(--hb-text2); }
+.hb-wege b { display: block; color: var(--hb-tinte); margin-bottom: 4px; }
+.hb-rechnung { width: 100%; border-collapse: collapse; font-size: 16px; }
+.hb-rechnung td { padding: 11px 4px; border-bottom: 1px solid var(--hb-linie); }
+.hb-rechnung td:last-child { text-align: right; font-weight: 700; color: var(--hb-tinte); white-space: nowrap; }
+.hb-rechnung tr.summe td { border-top: 2px solid var(--hb-tinte); border-bottom: none; font-weight: 700; color: var(--hb-tinte); font-size: 17px; }
+.hb-rechnung tr.plus td:last-child { color: var(--hb-gruen); }
+.hb-rechnung tr.minus td:last-child { color: var(--hb-rot); }
+.hb-rechnung td.lbl { color: var(--hb-text2); }
+/* Spaltenzahl über `--hb-spalten` (Kennzahlen im Abschnitt „Wer dahinter steht“), sonst drei. */
+.hb-ergebnis { display: grid; grid-template-columns: repeat(var(--hb-spalten, 3), 1fr); gap: 14px; margin-top: 20px; }
+.hb-ergebnis div { background: var(--hb-grund); border-radius: 16px; padding: 14px 16px; }
+.hb-ergebnis b { display: block; white-space: nowrap; font-size: 21px; color: var(--hb-tinte); }
+.hb-ergebnis span { font-size: 13px; color: var(--hb-muted); }
+.hb-annahmen { margin-top: 22px; padding: 18px 22px; border-radius: 16px; background: var(--hb-karte); border: 1px solid var(--hb-linie); font-size: 14px; color: var(--hb-text2); line-height: 1.55; }
+.hb-zeit { display: grid; grid-template-columns: repeat(7, 1fr); margin-top: 44px; position: relative; }
+.hb-zeit::before { content: ""; position: absolute; left: 0; right: 0; top: 22px; height: 4px; background: linear-gradient(90deg, #8AD0FF, #087CC9, #0F1621); border-radius: 4px; }
+.hb-zp { padding: 0 12px 0 0; position: relative; }
+.hb-zp .punkt { width: 48px; height: 48px; border-radius: 50%; background: var(--hb-karte); box-shadow: 0 6px 16px -6px rgba(15, 40, 80, .35); display: flex; align-items: center; justify-content: center; color: var(--hb-akzent); position: relative; z-index: 1; margin-bottom: 16px; }
+.hb-zp .punkt svg { width: 20px; height: 20px; }
+.hb-zp .dauer { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--hb-akzent-text); margin-bottom: 4px; }
+.hb-zp b { display: block; color: var(--hb-tinte); font-size: 16px; line-height: 1.3; margin-bottom: 6px; }
+.hb-zp span { font-size: 14px; color: var(--hb-text2); line-height: 1.45; display: block; }
+.hb-berater { display: flex; gap: 18px; align-items: center; padding: 20px; margin-top: 18px; }
+.hb-berater img, .hb-berater .av { width: 76px; height: 76px; border-radius: 50%; object-fit: cover; flex: none; background: var(--hb-akzent-flaeche); display: flex; align-items: center; justify-content: center; color: var(--hb-akzent); }
+.hb-berater .kontakt { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; margin-top: 6px; }
+.hb-cta { padding: 48px 56px; display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px; align-items: center; border-radius: 28px; color: #D4DCE8;
+  background: radial-gradient(ellipse 70% 80% at 0% 0%, rgba(8, 124, 201, .45), transparent 70%), linear-gradient(135deg, #0F1621, #073150); }
+.hb-cta h2 { color: #fff; }
+.hb-cta .hb-augenbraue { color: #8AD0FF; }
+.hb-danach { display: grid; gap: 12px; }
+.hb-danach > div { display: flex; gap: 16px; align-items: center; background: rgba(255, 255, 255, .08); border-radius: 16px; padding: 16px 18px; color: #fff; }
+.hb-danach .n { width: 40px; height: 40px; border-radius: 12px; background: #087CC9; display: flex; align-items: center; justify-content: center; font-weight: 700; flex: none; }
+.hb-danach span { display: block; font-size: 14px; color: #A9B6C8; }
+.hb-faq { display: grid; grid-template-columns: .8fr 1.2fr; gap: 48px; }
+/* Nur zweispaltig (ab 981 px) laufen Ansprechpartner und Fragen-Kopf beim
+   Scrollen mit, unterhalb der festen Kopfleiste. Die Karte steht zunächst
+   mittig zum Text und klebt erst, wenn sie oben ankommt. Kein Vorfahr der
+   Abschnitte setzt overflow, sonst griffe sticky nicht. */
+@media (min-width: 981px) {
+  .hb-wer { align-items: stretch; }
+  .hb-wer-karte { display: flex; flex-direction: column; justify-content: center; }
+  .hb-wer-karte > .hb-berater { position: sticky; top: 112px; bottom: 32px; margin-top: 0; }
+  .hb-faq-kopf { position: sticky; top: 112px; align-self: start; }
+}
+.hb-frage { margin-bottom: 12px; }
+.hb-frage summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; gap: 20px; align-items: center; padding: 20px 24px; font-weight: 700; color: var(--hb-tinte); font-size: 17px; transition: color var(--hb-dauer-kurz) ease; }
+.hb-frage summary::-webkit-details-marker { display: none; }
+.hb-frage summary svg { width: 20px; height: 20px; color: var(--hb-akzent); transition: transform var(--hb-dauer) var(--hb-ease); flex: none; }
+.hb-frage[open] summary svg { transform: rotate(45deg); }
+.hb-frage p { margin: 0; padding: 0 24px 20px; font-size: 16px; color: var(--hb-text2); }
+.hb-hinweise { font-size: 14px; color: var(--hb-muted); line-height: 1.6; padding: 26px 30px; border-radius: 20px; background: var(--hb-karte); border: 1px solid var(--hb-linie); margin-top: 40px; }
+.hb-hinweise b { color: var(--hb-text2); }
+/* Fuß wie auf more.immo: Schiefer #1B212D mit leisem Farbnebel, Spaltentitel
+   klein und gesperrt, Links gedämpft und beim Überfahren weiß. */
+.hb-fuss {
+  color: rgba(255, 255, 255, .55); padding: 56px 0 44px; font-size: 14px;
+  background:
+    radial-gradient(60% 50% at 80% 20%, rgba(138, 208, 255, .06), transparent 60%),
+    radial-gradient(50% 60% at 10% 80%, rgba(51, 85, 153, .08), transparent 60%),
+    #1B212D;
+}
+.hb-fuss .hb-wrap { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 32px; }
+.hb-fuss .hb-wrap > div > b { color: rgba(255, 255, 255, .45); display: block; margin-bottom: 12px; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; }
+.hb-fuss a, .hb-fuss button.hb-fuss-link { display: block; margin-bottom: 6px; color: rgba(255, 255, 255, .6); text-decoration: none; text-align: left; font-size: 14px; transition: color var(--hb-dauer-kurz) ease; }
+.hb-fuss a:hover, .hb-fuss button.hb-fuss-link:hover { color: #fff; }
+.hb-fuss img { height: 30px; margin-bottom: 14px; }
+
+/* ─── Ergebnis und Handbuch online ─────────────────────────────────── */
+.hb-ergebnis-kopf { padding: 130px 0 64px; color: #D4DCE8;
+  background: radial-gradient(ellipse 70% 60% at 20% -10%, rgba(8, 124, 201, .6), transparent 70%), #0F1621; }
+.hb-ergebnis-kopf h1 { color: #fff; font-size: clamp(34px, 4.4vw, 54px); line-height: 1.08; margin: 12px 0 16px; }
+.hb-ergebnis-kopf .hb-augenbraue { color: #8AD0FF; }
+.hb-ergebnis-raster { display: grid; grid-template-columns: 1.1fr .9fr; gap: 28px; align-items: start; margin-top: 30px; }
+.hb-rahmen-karte { padding: 26px; }
+.hb-rahmen-karte .gross { font-size: clamp(28px, 3.4vw, 38px); font-weight: 700; color: var(--hb-tinte); line-height: 1.1; margin: 6px 0; }
+.hb-sa-karte { padding: 28px; border-radius: 22px; color: #D4DCE8; background: linear-gradient(135deg, #0F1621, #073150); border: 1px solid rgba(136, 207, 255, .18); }
+.hb-sa-karte h2 { color: #fff; font-size: 26px; margin: 6px 0 10px !important; }
+.hb-sa-karte .hb-augenbraue { color: #8AD0FF; margin: 0; }
+
+.hb-buch { max-width: 900px; margin: 0 auto; }
+.hb-buch-seite { background: var(--hb-karte); border: 1px solid var(--hb-linie); border-radius: 22px; padding: 44px 48px; margin: 0 0 24px; box-shadow: var(--hb-schatten); scroll-margin-top: 100px; }
+.hb-buch-seite .kap { font-size: 12px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--hb-akzent-text); }
+.hb-buch-seite h2.titel { font-size: clamp(26px, 3vw, 34px); line-height: 1.15; margin: 8px 0 18px; }
+.hb-buch-seite h3.h2 { font-size: 20px; margin: 26px 0 10px; }
+.hb-buch-seite .lead { font-size: 18.5px; color: var(--hb-text2); line-height: 1.55; }
+.hb-buch-seite .absatz { font-size: 16.5px; }
+.hb-buch-seite .fn { font-size: 13.5px; color: var(--hb-muted); line-height: 1.55; }
+.hb-buch-seite ul.liste { padding-left: 20px; margin: 0 0 14px; }
+.hb-buch-seite ul.liste li { margin-bottom: 6px; }
+.hb-bk-karten { display: grid; gap: 14px; margin: 16px 0; }
+.hb-bk-karten.s2 { grid-template-columns: 1fr 1fr; }
+.hb-bk-karten.s3 { grid-template-columns: repeat(3, 1fr); }
+.hb-bk-karte { background: var(--hb-grund); border-radius: 16px; padding: 18px; }
+.hb-bk-karte .sym { width: 38px; height: 38px; border-radius: 12px; background: var(--hb-karte); color: var(--hb-akzent); display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+.hb-bk-karte .sym svg { width: 20px; height: 20px; }
+.hb-bk-karte b { display: block; color: var(--hb-tinte); margin-bottom: 4px; font-size: 16px; }
+.hb-bk-karte span { font-size: 14.5px; color: var(--hb-text2); line-height: 1.5; display: block; }
+.hb-kasten { border-radius: 16px; padding: 16px 18px 16px 20px; margin: 16px 0; border-left: 4px solid var(--hb-akzent); background: var(--hb-akzent-flaeche); }
+.hb-kasten .kl { font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--hb-akzent-text); margin-bottom: 4px; }
+.hb-kasten p { margin: 0; font-size: 15.5px; color: var(--hb-text); }
+.hb-kasten.gut, .hb-kasten.ok { border-left-color: var(--hb-gruen-f); background: var(--hb-gruen-flaeche); }
+.hb-kasten.gut .kl, .hb-kasten.ok .kl { color: var(--hb-gruen); }
+.hb-kasten.acht { border-left-color: #D39A1F; background: var(--hb-gelb-flaeche); }
+.hb-kasten.acht .kl { color: var(--hb-gelb); }
+.hb-bk-grafik { margin: 18px 0; }
+.hb-bk-grafik .gt { font-weight: 700; color: var(--hb-tinte); }
+.hb-bk-grafik .gu { font-size: 14px; color: var(--hb-muted); margin-bottom: 8px; }
+.hb-bk-grafik svg { width: 100%; height: auto; display: block; }
+.hb-tabelle-rahmen { overflow-x: auto; margin: 12px 0 16px; }
+.hb-tabelle { width: 100%; border-collapse: collapse; font-size: 15px; }
+.hb-tabelle th { text-align: left; font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--hb-tinte); background: var(--hb-grund); padding: 9px 10px; border-bottom: 1.5px solid var(--hb-tinte); }
+.hb-tabelle td { padding: 9px 10px; border-bottom: 1px solid var(--hb-linie); vertical-align: top; }
+.hb-tabelle .r { text-align: right; white-space: nowrap; }
+.hb-tabelle tr.summe td { font-weight: 700; color: var(--hb-tinte); border-top: 1.5px solid var(--hb-tinte); border-bottom: none; }
+.hb-tabelle tr.hervor td { background: var(--hb-akzent-flaeche); font-weight: 700; color: var(--hb-tinte); }
+.hb-tabelle td.plus { color: var(--hb-gruen); }
+.hb-tabelle td.minus { color: var(--hb-rot); }
+.hb-tabelle-titel { font-weight: 700; color: var(--hb-tinte); margin-top: 8px; }
+.hb-bk-weg { display: grid; grid-template-columns: 1fr 28px 1fr 28px 1fr; align-items: stretch; margin: 18px 0; }
+.hb-bk-weg .st { background: var(--hb-grund); border-radius: 16px; padding: 18px; }
+.hb-bk-weg .n { width: 38px; height: 38px; border-radius: 11px; color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+.hb-bk-weg .pf { display: flex; align-items: center; justify-content: center; color: var(--hb-akzent); }
+.hb-bk-weg b { display: block; color: var(--hb-tinte); }
+.hb-bk-weg span { font-size: 14.5px; color: var(--hb-text2); }
+.hb-bk-vergleich { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+.hb-bk-vergleich .sp { border-radius: 16px; padding: 16px 18px; }
+.hb-bk-vergleich .alt { background: var(--hb-rot-flaeche); }
+.hb-bk-vergleich .neu { background: var(--hb-gruen-flaeche); }
+.hb-bk-vergleich .kl { font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; margin-bottom: 8px; }
+.hb-bk-vergleich .alt .kl { color: var(--hb-rot); }
+.hb-bk-vergleich .neu .kl { color: var(--hb-gruen); }
+.hb-bk-vergleich div.p { background: var(--hb-karte); border-radius: 10px; padding: 8px 12px; font-size: 14.5px; color: var(--hb-tinte); margin-top: 6px; display: flex; gap: 8px; align-items: center; }
+.hb-bk-vergleich div.p svg { width: 16px; height: 16px; flex: none; }
+.hb-bk-vergleich .alt div.p svg { color: var(--hb-rot); }
+.hb-bk-vergleich .neu div.p svg { color: var(--hb-gruen); }
+.hb-bk-prozess { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin: 20px 0; position: relative; }
+.hb-bk-prozess::before { content: ""; position: absolute; left: 8%; right: 8%; top: 22px; height: 3px; background: linear-gradient(90deg, var(--hb-tinte), var(--hb-akzent)); border-radius: 2px; opacity: .9; }
+.hb-bk-prozess .pz { text-align: center; position: relative; }
+.hb-bk-prozess .pk { width: 46px; height: 46px; margin: 0 auto 8px; border-radius: 50%; border: 3px solid var(--hb-akzent); background: var(--hb-karte); color: var(--hb-akzent); display: flex; align-items: center; justify-content: center; }
+.hb-bk-prozess .pk svg { width: 20px; height: 20px; }
+.hb-bk-prozess b { display: block; font-size: 13.5px; color: var(--hb-tinte); line-height: 1.3; }
+.hb-bk-prozess span { display: block; font-size: 12.5px; color: var(--hb-text2); }
+.hb-bk-trichter { margin: 16px 0; }
+.hb-bk-trichter .tr { display: flex; gap: 12px; align-items: center; margin-bottom: 8px; }
+/* Die Breite je Stufe kommt aus `--hb-stufe` (HandbuchAnsicht), damit das Handy sie anders setzen kann. */
+.hb-bk-trichter .bal { height: 38px; border-radius: 10px; color: #fff; display: flex; align-items: center; padding: 0 14px; font-weight: 700; font-size: 14px; flex: none; width: calc(46% - var(--hb-stufe, 0) * 6%); }
+.hb-bk-trichter span { font-size: 14px; color: var(--hb-text2); line-height: 1.4; }
+.hb-bk-zeit { position: relative; margin: 16px 0; }
+.hb-bk-zeit::before { content: ""; position: absolute; left: 19px; top: 8px; bottom: 8px; width: 3px; background: linear-gradient(180deg, #8AD0FF, var(--hb-akzent), var(--hb-tinte)); border-radius: 2px; }
+.hb-bk-zeit .zs { display: grid; grid-template-columns: 40px 170px 1fr; gap: 14px; align-items: start; margin-bottom: 12px; position: relative; }
+.hb-bk-zeit .pk { width: 40px; height: 40px; border-radius: 50%; background: var(--hb-karte); border: 3px solid var(--hb-akzent); color: var(--hb-akzent); display: flex; align-items: center; justify-content: center; }
+.hb-bk-zeit .pk svg { width: 18px; height: 18px; }
+.hb-bk-zeit .d { font-size: 11.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--hb-akzent-text); padding-top: 4px; }
+.hb-bk-zeit .d b { display: block; font-size: 16px; letter-spacing: 0; text-transform: none; color: var(--hb-tinte); margin-top: 2px; }
+.hb-bk-zeit .x { font-size: 15px; color: var(--hb-text2); padding-top: 4px; }
+.hb-bk-check { list-style: none; padding: 0; margin: 6px 0 0; }
+.hb-bk-check li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--hb-linie); font-size: 15px; }
+.hb-bk-check .bx { width: 17px; height: 17px; border: 2px solid var(--hb-grau); border-radius: 5px; flex: none; margin-top: 3px; }
+.hb-bk-check .opt { color: var(--hb-muted); font-size: 13px; margin-left: 6px; }
+.hb-bk-zahlen { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0; }
+.hb-bk-zahlen div { background: var(--hb-grund); border-radius: 16px; padding: 16px; }
+.hb-bk-zahlen b { display: block; font-size: 24px; color: var(--hb-tinte); line-height: 1.15; }
+.hb-bk-zahlen span { font-size: 13px; color: var(--hb-muted); }
+.hb-bk-angaben { background: var(--hb-akzent-flaeche); border-radius: 18px; padding: 18px 20px; margin: 18px 0; }
+.hb-bk-angaben .gt { font-weight: 700; color: var(--hb-tinte); margin-bottom: 8px; }
+.hb-bk-angaben .raster { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }
+.hb-bk-angaben .raster div { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid rgba(8, 124, 201, .16); font-size: 15px; }
+.hb-bk-angaben span { color: var(--hb-muted); }
+.hb-bk-angaben b { color: var(--hb-tinte); text-align: right; }
+.hb-bk-inhalt { margin: 12px 0; }
+.hb-bk-inhalt a { display: flex; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--hb-linie); text-decoration: none; color: var(--hb-tinte); font-size: 16px; }
+.hb-bk-inhalt a:hover { color: var(--hb-akzent-text); }
+.hb-bk-inhalt .n { color: var(--hb-akzent-text); font-weight: 700; min-width: 28px; }
+.hb-bk-portal { background: var(--hb-grund); border-radius: 16px; padding: 16px 18px; margin: 16px 0; }
+.hb-bk-portal .zeile { display: flex; justify-content: space-between; align-items: center; background: var(--hb-karte); border-radius: 10px; padding: 10px 14px; margin-top: 8px; font-size: 15px; color: var(--hb-tinte); }
+.hb-status { font-size: 12px; font-weight: 700; border-radius: 999px; padding: 3px 10px; }
+.hb-status.g { background: var(--hb-gruen-flaeche); color: var(--hb-gruen); }
+.hb-status.y { background: var(--hb-gelb-flaeche); color: var(--hb-gelb); }
+.hb-status.r { background: var(--hb-rot-flaeche); color: var(--hb-rot); }
+.hb-bk-naechster { border-radius: 22px; padding: 28px; margin: 18px 0; color: #D4DCE8; background: linear-gradient(135deg, #0F1621, #073150); display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; }
+.hb-bk-naechster .fuer { font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #8AD0FF; }
+.hb-bk-naechster h3 { color: #fff; font-size: 24px; margin: 6px 0 10px; }
+.hb-bk-naechster p { color: #D4DCE8; }
+.hb-bk-naechster .qr { background: #fff; border-radius: 14px; padding: 8px; width: 140px; height: 140px; }
+.hb-bk-naechster .qr svg { width: 100%; height: 100%; display: block; }
+.hb-bk-zwei { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+
+.hb-inhaltsleiste { position: sticky; top: 96px; }
+.hb-werkzeug { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+/* ─── Ergänzungen vom 26.09.2026 ───────────────────────────────────────
+ * Orange Hauptaktion, Heldenbild mit Beispielergebnis, Wizard-Seite,
+ * Zwischenaufrufe, fester Knopf auf dem Handy, Ergebnis mit Agenda.
+ */
+
+/* Hauptaktion im Marken-Orange des CRM (index.css, --brand-orange und
+   --brand-orange-tief, wie .btn-brand). Weiß auf #BD550A schafft 4,70:1. */
+/* Wie auf der Website: Verlauf, weicher Schein darunter, helle Glanzkante oben
+   (`.btn-primary-brand`), aber im dunkleren Projekt-Orange für den Kontrast.
+   Beim Überfahren zieht ein Glanz einmal über den Knopf. */
+.hb-knopf.hb-orange {
+  position: relative; overflow: hidden; isolation: isolate;
+  background: linear-gradient(135deg, hsl(var(--brand-orange)) 0%, hsl(var(--brand-orange-tief)) 100%);
+  color: hsl(var(--brand-orange-foreground));
+  box-shadow: 0 6px 24px -6px hsl(var(--brand-orange) / .55), inset 0 1px 0 rgba(255, 209, 163, .45);
+}
+.hb-knopf.hb-orange::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, .28) 50%, transparent 70%);
+  transform: translateX(-120%);
+}
+/* Überfahren dunkelt leicht ab statt aufzuhellen: So bleibt Weiß auf Orange über 4,5:1. */
+.hb-knopf.hb-orange:hover { background: linear-gradient(135deg, hsl(var(--brand-orange)) 0%, hsl(var(--brand-orange-tief)) 100%); filter: brightness(.96); }
+.hb a.hb-knopf.hb-orange { color: hsl(var(--brand-orange-foreground)); }
+/* `.hb button { font: inherit }` nahm Knöpfen das Fett, Links behielten es. */
+.hb button.hb-knopf { font-weight: 700; }
+
+/* Zweiter Knopf im dunklen Einstieg: Schrift immer weiß, in hell und dunkel.
+   `.hb a.hb-knopf.hb-zweit` setzte sonst die Tintenfarbe, im hellen Thema
+   also fast schwarz auf Tintenblau. */
+.hb .hb-umschlag a.hb-knopf.hb-zweit, .hb .hb-umschlag button.hb-knopf.hb-zweit { color: #fff; }
+.hb .hb-umschlag a.hb-knopf.hb-zweit:hover { box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .6); }
+
+/* Heldenbild mit Beispielkarte */
+.hb-held-bild { position: relative; margin: 0; border-radius: 26px; overflow: hidden; min-height: 600px; box-shadow: var(--hb-schatten-gross); background: #1B2A40; }
+.hb-held-bild > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 60% 35%; }
+.hb-held-bild::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15, 22, 33, 0) 30%, rgba(15, 22, 33, .6) 100%); pointer-events: none; }
+.hb-beispiel { position: absolute; left: 18px; right: 18px; bottom: 18px; z-index: 1; padding: 20px 22px 16px; color: var(--hb-text); }
+.hb-beispiel .kopf { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; font-size: 13px; color: var(--hb-muted); }
+.hb-beispiel .kopf b { color: var(--hb-tinte); font-size: 15px; }
+.hb-beispiel .spanne { font-size: 26px; font-weight: 700; color: var(--hb-tinte); line-height: 1.15; margin: 6px 0 2px; }
+.hb-beispiel svg { width: 100%; height: auto; display: block; }
+.hb-beispiel .zeile { display: flex; justify-content: space-between; gap: 12px; border-top: 1px solid var(--hb-linie); padding-top: 10px; margin-top: 8px; font-size: 14px; color: var(--hb-text2); }
+.hb-beispiel .zeile b { color: var(--hb-tinte); white-space: nowrap; }
+.hb-beispiel .fuss { font-size: 12px; color: var(--hb-muted); margin-top: 8px; line-height: 1.45; }
+
+/* Vorher und nachher */
+.hb-vergleich { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px; }
+.hb-vergleich > div { border-radius: 20px; padding: 24px 26px; }
+.hb-vergleich .vorher { background: var(--hb-rot-flaeche); }
+.hb-vergleich .nachher { background: var(--hb-gruen-flaeche); }
+.hb-vergleich .kl { font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; margin-bottom: 12px; }
+.hb-vergleich .vorher .kl { color: var(--hb-rot); }
+.hb-vergleich .nachher .kl { color: var(--hb-gruen); }
+.hb-vergleich ol { list-style: none; margin: 0; padding: 0; }
+.hb-vergleich li { display: flex; gap: 12px; align-items: flex-start; background: var(--hb-karte); border-radius: 12px; padding: 11px 14px; margin-top: 8px; font-size: 15.5px; color: var(--hb-tinte); }
+.hb-vergleich li svg { width: 18px; height: 18px; flex: none; margin-top: 2px; }
+.hb-vergleich .vorher li svg { color: var(--hb-rot); }
+.hb-vergleich .nachher li svg { color: var(--hb-gruen); }
+.hb-vergleich .schluss { margin: 12px 0 0; font-size: 15px; color: var(--hb-text2); }
+
+/* Drei Kapitel der Vorschau */
+.hb-kapitel-auswahl { list-style: none; padding: 0; margin: 22px 0 16px; display: grid; gap: 10px; }
+.hb-kapitel-auswahl li { display: flex; gap: 14px; background: var(--hb-karte); border: 1px solid var(--hb-linie); border-radius: 16px; padding: 14px 16px; }
+.hb-kapitel-auswahl .n { width: 34px; height: 34px; border-radius: 10px; background: var(--hb-akzent-flaeche); color: var(--hb-akzent-text); font-weight: 700; display: flex; align-items: center; justify-content: center; flex: none; font-size: 15px; }
+.hb-kapitel-auswahl b { display: block; color: var(--hb-tinte); font-size: 16px; }
+.hb-kapitel-auswahl .x { display: block; font-size: 14.5px; color: var(--hb-text2); line-height: 1.45; }
+.hb-aufklapper { margin: 4px 0 18px; }
+.hb-aufklapper summary { cursor: pointer; color: var(--hb-akzent-text); font-weight: 700; font-size: 15px; list-style: none; display: inline-flex; gap: 6px; align-items: center; }
+.hb-aufklapper summary::-webkit-details-marker { display: none; }
+.hb-aufklapper summary svg { width: 16px; height: 16px; transition: transform .2s ease; }
+.hb-aufklapper[open] summary svg { transform: rotate(180deg); }
+
+/* Zwischenaufruf */
+.hb-zwischen { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; margin-top: 34px; padding: 22px 26px; border-radius: 20px; background: var(--hb-karte); border: 1px solid var(--hb-linie); box-shadow: var(--hb-schatten); }
+.hb-zwischen p { margin: 0; font-size: 17px; color: var(--hb-tinte); font-weight: 700; }
+.hb-zwischen p span { display: block; font-size: 14px; color: var(--hb-muted); font-weight: 400; margin-top: 2px; }
+
+/* Preis des Wartens: die Differenz als große Zahl */
+.hb-grosse-zahl { margin: 22px 0 8px; padding: 22px 24px; border-radius: 20px; background: var(--hb-akzent-flaeche); }
+.hb-grosse-zahl b { display: block; font-size: clamp(38px, 5vw, 56px); line-height: 1; color: var(--hb-tinte); letter-spacing: -.02em; }
+.hb-grosse-zahl > span { display: block; margin-top: 8px; font-size: 15px; color: var(--hb-text2); }
+.hb-grosse-zahl .marke { display: inline-block; margin-top: 10px; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--hb-akzent-text); }
+
+/* Videos in den drei Modellen. Drei Spalten per Klasse statt Inline-Stil,
+   sonst greift die Handy-Regel nicht und die Karten werden schmal wie Streifen. */
+.hb-vier.drei { grid-template-columns: repeat(3, 1fr); }
+/* Videos in den drei Modellen */
+.hb-modell { padding: 0 0 22px; overflow: hidden; }
+.hb-modell .hb-modell-video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; background: var(--hb-diagramm-flaeche); }
+.hb-modell .innen { padding: 18px 22px 0; }
+.hb-modell h3 { font-size: 19px; margin: 12px 0 6px; }
+.hb-modell p { font-size: 15.5px; color: var(--hb-text2); margin: 0; }
+
+/* Eine Zeitleiste statt drei */
+.hb-zeit.acht { grid-template-columns: repeat(8, 1fr); }
+.hb-zp.jetzt .punkt { background: hsl(var(--brand-orange)); color: #fff; }
+
+/* Kundenstimmen: Karten, auf dem Handy seitlich wischbar */
+.hb-stimmen { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+.hb-stimme { margin: 0; padding: 22px 22px 18px; display: flex; flex-direction: column; gap: 12px; }
+.hb-stimme .sterne { display: flex; gap: 3px; color: #E0A526; }
+.hb-stimme .sterne svg { width: 16px; height: 16px; fill: currentColor; }
+.hb-stimme blockquote { margin: 0; font-size: 15px; line-height: 1.55; color: var(--hb-text); flex: 1; }
+.hb-stimme figcaption b { display: block; color: var(--hb-tinte); font-size: 15px; }
+.hb-stimme figcaption span { font-size: 13px; color: var(--hb-muted); }
+.hb-zitat { position: relative; margin: 18px 0 14px; padding: 0 0 0 30px; font-size: 16.5px; line-height: 1.55; color: var(--hb-tinte); font-style: italic; }
+.hb-zitat svg { position: absolute; left: 0; top: 2px; width: 20px; height: 20px; color: var(--hb-akzent); }
+
+/* Fester Knopf auf dem Handy */
+.hb-mobil-cta { display: none; }
+
+/* Wizard-Seite und offene Selbstauskunft */
+.hb-wizard-seite { padding: 120px 0 72px; min-height: 80vh; min-height: 80svh; background: radial-gradient(ellipse 60% 40% at 50% -10%, rgba(8, 124, 201, .16), transparent 70%), var(--hb-grund); }
+.hb-wizard-seite .hb-wrap { max-width: 800px; }
+.hb-wizard-seite .einleitung { text-align: center; margin-bottom: 22px; }
+.hb-wizard-seite .einleitung h1 { font-size: clamp(28px, 3.6vw, 38px); line-height: 1.12; margin: 6px 0 8px; }
+.hb-wizard-seite .einleitung p { color: var(--hb-text2); margin: 0; }
+.hb-wizard-seite .hb-konfig { padding: 34px 36px 28px; }
+.hb-wizard-seite .hb-kacheln { gap: 14px; }
+.hb-wizard-seite .hb-kachel { min-height: 88px; font-size: 17px; padding: 16px 18px; }
+.hb-wizard-seite .hb-kachel-symbol { width: 46px; height: 46px; }
+.hb-wizard-seite .hb-vertrauen { justify-content: center; color: var(--hb-muted); }
+.hb-kacheln .hb-kachel.breit { grid-column: 1 / -1; }
+.hb-wizard-seite .hb-kacheln .hb-kachel.breit { min-height: 64px; }
+.hb-rechenhilfe { margin: 14px 0 0; font-size: 14.5px; color: var(--hb-text2); }
+.hb-rechenhilfe summary { cursor: pointer; font-weight: 700; color: var(--hb-akzent-text); }
+.hb-rechenhilfe ol { margin: 8px 0 0; padding-left: 20px; }
+.hb-rechenhilfe li { margin-bottom: 4px; }
+.hb-einwilligung-voll { margin: -4px 0 8px 32px; font-size: 13px; color: var(--hb-muted); }
+.hb-einwilligung-voll summary { cursor: pointer; color: var(--hb-akzent-text); font-weight: 700; }
+.hb-einwilligung-voll p { margin: 6px 0 0; line-height: 1.5; }
+.hb-schritt-hinweis { display: flex; gap: 10px; align-items: flex-start; padding: 14px 16px; border-radius: 14px; background: var(--hb-akzent-flaeche); color: var(--hb-text); font-size: 15px; margin-bottom: 16px; }
+.hb-schritt-hinweis svg { width: 20px; height: 20px; color: var(--hb-akzent); flex: none; margin-top: 1px; }
+
+/* Ergebnis: Agenda links, Handbuch rechts */
+.hb-ergebnis-layout { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 36px; align-items: start; max-width: 1240px; }
+.hb-ergebnis-layout .hb-buch { max-width: none; margin: 0; }
+.hb-agenda { position: sticky; top: 96px; max-height: calc(100vh - 116px); overflow-y: auto; display: grid; gap: 14px; padding-bottom: 8px; }
+.hb-agenda .block, .hb-agenda-handy .block { background: var(--hb-karte); border: 1px solid var(--hb-linie); border-radius: 18px; padding: 16px 16px 12px; }
+.hb-agenda .gt, .hb-agenda-handy .gt { font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--hb-akzent-text); margin-bottom: 8px; }
+.hb-agenda dl, .hb-agenda-handy dl { margin: 0; display: grid; gap: 6px; font-size: 13.5px; }
+.hb-agenda dl div, .hb-agenda-handy dl div { display: flex; justify-content: space-between; gap: 10px; }
+.hb-agenda dt, .hb-agenda-handy dt { color: var(--hb-muted); }
+.hb-agenda dd, .hb-agenda-handy dd { margin: 0; color: var(--hb-tinte); font-weight: 700; text-align: right; }
+.hb-agenda nav a { display: flex; gap: 10px; padding: 7px 10px; border-radius: 10px; text-decoration: none; color: var(--hb-text2); font-size: 14px; line-height: 1.35; border-left: 3px solid transparent; }
+.hb-agenda nav a .n, .hb-agenda-handy nav a .n { color: var(--hb-akzent-text); font-weight: 700; min-width: 22px; }
+.hb-agenda nav a:hover { background: var(--hb-grund); color: var(--hb-tinte); }
+.hb-agenda nav a[aria-current="true"] { background: var(--hb-akzent-flaeche); color: var(--hb-tinte); font-weight: 700; border-left-color: var(--hb-akzent); }
+.hb-agenda-handy { display: none; }
+.hb-sa-karte .hb-knopf { margin-top: 4px; }
+
+@media (max-width: 1100px) {
+  .hb-ergebnis-layout { grid-template-columns: 1fr; }
+  .hb-agenda { display: none; }
+  .hb-agenda-handy { display: block; margin-bottom: 18px; }
+  .hb-agenda-handy > summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 18px; border-radius: 16px; background: var(--hb-karte); border: 1px solid var(--hb-linie); font-weight: 700; color: var(--hb-tinte); }
+  .hb-agenda-handy > summary::-webkit-details-marker { display: none; }
+  .hb-agenda-handy > summary svg { width: 18px; height: 18px; transition: transform .2s ease; }
+  .hb-agenda-handy[open] > summary svg { transform: rotate(180deg); }
+  .hb-agenda-handy .innen { display: grid; gap: 12px; margin-top: 10px; }
+  .hb-agenda-handy nav a { display: flex; gap: 10px; padding: 9px 4px; text-decoration: none; color: var(--hb-text2); border-bottom: 1px solid var(--hb-linie); font-size: 15px; }
+}
+@media (max-width: 980px) {
+  .hb-vier.drei { grid-template-columns: 1fr; }
+  .hb-stimmen { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; padding-bottom: 8px; }
+  .hb-stimme { flex: 0 0 min(82%, 340px); scroll-snap-align: start; }
+  .hb-held-bild { min-height: 480px; }
+  .hb-zeit.acht { grid-template-columns: 1fr; }
+  .hb-vergleich { grid-template-columns: 1fr; }
+}
+@media (max-width: 700px) {
+  .hb-held-bild { min-height: 440px; border-radius: 20px; }
+  .hb-beispiel { left: 10px; right: 10px; bottom: 10px; padding: 16px 16px 12px; }
+  .hb-beispiel .spanne { font-size: 22px; }
+  .hb-umschlag .hb-knoepfe .hb-knopf { flex: 1 1 100%; }
+  .hb-zwischen { padding: 18px; }
+  .hb-zwischen .hb-knopf { width: 100%; }
+  .hb-wizard-seite { padding: 92px 0 72px; }
+  .hb-wizard-seite .hb-konfig { padding: 22px 16px 18px; }
+  .hb-wizard-seite .hb-kachel { min-height: 64px; font-size: 16px; }
+  .hb-einwilligung-voll { margin-left: 0; }
+  .hb-mobil-cta { display: block; position: fixed; left: 12px; right: 12px; bottom: 12px; bottom: max(12px, env(safe-area-inset-bottom)); z-index: 40; transition: transform .25s ease, opacity .25s ease; }
+  .hb-mobil-cta .hb-knopf { width: 100%; box-shadow: 0 16px 34px -12px rgba(8, 24, 54, .55); }
+  .hb-mobil-cta.weg { transform: translateY(140%); opacity: 0; pointer-events: none; }
+  .hb-mit-mobil-cta { padding-bottom: 76px; }
+}
+@media (max-width: 767px) {
+  .hb .hb-wizard-seite .einleitung h1 { font-size: 28px !important; line-height: 1.12 !important; }
+}
+
+/* ─── Handy ────────────────────────────────────────────────────────── */
+@media (max-width: 980px) {
+  .hb-umschlag .hb-wrap, .hb-vorschau .hb-wrap, .hb-zwei, .hb-zwei.gleich, .hb-cta, .hb-faq, .hb-bankband, .hb-ergebnis-raster { grid-template-columns: 1fr; gap: 28px; }
+  .hb-vier { grid-template-columns: 1fr 1fr; }
+  .hb-kopf nav { display: none; }
+  .hb-prozess { grid-template-columns: repeat(3, 1fr); gap: 22px 0; }
+  .hb-prozess::before { display: none; }
+  .hb-zeit { grid-template-columns: 1fr; gap: 18px; }
+  .hb-zeit::before { left: 22px; right: auto; width: 4px; top: 0; bottom: 0; height: auto; background: linear-gradient(180deg, #8AD0FF, #087CC9, #0F1621); }
+  .hb-zp { display: grid; grid-template-columns: 48px 1fr; gap: 0 16px; padding: 0; }
+  .hb-zp .punkt { grid-row: span 3; margin: 0; }
+  .hb-buch-mini { display: none; }
+}
+@media (max-width: 700px) {
+  .hb { font-size: 16px; }
+  .hb-wrap { padding: 0 16px; }
+  .hb-abschnitt { padding: 60px 0; }
+  .hb-lead { font-size: 17px; }
+  .hb-kopf { padding: 10px 10px 10px 14px; top: 8px; width: calc(100% - 16px); }
+  .hb-konfig.mit-buch .hb-konfig-kopf { padding-right: 0; }
+  .hb-kopf img { height: 26px; }
+  .hb-kopf-berater { display: none; }
+  .hb-umschlag { padding: 108px 0 56px; }
+  .hb-nutzen li { font-size: 16px; }
+  .hb-konfig { padding: 22px 16px 18px; }
+  .hb-konfig h3 { font-size: 21px; padding-right: 0; }
+  .hb-kacheln { grid-template-columns: 1fr; gap: 10px; }
+  .hb-kachel { min-height: 58px; padding: 12px 14px; font-size: 15px; }
+  .hb-felder { grid-template-columns: 1fr; gap: 0; }
+  .hb-kapitel { columns: 1; }
+  .hb-drei, .hb-vier, .hb-wege, .hb-ergebnis { grid-template-columns: 1fr; }
+  .hb-prozess { grid-template-columns: 1fr 1fr; }
+  .hb-cta { padding: 30px 20px; }
+  .hb-fuss .hb-wrap { grid-template-columns: 1fr; }
+  .hb-rechnung { font-size: 15px; }
+  .hb-diagramm { padding: 18px 12px 12px; }
+  .hb-nur-desktop { display: none; }
+  .hb-nur-handy { display: block; }
+  .hb-ergebnis-kopf { padding: 100px 0 44px; }
+  .hb-buch-seite { padding: 26px 18px; border-radius: 18px; }
+  .hb-bk-karten.s2, .hb-bk-karten.s3, .hb-bk-vergleich, .hb-bk-zahlen, .hb-bk-zwei, .hb-bk-angaben .raster { grid-template-columns: 1fr; }
+  .hb-bk-weg { grid-template-columns: 1fr; gap: 8px; }
+  .hb-bk-weg .pf { transform: rotate(90deg); height: 20px; }
+  .hb-bk-prozess { grid-template-columns: repeat(3, 1fr); row-gap: 16px; }
+  .hb-bk-prozess::before { display: none; }
+  .hb-bk-zeit .zs { grid-template-columns: 40px 1fr; }
+  .hb-bk-zeit .x { grid-column: 2; padding-top: 0; }
+  .hb-bk-naechster { grid-template-columns: 1fr; }
+  .hb-bk-trichter .bal { font-size: 12.5px; padding: 0 10px; }
+  .hb-tabelle { font-size: 14px; }
+}
+/*
+ * Das CRM verkleinert auf dem Handy global Überschriften, Beschriftungen und
+ * Knöpfe (index.css, „Globale Politur“, teils mit !important) und lässt
+ * Tabellenzellen nicht umbrechen. Für das CRM ist das richtig, für diese
+ * öffentliche Seite nicht: Hier gelten die eigenen Größen.
+ */
+@media (max-width: 767px) {
+  .hb .hb-umschlag h1 { font-size: 38px !important; line-height: 1.05 !important; }
+  .hb .hb-ergebnis-kopf h1 { font-size: 32px !important; line-height: 1.1 !important; }
+  .hb .hb-h2 { font-size: 29px !important; line-height: 1.12 !important; }
+  .hb .hb-buch-seite h2.titel { font-size: 25px !important; line-height: 1.15 !important; }
+  .hb .hb-feld label, .hb label.hb-haken, .hb label.hb-schalter { font-size: 14px !important; }
+  .hb .hb-feld input { font-size: 16px !important; }
+  .hb button.hb-kachel { font-size: 16px !important; }
+  .hb .hb-knopf { font-size: 16px !important; }
+  .hb .hb-knopf.hb-klein-knopf { font-size: 14px !important; }
+  .hb .hb-link-knopf { font-size: 14px !important; }
+  .hb table.hb-tabelle, .hb table.hb-rechnung { width: 100% !important; min-width: 0 !important; }
+  .hb .hb-tabelle th, .hb .hb-tabelle td, .hb .hb-rechnung td { white-space: normal; }
+  .hb .hb-tabelle td.r, .hb .hb-tabelle th.r, .hb .hb-rechnung td:last-child { white-space: nowrap; }
+  .hb .hb-rechnung td { font-size: 15px !important; }
+  .hb .hb-tabelle td { font-size: 14px !important; }
+  .hb .hb-tabelle th { font-size: 11px !important; letter-spacing: .06em; }
+  /* Diagramme im Handbuch: lieber seitlich wischen als unlesbar klein. */
+  .hb .hb-bk-grafik .zeichnung { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .hb .hb-bk-grafik .zeichnung svg { min-width: 540px; max-width: none; }
+}
+/*
+ * Handy, Durchsicht vom 28.09.2026 (320 bis 430 px).
+ */
+@media (max-width: 700px) {
+  /* Sicherheitsnetz: Was trotzdem über den Rand ragt (gedrehte Heftseiten,
+     ein unerwartet langes Wort), schiebt die Seite nicht seitlich. `clip`
+     statt `hidden`, damit kein Scrollbereich entsteht. */
+  .hb { overflow-x: clip; }
+  /* Logo, Aufruf und Sprachumschalter passten nicht nebeneinander (ab 390 px
+     überlappten Logo und Knopf). Den Aufruf übernimmt hier der feste Knopf
+     unten (`.hb-mobil-cta`) zusammen mit den Knöpfen im Einstieg. */
+  .hb-kopf-rechts .hb-knopf { display: none; }
+  /* Doppelte Klasse, weil die globale Handy-Regel für runde Knöpfe in
+     index.css (button.rounded-full, 0,2,1, mit !important) sonst 32 px
+     erzwingt. */
+  .hb .hb-sprache.hb-sprache { height: 44px !important; min-height: 44px !important; min-width: 44px; }
+  /* Einstieg kompakter, damit die Knöpfe näher an den ersten Bildschirm rücken. */
+  .hb-umschlag { padding: 96px 0 48px; }
+  .hb-nutzen { margin: 20px 0 22px; }
+  .hb-nutzen li { margin-bottom: 8px; }
+  /* Lange zusammengesetzte Wörter („Objektvorstellung“) sprengen sonst
+     schmale Spalten. Überschriften brechen nur im Notfall, die schmalen
+     Ablaufspalten mit Silbentrennung nach `lang` am Dokument. */
+  .hb h1, .hb h2, .hb h3 { overflow-wrap: break-word; }
+  .hb-bk-prozess b { hyphens: auto; -webkit-hyphens: auto; overflow-wrap: break-word; }
+  /* Fließtext nicht unter 15 px. */
+  .hb-kapitel-auswahl .x, .hb-bk-karte span, .hb-zp span, .hb-bk-weg span, .hb-bk-vergleich div.p, .hb-bk-trichter span, .hb-agenda-handy dl { font-size: 15px; }
+  .hb-heft-kacheln .unter, .hb-bk-prozess span { font-size: 13.5px; }
+  /* Tippflächen mindestens 44 px hoch. */
+  .hb-konfig-fuss { flex-wrap: wrap; }
+  .hb-konfig-fuss .hb-link-knopf, .hb-aufklapper summary { min-height: 44px; }
+  .hb-rechenhilfe summary { padding: 11px 0; }
+  .hb-einwilligung-voll summary { padding: 12px 0; }
+  .hb-agenda-handy nav a { min-height: 44px; align-items: center; }
+  .hb-fuss a, .hb-fuss button.hb-fuss-link { padding: 11px 0; margin-bottom: 0; }
+  .hb-berater .kontakt a { display: inline-flex; align-items: center; min-height: 44px; overflow-wrap: anywhere; }
+  /* Handbuch-Ablauf: drei Spalten waren für „Selbstauskunft“ zu schmal. */
+  .hb-bk-prozess { grid-template-columns: 1fr 1fr; }
+  /* Filter-Trichter: Die schmalen Balken schnitten ihre weiße Schrift ab.
+     Am Handy steht der Balken über dem Text, die Stufen bleiben ablesbar. */
+  .hb-bk-trichter .tr { flex-direction: column; align-items: flex-start; gap: 4px; margin-bottom: 12px; }
+  .hb-bk-trichter .bal { width: calc(100% - var(--hb-stufe, 0) * 10%); min-width: max-content; }
+}
+/* ─── Bewegung (26.09.2026) ────────────────────────────────────────────
+ * Nachempfunden der Website und der Berater-Mikroseite: kurze Wege, weiche
+ * Kurve, einmalig. Karten heben sich um 3 px, keine Neigung. Alles, was sich
+ * bewegt, nur bei echter Maus (`hover: hover`), damit auf dem Handy nichts
+ * hängen bleibt, und nur ohne „weniger Bewegung“. Das Licht an der
+ * Kartenkante kommt aus `lib/glasLicht.ts` und steht in der Liquid-Schicht.
+ */
+@keyframes hb-gewaehlt { 0% { transform: scale(.82); } 60% { transform: scale(1.08); } 100% { transform: scale(1); } }
+@keyframes hb-auftauchen { from { opacity: 0; transform: translate3d(0, 10px, 0); } }
+
+.hb-rund, .hb-zp .punkt, .hb-kapitel-auswahl li { transition: transform var(--hb-dauer) var(--hb-ease), border-color var(--hb-dauer-kurz) ease, box-shadow var(--hb-dauer) var(--hb-ease); }
+/* Zahlen, die hochzählen, springen nicht in der Breite. */
+.hb-grosse-zahl b, .hb-rahmen-karte .gross, .hb-beispiel .spanne { font-variant-numeric: tabular-nums lining-nums; }
+
+/* Einstieg: Text und Bild tauchen beim Laden einmal auf. */
+.hb-umschlag .hb-wrap > * { animation: hb-auftauchen .4s var(--hb-ease) backwards; }
+.hb-umschlag .hb-wrap > *:nth-child(2) { animation-delay: 90ms; }
+/* Wizard: Die Kacheln eines neuen Schritts kommen gestaffelt. `backwards`,
+   nicht `both`: Nach dem Einblenden gehört die Verschiebung wieder dem Hover. */
+.hb-kacheln > .hb-kachel { animation: hb-auftauchen .3s var(--hb-ease) backwards; }
+.hb-kacheln > .hb-kachel:nth-child(2) { animation-delay: 40ms; }
+.hb-kacheln > .hb-kachel:nth-child(3) { animation-delay: 80ms; }
+.hb-kacheln > .hb-kachel:nth-child(4) { animation-delay: 120ms; }
+.hb-kacheln > .hb-kachel:nth-child(5) { animation-delay: 160ms; }
+.hb-kacheln > .hb-kachel:nth-child(6) { animation-delay: 200ms; }
+
+/* Einblenden beim Scrollen, gesetzt von `useEinblenden` (teile.tsx). Nur was
+   beim Laden noch unter dem Sichtfeld liegt, wird überhaupt versteckt. */
+.hb-ein { transition: opacity .4s var(--hb-ease), transform .4s var(--hb-ease) !important; transition-delay: var(--hb-verzug, 0ms) !important; }
+.hb-ein-wartet { opacity: 0; transform: translate3d(0, 16px, 0); }
+
+@media (hover: hover) and (pointer: fine) {
+  .hb-kachel:hover { box-shadow: 0 14px 28px -18px rgba(8, 124, 201, .6); }
+  .hb-kachel[aria-pressed="true"]:hover { box-shadow: 0 0 0 3px var(--hb-ring), 0 14px 28px -18px rgba(8, 124, 201, .6); }
+  .hb-frage summary:hover { color: var(--hb-akzent-text); }
+  .hb-kapitel-auswahl li:hover { border-color: var(--hb-akzent); }
+  .hb :is(.hb-kachel-karte, .hb-stimme, .hb-berater, .hb-diagramm, .hb-bankband, .hb-zwischen, .hb-rahmen-karte):hover { --hb-karte-schatten: var(--hb-schatten-hoch); }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .hb-knopf:hover { transform: translateY(-2px); }
+  .hb-knopf:active { transform: scale(.97); }
+  .hb-knopf:hover svg.lucide-arrow-right { transform: translateX(3px); }
+  .hb-knopf.hb-orange:hover { box-shadow: 0 10px 34px -6px hsl(var(--brand-orange) / .7), inset 0 1px 0 rgba(255, 209, 163, .55); }
+  .hb-knopf.hb-orange:hover::after { transform: translateX(120%); transition: transform .4s ease-out; }
+  .hb :is(.hb-kachel-karte, .hb-stimme, .hb-berater, .hb-diagramm, .hb-bankband, .hb-zwischen, .hb-rahmen-karte):hover { transform: translateY(-3px); }
+  .hb-kapitel-auswahl li:hover { transform: translateY(-2px); }
+  .hb-kachel:hover { transform: translateY(-2px); }
+  .hb-kachel:active { transform: scale(.98); }
+  .hb-kachel:hover .hb-kachel-symbol { transform: scale(1.06); }
+  .hb :is(.hb-kachel-karte, .hb-punkte li):hover .hb-rund { transform: translateY(-2px) scale(1.05); }
+  .hb-zp:hover .punkt { transform: translateY(-3px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hb * { transition: none !important; }
+  .hb *:not(.animate-spin) { animation: none !important; }
+  .hb-ein-wartet { opacity: 1; transform: none; }
+}
+@media print {
+  .hb-kopf, .hb-werkzeug, .hb-fuss, .hb-agenda, .hb-agenda-handy, .hb-mobil-cta { display: none !important; }
+  .hb-ein-wartet { opacity: 1 !important; transform: none !important; }
+}

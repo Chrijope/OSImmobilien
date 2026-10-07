@@ -1,0 +1,275 @@
+/*
+  Liquid Glass: die zweite Designschicht.
+
+  Sie steht NEBEN `design-neu.css`, nicht an ihrer Stelle. Alles hier haengt an
+  `[data-glas="an"]` am Wurzelelement, waehrend `data-design="neu"` bestehen
+  bleibt. Daraus folgt dreierlei:
+
+    * Farben, Radien und Schatten kommen weiter aus `design-neu.css`. Diese
+      Datei aendert nur, WORAUF die Flaechen liegen und WIE Licht auf ihre
+      Kanten faellt. Die Markenrichtlinie bleibt unberuehrt.
+    * Zurueckschalten heisst: das Merkmal `data-glas` in `index.html`
+      entfernen. Kein Ausbau, kein Suchen, keine Migration.
+    * Der Waechter ueber `design-neu.css` bleibt gueltig, weil dort keine
+      einzige Zeile angefasst wird. Fuer diese Datei gibt es einen eigenen in
+      `design-glas.test.ts`.
+
+  ── Wo Glas liegt, und wo bewusst nicht ──────────────────────────────────
+
+  `backdrop-filter` ist teuer. Der Browser muss alles unter der Flaeche noch
+  einmal zeichnen und weichzeichnen, und zwar bei jedem Bildaufbau. In einem
+  CRM mit Tabellen ueber hunderte Zeilen ist das kein Schoenheitsfehler,
+  sondern ein Ruckeln beim Scrollen.
+
+  Deshalb gilt hier eine feste Regel: Weichzeichnung bekommt nur, was es
+  wenige Male auf dem Schirm gibt und was ueber dem Inhalt liegt. Das sind
+  Seitenleiste, Kopfleiste, Dialoge, Menues und der Tabellenkopf.
+
+  Karten bekommen KEINE Weichzeichnung. Von ihnen stehen auf einem Dashboard
+  zwanzig gleichzeitig, in einer Liste hundert. Sie bekommen stattdessen eine
+  leicht durchscheinende Flaeche und die Lichtkante, was nichts kostet und auf
+  dem weichen Grund darunter denselben Eindruck macht.
+
+  ── Und wo Text steht ────────────────────────────────────────────────────
+
+  Durchscheinender Grund senkt den Textkontrast. Zahlen werden hier den ganzen
+  Tag gelesen, deshalb bleiben Tabellenzeilen und Kennzahlflaechen ruhig. Das
+  Glas traegt die Navigation, nicht die Zahlen.
+*/
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   1. Der Grund, auf dem alles liegt
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Ohne einen Grund mit Struktur gibt es nichts zu brechen, und Glas sieht aus
+  wie mattes Grau. Drei sehr weiche Farbwolken in Blau 600 und Blau 700.
+
+  Sie stehen als Hintergrund direkt am `body`, NICHT als Pseudoelement.
+
+  Der erste Versuch am 14.09.2026 war ein `body::before` mit `position: fixed`
+  und `z-index: 0`, und das hat auf dem Dashboard die halbe Seite verschluckt.
+  Der Grund steckt in der Malreihenfolge: Ein positioniertes Element mit
+  `z-index: 0` wird NACH allen nicht positionierten Elementen gezeichnet. Weil
+  die unterste Schicht der Verlaeufe eine deckende Farbe ist, lag die Tapete
+  damit vor jedem Block, der keine eigene Positionierung hat. Sichtbar blieben
+  nur Seitenleiste, Kopfleiste und Karten, also ausgerechnet das, was
+  positioniert ist.
+
+  Als Hintergrund am Element selbst kann das nicht passieren: Ein Hintergrund
+  liegt immer hinter dem Inhalt. `background-attachment: fixed` uebernimmt
+  dabei, was vorher `position: fixed` leisten sollte, naemlich dass die Wolken
+  beim Scrollen stehen bleiben.
+*/
+[data-glas="an"] body {
+  background-image:
+    radial-gradient(58% 44% at 6% -6%, hsl(204 92% 41% / .13), transparent 68%),
+    radial-gradient(52% 40% at 96% 8%, hsl(204 95% 34% / .09), transparent 66%),
+    radial-gradient(70% 52% at 62% 108%, hsl(204 80% 55% / .11), transparent 70%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+/*
+  Damit die Tapete zu sehen ist, duerfen die beiden grossen Flaechen darueber
+  nicht mehr deckend sein. `main` traegt im Geruest `bg-background`, die
+  Seitenleiste ihr eigenes Weiss.
+*/
+[data-glas="an"] main.flex-1 {
+  background-color: transparent;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   2. Die Glasebenen
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Die gemeinsame Rezeptur. `saturate` gehoert dazu: Ohne sie wirkt alles
+  hinter der Scheibe ausgewaschen, weil die Weichzeichnung die Farbigkeit
+  mittelt. Apple nennt das Vibrancy, und es ist der Unterschied zwischen Glas
+  und Milchglas.
+*/
+[data-glas="an"] [data-sidebar="sidebar"],
+[data-glas="an"] header.sticky,
+[data-glas="an"] [role="dialog"],
+[data-glas="an"] [role="menu"],
+[data-glas="an"] [data-radix-popper-content-wrapper] > * {
+  backdrop-filter: blur(30px) saturate(185%);
+  -webkit-backdrop-filter: blur(30px) saturate(185%);
+}
+
+/* Die Seitenleiste. Sie liegt neben dem Inhalt, nicht darueber, und traegt
+   deshalb die staerkste Toenung: Sonst verschwimmt ihre Kante mit der Flaeche. */
+[data-glas="an"] [data-sidebar="sidebar"] {
+  background-color: hsl(0 0% 100% / .66);
+  border-right-color: hsl(15 22% 33% / .07);
+  box-shadow: inset -1px 0 0 hsl(0 0% 100% / .55);
+}
+
+/*
+  Die Kopfleiste bringt ihre Weichzeichnung schon aus dem Geruest mit, dort
+  aber mit `bg-background/95`, also praktisch undurchsichtig. Hier wird sie
+  wirklich durchsichtig, und sie bekommt die Lichtkante, die eine Glasscheibe
+  von einer getoenten Flaeche unterscheidet.
+*/
+[data-glas="an"] header.sticky {
+  background-color: hsl(0 0% 100% / .62);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / .7), 0 1px 0 hsl(15 22% 33% / .05);
+}
+
+/* Dialoge und Menues schweben ueber allem und duerfen am dichtesten sein:
+   Was darunter liegt, soll erkennbar bleiben, aber nicht mitgelesen werden. */
+[data-glas="an"] [role="dialog"],
+[data-glas="an"] [role="menu"],
+[data-glas="an"] [data-radix-popper-content-wrapper] > * {
+  background-color: hsl(0 0% 100% / .84);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / .8), var(--shadow-xl);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   3. Karten, Knoepfe, Abzeichen
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Karten ohne Weichzeichnung, siehe Kopf dieser Datei. Die Lichtkante oben
+  macht die Arbeit: Sie laesst die Flaeche wie eine Scheibe wirken, deren
+  Oberkante das Licht faengt, und kostet keinen einzigen Bildaufbau.
+*/
+[data-glas="an"] [data-ui="card"] {
+  background-color: hsl(0 0% 100% / .78);
+  border-color: hsl(15 22% 33% / .07);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / .75), var(--shadow-sm);
+}
+
+/*
+  Angehoben beim Ueberfahren, wie in `design-neu.css`, nur dass hier zusaetzlich
+  die Scheibe dichter wird. Das liest sich als "kommt naeher".
+*/
+[data-glas="an"] [data-ui="card"].cursor-pointer:hover,
+[data-glas="an"] a > [data-ui="card"]:hover,
+[data-glas="an"] button > [data-ui="card"]:hover {
+  background-color: hsl(0 0% 100% / .9);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / .85), var(--shadow-md);
+}
+
+/* Der Knopf bekommt dieselbe Lichtkante. Bei der gefuellten Fassung sitzt sie
+   innen im Blau und macht aus der Flaeche eine gewoelbte Taste. */
+[data-glas="an"] [data-ui="button"] {
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / .28), var(--shadow-xs);
+}
+[data-glas="an"] [data-ui="button"]:active {
+  box-shadow: inset 0 1px 2px hsl(15 22% 33% / .16);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   4. Tabellen
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Nur der Kopf ist Glas, und zwar weil er beim Scrollen stehen bleibt und
+  dabei ueber die Zeilen wandert. Genau dort gehoert die Weichzeichnung hin.
+
+  Die Zeilen selbst bleiben, wie sie sind. Eine Tabelle ist die Stelle, an der
+  im CRM am dichtesten gelesen wird, und jede Zehntelstufe Kontrast, die das
+  Glas kostet, faellt hier zuerst auf.
+*/
+[data-glas="an"] table thead tr {
+  background-color: hsl(0 0% 100% / .72);
+  backdrop-filter: blur(18px) saturate(170%);
+  -webkit-backdrop-filter: blur(18px) saturate(170%);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   5. Dunkelmodus
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Im Dunkeln kehrt sich die Lichtkante um: Sie wird nicht heller als die
+  Flaeche, sondern ist das Einzige, was ueberhaupt Licht traegt. Die Toenung
+  muss dafuer deutlich dichter sein, sonst versinkt jede Kante im Grund.
+*/
+[data-glas="an"].dark body {
+  background-image:
+    radial-gradient(58% 44% at 6% -6%, hsl(204 92% 41% / .22), transparent 68%),
+    radial-gradient(52% 40% at 96% 8%, hsl(204 100% 77% / .07), transparent 66%),
+    radial-gradient(70% 52% at 62% 108%, hsl(210 60% 30% / .26), transparent 70%);
+}
+
+[data-glas="an"].dark [data-sidebar="sidebar"] {
+  background-color: hsl(215 16% 17% / .72);
+  border-right-color: hsl(0 0% 100% / .07);
+  box-shadow: inset -1px 0 0 hsl(0 0% 100% / .08);
+}
+
+[data-glas="an"].dark header.sticky {
+  background-color: hsl(215 16% 17% / .66);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / .1), 0 1px 0 hsl(0 0% 0% / .3);
+}
+
+[data-glas="an"].dark [role="dialog"],
+[data-glas="an"].dark [role="menu"],
+[data-glas="an"].dark [data-radix-popper-content-wrapper] > * {
+  background-color: hsl(215 16% 19% / .9);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / .1), var(--shadow-xl);
+}
+
+[data-glas="an"].dark [data-ui="card"] {
+  background-color: hsl(215 16% 19% / .8);
+  border-color: hsl(0 0% 100% / .07);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / .07), var(--shadow-sm);
+}
+
+[data-glas="an"].dark [data-ui="card"].cursor-pointer:hover,
+[data-glas="an"].dark a > [data-ui="card"]:hover,
+[data-glas="an"].dark button > [data-ui="card"]:hover {
+  background-color: hsl(215 16% 22% / .92);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / .1), var(--shadow-md);
+}
+
+[data-glas="an"].dark [data-ui="button"] {
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / .12), var(--shadow-xs);
+}
+
+[data-glas="an"].dark table thead tr {
+  background-color: hsl(215 16% 19% / .78);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   6. Ruecksichtnahmen
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Wer Transparenz abgestellt hat, meint es ernst. Das Betriebssystem meldet
+  das, und ab hier ist jede Flaeche wieder deckend. Die Gestaltung bleibt
+  bestehen, nur das Glas verschwindet.
+
+  Dasselbe gilt fuer Browser ohne `backdrop-filter`: Ohne diese Absicherung
+  saehe man dort halbdurchsichtige Flaechen ohne Weichzeichnung, also
+  Schleier, durch die der Text darunter liest.
+*/
+@media (prefers-reduced-transparency: reduce) {
+  [data-glas="an"] [data-sidebar="sidebar"],
+  [data-glas="an"] header.sticky,
+  [data-glas="an"] [role="dialog"],
+  [data-glas="an"] [role="menu"],
+  [data-glas="an"] [data-ui="card"],
+  [data-glas="an"] table thead tr,
+  [data-glas="an"] [data-radix-popper-content-wrapper] > * {
+    background-color: hsl(var(--card));
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  [data-glas="an"] body { background-image: none; }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  [data-glas="an"] [data-sidebar="sidebar"],
+  [data-glas="an"] header.sticky,
+  [data-glas="an"] [role="dialog"],
+  [data-glas="an"] [role="menu"],
+  [data-glas="an"] [data-ui="card"],
+  [data-glas="an"] table thead tr,
+  [data-glas="an"] [data-radix-popper-content-wrapper] > * {
+    background-color: hsl(var(--card));
+  }
+}

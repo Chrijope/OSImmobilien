@@ -1,0 +1,15 @@
+/* Scoped to the goal planning page; preserves existing brand and theme tokens. */
+.zielplanung { max-width: 1200px; margin-inline: auto; }
+.zielplanung summary { border-radius: .25rem; }
+.zielplanung summary:focus-visible { outline: 2px solid hsl(var(--primary)); outline-offset: 5px; }
+.zielplanung input[type="number"] { font-variant-numeric: tabular-nums; }
+@media (max-width: 639px) {
+  .zielplanung-monate thead { display: none; }
+  .zielplanung-monate tbody { display: grid; gap: 12px; }
+  .zielplanung-monate tbody tr { display: block; padding: 12px; border: 1px solid hsl(var(--border)); border-radius: 10px; }
+  .zielplanung-monate tbody td { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 0; text-align: right; }
+  .zielplanung-monate tbody td:first-child { justify-content: flex-start; padding-bottom: 10px; font-weight: 600; }
+  .zielplanung-monate tbody td[data-label]::before { content: attr(data-label); color: hsl(var(--muted-foreground)); font-size: 12px; text-align: left; }
+  .zielplanung-monate tbody input { min-height: 44px; }
+  .zielplanung-monate tfoot { display: none; } /* Annual totals remain visible in the overview above. */
+}

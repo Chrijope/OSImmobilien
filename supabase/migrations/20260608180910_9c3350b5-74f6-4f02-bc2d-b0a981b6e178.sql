@@ -1,0 +1,1 @@
+UPDATE public.user_settings SET onboarding_complete = false WHERE user_id = '1d6f60b0-71a5-4649-aa94-8ef0302ee3d3';

@@ -1,0 +1,80 @@
+/*
+  Prozesslinie im Kundenprofil.
+
+  Kurznamen für die Tokens aus index.css: erledigt in der Primärfarbe (Blau),
+  aktuell in --fortschritt-aktiv (Orange), offen im Grau der Haarlinie.
+  Text der aktuellen Station steht in --warning, weil Schrift auf Orange
+  schlecht lesbar ist.
+*/
+.prozessstrasse {
+  --ps-erledigt: var(--primary);
+  --ps-erledigt-text: var(--primary-foreground);
+  --ps-aktiv: var(--fortschritt-aktiv);
+  --ps-aktiv-text: var(--warning);
+  --ps-offen: var(--border);
+  --ps-nein: var(--destructive);
+}
+
+/* Die Linie füllt sich beim Laden. pathLength="1" macht die Länge zu 1. */
+@keyframes ps-fuellen {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+.ps-fuellen {
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+  animation: ps-fuellen 1.2s cubic-bezier(0.32, 0.72, 0, 1) 0.1s forwards;
+}
+
+/* Das Haus gleitet mit der Linie zur aktuellen Station und bleibt dort. */
+@keyframes ps-hingleiten {
+  from { opacity: 0; transform: translateX(var(--ps-start, -48px)); }
+  25% { opacity: 1; }
+  to { opacity: 1; transform: translateX(0); }
+}
+.ps-haus {
+  opacity: 0;
+  animation: ps-hingleiten 1.2s cubic-bezier(0.32, 0.72, 0, 1) 0.1s forwards;
+}
+
+/* Erst nach dem Ankommen pulsiert die Station sanft. */
+@keyframes ps-puls {
+  0% { transform: scale(1); opacity: 0.35; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+.ps-puls {
+  opacity: 0;
+  animation: ps-puls 2.6s cubic-bezier(0.22, 1, 0.36, 1) 1.4s infinite;
+}
+
+@keyframes ps-auftauchen {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.ps-auftauchen {
+  opacity: 0;
+  animation: ps-auftauchen 0.6s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+.ps-gleiten {
+  transition: transform 0.55s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.ps-ohne-scrollleiste { scrollbar-width: none; }
+.ps-ohne-scrollleiste::-webkit-scrollbar { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ps-fuellen { animation: none; stroke-dashoffset: 0; }
+  .ps-haus { animation: none; opacity: 1; }
+  .ps-puls { animation: none; opacity: 0; }
+  .ps-auftauchen { animation: none; opacity: 1; }
+  .ps-gleiten { transition: none; }
+}
+
+/* Der Ausschnitt wächst oder schrumpft mit der sichtbaren Treppe. */
+.ps-gleiten-hoehe {
+  transition: height 0.55s cubic-bezier(0.32, 0.72, 0, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .ps-gleiten-hoehe { transition: none; }
+}

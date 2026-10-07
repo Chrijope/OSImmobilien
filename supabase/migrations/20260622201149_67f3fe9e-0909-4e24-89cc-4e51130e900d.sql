@@ -1,0 +1,6 @@
+DELETE FROM public.wohnungs_bilder WHERE wohnung_id IN (SELECT id FROM public.wohnungen WHERE objekt_id IN ('5c0c1451-c20e-48b6-a0cd-0803b3570237','174d1f70-c6c9-4945-adfc-e7f308678967','3a2acf71-aa02-4dbd-bf8c-be23ce9ff7e8'));
+DELETE FROM public.wohnungs_dokumente WHERE wohnung_id IN (SELECT id FROM public.wohnungen WHERE objekt_id IN ('5c0c1451-c20e-48b6-a0cd-0803b3570237','174d1f70-c6c9-4945-adfc-e7f308678967','3a2acf71-aa02-4dbd-bf8c-be23ce9ff7e8'));
+DELETE FROM public.wohnungen WHERE objekt_id IN ('5c0c1451-c20e-48b6-a0cd-0803b3570237','174d1f70-c6c9-4945-adfc-e7f308678967','3a2acf71-aa02-4dbd-bf8c-be23ce9ff7e8');
+DELETE FROM public.objekt_bilder WHERE objekt_id IN ('5c0c1451-c20e-48b6-a0cd-0803b3570237','174d1f70-c6c9-4945-adfc-e7f308678967','3a2acf71-aa02-4dbd-bf8c-be23ce9ff7e8');
+DELETE FROM public.objekt_dokumente WHERE objekt_id IN ('5c0c1451-c20e-48b6-a0cd-0803b3570237','174d1f70-c6c9-4945-adfc-e7f308678967','3a2acf71-aa02-4dbd-bf8c-be23ce9ff7e8');
+DELETE FROM public.objekte WHERE id IN ('5c0c1451-c20e-48b6-a0cd-0803b3570237','174d1f70-c6c9-4945-adfc-e7f308678967','3a2acf71-aa02-4dbd-bf8c-be23ce9ff7e8');

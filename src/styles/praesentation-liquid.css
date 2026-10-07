@@ -1,0 +1,330 @@
+/*
+  Die Beratungspraesentationen und die Moderation in Liquid Glass.
+
+  Betrifft:
+    * `/beratungspraesentation`, `/beratungspraesentation-moreimmo` und
+      `/beratungspraesentation-wg`. Ihre aeussere Huelle traegt
+      `data-praesentation="beratung"` (dazu `data-lg="seite"`, siehe unten).
+    * die Inhalte der Moderation unter `/praesentation-uebung`, also Skript,
+      Sprechtexte und Erfassungsfelder. Ihr Inhaltsbereich traegt
+      `data-praesentation="moderation"`.
+
+  Nicht betroffen:
+    * die Folien selbst. Die Buehnen des Vorabbogens und des Kennenlernbogens
+      sind bewusst dunkel, dieselben Folien wie unter
+      `/closing-praesentation-entwurf`, und bleiben so.
+    * Leiste und aeussere Huelle der Moderation. Die kommen aus der
+      gemeinsamen Schicht.
+
+  Warum eine eigene Datei und nicht `design-liquid.css`: Unterhalb des Hero
+  liegt jede Beratungspraesentation in `.beratung-apple` (index.css). Diese
+  Flaeche malt Grund, Streifen und Karten fest weiss und hellgrau an, zum Teil
+  mit `!important`, und deckt den bewegten Grund damit zu. Gegen
+  `!important` hilft nur `!important`, und die gemeinsame Schicht darf das
+  nicht (Waechter in `design-liquid.test.ts`). Dasselbe Muster wie
+  `components/landing/beraterMicroseiteLiquid.css`.
+
+  Huelle und Kopfleiste macht diese Datei NICHT selbst zu Glas. Das erledigen
+  die allgemeinen Regeln fuer `data-lg="seite"` und `data-lg="kopfscheibe"`
+  in der gemeinsamen Schicht; die Praesentationen tragen nur die Haken.
+
+  Farben kommen nur aus den Tokens der Glasschicht. Damit gelten deren
+  Ruecksichten von selbst mit: am Handy keine Weichzeichnung auf Karten und
+  dichtere Karten, ohne `backdrop-filter` fast deckend, bei "weniger
+  Transparenz" deckend, bei "weniger Bewegung" steht der Grund.
+
+  Hell und dunkel:
+    * Kopfleiste, Hero, Fusszeile und die Moderation folgen beiden Modi.
+    * `.beratung-apple` ist auch im Dunkeln eine helle Flaeche, so war sie
+      gebaut. Glas gibt es dort deshalb nur im Hellen; im Dunkeln bleibt sie
+      deckend wie bisher (Abschnitt 6).
+    * Die dunklen Abschnitte (`.beratung-dark`, `#kontakt`) behalten ihren
+      eigenen Hintergrund in beiden Modi.
+
+  Der PDF-Export (`lib/praesentationPdfExport.ts`) fotografiert eine Kopie, in
+  der `data-glas` auf `an` steht. Jede Regel hier haengt an
+  `data-glas="liquid"` und greift dort nicht: Das PDF bleibt, wie es war.
+
+  Keine Neigung, keine mitwandernde Zahl (Entscheidung vom 23.09.2026).
+  Alles in `@media screen`, gedruckt wird wie bisher.
+*/
+
+@media screen {
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   1. Kopfleiste
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Die Scheibe selbst kommt aus der gemeinsamen Schicht: Die Kopfleiste traegt
+  `data-lg="kopfscheibe"` wie die anderen Vollbildseiten. Hier steht nur,
+  was die Praesentationen zusaetzlich brauchen: Das aufgeklappte Handymenue
+  liegt in derselben Scheibe statt als deckender Streifen darunter.
+*/
+[data-glas="liquid"] [data-praesentation="beratung"] > header > .bg-background {
+  background: transparent;
+  border-top-color: var(--lg-haarlinie);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   2. Hero: die Titelkarte ueber dem Foto
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Die Karte liegt ueber einem Foto mit dunkler Abtoenung, nicht ueber dem
+  ruhigen Grund. Sie nimmt deshalb die dichte Stufe und noch etwas mehr:
+  Am Handy entfaellt die Weichzeichnung, dann darf ein dunkler Bildpunkt
+  unter der Grauschrift nicht unter 4,5:1 druecken.
+*/
+[data-glas="liquid"] [data-praesentation="beratung"] > #hero .rounded-3xl.bg-card {
+  background-color: hsl(var(--lg-glas) / calc(var(--lg-deckkraft-schwebend) + .08));
+  -webkit-backdrop-filter: var(--lg-filter-karte);
+  backdrop-filter: var(--lg-filter-karte);
+  border-color: var(--lg-kante);
+  box-shadow: var(--lg-innen), var(--lg-schatten-schwebend);
+}
+/* Das Logofeld wird eine Einlage in der Scheibe. */
+[data-glas="liquid"] [data-praesentation="beratung"] > #hero .rounded-3xl.bg-card .rounded-2xl.bg-muted {
+  background-color: hsl(var(--lg-glas) / var(--lg-deckkraft-einlage));
+  box-shadow: inset 0 1px 0 var(--lg-kante-oben), 0 0 0 .5px var(--lg-haarlinie);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   3. Fusszeile und schwebender Knopf
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+[data-glas="liquid"] [data-praesentation="beratung"] > footer {
+  background: transparent;
+  border-top-color: var(--lg-haarlinie);
+}
+
+/*
+  "Zur Selbstauskunft" unten rechts: die gewoelbte blaue Taste der
+  Glasschicht. Mit `--primary` selbst traegt weisse Schrift nur 4,45:1.
+*/
+[data-glas="liquid"] [data-praesentation="beratung"] > button.fixed.bg-primary {
+  background: linear-gradient(180deg, hsl(var(--lg-primaer-hoch)), hsl(var(--lg-primaer-tief)));
+  box-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / .32),
+    inset 0 -1px 0 hsl(0 0% 0% / .12),
+    0 6px 16px -8px hsl(var(--primary) / .7);
+}
+[data-glas="liquid"] [data-praesentation="beratung"] > button.fixed.bg-primary:hover {
+  filter: brightness(.94);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   4. Unter dem Hero: der Grund scheint durch (nur hell)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  `.beratung-apple` und ihre grauen Streifen werden durchsichtig. Die dunklen
+  Abschnitte tragen ihren Hintergrund als Inline-Stil oder mit eigener,
+  staerkerer Regel und bleiben dunkel.
+
+  Grauschrift braucht auf dem Grund die dunklere Stufe der Glasschicht
+  (215 16% 35%). `.beratung-apple` setzt ihr eigenes, helleres Grau; hier
+  zeigt es auf das Grau der Schicht, statt den Wert zu wiederholen.
+*/
+[data-glas="liquid"]:not(.dark) [data-praesentation="beratung"] .beratung-apple {
+  --b-ink-muted: var(--muted-foreground);
+  background: transparent;
+}
+[data-glas="liquid"]:not(.dark) [data-praesentation="beratung"] .beratung-apple section[class*="bg-muted"] {
+  background-color: transparent !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   5. Karten unter dem Hero (nur hell)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Die Form bleibt, wie `.beratung-apple` sie vorgibt (Rundung, Hover-Hub);
+  nur die Flaeche wird Glas.
+
+  Welche Flaeche Karte ist, steht ausdruecklich hier und ist nicht geraten
+  (Stand 24.09.2026, gemessen an den gerenderten Seiten):
+    * die Kaesten, die `.beratung-apple` heute weiss malt: gerundet
+      (`rounded-2xl`, `rounded-3xl`) und umrandet,
+    * umrandete, gerundete Kaesten mit weisser oder grauer Flaeche
+      (`bg-card`, `bg-background`, `bg-white`, `bg-muted…`).
+  Ausgenommen sind:
+    * Knoepfe, Felder und Pillen (nur `div`, `details`, `article`, `li`
+      zaehlen, `rounded-full` nie),
+    * alles in den dunklen Abschnitten und diese selbst,
+    * Flaechen mit eigener Farbe: dunkel (`bg-foreground…`), kraeftig blau
+      (`bg-primary`), feste Werte (`bg-[#…]`, Inline-Stil), Verlaeufe, die
+      `.beratung-apple` nicht schon weiss macht,
+    * das Handy-Modell im WG-Konzept (`rounded-[…]`).
+*/
+[data-glas="liquid"]:not(.dark) [data-praesentation="beratung"] .beratung-apple :is(div, details, article, li):is(
+  [class*="rounded-2xl"][class*="border"],
+  [class*="rounded-3xl"][class*="border"],
+  :is(.bg-card, .bg-background, .bg-white, [class*="bg-muted"])[class*="rounded-"][class*="border"]
+):not(
+  [class*="rounded-full"], [class*="rounded-["], .beratung-dark, [style*="background"],
+  [class*="bg-foreground"], .bg-primary, [class*="bg-[#"],
+  [class*="bg-gradient-to-"]:not([class*="rounded-2xl"], [class*="rounded-3xl"]),
+  :is(.beratung-dark, #kontakt) *
+) {
+  background-color: hsl(var(--lg-glas) / var(--lg-deckkraft)) !important;
+  background-image:
+    linear-gradient(var(--lg-ton-flaeche, transparent), var(--lg-ton-flaeche, transparent)),
+    radial-gradient(420px circle at 12% -30%, var(--lg-glanz), transparent 62%),
+    linear-gradient(180deg, var(--lg-glanz-oben), transparent 38%) !important;
+  -webkit-backdrop-filter: var(--lg-filter-karte);
+  backdrop-filter: var(--lg-filter-karte);
+  box-shadow: var(--lg-innen), var(--lg-schatten) !important;
+}
+
+/* Neutrale Raender werden zur Lichtkante, farbige Raender (Blau, Orange) bleiben. */
+[data-glas="liquid"]:not(.dark) [data-praesentation="beratung"] .beratung-apple :is(div, details, article, li)[class*="border-border"][class*="rounded-"]:not([class*="rounded-full"], [class*="rounded-["], :is(.beratung-dark, #kontakt) *) {
+  border-color: var(--lg-kante) !important;
+}
+
+/*
+  Blau getoente Kaesten (`bg-primary/5`, `bg-primary/10`) behalten ihre
+  Toenung, als Schicht ueber dem Glas wie getoente Karten in der
+  Glasschicht. Staerke aus dem Token, damit Text darauf 4,5:1 behaelt.
+*/
+[data-glas="liquid"]:not(.dark) [data-praesentation="beratung"] .beratung-apple [class*="bg-primary/"] {
+  --lg-ton-flaeche: hsl(var(--primary) / var(--lg-toenung));
+}
+
+/*
+  Glas in Glas: keine zweite Weichzeichnung, eine leichtere Einlage mit
+  Lichtkante. Dieselbe Regel wie in der Glasschicht.
+*/
+[data-glas="liquid"]:not(.dark) [data-praesentation="beratung"] .beratung-apple :is(div, details, article, li):is([class*="rounded-2xl"][class*="border"], [class*="rounded-3xl"][class*="border"], :is(.bg-card, .bg-background, .bg-white, [class*="bg-muted"])[class*="rounded-"][class*="border"]) :is(div, details, article, li):is(
+  [class*="rounded-2xl"][class*="border"],
+  [class*="rounded-3xl"][class*="border"],
+  :is(.bg-card, .bg-background, .bg-white, [class*="bg-muted"])[class*="rounded-"][class*="border"]
+):not([class*="rounded-full"], [class*="rounded-["], :is(.beratung-dark, #kontakt) *) {
+  background-color: hsl(var(--lg-glas) / var(--lg-deckkraft-einlage)) !important;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: inset 0 1px 0 var(--lg-kante-oben), 0 0 0 .5px var(--lg-haarlinie), 0 6px 16px -10px hsl(215 40% 20% / .18) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   6. Schrift auf Glas und Grund
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Blau als Schrift: Blau 700 wie `.text-primary` in der Glasschicht.
+  `.beratung-apple` schreibt Augenbrauen, Akzentwoerter der Ueberschriften
+  und die Vergleichszeilen in einem hellen Blau (204 100% 50%, auf Glas
+  unter 3:1) oder in Blau 600 (3,5:1). Der dunkle Kontaktabschnitt behaelt
+  sein helles Blau, das dort auf dunklem Grund steht, ebenso jede andere
+  dunkle oder kraeftig blaue Flaeche (`bg-foreground`, `bg-primary`, feste
+  Werte).
+
+  Gilt hell und dunkel: Im Dunkeln bleibt die Flaeche weiss, und
+  `--lg-schrift-blau` steht dort auf Blau 700 (siehe unten).
+*/
+[data-glas="liquid"] [data-praesentation="beratung"] .beratung-apple :is(
+  .text-primary.font-semibold.uppercase,
+  h2 .italic,
+  .bg-primary\/10.text-center
+):not(:is(.beratung-dark, #kontakt, [class*="bg-foreground"], .bg-primary, [class*="bg-[#"], [style*="background"]) *) {
+  color: hsl(var(--lg-schrift-blau)) !important;
+  -webkit-text-fill-color: hsl(var(--lg-schrift-blau)) !important;
+}
+
+/*
+  Die hervorgehobene Spalte der Vergleichstabelle (Moreimmo, "Warum
+  Immobilie") schreibt ihr Blau als Inline-Stil (#0A6EDB). Auf Glas ueber
+  zwei Wolken reicht es nicht ganz fuer 4,5:1, schon auf Weiss lag der Kopf
+  darunter. Die Zellen nehmen Blau 700.
+*/
+[data-glas="liquid"]:not(.dark) [data-praesentation="beratung"] .beratung-apple :is(td, th):is([style^="color:"], [style*="; color:"]):not(:is(.beratung-dark, #kontakt) *) {
+  color: hsl(var(--lg-schrift-blau)) !important;
+}
+
+/*
+  Abgeschwaechtes Grau (`text-muted-foreground/70`, `/80`, Quellenangaben
+  im WG-Marktlageteil) faellt auf Glas unter 4,5:1, auf Weiss lag es schon
+  knapp darunter. Auf Glas steht es voll deckend.
+*/
+[data-glas="liquid"]:not(.dark) [data-praesentation="beratung"] .beratung-apple [class*="text-muted-foreground/"]:not(:is(.beratung-dark, #kontakt, [class*="bg-foreground"], .bg-primary, [class*="bg-[#"], [style*="background"]) *) {
+  color: hsl(var(--muted-foreground));
+}
+
+/*
+  Im Dunkeln bleibt `.beratung-apple` eine helle, deckende Flaeche (siehe
+  oben). Die Glasschicht faerbt `.text-primary` im Dunkeln aber hellblau
+  (Blau 300), gedacht fuer dunkles Glas; auf der weissen Flaeche waeren das
+  1,9:1. Dasselbe galt schon vorher fuer die Akzentwoerter der
+  Ueberschriften, die `.beratung-apple` in `--primary` schreibt. Dort gilt
+  deshalb das Blau der hellen Schicht. Die dunklen Abschnitte darin bekommen
+  ihr helles Blau zurueck.
+*/
+[data-glas="liquid"].dark [data-praesentation="beratung"] .beratung-apple {
+  --lg-schrift-blau: 204 95% 34%;
+}
+[data-glas="liquid"].dark [data-praesentation="beratung"] .beratung-apple :is(.beratung-dark, #kontakt) {
+  --lg-schrift-blau: 204 100% 77%;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   7. Moderation: Skript, Sprechtexte, Erfassungsfelder
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  Die Skriptbausteine bringen eigene, umrandete Kaesten mit (Sprechtext,
+  Hinweis, Einwand, Feldgruppe), keine ui-Karten. Sie werden Glas, in hell
+  und dunkel, getoente Kaesten behalten ihre Toenung ueber dem Glas.
+  Ausgenommen: die Folienvorschau (dunkle Buehne), gestrichelte Platzhalter
+  und alles, was einen ui-Baustein-Haken traegt (ui-Karten macht die
+  Glasschicht selbst).
+*/
+[data-glas="liquid"] [data-praesentation="moderation"] :is(div, section, details, li)[class*="border"][class*="rounded-"]:not(
+  [class*="rounded-full"], [data-ui], .border-dashed, [class*="bg-[#"], [style*="background"],
+  [data-testid="uebungs-vorschau"], [data-testid="uebungs-vorschau"] *
+) {
+  background-color: hsl(var(--lg-glas) / var(--lg-deckkraft));
+  background-image:
+    linear-gradient(var(--lg-ton-flaeche, transparent), var(--lg-ton-flaeche, transparent)),
+    linear-gradient(180deg, var(--lg-glanz-oben), transparent 38%);
+  -webkit-backdrop-filter: var(--lg-filter-karte);
+  backdrop-filter: var(--lg-filter-karte);
+  border-color: var(--lg-ton-rand, var(--lg-kante));
+  box-shadow: var(--lg-innen), var(--lg-schatten);
+}
+
+/* Die Toenungen, genau die Klassen der Skriptbausteine (Stand 24.09.2026). */
+[data-glas="liquid"] [data-praesentation="moderation"] :is([class*="bg-primary/"], .bg-blue-50, [class*="bg-blue-50/"]) {
+  --lg-ton-flaeche: hsl(var(--primary) / var(--lg-toenung));
+  --lg-ton-rand: hsl(var(--primary) / .35);
+}
+[data-glas="liquid"] [data-praesentation="moderation"] :is(.bg-red-50, [class*="bg-red-50/"], [class*="bg-red-500/"], [class*="bg-destructive/"]) {
+  --lg-ton-flaeche: hsl(var(--destructive) / var(--lg-toenung));
+  --lg-ton-rand: hsl(var(--destructive) / .35);
+}
+[data-glas="liquid"] [data-praesentation="moderation"] :is(.bg-amber-50, [class*="bg-amber-50/"], [class*="bg-amber-500/"]) {
+  --lg-ton-flaeche: hsl(var(--warning) / var(--lg-toenung));
+  --lg-ton-rand: hsl(var(--warning) / .35);
+}
+[data-glas="liquid"] [data-praesentation="moderation"] :is(.bg-green-50, [class*="bg-green-50/"], .bg-emerald-50, [class*="bg-emerald-50/"], [class*="bg-emerald-500/"]) {
+  --lg-ton-flaeche: hsl(var(--success) / var(--lg-toenung));
+  --lg-ton-rand: hsl(var(--success) / .35);
+}
+
+/* Glas in Glas: in einer Karte oder einem anderen Kasten eine leichtere Einlage. */
+[data-glas="liquid"] [data-praesentation="moderation"] :is([data-ui="card"], [class*="border"][class*="rounded-"]:not([class*="rounded-full"])) :is(div, section, details, li)[class*="border"][class*="rounded-"]:not(
+  [class*="rounded-full"], [data-ui], .border-dashed, [class*="bg-[#"], [style*="background"],
+  [data-testid="uebungs-vorschau"], [data-testid="uebungs-vorschau"] *
+) {
+  background-color: hsl(var(--lg-glas) / var(--lg-deckkraft-einlage));
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: inset 0 1px 0 var(--lg-kante-oben), 0 0 0 .5px var(--lg-haarlinie), 0 6px 16px -10px hsl(215 40% 20% / .18);
+}
+[data-glas="liquid"].dark [data-praesentation="moderation"] :is([data-ui="card"], [class*="border"][class*="rounded-"]:not([class*="rounded-full"])) :is(div, section, details, li)[class*="border"][class*="rounded-"]:not(
+  [class*="rounded-full"], [data-ui], .border-dashed, [class*="bg-[#"], [style*="background"],
+  [data-testid="uebungs-vorschau"], [data-testid="uebungs-vorschau"] *
+) {
+  box-shadow: inset 0 1px 0 var(--lg-kante-oben), 0 0 0 .5px var(--lg-haarlinie), 0 8px 18px -10px hsl(0 0% 0% / .6);
+}
+
+} /* Ende @media screen */

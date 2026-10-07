@@ -1,0 +1,16 @@
+# Hinweis: Lovable wertet diese Datei derzeit nicht aus (geprüft am 26.09.2026,
+# die Live-Seite sendet keinen der Header unten). Sie greift erst bei einem
+# Hosting, das _headers kennt (etwa Netlify oder Cloudflare Pages).
+# Die Content-Security-Policy steht bewusst NUR in index.html als meta-Tag.
+# Eine zweite Fassung hier würde bei einem solchen Hosting zusätzlich gelten,
+# und der Browser ließe dann nur die Schnittmenge beider Regeln zu. Die alte
+# Fassung hier hätte so reCAPTCHA und das Meta-Pixel blockiert.
+# Test: src/lib/sicherheitsrichtlinie.test.ts
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  Permissions-Policy: camera=(), microphone=(), geolocation=(self), payment=()
+  Cross-Origin-Opener-Policy: same-origin
+  X-XSS-Protection: 1; mode=block

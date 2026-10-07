@@ -1,0 +1,1 @@
+GRANT EXECUTE ON FUNCTION public.consume_activation_token(uuid) TO service_role;

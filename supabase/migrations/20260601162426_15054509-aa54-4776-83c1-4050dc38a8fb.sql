@@ -1,0 +1,1 @@
+UPDATE public.profiles SET buchungslink = 'https://fantastical.app/Christian-Peetz/moreimmo-kooperationsgesprach' WHERE id = 'e81f0a13-0578-4456-9960-07be014d869c';

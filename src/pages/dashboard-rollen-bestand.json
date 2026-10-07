@@ -1,0 +1,141 @@
+{
+  "inhaber": [
+    "BewerberKpiCard",
+    "DashboardKopf",
+    "GeburtstageCard",
+    "HausverwaltungKpiCard",
+    "HelpdeskCard",
+    "KundenCard",
+    "LeadChart",
+    "MicroseiteCard",
+    "NoShowQuoteCard",
+    "PotenzialCard",
+    "ProvisionChart",
+    "QuickActions",
+    "SetterLeadOverviewCard",
+    "TeamUebersichtCard",
+    "UmsatzChart",
+    "WeeklyCallCard",
+    "WettbewerbCard",
+    "ZielplanungCard"
+  ],
+  "admin": [
+    "BewerberKpiCard",
+    "DashboardKopf",
+    "GeburtstageCard",
+    "HausverwaltungKpiCard",
+    "HelpdeskCard",
+    "KundenCard",
+    "LeadChart",
+    "MicroseiteCard",
+    "NoShowQuoteCard",
+    "PotenzialCard",
+    "ProvisionChart",
+    "QuickActions",
+    "SetterLeadOverviewCard",
+    "TeamUebersichtCard",
+    "UmsatzChart",
+    "WeeklyCallCard",
+    "WettbewerbCard",
+    "ZielplanungCard"
+  ],
+  "vertriebsleiter": [
+    "DashboardKopf",
+    "GeburtstageCard",
+    "HelpdeskCard",
+    "KundenCard",
+    "LeadChart",
+    "MicroseiteCard",
+    "NoShowQuoteCard",
+    "PotenzialCard",
+    "ProvisionChart",
+    "QuickActions",
+    "SetterLeadOverviewCard",
+    "TeamUebersichtCard",
+    "UmsatzChart",
+    "WeeklyCallCard",
+    "WettbewerbCard",
+    "ZielplanungCard"
+  ],
+  "vertriebspartner": [
+    "DashboardKopf",
+    "GeburtstageCard",
+    "KundenCard",
+    "LeadChart",
+    "MicroseiteCard",
+    "PotenzialCard",
+    "ProvisionChart",
+    "QuickActions",
+    "TeamUebersichtCard",
+    "UmsatzChart",
+    "WeeklyCallCard",
+    "WettbewerbCard",
+    "ZielplanungCard"
+  ],
+  "buchhaltung": [
+    "DashboardKopf",
+    "GeburtstageCard",
+    "ProvisionChart"
+  ],
+  "finanzierungspartner": [
+    "FinanzierungspartnerDashboard"
+  ],
+  "objektpartner": [
+    "ObjektpartnerDashboard"
+  ],
+  "hausverwaltung": [
+    "DashboardKopf",
+    "GeburtstageCard",
+    "HausverwaltungKpiCard"
+  ],
+  "individuell": [
+    "DashboardKopf",
+    "GeburtstageCard",
+    "KundenCard",
+    "LeadChart",
+    "PotenzialCard",
+    "ProvisionChart",
+    "UmsatzChart",
+    "WettbewerbCard",
+    "ZielplanungCard"
+  ],
+  "setterin": [
+    "DashboardKopf",
+    "GeburtstageCard",
+    "NoShowQuoteCard",
+    "SetterLeadOverviewCard",
+    "SetterMeineLeadsCard",
+    "SetterPipelineCard",
+    "UeberfaelligeFollowUpsCard",
+    "VernachlaessigteLeadsCard"
+  ],
+  "backoffice": [
+    "DashboardKopf",
+    "GeburtstageCard",
+    "HelpdeskCard",
+    "KundenCard",
+    "LeadChart",
+    "NoShowQuoteCard",
+    "PotenzialCard",
+    "ProvisionChart",
+    "SetterLeadOverviewCard",
+    "UmsatzChart"
+  ],
+  "hr": [
+    "BewerberKpiCard",
+    "DashboardKopf",
+    "GeburtstageCard"
+  ],
+  "marketing": [
+    "DashboardKopf",
+    "GeburtstageCard"
+  ],
+  "versicherungsexperte": [
+    "DashboardKopf",
+    "GeburtstageCard"
+  ],
+  "testaccount": [
+    "DashboardKopf",
+    "GeburtstageCard"
+  ]
+}

@@ -1,0 +1,1 @@
+ALTER TABLE public.objekte ADD COLUMN IF NOT EXISTS bodenrichtwert numeric DEFAULT 0;

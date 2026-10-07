@@ -1,0 +1,11 @@
+DELETE FROM public.aufgaben WHERE kontakt_id = '2970f89a-4fa3-4621-b518-71ee85e3ec7f';
+DELETE FROM public.anrufe WHERE kontakt_id = '2970f89a-4fa3-4621-b518-71ee85e3ec7f';
+DELETE FROM public.emails WHERE kontakt_id = '2970f89a-4fa3-4621-b518-71ee85e3ec7f';
+DELETE FROM public.pipeline WHERE kontakt_id = '2970f89a-4fa3-4621-b518-71ee85e3ec7f';
+DELETE FROM public.signature_requests WHERE kontakt_id = '2970f89a-4fa3-4621-b518-71ee85e3ec7f';
+DELETE FROM public.activation_tokens WHERE kontakt_id = '2970f89a-4fa3-4621-b518-71ee85e3ec7f';
+DELETE FROM public.sa_fill_tokens WHERE kontakt_id = '2970f89a-4fa3-4621-b518-71ee85e3ec7f';
+DELETE FROM public.mobile_scan_sessions WHERE kontakt_id = '2970f89a-4fa3-4621-b518-71ee85e3ec7f';
+DELETE FROM public.sales_coach_aufnahmen WHERE kontakt_id = '2970f89a-4fa3-4621-b518-71ee85e3ec7f';
+DELETE FROM public.dsgvo_deletion_log WHERE kontakt_id = '2970f89a-4fa3-4621-b518-71ee85e3ec7f';
+DELETE FROM public.kontakte WHERE id = '2970f89a-4fa3-4621-b518-71ee85e3ec7f';

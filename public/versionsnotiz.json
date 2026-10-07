@@ -1,0 +1,2677 @@
+[
+  {
+    "nr": 1,
+    "datum": "2026-09-26",
+    "art": "neu",
+    "titel": "deine persönliche Handbuch-Seite",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter"
+    ],
+    "kurztext": "Interessenten beantworten auf deiner Handbuch-Seite sechs kurze Fragen und bekommen sofort ihr persönliches Immobilienhandbuch mit ihrem Rahmen.",
+    "wasHeisstDasFuerDich": [
+      "Wer über deinen eigenen Link kommt, landet als Lead direkt bei dir unter Alle Kontakte.",
+      "Im Kundenprofil siehst du den Rahmen, die Antworten auf die sechs Fragen und den aktuellen Stand.",
+      "Du kannst den Link teilen, ohne vorher etwas vorzubereiten.",
+      "Die Seite gibt es auch auf Englisch, umschaltbar oben in der Kopfleiste. Handbuch, PDF und Mail kommen dann ebenfalls auf Englisch.",
+      "Nach dem Handbuch füllen Interessenten die normale Selbstauskunft aus, dieselbe wie über „An Kunde senden“."
+    ],
+    "soFindestDuEs": "Seitenleiste, Tools, Handbuch-Seite",
+    "kritisch": false
+  },
+  {
+    "nr": 2,
+    "datum": "2026-09-26",
+    "art": "geaendert",
+    "titel": "Lead-Verwaltung: schneller zuweisen",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "setterin"
+    ],
+    "kurztext": "Zuweisen und Papierkorb stehen jetzt direkt in jeder Zeile. Ein eigener Reiter zeigt die Leads aus der Handbuch-Seite.",
+    "wasHeisstDasFuerDich": [
+      "Du weist einen Lead mit einem Klick in seiner Zeile zu, ohne ihn erst zu öffnen.",
+      "Im Reiter Handbuch-Seite siehst du je Lead den Rahmen und den Stand.",
+      "Unterschreibt ein Handbuch-Lead ohne Partner seine Selbstauskunft, bekommst du eine Glocke. Dann gleich zuweisen, der Partner kann direkt mit der Objektvorstellung starten.",
+      "Als Vertriebsleitung siehst du auch die Handbuch-Leads ohne Partner und kannst Leads in den Papierkorb legen. Im Papierkorb kannst du sie auch endgültig löschen, wie Admin und Inhaber."
+    ],
+    "soFindestDuEs": "Seitenleiste, Lead-Verwaltung",
+    "kritisch": false
+  },
+  {
+    "nr": 3,
+    "datum": "2026-09-26",
+    "art": "geaendert",
+    "titel": "Tippgeber-Portal: Kontaktdaten und Einverständnis Pflicht",
+    "zielrollen": [
+      "tippgeber",
+      "vertriebspartner",
+      "admin"
+    ],
+    "kurztext": "Wer eine Empfehlung einträgt, muss nur noch Vorname, Nachname, E-Mail und Telefon angeben und per Häkchen bestätigen, dass die Person mit der Weitergabe ihrer Kontaktdaten einverstanden ist. Die Fragen zur finanziellen Situation sind freiwillig.",
+    "wasHeisstDasFuerDich": [
+      "Eine Empfehlung ist schneller abgeschickt, nichts blockiert mehr wegen einer offenen Frage.",
+      "Rechne damit, dass manche Empfehlungen ohne Angaben zu Einkommen oder Eigenkapital ankommen. Die klärst du im Erstgespräch.",
+      "Als Tippgeber setzt du vor dem Absenden ein Häkchen: Die empfohlene Person ist mit der Weitergabe ihrer Kontaktdaten einverstanden. Frag sie also vorher.",
+      "Als Partner siehst du im Kundenprofil im Tippgeber-Bereich, wann das Einverständnis bestätigt wurde."
+    ],
+    "soFindestDuEs": "Tippgeber-Portal, Neuen Kontakt empfehlen",
+    "kritisch": false
+  },
+  {
+    "nr": 4,
+    "datum": "2026-09-26",
+    "art": "geaendert",
+    "titel": "Selbstauskunft: Abschluss erst, wenn alle Unterschriften da sind",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner"
+    ],
+    "kurztext": "Stehen zwei Personen in der Selbstauskunft, ist sie erst abgeschlossen, wenn beide unterschrieben haben. Eine neue Fassung wird über einen neuen Link nachunterschrieben.",
+    "wasHeisstDasFuerDich": [
+      "Im Kundenprofil siehst du, wenn die zweite Person noch nicht unterschrieben hat, und kannst ihr die Anfrage direkt schicken.",
+      "Ändert sich etwas an einer fertigen Selbstauskunft, schickst du einen neuen Link. Die alte Fassung bleibt als Nachweis erhalten.",
+      "Wird eine fertige Selbstauskunft korrigiert, gilt sie bis zur neuen Unterschrift nicht mehr als erledigt. Im Kundenprofil steht dann „Neue Unterschrift ausstehend“.",
+      "Nach der letzten Unterschrift liegt die unterschriebene Selbstauskunft als PDF am Investment. „PDF anzeigen“ öffnet genau diese Datei."
+    ],
+    "soFindestDuEs": "Kundenprofil, Selbstauskunft",
+    "kritisch": false
+  },
+  {
+    "nr": 5,
+    "datum": "2026-09-26",
+    "art": "geaendert",
+    "titel": "Jede Nacht automatisch abgemeldet",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "setterin",
+      "backoffice",
+      "buchhaltung",
+      "marketing",
+      "hr",
+      "hausverwaltung",
+      "objektpartner",
+      "finanzierungspartner",
+      "versicherungsexperte",
+      "individuell",
+      "testaccount"
+    ],
+    "kurztext": "Aus Sicherheitsgründen meldet das CRM alle Vertriebspartner und das Team jede Nacht um 03:30 Uhr ab. Morgens meldest du dich einfach neu an.",
+    "wasHeisstDasFuerDich": [
+      "Speichere abends offene Eingaben, bevor du den Rechner verlässt. Nach 03:30 Uhr gehen ungespeicherte Eingaben verloren.",
+      "Das Häkchen „Angemeldet bleiben“ gibt es nicht mehr, weil es nichts bewirkt hat.",
+      "Du arbeitest morgens automatisch mit dem neuesten Stand des CRM."
+    ],
+    "soFindestDuEs": "Anmeldeseite, jeden Morgen",
+    "kritisch": false
+  },
+  {
+    "nr": 6,
+    "datum": "2026-09-26",
+    "art": "neu",
+    "titel": "Aufgabe für Handbuch-Leads mit Selbstauskunft",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner"
+    ],
+    "kurztext": "Hat ein Lead von der Handbuch-Seite seine Selbstauskunft unterschrieben und einen zuständigen Partner, bekommt dieser automatisch die Aufgabe „Objekt-Vorstellungstermin vereinbaren“.",
+    "wasHeisstDasFuerDich": [
+      "Als Partner findest du die Aufgabe sofort in deiner Inbox und im Kundenprofil unter „Offene Aufgaben“, fällig am selben Tag.",
+      "Solange sie offen ist, zeigt die Ampel hinter dem Namen Handlungsbedarf.",
+      "Weist die Leitung den Lead jemand anderem zu, wandert die offene Aufgabe mit. Es entsteht keine zweite.",
+      "Geht der Lead zurück in den Pool, schließt das CRM die Aufgabe. Bei der nächsten Zuteilung entsteht sie neu.",
+      "Andere Leads sind davon nicht betroffen."
+    ],
+    "soFindestDuEs": "Inbox und Kundenprofil, Offene Aufgaben",
+    "kritisch": false
+  },
+  {
+    "nr": 7,
+    "datum": "2026-09-26",
+    "art": "geaendert",
+    "titel": "Mails an nicht erreichte Leads: nur noch drei, vom Partner",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "setterin"
+    ],
+    "kurztext": "Ein Lead, den ihr telefonisch nicht erreicht, bekommt nur noch nach dem 1., 4. und 10. Versuch eine Mail, immer im Namen des zuständigen Partners. Die automatische Bestätigungsmail an neue Leads entfällt.",
+    "wasHeisstDasFuerDich": [
+      "Bei allen anderen Versuchen geht keine Mail raus, ab dem Beratungsgespräch gar keine.",
+      "Absender und Unterschrift ist immer der zuständige Partner, auch wenn die Setterin anruft. Antworten und Terminwünsche landen bei ihm. Ohne Partner schreibt das MOREImmo Team.",
+      "Hinterlege deinen Buchungslink in den Einstellungen, dann steht er in der ersten Mail.",
+      "Wechselt der Partner, beginnt die Folge für den Lead von vorn.",
+      "Bei der Zuweisung und beim Eingang über deine Mikroseite bekommt der Lead keine automatische Mail mehr. Glocke und Mail an dich bleiben."
+    ],
+    "soFindestDuEs": "Kundenprofil, Anruf notieren, Ergebnis „Nicht erreicht“",
+    "kritisch": false
+  },
+  {
+    "nr": 8,
+    "datum": "2026-09-26",
+    "art": "geaendert",
+    "titel": "Anrufen öffnet sofort „Anruf notieren“",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "setterin",
+      "backoffice"
+    ],
+    "kurztext": "Jeder Klick auf Anrufen im Kundenprofil öffnet gleich das Anruf-Protokoll, damit kein Gespräch undokumentiert bleibt.",
+    "wasHeisstDasFuerDich": [
+      "Wähle das Ergebnis aus. Hat ein Gespräch stattgefunden, ist die Zusammenfassung Pflicht. Bei „Nicht erreicht“, Mailbox und falschen Daten bleibt sie freiwillig.",
+      "Die Rückruf-Aufgabe ist schon mit passender Fälligkeit vorbereitet. Legst du selbst eine an, entfällt die automatische Nachfass-Aufgabe.",
+      "Schließt du das Fenster nach einem Anruf ohne Protokoll, fragt das CRM kurz nach."
+    ],
+    "soFindestDuEs": "Kundenprofil, Anrufen",
+    "kritisch": false
+  },
+  {
+    "nr": 9,
+    "datum": "2026-09-26",
+    "art": "neu",
+    "titel": "Kampagne im Kundenprofil und in der Statistik",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "marketing"
+    ],
+    "kurztext": "Du siehst jetzt, aus welcher Werbekampagne ein Lead kam, und in der Statistik, was jede Kampagne bringt.",
+    "wasHeisstDasFuerDich": [
+      "Im Kundenprofil steht die Kampagne direkt bei der Quelle.",
+      "Die Statistik zeigt je Kampagne Leads, Termine, Reservierungen und Abschlüsse, filterbar nach Quelle.",
+      "Erfasst wird die Kampagne aus Meta-Anzeigen, von den öffentlichen Seiten und aus dem Formular der Partnerseite."
+    ],
+    "soFindestDuEs": "Kundenprofil, Quelle/Lead. Statistiken, Reiter Quellen & Online-Rechner, Kampagnen",
+    "kritisch": false
+  },
+  {
+    "nr": 10,
+    "datum": "2026-09-26",
+    "art": "geaendert",
+    "titel": "Bewerbermails: persönlicher und seltener",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "hr"
+    ],
+    "kurztext": "Mails an Bewerber kommen jetzt im Namen der HR-Ansprechpartnerin, und Bewerber bekommen insgesamt weniger Mails.",
+    "wasHeisstDasFuerDich": [
+      "Antworten von Bewerbern landen bei der HR-Ansprechpartnerin.",
+      "Die Mail „Bewerber nicht erreicht“ geht nur noch nach dem 1. und 5. Versuch.",
+      "Die Erinnerungen zum Kennenlernbogen kommen an Tag 3 und Tag 11, die Mail an Tag 8 entfällt. Eine Sammelmail startet die Erinnerungen nicht mehr neu.",
+      "Nach der Bewerbung sehen Bewerber einen Hinweis, im Spam-Ordner nach unserer Mail zu schauen."
+    ],
+    "soFindestDuEs": "Seitenleiste, Bewerberprozess",
+    "kritisch": false
+  },
+  {
+    "nr": 11,
+    "datum": "2026-09-26",
+    "art": "neu",
+    "titel": "Neu im CRM: Änderungen auf einen Blick",
+    "zielrollen": [
+      "alle"
+    ],
+    "kurztext": "Unter News & Updates zeigt der Filter „Neu im CRM“, was sich im CRM geändert hat und was das für deine Rolle heißt. Neue CRM-Stände laden von selbst.",
+    "wasHeisstDasFuerDich": [
+      "Du siehst nur die Einträge, die deine Rolle betreffen. Ungelesene zählt die Seitenleiste mit.",
+      "Der Streifen für eine neue Version entfällt. Das CRM lädt beim nächsten Seitenwechsel still neu, nie mitten im Videogespräch.",
+      "Nur wenn Neuladen wirklich nötig ist, erscheint „Bitte kurz neu laden“."
+    ],
+    "soFindestDuEs": "Seitenleiste, News & Updates, Filter Neu im CRM",
+    "kritisch": false
+  },
+  {
+    "nr": 12,
+    "datum": "2026-09-26",
+    "art": "neu",
+    "titel": "Neue Präsentation zu den Kundentypen",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "setterin"
+    ],
+    "kurztext": "Die Präsentation zu den Kundentypen ist neu aufgebaut und steht im Hausdesign bereit.",
+    "wasHeisstDasFuerDich": [
+      "Nutze sie in der Beratung, um mit dem Kunden einzuordnen, welcher Anlagetyp er ist.",
+      "Die bisherige Fassung ist ersetzt, du findest nur noch die neue."
+    ],
+    "soFindestDuEs": "Seitenleiste, Unterlagen, Beratung, Kundentypen",
+    "kritisch": false
+  },
+  {
+    "nr": 13,
+    "datum": "2026-09-26",
+    "art": "neu",
+    "titel": "Glocke, wenn ein Kunde seine Selbstauskunft ändern möchte",
+    "zielrollen": [
+      "vertriebspartner",
+      "admin",
+      "inhaber",
+      "vertriebsleiter"
+    ],
+    "kurztext": "Fordert ein bekannter Kunde auf der Handbuch-Seite die Selbstauskunft an, obwohl sie schon unterschrieben vorliegt, bekommst du die Glocke „Kunde möchte seine Selbstauskunft aktualisieren“.",
+    "wasHeisstDasFuerDich": [
+      "Als zuständiger Partner meldest du dich beim Kunden. Er hat per Mail erfahren, dass sich sein Ansprechpartner bei ihm meldet.",
+      "Hat der Kunde noch keinen Partner, geht die Glocke an Admin, Inhaber und Vertriebsleitung."
+    ],
+    "soFindestDuEs": "Glocke oben rechts, von dort ins Kundenprofil",
+    "kritisch": false
+  },
+  {
+    "nr": 14,
+    "datum": "2026-09-26",
+    "art": "behoben",
+    "titel": "Duplikate zusammenführen: der ältere Kontakt bleibt",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "backoffice",
+      "setterin",
+      "vertriebspartner"
+    ],
+    "kurztext": "Beim Zusammenführen von Duplikaten bleibt jetzt immer der ältere Kontakt, und alles vom neueren wandert zu ihm, bevor der neuere in den Papierkorb geht.",
+    "wasHeisstDasFuerDich": [
+      "Investments, Aufgaben, Verlauf, Dokumente, Unterschriften, Termine und der Portalzugang gehen nicht mehr verloren.",
+      "Leere Felder des älteren werden gefüllt. Weicht etwas ab, bleibt der ältere Wert und der andere steht als Notiz im Verlauf.",
+      "Die Rückfrage zeigt dir vorher, welcher Kontakt bleibt und welcher in den Papierkorb geht, jeweils mit Anlagedatum.",
+      "Auch die Dateien des neueren wandern in die Ordner des älteren. Wer den Portalzugang übernimmt, sieht sie im Kundenportal. Gibt es einen Dateinamen schon, bekommt die übernommene Datei den Zusatz „aus MI-Nummer“, nichts wird überschrieben."
+    ],
+    "soFindestDuEs": "Alle Kontakte oder Lead-Verwaltung, Hinweis Duplikat-Gruppen, Zusammenführen",
+    "kritisch": false
+  },
+  {
+    "nr": 15,
+    "datum": "2026-09-27",
+    "art": "geaendert",
+    "titel": "Mail-Tracking zählt den Link, nicht mehr das Öffnen",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "hr",
+      "vertriebsleiter",
+      "vertriebspartner"
+    ],
+    "kurztext": "Mails zur Selbstauskunft und alle Mails an Bewerber tragen kein unsichtbares Zählbild mehr. Gezählt wird nur noch, ob der persönliche Link aus der Mail aufgerufen wurde.",
+    "wasHeisstDasFuerDich": [
+      "Bei der Selbstauskunft im Kundenprofil gibt es kein „E-Mail geöffnet“ mehr. Maßgeblich ist „Link geöffnet“: Der Kunde hat die Selbstauskunft über den Knopf in der Mail aufgerufen.",
+      "In der Bewerberliste, im Closing, im Verlauf und im Vertragsreiter steht jetzt „Link geöffnet“ oder „Link noch nicht geöffnet“. Grau heißt nicht, dass die Mail ungelesen ist.",
+      "Ältere „geöffnet“-Vermerke aus dem Zählbild werden nicht mehr angezeigt. Ein ausgefüllter Bogen zählt weiter als Beleg."
+    ],
+    "soFindestDuEs": "Kundenprofil, Karte Online-Selbstauskunft; Bewerbermanagement, Briefsymbol in der Liste und in der Akte",
+    "kritisch": false
+  },
+  {
+    "nr": 16,
+    "datum": "2026-09-27",
+    "art": "geaendert",
+    "titel": "Bewerberprozess jetzt auch für das Backoffice",
+    "zielrollen": [
+      "backoffice",
+      "hr",
+      "admin",
+      "inhaber"
+    ],
+    "kurztext": "Bewerbungen und den Bewerberprozess sehen jetzt genau vier Rollen: HR, Admin, Inhaber und Backoffice. Alle anderen Rollen haben keinen Zugriff mehr auf Bewerberdaten, auch nicht über die Datenbank.",
+    "wasHeisstDasFuerDich": [
+      "Im Backoffice findest du den Bewerberprozess jetzt in der Seitenleiste und kannst Bewerber bearbeiten, Mails verschicken und Verträge versenden wie HR.",
+      "Vertriebspartner, Vertriebsleitung, Setterin, Buchhaltung und Marketing sehen keine Bewerbungen, Fragebögen, Vertragsdateien oder Partnerverträge mehr.",
+      "Die Glocke und die Inbox-Einträge zu Bewerbern bekommt weiterhin nur HR."
+    ],
+    "soFindestDuEs": "Seitenleiste, Bewerberprozess",
+    "kritisch": false
+  },
+  {
+    "nr": 17,
+    "datum": "2026-09-27",
+    "art": "geaendert",
+    "titel": "Meta Pixel: Einwilligung je Partner, Firmenadresse nötig",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner"
+    ],
+    "kurztext": "Dein Meta Pixel lädt auf deiner Partnerseite nur noch, wenn der Besucher es dort ausdrücklich für dich erlaubt. Der Hinweis nennt dich dabei mit Firmenname und Firmenadresse.",
+    "wasHeisstDasFuerDich": [
+      "Hinterlege im Profil unter Gewerbedaten Straße, PLZ und Ort. Ohne Firmenadresse lädt dein Pixel nicht, in den Einstellungen unter Meta Pixel steht dann ein Hinweis.",
+      "Eine allgemeine Zustimmung auf anderen Seiten zählt für dein Pixel nicht. Besucher werden auf deiner Seite einmal neu gefragt, deshalb kann die Zahl der gemeldeten Besuche anfangs sinken.",
+      "Im Fuß deiner Mikroseite und deiner Handbuch-Seite steht, dass du und MOREImmo gemeinsam für das Pixel verantwortlich seid.",
+      "An Meta gemeldet wird nur auf deinen eigenen Seiten. Das Ergebnis des Handbuchs und die Selbstauskunft mit persönlichem Link bleiben ohne Pixel."
+    ],
+    "soFindestDuEs": "Einstellungen, Profil, Gewerbedaten und Einstellungen, Meta Pixel",
+    "kritisch": false
+  },
+  {
+    "nr": 18,
+    "datum": "2026-09-27",
+    "art": "geaendert",
+    "titel": "Eigenes Meta Pixel nur mit Anlage 4",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner"
+    ],
+    "kurztext": "Neue Partner können ein eigenes Meta Pixel nur nutzen, wenn ihr Vertrag die Anlage 4 zur gemeinsamen Verantwortung enthält. Wer heute schon ein Pixel hinterlegt hat, behält es.",
+    "wasHeisstDasFuerDich": [
+      "Hast du bereits ein Pixel eingetragen, läuft es weiter wie bisher.",
+      "Neue Partner bekommen die Anlage 4 mit dem Vertrag. Erst wenn der Vertrag unterschrieben und gegengezeichnet ist, lädt ihr Pixel.",
+      "Leerst du das Feld Meta Pixel und speicherst, werden Pixel-ID und Token gemeinsam gelöscht. Ein neues Pixel geht danach nur noch mit Anlage 4."
+    ],
+    "soFindestDuEs": "Einstellungen, Meta Pixel",
+    "kritisch": false
+  },
+  {
+    "nr": 19,
+    "datum": "2026-09-27",
+    "art": "geaendert",
+    "titel": "Gegenzeichnung: neuer Link über Erinnern",
+    "zielrollen": [
+      "hr",
+      "admin",
+      "inhaber",
+      "backoffice"
+    ],
+    "kurztext": "Den Link zur Gegenzeichnung eines Partnervertrags bekommt nur noch der Gegenzeichner per Mail und Glocke. Ältere offene Links werden einmalig erneuert.",
+    "wasHeisstDasFuerDich": [
+      "Liegt ein Vertrag noch zur Gegenzeichnung offen, drücke im Vertrags-Reiter einmal Erneut an Kurz erinnern. Der alte Link funktioniert dann nicht mehr.",
+      "Wird ein Vertrag neu verschickt, gilt nur noch die neueste Fassung. Eine ältere Gegenzeichnung wird abgelehnt.",
+      "Ein Testversand ändert den Stand der Bewerbung nicht mehr."
+    ],
+    "soFindestDuEs": "Bewerberprozess, Bewerbung, Reiter Vertrag",
+    "kritisch": false
+  },
+  {
+    "nr": 20,
+    "datum": "2026-09-27",
+    "art": "behoben",
+    "titel": "Systemmails gehen wieder raus",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "backoffice",
+      "hr"
+    ],
+    "kurztext": "Seit dem Abend des 26.09. wurden Mails, die das CRM selbst verschickt, teilweise nicht zugestellt, zum Beispiel ein neuer Link zur Selbstauskunft. Das ist behoben.",
+    "wasHeisstDasFuerDich": [
+      "Hast du seit dem 26.09. abends einen Link oder eine Mail aus dem CRM verschickt und eine Fehlermeldung bekommen, schick sie bitte noch einmal.",
+      "Klappt ein Versand nicht, sagt die Meldung jetzt verständlich, woran es liegt."
+    ],
+    "soFindestDuEs": "Kundenprofil, Selbstauskunft, Neuen Link senden",
+    "kritisch": false
+  },
+  {
+    "nr": 21,
+    "datum": "2026-09-27",
+    "art": "geaendert",
+    "titel": "Meta Pixel nicht mehr auf der Selbstauskunft",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner"
+    ],
+    "kurztext": "Dein Meta Pixel lädt auf deiner Handbuch-Seite und im Konfigurator, aber nicht mehr auf der Selbstauskunft. Dort werden Finanzdaten eingegeben.",
+    "wasHeisstDasFuerDich": [
+      "Meta zählt Besuche deiner Seite und des Konfigurators weiter, das Ausfüllen der Selbstauskunft nicht mehr.",
+      "Wie viele Selbstauskünfte über deine Seite kommen, siehst du weiter im CRM."
+    ],
+    "soFindestDuEs": "Einstellungen, Meta Pixel",
+    "kritisch": false
+  },
+  {
+    "nr": 22,
+    "datum": "2026-09-27",
+    "art": "behoben",
+    "titel": "Objektauswahl: Wohnort aus den Kontaktdaten",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "backoffice"
+    ],
+    "kurztext": "Die Objektauswahl nimmt den Wohnort jetzt aus den Kontaktdaten. Korrigierst du dort die Adresse, rechnet sie die Entfernung zu den Objekten mit der neuen Adresse.",
+    "wasHeisstDasFuerDich": [
+      "Stand bei einem Kunden „Wohnort nicht gefunden“, obwohl die Adresse stimmt, lade die Seite einmal neu.",
+      "Klickst du in der Objektauswahl auf eine Einheit und gehst dann zurück, landest du direkt bei der Objektauswahl dieses Investments. Sie wird kurz orange umrandet."
+    ],
+    "soFindestDuEs": "Kundenprofil, Investment, Objektauswahl",
+    "kritisch": false
+  },
+  {
+    "nr": 23,
+    "datum": "2026-09-27",
+    "art": "neu",
+    "titel": "Deine Handbuch-Seite für alle Partner",
+    "zielrollen": [
+      "vertriebspartner"
+    ],
+    "kurztext": "Die Handbuch-Seite steht jetzt in der Seitenleiste unter Tools. Dort findest du deinen persönlichen Link zum Immobilienhandbuch und siehst, was aus deinen Aufrufen und Anfragen wird.",
+    "wasHeisstDasFuerDich": [
+      "Teile deinen persönlichen Link, etwa per WhatsApp, Mail oder in Social Media. Interessenten beantworten sechs Fragen, bekommen ihr Handbuch und können direkt die Selbstauskunft ausfüllen.",
+      "Wer über deinen Link kommt, landet als Lead bei dir.",
+      "Unten auf der Seite siehst du nur deine eigenen Zahlen, keine der anderen Partner."
+    ],
+    "soFindestDuEs": "Seitenleiste, Tools, Handbuch-Seite",
+    "kritisch": false
+  },
+  {
+    "nr": 24,
+    "datum": "2026-09-27",
+    "art": "geaendert",
+    "titel": "Handbuch-Seite spricht Interessenten mit Sie an",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner"
+    ],
+    "kurztext": "Die Handbuch-Seite, der Fragebogen, das Ergebnis, das PDF-Handbuch und die Mail dazu siezen jetzt, passend zur Website more.immo. Die Grafik zeigt das Handbuch als gebundenes Heft.",
+    "wasHeisstDasFuerDich": [
+      "Wer deinen Handbuch-Link öffnet, wird durchgehend mit Sie angesprochen.",
+      "Im CRM selbst bleibt es beim Du."
+    ],
+    "soFindestDuEs": "Seitenleiste, Tools, Handbuch-Seite, persönlicher Link",
+    "kritisch": false
+  },
+  {
+    "nr": 25,
+    "datum": "2026-09-27",
+    "art": "behoben",
+    "titel": "Termine kurz nach Mitternacht",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "backoffice",
+      "setterin"
+    ],
+    "kurztext": "Zwischen 0 und 2 Uhr nachts hat das CRM beim Anlegen eines Termins den Vortag als heute vorgeschlagen und dann gemeldet, der Termin müsse in der Zukunft liegen. Das ist behoben.",
+    "wasHeisstDasFuerDich": [
+      "Termine, Follow-ups und Erinnerungen stimmen jetzt auch spät in der Nacht mit dem richtigen Tag."
+    ],
+    "soFindestDuEs": "Kundenprofil, Schnellaktionen Termin und Follow-up",
+    "kritisch": false
+  },
+  {
+    "nr": 26,
+    "datum": "2026-09-27",
+    "art": "geaendert",
+    "titel": "Meeting: Kunde wählt selbst im eigenen Kalender",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "backoffice",
+      "setterin",
+      "inhaber",
+      "hr"
+    ],
+    "kurztext": "Beim Meeting im Kundenprofil kannst du den Kunden selbst einen Termin in deinem eigenen Kalender wählen lassen, etwa über Calendly. Der interne Videocall ist nicht mehr Teil des CRM für dich.",
+    "wasHeisstDasFuerDich": [
+      "Hinterlege deinen Kalenderlink im Profil, dann erscheint im Meeting „Kunde wählt selbst“ mit „Mein Kalender“.",
+      "Der Kunde bekommt einen Link zur Terminseite, bucht in deinem Kalender und bestätigt den Termin. Er landet automatisch im Kundenprofil.",
+      "Videocall, Buchungskalender und Buchungslinks für Videotermine sind aus der Seitenleiste verschwunden."
+    ],
+    "soFindestDuEs": "Kundenprofil, Meeting, Kunde wählt selbst",
+    "kritisch": false
+  },
+  {
+    "nr": 27,
+    "datum": "2026-09-28",
+    "art": "geaendert",
+    "titel": "Handbuch-Seite fürs Handy",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner"
+    ],
+    "kurztext": "Deine Handbuch-Seite, die sechs Fragen, das Ergebnis und das PDF sind jetzt für Handys angepasst. Die meisten Interessenten öffnen deinen Link am Handy.",
+    "wasHeisstDasFuerDich": [
+      "Nichts ragt mehr über den Rand, Knöpfe und Schrift sind groß genug zum Tippen und Lesen.",
+      "Nach jeder Antwort im Konfigurator steht die nächste Frage gleich sichtbar oben.",
+      "Im PDF ist keine Schrift mehr winzig, lange Angaben laufen nicht mehr ineinander.",
+      "Aus Instagram, Facebook, TikTok oder LinkedIn heraus öffnet sich zum Speichern des PDFs das Teilen-Menü."
+    ],
+    "soFindestDuEs": "Seitenleiste, Tools, Handbuch-Seite, deinen Link am Handy öffnen",
+    "kritisch": false
+  },
+  {
+    "nr": 28,
+    "datum": "2026-09-28",
+    "art": "geaendert",
+    "titel": "Sicherheitscode wie am iPhone",
+    "zielrollen": [
+      "alle"
+    ],
+    "kurztext": "Den 6-stelligen Code aus deiner Authenticator-App tippst du jetzt in sechs einzelne Felder, wie beim Entsperren am iPhone.",
+    "wasHeisstDasFuerDich": [
+      "Nach der sechsten Ziffer wird der Code sofort geprüft, ein Klick auf Bestätigen ist nicht mehr nötig.",
+      "Du kannst den Code auch komplett einfügen, am iPhone schlägt die Tastatur ihn direkt vor.",
+      "Ist der Code falsch, schüttelt die Reihe kurz und du tippst einfach neu.",
+      "Am Schutz ändert sich nichts: Die Zwei-Faktor-Anmeldung bleibt für alle internen Rollen Pflicht."
+    ],
+    "soFindestDuEs": "Beim Anmelden und unter Einstellungen, Sicherheit",
+    "kritisch": false
+  },
+  {
+    "nr": 29,
+    "datum": "2026-09-28",
+    "art": "geaendert",
+    "titel": "Investmentkalkulation: Unterlagen als Gegenprobe",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "backoffice"
+    ],
+    "kurztext": "Die Investmentkalkulation startet wie bisher mit den hinterlegten Zahlen der Einheit. Die Unterlagen dienen jetzt als Gegenprobe, und du siehst genau, was übernommen wurde.",
+    "wasHeisstDasFuerDich": [
+      "Leere Felder füllt die Kalkulation weiter automatisch. In der Liste unter Objektunterlagen steht dann „Automatisch übernommen“ mit der Quelle, per „Zurücknehmen“ machst du es rückgängig.",
+      "Bestätigt eine Unterlage einen hinterlegten Wert, siehst du „stimmt mit den hinterlegten Daten überein“.",
+      "Weicht eine Unterlage ab, wird nichts überschrieben. Du siehst „Hinterlegt“ und „laut Quelle“ nebeneinander und entscheidest selbst.",
+      "Mietverträge werden nur noch als Faktenauszug ohne Namen gelesen. Unter dem Feld steht dann „Aus Mietvertrag der Einheit, Faktenauszug“.",
+      "Auf der Einheitenseite bleiben deine Annahmen erhalten, wenn du den Reiter wechselst."
+    ],
+    "soFindestDuEs": "Investmentrechner, Bereich Objektunterlagen",
+    "kritisch": false
+  },
+  {
+    "nr": 30,
+    "datum": "2026-09-28",
+    "art": "geaendert",
+    "titel": "Selbstauskunft: Kreditangaben vollständig",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "backoffice",
+      "finanzierungspartner"
+    ],
+    "kurztext": "In der Selbstauskunft müssen Kredite jetzt so vollständig angegeben werden, wie der Finanzierer sie braucht. Person 2 hat dieselben Felder wie Person 1.",
+    "wasHeisstDasFuerDich": [
+      "Je nach Kreditart sind Bank, Ursprungskredit, Zins, Vertragsbeginn, Zinsbindung, Zweck und Restschuld mit Stichtag Pflicht. Ohne sie geht es nicht weiter, fehlende Felder werden markiert.",
+      "Beim Immobilienkredit kommen Zinsart und die Zuordnung zur Immobilie dazu, Sondertilgung ist freiwillig.",
+      "Gibt der Kunde eine Immobilie an, aber keinen Kredit dafür, fragt die Selbstauskunft nach: noch abbezahlt oder schuldenfrei. Bei schuldenfrei steht das im PDF für die Bank.",
+      "Person 2 hat jetzt auch die Kreditdetails und das Immobilienvermögen, mit dem Feld Kreditnehmer.",
+      "Die ausfüllbare PDF für den Papierweg hat dieselben Angaben, mit eigenen Zeilen für Person 2. Lädst du eine am Computer ausgefüllte PDF hoch, kommt alles davon in die Selbstauskunft. Ältere ausgefüllte PDFs werden weiter gelesen.",
+      "Schon abgeschickte Selbstauskünfte bleiben gültig, die Pflicht greift erst beim nächsten Absenden."
+    ],
+    "soFindestDuEs": "Selbstauskunft, Schritt Ausgaben und Schritt Vermögenswerte",
+    "kritisch": false
+  },
+  {
+    "nr": 31,
+    "datum": "2026-09-28",
+    "art": "neu",
+    "titel": "Support-Tickets: du erfährst sofort von einer Antwort",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "backoffice",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "objektpartner",
+      "finanzierungspartner",
+      "hausverwaltung",
+      "versicherungsexperte",
+      "hr"
+    ],
+    "kurztext": "Antwortet der Support auf dein Ticket, bekommst du eine Glocke und eine Mail mit Knopf direkt ins Ticket. An „Support kontaktieren“ zeigt eine Zahl, wie viele Antworten du noch nicht gelesen hast.",
+    "wasHeisstDasFuerDich": [
+      "Die Glocke und der Knopf in der Mail öffnen genau das Ticket mit der Antwort.",
+      "Neue Antworten erscheinen sofort im offenen Ticket, du musst es nicht neu öffnen.",
+      "Tickets mit ungelesener Antwort sind unter „Meine Tickets“ markiert. Sobald du das Ticket öffnest, gilt es als gelesen.",
+      "Pro Ticket kommt höchstens eine Mail in 15 Minuten, auch wenn der Support mehrmals schreibt.",
+      "Für Backoffice und Geschäftsleitung: Antworten stehen jetzt als „MOREImmo Support“ mit deinem Vornamen im Ticket. Mit „Antwort erneut melden“ im Helpdesk meldest du eine frühere Antwort nachträglich.",
+      "Gleichzeitige Nachrichten gehen nicht mehr verloren."
+    ],
+    "soFindestDuEs": "Seitenleiste, Support kontaktieren",
+    "kritisch": false
+  },
+  {
+    "nr": 32,
+    "datum": "2026-09-28",
+    "art": "behoben",
+    "titel": "Kontakte an die Zentrale zurückgeben geht wieder",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "admin",
+      "inhaber",
+      "backoffice"
+    ],
+    "kurztext": "Unter „Alle Kontakte“ markierst du deine Kontakte und gibst sie mit einem Grund an die Zentrale zurück. Das ging seit einigen Tagen nicht mehr.",
+    "wasHeisstDasFuerDich": [
+      "Jede Zeile hat wieder ein Auswahlkästchen, auch „Alle markieren“ funktioniert.",
+      "Ein Kontakt in der Wartezeit nach „Nicht erreicht“ lässt sich trotzdem zurückgeben. Die Wartezeit gilt nur fürs Anrufen, unter der Telefonnummer steht, ab wann der nächste Anruf geht.",
+      "Im Fenster gibst du einen Grund an, für alle markierten Kontakte oder je Kontakt einzeln. Ohne Grund geht nichts zurück.",
+      "Danach siehst du, wie viele Kontakte zurückgegangen sind und welche nicht.",
+      "Hat ein Kunde schon reserviert, weist dich das Fenster vorher darauf hin.",
+      "Vertriebsleiter können jetzt ebenfalls an die Zentrale zurückgeben.",
+      "Für die Zentrale: Jeder zurückgegebene Kontakt steht in der Lead-Verwaltung als Rückläufer, mit Grund und bisherigem Betreuer, auch ein Kontakt, den der Partner selbst angelegt hat. Unter „Alle Kontakte“ findest du ihn mit dem Filter „Ohne Vertriebspartner“.",
+      "Für die Zentrale: Jede Rückgabe meldet sich einmal per Glocke bei Admin, Inhaber und Backoffice, mit Grund und den Kunden, die schon reserviert haben.",
+      "Hat ein Kunde keinen Zuständigen, gehen Hinweise wie „Dokumente vollständig“ oder „Reservierung eingegangen“ an die Zentrale und nicht mehr an alle Vertriebspartner."
+    ],
+    "soFindestDuEs": "Alle Kontakte, Kontakte markieren, Knopf „An die Zentrale zurückgeben“",
+    "kritisch": false
+  },
+  {
+    "nr": 33,
+    "datum": "2026-09-28",
+    "art": "geaendert",
+    "titel": "Investmentkalkulation direkt als PDF herunterladen",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "backoffice",
+      "finanzierungspartner"
+    ],
+    "kurztext": "Der Knopf „Berechnung herunterladen“ speichert die Berechnungsansicht jetzt mit denselben Seiten wie in der Vorschau und einem zusätzlichen Deckblatt im Haus-Design, ohne Druckfenster.",
+    "wasHeisstDasFuerDich": [
+      "Ein Klick speichert die sichtbaren Berechnungsseiten als PDF in der Sprache des Kunden.",
+      "Vor den unveränderten Berechnungsseiten steht nur ein zusätzliches Deckblatt im Haus-Design.",
+      "Die Tabellen und Diagramme sehen aus wie in der Berechnungsansicht.",
+      "Im Dateinamen stehen Objekt, Einheit und Datum, kein Kundenname."
+    ],
+    "soFindestDuEs": "Einheit, Reiter Investmentkalkulation, oben „Berechnung herunterladen“",
+    "kritisch": false
+  },
+  {
+    "nr": 34,
+    "datum": "2026-09-28",
+    "art": "behoben",
+    "titel": "Zuordnung über die Kennung statt über den Namen",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "setterin",
+      "backoffice"
+    ],
+    "kurztext": "Kontakte, Leads, Glocken und Provisionen werden jetzt über die Kennung der Person zugeordnet. Zwei Nutzer mit gleichem Namen werden nicht mehr verwechselt.",
+    "wasHeisstDasFuerDich": [
+      "Übergaben, Glocken und Abrechnungen gehen immer an die richtige Person, auch wenn zwei Nutzer gleich heißen.",
+      "Gibt es einen Namen mehrfach und fehlt die Kennung, ordnet das CRM nichts zu und weist darauf hin, statt zu raten.",
+      "„Lead neu zuweisen“ im Setter-Ablauf übergibt den Lead jetzt wirklich an den neuen Partner. Klappt das Speichern nicht, siehst du einen Hinweis statt einer Erfolgsmeldung.",
+      "An den Abläufen selbst ändert sich nichts."
+    ],
+    "soFindestDuEs": "Überall, wo Kontakte zugeordnet werden",
+    "kritisch": false
+  },
+  {
+    "nr": 35,
+    "datum": "2026-09-28",
+    "art": "neu",
+    "titel": "Notizen als Favorit anpinnen",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "backoffice",
+      "finanzierungspartner",
+      "setterin"
+    ],
+    "kurztext": "Im Kundenprofil kannst du wichtige Notizen mit einem Stern anpinnen. Sie stehen dann im Verlauf ganz oben.",
+    "wasHeisstDasFuerDich": [
+      "Klick auf den Stern an einer Notiz: Sie wandert in den Abschnitt „Angepinnt“ oben im Verlauf. Ein zweiter Klick löst sie wieder.",
+      "Angepinnte Notizen sieht jeder, der den Kunden sieht.",
+      "Beim Löschen eines Eintrags siehst du jetzt alles auf einen Blick, lange Texte zeigen drei Zeilen mit „mehr“.",
+      "Im CSV-Export der Notizen gibt es die Spalte „Favorit“."
+    ],
+    "soFindestDuEs": "Kundenprofil, rechte Leiste, Reiter „Notizen“",
+    "kritisch": false
+  },
+  {
+    "nr": 36,
+    "datum": "2026-09-28",
+    "art": "neu",
+    "titel": "Kunden in einem neuen Tab öffnen",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "backoffice",
+      "setterin",
+      "finanzierungspartner"
+    ],
+    "kurztext": "In „Alle Kontakte“, der Lead-Verwaltung und „Meine Leads“ öffnest du einen Kunden auch in einem neuen Tab, und die Liste bleibt offen.",
+    "wasHeisstDasFuerDich": [
+      "Rechtsklick auf den Namen und „Link in neuem Tab öffnen“, oder Mittelklick, oder Strg bzw. Cmd beim Klicken halten.",
+      "Oder das kleine Symbol neben dem Namen: Es öffnet den Kunden direkt in einem neuen Tab.",
+      "Ein normaler Klick auf die Zeile öffnet den Kunden wie bisher im selben Tab.",
+      "Vor „Angelegt am“ steht kein Kalender-Symbol mehr."
+    ],
+    "soFindestDuEs": "Alle Kontakte, Lead-Verwaltung, Meine Leads",
+    "kritisch": false
+  },
+  {
+    "nr": 37,
+    "datum": "2026-09-28",
+    "art": "geaendert",
+    "titel": "Handbuch: direkt in die Selbstauskunft",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "backoffice"
+    ],
+    "kurztext": "Kunden springen von der Handbuch-Ergebnisseite und aus dem Handbuch-PDF direkt in die Selbstauskunft, ohne ein zweites Kontaktformular.",
+    "wasHeisstDasFuerDich": [
+      "Die Selbstauskunft hängt am Lead aus dem Handbuch. Beim Abschicken wird dieser Lead aktualisiert, es entsteht kein zweiter Kontakt.",
+      "Ist die Adresse des Kunden schon bekannt, bekommt er seinen persönlichen Link per E-Mail.",
+      "Der Link im PDF erlaubt nur das Ausfüllen. Gespeicherte Angaben zeigt er nicht, auch nicht bei einem weitergeleiteten PDF.",
+      "Liegt die Selbstauskunft schon unterschrieben vor, sieht der Kunde das statt eines neuen Formulars."
+    ],
+    "soFindestDuEs": "Handbuch-Seite, Ergebnisseite, Rubrik Selbstauskunft",
+    "kritisch": false
+  },
+  {
+    "nr": 38,
+    "datum": "2026-09-28",
+    "art": "neu",
+    "titel": "Die Suche findet jetzt das ganze CRM",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "tippgeber",
+      "setterin",
+      "backoffice",
+      "finanzierungspartner",
+      "objektpartner",
+      "hausverwaltung",
+      "versicherungsexperte",
+      "hr",
+      "buchhaltung",
+      "marketing"
+    ],
+    "kurztext": "Die Suche oben im Menü findet neben Kontakten und Objekten jetzt auch alle Seiten und Reiter, die du öffnen darfst.",
+    "wasHeisstDasFuerDich": [
+      "Tipp zum Beispiel „Statistik“, „Handbuch“, „Provision“ oder „Passwort“, und du landest direkt auf der Seite oder dem passenden Reiter.",
+      "Du siehst nur, was deine aktive Rolle öffnen darf, genau wie in der Seitenleiste.",
+      "Mit Strg+K, auf dem Mac Cmd+K, öffnest du die Suche von überall. Pfeiltasten und Enter wählen den Treffer.",
+      "Ohne Eingabe zeigt sie deine zuletzt besuchten Seiten. Umlaute, Groß- und Kleinschreibung und kleine Tippfehler verzeiht sie."
+    ],
+    "soFindestDuEs": "Suchfeld oben im Menü",
+    "kritisch": false
+  },
+  {
+    "nr": 39,
+    "datum": "2026-09-28",
+    "art": "geaendert",
+    "titel": "Glocken ohne Zuständigen gehen an die Leitung",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "backoffice"
+    ],
+    "kurztext": "Hat ein Kunde keinen Zuständigen, gehen Hinweise wie „Dokumente vollständig“, „Reservierung eingegangen“ oder eine fertige Selbstauskunft an Admin, Inhaber und Vertriebsleitung.",
+    "wasHeisstDasFuerDich": [
+      "Vertriebsleitung: Du bekommst jetzt die Glocken zu Kunden ohne Zuständigen, damit du sie zuteilen kannst.",
+      "Backoffice: Diese Glocken bekommst du nicht mehr. Die Rückgabe an die Zentrale meldet sich weiter bei dir.",
+      "Mit Zuständigem ändert sich nichts, die Glocke geht nur an ihn. An alle Vertriebspartner geht nie eine Glocke mit Kundennamen."
+    ],
+    "soFindestDuEs": "Glocke oben rechts",
+    "kritisch": false
+  },
+  {
+    "nr": 40,
+    "datum": "2026-09-29",
+    "art": "geaendert",
+    "titel": "Terminseite zeigt den Kunden",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "backoffice"
+    ],
+    "kurztext": "Öffnest du im Kundenprofil „Meeting“, steht links jetzt der Kunde mit Telefon und E-Mail, auch wenn du danach den Kalender öffnest.",
+    "wasHeisstDasFuerDich": [
+      "Name, Telefon und E-Mail des Kunden kannst du anklicken oder kopieren, zum Beispiel für eine Buchung in Calendly.",
+      "Die Gesprächsarten stehen mit richtigen Umlauten da.",
+      "Der Link, den du dem Kunden schickst, zeigt ihm wie bisher dich als Ansprechpartner und keine Kundendaten."
+    ],
+    "soFindestDuEs": "Kundenprofil, Kontaktdaten, „Meeting“",
+    "kritisch": false
+  },
+  {
+    "nr": 41,
+    "datum": "2026-09-29",
+    "art": "geaendert",
+    "titel": "Glocken nur zu deinen eigenen Kunden",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "setterin",
+      "backoffice"
+    ],
+    "kurztext": "Glocken zu einem Kunden bekommt nur, wem er gerade zugewiesen ist. Wechselt der Kunde, gehen auch geplante Erinnerungen an den neuen Zuständigen.",
+    "wasHeisstDasFuerDich": [
+      "Gibst du einen Kontakt an die Zentrale zurück, bekommen Admin, Inhaber und Vertriebsleitung eine Glocke, du selbst keine.",
+      "Hängt die Leitung einen Kunden von dir zu einem anderen Partner um, erfährst du das per Glocke. Der neue Partner bekommt „Neuer Lead zugewiesen“.",
+      "Erinnerungen, zum Beispiel zum Notartermin oder zu fehlenden Unterlagen, gehen immer an den aktuell Zuständigen, ohne Zuständigen an die Leitung.",
+      "Ein verschobener oder abgesagter Termin meldet sich beim aktuell Zuständigen des Kunden."
+    ],
+    "soFindestDuEs": "Glocke oben rechts",
+    "kritisch": false
+  },
+  {
+    "nr": 42,
+    "datum": "2026-09-29",
+    "art": "behoben",
+    "titel": "Selbstauskunft: Bonitätsfragen ohne Vorbelegung",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "setterin",
+      "backoffice"
+    ],
+    "kurztext": "Mahnverfahren und Schufa sind nicht mehr mit Nein vorbelegt und müssen für beide Personen aktiv beantwortet werden. Bereits abgeschickte Selbstauskünfte bleiben gültig.",
+    "wasHeisstDasFuerDich": [
+      "Fehlt eine Antwort, markiert das Formular die Frage rot und lässt erst weiter, wenn sie beantwortet ist.",
+      "Nach dem Einreichen bleibt auf dem Gerät deines Kunden kein Entwurf mit seinen Daten zurück.",
+      "Kundentexte sprechen jetzt einheitlich von „Ihrem Berater“."
+    ],
+    "soFindestDuEs": "Selbstauskunft, Schritt „Sonstige Angaben“",
+    "kritisch": false
+  },
+  {
+    "nr": 43,
+    "datum": "2026-09-29",
+    "art": "geaendert",
+    "titel": "Objektauswahl: vorerst nur Objekt eintragen",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "backoffice",
+      "finanzierungspartner"
+    ],
+    "kurztext": "In der Objektauswahl deines Investments trägst du das Objekt vorerst selbst ein. Empfehlungen und die Liste der freien Einheiten kommen, sobald der Bereich Objekte für deine Rolle freigeschaltet ist.",
+    "wasHeisstDasFuerDich": [
+      "Unter „Objektauswahl“ siehst du nur noch „Objekt eintragen“.",
+      "Sobald der Menüpunkt „Objekte“ links für deine Rolle freigeschaltet ist, erscheinen dort auch die Empfehlungen für deinen Kunden."
+    ],
+    "soFindestDuEs": "Kundenprofil, Investment, Stufe „Objektauswahl“",
+    "kritisch": false
+  },
+  {
+    "nr": 44,
+    "datum": "2026-09-29",
+    "art": "behoben",
+    "titel": "Reservieren auf der Objektseite geht wieder",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "backoffice"
+    ],
+    "kurztext": "Seit dem 23.09. meldete die Objektseite bei fast allen Kunden „SA-Unterschrift fehlt“, obwohl die Selbstauskunft unterschrieben war. Reservieren war dadurch blockiert. Das ist behoben.",
+    "wasHeisstDasFuerDich": [
+      "Ist die Selbstauskunft deines Kunden unterschrieben, kannst du auf der Objektseite wieder reservieren.",
+      "Vorgänge mit unterschriebener Selbstauskunft rücken beim Eintragen des Objekts wieder von selbst auf „Objektauswahl“ vor."
+    ],
+    "soFindestDuEs": "Objekte, Einheit, Reservieren",
+    "kritisch": true
+  },
+  {
+    "nr": 45,
+    "datum": "2026-09-29",
+    "art": "geaendert",
+    "titel": "Objekt eintragen: offene Pflichtfelder orange umrandet",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "backoffice"
+    ],
+    "kurztext": "Beim Objekt eintragen siehst du sofort, was noch fehlt. Jedes offene Pflichtfeld ist orange umrandet, wie in der Selbstauskunft.",
+    "wasHeisstDasFuerDich": [
+      "Sobald du ein Pflichtfeld ausfüllst, verschwindet der Rahmen.",
+      "Die Angaben zum Verkäufer bleiben freiwillig und ohne Rahmen."
+    ],
+    "soFindestDuEs": "Kundenprofil, Investment, Objektauswahl, „Objekt eintragen“",
+    "kritisch": false
+  },
+  {
+    "nr": 46,
+    "datum": "2026-09-29",
+    "art": "geaendert",
+    "titel": "Investment: Kästen offen, zwei klappbar",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "backoffice"
+    ],
+    "kurztext": "Im Kundenprofil unter Investments stehen die Bereiche offen, von der Objektauswahl bis zum Kundenordner. Nur „Beratungsgespräch vereinbaren“ und „Erstgesprächs-Skript“ sind beim Öffnen zugeklappt und lassen sich aufklappen.",
+    "wasHeisstDasFuerDich": [
+      "Im Erstgesprächs-Skript zeigt ein oranger Rahmen mit „wird übernommen“, welche Antworten das CRM selbst weiterverwendet. Wer mit einem eigenen Skript telefoniert, trägt diese Angaben dort ein.",
+      "Beim Selbstfinanzierer sind die Bonitätsunterlagen eingeklappt und lassen sich über „Unterlagen anzeigen“ öffnen."
+    ],
+    "soFindestDuEs": "Kundenprofil, Investments",
+    "kritisch": false
+  },
+  {
+    "nr": 47,
+    "datum": "2026-09-29",
+    "art": "geaendert",
+    "titel": "Objekte nur mit freigeschaltetem Menüpunkt",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "backoffice",
+      "finanzierungspartner"
+    ],
+    "kurztext": "Die Objektverwaltung öffnest du nur noch, wenn der Punkt „Objekte“ in deiner Seitenleiste steht. Alte Links und die Suche führen sonst nicht mehr dorthin.",
+    "wasHeisstDasFuerDich": [
+      "Die globale Suche zeigt dir vorerst keine Objekte.",
+      "Ein Objekt für deinen Kunden trägst du im Investment unter „Objektauswahl“ ein."
+    ],
+    "soFindestDuEs": "Seitenleiste, sobald „Objekte“ für deine Rolle freigeschaltet ist",
+    "kritisch": false
+  },
+  {
+    "nr": 48,
+    "datum": "2026-09-29",
+    "art": "geaendert",
+    "titel": "Objekt eintragen statt Objektbereich",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "backoffice",
+      "finanzierungspartner"
+    ],
+    "kurztext": "Der Objektbereich ist vorerst nur für die Verwaltung, auch die Objektanlage und der Einheitenspiegel. Als Vertriebspartner trägst du das Objekt im Kundenprofil ein.",
+    "wasHeisstDasFuerDich": [
+      "Weg: Kundenprofil, Investment, Objektauswahl, „Objekt eintragen“. Danach geht es mit der Reservierung weiter.",
+      "Glocken führen nicht mehr in Bereiche, die du nicht öffnen kannst."
+    ],
+    "soFindestDuEs": "Kundenprofil, Investment, Objektauswahl",
+    "kritisch": false
+  },
+  {
+    "nr": 49,
+    "datum": "2026-09-29",
+    "art": "behoben",
+    "titel": "Kundenprofil zeigt gespeicherte Angaben wieder überall",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "backoffice"
+    ],
+    "kurztext": "Reservierungsdatum, RV-Unterschrift, Termine im Ampel-Badge und Aftersales-Status erscheinen wieder. Die Reservierung übernimmt IBAN und Familienstand aus der Selbstauskunft.",
+    "wasHeisstDasFuerDich": [
+      "Vor dem Wechsel des Notartermin-Modus fragt das CRM nach, bevor ein Termin oder Vorschläge gelöscht werden.",
+      "Eine Reservierung gibt es nur mit eingetragenem Objekt und unterschriebener Selbstauskunft, das prüft jetzt auch der Server.",
+      "Nach einer Korrektur der Selbstauskunft wartet die Reservierung, bis dein Kunde neu unterschrieben hat."
+    ],
+    "soFindestDuEs": "Kundenprofil, Investment",
+    "kritisch": false
+  },
+  {
+    "nr": 50,
+    "datum": "2026-09-29",
+    "art": "behoben",
+    "titel": "Meeting erstellen funktioniert wieder",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "backoffice"
+    ],
+    "kurztext": "Im Kundenprofil blieb der Knopf „Meeting erstellen“ grau, weil der Dialog eine Zoom-Verbindung verlangte. Zoom ist dort jetzt entfernt.",
+    "wasHeisstDasFuerDich": [
+      "Du trägst Thema, Datum, Uhrzeit und das Investment ein, und der Termin steht in der Kundenakte und auf der gewählten Pipeline-Kachel.",
+      "Eine Einladungsmail verschickt dieser Dialog nicht, die Terminerinnerungen an deinen Kunden laufen wie gewohnt."
+    ],
+    "soFindestDuEs": "Kundenprofil, Schnellaktion „Meeting“",
+    "kritisch": false
+  },
+  {
+    "nr": 51,
+    "datum": "2026-09-29",
+    "art": "behoben",
+    "titel": "Terminseite: ehrliche Fehlermeldungen",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner"
+    ],
+    "kurztext": "Klappt das Bestätigen auf der Terminseite nicht, sagt die Seite jetzt ehrlich, dass es erneut versucht werden muss, und erkennt eine kurze Verbindungsstörung.",
+    "wasHeisstDasFuerDich": [
+      "In deiner eigenen Ansicht aus dem Kundenprofil steht zusätzlich ein technischer Hinweis, den du an den Support weitergeben kannst.",
+      "Klappt es nicht, trägst du den Termin bitte selbst über „Meeting“ im Kundenprofil ein."
+    ],
+    "soFindestDuEs": "Kundenprofil, Meeting, Terminseite öffnen",
+    "kritisch": false
+  },
+  {
+    "nr": 52,
+    "datum": "2026-09-29",
+    "art": "geaendert",
+    "titel": "Zoom ist aus dem CRM verschwunden",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "backoffice"
+    ],
+    "kurztext": "Termine laufen über deinen Buchungskalender und den Videoraum. Nur der Weekly Sales Call bleibt bei Zoom.",
+    "wasHeisstDasFuerDich": [
+      "Die Einladung an den Kunden heißt jetzt Einladung zum Videogespräch.",
+      "Die Zoom-Hintergrundbilder für Marketing findest du weiter unter Unterlagen."
+    ],
+    "soFindestDuEs": "Kundenprofil, Meeting",
+    "kritisch": false
+  },
+  {
+    "nr": 53,
+    "datum": "2026-09-29",
+    "art": "geaendert",
+    "titel": "Provisionssatz wird bei der Reservierung festgeschrieben",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "backoffice"
+    ],
+    "kurztext": "Dein Provisionssatz aus der Nutzerverwaltung wird festgeschrieben, sobald dein Kunde reserviert. Wird der Kunde danach einem anderen Partner zugewiesen, gilt dessen Satz.",
+    "wasHeisstDasFuerDich": [
+      "Provisionssätze und Karrierestufe ändern nur Admin und Inhaber in der Nutzerverwaltung.",
+      "Vor der Reservierung wird nichts festgeschrieben."
+    ],
+    "soFindestDuEs": "Abrechnungen",
+    "kritisch": false
+  },
+  {
+    "nr": 54,
+    "datum": "2026-09-29",
+    "art": "behoben",
+    "titel": "Mehr Schutz für Unterschriften, Aftersales schließt wieder ab",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "backoffice"
+    ],
+    "kurztext": "Unterschriftsanfragen entstehen nur noch über die vorgesehenen Abläufe, und du siehst nur die Anfragen deiner eigenen Kunden.",
+    "wasHeisstDasFuerDich": [
+      "Die Aftersales-Beratung schließt nach der Kundenunterschrift wieder richtig ab: Das PDF liegt in den Unterlagen, und du bekommst die Glocke.",
+      "„Link erneut senden“ läuft wie gewohnt über den Knopf in der Karte."
+    ],
+    "soFindestDuEs": "Kundenprofil, Investment, Aftersales",
+    "kritisch": false
+  },
+  {
+    "nr": 55,
+    "datum": "2026-09-29",
+    "art": "geaendert",
+    "titel": "Terminseite nur für dich, jede Gesprächsart mit eigenem Termin",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner"
+    ],
+    "kurztext": "Die Terminseite öffnet sich nur noch für dich, angemeldet und nur für deine eigenen Links. Jede Gesprächsart bekommt ihren eigenen Eintrag in der Akte.",
+    "wasHeisstDasFuerDich": [
+      "Ein Beratungsgespräch überschreibt nicht mehr das Erstgespräch. „Zeit korrigieren“ gilt nur für dieselbe Gesprächsart.",
+      "„Gehört zu“ ist bei mehreren Investments Pflicht, das gewählte Investment rückt in der Pipeline vor.",
+      "„Terminseite öffnen“ kopiert keinen Link mehr in die Zwischenablage."
+    ],
+    "soFindestDuEs": "Kundenprofil, Meeting, Termin festlegen, Terminseite öffnen",
+    "kritisch": false
+  },
+  {
+    "nr": 56,
+    "datum": "2026-09-29",
+    "art": "neu",
+    "titel": "Statistik: Lead-Zuweisung je Partner",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter"
+    ],
+    "kurztext": "Der neue Reiter Lead-Zuweisung zeigt dir je Vertriebspartner, wie viele Leads die Zentrale ihm zugewiesen hat, wo sie heute stehen und wie viele er an die Zentrale zurückgegeben hat.",
+    "wasHeisstDasFuerDich": [
+      "Je Partner aufklappbar mit jedem einzelnen Lead, Zuweisungsdatum, Stand heute, Rückgabedatum und Grund, mit Link ins Kundenprofil.",
+      "Die Zahlen reichen bis zum 09.07.2026 zurück."
+    ],
+    "soFindestDuEs": "Statistiken, Reiter Lead-Zuweisung",
+    "kritisch": false
+  },
+  {
+    "nr": 57,
+    "datum": "2026-09-29",
+    "art": "geaendert",
+    "titel": "Leadpaket und Kontaktarten klarer",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "backoffice"
+    ],
+    "kurztext": "In den Kontaktlisten steht Eigenkontakt nur noch bei Kontakten, die du selbst angelegt hast. Alle anderen heißen Lead der Gesellschaft.",
+    "wasHeisstDasFuerDich": [
+      "Neue Vertragsfassung 2026-09-29 für neue Verträge: Der Betrag eines Leadpakets heißt Paketpreis. Wir setzen ihn innerhalb eines Monats für Werbung ein, du bekommst die Leads nach Eingang, fehlende werden nachgeliefert.",
+      "Bestehende Verträge bleiben unverändert.",
+      "Die alte Unterlage zu Lead-Paketen und das Lead-Playbook-PDF sind entfallen."
+    ],
+    "soFindestDuEs": "Kontaktliste, Spalte Kontaktart",
+    "kritisch": false
+  },
+  {
+    "nr": 58,
+    "datum": "2026-09-29",
+    "art": "behoben",
+    "titel": "Termine in Nächste Aktion nur noch einmal",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner"
+    ],
+    "kurztext": "Ein Termin, den du über die Terminseite, den Meeting-Dialog oder den Buchungskalender einträgst, steht im Kundenprofil unter Nächste Aktion nur noch einmal.",
+    "wasHeisstDasFuerDich": [
+      "Ein Klick auf den Termin öffnet immer das Ergebnis mit Stattgefunden, Nicht erschienen und Verschoben.",
+      "Ein alter, überfälliger Termin ohne eigenes Ergebnis-Feld, etwa ein Beratungsgespräch am Kontakt, lässt sich jetzt mit dem Haken als stattgefunden abhaken. Das eingetragene Datum bleibt am Kontakt stehen."
+    ],
+    "soFindestDuEs": "Kundenprofil, Kachel Nächste Aktion",
+    "kritisch": false
+  },
+  {
+    "nr": 59,
+    "datum": "2026-09-30",
+    "art": "geaendert",
+    "titel": "Unterschriften, Abwicklung und Löschen besser geschützt",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "backoffice"
+    ],
+    "kurztext": "Unterschriften, Kaufpreiseingang und Prämien ändert das System nur noch über die vorgesehenen Abläufe. Was du bisher gemacht hast, geht weiter.",
+    "wasHeisstDasFuerDich": [
+      "Ein Investment löschst du, solange es vor der Reservierung steht. Danach löschen Admin und Inhaber.",
+      "Löschst du eine Empfehlung, kommt der zugehörige Kontakt in den Papierkorb und lässt sich dort wiederherstellen.",
+      "Kaufpreiseingang, Provisionsrechnung und Auszahlung pflegt das Backoffice. Du siehst die Haken im Investment, Fälligkeit, Grundbuch und Übergabe trägst du weiter selbst ein."
+    ],
+    "soFindestDuEs": "Kundenprofil, Investment",
+    "kritisch": true
+  },
+  {
+    "nr": 60,
+    "datum": "2026-09-30",
+    "art": "geaendert",
+    "titel": "Objekte und Einheiten nur über geprüfte Wege",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "backoffice"
+    ],
+    "kurztext": "Objekte, Einheiten, Exposés und Chats werden jetzt nur noch von den Rollen geändert, die das auch dürfen.",
+    "wasHeisstDasFuerDich": [
+      "Einheit pflegen und Exposé hinterlegen siehst du nur, wenn du das Objekt bearbeiten darfst.",
+      "Lehnt das System eine Änderung ab, bekommst du einen Hinweis, statt einer falschen Erfolgsmeldung.",
+      "Eine Einheit wird erst mit unterschriebener Reservierung automatisch auf reserviert oder verkauft gestellt.",
+      "Kunden bekommen weiter das Online-Exposé zum Ansehen und Herunterladen."
+    ],
+    "soFindestDuEs": "Objekte, Einheitenseite",
+    "kritisch": true
+  },
+  {
+    "nr": 61,
+    "datum": "2026-09-30",
+    "art": "geaendert",
+    "titel": "Abgeschlossen setzt jetzt das Backoffice",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "backoffice",
+      "admin",
+      "inhaber"
+    ],
+    "kurztext": "Sobald die Auszahlung bestätigt ist, stellt das Backoffice das Investment auf Abgeschlossen.",
+    "wasHeisstDasFuerDich": [
+      "In der Pipeline und im Kundenprofil kannst du die Stufe Abgeschlossen nicht mehr selbst wählen oder verlassen.",
+      "Admin, Inhaber und Backoffice setzen die Stufe weiter.",
+      "Die Empfehlungsprämie wird wie bisher ab Fälligkeit berechtigt."
+    ],
+    "soFindestDuEs": "Pipeline, Kundenprofil",
+    "kritisch": false
+  },
+  {
+    "nr": 62,
+    "datum": "2026-09-30",
+    "art": "neu",
+    "titel": "Leadpakete im CRM",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "hr",
+      "backoffice"
+    ],
+    "kurztext": "Mit dem bestätigten Zahlungseingang entsteht das Leadpaket eines neuen Partners automatisch, spätestens wenn sein Nutzerkonto angelegt ist.",
+    "wasHeisstDasFuerDich": [
+      "Beim Zuweisen eines Leads wählst du, aus welchem Paket er geliefert wird.",
+      "Ein reklamierter Lead wird ersetzt, der Ersatz zählt automatisch.",
+      "Unter Statistik, Lead-Zuweisung siehst du je Paket Zahlung, Freischaltung, Einsatzfrist und wie viele Leads geliefert, reklamiert, ersetzt und noch offen sind.",
+      "Als Partner findest du dein Paket unter Meine Leads."
+    ],
+    "soFindestDuEs": "Statistik, Lead-Zuweisung",
+    "kritisch": false
+  },
+  {
+    "nr": 63,
+    "datum": "2026-09-30",
+    "art": "geaendert",
+    "titel": "Terminseite mit fester Dauer und neuer Auswahl",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "admin",
+      "inhaber"
+    ],
+    "kurztext": "Auf der Terminseite zeigt das Erstgespräch jetzt 15 bis 20 Minuten und das Beratungsgespräch 45 Minuten, unabhängig von deinen eigenen Terminarten.",
+    "wasHeisstDasFuerDich": [
+      "Datum und Uhrzeit wählst du in einer neuen Auswahl im Stil der Seite.",
+      "Die Uhrzeit stellst du in 5-Minuten-Schritten ein, auch mit den Pfeiltasten.",
+      "Objekt- und Finanzierungsgespräch behalten ihre bisherige Dauer."
+    ],
+    "soFindestDuEs": "Kundenprofil, Meeting, Terminseite öffnen",
+    "kritisch": false
+  },
+  {
+    "nr": 64,
+    "datum": "2026-09-30",
+    "art": "behoben",
+    "titel": "Terminergebnis auch beim Beratungsgespräch",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "admin",
+      "inhaber"
+    ],
+    "kurztext": "Nach einem vergangenen Beratungsgespräch fragt das Kundenprofil jetzt genauso nach dem Ergebnis wie nach einem Erstgespräch: stattgefunden, No-Show oder verschoben.",
+    "wasHeisstDasFuerDich": [
+      "Klickst du einen vergangenen Termin in Nächste Aktion weg, kannst du ihn auch als nicht stattgefunden markieren. Er gilt dann nicht als erledigt, und als nächster Schritt steht ein neuer Termin.",
+      "Bei einem No-Show bleibt der Lead bei dir. Nichts geht an eine Setterin zurück.",
+      "Ein No-Show beim Erstgespräch steht jetzt richtig auf EG NoShow, nicht mehr auf BG NoShow.",
+      "Nach einem stattgefundenen Erstgespräch bleibt die Pipeline auf Erstgespräch, bis das Beratungsgespräch eingebucht ist."
+    ],
+    "soFindestDuEs": "Kundenprofil, Kasten unter den vier Kacheln oder Haken in Nächste Aktion",
+    "kritisch": false
+  },
+  {
+    "nr": 65,
+    "datum": "2026-09-30",
+    "art": "behoben",
+    "titel": "No-Show schließt den Termin",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "admin",
+      "inhaber"
+    ],
+    "kurztext": "Wenn du bei einem Erst- oder Beratungsgespräch No-Show oder Nicht stattgefunden wählst, verschwindet der Termin jetzt aus Nächste Aktion.",
+    "wasHeisstDasFuerDich": [
+      "Danach stehen nur noch die drei Erinnerungen zum neuen Termin in deiner Liste, der rote No-Show-Hinweis entfällt.",
+      "Trägst du einen neuen Termin ein, fragt das Profil nach diesem Termin wieder nach dem Ergebnis.",
+      "Alte Termine mit schon erfasstem No-Show schließt du am Haken, ohne dass neue Aufgaben entstehen.",
+      "Der rote No-Show-Hinweis mit dem Zähler verschwindet, sobald ein neuer Erst- oder Beratungstermin eingetragen ist, egal über welchen Weg."
+    ],
+    "soFindestDuEs": "Kundenprofil, Kasten unter den vier Kacheln oder Haken in Nächste Aktion",
+    "kritisch": false
+  },
+  {
+    "nr": 66,
+    "datum": "2026-09-30",
+    "art": "neu",
+    "titel": "Willkommensmail an Leads nach der Zuweisung",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner"
+    ],
+    "kurztext": "Sobald ein Lead dir zugewiesen ist, bekommt er automatisch eine Willkommensmail mit deinem Namen und deinen Kontaktdaten.",
+    "wasHeisstDasFuerDich": [
+      "Die Mail geht einmal je Lead raus, direkt nach der Zuweisung oder wenn du dir einen Lead selbst nimmst.",
+      "Darin lädt die Mail zu deinem Handbuch-Konfigurator ein: sechs Fragen, danach bekommt der Lead sein persönliches Immobilienhandbuch.",
+      "Ob der Lead das Handbuch geholt und gelesen hat, siehst du wie gewohnt im Kundenprofil.",
+      "Leads, die schon über die Handbuch-Seite kamen, bekommen keine zweite Mail.",
+      "Absender und Antwortadresse bist du. Pflege deshalb Telefon und Profilbild in deinen Einstellungen."
+    ],
+    "soFindestDuEs": "Läuft automatisch bei jeder Zuweisung in der Lead-Verwaltung",
+    "kritisch": false
+  },
+  {
+    "nr": 67,
+    "datum": "2026-09-30",
+    "art": "geaendert",
+    "titel": "Vertragserinnerungen an Bewerber in drei Stufen",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "hr"
+    ],
+    "kurztext": "Bewerber mit offenem Handelsvertretervertrag bekommen jetzt an Tag 5 und 7 eine Erinnerung und an Tag 14 eine freundliche Abschlussmail.",
+    "wasHeisstDasFuerDich": [
+      "Nach der Abschlussmail steht der Bewerber automatisch auf Kein Interesse, mit dem Grund in der Akte. Der Unterschriftslink ist dann geschlossen.",
+      "Hast du nach dem Versand mit dem Bewerber gesprochen und das als Kontaktversuch eingetragen, geht keine Abschlussmail raus.",
+      "Antworten auf die Erinnerungen landen jetzt bei der HR-Ansprechpartnerin statt bei noreply.",
+      "Meldet sich jemand nach der Abschlussmail, schickst du den Vertrag einfach erneut zur Unterschrift."
+    ],
+    "soFindestDuEs": "Bewerberprozess, Vertragskarte des Bewerbers",
+    "kritisch": false
+  },
+  {
+    "nr": 68,
+    "datum": "2026-09-30",
+    "art": "neu",
+    "titel": "Investagon-Objekte mit einem Klick ein- und ausblenden",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "objektpartner"
+    ],
+    "kurztext": "Der Punkt oben rechts auf der Objektkachel ist bei Investagon-Objekten jetzt ein Schalter: grün heißt sichtbar für Vertriebspartner, orange heißt ausgeblendet.",
+    "wasHeisstDasFuerDich": [
+      "Ein Klick auf den Punkt fragt nach, ob du das Objekt ausblenden oder wieder sichtbar schalten willst. Erst nach deiner Bestätigung ändert sich etwas.",
+      "Ausgeblendete Objekte verschwinden aus der Objektübersicht der Vertriebspartner. Du siehst sie weiter, mit orangem Punkt unter „Nicht verfügbar“.",
+      "Der Investagon-Abgleich lässt deine Entscheidung stehen.",
+      "Selbst angelegte Objekte schaltest du wie bisher auf der Objektseite frei."
+    ],
+    "soFindestDuEs": "Objektübersicht, Kachelansicht, Punkt oben rechts auf der Kachel",
+    "kritisch": false
+  },
+  {
+    "nr": 69,
+    "datum": "2026-09-30",
+    "art": "neu",
+    "titel": "Handbuch ohne Formular für deine Leads",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner"
+    ],
+    "kurztext": "Die Willkommensmail führt deinen Lead jetzt über einen persönlichen Link zu den sechs Fragen. Seine Kontaktdaten muss er nicht mehr eintragen.",
+    "wasHeisstDasFuerDich": [
+      "Der Lead bestätigt am Ende nur noch seine Einwilligung und sieht sofort sein Handbuch.",
+      "Sobald er es geholt hat, bekommst du eine Glocke. Das ist ein guter Moment für deinen Anruf.",
+      "Die Antworten stehen wie gewohnt im Kundenprofil, der Handbuch-Stand ebenfalls.",
+      "Der Link gilt 30 Tage und nur für diesen Lead."
+    ],
+    "soFindestDuEs": "Läuft automatisch über die Willkommensmail nach der Zuweisung",
+    "kritisch": false
+  },
+  {
+    "nr": 70,
+    "datum": "2026-09-30",
+    "art": "neu",
+    "titel": "Handbuch deines Leads als PDF im Kundenprofil",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner"
+    ],
+    "kurztext": "Im Kundenprofil gibt es in der Karte „Aus dem Konfigurator“ jetzt den Knopf „Handbuch als PDF“. Du bekommst dasselbe Immobilienhandbuch, das dein Lead über die Handbuch-Seite erhalten hat.",
+    "wasHeisstDasFuerDich": [
+      "Du siehst vor dem Anruf genau die Seiten und Zahlen, die dein Lead vor sich hat.",
+      "Das PDF entsteht aus seinen sechs Antworten, in seiner Sprache und mit dir als Ansprechpartner im Kopf.",
+      "Dein Download zählt nicht als „PDF gespeichert“ beim Lead, sein Stand bleibt unverändert."
+    ],
+    "soFindestDuEs": "Kundenprofil, Stammdaten, Kasten „Angaben aus unseren Rechnern“, Karte „Aus dem Konfigurator“",
+    "kritisch": false
+  },
+  {
+    "nr": 71,
+    "datum": "2026-09-30",
+    "art": "neu",
+    "titel": "Neue Seite „Partner werden“ mit Leads im Bewerberprozess",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "hr"
+    ],
+    "kurztext": "Unter portal.more.immo/partner-werden können sich Finanzberater, Versicherungsmakler, Vertriebler und Immobilienvertriebe in rund einer Minute eintragen. Jeder Eintrag erscheint als neuer Lead im Bewerberprozess.",
+    "wasHeisstDasFuerDich": [
+      "Neue Leads stehen im Eingang mit der Quelle „Partner werden“ und der gewählten Rolle in der Spalte Stelle.",
+      "In der Akte siehst du links die Antworten aus dem Wizard, dazu Firma und Kampagne, falls vorhanden.",
+      "Es läuft keine Automatik: keine Mail an den Lead, kein Kennenlernbogen, keine Sammelmail. Bitte anrufen.",
+      "Für jeden neuen Eintrag bekommt die HR-Rolle eine Glocke."
+    ],
+    "soFindestDuEs": "Seitenleiste, direkt unter „Stellenanzeige“, Eintrag „Partner werden“ (öffnet im neuen Tab); die Leads unter Bewerberprozess",
+    "kritisch": false
+  },
+  {
+    "nr": 72,
+    "datum": "2026-09-30",
+    "art": "geaendert",
+    "titel": "Kaufnebenkosten ohne Erhaltungsaufwand",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner"
+    ],
+    "kurztext": "Der Erhaltungsaufwand ist bei uns eine gesonderte Leistung und im Notarvertrag eigens ausgewiesen. Grunderwerbsteuer, Notar und Grundbuch laufen deshalb in allen Rechnern nur noch auf den Kaufpreis ohne Erhaltungsaufwand.",
+    "wasHeisstDasFuerDich": [
+      "Bei Objekten mit Erhaltungsaufwand sinken Kaufnebenkosten, Darlehen und Eigenkapital etwas. Beispiel: 300.000 € inklusive 40.000 € Aufwand, 5 % Nebenkosten auf 260.000 €, also 13.000 € statt 15.000 €.",
+      "Der Gesamtkaufpreis steht weiter inklusive Erhaltungsaufwand da. Im Investmentrechner zeigen Analyse und PDF darunter den Kaufpreis der Immobilie, jeden Posten mit Satz und Basis und einen Hinweis für den Kunden.",
+      "Im Exposé zählt der Sanierungsanteil nicht mehr doppelt: Er wird entweder abgeschrieben oder als Erhaltungsaufwand abgezogen, nicht beides.",
+      "Objekte ohne Erhaltungsaufwand rechnen auf den Cent wie bisher. Gespeicherte Berechnungen bleiben gespeichert und zeigen beim Öffnen die neue Rechnung."
+    ],
+    "soFindestDuEs": "Investmentrechner, Bereich 02 und Analyse; Einheitenseite, Reiter Finanzen",
+    "kritisch": false
+  },
+  {
+    "nr": 73,
+    "datum": "2026-09-30",
+    "art": "geaendert",
+    "titel": "Alte Musterkalkulation und Immorechner entfernt, die Investmentkalkulation ersetzt sie",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner"
+    ],
+    "kurztext": "Die alte Musterkalkulation (Kalkulation Alt) und der Immorechner waren schon ausgeblendet und sind jetzt ganz aus dem CRM entfernt. Gerechnet wird mit der Investmentkalkulation.",
+    "wasHeisstDasFuerDich": [
+      "Alte Links und Lesezeichen führen nicht ins Leere: Die freien Rechner öffnen die Investmentkalkulation, die Adressen am Objekt führen auf die Objektseite oder die Einheit.",
+      "Die Annahmen, die am Objekt gepflegt sind, bleiben erhalten. Beim Bearbeiten eines Objekts heißt der Block jetzt „Annahmen für die Kalkulation“.",
+      "In der Vertriebsakademie verweisen die Links jetzt auf die Investmentkalkulation."
+    ],
+    "soFindestDuEs": "Seitenleiste, Eintrag „Investmentkalkulation“",
+    "kritisch": false
+  },
+  {
+    "nr": 74,
+    "datum": "2026-09-30",
+    "art": "geaendert",
+    "titel": "Partner werden: Leads kommen jetzt mit einem von drei Wegen",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "hr"
+    ],
+    "kurztext": "Wer sich über die Seite „Partner werden“ einträgt, wählt jetzt zuerst den Weg: Tippgeber, Vertriebspartner oder Portfolio-Partner. Danach kommen Bereich und Fragen, die zu diesem Weg passen.",
+    "wasHeisstDasFuerDich": [
+      "In der Bewerberakte steht der Weg neben dem Bereich, in der Spalte Stelle zum Beispiel „Partner werden: Vertriebspartner, Finanzberatung“.",
+      "Vertriebspartner beantworten unter anderem, ob sie eine Erlaubnis nach § 34c GewO haben. Tippgeber werden danach nicht gefragt.",
+      "Es läuft weiter keine Automatik: keine Mail an den Lead, nur die Glocke an HR. Bitte anrufen."
+    ],
+    "soFindestDuEs": "Bewerber, Quelle „Partner werden“",
+    "kritisch": false
+  },
+  {
+    "nr": 75,
+    "datum": "2026-09-30",
+    "art": "geaendert",
+    "titel": "Alte Rechner entfernt, alles läuft über die Investmentkalkulation",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner"
+    ],
+    "kurztext": "Kalkulation Team Pro Q, Kalkulation 1 sowie Kalkulator Beispiel 1 und 2 sind entfernt. Gerechnet wird ab jetzt nur noch in der Investmentkalkulation.",
+    "wasHeisstDasFuerDich": [
+      "Alte Links und Lesezeichen führen nicht ins Leere, sie öffnen die Investmentkalkulation.",
+      "Auf der Objekt- und der Einheitenseite ist der Knopf zur alten Kalkulation weg.",
+      "Im AfA-Rechner steht beim Kaufpreis jetzt ein Hinweis: nur den Kaufpreis der Immobilie eintragen, ohne Erhaltungsaufwand und ohne Möbel."
+    ],
+    "soFindestDuEs": "Seitenleiste, Eintrag „Investmentkalkulation“",
+    "kritisch": false
+  },
+  {
+    "nr": 76,
+    "datum": "2026-09-30",
+    "art": "neu",
+    "titel": "Rückläufer: sichtbar, von wem sie kommen",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter"
+    ],
+    "kurztext": "In der Lead-Verwaltung steht bei jedem Rückläufer vorne in der Zeile, welcher Vertriebspartner ihn zurückgegeben hat und wann.",
+    "wasHeisstDasFuerDich": [
+      "Unter Weitere Leads zeigt die erste Spalte den Partner, der den Lead zurückgegeben hat. Wurde ein Lead mehrfach zurückgegeben, siehst du die Anzahl, und beim Zeigen darauf den ganzen Verlauf mit Grund.",
+      "Beim Zuweisen steht der Rückgabehinweis im Dialog, und in der Auswahl ist der zurückgebende Partner mit „hat zurückgegeben“ gekennzeichnet.",
+      "Wählst du genau diesen Partner, fragen wir einmal nach, bevor der Lead wieder bei ihm landet."
+    ],
+    "soFindestDuEs": "Seitenleiste, Lead-Verwaltung, Reiter Weitere Leads, Schalter Rückläufer",
+    "kritisch": false
+  },
+  {
+    "nr": 77,
+    "datum": "2026-09-30",
+    "art": "behoben",
+    "titel": "Investmentkalkulation: Möbel ohne Kaufnebenkosten",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner"
+    ],
+    "kurztext": "Kaufnebenkosten laufen jetzt nur auf den Kaufpreis der Immobilie, also ohne Erhaltungsaufwand und ohne Möbel. Dazu erklärt der Rechner, warum Cashflow vor und nach Steuer gleich sind, wenn noch kein Einkommen eingetragen ist.",
+    "wasHeisstDasFuerDich": [
+      "Beispiel: 300.000 € inklusive 20.000 € Erhaltungsaufwand und 15.000 € Möbeln ergibt einen Kaufpreis der Immobilie von 265.000 €. Bei 5 % sind das 13.250 € Kaufnebenkosten statt 14.000 €.",
+      "Die Kaufpreisdetails zeigen jeden Posten mit Satz und Basis, auch im Druck und im PDF. Der Schalter „Möbel im Notarvertrag gesondert ausgewiesen“ ist weggefallen, er wird nicht mehr gebraucht.",
+      "Steht unter „Kunde & Einkommen“ noch kein zu versteuerndes Einkommen, gibt es keine Steuerwirkung. Ein Satz unter dem Cashflow nach Steuer weist jetzt darauf hin.",
+      "„Neue Berechnung“ im Kundenprofil wartet jetzt, bis die Objektdaten geladen sind, und startet mit den Zahlen der Wohnung."
+    ],
+    "soFindestDuEs": "Einheitenseite, Reiter Investmentkalkulation, oder Seitenleiste, Investmentkalkulation",
+    "kritisch": false
+  },
+  {
+    "nr": 78,
+    "datum": "2026-09-30",
+    "art": "geaendert",
+    "titel": "Weekly Sales Call: ein Termin für alle",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner"
+    ],
+    "kurztext": "Es gibt nur noch einen Weekly Sales Call, jeden Montag um 19:00 Uhr, für alle gemeinsam. Der Termin um 19:30 Uhr entfällt.",
+    "wasHeisstDasFuerDich": [
+      "Du wählst dich montags um 19:00 Uhr ein, egal ob Lead-Berater oder Vertriebspartner.",
+      "Der Zoom-Link bleibt derselbe wie bisher.",
+      "Karte, Erinnerung und Kalendereintrag zeigen jetzt 19:00 Uhr. Hast du den Termin um 19:30 Uhr in deinem Kalender, trag ihn über „In Kalender eintragen“ neu ein und lösch den alten."
+    ],
+    "soFindestDuEs": "Dashboard, Karte Weekly Sales Call",
+    "kritisch": false
+  },
+  {
+    "nr": 79,
+    "datum": "2026-09-30",
+    "art": "neu",
+    "titel": "Investmentkalkulation: Eigenkapitalrendite",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner"
+    ],
+    "kurztext": "In der Kachel „Vermögensaufbau“ steht jetzt die Eigenkapitalrendite pro Jahr, in Analyse, Berechnung und PDF.",
+    "wasHeisstDasFuerDich": [
+      "Gerechnet wird: Vermögensaufbau im Betrachtungszeitraum geteilt durch die Jahre, geteilt durch Eigenkapital plus zwölfmal die monatliche Zuzahlung vor Steuer. Die graue Zeile unter der Zahl zeigt den Weg mit den echten Werten.",
+      "Die Zuzahlung ist der angezeigte Cashflow vor Steuer pro Monat. Ist er positiv, zählt sie als 0. Ohne Eigenkapital und ohne Zuzahlung steht statt einer Zahl ein kurzer Satz, warum sie sich nicht bestimmen lässt.",
+      "Ein Satz darunter zeigt, wie sich Eigenkapitalrendite und Rate ändern würden, wenn der Kunde die Kaufnebenkosten mitfinanziert statt selbst zahlt oder umgekehrt.",
+      "Weniger Eigenkapital ergibt eine höhere Rendite, aber auch eine höhere Rate. Das Glossar „So entstehen die Zahlen“ erklärt die Kennzahl."
+    ],
+    "soFindestDuEs": "Einheitenseite, Reiter Investmentkalkulation, oder Seitenleiste, Investmentkalkulation",
+    "kritisch": false
+  },
+  {
+    "nr": 80,
+    "datum": "2026-10-01",
+    "art": "behoben",
+    "titel": "Termin-Ergebnis jederzeit eintragen",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner"
+    ],
+    "kurztext": "In den Kästen „Erstgespräch: Ergebnis“ und „Beratungsgespräch: Ergebnis“ und am Haken in „Nächste Aktion“ geht jetzt alles jederzeit, auch vor dem Termin. „Stattgefunden“ speichert wieder, und der Termin verschwindet danach.",
+    "wasHeisstDasFuerDich": [
+      "Stattgefunden, Nicht erschienen beziehungsweise No-Show, Verschoben, Einladung erneut senden und Löschen gehen sofort, du musst nicht mehr bis zum Terminbeginn warten.",
+      "Am Haken in „Nächste Aktion“ kannst du „Nicht stattgefunden“ jetzt ebenfalls jederzeit wählen.",
+      "Bei Terminen von der Terminseite scheiterte „Stattgefunden“ mit „Der Status konnte nicht gespeichert werden“. Das ist behoben. Klappt es einmal nicht, steht jetzt der genaue Grund in der Meldung.",
+      "Ein Beratungs- oder Erstgespräch, das nur als Datum am Kontakt oder Investment steht, blieb nach „Stattgefunden“ als Kasten stehen. Auch das ist behoben, auch nach dem Neuladen."
+    ],
+    "soFindestDuEs": "Kundenprofil, Kästen „Ergebnis“ oben im Profil",
+    "kritisch": false
+  },
+  {
+    "nr": 81,
+    "datum": "2026-10-01",
+    "art": "neu",
+    "titel": "Objekttexte: Quellen der Belege anklickbar",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner"
+    ],
+    "kurztext": "Unter den Standortargumenten und im Block „Markt und Standort“ sind die Quellen der Belege jetzt Links, etwa Destatis, Bundesagentur für Arbeit oder OpenStreetMap.",
+    "wasHeisstDasFuerDich": [
+      "Ein Klick auf den Quellnamen hinter einem Beleg öffnet die Seite der Quelle in einem neuen Tab. So kannst du einem Kunden zeigen, woher eine Zahl stammt.",
+      "Verlinkt wird nur, wenn die Quelle eindeutig ist. Belege aus Unterlagen oder ohne genannte Quelle bleiben reiner Text.",
+      "Der Link führt auf die Startseite der Quelle, nicht auf die einzelne Zahl. Dort findest du die Daten zu deinem Ort."
+    ],
+    "soFindestDuEs": "Objektseite und Einheitenseite, Karte mit Beschreibung und Standort",
+    "kritisch": false
+  },
+  {
+    "nr": 82,
+    "datum": "2026-10-01",
+    "art": "behoben",
+    "titel": "Lage der Immobilie: Umgebung wird wieder gemessen",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "backoffice"
+    ],
+    "kurztext": "Bei einigen Objekten stand im Kasten „Lage der Immobilie“ nur, dass die Auswertung der Umgebung noch fehlt. Die Messung über OpenStreetMap scheiterte an überlasteten Servern. Jetzt springt ein weiterer Server ein, und ein gescheiterter Versuch wird nach zwei Stunden wiederholt statt erst am nächsten Tag.",
+    "wasHeisstDasFuerDich": [
+      "Auf Objektseite, Einheitenseite und im Exposé erscheinen Einkaufen, Freizeit, Parks, Bus und Bahn, Kitas, Schulen, Apotheken und Behörden mit Entfernung, sobald die Messung durch ist.",
+      "Du musst nichts tun. Die fehlenden Objekte werden im Hintergrund nach und nach gemessen, meist im Laufe des Tages.",
+      "Steht dort weiter der Hinweis zur Adresse, prüfe bitte die Adresse am Objekt. Danach wird automatisch neu gemessen."
+    ],
+    "soFindestDuEs": "Objektseite und Einheitenseite, Reiter Karte, sowie im Exposé im Abschnitt zur Lage",
+    "kritisch": false
+  },
+  {
+    "nr": 83,
+    "datum": "2026-10-01",
+    "art": "geaendert",
+    "titel": "Neues Exposé-Design als PDF",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "backoffice"
+    ],
+    "kurztext": "Im Exposé heißt der Knopf oben rechts jetzt „Exposé herunterladen“. Ein Klick lädt eine fertige PDF-Datei im neuen Exposé-Design, statt den Druckdialog des Browsers zu öffnen. Das gilt auch für deine Kunden im Exposé-Link, im Kundenportal und in der Kundenansicht, auf Englisch heißt der Knopf „Download exposé“.",
+    "wasHeisstDasFuerDich": [
+      "Dein Kunde bekommt mit einem Klick ein hochwertiges PDF, auch am Handy: dunkles Deckblatt mit dem Titelbild des Objekts, jedes Kapitel mit eigenem Band, Inhalte auf übersichtlichen Karten.",
+      "Das PDF zeigt dieselben Zahlen wie der Rechner auf der Seite, mit den gerade eingestellten Annahmen, dazu Lage mit Karte, Grundriss, Chancen und Risiken.",
+      "Als Titelbild nimmt das PDF das Bild, das du in der Galerie mit „Titelbild setzen“ gewählt hast. Ohne Titelbild steht das erste Foto vorn.",
+      "Hat ein Objekt keinen Kaufpreis, fehlt im PDF der Abschnitt Wirtschaftlichkeit, statt Nullen zu zeigen."
+    ],
+    "soFindestDuEs": "Einheitenseite, Exposé öffnen, Knopf oben rechts oder unten in der Leiste links",
+    "kritisch": false
+  },
+  {
+    "nr": 84,
+    "datum": "2026-10-01",
+    "art": "geaendert",
+    "titel": "Karte und Dokumente oben in der Reiterleiste",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "backoffice"
+    ],
+    "kurztext": "Auf Objektseite und Einheitenseite stehen Karte und Dokumente jetzt oben in der Reiterleiste statt unter den Bildern. Die Fotos sind immer sichtbar, ein eigener Reiter dafür entfällt. Im großen Bild blätterst du mit Pfeilen durch alle Fotos.",
+    "wasHeisstDasFuerDich": [
+      "Einheitenseite: Der Reiter Karte steht zwischen Investmentkalkulation und MORE Lotse.",
+      "Objektseite: Oben findest du die Reiter Übersicht, Dokumente und Karte.",
+      "Im großen Bild blätterst du mit den Pfeilen, am Handy per Wischen, am Rechner auch mit den Pfeiltasten. Ein Klick öffnet die Vollbildansicht bei genau diesem Bild, ebenso ein Klick auf ein kleines Bild."
+    ],
+    "soFindestDuEs": "Objektseite und Einheitenseite, Reiterleiste oben und große Bildergalerie",
+    "kritisch": false
+  },
+  {
+    "nr": 85,
+    "datum": "2026-10-01",
+    "art": "neu",
+    "titel": "Interne Highlights zu Objekt und Einheit",
+    "zielrollen": [
+      "admin",
+      "inhaber"
+    ],
+    "kurztext": "Auf jeder Objektseite unter den Objektdetails und auf jeder Einheitenseite unter „Sanierungen und Maßnahmen“ steht jetzt das Kästchen „Interne Highlights“. Es fasst die wichtigsten verkaufsfördernden Punkte für die Objektvorstellung zusammen, aus den Objektdaten und automatisch aus den Unterlagen. Die Highlights sind rein intern und erscheinen weder im Exposé noch beim Kunden.",
+    "wasHeisstDasFuerDich": [
+      "Erhaltungsaufwand und Restnutzungsdauer beziehungsweise erhöhten AfA-Satz siehst du oben auf einen Blick, sobald sie belegt sind.",
+      "Auf der Einheitenseite stehen zuerst die Punkte der Einheit: Lage im Haus, Miete, vereinbarte Mieterhöhung, Mietgarantie und Kaufpreis je m², darunter die Punkte des Objekts.",
+      "Jeder Punkt aus den Unterlagen hat einen Beleg, den du beim Darüberfahren siehst. Was nicht belegt ist, steht nicht drin.",
+      "Für bestehende Objekte entstehen die Punkte nach und nach von selbst, beim Öffnen der Seite oder im nächsten Abgleich."
+    ],
+    "soFindestDuEs": "Objektseite rechts unter Objektdetails, Einheitenseite unter Sanierungen und Maßnahmen",
+    "kritisch": false
+  },
+  {
+    "nr": 86,
+    "datum": "2026-10-01",
+    "art": "geaendert",
+    "titel": "Investment-Fortschritt als Prozesslinie",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "backoffice",
+      "buchhaltung"
+    ],
+    "kurztext": "In jeder Investment-Karte im Kundenprofil zeigt jetzt eine Prozesslinie, wo das Investment steht. Jede Phase liegt eine Ebene höher, das MORE-Haus steht über der aktuellen Station. Erledigtes ist blau, die aktuelle Station orange, Offenes grau.",
+    "wasHeisstDasFuerDich": [
+      "Du siehst die aktuelle Station, zwei Schritte zurück und zwei voraus. Mit den Pfeilen oder der Punktleiste darunter schiebst du den Ausschnitt, ein Klick auf einen Punkt springt dorthin.",
+      "Eine Stufe setzt du wie bisher per Klick auf die Station, mit Rückfrage.",
+      "Vertriebspartner: Dein Ziel ist die Fälligkeit, ab dann kannst du deine Provision stellen. Die Stufen Abrechnung und Abgeschlossen setzen nur Backoffice und Buchhaltung, auch in der Pipeline.",
+      "Admin, Inhaber, Backoffice, Buchhaltung und Vertriebsleitung sehen den Weg bis Abgeschlossen.",
+      "Am Handy funktioniert die Linie jetzt vollständig, mit Info zu jeder Station."
+    ],
+    "soFindestDuEs": "Kundenprofil, Investment-Karte",
+    "kritisch": false
+  },
+  {
+    "nr": 87,
+    "datum": "2026-10-01",
+    "art": "geaendert",
+    "titel": "Geplante Termine stoppen Stillstand-Hinweise",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner"
+    ],
+    "kurztext": "Hast du mit einem Kunden einen nächsten Schritt in der Zukunft eingetragen, kommen für ihn keine Hinweise mehr zu Stillstand oder Re-Engagement nach 14 Tagen, bis 48 Stunden nach dem Termin. Geplante Aufgaben und Meetings stehen im Verlauf oben, bis ihr Zeitpunkt erreicht ist.",
+    "wasHeisstDasFuerDich": [
+      "Eine Aufgabe, ein Meeting oder ein Termin in der Zukunft gilt als vereinbarter Kontakt. Solange er bevorsteht und noch 48 Stunden danach, ruhen die Inaktivitäts-Hinweise. So hast du Zeit, das Ergebnis einzutragen. Offene Hinweise verschwinden aus deiner Inbox.",
+      "Erinnerungen an Sachverhalte laufen weiter, etwa fehlende Unterschrift, fehlender Darlehensvertrag oder Kaufpreisfälligkeit.",
+      "Im Kundenprofil unter Aufgaben & Termine steht oben der Abschnitt Geplant, der nächste Termin zuerst. Ist Tag und Uhrzeit erreicht, rutscht der Eintrag an seine normale Stelle im Verlauf, dort trägst du das Ergebnis ein."
+    ],
+    "kritisch": false
+  },
+  {
+    "nr": 88,
+    "datum": "2026-10-01",
+    "art": "geaendert",
+    "titel": "Lead-Verwaltung: Leads und Rückläufer",
+    "zielrollen": [
+      "inhaber",
+      "admin"
+    ],
+    "kurztext": "Die Lead-Verwaltung hat jetzt zwei Reiter: Leads und Rückläufer.",
+    "wasHeisstDasFuerDich": [
+      "Unter Leads stehen alle offenen Leads in einer Liste, egal ob aus Meta, Rechnern, Website, Handbuch-Seite oder von Hand angelegt. Die Spalte Quelle zeigt die Herkunft, oben grenzt du mit dem Quellen-Filter ein.",
+      "Bei Leads von der Handbuch-Seite siehst du Rahmen und Stand direkt in der Zeile.",
+      "Was ein Vertriebspartner an die Zentrale zurückgibt, steht getrennt unter Rückläufer, bis du es neu zuweist.",
+      "Foto-Upload und Powerdialer gibt es auf dieser Seite nicht mehr."
+    ],
+    "soFindestDuEs": "Seitenleiste, Lead-Verwaltung",
+    "kritisch": false
+  },
+  {
+    "nr": 89,
+    "datum": "2026-10-02",
+    "art": "behoben",
+    "titel": "Berechnung herunterladen klappt gleich beim ersten Mal",
+    "zielrollen": [
+      "alle"
+    ],
+    "kurztext": "Die heruntergeladene Berechnung sieht jetzt schon beim ersten Klick genauso aus wie die Vorschau.",
+    "wasHeisstDasFuerDich": [
+      "Bisher kam die PDF beim ersten Versuch manchmal ohne Gestaltung heraus, nur mit ungeordnetem Text. Erst nach mehreren Versuchen stimmte sie.",
+      "Jetzt stimmt sie sofort. Du musst nicht mehr mehrfach herunterladen.",
+      "Falls du einem Kunden eine verrutschte Berechnung geschickt hast, lade sie einfach neu herunter."
+    ],
+    "soFindestDuEs": "Einheit, Reiter Investmentkalkulation, oben „Berechnung herunterladen“",
+    "kritisch": false
+  },
+  {
+    "nr": 90,
+    "datum": "2026-10-04",
+    "art": "neu",
+    "titel": "Partnerlogos in der Beratungspräsentation",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "admin",
+      "inhaber"
+    ],
+    "kurztext": "In der Beratungspräsentation siehst du im Abschnitt 02 jetzt unsere Partner: MORE Immo als Objektpartner und MORE Finance als Finanzierungspartner.",
+    "wasHeisstDasFuerDich": [
+      "So zeigst du deinem Kunden gleich, wer die Objekte vertreibt und wer die Finanzierung übernimmt.",
+      "Die Hinweise gibt es auf Deutsch und Englisch, passend zur gewählten Sprache der Präsentation."
+    ],
+    "soFindestDuEs": "Unterlagen und Präsentation oder Investment im Kundenprofil, Beratungspräsentation, Abschnitt 02",
+    "kritisch": false
+  },
+  {
+    "nr": 91,
+    "datum": "2026-10-04",
+    "art": "neu",
+    "titel": "Objektscore in der Objektauswahl",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "backoffice",
+      "finanzierungspartner"
+    ],
+    "kurztext": "In der Objektauswahl stehen oben jetzt die fünf besten Treffer für deinen Kunden, jeder mit einer Zahl von 0 bis 100 und einer Begründung.",
+    "wasHeisstDasFuerDich": [
+      "Unter „Warum?“ siehst du, was den Score hebt oder senkt, etwa Überschuss, Steuerwirkung, Entfernung und Ziele des Kunden.",
+      "Die Liste aller freien Objekte sortierst du nach Bester Score, Entfernung oder Preis.",
+      "Auf Objekt- und Einheitenseite siehst du bei freien Einheiten, welche suchenden Kunden passen. Als Vertriebspartner siehst du dort nur deine eigenen Kunden, Admin, Inhaber und Vertriebsleitung sehen alle.",
+      "Die Steuerwirkung rechnet der Score linear, genau wie der Investmentrechner.",
+      "Der Score ist eine interne Sortierhilfe und erscheint nie beim Kunden."
+    ],
+    "soFindestDuEs": "Kundenprofil, Objektauswahl öffnen. Oben steht „Beste Treffer“.",
+    "kritisch": false
+  },
+  {
+    "nr": 92,
+    "datum": "2026-10-04",
+    "art": "behoben",
+    "titel": "Erinnerungen bei liegengebliebenen Leads laufen wieder",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "admin",
+      "inhaber"
+    ],
+    "kurztext": "Bleibt ein Lead zu lange in einer Stufe liegen, bekommst du wieder Aufgabe und Glocke. Diese Erinnerungen waren seit einiger Zeit still ausgefallen.",
+    "wasHeisstDasFuerDich": [
+      "Gezählt wird ab dem 27.09.2026, ältere Fälle kommen nicht auf einmal nach.",
+      "Du bekommst die Erinnerung für deine eigenen Leads, ohne Zuständigen geht sie an die Leitung."
+    ],
+    "soFindestDuEs": "Glocke oben rechts und deine Aufgaben.",
+    "kritisch": false
+  },
+  {
+    "nr": 93,
+    "datum": "2026-10-04",
+    "art": "geaendert",
+    "titel": "Neue Anfrage eines ruhenden Kontakts",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "admin",
+      "inhaber"
+    ],
+    "kurztext": "Fragt ein archivierter oder verlorener Kontakt erneut an, ist er wieder offen und steht mit Vermerk im Verlauf. Der bisherige Zuständige behält ihn.",
+    "wasHeisstDasFuerDich": [
+      "Du bekommst die Glocke „Dein Kontakt hat erneut angefragt“.",
+      "Ohne Zuständigen landet er in der Lead-Verwaltung unter Leads oder Rückläufer.",
+      "Kunden ab der Reservierung werden nicht zurückgesetzt, du bekommst nur die Glocke.",
+      "Glocken zu neuen Leads und Terminbuchungen gehen an den Zuständigen, ohne ihn an die Leitung."
+    ],
+    "soFindestDuEs": "Glocke oben rechts, Verlauf im Kundenprofil.",
+    "kritisch": false
+  },
+  {
+    "nr": 94,
+    "datum": "2026-10-04",
+    "art": "behoben",
+    "titel": "Erinnerungsmail für Termine aus der Checkliste",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "admin",
+      "inhaber"
+    ],
+    "kurztext": "Termine, die du in der Checkliste im Kundenprofil einträgst, bekommen jetzt auch eine Erinnerungsmail an den Kunden.",
+    "wasHeisstDasFuerDich": [
+      "Doppelte Erinnerungen sind ausgeschlossen, auch wenn der Termin zusätzlich als Aktivität eingetragen ist.",
+      "Bei abgesagten Terminen und No-Shows geht keine Erinnerung raus."
+    ],
+    "soFindestDuEs": "Kundenprofil, Checkliste.",
+    "kritisch": false
+  },
+  {
+    "nr": 95,
+    "datum": "2026-10-04",
+    "art": "geaendert",
+    "titel": "Erneute Bewerbung hängt an der bestehenden",
+    "zielrollen": [
+      "hr",
+      "admin",
+      "inhaber"
+    ],
+    "kurztext": "Bewirbt sich jemand ein zweites Mal, entsteht keine doppelte Bewerbung mehr. Die neue Anfrage hängt an der bestehenden, und du bekommst eine Glocke.",
+    "wasHeisstDasFuerDich": [
+      "Groß- und Kleinschreibung der Mailadresse spielt keine Rolle mehr.",
+      "Ein neu mitgeschickter Lebenslauf bleibt an der Anfrage erhalten."
+    ],
+    "soFindestDuEs": "Bewerberbereich, Glocke oben rechts.",
+    "kritisch": false
+  },
+  {
+    "nr": 96,
+    "datum": "2026-10-04",
+    "art": "behoben",
+    "titel": "Zinssatz aus dem Darlehensvertrag wird wieder erkannt",
+    "zielrollen": [
+      "vertriebspartner",
+      "finanzierungspartner",
+      "admin",
+      "inhaber"
+    ],
+    "kurztext": "Gibst du einen hochgeladenen Darlehensvertrag frei, liest das CRM den Sollzinssatz wieder selbst aus und trägt ihn beim Angebot ein.",
+    "wasHeisstDasFuerDich": [
+      "Bisher kam bei neu hochgeladenen Verträgen nur der Hinweis, dass die Auto-Auslesung nicht möglich ist, und du musstest den Zins von Hand eintragen.",
+      "Jetzt steht der Zins nach der Freigabe automatisch im Angebot. Prüf ihn kurz, bevor du weiterrechnest.",
+      "Erkennt das CRM keinen Zins, sagt es das wie bisher, dann trägst du ihn selbst ein."
+    ],
+    "soFindestDuEs": "Kundenprofil, Investment, Finanzierung, beim Darlehensvertrag „Freigeben“",
+    "kritisch": false
+  },
+  {
+    "nr": 97,
+    "datum": "2026-10-04",
+    "art": "geaendert",
+    "titel": "Kundenunterlagen und Mieterdaten nur noch für Zuständige",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "objektpartner",
+      "hausverwaltung",
+      "marketing",
+      "hr",
+      "versicherungsexperte",
+      "admin",
+      "inhaber"
+    ],
+    "kurztext": "Unterlagen eines Kunden öffnet nur noch, wer den Kunden betreut oder ohnehin alle Kunden sieht. Mieter, Eigentümer, Vermietungen und Tickets der Hausverwaltung sieht nur noch die Hausverwaltung.",
+    "wasHeisstDasFuerDich": [
+      "Als Partner öffnest du weiter alle Unterlagen deiner Kunden, auch während einer Vertretung.",
+      "Unterlagen fremder Kunden lassen sich nicht mehr öffnen. Bisher ging das technisch für jede interne Rolle.",
+      "Die Vertriebsleitung sieht die Karte Hausverwaltung auf der Startseite nicht mehr."
+    ],
+    "soFindestDuEs": "Kundenprofil, Unterlagen",
+    "kritisch": false
+  },
+  {
+    "nr": 98,
+    "datum": "2026-10-04",
+    "art": "geaendert",
+    "titel": "Anmeldung nur mit Passwort",
+    "zielrollen": [
+      "inhaber",
+      "admin",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "buchhaltung",
+      "backoffice",
+      "hr",
+      "individuell",
+      "objektpartner",
+      "finanzierungspartner",
+      "hausverwaltung",
+      "versicherungsexperte",
+      "marketing"
+    ],
+    "kurztext": "Du meldest dich im CRM nur mit deinem Passwort an. Der Code aus der Authenticator-App wird nicht mehr abgefragt, auch nicht bei neuen Konten.",
+    "wasHeisstDasFuerDich": [
+      "Nachts wirst du wie bisher automatisch abgemeldet und meldest dich morgens neu an."
+    ],
+    "soFindestDuEs": "Anmeldeseite",
+    "kritisch": false
+  },
+  {
+    "nr": 99,
+    "datum": "2026-10-04",
+    "art": "neu",
+    "titel": "Backoffice und Buchhaltung setzen Abrechnung und Abgeschlossen",
+    "zielrollen": [
+      "backoffice",
+      "buchhaltung"
+    ],
+    "kurztext": "Du setzt die Stufen Abrechnung und Abgeschlossen jetzt selbst, im Kundenprofil oder in der Pipeline.",
+    "wasHeisstDasFuerDich": [
+      "Im Kundenprofil klickst du auf die Station, das CRM fragt einmal nach.",
+      "In der Pipeline ziehst du die Kachel in die Spalte. Die Pipeline zeigt dir dafür alle Vorgänge.",
+      "Als Buchhaltung hast du dafür jetzt Zugang zu Kunden und Pipeline."
+    ],
+    "soFindestDuEs": "Kundenprofil, Fortschrittsleiste, oder Pipeline.",
+    "kritisch": false
+  },
+  {
+    "nr": 100,
+    "datum": "2026-10-04",
+    "art": "geaendert",
+    "titel": "Portal sperren wirkt jetzt sofort",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebspartner",
+      "vertriebsleiter"
+    ],
+    "kurztext": "Ein gesperrter Kunde kommt nicht mehr ins Kundenportal und sieht dort einen Hinweis in seiner Sprache.",
+    "wasHeisstDasFuerDich": [
+      "Sperren dürfen Admin, Inhaber und der zuständige Partner.",
+      "Eine neue Einladung entsperrt nicht mehr. Erst „Portal entsperren“, dann einladen."
+    ],
+    "soFindestDuEs": "Kundenprofil, Portal.",
+    "kritisch": false
+  },
+  {
+    "nr": 101,
+    "datum": "2026-10-04",
+    "art": "geaendert",
+    "titel": "Verloren trifft nur das Investment",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "admin",
+      "inhaber"
+    ],
+    "kurztext": "Ziehst du in der Pipeline ein Investment nach „Verloren“, bleibt der Kontakt aktiv, solange ein anderes Investment läuft.",
+    "wasHeisstDasFuerDich": [
+      "Grund und Zeitpunkt stehen am Investment.",
+      "Erst wenn kein Investment mehr läuft, gilt der Kontakt als verloren."
+    ],
+    "soFindestDuEs": "Pipeline, Kachel in die Spalte Verloren ziehen.",
+    "kritisch": false
+  },
+  {
+    "nr": 102,
+    "datum": "2026-10-04",
+    "art": "behoben",
+    "titel": "Eigentümer nach dem Notartermin",
+    "zielrollen": [
+      "vertriebspartner",
+      "backoffice",
+      "hausverwaltung",
+      "admin",
+      "inhaber"
+    ],
+    "kurztext": "Nach dem Notartermin wird der Kunde wieder zuverlässig als Eigentümer in der Hausverwaltung angelegt.",
+    "wasHeisstDasFuerDich": [
+      "Scheitert die Übernahme, bleibt die Stufe auf Notar und du kannst es in der Notarkarte erneut versuchen.",
+      "Pro Investment entsteht genau ein Eigentümer."
+    ],
+    "soFindestDuEs": "Kundenprofil, Notarkarte.",
+    "kritisch": false
+  },
+  {
+    "nr": 103,
+    "datum": "2026-10-04",
+    "art": "behoben",
+    "titel": "Speichern sagt die Wahrheit",
+    "zielrollen": [
+      "alle"
+    ],
+    "kurztext": "Lehnt das System eine Änderung ab, siehst du jetzt eine Meldung statt „gespeichert“.",
+    "wasHeisstDasFuerDich": [
+      "Wird nur ein Teil übernommen, steht „Teilweise gespeichert“ mit dem Grund.",
+      "Die Anzeige zeigt danach den echten Stand."
+    ],
+    "soFindestDuEs": "Überall, wo du speicherst.",
+    "kritisch": false
+  },
+  {
+    "nr": 104,
+    "datum": "2026-10-04",
+    "art": "geaendert",
+    "titel": "Nutzer anlegen nur Admin und Inhaber",
+    "zielrollen": [
+      "hr",
+      "admin",
+      "inhaber"
+    ],
+    "kurztext": "Im Aktivierungsreiter legen nur noch Admin und Inhaber Nutzer an und senden die Zugangsdaten.",
+    "wasHeisstDasFuerDich": [
+      "Die Glocke „Lead-Paket bezahlt, Nutzer anlegen“ geht an Admin und Inhaber.",
+      "Als HR siehst du dort einen Hinweis."
+    ],
+    "soFindestDuEs": "Bewerberbereich, Reiter Aktivierung.",
+    "kritisch": false
+  },
+  {
+    "nr": 105,
+    "datum": "2026-10-04",
+    "art": "geaendert",
+    "titel": "Mietrendite überall gleich gerechnet",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "admin",
+      "inhaber",
+      "objektpartner"
+    ],
+    "kurztext": "Die Mietrendite rechnet jetzt überall gleich: Jahreskaltmiete der Wohnung geteilt durch den Kaufpreis der Wohnung, der Stellplatz steht getrennt.",
+    "wasHeisstDasFuerDich": [
+      "Bei Wohnungen mit Stellplatz steigt die angezeigte Rendite dadurch leicht.",
+      "Einheitenseite, Kundenansicht und Exposé zeigen dieselbe Zahl."
+    ],
+    "soFindestDuEs": "Einheitenseite, Exposé.",
+    "kritisch": false
+  },
+  {
+    "nr": 106,
+    "datum": "2026-10-04",
+    "art": "geaendert",
+    "titel": "Provisionsbescheide rechnen je Investment",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "buchhaltung",
+      "vertriebspartner"
+    ],
+    "kurztext": "Provisionsbescheide rechnen jetzt je Investment mit dessen Kaufpreis und Satz, centgenau.",
+    "wasHeisstDasFuerDich": [
+      "„Fällig“ zeigt nur noch, was noch nicht ausgezahlt ist.",
+      "Ein Abschluss kann nicht mehr in zwei Monaten abgerechnet werden.",
+      "Fehlt ein Kaufpreis, steht das Investment unter „Kaufpreis fehlt“. Unklare Altfälle stehen unter „Bitte klären“.",
+      "Freigegebene und ausgezahlte Bescheide bleiben unverändert."
+    ],
+    "soFindestDuEs": "Abrechnungen und Provisionsabrechnung.",
+    "kritisch": false
+  },
+  {
+    "nr": 107,
+    "datum": "2026-10-04",
+    "art": "behoben",
+    "titel": "Empfehlungsprogramm-Anfrage aus dem Portal",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "admin",
+      "inhaber"
+    ],
+    "kurztext": "Fragt dein Kunde im Portal das Empfehlungsprogramm an, bekommst du eine Aufgabe und eine Glocke, die direkt auf die Aufgabe führt.",
+    "wasHeisstDasFuerDich": [
+      "Ohne Zuständigen gehen Aufgabe und Glocke an die Leitung.",
+      "Fragt der Kunde mehrfach an, entsteht keine zweite Aufgabe."
+    ],
+    "soFindestDuEs": "Glocke oben rechts, Inbox.",
+    "kritisch": false
+  },
+  {
+    "nr": 108,
+    "datum": "2026-10-04",
+    "art": "geaendert",
+    "titel": "Reservierung wird nach der Widerrufsfrist wirksam",
+    "zielrollen": [
+      "backoffice",
+      "vertriebspartner",
+      "admin",
+      "inhaber"
+    ],
+    "kurztext": "Eine unterschriebene Reservierung wird um 0 Uhr deutscher Zeit am 15. Tag nach der Unterschrift wirksam. Der Tag der Unterschrift zählt nicht mit.",
+    "wasHeisstDasFuerDich": [
+      "Das gilt auch über die Zeitumstellung hinweg.",
+      "Die Einheit wird dann im täglichen Lauf am Vormittag reserviert."
+    ],
+    "soFindestDuEs": "Kundenprofil, Reservierung.",
+    "kritisch": false
+  },
+  {
+    "nr": 109,
+    "datum": "2026-10-04",
+    "art": "geaendert",
+    "titel": "Objekte und Einheiten löschen nur ohne Bindung",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "objektpartner"
+    ],
+    "kurztext": "Reservierte, verkaufte, vorgemerkte oder aus Investagon stammende Einheiten lassen sich nicht mehr löschen, ebenso Objekte mit solchen Einheiten.",
+    "wasHeisstDasFuerDich": [
+      "Das CRM nennt dir den Grund, etwa welche Einheit gebunden ist.",
+      "Erst wenn nichts mehr gebunden ist, ist das Löschen möglich."
+    ],
+    "soFindestDuEs": "Objekte, Objekt löschen.",
+    "kritisch": false
+  },
+  {
+    "nr": 110,
+    "datum": "2026-10-05",
+    "art": "geaendert",
+    "titel": "Zugangsdaten-Mail mit Anleitung und Termin",
+    "zielrollen": [
+      "hr",
+      "admin",
+      "inhaber"
+    ],
+    "kurztext": "Die Mail mit der persönlichen MOREImmo Adresse enthält jetzt einen Link zur Einrichtungsanleitung als PDF und bestätigt den Onboarding-Termin aus Schritt 1.",
+    "wasHeisstDasFuerDich": [
+      "Die Anleitung öffnet sich ohne CRM-Zugang, der neue Partner kann sein Postfach also sofort einrichten.",
+      "Im Reiter Aktivierung findest du den Postfach-Haken und eine Vorschau der Anleitung jetzt direkt in Schritt 2."
+    ],
+    "soFindestDuEs": "Bewerberprofil, Reiter Aktivierung, Schritt 2.",
+    "kritisch": false
+  },
+  {
+    "nr": 111,
+    "datum": "2026-10-05",
+    "art": "behoben",
+    "titel": "Marketingkarte ruhig und vollständiger",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner"
+    ],
+    "kurztext": "Die Pins auf der Deutschlandkarte unter Marketing blinken nicht mehr. Sie stehen sofort und bleiben stehen.",
+    "wasHeisstDasFuerDich": [
+      "Kunden ohne Anschrift im Kontakt erscheinen jetzt auch, wenn ihre Selbstauskunft eine Anschrift enthält.",
+      "Findet die Karte eine Adresse nicht, korrigiere sie im Kontakt, dann sucht sie automatisch neu."
+    ],
+    "soFindestDuEs": "Sidebar, Marketing, Standorte Deutschland.",
+    "kritisch": false
+  },
+  {
+    "nr": 112,
+    "datum": "2026-10-05",
+    "art": "behoben",
+    "titel": "Chat im Kundenprofil in voller Höhe",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "admin",
+      "inhaber",
+      "backoffice",
+      "finanzierungspartner",
+      "buchhaltung"
+    ],
+    "kurztext": "Interner Chat und Kundenchat im Reiter Kommunikation haben jetzt dieselbe, gut lesbare Höhe. Vorher war das Chatfenster oft nur einen Streifen hoch.",
+    "wasHeisstDasFuerDich": [
+      "Am Computer stehen Verläufe und Kundenkontext links, der Chat rechts in voller Höhe.",
+      "Nur die Nachrichten scrollen, Kopf und Eingabe bleiben stehen."
+    ],
+    "soFindestDuEs": "Kundenprofil, Reiter Kommunikation.",
+    "kritisch": false
+  },
+  {
+    "nr": 113,
+    "datum": "2026-10-05",
+    "art": "behoben",
+    "titel": "Exposé: Ausstattung, Bilder und Speichern",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "admin",
+      "inhaber"
+    ],
+    "kurztext": "Die Liste Ausstattung und Merkmale ist jetzt lückenlos durchnummeriert, mit Leerzeichen nach der Zahl. Das Exposé-PDF zeigt unter Einblicke in die Immobilie alle Bilder statt nur vier.",
+    "wasHeisstDasFuerDich": [
+      "Nach Annahmen speichern wird der Knopf grün, bis du wieder etwas änderst.",
+      "Die Bilder im PDF laufen sauber über mehrere Seiten."
+    ],
+    "soFindestDuEs": "Einheitenseite, Exposé und Wirtschaftlichkeit.",
+    "kritisch": false
+  },
+  {
+    "nr": 114,
+    "datum": "2026-10-05",
+    "art": "neu",
+    "titel": "Kundenlink: Du wählst, welche Wohnungen der Kunde sieht",
+    "zielrollen": [
+      "admin",
+      "inhaber"
+    ],
+    "kurztext": "Beim Kundenlink mit Objektübersicht hakst du jetzt die Wohnungen an, die dein Kunde sehen soll. Vorgewählt ist die Wohnung, aus der du sendest.",
+    "wasHeisstDasFuerDich": [
+      "Der Kunde sieht nur deine Auswahl, auch wenn er die Adresse ändert.",
+      "Sendest du erneut, gilt die neue Auswahl für denselben Link.",
+      "„Als Kunde ansehen“ steht jetzt neben „Exposé anzeigen“."
+    ],
+    "soFindestDuEs": "Einheitenseite, Kundenlink senden.",
+    "kritisch": false
+  },
+  {
+    "nr": 115,
+    "datum": "2026-10-05",
+    "art": "neu",
+    "titel": "Kundenlink, Kundenansicht und Exposé für dich",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter"
+    ],
+    "kurztext": "Auf der Objekt- und Einheitenseite findest du jetzt „Kundenlink senden“, „Als Kunde ansehen“ und „Exposé anzeigen“.",
+    "wasHeisstDasFuerDich": [
+      "Du schickst deinen Kunden ihre persönliche Objektübersicht oder das Exposé und wählst dabei die Wohnungen aus.",
+      "Mit „Als Kunde ansehen“ siehst du vorher genau, was der Kunde sieht.",
+      "Wählen kannst du deine eigenen Kunden und die, die du gerade vertrittst."
+    ],
+    "soFindestDuEs": "Einheitenseite, oben rechts.",
+    "kritisch": false
+  },
+  {
+    "nr": 116,
+    "datum": "2026-10-05",
+    "art": "neu",
+    "titel": "Objektbereich für Vertriebspartner",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter"
+    ],
+    "kurztext": "Auf der Einheitenseite hast du jetzt auch den Reiter Investmentkalkulation. Aus der Objektauswahl im Kundenprofil öffnest du die neue Einheitenseite und kommst mit Zurück wieder zu deinem Kunden.",
+    "wasHeisstDasFuerDich": [
+      "In der Objektauswahl siehst du Beste Treffer mit Objektscore für deinen Kunden.",
+      "Bei passenden Kunden siehst du deine eigenen und vertretenen Kunden.",
+      "Ein Klick auf den Kundennamen an einer Einheit führt ins Kundenprofil."
+    ],
+    "soFindestDuEs": "Kundenprofil, Objektauswahl, und Einheitenseite.",
+    "kritisch": false
+  },
+  {
+    "nr": 117,
+    "datum": "2026-10-05",
+    "art": "neu",
+    "titel": "Reservierung aufheben im Kundenprofil",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "admin",
+      "inhaber",
+      "backoffice"
+    ],
+    "kurztext": "Im Kasten Reservierung findest du jetzt den Knopf „Reservierung aufheben“. Die Einheit wird wieder frei, und der Kunde steht wieder in der Objektauswahl.",
+    "wasHeisstDasFuerDich": [
+      "„Einheit wechseln“ in der Objektauswahl macht dasselbe.",
+      "Die unterschriebene Vereinbarung bleibt als Beleg im Kundenordner, mit Vermerk „aufgehoben“.",
+      "Danach wählst du direkt ein neues Objekt und reservierst neu."
+    ],
+    "soFindestDuEs": "Kundenprofil, Investments, Kasten Reservierung.",
+    "kritisch": false
+  },
+  {
+    "nr": 118,
+    "datum": "2026-10-05",
+    "art": "neu",
+    "titel": "MORE Lotse kennt jetzt alle Unterlagen und feste Zahlen",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "admin",
+      "inhaber",
+      "backoffice"
+    ],
+    "kurztext": "Frag den MORE Lotsen auf der Einheitenseite alles zum Objekt. Er kennt die Unterlagen der Einheit und des Hauses, Hausgeld, Rücklage, Abschreibung, Lage und deine Kalkulation und nennt immer die Quelle.",
+    "wasHeisstDasFuerDich": [
+      "Hausgeld gesamt, Rücklage und Steuerangaben kommen als feste Zahlen aus dem CRM. Fehlt etwas, sagt er es dir.",
+      "Die Rendite ist immer dieselbe wie im Exposé.",
+      "Fragen mit Kundennamen lehnt er ab, frag einfach ohne Namen.",
+      "Ist bei einem ganzen Haus schon eine Einheit reserviert, zeigt das CRM das Haus als teilweise reserviert."
+    ],
+    "soFindestDuEs": "Einheitenseite, Reiter MORE Lotse.",
+    "kritisch": false
+  },
+  {
+    "nr": 119,
+    "datum": "2026-10-05",
+    "art": "geaendert",
+    "titel": "Reservierung: neu senden nur vor der Unterschrift",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "backoffice",
+      "admin",
+      "inhaber"
+    ],
+    "kurztext": "Ist eine Reservierung schon unterschrieben, hebst du sie zuerst auf und sendest dann neu. Ein neuer Link braucht immer neue Unterschriften, auch vom Mitkäufer.",
+    "wasHeisstDasFuerDich": [
+      "Nach dem Aufheben sind alte Unterschriftslinks ungültig.",
+      "Die Glocke zur Unterschrift bekommt der zuständige Partner.",
+      "Ausgeblendete und fremde Exklusivobjekte findest du nicht mehr über Suche oder Link."
+    ],
+    "soFindestDuEs": "Kundenprofil, Investments, Kasten Reservierung.",
+    "kritisch": false
+  },
+  {
+    "nr": 120,
+    "datum": "2026-10-05",
+    "art": "geaendert",
+    "titel": "MORE Lotse beantwortet Fragen zur Eigenprovision",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "admin",
+      "inhaber",
+      "backoffice",
+      "buchhaltung"
+    ],
+    "kurztext": "Der MORE Lotse liest jetzt die Eigenprovisionsvereinbarung der Einheit und beantwortet Fragen dazu: Höhe, Prozentsatz, Bedingungen und Auszahlung. Provisionsangaben aus den Investagon-Daten sehen nur noch Admin, Inhaber und Buchhaltung.",
+    "wasHeisstDasFuerDich": [
+      "Frag zum Beispiel: Wie hoch ist die Eigenprovision, und wann wird sie ausgezahlt?",
+      "Fragen zur Provision von MORE Immo, des Vertriebs oder zu deinem Provisionssatz beantwortet der Lotse weiter nicht.",
+      "Kunden sehen die Eigenprovisionsvereinbarung nur, wenn sie ausdrücklich für Kunden freigegeben ist."
+    ],
+    "soFindestDuEs": "Einheitenseite, Reiter MORE Lotse.",
+    "kritisch": false
+  },
+  {
+    "nr": 121,
+    "datum": "2026-10-05",
+    "art": "geaendert",
+    "titel": "Selbstfinanzierer: auch Bankprüfung eingeklappt",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "backoffice"
+    ],
+    "kurztext": "Finanziert ein Kunde selbst, ist jetzt auch die Bankprüfung eingeklappt, ohne Fehlt-Zählung.",
+    "wasHeisstDasFuerDich": [
+      "Der Kunde wird im Kundenportal nicht mehr zum Hochladen aufgefordert.",
+      "Ein Vorgang auf Bonitätsunterlagen rückt nach der unterschriebenen Reservierung von selbst auf Finanzierung.",
+      "Freiwillig hochladen geht weiter, wenn du die Liste aufklappst."
+    ],
+    "soFindestDuEs": "Kundenprofil, Bonität und Bankprüfung.",
+    "kritisch": false
+  },
+  {
+    "nr": 122,
+    "datum": "2026-10-05",
+    "art": "geaendert",
+    "titel": "Vertragskopie verweist aufs Kundenportal",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "backoffice",
+      "admin",
+      "inhaber"
+    ],
+    "kurztext": "Die Mail nach der unterschriebenen Reservierung verweist den Kunden jetzt auf sein Kundenportal, wo die Vereinbarung als PDF zum Herunterladen liegt.",
+    "wasHeisstDasFuerDich": [
+      "Hat der Kunde noch keinen Portalzugang, steht dort, dass er die Zugangsdaten gesondert erhält.",
+      "Das PDF geht weiter als Anhang mit."
+    ],
+    "soFindestDuEs": "Mail an den Kunden nach der Unterschrift.",
+    "kritisch": false
+  },
+  {
+    "nr": 123,
+    "datum": "2026-10-05",
+    "art": "behoben",
+    "titel": "Hausgeld bei Investagon-Einheiten",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "backoffice",
+      "admin",
+      "inhaber"
+    ],
+    "kurztext": "Bei Einheiten aus Investagon wird das Hausgeld jetzt angezeigt: umlagefähig, nicht umlagefähig und Rücklage zusammen.",
+    "wasHeisstDasFuerDich": [
+      "In der Objektauswahl steht zum Beispiel „314,25 € je Monat, davon nicht umlagefähig 66,39 €“.",
+      "Die SEV-Verwaltung ist kein Hausgeld und steht getrennt.",
+      "Liefert Investagon einen Teil nicht, steht das Hausgeld weiter als fehlend da."
+    ],
+    "soFindestDuEs": "Kundenprofil, Objektauswahl, und Einheitenseite Finanzen.",
+    "kritisch": false
+  },
+  {
+    "nr": 124,
+    "datum": "2026-10-05",
+    "art": "geaendert",
+    "titel": "MORE Lotse liest jetzt auch Wirtschaftspläne und Beschlüsse",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "admin",
+      "inhaber",
+      "backoffice"
+    ],
+    "kurztext": "Der MORE Lotse kennt jetzt auch Wirtschaftspläne, Beschlüsse der Eigentümerversammlung, Abrechnungen, Verwalterverträge und Musterkaufverträge, immer nur als Zahlen und Fakten ohne Namen.",
+    "wasHeisstDasFuerDich": [
+      "Frag ihn etwa nach Sonderumlagen, der Rücklage oder den Kosten im Wirtschaftsplan.",
+      "Bei solchen Angaben sagt er dazu, dass sie automatisch ausgelesen sind. Bevor du sie an einen Kunden weitergibst, prüf sie im Original.",
+      "Die Rechnung für einen bestimmten Kunden steht nicht mehr im Lotsen, sondern in der Investmentkalkulation seines Investments."
+    ],
+    "soFindestDuEs": "Einheitenseite, Reiter MORE Lotse.",
+    "kritisch": false
+  },
+  {
+    "nr": 125,
+    "datum": "2026-10-05",
+    "art": "neu",
+    "titel": "Zu versteuerndes Einkommen in der Selbstauskunft",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "admin",
+      "inhaber",
+      "backoffice"
+    ],
+    "kurztext": "In der Selbstauskunft gibt es unter dem Jahresbrutto das freiwillige Feld zu versteuerndes Jahreseinkommen. Der Investmentrechner rechnet vorrangig damit statt mit einer Schätzung aus dem Brutto.",
+    "wasHeisstDasFuerDich": [
+      "Bei Verheirateten genügt ein gemeinsamer Wert laut Steuerbescheid, der Rechner nutzt dann den Splittingtarif.",
+      "Das Steuer-Cockpit im Kundenportal und das ausfüllbare PDF-Formular nutzen das neue Feld ebenfalls.",
+      "Ohne Angabe bleibt alles wie bisher, geschätzt aus dem Jahresbrutto."
+    ],
+    "soFindestDuEs": "Kundenprofil, Investment, Selbstauskunft unter Einkommen.",
+    "kritisch": false
+  },
+  {
+    "nr": 126,
+    "datum": "2026-10-05",
+    "art": "geaendert",
+    "titel": "Weekly Sales Call: zwei Termine am Montag",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner"
+    ],
+    "kurztext": "Lead-Berater treffen sich montags um 19:00 Uhr, Vertriebspartner um 19:30 Uhr. Der Zoom-Link ist für beide derselbe.",
+    "wasHeisstDasFuerDich": [
+      "Karte, Erinnerung und Kalender zeigen dir die Uhrzeit deines Calls.",
+      "Deine Punkte für den Call sehen nur die Teilnehmer deines Calls.",
+      "Der Call steht jetzt jeden Montag in deinem CRM-Kalender.",
+      "Leitung: Du siehst beide Calls und beide Punktelisten."
+    ],
+    "soFindestDuEs": "Dashboard, Karte Weekly Sales Call, sowie Kalender.",
+    "kritisch": false
+  },
+  {
+    "nr": 127,
+    "datum": "2026-10-07",
+    "art": "neu",
+    "titel": "Investmentrechner: zwei Deckblätter zur Wahl",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "admin",
+      "inhaber",
+      "backoffice"
+    ],
+    "kurztext": "Unter Berechnung wählst du jetzt dein Deckblatt: Ergebnis auf einen Blick oder Jahr für Jahr. Die Analyse zeigt oben dasselbe Deckblatt, umschaltbar an beiden Stellen.",
+    "wasHeisstDasFuerDich": [
+      "Ergebnis auf einen Blick: Cashflow nach Steuer, Vermögensaufbau und Eigenkapitalrendite vorn, der Monat Zeile für Zeile hergeleitet.",
+      "Jahr für Jahr: Vermögenskurve und Tabelle aller zehn Jahre.",
+      "Den Cashflow vor Steuer siehst du nur noch klein in der Herleitung, nicht mehr als große rote Zahl.",
+      "Hinter dem Deckblatt folgt eine Seite mit Kennzahlen, Kaufpreis, Finanzierung und Annahmen, danach die gewohnten Seiten. Deine Wahl bleibt gespeichert."
+    ],
+    "soFindestDuEs": "Investmentrechner, Ansicht Berechnung oder Analyse, Schalter Deckblatt.",
+    "kritisch": false
+  },
+  {
+    "nr": 128,
+    "datum": "2026-10-07",
+    "art": "geaendert",
+    "titel": "Selbstauskunft: ein fester Link je Kunde",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "admin",
+      "inhaber",
+      "backoffice"
+    ],
+    "kurztext": "Die Selbstauskunft hat jetzt einen festen Link je Kunde und Investment. Schickst du die Einladung erneut, bekommt dein Kunde denselben Link, und er macht dort weiter, wo er aufgehört hat.",
+    "wasHeisstDasFuerDich": [
+      "Der Link gilt 30 Tage ab der letzten Aktivität, also Versand, Erinnerung, Öffnen oder Speichern.",
+      "Ältere Links aus früheren Mails leiten automatisch auf den aktuellen weiter.",
+      "Ist ein Link doch abgelaufen, kann dein Kunde einen neuen anfordern, und du bekommst eine Glocke.",
+      "Schickst du an eine andere Mailadresse, wird der alte Link sofort gesperrt."
+    ],
+    "soFindestDuEs": "Kundenprofil, Investment, Selbstauskunft an Kunde senden.",
+    "kritisch": false
+  },
+  {
+    "nr": 129,
+    "datum": "2026-10-07",
+    "art": "neu",
+    "titel": "Investmentrechner: KfW-Darlehen",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "admin",
+      "inhaber",
+      "backoffice"
+    ],
+    "kurztext": "Im Investmentrechner kannst du unter Finanzierung jetzt ein KfW-Darlehen neben dem Bankdarlehen einrechnen, wie es bei Neubauten üblich ist.",
+    "wasHeisstDasFuerDich": [
+      "Du trägst Programm, Betrag, Zins, Zinsbindung, Laufzeit und tilgungsfreie Jahre ein, optional einen Tilgungszuschuss mit dem Jahr der Gutschrift laut Zusage.",
+      "Das Bankdarlehen verringert sich automatisch um den KfW-Betrag.",
+      "Analyse und Berechnung zeigen jedes Darlehen einzeln, den Mischzins und ab wann die Rate steigt.",
+      "Ohne KfW-Darlehen bleibt jede Kalkulation genau wie bisher."
+    ],
+    "soFindestDuEs": "Investmentrechner, Eingabe Finanzierung, Bereich KfW-Darlehen.",
+    "kritisch": false
+  }
+]

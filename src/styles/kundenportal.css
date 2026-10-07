@@ -1,0 +1,486 @@
+/* Kundenportal: ausschließlich Darstellung. Daten, Reihenfolge, Texte,
+   Sichtbarkeitsbedingungen und Aktionen werden von den bestehenden Komponenten
+   unverändert geliefert. Der Scope schützt die übrigen CRM-Rollen.
+
+   Schrift, Grundradius und Fokusring sind die des CRM (Entscheidung
+   Christian, 25.09.2026). Die Schrift setzt das Portal deshalb nicht selbst,
+   sie kommt vom `body` in index.css; Helvetica Neue als eigene Schrift ist
+   entfallen. */
+.portal-ui[data-portal="kunde"] {
+  --background: 216 33% 97%;
+  --foreground: 216 19% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 216 19% 11%;
+  --primary: 204 92% 41%;
+  --primary-foreground: 0 0% 100%;
+  --border: 214 25% 88%;
+  --input: 213 22% 78%;
+  --muted: 214 30% 95%;
+  --muted-foreground: 216 12% 40%;
+  --radius: 0.75rem;
+  --portal-akzent: 204 92% 41%;
+  --portal-akzent-soft: 206 69% 96%;
+  --portal-akzent-deep: 204 86% 32%;
+  --portal-card-shadow: 0 2px 6px hsl(215 35% 20% / 0.025);
+  --portal-soft-shadow: 0 1px 0 hsl(214 25% 88% / 0.65);
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.portal-ui[data-portal="kunde"] .portal-header {
+  background: hsl(0 0% 100% / 0.97);
+  border-color: hsl(var(--border));
+  box-shadow: 0 2px 10px hsl(215 35% 20% / 0.025);
+}
+.portal-ui[data-portal="kunde"] .portal-header-inner {
+  max-width: 1380px;
+  min-height: 80px;
+  height: auto;
+  padding: 16px 32px;
+  margin-inline: auto;
+}
+.portal-ui[data-portal="kunde"] .portal-header-inner > img {
+  width: 145px;
+  height: 42px;
+}
+.portal-ui[data-portal="kunde"] .portal-header-actions {
+  gap: 8px;
+  flex-shrink: 0;
+}
+.portal-ui[data-portal="kunde"] .portal-header-actions > :is(a, button),
+.portal-ui[data-portal="kunde"] .portal-header-actions > [data-state] {
+  min-height: 44px;
+  min-width: 40px;
+  border-radius: 10px;
+}
+.portal-ui[data-portal="kunde"] .portal-header-actions > :is(a, button):hover {
+  background-color: hsl(var(--portal-akzent-soft));
+}
+.portal-ui[data-portal="kunde"] .portal-desktop-nav > div {
+  max-width: 1380px;
+  padding-inline: 32px;
+  margin-inline: auto;
+}
+.portal-ui[data-portal="kunde"] .portal-desktop-nav ul {
+  gap: 12px;
+  padding-block: 0;
+}
+.portal-ui[data-portal="kunde"] .portal-desktop-nav a {
+  min-height: 56px;
+  padding: 16px 12px;
+  border-bottom-width: 3px;
+  color: hsl(var(--muted-foreground));
+  font-size: 14px;
+}
+.portal-ui[data-portal="kunde"] .portal-desktop-nav a[aria-current="page"] {
+  color: hsl(var(--primary));
+  border-bottom-color: hsl(var(--primary));
+  font-weight: 600;
+}
+.portal-ui[data-portal="kunde"] .portal-desktop-nav a:hover {
+  color: hsl(var(--primary));
+  background: hsl(var(--portal-akzent-soft));
+}
+.portal-ui[data-portal="kunde"] .portal-main {
+  max-width: 1320px;
+  padding: 36px 32px 64px;
+}
+.portal-ui[data-portal="kunde"] .portal-content {
+  min-width: 0;
+}
+.portal-ui[data-portal="kunde"] .portal-content :is(h1, h2, h3) {
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+  letter-spacing: -0.025em;
+}
+.portal-ui[data-portal="kunde"] .portal-content h1 {
+  font-size: clamp(1.7rem, 2.8vw, 2.3rem);
+  line-height: 1.18;
+  font-weight: 600;
+}
+.portal-ui[data-portal="kunde"] .portal-content h2 {
+  line-height: 1.3;
+}
+.portal-ui[data-portal="kunde"] .portal-content :is(.portal-card, .rounded-2xl.border.bg-card) {
+  background-color: hsl(var(--card));
+  border-radius: 16px;
+  box-shadow: var(--portal-card-shadow);
+}
+.portal-ui[data-portal="kunde"] .portal-card {
+  padding: 24px;
+}
+.portal-ui[data-portal="kunde"] .portal-page-heading {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 4px 0 12px;
+  margin-bottom: 24px;
+  overflow: visible;
+}
+.portal-ui[data-portal="kunde"] .portal-eyebrow {
+  color: hsl(var(--portal-akzent-deep));
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  margin-bottom: 12px;
+}
+.portal-ui[data-portal="kunde"] .portal-next-step {
+  background: hsl(var(--portal-akzent-soft));
+  border: 1px solid hsl(205 60% 85%);
+  border-left: 4px solid hsl(var(--primary));
+  border-radius: 16px;
+  box-shadow: none;
+  padding: 26px;
+}
+.portal-ui[data-portal="kunde"] .portal-content :is(button, a).bg-primary {
+  border-radius: 10px;
+  box-shadow: none;
+}
+/* Height changes are limited to standard control sizes. Hidden file inputs,
+   compact badges, sliders, switches, and drawing/signature tools keep their sizing. */
+.portal-ui[data-portal="kunde"] .portal-content :is(button, a):is(.h-9, .h-10, .h-11) {
+  min-height: 44px;
+  height: auto;
+}
+.portal-ui[data-portal="kunde"] .portal-content :is(input:not([type="hidden"]):not([type="file"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea) {
+  border-color: hsl(var(--input));
+  border-radius: 9px;
+  background-color: hsl(var(--card));
+  font-size: 14px;
+}
+.portal-ui[data-portal="kunde"] .portal-content input:is(.h-9, .h-10) {
+  min-height: 44px;
+}
+/* Derselbe Fokusring wie im CRM (design-neu.css, `:focus-visible`). */
+.portal-ui[data-portal="kunde"] :is(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+.portal-ui[data-portal="kunde"] .portal-content [role="tablist"] {
+  gap: 6px;
+  padding: 5px;
+  background: hsl(214 26% 93%);
+  border-radius: 12px;
+  max-width: 100%;
+  height: auto;
+  flex-wrap: wrap;
+}
+.portal-ui[data-portal="kunde"] .portal-content [role="tab"] {
+  min-height: 40px;
+  padding: 9px 14px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+.portal-ui[data-portal="kunde"] .portal-content [role="tab"][data-state="active"] {
+  background: hsl(var(--card));
+  color: hsl(var(--primary));
+  box-shadow: 0 1px 4px hsl(215 35% 20% / 0.08);
+}
+.portal-ui[data-portal="kunde"] .portal-phase {
+  border-radius: 16px;
+  background: hsl(var(--card));
+  box-shadow: var(--portal-card-shadow);
+}
+.portal-ui[data-portal="kunde"] .portal-phase > .p-5 {
+  padding: 26px;
+}
+.portal-ui[data-portal="kunde"] .portal-phase h3 {
+  font-size: 16px;
+  font-weight: 600;
+}
+.portal-ui[data-portal="kunde"] .portal-phase-future {
+  border-radius: 14px;
+  padding: 20px;
+}
+.portal-ui[data-portal="kunde"] .portal-content [id^="section-"] {
+  scroll-margin-top: 164px;
+}
+.portal-ui[data-portal="kunde"] .portal-chat-panel {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  box-shadow: var(--portal-card-shadow);
+}
+.portal-ui[data-portal="kunde"] .portal-chat-messages {
+  background: hsl(215 35% 97%);
+  padding: 24px;
+}
+.portal-ui[data-portal="kunde"] .portal-chat-bubble {
+  border-radius: 14px;
+  padding: 13px 16px;
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+}
+.portal-ui[data-portal="kunde"] .portal-chat-compose {
+  background: hsl(var(--card));
+  border-color: hsl(var(--border));
+  padding: 16px;
+  align-items: center;
+}
+.portal-ui[data-portal="kunde"] .portal-chat-compose input {
+  min-width: 0;
+}
+/*
+  Chat im Vollbild (`data-vollbild="chat"`, gesetzt in `KundePortalLayout.tsx`).
+
+  Die Seite endet am Bildschirmrand und scrollt selbst nicht. Die Huelle ist
+  eine Spalte aus Kopfleiste, Inhalt und Menue am Handy; der Inhalt nimmt den
+  Rest, und darin scrollt allein der Nachrichtenverlauf. Die Eingabezeile
+  steht damit immer unten im Bild.
+
+  `100dvh` folgt der ein- und ausfahrenden Adressleiste am Handy, `100vh`
+  davor ist der Rueckfall fuer Browser ohne dvh. Die Tastatur setzt die Hoehe
+  zusaetzlich als Inline-Stil, siehe dort.
+
+  Das Menue am Handy liegt hier im Fluss statt darueber. So braucht der Inhalt
+  keinen geschaetzten Abstand fuer das Menue, und die Eingabezeile kann nicht
+  darunter verschwinden. Der sichere Bereich unten am iPhone steckt schon im
+  Innenabstand des Menues.
+*/
+.portal-ui[data-portal="kunde"][data-vollbild="chat"] {
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+.portal-ui[data-portal="kunde"][data-vollbild="chat"] :is(.portal-header, .portal-mobile-greeting, .portal-mobile-nav) {
+  flex-shrink: 0;
+}
+.portal-ui[data-portal="kunde"][data-vollbild="chat"] .portal-main {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  padding-bottom: 24px;
+}
+.portal-ui[data-portal="kunde"][data-vollbild="chat"] .portal-content {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+.portal-ui[data-portal="kunde"][data-vollbild="chat"] .portal-mobile-nav {
+  position: static;
+}
+/* Bei offener Tastatur zaehlt jede Zeile: Menue und Begruessung treten zurueck. */
+.portal-ui[data-portal="kunde"][data-vollbild="chat"][data-tastatur="offen"] :is(.portal-mobile-nav, .portal-mobile-greeting) {
+  display: none;
+}
+.portal-ui[data-portal="kunde"] .portal-settings {
+  max-width: 960px;
+}
+.portal-ui[data-portal="kunde"] .portal-settings > header {
+  padding: 4px 0 12px;
+}
+.portal-ui[data-portal="kunde"] .portal-settings [role="tabpanel"] {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 16px;
+  padding: 28px;
+}
+.portal-ui[data-portal="kunde"] .portal-mobile-nav {
+  background: hsl(0 0% 100% / 0.98);
+  box-shadow: 0 -4px 18px hsl(215 35% 20% / 0.04);
+}
+.portal-ui[data-portal="kunde"] .portal-mobile-nav ul {
+  gap: 2px;
+  padding: 6px 8px;
+  scrollbar-width: none;
+}
+.portal-ui[data-portal="kunde"] .portal-mobile-nav ul::-webkit-scrollbar {
+  display: none;
+}
+.portal-ui[data-portal="kunde"] .portal-mobile-nav a {
+  min-height: 48px;
+  min-width: 56px;
+  padding: 6px 6px;
+  border-radius: 10px;
+}
+.portal-ui[data-portal="kunde"] .portal-mobile-nav a[aria-current="page"] {
+  background: hsl(var(--portal-akzent-soft));
+  color: hsl(var(--primary));
+  font-weight: 600;
+}
+.portal-ui[data-portal="kunde"] .portal-mobile-nav a[aria-current="page"] svg {
+  color: hsl(var(--primary));
+}
+.portal-ui[data-portal="kunde"].portal-activation > div {
+  padding: 36px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 20px;
+  background: hsl(var(--card));
+  box-shadow: var(--portal-card-shadow);
+}
+.portal-ui[data-portal="kunde"].portal-activation h1 {
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+.portal-ui[data-portal="kunde"].portal-activation button[style] {
+  /* Existing olive inline background is visual only; shared non-customer
+     activation pages are deliberately outside this selector. */
+  background: hsl(var(--primary)) !important;
+  border-radius: 10px;
+}
+@media (max-width: 1023px) and (min-width: 640px) {
+  .portal-ui[data-portal="kunde"] .portal-header-inner {
+    padding-inline: 20px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .portal-ui[data-portal="kunde"] .portal-desktop-nav > div {
+    padding-inline: 20px;
+  }
+  .portal-ui[data-portal="kunde"] .portal-desktop-nav ul {
+    gap: 0;
+  }
+  .portal-ui[data-portal="kunde"] .portal-main {
+    padding-inline: 24px;
+  }
+}
+@media (max-width: 639px) {
+  .portal-ui[data-portal="kunde"] .portal-header-inner {
+    min-height: 64px;
+    padding: 10px 14px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .portal-ui[data-portal="kunde"] .portal-header-inner > img {
+    width: 96px;
+    height: 29px;
+  }
+  .portal-ui[data-portal="kunde"] .portal-header-actions {
+    gap: 2px;
+  }
+  /* Tippflächen mindestens 44 mal 44 Pixel. */
+  .portal-ui[data-portal="kunde"] .portal-header-actions > :is(a, button),
+  .portal-ui[data-portal="kunde"] .portal-header-actions > [data-state] {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  /* Platz für die jetzt einreihige Menüleiste unten. */
+  .portal-ui[data-portal="kunde"] .portal-main {
+    padding: 20px 18px calc(96px + env(safe-area-inset-bottom));
+  }
+  /* Im Chat liegt das Menue im Fluss, siehe oben. Kein Platzhalter noetig. */
+  .portal-ui[data-portal="kunde"][data-vollbild="chat"] .portal-main {
+    padding: 12px 12px 12px;
+  }
+  .portal-ui[data-portal="kunde"] .portal-mobile-greeting {
+    padding: 12px 18px 0;
+  }
+  /* Reiterleisten scrollen auf dem Handy seitlich. Zentriert war der linke
+     Teil dabei nicht erreichbar und die Leiste wirkte abgeschnitten. */
+  .portal-ui[data-portal="kunde"] .portal-content [role="tablist"] {
+    justify-content: flex-start;
+  }
+  .portal-ui[data-portal="kunde"] .portal-card {
+    padding: 20px;
+    border-radius: 14px;
+  }
+  .portal-ui[data-portal="kunde"] .portal-page-heading {
+    padding: 0 0 8px;
+    margin-bottom: 20px;
+  }
+  .portal-ui[data-portal="kunde"] .portal-content .portal-hero-title {
+    font-size: 28px;
+  }
+  .portal-ui[data-portal="kunde"] .portal-phase > .p-5 {
+    padding: 20px;
+  }
+  .portal-ui[data-portal="kunde"] .portal-next-step {
+    padding: 20px;
+  }
+  .portal-ui[data-portal="kunde"] .portal-settings [role="tabpanel"] {
+    padding: 20px;
+  }
+  .portal-ui[data-portal="kunde"] .portal-chat-messages {
+    padding: 16px;
+  }
+  .portal-ui[data-portal="kunde"] .portal-chat-bubble {
+    max-width: 88%;
+    padding: 11px 13px;
+  }
+  .portal-ui[data-portal="kunde"] .portal-chat-compose {
+    padding: 12px;
+  }
+  .portal-ui[data-portal="kunde"] .portal-content [id^="section-"] {
+    scroll-margin-top: 88px;
+  }
+  .portal-ui[data-portal="kunde"].portal-activation {
+    padding: 18px;
+  }
+  .portal-ui[data-portal="kunde"].portal-activation > div {
+    padding: 26px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .portal-ui[data-portal="kunde"] *,
+  .portal-ui[data-portal="kunde"] *::before,
+  .portal-ui[data-portal="kunde"] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+/* Keep the existing next-step content and accordion structure; give them
+   their intended visual emphasis without duplicating nested padding. */
+.portal-ui[data-portal="kunde"] .portal-content .portal-step-summary {
+  background: hsl(var(--portal-akzent-soft));
+  border-color: hsl(205 60% 85%);
+  border-left: 4px solid hsl(var(--primary));
+}
+.portal-ui[data-portal="kunde"] .portal-content :is(details.portal-card, .portal-card.p-0) {
+  padding: 0;
+}
+.portal-ui[data-portal="kunde"] .portal-content .text-sm {
+  font-size: 14px;
+  line-height: 1.55;
+}
+.portal-ui[data-portal="kunde"] .portal-content .text-xs {
+  font-size: 12px;
+  line-height: 1.5;
+}
+.portal-ui[data-portal="kunde"] .portal-content :is([class~="text-[10px]"], [class~="text-[11px]"]) {
+  font-size: 11px;
+}
+/* The CRM's compact typography uses !important on shared Tailwind sizes.
+   Override only portal headings/data; leave global CRM typography untouched. */
+.portal-ui[data-portal="kunde"] .portal-content .portal-card .text-xl {
+  font-size: 20px !important;
+  line-height: 1.3 !important;
+}
+@media (max-width: 639px) {
+  .portal-ui[data-portal="kunde"] .portal-content h1 {
+    font-size: 28px !important;
+    line-height: 1.2 !important;
+  }
+  /* Im Chat zaehlt auf dem Handy jede Zeile fuer den Verlauf. Die Kopfkarte
+     bleibt einzeilig, deshalb die Ueberschrift dort kleiner. Staerker als die
+     Regel darueber, darum auch hier !important. */
+  .portal-ui[data-portal="kunde"][data-vollbild="chat"] .portal-content h1 {
+    font-size: 20px !important;
+    line-height: 1.25 !important;
+  }
+}
+/* Radix renders dialogs/popovers outside the page tree. Theme only their
+   surfaces while the customer portal is present, without changing controls. */
+body:has(.portal-ui[data-portal="kunde"]) :is([role="dialog"], [role="alertdialog"], [data-radix-popper-content-wrapper]) {
+  --background: 0 0% 100%;
+  --foreground: 216 19% 11%;
+  --card: 0 0% 100%;
+  --primary: 204 92% 41%;
+  --primary-foreground: 0 0% 100%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 216 19% 11%;
+  --border: 214 25% 88%;
+  --muted: 214 30% 95%;
+  --muted-foreground: 216 12% 40%;
+  --ring: 204 92% 41%;
+}
+body:has(.portal-ui[data-portal="kunde"]) :is([role="dialog"], [role="alertdialog"]) {
+  border-radius: 16px;
+  box-shadow: 0 20px 70px hsl(215 35% 20% / 0.16);
+}

@@ -1,0 +1,12 @@
+# MOREImmo
+
+> CRM-Portal von MOREImmo für B2C-Immobilieninvestments. Das Portal selbst ist nur für eingeloggte Nutzer zugänglich; öffentlich sind ausschließlich Karriere-, Impressums- und Datenschutzseiten.
+
+## Pages
+
+- [Karriere](/karriere): Offene Stellen und Bewerbungsmöglichkeiten bei MOREImmo.
+- [Vertriebspartner werden](/karriere/vertriebspartner-immobilien): Werde freier Vertriebspartner für Immobilieninvestments.
+- [Partner werden](/partner-werden): Einstieg als Partner bei MOREImmo.
+- [Impressum](/impressum): Anbieterkennzeichnung gemäß § 5 TMG.
+- [Datenschutz](/datenschutz): Datenschutzerklärung gemäß DSGVO.
+- [Login](/login): Zugang für bestehende Nutzer (interner Bereich).

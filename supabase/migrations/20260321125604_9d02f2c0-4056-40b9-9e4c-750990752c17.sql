@@ -1,0 +1,1 @@
+ALTER TABLE public.objekt_einreichungen ADD COLUMN IF NOT EXISTS akquisiteur_name text;

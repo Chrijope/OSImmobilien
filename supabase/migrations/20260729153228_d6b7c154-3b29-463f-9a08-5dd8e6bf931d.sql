@@ -1,0 +1,1 @@
+DELETE FROM public.aktivitaeten WHERE id IN ('5fb9cb38-2775-4704-a73e-53646948d025','a634267a-98bb-41c2-9bb9-3e0fd8c20d9d','f0b145df-813b-4e52-bb46-a1b50139eca5','e52e7cfc-2b86-4387-a1e0-dcfcbd5a0164');

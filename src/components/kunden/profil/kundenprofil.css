@@ -1,0 +1,372 @@
+/* Containerbreiten berücksichtigen die CRM-Seitenleiste, auch bei Browserzoom. */
+.kundenprofil { container-type: inline-size; min-width: 0; }
+.kundenprofil-layout { display: grid; grid-template-columns: 320px minmax(0, 1fr) 340px; gap: 18px; align-items: start; }
+.kundenprofil-layout[data-aktivitaeten="zu"] { grid-template-columns: 320px minmax(0, 1fr) 44px; }
+.kundenprofil-layout[data-aktivitaeten="ohne"] { grid-template-columns: 320px minmax(0, 1fr); }
+.kundenprofil-stammdaten, .kundenprofil-aktivitaeten { position: sticky; top: 0; min-width: 0; max-height: calc(100dvh - 115px); overflow-y: auto; scrollbar-width: thin; }
+.kundenprofil-mitte { min-width: 0; }
+.kundenprofil-person { padding: 20px; }
+.kundenprofil-felder { margin-top: 8px; }
+.kundenprofil-felder > div { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 8px; padding: 10px 0; border-bottom: 1px solid hsl(var(--border) / .6); font-size: 12px; }
+.kundenprofil-felder > div:last-child { border-bottom: 0; }
+.kundenprofil-felder dt { color: hsl(var(--muted-foreground)); }
+.kundenprofil-felder dd { overflow-wrap: anywhere; font-weight: 500; }
+.kundenprofil-arbeitskarte { border: 1px solid hsl(var(--border)); border-radius: var(--radius); background: hsl(var(--card)); min-width: 0; padding: 0 18px 18px; }
+/* `scroll-margin-top` gibt dem Sprung zur Reiterleiste nach einem
+   Reiterwechsel etwas Luft nach oben, sonst klebt sie am Rand. */
+.kundenprofil-navigation { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid hsl(var(--border)); padding: 10px 0; margin-bottom: 18px; scroll-margin-top: 8px; }
+.kundenprofil-navigation > * { min-width: 0; }
+.kundenprofil-inhalt { min-width: 0; overflow-wrap: anywhere; }
+/*
+ * Im Dokumentenreiter tragen am Schreibtisch die Schaltflächen je Investment,
+ * das Auswahlfeld daneben bleibt verborgen. Auf dem Telefon ist es umgekehrt,
+ * siehe die Handy-Regeln ganz unten. Die Grundregel muss hier oben stehen:
+ * Containerabfragen erhöhen die Spezifität nicht, es entscheidet die
+ * Reihenfolge, und die spätere Regel gewinnt.
+ */
+.kundendokumente-bereichswahl { display: none; }
+/* Breite Investmenttabellen bleiben innerhalb ihres Bereichs scrollbar. */
+.kundenprofil-inhalt > * { min-width: 0; max-width: 100%; }
+.kundenprofil-inhalt { overflow-x: auto; }
+.kundenprofil-kennzahlen { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 18px; }
+.kundenprofil-kennzahl { padding: 14px; min-width: 0; }
+.kundenprofil-kennzahl h3 { font-size: 10px; letter-spacing: .04em; text-transform: uppercase; color: hsl(var(--muted-foreground)); }
+.kundenprofil-kennzahl p { overflow-wrap: anywhere; }
+/* Die Ergebnis-Kaesten zu Terminen stehen in voller Breite unter den Kacheln. Ohne Termin faellt die Zeile weg. */
+.kundenprofil-terminkaesten { grid-column: 1 / -1; min-width: 0; display: grid; gap: 10px; }
+.kundenprofil-terminkaesten:empty { display: none; }
+/* Die aufgeklappten Listen (Aktionen, Aufgaben) stehen unter allen vier Kacheln, nicht neben ihnen. */
+.kundenprofil-aufgabenliste { grid-column: 1 / -1; min-width: 0; }
+.kundenprofil-aufgabenliste li { overflow-wrap: anywhere; }
+@container (max-width: 1399px) {
+  .kundenprofil-layout { grid-template-columns: 210px minmax(0, 1fr) 280px; gap: 12px; }
+  .kundenprofil-layout[data-aktivitaeten="zu"] { grid-template-columns: 210px minmax(0, 1fr) 44px; }
+  .kundenprofil-layout[data-aktivitaeten="ohne"] { grid-template-columns: 210px minmax(0, 1fr); }
+  .kundenprofil-person { padding: 14px; }
+  .kundenprofil-felder > div { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+}
+@container (max-width: 999px) {
+  .kundenprofil-layout, .kundenprofil-layout[data-aktivitaeten="zu"] { grid-template-columns: 210px minmax(0, 1fr) 44px; }
+  .kundenprofil-aktivitaeten { grid-column: 3; grid-row: 1; }
+  .kundenprofil-layout[data-aktivitaeten="offen"] .kundenprofil-aktivitaeten { overflow: visible; min-height: 44px; max-height: none; z-index: 40; }
+  /* Vier Kacheln nebeneinander werden hier zu schmal: zwei mal zwei. */
+  .kundenprofil-kennzahlen { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kundenprofil-layout[data-aktivitaeten="offen"] .kundenprofil-verlauf { position: absolute; top: 0; right: 0; width: min(340px, calc(100vw - 60px)); max-height: calc(100dvh - 115px); overflow-y: auto; scrollbar-width: thin; box-shadow: -8px 8px 30px hsl(var(--foreground) / .12); }
+}
+@container (max-width: 899px) {
+  .kundenprofil-layout, .kundenprofil-layout[data-aktivitaeten="zu"] { grid-template-columns: minmax(0, 1fr) 44px; gap: 10px; }
+  .kundenprofil-layout[data-aktivitaeten="ohne"] { grid-template-columns: minmax(0, 1fr); }
+  .kundenprofil-stammdaten { grid-column: 1; position: static; max-height: none; overflow: visible; }
+  .kundenprofil-mitte { grid-column: 1; }
+  .kundenprofil-aktivitaeten { grid-column: 2; grid-row: 1 / span 2; }
+  .kundenprofil-arbeitskarte { padding: 0 12px 12px; }
+}
+@container (max-width: 479px) {
+  .kundenprofil-kennzahlen { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .kundenprofil-navigation { gap: 2px; }
+  .kundenprofil-navigation button { padding-left: 7px; padding-right: 7px; font-size: 11px; }
+}
+.kundenprofil-verlauf { padding: 16px; }
+.kundenprofil-verlauf-kopf { display: flex; align-items: center; gap: 8px; }
+.kundenprofil-verlauf[data-offen="false"] { padding: 6px; }
+.kundenprofil-verlauf[data-offen="false"] .kundenprofil-verlauf-kopf { flex-direction: column; }
+.kundenprofil-verlauf[data-offen="false"] .kundenprofil-verlauf-marke { writing-mode: vertical-rl; order: 3; padding: 8px 0; font-size: 11px; font-weight: 600; letter-spacing: .06em; color: hsl(var(--muted-foreground)); white-space: nowrap; }
+.kundenprofil-verlauf[data-offen="false"] button { order: -1; margin-left: 0; }
+.kundenprofil-zeitlinie > [data-ui="card"] { border: 0; padding: 0; box-shadow: none; background: transparent; }
+/* Unter Liquid Glass wird die innere Karte trotzdem als Einlage gezeichnet,
+   die Regeln dort sind spezifischer. Ohne Innenabstand klebten „Verlauf",
+   „CSV Export" und die Blätterleiste dann am Rand der Einlage (06.10.2026). */
+[data-glas="liquid"] .kundenprofil-zeitlinie > [data-ui="card"] { padding: 12px 16px 16px; }
+.kundenprofil-zeitlinie .kundenprofil-verlauf-werkzeuge { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+.kundenprofil-zeitlinie .kundenprofil-verlauf-werkzeuge button { font-size: 11px; }
+.kundenprofil-zeitlinie table, .kundenprofil-zeitlinie tbody { display: block; width: 100%; }
+.kundenprofil-zeitlinie thead { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); }
+.kundenprofil-zeitlinie tr[data-art] { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; padding: 0 0 20px 18px; margin-left: 5px; border-bottom: 0; border-left: 1px solid hsl(var(--border)); }
+.kundenprofil-zeitlinie tr[data-art]::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: hsl(var(--primary)); box-shadow: 0 0 0 3px hsl(var(--card)); position: absolute; left: -4.5px; top: 7px; }
+.kundenprofil-zeitlinie tr[data-art="notiz"]::before { background: hsl(var(--brand-orange)); }
+.kundenprofil-zeitlinie tr[data-art]:last-child { border-left-color: transparent; }
+.kundenprofil-zeitlinie tr[data-art] td { padding: 3px 0; min-width: 0; overflow-wrap: anywhere; }
+.kundenprofil-zeitlinie tr[data-art] td:nth-child(1) { grid-column: 1; grid-row: 4; font-size: 10px; color: hsl(var(--muted-foreground)); }
+.kundenprofil-zeitlinie tr[data-art] td:nth-child(1) svg { display: none; }
+.kundenprofil-zeitlinie tr[data-art] td:nth-child(2) { grid-column: 1; grid-row: 1; font-size: 10px; color: hsl(var(--muted-foreground)); }
+.kundenprofil-zeitlinie tr[data-art] td:nth-child(3) { grid-column: 1 / -1; grid-row: 2; }
+.kundenprofil-zeitlinie tr[data-art] td:nth-child(4) { grid-column: 1 / -1; grid-row: 3; font-size: 12px; line-height: 1.6; }
+.kundenprofil-zeitlinie tr[data-art] td:nth-child(5) { grid-column: 2; grid-row: 1; }
+/* Favoriten im Reiter „Notizen" (28.09.2026): eigener Abschnitt oben, leicht getönt. */
+.kundenprofil-zeitlinie tr[data-abschnitt] { display: block; }
+.kundenprofil-zeitlinie tr[data-abschnitt] td { display: flex; align-items: center; gap: 6px; padding: 2px 0 8px; font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: hsl(var(--muted-foreground)); }
+.kundenprofil-zeitlinie tr[data-abschnitt="weitere"] td { padding-top: 10px; }
+.kundenprofil-zeitlinie tr[data-angepinnt="true"] { padding-top: 8px; padding-right: 6px; margin-bottom: 6px; border-radius: 0 10px 10px 0; background: hsl(38 92% 50% / .08); }
+.kundenprofil-zeitlinie tr[data-angepinnt="true"]::before { top: 15px; background: hsl(38 92% 50%); }
+.kundenprofil-mitte { container-type: inline-size; container-name: kundenprofil-mitte; }
+.kundenprofil-blaettern .flex { flex-wrap: wrap; justify-content: center; }
+/* Blätterleiste im Verlauf (06.10.2026): Zählung samt „Pro Seite" in einer
+   Zeile, Knöpfe in der nächsten, beide mittig. Die Leiste ist zu schmal für
+   links und rechts nebeneinander. */
+.kundenprofil-blaettern > div > .flex { flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+@container kundenprofil-mitte (max-width: 700px) {
+  .kundenprofil-inhalt .lg\:grid-cols-2, .kundenprofil-inhalt .lg\:grid-cols-3, .kundenprofil-inhalt .lg\:grid-cols-4 { grid-template-columns: minmax(0, 1fr); }
+  .kundenprofil-inhalt .lg\:col-span-2 { grid-column: auto; }
+}
+@container kundenprofil-mitte (max-width: 850px) {
+  .kundenprofil-inhalt > .grid { grid-template-columns: minmax(0, 1fr); }
+}
+/* Die globale Mobilregel für breite Datentabellen passt nicht zur Zeitleiste. */
+.kundenprofil-zeitlinie table { width: 100% !important; min-width: 0 !important; }
+.kundenprofil-zeitlinie td { white-space: normal; }
+.kundenprofil-zeitlinie > [data-ui="card"] { overflow-x: visible; }
+
+.kundenprofil-investment-layout { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 12px; align-items: start; }
+.kundenprofil-investment-layout[data-abschnitte="offen"] { grid-template-columns: 190px minmax(0, 1fr); }
+.kundenprofil-abschnitte { position: sticky; top: 8px; z-index: 10; }
+/*
+ * Damit die Abschnittsleiste beim Rollen wirklich stehen bleibt (05.10.2026).
+ *
+ * Sie trug `sticky` schon, klebte aber nie: `.kundenprofil-inhalt` hat
+ * `overflow-x: auto`, damit wird er zum Rollbereich, und `sticky` haftet an
+ * ihm statt an `main`. Er selbst rollt nie senkrecht, also rollte die Leiste
+ * einfach mit. `clip` schneidet waagerecht ebenso ab, ist aber kein
+ * Rollbereich. Nur im geöffneten Investment: Breite Tabellen dort rollen in
+ * ihrem eigenen Kasten, und waagerechtes Verschieben schnitt den Karten
+ * ohnehin den linken Rand ab (siehe `KundenprofilInvestmentBreite.test.ts`).
+ * Der Abstand unter der schwebenden Kopfleiste kommt vom Innenabstand von
+ * `main` (design-liquid.css), `top` misst ab dort.
+ */
+.kundenprofil-inhalt:has(.kundenprofil-investment-layout) { overflow-x: clip; }
+/*
+ * Investment untereinander in voller Breite (Christian, 05.10.2026): Alle
+ * Abschnitte stehen untereinander, nur Bonitätscheck und Bankprüfung bleiben
+ * nebeneinander (`.kp-zwei-spalten`). Die Kundenleiste links bleibt dabei
+ * stehen und fixiert (Christian, 06.10.2026).
+ */
+.kundenprofil-investment-layout .grid.lg\:grid-cols-2:not(.kp-zwei-spalten) { grid-template-columns: minmax(0, 1fr); }
+.kundenprofil-investment-layout .lg\:col-span-2 { grid-column: auto; }
+/* Das Sprungmenü gehört dem Telefon. Am Schreibtisch trägt die Leiste links. */
+.kundenprofil-abschnitte-mobil { display: none; }
+/*
+ * Auf dem Telefon fällt die Abschnittsleiste ganz weg.
+ *
+ * Christian hat sie am 17.09.2026 dafür freigegeben. Sie kostete selbst
+ * eingeklappt 48 Pixel plus Abstand, und davon hat ein Investment auf einem
+ * 375 Pixel breiten Bildschirm ein Fünftel seiner Breite verloren. Die
+ * Abschnitte stehen ohnehin untereinander, gescrollt wird also sowieso. Wer
+ * springen will, nimmt das Menü darüber.
+ */
+@container kundenprofil-mitte (max-width: 600px) {
+  .kundenprofil-investment-layout,
+  .kundenprofil-investment-layout[data-abschnitte="offen"] { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .kundenprofil-abschnitte { display: none; }
+  .kundenprofil-abschnitte-mobil { display: block; }
+}
+/* Der mobile Seitenrahmen darf für die rechte Leiste keinen eigenen Scrollbereich erzeugen. */
+main:has(> .kundenprofil) { overflow-x: clip; }
+
+.kundenprofil-verwaltung > div { display: flex; flex-direction: column; align-items: stretch; gap: 8px; margin-top: 16px; padding-top: 16px; border-top: 1px solid hsl(var(--border)); }
+.kundenprofil-verwaltung button { width: 100%; height: auto; min-height: 36px; white-space: normal; text-align: left; justify-content: flex-start; font-size: 12px; }
+.kundenprofil-verwaltung button svg { flex-shrink: 0; }
+.kundenprofil-verwaltung > div:empty { display: none; }
+
+/* ─────────────────────────────────────────────────────────────
+ * Dokumentenzeilen in Bonitätscheck und Bankprüfung
+ *
+ * Christian am 17.09.2026: „Datei anzeigen, bearbeiten und den Papierkorb in
+ * eine Zeile." Jedes Dokument brauchte bis zu vier Zeilen, bei zehn
+ * Pflichtdokumenten ein sehr langer Weg. Deshalb tragen Stift und Papierkorb
+ * kein Wort mehr, sondern nur noch ihr Symbol, siehe `DokumentSymbolKnopf` in
+ * `pages/KundenDetail.tsx`.
+ *
+ * Das gilt in jeder Größe, also am Schreibtisch genauso wie auf iPad und
+ * Telefon. Eine frühere Runde hatte die Zeile nur unterhalb von 600 Pixeln
+ * gestaucht, das war Christian ausdrücklich zu wenig.
+ * ───────────────────────────────────────────────────────────── */
+.kundenprofil-dokaktionen { align-items: center; }
+/*
+ * Stift und Papierkorb stehen als Paar am rechten Zeilenende.
+ *
+ * Anfangs stand nur der Papierkorb rechts, der Stift blieb links neben
+ * „Datei anzeigen". Gedanke war, mit der ganzen Restbreite dazwischen einen
+ * Fehlgriff zu verhindern. Christian wollte es am 17.09.2026 anders: Stift
+ * unmittelbar links neben dem Papierkorb, damit die Zeile ruhiger wirkt und
+ * die beiden Werkzeuge zusammengehörig aussehen.
+ *
+ * Gegen den Fehlgriff bleibt: beide Flächen mindestens 40 Pixel auf dem
+ * Telefon, der Abstand der Zeile dazwischen, der rote Papierkorb als Warnung
+ * und die Rückfrage vor dem Löschen. Das trägt auch ohne den großen Abstand.
+ *
+ * Geschoben wird der ERSTE der beiden (`bearbeiten`), der Papierkorb folgt
+ * ihm. Ein `margin-left: auto` am Papierkorb allein hätte die beiden wieder
+ * auseinandergezogen.
+ */
+.kundenprofil-dokaktionen [data-aktion="bearbeiten"] { margin-left: auto; }
+/*
+ * Ein Symbol ohne Wort ist nur so groß wie das Symbol. Damit man es trifft,
+ * bekommt die Fläche eine Mindestgröße: 32 Pixel mit der Maus, auf dem Telefon
+ * die vollen 40 wie überall. Die Höhe von 40 kommt schon aus der globalen
+ * Mobilschicht in `index.css` („Tap-Targets"), die Breite nicht.
+ */
+.kundenprofil-doksymbol {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 32px; min-height: 32px; border-radius: var(--radius);
+  transition: background-color .15s ease;
+}
+.kundenprofil-doksymbol:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
+@media (max-width: 767px) {
+  .kundenprofil-doksymbol { min-width: 40px; min-height: 40px; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * Knopfreihen in den Karten Reservierung und Finanzierung
+ *
+ * Christian am 17.09.2026: Die Knöpfe standen über dem Kastenrand. Zwei
+ * Gründe kamen zusammen. Erstens brach die Reihe nicht um. Zweitens trägt
+ * ein Knopf von Haus aus `white-space: nowrap` und eine feste Höhe, er kann
+ * also nicht schmaler werden als seine Beschriftung, und „Reservierung
+ * bearbeiten & erneut senden" ist auf einem Telefon breiter als die Karte.
+ *
+ * Hier darf die Reihe umbrechen, und der einzelne Knopf darf seine
+ * Beschriftung umbrechen und dabei wachsen, statt aus der Karte zu ragen.
+ * ───────────────────────────────────────────────────────────── */
+.kundenprofil-kartenaktionen { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
+/*
+ * `height: auto` lässt den Knopf mit seiner umgebrochenen Beschriftung
+ * wachsen. Damit einzeilige Knöpfe trotzdem so hoch bleiben wie bisher, hält
+ * `min-height` die bisherige Höhe: 36 Pixel für die normale kleine Größe,
+ * 28 für die Knöpfe, die im Quelltext ausdrücklich `h-7` tragen.
+ */
+.kundenprofil-kartenaktionen > button {
+  max-width: 100%; min-width: 0;
+  height: auto; min-height: 2.25rem; white-space: normal; text-align: left;
+  padding-top: .3rem; padding-bottom: .3rem;
+}
+.kundenprofil-kartenaktionen > button.h-7 { min-height: 1.75rem; }
+
+/* Innenliegende Kontur bleibt auch an Karten mit verdecktem Überlauf sichtbar.
+ * Projekt-Orange wie `data-abschnitt-hervorgehoben` in index.css. Bis zum
+ * 27.09.2026 stand hier --warning, im Liquid Glass ein dunkles Braun. */
+.kundenprofil [data-profil-sprungziel="aktiv"] {
+  outline: 3px solid hsl(var(--brand-orange));
+  outline-offset: -3px;
+  transition-property: background-color, border-color, color, box-shadow;
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * HANDY (Profilcontainer schmaler als 600 Pixel)
+ *
+ * Christian am 17.09.2026: „das Kundenprofil komplett mobilfähig
+ * machen". Auf einem 375 Pixel breiten Telefon bleiben nach dem
+ * Seitenrand 351 Pixel übrig. Davon gingen bisher 44 an die
+ * senkrechte Aktivitätenleiste und weitere 60 an die
+ * Abschnittsleiste des Investments. Der Arbeitsbereich war damit
+ * schmaler als die Hälfte des Bildschirms.
+ *
+ * Alles hier hängt an Containerabfragen. Der Schreibtisch sieht
+ * keine dieser Regeln: Dort ist die mittlere Spalte immer breiter.
+ * ───────────────────────────────────────────────────────────── */
+@container (max-width: 599px) {
+  /* Eine Spalte. Person, Arbeitsbereich, Verlauf, in dieser Reihenfolge. */
+  .kundenprofil-layout,
+  .kundenprofil-layout[data-aktivitaeten="zu"],
+  .kundenprofil-layout[data-aktivitaeten="ohne"] { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .kundenprofil-stammdaten { grid-column: 1; grid-row: auto; }
+  .kundenprofil-mitte { grid-column: 1; grid-row: auto; }
+  .kundenprofil-aktivitaeten {
+    grid-column: 1; grid-row: auto;
+    position: static; max-height: none; overflow: visible;
+  }
+  /*
+   * Die 999er-Regel legt den Verlauf als schwebende Karte über den
+   * Inhalt. Auf dem Telefon wäre das der halbe Bildschirm, und zwar
+   * sofort beim Öffnen, denn die Leiste ist standardmäßig offen.
+   * Hier steht er stattdessen in der Spalte, unter dem Arbeitsbereich.
+   */
+  .kundenprofil-layout[data-aktivitaeten="offen"] .kundenprofil-verlauf {
+    position: static; width: auto; max-height: none; overflow: visible; box-shadow: none;
+  }
+  /*
+   * Eingeklappt ist der Verlauf jetzt eine waagerechte Zeile statt
+   * einer 44 Pixel schmalen Leiste mit senkrecht gestelltem Wort.
+   */
+  .kundenprofil-verlauf[data-offen="false"] { padding: 8px 12px; }
+  .kundenprofil-verlauf[data-offen="false"] .kundenprofil-verlauf-kopf { flex-direction: row; }
+  .kundenprofil-verlauf[data-offen="false"] .kundenprofil-verlauf-marke {
+    writing-mode: horizontal-tb; order: 0; padding: 0; font-size: 14px; letter-spacing: normal;
+  }
+  .kundenprofil-verlauf[data-offen="false"] .kundenprofil-verlauf-kopf > button { order: 0; margin-left: auto; }
+  /*
+   * Der Pfeil zeigt hier nach oben und unten, denn der Verlauf klappt
+   * nach unten auf und nicht zur Seite. Gedreht statt ausgetauscht,
+   * damit dasselbe Bauteil beide Anordnungen bedienen kann.
+   */
+  .kundenprofil-verlauf .kundenprofil-verlauf-kopf > button svg { transform: rotate(-90deg); }
+  .kundenprofil-verlauf { padding: 12px; }
+
+  /* Der Personenblock hat wieder die volle Breite, also passen Beschriftung
+     und Wert nebeneinander. Das halbiert die Höhe der Kontaktdaten. */
+  .kundenprofil-person { padding: 16px; }
+  .kundenprofil-felder > div { grid-template-columns: 92px minmax(0, 1fr); gap: 8px; padding: 9px 0; }
+
+  .kundenprofil-arbeitskarte { padding: 0 10px 12px; }
+}
+
+@container kundenprofil-mitte (max-width: 599px) {
+  /* Vier gestapelte Kacheln sind sonst eine halbe Bildschirmlänge, bevor
+     der eigentliche Arbeitsbereich beginnt. */
+  .kundenprofil-kennzahlen { gap: 8px; margin-bottom: 12px; }
+  .kundenprofil-kennzahl { padding: 12px; }
+  .kundenprofil-navigation { padding: 8px 0; margin-bottom: 12px; }
+  /* Die Reiter sind Antippflächen, keine Wörter: 40 Pixel Höhe wie überall. */
+  .kundenprofil-navigation button { min-height: 40px; }
+  /*
+   * Karten im Arbeitsbereich tragen durchweg `p-6`, also 24 Pixel Rand
+   * auf jeder Seite. Von 331 Pixeln Kartenbreite bleiben damit 283 für
+   * den Inhalt. 14 Pixel reichen auf dem Telefon und geben 20 zurück.
+   */
+  .kundenprofil-inhalt .p-6 { padding: 0.875rem; }
+  /*
+   * Die Liste aller Investments, gestapelt statt als Tabelle.
+   *
+   * Sechs Spalten passen auf ein Telefon nicht nebeneinander. Die globale
+   * Mobilschicht macht daraus eine waagerecht scrollende Tabelle, dann steht
+   * die Pipelinestufe aber außerhalb des Bildschirms. Hier wird jede Zeile
+   * zu einem Block: Nummer und Papierkorb oben, darunter Objekt, Stufe,
+   * Unterlagenstand und nächster Schritt. Angeklickt wird weiterhin die
+   * ganze Zeile, der Behandler dafür bleibt unberührt.
+   *
+   * Aufbau wie bei der Zeitleiste weiter oben, damit im Profil nicht zwei
+   * verschiedene Verfahren für dieselbe Sache stehen.
+   */
+  .kundenprofil-investmentliste { overflow-x: visible; }
+  .kundenprofil-investmentliste table { width: 100% !important; min-width: 0 !important; }
+  .kundenprofil-investmentliste table, .kundenprofil-investmentliste tbody { display: block; }
+  .kundenprofil-investmentliste thead { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); }
+  .kundenprofil-investmentliste tbody tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 8px; padding: 10px 0; }
+  .kundenprofil-investmentliste tbody td { white-space: normal; padding: 0; overflow-wrap: anywhere; }
+  .kundenprofil-investmentliste tbody td:nth-child(1) { grid-column: 1; font-size: 13px; }
+  .kundenprofil-investmentliste tbody td:nth-child(2) { grid-column: 1 / -1; }
+  .kundenprofil-investmentliste tbody td:nth-child(3) { grid-column: 1 / -1; margin-top: 4px; }
+  .kundenprofil-investmentliste tbody td:nth-child(4),
+  .kundenprofil-investmentliste tbody td:nth-child(5) { grid-column: 1 / -1; font-size: 12px; }
+  /* Der Papierkorb bleibt oben rechts, neben der Nummer. */
+  .kundenprofil-investmentliste tbody td:nth-child(6) { grid-column: 2; grid-row: 1; }
+
+  /*
+   * Dokumentenreiter: Auswahlfeld statt fünf Schaltflächen.
+   * Siehe Begründung in `components/kunde/KundeDokumenteCard.tsx`.
+   */
+  .kundenprofil-inhalt .kundendokumente-bereichsknoepfe { display: none; }
+  .kundenprofil-inhalt .kundendokumente-bereichswahl { display: block; }
+}
+
+/*
+ * Der Verlauf steht auf dem Telefon in der Hauptspalte und nicht mehr in
+ * der schmalen Leiste. Deshalb hängen seine Regeln am Profilcontainer.
+ */
+@container (max-width: 599px) {
+  .kundenprofil-zeitlinie tr[data-art] { padding-bottom: 16px; }
+  /* Der Eintragstext ist das, was man liest. 12 Pixel sind dafür zu klein. */
+  .kundenprofil-zeitlinie tr[data-art] td:nth-child(4) { font-size: 13px; }
+  /* Stift und Papierkorb im Verlauf: quadratische Antippfläche.
+     Die Höhe kommt schon von der globalen Mobilschicht, die Breite nicht. */
+  .kundenprofil-zeitlinie td:nth-child(5) button,
+  .kundenprofil-zeitlinie td:nth-child(5) > span { min-width: 40px; }
+}

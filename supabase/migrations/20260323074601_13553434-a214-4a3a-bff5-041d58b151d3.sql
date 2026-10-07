@@ -1,0 +1,1 @@
+DELETE FROM investments WHERE id = '3821302b-2aa2-4038-b157-317cbb4fa47e';

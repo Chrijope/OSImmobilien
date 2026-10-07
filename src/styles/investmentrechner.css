@@ -1,0 +1,4290 @@
+/*
+ * Investmentrechner: Styles der Web-App „MORE Immo Investmentrechner",
+ * eins zu eins übernommen und vollständig unter .investmentrechner gescoped,
+ * damit die Originalklassen (.field, .button, table, .metric-card usw.) nicht
+ * ins restliche CRM leaken.
+ *
+ * Bewusste Abweichungen vom Original:
+ * - Farbvariablen folgen dem CI des CRM (Haus-Primär #0F1621, Akzent #0A6EDB),
+ *   Erfolgs- und Fehlerfarben kommen aus den Tokens --success und --destructive.
+ * - Keine Schriftfamilie: es gilt die Projektschrift (Tailwind sans-Stack).
+ * - Die Topbar-Regeln entfallen, die Aktionen sitzen im PageHeader.
+ * - Die Druckregeln greifen nur, solange der body die Klasse
+ *   investmentrechner-druck trägt (die Seite setzt sie beim Öffnen), sonst
+ *   würde diese Datei den Druck anderer CRM-Seiten leeren, sobald sie einmal
+ *   geladen wurde.
+ */
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Hell und dunkel
+   ─────────────────────────────────────────────────────────────────────────
+
+   Der Rechner folgt seit dem 22.09.2026 dem Modus, den der Nutzer oben im
+   Menü wählt. Eine Sache bleibt davon ausgenommen: das Dokument. Die Ansicht
+   „Berechnung" samt Vorschau und alles, was gedruckt wird, bleibt weiß mit
+   dunkler Schrift. Ein Blatt Papier ist weiß, und ein dunkel gedrucktes PDF
+   wäre nicht zu gebrauchen.
+
+   Technisch drei Schichten, alle nur über Variablen:
+
+     1. Der Block hier unten trägt die hellen Werte. Er gilt für die
+        Oberfläche im Hellmodus und über seine weiteren Selektoren
+        `.expose-document` und `.investmentrechner-print` auch dann, wenn
+        oben der Dunkelmodus gewählt ist. So stehen die Werte des Papiers
+        genau einmal in der Datei und können nicht auseinanderlaufen.
+     2. `.dark .investmentrechner` weiter unten ersetzt sie für die
+        Oberfläche. Dort stehen die Tokens des Haus-Designs aus index.css
+        (--card, --border, --foreground, --primary), damit hier keine zweite
+        Farbwelt entsteht.
+     3. Die Werte, die auf den dunklen Kacheln liegen (--auf-dunkel,
+        --blau-hell, --gruen-hell, --rot-hell), gelten in beiden Modi. Diese
+        Kacheln sind auch im Hellmodus dunkel.
+
+   Der Selektor des Dokuments ist eine Klasse länger als der des
+   Dunkelmodus, deshalb gewinnt er. Wer hier etwas ergänzt, ergänzt bitte
+   eine Variable und schreibt keine feste Farbe an eine Regel: Eine feste
+   Farbe kennt nur einen Modus, und im Dokument wäre sie nicht mehr
+   zurückzuholen.
+*/
+.investmentrechner,
+.dark .investmentrechner .expose-document,
+.dark .investmentrechner.investmentrechner-print {
+  /* Schrift, von kräftig nach leise. */
+  --ink: #0F1621;
+  --text-1: #3A4555;
+  --text-2: #4A5666;
+  --text-3: #5F6F82;
+  --muted: #7A8594;
+  --text-schwach: #9AA4B0;
+
+  /* Flächen und Linien. */
+  --flaeche: #fff;
+  --flaeche-leise: #F5F8FB;
+  --flaeche-hover: #E7ECF2;
+  --paper: #F4F7FA;
+  --linie-zart: #EEF1F5;
+  --line: #E3E8EE;
+  --linie-stark: #C9D1DB;
+  --linie-kraeftig: #A7B0BC;
+
+  /* Die dunklen Kacheln: Cashflowleiste, Kopfbild, Schlusskasten. */
+  --flaeche-dunkel: #0F1621;
+  --flaeche-dunkel-2: #1B2533;
+  --flaeche-dunkel-3: #132132;
+  --auf-dunkel: #fff;
+  --auf-dunkel-leise: #ACB7C4;
+  --auf-dunkel-schwach: #7E8A99;
+
+  /* Der gewählte Schalter, also aktive Umschalter und Nummernkreise. */
+  --flaeche-aktiv: #0F1621;
+  --auf-aktiv: #fff;
+  --schalter-knopf: #fff;
+
+  /* Blau, die Akzentfarbe des Rechners. */
+  --gold: #0A6EDB;
+  --gold-hover: #0862C4;
+  --gold-tief: #0466A9;
+  --gold-soft: #E6F0FB;
+  --gold-zart: #EFF5FC;
+  --gold-soft-hover: #D9E8FA;
+  --gold-linie: #C5D9F0;
+  --auf-akzent: #fff;
+  --blau-hell: #8AD0FF;
+  --balken-eigenkapital: #22304A;
+  /* Die Deckblätter seit dem 07.10.2026: Balken Immobilienwert und der eigene Beitrag in Orange. */
+  --balken-wert: #8EC5EE;
+  --orange-beitrag: #C8662B;
+
+  /* Grün und Rot. Die Grundtöne kommen aus den Tokens des Haus-Designs. */
+  --green: hsl(var(--success));
+  --green-soft: hsl(var(--success) / 0.12);
+  --gruen-tief: #1F7A47;
+  --gruen-hell: #5FE39A;
+  --gruen-hell-leise: #9FD9B6;
+  --gruen-zart: #F4F8F5;
+  --gruen-zart-linie: #CFE3D5;
+  --gruen-zart-hover: #E4EFE7;
+  --red: hsl(var(--destructive));
+  --red-soft: hsl(var(--destructive) / 0.1);
+  --rot-hell: #FF8A85;
+
+  /* Der warme Ton der Hinweise und der unsicheren Auslesewerte. */
+  --warn-text: #855324;
+  --warn-text-leise: #785F45;
+  --warn-flaeche: #FFF7EC;
+  --warn-flaeche-stark: #FFF3DF;
+  --warn-linie: #E6C89E;
+
+  /* Schatten. */
+  --shadow: 0 16px 50px #0F162114;
+  --schatten-karte: 0 6px 24px #0F162108;
+}
+
+/*
+  Der Dunkelmodus der Oberfläche. Er ersetzt nur Variablen, nie eine Regel:
+  Sobald hier eine feste Farbe an einem Bauteil stünde, nähme das Dokument
+  sie mit, und das Papier wäre nicht mehr weiß.
+
+  Die Zahlen sind an den Tokens aus index.css ausgerichtet: Die Karte liegt
+  bei 14 Prozent Helligkeit, der Grund bei 10. Die Schriftstufen darüber
+  halten auf der Karte mindestens 4,5:1, auch die leiseste.
+*/
+.dark .investmentrechner {
+  --ink: hsl(var(--foreground));
+  --text-1: hsl(200 12% 86%);
+  --text-2: hsl(200 10% 78%);
+  --text-3: hsl(200 9% 70%);
+  --muted: hsl(200 8% 64%);
+  --text-schwach: hsl(200 8% 56%);
+
+  --flaeche: hsl(var(--card));
+  --flaeche-leise: hsl(210 12% 17%);
+  --flaeche-hover: hsl(210 11% 25%);
+  --paper: hsl(var(--background));
+  --linie-zart: hsl(210 10% 19%);
+  --line: hsl(var(--border));
+  --linie-stark: hsl(210 9% 33%);
+  --linie-kraeftig: hsl(210 8% 44%);
+
+  /*
+    Die dunklen Kacheln kehren sich nicht um, sie werden heller als ihre
+    Umgebung. Bliebe die Kachel bei ihrem fast schwarzen Hellmodus-Wert,
+    verschwände sie im dunklen Grund und niemand sähe mehr, dass da eine
+    Kachel ist. Die Schrift darauf bleibt weiß, das trägt auch hier.
+  */
+  --flaeche-dunkel: hsl(210 14% 22%);
+  --flaeche-dunkel-2: hsl(210 13% 27%);
+  --flaeche-dunkel-3: hsl(210 13% 25%);
+  --auf-dunkel-schwach: hsl(210 10% 68%);
+  --flaeche-aktiv: hsl(210 11% 34%);
+  --schalter-knopf: hsl(210 15% 10%);
+
+  /*
+    Das Akzentblau wird hell (das Token --primary ist im Dunkelmodus ein
+    helles Blau). Damit muss die Schrift darauf dunkel werden, sonst steht
+    Weiß auf Hellblau.
+  */
+  --gold: hsl(var(--primary));
+  --gold-hover: hsl(204 100% 86%);
+  --gold-tief: hsl(204 85% 78%);
+  --gold-soft: hsl(204 42% 21%);
+  --gold-zart: hsl(204 38% 18%);
+  --gold-soft-hover: hsl(204 42% 27%);
+  --gold-linie: hsl(204 32% 36%);
+  --auf-akzent: hsl(var(--primary-foreground));
+  --balken-eigenkapital: hsl(212 32% 68%);
+
+  /*
+    --green und --green-soft bleiben, wie sie sind: --success ist im
+    Dunkelmodus unverändert und trägt auf dunklem Grund. Rot dagegen wird im
+    Haus-Design dunkler (--destructive 0 62% 35%), das wäre als Schriftfarbe
+    auf dunklem Grund nicht mehr zu lesen.
+  */
+  --gruen-tief: hsl(142 55% 66%);
+  --gruen-zart: hsl(142 20% 15%);
+  --gruen-zart-linie: hsl(142 18% 28%);
+  --gruen-zart-hover: hsl(142 20% 21%);
+  --red: hsl(0 78% 73%);
+  --red-soft: hsl(0 65% 60% / 0.18);
+
+  --warn-text: hsl(36 72% 74%);
+  --warn-text-leise: hsl(36 35% 66%);
+  --warn-flaeche: hsl(36 28% 15%);
+  --warn-flaeche-stark: hsl(36 32% 21%);
+  --warn-linie: hsl(36 28% 33%);
+
+  --shadow: 0 16px 50px rgb(0 0 0 / 0.45);
+  --schatten-karte: 0 6px 24px rgb(0 0 0 / 0.32);
+}
+
+.investmentrechner {
+  color: var(--ink);
+  line-height: 1.45;
+}
+.investmentrechner *,
+.investmentrechner *::before,
+.investmentrechner *::after {
+  box-sizing: border-box;
+}
+.investmentrechner button,
+.investmentrechner input,
+.investmentrechner select,
+.investmentrechner textarea {
+  font: inherit;
+}
+.investmentrechner button {
+  color: inherit;
+}
+/*
+ * Tailwind setzt Überschriften auf font-weight: inherit, das Original verlässt
+ * sich auf die fette Browservorgabe. Deshalb hier ausdrücklich fett.
+ */
+.investmentrechner h1,
+.investmentrechner h2,
+.investmentrechner h3,
+.investmentrechner h4 {
+  font-weight: 700;
+}
+.investmentrechner:not(.investmentrechner-print) {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.investmentrechner .brand-lockup,
+.investmentrechner .view-toggle,
+.investmentrechner .expose-brand-row,
+.investmentrechner .card-heading,
+.investmentrechner .chart-legend,
+.investmentrechner .expose-page-heading {
+  align-items: center;
+  display: flex;
+}
+.investmentrechner .brand-lockup {
+  white-space: nowrap;
+  gap: 10px;
+}
+.investmentrechner .brand-logo {
+  object-fit: contain;
+  border-radius: 4px;
+  width: auto;
+  height: 34px;
+  display: block;
+}
+.investmentrechner .expose-logo {
+  border-radius: 0;
+  height: 38px;
+}
+.investmentrechner .button {
+  cursor: pointer;
+  border: 1px solid #0000;
+  border-radius: 9px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 8px 14px;
+  font-size: 0.84rem;
+  font-weight: 720;
+  transition:
+    transform 0.16s,
+    background 0.16s,
+    border-color 0.16s;
+  display: inline-flex;
+}
+.investmentrechner .button:hover {
+  transform: translateY(-1px);
+}
+.investmentrechner .button-primary {
+  background: var(--gold);
+  color: var(--auf-akzent);
+}
+.investmentrechner .button-primary:hover {
+  background: var(--gold-hover);
+}
+.investmentrechner .full-width {
+  width: 100%;
+}
+.investmentrechner .workspace {
+  grid-template-columns: minmax(330px, 390px) minmax(0, 1fr);
+  min-height: calc(100vh - 70px);
+  display: grid;
+}
+.investmentrechner .input-panel {
+  border-right: 1px solid var(--line);
+  background: var(--flaeche-leise);
+}
+.investmentrechner .panel-heading {
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 26px 24px 18px;
+  display: flex;
+}
+.investmentrechner .eyebrow {
+  color: var(--gold);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  font-weight: 800;
+  display: block;
+}
+.investmentrechner .panel-heading h1,
+.investmentrechner .result-header h2,
+.investmentrechner .card-heading h3,
+.investmentrechner .section-title h2,
+.investmentrechner .expose-page h2,
+.investmentrechner .narrative-box h3 {
+  letter-spacing: -0.035em;
+  margin: 0;
+}
+.investmentrechner .panel-heading h1 {
+  margin-top: 4px;
+  font-size: 1.2rem;
+}
+.investmentrechner .section-nav {
+  border-bottom: 1px solid var(--line);
+  gap: 3px;
+  padding: 0 14px 17px;
+  display: grid;
+}
+.investmentrechner .section-button {
+  color: var(--text-3);
+  cursor: pointer;
+  text-align: left;
+  background: 0 0;
+  border: 0;
+  border-radius: 8px;
+  grid-template-columns: 22px 1fr 18px;
+  align-items: center;
+  width: 100%;
+  padding: 9px 12px;
+  font-size: 0.8rem;
+  font-weight: 650;
+  display: grid;
+}
+.investmentrechner .section-button svg:last-child {
+  opacity: 0;
+  transition: all 0.15s;
+  transform: translate(-3px);
+}
+.investmentrechner .section-button:hover,
+.investmentrechner .section-button.active {
+  background: var(--green-soft);
+  color: var(--ink);
+}
+.investmentrechner .section-button.active {
+  box-shadow: inset 3px 0 var(--green);
+}
+.investmentrechner .section-button.active svg:last-child,
+.investmentrechner .section-button:hover svg:last-child {
+  opacity: 1;
+  transform: translate(0);
+}
+/*
+  Objektvergleich, linkes Panel: Die Objektleiste erscheint erst ab dem zweiten
+  Objekt. Solange nur eines angelegt ist, steht am Ende der Bereichsliste nur
+  der dezente Knopf „Objekt zum Vergleich".
+*/
+.investmentrechner .object-bar {
+  border: 1px solid var(--line);
+  background: var(--flaeche);
+  border-radius: 10px;
+  margin: 0 14px 14px;
+  padding: 11px 12px 10px;
+}
+.investmentrechner .object-bar > small {
+  color: var(--muted);
+  margin-top: 8px;
+  font-size: 0.66rem;
+  line-height: 1.4;
+  display: block;
+}
+.investmentrechner .object-tabs {
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+  display: flex;
+}
+.investmentrechner .object-tab {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  align-items: stretch;
+  min-width: 0;
+  display: inline-flex;
+  overflow: hidden;
+}
+.investmentrechner .object-tab > button:first-child {
+  color: var(--text-2);
+  cursor: pointer;
+  background: 0 0;
+  border: 0;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  padding: 6px 9px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: inline-flex;
+}
+.investmentrechner .object-tab > button:first-child > span {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 128px;
+  overflow: hidden;
+}
+.investmentrechner .object-tab i {
+  color: var(--text-2);
+  background: var(--flaeche-hover);
+  border-radius: 5px;
+  flex: none;
+  justify-content: center;
+  align-items: center;
+  width: 18px;
+  height: 18px;
+  font-size: 0.6rem;
+  font-style: normal;
+  font-weight: 800;
+  display: inline-flex;
+}
+.investmentrechner .object-tab.active {
+  border-color: var(--gold);
+  background: var(--gold-soft);
+}
+.investmentrechner .object-tab.active > button:first-child {
+  color: var(--ink);
+}
+.investmentrechner .object-tab.active i {
+  background: var(--gold);
+  color: var(--auf-akzent);
+}
+.investmentrechner .object-tab-remove {
+  color: var(--text-schwach);
+  cursor: pointer;
+  background: 0 0;
+  border: 0;
+  border-left: 1px solid var(--line);
+  align-items: center;
+  padding: 0 7px;
+  display: inline-flex;
+}
+.investmentrechner .object-tab-remove:hover {
+  color: var(--red);
+  background: var(--red-soft);
+}
+.investmentrechner .object-add {
+  color: var(--gold);
+  cursor: pointer;
+  background: 0 0;
+  border: 1px dashed var(--gold-linie);
+  border-radius: 8px;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-top: 7px;
+  padding: 8px 10px;
+  font-size: 0.73rem;
+  font-weight: 700;
+  display: flex;
+}
+.investmentrechner .object-add:hover {
+  background: var(--gold-soft);
+}
+.investmentrechner .section-button.with-scope {
+  grid-template-columns: 22px 1fr auto 18px;
+}
+.investmentrechner .section-scope {
+  color: var(--gold-tief);
+  background: var(--gold-soft);
+  border-radius: 999px;
+  padding: 2px 7px;
+  font-size: 0.56rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.investmentrechner .section-scope.scope-all {
+  color: var(--text-2);
+  background: var(--flaeche-hover);
+}
+.investmentrechner .input-content {
+  padding: 24px;
+}
+.investmentrechner .input-section {
+  gap: 15px;
+  animation: 0.22s both enter;
+  display: grid;
+}
+@keyframes enter {
+  0% {
+    opacity: var(--tw-enter-opacity, 1);
+    transform: translate3d(
+        var(--tw-enter-translate-x, 0),
+        var(--tw-enter-translate-y, 0),
+        0
+      )
+      scale3d(
+        var(--tw-enter-scale, 1),
+        var(--tw-enter-scale, 1),
+        var(--tw-enter-scale, 1)
+      )
+      rotate(var(--tw-enter-rotate, 0));
+    filter: blur(var(--tw-enter-blur, 0));
+  }
+}
+.investmentrechner .section-title {
+  grid-template-columns: 34px 1fr;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 3px;
+  display: grid;
+}
+.investmentrechner .section-title > span {
+  background: var(--flaeche-aktiv);
+  color: var(--auf-aktiv);
+  border-radius: 50%;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  font-size: 0.67rem;
+  font-weight: 800;
+  display: inline-flex;
+}
+.investmentrechner .section-title h2 {
+  font-size: 1rem;
+}
+.investmentrechner .section-title p,
+.investmentrechner .result-header p {
+  color: var(--muted);
+  margin: 2px 0 0;
+  font-size: 0.75rem;
+}
+.investmentrechner .field,
+.investmentrechner .field-label,
+.investmentrechner .field-hint {
+  display: block;
+}
+.investmentrechner .field-label {
+  color: var(--text-2);
+  margin-bottom: 5px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.investmentrechner .field-hint {
+  color: var(--muted);
+  margin-top: 5px;
+  font-size: 0.67rem;
+  line-height: 1.45;
+}
+/*
+ * Info-Symbol neben dem Feld-Label. Der Tooltip-Inhalt selbst rendert Radix in
+ * einem Portal am Body und liegt damit ausserhalb von .investmentrechner, er
+ * wird deshalb über die Klassen der shadcn-Komponente gestaltet.
+ */
+.investmentrechner .field-info {
+  color: var(--muted);
+  cursor: help;
+  vertical-align: -2px;
+  margin-left: 4px;
+  transition: color 0.16s;
+  display: inline-flex;
+}
+.investmentrechner .field-info:hover,
+.investmentrechner .field-info:focus-visible {
+  color: var(--green);
+}
+.investmentrechner .toggle-field {
+  cursor: pointer;
+  background: var(--flaeche);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  grid-template-columns: 38px 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 11px;
+  display: grid;
+}
+.investmentrechner .toggle-field input {
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+}
+.investmentrechner .toggle-track {
+  background: var(--linie-stark);
+  border-radius: 99px;
+  width: 36px;
+  height: 21px;
+  transition: background 0.16s;
+  position: relative;
+}
+.investmentrechner .toggle-track i {
+  background: var(--schalter-knopf);
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  transition: transform 0.16s;
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  box-shadow: 0 1px 4px #0F16212E;
+}
+.investmentrechner .toggle-field input:checked + .toggle-track {
+  background: var(--green);
+}
+.investmentrechner .toggle-field input:checked + .toggle-track i {
+  transform: translate(15px);
+}
+.investmentrechner .toggle-field > span:last-child {
+  gap: 2px;
+  display: grid;
+}
+.investmentrechner .toggle-field strong {
+  font-size: 0.74rem;
+}
+.investmentrechner .toggle-field small {
+  color: var(--muted);
+  font-size: 0.64rem;
+}
+.investmentrechner .info-card {
+  border-left: 3px solid var(--green);
+  background: var(--green-soft);
+  border-radius: 4px 9px 9px 4px;
+  padding: 12px 13px;
+}
+.investmentrechner .info-card strong {
+  font-size: 0.74rem;
+}
+.investmentrechner .info-card p {
+  color: var(--text-2);
+  margin: 3px 0 0;
+  font-size: 0.67rem;
+  line-height: 1.5;
+}
+.investmentrechner .input-shell,
+.investmentrechner .select-shell,
+.investmentrechner .textarea-shell {
+  background: var(--flaeche);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  align-items: center;
+  min-height: 42px;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+  display: flex;
+}
+.investmentrechner .input-shell:focus-within,
+.investmentrechner .select-shell:focus-within,
+.investmentrechner .textarea-shell:focus-within {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px hsl(var(--success) / 0.1);
+}
+.investmentrechner .input-shell input,
+.investmentrechner .select-shell select,
+.investmentrechner .textarea-shell textarea {
+  width: 100%;
+  min-width: 0;
+  color: var(--ink);
+  background: 0 0;
+  border: 0;
+  outline: 0;
+  padding: 9px 11px;
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+.investmentrechner .select-shell select {
+  cursor: pointer;
+}
+.investmentrechner .textarea-shell textarea {
+  resize: vertical;
+  min-height: 112px;
+  line-height: 1.5;
+}
+.investmentrechner .input-suffix {
+  color: var(--muted);
+  flex: none;
+  padding-right: 11px;
+  font-size: 0.76rem;
+  font-weight: 650;
+}
+.investmentrechner .field-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 11px;
+  display: grid;
+}
+.investmentrechner .field-grid.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.investmentrechner .subheading {
+  color: var(--muted);
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  border-top: 1px solid var(--line);
+  margin-top: 3px;
+  padding-top: 14px;
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+.investmentrechner .calculated-line {
+  border-top: 1px solid var(--ink);
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding-top: 10px;
+  font-size: 0.77rem;
+  display: flex;
+}
+.investmentrechner .calculated-line strong {
+  white-space: nowrap;
+}
+/*
+ * Kaufnebenkosten: Umschaltung zwischen Bundesland und eigener Eingabe, dazu
+ * die Anzeige der gesetzten Sätze als Prozentsatz und Betrag.
+ */
+.investmentrechner .knk-weg {
+  border: 1px solid var(--line);
+  background: var(--flaeche);
+  border-radius: 9px;
+  gap: 3px;
+  padding: 3px;
+  display: flex;
+}
+.investmentrechner .knk-weg button {
+  color: var(--muted);
+  cursor: pointer;
+  background: 0 0;
+  border: 0;
+  border-radius: 6px;
+  flex: 1;
+  padding: 8px 10px;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+.investmentrechner .knk-weg button.active {
+  background: var(--flaeche-aktiv);
+  color: var(--auf-aktiv);
+}
+/* Rückt den Hinweis dicht unter das Bedienelement, zu dem er gehört. */
+.investmentrechner .knk-hinweis {
+  color: var(--muted);
+  margin: -8px 0 0;
+  font-size: 0.67rem;
+  line-height: 1.45;
+}
+.investmentrechner .knk-hinweis-warnung {
+  color: var(--warn-text);
+  font-weight: 700;
+}
+.investmentrechner .knk-saetze {
+  border: 1px solid var(--line);
+  background: var(--paper);
+  border-radius: 9px;
+  gap: 1px;
+  padding: 4px;
+  display: grid;
+}
+.investmentrechner .knk-saetze > div {
+  background: var(--flaeche);
+  border-radius: 6px;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 10px;
+  display: grid;
+}
+.investmentrechner .knk-saetze span {
+  color: var(--text-2);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.investmentrechner .knk-saetze b {
+  color: var(--muted);
+  white-space: nowrap;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+.investmentrechner .knk-saetze em {
+  white-space: nowrap;
+  font-size: 0.8rem;
+  font-style: normal;
+  font-weight: 800;
+}
+.investmentrechner .derived-loan {
+  background: var(--green-soft);
+  border: 1px solid hsl(var(--success) / 0.35);
+  border-radius: 10px;
+  grid-template-columns: 1fr auto;
+  gap: 1px 12px;
+  padding: 14px;
+  display: grid;
+}
+.investmentrechner .derived-loan span {
+  color: var(--text-2);
+  font-size: 0.73rem;
+  font-weight: 700;
+}
+.investmentrechner .derived-loan strong {
+  grid-row: span 2;
+  font-size: 1.15rem;
+}
+.investmentrechner .derived-loan small {
+  color: var(--muted);
+  font-size: 0.65rem;
+}
+.investmentrechner .summary-strip {
+  background: var(--flaeche-dunkel);
+  color: var(--auf-dunkel);
+  border-radius: 10px;
+  grid-template-columns: repeat(3, 1fr);
+  display: grid;
+  overflow: hidden;
+}
+.investmentrechner .summary-strip > span {
+  gap: 5px;
+  padding: 11px 9px;
+  display: grid;
+}
+.investmentrechner .summary-strip > span + span {
+  border-left: 1px solid #ffffff1c;
+}
+.investmentrechner .summary-strip small {
+  color: var(--auf-dunkel-leise);
+  font-size: 0.59rem;
+  line-height: 1.25;
+}
+.investmentrechner .summary-strip strong {
+  font-size: 0.75rem;
+}
+.investmentrechner .warning-card {
+  color: var(--warn-text);
+  background: var(--warn-flaeche);
+  border: 1px solid var(--warn-linie);
+  border-radius: 10px;
+  grid-template-columns: 24px 1fr;
+  gap: 10px;
+  padding: 13px;
+  display: grid;
+}
+.investmentrechner .warning-card strong {
+  font-size: 0.78rem;
+  display: block;
+}
+.investmentrechner .warning-card p {
+  color: var(--warn-text-leise);
+  margin: 3px 0 0;
+  font-size: 0.68rem;
+  line-height: 1.5;
+}
+.investmentrechner .document-upload {
+  min-height: 138px;
+  color: var(--green);
+  cursor: pointer;
+  text-align: center;
+  background: linear-gradient(145deg, var(--flaeche), var(--gruen-zart));
+  border: 1.5px dashed var(--linie-kraeftig);
+  border-radius: 12px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition:
+    border-color 0.16s,
+    transform 0.16s;
+  display: flex;
+}
+.investmentrechner .document-upload:hover {
+  border-color: var(--green);
+  transform: translateY(-1px);
+}
+.investmentrechner .document-upload.is-reading {
+  cursor: progress;
+  opacity: 0.8;
+}
+.investmentrechner .document-upload input {
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  position: absolute;
+}
+.investmentrechner .document-upload strong {
+  color: var(--ink);
+  margin-top: 8px;
+  font-size: 0.79rem;
+}
+.investmentrechner .document-upload span {
+  color: var(--muted);
+  margin-top: 4px;
+  font-size: 0.64rem;
+}
+.investmentrechner .spin {
+  animation: 0.9s linear infinite spin;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.investmentrechner .document-list {
+  gap: 6px;
+  display: grid;
+}
+.investmentrechner .document-row {
+  background: var(--flaeche);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  grid-template-columns: 30px minmax(0, 1fr) 28px;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  display: grid;
+}
+.investmentrechner .document-row.status-manual {
+  background: var(--warn-flaeche);
+  border-color: var(--warn-linie);
+}
+.investmentrechner .document-row.status-error {
+  background: var(--red-soft);
+  border-color: hsl(var(--destructive) / 0.35);
+}
+.investmentrechner .document-icon {
+  background: var(--green-soft);
+  width: 28px;
+  height: 28px;
+  color: var(--green);
+  border-radius: 7px;
+  justify-content: center;
+  align-items: center;
+  display: inline-flex;
+}
+.investmentrechner .document-name {
+  gap: 2px;
+  min-width: 0;
+  display: grid;
+}
+.investmentrechner .document-name strong,
+.investmentrechner .document-name small {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.investmentrechner .document-name strong {
+  font-size: 0.7rem;
+}
+.investmentrechner .document-name small {
+  color: var(--muted);
+  font-size: 0.6rem;
+}
+.investmentrechner .document-row button {
+  width: 28px;
+  height: 28px;
+  color: var(--muted);
+  cursor: pointer;
+  background: 0 0;
+  border: 0;
+  border-radius: 7px;
+  justify-content: center;
+  align-items: center;
+  display: inline-flex;
+}
+.investmentrechner .document-row button:hover {
+  color: var(--red);
+  background: var(--flaeche-hover);
+}
+.investmentrechner .source-excerpt {
+  background: var(--flaeche-leise);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 11px;
+}
+.investmentrechner .source-excerpt summary {
+  cursor: pointer;
+  padding: 9px 0;
+  font-size: 0.68rem;
+  font-weight: 720;
+}
+.investmentrechner .source-excerpt p {
+  color: var(--muted);
+  margin: 0 0 10px;
+  font-size: 0.62rem;
+  line-height: 1.5;
+}
+.investmentrechner .photo-upload {
+  min-height: 130px;
+  color: var(--green);
+  cursor: pointer;
+  text-align: center;
+  background: var(--flaeche);
+  border: 1.5px dashed var(--linie-stark);
+  border-radius: 12px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+.investmentrechner .photo-upload input {
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  position: absolute;
+}
+/*
+ * Bilder lassen sich auch in das Feld ziehen. Solange eine Datei darüber
+ * schwebt, wird der gestrichelte Rand zu einer durchgezogenen grünen Linie und
+ * der Grund färbt sich. Ohne dieses Zeichen weiß niemand, ob er an der
+ * richtigen Stelle loslässt, und probiert es lieber gar nicht erst.
+ */
+.investmentrechner .photo-upload-zieht {
+  background: var(--green-soft);
+  border-style: solid;
+  border-color: var(--green);
+}
+.investmentrechner .photo-upload strong {
+  color: var(--ink);
+  margin-top: 7px;
+  font-size: 0.8rem;
+}
+.investmentrechner .photo-upload span {
+  color: var(--muted);
+  margin-top: 3px;
+  font-size: 0.67rem;
+}
+.investmentrechner .photo-grid-input {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+  display: grid;
+}
+.investmentrechner .photo-grid-input > div {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  cursor: grab;
+}
+/*
+ * Die Reihenfolge der Bilder lässt sich mit der Maus ändern, das erste ist das
+ * Titelbild. Zwei Zeichen dafür: Das Bild, das gerade gezogen wird, tritt
+ * zurück, und die Stelle, an der es landen würde, bekommt einen Rahmen. Ohne
+ * das zweite Zeichen lässt man irgendwo los und hofft.
+ */
+.investmentrechner .photo-grid-input > div.foto-geschoben {
+  opacity: 0.4;
+}
+.investmentrechner .photo-grid-input > div.foto-ziel {
+  outline: 2px solid var(--green);
+  outline-offset: -2px;
+}
+.investmentrechner .photo-hint {
+  color: var(--muted);
+  margin: 7px 0 0;
+  font-size: 0.67rem;
+}
+.investmentrechner .photo-grid-input img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+/*
+  Der Knopf zum Entfernen liegt auf dem Bild, nicht auf der Oberfläche.
+  Deshalb bleibt er in beiden Modi dunkel mit weißer Schrift: Was ihn tragen
+  muss, ist das Foto darunter, und das kennt keinen Hell- und Dunkelmodus.
+*/
+.investmentrechner .photo-grid-input button {
+  color: #fff;
+  cursor: pointer;
+  background: #0F1621D1;
+  border: 0;
+  border-radius: 50%;
+  justify-content: center;
+  align-items: center;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+.investmentrechner .photo-grid-input > div > span {
+  background: var(--gold);
+  color: var(--auf-akzent);
+  text-transform: uppercase;
+  border-radius: 4px;
+  padding: 2px 5px;
+  font-size: 0.56rem;
+  font-weight: 800;
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+}
+.investmentrechner .result-panel {
+  min-width: 0;
+  padding: 30px clamp(20px, 3vw, 44px) 60px;
+}
+.investmentrechner .result-header {
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  margin-bottom: 24px;
+  display: flex;
+}
+.investmentrechner .result-header h2 {
+  max-width: 780px;
+  margin-top: 5px;
+  font-size: clamp(1.35rem, 2.2vw, 2rem);
+}
+.investmentrechner .view-toggle {
+  border: 1px solid var(--line);
+  background: var(--flaeche);
+  border-radius: 9px;
+  flex: none;
+  gap: 3px;
+  padding: 3px;
+}
+.investmentrechner .view-toggle button {
+  color: var(--muted);
+  cursor: pointer;
+  background: 0 0;
+  border: 0;
+  border-radius: 6px;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  display: inline-flex;
+}
+.investmentrechner .view-toggle button.active {
+  background: var(--flaeche-aktiv);
+  color: var(--auf-aktiv);
+}
+.investmentrechner .analysis-content {
+  gap: 18px;
+  display: grid;
+}
+/* Acht Kacheln in zwei Reihen zu je vier, siehe Kennzahlen in Auswertungen.tsx. */
+.investmentrechner .metrics-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 9px;
+  display: grid;
+}
+.investmentrechner .expose-metrics {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 9px;
+  display: grid;
+}
+.investmentrechner .metric-card {
+  border: 1px solid var(--line);
+  background: var(--flaeche);
+  border-top: 3px solid var(--linie-stark);
+  border-radius: 9px;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100px;
+  padding: 13px;
+  display: flex;
+}
+/*
+  Zwei Zeilen sind für die Beschriftung fest reserviert. Dadurch beginnt der
+  Wert in jeder Karte auf derselben Höhe, auch wenn eine Beschriftung nur eine
+  Zeile braucht. Lange Wörter brechen um, statt über den Kartenrand zu laufen.
+*/
+.investmentrechner .metric-card > span {
+  color: var(--text-3);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.65rem;
+  font-weight: 780;
+  line-height: 1.25;
+  min-height: 2.5em;
+  overflow-wrap: anywhere;
+}
+.investmentrechner .metric-card strong {
+  letter-spacing: -0.035em;
+  font-size: clamp(0.93rem, 1.55vw, 1.24rem);
+  overflow-wrap: anywhere;
+}
+.investmentrechner .metric-card small {
+  color: var(--muted);
+  margin-top: 4px;
+  font-size: 0.55rem;
+  line-height: 1.25;
+}
+.investmentrechner .metric-gold {
+  border-top-color: var(--gold);
+}
+.investmentrechner .metric-gold strong {
+  color: var(--gold-tief);
+}
+.investmentrechner .metric-green {
+  border-top-color: var(--green);
+}
+.investmentrechner .metric-green strong {
+  color: var(--green);
+}
+.investmentrechner .metric-red {
+  border-top-color: var(--red);
+}
+.investmentrechner .metric-red strong {
+  color: var(--red);
+}
+/*
+  Nimmt zwei der sechs Spalten ein. So fuellen beide Kennzahlzeilen die Breite
+  voll aus: oben die Kreditrate neben der Kaltmiete, unten das Gesamtvermoegen
+  als Abschluss.
+*/
+.investmentrechner .metric-wide {
+  grid-column: span 2;
+}
+/*
+  Die hervorgehobene Zeile unter den Kennzahlen. Sie traegt die drei Zahlen,
+  nach denen ein Kunde tatsaechlich entscheidet: Cashflow vor und nach Steuer
+  und der Steuereffekt im ersten Jahr. Die monatliche Kreditrate stand hier
+  frueher allein und gross; sie ist eine Zwischengroesse und sitzt jetzt als
+  doppelt breites Kaestchen oben neben der Kaltmiete.
+
+  Der gruene Streifen und der dunkle Grund heben die Zeile heraus. Der Wert
+  selbst folgt dem Vorzeichen: eine Minuszahl bleibt rot, damit die Farbe nie
+  etwas anderes behauptet als die Zahl.
+*/
+.investmentrechner .cashflow-band {
+  background: var(--flaeche-dunkel);
+  border-radius: 11px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2px;
+  display: grid;
+  overflow: hidden;
+}
+
+/*
+  Seit dem 25.09.2026 zwei Reihen. Oben die geteilte Cashflow-Kachel und der
+  Vermoegensaufbau, die Cashflow-Kachel etwas breiter, weil sie zwei Zahlen
+  traegt. Darunter drei gleich breite Kacheln: Gesamtvermoegen, Steuereffekt
+  im ersten Jahr und Steuereffekt ueber den ganzen Zeitraum.
+*/
+.investmentrechner .cashflow-band--oben {
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+}
+.investmentrechner .cashflow-band--drei {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 10px;
+}
+/* Die geteilte Kachel: oben vor Steuer, darunter nach Steuer, durch eine Linie getrennt. */
+.investmentrechner .cashflow-band .cashflow-geteilt {
+  align-content: start;
+  gap: 8px;
+}
+.investmentrechner .cashflow-band .cashflow-teil {
+  gap: 2px;
+  display: grid;
+}
+.investmentrechner .cashflow-band .cashflow-teil + .cashflow-teil {
+  border-top: 1px solid var(--flaeche-dunkel-2);
+  padding-top: 8px;
+}
+/* Die Eigenkapitalrendite unten in der Kachel Vermoegensaufbau (30.09.2026), durch eine Linie abgesetzt. */
+.investmentrechner .cashflow-band .ekr-teil {
+  border-top: 1px solid var(--flaeche-dunkel-2);
+  margin-top: 8px;
+  padding-top: 8px;
+}
+/* Auf dem A4-Blatt ist die Hoehe fest: Ueberschrift und Zahl stehen in einer
+   Zeile, die Abstaende sind knapper. So bleibt das Teilstueck innerhalb der
+   Hoehe, die die geteilte Cashflow-Kachel daneben ohnehin vorgibt. */
+.investmentrechner .expose-page .cashflow-band .ekr-teil {
+  row-gap: 0.2mm;
+  margin-top: 0.6mm;
+  padding-top: 0.8mm;
+}
+.investmentrechner .expose-page .cashflow-band .ekr-teil > .rechenweg,
+.investmentrechner .expose-page .cashflow-band .ekr-teil > small:not(.cashflow-teil-label) {
+  margin-top: 0;
+  line-height: 1.25;
+}
+/* Zahl links, Beschriftung direkt dahinter, auf einer Grundlinie. */
+.investmentrechner .cashflow-band .ekr-teil .ekr-zeile {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0 8px;
+}
+.investmentrechner .cashflow-band .cashflow-teil-label {
+  color: var(--auf-dunkel-leise);
+  font-size: 0.68rem;
+  font-weight: 650;
+}
+.investmentrechner .cashflow-band .cashflow-teil strong {
+  font-size: clamp(1.15rem, 1.7vw, 1.65rem);
+}
+.investmentrechner .cashflow-band > div {
+  background: var(--flaeche-dunkel-3);
+  border-left: 4px solid var(--green);
+  align-content: center;
+  gap: 4px;
+  min-height: 94px;
+  padding: 18px 20px;
+  display: grid;
+}
+/* Oben bündig: Mit den Rechenwegen sind die Kacheln verschieden hoch, mittig
+   gesetzt stünden die Überschriften einer Reihe auf verschiedenen Höhen. */
+.investmentrechner .cashflow-band--oben > div,
+.investmentrechner .cashflow-band--drei > div {
+  align-content: start;
+}
+.investmentrechner .cashflow-band span {
+  color: var(--gruen-hell-leise);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+.investmentrechner .cashflow-band strong {
+  color: var(--gruen-hell);
+  letter-spacing: -0.04em;
+  font-size: clamp(1.3rem, 2vw, 2rem);
+}
+.investmentrechner .cashflow-band small {
+  color: var(--auf-dunkel-schwach);
+  font-size: 0.67rem;
+}
+.investmentrechner .cashflow-band .negativ strong {
+  color: var(--rot-hell);
+}
+/* Der Steuereffekt ist keine Cashflow-Groesse, deshalb blau statt gruen. */
+.investmentrechner .cashflow-band .steuer {
+  background: var(--flaeche-dunkel-2);
+  border-left-color: var(--blau-hell);
+}
+.investmentrechner .cashflow-band .steuer span {
+  color: var(--auf-dunkel-leise);
+}
+.investmentrechner .cashflow-band .steuer strong {
+  color: var(--blau-hell);
+}
+.investmentrechner .cashflow-band .steuer.negativ strong {
+  color: var(--rot-hell);
+}
+.investmentrechner .tax-profile-grid {
+  background: var(--line);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  margin: 18px 20px 20px;
+  display: grid;
+}
+.investmentrechner .tax-profile-grid > div {
+  background: var(--flaeche-leise);
+  gap: 5px;
+  min-width: 0;
+  padding: 13px 14px;
+  display: grid;
+}
+.investmentrechner .tax-profile-grid span {
+  color: var(--muted);
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+  font-size: 0.62rem;
+  font-weight: 760;
+}
+.investmentrechner .tax-profile-grid strong {
+  letter-spacing: -0.025em;
+  font-size: 0.93rem;
+}
+.investmentrechner .tax-profile-grid .tax-profile-total {
+  background: var(--flaeche-dunkel);
+  color: var(--auf-dunkel);
+}
+.investmentrechner .tax-profile-grid .tax-profile-total span {
+  color: var(--auf-dunkel-leise);
+}
+.investmentrechner .tax-profile-grid .tax-profile-total strong {
+  color: var(--blau-hell);
+}
+.investmentrechner .input-section > .tax-profile-grid.compact {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+.investmentrechner .input-section > .tax-profile-grid.compact > div {
+  padding: 10px;
+}
+.investmentrechner .input-section > .tax-profile-grid.compact strong {
+  font-size: 0.78rem;
+}
+.investmentrechner .composition-wrap {
+  padding: 18px 20px;
+}
+.investmentrechner .composition-bar {
+  background: var(--line);
+  border-radius: 4px;
+  min-height: 22px;
+  display: flex;
+  overflow: hidden;
+}
+.investmentrechner .composition-bar span {
+  min-width: 0;
+}
+.investmentrechner .composition-equity {
+  background: var(--balken-eigenkapital);
+}
+.investmentrechner .composition-principal {
+  background: var(--green);
+}
+/* KfW-Tilgungszuschuss, seit dem 07.10.2026: neben der Tilgung, aber heller, weil der Kunde ihn nicht zahlt. */
+.investmentrechner .composition-grant {
+  background: var(--green-soft);
+  box-shadow: inset 0 0 0 1px var(--green);
+}
+.investmentrechner .composition-legend:has(> :nth-child(5)) {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+.investmentrechner .composition-value {
+  background: var(--gold);
+}
+.investmentrechner .composition-tax {
+  background: var(--blau-hell);
+}
+.investmentrechner .composition-legend {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+  display: grid;
+}
+.investmentrechner .composition-legend > span {
+  grid-template-columns: 8px 1fr;
+  column-gap: 7px;
+  display: grid;
+}
+.investmentrechner .composition-legend i {
+  border-radius: 2px;
+  grid-row: span 2;
+  width: 8px;
+  height: 8px;
+  margin-top: 3px;
+}
+.investmentrechner .composition-legend small {
+  color: var(--muted);
+  font-size: 0.6rem;
+}
+.investmentrechner .composition-legend strong {
+  font-size: 0.71rem;
+}
+.investmentrechner .visual-grid {
+  border-top: 1px solid var(--line);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: grid;
+}
+.investmentrechner .visual-grid > div {
+  min-width: 0;
+  padding: 16px 18px 18px;
+}
+.investmentrechner .visual-grid > div + div {
+  border-left: 1px solid var(--line);
+}
+.investmentrechner .visual-grid h4 {
+  margin: 0 0 8px;
+  font-size: 0.78rem;
+}
+.investmentrechner .mini-chart svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.investmentrechner .mini-chart .chart-line {
+  stroke-width: 2.5px;
+}
+/*
+  Objektvergleich, rechtes Panel: zwei Objektkarten, die Gegenüberstellung mit
+  Unterschiedsspalte und beide Vermögenskurven in einem Diagramm.
+*/
+.investmentrechner .compare-cards {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  display: grid;
+}
+.investmentrechner .compare-card {
+  border: 1px solid var(--line);
+  background: var(--flaeche);
+  border-top: 3px solid var(--linie-stark);
+  border-radius: 11px;
+  min-width: 0;
+  overflow: hidden;
+}
+.investmentrechner .compare-card.side-a {
+  border-top-color: var(--gold);
+}
+.investmentrechner .compare-card.side-b {
+  border-top-color: var(--green);
+}
+.investmentrechner .compare-card-head {
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  display: flex;
+}
+.investmentrechner .compare-card-head > div {
+  min-width: 0;
+}
+.investmentrechner .compare-card-head small {
+  color: var(--muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.56rem;
+  font-weight: 800;
+  display: block;
+}
+.investmentrechner .compare-card-head strong {
+  letter-spacing: -0.02em;
+  margin-top: 3px;
+  font-size: 0.92rem;
+  display: block;
+}
+.investmentrechner .compare-card-head > div > span {
+  color: var(--muted);
+  font-size: 0.7rem;
+  display: block;
+}
+.investmentrechner .compare-card-head > b {
+  color: var(--ink);
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+  font-size: 1rem;
+}
+.investmentrechner .compare-card-values {
+  background: var(--line);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  display: grid;
+}
+.investmentrechner .compare-card-values > div {
+  background: var(--flaeche);
+  min-width: 0;
+  padding: 9px 11px;
+}
+.investmentrechner .compare-card-values small {
+  color: var(--text-3);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+  font-size: 0.52rem;
+  font-weight: 800;
+  display: block;
+}
+.investmentrechner .compare-card-values b {
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.82rem;
+}
+.investmentrechner .compare-verdict {
+  background: var(--gold-soft);
+  border-top: 1px solid var(--gold-linie);
+  border-bottom: 1px solid var(--gold-linie);
+  border-left: 3px solid var(--gold);
+  margin: 14px 0 0;
+  padding: 10px 16px;
+}
+.investmentrechner .compare-verdict small {
+  color: var(--text-2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 0.55rem;
+  font-weight: 800;
+  display: block;
+}
+.investmentrechner .compare-verdict p {
+  color: var(--ink);
+  margin: 3px 0 0;
+  font-size: 0.8rem;
+  font-weight: 650;
+}
+.investmentrechner .compare-table th.side-a {
+  color: var(--gold);
+}
+.investmentrechner .compare-table th.side-b {
+  color: var(--green);
+}
+.investmentrechner .compare-table tr.compare-group td {
+  color: var(--text-3);
+  background: var(--flaeche-leise);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 6px 8px;
+  font-size: 0.55rem;
+  font-weight: 800;
+}
+.investmentrechner .compare-table td.compare-label {
+  white-space: normal;
+}
+.investmentrechner .compare-table td.compare-label small {
+  color: var(--muted);
+  font-size: 0.6rem;
+  font-weight: 500;
+  display: block;
+}
+.investmentrechner .compare-better {
+  color: var(--gruen-tief);
+  background: var(--green-soft);
+  border-radius: 5px;
+  margin-left: 6px;
+  padding: 1px 6px;
+  font-size: 0.53rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.investmentrechner .compare-fineprint {
+  color: var(--muted);
+  border-top: 1px solid var(--line);
+  margin: 0;
+  padding: 10px 20px 14px;
+  font-size: 0.65rem;
+  line-height: 1.5;
+}
+.investmentrechner .content-card,
+.investmentrechner .method-card {
+  border: 1px solid var(--line);
+  background: var(--flaeche);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--schatten-karte);
+}
+.investmentrechner .card-heading {
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 20px 0;
+}
+.investmentrechner .card-heading h3 {
+  margin-top: 3px;
+  font-size: 1.05rem;
+}
+.investmentrechner .period-pill {
+  background: var(--green-soft);
+  color: var(--green);
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 0.69rem;
+  font-weight: 800;
+}
+.investmentrechner .text-button {
+  background: var(--green-soft);
+  color: var(--green);
+  cursor: pointer;
+  border: 0;
+  border-radius: 7px;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  font-size: 0.69rem;
+  font-weight: 760;
+  display: inline-flex;
+}
+.investmentrechner .document-insights {
+  background: var(--line);
+  grid-template-columns: 1.25fr 0.75fr;
+  gap: 1px;
+  margin: 18px 20px 20px;
+  display: grid;
+}
+.investmentrechner .document-insights > section {
+  background: var(--flaeche-leise);
+  min-width: 0;
+  padding: 17px;
+}
+.investmentrechner .document-insights .renovation-insight {
+  grid-column: 1/-1;
+}
+.investmentrechner .insight-label {
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 11px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  display: block;
+}
+.investmentrechner .energy-scale-wrap {
+  grid-template-columns: minmax(0, 1fr) 118px;
+  align-items: center;
+  gap: 15px;
+  display: grid;
+}
+.investmentrechner .energy-scale {
+  border-radius: 4px;
+  grid-template-columns: repeat(9, 1fr);
+  align-items: center;
+  min-height: 44px;
+  display: grid;
+  overflow: visible;
+}
+.investmentrechner .energy-scale > span {
+  color: #fff;
+  text-shadow: 0 1px 2px #0003;
+  justify-content: center;
+  align-items: center;
+  height: 29px;
+  font-size: 0.62rem;
+  transition:
+    height 0.16s,
+    transform 0.16s;
+  display: flex;
+}
+.investmentrechner .energy-scale > span:first-child {
+  border-radius: 4px 0 0 4px;
+}
+.investmentrechner .energy-scale > span:last-child {
+  border-radius: 0 4px 4px 0;
+}
+.investmentrechner .energy-scale > span.active {
+  z-index: 1;
+  border: 2px solid #fff;
+  border-radius: 5px;
+  height: 42px;
+  transform: scaleX(1.08);
+  box-shadow: 0 3px 12px #0F162147;
+}
+/*
+  Die neun Farben der Energieskala bleiben in beiden Modi dieselben. Sie sind
+  keine Gestaltung, sondern die Skala vom Energieausweis: Grün heißt dort A,
+  Rot heißt H. Wer sie an den Modus koppelte, änderte eine Aussage über das
+  Objekt. Die weiße Beschriftung und der weiße Rahmen der aktiven Stufe
+  gehören dazu, sie liegen immer auf diesen kräftigen Farben.
+*/
+.investmentrechner .energy-Aplus {
+  background: #2e8b57;
+}
+.investmentrechner .energy-A {
+  background: #57a64e;
+}
+.investmentrechner .energy-B {
+  background: #89ba46;
+}
+.investmentrechner .energy-C {
+  background: #c1c63e;
+}
+.investmentrechner .energy-D {
+  background: #e3c737;
+}
+.investmentrechner .energy-E {
+  background: #e9a932;
+}
+.investmentrechner .energy-F {
+  background: #df7d2e;
+}
+.investmentrechner .energy-G {
+  background: #d55332;
+}
+.investmentrechner .energy-H {
+  background: #ae3531;
+}
+.investmentrechner .energy-scale-value {
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 1px 8px;
+  display: grid;
+}
+.investmentrechner .energy-scale-value span {
+  color: var(--muted);
+  text-transform: uppercase;
+  font-size: 0.58rem;
+  font-weight: 750;
+}
+.investmentrechner .energy-scale-value strong {
+  color: var(--ink);
+  grid-row: span 2;
+  font-size: 1.8rem;
+  line-height: 1;
+}
+.investmentrechner .energy-scale-value small {
+  color: var(--muted);
+  font-size: 0.58rem;
+}
+.investmentrechner .energy-scale-wrap.compact {
+  grid-template-columns: 1fr 94px;
+  gap: 9px;
+}
+.investmentrechner .energy-scale-wrap.compact .energy-scale-value strong {
+  font-size: 1.4rem;
+}
+.investmentrechner .insight-meta {
+  background: var(--line);
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  margin-top: 13px;
+  display: grid;
+}
+.investmentrechner .insight-meta > span {
+  background: var(--flaeche);
+  gap: 3px;
+  padding: 9px;
+  display: grid;
+}
+.investmentrechner .insight-meta small,
+.investmentrechner .reserve-unit span {
+  color: var(--muted);
+  text-transform: uppercase;
+  font-size: 0.56rem;
+  font-weight: 750;
+}
+.investmentrechner .insight-meta strong {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.69rem;
+  overflow: hidden;
+}
+.investmentrechner .reserve-number {
+  border-left: 3px solid var(--gold);
+  background: var(--gold-soft);
+  gap: 4px;
+  padding: 13px;
+  display: grid;
+}
+.investmentrechner .reserve-number strong {
+  letter-spacing: -0.04em;
+  font-size: 1.38rem;
+}
+.investmentrechner .reserve-number span {
+  color: var(--text-2);
+  font-size: 0.62rem;
+}
+.investmentrechner .reserve-unit {
+  border-top: 1px solid var(--line);
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  padding-top: 10px;
+  display: flex;
+}
+.investmentrechner .reserve-unit strong {
+  font-size: 0.75rem;
+}
+.investmentrechner .renovation-insight ul {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+}
+.investmentrechner .renovation-insight li {
+  color: var(--text-1);
+  border-bottom: 1px solid var(--line);
+  padding: 0 0 7px 15px;
+  font-size: 0.7rem;
+  line-height: 1.45;
+  position: relative;
+}
+.investmentrechner .renovation-insight li:before {
+  background: var(--green);
+  content: "";
+  border-radius: 50%;
+  width: 6px;
+  height: 6px;
+  position: absolute;
+  top: 0.48em;
+  left: 0;
+}
+.investmentrechner .no-insight {
+  color: var(--muted);
+  border: 1px dashed var(--linie-stark);
+  padding: 13px;
+  font-size: 0.68rem;
+}
+.investmentrechner .chart-wrap {
+  padding: 12px 18px 16px;
+}
+.investmentrechner .chart-wrap svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+.investmentrechner .grid-line {
+  stroke: var(--line);
+  stroke-width: 1px;
+}
+.investmentrechner .axis-label {
+  fill: var(--muted);
+  font-size: 10px;
+  font-weight: 600;
+}
+.investmentrechner .chart-line {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3px;
+}
+.investmentrechner .chart-line-gold {
+  stroke: var(--gold);
+}
+.investmentrechner .chart-line-muted {
+  stroke: var(--green);
+}
+.investmentrechner .chart-legend {
+  color: var(--muted);
+  justify-content: center;
+  gap: 20px;
+  font-size: 0.68rem;
+  font-weight: 650;
+}
+.investmentrechner .chart-legend span {
+  align-items: center;
+  gap: 6px;
+  display: inline-flex;
+}
+.investmentrechner .chart-legend i {
+  border-radius: 99px;
+  width: 15px;
+  height: 3px;
+}
+.investmentrechner .legend-gold {
+  background: var(--gold);
+}
+.investmentrechner .legend-green {
+  background: var(--green);
+}
+.investmentrechner .table-scroll {
+  padding: 12px 16px 17px;
+  overflow-x: auto;
+}
+.investmentrechner table {
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  width: 100%;
+}
+.investmentrechner th,
+.investmentrechner td {
+  text-align: right;
+  border-bottom: 1px solid var(--line);
+  padding: 9px 8px;
+  font-size: 0.7rem;
+}
+.investmentrechner th:first-child,
+.investmentrechner td:first-child {
+  text-align: left;
+}
+.investmentrechner th {
+  color: var(--muted);
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+  font-size: 0.59rem;
+  font-weight: 800;
+}
+.investmentrechner td {
+  color: var(--text-1);
+  font-weight: 620;
+}
+.investmentrechner .positive {
+  color: var(--green);
+}
+.investmentrechner .negative {
+  color: var(--red);
+}
+.investmentrechner .method-card {
+  padding: 0 20px;
+}
+.investmentrechner .method-card summary {
+  cursor: pointer;
+  padding: 15px 0;
+  font-size: 0.77rem;
+  font-weight: 750;
+}
+.investmentrechner .method-grid {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px 24px;
+  padding: 0 0 16px;
+  display: grid;
+}
+.investmentrechner .method-grid p {
+  gap: 3px;
+  margin: 0;
+  display: grid;
+}
+.investmentrechner .method-grid strong {
+  font-size: 0.71rem;
+}
+.investmentrechner .method-grid span {
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+.investmentrechner .expose-preview-wrap {
+  gap: 14px;
+  display: grid;
+}
+/*
+  Druckvorschau: Die Seite wird immer in voller A4-Breite aufgebaut und als
+  Ganzes verkleinert, siehe ExposeVorschau.tsx. Ohne das schrumpft nur die
+  Seitenbreite, während Schrift und Innenabstände gleich bleiben, und die
+  Beschriftungen laufen aus den Kennzahlkarten heraus.
+*/
+.investmentrechner .expose-scale {
+  min-width: 0;
+}
+.investmentrechner .expose-scale > .expose-document {
+  zoom: var(--expose-zoom, 1);
+}
+.investmentrechner .expose-scale .expose-page {
+  width: 210mm;
+}
+.investmentrechner .expose-preview-toolbar {
+  background: var(--green-soft);
+  border: 1px solid hsl(var(--success) / 0.35);
+  border-radius: 10px;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 10px 12px 10px 16px;
+  display: flex;
+}
+.investmentrechner .expose-preview-toolbar > span {
+  color: var(--gruen-tief);
+  align-items: center;
+  gap: 8px;
+  font-size: 0.76rem;
+  font-weight: 750;
+  display: inline-flex;
+}
+/*
+  Das Dokument setzt seine Schriftfarbe selbst, statt sie von
+  `.investmentrechner` zu erben.
+
+  Der Grund ist eine Feinheit der Vererbung: `.investmentrechner` schreibt
+  `color: var(--ink)`. Diese Rechnung passiert genau dort, im Dunkelmodus
+  also mit dem hellen Wert. Die Kinder erben danach die fertige Farbe, nicht
+  die Variable. Dass das Dokument sich `--ink` wieder auf Dunkelblau setzt,
+  käme deshalb nie an. Hier wird die Farbe neu gerechnet, und ab hier gilt
+  der Wert des Papiers.
+*/
+.investmentrechner .expose-document {
+  color: var(--ink);
+  gap: 20px;
+  display: grid;
+}
+/* Das Blatt ist weiß, in beiden Modi und im Druck. Siehe „Hell und dunkel". */
+.investmentrechner .expose-page {
+  width: min(100%, 210mm);
+  min-height: 297mm;
+  box-shadow: var(--shadow);
+  background: #fff;
+  margin: 0 auto;
+  padding: 14mm 14mm 12mm;
+  position: relative;
+  overflow: hidden;
+}
+.investmentrechner .expose-brand-row,
+.investmentrechner .expose-page-heading {
+  justify-content: space-between;
+  gap: 20px;
+}
+.investmentrechner .dark-text {
+  color: var(--ink);
+}
+.investmentrechner .client-block {
+  text-align: right;
+  display: grid;
+}
+.investmentrechner .client-block strong {
+  font-size: 0.74rem;
+}
+.investmentrechner .client-block span {
+  color: var(--muted);
+  font-size: 0.62rem;
+}
+.investmentrechner .expose-hero {
+  background: var(--flaeche-dunkel);
+  color: var(--auf-dunkel);
+  background-position: 50%;
+  background-size: cover;
+  border-radius: 2px;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  min-height: 92px;
+  margin-top: 9mm;
+  padding: 6mm;
+  display: flex;
+}
+.investmentrechner .expose-hero > div:first-child {
+  min-width: 0;
+}
+.investmentrechner .expose-hero > div:first-child > span {
+  color: var(--auf-dunkel-leise);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  font-size: 0.57rem;
+  font-weight: 750;
+  display: block;
+}
+.investmentrechner .expose-hero h1 {
+  margin: 0;
+  font-size: 1.18rem;
+  line-height: 1.15;
+}
+.investmentrechner .expose-hero p {
+  color: var(--auf-dunkel-leise);
+  margin: 5px 0 0;
+  font-size: 0.65rem;
+}
+.investmentrechner .hero-price {
+  text-align: right;
+  flex: none;
+  display: grid;
+}
+.investmentrechner .hero-price strong {
+  color: var(--blau-hell);
+  letter-spacing: -0.04em;
+  font-size: 1.55rem;
+  font-weight: 550;
+}
+.investmentrechner .hero-price span {
+  color: var(--auf-dunkel-leise);
+  font-size: 0.58rem;
+}
+.investmentrechner .object-facts {
+  background: var(--line);
+  gap: 1px;
+  margin-top: 2mm;
+  display: flex;
+}
+/*
+  Die Kästchen teilen sich die volle Breite. Vorher blieb rechts ein Rest des
+  dunkleren Untergrunds stehen, der wie ein leeres fünftes Feld aussah.
+*/
+.investmentrechner .object-facts > span {
+  background: var(--flaeche-leise);
+  gap: 1px;
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 2mm 3mm;
+  display: grid;
+}
+.investmentrechner .object-facts small {
+  color: var(--muted);
+  text-transform: uppercase;
+  font-size: 0.44rem;
+  font-weight: 750;
+}
+.investmentrechner .object-facts strong {
+  font-size: 0.62rem;
+}
+.investmentrechner .expose-metrics {
+  gap: 2mm;
+  margin-top: 4mm;
+}
+.investmentrechner .expose-metrics .metric-card {
+  border-radius: 2px;
+  min-height: 70px;
+  padding: 3mm;
+}
+.investmentrechner .expose-metrics .metric-card > span {
+  font-size: 0.5rem;
+}
+.investmentrechner .expose-metrics .metric-card strong {
+  font-size: 0.85rem;
+}
+.investmentrechner .expose-metrics .metric-card small {
+  display: none;
+}
+/*
+  Dieselbe Leiste auf der Exposeseite, nur kleiner gesetzt und mit geraden
+  Ecken wie die uebrigen Druckbausteine. Aufbau und Reihenfolge bleiben gleich,
+  damit Analyse und Expose dasselbe Bild zeigen.
+*/
+.investmentrechner .expose-page .cashflow-band {
+  border-radius: 2px;
+  margin-top: 4mm;
+}
+.investmentrechner .expose-page .cashflow-band > div {
+  border-left-width: 3px;
+  gap: 2px;
+  min-height: 0;
+  padding: 3.5mm 4mm;
+}
+.investmentrechner .expose-page .cashflow-band span {
+  letter-spacing: 0.04em;
+  font-size: 0.49rem;
+}
+.investmentrechner .expose-page .cashflow-band strong {
+  font-size: 1rem;
+}
+.investmentrechner .expose-page .cashflow-band small {
+  font-size: 0.45rem;
+}
+.investmentrechner .expose-page .cashflow-band .cashflow-teil strong {
+  font-size: 0.9rem;
+}
+.investmentrechner .expose-page .cashflow-band .cashflow-geteilt,
+.investmentrechner .expose-page .cashflow-band .cashflow-teil {
+  gap: 1.5mm;
+}
+.investmentrechner .expose-page .cashflow-band .cashflow-teil + .cashflow-teil {
+  padding-top: 1.5mm;
+}
+.investmentrechner .expose-wealth-grid {
+  background: var(--flaeche-dunkel);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 2px;
+  margin-top: 3mm;
+  display: grid;
+}
+/* Gesamtvermoegen schliesst die Zeile ab, wie das Kaestchen in der Analyse. */
+.investmentrechner .expose-wealth-grid .wealth-wide {
+  grid-column: span 2;
+}
+.investmentrechner .expose-wealth-grid > div {
+  background: var(--flaeche-dunkel-2);
+  gap: 6px;
+  min-width: 0;
+  padding: 3mm;
+  display: grid;
+}
+.investmentrechner .expose-wealth-grid span {
+  color: var(--auf-dunkel-leise);
+  text-transform: uppercase;
+  font-size: 0.48rem;
+  font-weight: 750;
+  line-height: 1.25;
+}
+.investmentrechner .expose-wealth-grid strong {
+  color: var(--blau-hell);
+  font-size: 0.75rem;
+}
+/*
+  Die Einordnung unter dem Wert, so wie in der Analyse-Ansicht. Sie steht nur
+  an der Kachel "Selbst gezahlt", wo die Zahl ohne Erklaerung wie ein Verlust
+  aussieht. Deutlich kleiner als das Etikett darueber, damit sie die Zahl nicht
+  ueberlagert, und ohne Grossbuchstaben, weil es ein Satz ist und kein Etikett.
+*/
+.investmentrechner .expose-wealth-grid small {
+  color: var(--auf-dunkel-schwach);
+  font-size: 0.42rem;
+  line-height: 1.35;
+  margin-top: 1px;
+}
+.investmentrechner .expose-tax-callout {
+  border: 1px solid var(--gold-linie);
+  border-left: 3px solid var(--gold);
+  background: var(--gold-zart);
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  margin-top: 4mm;
+  padding: 3.5mm 4mm;
+  display: flex;
+}
+.investmentrechner .expose-tax-callout > div {
+  display: grid;
+}
+.investmentrechner .expose-tax-callout > div:last-child {
+  text-align: right;
+}
+.investmentrechner .expose-tax-callout span {
+  color: var(--text-2);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.49rem;
+  font-weight: 750;
+}
+.investmentrechner .expose-tax-callout strong {
+  color: var(--gold-tief);
+  margin-top: 2px;
+  font-size: 0.76rem;
+}
+.investmentrechner .expose-columns {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8mm;
+  margin-top: 5mm;
+  display: grid;
+}
+/*
+  Die Seite „Kennzahlen, Kaufpreis, Finanzierung und Annahmen“ hinter dem
+  Deckblatt (seit dem 07.10.2026, vorher der untere Teil des alten
+  Deckblatts). Damit sie mit allen optionalen Zeilen (Möbel,
+  Erhaltungsaufwand, Rücklage, Nachrangdarlehen) auf ein Blatt passt, stehen
+  Kopf und Tabellenzeilen hier enger.
+*/
+.investmentrechner .deckblatt-page .expose-hero {
+  margin-top: 6mm;
+}
+.investmentrechner .kennzahlen-page .expose-page-heading {
+  margin-bottom: 7mm;
+}
+.investmentrechner .kennzahlen-page > h2 {
+  font-size: 1.15rem;
+}
+.investmentrechner .kennzahlen-page .expose-columns {
+  margin-top: 4mm;
+}
+.investmentrechner .kennzahlen-page .expose-columns .line-item {
+  padding: 1.1mm 0;
+}
+.investmentrechner .expose-columns h3 {
+  color: var(--text-2);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--muted);
+  margin: 0 0 2mm;
+  padding-bottom: 2mm;
+  font-size: 0.55rem;
+}
+.investmentrechner .line-item {
+  color: var(--text-3);
+  border-bottom: 1px solid var(--line);
+  justify-content: space-between;
+  gap: 10px;
+  padding: 2mm 0;
+  font-size: 0.58rem;
+  display: flex;
+}
+.investmentrechner .line-item b {
+  color: var(--ink);
+  text-align: right;
+}
+.investmentrechner .line-item.strong {
+  border-top: 1px solid var(--ink);
+  color: var(--ink);
+  border-bottom: 0;
+  font-weight: 800;
+}
+.investmentrechner .expose-page-heading {
+  color: var(--muted);
+  border-bottom: 1px solid var(--linie-stark);
+  margin-bottom: 18mm;
+  padding-bottom: 3mm;
+  font-size: 0.58rem;
+}
+.investmentrechner .expose-page-heading strong {
+  color: var(--ink);
+}
+.investmentrechner .expose-page > h2 {
+  margin-top: 2mm;
+  font-size: 1.5rem;
+}
+.investmentrechner .page-intro {
+  max-width: 154mm;
+  color: var(--muted);
+  margin: 4mm 0 7mm;
+  font-size: 0.66rem;
+  line-height: 1.6;
+}
+.investmentrechner .documents-page > .document-insights.compact {
+  grid-template-columns: 1.2fr 0.8fr;
+  margin: 0;
+}
+.investmentrechner .documents-page > .document-insights.compact > section {
+  padding: 5mm;
+}
+.investmentrechner .documents-page .energy-scale-wrap.compact {
+  grid-template-columns: 1fr 27mm;
+}
+.investmentrechner .documents-page .energy-scale > span {
+  font-size: 0.48rem;
+}
+.investmentrechner .documents-page .energy-scale-value strong {
+  font-size: 1.35rem;
+}
+.investmentrechner .documents-page .insight-meta > span {
+  padding: 2.5mm;
+}
+.investmentrechner .documents-page .insight-meta small,
+.investmentrechner .documents-page .reserve-unit span {
+  font-size: 0.43rem;
+}
+.investmentrechner .documents-page .insight-meta strong,
+.investmentrechner .documents-page .reserve-unit strong {
+  font-size: 0.55rem;
+}
+.investmentrechner .documents-page .reserve-number {
+  padding: 4mm;
+}
+.investmentrechner .documents-page .reserve-number strong {
+  font-size: 1rem;
+}
+.investmentrechner .documents-page .renovation-insight li {
+  padding-bottom: 2mm;
+  font-size: 0.52rem;
+}
+.investmentrechner .document-expose-summary {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3mm;
+  margin-top: 7mm;
+  display: grid;
+}
+.investmentrechner .document-expose-summary > div {
+  border-top: 3px solid var(--green);
+  background: var(--green-soft);
+  gap: 2px;
+  padding: 4mm;
+  display: grid;
+}
+.investmentrechner .document-expose-summary span {
+  color: var(--text-3);
+  text-transform: uppercase;
+  font-size: 0.48rem;
+  font-weight: 760;
+}
+.investmentrechner .document-expose-summary strong {
+  font-size: 0.9rem;
+}
+.investmentrechner .document-expose-summary small {
+  color: var(--muted);
+  font-size: 0.48rem;
+}
+.investmentrechner .document-sources {
+  margin-top: 8mm;
+}
+.investmentrechner .document-sources h3 {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--linie-kraeftig);
+  margin: 0 0 3mm;
+  padding-bottom: 2mm;
+  font-size: 0.65rem;
+}
+.investmentrechner .document-sources ul {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px 6mm;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+}
+.investmentrechner .document-sources li {
+  border-bottom: 1px solid var(--line);
+  gap: 1px;
+  min-width: 0;
+  padding: 2mm 0;
+  display: grid;
+}
+.investmentrechner .document-sources li span {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.53rem;
+  font-weight: 700;
+  overflow: hidden;
+}
+.investmentrechner .document-sources li small,
+.investmentrechner .document-sources > p {
+  color: var(--muted);
+  margin: 0;
+  font-size: 0.46rem;
+}
+.investmentrechner .tax-basis-strip {
+  background: var(--line);
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  display: grid;
+}
+.investmentrechner .tax-basis-strip > span {
+  background: var(--green-soft);
+  gap: 4px;
+  padding: 4mm;
+  display: grid;
+}
+.investmentrechner .tax-basis-strip small {
+  color: var(--text-3);
+  text-transform: uppercase;
+  font-size: 0.48rem;
+  font-weight: 760;
+}
+.investmentrechner .tax-basis-strip strong {
+  font-size: 0.68rem;
+}
+.investmentrechner .tax-profile-page > .tax-profile-grid.compact {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  margin: 5mm 0 0;
+}
+.investmentrechner .tax-profile-page > .tax-profile-grid.compact > div {
+  padding: 3.5mm;
+}
+.investmentrechner .tax-profile-page > .tax-profile-grid.compact span {
+  font-size: 0.46rem;
+}
+.investmentrechner .tax-profile-page > .tax-profile-grid.compact strong {
+  font-size: 0.75rem;
+}
+.investmentrechner .tax-before-after {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3mm;
+  margin-top: 6mm;
+  display: grid;
+}
+.investmentrechner .tax-before-after > div {
+  border-top: 3px solid var(--ink);
+  background: var(--flaeche-leise);
+  gap: 2mm;
+  padding: 4mm;
+  display: grid;
+}
+.investmentrechner .tax-before-after > div.tax-after-positive {
+  border-color: var(--green);
+  background: var(--green-soft);
+}
+.investmentrechner .tax-before-after > div.tax-after-negative {
+  border-color: var(--red);
+  background: var(--red-soft);
+}
+.investmentrechner .tax-before-after span {
+  color: var(--muted);
+  text-transform: uppercase;
+  font-size: 0.52rem;
+  font-weight: 760;
+}
+.investmentrechner .tax-before-after strong {
+  font-size: 1.15rem;
+}
+.investmentrechner .tax-before-after small {
+  color: var(--text-3);
+  font-size: 0.5rem;
+  line-height: 1.45;
+}
+.investmentrechner .expose-fineprint {
+  color: var(--muted);
+  margin: 4mm 0 0;
+  font-size: 0.48rem;
+  line-height: 1.55;
+}
+.investmentrechner .forecast-page .chart-wrap {
+  margin-top: 10mm;
+  padding: 0;
+}
+.investmentrechner .forecast-page > .composition-wrap {
+  margin-top: 7mm;
+  padding: 0;
+}
+.investmentrechner .forecast-page .composition-legend small {
+  font-size: 0.48rem;
+}
+.investmentrechner .forecast-page .composition-legend strong {
+  font-size: 0.6rem;
+}
+.investmentrechner .forecast-highlights {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3mm;
+  margin-top: 12mm;
+  display: grid;
+}
+.investmentrechner .forecast-highlights div {
+  border-top: 3px solid var(--green);
+  background: var(--green-soft);
+  gap: 4px;
+  padding: 5mm;
+  display: grid;
+}
+.investmentrechner .forecast-highlights span {
+  color: var(--text-3);
+  text-transform: uppercase;
+  font-size: 0.54rem;
+  font-weight: 750;
+}
+.investmentrechner .forecast-highlights strong {
+  font-size: 1rem;
+}
+.investmentrechner .narrative-box {
+  border-left: 3px solid var(--gold);
+  margin-top: 10mm;
+  padding: 1mm 0 1mm 5mm;
+}
+.investmentrechner .narrative-box h3 {
+  font-size: 0.83rem;
+}
+.investmentrechner .narrative-box p {
+  max-width: 620px;
+  color: var(--muted);
+  margin: 2mm 0 0;
+  font-size: 0.64rem;
+  line-height: 1.65;
+}
+.investmentrechner .compact-table {
+  margin-top: 6mm;
+  padding: 0;
+  overflow: visible;
+}
+.investmentrechner .compact-table th,
+.investmentrechner .compact-table td {
+  padding: 2.2mm 1.5mm;
+  font-size: 0.5rem;
+}
+.investmentrechner .compact-table th {
+  background: var(--flaeche-dunkel);
+  color: var(--auf-dunkel);
+  font-size: 0.44rem;
+}
+/*
+ * Die Jahrestabellen müssen immer vollständig in ihren Rahmen passen, auf dem
+ * Papier wie am Bildschirm. Vorher richtete sich ihre Breite nach dem Inhalt:
+ * Brauchte der Text mehr Platz als gedacht, wurde die Tabelle breiter als die
+ * Seite. Das passiert schneller als man denkt, denn Seite und Abstände stehen
+ * in Millimetern, die Schrift aber in rem. Eine im Browser eingestellte
+ * Mindestschriftgröße oder eine größere Grundschrift vergrößert nur die
+ * Schrift, nicht das Papier. Weil `.compact-table` die Bildlaufleiste
+ * abschaltet (overflow: visible) und die Seite `overflow: hidden` hat,
+ * verschwand der Überstand ohne jede Warnung, immer die letzte Spalte.
+ *
+ * `table-layout: fixed` setzt die Tabellenbreite gleich der Rahmenbreite:
+ * breiter kann sie gar nicht mehr werden. Die Jahresspalte bekommt einen
+ * festen schmalen Anteil, den Rest teilen sich die Geldspalten gleichmäßig.
+ * Die Überschriften dürfen umbrechen, damit ein langes Wort wie
+ * „Erhaltungsaufwand" nicht aus seiner Spalte läuft; die Beträge selbst
+ * bleiben durch das geerbte `white-space: nowrap` einzeilig.
+ *
+ * Seit dem 22.09.2026 gilt das auch für die Tabellen in der Analyse. Dort war
+ * es am 21.09.2026 nur das Exposé, und genau deshalb stand in „Cashflow, Steuer
+ * und Tilgung" die Spalte „Eigenkapital" halb hinter der Kartenkante. Sichtbar
+ * abgeschnitten war sie nicht wirklich: `.table-scroll` schiebt sie seitlich
+ * weg, und der Bildlauf dafür ist unter macOS unsichtbar, solange niemand
+ * scrollt. Für den Betrachter sieht beides gleich aus, und Zahlen, die man
+ * erst suchen muss, sind so gut wie nicht da.
+ *
+ * Die Vergleichstabelle bleibt außen vor: Ihre erste Spalte trägt die
+ * Bezeichnungen und braucht ihre eigene, inhaltsabhängige Breite.
+ */
+.investmentrechner .table-scroll:not(.compare-table) table {
+  table-layout: fixed;
+}
+.investmentrechner .table-scroll:not(.compare-table) th:first-child,
+.investmentrechner .table-scroll:not(.compare-table) td:first-child {
+  width: 7%;
+}
+.investmentrechner .table-scroll:not(.compare-table) th {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+/*
+ * Die Bildschirmtabellen etwas enger setzen, damit auch neun Spalten in eine
+ * Karte passen, ohne dass die Beträge an ihre Spaltengrenze stoßen. Gemessen
+ * bei einer 700mm breiten Karte, dem schmalsten Fall am Laptop: „-104.866 €"
+ * braucht 54 Bildpunkte, die Spalte bietet 69. Das Exposé bleibt bei seinen
+ * eigenen, kleineren Werten weiter oben.
+ */
+.investmentrechner .table-scroll:not(.compare-table):not(.compact-table) th,
+.investmentrechner .table-scroll:not(.compare-table):not(.compact-table) td {
+  padding: 8px 6px;
+  font-size: 0.65rem;
+}
+.investmentrechner .table-scroll:not(.compare-table):not(.compact-table) th {
+  letter-spacing: 0.03em;
+  font-size: 0.55rem;
+}
+/*
+ * Zweite Stufe für schmale Karten. Der Ergebnisbereich des Rechners teilt sich
+ * die Fensterbreite mit dem Eingabefeld links, an einem 1280er Bildschirm
+ * bleiben der Tabelle rund 600 Bildpunkte. Gemessen am 22.09.2026: Bei dieser
+ * Breite stößt der längste Betrag der Spalte „Eigenkapital" an seine
+ * Spaltengrenze. Deshalb hier noch eine Spur kleiner. Die Schwelle misst die
+ * Tabelle selbst, nicht das Fenster: Wer die Seitenleiste einklappt, bekommt
+ * die größere Schrift zurück, ohne dass sich die Fensterbreite geändert hat.
+ */
+.investmentrechner .table-scroll:not(.compare-table):not(.compact-table) {
+  container-type: inline-size;
+}
+@container (max-width: 660px) {
+  .investmentrechner .table-scroll:not(.compare-table):not(.compact-table) th,
+  .investmentrechner .table-scroll:not(.compare-table):not(.compact-table) td {
+    padding: 7px 4px;
+    font-size: 0.58rem;
+  }
+  .investmentrechner .table-scroll:not(.compare-table):not(.compact-table) th {
+    font-size: 0.5rem;
+  }
+}
+/*
+ * Auf einem schmalen Gerät wäre die feste Breite das falsche Mittel: Neun
+ * Spalten auf 375 Bildpunkten ergeben 37 Bildpunkte je Spalte, da steht keine
+ * Zahl mehr lesbar drin. Dort ist der seitliche Bildlauf richtig, den
+ * `.table-scroll` ohnehin mitbringt. Das Exposé behält seine feste Breite: Ein
+ * Blatt Papier wird nicht schmaler, nur weil das Fenster es ist.
+ */
+@media (max-width: 880px) {
+  .investmentrechner .table-scroll:not(.compare-table):not(.compact-table) table {
+    table-layout: auto;
+    width: max-content;
+    min-width: 100%;
+  }
+}
+/*
+ * „Erhaltungsaufwand" ist die mit Abstand längste Überschrift im Exposé. Bei
+ * gleichmäßig verteilten Spalten fehlen ihr wenige Bildpunkte und das Wort
+ * bräche um. Deshalb bekommt diese eine Spalte der AfA-Tabelle etwas mehr als
+ * ihren gleichmäßigen Anteil, die übrigen teilen sich den Rest.
+ */
+.investmentrechner .tax-table th:nth-child(5),
+.investmentrechner .tax-table td:nth-child(5) {
+  width: 19%;
+}
+.investmentrechner .tax-heading {
+  margin-top: 10mm !important;
+  font-size: 1.08rem !important;
+}
+.investmentrechner .tax-table {
+  margin-top: 4mm;
+}
+.investmentrechner .expose-photo-grid {
+  grid-template-columns: repeat(2, 1fr);
+  grid-auto-rows: 55mm;
+  gap: 3mm;
+  margin-top: 7mm;
+  display: grid;
+}
+.investmentrechner .expose-photo-grid > div {
+  background: var(--flaeche-hover);
+  overflow: hidden;
+}
+.investmentrechner .expose-photo-grid img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+.investmentrechner .expose-photo-grid.count-1 > div:first-child,
+.investmentrechner .expose-photo-grid.count-3 > div:first-child,
+.investmentrechner .expose-photo-grid.count-5 > div:first-child {
+  grid-column: span 2;
+}
+.investmentrechner .empty-photo-state {
+  color: var(--text-schwach);
+  border: 1px dashed var(--linie-stark);
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 3mm;
+  height: 120mm;
+  margin-top: 8mm;
+  font-size: 0.7rem;
+  display: flex;
+}
+.investmentrechner .legal-note {
+  color: var(--muted);
+  border-top: 1px solid var(--linie-stark);
+  padding-top: 4mm;
+  font-size: 0.48rem;
+  line-height: 1.55;
+  position: absolute;
+  bottom: 20mm;
+  left: 14mm;
+  right: 14mm;
+}
+.investmentrechner .legal-note strong {
+  color: var(--ink);
+}
+.investmentrechner .legal-note p {
+  margin: 1mm 0 0;
+}
+.investmentrechner .expose-footer {
+  color: var(--muted);
+  border-top: 1px solid var(--line);
+  justify-content: space-between;
+  padding-top: 2mm;
+  font-size: 0.46rem;
+  display: flex;
+  position: absolute;
+  bottom: 8mm;
+  left: 14mm;
+  right: 14mm;
+}
+/*
+  Objektvergleich, Exposé: kompakte Vergleichsseite ganz vorn. Sie nutzt die
+  Objektkarten und die Vergleichstabelle der Bildschirmansicht, nur kleiner
+  gesetzt, damit alles auf eine A4-Seite passt.
+*/
+.investmentrechner .compare-page .compare-cards {
+  gap: 4mm;
+  margin-bottom: 4mm;
+}
+.investmentrechner .compare-page .compare-card {
+  border-radius: 0;
+}
+.investmentrechner .compare-page .compare-card-head {
+  padding: 3mm;
+}
+.investmentrechner .compare-page .compare-card-head strong {
+  font-size: 0.78rem;
+}
+.investmentrechner .compare-page .compare-card-head > div > span {
+  font-size: 0.58rem;
+}
+.investmentrechner .compare-page .compare-card-head > b {
+  font-size: 0.85rem;
+}
+.investmentrechner .compare-page .compare-card-values > div {
+  padding: 2.5mm 3mm;
+}
+.investmentrechner .compare-page .compare-card-values b {
+  font-size: 0.7rem;
+}
+.investmentrechner .compare-page .table-scroll {
+  padding: 0;
+  overflow: visible;
+}
+.investmentrechner .compare-page .compare-table td.compare-label small {
+  font-size: 0.5rem;
+}
+/* Tabelle und Diagramm der Vergleichsseite sind enger gesetzt, damit
+   Einordnung, Rechtshinweis und Fußzeile sicher auf dieselbe A4-Seite passen. */
+.investmentrechner .compare-page .compare-table th,
+.investmentrechner .compare-page .compare-table td {
+  padding: 1.4mm 2mm;
+}
+.investmentrechner .compare-page .tax-heading {
+  margin-top: 4mm;
+}
+.investmentrechner .compare-page .chart-wrap {
+  padding: 2mm 0 0;
+}
+.investmentrechner .compare-page .chart-legend {
+  font-size: 0.55rem;
+}
+.investmentrechner .expose-verdict {
+  background: var(--flaeche-dunkel);
+  color: var(--auf-dunkel);
+  margin-top: 4mm;
+  padding: 3.5mm 4mm;
+}
+.investmentrechner .expose-verdict span {
+  color: var(--auf-dunkel-leise);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 0.49rem;
+  font-weight: 750;
+  display: block;
+}
+.investmentrechner .expose-verdict strong {
+  margin-top: 3px;
+  font-size: 0.72rem;
+  display: block;
+}
+.investmentrechner .print-only,
+.investmentrechner.print-only {
+  display: none;
+}
+/* Nur während des Downloads: A4-Seiten bei voller Breite abbilden, ohne Zoom
+   oder Bildschirmumbruch. Die normale Vorschau und der Druck bleiben unberührt. */
+.investmentrechner.investmentrechner-print.investmentrechner-export {
+  display: block;
+  position: fixed;
+  left: -10000px;
+  top: 0;
+  width: 210mm;
+  z-index: -1;
+}
+.investmentrechner-export .expose-document {
+  display: block;
+}
+.investmentrechner.investmentrechner-export .expose-page {
+  width: 210mm !important;
+  height: 297mm;
+  min-height: 297mm !important;
+  padding: 14mm 14mm 12mm !important;
+  box-shadow: none;
+}
+@media (max-width: 1180px) {
+  .investmentrechner .metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .investmentrechner .expose-metrics {
+    grid-template-columns: repeat(6, 1fr);
+  }
+  .investmentrechner .tax-profile-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+/*
+ * Auf dem Handy ragte der Rechner rechts aus dem Bild (Christian, 24.09.2026):
+ * Eingabefelder und der Reiter „Objekt & Kaufpreis" waren abgeschnitten.
+ *
+ * Ursache: `1fr` heißt `minmax(auto, 1fr)`, eine solche Spalte wird nie
+ * schmaler als ihr Inhalt. In der Eingabespalte steht die Bereichsleiste mit
+ * sieben Reitern zu je mindestens 145 Bildpunkten, zusammen über 1000. Die
+ * Leiste scrollt zwar selbst, aber vorher wuchs die Spalte darüber auf ihre
+ * volle Breite, und `main` schneidet auf dem Handy alles jenseits des
+ * Bildschirms ab (index.css, Punkt 1). Die Regel `.grid > * { min-width: 0 }`
+ * aus index.css hilft hier nicht, sie hängt an der Tailwind-Klasse `grid`.
+ *
+ * Deshalb `minmax(0, 1fr)` und `min-width: 0`: Die Spalten sind so breit wie
+ * der Bildschirm, die Bereichsleiste scrollt in sich. Oberhalb von 880
+ * Bildpunkten gilt diese Abfrage nicht, der Desktop bleibt, wie er ist.
+ */
+@media (max-width: 880px) {
+  .investmentrechner .workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .investmentrechner .input-panel,
+  .investmentrechner .input-content {
+    min-width: 0;
+  }
+  /* Die Abschnitte im Eingabebereich sind Raster ohne feste Spalte, also ebenfalls `auto`. */
+  .investmentrechner .input-section {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .investmentrechner .input-panel {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .investmentrechner .section-nav {
+    grid-template-columns: repeat(7, minmax(145px, 1fr));
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+  .investmentrechner .section-button {
+    white-space: nowrap;
+    grid-template-columns: 20px 1fr;
+  }
+  .investmentrechner .section-button svg:last-child {
+    display: none;
+  }
+  .investmentrechner .result-panel {
+    padding-top: 24px;
+  }
+}
+@media (max-width: 650px) {
+  .investmentrechner .panel-heading,
+  .investmentrechner .result-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .investmentrechner .view-toggle {
+    width: fit-content;
+  }
+  /* `minmax(0, …)` wie auf dem Desktop, sonst drückt ein langes Label die zweite Spalte aus dem Bild. */
+  .investmentrechner .field-grid,
+  .investmentrechner .field-grid.three {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .investmentrechner .field-grid.three .field:last-child {
+    grid-column: span 2;
+  }
+  .investmentrechner .metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .investmentrechner .compare-cards {
+    grid-template-columns: 1fr;
+  }
+  .investmentrechner .analysis-content .cashflow-band {
+    grid-template-columns: 1fr;
+  }
+  /*
+    Auf dem Handy stehen nur zwei Kaestchen nebeneinander. Ein doppelt breites
+    Kaestchen wuerde die Zeilen versetzen und Luecken reissen, deshalb ist hier
+    jedes Kaestchen gleich breit.
+  */
+  .investmentrechner .metric-wide {
+    grid-column: span 1;
+  }
+  .investmentrechner .visual-grid {
+    grid-template-columns: 1fr;
+  }
+  .investmentrechner .visual-grid > div + div {
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+  .investmentrechner .composition-legend {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .investmentrechner .document-insights {
+    grid-template-columns: 1fr;
+  }
+  .investmentrechner .document-insights .renovation-insight {
+    grid-column: auto;
+  }
+  .investmentrechner .energy-scale-wrap,
+  .investmentrechner .renovation-insight ul,
+  .investmentrechner .method-grid {
+    grid-template-columns: 1fr;
+  }
+  .investmentrechner .expose-preview-wrap {
+    margin: 0 -12px;
+  }
+  .investmentrechner .expose-preview-toolbar {
+    margin: 0 12px;
+  }
+  .investmentrechner .expose-page {
+    min-height: auto;
+    padding: 18px;
+  }
+  .investmentrechner .expose-hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .investmentrechner .hero-price {
+    text-align: left;
+  }
+  .investmentrechner .expose-metrics,
+  .investmentrechner .expose-wealth-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .investmentrechner .expose-columns {
+    grid-template-columns: 1fr;
+  }
+  .investmentrechner .tax-basis-strip,
+  .investmentrechner .tax-profile-page > .tax-profile-grid.compact {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .investmentrechner .tax-before-after,
+  .investmentrechner .documents-page > .document-insights.compact,
+  .investmentrechner .document-expose-summary,
+  .investmentrechner .document-sources ul {
+    grid-template-columns: 1fr;
+  }
+  .investmentrechner .expose-footer,
+  .investmentrechner .legal-note {
+    margin-top: 24px;
+    position: static;
+  }
+}
+/*
+ * Das Papier, auf dem gedruckt wird.
+ *
+ * Ohne diese Regel setzt der Browser eigene Raender, bei Chrome rund 10mm je
+ * Seite. Der bedruckbare Bereich ist dann nur etwa 190mm breit, unsere
+ * `.expose-page` aber 210mm. Alles rechts davon faellt weg, und genau so kam
+ * es, dass im gespeicherten PDF die letzte Tabellenspalte fehlte, waehrend die
+ * Vorschau am Bildschirm vollstaendig war.
+ *
+ * `margin: 0` heisst nicht randlos: Die Seite bringt ihren eigenen Rand von
+ * 14mm mit (`padding` an `.expose-page`). Sie bestimmt ihn damit selbst,
+ * unabhaengig von der Druckeinstellung des Nutzers.
+ *
+ * `portrait` steht ausdruecklich dabei, damit ein auf Querformat gestellter
+ * Drucker das Blatt nicht dreht.
+ */
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+@media print {
+  .investmentrechner .print-only,
+  .investmentrechner.print-only {
+    display: block !important;
+  }
+  .investmentrechner-print .expose-document {
+    display: block;
+  }
+  /*
+   * Kein erzwungener Seitenumbruch mehr, nur noch die Hoehe.
+   *
+   * Vorher stand an jeder Seite `break-after: page` und die Hoehe war mit
+   * 297mm genau die eines A4-Blattes. Im PDF stand danach hinter jeder Seite
+   * eine leere, also zwoelf Blatt statt sechs.
+   *
+   * Der Grund liegt in der Kombination: Eine Box, die das Blatt exakt fuellt,
+   * laesst den Fluss am Anfang des naechsten Blattes stehen. Der erzwungene
+   * Umbruch dahinter schiebt dann noch eines weiter. Dass es erst am
+   * 21.09.2026 auffiel, liegt an der `@page`-Regel vom selben Tag: Vorher
+   * verkleinerte der Browser die Seite auf sein eigenes Blattmass, und dabei
+   * verschwand der Ueberstand von selbst.
+   *
+   * Der Umbruch wird jetzt gar nicht mehr erzwungen. Er ergibt sich: Zwei
+   * Seiten zu je 296mm passen nie zusammen auf ein Blatt von 297mm, also
+   * beginnt jede eine neue. Was nicht erzwungen wird, kann auch nicht doppelt
+   * erzwungen werden.
+   *
+   * `break-inside: avoid` bleibt als Schutz, damit eine Seite nicht mitten
+   * durchgeschnitten wird, falls die Hoehenrechnung des Browsers einmal um
+   * einen Bildpunkt danebenliegt.
+   *
+   * Der eine Millimeter Luft kostet nichts: Der Inhalt hatte 271mm Platz und
+   * hat jetzt 270mm.
+   */
+  .investmentrechner-print .expose-page {
+    width: 210mm;
+    height: 296mm;
+    min-height: 296mm;
+    break-inside: avoid;
+    box-shadow: none;
+    margin: 0;
+  }
+  body.investmentrechner-druck > :not(.investmentrechner-print) {
+    display: none !important;
+  }
+  body.investmentrechner-druck {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    background: #fff !important;
+  }
+  /*
+   * Sicherheitsnetz für den Druck.
+   *
+   * Das Dokument holt sich seine hellen Werte schon über den Block „Hell und
+   * dunkel" ganz oben zurück, der Druck ist damit eigentlich versorgt. Diese
+   * Regel steht trotzdem hier, weil ein dunkel gedrucktes Blatt der eine
+   * Fehler ist, den niemand vor dem Kundentermin bemerkt: Auf dem Bildschirm
+   * sieht alles richtig aus, und das Papier kommt erst später aus dem
+   * Drucker. Sie kostet vier Zeilen und schließt die Sache ab, egal was
+   * jemand später an den Variablen dreht.
+   */
+  .investmentrechner .expose-page {
+    background: #fff !important;
+    color: #0F1621 !important;
+  }
+}
+
+/*
+ * KI-Auslesung der Rechnerfelder im Bereich „Objektunterlagen": Knopf,
+ * Alerts im Projektstil und die Übernahmeliste mit Häkchen.
+ */
+.investmentrechner .ki-auslesen {
+  background: var(--gold-soft);
+  color: var(--gold);
+  border: 1px solid var(--gold-linie);
+}
+.investmentrechner .ki-auslesen:hover:not(:disabled) {
+  background: var(--gold-soft-hover);
+}
+.investmentrechner .ki-auslesen:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+}
+.investmentrechner .ki-alert {
+  font-size: 0.72rem;
+}
+.investmentrechner .ki-alert h5 {
+  font-size: 0.76rem;
+  font-weight: 760;
+}
+.investmentrechner .ki-alert p {
+  margin: 0 0 8px;
+}
+.investmentrechner .ki-alert .text-button {
+  margin-top: 2px;
+}
+.investmentrechner .ki-uebernahme {
+  background: var(--flaeche);
+  border: 1px solid var(--gold-linie);
+  border-radius: 12px;
+  gap: 10px;
+  padding: 12px;
+  display: grid;
+}
+.investmentrechner .ki-uebernahme-kopf {
+  grid-template-columns: minmax(0, 1fr) 28px;
+  align-items: start;
+  gap: 8px;
+  display: grid;
+}
+.investmentrechner .ki-uebernahme-kopf strong {
+  font-size: 0.78rem;
+  display: block;
+}
+.investmentrechner .ki-uebernahme-kopf small {
+  color: var(--muted);
+  font-size: 0.64rem;
+  line-height: 1.4;
+  display: block;
+}
+.investmentrechner .ki-uebernahme-kopf button {
+  width: 28px;
+  height: 28px;
+  color: var(--muted);
+  cursor: pointer;
+  background: 0 0;
+  border: 0;
+  border-radius: 7px;
+  justify-content: center;
+  align-items: center;
+  display: inline-flex;
+}
+.investmentrechner .ki-uebernahme-kopf button:hover {
+  color: var(--red);
+  background: var(--red-soft);
+}
+.investmentrechner .ki-vorschlaege {
+  margin: 0;
+  padding: 0;
+  gap: 6px;
+  list-style: none;
+  display: grid;
+}
+.investmentrechner .ki-vorschlaege li {
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  grid-template-columns: 16px minmax(0, 1fr);
+  align-items: start;
+  gap: 10px;
+  padding: 9px 10px;
+  display: grid;
+}
+.investmentrechner .ki-vorschlaege li > button {
+  margin-top: 2px;
+}
+.investmentrechner .ki-vorschlaege li.unveraendert {
+  background: var(--paper);
+  color: var(--muted);
+}
+/* „Zurücknehmen“ unter einem automatisch übernommenen Wert, in der Textspalte. */
+.investmentrechner .ki-vorschlaege li > .text-button {
+  grid-column: 2;
+  justify-self: start;
+  margin-top: 0;
+}
+/* Unterlage weicht von den hinterlegten Daten ab (seit dem 28.09.2026). */
+.investmentrechner .ki-vorschlaege li.abweichend {
+  background: var(--warn-flaeche);
+  border-color: var(--warn-linie);
+}
+.investmentrechner .ki-vorschlaege li.abweichend .ki-werte,
+.investmentrechner .ki-vorschlaege li.abweichend small {
+  color: var(--warn-text);
+}
+.investmentrechner .ki-vorschlaege label {
+  cursor: pointer;
+  gap: 3px;
+  min-width: 0;
+  display: grid;
+}
+.investmentrechner .ki-feld {
+  align-items: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  font-weight: 760;
+  display: flex;
+  flex-wrap: wrap;
+}
+.investmentrechner .ki-sicherheit {
+  border-radius: 999px;
+  padding: 1px 7px;
+  font-size: 0.58rem;
+  font-style: normal;
+  font-weight: 760;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.investmentrechner .ki-sicherheit-hoch {
+  background: var(--green-soft);
+  color: var(--green);
+}
+.investmentrechner .ki-sicherheit-mittel {
+  background: var(--warn-flaeche-stark);
+  color: var(--warn-text);
+}
+.investmentrechner .ki-sicherheit-niedrig {
+  background: var(--red-soft);
+  color: var(--red);
+}
+.investmentrechner .ki-werte {
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.74rem;
+  display: flex;
+  flex-wrap: wrap;
+}
+.investmentrechner .ki-werte s {
+  color: var(--muted);
+}
+.investmentrechner .ki-vorschlaege li.unveraendert .ki-werte s {
+  text-decoration: none;
+}
+.investmentrechner .ki-werte b {
+  color: var(--gold);
+}
+.investmentrechner .ki-vorschlaege small {
+  color: var(--muted);
+  font-size: 0.6rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.investmentrechner .ki-hinweise {
+  color: var(--warn-text);
+  background: var(--warn-flaeche);
+  border: 1px solid var(--warn-linie);
+  border-radius: 9px;
+  margin: 0;
+  padding: 8px 10px 8px 24px;
+  font-size: 0.64rem;
+  line-height: 1.45;
+  display: grid;
+  gap: 4px;
+}
+.investmentrechner .button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+}
+
+/*
+ * Kunde und Investment im Bereich „Kunde & Einkommen".
+ *
+ * Eigene Klassen statt der Tailwind-Werkzeuge des CRM, weil der Rechner sein
+ * Aussehen komplett in dieser Datei trägt. Die Farben und Radien sind
+ * dieselben wie bei den übrigen Feldern.
+ */
+.investmentrechner .rechner-kundenwahl {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+.investmentrechner .rechner-kundenwahl-lupe {
+  color: var(--muted);
+  flex: none;
+  margin-left: 11px;
+}
+.investmentrechner .rechner-kundenwahl-treffer {
+  background: var(--gruen-zart);
+  border: 1px solid var(--gruen-zart-linie);
+  border-radius: 8px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 42px;
+  padding: 6px 8px 6px 11px;
+  display: flex;
+}
+.investmentrechner .rechner-kundenwahl-treffer > span {
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  display: inline-flex;
+}
+.investmentrechner .rechner-kundenwahl-treffer em,
+.investmentrechner .rechner-kundenwahl-liste em {
+  color: var(--green);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.58rem;
+  font-style: normal;
+  font-weight: 800;
+}
+.investmentrechner .rechner-kundenwahl-treffer button {
+  color: var(--muted);
+  cursor: pointer;
+  background: 0 0;
+  border: 0;
+  border-radius: 6px;
+  padding: 5px;
+  display: inline-flex;
+}
+.investmentrechner .rechner-kundenwahl-treffer button:hover {
+  color: var(--ink);
+  background: var(--gruen-zart-hover);
+}
+.investmentrechner .rechner-kundenwahl-liste {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  max-height: 190px;
+  margin: 6px 0 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+.investmentrechner .rechner-kundenwahl-liste li + li {
+  border-top: 1px solid var(--linie-zart);
+}
+.investmentrechner .rechner-kundenwahl-liste li.leer {
+  color: var(--muted);
+  padding: 9px 11px;
+  font-size: 0.72rem;
+}
+.investmentrechner .rechner-kundenwahl-liste button {
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+  background: 0 0;
+  border: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 11px;
+  font-size: 0.79rem;
+  font-weight: 600;
+  display: flex;
+}
+.investmentrechner .rechner-kundenwahl-liste button:hover {
+  background: var(--flaeche-leise);
+}
+
+/* Die Rückfrage nach der Kundenwahl und die Meldungen des Speicherns. */
+.investmentrechner .rechner-uebernahme-posten {
+  margin: 6px 0 10px;
+  padding: 0 0 0 16px;
+  font-size: 0.7rem;
+  line-height: 1.5;
+  display: grid;
+  gap: 2px;
+}
+.investmentrechner .rechner-uebernahme-posten b {
+  font-weight: 700;
+}
+.investmentrechner .rechner-uebernahme-posten span {
+  color: var(--muted);
+}
+.investmentrechner .rechner-uebernahme-knoepfe {
+  flex-wrap: wrap;
+  gap: 8px;
+  display: flex;
+}
+
+/*
+  Der Rechenweg unter jeder Zahl, seit dem 25.09.2026.
+
+  Er soll kaum auffallen: klein, in der leisen Schriftfarbe, ohne
+  Großbuchstaben und ohne Fettung. Auf den dunklen Kacheln die leise Farbe
+  für dunklen Grund. Lange Zeilen brechen um, auf dem Handy auch mitten in
+  einer Zahlengruppe, statt aus der Kachel zu laufen.
+*/
+.investmentrechner .rechenweg {
+  color: var(--muted);
+  margin: 4px 0 0;
+  font-size: 0.6rem;
+  font-weight: 450;
+  line-height: 1.35;
+  letter-spacing: 0;
+  text-transform: none;
+  overflow-wrap: anywhere;
+}
+/* Die Zahl steht direkt unter der Überschrift, der Rechenweg darunter. Mit
+   „space-between“ stünden die Zahlen einer Reihe je nach Zeilenzahl des
+   Rechenwegs auf verschiedenen Höhen. */
+.investmentrechner .metrics-grid .metric-card {
+  justify-content: flex-start;
+  gap: 6px;
+}
+.investmentrechner .cashflow-band .rechenweg,
+.investmentrechner .expose-wealth-grid .rechenweg {
+  color: var(--auf-dunkel-schwach);
+}
+.investmentrechner .cashflow-band .rechenweg {
+  font-size: 0.64rem;
+}
+.investmentrechner .expose-page .rechenweg,
+.investmentrechner .expose-page .cashflow-band .rechenweg {
+  margin-top: 0.6mm;
+  font-size: 0.42rem;
+}
+
+/* Die Unterzeile steht jetzt in jeder Kachel, nicht nur in der Steuerkachel.
+   Sie traegt den Prozentwert und die Einordnung, damit im Gespraech niemand
+   im Kopf rechnen muss. */
+.investmentrechner .cashflow-band > div > small {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.68rem;
+  line-height: 1.35;
+  color: var(--auf-dunkel-schwach);
+  font-weight: 500;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Weichere Ecken im Exposé
+   ─────────────────────────────────────────────────────────────────────────
+
+   Die Druckbausteine waren bewusst fast rechtwinklig (2px oder gar nichts).
+   Christian hat am 21.09.2026 entschieden, dass sie zum übrigen Haus-Design
+   passen sollen, das überall gerundete Kanten benutzt (`--radius` in
+   index.css, 12px).
+
+   Zwei Maße statt einem: Ein Kästchen von 70 Bildpunkten Höhe verträgt eine
+   kleinere Rundung als ein Kasten über die halbe Seite, sonst wirkt es wie
+   eine Pille. 3mm sind rund 11 Bildpunkte und treffen damit das CI, 2mm sind
+   der kleinere Bruder für die Kacheln.
+
+   Abgerundet wird, was einen Hintergrund oder einen vollen Rahmen hat. Die
+   Liste unten ist nicht geraten, sondern aus dem Stylesheet ausgelesen: jede
+   Regel im Exposé, die `background` oder `border` setzt. Der erste Versuch am
+   21.09.2026 hatte nur die Container erwischt und ausgerechnet die Kinder
+   übersehen, die den Hintergrund tragen, und die große Kachel auf Seite eins
+   dazu. Wer hier etwas ergänzt, sucht bitte wieder nach `background` statt
+   nach dem Augenschein.
+*/
+.investmentrechner .expose-page {
+  --expose-radius: 3mm;
+  --expose-radius-klein: 2mm;
+}
+
+/*
+  Die Kacheln. Klein gerundet, weil sie selbst klein sind.
+
+  `.tax-basis-strip > span`, `.tax-before-after > div`, `.forecast-highlights
+  div` und `.document-expose-summary > div` stehen hier als Kinder, nicht als
+  Container: Den Hintergrund tragen sie, die Hülle darum ist nur ein Raster.
+*/
+.investmentrechner .expose-page .metric-card,
+.investmentrechner .expose-page .cashflow-band,
+.investmentrechner .expose-page .cashflow-band > div,
+.investmentrechner .expose-page .expose-wealth-grid,
+.investmentrechner .expose-page .expose-wealth-grid > div,
+.investmentrechner .expose-page .object-facts,
+.investmentrechner .expose-page .object-facts > span,
+.investmentrechner .expose-page .tax-basis-strip,
+.investmentrechner .expose-page .tax-basis-strip > span,
+.investmentrechner .expose-page .tax-before-after > div,
+.investmentrechner .expose-page .forecast-highlights div,
+.investmentrechner .expose-page .document-expose-summary > div,
+.investmentrechner .expose-page .info-card,
+.investmentrechner .expose-page .summary-strip {
+  border-radius: var(--expose-radius-klein);
+}
+
+/*
+  Die großen Kästen: die Kachel über der ganzen Breite auf Seite eins, der
+  blaue Steuerkasten, die Streifen, die Fotos und der dunkle Schlusskasten.
+*/
+.investmentrechner .expose-page .expose-hero,
+.investmentrechner .expose-page .expose-tax-callout,
+.investmentrechner .expose-page .tax-before-after,
+.investmentrechner .expose-page .forecast-highlights,
+.investmentrechner .expose-page .document-expose-summary,
+.investmentrechner .expose-page .expose-verdict,
+.investmentrechner .expose-page .empty-photo-state,
+.investmentrechner .expose-page .expose-photo-grid > div,
+.investmentrechner .expose-page .compare-cards > div {
+  border-radius: var(--expose-radius);
+}
+
+/*
+  Die Tabellenköpfe und die hervorgehobene Zeile der Vergleichstabelle.
+
+  `border-collapse: collapse` legt benachbarte Ränder zusammen und ignoriert
+  dabei die Rundung der Zellen. Deshalb hier `separate` mit Abstand null: Das
+  Bild bleibt gleich, weil die Zellen ohnehin nur eine Linie nach unten haben,
+  aber die erste und die letzte Kopfzelle dürfen jetzt runde Ecken tragen.
+
+  Bewusst nur oben: Die Tabelle hat unten keinen Rahmen und keinen
+  Hintergrund, eine Rundung hinge dort in der Luft. Und bewusst nicht über
+  `overflow: hidden` am Container, denn genau das schnitte die letzte Spalte
+  wieder ab, siehe den Abschnitt zur festen Tabellenbreite weiter oben.
+*/
+.investmentrechner .expose-page table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.investmentrechner .expose-page thead th:first-child {
+  border-top-left-radius: var(--expose-radius-klein);
+}
+.investmentrechner .expose-page thead th:last-child {
+  border-top-right-radius: var(--expose-radius-klein);
+}
+.investmentrechner .expose-page .compare-table tr.compare-group td:first-child {
+  border-top-left-radius: var(--expose-radius-klein);
+  border-bottom-left-radius: var(--expose-radius-klein);
+}
+.investmentrechner .expose-page .compare-table tr.compare-group td:last-child {
+  border-top-right-radius: var(--expose-radius-klein);
+  border-bottom-right-radius: var(--expose-radius-klein);
+}
+
+/*
+ * Die beiden Kachelreihen im Exposé füllen die Seite.
+ *
+ * Christian am 21.09.2026: Oben (Kaltmiete, Kreditrate, Bruttorendite,
+ * Nettorendite) und unten (Immobilienwert, Restschuld, Immobilie minus
+ * Restschuld, Überschuss) standen die Kacheln links gedrängt, rechts blieb ein
+ * Rest frei.
+ *
+ * Grund: Das Raster hatte sechs Spalten, gefüllt werden aber nur vier. Die
+ * beiden übrigen blieben leer, und beim Vermögensraster sah man sie sogar, weil
+ * dessen dunkler Hintergrund durchscheint.
+ *
+ * `grid-auto-flow: column` mit `grid-auto-columns: minmax(0, 1fr)` verteilt so
+ * viele Spalten, wie Kacheln da sind, jede gleich breit. Damit hängt die
+ * Aufteilung nicht mehr an einer Zahl im Stylesheet, die jemand beim Ergänzen
+ * einer fünften Kachel übersehen könnte.
+ */
+.investmentrechner .expose-page .expose-metrics,
+.investmentrechner .expose-page .expose-wealth-grid {
+  grid-template-columns: none;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+}
+
+/* Der PDF-Export fotografiert das A4-Dokument auch auf Mobilgeräten;
+   die responsiven Bildschirmregeln dürfen dieses Blatt nicht umordnen. */
+@media (max-width: 650px) {
+  .investmentrechner.investmentrechner-export .expose-hero { flex-direction: row; align-items: center; }
+  .investmentrechner.investmentrechner-export .hero-price { text-align: right; }
+  .investmentrechner.investmentrechner-export .expose-columns { grid-template-columns: repeat(2, 1fr); }
+  .investmentrechner.investmentrechner-export .tax-basis-strip,
+  .investmentrechner.investmentrechner-export .tax-profile-page > .tax-profile-grid.compact { grid-template-columns: repeat(4, 1fr); }
+  .investmentrechner.investmentrechner-export .tax-before-after,
+  .investmentrechner.investmentrechner-export .documents-page > .document-insights.compact,
+  .investmentrechner.investmentrechner-export .document-sources ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .investmentrechner.investmentrechner-export .documents-page > .document-insights.compact { grid-template-columns: 1.2fr 0.8fr; }
+  .investmentrechner.investmentrechner-export .document-expose-summary { grid-template-columns: repeat(3, 1fr); }
+  .investmentrechner.investmentrechner-export .expose-footer { margin-top: 0; position: absolute; }
+  .investmentrechner.investmentrechner-export .legal-note { margin-top: 0; position: absolute; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Glossar „So entstehen die Zahlen“, seit dem 25.09.2026
+   ─────────────────────────────────────────────────────────────────────────
+
+   Dieselbe Komponente in zwei Größen: einklappbar am Ende der Analyse und als
+   siebte Seite der Berechnung. Titel kräftig, die Bedeutung in normaler
+   Schrift, die Formel leise darunter, wie die Rechenwege an den Kacheln.
+*/
+/* Der kurze Pflichthinweis unter den dunklen Kacheln der Analyse (30.09.2026). */
+.investmentrechner .kachel-hinweis {
+  color: var(--muted);
+  margin: 6px 0 0;
+  font-size: 0.7rem;
+  line-height: 1.4;
+}
+.investmentrechner .glossar-link {
+  color: var(--gold);
+  justify-self: start;
+  align-items: center;
+  gap: 6px;
+  margin-top: -6px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+}
+.investmentrechner .glossar-link:hover {
+  text-decoration: underline;
+}
+.investmentrechner .glossar {
+  gap: 14px;
+  padding: 0 0 18px;
+  display: grid;
+}
+.investmentrechner .glossar-einleitung,
+.investmentrechner .glossar-hinweis {
+  color: var(--text-2);
+  margin: 0;
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+.investmentrechner .glossar-steuerberatung {
+  color: var(--ink);
+  font-weight: 650;
+}
+.investmentrechner .glossar-gruppen {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 28px;
+  display: grid;
+}
+.investmentrechner .glossar-gruppe h4 {
+  color: var(--text-3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--line);
+  margin: 0 0 8px;
+  padding-bottom: 6px;
+  font-size: 0.64rem;
+  font-weight: 780;
+}
+.investmentrechner .glossar-gruppe dl {
+  gap: 10px;
+  margin: 0;
+  display: grid;
+}
+.investmentrechner .glossar-eintrag {
+  gap: 2px;
+  display: grid;
+}
+.investmentrechner .glossar-eintrag dt {
+  color: var(--ink);
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+.investmentrechner .glossar-eintrag dd {
+  color: var(--text-2);
+  margin: 0;
+  font-size: 0.7rem;
+  line-height: 1.45;
+}
+.investmentrechner .glossar-eintrag .glossar-formel {
+  color: var(--muted);
+  font-size: 0.66rem;
+}
+@media (max-width: 650px) {
+  .investmentrechner .glossar-gruppen {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/*
+  Die Glossarseite der Berechnung. Alles muss auf ein Blatt passen, deshalb
+  zwei Spalten im Zeitungssatz und kleine Schrift wie im übrigen Kleingedruckten.
+  Ein Eintrag wird nie zwischen zwei Spalten geteilt.
+*/
+.investmentrechner .glossary-page .glossar.kompakt {
+  gap: 2.5mm;
+  margin-top: 3mm;
+  padding: 0;
+}
+.investmentrechner .glossary-page .glossar-gruppen {
+  column-count: 2;
+  column-gap: 7mm;
+  display: block;
+}
+.investmentrechner .glossary-page .glossar-gruppe {
+  margin-bottom: 3mm;
+}
+.investmentrechner .glossary-page .glossar-gruppe h4 {
+  break-after: avoid;
+  margin-bottom: 1.5mm;
+  padding-bottom: 1mm;
+  font-size: 0.46rem;
+}
+.investmentrechner .glossary-page .glossar-gruppe dl {
+  gap: 1.8mm;
+  display: block;
+}
+.investmentrechner .glossary-page .glossar-eintrag {
+  break-inside: avoid;
+  gap: 0.4mm;
+  margin-bottom: 1.8mm;
+}
+.investmentrechner .glossary-page .glossar-eintrag dt {
+  font-size: 0.5rem;
+}
+.investmentrechner .glossary-page .glossar-eintrag dd {
+  font-size: 0.46rem;
+  line-height: 1.4;
+}
+.investmentrechner .glossary-page .glossar-eintrag .glossar-formel {
+  font-size: 0.43rem;
+}
+.investmentrechner .glossary-page .glossar-einleitung,
+.investmentrechner .glossary-page .glossar-hinweis {
+  font-size: 0.5rem;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Die beiden Deckblätter, seit dem 07.10.2026
+   ─────────────────────────────────────────────────────────────────────────
+
+   „Ergebnis auf einen Blick“ und „Jahr für Jahr“, nach Christians Entwürfen
+   IDEE 1 und IDEE 2. Kopf, Objektband und Eckdaten nutzen die Bausteine des
+   alten Deckblatts, der Rest steht hier. Nur Variablen, keine festen Farben,
+   siehe „Hell und dunkel“ ganz oben.
+*/
+.investmentrechner .deckblatt-page .hero-price span {
+  max-width: 62mm;
+}
+.investmentrechner .db-eckdaten small {
+  letter-spacing: 0.06em;
+}
+.investmentrechner .db-eckdaten strong {
+  font-size: 0.7rem;
+}
+.investmentrechner .deckblatt-page h3 {
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  margin: 0;
+  font-size: 0.8rem;
+}
+.investmentrechner .db-unterzeile {
+  color: var(--muted);
+  margin: 1mm 0 2.5mm;
+  font-size: 0.52rem;
+  line-height: 1.45;
+}
+.investmentrechner .db-fussnote {
+  color: var(--muted);
+  margin: 2.5mm 0 0;
+  font-size: 0.47rem;
+  line-height: 1.5;
+}
+.investmentrechner .db-ton-blau {
+  color: var(--gold);
+}
+.investmentrechner .db-ton-gruen {
+  color: var(--gruen-tief);
+}
+.investmentrechner .db-kern {
+  text-align: center;
+  margin-top: 9mm;
+}
+.investmentrechner .db-kern .eyebrow {
+  font-size: 0.55rem;
+}
+.investmentrechner .db-kernsatz {
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  max-width: 170mm;
+  margin: 2.5mm auto 0;
+  font-size: 1.12rem;
+  font-weight: 800;
+  line-height: 1.3;
+  /* Bricht der Satz um, dann in zwei ähnlich lange Zeilen, nie mit einem Wort allein in der zweiten. */
+  text-wrap: balance;
+}
+.investmentrechner .db-kacheln {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 3mm;
+  margin-top: 7mm;
+  display: grid;
+}
+.investmentrechner .db-kacheln > div {
+  background: var(--flaeche-dunkel);
+  color: var(--auf-dunkel);
+  border-radius: var(--expose-radius);
+  align-content: start;
+  gap: 1.6mm;
+  padding: 4.5mm 4.5mm 4mm;
+  display: grid;
+}
+.investmentrechner .db-kacheln span {
+  color: var(--auf-dunkel-leise);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 0.48rem;
+  font-weight: 750;
+}
+.investmentrechner .db-kacheln strong {
+  color: var(--auf-dunkel);
+  letter-spacing: -0.03em;
+  font-size: 1.45rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+.investmentrechner .db-kacheln strong.db-ton-gruen {
+  color: var(--gruen-hell);
+}
+.investmentrechner .db-kacheln strong.db-ton-blau {
+  color: var(--blau-hell);
+}
+.investmentrechner .db-kacheln small {
+  color: var(--auf-dunkel-leise);
+  font-size: 0.5rem;
+  line-height: 1.45;
+}
+/* Der Durchschnitt ab Jahr 2 steht gut lesbar unter dem Wert des ersten Jahres. */
+.investmentrechner .db-kacheln .db-ab-jahr-2 {
+  color: var(--auf-dunkel);
+  font-size: 0.6rem;
+  font-weight: 700;
+}
+.investmentrechner .db-spalten {
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
+  gap: 9mm;
+  margin-top: 8mm;
+  display: grid;
+}
+.investmentrechner .db-zeile {
+  color: var(--text-1);
+  border-bottom: 1px solid var(--line);
+  justify-content: space-between;
+  gap: 4mm;
+  padding: 1.6mm 0;
+  font-size: 0.58rem;
+  display: flex;
+}
+.investmentrechner .db-zeile b {
+  color: var(--ink);
+  white-space: nowrap;
+}
+.investmentrechner .db-zeile-eingerueckt {
+  color: var(--text-3);
+  padding-left: 4mm;
+}
+.investmentrechner .db-zeile-eingerueckt b {
+  color: var(--text-2);
+  font-weight: 600;
+}
+/* Vor Steuer bewusst klein und grau: Die Zahl, die zählt, steht zwei Zeilen tiefer. */
+.investmentrechner .db-zeile-leise,
+.investmentrechner .db-zeile-leise b {
+  color: var(--muted);
+  font-size: 0.53rem;
+  font-weight: 600;
+}
+.investmentrechner .db-zeile-summe {
+  color: var(--ink);
+  border-bottom: 2px solid var(--ink);
+  font-size: 0.66rem;
+  font-weight: 800;
+}
+.investmentrechner .db-zeile-schnitt {
+  background: var(--gold-zart);
+  border-bottom: 0;
+  padding: 1.8mm 2.5mm;
+  font-weight: 700;
+}
+.investmentrechner .db-zeile-gruen b {
+  color: var(--gruen-tief);
+}
+.investmentrechner .db-balkenzeile {
+  color: var(--text-1);
+  grid-template-columns: 27mm minmax(0, 1fr) 21mm;
+  align-items: center;
+  gap: 3mm;
+  padding: 1.5mm 0;
+  font-size: 0.56rem;
+  display: grid;
+}
+.investmentrechner .db-balkenzeile b {
+  color: var(--ink);
+  text-align: right;
+  white-space: nowrap;
+}
+.investmentrechner .db-balken {
+  background: var(--flaeche-leise);
+  border-radius: 2mm;
+  height: 3.2mm;
+  display: block;
+  overflow: hidden;
+}
+.investmentrechner .db-balken > i {
+  border-radius: 2mm;
+  height: 100%;
+  display: block;
+}
+.investmentrechner .db-balken-wert {
+  background: var(--balken-wert);
+}
+.investmentrechner .db-balken-schuld {
+  background: var(--linie-stark);
+}
+.investmentrechner .db-balken-anteil {
+  background: var(--gold);
+}
+.investmentrechner .db-balken-eingezahlt {
+  background: var(--orange-beitrag);
+}
+.investmentrechner .db-bleibt {
+  background: var(--flaeche-leise);
+  border-radius: var(--expose-radius);
+  gap: 1.2mm;
+  margin-top: 4mm;
+  padding: 4mm 4.5mm;
+  display: grid;
+}
+.investmentrechner .db-bleibt span {
+  color: var(--text-3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 0.48rem;
+  font-weight: 750;
+}
+.investmentrechner .db-bleibt strong {
+  color: var(--gold);
+  letter-spacing: -0.03em;
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+.investmentrechner .db-bleibt small {
+  color: var(--text-3);
+  font-size: 0.5rem;
+  line-height: 1.45;
+}
+.investmentrechner .db-steuerkaesten {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3mm;
+  margin-top: 9mm;
+  display: grid;
+}
+.investmentrechner .db-steuerkaesten > div {
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--green);
+  border-radius: var(--expose-radius);
+  gap: 1mm;
+  padding: 3.5mm 4.5mm;
+  display: grid;
+}
+.investmentrechner .db-steuerkaesten > div.negativ {
+  border-left-color: var(--linie-kraeftig);
+}
+.investmentrechner .db-steuerkaesten strong {
+  color: var(--gruen-tief);
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+.investmentrechner .db-steuerkaesten > div.negativ strong {
+  color: var(--ink);
+}
+.investmentrechner .db-steuerkaesten span {
+  color: var(--text-3);
+  font-size: 0.55rem;
+}
+/* Variante 2: Diagramm und Jahrestabelle. */
+.investmentrechner .deckblatt-jahre .db-kacheln {
+  margin-top: 6mm;
+}
+.investmentrechner .deckblatt-jahre .db-abschnitt {
+  margin-top: 7mm;
+}
+.investmentrechner .db-diagramm {
+  border: 1px solid var(--line);
+  border-radius: var(--expose-radius);
+  padding: 3mm 3mm 1mm;
+}
+.investmentrechner .db-diagramm svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.investmentrechner .db-raster {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+.investmentrechner .db-achse {
+  fill: var(--muted);
+  font-size: 12px;
+}
+.investmentrechner .db-flaeche {
+  fill: var(--gold-soft);
+}
+.investmentrechner .db-linie {
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 3;
+}
+.investmentrechner .db-punkt {
+  fill: var(--gold);
+}
+.investmentrechner .db-saeule {
+  fill: var(--orange-beitrag);
+}
+.investmentrechner .expose-page .db-tabelle {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  font-size: 0.5rem;
+}
+.investmentrechner .db-tabelle th {
+  color: var(--text-3);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: right;
+  white-space: nowrap;
+  background: none;
+  border-bottom: 1px solid var(--linie-stark);
+  padding: 1.6mm 1mm;
+  font-size: 0.42rem;
+  font-weight: 750;
+}
+.investmentrechner .db-tabelle td {
+  color: var(--text-1);
+  text-align: right;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--line);
+  padding: 1.7mm 1mm;
+}
+.investmentrechner .db-tabelle th:first-child,
+.investmentrechner .db-tabelle td:first-child {
+  text-align: left;
+}
+.investmentrechner .db-tabelle td.db-fett {
+  color: var(--ink);
+  font-weight: 800;
+}
+.investmentrechner .db-tabelle td.db-ton-gruen {
+  color: var(--gruen-tief);
+}
+.investmentrechner .db-tabelle td.db-ton-blau {
+  color: var(--gold);
+}
+.investmentrechner .db-tabelle .db-jahr-eins td {
+  background: var(--gruen-zart);
+}
+/* Kennzahlen-Seite: Ergebnisblock und „Worauf die Rechnung beruht“. */
+.investmentrechner .kennzahlen-page .kennzahlen-ergebnis {
+  margin-top: 4mm;
+}
+.investmentrechner .kennzahlen-annahmen {
+  margin-top: 5mm;
+}
+.investmentrechner .kennzahlen-annahmen ul {
+  color: var(--text-2);
+  margin: 2mm 0 0;
+  padding: 0;
+  font-size: 0.56rem;
+  line-height: 1.55;
+  list-style: none;
+}
+/* Eigene Punkte: Die Listenmarker des Browsers setzt der PDF-Export auf die Grundlinie, ohne Abstand. */
+.investmentrechner .kennzahlen-annahmen li {
+  padding-left: 3.5mm;
+  position: relative;
+}
+.investmentrechner .kennzahlen-annahmen li::before {
+  content: "•";
+  color: var(--gold);
+  position: absolute;
+  left: 0;
+}
+.investmentrechner .kennzahlen-annahmen li + li {
+  margin-top: 1mm;
+}
+/* Die Wahl des Deckblatts über der Vorschau, im Rechner (nicht im Dokument). */
+.investmentrechner .deckblatt-wahl {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-bottom: 14px;
+  display: flex;
+}
+.investmentrechner .deckblatt-wahl > span {
+  color: var(--text-3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  font-weight: 780;
+}
+.investmentrechner .deckblatt-wahl > small {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Der Ergebnisteil des Deckblatts oben in der Analyse, seit dem 07.10.2026
+   ─────────────────────────────────────────────────────────────────────────
+
+   Dieselben Bausteine wie im PDF (Deckblatt.tsx), nur in Bildschirmgrößen.
+   Die Druckmaße oben sind für ein A4-Blatt gerechnet und wären hier zu klein.
+*/
+.investmentrechner .analyse-deckblatt {
+  border: 1px solid var(--line);
+  background: var(--flaeche);
+  border-radius: 12px;
+  padding: 20px 22px 22px;
+}
+.investmentrechner .analyse-deckblatt .db-kern {
+  margin-top: 0;
+}
+.investmentrechner .analyse-deckblatt .db-kern .eyebrow {
+  font-size: 0.66rem;
+}
+.investmentrechner .analyse-deckblatt .db-kernsatz {
+  margin-top: 8px;
+  font-size: 1.3rem;
+}
+.investmentrechner .analyse-deckblatt .db-kacheln {
+  gap: 10px;
+  margin-top: 18px;
+}
+.investmentrechner .analyse-deckblatt-jahre .db-kacheln {
+  margin-top: 0;
+}
+.investmentrechner .analyse-deckblatt .db-kacheln > div {
+  border-radius: 10px;
+  gap: 6px;
+  padding: 16px;
+}
+.investmentrechner .analyse-deckblatt .db-kacheln span {
+  font-size: 0.62rem;
+}
+.investmentrechner .analyse-deckblatt .db-kacheln strong {
+  font-size: 1.75rem;
+}
+.investmentrechner .analyse-deckblatt .db-kacheln small {
+  font-size: 0.72rem;
+}
+.investmentrechner .analyse-deckblatt .db-kacheln .db-ab-jahr-2 {
+  font-size: 0.8rem;
+}
+.investmentrechner .analyse-deckblatt .db-spalten {
+  gap: 28px;
+  margin-top: 22px;
+}
+.investmentrechner .analyse-deckblatt h3 {
+  color: var(--ink);
+  margin: 0;
+  font-size: 1rem;
+}
+.investmentrechner .analyse-deckblatt .db-abschnitt {
+  margin-top: 22px;
+}
+.investmentrechner .analyse-deckblatt .db-unterzeile {
+  margin: 3px 0 10px;
+  font-size: 0.74rem;
+}
+.investmentrechner .analyse-deckblatt .db-zeile {
+  gap: 12px;
+  padding: 7px 0;
+  font-size: 0.8rem;
+}
+.investmentrechner .analyse-deckblatt .db-zeile-eingerueckt {
+  padding-left: 14px;
+}
+.investmentrechner .analyse-deckblatt .db-zeile-leise,
+.investmentrechner .analyse-deckblatt .db-zeile-leise b {
+  font-size: 0.72rem;
+}
+.investmentrechner .analyse-deckblatt .db-zeile-summe {
+  font-size: 0.88rem;
+}
+.investmentrechner .analyse-deckblatt .db-zeile-schnitt {
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+.investmentrechner .analyse-deckblatt .db-fussnote {
+  margin-top: 10px;
+  font-size: 0.7rem;
+}
+.investmentrechner .analyse-deckblatt .db-balkenzeile {
+  grid-template-columns: 120px minmax(0, 1fr) 92px;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 0.78rem;
+}
+.investmentrechner .analyse-deckblatt .db-balken,
+.investmentrechner .analyse-deckblatt .db-balken > i {
+  border-radius: 6px;
+  height: 10px;
+}
+.investmentrechner .analyse-deckblatt .db-bleibt {
+  border-radius: 10px;
+  gap: 4px;
+  margin-top: 14px;
+  padding: 16px;
+}
+.investmentrechner .analyse-deckblatt .db-bleibt span {
+  font-size: 0.62rem;
+}
+.investmentrechner .analyse-deckblatt .db-bleibt strong {
+  font-size: 1.6rem;
+}
+.investmentrechner .analyse-deckblatt .db-bleibt small {
+  font-size: 0.72rem;
+}
+.investmentrechner .analyse-deckblatt .db-steuerkaesten {
+  gap: 10px;
+  margin-top: 22px;
+}
+.investmentrechner .analyse-deckblatt .db-steuerkaesten > div {
+  border-radius: 10px;
+  gap: 2px;
+  padding: 14px 16px;
+}
+.investmentrechner .analyse-deckblatt .db-steuerkaesten strong {
+  font-size: 1.3rem;
+}
+.investmentrechner .analyse-deckblatt .db-steuerkaesten span {
+  font-size: 0.76rem;
+}
+.investmentrechner .analyse-deckblatt .db-diagramm {
+  border-radius: 10px;
+  padding: 10px 10px 4px;
+}
+.investmentrechner .analyse-deckblatt .db-tabelle-huelle {
+  overflow-x: auto;
+}
+.investmentrechner .analyse-deckblatt .db-tabelle {
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.76rem;
+}
+.investmentrechner .analyse-deckblatt .db-tabelle th {
+  padding: 8px 6px;
+  font-size: 0.6rem;
+}
+.investmentrechner .analyse-deckblatt .db-tabelle td {
+  padding: 8px 6px;
+  font-size: 0.76rem;
+}
+@media (max-width: 880px) {
+  .investmentrechner .analyse-deckblatt .db-spalten {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 650px) {
+  .investmentrechner .analyse-deckblatt {
+    padding: 16px 14px;
+  }
+  .investmentrechner .analyse-deckblatt .db-kacheln,
+  .investmentrechner .analyse-deckblatt .db-steuerkaesten {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .investmentrechner .analyse-deckblatt .db-kernsatz {
+    font-size: 1.1rem;
+  }
+}
+
+/*
+ * Darlehen je Jahr, seit dem 07.10.2026: zwei Kopfzeilen, oben der Name des
+ * Darlehens über seinen vier Spalten. Die Spaltennamen darunter in normaler
+ * Schreibung ohne Sperrung, sonst bricht „Restschuld“ mitten im Wort; die
+ * Rundung gehört nur an die äußeren Ecken der oberen Zeile.
+ */
+.investmentrechner .darlehen-tabelle thead tr:first-child th:not(:first-child) {
+  text-align: center;
+}
+.investmentrechner .darlehen-tabelle thead tr + tr th {
+  text-transform: none;
+  letter-spacing: 0;
+  overflow-wrap: normal;
+}
+.investmentrechner .expose-page .darlehen-tabelle thead tr + tr th {
+  border-radius: 0;
+}
+.investmentrechner .darlehen-tabelle thead tr:first-child th + th {
+  border-left: 1px solid #ffffff1c;
+}
+.investmentrechner .darlehen-tabelle td.darlehen-summe {
+  font-weight: 800;
+}

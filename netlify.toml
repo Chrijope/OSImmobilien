@@ -1,0 +1,14 @@
+# Netlify: baut die App und liefert alle Unterseiten über index.html aus.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Die App steuert ihre Seiten selbst (React Router). Jede Adresse ohne
+# eigene Datei geht deshalb an index.html, sonst gäbe es beim Neuladen 404.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
