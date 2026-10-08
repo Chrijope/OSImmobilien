@@ -78,6 +78,9 @@ const immobilienItems = [
   /* Bauträger-Kalkulator aus Ankaufstool.xlsx. Wer ihn sieht, steht in
      `ANKAUFSTOOL_ROLLEN` (sidebarPermissions.ts). */
   { title: "Ankaufstool", url: ANKAUFSTOOL_ROUTE, icon: Calculator, adminOnly: true, auchFuer: ["vertriebsleiter"], suchbegriffe: ["ankauf", "bautraeger", "kalkulator", "lohnt sich", "marge", "go no go", "aufteilung"] },
+  /* Ist- gegen Soll-Miete, Differenz als Subvention an die Hausverwaltung.
+     Rollen wie beim Ankaufstool (sidebarPermissions.ts). */
+  { title: "Mietsubvention", url: MIETSUBVENTION_ROUTE, icon: Calculator, adminOnly: true, auchFuer: ["vertriebsleiter"], suchbegriffe: ["subvention", "mietsubvention", "mieterhoehung", "kappungsgrenze", "hausverwaltung", "soll miete", "ist miete"] },
 ];
 
 const auswertungItems = [
@@ -105,9 +108,6 @@ const toolsItems = [
    * Investmentkalkulation weiter.
    */
   // { title: "Kalkulation Investagon", url: "/kalkulation-investagon", icon: Calculator, draft: true },
-  /* Ist- gegen Soll-Miete, Differenz als Subvention an die Hausverwaltung.
-     Rollen wie beim Ankaufstool (sidebarPermissions.ts). */
-  { title: "Mietsubvention", url: MIETSUBVENTION_ROUTE, icon: Calculator, adminOnly: true, auchFuer: ["vertriebsleiter"], suchbegriffe: ["subvention", "mietsubvention", "mieterhoehung", "kappungsgrenze", "hausverwaltung", "soll miete", "ist miete"] },
   { title: "AfA-Rechner", url: "/afa-rechner", icon: Calculator, suchbegriffe: ["abschreibung", "afa", "steuer", "denkmal", "restnutzungsdauer"] },
   { title: "Analysetool", url: "/analysetool", icon: Search, suchbegriffe: ["analyse", "auswertung", "kunde pruefen"] },
   { title: "Steuerrechner", url: "/steuerrechner", icon: Calculator, suchbegriffe: ["steuer", "steuerersparnis", "rechner", "eigener link"], tooltip: "Eigener öffentlicher Rechner mit Deinem persönlichen Link. Der Interessent sieht seine Steuerlast, seine Ersparnis und sein Vermögen nach zehn Jahren, und wer sich einträgt, landet als Lead direkt bei Dir." },
