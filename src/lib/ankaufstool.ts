@@ -199,7 +199,7 @@ export function eingabenAusVersion(v: AnkaufVersion): AnkaufEingaben {
  * Version in die Liste legen, neueste zuerst. Eine Version gleichen Namens
  * wird ersetzt, so lässt sich eine Rechnung unter ihrem Namen fortschreiben.
  */
-export function versionSpeichern(liste: AnkaufVersion[], neu: AnkaufVersion): AnkaufVersion[] {
+export function versionSpeichern<V extends { name: string }>(liste: V[], neu: V): V[] {
   const name = neu.name.trim().toLowerCase();
   return [neu, ...liste.filter((v) => v.name.trim().toLowerCase() !== name)];
 }

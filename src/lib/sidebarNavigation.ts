@@ -30,7 +30,7 @@ import type { UserRole } from "@/types/user";
 import { HANDBUCH_SEITE_ROUTE } from "@/lib/handbuch/zugang";
 import { isDraftRoute } from "@/lib/draftRoutes";
 import {
-  ANKAUFSTOOL_ROUTE, greiftAdminRiegel, isUrlAllowedForRole, isKundeRole, isTippgeberRole, objekteTestFreigabe, type NutzerIdentitaet,
+  ANKAUFSTOOL_ROUTE, MIETSUBVENTION_ROUTE, greiftAdminRiegel, isUrlAllowedForRole, isKundeRole, isTippgeberRole, objekteTestFreigabe, type NutzerIdentitaet,
 } from "@/lib/sidebarPermissions";
 
 /** Wonach Menschen die Einstellungen suchen. Steht hier, weil zwei Einträge sie brauchen. */
@@ -105,6 +105,9 @@ const toolsItems = [
    * Investmentkalkulation weiter.
    */
   // { title: "Kalkulation Investagon", url: "/kalkulation-investagon", icon: Calculator, draft: true },
+  /* Ist- gegen Soll-Miete, Differenz als Subvention an die Hausverwaltung.
+     Rollen wie beim Ankaufstool (sidebarPermissions.ts). */
+  { title: "Mietsubvention", url: MIETSUBVENTION_ROUTE, icon: Calculator, adminOnly: true, auchFuer: ["vertriebsleiter"], suchbegriffe: ["subvention", "mietsubvention", "mieterhoehung", "kappungsgrenze", "hausverwaltung", "soll miete", "ist miete"] },
   { title: "AfA-Rechner", url: "/afa-rechner", icon: Calculator, suchbegriffe: ["abschreibung", "afa", "steuer", "denkmal", "restnutzungsdauer"] },
   { title: "Analysetool", url: "/analysetool", icon: Search, suchbegriffe: ["analyse", "auswertung", "kunde pruefen"] },
   { title: "Steuerrechner", url: "/steuerrechner", icon: Calculator, suchbegriffe: ["steuer", "steuerersparnis", "rechner", "eigener link"], tooltip: "Eigener öffentlicher Rechner mit Deinem persönlichen Link. Der Interessent sieht seine Steuerlast, seine Ersparnis und sein Vermögen nach zehn Jahren, und wer sich einträgt, landet als Lead direkt bei Dir." },

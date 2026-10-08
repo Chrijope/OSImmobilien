@@ -227,6 +227,8 @@ export const ROUTEN_TABELLEN: Record<string, readonly string[]> = {
   "/investmentrechner": [...KONTAKT_TABELLEN, ...OBJEKT_TABELLEN],
   // Ankaufstool rechnet nur mit Eingaben, laedt keine Daten.
   "/ankaufstool": [],
+  // Mietsubvention liest Objekte und Einheiten fuer die Vorbelegung.
+  "/mietsubvention": [...OBJEKT_TABELLEN],
   "/musterkalkulation": [],
   "/kalkulation-1": [],
   "/kalkulation-team-pro-q": [],
