@@ -228,9 +228,9 @@ describe("Mit Einwilligung für den Partner", () => {
   it("meldet keinen Lead mehr, wenn der Widerruf aus einem anderen Tab im Speicher steht (A4-07)", () => {
     ladeMetaPixel({ pixelId: PIXEL, partnerId: PARTNER });
     // Der andere Tab schreibt nur den Speicher, dieses Modul bekommt kein Ereignis.
-    const roh = JSON.parse(window.localStorage.getItem("moreimmo.cookie-einwilligung")!);
+    const roh = JSON.parse(window.localStorage.getItem("osimmobilien.cookie-einwilligung")!);
     roh.partner = [{ partnerId: PARTNER, marketing: false, zeitpunkt: new Date().toISOString() }];
-    window.localStorage.setItem("moreimmo.cookie-einwilligung", JSON.stringify(roh));
+    window.localStorage.setItem("osimmobilien.cookie-einwilligung", JSON.stringify(roh));
     expect(istMetaPixelAktiv()).toBe(false);
     meldeMetaLead("event-nach-widerruf");
     expect(fbq()!.queue.some((e) => e[1] === PIXEL && e[2] === "Lead")).toBe(false);

@@ -20,7 +20,7 @@ export const BONITAET_ABSCHNITT = 'bonitaetsunterlagen'
 
 /** Pfad innerhalb des Portals, etwa für die Benachrichtigung in der Glocke. */
 export function bonitaetPfadFuerInvestment(investmentId: string): string {
-  const params = new URLSearchParams({ tab: 'moreimmo', inv: investmentId, highlight: BONITAET_ABSCHNITT })
+  const params = new URLSearchParams({ tab: 'osimmobilien', inv: investmentId, highlight: BONITAET_ABSCHNITT })
   return `/kunde/investments?${params.toString()}`
 }
 

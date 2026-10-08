@@ -21,7 +21,7 @@ const LANGS: Array<{ code: Sprache; label: string; short: string }> = [
  * Sprachumschalter (DE/EN).
  *
  * Ohne Props schaltet er die i18n-Sprache des Kundenportals, persistiert in
- * LocalStorage unter `moreimmo-crm-lang`. Das ist nur die Anzeige in diesem
+ * LocalStorage unter `osimmobilien-crm-lang`. Das ist nur die Anzeige in diesem
  * Browser: Die Profilsprache des Kunden, nach der Mails und Dokumente gehen,
  * ändert er nie (Plan Kundensprache, Entscheidung 3). Das Portal zeigt dazu
  * im Menü einen kurzen Satz über `hinweis`.

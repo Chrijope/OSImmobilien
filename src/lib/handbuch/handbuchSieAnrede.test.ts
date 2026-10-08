@@ -18,7 +18,7 @@ import { join } from "node:path";
 import { baueHandbuch } from "./inhalt";
 import { zeichnungAlsSvg } from "./diagramme";
 import { HANDBUCH_SEITEN_TEXTE } from "./seitenTexte";
-import { FIRMEN_ANSPRECHPARTNER, MOREIMMO_WARUM, MOREIMMO_WERTE } from "./firma";
+import { FIRMEN_ANSPRECHPARTNER, OS_IMMOBILIEN_WARUM, OS_IMMOBILIEN_WERTE } from "./firma";
 import type { Block, Handbuch } from "./bausteine";
 import { handbuchEinwilligungTexte } from "@/lib/leadEinwilligung";
 import { leadFehlermeldung, leadNetzfehlerMeldung } from "@/lib/leadFehlermeldung";
@@ -114,7 +114,7 @@ describe("Handbuch-Strecke siezt (Ausnahme vom 27.09.2026)", () => {
   });
 
   it("„Wer dahinter steht“", () => {
-    for (const text of [FIRMEN_ANSPRECHPARTNER.zitat, ...MOREIMMO_WARUM, MOREIMMO_WERTE]) {
+    for (const text of [FIRMEN_ANSPRECHPARTNER.zitat, ...OS_IMMOBILIEN_WARUM, OS_IMMOBILIEN_WERTE]) {
       expect(duStellen(text), text).toEqual([]);
     }
   });

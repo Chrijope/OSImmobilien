@@ -1,5 +1,5 @@
 import { ArrowRight, Shield, Clock, Phone } from "lucide-react";
-import logo from "@/assets/moreimmo-logo.png";
+import logo from "@/assets/osimmobilien-logo.png";
 import type { BeraterProfile } from "@/lib/beraterProfil";
 import { useSeitenSprache, useSeitenTexte } from "@/components/SeitenSprache";
 import { mitSeitenSprache } from "@/lib/seitenSprache";

@@ -58,13 +58,13 @@ const MAX_PARTNER = 30;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /** Schluessel im localStorage. */
-export const EINWILLIGUNG_SPEICHER = "moreimmo.cookie-einwilligung";
+export const EINWILLIGUNG_SPEICHER = "osimmobilien.cookie-einwilligung";
 
 /** Fensterereignis bei jeder gespeicherten Wahl. */
-export const EINWILLIGUNG_EREIGNIS = "moreimmo:cookie-einwilligung";
+export const EINWILLIGUNG_EREIGNIS = "osimmobilien:cookie-einwilligung";
 
 /** Fensterereignis, das den Banner in der Einstellungsansicht oeffnet. */
-export const EINSTELLUNGEN_OEFFNEN_EREIGNIS = "moreimmo:cookie-einstellungen";
+export const EINSTELLUNGEN_OEFFNEN_EREIGNIS = "osimmobilien:cookie-einstellungen";
 
 /** Die Marketingwahl fuer das Pixel genau eines Partners. */
 export interface PartnerEntscheidung {

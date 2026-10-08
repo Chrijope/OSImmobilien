@@ -9,14 +9,14 @@
  * stillschweigend als 0 mitgerechnet.
  */
 
-import { adaptMoreImmoInvestment } from "@/lib/kundePortalInvestment";
+import { adaptOsImmobilienInvestment } from "@/lib/kundePortalInvestment";
 import { aktuelleRestschuld } from "@/lib/eigeneInvestmentBerechnungen";
 
 export type MarktwertPunkt = { datum: string; wert: number };
 
 export type PortfolioPosition = {
   id: string;
-  quelle: "moreimmo" | "eigene";
+  quelle: "osimmobilien" | "eigene";
   kaufpreis: number;
   /** Belegte Jahresmiete; null = keine Miete erfasst. */
   jahresmiete: number | null;
@@ -41,14 +41,14 @@ function letzterWert(historie: MarktwertPunkt[]): number | null {
 }
 
 /** OS Immobilien-Investment (Zeile aus `investments` plus Finanzierung) als Position. */
-export function moreImmoPosition(inv: any, finanzierung: any): PortfolioPosition {
+export function osImmobilienPosition(inv: any, finanzierung: any): PortfolioPosition {
   const meta = inv?.meta || {};
-  const adapted = adaptMoreImmoInvestment(inv, meta, finanzierung);
+  const adapted = adaptOsImmobilienInvestment(inv, meta, finanzierung);
   const jahresmiete = Number(meta?.jahresnettomiete || meta?.miete_jaehrlich || 0);
   const historie = leseHistorie(meta);
   return {
     id: inv.id,
-    quelle: "moreimmo",
+    quelle: "osimmobilien",
     kaufpreis: Number(inv.kaufpreis || 0),
     jahresmiete: jahresmiete > 0 ? jahresmiete : null,
     // Eingetragene Restschuld, sonst aus dem Darlehen fortgeschrieben, wie im
@@ -90,7 +90,7 @@ export function eigenePosition(inv: any): PortfolioPosition {
 
 export type PortfolioKennzahlen = {
   anzahl: number;
-  anzahlMoreImmo: number;
+  anzahlOsImmobilien: number;
   anzahlEigene: number;
   kaufpreisGesamt: number;
   /** Summe der belegten Jahresmieten. */
@@ -123,7 +123,7 @@ export function berechnePortfolioKennzahlen(positionen: PortfolioPosition[]): Po
       : null;
   return {
     anzahl: positionen.length,
-    anzahlMoreImmo: positionen.filter((p) => p.quelle === "moreimmo").length,
+    anzahlOsImmobilien: positionen.filter((p) => p.quelle === "osimmobilien").length,
     anzahlEigene: positionen.filter((p) => p.quelle === "eigene").length,
     kaufpreisGesamt,
     mieteGesamt,

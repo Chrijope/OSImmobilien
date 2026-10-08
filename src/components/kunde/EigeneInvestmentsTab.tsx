@@ -199,7 +199,7 @@ const EigeneInvestmentsTab = ({ onZurUebersicht }: EigeneInvestmentsTabProps = {
       // "Über OS Immobilien" Investments laufen über den anderen Tab (Tabelle `investments`).
       // In "Eigene Investments" werden ausschließlich Immobilien angezeigt, die NICHT
       // über OS Immobilien erworben wurden.
-      const filtered = (data as any[]).filter(i => (i.meta?.quelle || "extern") !== "moreimmo");
+      const filtered = (data as any[]).filter(i => (i.meta?.quelle || "extern") !== "osimmobilien");
       // Einmalig: Bodenwert- und Verwaltungsanteil aus meta.steuerCockpit in
       // die Dialogfelder uebernehmen, danach gilt nur noch der Dialogwert.
       const uebernommen = await Promise.all(filtered.map(i => uebernimmAltwerte(i)));
@@ -630,9 +630,9 @@ const EigeneInvestmentsTab = ({ onZurUebersicht }: EigeneInvestmentsTabProps = {
           {selected.kaufdatum && <Badge variant="outline"><Calendar className="h-3 w-3 mr-1" />{t("portal.cards.eigene.purchase_on", { date: fmtDate(selected.kaufdatum) })}</Badge>}
         </div>
 
-        {m.quelle === "moreimmo" && (
+        {m.quelle === "osimmobilien" && (
           <div className="rounded-md border border-primary/20 bg-primary/5 px-4 py-2.5 text-sm text-foreground/80">
-            <span dangerouslySetInnerHTML={{ __html: t("portal.cards.eigene.moreimmo_hint") }} />
+            <span dangerouslySetInnerHTML={{ __html: t("portal.cards.eigene.osimmobilien_hint") }} />
           </div>
         )}
 

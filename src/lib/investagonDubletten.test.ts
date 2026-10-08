@@ -170,7 +170,7 @@ describe("Dublettenschutz: echte Dubletten", () => {
   it("fuehrt nichts zusammen, wenn der Bestand selbst schon doppelt liegt", () => {
     const index = baueAdressIndex([
       objekt("a", "Musterweg 3", "Musterweg 3", "90402", "lehner-7"),
-      objekt("b", "Musterweg 3", "Musterweg 3", "90402", "moreimmo-7"),
+      objekt("b", "Musterweg 3", "Musterweg 3", "90402", "osimmobilien-7"),
     ]);
     expect(
       findeAdressTreffer(index, { name: "Musterweg 3", adresse: "Musterweg 3", plz: "90402" }),
@@ -198,20 +198,20 @@ describe("Dublettenschutz: echte Dubletten", () => {
 describe("Zweitkennung", () => {
   it("laesst die Hauptkennung stehen und haengt die neue daneben", () => {
     const meta = { investagonSlug: "lehner-7", anlageklasse: "Eigentumswohnung" };
-    const ergaenzt = mitZweitkennung(meta, "moreimmo-7", "OS Immobilien (eigener Bestand)");
-    expect(ergaenzt.investagonSlugsWeitere).toEqual(["moreimmo-7"]);
+    const ergaenzt = mitZweitkennung(meta, "osimmobilien-7", "OS Immobilien (eigener Bestand)");
+    expect(ergaenzt.investagonSlugsWeitere).toEqual(["osimmobilien-7"]);
     expect(ergaenzt.investagonSlug).toBeUndefined();
-    expect((ergaenzt.investagonZweitkennungen as any)["moreimmo-7"]).toMatchObject({
+    expect((ergaenzt.investagonZweitkennungen as any)["osimmobilien-7"]).toMatchObject({
       bautraeger: "OS Immobilien (eigener Bestand)",
     });
   });
 
   it("traegt dieselbe Kennung kein zweites Mal ein", () => {
-    const meta = { investagonSlug: "lehner-7", investagonSlugsWeitere: ["moreimmo-7"] };
-    expect(mitZweitkennung(meta, "moreimmo-7", "OS Immobilien").investagonSlugsWeitere)
-      .toEqual(["moreimmo-7"]);
+    const meta = { investagonSlug: "lehner-7", investagonSlugsWeitere: ["osimmobilien-7"] };
+    expect(mitZweitkennung(meta, "osimmobilien-7", "OS Immobilien").investagonSlugsWeitere)
+      .toEqual(["osimmobilien-7"]);
     expect(mitZweitkennung(meta, "lehner-7", "Lehner").investagonSlugsWeitere)
-      .toEqual(["moreimmo-7"]);
+      .toEqual(["osimmobilien-7"]);
   });
 
   it("nennt alle Kennungen eines Objekts, damit die Bereinigung sie kennt", () => {

@@ -1,5 +1,4 @@
-import moreImmoLogo from "@/assets/moreimmo-logo.png";
-import moreFinanceLogo from "@/assets/morefinance-logo.svg";
+import osLogo from "@/assets/osimmobilien-logo.png";
 
 /*
  * Kleiner Partnerhinweis mit Logo in den Leistungskarten der
@@ -7,15 +6,11 @@ import moreFinanceLogo from "@/assets/morefinance-logo.svg";
  *
  * Kein Dunkelmodus-Umfärben: Die Karten liegen in `.beratung-apple`, und die
  * bleibt auch im Dunkelmodus eine helle, deckende Fläche (siehe
- * `styles/praesentation-liquid.css`). Das MORE-Immo-Logo steht dort deshalb
- * schon immer unverändert, MORE Finance genauso, die Blautöne bleiben.
- *
- * Die Höhen sind verschieden, weil das MORE-Immo-PNG viel Leerraum trägt:
- * So stehen beide Schriftzüge gleich groß.
+ * `styles/praesentation-liquid.css`). Das OS-Immobilien-Logo steht dort deshalb
+ * schon immer unverändert. Der Finanzierungspartner steht ohne Logo da.
  */
 const LOGOS: Record<string, { src: string; hoehe: string }> = {
-  "OS Immobilien": { src: moreImmoLogo, hoehe: "h-[30px] -my-1" },
-  "MORE Finance": { src: moreFinanceLogo, hoehe: "h-5" },
+  "OS Immobilien": { src: osLogo, hoehe: "h-[30px] -my-1" },
 };
 
 export function PartnerLogo({ marke, rolle, satz }: { marke: string; rolle: string; satz: string }) {

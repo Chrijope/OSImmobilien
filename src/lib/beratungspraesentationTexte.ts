@@ -1,6 +1,6 @@
 /**
  * Alle sichtbaren Texte der Beratungspräsentation OS Immobilien
- * (`src/pages/BeratungspraesentationHV.tsx`, Route `/beratungspraesentation-moreimmo`),
+ * (`src/pages/BeratungspraesentationHV.tsx`, Route `/beratungspraesentation-osimmobilien`),
  * auf Deutsch und auf Englisch.
  *
  * Warum eine eigene Datei und nicht `src/i18n/locales/*.json`: Die Präsentation
@@ -226,9 +226,9 @@ const de = {
         titel: "Finanzierung",
         text: "Finanzierungsstrategie, Bankgespräche und optimale Konditionen aus einer Hand.",
         partner: {
-          marke: "MORE Finance",
+          marke: "Finanzierungspartner",
           rolle: "Finanzierungspartner",
-          satz: "MORE Finance übernimmt die Finanzierung.",
+          satz: "Unser Finanzierungspartner übernimmt die Finanzierung.",
         },
       },
       { titel: "Steuerliche Gestaltung", text: "Steuerliche Potenziale frühzeitig erkennen und gezielt nutzen." },
@@ -1154,9 +1154,9 @@ const en: BeratungTexte = {
         titel: "Financing",
         text: "Financing strategy, bank negotiations and optimal terms from a single source.",
         partner: {
-          marke: "MORE Finance",
+          marke: "Finanzierungspartner",
           rolle: "Financing partner",
-          satz: "MORE Finance handles the financing.",
+          satz: "Our financing partner handles the financing.",
         },
       },
       { titel: "Tax planning", text: "Identify tax potential early and use it in a targeted way." },

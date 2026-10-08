@@ -8,7 +8,7 @@
  * Closing hinterlegten Bewerberfeldern (satzIndividuell / satzLead / satzEigen,
  * dieselben Felder, die auch der Vertragsgenerator in vertragKlauseln.ts
  * liest) oder aus den Standardwerten des neuen Konditionsmodells:
- * einheitlich 4 Prozent, für MORE-Leads wie für eigene Kunden.
+ * einheitlich 4 Prozent, für OS-Leads wie für eigene Kunden.
  */
 
 /** Standardsätze des neuen Modells, falls für den Bewerber nichts hinterlegt ist. */
@@ -27,7 +27,7 @@ export interface SatzQuellen {
 }
 
 export interface ClosingSaetze {
-  /** Satz in Prozent für über MORE zugewiesene Leads. */
+  /** Satz in Prozent für über OS Immobilien zugewiesene Leads. */
   leadSatz: number;
   /** Satz in Prozent für Kunden aus dem eigenen Netzwerk. */
   eigenSatz: number;

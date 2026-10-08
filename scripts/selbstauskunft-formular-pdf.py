@@ -230,8 +230,8 @@ HELL = HexColor("#F4F7FA")      # BRAND.light
 WARN_BG = HexColor("#F4F7FA")
 WARN_RAND = HexColor("#0A6EDB")
 WARN_TEXT = HexColor("#0F1621")
-LOGO_PFAD = "public/images/moreimmo-logo.png"
-FIRMENZEILE = "MOREImmo, Wendelsteinstraße 19, 83075 Bad Feilnbach"
+LOGO_PFAD = "public/images/osimmobilien-logo.png"
+FIRMENZEILE = "OS Immobilien Holding GmbH, Am Ostbahnhof 1, 15749 Mittenwalde"
 GESAMTSEITEN = 7
 
 W, H = A4
@@ -240,8 +240,8 @@ CW = W - 2 * M
 
 pfad = "public/dokumente/selbstauskunft-formular-en.pdf" if SPRACHE == "en" else "public/dokumente/selbstauskunft-formular.pdf"
 c = pdfcanvas.Canvas(pfad, pagesize=A4)
-c.setTitle("Self-disclosure MOREImmo (fillable)" if SPRACHE == "en" else "Selbstauskunft MOREImmo (ausfüllbar)")
-c.setAuthor("MOREImmo")
+c.setTitle("Self-disclosure OS Immobilien (fillable)" if SPRACHE == "en" else "Selbstauskunft OS Immobilien (ausfüllbar)")
+c.setAuthor("OS Immobilien")
 
 seite = [0]
 
@@ -258,7 +258,7 @@ def kopf(titelzusatz=""):
                     preserveAspectRatio=True, mask="auto")
     except Exception:
         c.setFillColor(NAVY); c.setFont("Helvetica-Bold", 12)
-        c.drawString(M, y_(13), "MOREImmo")
+        c.drawString(M, y_(13), "OS Immobilien")
     c.setFillColor(GRAU)
     c.setFont("Helvetica", 7)
     c.setFont("Helvetica", 7)

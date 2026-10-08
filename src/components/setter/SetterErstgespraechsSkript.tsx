@@ -229,7 +229,7 @@ interface Schritt {
   optional?: boolean;
   fragen?: { key: string; label: LocText; placeholder?: string; multiline?: boolean }[];
   notiz?: boolean; // Freitext-Notiz aktivieren
-  special?: "anrede" | "einleitung" | "netto" | "moreimmoVorstellung" | "sparformen" | "skala" | "cashflowErwartung" | "familienstand";
+  special?: "anrede" | "einleitung" | "netto" | "osVorstellung" | "sparformen" | "skala" | "cashflowErwartung" | "familienstand";
 }
 
 const ZIELE_OPTIONEN = [
@@ -418,7 +418,7 @@ const SCHRITTE: Schritt[] = [
 
   // Dank + OS Immobilien-Vorstellung (vor Terminvereinbarung)
   { id: "moreimmo_vorstellung", nr: 16, titel: "Dank + Wer ist OS Immobilien?",
-    special: "moreimmoVorstellung",
+    special: "osVorstellung",
     text: {
       du:  `"Danke, [Vorname], dass du mir so offen von dir erzählt hast. Kurz, wer wir sind:\n\n• Wir machen ausschließlich Immobilien als Kapitalanlage, kein Eigenheim.\n• Unsere Kunden sind Angestellte, Beamte und Selbstständige mit gutem Einkommen.\n• Wir arbeiten in wachstumsstarken deutschen A- und B-Lagen, mit saniertem Bestand, Neubau im KfW-40-Standard und Co-Living.\n• Wir begleiten dich von der Strategie über die Finanzierung bis nach dem Notar, alles aus einer Hand.\n• Seit [X] Jahren, [Y] begleitete Kunden.\n\nWas davon klingt für dich am ehesten nach dem, was du vorhin beschrieben hast?"`,
       sie: `"Danke, [Name], dass Sie mir so offen von sich erzählt haben. Kurz, wer wir sind:\n\n• Wir machen ausschließlich Immobilien als Kapitalanlage, kein Eigenheim.\n• Unsere Kunden sind Angestellte, Beamte und Selbstständige mit gutem Einkommen.\n• Wir arbeiten in wachstumsstarken deutschen A- und B-Lagen, mit saniertem Bestand, Neubau im KfW-40-Standard und Co-Living.\n• Wir begleiten Sie von der Strategie über die Finanzierung bis nach dem Notar, alles aus einer Hand.\n• Seit [X] Jahren, [Y] begleitete Kunden.\n\nWas davon klingt für Sie am ehesten nach dem, was Sie vorhin beschrieben haben?"`,

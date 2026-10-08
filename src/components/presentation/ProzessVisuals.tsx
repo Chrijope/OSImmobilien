@@ -60,7 +60,7 @@ const P = "hsl(var(--primary))";
 
 /* 01 · Beratung, Videocall: 4 Video-Kacheln + Waveform */
 export const VideoCallVisual = () => (
-  <Frame url="videoraum · moreimmo-beratung">
+  <Frame url="videoraum · osimmobilien-beratung">
     <g>
       {[[10, 12], [86, 12], [10, 62], [86, 62]].map(([x, y], i) => (
         <g key={i}>

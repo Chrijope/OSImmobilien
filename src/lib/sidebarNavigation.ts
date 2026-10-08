@@ -70,7 +70,7 @@ const immobilienItems = [
   /* Der Weg zu Investagon. Er steht oben, weil im Vertrieb hier gearbeitet
      wird. Der Eintrag darunter ist die eigene Objektverwaltung, sie traegt
      das Admin-Abzeichen und ist nur fuer die Pflege da. */
-  { title: "Objekte", url: "/objekte-neu", icon: Building2, suchbegriffe: ["immobilien", "haus", "gebaeude", "wohnungen", "einheiten", "investagon", "expose", "lotse", "more lotse"] },
+  { title: "Objekte", url: "/objekte-neu", icon: Building2, suchbegriffe: ["immobilien", "haus", "gebaeude", "wohnungen", "einheiten", "investagon", "expose", "lotse", "os lotse"] },
   { title: "Objekte", url: "/objekte", icon: Building2, adminOnly: true, adminBadge: true, suchbegriffe: ["objektverwaltung", "bestand", "investagon import"],
     tooltip: "Die eigene Objektverwaltung mit dem Investagon-Import. Fuer die Pflege, im Vertrieb wird der Eintrag darueber genutzt." },
   { title: "Objekt Akquise", url: "/objekt-akquise", icon: Search, adminOnly: true, suchbegriffe: ["ankauf", "einkauf", "neue objekte"] },

@@ -3,7 +3,7 @@
  * des MCP-Servers `kennzahlen-mcp`: `objekte_liste`, `objekt_details` und
  * `objekt_dokumente`.
  *
- * Seit dem 28.09.2026 liegt die Datei unter `_shared/`, weil auch der MORE
+ * Seit dem 28.09.2026 liegt die Datei unter `_shared/`, weil auch der OS
  * Lotse (`objekt-lotse`) die Positivliste für Objekt und Einheit nutzt. Am
  * Verhalten von `kennzahlen-mcp` ändert das nichts.
  *

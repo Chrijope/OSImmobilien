@@ -1,4 +1,4 @@
-# Stress-Test – MOREImmo CRM
+# Stress-Test – OS Immobilien CRM
 
 Generiert 5.000 Test-Leads und simuliert ein 50-VP-Setup, um Listen-Pagination,
 Pipeline-Performance und Cache-Verhalten zu prüfen.

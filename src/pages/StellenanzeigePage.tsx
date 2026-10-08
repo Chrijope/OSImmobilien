@@ -18,7 +18,7 @@ import {
   type StellenMerkmal,
   type Stellenanzeige,
 } from "@/lib/stellenanzeigen";
-import logoImg from "@/assets/moreimmo-logo.png";
+import logoImg from "@/assets/osimmobilien-logo.png";
 import {
   ArrowRight, BadgeCheck, Building2, CalendarCheck, Calculator, Check, CheckCircle,
   ChevronDown, Clock, Compass, Gift, Handshake, HeartHandshake, KeyRound, Landmark, Layers, Lightbulb,

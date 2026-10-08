@@ -1,4 +1,4 @@
-# Backup & Restore – MOREImmo CRM
+# Backup & Restore – OS Immobilien CRM
 
 Stand: 2026-05. Verantwortlich: Inhaber / IT-Admin.
 

@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Globe, Calculator, Plane, ArrowRight } from "lucide-react";
-import logoImg from "@/assets/moreimmo-logo.png";
+import logoImg from "@/assets/osimmobilien-logo.png";
 import { SeitenSpracheProvider, SeitenSprachUmschalter, useSeitenSprache, useSeitenTexte } from "@/components/SeitenSprache";
 import { mitSeitenSprache, type Sprache } from "@/lib/seitenSprache";
 import { LINKS_TEXTE, type LinksTexte } from "./linksTexte";

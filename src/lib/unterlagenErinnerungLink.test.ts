@@ -15,7 +15,7 @@ describe("Erinnerung „Deine Unterlagen fehlen noch“", () => {
     const url = new URL(bonitaetUrlFuerInvestment("inv-123"));
     expect(url.origin).toBe("https://osimmobilien.netlify.app");
     expect(url.pathname).toBe("/kunde/investments");
-    expect(url.searchParams.get("tab")).toBe("moreimmo");
+    expect(url.searchParams.get("tab")).toBe("osimmobilien");
     expect(url.searchParams.get("inv")).toBe("inv-123");
     // Gleicher Abschnitt wie der Knopf „Jetzt fortfahren“ (section-bonitaetsunterlagen).
     expect(url.searchParams.get("highlight")).toBe("bonitaetsunterlagen");
@@ -24,7 +24,7 @@ describe("Erinnerung „Deine Unterlagen fehlen noch“", () => {
   it("verschiedene Investments bekommen verschiedene Links", () => {
     expect(bonitaetPfadFuerInvestment("inv-a")).not.toBe(bonitaetPfadFuerInvestment("inv-b"));
     expect(bonitaetPfadFuerInvestment("inv-a")).toBe(
-      "/kunde/investments?tab=moreimmo&inv=inv-a&highlight=bonitaetsunterlagen",
+      "/kunde/investments?tab=osimmobilien&inv=inv-a&highlight=bonitaetsunterlagen",
     );
   });
 

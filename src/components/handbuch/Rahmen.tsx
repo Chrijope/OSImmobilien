@@ -107,7 +107,7 @@ export function HandbuchKopf({
 }) {
   const t = useSeitenTexte(HANDBUCH_SEITEN_TEXTE).kopf;
   const sprache = useSeitenSprache();
-  const marke = thema === "dunkel" ? <Wortmarke hell groesse={19} /> : <img src="/images/moreimmo-logo.png" alt="OS Immobilien" />;
+  const marke = thema === "dunkel" ? <Wortmarke hell groesse={19} /> : <img src="/images/osimmobilien-logo.png" alt="OS Immobilien" />;
   const anker_ = ["#handbuch", "#so-arbeiten-wir", "#musterrechnung", "#ablauf", "#fragen"];
   return (
     <header className="hb-kopf">

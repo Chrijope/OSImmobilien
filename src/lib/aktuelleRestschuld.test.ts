@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { aktuelleRestschuld, berechneTilgungsplan, jahresAnnuitaet } from "@/lib/eigeneInvestmentBerechnungen";
-import { adaptMoreImmoInvestment } from "@/lib/kundePortalInvestment";
-import { eigenePosition, moreImmoPosition } from "@/lib/portalPortfolio";
+import { adaptOsImmobilienInvestment } from "@/lib/kundePortalInvestment";
+import { eigenePosition, osImmobilienPosition } from "@/lib/portalPortfolio";
 
 /*
  * Befund vom 24.09.2026: „TEST Claude Eigene Immobilie“ mit 200.000 €
@@ -82,10 +82,10 @@ describe("Portal nutzt dieselbe Restschuld", () => {
       angebote: [{ id: "a", darlehensbetrag: 200000, zinssatz: 3 }],
     };
     const inv = { id: "m", kaufpreis: 250000, kaufdatum: "2024-01-01", meta: { monatlicheRate: 10000 / 12 } };
-    const adapted = adaptMoreImmoInvestment(inv, inv.meta, fin);
+    const adapted = adaptOsImmobilienInvestment(inv, inv.meta, fin);
     expect(adapted.offene_tilgung).toBeNull();
     const rest = aktuelleRestschuld(adapted, new Date("2026-01-01"))!;
     expect(rest).toBeCloseTo(berechneTilgungsplan(200000, 3, 10000, 0, 2)[1].restschuld, 6);
-    expect(moreImmoPosition(inv, fin).restschuld).toBeLessThan(200000);
+    expect(osImmobilienPosition(inv, fin).restschuld).toBeLessThan(200000);
   });
 });

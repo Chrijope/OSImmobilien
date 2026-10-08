@@ -1,7 +1,7 @@
 /**
  * Die Objekte aus Investagon, Stand 06.08.2026.
  *
- * Ausgelesen aus der Berateransicht unter more-immo.investagon.com, weil die
+ * Ausgelesen aus der Investagon-Berateransicht, weil die
  * API noch keine Leseberechtigung hat. Sobald `ROLE_PERMISSION_PROPERTY_VIEW`
  * freigeschaltet ist, wird diese Datei überflüssig: Dann holt der Sync die
  * Daten selbst, samt Bildern und Dokumenten, und hält sie aktuell.

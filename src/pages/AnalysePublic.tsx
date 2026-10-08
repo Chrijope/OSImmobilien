@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import AnalysisWizard from "@/components/analysis/AnalysisWizard";
-import moreimmoLogo from "@/assets/moreimmo-offices-logo.png";
+import osLogo from "@/assets/osimmobilien-offices-logo.png";
 import { nurEchteBezeichnung } from "@/lib/berufsbezeichnung";
 import { SeitenSpracheProvider, SeitenSprachUmschalter, useSeitenTexte } from "@/components/SeitenSprache";
 import { ANALYSE_TEXTE } from "@/components/analysis/analyseTexte";
@@ -125,7 +125,7 @@ function AnalysePublicInhalt() {
         </div>
         <div className="text-center mb-6">
           <img
-            src={moreimmoLogo}
+            src={osLogo}
             alt="OS Immobilien"
             className="mx-auto h-10 md:h-12 w-auto object-contain"
           />

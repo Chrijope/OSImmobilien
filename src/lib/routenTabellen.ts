@@ -138,7 +138,8 @@ export const ROUTEN_TABELLEN: Record<string, readonly string[]> = {
   // Praesentationen: angemeldet, aber ausserhalb des App-Rahmens. Die Seiten
   // holen sich ihre Tabellen ueber `useCacheReady` selbst.
   "/beratungspraesentation": [],
-  "/beratungspraesentation-moreimmo": [...KONTAKT_TABELLEN],
+  "/beratungspraesentation-osimmobilien": [...KONTAKT_TABELLEN],
+  "/beratungspraesentation-moreimmo": [],
   "/beratungspraesentation-hv": [],
   "/beratungspraesentation-neu": [],
   "/beratungspraesentation-wg": [],

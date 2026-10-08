@@ -76,7 +76,7 @@ describe("Befunde des Live-Diagnoseberichts vom 09.09.2026", () => {
     // Der andere Investagon-Zugang führt eigene Kopien mit neuen Kennungen.
     // Ohne diesen Vergleich läge danach jede Wohnung doppelt im Objekt.
     const alt = { we_nr: "WE 01", meta: { investagonId: "lehner-1" } };
-    expect(findeBestandsEinheit([alt], "moreimmo-1", "WE 01", new Set(["moreimmo-1"]))).toBe(alt);
+    expect(findeBestandsEinheit([alt], "osimmobilien-1", "WE 01", new Set(["osimmobilien-1"]))).toBe(alt);
   });
   it("nimmt keiner anderen gelieferten Wohnung ihre Nummer weg", () => {
     // "lehner-1" kommt in derselben Lieferung vor, gehört also zu einer

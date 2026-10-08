@@ -22,7 +22,7 @@ import "@/styles/steuerrechner.css";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { ArrowDown, Info } from "lucide-react";
-import moreimmoLogo from "@/assets/moreimmo-offices-logo.png";
+import osLogo from "@/assets/osimmobilien-offices-logo.png";
 import { nurEchteBezeichnung } from "@/lib/berufsbezeichnung";
 import SteuerRechnerStrecke from "@/components/steuerrechner/SteuerRechnerStrecke";
 import { moechteWenigBewegung } from "@/components/steuerrechner/bausteine";
@@ -177,7 +177,7 @@ function SteuerrechnerSeite() {
           <SeitenSprachUmschalter className="absolute right-4 top-3 min-h-[2.75rem] md:right-8 md:top-4" />
           <div className="steuer-public-header">
             <img
-              src={moreimmoLogo}
+              src={osLogo}
               alt="OS Immobilien"
               className="h-10 w-auto object-contain md:h-12"
             />

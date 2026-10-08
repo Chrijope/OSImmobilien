@@ -32,7 +32,7 @@ import {
 } from "../../supabase/functions/_shared/kunden-sprache.ts";
 
 /** Merker im Browser: für welche Anmeldung die Profilsprache schon gesetzt ist. */
-export const PROFILSPRACHE_ANMELDUNG_SCHLUESSEL = "moreimmo-portal-profilsprache-anmeldung";
+export const PROFILSPRACHE_ANMELDUNG_SCHLUESSEL = "osimmobilien-portal-profilsprache-anmeldung";
 
 /** Die Sprache, die das Portal gerade anzeigt. Unbekanntes gilt als Deutsch. */
 export function portalSprache(): Sprache {

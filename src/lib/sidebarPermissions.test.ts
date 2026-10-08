@@ -90,7 +90,7 @@ describe("Steuerrechner, Stand 24.09.2026", () => {
 
 describe("Beratungspräsentation", () => {
   const praesentationen = [
-    "/beratungspraesentation-moreimmo",
+    "/beratungspraesentation-osimmobilien",
     "/beratungspraesentation",
     "/beratungspraesentation-wg",
   ];

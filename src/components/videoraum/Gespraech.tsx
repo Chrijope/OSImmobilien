@@ -3,7 +3,7 @@ import {
   Mic, MicOff, Video, VideoOff, MonitorUp, PhoneOff, Loader2, WifiOff, Minimize2, Settings2, X,
   ChevronDown, ChevronUp, Users,
 } from "lucide-react";
-import logoImg from "@/assets/moreimmo-logo.png";
+import logoImg from "@/assets/osimmobilien-logo.png";
 import type { Gegenstelle, Verbindung, VerbindungsZustand } from "@/lib/videoraumVerbindung";
 import { bestimmeBuehne, merkeTeilende, type GeteilterInhalt } from "@/lib/videoraumBuehne";
 import { spiegeltVorschau, type HintergrundArt } from "@/lib/videocallEinstellungen";

@@ -512,11 +512,12 @@ const App = () => (
                     Rollen. Der Guard laesst nicht eingeloggte Nutzer und
                     kundenseitige Rollen (kunde/tippgeber) nicht durch. */}
                 <Route path="/beratungspraesentation" element={<PraesentationGuard><Beratungspraesentation /></PraesentationGuard>} />
-                <Route path="/beratungspraesentation-moreimmo" element={<PraesentationGuard><BeratungspraesentationHV /></PraesentationGuard>} />
+                <Route path="/beratungspraesentation-osimmobilien" element={<PraesentationGuard><BeratungspraesentationHV /></PraesentationGuard>} />
                 {/* Alte URLs bleiben gültig und leiten inklusive Kundenkontext (Query) weiter.
                     "-neu" war eine ältere Fassung der OS Immobilien-Präsentation, die Seite ist entfernt. */}
-                <Route path="/beratungspraesentation-hv" element={<Navigate to={`/beratungspraesentation-moreimmo${window.location.search}`} replace />} />
-                <Route path="/beratungspraesentation-neu" element={<Navigate to={`/beratungspraesentation-moreimmo${window.location.search}`} replace />} />
+                <Route path="/beratungspraesentation-moreimmo" element={<Navigate to={`/beratungspraesentation-osimmobilien${window.location.search}`} replace />} />
+                <Route path="/beratungspraesentation-hv" element={<Navigate to={`/beratungspraesentation-osimmobilien${window.location.search}`} replace />} />
+                <Route path="/beratungspraesentation-neu" element={<Navigate to={`/beratungspraesentation-osimmobilien${window.location.search}`} replace />} />
                 <Route path="/beratungspraesentation-wg" element={<PraesentationGuard><BeratungspraesentationWG /></PraesentationGuard>} />
                 {/* Die alte Closing-Praesentation ist seit dem 23.09.2026
                     entfernt. Wer die Adresse noch offen hat, landet im

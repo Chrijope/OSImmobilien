@@ -49,7 +49,7 @@ export function EigeneSteuerJahresListe() {
       // OS Immobilien-Investments laufen ueber den eigenen Bereich, hier zaehlen
       // nur selbst gehaltene Objekte (gleiche Filterung wie im Investments-Tab).
       const eigene = ((data || []) as unknown as AnlageVInvestment[]).filter(
-        (i) => (i.meta?.quelle || "extern") !== "moreimmo",
+        (i) => (i.meta?.quelle || "extern") !== "osimmobilien",
       );
       setInvestments(eigene);
       setLoading(false);

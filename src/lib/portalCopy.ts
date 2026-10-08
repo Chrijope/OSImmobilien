@@ -249,7 +249,7 @@ export function portalAbschnittId(abschnitt: string): string {
  * Detailseite scrollt nach dem Laden dorthin und hebt das Kästchen hervor.
  */
 export function investmentAbschnittRoute(investmentId: string, abschnitt: string): string {
-  const q = new URLSearchParams({ tab: "moreimmo", inv: investmentId, highlight: abschnitt });
+  const q = new URLSearchParams({ tab: "osimmobilien", inv: investmentId, highlight: abschnitt });
   return `/kunde/investments?${q.toString()}`;
 }
 

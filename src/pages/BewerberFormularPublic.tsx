@@ -48,7 +48,7 @@ import {
   SchrittFuss,
   Skala,
 } from "@/components/bewerberformular/FragebogenBausteine";
-import logo from "@/assets/moreimmo-logo.png";
+import logo from "@/assets/osimmobilien-logo.png";
 import { ersterVorname } from "@/lib/kennenlerntermin";
 // Liquid Glass fuer die Bewerberseiten (Huelle `.bewerber-seite`, Karte `.bewerber-karte`).
 import "@/styles/lp-theme-liquid.css";

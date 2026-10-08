@@ -18,7 +18,7 @@ export const LIQUID_GLASS_STANDARD = true;
 
 export type Design = "heute" | "liquid";
 
-export const DESIGN_SPEICHER_SCHLUESSEL = "moreimmo.design";
+export const DESIGN_SPEICHER_SCHLUESSEL = "osimmobilien.design";
 
 function alsDesign(wert: string | null | undefined): Design | null {
   return wert === "liquid" || wert === "heute" ? wert : null;

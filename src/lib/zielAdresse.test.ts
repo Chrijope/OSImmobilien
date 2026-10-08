@@ -297,8 +297,8 @@ describe("die erlaubten Sonderwege bleiben offen", () => {
     "https://onedrive.live.com/?authkey=AAA&id=BBB&cid=CCC",
     "https://1drv.ms/f/s!ABCDEFG",
     "https://1drv.ms/b/c/abc123/EinDokument",
-    "https://moreimmo-my.sharepoint.com/:f:/g/personal/christian_more_immo/AbCdEf",
-    "https://moreimmo.sharepoint.com/sites/Objekte/Freigegebene%20Dokumente/expose.pdf",
+    "https://osimmobilien-my.sharepoint.com/:f:/g/personal/christian_os_immobilien/AbCdEf",
+    "https://osimmobilien.sharepoint.com/sites/Objekte/Freigegebene%20Dokumente/expose.pdf",
     "https://api.onedrive.com/v1.0/shares/u!aHR0cHM6Ly8xZHJ2Lm1zL2Yvcw/driveItem",
     "https://api.onedrive.com/v1.0/shares/u!aHR0cHM6Ly8xZHJ2Lm1z/root/children",
     "https://drive.google.com/file/d/1AbCdEfGhIjKlMnOp/view?usp=sharing",
@@ -306,7 +306,7 @@ describe("die erlaubten Sonderwege bleiben offen", () => {
     "https://drive.google.com/drive/folders/1AbCdEfGhIjKlMnOp",
     "https://doc-0s-3c-docs.googleusercontent.com/docs/securesc/abc/def/0/datei.pdf",
     "https://public.bn.files.1drv.com/y4mABCDEF",
-    "https://moreimmo-my.sharepoint.com/personal/x/_layouts/15/download.aspx?UniqueId=abc",
+    "https://osimmobilien-my.sharepoint.com/personal/x/_layouts/15/download.aspx?UniqueId=abc",
   ];
 
   it.each(SONDERWEGE)("lässt %s durch", (adresse) => {

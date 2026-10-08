@@ -1860,7 +1860,7 @@ export const ClosingTab = ({
                     <Label className="text-xs">PLZ <span className="text-destructive">*</span></Label>
                     <Input
                       value={vaPlz} onChange={(e) => setVaPlz(e.target.value.replace(/[^\d]/g, "").slice(0, 5))}
-                      disabled={!canEdit} placeholder="83075" inputMode="numeric"
+                      disabled={!canEdit} placeholder="15749" inputMode="numeric"
                       className={!vaPlz.trim() ? "border-destructive/60" : ""}
                     />
                   </div>
@@ -1923,7 +1923,7 @@ export const ClosingTab = ({
                     <Label className="text-xs">PLZ <span className="text-destructive">*</span></Label>
                     <Input
                       value={raPlz} onChange={(e) => setRaPlz(e.target.value.replace(/[^\d]/g, "").slice(0, 5))}
-                      disabled={!canEdit} placeholder="83075" inputMode="numeric"
+                      disabled={!canEdit} placeholder="15749" inputMode="numeric"
                       className={!raPlz.trim() ? "border-destructive/60" : ""}
                     />
                   </div>

@@ -68,14 +68,14 @@ describe("Einbettungsschutz", () => {
   it("verlangt https und genaue Hosts", () => {
     expect(istErlaubterEinbetter("http://lovable.dev", PORTAL)).toBe(false);
     expect(istErlaubterEinbetter("https://lovable.dev.boese.example", PORTAL)).toBe(false);
-    expect(istErlaubterEinbetter("https://boesemore.immo", PORTAL)).toBe(false);
+    expect(istErlaubterEinbetter("https://boeseos-immobilien.com", PORTAL)).toBe(false);
     expect(istErlaubterEinbetter("https://app.lovable.dev", PORTAL)).toBe(true);
   });
 
   it("erkennt Vorschauadressen, aber nicht das veröffentlichte Portal", () => {
     expect(istVorschauHost(new URL(VORSCHAU).hostname)).toBe(true);
-    expect(istVorschauHost("preview--moreimmo.lovable.app")).toBe(true);
-    expect(istVorschauHost("moreimmo.lovable.app")).toBe(false);
+    expect(istVorschauHost("preview--osimmobilien.lovable.app")).toBe(true);
+    expect(istVorschauHost("osimmobilien.lovable.app")).toBe(false);
     expect(istVorschauHost("osimmobilien.netlify.app")).toBe(false);
   });
 });

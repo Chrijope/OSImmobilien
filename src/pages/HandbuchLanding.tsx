@@ -79,10 +79,10 @@ import {
   FIRMEN_KENNZAHLEN,
   FIRMEN_KENNZAHLEN_EN,
   KUNDENSTIMMEN,
-  MOREIMMO_WARUM,
-  MOREIMMO_WARUM_EN,
-  MOREIMMO_WERTE,
-  MOREIMMO_WERTE_EN,
+  OS_IMMOBILIEN_WARUM,
+  OS_IMMOBILIEN_WARUM_EN,
+  OS_IMMOBILIEN_WERTE,
+  OS_IMMOBILIEN_WERTE_EN,
 } from "@/lib/handbuch/firma";
 import type { HandbuchAntworten } from "../../supabase/functions/_shared/handbuch-funnel.ts";
 import type { KonfiguratorErgebnis } from "@/components/handbuch/Konfigurator";
@@ -705,12 +705,12 @@ function WerDahinterSteht({ berater }: { berater: HandbuchBerater | null }) {
           <div>
             <span className="hb-augenbraue">{W.augenbraue}</span>
             <h2 className="hb-h2">OS Immobilien.</h2>
-            {(en ? MOREIMMO_WARUM_EN : MOREIMMO_WARUM).map((satz) => (
+            {(en ? OS_IMMOBILIEN_WARUM_EN : OS_IMMOBILIEN_WARUM).map((satz) => (
               <p key={satz} style={{ fontSize: 17, color: "var(--hb-text2)" }}>
                 {satz}
               </p>
             ))}
-            <p style={{ fontSize: 17, color: "var(--hb-text2)" }}>{en ? MOREIMMO_WERTE_EN : MOREIMMO_WERTE}</p>
+            <p style={{ fontSize: 17, color: "var(--hb-text2)" }}>{en ? OS_IMMOBILIEN_WERTE_EN : OS_IMMOBILIEN_WERTE}</p>
             {/* Spaltenzahl als Variable statt fester Spalten, damit die Handy-Regel sie auf eine Spalte setzen kann. */}
             <div className="hb-ergebnis" style={{ "--hb-spalten": kennzahlen.length } as CSSProperties}>
               {kennzahlen.map((k) => (

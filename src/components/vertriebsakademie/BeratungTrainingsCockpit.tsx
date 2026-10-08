@@ -26,7 +26,7 @@ import {
 const SPRECHSKRIPTE_DU: BeratungSprechskript[] = BERATUNG_SPRECHSKRIPTE.map((s) => sprechskriptFuerAnrede(s, "du"));
 import { buildBeratungSkriptPdf } from "@/lib/beratungSkriptPdf";
 
-const PRAESENTATION_URL = "/beratungspraesentation-moreimmo";
+const PRAESENTATION_URL = "/beratungspraesentation-osimmobilien";
 
 function SkriptKarte({
   skript,

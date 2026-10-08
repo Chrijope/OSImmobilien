@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { upsertUserSettingsRole } from "@/lib/userRoles";
 import PasswordStrengthMeter from "@/components/PasswordStrengthMeter";
-import logoImg from "@/assets/moreimmo-logo.png";
+import logoImg from "@/assets/osimmobilien-logo.png";
 import { useTranslation } from "react-i18next";
 import { portalSprache, useHtmlLang } from "@/i18n/portalSprache";
 import { zahlText } from "@/lib/sprachFormat";

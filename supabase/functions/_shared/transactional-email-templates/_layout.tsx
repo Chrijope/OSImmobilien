@@ -73,7 +73,7 @@ export const MARKE = {
    * ehemals zufaelligen hellen Kasten eine bewusst gesetzte Flaeche mit
    * runden Ecken, auf der die dunkle Logoschrift lesbar bleibt.
    *
-   * Die Adresse stimmt und die Datei liegt dort: `public/moreimmo-logo-mail.png`
+   * Die Adresse stimmt und die Datei liegt dort: `public/osimmobilien-logo-mail.png`
    * wird mit veroeffentlicht und antwortet unter dieser Adresse mit 200 und
    * `image/png`, auch gegenueber den Bildproxys der Mailanbieter. Wenn das Logo
    * trotzdem nicht erscheint, laedt das Programm des Empfaengers fremde Bilder

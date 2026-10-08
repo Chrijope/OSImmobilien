@@ -176,7 +176,7 @@ export const template = {
     zugangUrl: 'https://osimmobilien.netlify.app/raum/beispiel-token',
     verwaltenUrl: 'https://osimmobilien.netlify.app/kooperationsgespraech/beispiel-token',
     kalenderUrl:
-      'https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/get-ics?title=Kooperationsgespr%C3%A4ch%20mit%20MOREImmo',
+      'https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/get-ics?title=Kooperationsgespr%C3%A4ch%20mit%20OS%20Immobilien',
     themen: ['Vergütung und Rechenwege', 'Leads und Kundengewinnung'],
     eigeneFrage: 'Wie läuft die Einarbeitung neben dem Hauptberuf?',
     berater: STANDARD,

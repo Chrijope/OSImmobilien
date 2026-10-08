@@ -31,7 +31,7 @@
  * Zahl, und sonst aendert sich nichts.
  * ────────────────────────────────────────────────────────────────────────────
  */
-import logoImg from "@/assets/moreimmo-logo.png";
+import logoImg from "@/assets/osimmobilien-logo.png";
 import { mitSeitenSprache } from "@/lib/seitenSprache";
 import { CookieEinstellungenLink } from "@/components/cookie/CookieEinstellungenLink";
 
@@ -128,9 +128,9 @@ function Sterne({ sterne }: { sterne: number }) {
  * bewusst in den Kopf hinein (das `-mt-` steht in `ExpatsRechner.tsx`), damit
  * sie als das Naechste gelesen wird und nicht als eine weitere Sektion.
  *
- * WARUM DAS LOGO UMGEFAERBT WIRD: `moreimmo-logo.png` traegt schwarze Schrift
+ * WARUM DAS LOGO UMGEFAERBT WIRD: `osimmobilien-logo.png` traegt schwarze Schrift
  * und waere auf dem Marineton unlesbar. Eine helle Fassung liegt nicht im
- * Projekt (`moreimmo-logo-dark.png` existiert nur als Lovable-Asset-Verweis,
+ * Projekt (`osimmobilien-logo-dark.png` existiert nur als Lovable-Asset-Verweis,
  * nicht als Datei). `brightness-0 invert` faerbt das ganze Bild weiss und ist
  * im Projekt der eingefuehrte Weg fuer dunkle Flaechen, siehe
  * `landing/HeroSection.tsx`, `videoraum/Buehne.tsx` und die

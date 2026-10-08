@@ -10,9 +10,9 @@ import {
   navigationsGruppen, darfNavEintrag, entwurfGesperrt, type NavItem,
 } from "@/lib/sidebarNavigation";
 import { NavLink } from "@/components/NavLink";
-import logoImg from "@/assets/moreimmo-logo.png";
-import logoImgDark from "@/assets/moreimmo-logo-dark.png";
-import iconImg from "@/assets/moreimmo-icon.png";
+import logoImg from "@/assets/osimmobilien-logo.png";
+import logoImgDark from "@/assets/osimmobilien-logo-dark.png";
+import iconImg from "@/assets/osimmobilien-icon.png";
 import { SidebarRoleSelector } from "@/components/SidebarRoleSelector";
 import { getUnreadChatCount } from "@/lib/chatStore";
 import { useLiveVersion } from "@/hooks/useLiveData";

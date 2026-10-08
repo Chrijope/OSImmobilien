@@ -64,7 +64,7 @@ export function Diagramm({ zeichnung, className }: { zeichnung: Zeichnung; class
 export function Wortmarke({ hell = false, groesse = 22 }: { hell?: boolean; groesse?: number }) {
   return (
     <span style={{ display: "inline-flex", alignItems: "center", gap: 9, fontSize: groesse, lineHeight: 1 }} aria-label="OS Immobilien">
-      <img src={hell ? "/images/os-bildmarke-hell.png" : "/images/moreimmo-icon-blau.png"} alt="" style={{ height: groesse * 1.35, width: "auto" }} />
+      <img src={hell ? "/images/os-bildmarke-hell.png" : "/images/osimmobilien-icon-blau.png"} alt="" style={{ height: groesse * 1.35, width: "auto" }} />
       <b style={{ color: hell ? "#fff" : "var(--hb-tinte)", fontWeight: 700 }}>Immobilien</b>
     </span>
   );

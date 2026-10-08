@@ -9,6 +9,44 @@
   # auf Netlify mit Exit-Code 134 ab (Speicher voll).
   NODE_OPTIONS = "--max-old-space-size=6144"
 
+# Logos hiessen frueher "moreimmo-...". Bereits versandte Mails verweisen
+# noch auf die alten Adressen, deshalb leiten diese auf die neuen Namen um.
+# Muss vor der Weiterleitung auf index.html stehen.
+[[redirects]]
+  from = "/moreimmo-logo.png"
+  to = "/osimmobilien-logo.png"
+  status = 301
+
+[[redirects]]
+  from = "/moreimmo-logo-mail.png"
+  to = "/osimmobilien-logo-mail.png"
+  status = 301
+
+[[redirects]]
+  from = "/images/moreimmo-logo.png"
+  to = "/images/osimmobilien-logo.png"
+  status = 301
+
+[[redirects]]
+  from = "/images/moreimmo-logo-wortmarke.png"
+  to = "/images/osimmobilien-logo-wortmarke.png"
+  status = 301
+
+[[redirects]]
+  from = "/images/moreimmo-logo-email.png"
+  to = "/images/osimmobilien-logo-email.png"
+  status = 301
+
+[[redirects]]
+  from = "/images/moreimmo-icon.png"
+  to = "/images/osimmobilien-icon.png"
+  status = 301
+
+[[redirects]]
+  from = "/images/moreimmo-icon-blau.png"
+  to = "/images/osimmobilien-icon-blau.png"
+  status = 301
+
 # Die App steuert ihre Seiten selbst (React Router). Jede Adresse ohne
 # eigene Datei geht deshalb an index.html, sonst gäbe es beim Neuladen 404.
 [[redirects]]

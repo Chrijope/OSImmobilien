@@ -72,13 +72,13 @@ describe("Pfadumrechnung", () => {
 });
 
 describe("Konflikt-Suffix", () => {
-  it("hängt die MORE-Nummer vor der Endung an", () => {
+  it("hängt die Kontaktnummer vor der Endung an", () => {
     expect(konfliktName("kundenordner/x/inv/vertrag.pdf", "MI-00042")).toBe("kundenordner/x/inv/vertrag_aus-MI-00042.pdf");
     expect(konfliktName("a/b/ohne-endung", "MI-00042")).toBe("a/b/ohne-endung_aus-MI-00042");
     expect(konfliktName("a/b/vertrag.pdf", "MI-00042", 2)).toBe("a/b/vertrag_aus-MI-00042-2.pdf");
   });
 
-  it("nimmt die MORE-Nummer, sonst den Anfang der Kennung", () => {
+  it("nimmt die Kontaktnummer, sonst den Anfang der Kennung", () => {
     expect(kontaktKennung(VON, { moreId: 42 })).toBe("MI-00042");
     expect(kontaktKennung(VON, { kundenNr: "17" })).toBe("MI-00017");
     expect(kontaktKennung(VON, {})).toBe("00000000");

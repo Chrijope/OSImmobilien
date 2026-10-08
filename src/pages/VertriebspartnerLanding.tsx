@@ -11,7 +11,7 @@ import { ChaosZuOrdnung, type ChaosPaar } from "@/components/landing/vp/ChaosZuO
 import { PartnerBewerbungFormular } from "@/components/landing/PartnerBewerbungFormular";
 import { SpamHinweis } from "@/components/bewerbung/SpamHinweis";
 import { LIZENZ_PAKETE, OVERHEAD_AKTIV } from "@/lib/lizenzPakete";
-import logoImg from "@/assets/moreimmo-logo.png";
+import logoImg from "@/assets/osimmobilien-logo.png";
 import test1Img from "@/assets/vp-testimonial-1.jpg";
 import test2Img from "@/assets/vp-testimonial-2.jpg";
 import test3Img from "@/assets/vp-testimonial-3.jpg";

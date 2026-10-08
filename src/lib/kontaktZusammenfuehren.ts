@@ -6,7 +6,7 @@ import { emailSchluessel, isPlaceholderEmail, telefonSchluessel } from "./duplik
  * Zwei Kontakte zu einem zusammenführen. Regel von Christian (26.09.2026):
  *
  *   - Es bleibt immer der ÄLTERE Kontakt (früheres `erstellt_am`; bei
- *     Gleichstand die kleinere MORE-Nummer, weil sie beim Anlegen hochgezählt
+ *     Gleichstand die kleinere Kontaktnummer, weil sie beim Anlegen hochgezählt
  *     wird und damit die Reihenfolge des Anlegens zeigt; zuletzt die Kennung,
  *     damit die Wahl nie vom Zufall abhängt).
  *   - Leere Felder des älteren werden aus dem neueren gefüllt. Bei Widerspruch

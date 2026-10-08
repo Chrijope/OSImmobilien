@@ -32,7 +32,7 @@ import {
   ListChecks,
   FileText,
 } from "lucide-react";
-import logoImg from "@/assets/moreimmo-logo.png";
+import logoImg from "@/assets/osimmobilien-logo.png";
 import { toast } from "sonner";
 import { buildVpUrl } from "@/lib/publicUrl";
 import {

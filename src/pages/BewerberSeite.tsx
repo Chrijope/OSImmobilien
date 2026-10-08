@@ -35,7 +35,7 @@ import {
   FARBE_DUNKEL,
   Hauptknopf,
 } from "@/components/bewerberformular/FragebogenBausteine";
-import logo from "@/assets/moreimmo-logo.png";
+import logo from "@/assets/osimmobilien-logo.png";
 // Liquid Glass fuer die Bewerberseiten (Huelle `.bewerber-seite`, Karte `.bewerber-karte`).
 import "@/styles/lp-theme-liquid.css";
 
@@ -514,7 +514,7 @@ export default function BewerberSeite() {
             </Karte>
 
             {/* Wer gerade am Zug ist. Aus dem Vorgang, nicht aus der Stufe. */}
-            {amZug === "moreimmo" && (
+            {amZug === "osimmobilien" && (
               <div className="rounded-[20px] sm:rounded-3xl border px-5 py-5 sm:px-6" style={{ background: "#EAF6EE", borderColor: "#CDE8D8" }}>
                 <p className="text-[13px] font-semibold uppercase tracking-wide" style={{ color: "#1E7A45" }}>
                   Wer gerade am Zug ist

@@ -50,8 +50,7 @@ describe("Der Satz über den Objektdaten", () => {
       ...VEREINBARUNG_ZIFFERN.map((z) => z.text), DATENSCHUTZ_EINVERSTAENDNIS,
       ...WIDERRUFSBELEHRUNG.flatMap((b) => b.absaetze), WIDERRUF_AUFLOESENDE_BEDINGUNG,
     ].join(" ");
-    expect(alles).not.toContain("MOREImmo");
-    expect(alles).not.toContain("MORE Immo");
+    expect(alles).not.toMatch(/MORE ?Immo/i);
   });
 });
 

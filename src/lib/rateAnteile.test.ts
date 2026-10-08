@@ -26,9 +26,9 @@ import {
 
 const lies = (pfad: string) => readFileSync(resolve(process.cwd(), pfad), "utf8");
 
-const moreimmo = lies("src/pages/BeratungspraesentationHV.tsx");
+const osimmobilien = lies("src/pages/BeratungspraesentationHV.tsx");
 // Die Musterrechnungen stehen seit dem Sprachwechsel als Texte je Sprache hier.
-const moreimmoTexte = lies("src/lib/beratungspraesentationTexte.ts");
+const osImmobilienTexte = lies("src/lib/beratungspraesentationTexte.ts");
 const ersteFassung = lies("src/pages/Beratungspraesentation.tsx");
 const sprechskripte = lies("src/lib/beratungSprechskripte.ts");
 
@@ -83,22 +83,22 @@ describe("Die Anteile der einzelnen Musterwohnungen", () => {
 
 describe("Die Musterrechnungen der Präsentationen tragen dieselben Zahlen", () => {
   it("OS Immobilien, sanierter Bestand: Miete, Rate und nicht umlagefähige Kosten", () => {
-    expect(moreimmoTexte).toContain('{ pos: "Kaltmiete", betrag: "+1.400 €" }');
-    expect(moreimmoTexte).toContain('{ pos: "Zins und Tilgung", betrag: "−1.604 €" }');
-    expect(moreimmoTexte).toContain('{ pos: "Nicht umlagefähige Kosten", betrag: "−150 €" }');
+    expect(osImmobilienTexte).toContain('{ pos: "Kaltmiete", betrag: "+1.400 €" }');
+    expect(osImmobilienTexte).toContain('{ pos: "Zins und Tilgung", betrag: "−1.604 €" }');
+    expect(osImmobilienTexte).toContain('{ pos: "Nicht umlagefähige Kosten", betrag: "−150 €" }');
   });
 
   it("OS Immobilien, sanierter Bestand: Entlastung und Eigenbeitrag ab dem zweiten Jahr", () => {
-    expect(moreimmoTexte).toContain('entlastungMonat: "126 €"');
-    expect(moreimmoTexte).toContain('beitragMonat: "−228 €"');
+    expect(osImmobilienTexte).toContain('entlastungMonat: "126 €"');
+    expect(osImmobilienTexte).toContain('beitragMonat: "−228 €"');
   });
 
   it("OS Immobilien, WG: Miete, Rate, Kosten, Entlastung und Eigenbeitrag", () => {
-    expect(moreimmoTexte).toContain('{ pos: "Kaltmiete", betrag: "+1.600 €" }');
-    expect(moreimmoTexte).toContain('{ pos: "Zins und Tilgung", betrag: "−1.895 €" }');
-    expect(moreimmoTexte).toContain('{ pos: "Nicht umlagefähige Kosten", betrag: "−73 €" }');
-    expect(moreimmoTexte).toContain('entlastungMonat: "168 €"');
-    expect(moreimmoTexte).toContain('beitragMonat: "−200 €"');
+    expect(osImmobilienTexte).toContain('{ pos: "Kaltmiete", betrag: "+1.600 €" }');
+    expect(osImmobilienTexte).toContain('{ pos: "Zins und Tilgung", betrag: "−1.895 €" }');
+    expect(osImmobilienTexte).toContain('{ pos: "Nicht umlagefähige Kosten", betrag: "−73 €" }');
+    expect(osImmobilienTexte).toContain('entlastungMonat: "168 €"');
+    expect(osImmobilienTexte).toContain('beitragMonat: "−200 €"');
   });
 
   it("erste Fassung, Memmingen: Rate, Miete, Hausgeld, Steuervorteil, Eigenaufwand", () => {
@@ -110,8 +110,8 @@ describe("Die Musterrechnungen der Präsentationen tragen dieselben Zahlen", () 
 
 describe("Die Folien rechnen, statt Zahlen zu tippen", () => {
   it("die Präsentationen speisen ihre Anteile aus dem Modul", () => {
-    expect(moreimmo).toContain("RATE_ANTEILE_BESTAND");
-    expect(moreimmo).toContain('from "@/lib/rateAnteile"');
+    expect(osimmobilien).toContain("RATE_ANTEILE_BESTAND");
+    expect(osimmobilien).toContain('from "@/lib/rateAnteile"');
     expect(ersteFassung).toContain("ANTEILE_MEMMINGEN");
     expect(ersteFassung).toContain('from "@/lib/rateAnteile"');
   });
@@ -122,12 +122,12 @@ describe("Die Folien rechnen, statt Zahlen zu tippen", () => {
   });
 
   it("in keiner Folie steht die alte Aufteilung noch als feste Zahl", () => {
-    expect(moreimmo).not.toContain('breite: "62%"');
-    expect(moreimmo).not.toContain('breite: "24%"');
-    expect(moreimmo).not.toContain('wert: 62,');
-    expect(moreimmo).not.toContain('wert: 24,');
-    expect(moreimmo).not.toContain('wert: "62 %"');
-    expect(moreimmo).not.toContain('wert: "24 %"');
+    expect(osimmobilien).not.toContain('breite: "62%"');
+    expect(osimmobilien).not.toContain('breite: "24%"');
+    expect(osimmobilien).not.toContain('wert: 62,');
+    expect(osimmobilien).not.toContain('wert: 24,');
+    expect(osimmobilien).not.toContain('wert: "62 %"');
+    expect(osimmobilien).not.toContain('wert: "24 %"');
   });
 
   it("das Sprechskript nennt dieselben Zahlen wie die Folie", () => {

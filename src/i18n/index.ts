@@ -13,7 +13,7 @@ import en from "./locales/en.json";
  *   1. `?lang=en` in der Adresse. So kommt die Profilsprache aus der
  *      Einladungsmail auf die Aktivierungsseite, und Login, Passwort und
  *      2FA danach passen schon, bevor der Kunde angemeldet ist.
- *   2. Die gemerkte Wahl in diesem Browser (`moreimmo-crm-lang`).
+ *   2. Die gemerkte Wahl in diesem Browser (`osimmobilien-crm-lang`).
  *   3. Deutsch.
  *
  * Die Browsersprache zählt bewusst nicht mehr. Sonst sähe ein Kunde mit
@@ -22,7 +22,7 @@ import en from "./locales/en.json";
  * `KundePortalLayout` ohnehin die Sprache aus dem Kundenprofil
  * (`src/i18n/portalSprache.ts`).
  */
-export const SPRACH_SPEICHER_SCHLUESSEL = "moreimmo-crm-lang";
+export const SPRACH_SPEICHER_SCHLUESSEL = "osimmobilien-crm-lang";
 
 i18n
   .use(LanguageDetector)

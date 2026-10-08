@@ -417,7 +417,7 @@ describe("findeLage, die Rückfälle der Messung", () => {
     expect(ergebnis).toMatchObject({ ok: true, genauigkeit: "adresse", quelle: "nominatim", koordinate: { lat: 48.1373, lng: 11.5755 } });
     const nominatim = aufrufe.find((a) => a.url.includes("nominatim"))!;
     expect(decodeURIComponent(nominatim.url)).toContain("street=8+Marienplatz");
-    expect(nominatim.headers?.["User-Agent"]).toContain("MORE-Immo-CRM");
+    expect(nominatim.headers?.["User-Agent"]).toContain("OS-Immobilien-CRM");
   });
 
   it("fällt auf die Straße zurück, wenn niemand die Hausnummer kennt", async () => {

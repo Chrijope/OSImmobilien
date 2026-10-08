@@ -110,7 +110,7 @@ export function seedUnterlagen(): UnterlagenAbschnitt[] {
           name: "Beratungspräsentation OS Immobilien",
           beschreibung: "Der aktuelle Gesprächsablauf mit Fragenblock, drei durchgerechneten Objekten und der Selbstauskunft am Ende",
           aktion: "internal-link",
-          interneRoute: "/beratungspraesentation-moreimmo",
+          interneRoute: "/beratungspraesentation-osimmobilien",
         },
         {
           id: "p-beratung-pdf",
@@ -378,8 +378,8 @@ export function seedUnterlagen(): UnterlagenAbschnitt[] {
           name: "OS Immobilien Logo (Download)",
           beschreibung: "Klick auf die Vorschau lädt das Logo ohne Hintergrund herunter",
           aktion: "external-link",
-          url: "/images/moreimmo-logo.png",
-          vorschauUrl: "/images/moreimmo-logo.png",
+          url: "/images/osimmobilien-logo.png",
+          vorschauUrl: "/images/osimmobilien-logo.png",
           download: true,
         },
         {
@@ -387,8 +387,8 @@ export function seedUnterlagen(): UnterlagenAbschnitt[] {
           name: "OS Immobilien Logo – Wortmarke (Icon + Schriftzug)",
           beschreibung: "Vollständiges Logo mit Bildmarke und Schriftzug „Immo\" – ideal für Briefköpfe, Präsentationen und Werbemittel",
           aktion: "external-link",
-          url: "/images/moreimmo-logo-wortmarke.png",
-          vorschauUrl: "/images/moreimmo-logo-wortmarke.png",
+          url: "/images/osimmobilien-logo-wortmarke.png",
+          vorschauUrl: "/images/osimmobilien-logo-wortmarke.png",
           download: true,
         },
         {
@@ -396,8 +396,8 @@ export function seedUnterlagen(): UnterlagenAbschnitt[] {
           name: "OS Immobilien Bildmarke – Icon (nur Haus)",
           beschreibung: "Reines Icon ohne Schriftzug – ideal für Social Media, Favicons und Avatare",
           aktion: "external-link",
-          url: "/images/moreimmo-icon.png",
-          vorschauUrl: "/images/moreimmo-icon.png",
+          url: "/images/osimmobilien-icon.png",
+          vorschauUrl: "/images/osimmobilien-icon.png",
           download: true,
         },
         {

@@ -8,7 +8,7 @@ import {
   ABMELDE_TOKEN_MUSTER,
 } from "../../supabase/functions/_shared/bewerber-nachfass";
 import { FARBE_BLAU, FARBE_DUNKEL, Hauptknopf } from "@/components/bewerberformular/FragebogenBausteine";
-import logo from "@/assets/moreimmo-logo.png";
+import logo from "@/assets/osimmobilien-logo.png";
 // Liquid Glass fuer die Bewerberseiten (Huelle `.bewerber-seite`, Karte `.bewerber-karte`).
 import "@/styles/lp-theme-liquid.css";
 

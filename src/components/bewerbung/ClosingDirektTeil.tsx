@@ -621,7 +621,7 @@ export const ClosingDirektTeil = ({
               <div className="space-y-1">
                 <Label className="text-xs">PLZ</Label>
                 <Input value={vaPlz} onChange={(e) => setVaPlz(e.target.value.replace(/[^\d]/g, "").slice(0, 5))}
-                  onBlur={speichereAdressen} disabled={!canEdit} placeholder="83075" inputMode="numeric" className="h-9 text-sm" />
+                  onBlur={speichereAdressen} disabled={!canEdit} placeholder="15749" inputMode="numeric" className="h-9 text-sm" />
               </div>
               <div className="space-y-1">
                 <Label className="text-xs">Ort</Label>

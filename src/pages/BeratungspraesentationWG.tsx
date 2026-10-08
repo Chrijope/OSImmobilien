@@ -8,7 +8,7 @@ import {
   HandCoins, Calendar, MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import logo from "@/assets/moreimmo-logo.png";
+import logo from "@/assets/osimmobilien-logo.png";
 import { PraesentationPdfButton } from "@/components/presentation/PraesentationPdfButton";
 import { PartnerLogo } from "@/components/presentation/PartnerLogo";
 import { BERATUNG_TEXTE, inAnrede } from "@/lib/beratungspraesentationTexte";
@@ -66,7 +66,7 @@ const partnerVon = (marke: string) => {
   return undefined;
 };
 const PARTNER_IMMO = partnerVon("OS Immobilien");
-const PARTNER_FINANCE = partnerVon("MORE Finance");
+const PARTNER_FINANCE = partnerVon("Finanzierungspartner");
 
 function Section({
   id, eyebrow, lead, accent, subtitle, children, className = "",
@@ -1680,7 +1680,7 @@ export default function BeratungspraesentationWG() {
               </p>
               <div className="flex flex-wrap justify-center gap-3 animate-scale-in">
                 <a
-                  href="mailto:os@os-immobilien.com?subject=WG%20Co-Living%20Beratung%20MOREImmo"
+                  href="mailto:os@os-immobilien.com?subject=WG%20Co-Living%20Beratung%20OS%20Immobilien"
                   className="inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-7 h-12 font-semibold hover:opacity-90 hover-scale transition shadow-lg shadow-primary/30"
                 >
                   Beratungstermin vereinbaren

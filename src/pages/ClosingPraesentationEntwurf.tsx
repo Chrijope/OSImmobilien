@@ -60,7 +60,7 @@ import {
   Area, AreaChart, ReferenceDot, ReferenceLine, ResponsiveContainer, XAxis, YAxis,
 } from "recharts";
 import { Button } from "@/components/ui/button";
-import logo from "@/assets/moreimmo-logo.png";
+import logo from "@/assets/osimmobilien-logo.png";
 import {
   GESTELLT_ZUSATZ_KURZ, LEAD_EINZELPREIS, LEAD_PAKET_ANZAHL, LEAD_PAKET_PREIS,
   formatPreis, ZAHLUNGSWEISEN, type LizenzPaketId, type Zahlungsweise,

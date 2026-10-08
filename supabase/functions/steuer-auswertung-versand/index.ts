@@ -245,12 +245,12 @@ Deno.serve(async (req) => {
     const namensteil =
       saubererName(`${typeof vorname === "string" ? vorname : ""}-${typeof nachname === "string" ? nachname : ""}`) ||
       "auswertung";
-    const pfad = `${jahr}/${kennung}/moreimmo-steuerauswertung-${namensteil}.pdf`;
+    const pfad = `${jahr}/${kennung}/osimmobilien-steuerauswertung-${namensteil}.pdf`;
     /* Englisch ohne Umlaute (Plan K4). */
     const anhangName =
       sprache === "en"
-        ? `moreimmo-tax-analysis-${namensteil}.pdf`
-        : `moreimmo-steuerauswertung-${namensteil}.pdf`;
+        ? `osimmobilien-tax-analysis-${namensteil}.pdf`
+        : `osimmobilien-steuerauswertung-${namensteil}.pdf`;
 
     const { error: uploadFehler } = await admin.storage
       .from(BUCKET)

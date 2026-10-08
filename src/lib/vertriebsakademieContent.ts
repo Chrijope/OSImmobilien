@@ -11053,12 +11053,12 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "links": [
           {
             "label": "Beratungspräsentation im Trainer-Modus",
-            "to": "/beratungspraesentation-moreimmo?trainer=1",
+            "to": "/beratungspraesentation-osimmobilien?trainer=1",
             "hinweis": "Mit eingeblendeten Sprechskripten unter jeder Station, zum Üben"
           },
           {
             "label": "Beratungspräsentation OS Immobilien",
-            "to": "/beratungspraesentation-moreimmo",
+            "to": "/beratungspraesentation-osimmobilien",
             "hinweis": "Ohne Skripte, so wie der Kunde sie sieht"
           }
         ]
@@ -21448,12 +21448,12 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           },
           {
             "label": "Beratungspräsentation im Trainer-Modus",
-            "to": "/beratungspraesentation-moreimmo?trainer=1",
+            "to": "/beratungspraesentation-osimmobilien?trainer=1",
             "hinweis": "Mit Sprechskript unter jeder Station, zum Üben allein"
           },
           {
             "label": "Beratungspräsentation OS Immobilien",
-            "to": "/beratungspraesentation-moreimmo"
+            "to": "/beratungspraesentation-osimmobilien"
           },
           {
             "label": "Kapitel 1, die Grenze ohne eigene Erlaubnis",

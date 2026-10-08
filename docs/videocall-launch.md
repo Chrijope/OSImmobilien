@@ -44,7 +44,7 @@ Datenbankprüfung: PGlite 0.3.14 in einem separaten temporären Verzeichnis inst
 
 Weitere Prüfungen: `npx tsc --noEmit -p tsconfig.app.json`, `npm run build`, `npm test`, `git diff --check`. Lokal wurde Node 24.19.0 genutzt.
 
-Der ausführliche Bedien- und Abschlussbericht liegt unter `output/pdf/MOREImmo-Videocall-Abschlussbericht.pdf`.
+Der ausführliche Bedien- und Abschlussbericht liegt unter `output/pdf/OSImmobilien-Videocall-Abschlussbericht.pdf`.
 
 ## Automatische manuelle Gastbenachrichtigungen
 

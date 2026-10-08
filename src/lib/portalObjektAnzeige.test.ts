@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, it, expect } from "vitest";
-import { adaptMoreImmoInvestment } from "@/lib/kundePortalInvestment";
+import { adaptOsImmobilienInvestment } from "@/lib/kundePortalInvestment";
 
 /**
  * Was der Kunde im Portal sieht, sobald ein Objekt eingetragen ist.
@@ -44,24 +44,24 @@ const vonHandEingetragen = {
 
 describe("Fall 1: Objekt von Hand eingetragen", () => {
   it("reicht die Wohnfläche an Steuer-Cockpit und Anlage V durch", () => {
-    const a = adaptMoreImmoInvestment(investment(), vonHandEingetragen, null);
+    const a = adaptOsImmobilienInvestment(investment(), vonHandEingetragen, null);
     expect(a.wohnflaeche).toBe(62);
   });
 
   it("reicht Adresse, PLZ und Ort durch", () => {
-    const a = adaptMoreImmoInvestment(investment(), vonHandEingetragen, null);
+    const a = adaptOsImmobilienInvestment(investment(), vonHandEingetragen, null);
     expect(a.adresse).toBe("Musterweg 1");
     expect(a.plz).toBe("12345");
     expect(a.ort).toBe("Musterstadt");
   });
 
   it("zeigt den Kaufpreis aus der Spalte, die beim Speichern mitgefüllt wird", () => {
-    const a = adaptMoreImmoInvestment(investment(), vonHandEingetragen, null);
+    const a = adaptOsImmobilienInvestment(investment(), vonHandEingetragen, null);
     expect(a.kaufpreis).toBe(200000);
   });
 
   it("benennt das Investment nach dem Objekt, nicht nach seiner Nummer", () => {
-    const a = adaptMoreImmoInvestment(investment(), vonHandEingetragen, null);
+    const a = adaptOsImmobilienInvestment(investment(), vonHandEingetragen, null);
     expect(a.bezeichnung).toBe("Musterweg 1, 12345 Musterstadt");
   });
 });
@@ -80,7 +80,7 @@ describe("Fall 2: Wohnung aus dem eigenen Bestand", () => {
   };
 
   it("liest Adresse und Baujahr aus dem Schnappschuss des Objekts", () => {
-    const a = adaptMoreImmoInvestment(investment(189000, "Bestandsobjekt"), ausBestand, null);
+    const a = adaptOsImmobilienInvestment(investment(189000, "Bestandsobjekt"), ausBestand, null);
     expect(a.adresse).toBe("Bestandsstraße 7");
     expect(a.plz).toBe("54321");
     expect(a.ort).toBe("Beispielort");
@@ -88,19 +88,19 @@ describe("Fall 2: Wohnung aus dem eigenen Bestand", () => {
   });
 
   it("nimmt die Fläche aus dem Schnappschuss der Wohnung", () => {
-    const a = adaptMoreImmoInvestment(investment(189000), ausBestand, null);
+    const a = adaptOsImmobilienInvestment(investment(189000), ausBestand, null);
     expect(a.wohnflaeche).toBe(74);
   });
 
   it("rechnet die Jahresmiete aus der Monatsmiete", () => {
-    const a = adaptMoreImmoInvestment(investment(189000), ausBestand, null);
+    const a = adaptOsImmobilienInvestment(investment(189000), ausBestand, null);
     expect(a.mieteinnahmen_kalt).toBe(690);
   });
 });
 
 describe("Fall 3: Es ist noch nichts eingetragen", () => {
   it("liefert keine erfundenen Werte, sondern leere Felder", () => {
-    const a = adaptMoreImmoInvestment({ id: "inv-1", objekt: null, wohnung: null, kaufpreis: 0 }, {}, null);
+    const a = adaptOsImmobilienInvestment({ id: "inv-1", objekt: null, wohnung: null, kaufpreis: 0 }, {}, null);
     expect(a.wohnflaeche).toBeNull();
     expect(a.baujahr).toBeNull();
     expect(a.adresse).toBe("");
@@ -108,13 +108,13 @@ describe("Fall 3: Es ist noch nichts eingetragen", () => {
   });
 
   it("fällt beim Namen auf eine neutrale Bezeichnung zurück", () => {
-    const a = adaptMoreImmoInvestment({ id: "inv-1", objekt: null, wohnung: null, kaufpreis: 0 }, {}, null);
+    const a = adaptOsImmobilienInvestment({ id: "inv-1", objekt: null, wohnung: null, kaufpreis: 0 }, {}, null);
     expect(a.bezeichnung).toBe("OS Immobilien Investment");
   });
 
   it("stürzt nicht ab, wenn meta fehlt", () => {
-    expect(() => adaptMoreImmoInvestment(investment(), null, null)).not.toThrow();
-    expect(() => adaptMoreImmoInvestment(investment(), undefined, undefined)).not.toThrow();
+    expect(() => adaptOsImmobilienInvestment(investment(), null, null)).not.toThrow();
+    expect(() => adaptOsImmobilienInvestment(investment(), undefined, undefined)).not.toThrow();
   });
 });
 
@@ -124,8 +124,8 @@ describe("Fall 4: Mehrere Investments", () => {
       kaufpreis: 310000,
       rvVirtualWohnung: { objAdresse: "Zweitweg 9", objPlz: "99999", objOrt: "Andernorts", groesse: 91, weNr: "7" },
     };
-    const a = adaptMoreImmoInvestment(investment(200000), vonHandEingetragen, null);
-    const b = adaptMoreImmoInvestment({ ...investment(310000), id: "inv-2" }, zweites, null);
+    const a = adaptOsImmobilienInvestment(investment(200000), vonHandEingetragen, null);
+    const b = adaptOsImmobilienInvestment({ ...investment(310000), id: "inv-2" }, zweites, null);
 
     expect(a.id).toBe("inv-1");
     expect(b.id).toBe("inv-2");

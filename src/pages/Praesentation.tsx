@@ -63,10 +63,10 @@ function seedAbschnitte(): Abschnitt[] {
         {
           id: "1hv",
           name: "Beratungspräsentation OS Immobilien",
-          url: "/beratungspraesentation-moreimmo",
+          url: "/beratungspraesentation-osimmobilien",
           typ: "link",
           action: "internal-link",
-          internalRoute: "/beratungspraesentation-moreimmo",
+          internalRoute: "/beratungspraesentation-osimmobilien",
         },
         // Die PDF-Fassung zum Herunterladen und Praesentieren. Im Termin ist die
         // Webfassung darueber der bevorzugte Weg, das sagt auch der Name.

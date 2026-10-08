@@ -60,7 +60,7 @@ function anmeldeMeldung(meldung: unknown, t: (k: string) => string): string {
  * gesetzten Schriftzug. Der Schriftzug des Originallogos ist schwarz und
  * würde auf der dunklen Bühne verschwinden.
  */
-const BILDMARKE_URL = "/images/moreimmo-icon-blau.png";
+const BILDMARKE_URL = "/images/osimmobilien-icon-blau.png";
 // Fuer den dunklen Bildteil: dunkles Gruen der Bildmarke als Weiss.
 const BILDMARKE_HELL_URL = "/images/os-bildmarke-hell.png";
 

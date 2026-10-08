@@ -72,14 +72,14 @@ beforeEach(() => {
 });
 afterEach(() => vi.unstubAllGlobals());
 
-const UNTERLAGEN = "/beratungspraesentation-moreimmo";
-const KUNDENPROFIL = "/beratungspraesentation-moreimmo?kunde=Max%20Muster&kundeId=k-1&investmentId=i-1";
+const UNTERLAGEN = "/beratungspraesentation-osimmobilien";
+const KUNDENPROFIL = "/beratungspraesentation-osimmobilien?kunde=Max%20Muster&kundeId=k-1&investmentId=i-1";
 
 function zeige(adresse: string) {
   return render(
     <MemoryRouter initialEntries={[adresse]}>
       <Routes>
-        <Route path="/beratungspraesentation-moreimmo" element={<BeratungspraesentationHV />} />
+        <Route path="/beratungspraesentation-osimmobilien" element={<BeratungspraesentationHV />} />
       </Routes>
     </MemoryRouter>,
   );
@@ -141,22 +141,23 @@ describe("Sprachwechsel der Beratungspräsentation", () => {
     expect(ueberschrift("Was machen wir heute?")).toBeInTheDocument();
   });
 
-  it("zeigt in Abschnitt 02 die Partnerlogos OS Immobilien und MORE Finance in beiden Sprachen", () => {
+  it("zeigt in Abschnitt 02 die Partner OS Immobilien und Finanzierungspartner in beiden Sprachen", () => {
     zeige(KUNDENPROFIL);
     const partner = () => screen.getAllByTestId("partner-logo");
     expect(partner()).toHaveLength(2);
     expect(within(partner()[0]).getByAltText("OS Immobilien")).toBeInTheDocument();
     expect(partner()[0]).toHaveTextContent("Objektpartner");
     expect(partner()[0]).toHaveTextContent("Über OS Immobilien vertreiben wir die Objekte und Einheiten.");
-    expect(within(partner()[1]).getByAltText("MORE Finance")).toBeInTheDocument();
+    // Der Finanzierungspartner steht ohne Namen und Logo da.
+    expect(within(partner()[1]).queryByRole("img")).toBeNull();
     expect(partner()[1]).toHaveTextContent("Finanzierungspartner");
-    expect(partner()[1]).toHaveTextContent("MORE Finance übernimmt die Finanzierung.");
+    expect(partner()[1]).toHaveTextContent("Unser Finanzierungspartner übernimmt die Finanzierung.");
 
     schalteAuf("English");
     expect(partner()[0]).toHaveTextContent("Property partner");
     expect(partner()[0]).toHaveTextContent("We market the properties and units through OS Immobilien.");
     expect(partner()[1]).toHaveTextContent("Financing partner");
-    expect(partner()[1]).toHaveTextContent("MORE Finance handles the financing.");
+    expect(partner()[1]).toHaveTextContent("Our financing partner handles the financing.");
   });
 
   it("zeigt auf Englisch keinen Gedankenstrich", () => {
@@ -199,14 +200,14 @@ describe("An beiden Einbindungsstellen derselbe Schalter", () => {
   it("alle Wege führen auf dieselbe Seite", () => {
     const lies = (pfad: string) => readFileSync(resolve(process.cwd(), pfad), "utf8");
     // Sidebar Präsentation
-    expect(lies("src/pages/Praesentation.tsx")).toContain('internalRoute: "/beratungspraesentation-moreimmo"');
+    expect(lies("src/pages/Praesentation.tsx")).toContain('internalRoute: "/beratungspraesentation-osimmobilien"');
     // Sidebar Unterlagen
-    expect(lies("src/lib/unterlagenSeed.ts")).toContain('interneRoute: "/beratungspraesentation-moreimmo"');
+    expect(lies("src/lib/unterlagenSeed.ts")).toContain('interneRoute: "/beratungspraesentation-osimmobilien"');
     // Kundenprofil beim Investment
-    expect(lies("src/pages/KundenDetail.tsx")).toContain("window.open(`/beratungspraesentation-moreimmo?${params.toString()}`");
+    expect(lies("src/pages/KundenDetail.tsx")).toContain("window.open(`/beratungspraesentation-osimmobilien?${params.toString()}`");
     // Und die Route zeigt genau diese Komponente.
     expect(lies("src/App.tsx")).toMatch(
-      /path="\/beratungspraesentation-moreimmo" element=\{<PraesentationGuard><BeratungspraesentationHV \/><\/PraesentationGuard>\}/,
+      /path="\/beratungspraesentation-osimmobilien" element=\{<PraesentationGuard><BeratungspraesentationHV \/><\/PraesentationGuard>\}/,
     );
   });
 });

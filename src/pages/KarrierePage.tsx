@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { getPublishedStellen, getStelleById, type Stelle } from "@/lib/bewerbungStore";
-import logoImg from "@/assets/moreimmo-logo.png";
+import logoImg from "@/assets/osimmobilien-logo.png";
 import {
   Building2, MapPin, Briefcase, ArrowRight, ArrowLeft, Sparkles,
   CheckCircle, Star, Mail,

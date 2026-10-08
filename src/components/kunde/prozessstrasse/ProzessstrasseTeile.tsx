@@ -84,7 +84,7 @@ export function Legende({ strasse }: { strasse: Strasse }) {
 }
 
 /**
- * Das Haus aus der MORE-Bildmarke (`public/images/moreimmo-icon-blau.png`),
+ * Das Haus aus der OS-Bildmarke (`public/images/osimmobilien-icon-blau.png`),
  * als SVG nachgezeichnet, damit es die Farbe aus den Tokens nimmt. Es gibt im
  * Projekt nur PNG-Fassungen. Die weiße Aussparung ist ein Loch (evenodd), so
  * steht auf jedem Grund die Kartenfarbe darin.

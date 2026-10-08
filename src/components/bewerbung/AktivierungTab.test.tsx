@@ -175,7 +175,7 @@ describe("AktivierungTab: Anleitung geht mit der persönlichen Mail", () => {
     expect(screen.getByText("Anleitung OS Immobilien Mail einrichten (PDF)")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Vorschau öffnen/ })).toHaveAttribute(
       "href",
-      "/dokumente/moreimmo-mail-einrichten.pdf",
+      "/dokumente/osimmobilien-mail-einrichten.pdf",
     );
   });
 

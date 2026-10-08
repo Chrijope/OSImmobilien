@@ -51,8 +51,8 @@ const {
   kennzahlenLuecken, kennzahlenVollstaendig, objektDatenFehlen,
   BESTANDSWOHNUNG_AKTIV,
 } = await import("@/lib/objektDatenPflicht");
-const { adaptMoreImmoInvestment } = await import("@/lib/kundePortalInvestment");
-const { moreImmoPosition, berechnePortfolioKennzahlen } = await import("@/lib/portalPortfolio");
+const { adaptOsImmobilienInvestment } = await import("@/lib/kundePortalInvestment");
+const { osImmobilienPosition, berechnePortfolioKennzahlen } = await import("@/lib/portalPortfolio");
 const { leseAnlageV } = await import("@/lib/eigeneInvestmentBerechnungen");
 
 /** Ein vollständig ausgefülltes Fenster, alle vier Schritte. */
@@ -189,7 +189,7 @@ describe("Fall 1: Was davon im Kundenportal ankommt", () => {
   beforeEach(() => speichereObjektDaten("inv-1", ALLES));
 
   it("reicht Fläche, Baujahr, Miete und Hausgeld an Steuer-Cockpit und Anlage V", () => {
-    const a = adaptMoreImmoInvestment(zeile(), metaFelder, null);
+    const a = adaptOsImmobilienInvestment(zeile(), metaFelder, null);
     expect(a.wohnflaeche).toBe(62);
     expect(a.baujahr).toBe(1996);
     expect(a.mieteinnahmen_kalt).toBe(620);
@@ -198,19 +198,19 @@ describe("Fall 1: Was davon im Kundenportal ankommt", () => {
   });
 
   it("reicht Adresse, PLZ und Ort für Marktwert und Anlage V durch", () => {
-    const a = adaptMoreImmoInvestment(zeile(), metaFelder, null);
+    const a = adaptOsImmobilienInvestment(zeile(), metaFelder, null);
     expect(a.adresse).toBe("Roonstraße 3");
     expect(a.plz).toBe("95028");
     expect(a.ort).toBe("Hof");
   });
 
   it("kennt den Kaufpreis auch dann, wenn die Spalte noch nicht nachgezogen ist", () => {
-    const a = adaptMoreImmoInvestment({ ...zeile(), kaufpreis: 0 }, metaFelder, null);
+    const a = adaptOsImmobilienInvestment({ ...zeile(), kaufpreis: 0 }, metaFelder, null);
     expect(a.kaufpreis).toBe(189000);
   });
 
   it("füllt die Rendite in der Portfolio-Leiste", () => {
-    const pos = moreImmoPosition({ ...zeile(), meta: metaFelder }, null);
+    const pos = osImmobilienPosition({ ...zeile(), meta: metaFelder }, null);
     expect(pos.jahresmiete).toBe(7440);
     const kz = berechnePortfolioKennzahlen([pos]);
     expect(kz.rendite).not.toBeNull();
@@ -218,7 +218,7 @@ describe("Fall 1: Was davon im Kundenportal ankommt", () => {
   });
 
   it("gibt der Anlage V den Miteigentumsanteil, statt still 100 Prozent anzusetzen", () => {
-    const a = adaptMoreImmoInvestment(zeile(), metaFelder, null);
+    const a = adaptOsImmobilienInvestment(zeile(), metaFelder, null);
     const av = leseAnlageV(a as any);
     expect(av.miteigentumsanteilProzent).toBe(2.41);
     expect(av.hausgeldNichtUmlageMonat).toBe(55);
@@ -240,7 +240,7 @@ describe("Fall 1: Nur die fünf Pflichtangaben", () => {
   });
 
   it("meldet im Portal keine Rendite statt einer geschätzten", () => {
-    const pos = moreImmoPosition({ ...zeile(), meta: metaFelder }, null);
+    const pos = osImmobilienPosition({ ...zeile(), meta: metaFelder }, null);
     expect(pos.jahresmiete).toBeNull();
     expect(berechnePortfolioKennzahlen([pos]).rendite).toBeNull();
   });
@@ -334,13 +334,13 @@ describe("Fall 3: Es ist noch nichts eingetragen", () => {
 describe("Fall 4: Mehrere Investments", () => {
   it("hält die Angaben zweier Vorgänge auseinander", () => {
     speichereObjektDaten("inv-1", ALLES);
-    const erstes = adaptMoreImmoInvestment(zeile(), { ...metaFelder }, null);
+    const erstes = adaptOsImmobilienInvestment(zeile(), { ...metaFelder }, null);
 
     const zweitesMeta = {
       kaufpreis: 310000,
       rvVirtualWohnung: { objAdresse: "Zweitweg 9", objPlz: "99999", objOrt: "Andernorts", groesse: 91, weNr: "7", miete: 900 },
     };
-    const zweites = adaptMoreImmoInvestment(
+    const zweites = adaptOsImmobilienInvestment(
       { id: "inv-2", objekt: "Zweitweg 9", wohnung: "7", kaufpreis: 310000 },
       zweitesMeta, null,
     );

@@ -15,8 +15,8 @@ import { toast } from "sonner";
 import { SteuerCockpitCard } from "@/components/kunde/SteuerCockpitCard";
 import { MarktwertCard } from "@/components/kunde/eigene/MarktwertCard";
 import { EigeneSteuerJahresListe } from "@/components/kunde/eigene/EigeneSteuerJahresListe";
-import { adaptMoreImmoInvestment } from "@/lib/kundePortalInvestment";
-import { moreImmoPosition, eigenePosition, berechnePortfolioKennzahlen } from "@/lib/portalPortfolio";
+import { adaptOsImmobilienInvestment } from "@/lib/kundePortalInvestment";
+import { osImmobilienPosition, eigenePosition, berechnePortfolioKennzahlen } from "@/lib/portalPortfolio";
 import { PortalHero } from "@/components/kunde/portal/PortalHero";
 import { useTranslation } from "react-i18next";
 import { portalSprache } from "@/i18n/portalSprache";
@@ -93,7 +93,7 @@ export default function KundeSteuerCockpit() {
       .channel(`steuer-ext-${authUser.id}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "externe_investments" }, () => {
         supabase.from("externe_investments").select("*").then(({ data }) => {
-          const filtered = (data || []).filter((i: any) => (i.meta?.quelle || "extern") !== "moreimmo");
+          const filtered = (data || []).filter((i: any) => (i.meta?.quelle || "extern") !== "osimmobilien");
           setExterneInvestments(filtered);
         });
       })
@@ -123,7 +123,7 @@ export default function KundeSteuerCockpit() {
     [finanzierungen, activeInv]
   );
   const adapted = useMemo(
-    () => activeInv ? adaptMoreImmoInvestment(activeInv, invMeta, finanzierung) : null,
+    () => activeInv ? adaptOsImmobilienInvestment(activeInv, invMeta, finanzierung) : null,
     [activeInv, invMeta, finanzierung]
   );
 
@@ -144,11 +144,12 @@ export default function KundeSteuerCockpit() {
 
   const tabParam = searchParams.get("tab");
   const invParam = searchParams.get("inv");
-  const tabFromUrl: "moreimmo" | "eigene" | null =
-    tabParam === "eigene" ? "eigene" : tabParam === "moreimmo" || invParam ? "moreimmo" : null;
+  // "moreimmo": alter Wert aus Links in bereits versandten Mails.
+  const tabFromUrl: "osimmobilien" | "eigene" | null =
+    tabParam === "eigene" ? "eigene" : tabParam === "osimmobilien" || tabParam === "moreimmo" || invParam ? "osimmobilien" : null;
   const handleTabChange = (val: string | null) => {
     const next = new URLSearchParams(searchParams);
-    if (val === "moreimmo" || val === "eigene") next.set("tab", val);
+    if (val === "osimmobilien" || val === "eigene") next.set("tab", val);
     else next.delete("tab");
     if (val === null) next.delete("inv");
     setSearchParams(next, { replace: true });
@@ -159,7 +160,7 @@ export default function KundeSteuerCockpit() {
   useEffect(() => {
     if (!authUser) return;
     supabase.from("externe_investments").select("*").then(({ data }) => {
-      const filtered = (data || []).filter((i: any) => (i.meta?.quelle || "extern") !== "moreimmo");
+      const filtered = (data || []).filter((i: any) => (i.meta?.quelle || "extern") !== "osimmobilien");
       setExterneInvestments(filtered);
     });
   }, [authUser]);
@@ -196,7 +197,7 @@ export default function KundeSteuerCockpit() {
     // Investments. Rendite nur ueber Positionen mit belegter Miete.
     const positionen = [
       ...investments.map((inv) =>
-        moreImmoPosition(inv, finanzierungen.find((f) => f.kunde_id === inv.id) || null),
+        osImmobilienPosition(inv, finanzierungen.find((f) => f.kunde_id === inv.id) || null),
       ),
       ...externeInvestments.map((inv) => eigenePosition(inv)),
     ];
@@ -204,7 +205,7 @@ export default function KundeSteuerCockpit() {
     const cards = [
       {
         label: t("portal.steuer.kpi_investments"), value: kz.anzahl.toString(),
-        sub: t("portal.steuer.kpi_split", { more: kz.anzahlMoreImmo, eigene: kz.anzahlEigene }),
+        sub: t("portal.steuer.kpi_split", { more: kz.anzahlOsImmobilien, eigene: kz.anzahlEigene }),
         icon: Building2, color: "text-primary", bg: "bg-primary/10",
       },
       { label: t("portal.steuer.kpi_value"), value: fmtCur(kz.kaufpreisGesamt), sub: undefined as string | undefined, icon: Wallet, color: "text-foreground", bg: "bg-muted" },
@@ -253,7 +254,7 @@ export default function KundeSteuerCockpit() {
 
           <div className="grid md:grid-cols-2 gap-4">
             <button
-              onClick={() => handleTabChange("moreimmo")}
+              onClick={() => handleTabChange("osimmobilien")}
               disabled={investments.length === 0}
               className="text-left rounded-2xl border border-border/60 bg-card bg-gradient-to-br from-primary/5 via-card to-card hover:border-primary/40 hover:shadow-lg transition-all p-6 group disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -263,11 +264,11 @@ export default function KundeSteuerCockpit() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2 mb-1">
-                    <h3 className="font-bold text-lg">{t("portal.steuer.card_moreimmo_title")}</h3>
+                    <h3 className="font-bold text-lg">{t("portal.steuer.card_osimmobilien_title")}</h3>
                     <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {t("portal.steuer.card_moreimmo_desc")}
+                    {t("portal.steuer.card_osimmobilien_desc")}
                   </p>
                   <div className="mt-3"><Badge variant="secondary" className="text-xs">{t(investments.length === 1 ? "portal.steuer.object_count_one" : "portal.steuer.object_count_other", { count: investments.length })}</Badge></div>
                 </div>
@@ -362,7 +363,7 @@ export default function KundeSteuerCockpit() {
           subtitle={t("portal.steuer.hero_subtitle_detail")}
           actions={activeInv && (
             <Button asChild variant="outline" size="sm">
-              <Link to={`/kunde/investments?tab=moreimmo&inv=${activeInv.id}`}>
+              <Link to={`/kunde/investments?tab=osimmobilien&inv=${activeInv.id}`}>
                 <ExternalLink className="h-3.5 w-3.5 mr-1.5" /> {t("portal.steuer.to_investment")}
               </Link>
             </Button>

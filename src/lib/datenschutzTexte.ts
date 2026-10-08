@@ -171,8 +171,8 @@ const de: DatenschutzFassung = {
           tabelle: {
             kopf: ["Name", "Zweck", "Dauer", "Kategorie"],
             zeilen: [
-              ["moreimmo.cookie-einwilligung", "Ihre Wahl im Cookie-Hinweis mit Zeitpunkt, einschließlich Ihrer Erlaubnisse je Vertriebspartner", "bis Sie die Wahl ändern oder die Website-Daten löschen; Erlaubnisse je Partner höchstens 13 Monate", "Notwendig"],
-              ["moreimmo-seiten-sprache, moreimmo-crm-lang", "Gewählte Sprache", "bis Sie die Website-Daten löschen", "Notwendig"],
+              ["osimmobilien.cookie-einwilligung", "Ihre Wahl im Cookie-Hinweis mit Zeitpunkt, einschließlich Ihrer Erlaubnisse je Vertriebspartner", "bis Sie die Wahl ändern oder die Website-Daten löschen; Erlaubnisse je Partner höchstens 13 Monate", "Notwendig"],
+              ["osimmobilien-seiten-sprache, osimmobilien-crm-lang", "Gewählte Sprache", "bis Sie die Website-Daten löschen", "Notwendig"],
               ["mi_lead_funnel_entwurf", "Zwischenstand des Anfrageformulars auf der Seite eines Vertriebspartners", "2 Stunden", "Notwendig"],
               ["hb_ergebnis_frisch (Sitzungsspeicher)", "Ihr Ergebnis auf der Handbuch-Seite, damit es beim Neuladen erhalten bleibt", "bis zum Schließen des Tabs", "Notwendig"],
               ["mi_bewerber_fragebogen_…", "Zwischenstand des Kennenlernbogens für Bewerbungen", "14 Tage", "Notwendig"],
@@ -182,7 +182,7 @@ const de: DatenschutzFassung = {
               ["role_permissions_v1, mi_current_role", "Zwischenspeicher Ihrer Zugriffsrechte nach der Anmeldung", "bis Sie die Website-Daten löschen", "Notwendig"],
               ["videoraum-gast:…, videoraum-kachelreihe (Sitzungsspeicher)", "Ihr Anzeigename und die Ansicht im Videoraum", "bis zum Schließen des Tabs", "Notwendig"],
               ["lazy-route-reload:…, versionshinweis-ausgeblendet (Sitzungsspeicher)", "Laden einer neuen Programmversion", "bis zum Schließen des Tabs", "Notwendig"],
-              ["moreimmo.kampagne.v2", "Kampagnenkennung (UTM-Parameter, gclid, fbclid)", "30 Tage", "Statistik"],
+              ["osimmobilien.kampagne.v2", "Kampagnenkennung (UTM-Parameter, gclid, fbclid)", "30 Tage", "Statistik"],
               ["tg_klick_… (Sitzungsspeicher)", "Verhindert, dass der Aufruf eines Empfehlungslinks doppelt gezählt wird", "bis zum Schließen des Tabs", "Statistik"],
               ["_fbp, _fbc (Cookies von Meta)", "Meta Pixel auf den Seiten eines Vertriebspartners, nur mit Erlaubnis für diesen Partner", "von Meta festgelegt, bis zu 90 Tage", "Marketing"],
             ],
@@ -792,8 +792,8 @@ const en: DatenschutzFassung = {
           tabelle: {
             kopf: ["Name", "Purpose", "Duration", "Category"],
             zeilen: [
-              ["moreimmo.cookie-einwilligung", "Your choice in the cookie notice with timestamp, including your permissions per sales partner", "until you change your choice or delete the site data; permissions per partner at most 13 months", "Necessary"],
-              ["moreimmo-seiten-sprache, moreimmo-crm-lang", "Selected language", "until you delete the site data", "Necessary"],
+              ["osimmobilien.cookie-einwilligung", "Your choice in the cookie notice with timestamp, including your permissions per sales partner", "until you change your choice or delete the site data; permissions per partner at most 13 months", "Necessary"],
+              ["osimmobilien-seiten-sprache, osimmobilien-crm-lang", "Selected language", "until you delete the site data", "Necessary"],
               ["mi_lead_funnel_entwurf", "Progress of the enquiry form on a sales partner's page", "2 hours", "Necessary"],
               ["hb_ergebnis_frisch (session storage)", "Your result on the handbook page, so that it survives a reload", "until you close the tab", "Necessary"],
               ["mi_bewerber_fragebogen_…", "Progress of the applicant questionnaire", "14 days", "Necessary"],
@@ -803,7 +803,7 @@ const en: DatenschutzFassung = {
               ["role_permissions_v1, mi_current_role", "Cache of your access rights after sign in", "until you delete the site data", "Necessary"],
               ["videoraum-gast:…, videoraum-kachelreihe (session storage)", "Your display name and the layout in the video room", "until you close the tab", "Necessary"],
               ["lazy-route-reload:…, versionshinweis-ausgeblendet (session storage)", "Loading a new program version", "until you close the tab", "Necessary"],
-              ["moreimmo.kampagne.v2", "Campaign identifier (UTM parameters, gclid, fbclid)", "30 days", "Statistics"],
+              ["osimmobilien.kampagne.v2", "Campaign identifier (UTM parameters, gclid, fbclid)", "30 days", "Statistics"],
               ["tg_klick_… (session storage)", "Prevents a referral link visit from being counted twice", "until you close the tab", "Statistics"],
               ["_fbp, _fbc (Meta cookies)", "Meta Pixel on a sales partner's pages, only with permission for that partner", "set by Meta, up to 90 days", "Marketing"],
             ],

@@ -50,7 +50,7 @@ import {
 } from "@/lib/cookieEinwilligung";
 
 /** Der gesicherte Stand, nur mit Statistik-Einwilligung. */
-const SPEICHER_SCHLUESSEL = "moreimmo.kampagne.v2";
+const SPEICHER_SCHLUESSEL = "osimmobilien.kampagne.v2";
 
 /** Die fruehere Ablage in der sessionStorage, ohne Einwilligung. Wird entfernt. */
 const ALTER_SCHLUESSEL = "moreimmo.kampagne";

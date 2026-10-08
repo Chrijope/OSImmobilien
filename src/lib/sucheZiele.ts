@@ -122,7 +122,7 @@ export interface SucheAktion {
 export const SUCHE_AKTIONEN: SucheAktion[] = [
   { titel: "Neuen Kontakt anlegen", url: "/alle-kontakte?neu=1", begriffe: ["neuer kunde", "kontakt anlegen", "lead anlegen", "hinzufuegen"] },
   { titel: "Neues Objekt anlegen", url: "/objekte/neu", begriffe: ["objekt anlegen", "immobilie anlegen", "neues haus"] },
-  { titel: "Beratungspräsentation öffnen", url: "/beratungspraesentation-moreimmo", begriffe: ["praesentation starten", "beratung", "termin"] },
+  { titel: "Beratungspräsentation öffnen", url: "/beratungspraesentation-osimmobilien", begriffe: ["praesentation starten", "beratung", "termin"] },
 ];
 
 /**

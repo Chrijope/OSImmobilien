@@ -238,7 +238,7 @@ describe("Wo die Kennung liegt", () => {
   it("mit Statistik-Einwilligung 30 Tage im localStorage", () => {
     speichereCookieEinwilligung({ statistik: true, marketing: false });
     kampagneErfassen("?utm_campaign=Herbst");
-    const roh = [...speicher.entries()].find(([k]) => k.startsWith("moreimmo.kampagne"));
+    const roh = [...speicher.entries()].find(([k]) => k.startsWith("osimmobilien.kampagne"));
     expect(roh).toBeTruthy();
     const gelesen = JSON.parse(roh![1]);
     expect(gelesen.erster.utmCampaign).toBe("Herbst");
@@ -251,14 +251,14 @@ describe("Wo die Kennung liegt", () => {
     kampagneErfassen("?utm_campaign=Herbst");
     expect(speicher.size).toBe(0);
     speichereCookieEinwilligung({ statistik: true, marketing: false });
-    expect([...speicher.keys()].some((k) => k.startsWith("moreimmo.kampagne"))).toBe(true);
+    expect([...speicher.keys()].some((k) => k.startsWith("osimmobilien.kampagne"))).toBe(true);
   });
 
   it("loescht den Stand, wenn die Einwilligung zurueckgenommen wird", () => {
     speichereCookieEinwilligung({ statistik: true, marketing: false });
     kampagneErfassen("?utm_campaign=Herbst");
     speichereCookieEinwilligung({ statistik: false, marketing: false });
-    expect([...speicher.keys()].some((k) => k.startsWith("moreimmo.kampagne"))).toBe(false);
+    expect([...speicher.keys()].some((k) => k.startsWith("osimmobilien.kampagne"))).toBe(false);
   });
 
   it("entfernt die alte Ablage in der sessionStorage", () => {
@@ -270,7 +270,7 @@ describe("Wo die Kennung liegt", () => {
   it("verwirft einen abgelaufenen Stand", () => {
     speichereCookieEinwilligung({ statistik: true, marketing: false });
     speicher.set(
-      "moreimmo.kampagne.v2",
+      "osimmobilien.kampagne.v2",
       JSON.stringify({ erster: { utmCampaign: "Uralt" }, letzter: { utmCampaign: "Uralt" }, ablauf: Date.now() - 1 }),
     );
     expect(kampagneErfassen("")).toEqual({});

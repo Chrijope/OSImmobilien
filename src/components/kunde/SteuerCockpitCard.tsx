@@ -17,7 +17,7 @@ import {
 } from "@/lib/steuerHelper";
 import { linearerAfaSatz, denkmalVerlauf } from "@/lib/afaSaetze";
 import { aktuellesSteuerjahr } from "@/lib/einkommensteuer";
-import { adaptMoreImmoInvestment } from "@/lib/kundePortalInvestment";
+import { adaptOsImmobilienInvestment } from "@/lib/kundePortalInvestment";
 import { baueAnlageVAufstellung, type AnlageVAufstellung } from "@/lib/anlageVExport";
 import { erzeugeAnlageVPdf } from "@/lib/anlageVPdf";
 import { AnlageVSendenDialog } from "@/components/kunde/AnlageVSendenDialog";
@@ -394,7 +394,7 @@ export function SteuerCockpitCard({ inv, invMeta, kontakt, kontaktMeta, finanzie
   // nicht kennt (Grundsteuer, Versicherung, Verwaltung, Umlagen), erscheinen
   // im PDF ausdruecklich als "Angabe fehlt".
   const baueAufstellung = () => {
-    const adapted = adaptMoreImmoInvestment(inv, invMeta, finanzierung);
+    const adapted = adaptOsImmobilienInvestment(inv, invMeta, finanzierung);
     const basis = {
       ...adapted,
       kaufpreis,
@@ -414,7 +414,7 @@ export function SteuerCockpitCard({ inv, invMeta, kontakt, kontaktMeta, finanzie
     };
     return baueAnlageVAufstellung(basis, {
       jahr: new Date().getFullYear(),
-      herkunft: "moreimmo",
+      herkunft: "osimmobilien",
       bodenwertAnteil: grundstuecksAnteilProz > 0 ? grundstuecksAnteilProz : null,
     });
   };

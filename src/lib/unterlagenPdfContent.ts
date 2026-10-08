@@ -527,7 +527,7 @@ export const generateVpAgbPDF = () => generateSimpleDocPdf({
 // ─────────────────────────────────────────
 // 9. Mail-Setup
 // ─────────────────────────────────────────
-// Ein Abzug davon liegt als public/dokumente/moreimmo-mail-einrichten.pdf und
+// Ein Abzug davon liegt als public/dokumente/osimmobilien-mail-einrichten.pdf und
 // geht als Link in der Zugangsdaten-Mail an Bewerber ohne CRM-Zugang. Nach
 // einer Aenderung hier neu erzeugen, siehe src/lib/mailAnleitungPdf.test.ts.
 export const generateMailSetupPDF = () => generateSimpleDocPdf({

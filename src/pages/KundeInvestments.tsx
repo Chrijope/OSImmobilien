@@ -29,7 +29,7 @@ import { TilgungsplanCard } from "@/components/kunde/eigene/TilgungsplanCard";
 import { CashflowForecastCard } from "@/components/kunde/eigene/CashflowForecastCard";
 import { ReinvestHinweisCard } from "@/components/kunde/eigene/ReinvestHinweisCard";
 import { monateSeitLetztemKauf } from "@/lib/eigeneInvestmentBerechnungen";
-import { adaptMoreImmoInvestment } from "@/lib/kundePortalInvestment";
+import { adaptOsImmobilienInvestment } from "@/lib/kundePortalInvestment";
 import { EmpfehlungsRecommendationCard } from "@/components/kunde/EmpfehlungsRecommendationCard";
 import { NotarterminAuswahlCard } from "@/components/kunde/NotarterminAuswahlCard";
 import { AbwicklungStatusCard } from "@/components/kunde/AbwicklungStatusCard";
@@ -42,7 +42,7 @@ import { ChevronDown, ChevronUp, Smartphone } from "lucide-react";
 import { PortalHero } from "@/components/kunde/portal/PortalHero";
 import { NextStepCard } from "@/components/kunde/portal/NextStepCard";
 import { GesamtvermoegenCard } from "@/components/kunde/portal/GesamtvermoegenCard";
-import { moreImmoPosition, eigenePosition, berechnePortfolioKennzahlen } from "@/lib/portalPortfolio";
+import { osImmobilienPosition, eigenePosition, berechnePortfolioKennzahlen } from "@/lib/portalPortfolio";
 import { renditeAusMiete } from "@/lib/objektDatenPflicht";
 import KundeFinanzierbarkeitCard from "@/components/kunde/KundeFinanzierbarkeitCard";
 import { EinnahmenAusgabenKarten } from "@/components/kunde/portal/EinnahmenAusgabenKarten";
@@ -386,11 +386,12 @@ export default function KundeInvestments() {
   const tabParam = searchParams.get("tab");
   const invParam = searchParams.get("inv");
   // Wenn ?inv=ID gesetzt ist (z. B. Sprung aus dem Steuer-Cockpit), automatisch in OS Immobilien-Detailansicht
-  const tabFromUrl: "moreimmo" | "eigene" | null =
-    tabParam === "eigene" ? "eigene" : tabParam === "moreimmo" || invParam ? "moreimmo" : null;
+  // "moreimmo": alter Wert aus Links in bereits versandten Mails.
+  const tabFromUrl: "osimmobilien" | "eigene" | null =
+    tabParam === "eigene" ? "eigene" : tabParam === "osimmobilien" || tabParam === "moreimmo" || invParam ? "osimmobilien" : null;
   const handleTabChange = (val: string | null) => {
     const next = new URLSearchParams(searchParams);
-    if (val === "eigene" || val === "moreimmo") next.set("tab", val);
+    if (val === "eigene" || val === "osimmobilien") next.set("tab", val);
     else next.delete("tab");
     // Beim manuellen Zurück zur Übersicht ggf. auch inv-Param entfernen
     if (val === null) next.delete("inv");
@@ -432,7 +433,7 @@ export default function KundeInvestments() {
           .from("externe_investments")
           .select("*");
         const filteredExt = (exts || []).filter(
-          (i: any) => (i.meta?.quelle || "extern") !== "moreimmo"
+          (i: any) => (i.meta?.quelle || "extern") !== "osimmobilien"
         );
         setExterneInvestments(filteredExt);
         const invIds = (invs || []).map((i: any) => i.id);
@@ -536,7 +537,7 @@ export default function KundeInvestments() {
       ...investments.map((inv) =>
         // Jedes Investment mit seiner eigenen Finanzierung. Das aktive Investment entsteht erst weiter
         // unten; ein Zugriff hier warf zur Laufzeit und legte die ganze Seite lahm.
-        moreImmoPosition(inv, finanzierungen.find((f) => f.kunde_id === inv.id) || null),
+        osImmobilienPosition(inv, finanzierungen.find((f) => f.kunde_id === inv.id) || null),
       ),
       ...externeInvestments.map((inv) => eigenePosition(inv)),
     ];
@@ -544,7 +545,7 @@ export default function KundeInvestments() {
     const overviewCards = [
       {
         label: t("portal.investments.kpi_investments"), value: kz.anzahl.toString(),
-        sub: t("portal.investments.kpi_split", { more: kz.anzahlMoreImmo, eigene: kz.anzahlEigene }),
+        sub: t("portal.investments.kpi_split", { more: kz.anzahlOsImmobilien, eigene: kz.anzahlEigene }),
         icon: Building2, color: "text-primary", bg: "bg-primary/10",
       },
       { label: t("portal.investments.kpi_value"), value: fmt(kz.kaufpreisGesamt), sub: undefined as string | undefined, icon: Wallet, color: "text-foreground", bg: "bg-muted" },
@@ -595,7 +596,7 @@ export default function KundeInvestments() {
 
           <div className="grid md:grid-cols-2 gap-4">
             <button
-              onClick={() => handleTabChange("moreimmo")}
+              onClick={() => handleTabChange("osimmobilien")}
               className="text-left rounded-2xl border border-border/60 bg-card bg-gradient-to-br from-primary/5 via-card to-card hover:border-primary/40 hover:shadow-lg transition-all p-6 group"
             >
               <div className="flex items-start gap-4">
@@ -604,11 +605,11 @@ export default function KundeInvestments() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2 mb-1">
-                    <h3 className="font-bold text-lg">{t("portal.investments.card_moreimmo_title")}</h3>
+                    <h3 className="font-bold text-lg">{t("portal.investments.card_osimmobilien_title")}</h3>
                     <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {t("portal.investments.card_moreimmo_desc")}
+                    {t("portal.investments.card_osimmobilien_desc")}
                   </p>
                   <div className="mt-3 flex items-center gap-2">
                     <Badge variant="secondary" className="text-xs">{t("portal.investments.object_count", { count: investments.length })}</Badge>
@@ -670,9 +671,9 @@ export default function KundeInvestments() {
             <ArrowRight className="h-3.5 w-3.5 rotate-180" /> {t("portal.investments.back_to_overview")}
           </button>
           <PortalHero
-            eyebrow={t("portal.investments.empty_moreimmo_eyebrow")}
-            title={t("portal.investments.empty_moreimmo_title")}
-            subtitle={t("portal.investments.empty_moreimmo_subtitle")}
+            eyebrow={t("portal.investments.empty_osimmobilien_eyebrow")}
+            title={t("portal.investments.empty_osimmobilien_title")}
+            subtitle={t("portal.investments.empty_osimmobilien_subtitle")}
           />
         </div>
       </DashboardLayout>
@@ -786,7 +787,7 @@ export default function KundeInvestments() {
           // Gemeinsamer Adapter, gleiche Datenbasis wie die Steuer-Seite
           // (Raten-Fallback aus dem Angebot, nur erfasste Nebenkosten).
           const fin = finanzierungen.find((f) => f.kunde_id === activeInv.id);
-          const adapted = adaptMoreImmoInvestment(activeInv, invMeta, fin);
+          const adapted = adaptOsImmobilienInvestment(activeInv, invMeta, fin);
           const monate = monateSeitLetztemKauf(adapted);
           const hatFinanzierung = adapted.hatFinanzierung;
           // Nur die Selbstauskunft dieses Investments, kein Rueckfall auf einen

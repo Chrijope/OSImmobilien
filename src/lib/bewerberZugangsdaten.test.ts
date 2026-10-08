@@ -113,7 +113,7 @@ describe("Vorlage bewerber-zugangsdaten", () => {
   );
 
   it("verlinkt die öffentliche PDF auf osimmobilien.netlify.app statt ins CRM", () => {
-    expect(MAIL_ANLEITUNG_URL).toBe("https://osimmobilien.netlify.app/dokumente/moreimmo-mail-einrichten.pdf");
+    expect(MAIL_ANLEITUNG_URL).toBe("https://osimmobilien.netlify.app/dokumente/osimmobilien-mail-einrichten.pdf");
     expect(vorlage).toContain('<Handlung href={MAIL_ANLEITUNG_URL} text="Anleitung öffnen" />');
     // Dieselbe Adresse zusätzlich als lesbarer Textlink.
     expect(vorlage).toContain("<Nebenhandlung href={MAIL_ANLEITUNG_URL} text={MAIL_ANLEITUNG_URL} />");

@@ -9084,7 +9084,7 @@ export default function KundenDetail() {
                       kundeId: id || "",
                       investmentId: inv.id,
                     });
-                    window.open(`/beratungspraesentation-moreimmo?${params.toString()}`, "_blank");
+                    window.open(`/beratungspraesentation-osimmobilien?${params.toString()}`, "_blank");
                   }}
                 >
                   <ExternalLink className="h-4 w-4 mr-1" /> Beratungspräsentation OS Immobilien

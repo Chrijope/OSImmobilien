@@ -25,7 +25,7 @@ import {
   type ExternesInvestment,
 } from "@/lib/eigeneInvestmentBerechnungen";
 
-export type AnlageVHerkunft = "eigen" | "moreimmo";
+export type AnlageVHerkunft = "eigen" | "osimmobilien";
 
 /** Investment mit optionalen Adressfeldern (eigene Tabelle und Adapter haben sie). */
 export type AnlageVInvestment = ExternesInvestment & {

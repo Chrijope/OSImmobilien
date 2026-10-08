@@ -1761,7 +1761,7 @@
     ],
     "kurztext": "Auf Objektseite und Einheitenseite stehen Karte und Dokumente jetzt oben in der Reiterleiste statt unter den Bildern. Die Fotos sind immer sichtbar, ein eigener Reiter dafür entfällt. Im großen Bild blätterst du mit Pfeilen durch alle Fotos.",
     "wasHeisstDasFuerDich": [
-      "Einheitenseite: Der Reiter Karte steht zwischen Investmentkalkulation und MORE Lotse.",
+      "Einheitenseite: Der Reiter Karte steht zwischen Investmentkalkulation und OS Lotse.",
       "Objektseite: Oben findest du die Reiter Übersicht, Dokumente und Karte.",
       "Im großen Bild blätterst du mit den Pfeilen, am Handy per Wischen, am Rechner auch mit den Pfeiltasten. Ein Klick öffnet die Vollbildansicht bei genau diesem Bild, ebenso ein Klick auf ein kleines Bild."
     ],
@@ -1800,7 +1800,7 @@
       "backoffice",
       "buchhaltung"
     ],
-    "kurztext": "In jeder Investment-Karte im Kundenprofil zeigt jetzt eine Prozesslinie, wo das Investment steht. Jede Phase liegt eine Ebene höher, das MORE-Haus steht über der aktuellen Station. Erledigtes ist blau, die aktuelle Station orange, Offenes grau.",
+    "kurztext": "In jeder Investment-Karte im Kundenprofil zeigt jetzt eine Prozesslinie, wo das Investment steht. Jede Phase liegt eine Ebene höher, das OS-Haus steht über der aktuellen Station. Erledigtes ist blau, die aktuelle Station orange, Offenes grau.",
     "wasHeisstDasFuerDich": [
       "Du siehst die aktuelle Station, zwei Schritte zurück und zwei voraus. Mit den Pfeilen oder der Punktleiste darunter schiebst du den Ausschnitt, ein Klick auf einen Punkt springt dorthin.",
       "Eine Stufe setzt du wie bisher per Klick auf die Station, mit Rückfrage.",
@@ -1877,7 +1877,7 @@
       "admin",
       "inhaber"
     ],
-    "kurztext": "In der Beratungspräsentation siehst du im Abschnitt 02 jetzt unsere Partner: OS Immobilien als Objektpartner und MORE Finance als Finanzierungspartner.",
+    "kurztext": "In der Beratungspräsentation siehst du im Abschnitt 02 jetzt unsere Partner: OS Immobilien als Objektpartner und unseren Finanzierungspartner.",
     "wasHeisstDasFuerDich": [
       "So zeigst du deinem Kunden gleich, wer die Objekte vertreibt und wer die Finanzierung übernimmt.",
       "Die Hinweise gibt es auf Deutsch und Englisch, passend zur gewählten Sprache der Präsentation."
@@ -2422,7 +2422,7 @@
     "nr": 118,
     "datum": "2026-10-05",
     "art": "neu",
-    "titel": "MORE Lotse kennt jetzt alle Unterlagen und feste Zahlen",
+    "titel": "OS Lotse kennt jetzt alle Unterlagen und feste Zahlen",
     "zielrollen": [
       "vertriebspartner",
       "vertriebsleiter",
@@ -2430,14 +2430,14 @@
       "inhaber",
       "backoffice"
     ],
-    "kurztext": "Frag den MORE Lotsen auf der Einheitenseite alles zum Objekt. Er kennt die Unterlagen der Einheit und des Hauses, Hausgeld, Rücklage, Abschreibung, Lage und deine Kalkulation und nennt immer die Quelle.",
+    "kurztext": "Frag den OS Lotsen auf der Einheitenseite alles zum Objekt. Er kennt die Unterlagen der Einheit und des Hauses, Hausgeld, Rücklage, Abschreibung, Lage und deine Kalkulation und nennt immer die Quelle.",
     "wasHeisstDasFuerDich": [
       "Hausgeld gesamt, Rücklage und Steuerangaben kommen als feste Zahlen aus dem CRM. Fehlt etwas, sagt er es dir.",
       "Die Rendite ist immer dieselbe wie im Exposé.",
       "Fragen mit Kundennamen lehnt er ab, frag einfach ohne Namen.",
       "Ist bei einem ganzen Haus schon eine Einheit reserviert, zeigt das CRM das Haus als teilweise reserviert."
     ],
-    "soFindestDuEs": "Einheitenseite, Reiter MORE Lotse.",
+    "soFindestDuEs": "Einheitenseite, Reiter OS Lotse.",
     "kritisch": false
   },
   {
@@ -2465,7 +2465,7 @@
     "nr": 120,
     "datum": "2026-10-05",
     "art": "geaendert",
-    "titel": "MORE Lotse beantwortet Fragen zur Eigenprovision",
+    "titel": "OS Lotse beantwortet Fragen zur Eigenprovision",
     "zielrollen": [
       "vertriebspartner",
       "vertriebsleiter",
@@ -2474,13 +2474,13 @@
       "backoffice",
       "buchhaltung"
     ],
-    "kurztext": "Der MORE Lotse liest jetzt die Eigenprovisionsvereinbarung der Einheit und beantwortet Fragen dazu: Höhe, Prozentsatz, Bedingungen und Auszahlung. Provisionsangaben aus den Investagon-Daten sehen nur noch Admin, Inhaber und Buchhaltung.",
+    "kurztext": "Der OS Lotse liest jetzt die Eigenprovisionsvereinbarung der Einheit und beantwortet Fragen dazu: Höhe, Prozentsatz, Bedingungen und Auszahlung. Provisionsangaben aus den Investagon-Daten sehen nur noch Admin, Inhaber und Buchhaltung.",
     "wasHeisstDasFuerDich": [
       "Frag zum Beispiel: Wie hoch ist die Eigenprovision, und wann wird sie ausgezahlt?",
       "Fragen zur Provision von OS Immobilien, des Vertriebs oder zu deinem Provisionssatz beantwortet der Lotse weiter nicht.",
       "Kunden sehen die Eigenprovisionsvereinbarung nur, wenn sie ausdrücklich für Kunden freigegeben ist."
     ],
-    "soFindestDuEs": "Einheitenseite, Reiter MORE Lotse.",
+    "soFindestDuEs": "Einheitenseite, Reiter OS Lotse.",
     "kritisch": false
   },
   {
@@ -2549,7 +2549,7 @@
     "nr": 124,
     "datum": "2026-10-05",
     "art": "geaendert",
-    "titel": "MORE Lotse liest jetzt auch Wirtschaftspläne und Beschlüsse",
+    "titel": "OS Lotse liest jetzt auch Wirtschaftspläne und Beschlüsse",
     "zielrollen": [
       "vertriebspartner",
       "vertriebsleiter",
@@ -2557,13 +2557,13 @@
       "inhaber",
       "backoffice"
     ],
-    "kurztext": "Der MORE Lotse kennt jetzt auch Wirtschaftspläne, Beschlüsse der Eigentümerversammlung, Abrechnungen, Verwalterverträge und Musterkaufverträge, immer nur als Zahlen und Fakten ohne Namen.",
+    "kurztext": "Der OS Lotse kennt jetzt auch Wirtschaftspläne, Beschlüsse der Eigentümerversammlung, Abrechnungen, Verwalterverträge und Musterkaufverträge, immer nur als Zahlen und Fakten ohne Namen.",
     "wasHeisstDasFuerDich": [
       "Frag ihn etwa nach Sonderumlagen, der Rücklage oder den Kosten im Wirtschaftsplan.",
       "Bei solchen Angaben sagt er dazu, dass sie automatisch ausgelesen sind. Bevor du sie an einen Kunden weitergibst, prüf sie im Original.",
       "Die Rechnung für einen bestimmten Kunden steht nicht mehr im Lotsen, sondern in der Investmentkalkulation seines Investments."
     ],
-    "soFindestDuEs": "Einheitenseite, Reiter MORE Lotse.",
+    "soFindestDuEs": "Einheitenseite, Reiter OS Lotse.",
     "kritisch": false
   },
   {

@@ -41,7 +41,7 @@ import { getInvestmentMetaField } from "@/lib/investmentsStore";
 import { ObjektSlideshow } from "@/components/beratung/ObjektSlideshow";
 import { ANLAGE_ZIELE, zielNachLabel, type AnlageKonzept } from "@/lib/anlageZiele";
 import BeforeAfterSection from "@/components/landing/BeforeAfterSection";
-import logo from "@/assets/moreimmo-logo.png";
+import logo from "@/assets/osimmobilien-logo.png";
 import { PartnerLogo } from "@/components/presentation/PartnerLogo";
 import heroBg from "@/assets/hero-beratung-bg.jpg";
 import beratungSzene from "@/assets/beratung-szene.jpg";
@@ -2035,7 +2035,7 @@ export default function BeratungspraesentationHV() {
   })();
 
   // Sprache der Präsentation, je Nutzer gemerkt. Kennung ist die Anmeldung,
-  // ersatzweise die MORE-ID aus dem Profil.
+  // ersatzweise die Kontakt-ID aus dem Profil.
   // Mit Kunden startet sie in dessen Sprache aus dem Profil (Plan Kundensprache, K10).
   const { sprache: profilSprache } = useKundenSprache(kundeId || null);
   const [sprache, setSprache] = usePraesentationsSprache(authUser?.id || user.moreId, kundeId ? profilSprache : null);
@@ -2410,7 +2410,7 @@ export default function BeratungspraesentationHV() {
       {/* ─── Navigation ─── */}
       <header data-lg="kopfscheibe" className="sticky top-0 z-50 backdrop-blur-xl bg-background/80 border-b border-border/60">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link to="/beratungspraesentation-moreimmo" className="flex items-center gap-3">
+          <Link to="/beratungspraesentation-osimmobilien" className="flex items-center gap-3">
             <img src={logo} alt="OS Immobilien" className="h-8 w-auto" />
           </Link>
           <nav className="hidden md:flex items-center gap-7">

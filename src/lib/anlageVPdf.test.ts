@@ -92,7 +92,7 @@ describe("erzeugeAnlageVPdf", () => {
         hausgeld_nicht_umlage_monat: null,
         dokumente: [],
       }),
-      { jahr: 2026, herkunft: "moreimmo" },
+      { jahr: 2026, herkunft: "osimmobilien" },
     );
     expect(aufstellung.unvollstaendig).toBe(true);
     await expect(erzeugeAnlageVPdf(aufstellung)).resolves.toBeUndefined();

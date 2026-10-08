@@ -25,7 +25,7 @@ export interface Absender {
  */
 export function istTeam(berater?: Absender | null): boolean {
   const name = (berater?.name || '').trim()
-  return !name || /moreimmo/i.test(name)
+  return !name || /osimmobilien/i.test(name)
 }
 
 /** Der Vorname des Partners für Betreff und Text, beim Haus leer. */

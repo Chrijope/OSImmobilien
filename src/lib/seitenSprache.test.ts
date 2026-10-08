@@ -82,7 +82,7 @@ describe("gemerkte Wahl", () => {
   it("wird unter einem eigenen Schlüssel gemerkt, nicht unter dem des Portals", () => {
     merkeSeitenSprache("en");
     expect(speicher.getItem(SEITEN_SPRACHE_SPEICHER)).toBe("en");
-    expect(speicher.getItem("moreimmo-crm-lang")).toBeNull();
+    expect(speicher.getItem("osimmobilien-crm-lang")).toBeNull();
     expect(leseGemerkteSeitenSprache()).toBe("en");
   });
 

@@ -35,21 +35,21 @@ export const FIRMEN_ANSPRECHPARTNER_EN = {
 };
 
 /** Warum es OS Immobilien gibt, zwei Sätze. */
-export const MOREIMMO_WARUM = [
+export const OS_IMMOBILIEN_WARUM = [
   "OS Immobilien gibt es, weil viele Menschen eine Wohnung kaufen, bevor sie wissen, was sie sich leisten können und was die Wohnung für sie leisten soll.",
   "Wir drehen die Reihenfolge um: erst Ihre Zahlen, dann die Bank, dann das Objekt, persönlich, transparent und langfristig gedacht.",
 ];
 
-export const MOREIMMO_WARUM_EN = [
+export const OS_IMMOBILIEN_WARUM_EN = [
   "OS Immobilien exists because many people buy a flat before they know what they can afford and what the flat should do for them.",
   "We reverse the order: your figures first, then the bank, then the property. Personal, transparent and with the long term in mind.",
 ];
 
 /** Unsere Werte, ein bis zwei Sätze. */
-export const MOREIMMO_WERTE =
+export const OS_IMMOBILIEN_WERTE =
   "Wir legen jede Rechnung offen und sagen Ihnen auch, wenn eine Wohnung nicht zu Ihnen passt. Nach dem Notar bleiben wir an Ihrer Seite, bei Übergabe, Vermietung und dem ersten Steuerjahr.";
 
-export const MOREIMMO_WERTE_EN =
+export const OS_IMMOBILIEN_WERTE_EN =
   "We disclose every calculation and tell you when a flat does not suit you. After the notary we stay by your side, through handover, letting and your first tax year.";
 
 /** Wörtlich von osimmobilien.netlify.app, Abschnitt „Über OS Immobilien“. */

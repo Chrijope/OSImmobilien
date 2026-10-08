@@ -45,8 +45,8 @@ dist-ssr
 # der Marke und nicht dem Quellcode. Lena Brandt liest sie hier, sie muessen
 # dafuer nicht nach GitHub.
 /Marke/
-MOREImmo_Investor_Businessplan*
-MOREImmo_Rentabilitaetsrechnung*
+OSImmobilien_Investor_Businessplan*
+OSImmobilien_Rentabilitaetsrechnung*
 *.numbers
 
 .env

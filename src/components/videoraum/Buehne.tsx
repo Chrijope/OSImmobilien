@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import logoImg from "@/assets/moreimmo-logo.png";
+import logoImg from "@/assets/osimmobilien-logo.png";
 
 /**
  * Gemeinsamer Hintergrund aller Videoraum-Seiten: dunkle Buehne, feines Karo

@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getStelleById, type Stelle } from "@/lib/bewerbungStore";
 import { supabase } from "@/integrations/supabase/client";
-import logoImg from "@/assets/moreimmo-logo.png";
+import logoImg from "@/assets/osimmobilien-logo.png";
 import { ArrowLeft, ArrowRight, CheckCircle, Send } from "lucide-react";
 import { SEITE_TOKEN_MUSTER, bewerberSeitePfad } from "@/lib/bewerberSeite";
 import { toast } from "@/hooks/use-toast";

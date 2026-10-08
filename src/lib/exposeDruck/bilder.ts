@@ -13,7 +13,7 @@ export const FOTOS_IM_DRUCK = 40;
 const GROSSE_FOTOS = 3;
 /** Kante für Fotos im Raster: halbe Seitenbreite reicht mit etwa 1200 Pixeln für 300 dpi. */
 const RASTER_KANTE = 1200;
-export const LOGO_ADRESSE = "/images/moreimmo-logo.png";
+export const LOGO_ADRESSE = "/images/osimmobilien-logo.png";
 const IST_PDF_PLAN = /\.pdf(?:[?#]|$)/i;
 
 /** Wie ein Bild geladen wird. Im Browser `browserLader`, für die Muster ein Lader in Node. */

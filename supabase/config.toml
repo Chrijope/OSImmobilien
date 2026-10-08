@@ -184,7 +184,7 @@ verify_jwt = true
 verify_jwt = false
 
 # HR verschickt aus dem Aktivierungs-Tab die Zugangsdaten der neuen
-# persoenlichen @more.immo-Adresse an die private Bewerber-Adresse.
+# persoenlichen @os-immobilien.com-Adresse an die private Bewerber-Adresse.
 # Mit Anmeldung; die Function prueft zusaetzlich die Rolle (admin/inhaber).
 [functions.send-bewerber-zugangsdaten]
 verify_jwt = true
@@ -316,7 +316,7 @@ verify_jwt = true
 [functions.standort-nachholen]
 verify_jwt = false
 
-# Der MORE Lotse, KI-Chat auf der Einheitenseite. Nur fuer Angemeldete; Rolle,
+# Der OS Lotse, KI-Chat auf der Einheitenseite. Nur fuer Angemeldete; Rolle,
 # Zustimmung und Tageslimit prueft die Function zusaetzlich selbst.
 [functions.objekt-lotse]
 verify_jwt = true

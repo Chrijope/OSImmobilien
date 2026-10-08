@@ -1,8 +1,8 @@
 /**
- * Sprache der Beratungspräsentation OS Immobilien (`/beratungspraesentation-moreimmo`).
+ * Sprache der Beratungspräsentation OS Immobilien (`/beratungspraesentation-osimmobilien`).
  *
  * Die Präsentation hat einen eigenen Sprachwechsel und hängt bewusst nicht am
- * i18n des Kundenportals. Dessen Sprache liegt unter `moreimmo-crm-lang` und
+ * i18n des Kundenportals. Dessen Sprache liegt unter `osimmobilien-crm-lang` und
  * gilt für den ganzen Browser: Schaltet ein Berater die Präsentation auf
  * Englisch, soll nicht nebenbei das Portal eines Kunden, der am selben Gerät
  * angemeldet war, mitwechseln. Die Wahl wird deshalb je Nutzer unter einem

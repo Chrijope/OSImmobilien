@@ -41,7 +41,7 @@ const ERLAUBTE_FREMDADRESSEN: Array<{ muster: RegExp; grund: string }> = [
   { muster: /^https:\/\/example\.com\//, grund: 'Vorschaudaten' },
 ]
 
-function istMoreImmo(url: string): boolean {
+function istOsImmobilien(url: string): boolean {
   try {
     const host = new URL(url).hostname
     return host === 'osimmobilien.netlify.app' || host.endsWith('.osimmobilien.netlify.app')
@@ -76,7 +76,7 @@ for (const name of bewerbermails) {
 
     for (const url of adressen(html)) {
       if (!/^https?:/.test(url)) continue // mailto:, tel:, Platzhalter
-      if (istMoreImmo(url)) continue
+      if (istOsImmobilien(url)) continue
       if (ERLAUBTE_FREMDADRESSEN.some((a) => a.muster.test(url))) continue
       throw new Error(`${name}: Link außerhalb von osimmobilien.netlify.app: ${url}`)
     }

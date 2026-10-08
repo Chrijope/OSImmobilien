@@ -674,7 +674,7 @@ export function baueDruckDaten(
       eyebrow: T.kontakt,
       satz: T.naechsterSchritt,
       text: T.kontaktText,
-      personTitel: vertrieb ? T.ansprechpartnerVertrieb : T.kontaktMoreImmo,
+      personTitel: vertrieb ? T.ansprechpartnerVertrieb : T.kontaktOsImmobilien,
       person: { name: person.name, rolle, initialen: initialen(person.name), zeilen: [person.email, person.telefon, person.buchungslink].filter((z): z is string => !!z?.trim()).map((z) => z.trim()), bild: bilder.person ?? null },
       firma: inhalt.kontakt.firma,
       erstellt: T.erstelltAm(datum(erstelltAm), kundeName, vertrieb?.name || ""),

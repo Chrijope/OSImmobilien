@@ -123,7 +123,7 @@ describe("Wer am Zug ist", () => {
       frage: { gestelltAm: "2026-09-18T09:00:00.000Z", text: "Wie ist das mit der 34c?", bisAm: "2026-09-22T09:00:00.000Z" },
     });
     expect(zustandVon(s, JETZT)).toBe("unterbrochen");
-    expect(werAmZug(s, JETZT)).toBe("moreimmo");
+    expect(werAmZug(s, JETZT)).toBe("osimmobilien");
   });
 
   it("ist wieder der Bewerber, sobald die Frage beantwortet ist", () => {
@@ -141,7 +141,7 @@ describe("Wer am Zug ist", () => {
 
   it("ist OS Immobilien nach dem Gespraech, solange die Zusammenfassung nicht freigegeben ist", () => {
     const ohne = stand({ termin: { datum: "2026-09-18", gefuehrt_am: "2026-09-18T14:30:00.000Z" } });
-    expect(werAmZug(ohne, JETZT)).toBe("moreimmo");
+    expect(werAmZug(ohne, JETZT)).toBe("osimmobilien");
 
     const mit = stand({
       termin: { datum: "2026-09-18", gefuehrt_am: "2026-09-18T14:30:00.000Z" },

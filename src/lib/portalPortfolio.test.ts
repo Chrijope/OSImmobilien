@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
-  moreImmoPosition,
+  osImmobilienPosition,
   eigenePosition,
   berechnePortfolioKennzahlen,
   berechneVermoegen,
@@ -20,13 +20,13 @@ const pos = (teil: Partial<PortfolioPosition>): PortfolioPosition => ({
   ...teil,
 });
 
-describe("moreImmoPosition", () => {
+describe("osImmobilienPosition", () => {
   it("uebernimmt Kaufpreis, Jahresmiete und Restschuld aus den Metadaten", () => {
-    const p = moreImmoPosition(
+    const p = osImmobilienPosition(
       { id: "a", kaufpreis: 200000, meta: { jahresnettomiete: 9000, restschuld: 150000 } },
       null,
     );
-    expect(p.quelle).toBe("moreimmo");
+    expect(p.quelle).toBe("osimmobilien");
     expect(p.kaufpreis).toBe(200000);
     expect(p.jahresmiete).toBe(9000);
     expect(p.restschuld).toBe(150000);
@@ -37,18 +37,18 @@ describe("moreImmoPosition", () => {
       akzeptiertes_angebot_id: "ang1",
       angebote: [{ id: "ang1", darlehensbetrag: 180000, zinssatz: 3.5 }],
     };
-    const p = moreImmoPosition({ id: "a", kaufpreis: 200000, meta: {} }, fin);
+    const p = osImmobilienPosition({ id: "a", kaufpreis: 200000, meta: {} }, fin);
     expect(p.restschuld).toBe(180000);
   });
 
   it("meldet fehlende Angaben als null statt 0", () => {
-    const p = moreImmoPosition({ id: "a", kaufpreis: 200000, meta: {} }, null);
+    const p = osImmobilienPosition({ id: "a", kaufpreis: 200000, meta: {} }, null);
     expect(p.jahresmiete).toBeNull();
     expect(p.restschuld).toBeNull();
   });
 
   it("liest den letzten Marktwert aus der Historie", () => {
-    const p = moreImmoPosition(
+    const p = osImmobilienPosition(
       {
         id: "a",
         kaufpreis: 100000,
@@ -92,12 +92,12 @@ describe("eigenePosition", () => {
 describe("berechnePortfolioKennzahlen", () => {
   it("zaehlt OS Immobilien und eigene Positionen getrennt", () => {
     const kz = berechnePortfolioKennzahlen([
-      pos({ quelle: "moreimmo" }),
-      pos({ quelle: "moreimmo" }),
+      pos({ quelle: "osimmobilien" }),
+      pos({ quelle: "osimmobilien" }),
       pos({ quelle: "eigene" }),
     ]);
     expect(kz.anzahl).toBe(3);
-    expect(kz.anzahlMoreImmo).toBe(2);
+    expect(kz.anzahlOsImmobilien).toBe(2);
     expect(kz.anzahlEigene).toBe(1);
   });
 

@@ -2,7 +2,7 @@ import jsPDF, { GState } from "jspdf";
 import { COMPANY_LINE } from "./impressumKontakt";
 import { datumText, type FormatSprache } from "./sprachFormat";
 
-const LOGO_URL = "/images/moreimmo-logo.png";
+const LOGO_URL = "/images/osimmobilien-logo.png";
 /** Nur die Bildmarke in Weiß und Gold, für dunklen Grund (Deckblatt). */
 const ICON_URL = "/images/os-bildmarke-hell.png";
 

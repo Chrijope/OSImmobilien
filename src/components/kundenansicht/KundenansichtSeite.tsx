@@ -118,7 +118,7 @@ export function KundenRahmen({ children, kopfRechts, partner, stand }: {
     <div className="min-h-screen bg-background" data-testid="kundenansicht">
       <header className="border-b border-border/60 bg-card">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
-          <img src="/images/moreimmo-logo.png" alt="OS Immobilien" className="h-7 w-auto sm:h-8" />
+          <img src="/images/osimmobilien-logo.png" alt="OS Immobilien" className="h-7 w-auto sm:h-8" />
           {kopfRechts}
         </div>
       </header>

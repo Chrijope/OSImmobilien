@@ -30,7 +30,7 @@ const PUBLIC = resolve(process.cwd(), "public");
 // Canvas für Node: kommt mit pdf.js ins Projekt, deshalb über pdf.js aufgelöst statt als eigene Abhängigkeit.
 const vonPdfjs = createRequire(createRequire(import.meta.url).resolve("pdfjs-dist/package.json"));
 const { createCanvas, loadImage } = vonPdfjs("@napi-rs/canvas") as typeof import("@napi-rs/canvas");
-const KENNUNG = "MOREImmo-Expose-Muster/1.0 (einmalige Mustererzeugung)";
+const KENNUNG = "OSImmobilien-Expose-Muster/1.0 (einmalige Mustererzeugung)";
 
 async function holen(url: string): Promise<Buffer | null> {
   if (url.startsWith("/")) return readFileSync(resolve(PUBLIC, `.${url}`));

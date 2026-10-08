@@ -103,10 +103,10 @@ describe("Vorfuehrmodus, eingeschaltet", () => {
 
   it("maskiert die Mailadresse und laesst die Domain nicht stehen", () => {
     setzeVorfuehrmodus(true);
-    const getarnt = tarnEmail("michael.bauer@moreimmo.de");
+    const getarnt = tarnEmail("michael.bauer@os-immobilien.com");
     expect(getarnt).toBe("m•••@•••");
     expect(getarnt).not.toContain("bauer");
-    expect(getarnt).not.toContain("moreimmo");
+    expect(getarnt).not.toContain("osimmobilien");
   });
 
   it("maskiert jede Ziffer der Telefonnummer", () => {
@@ -130,7 +130,7 @@ describe("Vorfuehrmodus, eingeschaltet", () => {
 
   it("nimmt Mail-, Telefon- und WhatsApp-Verweisen das Ziel", () => {
     setzeVorfuehrmodus(true);
-    expect(tarnVerweis("mailto:michael.bauer@moreimmo.de")).toBeUndefined();
+    expect(tarnVerweis("mailto:michael.bauer@os-immobilien.com")).toBeUndefined();
     expect(tarnVerweis("tel:+491701234567")).toBeUndefined();
   });
 

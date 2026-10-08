@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { SelbstauskunftForm, SelbstauskunftHinweise, loescheLokalenSaEntwurf } from "@/components/selbstauskunft/SelbstauskunftForm";
 import { normalisiereSprache, type Sprache } from "@/lib/kundenSprache";
 import { saText } from "@/lib/selbstauskunftTexte";
-import logo from "@/assets/moreimmo-logo.png";
+import logo from "@/assets/osimmobilien-logo.png";
 import { zaehleHandbuch } from "@/lib/handbuch/ereignisse";
 import { spracheAusAdresse } from "@/lib/seitenSprache";
 import { nameAusLink } from "@/lib/saNameAusLink";

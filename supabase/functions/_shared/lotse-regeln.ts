@@ -388,7 +388,7 @@ export function nenntVerguetungsbegriff(text: string): boolean {
 /** Eine Zahl, ein Prozentsatz oder ein Betrag, auch in Worten („drei Prozent“). */
 const ZAHL = /\d|%|€|\$|prozent|promille|euro|percent|\beur\b|\busd\b/;
 
-const VERTRIEB_ODER_BAUTRAEGER = /bautraeger|developer|vertrieb|vermittl|makler|moreimmo|more immo|os immobilien|os-immobilien/;
+const VERTRIEB_ODER_BAUTRAEGER = /bautraeger|developer|vertrieb|vermittl|makler|os immobilien|os-immobilien/;
 
 /** Ein Betrag oder Prozentsatz mit Einheit, nicht jede Ziffer: „Baujahr 2020“ zählt nicht. */
 const BETRAG_RE = new RegExp(BETRAG);
@@ -557,7 +557,7 @@ export function antwortNenntProvision(text: string): boolean {
 
 // Wer an einem Verkauf verdienen könnte, und wie danach gefragt wird. „Bekommen“ zählt nur mit „was“ oder „wie viel“,
 // damit „Welche Unterlagen bekommt der Vertrieb?“ eine normale Frage bleibt.
-const EMPFAENGER = "(moreimmo|more immo|os immobilien|os-immobilien|vertrieb\\w*|makler\\w*|vermittler\\w*|berater\\w*|tippgeber\\w*|sales( team)?|broker\\w*|agent\\w*|agency)";
+const EMPFAENGER = "(os immobilien|os-immobilien|vertrieb\\w*|makler\\w*|vermittler\\w*|berater\\w*|tippgeber\\w*|sales( team)?|broker\\w*|agent\\w*|agency)";
 const nahBeieinander = (a: string, b: string, abstand = 4) =>
   new RegExp(`${a}\\W+(\\w+\\W+){0,${abstand}}${b}\\b|${b}\\W+(\\w+\\W+){0,${abstand}}${a}\\b`);
 const VERDIENT = nahBeieinander("(verdien\\w*|kassier\\w*|earn\\w*)", EMPFAENGER);

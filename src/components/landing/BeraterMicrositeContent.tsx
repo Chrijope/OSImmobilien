@@ -14,7 +14,7 @@ import SocialProofSection from "@/components/landing/SocialProofSection";
 import BankPartnersSection from "@/components/landing/BankPartnersSection";
 import FAQSection from "@/components/landing/FAQSection";
 import CTASection from "@/components/landing/CTASection";
-import logo from "@/assets/moreimmo-logo.png";
+import logo from "@/assets/osimmobilien-logo.png";
 import { SeitenSprachUmschalter } from "@/components/SeitenSprache";
 import type { BeraterInfo } from "./FloatingBeraterBadge";
 import "./beraterMicroseite.css";

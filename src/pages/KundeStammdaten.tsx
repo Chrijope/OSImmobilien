@@ -197,7 +197,7 @@ export default function KundeStammdaten() {
   const naechsteSchritte = sammleNaechsteSchritte({ investments, kontaktMeta: meta });
 
   const handleNavigateToSection = (invId: string, section: string) => {
-    navigate(`/kunde/investments?tab=moreimmo&inv=${invId}&highlight=${section}`);
+    navigate(`/kunde/investments?tab=osimmobilien&inv=${invId}&highlight=${section}`);
   };
 
   // Die Begrüßung richtet sich nach dem am weitesten fortgeschrittenen

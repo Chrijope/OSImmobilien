@@ -47,11 +47,12 @@ export default function KundeKundenordner() {
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const tabParam = searchParams.get("tab");
-  const tabFromUrl: "moreimmo" | "eigene" | null =
-    tabParam === "eigene" ? "eigene" : tabParam === "moreimmo" ? "moreimmo" : null;
+  // "moreimmo": alter Wert aus Links in bereits versandten Mails.
+  const tabFromUrl: "osimmobilien" | "eigene" | null =
+    tabParam === "eigene" ? "eigene" : tabParam === "osimmobilien" || tabParam === "moreimmo" ? "osimmobilien" : null;
   const handleTabChange = (val: string | null) => {
     const next = new URLSearchParams(searchParams);
-    if (val === "moreimmo" || val === "eigene") next.set("tab", val);
+    if (val === "osimmobilien" || val === "eigene") next.set("tab", val);
     else next.delete("tab");
     setSearchParams(next, { replace: true });
   };
@@ -184,8 +185,8 @@ export default function KundeKundenordner() {
 
   // ─── Dashboard-Übersicht ───
   if (tabFromUrl === null) {
-    let docsMoreimmo = 0;
-    for (const inv of investments) docsMoreimmo += countDocs(inv, finanzierungen);
+    let docsOsImmobilien = 0;
+    for (const inv of investments) docsOsImmobilien += countDocs(inv, finanzierungen);
     let docsEigene = 0;
     for (const e of eigene) docsEigene += (e.dokumente || []).length;
     return (
@@ -202,8 +203,8 @@ export default function KundeKundenordner() {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
-                { label: t("portal.kundenordner.kpi_moreimmo_inv"), value: investments.length.toString(), icon: Building2 },
-                { label: t("portal.kundenordner.kpi_moreimmo_docs"), value: docsMoreimmo.toString(), icon: FileCheck },
+                { label: t("portal.kundenordner.kpi_osimmobilien_inv"), value: investments.length.toString(), icon: Building2 },
+                { label: t("portal.kundenordner.kpi_osimmobilien_docs"), value: docsOsImmobilien.toString(), icon: FileCheck },
                 { label: t("portal.kundenordner.kpi_eigene_imm"), value: eigene.length.toString(), icon: Home },
                 { label: t("portal.kundenordner.kpi_eigene_docs"), value: docsEigene.toString(), icon: FileText },
               ].map((c) => (
@@ -220,7 +221,7 @@ export default function KundeKundenordner() {
 
           <div className="grid md:grid-cols-2 gap-4">
             <button
-              onClick={() => handleTabChange("moreimmo")}
+              onClick={() => handleTabChange("osimmobilien")}
               className="text-left portal-card hover:shadow-md transition-shadow p-6 group"
             >
               <div className="flex items-start gap-4">
@@ -229,11 +230,11 @@ export default function KundeKundenordner() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2 mb-1">
-                    <h3 className="font-medium text-lg">{t("portal.kundenordner.card_moreimmo_title")}</h3>
+                    <h3 className="font-medium text-lg">{t("portal.kundenordner.card_osimmobilien_title")}</h3>
                     <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {t("portal.kundenordner.card_moreimmo_desc")}
+                    {t("portal.kundenordner.card_osimmobilien_desc")}
                   </p>
                   <p className="mt-3 text-xs text-muted-foreground">{t("portal.kundenordner.folder_count", { count: investments.length, defaultValue: `${investments.length} Ordner` })}</p>
                 </div>
@@ -324,7 +325,7 @@ export default function KundeKundenordner() {
         >
           <ArrowRight className="h-3.5 w-3.5 rotate-180" /> {t("portal.kundenordner.back_to_overview")}
         </button>
-        <PortalHero eyebrow={t("portal.kundenordner.hero_eyebrow")} title={t("portal.kundenordner.moreimmo_heading")} subtitle={t("portal.kundenordner.moreimmo_sub")} />
+        <PortalHero eyebrow={t("portal.kundenordner.hero_eyebrow")} title={t("portal.kundenordner.osimmobilien_heading")} subtitle={t("portal.kundenordner.osimmobilien_sub")} />
 
         {/* Investment Selector */}
         {investments.length > 1 && (

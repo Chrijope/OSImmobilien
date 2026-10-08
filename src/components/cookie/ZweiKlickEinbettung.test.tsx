@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { ZweiKlickEinbettung, _zweiKlickVergessen, anbieterAusAdresse } from "@/components/cookie/ZweiKlickEinbettung";
 
-const CALENDLY = "https://calendly.com/moreimmo/kennenlernen";
+const CALENDLY = "https://calendly.com/osimmobilien/kennenlernen";
 
 function zeige(url = CALENDLY, sprache: "de" | "en" = "de") {
   return render(

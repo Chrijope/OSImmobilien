@@ -8,7 +8,7 @@ import {
   Star, Quote,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import logo from "@/assets/moreimmo-logo.png";
+import logo from "@/assets/osimmobilien-logo.png";
 import { PraesentationPdfButton } from "@/components/presentation/PraesentationPdfButton";
 import heroBg from "@/assets/hero-beratung-bg.jpg";
 import beratungSzene from "@/assets/beratung-szene.jpg";
@@ -1332,7 +1332,7 @@ export default function Beratungspraesentation() {
               </p>
               <div className="flex flex-wrap justify-center gap-3 animate-scale-in">
                 <a
-                  href="mailto:os@os-immobilien.com?subject=Strategiegespräch%20MOREImmo"
+                  href="mailto:os@os-immobilien.com?subject=Strategiegespräch%20OS%20Immobilien"
                   className="inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-7 h-12 font-semibold hover:opacity-90 hover-scale transition shadow-lg shadow-primary/30"
                 >
                   Strategiegespräch vereinbaren

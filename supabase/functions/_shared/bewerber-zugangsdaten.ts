@@ -23,7 +23,7 @@
 import { BEWERBER_MAIL_BASIS } from "./bewerber-absender.ts";
 
 /** Pfad der Anleitung "OS Immobilien Mail einrichten" unter public/. */
-export const MAIL_ANLEITUNG_PFAD = "/dokumente/moreimmo-mail-einrichten.pdf";
+export const MAIL_ANLEITUNG_PFAD = "/dokumente/osimmobilien-mail-einrichten.pdf";
 /** Name, unter dem HR die Anleitung im Aktivierungsreiter sieht. */
 export const MAIL_ANLEITUNG_NAME = "Anleitung OS Immobilien Mail einrichten (PDF)";
 /** Absolute Adresse fuer die Mail, immer auf osimmobilien.netlify.app. */

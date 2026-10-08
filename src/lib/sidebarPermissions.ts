@@ -324,11 +324,12 @@ const NUR_ADMIN_ROUTEN: string[] = ["/videocall", "/videoraum", "/nachtpruefung"
  * darf, darf auch die Unterseite öffnen.
  *
  * Das Präfix-Match weiter unten hilft hier nicht: Es trennt an einem
- * Schrägstrich, und "/beratungspraesentation-moreimmo" ist kein Unterpfad von
+ * Schrägstrich, und "/beratungspraesentation-osimmobilien" ist kein Unterpfad von
  * "/praesentation". Ohne diese Zuordnung filterte die Präsentationsseite ihre
  * eigenen Einträge weg, und im Vertrieb stand dort eine leere Liste.
  */
 const ABGELEITETE_ROUTEN: Record<string, string> = {
+  "/beratungspraesentation-osimmobilien": "/praesentation",
   "/beratungspraesentation-moreimmo": "/praesentation",
   "/beratungspraesentation-hv": "/praesentation",
   "/beratungspraesentation": "/praesentation",

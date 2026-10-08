@@ -1,5 +1,5 @@
 import { useId, type ReactNode } from "react";
-import logoImg from "@/assets/moreimmo-logo.png";
+import logoImg from "@/assets/osimmobilien-logo.png";
 import type { InvestmentEingabe, InvestmentErgebnis } from "@/lib/investmentrechner/rechenkern";
 import type { UnterlagenDaten } from "@/lib/investmentrechner/unterlagenAuslesen";
 import { formatEuro, formatEuroCent, formatProzent, formatProzentEineStelle, formatZahl } from "@/lib/investmentrechner/formatierer";

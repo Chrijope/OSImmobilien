@@ -166,7 +166,7 @@ describe("Sprungziel des Knopfs im Kasten „Als Nächstes“", () => {
   it("baut Kennung und Tiefenlink passend zur Detailseite", () => {
     expect(portalAbschnittId("reservierung")).toBe("section-reservierung");
     expect(investmentAbschnittRoute("inv-1", "finanzierung")).toBe(
-      "/kunde/investments?tab=moreimmo&inv=inv-1&highlight=finanzierung",
+      "/kunde/investments?tab=osimmobilien&inv=inv-1&highlight=finanzierung",
     );
   });
 });

@@ -297,7 +297,7 @@ describe("Weiterleitung nur auf eigene Adressen", () => {
     for (const ziel of [
       "https://boese.example/",
       "https://osimmobilien.netlify.app.boese.example/",
-      "https://boesemore.immo/",
+      "https://boeseos-immobilien.com/",
       "http://osimmobilien.netlify.app/",
       "https://osimmobilien.netlify.app@boese.example/",
       "https://fremd.lovable.app/",

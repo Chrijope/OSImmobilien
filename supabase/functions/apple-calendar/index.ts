@@ -336,7 +336,7 @@ Deno.serve(async (req) => {
 
       // Die Kennung ist zugleich der Dateiname. Damit findet ein spaeteres
       // Aendern oder Loeschen denselben Eintrag wieder.
-      const uid = eventId || `moreimmo-${crypto.randomUUID()}`;
+      const uid = eventId || `osimmobilien-${crypto.randomUUID()}`;
       const ziel = `https://caldav.icloud.com${zielKalender.replace(/\/$/, "")}/${uid}.ics`;
 
       if (action === "delete-event") {

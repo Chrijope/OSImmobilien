@@ -102,8 +102,8 @@ describe("Kunden-Glocken verlinken nur auf vorhandene Portalseiten", () => {
     glocken.notifyKundeSelbstauskunft(KONTAKT, INVESTMENT);
     glocken.notifyKundeBonitaetFreigegeben(KONTAKT);
     const [mitInvestment, ohne] = cache.insert.mock.calls.map((c) => (c[1] as { link: string }).link);
-    expect(mitInvestment).toBe(`/kunde/investments?tab=moreimmo&inv=${INVESTMENT}&highlight=bonitaetsunterlagen`);
-    expect(ohne).toBe("/kunde/investments?tab=moreimmo&highlight=bonitaetsunterlagen");
+    expect(mitInvestment).toBe(`/kunde/investments?tab=osimmobilien&inv=${INVESTMENT}&highlight=bonitaetsunterlagen`);
+    expect(ohne).toBe("/kunde/investments?tab=osimmobilien&highlight=bonitaetsunterlagen");
   });
 
   it("das Empfehlungsprogramm führt zu den Empfehlungen", () => {

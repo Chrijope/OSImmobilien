@@ -72,7 +72,7 @@ describe("planeZusammenfuehrung", () => {
     expect(b).toEqual(a);
   });
 
-  it("nimmt bei gleichem Anlagezeitpunkt die kleinere MORE-Nummer", () => {
+  it("nimmt bei gleichem Anlagezeitpunkt die kleinere Kontaktnummer", () => {
     const gleich = "2026-05-05T05:05:05Z";
     const klein = neu({ erstellt_am: gleich, meta: { moreId: 3 } });
     const gross = alt({ erstellt_am: gleich, meta: { moreId: 9 } });

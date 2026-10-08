@@ -26,7 +26,7 @@ export type KundePortalInvestment = ExternesInvestment & {
   hatFinanzierung: boolean;
 };
 
-export function adaptMoreImmoInvestment(
+export function adaptOsImmobilienInvestment(
   activeInv: any,
   invMeta: any,
   finanzierung: any,

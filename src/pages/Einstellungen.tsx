@@ -94,7 +94,7 @@ const defaultSettings: EinstellungenData = {
   profil: { vorname: "", nachname: "", telefon: "", position: "", strasse: "", hausnummer: "", plz: "", ort: "", land: "Deutschland" },
   email: {
     passwort: "",
-    signatur: { aktiv: true, html: `<p>Mit freundlichen Grüßen</p>\n<p><strong>Christian Peetz</strong></p>\n<p>Vertriebsberater | OS Immobilien</p>\n<p>📞 +49 170 1234567</p>\n<p>✉ os@os-immobilien.com</p>\n<p>🌐 www.moreimmo.de</p>` },
+    signatur: { aktiv: true, html: `<p>Mit freundlichen Grüßen</p>\n<p><strong>Christian Peetz</strong></p>\n<p>Vertriebsberater | OS Immobilien</p>\n<p>📞 +49 170 1234567</p>\n<p>✉ os@os-immobilien.com</p>\n<p>🌐 www.os-immobilien.com</p>` },
     zusatzKonten: [],
     syncOptionen: { autoSync: false, intervall: "15", nurUngelesen: false, maxAnzahl: 50, ordnerSync: ["INBOX"] },
   },

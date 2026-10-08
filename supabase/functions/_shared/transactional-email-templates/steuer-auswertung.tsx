@@ -117,7 +117,7 @@ export const template = {
   displayName: 'Steuerauswertung (öffentlicher Steuerrechner)',
   previewData: {
     kundeName: 'Max Mustermann',
-    pdfUrl: 'https://example.com/moreimmo-steuerauswertung.pdf',
+    pdfUrl: 'https://example.com/osimmobilien-steuerauswertung.pdf',
     beraterName: 'Christian Peetz',
     berater: {
       name: 'Christian Peetz',

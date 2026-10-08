@@ -686,7 +686,7 @@ export function vorabGesperrt(h: { name?: string; text?: string }): boolean {
  */
 const VERWALTUNG_ERHAELT =
   /(\bsev\b|\w*verwalt(er|ung)\w*).{0,40}?\b(erhaelt|erhalten|bekommt|bekommen|berechnet|berechnen|verlangt|verlangen)\b.{0,40}?(verguetung|gebuehr)\w*/g;
-const VERTRIEB_IM_SATZ = /vertrieb|makler|vermittl|tippgeber|moreimmo|more immo|os immobilien|os-immobilien|broker|\bagent/;
+const VERTRIEB_IM_SATZ = /vertrieb|makler|vermittl|tippgeber|os immobilien|os-immobilien|broker|\bagent/;
 
 /** Satzgrenze: Satzzeichen mit folgendem Leerraum oder Zeilenumbruch. „1.000 €“ und „3,57 %“ bleiben ganz (LOTSE-R10-002). */
 const SATZGRENZE = /((?<=[.!?;])\s+|\n+)/;
@@ -734,7 +734,7 @@ export function ohneErlaubteKostenbegriffe(t: string): string {
 export const BETRAG =
   "(\\d[\\d.,]*\\s*(%|prozent|percent|€|euro|eur\\b|usd|\\$)|(€|eur|euro|usd|\\$)\\s*\\d|\\b(ein|eins|einen|zwei|drei|vier|fuenf|sechs|sieben|acht|neun|zehn|elf|zwoelf|halbe?|one|two|three|four|five|six|seven|eight|nine|ten)[\\s-]*(prozent|percent))";
 export const ZAHLUNG_AN_VERTRIEB = new RegExp(
-  "^(?=.*(vertrieb|makler|vermittl|broker|\\bagent|moreimmo|more immo|os immobilien|os-immobilien|berater|tippgeber))" +
+  "^(?=.*(vertrieb|makler|vermittl|broker|\\bagent|os immobilien|os-immobilien|berater|tippgeber))" +
     "(?=.*(erhaelt|erhalten|erhielt|bekommt|bekommen|verdient|verdienen|zahlt|zahlst|zahlen|gezahlt|ausgezahlt|ausschuettet|verguetet|fliess|geht an|gehen an|receives?|earns?|paid|pays))" +
     `(?=.*${BETRAG})`,
 );
@@ -747,9 +747,9 @@ export const ZAHLUNG_AN_VERTRIEB = new RegExp(
  */
 export function ohneQuellenangabe(t: string): string {
   return t
-    .replace(/\b(laut|lt\.?|gemaess|nach angaben (von|des|der)|according to|per)\s+(dem |der |des )?(moreimmo|more immo|os immobilien|os-immobilien|makler\w*|vertrieb\w*|vermittler\w*|berater\w*)/g, " ")
-    .replace(/(moreimmo|more immo|os immobilien|os-immobilien|makler|vertriebs?)[- ]?(expose|exposes|preisliste|angebot|unterlage\w*)/g, " ")
-    .replace(/(von|by) (moreimmo|more immo|os immobilien|os-immobilien|dem makler|dem vertrieb) (angeboten\w*|vermittelt\w*|offered|listed)/g, " ");
+    .replace(/\b(laut|lt\.?|gemaess|nach angaben (von|des|der)|according to|per)\s+(dem |der |des )?(os immobilien|os-immobilien|makler\w*|vertrieb\w*|vermittler\w*|berater\w*)/g, " ")
+    .replace(/(os immobilien|os-immobilien|makler|vertriebs?)[- ]?(expose|exposes|preisliste|angebot|unterlage\w*)/g, " ")
+    .replace(/(von|by) (os immobilien|os-immobilien|dem makler|dem vertrieb) (angeboten\w*|vermittelt\w*|offered|listed)/g, " ");
 }
 /** Ein Satz mit Vergütungsbezug: das Vokabular oder eine Zahlung an Vertrieb, Makler, Vermittler oder OS Immobilien. */
 export function istVerguetungssatz(satz: string): boolean {

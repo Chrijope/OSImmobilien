@@ -254,12 +254,12 @@ export function objekttexteFuer(deutsch: string[], englisch: string[] | null | u
  * `submit-lead` und wird dort zur Kundensprache des neuen Kontakts.
  *
  * Gemerkt wird unter einem eigenen Schlüssel und nicht unter dem des
- * Kundenportals (`moreimmo-crm-lang`): Wer hier auf Englisch schaltet, soll
+ * Kundenportals (`osimmobilien-crm-lang`): Wer hier auf Englisch schaltet, soll
  * damit nicht das Portal eines Kunden am selben Rechner umstellen.
  */
 
 /** Schlüssel im Browser-Speicher für die Wahl aus dem Umschalter. */
-export const SEITEN_SPRACHE_SPEICHER = "moreimmo-seiten-sprache";
+export const SEITEN_SPRACHE_SPEICHER = "osimmobilien-seiten-sprache";
 
 /** Der Name des Adressparameters. */
 export const SEITEN_SPRACHE_PARAMETER = "lang";

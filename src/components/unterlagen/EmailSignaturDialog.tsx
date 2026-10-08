@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/contexts/UserContext";
 import { Copy, Download, Mail, CheckCircle2, ArrowLeft } from "lucide-react";
-const LOGO_PFAD = "/images/moreimmo-logo.png";
+const LOGO_PFAD = "/images/osimmobilien-logo.png";
 import { cacheGet } from "@/lib/dataCache";
 import { OEFFENTLICHE_BASIS } from "@/lib/oeffentlicheBasis";
 
@@ -278,7 +278,7 @@ export function EmailSignaturDialog({ open = true, onOpenChange, asPage = false,
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `moreimmo-signatur-${vorname || "vp"}-${nachname || ""}.html`.toLowerCase().replace(/\s+/g, "-");
+    a.download = `osimmobilien-signatur-${vorname || "vp"}-${nachname || ""}.html`.toLowerCase().replace(/\s+/g, "-");
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

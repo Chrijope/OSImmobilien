@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { KeyRound, Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
-import logoImg from "@/assets/moreimmo-logo.png";
+import logoImg from "@/assets/osimmobilien-logo.png";
 import PasswordStrengthMeter from "@/components/PasswordStrengthMeter";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";

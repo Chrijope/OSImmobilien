@@ -130,8 +130,8 @@ describe("avatarUrlFuerMail macht jede Adresse mailfest, egal von wo versendet w
   });
 
   it("das Logo ist ein PNG unter der festen Adresse und liegt im public-Ordner", () => {
-    expect(MAIL_LOGO_URL).toBe("https://osimmobilien.netlify.app/moreimmo-logo-mail.png");
-    const datei = readFileSync(resolve(__dirname, "../../public/moreimmo-logo-mail.png"));
+    expect(MAIL_LOGO_URL).toBe("https://osimmobilien.netlify.app/osimmobilien-logo-mail.png");
+    const datei = readFileSync(resolve(__dirname, "../../public/osimmobilien-logo-mail.png"));
     // PNG-Signatur, kein SVG und kein WebP
     expect(datei.subarray(0, 4).toString("hex")).toBe("89504e47");
   });

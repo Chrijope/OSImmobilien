@@ -20,7 +20,7 @@ const BG_LIGHT: [number, number, number] = [248, 248, 248];
 const BG_ACCENT: [number, number, number] = [240, 249, 255]; // #F0F9FF, Blau 50
 const LINE_COLOR: [number, number, number] = [200, 200, 200];
 
-const LOGO_URL = "/images/moreimmo-logo.png";
+const LOGO_URL = "/images/osimmobilien-logo.png";
 
 interface Tranche {
   bezeichnung: string;

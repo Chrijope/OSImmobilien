@@ -93,7 +93,7 @@ export type BewerberSeiteStand = {
   vorname: string;
   beworbenAm: string;
   beendet: boolean;
-  /** bewerber | moreimmo | leer. Trennt den Ausstieg von der Absage. */
+  /** bewerber | moreimmo | leer (Wert aus der Datenbankfunktion, nicht umbenannt). Trennt den Ausstieg von der Absage. */
   beendetDurch: string;
   zugesagt: boolean;
   kennenlernen: SeiteKennenlernen;
@@ -235,7 +235,7 @@ export function zustandVon(stand: BewerberSeiteStand, jetzt: Date = new Date()):
 }
 
 /** Wer gerade handeln muss. */
-export type AmZug = "bewerber" | "moreimmo" | "niemand";
+export type AmZug = "bewerber" | "osimmobilien" | "niemand";
 
 /**
  * Wer am Zug ist, abgeleitet aus dem Vorgang und nicht aus der Stufe.
@@ -248,16 +248,16 @@ export function werAmZug(stand: BewerberSeiteStand, jetzt: Date = new Date()): A
   if (stand.beendet) return "niemand";
   // Eine offene Rückfrage schlägt alles andere. Sie hat eine Frist und einen
   // Namen; ohne beides wird aus einer offenen Frage ein stiller Stillstand.
-  if (frageOffen(stand.frage)) return "moreimmo";
+  if (frageOffen(stand.frage)) return "osimmobilien";
   const zustand = zustandVon(stand, jetzt);
   if (zustand === "entscheidung") {
     // Nach dem Gespräch wartet der Bewerber, solange die Zusammenfassung noch
     // nicht freigegeben ist. Erst danach ist er selbst am Zug.
-    return stand.entscheidung ? "bewerber" : "moreimmo";
+    return stand.entscheidung ? "bewerber" : "osimmobilien";
   }
   if (zustand === "start") {
     // Der Zugang wird eingerichtet, das macht nicht der Bewerber.
-    return stand.start.aktivAm ? "bewerber" : "moreimmo";
+    return stand.start.aktivAm ? "bewerber" : "osimmobilien";
   }
   return "bewerber";
 }

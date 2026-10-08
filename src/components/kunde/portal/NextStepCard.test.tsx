@@ -15,7 +15,7 @@ function Adresse() {
 /** Attrappe der Detailseite: der Kasten und darunter die Phasen-Kästchen. */
 function Detailseite({ stufe, mitKaestchen = true }: { stufe: string; mitKaestchen?: boolean }) {
   return (
-    <MemoryRouter initialEntries={["/kunde/investments?tab=moreimmo&inv=inv-7"]}>
+    <MemoryRouter initialEntries={["/kunde/investments?tab=osimmobilien&inv=inv-7"]}>
       <Routes>
         <Route
           path="*"
@@ -79,7 +79,7 @@ describe("NextStepCard: Knopf springt zum passenden Kästchen", () => {
     fireEvent.click(screen.getAllByText("Jetzt fortfahren")[0]);
     expect(scrollIntoView).not.toHaveBeenCalled();
     expect(screen.getByTestId("adresse").textContent).toBe(
-      "/kunde/investments?tab=moreimmo&inv=inv-7&highlight=reservierung",
+      "/kunde/investments?tab=osimmobilien&inv=inv-7&highlight=reservierung",
     );
   });
 

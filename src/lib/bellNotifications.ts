@@ -357,7 +357,7 @@ export function notifyKunde(kundeId: string, params: NotifyParams | ((sprache: S
 
 /** Bonitätsunterlagen im Portal, mit Sprung zum Abschnitt. Die Selbstauskunft liegt im selben Abschnitt. */
 function bonitaetLink(investmentId?: string): string {
-  const params = new URLSearchParams({ tab: "moreimmo" });
+  const params = new URLSearchParams({ tab: "osimmobilien" });
   if (investmentId) params.set("inv", investmentId);
   params.set("highlight", "bonitaetsunterlagen");
   return `/kunde/investments?${params.toString()}`;

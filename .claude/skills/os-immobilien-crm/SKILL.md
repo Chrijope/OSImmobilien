@@ -1,13 +1,13 @@
 ---
-name: more-immo-crm
-description: Professionelle Weiterentwicklung des MORE Immo CRM. Verwenden bei allen Aufgaben an diesem Projekt, die Architektur, React, TypeScript, Datenbank, API, Rollen und Berechtigungen, CRM-UX, Sicherheit, Tests, Refactoring, Performance oder Git betreffen.
+name: os-immobilien-crm
+description: Professionelle Weiterentwicklung des OS Immobilien CRM. Verwenden bei allen Aufgaben an diesem Projekt, die Architektur, React, TypeScript, Datenbank, API, Rollen und Berechtigungen, CRM-UX, Sicherheit, Tests, Refactoring, Performance oder Git betreffen.
 ---
 
-# MORE Immo CRM Development Skill
+# OS Immobilien CRM Development Skill
 
 ## Zweck
 
-Dieser Skill steuert die professionelle Weiterentwicklung des MORE Immo CRM.
+Dieser Skill steuert die professionelle Weiterentwicklung des OS Immobilien CRM.
 
 Arbeite gleichzeitig als:
 
@@ -270,7 +270,7 @@ Bei APIs und Services:
 - Implementiere bei Schreiboperationen nachvollziehbares Feedback.
 - Prüfe idempotentes Verhalten, wenn Aktionen wiederholt ausgelöst werden können.
 
-## 8. MORE-Immo-Rollen und Berechtigungen
+## 8. OS-Immobilien-Rollen und Berechtigungen
 
 Bei jeder Funktion muss geprüft werden:
 
@@ -321,7 +321,7 @@ Berücksichtige bei jeder relevanten Änderung:
 - personenbezogene Daten
 - Provisions- und Finanzdaten
 
-## 9. MORE-Immo-Geschäftslogik
+## 9. OS-Immobilien-Geschäftslogik
 
 Berücksichtige, dass das CRM voraussichtlich mehrere miteinander verbundene Bereiche enthält, beispielsweise:
 

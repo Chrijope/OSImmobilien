@@ -39,7 +39,7 @@ await db.exec(`REVOKE ALL ON FUNCTION buchung_termin_belegt(uuid,timestamptz,tim
 await db.exec(`SELECT set_config('test.uid','${uid}',false)`);
 let passed=0;
 const ok=(name)=>{console.log('PASS '+name);passed++};
-const data={kundeId:'33333333-3333-4333-8333-333333333333',beschreibung:'Prüftermin',von:'Test',faelligAm:'2099-09-09',uhrzeit:'10:00',dauer:'60',zoomLink:'https://portal.more.immo/raum/test-token',raum:{token:'test-token',art:'beratung',gastgeber:{name:'Test'}},aufgabe:{}};
+const data={kundeId:'33333333-3333-4333-8333-333333333333',beschreibung:'Prüftermin',von:'Test',faelligAm:'2099-09-09',uhrzeit:'10:00',dauer:'60',zoomLink:'https://osimmobilien.netlify.app/raum/test-token',raum:{token:'test-token',art:'beratung',gastgeber:{name:'Test'}},aufgabe:{}};
 await db.query('select meeting_anlegen($1,$2)',[id,JSON.stringify(data)]);
 for(const table of ['aktivitaeten','aufgaben','videoraeume'])assert.equal((await db.query(`select count(*)::int n from ${table}`)).rows[0].n,1);
 ok('Meeting creates all three records');
@@ -93,7 +93,7 @@ await db.exec(`SELECT set_config('test.uid','${uid}',false)`);
 const neu = new Date(); neu.setUTCDate(neu.getUTCDate()+12); const tag=neu.toISOString().slice(0,10);
 const rid='77777777-7777-4777-8777-777777777777';
 await db.query("insert into videoraeume(id,token,gastgeber_id,status) values($1,'booked-token',$2,'offen')",[rid,uid]);
-await db.query("insert into aktivitaeten(id,kunde_id,benutzer_id,art,beschreibung,faellig_am,uhrzeit,dauer,zoom_link) values($1,$2,$3,'meeting','Gebucht',$4,'10:00','60','https://portal.more.immo/raum/booked-token')",[rid,data.kundeId,uid,tag]);
+await db.query("insert into aktivitaeten(id,kunde_id,benutzer_id,art,beschreibung,faellig_am,uhrzeit,dauer,zoom_link) values($1,$2,$3,'meeting','Gebucht',$4,'10:00','60','https://osimmobilien.netlify.app/raum/booked-token')",[rid,data.kundeId,uid,tag]);
 await db.query("update buchungen set status='offen',videoraum_id=$2,aktivitaet_id=$2 where id=$1",[bid,rid]);
 await db.query("insert into buchung_verfuegbarkeiten values($1,$2,null,false,'09:00','17:00')",[uid,tag]);
 await db.query("select buchung_intern_verschieben($1,($2::date+time '14:00') at time zone 'Europe/Berlin')",[bid,tag]);
@@ -104,7 +104,7 @@ assert.equal((await db.query('select uhrzeit from aktivitaeten where id=$1',[rid
 // Manual recipient lifecycle is database-triggered, including room deletion.
 await db.exec('RESET ROLE');
 const mid='88888888-8888-4888-8888-888888888888';
-const mailData={...data,faelligAm:'2099-10-10',raum:{...data.raum,token:'mail-room'},zoomLink:'https://portal.more.immo/raum/mail-room',kommunikation:{modus:'video',empfaenger:[{name:'Kunde',email:'customer@example.test'},{name:'Gast 1',email:'one@example.test'},{name:'Gast 2',email:'two@example.test'},{name:'Doppelt',email:' ONE@example.test '}]}};
+const mailData={...data,faelligAm:'2099-10-10',raum:{...data.raum,token:'mail-room'},zoomLink:'https://osimmobilien.netlify.app/raum/mail-room',kommunikation:{modus:'video',empfaenger:[{name:'Kunde',email:'customer@example.test'},{name:'Gast 1',email:'one@example.test'},{name:'Gast 2',email:'two@example.test'},{name:'Doppelt',email:' ONE@example.test '}]}};
 await db.query('select meeting_anlegen($1,$2)',[mid,JSON.stringify(mailData)]);
 await db.query("update aktivitaeten set uhrzeit='12:00' where id=$1",[mid]);
 let jobs=(await db.query('select * from meeting_mail_auftraege where meeting_id=$1',[mid])).rows;

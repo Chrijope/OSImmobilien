@@ -55,7 +55,7 @@ describe("Link der Glocke (für alle Schreibwege)", () => {
   it("nimmt Pfade im CRM und leere Links an", () => {
     for (const link of [
       null, "", "/", "/inbox", "/kunden/1b2c", "/#crm-updates",
-      "/kunde/investments?tab=moreimmo&inv=1&highlight=bonitaetsunterlagen",
+      "/kunde/investments?tab=osimmobilien&inv=1&highlight=bonitaetsunterlagen",
       "/signatur?token=abc&type=vertrag_kurz", "/bewerberprozess?bewerber=1",
       "/chat?id=1", "/kunden/1#empfehlungsprogramm",
     ]) {
