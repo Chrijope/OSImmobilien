@@ -135,3 +135,18 @@ export function herkunftAusJson(roh: unknown, bekannteFelder: readonly string[])
   }
   return ergebnis;
 }
+
+/**
+ * Etikett am Feld in der Investmentkalkulation Plus (09.10.2026): Objekt
+ * (Objektanlage oder Objektunterlagen), Kunden-SA oder manuell. Manuell ist
+ * alles ohne fremde Quelle, auch ein übernommener und danach selbst
+ * geänderter Wert.
+ */
+export type Feldmarkierung = "objekt" | "selbstauskunft" | "manuell";
+
+export function feldmarkierung(herkunft: Herkunft | undefined, feld: keyof InvestmentEingabe): Feldmarkierung {
+  const quelle = herkunft?.[feld]?.quelle;
+  if (quelle === "objekt" || quelle === "unterlagen") return "objekt";
+  if (quelle === "selbstauskunft") return "selbstauskunft";
+  return "manuell";
+}

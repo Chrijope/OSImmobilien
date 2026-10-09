@@ -4419,3 +4419,43 @@
   margin: 0 0 8px;
   font-size: 0.78rem;
 }
+
+/* Herkunftsetiketten der Investmentkalkulation Plus (09.10.2026). */
+.investmentrechner .feldetikett {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  border: 1px solid;
+  border-radius: 999px;
+  font-size: 0.66rem;
+  font-weight: 600;
+  line-height: 1.5;
+  vertical-align: middle;
+}
+.investmentrechner .feldetikett-objekt {
+  background: var(--gold-zart);
+  border-color: var(--linie-stark);
+  color: var(--text-1);
+}
+.investmentrechner .feldetikett-selbstauskunft {
+  background: var(--gruen-zart);
+  border-color: var(--gruen-zart-linie);
+  color: var(--gruen-tief);
+}
+.investmentrechner .feldetikett-manuell {
+  background: var(--warn-flaeche);
+  border-color: var(--warn-linie);
+  color: var(--warn-text);
+}
+.investmentrechner .feldetikett-legende {
+  margin: 0 0 12px;
+  font-size: 0.72rem;
+  color: var(--text-3);
+}
+.investmentrechner .feldetikett-legende .feldetikett:first-child {
+  margin-left: 0;
+}
+.investmentrechner .feldetikett-legende .feldetikett + .feldetikett,
+.investmentrechner .feldetikett-legende .feldetikett:not(:first-child) {
+  margin-left: 10px;
+}

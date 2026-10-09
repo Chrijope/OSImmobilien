@@ -72,7 +72,7 @@ import {
 } from "@/lib/investmentrechner/unterlagenKiFelder";
 import { felderAusUnterlagenAuslesen, UnterlagenKiFehler } from "@/lib/investmentrechner/unterlagenKiAufruf";
 import { ladeRechnerBilder, MAX_RECHNER_BILDER } from "@/lib/investmentrechner/rechnerBilder";
-import { Bereichsknopf } from "@/components/investmentrechner/Felder";
+import { Bereichsknopf, FeldetikettKontext } from "@/components/investmentrechner/Felder";
 import { KundeUndInvestment, type KundenwahlKunde } from "@/components/investmentrechner/KundeUndInvestment";
 import type { KiAuslesung } from "@/components/investmentrechner/UnterlagenUebernahme";
 import {
@@ -1243,7 +1243,7 @@ export function InvestmentrechnerInhalt({
   );
 
   return (
-    <>
+    <FeldetikettKontext.Provider value={erweitert}>
       <div className="space-y-6 w-full">
         {mitUeberschrift ? (
           <PageHeader title={erweitert ? "Investmentkalkulation Plus" : "Investmentkalkulation"}>{aktionen}</PageHeader>
@@ -1333,6 +1333,13 @@ export function InvestmentrechnerInhalt({
                 {!vergleichAktiv && <ObjektHinzufuegen onClick={objektHinzufuegen} />}
               </nav>
               <div className="input-content">
+                {erweitert && (
+                  <p className="feldetikett-legende" data-testid="feldetikett-legende">
+                    <span className="feldetikett feldetikett-objekt">Objekt</span> aus Objektanlage oder Unterlagen
+                    <span className="feldetikett feldetikett-selbstauskunft">Kunden-SA</span> aus der Selbstauskunft
+                    <span className="feldetikett feldetikett-manuell">Manuell</span> selbst eintragen
+                  </p>
+                )}
                 {bereich === "kunde" && <EingabeKunde {...eingabeProps} kundenbereich={kundenbereich} />}
                 {bereich === "objekt" && <EingabeObjekt {...eingabeProps} knk={aktiv.knk} setzeKnk={setzeKnk} />}
                 {bereich === "unterlagen" && (
@@ -1473,6 +1480,6 @@ export function InvestmentrechnerInhalt({
         </div>,
         document.body,
       )}
-    </>
+    </FeldetikettKontext.Provider>
   );
 }
