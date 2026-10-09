@@ -19,7 +19,7 @@ describe("Karte Bankgespräch in der Analyse", () => {
     };
     const analyse = render(
       <TooltipProvider>
-        <Analyse input={eingabe} result={berechneInvestment(eingabe)} documents={[]} documentData={leereUnterlagenDaten} onOpenDocuments={() => undefined} />
+        <Analyse input={eingabe} result={berechneInvestment(eingabe)} documents={[]} documentData={leereUnterlagenDaten} onOpenDocuments={() => undefined} mitBankgespraech />
       </TooltipProvider>,
     );
     const text = analyse.getByTestId("karte-bankgespraech").textContent ?? "";
@@ -34,6 +34,16 @@ describe("Karte Bankgespräch in der Analyse", () => {
     ]) {
       expect(text).toContain(teil);
     }
+    analyse.unmount();
+  });
+
+  it("fehlt in der bestehenden Investmentkalkulation", () => {
+    const analyse = render(
+      <TooltipProvider>
+        <Analyse input={standardEingabe} result={berechneInvestment(standardEingabe)} documents={[]} documentData={leereUnterlagenDaten} onOpenDocuments={() => undefined} />
+      </TooltipProvider>,
+    );
+    expect(analyse.queryByTestId("karte-bankgespraech")).toBeNull();
     analyse.unmount();
   });
 });

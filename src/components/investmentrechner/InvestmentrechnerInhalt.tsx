@@ -319,6 +319,12 @@ export interface InvestmentrechnerInhaltProps {
    * Reiter ein leeres Blatt. Ohne Angabe: sichtbar.
    */
   sichtbar?: boolean;
+  /**
+   * „Investmentkalkulation Plus“, seit dem 09.10.2026 eine eigene Seite unter
+   * der bestehenden: derselbe Rechner mit denselben gespeicherten
+   * Berechnungen, dazu die Karte „Bankgespräch“ in der Analyse.
+   */
+  erweitert?: boolean;
 }
 
 export function InvestmentrechnerInhalt({
@@ -327,6 +333,7 @@ export function InvestmentrechnerInhalt({
   start,
   onErgebnis,
   sichtbar = true,
+  erweitert = false,
 }: InvestmentrechnerInhaltProps = {}) {
   const [objekte, setObjekte] = useState<Objektzustand[]>(() => {
     if (start?.berechnung) {
@@ -1239,7 +1246,7 @@ export function InvestmentrechnerInhalt({
     <>
       <div className="space-y-6 w-full">
         {mitUeberschrift ? (
-          <PageHeader title="Investmentkalkulation">{aktionen}</PageHeader>
+          <PageHeader title={erweitert ? "Investmentkalkulation Plus" : "Investmentkalkulation"}>{aktionen}</PageHeader>
         ) : (
           <div className="flex flex-wrap items-center justify-end gap-2">{aktionen}</div>
         )}
@@ -1417,6 +1424,7 @@ export function InvestmentrechnerInhalt({
                   onOpenDocuments={() => setBereich("unterlagen")}
                   deckblatt={deckblatt}
                   onDeckblatt={waehleDeckblatt}
+                  mitBankgespraech={erweitert}
                 />
               )}
               {ansicht === "vergleich" && vergleichAktiv && (

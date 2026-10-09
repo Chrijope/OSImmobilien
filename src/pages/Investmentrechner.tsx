@@ -79,7 +79,8 @@ function neuerStart(investmentId: string): Vorbereitet {
   };
 }
 
-const Investmentrechner = () => {
+/** `erweitert`: die Seite /investmentrechner-plus, siehe `InvestmentrechnerInhaltProps.erweitert`. */
+const Investmentrechner = ({ erweitert = false }: { erweitert?: boolean }) => {
   const [params] = useSearchParams();
   const berechnungParam = params.get("berechnung");
   const investmentParam = params.get("investment");
@@ -152,7 +153,7 @@ const Investmentrechner = () => {
     return (
       <DashboardLayout>
         <div className="space-y-6">
-          <PageHeader title="Investmentkalkulation" />
+          <PageHeader title={erweitert ? "Investmentkalkulation Plus" : "Investmentkalkulation"} />
           <Card className="flex items-center gap-3 p-6 text-sm text-muted-foreground">
             <LoaderCircle className="h-4 w-4 animate-spin" /> Gespeicherter Stand wird geladen …
           </Card>
@@ -165,7 +166,7 @@ const Investmentrechner = () => {
     return (
       <DashboardLayout>
         <div className="space-y-6">
-          <PageHeader title="Investmentkalkulation" />
+          <PageHeader title={erweitert ? "Investmentkalkulation Plus" : "Investmentkalkulation"} />
           <Card className="p-6 space-y-4">
             <div className="w-8 h-1 bg-primary" />
             <div>
@@ -227,6 +228,7 @@ const Investmentrechner = () => {
         key={vorbereitet.start?.berechnung?.id || vorbereitet.start?.investmentId || "leer"}
         start={vorbereitet.start}
         vorbelegung={vorbereitet.vorbelegung}
+        erweitert={erweitert}
       />
     </DashboardLayout>
   );

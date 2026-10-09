@@ -30,6 +30,8 @@ interface AnalyseProps {
   deckblatt?: DeckblattVariante;
   /** Ohne diesen Rückruf steht kein Schalter da, etwa in Tests der übrigen Karten. */
   onDeckblatt?: (variante: DeckblattVariante) => void;
+  /** Karte „Bankgespräch“, nur in der Investmentkalkulation Plus. */
+  mitBankgespraech?: boolean;
 }
 
 export function Analyse({
@@ -40,6 +42,7 @@ export function Analyse({
   onOpenDocuments,
   deckblatt = DECKBLATT_STANDARD,
   onDeckblatt,
+  mitBankgespraech = false,
 }: AnalyseProps) {
   const ohneSteuerwirkung = hinweisOhneSteuerwirkung(input, result, "de");
   const glossarRef = useRef<HTMLDetailsElement>(null);
@@ -104,6 +107,7 @@ export function Analyse({
         </div>
         <Steuerprofil input={input} result={result} />
       </article>
+      {mitBankgespraech && (
       <article className="content-card bank-card" data-testid="karte-bankgespraech">
         <div className="card-heading">
           <div>
@@ -113,6 +117,7 @@ export function Analyse({
         </div>
         <Bankgespraech input={input} result={result} />
       </article>
+      )}
       <article className="content-card document-analysis-card">
         <div className="card-heading">
           <div>
