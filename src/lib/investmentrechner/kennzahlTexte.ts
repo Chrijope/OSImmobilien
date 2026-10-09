@@ -87,6 +87,8 @@ export interface KennzahlTexte {
     jahresmiete: string;
     jahresmieteNachLeerstand: string;
     kaufpreis: string;
+    /** Beim All-inclusive-Modell, seit dem 09.10.2026. */
+    kaufpreisAllInclusive: string;
     gesamtkosten: string;
     kaltmiete: string;
     leerstand: string;
@@ -155,6 +157,8 @@ export interface KennzahlTexte {
     einleitung: string;
     gruppen: Record<GlossarGruppenSchluessel, string>;
     eintraege: Record<GlossarSchluessel, GlossarEintragText>;
+    /** Ersetzt `kaufpreisGesamt` beim All-inclusive-Modell (09.10.2026): der Aufschlag als eigener Summand. */
+    kaufpreisAllInclusive: GlossarEintragText;
     rundung: string;
     keineSteuerberatung: string;
   };
@@ -191,6 +195,7 @@ export const KENNZAHL_TEXTE_DE: KennzahlTexte = {
     jahresmiete: "Jahresmiete",
     jahresmieteNachLeerstand: "Jahresmiete nach Leerstand",
     kaufpreis: "Kaufpreis",
+    kaufpreisAllInclusive: "Kaufpreis all-inclusive",
     gesamtkosten: "Gesamtkosten",
     kaltmiete: "Kaltmiete",
     leerstand: "Leerstand",
@@ -430,6 +435,12 @@ export const KENNZAHL_TEXTE_DE: KennzahlTexte = {
           "Der Zinssatz, bei dem −Eigenkapital + abgezinste Cashflows nach Steuer + Immobilie minus Restschuld im letzten Jahr zusammen 0 ergeben",
       },
     },
+    kaufpreisAllInclusive: {
+      titel: "Kaufpreis all-inclusive",
+      bedeutung:
+        "Der Preis aus dem Kaufvertrag, die Kaufnebenkosten sind darin enthalten. Möbel, Erhaltungsaufwand, Rücklagenanteil und Kaufnebenkosten werden nicht noch einmal addiert.",
+      formel: "Kaufpreis all-inclusive = Grundstücksanteil + Gebäudeanteil + Möbel + Rücklage + Kaufnebenkosten im Kaufpreis",
+    },
     rundung:
       "Die Rechenwege unter den Zahlen nennen gerundete Werte. Verschiebt die Rundung das Ergebnis um einen Cent oder Euro, steht ≈ statt =. Gerechnet wird immer ungerundet.",
     keineSteuerberatung:
@@ -477,6 +488,7 @@ export const KENNZAHL_TEXTE_EN: KennzahlTexte = {
     jahresmiete: "Annual rent",
     jahresmieteNachLeerstand: "Annual rent after vacancy",
     kaufpreis: "Purchase price",
+    kaufpreisAllInclusive: "Purchase price all-inclusive",
     gesamtkosten: "Total costs",
     kaltmiete: "Net cold rent",
     leerstand: "Vacancy",
@@ -715,6 +727,13 @@ export const KENNZAHL_TEXTE_EN: KennzahlTexte = {
         formel:
           "The interest rate at which −equity + discounted cash flows after tax + property minus remaining debt in the final year add up to 0",
       },
+    },
+    kaufpreisAllInclusive: {
+      titel: "Purchase price all-inclusive",
+      bedeutung:
+        "The price from the purchase contract, the incidental purchase costs are included in it. Furniture, maintenance expenses, the reserve share and the incidental purchase costs are not added again.",
+      formel:
+        "Purchase price all-inclusive = land share + building share + furniture + reserve + incidental purchase costs in the price",
     },
     rundung:
       "The calculation steps below the figures show rounded values. If rounding shifts the result by a cent or a euro, ≈ appears instead of =. The calculation always uses unrounded values.",

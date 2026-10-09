@@ -1,4 +1,4 @@
-import type { Herkunft } from "./herkunft";
+import { EIGENKAPITAL_REGEL, type Herkunft } from "./herkunft";
 import { objektUnterlagenQuelle, type ObjektUnterlagenQuelle } from "./objektUnterlagen";
 /**
  * Vorbelegung des Investmentrechners aus einem Objekt und einer Einheit.
@@ -149,17 +149,25 @@ function investagonKfwProgramm(objekt: ObjektData, wohnung: ObjektWohnung): stri
  * gepflegt sind.
  *
  * `heute` ist nur für Tests und für den Stichtag der Mieterhöhung da.
+ * `allInclusive` rechnet die Vorbelegung im All-inclusive-Modell (seit dem
+ * 09.10.2026). Objekt und Einheit tragen dafür noch kein Kennzeichen, es
+ * kommt deshalb vom Aufrufer.
  */
 export function vorbelegungAusEinheit(
   objekt: ObjektData,
   wohnung: ObjektWohnung,
   heute: Date = new Date(),
+  optionen: { allInclusive?: boolean } = {},
 ): ObjektVorbelegung {
   const daten = exposeObjektdatenAus(objekt, wohnung, heute);
   const felder = objektseiteFelder(objekt);
   const uebernommen: VorbelegungUebernahme[] = [];
   const luecken: VorbelegungLuecke[] = [];
-  const eingabe: InvestmentEingabe = { ...standardEingabe, startYear: heute.getFullYear() };
+  const eingabe: InvestmentEingabe = {
+    ...standardEingabe,
+    startYear: heute.getFullYear(),
+    allInclusive: optionen.allInclusive === true,
+  };
   let knk: Kaufnebenkostenauswahl = standardKaufnebenkostenauswahl;
 
   const herkunft: Herkunft = {};
@@ -318,12 +326,24 @@ export function vorbelegungAusEinheit(
    * Erhaltungsaufwand und Gebäudeanteil feststehen; der Eintrag steht aber
    * schon hier, damit die Liste der Übernahmen ihre Reihenfolge behält.
    * Fehlt Kaufpreis oder Satz, bleibt es eine benannte Lücke.
+   *
+   * Beim All-inclusive-Modell ergibt dieselbe Regel 0: Die Kaufnebenkosten
+   * stecken im Kaufpreis und werden mit ihm finanziert, der Rechenkern weist
+   * keine gesonderten aus.
    */
   const nkSatz = eingabe.transferTaxRate + eingabe.notaryRate + eingabe.landRegisterRate
     + eingabe.brokerRate + eingabe.otherPurchaseCostRate;
   const eigenkapitalAusNebenkosten = eingabe.purchasePrice > 0 && nkSatz > 0;
   const eigenkapitalEintrag = eigenkapitalAusNebenkosten ? uebernommen.length : -1;
-  if (eigenkapitalAusNebenkosten) nimm("Eigenkapital", "", `in Höhe der Kaufnebenkosten (${prozent(nkSatz, 2)})`);
+  if (eigenkapitalAusNebenkosten) {
+    nimm(
+      "Eigenkapital",
+      "",
+      eingabe.allInclusive
+        ? `All-inclusive, die Kaufnebenkosten (${prozent(nkSatz, 2)}) sind im Kaufpreis enthalten`
+        : `${EIGENKAPITAL_REGEL} (${prozent(nkSatz, 2)})`,
+    );
+  }
 
   /*
    * Finanzierungsnebenkosten, seit dem 25.09.2026. Liefert Investagon einen
@@ -465,11 +485,11 @@ export function vorbelegungAusEinheit(
     const ergebnis = berechneInvestment(eingabe);
     eingabe.equity = Math.round(ergebnis.purchaseCosts);
     uebernommen[eigenkapitalEintrag].wert = eur0(eingabe.equity);
-    if (ergebnis.erhaltungsaufwand > 0 || ergebnis.moebelAnteil > 0) {
+    if (!eingabe.allInclusive && (ergebnis.erhaltungsaufwand > 0 || ergebnis.moebelAnteil > 0)) {
       const ohne = [ergebnis.erhaltungsaufwand > 0 && "Erhaltungsaufwand", ergebnis.moebelAnteil > 0 && "Möbel"]
         .filter(Boolean)
         .join(" und ");
-      const woher = `in Höhe der Kaufnebenkosten (${prozent(nkSatz, 2)} auf ${eur0(ergebnis.nebenkostenBasis)}, ohne ${ohne})`;
+      const woher = `${EIGENKAPITAL_REGEL} (${prozent(nkSatz, 2)} auf ${eur0(ergebnis.nebenkostenBasis)}, ohne ${ohne})`;
       uebernommen[eigenkapitalEintrag].woher = woher;
       herkunft.equity = { quelle: "objekt", text: `Aus der Objektanlage, ${woher}` };
     }
@@ -564,7 +584,8 @@ export function vorbelegungAusEinheit(
     "Kunde & Einkommen im Rechner, Zahl aus der Selbstauskunft",
     "kunde",
   );
-  if (!(eingabe.equity > 0)) {
+  // Beim All-inclusive-Modell ist 0 die Regel, keine Lücke.
+  if (!(eingabe.equity > 0) && !eingabe.allInclusive) {
     fehlt(
       "Eigenkapital",
       "Darlehenshöhe, Rate und Rendite auf das eingesetzte Kapital",

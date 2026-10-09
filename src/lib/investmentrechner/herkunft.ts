@@ -37,6 +37,23 @@ export interface Herkunftseintrag {
 /** Je Feld der Eingabe höchstens ein Eintrag. */
 export type Herkunft = Partial<Record<keyof InvestmentEingabe, Herkunftseintrag>>;
 
+/**
+ * Die Regel, nach der die Objektvorbelegung das Eigenkapital setzt. Sie steht
+ * im Herkunftssatz, daran erkennt der All-inclusive-Schalter einen Betrag, der
+ * noch der Regel folgt (09.10.2026).
+ */
+export const EIGENKAPITAL_REGEL = "in Höhe der Kaufnebenkosten";
+
+/**
+ * Stammt das Eigenkapital noch aus der automatischen Vorbelegung nach der
+ * Regel? Ein von Hand eingetragener oder vom Kunden übernommener Betrag hat
+ * eine andere Quelle und zählt nie dazu.
+ */
+export function eigenkapitalNachRegel(herkunft: Herkunft | undefined): boolean {
+  const eintrag = herkunft?.equity;
+  return eintrag?.quelle === "objekt" && eintrag.text.includes(EIGENKAPITAL_REGEL);
+}
+
 /** Einen Eintrag für mehrere Felder setzen. Gibt eine neue Ablage zurück. */
 export function setzeHerkunft(
   bisher: Herkunft,

@@ -10,8 +10,8 @@ import { useRechnerTexte } from "./RechnerSprache";
  * am Ende der Berechnung. Der Inhalt kommt aus kennzahlErklaerungen.ts, aus
  * derselben Quelle wie die Rechenwege unter den Zahlen.
  */
-export function Glossar({ kompakt = false }: { kompakt?: boolean }) {
-  const inhalt = glossar(useRechnerTexte().kennzahl);
+export function Glossar({ kompakt = false, allInclusive = false }: { kompakt?: boolean; allInclusive?: boolean }) {
+  const inhalt = glossar(useRechnerTexte().kennzahl, { allInclusive });
   return (
     <div className={`glossar ${kompakt ? "kompakt" : ""}`}>
       <p className="glossar-einleitung">{inhalt.einleitung}</p>

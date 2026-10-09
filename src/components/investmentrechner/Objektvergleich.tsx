@@ -10,6 +10,7 @@ import {
   vergleicheObjekte,
   type Vergleichsobjekt,
 } from "@/lib/investmentrechner/objektvergleich";
+import { ausgewiesenerKaufpreis } from "@/lib/investmentrechner/rechenkern";
 import { Objektkarte } from "./Felder";
 import { Zweireihendiagramm } from "./Diagramme";
 
@@ -107,7 +108,7 @@ export function Vergleichsansicht({ a, b }: VergleichsansichtProps) {
           marke={objektMarke(0)}
           titel={titelA}
           adresse={a.eingabe.address || "Adresse ergänzen"}
-          preis={formatEuro(a.eingabe.purchasePrice)}
+          preis={formatEuro(ausgewiesenerKaufpreis(a.eingabe, a.ergebnis))}
           seite="a"
           werte={kartenwerte(a)}
         />
@@ -115,7 +116,7 @@ export function Vergleichsansicht({ a, b }: VergleichsansichtProps) {
           marke={objektMarke(1)}
           titel={titelB}
           adresse={b.eingabe.address || "Adresse ergänzen"}
-          preis={formatEuro(b.eingabe.purchasePrice)}
+          preis={formatEuro(ausgewiesenerKaufpreis(b.eingabe, b.ergebnis))}
           seite="b"
           werte={kartenwerte(b)}
         />

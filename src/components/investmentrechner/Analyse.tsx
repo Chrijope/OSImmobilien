@@ -206,7 +206,7 @@ export function Analyse({
       */}
       <details className="method-card glossar-karte" id="rechner-glossar" ref={glossarRef}>
         <summary>{KENNZAHL_TEXTE.glossar.ueberschriftAnalyse}</summary>
-        <Glossar />
+        <Glossar allInclusive={result.allInclusive} />
       </details>
     </div>
   );

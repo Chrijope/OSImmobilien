@@ -1,5 +1,5 @@
 import { ImagePlus } from "lucide-react";
-import { eigenkapitalrendite, type InvestmentEingabe, type InvestmentErgebnis } from "@/lib/investmentrechner/rechenkern";
+import { ausgewiesenerKaufpreis, eigenkapitalrendite, type InvestmentEingabe, type InvestmentErgebnis } from "@/lib/investmentrechner/rechenkern";
 import {
   sanierungenBereinigt,
   type UnterlagenDaten,
@@ -582,7 +582,7 @@ export function ExposeDokument({
         <Seitenkopf clientName={input.clientName} marke={marke} sprache={sprache} />
         <span className="eyebrow">{t.glossarSeite.augenbraue}</span>
         <h2>{kennzahl.glossar.ueberschriftDokument}</h2>
-        <Glossar kompakt />
+        <Glossar kompakt allInclusive={result.allInclusive} />
         <Fusszeile seite={seitenOffset + 8 + zusatzseiten} sprache={sprache} />
       </section>
     </>
@@ -672,7 +672,7 @@ export function ExposeVergleichsseite({
           marke={objektMarke(0, sprache)}
           titel={titelA}
           adresse={a.input.address || t.adresseFehlt}
-          preis={formatEuro(a.input.purchasePrice, sprache)}
+          preis={formatEuro(ausgewiesenerKaufpreis(a.input, a.result), sprache)}
           seite="a"
           werte={objektangaben(a.input, sprache)}
         />
@@ -680,7 +680,7 @@ export function ExposeVergleichsseite({
           marke={objektMarke(1, sprache)}
           titel={titelB}
           adresse={b.input.address || t.adresseFehlt}
-          preis={formatEuro(b.input.purchasePrice, sprache)}
+          preis={formatEuro(ausgewiesenerKaufpreis(b.input, b.result), sprache)}
           seite="b"
           werte={objektangaben(b.input, sprache)}
         />

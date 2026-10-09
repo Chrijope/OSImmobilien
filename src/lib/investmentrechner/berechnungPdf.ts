@@ -34,7 +34,7 @@ import {
   sanitizePdfText,
 } from "@/lib/pdfBranding";
 import type { FormatSprache } from "@/lib/sprachFormat";
-import type { InvestmentEingabe, InvestmentErgebnis, Jahreswert } from "./rechenkern";
+import { ausgewiesenerKaufpreis, type InvestmentEingabe, type InvestmentErgebnis, type Jahreswert } from "./rechenkern";
 import { sanierungenBereinigt, type UnterlagenDaten, type UnterlagenDokument } from "./unterlagenAuslesen";
 import { formatEuro, formatEuroCent, formatProzent, formatZahl } from "./formatierer";
 import { dokumentTexteFuer, hinweisOhneSteuerwirkung, type DokumentTexte } from "./dokumentTexte";
@@ -523,8 +523,8 @@ function objektteil(l: Lauf, objekt: BerechnungPdfObjekt, bilder: Bild[], marke?
 
   const fakten: Kachel[] = [
     {
-      label: t.kaufpreis.gesamt,
-      wert: euro(input.purchasePrice),
+      label: result.allInclusive ? t.kaufpreis.gesamtAllInclusive : t.kaufpreis.gesamt,
+      wert: euro(ausgewiesenerKaufpreis(input, result)),
       notiz: input.furniturePrice > 0 ? t.deckblatt.inklMoebel(euro(input.furniturePrice)) : null,
     },
   ];
@@ -910,8 +910,8 @@ function vergleichsseite(l: Lauf, a: BerechnungPdfObjekt, b: BerechnungPdfObjekt
   kacheln(
     l,
     [
-      { label: objektMarke(0, sprache), wert: formatEuro(a.input.purchasePrice, sprache), notiz: `${titelA} · ${a.input.address || t.adresseFehlt}` },
-      { label: objektMarke(1, sprache), wert: formatEuro(b.input.purchasePrice, sprache), notiz: `${titelB} · ${b.input.address || t.adresseFehlt}` },
+      { label: objektMarke(0, sprache), wert: formatEuro(ausgewiesenerKaufpreis(a.input, a.result), sprache), notiz: `${titelA} · ${a.input.address || t.adresseFehlt}` },
+      { label: objektMarke(1, sprache), wert: formatEuro(ausgewiesenerKaufpreis(b.input, b.result), sprache), notiz: `${titelB} · ${b.input.address || t.adresseFehlt}` },
     ],
     2,
   );

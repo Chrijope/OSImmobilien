@@ -220,6 +220,15 @@ export interface DokumentTexte {
     hinweisErhaltung: string;
     hinweisMoebel: string;
     hinweisBeides: string;
+    /*
+      All-inclusive-Modell, seit dem 09.10.2026: Der Kaufpreis enthält die
+      Kaufnebenkosten, sie stehen deshalb nicht als eigener Betrag da.
+    */
+    gesamtAllInclusive: string;
+    /** Der Aufschlag als Teil des Kaufpreises, damit die Zeilen den all-inclusive-Preis ergeben. */
+    nebenkostenImKaufpreis: (satz: string) => string;
+    nebenkostenEnthalten: string;
+    hinweisAllInclusive: string;
   };
   energie: {
     effizienzklasse: (klasse: string) => string;
@@ -620,6 +629,11 @@ export const DOKUMENT_TEXTE_DE: DokumentTexte = {
       "Die Möbel sind eine gesonderte Leistung und im Notarvertrag eigens ausgewiesen. Grunderwerbsteuer, Notar und Grundbuch rechnen wir deshalb nur auf den Kaufpreis der Immobilie. Ob das Finanzamt die Grunderwerbsteuer trotzdem auf den ganzen Betrag erhebt, hängt vom Vertrag ab. Das klärt dein Steuerberater.",
     hinweisBeides:
       "Erhaltungsaufwand und Möbel sind gesonderte Leistungen und im Notarvertrag eigens ausgewiesen. Grunderwerbsteuer, Notar und Grundbuch rechnen wir deshalb nur auf den Kaufpreis der Immobilie. Ob das Finanzamt die Grunderwerbsteuer trotzdem auf den ganzen Betrag erhebt, hängt vom Vertrag ab. Das klärt dein Steuerberater.",
+    gesamtAllInclusive: "Kaufpreis all-inclusive",
+    nebenkostenImKaufpreis: (satz) => `davon Kaufnebenkosten im Kaufpreis (${satz})`,
+    nebenkostenEnthalten: "im Kaufpreis enthalten",
+    hinweisAllInclusive:
+      "Der Kaufpreis ist all-inclusive: Grunderwerbsteuer, Notar und Grundbuch sind darin enthalten, gesonderte Kaufnebenkosten fallen nicht an.",
   },
   energie: {
     effizienzklasse: (klasse) => `Energieeffizienzklasse ${klasse}`,
@@ -1036,6 +1050,11 @@ export const DOKUMENT_TEXTE_EN: DokumentTexte = {
       "The furniture is a separate item and stated separately in the notarial contract. We therefore calculate real estate transfer tax, notary and land registry fees on the purchase price of the property only. Whether the tax office still levies the transfer tax on the full amount depends on the contract. Your tax adviser will clarify this.",
     hinweisBeides:
       "The maintenance expenses and the furniture are separate items and stated separately in the notarial contract. We therefore calculate real estate transfer tax, notary and land registry fees on the purchase price of the property only. Whether the tax office still levies the transfer tax on the full amount depends on the contract. Your tax adviser will clarify this.",
+    gesamtAllInclusive: "Purchase price all-inclusive",
+    nebenkostenImKaufpreis: (satz) => `of which incidental purchase costs in the price (${satz})`,
+    nebenkostenEnthalten: "included in purchase price",
+    hinweisAllInclusive:
+      "The purchase price is all-inclusive: real estate transfer tax, notary and land registry fees are included, there are no separate incidental purchase costs.",
   },
   energie: {
     effizienzklasse: (klasse) => `Energy efficiency class ${klasse}`,

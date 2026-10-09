@@ -254,6 +254,24 @@ describe("alte Speicherstände: Finanzierungsnebenkosten seit dem 25.09.2026", (
   });
 });
 
+describe("All-inclusive-Modell in gespeicherten Berechnungen, seit dem 09.10.2026", () => {
+  it("liest einen Stand ohne das Feld als normales Modell", () => {
+    expect(eingabeAusJson({ purchasePrice: 300_000, eingabeVersion: 2 }).allInclusive).toBe(false);
+    expect(standardEingabe.allInclusive).toBe(false);
+  });
+
+  it("übernimmt einen gespeicherten Schalter, aber nur als echten Wahrheitswert", () => {
+    expect(eingabeAusJson({ purchasePrice: 300_000, allInclusive: true }).allInclusive).toBe(true);
+    expect(eingabeAusJson({ purchasePrice: 300_000, allInclusive: "ja" }).allInclusive).toBe(false);
+  });
+
+  it("speichert als Kaufpreis den all-inclusive-Preis, passend zur Bruttorendite", () => {
+    const eingabe = { ...standardEingabe, purchasePrice: 200_000, monthlyColdRent: 700, allInclusive: true };
+    const ergebnis = berechneInvestment(eingabe);
+    expect(kennzahlenAus(eingabe, ergebnis).kaufpreis).toBeCloseTo(200_000 + ergebnis.allInclusiveAufschlag, 6);
+  });
+});
+
 describe("Kennzahlen und Name", () => {
   it("nimmt die Kennzahlen aus dem Ergebnis, ohne selbst zu rechnen", () => {
     const eingabe = { ...standardEingabe, purchasePrice: 250_000, furniturePrice: 10_000, equity: 30_000, monthlyColdRent: 850 };

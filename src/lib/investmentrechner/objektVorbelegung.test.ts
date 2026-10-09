@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { ObjektData, ObjektWohnung } from "@/lib/objekteStore";
 import { berechneInvestment, standardEingabe } from "@/lib/investmentrechner/rechenkern";
 import { vorbelegungAusEinheit } from "@/lib/investmentrechner/objektVorbelegung";
+import { eigenkapitalNachRegel } from "@/lib/investmentrechner/herkunft";
 
 /**
  * Die Feldzuordnung des Reiters „Investmentrechner" auf der Einheitenseite.
@@ -416,5 +417,41 @@ describe("KfW-Programm aus Investagon, seit dem 07.10.2026", () => {
     const sonstiges = { ...objekt, meta: { ...objekt.meta, investagonRaw: { funding: "Landesförderung" } } } as ObjektData;
     expect(vorbelegungAusEinheit(sonstiges, w, heute).eingabe.kfwProgram).toBe("");
     expect(vorbelegungAusEinheit(objekt, w, heute).eingabe.kfwProgram).toBe("");
+  });
+});
+
+describe("Vorbelegung im All-inclusive-Modell (09.10.2026)", () => {
+  const v = vorbelegungAusEinheit(objekt, w, heute, { allInclusive: true });
+
+  it("schlägt 0 Eigenkapital vor, weil die Kaufnebenkosten im Kaufpreis stecken", () => {
+    expect(v.eingabe.allInclusive).toBe(true);
+    expect(v.eingabe.equity).toBe(0);
+    const eintrag = v.uebernommen.find((u) => u.feld === "Eigenkapital");
+    expect(eintrag?.wert).toMatch(/^0\s€$/);
+    expect(eintrag?.woher).toMatch(/All-inclusive.*im Kaufpreis enthalten/);
+  });
+
+  it("meldet kein fehlendes Eigenkapital", () => {
+    expect(feldnamen(v.luecken)).not.toContain("Eigenkapital");
+    // Ohne Kaufpreis und Sätze ebenso nicht: 0 ist im Modell die Regel.
+    const ohneDaten = vorbelegungAusEinheit(leer, leer.wohnungen[0], heute, { allInclusive: true });
+    expect(feldnamen(ohneDaten.luecken)).not.toContain("Eigenkapital");
+  });
+
+  it("bleibt ohne die Option beim normalen Modell", () => {
+    const normal = vorbelegungAusEinheit(objekt, w, heute);
+    expect(normal.eingabe.allInclusive).toBe(false);
+    expect(normal.eingabe.equity).toBeGreaterThan(0);
+  });
+
+  it("kennzeichnet das Eigenkapital nach der Regel, damit der Schalter es erkennt", () => {
+    // Mit Erhaltungsaufwand (ausführlicher Satz) und ohne (kurzer Satz).
+    expect(eigenkapitalNachRegel(vorbelegungAusEinheit(objekt, w, heute).herkunft)).toBe(true);
+    const ohneAufwand = { ...objekt, sanierungskosten: 0 } as ObjektData;
+    const kurz = vorbelegungAusEinheit(ohneAufwand, { ...w, sanierungAnteilProzent: 0 }, heute);
+    expect(kurz.eingabe.rehabExpense).toBe(0);
+    expect(eigenkapitalNachRegel(kurz.herkunft)).toBe(true);
+    expect(eigenkapitalNachRegel({ equity: { quelle: "eigen", text: "" } })).toBe(false);
+    expect(eigenkapitalNachRegel(undefined)).toBe(false);
   });
 });

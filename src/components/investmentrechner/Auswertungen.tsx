@@ -87,7 +87,11 @@ export function kaufpreiszeilen(result: InvestmentErgebnis, sprache: FormatSprac
   */
   const mitAufwand = result.erhaltungsaufwand > 0;
   const mitMoebeln = result.moebelAnteil > 0;
-  const gesamtLabel = mitAufwand && mitMoebeln
+  // Beim All-inclusive-Modell steckt der Aufschlag im Kaufpreis, die Nebenkosten stehen als „enthalten“ da, nie als 0 €.
+  const allInclusive = result.allInclusive;
+  const gesamtLabel = allInclusive
+    ? t.gesamtAllInclusive
+    : mitAufwand && mitMoebeln
     ? t.gesamtInklBeides
     : mitAufwand
       ? t.gesamtInklErhaltung
@@ -105,7 +109,20 @@ export function kaufpreiszeilen(result: InvestmentErgebnis, sprache: FormatSprac
       ? { label: t.gebaeudeOhneErhaltung, wert: euro(result.gebaeudeanteilKaufpreis - result.erhaltungsaufwand) }
       : { label: t.gebaeude, wert: euro(result.gebaeudeanteilKaufpreis) },
   );
-  if (!mitAufwand && !mitMoebeln) {
+  if (allInclusive) {
+    /*
+      Erst der Aufschlag als Betrag: Grundstück, Gebäude, Möbel, Rücklage und
+      er ergeben zusammen den Kaufpreis all-inclusive. Dann die Zeile, die
+      sagt, dass zu den Gesamtkosten nichts mehr dazukommt.
+    */
+    zeilen.push({ label: t.nebenkostenImKaufpreis(prozent(result.purchaseCostRate)), wert: euro(result.allInclusiveAufschlag) });
+    zeilen.push({
+      label: mitAufwand || mitMoebeln
+        ? t.nebenkostenAuf(prozent(result.purchaseCostRate), euro(result.nebenkostenBasis))
+        : t.nebenkosten(prozent(result.purchaseCostRate)),
+      wert: t.nebenkostenEnthalten,
+    });
+  } else if (!mitAufwand && !mitMoebeln) {
     zeilen.push({ label: t.nebenkosten(prozent(result.purchaseCostRate)), wert: euro(result.purchaseCosts) });
   } else {
     const basis = euro(result.nebenkostenBasis);
@@ -128,15 +145,20 @@ export function kaufpreiszeilen(result: InvestmentErgebnis, sprache: FormatSprac
   return zeilen;
 }
 
-/** Der feste Hinweis unter den Kaufpreisdetails, nur mit Erhaltungsaufwand oder Möbeln. */
+/** Der feste Hinweis unter den Kaufpreisdetails, nur mit Erhaltungsaufwand, Möbeln oder All-inclusive. */
 export function kaufpreisHinweis(result: InvestmentErgebnis, sprache: FormatSprache = "de"): string | null {
   const t = dokumentTexteFuer(sprache).kaufpreis;
   const mitAufwand = result.erhaltungsaufwand > 0;
   const mitMoebeln = result.moebelAnteil > 0;
-  if (mitAufwand && mitMoebeln) return t.hinweisBeides;
-  if (mitAufwand) return t.hinweisErhaltung;
-  if (mitMoebeln) return t.hinweisMoebel;
-  return null;
+  const basis = mitAufwand && mitMoebeln
+    ? t.hinweisBeides
+    : mitAufwand
+      ? t.hinweisErhaltung
+      : mitMoebeln
+        ? t.hinweisMoebel
+        : null;
+  if (!result.allInclusive) return basis;
+  return basis ? `${t.hinweisAllInclusive} ${basis}` : t.hinweisAllInclusive;
 }
 
 /** Kaufpreisdetails der Analyse, im Raster des Steuerprofils. */

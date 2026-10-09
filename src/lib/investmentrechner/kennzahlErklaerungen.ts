@@ -343,7 +343,7 @@ export function rechenwege(
       ? weg(
           [
             { label: g.jahresmiete, wert: erstes.grossRent, einheit: "euro" },
-            { zeichen: "÷", label: g.kaufpreis, wert: result.kaufpreisGesamt, einheit: "euro" },
+            { zeichen: "÷", label: result.allInclusive ? g.kaufpreisAllInclusive : g.kaufpreis, wert: result.kaufpreisGesamt, einheit: "euro" },
           ],
           result.grossYield,
           "prozent",
@@ -638,13 +638,16 @@ export interface Glossar {
  * der Berechnung. Beide Ansichten lesen genau diese Liste, und jeder
  * Rechenweg oben verweist über `glossar` auf einen ihrer Einträge.
  */
-export function glossar(texte: KennzahlTexte = KENNZAHL_TEXTE): Glossar {
+export function glossar(texte: KennzahlTexte = KENNZAHL_TEXTE, optionen: { allInclusive?: boolean } = {}): Glossar {
+  // Beim All-inclusive-Modell geht die Kaufpreisformel nur mit dem Aufschlag als eigenem Summanden auf.
+  const text = (eintrag: GlossarSchluessel) =>
+    eintrag === "kaufpreisGesamt" && optionen.allInclusive ? texte.glossar.kaufpreisAllInclusive : texte.glossar.eintraege[eintrag];
   return {
     einleitung: texte.glossar.einleitung,
     gruppen: GLOSSAR_AUFBAU.map(([gruppe, schluessel]) => ({
       schluessel: gruppe,
       titel: texte.glossar.gruppen[gruppe],
-      eintraege: schluessel.map((eintrag) => ({ schluessel: eintrag, ...texte.glossar.eintraege[eintrag] })),
+      eintraege: schluessel.map((eintrag) => ({ schluessel: eintrag, ...text(eintrag) })),
     })),
     rundung: texte.glossar.rundung,
     keineSteuerberatung: texte.glossar.keineSteuerberatung,

@@ -57,6 +57,13 @@ export interface InvestmentEingabe {
   landRegisterRate: number;
   brokerRate: number;
   otherPurchaseCostRate: number;
+  /**
+   * All-inclusive-Modell, seit dem 09.10.2026: Der Kaufpreis wird um die
+   * Kaufnebenkosten erhöht, dafür fallen keine gesonderten an. Die Sätze
+   * oben bleiben die Grundlage, aus ihnen entsteht der Aufschlag. Gespeicherte
+   * Stände ohne das Feld bekommen den Standard, also aus.
+   */
+  allInclusive: boolean;
   equity: number;
   /**
    * Finanzierungsnebenkosten in Prozent der Darlehenssumme (Bank plus
@@ -216,7 +223,15 @@ export interface Jahreswert {
 
 export interface InvestmentErgebnis {
   purchaseCostRate: number;
+  /** Gesonderte Kaufnebenkosten. Beim All-inclusive-Modell 0, sie stecken dann im Kaufpreis. */
   purchaseCosts: number;
+  /** Das All-inclusive-Modell ist an, siehe `InvestmentEingabe.allInclusive`. */
+  allInclusive: boolean;
+  /**
+   * Der Aufschlag auf den Kaufpreis beim All-inclusive-Modell: die Kaufnebenkosten,
+   * genau wie im normalen Modell gerechnet. 0 ohne das Modell.
+   */
+  allInclusiveAufschlag: number;
   totalInvestment: number;
   seniorLoanAmount: number;
   /** KfW-Darlehen, anteilig und auf den Finanzierungsbedarf gedeckelt. 0 ohne Schalter. */
@@ -250,6 +265,8 @@ export interface InvestmentErgebnis {
    * zählt ab 1, Raten je Monat. `null` ohne tilgungsfreie Jahre.
    */
   rateSprung: { jahr: number; kalenderjahr: number; rateVorher: number; rateNachher: number } | null;
+  /** Der gerechnete Miteigentumsanteil als Faktor, bei Zusammenveranlagung 1. Für Grenzen je m² der ganzen Wohnung. */
+  anteil: number;
   totalDebt: number;
   financingGap: number;
   monthlyDebtService: number;
@@ -295,7 +312,7 @@ export interface InvestmentErgebnis {
     sind der Anteil dieses Kunden, also schon mit dem Miteigentumsanteil
     gerechnet. Die Oberfläche liest sie, statt selbst zu rechnen.
   */
-  /** Gesamtkaufpreis. */
+  /** Gesamtkaufpreis, beim All-inclusive-Modell samt `allInclusiveAufschlag`. */
   kaufpreisGesamt: number;
   /** Davon Möbel/Inventar, gedeckelt auf den Kaufpreis. */
   moebelAnteil: number;
@@ -323,7 +340,9 @@ export interface InvestmentErgebnis {
   grundbuchkosten: number;
   /**
    * Die Kaufnebenkosten, nach dem Gebäudeanteil geteilt. Zusammen ergeben sie
-   * `purchaseCosts`. Die Möbel tragen seit dem 30.09.2026 keine mehr.
+   * `purchaseCosts`, beim All-inclusive-Modell den Aufschlag; dort sind auch
+   * Grunderwerbsteuer, Notar und Grundbuch die Bestandteile des Aufschlags.
+   * Die Möbel tragen seit dem 30.09.2026 keine mehr.
    */
   nebenkostenGrundstueck: number;
   nebenkostenGebaeude: number;
@@ -365,6 +384,7 @@ export const standardEingabe: InvestmentEingabe = {
   landRegisterRate: 0.5,
   brokerRate: 0,
   otherPurchaseCostRate: 0,
+  allInclusive: false,
   equity: 0,
   financingCostRate: 0.2,
   juniorLoanAmount: 0,
@@ -825,6 +845,23 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
   const grundbuchkosten = basisNebenkosten * prozentAnteil(t.landRegisterRate);
   const purchaseCosts = grunderwerbsteuer + basisNebenkosten * satzOhneGrunderwerbsteuer;
   const purchaseCostRate = summeDerSaetze;
+  /*
+    All-inclusive-Modell, seit dem 09.10.2026 (Vorgabe der Geschäftsführung):
+    Der Kaufpreis wird um die Kaufnebenkosten erhöht, gesonderte fallen dafür
+    keine an. Gerechnet wird intern genau wie im normalen Modell, nur der
+    Ausweis ist ein anderer: Der Aufschlag ist dieselbe Summe auf derselben
+    Basis mit denselben Sätzen. Deshalb bleiben Finanzierungsbedarf, Darlehen
+    und Gesamtkosten betragsgleich, und der Aufschlag geht wie sonst die
+    Nebenkosten nach dem Gebäudeanteil in die AfA-Basis und zum Boden. Die
+    Steuer ändert sich also nicht.
+
+    Der Immobilienwert für die Wertentwicklung (`immobilienanteil`,
+    `propertyValue`, Wertzuwachs, Vermögen) bleibt auf dem Kaufpreis ohne
+    Aufschlag. Sonst stünde der Kunde beim Vermögen besser da als im
+    normalen Modell, obwohl er dasselbe kauft.
+  */
+  const allInclusive = t.allInclusive === true;
+  const allInclusiveAufschlag = allInclusive ? purchaseCosts : 0;
   /** Kaufpreis plus Kaufnebenkosten: daraus ergibt sich das Darlehen. */
   const kaufkosten = purchasePrice + purchaseCosts;
   const juniorLoan = Math.max(0, t.juniorLoanAmount) * anteil;
@@ -919,7 +956,15 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
   const effectiveAnnualRent = monthlyColdRent * 12 * (1 - Math.min(1, prozentAnteil(t.vacancyRate)));
   // Für die Nettorendite zählt, was der Eigentümer trägt, also auch die Zuführung zur Rücklage.
   const jahresBetriebskosten = (monthlyOperatingCosts + monthlyReserveContribution) * 12;
-  const grossYield = purchasePrice > 0 ? (monthlyColdRent * 12) / purchasePrice : 0;
+  /*
+    Bruttorendite auf den ausgewiesenen Kaufpreis, beim All-inclusive-Modell
+    also samt Aufschlag: Das ist der Preis, den der Kunde zahlt und im Exposé
+    sieht, und Jahresmiete durch diesen Preis lässt sich dort nachrechnen.
+    Die Rendite fällt dadurch niedriger aus als im normalen Modell, das ist
+    gewollt, sonst wirkte derselbe Kauf nur durch den Ausweis besser.
+  */
+  const kaufpreisAusgewiesen = purchasePrice + allInclusiveAufschlag;
+  const grossYield = kaufpreisAusgewiesen > 0 ? (monthlyColdRent * 12) / kaufpreisAusgewiesen : 0;
   const netYield = totalInvestment > 0 ? (effectiveAnnualRent - jahresBetriebskosten) / totalInvestment : 0;
   /*
     Die Nebenkosten gehen nach dem Gebäudeanteil an Gebäude und Boden, wie bei
@@ -1248,7 +1293,9 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
 
   return {
     purchaseCostRate,
-    purchaseCosts,
+    purchaseCosts: allInclusive ? 0 : purchaseCosts,
+    allInclusive,
+    allInclusiveAufschlag,
     totalInvestment,
     seniorLoanAmount,
     kfwLoanAmount,
@@ -1262,6 +1309,7 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
     kfwAnnuitaetMonat: kfw.annuitaet,
     mischzins,
     rateSprung,
+    anteil,
     totalDebt,
     financingGap,
     monthlyDebtService,
@@ -1286,7 +1334,7 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
     getilgtGesamt,
     tilgungszuschussPrognose,
     faktorJeEuro,
-    kaufpreisGesamt: purchasePrice,
+    kaufpreisGesamt: kaufpreisAusgewiesen,
     moebelAnteil: furniturePrice,
     erhaltungsaufwand: rehabExpense,
     ruecklage,
@@ -1382,4 +1430,18 @@ export function eigenkapitalrenditeNebenkosten(
     vergleich: eigenkapitalrendite(vergleichEingabe, vergleichErgebnis),
     rateDifferenzMonat: vergleichErgebnis.monthlyDebtService - result.monthlyDebtService,
   };
+}
+
+/**
+ * Der Kaufpreis des ganzen Objekts, so wie er im Dokument steht: die Eingabe,
+ * beim All-inclusive-Modell samt Aufschlag (seit dem 09.10.2026). Das Ergebnis
+ * rechnet mit dem Miteigentumsanteil, der Aufschlag wird deshalb auf das ganze
+ * Objekt zurückgerechnet. Für die Stellen, die bisher `purchasePrice` zeigten.
+ */
+export function ausgewiesenerKaufpreis(
+  input: Pick<InvestmentEingabe, "purchasePrice">,
+  result: Pick<InvestmentErgebnis, "allInclusiveAufschlag" | "anteil">,
+): number {
+  const aufschlag = result.anteil > 0 ? (result.allInclusiveAufschlag ?? 0) / result.anteil : 0;
+  return input.purchasePrice + aufschlag;
 }

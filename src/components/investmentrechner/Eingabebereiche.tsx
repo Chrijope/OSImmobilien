@@ -18,7 +18,7 @@ import {
 } from "@/lib/investmentrechner/kaufnebenkostenAuswahl";
 import { ENERGIEKLASSEN, formatEuro, formatEuroCent, formatProzent } from "@/lib/investmentrechner/formatierer";
 import { unterlagenAuslesbar, type AuslesbaresFeld } from "@/lib/investmentrechner/unterlagenKiFelder";
-import { herkunftText, type Herkunft } from "@/lib/investmentrechner/herkunft";
+import { eigenkapitalNachRegel, herkunftText, type Herkunft } from "@/lib/investmentrechner/herkunft";
 import { OBJEKTTYP_VORSCHLAEGE } from "@/lib/investmentrechner/objekttypVorschlaege";
 import { Auswahlfeld, AuswahlOderText, FeldInfo, Schalterfeld, Textbereich, Textfeld, Zahlenfeld } from "./Felder";
 import { Energieskala, kaufpreisHinweis, Steuerprofil } from "./Auswertungen";
@@ -235,7 +235,7 @@ const KNK_ERKLAERUNG: Record<string, string> = {
     "Gebühren des Grundbuchamts für Eigentumsumschreibung und Eintragung der Grundschuld. Der Rechner setzt als Richtwert 0,5 Prozent des Gesamtkaufpreises ohne Erhaltungsaufwand und Möbel an.",
 };
 
-export function EingabeObjekt({ input, result, setzeZahl, setzeText, knk, setzeKnk, herkunft }: EingabeObjektProps) {
+export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, knk, setzeKnk, herkunft }: EingabeObjektProps) {
   const quelle = quelleFuer(herkunft);
   const posten = kaufnebenkostenposten(
     {
@@ -345,6 +345,33 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, knk, setzeK
         steht dauerhaft auf null und wird nirgends mehr bedienbar gemacht.
       */}
       <div className="subheading">Kaufnebenkosten</div>
+      {/*
+        All-inclusive-Modell, seit dem 09.10.2026. Die Sätze darunter bleiben
+        sichtbar und änderbar, aus ihnen entsteht der Aufschlag. Stammt das
+        Eigenkapital noch aus der Vorbelegung nach der Regel „in Höhe der
+        Kaufnebenkosten“, geht es beim Einschalten mit auf 0, denn die
+        Nebenkosten werden jetzt mitfinanziert. Erkannt wird das an der
+        Herkunft, nicht am Betrag: Ein von Hand eingetragener oder vom Kunden
+        übernommener Wert bleibt immer stehen, auch wenn er zufällig gleich
+        hoch ist. Beim Ausschalten wird nichts zurückgeschrieben.
+      */}
+      <Schalterfeld
+        label="All-inclusive (Kaufnebenkosten im Kaufpreis enthalten)"
+        checked={input.allInclusive}
+        onChange={(an) =>
+          aendere(
+            an && eigenkapitalNachRegel(herkunft)
+              ? { allInclusive: true, equity: 0 }
+              : { allInclusive: an },
+          )
+        }
+        hint={
+          input.allInclusive
+            ? "Kaufpreis um die Kaufnebenkosten erhöht, keine gesonderten Kaufnebenkosten"
+            : "Kaufnebenkosten werden gesondert ausgewiesen"
+        }
+        tooltip="Beim All-inclusive-Modell wird der Kaufpreis um die Kaufnebenkosten erhöht, dafür fallen keine gesonderten Kaufnebenkosten an. Der Aufschlag wird aus den Sätzen unten auf dieselbe Basis gerechnet wie sonst die Kaufnebenkosten. Darlehen, Gesamtkosten und Steuer bleiben dadurch gleich; der Immobilienwert für die Wertentwicklung bleibt der Kaufpreis ohne Aufschlag. Im Exposé steht der Kaufpreis als „Kaufpreis all-inclusive“ und die Kaufnebenkosten als „im Kaufpreis enthalten“."
+      />
       {/* Der Schalter „Möbel im Notarvertrag gesondert ausgewiesen“ ist seit dem 30.09.2026 weg: Möbel tragen nie Kaufnebenkosten. */}
       <div className="knk-weg" role="group" aria-label="Weg zu den Kaufnebenkosten">
         <button
@@ -449,10 +476,17 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, knk, setzeK
       <div className="calculated-line">
         <span>Kaufnebenkosten gesamt</span>
         <strong>
-          {formatEuro(result.purchaseCosts)} · {formatProzent(result.purchaseCostRate)}
+          {result.allInclusive ? "im Kaufpreis enthalten" : formatEuro(result.purchaseCosts)} · {formatProzent(result.purchaseCostRate)}
           {(result.erhaltungsaufwand > 0 || result.moebelAnteil > 0) && <> auf {formatEuro(result.nebenkostenBasis)}</>}
         </strong>
       </div>
+      {result.allInclusive && (
+        <p className="knk-hinweis" data-testid="hinweis-all-inclusive">
+          Kaufpreis all-inclusive: {formatEuro(result.kaufpreisGesamt)} (Kaufpreis{" "}
+          {formatEuro(result.kaufpreisGesamt - result.allInclusiveAufschlag)} plus Kaufnebenkosten{" "}
+          {formatEuro(result.allInclusiveAufschlag)})
+        </p>
+      )}
       {kaufpreisHinweis(result) && <p className="knk-hinweis">{kaufpreisHinweis(result)}</p>}
     </div>
   );

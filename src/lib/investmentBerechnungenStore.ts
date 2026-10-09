@@ -25,6 +25,7 @@ import { standardKaufnebenkostenauswahl, type Kaufnebenkostenauswahl } from "@/l
 import { leereUnterlagenDaten, type UnterlagenDaten } from "@/lib/investmentrechner/unterlagenAuslesen";
 import { herkunftAusJson, type Herkunft } from "@/lib/investmentrechner/herkunft";
 import {
+  ausgewiesenerKaufpreis,
   EINGABE_VERSION,
   standardEingabe,
   type InvestmentEingabe,
@@ -258,7 +259,8 @@ export function kennzahlenAus(eingabe: InvestmentEingabe, ergebnis: InvestmentEr
   return {
     // Der Gesamtkaufpreis, die Möbel stecken seit dem 25.09.2026 darin. Alte
     // Zeilen haben hier Kaufpreis plus Möbel gespeichert, also dieselbe Zahl.
-    kaufpreis: eingabe.purchasePrice,
+    // Beim All-inclusive-Modell samt Aufschlag, passend zur Bruttorendite daneben.
+    kaufpreis: ausgewiesenerKaufpreis(eingabe, ergebnis),
     eigenkapital: eingabe.equity,
     cashflowMonatNachSteuern: erstesJahr ? erstesJahr.cashflowAfterTax / 12 : 0,
     bruttorendite: ergebnis.grossYield,
