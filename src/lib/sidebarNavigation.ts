@@ -75,12 +75,6 @@ const immobilienItems = [
     tooltip: "Die eigene Objektverwaltung mit dem Investagon-Import. Fuer die Pflege, im Vertrieb wird der Eintrag darueber genutzt." },
   { title: "Objekt Akquise", url: "/objekt-akquise", icon: Search, adminOnly: true, suchbegriffe: ["ankauf", "einkauf", "neue objekte"] },
   { title: "Objekt Einreichungen", url: "/objekt-einreichungen", icon: ClipboardList, adminOnly: true, suchbegriffe: ["eingereicht", "vorschlaege"] },
-  /* Bauträger-Kalkulator aus Ankaufstool.xlsx. Wer ihn sieht, steht in
-     `ANKAUFSTOOL_ROLLEN` (sidebarPermissions.ts). */
-  { title: "Ankaufstool", url: ANKAUFSTOOL_ROUTE, icon: Calculator, adminOnly: true, auchFuer: ["vertriebsleiter"], suchbegriffe: ["ankauf", "bautraeger", "kalkulator", "lohnt sich", "marge", "go no go", "aufteilung"] },
-  /* Ist- gegen Soll-Miete, Differenz als Subvention an die Hausverwaltung.
-     Rollen wie beim Ankaufstool (sidebarPermissions.ts). */
-  { title: "Mietsubvention", url: MIETSUBVENTION_ROUTE, icon: Calculator, adminOnly: true, auchFuer: ["vertriebsleiter"], suchbegriffe: ["subvention", "mietsubvention", "mieterhoehung", "kappungsgrenze", "hausverwaltung", "soll miete", "ist miete"] },
 ];
 
 const auswertungItems = [
@@ -109,6 +103,20 @@ const toolsItems = [
    */
   // { title: "Kalkulation Investagon", url: "/kalkulation-investagon", icon: Calculator, draft: true },
   { title: "AfA-Rechner", url: "/afa-rechner", icon: Calculator, suchbegriffe: ["abschreibung", "afa", "steuer", "denkmal", "restnutzungsdauer"] },
+  /* Bauträger-Kalkulator aus Ankaufstool.xlsx. Wer ihn sieht, steht in
+     `ANKAUFSTOOL_ROLLEN` (sidebarPermissions.ts). */
+  { title: "Ankaufstool", url: ANKAUFSTOOL_ROUTE, icon: Calculator, adminOnly: true, auchFuer: ["vertriebsleiter"], suchbegriffe: ["ankauf", "bautraeger", "kalkulator", "lohnt sich", "marge", "go no go", "aufteilung"] },
+  /* Ist- gegen Soll-Miete, Differenz als Subvention an die Hausverwaltung.
+     Rollen wie beim Ankaufstool (sidebarPermissions.ts). */
+  { title: "Mietsubvention", url: MIETSUBVENTION_ROUTE, icon: Calculator, adminOnly: true, auchFuer: ["vertriebsleiter"], suchbegriffe: ["subvention", "mietsubvention", "mieterhoehung", "kappungsgrenze", "hausverwaltung", "soll miete", "ist miete"] },
+];
+
+/*
+ * Lead Gen (Christians Wunsch vom 09.10.2026): alles, womit Partner neue
+ * Interessenten gewinnen. "Tools" behaelt nur die Rechner fuer die eigene
+ * Arbeit.
+ */
+const leadGenItems = [
   { title: "Analysetool", url: "/analysetool", icon: Search, suchbegriffe: ["analyse", "auswertung", "kunde pruefen"] },
   { title: "Steuerrechner", url: "/steuerrechner", icon: Calculator, suchbegriffe: ["steuer", "steuerersparnis", "rechner", "eigener link"], tooltip: "Eigener öffentlicher Rechner mit Deinem persönlichen Link. Der Interessent sieht seine Steuerlast, seine Ersparnis und sein Vermögen nach zehn Jahren, und wer sich einträgt, landet als Lead direkt bei Dir." },
   /* Die kurze, englische Fassung fuer Anzeigen an Expats. Sie steht unter dem
@@ -361,12 +369,13 @@ export function navigationsGruppen(ctx: NavKontext): NavGruppe[] {
     // Junior-Override und Mentoring sind in Auswertungen (Tab "Mein Team")
     // und Abrechnungen (Differenzumsatz-Spalte) integriert.
     { label: "Auswertung", items: auswertungItems, iconTint: "text-apple-indigo" },
+    { label: "Tools", items: toolsItems, iconTint: "text-apple-purple" },
     {
-      label: "Tools",
-      items: toolsItems.map((item) =>
+      label: "Lead Gen",
+      items: leadGenItems.map((item) =>
         item.url === HANDBUCH_SEITE_ROUTE && ctx.handbuchFrei ? { ...item, adminOnly: false, adminBadge: false } : item,
       ),
-      iconTint: "text-apple-purple",
+      iconTint: "text-apple-pink",
     },
     { label: "Wissen", items: wissenItems, iconTint: "text-apple-purple" },
   ];
