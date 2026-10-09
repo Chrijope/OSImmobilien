@@ -117,6 +117,14 @@ export interface InvestmentEingabe {
   rehabDistributionYears: number;
   startYear: number;
   forecastYears: number;
+  /*
+    Altersvorsorge, seit dem 09.10.2026, nur für das Deckblatt
+    „Vermögensaufbau & Altersvorsorge“ (siehe altersvorsorge.ts). Der
+    Rechenkern selbst liest sie nicht. 0 beim Alter heißt: nicht eingetragen.
+  */
+  clientAge: number;
+  retirementAge: number;
+  inflationRate: number;
   /**
    * Welche Bedeutung die Eingabe hat, für gespeicherte Stände. Ab Version 2
    * (25.09.2026) ist `purchasePrice` der Gesamtkaufpreis samt Möbeln; bis
@@ -392,6 +400,9 @@ export const standardEingabe: InvestmentEingabe = {
   rehabDistributionYears: 1,
   startYear: 2026,
   forecastYears: 10,
+  clientAge: 0,
+  retirementAge: 67,
+  inflationRate: 2,
   eingabeVersion: EINGABE_VERSION,
 };
 
@@ -648,8 +659,14 @@ export function internerZinsfuss(zahlungen: number[]): number | null {
   return (untere + obere) / 2;
 }
 
-/** Gesamtberechnung: Kaufkosten, Finanzierung, Steuerprofil und Jahresprognose. */
-export function berechneInvestment(eingabe: InvestmentEingabe): InvestmentErgebnis {
+/**
+ * Gesamtberechnung: Kaufkosten, Finanzierung, Steuerprofil und Jahresprognose.
+ *
+ * `hoechstJahre` deckelt die Prognose. Die Oberfläche bleibt bei 30; nur die
+ * Altersvorsorge (siehe altersvorsorge.ts) rechnet bis zum Rentenbeginn und
+ * darüber hinaus weiter, seit dem 09.10.2026.
+ */
+export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30): InvestmentErgebnis {
   // Alle Zahlenfelder gegen NaN absichern, Texte und Schalter bleiben unverändert.
   // Fehlende Felder kommen aus der Standardeingabe: Eine Eingabe von vor
   // einem neuen Feld (etwa dem Rücklagenanteil vom 25.09.2026) rechnet sonst
@@ -848,7 +865,7 @@ export function berechneInvestment(eingabe: InvestmentEingabe): InvestmentErgebn
   const financingGap = totalInvestment - totalDebt - Math.max(0, t.equity);
   const seniorJahresrate = seniorLoanAmount * (prozentAnteil(t.seniorInterestRate) + prozentAnteil(t.seniorRepaymentRate));
   const juniorJahresrate = juniorLoan * (prozentAnteil(t.juniorInterestRate) + prozentAnteil(t.juniorRepaymentRate));
-  const laufzeit = Math.min(30, Math.max(1, Math.round(t.forecastYears)));
+  const laufzeit = Math.min(hoechstJahre, Math.max(1, Math.round(t.forecastYears)));
   /*
     Tilgungszuschuss: Prozent vom KfW-Darlehen oder ein Betrag, der anteilig
     gilt wie jeder Euro des Objekts. Gutgeschrieben nur zum Jahr aus der

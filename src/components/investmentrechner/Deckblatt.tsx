@@ -6,6 +6,7 @@ import { formatEuro, formatEuroCent, formatProzent, formatProzentEineStelle, for
 import { dokumentTexteFuer, type Kernsatzteil } from "@/lib/investmentrechner/dokumentTexte";
 import { kennzahlTexteFuer } from "@/lib/investmentrechner/kennzahlTexte";
 import { deckblattWerte, type DeckblattVariante, type DeckblattWerte } from "@/lib/investmentrechner/deckblattWerte";
+import { altersvorsorge } from "@/lib/investmentrechner/altersvorsorge";
 import { SPRACH_LOCALE, datumText, type FormatSprache } from "@/lib/sprachFormat";
 import { kaufpreiszeilen } from "./Auswertungen";
 import { mitVorzeichen } from "./Felder";
@@ -19,6 +20,10 @@ import { mitVorzeichen } from "./Felder";
  * übrigen Druckseiten als HTML, damit der Download sie mit derselben Technik
  * fotografiert. Alle Zahlen kommen aus `deckblattWerte`, also aus der
  * Jahrestabelle des Rechenkerns.
+ *
+ * Seit dem 09.10.2026 gibt es ein drittes, „Vermögensaufbau & Altersvorsorge“,
+ * für Kunden, die die Wohnung bis zur Rente abbezahlen und behalten wollen.
+ * Seine Zahlen kommen aus `altersvorsorge`.
  */
 
 export interface DeckblattProps {
@@ -486,6 +491,176 @@ export function ErgebnisJahrFuerJahr({ input, result, sprache }: ErgebnisProps) 
   );
 }
 
+/** Variante 3: „Vermögensaufbau & Altersvorsorge“. */
+export function DeckblattAltersvorsorge({ input, result, photos, sprache, marke, fusszeile }: DeckblattProps) {
+  return (
+    <section className="expose-page deckblatt-page deckblatt-rente">
+      <Kopf input={input} marke={marke} sprache={sprache} />
+      <Objektband input={input} result={result} photos={photos} sprache={sprache} unterzeile={input.address} />
+      <ErgebnisAltersvorsorge input={input} result={result} sprache={sprache} />
+      {fusszeile}
+    </section>
+  );
+}
+
+/**
+ * Der Ergebnisteil von Variante 3: Leitfrage, drei Kacheln, der Zeitstrahl
+ * bis zum Ruhestand, das Vermögen zum Rentenbeginn und die Annahmen. Auf dem
+ * Deckblatt und oben in der Analyse. Fehlt das Alter oder passt der
+ * Rentenbeginn nicht, steht statt der Zahlen ein Hinweis da.
+ */
+export function ErgebnisAltersvorsorge({ input, sprache }: ErgebnisProps) {
+  const a = dokumentTexteFuer(sprache).altersvorsorge;
+  const { euro, prozentZahl } = formate(sprache);
+  const av = altersvorsorge(input);
+
+  if (av.status !== "ok") {
+    const meldung = { ohneAlter: a.fehltAlter, rentenbeginnErreicht: a.rentenbeginnErreicht, zuWeit: a.zuWeit }[av.status];
+    return (
+      <div className="db-kern">
+        <span className="eyebrow">{a.augenbraue}</span>
+        <p className="db-kernsatz">{a.leitfrage}</p>
+        <p className="db-hinweis" role="note">{meldung}</p>
+      </div>
+    );
+  }
+
+  const { zumRentenbeginn: z, ruhestand: r, schuldenfrei: sf } = av;
+  const nochSchulden = z.restschuld >= 0.5;
+  const ueberschuss = av.eigenaufwandHeute <= -0.5;
+
+  // Stationen in zeitlicher Folge; die Phase steht jeweils vor ihrer Station.
+  const stationen: { titel: string; jahr: number; alter: number; text: string; phase?: string; ton?: "gruen" }[] = [
+    {
+      titel: a.stationKauf,
+      jahr: av.startJahr,
+      alter: av.alter,
+      text: av.darlehenStart >= 0.5 ? a.stationKaufText(euro(av.darlehenStart)) : a.stationKaufOhneDarlehen,
+    },
+  ];
+  const rente = {
+    titel: a.stationRente,
+    jahr: av.rentenJahr,
+    alter: av.rentenAlter,
+    text: nochSchulden ? a.stationRenteRestschuld(euro(z.restschuld)) : a.stationRenteText(euro(r.zusatz)),
+    ton: "gruen" as const,
+  };
+  if (sf && av.darlehenStart >= 0.5) {
+    const frei = { titel: a.stationSchuldenfrei, jahr: sf.jahr, alter: sf.alter, text: a.stationSchuldenfreiText };
+    if (nochSchulden) stationen.push({ ...rente, phase: a.phaseTilgung }, { ...frei, phase: a.phaseRateLaeuft, ton: "gruen" });
+    else stationen.push({ ...frei, phase: a.phaseTilgung }, { ...rente, phase: a.phaseSchuldenfrei });
+  } else {
+    stationen.push({ ...rente, phase: av.darlehenStart >= 0.5 ? a.phaseTilgung : a.phaseSchuldenfrei });
+  }
+
+  const balkenMax = Math.max(1, z.wert, z.restschuld, z.vermoegen, z.eingesetzt);
+  const balken = [
+    { label: a.immobilienwert, wert: z.wert, klasse: "wert" },
+    { label: a.restschuld, wert: z.restschuld, klasse: "schuld" },
+    { label: a.vermoegen, wert: z.vermoegen, klasse: "anteil" },
+    { label: a.eingesetzt, wert: z.eingesetzt, klasse: "eingezahlt" },
+  ];
+  const annahmen: [string, string][] = [
+    [a.alterHeute, String(av.alter)],
+    [a.rentenbeginn, `${av.rentenAlter} (${av.rentenJahr})`],
+    [a.mietsteigerung, prozentZahl(input.annualRentGrowth)],
+    [a.kostensteigerung, prozentZahl(input.annualCostGrowth)],
+    [a.wertsteigerung, prozentZahl(input.annualValueGrowth)],
+    [a.inflation, prozentZahl(input.inflationRate)],
+    [a.zinsTilgung, a.zinsTilgungWert(prozentZahl(input.seniorInterestRate), prozentZahl(input.seniorRepaymentRate))],
+  ];
+
+  return (
+    <>
+      <div className="db-kern">
+        <span className="eyebrow">{a.augenbraue}</span>
+        <p className="db-kernsatz">{a.leitfrage}</p>
+        <p className="db-unterzeile">{a.person(input.clientName.trim(), av.alter, av.rentenAlter, av.rentenJahr)}</p>
+      </div>
+
+      <div className="db-kacheln">
+        <Kachel
+          label={a.kachelEigenaufwand}
+          wert={euro(Math.max(0, av.eigenaufwandHeute))}
+          ton="blau"
+          notiz={
+            ueberschuss
+              ? a.kachelUeberschussNotiz(euro(-av.eigenaufwandHeute), mitVorzeichen(-av.eigenaufwandSchnitt, euro))
+              : a.kachelEigenaufwandNotiz(euro(av.eigenaufwandSchnitt))
+          }
+        />
+        {sf ? (
+          <Kachel label={a.kachelSchuldenfrei} wert={String(sf.jahr)} ton="gruen" notiz={a.kachelSchuldenfreiNotiz(sf.alter)} />
+        ) : (
+          <Kachel label={a.kachelSchuldenfrei} wert={a.kachelSchuldenfreiOffen} notiz={a.kachelSchuldenfreiOffenNotiz} />
+        )}
+        <Kachel
+          label={a.kachelZusatz(av.rentenJahr)}
+          wert={mitVorzeichen(r.zusatz, euro)}
+          ton={r.zusatz >= 0 ? "gruen" : undefined}
+          notiz={a.kachelZusatzNotiz(euro(r.zusatzHeute))}
+        />
+      </div>
+
+      {nochSchulden && (
+        <p className="db-hinweis" role="note">
+          {a.warnungRestschuld(av.rentenJahr, euro(z.restschuld), euro(r.rate))}
+          {av.nachEntschuldung &&
+            a.warnungAbEntschuldung(av.nachEntschuldung.jahr, euro(av.nachEntschuldung.zusatz), euro(av.nachEntschuldung.zusatzHeute))}
+        </p>
+      )}
+
+      <h3 className="db-abschnitt">{a.zeitstrahlTitel}</h3>
+      <p className="db-unterzeile">{a.zeitstrahlUntertitel}</p>
+      <ol className="db-zeitstrahl">
+        {stationen.map((station) => (
+          <li key={station.titel} className={station.ton ? "db-station-gruen" : undefined}>
+            {station.phase && <span className="db-phase">{station.phase}</span>}
+            <div className="db-station">
+              <small>{station.titel}</small>
+              <strong>{station.jahr}</strong>
+              <span>{a.alterText(station.alter)}</span>
+              <span>{station.text}</span>
+            </div>
+          </li>
+        ))}
+      </ol>
+
+      <div className="db-spalten">
+        <div className="db-vermoegen">
+          <h3>{a.vermoegenTitel(av.rentenJahr)}</h3>
+          <p className="db-unterzeile">{a.vermoegenUntertitel(av.jahreBisRente, prozentZahl(input.annualValueGrowth))}</p>
+          {balken.map((eintrag) => (
+            <div key={eintrag.klasse} className="db-balkenzeile">
+              <span>{eintrag.label}</span>
+              <i className="db-balken">
+                <i className={`db-balken-${eintrag.klasse}`} style={{ width: `${(Math.max(0, eintrag.wert) / balkenMax) * 100}%` }} />
+              </i>
+              <b>{euro(eintrag.wert)}</b>
+            </div>
+          ))}
+          <div className="db-bleibt">
+            <span>{a.aufgebaut}</span>
+            <strong>{mitVorzeichen(z.vermoegen - z.eingesetzt, euro)}</strong>
+            <small>{a.aufgebautRechnung(euro(z.vermoegen), euro(z.eingesetzt), euro(z.eigenkapital), euro(z.zuzahlungen))}</small>
+          </div>
+        </div>
+
+        <div className="db-monat">
+          <h3>{a.annahmenTitel}</h3>
+          <p className="db-unterzeile">{a.annahmenUntertitel}</p>
+          {annahmen.map(([label, wert]) => (
+            <Monatszeile key={label} label={label} wert={wert} />
+          ))}
+        </div>
+      </div>
+
+      <p className="db-fussnote">{a.hinweisRechnung}</p>
+      <p className="db-fussnote db-fett">{a.hinweisBeratung}</p>
+    </>
+  );
+}
+
 /**
  * Die Wahl des Deckblatts, unter „Berechnung“ und oben in der Analyse.
  * Beide lesen und schreiben denselben Zustand, die Wahl ist also immer gleich.
@@ -508,6 +683,7 @@ export function DeckblattWahl({
           [
             ["blick", "Ergebnis auf einen Blick"],
             ["jahre", "Jahr für Jahr"],
+            ["rente", "Vermögensaufbau & Altersvorsorge"],
           ] as const
         ).map(([variante, beschriftung]) => (
           <button
