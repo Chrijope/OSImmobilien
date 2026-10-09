@@ -645,6 +645,7 @@ const App = () => (
                   <Route path="/bonitaetsrechner" element={<Bonitaetsrechner />} />
                   <Route path="/immorechner" element={<Navigate to="/investmentrechner" replace />} />
                   <Route path="/investmentrechner" element={<Investmentrechner />} />
+                  <Route path="/investmentrechner-plus" element={<Investmentrechner erweitert />} />
                   <Route path="/ankaufstool" element={<Ankaufstool />} />
                   <Route path="/mietsubvention" element={<Mietsubvention />} />
                   <Route path="/musterkalkulation" element={<Navigate to="/investmentrechner" replace />} />

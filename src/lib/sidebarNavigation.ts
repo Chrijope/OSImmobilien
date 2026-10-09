@@ -93,6 +93,8 @@ const toolsItems = [
    * in Berechtigungen und gespeicherten Links.
    */
   { title: "Investmentkalkulation", url: "/investmentrechner", icon: Calculator, suchbegriffe: ["investmentrechner", "kalkulator", "kalkulation", "rechner", "rechnen", "rendite", "cashflow", "musterrechnung"] },
+  // Seit dem 09.10.2026: derselbe Rechner mit der Karte „Bankgespräch“ (Zinsänderungsrisiko, Beleihung, 15-%-Grenze).
+  { title: "Investmentkalkulation Plus", url: "/investmentrechner-plus", icon: Calculator, suchbegriffe: ["bankgespräch", "zinsänderungsrisiko", "beleihung", "dscr", "kapitaldienst", "15 prozent"] },
   /*
    * Die Kalkulation Investagon ist seit dem 03.09.2026 aus der Sidebar
    * ausgeblendet, aber direkt aufrufbar. Zum Wiedereinblenden genügt es, die

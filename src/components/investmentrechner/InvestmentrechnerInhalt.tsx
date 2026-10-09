@@ -72,7 +72,7 @@ import {
 } from "@/lib/investmentrechner/unterlagenKiFelder";
 import { felderAusUnterlagenAuslesen, UnterlagenKiFehler } from "@/lib/investmentrechner/unterlagenKiAufruf";
 import { ladeRechnerBilder, MAX_RECHNER_BILDER } from "@/lib/investmentrechner/rechnerBilder";
-import { Bereichsknopf } from "@/components/investmentrechner/Felder";
+import { Bereichsknopf, FeldetikettKontext } from "@/components/investmentrechner/Felder";
 import { KundeUndInvestment, type KundenwahlKunde } from "@/components/investmentrechner/KundeUndInvestment";
 import type { KiAuslesung } from "@/components/investmentrechner/UnterlagenUebernahme";
 import {
@@ -319,6 +319,12 @@ export interface InvestmentrechnerInhaltProps {
    * Reiter ein leeres Blatt. Ohne Angabe: sichtbar.
    */
   sichtbar?: boolean;
+  /**
+   * „Investmentkalkulation Plus“, seit dem 09.10.2026 eine eigene Seite unter
+   * der bestehenden: derselbe Rechner mit denselben gespeicherten
+   * Berechnungen, dazu die Karte „Bankgespräch“ in der Analyse.
+   */
+  erweitert?: boolean;
 }
 
 export function InvestmentrechnerInhalt({
@@ -327,6 +333,7 @@ export function InvestmentrechnerInhalt({
   start,
   onErgebnis,
   sichtbar = true,
+  erweitert = false,
 }: InvestmentrechnerInhaltProps = {}) {
   const [objekte, setObjekte] = useState<Objektzustand[]>(() => {
     if (start?.berechnung) {
@@ -1236,10 +1243,10 @@ export function InvestmentrechnerInhalt({
   );
 
   return (
-    <>
+    <FeldetikettKontext.Provider value={erweitert}>
       <div className="space-y-6 w-full">
         {mitUeberschrift ? (
-          <PageHeader title="Investmentkalkulation">{aktionen}</PageHeader>
+          <PageHeader title={erweitert ? "Investmentkalkulation Plus" : "Investmentkalkulation"}>{aktionen}</PageHeader>
         ) : (
           <div className="flex flex-wrap items-center justify-end gap-2">{aktionen}</div>
         )}
@@ -1326,6 +1333,13 @@ export function InvestmentrechnerInhalt({
                 {!vergleichAktiv && <ObjektHinzufuegen onClick={objektHinzufuegen} />}
               </nav>
               <div className="input-content">
+                {erweitert && (
+                  <p className="feldetikett-legende" data-testid="feldetikett-legende">
+                    <span className="feldetikett feldetikett-objekt">Objekt</span> aus Objektanlage oder Unterlagen
+                    <span className="feldetikett feldetikett-selbstauskunft">Kunden-SA</span> aus der Selbstauskunft
+                    <span className="feldetikett feldetikett-manuell">Manuell</span> selbst eintragen
+                  </p>
+                )}
                 {bereich === "kunde" && <EingabeKunde {...eingabeProps} kundenbereich={kundenbereich} />}
                 {bereich === "objekt" && <EingabeObjekt {...eingabeProps} knk={aktiv.knk} setzeKnk={setzeKnk} />}
                 {bereich === "unterlagen" && (
@@ -1417,6 +1431,7 @@ export function InvestmentrechnerInhalt({
                   onOpenDocuments={() => setBereich("unterlagen")}
                   deckblatt={deckblatt}
                   onDeckblatt={waehleDeckblatt}
+                  mitBankgespraech={erweitert}
                 />
               )}
               {ansicht === "vergleich" && vergleichAktiv && (
@@ -1465,6 +1480,6 @@ export function InvestmentrechnerInhalt({
         </div>,
         document.body,
       )}
-    </>
+    </FeldetikettKontext.Provider>
   );
 }

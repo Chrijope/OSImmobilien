@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { ChevronRight, Info } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatEuro, formatEuroCent, formatProzentEineStelle, formatZahl } from "@/lib/investmentrechner/formatierer";
@@ -12,6 +12,7 @@ import {
 import { useRechnerTexte } from "./RechnerSprache";
 import { rechenwege, type Rechenweg } from "@/lib/investmentrechner/kennzahlErklaerungen";
 import { hinweisOhneSteuerwirkung } from "@/lib/investmentrechner/dokumentTexte";
+import type { Feldmarkierung } from "@/lib/investmentrechner/herkunft";
 
 /*
  * Eingabebausteine des Investmentrechners, eins zu eins aus der Web-App
@@ -79,6 +80,29 @@ export function FeldInfo({ text }: { text: string }) {
   );
 }
 
+/**
+ * Herkunftsetiketten an den Feldern, nur in der Investmentkalkulation Plus
+ * (09.10.2026). Der Rechner schaltet sie mit diesem Kontext ein, damit nicht
+ * jedes Feld einen Schalter durchgereicht bekommen muss.
+ */
+export const FeldetikettKontext = createContext(false);
+
+const FELDETIKETT_TEXT: Record<Feldmarkierung, string> = {
+  objekt: "Objekt",
+  selbstauskunft: "Kunden-SA",
+  manuell: "Manuell",
+};
+
+/** Das Etikett hinter der Beschriftung. Ohne Angabe gilt das Feld als manuell. */
+export function Feldetikett({ art = "manuell" }: { art?: Feldmarkierung }) {
+  if (!useContext(FeldetikettKontext)) return null;
+  return (
+    <span className={`feldetikett feldetikett-${art}`} data-testid="feldetikett">
+      {FELDETIKETT_TEXT[art]}
+    </span>
+  );
+}
+
 interface ZahlenfeldProps {
   label: string;
   value: number;
@@ -93,14 +117,17 @@ interface ZahlenfeldProps {
    * sieht aus wie ein Fehler, ein graues erklaert sich mit seinem Hinweis.
    */
   gesperrt?: boolean;
+  /** Herkunftsetikett, siehe `Feldetikett`. */
+  markierung?: Feldmarkierung;
 }
 
-export function Zahlenfeld({ label, value, onChange, suffix, step = "any", min = 0, hint, tooltip, gesperrt }: ZahlenfeldProps) {
+export function Zahlenfeld({ label, value, onChange, suffix, step = "any", min = 0, hint, tooltip, gesperrt, markierung }: ZahlenfeldProps) {
   return (
     <label className="field" data-gesperrt={gesperrt ? "ja" : undefined}>
       <span className="field-label">
         {label}
         {tooltip && <FeldInfo text={tooltip} />}
+        <Feldetikett art={markierung} />
       </span>
       <span className="input-shell">
         <input
@@ -126,14 +153,17 @@ interface TextfeldProps {
   placeholder?: string;
   hint?: string;
   tooltip?: string;
+  /** Herkunftsetikett, siehe `Feldetikett`. */
+  markierung?: Feldmarkierung;
 }
 
-export function Textfeld({ label, value, onChange, placeholder, hint, tooltip }: TextfeldProps) {
+export function Textfeld({ label, value, onChange, placeholder, hint, tooltip, markierung }: TextfeldProps) {
   return (
     <label className="field">
       <span className="field-label">
         {label}
         {tooltip && <FeldInfo text={tooltip} />}
+        <Feldetikett art={markierung} />
       </span>
       <span className="input-shell">
         <input type="text" value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} />
@@ -154,6 +184,8 @@ interface AuswahlOderTextProps {
   placeholder?: string;
   hint?: string;
   tooltip?: string;
+  /** Herkunftsetikett, siehe `Feldetikett`. */
+  markierung?: Feldmarkierung;
 }
 
 /** Kennung der Zeile „Eigene Angabe", sie steht für keinen echten Wert. */
@@ -184,6 +216,7 @@ export function AuswahlOderText({
   placeholder,
   hint,
   tooltip,
+  markierung,
 }: AuswahlOderTextProps) {
   const [freiGewaehlt, setFreiGewaehlt] = useState(false);
   // Ein vorhandener Wert außerhalb der Liste öffnet das Textfeld von selbst.
@@ -194,6 +227,7 @@ export function AuswahlOderText({
       <span className="field-label">
         {label}
         {tooltip && <FeldInfo text={tooltip} />}
+        <Feldetikett art={markierung} />
       </span>
       <span className="select-shell">
         <select
@@ -268,14 +302,17 @@ interface AuswahlfeldProps {
   children: ReactNode;
   hint?: string;
   tooltip?: string;
+  /** Herkunftsetikett, siehe `Feldetikett`. */
+  markierung?: Feldmarkierung;
 }
 
-export function Auswahlfeld({ label, value, onChange, children, hint, tooltip }: AuswahlfeldProps) {
+export function Auswahlfeld({ label, value, onChange, children, hint, tooltip, markierung }: AuswahlfeldProps) {
   return (
     <label className="field">
       <span className="field-label">
         {label}
         {tooltip && <FeldInfo text={tooltip} />}
+        <Feldetikett art={markierung} />
       </span>
       <span className="select-shell">
         <select value={value} onChange={(e) => onChange(e.target.value)}>

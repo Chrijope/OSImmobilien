@@ -18,7 +18,7 @@ import {
 } from "@/lib/investmentrechner/kaufnebenkostenAuswahl";
 import { ENERGIEKLASSEN, formatEuro, formatEuroCent, formatProzent } from "@/lib/investmentrechner/formatierer";
 import { unterlagenAuslesbar, type AuslesbaresFeld } from "@/lib/investmentrechner/unterlagenKiFelder";
-import { eigenkapitalNachRegel, herkunftText, type Herkunft } from "@/lib/investmentrechner/herkunft";
+import { eigenkapitalNachRegel, feldmarkierung, herkunftText, type Herkunft } from "@/lib/investmentrechner/herkunft";
 import { OBJEKTTYP_VORSCHLAEGE } from "@/lib/investmentrechner/objekttypVorschlaege";
 import { Auswahlfeld, AuswahlOderText, FeldInfo, Schalterfeld, Textbereich, Textfeld, Zahlenfeld } from "./Felder";
 import { Energieskala, kaufpreisHinweis, Steuerprofil } from "./Auswertungen";
@@ -91,14 +91,14 @@ export function EingabeKunde({ input, result, setzeZahl, setzeText, aendere, her
           suffix="€"
           onChange={(wert) => setzeZahl("annualGrossIncome", wert)}
           tooltip="Das Bruttojahresgehalt aus Gehaltsabrechnung oder Arbeitsvertrag. Der Wert dient nur der Einordnung im Gespräch und geht in keine Berechnung ein. Gerechnet wird mit dem zu versteuernden Einkommen weiter unten."
-          hint={quelle("annualGrossIncome")}
+          hint={quelle("annualGrossIncome")} markierung={feldmarkierung(herkunft, "annualGrossIncome")}
         />
         <Auswahlfeld
           label="Steuerklasse"
           value={input.taxClass}
           onChange={(wert) => aendere({ taxClass: wert as Steuerklasse })}
           tooltip="Steht auf der Gehaltsabrechnung. Die Steuerklasse steuert nur den monatlichen Lohnsteuerabzug, nicht die Jahressteuer. Das Modell rechnet mit dem zu versteuernden Einkommen, dieses Feld ändert das Ergebnis deshalb nicht."
-          hint={quelle("taxClass")}
+          hint={quelle("taxClass")} markierung={feldmarkierung(herkunft, "taxClass")}
         >
           <option value="I">I</option>
           <option value="II">II</option>
@@ -113,7 +113,7 @@ export function EingabeKunde({ input, result, setzeZahl, setzeText, aendere, her
         value={input.jointAssessment ? "splitting" : "basic"}
         onChange={(wert) => aendere({ jointAssessment: wert === "splitting" })}
         tooltip="Grundtabelle gilt für Alleinstehende, Splittingtabelle für zusammen veranlagte Ehe- oder Lebenspartner. Bei Splitting werden beide zu versteuernden Einkommen addiert und nach dem Splittingverfahren besteuert, das senkt die Steuerlast meist spürbar."
-        hint={quelle("jointAssessment")}
+        hint={quelle("jointAssessment")} markierung={feldmarkierung(herkunft, "jointAssessment")}
       >
         <option value="basic">Grundtabelle · Einzelveranlagung</option>
         <option value="splitting">Splittingtabelle · Zusammenveranlagung</option>
@@ -125,7 +125,7 @@ export function EingabeKunde({ input, result, setzeZahl, setzeText, aendere, her
           suffix="€"
           onChange={(wert) => setzeZahl("taxableIncomeCustomer", wert)}
           tooltip="Das zu versteuernde Einkommen aus dem letzten Steuerbescheid, also nach Werbungskosten, Sonderausgaben und Freibeträgen. Es ist die wichtigste Zahl dieses Bereichs, denn daraus berechnet das Modell die Steuer vor und nach dem Kauf."
-          hint={quelle("taxableIncomeCustomer")}
+          hint={quelle("taxableIncomeCustomer")} markierung={feldmarkierung(herkunft, "taxableIncomeCustomer")}
         />
         {input.jointAssessment && (
           <Zahlenfeld
@@ -134,7 +134,7 @@ export function EingabeKunde({ input, result, setzeZahl, setzeText, aendere, her
             suffix="€"
             onChange={(wert) => setzeZahl("taxableIncomeSpouse", wert)}
             tooltip="Das zu versteuernde Einkommen des Partners aus dem gemeinsamen Steuerbescheid. Bei Zusammenveranlagung wird es zum zvE des Kunden addiert."
-            hint={quelle("taxableIncomeSpouse")}
+            hint={quelle("taxableIncomeSpouse")} markierung={feldmarkierung(herkunft, "taxableIncomeSpouse")}
           />
         )}
         <Zahlenfeld
@@ -254,10 +254,10 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
       <Textfeld label="Objektbezeichnung" value={input.propertyTitle} onChange={(wert) => setzeText("propertyTitle", wert)}
         placeholder="z. B. 3-Zimmerwohnung"
         tooltip="Wie die Wohnung im Exposé heißen soll, zum Beispiel „3-Zimmerwohnung“ oder „2-Zimmerwohnung mit Balkon“. Kommt der Rechner von einer Einheit, steht hier schon der Objektname mit der Wohnungsnummer. Die Bezeichnung geht nicht in die Rechnung ein, sie erscheint nur im Exposé."
-        hint={quelle("propertyTitle")}
+        hint={quelle("propertyTitle")} markierung={feldmarkierung(herkunft, "propertyTitle")}
       />
       <Textfeld label="Adresse" value={input.address} onChange={(wert) => setzeText("address", wert)}
-        hint={quelle("address")}
+        hint={quelle("address")} markierung={feldmarkierung(herkunft, "address")}
       />
       <AuswahlOderText
         label="Objekttyp"
@@ -270,7 +270,7 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
           OBJEKTTYP_VORSCHLAEGE.join(", ") +
           ". Passt keine davon, wähle „Eigene Angabe“ und schreib es selbst hinein. Der Objekttyp erscheint im Exposé und wird nicht mitgerechnet, die Abschreibung stellst du in Bereich 06 ein."
         }
-        hint={quelle("propertyType")}
+        hint={quelle("propertyType")} markierung={feldmarkierung(herkunft, "propertyType")}
       />
       <div className="field-grid three">
         <Zahlenfeld
@@ -279,14 +279,14 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
           suffix="m²"
           onChange={(wert) => setzeZahl("area", wert)}
           tooltip="Wohnfläche laut Kaufvertrag, Teilungserklärung oder Exposé des Verkäufers. Sie geht nicht in die Rechnung ein, erscheint aber im Exposé und dient dem Kunden als Vergleichsmaßstab."
-          hint={quelle("area")}
+          hint={quelle("area")} markierung={feldmarkierung(herkunft, "area")}
         />
         <Zahlenfeld
           label="Zimmer"
           value={input.rooms}
           step="1"
           onChange={(wert) => setzeZahl("rooms", wert)}
-          hint={quelle("rooms")}
+          hint={quelle("rooms")} markierung={feldmarkierung(herkunft, "rooms")}
         />
         <Zahlenfeld
           label="Baujahr"
@@ -294,7 +294,7 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
           step="1"
           onChange={(wert) => setzeZahl("constructionYear", wert)}
           tooltip="Fertigstellungsjahr des Gebäudes. Es erscheint im Exposé und wird nicht automatisch verrechnet. Der passende AfA-Satz für Altbau oder Neubau wird von Hand in Bereich 06 eingetragen."
-          hint={quelle("constructionYear")}
+          hint={quelle("constructionYear")} markierung={feldmarkierung(herkunft, "constructionYear")}
         />
       </div>
       {/*
@@ -309,7 +309,7 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
         suffix="€"
         onChange={(wert) => setzeZahl("purchasePrice", wert)}
         tooltip="Der Gesamtkaufpreis laut Kaufvertrag, also einschließlich Möbel, Inventar und eines mitgekauften Stellplatzes, aber ohne Kaufnebenkosten. Ohne einen Erhaltungsaufwand ist er die Basis für die Kaufnebenkosten; er ist außerdem die Basis für die Abschreibung und für das benötigte Darlehen und wirkt damit auf fast jede Zahl im Ergebnis."
-        hint={quelle("purchasePrice")}
+        hint={quelle("purchasePrice")} markierung={feldmarkierung(herkunft, "purchasePrice")}
       />
       <div className="field-grid">
         <Zahlenfeld
@@ -318,7 +318,7 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
           suffix="€"
           onChange={(wert) => setzeZahl("furniturePrice", wert)}
           tooltip="Der Teil des Kaufpreises, der im Kaufvertrag auf Möbel oder Inventar entfällt. Er ist im Kaufpreis oben schon enthalten und erhöht die Gesamtkosten nicht. Weil er im Notarvertrag als gesonderte Leistung ausgewiesen ist, fallen auf ihn keine Kaufnebenkosten an. Abgeschrieben wird er über die kürzere Möbel-Nutzungsdauer in Bereich 06."
-          hint={quelle("furniturePrice")}
+          hint={quelle("furniturePrice")} markierung={feldmarkierung(herkunft, "furniturePrice")}
         />
         <Zahlenfeld
           label="davon Erhaltungsaufwand"
@@ -326,7 +326,7 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
           suffix="€"
           onChange={(wert) => setzeZahl("rehabExpense", wert)}
           tooltip="Der Teil des Kaufpreises, der auf Renovierung oder Instandsetzung entfällt und steuerlich als Erhaltungsaufwand geltend gemacht wird, etwa der Sanierungsanteil. Er ist im Kaufpreis oben schon enthalten und erhöht die Gesamtkosten nicht. Weil er im Notarvertrag als gesonderte Leistung ausgewiesen ist, fallen auf ihn keine Kaufnebenkosten an: Grunderwerbsteuer, Notar und Grundbuch laufen nur auf den Kaufpreis der Immobilie ohne ihn und ohne Möbel. Wie er steuerlich wirkt, stellst du in Bereich 06 ein."
-          hint={quelle("rehabExpense")}
+          hint={quelle("rehabExpense")} markierung={feldmarkierung(herkunft, "rehabExpense")}
         />
         <Zahlenfeld
           label="davon Anteil Instandhaltungsrücklage"
@@ -334,7 +334,7 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
           suffix="€"
           onChange={(wert) => setzeZahl("maintenanceReserve", wert)}
           tooltip="Der Teil des Kaufpreises, der laut Kaufvertrag auf den übernommenen Anteil an der Instandhaltungsrücklage entfällt. Er ist im Kaufpreis oben schon enthalten. Er wird weder abgeschrieben noch als Werbungskosten angesetzt, die Grunderwerbsteuer fällt aber auch auf ihn an. Im Vermögen zählt er als Guthaben mit seinem Betrag."
-          hint={quelle("maintenanceReserve")}
+          hint={quelle("maintenanceReserve")} markierung={feldmarkierung(herkunft, "maintenanceReserve")}
         />
       </div>
       {/*
@@ -434,7 +434,7 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
             suffix="%"
             onChange={(wert) => setzeZahl("otherPurchaseCostRate", wert)}
             tooltip="Sammelposten für weitere Erwerbsnebenkosten, etwa Bereitstellungszinsen, Gutachten oder Erstausstattung. Angabe in Prozent des Gesamtkaufpreises ohne Erhaltungsaufwand und Möbel. Dieses Feld bleibt auch bei gewähltem Bundesland von Hand einstellbar."
-            hint={quelle("otherPurchaseCostRate")}
+            hint={quelle("otherPurchaseCostRate")} markierung={feldmarkierung(herkunft, "otherPurchaseCostRate")}
           />
         </>
       ) : (
@@ -445,7 +445,7 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
             suffix="%"
             onChange={(wert) => setzeZahl("transferTaxRate", wert)}
             tooltip={KNK_ERKLAERUNG.transferTaxRate}
-            hint={quelle("transferTaxRate")}
+            hint={quelle("transferTaxRate")} markierung={feldmarkierung(herkunft, "transferTaxRate")}
           />
           <Zahlenfeld
             label="Notar"
@@ -453,7 +453,7 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
             suffix="%"
             onChange={(wert) => setzeZahl("notaryRate", wert)}
             tooltip={KNK_ERKLAERUNG.notaryRate}
-            hint={quelle("notaryRate")}
+            hint={quelle("notaryRate")} markierung={feldmarkierung(herkunft, "notaryRate")}
           />
           <Zahlenfeld
             label="Grundbuch"
@@ -461,7 +461,7 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
             suffix="%"
             onChange={(wert) => setzeZahl("landRegisterRate", wert)}
             tooltip={KNK_ERKLAERUNG.landRegisterRate}
-            hint={quelle("landRegisterRate")}
+            hint={quelle("landRegisterRate")} markierung={feldmarkierung(herkunft, "landRegisterRate")}
           />
           <Zahlenfeld
             label="Sonstige KNK"
@@ -469,7 +469,7 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
             suffix="%"
             onChange={(wert) => setzeZahl("otherPurchaseCostRate", wert)}
             tooltip="Sammelposten für weitere Erwerbsnebenkosten, etwa Bereitstellungszinsen, Gutachten oder Erstausstattung. Angabe in Prozent des Gesamtkaufpreises ohne Erhaltungsaufwand und Möbel."
-            hint={quelle("otherPurchaseCostRate")}
+            hint={quelle("otherPurchaseCostRate")} markierung={feldmarkierung(herkunft, "otherPurchaseCostRate")}
           />
         </div>
       )}
@@ -714,7 +714,7 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
           suffix="€"
           onChange={(wert) => setzeZahl("equity", wert)}
           tooltip="Der Betrag, den der Kunde aus eigenem Vermögen einbringt. Er senkt das Bankdarlehen und damit Zins und Rate. Zugleich ist er die Bezugsgröße der Rendite: ohne Eigenkapital lässt sich kein interner Zinsfuß ausweisen."
-          hint={quelle("equity")}
+          hint={quelle("equity")} markierung={feldmarkierung(herkunft, "equity")}
         />
         <Zahlenfeld
           label="Nachrangdarlehen"
@@ -734,6 +734,7 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
               ? `${formatEuro(result.finanzierungsnebenkosten)} auf ${formatEuro(result.totalDebt)} Darlehen`
               : quelle("financingCostRate")
           }
+          markierung={feldmarkierung(herkunft, "financingCostRate")}
         />
       </div>
       <div className="derived-loan">
@@ -756,7 +757,7 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
           suffix="%"
           onChange={(wert) => setzeZahl("seniorInterestRate", wert)}
           tooltip="Der mit der Bank vereinbarte Zinssatz für das erstrangige Darlehen, aus dem Finanzierungsangebot. Das Modell rechnet ihn über den ganzen Betrachtungszeitraum unverändert weiter und bildet keine Anschlussfinanzierung nach Ablauf der Zinsbindung ab."
-          hint={quelle("seniorInterestRate")}
+          hint={quelle("seniorInterestRate")} markierung={feldmarkierung(herkunft, "seniorInterestRate")}
         />
         <Zahlenfeld
           label="Anfängliche Tilgung"
@@ -764,7 +765,7 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
           suffix="%"
           onChange={(wert) => setzeZahl("seniorRepaymentRate", wert)}
           tooltip="Anteil der Darlehenssumme, der im ersten Jahr getilgt wird. Zins und Tilgung zusammen ergeben die gleichbleibende Jahresrate. Weil der Zinsanteil mit sinkender Restschuld fällt, steigt der Tilgungsanteil von Jahr zu Jahr."
-          hint={quelle("seniorRepaymentRate")}
+          hint={quelle("seniorRepaymentRate")} markierung={feldmarkierung(herkunft, "seniorRepaymentRate")}
         />
       </div>
       {input.juniorLoanAmount > 0 && (
@@ -806,7 +807,7 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
             leerText="Ohne Angabe"
             placeholder="z. B. KfW 297 Klimafreundlicher Neubau"
             tooltip="Nur die Beschriftung in Analyse und PDF. Zins, Laufzeit und Zuschuss kommen aus der Zusage der Bank und werden unten eingetragen, hinterlegt ist dafür nichts."
-            hint={quelle("kfwProgram")}
+            hint={quelle("kfwProgram")} markierung={feldmarkierung(herkunft, "kfwProgram")}
           />
           <div className="field-grid">
             <Zahlenfeld
@@ -946,7 +947,7 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
           suffix="€"
           onChange={(wert) => setzeZahl("monthlyColdRent", wert)}
           tooltip="Monatliche Nettokaltmiete ohne Nebenkosten, aus dem Mietvertrag oder bei Leerstand aus einer nüchternen Markteinschätzung. Sie ist die Ertragsgrundlage der gesamten Rechnung und bestimmt Cashflow und Rendite unmittelbar."
-          hint={quelle("monthlyColdRent")}
+          hint={quelle("monthlyColdRent")} markierung={feldmarkierung(herkunft, "monthlyColdRent")}
         />
         <Zahlenfeld
           label="Nicht umlagefähige Kosten p. M."
@@ -954,7 +955,7 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
           suffix="€"
           onChange={(wert) => setzeZahl("monthlyOperatingCosts", wert)}
           tooltip="Kosten, die der Eigentümer selbst trägt und nicht auf den Mieter umlegen kann, vor allem der nicht umlagefähige Teil des Hausgelds und die Sondereigentumsverwaltung. Die Zuführung zur Instandhaltungsrücklage steht im eigenen Feld daneben. Sie stehen im Wirtschaftsplan der Verwaltung und mindern Cashflow und steuerliches Ergebnis."
-          hint={quelle("monthlyOperatingCosts")}
+          hint={quelle("monthlyOperatingCosts")} markierung={feldmarkierung(herkunft, "monthlyOperatingCosts")}
         />
         <Zahlenfeld
           label="Zuführung Instandhaltungsrücklage p. M."
@@ -962,7 +963,7 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
           suffix="€"
           onChange={(wert) => setzeZahl("monthlyReserveContribution", wert)}
           tooltip="Der Teil des Hausgelds, der in die Instandhaltungsrücklage der Gemeinschaft fließt. Er mindert den Cashflow jeden Monat. Steuerlich wird er hier nicht abgezogen: Nach dem Bundesfinanzhof ist er erst abziehbar, wenn die Gemeinschaft das Geld für Erhaltung ausgibt, nicht schon bei der Einzahlung."
-          hint={quelle("monthlyReserveContribution")}
+          hint={quelle("monthlyReserveContribution")} markierung={feldmarkierung(herkunft, "monthlyReserveContribution")}
         />
         <Zahlenfeld
           label="Leerstand / Mietausfall"
@@ -1069,7 +1070,7 @@ export function EingabeSteuer({ input, result, setzeZahl, aendere, herkunft }: E
           suffix="%"
           onChange={(wert) => setzeZahl("buildingShare", Math.min(100, wert))}
           tooltip="Anteil des Kaufpreises ohne Möbel, der auf das Gebäude entfällt. Der Rest ist Grund und Boden und wird nicht abgeschrieben. Maßgeblich sind die Aufteilung im Kaufvertrag oder eine Berechnung nach der Arbeitshilfe des Bundesfinanzministeriums, üblich sind 70 bis 85 Prozent. Die Möbel haben ihre eigene Abschreibung."
-          hint={quelle("buildingShare")}
+          hint={quelle("buildingShare")} markierung={feldmarkierung(herkunft, "buildingShare")}
         />
         <Auswahlfeld
           label="AfA-Methode Gebäude"
@@ -1086,7 +1087,7 @@ export function EingabeSteuer({ input, result, setzeZahl, aendere, herkunft }: E
           suffix="%"
           onChange={(wert) => setzeZahl("buildingDepreciationRate", wert)}
           tooltip="Abschreibungssatz für das Gebäude, üblich sind 2 Prozent ab Baujahr 1925, 2,5 Prozent davor und 3 Prozent bei Neubauten. Bei degressiver Methode gilt der Satz auf den Restbuchwert. Die Abschreibung mindert das steuerliche Ergebnis, kostet aber kein Geld und verändert den Cashflow vor Steuern nicht."
-          hint={quelle("buildingDepreciationRate")}
+          hint={quelle("buildingDepreciationRate")} markierung={feldmarkierung(herkunft, "buildingDepreciationRate")}
         />
         <Zahlenfeld
           label="Möbel-Nutzungsdauer"
@@ -1102,7 +1103,7 @@ export function EingabeSteuer({ input, result, setzeZahl, aendere, herkunft }: E
           suffix="%"
           onChange={(wert) => setzeZahl("specialDepreciationRate", wert)}
           tooltip="Zusätzliche Abschreibung in den ersten Jahren neben der regulären AfA, etwa nach § 7b EStG für neuen Mietwohnraum. Das Modell rechnet den Satz auf dieselbe Bemessungsgrundlage wie die Gebäude-AfA und begrenzt beide zusammen auf das noch nicht abgeschriebene Volumen."
-          hint={quelle("specialDepreciationRate") ?? "Nur eintragen, wenn die persönlichen und objektbezogenen Voraussetzungen geprüft sind."}
+          hint={quelle("specialDepreciationRate") ?? "Nur eintragen, wenn die persönlichen und objektbezogenen Voraussetzungen geprüft sind."} markierung={feldmarkierung(herkunft, "specialDepreciationRate")}
         />
         {input.specialDepreciationRate > 0 && (
           <Zahlenfeld

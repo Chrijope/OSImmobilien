@@ -1,6 +1,19 @@
-import type { InvestmentEingabe, InvestmentErgebnis } from "@/lib/investmentrechner/rechenkern";
+import { eigenkapitalrendite, type InvestmentEingabe, type InvestmentErgebnis } from "@/lib/investmentrechner/rechenkern";
+import {
+  bankuebersicht,
+  eigenkapitalrenditeOhneWertsteigerung,
+  fuenfzehnProzentGrenze,
+  zinsrisiko,
+} from "@/lib/investmentrechner/bankgespraech";
 import { sanierungenBereinigt, type UnterlagenDaten } from "@/lib/investmentrechner/unterlagenAuslesen";
-import { ENERGIEKLASSEN, formatEuro, formatEuroCent, formatProzent, formatZahl } from "@/lib/investmentrechner/formatierer";
+import {
+  ENERGIEKLASSEN,
+  formatEuro,
+  formatEuroCent,
+  formatProzent,
+  formatProzentEineStelle,
+  formatZahl,
+} from "@/lib/investmentrechner/formatierer";
 import { KENNZAHL_TEXTE } from "@/lib/investmentrechner/kennzahlTexte";
 import { rechenwege } from "@/lib/investmentrechner/kennzahlErklaerungen";
 import { Kennzahlkarte } from "./Felder";
@@ -159,6 +172,111 @@ export function kaufpreisHinweis(result: InvestmentErgebnis, sprache: FormatSpra
         : null;
   if (!result.allInclusive) return basis;
   return basis ? `${t.hinweisAllInclusive} ${basis}` : t.hinweisAllInclusive;
+}
+
+/**
+ * Bankgespräch und Risiko, seit dem 09.10.2026: Beleihung, Kapitaldienst,
+ * Zinsänderungsrisiko, Eigenkapitalrendite ohne Wertsteigerung und der
+ * Spielraum bis zur 15-Prozent-Grenze. Gerechnet wird in bankgespraech.ts,
+ * hier nur gezeigt. Die Analyse bleibt Deutsch.
+ */
+export function Bankgespraech({ input, result }: { input: InvestmentEingabe; result: InvestmentErgebnis }) {
+  const bank = bankuebersicht(input, result);
+  const letzter = result.years.length - 1;
+  const risiken = [zinsrisiko(input, result, 0), letzter > 0 ? zinsrisiko(input, result, letzter) : null];
+  const ekrMit = eigenkapitalrendite(input, result).rendite;
+  const ekrOhne = eigenkapitalrenditeOhneWertsteigerung(input, result).rendite;
+  const grenze = fuenfzehnProzentGrenze(result);
+  const prozent1 = (wert: number | null) => (wert === null ? "nicht bestimmbar" : formatProzentEineStelle(wert));
+  const optional = (wert: number | null, format: (w: number) => string) => (wert === null ? "–" : format(wert));
+
+  const bloecke: { titel: string; zeilen: [string, string][]; hinweis?: string }[] = [
+    {
+      titel: "Kapitalbedarf und Finanzierung",
+      zeilen: [
+        ["Kaufpreis", formatEuro(bank.kaufpreis)],
+        ...(bank.kaufnebenkosten > 0 ? [["Kaufnebenkosten", formatEuro(bank.kaufnebenkosten)] as [string, string]] : []),
+        ["Gesamtkosten", formatEuro(bank.gesamtkosten)],
+        ["Eigenkapital", formatEuro(bank.eigenkapital)],
+        ["Darlehen gesamt", formatEuro(bank.darlehen)],
+        ["Darlehen in % des Kaufpreises", formatProzent(bank.beleihungKaufpreis)],
+        ["Darlehen in % der Gesamtkosten", formatProzent(bank.beleihungGesamtkosten)],
+        ["Zinssatz gewichtet", formatProzent(bank.mischzins)],
+        ["Anfängliche Tilgung gewichtet", formatProzent(bank.tilgungGewichtet)],
+        ["Kapitaldienst je Monat (Jahr 1)", formatEuroCent(bank.kapitaldienstMonat)],
+        ["Bankdarlehen voll getilgt", optional(bank.volltilgungBank, String)],
+        ...(bank.volltilgungNachrang !== null
+          ? [["Nachrangdarlehen voll getilgt", String(bank.volltilgungNachrang)] as [string, string]]
+          : []),
+      ],
+    },
+    {
+      titel: "Objekt und Kapitaldienstfähigkeit",
+      zeilen: [
+        ["Kaufpreis je m²", optional(bank.kaufpreisJeQm, formatEuro)],
+        ["Kaltmiete je m²", optional(bank.kaltmieteJeQm, formatEuroCent)],
+        ["Kaufpreisfaktor", optional(bank.kaufpreisfaktor, (w) => `${formatZahl(w, "de", 1)}-fach`)],
+        ["Miete abzüglich Hausgeld und Rücklage je Monat", formatEuroCent(bank.mietueberschussMonat)],
+        ["Kapitaldienstdeckung (DSCR)", optional(bank.kapitaldienstdeckung, (w) => `${formatZahl(w, "de", 2)}-fach`)],
+      ],
+      hinweis: "Ab 1,0-fach trägt die Miete nach Kosten die Rate allein. Banken rechnen meist mit eigenen Abschlägen.",
+    },
+    {
+      titel: "Zinsänderungsrisiko",
+      zeilen: risiken.flatMap((risiko): [string, string][] =>
+        risiko
+          ? [
+              [`${risiko.jahr}: Zins heute auf ${formatEuro(risiko.restschuldBeginn)} Restschuld`, formatProzent(risiko.zinsHeute)],
+              [`${risiko.jahr}: Cashflow nach Steuer wird 0 bei`, risiko.zinsBeiNull === null ? "auch ohne Zins nicht" : formatProzent(risiko.zinsBeiNull)],
+              [`${risiko.jahr}: 1 Prozentpunkt mehr Zins kostet nach Steuer`, `${formatEuroCent(risiko.mehrkostenJeProzentpunktMonat)} im Monat`],
+            ]
+          : [],
+      ),
+      hinweis: "Tilgung, Miete und Kosten bleiben gleich, nur der Zins ändert sich. Die Steuer rechnet mit derselben Progression wie oben.",
+    },
+    {
+      titel: `Eigenkapitalrendite über ${result.years.length} Jahre`,
+      zeilen: [
+        ["mit Wertsteigerung", prozent1(ekrMit)],
+        ["ohne Wertsteigerung", prozent1(ekrOhne)],
+      ],
+      hinweis: "Ohne Wertsteigerung zählt nur, was Tilgung und Rücklage aufbauen.",
+    },
+    ...(grenze
+      ? [
+          {
+            titel: "15-%-Grenze anschaffungsnahe Herstellungskosten",
+            zeilen: [
+              ["Anschaffungskosten Gebäude", formatEuro(grenze.gebaeude)],
+              ["Grenze netto (brutto mit 19 % USt.)", `${formatEuro(grenze.grenzeNetto)} (${formatEuro(grenze.grenzeBrutto)})`],
+              ["Eingetragener Erhaltungsaufwand", formatEuro(grenze.aufwand)],
+              [grenze.spielraumNetto >= 0 ? "Spielraum netto" : "Grenze überschritten um", formatEuro(Math.abs(grenze.spielraumNetto))],
+            ] as [string, string][],
+            hinweis:
+              "Instandsetzungen in den ersten drei Jahren nach dem Kauf sind nur bis zu dieser Grenze sofort absetzbar, darüber werden sie über die AfA verteilt. Vereinfachter Check, ersetzt keine Steuerberatung.",
+          },
+        ]
+      : []),
+  ];
+
+  return (
+    <div className="bankgespraech">
+      {bloecke.map((block) => (
+        <section key={block.titel}>
+          <h4>{block.titel}</h4>
+          <div className="tax-profile-grid">
+            {block.zeilen.map(([label, wert]) => (
+              <div key={label}>
+                <span>{label}</span>
+                <strong>{wert}</strong>
+              </div>
+            ))}
+          </div>
+          {block.hinweis && <p className="kachel-hinweis">{block.hinweis}</p>}
+        </section>
+      ))}
+    </div>
+  );
 }
 
 /** Kaufpreisdetails der Analyse, im Raster des Steuerprofils. */

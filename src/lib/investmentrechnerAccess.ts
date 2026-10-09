@@ -19,6 +19,7 @@ import type { UserRole } from "@/types/user";
  * ist.
  */
 export const INVESTMENTRECHNER_ROUTE = "/investmentrechner";
+export const INVESTMENTRECHNER_PLUS_ROUTE = "/investmentrechner-plus";
 
 /** Rollen, fuer die der Investmentrechner regulaer offen ist. */
 export const INVESTMENTRECHNER_ROLLEN: ReadonlyArray<UserRole> = [
