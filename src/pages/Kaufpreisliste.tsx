@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { FileDown, FileSpreadsheet, Mail, Plus, RotateCcw, Save, Trash2 } from "lucide-react";
+import { FileDown, FileSpreadsheet, Mail, Plus, Save, Trash2 } from "lucide-react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -122,20 +122,6 @@ const Kaufpreisliste = () => {
     [objektStand],
   );
 
-  const objektWaehlen = (id: string) => {
-    if (id === KEIN_OBJEKT) return setze("objektId", null);
-    const o = objekte.find((x) => x.id === id);
-    if (!o) return;
-    if (eingaben.zeilen.some((z) => z.flaeche !== null || z.vk !== null) && !window.confirm("Die Einheiten durch die des Objekts ersetzen? Der Wirtschaftsplan bleibt.")) return;
-    const zeilen = [...o.wohnungen]
-      .sort((a, b) => a.weNr.localeCompare(b.weNr, "de", { numeric: true }))
-      .map((w) => zeileAusCrm(w, eingaben.stand));
-    setEingaben((alt) => ({
-      ...alt, objektId: o.id, objektName: o.titel, ort: [o.plz, o.ort].filter(Boolean).join(" "), zeilen,
-      wirtschaftsplan: { ...alt.wirtschaftsplan, anzahlEinheiten: alt.wirtschaftsplan.anzahlEinheiten ?? zeilen.length },
-    }));
-  };
-
   // Versionen, Muster wie im Ankaufstool.
   const cacheStand = useLiveVersion(["user_settings"]);
   const [gespeichertStand, setGespeichertStand] = useState(0);
@@ -153,15 +139,16 @@ const Kaufpreisliste = () => {
   const versionSichern = async () => {
     const jetzt = new Date();
     const name = eingaben.objektName.trim() || `Liste vom ${jetzt.toLocaleDateString("de-DE")} ${jetzt.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}`;
-    const neu: KplVersion = { id: crypto.randomUUID(), name, gespeichertAm: jetzt.toISOString(), eingaben };
+    // Eine geöffnete Liste wird überschrieben, sonst entsteht eine neue.
+    const neu: KplVersion = { id: aktiveVersion ?? crypto.randomUUID(), name, gespeichertAm: jetzt.toISOString(), eingaben };
     setSpeichertGerade(true);
     try {
-      await versionenSchreiben(versionSpeichern(versionen, neu));
+      await versionenSchreiben(versionSpeichern(versionen.filter((v) => v.id !== neu.id), neu));
       setAktiveVersion(neu.id);
-      toast.success(`Version „${name}“ gespeichert.`);
+      toast.success(`Kaufpreisliste „${name}“ gespeichert.`);
     } catch (err) {
       console.error(err);
-      toast.error("Die Version konnte nicht gespeichert werden.");
+      toast.error("Die Kaufpreisliste konnte nicht gespeichert werden.");
     } finally {
       setSpeichertGerade(false);
     }
@@ -172,14 +159,30 @@ const Kaufpreisliste = () => {
     setAktiveVersion(v.id);
   };
   const versionLoeschen = async (v: KplVersion) => {
-    if (!window.confirm(`Version „${v.name}“ löschen?`)) return;
+    if (!window.confirm(`Kaufpreisliste „${v.name}“ löschen?`)) return;
     try {
       await versionenSchreiben(versionen.filter((x) => x.id !== v.id));
       if (aktiveVersion === v.id) setAktiveVersion(null);
     } catch (err) {
       console.error(err);
-      toast.error("Die Version konnte nicht gelöscht werden.");
+      toast.error("Die Kaufpreisliste konnte nicht gelöscht werden.");
     }
+  };
+
+  const objektWaehlen = (id: string) => {
+    if (id === KEIN_OBJEKT) return setze("objektId", null);
+    const o = objekte.find((x) => x.id === id);
+    if (!o) return;
+    const gespeichert = versionen.find((v) => v.eingaben.objektId === id);
+    if (gespeichert && window.confirm(`Für „${o.titel}“ gibt es eine gespeicherte Kaufpreisliste. Diese öffnen? (Abbrechen: neu aus dem CRM befüllen)`)) return versionLaden(gespeichert);
+    if (eingaben.zeilen.some((z) => z.flaeche !== null || z.vk !== null) && !window.confirm("Die Einheiten durch die des Objekts ersetzen? Der Wirtschaftsplan bleibt.")) return;
+    const zeilen = [...o.wohnungen]
+      .sort((a, b) => a.weNr.localeCompare(b.weNr, "de", { numeric: true }))
+      .map((w) => zeileAusCrm(w, eingaben.stand));
+    setEingaben((alt) => ({
+      ...alt, objektId: o.id, objektName: o.titel, ort: [o.plz, o.ort].filter(Boolean).join(" "), zeilen,
+      wirtschaftsplan: { ...alt.wirtschaftsplan, anzahlEinheiten: alt.wirtschaftsplan.anzahlEinheiten ?? zeilen.length },
+    }));
   };
 
   const xlsxDatei = async () => new File([await baueKaufpreislisteXlsx(eingaben)], `${kplDateiname(eingaben)}.xlsx`, { type: XLSX_MIME });
@@ -218,9 +221,6 @@ const Kaufpreisliste = () => {
     <DashboardLayout>
       <div className="space-y-6 w-full">
         <PageHeader title="Kaufpreisliste" subtitle="Einheiten, Mieterliste, Soll-Miete, Kaufpreis und Hausgeld aus dem Wirtschaftsplan in einer Liste.">
-          <Button variant="outline" size="sm" onClick={() => { setEingaben(KPL_STANDARD()); setAktiveVersion(null); }}>
-            <RotateCcw className="h-4 w-4 mr-1" /> Zurücksetzen
-          </Button>
           <Button variant="outline" size="sm" onClick={perMail} disabled={laeuft !== null}>
             <Mail className="h-4 w-4 mr-1" /> {laeuft === "mail" ? "Bereite vor …" : "Per Mail versenden"}
           </Button>
@@ -231,6 +231,47 @@ const Kaufpreisliste = () => {
             <FileSpreadsheet className="h-4 w-4 mr-1" /> {laeuft === "xlsx" ? "Erstelle Excel …" : "Als Excel herunterladen"}
           </Button>
         </PageHeader>
+
+        <SectionCard>
+          <SectionCardHeader>
+            <SectionCardTitle>Meine Kaufpreislisten</SectionCardTitle>
+            <SectionCardDescription>
+              Je Objekt eine eigene Liste. Anklicken öffnet sie, „Liste speichern“ sichert die geöffnete Liste.
+            </SectionCardDescription>
+          </SectionCardHeader>
+          <SectionCardContent className="space-y-3">
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" onClick={() => { setEingaben(KPL_STANDARD()); setAktiveVersion(null); }}>
+                <Plus className="h-4 w-4 mr-1" /> Neue Liste
+              </Button>
+              <Button onClick={versionSichern} disabled={speichertGerade}>
+                <Save className="h-4 w-4 mr-1" /> {speichertGerade ? "Speichert …" : "Liste speichern"}
+              </Button>
+            </div>
+            {versionen.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Noch keine gespeicherte Liste. Objekt wählen, ausfüllen, „Liste speichern“.</p>
+            ) : (
+              <ul className="divide-y divide-border/60 rounded-xl border border-border/60">
+                {versionen.map((v) => {
+                  const vg = berechneKaufpreisliste({ ...KPL_STANDARD(), ...v.eingaben }).gesamt;
+                  return (
+                    <li key={v.id} className={cn("flex items-center gap-2 pr-2", aktiveVersion === v.id && "bg-muted/50")}>
+                      <button type="button" onClick={() => versionLaden(v)} className="flex-1 min-w-0 px-3 py-2 text-left hover:bg-muted/40 rounded-l-xl">
+                        <span className="block truncate text-sm font-medium">{v.name}{aktiveVersion === v.id && <span className="ml-2 text-xs font-normal text-primary">geöffnet</span>}</span>
+                        <span className="block text-xs text-muted-foreground">
+                          {vg.einheiten} WE · {eur(vg.vk)} · gespeichert {new Date(v.gespeichertAm).toLocaleString("de-DE", { dateStyle: "medium", timeStyle: "short" })}
+                        </span>
+                      </button>
+                      <Button variant="ghost" size="icon" aria-label={`Kaufpreisliste ${v.name} löschen`} onClick={() => versionLoeschen(v)}>
+                        <Trash2 className="h-4 w-4 text-muted-foreground" />
+                      </Button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </SectionCardContent>
+        </SectionCard>
 
         <SectionCard>
           <SectionCardHeader>
@@ -274,29 +315,6 @@ const Kaufpreisliste = () => {
                 <p className="text-xs text-muted-foreground">Wird nach Verkaufspreis auf die Einheiten verteilt.</p>
               </div>
             </div>
-            <div className="flex gap-2 justify-end">
-              <Button variant="outline" onClick={versionSichern} disabled={speichertGerade}>
-                <Save className="h-4 w-4 mr-1" /> {speichertGerade ? "Speichert …" : "Version speichern"}
-              </Button>
-            </div>
-            {versionen.length > 0 && (
-              <ul className="divide-y divide-border/60 rounded-xl border border-border/60">
-                {versionen.map((v) => (
-                  <li key={v.id} className={cn("flex items-center gap-2 pr-2", aktiveVersion === v.id && "bg-muted/50")}>
-                    <button type="button" onClick={() => versionLaden(v)} className="flex-1 min-w-0 px-3 py-2 text-left hover:bg-muted/40 rounded-l-xl">
-                      <span className="block truncate text-sm font-medium">{v.name}</span>
-                      <span className="block text-xs text-muted-foreground">
-                        {new Date(v.gespeichertAm).toLocaleString("de-DE", { dateStyle: "medium", timeStyle: "short" })}
-                        {" · "}{v.eingaben.zeilen.length} Einheiten
-                      </span>
-                    </button>
-                    <Button variant="ghost" size="icon" aria-label={`Version ${v.name} löschen`} onClick={() => versionLoeschen(v)}>
-                      <Trash2 className="h-4 w-4 text-muted-foreground" />
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            )}
           </SectionCardContent>
         </SectionCard>
 
