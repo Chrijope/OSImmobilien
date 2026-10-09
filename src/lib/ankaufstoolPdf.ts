@@ -3,7 +3,9 @@ import {
   addBrandedFooter, addBrandedHeader, addCoverPage, brandedSectionTitle, BRAND, ensureUnicodeFont, loadIcon, loadLogo,
   PDF_FONT, sanitizePdfText,
 } from "./pdfBranding";
-import { anteilAmErloes, berechneAnkauf, type AnkaufEingaben, type AnkaufErgebnis } from "./ankaufstool";
+import {
+  anteilAmErloes, berechneAnkauf, OBJEKT_LEER, type AnkaufEingaben, type AnkaufErgebnis, type AnkaufObjekt,
+} from "./ankaufstool";
 
 export const eur = (n: number, stellen = 0) =>
   n.toLocaleString("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: stellen, maximumFractionDigits: stellen });
@@ -64,8 +66,13 @@ function ergebnisKarte(doc: jsPDF, r: AnkaufErgebnis, e: AnkaufEingaben, y: numb
   doc.setTextColor(212, 220, 232);
   const zeilen = uebersicht
     ? [`Marge ${prozent(r.margeErloes)} vom Verkaufserlös`, `Rendite auf Eigenkapital ${prozent(r.renditeEigenkapital)} (nicht annualisiert)`]
-    : [`Verkaufserlös ${eur(r.verkaufserloes)}`, `abzüglich Gesamtkosten (1–4) ${eur(r.gesamtkosten)}`];
-  zeilen.forEach((z, i) => doc.text(s(z), M + 8, y + 33 + i * 5));
+    : [
+        `Verkaufserlös ${eur(r.verkaufserloes)}`,
+        ...(r.mieteinnahmen !== 0 ? [`zuzüglich Mietüberschuss bis Verkauf ${eur(r.mieteinnahmen)}`] : []),
+        `abzüglich Gesamtkosten (1–4) ${eur(r.gesamtkosten)}`,
+      ];
+  const abstand = zeilen.length > 2 ? 4.2 : 5;
+  zeilen.forEach((z, i) => doc.text(s(z), M + 8, y + (zeilen.length > 2 ? 31 : 33) + i * abstand));
 
   // Urteil-Schild rechts
   const schildB = 58;
@@ -94,7 +101,7 @@ function ergebnisKarte(doc: jsPDF, r: AnkaufErgebnis, e: AnkaufEingaben, y: numb
 }
 
 /** Eingaben und Ergebnis des Ankaufstools als PDF im Hausstil: Deckblatt, Übersicht, Details. */
-export async function buildAnkaufstoolPdf(e: AnkaufEingaben, objektName = ""): Promise<jsPDF> {
+export async function buildAnkaufstoolPdf(e: AnkaufEingaben, objektName = "", objekt: AnkaufObjekt = OBJEKT_LEER): Promise<jsPDF> {
   const r = berechneAnkauf(e);
   const doc = new jsPDF("p", "mm", "a4");
   await ensureUnicodeFont(doc);
@@ -106,7 +113,12 @@ export async function buildAnkaufstoolPdf(e: AnkaufEingaben, objektName = ""): P
     kennung: "Ankaufsprüfung",
     titel: objektName || "Ankaufskalkulation",
     untertitel: `${objektName ? "Ankaufskalkulation · " : ""}Bauträger-Kalkulation: Lohnt sich das Objekt? ` +
-      `${zahl(e.wohneinheiten)} Wohneinheiten, ${zahl(e.wohnflaeche, 2)} m² Wohnfläche.`,
+      [
+        e.wohnflaeche || e.wohneinheiten || !e.gewerbeflaeche
+          ? `${zahl(e.wohneinheiten)} Wohneinheiten, ${zahl(e.wohnflaeche, 2)} m² Wohnfläche` : "",
+        e.gewerbeflaeche ? `${zahl(e.gewerbeeinheiten)} Gewerbeeinheiten, ${zahl(e.gewerbeflaeche, 2)} m² Gewerbefläche` : "",
+        e.stellplaetze ? `${zahl(e.stellplaetze)} Stellplätze` : "",
+      ].filter(Boolean).join(", ") + ".",
   });
 
   let y = 0;
@@ -141,7 +153,7 @@ export async function buildAnkaufstoolPdf(e: AnkaufEingaben, objektName = ""): P
     ["Verkaufserlös", eur(r.verkaufserloes)],
     ["Gesamtkosten", eur(r.gesamtkosten)],
     ["Marge auf Kosten", prozent(r.margeKosten)],
-    ["Gewinn / Wohnung", eur(r.gewinnJeWohnung)],
+    ["Gewinn / Einheit", eur(r.gewinnJeWohnung)],
   ];
   const kachelB = (CW - 3 * 4) / 4;
   kacheln.forEach(([label, wert], i) => {
@@ -198,7 +210,7 @@ export async function buildAnkaufstoolPdf(e: AnkaufEingaben, objektName = ""): P
     ["Gewinn", Math.max(0, r.gewinn), GOLD],
   ];
   // Übersteigen die Kosten den Erlös, wird auf die Kosten skaliert.
-  const basis = Math.max(r.verkaufserloes, r.gesamtkosten) || 1;
+  const basis = Math.max(r.verkaufserloes + Math.max(0, r.mieteinnahmen), r.gesamtkosten) || 1;
   let bx = M;
   for (const [, betrag, c] of teile) {
     const b = (betrag / basis) * CW;
@@ -222,9 +234,9 @@ export async function buildAnkaufstoolPdf(e: AnkaufEingaben, objektName = ""): P
   y += Math.ceil(teile.length / 2) * 7 + 4;
 
   // Preisschwellen
-  abschnitt("Abgabepreis je m²");
+  abschnitt(e.gewerbeflaeche ? "Ø Abgabepreis je m² (Wohnen und Gewerbe)" : "Abgabepreis je m²");
   const preise: [string, number, RGB][] = [
-    ["Angesetzt", e.abgabepreisProQm, BRAND.primary],
+    ["Angesetzt", r.abgabepreisDurchschnitt, BRAND.primary],
     ["Mindestens (0 € Gewinn)", r.mindestAbgabepreis, ROT],
     ["Für Grün nötig", r.abgabepreisGruen, BRAND.accent],
   ];
@@ -297,12 +309,63 @@ export async function buildAnkaufstoolPdf(e: AnkaufEingaben, objektName = ""): P
   };
 
   neueSeite();
+
+  // Beschreibende Exposé-Angaben, nur ausgefüllte; lange Texte umbrechen.
+  const objektZeilen: [string, string][] = ([
+    ["Objektart", objekt.objektart],
+    ["Baujahr", objekt.baujahr],
+    ["Zustand / Modernisierung", objekt.zustand],
+    ["Vermietung / Leerstand", objekt.vermietung],
+    ["Energie / Heizung", objekt.energie],
+    ["Lage / Umfeld", objekt.lage],
+    ["Makler / Quelle", objekt.makler],
+  ] as [string, string][]).filter(([, wert]) => wert.trim());
+  if (objektZeilen.length) {
+    abschnitt("Objekt laut Exposé");
+    for (const [label, wert] of objektZeilen) {
+      schrift(8.5);
+      const text = doc.splitTextToSize(s(wert.trim()), CW - 60) as string[];
+      const hoehe = Math.max(7, text.length * 4 + 3);
+      platz(hoehe + 1);
+      schrift(8.5, false, BRAND.muted);
+      doc.text(s(label), M + 3, y + 4.7);
+      schrift(8.5, false, BRAND.text);
+      doc.text(text, M + 57, y + 4.7);
+      doc.setDrawColor(...BRAND.separator);
+      doc.setLineWidth(0.15);
+      doc.line(M, y + hoehe, M + CW, y + hoehe);
+      y += hoehe;
+    }
+    y += 4;
+  }
+
+  const nurWenn = (bedingung: unknown, zeilen: Zeile[]) => (bedingung ? zeilen : []);
+  // Reines Gewerbeobjekt: Wohnzeilen mit 0 € weglassen.
+  const mitWohnen = e.wohnflaeche > 0 || !e.gewerbeflaeche;
   tabelle("Objektdaten & Verkaufserlös", [
     { label: "Wohnfläche gesamt", eingabe: `${zahl(e.wohnflaeche, 2)} m²` },
     { label: "Anzahl Wohneinheiten", eingabe: zahl(e.wohneinheiten) },
+    ...nurWenn(e.gewerbeflaeche || e.gewerbeeinheiten, [
+      { label: "Gewerbefläche gesamt", eingabe: `${zahl(e.gewerbeflaeche, 2)} m²` },
+      { label: "Anzahl Gewerbeeinheiten", eingabe: zahl(e.gewerbeeinheiten) },
+    ]),
+    ...nurWenn(e.gesamtflaecheManuell || e.gewerbeflaeche, [
+      { label: "Gesamtfläche", eingabe: `${zahl(r.gesamtflaeche, 2)} m²` },
+      { label: "Kaufpreis je m² Gesamtfläche", eingabe: `${eur(r.kaufpreisJeQm)}/m²` },
+    ]),
+    ...nurWenn(e.grundstuecksflaeche, [{ label: "Grundstücksfläche", eingabe: `${zahl(e.grundstuecksflaeche, 2)} m²` }]),
+    ...nurWenn(e.stellplaetze, [{ label: "Stellplätze / Garagen", eingabe: zahl(e.stellplaetze) }]),
     { label: "Projektlaufzeit (Ankauf bis letzter Verkauf)", eingabe: `${zahl(e.laufzeitMonate)} Monate` },
-    { label: "Abgabepreis an Käufer (Durchschnitt)", eingabe: `${eur(e.abgabepreisProQm)}/m²` },
-    { label: "Ø Abgabepreis je Wohnung", betrag: r.abgabepreisJeWohnung, info: true },
+    ...nurWenn(mitWohnen, [
+      { label: "Abgabepreis Wohnen (Durchschnitt)", eingabe: `${eur(e.abgabepreisProQm)}/m²`, betrag: r.erloesWohnen },
+    ]),
+    ...nurWenn(e.gewerbeflaeche, [
+      { label: "Abgabepreis Gewerbe (Durchschnitt)", eingabe: `${eur(e.abgabepreisGewerbeProQm)}/m²`, betrag: r.erloesGewerbe },
+    ]),
+    ...nurWenn(e.stellplaetze, [
+      { label: "Abgabepreis je Stellplatz", eingabe: eur(e.abgabepreisStellplatz), betrag: r.erloesStellplaetze },
+    ]),
+    { label: e.gewerbeflaeche ? "Ø Abgabepreis je Einheit" : "Ø Abgabepreis je Wohnung", betrag: r.abgabepreisJeWohnung, info: true },
     { label: "Verkaufserlös gesamt", betrag: r.verkaufserloes, summe: true },
   ]);
   tabelle("1. Ankauf", [
@@ -313,7 +376,12 @@ export async function buildAnkaufstoolPdf(e: AnkaufEingaben, objektName = ""): P
     { label: "Summe Ankauf", betrag: r.summeAnkauf, summe: true },
   ]);
   tabelle("2. Sanierung & Aufteilung", [
-    { label: "Sanierung Wohnungen", eingabe: `${eur(e.sanierungProQm)}/m²`, betrag: r.sanierungWohnungen },
+    ...nurWenn(mitWohnen, [
+      { label: "Sanierung Wohnungen", eingabe: `${eur(e.sanierungProQm)}/m²`, betrag: r.sanierungWohnungen },
+    ]),
+    ...nurWenn(e.gewerbeflaeche, [
+      { label: "Sanierung Gewerbe", eingabe: `${eur(e.sanierungGewerbeProQm)}/m²`, betrag: r.sanierungGewerbe },
+    ]),
     { label: "Sanierung Gemeinschaftseigentum pauschal", betrag: e.sanierungGemeinschaft },
     { label: "Puffer Unvorhergesehenes (der Sanierung)", eingabe: prozent(e.pufferSanierung), betrag: r.pufferSanierung },
     { label: "Aufteilung (Teilungserklärung, Notar)", betrag: e.aufteilung },
@@ -339,6 +407,16 @@ export async function buildAnkaufstoolPdf(e: AnkaufEingaben, objektName = ""): P
     { label: "Bankgebühren / Bereitstellungszinsen", betrag: e.bankgebuehren },
     { label: "Summe Finanzierung", betrag: r.summeFinanzierung, summe: true },
   ]);
+  if (r.istMieteJahr || e.bewirtschaftungJahr) {
+    tabelle("Mieten bis zum Verkauf", [
+      ...nurWenn(e.istMieteWohnenJahr, [{ label: "Ist-Miete Wohnen p. a.", eingabe: eur(e.istMieteWohnenJahr) }]),
+      ...nurWenn(e.istMieteGewerbeJahr, [{ label: "Ist-Miete Gewerbe p. a.", eingabe: eur(e.istMieteGewerbeJahr) }]),
+      ...nurWenn(e.istMieteStellplaetzeJahr, [{ label: "Ist-Miete Stellplätze p. a.", eingabe: eur(e.istMieteStellplaetzeJahr) }]),
+      { label: "Nicht umlagefähige Kosten p. a.", eingabe: eur(e.bewirtschaftungJahr) },
+      ...nurWenn(r.kaufpreisFaktor, [{ label: "Kaufpreisfaktor (Kaufpreis / Ist-Miete)", eingabe: zahl(r.kaufpreisFaktor, 1) }]),
+      { label: "Mietüberschuss bis Verkauf (anteilig wie Darlehen)", betrag: r.mieteinnahmen, summe: true },
+    ]);
+  }
   abschnitt("Ergebnis");
   platz(48);
   ergebnisKarte(doc, r, e, y, false);
@@ -350,7 +428,7 @@ export async function buildAnkaufstoolPdf(e: AnkaufEingaben, objektName = ""): P
     ["Marge vom Verkaufserlös", prozent(r.margeErloes)],
     ["Marge auf Gesamtkosten", prozent(r.margeKosten)],
     ["Rendite auf Eigenkapital (nicht annualisiert)", prozent(r.renditeEigenkapital)],
-    ["Gewinn je Wohnung", eur(r.gewinnJeWohnung)],
+    ["Gewinn je Einheit", eur(r.gewinnJeWohnung)],
     ["Gewinn je m²", eur(r.gewinnJeQm)],
     ["Gesamtkosten je m²", eur(r.gesamtkostenJeQm)],
     ["Mindest-Abgabepreis für 0 € Gewinn", `${eur(r.mindestAbgabepreis)}/m²`],

@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
-  ANKAUF_STANDARD, anteilAmErloes, berechneAnkauf, eingabenAusVersion, versionSpeichern, type AnkaufVersion,
+  ANKAUF_STANDARD, anteilAmErloes, berechneAnkauf, eingabenAusVersion, objektAusVersion, versionSpeichern,
+  type AnkaufEingaben, type AnkaufVersion,
 } from "./ankaufstool";
 
 /*
@@ -74,6 +75,92 @@ describe("berechneAnkauf: Ampel und Randfälle", () => {
   });
 });
 
+describe("berechneAnkauf: Gewerbe, Stellplätze, Mieten", () => {
+  const basis = berechneAnkauf(ANKAUF_STANDARD);
+
+  it("Gewerbe = 0 und Exposé-Felder ohne Rechenwirkung ergeben exakt die Excel", () => {
+    const r = berechneAnkauf({
+      ...ANKAUF_STANDARD, gewerbeflaeche: 0, gesamtflaecheManuell: 999, grundstuecksflaeche: 3000,
+      abgabepreisGewerbeProQm: 3000, sanierungGewerbeProQm: 500, gewerbeeinheiten: 0,
+    });
+    for (const k of Object.keys(basis) as (keyof typeof basis)[]) {
+      if (["gesamtflaeche", "kaufpreisJeQm"].includes(k)) continue;
+      expect(r[k]).toBe(basis[k]);
+    }
+  });
+
+  it("Gewerbe wie Wohnen: gleiche Preise und Fläche verdoppeln Erlös und Sanierung", () => {
+    const r = berechneAnkauf({
+      ...ANKAUF_STANDARD, gewerbeflaeche: 560, gewerbeeinheiten: 8,
+      abgabepreisGewerbeProQm: 4900, sanierungGewerbeProQm: 650,
+    });
+    expect(r.verkaufserloes).toBe(2 * basis.verkaufserloes);
+    expect(r.sanierungGewerbe).toBe(basis.sanierungWohnungen);
+    expect(r.abgabepreisJeWohnung).toBe(basis.abgabepreisJeWohnung);
+    expect(r.mietsubvention).toBe(basis.mietsubvention); // nur Wohnfläche
+  });
+
+  it("Mindest- und Grün-Preis gelten auch mit Gewerbe, Stellplätzen und Mieten", () => {
+    const e: AnkaufEingaben = {
+      ...ANKAUF_STANDARD, gewerbeflaeche: 300, abgabepreisGewerbeProQm: 2500, stellplaetze: 6,
+      abgabepreisStellplatz: 15_000, istMieteGewerbeJahr: 30_000, bewirtschaftungJahr: 4_000,
+    };
+    const r = berechneAnkauf(e);
+    const mit = (p: number) => berechneAnkauf({ ...e, abgabepreisProQm: p, abgabepreisGewerbeProQm: p });
+    expect(mit(r.mindestAbgabepreis).gewinn).toBeCloseTo(0, 6);
+    expect(mit(r.abgabepreisGruen).margeErloes).toBeCloseTo(e.schwelleGruen, 10);
+  });
+
+  it("Mietüberschuss läuft anteilig über die Laufzeit, Leerstandskosten mindern den Gewinn", () => {
+    const r = berechneAnkauf({ ...ANKAUF_STANDARD, istMieteWohnenJahr: 50_000, istMieteStellplaetzeJahr: 4_000, bewirtschaftungJahr: 6_000 });
+    expect(r.mieteinnahmen).toBeCloseTo(48_000 * 1.5 * 0.7, 6);
+    expect(r.gewinn).toBeCloseTo(basis.gewinn + r.mieteinnahmen, 6);
+    expect(r.kaufpreisFaktor).toBeCloseTo(1_400_000 / 54_000, 10);
+    expect(berechneAnkauf({ ...ANKAUF_STANDARD, bewirtschaftungJahr: 10_000 }).gewinn).toBeLessThan(basis.gewinn);
+  });
+});
+
+/*
+ * Exposé Borchmann Immobilien, Kennung 63696: Pappelallee 34a, 14554 Seddiner
+ * See. Bürogebäude / Self Storage, Bj. 1988, modernisiert, leer. Aus dem
+ * Exposé: Kaufpreis, Flächen, Käuferprovision 7,14 %. Grunderwerbsteuer
+ * Brandenburg 6,5 %. Annahmen (stehen nicht im Exposé): Abgabepreis und
+ * Sanierung Gewerbe; alles Übrige aus der Excel-Vorlage.
+ */
+describe("Exposé Borchmann, Seddiner See", () => {
+  const e: AnkaufEingaben = {
+    ...ANKAUF_STANDARD,
+    kaufpreis: 1_800_000,
+    maklerEinkauf: 0.0714,
+    grunderwerbsteuer: 0.065,
+    wohnflaeche: 0,
+    wohneinheiten: 0,
+    gewerbeflaeche: 2_200,
+    grundstuecksflaeche: 3_000,
+    istMieteGewerbeJahr: 0, // nicht vermietet
+    abgabepreisGewerbeProQm: 2_000, // Annahme
+    sanierungGewerbeProQm: 300, // Annahme
+  };
+  const r = berechneAnkauf(e);
+
+  it("rechnet das Gewerbe statt 0 € Erlös", () => {
+    expect(r.verkaufserloes).toBe(4_400_000);
+    expect(r.summeAnkauf).toBeCloseTo(1_800_000 * (1 + 0.065 + 0.02 + 0.0714), 6);
+    expect(r.kaufpreisJeQm).toBeCloseTo(1_800_000 / 2_200, 10);
+    expect(r.mietsubvention).toBe(0);
+  });
+
+  it("Ergebnis", () => {
+    expect(r.summeSanierung).toBe(878_000);
+    expect(r.gesamtkosten).toBeCloseTo(3_463_249.824, 3);
+    expect(r.gewinn).toBeCloseTo(936_750.176, 3);
+    expect(r.margeErloes).toBeCloseTo(0.212898, 6);
+    expect(r.urteil).toBe("LOHNT SICH");
+    expect(r.mindestAbgabepreis).toBeCloseTo(1_537.18, 2);
+    expect(r.abgabepreisGruen).toBeCloseTo(1_964.17, 2);
+  });
+});
+
 describe("Versionen", () => {
   const version = (id: string, name: string): AnkaufVersion => ({ id, name, gespeichertAm: "", eingaben: { kaufpreis: 1 } });
 
@@ -86,5 +173,7 @@ describe("Versionen", () => {
     const e = eingabenAusVersion(version("a", "A"));
     expect(e.kaufpreis).toBe(1);
     expect(e.wohnflaeche).toBe(ANKAUF_STANDARD.wohnflaeche);
+    expect(e.gewerbeflaeche).toBe(0);
+    expect(objektAusVersion(version("a", "A")).objektart).toBe("");
   });
 });

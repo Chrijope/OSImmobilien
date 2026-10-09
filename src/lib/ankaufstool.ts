@@ -39,7 +39,35 @@ export interface AnkaufEingaben {
   zinssatz: number; // B44
   inanspruchnahme: number; // B45
   bankgebuehren: number; // B47
+  // Ab hier nicht in der Excel: Angaben aus dem Exposé. Alle 0 = Rechnung wie die Excel.
+  gewerbeflaeche: number; // m², wird wie Wohnen aufgeteilt und je m² verkauft
+  gesamtflaecheManuell: number; // m², 0 = Wohn- + Gewerbefläche
+  grundstuecksflaeche: number; // m², nur Info
+  gewerbeeinheiten: number;
+  stellplaetze: number;
+  abgabepreisGewerbeProQm: number;
+  abgabepreisStellplatz: number; // € je Stellplatz
+  sanierungGewerbeProQm: number;
+  istMieteWohnenJahr: number; // Nettokaltmiete p. a., Leerstand = 0
+  istMieteGewerbeJahr: number;
+  istMieteStellplaetzeJahr: number;
+  bewirtschaftungJahr: number; // nicht umlagefähige Kosten p. a.
 }
+
+/** Beschreibende Angaben aus dem Exposé; fließen nicht in die Rechnung. */
+export interface AnkaufObjekt {
+  objektart: string;
+  baujahr: string;
+  zustand: string;
+  vermietung: string;
+  energie: string;
+  makler: string;
+  lage: string;
+}
+
+export const OBJEKT_LEER: AnkaufObjekt = {
+  objektart: "", baujahr: "", zustand: "", vermietung: "", energie: "", makler: "", lage: "",
+};
 
 /** Die Eingaben der Excel-Vorlage. */
 export const ANKAUF_STANDARD: AnkaufEingaben = {
@@ -67,13 +95,28 @@ export const ANKAUF_STANDARD: AnkaufEingaben = {
   zinssatz: 0.055,
   inanspruchnahme: 0.7,
   bankgebuehren: 5_000,
+  gewerbeflaeche: 0,
+  gesamtflaecheManuell: 0,
+  grundstuecksflaeche: 0,
+  gewerbeeinheiten: 0,
+  stellplaetze: 0,
+  abgabepreisGewerbeProQm: 0,
+  abgabepreisStellplatz: 0,
+  sanierungGewerbeProQm: 0,
+  istMieteWohnenJahr: 0,
+  istMieteGewerbeJahr: 0,
+  istMieteStellplaetzeJahr: 0,
+  bewirtschaftungJahr: 0,
 };
 
 export type AnkaufUrteil = "LOHNT SICH" | "GRENZWERTIG" | "LOHNT SICH NICHT";
 
 export interface AnkaufErgebnis {
   verkaufserloes: number; // C13
-  abgabepreisJeWohnung: number; // C14
+  erloesWohnen: number;
+  erloesGewerbe: number;
+  erloesStellplaetze: number;
+  abgabepreisJeWohnung: number; // C14, mit Gewerbe: je Einheit (Wohnen + Gewerbe)
   // 1. Ankauf
   grunderwerbsteuer: number; // C18
   notarAnkauf: number; // C19
@@ -81,6 +124,7 @@ export interface AnkaufErgebnis {
   summeAnkauf: number; // C21
   // 2. Sanierung & Aufteilung
   sanierungWohnungen: number; // C24
+  sanierungGewerbe: number;
   pufferSanierung: number; // C26
   summeSanierung: number; // C29
   // 3. Vertrieb & Mietsubvention
@@ -92,17 +136,27 @@ export interface AnkaufErgebnis {
   eigenkapital: number; // C43
   zinskosten: number; // C46
   summeFinanzierung: number; // C48
+  // Mieten bis zum Verkauf
+  istMieteJahr: number;
+  mietueberschussJahr: number;
+  mieteinnahmen: number; // Überschuss über die Laufzeit, anteilig wie das Darlehen
+  // Objekt
+  verkaufsflaeche: number; // Wohn- + Gewerbefläche
+  gesamtflaeche: number;
+  kaufpreisJeQm: number; // je m² Gesamtfläche
+  kaufpreisFaktor: number; // Kaufpreis / Ist-Miete p. a.
+  abgabepreisDurchschnitt: number; // Ø €/m² Wohnen + Gewerbe
   // Ergebnis
   gesamtkosten: number; // C51
   gewinn: number; // C53
   margeErloes: number; // C54
   margeKosten: number; // C55
   renditeEigenkapital: number; // C56
-  gewinnJeWohnung: number; // C57
+  gewinnJeWohnung: number; // C57, mit Gewerbe: je Einheit
   gewinnJeQm: number; // C58
   gesamtkostenJeQm: number; // C59
-  mindestAbgabepreis: number; // C60
-  abgabepreisGruen: number; // C61
+  mindestAbgabepreis: number; // C60, Ø €/m² Wohnen + Gewerbe
+  abgabepreisGruen: number; // C61, Ø €/m² Wohnen + Gewerbe
   urteil: AnkaufUrteil; // B63
 }
 
@@ -110,7 +164,12 @@ export interface AnkaufErgebnis {
 const teile = (zaehler: number, nenner: number) => (nenner === 0 ? 0 : zaehler / nenner);
 
 export function berechneAnkauf(e: AnkaufEingaben): AnkaufErgebnis {
-  const verkaufserloes = e.abgabepreisProQm * e.wohnflaeche;
+  const erloesWohnen = e.abgabepreisProQm * e.wohnflaeche;
+  const erloesGewerbe = e.abgabepreisGewerbeProQm * e.gewerbeflaeche;
+  const erloesStellplaetze = e.abgabepreisStellplatz * e.stellplaetze;
+  const verkaufserloes = erloesWohnen + erloesGewerbe + erloesStellplaetze;
+  const verkaufsflaeche = e.wohnflaeche + e.gewerbeflaeche;
+  const einheiten = e.wohneinheiten + e.gewerbeeinheiten;
 
   const grunderwerbsteuer = e.kaufpreis * e.grunderwerbsteuer;
   const notarAnkauf = e.kaufpreis * e.notarAnkauf;
@@ -118,15 +177,17 @@ export function berechneAnkauf(e: AnkaufEingaben): AnkaufErgebnis {
   const summeAnkauf = e.kaufpreis + grunderwerbsteuer + notarAnkauf + maklerEinkauf;
 
   const sanierungWohnungen = e.sanierungProQm * e.wohnflaeche;
-  const pufferSanierung = (sanierungWohnungen + e.sanierungGemeinschaft) * e.pufferSanierung;
+  const sanierungGewerbe = e.sanierungGewerbeProQm * e.gewerbeflaeche;
+  const pufferSanierung = (sanierungWohnungen + sanierungGewerbe + e.sanierungGemeinschaft) * e.pufferSanierung;
   const summeSanierung =
-    sanierungWohnungen + e.sanierungGemeinschaft + pufferSanierung + e.aufteilung + e.gutachtenSonstiges;
+    sanierungWohnungen + sanierungGewerbe + e.sanierungGemeinschaft + pufferSanierung + e.aufteilung + e.gutachtenSonstiges;
 
   const vertriebsprovision = verkaufserloes * e.vertriebsprovision;
   const mietsubvention =
     Math.max(0, e.garantiemieteProQm - e.marktmieteProQm) * e.wohnflaeche * e.subventionMonate;
   const summeVertrieb = vertriebsprovision + mietsubvention + e.marketing;
 
+  // Mietsubvention nur auf Wohnfläche: die Garantiemiete gilt für Wohnungskäufer.
   // Fremd- und Eigenkapital sind nur Information, keine Kostenposten.
   const fremdkapital = (summeAnkauf + summeSanierung) * e.fremdkapitalquote;
   const eigenkapital = summeAnkauf + summeSanierung - fremdkapital;
@@ -134,23 +195,38 @@ export function berechneAnkauf(e: AnkaufEingaben): AnkaufErgebnis {
   const summeFinanzierung = zinskosten + e.bankgebuehren;
 
   const gesamtkosten = summeAnkauf + summeSanierung + summeVertrieb + summeFinanzierung;
-  const gewinn = verkaufserloes - gesamtkosten;
+
+  // Mieten bis zum Verkauf: Einheiten gehen nach und nach weg, deshalb
+  // anteilig mit derselben Ø-Quote wie das Darlehen. Negativ bei Leerstand.
+  const istMieteJahr = e.istMieteWohnenJahr + e.istMieteGewerbeJahr + e.istMieteStellplaetzeJahr;
+  const mietueberschussJahr = istMieteJahr - e.bewirtschaftungJahr;
+  const mieteinnahmen = ((mietueberschussJahr * e.laufzeitMonate) / 12) * e.inanspruchnahme;
+
+  const gewinn = verkaufserloes + mieteinnahmen - gesamtkosten;
   const margeErloes = teile(gewinn, verkaufserloes);
 
-  // Abgabepreis/m², bei dem die Marge genau 0 bzw. die Grün-Schwelle erreicht.
-  // Die Vertriebsprovision wächst mit dem Preis mit, deshalb steht sie im Nenner.
+  // Ø Abgabepreis/m² (Wohnen und Gewerbe gleich), bei dem die Marge genau 0
+  // bzw. die Grün-Schwelle erreicht; Stellplätze bleiben fest. Die
+  // Vertriebsprovision wächst mit dem Preis mit, deshalb steht sie im Nenner.
   const kostenOhneProvision = gesamtkosten - vertriebsprovision;
-  const nennerNull = e.wohnflaeche * (1 - e.vertriebsprovision);
-  const nennerGruen = e.wohnflaeche * (1 - e.vertriebsprovision - e.schwelleGruen);
+  const preisFuer = (quote: number) => {
+    const nenner = verkaufsflaeche * quote;
+    return nenner <= 0 ? 0 : (kostenOhneProvision - mieteinnahmen - erloesStellplaetze * quote) / nenner;
+  };
+  const gesamtflaeche = e.gesamtflaecheManuell > 0 ? e.gesamtflaecheManuell : verkaufsflaeche;
 
   return {
     verkaufserloes,
-    abgabepreisJeWohnung: teile(verkaufserloes, e.wohneinheiten),
+    erloesWohnen,
+    erloesGewerbe,
+    erloesStellplaetze,
+    abgabepreisJeWohnung: teile(erloesWohnen + erloesGewerbe, einheiten),
     grunderwerbsteuer,
     notarAnkauf,
     maklerEinkauf,
     summeAnkauf,
     sanierungWohnungen,
+    sanierungGewerbe,
     pufferSanierung,
     summeSanierung,
     vertriebsprovision,
@@ -160,16 +236,24 @@ export function berechneAnkauf(e: AnkaufEingaben): AnkaufErgebnis {
     eigenkapital,
     zinskosten,
     summeFinanzierung,
+    istMieteJahr,
+    mietueberschussJahr,
+    mieteinnahmen,
+    verkaufsflaeche,
+    gesamtflaeche,
+    kaufpreisJeQm: teile(e.kaufpreis, gesamtflaeche),
+    kaufpreisFaktor: teile(e.kaufpreis, istMieteJahr),
+    abgabepreisDurchschnitt: teile(erloesWohnen + erloesGewerbe, verkaufsflaeche),
     gesamtkosten,
     gewinn,
     margeErloes,
     margeKosten: teile(gewinn, gesamtkosten),
     renditeEigenkapital: teile(gewinn, eigenkapital),
-    gewinnJeWohnung: teile(gewinn, e.wohneinheiten),
-    gewinnJeQm: teile(gewinn, e.wohnflaeche),
-    gesamtkostenJeQm: teile(gesamtkosten, e.wohnflaeche),
-    mindestAbgabepreis: nennerNull <= 0 ? 0 : kostenOhneProvision / nennerNull,
-    abgabepreisGruen: nennerGruen <= 0 ? 0 : kostenOhneProvision / nennerGruen,
+    gewinnJeWohnung: teile(gewinn, einheiten),
+    gewinnJeQm: teile(gewinn, verkaufsflaeche),
+    gesamtkostenJeQm: teile(gesamtkosten, verkaufsflaeche),
+    mindestAbgabepreis: preisFuer(1 - e.vertriebsprovision),
+    abgabepreisGruen: preisFuer(1 - e.vertriebsprovision - e.schwelleGruen),
     urteil:
       margeErloes >= e.schwelleGruen ? "LOHNT SICH" : margeErloes >= e.schwelleGelb ? "GRENZWERTIG" : "LOHNT SICH NICHT",
   };
@@ -186,6 +270,7 @@ export interface AnkaufVersion {
   name: string;
   gespeichertAm: string;
   eingaben: Partial<AnkaufEingaben>;
+  objekt?: Partial<AnkaufObjekt>; // fehlt bei Versionen vor dem Exposé-Abschnitt
 }
 
 export const ANKAUF_VERSIONEN_SCHLUESSEL = "ankaufstool_versionen";
@@ -193,6 +278,10 @@ export const ANKAUF_VERSIONEN_SCHLUESSEL = "ankaufstool_versionen";
 /** Eingaben einer Version; Felder, die es beim Speichern noch nicht gab, kommen aus der Vorlage. */
 export function eingabenAusVersion(v: AnkaufVersion): AnkaufEingaben {
   return { ...ANKAUF_STANDARD, ...v.eingaben };
+}
+
+export function objektAusVersion(v: AnkaufVersion): AnkaufObjekt {
+  return { ...OBJEKT_LEER, ...v.objekt };
 }
 
 /**
