@@ -977,6 +977,34 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
           tooltip="Anzahl der gerechneten Jahre, höchstens dreißig. Im letzten Jahr unterstellt das Modell einen Verkauf zum prognostizierten Wert, deshalb hängt die ausgewiesene Rendite spürbar von dieser Länge ab."
         />
       </div>
+      {/* Seit dem 09.10.2026, nur für das Deckblatt „Vermögensaufbau & Altersvorsorge“. */}
+      <div className="field-grid">
+        <Zahlenfeld
+          label="Alter des Kunden heute"
+          value={input.clientAge}
+          suffix="Jahre"
+          step="1"
+          min={0}
+          onChange={(wert) => setzeZahl("clientAge", wert)}
+          tooltip="Nur für das Deckblatt „Vermögensaufbau & Altersvorsorge“. Daraus und aus dem Rentenbeginn ergibt sich, wie viele Jahre bis zum Ruhestand gerechnet werden. Leer gelassen zeigt das Deckblatt einen Hinweis statt Zahlen."
+        />
+        <Zahlenfeld
+          label="Geplanter Rentenbeginn mit"
+          value={input.retirementAge}
+          suffix="Jahren"
+          step="1"
+          min={0}
+          onChange={(wert) => setzeZahl("retirementAge", wert)}
+          tooltip="Alter, ab dem die Miete als Zusatzeinkommen im Ruhestand dienen soll. Die Rechnung läuft dafür bei Bedarf über die dreißig Jahre des Betrachtungszeitraums hinaus, mit denselben Annahmen."
+        />
+        <Zahlenfeld
+          label="Inflation p. a."
+          value={input.inflationRate}
+          suffix="%"
+          onChange={(wert) => setzeZahl("inflationRate", wert)}
+          tooltip="Modellannahme für die jährliche Geldentwertung. Mit ihr rechnet das Deckblatt „Vermögensaufbau & Altersvorsorge“ das Zusatzeinkommen im Ruhestand in heutige Kaufkraft um. Sonst wirkt sie nirgends."
+        />
+      </div>
       <div className="summary-strip">
         <span>
           <small>Effektive Jahresmiete</small>

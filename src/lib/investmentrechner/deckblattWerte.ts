@@ -20,7 +20,8 @@ import {
   type Jahreswert,
 } from "./rechenkern";
 
-export type DeckblattVariante = "blick" | "jahre";
+/** „rente“ ist das dritte Deckblatt, seit dem 09.10.2026, siehe altersvorsorge.ts. */
+export type DeckblattVariante = "blick" | "jahre" | "rente";
 
 export const DECKBLATT_STANDARD: DeckblattVariante = "blick";
 
@@ -120,7 +121,7 @@ const SPEICHERSCHLUESSEL = "investmentrechner.deckblatt";
 export function gemerkteDeckblattVariante(): DeckblattVariante {
   try {
     const wert = window.localStorage.getItem(SPEICHERSCHLUESSEL);
-    return wert === "blick" || wert === "jahre" ? wert : DECKBLATT_STANDARD;
+    return wert === "blick" || wert === "jahre" || wert === "rente" ? wert : DECKBLATT_STANDARD;
   } catch {
     return DECKBLATT_STANDARD;
   }

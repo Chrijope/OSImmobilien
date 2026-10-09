@@ -30,7 +30,7 @@ import { dokumentTexteFuer } from "@/lib/investmentrechner/dokumentTexte";
 import { rechenwege } from "@/lib/investmentrechner/kennzahlErklaerungen";
 import type { FormatSprache } from "@/lib/sprachFormat";
 import { Kennzahlkarte, Objektkarte } from "./Felder";
-import { DeckblattAufEinenBlick, DeckblattJahrFuerJahr } from "./Deckblatt";
+import { DeckblattAltersvorsorge, DeckblattAufEinenBlick, DeckblattJahrFuerJahr } from "./Deckblatt";
 import { kaufpreisHinweis, kaufpreiszeilen, Steuerprofil, UnterlagenEinblicke } from "./Auswertungen";
 import { Vermoegensdiagramm, Zusammensetzung, Zweireihendiagramm } from "./Diagramme";
 import { Cashflowtabelle, Darlehenstabelle, Steuertabelle } from "./Tabellen";
@@ -180,7 +180,13 @@ export function ExposeDokument({
         Deckblatt, Kennzahlen, Kaufpreis, Finanzierung und Annahmen auf der
         Seite dahinter. Ab der Seite „Objektunterlagen“ bleibt alles wie zuvor.
       */}
-      {deckblatt === "jahre" ? <DeckblattJahrFuerJahr {...deckblattProps} /> : <DeckblattAufEinenBlick {...deckblattProps} />}
+      {deckblatt === "jahre" ? (
+        <DeckblattJahrFuerJahr {...deckblattProps} />
+      ) : deckblatt === "rente" ? (
+        <DeckblattAltersvorsorge {...deckblattProps} />
+      ) : (
+        <DeckblattAufEinenBlick {...deckblattProps} />
+      )}
 
       <section className="expose-page kennzahlen-page">
         <Seitenkopf clientName={input.clientName} marke={marke} sprache={sprache} />

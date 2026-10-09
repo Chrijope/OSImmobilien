@@ -331,6 +331,60 @@ export interface DokumentTexte {
     tabelleFussnote: string;
     tabelleFussnoteErhaltung: (betrag: string) => string;
   };
+  /** Das dritte Deckblatt „Vermögensaufbau & Altersvorsorge“, seit dem 09.10.2026. */
+  altersvorsorge: {
+    augenbraue: string;
+    leitfrage: string;
+    person: (name: string, alter: number, rentenAlter: number, rentenJahr: number) => string;
+    kachelEigenaufwand: string;
+    kachelEigenaufwandNotiz: (schnitt: string) => string;
+    kachelUeberschussNotiz: (ueberschuss: string, schnitt: string) => string;
+    kachelSchuldenfrei: string;
+    kachelSchuldenfreiNotiz: (alter: number) => string;
+    kachelSchuldenfreiOffen: string;
+    kachelSchuldenfreiOffenNotiz: string;
+    kachelZusatz: (jahr: number) => string;
+    kachelZusatzNotiz: (heute: string) => string;
+    warnungRestschuld: (rentenJahr: number, restschuld: string, rate: string) => string;
+    warnungAbEntschuldung: (jahr: number, zusatz: string, heute: string) => string;
+    zeitstrahlTitel: string;
+    zeitstrahlUntertitel: string;
+    alterText: (alter: number) => string;
+    stationKauf: string;
+    stationKaufText: (darlehen: string) => string;
+    stationKaufOhneDarlehen: string;
+    stationSchuldenfrei: string;
+    stationSchuldenfreiText: string;
+    stationRente: string;
+    stationRenteText: (zusatz: string) => string;
+    stationRenteRestschuld: (restschuld: string) => string;
+    phaseTilgung: string;
+    phaseSchuldenfrei: string;
+    phaseRateLaeuft: string;
+    vermoegenTitel: (jahr: number) => string;
+    vermoegenUntertitel: (jahre: number, satz: string) => string;
+    immobilienwert: string;
+    restschuld: string;
+    vermoegen: string;
+    eingesetzt: string;
+    aufgebaut: string;
+    aufgebautRechnung: (vermoegen: string, eingesetzt: string, eigenkapital: string, zuzahlungen: string) => string;
+    annahmenTitel: string;
+    annahmenUntertitel: string;
+    alterHeute: string;
+    rentenbeginn: string;
+    mietsteigerung: string;
+    kostensteigerung: string;
+    wertsteigerung: string;
+    inflation: string;
+    zinsTilgung: string;
+    zinsTilgungWert: (zins: string, tilgung: string) => string;
+    hinweisRechnung: string;
+    hinweisBeratung: string;
+    fehltAlter: string;
+    rentenbeginnErreicht: string;
+    zuWeit: string;
+  };
   /** Die Seite hinter dem Deckblatt, für beide Varianten gleich, seit dem 07.10.2026. */
   kennzahlenSeite: {
     augenbraue: string;
@@ -685,6 +739,65 @@ export const DOKUMENT_TEXTE_DE: DokumentTexte = {
       "Jahr 1 hervorgehoben. Tilgung ist kein Verlust, sie baut deinen Anteil auf. Alle Werte stammen aus der Jahresprognose dieser Kalkulation.",
     tabelleFussnoteErhaltung: (betrag) =>
       `Jahr 1 hervorgehoben: Hier wirkt der Erhaltungsaufwand von ${betrag} steuerlich. Tilgung ist kein Verlust, sie baut deinen Anteil auf. Alle Werte stammen aus der Jahresprognose dieser Kalkulation.`,
+  },
+  altersvorsorge: {
+    augenbraue: "Vermögensaufbau & Altersvorsorge",
+    leitfrage: "Was bringt mir die Wohnung im Ruhestand?",
+    person: (name, alter, rentenAlter, rentenJahr) =>
+      [name, `heute ${alter} Jahre`, `geplanter Rentenbeginn mit ${rentenAlter} (${rentenJahr})`].filter(Boolean).join(" · "),
+    kachelEigenaufwand: "Eigenaufwand pro Monat heute",
+    kachelEigenaufwandNotiz: (schnitt) => `nach Steuer, Jahr 1 · Ø bis zum Rentenbeginn ${schnitt}`,
+    kachelUeberschussNotiz: (ueberschuss, schnitt) =>
+      `kein Eigenaufwand: ${ueberschuss} Überschuss nach Steuer im Monat · Ø bis zum Rentenbeginn ${schnitt}`,
+    kachelSchuldenfrei: "Wohnung schuldenfrei ab",
+    kachelSchuldenfreiNotiz: (alter) => `mit ${alter} Jahren · Restschuld dann 0 €`,
+    kachelSchuldenfreiOffen: "offen",
+    kachelSchuldenfreiOffenNotiz: "mit dieser Tilgung in absehbarer Zeit nicht",
+    kachelZusatz: (jahr) => `Zusatzeinkommen ab ${jahr}`,
+    kachelZusatzNotiz: (heute) => `im Monat, das sind in heutiger Kaufkraft ca. ${heute}`,
+    warnungRestschuld: (rentenJahr, restschuld, rate) =>
+      `Zum Rentenbeginn ${rentenJahr} ist die Wohnung noch nicht schuldenfrei: Restschuld ca. ${restschuld}, die Kreditrate von ca. ${rate} im Monat läuft weiter und ist im Zusatzeinkommen schon abgezogen. Mit einer höheren Tilgung wäre sie bis dahin bezahlt.`,
+    warnungAbEntschuldung: (jahr, zusatz, heute) =>
+      ` Ab ${jahr} entfällt die Rate, dann ca. ${zusatz} im Monat (heutige Kaufkraft ca. ${heute}).`,
+    zeitstrahlTitel: "Dein Weg bis zum Ruhestand",
+    zeitstrahlUntertitel: "Erst tilgt die Miete zusammen mit deinem Eigenaufwand das Darlehen, danach bleibt sie dir.",
+    alterText: (alter) => `mit ${alter} Jahren`,
+    stationKauf: "Kauf",
+    stationKaufText: (darlehen) => `Darlehen ${darlehen}`,
+    stationKaufOhneDarlehen: "ohne Darlehen",
+    stationSchuldenfrei: "Schuldenfrei",
+    stationSchuldenfreiText: "Restschuld 0 €, die Wohnung gehört dir",
+    stationRente: "Rentenbeginn",
+    stationRenteText: (zusatz) => `ca. ${zusatz} im Monat zusätzlich`,
+    stationRenteRestschuld: (restschuld) => `Restschuld noch ca. ${restschuld}`,
+    phaseTilgung: "Tilgungsphase: Restschuld sinkt auf 0",
+    phaseSchuldenfrei: "Miete ohne Rate",
+    phaseRateLaeuft: "Ruhestand, Rate läuft noch",
+    vermoegenTitel: (jahr) => `Dein Vermögen zum Rentenbeginn ${jahr}`,
+    vermoegenUntertitel: (jahre, satz) => `nach ${jahre} Jahren, Wertsteigerung ${satz} p. a. angenommen`,
+    immobilienwert: "Immobilienwert",
+    restschuld: "Restschuld",
+    vermoegen: "Dein Vermögen",
+    eingesetzt: "Eingesetztes Geld",
+    aufgebaut: "Mehr als eingesetzt",
+    aufgebautRechnung: (vermoegen, eingesetzt, eigenkapital, zuzahlungen) =>
+      `${vermoegen} Vermögen abzüglich ${eingesetzt} eingesetztes Geld: ${eigenkapital} Eigenkapital plus ${zuzahlungen} Zuzahlungen nach Steuer`,
+    annahmenTitel: "Annahmen dieser Rechnung",
+    annahmenUntertitel: "Im Rechner änderbar",
+    alterHeute: "Alter heute",
+    rentenbeginn: "Rentenbeginn",
+    mietsteigerung: "Mietsteigerung p. a.",
+    kostensteigerung: "Kostensteigerung p. a.",
+    wertsteigerung: "Wertsteigerung p. a.",
+    inflation: "Inflation p. a.",
+    zinsTilgung: "Zins und Tilgung",
+    zinsTilgungWert: (zins, tilgung) => `${zins} / ${tilgung}`,
+    hinweisRechnung:
+      "Zusatzeinkommen: Kaltmiete nach Leerstand, abzüglich nicht umlagefähiger Kosten und Rücklage sowie einer noch laufenden Rate, vor Steuer. Heutige Kaufkraft: abgezinst mit der Inflation. Zins und Tilgung gelten wie heute über die ganze Laufzeit; eine Anschlussfinanzierung zu anderem Zins ist nicht gerechnet.",
+    hinweisBeratung: "Beispielrechnung, keine Anlage-, Steuer- oder Rechtsberatung.",
+    fehltAlter: "Für diese Seite fehlt das Alter des Kunden. Bitte im Rechner unter „Miete & Entwicklung“ eintragen.",
+    rentenbeginnErreicht: "Der Rentenbeginn liegt nicht nach dem heutigen Alter. Bitte Alter und Rentenbeginn im Rechner prüfen.",
+    zuWeit: "Der Rentenbeginn liegt mehr als 60 Jahre in der Zukunft. Bitte Alter und Rentenbeginn im Rechner prüfen.",
   },
   kennzahlenSeite: {
     augenbraue: "Kennzahlen und Annahmen",
@@ -1043,6 +1156,65 @@ export const DOKUMENT_TEXTE_EN: DokumentTexte = {
       "Year 1 highlighted. Repayment is not a loss, it builds up your share. All values come from the annual forecast of this calculation.",
     tabelleFussnoteErhaltung: (betrag) =>
       `Year 1 highlighted: this is when the maintenance expenses of ${betrag} take effect for tax purposes. Repayment is not a loss, it builds up your share. All values come from the annual forecast of this calculation.`,
+  },
+  altersvorsorge: {
+    augenbraue: "Wealth building & retirement",
+    leitfrage: "What will the flat do for me in retirement?",
+    person: (name, alter, rentenAlter, rentenJahr) =>
+      [name, `age ${alter} today`, `planned retirement at ${rentenAlter} (${rentenJahr})`].filter(Boolean).join(" · "),
+    kachelEigenaufwand: "Your own monthly cost today",
+    kachelEigenaufwandNotiz: (schnitt) => `after tax, year 1 · Ø until retirement ${schnitt}`,
+    kachelUeberschussNotiz: (ueberschuss, schnitt) =>
+      `no own cost: ${ueberschuss} surplus after tax per month · Ø until retirement ${schnitt}`,
+    kachelSchuldenfrei: "Flat debt-free from",
+    kachelSchuldenfreiNotiz: (alter) => `at age ${alter} · outstanding loan then €0`,
+    kachelSchuldenfreiOffen: "open",
+    kachelSchuldenfreiOffenNotiz: "not in the foreseeable future with this repayment rate",
+    kachelZusatz: (jahr) => `Extra income from ${jahr}`,
+    kachelZusatzNotiz: (heute) => `per month, about ${heute} in today's purchasing power`,
+    warnungRestschuld: (rentenJahr, restschuld, rate) =>
+      `At retirement in ${rentenJahr} the flat is not yet debt-free: about ${restschuld} outstanding, the loan instalment of about ${rate} per month continues and is already deducted from the extra income. A higher repayment rate would pay it off by then.`,
+    warnungAbEntschuldung: (jahr, zusatz, heute) =>
+      ` From ${jahr} the instalment ends, then about ${zusatz} per month (today's purchasing power about ${heute}).`,
+    zeitstrahlTitel: "Your path to retirement",
+    zeitstrahlUntertitel: "First the rent and your own contribution repay the loan, then the rent is yours.",
+    alterText: (alter) => `at age ${alter}`,
+    stationKauf: "Purchase",
+    stationKaufText: (darlehen) => `Loan ${darlehen}`,
+    stationKaufOhneDarlehen: "no loan",
+    stationSchuldenfrei: "Debt-free",
+    stationSchuldenfreiText: "Outstanding loan €0, the flat is yours",
+    stationRente: "Retirement",
+    stationRenteText: (zusatz) => `about ${zusatz} extra per month`,
+    stationRenteRestschuld: (restschuld) => `still about ${restschuld} outstanding`,
+    phaseTilgung: "Repayment phase: loan falls to 0",
+    phaseSchuldenfrei: "Rent without instalment",
+    phaseRateLaeuft: "Retired, instalment continues",
+    vermoegenTitel: (jahr) => `Your wealth at retirement ${jahr}`,
+    vermoegenUntertitel: (jahre, satz) => `after ${jahre} years, assuming ${satz} value growth p.a.`,
+    immobilienwert: "Property value",
+    restschuld: "Outstanding loan",
+    vermoegen: "Your wealth",
+    eingesetzt: "Money put in",
+    aufgebaut: "More than you put in",
+    aufgebautRechnung: (vermoegen, eingesetzt, eigenkapital, zuzahlungen) =>
+      `${vermoegen} wealth minus ${eingesetzt} money put in: ${eigenkapital} equity plus ${zuzahlungen} top-ups after tax`,
+    annahmenTitel: "Assumptions of this calculation",
+    annahmenUntertitel: "Adjustable in the calculator",
+    alterHeute: "Age today",
+    rentenbeginn: "Retirement",
+    mietsteigerung: "Rent growth p.a.",
+    kostensteigerung: "Cost growth p.a.",
+    wertsteigerung: "Value growth p.a.",
+    inflation: "Inflation p.a.",
+    zinsTilgung: "Interest and repayment",
+    zinsTilgungWert: (zins, tilgung) => `${zins} / ${tilgung}`,
+    hinweisRechnung:
+      "Extra income: net cold rent after vacancy, minus non-recoverable costs, reserve and any remaining instalment, before tax. Today's purchasing power: discounted by inflation. Interest and repayment stay as today for the whole term; follow-up financing at a different rate is not modelled.",
+    hinweisBeratung: "Example calculation, not investment, tax or legal advice.",
+    fehltAlter: "The client's age is missing for this page. Please enter it in the calculator under “Rent & development”.",
+    rentenbeginnErreicht: "Retirement is not after today's age. Please check age and retirement in the calculator.",
+    zuWeit: "Retirement is more than 60 years away. Please check age and retirement in the calculator.",
   },
   kennzahlenSeite: {
     augenbraue: "Key figures and assumptions",

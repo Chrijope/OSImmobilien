@@ -6,7 +6,7 @@ import type { UnterlagenDaten, UnterlagenDokument } from "@/lib/investmentrechne
 import { DECKBLATT_STANDARD, type DeckblattVariante } from "@/lib/investmentrechner/deckblattWerte";
 import { hinweisOhneSteuerwirkung } from "@/lib/investmentrechner/dokumentTexte";
 import { Kaufpreisdetails, Kennzahlen, Steuerprofil, UnterlagenEinblicke } from "./Auswertungen";
-import { DeckblattWahl, ErgebnisAufEinenBlick, ErgebnisJahrFuerJahr } from "./Deckblatt";
+import { DeckblattWahl, ErgebnisAltersvorsorge, ErgebnisAufEinenBlick, ErgebnisJahrFuerJahr } from "./Deckblatt";
 import { Minidiagramm, Vermoegensdiagramm, Zusammensetzung } from "./Diagramme";
 import { Cashflowtabelle, Darlehenstabelle, Steuertabelle } from "./Tabellen";
 import { formatEuroCent, formatProzent } from "@/lib/investmentrechner/formatierer";
@@ -59,6 +59,8 @@ export function Analyse({
       <section className={`analyse-deckblatt analyse-deckblatt-${deckblatt}`}>
         {deckblatt === "jahre" ? (
           <ErgebnisJahrFuerJahr input={input} result={result} sprache="de" />
+        ) : deckblatt === "rente" ? (
+          <ErgebnisAltersvorsorge input={input} result={result} sprache="de" />
         ) : (
           <ErgebnisAufEinenBlick input={input} result={result} sprache="de" />
         )}

@@ -3970,6 +3970,94 @@
   color: var(--text-3);
   font-size: 0.55rem;
 }
+/*
+ * Variante 3: Vermögensaufbau & Altersvorsorge, seit dem 09.10.2026.
+ * Kacheln, Balken und Annahmen sind die Bausteine von Variante 1; neu sind
+ * nur der Hinweis und der Zeitstrahl.
+ */
+.investmentrechner .deckblatt-rente .db-kern {
+  margin-top: 6mm;
+}
+.investmentrechner .deckblatt-rente .db-kern .db-unterzeile {
+  margin-top: 1.5mm;
+}
+.investmentrechner .deckblatt-rente .db-kacheln {
+  margin-top: 4mm;
+}
+.investmentrechner .deckblatt-rente .db-abschnitt {
+  margin-top: 5mm;
+}
+.investmentrechner .deckblatt-rente .db-spalten {
+  margin-top: 5mm;
+}
+.investmentrechner .db-hinweis {
+  background: var(--warn-flaeche);
+  border: 1px solid var(--warn-linie);
+  color: var(--warn-text);
+  border-radius: var(--expose-radius);
+  margin: 3mm 0 0;
+  padding: 2.5mm 3.5mm;
+  font-size: 0.52rem;
+  line-height: 1.5;
+  text-align: left;
+}
+.investmentrechner .db-fussnote.db-fett {
+  color: var(--ink);
+  font-weight: 700;
+}
+.investmentrechner .db-zeitstrahl {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.investmentrechner .db-zeitstrahl > li {
+  display: flex;
+  flex: 1 1 0;
+  align-items: stretch;
+  min-width: 0;
+}
+.investmentrechner .db-zeitstrahl > li:first-child {
+  flex: 0 0 auto;
+}
+/* Die Phase ist die Strecke zur nächsten Station: eine Linie mit Beschriftung. */
+.investmentrechner .db-phase {
+  flex: 1 1 auto;
+  align-self: center;
+  border-top: 0.8mm solid var(--gold);
+  color: var(--text-3);
+  margin: 0 2mm;
+  padding-top: 1.2mm;
+  font-size: 0.48rem;
+  text-align: center;
+}
+.investmentrechner .db-station-gruen .db-phase {
+  border-top-color: var(--gruen-tief);
+}
+.investmentrechner .db-station {
+  background: var(--flaeche-leise);
+  border-radius: var(--expose-radius);
+  display: grid;
+  gap: 0.6mm;
+  padding: 2.5mm 3.5mm;
+  min-width: 30mm;
+  font-size: 0.5rem;
+  color: var(--text-3);
+}
+.investmentrechner .db-station small {
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 0.46rem;
+  font-weight: 750;
+}
+.investmentrechner .db-station strong {
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+.investmentrechner .db-station-gruen .db-station strong {
+  color: var(--gruen-tief);
+}
 /* Variante 2: Diagramm und Jahrestabelle. */
 .investmentrechner .deckblatt-jahre .db-kacheln {
   margin-top: 6mm;
@@ -4246,6 +4334,40 @@
 .investmentrechner .analyse-deckblatt .db-tabelle td {
   padding: 8px 6px;
   font-size: 0.76rem;
+}
+/* Variante 3 am Bildschirm. */
+.investmentrechner .analyse-deckblatt .db-hinweis {
+  margin-top: 12px;
+  padding: 10px 14px;
+  font-size: 0.78rem;
+}
+.investmentrechner .analyse-deckblatt .db-phase {
+  margin: 0 8px;
+  padding-top: 4px;
+  font-size: 0.72rem;
+}
+.investmentrechner .analyse-deckblatt .db-station {
+  border-radius: 10px;
+  gap: 2px;
+  padding: 10px 12px;
+  min-width: 0;
+  font-size: 0.74rem;
+}
+.investmentrechner .analyse-deckblatt .db-station small {
+  font-size: 0.64rem;
+}
+.investmentrechner .analyse-deckblatt .db-station strong {
+  font-size: 1.15rem;
+}
+@media (max-width: 650px) {
+  .investmentrechner .analyse-deckblatt .db-zeitstrahl,
+  .investmentrechner .analyse-deckblatt .db-zeitstrahl > li {
+    flex-direction: column;
+  }
+  .investmentrechner .analyse-deckblatt .db-phase {
+    margin: 6px 0;
+    text-align: left;
+  }
 }
 @media (max-width: 880px) {
   .investmentrechner .analyse-deckblatt .db-spalten {

@@ -1441,7 +1441,7 @@ export function InvestmentrechnerInhalt({
                   <DeckblattWahl
                     wert={deckblatt}
                     onWahl={waehleDeckblatt}
-                    hinweis="Gilt für die Vorschau, für „Berechnung herunterladen“ und für die Analyse. Die Seiten danach sind bei beiden gleich."
+                    hinweis="Gilt für die Vorschau, für „Berechnung herunterladen“ und für die Analyse. Die Seiten danach sind bei allen gleich."
                   />
                   <ExposeVorschau>{exposeInhalt(false)}</ExposeVorschau>
                 </div>
