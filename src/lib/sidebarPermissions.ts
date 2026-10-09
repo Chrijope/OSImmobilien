@@ -13,11 +13,11 @@ import { getAppConfig } from "@/lib/appConfigStore";
 
 /**
  * Ankaufstool (Bauträger-Kalkulator), seit dem 07.10.2026. Ein internes
- * Werkzeug der Hausleitung: Admin und Inhaber haben ohnehin Vollzugriff, dazu
- * die Vertriebsleitung, die auch die Objektseite sieht.
+ * Werkzeug der Hausleitung: nur Admin und Inhaber (seit 09.10.2026 ohne die
+ * Vertriebsleitung, Christians Vorgabe).
  */
 export const ANKAUFSTOOL_ROUTE = "/ankaufstool";
-const ANKAUFSTOOL_ROLLEN: readonly string[] = ["admin", "inhaber", "vertriebsleiter"];
+const ANKAUFSTOOL_ROLLEN: readonly string[] = ["admin", "inhaber"];
 /** Mietsubvention (Subventions-Kalkulator), seit dem 08.10.2026; dieselben Rollen wie das Ankaufstool. */
 export const MIETSUBVENTION_ROUTE = "/mietsubvention";
 

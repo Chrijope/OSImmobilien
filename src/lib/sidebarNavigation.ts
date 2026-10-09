@@ -105,10 +105,10 @@ const toolsItems = [
   { title: "AfA-Rechner", url: "/afa-rechner", icon: Calculator, suchbegriffe: ["abschreibung", "afa", "steuer", "denkmal", "restnutzungsdauer"] },
   /* Bauträger-Kalkulator aus Ankaufstool.xlsx. Wer ihn sieht, steht in
      `ANKAUFSTOOL_ROLLEN` (sidebarPermissions.ts). */
-  { title: "Ankaufstool", url: ANKAUFSTOOL_ROUTE, icon: Calculator, adminOnly: true, auchFuer: ["vertriebsleiter"], suchbegriffe: ["ankauf", "bautraeger", "kalkulator", "lohnt sich", "marge", "go no go", "aufteilung"] },
+  { title: "Ankaufstool", url: ANKAUFSTOOL_ROUTE, icon: Calculator, adminOnly: true, adminBadge: true, suchbegriffe: ["ankauf", "bautraeger", "kalkulator", "lohnt sich", "marge", "go no go", "aufteilung"] },
   /* Ist- gegen Soll-Miete, Differenz als Subvention an die Hausverwaltung.
-     Rollen wie beim Ankaufstool (sidebarPermissions.ts). */
-  { title: "Mietsubvention", url: MIETSUBVENTION_ROUTE, icon: Calculator, adminOnly: true, auchFuer: ["vertriebsleiter"], suchbegriffe: ["subvention", "mietsubvention", "mieterhoehung", "kappungsgrenze", "hausverwaltung", "soll miete", "ist miete"] },
+     Nur Admin und Inhaber, wie das Ankaufstool (sidebarPermissions.ts). */
+  { title: "Mietsubvention", url: MIETSUBVENTION_ROUTE, icon: Calculator, adminOnly: true, adminBadge: true, suchbegriffe: ["subvention", "mietsubvention", "mieterhoehung", "kappungsgrenze", "hausverwaltung", "soll miete", "ist miete"] },
 ];
 
 /*

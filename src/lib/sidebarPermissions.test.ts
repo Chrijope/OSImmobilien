@@ -342,21 +342,21 @@ describe("Individuelle Berechtigungen nur in internen Rollen", () => {
 
 describe("Mietsubvention", () => {
   it("steht denselben Rollen offen wie das Ankaufstool", () => {
-    for (const rolle of ["admin", "inhaber", "vertriebsleiter"] as const) {
+    for (const rolle of ["admin", "inhaber"] as const) {
       expect(isUrlAllowedForRole("/mietsubvention", rolle)).toBe(true);
     }
-    for (const rolle of ["vertriebspartner", "backoffice", "objektpartner", "kunde", "tippgeber"] as const) {
+    for (const rolle of ["vertriebsleiter", "vertriebspartner", "backoffice", "objektpartner", "kunde", "tippgeber"] as const) {
       expect(isUrlAllowedForRole("/mietsubvention", rolle)).toBe(false);
     }
   });
 });
 
 describe("Ankaufstool", () => {
-  it("steht der Hausleitung und der Vertriebsleitung offen, sonst niemandem", () => {
-    for (const rolle of ["admin", "inhaber", "vertriebsleiter"] as const) {
+  it("steht nur Admin und Inhaber offen, sonst niemandem", () => {
+    for (const rolle of ["admin", "inhaber"] as const) {
       expect(isUrlAllowedForRole("/ankaufstool", rolle)).toBe(true);
     }
-    for (const rolle of ["vertriebspartner", "backoffice", "objektpartner", "kunde", "tippgeber"] as const) {
+    for (const rolle of ["vertriebsleiter", "vertriebspartner", "backoffice", "objektpartner", "kunde", "tippgeber"] as const) {
       expect(isUrlAllowedForRole("/ankaufstool", rolle)).toBe(false);
     }
   });
