@@ -5,7 +5,7 @@ import type { InvestmentEingabe, InvestmentErgebnis } from "@/lib/investmentrech
 import type { UnterlagenDaten, UnterlagenDokument } from "@/lib/investmentrechner/unterlagenAuslesen";
 import { DECKBLATT_STANDARD, type DeckblattVariante } from "@/lib/investmentrechner/deckblattWerte";
 import { hinweisOhneSteuerwirkung } from "@/lib/investmentrechner/dokumentTexte";
-import { Kaufpreisdetails, Kennzahlen, Steuerprofil, UnterlagenEinblicke } from "./Auswertungen";
+import { Bankgespraech, Kaufpreisdetails, Kennzahlen, Steuerprofil, UnterlagenEinblicke } from "./Auswertungen";
 import { DeckblattWahl, ErgebnisAltersvorsorge, ErgebnisAufEinenBlick, ErgebnisJahrFuerJahr } from "./Deckblatt";
 import { Minidiagramm, Vermoegensdiagramm, Zusammensetzung } from "./Diagramme";
 import { Cashflowtabelle, Darlehenstabelle, Steuertabelle } from "./Tabellen";
@@ -103,6 +103,15 @@ export function Analyse({
           </span>
         </div>
         <Steuerprofil input={input} result={result} />
+      </article>
+      <article className="content-card bank-card" data-testid="karte-bankgespraech">
+        <div className="card-heading">
+          <div>
+            <span className="eyebrow">Finanzierung & Risiko</span>
+            <h3>Bankgespräch</h3>
+          </div>
+        </div>
+        <Bankgespraech input={input} result={result} />
       </article>
       <article className="content-card document-analysis-card">
         <div className="card-heading">

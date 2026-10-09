@@ -4410,3 +4410,12 @@
 .investmentrechner .darlehen-tabelle td.darlehen-summe {
   font-weight: 800;
 }
+
+/* Bankgespräch & Risiko (09.10.2026): Blöcke im Raster des Steuerprofils. */
+.investmentrechner .bankgespraech section + section {
+  margin-top: 18px;
+}
+.investmentrechner .bankgespraech h4 {
+  margin: 0 0 8px;
+  font-size: 0.78rem;
+}
