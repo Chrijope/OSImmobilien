@@ -487,6 +487,7 @@ export function addBrandedHeader(
   title: string,
   subtitle?: string,
 ): number {
+  const { W } = seitenMasse(doc);
   let y = 16;
 
   // Oben links steht das Originallogo, nicht mehr der nachgebaute Schriftzug.
@@ -563,8 +564,19 @@ export function addBrandedHeader(
   return y;
 }
 
+/**
+ * Seitengröße statt fester 210 × 297 mm, damit Kopf und Fuß auch im
+ * Querformat passen (Kaufpreisliste). Ohne Angabe, etwa bei nachgebildetem
+ * jsPDF in Tests, bleibt es bei A4 hoch.
+ */
+function seitenMasse(doc: jsPDF): { W: number; H: number } {
+  const seite = doc.internal?.pageSize;
+  return { W: seite?.getWidth?.() ?? W, H: seite?.getHeight?.() ?? H };
+}
+
 /** Fusszeile mit Firmenzeile und Seitenzahl. */
 export function addBrandedFooter(doc: jsPDF, pageNum: number, totalPages: number) {
+  const { W, H } = seitenMasse(doc);
   doc.setDrawColor(...BRAND.separator);
   doc.setLineWidth(0.3);
   doc.line(MARGIN, H - 20, W - MARGIN, H - 20);

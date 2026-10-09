@@ -20,6 +20,8 @@ export const ANKAUFSTOOL_ROUTE = "/ankaufstool";
 const ANKAUFSTOOL_ROLLEN: readonly string[] = ["admin", "inhaber"];
 /** Mietsubvention (Subventions-Kalkulator), seit dem 08.10.2026; dieselben Rollen wie das Ankaufstool. */
 export const MIETSUBVENTION_ROUTE = "/mietsubvention";
+/** Kaufpreisliste (Einheiten, Mieter, Hausgeld aus Wirtschaftsplan), seit dem 09.10.2026; dieselben Rollen wie das Ankaufstool. */
+export const KAUFPREISLISTE_ROUTE = "/kaufpreisliste";
 
 // Roles that see everything
 // New routes: /follow-ups, /empfehlungen, /einheitenspiegel, /afa-rechner
@@ -627,7 +629,7 @@ export function isUrlAllowedForRole(
   // Die Investmentkalkulation Plus (09.10.2026) ist derselbe Rechner und hat dieselben Rollen.
   if ((cleanUrl === INVESTMENTRECHNER_ROUTE || cleanUrl === INVESTMENTRECHNER_PLUS_ROUTE) && canAccessInvestmentrechner(role)) return true;
   // Das Ankaufstool ebenso im Code, damit es ohne Migration ankommt.
-  if ((cleanUrl === ANKAUFSTOOL_ROUTE || cleanUrl === MIETSUBVENTION_ROUTE) && ANKAUFSTOOL_ROLLEN.includes(role)) return true;
+  if ((cleanUrl === ANKAUFSTOOL_ROUTE || cleanUrl === MIETSUBVENTION_ROUTE || cleanUrl === KAUFPREISLISTE_ROUTE) && ANKAUFSTOOL_ROLLEN.includes(role)) return true;
   if (customPermissions?.includes(url) || customPermissions?.includes(cleanUrl)) return true;
   const allowed = getAllowedUrlsFor(role);
   if (!allowed) return false; // unknown role → deny by default

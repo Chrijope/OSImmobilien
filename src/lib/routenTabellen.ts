@@ -230,6 +230,8 @@ export const ROUTEN_TABELLEN: Record<string, readonly string[]> = {
   "/ankaufstool": [],
   // Mietsubvention liest Objekte und Einheiten fuer die Vorbelegung.
   "/mietsubvention": [...OBJEKT_TABELLEN],
+  // Kaufpreisliste ebenso.
+  "/kaufpreisliste": [...OBJEKT_TABELLEN],
   "/musterkalkulation": [],
   "/kalkulation-1": [],
   "/kalkulation-team-pro-q": [],

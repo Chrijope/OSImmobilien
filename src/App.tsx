@@ -134,6 +134,7 @@ const Bonitaetsrechner = lazyRoute(() => import("./pages/Bonitaetsrechner"));
 const Investmentrechner = lazyRoute(() => import("./pages/Investmentrechner"));
 const Ankaufstool = lazyRoute(() => import("./pages/Ankaufstool"));
 const Mietsubvention = lazyRoute(() => import("./pages/Mietsubvention"));
+const Kaufpreisliste = lazyRoute(() => import("./pages/Kaufpreisliste"));
 const KalkulationInvestagon = lazyRoute(() => import("./pages/KalkulationInvestagon"));
 const Kultur = lazyRoute(() => import("./pages/Kultur"));
 const WeeklyCall = lazyRoute(() => import("./pages/WeeklyCall"));
@@ -648,6 +649,7 @@ const App = () => (
                   <Route path="/investmentrechner-plus" element={<Investmentrechner erweitert />} />
                   <Route path="/ankaufstool" element={<Ankaufstool />} />
                   <Route path="/mietsubvention" element={<Mietsubvention />} />
+                  <Route path="/kaufpreisliste" element={<Kaufpreisliste />} />
                   <Route path="/musterkalkulation" element={<Navigate to="/investmentrechner" replace />} />
                   {/* Kalkulation 1, Team Pro Q und die Kalkulator-Beispiele sind entfernt
                       (30.09.2026). Alte Links landen in der Investmentkalkulation. */}

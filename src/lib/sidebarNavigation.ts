@@ -30,7 +30,7 @@ import type { UserRole } from "@/types/user";
 import { HANDBUCH_SEITE_ROUTE } from "@/lib/handbuch/zugang";
 import { isDraftRoute } from "@/lib/draftRoutes";
 import {
-  ANKAUFSTOOL_ROUTE, MIETSUBVENTION_ROUTE, greiftAdminRiegel, isUrlAllowedForRole, isKundeRole, isTippgeberRole, objekteTestFreigabe, type NutzerIdentitaet,
+  ANKAUFSTOOL_ROUTE, KAUFPREISLISTE_ROUTE, MIETSUBVENTION_ROUTE, greiftAdminRiegel, isUrlAllowedForRole, isKundeRole, isTippgeberRole, objekteTestFreigabe, type NutzerIdentitaet,
 } from "@/lib/sidebarPermissions";
 
 /** Wonach Menschen die Einstellungen suchen. Steht hier, weil zwei Einträge sie brauchen. */
@@ -111,6 +111,9 @@ const toolsItems = [
   /* Ist- gegen Soll-Miete, Differenz als Subvention an die Hausverwaltung.
      Nur Admin und Inhaber, wie das Ankaufstool (sidebarPermissions.ts). */
   { title: "Mietsubvention", url: MIETSUBVENTION_ROUTE, icon: Calculator, adminOnly: true, adminBadge: true, suchbegriffe: ["subvention", "mietsubvention", "mieterhoehung", "kappungsgrenze", "hausverwaltung", "soll miete", "ist miete"] },
+  /* Verkaufsliste, Mieterliste und Wirtschaftsplan in einer Tabelle, Export als
+     Excel und PDF. Nur Admin und Inhaber, wie das Ankaufstool. */
+  { title: "Kaufpreisliste", url: KAUFPREISLISTE_ROUTE, icon: Calculator, adminOnly: true, adminBadge: true, suchbegriffe: ["kaufpreisliste", "preisliste", "verkaufsliste", "mieterliste", "wirtschaftsplan", "hausgeld", "mea", "excel"] },
 ];
 
 /*

@@ -351,6 +351,17 @@ describe("Mietsubvention", () => {
   });
 });
 
+describe("Kaufpreisliste", () => {
+  it("steht denselben Rollen offen wie das Ankaufstool", () => {
+    for (const rolle of ["admin", "inhaber"] as const) {
+      expect(isUrlAllowedForRole("/kaufpreisliste", rolle)).toBe(true);
+    }
+    for (const rolle of ["vertriebsleiter", "vertriebspartner", "backoffice", "objektpartner", "kunde", "tippgeber"] as const) {
+      expect(isUrlAllowedForRole("/kaufpreisliste", rolle)).toBe(false);
+    }
+  });
+});
+
 describe("Ankaufstool", () => {
   it("steht nur Admin und Inhaber offen, sonst niemandem", () => {
     for (const rolle of ["admin", "inhaber"] as const) {
