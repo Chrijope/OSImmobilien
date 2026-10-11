@@ -73,14 +73,14 @@ describe("Pfadumrechnung", () => {
 
 describe("Konflikt-Suffix", () => {
   it("hängt die Kontaktnummer vor der Endung an", () => {
-    expect(konfliktName("kundenordner/x/inv/vertrag.pdf", "MI-00042")).toBe("kundenordner/x/inv/vertrag_aus-MI-00042.pdf");
-    expect(konfliktName("a/b/ohne-endung", "MI-00042")).toBe("a/b/ohne-endung_aus-MI-00042");
-    expect(konfliktName("a/b/vertrag.pdf", "MI-00042", 2)).toBe("a/b/vertrag_aus-MI-00042-2.pdf");
+    expect(konfliktName("kundenordner/x/inv/vertrag.pdf", "OSI-00042")).toBe("kundenordner/x/inv/vertrag_aus-OSI-00042.pdf");
+    expect(konfliktName("a/b/ohne-endung", "OSI-00042")).toBe("a/b/ohne-endung_aus-OSI-00042");
+    expect(konfliktName("a/b/vertrag.pdf", "OSI-00042", 2)).toBe("a/b/vertrag_aus-OSI-00042-2.pdf");
   });
 
   it("nimmt die Kontaktnummer, sonst den Anfang der Kennung", () => {
-    expect(kontaktKennung(VON, { moreId: 42 })).toBe("MI-00042");
-    expect(kontaktKennung(VON, { kundenNr: "17" })).toBe("MI-00017");
+    expect(kontaktKennung(VON, { osImmoId: 42 })).toBe("OSI-00042");
+    expect(kontaktKennung(VON, { kundenNr: "17" })).toBe("OSI-00017");
     expect(kontaktKennung(VON, {})).toBe("00000000");
   });
 
@@ -101,7 +101,7 @@ describe("verschiebeKontaktDateien", () => {
       [`kundenordner/${VON}/.emptyFolderPlaceholder`]: { size: 0, etag: "p" },
     });
     const u = umschreiber();
-    const erg = await verschiebeKontaktDateien({ speicher: f.speicher, umschreiben: u.umschreiben, vonId: VON, nachId: NACH, kennung: "MI-00042" });
+    const erg = await verschiebeKontaktDateien({ speicher: f.speicher, umschreiben: u.umschreiben, vonId: VON, nachId: NACH, kennung: "OSI-00042" });
 
     expect(erg).toMatchObject({ verschoben: 3, umbenannt: [], nichtVerschoben: [], alteNichtEntfernt: [] });
     expect(u.aufrufe).toEqual([{
@@ -120,9 +120,9 @@ describe("verschiebeKontaktDateien", () => {
       [`kundenordner/${NACH}/inv1/vertrag.pdf`]: { size: 7, etag: "alt" },
     });
     const u = umschreiber();
-    const erg = await verschiebeKontaktDateien({ speicher: f.speicher, umschreiben: u.umschreiben, vonId: VON, nachId: NACH, kennung: "MI-00042" });
+    const erg = await verschiebeKontaktDateien({ speicher: f.speicher, umschreiben: u.umschreiben, vonId: VON, nachId: NACH, kennung: "OSI-00042" });
 
-    const ziel = `kundenordner/${NACH}/inv1/vertrag_aus-MI-00042.pdf`;
+    const ziel = `kundenordner/${NACH}/inv1/vertrag_aus-OSI-00042.pdf`;
     expect(erg.umbenannt).toEqual([{ von: `kundenordner/${VON}/inv1/vertrag.pdf`, nach: ziel }]);
     expect(f.dateien.get(`kundenordner/${NACH}/inv1/vertrag.pdf`)).toEqual({ size: 7, etag: "alt" });
     expect(f.dateien.get(ziel)).toEqual({ size: 5, etag: "neu" });
@@ -135,7 +135,7 @@ describe("verschiebeKontaktDateien", () => {
       [`kundenordner/${NACH}/inv1/sa.pdf`]: { size: 1, etag: "a" },
     });
     const u = umschreiber();
-    const erg = await verschiebeKontaktDateien({ speicher: f.speicher, umschreiben: u.umschreiben, vonId: VON, nachId: NACH, kennung: "MI-00042" });
+    const erg = await verschiebeKontaktDateien({ speicher: f.speicher, umschreiben: u.umschreiben, vonId: VON, nachId: NACH, kennung: "OSI-00042" });
 
     expect(f.aufrufe.kopiert).toEqual([]);
     expect(erg.verschoben).toBe(1);
@@ -143,7 +143,7 @@ describe("verschiebeKontaktDateien", () => {
     expect(f.dateien.has(`kundenordner/${VON}/inv1/sa.pdf`)).toBe(false);
 
     // Ein dritter Lauf findet nichts mehr und ändert nichts.
-    const nochmal = await verschiebeKontaktDateien({ speicher: f.speicher, umschreiben: u.umschreiben, vonId: VON, nachId: NACH, kennung: "MI-00042" });
+    const nochmal = await verschiebeKontaktDateien({ speicher: f.speicher, umschreiben: u.umschreiben, vonId: VON, nachId: NACH, kennung: "OSI-00042" });
     expect(nochmal).toEqual({ verschoben: 0, umbenannt: [], nichtVerschoben: [], alteNichtEntfernt: [] });
     expect(u.aufrufe).toHaveLength(1);
   });
@@ -154,7 +154,7 @@ describe("verschiebeKontaktDateien", () => {
       [`kundenordner/${VON}/inv1/b.pdf`]: { size: 2, etag: "b" },
     }, { kopierFehler: (von) => von.endsWith("b.pdf") });
     const u = umschreiber();
-    const erg = await verschiebeKontaktDateien({ speicher: f.speicher, umschreiben: u.umschreiben, vonId: VON, nachId: NACH, kennung: "MI-00042" });
+    const erg = await verschiebeKontaktDateien({ speicher: f.speicher, umschreiben: u.umschreiben, vonId: VON, nachId: NACH, kennung: "OSI-00042" });
 
     expect(erg.verschoben).toBe(1);
     expect(erg.nichtVerschoben).toEqual([{ pfad: `kundenordner/${VON}/inv1/b.pdf`, grund: "Kopieren fehlgeschlagen: Netzwerk weg" }]);
@@ -165,7 +165,7 @@ describe("verschiebeKontaktDateien", () => {
   it("löscht nichts, wenn das Umschreiben der Verweise scheitert", async () => {
     const f = fakeSpeicher({ [`kundenordner/${VON}/inv1/a.pdf`]: { size: 1, etag: "a" } });
     const u = umschreiber("Zeitüberschreitung");
-    const erg = await verschiebeKontaktDateien({ speicher: f.speicher, umschreiben: u.umschreiben, vonId: VON, nachId: NACH, kennung: "MI-00042" });
+    const erg = await verschiebeKontaktDateien({ speicher: f.speicher, umschreiben: u.umschreiben, vonId: VON, nachId: NACH, kennung: "OSI-00042" });
 
     expect(erg.verschoben).toBe(0);
     expect(erg.nichtVerschoben).toEqual([{ pfad: `kundenordner/${VON}/inv1/a.pdf`, grund: "Verweise nicht umgeschrieben: Zeitüberschreitung" }]);
@@ -176,7 +176,7 @@ describe("verschiebeKontaktDateien", () => {
   it("meldet alte Kopien, die sich nicht löschen ließen, getrennt: verwiesen wird schon auf die neue", async () => {
     const f = fakeSpeicher({ [`kundenordner/${VON}/inv1/a.pdf`]: { size: 1, etag: "a" } }, { loeschFehler: true });
     const u = umschreiber();
-    const erg = await verschiebeKontaktDateien({ speicher: f.speicher, umschreiben: u.umschreiben, vonId: VON, nachId: NACH, kennung: "MI-00042" });
+    const erg = await verschiebeKontaktDateien({ speicher: f.speicher, umschreiben: u.umschreiben, vonId: VON, nachId: NACH, kennung: "OSI-00042" });
 
     expect(erg.verschoben).toBe(1);
     expect(erg.nichtVerschoben).toEqual([]);
@@ -186,7 +186,7 @@ describe("verschiebeKontaktDateien", () => {
   it("ruft das Umschreiben gar nicht erst auf, wenn es keine Dateien gibt", async () => {
     const f = fakeSpeicher({});
     const u = umschreiber();
-    await verschiebeKontaktDateien({ speicher: f.speicher, umschreiben: u.umschreiben, vonId: VON, nachId: NACH, kennung: "MI-00042" });
+    await verschiebeKontaktDateien({ speicher: f.speicher, umschreiben: u.umschreiben, vonId: VON, nachId: NACH, kennung: "OSI-00042" });
     expect(u.aufrufe).toEqual([]);
   });
 });

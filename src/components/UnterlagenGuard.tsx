@@ -42,7 +42,7 @@ export function UnterlagenBanner() {
   const { user } = useUser();
   const navigate = useNavigate();
   const lage = useUnterlagenStand();
-  const [weg, setWeg] = useState(() => heuteWeggeklickt(user?.moreId || "anonym"));
+  const [weg, setWeg] = useState(() => heuteWeggeklickt(user?.osImmoId || "anonym"));
 
   if (lage.laedt || !lage.bannerZeigen || !lage.stand || weg) return null;
 
@@ -115,7 +115,7 @@ export function UnterlagenBanner() {
             size="sm"
             variant="ghost"
             className="text-muted-foreground"
-            onClick={() => { heuteWegklicken(user?.moreId || "anonym"); setWeg(true); }}
+            onClick={() => { heuteWegklicken(user?.osImmoId || "anonym"); setWeg(true); }}
           >
             Später erinnern
           </Button>
@@ -126,7 +126,7 @@ export function UnterlagenBanner() {
         type="button"
         aria-label="Hinweis für heute ausblenden"
         className="shrink-0 text-muted-foreground/60 transition-colors hover:text-muted-foreground"
-        onClick={() => { heuteWegklicken(user?.moreId || "anonym"); setWeg(true); }}
+        onClick={() => { heuteWegklicken(user?.osImmoId || "anonym"); setWeg(true); }}
       >
         <X className="h-4 w-4" />
       </button>

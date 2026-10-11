@@ -8,7 +8,7 @@ import { cacheGet, cacheInsert, cacheUpdate, isTableLoaded } from "./dataCache";
 import { isTestAccount } from "./dbStoreHelper";
 import { fehlerAlsText } from "./fehlerKontext";
 
-const LS_PREFIX = "mi_appconfig_";
+const LS_PREFIX = "osimmo_appconfig_";
 
 export function getAppConfig<T = any>(key: string, fallback: T): T {
   if (isTestAccount()) {

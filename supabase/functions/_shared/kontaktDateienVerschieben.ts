@@ -8,7 +8,7 @@
  * seiner ID. Wer den Portalzugang übernahm, sah sie nicht.
  *
  * Reihenfolge, damit nie ein Verweis ins Leere zeigt:
- *   1. kopieren (nie überschreiben, bei Namenskonflikt Suffix „_aus-MI-…“),
+ *   1. kopieren (nie überschreiben, bei Namenskonflikt Suffix „_aus-OSI-…“),
  *   2. alle Verweise in der Datenbank in einem Schritt umschreiben,
  *   3. erst dann die alten Dateien löschen.
  * Scheitert Schritt 2, bleiben die alten Dateien und Verweise unverändert,
@@ -69,12 +69,12 @@ export interface VerschiebeErgebnis {
   alteNichtEntfernt: string[];
 }
 
-/** „MI-00042“ aus meta.moreId bzw. meta.kundenNr, sonst die ersten acht Zeichen der ID. */
+/** „OSI-00042“ aus meta.osImmoId bzw. meta.kundenNr, sonst die ersten acht Zeichen der ID. */
 export function kontaktKennung(id: string, meta: unknown): string {
   const m = (meta && typeof meta === "object" ? meta : {}) as Record<string, unknown>;
-  const roh = String(m.moreId ?? m.kundenNr ?? "").match(/^\s*(\d{1,18})/)?.[1];
+  const roh = String(m.osImmoId ?? m.kundenNr ?? "").match(/^\s*(\d{1,18})/)?.[1];
   const nr = roh ? Number(roh) : 0;
-  return nr > 0 ? `MI-${String(nr).padStart(5, "0")}` : id.slice(0, 8);
+  return nr > 0 ? `OSI-${String(nr).padStart(5, "0")}` : id.slice(0, 8);
 }
 
 /**
@@ -89,7 +89,7 @@ export function zielPfad(pfad: string, vonId: string, nachId: string): string | 
   return teile.join("/");
 }
 
-/** „a/b/vertrag.pdf“ → „a/b/vertrag_aus-MI-00042.pdf“, ab dem 2. Versuch „…_aus-MI-00042-2.pdf“. */
+/** „a/b/vertrag.pdf“ → „a/b/vertrag_aus-OSI-00042.pdf“, ab dem 2. Versuch „…_aus-OSI-00042-2.pdf“. */
 export function konfliktName(pfad: string, kennung: string, versuch = 1): string {
   const schnitt = pfad.lastIndexOf("/");
   const ordner = pfad.slice(0, schnitt + 1);

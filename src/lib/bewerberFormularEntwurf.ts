@@ -13,7 +13,7 @@ import type { FormularAntworten } from "./bewerberFormular";
  * demselben Gerät. Die Haltbarkeit entspricht der Gültigkeit des Links. Nach
  * dem Absenden wird sofort gelöscht, die Antworten sind dann in der Datenbank.
  */
-const SCHLUESSEL_PRAEFIX = "mi_bewerber_fragebogen_";
+const SCHLUESSEL_PRAEFIX = "osimmo_bewerber_fragebogen_";
 const HALTBARKEIT_MS = 14 * 24 * 60 * 60 * 1000;
 
 export interface FragebogenEntwurf {

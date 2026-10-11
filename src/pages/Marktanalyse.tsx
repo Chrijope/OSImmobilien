@@ -21,7 +21,7 @@ import { useUser } from "@/contexts/UserContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-const FAV_KEY = "mi_marktanalyse_favoriten_v1";
+const FAV_KEY = "osimmo_marktanalyse_favoriten_v1";
 /** Wie viele Kacheln auf einmal. 351 auf einen Schlag brachte die Seite ins Stocken. */
 const SEITENGROESSE = 48;
 

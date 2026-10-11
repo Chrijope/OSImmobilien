@@ -146,8 +146,8 @@ export interface Investment {
 }
 export interface InvestmentDokument { id: string; investmentId: string; name: string; kategorie: "notar_unterlagen" | "sonstige" | "kundenordner"; uploadedBy: string; uploadedAt: string; deleteRequested?: boolean; deleteRequestedBy?: string; }
 
-const LS_KEY = "mi_investments";
-const LS_DOK = "mi_investment_docs";
+const LS_KEY = "osimmo_investments";
+const LS_DOK = "osimmo_investment_docs";
 
 function buildInvestmentMeta(inv: Investment, existingMeta: Record<string, any> = {}): Record<string, any> {
   return {
@@ -360,7 +360,7 @@ export function setInvestmentNotarFields(investmentId: string, fields: Partial<{
   if (isTestAccount()) {
     const current = getMetaField<Record<string, string>>(investmentId, "notarData", {});
     const merged = { ...current, ...fields };
-    localStorage.setItem(`mi_notarData_${investmentId}`, JSON.stringify(merged));
+    localStorage.setItem(`osimmo_notarData_${investmentId}`, JSON.stringify(merged));
     return;
   }
   const row = getRawRow(investmentId);
@@ -381,7 +381,7 @@ export function setInvestmentNotarFields(investmentId: string, fields: Partial<{
 /** Read a key from kontakte meta (for kontakt-level settings like unterlagenFreigeschaltet) */
 function getKontaktMetaField<T>(kontaktId: string, key: string, fallback: T): T {
   if (isTestAccount()) {
-    try { const raw = localStorage.getItem(`mi_k_${key}_${kontaktId}`); return raw ? JSON.parse(raw) : fallback; } catch { return fallback; }
+    try { const raw = localStorage.getItem(`osimmo_k_${key}_${kontaktId}`); return raw ? JSON.parse(raw) : fallback; } catch { return fallback; }
   }
   const row = cacheGet("kontakte").find((r: any) => r.id === kontaktId);
   if (!row) return fallback;
@@ -392,7 +392,7 @@ function getKontaktMetaField<T>(kontaktId: string, key: string, fallback: T): T 
 /** Write a key to kontakte meta – uses server-side atomic JSONB merge to prevent race conditions */
 function setKontaktMetaField(kontaktId: string, key: string, value: any): void {
   if (isTestAccount()) {
-    localStorage.setItem(`mi_k_${key}_${kontaktId}`, JSON.stringify(value));
+    localStorage.setItem(`osimmo_k_${key}_${kontaktId}`, JSON.stringify(value));
     return;
   }
   // Optimistic local update first – ueber cacheSet, damit die Tabellenversion
@@ -927,9 +927,9 @@ export function getUnterlagenFreigeschalten(kontaktId: string): boolean {
 }
 export function setUnterlagenFreigeschalten(kontaktId: string, value: boolean) {
   if (isTestAccount()) {
-    localStorage.setItem(`mi_k_unterlagenFreigeschaltet_${kontaktId}`, JSON.stringify(value));
-    if (value) localStorage.setItem(`mi_k_unterlagenFreigeschaltetAt_${kontaktId}`, JSON.stringify(new Date().toISOString()));
-    else localStorage.setItem(`mi_k_unterlagenFreigeschaltetAt_${kontaktId}`, JSON.stringify(""));
+    localStorage.setItem(`osimmo_k_unterlagenFreigeschaltet_${kontaktId}`, JSON.stringify(value));
+    if (value) localStorage.setItem(`osimmo_k_unterlagenFreigeschaltetAt_${kontaktId}`, JSON.stringify(new Date().toISOString()));
+    else localStorage.setItem(`osimmo_k_unterlagenFreigeschaltetAt_${kontaktId}`, JSON.stringify(""));
     return;
   }
   // Single atomic merge with both fields to prevent race condition
@@ -1198,7 +1198,7 @@ export function updateKundenordnerDokument(docId: string, fields: Partial<Kunden
 }
 export function removeKundenordnerDokument(docId: string) {
   // Find which investment has this doc
-  if (isTestAccount()) { localSet("mi_kundenordner", localGet<KundenordnerDokument[]>("mi_kundenordner", []).filter(d => d.id !== docId)); return; }
+  if (isTestAccount()) { localSet("osimmo_kundenordner", localGet<KundenordnerDokument[]>("osimmo_kundenordner", []).filter(d => d.id !== docId)); return; }
   for (const r of cacheGet("investments")) {
     const docs = ((r.meta || {}).kundenordner as KundenordnerDokument[]) || [];
     if (docs.some(d => d.id === docId)) { setMetaField(r.id, "kundenordner", docs.filter(d => d.id !== docId)); return; }

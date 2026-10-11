@@ -17,7 +17,7 @@ import { kontaktBelongsToUser } from "@/lib/kontaktOwnership";
  * Läuft alle 5 Minuten + 1x bei Mount. Idempotent via REMINDER_KEY.
  */
 
-const REMINDER_KEY = "mi_followup_inbox_escalations_sent";
+const REMINDER_KEY = "osimmo_followup_inbox_escalations_sent";
 
 function getSent(): Record<string, string[]> {
   if (isTestAccount()) {

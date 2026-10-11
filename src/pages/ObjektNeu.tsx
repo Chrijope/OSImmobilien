@@ -850,7 +850,7 @@ export default function ObjektNeu() {
   };
 
   // ── LocalStorage persistence: save form state so it survives tab switches, browser minimize, etc. ──
-  const LS_KEY = isEditMode ? `mi_objekt_edit_${editId}` : "mi_objekt_neu_draft";
+  const LS_KEY = isEditMode ? `osimmo_objekt_edit_${editId}` : "osimmo_objekt_neu_draft";
   const skipRestore = useRef(false);
   const hasUserInteractedRef = useRef(false);
   const [draftRestored, setDraftRestored] = useState(false);
@@ -1606,7 +1606,7 @@ export default function ObjektNeu() {
     // Auto-save seller to dropdown list if not already saved
     if (verkaeuferDaten.name.trim()) {
       try {
-        const LS_VK = "mi_saved_verkaeufer";
+        const LS_VK = "osimmo_saved_verkaeufer";
         const existing: typeof verkaeuferDaten[] = JSON.parse(localStorage.getItem(LS_VK) || "[]");
         const duplicate = existing.find(v => v.name.toLowerCase() === verkaeuferDaten.name.trim().toLowerCase());
         if (duplicate) {
@@ -2774,7 +2774,7 @@ export default function ObjektNeu() {
                     <p className="text-xs text-muted-foreground">Diese Daten werden automatisch in die Reservierungsvereinbarung übernommen.</p>
                   </div>
                   {(() => {
-                    const LS_VK = "mi_saved_verkaeufer";
+                    const LS_VK = "osimmo_saved_verkaeufer";
                     const _v = vkListVersion;
                     const saved: typeof verkaeuferDaten[] = JSON.parse(localStorage.getItem(LS_VK) || "[]");
                     const isAlreadySaved = verkaeuferDaten.name.trim() && saved.some(v => v.name.toLowerCase() === verkaeuferDaten.name.trim().toLowerCase());
@@ -2808,7 +2808,7 @@ export default function ObjektNeu() {
                 {/* Saved seller dropdown + delete */}
                 {(() => {
                   const _vkVer = vkListVersion; // dependency to trigger re-render
-                  const LS_VK = "mi_saved_verkaeufer";
+                  const LS_VK = "osimmo_saved_verkaeufer";
                   const saved: typeof verkaeuferDaten[] = JSON.parse(localStorage.getItem(LS_VK) || "[]");
                   if (saved.length === 0) return null;
                   const activeIdx = saved.findIndex(v => v.name.toLowerCase() === (verkaeuferDaten.name || "").trim().toLowerCase());
@@ -2942,7 +2942,7 @@ export default function ObjektNeu() {
                     {(() => {
                       const query = verkaeuferDaten.name.trim().toLowerCase();
                       if (!query || query.length < 1) return null;
-                      const LS_VK = "mi_saved_verkaeufer";
+                      const LS_VK = "osimmo_saved_verkaeufer";
                       const _v = vkListVersion;
                       const saved: typeof verkaeuferDaten[] = JSON.parse(localStorage.getItem(LS_VK) || "[]");
                       const matches = saved.filter(v => v.name.toLowerCase().includes(query) && v.name.toLowerCase() !== query);

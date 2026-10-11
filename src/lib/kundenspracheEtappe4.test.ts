@@ -135,7 +135,7 @@ describe("Selbstauskunft-PDF für die Bank", () => {
   });
 
   it("bei Englisch zweisprachig beschriftet, Werte deutsch mit Übersetzung", async () => {
-    await generateSelbstauskunftPDF(daten(), { vorname: "Emily", nachname: "Carter", moreId: "" }, undefined, { sprache: "en" });
+    await generateSelbstauskunftPDF(daten(), { vorname: "Emily", nachname: "Carter", osImmoId: "" }, undefined, { sprache: "en" });
     const t = alles();
     expect(t).toContain("Familienstand");
     expect(t).toContain("Marital status");
@@ -147,7 +147,7 @@ describe("Selbstauskunft-PDF für die Bank", () => {
   });
 
   it("ohne Sprache wie bisher deutsch", async () => {
-    await generateSelbstauskunftPDF(daten(), { vorname: "Emily", nachname: "Carter", moreId: "" });
+    await generateSelbstauskunftPDF(daten(), { vorname: "Emily", nachname: "Carter", osImmoId: "" });
     const t = alles();
     expect(t).toContain("Verheiratet");
     expect(t).not.toContain("Marital status");

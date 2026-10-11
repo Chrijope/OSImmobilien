@@ -76,7 +76,7 @@ const renderKarte = (
       canEdit={canEdit}
       beraterName="Hanna HR"
       beraterEmail="hanna@more.de"
-      autorId="MI-1"
+      autorId="OSI-1"
       onRefresh={() => {}}
       gebuchterTermin={gebuchterTermin}
       abgesagterTermin={abgesagterTermin}
@@ -147,7 +147,7 @@ describe("ClosingTerminKarte", () => {
       "selbst-1",
       "Closing-Termin am 10.09.2030 um 14:30 Uhr, von Hand eingetragen.",
       "Hanna HR",
-      "MI-1",
+      "OSI-1",
     );
   });
 

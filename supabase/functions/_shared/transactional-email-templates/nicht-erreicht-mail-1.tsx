@@ -130,7 +130,7 @@ const Mail = ({ name, buchungsLink, berater, sprache }: Props) => {
 
       <Absatz letzter>
         {wahl.vor}
-        <Link href={zeitfensterLink} className="mi-link" style={{ color: T.blauLink, textDecoration: 'underline' }}>
+        <Link href={zeitfensterLink} className="osimmo-link" style={{ color: T.blauLink, textDecoration: 'underline' }}>
           {partnerAdresse}
         </Link>
         {wahl.nach}

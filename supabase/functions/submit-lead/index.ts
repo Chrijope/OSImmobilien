@@ -1646,36 +1646,36 @@ Deno.serve(async (req) => {
       }
     }
 
-    // ─── moreId (MI-XXXXX) vergeben ─────────────────────────
-    // Jeder Lead bekommt eine fortlaufende moreId, damit er im Kundenprofil
-    // eine eindeutige Anzeige-ID erhält (z. B. MI-00042). Wir lesen den
+    // ─── osImmoId (OSI-XXXXX) vergeben ─────────────────────────
+    // Jeder Lead bekommt eine fortlaufende osImmoId, damit er im Kundenprofil
+    // eine eindeutige Anzeige-ID erhält (z. B. OSI-00042). Wir lesen den
     // aktuellen Maximalwert und erhöhen um 1. Bei sehr seltenen Race-Conditions
     // kann es theoretisch zu Duplikaten kommen – Anzeige-ID, nicht PK.
     try {
       const { data: maxRow } = await supabaseAdmin
         .from("kontakte")
         .select("meta")
-        .not("meta->>moreId", "is", null)
-        .order("meta->moreId", { ascending: false })
+        .not("meta->>osImmoId", "is", null)
+        .order("meta->osImmoId", { ascending: false })
         .limit(1);
-      let maxMoreId = 0;
+      let maxOsImmoId = 0;
       if (Array.isArray(maxRow)) {
         for (const r of maxRow as any[]) {
-          const v = Number(r?.meta?.moreId);
-          if (Number.isFinite(v) && v > maxMoreId) maxMoreId = v;
+          const v = Number(r?.meta?.osImmoId);
+          if (Number.isFinite(v) && v > maxOsImmoId) maxOsImmoId = v;
         }
       }
       // Fallback: kompletten Scan falls Ordering nicht greift (jsonb-Sortierung)
-      if (maxMoreId === 0) {
+      if (maxOsImmoId === 0) {
         const { data: allRows } = await supabaseAdmin.from("kontakte").select("meta");
         for (const r of (allRows || []) as any[]) {
-          const v = Number(r?.meta?.moreId);
-          if (Number.isFinite(v) && v > maxMoreId) maxMoreId = v;
+          const v = Number(r?.meta?.osImmoId);
+          if (Number.isFinite(v) && v > maxOsImmoId) maxOsImmoId = v;
         }
       }
-      (baseMeta as any).moreId = maxMoreId + 1;
+      (baseMeta as any).osImmoId = maxOsImmoId + 1;
     } catch (e) {
-      console.error("moreId-Vergabe fehlgeschlagen:", e);
+      console.error("osImmoId-Vergabe fehlgeschlagen:", e);
     }
 
     // ─── Insert in kontakte ─────────────────────────────────

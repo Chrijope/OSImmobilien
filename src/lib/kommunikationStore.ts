@@ -6,7 +6,7 @@ export interface KommunikationsEintrag {
   richtung: "eingehend" | "ausgehend" | "intern"; betreff: string; inhalt: string; erstelltVon: string; erstelltAm: string;
 }
 
-const LS_KEY = "mi_kommunikation";
+const LS_KEY = "osimmo_kommunikation";
 
 export const KOMM_TYPEN: { value: KommunikationsEintrag["typ"]; label: string; emoji: string }[] = [
   { value: "anruf", label: "Anruf", emoji: "📞" }, { value: "email", label: "E-Mail", emoji: "📧" },

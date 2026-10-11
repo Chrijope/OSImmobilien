@@ -26,20 +26,20 @@ const ORDNER = resolve(__dirname, "../../supabase/functions/_shared/transactiona
 
 /** Welche Klasse eine inline gesetzte Farbe aus `T` braucht. */
 const FARBE_BRAUCHT_KLASSE: Record<string, string> = {
-  text: "mi-text",
-  textLeise: "mi-leise",
-  textStumm: "mi-stumm",
-  textZart: "mi-zart",
-  blau: "mi-link",
-  blauLink: "mi-link",
+  text: "osimmo-text",
+  textLeise: "osimmo-leise",
+  textStumm: "osimmo-stumm",
+  textZart: "osimmo-zart",
+  blau: "osimmo-link",
+  blauLink: "osimmo-link",
 };
 
 /**
  * Klassen, die im Dunkelmodus ihre eigene Textfarbe mitbringen. Wer eine davon
- * traegt, braucht keine zweite: `mi-kreis` etwa setzt Flaeche und Schrift des
+ * traegt, braucht keine zweite: `osimmo-kreis` etwa setzt Flaeche und Schrift des
  * Namenskuerzels in der Signatur gemeinsam.
  */
-const EIGENE_FARBE = ["mi-kreis"];
+const EIGENE_FARBE = ["osimmo-kreis"];
 
 /**
  * Ein Element samt seiner Eigenschaften, grob geschnitten: vom oeffnenden
@@ -90,7 +90,7 @@ describe("Die Sammelmail zum Kennenlernen im Dunkelmodus", () => {
     const i = vorlage.indexOf("KL_NACHFASS_ABSAGE_TITEL}");
     expect(i).toBeGreaterThan(-1);
     const umgebung = vorlage.slice(Math.max(0, i - 300), i);
-    expect(umgebung).toContain('className="mi-text"');
+    expect(umgebung).toContain('className="osimmo-text"');
   });
 });
 
@@ -108,7 +108,7 @@ describe("Der Kreis in der Signatur", () => {
      * Mailprogrammen gar nicht. Sichtbar wurde das nur, wenn das Bild nicht
      * geladen wurde, und genau das ist in Mails der Normalfall.
      */
-    const block = layout.slice(layout.indexOf('className="mi-kreis"'));
+    const block = layout.slice(layout.indexOf('className="osimmo-kreis"'));
     const zelle = block.slice(0, block.indexOf(">"));
     expect(zelle, "Der Kreis muss an einer <td> haengen").toContain("align=");
     expect(zelle, "ohne valign sitzt der Ersatztext oben").toContain('valign="middle"');

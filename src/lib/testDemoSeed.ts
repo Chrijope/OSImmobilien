@@ -5,7 +5,7 @@
 
 import type { KundeData } from "./kundenStore";
 
-const SEED_FLAG = "mi_demo_seeded_v2";
+const SEED_FLAG = "osimmo_demo_seeded_v2";
 
 export function seedTestDemoData() {
   if (localStorage.getItem(SEED_FLAG)) return;
@@ -14,7 +14,7 @@ export function seedTestDemoData() {
   const kontakte: KundeData[] = [
     // Pipeline: Erstgespräch
     {
-      id: "demo-001", moreId: 1001, anrede: "Herr", vorname: "Stefan", nachname: "Gruber",
+      id: "demo-001", osImmoId: 1001, anrede: "Herr", vorname: "Stefan", nachname: "Gruber",
       email: "s.gruber@example.com", telefon: "+49 170 1234567", geburtstag: "1985-03-15",
       strasse: "Musterstraße", hausnummer: "12", plz: "80331", ort: "München",
       quelle: "Website", berater: "Christian Peetz", erstellt_am: "2025-12-01T10:00:00Z",
@@ -28,7 +28,7 @@ export function seedTestDemoData() {
     },
     // Pipeline: Bonitätsunterlagen
     {
-      id: "demo-002", moreId: 1002, anrede: "Frau", vorname: "Maria", nachname: "Schneider",
+      id: "demo-002", osImmoId: 1002, anrede: "Frau", vorname: "Maria", nachname: "Schneider",
       email: "m.schneider@example.com", telefon: "+49 171 2345678", geburtstag: "1990-07-22",
       strasse: "Lindenweg", hausnummer: "5", plz: "86150", ort: "Augsburg",
       quelle: "Empfehlung", berater: "Christian Peetz", erstellt_am: "2025-11-15T14:30:00Z",
@@ -42,7 +42,7 @@ export function seedTestDemoData() {
     },
     // Pipeline: Objektauswahl
     {
-      id: "demo-003", moreId: 1003, anrede: "Herr", vorname: "Thomas", nachname: "Weber",
+      id: "demo-003", osImmoId: 1003, anrede: "Herr", vorname: "Thomas", nachname: "Weber",
       email: "t.weber@example.com", telefon: "+49 172 3456789", geburtstag: "1978-11-03",
       strasse: "Rosenweg", hausnummer: "8a", plz: "93047", ort: "Regensburg",
       quelle: "Google Ads", berater: "Christian Peetz", erstellt_am: "2025-10-20T09:15:00Z",
@@ -56,7 +56,7 @@ export function seedTestDemoData() {
     },
     // Pipeline: Reservierung
     {
-      id: "demo-004", moreId: 1004, anrede: "Frau", vorname: "Sandra", nachname: "Müller",
+      id: "demo-004", osImmoId: 1004, anrede: "Frau", vorname: "Sandra", nachname: "Müller",
       email: "s.mueller@example.com", telefon: "+49 173 4567890", geburtstag: "1988-05-18",
       strasse: "Schillerstr.", hausnummer: "22", plz: "68159", ort: "Mannheim",
       quelle: "Meta Ads", berater: "Christian Peetz", erstellt_am: "2025-09-05T16:45:00Z",
@@ -71,7 +71,7 @@ export function seedTestDemoData() {
     },
     // Pipeline: Finanzierung
     {
-      id: "demo-005", moreId: 1005, anrede: "Herr", vorname: "Michael", nachname: "Fischer",
+      id: "demo-005", osImmoId: 1005, anrede: "Herr", vorname: "Michael", nachname: "Fischer",
       email: "m.fischer@example.com", telefon: "+49 174 5678901", geburtstag: "1975-01-30",
       strasse: "Beethovenstr.", hausnummer: "3", plz: "94315", ort: "Straubing",
       quelle: "Website", berater: "Christian Peetz", erstellt_am: "2025-08-12T11:00:00Z",
@@ -88,7 +88,7 @@ export function seedTestDemoData() {
     },
     // Pipeline: Notar
     {
-      id: "demo-006", moreId: 1006, anrede: "Herr", vorname: "Andreas", nachname: "Hoffmann",
+      id: "demo-006", osImmoId: 1006, anrede: "Herr", vorname: "Andreas", nachname: "Hoffmann",
       email: "a.hoffmann@example.com", telefon: "+49 175 6789012", geburtstag: "1982-09-14",
       strasse: "Goethestr.", hausnummer: "17", plz: "72178", ort: "Waldachtal",
       quelle: "Empfehlung", berater: "Christian Peetz", erstellt_am: "2025-07-20T08:30:00Z",
@@ -106,7 +106,7 @@ export function seedTestDemoData() {
     },
     // Pipeline: Fälligkeit
     {
-      id: "demo-007", moreId: 1007, anrede: "Frau", vorname: "Julia", nachname: "Becker",
+      id: "demo-007", osImmoId: 1007, anrede: "Frau", vorname: "Julia", nachname: "Becker",
       email: "j.becker@example.com", telefon: "+49 176 7890123", geburtstag: "1992-04-07",
       strasse: "Hauptstr.", hausnummer: "45", plz: "84028", ort: "Landshut",
       quelle: "Google Ads", berater: "Christian Peetz", erstellt_am: "2025-06-01T13:20:00Z",
@@ -124,7 +124,7 @@ export function seedTestDemoData() {
     },
     // Pipeline: Abgeschlossen
     {
-      id: "demo-008", moreId: 1008, anrede: "Herr", vorname: "Markus", nachname: "Klein",
+      id: "demo-008", osImmoId: 1008, anrede: "Herr", vorname: "Markus", nachname: "Klein",
       email: "m.klein@example.com", telefon: "+49 177 8901234", geburtstag: "1970-12-25",
       strasse: "Am Marktplatz", hausnummer: "1", plz: "88400", ort: "Biberach",
       quelle: "Website", berater: "Christian Peetz", erstellt_am: "2025-04-10T15:00:00Z",
@@ -142,7 +142,7 @@ export function seedTestDemoData() {
     },
     // Setter-Lead: neuer Lead
     {
-      id: "demo-009", moreId: 1009, anrede: "Frau", vorname: "Lisa", nachname: "Wagner",
+      id: "demo-009", osImmoId: 1009, anrede: "Frau", vorname: "Lisa", nachname: "Wagner",
       email: "l.wagner@example.com", telefon: "+49 178 9012345", geburtstag: "1995-08-12",
       strasse: "Bergstr.", hausnummer: "9", plz: "87700", ort: "Memmingen",
       quelle: "Meta Ads", berater: "", erstellt_am: new Date().toISOString(),
@@ -158,7 +158,7 @@ export function seedTestDemoData() {
     },
     // Setter-Lead: kontaktiert
     {
-      id: "demo-010", moreId: 1010, anrede: "Herr", vorname: "Daniel", nachname: "Braun",
+      id: "demo-010", osImmoId: 1010, anrede: "Herr", vorname: "Daniel", nachname: "Braun",
       email: "d.braun@example.com", telefon: "+49 179 0123456", geburtstag: "1987-02-28",
       strasse: "Kirchplatz", hausnummer: "14", plz: "89073", ort: "Ulm",
       quelle: "Google Ads", berater: "", erstellt_am: "2026-03-10T09:00:00Z",
@@ -179,7 +179,7 @@ export function seedTestDemoData() {
     },
     // Verlorener Lead
     {
-      id: "demo-011", moreId: 1011, anrede: "Herr", vorname: "Peter", nachname: "Schulz",
+      id: "demo-011", osImmoId: 1011, anrede: "Herr", vorname: "Peter", nachname: "Schulz",
       email: "p.schulz@example.com", telefon: "+49 160 1112233", geburtstag: "1980-06-10",
       strasse: "Industriestr.", hausnummer: "7", plz: "90402", ort: "Nürnberg",
       quelle: "Website", berater: "Christian Peetz", erstellt_am: "2025-11-01T10:00:00Z",
@@ -193,7 +193,7 @@ export function seedTestDemoData() {
     },
     // Archivierter Lead
     {
-      id: "demo-012", moreId: 1012, anrede: "Frau", vorname: "Claudia", nachname: "Richter",
+      id: "demo-012", osImmoId: 1012, anrede: "Frau", vorname: "Claudia", nachname: "Richter",
       email: "c.richter@example.com", telefon: "+49 161 2223344", geburtstag: "1993-10-05",
       strasse: "Sonnenallee", hausnummer: "30", plz: "10967", ort: "Berlin",
       quelle: "Meta Ads", berater: "Christian Peetz", erstellt_am: "2025-08-15T12:00:00Z",
@@ -205,7 +205,7 @@ export function seedTestDemoData() {
     },
     // Person mit Partner (Person 2)
     {
-      id: "demo-013", moreId: 1013, anrede: "Herr", vorname: "Robert", nachname: "Hartmann",
+      id: "demo-013", osImmoId: 1013, anrede: "Herr", vorname: "Robert", nachname: "Hartmann",
       email: "r.hartmann@example.com", telefon: "+49 162 3334455", geburtstag: "1983-04-20",
       strasse: "Friedrichstr.", hausnummer: "88", plz: "70174", ort: "Stuttgart",
       quelle: "Website", berater: "Christian Peetz", erstellt_am: "2025-10-10T10:00:00Z",
@@ -227,7 +227,7 @@ export function seedTestDemoData() {
     },
     // Nicht erreicht Lead (Setterin)
     {
-      id: "demo-014", moreId: 1014, anrede: "Herr", vorname: "Kevin", nachname: "Neumann",
+      id: "demo-014", osImmoId: 1014, anrede: "Herr", vorname: "Kevin", nachname: "Neumann",
       email: "k.neumann@example.com", telefon: "+49 163 4445566", geburtstag: "1998-01-17",
       strasse: "Dorfstr.", hausnummer: "2", plz: "73230", ort: "Kirchheim",
       quelle: "Meta Ads", berater: "", erstellt_am: "2026-03-15T08:00:00Z",
@@ -244,7 +244,7 @@ export function seedTestDemoData() {
     },
     // Abrechnung
     {
-      id: "demo-015", moreId: 1015, anrede: "Frau", vorname: "Anna", nachname: "Lehmann",
+      id: "demo-015", osImmoId: 1015, anrede: "Frau", vorname: "Anna", nachname: "Lehmann",
       email: "a.lehmann@example.com", telefon: "+49 164 5556677", geburtstag: "1991-12-08",
       strasse: "Kastanienallee", hausnummer: "15", plz: "10435", ort: "Berlin",
       quelle: "Empfehlung", berater: "Christian Peetz", erstellt_am: "2025-05-20T09:00:00Z",
@@ -262,7 +262,7 @@ export function seedTestDemoData() {
     },
   ];
 
-  localStorage.setItem("mi_kontakte", JSON.stringify(kontakte));
+  localStorage.setItem("osimmo_kontakte", JSON.stringify(kontakte));
 
   // ── Investments ──
   const investments = [
@@ -270,7 +270,7 @@ export function seedTestDemoData() {
     { id: "inv-002", kundeId: "demo-008", objekt: "Augsburg – Gögginger Str.", wohnung: "WHG 5", kaufpreis: 280000, kaufdatum: "2025-09-10", status: "aktiv", notizen: "Zweites Investment geplant" },
     { id: "inv-003", kundeId: "demo-015", objekt: "Regensburg – Am Galgenberg", wohnung: "WHG 12", kaufpreis: 220000, kaufdatum: "2025-10-05", status: "aktiv", notizen: "" },
   ];
-  localStorage.setItem("mi_investments", JSON.stringify(investments));
+  localStorage.setItem("osimmo_investments", JSON.stringify(investments));
 
   // ── Aktivitäten ──
   const aktivitaeten = [
@@ -283,7 +283,7 @@ export function seedTestDemoData() {
     { id: "akt-007", kundeId: "demo-010", art: "anruf", beschreibung: "Qualifizierungsgespräch erfolgreich", datum: "2026-03-12T10:30:00Z", von: "Setterin Demo", ergebnis: "Termin mit VP gebucht" },
     { id: "akt-008", kundeId: "demo-013", art: "meeting", beschreibung: "Gemeinsamer Termin mit Ehepaar Hartmann", datum: "2026-02-25T16:00:00Z", von: "Christian Peetz", ergebnis: "Reservierung unterschrieben" },
   ];
-  localStorage.setItem("mi_aktivitaeten", JSON.stringify(aktivitaeten));
+  localStorage.setItem("osimmo_aktivitaeten", JSON.stringify(aktivitaeten));
 
   // ── Follow-Ups ──
   const followUps = [
@@ -293,10 +293,10 @@ export function seedTestDemoData() {
     { id: "fu-004", kundeId: "demo-007", kundeName: "Julia Becker", titel: "Zufriedenheitscheck", typ: "anruf", faelligAm: "2026-04-01", status: "offen", prioritaet: "niedrig", berater: "Christian Peetz", pipelineStufe: "faelligkeit" },
     { id: "fu-005", kundeId: "demo-009", kundeName: "Lisa Wagner", titel: "Rückruf – Erstkontakt", typ: "anruf", faelligAm: "2026-03-21", status: "offen", prioritaet: "hoch", berater: "", pipelineStufe: "neuer_lead" },
   ];
-  localStorage.setItem("mi_followups", JSON.stringify(followUps));
+  localStorage.setItem("osimmo_followups", JSON.stringify(followUps));
 
   // ── Finanzierungen ──
-  localStorage.setItem("mi_finanzierung_v2_demo-005", JSON.stringify({
+  localStorage.setItem("osimmo_finanzierung_v2_demo-005", JSON.stringify({
     angebote: [
       { id: "fa-001", bank: "Sparkasse", zinssatz: 3.2, tilgung: 2, laufzeit: 15, darlehensbetrag: 180000, monatlicheRate: 780, sondertilgung: "5%", bereitstellungsfrei: "6 Monate", status: "offen", erstellt_am: "2026-02-01" },
       { id: "fa-002", bank: "DKB", zinssatz: 3.0, tilgung: 2.5, laufzeit: 15, darlehensbetrag: 180000, monatlicheRate: 825, sondertilgung: "5%", bereitstellungsfrei: "12 Monate", status: "offen", erstellt_am: "2026-02-05" },
@@ -304,7 +304,7 @@ export function seedTestDemoData() {
     phase: "gesendet",
   }));
 
-  localStorage.setItem("mi_finanzierung_v2_demo-006", JSON.stringify({
+  localStorage.setItem("osimmo_finanzierung_v2_demo-006", JSON.stringify({
     angebote: [
       { id: "fa-003", bank: "DKB", zinssatz: 3.0, tilgung: 2.5, laufzeit: 20, darlehensbetrag: 165000, monatlicheRate: 756, sondertilgung: "5%", bereitstellungsfrei: "12 Monate", status: "akzeptiert", erstellt_am: "2025-12-10" },
     ],
@@ -329,12 +329,12 @@ export function resetTestDemoSeed() {
 export function clearTestDemoData() {
   const keys = [
     SEED_FLAG,
-    "mi_kontakte",
-    "mi_investments",
-    "mi_aktivitaeten",
-    "mi_followups",
-    "mi_finanzierung_v2_demo-005",
-    "mi_finanzierung_v2_demo-006",
+    "osimmo_kontakte",
+    "osimmo_investments",
+    "osimmo_aktivitaeten",
+    "osimmo_followups",
+    "osimmo_finanzierung_v2_demo-005",
+    "osimmo_finanzierung_v2_demo-006",
   ];
   for (const k of keys) {
     try { localStorage.removeItem(k); } catch { /* noop */ }

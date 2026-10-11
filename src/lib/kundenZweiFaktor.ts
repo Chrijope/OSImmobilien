@@ -90,7 +90,7 @@ export function kundenMfaSchritt(
 
 /** Schlüssel im Browser, damit der geschlossene Hinweis sofort weg bleibt. */
 export function hinweisSpeicherSchluessel(userId: string): string {
-  return `mi_kunde_2fa_hinweis_${userId}`;
+  return `osimmo_kunde_2fa_hinweis_${userId}`;
 }
 
 /** Schlüssel in `user_settings`, damit das Schließen auf allen Geräten gilt. */

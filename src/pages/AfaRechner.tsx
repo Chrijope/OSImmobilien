@@ -113,7 +113,7 @@ const AfaRechner = () => {
       savedAt: new Date().toISOString(),
     };
     if (isTestAccount()) {
-      const key = weId ? `mi_afa_rnd_${objektId}_${weId}` : `mi_afa_rnd_${objektId}`;
+      const key = weId ? `osimmo_afa_rnd_${objektId}_${weId}` : `osimmo_afa_rnd_${objektId}`;
       localStorage.setItem(key, JSON.stringify(data));
     } else {
       const key = weId ? `afa_rnd_${objektId}_${weId}` : `afa_rnd_${objektId}`;

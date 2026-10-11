@@ -404,7 +404,7 @@ describe("Der Zurueckweg fragt nur nach, wenn etwas zu verlieren ist", () => {
     fireEvent.click(knopf("Zurück zum Kundenprofil"));
     fireEvent.click(knopf("Zwischenspeichern und schließen"));
     expect(onZurueck).toHaveBeenCalledTimes(1);
-    const entwurf = speicher.get("mi_kaufvertrag_draft_k-1_inv-1");
+    const entwurf = speicher.get("osimmo_kaufvertrag_draft_k-1_inv-1");
     expect(entwurf).toBeTruthy();
     expect(JSON.parse(entwurf as string).vk_name).toBe("Musterbau GmbH");
   });
@@ -416,7 +416,7 @@ describe("Der Zurueckweg fragt nur nach, wenn etwas zu verlieren ist", () => {
     fireEvent.click(knopf("Verwerfen"));
     expect(onZurueck).toHaveBeenCalledTimes(1);
     // Sonst staende die verworfene Eingabe beim naechsten Oeffnen wieder da.
-    expect(speicher.get("mi_kaufvertrag_draft_k-1_inv-1")).toBeUndefined();
+    expect(speicher.get("osimmo_kaufvertrag_draft_k-1_inv-1")).toBeUndefined();
   });
 });
 

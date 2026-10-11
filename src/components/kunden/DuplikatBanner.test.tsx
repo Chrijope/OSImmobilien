@@ -32,8 +32,8 @@ import { DuplikatBanner } from "./DuplikatBanner";
 import type { KundeData } from "@/lib/kundenStore";
 
 /** Ausgedachte Testkontakte. */
-const aelter = { id: "a", moreId: 7, vorname: "Erika", nachname: "Beispiel", email: "erika@beispiel.test", telefon: "", erstellt_am: "2026-03-01T10:00:00Z" } as KundeData;
-const neuer = { id: "b", moreId: 42, vorname: "Erika", nachname: "Beispiel", email: "erika@beispiel.test", telefon: "0170 1234567", erstellt_am: "2026-09-20T10:00:00Z" } as KundeData;
+const aelter = { id: "a", osImmoId: 7, vorname: "Erika", nachname: "Beispiel", email: "erika@beispiel.test", telefon: "", erstellt_am: "2026-03-01T10:00:00Z" } as KundeData;
+const neuer = { id: "b", osImmoId: 42, vorname: "Erika", nachname: "Beispiel", email: "erika@beispiel.test", telefon: "0170 1234567", erstellt_am: "2026-09-20T10:00:00Z" } as KundeData;
 
 describe("DuplikatBanner", () => {
   beforeEach(() => {
@@ -48,8 +48,8 @@ describe("DuplikatBanner", () => {
     fireEvent.click(screen.getByRole("button", { name: /Anzeigen/ }));
     fireEvent.click(screen.getByRole("button", { name: /^Zusammenführen$/ }));
 
-    expect(await screen.findByText(/MI-00007, angelegt am 01\.03\.2026/)).toBeTruthy();
-    expect(screen.getByText(/MI-00042, angelegt am 20\.09\.2026/)).toBeTruthy();
+    expect(await screen.findByText(/OSI-00007, angelegt am 01\.03\.2026/)).toBeTruthy();
+    expect(screen.getByText(/OSI-00042, angelegt am 20\.09\.2026/)).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Zusammenführen" }));
     await waitFor(() => expect(t.zusammenfuehren).toHaveBeenCalledWith("a", "b"));

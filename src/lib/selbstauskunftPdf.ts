@@ -228,7 +228,7 @@ function unterschriftEinsetzen(
 
 export async function generateSelbstauskunftPDF(
   rawData: SelbstauskunftData,
-  kunde: { vorname: string; nachname: string; moreId: string },
+  kunde: { vorname: string; nachname: string; osImmoId: string },
   signatures?: { person1?: { signatureData?: string; signedAt?: string }; person2?: { signatureData?: string; signedAt?: string } },
   optionen: SelbstauskunftPdfOptionen = {},
 ): Promise<jsPDF> {

@@ -2162,7 +2162,7 @@ export function BonitaetsSection({ inv, invMeta, kontakt, kontaktMeta, onRefresh
               } catch (sigErr) {
                 console.warn("[SA-Entwurf] Live-Signaturen konnten nicht geladen werden:", sigErr);
               }
-              const pdf = await generateSelbstauskunftPDF(invMeta.saData, { vorname: kontakt?.vorname || "", nachname: kontakt?.nachname || "", moreId: "" }, liveSigs);
+              const pdf = await generateSelbstauskunftPDF(invMeta.saData, { vorname: kontakt?.vorname || "", nachname: kontakt?.nachname || "", osImmoId: "" }, liveSigs);
               pdf.save(`Selbstauskunft_${kontakt?.vorname}_${kontakt?.nachname}.pdf`);
             } catch (err) {
               console.error("SA PDF error:", err);

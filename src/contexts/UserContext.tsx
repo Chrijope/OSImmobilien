@@ -31,11 +31,11 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-const DEFAULT_PROFILE: UserProfile = { name: "Laden...", role: "kunde", moreId: "" };
+const DEFAULT_PROFILE: UserProfile = { name: "Laden...", role: "kunde", osImmoId: "" };
 
 function getStoredRolePreference() {
   try {
-    return localStorage.getItem("mi_current_role");
+    return localStorage.getItem("osimmo_current_role");
   } catch {
     return null;
   }
@@ -43,7 +43,7 @@ function getStoredRolePreference() {
 
 function setStoredRolePreference(role: UserRole) {
   try {
-    localStorage.setItem("mi_current_role", role);
+    localStorage.setItem("osimmo_current_role", role);
   } catch {
     // ignore storage errors
   }
@@ -143,7 +143,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         role,
         // Defensiv: Spalte fehlt, solange die Migration nicht gelaufen ist.
         rollenVariante: rollenVarianteVonProfil(profile),
-        moreId: profile?.more_id || "",
+        osImmoId: profile?.os_immo_id || "",
         avatar: profile?.avatar_url || undefined,
         email: profile?.email || undefined,
       });
@@ -151,9 +151,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       // Cache avatar_url for synchronous access in getProfilePic()
       try {
         if (profile?.avatar_url) {
-          localStorage.setItem("mi_profile_avatar_url", profile.avatar_url);
+          localStorage.setItem("osimmo_profile_avatar_url", profile.avatar_url);
         } else {
-          localStorage.removeItem("mi_profile_avatar_url");
+          localStorage.removeItem("osimmo_profile_avatar_url");
         }
       } catch {}
 
@@ -161,9 +161,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       // Landingpage lesen sie synchron, also ohne React-Kontext.
       try {
         if (profile?.email) {
-          localStorage.setItem("mi_profile_email", profile.email);
+          localStorage.setItem("osimmo_profile_email", profile.email);
         } else {
-          localStorage.removeItem("mi_profile_email");
+          localStorage.removeItem("osimmo_profile_email");
         }
       } catch {}
 
@@ -225,12 +225,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           name: profile?.name || "Nutzer",
           role,
           rollenVariante: rollenVarianteVonProfil(profile),
-          moreId: profile?.more_id || "",
+          osImmoId: profile?.os_immo_id || "",
           avatar: profile?.avatar_url || undefined,
           email: profile?.email || undefined,
         });
         try {
-          if (profile?.email) localStorage.setItem("mi_profile_email", profile.email);
+          if (profile?.email) localStorage.setItem("osimmo_profile_email", profile.email);
         } catch {}
         setStoredRolePreference(role);
         if (backgroundReloadRef.current) {

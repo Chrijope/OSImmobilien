@@ -58,7 +58,7 @@ vi.stubGlobal("fetch", () => Promise.reject(new Error("kein Netz im Test")));
 import { EMPTY_DATA, EMPTY_PERSON, type SelbstauskunftData } from "@/components/selbstauskunft/SelbstauskunftForm";
 import { generateSelbstauskunftPDF } from "@/lib/selbstauskunftPdf";
 
-const kunde = { vorname: "Anna", nachname: "Muster", moreId: "MI-1" };
+const kunde = { vorname: "Anna", nachname: "Muster", osImmoId: "OSI-1" };
 
 function saDaten(over: Partial<SelbstauskunftData> = {}): SelbstauskunftData {
   return {

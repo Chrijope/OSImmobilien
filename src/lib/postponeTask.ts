@@ -13,7 +13,7 @@ import type { FollowUp } from "./followUpStore";
 import { getBewerber, updateBewerber } from "./bewerbungStore";
 import { tageVorher } from "./bewerberErinnerungen";
 
-const LS_FU = "mi_followups";
+const LS_FU = "osimmo_followups";
 
 function toIsoDateOnly(d: Date): string {
   const y = d.getFullYear();

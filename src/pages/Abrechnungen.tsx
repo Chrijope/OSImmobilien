@@ -180,8 +180,8 @@ interface GutschriftStatus {
   bestaetigtVon?: string;
 }
 
-const GS_KEY = "mi_gutschrift_status";
-const GS_NOTIF_KEY = "mi_gutschrift_notifications";
+const GS_KEY = "osimmo_gutschrift_status";
+const GS_NOTIF_KEY = "osimmo_gutschrift_notifications";
 
 type GutschriftStore = { [partnerMonthKey: string]: GutschriftStatus };
 
@@ -1521,12 +1521,12 @@ const Abrechnungen = () => {
   const [abrechnungenFehler, setAbrechnungenFehler] = useState<string | null>(null);
   useEffect(() => {
     const neu = () => setLokalVersion((v) => v + 1);
-    window.addEventListener("mi_provisionsabrechnungen_changed", neu);
+    window.addEventListener("osimmo_provisionsabrechnungen_changed", neu);
     void refreshAbrechnungen().then((fehler) => {
       setAbrechnungenFehler(fehler);
       neu();
     });
-    return () => window.removeEventListener("mi_provisionsabrechnungen_changed", neu);
+    return () => window.removeEventListener("osimmo_provisionsabrechnungen_changed", neu);
   }, []);
 
   // Investments ab Reservierung ohne Kaufpreis, nur fuer die Verwaltung.

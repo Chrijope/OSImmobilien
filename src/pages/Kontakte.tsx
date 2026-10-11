@@ -95,15 +95,15 @@ export default function Kontakte() {
     return buildBucketEntries(scoped, "kontakte");
   }, [liveVersion, isTeamWide, user.name, authUser?.id, myUserId]);
   const [search, setSearch] = useState("");
-  const [showArchived, setShowArchived] = usePersistedState<boolean>("mi_filter_kontakte_archived", false);
+  const [showArchived, setShowArchived] = usePersistedState<boolean>("osimmo_filter_kontakte_archived", false);
   const [nurAnrufbar, setNurAnrufbar] = usePersistedState<boolean>(
-    `mi_filter_kontakte_nur_anrufbar__${myUserId || "anon"}`,
+    `osimmo_filter_kontakte_nur_anrufbar__${myUserId || "anon"}`,
     true,
   );
-  const [typFilter, setTypFilter] = usePersistedState<KontaktTyp | "-">("mi_filter_kontakte_typ", "-");
-  const [beraterFilter, setBeraterFilter] = usePersistedState<string>("mi_filter_kontakte_berater", "-");
-  const [sortField, setSortField] = usePersistedState<string>("mi_filter_kontakte_sortField", "erstellt_am");
-  const [sortDir, setSortDir] = usePersistedState<"asc" | "desc">("mi_filter_kontakte_sortDir", "desc");
+  const [typFilter, setTypFilter] = usePersistedState<KontaktTyp | "-">("osimmo_filter_kontakte_typ", "-");
+  const [beraterFilter, setBeraterFilter] = usePersistedState<string>("osimmo_filter_kontakte_berater", "-");
+  const [sortField, setSortField] = usePersistedState<string>("osimmo_filter_kontakte_sortField", "erstellt_am");
+  const [sortDir, setSortDir] = usePersistedState<"asc" | "desc">("osimmo_filter_kontakte_sortDir", "desc");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [showPowerdialer, setShowPowerdialer] = useState(false);
   const [newKontakt, setNewKontakt] = useState(emptyForm);

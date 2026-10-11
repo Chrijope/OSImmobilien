@@ -434,7 +434,7 @@ function UebungsNotizen({
 
   const speichern = () => {
     if (!bewerber || !kannSpeichern) return;
-    void addNotizEntry(bewerber.id, notizMitBezug(bezug, text), user.name || "Unbekannt", user.moreId);
+    void addNotizEntry(bewerber.id, notizMitBezug(bezug, text), user.name || "Unbekannt", user.osImmoId);
     setText("");
     toast({ title: "Notiz gespeichert", description: bezug });
   };

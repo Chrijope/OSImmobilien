@@ -4,8 +4,8 @@
 import { getUserSetting, setUserSetting } from "./userSettingsCache";
 import { isTestAccount } from "./dbStoreHelper";
 
-const INBOX_OPEN_KEY = "mi_inbox_open_count";
-const INBOX_DONE_KEY = "mi_inbox_done_ids";
+const INBOX_OPEN_KEY = "osimmo_inbox_open_count";
+const INBOX_DONE_KEY = "osimmo_inbox_done_ids";
 
 function lsGet(key: string): string | null { try { return localStorage.getItem(key); } catch { return null; } }
 function lsSet(key: string, val: string) { try { localStorage.setItem(key, val); } catch {} }

@@ -47,7 +47,7 @@ export interface FocusQueueState {
   paused: boolean;
 }
 
-const LS_KEY = "mi_focus_queue";
+const LS_KEY = "osimmo_focus_queue";
 const EVENT = "focus-queue-updated";
 
 const ELIGIBLE_TYPES: FocusTaskTyp[] = ["anruf", "meeting", "follow_up", "aufgabe", "deadline"];

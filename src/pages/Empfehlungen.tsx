@@ -73,7 +73,7 @@ interface EmpfehlungEntry {
 
 function loadEmpfehlungen(): EmpfehlungEntry[] {
   if (isTestAccount()) {
-    try { const raw = localStorage.getItem("mi_empfehlungen_tracking"); return raw ? JSON.parse(raw) : []; } catch { return []; }
+    try { const raw = localStorage.getItem("osimmo_empfehlungen_tracking"); return raw ? JSON.parse(raw) : []; } catch { return []; }
   }
   const rows = cacheGet("empfehlungen");
   return rows.map((r: any) => ({
@@ -104,7 +104,7 @@ function saveEmpfehlung(entry: EmpfehlungEntry) {
     const all = loadEmpfehlungen();
     const idx = all.findIndex(e => e.id === entry.id);
     if (idx >= 0) all[idx] = entry; else all.push(entry);
-    localStorage.setItem("mi_empfehlungen_tracking", JSON.stringify(all));
+    localStorage.setItem("osimmo_empfehlungen_tracking", JSON.stringify(all));
     return;
   }
   const existing = cacheGet("empfehlungen").find((r: any) => r.id === entry.id);
@@ -460,7 +460,7 @@ export default function Empfehlungen() {
       // Delete empfehlung
       if (isTestAccount()) {
         const all = loadEmpfehlungen().filter(e => e.id !== emp.id);
-        localStorage.setItem("mi_empfehlungen_tracking", JSON.stringify(all));
+        localStorage.setItem("osimmo_empfehlungen_tracking", JSON.stringify(all));
       } else {
         // Fehler beim Löschen wurden früher verschluckt, die Meldung sagte
         // trotzdem "gelöscht" und der Eintrag kam beim nächsten Laden zurück.

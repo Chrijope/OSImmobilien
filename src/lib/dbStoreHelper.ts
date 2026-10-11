@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 function getCurrentRole(): string {
   try {
-    return localStorage.getItem("mi_current_role") || "";
+    return localStorage.getItem("osimmo_current_role") || "";
   } catch { return ""; }
 }
 

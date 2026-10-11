@@ -12,7 +12,7 @@ export interface HvTicket {
   status: HvTicketStatus; erstelltAm: string; aktualisiertAm: string;
 }
 
-const LS_KEY = "mi_hv_tickets";
+const LS_KEY = "osimmo_hv_tickets";
 
 function toDb(t: HvTicket): Record<string, any> {
   return { id: t.id, titel: t.titel, beschreibung: t.beschreibung, kategorie: t.kategorie, prioritaet: t.prioritaet, status: t.status, objekt: t.objektId, wohnung: t.wohneinheitId, melder: t.mieterName, zugewiesen_an: t.zugewiesenerDienstleisterName, erstellt_am: t.erstelltAm, aktualisiert_am: t.aktualisiertAm, meta: { objektName: t.objektName, wohneinheitName: t.wohneinheitName, mieterId: t.mieterId, mieterName: t.mieterName, zugewiesenerDienstleisterId: t.zugewiesenerDienstleisterId, zugewiesenerDienstleisterName: t.zugewiesenerDienstleisterName } };

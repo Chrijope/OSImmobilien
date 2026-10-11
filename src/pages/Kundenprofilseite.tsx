@@ -662,7 +662,7 @@ function BonitaetsUnterlagenKunde({ inv, kunde, forceUpdate }: { inv: Investment
                           if (saData) {
                             try {
                               const { generateSelbstauskunftPDF } = await import("@/lib/selbstauskunftPdf");
-                              const pdf = await generateSelbstauskunftPDF(saData, { vorname: kunde.vorname, nachname: kunde.nachname, moreId: String((kunde as any).moreId || "") }, invRow?.meta?.saSignatures, { sprache: kundenSprache(kunde.id) });
+                              const pdf = await generateSelbstauskunftPDF(saData, { vorname: kunde.vorname, nachname: kunde.nachname, osImmoId: String((kunde as any).osImmoId || "") }, invRow?.meta?.saSignatures, { sprache: kundenSprache(kunde.id) });
                               pdf.save(`Selbstauskunft_${kunde.vorname}_${kunde.nachname}.pdf`);
                             } catch (err) {
                               console.error("SA PDF error:", err);
@@ -948,7 +948,7 @@ function InvestmentView({ inv, kunde }: { inv: Investment; kunde: ReturnType<typ
                 const saData = invRow?.meta?.saData;
                 if (saData) {
                   const { generateSelbstauskunftPDF } = await import("@/lib/selbstauskunftPdf");
-                  const pdf = await generateSelbstauskunftPDF(saData, { vorname: kunde.vorname, nachname: kunde.nachname, moreId: String(kunde.moreId || "") }, invRow?.meta?.saSignatures, { sprache: kundenSprache(kunde.id) });
+                  const pdf = await generateSelbstauskunftPDF(saData, { vorname: kunde.vorname, nachname: kunde.nachname, osImmoId: String(kunde.osImmoId || "") }, invRow?.meta?.saSignatures, { sprache: kundenSprache(kunde.id) });
                   pdf.save(`Selbstauskunft_${kunde.vorname}_${kunde.nachname}.pdf`);
                 } else {
                   toast.error("PDF-Daten nicht verfügbar");

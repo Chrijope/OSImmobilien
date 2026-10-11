@@ -130,19 +130,19 @@ export function useUnterlagenStand(): UnterlagenLage {
  * Hinweis, den man einmal wegklickt und der nie wiederkommt, erinnert an
  * nichts.
  */
-const SCHLUESSEL = (moreId: string) => `unterlagen-banner-weg:${moreId}`;
+const SCHLUESSEL = (osImmoId: string) => `unterlagen-banner-weg:${osImmoId}`;
 
-export function heuteWeggeklickt(moreId: string): boolean {
+export function heuteWeggeklickt(osImmoId: string): boolean {
   try {
-    return localStorage.getItem(SCHLUESSEL(moreId)) === new Date().toISOString().slice(0, 10);
+    return localStorage.getItem(SCHLUESSEL(osImmoId)) === new Date().toISOString().slice(0, 10);
   } catch {
     return false;
   }
 }
 
-export function heuteWegklicken(moreId: string): void {
+export function heuteWegklicken(osImmoId: string): void {
   try {
-    localStorage.setItem(SCHLUESSEL(moreId), new Date().toISOString().slice(0, 10));
+    localStorage.setItem(SCHLUESSEL(osImmoId), new Date().toISOString().slice(0, 10));
   } catch {
     /* Ohne Speicher erscheint er beim nächsten Seitenaufruf erneut. Ärgerlich,
        aber besser als eine Fehlermeldung. */

@@ -25,7 +25,7 @@ import { hatVereinbartenKontakt } from "@/lib/kontaktTermine";
  * es keinen Nudge, und ein offener verschwindet (siehe hatVereinbartenKontakt).
  */
 
-const REMINDER_KEY = "mi_stagnation_nudges_sent";
+const REMINDER_KEY = "osimmo_stagnation_nudges_sent";
 const NUDGE_MARK = "[Stillstand]";
 
 // SLA in Tagen pro Stufe. Fehlt eine Stufe → kein Nudge.

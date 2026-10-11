@@ -17,7 +17,7 @@ const zustand = vi.hoisted(() => ({ nutzerId: "nutzer-1" }));
 
 vi.mock("@/contexts/UserContext", () => ({
   useUser: () => ({
-    user: { name: "Maria Muster", role: "vertriebspartner", moreId: "M-0001", email: "maria@example.com" },
+    user: { name: "Maria Muster", role: "vertriebspartner", osImmoId: "M-0001", email: "maria@example.com" },
     authUser: { id: zustand.nutzerId, email: "maria@example.com" },
   }),
 }));

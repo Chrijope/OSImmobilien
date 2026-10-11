@@ -849,14 +849,14 @@ describe("Einheit löschen über den Mülleimer", () => {
   });
 
   it("entfernt im Testkonto wie bisher nur lokal und ohne Prüfung", async () => {
-    db.lokal.mi_objekte = [objekt()];
+    db.lokal.osimmo_objekte = [objekt()];
     db.testkonto = true;
 
     expect(await pruefeEinheitLoeschen(W2)).toBeNull();
     expect(await deleteWohnung(OBJEKT, W2)).toEqual({ geloescht: true, grund: null });
 
     expect(db.aufrufe).toEqual([]);
-    expect((db.lokal.mi_objekte as ObjektData[])[0].wohnungen.map((w) => w.id)).toEqual([W1]);
+    expect((db.lokal.osimmo_objekte as ObjektData[])[0].wohnungen.map((w) => w.id)).toEqual([W1]);
   });
 });
 
@@ -868,6 +868,6 @@ describe("Testkonto", () => {
     expect(await saveObjekt({ ...o, titel: "Lokal" })).toBe(true);
 
     expect(db.aufrufe).toEqual([]);
-    expect(db.lokal.mi_objekte).toEqual([expect.objectContaining({ id: OBJEKT, titel: "Lokal" })]);
+    expect(db.lokal.osimmo_objekte).toEqual([expect.objectContaining({ id: OBJEKT, titel: "Lokal" })]);
   });
 });

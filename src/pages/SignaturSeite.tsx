@@ -349,7 +349,7 @@ export default function SignaturSeite() {
           const { generateSelbstauskunftPDF } = await import("@/lib/selbstauskunftPdf");
           doc = await generateSelbstauskunftPDF(
             saData,
-            { vorname: saData.vorname || "", nachname: saData.nachname || "", moreId: "" },
+            { vorname: saData.vorname || "", nachname: saData.nachname || "", osImmoId: "" },
             undefined,
             { sprache },
           );
@@ -634,7 +634,7 @@ export default function SignaturSeite() {
         const saFuerPdf = (saAbschluss?.saData || saData) as typeof saData;
         doc = await generateSelbstauskunftPDF(
           saFuerPdf,
-          { vorname: saFuerPdf.vorname || "", nachname: saFuerPdf.nachname || "", moreId: "" },
+          { vorname: saFuerPdf.vorname || "", nachname: saFuerPdf.nachname || "", osImmoId: "" },
           saAbschluss
             ? unterschriftenFuerPdf(saAbschluss.signatures)
             : { [personKey]: { signatureData, signedAt: signedAtIso } } as any,

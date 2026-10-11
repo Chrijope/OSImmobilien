@@ -60,7 +60,7 @@ export function monatsrateAusAngebot(angebot: Partial<FinanzierungsAngebot> | nu
   return summe * (prozent(angebot.zins) + prozent(angebot.tilgung)) / 100 / 12;
 }
 
-const LS_PREFIX = "mi_finanzierung_v2_";
+const LS_PREFIX = "osimmo_finanzierung_v2_";
 
 function lsGet(investmentId: string): FinanzierungData {
   return localGet<FinanzierungData>(`${LS_PREFIX}${investmentId}`, { angebote: [] });

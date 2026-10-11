@@ -37,7 +37,7 @@ interface ChallengeData {
 }
 
 const ICONS = ["🏆", "🎯", "🔥", "💰", "⚡", "🏅", "🎖️", "🥇"];
-const LS_KEY = "mi_wettbewerb_challenges";
+const LS_KEY = "osimmo_wettbewerb_challenges";
 
 function toDb(c: ChallengeData): Record<string, any> {
   return {

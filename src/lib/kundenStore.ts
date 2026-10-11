@@ -18,7 +18,7 @@ import { generateFollowUpsFromKette, getFollowUpsByKunde, cancelStaleAutoFollowU
 
 export interface KundeData {
   id: string;
-  moreId: number;
+  osImmoId: number;
   anrede: string;
   vorname: string;
   nachname: string;
@@ -180,8 +180,8 @@ const DEFAULT_AUSGABEN = {
   miete: 0, lebenshaltung: 0, privateKV: 0, zinsTilgung: 0, autokredite: 0, privatkredite: 0, sonstigeKredite: 0, unterhalt: 0, sonstige: 0,
 };
 
-function resolveMoreId(meta: Record<string, any>): number {
-  const raw = meta?.moreId ?? meta?.kundenNr ?? 0;
+function resolveOsImmoId(meta: Record<string, any>): number {
+  const raw = meta?.osImmoId ?? meta?.kundenNr ?? 0;
   if (typeof raw === "number") return Number.isFinite(raw) ? raw : 0;
   const parsed = Number.parseInt(String(raw).trim(), 10);
   return Number.isFinite(parsed) ? parsed : 0;
@@ -193,7 +193,7 @@ export function dbRowToKunde(row: any): KundeData {
   const meta = row.meta || {};
   return {
     id: row.id,
-    moreId: resolveMoreId(meta),
+    osImmoId: resolveOsImmoId(meta),
     anrede: row.anrede || "",
     vorname: row.vorname || "",
     nachname: row.nachname || "",
@@ -292,7 +292,7 @@ function kundeToDbRow(k: KundeData): Record<string, any> {
   const existingMeta = (existingRow?.meta && typeof existingRow.meta === "object") ? { ...existingRow.meta } : {};
 
   const knownMeta: Record<string, any> = {
-    moreId: k.moreId,
+    osImmoId: k.osImmoId,
     geburtstag: k.geburtstag,
     pipelineStufe: k.pipelineStufe,
     reservierungsDatum: k.reservierungsDatum,
@@ -383,7 +383,7 @@ function kundeToDbRow(k: KundeData): Record<string, any> {
 }
 
 // ── localStorage fallback for testaccount ──
-const LS_KEY = "mi_kontakte";
+const LS_KEY = "osimmo_kontakte";
 
 function lsGetKontakte(): KundeData[] {
   return localGet<KundeData[]>(LS_KEY, []);
@@ -828,7 +828,7 @@ export function kontaktTypBeimAnlegen(
 
 export async function addKontakt(partial: Partial<KundeData> & { vorname: string; nachname: string }): Promise<KundeData> {
   const all = getKontakte();
-  const maxMoreId = all.reduce((max, k) => Math.max(max, k.moreId || 0), 0);
+  const maxOsImmoId = all.reduce((max, k) => Math.max(max, k.osImmoId || 0), 0);
 
   // Auto-Attribution: Wenn kein Vertriebspartner explizit gesetzt wurde (undefined),
   // wird der anlegende Nutzer automatisch als Vertriebspartner hinterlegt.
@@ -855,7 +855,7 @@ export async function addKontakt(partial: Partial<KundeData> & { vorname: string
 
   const newKunde: KundeData = {
     id: crypto.randomUUID(),
-    moreId: maxMoreId + 1,
+    osImmoId: maxOsImmoId + 1,
     anrede: partial.anrede || "",
     vorname: partial.vorname,
     nachname: partial.nachname,
@@ -964,7 +964,7 @@ export async function addKontakt(partial: Partial<KundeData> & { vorname: string
  * Hier gehen 500 Zeilen pro Insert raus, also 20 Anfragen statt 10.000.
  *
  * Die fortlaufende Kundennummer wird bewusst NICHT mitgeschickt. Sie kommt
- * aus der Sequenz `kontakt_more_id_seq` in der Datenbank. Im Browser
+ * aus der Sequenz `kontakt_os_immo_id_seq` in der Datenbank. Im Browser
  * gerechnet gaebe es beim Stapel-Insert zwangslaeufig Doubletten.
  */
 export const IMPORT_STAPEL_GROESSE = 500;
@@ -1027,7 +1027,7 @@ export async function addKontakteBulk(
     const kunde: KundeData = {
       id: crypto.randomUUID(),
       // Platzhalter, die Datenbank setzt die echte Nummer.
-      moreId: 0,
+      osImmoId: 0,
       anrede: partial.anrede || "",
       vorname: partial.vorname,
       nachname: partial.nachname,
@@ -1061,7 +1061,7 @@ export async function addKontakteBulk(
       ausgaben: { ...DEFAULT_AUSGABEN },
     };
     const row = kundeToDbRow(kunde);
-    delete (row.meta as any).moreId;
+    delete (row.meta as any).osImmoId;
     row.meta = {
       ...(row.meta || {}),
       ...(opts.metaBasis || {}),

@@ -4,7 +4,7 @@
 import { getUserSetting, setUserSetting } from "./userSettingsCache";
 import { isTestAccount } from "./dbStoreHelper";
 
-const DSGVO_MODE_KEY = "mi_dsgvo_mode";
+const DSGVO_MODE_KEY = "osimmo_dsgvo_mode";
 
 export function isPushSupported(): boolean {
   return "Notification" in window;

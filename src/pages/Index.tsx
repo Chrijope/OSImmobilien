@@ -237,7 +237,7 @@ const Index = () => {
   // zeigen wir die Tageszeit-Begrüßung, ab dem zweiten Aufruf „Willkommen zurück".
   const todayKey = now.toISOString().slice(0, 10);
   const firstName = user.name.split(" ")[0];
-  const greetSeenKey = `mi_dashboard_greet_seen_${user.moreId || firstName}`;
+  const greetSeenKey = `osimmo_dashboard_greet_seen_${user.osImmoId || firstName}`;
   const alreadySeenToday = (() => {
     try { return localStorage.getItem(greetSeenKey) === todayKey; } catch { return false; }
   })();

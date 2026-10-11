@@ -11,8 +11,8 @@ export interface FollowUp {
 export interface FollowUpKette { id: string; name: string; pipelineStufe: string; schritte: FollowUpSchritt[]; aktiv: boolean; }
 export interface FollowUpSchritt { id: string; tageNachEvent: number; typ: "anruf" | "email" | "meeting" | "erinnerung"; titel: string; beschreibung: string; prioritaet: "niedrig" | "mittel" | "hoch"; }
 
-const LS_FU = "mi_followups";
-const LS_KE = "mi_followup_ketten";
+const LS_FU = "osimmo_followups";
+const LS_KE = "osimmo_followup_ketten";
 
 function fuToDb(f: FollowUp): Record<string, any> {
   return { id: f.id, kunde_id: f.kundeId, kunde_name: f.kundeName, berater: f.berater, pipeline_stufe: f.pipelineStufe, typ: f.typ, titel: f.titel, beschreibung: f.beschreibung, faellig_am: f.faelligAm, erstellt_am: f.erstelltAm, erledigt_am: f.erledigtAm || null, status: f.status, prioritaet: f.prioritaet, automatisch: f.automatisch };

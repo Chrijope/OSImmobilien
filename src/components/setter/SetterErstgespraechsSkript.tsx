@@ -687,7 +687,7 @@ type SkriptDaten = {
   aktualisiertAm?: string;
 };
 
-const LS_KEY = (id: string) => `mi_setterSkript_${id}`;
+const LS_KEY = (id: string) => `osimmo_setterSkript_${id}`;
 
 /**
  * Cashflow-Erwartung – Toggle + Einwand-Behandlungs-Akkordeon.

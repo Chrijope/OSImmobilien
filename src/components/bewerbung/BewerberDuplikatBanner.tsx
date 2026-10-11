@@ -18,7 +18,7 @@ interface DuplikatGruppe {
   bewerber: Bewerber[];
 }
 
-const DISMISS_STORAGE_KEY = "mi_bewerber_duplikat_dismissed_v1";
+const DISMISS_STORAGE_KEY = "osimmo_bewerber_duplikat_dismissed_v1";
 
 const fingerprintGroup = (key: string, bewerber: Bewerber[]) => {
   const ids = bewerber.map(b => b.id).sort().join(",");

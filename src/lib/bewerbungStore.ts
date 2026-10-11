@@ -611,9 +611,9 @@ export type StellenStatus = "Veröffentlicht" | "Entwurf" | "Besetzt" | "Geschlo
 export type Stelle = { id: string; titel: string; abteilung: string; standort: string; art: string; status: StellenStatus; erstellt: string; beschreibung: string; anforderungen: string; benefits: string; };
 export type OnboardingTermin = { id: string; datum: string; uhrzeit: string; standort: string; maxTeilnehmer: number; };
 
-const LS_BEWERBER = "mi_bewerber";
-const LS_STELLEN = "mi_stellen";
-const LS_TERMINE = "mi_onboarding_termine";
+const LS_BEWERBER = "osimmo_bewerber";
+const LS_STELLEN = "osimmo_stellen";
+const LS_TERMINE = "osimmo_onboarding_termine";
 
 // We store stellen and termine in the bewerbungen cache as special rows with a type marker in meta,
 // or use separate localStorage keys. For simplicity, stellen/termine use a single cached "bewerbungen" table approach.
@@ -1404,7 +1404,7 @@ const defaultStellen: Stelle[] = [
   { id: "s4", titel: "Backoffice Assistenz (m/w/d)", abteilung: "Backoffice", standort: "München", art: "Teilzeit / Vollzeit", status: "Besetzt", erstellt: "1.12.2025", beschreibung: "Unterstützung des Backoffice-Teams.", anforderungen: "Organisationstalent, MS Office.", benefits: "Flexible Arbeitszeiten." },
 ];
 
-const STELLEN_MIGRATION_KEY = "mi_stellen_migration_v2";
+const STELLEN_MIGRATION_KEY = "osimmo_stellen_migration_v2";
 
 export function getStellen(): Stelle[] {
   // Einmalige harte Bereinigung: Teamleiter-Stellen aus altem Cache entfernen

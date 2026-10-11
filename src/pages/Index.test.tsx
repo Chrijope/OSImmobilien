@@ -6,7 +6,7 @@ import bestand from "./dashboard-rollen-bestand.json";
 import Index from "./Index";
 
 const state = vi.hoisted(() => ({ role: "admin", settings: {} as Record<string, boolean> }));
-vi.mock("@/contexts/UserContext", () => ({ useUser: () => ({ user: { role: state.role, name: "Christian Test", moreId: "test" } }) }));
+vi.mock("@/contexts/UserContext", () => ({ useUser: () => ({ user: { role: state.role, name: "Christian Test", osImmoId: "test" } }) }));
 vi.mock("@/components/DashboardLayout", () => ({ DashboardLayout: ({ children }: { children: React.ReactNode }) => <main>{children}</main> }));
 vi.mock("@/lib/dbStoreHelper", () => ({ isTestAccount: () => false }));
 vi.mock("@/lib/userSettingsCache", () => ({ getUserSetting: () => state.settings, setUserSetting: vi.fn() }));

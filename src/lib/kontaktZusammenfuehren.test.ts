@@ -46,7 +46,7 @@ function alt(extra: Partial<KontaktZeile> = {}): KontaktZeile {
     vorname: "Erika", nachname: "Beispiel",
     email: "erika@beispiel.test", telefon: "", ort: "",
     zustaendig_id: null, berater: null, notizen: "",
-    meta: { moreId: 7 },
+    meta: { osImmoId: 7 },
     ...extra,
   };
 }
@@ -58,7 +58,7 @@ function neu(extra: Partial<KontaktZeile> = {}): KontaktZeile {
     vorname: "Erika", nachname: "Beispiel",
     email: "erika@beispiel.test", telefon: "0170 1234567", ort: "Hamburg",
     zustaendig_id: null, berater: null, notizen: "",
-    meta: { moreId: 42 },
+    meta: { osImmoId: 42 },
     ...extra,
   };
 }
@@ -74,8 +74,8 @@ describe("planeZusammenfuehrung", () => {
 
   it("nimmt bei gleichem Anlagezeitpunkt die kleinere Kontaktnummer", () => {
     const gleich = "2026-05-05T05:05:05Z";
-    const klein = neu({ erstellt_am: gleich, meta: { moreId: 3 } });
-    const gross = alt({ erstellt_am: gleich, meta: { moreId: 9 } });
+    const klein = neu({ erstellt_am: gleich, meta: { osImmoId: 3 } });
+    const gross = alt({ erstellt_am: gleich, meta: { osImmoId: 9 } });
     expect(planeZusammenfuehrung(gross, klein, JETZT).behaltenId).toBe(klein.id);
     expect(vergleicheAlter(klein, gross)).toBeLessThan(0);
   });
@@ -91,7 +91,7 @@ describe("planeZusammenfuehrung", () => {
     expect(plan.abweichend.telefon).toBe("0170 1234567");
     expect(plan.notiz).toContain("Beim Zusammenführen am 26.09.2026");
     expect(plan.notiz).toContain("Telefon: 0170 1234567");
-    expect(plan.notiz).toContain("MI-00042");
+    expect(plan.notiz).toContain("OSI-00042");
     expect(plan.meta.zusammenfuehrungen).toHaveLength(1);
     expect(plan.meta.zusammenfuehrungen[0]).toMatchObject({ ausKontaktId: neu().id, abweichend: { telefon: "0170 1234567" } });
   });
@@ -109,16 +109,16 @@ describe("planeZusammenfuehrung", () => {
 
   it("hängt die Notizen des neueren an, statt sie zu verwerfen", () => {
     const plan = planeZusammenfuehrung(alt({ notizen: "ruft abends zurück" }), neu({ notizen: "hat Handbuch geladen" }), JETZT);
-    expect(plan.felder.notizen).toBe("ruft abends zurück\n\nAus MI-00042 übernommen:\nhat Handbuch geladen");
+    expect(plan.felder.notizen).toBe("ruft abends zurück\n\nAus OSI-00042 übernommen:\nhat Handbuch geladen");
   });
 
   it("führt meta zusammen: ältere Werte gewinnen, Listen vereinigt, Fehlendes ergänzt", () => {
     const plan = planeZusammenfuehrung(
-      alt({ meta: { moreId: 7, kampagne: { utmSource: "alt" }, weitereAnfragen: [{ am: "1" }], einwilligung: { version: "a" } } }),
-      neu({ meta: { moreId: 42, kampagne: { utmSource: "neu" }, weitereAnfragen: [{ am: "1" }, { am: "2" }], handbuchFunnel: { ausgang: "x" }, deletionRequest: { status: "confirmed" } } }),
+      alt({ meta: { osImmoId: 7, kampagne: { utmSource: "alt" }, weitereAnfragen: [{ am: "1" }], einwilligung: { version: "a" } } }),
+      neu({ meta: { osImmoId: 42, kampagne: { utmSource: "neu" }, weitereAnfragen: [{ am: "1" }, { am: "2" }], handbuchFunnel: { ausgang: "x" }, deletionRequest: { status: "confirmed" } } }),
       JETZT,
     );
-    expect(plan.meta.moreId).toBe(7);
+    expect(plan.meta.osImmoId).toBe(7);
     expect(plan.meta.kampagne).toEqual({ utmSource: "alt" });
     expect(plan.meta.einwilligung).toEqual({ version: "a" });
     expect(plan.meta.handbuchFunnel).toEqual({ ausgang: "x" });
@@ -137,15 +137,15 @@ describe("planeZusammenfuehrung", () => {
   });
 
   it("übernimmt den Portalzugang, wenn nur der neuere einen hat", () => {
-    const plan = planeZusammenfuehrung(alt(), neu({ meta: { moreId: 42, authUserId: "u-neu" } }), JETZT);
+    const plan = planeZusammenfuehrung(alt(), neu({ meta: { osImmoId: 42, authUserId: "u-neu" } }), JETZT);
     expect(plan.meta.authUserId).toBe("u-neu");
     expect(plan.portalKonflikt).toBe(false);
   });
 
   it("meldet einen Konflikt, wenn beide einen eigenen Portalzugang haben, und überschreibt nichts", () => {
     const plan = planeZusammenfuehrung(
-      alt({ meta: { moreId: 7, authUserId: "u-alt" } }),
-      neu({ meta: { moreId: 42, authUserId: "u-neu" } }),
+      alt({ meta: { osImmoId: 7, authUserId: "u-alt" } }),
+      neu({ meta: { osImmoId: 42, authUserId: "u-neu" } }),
       JETZT,
     );
     expect(plan.meta.authUserId).toBe("u-alt");
@@ -154,7 +154,7 @@ describe("planeZusammenfuehrung", () => {
   });
 
   it("hat keine Gedankenstriche im Notiztext", () => {
-    const plan = planeZusammenfuehrung(alt({ telefon: "040 1" }), neu({ meta: { moreId: 42, authUserId: "x" }, zustaendig_id: "v" }), JETZT);
+    const plan = planeZusammenfuehrung(alt({ telefon: "040 1" }), neu({ meta: { osImmoId: 42, authUserId: "x" }, zustaendig_id: "v" }), JETZT);
     expect(plan.notiz).not.toMatch(/[–—]/);
   });
 });

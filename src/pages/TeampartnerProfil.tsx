@@ -261,7 +261,7 @@ export default function TeampartnerProfil() {
         id: profile.id,
         vorname: nameParts[0] || "",
         nachname: nameParts.slice(1).join(" ") || "",
-        imonduId: profile.more_id || "",
+        imonduId: profile.os_immo_id || "",
         rolle: rolleLabel,
         rolleKey: primaryRole,
         alleRollen: userRoles.map(r => ({

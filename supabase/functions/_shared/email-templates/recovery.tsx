@@ -78,7 +78,7 @@ export const RecoveryEmail = ({
         <br />
         <a
           href={confirmationUrl}
-          className="mi-link"
+          className="osimmo-link"
           style={{ color: T.blauLink, wordBreak: 'break-all' as const }}
         >
           {confirmationUrl}

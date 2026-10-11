@@ -34,7 +34,7 @@ const STUFEN_MIT_INVESTMENT = new Set<string>([
  * des Dialogs noch angeboten werden. Bewusst nur der letzte Stapel, keine
  * Historienverwaltung.
  */
-const LETZTER_IMPORT_KEY = "mi_letzter_import";
+const LETZTER_IMPORT_KEY = "osimmo_letzter_import";
 
 interface LetzterImport {
   batchId: string;

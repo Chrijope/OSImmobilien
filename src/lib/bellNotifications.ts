@@ -58,7 +58,7 @@ async function scheduleServerNotification(params: {
   }
 }
 
-const LS_KEY = "mi_bell_notifications";
+const LS_KEY = "osimmo_bell_notifications";
 
 /** Get notification preferences for a specific user from cache */
 function getUserNotifPrefs(userId: string): { kanaele: Record<string, boolean>; themen: Record<string, boolean> } | null {

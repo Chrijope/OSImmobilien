@@ -2,7 +2,7 @@
  * One-time localStorage migration: hpo_ and herzogpark_ prefixed keys -> mi_
  * Runs once per browser; guarded by a sentinel flag.
  */
-const MIGRATION_FLAG = "mi_ls_migration_v1_done";
+const MIGRATION_FLAG = "osimmo_ls_migration_v1_done";
 
 export function runLocalStorageMigration() {
   if (typeof window === "undefined") return;
@@ -12,8 +12,8 @@ export function runLocalStorageMigration() {
     const renameMap: Array<[RegExp, (s: string) => string]> = [
       [/^hpo_/, (k) => "mi_" + k.slice(4)],
       [/^herzogpark_/, (k) => "mi_" + k.slice(11)],
-      [/^hpo-objekt-drafts$/, () => "mi-objekt-drafts"],
-      [/^hpo-bell-/, (k) => "mi-bell-" + k.slice(9)],
+      [/^hpo-objekt-drafts$/, () => "osimmo-objekt-drafts"],
+      [/^hpo-bell-/, (k) => "osimmo-bell-" + k.slice(9)],
     ];
 
     const oldKeys: string[] = [];

@@ -77,14 +77,14 @@ export default function Provisionsabrechnung() {
 
   useEffect(() => {
     const handler = () => setRows(getAbrechnungen());
-    window.addEventListener("mi_provisionsabrechnungen_changed", handler);
+    window.addEventListener("osimmo_provisionsabrechnungen_changed", handler);
     // Die Bescheide liegen in der Datenbank. Beim Öffnen der Seite einmal
     // nachladen, damit ein Partner sieht, was die Buchhaltung erzeugt hat.
     void refreshAbrechnungen().then((fehler) => {
       if (fehler) toast.error("Die Bescheide konnten nicht geladen werden", { description: fehler });
       handler();
     });
-    return () => window.removeEventListener("mi_provisionsabrechnungen_changed", handler);
+    return () => window.removeEventListener("osimmo_provisionsabrechnungen_changed", handler);
   }, []);
 
   const users = useMemo(() => loadAllUsers(), []);

@@ -97,7 +97,7 @@ export interface Provisionsabrechnung {
 }
 
 const TABELLE = "provisionsabrechnungen";
-const KEY = "mi_provisionsabrechnungen";
+const KEY = "osimmo_provisionsabrechnungen";
 
 // ── Umwandlung zwischen Datenbankzeile und Objekt ────────────────────────
 
@@ -164,7 +164,7 @@ function lokalLesen(): Provisionsabrechnung[] {
 function lokalSchreiben(rows: Provisionsabrechnung[]) {
   try {
     localStorage.setItem(KEY, JSON.stringify(rows));
-    window.dispatchEvent(new Event("mi_provisionsabrechnungen_changed"));
+    window.dispatchEvent(new Event("osimmo_provisionsabrechnungen_changed"));
   } catch (e) {
     console.warn("[abrechnung] lokales Speichern fehlgeschlagen", e);
   }
@@ -253,7 +253,7 @@ export async function refreshAbrechnungen(): Promise<string | null> {
   if (!fehler) return null;
   if (istTabelleFehlt({ message: fehler })) {
     nurLokal = true;
-    window.dispatchEvent(new Event("mi_provisionsabrechnungen_changed"));
+    window.dispatchEvent(new Event("osimmo_provisionsabrechnungen_changed"));
     return null;
   }
   return fehler;
@@ -275,7 +275,7 @@ export async function upsertAbrechnung(a: Provisionsabrechnung, nachKonflikt = f
   if (!nurLokal) {
     try {
       await cacheUpsert(TABELLE, zuZeile(zusammen), { silent: true });
-      window.dispatchEvent(new Event("mi_provisionsabrechnungen_changed"));
+      window.dispatchEvent(new Event("osimmo_provisionsabrechnungen_changed"));
       return zusammen;
     } catch (e) {
       /*
@@ -328,7 +328,7 @@ export async function updateAbrechnungStatus(
   if (!nurLokal) {
     try {
       await cacheUpsert(TABELLE, zuZeile(neu), { silent: true });
-      window.dispatchEvent(new Event("mi_provisionsabrechnungen_changed"));
+      window.dispatchEvent(new Event("osimmo_provisionsabrechnungen_changed"));
       return neu;
     } catch (e) {
       if (!istTabelleFehlt(e)) throw new AbrechnungSpeicherFehler(e);
@@ -405,7 +405,7 @@ export async function entferneLeerenBescheid(a: Provisionsabrechnung): Promise<"
     .select("id");
   if (error) throw new AbrechnungSpeicherFehler(error);
   await cacheRefreshTable(TABELLE);
-  window.dispatchEvent(new Event("mi_provisionsabrechnungen_changed"));
+  window.dispatchEvent(new Event("osimmo_provisionsabrechnungen_changed"));
   if ((data || []).length > 0) return "entfernt";
 
   // Nicht gelöscht: kein Recht, oder inzwischen nicht mehr offen.

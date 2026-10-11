@@ -14,7 +14,7 @@ import { istKontaktStumm } from "@/lib/kontaktStumm";
  *  - Skip, wenn `kaufpreisfaelligkeitDatum` bereits hinterlegt ist
  */
 
-const REMINDER_KEY = "mi_kaufpreis_faelligkeit_reminders_sent";
+const REMINDER_KEY = "osimmo_kaufpreis_faelligkeit_reminders_sent";
 const TARGET_ROLES = ["buchhaltung", "admin", "inhaber", "testaccount"];
 const STAGE_DAYS = 14;
 
@@ -28,7 +28,7 @@ function getKaufpreisFaelligDatum(investmentId: string): string | undefined {
   // 2) Persönliche Abwicklungsdaten (Buchhaltung)
   try {
     if (isTestAccount()) {
-      const raw = localStorage.getItem(`mi_abwicklung_${investmentId}`);
+      const raw = localStorage.getItem(`osimmo_abwicklung_${investmentId}`);
       const parsed = raw ? JSON.parse(raw) : {};
       if (parsed?.kaufpreisfaelligkeitDatum) return parsed.kaufpreisfaelligkeitDatum;
     } else {

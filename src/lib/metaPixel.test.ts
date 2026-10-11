@@ -93,7 +93,7 @@ describe("Einwilligung im localStorage", () => {
   });
 
   it("ignoriert manipulierte Werte im Speicher", () => {
-    window.localStorage.setItem("mi_meta_pixel_einwilligung", "quatsch");
+    window.localStorage.setItem("osimmo_meta_pixel_einwilligung", "quatsch");
     expect(gespeicherterMetaConsent()).toBeNull();
   });
 });

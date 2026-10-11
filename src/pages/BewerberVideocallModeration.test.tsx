@@ -50,7 +50,7 @@ vi.mock("@/lib/dataCache", () => ({
 }));
 
 vi.mock("@/contexts/UserContext", () => ({
-  useUser: () => ({ user: { name: "Sarah", role: "hr", moreId: "" }, authUser: null }),
+  useUser: () => ({ user: { name: "Sarah", role: "hr", osImmoId: "" }, authUser: null }),
 }));
 
 /** Der ausgefüllte Bogen eines Bewerbers auf Weg 2 (Finanzberatung). */

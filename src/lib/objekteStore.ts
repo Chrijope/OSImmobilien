@@ -842,7 +842,7 @@ export function wohnungToDbRow(
 }
 
 // ── localStorage fallback for testaccount ──
-const LS_KEY = "mi_objekte";
+const LS_KEY = "osimmo_objekte";
 let lastObjektSaveError = "";
 let lastObjektSaveHinweise: string[] = [];
 
@@ -2340,7 +2340,7 @@ export function updateWohnungDokument(objektId: string, wohnungId: string, dokId
 
 // ── New-object badge helpers ──
 
-const LS_OBJEKTE_SEEN = "mi_objekte_last_seen";
+const LS_OBJEKTE_SEEN = "osimmo_objekte_last_seen";
 
 export function getNewObjekteCount(): number {
   const lastSeen = isTestAccount()

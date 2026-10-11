@@ -164,7 +164,7 @@ export function EmailSignaturDialog({ open = true, onOpenChange, asPage = false,
   const { toast } = useToast();
   const navigate = useNavigate();
   const storageKey = useMemo(
-    () => `mi_email_signatur_${authUser?.id || authUser?.email || "anon"}`,
+    () => `osimmo_email_signatur_${authUser?.id || authUser?.email || "anon"}`,
     [authUser?.id, authUser?.email],
   );
   const stored = useMemo(() => {

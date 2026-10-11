@@ -504,9 +504,9 @@ function QualNumberInput({
 const fmt = (v: number) =>
   new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(v);
 
-const formatKundenId = (moreId?: number | null) => {
-  if (!moreId || moreId <= 0) return "–";
-  return `MI-${String(moreId).padStart(5, "0")}`;
+const formatKundenId = (osImmoId?: number | null) => {
+  if (!osImmoId || osImmoId <= 0) return "–";
+  return `OSI-${String(osImmoId).padStart(5, "0")}`;
 };
 
 import { kreditArt, kreditAuswahlLabel, RAHMEN_PUFFER, RAHMEN_ANNUITAET, extractEinkuenfte as extractFinanzEinkuenfte, extractAusgaben as extractFinanzAusgaben, calculateFinanzierbarkeitFromSaData } from "@/lib/finanzierbarkeitUtils";
@@ -2334,8 +2334,8 @@ export default function KundenDetail() {
   type PortalStatus = "none" | "eingeladen" | "aktiv" | "ausstehend" | "gesperrt";
   const getPortalMeta = () => {
     if (isTestAccount()) {
-      const raw = localStorage.getItem(`mi_portal_meta_${id || ""}`);
-      return raw ? JSON.parse(raw) : { status: localStorage.getItem(`mi_portal_${id || ""}`) === "true" ? "eingeladen" : "none" };
+      const raw = localStorage.getItem(`osimmo_portal_meta_${id || ""}`);
+      return raw ? JSON.parse(raw) : { status: localStorage.getItem(`osimmo_portal_${id || ""}`) === "true" ? "eingeladen" : "none" };
     }
     const rows = cacheGet("kontakte");
     const row = rows.find((r: any) => r.id === id);
@@ -2354,8 +2354,8 @@ export default function KundenDetail() {
       const rows = cacheGet("kontakte");
       const row = rows.find((r: any) => r.id === id);
       const meta = { ...(row?.meta || {}), ...updates };
-      localStorage.setItem(`mi_portal_meta_${id || ""}`, JSON.stringify(meta));
-      localStorage.setItem(`mi_portal_${id || ""}`, "true");
+      localStorage.setItem(`osimmo_portal_meta_${id || ""}`, JSON.stringify(meta));
+      localStorage.setItem(`osimmo_portal_${id || ""}`, "true");
       forceUpdate(n => n + 1);
       return;
     }
@@ -2769,7 +2769,7 @@ export default function KundenDetail() {
       draft = all[id || ""] || null;
     } else {
       try {
-        const raw = localStorage.getItem(`mi_selbstauskunft_${id || ""}`);
+        const raw = localStorage.getItem(`osimmo_selbstauskunft_${id || ""}`);
         draft = raw ? JSON.parse(raw) : null;
       } catch { /* ignore */ }
     }
@@ -3183,7 +3183,7 @@ export default function KundenDetail() {
   const [setterTerminUhrzeit, setSetterTerminUhrzeit] = useState(kunde?.setterTerminUhrzeit || "");
   const [setterChecklist, setSetterChecklist] = useState<Record<string, boolean>>(() => {
     if (isTestAccount()) {
-      try { const raw = localStorage.getItem(`mi_setter_checklist_${kunde?.id}`); return raw ? JSON.parse(raw) : {}; } catch { return {}; }
+      try { const raw = localStorage.getItem(`osimmo_setter_checklist_${kunde?.id}`); return raw ? JSON.parse(raw) : {}; } catch { return {}; }
     }
     return getUserSetting<Record<string, Record<string, boolean>>>("setter_checklists", {})[kunde?.id || ""] || {};
   });
@@ -3198,7 +3198,7 @@ export default function KundenDetail() {
   const [setterNewBeraterId, setSetterNewBeraterId] = useState<string | undefined>(kunde?.zustaendig_id || undefined);
   const [setterClosers] = useState<CloserEntry[]>(() => {
     if (isTestAccount()) {
-      try { const raw = localStorage.getItem("mi_setter_closer_list"); return raw ? JSON.parse(raw) : []; } catch { return []; }
+      try { const raw = localStorage.getItem("osimmo_setter_closer_list"); return raw ? JSON.parse(raw) : []; } catch { return []; }
     }
     // closer_list is a separate column on user_settings, not inside einstellungen
     const rows = cacheGet("user_settings");
@@ -3208,7 +3208,7 @@ export default function KundenDetail() {
   const [setterVertriebspartner] = useState(() => {
     if (isTestAccount()) {
       try {
-        const raw = localStorage.getItem("mi_nutzer");
+        const raw = localStorage.getItem("osimmo_nutzer");
         if (!raw) return [];
         const nutzer = JSON.parse(raw);
         return nutzer
@@ -3226,7 +3226,7 @@ export default function KundenDetail() {
   const [setterDirty, setSetterDirty] = useState(false);
   const [setterKontaktGeprueft, setSetterKontaktGeprueft] = useState(() => {
     if (isTestAccount()) {
-      try { return !!JSON.parse(localStorage.getItem(`mi_setter_kontakt_geprueft_${kunde?.id}`) || "false"); } catch { return false; }
+      try { return !!JSON.parse(localStorage.getItem(`osimmo_setter_kontakt_geprueft_${kunde?.id}`) || "false"); } catch { return false; }
     }
     return getUserSetting<Record<string, boolean>>("setter_kontakt_geprueft", {})[kunde?.id || ""] || false;
   });
@@ -3314,7 +3314,7 @@ export default function KundenDetail() {
     setSetterChecklist(prev => {
       const next = { ...prev, [itemId]: !prev[itemId] };
       if (isTestAccount()) {
-        localStorage.setItem(`mi_setter_checklist_${kunde?.id}`, JSON.stringify(next));
+        localStorage.setItem(`osimmo_setter_checklist_${kunde?.id}`, JSON.stringify(next));
       } else {
         const all = getUserSetting<Record<string, Record<string, boolean>>>("setter_checklists", {});
         all[kunde?.id || ""] = next;
@@ -6312,7 +6312,7 @@ export default function KundenDetail() {
                   <h4 className="font-semibold mb-3 text-muted-foreground uppercase tracking-wide text-xs">Persönliche Daten</h4>
                   <hr className="mb-3" />
               <div className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-3 text-sm items-center">
-                <span className="font-semibold">ID:</span><span>{formatKundenId(kunde.moreId)}</span>
+                <span className="font-semibold">ID:</span><span>{formatKundenId(kunde.osImmoId)}</span>
                 <span className="font-semibold">Vorname:</span>
                 <Input className="h-8" value={editData.vorname || ""} onChange={e => setEditData(p => ({ ...p, vorname: e.target.value }))} />
                 <span className="font-semibold">Nachname:</span>
@@ -6529,7 +6529,7 @@ export default function KundenDetail() {
                   <h4 className="font-semibold mb-3 text-muted-foreground uppercase tracking-wide text-xs">Persönliche Daten</h4>
                   <hr className="mb-3" />
                   <div className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
-                    <span className="font-semibold">ID:</span><span>{formatKundenId(kunde.moreId)}</span>
+                    <span className="font-semibold">ID:</span><span>{formatKundenId(kunde.osImmoId)}</span>
                     <span className="font-semibold">Vorname:</span><span>{kunde.vorname}</span>
                     <span className="font-semibold">Nachname:</span><span>{kunde.nachname}</span>
                     <span className="font-semibold">Geburtstag:</span><span>{kunde.geburtstag || "–"}</span>
@@ -6618,7 +6618,7 @@ export default function KundenDetail() {
                   <h4 className="font-semibold mb-3 text-muted-foreground uppercase tracking-wide text-xs">Persönliche Daten</h4>
                   <hr className="mb-3" />
                   <div className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
-                    <span className="font-semibold">ID:</span><span>{formatKundenId(kunde.moreId)}</span>
+                    <span className="font-semibold">ID:</span><span>{formatKundenId(kunde.osImmoId)}</span>
                     <span className="font-semibold">Vorname:</span><span>{kunde.vorname}</span>
                     <span className="font-semibold">Nachname:</span><span>{kunde.nachname}</span>
                     <span className="font-semibold">Geburtstag:</span><span>{kunde.geburtstag || "–"}</span>
@@ -6659,7 +6659,7 @@ export default function KundenDetail() {
                       setSetterKontaktGeprueft(next);
                       setSetterDirty(true);
                       if (isTestAccount()) {
-                        localStorage.setItem(`mi_setter_kontakt_geprueft_${kunde?.id}`, JSON.stringify(next));
+                        localStorage.setItem(`osimmo_setter_kontakt_geprueft_${kunde?.id}`, JSON.stringify(next));
                       } else {
                         const all = getUserSetting<Record<string, boolean>>("setter_kontakt_geprueft", {});
                         all[kunde?.id || ""] = next;
@@ -7969,7 +7969,7 @@ export default function KundenDetail() {
         const pdf = await generateSelbstauskunftPDF(storedSaData, {
           vorname: kunde.vorname,
           nachname: kunde.nachname,
-          moreId: String(kunde.moreId || ""),
+          osImmoId: String(kunde.osImmoId || ""),
         }, sigs || undefined, { sprache: kundenSprache(kunde.id) });
         pdf.save(dateiname);
       } catch (err) {
@@ -8108,7 +8108,7 @@ export default function KundenDetail() {
                 const sigs = meta.saSignatures;
                 const pdf = await generateSelbstauskunftPDF(
                   storedSaData,
-                  { vorname: kunde.vorname, nachname: kunde.nachname, moreId: String(kunde.moreId || "") },
+                  { vorname: kunde.vorname, nachname: kunde.nachname, osImmoId: String(kunde.osImmoId || "") },
                   sigs || undefined,
                   { sprache: kundenSprache(kunde.id) },
                 );
@@ -8766,7 +8766,7 @@ export default function KundenDetail() {
       const rows = cacheGet("kontakte");
       const kRow = rows.find((r: any) => r.id === id);
       const portalActivatedAt = isTestAccount()
-        ? localStorage.getItem(`mi_portal_activated_${id || ""}_${inv.id}`)
+        ? localStorage.getItem(`osimmo_portal_activated_${id || ""}_${inv.id}`)
         : (kRow?.meta as any)?.portalActivatedAt;
       if (portalActivatedAt) {
         const activatedDate = new Date(portalActivatedAt);
@@ -9485,7 +9485,7 @@ export default function KundenDetail() {
               <SaPdfNachholen
                 investmentId={inv.id}
                 kontaktId={id}
-                kunde={{ vorname: kunde.vorname, nachname: kunde.nachname, moreId: String(kunde.moreId || "") }}
+                kunde={{ vorname: kunde.vorname, nachname: kunde.nachname, osImmoId: String(kunde.osImmoId || "") }}
               />
             )}
             {/* Bonitätscheck, Bankprüfung und die Pflichtdokumente gehören
@@ -9758,7 +9758,7 @@ export default function KundenDetail() {
                                           onClick={async () => {
                                             try {
                                               const pdf = await generateSelbstauskunftPDF(storedSaData, {
-                                                vorname: kunde.vorname, nachname: kunde.nachname, moreId: String(kunde.moreId || ""),
+                                                vorname: kunde.vorname, nachname: kunde.nachname, osImmoId: String(kunde.osImmoId || ""),
                                               }, sigs || undefined, { sprache: kundenSprache(kunde.id) });
                                               pdf.save(`Selbstauskunft_${stage}_${kunde.vorname}_${kunde.nachname}.pdf`);
                                             } catch (err) {
@@ -9805,7 +9805,7 @@ export default function KundenDetail() {
                                           onClick={async () => {
                                             try {
                                               const pdf = await generateSelbstauskunftPDF(storedSaData, {
-                                                vorname: kunde.vorname, nachname: kunde.nachname, moreId: String(kunde.moreId || ""),
+                                                vorname: kunde.vorname, nachname: kunde.nachname, osImmoId: String(kunde.osImmoId || ""),
                                               }, sigs || undefined, { sprache: kundenSprache(kunde.id) });
                                               pdf.save(`Selbstauskunft_${stage}_${kunde.vorname}_${kunde.nachname}.pdf`);
                                             } catch (err) {
@@ -11420,7 +11420,7 @@ export default function KundenDetail() {
                       updateInvestment(inv.id, { pipelineStufe: "faelligkeit" });
                       updateKontakt(id || "", { pipelineStufe: "faelligkeit" });
 
-                      const empProgKey = `mi_emp_prog_task_${inv.id}`;
+                      const empProgKey = `osimmo_emp_prog_task_${inv.id}`;
                       const existingProg = getProgrammByInvestment(inv.id);
                       if (!existingProg && !localStorage.getItem(empProgKey)) {
                         localStorage.setItem(empProgKey, "true");
@@ -11442,7 +11442,7 @@ export default function KundenDetail() {
 
                       const notarNameVal = notarData.name || inv.notarName || "";
                       const notarTelefonVal = notarData.telefon || inv.notarTelefon || "";
-                      const notarKey = `mi_notar_7d_tasks_${inv.id}`;
+                      const notarKey = `osimmo_notar_7d_tasks_${inv.id}`;
                       if (!localStorage.getItem(notarKey)) {
                         localStorage.setItem(notarKey, "true");
                         // Fälligkeit nie in der Vergangenheit: max(heute, Notar + 7 Tage)
@@ -11472,7 +11472,7 @@ export default function KundenDetail() {
                         });
                       }
 
-                      const asReminderKey = `mi_as_upload_reminders_${inv.id}`;
+                      const asReminderKey = `osimmo_as_upload_reminders_${inv.id}`;
                       if (!localStorage.getItem(asReminderKey)) {
                         localStorage.setItem(asReminderKey, "true");
                         const reminderDays = [7, 14, 28, 44];

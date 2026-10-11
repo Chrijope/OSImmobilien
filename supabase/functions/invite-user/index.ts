@@ -156,7 +156,7 @@ Deno.serve(async (req) => {
     if (verworfen.length > 0) {
       console.warn("invite-user: Provisionsbedingungen verworfen (nur Admin und Inhaber):", verworfen.join(", "));
     }
-    const { email, name, role, roles, moreId, kontaktId, vorname, nachname, telefon, person2, karriereStufe, teamleaderId, customProvisionRate, customProvisionRateSetter, customProvisionRateEigen, tippgeberId, karriereGatingActive, rollenVariante } = einladung;
+    const { email, name, role, roles, osImmoId, kontaktId, vorname, nachname, telefon, person2, karriereStufe, teamleaderId, customProvisionRate, customProvisionRateSetter, customProvisionRateEigen, tippgeberId, karriereGatingActive, rollenVariante } = einladung;
 
     if (!email || !name || !role) {
       return new Response(JSON.stringify({ error: "Fehlende Pflichtfelder" }), {
@@ -636,11 +636,11 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Update profile with moreId if provided
-    if (moreId && newUser.user) {
+    // Update profile with osImmoId if provided
+    if (osImmoId && newUser.user) {
       await adminClient
         .from("profiles")
-        .update({ more_id: moreId })
+        .update({ os_immo_id: osImmoId })
         .eq("id", newUser.user.id);
     }
 

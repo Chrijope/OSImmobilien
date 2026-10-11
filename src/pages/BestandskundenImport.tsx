@@ -44,8 +44,8 @@ export default function BestandskundenImport() {
   }, [liveVersion, isTeamWide, user.name, authUser?.id]);
 
   const [search, setSearch] = useState("");
-  const [quelleFilter, setQuelleFilter] = usePersistedState<"all" | "bestandsimport_manuell" | "bestandsimport_csv">("mi_filter_bestandimport_quelle", "all");
-  const [beraterFilter, setBeraterFilter] = usePersistedState<string>("mi_filter_bestandimport_berater", "-");
+  const [quelleFilter, setQuelleFilter] = usePersistedState<"all" | "bestandsimport_manuell" | "bestandsimport_csv">("osimmo_filter_bestandimport_quelle", "all");
+  const [beraterFilter, setBeraterFilter] = usePersistedState<string>("osimmo_filter_bestandimport_berater", "-");
   const [createOpen, setCreateOpen] = useState(false);
 
   const filtered = useMemo(() => {

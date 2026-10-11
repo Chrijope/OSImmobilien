@@ -57,7 +57,7 @@ vi.mock("@/lib/dataCache", () => ({
 }));
 
 vi.mock("@/contexts/UserContext", () => ({
-  useUser: () => ({ user: { name: "Sarah", role: "hr", moreId: "" }, authUser: null }),
+  useUser: () => ({ user: { name: "Sarah", role: "hr", osImmoId: "" }, authUser: null }),
 }));
 
 /** Ein ausgefüllter Kennenlernbogen auf Weg 2 (Finanzberatung). */

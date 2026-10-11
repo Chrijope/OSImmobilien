@@ -150,7 +150,7 @@ describe("KundenMfaGuard: Zwei-Faktor freiwillig", () => {
   });
 
   it("zeigt den Hinweis wieder, wenn das Schließen länger als 30 Tage her ist", async () => {
-    localStorage.setItem("mi_kunde_2fa_hinweis_auth-otto", new Date(Date.now() - 31 * 24 * 3600 * 1000).toISOString());
+    localStorage.setItem("osimmo_kunde_2fa_hinweis_auth-otto", new Date(Date.now() - 31 * 24 * 3600 * 1000).toISOString());
     waechter();
 
     expect(await screen.findByText("Schütze dein Konto mit der Zwei-Faktor-Anmeldung")).toBeInTheDocument();

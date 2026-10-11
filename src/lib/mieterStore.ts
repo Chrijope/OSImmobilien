@@ -15,7 +15,7 @@ export interface Mieter {
   bankIban?: string; bankBic?: string;
 }
 
-const LS_KEY = "mi_mieter";
+const LS_KEY = "osimmo_mieter";
 
 function toDb(m: Mieter): Record<string, any> {
   return {

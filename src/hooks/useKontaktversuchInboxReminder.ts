@@ -21,7 +21,7 @@ import { MAX_KONTAKTVERSUCHE } from "@/lib/kontaktversuchSchedule";
  * Reminder wieder aus der Inbox entfernt.
  */
 
-const REMINDER_KEY = "mi_kontaktversuch_inbox_reminders_sent";
+const REMINDER_KEY = "osimmo_kontaktversuch_inbox_reminders_sent";
 
 function getSent(): Record<string, string[]> {
   if (isTestAccount()) {

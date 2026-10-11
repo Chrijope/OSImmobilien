@@ -5,7 +5,7 @@
  * jedem Durchlauf der Seitenleiste mit, also beim Laden einer Seite, bei jeder
  * Änderung an Aufgaben oder Follow-ups und zusätzlich jede Minute. Gebremst
  * hat sie allein ein Merker im Browserspeicher
- * (`mi_inbox_overdue_notified_<nutzer>_<datum>`). Der gilt nur für genau ein
+ * (`osimmo_inbox_overdue_notified_<nutzer>_<datum>`). Der gilt nur für genau ein
  * Fenster und genau eine Adresse: In der Lovable-Vorschau, am zweiten Gerät
  * oder in einem privaten Fenster fing die Zählung wieder bei null an, und die
  * Meldung kam mehrmals kurz hintereinander.

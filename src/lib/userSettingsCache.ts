@@ -9,7 +9,7 @@ import { getCurrentUserId } from "./currentUser";
 import { isTestAccount } from "./dbStoreHelper";
 import { supabase } from "@/integrations/supabase/client";
 
-const LS_PREFIX = "mi_usettings_";
+const LS_PREFIX = "osimmo_usettings_";
 
 /** Eine Zeile der Tabelle `user_settings`, so wie sie im Cache liegt. */
 type Einstellungszeile = {

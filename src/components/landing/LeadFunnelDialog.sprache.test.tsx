@@ -28,7 +28,7 @@ let rumpf: Record<string, unknown> | null = null;
 
 beforeEach(() => {
   rumpf = null;
-  const werte = new Map<string, string>([["mi_lead_funnel_entwurf", JSON.stringify(ENTWURF)]]);
+  const werte = new Map<string, string>([["osimmo_lead_funnel_entwurf", JSON.stringify(ENTWURF)]]);
   vi.stubGlobal("localStorage", {
     getItem: (k: string) => werte.get(k) ?? null,
     setItem: (k: string, v: string) => void werte.set(k, String(v)),

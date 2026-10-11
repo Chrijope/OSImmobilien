@@ -63,7 +63,7 @@ import { FehlerMeldenEintrag } from "@/components/FehlerMeldenEintrag";
 
 type NotificationCategory = "alle" | "chat" | "aufgaben" | "termine" | "wettbewerb" | "leads" | "system" | "academy";
 
-const EXCLUDED_LS_KEY = "mi_notif_excluded_categories";
+const EXCLUDED_LS_KEY = "osimmo_notif_excluded_categories";
 
 // Themen-Keys entsprechen settings.benachrichtigungen.themen in der zentralen Einstellungs-Seite
 const notificationSettings: { key: "chat" | "aufgaben" | "termine" | "wettbewerb" | "leads" | "system" | "academy"; label: string; desc: string; icon: any; defaultOn: boolean }[] = [

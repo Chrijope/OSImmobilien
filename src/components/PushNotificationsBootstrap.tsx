@@ -12,11 +12,11 @@ export function PushNotificationsBootstrap() {
   const { user } = useUser();
 
   useEffect(() => {
-    if (!user?.moreId) return;
+    if (!user?.osImmoId) return;
     if (!isPushSupported()) return;
     if (getPushPermission() !== "granted") return;
     subscribeToPush().catch(() => {});
-  }, [user?.moreId]);
+  }, [user?.osImmoId]);
 
   return null;
 }

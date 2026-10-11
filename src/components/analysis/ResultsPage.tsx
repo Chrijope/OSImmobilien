@@ -83,7 +83,7 @@ function CTAButton({ children, primary = true, onClick }: { children: React.Reac
   );
 }
 
-const ANALYSE_RESULTS_KEY = "mi_analyse_results";
+const ANALYSE_RESULTS_KEY = "osimmo_analyse_results";
 
 import { getUserSetting, setUserSetting } from "@/lib/userSettingsCache";
 import { isTestAccount } from "@/lib/dbStoreHelper";

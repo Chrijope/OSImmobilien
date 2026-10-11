@@ -89,7 +89,7 @@ type FeldFehler = keyof LeadFunnelTexte["fehler"] | "einwilligung";
  * fremden Besuchers vorfindet. Nach erfolgreichem Absenden wird sofort
  * gelöscht.
  */
-const ENTWURF_SCHLUESSEL = "mi_lead_funnel_entwurf";
+const ENTWURF_SCHLUESSEL = "osimmo_lead_funnel_entwurf";
 const ENTWURF_HALTBARKEIT_MS = 2 * 60 * 60 * 1000;
 
 interface Entwurf {

@@ -48,9 +48,9 @@ const DEFAULT_MEILENSTEINE: MeilensteinData[] = [
 ];
 
 // ── localStorage keys (testaccount fallback) ──
-const LS_LEVELS = "mi_levels";
-const LS_MEILENSTEINE = "mi_meilensteine";
-const LS_PRAEMIEN = "mi_praemien_status";
+const LS_LEVELS = "osimmo_levels";
+const LS_MEILENSTEINE = "osimmo_meilensteine";
+const LS_PRAEMIEN = "osimmo_praemien_status";
 
 // ── DB keys in user_settings.einstellungen ──
 const DB_LEVELS = "auswertungen_levels";

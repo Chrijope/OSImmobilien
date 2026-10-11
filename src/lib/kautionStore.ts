@@ -9,7 +9,7 @@ export interface KautionEintrag {
 }
 export interface KautionEinbehalt { id: string; grund: "schaeden" | "offene_nk" | "offene_miete" | "reinigung" | "sonstiges"; beschreibung: string; betrag: number; datum: string; }
 
-const LS_KEY = "mi_kautionen";
+const LS_KEY = "osimmo_kautionen";
 export const EINBEHALT_GRUENDE: { value: KautionEinbehalt["grund"]; label: string }[] = [
   { value: "schaeden", label: "Schäden" }, { value: "offene_nk", label: "Offene Nebenkosten" },
   { value: "offene_miete", label: "Offene Miete" }, { value: "reinigung", label: "Reinigungskosten" }, { value: "sonstiges", label: "Sonstiges" },

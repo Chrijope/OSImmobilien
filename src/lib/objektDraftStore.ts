@@ -1,4 +1,4 @@
-const DB_NAME = "mi-objekt-drafts";
+const DB_NAME = "osimmo-objekt-drafts";
 const STORE_NAME = "objekt-form-drafts";
 const BLOB_STORE_NAME = "objekt-form-draft-blobs";
 

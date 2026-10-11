@@ -54,7 +54,7 @@ describe("usePraesentationsFavoriten", () => {
     expect(result.current.favoriten).toEqual(["vorabbogen||rechner"]);
     expect(result.current.istFavorit("vorabbogen||rechner")).toBe(true);
     expect(setUserSetting).toHaveBeenCalledWith(FAVORITEN_SCHLUESSEL, ["vorabbogen||rechner"]);
-    expect(JSON.parse(speicher.get("mi_praesentationsFavoriten") ?? "[]")).toEqual(["vorabbogen||rechner"]);
+    expect(JSON.parse(speicher.get("osimmo_praesentationsFavoriten") ?? "[]")).toEqual(["vorabbogen||rechner"]);
   });
 
   it("entfernt einen Favoriten wieder", () => {
@@ -76,7 +76,7 @@ describe("usePraesentationsFavoriten", () => {
   });
 
   it("antwortet aus dem Browser, solange die Zeile fehlt, und wechselt zur Zeile, sobald sie da ist", () => {
-    speicher.set("mi_praesentationsFavoriten", JSON.stringify(["vorabbogen||cover"]));
+    speicher.set("osimmo_praesentationsFavoriten", JSON.stringify(["vorabbogen||cover"]));
     expect(ladeFavoriten()).toEqual(["vorabbogen||cover"]);
 
     const { result } = renderHook(() => usePraesentationsFavoriten());

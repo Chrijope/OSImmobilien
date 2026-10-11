@@ -176,7 +176,7 @@ describe("Rueckfall ohne Migration", () => {
 
   it("Lesemarke bleibt im Browser und schreibt nichts in die Datenbank", async () => {
     await ticketGelesenSetzen("t1");
-    expect(lokal.mi_support_gelesen?.t1).toBeTruthy();
+    expect(lokal.osimmo_support_gelesen?.t1).toBeTruthy();
     expect(cacheUpdateAufrufe).toHaveLength(0);
   });
 });

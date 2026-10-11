@@ -15,7 +15,7 @@ import { CALL_RUNDEN, ZOOM_URL, callRundenFuer } from "@/lib/weeklyCallZeit";
  */
 
 const DURATION_MS = 90 * 60 * 1000; // Banner bleibt bis 90 Min nach Start sichtbar
-const DISMISS_KEY = "mi_dismissed_weekly_call_reminder";
+const DISMISS_KEY = "osimmo_dismissed_weekly_call_reminder";
 
 // Termin und Uhrzeit kommen aus der Karte auf dem Dashboard. Vorher rechnete
 // der Banner den Termin selbst aus, mit einer eigenen Kopie der Logik. Beim

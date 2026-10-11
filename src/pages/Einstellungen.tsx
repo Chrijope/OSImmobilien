@@ -169,19 +169,19 @@ const Einstellungen = () => {
     // Sofort aus LocalStorage vorbefüllen (verhindert leeres Feld während DB-Roundtrip
     // und bewahrt das Geburtsdatum, falls die DB es kurzzeitig nicht liefert).
     try {
-      const cached = localStorage.getItem(`mi_profile_geburtstag_${authUser.id}`);
+      const cached = localStorage.getItem(`osimmo_profile_geburtstag_${authUser.id}`);
       if (cached) setGeburtstag(cached);
     } catch { /* noop */ }
     try {
-      const cachedLink = localStorage.getItem(`mi_profile_buchungslink_${authUser.id}`);
+      const cachedLink = localStorage.getItem(`osimmo_profile_buchungslink_${authUser.id}`);
       if (cachedLink) setBuchungslink(cachedLink);
     } catch { /* noop */ }
     try {
-      const cachedBeratung = localStorage.getItem(`mi_profile_beratungslink_${authUser.id}`);
+      const cachedBeratung = localStorage.getItem(`osimmo_profile_beratungslink_${authUser.id}`);
       if (cachedBeratung) setBeratungslink(cachedBeratung);
     } catch { /* noop */ }
     try {
-      const cachedEmail = localStorage.getItem(`mi_profile_email_${authUser.id}`);
+      const cachedEmail = localStorage.getItem(`osimmo_profile_email_${authUser.id}`);
       if (cachedEmail) setProfilEmail(cachedEmail);
     } catch { /* noop */ }
     supabase.from("profiles").select("avatar_url, geburtstag, buchungslink, beratungslink, email").eq("id", authUser.id).single()
@@ -189,21 +189,21 @@ const Einstellungen = () => {
         if (data?.avatar_url) setAvatarUrl(data.avatar_url);
         if (data?.geburtstag) {
           setGeburtstag(data.geburtstag);
-          try { localStorage.setItem(`mi_profile_geburtstag_${authUser.id}`, data.geburtstag); } catch { /* noop */ }
+          try { localStorage.setItem(`osimmo_profile_geburtstag_${authUser.id}`, data.geburtstag); } catch { /* noop */ }
         }
         if ((data as any)?.buchungslink) {
           setBuchungslink((data as any).buchungslink);
           setSavedBuchungslink((data as any).buchungslink);
-          try { localStorage.setItem(`mi_profile_buchungslink_${authUser.id}`, (data as any).buchungslink); } catch { /* noop */ }
+          try { localStorage.setItem(`osimmo_profile_buchungslink_${authUser.id}`, (data as any).buchungslink); } catch { /* noop */ }
         }
         if ((data as any)?.beratungslink) {
           setBeratungslink((data as any).beratungslink);
           setSavedBeratungslink((data as any).beratungslink);
-          try { localStorage.setItem(`mi_profile_beratungslink_${authUser.id}`, (data as any).beratungslink); } catch { /* noop */ }
+          try { localStorage.setItem(`osimmo_profile_beratungslink_${authUser.id}`, (data as any).beratungslink); } catch { /* noop */ }
         }
         const emailFromProfile = (data as any)?.email || authUser.email || "";
         setProfilEmail(emailFromProfile);
-        try { if (emailFromProfile) localStorage.setItem(`mi_profile_email_${authUser.id}`, emailFromProfile); } catch { /* noop */ }
+        try { if (emailFromProfile) localStorage.setItem(`osimmo_profile_email_${authUser.id}`, emailFromProfile); } catch { /* noop */ }
       });
   }, [authUser]);
 
@@ -283,7 +283,7 @@ const Einstellungen = () => {
         throw profErr;
       }
       setAvatarUrl(url);
-      try { localStorage.setItem("mi_profile_avatar_url", url); } catch {}
+      try { localStorage.setItem("osimmo_profile_avatar_url", url); } catch {}
       toast.success("Profilbild gespeichert");
     } catch (e: any) {
       console.error("Avatar upload error:", e);
@@ -308,8 +308,8 @@ const Einstellungen = () => {
     // LocalStorage-Cache für Profil (Telefon, Vorname, Nachname, Position):
     // verhindert, dass eine kurzzeitig leere DB-Antwort die Eingaben überschreibt
     // und stellt nach Reload sofort die zuletzt eingetippten Werte wieder her.
-    const profilLsKey = authUser ? `mi_profile_profil_${authUser.id}` : null;
-    const fullLsKey = authUser ? `mi_settings_full_${authUser.id}` : null;
+    const profilLsKey = authUser ? `osimmo_profile_profil_${authUser.id}` : null;
+    const fullLsKey = authUser ? `osimmo_settings_full_${authUser.id}` : null;
     let cachedProfil: any = null;
     let cachedFull: any = null;
     if (profilLsKey) {
@@ -424,7 +424,7 @@ const Einstellungen = () => {
     // der DB-Save fehlschlägt (Session-Timeout, Netz, RPC-Fehler). Beim
     // nächsten Laden werden Lücken aus diesem Cache wieder aufgefüllt.
     if (authUser) {
-      try { localStorage.setItem(`mi_settings_full_${authUser.id}`, JSON.stringify(safe)); } catch { /* noop */ }
+      try { localStorage.setItem(`osimmo_settings_full_${authUser.id}`, JSON.stringify(safe)); } catch { /* noop */ }
     }
     return await dbSaveSettings(safe);
   };
@@ -438,7 +438,7 @@ const Einstellungen = () => {
     if (authUser) {
       try {
         localStorage.setItem(
-          `mi_profile_profil_${authUser.id}`,
+          `osimmo_profile_profil_${authUser.id}`,
           JSON.stringify(newProfil),
         );
       } catch { /* noop */ }
@@ -722,13 +722,13 @@ const Einstellungen = () => {
     try {
       if (settings?.profil) {
         localStorage.setItem(
-          `mi_profile_profil_${authUser.id}`,
+          `osimmo_profile_profil_${authUser.id}`,
           JSON.stringify(settings.profil),
         );
       }
       if (settings?.gewerbedaten) {
         localStorage.setItem(
-          `mi_profile_gewerbedaten_${authUser.id}`,
+          `osimmo_profile_gewerbedaten_${authUser.id}`,
           JSON.stringify(settings.gewerbedaten),
         );
       }
@@ -848,22 +848,22 @@ const Einstellungen = () => {
       // Geburtsdatum zusätzlich lokal cachen – bleibt erhalten, falls die DB-Antwort
       // beim nächsten Laden verzögert ist.
       if (geburtstag) {
-        try { localStorage.setItem(`mi_profile_geburtstag_${authUser.id}`, geburtstag); } catch { /* noop */ }
+        try { localStorage.setItem(`osimmo_profile_geburtstag_${authUser.id}`, geburtstag); } catch { /* noop */ }
       }
       if (showBuchungslink) {
         try {
-          if (buchungslink) localStorage.setItem(`mi_profile_buchungslink_${authUser.id}`, buchungslink);
-          else localStorage.removeItem(`mi_profile_buchungslink_${authUser.id}`);
+          if (buchungslink) localStorage.setItem(`osimmo_profile_buchungslink_${authUser.id}`, buchungslink);
+          else localStorage.removeItem(`osimmo_profile_buchungslink_${authUser.id}`);
         } catch { /* noop */ }
         try {
-          if (beratungslink) localStorage.setItem(`mi_profile_beratungslink_${authUser.id}`, beratungslink);
-          else localStorage.removeItem(`mi_profile_beratungslink_${authUser.id}`);
+          if (beratungslink) localStorage.setItem(`osimmo_profile_beratungslink_${authUser.id}`, beratungslink);
+          else localStorage.removeItem(`osimmo_profile_beratungslink_${authUser.id}`);
         } catch { /* noop */ }
         setSavedBuchungslink(buchungslink);
         setSavedBeratungslink(beratungslink);
       }
       if (profilEmail.trim()) {
-        try { localStorage.setItem(`mi_profile_email_${authUser.id}`, profilEmail.trim()); } catch { /* noop */ }
+        try { localStorage.setItem(`osimmo_profile_email_${authUser.id}`, profilEmail.trim()); } catch { /* noop */ }
       }
     }
 
@@ -1122,7 +1122,7 @@ const Einstellungen = () => {
                           if (guardTestWrite("Profilbild entfernen")) return;
                           await supabase.from("profiles").update({ avatar_url: null }).eq("id", authUser.id);
                           setAvatarUrl(null);
-                          try { localStorage.removeItem("mi_profile_avatar_url"); } catch { /* noop */ }
+                          try { localStorage.removeItem("osimmo_profile_avatar_url"); } catch { /* noop */ }
                           toast.success("Profilbild entfernt");
                         }}
                       >
@@ -1186,7 +1186,7 @@ const Einstellungen = () => {
                       setGeburtstag(v);
                       // Sofort lokal cachen – bleibt beim Tab-Wechsel/Reload erhalten.
                       if (authUser && v) {
-                        try { localStorage.setItem(`mi_profile_geburtstag_${authUser.id}`, v); } catch { /* noop */ }
+                        try { localStorage.setItem(`osimmo_profile_geburtstag_${authUser.id}`, v); } catch { /* noop */ }
                       }
                     }}
                     className={`max-w-[200px] ${!geburtstag ? "border-destructive/50" : ""}`}
@@ -1295,8 +1295,8 @@ const Einstellungen = () => {
                             setBuchungslink(v);
                             if (authUser) {
                               try {
-                                if (v) localStorage.setItem(`mi_profile_buchungslink_${authUser.id}`, v);
-                                else localStorage.removeItem(`mi_profile_buchungslink_${authUser.id}`);
+                                if (v) localStorage.setItem(`osimmo_profile_buchungslink_${authUser.id}`, v);
+                                else localStorage.removeItem(`osimmo_profile_buchungslink_${authUser.id}`);
                               } catch { /* noop */ }
                             }
                           }}
@@ -1323,8 +1323,8 @@ const Einstellungen = () => {
                                 if (error) { toast.error("Speichern fehlgeschlagen: " + error.message); return; }
                                 setSavedBuchungslink(v);
                                 try {
-                                  if (v) localStorage.setItem(`mi_profile_buchungslink_${authUser.id}`, v);
-                                  else localStorage.removeItem(`mi_profile_buchungslink_${authUser.id}`);
+                                  if (v) localStorage.setItem(`osimmo_profile_buchungslink_${authUser.id}`, v);
+                                  else localStorage.removeItem(`osimmo_profile_buchungslink_${authUser.id}`);
                                 } catch { /* noop */ }
                                 toast.success("Erstgesprächs-Link gespeichert");
                               }}
@@ -1354,8 +1354,8 @@ const Einstellungen = () => {
                             setBeratungslink(v);
                             if (authUser) {
                               try {
-                                if (v) localStorage.setItem(`mi_profile_beratungslink_${authUser.id}`, v);
-                                else localStorage.removeItem(`mi_profile_beratungslink_${authUser.id}`);
+                                if (v) localStorage.setItem(`osimmo_profile_beratungslink_${authUser.id}`, v);
+                                else localStorage.removeItem(`osimmo_profile_beratungslink_${authUser.id}`);
                               } catch { /* noop */ }
                             }
                           }}
@@ -1382,8 +1382,8 @@ const Einstellungen = () => {
                                 if (error) { toast.error("Speichern fehlgeschlagen: " + error.message); return; }
                                 setSavedBeratungslink(v);
                                 try {
-                                  if (v) localStorage.setItem(`mi_profile_beratungslink_${authUser.id}`, v);
-                                  else localStorage.removeItem(`mi_profile_beratungslink_${authUser.id}`);
+                                  if (v) localStorage.setItem(`osimmo_profile_beratungslink_${authUser.id}`, v);
+                                  else localStorage.removeItem(`osimmo_profile_beratungslink_${authUser.id}`);
                                 } catch { /* noop */ }
                                 toast.success("Beratungsgesprächs-Link gespeichert");
                               }}
@@ -1942,7 +1942,7 @@ function GewerbedatenForm({
   vorname?: string;
   nachname?: string;
 }) {
-  const storageKey = userId ? `mi_profile_gewerbedaten_${userId}` : null;
+  const storageKey = userId ? `osimmo_profile_gewerbedaten_${userId}` : null;
   const [local, setLocal] = useState<Gewerbedaten>(() => {
     if (!storageKey) return value;
     try {

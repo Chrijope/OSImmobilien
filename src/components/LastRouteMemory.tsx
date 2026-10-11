@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { istOeffentlicheSeite } from "@/lib/cookieEinwilligung";
 
-const STORAGE_KEY = "mi_last_route";
+const STORAGE_KEY = "osimmo_last_route";
 /** Schluessel im localStorage, damit die Startwelle des Caches (routenTabellen.ts) dieselbe Seite annimmt. */
 export const LETZTE_ROUTE_SCHLUESSEL = STORAGE_KEY;
 

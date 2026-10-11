@@ -113,8 +113,8 @@ export function mergeEmpfehlungMeta(bestehend: unknown, patch: Record<string, an
   return { ...basis, ...patch };
 }
 
-const LS_PROG = "mi_empfehlungsprogramme";
-const LS_EMP = "mi_empfehlungen";
+const LS_PROG = "osimmo_empfehlungsprogramme";
+const LS_EMP = "osimmo_empfehlungen";
 
 function progToDb(p: EmpfehlungsProgramm): Record<string, any> {
   return { id: p.id, name: p.kontaktName, aktiv: p.freigeschaltet, praemie: p.provisionsText, beschreibung: p.bedingungen, erstellt_am: p.erstellt_am, meta: { investmentId: p.investmentId, kontaktId: p.kontaktId, kontaktName: p.kontaktName, beraterName: p.beraterName, provisionsTyp: p.provisionsTyp, provisionsBetrag: p.provisionsBetrag, provisionsText: p.provisionsText, bedingungen: p.bedingungen, freigeschaltet: p.freigeschaltet } };

@@ -329,7 +329,7 @@ const EMPTY: ReservierungData = {
 };
 
 const RV_KEY_PREFIX = "reservierung_";
-const LS_RV_KEY = "mi_reservierung_";
+const LS_RV_KEY = "osimmo_reservierung_";
 
 /** Ein Feldwert als Text, damit sich leer, fehlend und "0" vergleichen lassen. */
 function alsText(wert: unknown): string {

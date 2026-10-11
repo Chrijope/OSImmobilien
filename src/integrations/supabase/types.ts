@@ -4517,7 +4517,7 @@ export type Database = {
           gesperrt_grund: string | null
           gewerbeerlaubnis_34c: boolean | null
           id: string
-          more_id: string | null
+          os_immo_id: string | null
           name: string
           objektlink: string | null
           onboarding_abgeschlossen_am: string | null
@@ -4539,7 +4539,7 @@ export type Database = {
           gesperrt_grund?: string | null
           gewerbeerlaubnis_34c?: boolean | null
           id: string
-          more_id?: string | null
+          os_immo_id?: string | null
           name: string
           objektlink?: string | null
           onboarding_abgeschlossen_am?: string | null
@@ -4561,7 +4561,7 @@ export type Database = {
           gesperrt_grund?: string | null
           gewerbeerlaubnis_34c?: boolean | null
           id?: string
-          more_id?: string | null
+          os_immo_id?: string | null
           name?: string
           objektlink?: string | null
           onboarding_abgeschlossen_am?: string | null
@@ -6567,7 +6567,7 @@ export type Database = {
           created_at: string | null
           email: string | null
           id: string | null
-          more_id: string | null
+          os_immo_id: string | null
           name: string | null
           vp_slug: string | null
         }
@@ -6577,7 +6577,7 @@ export type Database = {
           created_at?: string | null
           email?: string | null
           id?: string | null
-          more_id?: string | null
+          os_immo_id?: string | null
           name?: string | null
           vp_slug?: string | null
         }
@@ -6587,7 +6587,7 @@ export type Database = {
           created_at?: string | null
           email?: string | null
           id?: string | null
-          more_id?: string | null
+          os_immo_id?: string | null
           name?: string | null
           vp_slug?: string | null
         }

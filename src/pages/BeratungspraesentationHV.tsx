@@ -2038,7 +2038,7 @@ export default function BeratungspraesentationHV() {
   // ersatzweise die Kontakt-ID aus dem Profil.
   // Mit Kunden startet sie in dessen Sprache aus dem Profil (Plan Kundensprache, K10).
   const { sprache: profilSprache } = useKundenSprache(kundeId || null);
-  const [sprache, setSprache] = usePraesentationsSprache(authUser?.id || user.moreId, kundeId ? profilSprache : null);
+  const [sprache, setSprache] = usePraesentationsSprache(authUser?.id || user.osImmoId, kundeId ? profilSprache : null);
   const tx = BERATUNG_TEXTE[sprache];
   const a = (wert: AnredeWert) => inAnrede(wert, anrede);
   const fmt = formatierer(sprache);

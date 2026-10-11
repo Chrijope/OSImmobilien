@@ -90,13 +90,13 @@ function KleineTabelle({ bloecke }: { bloecke: TabellenBlock[] }) {
     <Section style={{ padding: '32px 40px 0' }}>
       {/* Derselbe Trenner wie in den Layout-Bausteinen, hier von Hand, weil
           `Linie` dort nicht nach aussen gegeben ist. */}
-      <div style={{ height: '1px', backgroundColor: T.linie, fontSize: 0, lineHeight: 0 }} className="mi-linie">
+      <div style={{ height: '1px', backgroundColor: T.linie, fontSize: 0, lineHeight: 0 }} className="osimmo-linie">
         &nbsp;
       </div>
-      <Text className="mi-text" style={{ margin: '24px 0 4px', fontSize: '15px', fontWeight: 600, color: T.text }}>
+      <Text className="osimmo-text" style={{ margin: '24px 0 4px', fontSize: '15px', fontWeight: 600, color: T.text }}>
         Alle Kennzahlen
       </Text>
-      <Text className="mi-stumm" style={{ margin: '0 0 12px', fontSize: '12px', lineHeight: '1.5', color: T.textStumm }}>
+      <Text className="osimmo-stumm" style={{ margin: '0 0 12px', fontSize: '12px', lineHeight: '1.5', color: T.textStumm }}>
         Der vollständige Stand aus dem nächtlichen Lauf. Links der Wert von heute, rechts der von vor sieben Tagen.
       </Text>
 
@@ -105,24 +105,24 @@ function KleineTabelle({ bloecke }: { bloecke: TabellenBlock[] }) {
           <tbody>
             <tr>
               <td colSpan={3} style={{ padding: '6px 0 4px' }}>
-                <Text className="mi-stumm" style={{ margin: 0, fontSize: '11px', letterSpacing: '0.06em', textTransform: 'uppercase' as const, fontWeight: 600, color: T.textStumm }}>
+                <Text className="osimmo-stumm" style={{ margin: 0, fontSize: '11px', letterSpacing: '0.06em', textTransform: 'uppercase' as const, fontWeight: 600, color: T.textStumm }}>
                   {block.bereich}
                 </Text>
               </td>
             </tr>
             {block.zeilen.map((z, i) => (
               <tr key={i}>
-                <td valign="top" className="mi-leise" style={{ padding: '0 10px 5px 0', fontSize: '12px', lineHeight: '1.5', color: T.textLeise }}>
+                <td valign="top" className="osimmo-leise" style={{ padding: '0 10px 5px 0', fontSize: '12px', lineHeight: '1.5', color: T.textLeise }}>
                   {z.label}
                   {/* Ohne diese Trennzeichen klebt der Nur-Text-Teil die drei
                       Zellen zu "Offene Aufgaben112104" zusammen. */}
                   <NurText>: </NurText>
                 </td>
-                <td valign="top" align="right" className="mi-text" style={{ padding: '0 10px 5px 0', fontSize: '12px', lineHeight: '1.5', fontWeight: 600, color: T.text, whiteSpace: 'nowrap' as const }}>
+                <td valign="top" align="right" className="osimmo-text" style={{ padding: '0 10px 5px 0', fontSize: '12px', lineHeight: '1.5', fontWeight: 600, color: T.text, whiteSpace: 'nowrap' as const }}>
                   {z.wert}
                   <NurText>, vor einer Woche </NurText>
                 </td>
-                <td valign="top" align="right" className="mi-stumm" style={{ padding: '0 0 5px', fontSize: '12px', lineHeight: '1.5', color: T.textStumm, whiteSpace: 'nowrap' as const }}>
+                <td valign="top" align="right" className="osimmo-stumm" style={{ padding: '0 0 5px', fontSize: '12px', lineHeight: '1.5', color: T.textStumm, whiteSpace: 'nowrap' as const }}>
                   {z.vorwoche}
                   {z.veraenderung ? ` (${z.veraenderung})` : ''}
                   <Zeilenende />
@@ -231,7 +231,7 @@ const Mail = ({
 
       {datenstand && (
         <Section style={{ padding: '20px 40px 0' }}>
-          <Text className="mi-zart" style={{ margin: 0, fontSize: '11px', lineHeight: '1.5', color: T.textZart }}>
+          <Text className="osimmo-zart" style={{ margin: 0, fontSize: '11px', lineHeight: '1.5', color: T.textZart }}>
             Datenstand {datenstand}, aus dem nächtlichen Kennzahlenlauf. Die Mail nennt keine Namen, sie nennt nur Zahlen.
           </Text>
         </Section>

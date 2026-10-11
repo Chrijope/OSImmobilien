@@ -199,12 +199,12 @@ describe("Globale Suche", () => {
       fireEvent.focus(feld);
       expect(gruppen()[0]).toBe("Zuletzt geöffnet");
       expect(optionen()[0]).toContain("Abrechnungen");
-      expect(ablage.has("mi_suche_zuletzt:u-test")).toBe(true);
+      expect(ablage.has("osimmo_suche_zuletzt:u-test")).toBe(true);
     });
 
     it("laesst Seiten aus dem Verlauf weg, die die aktive Rolle nicht mehr darf", () => {
       localStorage.setItem(
-        "mi_suche_zuletzt:u-test",
+        "osimmo_suche_zuletzt:u-test",
         JSON.stringify([{ id: "seite-/audit-log", titel: "Sicherheit & Audit > Audit-Log", url: "/audit-log" }]),
       );
       rolle = "vertriebspartner";
@@ -252,7 +252,7 @@ describe("Globale Suche", () => {
 
     it("laesst ein Objekt aus dem Verlauf weg, wenn „Objekte“ für die Rolle zu ist", () => {
       localStorage.setItem(
-        "mi_suche_zuletzt:u-test",
+        "osimmo_suche_zuletzt:u-test",
         JSON.stringify([{ id: "objekt-o1", titel: "Wohnpark Test", url: "/objekte/o1" }]),
       );
       rolle = "vertriebspartner";
@@ -312,7 +312,7 @@ describe("Globale Suche", () => {
 
     it("kuerzt den Hinweis statt des Namens", () => {
       localStorage.setItem(
-        "mi_suche_zuletzt:u-test",
+        "osimmo_suche_zuletzt:u-test",
         JSON.stringify([{ id: "kontakt-k1", titel: "Otto Beispiel", hinweis: "Finanzierung · Musterstadt", url: "/kunden/k1" }]),
       );
       const feld = zeige("/nirgends");

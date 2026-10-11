@@ -19,8 +19,8 @@ export interface NewsArticle {
   autorId?: string;
 }
 
-const LS_KEY = "mi_news";
-const NEWS_READ_KEY = "mi_news_read";
+const LS_KEY = "osimmo_news";
+const NEWS_READ_KEY = "osimmo_news_read";
 
 function toDb(a: NewsArticle): Record<string, any> {
   return {

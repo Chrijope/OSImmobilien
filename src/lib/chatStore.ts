@@ -75,8 +75,8 @@ export interface ChatData {
   archiviert: boolean;
 }
 
-const CHATS_KEY = "mi_chats";
-const CHATS_VERSION_KEY = "mi_chats_v";
+const CHATS_KEY = "osimmo_chats";
+const CHATS_VERSION_KEY = "osimmo_chats_v";
 const CURRENT_CHATS_VERSION = 2;
 
 // Profile pic – DB-backed via user_settings, localStorage for testaccount
@@ -84,7 +84,7 @@ const CURRENT_CHATS_VERSION = 2;
 // (gecacht in localStorage durch UserContext)
 export function getProfilePic(): string | null {
   if (isTestAccount()) {
-    const local = localStorage.getItem("mi_profilbild");
+    const local = localStorage.getItem("osimmo_profilbild");
     if (local) return local;
   } else {
     const fromSettings = getUserSetting<string | null>("profilbild", null);
@@ -92,7 +92,7 @@ export function getProfilePic(): string | null {
   }
   // Fallback: avatar_url aus profiles (vom UserContext gecacht)
   try {
-    const cached = localStorage.getItem("mi_profile_avatar_url");
+    const cached = localStorage.getItem("osimmo_profile_avatar_url");
     return cached || null;
   } catch {
     return null;
@@ -100,7 +100,7 @@ export function getProfilePic(): string | null {
 }
 
 export function setProfilePic(base64: string) {
-  if (isTestAccount()) { localStorage.setItem("mi_profilbild", base64); return; }
+  if (isTestAccount()) { localStorage.setItem("osimmo_profilbild", base64); return; }
   setUserSetting("profilbild", base64);
 }
 

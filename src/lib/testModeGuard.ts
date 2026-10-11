@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 export function isTestMode(): boolean {
   try {
-    const raw = localStorage.getItem("mi_current_role");
+    const raw = localStorage.getItem("osimmo_current_role");
     return raw === "testaccount";
   } catch {
     return false;

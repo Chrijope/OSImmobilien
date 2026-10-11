@@ -59,17 +59,17 @@ const VERGLICHENE_SPALTEN: { spalte: string; label: string }[] = [
  * Zusammenführungs-Vermerke des neueren selbst.
  */
 const NIE_UEBERNEHMEN = new Set([
-  "moreId", "kundenNr",
+  "osImmoId", "kundenNr",
   "deleteRequested", "deleteRequestedBy", "deleteRequestedAt", "deleteGrund", "deleteDsgvo",
   "deletionRequest",
   "zusammengefuehrtIn", "zusammengefuehrtAm",
 ]);
 
-/** Was zum Altersvergleich nötig ist: Rohzeile (meta) oder KundeData (moreId). */
-type AlterAngaben = { id: string; erstellt_am?: string | null; meta?: Record<string, any> | null; moreId?: number };
+/** Was zum Altersvergleich nötig ist: Rohzeile (meta) oder KundeData (osImmoId). */
+type AlterAngaben = { id: string; erstellt_am?: string | null; meta?: Record<string, any> | null; osImmoId?: number };
 
-function moreIdVon(k: AlterAngaben): number {
-  const roh = k.meta?.moreId ?? k.meta?.kundenNr ?? k.moreId;
+function osImmoIdVon(k: AlterAngaben): number {
+  const roh = k.meta?.osImmoId ?? k.meta?.kundenNr ?? k.osImmoId;
   const n = typeof roh === "number" ? roh : Number.parseInt(String(roh ?? ""), 10);
   return Number.isFinite(n) && n > 0 ? n : Number.POSITIVE_INFINITY;
 }
@@ -81,15 +81,15 @@ export function vergleicheAlter(a: AlterAngaben, b: AlterAngaben): number {
   const za = Number.isFinite(ta) ? ta : Number.POSITIVE_INFINITY;
   const zb = Number.isFinite(tb) ? tb : Number.POSITIVE_INFINITY;
   if (za !== zb) return za < zb ? -1 : 1;
-  const ma = moreIdVon(a);
-  const mb = moreIdVon(b);
+  const ma = osImmoIdVon(a);
+  const mb = osImmoIdVon(b);
   if (ma !== mb) return ma < mb ? -1 : 1;
   return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
 }
 
-export function formatMoreId(k: Omit<AlterAngaben, "id">): string {
-  const n = moreIdVon(k as AlterAngaben);
-  return Number.isFinite(n) ? `MI-${String(n).padStart(5, "0")}` : "ohne Nummer";
+export function formatOsImmoId(k: Omit<AlterAngaben, "id">): string {
+  const n = osImmoIdVon(k as AlterAngaben);
+  return Number.isFinite(n) ? `OSI-${String(n).padStart(5, "0")}` : "ohne Nummer";
 }
 
 export function formatDatum(iso?: string | null): string {
@@ -167,7 +167,7 @@ export interface ZusammenfuehrungsPlan {
 export function planeZusammenfuehrung(x: KontaktZeile, y: KontaktZeile, jetzt: Date = new Date()): ZusammenfuehrungsPlan {
   const [alt, neu] = vergleicheAlter(x, y) <= 0 ? [x, y] : [y, x];
   const heute = formatDatum(jetzt.toISOString());
-  const neuNr = formatMoreId(neu);
+  const neuNr = formatOsImmoId(neu);
 
   const felder: Record<string, unknown> = {};
   const abweichend: Record<string, unknown> = {};
@@ -232,7 +232,7 @@ export function planeZusammenfuehrung(x: KontaktZeile, y: KontaktZeile, jetzt: D
   const vermerk = {
     am: jetzt.toISOString(),
     ausKontaktId: neu.id,
-    ausMoreId: neuNr,
+    ausOsImmoId: neuNr,
     ausAngelegtAm: neu.erstellt_am ?? null,
     abweichend,
   };

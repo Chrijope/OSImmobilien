@@ -55,7 +55,7 @@ vi.mock("@/integrations/supabase/client", () => {
 
 vi.mock("@/contexts/UserContext", () => ({
   useUser: () => ({
-    user: { name: "Test", role: "admin", moreId: "" },
+    user: { name: "Test", role: "admin", osImmoId: "" },
     authUser: { id: "u1" },
     setRole: async (rolle: string) => {
       zustand.gewechselteRollen.push(rolle);

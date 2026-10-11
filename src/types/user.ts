@@ -67,7 +67,7 @@ export interface UserProfile {
    */
   rollenVariante?: string;
   avatar?: string;
-  moreId: string;
+  osImmoId: string;
   /**
    * Die Adresse aus den Einstellungen (profiles.email), nicht die
    * Anmeldeadresse. Beides kann auseinanderfallen: angemeldet wird oft mit

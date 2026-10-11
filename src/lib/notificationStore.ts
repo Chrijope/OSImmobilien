@@ -31,7 +31,7 @@ export interface PrizeNotification {
   levelName: string;
   prizeName: string;
   requesterName: string;
-  requesterMoreId: string;
+  requesterOsImmoId: string;
   requesterAddress?: string;
   requesterPhone?: string;
   requesterEmail?: string;
@@ -227,11 +227,11 @@ function fromDbByType<T>(type: NotifType, nurFuer?: string): T[] {
 
 function getLocalKeyForType(type: NotifType): string {
   const map: Record<NotifType, string> = {
-    mention: "mi_mention_notifications",
-    prize: "mi_prize_notifications",
-    delete_request: "mi_delete_requests",
-    doc: "mi_doc_notifications",
-    analyse_lead: "mi_analyse_lead_notifications",
+    mention: "osimmo_mention_notifications",
+    prize: "osimmo_prize_notifications",
+    delete_request: "osimmo_delete_requests",
+    doc: "osimmo_doc_notifications",
+    analyse_lead: "osimmo_analyse_lead_notifications",
   };
   return map[type];
 }

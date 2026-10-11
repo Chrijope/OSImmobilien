@@ -31,7 +31,7 @@
 
 import type { UserRole } from "@/types/user";
 
-const SPEICHER_SCHLUESSEL = "mi_vorfuehrmodus";
+const SPEICHER_SCHLUESSEL = "osimmo_vorfuehrmodus";
 
 /** Name des Fensterereignisses, das bei jedem Umschalten gefeuert wird. */
 export const VORFUEHRMODUS_EREIGNIS = "vorfuehrmodus-geaendert";

@@ -225,7 +225,7 @@ export function getColumnDef(key: string): ColumnDef | undefined {
 // ── Saved column preferences (now DB-backed) ──
 function loadExtra(pageKey: string): string[] {
   if (isTestAccount()) {
-    try { const raw = localStorage.getItem(`mi_cols_${pageKey}`); return raw ? JSON.parse(raw) : []; } catch { return []; }
+    try { const raw = localStorage.getItem(`osimmo_cols_${pageKey}`); return raw ? JSON.parse(raw) : []; } catch { return []; }
   }
   const allCols = getUserSetting<Record<string, string[]>>("column_config", {});
   return allCols[pageKey] || [];
@@ -233,7 +233,7 @@ function loadExtra(pageKey: string): string[] {
 
 function saveExtra(pageKey: string, keys: string[]) {
   if (isTestAccount()) {
-    localStorage.setItem(`mi_cols_${pageKey}`, JSON.stringify(keys));
+    localStorage.setItem(`osimmo_cols_${pageKey}`, JSON.stringify(keys));
     return;
   }
   const allCols = getUserSetting<Record<string, string[]>>("column_config", {});

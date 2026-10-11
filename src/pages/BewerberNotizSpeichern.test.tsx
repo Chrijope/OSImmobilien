@@ -104,7 +104,7 @@ vi.mock("@/integrations/supabase/client", () => {
 
 vi.mock("@/contexts/UserContext", () => ({
   useUser: () => ({
-    user: { id: "u1", role: "admin", name: "Jana Kirchner", email: "jana@example.com", moreId: "u1" },
+    user: { id: "u1", role: "admin", name: "Jana Kirchner", email: "jana@example.com", osImmoId: "u1" },
     authUser: { id: "u1" },
   }),
 }));

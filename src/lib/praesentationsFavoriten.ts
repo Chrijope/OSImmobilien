@@ -18,7 +18,7 @@ import { getUserSetting, setUserSetting } from "./userSettingsCache";
 import { sanitizeFavoriten, toggleFavorit } from "./praesentationsUebung";
 
 export const FAVORITEN_SCHLUESSEL = "praesentationsFavoriten";
-const LS_SCHLUESSEL = "mi_praesentationsFavoriten";
+const LS_SCHLUESSEL = "osimmo_praesentationsFavoriten";
 
 function ausLocalStorage(): string[] {
   try {

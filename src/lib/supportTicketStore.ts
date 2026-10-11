@@ -56,7 +56,7 @@ export interface SupportTicket {
   gelesenAmErsteller?: string | null;
 }
 
-const LS_KEY = "mi_support_tickets";
+const LS_KEY = "osimmo_support_tickets";
 
 function generateId(): string {
   return crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2, 11);
@@ -371,7 +371,7 @@ export async function antwortErneutMelden(ticketId: string): Promise<SupportMail
 
 // ─── Gelesen und ungelesen ───
 
-const LS_GELESEN = "mi_support_gelesen";
+const LS_GELESEN = "osimmo_support_gelesen";
 
 /** Zeitpunkt der letzten Support-Nachricht, oder null. */
 export function letzteSupportAntwortAm(t: Pick<SupportTicket, "nachrichten">): string | null {

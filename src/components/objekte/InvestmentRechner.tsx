@@ -156,7 +156,7 @@ export function InvestmentRechner({
   const [eigenkapital, setEigenkapital] = useState(0);
 
   // Save/Load state
-  const STORAGE_KEY = analyseKey ? `mi_analyse_${analyseKey}` : "";
+  const STORAGE_KEY = analyseKey ? `osimmo_analyse_${analyseKey}` : "";
   const [isSaved, setIsSaved] = useState(false);
 
   // Load saved analysis on mount + sync AfA from object props (source of truth)
@@ -203,7 +203,7 @@ export function InvestmentRechner({
         const weId = parts.length > 1 ? parts.slice(1).join("-") : null;
         const afaDbKey = weId ? `afa_rnd_${objektId}_${weId}` : `afa_rnd_${objektId}`;
         const afaData = isTestAccount()
-          ? (() => { const r = localStorage.getItem(`mi_afa_rnd_${objektId}${weId ? `_${weId}` : ""}`); return r ? JSON.parse(r) : null; })()
+          ? (() => { const r = localStorage.getItem(`osimmo_afa_rnd_${objektId}${weId ? `_${weId}` : ""}`); return r ? JSON.parse(r) : null; })()
           : getUserSetting<any>(afaDbKey, null);
         if (afaData && afaData.rnd > 0) {
           setRestnutzungsdauer(Math.round(afaData.rnd));

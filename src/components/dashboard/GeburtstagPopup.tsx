@@ -42,7 +42,7 @@ export function GeburtstagPopup() {
 
     // Einmal am Tag. Der Schluessel haengt am Nutzer, damit ein zweiter
     // Mensch am selben Rechner seine eigene Meldung bekommt.
-    const gesehenSchluessel = `mi_birthday_popup_seen_${authUser.id}`;
+    const gesehenSchluessel = `osimmo_birthday_popup_seen_${authUser.id}`;
     if (localStorage.getItem(gesehenSchluessel) === heuteSchluessel()) return;
 
     const laden = async () => {
@@ -119,7 +119,7 @@ export function GeburtstagPopup() {
 
   const schliessen = () => {
     if (authUser?.id) {
-      localStorage.setItem(`mi_birthday_popup_seen_${authUser.id}`, heuteSchluessel());
+      localStorage.setItem(`osimmo_birthday_popup_seen_${authUser.id}`, heuteSchluessel());
     }
     setOffen(false);
   };

@@ -13,7 +13,7 @@ import { NUR_POPUP_OVERLAY } from "@/lib/popupOverlay";
 import { confirmDialog, hinweisDialog } from "@/lib/confirm";
 import { cacheRefreshTable } from "@/lib/dataCache";
 import {
-  kontakteZusammenfuehren, vergleicheAlter, formatDatum, formatMoreId,
+  kontakteZusammenfuehren, vergleicheAlter, formatDatum, formatOsImmoId,
   ZusammenfuehrenMigrationFehlt, zusammengefuehrteDateienVerschieben, type ZusammenfuehrungsErgebnis,
 } from "@/lib/kontaktZusammenfuehren";
 
@@ -362,14 +362,14 @@ export function DuplikatBanner({ kontakte, onMerged }: Props) {
                   <p>
                     <strong className="text-foreground">Bleibt:</strong>{" "}
                     {mergeConfirm.kontakte[0].vorname} {mergeConfirm.kontakte[0].nachname}
-                    {" "}({formatMoreId(mergeConfirm.kontakte[0])}, angelegt am {formatDatum(mergeConfirm.kontakte[0].erstellt_am)}), der ältere Kontakt.
+                    {" "}({formatOsImmoId(mergeConfirm.kontakte[0])}, angelegt am {formatDatum(mergeConfirm.kontakte[0].erstellt_am)}), der ältere Kontakt.
                   </p>
                   <div>
                     <strong className="text-foreground">Geht in den Papierkorb:</strong>
                     <ul className="list-disc pl-5">
                       {mergeConfirm.kontakte.slice(1).map((k) => (
                         <li key={k.id}>
-                          {k.vorname} {k.nachname} ({formatMoreId(k)}, angelegt am {formatDatum(k.erstellt_am)})
+                          {k.vorname} {k.nachname} ({formatOsImmoId(k)}, angelegt am {formatDatum(k.erstellt_am)})
                         </li>
                       ))}
                     </ul>

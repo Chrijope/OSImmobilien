@@ -117,13 +117,13 @@ const bisSchritt = (n: number) => { for (let i = 0; i < n; i++) weiter(); };
 const radio = (id: string) => fireEvent.click(document.getElementById(id)!);
 
 /** Alle Entwurfsschlüssel dieses Kontakts, alte und neue Form, in beiden Speichern. */
-const ENTWURF_SCHLUESSEL = ["mi_selbstauskunft_k1", "mi_selbstauskunft_k1_i1", "mi_sa_draft_saved_k1", "mi_sa_draft_saved_k1_i1"];
+const ENTWURF_SCHLUESSEL = ["osimmo_selbstauskunft_k1", "osimmo_selbstauskunft_k1_i1", "osimmo_sa_draft_saved_k1", "osimmo_sa_draft_saved_k1_i1"];
 function legeAlteEntwuerfeAn() {
   for (const k of ENTWURF_SCHLUESSEL) {
     localStorage.setItem(k, "{\"geburtsdatum\":\"01.02.1985\"}");
     sessionStorage.setItem(k, "{\"geburtsdatum\":\"01.02.1985\"}");
   }
-  localStorage.setItem("mi_selbstauskunft_k2_i9", "{}");
+  localStorage.setItem("osimmo_selbstauskunft_k2_i9", "{}");
 }
 const nochDa = () => ENTWURF_SCHLUESSEL.filter((k) => localStorage.getItem(k) !== null || sessionStorage.getItem(k) !== null);
 
@@ -172,7 +172,7 @@ describe("Selbstauskunft: Datenschutz und Pflichtfragen", { timeout: 30000 }, ()
     expect(invokeSpy.mock.calls[0][0]).toBe("submit-sa-signature");
     expect(nochDa()).toEqual([]);
     // Ein anderer Kontakt bleibt unberührt.
-    expect(localStorage.getItem("mi_selbstauskunft_k2_i9")).toBe("{}");
+    expect(localStorage.getItem("osimmo_selbstauskunft_k2_i9")).toBe("{}");
     // Ohne Anmeldung kein Schreibversuch in die Nutzereinstellungen.
     expect(setUserSettingSpy).not.toHaveBeenCalled();
   });
@@ -205,8 +205,8 @@ describe("Selbstauskunft: Datenschutz und Pflichtfragen", { timeout: 30000 }, ()
         customerMode saToken={"c".repeat(64)} onHinweisSchritt={() => {}} />,
     );
     fireEvent.click(screen.getByText("Zwischenspeichern").closest("button")!);
-    await waitFor(() => expect(sessionStorage.getItem("mi_selbstauskunft_k1_i1")).not.toBeNull());
-    expect(localStorage.getItem("mi_selbstauskunft_k1_i1")).toBeNull();
+    await waitFor(() => expect(sessionStorage.getItem("osimmo_selbstauskunft_k1_i1")).not.toBeNull());
+    expect(localStorage.getItem("osimmo_selbstauskunft_k1_i1")).toBeNull();
     expect(setUserSettingSpy).not.toHaveBeenCalled();
   });
 
@@ -262,12 +262,12 @@ describe("Selbstauskunft: Datenschutz und Pflichtfragen", { timeout: 30000 }, ()
   });
 
   it("nurDauerhaft: löscht den localStorage, lässt den Sitzungsentwurf stehen", () => {
-    localStorage.setItem("mi_selbstauskunft_k9_i9", "{}");
-    sessionStorage.setItem("mi_selbstauskunft_k9_i9", "{}");
+    localStorage.setItem("osimmo_selbstauskunft_k9_i9", "{}");
+    sessionStorage.setItem("osimmo_selbstauskunft_k9_i9", "{}");
     loescheLokalenSaEntwurf("k9", "i9", true);
-    expect(localStorage.getItem("mi_selbstauskunft_k9_i9")).toBeNull();
-    expect(sessionStorage.getItem("mi_selbstauskunft_k9_i9")).toBe("{}");
-    sessionStorage.removeItem("mi_selbstauskunft_k9_i9");
+    expect(localStorage.getItem("osimmo_selbstauskunft_k9_i9")).toBeNull();
+    expect(sessionStorage.getItem("osimmo_selbstauskunft_k9_i9")).toBe("{}");
+    sessionStorage.removeItem("osimmo_selbstauskunft_k9_i9");
   });
 
   it("gesperrter Speicher: Löschen stürzt nicht ab", () => {

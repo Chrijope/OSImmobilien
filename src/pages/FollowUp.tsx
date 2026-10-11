@@ -60,11 +60,11 @@ export default function FollowUp() {
   }, [liveVersion, isTeamWide, user.name, authUser?.id, myUserId]);
 
   const [search, setSearch] = useState("");
-  const [showArchived, setShowArchived] = usePersistedState<boolean>("mi_filter_followup_archived", false);
-  const [typFilter, setTypFilter] = usePersistedState<KontaktTyp | "-">("mi_filter_followup_typ", "-");
-  const [beraterFilter, setBeraterFilter] = usePersistedState<string>("mi_filter_followup_berater", "-");
-  const [sortField, setSortField] = usePersistedState<string>("mi_filter_followup_sortField", "followUpAm");
-  const [sortDir, setSortDir] = usePersistedState<"asc" | "desc">("mi_filter_followup_sortDir", "asc");
+  const [showArchived, setShowArchived] = usePersistedState<boolean>("osimmo_filter_followup_archived", false);
+  const [typFilter, setTypFilter] = usePersistedState<KontaktTyp | "-">("osimmo_filter_followup_typ", "-");
+  const [beraterFilter, setBeraterFilter] = usePersistedState<string>("osimmo_filter_followup_berater", "-");
+  const [sortField, setSortField] = usePersistedState<string>("osimmo_filter_followup_sortField", "followUpAm");
+  const [sortDir, setSortDir] = usePersistedState<"asc" | "desc">("osimmo_filter_followup_sortDir", "asc");
 
   const { columns, extraKeys, toggleExtra, optionalKeys, fixedKeys } = useColumnConfig("followup", FIXED_COLUMNS);
 

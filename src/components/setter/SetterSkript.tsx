@@ -124,7 +124,7 @@ export function SetterSkript({ kunde, onUpdate }: SetterSkriptProps) {
   const [checklist, setChecklist] = useState<Record<string, boolean>>(() => {
     let stored: Record<string, boolean> = {};
     if (isTestAccount()) {
-      try { const raw = localStorage.getItem(`mi_setter_checklist_${kunde.id}`); stored = raw ? JSON.parse(raw) : {}; } catch { stored = {}; }
+      try { const raw = localStorage.getItem(`osimmo_setter_checklist_${kunde.id}`); stored = raw ? JSON.parse(raw) : {}; } catch { stored = {}; }
     } else {
       stored = getUserSetting<Record<string, Record<string, boolean>>>("setter_checklists", {})[kunde.id] || {};
     }
@@ -141,7 +141,7 @@ export function SetterSkript({ kunde, onUpdate }: SetterSkriptProps) {
       CHECKLIST_ITEMS.forEach(item => { allChecked[item.id] = true; });
       // Persist
       if (isTestAccount()) {
-        localStorage.setItem(`mi_setter_checklist_${kunde.id}`, JSON.stringify(allChecked));
+        localStorage.setItem(`osimmo_setter_checklist_${kunde.id}`, JSON.stringify(allChecked));
       } else {
         const allChecklists = getUserSetting<Record<string, Record<string, boolean>>>("setter_checklists", {});
         allChecklists[kunde.id] = allChecked;
@@ -182,7 +182,7 @@ export function SetterSkript({ kunde, onUpdate }: SetterSkriptProps) {
 
   const persistChecklist = (data: Record<string, boolean>) => {
     if (isTestAccount()) {
-      localStorage.setItem(`mi_setter_checklist_${kunde.id}`, JSON.stringify(data));
+      localStorage.setItem(`osimmo_setter_checklist_${kunde.id}`, JSON.stringify(data));
     } else {
       const allChecklists = getUserSetting<Record<string, Record<string, boolean>>>("setter_checklists", {});
       allChecklists[kunde.id] = data;

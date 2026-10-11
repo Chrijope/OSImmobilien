@@ -14,8 +14,8 @@ export interface Eigentuemer {
 
 export interface EigentuemerBeschluss { id: string; eigentuemerId: string; datum: string; titel: string; beschreibung: string; ergebnis: "angenommen" | "abgelehnt" | "vertagt"; stimmenDafuer: number; stimmenDagegen: number; enthaltungen: number; }
 
-const LS_ET = "mi_eigentuemer";
-const LS_BESCHLUSS = "mi_et_beschluesse";
+const LS_ET = "osimmo_eigentuemer";
+const LS_BESCHLUSS = "osimmo_et_beschluesse";
 
 function toDb(e: Eigentuemer): Record<string, any> {
   return { id: e.id, name: e.name, email: e.email, telefon: e.telefon, adresse: [e.strasse, e.plz, e.ort].filter(Boolean).join(", "), objekte: e.objektIds, notizen: e.notizen, erstellt_am: e.erstelltAm, meta: { typ: e.typ, anrede: e.anrede, strasse: e.strasse, plz: e.plz, ort: e.ort, steuernummer: e.steuernummer, bankIban: e.bankIban, bankBic: e.bankBic, verwaltervertragBeginn: e.verwaltervertragBeginn, verwaltervertragEnde: e.verwaltervertragEnde, verwalterhonorar: e.verwalterhonorar, kuendigungsfrist: e.kuendigungsfrist, objektNamen: e.objektNamen, wirtschaftsplanJahr: e.wirtschaftsplanJahr, wirtschaftsplanBetrag: e.wirtschaftsplanBetrag, instandhaltungsruecklage: e.instandhaltungsruecklage, ruecklageSollMonatlich: e.ruecklageSollMonatlich, herkunftVertrieb: e.herkunftVertrieb, herkunftKontaktId: e.herkunftKontaktId, herkunftInvestmentId: e.herkunftInvestmentId, herkunftKontaktName: e.herkunftKontaktName, herkunftNotarDatum: e.herkunftNotarDatum } };

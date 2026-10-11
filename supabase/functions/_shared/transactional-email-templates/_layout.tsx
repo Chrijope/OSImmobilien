@@ -180,33 +180,33 @@ export const T = {
  * Im hellen Modus ist die Mail komplett weiss und ohne Kasten; der
  * Dunkelmodus zieht das nach, sonst kaeme der Kasten-Effekt dort zurueck.
  *
- * Mit dem Hausstil sind Klassen dazugekommen. `mi-link` und `mi-balken` hellen
- * Blau 600 auf, das auf dunklem Grund zu dunkel waere; `mi-gut`, `mi-warn`,
- * `mi-fehler` und die `mi-strich`-Reihe tun dasselbe fuer die Statusfarben,
+ * Mit dem Hausstil sind Klassen dazugekommen. `osimmo-link` und `osimmo-balken` hellen
+ * Blau 600 auf, das auf dunklem Grund zu dunkel waere; `osimmo-gut`, `osimmo-warn`,
+ * `osimmo-fehler` und die `osimmo-strich`-Reihe tun dasselbe fuer die Statusfarben,
  * die im hellen Modus bewusst abgedunkelt sind. Ohne sie stuenden Verweise und
  * Kennzahlen im Dunkelmodus unter 3:1.
  */
 const DUNKELMODUS_CSS = `
 :root { color-scheme: light dark; supported-color-schemes: light dark; }
 @media (prefers-color-scheme: dark) {
-  .mi-flaeche { background-color: #1F2428 !important; }
-  .mi-karte   { background-color: #1F2428 !important; }
-  .mi-text    { color: #E5E9EC !important; }
-  .mi-leise   { color: #B9C0C7 !important; }
-  .mi-stumm   { color: #9BA3AB !important; }
-  .mi-zart    { color: #8A929A !important; }
-  .mi-linie   { background-color: #35383B !important; }
-  .mi-kreis   { background-color: #35383B !important; color: #B9C0C7 !important; }
-  .mi-rahmen  { border-color: #35383B !important; }
-  .mi-platte  { background-color: #FFFFFF !important; }
-  .mi-link    { color: #36E2A0 !important; }
-  .mi-balken  { background-color: #36E2A0 !important; }
-  .mi-gut     { color: #4ADE80 !important; }
-  .mi-warn    { color: #FFB020 !important; }
-  .mi-fehler  { color: #FF6B60 !important; }
-  .mi-strich        { background-color: #6E7681 !important; }
-  .mi-strich-warn   { background-color: #FFB020 !important; }
-  .mi-strich-fehler { background-color: #FF6B60 !important; }
+  .osimmo-flaeche { background-color: #1F2428 !important; }
+  .osimmo-karte   { background-color: #1F2428 !important; }
+  .osimmo-text    { color: #E5E9EC !important; }
+  .osimmo-leise   { color: #B9C0C7 !important; }
+  .osimmo-stumm   { color: #9BA3AB !important; }
+  .osimmo-zart    { color: #8A929A !important; }
+  .osimmo-linie   { background-color: #35383B !important; }
+  .osimmo-kreis   { background-color: #35383B !important; color: #B9C0C7 !important; }
+  .osimmo-rahmen  { border-color: #35383B !important; }
+  .osimmo-platte  { background-color: #FFFFFF !important; }
+  .osimmo-link    { color: #36E2A0 !important; }
+  .osimmo-balken  { background-color: #36E2A0 !important; }
+  .osimmo-gut     { color: #4ADE80 !important; }
+  .osimmo-warn    { color: #FFB020 !important; }
+  .osimmo-fehler  { color: #FF6B60 !important; }
+  .osimmo-strich        { background-color: #6E7681 !important; }
+  .osimmo-strich-warn   { background-color: #FFB020 !important; }
+  .osimmo-strich-fehler { background-color: #FF6B60 !important; }
 }
 `.trim()
 
@@ -255,7 +255,7 @@ const huelle = { maxWidth: '600px', width: '100%', margin: 0, padding: 0 }
 const kopf = { padding: '24px 28px 0' }
 // Weiss auf Weiss unsichtbar. Die Platte bleibt wegen des Dunkelmodus: das
 // Logo-PNG hat dunkle Schrift auf eingebranntem Weiss (siehe MARKE.logo) und
-// braucht dort einen hellen Grund, siehe .mi-platte in DUNKELMODUS_CSS.
+// braucht dort einen hellen Grund, siehe .osimmo-platte in DUNKELMODUS_CSS.
 const logoPlatte = {
   backgroundColor: T.weiss,
   borderRadius: '8px',
@@ -283,7 +283,7 @@ const logoPlatte = {
  *
  * Die Farbe bleibt bewusst die dunkle Tinte und bekommt keine `mi-`Klasse: Der
  * Ersatztext steht auf der Logoplatte, und die ist auch im Dunkelmodus weiss
- * (siehe `.mi-platte`). Ein aufgehellter Ton waere dort unsichtbar.
+ * (siehe `.osimmo-platte`). Ein aufgehellter Ton waere dort unsichtbar.
  *
  * 17 Pixel, weil der Text in die 27 Pixel hohe Bildflaeche passen muss. Groesser
  * gesetzt schneiden ihn Outlook und Apple Mail unten ab.
@@ -308,7 +308,7 @@ const logoStil = {
 }
 // Seit dem Wechsel auf den weissen Grund hat die Karte keinen sichtbaren
 // Kasten mehr, sie verschmilzt mit dem Body. Der Baustein bleibt trotzdem:
-// er traegt die Abstaende, und der Dunkelmodus haengt an .mi-karte.
+// er traegt die Abstaende, und der Dunkelmodus haengt an .osimmo-karte.
 const karte = {
   backgroundColor: T.weiss,
   borderRadius: T.radius,
@@ -372,7 +372,7 @@ const blockTitel = { margin: '24px 0 14px', fontSize: '13px', fontWeight: 700, c
 /** Eine Trennlinie, die auch im Dunkelmodus stimmt. */
 function Linie() {
   return (
-    <div style={trenner} className="mi-linie">
+    <div style={trenner} className="osimmo-linie">
       &nbsp;
     </div>
   )
@@ -468,7 +468,7 @@ export function Handlung({
     console.error(`Mailvorlage: Knopf "${text}" hat keinen Link bekommen. Bitte die templateData der aufrufenden Function pruefen.`)
     return (
       <Section style={{ padding: '0 40px' }}>
-        <Text className="mi-text" style={{ margin: 0, fontSize: '15px', lineHeight: '24px', color: T.text }}>
+        <Text className="osimmo-text" style={{ margin: 0, fontSize: '15px', lineHeight: '24px', color: T.text }}>
           {LAYOUT_TEXTE[mailSprache(sprache)].linkFehlt}
         </Text>
       </Section>
@@ -480,7 +480,7 @@ export function Handlung({
       <div dangerouslySetInnerHTML={{ __html: knopfMarkup(ziel, text) }} />
       {hinweis && (
         <Text
-          className="mi-stumm"
+          className="osimmo-stumm"
           style={{ margin: '12px 0 0', textAlign: 'center' as const, fontSize: '13px', color: T.textStumm }}
         >
           {hinweis}
@@ -514,7 +514,7 @@ export function Nebenhandlung({
   return (
     <Section style={{ padding: '14px 40px 0' }}>
       <Text
-        className="mi-stumm"
+        className="osimmo-stumm"
         style={{
           margin: 0,
           textAlign: 'center' as const,
@@ -525,7 +525,7 @@ export function Nebenhandlung({
       >
         <a
           href={ziel}
-          className="mi-link"
+          className="osimmo-link"
           style={{
             color: T.blau,
             fontWeight: 600,
@@ -535,7 +535,7 @@ export function Nebenhandlung({
           {text}
         </a>
         {hinweis && (
-          <span className="mi-stumm" style={{ color: T.textStumm }}>
+          <span className="osimmo-stumm" style={{ color: T.textStumm }}>
             {' '}
             {hinweis}
           </span>
@@ -550,7 +550,7 @@ export function Schritte({ titel, punkte }: { titel?: string; punkte: string[] }
     <Section style={{ padding: '32px 40px 0' }}>
       <Linie />
       {titel && (
-        <Text className="mi-text" style={blockTitel}>
+        <Text className="osimmo-text" style={blockTitel}>
           {titel}
         </Text>
       )}
@@ -558,11 +558,11 @@ export function Schritte({ titel, punkte }: { titel?: string; punkte: string[] }
         <tbody>
           {punkte.map((p, i) => (
             <tr key={i}>
-              <td width={24} valign="top" className="mi-stumm" style={{ padding: i === punkte.length - 1 ? 0 : '0 0 10px', fontSize: '14px', color: T.textStumm }}>
+              <td width={24} valign="top" className="osimmo-stumm" style={{ padding: i === punkte.length - 1 ? 0 : '0 0 10px', fontSize: '14px', color: T.textStumm }}>
                 {i + 1}
                 <NurText>. </NurText>
               </td>
-              <td valign="top" className="mi-leise" style={{ padding: i === punkte.length - 1 ? 0 : '0 0 10px', fontSize: '15px', lineHeight: '1.5', color: T.textLeise }}>
+              <td valign="top" className="osimmo-leise" style={{ padding: i === punkte.length - 1 ? 0 : '0 0 10px', fontSize: '15px', lineHeight: '1.5', color: T.textLeise }}>
                 {p}
                 <Zeilenende />
               </td>
@@ -589,7 +589,7 @@ export function Liste({
     <Section style={{ padding: '32px 40px 0' }}>
       <Linie />
       {titel && (
-        <Text className="mi-text" style={blockTitel}>
+        <Text className="osimmo-text" style={blockTitel}>
           {titel}
         </Text>
       )}
@@ -597,13 +597,13 @@ export function Liste({
         <tbody>
           {punkte.map((p, i) => (
             <tr key={i}>
-              <td width={14} valign="top" className="mi-stumm" style={{ padding: '0 0 10px', fontSize: '15px', lineHeight: '1.5', color: T.textStumm }}>
+              <td width={14} valign="top" className="osimmo-stumm" style={{ padding: '0 0 10px', fontSize: '15px', lineHeight: '1.5', color: T.textStumm }}>
                 &middot;
                 <NurText> </NurText>
               </td>
-              <td valign="top" className="mi-leise" style={{ padding: '0 0 10px', fontSize: '15px', lineHeight: '1.5', color: T.textLeise }}>
+              <td valign="top" className="osimmo-leise" style={{ padding: '0 0 10px', fontSize: '15px', lineHeight: '1.5', color: T.textLeise }}>
                 {p.href ? (
-                  <Link href={p.href} className="mi-link" style={{ color: T.blauLink, textDecoration: 'none' }}>
+                  <Link href={p.href} className="osimmo-link" style={{ color: T.blauLink, textDecoration: 'none' }}>
                     {p.text}
                   </Link>
                 ) : (
@@ -642,7 +642,7 @@ export function Haken({ punkte }: { punkte: readonly string[] }) {
               <td
                 width={26}
                 valign="top"
-                className="mi-link"
+                className="osimmo-link"
                 style={{
                   padding: i === punkte.length - 1 ? '0 0 20px' : '0 0 10px',
                   fontSize: '15px',
@@ -656,7 +656,7 @@ export function Haken({ punkte }: { punkte: readonly string[] }) {
               </td>
               <td
                 valign="top"
-                className="mi-leise"
+                className="osimmo-leise"
                 style={{
                   padding: i === punkte.length - 1 ? '0 0 20px' : '0 0 10px',
                   fontSize: '16px',
@@ -696,7 +696,7 @@ export function Angaben({ titel, zeilen }: { titel?: string; zeilen: Array<[stri
     <Section style={{ padding: '32px 40px 0' }}>
       <Linie />
       {titel && (
-        <Text className="mi-text" style={blockTitel}>
+        <Text className="osimmo-text" style={blockTitel}>
           {titel}
         </Text>
       )}
@@ -704,11 +704,11 @@ export function Angaben({ titel, zeilen }: { titel?: string; zeilen: Array<[stri
         <tbody>
           {zeilen.map(([k, v], i) => (
             <tr key={i}>
-              <td valign="top" className="mi-stumm" style={{ padding: '0 12px 10px 0', fontSize: '15px', lineHeight: '1.5', color: T.textStumm }}>
+              <td valign="top" className="osimmo-stumm" style={{ padding: '0 12px 10px 0', fontSize: '15px', lineHeight: '1.5', color: T.textStumm }}>
                 {k}
                 <NurText>: </NurText>
               </td>
-              <td valign="top" align="right" className="mi-text" style={{ padding: '0 0 10px', fontSize: '15px', lineHeight: '1.5', color: T.text, fontWeight: 600 }}>
+              <td valign="top" align="right" className="osimmo-text" style={{ padding: '0 0 10px', fontSize: '15px', lineHeight: '1.5', color: T.text, fontWeight: 600 }}>
                 {v}
                 <Zeilenende />
               </td>
@@ -738,12 +738,12 @@ export function Kennzahlen({
   // aufgehellte Fassung. Die hellen Toene sind so abgedunkelt, dass sie auf
   // Weiss lesbar sind, und genau das macht sie auf Schwarz unlesbar.
   const tonKlasse = (ton?: string) =>
-    ton === 'fehler' ? 'mi-fehler' : ton === 'warnung' ? 'mi-warn' : ton === 'gut' ? 'mi-gut' : 'mi-text'
+    ton === 'fehler' ? 'osimmo-fehler' : ton === 'warnung' ? 'osimmo-warn' : ton === 'gut' ? 'osimmo-gut' : 'osimmo-text'
   return (
     <Section style={{ padding: '32px 40px 0' }}>
       <Linie />
       {titel && (
-        <Text className="mi-text" style={{ ...blockTitel, margin: '24px 0 0' }}>
+        <Text className="osimmo-text" style={{ ...blockTitel, margin: '24px 0 0' }}>
           {titel}
         </Text>
       )}
@@ -759,7 +759,7 @@ export function Kennzahlen({
                   {w.wert}
                   <NurText> </NurText>
                 </Text>
-                <Text className="mi-stumm" style={{ margin: '4px 0 0', fontSize: '13px', color: T.textStumm }}>
+                <Text className="osimmo-stumm" style={{ margin: '4px 0 0', fontSize: '13px', color: T.textStumm }}>
                   {w.label}
                 </Text>
               </td>
@@ -787,7 +787,7 @@ export function Posten({
     <Section style={{ padding: '32px 40px 0' }}>
       <Linie />
       {titel && (
-        <Text className="mi-text" style={blockTitel}>
+        <Text className="osimmo-text" style={blockTitel}>
           {titel}
         </Text>
       )}
@@ -796,12 +796,12 @@ export function Posten({
           {zeilen.map((z, i) => (
             <tr key={i}>
               <td valign="top" style={{ padding: '0 12px 12px 0' }}>
-                <Text className="mi-text" style={{ margin: 0, fontSize: '15px', lineHeight: '1.4', fontWeight: 600, color: T.text }}>
+                <Text className="osimmo-text" style={{ margin: 0, fontSize: '15px', lineHeight: '1.4', fontWeight: 600, color: T.text }}>
                   {z.href ? (
                     // Die Klasse gehoert an den Link selbst. Sein eigener
                     // Inline-Stil schlaegt sonst die Klasse am Absatz, und im
                     // Dunkelmodus stuende der Name fast schwarz auf schwarz.
-                    <Link href={z.href} className="mi-text" style={{ color: T.text, textDecoration: 'none' }}>
+                    <Link href={z.href} className="osimmo-text" style={{ color: T.text, textDecoration: 'none' }}>
                       {z.text}
                     </Link>
                   ) : (
@@ -809,7 +809,7 @@ export function Posten({
                   )}
                 </Text>
                 {z.unter && (
-                  <Text className="mi-stumm" style={{ margin: '2px 0 0', fontSize: '13px', color: T.textStumm }}>
+                  <Text className="osimmo-stumm" style={{ margin: '2px 0 0', fontSize: '13px', color: T.textStumm }}>
                     {z.unter}
                   </Text>
                 )}
@@ -817,7 +817,7 @@ export function Posten({
               {z.wert && (
                 <td valign="top" align="right" style={{ padding: '0 0 12px', whiteSpace: 'nowrap' as const }}>
                   <Text
-                    className={z.ton === 'fehler' ? 'mi-fehler' : z.ton === 'warnung' ? 'mi-warn' : 'mi-stumm'}
+                    className={z.ton === 'fehler' ? 'osimmo-fehler' : z.ton === 'warnung' ? 'osimmo-warn' : 'osimmo-stumm'}
                     style={{
                       margin: 0,
                       fontSize: '14px',
@@ -847,12 +847,12 @@ export function Textblock({ titel, text }: { titel?: string; text: string }) {
     <Section style={{ padding: '32px 40px 0' }}>
       <Linie />
       {titel && (
-        <Text className="mi-text" style={blockTitel}>
+        <Text className="osimmo-text" style={blockTitel}>
           {titel}
         </Text>
       )}
       <Text
-        className="mi-leise"
+        className="osimmo-leise"
         style={{
           margin: 0,
           fontSize: '15px',
@@ -873,7 +873,7 @@ export function Bilder({ titel, urls }: { titel?: string; urls: string[] }) {
     <Section style={{ padding: '32px 40px 0' }}>
       <Linie />
       {titel && (
-        <Text className="mi-text" style={blockTitel}>
+        <Text className="osimmo-text" style={blockTitel}>
           {titel}
         </Text>
       )}
@@ -882,7 +882,7 @@ export function Bilder({ titel, urls }: { titel?: string; urls: string[] }) {
           <Img
             src={u}
             alt={`Anhang ${i + 1}`}
-            className="mi-rahmen"
+            className="osimmo-rahmen"
             style={{ display: 'block', width: '100%', maxWidth: '520px', height: 'auto', borderRadius: T.radiusKlein, marginBottom: '12px', border: `1px solid ${T.linie}` }}
           />
         </Link>
@@ -897,7 +897,7 @@ export function Bilder({ titel, urls }: { titel?: string; urls: string[] }) {
  */
 export function Hinweis({ text, ton = 'neutral' }: { text: string; ton?: 'neutral' | 'warnung' | 'fehler' }) {
   const farbe = ton === 'fehler' ? T.rot : ton === 'warnung' ? T.gelb : T.textStumm
-  const strich = ton === 'fehler' ? 'mi-strich-fehler' : ton === 'warnung' ? 'mi-strich-warn' : 'mi-strich'
+  const strich = ton === 'fehler' ? 'osimmo-strich-fehler' : ton === 'warnung' ? 'osimmo-strich-warn' : 'osimmo-strich'
   return (
     <Section style={{ padding: '24px 40px 0' }}>
       <table role="presentation" cellPadding={0} cellSpacing={0} width="100%">
@@ -905,7 +905,7 @@ export function Hinweis({ text, ton = 'neutral' }: { text: string; ton?: 'neutra
           <tr>
             <td width={3} className={strich} style={{ backgroundColor: farbe, borderRadius: '2px' }}>&nbsp;</td>
             <td style={{ paddingLeft: '14px' }}>
-              <Text className="mi-leise" style={{ margin: 0, fontSize: '14px', lineHeight: '1.55', color: T.textLeise }}>
+              <Text className="osimmo-leise" style={{ margin: 0, fontSize: '14px', lineHeight: '1.55', color: T.textLeise }}>
                 {text}
               </Text>
             </td>
@@ -945,7 +945,7 @@ export function Code({ wert }: { wert: string }) {
           <tr>
             <td
               align="center"
-              className="mi-rahmen"
+              className="osimmo-rahmen"
               style={{
                 border: `1px solid ${T.linie}`,
                 borderRadius: T.radiusKlein,
@@ -953,7 +953,7 @@ export function Code({ wert }: { wert: string }) {
               }}
             >
               <Text
-                className="mi-text"
+                className="osimmo-text"
                 style={{
                   margin: 0,
                   fontFamily: T.schrift,
@@ -1061,7 +1061,7 @@ function Unterschrift({ person, sprache }: { person?: Ansprechpartner; sprache: 
                 <tbody>
                   <tr>
                     <td
-                      className="mi-kreis"
+                      className="osimmo-kreis"
                       width="36"
                       height="36"
                       align="center"
@@ -1103,22 +1103,22 @@ function Unterschrift({ person, sprache }: { person?: Ansprechpartner; sprache: 
               </table>
             </td>
             <td valign="top">
-              <Text className="mi-text" style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: T.text }}>
+              <Text className="osimmo-text" style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: T.text }}>
                 {name}
               </Text>
-              <Text className="mi-stumm" style={{ margin: '2px 0 0', fontSize: '13px', color: T.textStumm }}>
+              <Text className="osimmo-stumm" style={{ margin: '2px 0 0', fontSize: '13px', color: T.textStumm }}>
                 {rolle}
               </Text>
-              <Text className="mi-stumm" style={{ margin: '6px 0 0', fontSize: '13px', color: T.textStumm }}>
+              <Text className="osimmo-stumm" style={{ margin: '6px 0 0', fontSize: '13px', color: T.textStumm }}>
                 {tel && (
                   <>
-                    <Link href={`tel:${tel.replace(/\s/g, '')}`} className="mi-link" style={{ color: T.blauLink, textDecoration: 'none' }}>
+                    <Link href={`tel:${tel.replace(/\s/g, '')}`} className="osimmo-link" style={{ color: T.blauLink, textDecoration: 'none' }}>
                       {tel}
                     </Link>
                     {'  ·  '}
                   </>
                 )}
-                <Link href={`mailto:${mail}`} className="mi-link" style={{ color: T.blauLink, textDecoration: 'none' }}>
+                <Link href={`mailto:${mail}`} className="osimmo-link" style={{ color: T.blauLink, textDecoration: 'none' }}>
                   {mail}
                 </Link>
               </Text>
@@ -1192,7 +1192,7 @@ export function EmailLayout({
         <style dangerouslySetInnerHTML={{ __html: DUNKELMODUS_CSS }} />
       </Head>
       <Preview>{vorschau}</Preview>
-      <Body style={body} className="mi-flaeche">
+      <Body style={body} className="osimmo-flaeche">
         {/*
           Eigene Tabelle statt des Container-Bausteins von react-email: der
           schreibt align="center" fest in die Tabelle, und Outlook rendert
@@ -1216,7 +1216,7 @@ export function EmailLayout({
             <table role="presentation" cellPadding={0} cellSpacing={0}>
               <tbody>
                 <tr>
-                  <td className="mi-platte" style={logoPlatte}>
+                  <td className="osimmo-platte" style={logoPlatte}>
                     <Img
                       src={MARKE.logo}
                       alt={MARKE.name}
@@ -1230,21 +1230,21 @@ export function EmailLayout({
             </table>
           </Section>
 
-          <Section style={karte} className="mi-karte">
+          <Section style={karte} className="osimmo-karte">
             <Section style={innen}>
               {augenbraueText && (
-                <Text className="mi-stumm" style={augenbraue}>
+                <Text className="osimmo-stumm" style={augenbraue}>
                   {augenbraueText}
                 </Text>
               )}
-              <Text className="mi-text" style={ueberschrift}>
+              <Text className="osimmo-text" style={ueberschrift}>
                 {titel}
               </Text>
-              <div className="mi-balken" style={markenbalken}>
+              <div className="osimmo-balken" style={markenbalken}>
                 &nbsp;
               </div>
               {anrede && (
-                <Text className="mi-text" style={anredeStil}>
+                <Text className="osimmo-text" style={anredeStil}>
                   {anrede}
                 </Text>
               )}
@@ -1263,11 +1263,11 @@ export function EmailLayout({
 
           <Section style={fussBlock}>
             {fussHinweis && (
-              <Text className="mi-stumm" style={fussText}>
+              <Text className="osimmo-stumm" style={fussText}>
                 {fussHinweis}
               </Text>
             )}
-            <Text className="mi-zart" style={fussZart}>
+            <Text className="osimmo-zart" style={fussZart}>
               {MARKE.anschrift}
               {'  ·  '}
               <Link href={mitSprache(MARKE.impressum, sprache)} style={fussLink}>{fuss.impressum}</Link>
@@ -1307,7 +1307,7 @@ export function EmailLayout({
 export function Absatz({ children, letzter = false }: { children: React.ReactNode; letzter?: boolean }) {
   return (
     <Section style={{ padding: '0 40px' }}>
-      <Text className="mi-leise" style={{ ...absatz, margin: letzter ? '0 0 28px' : absatz.margin }}>
+      <Text className="osimmo-leise" style={{ ...absatz, margin: letzter ? '0 0 28px' : absatz.margin }}>
         {children}
       </Text>
     </Section>

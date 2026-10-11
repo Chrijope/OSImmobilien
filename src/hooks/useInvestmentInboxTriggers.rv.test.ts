@@ -126,7 +126,7 @@ describe("Reservierung ohne Unterschrift im Inbox-Hook", () => {
     expect(glocke.nutzer).not.toHaveBeenCalled();
     expect(glocke.vertriebsleitung).not.toHaveBeenCalled();
     // Auch keine Sperre, die spaeter etwas nachholen koennte.
-    expect(zustand.einstellungen["mi_investment_inbox_triggers_sent"]).toBeUndefined();
+    expect(zustand.einstellungen["osimmo_investment_inbox_triggers_sent"]).toBeUndefined();
   });
 
   it("laesst Altvorgaenge ohne Versandzeitpunkt ebenso ruhig", () => {
@@ -135,7 +135,7 @@ describe("Reservierung ohne Unterschrift im Inbox-Hook", () => {
     expect(rvAufgaben()).toEqual([]);
     expect(glocke.nutzer).not.toHaveBeenCalled();
     expect(glocke.vertriebsleitung).not.toHaveBeenCalled();
-    expect(zustand.einstellungen["mi_investment_inbox_triggers_sent"]).toBeUndefined();
+    expect(zustand.einstellungen["osimmo_investment_inbox_triggers_sent"]).toBeUndefined();
   });
 
   it("nimmt einen Versand genau zum Stichtag in die Kette auf", () => {

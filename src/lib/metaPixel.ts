@@ -36,7 +36,7 @@ export function istGueltigeMetaPixelId(wert: unknown): wert is string {
 
 export type MetaConsent = "zugestimmt" | "abgelehnt";
 
-const CONSENT_SCHLUESSEL = "mi_meta_pixel_einwilligung";
+const CONSENT_SCHLUESSEL = "osimmo_meta_pixel_einwilligung";
 
 /** Gespeicherte Entscheidung des Besuchers, oder null wenn noch keine vorliegt. */
 export function gespeicherterMetaConsent(): MetaConsent | null {

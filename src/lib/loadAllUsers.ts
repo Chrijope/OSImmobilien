@@ -44,7 +44,7 @@ export interface SystemUser {
 export function loadAllUsers(): SystemUser[] {
   if (isTestAccount()) {
     try {
-      const raw = localStorage.getItem("mi_nutzer");
+      const raw = localStorage.getItem("osimmo_nutzer");
       if (!raw) return [];
       const nutzer = JSON.parse(raw) as any[];
       return nutzer
@@ -111,7 +111,7 @@ export function loadBeraterUsers(): SystemUser[] {
   // Strict: nur Nutzer mit zugewiesener Rolle "vertriebspartner"
   if (isTestAccount()) {
     try {
-      const raw = localStorage.getItem("mi_nutzer");
+      const raw = localStorage.getItem("osimmo_nutzer");
       const nutzer = raw ? (JSON.parse(raw) as any[]) : [];
       const allowed = new Set(
         nutzer
@@ -142,7 +142,7 @@ export function loadVertriebsUsers(): SystemUser[] {
   const allowedRoles = new Set(["vertriebspartner", "vertriebsleiter"]);
   if (isTestAccount()) {
     try {
-      const raw = localStorage.getItem("mi_nutzer");
+      const raw = localStorage.getItem("osimmo_nutzer");
       const nutzer = raw ? (JSON.parse(raw) as any[]) : [];
       const allowed = new Set(
         nutzer

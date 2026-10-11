@@ -12,7 +12,7 @@ export interface Dienstleister {
   bewertung?: number; leistungsbeschreibung?: string;
 }
 
-const LS_KEY = "mi_dienstleister";
+const LS_KEY = "osimmo_dienstleister";
 
 function toDb(d: Dienstleister): Record<string, any> {
   return { id: d.id, name: d.firma, email: d.email, telefon: d.telefon, kategorie: d.typ, adresse: [d.strasse, d.plz, d.ort].filter(Boolean).join(", "), bewertung: d.bewertung || 0, notizen: d.notizen, erstellt_am: d.erstelltAm, meta: { firma: d.firma, ansprechpartner: d.ansprechpartner, typ: d.typ, objektIds: d.objektIds, objektNamen: d.objektNamen, vertragBeginn: d.vertragBeginn, vertragEnde: d.vertragEnde, kuendigungsfrist: d.kuendigungsfrist, kostenMonatlich: d.kostenMonatlich, dokumente: d.dokumente, strasse: d.strasse, plz: d.plz, ort: d.ort, webseite: d.webseite, steuernummer: d.steuernummer, iban: d.iban, leistungsbeschreibung: d.leistungsbeschreibung } };

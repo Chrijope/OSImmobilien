@@ -361,8 +361,8 @@ const ZIELE = ANLAGE_ZIELE.map((z) => ({
   icon: ZIEL_ICONS[z.id] || TrendingUp,
 }));
 
-const SA_KEY = "mi_selbstauskunft_";
-const SA_DRAFT_KEY = "mi_sa_draft_saved_";
+const SA_KEY = "osimmo_selbstauskunft_";
+const SA_DRAFT_KEY = "osimmo_sa_draft_saved_";
 
 // Import DB helpers for live persistence
 import { ANLAGE_ZIELE, MAX_ZIELE } from "@/lib/anlageZiele";

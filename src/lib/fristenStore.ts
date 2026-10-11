@@ -20,7 +20,7 @@ export interface Frist {
 }
 
 // localStorage fallback keys for testaccount
-const CUSTOM_FRISTEN_KEY = "mi_custom_fristen";
+const CUSTOM_FRISTEN_KEY = "osimmo_custom_fristen";
 
 function loadCustom(): Frist[] {
   if (isTestAccount()) {

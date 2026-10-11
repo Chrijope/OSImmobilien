@@ -47,12 +47,12 @@ const Analysetool = () => {
     const emailSettings = getUserSetting<any>("email", null);
     const profilBild = getProfilePic();
     // Single source of truth: authUser.id aus dem React-Context.
-    // Früher per localStorage("mi_current_user_id") – das konnte leer sein
+    // Früher per localStorage("osimmo_current_user_id") – das konnte leer sein
     // (z. B. nach Hard-Reload, Inkognito-Tab oder Test-Account-Wechsel),
     // wodurch eingehende Analysetool-Leads ohne zustaendig_id beim
     // Default-Vertriebspartner "Christian Peetz" gelandet sind.
     const userId = authUser?.id || (() => {
-      try { return localStorage.getItem("mi_current_user_id") || ""; } catch { return ""; }
+      try { return localStorage.getItem("osimmo_current_user_id") || ""; } catch { return ""; }
     })();
 
     return {

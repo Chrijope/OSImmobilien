@@ -88,8 +88,8 @@ beforeEach(() => {
   state.patches = [];
   state.rpcFehler = null;
   stubLocalStorage();
-  window.localStorage.setItem("mi_current_role", "vertriebspartner");
-  window.localStorage.setItem("mi_current_user_id", "u1");
+  window.localStorage.setItem("osimmo_current_role", "vertriebspartner");
+  window.localStorage.setItem("osimmo_current_user_id", "u1");
 });
 
 describe("getUnreadNewsCount", () => {

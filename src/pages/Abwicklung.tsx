@@ -40,10 +40,10 @@ export default function Abwicklung() {
     } catch { return []; }
   }, [liveVersion, isTeamWide, user.name, authUser?.id]);
   const [search, setSearch] = useState("");
-  const [typFilter, setTypFilter] = usePersistedState<KontaktTyp | "-">("mi_filter_abwicklung_typ", "-");
-  const [beraterFilter, setBeraterFilter] = usePersistedState<string>("mi_filter_abwicklung_berater", "-");
-  const [sortField, setSortField] = usePersistedState<string>("mi_filter_abwicklung_sortField", "nachname");
-  const [sortDir, setSortDir] = usePersistedState<"asc" | "desc">("mi_filter_abwicklung_sortDir", "asc");
+  const [typFilter, setTypFilter] = usePersistedState<KontaktTyp | "-">("osimmo_filter_abwicklung_typ", "-");
+  const [beraterFilter, setBeraterFilter] = usePersistedState<string>("osimmo_filter_abwicklung_berater", "-");
+  const [sortField, setSortField] = usePersistedState<string>("osimmo_filter_abwicklung_sortField", "nachname");
+  const [sortDir, setSortDir] = usePersistedState<"asc" | "desc">("osimmo_filter_abwicklung_sortDir", "asc");
 
   const { columns, extraKeys, toggleExtra, optionalKeys, fixedKeys } = useColumnConfig("abwicklung", FIXED_COLUMNS);
 

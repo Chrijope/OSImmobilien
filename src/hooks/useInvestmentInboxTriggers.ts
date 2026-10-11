@@ -24,7 +24,7 @@ import {
  * Idempotent über REMINDER_KEY (user_settings bzw. localStorage für Testaccount).
  */
 
-const REMINDER_KEY = "mi_investment_inbox_triggers_sent";
+const REMINDER_KEY = "osimmo_investment_inbox_triggers_sent";
 const RE_ENGAGEMENT_TITEL = "Re-Engagement (14 Tage inaktiv)";
 
 function getSent(): Record<string, string[]> {

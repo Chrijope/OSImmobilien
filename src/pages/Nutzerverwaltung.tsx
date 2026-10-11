@@ -43,7 +43,7 @@ export interface Nutzer {
   nachname: string;
   email: string;
   privateEmail: string;
-  moreId: string;
+  osImmoId: string;
   /** Anzeigename der Hauptrolle (kann "Lead-Berater" sein). NIE vergleichen, dafuer gibt es rolleId. */
   rolle: string;
   /** Kennung der Hauptrolle, z. B. "vertriebspartner". Massgeblich fuer Filter und Logik. */
@@ -105,12 +105,12 @@ function getAvatarColor(rolleId: string) {
 }
 
 
-function generateMoreId(nutzerList: Nutzer[]): string {
+function generateOsImmoId(nutzerList: Nutzer[]): string {
   const maxId = nutzerList.reduce((max, n) => {
-    const num = parseInt(n.moreId?.replace("MI-", "") || "0");
+    const num = parseInt(n.osImmoId?.replace("OSI-", "") || "0");
     return num > max ? num : max;
   }, 0);
-  return `MI-${String(maxId + 1).padStart(5, "0")}`;
+  return `OSI-${String(maxId + 1).padStart(5, "0")}`;
 }
 
 export default function Nutzerverwaltung() {
@@ -195,7 +195,7 @@ export default function Nutzerverwaltung() {
           nachname: p.name?.split(" ").slice(1).join(" ") || "",
           email: p.email || "",
           privateEmail: "",
-          moreId: p.more_id || "",
+          osImmoId: p.os_immo_id || "",
           rolle: rollenLabel(primaryRoleId, rollenVariante),
           rolleId: primaryRoleId,
           rollenVariante,
@@ -293,7 +293,7 @@ export default function Nutzerverwaltung() {
     try {
       const name = `${formVorname} ${formNachname}`;
       const role = formRollen[0]; // Primary role
-      const moreId = generateMoreId(nutzerList);
+      const osImmoId = generateOsImmoId(nutzerList);
 
       const { data, error } = await supabase.functions.invoke("invite-user", {
         body: {
@@ -301,7 +301,7 @@ export default function Nutzerverwaltung() {
           name,
           role,
           roles: formRollen,
-          moreId,
+          osImmoId,
           vorname: formVorname,
           nachname: formNachname,
           telefon: formTelefon || undefined,
@@ -427,7 +427,7 @@ export default function Nutzerverwaltung() {
           email: nutzer.email,
           name: `${nutzer.vorname} ${nutzer.nachname}`,
           role: nutzer.rollen[0] || "kunde",
-          moreId: nutzer.moreId,
+          osImmoId: nutzer.osImmoId,
           resend: true,
         },
       });
@@ -930,7 +930,7 @@ export default function Nutzerverwaltung() {
                           <div>
                             <p className="font-medium text-sm">{n.vorname} {n.nachname}</p>
                             <p className="text-xs text-muted-foreground">{n.email}</p>
-                            {n.moreId && <p className="text-xs text-muted-foreground">{n.moreId}</p>}
+                            {n.osImmoId && <p className="text-xs text-muted-foreground">{n.osImmoId}</p>}
                           </div>
                         </div>
                       </TableCell>

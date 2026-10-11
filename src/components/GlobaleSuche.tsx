@@ -40,7 +40,7 @@ import { handbuchPartnerFreigeschaltet } from "@/lib/handbuch/zugang";
 import { useVideocallFreigabe } from "@/hooks/useVideocallFreigabe";
 import { useLiveVersion } from "@/hooks/useLiveData";
 
-const ZULETZT_KEY = "mi_suche_zuletzt";
+const ZULETZT_KEY = "osimmo_suche_zuletzt";
 const MAX_JE_GRUPPE = 6;
 const MAX_ZULETZT = 5;
 
@@ -256,7 +256,7 @@ export function SuchFeld() {
           trefferWert(s, name),
           trefferWert(s, k.email || "") * 0.9,
           trefferWert(s, (k.telefon || "").replace(/\s/g, "")) * 0.9,
-          k.moreId ? trefferWert(s, `MI-${String(k.moreId).padStart(5, "0")}`) : 0,
+          k.osImmoId ? trefferWert(s, `OSI-${String(k.osImmoId).padStart(5, "0")}`) : 0,
         );
         return { k, name, wert };
       })

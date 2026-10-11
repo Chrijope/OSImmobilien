@@ -4,7 +4,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import AlleKontakte from "./AlleKontakte";
 
 vi.mock("@/contexts/UserContext", () => ({
-  useUser: () => ({ user: { role: "admin", name: "Test Leitung", moreId: "test" }, authUser: { id: "u-test" } }),
+  useUser: () => ({ user: { role: "admin", name: "Test Leitung", osImmoId: "test" }, authUser: { id: "u-test" } }),
 }));
 vi.mock("@/components/DashboardLayout", () => ({ DashboardLayout: ({ children }: { children: React.ReactNode }) => <main>{children}</main> }));
 vi.mock("@/hooks/useCacheReady", () => ({ useCacheReady: () => true }));

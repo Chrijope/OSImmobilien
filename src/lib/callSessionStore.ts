@@ -1,7 +1,7 @@
 // Anruf-Session (Bulk-Call-Queue) — Phase 4.
 // State lebt ausschließlich im sessionStorage (nicht geräteübergreifend nötig).
 
-const KEY = "mi_call_session_v1";
+const KEY = "osimmo_call_session_v1";
 
 export interface CallSession {
   ids: string[];

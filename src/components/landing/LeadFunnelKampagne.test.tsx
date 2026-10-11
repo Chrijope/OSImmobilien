@@ -18,7 +18,7 @@ let gesendet: Record<string, any> | null = null;
 
 function entwurfAufLetztemSchritt() {
   window.localStorage.setItem(
-    "mi_lead_funnel_entwurf",
+    "osimmo_lead_funnel_entwurf",
     JSON.stringify({
       gespeichertAm: Date.now(),
       step: 7,

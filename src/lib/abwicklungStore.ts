@@ -88,7 +88,7 @@ export function getAbwicklungDaten(investmentId: string): AbwicklungDaten {
   if (!investmentId) return {};
   if (isTestAccount()) {
     try {
-      const raw = localStorage.getItem(`mi_abwicklung_${investmentId}`);
+      const raw = localStorage.getItem(`osimmo_abwicklung_${investmentId}`);
       return raw ? JSON.parse(raw) : {};
     } catch {
       return {};
@@ -182,7 +182,7 @@ function senden(investmentId: string): Promise<boolean> {
 export function saveAbwicklungDaten(investmentId: string, daten: AbwicklungDaten) {
   if (!investmentId) return;
   if (isTestAccount()) {
-    localStorage.setItem(`mi_abwicklung_${investmentId}`, JSON.stringify(daten));
+    localStorage.setItem(`osimmo_abwicklung_${investmentId}`, JSON.stringify(daten));
     return;
   }
   for (const [schluessel, wert] of Object.entries(abwicklungFelder(daten))) {

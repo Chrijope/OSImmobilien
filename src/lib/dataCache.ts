@@ -1312,7 +1312,7 @@ export function hatLadefehler(table: string): boolean {
 export function cacheGet<T = any>(table: string): T[] {
   if (isTestAccount()) {
     try {
-      const raw = localStorage.getItem(`mi_cache_${table}`);
+      const raw = localStorage.getItem(`osimmo_cache_${table}`);
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }
   }
@@ -1334,7 +1334,7 @@ export async function cacheInsert<T extends Record<string, any>>(table: string, 
   if (isTestAccount()) {
     const rows = cacheGet(table);
     rows.push(row);
-    localStorage.setItem(`mi_cache_${table}`, JSON.stringify(rows));
+    localStorage.setItem(`osimmo_cache_${table}`, JSON.stringify(rows));
     notifyListeners(table, "INSERT", row);
     return row;
   }
@@ -1390,7 +1390,7 @@ export async function cacheUpdate(table: string, id: string, updates: Record<str
     const idx = rows.findIndex((r: any) => r.id === id);
     if (idx >= 0) {
       rows[idx] = { ...rows[idx], ...updates };
-      localStorage.setItem(`mi_cache_${table}`, JSON.stringify(rows));
+      localStorage.setItem(`osimmo_cache_${table}`, JSON.stringify(rows));
       notifyListeners(table, "UPDATE", rows[idx]);
     }
     return idx >= 0;
@@ -1667,7 +1667,7 @@ export async function cacheZeileSchreiben(
 export async function cacheDelete(table: string, id: string, opts?: { silent?: boolean }): Promise<boolean> {
   if (isTestAccount()) {
     const rows = cacheGet(table).filter((r: any) => r.id !== id);
-    localStorage.setItem(`mi_cache_${table}`, JSON.stringify(rows));
+    localStorage.setItem(`osimmo_cache_${table}`, JSON.stringify(rows));
     notifyListeners(table, "DELETE", { id });
     return true;
   }
@@ -1729,7 +1729,7 @@ export async function cacheUpsert<T extends Record<string, any>>(table: string, 
     } else {
       rows.push(row);
     }
-    localStorage.setItem(`mi_cache_${table}`, JSON.stringify(rows));
+    localStorage.setItem(`osimmo_cache_${table}`, JSON.stringify(rows));
     notifyListeners(table, idx >= 0 ? "UPDATE" : "INSERT", row);
     return row;
   }
@@ -1851,7 +1851,7 @@ export async function cacheLadeZeilenFuer(table: string, spalte: string, wert: s
 /** Replace entire cache for a table (used for bulk operations) */
 export function cacheSet(table: string, rows: any[]): void {
   if (isTestAccount()) {
-    localStorage.setItem(`mi_cache_${table}`, JSON.stringify(rows));
+    localStorage.setItem(`osimmo_cache_${table}`, JSON.stringify(rows));
     return;
   }
   _cache[table] = rows;

@@ -142,12 +142,12 @@ describe("Vorfuehrmodus, eingeschaltet", () => {
 
   it("ueberlebt ein Neuladen, der Zustand liegt im Speicher", () => {
     setzeVorfuehrmodus(true);
-    expect(window.localStorage.getItem("mi_vorfuehrmodus")).toBe("1");
+    expect(window.localStorage.getItem("osimmo_vorfuehrmodus")).toBe("1");
     // So sieht es aus, wenn die Seite neu geladen wird: Der Zustand kommt
     // allein aus dem Speicher zurueck.
     expect(vorfuehrmodusNeuLesen()).toBe(true);
     setzeVorfuehrmodus(false);
-    expect(window.localStorage.getItem("mi_vorfuehrmodus")).toBeNull();
+    expect(window.localStorage.getItem("osimmo_vorfuehrmodus")).toBeNull();
     expect(vorfuehrmodusNeuLesen()).toBe(false);
   });
 });

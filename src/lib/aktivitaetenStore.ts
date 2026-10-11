@@ -69,7 +69,7 @@ export interface AktivitaetEntry {
   angepinntVon?: string;
 }
 
-const LS_KEY = "mi_aktivitaeten";
+const LS_KEY = "osimmo_aktivitaeten";
 
 function toDbRow(a: AktivitaetEntry): Record<string, any> {
   return {
@@ -388,7 +388,7 @@ export interface InboxTask {
   faellig_am: string; uhrzeit: string; kundeId: string; kundeName: string;
 }
 
-const INBOX_KEY = "mi_inbox_tasks";
+const INBOX_KEY = "osimmo_inbox_tasks";
 
 export function getInboxTasks(): InboxTask[] {
   if (isTestAccount()) { try { const raw = localStorage.getItem(INBOX_KEY); return raw ? JSON.parse(raw) : []; } catch { return []; } }

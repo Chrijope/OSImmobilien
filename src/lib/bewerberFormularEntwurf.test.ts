@@ -65,11 +65,11 @@ describe("Zwischenstand des Bewerber-Fragebogens", () => {
   });
 
   it("verwirft kaputte oder fremde Inhalte im Speicher", () => {
-    window.localStorage.setItem(`mi_bewerber_fragebogen_${TOKEN}`, "kein json");
+    window.localStorage.setItem(`osimmo_bewerber_fragebogen_${TOKEN}`, "kein json");
     expect(ladeFragebogenEntwurf(TOKEN)).toBeNull();
 
     window.localStorage.setItem(
-      `mi_bewerber_fragebogen_${TOKEN}`,
+      `osimmo_bewerber_fragebogen_${TOKEN}`,
       JSON.stringify({ gespeichertAm: Date.now(), antworten: { region: 42 } }),
     );
     expect(ladeFragebogenEntwurf(TOKEN)).toBeNull();

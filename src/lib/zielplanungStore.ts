@@ -37,7 +37,7 @@ export interface ZielplanungConfig {
 }
 
 const SETTINGS_KEY = "zielplanung";
-const LS_KEY = "mi_zielplanung";
+const LS_KEY = "osimmo_zielplanung";
 
 /**
  * Fester Durchschnittskaufpreis für die gesamte Zielplanung.

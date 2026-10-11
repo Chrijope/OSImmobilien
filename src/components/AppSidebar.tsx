@@ -589,7 +589,7 @@ export function AppSidebar() {
        * eine Meldung wird, entscheidet allein der Mindestabstand.
        *
        * Der stand bis zum 18.09.2026 als Tagesmerker im Browserspeicher
-       * (`mi_inbox_overdue_notified_<nutzer>_<datum>`) und galt damit je
+       * (`osimmo_inbox_overdue_notified_<nutzer>_<datum>`) und galt damit je
        * Fenster und je Adresse, nicht je Nutzer: In der Lovable-Vorschau, am
        * zweiten Gerät oder in einem privaten Fenster fing er wieder bei null
        * an, und die Meldung kam mehrmals innerhalb einer Viertelstunde.

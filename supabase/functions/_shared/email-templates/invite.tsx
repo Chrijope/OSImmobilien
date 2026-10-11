@@ -64,7 +64,7 @@ export const InviteEmail = ({
     >
       <Absatz>
         {t.vor}{' '}
-        <Link href={siteUrl} className="mi-link" style={{ color: T.blauLink, textDecoration: 'none' }}>
+        <Link href={siteUrl} className="osimmo-link" style={{ color: T.blauLink, textDecoration: 'none' }}>
           <strong>{siteName}</strong>
         </Link>
         {/* Im Deutschen steht ein Leerzeichen vor „beizutreten“, im Englischen folgt der Punkt direkt. */}

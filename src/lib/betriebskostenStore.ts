@@ -18,7 +18,7 @@ export interface Betriebskostenabrechnung {
 
 export interface BKAErgebnis { mieterId: string; mieterName: string; wohneinheitName: string; kostenGesamt: number; vorauszahlungen: number; nachzahlung: number; details: { kategorie: string; bezeichnung: string; gesamtBetrag: number; anteil: number; schluessel: string }[]; }
 
-const LS_KEY = "mi_bka";
+const LS_KEY = "osimmo_bka";
 
 export const KOSTENART_KATEGORIEN: { value: KostenartKategorie; label: string; umlagefaehig: boolean }[] = [
   { value: "heizung", label: "Heizkosten", umlagefaehig: true }, { value: "wasser", label: "Wasserversorgung", umlagefaehig: true },

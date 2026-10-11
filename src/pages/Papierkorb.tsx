@@ -380,8 +380,8 @@ export default function Papierkorb() {
                       <tr key={k.id} className="border-b last:border-0 hover:bg-muted/30">
                         <td className="px-2 py-2 font-medium">
                           {k.vorname} {k.nachname}
-                          {k.moreId && (
-                            <span className="text-xs text-muted-foreground ml-2">#{k.moreId}</span>
+                          {k.osImmoId && (
+                            <span className="text-xs text-muted-foreground ml-2">#{k.osImmoId}</span>
                           )}
                         </td>
                         <td className="px-2 py-2 text-xs text-muted-foreground">

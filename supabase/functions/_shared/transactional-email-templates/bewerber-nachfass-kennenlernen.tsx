@@ -100,9 +100,9 @@ const Mail = ({
       <Absatz letzter>
         {/* `T` ist die Farbtafel des Layouts, kein Bauteil. Fettdruck deshalb
             von Hand, mit der Textfarbe aus derselben Tafel. Die Klasse
-            `mi-text` muss dazu: Der Dunkelmodus laeuft ueber Klassen, ein
+            `osimmo-text` muss dazu: Der Dunkelmodus laeuft ueber Klassen, ein
             Inline-Stil allein bliebe dort schwarz auf schwarzem Grund. */}
-        <span className="mi-text" style={{ fontWeight: 600, color: T.text }}>
+        <span className="osimmo-text" style={{ fontWeight: 600, color: T.text }}>
           {KL_NACHFASS_ABSAGE_TITEL}
         </span>{' '}
         {KL_NACHFASS_ABSAGE}

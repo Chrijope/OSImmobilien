@@ -16,8 +16,8 @@ export interface Schadenmeldung {
   status: "gemeldet" | "in_bearbeitung" | "reguliert" | "abgelehnt"; erstelltAm: string;
 }
 
-const LS_VERS = "mi_versicherungen";
-const LS_SCHADEN = "mi_schadensmeldungen";
+const LS_VERS = "osimmo_versicherungen";
+const LS_SCHADEN = "osimmo_schadensmeldungen";
 
 function versToDb(v: Versicherung): Record<string, any> {
   return { id: v.id, name: v.versicherer, objekt: v.objektId, typ: v.typ, police_nr: v.policenNr, praemie: v.praemieJaehrlich, gueltig_ab: v.vertragBeginn, gueltig_bis: v.vertragEnde, anbieter: v.versicherer, notizen: v.notizen, erstellt_am: v.erstelltAm, meta: { objektName: v.objektName, kuendigungsfrist: v.kuendigungsfrist, deckungssumme: v.deckungssumme, selbstbeteiligung: v.selbstbeteiligung, ansprechpartner: v.ansprechpartner, telefon: v.telefon, email: v.email } };

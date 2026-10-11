@@ -37,10 +37,10 @@ export default function Bestandskunden() {
     return buildBucketEntries(scoped, "bestandskunden");
   }, [liveVersion, isTeamWide, user.name, authUser?.id]);
   const [search, setSearch] = useState("");
-  const [typFilter, setTypFilter] = usePersistedState<KontaktTyp | "-">("mi_filter_bestand_typ", "-");
-  const [beraterFilter, setBeraterFilter] = usePersistedState<string>("mi_filter_bestand_berater", "-");
-  const [sortField, setSortField] = usePersistedState<string>("mi_filter_bestand_sortField", "nachname");
-  const [sortDir, setSortDir] = usePersistedState<"asc" | "desc">("mi_filter_bestand_sortDir", "asc");
+  const [typFilter, setTypFilter] = usePersistedState<KontaktTyp | "-">("osimmo_filter_bestand_typ", "-");
+  const [beraterFilter, setBeraterFilter] = usePersistedState<string>("osimmo_filter_bestand_berater", "-");
+  const [sortField, setSortField] = usePersistedState<string>("osimmo_filter_bestand_sortField", "nachname");
+  const [sortDir, setSortDir] = usePersistedState<"asc" | "desc">("osimmo_filter_bestand_sortDir", "asc");
 
   const { columns, extraKeys, toggleExtra, optionalKeys, fixedKeys } = useColumnConfig("bestandskunden", FIXED_COLUMNS);
 

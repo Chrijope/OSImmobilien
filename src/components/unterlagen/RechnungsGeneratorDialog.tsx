@@ -25,10 +25,10 @@ const todayDE = () => {
 };
 
 // Personalisierte Rechnungsnummer pro Vertriebspartner:
-// Format: RE-{MOREID}-{YYYY}-{laufende Nummer 4-stellig}
-// Zähler wird pro VP (moreId) + Jahr in localStorage geführt -> keine Überschneidung zwischen VPs.
+// Format: RE-{OSIMMOID}-{YYYY}-{laufende Nummer 4-stellig}
+// Zähler wird pro VP (osImmoId) + Jahr in localStorage geführt -> keine Überschneidung zwischen VPs.
 const vpCounterKey = (vpId: string, year: number) =>
-  `mi_rechnung_counter_${vpId}_${year}`;
+  `osimmo_rechnung_counter_${vpId}_${year}`;
 
 const peekVpCounter = (vpId: string, year: number) => {
   try {
@@ -121,7 +121,7 @@ export function RechnungsGeneratorDialog({ open = true, onOpenChange, asPage = f
 
   // Persistente Stammdaten (pro Benutzer im localStorage)
   const storageKey = useMemo(
-    () => `mi_rechnung_stammdaten_${user?.name || "default"}`,
+    () => `osimmo_rechnung_stammdaten_${user?.name || "default"}`,
     [user?.name],
   );
   const loadSaved = (): Record<string, string> => {
@@ -148,7 +148,7 @@ export function RechnungsGeneratorDialog({ open = true, onOpenChange, asPage = f
 
   // VP-Identifier (stabil, eindeutig pro Vertriebspartner)
   const vpId = useMemo(() => {
-    const mi = (user?.moreId || "").trim();
+    const mi = (user?.osImmoId || "").trim();
     if (mi) return sanitizeVpId(mi);
     const initials = (user?.name || "")
       .split(/\s+/)
@@ -156,7 +156,7 @@ export function RechnungsGeneratorDialog({ open = true, onOpenChange, asPage = f
       .filter(Boolean)
       .join("");
     return sanitizeVpId(initials || "VP");
-  }, [user?.moreId, user?.name]);
+  }, [user?.osImmoId, user?.name]);
 
   // Rechnung — personalisiert pro VP, Zähler kollidiert nie zwischen Partnern
   const [rechnungsnummer, setRechnungsnummer] = useState(() => previewRechnungsnummer(vpId));

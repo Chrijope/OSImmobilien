@@ -41,12 +41,12 @@ export default function Neukunden() {
     return buildBucketEntries(scoped, "neukunden");
   }, [liveVersion, isTeamWide, user.name, authUser?.id]);
   const [search, setSearch] = useState("");
-  const [pipelineFilter, setPipelineFilter] = usePersistedState<string>("mi_filter_neukunden_pipeline", "-");
-  const [typFilter, setTypFilter] = usePersistedState<KontaktTyp | "-">("mi_filter_neukunden_typ", "-");
-  const [beraterFilter, setBeraterFilter] = usePersistedState<string>("mi_filter_neukunden_berater", "-");
-  const [showArchived, setShowArchived] = usePersistedState<boolean>("mi_filter_neukunden_archived", false);
-  const [sortField, setSortField] = usePersistedState<string>("mi_filter_neukunden_sortField", "nachname");
-  const [sortDir, setSortDir] = usePersistedState<"asc" | "desc">("mi_filter_neukunden_sortDir", "asc");
+  const [pipelineFilter, setPipelineFilter] = usePersistedState<string>("osimmo_filter_neukunden_pipeline", "-");
+  const [typFilter, setTypFilter] = usePersistedState<KontaktTyp | "-">("osimmo_filter_neukunden_typ", "-");
+  const [beraterFilter, setBeraterFilter] = usePersistedState<string>("osimmo_filter_neukunden_berater", "-");
+  const [showArchived, setShowArchived] = usePersistedState<boolean>("osimmo_filter_neukunden_archived", false);
+  const [sortField, setSortField] = usePersistedState<string>("osimmo_filter_neukunden_sortField", "nachname");
+  const [sortDir, setSortDir] = usePersistedState<"asc" | "desc">("osimmo_filter_neukunden_sortDir", "asc");
 
   const { columns, extraKeys, toggleExtra, optionalKeys, fixedKeys } = useColumnConfig("neukunden", FIXED_COLUMNS);
 

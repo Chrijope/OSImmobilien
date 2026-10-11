@@ -1,4 +1,4 @@
-const CURRENT_USER_ID_KEY = "mi_current_user_id";
+const CURRENT_USER_ID_KEY = "osimmo_current_user_id";
 
 export function getCurrentUserId(): string | null {
   try {

@@ -12,7 +12,7 @@ export interface VermietungPipeline {
   kaltmiete: number; erstelltAm: string; aktualisiertAm: string;
 }
 
-const LS_KEY = "mi_vermietung";
+const LS_KEY = "osimmo_vermietung";
 
 export const VERMIETUNG_STUFEN: { value: VermietungStufe; label: string; color: string }[] = [
   { value: "leerstehend", label: "Leerstehend", color: "hsl(0, 70%, 55%)" }, { value: "inseriert", label: "Inseriert", color: "hsl(30, 80%, 50%)" },

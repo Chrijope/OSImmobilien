@@ -4,7 +4,7 @@
  *
  * Warum fest im Code und nicht aus der Stellenverwaltung
  * (`getStellen()` in `bewerbungStore.ts`): Diese Verwaltung speichert nur im
- * Browser dessen, der sie pflegt (`localStorage`, Schlüssel `mi_stellen`). Ein
+ * Browser dessen, der sie pflegt (`localStorage`, Schlüssel `osimmo_stellen`). Ein
  * Bewerber sieht davon nichts, er bekäme immer die Voreinstellung aus dem
  * Code. Eine Anzeige, die HR dort ändert, käme also nie bei einem Besucher an.
  * Solange die Stellen keine eigene Tabelle haben, ist diese Datei die einzige

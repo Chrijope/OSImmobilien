@@ -146,7 +146,7 @@ const formatBicInput = (raw: string): string => raw.toUpperCase().replace(/[^A-Z
 const REQUIRED_FIELDS: (keyof KaufvertragData)[] = NOTARBOGEN_PFLICHT_NAMEN;
 
 function getDraftKey(investmentId?: string, kundeId?: string) {
-  return `mi_kaufvertrag_draft_${kundeId || "x"}_${investmentId || "x"}`;
+  return `osimmo_kaufvertrag_draft_${kundeId || "x"}_${investmentId || "x"}`;
 }
 
 /* ── Vollmacht inline PDF/Image preview ── */

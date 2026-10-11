@@ -10,7 +10,7 @@ import { useUser } from "@/contexts/UserContext";
 function getActiveChallenges() {
   try {
     if (isTestAccount()) {
-      const raw = localGet<any[]>("mi_wettbewerb_challenges", []);
+      const raw = localGet<any[]>("osimmo_wettbewerb_challenges", []);
       return raw.filter((c: any) => c.aktiv);
     }
     return cacheGet("wettbewerb_challenges").filter((c: any) => c.aktiv);

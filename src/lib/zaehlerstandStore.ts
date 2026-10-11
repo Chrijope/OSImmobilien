@@ -8,7 +8,7 @@ export interface Zaehlerstand {
   anlass: "regulaer" | "einzug" | "auszug" | "zwischenablesung"; notiz: string;
 }
 
-const LS_KEY = "mi_zaehlerstaende";
+const LS_KEY = "osimmo_zaehlerstaende";
 
 export const ZAEHLER_TYPEN: { value: Zaehlerstand["typ"]; label: string; einheit: string }[] = [
   { value: "strom", label: "Strom", einheit: "kWh" }, { value: "wasser_kalt", label: "Wasser (kalt)", einheit: "m³" },

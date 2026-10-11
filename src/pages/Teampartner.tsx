@@ -1090,12 +1090,12 @@ export default function Teampartner() {
             .eq("geloescht", false);
 
           (kontakte || []).forEach((k: any) => {
-            const moreId = k.meta?.moreId || k.meta?.kundenNr || "";
+            const osImmoId = k.meta?.osImmoId || k.meta?.kundenNr || "";
             mapped.push({
               id: `prog-${k.id}`,
               vorname: k.vorname || "",
               nachname: k.nachname || "",
-              imonduId: moreId ? String(moreId) : "",
+              imonduId: osImmoId ? String(osImmoId) : "",
               rolle: "Tippgeber",
               rolleColor: "bg-gray-400 text-white",
               email: k.email || "",
@@ -1106,7 +1106,7 @@ export default function Teampartner() {
               zugeordnetId: k.zustaendig_id || "",
               provisionstyp: "euro",
               provisionswert: "",
-              notizen: `Kunde mit aktivem Empfehlungsprogramm · Kunden-ID ${moreId || k.id.slice(0, 8)}`,
+              notizen: `Kunde mit aktivem Empfehlungsprogramm · Kunden-ID ${osImmoId || k.id.slice(0, 8)}`,
             });
           });
         }
@@ -1197,7 +1197,7 @@ export default function Teampartner() {
             id: p.id,
             vorname,
             nachname,
-            imonduId: p.more_id || "",
+            imonduId: p.os_immo_id || "",
             rolle: rollenLabel(primaryRole, rollenVariante),
             rolleId: primaryRole,
             rollenVariante,

@@ -14,7 +14,7 @@
  *   3. Anmeldeadresse, nur als letzte Rettung
  */
 
-const CACHE_SCHLUESSEL = "mi_profile_email";
+const CACHE_SCHLUESSEL = "osimmo_profile_email";
 
 export interface AdressKandidaten {
   /** profiles.email, also die Adresse aus den Einstellungen. */

@@ -80,7 +80,7 @@ export default function MeineLeads() {
   const loadLeads = () => {
     const all = getKontakte();
     let myUserId: string | null = null;
-    try { myUserId = localStorage.getItem("mi_current_user_id"); } catch { /* ignore */ }
+    try { myUserId = localStorage.getItem("osimmo_current_user_id"); } catch { /* ignore */ }
     const norm = (s?: string) => (s || "").trim().toLowerCase().replace(/\s+/g, " ");
     const myNameNorm = norm(_user.name);
     const setterLeads = all.filter(k => {

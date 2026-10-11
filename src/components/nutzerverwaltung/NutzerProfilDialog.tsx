@@ -314,7 +314,7 @@ export default function NutzerProfilDialog({ nutzer, open, onOpenChange, onSaved
           <div className="flex-1">
             <h3 className="font-semibold text-lg">{nutzer.vorname} {nutzer.nachname}</h3>
             <p className="text-sm text-muted-foreground">{nutzer.email}</p>
-            {nutzer.moreId && <p className="text-xs text-muted-foreground">{nutzer.moreId}</p>}
+            {nutzer.osImmoId && <p className="text-xs text-muted-foreground">{nutzer.osImmoId}</p>}
           </div>
           <div className="flex flex-col items-end gap-1.5">
             <Badge variant="secondary">{nutzer.rolle}</Badge>

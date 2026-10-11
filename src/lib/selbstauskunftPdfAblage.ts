@@ -49,7 +49,7 @@ export interface SaPdfAblageErgebnis {
 /** Baut das PDF in der gewohnten Gestaltung und gibt es als Base64 zurück. */
 async function baueSaPdfBase64(
   saData: unknown,
-  kunde: { vorname: string; nachname: string; moreId: string },
+  kunde: { vorname: string; nachname: string; osImmoId: string },
   unterschriften: UnterschriftenRoh | null | undefined,
   sprache: Sprache,
 ): Promise<string> {
@@ -105,7 +105,7 @@ export async function legeSaPdfNachSignaturAb(args: {
     const d = (args.saData || {}) as { vorname?: string; nachname?: string };
     const pdfBase64 = await baueSaPdfBase64(
       args.saData,
-      { vorname: d.vorname || "", nachname: d.nachname || "", moreId: "" },
+      { vorname: d.vorname || "", nachname: d.nachname || "", osImmoId: "" },
       args.unterschriften,
       args.sprache,
     );
@@ -165,7 +165,7 @@ export async function holeSaPdfNach(args: {
   kontaktId: string;
   meta: SaPdfMeta & { saData?: unknown; saSignatures?: UnterschriftenRoh };
   saData: unknown;
-  kunde: { vorname: string; nachname: string; moreId: string };
+  kunde: { vorname: string; nachname: string; osImmoId: string };
   sprache: Sprache;
 }): Promise<SaPdfAblageErgebnis> {
   if (!saPdfFehlt(args.meta)) return { abgelegt: false, grund: "Nichts nachzuholen" };

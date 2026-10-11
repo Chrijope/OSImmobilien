@@ -30,7 +30,7 @@ import {
  * geprüft. Diese Datei entscheidet nichts über Zeiten, sie zeigt nur an.
  */
 
-const DISMISS_KEY = "mi_dismissed_weekly_call_vorbereitung";
+const DISMISS_KEY = "osimmo_dismissed_weekly_call_vorbereitung";
 
 
 function ladeWeggeklickt(): string | null {

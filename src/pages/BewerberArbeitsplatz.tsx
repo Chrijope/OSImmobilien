@@ -814,7 +814,7 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
      * Schlaegt es fehl, sagt das ein Hinweis im Projektstil.
      */
     const notizSpeichern = async (text: string) => {
-      const eintrag = await addNotizEntry(b.id, text, user.name || "Unbekannt", user.moreId);
+      const eintrag = await addNotizEntry(b.id, text, user.name || "Unbekannt", user.osImmoId);
       refresh();
       if (!eintrag) {
         toast({
@@ -977,7 +977,7 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                     canEdit={canManage(user.role)}
                     beraterName={user.name}
                     beraterEmail={user.email || ""}
-                    autorId={user.moreId}
+                    autorId={user.osImmoId}
                     gebuchterTermin={gebuchtesGespraech}
                     abgesagterTermin={
                       bewerberBuchungen[b.id]?.status === "abgesagt" ? bewerberBuchungen[b.id] : null

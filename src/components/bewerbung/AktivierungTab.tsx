@@ -216,7 +216,7 @@ export function AktivierungTab({ bewerber: b, canEdit, currentUserName, currentU
           // und loeste frueher auf den falschen Satz auf.
           karriereStufe: needsKarriere && !istTippgeberPaket ? fKarriere : undefined,
           teamleaderId: fTeamleader !== "__none__" ? fTeamleader : undefined,
-          moreId: undefined,
+          osImmoId: undefined,
           tippgeberId: tippgeberRowId || undefined,
           // Vertragspaket Lead-Berater: automatisch die Anzeige-Variante
           // mitgeben. Rolle und Rechte bleiben vertriebspartner, nur der

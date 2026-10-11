@@ -7,7 +7,7 @@ import { getUserSetting, setUserSetting } from "./userSettingsCache";
  * localStorage (Test-Account) oder in user_settings.
  */
 
-const LS_PREFIX = "mi_seen_";
+const LS_PREFIX = "osimmo_seen_";
 const DEFAULT_TTL_DAYS = 14;
 
 function lsKey(key: string) { return LS_PREFIX + key; }
@@ -95,7 +95,7 @@ export function isNewBadgeActive(key: string, ttlDays: number = DEFAULT_TTL_DAYS
  *    – sein `erstellt_am` jünger als der Cutoff ist UND
  *    – seine ID noch nicht in der Gesehen-Liste steht.
  * ────────────────────────────────────────────────────────────────── */
-const ITEM_LS_PREFIX = "mi_seen_items_";
+const ITEM_LS_PREFIX = "osimmo_seen_items_";
 const MAX_ITEM_IDS = 5000;
 
 function itemLsKey(key: string) { return ITEM_LS_PREFIX + key; }

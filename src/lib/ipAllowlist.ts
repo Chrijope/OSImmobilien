@@ -7,7 +7,7 @@ export type IpAllowlistConfig = {
 };
 
 const KEY = "security_ip_allowlist";
-const CACHE_KEY = "mi_client_ip";
+const CACHE_KEY = "osimmo_client_ip";
 const CACHE_TTL = 5 * 60 * 1000;
 
 export async function loadIpAllowlist(): Promise<IpAllowlistConfig> {

@@ -18,26 +18,26 @@ describe("Banner einmal am Tag wegklicken", () => {
   beforeEach(() => speicher.clear());
 
   it("ist vor dem ersten Klick sichtbar", () => {
-    expect(heuteWeggeklickt("MI-001")).toBe(false);
+    expect(heuteWeggeklickt("OSI-001")).toBe(false);
   });
 
   it("bleibt nach dem Wegklicken heute verborgen", () => {
-    heuteWegklicken("MI-001");
-    expect(heuteWeggeklickt("MI-001")).toBe(true);
+    heuteWegklicken("OSI-001");
+    expect(heuteWeggeklickt("OSI-001")).toBe(true);
   });
 
   it("erscheint am naechsten Tag wieder", () => {
     // Ein Hinweis, den man einmal wegklickt und der nie wiederkommt,
     // erinnert an nichts.
-    speicher.set("unterlagen-banner-weg:MI-001", "2020-01-01");
-    expect(heuteWeggeklickt("MI-001")).toBe(false);
+    speicher.set("unterlagen-banner-weg:OSI-001", "2020-01-01");
+    expect(heuteWeggeklickt("OSI-001")).toBe(false);
   });
 
   it("haelt zwei Nutzer auseinander", () => {
     // Auf einem geteilten Rechner darf der naechste Anmelder nicht den
     // weggeklickten Banner des vorigen erben.
-    heuteWegklicken("MI-001");
-    expect(heuteWeggeklickt("MI-002")).toBe(false);
-    expect(heuteWeggeklickt("MI-001")).toBe(true);
+    heuteWegklicken("OSI-001");
+    expect(heuteWeggeklickt("OSI-002")).toBe(false);
+    expect(heuteWeggeklickt("OSI-001")).toBe(true);
   });
 });

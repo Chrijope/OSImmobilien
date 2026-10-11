@@ -68,7 +68,7 @@ export const SignupEmail = ({
     >
       <Absatz>
         {t.dankVor}{' '}
-        <Link href={siteUrl} className="mi-link" style={{ color: T.blauLink, textDecoration: 'none' }}>
+        <Link href={siteUrl} className="osimmo-link" style={{ color: T.blauLink, textDecoration: 'none' }}>
           {siteName}
         </Link>
         .

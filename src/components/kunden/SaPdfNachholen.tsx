@@ -25,7 +25,7 @@ const VERSUCHT = new Set<string>();
 export function SaPdfNachholen({ investmentId, kontaktId, kunde }: {
   investmentId: string;
   kontaktId: string;
-  kunde: { vorname: string; nachname: string; moreId: string };
+  kunde: { vorname: string; nachname: string; osImmoId: string };
 }) {
   const saSignedAt = getInvestmentMetaField<string | null>(investmentId, "saSignedAt", null);
   const saPdfPath = getInvestmentMetaField<string>(investmentId, "saPdfPath", "");

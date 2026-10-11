@@ -36,7 +36,7 @@ vi.mock("@/lib/dataCache", () => ({
 }));
 let rolle = "hr";
 vi.mock("@/contexts/UserContext", () => ({
-  useUser: () => ({ user: { name: "Sarah", role: rolle, moreId: "u-sarah" }, authUser: null }),
+  useUser: () => ({ user: { name: "Sarah", role: rolle, osImmoId: "u-sarah" }, authUser: null }),
 }));
 let einstellungen: Record<string, unknown> = {};
 vi.mock("@/lib/userSettingsCache", () => ({
