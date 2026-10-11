@@ -230,6 +230,8 @@
   border: 1px solid var(--line);
   border-radius: 12px;
   overflow: hidden;
+  /* clip statt hidden, seit dem 11.10.2026: schneidet die runden Ecken genauso, ist aber kein Scrollkasten, sonst bliebe die Eingabemaske nicht stehen. */
+  overflow: clip;
 }
 .investmentrechner .brand-lockup,
 .investmentrechner .view-toggle,
@@ -2899,8 +2901,11 @@
     border-right: 0;
     border-bottom: 1px solid var(--line);
   }
+  /* Seit dem 11.10.2026 eine Zeile für beliebig viele Reiter: Mit „Bankunterlagen“ sind es acht, „Bilder“ rutschte sonst in eine zweite Zeile. */
   .investmentrechner .section-nav {
-    grid-template-columns: repeat(7, minmax(145px, 1fr));
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(145px, 1fr);
     overflow-x: auto;
     overscroll-behavior-x: contain;
   }
@@ -4707,4 +4712,34 @@
 .investmentrechner .sa-status-neu {
   border-color: var(--warn-linie);
   background: var(--warn-flaeche);
+}
+
+/*
+ * Eingabemaske fixiert, seit dem 11.10.2026 (Wunsch Christian): Auf dem
+ * Desktop bleibt die linke Spalte beim Scrollen stehen und scrollt in sich,
+ * nur die rechte Seite (Analyse, Berechnung) läuft mit der Seite. Bezug ist
+ * der nächste scrollende Kasten, im CRM `main`, in der Vorschau das Fenster.
+ * Die Höhe lässt Platz für App-Kopf und Seitenrand, damit das Ende der Maske
+ * erreichbar bleibt. Tooltips hängen am body und werden nicht abgeschnitten.
+ * Unter 881 Bildpunkten (Spalten untereinander) und im Druck gilt das nicht.
+ */
+@media screen and (min-width: 881px) {
+  .investmentrechner .workspace {
+    align-items: start;
+  }
+  .investmentrechner .input-panel {
+    position: sticky;
+    top: 0;
+    max-height: calc(100dvh - 7rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--linie-stark) transparent;
+    /* Die Trennlinie trägt jetzt die rechte Spalte, die linke ist nicht mehr so hoch wie sie. */
+    border-right: 0;
+  }
+  .investmentrechner .result-panel {
+    border-left: 1px solid var(--line);
+    min-height: calc(100dvh - 7rem);
+  }
 }
