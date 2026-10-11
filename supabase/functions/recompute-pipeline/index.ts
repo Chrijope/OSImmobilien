@@ -127,9 +127,9 @@ type KontaktRow = {
 /**
  * Effektive Pipelinestufe, vereinfachte Spiegelung von
  * getEffectivePipelineStufe (kontaktPipeline.ts): archiviert/verloren
- * gewinnen, danach die höchste Investment-Stufe ab "selbstauskunft"
- * (aktive Investments bevorzugt), dann die Kontakt-Stufe, dann der
- * Status-Fallback.
+ * gewinnen, danach die höchste Investment-Stufe (aktive Investments
+ * bevorzugt; seit 11.10.2026 jede Stufe, nicht erst ab "selbstauskunft"),
+ * dann die Kontakt-Stufe, dann der Status-Fallback.
  */
 function effektiveStufe(kontakt: KontaktRow, investmentStufen: string[]): string {
   if (kontakt.archiviert) return "archiviert";
@@ -139,14 +139,13 @@ function effektiveStufe(kontakt: KontaktRow, investmentStufen: string[]): string
     .map((s) => normalizeStufe(s))
     .filter((s): s is string => !!s);
   const aktive = normalisiert.filter(
-    (s) => s !== "abgeschlossen" && s !== "archiviert" && s !== "verloren",
+    (s) => s !== "abgeschlossen" && s !== "archiviert" && s !== "verloren" && s !== "bestandsimport",
   );
   const pool = aktive.length > 0 ? aktive : normalisiert;
-  const minIdx = PIPELINE_ORDER.indexOf("selbstauskunft");
   let best = -1;
   for (const s of pool) {
     const idx = PIPELINE_ORDER.indexOf(s);
-    if (idx >= minIdx && idx > best) best = idx;
+    if (idx > best) best = idx;
   }
   if (best >= 0) return PIPELINE_ORDER[best];
 

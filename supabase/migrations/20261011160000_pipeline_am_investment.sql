@@ -7,8 +7,9 @@
 --   1. sichert alle Investments, die sie aendert,
 --   2. legt Kontakten ohne Investment "Investment 1" an (auch Bestandskunden),
 --   3. traegt bei Kunden mit genau einem Investment in einer fruehen Stufe die
---      Kontaktstufe am Investment ein, also genau das, was die Pipeline heute
---      zeigt,
+--      bisher angezeigte Stufe des Kontakts am Investment ein (Kontaktstufe,
+--      sonst Rueckfall ueber den Status), also genau das, was die Pipeline
+--      heute zeigt,
 --   4. fuehrt die Kontaktstufe kuenftig automatisch aus den Investments nach
 --      (hoechste Stufe der laufenden Investments). Sie bleibt nur noch fuer
 --      Altleser stehen und wird spaeter entfernt.
@@ -43,6 +44,32 @@ AS $$
   FROM (SELECT lower(btrim(COALESCE(_stufe, ''))) AS s) x;
 $$;
 
+-- ── Hilfsfunktion: die Stufe, die die Oberflaeche bisher fuer den Kontakt
+-- zeigte (getEffectivePipelineStufe ohne Investments, kontaktPipeline.ts):
+-- archiviert, verloren, dann die Kontaktstufe, dann der Rueckfall ueber den
+-- Status. Nur fuer diese Migration.
+CREATE OR REPLACE FUNCTION public.kontakt_anzeige_stufe_bisher(_meta jsonb, _status text, _archiviert boolean, _objekt text)
+RETURNS text
+LANGUAGE sql
+IMMUTABLE
+SET search_path = public
+AS $$
+  SELECT CASE
+    WHEN COALESCE(_archiviert, false) THEN 'archiviert'
+    WHEN _status IN ('verloren', 'inaktiv') THEN 'verloren'
+    WHEN public.pipeline_stufe_normalisieren(_meta->>'pipelineStufe') IS NOT NULL
+      THEN public.pipeline_stufe_normalisieren(_meta->>'pipelineStufe')
+    WHEN _status = 'kunde' AND NULLIF(_objekt, '') IS NOT NULL THEN 'abgeschlossen'
+    WHEN _status = 'kunde' THEN 'faelligkeit'
+    WHEN _status = 'qualifiziert' THEN 'bonitaetsunterlagen'
+    WHEN NULLIF(_meta->>'setterTerminDatum', '') IS NOT NULL
+      OR NULLIF(_meta->>'beratungsgespraechAm', '') IS NOT NULL THEN 'erstgespraech_geplant'
+    WHEN COALESCE(NULLIF(_meta->>'nichtErreichtCount', ''), '0') ~ '^[1-9][0-9]*$' THEN 'nicht_erreicht'
+    WHEN _status = 'kontaktiert' THEN 'erreicht'
+    ELSE 'neuer_lead'
+  END;
+$$;
+
 -- ── 1. Sicherung der Investments, die Schritt 3 aendert ─────────────────────
 CREATE TABLE IF NOT EXISTS public.investments_sicherung_20261011 AS
 SELECT i.*
@@ -50,36 +77,34 @@ FROM public.investments i
 JOIN public.kontakte k ON k.id = i.kunde_id
 WHERE (SELECT count(*) FROM public.investments j WHERE j.kunde_id = k.id) = 1
   AND public.buchung_pipeline_rang(public.pipeline_stufe_normalisieren(i.meta->>'pipelineStufe')) < public.buchung_pipeline_rang('selbstauskunft')
-  AND public.pipeline_stufe_normalisieren(k.meta->>'pipelineStufe') IS NOT NULL
-  AND public.pipeline_stufe_normalisieren(k.meta->>'pipelineStufe')
+  AND public.kontakt_anzeige_stufe_bisher(k.meta, k.status::text, k.archiviert, k.objekt)
       IS DISTINCT FROM public.pipeline_stufe_normalisieren(i.meta->>'pipelineStufe');
 ALTER TABLE public.investments_sicherung_20261011 ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON public.investments_sicherung_20261011 FROM anon, authenticated;
 
 -- ── 2. Kontakte ohne Investment bekommen Investment 1 ───────────────────────
--- In der Stufe des Kontakts, ohne erkennbare Stufe 'neuer_lead'. Markiert mit
+-- In der Stufe, die die Oberflaeche bisher fuer den Kontakt zeigte. Markiert mit
 -- 'nachgelegt_am', damit sie sich wiederfinden lassen.
 INSERT INTO public.investments (kunde_id, meta)
 SELECT k.id, jsonb_build_object(
   'nummer', 1, 'label', 'Investment 1',
-  'pipelineStufe', COALESCE(public.pipeline_stufe_normalisieren(k.meta->>'pipelineStufe'), 'neuer_lead'),
+  'pipelineStufe', public.kontakt_anzeige_stufe_bisher(k.meta, k.status::text, k.archiviert, k.objekt),
   'nachgelegt_am', '2026-10-11'
 )
 FROM public.kontakte k
 WHERE NOT EXISTS (SELECT 1 FROM public.investments i WHERE i.kunde_id = k.id);
 
--- ── 3. Genau ein Investment in fruehen Stufen: Kontaktstufe uebernehmen ─────
+-- ── 3. Genau ein Investment in fruehen Stufen: angezeigte Stufe uebernehmen ──
 -- Nur dort zeigte die Pipeline die Kontaktstufe statt der Investmentstufe
 -- (getHighestInvestmentStufe ignorierte alles vor der Selbstauskunft).
 -- Ab der Selbstauskunft und bei Endzustaenden des Investments blieb schon
 -- bisher die Investmentstufe sichtbar, dort aendert sich nichts.
 UPDATE public.investments i
 SET meta = jsonb_set(COALESCE(i.meta, '{}'::jsonb), '{pipelineStufe}',
-                     to_jsonb(public.pipeline_stufe_normalisieren(k.meta->>'pipelineStufe')), true)
+                     to_jsonb(public.kontakt_anzeige_stufe_bisher(k.meta, k.status::text, k.archiviert, k.objekt)), true)
 FROM public.kontakte k, public.investments_sicherung_20261011 s
 WHERE s.id = i.id
   AND k.id = i.kunde_id
-  AND public.pipeline_stufe_normalisieren(k.meta->>'pipelineStufe') IS NOT NULL
   AND public.buchung_pipeline_rang(public.pipeline_stufe_normalisieren(i.meta->>'pipelineStufe')) < public.buchung_pipeline_rang('selbstauskunft');
 
 -- ── 4. Kontaktstufe aus den Investments nachfuehren ─────────────────────────

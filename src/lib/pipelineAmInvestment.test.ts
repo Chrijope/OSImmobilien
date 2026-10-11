@@ -90,3 +90,38 @@ describe("updateKontakt", () => {
     expect(k.status).toBe("kontaktiert");
   });
 });
+
+describe("Anzeige: die Stufe kommt vom Investment", () => {
+  const kunde = (teil: Record<string, unknown> = {}) =>
+    ({ id: K, vorname: "A", nachname: "B", status: "neu", archiviert: false, pipelineStufe: "beratungsgespraech", ...teil }) as never;
+
+  it("ein Investment in einer fruehen Stufe schlaegt die Kontaktstufe", async () => {
+    const { getEffectivePipelineStufe } = await import("./kontaktPipeline");
+    lege("erreicht");
+    // Bis 11.10.2026 gewann hier die Kontaktstufe "beratungsgespraech".
+    expect(getEffectivePipelineStufe(kunde())).toBe("erreicht");
+  });
+
+  it("Liste je Kontakt nennt die Stufen aller laufenden Investments", async () => {
+    const { getInvestmentStufenFuerKunde, investmentStufenText } = await import("./kontaktPipeline");
+    lege("notar", "neuer_lead", "verloren");
+    expect(getInvestmentStufenFuerKunde(kunde()).map((e) => e.stufe)).toEqual(["notar", "neuer_lead"]);
+    expect(investmentStufenText(kunde())).toBe("Inv. 1: Notar · Inv. 2: Neuer Lead");
+  });
+
+  it("ein verlorener Kontakt bleibt als Ganzes verloren", async () => {
+    const { getInvestmentStufenFuerKunde } = await import("./kontaktPipeline");
+    lege("notar");
+    expect(getInvestmentStufenFuerKunde(kunde({ status: "verloren" }))).toEqual([{ stufe: "verloren" }]);
+  });
+
+  it("die Automatik prueft nur das eigene Investment", async () => {
+    const { calculateLogicalPipelineStufe } = await import("./kontaktPipeline");
+    lege("neuer_lead", "notar");
+    const invs = JSON.parse(localStorage.getItem("osimmo_investments") || "[]");
+    invs[1].notarTermin = "2099-01-01";
+    localStorage.setItem("osimmo_investments", JSON.stringify(invs));
+    expect(calculateLogicalPipelineStufe(kunde(), "inv-2")).toBe("notar");
+    expect(calculateLogicalPipelineStufe(kunde(), "inv-1")).toBeNull();
+  });
+});

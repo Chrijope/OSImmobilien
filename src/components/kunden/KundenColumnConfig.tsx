@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { getInvestmentsByKontakt } from "@/lib/investmentsStore";
 import { getUserSetting, setUserSetting } from "@/lib/userSettingsCache";
 import { isTestAccount } from "@/lib/dbStoreHelper";
-import { getEffectivePipelineStufe, PIPELINE_STUFEN } from "@/lib/kontaktPipeline";
+import { getEffectivePipelineStufe, investmentStufenText, PIPELINE_STUFEN } from "@/lib/kontaktPipeline";
 import { normalizeTelefon } from "@/lib/phoneUtils";
 import { loadAllUsers } from "@/lib/loadAllUsers";
 import {
@@ -179,9 +179,8 @@ export const ALL_COLUMNS: ColumnDef[] = [
   },
   {
     key: "pipelineStufe", label: "Pipeline-Status", render: (k) => {
-      const stufe = getEffectivePipelineStufe(k);
-      const label = PIPELINE_STUFEN.find(s => s.key === stufe)?.label || stufe;
-      return <Badge className="text-[10px] bg-primary/10 text-primary">{label}</Badge>;
+      // Stufen aller Investments, nicht nur die höchste (11.10.2026).
+      return <Badge className="text-[10px] bg-primary/10 text-primary">{investmentStufenText(k)}</Badge>;
     },
   },
   {

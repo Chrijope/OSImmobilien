@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
 import { KontaktTypBadge } from "@/components/kunden/KontaktTypBadge";
-import { getEffectivePipelineStufe, calculateLogicalPipelineStufe, PIPELINE_STUFEN, buildBucketEntries, type PipelineStufe } from "@/lib/kontaktPipeline";
+import { getEffectivePipelineStufe, calculateLogicalPipelineStufe, investmentAnzeigeStufe, PIPELINE_STUFEN, buildBucketEntries, type PipelineStufe } from "@/lib/kontaktPipeline";
 import { stufenFilterLabel, kontaktGanzVerloren } from "@/lib/pipelineStufen";
 import { sichtfenster } from "@/lib/pipelineSichtfenster";
 import { getInboxTasks } from "@/lib/aktivitaetenStore";
@@ -82,14 +82,6 @@ function getStufe(k: KundeData): PipelineStufe {
   return getEffectivePipelineStufe(k);
 }
 
-// Normalisierung wie in kontaktPipeline.ts (lokal, damit kein Export nötig)
-function normalizeStufeKey(stufe?: string | null): PipelineStufe | null {
-  if (!stufe) return null;
-  let n = stufe === "after_sales" || stufe === "aftersales" ? "faelligkeit" : stufe;
-  if (n === "closing") n = "objektauswahl";
-  return (PIPELINE_STUFEN as readonly { key: string }[]).some(s => s.key === n) ? (n as PipelineStufe) : null;
-}
-
 type PipelineEntry = { kunde: KundeData; stufe: PipelineStufe; investmentId?: string; entryKey: string };
 
 /** Eine einzige leere Liste für alle leeren Spalten, damit kein neues Feld entsteht. */
@@ -126,26 +118,31 @@ const GESAMT_STUFEN = new Set([
 function buildPipelineEntries(kunden: KundeData[]): PipelineEntry[] {
   const entries: PipelineEntry[] = [];
   for (const k of kunden) {
-    // Archivierte Kontakte bleiben EINE Karte in "archiviert"
+    // Archivierte und als Ganzes verlorene Kontakte bleiben EINE Karte.
     if (k.archiviert) {
       entries.push({ kunde: k, stufe: "archiviert", entryKey: k.id });
       continue;
     }
-    const invs = getInvestmentsByKontakt(k.id);
-    // Bei mehreren Investments: pro Investment eine eigene Karte in dessen Stufe
-    if (invs.length >= 2) {
-      for (const inv of invs) {
-        const s = normalizeStufeKey(inv.pipelineStufe) || getStufe(k);
-        entries.push({ kunde: k, stufe: s, investmentId: inv.id, entryKey: `${k.id}__${inv.id}` });
-      }
+    if (k.status === "verloren" || k.status === "inaktiv") {
+      entries.push({ kunde: k, stufe: "verloren", entryKey: k.id });
       continue;
     }
-    // 0 oder 1 Investment → bisheriges Verhalten (effektive Stufe des Kunden)
-    entries.push({ kunde: k, stufe: getStufe(k), investmentId: invs[0]?.id, entryKey: k.id });
+    const invs = getInvestmentsByKontakt(k.id);
+    /*
+     * Eine Karte je Investment, in dessen eigener Stufe (11.10.2026), auch bei
+     * nur einem. Bis dahin stand ein Kunde mit einem Investment bis zur
+     * Selbstauskunft in der Stufe des Kontakts. Investment 2 erscheint so von
+     * Anfang an als eigene Karte, unabhängig von Investment 1.
+     */
+    for (const inv of invs) {
+      const s = investmentAnzeigeStufe(k, inv.pipelineStufe) || "neuer_lead";
+      entries.push({ kunde: k, stufe: s, investmentId: inv.id, entryKey: `${k.id}__${inv.id}` });
+    }
+    // Ohne Investment (vor der Migration 20261011160000): die Stufe des Kontakts.
+    if (invs.length === 0) entries.push({ kunde: k, stufe: getStufe(k), entryKey: k.id });
   }
   return entries;
 }
-
 
 const isSetterRole = (role: string) => role === "setterin";
 const isVersicherungsexperte = (role: string) => role === "versicherungsexperte";
@@ -883,7 +880,8 @@ export default function Pipeline() {
        * es sah nach einem Fehler aus. Jetzt steht da, warum.
        */
       const kunde = getKontakte().find((k) => k.id === kundeId);
-      const automatisch = kunde ? calculateLogicalPipelineStufe(kunde) : null;
+      // Nur die Daten dieses Investments, nicht die eines anderen (11.10.2026).
+      const automatisch = kunde ? calculateLogicalPipelineStufe(kunde, investmentId) : null;
       if (automatisch && automatisch !== to) {
         const autoLabel = PIPELINE_STUFEN.find((st) => st.key === automatisch)?.label || automatisch;
         toast({
