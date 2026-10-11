@@ -103,7 +103,7 @@ describe("Berechnung herunterladen (28.09.2026)", () => {
     expect(objekte).toHaveLength(1);
     expect(objekte[0].input.propertyTitle).toBe("Musterwohnanlage, WE 7");
     expect(sprache).toBe("de");
-    expect(druckdokument.querySelectorAll(".expose-page")).toHaveLength(8);
+    expect(druckdokument.querySelectorAll(".expose-page")).toHaveLength(9);
     expect(drucken).not.toHaveBeenCalled();
     await waitFor(() => expect(screen.getByRole("button", { name: "Berechnung herunterladen" })).toBeEnabled());
     drucken.mockRestore();

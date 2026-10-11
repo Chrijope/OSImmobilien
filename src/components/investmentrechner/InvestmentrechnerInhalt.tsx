@@ -1215,9 +1215,10 @@ export function InvestmentrechnerInhalt({
         printing={printing}
         sprache={kundenSprache}
         deckblatt={deckblatt}
+        erweitert={erweitert}
       />
     ) : (
-      <ExposeDokument {...exposeObjekte[0]} printing={printing} sprache={kundenSprache} deckblatt={deckblatt} />
+      <ExposeDokument {...exposeObjekte[0]} printing={printing} sprache={kundenSprache} deckblatt={deckblatt} erweitert={erweitert} />
     );
 
   const druckdokumentRef = useRef<HTMLDivElement>(null);
@@ -1376,13 +1377,6 @@ export function InvestmentrechnerInhalt({
                   vermerk={objektVermerk}
                   onClick={() => setBereich("steuer")}
                 />
-                <Bereichsknopf
-                  active={bereich === "expose"}
-                  icon={<ImagePlus size={17} />}
-                  label="Bilder"
-                  vermerk={objektVermerk}
-                  onClick={() => setBereich("expose")}
-                />
                 {erweitert && (
                   <Bereichsknopf
                     active={bereich === "bankunterlagen"}
@@ -1394,6 +1388,14 @@ export function InvestmentrechnerInhalt({
                     onClick={() => setBereich("bankunterlagen")}
                   />
                 )}
+                {/* Die Bilder stehen seit dem 11.10.2026 immer zuletzt, in Plus nach den Bankunterlagen. */}
+                <Bereichsknopf
+                  active={bereich === "expose"}
+                  icon={<ImagePlus size={17} />}
+                  label="Bilder"
+                  vermerk={objektVermerk}
+                  onClick={() => setBereich("expose")}
+                />
                 {!vergleichAktiv && <ObjektHinzufuegen onClick={objektHinzufuegen} />}
               </nav>
               <div className="input-content">
@@ -1443,6 +1445,7 @@ export function InvestmentrechnerInhalt({
                       }));
                     }}
                     hinweis={fotoHinweis}
+                    nummer={erweitert ? "08" : "07"}
                     onOpenPreview={() => {
                       setAnsicht("expose");
                       rolleSeiteNachOben();

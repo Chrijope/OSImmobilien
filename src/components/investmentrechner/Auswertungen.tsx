@@ -2,7 +2,12 @@ import { useState } from "react";
 import { FileDown } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { eigenkapitalrendite, type InvestmentEingabe, type InvestmentErgebnis } from "@/lib/investmentrechner/rechenkern";
-import { haushaltsrechnung, vermoegensaufstellung } from "@/lib/investmentrechner/bankunterlagen";
+import {
+  haushaltMitVorlage,
+  haushaltsrechnung,
+  vermoegenMitVorlage,
+  vermoegensaufstellung,
+} from "@/lib/investmentrechner/bankunterlagen";
 import {
   bankuebersicht,
   eigenkapitalrenditeOhneWertsteigerung,
@@ -185,13 +190,28 @@ export function kaufpreisHinweis(result: InvestmentErgebnis, sprache: FormatSpra
  * Spielraum bis zur 15-Prozent-Grenze. Gerechnet wird in bankgespraech.ts,
  * hier nur gezeigt. Die Analyse bleibt Deutsch.
  */
-export function Bankgespraech({ input, result }: { input: InvestmentEingabe; result: InvestmentErgebnis }) {
+export function Bankgespraech({
+  input,
+  result,
+  imDokument = false,
+  teil,
+}: {
+  input: InvestmentEingabe;
+  result: InvestmentErgebnis;
+  /** Nur in der Berechnung: Teil 1 Kapitalbedarf und Zinsbindung, Teil 2 der Rest, damit jede Seite aufs A4-Blatt passt. */
+  teil?: 1 | 2;
+  /**
+   * In der Berechnung (ExposeDokument), seit dem 11.10.2026: ohne PDF-Knopf
+   * und ohne Haushalt und Vermögen, die dort eine eigene Seite haben.
+   */
+  imDokument?: boolean;
+}) {
   const bank = bankuebersicht(input, result);
   const [pdfEntsteht, setPdfEntsteht] = useState(false);
   const haushaltAusgefuellt = (input.haushalt?.einkuenfte.length ?? 0) + (input.haushalt?.ausgaben.length ?? 0) > 0;
   const vermoegenAusgefuellt = (input.vermoegen?.werte.length ?? 0) + (input.vermoegen?.verbindlichkeiten.length ?? 0) > 0;
-  const haushalt = haushaltAusgefuellt ? haushaltsrechnung(input.haushalt, result) : null;
-  const vermoegen = vermoegenAusgefuellt ? vermoegensaufstellung(input.vermoegen, result) : null;
+  const haushalt = haushaltAusgefuellt && !imDokument ? haushaltsrechnung(input.haushalt, result) : null;
+  const vermoegen = vermoegenAusgefuellt && !imDokument ? vermoegensaufstellung(input.vermoegen, result) : null;
   const pdfLaden = async () => {
     setPdfEntsteht(true);
     try {
@@ -333,7 +353,8 @@ export function Bankgespraech({ input, result }: { input: InvestmentEingabe; res
   ];
 
   return (
-    <div className="bankgespraech">
+    <div className={imDokument ? "bankgespraech" : "bankgespraech karte-innen"}>
+      {!imDokument && (
       <div className="bankgespraech-pdf">
         <button type="button" className="button button-primary" disabled={pdfEntsteht} onClick={() => void pdfLaden()}>
           <FileDown size={14} /> {pdfEntsteht ? "PDF wird erstellt …" : "Bankgespräch-PDF"}
@@ -343,7 +364,8 @@ export function Bankgespraech({ input, result }: { input: InvestmentEingabe; res
           <span className="kachel-hinweis">Haushaltsrechnung und Vermögensaufstellung im Bereich „Bankunterlagen“ links ausfüllen, dann stehen sie mit im PDF.</span>
         )}
       </div>
-      {bloecke.map((block) => (
+      )}
+      {(teil === 1 ? bloecke.slice(0, 2) : teil === 2 ? bloecke.slice(2) : bloecke).map((block) => (
         <section key={block.titel}>
           <h4>
             {block.titel}
@@ -417,6 +439,110 @@ export function AmpelLeiste({ input, result, mitSchwellen = false }: { input: In
           </p>
         </>
       )}
+    </div>
+  );
+}
+
+/**
+ * Haushaltsrechnung und Vermögensaufstellung als Tabellen, für die eigene
+ * Seite in der Berechnung (seit dem 11.10.2026). Dieselben Zahlen wie im
+ * Bereich „Bankunterlagen“ und im Bankgespräch-PDF.
+ */
+export function BankunterlagenTabellen({
+  input,
+  result,
+  nur,
+}: {
+  input: InvestmentEingabe;
+  result: InvestmentErgebnis;
+  /** Nur eine der beiden Tabellen, je eine Seite in der Berechnung. */
+  nur?: "haushalt" | "vermoegen";
+}) {
+  const haushalt = haushaltMitVorlage(input.haushalt);
+  const vermoegen = vermoegenMitVorlage(input.vermoegen);
+  const h = haushaltsrechnung(haushalt, result);
+  const v = vermoegensaufstellung(vermoegen, result);
+  const zeile = (label: string, monat: number, summe = false) => (
+    <tr key={label} className={summe ? "bank-summe" : undefined}>
+      <td>{label}</td>
+      <td>{formatEuroCent(monat)}</td>
+      <td>{formatEuro(monat * 12)}</td>
+    </tr>
+  );
+  return (
+    <div className="bankunterlagen-tabellen">
+      {nur !== "vermoegen" && (<>
+      {!nur && <h3>Haushaltsrechnung</h3>}
+      <div className="table-scroll compact-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Posten</th>
+              <th>je Monat</th>
+              <th>je Jahr</th>
+            </tr>
+          </thead>
+          <tbody>
+            {haushalt.einkuenfte.map((p, i) => zeile(p.bezeichnung || `Einkunft ${i + 1}`, p.betrag))}
+            {zeile("Summe Einkünfte", h.einkuenfteMonat, true)}
+            {haushalt.ausgaben.map((p, i) => zeile(p.bezeichnung || `Ausgabe ${i + 1}`, -p.betrag))}
+            {zeile("Summe Ausgaben", -h.ausgabenMonat, true)}
+            {zeile("Überschuss vor dem Investment", h.ueberschussVorMonat, true)}
+            {zeile("+ Kaltmiete der Wohnung", h.mieteMonat)}
+            {zeile("− Kreditrate", -h.rateMonat)}
+            {zeile("− Bewirtschaftung und Rücklage", -h.bewirtschaftungMonat)}
+            {zeile("Überschuss nach dem Investment (ohne Steuer)", h.ueberschussNachMonat, true)}
+            {zeile("Steuerwirkung im ersten Jahr", h.steuerwirkungMonat)}
+            {zeile("Überschuss mit Steuerwirkung", h.ueberschussNachMitSteuerMonat, true)}
+          </tbody>
+        </table>
+      </div>
+      </>)}
+      {nur !== "haushalt" && (<>
+      {!nur && <h3>Vermögensaufstellung</h3>}
+      <div className="table-scroll compact-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Posten</th>
+              <th>verpfändet</th>
+              <th>Betrag</th>
+            </tr>
+          </thead>
+          <tbody>
+            {vermoegen.werte.map((p, i) => (
+              <tr key={`w${i}`}>
+                <td>{p.bezeichnung || `Vermögenswert ${i + 1}`}</td>
+                <td>{p.verpfaendet ? "ja" : "nein"}</td>
+                <td>{formatEuro(p.betrag)}</td>
+              </tr>
+            ))}
+            <tr className="bank-summe">
+              <td>Summe Vermögenswerte (davon verpfändet)</td>
+              <td>{formatEuro(v.davonVerpfaendet)}</td>
+              <td>{formatEuro(v.werte)}</td>
+            </tr>
+            {vermoegen.verbindlichkeiten.map((p, i) => (
+              <tr key={`v${i}`}>
+                <td>{p.bezeichnung || `Verbindlichkeit ${i + 1}`}</td>
+                <td />
+                <td>{formatEuro(-p.betrag)}</td>
+              </tr>
+            ))}
+            <tr className="bank-summe">
+              <td>Differenz</td>
+              <td />
+              <td>{formatEuro(v.differenz)}</td>
+            </tr>
+            <tr className="bank-summe">
+              <td>Differenz mit Wohnung und neuen Darlehen</td>
+              <td />
+              <td>{formatEuro(v.differenzNachKauf)}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      </>)}
     </div>
   );
 }

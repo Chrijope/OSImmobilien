@@ -1175,7 +1175,24 @@ export function EingabeBankunterlagen({ input, result, aendere, onAusSelbstausku
   const v = vermoegensaufstellung(vermoegen, result);
   return (
     <div className="input-section" data-testid="eingabe-bankunterlagen">
-      <Bereichstitel nummer="08" titel="Bankunterlagen" untertitel="Haushaltsrechnung und Vermögensaufstellung des Kunden" />
+      <Bereichstitel nummer="07" titel="Bankunterlagen" untertitel="Haushaltsrechnung und Vermögensaufstellung des Kunden" />
+      <label className="bank-haken" data-testid="haken-bankunterlagen">
+        <input
+          type="checkbox"
+          checked={input.bankunterlagenInBerechnung === true}
+          onChange={(e) => aendere({ bankunterlagenInBerechnung: e.target.checked })}
+        />
+        <span>
+          <strong>
+            In der Berechnung anzeigen <Neu />
+          </strong>
+          <small>
+            {input.bankunterlagenInBerechnung
+              ? "Haushaltsrechnung und Vermögensaufstellung stehen als eigene Seite in der Berechnung und im PDF, bei allen drei Deckblättern."
+              : "Aus: Beides steht nur in der Analyse und im Bankgespräch-PDF, nicht in der Berechnung für den Kunden."}
+          </small>
+        </span>
+      </label>
       {onAusSelbstauskunft && (
         <button type="button" className="button button-primary" onClick={onAusSelbstauskunft}>
           Aus der Selbstauskunft übernehmen <Neu />
@@ -1459,6 +1476,8 @@ export interface EingabeExposeProps {
   onOpenPreview: () => void;
   /** Ein Satz über den Bildern, etwa dass sie aus der Objektanlage stammen. */
   hinweis?: string;
+  /** Nummer im Titel. Bilder stehen immer zuletzt, in Plus nach den Bankunterlagen. */
+  nummer?: string;
 }
 
 export function EingabeExpose({
@@ -1469,6 +1488,7 @@ export function EingabeExpose({
   onRemovePhoto,
   onOpenPreview,
   hinweis,
+  nummer = "07",
 }: EingabeExposeProps) {
   const [zieht, setZieht] = useState(false);
   /** Das Bild, das gerade an eine andere Stelle gezogen wird. */
@@ -1510,7 +1530,7 @@ export function EingabeExpose({
 
   return (
     <div className="input-section">
-      <Bereichstitel nummer="07" titel="Bilder" untertitel="Objektbilder und druckfertige Vorschau" />
+      <Bereichstitel nummer={nummer} titel="Bilder" untertitel="Objektbilder und druckfertige Vorschau" />
       {/*
         Ohne `preventDefault` am Überfahren nimmt der Browser die Datei selbst
         an und öffnet sie in einem neuen Tab, statt sie hier abzulegen.

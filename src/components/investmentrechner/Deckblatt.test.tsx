@@ -129,6 +129,8 @@ describe("Seitenreihenfolge", () => {
         "tax-profile-page",
         "forecast-page",
         "table-page",
+        // Seit dem 11.10.2026: die Ampel als eigene Seite.
+        "einordnung-page",
         "photos-page",
         "glossary-page",
       ]);

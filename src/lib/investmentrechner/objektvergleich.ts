@@ -39,6 +39,7 @@ export const GEMEINSAME_FELDER: readonly (keyof InvestmentEingabe)[] = [
   // Haushalt und Vermögen gehören dem Kunden, nicht der Wohnung (seit dem 11.10.2026).
   "haushalt",
   "vermoegen",
+  "bankunterlagenInBerechnung",
 ];
 
 /** Kennzeichnung eines Objekts im Vergleich: Objekt A, Objekt B. */

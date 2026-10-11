@@ -85,7 +85,9 @@ export function Analyse({
             </h3>
           </div>
         </div>
-        <AmpelLeiste input={input} result={result} mitSchwellen />
+        <div className="karte-innen">
+          <AmpelLeiste input={input} result={result} mitSchwellen />
+        </div>
       </article>
       {/* Die Berechnung trägt den vollen Hinweis, die Analyse bis zum 30.09.2026 gar keinen. */}
       <p className="kachel-hinweis">{KENNZAHL_TEXTE.zusaetze.beispielrechnung}</p>

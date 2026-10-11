@@ -164,6 +164,8 @@ export interface InvestmentEingabe {
   */
   haushalt: Haushaltsrechnung;
   vermoegen: Vermoegensaufstellung;
+  /** Haushalt und Vermögen auch als eigene Seite in der Berechnung, nicht nur in der Analyse. */
+  bankunterlagenInBerechnung: boolean;
   /**
    * Welche Bedeutung die Eingabe hat, für gespeicherte Stände. Ab Version 2
    * (25.09.2026) ist `purchasePrice` der Gesamtkaufpreis samt Möbeln; bis
@@ -507,6 +509,7 @@ export const standardEingabe: InvestmentEingabe = {
   inflationRate: 2,
   haushalt: { einkuenfte: [], ausgaben: [] },
   vermoegen: { werte: [], verbindlichkeiten: [] },
+  bankunterlagenInBerechnung: false,
   eingabeVersion: EINGABE_VERSION,
 };
 

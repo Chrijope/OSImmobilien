@@ -29,9 +29,17 @@ import { kennzahlTexteFuer } from "@/lib/investmentrechner/kennzahlTexte";
 import { dokumentTexteFuer } from "@/lib/investmentrechner/dokumentTexte";
 import { rechenwege } from "@/lib/investmentrechner/kennzahlErklaerungen";
 import type { FormatSprache } from "@/lib/sprachFormat";
-import { Kennzahlkarte, Objektkarte } from "./Felder";
+import { Kennzahlkarte, Neu, Objektkarte } from "./Felder";
 import { DeckblattAltersvorsorge, DeckblattAufEinenBlick, DeckblattJahrFuerJahr } from "./Deckblatt";
-import { kaufpreisHinweis, kaufpreiszeilen, Steuerprofil, UnterlagenEinblicke } from "./Auswertungen";
+import {
+  AmpelLeiste,
+  Bankgespraech,
+  BankunterlagenTabellen,
+  kaufpreisHinweis,
+  kaufpreiszeilen,
+  Steuerprofil,
+  UnterlagenEinblicke,
+} from "./Auswertungen";
 import { Vermoegensdiagramm, Zusammensetzung, Zweireihendiagramm } from "./Diagramme";
 import { Cashflowtabelle, Darlehenstabelle, Steuertabelle, zeigeDarlehenstabelle } from "./Tabellen";
 import { Glossar } from "./Glossar";
@@ -76,14 +84,32 @@ export interface ExposeDokumentProps {
   sprache?: FormatSprache;
   /** Das Deckblatt, das der Berater gewählt hat. Ohne Angabe „Ergebnis auf einen Blick“. */
   deckblatt?: DeckblattVariante;
+  /** Investmentkalkulation Plus: Bankgespräch und, mit Haken, Bankunterlagen als eigene Seiten. */
+  erweitert?: boolean;
 }
 
 /** Seiten je Objekt: Deckblatt, Kennzahlen, Unterlagen, Steuer, Prognose, Tabellen, Bilder, Glossar. */
 const SEITEN_JE_OBJEKT = 8;
 
-/** Mit KfW-Darlehen kommt die Seite „Darlehen je Jahr“ dazu. */
-function seitenJeObjekt(result: InvestmentErgebnis): number {
-  return SEITEN_JE_OBJEKT + (zeigeDarlehenstabelle(result) ? 1 : 0);
+/**
+ * Zusatzseiten nach der Tabellenseite, seit dem 11.10.2026 in fester
+ * Reihenfolge: „Darlehen je Jahr“ (mit KfW, zweitem Darlehen, Sondertilgung
+ * oder Anschlusszins), „Einordnung“ (Ampel, in Plus samt Bankgespräch) und
+ * „Bankunterlagen“ (nur Plus und nur mit dem Haken im Bereich Bankunterlagen).
+ * Die Einordnung kommt immer dazu, ein Objekt hat also mindestens neun Seiten.
+ */
+function zusatzseitenVon(input: InvestmentEingabe, result: InvestmentErgebnis, erweitert: boolean) {
+  // Anzahl Seiten je Abschnitt. Bankgespräch und Bankunterlagen brauchen je zwei, sonst passen sie nicht auf A4.
+  return {
+    darlehen: zeigeDarlehenstabelle(result) ? 1 : 0,
+    einordnung: erweitert ? 2 : 1,
+    bankunterlagen: erweitert && input.bankunterlagenInBerechnung === true ? 2 : 0,
+  };
+}
+
+function seitenJeObjekt(input: InvestmentEingabe, result: InvestmentErgebnis, erweitert = false): number {
+  const z = zusatzseitenVon(input, result, erweitert);
+  return SEITEN_JE_OBJEKT + z.darlehen + z.einordnung + z.bankunterlagen;
 }
 
 function Zeile({ label, value, strong = false }: { label: string; value: string; strong?: boolean }) {
@@ -126,6 +152,7 @@ export function ExposeDokument({
   ohneRahmen = false,
   sprache = "de",
   deckblatt = DECKBLATT_STANDARD,
+  erweitert = false,
 }: ExposeDokumentProps) {
   const kennzahl = kennzahlTexteFuer(sprache);
   const t = dokumentTexteFuer(sprache);
@@ -156,9 +183,13 @@ export function ExposeDokument({
   const ks = t.kennzahlenSeite;
   const kfw = result.kfwLoanAmount > 0;
   // Seit dem 11.10.2026 auch mit zweitem Darlehen, Sondertilgung oder Anschlusszins.
-  const darlehensseite = zeigeDarlehenstabelle(result);
+  const zusatz = zusatzseitenVon(input, result, erweitert);
+  const darlehensseite = zusatz.darlehen > 0;
+  // Seitenzahlen der Zusatzseiten, gezählt ab der Tabellenseite (6).
+  const seiteEinordnung = seitenOffset + 7 + zusatz.darlehen;
+  const seiteBankunterlagen = seiteEinordnung + zusatz.einordnung;
   const zuschussJahr = Math.round(input.kfwGrantYear);
-  const zusatzseiten = seitenJeObjekt(result) - SEITEN_JE_OBJEKT;
+  const zusatzseiten = seitenJeObjekt(input, result, erweitert) - SEITEN_JE_OBJEKT;
   const prozentZahl = (wert: number) => (sprache === "en" ? `${zahl(wert)}%` : `${zahl(wert)} %`);
   /*
     Bei aktiviertem Erhaltungsaufwand teilt er das Schicksal der
@@ -551,6 +582,52 @@ export function ExposeDokument({
         </section>
       )}
 
+      {/*
+        Seit dem 11.10.2026: was die Analyse über den Zahlen zeigt, auch hier.
+        Die Ampel immer, in der Investmentkalkulation Plus dazu das Bankgespräch.
+        Beide bleiben Deutsch, wie in der Analyse.
+      */}
+      <section className="expose-page einordnung-page" lang="de">
+        <Seitenkopf clientName={input.clientName} marke={marke} sprache={sprache} />
+        <span className="eyebrow">Einordnung{erweitert ? " und Bankgespräch" : ""}</span>
+        <h2>
+          Ampel{erweitert ? ", Finanzierung und Risiko" : ""} <Neu />
+        </h2>
+        <AmpelLeiste input={input} result={result} />
+        {erweitert && <Bankgespraech input={input} result={result} imDokument teil={1} />}
+        <Fusszeile seite={seiteEinordnung} sprache={sprache} />
+      </section>
+
+      {erweitert && (
+        <section className="expose-page einordnung-page" lang="de">
+          <Seitenkopf clientName={input.clientName} marke={marke} sprache={sprache} />
+          <span className="eyebrow">Bankgespräch</span>
+          <h2>
+            Kapitaldienstfähigkeit, Zinsänderungsrisiko und Rendite <Neu />
+          </h2>
+          <Bankgespraech input={input} result={result} imDokument teil={2} />
+          <Fusszeile seite={seiteEinordnung + 1} sprache={sprache} />
+        </section>
+      )}
+
+      {zusatz.bankunterlagen > 0 &&
+        (["haushalt", "vermoegen"] as const).map((teil, index) => (
+          <section key={teil} className="expose-page bankunterlagen-page" lang="de">
+            <Seitenkopf clientName={input.clientName} marke={marke} sprache={sprache} />
+            <span className="eyebrow">Unterlagen für das Bankgespräch</span>
+            <h2>
+              {teil === "haushalt" ? "Haushaltsrechnung" : "Vermögensaufstellung"} <Neu />
+            </h2>
+            <BankunterlagenTabellen input={input} result={result} nur={teil} />
+            <p className="expose-fineprint">
+              {teil === "haushalt"
+                ? "Angaben des Kunden ohne Gewähr. Miete, Rate und Bewirtschaftung stammen aus dieser Berechnung, erstes Jahr."
+                : "Angaben des Kunden ohne Gewähr. Die Wohnung zählt mit dem Kaufpreis, die neuen Darlehen mit ihrem Betrag."}
+            </p>
+            <Fusszeile seite={seiteBankunterlagen + index} sprache={sprache} />
+          </section>
+        ))}
+
       <section className="expose-page photos-page">
         <Seitenkopf clientName={input.clientName} marke={marke} sprache={sprache} />
         <span className="eyebrow">{t.fotoSeite.augenbraue}</span>
@@ -747,21 +824,23 @@ export function ExposeVergleichsdokument({
   printing = false,
   sprache = "de",
   deckblatt = DECKBLATT_STANDARD,
+  erweitert = false,
 }: {
   a: ExposeObjekt;
   b: ExposeObjekt;
   printing?: boolean;
   sprache?: FormatSprache;
   deckblatt?: DeckblattVariante;
+  erweitert?: boolean;
 }) {
-  const gemeinsam = { printing, ohneRahmen: true, sprache, deckblatt };
+  const gemeinsam = { printing, ohneRahmen: true, sprache, deckblatt, erweitert };
   return (
     <div className={`expose-document ${printing ? "printing" : ""}`} lang={sprache}>
       <RechnerSpracheContext.Provider value={sprache}>
         <ExposeVergleichsseite a={a} b={b} seite={1} sprache={sprache} />
       </RechnerSpracheContext.Provider>
       <ExposeDokument {...a} {...gemeinsam} seitenOffset={1} marke={objektMarke(0, sprache)} />
-      <ExposeDokument {...b} {...gemeinsam} seitenOffset={1 + seitenJeObjekt(a.result)} marke={objektMarke(1, sprache)} />
+      <ExposeDokument {...b} {...gemeinsam} seitenOffset={1 + seitenJeObjekt(a.input, a.result, erweitert)} marke={objektMarke(1, sprache)} />
     </div>
   );
 }
