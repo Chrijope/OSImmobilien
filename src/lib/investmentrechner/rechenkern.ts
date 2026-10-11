@@ -77,6 +77,29 @@ export interface InvestmentEingabe {
   juniorInterestRate: number;
   juniorRepaymentRate: number;
   /*
+    Anschlussfinanzierung des Bankdarlehens, seit dem 11.10.2026 (Abgleich
+    mit dem Excel-Tool von immocation). Nach der Zinsbindung gilt der
+    Anschlusszins, die neue Rate ist Restschuld mal (Anschlusszins plus neue
+    Tilgung). 0 heißt leer: ohne Anschlusszins und neue Tilgung läuft das
+    Darlehen mit Zins und Rate von heute weiter, genau wie vorher.
+  */
+  seniorFixedRateYears: number;
+  seniorFollowUpRate: number;
+  /** Neue Tilgung ab der Anschlussfinanzierung. 0: die anfängliche Tilgung. */
+  seniorFollowUpRepaymentRate: number;
+  /** Sondertilgungen auf das Bankdarlehen, je Kalenderjahr am Jahresende. */
+  specialRepayments: Sondertilgung[];
+  /*
+    Zweites Bankdarlehen, seit dem 11.10.2026. Es ersetzt wie das KfW-Darlehen
+    einen Teil des Bankdarlehens, 0 heißt keines. Nach der Zinsbindung gilt
+    sein Anschlusszins mit der anfänglichen Tilgung auf die Restschuld.
+  */
+  secondLoanAmount: number;
+  secondInterestRate: number;
+  secondRepaymentRate: number;
+  secondFixedRateYears: number;
+  secondFollowUpRate: number;
+  /*
     KfW-Darlehen, seit dem 07.10.2026, als drittes Darlehen neben Bank und
     Nachrang (siehe `kfwTilgungsplan`). Ohne Schalter rechnet nichts davon,
     gespeicherte Stände ohne die Felder bekommen die Standardwerte, also aus.
@@ -86,8 +109,10 @@ export interface InvestmentEingabe {
   kfwProgram: string;
   kfwLoanAmount: number;
   kfwInterestRate: number;
-  /** Zinsbindung in Jahren. Gerechnet wird danach mit demselben Zins, wie beim Bankdarlehen. */
+  /** Zinsbindung in Jahren. Danach gilt `kfwFollowUpRate`, ohne ihn derselbe Zins. */
   kfwFixedRateYears: number;
+  /** Anschlusszins nach der KfW-Zinsbindung, seit dem 11.10.2026. 0: derselbe Zins. */
+  kfwFollowUpRate: number;
   /** Gesamtlaufzeit in Jahren, das Darlehen ist danach voll getilgt. */
   kfwTermYears: number;
   /** Tilgungsfreie Anlaufjahre, 0 bis 5, immer kürzer als die Laufzeit. */
@@ -132,6 +157,13 @@ export interface InvestmentEingabe {
   clientAge: number;
   retirementAge: number;
   inflationRate: number;
+  /*
+    Unterlagen fürs Bankgespräch, seit dem 11.10.2026 (siehe
+    bankunterlagen.ts). Der Rechenkern liest sie nicht, sie reisen nur mit der
+    gespeicherten Berechnung. Leere Listen heißen: nicht ausgefüllt.
+  */
+  haushalt: Haushaltsrechnung;
+  vermoegen: Vermoegensaufstellung;
   /**
    * Welche Bedeutung die Eingabe hat, für gespeicherte Stände. Ab Version 2
    * (25.09.2026) ist `purchasePrice` der Gesamtkaufpreis samt Möbeln; bis
@@ -139,6 +171,33 @@ export interface InvestmentEingabe {
    * `eingabeAusJson` in investmentBerechnungenStore.ts.
    */
   eingabeVersion: number;
+}
+
+/** Eine Sondertilgung: Kalenderjahr und Betrag, gezahlt am Jahresende. */
+export interface Sondertilgung {
+  jahr: number;
+  betrag: number;
+}
+
+/** Eine Zeile der Haushaltsrechnung oder Vermögensaufstellung. */
+export interface Bankunterlagenposten {
+  bezeichnung: string;
+  /** Haushalt: Euro je Monat. Vermögen: Euro. */
+  betrag: number;
+  /** Nur Vermögenswerte: als Sicherheit verpfändet. */
+  verpfaendet?: boolean;
+  /** Herkunftssatz, etwa „Aus der Selbstauskunft“. Fehlt, sobald jemand den Betrag ändert. */
+  herkunft?: string;
+}
+
+export interface Haushaltsrechnung {
+  einkuenfte: Bankunterlagenposten[];
+  ausgaben: Bankunterlagenposten[];
+}
+
+export interface Vermoegensaufstellung {
+  werte: Bankunterlagenposten[];
+  verbindlichkeiten: Bankunterlagenposten[];
 }
 
 /** Die aktuelle Version der Eingabe, siehe `eingabeVersion`. */
@@ -173,9 +232,14 @@ export interface Annuitaetsjahr {
 /** Ein Jahr eines Darlehens in der Jahrestabelle. Der Zuschuss ist keine Tilgung, er mindert nur die Restschuld. */
 export interface Darlehensjahr extends Annuitaetsjahr {
   tilgungszuschuss: number;
+  /** Sollzins, der in diesem Jahr galt, als Faktor. 0 ohne Darlehen (seit dem 11.10.2026). */
+  zinssatz?: number;
+  /** Sondertilgung am Jahresende, steckt schon in `principal` und `payment`. */
+  sondertilgung?: number;
 }
 
-export type Darlehensart = "bank" | "nachrang" | "kfw";
+/** `bank2`: das zweite Bankdarlehen, seit dem 11.10.2026. */
+export type Darlehensart = "bank" | "bank2" | "nachrang" | "kfw";
 
 export interface Jahreswert {
   index: number;
@@ -189,6 +253,8 @@ export interface Jahreswert {
   debtService: number;
   /** Jedes Darlehen einzeln, seit dem 07.10.2026. Ohne KfW und Nachrang stehen dort Nullen. */
   darlehen: Record<Darlehensart, Darlehensjahr>;
+  /** Sondertilgung dieses Jahres, steckt in `principal` und `debtService` (seit dem 11.10.2026). */
+  sondertilgung: number;
   /** Nicht umlagefähige Kosten, abziehbar. */
   operatingCosts: number;
   /** Zuführung zur Instandhaltungsrücklage, im Cashflow, steuerlich siehe `RUECKLAGENZUFUEHRUNG_ABZIEHBAR`. */
@@ -236,6 +302,12 @@ export interface InvestmentErgebnis {
   seniorLoanAmount: number;
   /** KfW-Darlehen, anteilig und auf den Finanzierungsbedarf gedeckelt. 0 ohne Schalter. */
   kfwLoanAmount: number;
+  /** Zweites Bankdarlehen, anteilig und auf den Rest des Finanzierungsbedarfs gedeckelt. */
+  secondLoanAmount: number;
+  /** Restschuld des Bankdarlehens am Ende seiner Zinsbindung, auch jenseits der Prognose. 0 ohne Zinsbindung. */
+  bankRestschuldZinsbindung: number;
+  /** Summe der gerechneten Sondertilgungen im Prognosezeitraum. */
+  sondertilgungenGesamt: number;
   /** Der KfW-Betrag war höher als der Finanzierungsbedarf und wurde gekürzt. */
   kfwGekuerzt: boolean;
   /** Kaufpreis und Kaufnebenkosten minus Eigenkapital und Nachrang: was Bank und KfW zusammen finanzieren. */
@@ -392,11 +464,21 @@ export const standardEingabe: InvestmentEingabe = {
   seniorRepaymentRate: 1.5,
   juniorInterestRate: 6,
   juniorRepaymentRate: 1,
+  seniorFixedRateYears: 10,
+  seniorFollowUpRate: 0,
+  seniorFollowUpRepaymentRate: 0,
+  specialRepayments: [],
+  secondLoanAmount: 0,
+  secondInterestRate: 4,
+  secondRepaymentRate: 2,
+  secondFixedRateYears: 10,
+  secondFollowUpRate: 0,
   kfwEnabled: false,
   kfwProgram: "",
   kfwLoanAmount: 0,
   kfwInterestRate: 2.5,
   kfwFixedRateYears: 10,
+  kfwFollowUpRate: 0,
   kfwTermYears: 30,
   kfwGracePeriodYears: 0,
   kfwGrantMode: "percent",
@@ -423,6 +505,8 @@ export const standardEingabe: InvestmentEingabe = {
   clientAge: 0,
   retirementAge: 67,
   inflationRate: 2,
+  haushalt: { einkuenfte: [], ausgaben: [] },
+  vermoegen: { werte: [], verbindlichkeiten: [] },
   eingabeVersion: EINGABE_VERSION,
 };
 
@@ -539,6 +623,74 @@ export function annuitaetsjahr(restsaldo: number, zinssatz: number, jahresrate: 
   };
 }
 
+export interface Bankplanparameter {
+  betrag: number;
+  zinsProzent: number;
+  tilgungProzent: number;
+  zinsbindungJahre: number;
+  /** 0 heißt leer: derselbe Zins. */
+  anschlusszinsProzent: number;
+  /** 0 heißt leer: die anfängliche Tilgung. */
+  neueTilgungProzent: number;
+  /** Sondertilgung je Jahr ab 0, siehe `sondertilgungenJeJahr`. */
+  sondertilgungen?: readonly number[];
+  jahre: number;
+}
+
+/**
+ * Ein Bankdarlehen Jahr für Jahr, seit dem 11.10.2026 mit Anschlussfinanzierung
+ * und Sondertilgungen.
+ *
+ * Bis zur Zinsbindung eine feste Jahresrate aus Zins und anfänglicher
+ * Tilgung, wie immer. Ist ein Anschlusszins oder eine neue Tilgung
+ * eingetragen, beginnt mit dem Jahr nach der Zinsbindung eine neue Rate:
+ * Restschuld mal (Anschlusszins plus neue Tilgung), so rechnen Banken ein
+ * Anschlussangebot. Ohne beides bleiben Zins und Rate, und das Ergebnis ist
+ * auf den Cent das alte (rechenkern.golden.json).
+ *
+ * Eine Sondertilgung wird am Jahresende gezahlt, höchstens die Restschuld. Die
+ * Rate bleibt, die Laufzeit wird kürzer. Sie steckt in Tilgung und Zahlung.
+ */
+export function banktilgungsplan(p: Bankplanparameter): Darlehensjahr[] {
+  let rest = Math.max(0, p.betrag);
+  let zins = prozentAnteil(p.zinsProzent);
+  let rate = rest * (zins + prozentAnteil(p.tilgungProzent));
+  const bindung = Math.max(0, Math.round(p.zinsbindungJahre));
+  const anschluss = bindung >= 1 && (p.anschlusszinsProzent > 0 || p.neueTilgungProzent > 0);
+  const jahre: Darlehensjahr[] = [];
+  for (let i = 0; i < p.jahre; i += 1) {
+    if (anschluss && i === bindung) {
+      if (p.anschlusszinsProzent > 0) zins = prozentAnteil(p.anschlusszinsProzent);
+      const tilgung = p.neueTilgungProzent > 0 ? p.neueTilgungProzent : p.tilgungProzent;
+      rate = rest * (zins + prozentAnteil(tilgung));
+    }
+    const aktiv = rest > 0;
+    const jahr = annuitaetsjahr(rest, zins, rate);
+    const sondertilgung = Math.min(jahr.closingBalance, Math.max(0, p.sondertilgungen?.[i] ?? 0));
+    rest = jahr.closingBalance - sondertilgung;
+    jahre.push({
+      interest: jahr.interest,
+      principal: jahr.principal + sondertilgung,
+      payment: jahr.payment + sondertilgung,
+      closingBalance: rest,
+      tilgungszuschuss: 0,
+      zinssatz: aktiv ? zins : 0,
+      sondertilgung,
+    });
+  }
+  return jahre;
+}
+
+/** Sondertilgungen je Jahr ab 0, aus der Liste mit Kalenderjahren. Mehrere im selben Jahr zählen zusammen. */
+export function sondertilgungenJeJahr(liste: readonly Sondertilgung[] | undefined, startjahr: number, jahre: number): number[] {
+  const je = Array.from({ length: Math.max(0, jahre) }, () => 0);
+  for (const eintrag of liste ?? []) {
+    const index = Math.round(endlicheZahl(eintrag?.jahr)) - Math.round(startjahr);
+    if (index >= 0 && index < je.length) je[index] += Math.max(0, endlicheZahl(eintrag?.betrag));
+  }
+  return je;
+}
+
 /** Das KfW-Darlehen Monat für Monat, zu Jahren zusammengefasst. */
 export interface KfwTilgungsplan {
   jahre: Darlehensjahr[];
@@ -569,8 +721,10 @@ export interface KfwTilgungsplan {
  * kein Zuschuss gerechnet: Den Zeitpunkt nennt die Zusage, raten wir ihn,
  * stünde eine Restschuld da, die es nicht gibt (Prüfung vom 07.10.2026).
  *
- * Nach der Zinsbindung rechnet der Plan mit demselben Zins weiter, wie das
- * Bankdarlehen auch; `restschuldZinsbindung` nennt, was dann anzuschließen ist.
+ * Nach der Zinsbindung rechnet der Plan mit demselben Zins weiter;
+ * `restschuldZinsbindung` nennt, was dann anzuschließen ist. Seit dem
+ * 11.10.2026 gilt danach der Anschlusszins, falls einer eingetragen ist: Die
+ * Rate wird auf die Restschuld über die Restlaufzeit neu bestimmt.
  */
 export function kfwTilgungsplan(
   betrag: number,
@@ -581,18 +735,22 @@ export function kfwTilgungsplan(
   zuschuss: number,
   zuschussNachJahren: number,
   prognoseJahre: number,
+  anschlusszinsProzent = 0,
 ): KfwTilgungsplan {
-  const i = prozentAnteil(zinsProzent) / 12;
+  let i = prozentAnteil(zinsProzent) / 12;
   const laufzeit = Math.max(1, Math.round(laufzeitJahre)) * 12;
   const anlauf = Math.min(laufzeit - 12, Math.max(0, Math.round(anlaufJahre)) * 12);
   const bindung = Math.max(0, Math.round(zinsbindungJahre)) * 12;
   const zuschussMonat = zuschuss > 0 && zuschussNachJahren >= 1 ? Math.round(zuschussNachJahren) * 12 : -1;
-  const leer = (): Darlehensjahr => ({ interest: 0, principal: 0, payment: 0, closingBalance: 0, tilgungszuschuss: 0 });
+  const leer = (): Darlehensjahr => ({ interest: 0, principal: 0, payment: 0, closingBalance: 0, tilgungszuschuss: 0, zinssatz: 0 });
   const jahre = Array.from({ length: prognoseJahre }, leer);
   const monateMitRate = laufzeit - anlauf;
   const anfang = Math.max(0, betrag);
   // Vor jedem Zuschuss bestimmt und danach unverändert.
-  const rate = anfang > 0 ? (i > 0 ? (anfang * i) / (1 - (1 + i) ** -monateMitRate) : anfang / monateMitRate) : 0;
+  const annuitaet = (basis: number, monate: number) =>
+    basis > 0 && monate > 0 ? (i > 0 ? (basis * i) / (1 - (1 + i) ** -monate) : basis / monate) : 0;
+  const ersteAnnuitaet = annuitaet(anfang, monateMitRate);
+  let rate = ersteAnnuitaet;
 
   let rest = anfang;
   let ersteRate = 0;
@@ -616,8 +774,14 @@ export function kfwTilgungsplan(
     if (monat === anlauf) rateVorAnlaufende = zahlung;
     if (monat === anlauf + 1) rateNachAnlaufende = zahlung;
     if (monat === bindung) restschuldZinsbindung = rest;
+    if (monat === bindung && anschlusszinsProzent > 0 && rest > 0) {
+      i = prozentAnteil(anschlusszinsProzent) / 12;
+      rate = annuitaet(rest, laufzeit - Math.max(monat, anlauf));
+    }
     const jahr = jahre[Math.floor((monat - 1) / 12)];
     if (!jahr) continue;
+    if (!jahr.zinssatz) jahr.zinssatz = prozentAnteil(zinsProzent);
+    if (monat > bindung && bindung > 0 && anschlusszinsProzent > 0) jahr.zinssatz = prozentAnteil(anschlusszinsProzent);
     jahr.interest += zinsen;
     jahr.principal += tilgung;
     jahr.payment += zahlung;
@@ -627,7 +791,7 @@ export function kfwTilgungsplan(
   return {
     jahre,
     ersteRate,
-    annuitaet: rate,
+    annuitaet: ersteAnnuitaet,
     rateVorAnlaufende,
     rateNachAnlaufende,
     restschuldZinsbindung,
@@ -879,8 +1043,11 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
   */
   const kfwGewuenscht = t.kfwEnabled ? Math.max(0, t.kfwLoanAmount) * anteil : 0;
   const kfwLoanAmount = Math.min(kfwGewuenscht, finanzierungsbedarf);
-  const seniorLoanAmount = Math.max(0, finanzierungsbedarf - kfwLoanAmount);
-  const totalDebt = seniorLoanAmount + juniorLoan + kfwLoanAmount;
+  // Das zweite Bankdarlehen nimmt, was nach der KfW noch offen ist, die Bank den Rest.
+  const zweitesGewuenscht = Math.max(0, t.secondLoanAmount) * anteil;
+  const secondLoanAmount = Math.min(zweitesGewuenscht, finanzierungsbedarf - kfwLoanAmount);
+  const seniorLoanAmount = Math.max(0, finanzierungsbedarf - kfwLoanAmount - secondLoanAmount);
+  const totalDebt = seniorLoanAmount + juniorLoan + kfwLoanAmount + secondLoanAmount;
   /*
     Finanzierungsnebenkosten, seit dem 25.09.2026.
 
@@ -902,7 +1069,37 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
   const financingGap = totalInvestment - totalDebt - Math.max(0, t.equity);
   const seniorJahresrate = seniorLoanAmount * (prozentAnteil(t.seniorInterestRate) + prozentAnteil(t.seniorRepaymentRate));
   const juniorJahresrate = juniorLoan * (prozentAnteil(t.juniorInterestRate) + prozentAnteil(t.juniorRepaymentRate));
+  const zweitesJahresrate =
+    secondLoanAmount * (prozentAnteil(t.secondInterestRate) + prozentAnteil(t.secondRepaymentRate));
   const laufzeit = Math.min(hoechstJahre, Math.max(1, Math.round(t.forecastYears)));
+  /*
+    Bank und zweites Darlehen als Plan, seit dem 11.10.2026 mit Anschlusszins
+    und Sondertilgungen (siehe `banktilgungsplan`). Er läuft bis zum Ende der
+    Zinsbindung, wenn die hinter der Prognose liegt, damit die Restschuld dort
+    bekannt ist.
+  */
+  const bankplanJahre = Math.max(laufzeit, Math.round(t.seniorFixedRateYears));
+  const bankplan = banktilgungsplan({
+    betrag: seniorLoanAmount,
+    zinsProzent: t.seniorInterestRate,
+    tilgungProzent: t.seniorRepaymentRate,
+    zinsbindungJahre: t.seniorFixedRateYears,
+    anschlusszinsProzent: t.seniorFollowUpRate,
+    neueTilgungProzent: t.seniorFollowUpRepaymentRate,
+    sondertilgungen: sondertilgungenJeJahr(t.specialRepayments, t.startYear, laufzeit),
+    jahre: bankplanJahre,
+  });
+  const bindungBank = Math.round(t.seniorFixedRateYears);
+  const bankRestschuldZinsbindung = bindungBank >= 1 ? bankplan[bindungBank - 1].closingBalance : 0;
+  const zweitesplan = banktilgungsplan({
+    betrag: secondLoanAmount,
+    zinsProzent: t.secondInterestRate,
+    tilgungProzent: t.secondRepaymentRate,
+    zinsbindungJahre: t.secondFixedRateYears,
+    anschlusszinsProzent: t.secondFollowUpRate,
+    neueTilgungProzent: 0,
+    jahre: laufzeit,
+  });
   /*
     Tilgungszuschuss: Prozent vom KfW-Darlehen oder ein Betrag, der anteilig
     gilt wie jeder Euro des Objekts. Gutgeschrieben nur zum Jahr aus der
@@ -924,14 +1121,16 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
     kfwTilgungszuschussNominal,
     t.kfwGrantYear,
     laufzeit,
+    t.kfwFollowUpRate,
   );
-  const monthlyDebtService = (seniorJahresrate + juniorJahresrate) / 12 + kfw.ersteRate;
+  const monthlyDebtService = (seniorJahresrate + juniorJahresrate + zweitesJahresrate) / 12 + kfw.ersteRate;
   // Mischzins auf die Anfangsbeträge, nur Darlehen mit Betrag zählen.
   const mischzins =
     totalDebt > 0
       ? (seniorLoanAmount * prozentAnteil(t.seniorInterestRate) +
           juniorLoan * prozentAnteil(t.juniorInterestRate) +
-          kfwLoanAmount * prozentAnteil(t.kfwInterestRate)) /
+          kfwLoanAmount * prozentAnteil(t.kfwInterestRate) +
+          secondLoanAmount * prozentAnteil(t.secondInterestRate)) /
         totalDebt
       : 0;
   /*
@@ -946,7 +1145,8 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
   if (kfwLoanAmount > 0 && kfwAnlaufJahre > 0) {
     const bank = jahresraten(seniorLoanAmount, prozentAnteil(t.seniorInterestRate), seniorJahresrate, kfwAnlaufJahre + 1);
     const nachrang = jahresraten(juniorLoan, prozentAnteil(t.juniorInterestRate), juniorJahresrate, kfwAnlaufJahre + 1);
-    const ohneKfw = (jahr: number) => (bank[jahr] + nachrang[jahr]) / 12;
+    const zweites = jahresraten(secondLoanAmount, prozentAnteil(t.secondInterestRate), zweitesJahresrate, kfwAnlaufJahre + 1);
+    const ohneKfw = (jahr: number) => (bank[jahr] + nachrang[jahr] + zweites[jahr]) / 12;
     const rateVorher = ohneKfw(kfwAnlaufJahre - 1) + kfw.rateVorAnlaufende;
     const rateNachher = ohneKfw(kfwAnlaufJahre) + kfw.rateNachAnlaufende;
     if (rateNachher > rateVorher + 0.005) {
@@ -1025,7 +1225,6 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
     true,
   );
 
-  let seniorRest = seniorLoanAmount;
   let juniorRest = juniorLoan;
   let degressiverBuchwert = depreciationBasis;
   let restvolumenAfa = depreciationBasis;
@@ -1042,12 +1241,13 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
     const kostenfaktor = (1 + prozentAnteil(t.annualCostGrowth)) ** i;
     const operatingCosts = monthlyOperatingCosts * 12 * kostenfaktor;
     const reserveContribution = monthlyReserveContribution * 12 * kostenfaktor;
-    const senior = annuitaetsjahr(seniorRest, prozentAnteil(t.seniorInterestRate), seniorJahresrate);
+    const senior = bankplan[i];
+    const zweitesJahr = zweitesplan[i];
     const junior = annuitaetsjahr(juniorRest, prozentAnteil(t.juniorInterestRate), juniorJahresrate);
     const kfwJahr = kfw.jahre[i];
-    const interest = senior.interest + junior.interest + kfwJahr.interest;
-    const principal = senior.principal + junior.principal + kfwJahr.principal;
-    const debtService = senior.payment + junior.payment + kfwJahr.payment;
+    const interest = senior.interest + junior.interest + kfwJahr.interest + zweitesJahr.interest;
+    const principal = senior.principal + junior.principal + kfwJahr.principal + zweitesJahr.principal;
+    const debtService = senior.payment + junior.payment + kfwJahr.payment + zweitesJahr.payment;
     /*
       Steuer: Die KfW-Zinsen sind Werbungskosten wie die Bankzinsen, sie
       stecken in `interest`. Der Tilgungszuschuss ist ein öffentlicher
@@ -1128,9 +1328,8 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
     const cashflowAfterTax = cashflowBeforeTax + taxEffect;
     kumulierterCashflow += cashflowAfterTax;
     kumulierterEigenanteil += Math.max(0, -cashflowAfterTax);
-    seniorRest = senior.closingBalance;
     juniorRest = junior.closingBalance;
-    const remainingDebt = seniorRest + juniorRest + kfwJahr.closingBalance;
+    const remainingDebt = senior.closingBalance + juniorRest + kfwJahr.closingBalance + zweitesJahr.closingBalance;
     /*
       Der Wert am Jahresende, seit dem 25.09.2026 aus drei Teilen.
 
@@ -1158,10 +1357,12 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
       principal,
       debtService,
       darlehen: {
-        bank: { ...senior, tilgungszuschuss: 0 },
-        nachrang: { ...junior, tilgungszuschuss: 0 },
+        bank: senior,
+        bank2: zweitesJahr,
+        nachrang: { ...junior, tilgungszuschuss: 0, zinssatz: juniorRest + junior.principal > 0 ? prozentAnteil(t.juniorInterestRate) : 0 },
         kfw: kfwJahr,
       },
+      sondertilgung: senior.sondertilgung ?? 0,
       operatingCosts,
       reserveContribution,
       cashflowBeforeTax,
@@ -1299,6 +1500,9 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
     totalInvestment,
     seniorLoanAmount,
     kfwLoanAmount,
+    secondLoanAmount,
+    bankRestschuldZinsbindung,
+    sondertilgungenGesamt: years.reduce((summe, jahr) => summe + jahr.sondertilgung, 0),
     kfwGekuerzt: kfwGewuenscht > kfwLoanAmount + 0.005,
     finanzierungsbedarf,
     kfwTilgungszuschussNominal,

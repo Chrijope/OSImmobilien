@@ -23,6 +23,7 @@ import { KundenMfaGuard } from "@/components/kunde/KundenMfaGuard";
 
 // Oeffentliche Seiten (eager, klein und immer noetig)
 import Login from "./pages/Login";
+import { VorschauInvestmentrechner } from "./vorschauRouten";
 import NotFound from "./pages/NotFound";
 const InvestagonDokument = lazy(() => import("./pages/InvestagonDokument"));
 
@@ -369,6 +370,14 @@ const App = () => (
               <CookieBanner />
               <Routes>
                 <Route path="/login" element={<Login />} />
+                {/* Lokale Vorschau der Investmentkalkulation, nur im Entwicklungsmodus
+                    und ohne Anmeldung (siehe vorschauRouten.ts). */}
+                {VorschauInvestmentrechner && (
+                  <>
+                    <Route path="/vorschau/investmentrechner" element={<VorschauInvestmentrechner />} />
+                    <Route path="/vorschau/investmentrechner-plus" element={<VorschauInvestmentrechner erweitert />} />
+                  </>
+                )}
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/portal-aktivieren" element={<PortalAktivieren />} />
                 <Route path="/aktivieren" element={<Aktivieren />} />

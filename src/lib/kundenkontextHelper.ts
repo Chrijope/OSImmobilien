@@ -78,7 +78,7 @@ export interface Kundenkontext {
  * Tausendstel des Betrags. Deshalb wird jetzt zuerst entschieden, welches
  * Zeichen das Dezimaltrennzeichen ist, und erst dann gerechnet.
  */
-function num(v: unknown): number {
+export function num(v: unknown): number {
   if (typeof v === "number") return isFinite(v) ? v : 0;
   if (typeof v !== "string") return 0;
   const roh = v.replace(/[^\d,.-]/g, "");

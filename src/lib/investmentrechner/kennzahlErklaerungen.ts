@@ -275,7 +275,8 @@ export function rechenwege(
   const anzahlJahre = jahre.length;
   const monate = anzahlJahre * 12;
   const leerstand = Math.min(1, prozentAnteil(input.vacancyRate));
-  const juniorDarlehen = result.totalDebt - result.seniorLoanAmount - result.kfwLoanAmount;
+  const zweitesDarlehen = result.secondLoanAmount ?? 0;
+  const juniorDarlehen = result.totalDebt - result.seniorLoanAmount - result.kfwLoanAmount - zweitesDarlehen;
 
   const kaltmiete = weg(
     [
@@ -310,6 +311,7 @@ export function rechenwege(
   ];
   const bank = darlehensglieder(g.bankdarlehen, result.seniorLoanAmount, input.seniorInterestRate, input.seniorRepaymentRate);
   const nachrang = darlehensglieder(g.nachrang, juniorDarlehen, input.juniorInterestRate, input.juniorRepaymentRate);
+  const zweites = darlehensglieder(g.zweitesBankdarlehen, zweitesDarlehen, input.secondInterestRate, input.secondRepaymentRate);
   /*
     KfW, seit dem 07.10.2026: in den tilgungsfreien Jahren Betrag mal Zins,
     sonst die Monatsrate der Annuität mal zwölf. Beides ist die Jahresrate im
@@ -326,6 +328,7 @@ export function rechenwege(
           { zeichen: "×", wert: 12, einheit: "anzahl" },
         ];
   const weitere: Rechenglied[] = [
+    ...(zweitesDarlehen > 0.005 ? [{ zeichen: "+" as const, wert: werteAus(zweites), einheit: "euro" as const, klammer: zweites }] : []),
     ...(juniorDarlehen > 0.005 ? [{ zeichen: "+" as const, wert: werteAus(nachrang), einheit: "euro" as const, klammer: nachrang }] : []),
     ...(result.kfwLoanAmount > 0 ? [{ zeichen: "+" as const, wert: werteAus(kfwGlieder), einheit: "euro" as const, klammer: kfwGlieder }] : []),
   ];

@@ -94,6 +94,7 @@ export interface KennzahlTexte {
     leerstand: string;
     bankdarlehen: string;
     nachrang: string;
+    zweitesBankdarlehen: string;
     kfwDarlehen: string;
     kfwRate: string;
     tilgungszuschuss: string;
@@ -201,6 +202,7 @@ export const KENNZAHL_TEXTE_DE: KennzahlTexte = {
     leerstand: "Leerstand",
     bankdarlehen: "Bankdarlehen",
     nachrang: "Nachrang",
+    zweitesBankdarlehen: "2. Bankdarlehen",
     kfwDarlehen: "KfW-Darlehen",
     kfwRate: "KfW-Rate",
     tilgungszuschuss: "Tilgungszuschuss",
@@ -494,6 +496,7 @@ export const KENNZAHL_TEXTE_EN: KennzahlTexte = {
     leerstand: "Vacancy",
     bankdarlehen: "Bank loan",
     nachrang: "Subordinated loan",
+    zweitesBankdarlehen: "2nd bank loan",
     kfwDarlehen: "KfW loan",
     kfwRate: "KfW instalment",
     tilgungszuschuss: "Repayment grant",

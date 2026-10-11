@@ -13,6 +13,7 @@ import { useRechnerTexte } from "./RechnerSprache";
 import { rechenwege, type Rechenweg } from "@/lib/investmentrechner/kennzahlErklaerungen";
 import { hinweisOhneSteuerwirkung } from "@/lib/investmentrechner/dokumentTexte";
 import type { Feldmarkierung } from "@/lib/investmentrechner/herkunft";
+import type { Ampelfarbe } from "@/lib/investmentrechner/ampel";
 
 /*
  * Eingabebausteine des Investmentrechners, eins zu eins aus der Web-App
@@ -87,6 +88,23 @@ export function FeldInfo({ text }: { text: string }) {
  */
 export const FeldetikettKontext = createContext(false);
 
+/**
+ * Lokale Vorschau der Etappen vom 11.10.2026 (/vorschau/investmentrechner,
+ * nur im Entwicklungsmodus). Dort trägt alles Neue ein kleines Etikett „NEU“,
+ * damit Christian sieht, was sich wo ändert. Im echten Rechner ist der
+ * Kontext aus und das Etikett fehlt.
+ */
+export const VorschauKontext = createContext(false);
+
+export function Neu({ titel }: { titel?: string }) {
+  if (!useContext(VorschauKontext)) return null;
+  return (
+    <span className="neu-etikett" title={titel} data-testid="neu-etikett">
+      NEU
+    </span>
+  );
+}
+
 const FELDETIKETT_TEXT: Record<Feldmarkierung, string> = {
   objekt: "Objekt",
   selbstauskunft: "Kunden-SA",
@@ -119,15 +137,18 @@ interface ZahlenfeldProps {
   gesperrt?: boolean;
   /** Herkunftsetikett, siehe `Feldetikett`. */
   markierung?: Feldmarkierung;
+  /** Etikett „NEU“ in der lokalen Vorschau, siehe `Neu`. */
+  neu?: boolean;
 }
 
-export function Zahlenfeld({ label, value, onChange, suffix, step = "any", min = 0, hint, tooltip, gesperrt, markierung }: ZahlenfeldProps) {
+export function Zahlenfeld({ label, value, onChange, suffix, step = "any", min = 0, hint, tooltip, gesperrt, markierung, neu }: ZahlenfeldProps) {
   return (
     <label className="field" data-gesperrt={gesperrt ? "ja" : undefined}>
       <span className="field-label">
         {label}
         {tooltip && <FeldInfo text={tooltip} />}
         <Feldetikett art={markierung} />
+        {neu && <Neu />}
       </span>
       <span className="input-shell">
         <input
@@ -362,13 +383,18 @@ interface BereichsknopfProps {
   vermerk?: string;
   /** true, wenn der Vermerk für alle Objekte gilt (andere Farbe). */
   vermerkFuerAlle?: boolean;
+  /** Etikett „NEU“ in der lokalen Vorschau. */
+  neu?: boolean;
 }
 
-export function Bereichsknopf({ active, icon, label, onClick, vermerk, vermerkFuerAlle }: BereichsknopfProps) {
+export function Bereichsknopf({ active, icon, label, onClick, vermerk, vermerkFuerAlle, neu }: BereichsknopfProps) {
   return (
     <button className={`section-button ${vermerk ? "with-scope" : ""} ${active ? "active" : ""}`} onClick={onClick}>
       {icon}
-      <span>{label}</span>
+      <span>
+        {label}
+        {neu && <Neu />}
+      </span>
       {vermerk && <span className={`section-scope ${vermerkFuerAlle ? "scope-all" : ""}`}>{vermerk}</span>}
       <ChevronRight size={16} />
     </button>
@@ -428,14 +454,30 @@ interface KennzahlkarteProps {
   wide?: boolean;
   /** Der Rechenweg unter der Zahl, siehe kennzahlErklaerungen.ts. */
   rechenweg?: Rechenweg | null;
+  /** Ampelfarbe vor dem Wert, seit dem 11.10.2026 (ampel.ts). */
+  ampel?: Ampelfarbe | null;
 }
 
-export function Kennzahlkarte({ label, value, accent, note, wide, rechenweg }: KennzahlkarteProps) {
+export const AMPEL_WORT: Record<Ampelfarbe, string> = { gruen: "Grün", gelb: "Gelb", rot: "Rot" };
+
+/** Der farbige Punkt, mit dem Wort für Screenreader und Graustufendruck. */
+export function Ampelpunkt({ farbe }: { farbe: Ampelfarbe | null | undefined }) {
+  if (!farbe) return null;
+  return <i className={`ampel-punkt ampel-${farbe}`} role="img" aria-label={`Ampel ${AMPEL_WORT[farbe]}`} title={`Ampel: ${AMPEL_WORT[farbe]}`} />;
+}
+
+export function Kennzahlkarte({ label, value, accent, note, wide, rechenweg, ampel }: KennzahlkarteProps) {
   const klassen = ["metric-card", accent ? `metric-${accent}` : "", wide ? "metric-wide" : ""];
   return (
     <div className={klassen.filter(Boolean).join(" ")}>
-      <span>{label}</span>
-      <strong>{value}</strong>
+      <span>
+        {label}
+        {ampel && <Neu />}
+      </span>
+      <strong>
+        <Ampelpunkt farbe={ampel} />
+        {value}
+      </strong>
       <RechenwegZeile weg={rechenweg} />
       {note && <small>{note}</small>}
     </div>

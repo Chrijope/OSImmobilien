@@ -28,6 +28,7 @@ import {
   ausgewiesenerKaufpreis,
   EINGABE_VERSION,
   standardEingabe,
+  type Bankunterlagenposten,
   type InvestmentEingabe,
   type InvestmentErgebnis,
 } from "@/lib/investmentrechner/rechenkern";
@@ -148,7 +149,29 @@ export function eingabeAusJson(roh: unknown): InvestmentEingabe {
       || (typeof vorlage === "string" && typeof wert === "string");
     if (passt) (ergebnis as unknown as Record<string, unknown>)[schluessel] = wert;
   }
+  // Listen seit dem 11.10.2026: Sondertilgungen und die Unterlagen fürs Bankgespräch.
+  ergebnis.specialRepayments = Array.isArray(daten.specialRepayments)
+    ? daten.specialRepayments
+        .map((e) => ({ jahr: zahl((e as Record<string, unknown>)?.jahr), betrag: zahl((e as Record<string, unknown>)?.betrag) }))
+        .filter((e) => e.jahr > 0 && e.betrag > 0)
+    : [];
+  const haushalt = (daten.haushalt ?? {}) as Record<string, unknown>;
+  const vermoegen = (daten.vermoegen ?? {}) as Record<string, unknown>;
+  ergebnis.haushalt = { einkuenfte: postenAusJson(haushalt.einkuenfte), ausgaben: postenAusJson(haushalt.ausgaben) };
+  ergebnis.vermoegen = { werte: postenAusJson(vermoegen.werte), verbindlichkeiten: postenAusJson(vermoegen.verbindlichkeiten) };
   return aufGesamtkaufpreis(ergebnis, daten.eingabeVersion);
+}
+
+function postenAusJson(roh: unknown): Bankunterlagenposten[] {
+  if (!Array.isArray(roh)) return [];
+  return roh
+    .filter((e): e is Record<string, unknown> => !!e && typeof e === "object")
+    .map((e) => ({
+      bezeichnung: typeof e.bezeichnung === "string" ? e.bezeichnung : "",
+      betrag: zahl(e.betrag),
+      ...(e.verpfaendet === true ? { verpfaendet: true } : {}),
+      ...(typeof e.herkunft === "string" && e.herkunft ? { herkunft: e.herkunft } : {}),
+    }));
 }
 
 /**

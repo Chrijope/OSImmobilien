@@ -5,10 +5,11 @@ import type { InvestmentEingabe, InvestmentErgebnis } from "@/lib/investmentrech
 import type { UnterlagenDaten, UnterlagenDokument } from "@/lib/investmentrechner/unterlagenAuslesen";
 import { DECKBLATT_STANDARD, type DeckblattVariante } from "@/lib/investmentrechner/deckblattWerte";
 import { hinweisOhneSteuerwirkung } from "@/lib/investmentrechner/dokumentTexte";
-import { Bankgespraech, Kaufpreisdetails, Kennzahlen, Steuerprofil, UnterlagenEinblicke } from "./Auswertungen";
+import { AmpelLeiste, Bankgespraech, Kaufpreisdetails, Kennzahlen, Steuerprofil, UnterlagenEinblicke } from "./Auswertungen";
+import { Neu } from "./Felder";
 import { DeckblattWahl, ErgebnisAltersvorsorge, ErgebnisAufEinenBlick, ErgebnisJahrFuerJahr } from "./Deckblatt";
 import { Minidiagramm, Vermoegensdiagramm, Zusammensetzung } from "./Diagramme";
-import { Cashflowtabelle, Darlehenstabelle, Steuertabelle } from "./Tabellen";
+import { Cashflowtabelle, Darlehenstabelle, Steuertabelle, zeigeDarlehenstabelle } from "./Tabellen";
 import { formatEuroCent, formatProzent } from "@/lib/investmentrechner/formatierer";
 import { Glossar } from "./Glossar";
 
@@ -65,7 +66,7 @@ export function Analyse({
         ) : deckblatt === "rente" ? (
           <ErgebnisAltersvorsorge input={input} result={result} sprache="de" />
         ) : (
-          <ErgebnisAufEinenBlick input={input} result={result} sprache="de" />
+          <ErgebnisAufEinenBlick input={input} result={result} sprache="de" mitAmpel />
         )}
         {/* Stand bis zum 07.10.2026 in der Cashflow-Leiste: ohne Einkommen oder Satz keine Steuerwirkung. */}
         {ohneSteuerwirkung && (
@@ -75,6 +76,17 @@ export function Analyse({
         )}
       </section>
       <Kennzahlen result={result} input={input} />
+      <article className="content-card ampel-card">
+        <div className="card-heading">
+          <div>
+            <span className="eyebrow">Einordnung</span>
+            <h3>
+              Ampel <Neu />
+            </h3>
+          </div>
+        </div>
+        <AmpelLeiste input={input} result={result} mitSchwellen />
+      </article>
       {/* Die Berechnung trägt den vollen Hinweis, die Analyse bis zum 30.09.2026 gar keinen. */}
       <p className="kachel-hinweis">{KENNZAHL_TEXTE.zusaetze.beispielrechnung}</p>
       {/* Der Weg zum Glossar ganz unten, direkt unter den Zahlen, nach denen man fragt. */}
@@ -184,7 +196,7 @@ export function Analyse({
         <Cashflowtabelle years={result.years} />
       </article>
       {/* Seit dem 07.10.2026: Mit KfW-Darlehen jedes Darlehen einzeln, ohne bleibt es bei der Tabelle darüber. */}
-      {result.kfwLoanAmount > 0 && (
+      {zeigeDarlehenstabelle(result) && (
         <article className="content-card">
           <div className="card-heading">
             <div>

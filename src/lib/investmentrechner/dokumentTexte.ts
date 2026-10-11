@@ -142,6 +142,9 @@ export interface DokumentTexte {
     steuereffekt: string;
     cfNachSteuer: string;
     eigenkapital: string;
+    /** Seit dem 11.10.2026, nur mit Anschlusszins oder Sondertilgung. */
+    zinsBank: string;
+    sondertilgung: string;
   };
   /** Die Darlehen einzeln je Jahr, seit dem 07.10.2026, nur mit KfW-Darlehen. */
   darlehenTabelle: {
@@ -150,6 +153,7 @@ export interface DokumentTexte {
     einleitung: string;
     jahr: string;
     bank: string;
+    bank2: string;
     kfw: string;
     nachrang: string;
     gesamt: string;
@@ -553,6 +557,8 @@ export const DOKUMENT_TEXTE_DE: DokumentTexte = {
     steuereffekt: "Steuereffekt",
     cfNachSteuer: "CF n. St.",
     eigenkapital: "Eigenkapital",
+    zinsBank: "Zins Bank",
+    sondertilgung: "Sondertilgung",
   },
   darlehenTabelle: {
     augenbraue: "Finanzierung",
@@ -560,6 +566,7 @@ export const DOKUMENT_TEXTE_DE: DokumentTexte = {
     einleitung: "Rate, Zinsen und Tilgung jedes Darlehens im Jahr, die Restschuld jeweils zum Jahresende. Die Spalte Gesamt ist die Summe aller Darlehen.",
     jahr: "Jahr",
     bank: "Bankdarlehen",
+    bank2: "2. Bankdarlehen",
     kfw: "KfW-Darlehen",
     nachrang: "Nachrangdarlehen",
     gesamt: "Gesamt",
@@ -974,6 +981,8 @@ export const DOKUMENT_TEXTE_EN: DokumentTexte = {
     steuereffekt: "Tax effect",
     cfNachSteuer: "CF after tax",
     eigenkapital: "Equity",
+    zinsBank: "Bank rate",
+    sondertilgung: "Special repayment",
   },
   darlehenTabelle: {
     augenbraue: "Financing",
@@ -981,6 +990,7 @@ export const DOKUMENT_TEXTE_EN: DokumentTexte = {
     einleitung: "Instalment, interest and repayment of each loan per year, the remaining debt at the end of each year. The Total column is the sum of all loans.",
     jahr: "Year",
     bank: "Bank loan",
+    bank2: "2nd bank loan",
     kfw: "KfW loan",
     nachrang: "Subordinated loan",
     gesamt: "Total",

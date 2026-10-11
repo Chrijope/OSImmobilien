@@ -36,6 +36,9 @@ export const GEMEINSAME_FELDER: readonly (keyof InvestmentEingabe)[] = [
   "marginalTaxRate",
   "startYear",
   "forecastYears",
+  // Haushalt und Vermögen gehören dem Kunden, nicht der Wohnung (seit dem 11.10.2026).
+  "haushalt",
+  "vermoegen",
 ];
 
 /** Kennzeichnung eines Objekts im Vergleich: Objekt A, Objekt B. */

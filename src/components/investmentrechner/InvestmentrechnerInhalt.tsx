@@ -4,6 +4,7 @@ import { vorbelegungAusInvestment } from "@/lib/investmentrechner/investmentVorb
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { createPortal } from "react-dom";
 import {
+  Banknote,
   Building2,
   Calculator,
   ChartColumn,
@@ -38,7 +39,7 @@ import {
   type InvestmentBerechnung,
 } from "@/lib/investmentBerechnungenStore";
 import { aufEigenSetzen, ohneAutomatik, setzeHerkunft, type Herkunft, type Herkunftseintrag } from "@/lib/investmentrechner/herkunft";
-import { kundenschritt, kundenUebernahmeFuer, type Kundenschritt } from "@/lib/investmentrechner/kundenUebernahme";
+import { kundenschritt, kundenUebernahmeFuer, selbstauskunftAus, type Kundenschritt } from "@/lib/investmentrechner/kundenUebernahme";
 import {
   berechneInvestment,
   standardEingabe,
@@ -72,10 +73,13 @@ import {
 } from "@/lib/investmentrechner/unterlagenKiFelder";
 import { felderAusUnterlagenAuslesen, UnterlagenKiFehler } from "@/lib/investmentrechner/unterlagenKiAufruf";
 import { ladeRechnerBilder, MAX_RECHNER_BILDER } from "@/lib/investmentrechner/rechnerBilder";
-import { Bereichsknopf, FeldetikettKontext } from "@/components/investmentrechner/Felder";
+import { Bereichsknopf, FeldetikettKontext, VorschauKontext } from "@/components/investmentrechner/Felder";
+import { bankunterlagenAusSa } from "@/lib/investmentrechner/bankunterlagen";
+import { formatStand, loadKundenkontext } from "@/lib/kundenkontextHelper";
 import { KundeUndInvestment, type KundenwahlKunde } from "@/components/investmentrechner/KundeUndInvestment";
 import type { KiAuslesung } from "@/components/investmentrechner/UnterlagenUebernahme";
 import {
+  EingabeBankunterlagen,
   EingabeErtrag,
   EingabeExpose,
   EingabeFinanzierung,
@@ -109,7 +113,10 @@ import "@/styles/investmentrechner.css";
  * src/lib/investmentrechner/objektvergleich.ts.
  */
 
-type Eingabebereich = "kunde" | "objekt" | "unterlagen" | "finanzierung" | "ertrag" | "steuer" | "expose";
+type Eingabebereich = "kunde" | "objekt" | "unterlagen" | "finanzierung" | "ertrag" | "steuer" | "expose" | "bankunterlagen";
+
+/** Der Hinweis, wenn etwas in der lokalen Vorschau ohne Datenbank nicht geht. */
+export const VORSCHAU_NICHT_VERFUEGBAR = "In der Vorschau nicht verfügbar";
 type Ansicht = "analyse" | "vergleich" | "expose";
 
 /** Klasse am body, solange die Seite offen ist. Nur dann greifen die Druckregeln. */
@@ -325,6 +332,14 @@ export interface InvestmentrechnerInhaltProps {
    * Berechnungen, dazu die Karte „Bankgespräch“ in der Analyse.
    */
   erweitert?: boolean;
+  /**
+   * Lokale Vorschau ohne Anmeldung und ohne Datenbank, seit dem 11.10.2026
+   * (/vorschau/investmentrechner, nur im Entwicklungsmodus). Speichern und
+   * KI melden dann „In der Vorschau nicht verfügbar“, alles Neue trägt das
+   * Etikett „NEU“. `selbstauskunft` ist eine Beispiel-Selbstauskunft für
+   * „Aus der Selbstauskunft übernehmen“.
+   */
+  vorschau?: { selbstauskunft?: unknown };
 }
 
 export function InvestmentrechnerInhalt({
@@ -334,6 +349,7 @@ export function InvestmentrechnerInhalt({
   onErgebnis,
   sichtbar = true,
   erweitert = false,
+  vorschau,
 }: InvestmentrechnerInhaltProps = {}) {
   const [objekte, setObjekte] = useState<Objektzustand[]>(() => {
     if (start?.berechnung) {
@@ -805,6 +821,10 @@ export function InvestmentrechnerInhalt({
 
   /** Die Rechnerfelder per KI aus den Unterlagen des aktiven Objekts holen. */
   const felderAuslesen = async () => {
+    if (vorschau) {
+      toast({ title: VORSCHAU_NICHT_VERFUEGBAR, description: "Die KI-Auslesung braucht die Datenbank und eine Anmeldung." });
+      return;
+    }
     const objektIndex = sicherIndex;
     setKiAuslesung({ objektIndex, status: "laedt", vorschlaege: [], hinweise: [], fehler: "", uebernommen: 0 });
     try {
@@ -959,11 +979,43 @@ export function InvestmentrechnerInhalt({
     });
   };
 
+  /**
+   * Haushaltsrechnung und Vermögensaufstellung aus der Selbstauskunft des
+   * gewählten Investments, seit dem 11.10.2026. Dieselbe Quelle wie die
+   * Übernahme von Einkommen und Steuerklasse (`selbstauskunftAus`).
+   */
+  const bankunterlagenAusSelbstauskunft = () => {
+    let sa: unknown = null;
+    let herkunft = "Aus der Selbstauskunft";
+    if (vorschau) {
+      sa = vorschau.selbstauskunft;
+      herkunft = "Aus der Selbstauskunft (Beispiel der Vorschau)";
+    } else if (kundeId && investmentId) {
+      sa = selbstauskunftAus(kundeId, investmentId);
+      const stand = formatStand(loadKundenkontext(kundeId, investmentId)?.saDatum);
+      if (stand) herkunft = `Aus der Selbstauskunft vom ${stand}`;
+    } else {
+      toast({ title: "Erst Kunde und Investment wählen", description: "Die Selbstauskunft gehört zum Investment, im Bereich „Kunde & Einkommen“." });
+      return;
+    }
+    const uebernahme = bankunterlagenAusSa(sa, herkunft);
+    if (!uebernahme) {
+      toast({ title: "Nichts zu übernehmen", description: "Die Selbstauskunft dieses Investments enthält keine Einkünfte, Ausgaben oder Vermögenswerte." });
+      return;
+    }
+    aendere(uebernahme);
+    toast({ title: "Aus der Selbstauskunft übernommen", description: "Unter jedem übernommenen Posten steht, woher er kommt. Wer den Betrag ändert, lässt den Hinweis verschwinden." });
+  };
+
   /* ── Am Investment speichern ── */
 
   const investment = investmentId ? getInvestmentById(investmentId) : undefined;
 
   const speichere = async (alsNeue: boolean) => {
+    if (vorschau) {
+      toast({ title: VORSCHAU_NICHT_VERFUEGBAR, description: "Speichern braucht die Datenbank. In der Vorschau bleibt alles nur in diesem Fenster." });
+      return;
+    }
     if (!investmentId || !kundeId || speichertGerade) return;
     /*
      * Speichern legt nur eine Berechnung am Investment an. Das Investment
@@ -1220,8 +1272,8 @@ export function InvestmentrechnerInhalt({
         <Button
           variant="outline"
           className="btn-brand-umriss gap-2"
-          disabled={!investmentId || speichertGerade}
-          title={investmentId ? undefined : "Erst Kunde und Investment im Bereich „Kunde & Einkommen“ wählen"}
+          disabled={(!investmentId && !vorschau) || speichertGerade}
+          title={investmentId || vorschau ? undefined : "Erst Kunde und Investment im Bereich „Kunde & Einkommen“ wählen"}
           onClick={() => void speichere(false)}
         >
           <Save size={16} /> Am Investment speichern
@@ -1243,6 +1295,7 @@ export function InvestmentrechnerInhalt({
   );
 
   return (
+    <VorschauKontext.Provider value={!!vorschau}>
     <FeldetikettKontext.Provider value={erweitert}>
       <div className="space-y-6 w-full">
         {mitUeberschrift ? (
@@ -1330,6 +1383,17 @@ export function InvestmentrechnerInhalt({
                   vermerk={objektVermerk}
                   onClick={() => setBereich("expose")}
                 />
+                {erweitert && (
+                  <Bereichsknopf
+                    active={bereich === "bankunterlagen"}
+                    icon={<Banknote size={17} />}
+                    label="Bankunterlagen"
+                    vermerk={alleVermerk}
+                    vermerkFuerAlle
+                    neu
+                    onClick={() => setBereich("bankunterlagen")}
+                  />
+                )}
                 {!vergleichAktiv && <ObjektHinzufuegen onClick={objektHinzufuegen} />}
               </nav>
               <div className="input-content">
@@ -1362,6 +1426,9 @@ export function InvestmentrechnerInhalt({
                 {bereich === "finanzierung" && <EingabeFinanzierung {...eingabeProps} />}
                 {bereich === "ertrag" && <EingabeErtrag {...eingabeProps} />}
                 {bereich === "steuer" && <EingabeSteuer {...eingabeProps} />}
+                {bereich === "bankunterlagen" && erweitert && (
+                  <EingabeBankunterlagen {...eingabeProps} onAusSelbstauskunft={bankunterlagenAusSelbstauskunft} />
+                )}
                 {bereich === "expose" && (
                   <EingabeExpose
                     photos={photos}
@@ -1481,5 +1548,6 @@ export function InvestmentrechnerInhalt({
         document.body,
       )}
     </FeldetikettKontext.Provider>
+    </VorschauKontext.Provider>
   );
 }

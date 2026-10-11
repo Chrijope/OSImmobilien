@@ -103,6 +103,9 @@ describe("Wo der Banner hingehört", () => {
       // Nur der gewünschte Dienst, ein Banner läge über den Bedienknöpfen.
       "/mobile-scan/:token",
       "/raum/:token",
+      // Lokale Vorschau, nur im Entwicklungsmodus (vorschauRouten.ts), nie auf Netlify.
+      "/vorschau/investmentrechner",
+      "/vorschau/investmentrechner-plus",
     ]);
     const ohneEntscheidung = routen
       // Hinter `PraesentationGuard` liegt eine Anmeldung, `Navigate` leitet

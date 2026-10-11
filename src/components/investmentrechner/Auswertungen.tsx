@@ -1,4 +1,8 @@
+import { useState } from "react";
+import { FileDown } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 import { eigenkapitalrendite, type InvestmentEingabe, type InvestmentErgebnis } from "@/lib/investmentrechner/rechenkern";
+import { haushaltsrechnung, vermoegensaufstellung } from "@/lib/investmentrechner/bankunterlagen";
 import {
   bankuebersicht,
   eigenkapitalrenditeOhneWertsteigerung,
@@ -16,7 +20,8 @@ import {
 } from "@/lib/investmentrechner/formatierer";
 import { KENNZAHL_TEXTE } from "@/lib/investmentrechner/kennzahlTexte";
 import { rechenwege } from "@/lib/investmentrechner/kennzahlErklaerungen";
-import { Kennzahlkarte } from "./Felder";
+import { AMPEL_WORT, Ampelpunkt, Kennzahlkarte, Neu } from "./Felder";
+import { AMPEL_SCHWELLEN, ampel, type Ampelschwelle } from "@/lib/investmentrechner/ampel";
 import { useRechnerTexte } from "./RechnerSprache";
 import { dokumentTexteFuer } from "@/lib/investmentrechner/dokumentTexte";
 import type { FormatSprache } from "@/lib/sprachFormat";
@@ -182,6 +187,23 @@ export function kaufpreisHinweis(result: InvestmentErgebnis, sprache: FormatSpra
  */
 export function Bankgespraech({ input, result }: { input: InvestmentEingabe; result: InvestmentErgebnis }) {
   const bank = bankuebersicht(input, result);
+  const [pdfEntsteht, setPdfEntsteht] = useState(false);
+  const haushaltAusgefuellt = (input.haushalt?.einkuenfte.length ?? 0) + (input.haushalt?.ausgaben.length ?? 0) > 0;
+  const vermoegenAusgefuellt = (input.vermoegen?.werte.length ?? 0) + (input.vermoegen?.verbindlichkeiten.length ?? 0) > 0;
+  const haushalt = haushaltAusgefuellt ? haushaltsrechnung(input.haushalt, result) : null;
+  const vermoegen = vermoegenAusgefuellt ? vermoegensaufstellung(input.vermoegen, result) : null;
+  const pdfLaden = async () => {
+    setPdfEntsteht(true);
+    try {
+      const { ladeBankgespraechPdfHerunter } = await import("@/lib/investmentrechner/berechnungPdf");
+      await ladeBankgespraechPdfHerunter(input, result);
+    } catch (fehler) {
+      console.error("[Bankgespräch] PDF fehlgeschlagen", fehler);
+      toast({ title: "PDF konnte nicht erstellt werden", description: "Bitte versuch es noch einmal.", variant: "destructive" });
+    } finally {
+      setPdfEntsteht(false);
+    }
+  };
   const letzter = result.years.length - 1;
   const risiken = [zinsrisiko(input, result, 0), letzter > 0 ? zinsrisiko(input, result, letzter) : null];
   const ekrMit = eigenkapitalrendite(input, result).rendite;
@@ -190,7 +212,7 @@ export function Bankgespraech({ input, result }: { input: InvestmentEingabe; res
   const prozent1 = (wert: number | null) => (wert === null ? "nicht bestimmbar" : formatProzentEineStelle(wert));
   const optional = (wert: number | null, format: (w: number) => string) => (wert === null ? "–" : format(wert));
 
-  const bloecke: { titel: string; zeilen: [string, string][]; hinweis?: string }[] = [
+  const bloecke: { titel: string; zeilen: [string, string][]; hinweis?: string; neu?: boolean }[] = [
     {
       titel: "Kapitalbedarf und Finanzierung",
       zeilen: [
@@ -205,10 +227,30 @@ export function Bankgespraech({ input, result }: { input: InvestmentEingabe; res
         ["Anfängliche Tilgung gewichtet", formatProzent(bank.tilgungGewichtet)],
         ["Kapitaldienst je Monat (Jahr 1)", formatEuroCent(bank.kapitaldienstMonat)],
         ["Bankdarlehen voll getilgt", optional(bank.volltilgungBank, String)],
+        ...(bank.volltilgungZweites !== null
+          ? [["2. Bankdarlehen voll getilgt", String(bank.volltilgungZweites)] as [string, string]]
+          : []),
         ...(bank.volltilgungNachrang !== null
           ? [["Nachrangdarlehen voll getilgt", String(bank.volltilgungNachrang)] as [string, string]]
           : []),
       ],
+    },
+    {
+      titel: "Zinsbindung und Anschluss",
+      neu: true,
+      zeilen: [
+        ...(bank.restschuldZinsbindung
+          ? [[`Restschuld Bankdarlehen Ende ${bank.restschuldZinsbindung.jahr}`, formatEuro(bank.restschuldZinsbindung.betrag)] as [string, string]]
+          : []),
+        ["Anschlusszins angenommen", bank.anschlusszins === null ? "keiner, Zins von heute" : formatProzent(bank.anschlusszins)],
+        ...(result.sondertilgungenGesamt > 0
+          ? [["Sondertilgungen im Prognosezeitraum", formatEuro(result.sondertilgungenGesamt)] as [string, string]]
+          : []),
+        ...((result.secondLoanAmount ?? 0) > 0
+          ? [["Zweites Bankdarlehen", formatEuro(result.secondLoanAmount)] as [string, string]]
+          : []),
+      ],
+      hinweis: "Mit Anschlusszins rechnen Cashflow, Steuer, Restschuld und das Zinsänderungsrisiko unten ab dem Jahr nach der Zinsbindung mit ihm.",
     },
     {
       titel: "Objekt und Kapitaldienstfähigkeit",
@@ -242,6 +284,37 @@ export function Bankgespraech({ input, result }: { input: InvestmentEingabe; res
       ],
       hinweis: "Ohne Wertsteigerung zählt nur, was Tilgung und Rücklage aufbauen.",
     },
+    ...(haushalt
+      ? [
+          {
+            titel: "Haushaltsrechnung je Monat",
+            neu: true,
+            zeilen: [
+              ["Einkünfte", formatEuroCent(haushalt.einkuenfteMonat)],
+              ["Ausgaben", formatEuroCent(haushalt.ausgabenMonat)],
+              ["Überschuss vor dem Investment", formatEuroCent(haushalt.ueberschussVorMonat)],
+              ["Überschuss nach dem Investment (ohne Steuer)", formatEuroCent(haushalt.ueberschussNachMonat)],
+              ["… mit Steuerwirkung im ersten Jahr", formatEuroCent(haushalt.ueberschussNachMitSteuerMonat)],
+            ] as [string, string][],
+            hinweis: "Miete, Rate und Bewirtschaftung der Wohnung kommen aus der Berechnung. Je Jahr mal 12, im Bankgespräch-PDF ausgewiesen.",
+          },
+        ]
+      : []),
+    ...(vermoegen
+      ? [
+          {
+            titel: "Vermögensaufstellung",
+            neu: true,
+            zeilen: [
+              ["Vermögenswerte", formatEuro(vermoegen.werte)],
+              ["davon verpfändet", formatEuro(vermoegen.davonVerpfaendet)],
+              ["Verbindlichkeiten", formatEuro(vermoegen.verbindlichkeiten)],
+              ["Differenz", formatEuro(vermoegen.differenz)],
+              ["Differenz mit Wohnung und neuen Darlehen", formatEuro(vermoegen.differenzNachKauf)],
+            ] as [string, string][],
+          },
+        ]
+      : []),
     ...(grenze
       ? [
           {
@@ -261,9 +334,21 @@ export function Bankgespraech({ input, result }: { input: InvestmentEingabe; res
 
   return (
     <div className="bankgespraech">
+      <div className="bankgespraech-pdf">
+        <button type="button" className="button button-primary" disabled={pdfEntsteht} onClick={() => void pdfLaden()}>
+          <FileDown size={14} /> {pdfEntsteht ? "PDF wird erstellt …" : "Bankgespräch-PDF"}
+        </button>
+        <Neu titel="Investitionsübersicht, Haushaltsrechnung und Vermögensaufstellung als eine Unterlage" />
+        {!haushalt && !vermoegen && (
+          <span className="kachel-hinweis">Haushaltsrechnung und Vermögensaufstellung im Bereich „Bankunterlagen“ links ausfüllen, dann stehen sie mit im PDF.</span>
+        )}
+      </div>
       {bloecke.map((block) => (
         <section key={block.titel}>
-          <h4>{block.titel}</h4>
+          <h4>
+            {block.titel}
+            {block.neu && <Neu />}
+          </h4>
           <div className="tax-profile-grid">
             {block.zeilen.map(([label, wert]) => (
               <div key={label}>
@@ -275,6 +360,63 @@ export function Bankgespraech({ input, result }: { input: InvestmentEingabe; res
           {block.hinweis && <p className="kachel-hinweis">{block.hinweis}</p>}
         </section>
       ))}
+    </div>
+  );
+}
+
+function ampelwert(wert: number | null, schwelle: Pick<Ampelschwelle, "einheit">): string {
+  if (wert === null) return "nicht bestimmbar";
+  return schwelle.einheit === "prozent" ? formatProzent(wert) : `${formatEuro(wert)} / Monat`;
+}
+
+/**
+ * Die Ampel der fünf Kennzahlen, seit dem 11.10.2026. `mitSchwellen` zeigt
+ * darunter, ab wann welche Farbe gilt, damit niemand raten muss.
+ */
+export function AmpelLeiste({ input, result, mitSchwellen = false }: { input: InvestmentEingabe; result: InvestmentErgebnis; mitSchwellen?: boolean }) {
+  const zeilen = ampel(input, result);
+  return (
+    <div data-testid="ampel">
+      <div className="ampel-leiste">
+        {zeilen.map((z) => (
+          <div key={z.kennzahl}>
+            <small>{z.schwelle.label}</small>
+            <strong>
+              <Ampelpunkt farbe={z.farbe} />
+              {ampelwert(z.wert, z.schwelle)}
+            </strong>
+            {z.farbe && <span className="ampel-wort">{AMPEL_WORT[z.farbe]}</span>}
+          </div>
+        ))}
+      </div>
+      {mitSchwellen && (
+        <>
+          <table className="ampel-schwellen">
+            <thead>
+              <tr>
+                <th>Kennzahl</th>
+                <th>Grün ab</th>
+                <th>Gelb ab</th>
+                <th>Rot</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.values(AMPEL_SCHWELLEN).map((s) => (
+                <tr key={s.label} title={s.erklaerung}>
+                  <td>{s.label}</td>
+                  <td>{ampelwert(s.gruenAb, s)}</td>
+                  <td>{ampelwert(s.gelbAb, s)}</td>
+                  <td>darunter</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p className="kachel-hinweis">
+            Vorschlag, noch nicht abgestimmt. Cashflows im ersten Jahr je Monat. Die Schwellen stehen an einer Stelle
+            (ampel.ts) und sollen später in den Einstellungen für Admins änderbar sein.
+          </p>
+        </>
+      )}
     </div>
   );
 }
@@ -410,14 +552,15 @@ export function UnterlagenEinblicke({ data, compact = false }: UnterlagenEinblic
 export function Kennzahlen({ result, input }: { result: InvestmentErgebnis; input: InvestmentEingabe }) {
   const texte = KENNZAHL_TEXTE.kacheln;
   const wege = rechenwege(input, result);
+  const farben = Object.fromEntries(ampel(input, result).map((z) => [z.kennzahl, z.farbe]));
   const letztesJahr = result.years[result.years.length - 1];
   const zahltZu = letztesJahr.cumulativeEigenanteil > 0;
   return (
     <div className="metrics-grid">
       <Kennzahlkarte label={texte.kaltmiete} value={formatEuro(result.effectiveAnnualRent / 12)} rechenweg={wege.kaltmiete} />
       <Kennzahlkarte label={texte.kreditrate} value={formatEuroCent(result.monthlyDebtService)} rechenweg={wege.kreditrate} />
-      <Kennzahlkarte label={texte.bruttorendite} value={formatProzent(result.grossYield)} rechenweg={wege.bruttorendite} />
-      <Kennzahlkarte label={texte.nettorendite} value={formatProzent(result.netYield)} rechenweg={wege.nettorendite} />
+      <Kennzahlkarte label={texte.bruttorendite} value={formatProzent(result.grossYield)} rechenweg={wege.bruttorendite} ampel={farben.bruttorendite} />
+      <Kennzahlkarte label={texte.nettorendite} value={formatProzent(result.netYield)} rechenweg={wege.nettorendite} ampel={farben.nettorendite} />
       <Kennzahlkarte
         label={texte.immobilienwert(letztesJahr.year)}
         value={formatEuro(letztesJahr.propertyValue)}

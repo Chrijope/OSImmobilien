@@ -52,6 +52,8 @@ import {
   type Vergleichszeile,
 } from "./objektvergleich";
 import { kaufpreisHinweis, kaufpreiszeilen } from "@/components/investmentrechner/Auswertungen";
+import { bankuebersicht } from "./bankgespraech";
+import { haushaltMitVorlage, haushaltsrechnung, vermoegenMitVorlage, vermoegensaufstellung } from "./bankunterlagen";
 import { VERGLEICHSSEITE_KENNZAHLEN } from "@/components/investmentrechner/ExposeDokument";
 
 /** Ein Objekt mit allem, was seine Berechnung braucht, wie `ExposeObjekt`. */
@@ -1024,6 +1026,148 @@ export async function erzeugeBerechnungPdf(objekte: BerechnungPdfObjekt[], sprac
 export async function ladeBerechnungPdfHerunter(objekte: BerechnungPdfObjekt[], sprache: FormatSprache = "de"): Promise<string> {
   const doc = await erzeugeBerechnungPdf(objekte, sprache);
   const name = berechnungPdfDateiname(objekte, sprache);
+  doc.save(name);
+  return name;
+}
+
+/** Dateiname des Bankgespräch-PDFs, ohne Kundennamen wie die Berechnung. */
+export function bankgespraechPdfDateiname(input: Pick<InvestmentEingabe, "propertyTitle">, datum: Date = new Date()): string {
+  return berechnungPdfDateiname([{ input: input as InvestmentEingabe }], "de", datum).replace(/^Berechnung_/, "Bankgespraech_");
+}
+
+/**
+ * Unterlage fürs Bankgespräch, seit dem 11.10.2026: Investitionsübersicht,
+ * Darlehensverlauf, Haushaltsrechnung und Vermögensaufstellung in einem PDF,
+ * im selben Haus-Design wie die Berechnung. Immer Deutsch, sie geht an die
+ * Bank. Gerechnet wird in bankgespraech.ts und bankunterlagen.ts.
+ */
+export async function erzeugeBankgespraechPdf(input: InvestmentEingabe, result: InvestmentErgebnis): Promise<jsPDF> {
+  const doc = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait", compress: true });
+  await ensureUnicodeFont(doc);
+  const [logo, icon] = await Promise.all([loadLogo(), loadIcon()]);
+  const euro = (wert: number) => formatEuro(wert, "de");
+  const euroCent = (wert: number) => formatEuroCent(wert, "de");
+  const prozent = (wert: number) => formatProzent(wert, "de");
+  const bank = bankuebersicht(input, result);
+
+  addCoverPage(doc, icon, {
+    sprache: "de",
+    kennung: "Unterlagen für das Bankgespräch",
+    titel: input.propertyTitle || "Investmentobjekt",
+    untertitel: input.address || undefined,
+    empfaenger: input.clientName.trim() || undefined,
+  });
+
+  const l: Lauf = { doc, logo, kopf: "Bankgespräch", y: 0, sprache: "de", t: dokumentTexteFuer("de"), k: kennzahlTexteFuer("de") };
+  neueSeite(l);
+
+  augenbraue(l, "Teil 1");
+  ueberschrift(l, "Investitionsübersicht");
+  zeile(l, "Kaufpreis", euro(bank.kaufpreis));
+  if (bank.kaufnebenkosten > 0) zeile(l, "Kaufnebenkosten", euro(bank.kaufnebenkosten));
+  zeile(l, "Gesamtkosten", euro(bank.gesamtkosten), true);
+  zeile(l, "Eigenkapital", euro(bank.eigenkapital));
+  zeile(l, "Bankdarlehen", euro(result.seniorLoanAmount));
+  if (result.secondLoanAmount > 0) zeile(l, "Zweites Bankdarlehen", euro(result.secondLoanAmount));
+  if (result.kfwLoanAmount > 0) zeile(l, `KfW-Darlehen${input.kfwProgram ? ` (${input.kfwProgram})` : ""}`, euro(result.kfwLoanAmount));
+  if (input.juniorLoanAmount > 0) zeile(l, "Nachrangdarlehen", euro(result.totalDebt - result.seniorLoanAmount - result.kfwLoanAmount - result.secondLoanAmount));
+  zeile(l, "Darlehen gesamt", euro(bank.darlehen), true);
+  zeile(l, "Darlehen in % des Kaufpreises", prozent(bank.beleihungKaufpreis));
+  zeile(l, "Zinssatz gewichtet / anfängliche Tilgung gewichtet", `${prozent(bank.mischzins)} / ${prozent(bank.tilgungGewichtet)}`);
+  zeile(l, "Kapitaldienst je Monat (Jahr 1)", euroCent(bank.kapitaldienstMonat));
+  zeile(l, "Miete abzüglich Hausgeld und Rücklage je Monat", euroCent(bank.mietueberschussMonat));
+  if (bank.kapitaldienstdeckung !== null) zeile(l, "Kapitaldienstdeckung (DSCR)", `${formatZahl(bank.kapitaldienstdeckung, "de", 2)}-fach`);
+  if (bank.kaufpreisfaktor !== null) zeile(l, "Kaufpreisfaktor", `${formatZahl(bank.kaufpreisfaktor, "de", 1)}-fach`);
+  zeile(l, "Bruttomietrendite / Nettomietrendite", `${prozent(result.grossYield)} / ${prozent(result.netYield)}`);
+  if (bank.restschuldZinsbindung) zeile(l, `Restschuld Bankdarlehen Ende ${bank.restschuldZinsbindung.jahr}`, euro(bank.restschuldZinsbindung.betrag));
+  zeile(l, "Anschlusszins angenommen", bank.anschlusszins === null ? "keiner, Zins von heute" : prozent(bank.anschlusszins));
+  if (bank.volltilgungBank !== null) zeile(l, "Bankdarlehen voll getilgt", String(bank.volltilgungBank));
+
+  ueberschrift(l, "Darlehensverlauf");
+  const mitSonder = result.sondertilgungenGesamt > 0;
+  tabelle(
+    l,
+    [
+      { titel: "Jahr", anteil: 0.8, links: true },
+      { titel: "Zins Bank", anteil: 1 },
+      { titel: "Rate im Jahr", anteil: 1.4 },
+      { titel: "Zinsen", anteil: 1.3 },
+      { titel: "Tilgung", anteil: 1.3 },
+      ...(mitSonder ? [{ titel: "davon Sondertilgung", anteil: 1.4 }] : []),
+      { titel: "Restschuld", anteil: 1.5 },
+    ],
+    result.years.map((jahr) => [
+      String(jahr.year),
+      jahr.darlehen.bank.zinssatz ? prozent(jahr.darlehen.bank.zinssatz) : "",
+      euro(jahr.debtService),
+      euro(jahr.interest),
+      euro(jahr.principal),
+      ...(mitSonder ? [euro(jahr.sondertilgung)] : []),
+      euro(jahr.remainingDebt),
+    ]),
+  );
+
+  const haushalt = haushaltsrechnung(haushaltMitVorlage(input.haushalt), result);
+  neueSeite(l);
+  augenbraue(l, "Teil 2");
+  ueberschrift(l, "Haushaltsrechnung");
+  const monatJahr = (wert: number): [string, string] => [euroCent(wert), euro(wert * 12)];
+  const posten = haushaltMitVorlage(input.haushalt);
+  tabelle(
+    l,
+    [
+      { titel: "Posten", anteil: 3, links: true },
+      { titel: "je Monat", anteil: 1.2 },
+      { titel: "je Jahr", anteil: 1.2 },
+    ],
+    [
+      ...posten.einkuenfte.map((p) => [p.bezeichnung || "Einkünfte", ...monatJahr(p.betrag)]),
+      ["Summe Einkünfte", ...monatJahr(haushalt.einkuenfteMonat)],
+      ...posten.ausgaben.map((p) => [p.bezeichnung || "Ausgaben", ...monatJahr(-p.betrag)]),
+      ["Summe Ausgaben", ...monatJahr(-haushalt.ausgabenMonat)],
+      ["Überschuss vor dem Investment", ...monatJahr(haushalt.ueberschussVorMonat)],
+      ["+ Kaltmiete der Wohnung (nach Leerstand)", ...monatJahr(haushalt.mieteMonat)],
+      ["− Kreditrate", ...monatJahr(-haushalt.rateMonat)],
+      ["− nicht umlagefähige Bewirtschaftung und Rücklage", ...monatJahr(-haushalt.bewirtschaftungMonat)],
+      ["Überschuss nach dem Investment (ohne Steuer)", ...monatJahr(haushalt.ueberschussNachMonat)],
+      ["Steuerwirkung im ersten Jahr", ...monatJahr(haushalt.steuerwirkungMonat)],
+      ["Überschuss nach dem Investment mit Steuerwirkung", ...monatJahr(haushalt.ueberschussNachMitSteuerMonat)],
+    ],
+  );
+  absatz(l, "Miete, Rate und Bewirtschaftung stammen aus der Investmentberechnung, erstes Jahr. Angaben des Kunden ohne Gewähr.", 7.5, BRAND.muted);
+
+  const vPosten = vermoegenMitVorlage(input.vermoegen);
+  const vermoegen = vermoegensaufstellung(vPosten, result);
+  ueberschrift(l, "Vermögensaufstellung");
+  tabelle(
+    l,
+    [
+      { titel: "Posten", anteil: 3, links: true },
+      { titel: "verpfändet", anteil: 1 },
+      { titel: "Betrag", anteil: 1.4 },
+    ],
+    [
+      ...vPosten.werte.map((p) => [p.bezeichnung || "Vermögenswert", p.verpfaendet ? "ja" : "nein", euro(p.betrag)]),
+      ["Summe Vermögenswerte", euro(vermoegen.davonVerpfaendet), euro(vermoegen.werte)],
+      ...vPosten.verbindlichkeiten.map((p) => [p.bezeichnung || "Verbindlichkeit", "", euro(-p.betrag)]),
+      ["Summe Verbindlichkeiten", "", euro(-vermoegen.verbindlichkeiten)],
+      ["Differenz", "", mitTon(vermoegen.differenz, euro(vermoegen.differenz), false)],
+      ["+ Wohnung (Kaufpreis) − neue Darlehen", "", euro(vermoegen.kaufpreis - vermoegen.neueDarlehen)],
+      ["Differenz nach dem Kauf", "", mitTon(vermoegen.differenzNachKauf, euro(vermoegen.differenzNachKauf), false)],
+    ],
+  );
+
+  const seiten = doc.getNumberOfPages();
+  for (let seite = 2; seite <= seiten; seite++) {
+    doc.setPage(seite);
+    addBrandedFooter(doc, seite, seiten);
+  }
+  return doc;
+}
+
+export async function ladeBankgespraechPdfHerunter(input: InvestmentEingabe, result: InvestmentErgebnis): Promise<string> {
+  const doc = await erzeugeBankgespraechPdf(input, result);
+  const name = bankgespraechPdfDateiname(input);
   doc.save(name);
   return name;
 }

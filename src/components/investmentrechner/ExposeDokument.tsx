@@ -33,7 +33,7 @@ import { Kennzahlkarte, Objektkarte } from "./Felder";
 import { DeckblattAltersvorsorge, DeckblattAufEinenBlick, DeckblattJahrFuerJahr } from "./Deckblatt";
 import { kaufpreisHinweis, kaufpreiszeilen, Steuerprofil, UnterlagenEinblicke } from "./Auswertungen";
 import { Vermoegensdiagramm, Zusammensetzung, Zweireihendiagramm } from "./Diagramme";
-import { Cashflowtabelle, Darlehenstabelle, Steuertabelle } from "./Tabellen";
+import { Cashflowtabelle, Darlehenstabelle, Steuertabelle, zeigeDarlehenstabelle } from "./Tabellen";
 import { Glossar } from "./Glossar";
 import { RechnerSpracheContext } from "./RechnerSprache";
 
@@ -83,7 +83,7 @@ const SEITEN_JE_OBJEKT = 8;
 
 /** Mit KfW-Darlehen kommt die Seite „Darlehen je Jahr“ dazu. */
 function seitenJeObjekt(result: InvestmentErgebnis): number {
-  return SEITEN_JE_OBJEKT + (result.kfwLoanAmount > 0 ? 1 : 0);
+  return SEITEN_JE_OBJEKT + (zeigeDarlehenstabelle(result) ? 1 : 0);
 }
 
 function Zeile({ label, value, strong = false }: { label: string; value: string; strong?: boolean }) {
@@ -155,6 +155,8 @@ export function ExposeDokument({
   const ekr = eigenkapitalrendite(input, result);
   const ks = t.kennzahlenSeite;
   const kfw = result.kfwLoanAmount > 0;
+  // Seit dem 11.10.2026 auch mit zweitem Darlehen, Sondertilgung oder Anschlusszins.
+  const darlehensseite = zeigeDarlehenstabelle(result);
   const zuschussJahr = Math.round(input.kfwGrantYear);
   const zusatzseiten = seitenJeObjekt(result) - SEITEN_JE_OBJEKT;
   const prozentZahl = (wert: number) => (sprache === "en" ? `${zahl(wert)}%` : `${zahl(wert)} %`);
@@ -231,6 +233,7 @@ export function ExposeDokument({
             <h3>{t.deckblatt.finanzierungSteuer}</h3>
             <Zeile label={t.deckblatt.bankdarlehen} value={euro(result.seniorLoanAmount)} />
             {kfw && <Zeile label={t.deckblatt.kfwDarlehen(input.kfwProgram.trim())} value={euro(result.kfwLoanAmount)} />}
+            {result.secondLoanAmount > 0 && <Zeile label={t.darlehenTabelle.bank2} value={euro(result.secondLoanAmount)} />}
             {input.juniorLoanAmount > 0 && <Zeile label={t.deckblatt.nachrangdarlehen} value={euro(input.juniorLoanAmount)} />}
             <Zeile
               label={t.deckblatt.zinsTilgung}
@@ -534,7 +537,7 @@ export function ExposeDokument({
       </section>
 
       {/* Seit dem 07.10.2026, nur mit KfW-Darlehen: jedes Darlehen einzeln, auf eigener Seite, weil die Tabellenseite voll ist. */}
-      {kfw && (
+      {darlehensseite && (
         <section className="expose-page table-page loans-page">
           <Seitenkopf clientName={input.clientName} marke={marke} sprache={sprache} />
           <span className="eyebrow">{t.darlehenTabelle.augenbraue}</span>

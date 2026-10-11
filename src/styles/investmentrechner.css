@@ -4459,3 +4459,141 @@
 .investmentrechner .feldetikett-legende .feldetikett:not(:first-child) {
   margin-left: 10px;
 }
+
+/* Etikett „NEU“, nur in der lokalen Vorschau der Etappen vom 11.10.2026. */
+.neu-etikett {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 5px;
+  border-radius: 4px;
+  background: #e5007d;
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+  vertical-align: middle;
+}
+
+/* Ampel, seit dem 11.10.2026. Farbe immer mit Wort, nie allein. */
+.investmentrechner .ampel-punkt {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-right: 5px;
+  border-radius: 50%;
+  vertical-align: baseline;
+}
+.investmentrechner .ampel-gruen { background: var(--green); }
+.investmentrechner .ampel-gelb { background: #e0a800; }
+.investmentrechner .ampel-rot { background: var(--red); }
+.investmentrechner .ampel-leiste {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+}
+.investmentrechner .ampel-leiste > div {
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--flaeche);
+}
+.investmentrechner .ampel-leiste small {
+  display: block;
+  color: var(--text-3);
+  font-size: 0.7rem;
+}
+.investmentrechner .ampel-leiste strong {
+  display: block;
+  font-size: 0.95rem;
+}
+.investmentrechner .ampel-leiste .ampel-wort {
+  font-size: 0.7rem;
+  color: var(--text-2);
+}
+.investmentrechner .ampel-schwellen {
+  width: 100%;
+  margin-top: 10px;
+  font-size: 0.74rem;
+  border-collapse: collapse;
+}
+.investmentrechner .ampel-schwellen th,
+.investmentrechner .ampel-schwellen td {
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--linie-zart);
+  text-align: left;
+}
+
+/* Sondertilgungen und Bankunterlagen: Listen mit Zeilen. */
+.investmentrechner .zeilenliste {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.investmentrechner .zeilenliste-zeile {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 120px auto;
+  gap: 6px;
+  align-items: start;
+}
+.investmentrechner .zeilenliste-zeile.mit-pfand {
+  grid-template-columns: minmax(0, 1fr) 120px auto auto;
+}
+.investmentrechner .zeilenliste input[type="text"],
+.investmentrechner .zeilenliste input[type="number"] {
+  width: 100%;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--text-1);
+  font: inherit;
+  font-size: 0.82rem;
+}
+.investmentrechner .zeilenliste .zeilen-herkunft {
+  grid-column: 1 / -1;
+  margin-top: -3px;
+  font-size: 0.68rem;
+  color: var(--gruen-tief);
+}
+.investmentrechner .zeilenliste label.pfand {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+.investmentrechner .summenzeile {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-top: 1px solid var(--linie-stark);
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+.investmentrechner .summenzeile.leise {
+  border-top: 0;
+  font-weight: 400;
+  color: var(--text-2);
+}
+@media (max-width: 520px) {
+  .investmentrechner .zeilenliste-zeile,
+  .investmentrechner .zeilenliste-zeile.mit-pfand {
+    grid-template-columns: minmax(0, 1fr) 100px auto;
+  }
+}
+.investmentrechner .db-ampel {
+  margin-top: 14px;
+}
+.investmentrechner .db-ampel h3 {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+}
+.investmentrechner .bankgespraech-pdf {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 14px;
+}

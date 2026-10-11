@@ -14,6 +14,8 @@
 import {
   annuitaetsjahr,
   ausgewiesenerKaufpreis,
+  banktilgungsplan,
+  sondertilgungenJeJahr,
   eigenkapitalrendite,
   prozentAnteil,
   standardEingabe,
@@ -211,6 +213,22 @@ export interface Bankuebersicht {
   kapitaldienstdeckung: number | null;
   volltilgungBank: number | null;
   volltilgungNachrang: number | null;
+  /** Seit dem 11.10.2026: das zweite Bankdarlehen, `null` ohne. */
+  volltilgungZweites: number | null;
+  /** Restschuld des Bankdarlehens am Ende der Zinsbindung, `null` ohne Zinsbindung oder Darlehen. */
+  restschuldZinsbindung: { jahr: number; betrag: number } | null;
+  /** Anschlusszins des Bankdarlehens als Faktor, `null` wenn keiner eingetragen ist. */
+  anschlusszins: number | null;
+}
+
+/**
+ * Jahr der Volltilgung aus dem echten Plan des Bankdarlehens, also mit
+ * Anschlusszins und Sondertilgungen (seit dem 11.10.2026). Ohne beides ist es
+ * dasselbe Jahr wie `volltilgungsjahr`.
+ */
+function volltilgungAusPlan(plan: { closingBalance: number }[], startjahr: number): number | null {
+  const index = plan.findIndex((jahr) => jahr.closingBalance < 0.005);
+  return index >= 0 ? Math.round(startjahr) + index : null;
 }
 
 /**
@@ -229,14 +247,27 @@ export function bankuebersicht(input: InvestmentEingabe, result: InvestmentErgeb
     : 0;
   const kapitaldienstMonat = erstes ? erstes.debtService / 12 : result.monthlyDebtService;
   const kfwTilgung = result.kfwLoanAmount > 0 ? (result.years[0]?.darlehen.kfw.principal ?? 0) : 0;
-  const juniorLoan = result.totalDebt - result.seniorLoanAmount - result.kfwLoanAmount;
+  const zweites = result.secondLoanAmount ?? 0;
+  const juniorLoan = result.totalDebt - result.seniorLoanAmount - result.kfwLoanAmount - zweites;
   const tilgungGewichtet =
     result.totalDebt > 0
       ? (result.seniorLoanAmount * prozentAnteil(t.seniorRepaymentRate) +
           juniorLoan * prozentAnteil(t.juniorRepaymentRate) +
+          zweites * prozentAnteil(t.secondRepaymentRate) +
           kfwTilgung) /
         result.totalDebt
       : 0;
+  const bankplan = banktilgungsplan({
+    betrag: result.seniorLoanAmount,
+    zinsProzent: t.seniorInterestRate,
+    tilgungProzent: t.seniorRepaymentRate,
+    zinsbindungJahre: t.seniorFixedRateYears,
+    anschlusszinsProzent: t.seniorFollowUpRate,
+    neueTilgungProzent: t.seniorFollowUpRepaymentRate,
+    sondertilgungen: sondertilgungenJeJahr(t.specialRepayments, t.startYear, result.years.length),
+    jahre: 100,
+  });
+  const bindung = Math.round(t.seniorFixedRateYears);
   return {
     kaufpreis,
     kaufnebenkosten: result.purchaseCosts,
@@ -253,7 +284,27 @@ export function bankuebersicht(input: InvestmentEingabe, result: InvestmentErgeb
     kapitaldienstMonat,
     mietueberschussMonat,
     kapitaldienstdeckung: kapitaldienstMonat > 0 ? mietueberschussMonat / kapitaldienstMonat : null,
-    volltilgungBank: volltilgungsjahr(result.seniorLoanAmount, t.seniorInterestRate, t.seniorRepaymentRate, t.startYear),
+    volltilgungBank: result.seniorLoanAmount > 0 && t.seniorRepaymentRate > 0 ? volltilgungAusPlan(bankplan, t.startYear) : null,
     volltilgungNachrang: volltilgungsjahr(juniorLoan, t.juniorInterestRate, t.juniorRepaymentRate, t.startYear),
+    volltilgungZweites:
+      zweites > 0 && t.secondRepaymentRate > 0
+        ? volltilgungAusPlan(
+            banktilgungsplan({
+              betrag: zweites,
+              zinsProzent: t.secondInterestRate,
+              tilgungProzent: t.secondRepaymentRate,
+              zinsbindungJahre: t.secondFixedRateYears,
+              anschlusszinsProzent: t.secondFollowUpRate,
+              neueTilgungProzent: 0,
+              jahre: 100,
+            }),
+            t.startYear,
+          )
+        : null,
+    restschuldZinsbindung:
+      result.seniorLoanAmount > 0 && bindung >= 1
+        ? { jahr: Math.round(t.startYear) + bindung - 1, betrag: bankplan[bindung - 1].closingBalance }
+        : null,
+    anschlusszins: t.seniorFollowUpRate > 0 ? prozentAnteil(t.seniorFollowUpRate) : null,
   };
 }

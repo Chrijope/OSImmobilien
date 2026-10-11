@@ -8,8 +8,8 @@ import { kennzahlTexteFuer } from "@/lib/investmentrechner/kennzahlTexte";
 import { deckblattWerte, type DeckblattVariante, type DeckblattWerte } from "@/lib/investmentrechner/deckblattWerte";
 import { altersvorsorge } from "@/lib/investmentrechner/altersvorsorge";
 import { SPRACH_LOCALE, datumText, type FormatSprache } from "@/lib/sprachFormat";
-import { kaufpreiszeilen } from "./Auswertungen";
-import { mitVorzeichen } from "./Felder";
+import { AmpelLeiste, kaufpreiszeilen } from "./Auswertungen";
+import { mitVorzeichen, Neu } from "./Felder";
 
 /*
  * Die beiden Deckblätter der Berechnung, seit dem 07.10.2026. Der Berater
@@ -176,6 +176,12 @@ export interface ErgebnisProps {
   input: InvestmentEingabe;
   result: InvestmentErgebnis;
   sprache: FormatSprache;
+  /**
+   * Die Ampel unter den Steuerkästen, seit dem 11.10.2026. Nur die Analyse
+   * schaltet sie ein; ob sie auch auf das Deckblatt im Kunden-PDF gehört,
+   * entscheidet Christian noch.
+   */
+  mitAmpel?: boolean;
 }
 
 /**
@@ -183,7 +189,7 @@ export interface ErgebnisProps {
  * Vermögen und die Steuervorteile. Steht auf dem Deckblatt und, seit dem
  * 07.10.2026, auch oben in der Analyse, damit Bildschirm und PDF dasselbe zeigen.
  */
-export function ErgebnisAufEinenBlick({ input, result, sprache }: ErgebnisProps) {
+export function ErgebnisAufEinenBlick({ input, result, sprache, mitAmpel = false }: ErgebnisProps) {
   const d = dokumentTexteFuer(sprache).deckblaetter;
   const k = kennzahlTexteFuer(sprache);
   const { euro, euroCent, prozentZahl } = formate(sprache);
@@ -206,7 +212,7 @@ export function ErgebnisAufEinenBlick({ input, result, sprache }: ErgebnisProps)
   ];
   // Ohne Nachrangdarlehen gehören Zins und Tilgung eindeutig zu einer Rate; mit KfW zählt der Mischzins.
   const kreditrate =
-    result.kfwLoanAmount > 0
+    result.kfwLoanAmount > 0 || (result.secondLoanAmount ?? 0) > 0
       ? d.kreditrateMischzins(formatProzent(result.mischzins, sprache))
       : input.juniorLoanAmount > 0
         ? d.kreditrateOhneSaetze
@@ -316,6 +322,14 @@ export function ErgebnisAufEinenBlick({ input, result, sprache }: ErgebnisProps)
           <span>{w.steuerSumme >= 0 ? d.steuerGesamt(anzahl) : d.steuerwirkungGesamt(anzahl)}</span>
         </div>
       </div>
+      {mitAmpel && (
+        <div className="db-ampel">
+          <h3>
+            Ampel <Neu />
+          </h3>
+          <AmpelLeiste input={input} result={result} />
+        </div>
+      )}
     </>
   );
 }

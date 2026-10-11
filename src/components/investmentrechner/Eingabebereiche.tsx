@@ -2,9 +2,11 @@ import { useState, type ChangeEvent, type DragEvent, type ReactNode } from "reac
 import { FileText, ImagePlus, LoaderCircle, Sparkles, Trash2, TriangleAlert, Upload, X } from "lucide-react";
 import type {
   AfaMethode,
+  Bankunterlagenposten,
   Erhaltungsaufwandmodus,
   InvestmentEingabe,
   InvestmentErgebnis,
+  Sondertilgung,
   Steuerberechnungsmodus,
   Steuerklasse,
   TextFeld,
@@ -20,7 +22,8 @@ import { ENERGIEKLASSEN, formatEuro, formatEuroCent, formatProzent } from "@/lib
 import { unterlagenAuslesbar, type AuslesbaresFeld } from "@/lib/investmentrechner/unterlagenKiFelder";
 import { eigenkapitalNachRegel, feldmarkierung, herkunftText, type Herkunft } from "@/lib/investmentrechner/herkunft";
 import { OBJEKTTYP_VORSCHLAEGE } from "@/lib/investmentrechner/objekttypVorschlaege";
-import { Auswahlfeld, AuswahlOderText, FeldInfo, Schalterfeld, Textbereich, Textfeld, Zahlenfeld } from "./Felder";
+import { Auswahlfeld, AuswahlOderText, FeldInfo, Feldetikett, Neu, Schalterfeld, Textbereich, Textfeld, Zahlenfeld } from "./Felder";
+import { haushaltMitVorlage, haushaltsrechnung, vermoegenMitVorlage, vermoegensaufstellung } from "@/lib/investmentrechner/bankunterlagen";
 import { Energieskala, kaufpreisHinweis, Steuerprofil } from "./Auswertungen";
 import { UnterlagenUebernahme, type KiAuslesung } from "./UnterlagenUebernahme";
 
@@ -744,9 +747,13 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
         </span>
         <strong>{formatEuro(result.seniorLoanAmount)}</strong>
         <small>
-          {kfw
-            ? "Kaufpreis und Nebenkosten minus Eigenkapital, Nachrang und KfW-Darlehen"
-            : "Kaufpreis und Nebenkosten minus Eigenkapital und Nachrang"}
+          {kfw && input.secondLoanAmount > 0
+            ? "Kaufpreis und Nebenkosten minus Eigenkapital, Nachrang, KfW-Darlehen und zweites Bankdarlehen"
+            : kfw
+              ? "Kaufpreis und Nebenkosten minus Eigenkapital, Nachrang und KfW-Darlehen"
+              : input.secondLoanAmount > 0
+                ? "Kaufpreis und Nebenkosten minus Eigenkapital, Nachrang und zweites Bankdarlehen"
+                : "Kaufpreis und Nebenkosten minus Eigenkapital und Nachrang"}
         </small>
       </div>
       <div className="subheading">Bankdarlehen</div>
@@ -756,7 +763,7 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
           value={input.seniorInterestRate}
           suffix="%"
           onChange={(wert) => setzeZahl("seniorInterestRate", wert)}
-          tooltip="Der mit der Bank vereinbarte Zinssatz für das erstrangige Darlehen, aus dem Finanzierungsangebot. Das Modell rechnet ihn über den ganzen Betrachtungszeitraum unverändert weiter und bildet keine Anschlussfinanzierung nach Ablauf der Zinsbindung ab."
+          tooltip="Der mit der Bank vereinbarte Zinssatz für das erstrangige Darlehen, aus dem Finanzierungsangebot. Er gilt bis zum Ende der Zinsbindung. Ohne Anschlusszins rechnet das Modell ihn danach unverändert weiter."
           hint={quelle("seniorInterestRate")} markierung={feldmarkierung(herkunft, "seniorInterestRate")}
         />
         <Zahlenfeld
@@ -767,6 +774,97 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
           tooltip="Anteil der Darlehenssumme, der im ersten Jahr getilgt wird. Zins und Tilgung zusammen ergeben die gleichbleibende Jahresrate. Weil der Zinsanteil mit sinkender Restschuld fällt, steigt der Tilgungsanteil von Jahr zu Jahr."
           hint={quelle("seniorRepaymentRate")} markierung={feldmarkierung(herkunft, "seniorRepaymentRate")}
         />
+        <Zahlenfeld
+          label="Zinsbindung"
+          value={input.seniorFixedRateYears}
+          suffix="Jahre"
+          neu
+          onChange={(wert) => setzeZahl("seniorFixedRateYears", wert)}
+          tooltip="Wie lange der Sollzins fest vereinbart ist. Danach gilt der Anschlusszins, ohne ihn rechnet das Modell mit Zins und Rate von heute weiter."
+          hint={
+            result.seniorLoanAmount > 0 && input.seniorFixedRateYears >= 1
+              ? `Restschuld danach ${formatEuro(result.bankRestschuldZinsbindung)}`
+              : undefined
+          }
+        />
+        <Zahlenfeld
+          label="Anschlusszins p. a."
+          value={input.seniorFollowUpRate}
+          suffix="%"
+          neu
+          onChange={(wert) => setzeZahl("seniorFollowUpRate", wert)}
+          tooltip="Angenommener Zins für die Anschlussfinanzierung nach der Zinsbindung. Leer heißt: derselbe Zins wie heute. Die neue Rate ist Restschuld mal (Anschlusszins plus Tilgung), so rechnen Banken ein Anschlussangebot."
+          hint={input.seniorFollowUpRate > 0 ? undefined : "Leer: Zins von heute"}
+        />
+        <Zahlenfeld
+          label="Neue Tilgung ab Anschluss"
+          value={input.seniorFollowUpRepaymentRate}
+          suffix="%"
+          neu
+          onChange={(wert) => setzeZahl("seniorFollowUpRepaymentRate", wert)}
+          tooltip="Tilgung in Prozent der Restschuld ab der Anschlussfinanzierung. Leer heißt: dieselbe Tilgung wie heute. Ohne Anschlusszins und neue Tilgung bleibt die Rate unverändert."
+          hint={input.seniorFollowUpRepaymentRate > 0 ? undefined : "Leer: anfängliche Tilgung"}
+        />
+      </div>
+      <div className="subheading">
+        Sondertilgungen <Neu />
+      </div>
+      <Sondertilgungen
+        liste={input.specialRepayments ?? []}
+        startjahr={input.startYear}
+        jahre={input.forecastYears}
+        onChange={(liste) => aendere({ specialRepayments: liste })}
+      />
+      <div className="subheading">
+        Zweites Bankdarlehen <Neu />
+      </div>
+      <div className="field-grid">
+        <Zahlenfeld
+          label="Betrag"
+          value={input.secondLoanAmount}
+          suffix="€"
+          neu
+          onChange={(wert) => setzeZahl("secondLoanAmount", wert)}
+          tooltip="Ein zweites Darlehen derselben oder einer anderen Bank, etwa mit anderer Zinsbindung. Es ersetzt einen Teil des Bankdarlehens, so wie das KfW-Darlehen. Sobald hier ein Betrag steht, erscheinen eigene Felder."
+          hint={input.secondLoanAmount > 0 && result.secondLoanAmount < input.secondLoanAmount * result.anteil - 0.5 ? `Gedeckelt auf ${formatEuro(result.secondLoanAmount)}` : undefined}
+        />
+        {input.secondLoanAmount > 0 && (
+          <>
+            <Zahlenfeld
+              label="Sollzins p. a."
+              value={input.secondInterestRate}
+              suffix="%"
+              neu
+              onChange={(wert) => setzeZahl("secondInterestRate", wert)}
+              tooltip="Zins des zweiten Bankdarlehens bis zum Ende seiner Zinsbindung."
+            />
+            <Zahlenfeld
+              label="Anfängliche Tilgung"
+              value={input.secondRepaymentRate}
+              suffix="%"
+              neu
+              onChange={(wert) => setzeZahl("secondRepaymentRate", wert)}
+              tooltip="Tilgung im ersten Jahr. Zins und Tilgung ergeben die gleichbleibende Jahresrate."
+            />
+            <Zahlenfeld
+              label="Zinsbindung"
+              value={input.secondFixedRateYears}
+              suffix="Jahre"
+              neu
+              onChange={(wert) => setzeZahl("secondFixedRateYears", wert)}
+              tooltip="Wie lange der Zins des zweiten Darlehens fest ist."
+            />
+            <Zahlenfeld
+              label="Anschlusszins p. a."
+              value={input.secondFollowUpRate}
+              suffix="%"
+              neu
+              onChange={(wert) => setzeZahl("secondFollowUpRate", wert)}
+              tooltip="Zins nach der Zinsbindung. Leer heißt: derselbe Zins. Die Rate wird auf die Restschuld mit der anfänglichen Tilgung neu bestimmt."
+              hint={input.secondFollowUpRate > 0 ? undefined : "Leer: Zins von heute"}
+            />
+          </>
+        )}
       </div>
       {input.juniorLoanAmount > 0 && (
         <>
@@ -830,12 +928,21 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
               value={input.kfwFixedRateYears}
               suffix="Jahre"
               onChange={(wert) => setzeZahl("kfwFixedRateYears", wert)}
-              tooltip="Wie lange der Zins fest ist. Danach rechnet das Modell mit demselben Zins weiter, wie beim Bankdarlehen; die Restschuld zu diesem Zeitpunkt steht in der Berechnung."
+              tooltip="Wie lange der Zins fest ist. Danach gilt der Anschlusszins, ohne ihn derselbe Zins; die Restschuld zu diesem Zeitpunkt steht in der Berechnung."
               hint={
                 result.kfwLoanAmount > 0 && input.kfwFixedRateYears > 0
                   ? `Restschuld danach ${formatEuro(result.kfwRestschuldZinsbindung)}`
                   : undefined
               }
+            />
+            <Zahlenfeld
+              label="Anschlusszins p. a."
+              value={input.kfwFollowUpRate}
+              suffix="%"
+              neu
+              onChange={(wert) => setzeZahl("kfwFollowUpRate", wert)}
+              tooltip="Zins nach der KfW-Zinsbindung. Leer heißt: derselbe Zins. Die Rate wird auf die Restschuld über die Restlaufzeit neu bestimmt."
+              hint={input.kfwFollowUpRate > 0 ? undefined : "Leer: Zins von heute"}
             />
             <Zahlenfeld
               label="Gesamtlaufzeit"
@@ -931,6 +1038,180 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
             ` Ab Jahr ${result.rateSprung.jahr} (${result.rateSprung.kalenderjahr}) steigt die Rate auf ${formatEuroCent(result.rateSprung.rateNachher)} im Monat.`}
         </p>
       )}
+    </div>
+  );
+}
+
+/**
+ * Sondertilgungen als Liste: Kalenderjahr und Betrag, seit dem 11.10.2026.
+ * Gezahlt am Jahresende auf das Bankdarlehen, höchstens die Restschuld.
+ */
+function Sondertilgungen({
+  liste,
+  startjahr,
+  jahre,
+  onChange,
+}: {
+  liste: Sondertilgung[];
+  startjahr: number;
+  jahre: number;
+  onChange: (liste: Sondertilgung[]) => void;
+}) {
+  const setze = (index: number, aenderung: Partial<Sondertilgung>) =>
+    onChange(liste.map((eintrag, i) => (i === index ? { ...eintrag, ...aenderung } : eintrag)));
+  const ende = Math.round(startjahr) + Math.max(1, Math.round(jahre)) - 1;
+  return (
+    <div className="zeilenliste" data-testid="sondertilgungen">
+      {liste.map((eintrag, index) => (
+        <div className="zeilenliste-zeile" key={index}>
+          <input
+            type="number"
+            aria-label="Jahr der Sondertilgung"
+            value={eintrag.jahr || ""}
+            onChange={(e) => setze(index, { jahr: Number(e.target.value) })}
+          />
+          <input
+            type="number"
+            aria-label="Betrag der Sondertilgung in Euro"
+            value={eintrag.betrag || ""}
+            onChange={(e) => setze(index, { betrag: Number(e.target.value) })}
+          />
+          <button type="button" className="text-button" aria-label="Sondertilgung entfernen" onClick={() => onChange(liste.filter((_, i) => i !== index))}>
+            <Trash2 size={14} />
+          </button>
+          {(eintrag.jahr < startjahr || eintrag.jahr > ende) && eintrag.jahr > 0 && (
+            <span className="zeilen-herkunft">Liegt außerhalb der Prognose ({Math.round(startjahr)} bis {ende}) und zählt nicht.</span>
+          )}
+        </div>
+      ))}
+      <button
+        type="button"
+        className="text-button"
+        onClick={() => onChange([...liste, { jahr: Math.min(ende, Math.round(startjahr) + 1), betrag: 0 }])}
+      >
+        + Sondertilgung (Jahr, Betrag)
+      </button>
+      <span className="field-hint">Am Jahresende auf das Bankdarlehen. Die Rate bleibt, die Laufzeit wird kürzer.</span>
+    </div>
+  );
+}
+
+/** Eine Liste von Posten mit Bezeichnung und Betrag, für Haushalt und Vermögen. */
+function Postenliste({
+  liste,
+  onChange,
+  mitPfand = false,
+  neuText,
+  betragLabel,
+}: {
+  liste: Bankunterlagenposten[];
+  onChange: (liste: Bankunterlagenposten[]) => void;
+  mitPfand?: boolean;
+  neuText: string;
+  betragLabel: string;
+}) {
+  const setze = (index: number, aenderung: Partial<Bankunterlagenposten>) =>
+    onChange(liste.map((p, i) => (i === index ? { ...p, ...aenderung } : p)));
+  return (
+    <div className="zeilenliste">
+      {liste.map((p, index) => (
+        <div className={`zeilenliste-zeile${mitPfand ? " mit-pfand" : ""}`} key={index}>
+          <input type="text" aria-label="Bezeichnung" value={p.bezeichnung} onChange={(e) => setze(index, { bezeichnung: e.target.value })} />
+          <input
+            type="number"
+            aria-label={`${p.bezeichnung || "Posten"}, ${betragLabel}`}
+            value={p.betrag || ""}
+            // Wer den Betrag ändert, hat ihn selbst entschieden: Der Herkunftssatz geht weg.
+            onChange={(e) => setze(index, { betrag: Number(e.target.value), herkunft: undefined })}
+          />
+          {mitPfand && (
+            <label className="pfand">
+              <input type="checkbox" checked={!!p.verpfaendet} onChange={(e) => setze(index, { verpfaendet: e.target.checked })} />
+              verpfändet
+            </label>
+          )}
+          <button type="button" className="text-button" aria-label={`${p.bezeichnung || "Posten"} entfernen`} onClick={() => onChange(liste.filter((_, i) => i !== index))}>
+            <Trash2 size={14} />
+          </button>
+          {p.herkunft && (
+            <span className="zeilen-herkunft">
+              {p.herkunft} <Feldetikett art="selbstauskunft" />
+            </span>
+          )}
+        </div>
+      ))}
+      <button type="button" className="text-button" onClick={() => onChange([...liste, { bezeichnung: "", betrag: 0 }])}>
+        + {neuText}
+      </button>
+    </div>
+  );
+}
+
+function Summenzeile({ label, monat, leise = false }: { label: string; monat: number; leise?: boolean }) {
+  return (
+    <div className={`summenzeile${leise ? " leise" : ""}`}>
+      <span>{label}</span>
+      <span>
+        {formatEuroCent(monat)} <small>· {formatEuro(monat * 12)} im Jahr</small>
+      </span>
+    </div>
+  );
+}
+
+export interface EingabeBankunterlagenProps extends EingabeProps {
+  /** Übernimmt Haushalt und Vermögen aus der Selbstauskunft. Ohne: der Knopf fehlt. */
+  onAusSelbstauskunft?: () => void;
+}
+
+/**
+ * Haushaltsrechnung und Vermögensaufstellung fürs Bankgespräch, seit dem
+ * 11.10.2026, nur in der Investmentkalkulation Plus. Gespeichert in der
+ * Eingabe, gerechnet in bankunterlagen.ts.
+ */
+export function EingabeBankunterlagen({ input, result, aendere, onAusSelbstauskunft }: EingabeBankunterlagenProps) {
+  const haushalt = haushaltMitVorlage(input.haushalt);
+  const vermoegen = vermoegenMitVorlage(input.vermoegen);
+  const h = haushaltsrechnung(haushalt, result);
+  const v = vermoegensaufstellung(vermoegen, result);
+  return (
+    <div className="input-section" data-testid="eingabe-bankunterlagen">
+      <Bereichstitel nummer="08" titel="Bankunterlagen" untertitel="Haushaltsrechnung und Vermögensaufstellung des Kunden" />
+      {onAusSelbstauskunft && (
+        <button type="button" className="button button-primary" onClick={onAusSelbstauskunft}>
+          Aus der Selbstauskunft übernehmen <Neu />
+        </button>
+      )}
+      <div className="subheading">
+        Haushaltsrechnung je Monat <Neu />
+      </div>
+      <p className="field-hint">Einkünfte</p>
+      <Postenliste liste={haushalt.einkuenfte} onChange={(einkuenfte) => aendere({ haushalt: { ...haushalt, einkuenfte } })} neuText="Einkunft" betragLabel="Euro je Monat" />
+      <p className="field-hint">Ausgaben</p>
+      <Postenliste liste={haushalt.ausgaben} onChange={(ausgaben) => aendere({ haushalt: { ...haushalt, ausgaben } })} neuText="Ausgabe" betragLabel="Euro je Monat" />
+      <Summenzeile label="Überschuss vor dem Investment" monat={h.ueberschussVorMonat} />
+      <Summenzeile label="+ Kaltmiete der Wohnung (automatisch)" monat={h.mieteMonat} leise />
+      <Summenzeile label="− Kreditrate (automatisch)" monat={-h.rateMonat} leise />
+      <Summenzeile label="− Bewirtschaftung und Rücklage (automatisch)" monat={-h.bewirtschaftungMonat} leise />
+      <Summenzeile label="Überschuss nach dem Investment" monat={h.ueberschussNachMonat} />
+      <Summenzeile label="… mit Steuerwirkung im ersten Jahr" monat={h.ueberschussNachMitSteuerMonat} leise />
+
+      <div className="subheading">
+        Vermögensaufstellung <Neu />
+      </div>
+      <p className="field-hint">Vermögenswerte</p>
+      <Postenliste liste={vermoegen.werte} onChange={(werte) => aendere({ vermoegen: { ...vermoegen, werte } })} mitPfand neuText="Vermögenswert" betragLabel="Euro" />
+      <p className="field-hint">Verbindlichkeiten</p>
+      <Postenliste
+        liste={vermoegen.verbindlichkeiten}
+        onChange={(verbindlichkeiten) => aendere({ vermoegen: { ...vermoegen, verbindlichkeiten } })}
+        neuText="Verbindlichkeit"
+        betragLabel="Euro"
+      />
+      <div className="summenzeile"><span>Vermögenswerte (davon verpfändet)</span><span>{formatEuro(v.werte)} ({formatEuro(v.davonVerpfaendet)})</span></div>
+      <div className="summenzeile leise"><span>Verbindlichkeiten</span><span>{formatEuro(v.verbindlichkeiten)}</span></div>
+      <div className="summenzeile"><span>Differenz</span><span>{formatEuro(v.differenz)}</span></div>
+      <div className="summenzeile leise"><span>mit Wohnung und neuen Darlehen</span><span>{formatEuro(v.differenzNachKauf)}</span></div>
+      <p className="field-hint">Beides steht im Bankgespräch-PDF, Knopf in der Karte „Bankgespräch“ der Analyse.</p>
     </div>
   );
 }

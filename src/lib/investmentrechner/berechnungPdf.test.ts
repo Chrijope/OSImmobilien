@@ -43,7 +43,9 @@ import { leereUnterlagenDaten } from "./unterlagenAuslesen";
 import {
   BERECHNUNG_PDF_RAND,
   berechnungPdfDateiname,
+  erzeugeBankgespraechPdf,
   erzeugeBerechnungPdf,
+  ladeBankgespraechPdfHerunter,
   ladeBerechnungPdfHerunter,
   type BerechnungPdfObjekt,
 } from "./berechnungPdf";
@@ -142,5 +144,32 @@ describe("Herunterladen", () => {
     expect(berechnungPdfDateiname([objekt(), objekt()], "en", tag)).toBe(
       "Calculation_Musterstrasse-12_WE-7_Comparison_2026-09-28.pdf",
     );
+  });
+});
+
+describe("Bankgespräch-PDF (11.10.2026)", () => {
+  it("enthält Investitionsübersicht, Darlehensverlauf, Haushaltsrechnung und Vermögensaufstellung, nichts über dem Rand", async () => {
+    const { input, result } = objekt({
+      seniorFixedRateYears: 5,
+      seniorFollowUpRate: 5.5,
+      specialRepayments: [{ jahr: 2028, betrag: 5000 }],
+      secondLoanAmount: 30000,
+      haushalt: { einkuenfte: [{ bezeichnung: "Nettoeinkommen Person 1", betrag: 4000 }], ausgaben: [{ bezeichnung: "Lebenshaltung", betrag: 1500 }] },
+      vermoegen: { werte: [{ bezeichnung: "Depot", betrag: 20000, verpfaendet: true }], verbindlichkeiten: [] },
+    });
+    const doc = await erzeugeBankgespraechPdf(input, result);
+    const texte = mitschnitt.texte.map((t) => t.text);
+    for (const titel of ["Investitionsübersicht", "Darlehensverlauf", "Haushaltsrechnung", "Vermögensaufstellung", "Zweites Bankdarlehen", "davon Sondertilgung"]) {
+      expect(texte.some((t) => t.includes(titel)), titel).toBe(true);
+    }
+    expect(mitschnitt.texte.filter((t) => t.seite > 1 && (t.links < BERECHNUNG_PDF_RAND - TOLERANZ || t.rechts > SEITE_B - BERECHNUNG_PDF_RAND + TOLERANZ))).toEqual([]);
+    expect(mitschnitt.texte.filter((t) => /[–—]/.test(t.text))).toEqual([]);
+    expect(doc.getNumberOfPages()).toBeGreaterThanOrEqual(3);
+  });
+
+  it("speichert unter Bankgespraech_<Objekt>_<Datum>.pdf", async () => {
+    const { input, result } = objekt({ clientName: "Familie Beispiel" });
+    const name = await ladeBankgespraechPdfHerunter(input, result);
+    expect(name).toMatch(/^Bankgespraech_Musterstrasse-12_WE-7_\d{4}-\d{2}-\d{2}\.pdf$/);
   });
 });

@@ -226,6 +226,9 @@ export const ROUTEN_TABELLEN: Record<string, readonly string[]> = {
   "/immorechner": [],
   "/investmentrechner": [...KONTAKT_TABELLEN, ...OBJEKT_TABELLEN],
   "/investmentrechner-plus": [...KONTAKT_TABELLEN, ...OBJEKT_TABELLEN],
+  // Lokale Vorschau, nur im Entwicklungsmodus und ohne Datenbank (vorschauRouten.ts).
+  "/vorschau/investmentrechner": [],
+  "/vorschau/investmentrechner-plus": [],
   // Ankaufstool rechnet nur mit Eingaben, laedt keine Daten.
   "/ankaufstool": [],
   // Mietsubvention liest Objekte und Einheiten fuer die Vorbelegung.
