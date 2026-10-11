@@ -14,8 +14,12 @@
 -- nach (ImportExportButton, STUFEN_MIT_INVESTMENT). Die Altschreibweise
 -- 'erstgespraech' (Empfehlung, Tippgeber) und 'termin_gebucht' (Terminlead
 -- aus submit-lead, keine Stufe der Oberflaeche) werden zu
--- 'erstgespraech_geplant'. Bestandskunden ('bestandsimport') bleiben vorerst
--- ohne Auto-Investment.
+-- 'erstgespraech_geplant'.
+--
+-- Bestandskunden ('bestandsimport') bekommen jetzt ebenfalls Investment 1, in
+-- ihrer eigenen Stufe (Freigabe Christian, 11.10.2026). Damit hat jeder
+-- Kontakt ein Investment, ohne Ausnahme. 'bestandsimport' ist ein Endzustand
+-- (pipelineStufen.ts), keine Automatik hebt das Investment an.
 -- Nur der Trigger aendert sich, bestehende Daten nicht; deshalb keine
 -- Sicherungstabelle.
 
@@ -28,10 +32,6 @@ AS $$
 DECLARE
   _stufe text := COALESCE(NULLIF(NEW.meta->>'pipelineStufe', ''), 'neuer_lead');
 BEGIN
-  IF COALESCE(NEW.meta->>'pipelineStufe', '') = 'bestandsimport' THEN
-    RETURN NEW;
-  END IF;
-
   IF EXISTS (SELECT 1 FROM public.investments WHERE kunde_id = NEW.id) THEN
     RETURN NEW;
   END IF;
@@ -41,7 +41,7 @@ BEGIN
   ELSIF _stufe NOT IN (
     'neuer_lead', 'zugewiesen', 'kontaktversuche', 'nicht_erreicht', 'erreicht',
     'follow_up', 'erstgespraech_geplant', 'eg_noshow', 'beratungsgespraech',
-    'bg_noshow', 'objektauswahl'
+    'bg_noshow', 'objektauswahl', 'bestandsimport'
   ) THEN
     _stufe := 'neuer_lead';
   END IF;

@@ -6,8 +6,8 @@ import { describe, expect, it } from "vitest";
  *
  * Ausfuehren laesst sie sich hier nicht. Der Quelltext haelt fest: Investment 1
  * uebernimmt die Startstufe des Kontakts, soweit sie zur fruehen Phase gehoert,
- * sonst 'neuer_lead'; Bestandsimporte und Kontakte mit Investment bleiben
- * aussen vor.
+ * sonst 'neuer_lead'. Auch Bestandsimporte bekommen Investment 1, in ihrer
+ * eigenen Stufe; nur ein Kontakt mit Investment bekommt keines dazu.
  */
 const SQL = readFileSync("supabase/migrations/20261011150000_investment1_startstufe_vom_kontakt.sql", "utf8");
 const ohneKommentare = SQL.split("\n").filter((z) => !z.trim().startsWith("--")).join("\n");
@@ -34,9 +34,13 @@ describe("Migration investment1_startstufe_vom_kontakt", () => {
     expect(ohneKommentare).toContain("IF _stufe IN ('erstgespraech', 'termin_gebucht') THEN\n    _stufe := 'erstgespraech_geplant';");
   });
 
-  it("legt kein zweites Investment an und laesst Bestandsimporte aus", () => {
+  it("legt kein zweites Investment an", () => {
     expect(ohneKommentare).toContain("IF EXISTS (SELECT 1 FROM public.investments WHERE kunde_id = NEW.id) THEN");
-    expect(ohneKommentare).toContain("COALESCE(NEW.meta->>'pipelineStufe', '') = 'bestandsimport'");
+  });
+
+  it("Bestandsimport bekommt Investment 1 in der eigenen Stufe, keine Ausnahme mehr", () => {
+    expect(ohneKommentare).toContain("'bg_noshow', 'objektauswahl', 'bestandsimport'");
+    expect(ohneKommentare).not.toMatch(/= 'bestandsimport' THEN\s+RETURN NEW/);
   });
 
   it("aendert nur die Funktion, keine Daten", () => {
