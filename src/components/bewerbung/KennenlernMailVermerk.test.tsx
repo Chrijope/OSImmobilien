@@ -50,7 +50,7 @@ describe("Welches Datum gilt", () => {
   });
 
   /*
-   * Der Fall aus der Akte von Stefan Garving, 14.09.2026: Dort stand „Die
+   * Der Fall aus einer Bewerberakte, 14.09.2026: Dort stand „Die
    * Einladung ging am 11.9. hinaus", in der Liste fehlte das Symbol. Die Akte
    * nimmt als Rückfall das Anlagedatum des Bogens, die Liste kannte ihn nicht.
    */
@@ -99,8 +99,8 @@ describe("Was in der Liste steht", () => {
 /*
  * Drei Zustände, seit der Abfrage vom 14.09.2026: Von rund 150 Bewerbern im
  * Eingang haben elf den aktuellen Kennenlernbogen, eine Handvoll nur den alten
- * Vorabbogen, alle übrigen gar nichts. Stefan Garving und Dominik Franz
- * gehören zur mittleren Gruppe; die Karte in der Akte nannte deren Vorabbogen
+ * Vorabbogen, alle übrigen gar nichts. Zwei Bewerber damals
+ * gehörten zur mittleren Gruppe; die Karte in der Akte nannte deren Vorabbogen
  * „die Einladung" und führte damit in die Irre.
  */
 describe("Welcher Bogen hinausging", () => {

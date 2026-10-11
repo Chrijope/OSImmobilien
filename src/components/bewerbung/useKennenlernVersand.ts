@@ -14,8 +14,8 @@ import { gemeinsamerLauf, gemerkterStand, letzterStand, merkeStand } from "./nac
  * Zierde, sondern der Regelfall bei allen Bewerbern, deren Mail über einen Weg
  * hinausging, der den Vermerk nicht schreibt.
  *
- * Die Liste hatte nur die erste Quelle. Deshalb stand am 14.09.2026 bei Stefan
- * Garving in der Akte, die Einladung sei am 11.9. hinausgegangen, und in der
+ * Die Liste hatte nur die erste Quelle. Deshalb stand am 14.09.2026 bei einem
+ * Bewerber in der Akte, die Einladung sei am 11.9. hinausgegangen, und in der
  * Übersicht fehlte das Briefsymbol. Zwei Ansichten, zwei Antworten auf
  * dieselbe Frage.
  *
@@ -41,7 +41,7 @@ import { gemeinsamerLauf, gemerkterStand, letzterStand, merkeStand } from "./nac
  * ## Was die alten Zeilen kennzeichnet
  *
  * Ein erster Versuch am 14.09.2026 filterte auf `antworten->>bogen` gleich
- * „kennenlernen" und fand bei Stefan Garving und Dominik Franz weiterhin
+ * „kennenlernen" und fand bei zwei betroffenen Bewerbern weiterhin
  * nichts. Der Grund: Zwei Wege legen Bögen an, und nur der neuere
  * (`send-bewerber-kennenlernen`) schreibt dieses Feld. Der ältere
  * (`send-bewerber-formular`) legt die Zeile ohne Antworten an. Wer seinen Link
