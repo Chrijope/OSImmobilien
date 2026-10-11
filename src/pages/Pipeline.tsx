@@ -730,7 +730,7 @@ function KundeCard({ kunde, stufe, investmentId, zusatzBereit, datenstand, onCli
          * Zwei verschiedene Dinge, deshalb zwei Zeilen.
          *
          * Der Finanzierungspartner ist der Mensch, der die Finanzierung
-         * betreut, heute Stefan Kurz. Er steht immer da, auch bevor eine Bank
+         * betreut (Rolle finanzierungspartner). Er steht immer da, auch bevor eine Bank
          * feststeht. Die Bank kommt erst dazu, wenn ein Angebot angenommen
          * ist. Frueher stand hier eine gemeinsame Zeile "Finanzierer", die
          * mal die Bank und mal den Partner zeigte, und in der Stufe

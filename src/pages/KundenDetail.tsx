@@ -14323,7 +14323,7 @@ export default function KundenDetail() {
                    * Seit die Bonitaetsunterlagen hinter der Reservierung
                    * liegen, ist diese Freigabe der Startschuss fuer die
                    * Finanzierung. Vorher lag die Bonitaet weit vorne im
-                   * Prozess, und Stefan Kurz erfuhr erst viel spaeter, dass
+                   * Prozess, und der Finanzierungspartner erfuhr erst viel spaeter, dass
                    * etwas fuer ihn anliegt.
                    *
                    * Der Kunde bekommt seine Mail wie bisher, hier kommt nur

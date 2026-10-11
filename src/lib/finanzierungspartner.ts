@@ -7,8 +7,7 @@ import { loadAllUsers, type SystemUser } from "@/lib/loadAllUsers";
  * Investment. Massgeblich ist allein die Rolle `finanzierungspartner`, genau
  * so, wie die Bonitaetsfreigabe ihre Meldung adressiert
  * (`src/lib/bonitaetFreigabeMeldung.ts` und die Edge Function
- * `bonitaet-freigabe-mail`). Heute traegt diese Rolle Stefan Kurz allein.
- * Kommt jemand dazu, taucht er hier ohne weiteres Zutun auf, und niemand muss
+ * `bonitaet-freigabe-mail`). Kommt jemand dazu, taucht er hier ohne weiteres Zutun auf, und niemand muss
  * daran denken, irgendwo einen Namen nachzutragen.
  *
  * Bewusst wird nichts erfunden: Ohne hinterlegte Rolle gibt es keinen Namen,

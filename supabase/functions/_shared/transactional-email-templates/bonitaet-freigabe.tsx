@@ -46,7 +46,7 @@ export const template = {
   subject: 'Bonitätsunterlagen freigegeben: Finanzierung kann starten',
   displayName: 'Bonitätsfreigabe an Finanzierungspartner',
   previewData: {
-    name: 'Stefan Kurz',
+    name: 'Erika Mustermann',
     kundeName: 'Kai Laube-Richtsteiger',
     link: 'https://osimmobilien.netlify.app/kunden/beispiel?tab=investments',
   },

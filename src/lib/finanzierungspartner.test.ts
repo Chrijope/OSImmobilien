@@ -24,24 +24,24 @@ describe("Finanzierungspartner finden", () => {
   it("findet den Nutzer mit der Rolle", () => {
     const gefunden = filterFinanzierungspartner([
       { id: "1", name: "Otto Hans", rolle: "vertriebspartner", rollen: ["vertriebspartner"] },
-      { id: "2", name: "Stefan Kurz", rolle: "finanzierungspartner", rollen: ["finanzierungspartner"] },
+      { id: "2", name: "Erika Mustermann", rolle: "finanzierungspartner", rollen: ["finanzierungspartner"] },
     ]);
-    expect(gefunden.map((u) => u.name)).toEqual(["Stefan Kurz"]);
+    expect(gefunden.map((u) => u.name)).toEqual(["Erika Mustermann"]);
   });
 
   it("zaehlt die Rolle auch, wenn sie nicht die erste ist", () => {
     // Genau daran scheiterte die alte Fusszeile: Sie verglich nur die erste Rolle.
     const gefunden = filterFinanzierungspartner([
-      { id: "2", name: "Stefan Kurz", rolle: "admin", rollen: ["admin", "finanzierungspartner"] },
+      { id: "2", name: "Erika Mustermann", rolle: "admin", rollen: ["admin", "finanzierungspartner"] },
     ]);
-    expect(gefunden.map((u) => u.name)).toEqual(["Stefan Kurz"]);
+    expect(gefunden.map((u) => u.name)).toEqual(["Erika Mustermann"]);
   });
 
   it("nimmt die einzelne Rolle, wenn keine Liste da ist", () => {
     const gefunden = filterFinanzierungspartner([
-      { id: "2", name: "Stefan Kurz", rolle: "Finanzierungspartner" },
+      { id: "2", name: "Erika Mustermann", rolle: "Finanzierungspartner" },
     ]);
-    expect(gefunden.map((u) => u.name)).toEqual(["Stefan Kurz"]);
+    expect(gefunden.map((u) => u.name)).toEqual(["Erika Mustermann"]);
   });
 
   it("liefert niemanden, wenn niemand die Rolle traegt", () => {
@@ -51,11 +51,11 @@ describe("Finanzierungspartner finden", () => {
 
 describe("Anzeige auf der Kachel", () => {
   it("nennt einen Namen", () => {
-    expect(finanzierungspartnerLabel(["Stefan Kurz"])).toBe("Stefan Kurz");
+    expect(finanzierungspartnerLabel(["Erika Mustermann"])).toBe("Erika Mustermann");
   });
 
   it("nennt zwei Namen ausgeschrieben", () => {
-    expect(finanzierungspartnerLabel(["Stefan Kurz", "Otto Hans"])).toBe("Stefan Kurz, Otto Hans");
+    expect(finanzierungspartnerLabel(["Erika Mustermann", "Otto Hans"])).toBe("Erika Mustermann, Otto Hans");
   });
 
   it("zaehlt ab dem dritten, damit die Kachel nicht ueberlaeuft", () => {
@@ -70,9 +70,9 @@ describe("Anzeige auf der Kachel", () => {
   it("liest die Namen aus den Nutzern des Hauses", () => {
     usersMock.mockReturnValue([
       { id: "1", name: "Otto Hans", rolle: "vertriebspartner", rollen: ["vertriebspartner"] },
-      { id: "2", name: "Stefan Kurz", rolle: "finanzierungspartner", rollen: ["finanzierungspartner"] },
+      { id: "2", name: "Erika Mustermann", rolle: "finanzierungspartner", rollen: ["finanzierungspartner"] },
     ]);
-    expect(finanzierungspartnerAnzeige()).toBe("Stefan Kurz");
+    expect(finanzierungspartnerAnzeige()).toBe("Erika Mustermann");
   });
 
   it("erfindet keinen Partner, wenn die Rolle unbesetzt ist", () => {

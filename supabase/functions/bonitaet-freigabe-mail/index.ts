@@ -48,7 +48,7 @@ Deno.serve(async (req: Request) => {
   /*
    * Alle Finanzierungspartner, nicht nur einer.
    *
-   * Heute ist das Stefan Kurz allein. Wird jemand ergaenzt, bekommt er die
+   * Wird jemand ergaenzt, bekommt er die
    * Meldung ohne weiteres Zutun, und niemand muss daran denken, hier einen
    * Namen nachzutragen.
    */
