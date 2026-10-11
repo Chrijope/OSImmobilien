@@ -629,8 +629,8 @@ export function notifySelbstauskunftUnterschrieben(kundeName: string, kundeId: s
 }
 
 export function notifyPipelineChange(kundeName: string, neueStufe: string, kundeId: string, beraterId?: string) {
-  // Primär läuft der DB-Trigger trg_notify_vp_pipeline_change – dieser Client-Aufruf ist
-  // ein Fallback für Legacy-Codepfade, die pipelineStufe außerhalb von kontakte.meta setzen.
+  // Primär läuft der DB-Trigger trg_notify_vp_investment_stufe (je Investment, seit
+  // 11.10.2026) – dieser Client-Aufruf ist ein Fallback für Legacy-Codepfade.
   const stufeLabel: Record<string, string> = {
     neuer_lead: "Neuer Lead", kontaktversuche: "Kontaktversuche", follow_up: "Follow-Up",
     erstgespraech: "Erstgespräch", beratungsgespraech: "Beratungsgespräch",

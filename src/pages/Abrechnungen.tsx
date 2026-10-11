@@ -5,7 +5,7 @@ import { isTestAccount } from "@/lib/dbStoreHelper";
 import { useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { getKontakte } from "@/lib/kundenStore";
-import { getInvestments } from "@/lib/investmentsStore";
+import { getInvestments, getInvestmentsByKontakt } from "@/lib/investmentsStore";
 import { loadAllUsers } from "@/lib/loadAllUsers";
 import { istZustaendig } from "@/lib/kontaktOwnership";
 import { kennungZuName } from "@/lib/beraterNamensabgleich";
@@ -522,11 +522,30 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
       ),
     [p.userId, p.name],
   );
+  /*
+   * Je Investment, nicht je Kunde (11.10.2026): Jedes Investment steht mit
+   * seiner Stufe, seinem Objekt und seinem Kaufpreis für sich. Vorher zählte
+   * der Kunde einmal, mit der Kontaktstufe und dem Kaufpreis am Kontakt.
+   */
+  const vorgaenge = useMemo(
+    () =>
+      alleKontakte.flatMap((k) => {
+        const invs = getInvestmentsByKontakt(k.id);
+        if (invs.length === 0) return [k];
+        return invs.map((inv) => ({
+          ...k,
+          pipelineStufe: inv.pipelineStufe as typeof k.pipelineStufe,
+          objekt: inv.objektTitel || k.objekt,
+          kaufpreis: investmentKaufpreis(inv.id),
+        }));
+      }),
+    [alleKontakte],
+  );
   const potenzialPhasen = useMemo(() => {
-    const qualifiziert = alleKontakte.filter(istQualifiziert);
-    const abwicklung = alleKontakte.filter(k => ABWICKLUNG_STUFEN.some(s => s === k.pipelineStufe));
-    const reserviert = alleKontakte.filter(k => k.pipelineStufe === "reservierung");
-    const abgeschlossen = alleKontakte.filter(k => ABSCHLUSS_STUFEN.some(s => s === k.pipelineStufe));
+    const qualifiziert = vorgaenge.filter(istQualifiziert);
+    const abwicklung = vorgaenge.filter(k => ABWICKLUNG_STUFEN.some(s => s === k.pipelineStufe));
+    const reserviert = vorgaenge.filter(k => k.pipelineStufe === "reservierung");
+    const abgeschlossen = vorgaenge.filter(k => ABSCHLUSS_STUFEN.some(s => s === k.pipelineStufe));
 
     return [
       { label: "Qualifizierte Leads", kunden: qualifiziert, color: "hsl(38 92% 50%)" },
@@ -534,7 +553,7 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
       { label: "Reserviert", kunden: reserviert, color: "hsl(210 40% 55%)" },
       { label: "Abgeschlossen", kunden: abgeschlossen, color: "hsl(43 25% 74%)" },
     ];
-  }, [alleKontakte]);
+  }, [vorgaenge]);
 
   const [potenzialDetail, setPotenzialDetail] = useState<{ label: string; kunden: typeof alleKontakte } | null>(null);
   const [rechnungOpen, setRechnungOpen] = useState(false);
@@ -1067,10 +1086,10 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
       <Dialog open={!!potenzialDetail} onOpenChange={() => setPotenzialDetail(null)}>
         <DialogContent className="sm:max-w-lg max-h-[70vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{potenzialDetail?.label} – {potenzialDetail?.kunden.length} Kontakte</DialogTitle>
+            <DialogTitle>{potenzialDetail?.label} – {potenzialDetail?.kunden.length} Investments</DialogTitle>
           </DialogHeader>
           {potenzialDetail?.kunden.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-4">Keine Kontakte in dieser Phase.</p>
+            <p className="text-sm text-muted-foreground py-4">Keine Investments in dieser Phase.</p>
           ) : (
             <Table>
               <TableHeader>
@@ -1081,8 +1100,8 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {potenzialDetail?.kunden.map(k => (
-                  <TableRow key={k.id} className="cursor-pointer hover:bg-muted/50" onClick={() => { setPotenzialDetail(null); navigate(`/kunden/${k.id}`); }}>
+                {potenzialDetail?.kunden.map((k, i) => (
+                  <TableRow key={`${k.id}-${i}`} className="cursor-pointer hover:bg-muted/50" onClick={() => { setPotenzialDetail(null); navigate(`/kunden/${k.id}`); }}>
                     <TableCell className="text-sm font-medium">{tarnName(`${k.vorname ?? ""} ${k.nachname ?? ""}`.trim())}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">{k.objekt || "–"}</TableCell>
                     <TableCell className="text-sm text-right">{k.kaufpreis ? fmt(k.kaufpreis) : "–"}</TableCell>

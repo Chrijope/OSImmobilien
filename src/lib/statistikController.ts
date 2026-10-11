@@ -186,12 +186,25 @@ export function pipeline(
     weighted: 0,
     contacts: [],
   });
+  /*
+   * Gezaehlt wird je Investment (11.10.2026): Ein Kunde mit Investment 1
+   * beim Notar und Investment 2 als neuer Lead zaehlt in beiden Stufen,
+   * passend zum Volumen darunter, das schon je Investment rechnete. Ein
+   * archivierter oder verlorener Kontakt und einer ohne laufendes
+   * Investment zaehlt wie bisher mit seiner eigenen Stufe.
+   */
   for (const k of kontakte) {
-    const target =
-      rows.find((r) => r.key === (k.archiviert ? "archiviert" : stage(k))) ||
-      rows[rows.length - 1];
-    target.count++;
-    target.contacts.push(k);
+    const invs = invMap.get(k.id) || [];
+    const stufen = k.archiviert
+      ? ["archiviert"]
+      : lost(k) || !invs.length
+        ? [stage(k)]
+        : invs.map((i) => stage(i));
+    for (const s of stufen) {
+      const target = rows.find((r) => r.key === s) || rows[rows.length - 1];
+      target.count++;
+      if (!target.contacts.includes(k)) target.contacts.push(k);
+    }
   }
   let budget = 0;
   for (const k of open) {

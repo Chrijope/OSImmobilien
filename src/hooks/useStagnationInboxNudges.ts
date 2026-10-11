@@ -5,7 +5,8 @@ import { addInboxTask, getInboxTasks, setInboxTasks } from "@/lib/aktivitaetenSt
 import { getUserSetting, setUserSetting } from "@/lib/userSettingsCache";
 import { isTestAccount } from "@/lib/dbStoreHelper";
 import { kontaktBelongsToUser } from "@/lib/kontaktOwnership";
-import { getEffectivePipelineStufe, type PipelineStufe } from "@/lib/kontaktPipeline";
+import { getEffectivePipelineStufe, getInvestmentStufenFuerKunde, investmentAnzeigeStufe, type PipelineStufe } from "@/lib/kontaktPipeline";
+import { getInvestmentsByKontakt } from "@/lib/investmentsStore";
 import { hatVereinbartenKontakt } from "@/lib/kontaktTermine";
 
 /**
@@ -96,11 +97,11 @@ export function useStagnationInboxNudges(userName?: string, userId?: string) {
         if (!k) return false;
         if (k.archiviert) return false;
         if (hatVereinbartenKontakt(k)) return false;
-        const currentStufe = getEffectivePipelineStufe(k);
-        // Ableiten, für welche Stufe der Nudge ursprünglich war (aus Titel)
+        // Ableiten, für welche Stufe der Nudge ursprünglich war (aus Titel).
+        // Er bleibt, solange eines der Investments dort steht (11.10.2026).
         const stagesInTitle = Object.entries(STUFE_LABEL).find(([, label]) => t.titel.includes(label!));
         if (!stagesInTitle) return true;
-        return currentStufe === stagesInTitle[0];
+        return getInvestmentStufenFuerKunde(k).some((e) => e.stufe === stagesInTitle[0]);
       });
       if (cleaned.length !== inbox.length) {
         setInboxTasks(cleaned);
@@ -111,52 +112,66 @@ export function useStagnationInboxNudges(userName?: string, userId?: string) {
         if (k.archiviert) continue;
         if (!kontaktBelongsToUser(k, { userName, userId })) continue;
 
-        const stufe = getEffectivePipelineStufe(k);
-        const sla = SLA_DAYS[stufe];
-        const label = STUFE_LABEL[stufe];
-        if (!sla || !label) continue;
+        /*
+         * Je Investment (11.10.2026): Ein Investment, das in einer frühen Stufe
+         * hängt, wird gemeldet, auch wenn ein anderes weiter ist. Gemessen ab
+         * seinem Stufeneintritt (meta.pipelineSeit), sonst ab der letzten
+         * Änderung am Kontakt.
+         */
+        const invs = getInvestmentsByKontakt(k.id);
+        const vorgaenge = invs.length > 0
+          ? invs.map((inv) => ({
+              stufe: investmentAnzeigeStufe(k, inv.pipelineStufe),
+              seit: (inv.meta?.pipelineSeit as string | undefined) || k.aktualisiert_am || k.erstellt_am || k.erstelltAm,
+            }))
+          : [{ stufe: getEffectivePipelineStufe(k), seit: k.aktualisiert_am || k.erstellt_am || k.erstelltAm }];
+        for (const { stufe, seit: anchorRaw } of vorgaenge) {
+          if (!stufe) continue;
+          const sla = SLA_DAYS[stufe];
+          const label = STUFE_LABEL[stufe];
+          if (!sla || !label) continue;
 
-        const anchorRaw: string = k.aktualisiert_am || k.erstellt_am || k.erstelltAm;
-        if (!anchorRaw) continue;
-        const anchorMs = new Date(anchorRaw).getTime();
-        if (isNaN(anchorMs)) continue;
+          if (!anchorRaw) continue;
+          const anchorMs = new Date(anchorRaw).getTime();
+          if (isNaN(anchorMs)) continue;
 
-        const daysInStage = (now - anchorMs) / (24 * 60 * 60 * 1000);
-        if (daysInStage < sla) continue;
-        if (hatVereinbartenKontakt(k)) continue;
+          const daysInStage = (now - anchorMs) / (24 * 60 * 60 * 1000);
+          if (daysInStage < sla) continue;
+          if (hatVereinbartenKontakt(k)) continue;
 
-        const weekAnchor = isoWeekAnchor(new Date());
-        const sentKey = `${stufe}::${weekAnchor}`;
-        if (wasSent(k.id, sentKey)) continue;
+          const weekAnchor = isoWeekAnchor(new Date());
+          const sentKey = `${stufe}::${weekAnchor}`;
+          if (wasSent(k.id, sentKey)) continue;
 
-        const name = `${k.vorname || ""} ${k.nachname || ""}`.trim();
-        const titleNeedle = `${NUDGE_MARK} ${label}: ${name}`;
-        // Doppelt absichern gegen bestehende offene Nudges dieser Stufe
-        if (inbox.some(t => t.kundeId === k.id && t.titel.includes(NUDGE_MARK) && t.titel.includes(label))) {
+          const name = `${k.vorname || ""} ${k.nachname || ""}`.trim();
+          const titleNeedle = `${NUDGE_MARK} ${label}: ${name}`;
+          // Doppelt absichern gegen bestehende offene Nudges dieser Stufe
+          if (inbox.some(t => t.kundeId === k.id && t.titel.includes(NUDGE_MARK) && t.titel.includes(label))) {
+            markSent(k.id, sentKey);
+            continue;
+          }
+
+          const d = new Date();
+          const fmtDate = (x: Date) => x.toISOString().split("T")[0];
+          const fmtTime = (x: Date) => x.toTimeString().slice(0, 5);
+          addInboxTask({
+            titel: `⏳ ${titleNeedle}`,
+            beschreibung: `Lead steht seit ${Math.floor(daysInStage)} Tagen in „${label}" ohne Fortschritt (SLA ${sla} Tage). Bitte kontaktieren, weiterbewegen oder als verloren markieren.`,
+            prioritaet: "hoch",
+            typ: "aufgabe",
+            faellig_am: fmtDate(d),
+            uhrzeit: fmtTime(d),
+            kundeId: k.id,
+            kundeName: name,
+          });
           markSent(k.id, sentKey);
-          continue;
         }
-
-        const d = new Date();
-        const fmtDate = (x: Date) => x.toISOString().split("T")[0];
-        const fmtTime = (x: Date) => x.toTimeString().slice(0, 5);
-        addInboxTask({
-          titel: `⏳ ${titleNeedle}`,
-          beschreibung: `Lead steht seit ${Math.floor(daysInStage)} Tagen in „${label}" ohne Fortschritt (SLA ${sla} Tage). Bitte kontaktieren, weiterbewegen oder als verloren markieren.`,
-          prioritaet: "hoch",
-          typ: "aufgabe",
-          faellig_am: fmtDate(d),
-          uhrzeit: fmtTime(d),
-          kundeId: k.id,
-          kundeName: name,
-        });
-        markSent(k.id, sentKey);
       }
     }
 
     // Erst rechnen, wenn die Kontakte im Cache liegen (Laden je Route).
     let abmelden = () => {};
-    const t = setTimeout(() => { abmelden = wennTabellenGeladen(["kontakte"], check); }, 6_000);
+    const t = setTimeout(() => { abmelden = wennTabellenGeladen(["kontakte", "investments"], check); }, 6_000);
     const iv = setInterval(check, 10 * 60 * 1000);
     return () => { clearTimeout(t); abmelden(); clearInterval(iv); };
   }, [userName, userId]);
