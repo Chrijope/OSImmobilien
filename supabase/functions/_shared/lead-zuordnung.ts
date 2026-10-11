@@ -230,7 +230,14 @@ export function pipelineStufeFuerLead(args: {
 }): string {
   if (args.istTerminLead) return "termin_gebucht";
   if (args.persoenlicherPartnerWeg) return "zugewiesen";
-  if (typeof args.vorgabe === "string" && args.vorgabe.trim()) return args.vorgabe.trim();
+  /*
+   * "bestandsimport" ist nie eine Vorgabe fuer einen Lead. Mit dieser Stufe
+   * legt der Datenbank-Trigger kein Investment 1 an, und die Pipeline haengt
+   * seit dem 11.10.2026 am Investment: Der Lead waere dort unsichtbar.
+   */
+  if (typeof args.vorgabe === "string" && args.vorgabe.trim() && args.vorgabe.trim() !== "bestandsimport") {
+    return args.vorgabe.trim();
+  }
   return "neuer_lead";
 }
 

@@ -163,6 +163,15 @@ describe("pipelineStufeFuerLead", () => {
     ).toBe("erreicht");
   });
 
+  it("nimmt bestandsimport nie als Vorgabe an, sonst entstuende kein Investment", () => {
+    expect(
+      pipelineStufeFuerLead({ istTerminLead: false, persoenlicherPartnerWeg: false, vorgabe: "bestandsimport" }),
+    ).toBe("neuer_lead");
+    expect(
+      pipelineStufeFuerLead({ istTerminLead: false, persoenlicherPartnerWeg: false, vorgabe: " bestandsimport " }),
+    ).toBe("neuer_lead");
+  });
+
   it("laesst die Terminbuchung unberuehrt", () => {
     expect(pipelineStufeFuerLead({ istTerminLead: true, persoenlicherPartnerWeg: true })).toBe(
       "termin_gebucht",
