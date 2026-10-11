@@ -24,6 +24,14 @@ import { KundenMfaGuard } from "@/components/kunde/KundenMfaGuard";
 // Oeffentliche Seiten (eager, klein und immer noetig)
 import Login from "./pages/Login";
 import { VorschauInvestmentrechner } from "./vorschauRouten";
+
+/** /investmentrechner-plus → /investmentrechner mit Schalter „Bankgespräch & Bankunterlagen“, Parameter bleiben. */
+function InvestmentrechnerPlusWeiterleitung() {
+  const { search } = useLocation();
+  const parameter = new URLSearchParams(search);
+  parameter.set("bankgespraech", "1");
+  return <Navigate to={`/investmentrechner?${parameter.toString()}`} replace />;
+}
 import NotFound from "./pages/NotFound";
 const InvestagonDokument = lazy(() => import("./pages/InvestagonDokument"));
 
@@ -375,7 +383,7 @@ const App = () => (
                 {VorschauInvestmentrechner && (
                   <>
                     <Route path="/vorschau/investmentrechner" element={<VorschauInvestmentrechner />} />
-                    <Route path="/vorschau/investmentrechner-plus" element={<VorschauInvestmentrechner erweitert />} />
+                    <Route path="/vorschau/investmentrechner-plus" element={<Navigate to="/vorschau/investmentrechner" replace />} />
                   </>
                 )}
                 <Route path="/reset-password" element={<ResetPassword />} />
@@ -655,7 +663,8 @@ const App = () => (
                   <Route path="/bonitaetsrechner" element={<Bonitaetsrechner />} />
                   <Route path="/immorechner" element={<Navigate to="/investmentrechner" replace />} />
                   <Route path="/investmentrechner" element={<Investmentrechner />} />
-                  <Route path="/investmentrechner-plus" element={<Investmentrechner erweitert />} />
+                  {/* Seit dem 11.10.2026 ein Schalter im Rechner statt einer eigenen Seite. Alte Links und Lesezeichen starten mit eingeschaltetem Schalter. */}
+                  <Route path="/investmentrechner-plus" element={<InvestmentrechnerPlusWeiterleitung />} />
                   <Route path="/ankaufstool" element={<Ankaufstool />} />
                   <Route path="/mietsubvention" element={<Mietsubvention />} />
                   <Route path="/kaufpreisliste" element={<Kaufpreisliste />} />

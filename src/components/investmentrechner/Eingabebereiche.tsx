@@ -1159,8 +1159,14 @@ function Summenzeile({ label, monat, leise = false }: { label: string; monat: nu
 }
 
 export interface EingabeBankunterlagenProps extends EingabeProps {
-  /** Übernimmt Haushalt und Vermögen aus der Selbstauskunft. Ohne: der Knopf fehlt. */
+  /** Lädt Haushalt und Vermögen (neu) aus der Selbstauskunft. Ohne: der Knopf fehlt. */
   onAusSelbstauskunft?: () => void;
+  /**
+   * `verbunden`: ein Kunde mit Selbstauskunft zum Investment ist gewählt.
+   * `neuerStand`: Kunde, Investment oder Stand der Selbstauskunft sind
+   * andere als bei der letzten Übernahme.
+   */
+  saStatus?: { verbunden: boolean; neuerStand: boolean; vorschau?: boolean };
 }
 
 /**
@@ -1168,7 +1174,7 @@ export interface EingabeBankunterlagenProps extends EingabeProps {
  * 11.10.2026, nur in der Investmentkalkulation Plus. Gespeichert in der
  * Eingabe, gerechnet in bankunterlagen.ts.
  */
-export function EingabeBankunterlagen({ input, result, aendere, onAusSelbstauskunft }: EingabeBankunterlagenProps) {
+export function EingabeBankunterlagen({ input, result, aendere, onAusSelbstauskunft, saStatus }: EingabeBankunterlagenProps) {
   const haushalt = haushaltMitVorlage(input.haushalt);
   const vermoegen = vermoegenMitVorlage(input.vermoegen);
   const h = haushaltsrechnung(haushalt, result);
@@ -1193,11 +1199,26 @@ export function EingabeBankunterlagen({ input, result, aendere, onAusSelbstausku
           </small>
         </span>
       </label>
-      {onAusSelbstauskunft && (
-        <button type="button" className="button button-primary" onClick={onAusSelbstauskunft}>
-          Aus der Selbstauskunft übernehmen <Neu />
-        </button>
-      )}
+      <div className={`sa-status${saStatus?.neuerStand ? " sa-status-neu" : ""}`} data-testid="sa-status">
+        {!saStatus?.verbunden ? (
+          <p>Kein Kunde mit Selbstauskunft verbunden. Die Felder sind frei auszufüllen; mit Kunde und Investment im Bereich „Kunde &amp; Einkommen“ füllt der Rechner sie selbst.</p>
+        ) : saStatus.neuerStand ? (
+          <p>
+            <strong>Neue Selbstauskunft verfügbar</strong> (anderer Kunde, anderes Investment oder neuerer Stand). Von Hand
+            geänderte Werte bleiben, bis du neu lädst.
+          </p>
+        ) : (
+          <p>
+            Vorbefüllt aus der Selbstauskunft{saStatus.vorschau ? " des Beispielkunden" : " des verbundenen Kunden"}. Alles bleibt
+            änderbar; geänderte Beträge gelten als Handwert und werden nicht ungefragt überschrieben.
+          </p>
+        )}
+        {onAusSelbstauskunft && saStatus?.verbunden && (
+          <button type="button" className={saStatus.neuerStand ? "button button-primary" : "text-button"} onClick={onAusSelbstauskunft}>
+            Neu aus Selbstauskunft laden <Neu />
+          </button>
+        )}
+      </div>
       <div className="subheading">
         Haushaltsrechnung je Monat <Neu />
       </div>

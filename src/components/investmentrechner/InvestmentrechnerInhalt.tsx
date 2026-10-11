@@ -24,7 +24,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import { abfrageDialog } from "@/lib/confirm";
+import { abfrageDialog, auswahlDialog } from "@/lib/confirm";
 // Im CRM rollt der Inhaltskasten, nicht das Fenster. Siehe lib/rollen.ts.
 import { rolleSeiteNachOben } from "@/lib/rollen";
 import { getCurrentUserId } from "@/lib/currentUser";
@@ -73,8 +73,18 @@ import {
 } from "@/lib/investmentrechner/unterlagenKiFelder";
 import { felderAusUnterlagenAuslesen, UnterlagenKiFehler } from "@/lib/investmentrechner/unterlagenKiAufruf";
 import { ladeRechnerBilder, MAX_RECHNER_BILDER } from "@/lib/investmentrechner/rechnerBilder";
-import { Bereichsknopf, FeldetikettKontext, VorschauKontext } from "@/components/investmentrechner/Felder";
-import { bankunterlagenAusSa } from "@/lib/investmentrechner/bankunterlagen";
+import { Bereichsknopf, FeldetikettKontext, Neu, VorschauKontext } from "@/components/investmentrechner/Felder";
+import { AmpelKontext, type AmpelEinstellung } from "@/components/investmentrechner/Auswertungen";
+import { bankunterlagenAusSa, bankunterlagenZusammenfuehren, hatManuelleBankunterlagen } from "@/lib/investmentrechner/bankunterlagen";
+import {
+  AMPEL_CONFIG_SCHLUESSEL,
+  AMPEL_SCHWELLEN,
+  darfAmpelSchwellenBearbeiten,
+  schwellenAusConfig,
+  schwellenFuerConfig,
+} from "@/lib/investmentrechner/ampel";
+import { getAppConfig, setAppConfig } from "@/lib/appConfigStore";
+import { useOptionalUser } from "@/contexts/UserContext";
 import { formatStand, loadKundenkontext } from "@/lib/kundenkontextHelper";
 import { KundeUndInvestment, type KundenwahlKunde } from "@/components/investmentrechner/KundeUndInvestment";
 import type { KiAuslesung } from "@/components/investmentrechner/UnterlagenUebernahme";
@@ -327,19 +337,21 @@ export interface InvestmentrechnerInhaltProps {
    */
   sichtbar?: boolean;
   /**
-   * „Investmentkalkulation Plus“, seit dem 09.10.2026 eine eigene Seite unter
-   * der bestehenden: derselbe Rechner mit denselben gespeicherten
-   * Berechnungen, dazu die Karte „Bankgespräch“ in der Analyse.
+   * Mit eingeschaltetem Schalter „Bankgespräch & Bankunterlagen“ starten.
+   * Seit dem 11.10.2026 ersetzt der Schalter die eigene Seite
+   * „Investmentkalkulation Plus“; deren alte Adresse leitet mit diesem
+   * Start hierher. Eine geladene Berechnung bringt ihren Schalter selbst mit.
    */
-  erweitert?: boolean;
+  bankgespraechStart?: boolean;
   /**
    * Lokale Vorschau ohne Anmeldung und ohne Datenbank, seit dem 11.10.2026
    * (/vorschau/investmentrechner, nur im Entwicklungsmodus). Speichern und
    * KI melden dann „In der Vorschau nicht verfügbar“, alles Neue trägt das
-   * Etikett „NEU“. `selbstauskunft` ist eine Beispiel-Selbstauskunft für
-   * „Aus der Selbstauskunft übernehmen“.
+   * Etikett „NEU“. `selbstauskunft` ist die Selbstauskunft eines
+   * verbundenen Beispielkunden, `stand` ihr Stand (ein neuer Stand zeigt den
+   * Ablauf „Neu aus Selbstauskunft laden“).
    */
-  vorschau?: { selbstauskunft?: unknown };
+  vorschau?: { selbstauskunft?: unknown; stand?: string };
 }
 
 export function InvestmentrechnerInhalt({
@@ -348,10 +360,17 @@ export function InvestmentrechnerInhalt({
   start,
   onErgebnis,
   sichtbar = true,
-  erweitert = false,
+  bankgespraechStart = false,
   vorschau,
 }: InvestmentrechnerInhaltProps = {}) {
   const [objekte, setObjekte] = useState<Objektzustand[]>(() => {
+    const mitSchalter = (liste: Objektzustand[]) =>
+      bankgespraechStart && !start?.berechnung
+        ? liste.map((o) => ({ ...o, eingabe: { ...o.eingabe, bankgespraechAktiv: true } }))
+        : liste;
+    return mitSchalter(startObjekte());
+  });
+  function startObjekte(): Objektzustand[] {
     if (start?.berechnung) {
       return [
         startZustand({
@@ -368,7 +387,7 @@ export function InvestmentrechnerInhalt({
     // deshalb bekommt es keinen Herkunftshinweis.
     if (!start?.kundeName) return [zustand];
     return [{ ...zustand, eingabe: { ...zustand.eingabe, clientName: start.kundeName } }];
-  });
+  }
   const [aktivIndex, setAktivIndex] = useState(0);
   /* ── Kunde, Investment und die gespeicherte Berechnung ── */
   const [kundeId, setKundeId] = useState<string | null>(start?.berechnung?.kontakt_id ?? start?.kundeId ?? null);
@@ -979,33 +998,112 @@ export function InvestmentrechnerInhalt({
     });
   };
 
-  /**
+  /*
    * Haushaltsrechnung und Vermögensaufstellung aus der Selbstauskunft des
    * gewählten Investments, seit dem 11.10.2026. Dieselbe Quelle wie die
    * Übernahme von Einkommen und Steuerklasse (`selbstauskunftAus`).
+   *
+   * Mit verbundenem Kunden und eingeschaltetem Schalter füllt der Rechner sie
+   * selbst, ohne Klick. Ist der Kunde, das Investment oder der Stand der
+   * Selbstauskunft ein anderer als bei der letzten Übernahme
+   * (`bankunterlagenStand`), steht „Neu aus Selbstauskunft laden“ bereit; von
+   * Hand geänderte Werte werden nur nach Rückfrage überschrieben, nie automatisch.
    */
-  const bankunterlagenAusSelbstauskunft = () => {
-    let sa: unknown = null;
-    let herkunft = "Aus der Selbstauskunft";
-    if (vorschau) {
-      sa = vorschau.selbstauskunft;
-      herkunft = "Aus der Selbstauskunft (Beispiel der Vorschau)";
-    } else if (kundeId && investmentId) {
-      sa = selbstauskunftAus(kundeId, investmentId);
-      const stand = formatStand(loadKundenkontext(kundeId, investmentId)?.saDatum);
-      if (stand) herkunft = `Aus der Selbstauskunft vom ${stand}`;
-    } else {
+  const saVersion = useLiveVersion(["investments", "kontakte"]);
+  const saQuelle = useMemo(() => {
+    if (vorschau?.selbstauskunft) {
+      return {
+        sa: vorschau.selbstauskunft,
+        herkunft: "Aus der Selbstauskunft (Beispielkunde der Vorschau)",
+        stand: `vorschau|${vorschau.stand ?? "1"}`,
+      };
+    }
+    if (!kundeId || !investmentId) return null;
+    const sa = selbstauskunftAus(kundeId, investmentId);
+    if (!sa) return null;
+    const datum = loadKundenkontext(kundeId, investmentId)?.saDatum;
+    const stand = formatStand(datum);
+    return {
+      sa,
+      herkunft: stand ? `Aus der Selbstauskunft vom ${stand}` : "Aus der Selbstauskunft",
+      stand: `${kundeId}|${investmentId}|${datum ?? ""}`,
+    };
+    // saVersion: neu lesen, sobald Investments oder Kontakte im Zwischenspeicher wechseln.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vorschau?.selbstauskunft, vorschau?.stand, kundeId, investmentId, saVersion]);
+
+  const bankunterlagenLaden = async (automatisch: boolean) => {
+    if (!saQuelle) {
       toast({ title: "Erst Kunde und Investment wählen", description: "Die Selbstauskunft gehört zum Investment, im Bereich „Kunde & Einkommen“." });
       return;
     }
-    const uebernahme = bankunterlagenAusSa(sa, herkunft);
-    if (!uebernahme) {
-      toast({ title: "Nichts zu übernehmen", description: "Die Selbstauskunft dieses Investments enthält keine Einkünfte, Ausgaben oder Vermögenswerte." });
+    const neu = bankunterlagenAusSa(saQuelle.sa, saQuelle.herkunft);
+    if (!neu) {
+      if (!automatisch) toast({ title: "Nichts zu übernehmen", description: "Die Selbstauskunft dieses Investments enthält keine Einkünfte, Ausgaben oder Vermögenswerte." });
       return;
     }
-    aendere(uebernahme);
-    toast({ title: "Aus der Selbstauskunft übernommen", description: "Unter jedem übernommenen Posten steht, woher er kommt. Wer den Betrag ändert, lässt den Hinweis verschwinden." });
+    const bisher = { haushalt: input.haushalt, vermoegen: input.vermoegen };
+    let ueberschreiben = true;
+    if (hatManuelleBankunterlagen(bisher)) {
+      if (automatisch) return;
+      const wahl = await auswahlDialog({
+        title: "Von Hand geänderte Werte überschreiben?",
+        description: "Einige Posten sind von Hand eingetragen oder geändert. Sie können stehen bleiben, oder die Selbstauskunft ersetzt alles.",
+        optionen: [
+          { wert: "behalten", text: "Handwerte behalten" },
+          { wert: "ueberschreiben", text: "Alles aus der Selbstauskunft" },
+        ],
+      });
+      if (!wahl) return;
+      ueberschreiben = wahl === "ueberschreiben";
+    }
+    aendere({ ...bankunterlagenZusammenfuehren(bisher, neu, ueberschreiben), bankunterlagenStand: saQuelle.stand });
+    toast({
+      title: automatisch ? "Aus der Selbstauskunft vorbefüllt" : "Aus der Selbstauskunft übernommen",
+      description: "Haushalt und Vermögen tragen das Etikett „Kunden-SA“. Wer einen Betrag ändert, macht ihn zum Handwert.",
+    });
   };
+
+  const bankModus = input.bankgespraechAktiv === true;
+  const saNeuerStand = !!saQuelle && saQuelle.stand !== input.bankunterlagenStand;
+  useEffect(() => {
+    if (!bankModus || !saNeuerStand) return;
+    if (hatManuelleBankunterlagen({ haushalt: input.haushalt, vermoegen: input.vermoegen })) return;
+    void bankunterlagenLaden(true);
+    // Nur bei neuem Stand der Quelle oder beim Einschalten, nicht bei jeder Eingabe.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bankModus, saQuelle?.stand, input.bankunterlagenStand]);
+
+  /* ── Ampel-Schwellen aus der Admin-Konfiguration ── */
+  const benutzer = useOptionalUser();
+  const configVersion = useLiveVersion(["app_config"]);
+  const [vorschauSchwellen, setVorschauSchwellen] = useState<AmpelEinstellung["schwellen"] | null>(null);
+  const ampelEinstellung = useMemo<AmpelEinstellung>(
+    () =>
+      vorschau
+        ? {
+            schwellen: vorschauSchwellen ?? AMPEL_SCHWELLEN,
+            darfBearbeiten: true,
+            hinweis: "Vorschau: Die Schwellen gelten nur in diesem Fenster. Im CRM speichern Admin und Inhaber sie unternehmensweit.",
+            speichern: async (neu) => {
+              setVorschauSchwellen(neu);
+              toast({ title: "Nur lokal gespeichert", description: "In der Vorschau gibt es keine Datenbank. Die Schwellen gelten bis zum Neuladen." });
+              return true;
+            },
+          }
+        : {
+            schwellen: schwellenAusConfig(getAppConfig(AMPEL_CONFIG_SCHLUESSEL, null)),
+            darfBearbeiten: darfAmpelSchwellenBearbeiten(benutzer?.user?.role),
+            speichern: async (neu) => {
+              const ok = await setAppConfig(AMPEL_CONFIG_SCHLUESSEL, schwellenFuerConfig(neu));
+              if (ok) toast({ title: "Ampel-Schwellen gespeichert", description: "Sie gelten ab sofort für alle Berechnungen." });
+              return ok;
+            },
+          },
+    // configVersion: neu lesen, wenn app_config sich ändert.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [vorschau, vorschauSchwellen, benutzer?.user?.role, configVersion],
+  );
 
   /* ── Am Investment speichern ── */
 
@@ -1215,10 +1313,9 @@ export function InvestmentrechnerInhalt({
         printing={printing}
         sprache={kundenSprache}
         deckblatt={deckblatt}
-        erweitert={erweitert}
       />
     ) : (
-      <ExposeDokument {...exposeObjekte[0]} printing={printing} sprache={kundenSprache} deckblatt={deckblatt} erweitert={erweitert} />
+      <ExposeDokument {...exposeObjekte[0]} printing={printing} sprache={kundenSprache} deckblatt={deckblatt} />
     );
 
   const druckdokumentRef = useRef<HTMLDivElement>(null);
@@ -1250,6 +1347,19 @@ export function InvestmentrechnerInhalt({
         <i className="h-[7px] w-[7px] rounded-full bg-success shadow-[0_0_0_4px_hsl(var(--success)/0.12)]" />
         Live-Berechnung
       </span>
+      {/* Seit dem 11.10.2026 statt der Seite „Investmentkalkulation Plus“; wird mit der Berechnung gespeichert. */}
+      <label className="rechner-modus" data-testid="schalter-bankgespraech">
+        <input
+          type="checkbox"
+          checked={bankModus}
+          onChange={(e) => {
+            aendere({ bankgespraechAktiv: e.target.checked });
+            if (!e.target.checked && bereich === "bankunterlagen") setBereich("kunde");
+          }}
+        />
+        Bankgespräch &amp; Bankunterlagen
+        <Neu />
+      </label>
       <Button variant="outline" className="gap-2" onClick={neuStarten}>
         <RotateCcw size={16} /> {vorbelegung ? "Auf Objektdaten zurücksetzen" : "Neu starten"}
       </Button>
@@ -1297,10 +1407,11 @@ export function InvestmentrechnerInhalt({
 
   return (
     <VorschauKontext.Provider value={!!vorschau}>
-    <FeldetikettKontext.Provider value={erweitert}>
+    <AmpelKontext.Provider value={ampelEinstellung}>
+    <FeldetikettKontext.Provider value={bankModus}>
       <div className="space-y-6 w-full">
         {mitUeberschrift ? (
-          <PageHeader title={erweitert ? "Investmentkalkulation Plus" : "Investmentkalkulation"}>{aktionen}</PageHeader>
+          <PageHeader title="Investmentkalkulation">{aktionen}</PageHeader>
         ) : (
           <div className="flex flex-wrap items-center justify-end gap-2">{aktionen}</div>
         )}
@@ -1377,7 +1488,7 @@ export function InvestmentrechnerInhalt({
                   vermerk={objektVermerk}
                   onClick={() => setBereich("steuer")}
                 />
-                {erweitert && (
+                {bankModus && (
                   <Bereichsknopf
                     active={bereich === "bankunterlagen"}
                     icon={<Banknote size={17} />}
@@ -1399,7 +1510,7 @@ export function InvestmentrechnerInhalt({
                 {!vergleichAktiv && <ObjektHinzufuegen onClick={objektHinzufuegen} />}
               </nav>
               <div className="input-content">
-                {erweitert && (
+                {bankModus && (
                   <p className="feldetikett-legende" data-testid="feldetikett-legende">
                     <span className="feldetikett feldetikett-objekt">Objekt</span> aus Objektanlage oder Unterlagen
                     <span className="feldetikett feldetikett-selbstauskunft">Kunden-SA</span> aus der Selbstauskunft
@@ -1428,8 +1539,12 @@ export function InvestmentrechnerInhalt({
                 {bereich === "finanzierung" && <EingabeFinanzierung {...eingabeProps} />}
                 {bereich === "ertrag" && <EingabeErtrag {...eingabeProps} />}
                 {bereich === "steuer" && <EingabeSteuer {...eingabeProps} />}
-                {bereich === "bankunterlagen" && erweitert && (
-                  <EingabeBankunterlagen {...eingabeProps} onAusSelbstauskunft={bankunterlagenAusSelbstauskunft} />
+                {bereich === "bankunterlagen" && bankModus && (
+                  <EingabeBankunterlagen
+                    {...eingabeProps}
+                    onAusSelbstauskunft={() => void bankunterlagenLaden(false)}
+                    saStatus={{ verbunden: !!saQuelle, neuerStand: saNeuerStand, vorschau: !!vorschau }}
+                  />
                 )}
                 {bereich === "expose" && (
                   <EingabeExpose
@@ -1445,7 +1560,7 @@ export function InvestmentrechnerInhalt({
                       }));
                     }}
                     hinweis={fotoHinweis}
-                    nummer={erweitert ? "08" : "07"}
+                    nummer={bankModus ? "08" : "07"}
                     onOpenPreview={() => {
                       setAnsicht("expose");
                       rolleSeiteNachOben();
@@ -1501,7 +1616,7 @@ export function InvestmentrechnerInhalt({
                   onOpenDocuments={() => setBereich("unterlagen")}
                   deckblatt={deckblatt}
                   onDeckblatt={waehleDeckblatt}
-                  mitBankgespraech={erweitert}
+                  mitBankgespraech={bankModus}
                 />
               )}
               {ansicht === "vergleich" && vergleichAktiv && (
@@ -1551,6 +1666,7 @@ export function InvestmentrechnerInhalt({
         document.body,
       )}
     </FeldetikettKontext.Provider>
+    </AmpelKontext.Provider>
     </VorschauKontext.Provider>
   );
 }

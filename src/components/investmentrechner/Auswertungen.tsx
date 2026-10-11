@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { FileDown } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { eigenkapitalrendite, type InvestmentEingabe, type InvestmentErgebnis } from "@/lib/investmentrechner/rechenkern";
@@ -26,7 +26,32 @@ import {
 import { KENNZAHL_TEXTE } from "@/lib/investmentrechner/kennzahlTexte";
 import { rechenwege } from "@/lib/investmentrechner/kennzahlErklaerungen";
 import { AMPEL_WORT, Ampelpunkt, Kennzahlkarte, Neu } from "./Felder";
-import { AMPEL_SCHWELLEN, ampel, type Ampelschwelle } from "@/lib/investmentrechner/ampel";
+import {
+  AMPEL_SCHWELLEN,
+  ampel,
+  pruefeSchwellen,
+  type Ampelkennzahl,
+  type Ampelschwelle,
+} from "@/lib/investmentrechner/ampel";
+
+/**
+ * Die gültigen Ampel-Schwellen und wer sie ändern darf, seit dem 11.10.2026.
+ * Der Rechner liest sie aus `app_config` und reicht sie hier herein; ohne
+ * Rechner (Tests, Einzelkarten) gelten die Standardwerte, nur lesend.
+ */
+export interface AmpelEinstellung {
+  schwellen: Record<Ampelkennzahl, Ampelschwelle>;
+  darfBearbeiten: boolean;
+  speichern: (schwellen: Record<Ampelkennzahl, Ampelschwelle>) => Promise<boolean>;
+  /** Satz unter dem Editor, etwa dass in der Vorschau nur lokal gespeichert wird. */
+  hinweis?: string;
+}
+
+export const AmpelKontext = createContext<AmpelEinstellung>({
+  schwellen: AMPEL_SCHWELLEN,
+  darfBearbeiten: false,
+  speichern: async () => false,
+});
 import { useRechnerTexte } from "./RechnerSprache";
 import { dokumentTexteFuer } from "@/lib/investmentrechner/dokumentTexte";
 import type { FormatSprache } from "@/lib/sprachFormat";
@@ -396,7 +421,9 @@ function ampelwert(wert: number | null, schwelle: Pick<Ampelschwelle, "einheit">
  * darunter, ab wann welche Farbe gilt, damit niemand raten muss.
  */
 export function AmpelLeiste({ input, result, mitSchwellen = false }: { input: InvestmentEingabe; result: InvestmentErgebnis; mitSchwellen?: boolean }) {
-  const zeilen = ampel(input, result);
+  const einstellung = useContext(AmpelKontext);
+  const [bearbeitet, setBearbeitet] = useState(false);
+  const zeilen = ampel(input, result, einstellung.schwellen);
   return (
     <div data-testid="ampel">
       <div className="ampel-leiste">
@@ -423,7 +450,7 @@ export function AmpelLeiste({ input, result, mitSchwellen = false }: { input: In
               </tr>
             </thead>
             <tbody>
-              {Object.values(AMPEL_SCHWELLEN).map((s) => (
+              {Object.values(einstellung.schwellen).map((s) => (
                 <tr key={s.label} title={s.erklaerung}>
                   <td>{s.label}</td>
                   <td>{ampelwert(s.gruenAb, s)}</td>
@@ -434,9 +461,15 @@ export function AmpelLeiste({ input, result, mitSchwellen = false }: { input: In
             </tbody>
           </table>
           <p className="kachel-hinweis">
-            Vorschlag, noch nicht abgestimmt. Cashflows im ersten Jahr je Monat. Die Schwellen stehen an einer Stelle
-            (ampel.ts) und sollen später in den Einstellungen für Admins änderbar sein.
+            Cashflows im ersten Jahr je Monat. Die Schwellen gelten unternehmensweit; ändern dürfen sie nur Admin und
+            Inhaber. Die Ampel ist ein internes Werkzeug und steht nicht in der Berechnung für den Kunden.
           </p>
+          {einstellung.darfBearbeiten && !bearbeitet && (
+            <button type="button" className="text-button" data-testid="schwellen-bearbeiten" onClick={() => setBearbeitet(true)}>
+              Schwellen bearbeiten <Neu />
+            </button>
+          )}
+          {einstellung.darfBearbeiten && bearbeitet && <SchwellenEditor einstellung={einstellung} onFertig={() => setBearbeitet(false)} />}
         </>
       )}
     </div>
@@ -543,6 +576,90 @@ export function BankunterlagenTabellen({
         </table>
       </div>
       </>)}
+    </div>
+  );
+}
+
+/**
+ * Die Schwellen bearbeiten: je Kennzahl „Grün ab“ und „Gelb ab“, darunter
+ * Rot. Renditen in Prozent, Cashflows in Euro je Monat.
+ */
+function SchwellenEditor({ einstellung, onFertig }: { einstellung: AmpelEinstellung; onFertig: () => void }) {
+  const alsText = (s: Record<Ampelkennzahl, Ampelschwelle>) =>
+    Object.fromEntries(
+      (Object.keys(s) as Ampelkennzahl[]).map((k) => {
+        const faktor = s[k].einheit === "prozent" ? 100 : 1;
+        return [k, { gruenAb: String(+(s[k].gruenAb * faktor).toFixed(4)), gelbAb: String(+(s[k].gelbAb * faktor).toFixed(4)) }];
+      }),
+    ) as Record<Ampelkennzahl, { gruenAb: string; gelbAb: string }>;
+  const [werte, setWerte] = useState(() => alsText(einstellung.schwellen));
+  const [speichert, setSpeichert] = useState(false);
+  const zahl = (text: string) => (text.trim() === "" ? NaN : Number(text.replace(",", ".")));
+  const neu = Object.fromEntries(
+    (Object.keys(werte) as Ampelkennzahl[]).map((k) => {
+      const faktor = AMPEL_SCHWELLEN[k].einheit === "prozent" ? 100 : 1;
+      return [k, { ...einstellung.schwellen[k], gruenAb: zahl(werte[k].gruenAb) / faktor, gelbAb: zahl(werte[k].gelbAb) / faktor }];
+    }),
+  ) as Record<Ampelkennzahl, Ampelschwelle>;
+  const fehler = pruefeSchwellen(neu);
+  const speichern = async () => {
+    if (fehler.length) return;
+    setSpeichert(true);
+    const ok = await einstellung.speichern(neu);
+    setSpeichert(false);
+    if (ok) onFertig();
+  };
+  return (
+    <div className="schwellen-editor" data-testid="schwellen-editor">
+      <table className="ampel-schwellen">
+        <thead>
+          <tr>
+            <th>Kennzahl</th>
+            <th>Grün ab</th>
+            <th>Gelb ab</th>
+            <th>Rot</th>
+          </tr>
+        </thead>
+        <tbody>
+          {(Object.keys(werte) as Ampelkennzahl[]).map((k) => {
+            const einheit = AMPEL_SCHWELLEN[k].einheit === "prozent" ? "%" : "€ / Monat";
+            const feld = (art: "gruenAb" | "gelbAb") => (
+              <input
+                type="number"
+                step="any"
+                aria-label={`${AMPEL_SCHWELLEN[k].label} ${art === "gruenAb" ? "Grün ab" : "Gelb ab"} in ${einheit}`}
+                value={werte[k][art]}
+                onChange={(e) => setWerte({ ...werte, [k]: { ...werte[k], [art]: e.target.value } })}
+              />
+            );
+            return (
+              <tr key={k}>
+                <td>{AMPEL_SCHWELLEN[k].label}</td>
+                <td>{feld("gruenAb")} {einheit}</td>
+                <td>{feld("gelbAb")} {einheit}</td>
+                <td>darunter</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      {fehler.length > 0 && (
+        <ul className="knk-hinweis knk-hinweis-warnung" role="alert">
+          {fehler.map((f) => <li key={f}>{f}</li>)}
+        </ul>
+      )}
+      <div className="schwellen-knoepfe">
+        <button type="button" className="button button-primary" disabled={fehler.length > 0 || speichert} onClick={() => void speichern()}>
+          {speichert ? "Wird gespeichert …" : "Schwellen speichern"}
+        </button>
+        <button type="button" className="text-button" onClick={() => setWerte(alsText(AMPEL_SCHWELLEN))}>
+          Auf Standard zurücksetzen
+        </button>
+        <button type="button" className="text-button" onClick={onFertig}>
+          Abbrechen
+        </button>
+      </div>
+      {einstellung.hinweis && <p className="kachel-hinweis">{einstellung.hinweis}</p>}
     </div>
   );
 }
@@ -678,7 +795,8 @@ export function UnterlagenEinblicke({ data, compact = false }: UnterlagenEinblic
 export function Kennzahlen({ result, input }: { result: InvestmentErgebnis; input: InvestmentEingabe }) {
   const texte = KENNZAHL_TEXTE.kacheln;
   const wege = rechenwege(input, result);
-  const farben = Object.fromEntries(ampel(input, result).map((z) => [z.kennzahl, z.farbe]));
+  const { schwellen } = useContext(AmpelKontext);
+  const farben = Object.fromEntries(ampel(input, result, schwellen).map((z) => [z.kennzahl, z.farbe]));
   const letztesJahr = result.years[result.years.length - 1];
   const zahltZu = letztesJahr.cumulativeEigenanteil > 0;
   return (

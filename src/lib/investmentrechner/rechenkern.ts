@@ -167,6 +167,18 @@ export interface InvestmentEingabe {
   /** Haushalt und Vermögen auch als eigene Seite in der Berechnung, nicht nur in der Analyse. */
   bankunterlagenInBerechnung: boolean;
   /**
+   * Schalter „Bankgespräch & Bankunterlagen“ oben im Rechner, seit dem
+   * 11.10.2026 statt der eigenen Seite „Investmentkalkulation Plus“. Aus heißt:
+   * der Rechner wie vorher. Gespeicherte Stände ohne das Feld sind aus.
+   */
+  bankgespraechAktiv: boolean;
+  /**
+   * Aus welcher Selbstauskunft Haushalt und Vermögen zuletzt übernommen
+   * wurden (Kunde, Investment, Stand). Leer: noch nie. Daran erkennt der
+   * Rechner eine neuere Selbstauskunft oder einen anderen Kunden.
+   */
+  bankunterlagenStand: string;
+  /**
    * Welche Bedeutung die Eingabe hat, für gespeicherte Stände. Ab Version 2
    * (25.09.2026) ist `purchasePrice` der Gesamtkaufpreis samt Möbeln; bis
    * dahin war es der Preis ohne Möbel. Gerechnet wird damit nichts, siehe
@@ -510,6 +522,8 @@ export const standardEingabe: InvestmentEingabe = {
   haushalt: { einkuenfte: [], ausgaben: [] },
   vermoegen: { werte: [], verbindlichkeiten: [] },
   bankunterlagenInBerechnung: false,
+  bankgespraechAktiv: false,
+  bankunterlagenStand: "",
   eingabeVersion: EINGABE_VERSION,
 };
 

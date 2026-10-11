@@ -105,3 +105,44 @@ export function ampel(
     farbe: ampelfarbe(werte[kennzahl], schwellen[kennzahl]),
   }));
 }
+
+/** Schlüssel in der Admin-Konfiguration `app_config`, seit dem 11.10.2026. */
+export const AMPEL_CONFIG_SCHLUESSEL = "investmentrechner_ampel_schwellen";
+
+/** Nur admin und inhaber ändern die Schwellen; die Datenbank (RLS über is_admin_role) sieht es genauso. */
+export function darfAmpelSchwellenBearbeiten(rolle: string | null | undefined): boolean {
+  return rolle === "admin" || rolle === "inhaber";
+}
+
+/** Gespeicherte Werte ({ kennzahl: { gruenAb, gelbAb } }) über die Standardwerte legen. Unsinn fällt weg. */
+export function schwellenAusConfig(roh: unknown): Record<Ampelkennzahl, Ampelschwelle> {
+  const daten = roh && typeof roh === "object" ? (roh as Record<string, unknown>) : {};
+  return Object.fromEntries(
+    (Object.keys(AMPEL_SCHWELLEN) as Ampelkennzahl[]).map((kennzahl) => {
+      const standard = AMPEL_SCHWELLEN[kennzahl];
+      const eintrag = daten[kennzahl] && typeof daten[kennzahl] === "object" ? (daten[kennzahl] as Record<string, unknown>) : {};
+      const zahl = (wert: unknown, ersatz: number) => (typeof wert === "number" && Number.isFinite(wert) ? wert : ersatz);
+      const gruenAb = zahl(eintrag.gruenAb, standard.gruenAb);
+      const gelbAb = zahl(eintrag.gelbAb, standard.gelbAb);
+      // Ein gespeichertes Paar, das nicht zusammenpasst, gilt nicht: lieber der Standard als eine falsche Farbe.
+      return [kennzahl, gruenAb >= gelbAb ? { ...standard, gruenAb, gelbAb } : standard];
+    }),
+  ) as Record<Ampelkennzahl, Ampelschwelle>;
+}
+
+/** Nur die Zahlen, so wie sie in `app_config` stehen. */
+export function schwellenFuerConfig(schwellen: Record<Ampelkennzahl, Ampelschwelle>): Record<Ampelkennzahl, { gruenAb: number; gelbAb: number }> {
+  return Object.fromEntries(
+    (Object.keys(schwellen) as Ampelkennzahl[]).map((k) => [k, { gruenAb: schwellen[k].gruenAb, gelbAb: schwellen[k].gelbAb }]),
+  ) as Record<Ampelkennzahl, { gruenAb: number; gelbAb: number }>;
+}
+
+/** Fehler je Kennzahl, leer heißt speicherbar. Grün muss mindestens so streng sein wie Gelb. */
+export function pruefeSchwellen(schwellen: Record<Ampelkennzahl, Pick<Ampelschwelle, "gruenAb" | "gelbAb" | "label">>): string[] {
+  return (Object.keys(schwellen) as Ampelkennzahl[]).flatMap((k) => {
+    const s = schwellen[k];
+    if (!Number.isFinite(s.gruenAb) || !Number.isFinite(s.gelbAb)) return [`${s.label}: bitte beide Werte eintragen.`];
+    if (s.gruenAb < s.gelbAb) return [`${s.label}: „Grün ab“ muss größer oder gleich „Gelb ab“ sein.`];
+    return [];
+  });
+}

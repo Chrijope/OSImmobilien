@@ -183,3 +183,39 @@ export function bankunterlagenAusSa(
   if (einkuenfte.length + ausgaben.length + werte.length + verbindlichkeiten.length === 0) return null;
   return { haushalt: { einkuenfte, ausgaben }, vermoegen: { werte, verbindlichkeiten } };
 }
+
+type Bankunterlagen = { haushalt: Haushaltsrechnung; vermoegen: Vermoegensaufstellung };
+
+/** Von Hand eingetragen: ohne Herkunftssatz und mit Betrag. Leere Vorlagezeilen zählen nicht. */
+const istManuell = (p: Bankunterlagenposten) => !p.herkunft && p.betrag !== 0;
+const alleListen = (u: Bankunterlagen) => [u.haushalt.einkuenfte, u.haushalt.ausgaben, u.vermoegen.werte, u.vermoegen.verbindlichkeiten];
+
+/** Stehen von Hand eingetragene oder geänderte Werte in Haushalt oder Vermögen? */
+export function hatManuelleBankunterlagen(u: Bankunterlagen): boolean {
+  return alleListen(u).some((liste) => liste.some(istManuell));
+}
+
+/**
+ * Neue Werte aus der Selbstauskunft übernehmen, seit dem 11.10.2026.
+ *
+ * `ueberschreiben`: die Selbstauskunft ersetzt alles. Sonst bleiben von Hand
+ * eingetragene oder geänderte Posten stehen (wie „eigen“ in herkunft.ts):
+ * Ein Posten der Selbstauskunft mit derselben Bezeichnung fällt dann weg,
+ * zusätzliche Handposten kommen ans Ende.
+ */
+export function bankunterlagenZusammenfuehren(bisher: Bankunterlagen, neu: Bankunterlagen, ueberschreiben: boolean): Bankunterlagen {
+  if (ueberschreiben) return neu;
+  const name = (p: Bankunterlagenposten) => p.bezeichnung.trim().toLowerCase();
+  const liste = (alt: Bankunterlagenposten[], frisch: Bankunterlagenposten[]) => {
+    const manuell = alt.filter(istManuell);
+    const ersetzt = frisch.map((p) => manuell.find((m) => name(m) === name(p)) ?? p);
+    return [...ersetzt, ...manuell.filter((m) => !ersetzt.includes(m))];
+  };
+  return {
+    haushalt: { einkuenfte: liste(bisher.haushalt.einkuenfte, neu.haushalt.einkuenfte), ausgaben: liste(bisher.haushalt.ausgaben, neu.haushalt.ausgaben) },
+    vermoegen: {
+      werte: liste(bisher.vermoegen.werte, neu.vermoegen.werte),
+      verbindlichkeiten: liste(bisher.vermoegen.verbindlichkeiten, neu.vermoegen.verbindlichkeiten),
+    },
+  };
+}

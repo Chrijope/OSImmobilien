@@ -40,6 +40,8 @@ export const GEMEINSAME_FELDER: readonly (keyof InvestmentEingabe)[] = [
   "haushalt",
   "vermoegen",
   "bankunterlagenInBerechnung",
+  "bankgespraechAktiv",
+  "bankunterlagenStand",
 ];
 
 /** Kennzeichnung eines Objekts im Vergleich: Objekt A, Objekt B. */

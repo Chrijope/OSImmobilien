@@ -240,3 +240,57 @@ describe("Gespeicherte Berechnung", () => {
     expect(eingabeAusJson({}).specialRepayments).toEqual([]);
   });
 });
+
+describe("Ampel-Schwellen aus der Admin-Konfiguration (11.10.2026)", () => {
+  it("nur admin und inhaber dürfen bearbeiten", async () => {
+    const { darfAmpelSchwellenBearbeiten } = await import("./ampel");
+    expect(darfAmpelSchwellenBearbeiten("admin")).toBe(true);
+    expect(darfAmpelSchwellenBearbeiten("inhaber")).toBe(true);
+    for (const rolle of ["vertriebsleiter", "vertriebspartner", "objektpartner", "finanzierungspartner", "kunde", "", null, undefined]) {
+      expect(darfAmpelSchwellenBearbeiten(rolle)).toBe(false);
+    }
+  });
+
+  it("gespeicherte Werte gelten, fehlende und unpassende fallen auf den Standard", async () => {
+    const { schwellenAusConfig, schwellenFuerConfig, pruefeSchwellen } = await import("./ampel");
+    expect(schwellenAusConfig(null)).toEqual(AMPEL_SCHWELLEN);
+    const s = schwellenAusConfig({ bruttorendite: { gruenAb: 0.05, gelbAb: 0.04 }, nettorendite: { gruenAb: 0.01, gelbAb: 0.03 }, cashflowOperativ: { gruenAb: "x" } });
+    expect(s.bruttorendite).toMatchObject({ gruenAb: 0.05, gelbAb: 0.04, label: "Bruttomietrendite" });
+    expect(s.nettorendite).toEqual(AMPEL_SCHWELLEN.nettorendite);
+    expect(s.cashflowOperativ).toEqual(AMPEL_SCHWELLEN.cashflowOperativ);
+    expect(schwellenFuerConfig(s).bruttorendite).toEqual({ gruenAb: 0.05, gelbAb: 0.04 });
+    expect(pruefeSchwellen(AMPEL_SCHWELLEN)).toEqual([]);
+    expect(pruefeSchwellen({ ...AMPEL_SCHWELLEN, cashflowOperativ: { ...AMPEL_SCHWELLEN.cashflowOperativ, gruenAb: -200 } })).toHaveLength(1);
+    expect(ampel(standard, berechneInvestment(standard), s)[0].farbe).toBe(ampelfarbe(berechneInvestment(standard).grossYield, s.bruttorendite));
+  });
+});
+
+describe("Bankunterlagen zusammenführen (11.10.2026)", () => {
+  it("Handwerte bleiben ohne Überschreiben, mit Überschreiben ersetzt die Selbstauskunft alles", async () => {
+    const { bankunterlagenZusammenfuehren, hatManuelleBankunterlagen } = await import("./bankunterlagen");
+    const bisher = {
+      haushalt: {
+        einkuenfte: [
+          { bezeichnung: "Nettoeinkommen Person 1", betrag: 4100 },
+          { bezeichnung: "Kindergeld", betrag: 250, herkunft: "Aus der Selbstauskunft" },
+          { bezeichnung: "Nebenjob", betrag: 300 },
+        ],
+        ausgaben: [{ bezeichnung: "Leer", betrag: 0 }],
+      },
+      vermoegen: { werte: [], verbindlichkeiten: [] },
+    };
+    const neu = {
+      haushalt: { einkuenfte: [{ bezeichnung: "Nettoeinkommen Person 1", betrag: 4500, herkunft: "SA" }, { bezeichnung: "Kindergeld", betrag: 255, herkunft: "SA" }], ausgaben: [] },
+      vermoegen: { werte: [], verbindlichkeiten: [] },
+    };
+    expect(hatManuelleBankunterlagen(bisher)).toBe(true);
+    expect(hatManuelleBankunterlagen(neu)).toBe(false);
+    const geschuetzt = bankunterlagenZusammenfuehren(bisher, neu, false);
+    expect(geschuetzt.haushalt.einkuenfte.map((p) => [p.bezeichnung, p.betrag])).toEqual([
+      ["Nettoeinkommen Person 1", 4100],
+      ["Kindergeld", 255],
+      ["Nebenjob", 300],
+    ]);
+    expect(bankunterlagenZusammenfuehren(bisher, neu, true)).toBe(neu);
+  });
+});

@@ -1,7 +1,6 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
 import { InvestmentrechnerInhalt } from "@/components/investmentrechner/InvestmentrechnerInhalt";
 import golden from "@/lib/investmentrechner/rechenkern.golden.json";
-import { bankunterlagenAusSa } from "@/lib/investmentrechner/bankunterlagen";
 import { standardKaufnebenkostenauswahl } from "@/lib/investmentrechner/kaufnebenkostenAuswahl";
 import { standardEingabe, type InvestmentEingabe } from "@/lib/investmentrechner/rechenkern";
 
@@ -35,7 +34,12 @@ export const BEISPIEL_SELBSTAUSKUNFT = {
   ],
 };
 
-const unterlagen = bankunterlagenAusSa(BEISPIEL_SELBSTAUSKUNFT, "Aus der Selbstauskunft (Beispiel der Vorschau)");
+/** Dieselbe Selbstauskunft mit neuerem Stand: mehr Netto, ein Kredit weniger. Zeigt „Neu aus Selbstauskunft laden“. */
+export const BEISPIEL_SELBSTAUSKUNFT_NEU = {
+  ...BEISPIEL_SELBSTAUSKUNFT,
+  einkommen: { ...BEISPIEL_SELBSTAUSKUNFT.einkommen, netto: "4.400" },
+  kredite: [],
+};
 
 export const VORSCHAU_EINGABE: InvestmentEingabe = {
   ...standardEingabe,
@@ -55,14 +59,12 @@ export const VORSCHAU_EINGABE: InvestmentEingabe = {
   secondInterestRate: 3.2,
   secondRepaymentRate: 3,
   secondFixedRateYears: 15,
-  haushalt: unterlagen?.haushalt ?? standardEingabe.haushalt,
-  vermoegen: {
-    werte: (unterlagen?.vermoegen.werte ?? []).map((p, i) => (i === 1 ? { ...p, verpfaendet: true } : p)),
-    verbindlichkeiten: unterlagen?.vermoegen.verbindlichkeiten ?? [],
-  },
+  // Schalter an, Haushalt und Vermögen leer: Der verbundene Beispielkunde füllt sie beim Öffnen selbst.
+  bankgespraechAktiv: true,
 };
 
-export default function VorschauInvestmentrechner({ erweitert = false }: { erweitert?: boolean }) {
+export default function VorschauInvestmentrechner() {
+  const [neuereSa, setNeuereSa] = useState(false);
   return (
     <div className="min-h-screen bg-background p-4 md:p-6" data-lg="seite">
       <div
@@ -72,20 +74,20 @@ export default function VorschauInvestmentrechner({ erweitert = false }: { erwei
         <strong>Lokale Vorschau, nur auf diesem Rechner.</strong> Ohne Anmeldung und ohne Datenbank: Speichern, Laden und
         KI sind hier nicht verfügbar, alles bleibt in diesem Fenster. Das Etikett <span className="neu-etikett">NEU</span>{" "}
         zeigt, was sich ändert. Beispielzahlen, kein echter Kunde.
-        <span className="ml-2 inline-flex gap-3">
-          <Link className="underline" to="/vorschau/investmentrechner">
-            Investmentkalkulation
-          </Link>
-          <Link className="underline" to="/vorschau/investmentrechner-plus">
-            Investmentkalkulation Plus (mit Bankgespräch und Bankunterlagen)
-          </Link>
-        </span>
+        <br />
+        Oben rechts der Schalter <strong>„Bankgespräch &amp; Bankunterlagen“</strong> (hier an). Ein Beispielkunde mit
+        Selbstauskunft ist verbunden, Haushalt und Vermögen füllen sich deshalb selbst (Bereich „Bankunterlagen“). Die
+        Ampel-Schwellen bearbeitest du in der Karte „Ampel“ der Analyse.{" "}
+        <button type="button" className="underline" onClick={() => setNeuereSa((v) => !v)} data-testid="vorschau-neuere-sa">
+          {neuereSa ? "Wieder die erste Selbstauskunft" : "Neuere Selbstauskunft des Kunden simulieren"}
+        </button>
       </div>
       <InvestmentrechnerInhalt
-        key={erweitert ? "plus" : "normal"}
         vorbelegung={{ eingabe: VORSCHAU_EINGABE, knk: standardKaufnebenkostenauswahl }}
-        erweitert={erweitert}
-        vorschau={{ selbstauskunft: BEISPIEL_SELBSTAUSKUNFT }}
+        vorschau={{
+          selbstauskunft: neuereSa ? BEISPIEL_SELBSTAUSKUNFT_NEU : BEISPIEL_SELBSTAUSKUNFT,
+          stand: neuereSa ? "2" : "1",
+        }}
       />
     </div>
   );

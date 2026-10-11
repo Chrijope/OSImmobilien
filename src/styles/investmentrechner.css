@@ -4660,3 +4660,51 @@
 .investmentrechner .einordnung-page .ampel-leiste {
   margin-bottom: 12px;
 }
+.investmentrechner .schwellen-editor input {
+  width: 80px;
+  padding: 3px 6px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--text-1);
+  font: inherit;
+}
+.investmentrechner .schwellen-knoepfe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+}
+.rechner-modus {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 7px 12px;
+  border: 2px solid hsl(var(--primary));
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+.rechner-modus input {
+  width: 16px;
+  height: 16px;
+  accent-color: hsl(var(--primary));
+}
+.investmentrechner .sa-status {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--gruen-zart-linie);
+  border-radius: 8px;
+  background: var(--gruen-zart);
+  font-size: 0.78rem;
+}
+.investmentrechner .sa-status p {
+  margin: 0 0 6px;
+}
+.investmentrechner .sa-status-neu {
+  border-color: var(--warn-linie);
+  background: var(--warn-flaeche);
+}

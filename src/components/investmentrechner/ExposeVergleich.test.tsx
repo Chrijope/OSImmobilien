@@ -5,10 +5,10 @@ import { leereUnterlagenDaten } from "@/lib/investmentrechner/unterlagenAuslesen
 import { ExposeDokument, ExposeVergleichsdokument, type ExposeObjekt } from "./ExposeDokument";
 
 /*
- * Geprüft wird der Zusammenbau des Exposés: bei einem Objekt neun Seiten (seit dem 11.10.2026 mit der Ampel)
+ * Geprüft wird der Zusammenbau des Exposés: bei einem Objekt acht Seiten
  * (seit dem 25.09.2026 mit dem Glossar am Ende, seit dem 07.10.2026 mit
  * Deckblatt und Kennzahlen-Seite vorn), bei zwei Objekten kommt die
- * Vergleichsseite dazu und die Zählung läuft von 1 bis 19 durch.
+ * Vergleichsseite dazu und die Zählung läuft von 1 bis 17 durch.
  */
 
 function objekt(aenderung: Partial<InvestmentEingabe>): ExposeObjekt {
@@ -30,25 +30,24 @@ function seitenzahlen(wurzel: HTMLElement): string[] {
 }
 
 describe("Exposé", () => {
-  it("hat bei einem Objekt neun Seiten, das Glossar zuletzt", () => {
+  it("hat bei einem Objekt acht Seiten, das Glossar zuletzt", () => {
     const { container } = render(<ExposeDokument {...objekt({ propertyTitle: "4 WG München" })} />);
-    expect(container.querySelectorAll(".expose-page")).toHaveLength(9);
-    expect(seitenzahlen(container)).toEqual(Array.from({ length: 9 }, (_, i) => `Seite ${i + 1}`));
-    // Die Ampel vor den Bildern, das Glossar danach.
+    expect(container.querySelectorAll(".expose-page")).toHaveLength(8);
+    expect(seitenzahlen(container)).toEqual(Array.from({ length: 8 }, (_, i) => `Seite ${i + 1}`));
+    // Das Glossar steht nach den Bildern.
     const seiten = [...container.querySelectorAll(".expose-page")];
-    expect(seiten[6].classList.contains("einordnung-page")).toBe(true);
-    expect(seiten[7].classList.contains("photos-page")).toBe(true);
-    expect(seiten[8].classList.contains("glossary-page")).toBe(true);
+    expect(seiten[6].classList.contains("photos-page")).toBe(true);
+    expect(seiten[7].classList.contains("glossary-page")).toBe(true);
     // Ohne Vergleich steht keine Objektkennzeichnung im Seitenkopf.
     expect(container.textContent).not.toContain("Objekt A");
   });
 
-  it("hat bei zwei Objekten neunzehn durchnummerierte Seiten, jedes Objekt mit dem gewählten Deckblatt", () => {
+  it("hat bei zwei Objekten siebzehn durchnummerierte Seiten, jedes Objekt mit dem gewählten Deckblatt", () => {
     const a = objekt({ propertyTitle: "4 WG München", purchasePrice: 600000, monthlyColdRent: 2000 });
     const b = objekt({ propertyTitle: "Sonnenweg 12" });
     const { container } = render(<ExposeVergleichsdokument a={a} b={b} deckblatt="jahre" />);
-    expect(container.querySelectorAll(".expose-page")).toHaveLength(19);
-    expect(seitenzahlen(container)).toEqual(Array.from({ length: 19 }, (_, i) => `Seite ${i + 1}`));
+    expect(container.querySelectorAll(".expose-page")).toHaveLength(17);
+    expect(seitenzahlen(container)).toEqual(Array.from({ length: 17 }, (_, i) => `Seite ${i + 1}`));
     expect(container.querySelectorAll(".compare-page")).toHaveLength(1);
     expect(container.querySelectorAll(".deckblatt-jahre")).toHaveLength(2);
     expect(container.querySelectorAll(".deckblatt-blick")).toHaveLength(0);
@@ -60,20 +59,28 @@ describe("Exposé", () => {
       (element) => element.textContent ?? "",
     );
     // Alle Seiten außer dem Deckblatt, das die Marke rechts oben trägt.
-    expect(kopfzeilen.filter((zeile) => zeile.endsWith("Objekt A"))).toHaveLength(8);
-    expect(kopfzeilen.filter((zeile) => zeile.endsWith("Objekt B"))).toHaveLength(8);
+    expect(kopfzeilen.filter((zeile) => zeile.endsWith("Objekt A"))).toHaveLength(7);
+    expect(kopfzeilen.filter((zeile) => zeile.endsWith("Objekt B"))).toHaveLength(7);
     expect(kopfzeilen.filter((zeile) => zeile.endsWith("Objektvergleich"))).toHaveLength(1);
   });
 
-  it("Plus: zwei Seiten Bankgespräch, mit Haken zwei Seiten Bankunterlagen, durchnummeriert (11.10.2026)", () => {
-    const ohne = render(<ExposeDokument {...objekt({})} erweitert />).container;
-    expect(ohne.querySelectorAll(".einordnung-page")).toHaveLength(2);
-    expect(ohne.querySelectorAll(".bankunterlagen-page")).toHaveLength(0);
-    const mit = render(<ExposeDokument {...objekt({ bankunterlagenInBerechnung: true })} erweitert />).container;
+  it("Bankgespräch: zwei Seiten mit Schalter, mit Haken zwei Seiten Bankunterlagen, Ampel nie (11.10.2026)", () => {
+    const ohne = render(<ExposeDokument {...objekt({})} />).container;
+    expect(ohne.querySelectorAll(".einordnung-page")).toHaveLength(0);
+    const bank = render(<ExposeDokument {...objekt({ bankgespraechAktiv: true })} />).container;
+    expect(bank.querySelectorAll(".einordnung-page")).toHaveLength(2);
+    expect(bank.querySelectorAll(".bankunterlagen-page")).toHaveLength(0);
+    const mit = render(<ExposeDokument {...objekt({ bankgespraechAktiv: true, bankunterlagenInBerechnung: true })} />).container;
     expect(mit.querySelectorAll(".bankunterlagen-page")).toHaveLength(2);
     expect(seitenzahlen(mit)).toEqual(Array.from({ length: 12 }, (_, i) => `Seite ${i + 1}`));
-    // Der Haken allein wirkt nur in Plus.
-    const normal = render(<ExposeDokument {...objekt({ bankunterlagenInBerechnung: true })} />).container;
-    expect(normal.querySelectorAll(".bankunterlagen-page")).toHaveLength(0);
+    // Der Haken allein wirkt nur mit eingeschaltetem Bankgespräch.
+    const nurHaken = render(<ExposeDokument {...objekt({ bankunterlagenInBerechnung: true })} />).container;
+    expect(nurHaken.querySelectorAll(".bankunterlagen-page")).toHaveLength(0);
+    // Die Ampel ist intern und steht in keiner Variante in der Berechnung, auch nicht auf den Deckblättern.
+    for (const deckblatt of ["blick", "jahre", "rente"] as const) {
+      const doc = render(<ExposeDokument {...objekt({ bankgespraechAktiv: true, bankunterlagenInBerechnung: true })} deckblatt={deckblatt} />).container;
+      expect(doc.querySelector('[data-testid="ampel"]')).toBeNull();
+      expect(doc.querySelector(".ampel-punkt")).toBeNull();
+    }
   });
 });

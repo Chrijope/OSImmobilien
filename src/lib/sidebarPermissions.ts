@@ -626,7 +626,7 @@ export function isUrlAllowedForRole(
   // `investmentrechnerAccess.ts`. Die Pruefung steht vor der Rollenliste aus
   // der Datenbank, weil die Rollenfreigaben dort gepflegt werden und eine
   // Freischaltung im Code sonst nicht ankaeme.
-  // Die Investmentkalkulation Plus (09.10.2026) ist derselbe Rechner und hat dieselben Rollen.
+  // /investmentrechner-plus leitet seit dem 11.10.2026 auf den Rechner mit Schalter weiter, dieselben Rollen.
   if ((cleanUrl === INVESTMENTRECHNER_ROUTE || cleanUrl === INVESTMENTRECHNER_PLUS_ROUTE) && canAccessInvestmentrechner(role)) return true;
   // Das Ankaufstool ebenso im Code, damit es ohne Migration ankommt.
   if ((cleanUrl === ANKAUFSTOOL_ROUTE || cleanUrl === MIETSUBVENTION_ROUTE || cleanUrl === KAUFPREISLISTE_ROUTE) && ANKAUFSTOOL_ROLLEN.includes(role)) return true;
