@@ -40,7 +40,8 @@ describe("Pipeline: applyVerlust", () => {
 
   it("meldet einen Stufenwechsel erst nach der Antwort der Datenbank", () => {
     const stufe = quelle.slice(quelle.indexOf("const setStufeOnly = async"), quelle.indexOf("const setStufeOnly = async") + 1500);
-    expect(stufe).toContain("if (investmentId && !(await updateInvestment(investmentId, { pipelineStufe: to } as any))) return;");
-    expect(stufe).toContain("await updateKontakt(kundeId, { pipelineStufe: to } as any);");
+    expect(stufe).toContain("if (!investmentId || !(await updateInvestment(investmentId, { pipelineStufe: to } as any))) return;");
+    // Die Stufe haengt nur am Investment (11.10.2026).
+    expect(stufe).not.toContain("updateKontakt(kundeId, { pipelineStufe");
   });
 });

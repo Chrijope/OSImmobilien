@@ -145,12 +145,17 @@ export function deleteFollowUp(id: string) {
  * die NICHT zur aktuellen Pipeline-Stufe gehören. Wird beim Stufenwechsel
  * aufgerufen, damit alte Erinnerungen nicht "überfällig" auflaufen.
  */
-export function cancelStaleAutoFollowUps(kundeId: string, neueStufe: string): number {
+/**
+ * Storniert offene automatische Follow-ups aus Stufen, in denen kein
+ * Investment des Kunden mehr steht. Seit dem 11.10.2026 eine Liste: Jedes
+ * Investment hat seine eigene Stufe und behaelt seine Erinnerungen.
+ */
+export function cancelStaleAutoFollowUps(kundeId: string, aktuelleStufen: string[]): number {
   const all = getFollowUps().filter(
     f => f.kundeId === kundeId
       && f.automatisch
       && (f.status === "offen" || f.status === "ueberfallig")
-      && f.pipelineStufe !== neueStufe
+      && !aktuelleStufen.includes(f.pipelineStufe)
   );
   all.forEach(f => deleteFollowUp(f.id));
   return all.length;

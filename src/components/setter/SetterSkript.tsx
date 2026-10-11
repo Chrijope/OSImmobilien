@@ -17,6 +17,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { updateKontakt, mergeKontaktMeta, type KundeData } from "@/lib/kundenStore";
 import { addAktivitaet, addGeteilteAufgabe } from "@/lib/aktivitaetenStore";
 import { addFollowUp } from "@/lib/followUpStore";
+import { setzeStufeFruehePhase, kontaktVerlorenAnInvestments } from "@/lib/investmentsStore";
 import { useToast } from "@/hooks/use-toast";
 import { loadBeraterUsers } from "@/lib/loadAllUsers";
 import { useUser } from "@/contexts/UserContext";
@@ -260,8 +261,8 @@ export function SetterSkript({ kunde, onUpdate }: SetterSkriptProps) {
       // Wartezeit setzen – Lead wird gemäß Staffelung versteckt
       const verstecktBis = getVerstecktBisForVersuch(newCount) || new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
       const wartezeitLabel = getWartezeitLabel(newCount);
+      setzeStufeFruehePhase(kunde.id, "kontaktversuche");
       updateKontakt(kunde.id, {
-        pipelineStufe: "kontaktversuche",
         nichtErreichtCount: newCount,
         nichtErreichtMails,
         verstecktBis,
@@ -332,7 +333,8 @@ export function SetterSkript({ kunde, onUpdate }: SetterSkriptProps) {
       followUpEsk2Sent: null,
       followUpEsk3Sent: null,
     });
-    updateKontakt(kunde.id, { pipelineStufe: "follow_up", verstecktBis });
+    setzeStufeFruehePhase(kunde.id, "follow_up");
+    updateKontakt(kunde.id, { verstecktBis });
     addAktivitaet({ kundeId: kunde.id, art: "notiz", beschreibung: `${FOLLOW_UP_GEPLANT} "${fuTitel}" am ${fuDatum} um ${fuUhrzeit} Uhr`, von: user.name });
     onUpdate();
     setFuDialogOpen(false);
@@ -340,7 +342,8 @@ export function SetterSkript({ kunde, onUpdate }: SetterSkriptProps) {
   };
 
   const handleKontaktdatenFalsch = () => {
-    updateKontakt(kunde.id, { status: "verloren" as any, pipelineStufe: "verloren", verlorenGrund: "ne_daten_falsch", verlorenAm: new Date().toISOString() });
+    kontaktVerlorenAnInvestments(kunde.id, "ne_daten_falsch", new Date().toISOString());
+    updateKontakt(kunde.id, { status: "verloren" as any, verlorenGrund: "ne_daten_falsch", verlorenAm: new Date().toISOString() });
     addAktivitaet({ kundeId: kunde.id, art: "notiz", beschreibung: "Kontaktdaten falsch, Lead als verloren markiert", von: user.name });
     sendKundenEmail("setter-daten-falsch");
     checkAllItems();
@@ -349,7 +352,8 @@ export function SetterSkript({ kunde, onUpdate }: SetterSkriptProps) {
   };
 
   const handleKeinInteresse = () => {
-    updateKontakt(kunde.id, { status: "verloren" as any, pipelineStufe: "verloren", verlorenGrund: "kb_kein_interesse", verlorenAm: new Date().toISOString() });
+    kontaktVerlorenAnInvestments(kunde.id, "kb_kein_interesse", new Date().toISOString());
+    updateKontakt(kunde.id, { status: "verloren" as any, verlorenGrund: "kb_kein_interesse", verlorenAm: new Date().toISOString() });
     addAktivitaet({ kundeId: kunde.id, art: "notiz", beschreibung: "Kein Interesse, Lead als verloren markiert", von: user.name });
     sendKundenEmail("setter-kein-interesse");
     checkAllItems();
@@ -404,8 +408,8 @@ export function SetterSkript({ kunde, onUpdate }: SetterSkriptProps) {
       ? { id: closerTreffer.id, name: closerTreffer.name }
       : null;
 
+    setzeStufeFruehePhase(kunde.id, "erstgespraech_geplant");
     updateKontakt(kunde.id, {
-      pipelineStufe: "erstgespraech_geplant",
       status: "kontaktiert" as any,
       berater: selectedCloser,
       ...(beraterUser ? { zustaendig_id: beraterUser.id } : {}),

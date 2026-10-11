@@ -24,7 +24,6 @@
 import { addAktivitaet, addGeteilteAufgabe } from "./aktivitaetenStore";
 import { aktuellerZustaendiger, notifyUser } from "./bellNotifications";
 import { getInvestmentsByKontakt, updateInvestment } from "./investmentsStore";
-import { getEffectivePipelineStufe } from "./kontaktPipeline";
 import { erledigteTermine, mitKontaktMeta } from "./kontaktTermine";
 import { festerTerminSchluessel, noShowErfasst, noShowMetaPatch } from "./kundenNaechsteAktion";
 import { mergeKontaktMetaMitGrund, updateKontakt, type KundeData } from "./kundenStore";
@@ -162,9 +161,14 @@ async function nimmAusListe(
  * Eine neue Stufe an Kontakt und fruehen Investments, wo `darf` es erlaubt.
  * Die Kachel "Naechster Schritt" liest die Investment-Stufe.
  */
-function setzeStufe(kundeId: string, stufe: string, darf: (jetzige: string) => boolean) {
+/**
+ * Seit 11.10.2026 haengt die Stufe nur am Investment: Jedes bekommt die
+ * Stufe, die `ziel` aus seiner eigenen ergibt (null: bleibt).
+ */
+function setzeStufe(kundeId: string, ziel: (jetzige: string) => string | null | undefined) {
   for (const inv of getInvestmentsByKontakt(kundeId)) {
-    if (inv.pipelineStufe !== stufe && darf(inv.pipelineStufe)) updateInvestment(inv.id, { pipelineStufe: stufe });
+    const stufe = ziel(inv.pipelineStufe);
+    if (stufe && stufe !== inv.pipelineStufe) updateInvestment(inv.id, { pipelineStufe: stufe });
   }
 }
 
@@ -172,9 +176,7 @@ function setzeStufe(kundeId: string, stufe: string, darf: (jetzige: string) => b
 export async function festerTerminStattgefunden(t: FesterTerminAngabe, ctx: FesterTerminKontext): Promise<boolean> {
   if (!(await nimmAusListe(t, ctx))) return false;
   const art = festeGespraechsArt(t.titel);
-  const stufe = stufeNachStattgefunden(art, getEffectivePipelineStufe(ctx.kunde));
   const patch: Partial<KundeData> = {};
-  if (stufe) patch.pipelineStufe = stufe as KundeData["pipelineStufe"];
   if (t.setterTermin) {
     Object.assign(patch, {
       terminErgebnis: "erschienen",
@@ -184,7 +186,7 @@ export async function festerTerminStattgefunden(t: FesterTerminAngabe, ctx: Fest
     });
   }
   if (Object.keys(patch).length) updateKontakt(ctx.kunde.id, patch);
-  if (stufe) setzeStufe(ctx.kunde.id, stufe, (s) => stufeNachStattgefunden(art, s) === stufe);
+  setzeStufe(ctx.kunde.id, (s) => stufeNachStattgefunden(art, s));
   addAktivitaet({
     kundeId: ctx.kunde.id,
     art: "meeting",
@@ -319,11 +321,7 @@ export async function festerTerminVerschieben(
     ? { erstgespraechAm: neuDatum, erstgespraechUhrzeit: neuUhrzeit }
     : { beratungsgespraechAm: neuDatum, beratungsgespraechUhrzeit: neuUhrzeit };
   if (!(await nimmAusListe(t, ctx, felder))) return false;
-  const stufe = stufeNachVerschieben(art, getEffectivePipelineStufe(ctx.kunde));
-  if (stufe) {
-    updateKontakt(ctx.kunde.id, { pipelineStufe: stufe as KundeData["pipelineStufe"] });
-    setzeStufe(ctx.kunde.id, stufe, (s) => s === noShowStufeFuer(art));
-  }
+  setzeStufe(ctx.kunde.id, (s) => (s === noShowStufeFuer(art) ? stufeNachVerschieben(art, s) : null));
   addAktivitaet({
     kundeId: ctx.kunde.id,
     art: "meeting",

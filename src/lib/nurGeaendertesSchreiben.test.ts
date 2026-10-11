@@ -28,7 +28,8 @@ describe("Nur Geändertes schreiben", () => {
     const rumpf = store.slice(store.indexOf("function investmentAenderung("), store.indexOf("export async function deleteInvestment("));
     expect(rumpf).toContain("const patch = metaUnterschied(altesMeta, neuMeta);");
     expect(rumpf).toContain('cacheZeileSchreiben("investments", id, geaendert, patch)');
-    expect(rumpf).toContain('cacheMetaZusammenfuehren("kontakte", kundeId, { pipelineStufe: nextI })');
+    // Die Kontaktstufe fuehrt seit 11.10.2026 die Datenbank nach, nicht der Browser.
+    expect(rumpf).not.toContain('cacheMetaZusammenfuehren("kontakte"');
     expect(rumpf).not.toMatch(/cacheUpdate\("investments", id, u\)/);
   });
 

@@ -869,12 +869,9 @@ export default function Pipeline() {
       // Erst auf die Datenbank warten. Lehnt sie ab (Zeilenregel oder ein
       // Wächter wie bei Abrechnung und Abgeschlossen), meldet das der
       // Zwischenspeicher und stellt die Kachel zurück; dann kein „aktualisiert“.
-      if (investmentId && !(await updateInvestment(investmentId, { pipelineStufe: to } as any))) return;
-      try {
-        await updateKontakt(kundeId, { pipelineStufe: to } as any);
-      } catch {
-        return;
-      }
+      // Die Stufe haengt nur am Investment (11.10.2026); die Kontaktstufe
+      // fuehrt die Datenbank nach.
+      if (!investmentId || !(await updateInvestment(investmentId, { pipelineStufe: to } as any))) return;
 
       /*
        * Sagen, wenn die Automatik den Zug wieder einholen wird.
@@ -927,7 +924,6 @@ export default function Pipeline() {
       const ganz = kontaktGanzVerloren(getInvestmentsByKontakt(kundeId), investmentId);
       if (ganz) {
         await updateKontakt(kundeId, {
-          pipelineStufe: "verloren",
           status: "verloren" as any,
           verlorenGrund: verlustGrundId,
           verlorenAm,
@@ -1018,11 +1014,7 @@ export default function Pipeline() {
     try {
       updateInvestment(invId, { pipelineStufe: "beratungsgespraech" } as any);
       setInvestmentMetaFields(invId, { beratungsgespraechAm: bgDatum, beratungsgespraechUhrzeit: bgUhrzeit } as any);
-      // Erst den Termin in meta schreiben und den Zwischenspeicher nachziehen,
-      // danach erst updateKontakt. Sonst baut updateKontakt das meta aus dem
-      // alten Zwischenspeicher neu auf und loescht den Termin im selben Klick.
       await mergeKontaktMeta(kundeId, { beratungsgespraechAm: bgDatum, beratungsgespraechUhrzeit: bgUhrzeit });
-      updateKontakt(kundeId, { pipelineStufe: "beratungsgespraech" } as any);
       toast({ title: "Beratungsgespräch eingetragen ✓", description: `${moveConfirm.kundeName}: ${bgDatum} um ${bgUhrzeit}` });
     } catch {
       toast({ title: "Fehler beim Speichern", variant: "destructive" });

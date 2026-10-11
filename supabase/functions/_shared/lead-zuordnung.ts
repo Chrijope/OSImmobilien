@@ -568,3 +568,29 @@ export function reaktivierungFuerAnfrage(args: {
     },
   };
 }
+
+/**
+ * Welches Investment bei einer Reaktivierung wieder auflebt, und in welcher
+ * Stufe (11.10.2026).
+ *
+ * Die Pipeline haengt am Investment. Bis hierhin setzte die Reaktivierung nur
+ * die Kontaktstufe zurueck, das verlorene Investment blieb verloren, und der
+ * Kontakt hatte in der Pipeline keine laufende Karte. Jetzt lebt das juengste
+ * Investment wieder auf. Ein ruhender Kontakt in der Kaufphase wird gar nicht
+ * erst reaktiviert (`istInKaufphase`), es geht also nie um einen laufenden
+ * Kauf. `termin_gebucht` kennt die Oberflaeche nicht, das Investment bekommt
+ * dafuer "erstgespraech_geplant" wie im Datenbank-Trigger.
+ */
+export function investmentFuerReaktivierung(
+  investments: Array<{ id: string; meta?: unknown }>,
+  pipelineStufe: string,
+): { id: string | null; stufe: string } {
+  const nummer = (i: { meta?: unknown }) =>
+    Number((i.meta && typeof i.meta === "object" ? (i.meta as Record<string, unknown>).nummer : 0) || 0);
+  const juengstes = [...investments].sort((a, b) => nummer(b) - nummer(a))[0];
+  return {
+    id: juengstes?.id ?? null,
+    stufe: pipelineStufe === "termin_gebucht" ? "erstgespraech_geplant" : pipelineStufe,
+  };
+}
+

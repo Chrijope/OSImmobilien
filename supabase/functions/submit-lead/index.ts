@@ -23,6 +23,7 @@ import {
   hatBeraterRolle,
   istFremdeDublette,
   istInKaufphase,
+  investmentFuerReaktivierung,
   istRuhenderKontakt,
   istUuid,
   leadAntwort,
@@ -1291,11 +1292,13 @@ Deno.serve(async (req) => {
         let neuerZustaendig: string | null = bisherZustaendig;
         let reaktivierung: ReturnType<typeof reaktivierungFuerAnfrage> | null = null;
         let ruhendInKaufphase = false;
+        let ruhendeInvestments: Array<{ id: string; meta?: unknown }> = [];
         if (istRuhenderKontakt(bestehend)) {
           const { data: invZeilen, error: invFehler } = await supabaseAdmin
             .from("investments")
-            .select("meta, status")
+            .select("id, meta, status")
             .eq("kunde_id", bestandsId);
+          ruhendeInvestments = (invZeilen || []) as Array<{ id: string; meta?: unknown }>;
           // Ohne Gewissheit ueber die Kaufphase lieber nicht reaktivieren.
           if (invFehler) console.error("Reaktivierung: Investments nicht lesbar:", invFehler.message);
           ruhendInKaufphase = !!invFehler || istInKaufphase(bestehend.meta, (invZeilen || []) as any[]);
@@ -1381,6 +1384,23 @@ Deno.serve(async (req) => {
           reaktivierung = null;
           neuerZustaendig = bisherZustaendig;
           reaktivierungVerworfen = true;
+        }
+
+        // Die Pipeline haengt am Investment: Das juengste lebt wieder auf.
+        // Ohne Investment (Altfall) wird eines angelegt. Ein Fehler hier
+        // laesst die Anfrage nicht scheitern, er steht im Log.
+        if (reaktivierung && !updateFehler) {
+          const ziel = investmentFuerReaktivierung(ruhendeInvestments, String(reaktivierung.metaPatch.pipelineStufe || "neuer_lead"));
+          const alt = ruhendeInvestments.find((i) => i.id === ziel.id);
+          const invErgebnis = ziel.id
+            ? await supabaseAdmin.from("investments").update({
+                meta: { ...((alt?.meta as Record<string, unknown>) || {}), pipelineStufe: ziel.stufe, reaktiviertAm: eingegangenAm },
+              }).eq("id", ziel.id)
+            : await supabaseAdmin.from("investments").insert({
+                kunde_id: bestandsId,
+                meta: { nummer: 1, label: "Investment 1", pipelineStufe: ziel.stufe, reaktiviertAm: eingegangenAm },
+              });
+          if (invErgebnis.error) console.error("Reaktivierung: Investment nicht gesetzt:", invErgebnis.error.message);
         }
 
         if (updateFehler) {

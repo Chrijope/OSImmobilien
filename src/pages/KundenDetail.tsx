@@ -349,6 +349,9 @@ import {
   clearNotarTerminBestaetigt,
   switchNotarTerminModus,
   getWartendeRvUnterschriften,
+  setzeStufeFruehePhase,
+  kontaktVerlorenAnInvestments,
+  kontaktWiederaufnahmeAnInvestments,
   type NotarTerminVorschlag,
 } from "@/lib/investmentsStore";
 import { KaufvertragForm } from "@/components/notar/KaufvertragForm";
@@ -3610,18 +3613,9 @@ export default function KundenDetail() {
       followUpEsk2Sent: null,
       followUpEsk3Sent: null,
     });
-    updateKontakt(id, { setterSkriptNotizen: setterNotizen, pipelineStufe: "follow_up", status: "kontaktiert" as any, verstecktBis, setter: kunde?.setter || (isSetterinRole ? user.name : undefined) });
-    // Investments, die noch in einer frühen Stufe stehen, ebenfalls auf "follow_up"
-    // setzen — sonst überschreibt die Investment-zentrische Bucket-Logik den
-    // Kontakt-Status und der Lead taucht nicht auf der Follow-Up-Seite auf.
-    try {
-      const earlyInvStufen = new Set(["neuer_lead", "zugewiesen", "kontaktversuche", "erstgespraech_geplant", "erstgespraech"]);
-      for (const _inv of investments) {
-        if (earlyInvStufen.has(String(_inv?.pipelineStufe || ""))) {
-          updateInvestment(_inv.id, { pipelineStufe: "follow_up" });
-        }
-      }
-    } catch (e) { console.error("updateInvestment (followUp) error:", e); }
+    updateKontakt(id, { setterSkriptNotizen: setterNotizen, status: "kontaktiert" as any, verstecktBis, setter: kunde?.setter || (isSetterinRole ? user.name : undefined) });
+    // Die Stufe haengt am Investment (11.10.2026): alle, die noch frueh stehen.
+    setzeStufeFruehePhase(id, "follow_up");
     addAktivitaet({ kundeId: id, art: "notiz", beschreibung: `${FOLLOW_UP_GEPLANT} "${followUpTitel}" am ${followUpDatum} um ${followUpUhrzeit} Uhr`, von: user.name });
     notifyFollowUpErstellt(`${kunde.vorname} ${kunde.nachname}`, followUpTitel, id);
     reloadKunde();
@@ -3653,7 +3647,8 @@ export default function KundenDetail() {
         },
       }).catch(e => console.error(`${templateName} E-Mail Fehler:`, e));
     }
-    updateKontakt(id, { setterSkriptNotizen: setterNotizen, status: "verloren" as any, pipelineStufe: "verloren", verlorenGrund: "ne_daten_falsch", verlorenAm: new Date().toISOString(), setter: kunde?.setter || (isSetterinRole ? user.name : undefined) });
+    kontaktVerlorenAnInvestments(id, "ne_daten_falsch", new Date().toISOString());
+    updateKontakt(id, { setterSkriptNotizen: setterNotizen, status: "verloren" as any, verlorenGrund: "ne_daten_falsch", verlorenAm: new Date().toISOString(), setter: kunde?.setter || (isSetterinRole ? user.name : undefined) });
     addAktivitaet({ kundeId: id, art: "notiz", beschreibung: "Kontaktdaten falsch, Lead als verloren markiert", von: user.name });
     reloadKunde();
     toast({ title: "Kontaktdaten falsch", description: "Lead wurde als verloren markiert.", variant: "destructive" });
@@ -3679,7 +3674,8 @@ export default function KundenDetail() {
         },
       }).catch(e => console.error("vp-kein-interesse E-Mail Fehler:", e));
     }
-    updateKontakt(id, { setterSkriptNotizen: setterNotizen, status: "verloren" as any, pipelineStufe: "verloren", verlorenGrund: "kb_kein_interesse", verlorenAm: new Date().toISOString(), setter: kunde?.setter || (isSetterinRole ? user.name : undefined) });
+    kontaktVerlorenAnInvestments(id, "kb_kein_interesse", new Date().toISOString());
+    updateKontakt(id, { setterSkriptNotizen: setterNotizen, status: "verloren" as any, verlorenGrund: "kb_kein_interesse", verlorenAm: new Date().toISOString(), setter: kunde?.setter || (isSetterinRole ? user.name : undefined) });
     addAktivitaet({ kundeId: id, art: "notiz", beschreibung: "Kein Interesse, Lead als verloren markiert", von: user.name });
     reloadKunde();
     toast({ title: "Kein Interesse", description: "Lead wurde als verloren markiert.", variant: "destructive" });
@@ -3687,10 +3683,10 @@ export default function KundenDetail() {
 
   const handleSetterVermoegenGeeignet = () => {
     if (!id || !kunde) return;
+    setzeStufeFruehePhase(id, "vermoegensaufbau");
     updateKontakt(id, {
       setterSkriptNotizen: setterNotizen,
       status: "verloren" as any,
-      pipelineStufe: "vermoegensaufbau",
       verlorenGrund: "pn_vermoegensaufbau",
       verlorenAm: new Date().toISOString(),
       versicherungGeeignet: true,
@@ -3849,7 +3845,10 @@ export default function KundenDetail() {
        * so nicht mehr an der gesetzten Stufe vorbeilaufen.
        */
       const ersteStufe = "kontaktversuche";
-      updateKontakt(id, { pipelineStufe: ersteStufe } as any);
+      // Nur die Investments, die noch auf "zugewiesen" stehen (11.10.2026).
+      for (const inv of getInvestmentsByKontakt(id)) {
+        if (inv.pipelineStufe === "zugewiesen") updateInvestment(inv.id, { pipelineStufe: ersteStufe });
+      }
       notiereStufenwechsel(ERSTER_KONTAKTVERSUCH, ersteStufe);
       reloadKunde();
     }
@@ -3873,10 +3872,10 @@ export default function KundenDetail() {
    * zurückspringen, sonst verliert ein Kunde in der Finanzierung seinen Stand,
    * weil jemand die Selbstauskunft erneut verschickt.
    */
-  const hebeAufSelbstauskunft = () => {
-    if (!id || !kunde) return;
-    if (!PRE_SA_PIPELINE_STEPS.has(String(kunde.pipelineStufe || ""))) return;
-    updateKontakt(id, { pipelineStufe: "selbstauskunft" as any });
+  const hebeAufSelbstauskunft = (investmentId: string) => {
+    const inv = getInvestmentsByKontakt(id || "").find((i) => i.id === investmentId);
+    if (!inv || !PRE_SA_PIPELINE_STEPS.has(String(inv.pipelineStufe || ""))) return;
+    updateInvestment(investmentId, { pipelineStufe: "selbstauskunft" });
   };
 
   /**
@@ -4002,14 +4001,17 @@ export default function KundenDetail() {
     // auf "Erstgespräch"). Die effektive Stufe rechnet es beim BG ohnehin so,
     // hier wird es zusaetzlich gespeichert, damit die rohe Stufe stimmt.
     const art = setterTerminName(kunde);
-    const geheilt = stufeNachVerschieben(festeGespraechsArt(art), String(kunde.pipelineStufe || ""));
+    // Seit 11.10.2026 je Investment: jedes, das auf der NoShow-Stufe steht.
+    for (const inv of getInvestmentsByKontakt(id)) {
+      const geheilt = stufeNachVerschieben(festeGespraechsArt(art), String(inv.pipelineStufe || ""));
+      if (geheilt) updateInvestment(inv.id, { pipelineStufe: geheilt });
+    }
     updateKontakt(id, {
       terminErgebnis: "verschoben",
       terminErgebnisAm: new Date().toISOString(),
       terminErgebnisVon: user.name,
       setterTerminDatum: verschiebenDatum,
       setterTerminUhrzeit: verschiebenUhrzeit,
-      ...(geheilt ? { pipelineStufe: geheilt as any } : {}),
     });
     addAktivitaet({
       kundeId: id,
@@ -5027,9 +5029,9 @@ export default function KundenDetail() {
               // Stufe 2/3 und 3/3 werden erst on-demand erzeugt
               // (siehe useFollowUpInboxEscalation) – nur wenn Lead noch in
               // Follow-Up steht und kein neuer Termin in der Zukunft liegt.
+              setzeStufeFruehePhase(id, "follow_up");
               updateKontakt(id, {
                 setterSkriptNotizen: setterNotizen,
-                pipelineStufe: "follow_up",
                 status: "kontaktiert" as any,
                 verstecktBis,
                 setter: kunde?.setter || (isSetterinRole ? user.name : undefined),
@@ -8009,7 +8011,7 @@ export default function KundenDetail() {
         }
         // saPdf setzt die Datenbank, nachdem sie die Datei im Eimer gefunden hat.
         await vermerkeSaPdf(inv.id, datei.name, pfad);
-        hebeAufSelbstauskunft();
+        hebeAufSelbstauskunft(inv.id);
         addAktivitaet({ kundeId: id || "", art: "notiz", beschreibung: felder > 0 ? `Selbstauskunft (PDF) hochgeladen und automatisch ausgelesen (${felder} Angaben)` : "Selbstauskunft (Papier/Scan) hochgeladen", von: user.name });
         toast(felder > 0
           ? { title: "Selbstauskunft ausgelesen ✓", description: `${felder} Angaben wurden automatisch übernommen. Einnahmen, Ausgaben und Finanzierungsrahmen liegen bei diesem Investment.` }
@@ -9294,7 +9296,7 @@ export default function KundenDetail() {
                                 }
                                 setSaInvitationSentAt(inv.id);
                                 // Die Selbstauskunft ist beim Kunden, also Stufe anheben.
-                                hebeAufSelbstauskunft();
+                                hebeAufSelbstauskunft(inv.id);
                                 // Schedule 48h/96h follow-up reminders
                                 const kontaktRow = cacheGet("kontakte").find((k: any) => k.id === id);
                                 const vpId = kontaktRow?.zustaendig_id || authUser?.id;
@@ -14466,8 +14468,8 @@ export default function KundenDetail() {
                   // Die bisherige Stufe merken, damit eine spaetere
                   // Wiederaufnahme dort weitermacht statt ganz vorne.
                   const stufeVorher = getEffectivePipelineStufe(kunde);
+                  kontaktVerlorenAnInvestments(id, verlorenGrund, new Date().toISOString());
                   updateKontakt(id, {
-                    pipelineStufe: "verloren",
                     status: "verloren" as any,
                     verlorenGrund,
                     verlorenAm: new Date().toISOString(),
@@ -14518,8 +14520,8 @@ export default function KundenDetail() {
                     && kunde.stufeVorVerlust !== "archiviert")
                     ? kunde.stufeVorVerlust
                     : "erreicht";
+                  kontaktWiederaufnahmeAnInvestments(id, zielStufe);
                   updateKontakt(id, {
-                    pipelineStufe: zielStufe as any,
                     status: "kontaktiert" as any,
                     archiviert: false,
                     archivGrund: undefined,

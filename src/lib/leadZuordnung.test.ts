@@ -31,6 +31,7 @@ import {
   leadHerkunft,
   linkBezeichnung,
   pipelineStufeFuerLead,
+  investmentFuerReaktivierung,
   waehleZuordnungsWeg,
 } from "../../supabase/functions/_shared/lead-zuordnung.ts";
 
@@ -497,5 +498,23 @@ describe("submit-lead wendet die Regeln an", () => {
     expect(abschnitt).toContain('.eq("role", "admin")');
     expect(abschnitt).toContain("link: `/kunden/${bestandsId}`");
     expect(abschnitt).toContain('notif_type: "kontakt_fremder_partnerlink"');
+  });
+});
+
+describe("investmentFuerReaktivierung", () => {
+  it("nimmt das juengste Investment, damit der Kontakt wieder eine Karte in der Pipeline hat", () => {
+    const invs = [
+      { id: "a", meta: { nummer: 1, pipelineStufe: "verloren" } },
+      { id: "b", meta: { nummer: 2, pipelineStufe: "verloren" } },
+    ];
+    expect(investmentFuerReaktivierung(invs, "zugewiesen")).toEqual({ id: "b", stufe: "zugewiesen" });
+  });
+
+  it("macht aus termin_gebucht die Stufe, die die Oberflaeche kennt", () => {
+    expect(investmentFuerReaktivierung([{ id: "a", meta: { nummer: 1 } }], "termin_gebucht").stufe).toBe("erstgespraech_geplant");
+  });
+
+  it("ohne Investment: keine Kennung, der Aufrufer legt eines an", () => {
+    expect(investmentFuerReaktivierung([], "neuer_lead")).toEqual({ id: null, stufe: "neuer_lead" });
   });
 });
