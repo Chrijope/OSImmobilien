@@ -2075,7 +2075,7 @@ function VertragKurzSignatur({
                 <div className="pt-2 space-y-3">
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-medium flex items-center gap-1.5">
-                      <Pen className="h-3.5 w-3.5" /> Deine Unterschrift (Christian Kurz)
+                      <Pen className="h-3.5 w-3.5" /> Deine Unterschrift (Oliver Skowrnowski)
                     </label>
                     {hasDrawn && (
                       <Button variant="ghost" size="sm" onClick={clearCanvas} className="h-7 text-xs gap-1">
@@ -2113,7 +2113,7 @@ function VertragKurzSignatur({
       <div className="flex items-start gap-3 bg-muted/30 rounded-lg p-3">
         <Checkbox id="consent-kurz" checked={consent} onCheckedChange={(c) => setConsent(c === true)} className="mt-0.5" />
         <label htmlFor="consent-kurz" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
-          Ich, Christian Kurz, gegenzeichne hiermit den Handelsvertretervertrag mit {bewerberName} samt
+          Ich, Oliver Skowrnowski, gegenzeichne hiermit den Handelsvertretervertrag mit {bewerberName} samt
           allen Anlagen rechtsverbindlich für OS Immobilien. Mit meiner Unterschrift wird der Vertrag beidseitig
           rechtswirksam, die finalen PDFs werden im System abgelegt und dem Vertriebspartner per E-Mail zugestellt.
         </label>

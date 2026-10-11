@@ -45,7 +45,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { supabase } from "@/integrations/supabase/client";
 
 /**
- * Terminkalender fuer das Folgegespraech mit Christian Kurz: eine Quelle fuer
+ * Terminkalender fuer das Folgegespraech mit Oliver Skowrnowski: eine Quelle fuer
  * alle Stellen (hier und Teil 2 des Erstgespraechs), definiert in
  * closingDirektSkript.ts. Gedacht fuer erfahrene Partner, die von Beginn an
  * mit Leads arbeiten wollen; das Gespraech findet vor dem Vertragsversand statt.
@@ -1712,7 +1712,7 @@ export const ClosingTab = ({
                         )}
 
                         {/*
-                          Folgegespraech mit Christian Kurz, bewusst innerhalb des
+                          Folgegespraech mit Oliver Skowrnowski, bewusst innerhalb des
                           Lead-Paket-Kastens: Es geht um dieselbe Entscheidung. Als
                           eigener Block darunter war der Bezug nicht zu erkennen.
 
@@ -1734,7 +1734,7 @@ export const ClosingTab = ({
                                 )}
                               </div>
                               <p className="mt-1 text-[11px] leading-snug text-muted-foreground">
-                                Dann vor dem Vertragsversand ein Folgegespräch mit Christian Kurz buchen. Der Vertrag
+                                Dann vor dem Vertragsversand ein Folgegespräch mit Oliver Skowrnowski buchen. Der Vertrag
                                 geht erst danach raus.
                               </p>
                               <a
@@ -1743,7 +1743,7 @@ export const ClosingTab = ({
                                 rel="noopener noreferrer"
                                 className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-semibold text-amber-700 hover:underline"
                               >
-                                Termin mit Christian Kurz buchen
+                                Termin mit Oliver Skowrnowski buchen
                                 <ExternalLink className="h-3 w-3" />
                               </a>
                             </div>

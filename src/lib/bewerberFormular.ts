@@ -293,7 +293,7 @@ export const FORMULAR_FRAGEN: FormularFrage[] = [
   {
     /*
      * Zahlt direkt auf zwei Dinge ein: auf das Lead-Paket im Closing und auf
-     * das Folgegespräch mit Christian Kurz, das im Vertragsreiter angeboten
+     * das Folgegespräch mit Oliver Skowrnowski, das im Vertragsreiter angeboten
      * wird. Wer hier "bereitgestellte Leads" wählt, ist genau dieser Fall, und
      * das steht schon vor dem ersten Telefonat fest.
      */

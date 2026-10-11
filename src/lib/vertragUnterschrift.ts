@@ -7,8 +7,8 @@ import type { Bewerber } from "./bewerbungStore";
  * auseinanderhalten:
  *
  * 1. Der Bewerber unterschreibt. Dann steht `vertragBewerberSignedAt`, und der
- *    Vertrag wartet auf die Gegenzeichnung durch Christian Kurz.
- * 2. Christian Kurz zeichnet gegen. Dann steht `vertragSignedAt`, und der
+ *    Vertrag wartet auf die Gegenzeichnung durch Oliver Skowrnowski.
+ * 2. Oliver Skowrnowski zeichnet gegen. Dann steht `vertragSignedAt`, und der
  *    Vertrag ist fertig.
  *
  * Vom 19. bis 23.09.2026 lagen beide Zustaende nebeneinander in der Stufe

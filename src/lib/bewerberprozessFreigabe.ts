@@ -43,16 +43,8 @@ export type BewerberprozessFreigabe = {
 export const BEWERBERPROZESS_FREIGABEN: readonly BewerberprozessFreigabe[] = [
   {
     name: "Christian Peetz",
-    /*
-     * Beide Kennungen mit Absicht. Im Projekt stehen zwei verschiedene für
-     * dieselbe Person: `CHRISTIAN_PEETZ_ID` in `leadPool.ts` und eine zweite,
-     * fest eingetragene in `KundenDetail.tsx`. Welche die des angemeldeten
-     * Kontos ist, lässt sich aus dem Quelltext nicht entscheiden. Stünde hier
-     * nur die falsche, fehlte der Punkt in der Seitenleiste, und der Bereich
-     * wäre nicht erreichbar. Beide einzutragen kostet nichts, es ist dieselbe
-     * Person.
-     */
-    userIds: [CHRISTIAN_PEETZ_ID, "e81f0a13-0578-4456-9960-07be014d869c"],
+    /* Sein Konto in diesem Projekt (profiles.id), siehe `leadPool.ts`. */
+    userIds: [CHRISTIAN_PEETZ_ID],
     /*
      * Ebenso alle Adressen, die im Projekt für ihn vorkommen. Verglichen wird
      * ohne Rücksicht auf Groß- und Kleinschreibung, deshalb genügt je eine

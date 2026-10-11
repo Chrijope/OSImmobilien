@@ -3,7 +3,7 @@
  *
  * Auftrag Christians vom 24.09.2026: Sobald ein Kunde die
  * Reservierungsvereinbarung unterschrieben hat, geht eine Mail an den
- * zuständigen Vertriebspartner, an Christian Peetz und an Christian Kurz. Sie
+ * zuständigen Vertriebspartner, an Christian Peetz und an Oliver Skowrnowski. Sie
  * verweist auf die unterschriebene Vereinbarung und bietet sie per Knopf zum
  * Herunterladen an.
  *

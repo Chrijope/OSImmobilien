@@ -360,7 +360,7 @@ export function getUnreadAnalyseLeadCount(): number {
  * Erwaehnung gilt genau einer Person, aber die Zeilensicherheit laesst
  * Verwaltende ALLE Zeilen lesen. Ohne diesen Filter stand in Christians
  * Glocke am 21.09.2026 viermal "@Erwaehnung von Christian Peetz ... @Christian
- * Kurz test": Meldungen, die an Christian Kurz gingen, angezeigt bei Christian
+ * Kurz test": Meldungen, die an Oliver Skowrnowski gingen, angezeigt bei Christian
  * Peetz, nicht wegklickbar, weil das Schreibrecht nur fuer eigene Zeilen gilt.
  *
  * Dieselbe Lehre wie bei den Dokumentmeldungen am 17.09.2026, siehe

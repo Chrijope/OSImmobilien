@@ -26,7 +26,7 @@ import {
  */
 
 const STANDARD: Ansprechpartner = {
-  name: 'Christian Kurz',
+  name: 'Oliver Skowrnowski',
   rolle: 'Ansprechpartner Vertriebspartnerschaften',
   telefon: '+49 30 863289210',
   email: 'os@os-immobilien.com',
@@ -124,7 +124,7 @@ export const template = {
     terminDatum: '15.09.2026',
     terminUhrzeit: '10:00',
     terminDauer: 45,
-    beraterName: 'Christian Kurz',
+    beraterName: 'Oliver Skowrnowski',
     zugangUrl: 'https://osimmobilien.netlify.app/raum/beispiel-token',
     verwaltenUrl: 'https://osimmobilien.netlify.app/kennenlernen/beispiel-token',
     berater: STANDARD,

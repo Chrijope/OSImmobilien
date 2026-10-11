@@ -24,8 +24,10 @@ const corsHeaders = {
 };
 
 const SIGNATURE_BASE_URL = "https://osimmobilien.netlify.app/signatur";
-const CHRISTIAN_KURZ_USER_ID = "df8190e9-b5f2-4519-8343-293688ff062d";
-const CHRISTIAN_KURZ_EMAIL = "os@os-immobilien.com";
+// Oliver Skowrnowski hat noch kein Konto. Bis dahin landen Aufgaben und
+// Meldungen zur Gegenzeichnung bei Christian Peetz.
+const GESCHAEFTSFUEHRER_USER_ID = "46c4fb38-ee1d-4cb8-b321-5e3fcc652464";
+const GESCHAEFTSFUEHRER_EMAIL = "os@os-immobilien.com";
 // Nur noch die Adresse: Die Glocken an sein Konto sind entfallen, das
 // Bewerbermanagement meldet ausschliesslich an die HR-Rolle. Die Mail zur
 // Rechnungsstellung bleibt.
@@ -46,9 +48,9 @@ function safeName(name: string): string {
 /**
  * 2-Stufen-Workflow:
  *   stage="bewerber" (default): Bewerber hat unterschrieben → Signatur-Anfrage
- *     für Christian Kurz anlegen, E-Mail an os@os-immobilien.com, Status
+ *     für Oliver Skowrnowski anlegen, E-Mail an os@os-immobilien.com, Status
  *     "wartet_auf_kurz". Es wird noch NICHTS in der Dokumentenakte abgelegt.
- *   stage="kurz": Christian Kurz hat gegengezeichnet → finale PDFs
+ *   stage="kurz": Oliver Skowrnowski hat gegengezeichnet → finale PDFs
  *     (vom Client base64-codiert mitgeliefert) in Storage hochladen,
  *     als Dokumente ablegen, Vertrag "unterschrieben", Status "Rechnung"
  *     (mit Lead-Paket) oder "Nutzer_anlegen" (ohne), Bestätigungs-Mail an
@@ -248,8 +250,8 @@ Deno.serve(async (req) => {
           token: kurzToken,
           kontakt_id: bewerberId,
           investment_id: null,
-          name: "Christian Kurz",
-          email: CHRISTIAN_KURZ_EMAIL,
+          name: "Oliver Skowrnowski",
+          email: GESCHAEFTSFUEHRER_EMAIL,
           person_type: "vertrag_kurz",
           sa_data: saData,
           status: "pending",
@@ -280,7 +282,7 @@ Deno.serve(async (req) => {
         await supabase.functions.invoke("send-transactional-email", {
           body: {
             templateName: "vertrag-gegenzeichnung-kurz",
-            recipientEmail: CHRISTIAN_KURZ_EMAIL,
+            recipientEmail: GESCHAEFTSFUEHRER_EMAIL,
             idempotencyKey: `vertrag-kurz-${kurzToken}`,
             templateData: {
               bewerberName,
@@ -294,9 +296,9 @@ Deno.serve(async (req) => {
 
       try {
         const rows: any[] = [{
-          benutzer_id: CHRISTIAN_KURZ_USER_ID,
+          benutzer_id: GESCHAEFTSFUEHRER_USER_ID,
           titel: "Vertrag bereit zur Gegenzeichnung",
-          nachricht: `${bewerberName} hat den Handelsvertretervertrag unterschrieben. Du hast die Unterschriftsanfrage per E-Mail an ${CHRISTIAN_KURZ_EMAIL} erhalten — bitte gegenzeichnen.`,
+          nachricht: `${bewerberName} hat den Handelsvertretervertrag unterschrieben. Du hast die Unterschriftsanfrage per E-Mail an ${GESCHAEFTSFUEHRER_EMAIL} erhalten — bitte gegenzeichnen.`,
           // Deep-Link direkt auf die Signatur-Seite, damit Kurz nicht erst suchen muss.
           // Als Pfad, nicht als volle Adresse: Die Glocke nimmt seit
           // 20260928160000 nur Pfade im CRM an. Die Mail oben behaelt die volle Adresse.
@@ -377,10 +379,10 @@ Deno.serve(async (req) => {
         signedAt,
         naechsterSchritt:
           "Bitte kontaktieren und den Onboarding-Termin vereinbaren. Die Aufgabe dazu liegt in der Inbox. " +
-          "Christian Kurz wurde parallel zur Gegenzeichnung aufgefordert.",
+          "Oliver Skowrnowski wurde parallel zur Gegenzeichnung aufgefordert.",
       });
 
-      // Queue sofort abarbeiten, damit die Mail an Kurz nicht bis zu 5s
+      // Queue sofort abarbeiten, damit die Mail an Skowrnowski nicht bis zu 5s
       // auf den pg_cron-Tick warten muss.
       try {
         await supabase.functions.invoke("process-email-queue", { body: {} });
@@ -395,7 +397,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    // ─────────────── STAGE B: Kurz hat gegengezeichnet ───────────────
+    // ─────────────── STAGE B: Skowrnowski hat gegengezeichnet ───────────────
     const { data: kurzAnfrage } = await supabase
       .from("signature_requests").select("id, person_type, status, created_at, signed_at, sa_data")
       .eq("token", String(signatureToken).trim()).maybeSingle();
@@ -558,7 +560,7 @@ Deno.serve(async (req) => {
           benutzer_id: uid,
           titel: LEAD_PAKET_RECHNUNG_GLOCKE_TITEL,
           nachricht:
-            `${bewerberName} und Christian Kurz haben den Handelsvertretervertrag unterschrieben. ` +
+            `${bewerberName} und Oliver Skowrnowski haben den Handelsvertretervertrag unterschrieben. ` +
             `${leadPaketGlockeZeile(currentMeta.leadPaket)} Bitte die Rechnung über das Lead-Paket erstellen.`,
           link: `/bewerberprozess?bewerber=${bewerberId}`,
         }));
@@ -588,7 +590,7 @@ Deno.serve(async (req) => {
           supabase.functions.invoke("send-transactional-email", {
             body: {
               templateName: "vertrag-unterschrieben-rechnung",
-              recipientEmail: CHRISTIAN_KURZ_EMAIL,
+              recipientEmail: GESCHAEFTSFUEHRER_EMAIL,
               idempotencyKey: `vertrag-unterschrieben-kurz-${bewerberId}`,
               templateData,
             },

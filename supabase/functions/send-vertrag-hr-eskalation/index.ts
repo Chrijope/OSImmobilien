@@ -28,7 +28,7 @@ import {
  *    bekam HR am 03.09.2026 Meldungen zu längst aktiven Partnern und zu
  *    Absagen aus dem Juli.
  * 2. Verträge, die der Bewerber unterschrieben hat und bei denen nur die
- *    Gegenzeichnung durch Christian Kurz fehlt (`wartet_auf_kurz`). Das ist
+ *    Gegenzeichnung durch Oliver Skowrnowski fehlt (`wartet_auf_kurz`). Das ist
  *    kein Fall für HR und schon gar nicht "nicht unterschrieben". Dafür gibt
  *    es einmal je Anfrage eine Glocke und eine Inbox-Aufgabe, nur für Kurz.
  *
@@ -76,13 +76,15 @@ const STATUS_OHNE_MELDUNG = new Set(["Rechnung", "Nutzer_anlegen", "Aktiv", "Kei
 const STATUS_AUSGESCHIEDEN = new Set(["KeinInteresse", "Abgelehnt"]);
 
 /**
- * Christian Kurz gegenzeichnet jeden Handelsvertretervertrag. Die Anfrage
+ * Oliver Skowrnowski gegenzeichnet jeden Handelsvertretervertrag. Die Anfrage
  * liegt in seinem Postfach os@os-immobilien.com (siehe finalize-vertrag). Sein
  * Konto wird über diese Adresse gesucht, die feste ID ist nur der Rückfall,
  * falls das Profil die Adresse einmal nicht trägt.
  */
-const CHRISTIAN_KURZ_EMAIL = "os@os-immobilien.com";
-const CHRISTIAN_KURZ_USER_ID = "df8190e9-b5f2-4519-8343-293688ff062d";
+const GESCHAEFTSFUEHRER_EMAIL = "os@os-immobilien.com";
+// Oliver Skowrnowski hat noch kein Konto. Bis dahin landen Aufgaben und
+// Meldungen zur Gegenzeichnung bei Christian Peetz.
+const GESCHAEFTSFUEHRER_USER_ID = "46c4fb38-ee1d-4cb8-b321-5e3fcc652464";
 
 /**
  * Auslöser der Inbox-Aufgabe. Das Präfix "bewerber_" plus Bewerbungs-ID
@@ -229,10 +231,10 @@ Deno.serve(async (req) => {
       .map((p) => p.email)
       .filter((e): e is string => !!e && e.includes("@"));
 
-    // Konto von Christian Kurz für die Gegenzeichnungs-Meldung, einmal je Lauf.
+    // Konto von Oliver Skowrnowski für die Gegenzeichnungs-Meldung, einmal je Lauf.
     const { data: kurzProfil } = await admin
-      .from("profiles").select("id").eq("email", CHRISTIAN_KURZ_EMAIL).limit(1).maybeSingle();
-    const kurzId: string = (kurzProfil?.id as string | undefined) || CHRISTIAN_KURZ_USER_ID;
+      .from("profiles").select("id").eq("email", GESCHAEFTSFUEHRER_EMAIL).limit(1).maybeSingle();
+    const kurzId: string = (kurzProfil?.id as string | undefined) || GESCHAEFTSFUEHRER_USER_ID;
 
     // ── Unterlagen für die Erinnerungen an den Bewerber ──────────────────
     //
@@ -282,8 +284,8 @@ Deno.serve(async (req) => {
       const erstVersand = String(meta.vertragErstVersandAt || meta.vertragDatum || "");
       const name = `${b.vorname || ""} ${b.nachname || ""}`.trim() || "Ein Bewerber";
 
-      // Bewerber hat unterschrieben, Christian Kurz noch nicht: keine
-      // HR-Leiter, sondern genau eine Meldung an Kurz je Anfrage.
+      // Bewerber hat unterschrieben, Oliver Skowrnowski noch nicht: keine
+      // HR-Leiter, sondern genau eine Meldung an Skowrnowski je Anfrage.
       if (status === "wartet_auf_kurz") {
         if (meta.vertragSignedAt) continue;
         if (STATUS_AUSGESCHIEDEN.has(bewerberStatus)) continue;
@@ -300,9 +302,9 @@ Deno.serve(async (req) => {
         const nachricht =
           `${name} hat den Vertrag am ${unterschriebenAm} unterschrieben. ` +
           `Der Vertrag wartet${seit} auf Deine Gegenzeichnung. ` +
-          `Die Anfrage mit dem Signaturlink liegt in Deinem Postfach ${CHRISTIAN_KURZ_EMAIL}.`;
+          `Die Anfrage mit dem Signaturlink liegt in Deinem Postfach ${GESCHAEFTSFUEHRER_EMAIL}.`;
 
-        // Aufgabe in der Inbox von Kurz. Der eindeutige Index auf
+        // Aufgabe in der Inbox von Skowrnowski. Der eindeutige Index auf
         // (zugewiesen_an, ausloeser_schluessel) hält sie je Bewerber einmalig,
         // solange sie offen ist; ein Duplikat-Fehler ist deshalb kein Problem.
         const { error: aufgabeFehler } = await admin.from("aufgaben").insert({

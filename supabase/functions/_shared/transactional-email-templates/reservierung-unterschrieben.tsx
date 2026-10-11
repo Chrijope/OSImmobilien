@@ -6,7 +6,7 @@ import { EmailLayout, Absatz, Angaben, Handlung, Hinweis, Nebenhandlung } from '
  * Interne Meldung: Die Reservierungsvereinbarung ist unterschrieben.
  *
  * Geht an den zuständigen Vertriebspartner und an die Geschäftsführung
- * (Christian Peetz, Christian Kurz), verschickt über
+ * (Christian Peetz, Oliver Skowrnowski), verschickt über
  * `_shared/reservierung-unterschrieben-meldung.ts`, sobald die PDF abgelegt
  * ist. Der Knopf lädt die unterschriebene Vereinbarung über eine signierte
  * Adresse mit sieben Tagen Laufzeit; danach bleibt der Weg über das
@@ -83,7 +83,7 @@ const Mail = ({
           zeilen={[
             ['Anlass', 'Start in die Finanzierung'],
             ['Vertriebspartner', whatsappVertriebspartner || 'Vertriebspartner nicht zugeordnet'],
-            ['OS Immobilien Leitung', 'Christian Peetz, Christian Kurz'],
+            ['OS Immobilien Leitung', 'Christian Peetz, Oliver Skowrnowski'],
             ['Finanzierer', whatsappFinanzierer || 'Finanzierer noch nicht zugeordnet'],
           ]}
         />

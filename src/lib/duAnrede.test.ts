@@ -92,7 +92,7 @@ describe("Die Du-Fassung des Videoraums", () => {
     expect(istPlatzhalterName("Dein Ansprechpartner")).toBe(true);
     expect(istPlatzhalterName("Ihr Ansprechpartner")).toBe(true);
     expect(istPlatzhalterName("")).toBe(true);
-    expect(istPlatzhalterName("Christian Kurz")).toBe(false);
+    expect(istPlatzhalterName("Oliver Skowrnowski")).toBe(false);
   });
 
   it("setzt Platzhalter ein, ohne einen stehen zu lassen", () => {

@@ -175,7 +175,7 @@ export const WIDERRUF_WAHL_EINLEITUNG_EN =
  * dieselben Angaben wie im Deutschen.
  */
 const BELEHRUNG_UNTERNEHMER_EN =
-  `OS Immobilien, owner Christian Kurz, Am Ostbahnhof 1, 15749 Mittenwalde, Germany${IMPRESSUM_TELEFON ? `, telephone ${IMPRESSUM_TELEFON}` : ""}, email ${IMPRESSUM_EMAIL}`;
+  `OS Immobilien Holding GmbH, Am Ostbahnhof 1, 15749 Mittenwalde, Germany${IMPRESSUM_TELEFON ? `, telephone ${IMPRESSUM_TELEFON}` : ""}, email ${IMPRESSUM_EMAIL}`;
 
 /**
  * Die Widerrufsbelehrung auf Englisch.

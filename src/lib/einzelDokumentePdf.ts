@@ -50,11 +50,11 @@ export interface EinzelDokumentCtx {
   bewerberSignedAt?: string;
   /** Ort der Bewerber-Unterschrift (fällt zurück auf Bewerber.ort). */
   bewerberSignedOrt?: string;
-  /** Optional: Christian-Kurz-Unterschrift (PNG-DataURL). */
+  /** Optional: Oliver-Skowrnowski-Unterschrift (PNG-DataURL). */
   kurzSignatureDataUrl?: string;
-  /** ISO-Zeitstempel der Kurz-Unterschrift. */
+  /** ISO-Zeitstempel der Gegenzeichnung. */
   kurzSignedAt?: string;
-  /** Ort der Kurz-Unterschrift (fällt zurück auf "Mittenwalde"). */
+  /** Ort der Gegenzeichnung (fällt zurück auf "Mittenwalde"). */
   kurzSignedOrt?: string;
 }
 

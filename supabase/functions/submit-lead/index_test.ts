@@ -13,7 +13,7 @@ const SUPABASE_ANON_KEY =
   Deno.env.get("SUPABASE_ANON_KEY")!;
 const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
-const CHRISTIAN_PEETZ_ID = "27ccfbab-f949-4484-90b1-7dffca6a65c9";
+const CHRISTIAN_PEETZ_ID = "46c4fb38-ee1d-4cb8-b321-5e3fcc652464";
 const FUNCTION_URL = `${SUPABASE_URL}/functions/v1/submit-lead`;
 
 /**

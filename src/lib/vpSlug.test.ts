@@ -19,7 +19,7 @@ import {
   vergibVpSlug,
 } from "../../supabase/functions/_shared/vp-slug.ts";
 
-const KENNUNG = "27ccfbab-f949-4484-90b1-7dffca6a65c9";
+const KENNUNG = "46c4fb38-ee1d-4cb8-b321-5e3fcc652464";
 
 describe("Ein vergebenes Kuerzel", () => {
   it("bleibt bei einer Namensaenderung gleich", () => {
@@ -56,9 +56,9 @@ describe("Wer noch kein Kuerzel hat", () => {
   });
 
   it("bekommt ohne brauchbaren Namen eins aus der Kennung", () => {
-    expect(slugBasis("", KENNUNG)).toBe("vp-27ccfbab");
-    expect(slugBasis("!!!", KENNUNG)).toBe("vp-27ccfbab");
-    expect(slugBasis(null, KENNUNG)).toBe("vp-27ccfbab");
+    expect(slugBasis("", KENNUNG)).toBe("vp-46c4fb38");
+    expect(slugBasis("!!!", KENNUNG)).toBe("vp-46c4fb38");
+    expect(slugBasis(null, KENNUNG)).toBe("vp-46c4fb38");
   });
 });
 
@@ -70,7 +70,7 @@ describe("Die Eindeutigkeit bei der Erstvergabe", () => {
   });
 
   it("haengt nach allen Zaehlern die Kennung an", () => {
-    expect(slugKandidat("timo-blum", SLUG_MAX_VERSUCHE + 1, KENNUNG)).toBe("timo-blum-27ccfb");
+    expect(slugKandidat("timo-blum", SLUG_MAX_VERSUCHE + 1, KENNUNG)).toBe("timo-blum-46c4fb");
   });
 });
 

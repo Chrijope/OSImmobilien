@@ -76,7 +76,7 @@ describe("Handbuch-Strecke siezt (Ausnahme vom 27.09.2026)", () => {
       { ueberschuss: "unbekannt", eigenkapital: "10_30" },
       { ueberschuss: "unter_500", eigenkapital: "unter_10" },
     ] as const;
-    const partner = [null, { name: "Christian Kurz", email: "c@example.org" }, { name: "Christian Kurz", buchungslink: "https://example.org" }];
+    const partner = [null, { name: "Oliver Skowrnowski", email: "c@example.org" }, { name: "Oliver Skowrnowski", buchungslink: "https://example.org" }];
     for (let i = 0; i < ziele.length; i++) {
       for (const lage of lagen) {
         for (const gemeinsamVeranlagt of [false, true]) {

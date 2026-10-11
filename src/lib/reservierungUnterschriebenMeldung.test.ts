@@ -105,7 +105,7 @@ const STANDARD: Aufbau = {
   kontakt: { zustaendig_id: PARTNER_ID, berater: null },
   profile: [
     { id: PARTNER_ID, name: "Paula Partner", email: "paula@partner.test" },
-    { id: KENNUNG_KURZ, name: "Christian Kurz", email: "kurz@firma.test" },
+    { id: KENNUNG_KURZ, name: "Oliver Skowrnowski", email: "kurz@firma.test" },
   ],
   config: { wert: ["peetz@firma.test", KENNUNG_KURZ] },
 };
@@ -118,10 +118,10 @@ beforeEach(() => {
 
 describe("Empfängerliste aus app_config", () => {
   it("trennt Kennungen von Adressen und verwirft den Rest", () => {
-    expect(konfigLesen([KENNUNG_KURZ.toUpperCase(), " Peetz@Firma.test ", "Christian Kurz", "", 42])).toEqual({
+    expect(konfigLesen([KENNUNG_KURZ.toUpperCase(), " Peetz@Firma.test ", "Oliver Skowrnowski", "", 42])).toEqual({
       kennungen: [KENNUNG_KURZ],
       adressen: ["peetz@firma.test"],
-      ungueltig: ["Christian Kurz"],
+      ungueltig: ["Oliver Skowrnowski"],
     });
   });
 
@@ -135,11 +135,11 @@ describe("Empfänger zusammenstellen", () => {
   it("nimmt den Partner zuerst und jede Adresse nur einmal", () => {
     const liste = empfaengerZusammenstellen(
       { email: "os@os-immobilien.com", name: "Christian Peetz" },
-      [{ email: "os@os-immobilien.com" }, { email: "kurz@firma.test", name: "Christian Kurz" }],
+      [{ email: "os@os-immobilien.com" }, { email: "kurz@firma.test", name: "Oliver Skowrnowski" }],
     );
     expect(liste).toEqual([
       { email: "os@os-immobilien.com", name: "Christian Peetz", art: "partner" },
-      { email: "kurz@firma.test", name: "Christian Kurz", art: "geschaeftsfuehrung" },
+      { email: "kurz@firma.test", name: "Oliver Skowrnowski", art: "geschaeftsfuehrung" },
     ]);
   });
 
@@ -210,7 +210,7 @@ describe("Versand der Meldung", () => {
     expect(new Set(mails.map((m) => m.idempotencyKey)).size).toBe(3);
     expect(mails[0].templateData.pdfUrl).toContain("https://speicher.test/");
     // Kennung aus app_config wird über das Profil aufgelöst, samt Anrede.
-    expect(mails[2].templateData.vpName).toBe("Christian Kurz");
+    expect(mails[2].templateData.vpName).toBe("Oliver Skowrnowski");
 
     expect(signaturen).toEqual([{
       pfad: META.rvPdfPath,
@@ -320,7 +320,7 @@ describe("WhatsApp-Gruppe zum Start in die Finanzierung", () => {
       ...STANDARD,
       profile: [
         { id: PARTNER_ID, name: "Paula Partner", email: "paula@partner.test", telefon: "0171 1111111" },
-        { id: KENNUNG_KURZ, name: "Christian Kurz", email: "kurz@firma.test" },
+        { id: KENNUNG_KURZ, name: "Oliver Skowrnowski", email: "kurz@firma.test" },
         { id: FP_ID, name: "Fritz Finanz", email: "fritz@fp.test", telefon: "0172 2222222" },
       ],
       rollen: [{ user_id: FP_ID }],
@@ -356,7 +356,7 @@ describe("WhatsApp-Gruppe zum Start in die Finanzierung", () => {
   it("die Vorlage zeigt den Abschnitt ohne Gedankenstriche", () => {
     const vorlage = lies("supabase/functions/_shared/transactional-email-templates/reservierung-unterschrieben.tsx");
     expect(vorlage).toContain('titel="Nächster Schritt: WhatsApp-Gruppe eröffnen"');
-    expect(vorlage).toContain("Christian Peetz, Christian Kurz");
+    expect(vorlage).toContain("Christian Peetz, Oliver Skowrnowski");
     expect(vorlage).not.toMatch(/[–—]/);
   });
 });

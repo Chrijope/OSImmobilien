@@ -86,7 +86,7 @@ const SubmitSchema = z.object({
    * Karriereseite schicken es nicht und laufen unveraendert.
    *   tippgeber            wird angerufen, kein Bogen, kein Lebenslauf
    *   finanzdienstleister  wie der Berater, dazu vorgemerkt fuer das
-   *                        Gespraech zum zweiten Produkt mit Christian Kurz
+   *                        Gespraech zum zweiten Produkt mit Oliver Skowrnowski
    */
   stelle: z.enum(["tippgeber", "finanzdienstleister"]).optional(),
   // Spam-Schutz
@@ -251,7 +251,7 @@ Deno.serve(async (req) => {
     /*
      * Finanzdienstleister laufen wie der Berater, mit Kennenlernbogen und
      * Ueberleitung. Das Kennzeichen merkt sie fuer das Gespraech zum zweiten
-     * Produkt vor, das Christian Kurz fuehrt.
+     * Produkt vor, das Oliver Skowrnowski fuehrt.
      */
     const istFinanzdienstleister = data.stelle === "finanzdienstleister";
 

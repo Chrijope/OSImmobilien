@@ -331,7 +331,7 @@ export type Bewerber = {
    * Wann der BEWERBER unterschrieben hat.
    *
    * Nicht zu verwechseln mit `vertragSignedAt`: Das steht erst, wenn auch
-   * Christian Kurz gegengezeichnet hat. Dazwischen liegt der Zustand
+   * Oliver Skowrnowski gegengezeichnet hat. Dazwischen liegt der Zustand
    * `vertragStatus = "wartet_auf_kurz"`, und genau den zeigt die Liste in der
    * Stufe Vertrag an.
    *
@@ -351,7 +351,7 @@ export type Bewerber = {
   rechnungPdfUrl: string;
   /** Datum der Rechnungserstellung (ISO) */
   rechnungErstelltAm: string;
-  /** Bestätigungen "bezahlt" (Christian Peetz & Christian Kurz) */
+  /** Bestätigungen "bezahlt" (Christian Peetz & Oliver Skowrnowski) */
   rechnungBezahltBestaetigungen: { name: string; userId: string; datum: string }[];
   /** Datum, an dem beide Bestätigungen vorlagen */
   rechnungBezahltAm: string;

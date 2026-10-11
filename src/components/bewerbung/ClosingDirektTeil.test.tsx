@@ -103,12 +103,12 @@ describe("ClosingDirektTeil", () => {
     renderTeil(baueBewerber());
     // Einmal an der Lead-Thematik (Preis), einmal am Ende des Skripts.
     expect(screen.getAllByRole("button", { name: /Folge-Call anbieten/ })).toHaveLength(2);
-    expect(screen.queryByText(/Folge-Call bei Christian Kurz buchen/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Folge-Call bei Oliver Skowrnowski buchen/)).not.toBeInTheDocument();
   });
 
-  it("eingeblendeter Folge-Call zeigt den Buchungslink von Christian Kurz", () => {
+  it("eingeblendeter Folge-Call zeigt den Buchungslink von Oliver Skowrnowski", () => {
     renderTeil(baueBewerber(), { aktiv: true, qualiCallAngeboten: true });
-    const links = screen.getAllByRole("link", { name: /Folge-Call bei Christian Kurz buchen/ });
+    const links = screen.getAllByRole("link", { name: /Folge-Call bei Oliver Skowrnowski buchen/ });
     expect(links).toHaveLength(2);
     expect(links[0]).toHaveAttribute(
       "href",

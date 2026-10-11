@@ -40,7 +40,7 @@ import {
  */
 
 const STANDARD: Ansprechpartner = {
-  name: 'Christian Kurz',
+  name: 'Oliver Skowrnowski',
   rolle: 'Ansprechpartner Vertriebspartnerschaften',
   telefon: '+49 30 863289210',
   email: 'os@os-immobilien.com',

@@ -34,7 +34,7 @@ import {
   waehleZuordnungsWeg,
 } from "../../supabase/functions/_shared/lead-zuordnung.ts";
 
-const ECHTE_ID = "27ccfbab-f949-4484-90b1-7dffca6a65c9";
+const ECHTE_ID = "46c4fb38-ee1d-4cb8-b321-5e3fcc652464";
 
 describe("istUuid", () => {
   it("erkennt eine Nutzerkennung", () => {
@@ -43,7 +43,7 @@ describe("istUuid", () => {
   });
 
   it("weist alles ab, was keine ist", () => {
-    for (const wert of ["", "  ", "abc", "27ccfbab-f949-4484-90b1", 42, null, undefined, {}]) {
+    for (const wert of ["", "  ", "abc", "46c4fb38-ee1d-4cb8-b321", 42, null, undefined, {}]) {
       expect(istUuid(wert)).toBe(false);
     }
   });

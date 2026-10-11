@@ -32,7 +32,7 @@ const ANGABEN = {
   startIso: "2026-09-15T08:00:00.000Z",
   endeIso: "2026-09-15T08:45:00.000Z",
   uid: "os@os-immobilien.com",
-  organisator: "Christian Kurz",
+  organisator: "Oliver Skowrnowski",
   organisatorEmail: "os@os-immobilien.com",
   teilnehmerEmail: "max@example.com",
 };
@@ -54,7 +54,7 @@ describe("Die Kalenderdatei", () => {
     expect(ics).toContain("DTEND:20260915T084500Z");
     expect(ics).toContain(`UID:${ANGABEN.uid}`);
     expect(ics).toContain(`SUMMARY:${KALENDER_TITEL}`);
-    expect(ics).toContain("ORGANIZER;CN=Christian Kurz:mailto:os@os-immobilien.com");
+    expect(ics).toContain("ORGANIZER;CN=Oliver Skowrnowski:mailto:os@os-immobilien.com");
     expect(ics).toContain("mailto:max@example.com");
   });
 

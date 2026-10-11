@@ -34,10 +34,12 @@ export default function Impressum() {
             <p>
               Mail: <a href={`mailto:${IMPRESSUM_EMAIL}`} className="text-primary hover:underline">{IMPRESSUM_EMAIL}</a>
             </p>
-            <p>Steuernummer: 134 | 178 | 41478</p>
-            <p>&nbsp;</p>
-            <p>Umsatzsteuer-ID gemäß § 27 a UStG:&nbsp;&nbsp;DEINE-UST-ID</p>
-            <p>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV: Christian Kurz</p>
+            {/* Angaben übernommen aus dem Impressum auf os-immobilien.com (Stand 11.10.2026). */}
+            <p>Vertreten durch den Geschäftsführer: Oliver Skowrnowski</p>
+            <p>Registergericht: Amtsgericht Potsdam<br />Registernummer: HRB 35976 P</p>
+            <p>Umsatzsteuer-Identifikationsnummer (USt-IdNr.): auf Anfrage</p>
+            <p>Aufsichtsbehörde nach § 34c GewO: Fachbereich Ordnung</p>
+            <p>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV: Oliver Skowrnowski, Anschrift wie oben</p>
           </div>
 
           <div>

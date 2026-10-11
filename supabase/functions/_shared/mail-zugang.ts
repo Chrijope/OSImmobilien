@@ -52,10 +52,10 @@ export const EXTERNE_VORLAGEN: Readonly<Record<string, "eigene" | "team">> = {
 
 /**
  * Feste Team-Postfaecher, die kein eigenes Profil haben muessen. office@ ist
- * das Buero (BUERO_EMAIL), c.peetz@imondu.de der Standard-Empfaenger der
+ * das Buero (BUERO_EMAIL), christianpeetz.v.a@me.com der Standard-Empfaenger der
  * Fehlermeldungen (BugReportDialog).
  */
-export const TEAM_POSTFAECHER: readonly string[] = ["os@os-immobilien.com", "c.peetz@imondu.de"];
+export const TEAM_POSTFAECHER: readonly string[] = ["os@os-immobilien.com", "christianpeetz.v.a@me.com"];
 
 /** Mengenbremse je Nutzer und Stunde beziehungsweise Tag. */
 export const MAIL_BREMSE = {

@@ -21,7 +21,7 @@ import { istKonfiguratorQuelle } from "../../supabase/functions/_shared/handbuch
  * aktiven Rolle. Die Konstante bleibt, weil `bewerberprozessFreigabe.ts` sie
  * fuer seinen Eintrag nutzt.
  */
-export const CHRISTIAN_PEETZ_ID = "27ccfbab-f949-4484-90b1-7dffca6a65c9";
+export const CHRISTIAN_PEETZ_ID = "46c4fb38-ee1d-4cb8-b321-5e3fcc652464";
 
 /** Ab so vielen Tagen im Pool wird ein Lead gelb markiert. */
 export const POOL_LEAD_WARNUNG_TAGE = 1;

@@ -2410,7 +2410,7 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                                   {stand.datum || <span className="text-muted-foreground">Datum unbekannt</span>}
                                   {stand.wartetAufKurz && (
                                     <Badge variant="outline" className="ml-2 text-[10px] font-normal">
-                                      wartet auf Kurz
+                                      wartet auf Skowrnowski
                                     </Badge>
                                   )}
                                 </TableCell>

@@ -8,7 +8,7 @@
  *   - Kundenstimmen wörtlich und mit der Namensform der Website, nichts
  *     ergänzt. Ausgewählt sind Stimmen ohne Steuer- oder Tempoversprechen.
  *   - Das Zitat des Inhabers ist ein ENTWURF: Auf der Website steht keins.
- *     Es muss von Christian Kurz freigegeben werden, bevor die Seite live geht.
+ *     Es muss von Oliver Skowrnowski freigegeben werden, bevor die Seite live geht.
  *   - Foto: fest im Projekt unter `src/assets/handbuch/christian-kurz.webp`,
  *     von Christian am 26.09.2026 geliefert und geschärft. Initialen nur,
  *     falls das Bild nicht lädt.
@@ -19,10 +19,10 @@
  */
 
 export const FIRMEN_ANSPRECHPARTNER = {
-  name: "Christian Kurz",
+  name: "Oliver Skowrnowski",
   rolle: "Inhaber und Geschäftsführer",
   initialen: "CK",
-  /** ENTWURF, von Christian Kurz freigeben lassen. */
+  /** ENTWURF, von Oliver Skowrnowski freigeben lassen. */
   zitat:
     "Bei uns kommt die Rechnung vor der Wohnung. Wenn die Zahlen nicht zu Ihnen passen, sagen wir Ihnen das offen, auch wenn es dann erst einmal kein Kauf wird.",
 };
@@ -68,7 +68,7 @@ export const KUNDENSTIMMEN: Array<{ name: string; ort: string; text: string }> =
   {
     name: "Stefan L.",
     ort: "Regensburg",
-    text: "Ich habe über Christian Kurz und sein Team meine erste Kapitalanlagewohnung gekauft und hätte mir keinen besseren Einstieg vorstellen können. Die Beratung war ehrlich, transparent und ohne dieses typische Makler-Blabla. Danke für die starke Begleitung!",
+    text: "Ich habe über Oliver Skowrnowski und sein Team meine erste Kapitalanlagewohnung gekauft und hätte mir keinen besseren Einstieg vorstellen können. Die Beratung war ehrlich, transparent und ohne dieses typische Makler-Blabla. Danke für die starke Begleitung!",
   },
   {
     name: "Miriam K.",

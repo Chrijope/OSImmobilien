@@ -318,7 +318,7 @@ export const STELLENANZEIGEN: Stellenanzeige[] = [
      * Das zweite Produkt. Die Vorteile stehen so im Kennenlernbogen, Weg 2,
      * Ansicht „Ein zweites Produkt, das zu dir passt"; der Satz „keine
      * Bedingung für die Zusammenarbeit" steht so im Videocall
-     * (`bewerberVideocall.ts`). Die Gespräche dazu führt Christian Kurz
+     * (`bewerberVideocall.ts`). Die Gespräche dazu führt Oliver Skowrnowski
      * (`bewerberprozessFreigabe.ts`).
      */
     zweitesProdukt: {

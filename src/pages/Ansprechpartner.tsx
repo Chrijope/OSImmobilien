@@ -58,7 +58,7 @@ const initialAbteilungen: Abteilung[] = [
     id: "1",
     name: "Geschäftsführung",
     kontakte: [
-      { id: "k1", name: "Christian Kurz", position: "CEO & Founder", beschreibung: "Geschäftsführung, Strategie, Unternehmensentwicklung", email: "os@os-immobilien.com", telefon: "", avatarColor: "bg-blue-500", chatErlaubt: true },
+      { id: "k1", name: "Oliver Skowrnowski", position: "CEO & Founder", beschreibung: "Geschäftsführung, Strategie, Unternehmensentwicklung", email: "os@os-immobilien.com", telefon: "", avatarColor: "bg-blue-500", chatErlaubt: true },
     ],
   },
   {

@@ -92,8 +92,8 @@ const de: DatenschutzFassung = {
         "Verantwortlich für die Verarbeitung Ihrer personenbezogenen Daten auf dieser Website (osimmobilien.netlify.app), im Kundenportal und in den damit verbundenen Abläufen ist:",
         {
           zeilen: [
-            "OS Immobilien",
-            "Holding GmbH",
+            "OS Immobilien Holding GmbH",
+            "vertreten durch den Geschäftsführer Oliver Skowrnowski",
             "Am Ostbahnhof 1",
             "15749 Mittenwalde",
             "Deutschland",
@@ -101,7 +101,7 @@ const de: DatenschutzFassung = {
             `E-Mail: ${IMPRESSUM_EMAIL}`,
           ],
         },
-        `Ansprechpartner für den Datenschutz ist der Inhaber Christian Kurz. Für alle Fragen zum Datenschutz und zur Ausübung Ihrer Rechte erreichen Sie uns unter ${DATENSCHUTZ_EMAIL} oder unter der oben genannten Anschrift.`,
+        `Ansprechpartner für den Datenschutz ist der Geschäftsführer Oliver Skowrnowski. Für alle Fragen zum Datenschutz und zur Ausübung Ihrer Rechte erreichen Sie uns unter ${DATENSCHUTZ_EMAIL} oder unter der oben genannten Anschrift.`,
       ],
     },
     {
@@ -713,8 +713,8 @@ const en: DatenschutzFassung = {
         "The controller responsible for processing your personal data on this website (osimmobilien.netlify.app), in the customer portal and in the related processes is:",
         {
           zeilen: [
-            "OS Immobilien",
-            "Sole proprietorship, owner: Christian Kurz",
+            "OS Immobilien Holding GmbH",
+            "represented by its managing director Oliver Skowrnowski",
             "Am Ostbahnhof 1",
             "15749 Mittenwalde",
             "Germany",
@@ -722,7 +722,7 @@ const en: DatenschutzFassung = {
             `Email: ${IMPRESSUM_EMAIL}`,
           ],
         },
-        `The contact person for data protection is the owner, Christian Kurz. For any questions about data protection and to exercise your rights, please contact us at ${DATENSCHUTZ_EMAIL} or at the address above.`,
+        `The contact person for data protection is the managing director, Oliver Skowrnowski. For any questions about data protection and to exercise your rights, please contact us at ${DATENSCHUTZ_EMAIL} or at the address above.`,
       ],
     },
     {

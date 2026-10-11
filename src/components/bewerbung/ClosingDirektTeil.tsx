@@ -295,7 +295,7 @@ export const ClosingDirektTeil = ({
 
   /**
    * Einblendung des Folge-Calls zu gestellten Leads bei Geschäftsführer
-   * Christian Kurz. Bewusst hinter einem Knopf: Die HR-Managerin zeigt ihn
+   * Oliver Skowrnowski. Bewusst hinter einem Knopf: Die HR-Managerin zeigt ihn
    * nur bei richtig starken Kandidaten, das ist reine Ermessenssache.
    */
   const renderQualiCall = () => (
@@ -323,7 +323,7 @@ export const ClosingDirektTeil = ({
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-amber-700 hover:underline"
         >
-          Folge-Call bei Christian Kurz buchen
+          Folge-Call bei Oliver Skowrnowski buchen
           <ExternalLink className="h-3 w-3" />
         </a>
       )}

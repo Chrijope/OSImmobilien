@@ -214,7 +214,7 @@ const GUIDE: Partial<Record<PipelineStufe, NextStepsGuide>> = {
     titel: "Notartermin organisieren",
     aktionen: [
       { text: "Notaraufnahme Bogen ausfüllen" },
-      { text: "Notartermin in Absprache mit Backoffice/Christian Kurz abstimmen" },
+      { text: "Notartermin in Absprache mit Backoffice/Oliver Skowrnowski abstimmen" },
       { text: "Notartermin durchführen und Notarfoto im Anschluss nicht vergessen und im Notar-Tab hochladen" },
     ],
   },

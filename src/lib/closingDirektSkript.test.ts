@@ -241,7 +241,7 @@ describe("closingDirektSkript: ehrliche Zahlen aus den Konstanten", () => {
     expect(einwand!.antwort).toContain("Individualfassung");
   });
 
-  it("der Folge-Call nutzt den bestehenden Buchungslink von Christian Kurz", () => {
+  it("der Folge-Call nutzt den bestehenden Buchungslink von Oliver Skowrnowski", () => {
     expect(LEAD_QUALIFIZIERUNG_BUCHUNGSLINK).toBe(
       "https://DEIN-VERTRIEBSPARTNER-BUCHUNGSLINK",
     );

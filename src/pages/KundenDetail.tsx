@@ -15023,8 +15023,8 @@ export default function KundenDetail() {
 
                   // ── Christian Peetz benachrichtigen: Inbox + App-E-Mail mit Download-Link ──
                   try {
-                    const CHRISTIAN_PEETZ_USER_ID = "e81f0a13-0578-4456-9960-07be014d869c";
-                    const CHRISTIAN_PEETZ_EMAIL = "info@peetz-ventures.de";
+                    const CHRISTIAN_PEETZ_USER_ID = "46c4fb38-ee1d-4cb8-b321-5e3fcc652464";
+                    const CHRISTIAN_PEETZ_EMAIL = "christianpeetz.v.a@me.com";
                     const kundeFullName = `${kunde?.vorname || ""} ${kunde?.nachname || ""}`.trim() || "Kunde";
                     const kundeLinkPath = `/kunden/${id}`;
 

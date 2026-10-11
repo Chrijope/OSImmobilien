@@ -12,7 +12,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
  * Eine Erwaehnung gilt genau einer Person. Die Zeilensicherheit laesst
  * Verwaltende aber ALLE Benachrichtigungen lesen, und `getMentionNotifications`
  * fragte ohne Empfaengerfilter ab. Christian sah deshalb die Meldungen, die an
- * Christian Kurz gingen, und konnte sie nicht einmal wegklicken: Geaendert
+ * Oliver Skowrnowski gingen, und konnte sie nicht einmal wegklicken: Geaendert
  * werden duerfen nur eigene Zeilen.
  *
  * ZWEITENS, DIE REIHENFOLGE
@@ -53,7 +53,7 @@ function erwaehnung(id: string, empfaenger: string, wann: string) {
         chatId: "chat-1",
         chatName: "Otto Hans (Intern)",
         mentionedByName: "Christian Peetz",
-        messageText: "@Christian Kurz test",
+        messageText: "@Oliver Skowrnowski test",
         timestamp: wann,
       },
     },

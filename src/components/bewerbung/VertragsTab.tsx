@@ -460,7 +460,7 @@ export function VertragsTab({ bewerber: b, canEdit, hrName, onRefresh }: Props) 
       // Die Glocke "Rechnung erstellen" geht an HR, und seit dem 23.09.2026
       // nur beim Lead-Paket; ohne gibt es nichts abzurechnen. Das
       // Bewerbermanagement führt HR, und die Rechnung lässt sich aus derselben
-      // Bewerberakte erstellen. Christian Kurz bekommt aus dem Bewerberprozess
+      // Bewerberakte erstellen. Oliver Skowrnowski bekommt aus dem Bewerberprozess
       // keine Meldungen; seine einzige bleibt die Gegenzeichnungsanfrage aus
       // finalize-vertrag.
       if (mitLeadPaket) {
@@ -822,7 +822,7 @@ export function VertragsTab({ bewerber: b, canEdit, hrName, onRefresh }: Props) 
                 </>
               )}
               {b.vertragStatus === "wartet_auf_kurz" && (
-                <>Bewerber hat unterschrieben – wartet auf Gegenzeichnung durch Christian Kurz (OS Immobilien)</>
+                <>Bewerber hat unterschrieben – wartet auf Gegenzeichnung durch Oliver Skowrnowski (OS Immobilien)</>
               )}
               {b.vertragStatus === "unterschrieben" && "Unterschrieben & in der Akte"}
               {b.vertragStatus === "abgelehnt" && "Vom Bewerber abgelehnt"}
@@ -1100,7 +1100,7 @@ function KurzReminderBlock({ bewerberId, bewerberName, paketTitel }: { bewerberI
     // Den Link baut der Server mit dem aktuellen Token der offenen Anfrage.
     const fehler = await signaturLinkErinnern({ art: "vertrag_kurz", bewerberId, bewerberName, paketTitel });
     if (fehler) toast({ title: "Fehler", description: fehler, variant: "destructive" });
-    else toast({ title: "Erinnerung gesendet", description: "Christian Kurz wurde per E-Mail erinnert." });
+    else toast({ title: "Erinnerung gesendet", description: "Oliver Skowrnowski wurde per E-Mail erinnert." });
     setBusy(false);
   };
 
@@ -1109,7 +1109,7 @@ function KurzReminderBlock({ bewerberId, bewerberName, paketTitel }: { bewerberI
     <div className="flex flex-col gap-3 rounded-md border border-dashed p-3 bg-blue-500/5 border-blue-500/30 sm:flex-row sm:items-center sm:justify-between">
       <div className="min-w-0 text-xs text-muted-foreground space-y-1">
         <p className="font-medium text-foreground">Wartet auf Gegenzeichnung OS Immobilien</p>
-        <p>Der Bewerber hat bereits unterschrieben. Christian Kurz wurde per E-Mail an <span className="font-medium">os@os-immobilien.com</span> zur Gegenzeichnung aufgefordert.</p>
+        <p>Der Bewerber hat bereits unterschrieben. Oliver Skowrnowski wurde per E-Mail an <span className="font-medium">os@os-immobilien.com</span> zur Gegenzeichnung aufgefordert.</p>
         {info.created_at && (
           <p>Anfrage erstellt am {new Date(info.created_at).toLocaleString("de-DE")}</p>
         )}
@@ -1117,7 +1117,7 @@ function KurzReminderBlock({ bewerberId, bewerberName, paketTitel }: { bewerberI
       </div>
       <div className="flex w-full flex-col gap-2 sm:w-auto sm:shrink-0">
         <Button variant="outline" size="sm" onClick={remind} disabled={busy || !info.offen}>
-          <Mail className="h-4 w-4 mr-1" />Erneut an Kurz erinnern
+          <Mail className="h-4 w-4 mr-1" />Erneut an Oliver Skowrnowski erinnern
         </Button>
       </div>
     </div>

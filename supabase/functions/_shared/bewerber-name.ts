@@ -5,7 +5,7 @@
  * das `meta`-Feld (siehe `bewerberToDb` in src/lib/bewerbungStore.ts). Eine
  * Function, die den Namen nur aus `meta` liest, sieht deshalb bei jedem
  * Bewerber einen leeren Namen und landet im Rueckfall "Ein Bewerber". Genau
- * das stand in der HR-Aufgabe und in der Mail an Christian Kurz.
+ * das stand in der HR-Aufgabe und in der Mail an Oliver Skowrnowski.
  *
  * Reihenfolge: Spalten zuerst, `meta` nur als Rueckfall fuer Altbestand, dann
  * die neutrale Anrede.

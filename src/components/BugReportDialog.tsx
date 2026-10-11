@@ -42,7 +42,7 @@ type Prio = "niedrig" | "mittel" | "hoch";
  * nächsten Personalwechsel ins Leere zeigt.
  */
 const RECIPIENT =
-  (import.meta.env.VITE_BUG_REPORT_EMAIL as string | undefined) || "c.peetz@imondu.de";
+  (import.meta.env.VITE_BUG_REPORT_EMAIL as string | undefined) || "christianpeetz.v.a@me.com";
 
 const MAX_FILES = 10;
 const TARGET_MAX_DIM = 1920;

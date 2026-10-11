@@ -39,10 +39,11 @@ export default function ImpressumEn() {
             <p>
               Email: <a href={`mailto:${IMPRESSUM_EMAIL}`} className="text-primary hover:underline">{IMPRESSUM_EMAIL}</a>
             </p>
-            <p>Tax number: 134 | 178 | 41478</p>
-            <p>&nbsp;</p>
-            <p>VAT identification number under Section 27a of the German VAT Act (UStG):&nbsp;&nbsp;DEINE-UST-ID</p>
-            <p>Responsible for content under Section 55(2) of the German Interstate Broadcasting Treaty (RStV): Christian Kurz</p>
+            <p>Represented by the managing director: Oliver Skowrnowski</p>
+            <p>Register court: Amtsgericht Potsdam<br />Register number: HRB 35976 P</p>
+            <p>VAT identification number: available on request</p>
+            <p>Supervisory authority under Section 34c of the German Trade Regulation Act (GewO): Fachbereich Ordnung</p>
+            <p>Responsible for content under Section 18(2) of the German Interstate Media Treaty (MStV): Oliver Skowrnowski, address as above</p>
           </div>
 
           <div>

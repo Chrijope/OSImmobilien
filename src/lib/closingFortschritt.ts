@@ -248,7 +248,7 @@ export function berechneClosingFortschritt(b: Bewerber, zusatz: ClosingZusatz = 
     : entscheidung === "bedenkzeit" ? `Bedenkzeit, Rückruf ${rueckrufText(b)}`
     : "Ja, Bedenkzeit oder Nein";
 
-  // Ein Wortlaut für Kopfzeile, Balken und Seitenleiste. "wartet auf Kurz"
+  // Ein Wortlaut für Kopfzeile, Balken und Seitenleiste. "wartet auf Skowrnowski"
   // bekommt eine eigene Formulierung: Der Bewerber hat dann bereits
   // unterschrieben, es fehlt nur die Gegenzeichnung.
   const version = `v${b.vertragVersion || 1}`;
@@ -421,7 +421,7 @@ export function berechneClosingFortschritt(b: Bewerber, zusatz: ClosingZusatz = 
       fehlt.push({ text: `Individuelle Sätze ${saetze}`, unter: "prüfen, ob so vereinbart", dringend: true });
     }
     if (ja && b.leadPaket && !vertragErzeugt) {
-      fehlt.push({ text: "Folgegespräch mit Christian Kurz", unter: "nur bei gestellten Leads nötig" });
+      fehlt.push({ text: "Folgegespräch mit Oliver Skowrnowski", unter: "nur bei gestellten Leads nötig" });
     }
   }
 
