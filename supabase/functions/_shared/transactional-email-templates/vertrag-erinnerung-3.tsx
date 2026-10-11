@@ -59,7 +59,7 @@ export const template = {
   previewData: {
     name: 'Max Mustermann',
     hrKontakt: {
-      name: 'Sarah Kaiser-Thom',
+      name: 'Erika Mustermann',
       rolle: berufsbezeichnung('hr'),
       email: 'os@os-immobilien.com',
     },

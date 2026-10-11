@@ -210,11 +210,11 @@ describe("buildStartfahrplanErweitertPdf (erweiterter Startfahrplan)", () => {
     texte.length = 0;
     deckblaetter.length = 0;
     await buildStartfahrplanErweitertPdf({
-      berater: { name: "Sarah Kaiser-Thom", email: "s.kaiser-thom@os-immobilien.com", telefon: "+49 151 1234567" },
+      berater: { name: "Erika Mustermann", email: "e.mustermann@os-immobilien.com", telefon: "+49 151 1234567" },
     });
     alles = texte.join("\n");
-    expect(alles).toContain("Sarah Kaiser-Thom");
-    expect(alles).toContain("s.kaiser-thom@os-immobilien.com");
+    expect(alles).toContain("Erika Mustermann");
+    expect(alles).toContain("e.mustermann@os-immobilien.com");
     expect(alles).not.toContain("os@os-immobilien.com");
   });
 

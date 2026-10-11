@@ -293,7 +293,7 @@ export function GespraechEinladung({
           </p>
           {/*
             Der Normalfall ist seit dem 21.09.2026, dass der Bewerber die Zeit
-            nach seiner Buchung selbst bestätigt. Sarah sieht hier, ob er das
+            nach seiner Buchung selbst bestätigt. HR sieht hier, ob er das
             getan hat, und muss nur eingreifen, wenn er es vergessen hat.
           */}
           {vomBewerber ? (

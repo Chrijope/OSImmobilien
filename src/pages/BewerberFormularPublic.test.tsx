@@ -225,7 +225,7 @@ describe("BewerberFormularPublic als Wizard", () => {
 
     // Danke-Seite mit der HR-Managerin, der Wunschzeit und dem Buchungslink aus der Mail.
     expect(await screen.findByRole("heading", { name: "Vielen Dank, Max." })).toBeInTheDocument();
-    expect(screen.getByText("Sarah Kaiser-Thom")).toBeInTheDocument();
+    expect(screen.getByText("OS Immobilien Team")).toBeInTheDocument();
     expect(screen.getByText("nachmittags zwischen 14 und 18 Uhr")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Gesprächstermin buchen/ })).toHaveAttribute("href", BEWERBER_BUCHUNGSLINK);
     expect(ladeFragebogenEntwurf(TOKEN)).toBeNull();

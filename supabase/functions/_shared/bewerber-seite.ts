@@ -93,7 +93,7 @@ export type BewerberSeiteStand = {
   vorname: string;
   beworbenAm: string;
   beendet: boolean;
-  /** bewerber | moreimmo | leer (Wert aus der Datenbankfunktion, nicht umbenannt). Trennt den Ausstieg von der Absage. */
+  /** bewerber | osimmobilien | leer. Trennt den Ausstieg von der Absage. */
   beendetDurch: string;
   zugesagt: boolean;
   kennenlernen: SeiteKennenlernen;

@@ -30,7 +30,7 @@ import BewerberKooperationsgespraech from "./BewerberKooperationsgespraech";
 /** Der Zugang, wie `bewerber_termin_zugang` ihn liefert, bereits gelesen. */
 function offenerZugang(teil: Record<string, unknown> = {}) {
   return {
-    gastgeber: { name: "Sarah Kaiser-Thom", email: null, telefon: null, bild: null, position: null },
+    gastgeber: { name: "Erika Mustermann", email: null, telefon: null, bild: null, position: null },
     zeitzone: "Europe/Berlin",
     dauerMinuten: 45,
     bezeichnung: "Bewerbergespräch",
@@ -53,7 +53,7 @@ describe("Die Startseite vor dem Kalender", () => {
 
     expect(await screen.findByText(/Dein persönliches Gespräch/)).toBeInTheDocument();
     expect(screen.getByText(/45 Minuten/)).toBeInTheDocument();
-    expect(screen.getByText(/Sarah Kaiser-Thom/)).toBeInTheDocument();
+    expect(screen.getByText(/Erika Mustermann/)).toBeInTheDocument();
     expect(screen.getByText(/Nichts entschieden/)).toBeInTheDocument();
     // Der Kalender kommt erst nach dem Knopf.
     expect(screen.queryByLabelText("Nächster Monat")).not.toBeInTheDocument();

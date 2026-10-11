@@ -261,11 +261,6 @@ describe("Wo die Kennung liegt", () => {
     expect([...speicher.keys()].some((k) => k.startsWith("osimmobilien.kampagne"))).toBe(false);
   });
 
-  it("entfernt die alte Ablage in der sessionStorage", () => {
-    sitzung.set("moreimmo.kampagne", JSON.stringify({ utmCampaign: "Alt" }));
-    kampagneErfassen("");
-    expect(sitzung.has("moreimmo.kampagne")).toBe(false);
-  });
 
   it("verwirft einen abgelaufenen Stand", () => {
     speichereCookieEinwilligung({ statistik: true, marketing: false });

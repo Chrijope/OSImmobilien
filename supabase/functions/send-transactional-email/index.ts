@@ -544,7 +544,7 @@ Deno.serve(async (req) => {
    * 3b. Im Bewerberprozess steht immer die HR-Managerin unter der Mail.
    *
    * Christian am 21.09.2026: „der ansprechpartner am fuss der mail muss im
-   * bewerber prozess immer auf sarah laufen nie auf christian kurz".
+   * bewerber prozess immer auf die hr-person laufen" (sinngemäß).
    *
    * Aufgeloest wird ueber die Rolle `hr`, nicht ueber einen Namen. Wechselt die
    * Person, wechselt der Kasten mit, ohne dass jemand Code anfasst. Ueber den
@@ -620,7 +620,7 @@ Deno.serve(async (req) => {
   /*
    * 3b3. Mails an Bewerber kommen von der HR-Ansprechpartnerin.
    *
-   * Seit dem 26.09.2026, gegen den Spamordner: "Sarah … | OS Immobilien" statt
+   * Seit dem 26.09.2026, gegen den Spamordner: "Vorname … | OS Immobilien" statt
    * "OS Immobilien", und eine Antwort landet bei ihr statt bei noreply@. Dieselbe
    * Person wie im Kasten unter der Mail (3b), ermittelt ueber die Kennung.
    * Ohne HR-Person: "OS Immobilien" mit office@ als Antwortadresse. Eine vom

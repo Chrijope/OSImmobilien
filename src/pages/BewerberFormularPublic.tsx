@@ -31,7 +31,6 @@ import {
   speichereFragebogenEntwurf,
 } from "@/lib/bewerberFormularEntwurf";
 import { HR_ANSPRECHPARTNERIN } from "@/lib/bewerberKontaktversuch";
-import { HR_ROLLENBEZEICHNUNG } from "../../supabase/functions/_shared/hr-ansprechpartner";
 import { BEWERBER_BUCHUNGSLINK } from "../../supabase/functions/_shared/bewerber-eingangsmail";
 import {
   Eyebrow,
@@ -642,7 +641,6 @@ function DankeSeite({
     .join("")
     .slice(0, 2)
     .toUpperCase();
-  const hrVorname = HR_ANSPRECHPARTNERIN.split(" ")[0];
 
   return (
     <div>
@@ -673,14 +671,14 @@ function DankeSeite({
           </span>
           <div>
             <p className="text-[15px] font-semibold" style={{ color: FARBE_DUNKEL }}>{HR_ANSPRECHPARTNERIN}</p>
-            <p className="text-[13px]" style={{ color: "#6E6E73" }}>{HR_ROLLENBEZEICHNUNG}</p>
+            <p className="text-[13px]" style={{ color: "#6E6E73" }}>Bewerbermanagement</p>
           </div>
         </div>
         <div className="h-px my-4" style={{ background: "#EEF0F3" }} />
         <div className="flex gap-3 items-start text-[15px] leading-[1.5]" style={{ color: "#3A3A3F" }}>
           <Phone className="w-5 h-5 shrink-0 mt-0.5" style={{ color: FARBE_DUNKEL }} aria-hidden />
           <span>
-            {hrVorname} ruft dich an
+            Wir rufen dich an
             {wunschzeit ? (
               <>, am liebsten <b className="font-semibold" style={{ color: FARBE_DUNKEL }}>{wunschzeit}</b>, so wie du es angegeben hast.</>
             ) : (

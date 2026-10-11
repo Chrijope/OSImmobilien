@@ -417,7 +417,7 @@ const SCHRITTE: Schritt[] = [
     notiz: true },
 
   // Dank + OS Immobilien-Vorstellung (vor Terminvereinbarung)
-  { id: "moreimmo_vorstellung", nr: 16, titel: "Dank + Wer ist OS Immobilien?",
+  { id: "osimmobilien_vorstellung", nr: 16, titel: "Dank + Wer ist OS Immobilien?",
     special: "osVorstellung",
     text: {
       du:  `"Danke, [Vorname], dass du mir so offen von dir erzählt hast. Kurz, wer wir sind:\n\n• Wir machen ausschließlich Immobilien als Kapitalanlage, kein Eigenheim.\n• Unsere Kunden sind Angestellte, Beamte und Selbstständige mit gutem Einkommen.\n• Wir arbeiten in wachstumsstarken deutschen A- und B-Lagen, mit saniertem Bestand, Neubau im KfW-40-Standard und Co-Living.\n• Wir begleiten dich von der Strategie über die Finanzierung bis nach dem Notar, alles aus einer Hand.\n• Seit [X] Jahren, [Y] begleitete Kunden.\n\nWas davon klingt für dich am ehesten nach dem, was du vorhin beschrieben hast?"`,

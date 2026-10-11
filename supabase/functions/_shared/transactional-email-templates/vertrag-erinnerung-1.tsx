@@ -71,7 +71,7 @@ export const template = {
     signatureUrl: 'https://osimmobilien.netlify.app/signatur?token=example&type=vertrag',
     tageOffen: 5,
     hrKontakt: {
-      name: 'Sarah Kaiser-Thom',
+      name: 'Erika Mustermann',
       rolle: berufsbezeichnung('hr'),
       email: 'os@os-immobilien.com',
     },

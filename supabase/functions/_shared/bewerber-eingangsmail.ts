@@ -17,7 +17,7 @@
  * CLOSING_BUCHUNGSLINK in `src/lib/assessmentSkript.ts`.
  */
 export const BEWERBER_BUCHUNGSLINK =
-  'https://calendly.com/sarah-kaiser-thom-more/gespraechstermin'
+  'https://DEIN-BEWERBER-BUCHUNGSLINK'
 
 /**
  * Wie viele Fragen jeder Bewerber sieht, ohne die bedingten Zusatzfragen.

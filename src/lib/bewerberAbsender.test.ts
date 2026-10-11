@@ -56,8 +56,8 @@ describe("istBewerbermail", () => {
 
 describe("bewerberAbsender", () => {
   it("setzt Namen der HR-Ansprechpartnerin und ihre Adresse", () => {
-    expect(bewerberAbsender({ name: "Sarah Kaiser-Thom", email: "os@os-immobilien.com" })).toEqual({
-      anzeige: "Sarah Kaiser-Thom | OS Immobilien",
+    expect(bewerberAbsender({ name: "Erika Mustermann", email: "os@os-immobilien.com" })).toEqual({
+      anzeige: "Erika Mustermann | OS Immobilien",
       antwortAn: "os@os-immobilien.com",
     });
   });
@@ -70,8 +70,8 @@ describe("bewerberAbsender", () => {
   });
 
   it("antwortet an office@, wenn die Person keine brauchbare Adresse hat", () => {
-    expect(bewerberAbsender({ name: "Sarah Kaiser-Thom", email: "keine adresse" }).antwortAn).toBe("os@os-immobilien.com");
-    expect(bewerberAbsender({ name: "Sarah Kaiser-Thom" }).anzeige).toBe("Sarah Kaiser-Thom | OS Immobilien");
+    expect(bewerberAbsender({ name: "Erika Mustermann", email: "keine adresse" }).antwortAn).toBe("os@os-immobilien.com");
+    expect(bewerberAbsender({ name: "Erika Mustermann" }).anzeige).toBe("Erika Mustermann | OS Immobilien");
   });
 
   it("entfernt Zeichen, die den Mailkopf brechen würden", () => {

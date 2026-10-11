@@ -62,7 +62,7 @@ describe("belegungsText", () => {
 });
 
 describe("darfBelegteOeffnen", () => {
-  const partner = { rolle: "vertriebspartner", benutzerId: "u1", name: "Sarah Kaiser-Thom" };
+  const partner = { rolle: "vertriebspartner", benutzerId: "u1", name: "Erika Mustermann" };
 
   it("laesst jede freie Einheit durch", () => {
     expect(darfBelegteOeffnen(einheit(), partner)).toBe(true);
@@ -89,7 +89,7 @@ describe("darfBelegteOeffnen", () => {
 
   it("laesst den Berater an seinen eigenen Vorgang", () => {
     expect(darfBelegteOeffnen(
-      einheit({ status: "reserviert", kundeId: "k1", beraterName: "Sarah Kaiser-Thom" }),
+      einheit({ status: "reserviert", kundeId: "k1", beraterName: "Erika Mustermann" }),
       partner,
     )).toBe(true);
   });

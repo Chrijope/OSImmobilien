@@ -26,7 +26,7 @@ vi.mock("./bewerbungStore", () => ({
 
 vi.mock("./bewerberKontaktversuch", () => ({
   ladeHrAnsprechpartner: vi.fn().mockResolvedValue({
-    name: "Sarah Kaiser-Thom",
+    name: "Erika Mustermann",
     email: "os@os-immobilien.com",
     telefon: "+49 151 1234567",
   }),
@@ -227,7 +227,7 @@ describe("waehleStartfahrplanFassung aus beiden Abläufen", () => {
       erstgespraechSkript: {
         ...leeresSkript(),
         durchgefuehrtAm: "2026-09-08T10:00:00Z",
-        durchgefuehrtVon: "Sarah Kaiser-Thom",
+        durchgefuehrtVon: "Erika Mustermann",
         bewerberVideocall: {
           entscheidung: "moeglich",
           wunsch: "unterlagen",

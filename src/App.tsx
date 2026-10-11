@@ -515,7 +515,6 @@ const App = () => (
                 <Route path="/beratungspraesentation-osimmobilien" element={<PraesentationGuard><BeratungspraesentationHV /></PraesentationGuard>} />
                 {/* Alte URLs bleiben gültig und leiten inklusive Kundenkontext (Query) weiter.
                     "-neu" war eine ältere Fassung der OS Immobilien-Präsentation, die Seite ist entfernt. */}
-                <Route path="/beratungspraesentation-moreimmo" element={<Navigate to={`/beratungspraesentation-osimmobilien${window.location.search}`} replace />} />
                 <Route path="/beratungspraesentation-hv" element={<Navigate to={`/beratungspraesentation-osimmobilien${window.location.search}`} replace />} />
                 <Route path="/beratungspraesentation-neu" element={<Navigate to={`/beratungspraesentation-osimmobilien${window.location.search}`} replace />} />
                 <Route path="/beratungspraesentation-wg" element={<PraesentationGuard><BeratungspraesentationWG /></PraesentationGuard>} />

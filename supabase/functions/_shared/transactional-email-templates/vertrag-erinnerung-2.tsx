@@ -81,7 +81,7 @@ export const template = {
     gueltigBis: '30.10.2026',
     abschlussAm: '14.10.2026',
     hrKontakt: {
-      name: 'Sarah Kaiser-Thom',
+      name: 'Erika Mustermann',
       rolle: berufsbezeichnung('hr'),
       email: 'os@os-immobilien.com',
     },

@@ -106,7 +106,7 @@ export const template = {
     bewerberName: 'Max Mustermann',
     versuch: 1,
     berater: {
-      name: 'Sarah Kaiser-Thom',
+      name: 'Erika Mustermann',
       rolle: 'Dein Kontakt bei OS Immobilien',
       telefon: '+49 151 12345678',
       email: 'os@os-immobilien.com',

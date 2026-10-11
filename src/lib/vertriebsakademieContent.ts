@@ -2020,7 +2020,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           ],
           "korrekt": 1,
           "aufloesung": "Drei Produktwelten und nicht mehr. Sanierter Bestand ist fertig und vermietet, der Neubau hat den stärksten Steuerhebel in den ersten Jahren, WG und Co-Living die höchste Miete je Quadratmeter. Die Objekte selbst stehen in Investagon, unserer Objektplattform.",
-          "sprungZuAbschnitt": "moreimmo-fokus"
+          "sprungZuAbschnitt": "osimmobilien-fokus"
         },
         {
           "frage": "Warum sinkt der Steuervorteil einer vermieteten Immobilie von Jahr zu Jahr?",
@@ -2368,7 +2368,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "profiTipp": "Frage dich vor jeder Objektempfehlung, ob der Immobilientyp zur Kundensituation passt, also zu Alter, Steuerlast, Zeit und Risikoprofil, nie umgekehrt. Die Feinheit dahinter: Der Typ entscheidet nicht nur über die Rendite, sondern darüber, wie oft der Kunde nach dem Kauf an sein Objekt denken muss. Ein Bestandsobjekt mit langjährigem Mieter meldet sich einmal im Jahr mit der Hausgeldabrechnung. Micro-Living meldet sich bei jedem Mieterwechsel. Ein Mehrfamilienhaus meldet sich, wann immer etwas kaputtgeht. Frag deshalb nicht nur nach Risikobereitschaft, sondern nach der Zeit, die jemand investieren will, denn das ist die Größe, an der eine sonst passende Anlage im zweiten Jahr scheitert. Und bei Betreibermodellen, also Pflege und teilweise Co-Living, prüfst du den Betreiber wie eine Bank den Kreditnehmer prüft: Wie lange am Markt, wie viele Objekte, welche Bonität, welche Restlaufzeit hat der Pachtvertrag. Ein gutes Objekt mit schwachem Betreiber ist kein gutes Objekt."
       },
       {
-        "id": "moreimmo-fokus",
+        "id": "osimmobilien-fokus",
         "visuals": [
           {
             "kpis": [
@@ -4307,7 +4307,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "profiTipp": "Regel: erst Kundensituation verstehen, also Alter, Einkommen, Steuerlast, Familienstand und Motiv, dann die Immobilie vorschlagen. Nie umgekehrt. Zwei Feinheiten, die über den Schwellenwerten stehen: Erstens ist die Steuerlast von heute nicht die von morgen. Bei einem Kunden, der in zwei Jahren in Elternzeit geht, seine Stelle wechselt oder in Teilzeit will, bricht die Wirkung eines starken Abschreibungsprodukts genau dann ein, wenn die Sonderabschreibung noch läuft. Frag deshalb nicht nur nach der Zahl, sondern nach ihrer Haltbarkeit. Zweitens gilt bei Ehepaaren die gemeinsame Steuerlast, aber nur, wenn das Objekt auch dem richtigen Partner gehört oder beide gemeinsam kaufen. Bei stark unterschiedlichen Einkommen entscheidet die Eigentümerstellung darüber, mit welchem Grenzsteuersatz der Verlust wirkt, und das kann mehrere tausend Euro im Jahr ausmachen. Die Gestaltung im Einzelfall gehört zum Steuerberater, die Frage danach stellst du aber vor dem Objektvorschlag und nicht danach.",
         "uebungen": [
           {
-            "id": "moreimmo-pitch",
+            "id": "osimmobilien-pitch",
             "titel": "3-Produkte-Pitch schreiben",
             "beschreibung": "Formuliere in eigenen Worten (max. 60 Sekunden Sprechzeit): Welche 3 Produktwelten macht OS Immobilien, für wen ist welches Produkt ideal, und warum sind wir darin stark?",
             "xp": 30,
@@ -28991,7 +28991,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
   {
     id: "vertrauen-01",
     technik: "referenz",
-    skriptSchritte: ["einleitung", "moreimmo_vorstellung"],
+    skriptSchritte: ["einleitung", "osimmobilien_vorstellung"],
     kategorie: "vertrauen",
     einwand: "Ich kenne euch nicht, warum sollte ich euch vertrauen?",
     meintEigentlich: "Ich habe Angst, betrogen zu werden.",
@@ -29137,7 +29137,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
     kategorie: "vertrauen",
     einwand: "Ich verstehe nichts von Immobilien.",
     technik: "zerlegung",
-    skriptSchritte: ["erfahrung", "moreimmo_vorstellung"],
+    skriptSchritte: ["erfahrung", "osimmobilien_vorstellung"],
     meintEigentlich: "Ich habe Angst, eine Entscheidung zu treffen, die ich selbst nicht beurteilen kann.",
     antwortKurz: "Musst du auch nicht, dafür gibt es uns. Wir nehmen dir das komplette Fachwissen ab, von der Standortanalyse bis zur Steuererklärung.",
     falle: "Nicht mit Fachbegriffen antworten, um Kompetenz zu zeigen. Das vergrößert genau den Abstand, den der Kunde gerade beschreibt.",
@@ -29281,7 +29281,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
     kategorie: "vertrauen",
     einwand: "Das ist mir alles zu komplex.",
     technik: "zerlegung",
-    skriptSchritte: ["moreimmo_vorstellung", "pattern_interrupt"],
+    skriptSchritte: ["osimmobilien_vorstellung", "pattern_interrupt"],
     meintEigentlich: "Ich weiß nicht, wo ich anfangen soll, und will mich nicht blamieren.",
     antwortKurz: "Genau dafür gibt es uns. Wir reduzieren Komplexität auf 5 Entscheidungen: Standort, Objekt, Bank, Notar, Verwaltung. Den Rest erledigen wir.",
     falle: "Nicht mit noch mehr Informationen antworten. Mehr Inhalt bestätigt genau den Eindruck, den der Kunde gerade beschreibt.",

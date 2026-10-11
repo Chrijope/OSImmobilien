@@ -43,7 +43,7 @@ const fmt = (n: number) => n.toLocaleString("de-DE");
  * Frueher galt hier der Buchungslink aus dem eigenen Profil mit diesem Wert
  * als Rueckfall, dadurch landete der Termin im falschen Kalender.
  */
-export const CLOSING_BUCHUNGSLINK = "https://calendly.com/sarah-kaiser-thom-more/gespraechstermin";
+export const CLOSING_BUCHUNGSLINK = "https://DEIN-BEWERBER-BUCHUNGSLINK";
 
 // ── Antworten (werden in bewerber.meta.erstgespraechSkript.assessment gespeichert) ──
 

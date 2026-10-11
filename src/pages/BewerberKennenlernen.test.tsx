@@ -478,7 +478,7 @@ describe("Abgelaufene und unbekannte Links", () => {
  * Termin nicht verloren geht.
  */
 const ZUGANG = {
-  gastgeber: { name: "Sarah Kaiser-Thom", email: "os@os-immobilien.com" },
+  gastgeber: { name: "Erika Mustermann", email: "os@os-immobilien.com" },
   zeitzone: "Europe/Berlin",
   dauer_minuten: 30,
   bezeichnung: "Bewerbergespräch",

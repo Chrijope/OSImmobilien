@@ -10,7 +10,7 @@ const SKRIPT_SCHRITTE = [
   "einleitung", "anrede", "ziel_gespraech", "warmup", "mitentscheider", "erfahrung",
   "sparformen", "investitionsbereitschaft", "zwei_punkte", "zusammenarbeit",
   "berufliche_situation", "schufa", "netto", "ziele", "cashflow_erwartung",
-  "moreimmo_vorstellung", "pattern_interrupt", "skala_verbindlichkeit",
+  "osimmobilien_vorstellung", "pattern_interrupt", "skala_verbindlichkeit",
   "terminvereinbarung", "einladung_check", "offene_fragen", "verabschiedung",
 ];
 

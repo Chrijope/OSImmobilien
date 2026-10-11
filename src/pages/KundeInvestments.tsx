@@ -386,9 +386,8 @@ export default function KundeInvestments() {
   const tabParam = searchParams.get("tab");
   const invParam = searchParams.get("inv");
   // Wenn ?inv=ID gesetzt ist (z. B. Sprung aus dem Steuer-Cockpit), automatisch in OS Immobilien-Detailansicht
-  // "moreimmo": alter Wert aus Links in bereits versandten Mails.
   const tabFromUrl: "osimmobilien" | "eigene" | null =
-    tabParam === "eigene" ? "eigene" : tabParam === "osimmobilien" || tabParam === "moreimmo" || invParam ? "osimmobilien" : null;
+    tabParam === "eigene" ? "eigene" : tabParam === "osimmobilien" || invParam ? "osimmobilien" : null;
   const handleTabChange = (val: string | null) => {
     const next = new URLSearchParams(searchParams);
     if (val === "eigene" || val === "osimmobilien") next.set("tab", val);

@@ -29,7 +29,7 @@ describe("Bewerber-Eingangsmail", () => {
 
   it("verweist auf den Calendly-Kalender der HR-Managerin", () => {
     expect(BEWERBER_BUCHUNGSLINK).toBe(
-      "https://calendly.com/sarah-kaiser-thom-more/gespraechstermin",
+      "https://DEIN-BEWERBER-BUCHUNGSLINK",
     );
   });
 

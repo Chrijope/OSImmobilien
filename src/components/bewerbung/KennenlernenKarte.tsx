@@ -16,7 +16,6 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { confirmDialog } from "@/lib/confirm";
-import { HR_ANSPRECHPARTNERIN } from "@/lib/bewerberKontaktversuch";
 import { changeBewerberStatus, type Bewerber } from "@/lib/bewerbungStore";
 import {
   abbruchText,
@@ -753,7 +752,7 @@ export function KennenlernenKarte({
               ) : (
                 <p className="mt-1.5 text-[11px] leading-relaxed text-muted-foreground">
                   Noch kein Termin. Der Bogen endet ohne Terminwahl: Erst eure Einladung führt ihn
-                  in den Kalender von {HR_ANSPRECHPARTNERIN}, und dort sucht er sich die Zeit
+                  in euren Buchungskalender, und dort sucht er sich die Zeit
                   selbst aus. Erscheint hier nichts, obwohl ihr eingeladen habt und er gebucht hat,
                   fehlt entweder die Migration 20260906120000 oder ein Wochenplan im
                   Buchungskalender.

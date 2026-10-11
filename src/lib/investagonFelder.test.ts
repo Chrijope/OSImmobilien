@@ -194,7 +194,7 @@ describe("rohdaten", () => {
     expect(rohdaten(undefined)).toBeUndefined();
     expect(rohdaten({})).toBeUndefined();
     expect(rohdaten({ meta: null })).toBeUndefined();
-    expect(rohdaten({ meta: { beraterName: "Sarah Kaiser-Thom" } })).toBeUndefined();
+    expect(rohdaten({ meta: { beraterName: "Erika Mustermann" } })).toBeUndefined();
   });
 
   it("nimmt nur ein Objekt als Rohdatensatz an", () => {

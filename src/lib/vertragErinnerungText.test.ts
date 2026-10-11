@@ -47,7 +47,7 @@ describe("tageWort", () => {
  */
 describe("meldeSichText", () => {
   it("nennt den Vornamen", () => {
-    expect(meldeSichText("Sarah Kaiser-Thom")).toBe("meldet sich Sarah");
+    expect(meldeSichText("Erika Mustermann")).toBe("meldet sich Erika");
   });
 
   it("nennt niemanden, wenn niemand feststeht", () => {

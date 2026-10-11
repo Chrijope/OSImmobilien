@@ -97,7 +97,7 @@ const { zaehleEigeneInboxKacheln } = await import("./inboxKpiCounts");
 
 describe("Bewerber-Follow-Ups in den Dashboard-Kacheln", () => {
   it("zählt sie für HR", () => {
-    const zahlen = zaehleEigeneInboxKacheln({ userName: "Sarah Kaiser-Thom", role: "hr" });
+    const zahlen = zaehleEigeneInboxKacheln({ userName: "Erika Mustermann", role: "hr" });
     // Zwei Bewerber, zwei Erinnerungen: ein Follow-Up und ein Rückruf aus der
     // Bedenkzeit.
     expect(zahlen.followUpsOffen).toBe(2);

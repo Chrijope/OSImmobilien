@@ -160,7 +160,7 @@ describe("Die Dauer folgt derselben Regel wie im Browser", () => {
 // ────────────────────────────── Die Anzeige ───────────────────────────────
 
 const ROH = {
-  gastgeber: { name: "Sarah Kaiser-Thom", email: "os@os-immobilien.com", telefon: "+49 1", bild: "", position: "HR" },
+  gastgeber: { name: "Erika Mustermann", email: "os@os-immobilien.com", telefon: "+49 1", bild: "", position: "HR" },
   zeitzone: "Europe/Berlin",
   dauer_minuten: 45,
   bezeichnung: "Bewerbergespräch",
@@ -173,7 +173,7 @@ const ROH = {
 describe("leseZugang", () => {
   it("liest die Antwort der Datenbank", () => {
     const z = leseZugang(ROH)!;
-    expect(z.gastgeber.name).toBe("Sarah Kaiser-Thom");
+    expect(z.gastgeber.name).toBe("Erika Mustermann");
     expect(z.dauerMinuten).toBe(45);
     expect(z.buchbar).toBe(true);
     expect(z.buchung).toBeNull();

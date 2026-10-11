@@ -144,9 +144,8 @@ export default function KundeSteuerCockpit() {
 
   const tabParam = searchParams.get("tab");
   const invParam = searchParams.get("inv");
-  // "moreimmo": alter Wert aus Links in bereits versandten Mails.
   const tabFromUrl: "osimmobilien" | "eigene" | null =
-    tabParam === "eigene" ? "eigene" : tabParam === "osimmobilien" || tabParam === "moreimmo" || invParam ? "osimmobilien" : null;
+    tabParam === "eigene" ? "eigene" : tabParam === "osimmobilien" || invParam ? "osimmobilien" : null;
   const handleTabChange = (val: string | null) => {
     const next = new URLSearchParams(searchParams);
     if (val === "osimmobilien" || val === "eigene") next.set("tab", val);

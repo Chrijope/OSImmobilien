@@ -330,7 +330,6 @@ const NUR_ADMIN_ROUTEN: string[] = ["/videocall", "/videoraum", "/nachtpruefung"
  */
 const ABGELEITETE_ROUTEN: Record<string, string> = {
   "/beratungspraesentation-osimmobilien": "/praesentation",
-  "/beratungspraesentation-moreimmo": "/praesentation",
   "/beratungspraesentation-hv": "/praesentation",
   "/beratungspraesentation": "/praesentation",
   "/beratungspraesentation-wg": "/praesentation",

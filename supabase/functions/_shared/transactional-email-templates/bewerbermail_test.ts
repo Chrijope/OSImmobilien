@@ -36,7 +36,7 @@ const ERLAUBTE_FREMDADRESSEN: Array<{ muster: RegExp; grund: string }> = [
   { muster: /\.supabase\.co\/storage\/v1\/object\/public\/avatars\//, grund: 'Profilbild' },
   // Der Buchungskalender der HR-Managerin im alten Ablauf. Eine Buchungsseite
   // ohne persönlichen Link gibt es unter osimmobilien.netlify.app noch nicht.
-  { muster: /^https:\/\/calendly\.com\/sarah-kaiser-thom-more\//, grund: 'Buchungskalender alter Ablauf' },
+  { muster: /^https:\/\/DEIN-BEWERBER-BUCHUNGSLINK/, grund: 'Buchungskalender alter Ablauf' },
   // Platzhalter in den Vorschaudaten, geht nie hinaus.
   { muster: /^https:\/\/example\.com\//, grund: 'Vorschaudaten' },
 ]
@@ -89,14 +89,14 @@ Deno.test('bewerber-nicht-erreicht: unterschreibt die HR-Ansprechpartnerin aus h
     bewerberName: 'Max Mustermann',
     versuch: 5,
     // So kommt es von send-transactional-email, ermittelt über die Kennung.
-    hrKontakt: { name: 'Sarah Kaiser-Thom', rolle: 'HR-Managerin', email: 'os@os-immobilien.com' },
+    hrKontakt: { name: 'Erika Mustermann', rolle: 'HR-Managerin', email: 'os@os-immobilien.com' },
     // Was ein alter Aufrufer mitschickt, verliert gegen hrKontakt.
     beraterName: 'Jana Anruferin',
   }
   // Der Textwandler bricht bei 80 Zeichen um; Leerraum zählt deshalb nicht.
   const text = (await renderAsync(React.createElement(eintrag.component, daten), { plainText: true }))
     .replace(/\s+/g, ' ')
-  if (!text.includes('Sarah Kaiser-Thom')) throw new Error('Sarah fehlt in der Unterschrift')
+  if (!text.includes('Erika Mustermann')) throw new Error('HR-Kontakt fehlt in der Unterschrift')
   if (text.includes('Jana Anruferin')) throw new Error('Die anrufende Person steht in der Unterschrift')
   if (!text.includes('schreiben dir dazu aber nicht mehr')) throw new Error('Text der letzten Mail fehlt')
 })

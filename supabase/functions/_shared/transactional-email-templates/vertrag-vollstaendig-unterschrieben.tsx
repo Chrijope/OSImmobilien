@@ -95,7 +95,7 @@ export const template = {
     // Wie in den uebrigen Bewerbermails: die HR-Managerin, zur Laufzeit aus
     // der Rolle `hr` geladen (hr-ansprechpartner.ts).
     hrKontakt: {
-      name: 'Sarah Kaiser-Thom',
+      name: 'Erika Mustermann',
       rolle: berufsbezeichnung('hr'),
       email: 'os@os-immobilien.com',
     },

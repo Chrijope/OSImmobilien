@@ -119,7 +119,7 @@ describe("Die Kalenderadresse kommt aus dem Profil der zuständigen Person", () 
     zeichne();
 
     const rahmen = await screen.findByTitle("Termin aussuchen");
-    expect(rahmen.getAttribute("src")).toMatch(/^https:\/\/calendly\.com\//);
+    expect(rahmen.getAttribute("src")).toBe("https://DEIN-BEWERBER-BUCHUNGSLINK");
   });
 
   it("zeigt einen Knopf statt eines toten Rahmens, wenn der Dienst kein Einbetten erlaubt", async () => {

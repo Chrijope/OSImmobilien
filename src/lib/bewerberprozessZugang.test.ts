@@ -47,17 +47,12 @@ const FREMDE_ROLLEN = [
 
 describe("Bewerberprozess, die Freigabeliste", () => {
   /*
-   * Seit dem 08.09.2026 stehen drei Personen in der Liste: der
-   * Geschäftsführer, die HR-Managerin und die Geschäftsleitung. Seit dem
-   * 21.09.2026 öffnet die Liste nur noch den Videocall-Bereich. Den
-   * Bewerberprozess öffnet allein die Rolle.
+   * Seit dem 11.10.2026 steht nur noch Christian Peetz in der Liste. Die
+   * Einträge des Ursprungsprojekts sind entfernt. Den Bewerberprozess öffnet
+   * allein die Rolle.
    */
-  it("kennt die drei Personen der Liste", () => {
-    expect(BEWERBERPROZESS_FREIGABEN).toHaveLength(3);
-    const namen = BEWERBERPROZESS_FREIGABEN.map((f) => f.name);
-    expect(namen).toContain("Christian Peetz");
-    expect(namen).toContain("Sarah Kaiser-Thom");
-    expect(namen).toContain("Christian Kurz");
+  it("kennt nur Christian Peetz", () => {
+    expect(BEWERBERPROZESS_FREIGABEN.map((f) => f.name)).toEqual(["Christian Peetz"]);
     expect(BEWERBERPROZESS_FREIGABEN[0].userIds).toContain(CHRISTIAN_PEETZ_ID);
   });
 
@@ -67,10 +62,9 @@ describe("Bewerberprozess, die Freigabeliste", () => {
    * Bewerberprozess nicht, eine Kennung auch nicht.
    */
   it("oeffnet den Bewerberprozess nicht mehr ueber Adresse oder Kennung", () => {
-    expect(darfBewerberprozess({ email: "s.kaiser-thom@osimmobilien.netlify.app" })).toBe(false);
+    expect(darfBewerberprozess({ email: "e.mustermann@osimmobilien.netlify.app" })).toBe(false);
     expect(darfBewerberprozess(CHRISTIAN)).toBe(false);
     expect(darfBewerberprozess({ email: "c.peetz@osimmobilien.netlify.app" })).toBe(false);
-    expect(darfBewerberprozess({ email: "C.Peetz@MORE.immo" })).toBe(false);
   });
 
   it("laesst niemanden hinein, solange keine Rolle mitkommt", () => {
@@ -158,7 +152,7 @@ describe("Videocall, nur Christian Peetz als admin", () => {
 
   it("ist fuer Christian in der Rolle admin offen", () => {
     expect(darfVideocallBereich({ ...CHRISTIAN, rolle: "admin" })).toBe(true);
-    expect(darfVideocallBereich({ email: "C.Peetz@osimmobilien.netlify.app", rolle: "admin" })).toBe(true);
+    expect(darfVideocallBereich({ email: "ChristianPeetz.V.A@me.com", rolle: "admin" })).toBe(true);
     for (const url of ROUTEN) {
       expect(isUrlAllowedForRole(url, "admin", undefined, null, CHRISTIAN), url).toBe(true);
     }
@@ -186,7 +180,7 @@ describe("Videocall, nur Christian Peetz als admin", () => {
     expect(isUrlAllowedForRole("/videocall", "admin")).toBe(false);
     expect(isUrlAllowedForRole("/videocall", "inhaber")).toBe(false);
     expect(isUrlAllowedForRole("/videocall/buchungen", "hr")).toBe(false);
-    expect(isUrlAllowedForRole("/videocall", "hr", undefined, null, { email: "sarah.kaiser-thom@osimmobilien.netlify.app" })).toBe(false);
+    expect(isUrlAllowedForRole("/videocall", "hr", undefined, null, { email: "erika.mustermann@osimmobilien.netlify.app" })).toBe(false);
   });
 
   it("laesst sich durch keine individuelle Berechtigung oeffnen", () => {

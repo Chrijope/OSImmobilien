@@ -52,8 +52,6 @@ import {
 /** Der gesicherte Stand, nur mit Statistik-Einwilligung. */
 const SPEICHER_SCHLUESSEL = "osimmobilien.kampagne.v2";
 
-/** Die fruehere Ablage in der sessionStorage, ohne Einwilligung. Wird entfernt. */
-const ALTER_SCHLUESSEL = "moreimmo.kampagne";
 
 /** So lange bleibt ein gespeicherter Stand gueltig. */
 const LAUFZEIT_MS = 30 * 86_400_000;
@@ -169,14 +167,6 @@ interface Stand {
 /** Der Stand dieses Seitenbesuchs, auch ohne jede Einwilligung. */
 let imArbeitsspeicher: Stand | null = null;
 
-function entferneAlteAblage(): void {
-  try {
-    window.sessionStorage.removeItem(ALTER_SCHLUESSEL);
-  } catch {
-    // egal
-  }
-}
-
 function liesSpeicher(): Stand | null {
   if (!hatStatistikEinwilligung()) return null;
   try {
@@ -237,7 +227,6 @@ if (typeof window !== "undefined") {
 function aktuellerStand(): Stand | null {
   if (imArbeitsspeicher) return imArbeitsspeicher;
   if (typeof window === "undefined") return null;
-  entferneAlteAblage();
   imArbeitsspeicher = liesSpeicher();
   return imArbeitsspeicher;
 }
@@ -300,7 +289,6 @@ export function kampagneFuerLead(suche?: string): KampagnenKennung | undefined {
 export function _kampagneVergessen(): void {
   imArbeitsspeicher = null;
   loescheSpeicher();
-  entferneAlteAblage();
 }
 
 /**

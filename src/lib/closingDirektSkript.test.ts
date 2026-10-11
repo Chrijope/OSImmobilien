@@ -243,7 +243,7 @@ describe("closingDirektSkript: ehrliche Zahlen aus den Konstanten", () => {
 
   it("der Folge-Call nutzt den bestehenden Buchungslink von Christian Kurz", () => {
     expect(LEAD_QUALIFIZIERUNG_BUCHUNGSLINK).toBe(
-      "https://calendly.com/office-more/vertriebspartnerschaft-more-immo",
+      "https://DEIN-VERTRIEBSPARTNER-BUCHUNGSLINK",
     );
   });
 

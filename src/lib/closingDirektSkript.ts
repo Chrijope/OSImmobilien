@@ -60,7 +60,7 @@ export const DIREKT_PAKETE: LizenzPaket[] = WAEHLBARE_LIZENZ_PAKETE.filter((p) =
  * Kompatibilitätsgründen, der ClosingTab importiert ihn.)
  */
 export const LEAD_QUALIFIZIERUNG_BUCHUNGSLINK =
-  "https://calendly.com/office-more/vertriebspartnerschaft-more-immo";
+  "https://DEIN-VERTRIEBSPARTNER-BUCHUNGSLINK";
 
 // ── Gespeicherte Daten (Meta-JSON in erstgespraechSkript.closingDirekt) ──
 

@@ -23,7 +23,7 @@ describe("ausInvestagon", () => {
   });
 
   it("laesst ein selbst angelegtes Objekt in Ruhe", () => {
-    expect(ausInvestagon({ meta: { beraterName: "Sarah Kaiser-Thom" } })).toBe(false);
+    expect(ausInvestagon({ meta: { beraterName: "Erika Mustermann" } })).toBe(false);
     expect(ausInvestagon({ meta: {} })).toBe(false);
     expect(ausInvestagon({})).toBe(false);
   });

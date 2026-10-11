@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import { ladeBewerberSeite, meldeBewerberSeitenAktion } from "@/lib/bewerberSeiteStore";
 import { HR_ANSPRECHPARTNERIN } from "@/lib/bewerberKontaktversuch";
-import { BERUF_HR } from "@/lib/berufsbezeichnung";
 import { KENNENLERNEN_GUELTIG_TAGE } from "@/lib/bewerberKennenlernen";
 import {
   FRAGE_MAX,
@@ -327,8 +326,8 @@ export default function BewerberSeite() {
                       Wir fassen zusammen, was besprochen wurde.
                     </h2>
                     <p className="text-[15px] leading-relaxed" style={{ color: "#5A5F66" }}>
-                      {HR_ANSPRECHPARTNERIN.split(" ")[0]} schreibt dir die Zusammenfassung, sobald
-                      sie sie durchgesehen hat. Du musst dafür nichts tun und nichts nachfassen.
+                      Wir schreiben dir die Zusammenfassung, sobald wir sie
+                      durchgesehen haben. Du musst dafür nichts tun und nichts nachfassen.
                     </p>
                   </>
                 )}
@@ -392,7 +391,7 @@ export default function BewerberSeite() {
                   Schreib sie auf, du bekommst eine Antwort.
                 </h2>
                 <p className="text-[14.5px] leading-relaxed mb-3" style={{ color: "#5A5F66" }}>
-                  Deine Frage geht an {HR_ANSPRECHPARTNERIN.split(" ")[0]}, mit einer Frist. Ein
+                  Deine Frage geht an unser Team, mit einer Frist. Ein
                   Anruf kommt nur, wenn du ihn dir ausdrücklich wünschst, und dann mit deinem Thema.
                 </p>
                 {frageOffenAufklappen ? (
@@ -503,11 +502,11 @@ export default function BewerberSeite() {
 
           <div className="space-y-4">
             <Karte>
-              <Eyebrow>Deine Ansprechpartnerin</Eyebrow>
+              <Eyebrow>Dein Ansprechpartner</Eyebrow>
               <p className="text-[19px] mt-2" style={{ color: FARBE_DUNKEL }}>{HR_ANSPRECHPARTNERIN}</p>
-              <p className="text-[14px]" style={{ color: "#8A8F98" }}>{BERUF_HR}</p>
+              <p className="text-[14px]" style={{ color: "#8A8F98" }}>Bewerbermanagement</p>
               <p className="text-[14.5px] leading-relaxed mt-2.5" style={{ color: "#5A5F66" }}>
-                Eine Person, von der ersten Minute bis zu deiner Entscheidung. Schreib ihr direkt an{" "}
+                Von der ersten Minute bis zu deiner Entscheidung. Schreib uns direkt an{" "}
                 <a href="mailto:os@os-immobilien.com" className="underline underline-offset-[3px]" style={{ color: FARBE_BLAU }}>os@os-immobilien.com</a>,
                 das landet nicht in einem Sammelpostfach.
               </p>
@@ -770,16 +769,15 @@ function kopfText(zustand: SeitenZustand, stand: BewerberSeiteStand): string {
 }
 
 function amZugTitel(stand: BewerberSeiteStand): string {
-  const vorname = HR_ANSPRECHPARTNERIN.split(" ")[0];
   if (frageOffen(stand.frage)) {
     const bis = alsDatum(stand.frage?.bisAm);
-    return bis ? `${vorname}, bis zum ${bis}.` : `${vorname} ist dran.`;
+    return bis ? `Wir sind dran, bis zum ${bis}.` : "Wir sind dran.";
   }
   if (stand.entscheidung?.offenerPunkt?.wer) {
     const p = stand.entscheidung.offenerPunkt;
     return p.bis ? `${p.wer}, bis zum ${alsDatum(p.bis) || p.bis}.` : `${p.wer} ist dran.`;
   }
-  return `${vorname} ist dran.`;
+  return "Wir sind dran.";
 }
 
 function amZugText(stand: BewerberSeiteStand): string {

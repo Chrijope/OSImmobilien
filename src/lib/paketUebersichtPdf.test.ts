@@ -148,11 +148,11 @@ describe("buildPaketUebersichtPdf (Startfahrplan)", () => {
 
   it("zeigt den uebergebenen Ansprechpartner statt der Standard-Kontaktdaten", async () => {
     await buildPaketUebersichtPdf({
-      berater: { name: "Sarah Kaiser-Thom", email: "s.kaiser-thom@os-immobilien.com", telefon: "+49 151 1234567" },
+      berater: { name: "Erika Mustermann", email: "e.mustermann@os-immobilien.com", telefon: "+49 151 1234567" },
     });
     const alles = texte.join("\n");
-    expect(alles).toContain("Sarah Kaiser-Thom");
-    expect(alles).toContain("s.kaiser-thom@os-immobilien.com");
+    expect(alles).toContain("Erika Mustermann");
+    expect(alles).toContain("e.mustermann@os-immobilien.com");
     expect(alles).toContain("+49 151 1234567");
     // Die frueher fest verdrahteten Kontaktdaten duerfen nicht mehr auftauchen.
     expect(alles).not.toContain("os@os-immobilien.com");
@@ -160,9 +160,9 @@ describe("buildPaketUebersichtPdf (Startfahrplan)", () => {
   });
 
   it("laesst fehlende Kontaktangaben des Ansprechpartners weg", async () => {
-    await buildPaketUebersichtPdf({ berater: { name: "Sarah Kaiser-Thom" } });
+    await buildPaketUebersichtPdf({ berater: { name: "Erika Mustermann" } });
     const alles = texte.join("\n");
-    expect(alles).toContain("Sarah Kaiser-Thom");
+    expect(alles).toContain("Erika Mustermann");
     // Keine fremden Kontaktdaten als Lueckenfueller.
     expect(alles).not.toContain("os@os-immobilien.com");
     expect(alles).not.toContain("+49 30 863289210");

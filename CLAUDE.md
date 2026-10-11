@@ -11,7 +11,9 @@ Es hat keine Verbindung zum Ursprungsprojekt.
 - Backend: eigenes Supabase-Projekt `irwdgutegmivbtgmftyc` (Datenbank,
   Auth, Storage, Edge Functions), später beim Systemhaus. Werte siehe
   `.env.example`; die `.env` gehört nie ins Repo.
-- Platzhalter: `DEIN-MEETING`, `DEIN-KENNCODE` (Weekly Call).
+- Platzhalter: `DEIN-MEETING`, `DEIN-KENNCODE` (Weekly Call),
+  `DEIN-BEWERBER-BUCHUNGSLINK` (Bewerbergespräch), `DEIN-VERTRIEBSPARTNER-BUCHUNGSLINK`
+  (Folge-Call Vertriebspartnerschaft).
   `DEIN-ANON-KEY` in sieben Zeitplan-Migrationen betrifft nur eine neue,
   leere Datenbank; im Projekt sind diese Migrationen schon eingespielt.
 

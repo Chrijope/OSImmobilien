@@ -208,7 +208,6 @@ describe("Abschnitt 7, Widerrufsbelehrung", () => {
     expect(text).toContain(`Telefon ${IMPRESSUM_TELEFON}`);
     expect(text).toContain(`E-Mail ${IMPRESSUM_EMAIL}`);
     expect(text).not.toContain("Grundlage fehlt");
-    expect(text).not.toContain("moreimmo.de");
   });
 
   it("verlangt beim sofortigen Beginn die ausdrückliche Zustimmung und die Kenntnis vom Erlöschen", () => {

@@ -47,9 +47,8 @@ export default function KundeKundenordner() {
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const tabParam = searchParams.get("tab");
-  // "moreimmo": alter Wert aus Links in bereits versandten Mails.
   const tabFromUrl: "osimmobilien" | "eigene" | null =
-    tabParam === "eigene" ? "eigene" : tabParam === "osimmobilien" || tabParam === "moreimmo" ? "osimmobilien" : null;
+    tabParam === "eigene" ? "eigene" : tabParam === "osimmobilien" ? "osimmobilien" : null;
   const handleTabChange = (val: string | null) => {
     const next = new URLSearchParams(searchParams);
     if (val === "osimmobilien" || val === "eigene") next.set("tab", val);

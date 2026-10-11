@@ -167,7 +167,7 @@ describe("Pause, Ausstieg und der Widerspruch gegen den Anruf", () => {
 
 describe("Die weiteren Zustaende", () => {
   it("Zustand 3 nennt Datum und Uhrzeit des Videocalls", async () => {
-    antwort = stand({ termin: { datum: "2026-09-24", uhrzeit: "16:30", berater: "Sarah Kaiser-Thom" } });
+    antwort = stand({ termin: { datum: "2026-09-24", uhrzeit: "16:30", berater: "Erika Mustermann" } });
     await oeffne();
     expect(screen.getByRole("heading", { name: /24\.09\.2026 um 16:30 Uhr/ })).toBeInTheDocument();
   });
@@ -176,7 +176,7 @@ describe("Die weiteren Zustaende", () => {
     antwort = stand({ termin: { datum: "2026-09-18", gefuehrt_am: "2026-09-18T14:30:00.000Z" } });
     await oeffne();
     expect(screen.getByRole("heading", { name: /Jetzt entscheidest du, ohne Frist/ })).toBeInTheDocument();
-    expect(screen.getByText(/sobald sie sie durchgesehen hat/)).toBeInTheDocument();
+    expect(screen.getByText(/sobald wir sie\s+durchgesehen haben/)).toBeInTheDocument();
   });
 
   it("Zustand 5 nennt Voraussetzungen mit Verantwortlichen statt Kalenderwochen", async () => {
@@ -194,7 +194,7 @@ describe("Die weiteren Zustaende", () => {
     await oeffne();
     expect(screen.getByRole("heading", { name: /Danke für deine Offenheit/ })).toBeInTheDocument();
 
-    antwort = stand({ beendet: true, beendet_durch: "moreimmo" });
+    antwort = stand({ beendet: true, beendet_durch: "osimmobilien" });
     await oeffne();
     expect(screen.getAllByRole("heading", { name: /Deine Bewerbung ist abgeschlossen/ }).length)
       .toBeGreaterThan(0);

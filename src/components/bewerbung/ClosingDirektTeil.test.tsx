@@ -112,7 +112,7 @@ describe("ClosingDirektTeil", () => {
     expect(links).toHaveLength(2);
     expect(links[0]).toHaveAttribute(
       "href",
-      "https://calendly.com/office-more/vertriebspartnerschaft-more-immo",
+      "https://DEIN-VERTRIEBSPARTNER-BUCHUNGSLINK",
     );
   });
 

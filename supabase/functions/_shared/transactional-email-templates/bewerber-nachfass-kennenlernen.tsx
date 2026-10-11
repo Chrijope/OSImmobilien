@@ -135,7 +135,7 @@ export const template = {
     kennenlernenLink: 'https://osimmobilien.netlify.app/kennenlernen/beispiel-token',
     keinInteresseLink: keinInteresseLink('beispiel-token'),
     hrKontakt: {
-      name: 'Sarah Kaiser-Thom',
+      name: 'Erika Mustermann',
       rolle: berufsbezeichnung('hr'),
       email: 'os@os-immobilien.com',
     },

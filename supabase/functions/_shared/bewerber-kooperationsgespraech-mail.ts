@@ -36,7 +36,7 @@
  * Wechselt die Person, die das Gespräch führt, wechselt hier die Adresse, an
  * genau dieser einen Stelle.
  */
-export const KOOPERATION_KALENDER_URL = 'https://calendly.com/sarah-kaiser-thom-more/gespraechstermin'
+export const KOOPERATION_KALENDER_URL = 'https://DEIN-BEWERBER-BUCHUNGSLINK'
 
 /**
  * Die eigene Terminseite, das Ziel des Knopfs in der Einladungsmail.

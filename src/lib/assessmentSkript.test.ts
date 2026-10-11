@@ -128,7 +128,7 @@ describe("assessmentSkript: Struktur", () => {
   });
 
   it("Punkt 10 bucht das Kooperationsgespraech fest ueber den Calendly-Link der HR Managerin", () => {
-    expect(CLOSING_BUCHUNGSLINK).toBe("https://calendly.com/sarah-kaiser-thom-more/gespraechstermin");
+    expect(CLOSING_BUCHUNGSLINK).toBe("https://DEIN-BEWERBER-BUCHUNGSLINK");
   });
 
   it("Punkt 9 fordert nicht mehr zum Buchen auf, das passiert erst in Punkt 10", () => {

@@ -59,10 +59,6 @@ export const BEWERBERPROZESS_FREIGABEN: readonly BewerberprozessFreigabe[] = [
      * Schreibweise.
      */
     emails: [
-      "c.peetz@osimmobilien.netlify.app",
-      "c.peetz@moreimmo.de",
-      "c.peetz@imondu.de",
-      "info@peetz-ventures.de",
       "christianpeetz.v.a@me.com",
       "christianpeetz.v.a@icloud.com",
     ],
@@ -74,49 +70,6 @@ export const BEWERBERPROZESS_FREIGABEN: readonly BewerberprozessFreigabe[] = [
      * 20260927120000_videocall_nur_geschaeftsfuehrer.sql).
      */
     bereiche: ["videocall"],
-  },
-  {
-    name: "Sarah Kaiser-Thom",
-    /*
-     * Sie führt die persönlichen Gespräche. Den Bewerberprozess sieht sie über
-     * ihre Rolle `hr`, und nur darüber. Hier stand sie wegen des
-     * Videocall-Bereichs, weil sie die Moderation führt; auch den öffnet
-     * seit dem 27.09.2026 niemand außer Christian Peetz als admin.
-     */
-    userIds: [],
-    /*
-     * Beide Schreibweisen, und das ist kein Schoenheitsfehler: Bis zum
-     * 10.09.2026 stand hier nur `s.kaiser-thom@osimmobilien.netlify.app`. Ihr Konto lautet
-     * aber `sarah.kaiser-thom@osimmobilien.netlify.app`. Der Vergleich unten ist exakt, nur
-     * kleingeschrieben, also hat die Freigabe nie gegriffen.
-     *
-     * Die Folge war nicht offensichtlich: Ohne den Videocall-Bereich sieht sie
-     * ihren Buchungskalender nicht, kann dort keinen Wochenplan eintragen, und
-     * ohne Wochenplan findet `bewerber_termin_gastgeber()` keinen Gastgeber.
-     * Dann zeigt die Buchungsseite ihren Abschlusstext, nichts sieht kaputt
-     * aus, und **kein Bewerber kann einen Termin buchen**.
-     *
-     * Wer hier eine Zeile aendert, prueft die Adresse gegen das echte Konto,
-     * nicht gegen die Schreibweise, die im Haus ueblich scheint.
-     */
-    emails: ["sarah.kaiser-thom@osimmobilien.netlify.app", "s.kaiser-thom@osimmobilien.netlify.app"],
-    /*
-     * Leer seit dem 27.09.2026. Den Videocall-Bereich sieht seitdem nur noch
-     * Christian Peetz in der Rolle admin, auch die Rolle hr öffnet ihn nicht.
-     */
-    bereiche: [],
-  },
-  {
-    name: "Christian Kurz",
-    /*
-     * Geschäftsleitung, führt die Gespräche zum zweiten Produkt. Die Adressen
-     * sind nicht im Projekt hinterlegt, deshalb beide gängigen Schreibweisen
-     * des Hauses. Trifft keine zu, ergänzt sie der nächste Durchgang.
-     */
-    userIds: [],
-    emails: ["c.kurz@osimmobilien.netlify.app", "christian.kurz@osimmobilien.netlify.app"],
-    /* Leer seit dem 27.09.2026, Videocall nur noch für Christian Peetz als admin. */
-    bereiche: [],
   },
 ];
 

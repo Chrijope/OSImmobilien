@@ -44,7 +44,7 @@ async function nichtErreichtCountLastHour(): Promise<number> {
  * Vorlage faellt auf den anrufenden Berater zurueck. Das ist besser als eine
  * halb ausgefuellte Signatur.
  */
-export const HR_ANSPRECHPARTNERIN = "Sarah Kaiser-Thom";
+export const HR_ANSPRECHPARTNERIN = "OS Immobilien Team";
 
 /** Vergleicht Namen ohne Ruecksicht auf Gross-/Kleinschreibung, Bindestriche und Leerzeichen. */
 function nameGleich(a: string, b: string): boolean {
