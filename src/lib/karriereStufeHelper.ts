@@ -150,13 +150,44 @@ export function provisionssaetze(userId?: string | null): { lead: number | null;
 /**
  * Ein einzelner Satz für Anzeigen, die nicht nach Kontakt unterscheiden
  * (Prognosen, Zielplanung): der allgemeine, sonst der Lead-, sonst der
- * Eigen-Satz, sonst 0. Der zweite Parameter ist nur noch aus Gründen der
- * Kompatibilität da; eine Karrierestufe zählt nicht mehr.
+ * Eigen-Satz. Ohne Satz `null`, nie eine erfundene Zahl; eine Karrierestufe
+ * zählt nicht mehr (Entscheidung Christian 15.10.2026).
  */
-export function getEffectiveRate(userId?: string | null, _stufeOhneWirkung?: KarriereStufeInfo): number {
+export function getEffectiveRate(userId?: string | null): number | null {
   const { lead, eigen } = provisionssaetze(userId);
-  return getCustomProvisionRate(userId) ?? lead ?? eigen ?? 0;
+  return getCustomProvisionRate(userId) ?? lead ?? eigen;
 }
+
+/**
+ * Mischsatz für Planungen: Eigen- und Lead-Satz, gewichtet mit dem geplanten
+ * Anteil eigener Kontakte (0 bis 100). Fehlt einer der beiden, gilt der
+ * andere; fehlen beide, `null`.
+ */
+export function mischsatz(userId: string | null | undefined, anteilEigenPct: number): number | null {
+  const { lead, eigen } = provisionssaetze(userId);
+  if (lead === null && eigen === null) return null;
+  const e = eigen ?? (lead as number);
+  const l = lead ?? (eigen as number);
+  const anteil = Math.max(0, Math.min(100, Number(anteilEigenPct) || 0));
+  return (e * anteil + l * (100 - anteil)) / 100;
+}
+
+/** Hinweis, wenn kein Satz hinterlegt ist. Überall derselbe Wortlaut. */
+export const KEIN_SATZ_TEXT = "Kein Provisionssatz hinterlegt";
+
+/**
+ * Liest einen Provisionssatz aus einer Eingabe, Komma oder Punkt: "10,5" wird
+ * 10,5. Gültig ist größer 0 bis höchstens 100, sonst `null`.
+ */
+export function parseProvisionssatz(eingabe: string | number | null | undefined): number | null {
+  if (eingabe === null || eingabe === undefined) return null;
+  const text = String(eingabe).trim().replace(",", ".");
+  if (!/^\d+(\.\d+)?$/.test(text)) return null;
+  const wert = Number(text);
+  return wert > 0 && wert <= 100 ? wert : null;
+}
+
+export const SATZ_UNGUELTIG_TEXT = "Bitte trag einen Provisionssatz zwischen 0 und 100 Prozent ein.";
 
 /**
  * Determines the effective provision rate for a user with respect to a specific contact.
@@ -194,7 +225,7 @@ export const SATZART_LABEL: Record<Satzart, string> = {
   locked: "Festgeschrieben",
   stufe: "Karrierestufe",
   nutzerverwaltung: "Nutzerverwaltung",
-  fehlt: "Kein Satz",
+  fehlt: "Kein Satz hinterlegt",
 };
 
 export const SATZART_ERKLAERUNG: Record<Satzart, string> = {
@@ -205,7 +236,7 @@ export const SATZART_ERKLAERUNG: Record<Satzart, string> = {
   stufe: "Für diesen Fall ist kein eigener Satz gepflegt. Es gilt der Satz der Karrierestufe.",
   nutzerverwaltung:
     "Die Sätze dieses Partners waren in der Nutzerverwaltung festgeschrieben. Der dort hinterlegte Satz galt für diesen Vorgang.",
-  fehlt: "Für diesen Partner ist in der Nutzerverwaltung kein Provisionssatz hinterlegt. Gerechnet wird mit 0 %, bis er eingetragen ist.",
+  fehlt: "Für diesen Partner ist in der Nutzerverwaltung kein Provisionssatz hinterlegt. Bis Admin oder Inhaber ihn eintragen, wird keine Provision gerechnet.",
 };
 
 /**
@@ -244,7 +275,7 @@ export function getEffectiveRateForKontakt(
   userId: string | null | undefined,
   kontakt: any,
   lockedRate?: number | null,
-): number {
+): number | null {
   return getEffectiveRateInfoForKontakt(userId, kontakt, lockedRate).rate;
 }
 
@@ -292,14 +323,16 @@ export function festgeschriebenerSatz(
  *     rückwirkend auf reservierte Vorgänge durchschlagen lassen.
  *  2. Eigen- bzw. Lead-Satz aus der Nutzerverwaltung (fehlt er, der
  *     allgemeine Satz).
- *  3. Kein Satz: 0 %, als "fehlt" gekennzeichnet, statt still eine Stufe.
+ *  3. Kein Satz: `rate` ist `null`, als "fehlt" gekennzeichnet. Es wird
+ *     keine Provision gerechnet und keine Zahl erfunden.
  */
 export function getEffectiveRateInfoForKontakt(
   userId: string | null | undefined,
   kontakt: any,
   lockedRate?: number | null,
 ): {
-  rate: number;
+  /** `null`, wenn kein Satz hinterlegt ist: dann keine Provision. */
+  rate: number | null;
   quelle: Satzart;
   setterName?: string;
   /** Der Satz, der heute gelten würde. Nur bei "locked" gefüllt und nur, wenn er abweicht. */
@@ -319,7 +352,7 @@ export function getEffectiveRateInfoForKontakt(
     };
   }
 
-  if (aktuell === null) return { rate: 0, quelle: "fehlt", setterName };
+  if (aktuell === null) return { rate: null, quelle: "fehlt", setterName };
   return { rate: aktuell, quelle: eigen ? "eigen" : "zugewiesen", setterName };
 }
 

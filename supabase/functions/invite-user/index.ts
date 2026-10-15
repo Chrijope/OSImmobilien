@@ -2,7 +2,7 @@ import { createClient } from "npm:@supabase/supabase-js@2.49.4";
 import { checkRateLimit, rateLimitErrorBody } from "../_shared/rate-limit.ts";
 import { kundenSprache, type Sprache } from "../_shared/kunden-sprache.ts";
 import { vorhandenesKontoPruefen } from "../_shared/portal-verknuepfung.ts";
-import { einladungOhneFremdeKonditionen, tippgeberKontoAblehnung, tippgeberVerknuepfungAblehnung } from "../_shared/einladung-konditionen.ts";
+import { einladungOhneFremdeKonditionen, provisionssatzAblehnung, provisionssatzAusEinladung, tippgeberKontoAblehnung, tippgeberVerknuepfungAblehnung } from "../_shared/einladung-konditionen.ts";
 import { startrollenSetzen } from "../_shared/startrolle.ts";
 import { pruefeKundenportalRecht } from "../_shared/kundenportal-recht.ts";
 
@@ -156,7 +156,11 @@ Deno.serve(async (req) => {
     if (verworfen.length > 0) {
       console.warn("invite-user: Provisionsbedingungen verworfen (nur Admin und Inhaber):", verworfen.join(", "));
     }
-    const { email, name, role, roles, osImmoId, kontaktId, vorname, nachname, telefon, person2, karriereStufe, teamleaderId, customProvisionRate, customProvisionRateSetter, customProvisionRateEigen, tippgeberId, karriereGatingActive, rollenVariante } = einladung;
+    // Karrierestufe, allgemeiner Satz und Sidebar-Sperre gibt es seit dem
+    // 15.10.2026 nicht mehr; was ein alter Browser noch mitschickt, bleibt liegen.
+    const { email, name, role, roles, osImmoId, kontaktId, vorname, nachname, telefon, person2, teamleaderId, customProvisionRateSetter, customProvisionRateEigen, tippgeberId, rollenVariante, resend } = einladung;
+    const leadSatz = provisionssatzAusEinladung(customProvisionRateSetter);
+    const eigenSatz = provisionssatzAusEinladung(customProvisionRateEigen);
 
     if (!email || !name || !role) {
       return new Response(JSON.stringify({ error: "Fehlende Pflichtfelder" }), {
@@ -208,6 +212,15 @@ Deno.serve(async (req) => {
         }),
         { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
+    }
+
+    // Pflicht bei Vertriebspartnern: Lead- und Eigen-Satz, 0 bis 100 Prozent.
+    const satzFehlt = provisionssatzAblehnung({ rollen: requestedRoles, resend, lead: leadSatz, eigen: eigenSatz });
+    if (satzFehlt) {
+      return new Response(JSON.stringify({ error: satzFehlt }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Tippgeber-Verknuepfung pruefen, BEVOR ein Konto oder eine Mail entsteht.
@@ -557,8 +570,8 @@ Deno.serve(async (req) => {
       await ensurePreferredRole(newUser.user.id, "kunde");
     }
 
-    // Pre-fill user_settings with profil data + karriere_override from invite form
-    if (newUser?.user?.id && (vorname || nachname || telefon || karriereStufe || teamleaderId || customProvisionRate != null || customProvisionRateSetter != null || customProvisionRateEigen != null || typeof karriereGatingActive === "boolean")) {
+    // Pre-fill user_settings with profil data and the two provision rates
+    if (newUser?.user?.id && (vorname || nachname || telefon || teamleaderId || leadSatz !== null || eigenSatz !== null)) {
       const splitVorname = vorname || name?.split(" ")[0] || "";
       const splitNachname = nachname || name?.split(" ").slice(1).join(" ") || "";
       const profilData: Record<string, string> = {
@@ -579,29 +592,12 @@ Deno.serve(async (req) => {
       const mergedProfil = { ...profilData, ...Object.fromEntries(Object.entries(existingProfil).filter(([, v]) => v && String(v).trim())) };
 
       const newEinstellungen: Record<string, unknown> = { ...existing, profil: mergedProfil };
-      if (karriereStufe && typeof karriereStufe === "string") {
-        newEinstellungen.karriere_override = karriereStufe;
-        console.log("invite-user: Karrierestufe override gesetzt:", karriereStufe, "für", newUser.user.id);
-      }
       if (teamleaderId && typeof teamleaderId === "string") {
         newEinstellungen.teamleader_id = teamleaderId;
         console.log("invite-user: Teamleiter-ID gesetzt:", teamleaderId, "für", newUser.user.id);
       }
-      if (customProvisionRate !== undefined && customProvisionRate !== null && customProvisionRate !== "") {
-        const v = typeof customProvisionRate === "number" ? customProvisionRate : parseFloat(String(customProvisionRate));
-        if (!isNaN(v)) newEinstellungen.custom_provision_rate = v;
-      }
-      if (customProvisionRateSetter !== undefined && customProvisionRateSetter !== null && customProvisionRateSetter !== "") {
-        const v = typeof customProvisionRateSetter === "number" ? customProvisionRateSetter : parseFloat(String(customProvisionRateSetter));
-        if (!isNaN(v)) newEinstellungen.custom_provision_rate_setter = v;
-      }
-      if (customProvisionRateEigen !== undefined && customProvisionRateEigen !== null && customProvisionRateEigen !== "") {
-        const v = typeof customProvisionRateEigen === "number" ? customProvisionRateEigen : parseFloat(String(customProvisionRateEigen));
-        if (!isNaN(v)) newEinstellungen.custom_provision_rate_eigen = v;
-      }
-      if (typeof karriereGatingActive === "boolean") {
-        newEinstellungen.karriere_gating_active = karriereGatingActive;
-      }
+      if (leadSatz !== null) newEinstellungen.custom_provision_rate_setter = leadSatz;
+      if (eigenSatz !== null) newEinstellungen.custom_provision_rate_eigen = eigenSatz;
 
       if (existingSettings?.id) {
         await adminClient

@@ -201,7 +201,7 @@ describe("Provision: festgeschriebener Satz und Fälligkeit wirken (Entscheidung
     // hier ist keiner gepflegt, und seit 15.10.2026 springt keine
     // Karrierestufe mehr ein.
     const ohne = getEffectiveRateInfoForKontakt("u-1", kontakt, null);
-    expect(ohne).toMatchObject({ rate: 0, quelle: "fehlt" });
+    expect(ohne).toMatchObject({ rate: null, quelle: "fehlt" });
     expect(info.heutigerSatz).toBeUndefined();
   });
 

@@ -456,7 +456,8 @@ export function AppSidebar() {
   const [vertriebsakademieNew, setVertriebsakademieNew] = useState<boolean>(() => isNewBadgeActive(SEEN_KEYS.vertriebsakademie));
   const [customPermissions, setCustomPermissions] = useState<string[]>([]);
   const [onboardingComplete, setOnboardingComplete] = useState(true);
-  const [vpStufeId, setVpStufeId] = useState<string | null>(null);
+  // Die Sperre nach Karrierestufe ist seit 15.10.2026 entfallen.
+  const vpStufeId: string | null = null;
 
   // Load onboarding status
   useEffect(() => {
@@ -714,9 +715,6 @@ export function AppSidebar() {
           .single();
         const perms = (data?.einstellungen as any)?.custom_permissions || [];
         setCustomPermissions(perms);
-        const gatingOn = !!(data?.einstellungen as any)?.karriere_gating_active;
-        const stufe = gatingOn ? ((data?.einstellungen as any)?.karriere_override ?? null) : null;
-        setVpStufeId(typeof stufe === "string" && stufe.trim() ? stufe.trim() : null);
       } catch { /* ignore */ }
     };
     loadPerms();
@@ -731,9 +729,6 @@ export function AppSidebar() {
         (payload: any) => {
           const perms = payload.new?.einstellungen?.custom_permissions || [];
           setCustomPermissions(perms);
-          const gatingOn = !!payload.new?.einstellungen?.karriere_gating_active;
-          const stufe = gatingOn ? (payload.new?.einstellungen?.karriere_override ?? null) : null;
-          setVpStufeId(typeof stufe === "string" && stufe.trim() ? stufe.trim() : null);
         }
       )
       .subscribe();

@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { loadZielplanung, DURCHSCHNITTSKAUFPREIS } from "@/lib/zielplanungStore";
-import { getKarriereOverrideForUser, getKarriereStufe, getKarriereStufeById, getEffectiveRate, getCustomProvisionRateSetter, getCustomProvisionRateEigen } from "@/lib/karriereStufeHelper";
+import { mischsatz, provisionssaetze, KEIN_SATZ_TEXT } from "@/lib/karriereStufeHelper";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@/contexts/UserContext";
 import { useLiveVersion } from "@/hooks/useLiveData";
@@ -23,30 +23,13 @@ export function ZielplanungCard() {
   const { user, authUser } = useUser();
   const _settingsVersion = useLiveVersion(["user_settings", "kontakte", "investments"]);
   const config = loadZielplanung();
-  // Eine einzige Auflösung: der Override direkt zur Stufe, sonst die in der
-  // Planung gespeicherte Kennung (vorher doppelt: Stufe -> id -> Stufe).
-  const stufe = useMemo(() => {
-    const override = getKarriereOverrideForUser(authUser?.id);
-    if (override) return getKarriereStufe(0, override);
-    return getKarriereStufeById(config.karrierestufe);
-  }, [authUser?.id, config.karrierestufe, _settingsVersion]);
-  const stufenRate = getEffectiveRate(authUser?.id, stufe);
-  const setterRate = getCustomProvisionRateSetter(authUser?.id);
-  const eigenRate = getCustomProvisionRateEigen(authUser?.id);
-  const hasSplitRates = setterRate != null || eigenRate != null;
-  /**
-   * Derselbe Mischsatz wie in der Zielplanung selbst: die beiden gepflegten
-   * Saetze, gewichtet mit dem geplanten Anteil eigener Kontakte.
-   *
-   * Vorher rechnete diese Karte mit dem flachen Stufensatz. Bei Partnern, fuer
-   * die Eigen- und Lead-Satz getrennt gepflegt sind und auseinandergehen, zeigte
-   * die Karte deshalb eine andere Jahresprovision als die Seite, obwohl beide
-   * dieselbe gespeicherte Planung lesen.
-   */
+  // Derselbe Mischsatz wie in der Zielplanung: Lead- und Eigen-Satz,
+  // gewichtet mit dem geplanten Anteil eigener Kontakte. Ohne Satz `null`.
   const anteilEigen = Math.max(0, Math.min(100, config.anteilEigenPct ?? 50));
-  const effectiveRate = hasSplitRates
-    ? ((eigenRate ?? stufenRate) * anteilEigen + (setterRate ?? stufenRate) * (100 - anteilEigen)) / 100
-    : stufenRate;
+  const planSatz = mischsatz(authUser?.id, anteilEigen);
+  const effectiveRate = planSatz ?? 0;
+  const { lead: setterRate, eigen: eigenRate } = provisionssaetze(authUser?.id);
+  const hasSplitRates = setterRate !== null && eigenRate !== null && setterRate !== eigenRate;
   const isAnzahl = config.modus === "anzahl";
 
   const now = new Date();
@@ -110,7 +93,7 @@ export function ZielplanungCard() {
       : 0;
 
     return { monatAnzahl, monatVolumen, jahresAnzahl, jahresVolumen, jahresProvision, monthProgress, yearProgress, monatIst, jahresIst };
-  }, [config, stufe, isAnzahl, currentMonth, ist]);
+  }, [config, effectiveRate, isAnzahl, currentMonth, ist]);
 
   return (
     <Card className="h-full flex flex-col">
@@ -139,7 +122,7 @@ export function ZielplanungCard() {
                 <div className="space-y-1">
                   {setterRate != null && (
                     <div className="flex items-center justify-center gap-1 text-xs">
-                      <Badge variant="outline" className="text-[10px] px-1.5 py-0">Setter</Badge>
+                      <Badge variant="outline" className="text-[10px] px-1.5 py-0">Lead</Badge>
                       <span className={unscharfKlasse("font-bold")}>{setterRate} %</span>
                     </div>
                   )}
@@ -153,7 +136,7 @@ export function ZielplanungCard() {
                 </div>
               ) : (
                 <>
-                  <p className={unscharfKlasse("text-2xl font-bold")}>{effectiveRate} %</p>
+                  <p className={unscharfKlasse("text-2xl font-bold")}>{planSatz === null ? KEIN_SATZ_TEXT : `${planSatz.toLocaleString("de-DE", { maximumFractionDigits: 2 })} %`}</p>
                   <p className="text-xs text-muted-foreground">Provisionssatz</p>
                 </>
               )}

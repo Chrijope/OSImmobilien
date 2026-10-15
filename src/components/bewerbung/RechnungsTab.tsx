@@ -9,7 +9,6 @@ import { CheckCircle2, AlertTriangle, UserCheck, HandCoins, ArrowRight } from "l
 import { toast } from "@/hooks/use-toast";
 import { updateBewerber, type Bewerber } from "@/lib/bewerbungStore";
 import { getLizenzPaket, formatPreis } from "@/lib/lizenzPakete";
-import { PAKET_KARRIERE_MAP } from "@/lib/aktivierungsCheckliste";
 import { supabase } from "@/integrations/supabase/client";
 import { notifyByRole } from "@/lib/bellNotifications";
 import { gebuchtesLeadPaket, stufeNachZahlung } from "../../../supabase/functions/_shared/lead-paket";
@@ -153,7 +152,8 @@ export function RechnungsTab({ bewerber: b, canEdit, currentUserName, onRefresh,
     try {
       const CHRISTIAN_PEETZ_EMAIL = "os@os-immobilien.com";
       const bewerberName = `${b.vorname} ${b.nachname}`.trim();
-      const karriereStufe = b.karriereStufe || (paket ? PAKET_KARRIERE_MAP[paket.id] : "") || "";
+      // Karrierestufen gibt es seit 15.10.2026 nicht mehr; die Mail laesst die Zeile dann weg.
+      const karriereStufe = "";
       const paketTitel = paket?.titel || "Vertrag";
 
       // Die Glocke geht an Admin und Inhaber. Nutzer legen seit dem
@@ -162,7 +162,7 @@ export function RechnungsTab({ bewerber: b, canEdit, currentUserName, onRefresh,
       // Mail an Christian Peetz bleibt daneben bestehen.
       notifyByRole(["admin", "inhaber"], {
         titel: "Lead-Paket bezahlt, Nutzer anlegen",
-        nachricht: `${anlass} Bitte als Nutzer anlegen mit Karrierestufe „${karriereStufe || "siehe Profil"}" (Vertragsdokument: ${paketTitel}).`,
+        nachricht: `${anlass} Bitte als Nutzer anlegen und Lead- und Eigen-Satz eintragen (Vertragsdokument: ${paketTitel}).`,
         link: `/bewerberprozess?bewerber=${b.id}`,
         category: "system",
       });

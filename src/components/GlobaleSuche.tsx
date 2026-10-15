@@ -102,17 +102,14 @@ export function SuchFeld() {
   const schluessel = zuletztSchluessel(authUser?.id);
 
   /*
-   * Die Seiten, die die aktive Rolle öffnen darf. Individuelle Freigaben und
-   * Karrierestufe liest die Seitenleiste aus `user_settings`, hier kommen sie
+   * Die Seiten, die die aktive Rolle öffnen darf. Individuelle Freigaben liest die Seitenleiste aus `user_settings`, hier kommen sie
    * aus demselben Datensatz im Zwischenspeicher. Ändert sich einer davon,
    * rechnet die Liste neu.
    */
   useLiveVersion(["user_settings", "app_config"]);
   const customPermissions = getUserSetting<string[]>("custom_permissions", []) || [];
-  const stufeRoh = getUserSetting<boolean>("karriere_gating_active", false)
-    ? getUserSetting<string | null>("karriere_override", null)
-    : null;
-  const vpStufeId = typeof stufeRoh === "string" && stufeRoh.trim() ? stufeRoh.trim() : null;
+  // Die Sperre nach Karrierestufe ist seit 15.10.2026 entfallen.
+  const vpStufeId = null;
   const handbuchFrei = handbuchPartnerFreigeschaltet();
   const rechteSchluessel = customPermissions.join("|");
   const seitenIndex = useMemo(

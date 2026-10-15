@@ -55,12 +55,9 @@ import { CrmTutorialProvider } from "@/components/tutorial/CrmTutorial";
 export function AppShell() {
   const { isLoggedIn, loading, user, authUser } = useUser();
   const location = useLocation();
-  const { loaded: settingsLoaded, onboardingComplete, customPermissions, settings } = useUserSettings();
-  // Karrierestufen-Gating ist Opt-In pro Nutzer (Bestandsschutz). Erst wenn
-  // `karriere_gating_active === true` im Profil gesetzt wurde, greift das
-  // Sidebar/Route-Gating nach Karrierestufe — sonst voller CRM-Zugriff.
-  const vpGatingActive = !!(settings as any)?.karriere_gating_active;
-  const vpStufeId = vpGatingActive ? ((settings as any)?.karriere_override ?? null) : null;
+  const { loaded: settingsLoaded, onboardingComplete, customPermissions } = useUserSettings();
+  // Die Sperre nach Karrierestufe ist seit 15.10.2026 entfallen.
+  const vpStufeId = null;
   useNotarfotoReminder(user.role, user.name, authUser?.id);
   useKaufpreisFaelligkeitReminder(user.role, authUser?.id);
   useInvestmentInboxTriggers(user.role, user.name, authUser?.id);

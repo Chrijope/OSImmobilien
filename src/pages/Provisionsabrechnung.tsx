@@ -200,6 +200,7 @@ export default function Provisionsabrechnung() {
 
     let generated = 0;
     let gesperrt = 0;
+    const ohneSatz: string[] = [];
     const fehler: string[] = [];
     for (const u of users) {
       // Kennung zuerst. Der Name zaehlt nur fuer Kontakte ohne Kennung und
@@ -208,12 +209,18 @@ export default function Provisionsabrechnung() {
         (g) => istZustaendig(g.k, { userId: u.id, userName: u.name }, users),
       );
 
-      const eigeneDeals: AbrechnungDeal[] = eigene.map(({ inv, k, kaufpreis }) => {
+      const eigeneDeals: AbrechnungDeal[] = eigene.flatMap(({ inv, k, kaufpreis }) => {
         // Der beim Eintritt in die Kaufphase festgeschriebene Satz gilt
         // (Entscheidung Christian vom 29.09.2026), jetzt der dieses
         // Investments und nicht mehr der erste des Kontakts.
         const info = getEffectiveRateInfoForKontakt(u.id, k, festgeschriebenerSatz(inv.meta, u.id));
-        return {
+        // Ohne Satz keine Provision und kein erfundener Betrag: Der Abschluss
+        // bleibt draussen, bis Admin oder Inhaber den Satz eintragen.
+        if (info.rate === null) {
+          ohneSatz.push(`${k.vorname} ${k.nachname}`.trim());
+          return [];
+        }
+        return [{
           investmentId: inv.id,
           kontaktId: k.id,
           kundeName: `${k.vorname} ${k.nachname}`,
@@ -223,7 +230,7 @@ export default function Provisionsabrechnung() {
           betrag: provisionCent(kaufpreis, info.rate) / 100,
           satzTyp: info.quelle,
           setterName: info.setterName,
-        };
+        }];
       });
 
       // Wenn dieser User Junior ist → Override wird abgezogen
@@ -301,6 +308,12 @@ export default function Provisionsabrechnung() {
     }
     const entfernt = await leereEntfernen();
     setRows(getAbrechnungen());
+    if (ohneSatz.length > 0) {
+      void hinweisDialog({
+        title: "Satz nicht gepflegt",
+        description: `${ohneSatz.length === 1 ? "Ein Abschluss steht" : `${ohneSatz.length} Abschlüsse stehen`} nicht im Bescheid, weil für den Partner kein Provisionssatz hinterlegt ist: ${ohneSatz.join(", ")}. Bitte den Satz in der Nutzerverwaltung eintragen und die Abrechnung neu erstellen.`,
+      });
+    }
     if (fehler.length > 0) {
       toast.error(`${fehler.length} Bescheide wurden nicht gespeichert`, { description: fehler.join(" · ") });
     }

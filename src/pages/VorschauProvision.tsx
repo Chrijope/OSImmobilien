@@ -2,6 +2,7 @@ import { useState } from "react";
 import { cacheSet } from "@/lib/dataCache";
 import { DeineProvisionKarte } from "@/components/abrechnung/DeineProvisionKarte";
 import { ProvisionssatzBadges } from "@/components/abrechnung/ProvisionssatzBadges";
+import { ProvisionssatzBearbeiten } from "@/components/nutzerverwaltung/ProvisionssatzBearbeiten";
 import { SatzartBadge, SatzartLegende } from "@/components/abrechnung/SatzartBadge";
 import { festgeschriebenerSatz, getEffectiveRateInfoForKontakt } from "@/lib/karriereStufeHelper";
 import { provisionCent } from "@/lib/abrechnungRechnung";
@@ -45,8 +46,9 @@ export default function VorschauProvision() {
     <div className="min-h-screen bg-background p-4 md:p-6 space-y-8" data-lg="seite">
       <div className="rounded-lg border-2 border-dashed border-[#e5007d] bg-[#e5007d]/5 p-3 text-sm">
         <strong>Lokale Vorschau, nur auf diesem Rechner.</strong> Ohne Anmeldung und ohne Datenbank, erfundene Partner.
-        Ben und Cem haben noch eine alte Karrierestufe gespeichert; sie wirkt nicht mehr. Das Einladeformular der
-        Nutzerverwaltung siehst du nach dem Anmelden unter localhost in der echten Seite.
+        Ben und Cem haben noch eine alte Karrierestufe gespeichert; sie wirkt nicht mehr. Einladeformular und
+        Nutzerprofil der Nutzerverwaltung siehst du nach dem Anmelden unter localhost in der echten Seite; das
+        Satzfeld des Profils steht unten als Baustein.
       </div>
 
       <section className="space-y-3">
@@ -62,12 +64,24 @@ export default function VorschauProvision() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Auswertungen und Abrechnungen: statt Karriereplan und Staffel</h2>
+        <h2 className="text-lg font-semibold">Auswertungen und Abrechnungen: „Dein Provisionssatz“ statt Karriereplan und Staffel</h2>
         <div className="grid gap-4 md:grid-cols-3">
           <DeineProvisionKarte userId={ANNA} />
+          <DeineProvisionKarte userId={BEN} />
+          <DeineProvisionKarte userId={CEM} />
           <DeineProvisionKarte userId={BEN} partnerName="Ben Muster" />
           <DeineProvisionKarte userId={CEM} partnerName="Cem Neu" />
+          <DeineProvisionKarte alle />
         </div>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-lg font-semibold">Nutzerprofil: Provisionssatz (Komma erlaubt, z. B. 10,5)</h2>
+        <div className="grid gap-4 md:grid-cols-2 max-w-3xl">
+          <ProvisionssatzBearbeiten userId={BEN} zielName="Ben Muster" lead={8} eigen={12} darfBearbeiten />
+          <ProvisionssatzBearbeiten userId={BEN} zielName="Ben Muster" lead={8} eigen={12} darfBearbeiten={false} />
+        </div>
+        <p className="text-xs text-muted-foreground">Links als Admin oder Inhaber, rechts als andere Rolle. Speichern geht in der Vorschau nicht (keine Datenbank).</p>
       </section>
 
       <section className="space-y-3">
@@ -86,8 +100,10 @@ export default function VorschauProvision() {
                     <td className="p-2">{a.kunde}</td>
                     <td className="p-2">{PARTNER.find((p) => p.id === a.partner)?.name}</td>
                     <td className="p-2 text-muted-foreground">{a.hinweis}</td>
-                    <td className="p-2"><SatzartBadge art={info.quelle} satz={info.rate} heutigerSatz={info.heutigerSatz} /></td>
-                    <td className="p-2 text-right tabular-nums">{eur(provisionCent(a.kaufpreis, info.rate) / 100)}</td>
+                    <td className="p-2"><SatzartBadge art={info.quelle} satz={info.rate ?? undefined} heutigerSatz={info.heutigerSatz} /></td>
+                    <td className="p-2 text-right tabular-nums">
+                      {info.rate === null ? <span className="text-destructive">Satz nicht gepflegt</span> : eur(provisionCent(a.kaufpreis, info.rate) / 100)}
+                    </td>
                   </tr>
                 );
               })}

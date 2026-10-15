@@ -76,9 +76,11 @@ describe("Steuerrechner, Stand 24.09.2026", () => {
     }
   });
 
-  it("oeffnet dabei nicht das Analysetool mit, das bleibt ab Lizenzpartner", () => {
-    expect(isUrlAllowedForRole("/analysetool", "vertriebspartner", [], "vertriebspartner")).toBe(false);
-    expect(isUrlAllowedForRole("/analysetool", "vertriebspartner", [], "vertriebsfirma")).toBe(true);
+  it("die Sperre nach Karrierestufe ist entfallen (15.10.2026): die Stufe aendert nichts mehr", () => {
+    expect(isUrlAllowedForRole("/analysetool", "vertriebspartner", [], "vertriebspartner"))
+      .toBe(isUrlAllowedForRole("/analysetool", "vertriebspartner", [], "vertriebsfirma"));
+    expect(isUrlAllowedForRole("/auswertungen", "vertriebspartner", [], "tippgeber"))
+      .toBe(isUrlAllowedForRole("/auswertungen", "vertriebspartner", [], null));
   });
 
   it("bleibt fuer Rollen ohne Freigabe zu", () => {

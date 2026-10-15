@@ -87,6 +87,7 @@ const Auswertungen = () => {
         <DeineProvisionKarte
           userId={targetUserId}
           partnerName={isBackoffice && selectedPartner !== "alle" ? selectedPartner : undefined}
+          alle={isBackoffice && sicht === "haus" && selectedPartnerId === "alle"}
         />
 
         {/* ── Partner-Filter für Admin ── */}

@@ -31,6 +31,7 @@ import { confirmDialog } from "@/lib/confirm";
 import { beendeSitzungenVon, sitzungenNachSperreBeenden } from "@/lib/sitzungenBeenden";
 import { useUser } from "@/contexts/UserContext";
 import { ProvisionssatzBadges } from "@/components/abrechnung/ProvisionssatzBadges";
+import { parseProvisionssatz, SATZ_UNGUELTIG_TEXT } from "@/lib/karriereStufeHelper";
 import { useLiveVersion } from "@/hooks/useLiveData";
 import { cacheRefreshTable } from "@/lib/dataCache";
 import { PhoneInput } from "@/components/ui/phone-input";
@@ -126,12 +127,10 @@ export default function Nutzerverwaltung() {
   const [formLeadBerater, setFormLeadBerater] = useState<boolean>(false);
 
   
-  // Beide Sätze Pflicht, als Zahl zwischen 0 und 100.
-  const satzGueltig = (wert: string) => {
-    const v = parseFloat(wert);
-    return wert.trim() !== "" && Number.isFinite(v) && v > 0 && v <= 100;
-  };
-  const provisionssaetzeGueltig = satzGueltig(formCustomRateSetter) && satzGueltig(formCustomRateEigen);
+  // Beide Sätze Pflicht, größer 0 bis 100, Komma oder Punkt ("10,5" = 10,5).
+  const leadSatz = parseProvisionssatz(formCustomRateSetter);
+  const eigenSatz = parseProvisionssatz(formCustomRateEigen);
+  const provisionssaetzeGueltig = leadSatz !== null && eigenSatz !== null;
 
   // Load users from DB
   const loadUsers = async () => {
@@ -286,8 +285,8 @@ export default function Nutzerverwaltung() {
           nachname: formNachname,
           telefon: formTelefon || undefined,
           teamleaderId: formTeamleader && formTeamleader !== "__none__" ? formTeamleader : undefined,
-          customProvisionRateSetter: brauchtSatz ? parseFloat(formCustomRateSetter) : undefined,
-          customProvisionRateEigen: brauchtSatz ? parseFloat(formCustomRateEigen) : undefined,
+          customProvisionRateSetter: brauchtSatz ? leadSatz : undefined,
+          customProvisionRateEigen: brauchtSatz ? eigenSatz : undefined,
           // Reine Anzeige-Variante, keine eigene Rolle (siehe rollenLabel.ts)
           rollenVariante: formLeadBerater && formRollen.includes("vertriebspartner") ? ROLLEN_VARIANTE_LEAD_BERATER : undefined,
         },
@@ -596,7 +595,7 @@ export default function Nutzerverwaltung() {
                         <Label htmlFor="einladung-satz-lead" className="text-xs text-muted-foreground">Lead-Satz (%) *</Label>
                         <Input
                           id="einladung-satz-lead"
-                          type="number" min={0} max={100} step={0.01}
+                          inputMode="decimal"
                           placeholder="z. B. 10"
                           value={formCustomRateSetter}
                           onChange={e => setFormCustomRateSetter(e.target.value)}
@@ -607,7 +606,7 @@ export default function Nutzerverwaltung() {
                         <Label htmlFor="einladung-satz-eigen" className="text-xs text-muted-foreground">Eigen-Satz (%) *</Label>
                         <Input
                           id="einladung-satz-eigen"
-                          type="number" min={0} max={100} step={0.01}
+                          inputMode="decimal"
                           placeholder="z. B. 10"
                           value={formCustomRateEigen}
                           onChange={e => setFormCustomRateEigen(e.target.value)}
@@ -615,8 +614,8 @@ export default function Nutzerverwaltung() {
                         <p className="text-[10px] text-muted-foreground">Für Kontakte aus dem eigenen Netzwerk.</p>
                       </div>
                     </div>
-                    {formRollen.includes("vertriebspartner") && !provisionssaetzeGueltig && (formCustomRateSetter !== "" || formCustomRateEigen !== "") && (
-                      <p className="text-[11px] text-destructive mt-2">Bitte beide Sätze zwischen 0 und 100 % eintragen.</p>
+                    {!provisionssaetzeGueltig && (
+                      <p className="text-[11px] text-destructive mt-2">{SATZ_UNGUELTIG_TEXT}</p>
                     )}
                     <p className="text-[10px] text-muted-foreground mt-3">
                       Der Satz gilt ab sofort für neue Vorgänge. Ab der Reservierung wird er am Vorgang festgeschrieben; eine spätere Änderung wirkt dort nicht mehr.

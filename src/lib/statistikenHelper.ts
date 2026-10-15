@@ -162,6 +162,8 @@ export function computeFinanzKPIs(
     if (!kontakt) return;
     const lockedRate = i.meta?.lockedProvisionRate ?? null;
     const rate = getEffectiveRateForKontakt(kontakt.zustaendig_id, kontakt, lockedRate);
+    // Ohne Satz keine Provision, keine erfundene Zahl.
+    if (rate === null) return;
     provisionssumme += (Number(i.kaufpreis) || 0) * (rate / 100);
   });
 

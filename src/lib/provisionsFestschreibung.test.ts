@@ -13,6 +13,7 @@ import {
   festgeschriebenerSatz,
   istProvisionFestgeschrieben,
   provisionssaetze,
+  mischsatz,
   SATZART_LABEL,
   SATZART_ERKLAERUNG,
 } from "@/lib/karriereStufeHelper";
@@ -55,10 +56,18 @@ describe("Satz aus der Nutzerverwaltung", () => {
     expect(provisionssaetze(PARTNER)).toEqual({ lead: 8, eigen: 7 });
   });
 
-  it("Karrierestufe liefert keinen Satz mehr: ohne Satz 0 % und 'fehlt'", () => {
+  it("Karrierestufe liefert keinen Satz mehr: ohne Satz null und 'fehlt'", () => {
     setzeSettings({ karriere_override: "vertriebsfirma" });
-    expect(getEffectiveRateInfoForKontakt(PARTNER, eigenerKontakt)).toMatchObject({ rate: 0, quelle: "fehlt" });
-    expect(getEffectiveRate(PARTNER)).toBe(0);
+    expect(getEffectiveRateInfoForKontakt(PARTNER, eigenerKontakt)).toMatchObject({ rate: null, quelle: "fehlt" });
+    expect(getEffectiveRate(PARTNER)).toBeNull();
+  });
+
+  it("Mischsatz für Planungen, ohne Satz null", () => {
+    setzeSettings({ custom_provision_rate_setter: 8, custom_provision_rate_eigen: 12 });
+    expect(mischsatz(PARTNER, 50)).toBe(10);
+    expect(mischsatz(PARTNER, 100)).toBe(12);
+    setzeSettings({ karriere_override: "manager" });
+    expect(mischsatz(PARTNER, 50)).toBeNull();
   });
 
   it("provision_locked ändert die Rechnung nicht", () => {
@@ -122,7 +131,7 @@ describe("istProvisionFestgeschrieben", () => {
 
 describe("Satzart-Kennzeichnung", () => {
   it("'fehlt' hat Label und Erklärung", () => {
-    expect(SATZART_LABEL.fehlt).toBe("Kein Satz");
+    expect(SATZART_LABEL.fehlt).toBe("Kein Satz hinterlegt");
     expect(SATZART_ERKLAERUNG.fehlt).toContain("Nutzerverwaltung");
   });
 });

@@ -565,14 +565,11 @@ export function HeaderBar() {
     Angaben wie in der Suche (`GlobaleSuche.tsx`).
   */
   const zielFuer = (link: string | null | undefined) => {
-    const stufe = getUserSetting<boolean>("karriere_gating_active", false)
-      ? getUserSetting<string | null>("karriere_override", null)
-      : null;
     return benachrichtigungZiel(link, window.location.host, (pfad) =>
       objektbereichGesperrt(pfad, {
         rolle: user.role,
         customPermissions: getUserSetting<string[]>("custom_permissions", []) || [],
-        vpStufeId: typeof stufe === "string" && stufe.trim() ? stufe.trim() : null,
+        vpStufeId: null,
         identitaet: { email: authUser?.email, userId: authUser?.id },
       }),
     );

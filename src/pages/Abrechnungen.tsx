@@ -91,7 +91,8 @@ interface PartnerData {
    */
   vermittlungen: number;
   teamleaderId?: string;
-  effectiveRate: number;
+  /** `null`: kein Satz in der Nutzerverwaltung, dann keine Provision. */
+  effectiveRate: number | null;
   setterRate?: number | null;
   eigenRate?: number | null;
   abschluesse: {
@@ -114,7 +115,8 @@ interface PartnerData {
     abrechenbar: boolean;
     status: string;
     /** Welcher Satz auf genau diesen Abschluss angewandt wurde und warum. */
-    satz: number;
+    /** `null`: kein Satz hinterlegt, keine Provision. */
+    satz: number | null;
     satzart: Satzart;
     /** Nur bei festgeschriebenem Satz und nur, wenn er vom heutigen abweicht. */
     heutigerSatz?: number;
@@ -347,7 +349,7 @@ function baueHistorie(
     abschluesse.map((a) => ({
       kaufpreis: a.kaufpreis,
       stufe: a.stufe,
-      satz: a.satz,
+      satz: a.satz ?? 0,
       kaufpreisfaelligAm: a.kaufpreisfaelligAm,
     })),
   ).map((zeile) => {
@@ -553,7 +555,9 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
     // Bescheid, damit „Faellig" sie danach nicht noch einmal zaehlt. Was
     // „bitte klären“ traegt, gehoert nicht dazu.
     const deals = p.abschluesse
-      .filter((a) => a.abrechenbar && !a.ausgezahlt && !a.klaeren)
+      // Ohne Satz gibt es keine Provision; der Abschluss kommt erst in einen
+      // Bescheid, wenn der Satz eingetragen ist.
+      .filter((a) => a.abrechenbar && !a.ausgezahlt && !a.klaeren && a.satz !== null)
       .map((a) => ({
         investmentId: a.investmentId,
         kontaktId: a.kontaktId,
@@ -966,7 +970,7 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
           // Grobe Vorschau mit dem allgemeinen Satz aus der Nutzerverwaltung;
           // bis 15.10.2026 stand hier der Stufensatz, sonst pauschal 5 %.
           const provisionRate = p.effectiveRate;
-          const provisionBetrag = Math.round(volumen * (provisionRate / 100));
+          const provisionBetrag = provisionRate === null ? null : Math.round(volumen * (provisionRate / 100));
           return (
             <Card
               key={kp.label}
@@ -980,7 +984,9 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
               <p className="text-2xl font-bold text-foreground">{kp.kunden.length}</p>
               <div className="mt-2 space-y-0.5">
                 <p className="text-xs text-muted-foreground">Volumen: <span className="font-semibold text-foreground">{fmt(volumen)}</span></p>
-                <p className="text-xs text-muted-foreground">Provision: <span className="font-semibold text-primary">{fmt(provisionBetrag)}</span></p>
+                <p className="text-xs text-muted-foreground">Provision: {provisionBetrag === null
+                  ? <span className="font-semibold text-destructive">Satz nicht gepflegt</span>
+                  : <span className="font-semibold text-primary">{fmt(provisionBetrag)}</span>}</p>
               </div>
             </Card>
           );
@@ -1119,9 +1125,11 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
                     <TableCell className="text-sm font-medium">{a.objekt}</TableCell>
                     <TableCell className="text-sm tabular-nums">{fmt(a.kaufpreis)}</TableCell>
                     <TableCell>
-                      <SatzartBadge art={a.satzart} satz={a.satz} heutigerSatz={a.heutigerSatz} />
+                      <SatzartBadge art={a.satzart} satz={a.satz ?? undefined} heutigerSatz={a.heutigerSatz} />
                     </TableCell>
-                    <TableCell className="text-sm font-medium tabular-nums">{fmt(a.provision)}</TableCell>
+                    <TableCell className="text-sm font-medium tabular-nums">
+                      {a.satz === null ? <span className="text-destructive">Satz nicht gepflegt</span> : fmt(a.provision)}
+                    </TableCell>
                     <TableCell className="text-sm text-muted-foreground">{a.notarDatum}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">{a.kaufpreisfaellig}</TableCell>
                     <TableCell><Badge variant="outline" className="text-[10px]">{a.status}</Badge></TableCell>
@@ -1149,7 +1157,9 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
                         <SatzartBadge art={art} />
                         <span className="text-muted-foreground tabular-nums">
                           {e.anzahl} {e.anzahl === 1 ? "Abschluss" : "Abschlüsse"} · {fmt(e.volumen)} Volumen ·{" "}
-                          <span className="font-medium text-foreground">{fmt(e.provision)}</span>
+                          {art === "fehlt"
+                            ? <span className="font-medium text-destructive">keine Provision, Satz nicht gepflegt</span>
+                            : <span className="font-medium text-foreground">{fmt(e.provision)}</span>}
                         </span>
                       </div>
                     ))}
@@ -1484,16 +1494,16 @@ const Abrechnungen = () => {
              * der am Investment festgeschriebene Satz (Entscheidung Christian
              * vom 29.09.2026, scharf seit 15.10.2026), davor Eigen- oder
              * Lead-Satz aus der Nutzerverwaltung. Keine Karrierestufe; ohne
-             * Satz 0 % mit Kennzeichnung. Reihenfolge: siehe
+             * Satz keine Provision (0 Cent) und „Satz nicht gepflegt“. Reihenfolge: siehe
              * `getEffectiveRateInfoForKontakt`.
              */
             const info = getEffectiveRateInfoForKontakt(u.id, k, festgeschriebenerSatz(inv.meta, u.id));
-            const cent = provisionCent(kp, info.rate);
+            const cent = info.rate === null ? 0 : provisionCent(kp, info.rate);
             const betrag = cent / 100;
             provisionCentSumme += cent;
 
             const abrechenbar = istAbrechenbar(
-              { kaufpreis: kp, stufe: inv.pipelineStufe, satz: info.rate, kaufpreisfaelligAm: faelligAm },
+              { kaufpreis: kp, stufe: inv.pipelineStufe, satz: info.rate ?? 0, kaufpreisfaelligAm: faelligAm },
             );
             const stand = abrechnungsstand(
               abgerechnet,

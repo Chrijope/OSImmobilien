@@ -14,7 +14,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { loadZielplanung, saveZielplanung, loadZielplanungForUser, saveZielplanungForUser, DURCHSCHNITTSKAUFPREIS, type ZielplanungConfig } from "@/lib/zielplanungStore";
 import { Slider } from "@/components/ui/slider";
 import { SatzartBadge } from "@/components/abrechnung/SatzartBadge";
-import { getKarriereOverrideForUser, getKarriereStufe, getKarriereStufeById, getEffectiveRate, getCustomProvisionRateEigen, getCustomProvisionRateSetter, KARRIERE_STUFEN } from "@/lib/karriereStufeHelper";
+import { getEffectiveRate, mischsatz, provisionssaetze, KEIN_SATZ_TEXT } from "@/lib/karriereStufeHelper";
 import { useLiveVersion } from "@/hooks/useLiveData";
 import { loadBeraterUsers, type SystemUser } from "@/lib/loadAllUsers";
 import { useToast } from "@/hooks/use-toast";
@@ -101,7 +101,7 @@ const Zielplanung = () => {
   const settingsVersion = useLiveVersion(["user_settings"]);
 
   // VP list for admin selector
-  const vpUsers = useMemo<(SystemUser & { rate: number })[]>(() => admin ? loadBeraterUsers().map(u => ({ ...u, rate: getEffectiveRate(u.id) })) : [], [admin, settingsVersion]);
+  const vpUsers = useMemo<(SystemUser & { rate: number | null })[]>(() => admin ? loadBeraterUsers().map(u => ({ ...u, rate: getEffectiveRate(u.id) })) : [], [admin, settingsVersion]);
 
   // Selected VP id (admin only) – "__self__" means "own"
   const [selectedVpId, setSelectedVpId] = useState<string>("__self__");
@@ -154,39 +154,20 @@ const Zielplanung = () => {
     return () => { cancelled = true; };
   }, [admin, authUser?.id, settingsVersion]);
 
-  // Eine einzige Auflösung: der Override direkt zur Stufe, sonst die in der
-  // Planung gespeicherte Kennung. Vorher lief der Wert doppelt durch die
-  // Auflösung (Stufe -> id -> Stufe).
-  const stufe = useMemo(() => {
-    const targetUserId = isViewingVp ? selectedVpId : authUser?.id;
-    if (targetUserId) {
-      const override = getKarriereOverrideForUser(targetUserId);
-      if (override) {
-        return getKarriereStufe(0, override);
-      }
-    }
-    return getKarriereStufeById(config.karrierestufe);
-  }, [isViewingVp, selectedVpId, authUser?.id, config.karrierestufe, settingsVersion]);
-  const effectiveKarriereId = stufe.id;
+  // Seit 15.10.2026 ohne Karrierestufe: die beiden Sätze aus der
+  // Nutzerverwaltung, gewichtet mit dem geplanten Anteil eigener Kontakte.
   const targetUserId = isViewingVp ? selectedVpId : authUser?.id;
-  const stufenRate = getEffectiveRate(targetUserId, stufe);
-
-  // Die beiden gepflegten Sätze. Fehlt einer, gilt dort der Stufensatz.
-  const eigenRate = getCustomProvisionRateEigen(targetUserId) ?? stufenRate;
-  const leadRate = getCustomProvisionRateSetter(targetUserId) ?? stufenRate;
-  const hatSplit = Math.abs(eigenRate - leadRate) > 0.001;
-
+  const { lead: leadSatz, eigen: eigenSatz } = provisionssaetze(targetUserId);
+  const hatSplit = leadSatz !== null && eigenSatz !== null && Math.abs(eigenSatz - leadSatz) > 0.001;
   const anteilEigen = Math.max(0, Math.min(100, config.anteilEigenPct ?? 50));
+  const planSatz = mischsatz(targetUserId, anteilEigen);
+  // Ohne Satz plant die Seite mit 0 und sagt das deutlich, statt eine Zahl zu erfinden.
+  const effectiveRate = planSatz ?? 0;
+  // Für die Rechnung je Seite; fehlt einer, gilt der andere.
+  const eigenRate = eigenSatz ?? leadSatz ?? 0;
+  const leadRate = leadSatz ?? eigenSatz ?? 0;
 
-  /**
-   * Mischsatz aus den beiden Sätzen, gewichtet mit dem geplanten Anteil
-   * eigener Kontakte. Sind beide Sätze gleich, ist es schlicht dieser Satz.
-   */
-  const effectiveRate = hatSplit
-    ? (eigenRate * anteilEigen + leadRate * (100 - anteilEigen)) / 100
-    : eigenRate;
-
-  const satzText = `${effectiveRate.toLocaleString("de-DE", { maximumFractionDigits: 2 })} %`;
+  const satzText = planSatz === null ? KEIN_SATZ_TEXT : `${planSatz.toLocaleString("de-DE", { maximumFractionDigits: 2 })} %`;
   const isAnzahl = config.modus === "anzahl";
 
   const calculations = useMemo(() => {
@@ -486,7 +467,7 @@ const Zielplanung = () => {
                   <SelectItem value="__self__">Eigene Planung</SelectItem>
                   {vpUsers.map(vp => (
                     <SelectItem key={vp.id} value={vp.id}>
-                      {tarnName(vp.name, "partner")} (<span className={unscharfKlasse()}>{vp.rate} %</span>)
+                      {tarnName(vp.name, "partner")} (<span className={unscharfKlasse()}>{vp.rate === null ? KEIN_SATZ_TEXT : `${vp.rate} %`}</span>)
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -551,7 +532,9 @@ const Zielplanung = () => {
             <div>
               <p className="text-sm text-muted-foreground">{hatSplit ? "Gewichteter Provisionssatz" : "Dein Provisionssatz"}</p>
               <p className={unscharfKlasse("text-2xl font-semibold tracking-tight mt-2")}>{satzText}</p>
-              <p className="text-xs text-muted-foreground mt-2">{stufe.titel} · auf das Verkaufsvolumen</p>
+              <p className="text-xs text-muted-foreground mt-2">
+                {planSatz === null ? "Bitte wende dich an die Geschäftsleitung." : "Aus der Nutzerverwaltung · auf das Verkaufsvolumen"}
+              </p>
             </div>
           </div>
           {!planungGefuellt && <p className="mt-5 rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground">Noch kein Monatsziel eingetragen. Berechne zuerst ein Jahresziel oder trage unten deine Monatsziele direkt ein.</p>}
@@ -961,18 +944,18 @@ const Zielplanung = () => {
           )}
         </Card>
 
-        {/* Karrierestufen */}
+        {/* Berechnungsgrundlage: der feste Satz statt Karrierestufen (15.10.2026) */}
         <details data-ui="card" className="rounded-xl border bg-card p-5">
-          <summary className="cursor-pointer font-semibold mb-3">Berechnungsgrundlagen & Provisionsstufen</summary>
+          <summary className="cursor-pointer font-semibold mb-3">Berechnungsgrundlagen</summary>
           <div className="space-y-2 text-sm">
-            {/* Gezeigt wird das aktuelle Modell (einheitliche 4-%-Stufe) plus
-                die eigene Stufe, falls sie eine Bestandsstufe ist. */}
-            {KARRIERE_STUFEN.filter((k) => !k.nurBestand || k.id === effectiveKarriereId).map((k) => (
-              <div key={k.id} className={`flex justify-between items-center py-1.5 px-3 rounded-md ${k.id === effectiveKarriereId ? "bg-primary/10 border border-primary/20" : ""}`}>
-                <span className={k.id === effectiveKarriereId ? "font-semibold" : ""}>{k.titel}</span>
-                <Badge variant={k.id === effectiveKarriereId ? "default" : "outline"} className={unscharfKlasse("text-xs")}>{k.rate} %</Badge>
-              </div>
-            ))}
+            <div className="flex justify-between items-center py-1.5 px-3 rounded-md">
+              <span>Lead-Satz (zugewiesene Leads)</span>
+              <Badge variant="outline" className={unscharfKlasse("text-xs")}>{leadSatz === null ? "–" : `${leadSatz.toLocaleString("de-DE")} %`}</Badge>
+            </div>
+            <div className="flex justify-between items-center py-1.5 px-3 rounded-md">
+              <span>Eigen-Satz (eigenes Netzwerk)</span>
+              <Badge variant="outline" className={unscharfKlasse("text-xs")}>{eigenSatz === null ? "–" : `${eigenSatz.toLocaleString("de-DE")} %`}</Badge>
+            </div>
           </div>
           <p className="text-xs text-muted-foreground mt-3">
             Die Provision berechnet sich prozentual auf das Verkaufsvolumen der vermittelten Kapitalanlage-Immobilien.

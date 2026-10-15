@@ -20,9 +20,9 @@ import {
 } from "@/lib/bewerbungStore";
 import { getLizenzPaket, OVERHEAD_AKTIV } from "@/lib/lizenzPakete";
 import {
-  DEFAULT_ONBOARDING, ACADEMY_PFLICHT, PAKET_KARRIERE_MAP,
+  DEFAULT_ONBOARDING, ACADEMY_PFLICHT,
 } from "@/lib/aktivierungsCheckliste";
-import { KARRIERE_STUFEN } from "@/lib/karriereStufeHelper";
+import { parseProvisionssatz, SATZ_UNGUELTIG_TEXT } from "@/lib/karriereStufeHelper";
 import { ROLES } from "@/types/user";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -100,7 +100,14 @@ export function AktivierungTab({ bewerber: b, canEdit, currentUserName, currentU
   const aktivierungOffen = istBezahlt || vertragVollstaendig;
   const istTippgeberPaket = !!paket?.istTippgeber;
   const istEingeladen = !!b.userInviteSentAt;
-  const defaultKarriere = b.karriereStufe || (paket ? PAKET_KARRIERE_MAP[paket.id] : "");
+  /*
+   * Vorbelegung der beiden Sätze (seit 15.10.2026 statt einer Karrierestufe):
+   * im Closing individuell vereinbart, sonst Lead/Eigen aus dem Closing, sonst
+   * der Satz des Vertragspakets. Das Tippgeber-Paket hat keinen Satz.
+   */
+  const paketSatz = paket && paket.provisionssatz > 0 ? String(paket.provisionssatz).replace(".", ",") : "";
+  const defaultLead = b.satzIndividuell || b.satzLead || paketSatz;
+  const defaultEigen = b.satzIndividuell || b.satzEigen || paketSatz;
 
   // Confirm + Form dialog state
   const [formOpen, setFormOpen] = useState(false);
@@ -111,7 +118,8 @@ export function AktivierungTab({ bewerber: b, canEdit, currentUserName, currentU
   const [fNachname, setFNachname] = useState(b.nachname || "");
   const [fEmail, setFEmail] = useState(b.email || "");
   const [fTelefon, setFTelefon] = useState(b.telefon || "");
-  const [fKarriere, setFKarriere] = useState(defaultKarriere);
+  const [fLead, setFLead] = useState(defaultLead);
+  const [fEigen, setFEigen] = useState(defaultEigen);
   const [fRollen, setFRollen] = useState<string[]>(istTippgeberPaket ? ["tippgeber"] : ["vertriebspartner"]);
   const [fTeamleader, setFTeamleader] = useState<string>("__none__");
 
@@ -159,7 +167,8 @@ export function AktivierungTab({ bewerber: b, canEdit, currentUserName, currentU
     setFNachname(b.nachname || "");
     setFEmail(b.email || "");
     setFTelefon(b.telefon || "");
-    setFKarriere(defaultKarriere);
+    setFLead(defaultLead);
+    setFEigen(defaultEigen);
     setFRollen(istTippgeberPaket ? ["tippgeber"] : ["vertriebspartner"]);
     setFTeamleader("__none__");
     setFormOpen(true);
@@ -168,10 +177,11 @@ export function AktivierungTab({ bewerber: b, canEdit, currentUserName, currentU
   const toggleRolle = (id: string) =>
     setFRollen((prev) => (prev.includes(id) ? prev.filter((r) => r !== id) : [...prev, id]));
 
-  const selectedKarriere = KARRIERE_STUFEN.find((k) => k.id === fKarriere);
-  const needsKarriere = fRollen.includes("vertriebspartner");
+  const brauchtSatz = fRollen.includes("vertriebspartner");
+  const leadSatz = parseProvisionssatz(fLead);
+  const eigenSatz = parseProvisionssatz(fEigen);
   const canSubmit =
-    !!fVorname && !!fNachname && !!fEmail && fRollen.length > 0 && (!needsKarriere || !!fKarriere);
+    !!fVorname && !!fNachname && !!fEmail && fRollen.length > 0 && (!brauchtSatz || (leadSatz !== null && eigenSatz !== null));
 
   const handleInviteUser = async () => {
     if (!canSubmit) {
@@ -211,10 +221,9 @@ export function AktivierungTab({ bewerber: b, canEdit, currentUserName, currentU
           telefon: fTelefon || undefined,
           role,
           roles: fRollen,
-          // Immer die Stufen-Kennung uebergeben, nie den Titel: der Titel
-          // "Vertriebspartner" kollidiert mit der Kennung der Lead-Partner-Stufe
-          // und loeste frueher auf den falschen Satz auf.
-          karriereStufe: needsKarriere && !istTippgeberPaket ? fKarriere : undefined,
+          // Die beiden Sätze; die Function verlangt sie bei Vertriebspartnern.
+          customProvisionRateSetter: brauchtSatz ? leadSatz : undefined,
+          customProvisionRateEigen: brauchtSatz ? eigenSatz : undefined,
           teamleaderId: fTeamleader !== "__none__" ? fTeamleader : undefined,
           osImmoId: undefined,
           tippgeberId: tippgeberRowId || undefined,
@@ -231,34 +240,14 @@ export function AktivierungTab({ bewerber: b, canEdit, currentUserName, currentU
       // (für Junior-Override-Logik & spätere Provisionsabrechnung)
       if (newUserId && paket) {
         try {
-          const parseSatz = (v?: string): number | null => {
-            if (!v) return null;
-            const n = parseFloat((v || "").replace(",", "."));
-            return isFinite(n) && n > 0 ? n : null;
-          };
-          const iv = parseSatz(b.satzIndividuell);
-          const lv = parseSatz(b.satzLead);
-          const ev = parseSatz(b.satzEigen);
-          // Vertragssatz des gewählten Lizenzpakets als Grundlage. Vorher
-          // wurden die Custom-Sätze nur geschrieben, wenn im Closing
-          // individuelle Sätze vereinbart waren; der Paketsatz landete sonst
-          // nirgends. Das Paket kennt nur einen Satz, er gilt deshalb für
-          // Lead- und Eigen-Kontakte gleichermassen. Das Tippgeber-Paket hat
-          // keinen Provisionssatz (0), dann bleiben die Schlüssel leer.
-          const paketSatz = paket.provisionssatz > 0 ? paket.provisionssatz : null;
           await supabase.rpc("merge_user_settings" as any, {
             _user_id: newUserId,
             _patch: {
               lizenz_paket: paket.id,
-              karriere_override: fKarriere,
               geworben_von_user_id: b.geworbenVonUserId || null,
               geworben_von_name: b.geworbenVonName || null,
               bewerber_id: b.id,
               teamleader_id: fTeamleader !== "__none__" ? fTeamleader : null,
-              // Individuell im Closing vereinbarte Sätze gehen vor dem Paketsatz
-              custom_provision_rate: iv ?? paketSatz ?? undefined,
-              custom_provision_rate_setter: iv ?? lv ?? paketSatz ?? undefined,
-              custom_provision_rate_eigen: iv ?? ev ?? paketSatz ?? undefined,
             },
           });
         } catch (settingsErr) {
@@ -268,7 +257,6 @@ export function AktivierungTab({ bewerber: b, canEdit, currentUserName, currentU
       const gespeichert = updateBewerber(b.id, {
         userInviteSentAt: new Date().toISOString(),
         userAccountId: newUserId,
-        karriereStufe: fKarriere,
         onboardingChecklist: DEFAULT_ONBOARDING,
         academyPflichtModule: paket ? ACADEMY_PFLICHT[paket.id] : [],
       });
@@ -874,24 +862,18 @@ export function AktivierungTab({ bewerber: b, canEdit, currentUserName, currentU
               <PhoneInput value={fTelefon} onChange={(v) => setFTelefon(v)} />
             </div>
 
-            {needsKarriere && (
-              <div>
-                <Label>Karrierestufe *</Label>
-                <Select value={fKarriere} onValueChange={setFKarriere}>
-                  <SelectTrigger><SelectValue placeholder="Stufe wählen..." /></SelectTrigger>
-                  <SelectContent>
-                    {/* Neuvergabe: nur die einheitliche 4-%-Stufe. Ist aus einem
-                        Bestandspaket eine alte Stufe vorbelegt, bleibt sie als
-                        Eintrag stehen, damit der Wert anzeigbar bleibt. */}
-                    {KARRIERE_STUFEN.filter((k) => !k.nurBestand || k.id === fKarriere).map((k) => (
-                      <SelectItem key={k.id} value={k.id}>{k.emoji} {k.titel} ({k.rate} %)</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {selectedKarriere && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Vorausgewählt aus Paket „{paket?.id}".
-                  </p>
+            {brauchtSatz && (
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="aktivierung-satz-lead">Lead-Satz (%) *</Label>
+                  <Input id="aktivierung-satz-lead" inputMode="decimal" placeholder="z. B. 10" value={fLead} onChange={(e) => setFLead(e.target.value)} />
+                </div>
+                <div>
+                  <Label htmlFor="aktivierung-satz-eigen">Eigen-Satz (%) *</Label>
+                  <Input id="aktivierung-satz-eigen" inputMode="decimal" placeholder="z. B. 10" value={fEigen} onChange={(e) => setFEigen(e.target.value)} />
+                </div>
+                {(leadSatz === null || eigenSatz === null) && (
+                  <p className="col-span-2 text-xs text-destructive">{SATZ_UNGUELTIG_TEXT}</p>
                 )}
               </div>
             )}

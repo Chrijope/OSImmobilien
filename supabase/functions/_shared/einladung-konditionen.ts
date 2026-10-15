@@ -86,3 +86,35 @@ export function tippgeberKontoAblehnung(p: {
   }
   return null;
 }
+
+/**
+ * Provisionssatz aus der Einladung: Zahl oder Text mit Komma oder Punkt
+ * ("10,5" = 10,5). Gültig ist größer 0 bis höchstens 100, sonst null.
+ * Dieselbe Regel wie parseProvisionssatz im Browser (karriereStufeHelper.ts).
+ */
+export function provisionssatzAusEinladung(wert: unknown): number | null {
+  if (typeof wert !== "number" && typeof wert !== "string") return null;
+  const text = String(wert).trim().replace(",", ".");
+  if (!/^\d+(\.\d+)?$/.test(text)) return null;
+  const zahl = Number(text);
+  return zahl > 0 && zahl <= 100 ? zahl : null;
+}
+
+/**
+ * Seit 15.10.2026: Wer mit der Rolle Vertriebspartner angelegt wird, braucht
+ * einen Lead- und einen Eigen-Satz. Eine erneut versendete Einladung
+ * (`resend`) legt nichts neu an und ist ausgenommen. Liefert null, wenn es
+ * passt, sonst die Meldung für Status 400.
+ */
+export function provisionssatzAblehnung(p: {
+  rollen: readonly string[];
+  resend?: unknown;
+  lead: number | null;
+  eigen: number | null;
+}): string | null {
+  if (p.resend === true || !p.rollen.includes("vertriebspartner")) return null;
+  if (p.lead === null || p.eigen === null) {
+    return "Für Vertriebspartner sind Lead- und Eigen-Satz Pflicht. Bitte trag einen Provisionssatz zwischen 0 und 100 Prozent ein.";
+  }
+  return null;
+}

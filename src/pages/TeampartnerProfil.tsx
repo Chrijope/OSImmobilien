@@ -15,13 +15,12 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, Pencil, Save, X, Loader2, Shield, Lock, Unlock, Download, CheckCircle2, XCircle, Clock, Trash2, ChevronDown, ScrollText } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
+import { ProvisionssatzBearbeiten } from "@/components/nutzerverwaltung/ProvisionssatzBearbeiten";
 import { ROLES, type UserRole } from "@/types/user";
 import { rollenLabel, rollenVarianteVonProfil } from "@/lib/rollenLabel";
 import { supabase } from "@/integrations/supabase/client";
-import { confirmDialog } from "@/lib/confirm";
 import { toast } from "sonner";
 import { isUrlAllowedForRole } from "@/lib/sidebarPermissions";
-import { logAudit } from "@/lib/auditLog";
 import { TeamleaderSelect } from "@/components/nutzerverwaltung/TeamleaderSelect";
 
 interface MemberData {
@@ -155,14 +154,9 @@ export default function TeampartnerProfil() {
   const [savingPerms, setSavingPerms] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  // Opt-In: Sidebar/Routen nach Karrierestufe einschränken. Default AUS
-  // (Bestandsschutz — bisherige Vertriebspartner sehen das komplette CRM).
-  const [karriereGatingActive, setKarriereGatingActive] = useState<boolean>(false);
   const [customProvisionRate, setCustomProvisionRate] = useState<number | null>(null);
   const [customProvisionRateSetter, setCustomProvisionRateSetter] = useState<number | null>(null);
   const [customProvisionRateEigen, setCustomProvisionRateEigen] = useState<number | null>(null);
-  const [provisionLocked, setProvisionLocked] = useState<boolean>(false);
-  const [showUnlockConfirm, setShowUnlockConfirm] = useState<boolean>(false);
   const [teamleaderId, setTeamleaderId] = useState<string | null>(null);
 
   // Audit-Verlauf
@@ -244,11 +238,9 @@ export default function TeampartnerProfil() {
       setUnterlagen((settingsData as any)?.unterlagen || []);
       setOnboardingComplete((settingsData as any)?.onboarding_complete ?? false);
       setCustomPermissions(einst.custom_permissions || []);
-      setKarriereGatingActive(!!einst.karriere_gating_active);
       setCustomProvisionRate(typeof einst.custom_provision_rate === "number" ? einst.custom_provision_rate : null);
       setCustomProvisionRateSetter(typeof einst.custom_provision_rate_setter === "number" ? einst.custom_provision_rate_setter : null);
       setCustomProvisionRateEigen(typeof einst.custom_provision_rate_eigen === "number" ? einst.custom_provision_rate_eigen : null);
-      setProvisionLocked(!!einst.provision_locked);
       setTeamleaderId(einst.teamleader_id || null);
       setSelectedRole(primaryRole);
       setSelectedRoles(userRoles.length > 0 ? userRoles : [primaryRole]);
@@ -524,179 +516,19 @@ export default function TeampartnerProfil() {
                 </div>
               )}
               </div>
-              {["vertriebspartner"].some(r => selectedRoles.includes(r)) && (() => {
-                // Seit 15.10.2026 ohne Karrierestufe: es gilt der feste Satz
-                // aus diesen Feldern, getrennt nach Lead und Eigen.
-                return (
-                <div className="border rounded-lg p-4 bg-muted/30 space-y-3">
-                  <div className="text-sm font-medium">Provisionssatz</div>
-                  {/* Die Einschränkung nach Karrierestufe gibt es nicht mehr.
-                      Wer sie noch aktiv hat, soll sie hier abschalten können. */}
-                  {karriereGatingActive && (
-                    <div className="flex items-start gap-2 rounded-md border bg-background/60 p-2">
-                      <Switch
-                        checked={karriereGatingActive}
-                        onCheckedChange={async (v) => {
-                          setKarriereGatingActive(v);
-                          try {
-                            const { error } = await supabase.rpc("merge_user_settings" as any, {
-                              _user_id: member.id,
-                              _patch: { karriere_gating_active: v },
-                            });
-                            if (error) throw error;
-                            toast.success("Sidebar zeigt wieder den vollen CRM-Zugriff");
-                          } catch (err: any) {
-                            setKarriereGatingActive(!v);
-                            toast.error(`Fehler: ${err.message}`);
-                          }
-                        }}
-                      />
-                      <div className="space-y-0.5 text-[11px] leading-tight">
-                        <p className="font-medium">Sidebar nach alter Karrierestufe eingeschränkt</p>
-                        <p className="text-muted-foreground">Ausschalten, damit der Partner das komplette CRM sieht.</p>
-                      </div>
-                    </div>
-                  )}
-                  <div className="grid grid-cols-2 gap-4">
-                    {/* Altbestand: Der allgemeine Satz gilt, wo Lead oder Eigen
-                        leer ist. Neu vergeben wird er nicht, deshalb nur, wenn
-                        einer hinterlegt ist. */}
-                    {customProvisionRate !== null && (
-                    <div className="space-y-1 col-span-2">
-                      <Label className="text-xs text-muted-foreground">Allgemeiner Satz (%), gilt wo Lead/Eigen leer</Label>
-                      <Input
-                        type="number" min={0} max={100} step={0.01}
-                        value={customProvisionRate ?? ""}
-                        onChange={(e) => setCustomProvisionRate(e.target.value === "" ? null : parseFloat(e.target.value))}
-                        disabled={provisionLocked}
-                      />
-                    </div>
-                    )}
-                    <div className="space-y-1">
-                      <Label className="text-xs text-muted-foreground">Lead-Satz (%)</Label>
-                      <Input
-                        type="number" min={0} max={100} step={0.01}
-                        placeholder="z. B. 5"
-                        value={customProvisionRateSetter ?? ""}
-                        onChange={(e) => setCustomProvisionRateSetter(e.target.value === "" ? null : parseFloat(e.target.value))}
-                        disabled={provisionLocked}
-                      />
-                      <p className="text-[10px] text-muted-foreground">Für Leads, die OS Immobilien zuweist</p>
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-xs text-muted-foreground">Eigen-Satz (%)</Label>
-                      <div className="flex items-center gap-2">
-                        <Input
-                          type="number" min={0} max={100} step={0.01}
-                          placeholder="z. B. 7.14"
-                          value={customProvisionRateEigen ?? ""}
-                          onChange={(e) => setCustomProvisionRateEigen(e.target.value === "" ? null : parseFloat(e.target.value))}
-                          disabled={provisionLocked}
-                        />
-                        <Button size="sm" variant="outline" disabled={provisionLocked} onClick={async () => {
-                          try {
-                            const vorher = {
-                              custom_provision_rate: (member as any)?.einstellungen?.custom_provision_rate ?? null,
-                              custom_provision_rate_setter: (member as any)?.einstellungen?.custom_provision_rate_setter ?? null,
-                              custom_provision_rate_eigen: (member as any)?.einstellungen?.custom_provision_rate_eigen ?? null,
-                            };
-                            const { error } = await supabase.rpc("merge_user_settings" as any, {
-                              _user_id: member.id,
-                              _patch: {
-                                custom_provision_rate: customProvisionRate,
-                                custom_provision_rate_setter: customProvisionRateSetter,
-                                custom_provision_rate_eigen: customProvisionRateEigen,
-                              },
-                            });
-                            if (error) throw error;
-                            void logAudit({
-                              action: "provision_satz_override",
-                              entity: "user_settings",
-                              entityId: member.id,
-                              vorher,
-                              nachher: {
-                                custom_provision_rate: customProvisionRate,
-                                custom_provision_rate_setter: customProvisionRateSetter,
-                                custom_provision_rate_eigen: customProvisionRateEigen,
-                              },
-                              meta: { target_user: `${member.vorname} ${member.nachname}` },
-                            });
-                            toast.success("Provisionssätze gespeichert");
-                          } catch (err: any) { toast.error(`Fehler: ${err.message}`); }
-                        }}>
-                          <Save className="h-3.5 w-3.5" />
-                        </Button>
-                      </div>
-                      <p className="text-[10px] text-muted-foreground">Für Kontakte aus dem eigenen Netzwerk</p>
-                    </div>
-                  </div>
-                  {/* Lock-Toggle */}
-                  <div className="mt-3 flex items-center justify-between rounded-md border border-dashed border-amber-500/40 bg-amber-500/5 px-3 py-2">
-                    <div className="flex items-center gap-2 text-xs">
-                      <span className="text-amber-600 dark:text-amber-400">
-                        {provisionLocked ? "🔒 Provisionssätze sind festgeschrieben" : "🔓 Provisionssätze können geändert werden"}
-                      </span>
-                    </div>
-                    <Button
-                      size="sm"
-                      variant={provisionLocked ? "outline" : "default"}
-                      onClick={async () => {
-                        if (provisionLocked) {
-                          const ok = await confirmDialog({
-                            title: "Provisionssätze entsperren?",
-                            description: "Danach lassen sich die Werte wieder ändern.",
-                            confirmText: "Entsperren",
-                            cancelText: "Festgeschrieben lassen",
-                          });
-                          if (!ok) return;
-                        }
-                        try {
-                          // Beim Festschreiben: aktuelle Input-Werte MIT speichern,
-                          // sonst geht eine ungespeicherte Änderung verloren.
-                          const patch: Record<string, any> = provisionLocked
-                            ? { provision_locked: false }
-                            : {
-                                provision_locked: true,
-                                provision_locked_at: new Date().toISOString(),
-                                custom_provision_rate: customProvisionRate,
-                                custom_provision_rate_setter: customProvisionRateSetter,
-                                custom_provision_rate_eigen: customProvisionRateEigen,
-                              };
-                          const { error } = await supabase.rpc("merge_user_settings" as any, {
-                            _user_id: member.id,
-                            _patch: patch,
-                          });
-                          if (error) throw error;
-                          void logAudit({
-                            action: "provision_lock_changed",
-                            entity: "user_settings",
-                            entityId: member.id,
-                            vorher: { provision_locked: provisionLocked },
-                            nachher: provisionLocked
-                              ? { provision_locked: false }
-                              : {
-                                  provision_locked: true,
-                                  custom_provision_rate: customProvisionRate,
-                                  custom_provision_rate_setter: customProvisionRateSetter,
-                                  custom_provision_rate_eigen: customProvisionRateEigen,
-                                },
-                            meta: { target_user: `${member.vorname} ${member.nachname}` },
-                          });
-                          setProvisionLocked(!provisionLocked);
-                          toast.success(
-                            provisionLocked
-                              ? "Entsperrt"
-                              : "🔒 Festgeschrieben — Werte gespeichert und gesperrt"
-                          );
-                        } catch (err: any) { toast.error(`Fehler: ${err.message}`); }
-                      }}
-                    >
-                      {provisionLocked ? "Entsperren" : "🔒 Festschreiben"}
-                    </Button>
-                  </div>
-                </div>
-                );
-              })()}
+              {["vertriebspartner"].some(r => selectedRoles.includes(r)) && (
+                // Seit 15.10.2026 ohne Karrierestufe, Festschreibung und
+                // Sidebar-Sperre: nur Lead- und Eigen-Satz. Fehlt einer,
+                // steht der allgemeine Satz (Altbestand) als Vorschlag da.
+                <ProvisionssatzBearbeiten
+                  key={member.id}
+                  userId={member.id}
+                  zielName={`${member.vorname} ${member.nachname}`}
+                  lead={customProvisionRateSetter ?? customProvisionRate}
+                  eigen={customProvisionRateEigen ?? customProvisionRate}
+                  darfBearbeiten={["admin", "inhaber"].includes(user.role)}
+                />
+              )}
             </div>
           )}
         </div>
