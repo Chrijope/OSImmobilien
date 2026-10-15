@@ -32,3 +32,26 @@ describe("Vorschau-Route der Investmentkalkulation", () => {
     expect(routen).toMatch(/import\.meta\.env\.DEV\s*\?\s*lazy\(\(\) => import\("\.\/pages\/VorschauInvestmentrechner"\)\)/);
   });
 });
+
+describe("Vorschau-Route Pipeline am Investment", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+
+  it("existiert nur im Entwicklungsmodus", async () => {
+    vi.stubEnv("DEV", true);
+    expect((await import("./vorschauRouten")).VorschauPipeline).not.toBeNull();
+    vi.resetModules();
+    vi.stubEnv("DEV", false);
+    vi.stubEnv("PROD", true);
+    expect((await import("./vorschauRouten")).VorschauPipeline).toBeNull();
+  });
+
+  it("App.tsx bindet sie nur über den abgesicherten Weg ein", () => {
+    const app = readFileSync("src/App.tsx", "utf8");
+    expect(app).not.toMatch(/pages\/VorschauPipeline/);
+    expect(app).toMatch(/\{VorschauPipeline && <Route path="\/vorschau\/pipeline"/);
+  });
+});
+

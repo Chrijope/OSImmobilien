@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
 import { KontaktTypBadge } from "@/components/kunden/KontaktTypBadge";
-import { getEffectivePipelineStufe, calculateLogicalPipelineStufe, investmentAnzeigeStufe, PIPELINE_STUFEN, buildBucketEntries, type PipelineStufe } from "@/lib/kontaktPipeline";
+import { getEffectivePipelineStufe, calculateLogicalPipelineStufe, buildPipelineKarten, getInvestmentStufenFuerKunde, PIPELINE_STUFEN, buildBucketEntries, type PipelineStufe } from "@/lib/kontaktPipeline";
 import { stufenFilterLabel, kontaktGanzVerloren } from "@/lib/pipelineStufen";
 import { sichtfenster } from "@/lib/pipelineSichtfenster";
 import { getInboxTasks } from "@/lib/aktivitaetenStore";
@@ -115,34 +115,9 @@ const GESAMT_STUFEN = new Set([
   "faelligkeit", "abrechnung", "abgeschlossen", "bestandskunden", "bestandsimport",
 ]);
 
-function buildPipelineEntries(kunden: KundeData[]): PipelineEntry[] {
-  const entries: PipelineEntry[] = [];
-  for (const k of kunden) {
-    // Archivierte und als Ganzes verlorene Kontakte bleiben EINE Karte.
-    if (k.archiviert) {
-      entries.push({ kunde: k, stufe: "archiviert", entryKey: k.id });
-      continue;
-    }
-    if (k.status === "verloren" || k.status === "inaktiv") {
-      entries.push({ kunde: k, stufe: "verloren", entryKey: k.id });
-      continue;
-    }
-    const invs = getInvestmentsByKontakt(k.id);
-    /*
-     * Eine Karte je Investment, in dessen eigener Stufe (11.10.2026), auch bei
-     * nur einem. Bis dahin stand ein Kunde mit einem Investment bis zur
-     * Selbstauskunft in der Stufe des Kontakts. Investment 2 erscheint so von
-     * Anfang an als eigene Karte, unabhängig von Investment 1.
-     */
-    for (const inv of invs) {
-      const s = investmentAnzeigeStufe(k, inv.pipelineStufe) || "neuer_lead";
-      entries.push({ kunde: k, stufe: s, investmentId: inv.id, entryKey: `${k.id}__${inv.id}` });
-    }
-    // Ohne Investment (vor der Migration 20261011160000): die Stufe des Kontakts.
-    if (invs.length === 0) entries.push({ kunde: k, stufe: getStufe(k), entryKey: k.id });
-  }
-  return entries;
-}
+// Die Kartenlogik liegt in kontaktPipeline.ts (buildPipelineKarten), damit
+// die lokale Vorschau dieselbe Regel zeigt wie diese Seite.
+const buildPipelineEntries = (kunden: KundeData[]): PipelineEntry[] => buildPipelineKarten(kunden);
 
 const isSetterRole = (role: string) => role === "setterin";
 const isVersicherungsexperte = (role: string) => role === "versicherungsexperte";
@@ -1161,13 +1136,18 @@ export default function Pipeline() {
         if (!matches) return false;
       }
       if (statusFilter !== "alle") {
-        if (getStufe(k) !== statusFilter) return false;
+        // Ein Kunde bleibt, wenn eines seiner Investments in der Stufe steht (11.10.2026).
+        if (!getInvestmentStufenFuerKunde(k).some((e) => e.stufe === statusFilter)) return false;
       }
       return true;
     });
   }, [kontakte, filter, statusFilter, beraterFilter, teamView, showArchived, isTeamLead, siehtGanzesHaus, teamIds, isSetter, isVExperte, myUserId]);
 
-  const pipelineEntries = useMemo(() => buildPipelineEntries(filteredKontakte), [filteredKontakte, liveVersion]);
+  // Mit Stufenfilter nur die Karten dieser Stufe, nicht die anderen Investments desselben Kunden.
+  const pipelineEntries = useMemo(
+    () => buildPipelineEntries(filteredKontakte).filter((e) => statusFilter === "alle" || e.stufe === statusFilter),
+    [filteredKontakte, liveVersion, statusFilter],
+  );
 
   // Virtuelle Spalte "Bestandskunden" – spiegelt die Sidebar-Liste 'Bestandskunden' wider.
   const bestandskundenEntries: PipelineEntry[] = useMemo(() => {

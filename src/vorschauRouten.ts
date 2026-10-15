@@ -12,3 +12,12 @@ import { lazy } from "react";
 export const VorschauInvestmentrechner = import.meta.env.DEV
   ? lazy(() => import("./pages/VorschauInvestmentrechner"))
   : null;
+
+/*
+ * Lokale Vorschau "Pipeline am Investment", seit dem 15.10.2026:
+ * /vorschau/pipeline. Gleiche Absicherung wie oben, nur `npm run dev`.
+ */
+export const VorschauPipeline = import.meta.env.DEV
+  ? lazy(() => import("./pages/VorschauPipeline"))
+  : null;
+

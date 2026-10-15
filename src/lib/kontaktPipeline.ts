@@ -599,3 +599,42 @@ export function buildBucketEntries(kontakte: KundeData[], bucket: ProzessBereich
   }
   return out;
 }
+
+/** Eine Karte der Pipeline-Seite. */
+export interface PipelineKarte {
+  kunde: KundeData;
+  stufe: PipelineStufe;
+  investmentId?: string;
+  entryKey: string;
+}
+
+/**
+ * Die Karten der Pipeline-Seite (11.10.2026): eine Karte je Investment, in
+ * dessen eigener Stufe, auch bei nur einem. Bis dahin stand ein Kunde mit
+ * einem Investment bis zur Selbstauskunft in der Stufe des Kontakts.
+ * Investment 2 erscheint so von Anfang an als eigene Karte, unabhängig von
+ * Investment 1. Archivierte und als Ganzes verlorene Kontakte bleiben EINE
+ * Karte; ein Kontakt ohne Investment (vor der Migration 20261011160000)
+ * steht in seiner eigenen Stufe.
+ */
+export function buildPipelineKarten(kunden: KundeData[]): PipelineKarte[] {
+  const karten: PipelineKarte[] = [];
+  for (const k of kunden) {
+    if (k.archiviert) {
+      karten.push({ kunde: k, stufe: "archiviert", entryKey: k.id });
+      continue;
+    }
+    if (k.status === "verloren" || k.status === "inaktiv") {
+      karten.push({ kunde: k, stufe: "verloren", entryKey: k.id });
+      continue;
+    }
+    const invs = getInvestmentsByKontakt(k.id);
+    for (const inv of invs) {
+      const s = investmentAnzeigeStufe(k, inv.pipelineStufe) || "neuer_lead";
+      karten.push({ kunde: k, stufe: s, investmentId: inv.id, entryKey: `${k.id}__${inv.id}` });
+    }
+    if (invs.length === 0) karten.push({ kunde: k, stufe: getEffectivePipelineStufe(k), entryKey: k.id });
+  }
+  return karten;
+}
+
