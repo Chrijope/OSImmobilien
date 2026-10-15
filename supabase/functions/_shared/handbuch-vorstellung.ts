@@ -31,7 +31,7 @@
  */
 import { handbuchRahmen, istKonfiguratorQuelle, pruefeAntworten, rahmenText } from "./handbuch-funnel.ts";
 
-export const VORSTELLUNG_TITEL = "Objekt-Vorstellungstermin vereinbaren";
+export const VORSTELLUNG_TITEL = "Selbstauskunft fertig: Vorstellungstermin vereinbaren";
 export const VORSTELLUNG_PRAEFIX = "objekt_vorstellung:";
 
 export function vorstellungSchluessel(kontaktId: string): string {

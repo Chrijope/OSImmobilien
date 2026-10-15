@@ -84,7 +84,8 @@ import {
   addEmpfehlung,
 } from "@/lib/empfehlungenStore";
 import { addKontakt } from "@/lib/kundenStore";
-import { addAufgabe } from "@/lib/aufgabenStore";
+import { sichereUnterlagenPruefaufgabe } from "@/lib/unterlagenMitteilung";
+import { legeEmpfehlungAufgabeAn } from "@/lib/empfehlungAufgabe";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { normalizeTelefon } from "@/lib/phoneUtils";
 import { MobileScanQRDialog } from "@/components/MobileScanQRDialog";
@@ -537,20 +538,16 @@ function BonitaetsUnterlagenKunde({ inv, kunde, forceUpdate }: { inv: Investment
 
   const handleSenden = () => {
     setUnterlagenGesendet(kunde.id, inv.id);
-    // Create notification for backoffice
-    // Geht an den Berater. Vorher landete die Aufgabe in der Inbox des
-    // Kunden, obwohl der Text sich eindeutig an den Berater richtet.
-    void addAufgabe({
+    // Dieselbe eine Prüfaufgabe je Investment wie beim Hochladen, beim
+    // Einreichen mit zwei Tagen Frist. Sie legt die Datenbank an, nie der
+    // Kunde, siehe `unterlagenMitteilung.ts`.
+    void sichereUnterlagenPruefaufgabe({
       kontaktId: kunde.id,
-      typ: "aufgabe",
-      prioritaet: "hoch",
-      titel: `Bonitätsunterlagen prüfen: ${kunde.vorname} ${kunde.nachname}`,
+      investmentId: inv.id,
       beschreibung: `${kunde.vorname} ${kunde.nachname} hat die Bonitätsunterlagen über das Kundenportal eingereicht. Bitte prüfen und freigeben.`,
-      faelligAm: new Date(Date.now() + 2 * 86400000).toISOString().split("T")[0],
-      uhrzeit: "09:00",
-      zugewiesenAn: (kunde as any).zustaendig_id || undefined,
+      tageBisFaellig: 2,
+      zustaendigId: (kunde as any).zustaendig_id || undefined,
       erstelltVonName: `${kunde.vorname} ${kunde.nachname}`,
-      ausloeserSchluessel: `portal:bonitaet:${kunde.id}:${inv.id}`,
     });
     forceUpdate(n => n + 1);
   };
@@ -1290,6 +1287,7 @@ function InvestmentView({ inv, kunde }: { inv: Investment; kunde: ReturnType<typ
           const vn = nameParts[0] || empName.trim();
           const nn = nameParts.slice(1).join(" ") || "";
 
+          let empfehlungId: string | null = null;
           try {
             // Use server-side function to create both contact + empfehlung (bypasses RLS)
             const { data, error } = await supabase.rpc("create_empfehlung_kontakt", {
@@ -1307,6 +1305,7 @@ function InvestmentView({ inv, kunde }: { inv: Investment; kunde: ReturnType<typ
             });
             if (error) throw error;
             const result = data as any;
+            empfehlungId = result?.empfehlung_id ? String(result.empfehlung_id) : null;
             if (result?.duplicate) {
               toast.info(`Hinweis: ${result.duplicate_name || "Diese Person"} ist bereits in unserem System. Wir haben die Empfehlung trotzdem an deinen Vertriebspartner weitergegeben.`);
             }
@@ -1331,16 +1330,12 @@ function InvestmentView({ inv, kunde }: { inv: Investment; kunde: ReturnType<typ
             });
           }
 
-          // Inbox notification for VP
-          void addAufgabe({
+          // Die Aufgabe fuer den Zustaendigen, ohne ihn die Leitung, legt die Datenbank an.
+          void legeEmpfehlungAufgabeAn({
             kontaktId: kunde.id,
-            typ: "anruf",
-            prioritaet: "hoch",
-            titel: `Empfehlung von ${kunde.vorname} ${kunde.nachname}`,
+            empfehlungId,
             beschreibung: `Dein Kunde ${kunde.vorname} ${kunde.nachname} hat eine Empfehlung gesendet: ${empName.trim()} (${empTelefon.trim()}). Beziehung: ${empBeziehung.trim()}. Bitte zeitnah kontaktieren.`,
-            faelligAm: new Date(Date.now() + 86400000).toISOString().split("T")[0],
-            uhrzeit: "09:00",
-            zugewiesenAn: (kunde as any).zustaendig_id || undefined,
+            zustaendigId: (kunde as any).zustaendig_id || undefined,
             erstelltVonName: `${kunde.vorname} ${kunde.nachname}`,
           });
 

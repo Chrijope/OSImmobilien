@@ -1731,7 +1731,7 @@ Deno.serve(async (req) => {
           benutzer_id: zustaendigId,
           zugewiesen_an: zustaendigId,
           kontakt_id: newKontaktId,
-          titel: `Neuer Lead erhalten: ${kontaktName}`,
+          titel: "Neuer Lead: Kunden innerhalb einer Stunde anrufen",
           beschreibung: `Neuer Lead erhalten: ${kontaktName}. Bitte anrufen und qualifizieren. Viel Erfolg!${notizen ? `\n\n${notizen}` : ""}`,
           typ: "anruf",
           status: "offen",

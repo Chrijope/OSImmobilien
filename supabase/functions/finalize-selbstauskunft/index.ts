@@ -589,13 +589,25 @@ Deno.serve(async (req) => {
         console.error("Failed to cancel scheduled_notifications:", notifErr);
       }
 
+      // Beide Nachfass-Aufgaben (nach 48 Stunden aus dem Browser, nach 14
+      // Tagen aus dem Serverlauf) am Ausloeser, dazu Altbestaende am Titel.
+      // Offen und in Bearbeitung, jeweils mit Erledigt-Zeitpunkt.
+      const erledigtPatch = { status: "erledigt", erledigt_am: new Date().toISOString() };
       try {
-        await supabase
+        const { error: schluesselFehler } = await supabase
           .from("aufgaben")
-          .update({ status: "erledigt" })
+          .update(erledigtPatch)
           .eq("kontakt_id", kontaktId)
-          .eq("status", "offen")
+          .in("status", ["offen", "in_bearbeitung"])
+          .in("ausloeser_schluessel", [`sa_nachfass:${investmentId}`, `selbstauskunft_offen:${investmentId}`]);
+        if (schluesselFehler) console.error("Failed to close SA follow-up tasks:", schluesselFehler);
+        const { error: titelFehler } = await supabase
+          .from("aufgaben")
+          .update(erledigtPatch)
+          .eq("kontakt_id", kontaktId)
+          .in("status", ["offen", "in_bearbeitung"])
           .like("titel", "SA-Nachfass:%");
+        if (titelFehler) console.error("Failed to close SA follow-up tasks:", titelFehler);
       } catch (aufgErr) {
         console.error("Failed to close SA follow-up tasks:", aufgErr);
       }

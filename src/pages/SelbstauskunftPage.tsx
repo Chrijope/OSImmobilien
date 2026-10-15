@@ -7,7 +7,6 @@ import { SelbstauskunftForm } from "@/components/selbstauskunft/SelbstauskunftFo
 import { getKontaktById } from "@/lib/kundenStore";
 import { updateInvestment, setSaEditStatus, setSaSignaturePending } from "@/lib/investmentsStore";
 import { updateKontakt } from "@/lib/kundenStore";
-import { addGeteilteAufgabe } from "@/lib/aktivitaetenStore";
 import { sendeSelbstauskunftEinladung, hatAngefangenenStand } from "@/lib/selbstauskunftEinladung";
 import { getSaInvitationSentAt } from "@/lib/investmentsStore";
 import { useToast } from "@/hooks/use-toast";
@@ -485,17 +484,8 @@ export default function SelbstauskunftPage() {
                 <AlertDialogCancel>Abbrechen</AlertDialogCancel>
                 <AlertDialogAction onClick={() => {
                   setSaEditStatus(investmentId, "unterschrift_versendet");
-                  // Notify backoffice
-                  addGeteilteAufgabe({
-                    titel: `SA-Änderung zur Unterschrift versendet: ${kunde.vorname} ${kunde.nachname}`,
-                    beschreibung: `Die geänderte Selbstauskunft für ${kunde.vorname} ${kunde.nachname} wurde zur Unterschrift an Person 1${kunde.person2 ? " + Person 2" : ""} versendet. Nach Rücklauf werden alle Berechnungen aktualisiert.`,
-                    prioritaet: "mittel",
-                    typ: "aufgabe",
-                    faellig_am: new Date(Date.now() + 3 * 86400000).toISOString().split("T")[0],
-                    uhrzeit: "09:00",
-                    kundeId: kundeId,
-                    kundeName: `${kunde.vorname} ${kunde.nachname}`,
-                  });
+                  // Keine Aufgabe mehr (seit 15.10.2026): Sie meldete nur, was
+                  // gerade geschehen war, und bewirkte nichts.
                   setSignatureSent(true);
                   setTimeout(() => navigate(`/kunden/${kundeId}`), 2000);
                 }} className="gap-1.5">

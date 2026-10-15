@@ -147,14 +147,19 @@ describe("No-Show beim Erstgespräch: der Lead bleibt beim Partner", () => {
     expect(t.invUpdate).not.toHaveBeenCalledWith("inv-weit", expect.anything());
     expect(getNextSteps("eg_noshow", false)?.titel).toBe("Neuen Erstgesprächstermin vereinbaren");
 
-    // Glocke und Aufgaben nur an den Zuständigen.
+    // Glocke und genau eine Aufgabe (seit 15.10.2026, vorher drei) nur an den Zuständigen.
     expect(t.glocke).toHaveBeenCalledTimes(1);
     expect(t.glocke.mock.calls[0][0]).toBe("vp-1");
-    expect(t.aufgabe).toHaveBeenCalledTimes(3);
-    for (const [aufgabe] of t.aufgabe.mock.calls) {
-      expect(aufgabe.zugewiesenAn).toBe("vp-1");
-      expect(aufgabe.titel).toContain("neuen Erstgesprächstermin vereinbaren");
-    }
+    expect(t.glocke.mock.calls[0][1].titel).toContain("neuen Erstgesprächstermin vereinbaren");
+    expect(t.aufgabe).toHaveBeenCalledTimes(1);
+    expect(t.aufgabe.mock.calls[0][0]).toMatchObject({
+      zugewiesenAn: "vp-1",
+      titel: "Kunde nicht erschienen: anrufen und neuen Termin vereinbaren",
+      typ: "anruf",
+      prioritaet: "hoch",
+      uhrzeit: "09:00",
+      ausloeserSchluessel: "termin_noshow_fest_k-1_2026-09-20 10:00",
+    });
 
     const texte = sichtbareTexte();
     expect(texte).not.toMatch(/setter/i);
@@ -180,7 +185,8 @@ describe("Beratungsgespräch: dieselbe Nachfrage wie beim Erstgespräch", () => 
     expect(patches).toContainEqual({ pipelineStufe: "bg_noshow" });
     // Kein Setter-Feld: Ergebnis und Historie am Kontakt bleiben unberührt.
     expect(patches.some((p) => "terminErgebnis" in p || "noShowHistorie" in p)).toBe(false);
-    expect(t.aufgabe.mock.calls[0][0].titel).toContain("neuen Beratungstermin vereinbaren");
+    expect(t.glocke.mock.calls[0][1].titel).toContain("neuen Beratungstermin vereinbaren");
+    expect(t.aufgabe.mock.calls[0][0].titel).toBe("Kunde nicht erschienen: anrufen und neuen Termin vereinbaren");
     expect(getNextSteps("bg_noshow", false)?.titel).toBe(f.neuerTerminSchritt("Beratungsgespräch"));
   });
 
@@ -301,12 +307,12 @@ describe("Bestandsfall: No-Show schon erfasst (Punkt 6)", () => {
     const k = kunde({ pipelineStufe: "beratungsgespraech", setterTerminDatum: "" });
     const termin = { titel: "Beratungsgespräch", datum: "2026-06-24", uhrzeit: "14:00" };
     await f.festerTerminNichtStattgefunden(termin, ctx(k));
-    expect(t.aufgabe).toHaveBeenCalledTimes(3);
+    expect(t.aufgabe).toHaveBeenCalledTimes(1);
     // Der Kontakt traegt jetzt den No-Show; so kommt er beim naechsten Laden.
     const merged = t.merge.mock.calls[0][1] as Record<string, unknown>;
     const k2 = kunde({ pipelineStufe: "bg_noshow", setterTerminDatum: "", meta: merged });
     await f.festerTerminNichtStattgefunden(termin, ctx(k2));
-    expect(t.aufgabe).toHaveBeenCalledTimes(3);
+    expect(t.aufgabe).toHaveBeenCalledTimes(1);
   });
 });
 

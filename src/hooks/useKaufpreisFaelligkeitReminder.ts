@@ -104,7 +104,7 @@ export function useKaufpreisFaelligkeitReminder(userRole?: string, userId?: stri
             kontaktId: inv.kontaktId,
             typ: "aufgabe",
             prioritaet: "hoch",
-            titel: `Kaufpreisfälligkeit prüfen: ${kundeName}`,
+            titel: "Kaufpreisfälligkeit fehlt: beim Notar erfragen",
             beschreibung:
               `Zwei Wochen nach dem Notartermin am ${new Date(inv.notarTermin).toLocaleDateString("de-DE")} für ${kundeName} (${inv.label}). ` +
               `Bitte die Kaufpreisfälligkeit prüfen. Sobald Fälligkeitsdatum und Grundbucheintrag vorliegen, beides im Investment unter Abwicklung eintragen.`,

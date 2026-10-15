@@ -2696,5 +2696,28 @@
     ],
     "soFindestDuEs": "Auswertungen, Karte Dein Provisionssatz. Für die Leitung: Nutzerverwaltung, Spalte Provision.",
     "kritisch": false
+  },
+  {
+    "nr": 131,
+    "datum": "2026-10-16",
+    "art": "geaendert",
+    "titel": "Weniger und klarere automatische Aufgaben, eine Kachel Nächste Aktionen",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "backoffice",
+      "admin",
+      "inhaber"
+    ],
+    "kurztext": "Im Kundenprofil gibt es nur noch die Kachel Nächste Aktionen, und das CRM legt weniger, dafür klar benannte Aufgaben an.",
+    "wasHeisstDasFuerDich": [
+      "Termine, Aufgaben und Follow-ups stehen in einer Kachel, jeder Eintrag nur einmal. Die Kachel Offene Aufgaben gibt es nicht mehr.",
+      "Weggefallen sind unter anderem Danke-Mail, Unterlagen zusenden, Entscheidung nachfragen, Finanzierung besprechen und Glückwunsch-Anruf. No-Show, Selbstauskunft-Nachfass und Unterlagen prüfen kommen nur noch einmal.",
+      "Den Nachfass-Anruf bekommst du drei Tage nach einem stattgefundenen Erstgespräch.",
+      "Die Titel nennen zuerst den Anlass, dann was zu tun ist. Aufgaben gehen an den zuständigen Partner, ohne ihn an die Leitung.",
+      "Spricht ein Kunde Englisch, bekommt jedes Backoffice die Dolmetscher-Aufgabe. Ist sie bei einer Person erledigt, ist sie es für alle."
+    ],
+    "soFindestDuEs": "Kundenprofil, Kachel Nächste Aktionen; Inbox, Aufgaben.",
+    "kritisch": false
   }
 ]

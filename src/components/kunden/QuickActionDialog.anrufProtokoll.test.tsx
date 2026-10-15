@@ -235,7 +235,7 @@ describe('Verdrahtung im Kundenprofil', () => {
   it('legt bei „Nicht erreicht“ keine zweite Aufgabe an, wenn der Nutzer selbst eine anlegt', () => {
     expect(seite).toContain('handleSetterNichtErreicht({ ohneNachfassAufgabe: r.eigeneAufgabe })');
     const zweig = seite.slice(seite.indexOf('if (isAdvancedStage) {'), seite.indexOf('// E-Mail an Lead bei jedem Versuch'));
-    expect(zweig).toMatch(/if \(!opts\.ohneNachfassAufgabe\) \{\s*try \{\s*addGeteilteAufgabe\(/);
+    expect(zweig).toMatch(/if \(!opts\.ohneNachfassAufgabe\) \{\s*try \{\s*void addProzessAufgabe\(/);
   });
 
   it('gibt dem Dialog weiter, dass ein Anruf lief, und vergisst es beim Schließen', () => {

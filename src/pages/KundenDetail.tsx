@@ -129,6 +129,10 @@ import { kontaktQuelleAnzeige } from "@/lib/kontaktQuelle";
 import { UebergabeGrundFeld } from "@/components/kunden/UebergabeGrundFeld";
 import { grundSatz, grundVollstaendig, type UebergabeGrund } from "@/lib/uebergabeGrund";
 import { getAktivitaeten, addAktivitaet, addAktivitaetSicher, addGeteilteAufgabe, updateAktivitaet, ART_LABELS, type AktivitaetEntry, setzeAktivitaetErledigt, setzeNotizAngepinnt } from "@/lib/aktivitaetenStore";
+import { addProzessAufgabe } from "@/lib/prozessAufgabe";
+import { speichereMeeting } from "@/lib/meetingSpeichern";
+import { TERMINE_AKTUALISIERT_EVENT } from "@/lib/terminAnzeige";
+import { istErstgespraech, legeNachfassNachErstgespraechAn, NACHFASS_FEHLER_TEXT, NACHFASS_FEHLER_TITEL } from "@/lib/nachfassNachErstgespraech";
 import { darfEintragEntfernen, darfNotizBearbeiten, darfVorgangBearbeiten, istSystemEintrag, LEITUNG_ROLLEN, type Rechtekontext } from "@/lib/aktivitaetRechte";
 import {
   alleFormulierungen,
@@ -3470,21 +3474,22 @@ export default function KundenDetail() {
       addAktivitaet({ kundeId: id, art: "anruf", beschreibung: `Kontaktversuch ${count} – Nicht erreicht (Stufe „${effStufe}"). Keine Wartezeit, bitte manuell nachfassen.`, von: user.name });
       if (!opts.ohneNachfassAufgabe) {
         try {
-          addGeteilteAufgabe({
-            titel: `Nachfassen: ${kunde.vorname} ${kunde.nachname}`.trim(),
-            beschreibung: `Kunde nicht erreicht in fortgeschrittener Stufe „${effStufe}". Bitte Termin klären.`,
+          void addProzessAufgabe({
+            titel: "Nicht erreicht: morgen erneut anrufen",
+            beschreibung: `${`${kunde.vorname} ${kunde.nachname}`.trim()} nicht erreicht in fortgeschrittener Stufe „${effStufe}". Bitte Termin klären.`,
             prioritaet: "hoch",
             typ: "aufgabe",
             faellig_am: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
             uhrzeit: "10:00",
             kundeId: id,
             kundeName: `${kunde.vorname} ${kunde.nachname}`.trim(),
+            erstelltVonName: user.name,
             // Kennzeichnet die Aufgabe als selbst erzeugte Wiedervorlage aus
             // einem Kontaktversuch. Die Pipeline-Ampel darf sie deshalb nicht
             // als versäumten Termin werten: Es gab nie einen Termin, nur einen
             // Anruf, bei dem niemand rangegangen ist.
             ausloeserSchluessel: `nicht_erreicht:${id}`,
-          });
+          }, kunde.zustaendig_id || undefined);
         } catch (e) { console.warn("addInboxTask (advanced-stage nicht erreicht) failed:", e); }
       }
       reloadKunde();
@@ -3492,7 +3497,7 @@ export default function KundenDetail() {
         title: "Nicht erreicht protokolliert",
         description: opts.ohneNachfassAufgabe
           ? "Deine Aufgabe steht in der Inbox."
-          : `Aufgabe „Nachfassen" wurde in der Inbox erstellt.`,
+          : "Aufgabe „Nicht erreicht: morgen erneut anrufen“ wurde in der Inbox erstellt.",
       });
       return;
     }
@@ -5836,10 +5841,43 @@ export default function KundenDetail() {
       console.error("Ergebnis-Termin konnte nicht geladen werden:", fehler);
     }
     if (!gefunden) {
-      await hinweisDialog({
-        title: "Zu diesem Termin gibt es kein Ergebnis-Feld",
-        description: "Der Termin steht im Verlauf, aber er ist dort nicht mehr als offener Termin hinterlegt. Bitte den Eintrag im Verlauf selbst bearbeiten.",
+      /*
+       * Kein Ergebnis-Feld mehr, etwa weil das Ergebnis schon als eigener
+       * Eintrag gespeichert wurde und der Termin dabei offen blieb. Bisher
+       * endete der Haken hier in einem Hinweis, und der Termin blieb als
+       * naechste Aktion stehen. Jetzt laesst er sich trotzdem abschliessen;
+       * beim Erstgespraech folgt der Nachfass-Anruf wie auf jedem anderen Weg.
+       */
+      const wahl = await auswahlDialog({
+        title: `${aktion.titel}: abschließen`,
+        description: [
+          `Termin: ${aktionZeitpunktText(aktion)}.`,
+          "Für diesen Termin gibt es kein eigenes Ergebnis-Feld mehr. Du kannst ihn trotzdem als stattgefunden abschließen, er fällt dann aus den nächsten Aktionen.",
+        ].join("\n"),
+        optionen: [
+          { wert: "erledigt", text: "Als stattgefunden abschließen" },
+          { wert: "behalten", text: "Behalten" },
+        ],
       });
+      if (wahl !== "erledigt" || !aktion.aktivitaetId) return;
+      try {
+        await setzeAktivitaetErledigt(aktion.aktivitaetId);
+      } catch {
+        toast({ title: "Konnte nicht gespeichert werden", variant: "destructive" });
+        return;
+      }
+      reloadKunde();
+      toast({ title: "Erledigt ✓", description: aktion.titel });
+      if (kunde && istErstgespraech(aktion.titel)) {
+        const nachfass = await legeNachfassNachErstgespraechAn({
+          kontaktId: id,
+          kundeName: `${kunde.vorname || ""} ${kunde.nachname || ""}`.trim() || "Kunde",
+          gespraech: new Date(aktion.zeitpunkt),
+          rueckfallZustaendig: kunde.zustaendig_id || undefined,
+          erstelltVonName: user.name,
+        });
+        if (nachfass === "fehler") toast({ title: NACHFASS_FEHLER_TITEL, description: NACHFASS_FEHLER_TEXT, variant: "destructive" });
+      }
       return;
     }
     setAktionTermin(gefunden);
@@ -11400,16 +11438,18 @@ export default function KundenDetail() {
                         // zur gleichen Uhrzeit – nie rückdatiert.
                         const empMs = Math.max(Date.now(), terminDate.getTime());
                         const empUhr = (terminUhrzeit && /^\d{1,2}:\d{2}$/.test(terminUhrzeit)) ? terminUhrzeit : "10:00";
-                        addGeteilteAufgabe({
-                          titel: `Empfehlungsprogramm einrichten: ${kunde.vorname} ${kunde.nachname}`,
-                          beschreibung: `Der Notartermin für ${kunde.vorname} ${kunde.nachname} (${inv.label}) ist abgeschlossen. Bitte richte das Empfehlungsprogramm ein.`,
+                        // Das Vorstellen steckt seit 15.10.2026 hier, nicht mehr in der Follow-up-Kette.
+                        void addProzessAufgabe({
+                          titel: "Nach dem Notartermin: Empfehlungsprogramm einrichten und vorstellen",
+                          beschreibung: `Der Notartermin für ${kunde.vorname} ${kunde.nachname} (${inv.label}) ist abgeschlossen. Bitte richte das Empfehlungsprogramm ein und stelle es dem Kunden vor.`,
                           prioritaet: "mittel",
                           typ: "aufgabe",
                           faellig_am: new Date(empMs).toISOString().split("T")[0],
                           uhrzeit: empUhr,
                           kundeId: id || "",
                           kundeName: `${kunde.vorname} ${kunde.nachname}`,
-                        });
+                          investmentId: inv.id,
+                        }, kunde.zustaendig_id || undefined);
                       }
 
                       const notarNameVal = notarData.name || inv.notarName || "";
@@ -11421,51 +11461,37 @@ export default function KundenDetail() {
                         const anruf7Ms = Math.max(Date.now(), terminDate.getTime() + 7 * 86400000);
                         const fälligDatum = new Date(anruf7Ms).toISOString().split("T")[0];
 
-                        addGeteilteAufgabe({
-                          titel: `Notar kontaktieren: Bewilligung abzulösende Bank – ${kunde.vorname} ${kunde.nachname}`,
-                          beschreibung: `Bitte bei ${notarNameVal || "dem Notar"}${notarTelefonVal ? ` (Tel.: ${notarTelefonVal})` : ""} anrufen.`,
+                        // Frueher zwei Aufgaben (Notar, Grundbuchamt), jetzt eine.
+                        void addProzessAufgabe({
+                          titel: "Eine Woche nach Notar: Bewilligung und Vormerkung nachfragen",
+                          beschreibung: `${kunde.vorname} ${kunde.nachname} (${inv.label}): Bitte bei ${notarNameVal || "dem Notar"}${notarTelefonVal ? ` (Tel.: ${notarTelefonVal})` : ""} nach der Bewilligung der abzulösenden Bank fragen und beim zuständigen Grundbuchamt nach der Auflassungsvormerkung.`,
                           prioritaet: "hoch",
                           typ: "anruf",
                           faellig_am: fälligDatum,
                           uhrzeit: "09:00",
                           kundeId: id || "",
                           kundeName: `${kunde.vorname} ${kunde.nachname}`,
-                        });
-
-                        addGeteilteAufgabe({
-                          titel: `Grundbuchamt kontaktieren: Auflassungsvormerkung – ${kunde.vorname} ${kunde.nachname}`,
-                          beschreibung: `Bitte beim zuständigen Grundbuchamt anrufen und nachfragen.`,
-                          prioritaet: "hoch",
-                          typ: "anruf",
-                          faellig_am: fälligDatum,
-                          uhrzeit: "10:00",
-                          kundeId: id || "",
-                          kundeName: `${kunde.vorname} ${kunde.nachname}`,
-                        });
+                          investmentId: inv.id,
+                        }, kunde.zustaendig_id || undefined);
                       }
 
                       const asReminderKey = `osimmo_as_upload_reminders_${inv.id}`;
                       if (!localStorage.getItem(asReminderKey)) {
                         localStorage.setItem(asReminderKey, "true");
-                        const reminderDays = [7, 14, 28, 44];
-                        // Eskalations-Kette: gestaffelt anhand max(heute, Notar+N).
-                        // Wenn Notar in der Vergangenheit liegt, werden die 4 Reminder
-                        // ab heute weiter-versetzt, statt alle gleichzeitig zu erscheinen.
-                        const baseShiftMs = Math.max(0, Date.now() - (terminDate.getTime() + 7 * 86400000));
-                        reminderDays.forEach((days, idx) => {
-                          const reminderMs = terminDate.getTime() + days * 86400000 + baseShiftMs;
-                          const reminderDate = new Date(Math.max(Date.now(), reminderMs)).toISOString().split("T")[0];
-                          addGeteilteAufgabe({
-                            titel: `Fälligkeit Unterlagen hochladen (${idx + 1}/4): ${kunde.vorname} ${kunde.nachname}`,
-                            beschreibung: `Bitte die Fälligkeit Unterlagen für ${kunde.vorname} ${kunde.nachname} hochladen. ${days}-Tage-Erinnerung.`,
-                            prioritaet: days <= 14 ? "mittel" : "hoch",
-                            typ: "aufgabe",
-                            faellig_am: reminderDate,
-                            uhrzeit: "09:00",
-                            kundeId: id || "",
-                            kundeName: `${kunde.vorname} ${kunde.nachname}`,
-                          });
-                        });
+                        // Frueher vier gestaffelte Aufgaben (Tag 7, 14, 28, 44), jetzt
+                        // eine am Tag 7 nach dem Notar, nie rueckdatiert.
+                        const unterlagenMs = Math.max(Date.now(), terminDate.getTime() + 7 * 86400000);
+                        void addProzessAufgabe({
+                          titel: "Nach dem Notar: Fälligkeitsunterlagen hochladen",
+                          beschreibung: `Bitte die Fälligkeitsunterlagen für ${kunde.vorname} ${kunde.nachname} (${inv.label}) hochladen.`,
+                          prioritaet: "mittel",
+                          typ: "aufgabe",
+                          faellig_am: new Date(unterlagenMs).toISOString().split("T")[0],
+                          uhrzeit: "09:00",
+                          kundeId: id || "",
+                          kundeName: `${kunde.vorname} ${kunde.nachname}`,
+                          investmentId: inv.id,
+                        }, kunde.zustaendig_id || undefined);
                       }
 
                       reloadKunde();
@@ -13772,23 +13798,40 @@ export default function KundenDetail() {
             // entkoppelt vom Sales-Prozess. Es wird KEIN setterTermin*, KEIN
             // pipelineStufe-Wechsel und keine „Beratungsgespräch"-Logik
             // getriggert. Das Meeting steht als Meeting in der Timeline und
-            // als Aufgabe am gewaehlten Investment.
+            // als gekoppelte Aufgabe am gewaehlten Investment.
             //
-            // Auf die Datenbank wird gewartet, sonst überholt das Neuladen
-            // weiter unten den Schreibvorgang und der Eintrag verschwindet
-            // gleich wieder. Die Beschreibung ist nur das Thema: Sie steht
-            // auch in der Terminerinnerung an den Kunden.
-            const eintrag = await addAktivitaetSicher({
-              kundeId: id,
-              art: "meeting",
-              beschreibung: m.thema,
-              details: m.agenda || undefined,
-              faelligAm: m.datum,
-              uhrzeit: m.uhrzeit,
-              dauer: String(m.dauer),
-              von: user.name,
-            });
-            if (!eintrag) {
+            // Seit 15.10.2026 in einem Schritt ueber `speichereMeeting`:
+            // Meeting im Verlauf und Aufgabe (Kopplung meeting_aktivitaet_id)
+            // in einer Transaktion. Die lose Aufgabe "Meeting: {Thema}" ist
+            // entfallen. Das Investment steht zusaetzlich lesbar in den
+            // Details, die Verlaufstabelle hat dafuer keine Spalte. Die
+            // Beschreibung ist nur das Thema: Sie steht auch in der
+            // Terminerinnerung an den Kunden.
+            const inv = gewaehltesInvestment ? investments.find((i) => i.id === gewaehltesInvestment) : undefined;
+            const investmentZeile = inv ? `Investment: ${inv.label || inv.objektTitel || "Investment"}` : "";
+            try {
+              await speichereMeeting(crypto.randomUUID(), {
+                kundeId: id,
+                art: "meeting",
+                beschreibung: m.thema,
+                details: [m.agenda, investmentZeile].filter(Boolean).join("\n") || undefined,
+                faelligAm: m.datum,
+                uhrzeit: m.uhrzeit,
+                dauer: String(m.dauer),
+                von: user.name,
+              }, {
+                kontaktId: id,
+                investmentId: gewaehltesInvestment,
+                typ: "meeting",
+                prioritaet: "hoch",
+                titel: m.thema,
+                beschreibung: m.agenda || undefined,
+                faelligAm: m.datum,
+                uhrzeit: m.uhrzeit,
+                erstelltVonName: user.name,
+              });
+            } catch (fehler) {
+              console.error("Meeting nicht gespeichert:", fehler);
               toast({
                 title: "Meeting nicht gespeichert",
                 description: "Der Termin ist nicht in der Kundenakte angekommen. Bitte versuch es noch einmal.",
@@ -13796,30 +13839,8 @@ export default function KundenDetail() {
               });
               return false;
             }
-            // `addGeteilteAufgabe` wirft nicht, sondern liefert `false`. Ohne
-            // die Pruefung fiel der Termin still aus der Aufgabenliste.
-            const kName = `${kunde?.vorname || ""} ${kunde?.nachname || ""}`.trim();
-            const aufgabeOk = await addGeteilteAufgabe({
-              titel: `Meeting: ${m.thema}`,
-              beschreibung: [kName, `${m.datum} ${m.uhrzeit} Uhr`, m.agenda].filter(Boolean).join(" · "),
-              prioritaet: "hoch",
-              typ: "meeting",
-              faellig_am: m.datum,
-              uhrzeit: m.uhrzeit,
-              kundeId: id,
-              kundeName: kName,
-              // Damit der Termin auf der richtigen Pipeline-Kachel steht.
-              investmentId: gewaehltesInvestment,
-            });
-            if (aufgabeOk) {
-              toast({ title: "Meeting erstellt ✓", description: `${m.datum} um ${m.uhrzeit} Uhr` });
-            } else {
-              toast({
-                title: "Meeting steht nicht in den Aufgaben",
-                description: "Das Meeting ist in der Kundenakte, aber es wurde keine Aufgabe dafür erstellt. Bitte den Termin von Hand eintragen.",
-                variant: "destructive",
-              });
-            }
+            window.dispatchEvent(new CustomEvent(TERMINE_AKTUALISIERT_EVENT));
+            toast({ title: "Meeting erstellt ✓", description: `${m.datum} um ${m.uhrzeit} Uhr` });
             reloadKunde();
           }}
         />

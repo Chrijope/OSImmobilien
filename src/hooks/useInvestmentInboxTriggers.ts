@@ -14,6 +14,7 @@ import { notifyUser, notifyVertriebsleitung } from "@/lib/bellNotifications";
 import {
   RV_MAHN_STUFEN,
   naechsteRvMahnung,
+  rvGlockenTitel,
   rvMahnTexte,
   rvUnterschriftStand,
   rvVertriebsleitungTexte,
@@ -25,6 +26,8 @@ import {
  */
 
 const REMINDER_KEY = "osimmo_investment_inbox_triggers_sent";
+/** Der Titel seit 15.10.2026. Der alte wird beim Aufräumen weiter erkannt. */
+const INAKTIV_TITEL = "Seit 14 Tagen inaktiv: Kunden erneut kontaktieren";
 const RE_ENGAGEMENT_TITEL = "Re-Engagement (14 Tage inaktiv)";
 
 function getSent(): Record<string, string[]> {
@@ -129,7 +132,7 @@ export function useInvestmentInboxTriggers(userRole?: string, userName?: string,
           if (!liveIds.has(t.kundeId)) return false; // verwaiste Tasks raus
           if (ownedIds && !ownedIds.has(t.kundeId)) return false; // nur eigene Kunden
           // Re-Engagement ist erledigt, sobald ein nächster Schritt vereinbart ist.
-          if (t.titel?.startsWith(RE_ENGAGEMENT_TITEL)) {
+          if (t.titel?.startsWith(INAKTIV_TITEL) || t.titel?.startsWith(RE_ENGAGEMENT_TITEL)) {
             const k = kunden.find((x) => x.id === t.kundeId);
             if (k && hatVereinbartenKontakt(k)) return false;
           }
@@ -138,12 +141,35 @@ export function useInvestmentInboxTriggers(userRole?: string, userName?: string,
         if (cleaned.length !== current.length) setInboxTasks(cleaned);
       }
 
+      /*
+       * Entdoppelt am Schluessel aus Anlass und Investment, nicht mehr am
+       * Titel: Seit die Titel keinen Kundennamen tragen, haette eine
+       * Erinnerung zu einem Kunden dieselbe zu einem anderen unterdrueckt.
+       * Aeltere Eintraege ohne Schluessel zaehlen nur bei gleichem Kunden und
+       * Titel. Die in diesem Lauf angelegten Schluessel stehen getrennt, die
+       * gelesene Liste bleibt unveraendert.
+       *
+       * Rueckgabe true, wenn die Erinnerung jetzt in der Liste steht. Erst dann
+       * setzt der Aufrufer seine Merkmarke; vorher kam eine gescheiterte
+       * Erinnerung nie wieder.
+       */
       const existingTasks = getInboxTasks();
-      const taskExists = (titel: string) => existingTasks.some((t) => t.titel === titel);
-      const add = (titel: string, beschreibung: string, prio: "niedrig"|"mittel"|"hoch"|"dringend", typ: "anruf"|"meeting"|"follow_up"|"aufgabe"|"deadline", kundeId: string, kundeName: string, uhrzeit = "09:00", faelligMs?: number) => {
-        if (taskExists(titel)) return;
+      const angelegtImLauf = new Set<string>();
+      const add = (schluessel: string, titel: string, beschreibung: string, prio: "niedrig"|"mittel"|"hoch"|"dringend", typ: "anruf"|"meeting"|"follow_up"|"aufgabe"|"deadline", kundeId: string, kundeName: string, uhrzeit = "09:00", faelligMs?: number): boolean => {
+        if (angelegtImLauf.has(schluessel)) return true;
+        const vorhanden = existingTasks.some((t) =>
+          t.schluessel ? t.schluessel === schluessel : t.kundeId === kundeId && t.titel === titel);
+        if (vorhanden) return true;
         const faellig_am = faelligMs != null ? toISO(faelligMs) : todayISO();
-        addInboxTask({ titel, beschreibung, prioritaet: prio, typ, faellig_am, uhrzeit, kundeId, kundeName });
+        try {
+          const neu = addInboxTask({ titel, beschreibung, prioritaet: prio, typ, faellig_am, uhrzeit, kundeId, kundeName, schluessel });
+          if (!getInboxTasks().some((t) => t.id === neu.id)) return false;
+        } catch (fehler) {
+          console.warn("Inbox-Erinnerung nicht angelegt:", schluessel, fehler);
+          return false;
+        }
+        angelegtImLauf.add(schluessel);
+        return true;
       };
 
       for (const inv of investments) {
@@ -183,11 +209,13 @@ export function useInvestmentInboxTriggers(userRole?: string, userName?: string,
           {
             const stand = rvUnterschriftStand(meta, { jetzt: new Date(now) });
             const mahnung = naechsteRvMahnung(stand, (s) => wasSent(inv.id, s));
-            if (mahnung) {
+            const rvTexte = mahnung
+              ? rvMahnTexte(mahnung.stufe, { kundeName, investmentLabel: inv.label, tage: stand.tage ?? mahnung.stufe.tage })
+              : null;
+            if (mahnung && rvTexte && add(`${mahnung.stufe.schluessel}:${inv.id}`, rvTexte.titel, rvTexte.beschreibung, mahnung.stufe.prioritaet, mahnung.stufe.typ, inv.kontaktId, kundeName)) {
               const { stufe } = mahnung;
               const tage = stand.tage ?? stufe.tage;
-              const texte = rvMahnTexte(stufe, { kundeName, investmentLabel: inv.label, tage });
-              add(texte.titel, texte.beschreibung, stufe.prioritaet, stufe.typ, inv.kontaktId, kundeName);
+              const texte = rvTexte;
               for (const sperre of mahnung.sperren) markSent(inv.id, sperre);
               /*
                * Die Glocke kommt zusaetzlich, das Rueckgrat bleibt die
@@ -202,7 +230,7 @@ export function useInvestmentInboxTriggers(userRole?: string, userName?: string,
                   const vl = rvVertriebsleitungTexte({ kundeName, investmentLabel: inv.label, tage, partnerName: userName });
                   notifyVertriebsleitung({ titel: vl.titel, nachricht: vl.beschreibung, link });
                 } else if (stufe === RV_MAHN_STUFEN[0] && userId) {
-                  notifyUser(userId, { titel: texte.titel, nachricht: texte.beschreibung, link });
+                  notifyUser(userId, { titel: rvGlockenTitel(kundeName), nachricht: texte.beschreibung, link });
                 }
               } catch (fehler) {
                 console.warn("RV-Erinnerung: Glocke fehlgeschlagen:", fehler);
@@ -220,13 +248,13 @@ export function useInvestmentInboxTriggers(userRole?: string, userName?: string,
               } else termin.setHours(10, 0, 0, 0);
               const diffH = (termin.getTime() - now) / 3_600_000;
               if (diffH > 24 && diffH <= 56 && !wasSent(inv.id, "notar_t_minus_2")) {
-                add(`Notartermin in 2 Tagen: ${kundeName}`, `Der Notartermin für ${kundeName} (${inv.label}) findet in 2 Tagen statt (${termin.toLocaleDateString("de-DE")} ${inv.notarUhrzeit || ""} Uhr). Mit Kunde Rücksprache halten – passt alles? Offene Fragen klären.`, "hoch", "anruf", inv.kontaktId, kundeName);
-                markSent(inv.id, "notar_t_minus_2");
+                if (add(`notar_t_minus_2:${inv.id}`, "Notar in zwei Tagen: mit dem Kunden Rücksprache halten", `Der Notartermin für ${kundeName} (${inv.label}) findet in 2 Tagen statt (${termin.toLocaleDateString("de-DE")} ${inv.notarUhrzeit || ""} Uhr). Mit Kunde Rücksprache halten – passt alles? Offene Fragen klären.`, "hoch", "anruf", inv.kontaktId, kundeName))
+                  markSent(inv.id, "notar_t_minus_2");
               }
               const sameDay = termin.getFullYear() === today.getFullYear() && termin.getMonth() === today.getMonth() && termin.getDate() === today.getDate();
               if (sameDay && diffH > 0 && !wasSent(inv.id, "notar_tag")) {
-                add(`Heute Notartermin: ${kundeName}`, `Heute um ${inv.notarUhrzeit || "10:00"} Uhr findet der Notartermin für ${kundeName} (${inv.label}) statt. Wichtig: Nach der Unterschrift Foto-Pflicht – bitte Notarfoto im Investment hochladen.`, "dringend", "meeting", inv.kontaktId, kundeName, inv.notarUhrzeit || "10:00");
-                markSent(inv.id, "notar_tag");
+                if (add(`notar_tag:${inv.id}`, "Heute Notartermin: danach Notarfoto hochladen", `Heute um ${inv.notarUhrzeit || "10:00"} Uhr findet der Notartermin für ${kundeName} (${inv.label}) statt. Wichtig: Nach der Unterschrift Foto-Pflicht – bitte Notarfoto im Investment hochladen.`, "dringend", "meeting", inv.kontaktId, kundeName, inv.notarUhrzeit || "10:00"))
+                  markSent(inv.id, "notar_tag");
               }
             }
           }
@@ -239,8 +267,8 @@ export function useInvestmentInboxTriggers(userRole?: string, userName?: string,
               const d = daysBetween(vpSignedAt, new Date(now));
               for (const s of [{ k: "as_kunde_3d", d: 3, p: "mittel" as const }, { k: "as_kunde_7d", d: 7, p: "hoch" as const }, { k: "as_kunde_14d", d: 14, p: "dringend" as const }]) {
                 if (d < s.d || wasSent(inv.id, s.k)) continue;
-                add(`Aftersales-Beratung Gegenzeichnung: ${kundeName}`, `Seit ${s.d} Tagen wartet das Aftersales-Beratungsdokument für ${kundeName} (${inv.label}) auf die Kunden-Gegenzeichnung. Bitte beim Kunden nachhalten.`, s.p, "follow_up", inv.kontaktId, kundeName);
-                markSent(inv.id, s.k);
+                if (add(`${s.k}:${inv.id}`, "Aftersales-Beratung nicht gegengezeichnet: beim Kunden nachhalten", `Seit ${s.d} Tagen wartet das Aftersales-Beratungsdokument für ${kundeName} (${inv.label}) auf die Kunden-Gegenzeichnung. Bitte beim Kunden nachhalten.`, s.p, "follow_up", inv.kontaktId, kundeName))
+                  markSent(inv.id, s.k);
               }
             }
           }
@@ -252,8 +280,8 @@ export function useInvestmentInboxTriggers(userRole?: string, userName?: string,
             for (let i = 1; i <= Math.min(q, 8); i++) {
               const key = `bestand_q${i}`;
               if (wasSent(inv.id, key)) continue;
-              add(`Quartals-Check-In: ${kundeName} (Q${i})`, `${i * 3} Monate seit Notartermin von ${kundeName} (${inv.label}). Proaktiver Check-In laut Aftersales-Konzept: Stand erfragen, Zufriedenheit prüfen, Portfolio-Erweiterung ansprechen.`, "mittel", "anruf", inv.kontaktId, kundeName);
-              markSent(inv.id, key);
+              if (add(`${key}:${inv.id}`, `Quartals-Check-in (Q${i}): Stand erfragen, Zufriedenheit prüfen`, `${i * 3} Monate seit Notartermin von ${kundeName} (${inv.label}). Proaktiver Check-In laut Aftersales-Konzept: Stand erfragen, Zufriedenheit prüfen, Portfolio-Erweiterung ansprechen.`, "mittel", "anruf", inv.kontaktId, kundeName))
+                markSent(inv.id, key);
             }
           }
         }
@@ -267,8 +295,8 @@ export function useInvestmentInboxTriggers(userRole?: string, userName?: string,
               const d = daysBetween(vpAt, new Date(now));
               for (const s of [{ k: "bd_kunde_3d", d: 3, p: "mittel" as const }, { k: "bd_kunde_7d", d: 7, p: "hoch" as const }]) {
                 if (d < s.d || wasSent(inv.id, s.k)) continue;
-                add(`Beratungsdokument Gegenzeichnung: ${kundeName}`, `Seit ${s.d} Tagen wartet das Beratungsdokument für ${kundeName} (${inv.label}) auf die Kunden-Gegenzeichnung. Bitte beim Kunden nachhalten.`, s.p, "follow_up", inv.kontaktId, kundeName);
-                markSent(inv.id, s.k);
+                if (add(`${s.k}:${inv.id}`, "Beratungsdokument nicht gegengezeichnet: beim Kunden nachhalten", `Seit ${s.d} Tagen wartet das Beratungsdokument für ${kundeName} (${inv.label}) auf die Kunden-Gegenzeichnung. Bitte beim Kunden nachhalten.`, s.p, "follow_up", inv.kontaktId, kundeName))
+                  markSent(inv.id, s.k);
               }
             }
           }
@@ -290,8 +318,8 @@ export function useInvestmentInboxTriggers(userRole?: string, userName?: string,
               const d = daysBetween(seit, new Date(now));
               for (const s of [{ k: "bonitaet_3d", d: 3, p: "mittel" as const }, { k: "bonitaet_7d", d: 7, p: "hoch" as const }, { k: "bonitaet_14d", d: 14, p: "dringend" as const }]) {
                 if (d < s.d || wasSent(inv.id, s.k)) continue;
-                add(`Bonitätsunterlagen fehlen: ${kundeName}`, `Seit ${d} Tagen sind noch Bonitätsunterlagen offen für ${kundeName} (${inv.label}). Fehlend: ${fehlend.join(", ")}. Bitte beim Kunden nachfassen.`, s.p, "follow_up", inv.kontaktId, kundeName);
-                markSent(inv.id, s.k);
+                if (add(`${s.k}:${inv.id}`, "Bonitätsunterlagen fehlen: beim Kunden nachfassen", `Seit ${d} Tagen sind noch Bonitätsunterlagen offen für ${kundeName} (${inv.label}). Fehlend: ${fehlend.join(", ")}. Bitte beim Kunden nachfassen.`, s.p, "follow_up", inv.kontaktId, kundeName))
+                  markSent(inv.id, s.k);
               }
             }
           }
@@ -301,12 +329,12 @@ export function useInvestmentInboxTriggers(userRole?: string, userName?: string,
         if (stage === "objektauswahl") {
           const seit = parseDateMaybe(meta.objektZugewiesenAm) || parseDateMaybe(meta.objektauswahlSeit) || parseDateMaybe(meta.pipelineSeit);
           if (isVp && inv.objektId && seit && daysBetween(seit, new Date(now)) >= 5 && !wasSent(inv.id, "obj_5d")) {
-            add(`Kunde zum Objekt zurückrufen: ${kundeName}`, `Objekt wurde ${kundeName} (${inv.label}) vor mehr als 5 Tagen zugewiesen – noch keine Reservierung. Bitte aktiv beim Kunden nachfassen.`, "hoch", "anruf", inv.kontaktId, kundeName);
-            markSent(inv.id, "obj_5d");
+            if (add(`obj_5d:${inv.id}`, "Objekt seit 5 Tagen zugewiesen: Kunden zurückrufen", `Objekt wurde ${kundeName} (${inv.label}) vor mehr als 5 Tagen zugewiesen – noch keine Reservierung. Bitte aktiv beim Kunden nachfassen.`, "hoch", "anruf", inv.kontaktId, kundeName))
+              markSent(inv.id, "obj_5d");
           }
           if ((isVp || isAdmin) && seit && daysBetween(seit, new Date(now)) >= 14 && !wasSent(inv.id, "obj_14d_eskal")) {
-            add(`Eskalation Objektauswahl > 14 Tage: ${kundeName}`, `${kundeName} (${inv.label}) ist seit über 14 Tagen in der Objektauswahl ohne Fortschritt. Vertriebsleiter informieren und Kunden persönlich kontaktieren.`, "dringend", "aufgabe", inv.kontaktId, kundeName);
-            markSent(inv.id, "obj_14d_eskal");
+            if (add(`obj_14d_eskal:${inv.id}`, "Eskalation Objektauswahl über 14 Tage: Kunden persönlich kontaktieren", `${kundeName} (${inv.label}) ist seit über 14 Tagen in der Objektauswahl ohne Fortschritt. Vertriebsleiter informieren und Kunden persönlich kontaktieren.`, "dringend", "aufgabe", inv.kontaktId, kundeName))
+              markSent(inv.id, "obj_14d_eskal");
           }
         }
 
@@ -322,8 +350,8 @@ export function useInvestmentInboxTriggers(userRole?: string, userName?: string,
             const d = daysBetween(rvSignedAt, new Date(now));
             for (const s of [{ k: "fin_angebot_5d", d: 5, p: "mittel" as const }, { k: "fin_angebot_10d", d: 10, p: "hoch" as const }, { k: "fin_angebot_15d", d: 15, p: "dringend" as const }]) {
               if (d < s.d || wasSent(inv.id, s.k)) continue;
-              add(`Finanzierung starten: ${kundeName}`, `RV von ${kundeName} (${inv.label}) ist seit ${s.d} Tagen unterschrieben. Bitte mit dem Finanzierungspartner Kontakt aufnehmen / Status des Angebots prüfen.`, s.p, "follow_up", inv.kontaktId, kundeName);
-              markSent(inv.id, s.k);
+              if (add(`${s.k}:${inv.id}`, "Reservierung unterschrieben: Finanzierung starten", `RV von ${kundeName} (${inv.label}) ist seit ${s.d} Tagen unterschrieben. Bitte mit dem Finanzierungspartner Kontakt aufnehmen / Status des Angebots prüfen.`, s.p, "follow_up", inv.kontaktId, kundeName))
+                markSent(inv.id, s.k);
             }
           }
 
@@ -338,8 +366,8 @@ export function useInvestmentInboxTriggers(userRole?: string, userName?: string,
             const d = daysBetween(detected, new Date(now));
             for (const s of [{ k: "fin_darlehen_5d", d: 5, p: "mittel" as const }, { k: "fin_darlehen_10d", d: 10, p: "hoch" as const }, { k: "fin_darlehen_15d", d: 15, p: "dringend" as const }]) {
               if (d < s.d || wasSent(inv.id, s.k)) continue;
-              add(`Darlehensvertrag fehlt: ${kundeName}`, `Finanzierungsangebot für ${kundeName} (${inv.label}) liegt seit ${s.d} Tagen vor – Darlehensvertrag noch nicht hochgeladen. Bitte mit Bank / Finanzierungspartner klären.`, s.p, "follow_up", inv.kontaktId, kundeName);
-              markSent(inv.id, s.k);
+              if (add(`${s.k}:${inv.id}`, "Darlehensvertrag fehlt: mit Bank oder Finanzierung klären", `Finanzierungsangebot für ${kundeName} (${inv.label}) liegt seit ${s.d} Tagen vor – Darlehensvertrag noch nicht hochgeladen. Bitte mit Bank / Finanzierungspartner klären.`, s.p, "follow_up", inv.kontaktId, kundeName))
+                markSent(inv.id, s.k);
             }
           }
 
@@ -349,21 +377,21 @@ export function useInvestmentInboxTriggers(userRole?: string, userName?: string,
           if (isVp && angebotUploaded && !darlehenUploaded) {
             const angSentAt = parseDateMaybe(meta.finanzierungAngebotGesendetAm) || parseDateMaybe(meta.finanzierungSeit);
             if (angSentAt && daysBetween(angSentAt, new Date(now)) >= 7 && !wasSent(inv.id, "fin_angebot_besprechen")) {
-              add(`Finanzierungsangebot mit Kunde besprechen: ${kundeName}`, `Das Finanzierungsangebot für ${kundeName} (${inv.label}) liegt seit über 7 Tagen vor, wurde aber noch nicht akzeptiert. Bitte Termin mit Kunde abstimmen und Konditionen besprechen.`, "hoch", "anruf", inv.kontaktId, kundeName);
-              markSent(inv.id, "fin_angebot_besprechen");
+              if (add(`fin_angebot_besprechen:${inv.id}`, "Finanzierungsangebot liegt vor: mit dem Kunden besprechen", `Das Finanzierungsangebot für ${kundeName} (${inv.label}) liegt seit über 7 Tagen vor, wurde aber noch nicht akzeptiert. Bitte Termin mit Kunde abstimmen und Konditionen besprechen.`, "hoch", "anruf", inv.kontaktId, kundeName))
+                markSent(inv.id, "fin_angebot_besprechen");
             }
           }
 
           if (isVp && darlehenUploaded && !wasSent(inv.id, "fin_darlehen_pruefen")) {
-            add(`Finanzierung prüfen & Aufnahmebogen ausfüllen: ${kundeName}`, `Darlehensvertrag für ${kundeName} (${inv.label}) wurde hochgeladen. Bitte Finanzierung mit Kunde final bestätigen und anschließend den Notaraufnahmebogen ausfüllen, damit der Notartermin koordiniert werden kann.`, "hoch", "aufgabe", inv.kontaktId, kundeName);
-            markSent(inv.id, "fin_darlehen_pruefen");
+            if (add(`fin_darlehen_pruefen:${inv.id}`, "Darlehensvertrag da: prüfen und auf Notar setzen", `Darlehensvertrag für ${kundeName} (${inv.label}) wurde hochgeladen. Bitte Finanzierung mit Kunde final bestätigen und anschließend den Notaraufnahmebogen ausfüllen, damit der Notartermin koordiniert werden kann.`, "hoch", "aufgabe", inv.kontaktId, kundeName))
+              markSent(inv.id, "fin_darlehen_pruefen");
           }
 
           if (isAdmin && stage === "finanzierung") {
             const finSeit = parseDateMaybe(meta.finanzierungSeit) || parseDateMaybe(meta.pipelineSeit);
             if (finSeit && daysBetween(finSeit, new Date(now)) >= 30 && !darlehenUploaded && !wasSent(inv.id, "fin_30d_eskal")) {
-              add(`Eskalation Finanzierung > 30 Tage: ${kundeName}`, `${kundeName} (${inv.label}) hängt seit über 30 Tagen in der Finanzierungsphase ohne Darlehensvertrag. Bitte Status mit VP / Finanzierungspartner klären.`, "dringend", "aufgabe", inv.kontaktId, kundeName);
-              markSent(inv.id, "fin_30d_eskal");
+              if (add(`fin_30d_eskal:${inv.id}`, "Eskalation Finanzierung über 30 Tage: Status klären", `${kundeName} (${inv.label}) hängt seit über 30 Tagen in der Finanzierungsphase ohne Darlehensvertrag. Bitte Status mit VP / Finanzierungspartner klären.`, "dringend", "aufgabe", inv.kontaktId, kundeName))
+                markSent(inv.id, "fin_30d_eskal");
             }
           }
         }
@@ -371,18 +399,18 @@ export function useInvestmentInboxTriggers(userRole?: string, userName?: string,
         // =========== PHASE 5 – Fälligkeit / Abrechnung ===========
         const kpFaellig = parseDateMaybe(meta.kaufpreisfaelligkeitDatum);
         if (isAdmin && stage === "faelligkeit" && !kpFaellig && !wasSent(inv.id, "kp_eintragen")) {
-          add(`Kaufpreisfälligkeit eintragen: ${kundeName}`, `Bitte das Datum der Kaufpreisfälligkeit für ${kundeName} (${inv.label}) im Investment eintragen, damit der VP den Kunden informieren kann.`, "hoch", "aufgabe", inv.kontaktId, kundeName);
-          markSent(inv.id, "kp_eintragen");
+          if (add(`kp_eintragen:${inv.id}`, "Kaufpreisfälligkeit fehlt: Datum im Investment eintragen", `Bitte das Datum der Kaufpreisfälligkeit für ${kundeName} (${inv.label}) im Investment eintragen, damit der VP den Kunden informieren kann.`, "hoch", "aufgabe", inv.kontaktId, kundeName))
+            markSent(inv.id, "kp_eintragen");
         }
         if (isVp && kpFaellig && !wasSent(inv.id, "kp_vp_besprechen")) {
-          add(`Kaufpreiszahlung mit Kunde besprechen: ${kundeName}`, `Die Kaufpreisfälligkeit für ${kundeName} (${inv.label}) ist auf den ${kpFaellig.toLocaleDateString("de-DE")} festgesetzt. Bitte mit Kunde die Zahlung besprechen und offene Fragen klären.`, "hoch", "anruf", inv.kontaktId, kundeName);
-          markSent(inv.id, "kp_vp_besprechen");
+          if (add(`kp_vp_besprechen:${inv.id}`, "Kaufpreisfälligkeit steht: Zahlung mit dem Kunden besprechen", `Die Kaufpreisfälligkeit für ${kundeName} (${inv.label}) ist auf den ${kpFaellig.toLocaleDateString("de-DE")} festgesetzt. Bitte mit Kunde die Zahlung besprechen und offene Fragen klären.`, "hoch", "anruf", inv.kontaktId, kundeName))
+            markSent(inv.id, "kp_vp_besprechen");
         }
         if (isVp && kpFaellig) {
           const d = daysBetween(new Date(now), kpFaellig);
           if (d <= 14 && d >= 0 && !wasSent(inv.id, "kp_14d_vorab")) {
-            add(`Zahlungseingang vorbereiten: ${kundeName}`, `In ${d} Tagen ist Kaufpreisfälligkeit für ${kundeName} (${inv.label}). Bitte mit Kunde Rücksprache zum Zahlungseingang halten.`, "hoch", "anruf", inv.kontaktId, kundeName);
-            markSent(inv.id, "kp_14d_vorab");
+            if (add(`kp_14d_vorab:${inv.id}`, "Kaufpreis bald fällig: Zahlungseingang vorbereiten", `In ${d} Tagen ist Kaufpreisfälligkeit für ${kundeName} (${inv.label}). Bitte mit Kunde Rücksprache zum Zahlungseingang halten.`, "hoch", "anruf", inv.kontaktId, kundeName))
+              markSent(inv.id, "kp_14d_vorab");
           }
         }
         if (isAdmin || isBuchhaltung) {
@@ -391,8 +419,8 @@ export function useInvestmentInboxTriggers(userRole?: string, userName?: string,
             const d = daysBetween(abrErstellt, new Date(now));
             for (const s of [{ k: "abr_14d", d: 14, p: "hoch" as const }, { k: "abr_30d", d: 30, p: "dringend" as const }]) {
               if (d < s.d || wasSent(inv.id, s.k)) continue;
-              add(`Abrechnung unbezahlt seit ${s.d} Tagen: ${kundeName}`, `Die Abrechnung für ${kundeName} (${inv.label}) wurde vor ${s.d} Tagen erstellt, ist aber noch nicht bezahlt. Bitte Zahlungseingang prüfen und ggf. mahnen.`, s.p, "aufgabe", inv.kontaktId, kundeName);
-              markSent(inv.id, s.k);
+              if (add(`${s.k}:${inv.id}`, `Abrechnung seit ${s.d} Tagen unbezahlt: Zahlungseingang prüfen`, `Die Abrechnung für ${kundeName} (${inv.label}) wurde vor ${s.d} Tagen erstellt, ist aber noch nicht bezahlt. Bitte Zahlungseingang prüfen und ggf. mahnen.`, s.p, "aufgabe", inv.kontaktId, kundeName))
+                markSent(inv.id, s.k);
             }
           }
         }
@@ -409,8 +437,8 @@ export function useInvestmentInboxTriggers(userRole?: string, userName?: string,
                 const label = (stage === "kontaktversuche" || stage === "follow_up")
                   ? "Kunden erneut kontaktieren – warmhalten & nächste Schritte abstimmen"
                   : `Re-Engagement in Stufe „${stage}" – Stand erfragen und nächste Schritte planen`;
-                add(`${RE_ENGAGEMENT_TITEL}: ${kundeName}`, `${kundeName} (${inv.label}) – seit 14 Tagen keine Aktivität. ${label}.`, "mittel", "anruf", inv.kontaktId, kundeName);
-                markSent(inv.id, key);
+                if (add(`${key}:${inv.id}`, INAKTIV_TITEL, `${kundeName} (${inv.label}) – seit 14 Tagen keine Aktivität. ${label}.`, "mittel", "anruf", inv.kontaktId, kundeName))
+                  markSent(inv.id, key);
               }
             }
           }
@@ -421,13 +449,13 @@ export function useInvestmentInboxTriggers(userRole?: string, userName?: string,
             for (let y = 1; y <= Math.min(yearsSince, 10); y++) {
               const key = `jubilaeum_${y}j`;
               if (wasSent(inv.id, key)) continue;
-              add(`${y}-Jahres-Jubiläum: ${kundeName}`, `${kundeName} (${inv.label}) ist seit ${y} Jahr${y > 1 ? "en" : ""} Investor. Bitte Jahres-Feedback einholen und – falls noch nicht geschehen – über Portfolio-Erweiterung / Folge-Investment sprechen.`, "mittel", "anruf", inv.kontaktId, kundeName, "10:00");
-              markSent(inv.id, key);
+              if (add(`${key}:${inv.id}`, `${y === 1 ? "1 Jahr" : `${y} Jahre`} Investor: Feedback einholen`, `${kundeName} (${inv.label}) ist seit ${y} Jahr${y > 1 ? "en" : ""} Investor. Bitte Jahres-Feedback einholen und – falls noch nicht geschehen – über Portfolio-Erweiterung / Folge-Investment sprechen.`, "mittel", "anruf", inv.kontaktId, kundeName, "10:00"))
+                markSent(inv.id, key);
             }
             const dN = daysBetween(notarT, new Date(now));
             if (dN >= 180 && !wasSent(inv.id, "steuer_6m")) {
-              add(`Steuerunterlagen-Reminder (AfA + Anlage V): ${kundeName}`, `${kundeName} (${inv.label}) – 6 Monate seit Notartermin. Bitte Kunde an AfA-Bescheinigung und Anlage V für die Steuererklärung erinnern (Belege sammeln, Hausverwaltungs-Abrechnung anfragen, Steuerberater einbeziehen).`, "mittel", "follow_up", inv.kontaktId, kundeName);
-              markSent(inv.id, "steuer_6m");
+              if (add(`steuer_6m:${inv.id}`, "Sechs Monate nach Notar: an Steuerunterlagen erinnern", `${kundeName} (${inv.label}) – 6 Monate seit Notartermin. Bitte Kunde an AfA-Bescheinigung und Anlage V für die Steuererklärung erinnern (Belege sammeln, Hausverwaltungs-Abrechnung anfragen, Steuerberater einbeziehen).`, "mittel", "follow_up", inv.kontaktId, kundeName))
+                markSent(inv.id, "steuer_6m");
             }
           }
         }
@@ -441,8 +469,8 @@ export function useInvestmentInboxTriggers(userRole?: string, userName?: string,
           const key = `kunde_geb_${k.id}_${new Date().getFullYear()}`;
           if (wasSent("birthdays", key)) continue;
           const name = `${k.vorname || ""} ${k.nachname || ""}`.trim() || "Kunde";
-          add(`Geburtstag heute: ${name}`, `${name} hat heute Geburtstag. Bitte persönlich gratulieren (Anruf / WhatsApp / Karte).`, "mittel", "anruf", k.id, name);
-          markSent("birthdays", key);
+          if (add(`geburtstag:${key}`, "Geburtstag heute: persönlich gratulieren", `${name} hat heute Geburtstag. Bitte persönlich gratulieren (Anruf / WhatsApp / Karte).`, "mittel", "anruf", k.id, name))
+            markSent("birthdays", key);
         }
       }
       if (isAdmin) {
@@ -455,8 +483,8 @@ export function useInvestmentInboxTriggers(userRole?: string, userName?: string,
           const key = `intern_geb_${p.id || p.user_id}_${new Date().getFullYear()}`;
           if (wasSent("birthdays", key)) continue;
           const name = `${p.vorname || p.first_name || ""} ${p.nachname || p.last_name || ""}`.trim() || "Teammitglied";
-          add(`Team-Geburtstag heute: ${name}`, `${name} (${role}) hat heute Geburtstag. Bitte im Team persönlich gratulieren.`, "mittel", "aufgabe", "", name);
-          markSent("birthdays", key);
+          if (add(`geburtstag:${key}`, `Team-Geburtstag heute: ${name}`, `${name} (${role}) hat heute Geburtstag. Bitte im Team persönlich gratulieren.`, "mittel", "aufgabe", "", name))
+            markSent("birthdays", key);
         }
       }
     }

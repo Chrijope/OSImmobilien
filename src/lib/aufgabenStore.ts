@@ -13,7 +13,7 @@
  * nächsten Kontakt.
  */
 
-import { cacheGet, cacheInsert, cacheUpdate, isTableLoaded } from "./dataCache";
+import { aktiveCacheRolle, cacheGet, cacheInsert, cacheUpdate, isTableLoaded } from "./dataCache";
 import { getAktivitaeten, setzeAktivitaetErledigt } from "./aktivitaetenStore";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -181,6 +181,16 @@ export async function addAufgabe(neu: NeueAufgabe): Promise<Aufgabe | null> {
     console.error("addAufgabe: kein angemeldeter Nutzer, Aufgabe nicht gespeichert");
     return null;
   }
+  /*
+   * Nie an den Kunden. Ohne Empfaenger setzte diese Funktion die eigene
+   * Kennung ein; im Kundenportal landete eine Aufgabe fuer den Berater damit
+   * beim Kunden. Still, denn der Kunde kann daran nichts aendern. Aufgaben aus
+   * dem Portal legt die Datenbank an (Migration 20261015190000).
+   */
+  if (aktiveCacheRolle() === "kunde" && (!neu.zugewiesenAn || neu.zugewiesenAn === uid)) {
+    console.warn("addAufgabe: im Kundenportal ohne anderen Empfaenger, nicht gespeichert:", neu.titel);
+    return null;
+  }
 
   const basis = {
     id: crypto.randomUUID(),
@@ -213,6 +223,8 @@ export async function addAufgabe(neu: NeueAufgabe): Promise<Aufgabe | null> {
     await cacheInsert("aufgaben", mitZusatz, { silent: true });
     return fromDb(mitZusatz);
   } catch (fehler) {
+    // Ein 23505 (eindeutiger Index aufgaben_ausloeser_offen_idx, "gibt es
+    // schon") kommt hier nicht an, `cacheInsert` nimmt ihn als Erfolg.
     const text = String((fehler as { message?: string })?.message || "").toLowerCase();
     const spalteFehlt =
       text.includes("erstellt_von_name") ||
@@ -463,6 +475,36 @@ export async function erledigeAufgabe(id: string, opts?: { silent?: boolean }): 
     erledigt_am: new Date().toISOString(),
   }, opts);
   await gleicheKopieAb(aufgabe, true);
+  await geschwisterAufgabenSchliessen(aufgabe?.ausloeserSchluessel, aufgabe?.kontaktId);
+}
+
+/**
+ * Auslöser, deren gleichnamige Aufgaben bei anderen Empfängern mit
+ * geschlossen werden, sobald eine Person ihre abhakt oder absagt. Muss zur
+ * Liste in der Datenbankfunktion `aufgaben_geschwister_schliessen` passen
+ * (Migration 20261015200000); ein Test vergleicht beide.
+ */
+export const GESCHWISTER_AUSLOESER_PRAEFIXE = ["dolmetscher_notar:"] as const;
+
+/**
+ * Schließt die Aufgaben der anderen Empfänger zum selben Anlass. Die
+ * Zeilenregel lässt niemanden fremde Aufgaben ändern, deshalb über die
+ * Datenbank; die geschlossenen Zeilen kommen über die Echtzeit-Aktualisierung
+ * in den Zwischenspeicher. Fehlt die Migration, bleiben die Geschwister offen,
+ * und der Nutzer sieht keinen Fehler.
+ */
+export async function geschwisterAufgabenSchliessen(schluessel?: string, kontaktId?: string): Promise<void> {
+  if (!schluessel || !kontaktId) return;
+  if (!GESCHWISTER_AUSLOESER_PRAEFIXE.some((p) => schluessel.startsWith(p))) return;
+  try {
+    const { error } = await (supabase as any).rpc("aufgaben_geschwister_schliessen", {
+      _schluessel: schluessel,
+      _kontakt_id: kontaktId,
+    });
+    if (error) console.warn("Geschwister-Aufgaben nicht geschlossen:", error);
+  } catch (fehler) {
+    console.warn("Geschwister-Aufgaben nicht geschlossen:", fehler);
+  }
 }
 
 /**
@@ -474,6 +516,7 @@ export async function sageAufgabeAb(id: string): Promise<void> {
   const aufgabe = getAufgaben().find((a) => a.id === id);
   await cacheUpdate("aufgaben", id, { status: "abgesagt", erledigt_am: null });
   await gleicheKopieAb(aufgabe, true);
+  await geschwisterAufgabenSchliessen(aufgabe?.ausloeserSchluessel, aufgabe?.kontaktId);
 }
 
 /** Nimmt das Abhaken zurück, ebenfalls auf beiden Seiten. */

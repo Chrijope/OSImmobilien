@@ -208,7 +208,7 @@ export function rvMahnTexte(
 
   if (stufe.schluessel === "rv_unterschrift_2d") {
     return {
-      titel: `Reservierung unterschreiben lassen: ${kundeName}`,
+      titel: "Reservierung versendet: beim Kunden nachfassen",
       beschreibung:
         `Die Reservierungsvereinbarung für ${objekt} ist seit ${seit} zur Unterschrift versendet und noch nicht zurück. ` +
         `Schreib oder ruf den Kunden heute an, frag nach offenen Fragen zur Vereinbarung und halte fest, bis wann er unterschreibt.`,
@@ -217,7 +217,7 @@ export function rvMahnTexte(
 
   if (stufe.schluessel === "rv_unterschrift_5d") {
     return {
-      titel: `Reservierung seit ${seit} offen: ${kundeName}`,
+      titel: `Reservierung seit ${seit} offen: Kunden anrufen`,
       beschreibung:
         `Die Reservierungsvereinbarung für ${objekt} wartet seit ${seit} auf die Unterschrift. Eine Mail reicht jetzt nicht mehr. ` +
         `Ruf den Kunden heute an, kläre was ihn aufhält, und vereinbare einen festen Tag für die Unterschrift.`,
@@ -225,12 +225,17 @@ export function rvMahnTexte(
   }
 
   return {
-    titel: `Eskalation Reservierung ohne Unterschrift: ${kundeName}`,
+    titel: "Eskalation Reservierung ohne Unterschrift: heute Kontakt aufnehmen",
     beschreibung:
       `Die Reservierungsvereinbarung für ${objekt} ist seit ${seit} versendet und weiterhin ohne Unterschrift. ` +
       `Nimm heute Kontakt auf, halte das Ergebnis schriftlich im Investment fest und stimme mit der Vertriebsleitung ab, ` +
       `ob die Einheit weiter für den Kunden gebunden bleibt. Die Vertriebsleitung ist bereits informiert.`,
   };
+}
+
+/** Die Glocke der ersten Stufe an den Partner. Glocken behalten den Kundennamen. */
+export function rvGlockenTitel(kundeName: string): string {
+  return `Reservierung nicht unterschrieben: ${kundeName}`;
 }
 
 /**

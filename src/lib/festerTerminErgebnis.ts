@@ -21,7 +21,7 @@
  * umgehaengt, die Setter-Rolle ruht.
  */
 
-import { addAktivitaet, addGeteilteAufgabe } from "./aktivitaetenStore";
+import { addAktivitaet } from "./aktivitaetenStore";
 import { aktuellerZustaendiger, notifyUser } from "./bellNotifications";
 import { getInvestmentsByKontakt, updateInvestment } from "./investmentsStore";
 import { getEffectivePipelineStufe } from "./kontaktPipeline";
@@ -29,7 +29,9 @@ import { erledigteTermine, mitKontaktMeta } from "./kontaktTermine";
 import { festerTerminSchluessel, noShowErfasst, noShowMetaPatch } from "./kundenNaechsteAktion";
 import { mergeKontaktMetaMitGrund, updateKontakt, type KundeData } from "./kundenStore";
 import { fortschrittsRang, istEndzustand } from "./pipelineStufen";
-import { lokalesDatum, schliesseOffeneTermineZumZeitpunkt, setzeNoShowStufe } from "./terminErgebnis";
+import { lokalesDatum, NOSHOW_TITEL, schliesseOffeneTermineZumZeitpunkt, setzeNoShowStufe } from "./terminErgebnis";
+import { addProzessAufgabe } from "./prozessAufgabe";
+import { legeNachfassNachErstgespraechAn, NACHFASS_FEHLER_TEXT, NACHFASS_FEHLER_TITEL } from "./nachfassNachErstgespraech";
 
 export type FesteGespraechsArt = "Erstgespräch" | "Beratungsgespräch";
 
@@ -194,6 +196,16 @@ export async function festerTerminStattgefunden(t: FesterTerminAngabe, ctx: Fest
     erledigtAm: new Date().toISOString(),
   });
   ctx.melde({ title: `${t.titel} stattgefunden ✓`, description: wannText(t) });
+  if (art === "Erstgespräch") {
+    const nachfass = await legeNachfassNachErstgespraechAn({
+      kontaktId: ctx.kunde.id,
+      kundeName: kundenName(ctx.kunde),
+      gespraech: t.datum,
+      rueckfallZustaendig: ctx.kunde.zustaendig_id || undefined,
+      erstelltVonName: ctx.userName,
+    });
+    if (nachfass === "fehler") ctx.melde({ title: NACHFASS_FEHLER_TITEL, description: NACHFASS_FEHLER_TEXT, variant: "destructive" });
+  }
   return true;
 }
 
@@ -205,8 +217,8 @@ export async function festerTerminStattgefunden(t: FesterTerminAngabe, ctx: Fest
  * No-Show wird je Termin gemerkt (`meta.noShowTermine`); ist er fuer diesen
  * Termin schon erfasst, wird nur geschlossen. Bei Erst- und Beratungsgespraech setzt die Kette die NoShow-Stufe
  * (nie zurueck, siehe `darfNoShowStufeSetzen`), und der zustaendige
- * Vertriebspartner bekommt eine Glocke und die Aufgabe "Neuen ...termin
- * vereinbaren" (sofort, nach 24 und nach 48 Stunden). Der Lead bleibt bei
+ * Vertriebspartner bekommt eine Glocke und genau eine Aufgabe, den Kunden
+ * anzurufen und neu zu terminieren. Der Lead bleibt bei
  * ihm; an Zustaendigkeit und Setter wird nichts geaendert.
  *
  * Andere feste Termine (Notar, Versicherung) werden nur aufgehoben und
@@ -267,31 +279,26 @@ export async function festerTerminNichtStattgefunden(t: FesterTerminAngabe, ctx:
     von: ctx.userName,
   });
 
-  // Glocke und Aufgaben nur an den, dem der Kunde jetzt gehoert.
+  // Glocke nur an den, dem der Kunde jetzt gehoert. Die Aufgabe genau
+  // einmal je Termin (frueher drei: sofort, nach 24 und nach 48 Stunden),
+  // ohne Zustaendigen an die Leitung.
   const zustaendig = aktuellerZustaendiger(k.id, k.zustaendig_id || undefined);
-  const titel = `🔁 No-Show-Erinnerung: ${kundenName(k)}, ${schritt.charAt(0).toLowerCase()}${schritt.slice(1)}`;
+  const glockenTitel = `🔁 No-Show: ${kundenName(k)}, ${schritt.charAt(0).toLowerCase()}${schritt.slice(1)}`;
   const nachricht =
-    `Der Termin „${art}" am ${wannText(t)} hat nicht stattgefunden. Bitte den Kunden anrufen und einen neuen Termin eintragen. ` +
-    "Die Erinnerung kommt nach 24 und nach 48 Stunden noch einmal.";
-  if (zustaendig) notifyUser(zustaendig, { titel, nachricht, link: `/kunden/${k.id}` });
-  const tag = (versatz: number) => {
-    const d = new Date();
-    d.setDate(d.getDate() + versatz);
-    return lokalesDatum(d);
-  };
-  const basis = {
-    beschreibung: nachricht,
-    prioritaet: "hoch" as const,
-    typ: "anruf" as const,
+    `Der Termin „${art}" am ${wannText(t)} hat nicht stattgefunden. Bitte den Kunden anrufen und einen neuen Termin eintragen.`;
+  if (zustaendig) notifyUser(zustaendig, { titel: glockenTitel, nachricht, link: `/kunden/${k.id}` });
+  void addProzessAufgabe({
+    titel: NOSHOW_TITEL,
+    beschreibung: `${kundenName(k)}: ${nachricht}`,
+    prioritaet: "hoch",
+    typ: "anruf",
+    faellig_am: lokalesDatum(new Date()),
     uhrzeit: "09:00",
     kundeId: k.id,
     kundeName: kundenName(k),
-    zugewiesenAn: zustaendig,
     erstelltVonName: ctx.userName,
-  };
-  void addGeteilteAufgabe({ ...basis, titel, faellig_am: tag(0) });
-  void addGeteilteAufgabe({ ...basis, titel: `${titel} (Erinnerung nach 24 h)`, faellig_am: tag(1) });
-  void addGeteilteAufgabe({ ...basis, titel: `${titel} (Erinnerung nach 48 h)`, faellig_am: tag(2) });
+    ausloeserSchluessel: `termin_noshow_fest_${k.id}_${festerTerminSchluessel(t.datum, t.uhrzeit)}`,
+  }, k.zustaendig_id || undefined);
 
   ctx.melde({
     title: "No-Show registriert",

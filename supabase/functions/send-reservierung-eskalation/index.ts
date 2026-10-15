@@ -259,7 +259,7 @@ async function reservierungenWirksamSetzen(
           benutzer_id: besitzer,
           zugewiesen_an: besitzer,
           kontakt_id: kontaktId,
-          titel: `${gegenstand} inzwischen anderweitig reserviert: ${kundeName}`,
+          titel: "Objekt vergeben: Kunden informieren, Gebühr erstatten",
           beschreibung:
             `${kundeName} hat die Widerrufsfrist abgewartet. ${gesamtobjekt ? "Das Haus" : "Die Wohnung"}${objektTitel ? ` (${objektTitel})` : ""} ist inzwischen anderweitig reserviert, ` +
             `die Reservierungsvereinbarung ist damit nach Abschnitt 7 entfallen. Bitte den Kunden informieren und eine bereits gezahlte ` +
@@ -417,7 +417,7 @@ Deno.serve(async (req: Request) => {
         benutzer_id: besitzer,
         zugewiesen_an: besitzer,
         kontakt_id: s.kontakt_id,
-        titel: `Reservierung seit ${tage} Tagen nicht unterschrieben: ${s.name}`,
+        titel: "Reservierung nicht unterschrieben: beim Kunden nachfragen",
         beschreibung:
           `${s.name} hat die Reservierungsvereinbarung${objektTitel ? ` für ${objektTitel}` : ""} vor ${tage} Tagen bekommen ` +
           `und noch nicht unterschrieben. Eine automatische Erinnerung an den Kunden gibt es nicht, jetzt hilft ein Anruf. ` +

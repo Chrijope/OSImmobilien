@@ -23,7 +23,7 @@ import { KundenMfaGuard } from "@/components/kunde/KundenMfaGuard";
 
 // Oeffentliche Seiten (eager, klein und immer noetig)
 import Login from "./pages/Login";
-import { VorschauInvestmentrechner, VorschauProvision } from "./vorschauRouten";
+import { VorschauInvestmentrechner, VorschauNaechsteAktionen, VorschauProvision } from "./vorschauRouten";
 
 /** /investmentrechner-plus → /investmentrechner mit Schalter „Bankgespräch & Bankunterlagen“, Parameter bleiben. */
 function InvestmentrechnerPlusWeiterleitung() {
@@ -394,6 +394,9 @@ const App = () => (
                   </>
                 )}
                 {VorschauProvision && <Route path="/vorschau/provision" element={<VorschauProvision />} />}
+                {VorschauNaechsteAktionen && (
+                  <Route path="/vorschau/naechste-aktionen" element={<VorschauNaechsteAktionen />} />
+                )}
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/portal-aktivieren" element={<PortalAktivieren />} />
                 <Route path="/aktivieren" element={<Aktivieren />} />

@@ -38,6 +38,13 @@ import { getKontaktById, mergeKontaktMetaMitGrund, updateKontakt } from "./kunde
 import { festerTerminSchluessel, noShowErfasst, noShowMetaPatch } from "./kundenNaechsteAktion";
 import { meetingZeitISO } from "./meetingZeit";
 import { mitKontaktMeta } from "./kontaktTermine";
+import { addProzessAufgabe } from "./prozessAufgabe";
+import {
+  istErstgespraech, legeNachfassNachErstgespraechAn, NACHFASS_FEHLER_TEXT, NACHFASS_FEHLER_TITEL,
+} from "./nachfassNachErstgespraech";
+
+/** Titel der einen Aufgabe nach einem No-Show, gleich auf allen Wegen. */
+export const NOSHOW_TITEL = "Kunde nicht erschienen: anrufen und neuen Termin vereinbaren";
 
 /**
  * Welche Anlaesse eine Ergebnis-Karte bekommen.
@@ -364,6 +371,17 @@ export async function terminErschienen(t: ErgebnisTermin, ctx: ErgebnisKontext):
   await schliesseAufgabe(aufgabe);
   protokolliere(ctx, `${t.titel} erschienen ✓`, `Termin: ${terminText(t.startAt)}`);
   ctx.melde({ title: `${t.titel} erschienen ✓` });
+  // Nach einem Erstgespraech der Nachfass-Anruf drei Tage spaeter.
+  if (istErstgespraech(t.titel, t.buchung?.anlass)) {
+    const nachfass = await legeNachfassNachErstgespraechAn({
+      kontaktId: ctx.kundeId,
+      kundeName: ctx.kundeName,
+      gespraech: t.startAt,
+      rueckfallZustaendig: empfaenger(t, ctx),
+      erstelltVonName: ctx.userName,
+    });
+    if (nachfass === "fehler") ctx.melde({ title: NACHFASS_FEHLER_TITEL, description: NACHFASS_FEHLER_TEXT, variant: "destructive" });
+  }
   return true;
 }
 
@@ -508,10 +526,10 @@ export async function terminNoShow(t: ErgebnisTermin, ctx: ErgebnisKontext): Pro
   // tragen keinen Anlass, dort bleibt die Stufe wie bisher stehen.
   const noShowStufe = t.buchung ? NOSHOW_STUFE[t.buchung.anlass] : undefined;
   const stufeGesetzt = noShowStufe ? setzeNoShowStufe(ctx.kundeId, noShowStufe) : false;
-  // Folgekette: Der Vertriebspartner bekommt sofort die Aufgabe, den Kunden
-  // neu zu kontaktieren.
-  void addGeteilteAufgabe({
-    titel: `❌ No-Show: ${ctx.kundeName} – ${t.titel}`,
+  // Folgekette: Der Zustaendige bekommt sofort genau eine Aufgabe, den
+  // Kunden neu zu kontaktieren (ohne ihn die Leitung).
+  void addProzessAufgabe({
+    titel: NOSHOW_TITEL,
     beschreibung: `${ctx.kundeName} ist zum Termin „${t.titel}" am ${terminText(t.startAt)} nicht erschienen. Bitte neu kontaktieren und einen neuen Termin vereinbaren.`,
     prioritaet: "hoch",
     typ: "anruf",
@@ -519,10 +537,9 @@ export async function terminNoShow(t: ErgebnisTermin, ctx: ErgebnisKontext): Pro
     uhrzeit: "09:00",
     kundeId: ctx.kundeId,
     kundeName: ctx.kundeName,
-    zugewiesenAn: empfaenger(t, ctx),
     erstelltVonName: ctx.userName,
     ausloeserSchluessel: `termin_noshow_${t.key}`,
-  });
+  }, empfaenger(t, ctx));
   ctx.melde({
     title: "No-Show registriert",
     description: stufeGesetzt

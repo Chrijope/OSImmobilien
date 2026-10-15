@@ -107,6 +107,7 @@ describe("Wo der Banner hingehört", () => {
       "/vorschau/investmentrechner",
       "/vorschau/investmentrechner-plus",
       "/vorschau/provision",
+      "/vorschau/naechste-aktionen",
     ]);
     const ohneEntscheidung = routen
       // Hinter `PraesentationGuard` liegt eine Anmeldung, `Navigate` leitet

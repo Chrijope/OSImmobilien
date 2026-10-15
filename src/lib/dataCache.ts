@@ -297,6 +297,11 @@ let _ladenErlaubt = false;
 /** Aktive Rolle, gesetzt von UserContext ueber `cacheRolleSetzen`. */
 let _aktiveRolle = "";
 
+/** Die aktive Rolle, leer solange UserContext sie noch nicht gemeldet hat. */
+export function aktiveCacheRolle(): string {
+  return _aktiveRolle;
+}
+
 /**
  * Tabellen, die nur bestimmte aktive Rollen lesen.
  *

@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { useUser } from "@/contexts/UserContext";
 import { confirmDialog } from "@/lib/confirm";
+import { istErstgespraech, legeNachfassNachErstgespraechAn, NACHFASS_FEHLER_TEXT, NACHFASS_FEHLER_TITEL } from "@/lib/nachfassNachErstgespraech";
 import {
   buchungFehlerMeldung, endeVorAnfangMeldung,
   leererWochenplanRueckfrage, letzteTerminartRueckfrage, buchungGesperrtHinweis,
@@ -675,6 +676,18 @@ export default function VideocallBuchungen() {
       return;
     }
     toast.success(status === "abgesagt" ? "Termin abgesagt." : status === "nicht_erschienen" ? "Als nicht erschienen vermerkt." : "Als wahrgenommen vermerkt.");
+    // Ein wahrgenommenes Erstgespraech bekommt den Nachfass-Anruf. Der Status
+    // ist schon gespeichert; scheitert nur der Anruf, bleibt die Warnung stehen.
+    if (status === "wahrgenommen" && buchung.kontakt_id && istErstgespraech(buchung.bezeichnung || "", buchung.anlass)) {
+      const nachfass = await legeNachfassNachErstgespraechAn({
+        kontaktId: buchung.kontakt_id,
+        kundeName: buchung.name || "Kunde",
+        gespraech: new Date(buchung.start_at),
+        rueckfallZustaendig: buchung.mitarbeiter_id,
+        erstelltVonName: user?.name,
+      });
+      if (nachfass === "fehler") toast.warning(NACHFASS_FEHLER_TITEL, { description: NACHFASS_FEHLER_TEXT, duration: 12000 });
+    }
     await allesLaden();
   };
 

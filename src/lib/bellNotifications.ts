@@ -266,7 +266,7 @@ export function notifyBackoffice(params: NotifyParams) {
 }
 
 /** Kennungen aller Nutzer mit einer dieser Rollen, jede Person einmal. */
-function kennungenMitRolle(rollen: readonly string[]): string[] {
+export function kennungenMitRolle(rollen: readonly string[]): string[] {
   return [
     ...new Set(
       cacheGet("user_roles")
@@ -295,7 +295,7 @@ export function aktuellerZustaendiger(kundeId: string | undefined, beraterId?: s
 }
 
 /** Wer eine Prozess-Glocke bekommt: der aktuelle Zustaendige, ohne ihn die Leitung. */
-function zustaendigOderLeitung(kundeId: string, beraterId?: string): string[] {
+export function zustaendigOderLeitung(kundeId: string, beraterId?: string): string[] {
   const zustaendig = aktuellerZustaendiger(kundeId, beraterId);
   return zustaendig ? [zustaendig] : kennungenMitRolle(LEITUNG_ROLLEN);
 }
@@ -893,20 +893,38 @@ export function scheduleSaFollowUpReminders(
       dedupeKey: `sa-followup-${r.hours}h-${investmentId}`,
     });
 
-    // Backup als Aufgabe (Inbox) für sichtbare Übersicht
-    if (!isTestAccount()) {
-      cacheInsert("aufgaben", {
+    // Dazu genau eine Aufgabe, faellig nach 48 Stunden. Die zweite nach 96
+    // Stunden ist seit 15.10.2026 gestrichen, beide Glocken bleiben.
+    if (r.hours === 48 && !isTestAccount() && !hatOffenenSaNachfass(kundeId, investmentId)) {
+      void cacheInsert("aufgaben", {
         id: crypto.randomUUID(),
         benutzer_id: empfaenger,
-        titel: "SA-Nachfass: " + kundeName,
-        beschreibung: `Die Selbstauskunft wurde seit ${r.text} nicht ausgefüllt. Bitte beim Kunden nachfragen, ob Unterstützung benötigt wird. (/kunden/${kundeId})`,
+        titel: SA_NACHFASS_TITEL,
+        beschreibung: `${kundeName}: Die Selbstauskunft wurde seit ${r.text} nicht ausgefüllt. Bitte beim Kunden nachfragen, ob Unterstützung benötigt wird.`,
         typ: "follow_up",
         prioritaet: "hoch",
         status: "offen",
         faellig_am: triggerAt.toISOString(),
         kontakt_id: kundeId,
+        investment_id: investmentId || null,
         zugewiesen_an: empfaenger,
-      });
+        ausloeser_schluessel: saNachfassSchluessel(kundeId, investmentId),
+      }, { silent: true }).catch((fehler) => console.error("SA-Nachfass-Aufgabe nicht angelegt:", fehler));
     }
   }
+}
+
+export const SA_NACHFASS_TITEL = "Selbstauskunft offen: Kunden anrufen und Hilfe anbieten";
+
+export function saNachfassSchluessel(kundeId: string, investmentId?: string): string {
+  return `sa_nachfass:${investmentId || kundeId}`;
+}
+
+/** Offen ist sie auch als Altbestand mit dem frueheren Titel "SA-Nachfass: {Name}". */
+function hatOffenenSaNachfass(kundeId: string, investmentId?: string): boolean {
+  const schluessel = saNachfassSchluessel(kundeId, investmentId);
+  return cacheGet("aufgaben").some((a: any) =>
+    a.kontakt_id === kundeId &&
+    a.status !== "erledigt" && a.status !== "abgesagt" &&
+    (a.ausloeser_schluessel === schluessel || String(a.titel || "").startsWith("SA-Nachfass:")));
 }

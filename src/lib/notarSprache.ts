@@ -64,7 +64,7 @@ export function dolmetscherKennzeichen(
 }
 
 /** Die Aufgabe fürs Backoffice, in der Form des vorhandenen Aufgabenmechanismus. */
-export const DOLMETSCHER_AUFGABE_TITEL = "Dolmetscher für Notartermin klären";
+export const DOLMETSCHER_AUFGABE_TITEL = "Kunde spricht Englisch: Dolmetscher für den Notar klären";
 
 export function dolmetscherAufgabeBeschreibung(kundeName: string): string {
   const name = kundeName.trim() || "Der Kunde";

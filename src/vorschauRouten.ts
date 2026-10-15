@@ -17,3 +17,8 @@ export const VorschauInvestmentrechner = import.meta.env.DEV
 export const VorschauProvision = import.meta.env.DEV
   ? lazy(() => import("./pages/VorschauProvision"))
   : null;
+
+/** /vorschau/naechste-aktionen: die Kachel im Kundenprofil, seit 15.10.2026. */
+export const VorschauNaechsteAktionen = import.meta.env.DEV
+  ? lazy(() => import("./pages/VorschauNaechsteAktionen"))
+  : null;

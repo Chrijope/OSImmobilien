@@ -37,7 +37,7 @@ vi.mock("@/lib/buchungStore", () => ({
 
 vi.mock("@/lib/aktivitaetenStore", () => ({
   addAktivitaet: () => {},
-  addGeteilteAufgabe: async (a: unknown) => { folgeaufgaben.push(a); },
+  addGeteilteAufgabe: async (a: unknown) => { folgeaufgaben.push(a); return true; },
   getAktivitaeten: () => [],
   setzeAktivitaetErledigt: async (id: string) => { erledigteAktivitaeten.push(id); },
   verschiebeAktivitaetTermin: async () => {},
@@ -54,6 +54,9 @@ vi.mock("@/lib/investmentsStore", () => ({
 vi.mock("@/lib/dataCache", () => ({
   onCacheChange: () => () => {},
   cacheGet: () => [],
+  isTableLoaded: () => true,
+  ladeTabellen: async () => {},
+  cacheLadeZeilenFuer: async () => true,
   // Der Kontakt aus dem Zwischenspeicher, fuer den Bestandsfall mit meta.
   cacheGetById: () => kontakt,
 }));
@@ -70,6 +73,7 @@ vi.mock("@/lib/oeffentlicheBasis", () => ({ oeffentlicheAdresse: (p: string) => 
 vi.mock("@/lib/videoraumStore", () => ({ beendeRaumMitToken: async () => true }));
 vi.mock("@/lib/aufgabenStore", () => ({
   getAufgabenFuerKunde: () => [],
+  getAufgaben: () => [],
   erledigeAufgabe: async () => {},
   // Die echte Aufgabe hinter einem von Hand angelegten Meeting wird beim
   // Abschliessen mitgezogen; hier gibt es keine.
@@ -208,6 +212,29 @@ describe("Knoepfe sind jederzeit klickbar, auch vor dem Termin", () => {
     }
     fireEvent.click(screen.getByRole("button", { name: /Stattgefunden/ }));
     await waitFor(() => expect(gesetzteStatus).toEqual([{ id: "b-erstgespraech", status: "wahrgenommen" }]));
+  });
+});
+
+describe("Nachfass-Anruf nach dem Erstgespräch (15.10.2026)", () => {
+  it("entsteht nach Stattgefunden beim Erstgespräch, beim Zuständigen", async () => {
+    buchungen.push(buchung("erstgespraech", "Erstgespräch"));
+    zeige();
+    fireEvent.click(await screen.findByRole("button", { name: /Stattgefunden/ }));
+    await waitFor(() => expect(folgeaufgaben).toHaveLength(1));
+    expect(folgeaufgaben[0]).toMatchObject({
+      titel: "Nach dem Erstgespräch: Kunden anrufen und Fragen klären",
+      typ: "anruf",
+      prioritaet: "hoch",
+      zugewiesenAn: "u-1",
+    });
+  });
+
+  it("entsteht nicht nach einem Beratungsgespräch", async () => {
+    buchungen.push(buchung("beratung", "Beratungsgespräch"));
+    zeige();
+    fireEvent.click(await screen.findByRole("button", { name: /Stattgefunden/ }));
+    await waitFor(() => expect(gesetzteStatus).toHaveLength(1));
+    expect(folgeaufgaben).toHaveLength(0);
   });
 });
 
