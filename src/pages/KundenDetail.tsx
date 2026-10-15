@@ -153,13 +153,13 @@ import { describeActivityAction, categorizeActivityAction } from "@/lib/activity
 import { StickyPagination, usePagination } from "@/components/kunden/StickyPagination";
 import { addFollowUp, completeFollowUp, getFollowUpsByKunde, uncompleteFollowUp } from "@/lib/followUpStore";
 import { aufgabenSchluessel, erledigeAufgabe, findeAufgabeZuAktivitaet, getAufgabenFuerKunde, oeffneAufgabe, offeneAufgabenOhneAktivitaet } from "@/lib/aufgabenStore";
-import { baueKundenAufgabenListe, zaehleKundenAufgaben, type KundenAufgabe } from "@/lib/kundenAufgabenListe";
+import type { KundenAufgabe } from "@/lib/kundenAufgabenListe";
 import { aktionZeitpunktText, neuerGespraechsterminNachNoShow, noShowListe, type GeplanteAktion } from "@/lib/kundenNaechsteAktion";
 import { abschlussWeg, sammelbareAufgaben, sammelwegBeschreibung } from "@/lib/aktionAbschluss";
 import { findeErgebnisTermin, ladeErgebnisTermine, lokalesDatum, type ErgebnisKontext, type ErgebnisTermin } from "@/lib/terminErgebnis";
 import { TerminErgebnisDialog } from "@/components/kunden/TerminErgebnisDialog";
 import { berechneInaktivitaetsAmpel } from "@/lib/inaktivitaetsAmpel";
-import { useNaechsteAktionKachel, useOffeneAufgabenKachel } from "@/components/kunden/profil/useOffeneAufgabenKachel";
+import { useNaechsteAktionKachel } from "@/components/kunden/profil/useOffeneAufgabenKachel";
 import { ToastAction } from "@/components/ui/toast";
 import { getNextSteps } from "@/lib/nextStepsGuide";
 import { loadBeraterUsers, loadAllUsers } from "@/lib/loadAllUsers";
@@ -1167,7 +1167,6 @@ export default function KundenDetail() {
    * Reiter in ihren eigenen Effekten und ueberschreiben diesen Startwert.
    */
   const aktivitaetenLeiste = useAktivitaetenLeiste();
-  const offeneAufgabenKachel = useOffeneAufgabenKachel();
   const naechsteAktionKachel = useNaechsteAktionKachel();
   const offeneAufgabenVersion = useLiveVersion(OFFENE_AUFGABEN_TABELLEN);
   const profilKennzahlenBereit = useCacheReady(PROFIL_KENNZAHL_TABELLEN);
@@ -4435,48 +4434,34 @@ export default function KundenDetail() {
    * brach ab mit "Rendered fewer hooks than expected".
    */
   /**
-   * Die offenen Vorgänge dieses Kunden für die Kachel "Offene Aufgaben".
-   *
-   * Zwei Quellen, beide hängen am Kunden: die Tabelle `aufgaben` und die
-   * Follow-ups. Die persönliche Inbox-Liste aus den Nutzereinstellungen bleibt
-   * bewusst draußen, sie gehört einem einzelnen Nutzer und wäre für alle
-   * anderen am selben Kunden unsichtbar.
-   */
-  const offeneKundenAufgaben = useMemo<KundenAufgabe[]>(() => {
-    if (!id || !profilKennzahlenBereit) return [];
-    try {
-      return baueKundenAufgabenListe(getAufgabenFuerKunde(id), getFollowUpsByKunde(id));
-    } catch (fehler) {
-      console.error("Offene Aufgaben des Kunden konnten nicht gelesen werden:", fehler);
-      return [];
-    }
-    // `offeneAufgabenVersion` zählt hoch, sobald sich eine der beiden Tabellen
-    // im Zwischenspeicher ändert. Genau das hält die Liste aktuell.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, profilKennzahlenBereit, offeneAufgabenVersion]);
-
-  /**
-   * Die geplanten Aktionen für die Kachel "Nächste Aktion".
+   * Alles Offene dieses Kunden für die Kachel "Nächste Aktionen".
    *
    * Dieselben Quellen, aus denen die Ampel hinter dem Namen ihre Antwort
    * zieht: Aufgaben, Follow-ups, Meetings im Verlauf und die fest gebuchten
-   * Termine. `_liveV` deckt dabei die Investments ab, an denen ein Termin
-   * hängen kann.
+   * Termine, dazu mit `alleOffenen` auch Einträge ohne Termin, Wiedervorlagen
+   * und Vorstellungsaufträge. Die frühere Kachel "Offene Aufgaben" ist darin
+   * aufgegangen. `_liveV` deckt die Investments ab, an denen ein Termin hängen
+   * kann; `offeneAufgabenVersion` zählt hoch, sobald sich Aufgaben oder
+   * Follow-ups im Zwischenspeicher ändern.
    */
-  const geplanteAktionen = useMemo<GeplanteAktion[]>(() => {
+  const kachelAktionen = useMemo<GeplanteAktion[]>(() => {
     if (!id || !kunde || !profilKennzahlenBereit) return [];
     try {
       // Dieselbe Sammlung wie Ampel und Pipelinekachel (M20, geplanteAktionenFuer).
       return geplanteAktionenFuer(kunde, undefined, {
         aktivitaeten,
         unterschriften: getWartendeRvUnterschriften(id),
+        alleOffenen: true,
       });
     } catch (fehler) {
-      console.error("Geplante Aktionen des Kunden konnten nicht gelesen werden:", fehler);
+      console.error("Aktionen des Kunden konnten nicht gelesen werden:", fehler);
       return [];
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, kunde, profilKennzahlenBereit, offeneAufgabenVersion, aktivitaeten, _liveV]);
+
+  /** Nur die geplanten Schritte: für No-Show-Hinweis und Ergebnis-Kästen, wie die Ampel sie zählt. */
+  const geplanteAktionen = useMemo(() => kachelAktionen.filter((a) => !a.nichtGeplant), [kachelAktionen]);
   if (loadingKunde) {
     return (
       <DashboardLayout>
@@ -5876,11 +5861,11 @@ export default function KundenDetail() {
    * auf, was betroffen ist, damit nichts stillschweigend verschwindet.
    */
   const alleUeberfaelligenAufgabenErledigen = async () => {
-    const betroffen = sammelbareAufgaben(geplanteAktionen);
+    const betroffen = sammelbareAufgaben(kachelAktionen);
     if (betroffen.length === 0) return;
     const bestaetigt = await confirmDialog({
       title: "Alle überfälligen Aufgaben erledigen?",
-      description: sammelwegBeschreibung(geplanteAktionen),
+      description: sammelwegBeschreibung(kachelAktionen),
       confirmText: "Erledigen",
       cancelText: "Behalten",
     });
@@ -6096,17 +6081,12 @@ export default function KundenDetail() {
     if (!profilKennzahlenBereit) return <Card className="p-4 mb-4 text-sm text-muted-foreground" role="status">Übersicht wird geladen …</Card>;
     // Die bestehenden Quellen liefern weiterhin Aufgaben, Termine und Schritte.
     const letzter = aktivitaeten.find((a) => !istSystemEintrag(a) && ["anruf_protokoll", "meeting_protokoll", "email"].includes(a.art));
-    // Gezählt wird jetzt dieselbe Liste, die aufgeklappt zu sehen ist. Vorher
-    // zählte die Kachel nur Aufgaben, die Liste zeigt zusätzlich Follow-ups.
-    const { gesamt, ueberfaellig } = zaehleKundenAufgaben(offeneKundenAufgaben);
     const aktuellstesInvestment = investmentFuerNaechstenSchritt(investments, activeTab === "investments" ? gewaehltesInvestment : null);
     const schritt = aktuellstesInvestment ? getNextSteps(aktuellstesInvestment.pipelineStufe, isAdminOrInhaber || (user.role as string) === "vertriebsleiter") : null;
     return <KundenprofilKennzahlen
       schritt={schritt}
       investmentNummer={aktuellstesInvestment?.nummer}
       letzter={letzter ? { artLabel: ART_LABELS[letzter.art], datum: letzter.datum } : undefined}
-      aufgabenAnzahl={gesamt}
-      ueberfaellig={ueberfaellig}
       onUebersicht={() => wechsleReiter("uebersicht")}
       /*
        * "Alle nächsten Schritte" führte bisher in den Reiter Übersicht. Von
@@ -6127,17 +6107,9 @@ export default function KundenDetail() {
         }, 300);
       } : undefined}
       onVerlauf={() => { setAktivitaetenAnsicht("manuell"); wechsleReiter("aktivitaeten"); }}
-      onAufgaben={() => { setAktivitaetenAnsicht("manuell"); setAktivitaetenFilter("aufgabe"); wechsleReiter("aktivitaeten"); }}
-      aufgaben={offeneKundenAufgaben}
-      listeOffen={offeneAufgabenKachel.offen}
-      onListeUmschalten={offeneAufgabenKachel.umschalten}
-      // Der Finanzierungspartner liest das Kundenprofil nur. Maßgeblich bleibt
-      // die Zugriffskontrolle der Datenbank, das Häkchen fehlt zusätzlich.
-      onErledigen={isFinanzierer ? undefined : erledigeKundenAufgabe}
-      onAufgabeAnlegen={isFinanzierer ? undefined : () => setActionDialog("aufgabe")}
-      // Die Kachel "Nächste Aktion": dieselbe Ampel wie hinter dem Namen, eine
+      // Die Kachel "Nächste Aktionen": dieselbe Ampel wie hinter dem Namen, eine
       // Rechnung an einer Stelle, damit Kopf und Kachel nie auseinanderlaufen.
-      aktionen={geplanteAktionen}
+      aktionen={kachelAktionen}
       ampel={berechneInaktivitaetsAmpel(kunde)}
       aktionenOffen={naechsteAktionKachel.offen}
       onAktionenUmschalten={naechsteAktionKachel.umschalten}

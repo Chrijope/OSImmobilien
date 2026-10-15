@@ -1,37 +1,19 @@
 import { useState } from "react";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { KundenprofilKennzahlen } from "./KundenprofilKennzahlen";
-import { baueKundenAufgabenListe } from "@/lib/kundenAufgabenListe";
 import { baueGeplanteAktionen } from "@/lib/kundenNaechsteAktion";
 import type { Aufgabe } from "@/lib/aufgabenStore";
 
 const JETZT = new Date(2026, 8, 15, 14, 0);
-
-function liste(teile: Array<Partial<Aufgabe> & { id: string }>) {
-  return baueKundenAufgabenListe(
-    teile.map((t) => ({
-      benutzerId: "u1",
-      kontaktId: "k1",
-      typ: "aufgabe",
-      prioritaet: "mittel",
-      status: "offen",
-      titel: "Aufgabe",
-      ...t,
-    }) as Aufgabe),
-    [],
-    JETZT,
-  );
-}
 
 const grund = {
   schritt: null,
   letzter: undefined,
   onUebersicht: () => {},
   onVerlauf: () => {},
-  onAufgaben: () => {},
 };
 
-/** Geplante Aktionen aus Aufgaben mit Fälligkeit, gerechnet gegen JETZT. */
+/** Alle offenen Aktionen aus Aufgaben, gerechnet gegen JETZT, wie die Kachel im Profil. */
 function aktionen(teile: Array<Partial<Aufgabe> & { id: string }>) {
   return baueGeplanteAktionen(
     {
@@ -46,22 +28,16 @@ function aktionen(teile: Array<Partial<Aufgabe> & { id: string }>) {
       }) as Aufgabe),
     },
     JETZT,
+    { alleOffenen: true },
   );
 }
 
 /** Die Kacheln mit echtem Auf- und Zuklappen, wie im Kundenprofil. */
 function Beispiel(props: Partial<React.ComponentProps<typeof KundenprofilKennzahlen>> = {}) {
-  const [offen, setOffen] = useState(false);
   const [aktionenOffen, setAktionenOffen] = useState(false);
-  const aufgaben = props.aufgaben ?? [];
   return (
     <KundenprofilKennzahlen
       {...grund}
-      aufgabenAnzahl={aufgaben.length}
-      ueberfaellig={aufgaben.filter((a) => a.ueberfaellig).length}
-      aufgaben={aufgaben}
-      listeOffen={offen}
-      onListeUmschalten={() => setOffen((o) => !o)}
       aktionenOffen={aktionenOffen}
       onAktionenUmschalten={() => setAktionenOffen((o) => !o)}
       {...props}
@@ -69,61 +45,20 @@ function Beispiel(props: Partial<React.ComponentProps<typeof KundenprofilKennzah
   );
 }
 
-it("klappt die Liste auf und wieder zu", () => {
-  render(<Beispiel aufgaben={liste([{ id: "a1", titel: "Unterlagen prüfen", faelligAm: "2026-09-20" }])} />);
-  expect(screen.queryByText("Unterlagen prüfen")).not.toBeInTheDocument();
-  fireEvent.click(screen.getByRole("button", { name: "Aufgaben anzeigen" }));
-  expect(screen.getByText("Unterlagen prüfen")).toBeInTheDocument();
-  fireEvent.click(screen.getByRole("button", { name: "Liste ausblenden" }));
-  expect(screen.queryByText("Unterlagen prüfen")).not.toBeInTheDocument();
-});
-
-it("zeigt überfällige zuerst und benennt sie als überfällig", () => {
-  render(
-    <Beispiel
-      aufgaben={liste([
-        { id: "a1", titel: "Später", faelligAm: "2026-09-30" },
-        { id: "a2", titel: "Längst fällig", faelligAm: "2026-09-01" },
-      ])}
-    />,
-  );
-  fireEvent.click(screen.getByRole("button", { name: "Aufgaben anzeigen" }));
-  const zeilen = screen.getAllByRole("listitem").map((li) => li.textContent || "");
-  expect(zeilen[0]).toContain("Längst fällig");
-  expect(zeilen[0]).toContain("überfällig seit 01.09.2026");
-  expect(zeilen[1]).toContain("Später");
-});
-
-it("sagt bei nichts Offenem ruhig Bescheid", () => {
-  render(<Beispiel aufgaben={[]} />);
-  fireEvent.click(screen.getByRole("button", { name: "Aufgaben anzeigen" }));
-  expect(screen.getByText("Nichts offen.")).toBeInTheDocument();
-});
-
-it("reicht das Abhaken mit dem richtigen Eintrag weiter", async () => {
-  const erledigen = vi.fn().mockResolvedValue(undefined);
-  render(<Beispiel aufgaben={liste([{ id: "a1", titel: "Anrufen" }])} onErledigen={erledigen} />);
-  fireEvent.click(screen.getByRole("button", { name: "Aufgaben anzeigen" }));
-  fireEvent.click(screen.getByRole("button", { name: "Anrufen als erledigt markieren" }));
-  await waitFor(() => expect(erledigen).toHaveBeenCalledTimes(1));
-  expect(erledigen.mock.calls[0][0]).toMatchObject({ id: "a1", quelle: "aufgabe" });
-});
-
-it("zeigt ohne Erledigen-Recht kein Häkchen und keinen Anlegen-Knopf", () => {
-  render(<Beispiel aufgaben={liste([{ id: "a1", titel: "Anrufen" }])} />);
-  fireEvent.click(screen.getByRole("button", { name: "Aufgaben anzeigen" }));
-  expect(screen.getByText("Anrufen")).toBeInTheDocument();
-  expect(screen.queryByRole("button", { name: /als erledigt markieren/ })).not.toBeInTheDocument();
-  expect(screen.queryByRole("button", { name: /Aufgabe hinzufügen/ })).not.toBeInTheDocument();
-});
-
-describe("Kachel Nächste Aktion", () => {
+describe("Kachel Nächste Aktionen", () => {
   beforeEach(() => {
     vi.useFakeTimers({ toFake: ["Date"] });
     vi.setSystemTime(JETZT);
   });
   afterEach(() => {
     vi.useRealTimers();
+  });
+
+  it("ist die einzige Aktionskachel, die frühere Kachel Offene Aufgaben gibt es nicht mehr", () => {
+    render(<Beispiel />);
+    expect(screen.getByText("Nächste Aktionen")).toBeInTheDocument();
+    expect(screen.queryByText("Offene Aufgaben")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Aufgaben anzeigen" })).not.toBeInTheDocument();
   });
 
   it("zeigt zugeklappt den nächsten Schritt mit Art, Datum und Uhrzeit sowie den Ampelpunkt", () => {
@@ -143,9 +78,33 @@ describe("Kachel Nächste Aktion", () => {
     expect(screen.queryByText("Später")).not.toBeInTheDocument();
   });
 
+  it("zählt offen und überfällig, überfällig in Rot", () => {
+    const { rerender } = render(<Beispiel aktionen={aktionen([{ id: "a1", faelligAm: "2026-09-30" }])} />);
+    expect(screen.getByText("1 offen")).not.toHaveClass("text-destructive");
+    rerender(
+      <Beispiel
+        aktionen={aktionen([
+          { id: "a1", faelligAm: "2026-09-30" },
+          { id: "a2", faelligAm: "2026-09-01" },
+          { id: "a3" },
+        ])}
+      />,
+    );
+    expect(screen.getByText("3 offen, 1 überfällig")).toHaveClass("text-destructive");
+  });
+
   it("nennt einen verstrichenen Schritt überfällig, wenn nichts mehr bevorsteht", () => {
     render(<Beispiel aktionen={aktionen([{ id: "a1", titel: "Rückruf", faelligAm: "2026-09-10", uhrzeit: "09:30" }])} />);
     expect(screen.getByText("überfällig seit Do 10.09., 09:30")).toHaveClass("text-destructive");
+  });
+
+  it("zeigt einen Eintrag ohne Termin nur, wenn es sonst nichts gibt", () => {
+    const { rerender } = render(<Beispiel aktionen={aktionen([{ id: "a1", titel: "Irgendwann" }])} />);
+    expect(screen.getByText("Irgendwann")).toBeInTheDocument();
+    expect(screen.getByText("Ohne Termin")).toBeInTheDocument();
+    rerender(<Beispiel aktionen={aktionen([{ id: "a1", titel: "Irgendwann" }, { id: "a2", titel: "Datiert", faelligAm: "2026-09-20" }])} />);
+    expect(screen.getByText("Datiert")).toBeInTheDocument();
+    expect(screen.queryByText("Irgendwann")).not.toBeInTheDocument();
   });
 
   it("sagt in Rot Bescheid, wenn nichts geplant ist, und zeigt den Ampeltext", () => {
@@ -155,11 +114,12 @@ describe("Kachel Nächste Aktion", () => {
     expect(screen.getByRole("img", { name: "Status: Handlungsbedarf" })).toHaveClass("bg-red-500");
   });
 
-  it("klappt die Liste chronologisch auf und reicht den Sprung mit dem richtigen Eintrag weiter", () => {
+  it("klappt die Liste chronologisch auf, Ohne Termin am Ende, und reicht den Sprung weiter", () => {
     const springen = vi.fn();
     render(
       <Beispiel
         aktionen={aktionen([
+          { id: "a0", titel: "Ohne Datum" },
           { id: "a1", titel: "Später", faelligAm: "2026-09-30" },
           { id: "a2", titel: "Früher", faelligAm: "2026-09-20" },
         ])}
@@ -170,6 +130,8 @@ describe("Kachel Nächste Aktion", () => {
     const zeilen = screen.getAllByRole("listitem").map((li) => li.textContent || "");
     expect(zeilen[0]).toContain("Früher");
     expect(zeilen[1]).toContain("Später");
+    expect(zeilen[2]).toContain("Ohne Datum");
+    expect(zeilen[2]).toContain("Ohne Termin");
     fireEvent.click(screen.getByRole("button", { name: /Später/ }));
     expect(springen).toHaveBeenCalledTimes(1);
     expect(springen.mock.calls[0][0]).toMatchObject({ schluessel: "aufgabe:a1" });
@@ -177,21 +139,38 @@ describe("Kachel Nächste Aktion", () => {
     expect(screen.queryByRole("listitem")).not.toBeInTheDocument();
   });
 
-  it("zeigt Aktion erstellen nur mit Recht und stellt beide Listen untereinander, erst Aktionen, dann Aufgaben", () => {
-    const { rerender } = render(
+  it("trägt bei Aufgaben die Priorität als Marke, ohne Angabe Mittel", () => {
+    render(
       <Beispiel
-        aktionen={aktionen([{ id: "a1", titel: "Geplant", faelligAm: "2026-09-20" }])}
-        aufgaben={liste([{ id: "b1", titel: "Offen" }])}
+        aktionen={aktionen([
+          { id: "a1", titel: "Eilig", faelligAm: "2026-09-20", prioritaet: "dringend" },
+          { id: "a2", titel: "Normal", faelligAm: "2026-09-21", prioritaet: undefined },
+          { id: "a3", titel: "Treffen", typ: "meeting", faelligAm: "2026-09-22", prioritaet: "hoch" },
+        ])}
       />,
     );
     fireEvent.click(screen.getByRole("button", { name: "Aktionen anzeigen" }));
-    fireEvent.click(screen.getByRole("button", { name: "Aufgaben anzeigen" }));
+    const zeilen = screen.getAllByRole("listitem").map((li) => li.textContent || "");
+    expect(zeilen[0]).toContain("Dringend");
+    expect(zeilen[1]).toContain("Mittel");
+    // Termine tragen keine Priorität.
+    expect(zeilen[2]).not.toContain("Hoch");
+  });
+
+  it("hakt den nächsten Eintrag direkt in der zugeklappten Kachel ab", async () => {
+    const abschliessen = vi.fn();
+    render(<Beispiel aktionen={aktionen([{ id: "a1", titel: "Anrufen", faelligAm: "2026-09-20" }])} onAktionAbschliessen={abschliessen} />);
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Nächste Aktion abschließen: Anrufen" }));
+    });
+    expect(abschliessen.mock.calls[0][0].schluessel).toBe("aufgabe:a1");
+  });
+
+  it("zeigt ohne Recht weder Haken noch Aktion erstellen", () => {
+    const { rerender } = render(<Beispiel aktionen={aktionen([{ id: "a1", titel: "Geplant", faelligAm: "2026-09-20" }])} />);
+    fireEvent.click(screen.getByRole("button", { name: "Aktionen anzeigen" }));
     expect(screen.queryByRole("button", { name: /Aktion erstellen/ })).not.toBeInTheDocument();
-    // "Geplant" steht zweimal: in der Kachel und in der Liste. Gemeint ist die Liste.
-    const geplant = screen.getAllByText("Geplant").at(-1)!;
-    const offen = screen.getByText("Offen");
-    // Node.DOCUMENT_POSITION_FOLLOWING: "Offen" kommt im Dokument nach "Geplant".
-    expect(geplant.compareDocumentPosition(offen) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /abschließen/ })).not.toBeInTheDocument();
 
     rerender(
       <Beispiel

@@ -232,12 +232,13 @@ export function erledigteTermine(kunde: KundeData): string[] {
  *                     Investments plus die allgemeinen ohne Zuordnung.
  * @param quellen      Das Kundenprofil reicht seine eigene, vollständiger
  *                     geladene Aktivitätenliste und die wartenden
- *                     Unterschriften mit.
+ *                     Unterschriften mit, für die Kachel "Nächste Aktionen"
+ *                     zusätzlich `alleOffenen` (siehe `baueGeplanteAktionen`).
  */
 export function geplanteAktionenFuer(
   kunde: KundeData,
   investmentId?: string,
-  quellen: { aktivitaeten?: AktivitaetEntry[]; unterschriften?: WartendeUnterschrift[] } = {},
+  quellen: { aktivitaeten?: AktivitaetEntry[]; unterschriften?: WartendeUnterschrift[]; alleOffenen?: boolean } = {},
   jetzt: Date = new Date(),
 ): GeplanteAktion[] {
   const meta = (mitKontaktMeta(kunde).meta || {}) as Record<string, unknown>;
@@ -268,6 +269,20 @@ export function geplanteAktionenFuer(
         return !geschlossen.has(k) || offen.has(k);
       });
     }
+    /*
+     * Ein Meeting haengt ueber seine gekoppelte Aufgabe an einem Investment.
+     * In der Ansicht eines anderen Investments gehoert es nicht dazu; die
+     * Aufgabe selbst filtert schon `getAufgabenFuerKunde`, das Meeting im
+     * Verlauf haette sonst allein weiter gezaehlt.
+     */
+    if (investmentId) {
+      const fremd = new Set(
+        getAufgaben()
+          .filter((a) => a.kontaktId === kunde.id && a.meetingAktivitaetId && a.investmentId && a.investmentId !== investmentId)
+          .map((a) => a.meetingAktivitaetId as string),
+      );
+      if (fremd.size > 0) aktivitaeten = aktivitaeten.filter((a) => !fremd.has(a.id));
+    }
   } catch { /* Store noch nicht bereit */ }
   return baueGeplanteAktionen({
     aufgaben,
@@ -279,7 +294,7 @@ export function geplanteAktionenFuer(
       uhrzeit: typeof meta.followUpUhrzeit === "string" ? meta.followUpUhrzeit : undefined,
     },
     unterschriften: quellen.unterschriften,
-  }, jetzt);
+  }, jetzt, { alleOffenen: quellen.alleOffenen });
 }
 
 /**
