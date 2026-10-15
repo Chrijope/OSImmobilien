@@ -133,14 +133,29 @@ export function istProvisionFestgeschrieben(userId?: string | null): boolean {
   return allSettings.find((row: any) => row.user_id === userId)?.einstellungen?.provision_locked === true;
 }
 
-/** Returns the effective provision rate for a user (custom rate > stufe rate) */
-export function getEffectiveRate(userId?: string | null, fallbackStufe?: KarriereStufeInfo): number {
-  const customRate = getCustomProvisionRate(userId);
-  if (customRate !== null) return customRate;
-  if (fallbackStufe) return fallbackStufe.rate;
-  const override = getKarriereOverrideForUser(userId);
-  const stufe = override ? getKarriereStufe(0, override) : KARRIERE_STUFEN[0];
-  return stufe.rate;
+/**
+ * Lead- und Eigen-Satz eines Partners aus der Nutzerverwaltung. Fehlt einer,
+ * springt der allgemeine Satz ein (Altbestand vor der Trennung). Ohne
+ * gepflegten Satz `null`: Bei OS Immobilien gibt es seit dem 15.10.2026
+ * keine Karrierestufe mehr, die still einen Satz liefert.
+ */
+export function provisionssaetze(userId?: string | null): { lead: number | null; eigen: number | null } {
+  const allgemein = getCustomProvisionRate(userId);
+  return {
+    lead: getCustomProvisionRateSetter(userId) ?? allgemein,
+    eigen: getCustomProvisionRateEigen(userId) ?? allgemein,
+  };
+}
+
+/**
+ * Ein einzelner Satz für Anzeigen, die nicht nach Kontakt unterscheiden
+ * (Prognosen, Zielplanung): der allgemeine, sonst der Lead-, sonst der
+ * Eigen-Satz, sonst 0. Der zweite Parameter ist nur noch aus Gründen der
+ * Kompatibilität da; eine Karrierestufe zählt nicht mehr.
+ */
+export function getEffectiveRate(userId?: string | null, _stufeOhneWirkung?: KarriereStufeInfo): number {
+  const { lead, eigen } = provisionssaetze(userId);
+  return getCustomProvisionRate(userId) ?? lead ?? eigen ?? 0;
 }
 
 /**
@@ -169,7 +184,9 @@ export function getEffectiveRate(userId?: string | null, fallbackStufe?: Karrier
  * Datensätze richtig eingeordnet.
  */
 
-export type Satzart = "eigen" | "zugewiesen" | "locked" | "stufe" | "nutzerverwaltung";
+// "stufe" und "nutzerverwaltung" entstehen nicht mehr, stehen aber noch in
+// gespeicherten Bescheiden und bleiben deshalb lesbar.
+export type Satzart = "eigen" | "zugewiesen" | "locked" | "stufe" | "nutzerverwaltung" | "fehlt";
 
 export const SATZART_LABEL: Record<Satzart, string> = {
   eigen: "Eigen",
@@ -177,16 +194,18 @@ export const SATZART_LABEL: Record<Satzart, string> = {
   locked: "Festgeschrieben",
   stufe: "Karrierestufe",
   nutzerverwaltung: "Nutzerverwaltung",
+  fehlt: "Kein Satz",
 };
 
 export const SATZART_ERKLAERUNG: Record<Satzart, string> = {
   eigen: "Der Vertriebspartner hat diesen Kontakt selbst angelegt. Es gilt sein Eigen-Satz.",
   zugewiesen: "Dieser Lead wurde dem Vertriebspartner zugewiesen. Es gilt sein Lead-Satz.",
   locked:
-    "Der Satz wurde beim Anlegen des Vorgangs festgeschrieben. Eine spätere Änderung am Partner wirkt sich auf diesen Vorgang nicht mehr aus.",
+    "Der Satz wurde bei der Reservierung festgeschrieben. Eine spätere Änderung in der Nutzerverwaltung wirkt sich auf diesen Vorgang nicht mehr aus.",
   stufe: "Für diesen Fall ist kein eigener Satz gepflegt. Es gilt der Satz der Karrierestufe.",
   nutzerverwaltung:
-    "Die Sätze dieses Partners sind in der Nutzerverwaltung festgeschrieben. Der dort hinterlegte Satz gilt vor allem anderen, auch vor einem am Vorgang eingefrorenen Satz.",
+    "Die Sätze dieses Partners waren in der Nutzerverwaltung festgeschrieben. Der dort hinterlegte Satz galt für diesen Vorgang.",
+  fehlt: "Für diesen Partner ist in der Nutzerverwaltung kein Provisionssatz hinterlegt. Gerechnet wird mit 0 %, bis er eingetragen ist.",
 };
 
 /**
@@ -230,26 +249,34 @@ export function getEffectiveRateForKontakt(
 }
 
 /**
- * Schalter fuer Abrechnungen und Provisionsabrechnung (29.09.2026).
+ * Schalter fuer Abrechnungen und Provisionsabrechnung.
  *
- * Christian hat Variante a entschieden: Es gilt der beim Anlegen
- * festgeschriebene Satz. Scharf geschaltet wird erst, wenn zwei Dinge geklaert
- * sind: Die Festschreibung in der Datenbank hat vom 18.08. bis 28.09.2026 nichts
- * geschrieben (Trigger-Reparatur nie angekommen, Leads beim Anlegen oft noch
- * ohne Partner), und 12 vom Browser im Juni geschriebene Saetze (5 %) weichen
- * vom heutigen Satz (3 %) ab. Bis dahin rechnen beide Seiten wie bisher mit dem
- * aktuellen Satz. Statistik und Dashboard lesen den Satz unabhaengig davon.
+ * 29.09.2026: Christian entscheidet, dass der festgeschriebene Satz gilt,
+ * scharf geschaltet wurde noch nicht. 15.10.2026: eingeschaltet. Die Saetze
+ * schreibt seit 20260929140000 nur noch der Trigger, ab Reservierung; der
+ * Altbestand wurde mit 20260929150000 nachgezogen. Damit wirkt eine
+ * Satzaenderung in der Nutzerverwaltung nur noch auf Vorgaenge vor der
+ * Reservierung.
  */
-export const FESTGESCHRIEBENER_SATZ_IN_ABRECHNUNG = false;
+export const FESTGESCHRIEBENER_SATZ_IN_ABRECHNUNG = true;
 
 /**
  * Der am Investment festgeschriebene Satz (`meta.lockedProvisionRate`), sonst
  * `null`. Nur eine Zahl größer null zählt, alles andere ist kein Satz.
+ *
+ * Mit `partnerId`: Steht am Satz ein anderer Partner (Umhängung, bei der der
+ * Trigger nicht nachziehen konnte), gilt er für diesen Partner nicht.
  */
-export function festgeschriebenerSatz(meta: Record<string, unknown> | null | undefined): number | null {
+export function festgeschriebenerSatz(
+  meta: Record<string, unknown> | null | undefined,
+  partnerId?: string | null,
+): number | null {
   if (!FESTGESCHRIEBENER_SATZ_IN_ABRECHNUNG) return null;
   const satz = meta?.lockedProvisionRate;
-  return typeof satz === "number" && satz > 0 ? satz : null;
+  if (typeof satz !== "number" || satz <= 0) return null;
+  const fuer = meta?.lockedProvisionRatePartner;
+  if (partnerId && typeof fuer === "string" && fuer && fuer !== partnerId) return null;
+  return satz;
 }
 
 /**
@@ -257,15 +284,15 @@ export function festgeschriebenerSatz(meta: Record<string, unknown> | null | und
  * Auswertung und Zielplanung sichtbar wird, warum genau dieser Prozentsatz
  * gerechnet wurde.
  *
- * Prioritätskette:
- *  1. Festschreibung in der Nutzerverwaltung (provision_locked): Es gelten die
- *     dort gepflegten Sätze (_eigen/_setter, sonst der allgemeine Satz), und
- *     zwar VOR einem am Investment eingefrorenen Satz. Fehlt trotz
- *     Festschreibung der passende Satz, gilt der Stufensatz (Kennung zuerst
- *     über findKarriereStufe) und wird als "stufe" gekennzeichnet.
- *  2. Am Investment eingefrorener Satz (lockedProvisionRate).
- *  3. Eigen- bzw. Lead-Satz des Partners.
- *  4. Karrierestufe.
+ * Reihenfolge (seit 15.10.2026, ohne Karrierestufe):
+ *  1. Am Investment festgeschriebener Satz (ab Reservierung, nur der
+ *     Trigger schreibt ihn). Er gilt auch dann, wenn sich der Satz in der
+ *     Nutzerverwaltung später ändert, das ist der Zweck der Festschreibung.
+ *     Früher schlug `provision_locked` ihn; das hätte eine Satzänderung
+ *     rückwirkend auf reservierte Vorgänge durchschlagen lassen.
+ *  2. Eigen- bzw. Lead-Satz aus der Nutzerverwaltung (fehlt er, der
+ *     allgemeine Satz).
+ *  3. Kein Satz: 0 %, als "fehlt" gekennzeichnet, statt still eine Stufe.
  */
 export function getEffectiveRateInfoForKontakt(
   userId: string | null | undefined,
@@ -279,57 +306,21 @@ export function getEffectiveRateInfoForKontakt(
   heutigerSatz?: number;
 } {
   const eigen = istEigenKontakt(userId, kontakt);
-  const setterName = kontakt?.setter ? String(kontakt.setter).trim() : "";
+  const setterName = kontakt?.setter ? String(kontakt.setter).trim() || undefined : undefined;
+  const saetze = provisionssaetze(userId);
+  const aktuell = eigen ? saetze.eigen : saetze.lead;
 
-  // Der Satz, der ohne Festschreibung am Investment gelten würde.
-  // `istCustomSatz` unterscheidet gepflegte Sätze vom Stufen-Fallback, damit
-  // die Festschreibung aus der Nutzerverwaltung korrekt gekennzeichnet wird.
-  const aktuell = ((): { rate: number; quelle: Satzart; istCustomSatz: boolean } => {
-    if (eigen) {
-      const r = getCustomProvisionRateEigen(userId);
-      if (r !== null) return { rate: r, quelle: "eigen", istCustomSatz: true };
-    } else {
-      const r = getCustomProvisionRateSetter(userId);
-      if (r !== null) return { rate: r, quelle: "zugewiesen", istCustomSatz: true };
-    }
-    const allgemein = getCustomProvisionRate(userId);
-    if (allgemein !== null) return { rate: allgemein, quelle: "stufe", istCustomSatz: true };
-    const override = getKarriereOverrideForUser(userId);
-    const stufe = override ? getKarriereStufe(0, override) : KARRIERE_STUFEN[0];
-    return { rate: stufe.rate, quelle: "stufe", istCustomSatz: false };
-  })();
-
-  // 1. Festschreibung aus der Nutzerverwaltung: schlägt auch den am Investment
-  // eingefrorenen Satz. So kann ein falsch eingefrorener Wert (z. B. 3 % durch
-  // fehlende Leserechte beim Anlegen) die Zusage aus der Nutzerverwaltung
-  // nicht mehr aushebeln.
-  if (istProvisionFestgeschrieben(userId)) {
+  if (typeof lockedRate === "number" && lockedRate > 0) {
     return {
-      rate: aktuell.rate,
-      quelle: aktuell.istCustomSatz ? "nutzerverwaltung" : "stufe",
-      setterName: setterName || undefined,
-    };
-  }
-
-  // 2. Ein am Investment festgeschriebener Satz. Er entsteht beim Anlegen des
-  // Investments und schützt den Partner davor, dass eine spätere Änderung an
-  // seinen Konditionen eine bereits zugesagte Provision nachträglich verschiebt.
-  const festgeschrieben =
-    typeof lockedRate === "number" && lockedRate > 0
-      ? lockedRate
-      : ((kontakt?.meta?.lockedProvisionRate ?? kontakt?.lockedProvisionRate) as number | undefined);
-
-  if (typeof festgeschrieben === "number" && festgeschrieben > 0) {
-    return {
-      rate: festgeschrieben,
+      rate: lockedRate,
       quelle: "locked",
-      setterName: setterName || undefined,
-      heutigerSatz:
-        Math.abs(festgeschrieben - aktuell.rate) > 0.001 ? aktuell.rate : undefined,
+      setterName,
+      heutigerSatz: aktuell !== null && Math.abs(lockedRate - aktuell) > 0.001 ? aktuell : undefined,
     };
   }
 
-  return { rate: aktuell.rate, quelle: aktuell.quelle, setterName: setterName || undefined };
+  if (aktuell === null) return { rate: 0, quelle: "fehlt", setterName };
+  return { rate: aktuell, quelle: eigen ? "eigen" : "zugewiesen", setterName };
 }
 
 export function getKarriereStufeById(id?: string | null): KarriereStufeInfo {

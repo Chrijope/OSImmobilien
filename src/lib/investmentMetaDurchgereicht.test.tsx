@@ -197,10 +197,12 @@ describe("Provision: festgeschriebener Satz und Fälligkeit wirken (Entscheidung
     const info = getEffectiveRateInfoForKontakt("u-1", kontakt, festgeschriebenerSatz(inv.meta));
     expect(info.rate).toBe(2.5);
     expect(info.quelle).toBe("locked");
-    // Ohne festgeschriebenen Satz gilt der aktuelle, und der ist hier ein anderer.
+    // Ohne festgeschriebenen Satz gilt der aktuelle aus der Nutzerverwaltung;
+    // hier ist keiner gepflegt, und seit 15.10.2026 springt keine
+    // Karrierestufe mehr ein.
     const ohne = getEffectiveRateInfoForKontakt("u-1", kontakt, null);
-    expect(ohne.rate).not.toBe(2.5);
-    expect(info.heutigerSatz).toBe(ohne.rate);
+    expect(ohne).toMatchObject({ rate: 0, quelle: "fehlt" });
+    expect(info.heutigerSatz).toBeUndefined();
   });
 
   it("nur eine Zahl größer null ist ein festgeschriebener Satz", async () => {
@@ -235,10 +237,10 @@ describe("Provision: festgeschriebener Satz und Fälligkeit wirken (Entscheidung
 
   it("Abrechnungen und Provisionsabrechnung reichen den festgeschriebenen Satz durch", () => {
     const abrechnungen = readFileSync(resolve(process.cwd(), "src/pages/Abrechnungen.tsx"), "utf8");
-    expect(abrechnungen).toContain("getEffectiveRateInfoForKontakt(u.id, k, festgeschriebenerSatz(inv.meta))");
+    expect(abrechnungen).toContain("getEffectiveRateInfoForKontakt(u.id, k, festgeschriebenerSatz(inv.meta, u.id))");
     const bescheide = readFileSync(resolve(process.cwd(), "src/pages/Provisionsabrechnung.tsx"), "utf8");
     // Seit dem 04.10.2026 je Investment: der Satz genau dieses Investments.
-    expect(bescheide).toContain("getEffectiveRateInfoForKontakt(u.id, k, festgeschriebenerSatz(inv.meta))");
+    expect(bescheide).toContain("getEffectiveRateInfoForKontakt(u.id, k, festgeschriebenerSatz(inv.meta, u.id))");
   });
 });
 

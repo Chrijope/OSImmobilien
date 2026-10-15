@@ -20,7 +20,7 @@ import { loadAllUsers } from "@/lib/loadAllUsers";
 import { istZustaendig } from "@/lib/kontaktOwnership";
 import { calculateJuniorOverride, getUserPaket, getJuniorsForRecruiter } from "@/lib/juniorOverrideLogic";
 import { getLizenzPaket, OVERHEAD_AKTIV } from "@/lib/lizenzPakete";
-import { festgeschriebenerSatz, getEffectiveRateInfoForKontakt, getKarriereOverrideForUser } from "@/lib/karriereStufeHelper";
+import { festgeschriebenerSatz, getEffectiveRateInfoForKontakt } from "@/lib/karriereStufeHelper";
 import {
   getAbrechnungen, upsertAbrechnung, updateAbrechnungStatus, newId, entferneLeerenBescheid,
   monatLabel, fmtEUR, refreshAbrechnungen, abrechnungenPersistenz, bescheidVeraenderbar,
@@ -212,7 +212,7 @@ export default function Provisionsabrechnung() {
         // Der beim Eintritt in die Kaufphase festgeschriebene Satz gilt
         // (Entscheidung Christian vom 29.09.2026), jetzt der dieses
         // Investments und nicht mehr der erste des Kontakts.
-        const info = getEffectiveRateInfoForKontakt(u.id, k, festgeschriebenerSatz(inv.meta));
+        const info = getEffectiveRateInfoForKontakt(u.id, k, festgeschriebenerSatz(inv.meta, u.id));
         return {
           investmentId: inv.id,
           kontaktId: k.id,
@@ -276,11 +276,9 @@ export default function Provisionsabrechnung() {
         gesperrt++;
         continue;
       }
-      const karriere = getKarriereOverrideForUser(u.id) || undefined;
       const a: Provisionsabrechnung = {
         id: existing?.id || newId(),
         monat, userId: u.id, userName: u.name,
-        karriereStufe: karriere,
         eigeneDeals, overridesErhalten, overheadsAbgezogen,
         summeEigen: eigenCent / 100,
         summeOverridesErhalten: overridesCent / 100,
@@ -510,9 +508,6 @@ export default function Provisionsabrechnung() {
                       <span className="flex items-center gap-2 flex-wrap">
                         {d.kundeName} · {d.objekt}
                         {d.satzTyp && <SatzartBadge art={d.satzTyp} satz={d.satz} />}
-                        {false && (
-                          <Badge variant="outline" className="text-[10px]">Karrierestufe</Badge>
-                        )}
                       </span>
                       <span>{d.satz}% von {fmtEUR(d.kaufpreis)} = <b>{fmtEUR(d.betrag)}</b></span>
                     </div>

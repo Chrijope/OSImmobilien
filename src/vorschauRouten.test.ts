@@ -20,13 +20,16 @@ describe("Vorschau-Route der Investmentkalkulation", () => {
   it("fehlt im Produktions-Build", async () => {
     vi.stubEnv("DEV", false);
     vi.stubEnv("PROD", true);
-    const { VorschauInvestmentrechner } = await import("./vorschauRouten");
+    const { VorschauInvestmentrechner, VorschauProvision } = await import("./vorschauRouten");
     expect(VorschauInvestmentrechner).toBeNull();
+    expect(VorschauProvision).toBeNull();
   });
 
   it("App.tsx bindet die Seite nur über den abgesicherten Weg ein", () => {
     const app = readFileSync("src/App.tsx", "utf8");
     expect(app).not.toMatch(/pages\/VorschauInvestmentrechner/);
+    expect(app).not.toMatch(/pages\/VorschauProvision/);
+    expect(app).toMatch(/\{VorschauProvision && </);
     expect(app).toMatch(/\{VorschauInvestmentrechner && \(/);
     const routen = readFileSync("src/vorschauRouten.ts", "utf8");
     expect(routen).toMatch(/import\.meta\.env\.DEV\s*\?\s*lazy\(\(\) => import\("\.\/pages\/VorschauInvestmentrechner"\)\)/);

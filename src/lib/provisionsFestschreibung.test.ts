@@ -8,8 +8,11 @@ vi.mock("@/lib/dataCache", () => ({
 }));
 
 import {
+  getEffectiveRate,
   getEffectiveRateInfoForKontakt,
+  festgeschriebenerSatz,
   istProvisionFestgeschrieben,
+  provisionssaetze,
   SATZART_LABEL,
   SATZART_ERKLAERUNG,
 } from "@/lib/karriereStufeHelper";
@@ -32,111 +35,76 @@ beforeEach(() => {
 });
 
 /**
- * Kern von Paket C: Die Festschreibung aus der Nutzerverwaltung
- * (provision_locked) gilt VOR dem am Investment eingefrorenen Satz. Damit kann
- * ein falsch eingefrorener Wert (z. B. 3 % durch fehlende Leserechte beim
- * Anlegen) die Zusage aus der Nutzerverwaltung nicht mehr aushebeln.
+ * Seit 15.10.2026 (Christian): ein fester Satz je Partner aus der
+ * Nutzerverwaltung, getrennt nach Lead und Eigen. Keine Karrierestufe.
  */
-describe("Priorität 1: Festschreibung aus der Nutzerverwaltung", () => {
-  it("Eigen-Satz aus der Nutzerverwaltung schlägt den am Investment eingefrorenen Satz", () => {
-    setzeSettings({ provision_locked: true, custom_provision_rate_eigen: 5 });
-    const info = getEffectiveRateInfoForKontakt(PARTNER, eigenerKontakt, 3);
-    expect(info.rate).toBe(5);
-    expect(info.quelle).toBe("nutzerverwaltung");
+describe("Satz aus der Nutzerverwaltung", () => {
+  it("eigener Kontakt: Eigen-Satz", () => {
+    setzeSettings({ custom_provision_rate_eigen: 10, custom_provision_rate_setter: 8 });
+    expect(getEffectiveRateInfoForKontakt(PARTNER, eigenerKontakt)).toMatchObject({ rate: 10, quelle: "eigen" });
   });
 
-  it("Lead-Satz aus der Nutzerverwaltung schlägt den am Investment eingefrorenen Satz", () => {
-    setzeSettings({ provision_locked: true, custom_provision_rate_setter: 4.5 });
-    const info = getEffectiveRateInfoForKontakt(PARTNER, zugewiesenerKontakt, 3);
-    expect(info.rate).toBe(4.5);
-    expect(info.quelle).toBe("nutzerverwaltung");
+  it("zugewiesener Lead: Lead-Satz", () => {
+    setzeSettings({ custom_provision_rate_eigen: 10, custom_provision_rate_setter: 8 });
+    expect(getEffectiveRateInfoForKontakt(PARTNER, zugewiesenerKontakt)).toMatchObject({ rate: 8, quelle: "zugewiesen" });
   });
 
-  it("fällt auf den allgemeinen individuellen Satz zurück, wenn der fallspezifische fehlt", () => {
-    setzeSettings({ provision_locked: true, custom_provision_rate: 4.2 });
-    const info = getEffectiveRateInfoForKontakt(PARTNER, eigenerKontakt, 3);
-    expect(info.rate).toBe(4.2);
-    expect(info.quelle).toBe("nutzerverwaltung");
+  it("allgemeiner Satz füllt eine fehlende Seite (Altbestand)", () => {
+    setzeSettings({ custom_provision_rate: 7, custom_provision_rate_setter: 8 });
+    expect(getEffectiveRateInfoForKontakt(PARTNER, eigenerKontakt)).toMatchObject({ rate: 7, quelle: "eigen" });
+    expect(provisionssaetze(PARTNER)).toEqual({ lead: 8, eigen: 7 });
   });
 
-  it("greift auch über den Lock im Kontakt-Meta hinweg", () => {
-    setzeSettings({ provision_locked: true, custom_provision_rate_eigen: 5 });
-    const kontakt = { ...eigenerKontakt, meta: { lockedProvisionRate: 3 } };
-    const info = getEffectiveRateInfoForKontakt(PARTNER, kontakt);
-    expect(info.rate).toBe(5);
-    expect(info.quelle).toBe("nutzerverwaltung");
-  });
-});
-
-describe("Festschreibung ohne gepflegten Satz: Stufensatz, als Stufe gekennzeichnet", () => {
-  it("löst karriere_override 'vertriebspartner' Kennung-zuerst auf 4 % auf, nicht auf 3 %", () => {
-    setzeSettings({ provision_locked: true, karriere_override: "vertriebspartner" });
-    const info = getEffectiveRateInfoForKontakt(PARTNER, eigenerKontakt, 3);
-    expect(info.rate).toBe(4);
-    expect(info.quelle).toBe("stufe");
-  });
-
-  it("löst den nackten Titel 'Vertriebspartner' auf die einheitliche 4-%-Stufe auf", () => {
-    // Seit dem vereinheitlichten Modell ist "Vertriebspartner" der Titel der
-    // 4-%-Stufe. Alt-Bestand mit diesem Wert ist über festgeschriebene
-    // custom-Sätze abgesichert und landet gar nicht in diesem Zweig.
-    setzeSettings({ provision_locked: true, karriere_override: "Vertriebspartner" });
-    const info = getEffectiveRateInfoForKontakt(PARTNER, eigenerKontakt);
-    expect(info.rate).toBe(4);
-    expect(info.quelle).toBe("stufe");
-  });
-
-  it("löst den Titel 'Vertriebspartner (Alt)' auf die alte 3-%-Stufe auf", () => {
-    setzeSettings({ provision_locked: true, karriere_override: "Vertriebspartner (Alt)" });
-    const info = getEffectiveRateInfoForKontakt(PARTNER, eigenerKontakt);
-    expect(info.rate).toBe(3);
-    expect(info.quelle).toBe("stufe");
-  });
-
-  it("ignoriert den eingefrorenen Investment-Satz auch beim Stufen-Fallback", () => {
-    setzeSettings({ provision_locked: true, karriere_override: "manager" });
-    const info = getEffectiveRateInfoForKontakt(PARTNER, zugewiesenerKontakt, 3);
-    expect(info.rate).toBe(4.5);
-    expect(info.quelle).toBe("stufe");
-  });
-});
-
-describe("Ohne Festschreibung in der Nutzerverwaltung: bisheriges Verhalten", () => {
-  it("der am Investment eingefrorene Satz gilt und wird als 'locked' gekennzeichnet", () => {
-    setzeSettings({ custom_provision_rate_eigen: 5 });
-    const info = getEffectiveRateInfoForKontakt(PARTNER, eigenerKontakt, 3);
-    expect(info.rate).toBe(3);
-    expect(info.quelle).toBe("locked");
-    // Der heute gültige Satz weicht ab und wird zum Vergleich mitgeliefert.
-    expect(info.heutigerSatz).toBe(5);
-  });
-
-  it("ohne Lock gilt der Eigen-Satz", () => {
-    setzeSettings({ custom_provision_rate_eigen: 5 });
-    const info = getEffectiveRateInfoForKontakt(PARTNER, eigenerKontakt);
-    expect(info.rate).toBe(5);
-    expect(info.quelle).toBe("eigen");
-  });
-
-  it("ohne Lock gilt für zugewiesene Leads der Lead-Satz", () => {
-    setzeSettings({ custom_provision_rate_setter: 3.5 });
-    const info = getEffectiveRateInfoForKontakt(PARTNER, zugewiesenerKontakt);
-    expect(info.rate).toBe(3.5);
-    expect(info.quelle).toBe("zugewiesen");
-  });
-
-  it("ohne jeden gepflegten Satz gilt die Karrierestufe", () => {
+  it("Karrierestufe liefert keinen Satz mehr: ohne Satz 0 % und 'fehlt'", () => {
     setzeSettings({ karriere_override: "vertriebsfirma" });
-    const info = getEffectiveRateInfoForKontakt(PARTNER, eigenerKontakt);
-    expect(info.rate).toBe(5);
-    expect(info.quelle).toBe("stufe");
+    expect(getEffectiveRateInfoForKontakt(PARTNER, eigenerKontakt)).toMatchObject({ rate: 0, quelle: "fehlt" });
+    expect(getEffectiveRate(PARTNER)).toBe(0);
   });
 
-  it("provision_locked: false verhält sich wie kein Lock", () => {
-    setzeSettings({ provision_locked: false, custom_provision_rate_eigen: 5 });
-    const info = getEffectiveRateInfoForKontakt(PARTNER, eigenerKontakt, 3);
-    expect(info.rate).toBe(3);
-    expect(info.quelle).toBe("locked");
+  it("provision_locked ändert die Rechnung nicht", () => {
+    setzeSettings({ provision_locked: true, custom_provision_rate_eigen: 5 });
+    expect(getEffectiveRateInfoForKontakt(PARTNER, eigenerKontakt)).toMatchObject({ rate: 5, quelle: "eigen" });
+  });
+});
+
+describe("Festgeschriebener Satz am Investment gilt unverändert", () => {
+  it("schlägt den heutigen Satz und meldet die Abweichung", () => {
+    setzeSettings({ custom_provision_rate_eigen: 10 });
+    const info = getEffectiveRateInfoForKontakt(PARTNER, eigenerKontakt, 8);
+    expect(info).toMatchObject({ rate: 8, quelle: "locked", heutigerSatz: 10 });
+  });
+
+  it("schlägt auch einen in der Nutzerverwaltung festgeschriebenen Satz (keine Rückwirkung)", () => {
+    setzeSettings({ provision_locked: true, custom_provision_rate_eigen: 12 });
+    expect(getEffectiveRateInfoForKontakt(PARTNER, eigenerKontakt, 8)).toMatchObject({ rate: 8, quelle: "locked" });
+  });
+
+  it("gilt auch, wenn der Partner heute gar keinen Satz mehr hat", () => {
+    setzeSettings({});
+    expect(getEffectiveRateInfoForKontakt(PARTNER, eigenerKontakt, 8)).toMatchObject({ rate: 8, quelle: "locked" });
+  });
+
+  it("ein alter Satz im Kontakt-Meta zählt nicht, nur der vom Investment", () => {
+    setzeSettings({ custom_provision_rate_eigen: 10 });
+    const kontakt = { ...eigenerKontakt, meta: { lockedProvisionRate: 3 } };
+    expect(getEffectiveRateInfoForKontakt(PARTNER, kontakt)).toMatchObject({ rate: 10, quelle: "eigen" });
+  });
+});
+
+describe("festgeschriebenerSatz", () => {
+  it("liest lockedProvisionRate aus dem Investment", () => {
+    expect(festgeschriebenerSatz({ lockedProvisionRate: 8 })).toBe(8);
+    expect(festgeschriebenerSatz({ lockedProvisionRate: 8, lockedProvisionRatePartner: PARTNER }, PARTNER)).toBe(8);
+  });
+
+  it("gilt nicht für einen anderen Partner als den, für den er geschrieben wurde", () => {
+    expect(festgeschriebenerSatz({ lockedProvisionRate: 8, lockedProvisionRatePartner: ANDERER }, PARTNER)).toBeNull();
+  });
+
+  it("nur Zahlen größer null", () => {
+    expect(festgeschriebenerSatz({ lockedProvisionRate: 0 })).toBeNull();
+    expect(festgeschriebenerSatz({ lockedProvisionRate: "8" })).toBeNull();
+    expect(festgeschriebenerSatz(null)).toBeNull();
   });
 });
 
@@ -153,8 +121,8 @@ describe("istProvisionFestgeschrieben", () => {
 });
 
 describe("Satzart-Kennzeichnung", () => {
-  it("die neue Satzart 'nutzerverwaltung' hat Label und Erklärung", () => {
-    expect(SATZART_LABEL.nutzerverwaltung).toBe("Nutzerverwaltung");
-    expect(SATZART_ERKLAERUNG.nutzerverwaltung).toContain("Nutzerverwaltung");
+  it("'fehlt' hat Label und Erklärung", () => {
+    expect(SATZART_LABEL.fehlt).toBe("Kein Satz");
+    expect(SATZART_ERKLAERUNG.fehlt).toContain("Nutzerverwaltung");
   });
 });

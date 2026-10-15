@@ -106,6 +106,7 @@ describe("Wo der Banner hingehört", () => {
       // Lokale Vorschau, nur im Entwicklungsmodus (vorschauRouten.ts), nie auf Netlify.
       "/vorschau/investmentrechner",
       "/vorschau/investmentrechner-plus",
+      "/vorschau/provision",
     ]);
     const ohneEntscheidung = routen
       // Hinter `PraesentationGuard` liegt eine Anmeldung, `Navigate` leitet

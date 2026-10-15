@@ -14,7 +14,6 @@ import { Separator } from "@/components/ui/separator";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, Pencil, Save, X, Loader2, Shield, Lock, Unlock, Download, CheckCircle2, XCircle, Clock, Trash2, ChevronDown, ScrollText } from "lucide-react";
-import { KARRIERE_STUFEN, findKarriereStufe } from "@/lib/karriereStufeHelper";
 import { useUser } from "@/contexts/UserContext";
 import { ROLES, type UserRole } from "@/types/user";
 import { rollenLabel, rollenVarianteVonProfil } from "@/lib/rollenLabel";
@@ -156,7 +155,6 @@ export default function TeampartnerProfil() {
   const [savingPerms, setSavingPerms] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [karriereOverride, setKarriereOverride] = useState<string>("");
   // Opt-In: Sidebar/Routen nach Karrierestufe einschränken. Default AUS
   // (Bestandsschutz — bisherige Vertriebspartner sehen das komplette CRM).
   const [karriereGatingActive, setKarriereGatingActive] = useState<boolean>(false);
@@ -246,7 +244,6 @@ export default function TeampartnerProfil() {
       setUnterlagen((settingsData as any)?.unterlagen || []);
       setOnboardingComplete((settingsData as any)?.onboarding_complete ?? false);
       setCustomPermissions(einst.custom_permissions || []);
-      setKarriereOverride(einst.karriere_override || "");
       setKarriereGatingActive(!!einst.karriere_gating_active);
       setCustomProvisionRate(typeof einst.custom_provision_rate === "number" ? einst.custom_provision_rate : null);
       setCustomProvisionRateSetter(typeof einst.custom_provision_rate_setter === "number" ? einst.custom_provision_rate_setter : null);
@@ -528,106 +525,55 @@ export default function TeampartnerProfil() {
               )}
               </div>
               {["vertriebspartner"].some(r => selectedRoles.includes(r)) && (() => {
-                // Zentrale Auflösung (Kennung vor Titel), sonst löst der Wert
-                // "vertriebspartner" über den gleichnamigen Titel die falsche Stufe auf.
-                const activeStufe = findKarriereStufe(karriereOverride) || KARRIERE_STUFEN[0];
-                const displayRate = customProvisionRate ?? activeStufe.rate;
-                const isCustom = customProvisionRate !== null && customProvisionRate !== activeStufe.rate;
+                // Seit 15.10.2026 ohne Karrierestufe: es gilt der feste Satz
+                // aus diesen Feldern, getrennt nach Lead und Eigen.
                 return (
                 <div className="border rounded-lg p-4 bg-muted/30 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-sm font-medium">
-                      <span className="text-lg">{activeStufe.emoji}</span>
-                      <span>Karrierestufe & Provision</span>
+                  <div className="text-sm font-medium">Provisionssatz</div>
+                  {/* Die Einschränkung nach Karrierestufe gibt es nicht mehr.
+                      Wer sie noch aktiv hat, soll sie hier abschalten können. */}
+                  {karriereGatingActive && (
+                    <div className="flex items-start gap-2 rounded-md border bg-background/60 p-2">
+                      <Switch
+                        checked={karriereGatingActive}
+                        onCheckedChange={async (v) => {
+                          setKarriereGatingActive(v);
+                          try {
+                            const { error } = await supabase.rpc("merge_user_settings" as any, {
+                              _user_id: member.id,
+                              _patch: { karriere_gating_active: v },
+                            });
+                            if (error) throw error;
+                            toast.success("Sidebar zeigt wieder den vollen CRM-Zugriff");
+                          } catch (err: any) {
+                            setKarriereGatingActive(!v);
+                            toast.error(`Fehler: ${err.message}`);
+                          }
+                        }}
+                      />
+                      <div className="space-y-0.5 text-[11px] leading-tight">
+                        <p className="font-medium">Sidebar nach alter Karrierestufe eingeschränkt</p>
+                        <p className="text-muted-foreground">Ausschalten, damit der Partner das komplette CRM sieht.</p>
+                      </div>
                     </div>
-                    <Badge variant="outline" className="text-xs font-bold px-3 py-1">
-                      {displayRate} %
-                    </Badge>
-                  </div>
+                  )}
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <Label className="text-xs text-muted-foreground">Karrierestufe</Label>
-                      <Select value={(() => {
-                        // Kennung vor Titel auflösen, zentral im Helper.
-                        const match = findKarriereStufe(karriereOverride);
-                        return match ? match.id : "auto";
-                      })()} onValueChange={async (v) => {
-                        if (provisionLocked) {
-                          toast.error("Provisionssätze sind festgeschrieben. Bitte zuerst entsperren.");
-                          return;
-                        }
-                        const newVal = v === "auto" ? "" : v;
-                        setKarriereOverride(newVal);
-                        try {
-                          const { error } = await supabase.rpc("merge_user_settings" as any, {
-                            _user_id: member.id,
-                            _patch: { karriere_override: newVal || null },
-                          });
-                          if (error) throw error;
-                          toast.success(`Karrierestufe ${newVal ? `auf "${KARRIERE_STUFEN.find(s=>s.id===newVal)?.titel||newVal}" gesetzt` : "auf automatisch zurückgesetzt"}`);
-                        } catch (err: any) {
-                          toast.error(`Fehler: ${err.message}`);
-                        }
-                      }}>
-                        <SelectTrigger className="w-full" disabled={provisionLocked}>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="auto">🔄 Automatisch</SelectItem>
-                          {/* Neu vergeben wird nur die einheitliche 4-%-Stufe.
-                              Hat der Partner bereits eine Bestandsstufe, bleibt
-                              sie als Eintrag stehen, damit der aktuelle Wert
-                              sichtbar ist und nicht ungewollt wechselt. */}
-                          {KARRIERE_STUFEN.filter(s => !s.nurBestand || findKarriereStufe(karriereOverride)?.id === s.id).map(s => (
-                            <SelectItem key={s.id} value={s.id}>{s.emoji} {s.titel} ({s.rate} %)</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <p className="text-[10px] text-muted-foreground">Standard-Satz: {activeStufe.rate} %</p>
-                      <div className="mt-2 flex items-start gap-2 rounded-md border bg-background/60 p-2">
-                        <Switch
-                          checked={karriereGatingActive}
-                          onCheckedChange={async (v) => {
-                            setKarriereGatingActive(v);
-                            try {
-                              const { error } = await supabase.rpc("merge_user_settings" as any, {
-                                _user_id: member.id,
-                                _patch: { karriere_gating_active: v },
-                              });
-                              if (error) throw error;
-                              toast.success(v
-                                ? "Sidebar wird jetzt nach Karrierestufe gefiltert"
-                                : "Sidebar zeigt wieder vollen CRM-Zugriff (Bestandsschutz)");
-                            } catch (err: any) {
-                              setKarriereGatingActive(!v);
-                              toast.error(`Fehler: ${err.message}`);
-                            }
-                          }}
-                        />
-                        <div className="space-y-0.5 text-[11px] leading-tight">
-                          <p className="font-medium">Sidebar nach Karrierestufe einschränken</p>
-                          <p className="text-muted-foreground">
-                            Standard AUS: Bestandspartner sehen das komplette CRM. Aktivieren, um nur Module der gewählten Stufe zu zeigen.
-                          </p>
-                        </div>
-                      </div>
+                    {/* Altbestand: Der allgemeine Satz gilt, wo Lead oder Eigen
+                        leer ist. Neu vergeben wird er nicht, deshalb nur, wenn
+                        einer hinterlegt ist. */}
+                    {customProvisionRate !== null && (
+                    <div className="space-y-1 col-span-2">
+                      <Label className="text-xs text-muted-foreground">Allgemeiner Satz (%), gilt wo Lead/Eigen leer</Label>
+                      <Input
+                        type="number" min={0} max={100} step={0.01}
+                        value={customProvisionRate ?? ""}
+                        onChange={(e) => setCustomProvisionRate(e.target.value === "" ? null : parseFloat(e.target.value))}
+                        disabled={provisionLocked}
+                      />
                     </div>
+                    )}
                     <div className="space-y-1">
-                      <Label className="text-xs text-muted-foreground">Individueller Satz (%)</Label>
-                      <div className="flex items-center gap-2">
-                        <Input
-                          type="number" min={0} max={100} step={0.5}
-                          placeholder={`${activeStufe.rate} (Standard)`}
-                          value={customProvisionRate ?? ""}
-                          onChange={(e) => setCustomProvisionRate(e.target.value === "" ? null : parseFloat(e.target.value))}
-                          className="w-full"
-                          disabled={provisionLocked}
-                        />
-                      </div>
-                      <p className="text-[10px] text-muted-foreground">Allgemeiner Override</p>
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-xs text-muted-foreground">Setter-Lead Satz (%)</Label>
+                      <Label className="text-xs text-muted-foreground">Lead-Satz (%)</Label>
                       <Input
                         type="number" min={0} max={100} step={0.01}
                         placeholder="z. B. 5"
@@ -635,10 +581,10 @@ export default function TeampartnerProfil() {
                         onChange={(e) => setCustomProvisionRateSetter(e.target.value === "" ? null : parseFloat(e.target.value))}
                         disabled={provisionLocked}
                       />
-                      <p className="text-[10px] text-muted-foreground">Bei Leads mit Setter-Zuweisung</p>
+                      <p className="text-[10px] text-muted-foreground">Für Leads, die OS Immobilien zuweist</p>
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs text-muted-foreground">Eigen-Kontakt Satz (%)</Label>
+                      <Label className="text-xs text-muted-foreground">Eigen-Satz (%)</Label>
                       <div className="flex items-center gap-2">
                         <Input
                           type="number" min={0} max={100} step={0.01}
@@ -681,7 +627,7 @@ export default function TeampartnerProfil() {
                           <Save className="h-3.5 w-3.5" />
                         </Button>
                       </div>
-                      <p className="text-[10px] text-muted-foreground">Selbst angelegte Kontakte</p>
+                      <p className="text-[10px] text-muted-foreground">Für Kontakte aus dem eigenen Netzwerk</p>
                     </div>
                   </div>
                   {/* Lock-Toggle */}

@@ -12,3 +12,8 @@ import { lazy } from "react";
 export const VorschauInvestmentrechner = import.meta.env.DEV
   ? lazy(() => import("./pages/VorschauInvestmentrechner"))
   : null;
+
+/** Vorschau „Provision je Partner“ (15.10.2026): /vorschau/provision. Gleiche Regeln wie oben. */
+export const VorschauProvision = import.meta.env.DEV
+  ? lazy(() => import("./pages/VorschauProvision"))
+  : null;
