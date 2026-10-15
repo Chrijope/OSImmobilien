@@ -11,12 +11,11 @@ import {
   getEffectiveRate,
   getEffectiveRateInfoForKontakt,
   festgeschriebenerSatz,
-  istProvisionFestgeschrieben,
   provisionssaetze,
   mischsatz,
   SATZART_LABEL,
   SATZART_ERKLAERUNG,
-} from "@/lib/karriereStufeHelper";
+} from "@/lib/provisionssatz";
 
 const PARTNER = "11111111-1111-1111-1111-111111111111";
 const ANDERER = "22222222-2222-2222-2222-222222222222";
@@ -114,18 +113,6 @@ describe("festgeschriebenerSatz", () => {
     expect(festgeschriebenerSatz({ lockedProvisionRate: 0 })).toBeNull();
     expect(festgeschriebenerSatz({ lockedProvisionRate: "8" })).toBeNull();
     expect(festgeschriebenerSatz(null)).toBeNull();
-  });
-});
-
-describe("istProvisionFestgeschrieben", () => {
-  it("erkennt nur ein echtes true", () => {
-    setzeSettings({ provision_locked: true });
-    expect(istProvisionFestgeschrieben(PARTNER)).toBe(true);
-    setzeSettings({ provision_locked: "true" });
-    expect(istProvisionFestgeschrieben(PARTNER)).toBe(false);
-    setzeSettings({});
-    expect(istProvisionFestgeschrieben(PARTNER)).toBe(false);
-    expect(istProvisionFestgeschrieben(undefined)).toBe(false);
   });
 });
 

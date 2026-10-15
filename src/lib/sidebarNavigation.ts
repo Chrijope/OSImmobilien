@@ -322,8 +322,6 @@ export interface NavKontext {
   rolle: UserRole | string;
   /** Individuelle Freigaben aus `user_settings.einstellungen.custom_permissions`. */
   customPermissions?: string[];
-  /** Karrierestufe, nur wenn das Stufen-Gating für die Person aktiv ist. */
-  vpStufeId?: string | null;
   /** Nur für Freigaben, die an einer Person hängen (Videocall, Bewerberprozess). */
   identitaet?: NutzerIdentitaet;
   /** Videocall-Bereich, siehe `useVideocallFreigabe`. */
@@ -410,7 +408,7 @@ export function navigationsGruppen(ctx: NavKontext): NavGruppe[] {
 /** Erscheint dieser Eintrag für die Rolle? Admin-Riegel plus Routenfreigabe. */
 export function darfNavEintrag(item: Pick<NavItem, "url" | "adminOnly" | "auchFuer">, ctx: NavKontext): boolean {
   if (greiftAdminRiegel(item, ctx.rolle)) return false;
-  return isUrlAllowedForRole(item.url, (ctx.rolle || "admin") as UserRole, ctx.customPermissions, ctx.vpStufeId, ctx.identitaet);
+  return isUrlAllowedForRole(item.url, (ctx.rolle || "admin") as UserRole, ctx.customPermissions, null, ctx.identitaet);
 }
 
 /**

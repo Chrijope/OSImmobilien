@@ -569,7 +569,6 @@ export function HeaderBar() {
       objektbereichGesperrt(pfad, {
         rolle: user.role,
         customPermissions: getUserSetting<string[]>("custom_permissions", []) || [],
-        vpStufeId: null,
         identitaet: { email: authUser?.email, userId: authUser?.id },
       }),
     );

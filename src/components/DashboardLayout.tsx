@@ -56,8 +56,6 @@ export function AppShell() {
   const { isLoggedIn, loading, user, authUser } = useUser();
   const location = useLocation();
   const { loaded: settingsLoaded, onboardingComplete, customPermissions } = useUserSettings();
-  // Die Sperre nach Karrierestufe ist seit 15.10.2026 entfallen.
-  const vpStufeId = null;
   useNotarfotoReminder(user.role, user.name, authUser?.id);
   useKaufpreisFaelligkeitReminder(user.role, authUser?.id);
   useInvestmentInboxTriggers(user.role, user.name, authUser?.id);
@@ -195,7 +193,7 @@ export function AppShell() {
     const staticSegments = pathSegments.filter(s => !/^[0-9a-f-]{8,}$/i.test(s) && !/^\d+$/.test(s));
     for (let i = staticSegments.length; i >= 1; i--) {
       const candidate = "/" + staticSegments.slice(0, i).join("/");
-      if (isUrlAllowedForRole(candidate, user.role, customPermissions, vpStufeId, {
+      if (isUrlAllowedForRole(candidate, user.role, customPermissions, null, {
         email: authUser?.email,
         userId: authUser?.id,
       })) {
@@ -213,7 +211,6 @@ export function AppShell() {
     const objekteZu = objektbereichGesperrt(location.pathname, {
       rolle: user.role,
       customPermissions,
-      vpStufeId,
       identitaet: { email: authUser?.email, userId: authUser?.id },
     });
     if (!allowed || objekteZu || objektAdresseZu) {

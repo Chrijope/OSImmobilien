@@ -1,102 +1,23 @@
 import { cacheGet } from "./dataCache";
 import { kennungZuName, nameMehrdeutig } from "./beraterNamensabgleich";
-import { OVERHEAD_AKTIV } from "./lizenzPakete";
 
 /**
- * Karrierestufen-Definitionen und Override-Helfer.
- * Andere Module importieren diese für konsistente Stufen-Definitionen.
+ * Provisionssätze der Vertriebspartner aus der Nutzerverwaltung.
+ *
+ * Karrierestufen gibt es bei OS Immobilien seit dem 15.10.2026 nicht mehr
+ * (Christian: im Vertrieb gibt es nur Vertriebspartner, ohne Stufen). Die
+ * gespeicherten Stufenwerte in den Nutzereinstellungen und die Tabelle
+ * `karriere_stufen` bleiben in der Datenbank stehen, werden aber weder
+ * gelesen noch geschrieben (bis 15.10.2026 hiess diese Datei
+ * karriereStufeHelper.ts).
  */
-export interface KarriereStufeInfo {
-  id: "tippgeber" | "vertriebspartner" | "manager" | "vertriebsfirma";
-  titel: string;
-  emoji: string;
-  rate: number;
-  schwelle: number;
-  /** Junior-Override in Prozentpunkten (nur Team Lead / Lizenzpartner) */
-  juniorOverride?: number;
-  /**
-   * Stufe existiert nur noch für Bestandsnutzer. Sie bleibt in der Liste,
-   * damit gespeicherte Overrides weiterhin auf Titel und Satz aufgelöst
-   * werden (getKarriereStufe liefert sie unverändert). Neu vergeben wird sie
-   * nicht mehr: alle Neuvergabe-Auswahlen und Vergleichs-Anzeigen filtern
-   * über NEUVERGABE_KARRIERE_STUFEN.
-   */
-  nurBestand?: boolean;
-}
-
-/**
- * Neues Konditionsmodell (Etappe 1 Bewerbermanagement-Umbau): Alle neuen
- * Partner starten einheitlich mit 4 % (id "vertriebspartner", Titel
- * "Vertriebspartner"). Die alte 3-%-Stufe heißt jetzt "Vertriebspartner
- * (Alt)", Manager und Vertriebsfirma bleiben als reine Bestandsstufen
- * erhalten. Bestandspartner sind über ihre in der Nutzerverwaltung
- * festgeschriebenen custom_provision_rate-Sätze abgesichert (Provisions-
- * Sanierung), die Stufe ist für sie nur noch Anzeige und Fallback.
- */
-export const KARRIERE_STUFEN: KarriereStufeInfo[] = [
-  { id: "tippgeber", titel: "Vertriebspartner (Alt)", emoji: "🌱", rate: 3, schwelle: 0, nurBestand: true },
-  { id: "vertriebspartner", titel: "Vertriebspartner", emoji: "🔥", rate: 4, schwelle: 10 },
-  // Der Junior-Override hängt am zentralen Overhead-Schalter: ohne aktive
-  // Overhead-Provision führt keine Stufe einen Override-Satz.
-  { id: "manager", titel: "Team Lead", emoji: "🏆", rate: 4.5, schwelle: 30, ...(OVERHEAD_AKTIV ? { juniorOverride: 1.5 } : {}), nurBestand: true },
-  { id: "vertriebsfirma", titel: "Lizenzpartner", emoji: "👑", rate: 5, schwelle: 50, ...(OVERHEAD_AKTIV ? { juniorOverride: 2 } : {}), nurBestand: true },
-];
-
-/**
- * Stufen, die bei Neuvergabe (Einladung, Aktivierung, Karriere-Auswahl) zur
- * Wahl stehen und die in Vergleichs-Anzeigen als Zielbild gezeigt werden.
- * Aktuell ist das genau die einheitliche 4-%-Stufe.
- */
-export const NEUVERGABE_KARRIERE_STUFEN = KARRIERE_STUFEN.filter((s) => !s.nurBestand);
-
-export type KarriereStufe = typeof KARRIERE_STUFEN[number]["titel"];
 
 /** Formatiert einen Satz deutsch fuer die Anzeige, z. B. 4.5 wird zu "4,5 %". */
 export function formatSatzProzent(rate: number): string {
   return `${String(rate).replace(".", ",")} %`;
 }
 
-/**
- * Anzeige-Text einer Stufe inklusive Junior-Override, z. B.
- * "4,5 % + 1,5 % Junior-Override" fuer Team Lead. Wird u. a. in der
- * Nutzerverwaltung angezeigt; so bleibt der Satz je Stufe an einer Stelle.
- */
-export function formatStufenProvision(stufe: KarriereStufeInfo): string {
-  const satz = formatSatzProzent(stufe.rate);
-  return stufe.juniorOverride
-    ? `${satz} + ${formatSatzProzent(stufe.juniorOverride)} Junior-Override`
-    : satz;
-}
-
-const normalizeKarriereValue = (value?: string | null) => (value ?? "").trim().toLowerCase();
-
-/**
- * Legacy-Aliase: alte Titel, die noch in user_settings.karriere_override gespeichert
- * sein können, werden auf die aktuelle Stufen-ID gemappt.
- *
- * "lead partner" war bis zur Vereinheitlichung auf 4 % der Titel der Stufe
- * "vertriebspartner". Der nackte Titel "Vertriebspartner" löst seit der
- * Umbenennung über den Titel-Durchlauf auf die 4-%-Stufe auf (vorher 3 %);
- * Alt-Bestand mit diesem gespeicherten Wert ist über die festgeschriebenen
- * custom_provision_rate-Sätze abgesichert und rutscht nicht auf 4 % hoch.
- */
-const LEGACY_KARRIERE_ALIASES: Record<string, KarriereStufeInfo["id"]> = {
-  "junior berater": "tippgeber",
-  "berater": "vertriebspartner",
-  "lead berater": "vertriebspartner",
-  "lead partner": "vertriebspartner",
-  "team berater": "manager",
-  "senior berater": "vertriebsfirma",
-};
-
-export function getKarriereOverrideForUser(userId?: string | null): string | null {
-  if (!userId) return null;
-  const allSettings = cacheGet<any>("user_settings");
-  const override = allSettings.find((row: any) => row.user_id === userId)?.einstellungen?.karriere_override;
-  return typeof override === "string" && override.trim().length > 0 ? override : null;
-}
-
-/** Returns a custom provision rate if manually set for a user, or null to use the standard stufe rate */
+/** Der allgemeine Satz (Altbestand), sonst null. */
 export function getCustomProvisionRate(userId?: string | null): number | null {
   if (!userId) return null;
   const allSettings = cacheGet<any>("user_settings");
@@ -118,19 +39,6 @@ export function getCustomProvisionRateEigen(userId?: string | null): number | nu
   const allSettings = cacheGet<any>("user_settings");
   const rate = allSettings.find((row: any) => row.user_id === userId)?.einstellungen?.custom_provision_rate_eigen;
   return typeof rate === "number" && rate > 0 ? rate : null;
-}
-
-/**
- * Sind die Provisionssätze dieses Partners in der Nutzerverwaltung
- * festgeschrieben? Gesetzt wird das Flag im Teampartner-Profil, geprüft
- * serverseitig von `merge_user_settings`. Hier wird es gelesen, damit die
- * Festschreibung auch in Anzeige und Rechnung wirkt und nicht nur beim
- * Speichern.
- */
-export function istProvisionFestgeschrieben(userId?: string | null): boolean {
-  if (!userId) return false;
-  const allSettings = cacheGet<any>("user_settings");
-  return allSettings.find((row: any) => row.user_id === userId)?.einstellungen?.provision_locked === true;
 }
 
 /**
@@ -190,12 +98,8 @@ export function parseProvisionssatz(eingabe: string | number | null | undefined)
 export const SATZ_UNGUELTIG_TEXT = "Bitte trag einen Provisionssatz zwischen 0 und 100 Prozent ein.";
 
 /**
- * Determines the effective provision rate for a user with respect to a specific contact.
- * Priority:
- *  1. Locked rate on the kontakt/investment (e.g. invMeta.lockedProvisionRate or kontakt.meta.lockedProvisionRate)
- *  2. Zugewiesener Lead → custom_provision_rate_setter (falls gesetzt)
- *  3. Eigener Kontakt → custom_provision_rate_eigen (falls gesetzt)
- *  4. Fallback → getEffectiveRate (custom_provision_rate / Karrierestufe)
+ * Eigen oder zugewiesen: Davon hängt ab, ob der Eigen- oder der Lead-Satz
+ * gilt (Reihenfolge siehe getEffectiveRateInfoForKontakt unten).
  *
  * Was ein eigener Kontakt ist, entschied bisher allein das Feld `setter`, also
  * der Name einer Setterin. Bei OS Immobilien gibt es aber keine Setterinnen: die
@@ -223,7 +127,7 @@ export const SATZART_LABEL: Record<Satzart, string> = {
   eigen: "Eigen",
   zugewiesen: "Zugewiesen",
   locked: "Festgeschrieben",
-  stufe: "Karrierestufe",
+  stufe: "Altbestand",
   nutzerverwaltung: "Nutzerverwaltung",
   fehlt: "Kein Satz hinterlegt",
 };
@@ -233,7 +137,7 @@ export const SATZART_ERKLAERUNG: Record<Satzart, string> = {
   zugewiesen: "Dieser Lead wurde dem Vertriebspartner zugewiesen. Es gilt sein Lead-Satz.",
   locked:
     "Der Satz wurde bei der Reservierung festgeschrieben. Eine spätere Änderung in der Nutzerverwaltung wirkt sich auf diesen Vorgang nicht mehr aus.",
-  stufe: "Für diesen Fall ist kein eigener Satz gepflegt. Es gilt der Satz der Karrierestufe.",
+  stufe: "Alter Bescheid aus der Zeit vor dem 15.10.2026, als ohne eigenen Satz noch ein Standardsatz galt.",
   nutzerverwaltung:
     "Die Sätze dieses Partners waren in der Nutzerverwaltung festgeschrieben. Der dort hinterlegte Satz galt für diesen Vorgang.",
   fehlt: "Für diesen Partner ist in der Nutzerverwaltung kein Provisionssatz hinterlegt. Bis Admin oder Inhaber ihn eintragen, wird keine Provision gerechnet.",
@@ -354,67 +258,4 @@ export function getEffectiveRateInfoForKontakt(
 
   if (aktuell === null) return { rate: null, quelle: "fehlt", setterName };
   return { rate: aktuell, quelle: eigen ? "eigen" : "zugewiesen", setterName };
-}
-
-export function getKarriereStufeById(id?: string | null): KarriereStufeInfo {
-  const normalizedId = normalizeKarriereValue(id);
-  return KARRIERE_STUFEN.find((stufe) => stufe.id === normalizedId) ?? KARRIERE_STUFEN[0];
-}
-
-/**
- * Löst einen gespeicherten Karriere-Wert (Kennung, Titel oder Legacy-Alias)
- * auf die passende Stufe auf.
- *
- * Die Kennungen laufen dabei in einem eigenen, kompletten Durchlauf VOR den
- * Titeln (Kennung-zuerst-Logik). Historischer Grund: Bis zur Vereinheitlichung
- * auf 4 % trug die ERSTE Stufe den Titel "Vertriebspartner", während
- * "vertriebspartner" die Kennung der zweiten war; ein kombinierter Vergleich
- * löste die Kennung fälschlich auf 3 % auf. Seit der Umbenennung gehören
- * Titel "Vertriebspartner" und Kennung "vertriebspartner" zur selben
- * 4-%-Stufe, der nackte Alt-Titel "Vertriebspartner" landet damit bewusst
- * auf 4 %. Bestandspartner aus der 3-%-Zeit sind über die in der
- * Nutzerverwaltung festgeschriebenen custom_provision_rate-Sätze
- * (Provisions-Sanierung) abgesichert; ihre alte Stufe existiert weiter als
- * "Vertriebspartner (Alt)".
- */
-export function findKarriereStufe(value?: string | null): KarriereStufeInfo | undefined {
-  const raw = (value ?? "").trim();
-  const normalized = normalizeKarriereValue(value);
-  if (!normalized) return undefined;
-
-  // 1. Exakte Kennung (so schreiben Nutzerverwaltung und Aktivierung den Wert).
-  const byId = KARRIERE_STUFEN.find((stufe) => stufe.id === raw);
-  if (byId) return byId;
-
-  // 2. Titel, für Altbestand wie "Lead Partner" oder "Vertriebspartner".
-  const byTitel = KARRIERE_STUFEN.find(
-    (stufe) => normalizeKarriereValue(stufe.titel) === normalized,
-  );
-  if (byTitel) return byTitel;
-
-  // 3. Kennung in abweichender Schreibweise (z. B. "MANAGER").
-  const byIdNormalized = KARRIERE_STUFEN.find((stufe) => stufe.id === normalized);
-  if (byIdNormalized) return byIdNormalized;
-
-  // 4. Legacy-Aliase aus alten Datenbeständen.
-  const aliasId = LEGACY_KARRIERE_ALIASES[normalized];
-  if (aliasId) {
-    return KARRIERE_STUFEN.find((s) => s.id === aliasId);
-  }
-  return undefined;
-}
-
-/**
- * Berechnet die Karrierestufe basierend auf Abschlüssen,
- * aber ein manueller Override hat immer Vorrang.
- */
-export function getKarriereStufe(abschluesse: number, override?: string | null): KarriereStufeInfo {
-  const overrideStufe = findKarriereStufe(override);
-  if (overrideStufe) return overrideStufe;
-
-  let result = KARRIERE_STUFEN[0];
-  for (const stufe of KARRIERE_STUFEN) {
-    if (abschluesse >= stufe.schwelle) result = stufe;
-  }
-  return result;
 }

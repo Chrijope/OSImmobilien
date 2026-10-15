@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { loadZielplanung, DURCHSCHNITTSKAUFPREIS } from "@/lib/zielplanungStore";
-import { mischsatz, provisionssaetze, KEIN_SATZ_TEXT } from "@/lib/karriereStufeHelper";
+import { mischsatz, provisionssaetze, KEIN_SATZ_TEXT } from "@/lib/provisionssatz";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@/contexts/UserContext";
 import { useLiveVersion } from "@/hooks/useLiveData";

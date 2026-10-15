@@ -63,7 +63,7 @@ const Auswertungen = () => {
   // Neu zeichnen, wenn sich ein Satz in der Nutzerverwaltung ändert.
   useLiveVersion(["user_settings"]);
 
-  // „Mein Team" — nur für Team Lead / Lizenzpartner / Admin / Inhaber / Vertriebsleiter
+  // „Mein Team": Admin, Inhaber, Vertriebsleiter und Partner mit altem Team-Vertragspaket
   const meinTeamRecruiterId = isBackoffice && selectedPartner !== "alle" ? targetUserId : authUser?.id;
   const meinTeamRecruiterName = isBackoffice && selectedPartner !== "alle" ? selectedPartner : user.name;
   const showMeinTeam = useShowMeinTeam(meinTeamRecruiterId, user.role);
@@ -119,7 +119,7 @@ const Auswertungen = () => {
 
         {/* ── Rankings ── */}
         <div>
-          {/* ── Mein Team (Team Lead / Lizenzpartner) ── */}
+          {/* ── Mein Team ── */}
           {showMeinTeam && (
             <div className="mb-6">
               <MeinTeamSection

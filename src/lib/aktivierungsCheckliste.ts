@@ -1,5 +1,5 @@
 /**
- * Default Checklisten + Karrierestufen-Mapping für die finale Aktivierung
+ * Default Checklisten für die finale Aktivierung
  * eines Bewerbers nach bezahlter Rechnung.
  *
  * Onboarding-Checkliste = manuelle Schritte vor der Account-Freischaltung.
@@ -77,22 +77,6 @@ export const ACADEMY_PFLICHT: Record<LizenzPaketId, AktivierungsCheck[]> = {
     make("aca-tipp-dsgvo", "DSGVO & Weitergabe von Kontakten"),
     make("aca-tipp-qualitaet", "Qualitätskriterien für Kontakte"),
   ],
-};
-
-/**
- * Mapping Lizenz → interne Karrierestufe (KARRIERE_STUFEN.id).
- * Neue Partner (Paket junior) starten einheitlich auf der 4-%-Stufe
- * "vertriebspartner"; die übrigen Zuordnungen bleiben für Bestandsbewerber
- * mit alten Paketen bestehen.
- */
-export const PAKET_KARRIERE_MAP: Record<LizenzPaketId, "tippgeber" | "vertriebspartner" | "manager" | "vertriebsfirma"> = {
-  junior: "vertriebspartner",
-  lead_berater: "vertriebspartner",
-  lead: "vertriebspartner",
-  team_builder: "manager",
-  enterprise: "vertriebsfirma",
-  partner_2: "vertriebspartner",
-  tippgeber: "tippgeber",
 };
 
 /** Alle Items abgehakt? */

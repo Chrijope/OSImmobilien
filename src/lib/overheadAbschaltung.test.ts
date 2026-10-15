@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 import { getLizenzPaket, OVERHEAD_AKTIV } from "@/lib/lizenzPakete";
-import { KARRIERE_STUFEN, formatStufenProvision } from "@/lib/karriereStufeHelper";
 import { calculateJuniorOverride } from "@/lib/juniorOverrideLogic";
 import { getVertragsAnhaenge } from "@/lib/vertragAnhaenge";
 import { renderHauptvertrag, type KlauselTools } from "@/lib/vertragKlauseln";
@@ -36,13 +35,6 @@ describe.runIf(!OVERHEAD_AKTIV)("Overhead-Provision abgeschaltet (OVERHEAD_AKTIV
       const paket = getLizenzPaket(id)!;
       expect(paket.juniorOverride).toBeUndefined();
       expect(paket.features.join("\n")).not.toContain("Overhead");
-    }
-  });
-
-  it("keine Karrierestufe führt einen Junior-Override", () => {
-    for (const stufe of KARRIERE_STUFEN) {
-      expect(stufe.juniorOverride).toBeUndefined();
-      expect(formatStufenProvision(stufe)).not.toContain("Override");
     }
   });
 

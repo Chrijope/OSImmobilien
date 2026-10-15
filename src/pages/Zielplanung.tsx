@@ -14,7 +14,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { loadZielplanung, saveZielplanung, loadZielplanungForUser, saveZielplanungForUser, DURCHSCHNITTSKAUFPREIS, type ZielplanungConfig } from "@/lib/zielplanungStore";
 import { Slider } from "@/components/ui/slider";
 import { SatzartBadge } from "@/components/abrechnung/SatzartBadge";
-import { getEffectiveRate, mischsatz, provisionssaetze, KEIN_SATZ_TEXT } from "@/lib/karriereStufeHelper";
+import { getEffectiveRate, mischsatz, provisionssaetze, KEIN_SATZ_TEXT } from "@/lib/provisionssatz";
 import { useLiveVersion } from "@/hooks/useLiveData";
 import { loadBeraterUsers, type SystemUser } from "@/lib/loadAllUsers";
 import { useToast } from "@/hooks/use-toast";
@@ -31,7 +31,6 @@ const fmtFull = (v: number) => new Intl.NumberFormat("de-DE", { style: "currency
 
 const DEFAULT_CONFIG: ZielplanungConfig = {
   modus: "volumen",
-  karrierestufe: "tippgeber",
   durchschnittskaufpreis: DURCHSCHNITTSKAUFPREIS,
   verkaufsvolumen: Array(12).fill(0),
   verkaufsAnzahl: Array(12).fill(0),

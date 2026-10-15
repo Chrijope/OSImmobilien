@@ -20,7 +20,7 @@ import { loadAllUsers } from "@/lib/loadAllUsers";
 import { istZustaendig } from "@/lib/kontaktOwnership";
 import { calculateJuniorOverride, getUserPaket, getJuniorsForRecruiter } from "@/lib/juniorOverrideLogic";
 import { getLizenzPaket, OVERHEAD_AKTIV } from "@/lib/lizenzPakete";
-import { festgeschriebenerSatz, getEffectiveRateInfoForKontakt } from "@/lib/karriereStufeHelper";
+import { festgeschriebenerSatz, getEffectiveRateInfoForKontakt } from "@/lib/provisionssatz";
 import {
   getAbrechnungen, upsertAbrechnung, updateAbrechnungStatus, newId, entferneLeerenBescheid,
   monatLabel, fmtEUR, refreshAbrechnungen, abrechnungenPersistenz, bescheidVeraenderbar,

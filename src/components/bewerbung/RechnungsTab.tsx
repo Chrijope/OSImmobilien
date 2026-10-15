@@ -152,8 +152,6 @@ export function RechnungsTab({ bewerber: b, canEdit, currentUserName, onRefresh,
     try {
       const CHRISTIAN_PEETZ_EMAIL = "os@os-immobilien.com";
       const bewerberName = `${b.vorname} ${b.nachname}`.trim();
-      // Karrierestufen gibt es seit 15.10.2026 nicht mehr; die Mail laesst die Zeile dann weg.
-      const karriereStufe = "";
       const paketTitel = paket?.titel || "Vertrag";
 
       // Die Glocke geht an Admin und Inhaber. Nutzer legen seit dem
@@ -170,7 +168,6 @@ export function RechnungsTab({ bewerber: b, canEdit, currentUserName, onRefresh,
       const templateData = leadPaketBezahltDaten({
         bewerberName,
         leadPaket: b.leadPaket,
-        karriereStufe,
         bewerberLink: oeffentlicheAdresse(`/bewerberprozess?bewerber=${b.id}`),
       });
       if (!templateData) return;

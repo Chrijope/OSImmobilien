@@ -108,8 +108,6 @@ export function SuchFeld() {
    */
   useLiveVersion(["user_settings", "app_config"]);
   const customPermissions = getUserSetting<string[]>("custom_permissions", []) || [];
-  // Die Sperre nach Karrierestufe ist seit 15.10.2026 entfallen.
-  const vpStufeId = null;
   const handbuchFrei = handbuchPartnerFreigeschaltet();
   const rechteSchluessel = customPermissions.join("|");
   const seitenIndex = useMemo(
@@ -117,7 +115,6 @@ export function SuchFeld() {
       seitenFuerSuche({
         rolle: user.role,
         customPermissions,
-        vpStufeId,
         identitaet: { email: authUser?.email, userId: authUser?.id },
         videocallFreigabe,
         handbuchFrei,
@@ -125,7 +122,7 @@ export function SuchFeld() {
     // `customPermissions` ist bei jedem Aufruf ein neues Feld, verglichen
     // wird deshalb sein Inhalt.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [user.role, rechteSchluessel, vpStufeId, authUser?.id, authUser?.email, videocallFreigabe, handbuchFrei],
+    [user.role, rechteSchluessel, authUser?.id, authUser?.email, videocallFreigabe, handbuchFrei],
   );
   const seiteZuUrl = useMemo(() => new Map(seitenIndex.map((z) => [z.url, z])), [seitenIndex]);
 
@@ -176,15 +173,14 @@ export function SuchFeld() {
   // Verlauf zusammen weg.
   const darfOeffnen = useCallback(
     (url: string) =>
-      isUrlAllowedForRole(url, user.role as any, (user as any).customPermissions, (user as any).vpStufeId) &&
+      isUrlAllowedForRole(url, user.role as any, (user as any).customPermissions) &&
       !objektbereichGesperrt(url, {
         rolle: user.role,
         customPermissions,
-        vpStufeId,
         identitaet: { email: authUser?.email, userId: authUser?.id },
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [user, rechteSchluessel, vpStufeId, authUser?.id, authUser?.email],
+    [user, rechteSchluessel, authUser?.id, authUser?.email],
   );
 
   const schliessen = () => {

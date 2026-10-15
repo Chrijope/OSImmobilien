@@ -381,8 +381,6 @@ export type Bewerber = {
   userAccountId: string;
   /** Datum der Invite-Versand (ISO) */
   userInviteSentAt: string;
-  /** Zugeordnete Karrierestufe (abgeleitet aus Paketwahl, editierbar) */
-  karriereStufe: string;
   /** Onboarding-Checkliste (manuelle Schritte) */
   onboardingChecklist: AktivierungsCheck[];
   /** Academy-Pflichtmodule pro Lizenz */
@@ -702,7 +700,6 @@ function bewerberToDb(b: Bewerber): Record<string, any> {
       rechnungUebersprungenErinnerungenErledigt: b.rechnungUebersprungenErinnerungenErledigt,
       userAccountId: b.userAccountId,
       userInviteSentAt: b.userInviteSentAt,
-      karriereStufe: b.karriereStufe,
       onboardingChecklist: b.onboardingChecklist,
       academyPflichtModule: b.academyPflichtModule,
       aktivAm: b.aktivAm,
@@ -876,7 +873,6 @@ function bewerberFromDb(r: any): Bewerber {
       : [],
     userAccountId: m.userAccountId || "",
     userInviteSentAt: m.userInviteSentAt || "",
-    karriereStufe: m.karriereStufe || "",
     onboardingChecklist: Array.isArray(m.onboardingChecklist) ? m.onboardingChecklist : [],
     academyPflichtModule: Array.isArray(m.academyPflichtModule) ? m.academyPflichtModule : [],
     aktivAm: m.aktivAm || "",
@@ -1036,7 +1032,7 @@ export function getBewerberById(id: string): Bewerber | undefined {
   return getBewerber().find(b => b.id === id);
 }
 
-export async function createBewerber(data: Omit<Bewerber, "id" | "beworben" | "status" | "bewertung" | "typ" | "typLabel" | "typBeschreibung" | "typEignung" | "notizen" | "ziele" | "onboardingTerminId" | "lebenslaufUrl" | "dokumente" | "vertragStatus" | "vertragDatum" | "benachrichtigungen" | "chatVerknuepft" | "ausgangslage" | "zielBest" | "wieStarten" | "notizenLog" | "adresse" | "vertragsAdresse" | "rechnungsAdresse" | "closingTerminDatum" | "closingTerminUhrzeit" | "erstgespraechSkript" | "paketwahl" | "zahlungsweise" | "vertragPdfUrl" | "vertragSignedPdfUrl" | "vertragSignedAt" | "vertragHrName" | "vertragVersion" | "rechnungNr" | "rechnungPdfUrl" | "rechnungErstelltAm" | "rechnungBezahltBestaetigungen" | "rechnungBezahltAm" | "userAccountId" | "userInviteSentAt" | "karriereStufe" | "onboardingChecklist" | "academyPflichtModule" | "aktivAm" | "geworbenVonUserId" | "geworbenVonName" | "erstelltAm">): Promise<Bewerber> {
+export async function createBewerber(data: Omit<Bewerber, "id" | "beworben" | "status" | "bewertung" | "typ" | "typLabel" | "typBeschreibung" | "typEignung" | "notizen" | "ziele" | "onboardingTerminId" | "lebenslaufUrl" | "dokumente" | "vertragStatus" | "vertragDatum" | "benachrichtigungen" | "chatVerknuepft" | "ausgangslage" | "zielBest" | "wieStarten" | "notizenLog" | "adresse" | "vertragsAdresse" | "rechnungsAdresse" | "closingTerminDatum" | "closingTerminUhrzeit" | "erstgespraechSkript" | "paketwahl" | "zahlungsweise" | "vertragPdfUrl" | "vertragSignedPdfUrl" | "vertragSignedAt" | "vertragHrName" | "vertragVersion" | "rechnungNr" | "rechnungPdfUrl" | "rechnungErstelltAm" | "rechnungBezahltBestaetigungen" | "rechnungBezahltAm" | "userAccountId" | "userInviteSentAt" | "onboardingChecklist" | "academyPflichtModule" | "aktivAm" | "geworbenVonUserId" | "geworbenVonName" | "erstelltAm">): Promise<Bewerber> {
   const neu: Bewerber = {
     ...data, id: uid(), beworben: now(), status: "Eingang", bewertung: 0, erstelltAm: new Date().toISOString(),
     typ: "", typLabel: "", typBeschreibung: "", typEignung: "", notizen: "", ziele: "",
@@ -1068,7 +1064,6 @@ export async function createBewerber(data: Omit<Bewerber, "id" | "beworben" | "s
     rechnungBezahltAm: "",
     userAccountId: "",
     userInviteSentAt: "",
-    karriereStufe: "",
     onboardingChecklist: [],
     academyPflichtModule: [],
     aktivAm: "",
@@ -1367,7 +1362,6 @@ export function resetClosing(bewerberId: string) {
     dokumente: [],
     userAccountId: "",
     userInviteSentAt: "",
-    karriereStufe: "",
     onboardingChecklist: [],
     academyPflichtModule: [],
     aktivAm: "",

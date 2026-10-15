@@ -12,7 +12,7 @@ import { useLiveVersion } from "@/hooks/useLiveData";
 import { unscharfKlasse } from "@/lib/vorfuehrmodus";
 import { loadAllUsers } from "@/lib/loadAllUsers";
 import { kennungZuName } from "@/lib/beraterNamensabgleich";
-import { getEffectiveRateForKontakt, provisionssaetze, KEIN_SATZ_TEXT } from "@/lib/karriereStufeHelper";
+import { getEffectiveRateForKontakt, provisionssaetze, KEIN_SATZ_TEXT } from "@/lib/provisionssatz";
 import { cacheGet } from "@/lib/dataCache";
 import { calculateJuniorOverride, getJuniorsForRecruiter } from "@/lib/juniorOverrideLogic";
 import { OVERHEAD_AKTIV } from "@/lib/lizenzPakete";

@@ -9,7 +9,7 @@ import { getInvestments } from "@/lib/investmentsStore";
 import { loadAllUsers } from "@/lib/loadAllUsers";
 import { istZustaendig } from "@/lib/kontaktOwnership";
 import { kennungZuName } from "@/lib/beraterNamensabgleich";
-import { formatSatzProzent, getEffectiveRate, provisionssaetze, getEffectiveRateInfoForKontakt, festgeschriebenerSatz, type Satzart } from "@/lib/karriereStufeHelper";
+import { formatSatzProzent, getEffectiveRate, provisionssaetze, getEffectiveRateInfoForKontakt, festgeschriebenerSatz, type Satzart } from "@/lib/provisionssatz";
 import { DeineProvisionKarte } from "@/components/abrechnung/DeineProvisionKarte";
 import { ProvisionssatzBadges } from "@/components/abrechnung/ProvisionssatzBadges";
 import { OVERHEAD_AKTIV } from "@/lib/lizenzPakete";

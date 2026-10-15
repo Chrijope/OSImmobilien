@@ -31,7 +31,8 @@ import { confirmDialog } from "@/lib/confirm";
 import { beendeSitzungenVon, sitzungenNachSperreBeenden } from "@/lib/sitzungenBeenden";
 import { useUser } from "@/contexts/UserContext";
 import { ProvisionssatzBadges } from "@/components/abrechnung/ProvisionssatzBadges";
-import { parseProvisionssatz, SATZ_UNGUELTIG_TEXT } from "@/lib/karriereStufeHelper";
+import { istTeamleiterRolle } from "@/components/nutzerverwaltung/TeamleaderSelect";
+import { parseProvisionssatz, SATZ_UNGUELTIG_TEXT } from "@/lib/provisionssatz";
 import { useLiveVersion } from "@/hooks/useLiveData";
 import { cacheRefreshTable } from "@/lib/dataCache";
 import { PhoneInput } from "@/components/ui/phone-input";
@@ -57,7 +58,6 @@ export interface Nutzer {
   einladung: "angenommen" | "ausstehend" | "abgelaufen";
   erstelltAm: string;
   letzterLogin: string;
-  karriereStufe: string;
   isNew?: boolean;
   avatarUrl?: string;
   crmFreigeschaltet: boolean;
@@ -189,7 +189,6 @@ export default function Nutzerverwaltung() {
           letzterLogin: lastLoginMap.has(p.id)
             ? new Date(lastLoginMap.get(p.id)!).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })
             : "–",
-          karriereStufe: "",
           avatarUrl: (p as any).avatar_url || undefined,
           crmFreigeschaltet,
           gesperrt: !!(p as any).gesperrt,
@@ -208,8 +207,8 @@ export default function Nutzerverwaltung() {
 
   useEffect(() => {
     loadUsers();
-    // user_settings Cache initial nachladen, damit Karrierestufen-Overrides
-    // (z. B. Lead Partner 4 %) sofort korrekt angezeigt werden.
+    // user_settings Cache initial nachladen, damit die Provisionssätze
+    // sofort korrekt angezeigt werden.
     cacheRefreshTable("user_settings").catch(() => {});
   }, []);
 
@@ -641,15 +640,8 @@ export default function Nutzerverwaltung() {
                             if (n.einladung === "ausstehend") return false;
                             const rollen = (n.rollen && n.rollen.length ? n.rollen : [n.rolle])
                               .map(r => (r || "").toLowerCase());
-                            // Immer erlaubt: Admin / Inhaber / Vertriebsleiter
-                            if (rollen.some(r => ["admin", "super admin", "inhaber", "vertriebsleiter"].includes(r))) {
-                              return true;
-                            }
-                            // Vertriebspartner nur ab Team Lead / Lizenzpartner
-                            if (rollen.includes("vertriebspartner")) {
-                              return n.karriereStufe === "manager" || n.karriereStufe === "vertriebsfirma";
-                            }
-                            return false;
+                            // Nur nach Rolle: Admin, Inhaber, Vertriebsleiter (seit 15.10.2026 ohne Stufen).
+                            return istTeamleiterRolle(rollen);
                           })
                           .map(n => (
                             <SelectItem key={n.id} value={n.id}>{n.vorname} {n.nachname} – {n.rolle}</SelectItem>

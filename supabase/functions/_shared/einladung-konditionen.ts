@@ -1,20 +1,17 @@
 /**
  * Provisionsbedingungen beim Einladen nur von Admin und Inhaber (seit 30.09.2026).
  *
- * invite-user schreibt Karrierestufe, eigene Provisionssätze, Teamleiter und
- * Karriere-Sperre mit dem Dienstschlüssel in `user_settings`. Der Wächter
+ * invite-user schreibt Lead- und Eigen-Satz und den Teamleiter mit dem
+ * Dienstschlüssel in `user_settings`. Der Wächter
  * `user_settings_provision_schuetzen` sieht diesen Weg nicht, weil ohne
  * angemeldeten Nutzer alles erlaubt ist. Vertriebspartner und
  * Vertriebsleitung dürfen die Function aufrufen (Kunden, Tippgeber); was sie
  * an Bedingungen mitschicken, fällt hier weg.
  */
 export const EINLADUNG_KONDITIONEN = [
-  "karriereStufe",
   "teamleaderId",
-  "customProvisionRate",
   "customProvisionRateSetter",
   "customProvisionRateEigen",
-  "karriereGatingActive",
 ] as const;
 
 export function einladungOhneFremdeKonditionen<T extends Record<string, unknown>>(
@@ -90,7 +87,7 @@ export function tippgeberKontoAblehnung(p: {
 /**
  * Provisionssatz aus der Einladung: Zahl oder Text mit Komma oder Punkt
  * ("10,5" = 10,5). Gültig ist größer 0 bis höchstens 100, sonst null.
- * Dieselbe Regel wie parseProvisionssatz im Browser (karriereStufeHelper.ts).
+ * Dieselbe Regel wie parseProvisionssatz im Browser (provisionssatz.ts).
  */
 export function provisionssatzAusEinladung(wert: unknown): number | null {
   if (typeof wert !== "number" && typeof wert !== "string") return null;

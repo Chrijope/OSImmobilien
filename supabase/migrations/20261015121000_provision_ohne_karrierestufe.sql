@@ -49,7 +49,7 @@ $$;
 --
 -- Wie 20260818140000, Schritte 1 und 2 unveraendert; 3 (karriere_override)
 -- und 4 (erste Stufe) entfallen. Spiegel von getEffectiveRateInfoForKontakt
--- in src/lib/karriereStufeHelper.ts.
+-- in src/lib/provisionssatz.ts.
 
 CREATE OR REPLACE FUNCTION public.provisionssatz_fuer_partner(_partner uuid, _eigen boolean)
 RETURNS numeric

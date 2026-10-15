@@ -4,7 +4,7 @@ import {
   provisionssatzAblehnung,
   provisionssatzAusEinladung,
 } from "../../supabase/functions/_shared/einladung-konditionen";
-import { parseProvisionssatz } from "./karriereStufeHelper";
+import { parseProvisionssatz } from "./provisionssatz";
 
 /*
  * Seit 15.10.2026: Vertriebspartner nur mit Lead- und Eigen-Satz anlegen,

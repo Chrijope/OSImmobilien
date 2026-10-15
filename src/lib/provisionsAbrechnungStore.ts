@@ -29,7 +29,7 @@
 
 import { cacheGet, cacheUpsert, cacheRefreshTable, cacheLadefehler } from "./dataCache";
 import { supabase } from "@/integrations/supabase/client";
-import type { Satzart } from "./karriereStufeHelper";
+import type { Satzart } from "./provisionssatz";
 
 export type AbrechnungStatus = "offen" | "freigegeben" | "ausgezahlt";
 
@@ -48,7 +48,8 @@ export interface AbrechnungDeal {
   /**
    * Woher der Satz kommt: "eigen" = selbst angelegter Kontakt, "zugewiesen" =
    * zugewiesener Lead, "locked" = beim Anlegen des Vorgangs festgeschrieben,
-   * "stufe" = Satz der Karrierestufe, weil kein eigener gepflegt ist.
+   * "stufe" = Altbestand vor dem 15.10.2026 (damals Stufensatz), "fehlt" =
+   * kein Satz hinterlegt.
    */
   satzTyp?: Satzart;
   /** Name der Setterin, falls es bei einem Altdatensatz noch einen gibt. */
@@ -79,7 +80,6 @@ export interface Provisionsabrechnung {
   monat: string;             // YYYY-MM
   userId: string;
   userName: string;
-  karriereStufe?: string;
   eigeneDeals: AbrechnungDeal[];
   overridesErhalten: AbrechnungOverride[];
   overheadsAbgezogen: AbrechnungOverhead[];
@@ -107,7 +107,6 @@ function ausZeile(r: any): Provisionsabrechnung {
     monat: r.monat,
     userId: r.user_id,
     userName: r.user_name || "",
-    karriereStufe: r.karrierestufe || undefined,
     eigeneDeals: Array.isArray(r.eigene_deals) ? r.eigene_deals : [],
     overridesErhalten: Array.isArray(r.overrides_erhalten) ? r.overrides_erhalten : [],
     overheadsAbgezogen: Array.isArray(r.overheads_abgezogen) ? r.overheads_abgezogen : [],
@@ -131,7 +130,8 @@ function zuZeile(a: Provisionsabrechnung): Record<string, any> {
     monat: a.monat,
     user_id: a.userId,
     user_name: a.userName,
-    karrierestufe: a.karriereStufe ?? null,
+    // Die Spalte karrierestufe bleibt in der Tabelle, wird seit dem
+    // 15.10.2026 aber weder gelesen noch geschrieben.
     eigene_deals: a.eigeneDeals,
     overrides_erhalten: a.overridesErhalten,
     overheads_abgezogen: a.overheadsAbgezogen,
@@ -494,7 +494,7 @@ export function rechnungsStatus(userId: string, monat: string, betrag: number): 
  * stehen im neuen Bescheid, damit „Fällig“ sie danach nicht mehr zählt.
  */
 export async function setzeRechnungBezahlt(
-  partner: { userId: string; name: string; karriere?: string },
+  partner: { userId: string; name: string },
   monat: string,
   betrag: number,
   bezahlt: boolean,
@@ -511,7 +511,6 @@ export async function setzeRechnungBezahlt(
       monat,
       userId: partner.userId,
       userName: partner.name,
-      karriereStufe: partner.karriere,
       eigeneDeals: deals,
       overridesErhalten: [],
       overheadsAbgezogen: [],

@@ -17,7 +17,7 @@ import { wahrscheinlichkeitFuerStufe } from "@/lib/kontaktPipeline";
 import { cacheGet } from "./dataCache";
 import { istZustaendig } from "./kontaktOwnership";
 import { istPerson } from "./beraterNamensabgleich";
-import { getEffectiveRateForKontakt } from "./karriereStufeHelper";
+import { getEffectiveRateForKontakt } from "./provisionssatz";
 
 export interface PersonRow {
   user_id: string;

@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { logAudit } from "@/lib/auditLog";
 import { cacheRefreshTable } from "@/lib/dataCache";
-import { parseProvisionssatz, SATZ_UNGUELTIG_TEXT } from "@/lib/karriereStufeHelper";
+import { parseProvisionssatz, SATZ_UNGUELTIG_TEXT } from "@/lib/provisionssatz";
 
 /*
  * Lead- und Eigen-Satz eines Vertriebspartners im Nutzerprofil (15.10.2026).

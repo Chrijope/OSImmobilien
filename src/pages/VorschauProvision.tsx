@@ -4,7 +4,7 @@ import { DeineProvisionKarte } from "@/components/abrechnung/DeineProvisionKarte
 import { ProvisionssatzBadges } from "@/components/abrechnung/ProvisionssatzBadges";
 import { ProvisionssatzBearbeiten } from "@/components/nutzerverwaltung/ProvisionssatzBearbeiten";
 import { SatzartBadge, SatzartLegende } from "@/components/abrechnung/SatzartBadge";
-import { festgeschriebenerSatz, getEffectiveRateInfoForKontakt } from "@/lib/karriereStufeHelper";
+import { festgeschriebenerSatz, getEffectiveRateInfoForKontakt } from "@/lib/provisionssatz";
 import { provisionCent } from "@/lib/abrechnungRechnung";
 
 /*
@@ -21,8 +21,8 @@ const CEM = "00000000-0000-0000-0000-00000000c003";
 
 const PARTNER = [
   { id: ANNA, name: "Anna Beispiel", einstellungen: { custom_provision_rate_setter: 10, custom_provision_rate_eigen: 10 } },
-  { id: BEN, name: "Ben Muster", einstellungen: { custom_provision_rate_setter: 8, custom_provision_rate_eigen: 12, karriere_override: "manager" } },
-  { id: CEM, name: "Cem Neu", einstellungen: { karriere_override: "vertriebspartner" } },
+  { id: BEN, name: "Ben Muster", einstellungen: { custom_provision_rate_setter: 8, custom_provision_rate_eigen: 12 } },
+  { id: CEM, name: "Cem Neu", einstellungen: {} },
 ];
 
 const ABSCHLUESSE = [
@@ -46,7 +46,7 @@ export default function VorschauProvision() {
     <div className="min-h-screen bg-background p-4 md:p-6 space-y-8" data-lg="seite">
       <div className="rounded-lg border-2 border-dashed border-[#e5007d] bg-[#e5007d]/5 p-3 text-sm">
         <strong>Lokale Vorschau, nur auf diesem Rechner.</strong> Ohne Anmeldung und ohne Datenbank, erfundene Partner.
-        Ben und Cem haben noch eine alte Karrierestufe gespeichert; sie wirkt nicht mehr. Einladeformular und
+        Cem hat noch keinen Satz. Einladeformular und
         Nutzerprofil der Nutzerverwaltung siehst du nach dem Anmelden unter localhost in der echten Seite; das
         Satzfeld des Profils steht unten als Baustein.
       </div>

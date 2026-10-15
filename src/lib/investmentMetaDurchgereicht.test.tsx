@@ -179,14 +179,14 @@ describe("Anzeigen, die jetzt Daten bekommen", () => {
 
 describe("Provision: festgeschriebener Satz und Fälligkeit wirken (Entscheidung 29.09.2026)", () => {
   it("solange der Schalter aus ist, rechnen die Abrechnungen mit dem aktuellen Satz", async () => {
-    const { festgeschriebenerSatz, FESTGESCHRIEBENER_SATZ_IN_ABRECHNUNG } = await import("@/lib/karriereStufeHelper");
+    const { festgeschriebenerSatz, FESTGESCHRIEBENER_SATZ_IN_ABRECHNUNG } = await import("@/lib/provisionssatz");
     if (FESTGESCHRIEBENER_SATZ_IN_ABRECHNUNG) return;
     expect(festgeschriebenerSatz({ lockedProvisionRate: 5 })).toBeNull();
   });
 
   it("der festgeschriebene Satz aus dem Meta gilt vor dem aktuellen", async () => {
-    const { festgeschriebenerSatz, getEffectiveRateInfoForKontakt, FESTGESCHRIEBENER_SATZ_IN_ABRECHNUNG } = await import("@/lib/karriereStufeHelper");
-    // Gilt erst mit eingeschaltetem Schalter, siehe karriereStufeHelper.ts.
+    const { festgeschriebenerSatz, getEffectiveRateInfoForKontakt, FESTGESCHRIEBENER_SATZ_IN_ABRECHNUNG } = await import("@/lib/provisionssatz");
+    // Gilt erst mit eingeschaltetem Schalter, siehe provisionssatz.ts.
     if (!FESTGESCHRIEBENER_SATZ_IN_ABRECHNUNG) return;
     // 2,5 Prozent, damit er sich sicher vom Stufensatz unterscheidet.
     cache.investments = [zeile("inv-1", { pipelineStufe: "faelligkeit", lockedProvisionRate: 2.5 })];
@@ -206,7 +206,7 @@ describe("Provision: festgeschriebener Satz und Fälligkeit wirken (Entscheidung
   });
 
   it("nur eine Zahl größer null ist ein festgeschriebener Satz", async () => {
-    const { festgeschriebenerSatz, FESTGESCHRIEBENER_SATZ_IN_ABRECHNUNG } = await import("@/lib/karriereStufeHelper");
+    const { festgeschriebenerSatz, FESTGESCHRIEBENER_SATZ_IN_ABRECHNUNG } = await import("@/lib/provisionssatz");
     if (!FESTGESCHRIEBENER_SATZ_IN_ABRECHNUNG) return;
     expect(festgeschriebenerSatz(undefined)).toBeNull();
     expect(festgeschriebenerSatz({})).toBeNull();
@@ -218,7 +218,7 @@ describe("Provision: festgeschriebener Satz und Fälligkeit wirken (Entscheidung
   it("Provision ist Satz mal Kaufpreis des Investments, abrechenbar ab dem Fälligkeitsdatum", async () => {
     const { abwicklungAusMeta } = await import("@/lib/abwicklungStore");
     const { istAbrechenbar, postenProvision } = await import("@/lib/abrechnungRechnung");
-    const { festgeschriebenerSatz, getEffectiveRateInfoForKontakt } = await import("@/lib/karriereStufeHelper");
+    const { festgeschriebenerSatz, getEffectiveRateInfoForKontakt } = await import("@/lib/provisionssatz");
     cache.investments = [zeile("inv-1", {
       pipelineStufe: "faelligkeit",
       lockedProvisionRate: 3,

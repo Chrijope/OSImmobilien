@@ -21,7 +21,7 @@
 --   * "Vertriebspartner (Alt)" loest ueber den Titel auf die 3-%-Stufe auf.
 --
 -- Dieses SQL ist das Abbild von KARRIERE_STUFEN in
--- src/lib/karriereStufeHelper.ts, siehe Kommentar auf der Tabelle.
+-- src/lib/provisionssatz.ts, siehe Kommentar auf der Tabelle.
 
 INSERT INTO public.karriere_stufen (id, titel, rate, sortierung, legacy_aliase) VALUES
   ('tippgeber',        'Vertriebspartner (Alt)', 3,   1, ARRAY['junior berater']),

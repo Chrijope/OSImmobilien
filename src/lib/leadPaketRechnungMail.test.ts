@@ -210,7 +210,6 @@ describe("Folgemail: die Zahlung für das Lead-Paket ist eingegangen", () => {
   const daten = leadPaketBezahltDaten({
     bewerberName: wer,
     leadPaket: { betrag: LEAD_PAKET_PREIS, anzahl: LEAD_PAKET_ANZAHL },
-    karriereStufe: "vertriebspartner",
     bewerberLink: "https://osimmobilien.netlify.app/bewerberprozess?bewerber=beispiel",
   })!;
 
@@ -242,7 +241,8 @@ describe("Folgemail: die Zahlung für das Lead-Paket ist eingegangen", () => {
   it("zeigt den Betrag aus dem Vertrag und kommt ohne Lead-Paket gar nicht zustande", () => {
     expect(daten.leadPaketBetragFormatiert).toBe(formatPreis(LEAD_PAKET_PREIS));
     expect(daten.leadAnzahl).toBe(LEAD_PAKET_ANZAHL);
-    expect(daten.karriereStufe).toBe("vertriebspartner");
+    // Karrierestufen gibt es seit dem 15.10.2026 nicht mehr.
+    expect(daten).not.toHaveProperty("karriereStufe");
     expect(
       leadPaketBezahltDaten({ bewerberName: wer, leadPaket: undefined, bewerberLink: "x" }),
     ).toBeNull();
@@ -250,7 +250,7 @@ describe("Folgemail: die Zahlung für das Lead-Paket ist eingegangen", () => {
 
   it("die Vorlage schreibt keinen Betrag fest und erwartet die Felder, die der RechnungsTab liefert", () => {
     expect(FOLGEMAIL_SICHTBAR).not.toMatch(/2\.?500|1\.490/);
-    for (const feld of ["leadPaketBetragFormatiert", "leadAnzahl", "karriereStufe", "bewerberLink"]) {
+    for (const feld of ["leadPaketBetragFormatiert", "leadAnzahl", "bewerberLink"]) {
       expect(FOLGEMAIL_SICHTBAR, feld).toContain(feld);
     }
     expect(RECHNUNGS_TAB).toContain("leadPaketBezahltDaten(");

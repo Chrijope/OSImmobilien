@@ -22,7 +22,8 @@ import { getLizenzPaket, OVERHEAD_AKTIV } from "@/lib/lizenzPakete";
 import {
   DEFAULT_ONBOARDING, ACADEMY_PFLICHT,
 } from "@/lib/aktivierungsCheckliste";
-import { parseProvisionssatz, SATZ_UNGUELTIG_TEXT } from "@/lib/karriereStufeHelper";
+import { parseProvisionssatz, SATZ_UNGUELTIG_TEXT } from "@/lib/provisionssatz";
+import { istTeamleiterRolle } from "@/components/nutzerverwaltung/TeamleaderSelect";
 import { ROLES } from "@/types/user";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -148,9 +149,8 @@ export function AktivierungTab({ bewerber: b, canEdit, currentUserName, currentU
         if (!roleMap.has(r.user_id)) roleMap.set(r.user_id, []);
         roleMap.get(r.user_id)!.push(r.role);
       });
-      const leaderRoles = new Set(["inhaber", "admin", "vertriebsleiter", "manager"]);
       const list = (profilesRes.data || [])
-        .filter((p: any) => (roleMap.get(p.id) || []).some((r) => leaderRoles.has(r)))
+        .filter((p: any) => istTeamleiterRolle(roleMap.get(p.id) || []))
         .map((p: any) => ({
           id: p.id,
           name: p.name || "(ohne Name)",

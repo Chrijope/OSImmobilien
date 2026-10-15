@@ -2,8 +2,8 @@
  * Grundgebühr-Pakete für das Bewerbungsmanagement.
  *
  * Diese Pakete sind das B2B-Verkaufsmodell der OS Immobilien-Plattform an
- * selbständige Vertriebspartner. Sie sind UNABHÄNGIG von den internen Karrierestufen
- * (Tippgeber / Vertriebspartner / Manager / Vertriebsfirma) der eigenen VPs.
+ * selbständige Vertriebspartner. Interne Karrierestufen gibt es seit dem
+ * 15.10.2026 nicht mehr.
  *
  * Team Lead & Lizenzpartner dürfen Vertriebspartner werben und erhalten
  * dafür einen Provisions-Override (Differenz auf jeden Abschluss des

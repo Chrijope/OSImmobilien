@@ -4,7 +4,7 @@
 
 import { SatzartBadge } from "@/components/abrechnung/SatzartBadge";
 import { Badge } from "@/components/ui/badge";
-import { formatSatzProzent, provisionssaetze } from "@/lib/karriereStufeHelper";
+import { formatSatzProzent, provisionssaetze } from "@/lib/provisionssatz";
 
 export function ProvisionssatzBadges({ userId }: { userId?: string | null }) {
   const { lead, eigen } = provisionssaetze(userId);

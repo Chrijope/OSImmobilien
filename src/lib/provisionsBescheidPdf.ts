@@ -22,7 +22,7 @@ export function buildProvisionsBescheidPdf(a: Provisionsabrechnung): Blob {
 
   doc.setFont(PDF_FONT, "bold"); doc.setFontSize(11);
   doc.text(`Abrechnungsmonat: ${monatLabel(a.monat)}`, M, y); y += 16;
-  doc.text(`Empfänger: ${a.userName}${a.karriereStufe ? `  ·  ${a.karriereStufe}` : ""}`, M, y); y += 22;
+  doc.text(`Empfänger: ${a.userName}`, M, y); y += 22;
 
   const section = (title: string) => {
     doc.setFont(PDF_FONT, "bold"); doc.setFontSize(11);

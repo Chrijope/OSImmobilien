@@ -12,7 +12,7 @@ import { describe, it, expect, vi } from "vitest";
 vi.mock("@/lib/loadAllUsers", () => ({ loadAllUsers: () => [] }));
 
 import { istZustaendig } from "./kontaktOwnership";
-import { istEigenKontakt } from "./karriereStufeHelper";
+import { istEigenKontakt } from "./provisionssatz";
 
 type K = { id: string; berater: string; zustaendig_id: string; kaufpreis: number };
 

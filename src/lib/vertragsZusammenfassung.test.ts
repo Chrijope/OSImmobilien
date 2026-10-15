@@ -22,7 +22,7 @@ function bewerber(patch: Partial<Bewerber>): Bewerber {
     paketwahl: "", zahlungsweise: "", vertragPdfUrl: "", vertragSignedPdfUrl: "",
     vertragSignedAt: "", vertragHrName: "", vertragVersion: 0, rechnungNr: "",
     rechnungPdfUrl: "", rechnungErstelltAm: "", rechnungBezahltBestaetigungen: [],
-    rechnungBezahltAm: "", userAccountId: "", userInviteSentAt: "", karriereStufe: "",
+    rechnungBezahltAm: "", userAccountId: "", userInviteSentAt: "",
     onboardingChecklist: [], academyPflichtModule: [], aktivAm: "",
     geworbenVonUserId: "", geworbenVonName: "",
     ...patch,

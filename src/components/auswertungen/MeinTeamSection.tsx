@@ -8,7 +8,6 @@ import { getKontakte } from "@/lib/kundenStore";
 import { calculateJuniorOverride, getUserPaket, getJuniorsForRecruiter } from "@/lib/juniorOverrideLogic";
 import { getLizenzPaket, OVERHEAD_AKTIV } from "@/lib/lizenzPakete";
 import { istFuehrungskraft } from "@/lib/datenSicht";
-import { getKarriereOverrideForUser } from "@/lib/karriereStufeHelper";
 import { PIPELINE_STUFEN } from "@/lib/kontaktPipeline";
 import { istAbschluss, istStorniert } from "@/lib/abschlussDefinition";
 
@@ -34,10 +33,9 @@ interface Props {
  * mit Pipeline-Schwerpunkt, Volumen, Abschlüssen und kumulierter
  * Differenzprovision (Junior-Override).
  *
- * Wird nur eingeblendet, wenn der Recruiter Karrierestufe Team Lead
- * (`manager`) oder Lizenzpartner (`vertriebsfirma`) hat — oder wenn ein
- * Admin/Inhaber/Vertriebsleiter die Sicht auf einen anderen Recruiter
- * filtert.
+ * Wird eingeblendet für Admin, Inhaber und Vertriebsleiter sowie für
+ * Partner mit einem alten Team-Vertragspaket (team_builder, enterprise).
+ * Karrierestufen zählen seit dem 15.10.2026 nicht mehr.
  */
 export function MeinTeamSection({ recruiterUserId, recruiterName }: Props) {
   useLiveVersion(["kontakte", "user_settings", "profiles", "bewerbungen"]);
@@ -190,8 +188,6 @@ export function useShowMeinTeam(userId: string | null | undefined, role: string)
   if (!userId) return false;
   // Fuehrungskraefte immer, das entscheidet `datenSicht` fuer alle Seiten.
   if (istFuehrungskraft(role)) return true;
-  const karriere = getKarriereOverrideForUser(userId);
-  if (karriere === "manager" || karriere === "vertriebsfirma") return true;
   const paket = getUserPaket(userId);
   return paket === "team_builder" || paket === "enterprise";
 }

@@ -10,13 +10,20 @@ import { cacheReload } from "@/lib/dataCache";
 import { logAudit } from "@/lib/auditLog";
 
 /**
- * Lädt alle Nutzer, die als Teamleiter in Frage kommen:
- *  - Inhaber, Admin, Vertriebsleiter (immer)
- *  - Vertriebspartner mit Karrierestufe Team Lead (id "manager") oder Lizenzpartner (id "vertriebsfirma")
+ * Lädt alle Nutzer, die als Teamleiter in Frage kommen: Inhaber, Admin und
+ * Vertriebsleiter. Seit dem 15.10.2026 entscheidet nur die Rolle; im Vertrieb
+ * gibt es nur Vertriebspartner, ohne Stufen (Christian).
  *
  * Speichert die Zuweisung als user_settings.einstellungen.teamleader_id
  * via merge_user_settings RPC (atomar).
  */
+/** Rollen, die Teamleiter sein dürfen. Gilt überall, wo ein Teamleiter gewählt wird. */
+export const TEAMLEITER_ROLLEN = ["inhaber", "admin", "vertriebsleiter"] as const;
+
+export function istTeamleiterRolle(rollen: readonly string[]): boolean {
+  return rollen.some((r) => (TEAMLEITER_ROLLEN as readonly string[]).includes(r));
+}
+
 interface Props {
   userId: string;
   /** Initialwert (aus user_settings.einstellungen.teamleader_id), darf leer sein */
@@ -64,12 +71,7 @@ export function TeamleaderSelect({ userId, currentTeamleaderId, disabled, onSave
           .filter((p: any) => p.id !== userId) // sich selbst nicht zuweisen
           .map((p: any) => {
             const roles = roleMap.get(p.id) || [];
-            // Alle Inhaber, Admins, Vertriebsleiter und Vertriebspartner kommen
-            // als Teamleiter in Frage – unabhängig von der Karrierestufe.
-            const isEligible = roles.some((r) =>
-              ["inhaber", "admin", "vertriebsleiter", "vertriebspartner"].includes(r),
-            );
-            if (!isEligible) return null;
+            if (!istTeamleiterRolle(roles)) return null;
             const primary = roles[0] || "";
             const rolleLabel = rollenLabel(primary, p.rollen_variante || undefined);
             return { id: p.id, name: p.name || "(ohne Name)", rolleLabel } as Candidate;

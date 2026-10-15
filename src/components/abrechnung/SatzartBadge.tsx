@@ -8,7 +8,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Lock, UserPlus, Inbox, Layers, ShieldCheck, AlertTriangle } from "lucide-react";
-import { type Satzart, SATZART_LABEL, SATZART_ERKLAERUNG } from "@/lib/karriereStufeHelper";
+import { type Satzart, SATZART_LABEL, SATZART_ERKLAERUNG } from "@/lib/provisionssatz";
 
 const STIL: Record<Satzart, { klasse: string; Icon: React.ComponentType<{ className?: string }> }> = {
   eigen: {

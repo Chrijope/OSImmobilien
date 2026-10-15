@@ -184,7 +184,6 @@ export function leadPaketBezahltText(bewerberName?: string): string {
 export interface LeadPaketBezahltEingabe {
   bewerberName: string
   leadPaket: unknown
-  karriereStufe?: string
   bewerberLink: string
 }
 
@@ -192,7 +191,6 @@ export interface LeadPaketBezahltDaten {
   bewerberName: string
   leadPaketBetragFormatiert: string
   leadAnzahl: number
-  karriereStufe: string
   bewerberLink: string
 }
 
@@ -204,7 +202,6 @@ export function leadPaketBezahltDaten(e: LeadPaketBezahltEingabe): LeadPaketBeza
     bewerberName: e.bewerberName,
     leadPaketBetragFormatiert: formatiereLeadPaketBetrag(paket.betrag),
     leadAnzahl: paket.anzahl,
-    karriereStufe: e.karriereStufe || '',
     bewerberLink: e.bewerberLink,
   }
 }

@@ -3,7 +3,7 @@
 // Nutzerverwaltung, getrennt nach zugewiesenen Leads und eigenem Netzwerk.
 
 import { Card, CardContent } from "@/components/ui/card";
-import { provisionssaetze } from "@/lib/karriereStufeHelper";
+import { provisionssaetze } from "@/lib/provisionssatz";
 
 const prozent = (v: number) => `${v.toLocaleString("de-DE", { maximumFractionDigits: 2 })} %`;
 
