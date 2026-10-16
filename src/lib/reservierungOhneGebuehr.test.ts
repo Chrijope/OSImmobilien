@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
+import { GEBUEHR_IBAN } from "./reservierungsgebuehr";
 import {
   vertragsAufbau,
+  reservierungTexte,
   VEREINBARUNG_ZIFFERN,
   WIDERRUF_WAHL_SOFORT,
   WIDERRUF_AUFLOESENDE_BEDINGUNG,
@@ -237,5 +239,51 @@ describe("Der Schalter für die Widerrufsthematik", () => {
     expect(vertragsAufbau({ gebuehrEntfaellt: true }).mitWiderruf).toBe(!schalter);
     // Mit Gebühr steht die Belehrung in jedem Fall im Dokument.
     expect(vertragsAufbau({}).mitWiderruf).toBe(true);
+  });
+});
+
+/*
+ * Wächter seit dem 16.10.2026: Die Reservierung ist kostenfrei, das Formular
+ * schreibt immer `gebuehrEntfaellt: true`. Für jede neue Reservierung, ob
+ * Wohnung oder Haus, privat oder Gesellschaft, deutsch oder englisch, steht
+ * im Vertragstext weder ein Gebührenabschnitt noch eine IBAN noch eine
+ * Rückzahlungsregel. Der Gebührenzweig bleibt nur für alte Datensätze.
+ */
+describe("Wächter: der Vertragstext einer neuen Reservierung", () => {
+  const faelle = [
+    { gebuehrEntfaellt: true },
+    { gebuehrEntfaellt: true, gesamtobjekt: true },
+    { gebuehrEntfaellt: true, gesamtobjekt: true, gesellschaft: true },
+  ];
+  for (const opt of faelle) {
+    for (const sprache of ["de", "en"] as const) {
+      it(`${JSON.stringify(opt)} ${sprache}: keine IBAN, kein Gebührenabschnitt`, () => {
+        const a = vertragsAufbau(opt, sprache);
+        expect(a.mitGebuehr).toBe(false);
+        expect(a.abschnitt("gebuehr")).toBeUndefined();
+        expect(a.ziffern.map((z) => z.kennung)).not.toEqual(expect.arrayContaining(["zahlung"]));
+        for (const k of ["zahlung", "rueckzahlung", "verfall"]) {
+          expect(a.ziffern.some((z) => z.kennung === k), k).toBe(false);
+        }
+        const text = [
+          ...a.abschnitte.map((x) => x.ueberschrift),
+          ...a.ziffern.map((z) => `${z.text} ${(z.punkte || []).join(" ")}`),
+          ...a.widerrufWahlen.map((w) => `${w.satz} ${w.erlaeuterung}`),
+          a.aufloesendeBedingung,
+          unterschriftBestaetigung(opt, sprache),
+        ].join("\n");
+        expect(text).not.toContain(GEBUEHR_IBAN);
+        expect(text).not.toMatch(/IBAN|Kontoverbindung|Kontoinhaber|Verwendungszweck|bank details|account holder/i);
+        expect(text).not.toMatch(/\d\.\d{3},\d{2} EUR/);
+        expect(text).not.toMatch(/zurücküberwiesen|zurückgezahlt|nicht erstattet|refunded|repaid/i);
+      });
+    }
+  }
+
+  it("der Gebührenabschnitt existiert nur noch für alte Datensätze", () => {
+    expect(vertragsAufbau({}).abschnitt("gebuehr")).toBeDefined();
+    expect(vertragsAufbau({ gebuehrEntfaellt: false }).abschnitt("gebuehr")).toBeDefined();
+    // Die Einleitung des Gebührenabschnitts liegt bereit, gedruckt wird sie nur mit Gebühr.
+    expect(reservierungTexte("de").gebuehrEinleitung).toContain("Reservierungsgebühr");
   });
 });

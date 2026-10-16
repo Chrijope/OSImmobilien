@@ -89,7 +89,9 @@ describe("Globalobjekt und Kundenlink seit dem 23.09.2026", () => {
     expect(c.einheiten?.[0]).toMatchObject({ nummer: "7", miete: 800 });
     // Seit dem 23.09.2026 steht im Zeitstrahl keine Gebühr mehr, nur die kurze
     // Angabe der Vorlage; der Betrag steht allein in der Reservierungsvereinbarung.
-    expect(c.zeitplan[0]).toMatchObject({ titel: "Reservierung", frist: "Mit Anzahlung wirksam", zahlung: true });
+    // Seit dem 16.10.2026 ist die Reservierung kostenfrei und nicht mehr als Zahlung hervorgehoben.
+    expect(c.zeitplan[5]).toMatchObject({ titel: "Reservierung", frist: "Kostenfrei, wirksam mit deiner Unterschrift" });
+    expect(c.zeitplan[5].zahlung).toBeUndefined();
     expect(JSON.stringify(c.zeitplan)).not.toMatch(/€|Werkvertrag/);
     // Kopf: die Adresse des Hauses ohne Wohneinheit, der Objektname darunter.
     expect(c.kopf.ueberschrift).toBe("Parkstraße 8, 86150 Augsburg");

@@ -25,8 +25,10 @@ export type PhaseKey = "kontakt" | "beratung" | "objekt" | "finanzierung" | "abs
 export const PHASEN: { key: PhaseKey; label: string; stufen: string[] }[] = [
   { key: "kontakt", label: "Kontakt", stufen: ["neuer_lead", "nicht_erreicht", "erreicht", "follow_up"] },
   { key: "beratung", label: "Beratung", stufen: ["erstgespraech_geplant", "beratungsgespraech", "selbstauskunft"] },
-  { key: "objekt", label: "Objekt", stufen: ["objektauswahl", "follow_up_objekt", "reservierung"] },
-  { key: "finanzierung", label: "Finanzierung", stufen: ["bonitaetsunterlagen", "finanzierung"] },
+  // Seit 16.10.2026: Besichtigung gehoert zum Objekt, der Bankgutachter zur
+  // Finanzierung. "bonitaetsunterlagen" hat keine eigene Station mehr.
+  { key: "objekt", label: "Objekt", stufen: ["objektauswahl", "follow_up_objekt", "reservierung", "besichtigung"] },
+  { key: "finanzierung", label: "Finanzierung", stufen: ["bankgutachter", "finanzierung"] },
   { key: "abschluss", label: "Abschluss", stufen: ["notar", "faelligkeit", "abrechnung", "abgeschlossen"] },
 ];
 

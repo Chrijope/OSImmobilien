@@ -84,7 +84,8 @@ import {
   addEmpfehlung,
 } from "@/lib/empfehlungenStore";
 import { addKontakt } from "@/lib/kundenStore";
-import { addAufgabe } from "@/lib/aufgabenStore";
+import { sichereUnterlagenPruefaufgabe } from "@/lib/unterlagenMitteilung";
+import { legeEmpfehlungAufgabeAn } from "@/lib/empfehlungAufgabe";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { normalizeTelefon } from "@/lib/phoneUtils";
 import { MobileScanQRDialog } from "@/components/MobileScanQRDialog";
@@ -115,30 +116,58 @@ function getAbwicklungDaten(investmentId: string): AbwicklungDaten {
 /*
  * Die Leiste, die der Kunde auf seiner Profilseite sieht.
  *
- * Sie zeigt bewusst nur die grossen Etappen und teilt den Notar in zwei
- * Schritte, sie kann deshalb nicht einfach `FORTSCHRITT_STUFEN` sein. Die
- * REIHENFOLGE muss aber der Pipeline folgen: Bis zum 08.09.2026 stand hier
- * die Bonitaet noch vor der Objektauswahl, die Pipeline fuehrt sie seit dem
- * 06.08.2026 hinter die Reservierung. Der Kunde sah damit einen anderen
- * Ablauf, als sein Berater im CRM vor sich hatte.
+ * Seit 16.10.2026 die Schritte des neuen Ablaufs (Umsetzungsstrategie
+ * Vertrieb, Abschnitt 2), dieselben wie in der Beratungspraesentation. Sie
+ * kann nicht einfach `FORTSCHRITT_STUFEN` sein: „Unterlagen" ist hier ein
+ * eigener Schritt, in der Pipeline steckt er in „Selbstauskunft & Unterlagen".
+ * Welche Pipelinestufe auf welchen Schritt faellt, steht in `STUFE_ZU_SCHRITT`.
  */
 const PIPELINE_STEPS = [
   { key: "erstgespraech", label: "Erstgespräch", icon: User },
-  { key: "objektauswahl", label: "Objektauswahl", icon: Home },
+  { key: "beratung", label: "Beratung", icon: User },
+  { key: "selbstauskunft", label: "Selbstauskunft", icon: ShieldCheck },
+  { key: "unterlagen", label: "Unterlagen", icon: ShieldCheck },
+  { key: "objektvorstellung", label: "Objektvorstellung", icon: Home },
   { key: "reservierung", label: "Reservierung", icon: FileText },
-  { key: "bonitaetsunterlagen", label: "Bonitätsunterlagen", icon: ShieldCheck },
+  { key: "besichtigung", label: "Besichtigung", icon: Home },
+  { key: "bankgutachter", label: "Bankgutachter", icon: Landmark },
   { key: "finanzierung", label: "Finanzierung", icon: Landmark },
-  { key: "notar_ohne_gs", label: "Notar ohne GS", icon: Briefcase },
-  { key: "notar_mit_gs", label: "Notar mit GS", icon: Briefcase },
+  { key: "notar", label: "Notar", icon: Briefcase },
+  { key: "faelligkeit", label: "Kaufpreisfälligkeit", icon: Briefcase },
 ];
 
+/*
+ * Pipelinestufe zu Schritt der Leiste. Alles davor (Leads, Erstgespraech,
+ * NoShow) faellt auf den ersten Schritt. Die ausgeblendeten
+ * Bonitaetsunterlagen stehen im Rang der Reservierung. „Unterlagen" hat keine
+ * eigene Stufe; der Schritt gilt als erledigt, sobald es weitergeht.
+ */
+const STUFE_ZU_SCHRITT: Record<string, string> = {
+  beratungsgespraech: "beratung",
+  bg_noshow: "beratung",
+  selbstauskunft: "selbstauskunft",
+  objektauswahl: "objektvorstellung",
+  follow_up_objekt: "objektvorstellung",
+  reservierung: "reservierung",
+  bonitaetsunterlagen: "reservierung",
+  besichtigung: "besichtigung",
+  bankgutachter: "bankgutachter",
+  finanzierung: "finanzierung",
+  notar: "notar",
+  notar_ohne_gs: "notar",
+  notar_mit_gs: "notar",
+  faelligkeit: "faelligkeit",
+  abrechnung: "faelligkeit",
+  abgeschlossen: "faelligkeit",
+};
+
 const PORTAL_STEP_TO_CARD: Record<string, string> = {
-  bonitaetsunterlagen: "portal-card-bonitaet",
-  objektauswahl: "portal-card-wohnung",
+  selbstauskunft: "portal-card-bonitaet",
+  unterlagen: "portal-card-bonitaet",
+  objektvorstellung: "portal-card-wohnung",
   reservierung: "portal-card-reservierung",
   finanzierung: "portal-card-finanzierung",
-  notar_ohne_gs: "portal-card-notar",
-  notar_mit_gs: "portal-card-notar",
+  notar: "portal-card-notar",
 };
 
 /**
@@ -153,32 +182,9 @@ function adresseZeile(teile: { strasse?: string; hausnummer?: string; plz?: stri
   return [strasse, ort].filter(Boolean).join(", ");
 }
 
-function getStepIndex(stufe: string, kundeId?: string): number {
-  // Map "notar" to the correct GS sub-step
-  if (stufe === "notar") {
-    const gs = kundeId ? isGrundschuldUploaded(kundeId) : false;
-    const key = gs ? "notar_mit_gs" : "notar_ohne_gs";
-    const idx = PIPELINE_STEPS.findIndex(s => s.key === key);
-    return idx >= 0 ? idx : 0;
-  }
-  if (stufe === "faelligkeit") {
-    const idx = PIPELINE_STEPS.findIndex(s => s.key === "faelligkeit");
-    return idx >= 0 ? idx : 0;
-  }
-  // Die Pipelinestufe heisst "erstgespraech_geplant", der Portal-Schritt
-  // schlicht "erstgespraech". Ausdrueckliche Zuordnung, damit sie nicht am
-  // Rueckfall auf Position 0 haengt.
-  if (stufe === "erstgespraech_geplant") {
-    const idx = PIPELINE_STEPS.findIndex(s => s.key === "erstgespraech");
-    return idx >= 0 ? idx : 0;
-  }
-  // Manuelle Follow-Up-Stufe nach der Objektvorstellung: gleicher Schritt
-  // wie die Objektauswahl.
-  if (stufe === "follow_up_objekt") {
-    const idx = PIPELINE_STEPS.findIndex(s => s.key === "objektauswahl");
-    return idx >= 0 ? idx : 0;
-  }
-  const idx = PIPELINE_STEPS.findIndex(s => s.key === stufe);
+function getStepIndex(stufe: string, _kundeId?: string): number {
+  const schritt = STUFE_ZU_SCHRITT[stufe] ?? "erstgespraech";
+  const idx = PIPELINE_STEPS.findIndex((s) => s.key === schritt);
   return idx >= 0 ? idx : 0;
 }
 
@@ -537,20 +543,16 @@ function BonitaetsUnterlagenKunde({ inv, kunde, forceUpdate }: { inv: Investment
 
   const handleSenden = () => {
     setUnterlagenGesendet(kunde.id, inv.id);
-    // Create notification for backoffice
-    // Geht an den Berater. Vorher landete die Aufgabe in der Inbox des
-    // Kunden, obwohl der Text sich eindeutig an den Berater richtet.
-    void addAufgabe({
+    // Dieselbe eine Prüfaufgabe je Investment wie beim Hochladen, beim
+    // Einreichen mit zwei Tagen Frist. Sie legt die Datenbank an, nie der
+    // Kunde, siehe `unterlagenMitteilung.ts`.
+    void sichereUnterlagenPruefaufgabe({
       kontaktId: kunde.id,
-      typ: "aufgabe",
-      prioritaet: "hoch",
-      titel: `Bonitätsunterlagen prüfen: ${kunde.vorname} ${kunde.nachname}`,
+      investmentId: inv.id,
       beschreibung: `${kunde.vorname} ${kunde.nachname} hat die Bonitätsunterlagen über das Kundenportal eingereicht. Bitte prüfen und freigeben.`,
-      faelligAm: new Date(Date.now() + 2 * 86400000).toISOString().split("T")[0],
-      uhrzeit: "09:00",
-      zugewiesenAn: (kunde as any).zustaendig_id || undefined,
+      tageBisFaellig: 2,
+      zustaendigId: (kunde as any).zustaendig_id || undefined,
       erstelltVonName: `${kunde.vorname} ${kunde.nachname}`,
-      ausloeserSchluessel: `portal:bonitaet:${kunde.id}:${inv.id}`,
     });
     forceUpdate(n => n + 1);
   };
@@ -863,13 +865,7 @@ function InvestmentView({ inv, kunde }: { inv: Investment; kunde: ReturnType<typ
   let objekt = wohnung ? allObjekte.find(o => o.wohnungen.some(w => w.id === inv.wohnungId)) : null;
 
     // Determine the current card to highlight for "go to current step"
-    const currentCardKey = (() => {
-      if (currentPipelineStufe === "notar") {
-        const gs = kunde?.id ? isGrundschuldUploaded(kunde.id) : false;
-        return gs ? "notar_mit_gs" : "notar_ohne_gs";
-      }
-      return currentPipelineStufe;
-    })();
+    const currentCardKey = PIPELINE_STEPS[stepIdx]?.key ?? "";
     const currentCardId = PORTAL_STEP_TO_CARD[currentCardKey];
 
     const scrollToCard = (cardId: string) => {
@@ -1290,6 +1286,7 @@ function InvestmentView({ inv, kunde }: { inv: Investment; kunde: ReturnType<typ
           const vn = nameParts[0] || empName.trim();
           const nn = nameParts.slice(1).join(" ") || "";
 
+          let empfehlungId: string | null = null;
           try {
             // Use server-side function to create both contact + empfehlung (bypasses RLS)
             const { data, error } = await supabase.rpc("create_empfehlung_kontakt", {
@@ -1307,6 +1304,7 @@ function InvestmentView({ inv, kunde }: { inv: Investment; kunde: ReturnType<typ
             });
             if (error) throw error;
             const result = data as any;
+            empfehlungId = result?.empfehlung_id ? String(result.empfehlung_id) : null;
             if (result?.duplicate) {
               toast.info(`Hinweis: ${result.duplicate_name || "Diese Person"} ist bereits in unserem System. Wir haben die Empfehlung trotzdem an deinen Vertriebspartner weitergegeben.`);
             }
@@ -1331,16 +1329,12 @@ function InvestmentView({ inv, kunde }: { inv: Investment; kunde: ReturnType<typ
             });
           }
 
-          // Inbox notification for VP
-          void addAufgabe({
+          // Die Aufgabe fuer den Zustaendigen, ohne ihn die Leitung, legt die Datenbank an.
+          void legeEmpfehlungAufgabeAn({
             kontaktId: kunde.id,
-            typ: "anruf",
-            prioritaet: "hoch",
-            titel: `Empfehlung von ${kunde.vorname} ${kunde.nachname}`,
+            empfehlungId,
             beschreibung: `Dein Kunde ${kunde.vorname} ${kunde.nachname} hat eine Empfehlung gesendet: ${empName.trim()} (${empTelefon.trim()}). Beziehung: ${empBeziehung.trim()}. Bitte zeitnah kontaktieren.`,
-            faelligAm: new Date(Date.now() + 86400000).toISOString().split("T")[0],
-            uhrzeit: "09:00",
-            zugewiesenAn: (kunde as any).zustaendig_id || undefined,
+            zustaendigId: (kunde as any).zustaendig_id || undefined,
             erstelltVonName: `${kunde.vorname} ${kunde.nachname}`,
           });
 

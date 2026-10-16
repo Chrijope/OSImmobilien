@@ -56,16 +56,16 @@ export const MARKE = {
   /**
    * Eigene Fassung fuer den Mailversand, nicht das Original aus der App.
    *
-   * Das Original ist 1920 mal 575 Pixel gross, zu 87 Prozent transparent und
-   * hat viel Rand. In einer Mail hiess das: aeltere Outlook-Versionen legen
-   * transparente PNG schwarz hinterlegt an, und ein dunkles Logo auf schwarzem
+   * Gezeigt wird das OS-Real-Estate-Logo (wie oben in der Sidebar der App) in
+   * der Querfassung. Das transparente Original hat Rand. In einer Mail hiess das: aeltere Outlook-Versionen legen
+   * transparente PNG schwarz hinterlegt an, und die graue Schrift auf schwarzem
    * Grund ist unsichtbar. Der Rand liess es ausserdem kleiner wirken, als die
    * Breitenangabe versprach.
    *
    * Diese Fassung ist auf den sichtbaren Inhalt zugeschnitten, auf Weiss
    * gesetzt (die Farbe des Mailgrunds) und liegt in doppelter Aufloesung vor,
-   * damit sie auf Retina-Bildschirmen scharf bleibt: 320 mal 55 Pixel, gezeigt
-   * mit 160 mal 27.
+   * damit sie auf Retina-Bildschirmen scharf bleibt: 320 mal 56 Pixel, gezeigt
+   * mit 160 mal 28.
    *
    * Weil das Weiss eingebrannt ist, sitzt das Logo auf einer eigenen weissen
    * Platte, die auch im Dunkelmodus weiss bleibt. Im hellen Modus verschmilzt
@@ -73,7 +73,7 @@ export const MARKE = {
    * ehemals zufaelligen hellen Kasten eine bewusst gesetzte Flaeche mit
    * runden Ecken, auf der die dunkle Logoschrift lesbar bleibt.
    *
-   * Die Adresse stimmt und die Datei liegt dort: `public/osimmobilien-logo-mail.png`
+   * Die Adresse stimmt und die Datei liegt dort: `public/images/os-real-estate-logo-mail.png`
    * wird mit veroeffentlicht und antwortet unter dieser Adresse mit 200 und
    * `image/png`, auch gegenueber den Bildproxys der Mailanbieter. Wenn das Logo
    * trotzdem nicht erscheint, laedt das Programm des Empfaengers fremde Bilder
@@ -88,8 +88,9 @@ export const MARKE = {
    * Streuung ueber viele Dateien, die dieses Layout beseitigt hat.
    */
   logo: MAIL_LOGO_URL,
+  logoAlt: 'OS Real Estate GmbH',
   logoBreite: 160,
-  logoHoehe: 27,
+  logoHoehe: 28,
   anschrift: 'OS Immobilien Holding GmbH, Am Ostbahnhof 1, 15749 Mittenwalde',
   impressum: 'https://osimmobilien.netlify.app/impressum',
   datenschutz: 'https://osimmobilien.netlify.app/datenschutz',
@@ -285,19 +286,19 @@ const logoPlatte = {
  * Ersatztext steht auf der Logoplatte, und die ist auch im Dunkelmodus weiss
  * (siehe `.osimmo-platte`). Ein aufgehellter Ton waere dort unsichtbar.
  *
- * 17 Pixel, weil der Text in die 27 Pixel hohe Bildflaeche passen muss. Groesser
+ * 17 Pixel, weil der Text in die 28 Pixel hohe Bildflaeche passen muss. Groesser
  * gesetzt schneiden ihn Outlook und Apple Mail unten ab.
  */
 const logoStil = {
   display: 'block' as const,
   width: '160px',
-  height: '27px',
+  height: '28px',
   border: 0,
   outline: 'none' as const,
   textDecoration: 'none' as const,
   fontFamily: T.schrift,
   fontSize: '17px',
-  lineHeight: '27px',
+  lineHeight: '28px',
   fontWeight: 700,
   letterSpacing: '-0.01em',
   whiteSpace: 'nowrap' as const,
@@ -1219,7 +1220,7 @@ export function EmailLayout({
                   <td className="osimmo-platte" style={logoPlatte}>
                     <Img
                       src={MARKE.logo}
-                      alt={MARKE.name}
+                      alt={MARKE.logoAlt}
                       width={MARKE.logoBreite}
                       height={MARKE.logoHoehe}
                       style={logoStil}

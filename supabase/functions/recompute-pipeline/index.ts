@@ -33,7 +33,10 @@ const PIPELINE_ORDER = [
   "neuer_lead", "nicht_erreicht", "erreicht", "follow_up",
   "erstgespraech_geplant", "erstgespraech", "eg_noshow",
   "beratungsgespraech", "bg_noshow", "selbstauskunft", "objektauswahl",
-  "follow_up_objekt", "reservierung", "bonitaetsunterlagen", "finanzierung", "notar",
+  // "bonitaetsunterlagen" ist seit 16.10.2026 ausgeblendet und steht im Rang
+  // der Reservierung, deshalb direkt davor.
+  "follow_up_objekt", "bonitaetsunterlagen", "reservierung", "besichtigung", "bankgutachter",
+  "finanzierung", "notar",
   "faelligkeit", "abrechnung", "abgeschlossen", "bestandsimport",
   "archiviert", "verloren",
 ];
@@ -76,6 +79,8 @@ function stufeZuStatus(stufe: string | null | undefined): string | null {
       return "in_beratung";
     case "reservierung":
     case "bonitaetsunterlagen":
+    case "besichtigung":
+    case "bankgutachter":
     case "finanzierung":
     case "notar":
       return "in_abwicklung";
@@ -127,9 +132,9 @@ type KontaktRow = {
 /**
  * Effektive Pipelinestufe, vereinfachte Spiegelung von
  * getEffectivePipelineStufe (kontaktPipeline.ts): archiviert/verloren
- * gewinnen, danach die höchste Investment-Stufe ab "selbstauskunft"
- * (aktive Investments bevorzugt), dann die Kontakt-Stufe, dann der
- * Status-Fallback.
+ * gewinnen, danach die höchste Investment-Stufe (aktive Investments
+ * bevorzugt; seit 11.10.2026 jede Stufe, nicht erst ab "selbstauskunft"),
+ * dann die Kontakt-Stufe, dann der Status-Fallback.
  */
 function effektiveStufe(kontakt: KontaktRow, investmentStufen: string[]): string {
   if (kontakt.archiviert) return "archiviert";
@@ -139,14 +144,13 @@ function effektiveStufe(kontakt: KontaktRow, investmentStufen: string[]): string
     .map((s) => normalizeStufe(s))
     .filter((s): s is string => !!s);
   const aktive = normalisiert.filter(
-    (s) => s !== "abgeschlossen" && s !== "archiviert" && s !== "verloren",
+    (s) => s !== "abgeschlossen" && s !== "archiviert" && s !== "verloren" && s !== "bestandsimport",
   );
   const pool = aktive.length > 0 ? aktive : normalisiert;
-  const minIdx = PIPELINE_ORDER.indexOf("selbstauskunft");
   let best = -1;
   for (const s of pool) {
     const idx = PIPELINE_ORDER.indexOf(s);
-    if (idx >= minIdx && idx > best) best = idx;
+    if (idx > best) best = idx;
   }
   if (best >= 0) return PIPELINE_ORDER[best];
 

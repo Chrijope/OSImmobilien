@@ -224,7 +224,7 @@ describe("Migration: Empfehlung als Dublette", () => {
 // ── Browser-Glocken ──────────────────────────────────────────────────────────
 
 const cache = vi.hoisted(() => ({
-  insert: vi.fn(),
+  insert: vi.fn(async (..._a: unknown[]) => ({})),
   warteschlange: vi.fn(async () => ({ error: null })),
   tabellen: {} as Record<string, unknown[]>,
 }));

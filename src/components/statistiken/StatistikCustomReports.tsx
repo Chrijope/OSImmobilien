@@ -93,12 +93,24 @@ export function StatistikCustomReports({ kontakte }: { kontakte: any[] }) {
     return [...new Set(kontakte.map((k) => k.berater).filter(Boolean))].sort();
   }, [kontakte]);
 
+  /*
+   * Stufen je Kontakt aus seinen Investments (11.10.2026): Ein Kontakt passt
+   * zum Stufenfilter, wenn eines seiner Investments dort steht. Ohne
+   * Investment zählt die Kontaktstufe.
+   */
+  const stufenJeKontakt = useMemo(() => {
+    const m = new Map<string, string[]>();
+    for (const i of (cacheGet("investments") || []) as any[]) {
+      const st = i.meta?.pipelineStufe || "neuer_lead";
+      m.set(i.kunde_id, [...(m.get(i.kunde_id) || []), st]);
+    }
+    return m;
+  }, [kontakte]);
+  const stufenVon = (k: any): string[] => stufenJeKontakt.get(k.id) || [k.meta?.pipelineStufe || "neuer_lead"];
+
   const filtered = useMemo(() => {
     return kontakte.filter((k) => {
-      if (
-        pipelineStufe !== "alle" &&
-        (k.meta?.pipelineStufe || "neuer_lead") !== pipelineStufe
-      )
+      if (pipelineStufe !== "alle" && !stufenVon(k).includes(pipelineStufe))
         return false;
       if (quelle !== "alle" && (k.quelle || "Unbekannt") !== quelle)
         return false;
@@ -109,7 +121,8 @@ export function StatistikCustomReports({ kontakte }: { kontakte: any[] }) {
         return false;
       return true;
     });
-  }, [kontakte, pipelineStufe, quelle, berater, fromDate, toDate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [kontakte, stufenJeKontakt, pipelineStufe, quelle, berater, fromDate, toDate]);
 
   const cellValue = (k: any, col: string): string => {
     switch (col) {
@@ -124,7 +137,7 @@ export function StatistikCustomReports({ kontakte }: { kontakte: any[] }) {
       case "quelle":
         return k.quelle || "";
       case "stufe":
-        return k.meta?.pipelineStufe || "";
+        return stufenVon(k).join(", ");
       case "erstellt":
         return k.erstellt_am
           ? new Date(k.erstellt_am).toLocaleDateString("de-DE")

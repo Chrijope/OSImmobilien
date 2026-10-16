@@ -448,7 +448,7 @@ export default function Kontakte() {
                         navigate(bucketEntryHref(entry));
                       }}
                     >
-                      <TableCell><InactivityAmpel kunde={entry.kunde} stufeOverride={entry.stufe} /></TableCell>
+                      <TableCell><InactivityAmpel kunde={entry.kunde} stufeOverride={entry.stufe} investmentId={entry.investmentId} /></TableCell>
                       {columns.map((col, idx) => (
                         <React.Fragment key={col.key}>
                           <TableCell>

@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { getInvestmentsByKontakt } from "@/lib/investmentsStore";
 import { getUserSetting, setUserSetting } from "@/lib/userSettingsCache";
 import { isTestAccount } from "@/lib/dbStoreHelper";
-import { getEffectivePipelineStufe, PIPELINE_STUFEN } from "@/lib/kontaktPipeline";
+import { getEffectivePipelineStufe, investmentStufenText, PIPELINE_STUFEN } from "@/lib/kontaktPipeline";
 import { normalizeTelefon } from "@/lib/phoneUtils";
 import { loadAllUsers } from "@/lib/loadAllUsers";
 import {
@@ -52,6 +52,8 @@ const PIPELINE_COLORS: Record<string, string> = {
   objektauswahl: "bg-chart-1/10 text-chart-1",
   follow_up_objekt: "bg-warning/10 text-warning",
   reservierung: "bg-blue-500/10 text-blue-600",
+  besichtigung: "bg-blue-500/10 text-blue-600",
+  bankgutachter: "bg-blue-500/10 text-blue-600",
   finanzierung: "bg-blue-500/10 text-blue-600",
   notar: "bg-blue-500/10 text-blue-600",
   faelligkeit: "bg-emerald-500/10 text-emerald-600",
@@ -138,7 +140,7 @@ export const ALL_COLUMNS: ColumnDef[] = [
       const stage = (k as any)?.pipelineStufe || "";
       const beratungOrLater = [
         "beratungsgespraech","bonitaetsunterlagen","objektauswahl","follow_up_objekt",
-        "reservierung","finanzierung","notar","faelligkeit","abrechnung","abgeschlossen",
+        "reservierung","besichtigung","bankgutachter","finanzierung","notar","faelligkeit","abrechnung","abgeschlossen",
       ].includes(stage);
       if (beratungOrLater && (k as any)?.setterTerminDatum) {
         am = (k as any).setterTerminDatum;
@@ -179,9 +181,8 @@ export const ALL_COLUMNS: ColumnDef[] = [
   },
   {
     key: "pipelineStufe", label: "Pipeline-Status", render: (k) => {
-      const stufe = getEffectivePipelineStufe(k);
-      const label = PIPELINE_STUFEN.find(s => s.key === stufe)?.label || stufe;
-      return <Badge className="text-[10px] bg-primary/10 text-primary">{label}</Badge>;
+      // Stufen aller Investments, nicht nur die höchste (11.10.2026).
+      return <Badge className="text-[10px] bg-primary/10 text-primary">{investmentStufenText(k)}</Badge>;
     },
   },
   {
@@ -190,7 +191,8 @@ export const ALL_COLUMNS: ColumnDef[] = [
       if (invs.length === 0) return <span className="text-sm text-muted-foreground">–</span>;
       const STEP_LABELS: Record<string, string> = {
         erstgespraech: "Erstgespräch", bonitaetsunterlagen: "Bonität",
-        objektauswahl: "Objekt", follow_up_objekt: "Follow-Up", reservierung: "Reserv.", finanzierung: "Finanz.",
+        objektauswahl: "Objekt", follow_up_objekt: "Follow-Up", reservierung: "Reserv.",
+        besichtigung: "Besicht.", bankgutachter: "Gutachter", finanzierung: "Finanz.",
         notar: "Notar", abrechnung: "Abrechn.", abgeschlossen: "Abgeschl.",
       };
       return (

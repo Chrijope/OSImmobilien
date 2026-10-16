@@ -67,7 +67,8 @@ import {
  * ## Warum die Nummern hier nicht mehr im Satz stehen (22.09.2026)
  *
  * Seit dem 22.09.2026 kann eine Reservierung ohne Reservierungsgebühr
- * geschlossen werden. Dann fallen ganze Abschnitte und Punkte weg, und alles,
+ * geschlossen werden, seit dem 16.10.2026 ist sie immer kostenfrei (siehe
+ * `VertragsOptionen.gebuehrEntfaellt`). Ohne Gebühr fallen ganze Abschnitte und Punkte weg, und alles,
  * was danach kommt, rückt auf. Die Nummern standen vorher als fester Text in
  * den Sätzen („in Abschnitt 4", „in Punkt 2"), und genau daran wäre der
  * Wegfall gescheitert: Der Verweis hätte auf die falsche Stelle gezeigt.
@@ -180,6 +181,11 @@ export const UNTERNEHMER_EMAIL = IMPRESSUM_EMAIL;
  * entgeltliche Leistung an. Ohne Gebühr fehlt das Entgelt, das Widerrufsrecht
  * entsteht damit gar nicht erst, und eine Belehrung über ein nicht bestehendes
  * Recht würde den Kunden nur verwirren.
+ *
+ * Seit dem 16.10.2026 ist jede neue Reservierung kostenfrei. Damit gilt
+ * dieser Schalter für jede neue Vereinbarung: Steht er auf `true`, hat keine
+ * neue Reservierung mehr eine Widerrufsbelehrung, eine Wahl zum Beginn oder
+ * eine auflösende Bedingung, und sie wird mit der Unterschrift wirksam.
  *
  * Die anwaltliche Prüfung dieser Frage steht noch aus. Damit die Antwort
  * nicht zehn Dateien kostet, hängt der gesamte Wegfall an diesem einen
@@ -499,10 +505,14 @@ const ZIFFERN_VORLAGE: ZifferVorlage[] = [
 /** Was den Aufbau des Dokuments bestimmt. */
 export interface VertragsOptionen {
   /**
-   * Zahlt der Kunde ausnahmsweise keine Reservierungsgebühr?
+   * Keine Reservierungsgebühr.
    *
-   * Ausdrücklich `true` und nichts anderes. Ein fehlendes Feld, wie es jede
-   * Reservierung von vor dem 22.09.2026 hat, bedeutet „zahlt eine Gebühr".
+   * Seit dem 16.10.2026 ist jede neue Reservierung kostenfrei, das Formular
+   * schreibt immer `true`. Der Fall mit Gebühr bleibt nur, damit alte
+   * Datensätze unverändert angezeigt werden: Ein fehlendes Feld, wie es jede
+   * Reservierung von vor dem 22.09.2026 hat, oder ein `false` aus der Zeit
+   * bis zum 16.10.2026 bedeutet „damals mit Gebühr vereinbart". Deshalb zählt
+   * weiterhin nur ein ausdrückliches `true`.
    */
   gebuehrEntfaellt?: boolean;
   /**
@@ -788,10 +798,11 @@ export function vertragsAufbau(opt: VertragsOptionen = {}, sprache: VertragsSpra
 }
 
 /**
- * Der Regelfall mit Reservierungsgebühr.
+ * Der frühere Regelfall mit Reservierungsgebühr, nur noch für alte Vorgänge.
  *
- * Er ist zugleich der Stand, den jede Reservierung von vor dem 22.09.2026
- * hat, und die Grundlage der unveränderten Ausgaben weiter unten.
+ * Er ist der Stand, den jede Reservierung von vor dem 22.09.2026 hat, und die
+ * Grundlage der unveränderten Ausgaben weiter unten. Eine neue Reservierung
+ * baut nie auf ihm auf (seit dem 16.10.2026 kostenfrei).
  */
 const MIT_GEBUEHR = vertragsAufbau({ gebuehrEntfaellt: false });
 

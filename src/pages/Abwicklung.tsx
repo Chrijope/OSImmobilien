@@ -126,7 +126,7 @@ export default function Abwicklung() {
               ) : (
                 paged.map(entry => (
                   <TableRow key={bucketEntryKey(entry)} className="cursor-pointer hover:bg-muted/50" onClick={() => navigate(bucketEntryHref(entry))}>
-                    <TableCell><InactivityAmpel kunde={entry.kunde} stufeOverride={entry.stufe} /></TableCell>
+                    <TableCell><InactivityAmpel kunde={entry.kunde} stufeOverride={entry.stufe} investmentId={entry.investmentId} /></TableCell>
                     {columns.map(col => (
                       <React.Fragment key={col.key}>
                         <TableCell>{col.render(entry.kunde)}</TableCell>

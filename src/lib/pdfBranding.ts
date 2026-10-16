@@ -2,9 +2,9 @@ import jsPDF, { GState } from "jspdf";
 import { COMPANY_LINE } from "./impressumKontakt";
 import { datumText, type FormatSprache } from "./sprachFormat";
 
-const LOGO_URL = "/images/osimmobilien-logo.png";
-/** Nur die Bildmarke in Weiß und Gold, für dunklen Grund (Deckblatt). */
-const ICON_URL = "/images/os-bildmarke-hell.png";
+const LOGO_URL = "/images/os-real-estate-logo-quer.png";
+/** Das Logo in der Fassung für dunklen Grund (Deckblatt), Zusatz GMBH hell. */
+const ICON_URL = "/images/os-real-estate-logo-quer-dunkel.png";
 
 // Active PDF font family. Defaults to built-in Helvetica (no Unicode support).
 // Call ensureUnicodeFont(doc) to switch to embedded Noto Sans (full Unicode incl. Umlaute).
@@ -171,7 +171,7 @@ export async function loadLogo(): Promise<string | null> {
 
 let _iconCache: string | null | undefined = undefined;
 
-/** Lädt die Bildmarke für dunkle Flächen. */
+/** Lädt das Logo für dunkle Flächen. */
 export async function loadIcon(): Promise<string | null> {
   if (_iconCache !== undefined) return _iconCache;
   try {
@@ -201,8 +201,8 @@ function wortmarke(doc: jsPDF, x: number, y: number, groesse: number, hell: bool
   const breite = doc.getTextWidth("OS");
   doc.setFont(PDF_FONT, "normal");
   doc.setTextColor(...(hell ? BRAND.accentLight : BRAND.muted));
-  doc.text("Immobilien", x + breite + 1.2, y);
-  return breite + 1.2 + doc.getTextWidth("Immobilien");
+  doc.text("Real Estate", x + breite + 1.2, y);
+  return breite + 1.2 + doc.getTextWidth("Real Estate");
 }
 
 /**
@@ -360,22 +360,21 @@ export function addCoverPage(
   });
   doc.setGState(new GState({ opacity: 1, "stroke-opacity": 1 }));
 
-  // Bildmarke und Wortmarke.
+  // Logo.
   //
-  // REGEL für alle Dokumente: Auf hellem Grund steht das Originallogo als Bild,
-  // siehe addBrandedHeader. Auf DUNKLEM Grund gilt diese Fassung hier, also die
-  // blaue Bildmarke plus den weiss gesetzten Schriftzug. Das Originallogo hat
-  // schwarze Schrift und wuerde auf Dunkel verschwinden. Wer kuenftig ein Logo
-  // auf dunkler Flaeche braucht, nimmt diese Kombination.
+  // REGEL für alle Dokumente: Auf hellem Grund steht das OS-Real-Estate-Logo
+  // in der hellen Fassung, siehe addBrandedHeader. Auf DUNKLEM Grund steht hier
+  // die dunkle Fassung (Zusatz GMBH hell statt grau). Der gesetzte Schriftzug
+  // ist nur die Rueckfallebene, falls die Bilddatei nicht geladen werden kann.
   let y = 38;
   if (icon) {
     try {
       // "FAST" packt die Bilddaten (Flate). Ohne Angabe legt jsPDF ein PNG
       // unkomprimiert ab, allein die Wortmarke wog so über drei Megabyte.
       const bild = doc.getImageProperties(icon);
-      const iconB = (11 * bild.width) / bild.height;
-      doc.addImage(icon, "PNG", MARGIN, y - 9, iconB, 11, undefined, "FAST");
-      wortmarke(doc, MARGIN + iconB + 4, y, 17, true);
+      const logoH = 13;
+      const logoB = (logoH * bild.width) / bild.height;
+      doc.addImage(icon, "PNG", MARGIN, y - 11, logoB, logoH, undefined, "FAST");
     } catch {
       wortmarke(doc, MARGIN, y, 17, true);
     }
@@ -673,7 +672,7 @@ export function brandedRow(
   /**
    * Auch die Beschriftung fett und in der Textfarbe des Werts setzen, statt
    * grau und normal. Für die eine Zeile eines Abschnitts, die der Leser
-   * mitnehmen soll, etwa die Reservierungsgebühr für genau diesen Kaufpreis.
+   * mitnehmen soll, etwa einen Betrag, der genau für diesen Fall gilt.
    */
   labelFett = false,
 ): number {

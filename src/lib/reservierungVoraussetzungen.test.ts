@@ -1,11 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
+  fehlendeMindestunterlagenAusMeta,
   objektAngabenAusInvestment,
   objektEingetragen,
   pruefeReservierungsVoraussetzungen,
   RV_OBJEKT_FEHLT,
   RV_SA_FEHLT,
   RV_SA_NEU_AUSSTEHEND,
+  rvUnterlagenFehlen,
   SA_ENTFAELLT_META_SCHLUESSEL,
   selbstauskunftErledigt,
 } from "../../supabase/functions/_shared/reservierung-voraussetzungen.ts";
@@ -34,6 +36,8 @@ vi.mock("@/lib/objekteStore", () => ({ getWohnungKurz: () => null }));
 
 const { vorhandeneObjektDaten, objektDatenFehlen } = await import("./objektDatenPflicht");
 const { SA_ENTFAELLT_SCHLUESSEL } = await import("./selbstauskunftEntfaellt");
+const { fehlendeMindestunterlagen } = await import("./mindestunterlagen");
+const { fehlendeUnterlagenFuerReservierung } = await import("./reservierungStart");
 
 beforeEach(() => {
   zeile = null;
@@ -41,6 +45,7 @@ beforeEach(() => {
 
 const KONTAKT = "11111111-1111-1111-1111-111111111111";
 const FREMD = "22222222-2222-2222-2222-222222222222";
+const UNTERLAGEN = { docStatuses: { Personalausweis: "uploaded", "Letzter Gehaltsnachweis": "approved" } };
 const OBJEKT = {
   rvVirtualWohnung: { objAdresse: "Hauptstr. 1", objOrt: "Leipzig", weNr: "4", kaufpreis: 189000 },
 };
@@ -130,7 +135,7 @@ describe("objektAngabenAusInvestment gegen vorhandeneObjektDaten", () => {
 });
 
 describe("pruefeReservierungsVoraussetzungen", () => {
-  const bereit = { kunde_id: KONTAKT, meta: { saSigned: true, ...OBJEKT } };
+  const bereit = { kunde_id: KONTAKT, meta: { saSigned: true, ...UNTERLAGEN, ...OBJEKT } };
 
   it("laesst den vollstaendigen Vorgang durch", () => {
     expect(pruefeReservierungsVoraussetzungen(KONTAKT, bereit)).toEqual({ ok: true });
@@ -157,13 +162,51 @@ describe("pruefeReservierungsVoraussetzungen", () => {
   });
 
   it("verlangt ein Objekt, ohne Blanko-Ausnahme fuer Investagon", () => {
-    const meta = { saSigned: true, quelle: "investagon" };
+    const meta = { saSigned: true, ...UNTERLAGEN, quelle: "investagon" };
     expect(pruefeReservierungsVoraussetzungen(KONTAKT, { kunde_id: KONTAKT, meta }))
       .toEqual({ ok: false, status: 409, fehler: RV_OBJEKT_FEHLT });
   });
 
   it("laesst Vermerk und Objekt aus der Objektseite genuegen", () => {
-    const meta = { [SA_ENTFAELLT_META_SCHLUESSEL]: { aktiv: true }, objektId: "obj-1" };
+    // Beim Vermerk genuegt der Ausweis, die Gehaltsabrechnung entfaellt.
+    const meta = {
+      [SA_ENTFAELLT_META_SCHLUESSEL]: { aktiv: true }, objektId: "obj-1",
+      docStatuses: { Personalausweis: "uploaded" },
+    };
     expect(pruefeReservierungsVoraussetzungen(KONTAKT, { kunde_id: KONTAKT, meta })).toEqual({ ok: true });
   });
+
+  it("nennt die fehlenden Mindestunterlagen nach der Selbstauskunft, vor dem Objekt (16.10.2026)", () => {
+    expect(pruefeReservierungsVoraussetzungen(KONTAKT, { kunde_id: KONTAKT, meta: { saSigned: true } }))
+      .toEqual({ ok: false, status: 409, fehler: rvUnterlagenFehlen(["Personalausweis", "Letzter Gehaltsnachweis"]) });
+    expect(rvUnterlagenFehlen(["Personalausweis", "Letzter Gehaltsnachweis"]))
+      .toBe("Für die Reservierung fehlen noch: Personalausweis, letzte Gehaltsabrechnung. Sie müssen zuerst im Portal liegen.");
+    const ohneGehalt = { saSigned: true, ...OBJEKT, docStatuses: { Personalausweis: "approved", "Letzter Gehaltsnachweis": "rejected" } };
+    expect(pruefeReservierungsVoraussetzungen(KONTAKT, { kunde_id: KONTAKT, meta: ohneGehalt }))
+      .toEqual({ ok: false, status: 409, fehler: rvUnterlagenFehlen(["Letzter Gehaltsnachweis"]) });
+  });
+});
+
+describe("Mindestunterlagen: Server gegen Oberflaeche (16.10.2026)", () => {
+  const faelle: Array<[string, Record<string, unknown>]> = [
+    ["nichts da", {}],
+    ["beide hochgeladen", { ...UNTERLAGEN }],
+    ["Gehalt abgelehnt", { docStatuses: { Personalausweis: "approved", "Letzter Gehaltsnachweis": "rejected" } }],
+    ["nur Gehalt", { docStatuses: { "Letzter Gehaltsnachweis": "uploaded" } }],
+    ["selbststaendig ohne Gehalt", { saData: { beschaeftigungsart: "Selbstständig" }, docStatuses: { Personalausweis: "uploaded" } }],
+    ["freiberuflich laut Schnappschuss, ohne Ausweis", { saSnapshot: { beschaeftigungsart: "Freiberufler" } }],
+    ["angestellt laut saData", { saData: { beschaeftigungsart: "Angestellt" }, docStatuses: { Personalausweis: "uploaded" } }],
+    ["Vermerk finanziert selbst", { [SA_ENTFAELLT_META_SCHLUESSEL]: { aktiv: true }, docStatuses: { Personalausweis: "uploaded" } }],
+    ["Vermerk inaktiv", { [SA_ENTFAELLT_META_SCHLUESSEL]: { aktiv: false }, docStatuses: { Personalausweis: "uploaded" } }],
+    ["Status unbekannt", { docStatuses: { Personalausweis: "pending", "Letzter Gehaltsnachweis": "" } }],
+  ];
+
+  for (const [name, meta] of faelle) {
+    it(`liest dasselbe: ${name}`, () => {
+      zeile = { id: "i1", kunde_id: KONTAKT, meta };
+      const server = fehlendeMindestunterlagenAusMeta(meta);
+      expect(server).toEqual(fehlendeMindestunterlagen(meta));
+      expect(server).toEqual(fehlendeUnterlagenFuerReservierung("i1"));
+    });
+  }
 });

@@ -2,7 +2,8 @@ import { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { getPublishedStellen, getStelleById, type Stelle } from "@/lib/bewerbungStore";
-import logoImg from "@/assets/osimmobilien-logo.png";
+import logoImg from "@/assets/os-real-estate-logo-quer.png";
+import logoImgDunkel from "@/assets/os-real-estate-logo-quer-dunkel.png";
 import {
   Building2, MapPin, Briefcase, ArrowRight, ArrowLeft, Sparkles,
   CheckCircle, Star, Mail,
@@ -59,9 +60,9 @@ function Kopf({ dunkel = false, rechts }: { dunkel?: boolean; rechts?: React.Rea
       <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
         <Link to="/karriere" aria-label="Zur Karriereübersicht">
           <img
-            src={logoImg}
-            alt="OS Immobilien"
-            className={`h-8 object-contain ${dunkel ? "brightness-0 invert" : ""}`}
+            src={dunkel ? logoImgDunkel : logoImg}
+            alt="OS Real Estate GmbH"
+            className="h-8 object-contain"
           />
         </Link>
         {rechts}
@@ -391,7 +392,7 @@ function Fuss() {
   return (
     <footer className="border-t border-border bg-card/40">
       <div className="mx-auto max-w-5xl px-6 py-10 text-center">
-        <img src={logoImg} alt="OS Immobilien" className="mx-auto mb-4 h-7 object-contain opacity-60" />
+        <img src={logoImg} alt="OS Real Estate GmbH" className="mx-auto mb-4 h-7 object-contain opacity-60" />
         <p className="text-xs text-muted-foreground">
           © {new Date().getFullYear()} OS Immobilien Holding GmbH. Alle Rechte
           vorbehalten.

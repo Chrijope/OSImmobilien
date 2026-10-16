@@ -38,6 +38,15 @@ import { getKontaktById, mergeKontaktMetaMitGrund, updateKontakt } from "./kunde
 import { festerTerminSchluessel, noShowErfasst, noShowMetaPatch } from "./kundenNaechsteAktion";
 import { meetingZeitISO } from "./meetingZeit";
 import { mitKontaktMeta } from "./kontaktTermine";
+import { addProzessAufgabe } from "./prozessAufgabe";
+import { rueckeNachStufenTermin } from "./stufenTerminAktionen";
+import {
+  istErstgespraech, legeNachfassNachErstgespraechAn, NACHFASS_FEHLER_TEXT, NACHFASS_FEHLER_TITEL,
+} from "./nachfassNachErstgespraech";
+import { gespraechsArt, legeZusammenfassungAn } from "./nachfassplan";
+
+/** Titel der einen Aufgabe nach einem No-Show, gleich auf allen Wegen. */
+export const NOSHOW_TITEL = "Kunde nicht erschienen: anrufen und neuen Termin vereinbaren";
 
 /**
  * Welche Anlaesse eine Ergebnis-Karte bekommen.
@@ -145,7 +154,7 @@ export function lokaleUhrzeit(d: Date): string {
 }
 
 /**
- * Setzt nach einem No-Show die passende NoShow-Stufe am Kontakt.
+ * Setzt nach einem No-Show die passende NoShow-Stufe an den Investments.
  *
  * Fehlschlaege sind hier bewusst still. Der No-Show selbst ist zu diesem
  * Zeitpunkt schon gespeichert, und eine Fehlermeldung ueber eine nicht
@@ -153,18 +162,17 @@ export function lokaleUhrzeit(d: Date): string {
  */
 export function setzeNoShowStufe(kundeId: string, ziel: "eg_noshow" | "bg_noshow"): boolean {
   try {
-    const kunde = getKontaktById(kundeId);
-    if (!kunde) return false;
-    if (!darfNoShowStufeSetzen(getEffectivePipelineStufe(kunde), ziel)) return false;
-    updateKontakt(kundeId, { pipelineStufe: ziel });
-    // Die Kachel "Naechster Schritt" liest die Stufe des Investments, nicht
-    // die des Kontakts. Ohne das Nachziehen stand dort nach einem No-Show
-    // weiter der Schritt des geplatzten Termins statt "Neuen ... vereinbaren".
-    // Dieselbe Sperre wie am Kontakt: Ein weiter gediehenes Investment bleibt.
+    if (!getKontaktById(kundeId)) return false;
+    // Seit 11.10.2026 nur am Investment: jedes, das noch vor dem Termin steht.
+    // Ein weiter gediehenes Investment bleibt (darfNoShowStufeSetzen).
+    let gesetzt = false;
     for (const inv of getInvestmentsByKontakt(kundeId)) {
-      if (darfNoShowStufeSetzen(inv.pipelineStufe, ziel)) updateInvestment(inv.id, { pipelineStufe: ziel });
+      if (darfNoShowStufeSetzen(inv.pipelineStufe, ziel)) {
+        updateInvestment(inv.id, { pipelineStufe: ziel });
+        gesetzt = true;
+      }
     }
-    return true;
+    return gesetzt;
   } catch (fehler) {
     console.error("NoShow-Stufe nicht gesetzt:", fehler);
     return false;
@@ -363,7 +371,50 @@ export async function terminErschienen(t: ErgebnisTermin, ctx: ErgebnisKontext):
   if (fehler !== null) { meldeStatusFehler(ctx, fehler); return false; }
   await schliesseAufgabe(aufgabe);
   protokolliere(ctx, `${t.titel} erschienen ✓`, `Termin: ${terminText(t.startAt)}`);
-  ctx.melde({ title: `${t.titel} erschienen ✓` });
+  /*
+   * Besichtigung und Termin Bankgutachter ruecken die Stufe ihres
+   * Investments vor (16.10.2026, `stufenTermin.ts`). Das Investment kommt
+   * aus der gekoppelten Aufgabe des Meetings; ohne sie bleibt die Stufe.
+   */
+  const neueStufe = await rueckeNachStufenTermin(t.titel, aufgabe?.investmentId, {
+    kundeId: ctx.kundeId,
+    kundeName: ctx.kundeName,
+    erstelltVonName: ctx.userName,
+    rueckfallZustaendig: empfaenger(t, ctx),
+  });
+  ctx.melde({
+    title: `${t.titel} erschienen ✓`,
+    description: neueStufe === "bankgutachter"
+      ? "Das Investment steht jetzt auf „Termin Bankgutachter“, die Aufgabe zum Vereinbaren ist angelegt."
+      : neueStufe === "finanzierung"
+        ? "Das Investment steht jetzt auf „Finanzierung“."
+        : undefined,
+  });
+  // Nach einem Erstgespraech der Nachfass-Anruf drei Tage spaeter.
+  if (istErstgespraech(t.titel, t.buchung?.anlass)) {
+    const nachfass = await legeNachfassNachErstgespraechAn({
+      kontaktId: ctx.kundeId,
+      kundeName: ctx.kundeName,
+      gespraech: t.startAt,
+      rueckfallZustaendig: empfaenger(t, ctx),
+      erstelltVonName: ctx.userName,
+    });
+    if (nachfass === "fehler") ctx.melde({ title: NACHFASS_FEHLER_TITEL, description: NACHFASS_FEHLER_TEXT, variant: "destructive" });
+  }
+  // Nachfassplan: nach Erstgespraech und Beratungspraesentation zusammenfassen.
+  const art = gespraechsArt(t.titel, t.buchung?.anlass);
+  if (art) {
+    await legeZusammenfassungAn({
+      kontaktId: ctx.kundeId,
+      kundeName: ctx.kundeName,
+      art,
+      beginn: t.startAt,
+      dauerMinuten: t.dauerMinuten,
+      rueckfallZustaendig: empfaenger(t, ctx),
+      erstelltVonName: ctx.userName,
+      investmentId: aufgabe?.investmentId,
+    });
+  }
   return true;
 }
 
@@ -508,10 +559,10 @@ export async function terminNoShow(t: ErgebnisTermin, ctx: ErgebnisKontext): Pro
   // tragen keinen Anlass, dort bleibt die Stufe wie bisher stehen.
   const noShowStufe = t.buchung ? NOSHOW_STUFE[t.buchung.anlass] : undefined;
   const stufeGesetzt = noShowStufe ? setzeNoShowStufe(ctx.kundeId, noShowStufe) : false;
-  // Folgekette: Der Vertriebspartner bekommt sofort die Aufgabe, den Kunden
-  // neu zu kontaktieren.
-  void addGeteilteAufgabe({
-    titel: `❌ No-Show: ${ctx.kundeName} – ${t.titel}`,
+  // Folgekette: Der Zustaendige bekommt sofort genau eine Aufgabe, den
+  // Kunden neu zu kontaktieren (ohne ihn die Leitung).
+  void addProzessAufgabe({
+    titel: NOSHOW_TITEL,
     beschreibung: `${ctx.kundeName} ist zum Termin „${t.titel}" am ${terminText(t.startAt)} nicht erschienen. Bitte neu kontaktieren und einen neuen Termin vereinbaren.`,
     prioritaet: "hoch",
     typ: "anruf",
@@ -519,10 +570,9 @@ export async function terminNoShow(t: ErgebnisTermin, ctx: ErgebnisKontext): Pro
     uhrzeit: "09:00",
     kundeId: ctx.kundeId,
     kundeName: ctx.kundeName,
-    zugewiesenAn: empfaenger(t, ctx),
     erstelltVonName: ctx.userName,
     ausloeserSchluessel: `termin_noshow_${t.key}`,
-  });
+  }, empfaenger(t, ctx));
   ctx.melde({
     title: "No-Show registriert",
     description: stufeGesetzt

@@ -24,9 +24,9 @@ const de = {
     nichtGefundenTitel: "Vertriebspartner nicht gefunden",
     nichtGefundenText: "Diese Seite existiert nicht oder wurde deaktiviert.",
     nichtGefundenLink: "Weiter zu osimmobilien.netlify.app",
-    seoTitel: (name: string) => `${name}: Vermögensaufbau mit Immobilien | OS Immobilien`,
+    seoTitel: (name: string) => `${name}: Vermögensaufbau mit Immobilien | OS Real Estate`,
     seoBeschreibung: (name: string) =>
-      `Persönliche Beratung von ${name}: Vermögen aufbauen, Steuern sparen und finanzielle Freiheit erreichen. Jetzt kostenloses Erstgespräch sichern.`,
+      `Persönliche Beratung von ${name}: Kapitalanlage-Immobilien in Berlin und Umland, zum Steuern senken oder für die Altersvorsorge. Jetzt kostenloses Erstgespräch vereinbaren.`,
   },
 
   erstberatungKnopf: "Kostenlose Erstberatung vereinbaren",
@@ -205,11 +205,11 @@ const de = {
   },
 
   schwebend: {
-    kopf: "Dein persönlicher Ansprechpartner",
+    kopf: "Ihr persönlicher Ansprechpartner",
     schliessen: "Schließen",
     buchen: "Erstgespräch buchen",
-    mehr: "Mehr erfahren",
-    knopf: "Dein Ansprechpartner",
+    mehr: "Anfrage senden",
+    knopf: "Ihr Ansprechpartner",
   },
 
   abschluss: {
@@ -251,9 +251,9 @@ const en: MikroseiteAbschlussTexte = {
     nichtGefundenTitel: "Sales partner not found",
     nichtGefundenText: "This page does not exist or has been deactivated.",
     nichtGefundenLink: "Continue to osimmobilien.netlify.app",
-    seoTitel: (name: string) => `${name}: Building wealth with property | OS Immobilien`,
+    seoTitel: (name: string) => `${name}: Building wealth with property | OS Real Estate`,
     seoBeschreibung: (name: string) =>
-      `A personal consultation with ${name}: build wealth, save tax and work towards financial freedom. Book your free initial consultation now.`,
+      `A personal consultation with ${name}: investment property in Berlin and the surrounding region, to lower your tax or provide for retirement. Book your free initial consultation now.`,
   },
 
   erstberatungKnopf: "Book a free initial consultation",
@@ -427,10 +427,10 @@ const en: MikroseiteAbschlussTexte = {
   },
 
   schwebend: {
-    kopf: "Your contact person at OS Immobilien",
+    kopf: "Your contact person at OS Real Estate",
     schliessen: "Close",
     buchen: "Book an initial call",
-    mehr: "Find out more",
+    mehr: "Send an enquiry",
     knopf: "Your contact person",
   },
 

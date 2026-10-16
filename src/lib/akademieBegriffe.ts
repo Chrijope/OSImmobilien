@@ -389,7 +389,7 @@ export const AKADEMIE_BEGRIFFE: readonly AkademieBegriff[] = [
     erklaerung:
       "Das Formular, in dem der Kunde der Bank Einkommen, Ausgaben, Vermögen und Verbindlichkeiten offenlegt. Es ist die Grundlage der Kreditentscheidung, und unrichtige Angaben können den Vertrag gefährden.",
     imVerkauf:
-      "Sie ist der erste verbindliche Schritt des Kunden und damit ein ehrlicher Prüfstein für echtes Interesse.",
+      "Ihr füllt sie am Ende der Beratung gemeinsam aus, sie ist die Basis der Kalkulation für die Objektvorstellung. Und sie ist der erste verbindliche Schritt des Kunden, ein ehrlicher Prüfstein für Interesse.",
   },
   {
     begriff: "Grundschuld",

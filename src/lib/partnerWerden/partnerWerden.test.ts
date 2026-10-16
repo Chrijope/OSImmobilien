@@ -255,7 +255,9 @@ describe("Texte und Zahlen der Seite", () => {
   it("die Stimmen sind als Kundenstimmen beschriftet, nicht als Partnerstimmen", () => {
     expect(INHALT.STIMMEN_TEXTE.h2).toMatch(/Kunden/);
     expect(INHALT.STIMMEN_TEXTE.fuss).toMatch(/keine Stimmen von Partnern/);
-    expect(INHALT.STIMMEN.length).toBeGreaterThanOrEqual(4);
+    // Seit dem 16.10.2026 leer, bis echte Stimmen mit Einverständnis vorliegen.
+    expect(INHALT.STIMMEN).toEqual([]);
+    expect(INHALT.STIMMEN_TEXTE.folgen).toBe("Kundenstimmen folgen, sobald echte Stimmen mit Einverständnis vorliegen.");
   });
 
   it("die Nadeln liegen in der Karte, Hof im Nordosten Bayerns", () => {

@@ -6,8 +6,10 @@ import {
   getEffectivePipelineStufe,
   normalizePipelineStufe,
   type PipelineStufe,
+  investmentAnzeigeStufe,
 } from "@/lib/kontaktPipeline";
 import { getKontakte } from "@/lib/kundenStore";
+import { getInvestmentsByKontakt } from "@/lib/investmentsStore";
 import { istZustaendig } from "@/lib/kontaktOwnership";
 import { useLiveVersion } from "@/hooks/useLiveData";
 
@@ -31,6 +33,8 @@ const FUNNEL_STUFEN: PipelineStufe[] = [
   "objektauswahl",
   "reservierung",
   "bonitaetsunterlagen",
+  "besichtigung",
+  "bankgutachter",
   "finanzierung",
   "notar",
   "faelligkeit",
@@ -102,15 +106,22 @@ export function FunnelReport({ beraterFilter, beraterId }: { beraterFilter?: str
       return true;
     });
 
-    // Map: für jeden Kontakt → höchste erreichte Stufe
+    // Je Investment (11.10.2026) → seine erreichte Stufe. Ein Kunde mit zwei
+    // Investments sind zwei Vorgänge im Trichter; ohne Investment zählt der
+    // Kontakt selbst.
     const reachedCount = new Array(FUNNEL_STUFEN.length).fill(0);
 
     for (const k of kontakte) {
-      const effective = normalizePipelineStufe(getEffectivePipelineStufe(k));
-      const idx = effective === null ? -1 : FUNNEL_INDEX.get(effective) ?? -1;
-      if (idx < 0) continue;
-      // Lead hat alle Stufen bis inkl. seiner aktuellen erreicht
-      for (let i = 0; i <= idx; i++) reachedCount[i]++;
+      const invs = getInvestmentsByKontakt(k.id);
+      const stufen = invs.length > 0
+        ? invs.map((inv) => investmentAnzeigeStufe(k, inv.pipelineStufe))
+        : [normalizePipelineStufe(getEffectivePipelineStufe(k))];
+      for (const effective of stufen) {
+        const idx = effective === null ? -1 : FUNNEL_INDEX.get(effective) ?? -1;
+        if (idx < 0) continue;
+        // Der Vorgang hat alle Stufen bis inkl. seiner aktuellen erreicht
+        for (let i = 0; i <= idx; i++) reachedCount[i]++;
+      }
     }
 
     const total = reachedCount[0] || 0;

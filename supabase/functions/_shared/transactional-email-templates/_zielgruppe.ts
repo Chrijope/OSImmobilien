@@ -46,6 +46,12 @@ export const VORLAGEN_ZIELGRUPPE: Readonly<Record<string, Zielgruppe>> = {
   'erstgespraech-erinnerung-6h': 'kunde',
   'erstgespraech-erinnerung-1h': 'kunde',
   'zoom-meeting-einladung': 'kunde',
+  // Nachfassplan, seit 16.10.2026. Siezen nach dem Drive-Prozessstandard.
+  'termin-beratungspraesentation': 'kunde',
+  'einladung-objektvorstellung': 'kunde',
+  'erinnerung-unterlagen-objektvorstellung': 'kunde',
+  'nachfass-zusammenfassung': 'kunde',
+  'letzte-nachricht': 'kunde',
   'meeting-aenderung': 'kunde',
   'sa-invitation': 'kunde',
   'selbstauskunft-signatur': 'kunde',

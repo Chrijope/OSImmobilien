@@ -3,6 +3,7 @@ import { checkEdgeRateLimit, clientIp } from '../_shared/edge-rate-limit.ts'
 import { ladeBuchungKontext } from '../_shared/buchung-kontext.ts'
 import { sendeVorlage } from '../_shared/transactional-versand.ts'
 import { zustaendigOderLeitung } from '../_shared/glocke-zustaendiger.ts'
+import { buchungsVorlage } from '../_shared/objektvorstellung-unterlagen.ts'
 
 /**
  * send-buchung-bestaetigung
@@ -155,6 +156,14 @@ Deno.serve(async (req) => {
 
     const fehler: string[] = []
 
+    // Beratungspraesentation und Objektvorstellung haben eigene Mails
+    // (Nachfassplan, 16.10.2026). Die Begleitperson bekommt die allgemeine
+    // Bestaetigung: die Anlass-Mails sprechen den Kunden an.
+    const kundenVorlage = buchungsVorlage(buchung.anlass)
+    const uploadUrl = kundenVorlage === 'einladung-objektvorstellung'
+      ? `${basisAdresse.replace(/\/+$/, '')}/kunde/investments`
+      : undefined
+
     // Die Termindaten sind fuer Kunde und Begleitperson dieselben, nur die
     // Anrede unterscheidet sich.
     const terminDaten = {
@@ -176,7 +185,7 @@ Deno.serve(async (req) => {
     // ── A) Bestaetigung an den Kunden ──
     if (k.kundeEmail) {
       const ergebnis = await sendeVorlage(supabase, {
-        templateName: 'buchung-bestaetigung',
+        templateName: kundenVorlage,
         recipientEmail: k.kundeEmail,
         idempotencyKey: `buchung-bestaetigung-${buchung.id}`,
         templateData: {
@@ -184,6 +193,7 @@ Deno.serve(async (req) => {
           vorname: k.vorname,
           nachname: k.nachname,
           ...terminDaten,
+          ...(uploadUrl ? { uploadUrl } : {}),
         },
         // Kalenderdatei und Mail in derselben Kundensprache.
         sprache: k.sprache,

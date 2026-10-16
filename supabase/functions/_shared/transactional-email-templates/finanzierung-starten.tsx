@@ -1,42 +1,57 @@
 import * as React from 'npm:react@18.3.1'
 import type { TemplateEntry } from './registry.ts'
 import { EmailLayout, Absatz, Handlung, Angaben } from './_layout.tsx'
+import { foermlich } from './_anrede.ts'
 import { finanzierungBetreff } from '../finanzierung-starten-mail.ts'
+
+/**
+ * An den gewählten Finanzierungspartner, wenn die Reservierung unterschrieben
+ * ist. Versand: Edge Function `finanzierung-partner-benachrichtigen`.
+ *
+ * Bewusst ohne Anhang: Personalausweis und Gehaltsnachweise gehören nicht
+ * unverschlüsselt in eine Mail. Der Knopf führt ins CRM, dort liegen Kunden-
+ * und Objektunterlagen nach der Anmeldung als ZIP bereit.
+ */
 
 interface Props {
   finanzierungspartnerName?: string
   kundeName?: string
-  vpName?: string
   objektTitel?: string
   kaufpreis?: string
-  reserviertAm?: string
-  kundeLink?: string
+  unterschriebenAm?: string
+  link?: string
 }
 
-const Mail = ({ finanzierungspartnerName, kundeName, vpName, objektTitel, kaufpreis, reserviertAm, kundeLink }: Props) => (
+const Mail = ({ finanzierungspartnerName, kundeName, objektTitel, kaufpreis, unterschriebenAm, link }: Props) => (
   <EmailLayout
-    augenbraue="Zum Handeln"
-    titel="Eine Finanzierung kann starten"
-    vorschau={kundeName ? `Die Reservierung von ${kundeName} ist unterschrieben` : 'Eine neue Finanzierung kann starten'}
-    anrede={finanzierungspartnerName ? `Hallo ${finanzierungspartnerName.split(' ')[0]},` : 'Hallo,'}
+    augenbraue="Finanzierung"
+    titel="Reservierung unterschrieben"
+    vorschau="Der Finanzierungsprozess kann gestartet werden."
+    anrede={foermlich(finanzierungspartnerName)}
     intern
     ohneUnterschrift
   >
-    <Absatz letzter>
-      die Reservierungsvereinbarung von {kundeName || 'einem Kunden'} ist unterschrieben, die
-      Einheit ist verbindlich reserviert. Bitte beginne zeitnah mit der Finanzierung, damit der
-      Notartermin planmäßig stattfinden kann.
+    <Absatz>
+      die Reservierungsvereinbarung von {kundeName || 'einem Kunden'} ist unterschrieben.
+      Der Finanzierungsprozess kann gestartet werden.
     </Absatz>
 
-    {kundeLink && <Handlung href={kundeLink} text="Kundenprofil öffnen" />}
-
     <Angaben titel="Der Vorgang" zeilen={[
-      ...(kundeName ? ([['Kunde', kundeName]] as Array<[string, string]>) : []),
+      ['Kunde', kundeName || 'Ein Kunde'],
       ...(objektTitel ? ([['Objekt', objektTitel]] as Array<[string, string]>) : []),
       ...(kaufpreis ? ([['Kaufpreis', kaufpreis]] as Array<[string, string]>) : []),
-      ...(vpName ? ([['Vertriebspartner', vpName]] as Array<[string, string]>) : []),
-      ...(reserviertAm ? ([['Reserviert am', reserviertAm]] as Array<[string, string]>) : []),
+      ...(unterschriebenAm ? ([['Reservierung unterschrieben am', unterschriebenAm]] as Array<[string, string]>) : []),
     ]} />
+
+    <Handlung
+      href={link || ''}
+      text="Unterlagen im CRM öffnen"
+      hinweis="Nach der Anmeldung liegen dort Kunden- und Objektunterlagen als ZIP bereit."
+    />
+
+    <Absatz letzter>
+      Aus Datenschutzgründen sind dieser Mail keine Unterlagen angehängt.
+    </Absatz>
   </EmailLayout>
 )
 
@@ -45,15 +60,14 @@ export const template = {
   // Der Wortlaut liegt in `../finanzierung-starten-mail.ts`, damit ein Test
   // unter `src` ihn pruefen kann. Diese Datei ist wegen ihrer npm-Importe dort
   // nicht ladbar.
-  subject: (data: Record<string, any>) => finanzierungBetreff(data?.kundeName),
+  subject: () => finanzierungBetreff(),
   displayName: 'Finanzierung starten (Finanzierungspartner)',
   previewData: {
-    finanzierungspartnerName: 'Sabine Wolf',
+    finanzierungspartnerName: 'Erika Mustermann',
     kundeName: 'Max Mustermann',
-    vpName: 'Julian Meyer',
-    objektTitel: 'Breitscheidstraße 18, Wohnung 12',
+    objektTitel: 'Musterstraße 1, WE 12',
     kaufpreis: '132.000 €',
-    reserviertAm: '29. Juli 2026',
-    kundeLink: 'https://osimmobilien.netlify.app/kunden/123',
+    unterschriebenAm: '29.07.2026',
+    link: 'https://osimmobilien.netlify.app/kunden/123?tab=investments&investment=456#finanzierung',
   },
 } satisfies TemplateEntry

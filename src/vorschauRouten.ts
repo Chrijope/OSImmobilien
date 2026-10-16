@@ -29,3 +29,25 @@ export const VorschauErstgespraech = import.meta.env.DEV
 export const VorschauProvision = import.meta.env.DEV
   ? lazy(() => import("./pages/VorschauProvision"))
   : null;
+
+/** /vorschau/naechste-aktionen: die Kachel im Kundenprofil, seit 15.10.2026. */
+export const VorschauNaechsteAktionen = import.meta.env.DEV
+  ? lazy(() => import("./pages/VorschauNaechsteAktionen"))
+  : null;
+/*
+ * Lokale Vorschau "Pipeline am Investment", seit dem 15.10.2026:
+ * /vorschau/pipeline. Gleiche Absicherung wie oben, nur `npm run dev`.
+ */
+export const VorschauPipeline = import.meta.env.DEV
+  ? lazy(() => import("./pages/VorschauPipeline"))
+  : null;
+
+/** /vorschau/mikroseite: die Partner-Landingpage mit Beispielpartner, seit 16.10.2026. */
+export const VorschauMikroseite = import.meta.env.DEV
+  ? lazy(() => import("./pages/VorschauMikroseite"))
+  : null;
+
+/** Vorschau Rechnungsvorlage mit Live-PDF (16.10.2026): /vorschau/rechnungsvorlage. Gleiche Regeln wie oben. */
+export const VorschauRechnungsvorlage = import.meta.env.DEV
+  ? lazy(() => import("./pages/VorschauRechnungsvorlage"))
+  : null;

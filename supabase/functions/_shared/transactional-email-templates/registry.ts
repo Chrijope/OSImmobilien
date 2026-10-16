@@ -142,6 +142,11 @@ import { template as bewerberAbsage } from './bewerber-absage.tsx'
 import { template as bewerberNeuIntern } from './bewerber-neu-intern.tsx'
 import { template as bewerberVertragUnterschriebenIntern } from './bewerber-vertrag-unterschrieben-intern.tsx'
 import { template as supportAntwort } from './support-antwort.tsx'
+import { template as terminBeratungspraesentation } from './termin-beratungspraesentation.tsx'
+import { template as einladungObjektvorstellung } from './einladung-objektvorstellung.tsx'
+import { template as erinnerungUnterlagenObjektvorstellung } from './erinnerung-unterlagen-objektvorstellung.tsx'
+import { template as nachfassZusammenfassung } from './nachfass-zusammenfassung.tsx'
+import { template as letzteNachricht } from './letzte-nachricht.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'birthday-greeting': birthdayGreeting,
@@ -318,4 +323,14 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   // Meldung an den Ersteller eines Support-Tickets, seit 28.09.2026. Verschickt
   // von support-antwort-mail, hoechstens einmal je Ticket in 15 Minuten.
   'support-antwort': supportAntwort,
+  // Nachfassplan nach dem Drive-Prozessstandard (Strategie Vertrieb,
+  // Abschnitt 8, seit 16.10.2026). Die beiden Terminmails ersetzen fuer ihren
+  // Anlass zoom-meeting-einladung und buchung-bestaetigung; die Erinnerung
+  // verschickt check-document-reminders; die letzten beiden sind Vorlagen
+  // fuer den Partner.
+  'termin-beratungspraesentation': terminBeratungspraesentation,
+  'einladung-objektvorstellung': einladungObjektvorstellung,
+  'erinnerung-unterlagen-objektvorstellung': erinnerungUnterlagenObjektvorstellung,
+  'nachfass-zusammenfassung': nachfassZusammenfassung,
+  'letzte-nachricht': letzteNachricht,
 }

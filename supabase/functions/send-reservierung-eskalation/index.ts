@@ -38,8 +38,9 @@ import { widerrufsfristAbgelaufen } from "../_shared/widerrufsfrist.ts";
  * vermerkt dafür `rvReservierungAb` am Investment. An diesem Tag stellt
  * dieser Lauf die Wohnung auf reserviert, sofern sie noch frei ist. Ist sie
  * inzwischen anderweitig reserviert oder verkauft, bekommt der zuständige
- * Partner Aufgabe und Glocke: Kunde informieren, Gebühr zurückzahlen.
- * Entscheidung Christians vom 15.09.2026.
+ * Partner Aufgabe und Glocke: Kunde informieren, bei einem alten Vorgang mit
+ * Gebühr auch die Gebühr zurückzahlen (seit dem 16.10.2026 ist die
+ * Reservierung kostenfrei). Entscheidung Christians vom 15.09.2026.
  *
  * Seit dem 23.09.2026 schreibt dieser Lauf nie mehr ohne Pruefung auf
  * „reserviert“. Vorher las er den Stand, entschied und schrieb danach
@@ -255,15 +256,23 @@ async function reservierungenWirksamSetzen(
         const besitzer = (kontakt as { zustaendig_id?: string } | null)?.zustaendig_id;
         if (!besitzer) { bericht.fehler.push(`${kundeName}: Reservierung entfallen, aber kein Zuständiger`); continue; }
 
+        /*
+         * Seit dem 16.10.2026 ist die Reservierung kostenfrei. Eine Gebühr
+         * zurückzuzahlen gibt es nur bei einem alten Vorgang, in dem sie
+         * vereinbart war (`gebuehrEntfaellt` fehlt oder ist nicht `true`).
+         */
+        const altMitGebuehr = rvData.gebuehrEntfaellt !== true;
         const { error: aufgabeFehler } = await db.from("aufgaben").insert({
           benutzer_id: besitzer,
           zugewiesen_an: besitzer,
           kontakt_id: kontaktId,
-          titel: `${gegenstand} inzwischen anderweitig reserviert: ${kundeName}`,
+          titel: altMitGebuehr ? "Objekt vergeben: Kunden informieren, Gebühr erstatten" : "Objekt vergeben: Kunden informieren",
           beschreibung:
             `${kundeName} hat die Widerrufsfrist abgewartet. ${gesamtobjekt ? "Das Haus" : "Die Wohnung"}${objektTitel ? ` (${objektTitel})` : ""} ist inzwischen anderweitig reserviert, ` +
-            `die Reservierungsvereinbarung ist damit nach Abschnitt 7 entfallen. Bitte den Kunden informieren und eine bereits gezahlte ` +
-            `Reservierungsgebühr innerhalb von vierzehn Tagen vollständig zurückzahlen.`,
+            (altMitGebuehr
+              ? `die Reservierungsvereinbarung ist damit nach Abschnitt 7 entfallen. Bitte den Kunden informieren und eine bereits gezahlte ` +
+                `Reservierungsgebühr innerhalb von vierzehn Tagen vollständig zurückzahlen.`
+              : `die Reservierungsvereinbarung ist damit entfallen. Bitte den Kunden informieren.`),
           prioritaet: "hoch",
           faellig_am: jetzt.slice(0, 10),
           typ: "aufgabe",
@@ -275,7 +284,7 @@ async function reservierungenWirksamSetzen(
           id: crypto.randomUUID(),
           benutzer_id: besitzer,
           titel: `${gegenstand} inzwischen anderweitig reserviert: ${kundeName}`,
-          nachricht: `Reservierung nach Ablauf der Widerrufsfrist (${datumDe(String(meta.rvReservierungAb))}) nicht mehr möglich. Kunde informieren, Gebühr zurückzahlen.`,
+          nachricht: `Reservierung nach Ablauf der Widerrufsfrist (${datumDe(String(meta.rvReservierungAb))}) nicht mehr möglich. Kunde informieren${altMitGebuehr ? ", Gebühr zurückzahlen" : ""}.`,
           link: `/kunden/${kontaktId}`,
           gelesen: false,
           erstellt_am: jetzt,
@@ -417,7 +426,7 @@ Deno.serve(async (req: Request) => {
         benutzer_id: besitzer,
         zugewiesen_an: besitzer,
         kontakt_id: s.kontakt_id,
-        titel: `Reservierung seit ${tage} Tagen nicht unterschrieben: ${s.name}`,
+        titel: "Reservierung nicht unterschrieben: beim Kunden nachfragen",
         beschreibung:
           `${s.name} hat die Reservierungsvereinbarung${objektTitel ? ` für ${objektTitel}` : ""} vor ${tage} Tagen bekommen ` +
           `und noch nicht unterschrieben. Eine automatische Erinnerung an den Kunden gibt es nicht, jetzt hilft ein Anruf. ` +

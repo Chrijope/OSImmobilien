@@ -4,6 +4,7 @@ import FloatingBeraterBadge from "./FloatingBeraterBadge";
 import SocialProofSection from "./SocialProofSection";
 import InvestorBenefitsSection from "./InvestorBenefitsSection";
 import TaxSection from "./TaxSection";
+import BeraterMicrositeContent from "./BeraterMicrositeContent";
 
 const berater = {
   name: "Maria Muster", position: "Kapitalanlageberaterin", telefon: "+49 911 123456",
@@ -36,12 +37,12 @@ describe("Persönliche Microseite", () => {
   it("behält die Kontaktwege des schwebenden Ansprechpartners", () => {
     const onContactClick = vi.fn();
     render(<FloatingBeraterBadge berater={berater} onContactClick={onContactClick} />);
-    fireEvent.click(screen.getByRole("button", { name: "Dein Ansprechpartner" }));
+    fireEvent.click(screen.getByRole("button", { name: "Ihr Ansprechpartner" }));
     expect(screen.getByRole("link", { name: berater.email })).toHaveAttribute("href", `mailto:${berater.email}`);
     expect(screen.getByRole("link", { name: berater.telefon })).toHaveAttribute("href", `tel:${berater.telefon}`);
-    fireEvent.click(screen.getByRole("button", { name: /Mehr erfahren/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Anfrage senden/ }));
     expect(onContactClick).toHaveBeenCalledOnce();
-    expect(screen.queryByText("Dein persönlicher Ansprechpartner")).not.toBeInTheDocument();
+    expect(screen.queryByText("Ihr persönlicher Ansprechpartner")).not.toBeInTheDocument();
   });
 
   it("liest jede Kundenstimme einmal vor und kann die Endlosschleife pausieren", () => {
@@ -138,5 +139,51 @@ describe("Microseite, Überschriften und Investorenprofile", () => {
     expect(container.querySelector(".profil-bahn-huelle")).toBeNull();
     expect(container.querySelector(".profil-bahn")).toBeNull();
     expect(container.querySelectorAll(".investor-profile-card")).toHaveLength(4);
+  });
+});
+
+/**
+ * Umbau auf OS Real Estate (16.10.2026): Aufbau, Partnerdaten und Diashow der
+ * neuen Seite. Der Steuer- und Eignungscheck ist entfallen.
+ */
+describe("Microseite OS Real Estate", () => {
+  it("zeigt die Abschnitte in der neuen Reihenfolge und keinen Steuer-Check mehr", () => {
+    const { container } = render(<BeraterMicrositeContent berater={berater} onOpenFunnel={() => {}} />);
+    const ueberschriften = [...container.querySelectorAll("h2")].map((h) => h.textContent ?? "");
+    const reihenfolge = [
+      /Rente allein/, /Steuern senken oder/, /Drei Standorte/, /So rechnet sich/, /Investoren-Profile/,
+      /Alles, was Sie/, /Regional verwurzelt/, /Standorte im Bild/, /Elf Schritte/, /kennen/,
+    ].map((muster) => ueberschriften.findIndex((t) => muster.test(t)));
+    expect(reihenfolge.every((stelle) => stelle >= 0)).toBe(true);
+    expect([...reihenfolge].sort((a, b) => a - b)).toEqual(reihenfolge);
+    expect(container.querySelector("#steuer-check")).toBeNull();
+    expect(screen.getAllByRole("img", { name: "OS Real Estate GmbH" }).length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Altersvorsorgeobjekt")).toHaveLength(2);
+    expect(screen.getByText("Steuersparobjekt")).toBeInTheDocument();
+    expect(screen.getByText("− 151 €")).toBeInTheDocument();
+  });
+
+  it("behält Name, Foto, Telefon, E-Mail und Buchungslink des Partners", () => {
+    const onOpenFunnel = vi.fn();
+    render(<BeraterMicrositeContent berater={berater} onOpenFunnel={onOpenFunnel} />);
+    expect(screen.getAllByRole("img", { name: berater.name }).length).toBeGreaterThan(0);
+    expect(screen.getByRole("link", { name: /Termin direkt buchen/ })).toHaveAttribute("href", berater.buchungslink);
+    expect(screen.getByRole("link", { name: berater.telefon })).toHaveAttribute("href", "tel:+49911123456");
+    expect(screen.getByRole("link", { name: berater.email })).toHaveAttribute("href", `mailto:${berater.email}`);
+    fireEvent.click(screen.getByRole("button", { name: /Anfrage senden/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Kostenloses Erstgespräch/ }));
+    expect(onOpenFunnel).toHaveBeenCalledTimes(2);
+  });
+
+  it("blättert die Bilder eines Objekts mit Pfeil und Punkt", () => {
+    render(<BeraterMicrositeContent berater={berater} onOpenFunnel={() => {}} />);
+    const diashow = screen.getByRole("group", { name: "Bilder Barfusstraße 9" });
+    const punkte = within(diashow).getAllByRole("button", { name: /Bild \d von 7/ });
+    expect(punkte[0]).toHaveAttribute("aria-current", "true");
+    fireEvent.click(within(diashow).getByRole("button", { name: "Nächstes Bild" }));
+    expect(punkte[1]).toHaveAttribute("aria-current", "true");
+    fireEvent.click(within(diashow).getByRole("button", { name: "Vorheriges Bild" }));
+    fireEvent.click(within(diashow).getByRole("button", { name: "Vorheriges Bild" }));
+    expect(punkte[6]).toHaveAttribute("aria-current", "true");
   });
 });

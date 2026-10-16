@@ -427,7 +427,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "optionen": [
             "Jeder Partner bekommt morgens zufällig einen anderen Satz aus der Liste gezogen",
             "Er wechselt nach Datum, alle im Team sehen am selben Tag denselben Satz",
-            "Die Führungskraft setzt ihn jeden Morgen von Hand für das Team"
+            "Die Vertriebsleitung setzt ihn jeden Morgen von Hand für das Team"
           ],
           "korrekt": 1,
           "aufloesung": "Der Wechsel folgt dem Kalendertag, nicht dem Zufall, und der Wert der Woche folgt der Kalenderwoche. So wird aus einem Spruch ein gemeinsamer Bezugspunkt, auf den man sich im Weekly Call beziehen kann.",
@@ -1755,7 +1755,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "ueberschrift": "Wie es weitergeht, und womit du morgen anfängst",
         "intro": "Du hast die Haltung. Ab jetzt geht es um Handwerk. Dieser Abschnitt sagt dir, welches Kapitel als Nächstes dran ist, je nachdem, wo du herkommst.",
         "absaetze": [
-          "Die Akademie hat neben diesem Vorspann achtzehn Kapitel, und sie sind nicht als Pflichtlektüre gebaut, sondern als Werkzeugkasten in der Reihenfolge des echten Ablaufs. Kapitel 0 legt das Fundament: Immobilientypen, Renditearten, Cashflow, Hebel, Steuer, Kaufnebenkosten, Wohnungseigentumsrecht, Finanzierung und Mietrecht. Kapitel 1 klärt deine Rolle und den rechtlichen Rahmen. Ab Kapitel 2 läuft der Prozess: Ansprache, Lead-Generierung, Erstgespräch, Beratungsgespräch, Objektauswahl, Finanzierung, Notar, und dann alles, was danach kommt. Kapitel 10 bis 16 sind die Vertiefungen, Kapitel R ist das Nachschlagewerk mit allen Zahlen, Sätzen und Fristen an einer Stelle.",
+          "Die Akademie hat neben diesem Vorspann achtzehn Kapitel, und sie sind nicht als Pflichtlektüre gebaut, sondern als Werkzeugkasten in der Reihenfolge des echten Ablaufs. Kapitel 0 legt das Fundament: Immobilientypen, Renditearten, Cashflow, Hebel, Steuer, Kaufnebenkosten, Wohnungseigentumsrecht, Finanzierung und Mietrecht. Kapitel 1 klärt deine Rolle und den rechtlichen Rahmen. Ab Kapitel 2 läuft der Prozess: Ansprache, Lead-Generierung, Erstgespräch, Beratungspräsentation, Objektvorstellung und Reservierung, Finanzierung, Notar, und dann alles, was danach kommt. Kapitel 10 bis 16 sind die Vertiefungen, Kapitel R ist das Nachschlagewerk mit allen Zahlen, Sätzen und Fristen an einer Stelle.",
           "Eine Sache aus Kapitel 1 gehört schon hierher, weil sie eine Erlaubnis betrifft und nicht warten sollte. Wer als selbstständiger Vertriebspartner mehr tut, als Kontakte herzustellen, braucht eine eigene Erlaubnis nach § 34c Gewerbeordnung. Die Erlaubnis der Gesellschaft deckt dich dabei nicht ab. Was genau als mehr gilt, wo die Grenze zur reinen Tippgebung verläuft und wie du die Erlaubnis beantragst, steht ausführlich in Kapitel 1 in den Abschnitten zur Erlaubnis und zur Antragstellung. Lies sie früh, nicht erst vor dem ersten Abschluss.",
           "Es gibt zwei Lernpfade, und du kannst oben auf jeder Kapitelseite zwischen ihnen wechseln. Im Quereinsteiger-Pfad bekommst du zusätzliche Erklärboxen für Fachbegriffe und leichtere Aufgabenvarianten. Im Profi-Pfad verschwinden diese Boxen und dafür erscheinen die Gold-Nuggets, die Profi-Tipps, die schwereren Aufgaben und die Advanced-Übungen. Der Modus Alle zeigt beides. Deine Wahl bleibt gespeichert, auch wenn du das Gerät wechselst.",
           "Der Abschlusstest am Ende jedes Kapitels wird nie nach Pfad gefiltert. Jede Antwort steht deshalb im Text, den beide Pfade sehen, nicht in einer der Boxen. Du kannst also den Pfad wechseln, ohne etwas zu verpassen, was geprüft wird.",
@@ -2549,9 +2549,9 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "titel": "Rechne die Nettomietrendite mit Kosten und Nebenkosten",
             "hinweis": "Dieselbe Wohnung wie im Beispiel, jetzt mit allem, was die Bruttorendite weglässt.",
             "wegErstNachVersuch": true,
-            "fall": "Kaufpreis 300.000 Euro, Kaltmiete 900 Euro im Monat. Nicht umlagefähige Kosten nach Faustregel 10 Prozent der Kaltmiete. Kaufnebenkosten in Bayern ohne Makler 5,5 Prozent des Kaufpreises.",
+            "fall": "Kaufpreis 300.000 Euro, Kaltmiete 900 Euro im Monat. Nicht umlagefähige Kosten nach Faustregel 10 Prozent der Kaltmiete. Kaufnebenkosten in Brandenburg ohne Makler 8,5 Prozent des Kaufpreises.",
             "gesucht": "Nettomietrendite in Prozent, auf eine Nachkommastelle",
-            "zielwert": 3.07,
+            "zielwert": 2.99,
             "toleranzProzent": 2,
             "einheit": "%",
             "rechenweg": {
@@ -2572,23 +2572,23 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                   "op": "="
                 },
                 {
-                  "label": "Kaufpreis plus 5,5 Prozent Kaufnebenkosten",
-                  "wert": "316.500 €",
+                  "label": "Kaufpreis plus 8,5 Prozent Kaufnebenkosten",
+                  "wert": "325.500 €",
                   "op": "→",
-                  "hinweis": "300.000 Euro plus 16.500 Euro."
+                  "hinweis": "300.000 Euro plus 25.500 Euro."
                 },
                 {
                   "label": "Nettomiete geteilt durch Gesamtkosten",
-                  "wert": "9.720 ÷ 316.500"
+                  "wert": "9.720 ÷ 325.500"
                 },
                 {
                   "label": "Nettomietrendite",
-                  "wert": "3,1 %",
+                  "wert": "3,0 %",
                   "op": "=",
                   "ergebnis": true
                 }
               ],
-              "fazit": "Aus 3,6 Prozent brutto werden 3,1 Prozent netto, und in Nordrhein-Westfalen mit Makler läge der Wert noch tiefer. Nenne im Gespräch immer dazu, was im Zähler abgeht und ob die Kaufnebenkosten im Nenner stecken."
+              "fazit": "Aus 3,6 Prozent brutto werden 3,0 Prozent netto, und mit Makler läge der Wert noch tiefer. Nenne im Gespräch immer dazu, was im Zähler abgeht und ob die Kaufnebenkosten im Nenner stecken."
             }
           }
         ],
@@ -3472,19 +3472,19 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "typ": "rechnen",
             "pfad": "quereinsteiger",
             "punkte": 10,
-            "titel": "Rechne die Kaufnebenkosten in Bayern aus",
+            "titel": "Rechne die Kaufnebenkosten in Brandenburg aus",
             "hinweis": "Drei Prozentsätze auf denselben Kaufpreis, dann alles zusammenzählen.",
-            "fall": "Kaufpreis 300.000 Euro, Objekt in Bayern, kein Makler beteiligt. Grunderwerbsteuer 3,5 Prozent, Notar rund 1,5 Prozent, Grundbuch rund 0,5 Prozent.",
+            "fall": "Kaufpreis 300.000 Euro, Objekt in Brandenburg, kein Makler beteiligt. Grunderwerbsteuer 6,5 Prozent, Notar rund 1,5 Prozent, Grundbuch rund 0,5 Prozent.",
             "gesucht": "Kaufnebenkosten insgesamt in Euro",
-            "zielwert": 16500,
+            "zielwert": 25500,
             "toleranzProzent": 1,
             "einheit": "€",
             "rechenweg": {
               "titel": "Drei Positionen auf denselben Kaufpreis",
               "zeilen": [
                 {
-                  "label": "Grunderwerbsteuer, 3,5 Prozent von 300.000 Euro",
-                  "wert": "10.500 €"
+                  "label": "Grunderwerbsteuer, 6,5 Prozent von 300.000 Euro",
+                  "wert": "19.500 €"
                 },
                 {
                   "label": "Notar, rund 1,5 Prozent",
@@ -3498,12 +3498,12 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 },
                 {
                   "label": "Kaufnebenkosten insgesamt",
-                  "wert": "16.500 €",
+                  "wert": "25.500 €",
                   "op": "=",
                   "ergebnis": true
                 }
               ],
-              "fazit": "Das sind 5,5 Prozent vom Kaufpreis. In Nordrhein-Westfalen wären es allein bei der Grunderwerbsteuer 19.500 Euro statt 10.500, und mit Makler landet man dort bei rund 12 Prozent."
+              "fazit": "Das sind 8,5 Prozent vom Kaufpreis. In Berlin mit 6 Prozent Grunderwerbsteuer wären es 24.000 Euro, mit Makler deutlich mehr."
             }
           },
           {
@@ -3514,9 +3514,9 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "titel": "Rechne aus, wie viel Wohnung 12.000 Euro Eigenkapital erlauben",
             "hinweis": "Die Umkehrrechnung aus dem Profi-Tipp, sie erspart dir eine Beratung am falschen Objekt.",
             "wegErstNachVersuch": true,
-            "fall": "Ein Kunde hat 12.000 Euro Eigenkapital und will damit genau die Kaufnebenkosten bezahlen, die Bank finanziert den Kaufpreis voll. Das Objekt soll in Bayern liegen, ohne Makler, Nebenkosten also 5,5 Prozent.",
+            "fall": "Ein Kunde hat 12.000 Euro Eigenkapital und will damit genau die Kaufnebenkosten bezahlen, die Bank finanziert den Kaufpreis voll. Das Objekt soll in Brandenburg liegen, ohne Makler, Nebenkosten also 8,5 Prozent.",
             "gesucht": "Wie hoch darf der Kaufpreis höchstens sein, in Euro?",
-            "zielwert": 218182,
+            "zielwert": 141176,
             "toleranzProzent": 2,
             "einheit": "€",
             "rechenweg": {
@@ -3527,23 +3527,23 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                   "wert": "12.000 €"
                 },
                 {
-                  "label": "geteilt durch 5,5 Prozent Nebenkosten",
-                  "wert": "0,055",
+                  "label": "geteilt durch 8,5 Prozent Nebenkosten",
+                  "wert": "0,085",
                   "op": "÷"
                 },
                 {
                   "label": "höchster Kaufpreis",
-                  "wert": "218.182 €",
+                  "wert": "141.176 €",
                   "op": "=",
                   "ergebnis": true
                 },
                 {
-                  "label": "Gegenprobe: 5,5 Prozent von 218.182 Euro",
+                  "label": "Gegenprobe: 8,5 Prozent von 141.176 Euro",
                   "wert": "12.000 €",
                   "op": "→"
                 }
               ],
-              "fazit": "In Nordrhein-Westfalen ohne Makler sind es 8,5 Prozent, also höchstens rund 141.000 Euro Kaufpreis. Dieselben 12.000 Euro reichen dort für eine Wohnung, für die es in Bayern noch gereicht hätte, nicht mehr."
+              "fazit": "In Berlin ohne Makler sind es 8 Prozent, also höchstens 150.000 Euro Kaufpreis. Für die meisten unserer Objekte reichen 12.000 Euro Eigenkapital deshalb nicht, und das gehört früh ins Gespräch."
             }
           }
         ],
@@ -3553,24 +3553,24 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Die Grunderwerbsteuer setzt jedes Bundesland selbst fest. § 11 Absatz 1 Grunderwerbsteuergesetz nennt einen Steuersatz von 3,5 Prozent, seit der Föderalismusreform von 2006 dürfen die Länder nach Artikel 105 Absatz 2a Satz 2 Grundgesetz davon abweichen, und fast alle haben das getan. Stand 2026 reicht die Spanne von 3,5 Prozent in Bayern bis 6,5 Prozent in Brandenburg, Nordrhein-Westfalen, im Saarland und in Schleswig-Holstein. Weil die Länder ihre Sätze regelmäßig ändern, gehört zu dieser Zahl immer der Stand: Thüringen hat zum 1. Januar 2024 von 6,5 auf 5,0 Prozent gesenkt, Bremen zum 1. Juli 2025 von 5,0 auf 5,5 Prozent erhöht. Prüfe den Satz am Objekt, nicht aus dem Gedächtnis.",
           "Notar- und Grundbuchkosten sind bundesweit gleich, sie folgen dem Gerichts- und Notarkostengesetz und richten sich nach dem Geschäftswert, also im Regelfall dem Kaufpreis. Sie sind nicht verhandelbar, ein Preisvergleich zwischen Notaren ist deshalb sinnlos. Als Faustgröße gelten rund 1,5 Prozent für den Notar und rund 0,5 Prozent für das Grundbuch, zusammen also etwa 2 Prozent. Mit genau diesem Wert rechnet auch die zentrale Bundesländertabelle im CRM, damit Akademie, Analysetool und AfA-Rechner dieselbe Zahl nennen.",
           "Die Maklercourtage von 3,57 Prozent ist keine feste Größe, sondern die häufigste Vereinbarung: 3,0 Prozent Nettocourtage zuzüglich 19 Prozent Umsatzsteuer ergeben 3,57 Prozent. Bei einer Wohnung, die ein Verbraucher kauft, gilt seit dem 23. Dezember 2020 zusätzlich die Teilung der Maklerkosten nach den §§ 656a bis 656d Bürgerliches Gesetzbuch: Beauftragt der Verkäufer den Makler, darf höchstens die Hälfte an den Käufer weitergegeben werden, und der Käufer muss erst zahlen, wenn der Verkäufer nachweislich seinen Anteil gezahlt hat. Bei unseren Objekten fällt für den Käufer in der Regel gar keine gesonderte Courtage an, weil wir nicht als Makler für ihn tätig werden.",
-          "Alle drei Positionen zusammen ergeben die Faustformel von 8 bis 12 Prozent. Sie schwankt vor allem, weil die Grunderwerbsteuer schwankt und weil ein Makler beteiligt sein kann oder nicht. In Bayern ohne Makler sind es rund 5,5 Prozent, in Nordrhein-Westfalen mit Makler rund 12 Prozent. Das ist bei 300.000 Euro ein Unterschied von fast 20.000 Euro, und er entscheidet oft darüber, ob ein Kunde überhaupt genug Eigenkapital hat."
+          "Alle drei Positionen zusammen ergeben die Faustformel von 8 bis 12 Prozent. Sie schwankt vor allem, weil die Grunderwerbsteuer schwankt und weil ein Makler beteiligt sein kann oder nicht. Für unsere Objekte heißt das: In Berlin ohne Makler sind es rund 8 Prozent, in Brandenburg rund 8,5 Prozent. Bei 300.000 Euro Kaufpreis sind das 24.000 beziehungsweise 25.500 Euro, und dieser Betrag entscheidet oft darüber, ob ein Kunde überhaupt genug Eigenkapital hat."
         ],
         "bullets": [
-          "Grunderwerbsteuer: 3,5 bis 6,5 Prozent je Bundesland, Stand 2026. Bayern 3,5 Prozent, Nordrhein-Westfalen 6,5 Prozent. Rechtsgrundlage § 11 Grunderwerbsteuergesetz mit Abweichungsrecht der Länder nach Artikel 105 Absatz 2a Satz 2 Grundgesetz.",
+          "Grunderwerbsteuer: 3,5 bis 6,5 Prozent je Bundesland, Stand 2026. Berlin 6 Prozent, Brandenburg 6,5 Prozent. Rechtsgrundlage § 11 Grunderwerbsteuergesetz mit Abweichungsrecht der Länder nach Artikel 105 Absatz 2a Satz 2 Grundgesetz.",
           "Notar und Grundbuch: rund 2 Prozent zusammen, davon etwa 1,5 Prozent Notar und etwa 0,5 Prozent Grundbuch. Die Gebühren richten sich nach dem Gerichts- und Notarkostengesetz und sind nicht verhandelbar. Mit denselben 2 Prozent rechnet auch die zentrale Bundesländertabelle im CRM, aus der Analysetool und AfA-Rechner ihre Kaufnebenkosten ziehen.",
           "Maklercourtage, falls beauftragt: üblicherweise 3,0 Prozent netto plus 19 Prozent Umsatzsteuer, also 3,57 Prozent. Beim Wohnungskauf durch einen Verbraucher gilt die Kostenteilung nach den §§ 656a bis 656d Bürgerliches Gesetzbuch.",
           "Faustformel: Kaufnebenkosten rund 8 bis 12 Prozent des Kaufpreises, meist als Eigenkapital erforderlich.",
           "Steuerlich wichtig: Kaufnebenkosten sind keine sofort abziehbaren Werbungskosten. Sie erhöhen die Anschaffungskosten und damit die Bemessungsgrundlage der Abschreibung, wirken also über die gesamte Nutzungsdauer verteilt."
         ],
         "quereinsteigerHinweis": "Kaufnebenkosten sind extra, sie kommen zusätzlich zum Kaufpreis obendrauf und werden meist nicht von der Bank mitfinanziert. Deshalb braucht der Kunde diese 8 bis 12 Prozent oft als bares Eigenkapital. Ausnahme ist die 110-Prozent-Finanzierung bei sehr guter Bonität, dazu mehr in Kapitel 7. Der Grund, warum die Bank hier zurückhaltend ist, lässt sich in einem Satz erklären: Die Nebenkosten sind weg, sobald sie gezahlt sind. Sie stecken nicht im Objekt und bringen der Bank im Ernstfall keine Sicherheit. Deshalb finanziert sie den Kaufpreis lieber als die Steuer darauf.",
-        "profiTipp": "Zwei Punkte, mit denen du im Erstgespräch Zeit sparst. Erstens: Frag nach dem verfügbaren Eigenkapital, bevor du über Objekte sprichst, und rechne die Nebenkosten des Ziel-Bundeslandes sofort dagegen. Ein Kunde mit 12.000 Euro kann in Bayern eine Wohnung für 200.000 Euro kaufen und in Nordrhein-Westfalen nicht. Diese eine Rechnung erspart dir eine ganze Beratung am falschen Objekt. Zweitens, und das übersehen viele: Die Kaufnebenkosten sind steuerlich kein verlorener Betrag. Sie gehören zu den Anschaffungskosten und erhöhen die Bemessungsgrundlage der Abschreibung, allerdings nur anteilig für den Gebäudeanteil. Bei 16.500 Euro Nebenkosten und 75 Prozent Gebäudeanteil sind das 12.375 Euro mehr Bemessungsgrundlage und damit bei 2 Prozent rund 248 Euro zusätzliche Abschreibung im Jahr. Das ist kein großes Argument, aber es ist das ehrliche Gegengewicht, wenn ein Kunde die Nebenkosten als reine Verschwendung empfindet.",
+        "profiTipp": "Zwei Punkte, mit denen du im Erstgespräch Zeit sparst. Erstens: Frag nach dem verfügbaren Eigenkapital, bevor du über Objekte sprichst, und rechne die Nebenkosten des Ziel-Bundeslandes sofort dagegen. Ein Kunde mit 12.000 Euro Eigenkapital deckt damit in Brandenburg die Nebenkosten bis rund 141.000 Euro Kaufpreis, in Berlin bis 150.000 Euro. Diese eine Rechnung erspart dir eine ganze Beratung am falschen Objekt. Zweitens, und das übersehen viele: Die Kaufnebenkosten sind steuerlich kein verlorener Betrag. Sie gehören zu den Anschaffungskosten und erhöhen die Bemessungsgrundlage der Abschreibung, allerdings nur anteilig für den Gebäudeanteil. Bei 25.500 Euro Nebenkosten und 75 Prozent Gebäudeanteil sind das 19.125 Euro mehr Bemessungsgrundlage und damit bei 2 Prozent rund 383 Euro zusätzliche Abschreibung im Jahr. Das ist kein großes Argument, aber es ist das ehrliche Gegengewicht, wenn ein Kunde die Nebenkosten als reine Verschwendung empfindet.",
         "visuals": [
           {
             "kpis": [
               {
                 "label": "Grunderwerbsteuer",
                 "wert": "3,5 bis 6,5 %",
-                "hinweis": "Bayern 3,5 Prozent, Nordrhein-Westfalen 6,5 Prozent",
+                "hinweis": "Berlin 6 Prozent, Brandenburg 6,5 Prozent",
                 "farbe": "sky"
               },
               {
@@ -3597,12 +3597,12 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           },
           {
             "donut": {
-              "titel": "Kaufnebenkosten aufgeschlüsselt, Beispiel Bayern bei 300.000 Euro Kaufpreis",
-              "untertitel": "Insgesamt 16.500 € (5,5 %), ohne Makler.",
+              "titel": "Kaufnebenkosten aufgeschlüsselt, Beispiel Brandenburg bei 300.000 Euro Kaufpreis",
+              "untertitel": "Insgesamt 25.500 € (8,5 %), ohne Makler.",
               "daten": [
                 {
-                  "label": "Grunderwerbsteuer 3,5 %",
-                  "wert": 10500
+                  "label": "Grunderwerbsteuer 6,5 %",
+                  "wert": 19500
                 },
                 {
                   "label": "Notar ~1,5 %",
@@ -3613,7 +3613,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                   "wert": 1500
                 }
               ],
-              "zentrumWert": "5,5 %",
+              "zentrumWert": "8,5 %",
               "zentrumLabel": "Ø KNK"
             }
           },
@@ -3624,8 +3624,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               "daten": [
                 {
                   "label": "Bayern",
-                  "wert": 3.5,
-                  "hervorheben": true
+                  "wert": 3.5
                 },
                 {
                   "label": "BW, NI, RP, ST, Thüringen",
@@ -3637,11 +3636,13 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 },
                 {
                   "label": "Berlin, Hessen, MV",
-                  "wert": 6
+                  "wert": 6,
+                  "hervorheben": true
                 },
                 {
                   "label": "Brandenburg, NRW, Saarland, SH",
-                  "wert": 6.5
+                  "wert": 6.5,
+                  "hervorheben": true
                 }
               ],
               "maxWert": 7
@@ -4541,7 +4542,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "Mindestens ein halbes Jahr"
           ],
           "korrekt": 1,
-          "aufloesung": "Realistisch sind 3 bis 6 Wochen, der Engpass ist meist das Führungszeugnis. Eine feste Frist nennt die IHK für München und Oberbayern nicht, sie rechnet mit einigen Wochen ab vollständigen Unterlagen; andere Behörden nennen 4 bis 12 Wochen.",
+          "aufloesung": "Realistisch sind 3 bis 6 Wochen, der Engpass ist meist das Führungszeugnis. Eine feste Frist nennen die meisten Behörden nicht, sie rechnen mit einigen Wochen ab vollständigen Unterlagen, oft 4 bis 12 Wochen.",
           "sprungZuAbschnitt": "34c-beantragen"
         },
         {
@@ -4563,7 +4564,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "Bei der IHK, in der die Gesellschaft Mitglied ist, ihre Erlaubnis trägt den Vertriebspartner mit"
           ],
           "korrekt": 1,
-          "aufloesung": "Die Zuständigkeit hängt vom Sitz deines eigenen Betriebs ab, nicht vom Sitz der Gesellschaft. In Bayern erteilt die IHK für München und Oberbayern die Erlaubnis für das ganze Land, seit dem 01.01.2026 auch für den Kammerbezirk Aschaffenburg, beantragt wird online über das BayernPortal. Andere Länder leiten zur Kreisverwaltungsbehörde, also zum Landratsamt oder Ordnungsamt der kreisfreien Stadt, etwa Hessen. Wer unsicher ist, fragt beim örtlichen Gewerbeamt nach.",
+          "aufloesung": "Die Zuständigkeit hängt vom Sitz deines eigenen Betriebs ab, nicht vom Sitz der Gesellschaft. In Brandenburg sind es die Gewerbeämter, in Berlin die Bezirksämter, in anderen Ländern die IHK oder die Kreisverwaltungsbehörde. Wer unsicher ist, fragt beim örtlichen Gewerbeamt nach.",
           "sprungZuAbschnitt": "34c-beantragen"
         },
         {
@@ -4726,7 +4727,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "§ 34c Gewerbeordnung ist die Gewerbeerlaubnis für Immobilienmakler, Darlehensvermittler, Bauträger und Wohnimmobilienverwalter. Erteilt wird sie von der zuständigen Stelle des Bundeslandes, je nach Land ist das die IHK oder das Gewerbeamt. Sie ist die Vorschrift, die überhaupt darüber entscheidet, wer gewerbsmäßig den Abschluss von Verträgen über Grundstücke vermitteln darf.",
           "§ 34f Gewerbeordnung ist die Erlaubnis des Finanzanlagenvermittlers. Er erfasst Anteile an offenen und geschlossenen Investmentvermögen sowie Vermögensanlagen nach § 1 Absatz 2 Vermögensanlagengesetz. Für uns ist er ohne Bedeutung, weil unsere Kunden die Immobilie direkt erwerben und nicht einen Anteil an einem Fonds. Merke dir die Abgrenzung über den Kaufgegenstand, nicht über das Wort Sachwert: Auch eine Immobilie kann in Fondsform verpackt sein, und dann greift § 34f sehr wohl.",
           "§ 84 Handelsgesetzbuch beschreibt den Handelsvertreter, also den, der selbstständig und ständig damit betraut ist, für einen anderen Unternehmer Geschäfte zu vermitteln. Das ist deine Rechtsform bei uns. Selbstständig heißt: Du trägst dein unternehmerisches Risiko selbst, meldest ein Gewerbe an, versteuerst deinen Gewinn selbst und bist nicht sozialversicherungspflichtig angestellt. Ständig betraut heißt: nicht ein einzelner Auftrag, sondern eine laufende Zusammenarbeit.",
-          "Zusammen ergeben die drei deine Lage, und zwar anders, als viele erwarten. Die Erlaubnispflicht des § 34c GewO knüpft an die gewerbsmäßige Tätigkeit an, und gewerbsmäßig heißt selbstständig, auf Dauer angelegt und mit Gewinnerzielungsabsicht (so das Merkblatt der IHK für München und Oberbayern zu § 34c GewO). Angestellte brauchen keine eigene Erlaubnis, weil sie gerade nicht selbstständig sind. Der Handelsvertreter nach § 84 HGB ist aber selbstständig, das steht im ersten Wort der Vorschrift. Deshalb hebt der Handelsvertretervertrag die Erlaubnispflicht nicht auf, sondern führt genau in sie hinein. § 1 Absatz 3 unseres Vertriebspartnervertrags sagt es wörtlich: „Dieser Vertrag befreit nicht von der Erlaubnispflicht; eine Erlaubnis der Gesellschaft ersetzt die eigene Erlaubnis des Vertriebspartners nicht.“",
+          "Zusammen ergeben die drei deine Lage, und zwar anders, als viele erwarten. Die Erlaubnispflicht des § 34c GewO knüpft an die gewerbsmäßige Tätigkeit an, und gewerbsmäßig heißt selbstständig, auf Dauer angelegt und mit Gewinnerzielungsabsicht (so die Merkblätter der Industrie- und Handelskammern zu § 34c GewO). Angestellte brauchen keine eigene Erlaubnis, weil sie gerade nicht selbstständig sind. Der Handelsvertreter nach § 84 HGB ist aber selbstständig, das steht im ersten Wort der Vorschrift. Deshalb hebt der Handelsvertretervertrag die Erlaubnispflicht nicht auf, sondern führt genau in sie hinein. § 1 Absatz 3 unseres Vertriebspartnervertrags sagt es wörtlich: „Dieser Vertrag befreit nicht von der Erlaubnispflicht; eine Erlaubnis der Gesellschaft ersetzt die eigene Erlaubnis des Vertriebspartners nicht.“",
           "Eine Figur „gebundener Vermittler unter fremder Erlaubnis“ kennt § 34c GewO nicht. Es gibt sie im Wertpapierbereich, dort für vertraglich gebundene Vermittler nach § 2 Absatz 10 Kreditwesengesetz und § 3 Absatz 2 Wertpapierinstitutsgesetz, und § 34c Absatz 5 GewO nimmt genau diese Fälle sowie Kreditinstitute und Kapitalverwaltungsgesellschaften aus. Diese Ausnahmen sind abschließend, und der selbstständige Immobilienvermittler steht nicht darin. Übrig bleibt für dich also die Frage, wie weit du ohne eigene Erlaubnis gehen darfst: Erlaubnisfrei ist allein die Tippgebertätigkeit des § 1 Absatz 3a des Vertriebspartnervertrags, also benennen, Kontaktdaten mit Einverständnis weitergeben, allgemein auf das Angebot hinweisen und einen Termin vereinbaren. Alles darüber hinaus ist Vermittlung und braucht deine eigene Erlaubnis. Wie du sie bekommst, steht zwei Abschnitte weiter."
         ],
         "bullets": [
@@ -4831,11 +4832,11 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "aufloesungAmEnde": true,
             "fragen": [
               {
-                "frage": "Du hast als Teamleiter drei Vorgespräche mit Objekt und Zahlen geführt, ein Kollege mit Erlaubnis übernimmt den Abschluss. Brauchtest du die Erlaubnis?",
+                "frage": "Du hast als Vertriebspartner drei Vorgespräche mit Objekt und Zahlen geführt, ein Kollege mit Erlaubnis übernimmt den Abschluss. Brauchtest du die Erlaubnis?",
                 "optionen": [
                   "Nein, der Abschluss läuft über einen Kollegen mit Erlaubnis",
                   "Ja, weil du vorher selbst vermittelt hast, egal wer abschließt",
-                  "Nein, Teamleiter sind von der Erlaubnispflicht ausgenommen"
+                  "Nein, wer nur Vorgespräche führt, ist von der Erlaubnispflicht ausgenommen"
                 ],
                 "korrekt": 1,
                 "aufloesung": "Auch die Vorbereitung eines Abschlusses ist Vermittlung. Dass am Ende ein Kollege mit Erlaubnis übernimmt, ändert nichts, wenn du vorher selbst zur Sache gesprochen hast. Teamaufbau allein ist erlaubnisfrei, eigene Vermittlung nie.",
@@ -4875,7 +4876,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Was heißt das für deine ersten Wochen? Es heißt nicht, dass du wartest, und es heißt auch nicht, dass du in dieser Zeit selbst beraten darfst. Es heißt, dass du deine ersten Kunden gemeinsam mit uns abwickelst. Du führst sie zu, du bist beim Gespräch dabei und lernst mit, beraten und vermittelt wird von der Gesellschaft. Deine eigene Rolle bleibt in dieser Anlaufzeit die des Tippgebers nach § 1 Absatz 3a des Vertriebspartnervertrags: benennen, Kontaktdaten mit Einverständnis weitergeben, allgemein auf das Angebot hinweisen, einen Termin vereinbaren. Dabeisitzen und zuhören ist keine Vermittlung, zur Sache sprechen ist es. Sobald du selbst das Objekt erklärst oder eine Zahl zu Kaufpreis, Miete, Rendite oder Steuer nennst, brauchst du die eigene Erlaubnis. Deshalb gehört der Antrag an den Anfang dieser Anlaufzeit und nicht an ihr Ende: Er läuft ab dem ersten Tag, nicht erst dann, wenn du an die Grenze stößt. Ab Erteilung führst du Beratung, Objektvorstellung und Verhandlung selbst und weist die Erlaubnis vorher der Gesellschaft nach (§ 1 Absatz 3).",
           "Wie lange diese Anlaufzeit dauert, hängt an deiner Erlaubnis und nicht an einer Stückzahl. Erfahrungsgemäß reichen zwei bis drei Kunden, die du gemeinsam mit uns berätst und abschließt, um den Ablauf einmal ganz gesehen zu haben, vom Erstgespräch bis zum Notartermin. In dieser Zeit sollte dein Antrag längst laufen. Und wenn du dann merkst, dass du die Beratung, die Objektvorstellung und die Verhandlung selbst machen willst, also alles, wofür man den § 34c braucht, dann ist die Erlaubnis die Voraussetzung dafür und nicht die Folge davon. Verstehe die zwei bis drei Kunden deshalb als Erfahrungswert für deine Einarbeitung, nicht als Grenze im Gesetz: Eine Zahl von Kunden, bis zu der man ohne Erlaubnis selbst beraten dürfte, gibt es nicht.",
           "Damit du die Grenze im Einzelfall selbst ziehen kannst, hier die vier Fälle, an denen sie sich in der Praxis fast immer entscheidet. Erstens, du stellst nur den Kontakt zwischen einem Interessenten und unserem Maklerbetrieb her. Die Verwaltungsvorschrift nennt das die schlichte Anbahnung des Kontaktes, sie bleibt erlaubnisfrei. Zweitens, du informierst den Kunden in objektbezogener Verhandlung selbst über Einzelheiten des späteren Vertragsschlusses oder weckst und verstärkst seinen Kaufentschluss. Das ist Vermittlung und erlaubnispflichtig. Drittens, du benennst ein Objekt und den künftigen Vertragspartner so, dass der andere von sich aus Vertragsverhandlungen aufnehmen kann. Das ist der Nachweis einer Gelegenheit, und das Gesetz stellt ihn der Vermittlung ausdrücklich gleich. Viertens, du machst ausschließlich Innentätigkeiten, verwaltest also dein eigenes Geschäft oder baust dein Team auf, ohne selbst zu vermitteln oder nachzuweisen. Allein dafür brauchst du keine Erlaubnis, denn § 34c Absatz 1 knüpft an Vermittlung und Nachweis an, und beides tust du in diesem Fall nicht. Fundstellen: § 34c Absatz 1 Satz 1 Nummer 1 GewO und die Musterverwaltungsvorschrift zum Vollzug des § 34c GewO und der Makler- und Bauträgerverordnung, Nummer 1.1.2.",
-          "Und der Satz, der über allen vier Fällen steht: Maßgeblich ist, was du tatsächlich tust, nicht wie deine Rolle heißt. Ob auf deiner Karte Tippgeber, Vertriebspartner oder Teamleiter steht, ändert an der Erlaubnispflicht nichts. Die Verwaltungsvorschrift stellt in Nummer 1.1.2 ausdrücklich darauf ab, ob jemand tatsächlich keine eigenen Tätigkeiten im Sinne des § 34c erbringt. Weil auch die bloße Vorbereitung eines Abschlusses schon Vermittlung sein kann, entsteht die Erlaubnispflicht vor Beginn der Tätigkeit und nicht erst mit dem ersten Abschluss, der ersten Provision oder einer bestimmten Karrierestufe. Dass am Ende ein Kollege mit Erlaubnis das Abschlussgespräch übernimmt, ändert daran nichts, wenn du vorher selbst vermittelt hast."
+          "Und der Satz, der über allen vier Fällen steht: Maßgeblich ist, was du tatsächlich tust, nicht wie deine Rolle heißt. Ob auf deiner Karte Tippgeber oder Vertriebspartner steht, ändert an der Erlaubnispflicht nichts. Die Verwaltungsvorschrift stellt in Nummer 1.1.2 ausdrücklich darauf ab, ob jemand tatsächlich keine eigenen Tätigkeiten im Sinne des § 34c erbringt. Weil auch die bloße Vorbereitung eines Abschlusses schon Vermittlung sein kann, entsteht die Erlaubnispflicht vor Beginn der Tätigkeit und nicht erst mit dem ersten Abschluss oder der ersten Provision. Dass am Ende ein Kollege mit Erlaubnis das Abschlussgespräch übernimmt, ändert daran nichts, wenn du vorher selbst vermittelt hast."
         ],
         "bullets": [
           "Wann DU einen eigenen § 34c brauchst: sobald du berätst, konkrete Objekte vorstellst oder erläuterst, Angaben zu Kaufpreis, Miete, Rendite oder Steuerwirkung machst, verhandelst, zum Notartermin begleitest oder Reservierungen entgegennimmst.",
@@ -4884,7 +4885,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Die Grenze in der Anlaufzeit: Dabeisitzen und zuhören ist keine Vermittlung. Sobald du selbst das Objekt erklärst oder eine Zahl zu Kaufpreis, Miete, Rendite oder Steuer nennst, brauchst du die eigene Erlaubnis. Die Anlaufzeit erlaubt kein eigenes Beraten, sie überbrückt nur die Wartezeit.",
           "Kein § 34c nötig ist außerdem für reine Werbeleistung und für angestellte Mitarbeiter, die nicht selbstständig sind. Der selbstständige Handelsvertreter gehört nicht in diese Gruppe.",
           "Erlaubnisfrei bleibt auch, wer ausschließlich sein eigenes Geschäft verwaltet oder sein Team aufbaut, ohne selbst zu vermitteln oder Gelegenheiten nachzuweisen. Das ist die Linie, an der Kapitel 16 weiterarbeitet: Teamaufbau allein löst keine Erlaubnispflicht aus, deine eigene Vermittlung sehr wohl.",
-          "Maßgeblich ist immer die tatsächliche Tätigkeit, nicht die Bezeichnung. Ob du dich Tippgeber, Vertriebspartner oder Teamleiter nennst, entscheidet nichts. Und die Erlaubnis braucht man vor Beginn dieser Tätigkeit, nicht ab dem ersten Abschluss und nicht ab einer bestimmten Provision.",
+          "Maßgeblich ist immer die tatsächliche Tätigkeit, nicht die Bezeichnung. Ob du dich Tippgeber oder Vertriebspartner nennst, entscheidet nichts. Und die Erlaubnis braucht man vor Beginn dieser Tätigkeit, nicht ab dem ersten Abschluss und nicht ab einer bestimmten Provision.",
           "Wo die Tippgebergrenze genau verläuft, steht in § 1 Absatz 3a des Vertriebspartnervertrags. Erlaubnisfrei sind vier Handlungen: einen Interessenten benennen, seine Kontaktdaten mit seinem Einverständnis weitergeben, allgemein auf das Leistungsangebot der Gesellschaft hinweisen und einen Termin mit ihr vereinbaren.",
           "Nicht mehr erlaubnisfrei sind: den Interessenten beraten, Objekt- und Verkaufsgespräche führen, konkrete Objekte vorstellen oder erläutern, Angaben zu Kaufpreisen, Renditen, Mieten oder steuerlichen Wirkungen machen, über Kaufpreis oder Vertragsinhalte verhandeln, zum Notartermin begleiten, Reservierungen entgegennehmen oder sonst an der Kaufentscheidung mitwirken. Ab der ersten dieser Handlungen wird der Tippgeber erlaubnispflichtig tätig.",
           "Praktisch heißt das: Der Satz Ich kenne da jemanden, ruf ihn an ist erlaubnisfrei. Der Satz Bei der Wohnung sparst du 250 Euro Steuern im Monat ist es nicht, denn das ist eine Angabe zur steuerlichen Wirkung. Der Unterschied liegt nicht in der Länge des Gesprächs, sondern darin, ob eine Aussage zur Sache getroffen wird.",
@@ -4997,17 +4998,17 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "intro": "So läuft der Antrag, realistisch 3 bis 6 Wochen bis zur Erlaubnis. Stell ihn am Anfang deiner Anlaufzeit, nicht an ihrem Ende: Bis die Erlaubnis da ist, wickelst du deine ersten Kunden gemeinsam mit der Gesellschaft ab, danach führst du Beratung und Verhandlung selbst.",
         "absaetze": [
           "Wo du dich meldest, hängt vom Sitz deines Betriebs ab, nicht davon, wo die Gesellschaft sitzt. Die Erlaubnis erteilt die zuständige Stelle des Bundeslandes, in dem deine Betriebsstätte liegt; ist sie bei Antragstellung noch nicht bekannt, ist die Behörde an deinem Wohnsitz zuständig. Je nach Land ist das eine Industrie- und Handelskammer oder die Kreisverwaltungsbehörde, also das Landratsamt oder das Ordnungsamt der kreisfreien Stadt. Es gibt dafür keine bundesweite Anlaufstelle. Die zuverlässigste Art, deine eigene Stelle zu finden, sind zwei Anrufe: erst dein örtliches Gewerbeamt, das die zuständige Erlaubnisbehörde nennt, oder die Übersicht „Länderzuständigkeiten nach § 34c GewO“ des Deutschen Industrie- und Handelskammertages, die alle sechzehn Länder auflistet.",
-          "Für Bayern ist die Antwort eindeutig: Zuständig ist die IHK für München und Oberbayern, und zwar für ganz Bayern. Seit dem 01.01.2026 gilt das auch für den Kammerbezirk Aschaffenburg, der seine Aufgaben als Erlaubnis- und Aufsichtsbehörde nach den §§ 34c, 34d, 34f, 34h und 34i GewO dorthin abgegeben hat (IHK Aschaffenburg, Mitteilung zum Zuständigkeitswechsel, Stand 2026). Beantragt wird online über das BayernPortal, Verfahren „Online-Antragstellung für Immobilienmakler, Darlehensvermittler, Bauträger, Baubetreuer und Wohnimmobilienverwalter nach § 34c GewO“. Du füllst den Antrag am Bildschirm aus, lädst die Nachweise hoch und bekommst den Bestätigungslink per E-Mail. Kontakt: IHK für München und Oberbayern, Max-Joseph-Straße 2, 80333 München.",
-          "Außerhalb Bayerns fragst du beim Gewerbeamt an deinem Betriebssitz nach der zuständigen Erlaubnisbehörde. Die Länder handhaben es unterschiedlich: Baden-Württemberg, Niedersachsen und Schleswig-Holstein leiten wie Bayern zur IHK, Hessen dagegen zu den Landkreisen und kreisfreien Städten, Nordrhein-Westfalen zu den Kreisordnungsbehörden, Rheinland-Pfalz, Brandenburg, Sachsen-Anhalt und Thüringen zu den Gewerbeämtern, Berlin und Hamburg zu den Bezirksämtern (Übersicht der IHK Frankfurt am Main zu den Länderzuständigkeiten nach § 34c GewO, abgerufen 09/2026). Frag bei diesem Anruf gleich nach dem Antragsformular, der Gebühr und danach, ob online eingereicht werden kann.",
-          "Womit du rechnest: In Bayern kostet das Regelverfahren für den Immobilienmakler nach § 34c Absatz 1 Satz 1 Nummer 1 GewO 335 Euro (Gebührentarif der IHK für München und Oberbayern, Nummer 2.1.1.1, zuletzt geändert am 04.12.2025). Bundesweit liegt die Gebühr je nach Behörde bei rund 150 bis 500 Euro, denn jede Stelle setzt ihren Tarif selbst. Jeder zusätzlich angekreuzte Erlaubnistatbestand kostet eine eigene Gebühr, deshalb kreuze nur die Vermittlung nach Nummer 1 an. Für die Dauer nennt die IHK für München und Oberbayern keine feste Frist, sie rechnet mit einigen Wochen ab dem Eingang vollständiger Unterlagen (BayernPortal, Leistungsbeschreibung 6110905444). Andere Behörden nennen 4 bis 12 Wochen. Der Engpass ist fast immer das Führungszeugnis, deshalb beantragst du es als Erstes."
+          "Für unsere Region ist die Antwort klar: In Brandenburg erteilen die Gewerbeämter die Erlaubnis, in Berlin die Bezirksämter (Übersicht der IHK Frankfurt am Main zu den Länderzuständigkeiten nach § 34c GewO, abgerufen 09/2026). Frag bei deinem Anruf dort gleich nach dem Antragsformular, der Gebühr und danach, ob online eingereicht werden kann.",
+          "Liegt dein Betriebssitz in einem anderen Land, fragst du beim Gewerbeamt an deinem Betriebssitz nach der zuständigen Erlaubnisbehörde. Die Länder handhaben es unterschiedlich: Baden-Württemberg, Bayern, Niedersachsen und Schleswig-Holstein leiten zur IHK, Hessen zu den Landkreisen und kreisfreien Städten, Nordrhein-Westfalen zu den Kreisordnungsbehörden, Rheinland-Pfalz, Sachsen-Anhalt und Thüringen zu den Gewerbeämtern, Hamburg zu den Bezirksämtern (dieselbe Übersicht).",
+          "Womit du rechnest: Die Gebühr liegt je nach Behörde bei rund 150 bis 500 Euro, denn jede Stelle setzt ihren Tarif selbst. Jeder zusätzlich angekreuzte Erlaubnistatbestand kostet eine eigene Gebühr, deshalb kreuze nur die Vermittlung nach Nummer 1 an. Eine feste Bearbeitungsfrist nennen die meisten Behörden nicht, gerechnet wird mit einigen Wochen ab dem Eingang vollständiger Unterlagen, oft 4 bis 12 Wochen. Der Engpass ist fast immer das Führungszeugnis, deshalb beantragst du es als Erstes."
         ],
         "bullets": [
           "1. Gewerbe anmelden beim örtlichen Gewerbeamt (Tätigkeit: „Vermittlung des Abschlusses von Verträgen über Grundstücke und grundstücksgleiche Rechte gem. § 34c GewO“).",
-          "2. Zuständige Stelle klären und Antrag dort einreichen. Sie richtet sich nach deinem Betriebssitz. In Bayern ist es die IHK für München und Oberbayern für das ganze Land, online über das BayernPortal. In anderen Ländern ist es entweder die IHK oder die Gewerbebehörde am Betriebssitz, also Landratsamt oder Ordnungsamt der kreisfreien Stadt. Wenn du unsicher bist: beim örtlichen Gewerbeamt nachfragen.",
+          "2. Zuständige Stelle klären und Antrag dort einreichen. Sie richtet sich nach deinem Betriebssitz. In Brandenburg ist es das Gewerbeamt, in Berlin das Bezirksamt, in anderen Ländern die IHK oder die Gewerbebehörde am Betriebssitz. Wenn du unsicher bist: beim örtlichen Gewerbeamt nachfragen.",
           "3. Nachweise vorbereiten: (a) polizeiliches Führungszeugnis, das Behördenführungszeugnis nach § 30 Absatz 5 Bundeszentralregistergesetz, das die Meldebehörde direkt an die Erlaubnisbehörde schickt und nicht an dich, für gewerberechtliche Zwecke in der Belegart OG, (b) Auszug aus dem Gewerbezentralregister nach § 150 Gewerbeordnung in der Belegart 9, ein Register beim Bundesamt für Justiz, in dem gewerberechtliche Verstöße, Bußgelder und Gewerbeuntersagungen stehen, (c) Bescheinigung in Steuersachen von jedem Finanzamt, in dessen Bezirk du in den letzten drei Jahren gewohnt oder eine Niederlassung gehabt hast, (d) Auszug aus dem Schuldnerverzeichnis beim zuständigen Amtsgericht und aus dem Insolvenzregister, soweit deine Behörde ihn verlangt.",
-          "3a. Zwei Handgriffe, an denen der Antrag sonst hängen bleibt. Erstens: Beide Registerauszüge beantragst du bei deiner Wohnsitzgemeinde ausdrücklich zur Vorlage bei der Erlaubnisbehörde, mit deren genauer Anschrift und Behördenkennzeichen, sonst landen sie bei dir und nicht dort, wo sie hingehören. Bei der IHK für München und Oberbayern lautet das Kennzeichen D8482. Beides geht auch online über das Portal des Bundesamts für Justiz, mit elektronischem Personalausweis und Ausweis-App. Zweitens: Alle Nachweise dürfen bei Antragstellung nicht älter als drei Monate sein. Beantrage sie deshalb erst, wenn du den Antrag wirklich stellst, und nicht Wochen vorher auf Vorrat (Antragsformular der IHK für München und Oberbayern, § 34c Absatz 1 GewO, natürliche Person, Stand April 2025).",
+          "3a. Zwei Handgriffe, an denen der Antrag sonst hängen bleibt. Erstens: Beide Registerauszüge beantragst du bei deiner Wohnsitzgemeinde ausdrücklich zur Vorlage bei der Erlaubnisbehörde, mit deren genauer Anschrift und Behördenkennzeichen, sonst landen sie bei dir und nicht dort, wo sie hingehören. Beides geht auch online über das Portal des Bundesamts für Justiz, mit elektronischem Personalausweis und Ausweis-App. Zweitens: Alle Nachweise dürfen bei Antragstellung nicht älter als drei Monate sein. Beantrage sie deshalb erst, wenn du den Antrag wirklich stellst, und nicht Wochen vorher auf Vorrat.",
           "4. Bei GmbH oder UG zusätzlich: Handelsregisterauszug und dieselben Nachweise für jeden Geschäftsführer.",
-          "5. Gebühren: einmalig etwa 150 bis 500 Euro, den Tarif setzt jede Behörde selbst. In Bayern sind es 335 Euro für das Regelverfahren als Immobilienmakler nach § 34c Absatz 1 Satz 1 Nummer 1 GewO (Gebührentarif der IHK für München und Oberbayern, Nummer 2.1.1.1, Stand 04.12.2025); für den Wohnimmobilienverwalter nach Nummer 4 wären es 360 Euro. Jeder zusätzlich angekreuzte Erlaubnistatbestand kostet eine eigene Gebühr, kreuze also nur Nummer 1 an.",
+          "5. Gebühren: einmalig etwa 150 bis 500 Euro, den Tarif setzt jede Behörde selbst. Jeder zusätzlich angekreuzte Erlaubnistatbestand kostet eine eigene Gebühr, kreuze also nur Nummer 1 an.",
           "6. Nach Erhalt der Erlaubnis: Weise sie der Gesellschaft nach, bevor du erlaubnispflichtig tätig wirst (§ 1 Absatz 3 des Vertriebspartnervertrags). Eine gesetzliche Weiterbildungspflicht trifft dich als Makler nicht mehr: Sie ist zum 24.07.2026 entfallen (Gesetz zum Bürokratierückbau in der Gewerbeordnung und im Energieverbrauchskennzeichnungsgesetz, BGBl. 2026 I Nr. 215). § 34c Absatz 2a Gewerbeordnung und § 15b der Makler- und Bauträgerverordnung gelten seitdem nur noch für Wohnimmobilienverwalter nach § 34c Absatz 1 Satz 1 Nummer 4. Eine Vermögensschadenhaftpflicht ist für den reinen Makler ebenfalls nicht vorgeschrieben, aber empfehlenswert.",
           "7. Die jährliche Prüfungspflicht nach § 16 der Makler- und Bauträgerverordnung trifft dich als Makler nicht. Sie gilt für Gewerbetreibende nach § 34c Absatz 1 Satz 1 Nummer 3 Gewerbeordnung, also für Bauträger und Baubetreuer, die mit fremdem Vermögen bauen. Geprüft wird die Einhaltung der §§ 2 bis 14 der Verordnung, der Bericht ist bis zum 31. Dezember des Folgejahres bei der Behörde einzureichen. Wer im Berichtszeitraum keine erlaubnispflichtige Tätigkeit ausgeübt hat, reicht stattdessen eine entsprechende Erklärung ein. Für die reine Vermittlung von Kauf und Miete nach Nummer 1 fällt das alles nicht an.",
           "8. Meldung an das Vermittlerregister nach § 11a Absatz 1 Gewerbeordnung: nötig für Versicherungsvermittler nach § 34d, Finanzanlagenvermittler nach § 34f und Immobiliardarlehensvermittler nach § 34i, NICHT für den reinen § 34c GewO."
@@ -6301,7 +6302,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
     "abwaegungsfall": {
       "id": "tippgeber-verguetung",
       "titel": "Wann nennst du dem Tippgeber die Vergütung?",
-      "fall": "Du sprichst einen Versicherungsmakler zum ersten Mal auf eine Zusammenarbeit an. Die beiden Vorlagen im Kapitel handhaben das unterschiedlich: die Erstansprache an den Versicherungsmakler nennt die attraktive Vergütung schon in der ersten Nachricht, die Erstansprache an den Finanzdienstleister erwähnt sie gar nicht und lädt nur zu 15 Minuten ein. Beide Texte sind vom Haus freigegeben. Eines gilt in allen drei Wegen: Es gibt keinen Hauspauschalsatz. Die Tippgeber-Vergütung wird individuell vereinbart, entweder als Festbetrag in Euro oder als Prozentsatz vom Kaufpreis, und im Closing-Tab hinterlegt. Kläre deinen Rahmen deshalb vorher mit deiner Führungskraft, sonst hast du im Rückruf keine Zahl. Wie gehst du vor und warum?",
+      "fall": "Du sprichst einen Versicherungsmakler zum ersten Mal auf eine Zusammenarbeit an. Die beiden Vorlagen im Kapitel handhaben das unterschiedlich: die Erstansprache an den Versicherungsmakler nennt die attraktive Vergütung schon in der ersten Nachricht, die Erstansprache an den Finanzdienstleister erwähnt sie gar nicht und lädt nur zu 15 Minuten ein. Beide Texte sind vom Haus freigegeben. Eines gilt in allen drei Wegen: Es gibt keinen Hauspauschalsatz. Die Tippgeber-Vergütung wird individuell vereinbart, entweder als Festbetrag in Euro oder als Prozentsatz vom Kaufpreis, und im Closing-Tab hinterlegt. Kläre deinen Rahmen deshalb vorher mit der Vertriebsleitung, sonst hast du im Rückruf keine Zahl. Wie gehst du vor und warum?",
       "wege": [
         {
           "id": "a",
@@ -6861,7 +6862,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "kontext": "Etwa drei Monate nach einem Kontakt, der damals am Zeitpunkt gescheitert ist, nicht an der Sache.",
             "text": "Hey {{Vorname}}, wir hatten vor ein paar Monaten kurz Kontakt zum Thema Kapitalanlage-Immobilie. Damals war der Zeitpunkt nicht ideal. Passt es jetzt vielleicht besser? Ich habe aktuell zwei sehr interessante Objekte, die für deine Situation gut passen könnten.\n\nHier nochmal alles auf einen Blick:\n👉 {{MeineLandingpage}}",
             "warumTitel": "Warum der Zeitpunkt schuld ist und nicht der Kontakt",
-            "warum": "Der zweite Satz gibt dem Empfänger eine gesichtswahrende Erklärung für sein damaliges Nein: Nicht er hat abgelehnt, der Zeitpunkt hat nicht gepasst. Wer sich nicht rechtfertigen muss, antwortet leichter. Der Rückbezug auf das frühere Gespräch ist außerdem der Anlass, ohne den jede Wiederansprache wie ein Serienbrief wirkt. Wichtig ist die letzte Zeile, und sie ist zugleich die gefährlichste: Zwei Objekte, die zu seiner Situation passen, darfst du nur behaupten, wenn du sie hast und wenn du seine Situation kennst. Sonst ist es eine Verknappung ohne Deckung, und die fällt beim ersten Rückruf auf. Steht nichts Passendes bereit, streich den Satz und lass die Frage allein stehen. Und prüf vor dem Senden, ob damals ein Nein zur Ansprache kam oder nur ein Nein zum Termin. Wer damals ausdrücklich widersprochen hat, wird nicht wieder angeschrieben, das ist keine Höflichkeitsfrage."
+            "warum": "Der zweite Satz gibt dem Empfänger eine gesichtswahrende Erklärung für sein damaliges Nein: Nicht er hat abgelehnt, der Zeitpunkt hat nicht gepasst. Wer sich nicht rechtfertigen muss, antwortet leichter. Der Rückbezug auf das frühere Gespräch ist außerdem der Anlass, ohne den jede Wiederansprache wie ein Serienbrief wirkt. Wichtig ist die letzte Zeile, und sie ist zugleich die gefährlichste: Zwei Objekte, die zu seiner Situation passen, darfst du nur behaupten, wenn du sie hast und wenn du seine Situation kennst. Sonst ist es eine Behauptung ohne Deckung, und die fällt beim ersten Rückruf auf. Steht nichts Passendes bereit, streich den Satz und lass die Frage allein stehen. Und prüf vor dem Senden, ob damals ein Nein zur Ansprache kam oder nur ein Nein zum Termin. Wer damals ausdrücklich widersprochen hat, wird nicht wieder angeschrieben, das ist keine Höflichkeitsfrage."
           },
           {
             "titel": "Geburtstags-/Weihnachts-Touchpoint",
@@ -7147,7 +7148,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "hinweis": "Ein Prozentsatz sagt niemandem etwas, sag die Zahl.",
             "wegErstNachVersuch": true,
             "zeitlimitSek": 45,
-            "fall": "Du hast mit deiner Führungskraft 0,75 Prozent vom Kaufpreis als Tippgeber-Vergütung abgestimmt. Der Tippgeber fragt am Telefon, was das bei einer typischen Wohnung für 280.000 Euro wäre.",
+            "fall": "Du hast mit der Vertriebsleitung 0,75 Prozent vom Kaufpreis als Tippgeber-Vergütung abgestimmt. Der Tippgeber fragt am Telefon, was das bei einer typischen Wohnung für 280.000 Euro wäre.",
             "gesucht": "Vergütung je Abschluss in Euro",
             "zielwert": 2100,
             "toleranzProzent": 1,
@@ -7179,7 +7180,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "absaetze": [
           "Bevor du die erste dieser vier Nachrichten verschickst, musst du zwei Dinge wissen, sonst stehst du beim ersten Rückruf sprachlos da: was ein Tippgeber bei uns eigentlich ist und was er bekommt.",
           "Was ein Tippgeber ist, hat eine scharfe Grenze, und sie ist der Grund, warum das Modell für regulierte Berufsgruppen überhaupt infrage kommt. Ein Tippgeber stellt Kontakte her, gibt Daten weiter, gibt einen allgemeinen Hinweis und vereinbart Termine. Er berät nicht, er führt keine Objektgespräche und er macht keine Angaben zu Kaufpreisen, Renditen, Mieten oder steuerlichen Wirkungen. Genau das ist die Trennlinie zwischen erlaubnisfreier Kontaktvermittlung und erlaubnispflichtiger Vermittlung nach § 34c Gewerbeordnung. Sag diese Grenze im ersten Gespräch selbst, statt sie zu verschweigen: Für den Gegenüber ist sie kein Nachteil, sondern der Grund, warum er mitmachen kann. Das Tippgeber-Paket ist entsprechend schlank, es kostet nichts und es gibt kein laufendes Entgelt, und gearbeitet wird über das Tippgeberportal, in dem der Tippgeber den Status seiner Kontakte selbst sieht.",
-          "Was er bekommt, ist die Frage, um die sich der Abwägungsfall dieses Kapitels dreht, und die ehrliche Antwort lautet: Es gibt keine Hauszahl. Die Vergütung wird individuell je Tippgeber vereinbart, entweder als Festbetrag in Euro oder als Prozentsatz vom Kaufpreis, und sie wird im Closing-Tab des Kontakts hinterlegt. Ohne diesen Eintrag lässt sich die Tippgebervereinbarung gar nicht erzeugen. Für dich heißt das zweierlei. Erstens: Kläre deinen eigenen Rahmen mit deiner Führungskraft, bevor du die erste Nachricht schreibst. Wer attraktive Vergütung schreibt und beim Rückruf keine Zahl nennen kann, hat das Gespräch verloren, bevor es begonnen hat. Zweitens: Lerne die Umrechnung, denn ein Prozentsatz sagt niemandem etwas. Ein halbes Prozent auf einen Kaufpreis von 300.000 Euro sind 1.500 Euro je Abschluss, ein Prozent sind 3.000 Euro. Sag die Zahl, nicht den Satz.",
+          "Was er bekommt, ist die Frage, um die sich der Abwägungsfall dieses Kapitels dreht, und die ehrliche Antwort lautet: Es gibt keine Hauszahl. Die Vergütung wird individuell je Tippgeber vereinbart, entweder als Festbetrag in Euro oder als Prozentsatz vom Kaufpreis, und sie wird im Closing-Tab des Kontakts hinterlegt. Ohne diesen Eintrag lässt sich die Tippgebervereinbarung gar nicht erzeugen. Für dich heißt das zweierlei. Erstens: Kläre deinen eigenen Rahmen mit der Vertriebsleitung, bevor du die erste Nachricht schreibst. Wer attraktive Vergütung schreibt und beim Rückruf keine Zahl nennen kann, hat das Gespräch verloren, bevor es begonnen hat. Zweitens: Lerne die Umrechnung, denn ein Prozentsatz sagt niemandem etwas. Ein halbes Prozent auf einen Kaufpreis von 300.000 Euro sind 1.500 Euro je Abschluss, ein Prozent sind 3.000 Euro. Sag die Zahl, nicht den Satz.",
           "Und die dritte Frage, die immer kommt: wann gezahlt wird. Der Anspruch entsteht nicht mit dem Notartermin, sondern erst, wenn der Vorgang abgeschlossen ist und die Provision beim Haus eingegangen ist. Zwischen Beurkundung und Auszahlung liegen deshalb regelmäßig Wochen. Sag das von Anfang an, denn diese eine Auskunft entscheidet darüber, ob dein Tippgeber beim zweiten Kontakt noch mitmacht. Die Einzelheiten dazu stehen im Kapitel Empfehlungssystem."
         ],
         "skripte": [
@@ -7212,7 +7213,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "warum": "Wer empfiehlt, geht ein Risiko ein, und zwar mit seiner Beziehung, nicht mit seinem Geld. Die größte Sorge ist deshalb nicht, dass nichts daraus wird, sondern dass die Empfehlung schiefgeht und er dafür geradestehen muss. Der Halbsatz egal wie es ausgeht nimmt genau diese Sorge, indem er die Anerkennung vom Ergebnis abkoppelt. Damit bleibt die Tür für die zweite Empfehlung offen, auch wenn die erste nichts wird, und die zweite ist die eigentlich wertvolle. Der zweite tragende Teil ist die Zusage, auf dem Laufenden zu halten, denn nichts beendet ein Tippgeberverhältnis zuverlässiger als Funkstille. Halte diese Zusage auch dann, wenn nichts passiert: Eine kurze Rückmeldung nach zwei Wochen ist mehr wert als jede Vergütung. Und sag am selben Tag Danke, nicht nach der ersten Reaktion des Empfohlenen. Der Dank gehört zur Empfehlung, nicht zum Ergebnis."
           }
         ],
-        "quereinsteigerHinweis": "Ein Tippgeber ist jemand, der dir Kontakte nennt und dafür vergütet wird, ohne selbst zu beraten. Der Unterschied zum Vertriebspartner ist wichtig: Der Vertriebspartner führt Gespräche und braucht dafür die entsprechende Erlaubnis, der Tippgeber stellt nur den Kontakt her und braucht sie deshalb nicht. Genau deshalb darf ein Tippgeber auch nicht über Kaufpreise, Renditen, Mieten oder Steuerwirkungen sprechen. Erklär ihm das als Erleichterung und nicht als Verbot, denn es bedeutet: Er muss nichts wissen und trägt keine Verantwortung für die Beratung. Und wenn er nach der Vergütung fragt, sag ehrlich, dass sie individuell vereinbart wird, und nenne die Zahl, die du mit deiner Führungskraft abgestimmt hast. Eine ehrliche Auskunft mit einer kleinen Zahl trägt weiter als eine große Andeutung.",
+        "quereinsteigerHinweis": "Ein Tippgeber ist jemand, der dir Kontakte nennt und dafür vergütet wird, ohne selbst zu beraten. Der Unterschied zum Vertriebspartner ist wichtig: Der Vertriebspartner führt Gespräche und braucht dafür die entsprechende Erlaubnis, der Tippgeber stellt nur den Kontakt her und braucht sie deshalb nicht. Genau deshalb darf ein Tippgeber auch nicht über Kaufpreise, Renditen, Mieten oder Steuerwirkungen sprechen. Erklär ihm das als Erleichterung und nicht als Verbot, denn es bedeutet: Er muss nichts wissen und trägt keine Verantwortung für die Beratung. Und wenn er nach der Vergütung fragt, sag ehrlich, dass sie individuell vereinbart wird, und nenne die Zahl, die du mit der Vertriebsleitung abgestimmt hast. Eine ehrliche Auskunft mit einer kleinen Zahl trägt weiter als eine große Andeutung.",
         "profiTipp": "Der Fehler, der die meisten Tippgeber-Verhältnisse nach dem ersten Kontakt sterben lässt, passiert nicht bei der Ansprache, sondern danach. Drei Punkte dazu. Erstens die Zeit bis zur Auszahlung: Zwischen Empfehlung und Vergütung liegen bei uns typischerweise Monate, weil erst der Kauf abgeschlossen und die Provision eingegangen sein muss. Wer das vorher sagt, hat einen geduldigen Partner. Wer es verschweigt, bekommt nach acht Wochen eine unangenehme Nachfrage und danach keine zweite Empfehlung. Zweitens die Rückmeldung ohne Anlass: Setz dir für jeden Tippgeber eine feste Rückmeldung alle zwei Wochen, auch wenn es nichts Neues gibt. Ein kurzes Es läuft, er ist jetzt in der Beratung hält das Verhältnis am Leben, ohne dass etwas passieren muss. Drittens die Auswahl: Zehn Tippgeber, von denen einer regelmäßig empfiehlt, sind weniger wert als zwei, die beide gelegentlich empfehlen. Investier deine Zeit in die zwei. Und für regulierte Berufsgruppen gilt zusätzlich: Bring das Thema der eigenen Berufsordnung im ersten Gespräch selbst auf. Beim Steuerberater ist der Punkt § 57 Absatz 4 Nummer 1 Steuerberatungsgesetz, die grundsätzliche Unvereinbarkeit einer gewerblichen Tätigkeit mit dem Beruf, von der die Kammer Ausnahmen zulassen kann. Wer die Frage stellt, wirkt souverän. Wer sie umgeht, hat sie nur verschoben.",
         "links": [
           {
@@ -7394,9 +7395,9 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "hinweis": "Die 50.000 Euro Tagesgeld über zehn Jahre, mit beiden Annahmen offengelegt"
           },
           {
-            "label": "Immobilie, Aktien und Tagesgeld im Vergleich",
-            "to": "/vertriebsakademie/beratungsgespraech?vaScrollTo=bausteine-vergleich",
-            "hinweis": "Der ehrliche Vergleich aus Station 06, inklusive des Nachteils Verfügbarkeit"
+            "label": "Das Prinzip mit vier Bausteinen",
+            "to": "/vertriebsakademie/beratungsgespraech?vaScrollTo=konzepte-matching",
+            "hinweis": "Miete, Tilgung, Steuer und Wert, jeweils mit ihrer ehrlichen Einschränkung"
           },
           {
             "label": "Zinsbindung und § 489 BGB",
@@ -7523,7 +7524,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           }
         ],
         "quereinsteigerHinweis": "Ein Elevator-Pitch ist die Antwort auf die Frage, was du beruflich machst, in der Länge einer Aufzugfahrt. Es gibt zwei Fassungen aus einem einfachen Grund: Die kurze soll eine Rückfrage auslösen, die lange beantwortet sie. Wer sofort die lange Fassung erzählt, hält einen Vortrag. Und der Unterschied zwischen Belastung und Eigenaufwand ist nicht nur ein Wort: Belastung klingt nach Verlust, Eigenaufwand nach Einsatz. Da ein großer Teil davon Tilgung ist, also Schuldenabbau, ist Eigenaufwand die genauere Bezeichnung. Übe beide Fassungen laut, bis du sie ohne Nachdenken sprichst. Die kurze braucht 15 Sekunden, die lange knapp eine Minute, und wenn du länger brauchst, ist zu viel drin.",
-        "profiTipp": "Der Pitch wird meistens nicht am Text besser, sondern an drei Entscheidungen davor. Erstens: Halte die Zahlen deines Beispiels über alle Kanäle identisch. Dieselben 285 Euro und 367 Euro stehen im LinkedIn-Beitrag, in der Q4-Mail und hier. Ein Interessent, der dich an zwei Stellen mit zwei Zahlen erlebt, glaubt keiner von beiden. Zweitens: Bau dir ein zweites Beispiel für den Fall, dass dein Gegenüber deutlich mehr verdient. Bei hoher Steuerlast trägt die Bestandswohnung mit einmaligem Erhaltungsaufwand aus dem Beratungsgespräch besser, dort sind es 350.000 Euro Kaufpreis, rund 354 Euro Eigenaufwand vor Steuer und im ersten Jahr 826 Euro Steuerentlastung im Monat. Dann bist du im Gespräch nicht auf ein einziges Objekt festgelegt. Drittens: Sprich den Preis der Sache mit, sobald der Pitch länger als eine Minute wird. Wer nach sechzig Sekunden nur Vorteile genannt hat, klingt wie eine Anzeige. Ein Halbsatz genügt, etwa dass eine Immobilie nicht schnell verfügbar ist und man deshalb Zeit mitbringen muss. Genau dieser Halbsatz sorgt dafür, dass die Zahlen davor geglaubt werden.",
+        "profiTipp": "Der Pitch wird meistens nicht am Text besser, sondern an drei Entscheidungen davor. Erstens: Halte die Zahlen deines Beispiels über alle Kanäle identisch. Dieselben 285 Euro und 367 Euro stehen im LinkedIn-Beitrag, in der Q4-Mail und hier. Ein Interessent, der dich an zwei Stellen mit zwei Zahlen erlebt, glaubt keiner von beiden. Zweitens: Bau dir ein zweites Beispiel für den Fall, dass dein Gegenüber deutlich mehr verdient. Bei hoher Steuerlast passt das Konzept Steuerersparnis aus der Beratungspräsentation, die Barfusstraße 9 in Berlin-Wedding: 361.600 Euro Kaufpreis, minus 943 Euro im Monat vor Steuern und für die Musterperson mit 42 Prozent rund minus 4 Euro nach Steuern, mit erhöhter AfA laut Ersteinschätzung. Mit Regel-AfA sind es rund minus 390 Euro, und auch diese Zahl nennst du. Dann bist du im Gespräch nicht auf ein einziges Objekt festgelegt. Drittens: Sprich den Preis der Sache mit, sobald der Pitch länger als eine Minute wird. Wer nach sechzig Sekunden nur Vorteile genannt hat, klingt wie eine Anzeige. Ein Halbsatz genügt, etwa dass eine Immobilie nicht schnell verfügbar ist und man deshalb Zeit mitbringen muss. Genau dieser Halbsatz sorgt dafür, dass die Zahlen davor geglaubt werden.",
         "links": [
           {
             "label": "Die Beispielrechnung Zeile für Zeile",
@@ -7531,9 +7532,9 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "hinweis": "Kaltmiete, nicht umlagefähige Kosten, Zins, Tilgung und Steuerentlastung, mit allen Annahmen"
           },
           {
-            "label": "Das größere Beispiel für Kunden mit hoher Steuerlast",
+            "label": "Das Beispiel für Kunden mit hoher Steuerlast",
             "to": "/vertriebsakademie/beratungsgespraech?vaScrollTo=musterrechnung",
-            "hinweis": "350.000 Euro sanierter Bestand, mit vollständiger Monats- und Steuerrechnung"
+            "hinweis": "Barfusstraße 9, Rechnung vor und nach Steuern, mit Regel-AfA daneben"
           }
         ]
       },
@@ -7871,73 +7872,128 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
       "bestehensquote": 70,
       "fragen": [
         {
-          "frage": "Wann setzt du den Erwartungsrahmen zu Cashflow und Qualität aus Schritt 9 ein?",
+          "frage": "Wie lange dauert das Erstgespräch nach dem Skript?",
           "optionen": [
-            "In jedem Erstgespräch, direkt nach der Begrüßung und noch vor den Fragen zur Lebenssituation",
-            "Nur wenn der Lead selbst von selbsttragend, Cashflow oder soll nichts kosten gesprochen hat",
-            "Nur wenn der Lead bereits eine Immobilie besitzt und vermietet"
+            "15 bis 20 Minuten",
+            "25 bis 30 Minuten",
+            "etwa eine Stunde"
           ],
           "korrekt": 1,
-          "aufloesung": "Der Baustein ist an eine Bedingung geknüpft und nimmt den klassischen Killer-Einwand aus dem Beratungsgespräch vorweg.",
+          "aufloesung": "Das Skript ist auf 25 bis 30 Minuten angelegt, am Telefon oder per Video. Eine Stunde dauert erst die Beratungspräsentation.",
           "sprungZuAbschnitt": "skript"
         },
         {
-          "frage": "Ab welchem Wert auf der Skala aus Schritt 10 ist die Show-Wahrscheinlichkeit hoch?",
+          "frage": "Welche Haltung trägt das ganze Erstgespräch?",
           "optionen": [
-            "ab 5",
-            "ab 7",
-            "ab 9"
+            "Erst verstehen, dann empfehlen",
+            "Erst das Objekt zeigen, dann die Fragen stellen",
+            "Möglichst schnell zum Termin, die Fragen kommen später"
+          ],
+          "korrekt": 0,
+          "aufloesung": "Der Kunde spricht etwa zwei Drittel der Zeit. Empfohlen wird erst, wenn klar ist, was er erreichen will und was er tragen kann.",
+          "sprungZuAbschnitt": "skript"
+        },
+        {
+          "frage": "Was gehört ausdrücklich nicht ins Erstgespräch?",
+          "optionen": [
+            "Die Frage nach früheren Schwierigkeiten mit Bank oder Schufa",
+            "Eine konkrete Immobilie, Renditen oder Steuerzusagen",
+            "Die Frage, wer bei der Entscheidung mitredet"
           ],
           "korrekt": 1,
-          "aufloesung": "Werte ab 7 stehen für eine hohe Show-Wahrscheinlichkeit, bei 4 und darunter ist ein Follow-up in 3 bis 6 Monaten oft passender als ein Termin. Die 7 ist die Grenze, ab der eine Antwort eindeutig in der oberen Hälfte liegt: 5 und 6 heißen in aller Regel unentschlossen. Die Skalenfrage selbst stammt als Readiness Ruler aus der motivierenden Gesprächsführung nach Miller und Rollnick, die Schwellen sind ein Erfahrungswert des Hauses.",
+          "aufloesung": "Im Erstgespräch zeigen wir kein Objekt, fragen nicht nach Steuer-ID oder Ausweis und nennen keine Renditen und keine Steuerzusagen. Die Schufa-Frage stellen wir allen, und der Mitentscheider gehört in den nächsten Termin.",
           "sprungZuAbschnitt": "skript"
         },
         {
-          "frage": "Warum steht die Vorstellung von OS Immobilien erst im letzten Schritt?",
+          "frage": "Wofür brauchst du den Schwerpunkt aus Schritt 7?",
           "optionen": [
-            "Weil sie sonst die 15 bis 20 Minuten des Erstgesprächs sprengen würde",
-            "Weil erst der Lead erzählt und dann wir, das erzeugt Reziprozität",
-            "Weil sie im Beratungsgespräch ohnehin wiederholt wird"
-          ],
-          "korrekt": 1,
-          "aufloesung": "Erst öffnet sich der Lead in den Schritten 3 bis 10, dann öffnen wir uns. Umgekehrt wirkt das Gespräch wie eine Verkaufsshow.",
-          "sprungZuAbschnitt": "skript"
-        },
-        {
-          "frage": "Was heißt bei Schritt 6 der Hinweis, dass Nachweisen nicht Einsetzen ist?",
-          "optionen": [
-            "In den meisten Fällen reicht es, das vorhandene Eigenkapital nachzuweisen, tatsächlich einsetzen muss der Kunde es nicht zwingend",
-            "Der Kunde weist sein Eigenkapital nach und überweist es vor dem Notartermin auf das Konto des Notars, sonst platzt der Termin",
-            "Der Nachweis ersetzt die Bonitätsprüfung der Bank und beschleunigt damit die Zusage um mehrere Tage"
+            "Er belegt den Konzeptschalter der Beratungspräsentation vor: Zusatzrente oder Steuerersparnis",
+            "Er legt fest, welches Objekt der Kunde reserviert",
+            "Er entscheidet, welcher Vertriebspartner die Beratung übernimmt"
           ],
           "korrekt": 0,
-          "aufloesung": "Der Satz holt genau die Leads zurück, die sofort denken, sie hätten nichts flüssig.",
+          "aufloesung": "Der Schwerpunkt ist eine Pflichtangabe und landet im Konzeptschalter der Präsentation. Der Kunde kann dort jederzeit umschalten.",
           "sprungZuAbschnitt": "skript"
         },
         {
-          "frage": "Welche vier Angaben brauchst du aus dem Erstgespräch auf jeden Fall?",
+          "frage": "Was heißt in Schritt 12, dass Nachweisen nicht Einsetzen ist?",
           "optionen": [
-            "Beruf, Nettoeinkommen, Eigenkapital und Ziele",
-            "Auslöser, Mitentscheider, Schufa und Termin",
-            "Alle Felder aller elf Schritte, sonst lässt sich das Skript nicht abschließen"
+            "Der Kunde nennt, was für die Kaufnebenkosten zur Verfügung stünde, und entscheidet später selbst, was er davon wirklich einsetzt",
+            "Der Kunde überweist das genannte Eigenkapital vor dem Notartermin vollständig auf ein Treuhandkonto",
+            "Der Nachweis ersetzt die Prüfung der Bank und beschleunigt die Zusage"
           ],
           "korrekt": 0,
-          "aufloesung": "Nur diese vier sind gekennzeichnet, alles andere ist freiwillig. Auch die vier blockieren nichts, sie werden nur benannt: Ein Skript, das ein gut laufendes Gespräch anhält, wird umgangen statt ausgefüllt.",
+          "aufloesung": "Der Satz nimmt die Sorge, alles Ersparte sofort einsetzen zu müssen. Die Reserve, die unangetastet bleiben soll, fragst du davor eigens ab.",
           "sprungZuAbschnitt": "skript"
         },
         {
-          "frage": "Welche drei Bedingungen machen einen Lead in der Ampel grün?",
+          "frage": "Fragst du den monatlich tragbaren Betrag in Schritt 13 vor oder nach Steuern ab?",
           "optionen": [
-            "Motiv klar, Haushaltsnetto über 3.500 Euro, keine SCHUFA-Themen",
-            "Motiv klar, Eigenkapital über 20.000 Euro, unbefristeter Vertrag",
-            "Termin gebucht, Selbstauskunft ausgefüllt, Mitentscheider dabei"
+            "Vor Steuern",
+            "Nach Steuern",
+            "Das ist gleich, beides ergibt dieselbe Zahl"
           ],
           "korrekt": 0,
-          "aufloesung": "Grün heißt: Motiv klar, Haushaltsnetto über 3.500 Euro und keine SCHUFA-Themen. Dann werden Beratung und Selbstauskunft sofort auf den Weg gebracht.",
-          "sprungZuAbschnitt": "ampel"
+          "aufloesung": "Vor Steuern, damit der Betrag ehrlich ist. Die Steuerwirkung hängt vom persönlichen Steuersatz ab und wird erst in der Präsentation gerechnet, dort immer getrennt vor und nach Steuern.",
+          "sprungZuAbschnitt": "skript"
         },
         {
-          "frage": "Woher bekommt der Kunde den Termin für das Beratungsgespräch?",
+          "frage": "Welche acht Angaben sind im Skript Pflicht?",
+          "optionen": [
+            "Beruf, Ziele, Schwerpunkt, Netto, Brutto, laufende Raten, Reserve und Eigenkapital",
+            "Beruf, Netto, Eigenkapital, Ziele, Schufa, Steuer-ID, Ausweis und Termin",
+            "Alle Felder aller 23 Schritte, sonst lässt sich das Skript nicht abschließen"
+          ],
+          "korrekt": 0,
+          "aufloesung": "Ohne diese acht Angaben lässt sich in der Beratungspräsentation nicht mit echten Zahlen rechnen. Sie blockieren trotzdem nichts, sie sind nur orange umrandet und als Pflichtangabe benannt.",
+          "sprungZuAbschnitt": "skript"
+        },
+        {
+          "frage": "Was sagst du dem Kunden in Schritt 16 über die Reservierung?",
+          "optionen": [
+            "Sie kommt erst nach der Objektvorstellung und ist kostenfrei",
+            "Sie kostet eine Gebühr, die später angerechnet wird",
+            "Sie erfolgt direkt nach dem Erstgespräch, damit die Wohnung sicher ist"
+          ],
+          "korrekt": 0,
+          "aufloesung": "Der Ablauf lautet: Beratungspräsentation mit Selbstauskunft, rund eine Woche später die Objektvorstellung mit Exposé und Kalkulation, erst dann die Entscheidung über die kostenfreie Reservierung. Nach jedem Schritt entscheidet der Kunde, ob es weitergeht.",
+          "sprungZuAbschnitt": "skript"
+        },
+        {
+          "frage": "In Schritt 18 merkst du, dass unser Konzept nicht zum Kunden passt. Was tust du?",
+          "optionen": [
+            "Offen sagen, dass es im Moment nicht passt, den Grund nennen und keinen Termin erzwingen",
+            "Trotzdem einen Beratungstermin buchen, vielleicht ändert er seine Meinung",
+            "Ein günstigeres Objekt in Aussicht stellen, damit das Gespräch nicht verloren ist"
+          ],
+          "korrekt": 0,
+          "aufloesung": "Ehrlichkeit statt Druck. Wir empfehlen nichts, das nicht passt. Der Grund wird festgehalten, der Kontakt kommt in die Stufe Verloren, und der Kunde darf sich melden, wenn sich an dem Grund etwas ändert.",
+          "sprungZuAbschnitt": "einschaetzung"
+        },
+        {
+          "frage": "Welcher Satz fällt in keinem unserer Gespräche?",
+          "optionen": [
+            "„Das trägt sich durch die Steuer von selbst.“",
+            "„Ob die Zahlen aufgehen, zeige ich dir im nächsten Termin, offen und mit Stresstest.“",
+            "„Nach jedem Schritt entscheidest du, ob es weitergeht.“"
+          ],
+          "korrekt": 0,
+          "aufloesung": "Er steht auf der Liste der Sätze, die wir nie sagen, zusammen mit „Das bekommen wir bei der Bank schon hin“, „Immobilien für 150 € im Monat“ und „Das Angebot gilt nur noch heute“.",
+          "sprungZuAbschnitt": "einschaetzung"
+        },
+        {
+          "frage": "Bis wann bekommt der Kunde nach dem Erstgespräch die Zusammenfassung?",
+          "optionen": [
+            "Innerhalb von 2 Stunden",
+            "Am nächsten Werktag",
+            "Erst zusammen mit der Einladung zur Objektvorstellung"
+          ],
+          "korrekt": 0,
+          "aufloesung": "Die Zusammenfassung geht innerhalb von 2 Stunden hinaus. Dann ist das Gespräch noch frisch, und der Kunde sieht schwarz auf weiß, dass er verstanden wurde.",
+          "sprungZuAbschnitt": "danach"
+        },
+        {
+          "frage": "Woher bekommt der Kunde den Termin für die Beratungspräsentation?",
           "optionen": [
             "Über den zentral vergebenen Kampagnenlink des Admins, der für alle Berater des Hauses gemeinsam gilt",
             "Über deinen persönlichen Buchungslink, den du einmalig in den Einstellungen hinterlegst",
@@ -7950,33 +8006,33 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
       ]
     },
     "abwaegungsfall": {
-      "id": "ampel-motiv-gegen-range",
-      "titel": "Starkes Motiv, 3.600 Euro Netto, keine Range",
-      "fall": "Der Lead hat in Schritt 3 ein sehr klares Motiv genannt, nämlich einen Gehaltssprung und eine deutlich gestiegene Steuerlast. Sein Haushaltsnetto liegt bei 3.600 Euro, die SCHUFA ist sauber. In Schritt 7 will er partout keine monatliche Range nennen, auch nach Nachfrage nicht. Zwei Regeln aus diesem Kapitel ziehen jetzt in verschiedene Richtungen: die Ampel sagt Grün, die Erklärung zum Budget-Baustein sagt, wer keine Range nennen kann oder will, sagt damit selbst etwas über seine Ernsthaftigkeit. Wie entscheidest du und warum?",
+      "id": "erstgespraech-reserve-fehlt",
+      "titel": "Klares Motiv, gutes Einkommen, aber keine Reserve",
+      "fall": "Der Lead hat in Schritt 4 ein klares Motiv genannt, sein Schwerpunkt ist die Steuerersparnis, Netto und Brutto passen gut. In Schritt 12 stellt sich heraus: Eine Rücklage, die unangetastet bleiben könnte, gibt es nicht. Was da ist, würde gerade die Kaufnebenkosten decken. Er möchte trotzdem unbedingt den nächsten Termin. Wie entscheidest du in Schritt 18 und warum?",
       "wege": [
         {
           "id": "a",
-          "label": "Als Grün behandeln",
-          "beschreibung": "Beratung buchen und die Selbstauskunft sofort verschicken. Die drei harten Ampelkriterien sind erfüllt, das Motiv ist der stärkste Anker im Gespräch, und die Range kann der Berater in der Beratung klären."
+          "label": "Ehrlich sagen: im Moment passt es nicht",
+          "beschreibung": "Du nennst den Grund offen, die fehlende Reserve, und vereinbarst, dass er sich meldet, sobald eine Rücklage steht. Kein Termin, der nur auf Hoffnung gebaut ist."
         },
         {
           "id": "b",
-          "label": "Als Gelb behandeln",
-          "beschreibung": "Beratung buchen, aber die Bonität zuerst prüfen. Die fehlende Range ist ein Signal, das du nicht überhörst, und 3.600 Euro liegen nur knapp über der Schwelle. Der Termin bleibt, das Risiko für den Berater sinkt."
+          "label": "Termin vereinbaren, mit der Reserve als offenem Punkt",
+          "beschreibung": "Du buchst die Beratungspräsentation, sagst aber schon jetzt klar, dass dort zuerst geprüft wird, ob eine Reserve neben den Nebenkosten möglich ist. Passt es auch dann nicht, endet es dort ehrlich."
         },
         {
           "id": "c",
-          "label": "Die Skala abwarten",
-          "beschreibung": "Jetzt noch nicht festlegen, sondern die Verbindlichkeitsfrage in Schritt 10 abwarten und danach entscheiden. Die Skala kommt ohnehin bei jedem Lead. Ab 7 gehst du auf Grün, bei 4 und darunter klärst du offen, ob ein Follow-up passender ist als ein Termin."
+          "label": "Wiedervorlage mit konkretem Datum",
+          "beschreibung": "Du sagst offen, dass Warten die bessere Wahl ist, und setzt eine Wiedervorlage in drei bis sechs Monaten mit Datum. Bis dahin schickst du ihm die Zusammenfassung, damit er weiß, woran es lag."
         }
       ]
     },
     "nummer": "4",
     "icon": "phone",
-    "titel": "Erstqualifizierungsgespräch",
-    "kicker": "Bedarf klären, Bonität abschätzen, Termin buchen",
-    "teaser": "In 15 bis 20 Minuten prüfst du: Passt der Kunde? Passt das Timing? Passt das Konzept? Geführt vom Erstgesprächs-Skript im CRM, 22 Punkte mit ausformuliertem Sprechtext.",
-    "ziel": "Du führst ein strukturiertes Erstgespräch, klärst Motiv + Bonität ampelklar, und buchst am Ende einen Beratungstermin, inklusive Selbstauskunft-Versand.",
+    "titel": "Erstgespräch",
+    "kicker": "Erst verstehen, dann empfehlen",
+    "teaser": "In 25 bis 30 Minuten verstehst du Ziel, Motiv und finanziellen Rahmen des Kunden und sagst ehrlich, ob unser Konzept passt. Geführt vom Erstgesprächsskript im CRM: 23 Schritte in sechs Phasen mit ausformuliertem Sprechtext.",
+    "ziel": "Du führst das Erstgespräch nach dem Skript, hörst mehr zu, als du sprichst, sagst offen, ob es passt, und vereinbarst bei Passung den Termin für die Beratungspräsentation, gemeinsam mit allen Mitentscheidern.",
     "sections": [
       {
         "id": "vorbereitung",
@@ -8028,7 +8084,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               {
                 "aussage": "Die Selbstauskunft des Kunden schon einmal vorausfüllen.",
                 "stimmt": false,
-                "aufloesung": "Die Selbstauskunft geht erst nach dem Gespräch raus, und der Kunde füllt sie selbst aus."
+                "aufloesung": "Die Selbstauskunft kommt im Erstgespräch nicht vor. Ihr füllt sie am Ende der Beratungspräsentation gemeinsam aus."
               },
               {
                 "aussage": "Mikrofon und Videoraum testen, ruhige Umgebung, gutes Licht.",
@@ -8038,12 +8094,12 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               {
                 "aussage": "Den Kaufvertrag für ein passendes Objekt vorbereiten.",
                 "stimmt": false,
-                "aufloesung": "Der Kaufvertrag ist Thema viel später. Im Erstgespräch geht es um Motiv, Bonität und den Beratungstermin."
+                "aufloesung": "Der Kaufvertrag ist Thema viel später. Im Erstgespräch geht es um Ziel, Motiv, Rahmen und den Termin für die Beratungspräsentation."
               },
               {
                 "aussage": "Die Kalkulation in einem Tab öffnen, falls der Lead nach Zahlen fragt.",
                 "stimmt": true,
-                "aufloesung": "Rechnen musst du im Erstgespräch nicht, sprachlos sein solltest du aber auch nicht."
+                "aufloesung": "Rechnen musst du im Erstgespräch nicht, und Renditen oder Steuerzusagen nennst du nicht. Eine Preisspanne solltest du aber parat haben."
               }
             ]
           },
@@ -8078,7 +8134,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "absaetze": [
           "Fünf Minuten sind wenig, deshalb ist die Reihenfolge festgelegt: erst der Kontakt, dann die Technik, dann der Schreibtisch. Der Kontakt zuerst, weil du vor dem Klingeln wissen willst, woher der Lead kommt. Ein Kontakt aus einer Anzeige weiß, dass er sein Interesse gezeigt hat, aber nicht mehr, was genau er angeklickt hat. Ein Kontakt aus einer Empfehlung weiß, wer dich empfohlen hat, und erwartet, dass du es auch weißt. Dieselbe Begrüßung wirkt in beiden Fällen völlig verschieden."
         ],
-        "quereinsteigerHinweis": "Quelle heißt im CRM: Woher der Kontakt gekommen ist. Die drei häufigsten sind Anzeigen bei Facebook oder Instagram, im Haus Meta-Leads genannt, dein eigenes Netzwerk und Empfehlungen von Bestandskunden. Warum das vor dem Anruf zählt: Bei einem Lead aus einer Anzeige eröffnest du mit dem Bezug auf sein Interesse, bei einer Empfehlung mit dem Namen des Empfehlungsgebers. Und die Kalkulation offen im Tab meint den Finanzierungsrechner, damit du eine Größenordnung nennen kannst, falls der Lead von sich aus nach Zahlen fragt. Rechnen musst du im Erstgespräch nicht, aber sprachlos sein solltest du auch nicht.",
+        "quereinsteigerHinweis": "Quelle heißt im CRM: Woher der Kontakt gekommen ist. Die drei häufigsten sind Anzeigen bei Facebook oder Instagram, im Haus Meta-Leads genannt, dein eigenes Netzwerk und Empfehlungen von Bestandskunden. Warum das vor dem Anruf zählt: Bei einem Lead aus einer Anzeige eröffnest du mit dem Bezug auf sein Interesse, bei einer Empfehlung mit dem Namen des Empfehlungsgebers. Und die Kalkulation offen im Tab meint den Investmentrechner, damit du nicht sprachlos bist, falls der Lead von sich aus nach Preisen fragt: Unsere Wohnungen liegen zwischen etwa 176.000 und 470.000 Euro. Renditen und Steuerzusagen nennst du im Erstgespräch nicht, was das im Monat bedeutet, klärt die Beratungspräsentation.",
         "profiTipp": "Zwei Minuten der fünf gehören einer Frage, die auf keiner Checkliste steht: Was ist das wahrscheinlichste Abbruchszenario bei genau diesem Lead? Bei einem sehr jungen Lead ist es die Bonität, bei einem Selbstständigen die Frage nach den Bilanzen, bei einem Paar der abwesende Mitentscheider, bei einem alten Kontakt aus dem Netzwerk die Sorge, jetzt verkauft zu bekommen. Wer sich vorher für eine Antwort entscheidet, formuliert den passenden Schritt im Skript bewusster und wird nicht überrascht. Und eine Kleinigkeit mit großer Wirkung: Öffne den Kontakt im CRM in einem eigenen Fenster neben dem Videobild, nicht dahinter. Wer während des Gesprächs sichtbar Fenster sucht, verliert genau in dem Moment den Faden, in dem der Lead gerade seinen Auslöser erzählt.",
         "bullets": [
           "Kontakt im CRM öffnen: Notizen, Quelle, evtl. Verlauf checken.",
@@ -8265,98 +8321,98 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "hinweis": "Erster und letzter Schritt stehen fest. Achte darauf, wo das Netto steht und wo die Schufa.",
             "randVorgegeben": true,
             "schritte": [
-                "1. Begrüßung und Erlaubnis",
-                "2. Anrede klären",
-                "3. Ablauf und Ziel des Gesprächs",
-                "4. Motiv: Warum gerade jetzt?",
-                "5. Familie und Mitentscheider",
-                "6. Beruf",
-                "7. Ziele und Schwerpunkt",
-                "8. Ruhestand und Rentenlücke",
-                "9. Heutige Vorsorge und Erfahrung",
-                "10. Überleitung",
-                "11. Einkommen und Verpflichtungen",
-                "12. Eigenkapital und Reserve",
-                "13. Monatlich tragbarer Betrag",
-                "14. Sorgen und Schufa",
-                "15. Unternehmen",
-                "16. So arbeiten wir: der Ablauf",
-                "17. Zusammenfassung",
-                "18. Ehrliche Einschätzung",
-                "19. Verbindlichkeit",
-                "20. Termin für die Beratungspräsentation",
-                "21. Einladung prüfen und Vorbereitung",
-                "22. Offene Fragen",
-                "23. Verabschiedung"
-              ]
+              "1. Begrüßung und Erlaubnis",
+              "2. Anrede klären",
+              "3. Ablauf und Ziel des Gesprächs",
+              "4. Motiv: Warum gerade jetzt?",
+              "5. Familie und Mitentscheider",
+              "6. Beruf",
+              "7. Ziele und Schwerpunkt",
+              "8. Ruhestand und Rentenlücke",
+              "9. Heutige Vorsorge und Erfahrung",
+              "10. Überleitung",
+              "11. Einkommen und Verpflichtungen",
+              "12. Eigenkapital und Reserve",
+              "13. Monatlich tragbarer Betrag",
+              "14. Sorgen und Schufa",
+              "15. Unternehmen",
+              "16. So arbeiten wir: der Ablauf",
+              "17. Zusammenfassung",
+              "18. Ehrliche Einschätzung",
+              "19. Verbindlichkeit",
+              "20. Termin für die Beratungspräsentation",
+              "21. Einladung prüfen und Vorbereitung",
+              "22. Offene Fragen",
+              "23. Verabschiedung"
+            ]
           },
           {
             "id": "skript-zuordnen-profi",
             "typ": "zuordnen",
             "pfad": "profi",
             "punkte": 15,
-            "titel": "Zieh jeden Baustein zu dem Prinzip, das ihn trägt",
-            "hinweis": "Sechs Bausteine, sechs Prinzipien aus den Erklär-Boxen, zwei Karten passen zu keinem Baustein.",
+            "titel": "Zieh jeden Schritt zu dem Grund, aus dem es ihn gibt",
+            "hinweis": "Sechs Schritte, sechs Begründungen aus den Erklär-Boxen, zwei Karten passen zu keinem Schritt.",
             "paare": [
               {
-                "links": "Anrede klären, Du oder Sie",
-                "rechts": "Betonte Entscheidungsfreiheit, der Lead entscheidet selbst"
+                "links": "Schritt 1, Begrüßung und Erlaubnis",
+                "rechts": "Der Lead entscheidet, ob jetzt der richtige Moment ist"
               },
               {
-                "links": "Ziel des Erstgesprächs mit Einverstanden am Ende",
-                "rechts": "Commitment, das erste kleine Ja"
+                "links": "Schritt 4, Motiv wörtlich notieren",
+                "rechts": "Der Satz steht später als Zitat in der Beratungspräsentation"
               },
               {
-                "links": "Erwartungsrahmen, Cashflow gegen Qualität",
-                "rechts": "Bogen-Prinzip, früh sauber spannen, später präzise treffen"
+                "links": "Schritt 11, Brutto im Jahr",
+                "rechts": "Persönlicher Steuersatz statt pauschal 42 Prozent"
               },
               {
-                "links": "Frage vor dem Termin, ob noch etwas im Kopf ist",
-                "rechts": "Einwand-Vorwegnahme, Zweifel jetzt statt beim No-Show"
+                "links": "Schritt 13, Betrag vor Steuern",
+                "rechts": "Ein ehrlicher Betrag, der Stresstest prüft die Grenze"
               },
               {
-                "links": "Terminvereinbarung mit zwei konkreten Zeitfenstern",
-                "rechts": "Assumption Close, nicht ob, sondern wann"
+                "links": "Schritt 15, offen sagen, woran wir verdienen",
+                "rechts": "Vertrauen durch Offenheit, keine erfundenen Zahlen"
               },
               {
-                "links": "Verabschiedung mit dem Termin im letzten Satz",
-                "rechts": "Recency-Effekt, die letzte Information bleibt hängen"
+                "links": "Schritt 18, Ehrliche Einschätzung",
+                "rechts": "Ehrlichkeit statt Druck, auch wenn es nicht passt"
               }
             ],
             "ablenker": [
-              "Soziale Bewährtheit, alle anderen tun es auch",
-              "Knappheit, nur noch zwei Einheiten frei"
+              "Knappheit erzeugen, damit der Termin schneller zustande kommt",
+              "Die Steuerersparnis als Hauptargument gleich zu Beginn nennen"
             ]
           }
         ],
         "ueberschrift": "Das Erstgesprächs-Skript im CRM, 23 Schritte in sechs Phasen, alle untereinander",
         "absaetze": [
           "Das Erstgespräch führst du nicht an einem ausgedruckten Skript entlang, sondern im CRM. Du findest es auf der Kontaktseite: Kontakt öffnen, zum Investment scrollen, den Kasten „Erstgesprächs-Skript\" aufklappen. Er gehört zum Investment und nicht zum Kontakt. Wer später ein zweites Investment startet, bekommt dafür ein frisches, leeres Skript, und das erste bleibt unberührt.",
-          "Im Kasten stehen alle 22 Punkte untereinander auf einer Seite, von der Begrüßung bis zur Verabschiedung. Du scrollst durch, während du sprichst, und siehst dabei jederzeit, was noch kommt. Links an jedem Punkt sitzt ein Häkchen zum Abhaken, im Kopf des Kastens steht, wie viele Felder du schon gefüllt hast. Nichts blockiert, nichts hält das Gespräch an: Ein Skript, das ein gut laufendes Telefonat stoppt, wird umgangen statt ausgefüllt.",
-          "Jeder Punkt trägt seinen Sprechtext offen, ausformuliert und in der Anrede, die ihr vereinbart habt. Darunter steht ein kurzer Tipp, bei einigen Punkten zusätzlich „Mehr Kontext\" mit der längeren Begründung. Genau diese 23 Sätze stehen weiter unten in diesem Kapitel noch einmal, Baustein für Baustein, mit der Begründung dahinter.",
-          "Die ersten drei Punkte stehen immer im Sie, auch wenn bei uns sonst alles duzt. Der Grund steht in Punkt 2: Solange der Lead nicht gesagt hat, was ihm lieber ist, entscheidest du das nicht für ihn. Sobald er geantwortet hat und du Du-Form oder Sie-Form angeklickt hast, schaltet der ganze Rest um, jeder Sprechtext und jede Feldbeschriftung.",
-          "Vier Angaben brauchst du am Ende auf jeden Fall: Beruf, Nettoeinkommen, Eigenkapital und Ziele. Alle vier schreiben zugleich in die Qualifizierungsfragen der Stammdaten: Was du hier einträgst, steht dort, und was dort schon steht, ist hier vorbelegt. Du füllst also nichts doppelt aus.",
+          "Im Kasten stehen alle 23 Schritte untereinander auf einer Seite, gegliedert in sechs Phasen: A Einstieg, B Kundenrahmen, C Ziele, D Finanzieller Rahmen, E Wer wir sind, F Abschluss. Du scrollst durch, während du sprichst, und siehst jederzeit, was noch kommt. An jedem Schritt sitzt ein Häkchen zum Abhaken, im Kopf des Kastens steht, wie viele Felder du schon gefüllt hast. Nichts blockiert, nichts hält das Gespräch an: Ein Skript, das ein gut laufendes Telefonat stoppt, wird umgangen statt ausgefüllt.",
+          "Über den Schritten klappst du „So ist das Skript aufgebaut · Reaktionen am Telefon · Das sagen wir nie\" auf. Dort stehen die sechs Phasen mit ihrer Dauer, die Haltung, sechs typische Reaktionen am Telefon mit einer passenden Antwort und die Sätze, die in keinem unserer Gespräche fallen.",
+          "Die Haltung ist die Grundlage von allem: Erst verstehen, dann empfehlen. Der Kunde spricht etwa zwei Drittel der Zeit. Im Erstgespräch zeigen wir kein Objekt, fragen nicht nach Steuer-ID oder Ausweis und nennen keine Renditen und keine Steuerzusagen. Wer im Erstgespräch schon verkauft, hat nicht zugehört.",
+          "Jeder Schritt trägt seinen Sprechtext offen, ausformuliert und in der Anrede, die ihr vereinbart habt. Darunter steht ein kurzer Hinweis, bei einigen Schritten zusätzlich „Mehr Kontext\" mit der längeren Begründung. Genau diese Sätze stehen weiter unten in diesem Kapitel noch einmal, Schritt für Schritt, mit der Begründung dahinter.",
+          "Die Schritte 1 und 2 stehen immer im Sie. Solange der Lead nicht gesagt hat, was ihm lieber ist, entscheidest du das nicht für ihn. Sobald er geantwortet hat, gilt ab Schritt 3 die gewählte Anrede, im ganzen Skript, in der Beratungspräsentation und in den Mails.",
+          "Acht Angaben brauchst du am Ende auf jeden Fall: Beruf, Ziele, Schwerpunkt, Netto, Brutto, laufende Raten, Reserve und Eigenkapital. Ohne sie lässt sich in der Beratungspräsentation nicht mit echten Zahlen rechnen. Sie sind orange umrandet und als Pflichtangabe benannt. Beruf, Netto, Eigenkapital und Ziele schreiben zugleich in die Qualifizierung der Stammdaten, du füllst also nichts doppelt aus.",
+          "Viele Antworten übernimmt die Beratungspräsentation von selbst, solche Felder tragen das Etikett „wird übernommen\": das Motiv in den Worten des Kunden als Zitat auf der Seite Ihre Ziele, der Schwerpunkt als Konzeptschalter, Ruhestand, erwartete Rente und Wunsch-Netto für die Rentenlücke, Reserve und tragbarer Betrag für Ihr Rahmen und Ihre Kriterien, die Sorgen für den Abschnitt Sicherheit und die erste Frage des Kunden. Deshalb lohnt es sich, wörtlich mitzuschreiben.",
           "Gespeichert wird von selbst, kurz nach dem letzten Tastendruck, und zusätzlich immer dann, wenn du den Tab wechselst oder die Seite verlässt. Im Kopf des Kastens blitzt dann „gespeichert\" auf. Geht zweimal hintereinander nichts durch, sagt das Skript das mit einem Hinweis, statt still zu scheitern.",
-          "An den Punkten, an denen erfahrungsgemäß Einwände kommen, sitzt die Einwand-Schnellhilfe direkt im Kasten. Sie zeigt nur die Einwände, die genau hier typisch sind, und klappt die Behandlung darunter auf, ohne dass du die Seite wechselst. Das ist ihr ganzer Sinn: Wer im Telefonat erst eine andere Seite suchen muss, verliert seinen Platz im Skript, und der Lead hört die Pause.",
-          "Gegen Ende wächst der Kasten. In Punkt 19, Terminvereinbarung, ist der Terminblock eingebaut, also der Buchungskalender, das Datum und die Uhrzeit. Unter dem Kasten liegt der Knopf, der das Gespräch abschließt: Er setzt den Lead auf die Pipeline-Stufe Beratungsgespräch, hält Berater, Datum und Uhrzeit fest und stößt die KI-Zusammenfassung an. Die Zusammenfassung selbst liest du danach über den Knopf „Zusammenfassung\" oben am Kasten, in einer kurzen und einer ausführlichen Fassung.",
+          "An den Schritten, an denen erfahrungsgemäß Einwände kommen, sitzt die Einwand-Schnellhilfe direkt im Kasten. Sie zeigt nur die Einwände, die genau hier typisch sind, und klappt die Behandlung darunter auf, ohne dass du die Seite wechselst. Die 15 häufigsten Einwände mit Kernsatz, Nachfrage und Belegen stehen gesammelt im Leitfaden Einwandbehandlung. Dort werden sie gepflegt, nicht in diesem Kapitel.",
+          "Gegen Ende wächst der Kasten. In Schritt 20, Termin für die Beratungspräsentation, ist der Terminblock eingebaut. Unter dem Kasten liegt der Knopf, der das Gespräch abschließt: Er setzt den Lead auf die Pipeline-Stufe Beratungspräsentation, hält Vertriebspartner, Datum und Uhrzeit fest und stößt die KI-Zusammenfassung an.",
           "Wenn du als Vertriebspartner deinen eigenen Lead qualifizierst, läuft das Skript im Modus Vertriebspartner. Der Unterschied ist klein und bewusst klein gehalten: Die Einleitung kommt ohne den Bezug auf die Anzeige aus, weil ein selbst angelegter Lead aus jeder Quelle stammen kann, und im Terminblock steht dein eigener Buchungskalender statt der Liste der Kollegen. Alles andere ist Wort für Wort dasselbe. Früher gab es dafür eine zweite Fassung halber Sätze, in denen von „dem Berater\" in der dritten Person die Rede war. Die ist entfallen, weil bei uns derselbe Mensch das Erstgespräch führt, der anschließend berät.",
-          "Warum alle 22 Punkte gleichzeitig und nicht einer nach dem anderen: Im Telefonat brauchst du den Überblick. Wer nur den aktuellen Punkt vor sich hat, weiß nicht, was gleich kommt, kann nicht vorgreifen, wenn der Lead ein Thema von sich aus anschneidet, und kann nicht zurückblättern, ohne den Faden zu verlieren. Die Reihenfolge trägt die Wirkung, aber sie ist kein Gleis. Ein Gespräch läuft selten genau so, wie es geplant war.",
-          "Warum elf Schritte und nicht 23: Die 23 Bausteine gibt es weiterhin, sie sind nur zu elf Schritten gebündelt. Eine Liste mit 23 Punkten liest sich im Gespräch wie eine Abarbeitung, und genau so klingt sie dann auch. Elf Schritte sind elf Themen, und ein Thema lässt sich im Kopf behalten, während man zuhört. Gebündelt wird nach dem, was zusammengehört: Beruf und Netto gehören in denselben Atemzug, Ziele und die zwei wichtigsten Punkte auch.",
-          "Und noch einmal deutlich, weil es der häufigste Anfängerfehler ist: Es geht nicht darum, die Sätze abzulesen. Sie sind deine Orientierung, der rote Faden, damit du in einer Viertelstunde strukturiert vorqualifizierst. Deine eigenen Worte, dein Ton und deine Persönlichkeit machen es echt. Was du nicht verändern solltest, ist die Reihenfolge, denn die trägt die Wirkung.",
-          "Acht Begriffe tauchen in den Begründungen immer wieder auf. Hier stehen sie einmal in Klartext, damit die Erklärung nicht selbst erklärungsbedürftig ist. Reziprozität heißt Gegenseitigkeit: Wer etwas gibt, bekommt eher etwas zurück. Deshalb erzählt erst der Lead und dann wir. Commitment und Konsistenz heißt, dass Menschen zu dem stehen, was sie selbst gesagt haben, auch wenn es nur ein kleines Ja war. Deshalb endet der Ablaufsatz in Punkt 3 mit einem Einverstanden. Betonte Entscheidungsfreiheit meint, dem Gegenüber ausdrücklich die Wahl zu lassen, etwa bei Du oder Sie. Der Assumption Close, auf Deutsch Annahme-Abschluss, fragt nicht ob, sondern wann: zwei konkrete Zeitfenster statt einer Ja-Nein-Frage. Das Bogen-Prinzip beschreibt, dass eine Erwartung, die du früh sauber spannst, später präzise trifft, weil der Lead die Rahmensetzung selbst mitbekommen hat. Ein Pattern Interrupt ist ein bewusster Bruch im Gesprächsmuster, eine Pause und ein direkter Satz, der die Routine unterbricht und den echten Einwand nach oben holt. Einwand-Vorwegnahme heißt, einen absehbaren Zweifel selbst auszusprechen, bevor der andere ihn stellt. Und der Recency-Effekt besagt, dass von einer Reihe von Informationen die letzte am besten erinnert wird, weshalb der Termin ganz zum Schluss noch einmal fällt.",
-          "Zwei Herkunftsangaben, damit du weißt, worauf sich das stützt. Reziprozität sowie Commitment und Konsistenz sind zwei der sechs Prinzipien der Beeinflussung von Robert Cialdini (Influence, The Psychology of Persuasion, 1984); die anderen vier sind soziale Bewährtheit, Sympathie, Autorität und Knappheit. Die betonte Entscheidungsfreiheit gehört nicht dazu, sie stammt aus einer eigenen Forschungslinie, die in der Literatur But you are free heißt (Guéguen und Pascual, 2000). Beides wird im Vertrieb oft in einen Topf geworfen, und wenn ein Lead nachfragt, willst du den Unterschied kennen.",
-          "Zwei weitere Wörter fallen im Skript und werden dort nicht erklärt. Meta-Leads sind Kontakte, die über eine Anzeige bei Facebook oder Instagram zu uns kommen, also über den Konzern Meta. Sie haben ihr Werbe-Einverständnis beim Ausfüllen des Formulars selbst gesetzt, deshalb darfst du sie anrufen. Und ein No-Show ist ein gebuchter Termin, zu dem der Lead nicht erscheint. Fast alles ab Punkt 17 dient dazu, ihn zu verhindern."
+          "Warum alle 23 Schritte gleichzeitig und nicht einer nach dem anderen: Im Telefonat brauchst du den Überblick. Wer nur den aktuellen Schritt vor sich hat, weiß nicht, was gleich kommt, kann nicht vorgreifen, wenn der Lead ein Thema von sich aus anschneidet, und kann nicht zurückblättern, ohne den Faden zu verlieren. Die Reihenfolge trägt die Wirkung, aber sie ist kein Gleis.",
+          "Und noch einmal deutlich, weil es der häufigste Anfängerfehler ist: Es geht nicht darum, die Sätze abzulesen. Sie sind deine Orientierung, damit du in 25 bis 30 Minuten strukturiert verstehst, wo der Kunde steht. Deine eigenen Worte, dein Ton und deine Persönlichkeit machen es echt. Was du nicht verändern solltest, ist die Reihenfolge: erst der Mensch, dann die Ziele, dann das Geld, dann wir.",
+          "Zwei Wörter fallen im Skript und werden dort nicht erklärt. Meta-Leads sind Kontakte, die über eine Anzeige bei Facebook oder Instagram zu uns kommen, also über den Konzern Meta. Sie haben ihr Werbe-Einverständnis beim Ausfüllen des Formulars selbst gesetzt, deshalb darfst du sie anrufen. Und ein No-Show ist ein gebuchter Termin, zu dem der Lead nicht erscheint. Die Schritte 20 bis 23 dienen vor allem dazu, ihn zu verhindern."
         ],
         "bullets": [
-          "Schrittleiste oben: elf Knöpfe, grüner Haken erledigt, ausgefüllt der aktuelle Schritt, blass angefangen, grau offen.",
-          "Zeile darunter: Schritt x von 11, wie viele erledigt sind, und welche Pflichtangabe im ganzen Skript noch fehlt.",
-          "Im Kasten: drei bis fünf Stichpunkte, darunter je Baustein der Knopf Formulierungsvorschlag mit Satz, Tipp und Mehr Kontext.",
-          "Unter den Stichpunkten die Eingabefelder des Schritts, jedes sichtbar als Pflicht oder freiwillig gekennzeichnet.",
-          "Am Fuß Zurück und Weiter, im elften Schritt heißt Weiter dann Skript durchgegangen.",
-          "Im Kopf: Knopf für alle Vorschläge auf einmal, Zähler der ausgefüllten Felder, kurzer Hinweis gespeichert, Knopf Zusammenfassung."
+          "Kopf des Kastens: 23 Schritte in 6 Phasen, etwa 25 bis 30 Minuten, Zähler der ausgefüllten Felder, kurzer Hinweis gespeichert.",
+          "Darunter aufklappbar: Aufbau der Phasen, Haltung, Reaktionen am Telefon, Das sagen wir nie.",
+          "Je Phase ein Kopf von A bis F, darunter die Schritte mit Nummer, Titel und Häkchen.",
+          "Je Schritt: Sprechtext, Hinweis, bei Bedarf Mehr Kontext, darunter die Eingabefelder.",
+          "Pflichtangaben orange umrandet, Angaben für die Beratungspräsentation mit dem Etikett wird übernommen.",
+          "In Schritt 20 der Terminblock, unter dem Kasten der Knopf, der das Gespräch abschließt."
         ],
-        "quereinsteigerHinweis": "Zum Einarbeiten drei Handgriffe. Erstens: Klapp im Kopf des Kastens einmal alle Formulierungsvorschläge auf und lies einen Schritt komplett durch, bevor du ihn sprichst. Zweitens: Nimm dir für das erste Rollenspiel einen Kollegen, spiel es einmal ab (da darfst du noch ablesen) und dann ein zweites Mal nur nach den Stichpunkten. Nach dem zweiten Durchlauf sitzt der Ablauf, ab dann findest du deine eigenen Worte. Drittens, und das ist die wichtigste Regel für alle Zahlenfragen: Du fragst nach Bereichen, nicht nach Beträgen. Menschen nennen eine Spanne viel eher als eine genaue Zahl, weil eine Spanne sich nicht falsch anfühlt. Das gilt beim Netto, beim Eigenkapital und beim Monatsbeitrag gleichermaßen. Genaue Zahlen liefert später die Selbstauskunft, und die ist ein Formular und kein Gespräch. Und keine Angst vor der Leiste: Du kannst nichts kaputt machen, es blockiert nichts, und gespeichert wird von selbst.",
-        "profiTipp": "Vier Feinheiten, die den Unterschied zwischen Abarbeiten und Führen ausmachen. Erstens die Notiz in Schritt 3: Schreib den Auslöser wörtlich mit, nicht sinngemäß. Der Satz, mit dem der Lead beschreibt, warum gerade jetzt, ist die einzige Formulierung des ganzen Gesprächs, die im Beratungsgespräch und im Closing wörtlich zurückkommt. Eine Zusammenfassung taugt dafür nicht, dafür gibt es das Notizfeld Auslöser. Zweitens die Reihenfolge von Netto und Schufa: Erst das Geld, dann die Schufa, und das ist keine Kleinigkeit. Umgekehrt fragst du erst nach Misstrauen und dann nach Geld, und das ist die schlechteste aller Reihenfolgen. Deshalb liegt das Netto in Schritt 5 und die Schufa erst in Schritt 9, und vor der Schufa steht ein Nutzensatz, damit der Block nicht in einen Prüfungsmodus kippt. Drittens die Skala in Schritt 10: Frag sie bei jedem, nicht nur bei lauwarmem Bauchgefühl. Nur wer bei allen fragt, hat einen Vergleichswert, und erst der Vergleichswert macht aus einer Zahl eine Aussage. Der stärkste Zug kommt ohnehin nach der Zahl: Frag bei jeder Antwort unter 10 nach, warum es nicht eine Zahl niedriger ist. Dann begründet der Lead seine eigene Motivation, statt dass du sie behauptest. Viertens der Baustein, den du wirklich weglassen darfst: Der Erwartungsrahmen in Schritt 9 kommt nur, wenn der Lead vorher selbst von selbsttragend, Cashflow oder soll nichts kosten gesprochen hat. Sonst löst du einen Einwand, den es nicht gibt, und verlängerst die Viertelstunde, in der ein Erstgespräch stark ist.",
+        "quereinsteigerHinweis": "Zum Einarbeiten drei Handgriffe. Erstens: Klapp einmal den Aufbau über dem Skript auf und lies die Haltung und die Sätze, die wir nie sagen, bevor du den ersten Schritt sprichst. Zweitens: Nimm dir für das erste Rollenspiel einen Kollegen, spiel es einmal ab (da darfst du noch ablesen) und dann ein zweites Mal nur nach den Phasen. Nach dem zweiten Durchlauf sitzt der Ablauf, ab dann findest du deine eigenen Worte. Drittens, die wichtigste Regel für alle Zahlenfragen: Du fragst nach Spannen, nicht nach genauen Beträgen. Menschen nennen eine Spanne viel eher als eine genaue Zahl, weil eine Spanne sich nicht falsch anfühlt. Genaue Zahlen liefert später die Selbstauskunft, und die füllt ihr am Ende der Beratungspräsentation gemeinsam aus. Und keine Angst vor dem Kasten: Du kannst nichts kaputt machen, es blockiert nichts, und gespeichert wird von selbst.",
+        "profiTipp": "Vier Feinheiten, die den Unterschied zwischen Abarbeiten und Führen ausmachen. Erstens das Motiv in Schritt 4: Schreib den wichtigsten Satz wörtlich mit, nicht sinngemäß. Er steht in der Beratungspräsentation als Zitat auf der Seite Ihre Ziele, und der Kunde erkennt seine eigenen Worte sofort wieder. Zweitens die Reihenfolge im finanziellen Rahmen: Erst Einkommen, Reserve und tragbarer Betrag, dann die Sorgen, ganz zum Schluss die Schufa, und davor der Satz aus Schritt 10, dass es um echte Zahlen statt Wunschwerte geht. So kippt der Block nicht in einen Prüfungsmodus. Drittens Reserve und Stressgrenze: Frag in Schritt 12 zuerst, was unangetastet bleiben soll, und in Schritt 13 auch nach der Grenze, wenn etwas nicht nach Plan läuft. Beides prüft später der Stresstest der Präsentation, und ein Kunde, der seine Grenze selbst genannt hat, vertraut der Rechnung. Viertens die Skala in Schritt 19: Frag sie bei jedem, nicht nur bei lauwarmem Bauchgefühl. Der stärkste Zug kommt nach der Zahl: Was müsste passieren, damit es eine 10 wird? Die Antwort ist das Hindernis, um das sich die Beratung kümmern muss.",
         "links": [
           {
             "label": "Kontakte-Übersicht",
@@ -8364,14 +8420,19 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "hinweis": "Von hier aus den Kontakt öffnen, zum Investment scrollen und den Kasten Erstgesprächs-Skript aufklappen"
           },
           {
-            "label": "Die drei Konzepte im Beratungsgespräch",
-            "to": "/vertriebsakademie/beratungsgespraech?vaScrollTo=konzepte-matching",
-            "hinweis": "Sanierter Bestand, WG und Co-Living, KfW 40: die drei Assetklassen aus Schritt 11, dort ausführlich erklärt"
+            "label": "Leitfaden Einwandbehandlung",
+            "to": "/leitfaeden/einwandbehandlung",
+            "hinweis": "Die 15 häufigsten Einwände mit Kernsatz, Nachfrage und Belegen, an einer Stelle gepflegt"
           },
           {
-            "label": "Begriffe und Zahlen im Glossarkapitel",
+            "label": "Kapitel 5: Zusatzrente oder Steuerersparnis",
+            "to": "/vertriebsakademie/beratungsgespraech?vaScrollTo=konzepte-matching",
+            "hinweis": "Zusatzrente oder Steuerersparnis: die zwei Konzepte, auf die der Schwerpunkt aus Schritt 7 zeigt"
+          },
+          {
+            "label": "Finanzierungszahlen im Glossar",
             "to": "/vertriebsakademie/glossar-zahlen?vaScrollTo=finanzierung-zahlen",
-            "hinweis": "Kapitaldienstfähigkeit und die Faustformeln hinter der Bonitätseinschätzung"
+            "hinweis": "Kapitaldienstfähigkeit und die Faustformeln hinter der Haushaltsrechnung der Bank"
           }
         ],
         "skripte": [
@@ -8518,149 +8579,151 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           {
             "id": "erstgespraech-training",
             "titel": "Das Skript einmal komplett im Rollenspiel durchsprechen",
-            "beschreibung": "Nimm dir einen Kollegen und einen Testkontakt und geh alle elf Schritte im CRM durch, so wie im echten Gespräch: Schritt für Schritt, Felder ausfüllen, Formulierungsvorschläge nur dann aufklappen, wenn du hängst. Ziel sind 15 bis 20 Minuten. Danach kurzes Selbst-Feedback: Welche Schritte saßen, wo warst du unsicher, an welcher Stelle hast du die Stichpunkte schon nicht mehr gebraucht?",
+            "beschreibung": "Nimm dir einen Kollegen und einen Testkontakt und geh alle 23 Schritte im CRM durch, so wie im echten Gespräch: Phase für Phase, Felder ausfüllen, Sprechtexte nur dann wörtlich nehmen, wenn du hängst. Ziel sind 25 bis 30 Minuten, in denen dein Gegenüber etwa zwei Drittel spricht. Danach kurzes Selbst-Feedback: Welche Phase saß, wo warst du unsicher, an welcher Stelle hast du zu früh empfohlen?",
             "xp": 50,
             "antwortTyp": "textarea",
             "antwortLabel": "Feedback aus dem Rollenspiel und was du für dich anpasst",
-            "antwortPlaceholder": "Buddy: [Name]. Gesamtzeit: __ Min. Was saß gut: … Wo unsicher: … Welche Begründung hat mir am meisten gebracht: … Wie ich Baustein X in meinen eigenen Worten formuliere: …",
+            "antwortPlaceholder": "Gesamtzeit: __ Min. Was saß gut: … Wo unsicher: … Wo habe ich zu viel geredet: … Wie ich Schritt X in meinen eigenen Worten formuliere: …",
             "mindestZeichen": 200
           }
         ]
       },
       {
-        "id": "ampel",
+        "id": "einschaetzung",
         "aufgaben": [
           {
-            "id": "ampel-zuordnen-qe",
+            "id": "einschaetzung-zuordnen-qe",
             "typ": "zuordnen",
             "pfad": "quereinsteiger",
             "punkte": 10,
-            "titel": "Zieh jede Kundensituation auf ihre Ampelfarbe",
-            "hinweis": "Drei Situationen, drei Farben mit der nächsten Aktion.",
+            "titel": "Zieh jede Situation zu deiner Einschätzung",
+            "hinweis": "Drei Situationen, drei ehrliche nächste Schritte.",
             "paare": [
               {
-                "links": "Motiv klar, Haushaltsnetto 4.200 Euro, keine SCHUFA-Themen",
-                "rechts": "Grün: Beratung buchen und Selbstauskunft sofort"
+                "links": "Ziel klar, Reserve vorhanden, tragbarer Betrag genannt, Partnerin entscheidet mit",
+                "rechts": "Passt: Termin mit beiden vereinbaren"
               },
               {
-                "links": "Motiv da, Bonität grenzwertig",
-                "rechts": "Gelb: Beratung buchen, Bonität zuerst prüfen"
+                "links": "Kein Puffer neben den Nebenkosten, Eigenheim in zwei Jahren geplant",
+                "rechts": "Passt im Moment nicht: offen sagen und Grund festhalten"
               },
               {
-                "links": "Kein Motiv erkennbar oder Bonität reicht nicht",
-                "rechts": "Rot: freundlich verabschieden, Follow-up in 6 bis 12 Monaten"
+                "links": "Interesse da, auf der Skala aber nur eine 4",
+                "rechts": "Nachfragen, was es zur 10 bräuchte"
               }
             ]
           },
           {
-            "id": "ampel-quiz-profi",
+            "id": "einschaetzung-quiz-profi",
             "typ": "quiz",
             "pfad": "profi",
             "punkte": 15,
-            "titel": "Entscheide die Ampel im Grenzfall",
-            "hinweis": "Drei Fälle, in denen die Farbe nicht auf der Hand liegt.",
+            "titel": "Entscheide im Grenzfall",
+            "hinweis": "Drei Fälle, in denen die Antwort nicht auf der Hand liegt.",
             "aufloesungAmEnde": true,
             "fragen": [
               {
-                "frage": "Motiv klar, Haushaltsnetto 3.900 Euro, ein offener SCHUFA-Eintrag aus einem alten Vertrag. Welche Farbe?",
+                "frage": "Der Lead sagt: Ich will nur Steuern sparen, der Rest ist mir egal. Was tust du?",
                 "optionen": [
-                  "Grün, das Netto liegt über 3.500 Euro",
-                  "Gelb, Beratung buchen und die Bonität zuerst prüfen",
-                  "Rot, ein SCHUFA-Eintrag schließt aus"
+                  "Sofort die Steuerersparnis vorrechnen, das ist sein Motiv",
+                  "Sagen, dass die Steuerwirkung ein wichtiger Baustein ist, allein aber kein Grund für einen Kauf, und nachfragen",
+                  "Das Gespräch beenden, Steuersparer passen grundsätzlich nicht"
                 ],
                 "korrekt": 1,
-                "aufloesung": "Grün verlangt ausdrücklich keine SCHUFA-Themen, und offen heißt offen. Motiv und Netto stimmen, die Bonität ist grenzwertig, also Gelb.",
-                "sprungZuAbschnitt": "ampel"
+                "aufloesung": "Die Immobilie muss auch ohne Steuervorteil zum Kunden passen. Mit zwei Nachfragen findest du heraus, ob dahinter ein echtes Ziel steht, etwa Vermögen aufbauen oder mehr Netto vom Brutto für später.",
+                "sprungZuAbschnitt": "einschaetzung"
               },
               {
-                "frage": "Der Lead hat kein erkennbares Motiv, ist aber gut vernetzt und findet das Thema spannend. Was tust du?",
+                "frage": "Der Lead ist in der Probezeit, sonst passt alles. Was sagst du?",
                 "optionen": [
-                  "Trotzdem Beratung buchen, das Motiv kommt im Gespräch",
-                  "Freundlich verabschieden, Follow-up setzen und ihn im selben Gespräch als Tippgeber gewinnen",
-                  "Die Selbstauskunft schicken und abwarten"
+                  "Das ist kein Thema, die Bank bekommen wir schon hin",
+                  "Offen ansprechen, dass die Bank danach fragt, und gemeinsam klären, ob jetzt oder nach der Probezeit der bessere Zeitpunkt ist",
+                  "Die Probezeit nicht notieren, damit sie die Beratung nicht belastet"
                 ],
                 "korrekt": 1,
-                "aufloesung": "Ohne Motiv ist der Lead rot, aber rot heißt nicht wertlos. Genau diese Leute kennen die Menschen, die grün wären. Der Übergang ins Tippgeber-Programm gehört in dasselbe Gespräch, denn nach der Verabschiedung rufst du erfahrungsgemäß nicht mehr an.",
-                "sprungZuAbschnitt": "ampel"
+                "aufloesung": "„Das bekommen wir bei der Bank schon hin“ steht auf der Liste der Sätze, die wir nie sagen. Die Probezeit wird in Schritt 6 notiert, weil die Bank später danach fragt.",
+                "sprungZuAbschnitt": "einschaetzung"
               },
               {
-                "frage": "Haushaltsnetto 3.700 Euro, Motiv klar, keine SCHUFA-Themen. Was fragst du, bevor du die Farbe festlegst?",
+                "frage": "Der Lead wird mitten im Gespräch einsilbig. Was ist der richtige Zug?",
                 "optionen": [
-                  "Nichts, das ist Grün",
-                  "Nach laufenden Raten, denn genau die zieht die Bank später ab",
-                  "Nach dem Eigenkapital auf dem Tagesgeldkonto"
+                  "Mit noch mehr Zahlen gegenhalten, damit das Interesse zurückkommt",
+                  "Anhalten, kurze Pause, aussprechen, was du merkst, und ehrlich fragen, was nicht passt",
+                  "Das Skript schneller durchgehen, um den Termin noch zu sichern"
                 ],
                 "korrekt": 1,
-                "aufloesung": "Zwischen 3.500 und 4.000 Euro entscheidet nicht die Zahl, sondern was daneben steht. Ein unbefristeter Vertrag ohne Konsumkredite trägt eine kleinere Wohnung locker, zwei Autofinanzierungen fressen dieselbe Zahl auf.",
-                "sprungZuAbschnitt": "ampel"
+                "aufloesung": "Wer sich gesehen fühlt statt bearbeitet, sagt ehrlich, was ihn bremst. Mehr Argumente oder Tempo erzeugen nur Druck.",
+                "sprungZuAbschnitt": "einschaetzung"
               }
             ]
           }
         ],
-        "ueberschrift": "Ampel-Qualifizierung",
+        "ueberschrift": "Ehrliche Einschätzung und Ausstiegskriterien: passt es oder passt es nicht?",
         "absaetze": [
-          "Die Ampel fasst am Ende des Gesprächs drei Beobachtungen zu einer Entscheidung zusammen: Ist ein Motiv da, trägt die Bonität, und gibt es SCHUFA-Themen? Sie schützt dich vor dem teuersten Fehler im Vertrieb, nämlich vier Wochen Arbeit in einen Lead zu stecken, der von Anfang an rot war.",
-          "Die drei Schwellen sind Hausregeln und keine Bankvorgaben, aber sie sind begründet. Die 3.500 Euro Haushaltsnetto sind die Größenordnung, ab der nach Abzug einer üblichen Haushaltspauschale für die Lebenshaltung überhaupt eine tragbare Rate übrig bleibt. Motiv klar heißt, dass der Lead auf die Frage nach dem Warum gerade jetzt eine konkrete Veränderung nennen kann, also Gehaltssprung, Erbe, Kind, gestiegene Steuerlast. Ohne diesen Auslöser fehlt im Beratungsgespräch der Anker, auf den sich am Ende alles bezieht. Und keine SCHUFA-Themen heißt nicht makellos, sondern nichts Offenes: Ein abgeschlossener alter Vorgang ist etwas anderes als eine laufende Forderung.",
-          "Eine Sache gehört zur Ampel, auch wenn sie nicht in den drei Farben steht: Was tust du, wenn ein Gespräch mitten im Skript kippt? Wenn der Lead einsilbig wird, Ausreden vorschiebt oder abschaltet, hilft kein weiteres Argument. Dann stoppst du das Skript, machst eine kurze Pause, senkst die Stimme und sprichst aus, was du siehst: Ich merke gerade, irgendwas passt für dich nicht. Was ist es? Das ist ein Pattern Interrupt, ein bewusster Bruch im Gesprächsmuster. Er wirkt, weil der Lead sich gesehen fühlt statt bearbeitet, und weil du ihm ausdrücklich erlaubst, Nein zu sagen. Was du an dieser Stelle nicht tust: mit noch mehr Zahlen dagegenhalten. Ein ehrliches Nein ist besser als ein weichgespültes Ja, das zwei Wochen später zum No-Show wird."
+          "Am Ende des Gesprächs steht in Schritt 18 eine Entscheidung, die du offen aussprichst: Kann eine vermietete Immobilie ein sinnvoller Baustein für diesen Kunden sein, oder passt unser Konzept im Moment nicht? Beide Antworten sind gute Ergebnisse. Schlecht ist nur ein Termin, der auf Hoffnung gebaut ist und zwei Wochen später als No-Show oder als Absage endet.",
+          "Passt es nicht, sagst du es mit dem Grund. Die Ausstiegskriterien ergeben sich direkt aus den Schritten davor: Es gibt keine Reserve, die unangetastet bleiben kann, oder die Lebensplanung passt gerade nicht, etwa ein geplantes Eigenheim. Der tragbare Betrag reicht auch ohne Stressfall nicht. Laufende Raten oder offene Schufa-Themen lassen die Haushaltsrechnung der Bank nicht aufgehen. Oder der Kunde will nur Steuern sparen, und die Immobilie würde ohne Steuervorteil nicht zu ihm passen. Dann ist Warten die bessere Wahl, und das sagen wir offen.",
+          "Im CRM wählst du in Schritt 18 das Ergebnis. Bei passt nicht trägst du den Grund ein, der Kontakt kommt in die Stufe Verloren, und der Grund steht für jeden sichtbar dabei. Der Kunde darf sich melden, wenn sich an dem Grund etwas ändert, und genau das sagt der Sprechtext auch.",
+          "Passt es, folgt in Schritt 19 die Frage nach der Verbindlichkeit auf einer Skala von 1 bis 10 und die Nachfrage, was es zur 10 bräuchte. Die Antwort holt das Hindernis nach oben, das in der Beratung geklärt werden muss. Druck brauchst du dafür nicht: Wer weiß, dass er nach jedem Schritt selbst entscheidet, sagt ehrlicher, wo er steht.",
+          "Eine Sache gehört dazu, auch wenn sie in keinem Schritt steht: Was tust du, wenn ein Gespräch mitten im Skript kippt? Wenn der Lead einsilbig wird, Ausreden vorschiebt oder abschaltet, hilft kein weiteres Argument. Dann hältst du an, machst eine kurze Pause und sprichst aus, was du siehst: Ich merke gerade, irgendwas passt für dich nicht. Was ist es? Er wirkt, weil der Lead sich gesehen fühlt statt bearbeitet, und weil du ihm ausdrücklich erlaubst, Nein zu sagen. Ein ehrliches Nein ist besser als ein weichgespültes Ja."
         ],
         "bullets": [
-          "🟢 GRÜN: Motiv klar, HH-Netto > 3.500 €, keine SCHUFA-Themen: Beratung buchen + Selbstauskunft sofort.",
-          "🟡 GELB: Motiv da, Bonität grenzwertig: Beratung buchen, Bonität zuerst prüfen.",
-          "🔴 ROT: Bonität nicht ausreichend / kein Motiv: freundlich verabschieden, Follow-up in 6-12 Monaten setzen, ggf. als Tippgeber gewinnen."
+          "Passt: kann ein sinnvoller Baustein sein, ob die Zahlen aufgehen, zeigt die Beratungspräsentation mit Stresstest. Termin mit allen Mitentscheidern.",
+          "Passt nicht: offen sagen, Grund nennen, nichts empfehlen, was nicht passt. Grund im CRM, Stufe Verloren.",
+          "Das sagen wir nie: „Das bekommen wir bei der Bank schon hin“, „Das trägt sich durch die Steuer von selbst“, „Immobilien für 150 € im Monat“, „Das Angebot gilt nur noch heute“."
         ],
         "visuals": [
           {
             "kpis": [
               {
-                "label": "Grün",
-                "wert": "über 3.500 € HH-Netto",
-                "hinweis": "Motiv klar, keine SCHUFA-Themen. Beratung buchen und Selbstauskunft sofort.",
+                "label": "Passt",
+                "wert": "Termin Beratungspräsentation",
+                "hinweis": "Mit allen Mitentscheidern, zwei konkrete Zeitfenster, Einladung live geprüft.",
                 "farbe": "emerald"
               },
               {
-                "label": "Gelb",
-                "wert": "Bonität grenzwertig",
-                "hinweis": "Motiv ist da. Beratung buchen, Bonität zuerst prüfen.",
-                "farbe": "amber"
+                "label": "Passt nicht",
+                "wert": "Ehrlich sagen, Grund nennen",
+                "hinweis": "Grund im CRM, Stufe Verloren. Der Kunde darf sich wieder melden.",
+                "farbe": "rose"
               },
               {
-                "label": "Rot",
-                "wert": "kein Motiv oder Bonität reicht nicht",
-                "hinweis": "Freundlich verabschieden, Follow-up in 6 bis 12 Monaten, gegebenenfalls als Tippgeber gewinnen.",
-                "farbe": "rose"
+                "label": "Verbindlichkeit",
+                "wert": "Skala 1 bis 10",
+                "hinweis": "Und was es zur 10 bräuchte. Die Antwort ist das Thema der Beratung.",
+                "farbe": "sky"
               }
             ]
           },
           {
             "vergleich": {
-              "titel": "Was passiert nach dem Erstgespräch?",
-              "untertitel": "Deine Ampel-Entscheidung steuert die nächste Aktion, keine Grauzone.",
+              "titel": "Zwei ehrliche Ausgänge, kein dritter",
+              "untertitel": "Erst verstehen, dann empfehlen. Und manchmal heißt empfehlen: noch nicht.",
               "optionA": {
-                "label": "🟢 GRÜN → sofort in Beratung",
+                "label": "Es passt",
                 "punkte": [
-                  "Motiv sitzt, HH-Netto > 3.500 €",
-                  "Keine SCHUFA-Themen sichtbar",
-                  "Beratungstermin + SA-Link jetzt"
+                  "Ziel, Motiv und Schwerpunkt sind klar",
+                  "Reserve bleibt unangetastet, tragbarer Betrag ist genannt",
+                  "Mitentscheider ist zum Termin eingeladen"
                 ],
-                "ergebnis": "Erwartung: → Beratung → Bonität"
+                "ergebnis": "Beratungspräsentation mit echten Zahlen"
               },
               "optionB": {
-                "label": "🟡 GELB / 🔴 ROT → gefiltert weiterführen",
-                "badge": "Zeit-Schutz",
+                "label": "Es passt im Moment nicht",
+                "badge": "Ausstieg",
                 "punkte": [
-                  "GELB: Beratung buchen, Bonität zuerst prüfen",
-                  "ROT: freundlich verabschieden, 6 bis 12 Mon. Follow-up",
-                  "ROT-Lead ggf. als Tippgeber gewinnen"
+                  "Keine Reserve oder Lebensplanung passt nicht",
+                  "Haushaltsrechnung geht nicht auf",
+                  "Nur Steuern sparen, ohne dass die Immobilie passt"
                 ],
-                "ergebnis": "Erwartung: kein Zeitverlust im Team"
+                "ergebnis": "Offen sagen, Grund festhalten"
               },
-              "fazit": "Die Ampel schützt dich vor dem größten Vertriebs-Killer: 4 Wochen Arbeit in einem Lead, der von Anfang an rot war."
+              "fazit": "Ein ehrliches Nein schützt den Kunden und deine Zeit. Ein Termin auf Hoffnung kostet beides."
             }
           }
         ],
         "goldNugget": {
           "titel": "Die vier Antworten, die nach dem Pattern-Interrupt kommen, und was du mit jeder machst",
-          "text": "Der Pattern-Interrupt steht oben im Fließtext, weil ihn jeder braucht. Das eigentliche Handwerk beginnt eine Sekunde später, nämlich bei der Antwort. Nach unserer Erfahrung im Team fällt fast jede in eine von vier Schubladen, und jede verlangt einen anderen nächsten Zug. Zeit heißt in Wahrheit selten Zeit, sondern Priorität: Frag, was gerade wichtiger ist, und setz ein Follow-up auf einen konkreten Monat statt auf irgendwann. Geld ist die einzige der vier, bei der du sofort rechnen darfst, aber nicht mit Renditen, sondern mit der Größenordnung des Eigenanteils. Partner heißt, dass du das falsche Gespräch führst: Bied den Termin zu zweit an, statt zu überzeugen. Vertrauen ist die schwierigste und zugleich die wertvollste Antwort, denn sie ist ehrlich. Bei ihr hilft kein Argument, sondern ein Beleg, also ein Referenzkunde, eine unverbindliche zweite Meinung oder schlicht die Zusage, dass die Selbstauskunft zu nichts verpflichtet.",
+          "text": "Der Pattern-Interrupt steht oben im Fließtext, weil ihn jeder braucht. Das eigentliche Handwerk beginnt eine Sekunde später, nämlich bei der Antwort. Nach unserer Erfahrung im Team fällt fast jede in eine von vier Schubladen, und jede verlangt einen anderen nächsten Zug. Zeit heißt in Wahrheit selten Zeit, sondern Priorität: Frag, was gerade wichtiger ist, und setz ein Follow-up auf einen konkreten Monat statt auf irgendwann. Geld heißt oft: Der Kunde ahnt, dass sein Rahmen nicht reicht. Hier rechnest du nichts schön, sondern fragst nach Reserve und tragbarem Betrag und sagst ehrlich, wenn es im Moment nicht passt. Partner heißt, dass du das falsche Gespräch führst: Bied den Termin zu zweit an, statt zu überzeugen. Vertrauen ist die schwierigste und zugleich die wertvollste Antwort, denn sie ist ehrlich. Bei ihr hilft kein Argument, sondern ein Beleg, also ein Referenzkunde, eine unverbindliche zweite Meinung oder schlicht der Hinweis, dass er nach jedem Schritt selbst entscheidet und die Reservierung später kostenfrei ist.",
           "skript": {
             "titel": "Pattern-Interrupt bei kippendem Gespräch",
             "text": "*kurze Pause* … {{Vorname}}, ich merke gerade, irgendwas passt für dich nicht. Was ist es? Sag's mir ehrlich, dann wissen wir beide, ob es Sinn macht weiterzumachen, oder ob wir hier lieber Schluss machen und du dich nochmal in Ruhe damit beschäftigst.",
@@ -8673,44 +8736,44 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "Kommt keine Antwort, ist das auch eine: Dann sauber verabschieden und ein Follow-up setzen, statt ein zweites Mal nachzufassen."
           ]
         },
-        "quereinsteigerHinweis": "Drei Begriffe für diesen Abschnitt. HH-Netto ist die Abkürzung für Haushaltsnetto, also alles, was in dem Haushalt monatlich netto zusammenkommt, bei Paaren beide Einkommen zusammen. Bonität ist die Fähigkeit, einen Kredit zuverlässig zu bedienen, also die Kombination aus Einkommen, Sicherheiten und Zahlungshistorie. Und die SCHUFA ist die größte deutsche Auskunftei: Sie speichert, wer welche Kredite und Verträge hat und ob sie ordentlich bedient wurden. Für die Ampel gilt: Du prüfst nicht, du schätzt ein. Die verbindliche Prüfung macht später die Bank, und deshalb darfst du im Gespräch auch ruhig sagen, dass du nur eine erste Einordnung vornimmst.",
-        "profiTipp": "Zwei Grenzfälle entscheiden bei der Ampel öfter als die klaren Fälle. Erster Grenzfall, der rote Lead mit Netzwerk: Kein Motiv heißt rot, aber rot heißt nicht wertlos. Genau diese Leute kennen die Menschen, die grün wären. Der Übergang ins Tippgeber-Programm gehört deshalb in dasselbe Gespräch und nicht in ein späteres, denn nach der Verabschiedung rufst du erfahrungsgemäß nicht mehr an. Zweiter Grenzfall, das gelbe Netto: Zwischen 3.500 und 4.000 Euro entscheidet nicht die Zahl, sondern was daneben steht. Ein unbefristeter Vertrag ohne laufende Konsumkredite trägt eine kleinere Wohnung locker, zwei Autofinanzierungen fressen dieselbe Zahl auf. Frag deshalb bei Gelb immer nach laufenden Raten, bevor du entscheidest, denn genau diese Zahl zieht die Bank später ab. Und halte die Ampel im CRM fest, samt Begründung in einem Satz. Der Berater liest sie vor dem Termin, und eine Farbe ohne Begründung ist für ihn wertlos.",
+        "profiTipp": "Der schwierigste Satz im ganzen Skript ist der aus Schritt 18, wenn es nicht passt. Sprich ihn ruhig und ohne Entschuldigung, nenne genau einen Grund und sag, was sich ändern müsste. Ein Kunde, dem du ehrlich abgeraten hast, empfiehlt dich häufiger weiter als einer, den du überredet hast. Und halte den Grund im CRM in einem Satz fest. Eine Absage ohne Grund ist für niemanden eine Hilfe, auch nicht für dich in sechs Monaten.",
         "uebungen": [
           {
             "id": "erstgespraech-advanced-review",
             "titel": "Advanced Challenge: 5 verlorene Erstgespräche der letzten 90 Tage analysieren",
-            "beschreibung": "Nimm dir aus dem CRM 5 Erstgespräche, die nicht in eine Beratung übergegangen sind. Trage für jedes ein: Was war der eigentliche Absage-Grund? Auf welcher Skript-Stufe ist es gekippt? Hätte ein Pattern-Interrupt geholfen? Was änderst du in deinem nächsten Erstgespräch konkret?",
+            "beschreibung": "Nimm dir aus dem CRM 5 Erstgespräche, die nicht in eine Beratung übergegangen sind. Trage für jedes ein: Was war der eigentliche Absage-Grund? In welchem Schritt des Skripts ist es gekippt? War es ein ehrliches passt nicht, das wir zu spät ausgesprochen haben? Was änderst du in deinem nächsten Erstgespräch konkret?",
             "xp": 100,
             "advanced": true,
             "antwortTyp": "textarea",
             "antwortLabel": "Analyse der 5 verlorenen Erstgespräche + konkrete Ableitungen",
-            "antwortPlaceholder": "Fall 1: Kunde XY, Absage-Grund: …, gekippt bei Skript-Punkt Nr. …, Muster: …\nFall 2: …\n\nMeine 2 konkreten Änderungen für die nächsten 10 Erstgespräche: …",
+            "antwortPlaceholder": "Fall 1: Kunde XY, Absage-Grund: …, gekippt bei Skript-Schritt Nr. …, Muster: …\nFall 2: …\n\nMeine 2 konkreten Änderungen für die nächsten 10 Erstgespräche: …",
             "mindestZeichen": 300
           }
-        ]
+        ],
+        "quereinsteigerHinweis": "Drei Begriffe für diesen Abschnitt. Reserve ist das Geld, das auf jeden Fall unangetastet bleibt, egal was passiert, zum Beispiel für eine kaputte Heizung im eigenen Haushalt oder ein paar Monate ohne Mieter. Bonität ist die Fähigkeit, einen Kredit zuverlässig zu bedienen, also Einkommen, Verpflichtungen und Zahlungshistorie zusammen. Und die Schufa ist die größte deutsche Auskunftei: Sie speichert, wer welche Kredite und Verträge hat und ob sie ordentlich bedient wurden. Du prüfst im Erstgespräch nicht, du schätzt ein. Die verbindliche Prüfung macht später die Bank, und genau das darfst du auch so sagen."
       },
       {
         "id": "danach",
         "visuals": [
           {
             "timeline": {
-              "titel": "Die nächsten 60 Minuten nach dem Erstgespräch",
+              "titel": "Die nächsten 2 Stunden nach dem Erstgespräch",
               "schritte": [
                 {
-                  "label": "Beratungsgespräch mit dem persönlichen Buchungslink terminiert",
-                  "beschreibung": "Den Link hinterlegst du einmalig in den Einstellungen, danach wird er im Erstgesprächsskript automatisch angezeigt.",
+                  "label": "Termin für die Beratungspräsentation steht im CRM",
+                  "beschreibung": "Eingetragen über den Terminblock in Schritt 20 oder deinen persönlichen Buchungslink aus den Einstellungen.",
                   "status": "start"
                 },
                 {
-                  "label": "Terminbestätigung Beratung versendet",
-                  "beschreibung": "Mit Kalender-Invite."
+                  "label": "Einladung kam an, live geprüft in Schritt 21",
+                  "beschreibung": "Mit Kalendereintrag, auch für den Mitentscheider."
                 },
                 {
-                  "label": "Notizen im CRM erfasst",
-                  "beschreibung": "Motiv, Bonitäts-Ampel, Familienstand, Steuerlast, Highlights."
+                  "label": "Notizen vollständig",
+                  "beschreibung": "Motiv wörtlich, Schwerpunkt, Reserve, tragbarer Betrag, Sorgen, erste Frage."
                 },
                 {
-                  "label": "Follow-up-Task, falls der Kunde noch überlegt",
+                  "label": "Zusammenfassung an den Kunden, innerhalb von 2 Stunden",
                   "status": "ziel"
                 }
               ]
@@ -8723,40 +8786,40 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "typ": "quiz",
             "pfad": "quereinsteiger",
             "punkte": 10,
-            "titel": "Nutze die 60 Minuten nach dem Gespräch richtig",
+            "titel": "Nutze die 2 Stunden nach dem Gespräch richtig",
             "hinweis": "Drei Fragen dazu, warum die Nachbereitung so eilig ist.",
             "fragen": [
               {
-                "frage": "Warum sollen die Notizen innerhalb von 60 Minuten im CRM stehen?",
+                "frage": "Warum sollen Notizen und Zusammenfassung innerhalb von 2 Stunden fertig sein?",
                 "optionen": [
                   "Weil das System die Eingabe danach sperrt",
-                  "Weil du dann noch weißt, was der Lead wörtlich gesagt hat",
-                  "Weil der Berater in dieser Stunde den Termin bestätigt"
+                  "Weil du dann noch weißt, was der Kunde wörtlich gesagt hat, und er sich verstanden fühlt",
+                  "Weil der Termin sonst automatisch verfällt"
                 ],
                 "korrekt": 1,
-                "aufloesung": "In dieser Stunde weißt du noch die Formulierung beim Motiv und den Nebensatz über die Partnerin. Was du am Abend notierst, ist eine Erinnerung an eine Zusammenfassung.",
+                "aufloesung": "Das Motiv in seinen Worten, die Sorge, der Nebensatz über die Partnerin: Genau das übernimmt die Präsentation, und genau das ist am Abend schon verblasst.",
                 "sprungZuAbschnitt": "danach"
               },
               {
-                "frage": "Der Kunde will noch überlegen. Was legst du an?",
+                "frage": "Der Kunde reagiert auf die Zusammenfassung nicht. Was ist der Plan?",
                 "optionen": [
-                  "Eine Notiz mit dem Hinweis, dass er sich meldet",
-                  "Einen Follow-up-Task mit festem Datum",
-                  "Nichts, er hat ja deinen Buchungslink"
+                  "Täglich anrufen, bis er abnimmt",
+                  "Nach 24 Stunden erinnern, nach 48 Stunden anrufen, nach drei Versuchen eine letzte Nachricht und den Vorgang pausieren",
+                  "Nichts tun, er hat ja den Termin"
                 ],
                 "korrekt": 1,
-                "aufloesung": "Eine Notiz liest niemand wieder, eine Aufgabe erscheint am gesetzten Tag in deiner Liste. Immer ein konkretes Datum, nie demnächst.",
+                "aufloesung": "Der Nachfassplan ist begrenzt und freundlich. Drei Versuche, dann eine letzte Nachricht, dann Pause. Das schützt den Kunden vor Druck und dich vor Leerlauf.",
                 "sprungZuAbschnitt": "danach"
               },
               {
-                "frage": "Wofür gilt die 24-Stunden-Regel, wofür die 60 Minuten?",
+                "frage": "Wofür gilt die 24-Stunden-Regel, wofür die 2 Stunden?",
                 "optionen": [
-                  "24 Stunden für den Erstkontakt, 60 Minuten für die Nachbereitung",
-                  "24 Stunden für die Nachbereitung, 60 Minuten für den Rückruf",
+                  "24 Stunden für den Erstkontakt, 2 Stunden für die Nachbereitung",
+                  "24 Stunden für die Nachbereitung, 2 Stunden für den Rückruf",
                   "Beides für den Erstkontakt, je nach Quelle"
                 ],
                 "korrekt": 0,
-                "aufloesung": "Die eine Frist schützt den Lead vor dem Vergessenwerden, die andere schützt das Gespräch vor dem Verblassen. Fallen beide zusammen, geht die Nachbereitung vor.",
+                "aufloesung": "Die eine Frist schützt den Lead vor dem Vergessenwerden, die andere das Gespräch vor dem Verblassen.",
                 "sprungZuAbschnitt": "danach"
               }
             ]
@@ -8766,19 +8829,19 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "typ": "quiz",
             "pfad": "profi",
             "punkte": 15,
-            "titel": "Übergib so, dass der Berater etwas damit anfangen kann",
+            "titel": "Übergib so, dass der Kollege etwas damit anfangen kann",
             "hinweis": "Drei Feinheiten aus dem Profi-Tipp, die über den No-Show entscheiden.",
             "aufloesungAmEnde": true,
             "fragen": [
               {
-                "frage": "Welche der drei Notizen nützt dem Berater im Beratungsgespräch?",
+                "frage": "Welche der drei Notizen nützt dir in der Beratungspräsentation?",
                 "optionen": [
                   "Motiv: Steuer",
                   "Ich zahle jedes Jahr 14.000 Euro Steuern und sehe nichts davon",
                   "Kunde ist steuerlich motiviert, Details im Gespräch"
                 ],
                 "korrekt": 1,
-                "aufloesung": "Mindestens ein Satz wörtlich, in den Worten des Leads. Der Berater greift ihn auf, und der Lead erkennt seinen eigenen Satz sofort wieder. Eine Zusammenfassung taugt dafür nicht.",
+                "aufloesung": "Mindestens ein Satz wörtlich, in den Worten des Leads. Er steht in der Präsentation als Zitat auf der Seite Ihre Ziele, und der Kunde erkennt seinen eigenen Satz sofort wieder. Eine Zusammenfassung taugt dafür nicht.",
                 "sprungZuAbschnitt": "danach"
               },
               {
@@ -8786,39 +8849,43 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 "optionen": [
                   "Ob er den Link zum Videogespräch schon getestet hat",
                   "Ob der Termin jetzt in seinem Kalender steht",
-                  "Ob er die Selbstauskunft schon geöffnet hat"
+                  "Ob er schon Unterlagen für die Bank zusammengesucht hat"
                 ],
                 "korrekt": 1,
                 "aufloesung": "Die Prüfung im Postfach ist die halbe Miete, der Kalendereintrag die andere Hälfte. Frag ausdrücklich nach dem Kalender, nicht nur nach der Mail.",
                 "sprungZuAbschnitt": "danach"
               },
               {
-                "frage": "Ein anderer Berater führt den Termin. Was gehört in deine Übergabe außer den Daten?",
+                "frage": "Ein Kollege führt die Beratungspräsentation. Was gehört in deine Übergabe außer den Daten?",
                 "optionen": [
                   "Deine Einschätzung, an welcher Stelle es kippen könnte und was du dort tun würdest",
                   "Die vollständige Gesprächsaufzeichnung",
-                  "Nichts weiter, die Ampelfarbe reicht"
+                  "Nichts weiter, das Ergebnis aus Schritt 18 reicht"
                 ],
                 "korrekt": 0,
-                "aufloesung": "Ein Satz dazu, wo es kippen könnte, gibt nicht nur Daten weiter, sondern eine Einschätzung. Genau die fehlt in den meisten Übergaben, und eine Farbe ohne Begründung ist für den Berater wertlos.",
+                "aufloesung": "Ein Satz dazu, wo es kippen könnte, gibt nicht nur Daten weiter, sondern eine Einschätzung. Genau die fehlt in den meisten Übergaben, und eine Einschätzung ohne Begründung ist für den Kollegen wertlos.",
                 "sprungZuAbschnitt": "danach"
               }
             ]
           }
         ],
-        "ueberschrift": "Nach dem Erstgespräch (in den nächsten 60 Minuten!)",
+        "ueberschrift": "Nach dem Erstgespräch: die nächsten 2 Stunden",
         "absaetze": [
-          "Die 60 Minuten sind kein Wettbewerb, sie haben einen praktischen Grund: In dieser Stunde weißt du noch, was der Lead wörtlich gesagt hat. Der Auslöser, die Formulierung beim Motiv, der Nebensatz über die Partnerin. Genau diese Wörter braucht der Berater, und genau sie verschwinden zuerst. Was du eine Stunde später notierst, ist eine Zusammenfassung. Was du am Abend notierst, ist eine Erinnerung an eine Zusammenfassung.",
-          "Die 60 Minuten sind nicht dasselbe wie die 24-Stunden-Regel, und die beiden widersprechen sich nicht. Die 24-Stunden-Regel gilt für den Erstkontakt zu einem neuen Lead, also für die Zeit zwischen Anfrage und erstem Anruf. Die 60 Minuten gelten für deine eigene Nachbereitung nach einem geführten Gespräch. Die eine Frist schützt den Lead vor dem Vergessenwerden, die andere schützt das Gespräch vor dem Verblassen. Wenn beide zusammenfallen, geht die Nachbereitung vor: Ein sauber dokumentierter Lead ist mehr wert als ein schnell angerufener zweiter.",
-          "Und damit steht die Beratung. Das nächste Kapitel ist dieser Termin: die Beratungspräsentation OS Immobilien, Station für Station, mit den zehn Überleitungen und den Momenten, an denen die Zahlen fallen."
+          "Die 2 Stunden haben einen praktischen Grund: In dieser Zeit weißt du noch, was der Kunde wörtlich gesagt hat. Das Motiv, die Sorge, der Nebensatz über die Partnerin. Genau diese Wörter übernimmt die Beratungspräsentation, und genau sie verschwinden zuerst aus dem Gedächtnis.",
+          "Innerhalb von 2 Stunden geht die Zusammenfassung an den Kunden: was du verstanden hast, der Termin für die Beratungspräsentation und dass er nichts vorbereiten muss, außer wenn er mag seine letzte Renteninformation. So sieht er schwarz auf weiß, dass er verstanden wurde, und der Termin steht ein zweites Mal vor ihm.",
+          "Kommt danach keine Reaktion oder bleibt ein offener Punkt, gilt der Nachfassplan: nach 24 Stunden eine kurze Erinnerung, nach 48 Stunden ein Anruf, nach drei Versuchen eine letzte freundliche Nachricht, und dann pausiert der Vorgang. Kein viertes und fünftes Nachhaken, kein Druck. Wer sich nicht meldet, hat damit auch geantwortet.",
+          "Die 2 Stunden sind nicht dasselbe wie die 24-Stunden-Regel. Die 24-Stunden-Regel gilt für den Erstkontakt zu einem neuen Lead, also die Zeit zwischen Anfrage und erstem Anruf. Die 2 Stunden gelten für deine Nachbereitung nach einem geführten Gespräch. Die eine Frist schützt den Lead vor dem Vergessenwerden, die andere schützt das Gespräch vor dem Verblassen.",
+          "Und damit steht die Beratung. Das nächste Kapitel ist dieser Termin: die Beratungspräsentation mit der Wahl des Konzepts, den Zahlen vor und nach Steuern und der Selbstauskunft, die ihr am Ende gemeinsam ausfüllt."
         ],
-        "quereinsteigerHinweis": "Zwei Dinge, die im ersten Monat oft durcheinandergehen. Der Buchungslink ist eine Adresse zu deinem eigenen Kalender: Der Lead klickt sie an und wählt selbst einen freien Termin, deshalb hinterlegst du sie einmalig in den Einstellungen und musst danach nie wieder Termine hin und her schieben. Und ein Follow-up-Task ist eine Aufgabe mit Datum im CRM, keine Notiz. Der Unterschied ist entscheidend: Eine Notiz liest niemand wieder, eine Aufgabe erscheint am gesetzten Tag in deiner Liste. Setz sie immer auf ein konkretes Datum, nicht auf demnächst.",
-        "profiTipp": "Die Nachbereitung entscheidet über den No-Show, nicht die Terminvereinbarung. Drei Feinheiten dazu. Erstens die Notiz: Schreib mindestens einen Satz wörtlich mit, in den Worten des Leads, nicht in deinen. Der Berater greift ihn im Beratungsgespräch auf, und der Lead erkennt seinen eigenen Satz sofort wieder. Eine Notiz wie Motiv Steuer nützt niemandem, eine Notiz wie Ich zahle jedes Jahr 14.000 Euro Steuern und sehe nichts davon trägt den ganzen nächsten Termin. Zweitens der Kalendereintrag: Die Prüfung im Postfach im letzten Schritt ist die halbe Miete, die andere Hälfte ist der Kalender selbst. Frag ausdrücklich, ob der Termin jetzt im Kalender steht, nicht nur, ob die Mail angekommen ist. Drittens die Übergabe: Wenn ein anderer Berater den Termin führt, schreib ihm in einem Satz, was du an der Stelle machen würdest, an der es kippen könnte. Damit gibst du nicht nur Daten weiter, sondern eine Einschätzung, und genau die fehlt in den meisten Übergaben.",
+        "quereinsteigerHinweis": "Zwei Dinge, die im ersten Monat oft durcheinandergehen. Der Buchungslink ist eine Adresse zu deinem eigenen Kalender: Der Lead klickt sie an und wählt selbst einen freien Termin, deshalb hinterlegst du sie einmalig in den Einstellungen und musst danach nie wieder Termine hin und her schieben. Und ein Follow-up-Task ist eine Aufgabe mit Datum im CRM, keine Notiz. Der Unterschied ist entscheidend: Eine Notiz liest niemand wieder, eine Aufgabe erscheint am gesetzten Tag in deiner Liste. Setz sie immer auf ein konkretes Datum, nicht auf demnächst, und halte dich an den Nachfassplan: drei Versuche, dann eine letzte Nachricht und Pause.",
+        "profiTipp": "Die Nachbereitung entscheidet über den No-Show, nicht die Terminvereinbarung. Drei Feinheiten dazu. Erstens die Notiz: Schreib mindestens einen Satz wörtlich mit, in den Worten des Kunden, nicht in deinen. Eine Notiz wie Motiv Steuer nützt niemandem, eine Notiz wie Ich zahle jedes Jahr 14.000 Euro Steuern und sehe nichts davon trägt den ganzen nächsten Termin. Zweitens der Kalendereintrag: Die Prüfung im Postfach in Schritt 21 ist die halbe Miete, die andere Hälfte ist der Kalender selbst. Frag ausdrücklich, ob der Termin jetzt im Kalender steht, auch beim Mitentscheider. Drittens die Übergabe: Wenn ein Kollege den Termin führt, schreib ihm in einem Satz, an welcher Stelle es kippen könnte. Damit gibst du nicht nur Daten weiter, sondern eine Einschätzung.",
         "checkliste": [
-          "Beratungsgespräch mit deinem persönlichen Buchungslink terminiert (den Link hinterlegst du einmalig in den Einstellungen, er wird im Erstgesprächsskript automatisch angezeigt)",
-          "Terminbestätigung Beratung versendet (mit Kalender-Invite)",
-          "Notizen im CRM: Motiv, Bonitäts-Ampel, Familienstand, Steuerlast, Highlights",
-          "Follow-up-Task falls Kunde noch überlegt"
+          "Termin für die Beratungspräsentation im CRM, mit Mitentscheider",
+          "Einladung angekommen und im Kalender, live geprüft",
+          "Notizen: Motiv wörtlich, Schwerpunkt, Reserve, tragbarer Betrag, Sorgen, erste Frage",
+          "Zusammenfassung an den Kunden innerhalb von 2 Stunden",
+          "Bei passt nicht: Grund eingetragen, Stufe Verloren",
+          "Ohne Reaktion: Nachfassplan mit höchstens drei Versuchen, dann Pause"
         ],
         "links": [
           {
@@ -8840,9 +8907,9 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "hinweis": "Gilt für den Erstkontakt zu einem neuen Lead, nicht für die Nachbereitung nach dem Gespräch"
           },
           {
-            "label": "Was im Beratungsgespräch als Nächstes passiert",
+            "label": "Was in der Beratungspräsentation als Nächstes passiert",
             "to": "/vertriebsakademie/beratungsgespraech?vaScrollTo=ueberblick-dramaturgie",
-            "hinweis": "Damit du weißt, worauf der Berater aufbaut, und deine Notiz danach ausrichtest"
+            "hinweis": "Damit du weißt, welche deiner Notizen dort wieder auftauchen"
           }
         ]
       }
@@ -8852,288 +8919,321 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
     "slug": "beratungsgespraech",
     "nummer": "5",
     "icon": "presentation",
-    "titel": "Beratungsgespräch",
-    "kicker": "Die Beratungspräsentation OS Immobilien",
-    "teaser": "Wie du die Beratungspräsentation OS Immobilien mit ihren 15 Stationen führst, an jeder Station weißt, was du sagst, und das Gespräch zur gemeinsam ausgefüllten Selbstauskunft bringst.",
-    "ziel": "Du kennst alle 15 Stationen und die drei Einschübe der Beratungspräsentation OS Immobilien, sprichst die zehn Überleitungen frei, rechnest Finanzierungsrahmen und Musterrechnung live vor und füllst am Ende die Selbstauskunft gemeinsam mit dem Kunden aus.",
+    "titel": "Beratungspräsentation",
+    "kicker": "Konzept wählen, ehrlich rechnen, Selbstauskunft gemeinsam",
+    "teaser": "Wie du die Beratungspräsentation von OS Real Estate führst: 16 Abschnitte in rund einer Stunde, die Wahl zwischen Zusatzrente und Steuerersparnis, echte Objekte mit Zahlen vor und nach Steuern, und am Ende die Selbstauskunft, die ihr gemeinsam ausfüllt.",
+    "ziel": "Du führst die Beratungspräsentation frei, lässt den Kunden sein Konzept wählen, rechnest Belastung und Steuerwirkung ehrlich vor, beantwortest Einwände ohne Druck und füllst bei einem Ja die Selbstauskunft gemeinsam aus. Die Objektvorstellung folgt rund 7 Tage später.",
     "abschlusstest": {
       "bestehensquote": 70,
       "anzahl": 10,
       "fragen": [
         {
-          "frage": "Was ist das Ziel der gesamten Beratungspräsentation OS Immobilien?",
+          "frage": "Was ist das Ziel der Beratungspräsentation?",
           "optionen": [
-            "Der Kunde entscheidet sich heute für eines der drei gezeigten Objekte",
-            "Die gemeinsam ausgefüllte Selbstauskunft in Station 14",
-            "Der Kunde wählt eines der drei Konzepte für sich aus"
+            "Der Kunde reserviert heute eine Wohnung",
+            "Bei einem Ja füllt ihr die Selbstauskunft gemeinsam aus",
+            "Der Kunde unterschreibt heute den Kaufvertrag"
           ],
           "korrekt": 1,
-          "aufloesung": "Die ganze Dramaturgie läuft auf Station 14 zu: die Selbstauskunft, die ihr noch im Termin gemeinsam ausfüllt. Eine Kaufentscheidung fällt heute ausdrücklich nicht.",
-          "sprungZuAbschnitt": "selbstauskunft-abschluss"
+          "aufloesung": "Am Ende steht die Frage aus Abschnitt 15 und bei Ja die gemeinsam ausgefüllte Selbstauskunft. Eine Kaufentscheidung fällt heute nicht, und reserviert wird erst in der Objektvorstellung.",
+          "sprungZuAbschnitt": "ueberblick-dramaturgie"
         },
         {
-          "frage": "Was stellst du in Station 01 als Erstes klar?",
+          "frage": "Zwischen welchen zwei Konzepten wählt der Kunde?",
           "optionen": [
-            "Heute fällt keine Kaufentscheidung",
-            "Welche Immobilie du heute vorstellen wirst",
-            "Wie hoch der monatliche Beitrag sein wird"
+            "Zusatzrente oder Steuerersparnis",
+            "Eigennutzung oder Kapitalanlage",
+            "Kaufen oder Mieten"
           ],
           "korrekt": 0,
-          "aufloesung": "Der Druck muss zuerst raus. Wer glaubt, er müsse heute unterschreiben, hört nicht zu. Deshalb steht am Anfang: Heute fällt keine Kaufentscheidung, heute geht es ums Verstehen.",
-          "sprungZuAbschnitt": "einstieg-sicherheit"
+          "aufloesung": "Konzept 1 heißt heute kaufen, später Zusatzrente. Konzept 2 heißt Steuern sparen, mehr Netto vom Brutto.",
+          "sprungZuAbschnitt": "konzepte-matching"
         },
         {
-          "frage": "Der Preis des Nichtstuns: Was sind 50.000 Euro auf dem Tagesgeldkonto nach 10 Jahren im Einkaufskorb noch wert?",
+          "frage": "Welches Objekt gehört zum Konzept Steuerersparnis?",
           "optionen": [
-            "60.950 Euro",
-            "50.000 Euro",
-            "47.615 Euro"
-          ],
-          "korrekt": 2,
-          "aufloesung": "Nominal werden aus 50.000 Euro bei 2 Prozent Zinsen zwar 60.950 Euro. Bei 2,5 Prozent Geldentwertung bleiben davon aber nur 47.615 Euro Kaufkraft, rund 2.400 Euro weniger als zu Beginn.",
-          "sprungZuAbschnitt": "einstieg-sicherheit"
-        },
-        {
-          "frage": "Wer wählt in der Präsentation das Konzept aus?",
-          "optionen": [
-            "Der Kunde klickt sich sein Wunschkonzept aus den drei Angeboten selbst an",
-            "Niemand, das Konzept wird still aus dem gewählten Hauptziel abgeleitet",
-            "Der Berater entscheidet es nach seinem Eindruck vom Kunden"
+            "Hauffstraße 38, Schwielowsee",
+            "Barfusstraße 9, Berlin-Wedding",
+            "Doppelhaushälften Zossen-Wünsdorf"
           ],
           "korrekt": 1,
-          "aufloesung": "Der Kunde wählt sein Ziel, nicht das Konzept. Das passende Konzept wird daraus abgeleitet. Der Kunde soll nicht raten, welches Konzept zu ihm passt, das ist unsere Aufgabe.",
-          "sprungZuAbschnitt": "vier-fragen"
+          "aufloesung": "Die Barfusstraße 9 ist das Objekt zur Steuerersparnis. Hauffstraße 38 und Zossen-Wünsdorf gehören zur Zusatzrente.",
+          "sprungZuAbschnitt": "konzepte-matching"
         },
         {
-          "frage": "Wie berechnet Station 03 den Finanzierungsrahmen?",
+          "frage": "Womit ist der Konzeptschalter vorbelegt?",
           "optionen": [
-            "Der gesamte Überschuss mal 12, geteilt durch 6 Prozent Annuität, plus liquides Eigenkapital",
-            "80 Prozent des Überschusses mal 12, geteilt durch 6 Prozent Annuität, plus Eigenkapital",
-            "Überschuss mal 12, geteilt durch 1,2, plus das gesamte vorhandene Eigenkapital"
+            "Mit dem Schwerpunkt aus Schritt 7 des Erstgesprächs",
+            "Mit dem teuersten verfügbaren Objekt",
+            "Mit dem Konzept, das der Vertriebspartner bevorzugt"
           ],
-          "korrekt": 1,
-          "aufloesung": "Gerechnet wird mit 80 Prozent des Monatsüberschusses als tragbarer Rate, einer Annuität aus Zins und Tilgung von 6 Prozent und dem liquiden Eigenkapital obendrauf. Genau so rechnet die Software an jeder anderen Stelle auch. Der Faktor 1,2 gehört der Bank, nicht uns: Sie teilt den verfügbaren Betrag durch 1,2 und rechnet zusätzlich die Miete des Objekts mit. Unsere Zahl ist eine Orientierung, keine Zusage.",
-          "sprungZuAbschnitt": "vier-fragen"
+          "korrekt": 0,
+          "aufloesung": "Der Schwerpunkt aus dem Erstgespräch belegt den Schalter vor. Der Kunde kann jederzeit umschalten.",
+          "sprungZuAbschnitt": "konzepte-matching"
         },
         {
-          "frage": "Wer trägt laut Station 05 den größten Teil der monatlichen Rate?",
+          "frage": "In welcher Reihenfolge zeigst du die Belastung?",
           "optionen": [
-            "Der Kunde mit 78 Prozent",
-            "Der Mieter mit 78 Prozent",
-            "Das Finanzamt mit 78 Prozent"
+            "Erst nach Steuern, weil die Zahl kleiner ist",
+            "Erst vor Steuern, dann nach Steuern",
+            "Nur nach Steuern, vor Steuern verwirrt den Kunden"
           ],
           "korrekt": 1,
-          "aufloesung": "Bezugsgröße ist die Rate von 1.604 Euro aus der Bestandsrechnung. Der Mieter trägt davon 1.250 Euro, also 78 Prozent, das Finanzamt ab dem zweiten Jahr 126 Euro, also 8 Prozent, und beim Kunden bleiben 228 Euro, also 14 Prozent. Aus dem Gefühl, alles allein zu zahlen, wird der kleine Rest im Ring.",
-          "sprungZuAbschnitt": "bausteine-vergleich"
-        },
-        {
-          "frage": "Auf welche Bemessungsgrundlage rechnen Bestand und WG ihre 2 Prozent Gebäude-AfA?",
-          "optionen": [
-            "Auf den vollen Kaufpreis, die Kaufnebenkosten bleiben dabei außen vor",
-            "Auf 80 Prozent von Kaufpreis plus Kaufnebenkosten, also den Gebäudeanteil",
-            "Auf den Kaufpreis abzüglich des einmaligen Erhaltungsaufwands im ersten Jahr"
-          ],
-          "korrekt": 1,
-          "aufloesung": "Beide Objektkarten weisen einen Gebäudeanteil von 80 Prozent aus. Beim Bestand sind das 80 Prozent von 369.250 Euro, also 295.400 Euro, und davon 2 Prozent sind die 5.908 Euro Gebäude-AfA. Der Grund und Boden nutzt sich nicht ab und wird nicht abgeschrieben.",
-          "sprungZuAbschnitt": "steuerwirkung"
-        },
-        {
-          "frage": "Was entscheidet die 15-Prozent-Grenze des § 6 Absatz 1 Nummer 1a Einkommensteuergesetz?",
-          "optionen": [
-            "Wie hoch die Gebäude-AfA in den ersten drei Jahren nach dem Kauf angesetzt werden darf",
-            "Ob Instandsetzung der ersten drei Jahre sofort abziehbar bleibt oder nicht",
-            "Wie viel Eigenkapital die Bank bei einer sanierungsbedürftigen Wohnung verlangt"
-          ],
-          "korrekt": 1,
-          "aufloesung": "Übersteigen die Instandsetzungs- und Modernisierungsaufwendungen der ersten drei Jahre ohne Umsatzsteuer 15 Prozent der Gebäude-Anschaffungskosten, kippt der gesamte Betrag in Herstellungskosten. Beim Bestand liegt die Grenze bei 44.310 Euro, die angesetzten 20.000 Euro bleiben darunter.",
-          "sprungZuAbschnitt": "steuerwirkung"
-        },
-        {
-          "frage": "Was gilt in der Musterrechnung für das WG-Konzept?",
-          "optionen": [
-            "Es rechnet wie der sanierte Bestand, nur mit höheren Mieteinnahmen je Quadratmeter Wohnfläche",
-            "Es hat eine eigene vollständige Rechnung: 413.500 Euro, 38,33 Quadratmeter, 1.600 Euro Miete",
-            "Für WG-Objekte zeigt die Präsentation nur die Mietrendite, ohne vollständige Rechnung"
-          ],
-          "korrekt": 1,
-          "aufloesung": "Jedes der drei Konzepte hat eine eigene, vollständig durchgerechnete Wohnung. Die WG-Wohnung kostet 413.500 Euro bei 38,33 Quadratmetern und bringt 1.600 Euro Kaltmiete, also 41,74 Euro je Quadratmeter.",
+          "aufloesung": "Die Rechnung muss vor Steuern tragen, alles darüber ist ein möglicher Bonus. Deshalb immer zuerst vor Steuern.",
           "sprungZuAbschnitt": "musterrechnung"
         },
         {
-          "frage": "Der Kunde zieht den Wertsteigerungsregler auf null. Was bleibt in der Bestandsrechnung nach 10 Jahren übrig?",
+          "frage": "Was zeigst du neben einer Rechnung mit erhöhter AfA?",
           "optionen": [
-            "Nichts, ohne Wertsteigerung trägt sich die Rechnung des Bestandsobjekts nicht",
-            "63.032 Euro, weil die Tilgung unabhängig von jeder Wertentwicklung läuft",
-            "183.403 Euro, das ist der Wert aus der Voreinstellung des Reglers"
+            "Die Rechnung mit Regel-AfA",
+            "Nichts, die erhöhte AfA ist sicher",
+            "Eine Rechnung mit höherer Miete"
           ],
-          "korrekt": 1,
-          "aufloesung": "Selbst bei null Prozent Wertsteigerung bleiben die 63.032 Euro getilgtes Darlehen. Alles darüber ist Zugabe, nicht Grundlage. Genau deshalb darf der Kunde den Regler selbst auf null ziehen.",
+          "korrekt": 0,
+          "aufloesung": "Die erhöhte AfA braucht ein Gutachten, das das Finanzamt anerkennen muss. Deshalb steht die Regel-AfA immer daneben.",
           "sprungZuAbschnitt": "musterrechnung"
         },
         {
-          "frage": "Aus welchen beiden Bausteinen bildet Station 11 den Einsatz, mit dem sie die nötige Sparplan-Rendite errechnet?",
+          "frage": "Wie hoch ist der Eigenanteil der Hauffstraße 38, WE 01, vor Steuern im Monat?",
           "optionen": [
-            "Kaufpreis und Kaltmiete, daraus ergibt sich die Bruttomietrendite des Objekts über zehn Jahre",
-            "Eigenkapital in Höhe der Kaufnebenkosten und der Cashflow nach Steuer über 120 Monate",
-            "Darlehenssumme und Steuerentlastung des ersten Jahres, hochgerechnet auf zehn Jahre"
+            "151 Euro",
+            "391 Euro",
+            "880 Euro"
           ],
           "korrekt": 1,
-          "aufloesung": "Einmaliges Eigenkapital plus monatlicher Cashflow nach Steuer mal 120 Monate ergeben das Endvermögen nach zehn Jahren. Daraus wird die effektive Jahresrendite errechnet, die ein Sparplan bräuchte, netto steuerfrei.",
-          "sprungZuAbschnitt": "sparplan-rendite"
+          "aufloesung": "653 Euro Miete samt Garage minus 880 Euro Zins und Tilgung minus 164 Euro Hausgeld ergeben minus 391 Euro vor Steuern. Nach Steuern bleiben 151 Euro, mit Regel-AfA rund 210 Euro.",
+          "sprungZuAbschnitt": "musterrechnung"
         },
         {
-          "frage": "Nach welchem Prinzip sind deine fünf Standardantworten auf die häufigsten Einwände aufgebaut?",
+          "frage": "Wie hoch ist das Ergebnis der Barfusstraße 9, WE 03, mit Regel-AfA von 2,5 Prozent?",
           "optionen": [
-            "Zuerst das echte Risiko nennen, dann was dagegen getan wird",
-            "Zuerst beruhigen, dann das Risiko so klein wie möglich halten",
-            "Das Risiko umgehen und auf den Steuerberater verweisen"
+            "Rund minus 4 Euro im Monat",
+            "Rund minus 390 Euro im Monat",
+            "Rund plus 163 Euro im Monat"
           ],
-          "korrekt": 0,
-          "aufloesung": "Jede Antwort nennt zuerst das echte Risiko und dann die Absicherung. Andersherum klänge es nach Beschwichtigung und würde das Gegenteil bewirken.",
+          "korrekt": 1,
+          "aufloesung": "Mit 5,6 Prozent AfA laut Ersteinschätzung sind es minus 4 Euro, mit Regel-AfA rund minus 390 Euro. Beide Zahlen gehören auf den Tisch.",
+          "sprungZuAbschnitt": "musterrechnung"
+        },
+        {
+          "frage": "Was zeigt Abschnitt 11, Sicherheit?",
+          "optionen": [
+            "Wie viel Rendite garantiert ist",
+            "Was passiert, wenn Zins steigt, Wohnung leer steht oder das Gutachten nicht anerkannt wird",
+            "Welche Wohnungen bald ausverkauft sind"
+          ],
+          "korrekt": 1,
+          "aufloesung": "Der Stresstest: Zins plus ein Punkt ab Jahr 11, drei Monate Leerstand, Gutachten nicht anerkannt. Eine Rechnung, die nur funktioniert, wenn alles glatt läuft, ist nichts wert.",
           "sprungZuAbschnitt": "pruefung-einwaende"
         },
         {
-          "frage": "Warum sinkt die Steuerentlastung beim Bestand ab dem zweiten Jahr von 826 auf 126 Euro im Monat?",
+          "frage": "Wie behandelst du Zukunftszahlen wie die Zusatzrente ab 2061?",
           "optionen": [
-            "Weil die lineare AfA von 2 Prozent nur im ersten Jahr in voller Höhe angesetzt wird",
-            "Weil der einmalige Erhaltungsaufwand von 20.000 Euro nur im ersten Jahr wirkt",
-            "Weil der Grenzsteuersatz des Beispielkunden durch die Mieteinnahmen sinkt"
+            "Als Zusage, damit der Kunde planen kann",
+            "Als Szenario mit genannter Annahme",
+            "Gar nicht, Zukunftszahlen sind verboten"
           ],
           "korrekt": 1,
-          "aufloesung": "Der große Effekt des ersten Jahres kommt genau einmal: der Erhaltungsaufwand von 20.000 Euro. Danach bleibt ein steuerliches Ergebnis von rund minus 3.588 Euro, also etwa 126 Euro Entlastung im Monat. Wer das verschweigt, verkauft eine Illusion.",
-          "sprungZuAbschnitt": "steuerwirkung"
+          "aufloesung": "Jede Zahl über die Zukunft ist ein Szenario, keine Zusage. Die Zusatzrente von 2061 entspricht heute zudem weniger Kaufkraft.",
+          "sprungZuAbschnitt": "pruefung-einwaende"
         },
         {
-          "frage": "Wann verlässt der Kunde die Pipeline-Stufe Beratungsgespräch?",
+          "frage": "Wo werden die 15 häufigsten Einwände gepflegt?",
           "optionen": [
-            "Wenn der Termin stattgefunden hat und im Protokoll als erschienen vermerkt ist",
-            "Wenn die Selbstauskunft verschickt ist und beim Kunden zur Unterschrift liegt",
-            "Wenn die Selbstauskunft unterschrieben ist, vorher bleibt die Stufe stehen"
+            "Im Leitfaden Einwandbehandlung",
+            "In jedem Kapitel der Akademie einzeln",
+            "Nur in den Köpfen erfahrener Partner"
+          ],
+          "korrekt": 0,
+          "aufloesung": "Kernsatz, Nachfrage, Belege, Zustimmungsfrage und die Sätze, die wir nie sagen, stehen an einer Stelle. Die Akademie verweist darauf.",
+          "sprungZuAbschnitt": "pruefung-einwaende"
+        },
+        {
+          "frage": "Wie rechnet Abschnitt 13 den Finanzierungsrahmen?",
+          "optionen": [
+            "80 Prozent des Überschusses mal 12, geteilt durch 6 Prozent Annuität, plus liquides Eigenkapital",
+            "Der gesamte Überschuss mal 12, geteilt durch 1,2, plus Eigenkapital",
+            "Das Bruttojahresgehalt mal fünf"
+          ],
+          "korrekt": 0,
+          "aufloesung": "Dieselbe Formel wie im Kundenprofil. Die Zahl ist eine Orientierung, keine Zusage, die Bank rechnet selbst.",
+          "sprungZuAbschnitt": "vier-fragen"
+        },
+        {
+          "frage": "Wann findet die Objektvorstellung statt?",
+          "optionen": [
+            "Direkt im Anschluss an die Beratung",
+            "Rund 7 Tage nach der Beratung",
+            "Erst nach der Finanzierungszusage"
           ],
           "korrekt": 1,
-          "aufloesung": "Schon das Verschicken schaltet auf die Stufe Selbstauskunft, die Unterschrift schaltet danach weiter auf Objektauswahl. Die Zweiteilung ist bewusst so gebaut: Wer auf eine Unterschrift wartete, stand vorher weiter unter Beratungsgespräch, und niemand sah, dass an dem Vorgang etwas läuft.",
+          "aufloesung": "Rund eine Woche später, mit Exposé und Investmentkalkulation auf Basis der Selbstauskunft. Bis dahin liegen Ausweis und letzte Gehaltsabrechnung vor.",
           "sprungZuAbschnitt": "selbstauskunft-abschluss"
         },
         {
-          "frage": "Wen zeigt die Beraterkarte in Station 02?",
+          "frage": "Was kostet die Reservierung den Kunden?",
           "optionen": [
-            "Immer die Geschäftsführung von OS Immobilien, damit die Firma im Vordergrund steht",
-            "Den angemeldeten Nutzer, also dich, der die Präsentation gerade hält",
-            "Einen zufällig gewählten Berater aus dem Team, das Foto wechselt je Aufruf"
+            "Eine Gebühr, die beim Kauf angerechnet wird",
+            "Nichts, sie ist kostenfrei",
+            "Ein Prozent des Kaufpreises"
           ],
           "korrekt": 1,
-          "aufloesung": "Die Karte zieht Name, Foto, Position, Telefon und E-Mail aus deinem Profil in den Einstellungen. Ein Kunde vertraut keiner Firma, sondern dem Menschen, der ihm gegenübersitzt. Deshalb: Profil pflegen, bevor du den ersten Termin hältst, denn eine leere Karte kostet an dieser Stelle Vertrauen.",
-          "sprungZuAbschnitt": "einstieg-sicherheit"
+          "aufloesung": "Die Reservierung ist kostenfrei und fällt erst in der Objektvorstellung, wenn der Kunde sein Objekt gesehen hat.",
+          "sprungZuAbschnitt": "selbstauskunft-abschluss"
+        },
+        {
+          "frage": "Was ist der Nachfassplan nach der Beratung?",
+          "optionen": [
+            "Zusammenfassung innerhalb von 2 Stunden, nach 24 Stunden Erinnerung an die fehlende Unterlage, nach 48 Stunden Anruf, nach drei Versuchen letzte Nachricht und Pause",
+            "Täglich anrufen, bis alle Unterlagen da sind",
+            "Eine Woche abwarten und dann den Termin absagen"
+          ],
+          "korrekt": 0,
+          "aufloesung": "Begrenzt, freundlich und ohne Druck. Nach drei Versuchen pausiert der Vorgang.",
+          "sprungZuAbschnitt": "selbstauskunft-abschluss"
+        },
+        {
+          "frage": "Welcher Satz fällt nie?",
+          "optionen": [
+            "„Ob und wie viel die Bank finanziert, entscheidet die Bank.“",
+            "„Das bekommen wir bei der Bank schon hin.“",
+            "„Nach jedem Schritt entscheidest du, ob es weitergeht.“"
+          ],
+          "korrekt": 1,
+          "aufloesung": "Über die Finanzierung entscheidet die Bank. Wir versprechen nichts, was wir nicht in der Hand haben.",
+          "sprungZuAbschnitt": "haltung-wording"
         }
       ]
     },
     "abwaegungsfall": {
       "id": "selbstauskunft-hausaufgabe",
       "titel": "Der Kunde will die Selbstauskunft lieber zu Hause ausfüllen. Was machst du?",
-      "fall": "Das Gespräch lief gut, die Rückspiegelung hat gepasst, du bist bei Station 14. Der Kunde sagt: Schick mir das doch per Mail, ich fülle das am Wochenende in Ruhe aus. Die Präsentation sagt ausdrücklich: nicht als Hausaufgabe, nicht per Mail hinterher. Aber der Kunde hat es nun einmal so vorgeschlagen. Wähle einen Weg und begründe ihn in zwei Sätzen.",
+      "fall": "Das Gespräch lief gut, die Rückspiegelung hat gepasst, auf die Frage aus Abschnitt 15 kam ein Ja. Der Kunde sagt: Schick mir das doch per Mail, ich fülle das am Wochenende in Ruhe aus. Der Ablauf sieht vor, die Selbstauskunft gemeinsam auszufüllen, aber Druck soll es ausdrücklich nicht geben. Wähle einen Weg und begründe ihn in zwei Sätzen.",
       "wege": [
         {
           "id": "a",
           "label": "Freundlich beim gemeinsamen Ausfüllen bleiben",
-          "beschreibung": "Du erklärst, warum jetzt der beste Moment ist: Die halbe Selbstauskunft ist mit seinen Antworten aus Station 03 schon gefüllt, der Rest dauert zehn Minuten, und du kannst jede Frage sofort beantworten. Zu Hause bleibt das Formular erfahrungsgemäß liegen, und der nächste Termin rechnet wieder nur mit einem Beispiel."
+          "beschreibung": "Du erklärst, warum jetzt der beste Moment ist: Vieles ist aus dem Erstgespräch schon bekannt, der Rest dauert etwa 15 Minuten, und du kannst jede Frage sofort beantworten. Sagt er danach immer noch lieber zu Hause, respektierst du das."
         },
         {
           "id": "b",
           "label": "Den größten Teil jetzt erfassen, den Rest in einem festen Kurztermin",
-          "beschreibung": "Du füllst alles aus, was ohne Unterlagen geht, also Einkommen, Ausgaben, Beitrag und Ziele, und vereinbarst für die restlichen Angaben einen festen Videotermin von 15 Minuten innerhalb von 48 Stunden. Der Kunde behält das Gefühl von Kontrolle, du behältst das Momentum und einen Termin im Kalender."
+          "beschreibung": "Du füllst aus, was ohne Unterlagen geht, und vereinbarst für die restlichen Angaben einen Videotermin von 15 Minuten innerhalb von 48 Stunden. Die Objektvorstellung bleibt rund 7 Tage nach der Beratung."
         },
         {
           "id": "c",
-          "label": "Loslassen und mitgeben, aber mit festem Folgetermin",
-          "beschreibung": "Du respektierst den Wunsch, gibst die Selbstauskunft mit und legst noch im Gespräch den Folgetermin fest, an dem ihr sie gemeinsam durchgeht. Das wahrt die Beziehung bei sehr sicherheitsbedürftigen Kunden, kostet aber Verbindlichkeit, und die Stufe im CRM bleibt so lange stehen."
+          "label": "Loslassen und mitgeben, mit festem Folgetermin",
+          "beschreibung": "Du respektierst den Wunsch, gibst die Selbstauskunft mit und legst den Termin fest, an dem ihr sie gemeinsam durchgeht. Das wahrt die Beziehung, kostet aber Zeit, und die Objektvorstellung rückt womöglich nach hinten."
         }
       ]
     },
     "sections": [
       {
         "id": "ueberblick-dramaturgie",
-        "ueberschrift": "Eine Präsentation, 15 Stationen, ein Ziel",
-        "intro": "Im Vertrieb gibt es nur noch eine Präsentation: die Beratungspräsentation OS Immobilien. Die drei früheren Fassungen tragen ein Alt-Badge und dienen der Leitung als Nachschlagewerk. Du arbeitest ausschließlich mit der aktuellen.",
+        "ueberschrift": "Eine Präsentation, 16 Abschnitte, ein Ziel",
+        "intro": "Im Vertrieb gibt es eine Präsentation: die Beratungspräsentation von OS Real Estate. Rund eine Stunde, per Video oder bei uns im Büro, in der Anrede, die im Erstgespräch vereinbart wurde.",
         "absaetze": [
-          "Die Präsentation ist nach der Gesprächsvorlage aufgebaut: 15 nummerierte Stationen plus drei Einschübe ohne Nummer, nämlich der Preis des Nichtstuns, die Referenzen und Deine Angaben. Die Spannung wächst bewusst: erst Sicherheit geben, denn heute wird nichts entschieden. Dann verstehen. Dann den Preis des Nichtstuns spürbar machen. Dann den Weg zeigen. Ziel ist Station 14, die gemeinsam ausgefüllte Selbstauskunft.",
-          "Zwischen den Stationen stehen zehn Überleitungen. Sie sind kein Dekor, sondern die Brücke von einem Gedanken zum nächsten. Ohne sie ist eine Präsentation eine Aneinanderreihung von Folien, mit ihnen wird sie ein Gespräch. Die Überleitungen sind dein Gesprächsgerüst: Wer sie frei sprechen kann, kann die ganze Präsentation frei führen.",
-          "Auch die Farben erzählen mit: Es gibt drei Tonlagen, normal, hell und dunkel. Die dunklen Abschnitte sind die Höhepunkte des Gesprächs, der Preis des Nichtstuns, der gemeinsame Weg, die Rechnung Zeile für Zeile und die Selbstauskunft-Bühne. Der Wechsel zwischen hell und dunkel ist der eigentliche Spannungsbogen.",
-          "Wichtig für die Praxis: Öffne die Präsentation beim Kunden immer aus dem Kundenprofil über das Investment. Dann steht der Kundenname in der Begrüßung, alle Antworten aus Station 03 werden am Kunden gespeichert und stehen beim zweiten Termin noch da, und die Selbstauskunft ist direkt mit Kunde und Investment verknüpft. Du findest die Präsentation auch unter Präsentation und Unterlagen in der Sidebar, dort aber ohne Kundenkontext, zum Üben.",
-          "Und der rote Faden hinter fast allem, was du gleich lernst, heißt geistige Brandstiftung, sauber eingesetzt: Nicht du überzeugst den Kunden, der Kunde überzeugt sich selbst. Er zieht die Schlussfolgerung beim Preis des Nichtstuns, er gibt die fünf Antworten in Station 03, er zieht den Regler auf null, und am Ende hört er in der Rückspiegelung seine eigenen Worte. Der Interessent verkauft sich die Immobilie selbst, deine Aufgabe ist, die Funken zu setzen und dann nicht dazwischenzureden.",
-          "Geistige Brandstiftung ist ein Bild aus dem Verkaufstraining und meint genau das: Du legst kein Feuer mit Behauptungen, du legst den Funken, indem du eine Rechnung zeigst und eine Frage stellst. Den Gedanken zu Ende führt der Kunde. Der Wirkmechanismus dahinter ist gut belegt und heißt in der Sozialpsychologie Selbstüberzeugung: Selbst erzeugte Argumente überzeugen stärker und halten länger als vorgetragene, weil der Zuhörer sie nicht gegen den Sprecher prüft, sondern gegen sich selbst (Anthony Greenwald, Cognitive Learning, Cognitive Response to Persuasion and Attitude Change, 1968). Die Grenze ist genauso wichtig: Ein Funke ohne Deckung ist Angstmache. Deshalb steht hinter jedem dieser Momente eine Rechnung, die du Zeile für Zeile belegen kannst.",
-          "Unten siehst du das Trainings-Cockpit: links die echte Präsentation, rechts das Sprechskript zu jeder Station. Beim Scrollen springt das passende Skript automatisch mit. So lernst du beides gleichzeitig, das Bild des Kunden und deine Worte dazu."
+          "Die Präsentation hat 16 Abschnitte: 01 Unser Termin, 02 Ihre Ziele, 03 Ihre Rentenlücke, 04 Der Preis des Nichtstuns, 05 Wer wir sind und die Unternehmensgruppe, 06 Das Prinzip mit vier Bausteinen, 07 Ihr Konzept, 08 So funktioniert es, 09 Unsere Objekte, 10 Die Rechnung Zeile für Zeile, 11 Sicherheit, 12 Ihr Plan, 13 Ihre Kriterien, 14 Ihr Weg, 15 Der nächste Schritt und 16 Ihr nächster Termin.",
+          "Der rote Faden ist einfach: erst der Kunde, dann das Prinzip, dann sein Konzept mit echten Zahlen, dann die Frage, was passieren muss, damit es für ihn passt. Ziel ist Abschnitt 15. Dort fragst du: Wenn wir eine Immobilie finden, die deine Kriterien erfüllt, möchtest du den nächsten Schritt gehen? Bei Ja füllt ihr die Selbstauskunft gemeinsam aus, das dauert etwa 15 Minuten. Eine Kaufentscheidung fällt heute nicht, und auch keine Reservierung.",
+          "Vieles ist schon vorbelegt, wenn du die Präsentation aus dem Kundenprofil öffnest: die Anrede, die Ziele und das Motiv als Zitat, Ruhestand, erwartete Rente und Wunsch-Netto für die Rentenlücke, Reserve, tragbarer Betrag und Stressgrenze, die Sorgen und die erste Frage des Kunden. Und der Schwerpunkt aus dem Erstgespräch belegt den Konzeptschalter vor. Was im Erstgespräch sauber notiert wurde, steht hier wieder vorn.",
+          "Die Haltung bleibt dieselbe wie im Erstgespräch: Erst verstehen, dann empfehlen. Dazu drei feste Regeln für alle Zahlen. Die Belastung zeigst du immer vor und nach Steuern. Wo mit erhöhter AfA gerechnet wird, steht die Regel-AfA daneben. Und jede Zahl über die Zukunft ist ein Szenario mit genannten Annahmen, keine Zusage.",
+          "Nach der Präsentation geht es so weiter: Bis zur Objektvorstellung reicht der Kunde Personalausweis und letzte Gehaltsabrechnung nach, bequem über das Kundenportal. Rund 7 Tage nach der Beratung stellst du die passende Immobilie vor, mit Exposé und einer Investmentkalkulation auf Basis der Selbstauskunft. Passt alles, reserviert der Kunde im selben Termin, kostenfrei."
         ],
-        "trainingsCockpit": true,
+        "praesentationEmbed": {
+          "url": "/beratungspraesentation-osimmobilien",
+          "label": "Beratungspräsentation, so wie der Kunde sie sieht",
+          "hoehe": 640,
+          "oeffnenLabel": "In neuem Tab öffnen"
+        },
         "visuals": [
           {
+            "kpis": [
+              {
+                "label": "Dauer",
+                "wert": "rund 1 Std.",
+                "hinweis": "Per Video oder im Büro, mit allen Mitentscheidern",
+                "farbe": "primary"
+              },
+              {
+                "label": "Abschnitte",
+                "wert": "16",
+                "hinweis": "Vom Termin heute bis zum nächsten Termin",
+                "farbe": "indigo"
+              },
+              {
+                "label": "Konzepte",
+                "wert": "2",
+                "hinweis": "Zusatzrente oder Steuerersparnis, der Kunde wählt",
+                "farbe": "emerald"
+              },
+              {
+                "label": "Ziel",
+                "wert": "Selbstauskunft",
+                "hinweis": "Gemeinsam ausgefüllt, etwa 15 Minuten",
+                "farbe": "sky"
+              }
+            ]
+          },
+          {
             "timeline": {
-              "titel": "Der rote Faden der Beratungspräsentation OS Immobilien",
+              "titel": "Der Weg des Kunden, wie er ihn in Abschnitt 14 sieht",
               "schritte": [
                 {
-                  "label": "Heute fällt keine Kaufentscheidung",
-                  "dauer": "Station 01",
-                  "beschreibung": "Druck raus, Agenda zeigen. Wer unterschreiben zu müssen glaubt, hört nicht zu.",
+                  "label": "Erstgespräch",
+                  "beschreibung": "Ziele und Rahmen",
                   "status": "start"
                 },
                 {
-                  "label": "Der Preis des Nichtstuns",
-                  "dauer": "Einschub, dunkel",
-                  "beschreibung": "50.000 Euro Tagesgeld verlieren in 10 Jahren rund 2.400 Euro Kaufkraft.",
-                  "status": "trigger"
+                  "label": "Beratung",
+                  "beschreibung": "Konzept und Objekte, heute"
                 },
                 {
-                  "label": "Wer sitzt hier vor dir",
-                  "dauer": "Station 02",
-                  "beschreibung": "OS Immobilien in einem Satz, dann du als Person mit Foto und Kontakt."
+                  "label": "Selbstauskunft",
+                  "beschreibung": "Gleich im Anschluss gemeinsam, heute"
                 },
                 {
-                  "label": "Die fünf Fragen an den Kunden",
-                  "dauer": "Station 03",
-                  "beschreibung": "Erfahrung, Ziele, Eigenaufwand, Finanzierungsrahmen live gerechnet, was ihm wichtig ist."
+                  "label": "Unterlagen",
+                  "dauer": "bis Tag 7",
+                  "beschreibung": "Ausweis und letzte Gehaltsabrechnung"
                 },
                 {
-                  "label": "Der gemeinsame Weg",
-                  "dauer": "Station 04, dunkel",
-                  "beschreibung": "Sechs Schritte, heute machen wir Schritt eins und zwei."
+                  "label": "Objektvorstellung",
+                  "dauer": "Tag 7",
+                  "beschreibung": "Exposé und Kalkulation, Reservierung kostenfrei"
                 },
                 {
-                  "label": "Wie die Kapitalanlage ihr Geld verdient",
-                  "dauer": "Station 05 und 06",
-                  "beschreibung": "Vier Bausteine, wer trägt die Rate, der ehrliche Vergleich."
+                  "label": "Besichtigung",
+                  "beschreibung": "Der Kunde sieht seine Immobilie"
                 },
                 {
-                  "label": "Drei Konzepte, drei Ziele",
-                  "dauer": "Station 07 und 08",
-                  "beschreibung": "Sanierter Bestand, WG und Co-Living, KfW 40 QNG, alle drei als Reiter in Station 08."
+                  "label": "Bankgutachter",
+                  "beschreibung": "Bewertung für die Bank"
                 },
                 {
-                  "label": "Die Rechnung Zeile für Zeile",
-                  "dauer": "Station 09 bis 12",
-                  "beschreibung": "Drei Objekte, Monatsrechnung, Immobilienschere mit Regler, Sparplan-Rendite, Steuerwirkung, dann die Referenzen."
+                  "label": "Finanzierung",
+                  "beschreibung": "Zusage der Bank"
                 },
                 {
-                  "label": "Was wir bei jedem Objekt prüfen",
-                  "dauer": "Station 13",
-                  "beschreibung": "Zehn Prüfpunkte. Knappheit durch Auswahl statt durch Fristen."
+                  "label": "Notar",
+                  "beschreibung": "Kaufvertrag"
                 },
                 {
-                  "label": "Selbstauskunft gemeinsam ausfüllen",
-                  "dauer": "Station 14 und 15",
-                  "beschreibung": "Rückspiegelung, dann die Bühne: der einzige Schritt, der heute verlangt wird.",
+                  "label": "Kaufpreis",
+                  "beschreibung": "Fälligkeit und Übergabe",
                   "status": "ziel"
                 }
               ]
             }
           }
         ],
-        "quereinsteigerHinweis": "Merk dir den Ablauf als Geschichte, nicht als Liste: Sicherheit geben, Nichtstun kostet, wer wir sind, deine fünf Antworten, unser Weg, so verdient die Immobilie Geld, warum nicht Aktien, drei Konzepte, drei Rechnungen, was ein Sparplan leisten müsste, deine Steuer, echte Projekte, unsere Prüfung, deine Worte zurück, Selbstauskunft, Ausblick. Wenn du die Geschichte erzählen kannst, brauchst du keine Folien auswendig zu lernen.",
+        "quereinsteigerHinweis": "Zwei Wörter, die in diesem Kapitel ständig vorkommen. Die Selbstauskunft ist das Formular, in dem der Kunde Einkommen, Ausgaben, Vermögen und Verbindlichkeiten angibt. Sie ist die Grundlage für die Investmentkalkulation der Objektvorstellung und später für die Bank. Und die Investmentkalkulation ist die Rechnung für ein konkretes Objekt mit den Zahlen des Kunden, vor und nach Steuern, mit Stresstest. Im CRM heißt das Werkzeug Investmentrechner.",
         "goldNugget": {
-          "titel": "Immer aus dem Kundenprofil öffnen",
-          "text": "Der Knopf Beratungspräsentation OS Immobilien im Kundenprofil hängt Kundenname, Kunden-ID und Investment-ID an die Adresse. Nur dann werden die Antworten aus Station 03 am Kunden gespeichert und die Selbstauskunft öffnet direkt mit dem richtigen Kunden und Investment. Wer die Präsentation ohne Kontext öffnet, verschenkt genau die Daten, die den zweiten Termin stark machen.",
+          "titel": "Warum die Präsentation mit einer Frage endet und nicht mit einem Angebot",
+          "text": "Abschnitt 15 fragt nicht, ob der Kunde kaufen will, sondern ob er den nächsten Schritt gehen möchte, wenn wir eine Immobilie finden, die seine Kriterien erfüllt. Die Kriterien hat er in Abschnitt 13 selbst genannt. Damit entscheidet er über seine eigenen Bedingungen und nicht über ein Produkt. Drei Antworten sind möglich und alle in Ordnung: Ja, Nein oder Ja unter einer Bedingung. Du hältst die Antwort im CRM fest, und bei einer Bedingung schreibst du sie wörtlich mit.",
           "bullets": [
-            "Mit Kontext: Antworten überleben den Termin und stehen beim Folgetermin noch da.",
-            "Mit Kontext: Der Selbstauskunft-Knopf übergibt Kunde und Investment automatisch.",
-            "Ohne Kontext: Die Begrüßungszeile mit dem Kundennamen fehlt im Hero."
+            "Frage stellen, dann schweigen.",
+            "Ja unter Bedingung ist ein gutes Ergebnis: Die Bedingung ist der Auftrag für die Objektvorstellung.",
+            "Ein Nein ist kein Scheitern. Wenn Reserve oder Lebensplanung nicht passen, ist Warten die bessere Wahl."
           ]
         },
         "aufgaben": [
@@ -9141,123 +9241,97 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "id": "ablauf-sortieren-qe",
             "typ": "sortieren",
             "pfad": "quereinsteiger",
-            "titel": "Bring die Geschichte in die richtige Reihenfolge",
-            "hinweis": "Ziehe die sechs Momente in die Reihenfolge des Gesprächs, Anfang und Ende stehen schon fest.",
             "punkte": 10,
+            "titel": "Bring die Präsentation in die richtige Reihenfolge",
+            "hinweis": "Acht Blöcke, erster und letzter stehen fest.",
             "randVorgegeben": true,
             "schritte": [
-              "Heute fällt keine Kaufentscheidung",
-              "Der Preis des Nichtstuns",
-              "Die fünf Fragen an den Kunden",
-              "Wer trägt eigentlich deine monatliche Rate",
-              "Die Rechnung Zeile für Zeile",
-              "Selbstauskunft gemeinsam ausfüllen"
+              "Unser Termin und deine Ziele",
+              "Rentenlücke und Preis des Nichtstuns",
+              "Wer wir sind",
+              "Das Prinzip mit vier Bausteinen",
+              "Dein Konzept: Zusatzrente oder Steuerersparnis",
+              "Objekte und Rechnung Zeile für Zeile",
+              "Sicherheit, Plan und Kriterien",
+              "Der nächste Schritt und die Selbstauskunft"
             ]
           },
           {
             "id": "ablauf-sortieren-profi",
             "typ": "sortieren",
             "pfad": "profi",
-            "titel": "Acht Momente, keine Hilfe",
-            "hinweis": "Ziehe die acht Momente in die Reihenfolge der Präsentation, diesmal ohne vorgegebene Ränder.",
             "punkte": 15,
+            "titel": "Der Weg nach der Beratung, ohne Hilfe",
+            "hinweis": "Acht Schritte, wie sie der Kunde in Abschnitt 14 sieht.",
             "schritte": [
-              "Der Preis des Nichtstuns",
-              "OS Immobilien in einem Satz und die Beraterkarte",
-              "Die fünf Fragen mit Finanzierungsrahmen",
-              "Der gemeinsame Weg in sechs Schritten",
-              "Immobilie, Aktien, Tagesgeld im Vergleich",
-              "Drei Konzepte, drei Ziele",
-              "Die Immobilienschere mit dem Regler",
-              "Was ein Sparplan leisten müsste"
+              "Selbstauskunft gemeinsam ausfüllen",
+              "Ausweis und letzte Gehaltsabrechnung nachreichen",
+              "Objektvorstellung mit Exposé und Kalkulation",
+              "Reservierung, kostenfrei",
+              "Besichtigung",
+              "Termin Bankgutachter",
+              "Finanzierung",
+              "Notar"
             ]
           }
         ]
       },
       {
         "id": "einstieg-sicherheit",
-        "ueberschrift": "Der Einstieg: Druck raus, Preis des Nichtstuns, Vertrauen",
-        "intro": "Hero, Station 01, der dunkle Einschub und Station 02 haben zusammen eine Aufgabe: Der Kunde soll sich sicher fühlen, verstehen, warum sich die nächste Stunde lohnt, und wissen, wem er gegenübersitzt.",
+        "ueberschrift": "Abschnitte 01 bis 05: Termin, Ziele, Rentenlücke, Preis des Nichtstuns, wer wir sind",
+        "intro": "Die ersten fünf Abschnitte holen den Kunden dort ab, wo das Erstgespräch aufgehört hat. Erst wenn er sich wiedererkennt, ist er bereit für das Prinzip.",
         "absaetze": [
-          "Der Hero begrüßt den Kunden mit Namen, wenn du aus dem Kundenprofil geöffnet hast, und tippt den Firmennamen in Dauerschleife. Hier redest du noch nicht über Inhalte, du lässt ankommen.",
-          "Station 01 nimmt den Druck raus, bevor er entsteht. Wer glaubt, er müsse heute unterschreiben, hört nicht zu. Deshalb steht die Agenda mit fünf Punkten auf dem Bildschirm und darunter der Satz, dass das Ziel des Gesprächs noch keine Kaufentscheidung ist, sondern eine erste klare Strategie.",
-          "Der Einschub Preis des Nichtstuns ist der emotionale Motor der Präsentation, bewusst rein rechnerisch gehalten. Ohne ihn gibt es keinen Grund, warum jetzt und nicht in zwei Jahren. Wichtig: Die Aussage muss der Kunde selbst ziehen. Deshalb endet der Abschnitt mit einer Frage und keiner Behauptung.",
-          "Die beiden Annahmen des Einschubs solltest du benennen können, denn sie sind Annahmen und keine Tatsachen. Die 2 Prozent Zinsen stehen für ein gut verzinstes Tagesgeldkonto, die 2,5 Prozent Geldentwertung liegen bewusst etwas über dem mittelfristigen Zielwert der Europäischen Zentralbank von 2 Prozent, den sie in ihrer Strategieüberprüfung 2021 als symmetrisches Ziel festgelegt hat. Die tatsächliche Teuerungsrate veröffentlicht das Statistische Bundesamt monatlich als Verbraucherpreisindex. Sag im Termin, dass es Annahmen sind, und biete an, mit den Zahlen des Kunden zu rechnen. Genau das macht den Einschub unangreifbar.",
-          "Station 02 beantwortet die stille Frage, wer hier eigentlich vor dem Kunden sitzt: sechs Leistungskacheln für die Firma, dann die Karte mit dir als Person. Ein Kunde vertraut keiner Firma, sondern dem Menschen, der ihm gegenübersitzt. Die Karte zieht Name, Foto, Position, Telefon und E-Mail aus deinem Profil in den Einstellungen. Pflege es vor deinem ersten Termin, denn eine leere Karte kostet an dieser Stelle genau das Vertrauen, das sie aufbauen soll."
+          "Abschnitt 01 nimmt den Druck heraus: Heute geht es nicht ums Unterschreiben. Ihr schaut gemeinsam, ob eine vermietete Immobilie zu seinen Zielen passt, gerechnet mit seinen Zahlen, vor und nach Steuern. Am Ende entscheidet er: Ja, Nein oder Ja unter einer Bedingung, und alles ist in Ordnung. Wer glaubt, er müsse heute unterschreiben, hört nicht zu.",
+          "Abschnitt 02 zeigt, was der Kunde im Erstgespräch gesagt hat: seine wichtigsten Ziele, sein Rahmen mit tragbarem Betrag vor Steuern, Reserve, Eigenkapital für die Nebenkosten und Mitentscheider, dazu sein wichtigster Satz als Zitat und seine erste Frage. Die Nachfrage lautet: Stimmt das noch so? Was würdest du heute ergänzen? Beantworte seine erste Frage hier, nicht erst am Ende.",
+          "Abschnitt 03 rechnet die Rentenlücke aus den Werten des Erstgesprächs: gewünschtes Netto im Ruhestand minus erwartete Rente, je Monat und über 25 Jahre Ruhestand. Die Rechnung ist ohne Inflation und ausdrücklich eine Größenordnung. Die Frage dazu: Was passiert, wenn diese Lücke einfach bleibt?",
+          "Abschnitt 04 ist der Preis des Nichtstuns: 50.000 Euro auf dem Tagesgeld zu 2 Prozent sind nach 10 Jahren 60.950 Euro, bei 2,5 Prozent Inflation aber nur noch 47.615 Euro Kaufkraft. Zins und Inflation sind Annahmen, und genau so sagst du es auch. Der Abschnitt ist ein Anlass zum Nachdenken, kein Beweis und kein Zeitdruck. Wenn Reserve oder Lebensplanung noch nicht passen, ist Warten die bessere Wahl, und auch das sagt die Folie offen.",
+          "Abschnitt 05 stellt OS Real Estate vor: Wir vermitteln geprüfte, vermietete Wohnimmobilien in Berlin und Brandenburg als Kapitalanlage und begleiten vom ersten Gespräch bis zur Kaufpreiszahlung. Dazu die Unternehmensgruppe unter dem Dach der OS Immobilien Holding mit Real Estate, Verwaltung und Finanzierung. Und der Satz, der Vertrauen schafft: Wir verdienen an der Vermittlung. Steuer-, Rechts- und Finanzierungsberatung leisten Steuerberater, Notare und Banken."
         ],
         "visuals": [
           {
-            "beispielrechnung": {
-              "titel": "Der Preis des Nichtstuns",
-              "untertitel": "50.000 Euro Tagesgeld, 2 Prozent Zinsen, 2,5 Prozent Geldentwertung, 10 Jahre",
-              "zeilen": [
-                {
-                  "label": "Heute auf dem Konto",
-                  "wert": "50.000 €"
-                },
-                {
-                  "label": "In 10 Jahren, auf dem Papier",
-                  "wert": "60.950 €",
-                  "op": "→",
-                  "hinweis": "Nach 2 Prozent Zinsen. Sieht nach mehr aus."
-                },
-                {
-                  "label": "In 10 Jahren, im Einkaufskorb",
-                  "wert": "47.615 €",
-                  "op": "→",
-                  "ergebnis": true,
-                  "hinweis": "Kaufkraft in heutigem Geld, rund 2.400 Euro weniger als zu Beginn."
-                }
-              ],
-              "fazit": "Die Zinsen holen die Geldentwertung nicht ein. Das ist kein Argument für eine Immobilie, nur der Grund, warum sich die nächste Stunde lohnt."
-            }
+            "kpis": [
+              {
+                "label": "Heute auf dem Tagesgeld",
+                "wert": "50.000 €",
+                "hinweis": "zu 2 % Zinsen, Annahme",
+                "farbe": "sky"
+              },
+              {
+                "label": "Nach 10 Jahren auf dem Konto",
+                "wert": "60.950 €",
+                "hinweis": "sieht nach mehr aus",
+                "farbe": "indigo"
+              },
+              {
+                "label": "Kaufkraft bei 2,5 % Inflation",
+                "wert": "47.615 €",
+                "hinweis": "tatsächlich weniger wert",
+                "farbe": "rose"
+              }
+            ]
           }
         ],
         "skripte": [
           {
-            "titel": "Station 01: Heute fällt keine Kaufentscheidung",
-            "kontext": "Direkt nach der Begrüßung, die Agenda steht auf dem Bildschirm.",
-            "text": "\"Bevor wir über Immobilien sprechen, eine Sache vorweg: Heute fällt keine Kaufentscheidung. Heute geht es darum, dass du am Ende dieses Gesprächs verstehst, was in deiner Situation möglich ist. Wir schauen uns deine Situation und deine Ziele an, wie eine Kapitalanlageimmobilie funktioniert, welche Konzepte es gibt, welches zu dir passen könnte und wie der weitere Ablauf aussieht.\"",
-            "warumTitel": "Warum der Druck zuerst raus muss",
-            "warum": "Wer glaubt, er müsse heute unterschreiben, hört nicht zu, sondern verteidigt sich. Die ausgesprochene Entlastung macht den Kopf frei. Und sie ist ehrlich: Das Tagesziel ist nicht der Kauf, sondern die gemeinsam ausgefüllte Selbstauskunft in Station 14. Genau dafür brauchst du einen Kunden, der zuhört."
+            "titel": "Abschnitt 01 · Unser Termin",
+            "kontext": "Gleich nach der Begrüßung.",
+            "text": "„Heute geht es nicht ums Unterschreiben. Wir schauen gemeinsam, ob eine vermietete Immobilie zu deinen Zielen passt, gerechnet mit deinen Zahlen, vor und nach Steuern. Am Ende entscheidest du: Ja, Nein oder Ja unter einer Bedingung. Alles ist in Ordnung.“",
+            "warum": "Der Satz nimmt den Druck heraus, bevor die erste Zahl fällt. Wer weiß, dass er auch Nein sagen darf, hört zu, statt sich innerlich zu verteidigen."
           },
           {
-            "titel": "Überleitung zum Preis des Nichtstuns",
-            "kontext": "Die erste der zehn Überleitungen. Kurz stehen lassen, dann weiterscrollen.",
-            "text": "\"Bevor wir über Immobilien reden, eine Frage: Was passiert eigentlich, wenn du gar nichts tust?\"",
-            "warum": "Die Frage öffnet den dunklen Einschub, ohne etwas zu behaupten. Der Kunde beginnt selbst zu rechnen. Eine Pause nach der Frage wirkt stärker als jeder Zusatzsatz."
+            "titel": "Abschnitt 02 · Ihre Ziele",
+            "kontext": "Die Seite zeigt Ziele, Rahmen und Zitat aus dem Erstgespräch.",
+            "text": "„Das hast du uns gesagt. Stimmt das noch so? Was würdest du heute ergänzen?“",
+            "warum": "Der Kunde hört seine eigenen Worte und bestätigt oder korrigiert sie. Alles, was danach kommt, baut auf seinem Ziel auf und nicht auf unserem Produkt."
           },
           {
-            "titel": "Einschub: Der Preis des Nichtstuns",
-            "kontext": "Dunkler Abschnitt, die drei Kacheln zählen animiert hoch.",
-            "text": "\"Kein Weltuntergang, nur Mathematik. Nehmen wir 50.000 Euro auf einem gut verzinsten Tagesgeldkonto, zwei Prozent Zinsen, zweieinhalb Prozent Geldentwertung. Auf dem Papier werden daraus in zehn Jahren 60.950 Euro. Im Einkaufskorb sind es noch 47.615 Euro, rund 2.400 Euro weniger als heute. Die Zinsen holen die Geldentwertung nicht ein. Was macht dein Erspartes gerade?\"",
-            "warumTitel": "Warum eine Frage und keine Behauptung",
-            "warum": "Verlustaversion wirkt stärker als Gewinnaussicht, aber nur, wenn der Kunde die Schlussfolgerung selbst zieht. Deshalb endet der Abschnitt mit der Frage nach seinem Ersparten. Und der Nachsatz auf der Folie nimmt das Verkäuferische raus: Das ist kein Argument für eine Immobilie, nur der Grund, sich die nächste Stunde Zeit zu nehmen. Genau diesen Satz darfst du mitsprechen, er kauft dir Glaubwürdigkeit."
-          },
-          {
-            "titel": "Überleitung zur Vorstellung",
-            "kontext": "Zweite Überleitung, vom Rechenbeispiel zur Person.",
-            "text": "\"Damit du einschätzen kannst, ob unsere Arbeitsweise zu dir passt, kurz wer hier eigentlich vor dir sitzt.\"",
-            "warum": "Die Formulierung macht aus der Firmenvorstellung eine Passungsfrage. Der Kunde prüft uns, nicht umgekehrt. Das senkt die Abwehr und erhöht die Aufmerksamkeit."
-          },
-          {
-            "titel": "Station 02: OS Immobilien in einem Satz und du als Person",
-            "kontext": "Sechs Leistungskacheln, darunter deine Beraterkarte mit Foto und Kontakt.",
-            "text": "\"Wir begleiten Kunden beim strategischen Vermögensaufbau mit Immobilien. Nicht bei einem Kauf, sondern beim Aufbau. Von der Investmentstrategie über geprüfte Immobilien, Finanzierung und steuerliche Gestaltung bis zu Vermietung und Verwaltung. Und damit du weißt, mit wem du es zu tun hast: Das bin ich. Du hast ab heute einen festen Ansprechpartner, keine Hotline. Vom Erstgespräch bis lange nach dem Notartermin.\"",
-            "warumTitel": "Warum die Karte mit deinem Gesicht entscheidend ist",
-            "warum": "Bis hierhin war von einer Firma die Rede. Vertrauen entsteht aber zur Person. Die Karte zeigt dich mit Foto, Position, Telefon und E-Mail, direkt anklickbar. Der Kunde speichert: Ich habe einen Menschen, den ich erreichen kann. Das trägt bis zum Notartermin und darüber hinaus."
+            "titel": "Abschnitt 05 · Wer wir sind",
+            "kontext": "Nach Rentenlücke und Preis des Nichtstuns.",
+            "text": "„Wir vermitteln geprüfte, vermietete Wohnimmobilien in Berlin und Brandenburg und verdienen an der Vermittlung. Gerade deshalb rechnen wir mit echten Zahlen. Steuer-, Rechts- und Finanzierungsberatung machen Steuerberater, Notare und Banken.“",
+            "warum": "Offen zu sagen, woran wir verdienen, nimmt dem Misstrauen den Boden. Die Grenze zur Steuer-, Rechts- und Finanzierungsberatung schützt den Kunden und dich."
           }
         ],
-        "profiTipp": "Rechne den Einschub mit der Zahl des Kunden nach, nicht mit den 50.000 Euro der Folie. Zwei Feinheiten machen den Unterschied. Erstens die Formulierung: Verlustaversion wirkt nur, wenn der Verlust als bereits eigener Besitz erlebt wird, deshalb heißt es deine 50.000 Euro und nicht man verliert. Zweitens der Fall, den die Folie nicht abbildet: Sagt der Kunde, er habe gar kein Tagesgeld, sondern alles im Depot, dann rechne nicht dagegen an. Der Einschub ist kein Argument gegen Aktien, sondern gegen unverzinstes Warten. Wechsle dann sofort auf die Frage, wie viel er im Monat frei hat, denn bei ihm ist nicht das Ersparte das Thema, sondern der ungenutzte Fremdkapitalhebel. Der ehrliche Vergleich mit Aktien kommt ohnehin in Station 06.",
-        "goldNugget": {
-          "titel": "Der Einschub trägt nur, solange die Zinsen darunter bleiben",
-          "text": "Der Preis des Nichtstuns ist eine Differenzrechnung, kein Naturgesetz: Er lebt davon, dass die Tagesgeldverzinsung unter der Teuerungsrate liegt. Genau das ist die Rückfrage, die dir ein informierter Kunde stellt, und du solltest sie vor ihm stellen. Bei 2 Prozent Zins und 2,5 Prozent Geldentwertung schrumpft die Kaufkraft um rund ein halbes Prozent im Jahr, das sind über zehn Jahre die 2.400 Euro der Folie. Dreht sich das Verhältnis, dreht sich auch die Rechnung. Was sich nicht dreht, ist der eigentliche Punkt: Tagesgeld baut kein Vermögen mit Fremdkapital auf. Führe den Einschub deshalb nie als Beweis, sondern als Anlass.",
-          "bullets": [
-            "Funke setzen: die Rechnung zeigen, die Frage stellen, Pause aushalten. Wer die Pause füllt, löscht den Funken.",
-            "Die Rückfrage vorwegnehmen: Und wenn die Zinsen wieder über der Teuerungsrate liegen? Dann bleibt der Hebel als Argument, nicht die Geldentwertung.",
-            "Der Nachsatz auf der Folie entdramatisiert und macht dich glaubwürdig: Das ist kein Argument für eine Immobilie, nur der Grund für die nächste Stunde."
-          ]
-        },
+        "profiTipp": "Die erste Frage des Kunden aus dem Erstgespräch steht in Abschnitt 02. Beantworte sie dort, auch wenn die Antwort eigentlich später käme. Wer eine Stunde auf seine Frage warten muss, hört bis dahin nur halb zu. Und noch eine Kleinigkeit mit Wirkung: Fehlt ein Wert aus dem Erstgespräch, frag ihn hier nach, statt mit einem Beispiel weiterzurechnen.",
         "aufgaben": [
           {
             "id": "einstieg-wahrfalsch-qe",
@@ -9275,7 +9349,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               {
                 "aussage": "Der Preis des Nichtstuns endet mit der Behauptung, dass Immobilien besser sind als Tagesgeld.",
                 "stimmt": false,
-                "aufloesung": "Er endet mit einer Frage: Was macht dein Erspartes gerade? Die Schlussfolgerung zieht der Kunde selbst."
+                "aufloesung": "Er zeigt eine Differenzrechnung mit genannten Annahmen. Die Schlussfolgerung zieht der Kunde selbst."
               },
               {
                 "aussage": "Die 2 Prozent Zinsen und die 2,5 Prozent Geldentwertung im Einschub sind Annahmen, keine Tatsachen.",
@@ -9285,17 +9359,17 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               {
                 "aussage": "Der Preis des Nichtstuns ist ein Argument gegen Aktien.",
                 "stimmt": false,
-                "aufloesung": "Er ist ein Argument gegen unverzinstes Warten. Der ehrliche Vergleich mit Aktien kommt erst in Station 06."
+                "aufloesung": "Er ist ein Argument gegen unverzinstes Warten. Der Kunde zieht die Schlussfolgerung selbst, und wer Aktien hat, bekommt eine ehrliche Antwort: Die Immobilie ist eine Ergänzung, kein Ersatz."
               },
               {
-                "aussage": "In Station 02 kommt erst die Firma, dann du als Person, weil Vertrauen zum Menschen entsteht.",
+                "aussage": "In Abschnitt 05 sagst du offen, dass wir an der Vermittlung verdienen.",
                 "stimmt": true,
-                "aufloesung": "Ein Kunde vertraut keiner Firma, sondern dem Menschen, der ihm gegenübersitzt. Deshalb steht deine Karte am Ende der Station."
+                "aufloesung": "Offenheit über das eigene Geld schafft Vertrauen. Wer es verschweigt, wird spätestens beim Notar danach gefragt."
               },
               {
-                "aussage": "Eine leere Beraterkarte ist kein Problem, der Kunde kennt dich ja schon vom Erstgespräch.",
+                "aussage": "Der Preis des Nichtstuns zeigt, dass der Kunde heute entscheiden muss, sonst ist die Chance weg.",
                 "stimmt": false,
-                "aufloesung": "Die Karte zieht Foto, Position, Telefon und E-Mail aus deinem Profil. Leer kostet sie genau das Vertrauen, das sie aufbauen soll."
+                "aufloesung": "Er ist ein Anlass zum Nachdenken, kein Zeitdruck. Verknappung gibt es bei uns nicht, und wenn Reserve oder Lebensplanung nicht passen, ist Warten die bessere Wahl."
               }
             ]
           },
@@ -9316,7 +9390,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                   "Ich zeige den Einschub trotzdem mit den 50.000 Euro der Folie"
                 ],
                 "korrekt": 1,
-                "aufloesung": "Bei ihm ist nicht das Ersparte das Thema, sondern der ungenutzte Fremdkapitalhebel. Gegen Aktien anzurechnen wäre der falsche Kampf, der ehrliche Vergleich kommt in Station 06."
+                "aufloesung": "Bei ihm ist nicht das Ersparte das Thema, sondern der ungenutzte Fremdkapitalhebel. Gegen Aktien anzurechnen wäre der falsche Kampf. Die Immobilie ist eine Ergänzung, kein Ersatz, und so steht es auch im Leitfaden Einwandbehandlung."
               },
               {
                 "frage": "Der Kunde fragt: Und wenn die Zinsen wieder über der Teuerungsrate liegen? Was bleibt dann von deinem Einschub?",
@@ -9333,101 +9407,575 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         ]
       },
       {
-        "id": "vier-fragen",
-        "ueberschrift": "Station 03 und 04: Die fünf Fragen und der gemeinsame Weg",
-        "intro": "Station 03 ist der wichtigste Eingriff der ganzen Präsentation: Was der Kunde selbst beantwortet, verteidigt er später. Was man ihm vorsetzt, prüft er.",
+        "id": "konzepte-matching",
+        "ueberschrift": "Abschnitte 06 und 07: Vier Bausteine und zwei Konzepte",
+        "intro": "Erst das Prinzip, dann die Wahl. Der Kunde soll verstehen, wer seine Rate trägt, bevor er entscheidet, welches Ziel für ihn an erster Stelle steht.",
         "absaetze": [
-          "Fünf Dinge willst du wissen, bevor über eine konkrete Wohnung geredet wird, und du schreibst die Antworten direkt in der Präsentation mit. Frage 1 ist die Erfahrung mit Immobilien und steht bewusst vorn: Wer schon eine Wohnung hat, braucht ein anderes Gespräch als jemand, der zum ersten Mal darüber nachdenkt. Frage 2 sind die Ziele, gewählt aus einer Liste von neun Anlagezielen, höchstens drei, und das zuerst gewählte führt. Es ist dieselbe Liste wie in der Selbstauskunft: Was der Kunde hier wählt, ist dort später schon angehakt. Frage 3 ist der monatliche Eigenaufwand, der für ihn gut darstellbar ist. Frage 4 ist die Finanzierung, und die schätzt du nicht, die rechnest du live. Frage 5 ist, was ihm bei einem Immobilieninvestment besonders wichtig ist. Seine Antwort ist der Maßstab, an dem er jedes Angebot misst, das du ihm später zeigst.",
-          "Frage 4 hat vier Felder: Einnahmen, Ausgaben, Eigenkapital gesamt und davon liquide verfügbar. Der Unterschied zwischen den letzten beiden ist wichtig: Wer 80.000 Euro hat, davon aber nur 25.000 greifbar, kann eben nur mit 25.000 kaufen. In den Rahmen geht deshalb der liquide Teil. Pflichtfelder sind Ziel, Monatsbeitrag und Haushaltsrechnung: Solange eines offen ist, bleibt es orange umrandet. Orange, nicht rot, denn es ist kein Fehler, sondern eine offene Aufgabe.",
-          "Das Konzept wird weiterhin aus dem Hauptziel abgeleitet, aber es steht nicht mehr als eigenes Kästchen unter den Fragen. Die Präsentation leitet es still im Hintergrund ab: Sie belegt damit die Musterrechnung vor und nennt es erst in der Rückspiegelung. Der Kunde soll nicht raten, welches Konzept zu ihm passt, das ist unsere Aufgabe. Die Steuerfrage ist bewusst gestrichen, die beantwortet später der Steuerrechner mit echten Zahlen. Und alle Antworten kommen am Ende der Präsentation gebündelt zurück, kurz bevor es um die Selbstauskunft geht. Deshalb lohnt sauberes Mitschreiben doppelt.",
-          "Zwei Zahlen in dieser Formel musst du erklären können, weil beide bewusst vorsichtig gewählt sind. Die 80 Prozent sind der Sicherheitsabschlag auf den Überschuss: Gerechnet wird nur mit vier Fünfteln dessen, was übrig bleibt, damit ein schlechter Monat die Rate nicht sofort gefährdet. Und die Annuität von 6 Prozent liegt über den 5,5 Prozent, mit denen die Musterrechnungen später arbeiten, also über 4 Prozent Zins plus 1,5 Prozent Anfangstilgung. Eine höhere Annuität ergibt einen kleineren Rahmen: Mit 5,5 statt 6 Prozent käme im Beispiel ein Darlehen von 279.273 statt 256.000 Euro heraus, also rund 8 Prozent mehr. Der Rahmen soll die Grenze eher unterschätzen als überschätzen, denn eine Zahl, die im Bankgespräch nach unten korrigiert wird, kostet dich das Vertrauen des ganzen Gesprächs.",
-          "Eine Sache noch, damit du nicht stolperst, wenn du im Glossarkapitel eine andere Zahl findest. Unsere Rechnung im Termin ist die Rechnung der Software: 80 Prozent des Überschusses, 6 Prozent Annuität, liquides Eigenkapital obendrauf. Genau so rechnet auch die Karte im Kundenprofil, die Finanzierbarkeit im Kundenportal und der Bonitätsrechner. Die Bank rechnet anders. Sie prüft die Kapitaldienstfähigkeit, indem sie den verfügbaren Betrag durch 1,2 teilt, das sind rund 83 statt 80 Prozent, und sie rechnet zusätzlich die erwartete Kaltmiete des zu kaufenden Objekts mit, üblicherweise zu 70 bis 80 Prozent. Beides zusammen führt dazu, dass die Bank bei einer Kapitalanlage regelmäßig auf mehr kommt als wir im Termin. Das ist Absicht: Eine Zahl, die im Bankgespräch nach oben korrigiert wird, ist eine gute Nachricht. Eine, die nach unten korrigiert wird, kostet dich das ganze Gespräch. Die vollständige Bankformel mit der Mietanrechnung steht in Kapitel 7 und im Glossarkapitel.",
-          "Station 04 zeigt danach den gemeinsamen Weg als Bahn mit sechs Schritten. Schritt eins pulsiert, weil das Gespräch genau dort steht. Das beantwortet die stille Frage jedes Kunden, worauf er sich hier eigentlich einlässt und wie weit er schon ist. Und es setzt das Tagesziel: Am Ende dieses Gesprächs stehen wir bei Schritt zwei, der Selbstauskunft."
+          "Abschnitt 06 erklärt das Prinzip mit vier Bausteinen, die zusammenarbeiten: Die Miete trägt den größten Teil der Rate. Die Tilgung sorgt dafür, dass dem Kunden jeden Monat ein Stück mehr der Immobilie gehört. Zinsen, Kosten und Abschreibung können seine Steuer senken. Und der Wert ist ein Sachwert, der langfristig mit der Inflation wachsen kann, nicht muss.",
+          "Dazu die Frage: Wer trägt deine Rate? Am Beispiel Hauffstraße 38 sind das Rate von 880 Euro plus Hausgeld. Davon trägt die Miete rund 62 Prozent, die Steuerwirkung rund 23 Prozent und der Kunde rund 15 Prozent. Die Steuerwirkung hängt vom persönlichen Steuersatz ab, und genau das sagst du dazu.",
+          "Abschnitt 07 ist der Konzeptschalter: Welches Ziel steht für dich an erster Stelle? Konzept 1 heißt heute kaufen, später Zusatzrente: Mieter und Steuer zahlen die Immobilie ab, im Ruhestand gehört sie dem Kunden, und die Miete wird zur zweiten Rente. Konzept 2 heißt Steuern sparen, mehr Netto vom Brutto: Ein Teil der Lohnsteuer fließt ins eigene Vermögen statt ans Finanzamt, gedacht für Einkommen mit hohem Steuersatz.",
+          "Zu jedem Konzept gehören feste Objekte. Zusatzrente: Hauffstraße 38 in Schwielowsee bei Potsdam und die Doppelhaushälften in Zossen-Wünsdorf. Steuerersparnis: Barfusstraße 9 in Berlin-Wedding. Im CRM steht das Konzept als Merkmal am Objekt, und die Präsentation zeigt nur verfügbare Einheiten des gewählten Konzepts.",
+          "Der Schalter ist mit dem Schwerpunkt aus Schritt 7 des Erstgesprächs vorbelegt. Der Kunde kann jederzeit umschalten, und alle folgenden Abschnitte zeigen dann das andere Konzept. Wichtig: Der Kunde wählt, nicht du. Deine Aufgabe ist, beide Wege ehrlich zu erklären, auch die Grenzen."
+        ],
+        "visuals": [
+          {
+            "donut": {
+              "titel": "Wer trägt die Rate? Beispiel Hauffstraße 38, WE 01",
+              "untertitel": "Rate 880 € plus Hausgeld 164 €, Werte aus dem Exposé, Steuerwirkung bei 42 %",
+              "daten": [
+                {
+                  "label": "Miete",
+                  "wert": 62
+                },
+                {
+                  "label": "Steuerwirkung",
+                  "wert": 23
+                },
+                {
+                  "label": "Kunde",
+                  "wert": 15
+                }
+              ],
+              "zentrumLabel": "Rate gesamt",
+              "zentrumWert": "1.045 €"
+            }
+          },
+          {
+            "vergleich": {
+              "titel": "Zwei Konzepte, zwei Ziele",
+              "untertitel": "Der Kunde wählt, der Schalter ist mit dem Schwerpunkt aus dem Erstgespräch vorbelegt.",
+              "optionA": {
+                "label": "Konzept 1 · Zusatzrente",
+                "punkte": [
+                  "Heute kaufen, später Zusatzrente",
+                  "Mieter und Steuer tragen den größten Teil der Rate",
+                  "Hauffstraße 38, Schwielowsee bei Potsdam",
+                  "Doppelhaushälften Zossen-Wünsdorf"
+                ],
+                "ergebnis": "Im Ruhestand gehört die Immobilie dem Kunden"
+              },
+              "optionB": {
+                "label": "Konzept 2 · Steuerersparnis",
+                "punkte": [
+                  "Mehr Netto vom Brutto",
+                  "Für Einkommen mit hohem Steuersatz",
+                  "Barfusstraße 9, Berlin-Wedding",
+                  "Mit erhöhter AfA laut Ersteinschätzung, Gutachten nötig"
+                ],
+                "ergebnis": "Steuer wird zu Vermögen"
+              },
+              "fazit": "Beide Konzepte rechnest du vor und nach Steuern. Die Steuerersparnis ist ein Baustein, allein aber kein Grund für einen Kauf."
+            }
+          }
+        ],
+        "skripte": [
+          {
+            "titel": "Abschnitt 06 · Wer trägt deine Rate?",
+            "kontext": "Auf der Folie mit dem Ring.",
+            "text": "„Am Beispiel Hauffstraße 38 trägt die Miete rund 62 Prozent der Rate samt Hausgeld, die Steuerwirkung rund 23 Prozent, und bei dir bleiben rund 15 Prozent. Wie hoch die Steuerwirkung bei dir ist, hängt von deinem persönlichen Steuersatz ab. Das rechnen wir gleich mit deinen Zahlen.“",
+            "warum": "Aus dem Gefühl, alles allein zu zahlen, wird ein überschaubarer Anteil. Der Nachsatz zum Steuersatz verhindert, dass der Kunde die Beispielzahl für seine eigene hält."
+          },
+          {
+            "titel": "Abschnitt 07 · Dein Konzept",
+            "kontext": "Konzeptschalter, vorbelegt aus dem Erstgespräch.",
+            "text": "„Im Erstgespräch hast du gesagt, dass dir [Schwerpunkt] am wichtigsten ist. Steht das für dich weiter an erster Stelle, oder schauen wir uns das andere Konzept an?“",
+            "warum": "Der Kunde bestätigt seine Wahl selbst. Wer sein Konzept selbst gewählt hat, prüft die folgenden Zahlen als seine eigenen und nicht als unser Angebot."
+          }
+        ],
+        "quereinsteigerHinweis": "AfA heißt Absetzung für Abnutzung: Der Gebäudeanteil des Kaufpreises wird über viele Jahre steuerlich abgeschrieben. Die Regel-AfA ist der gesetzliche Normalsatz, je nach Baujahr meist 2 oder 2,5 Prozent. Eine erhöhte AfA ist möglich, wenn ein Gutachten eine kürzere Restnutzungsdauer belegt, und das Finanzamt muss sie anerkennen. Deshalb steht neben jeder Rechnung mit erhöhter AfA auch die mit Regel-AfA.",
+        "profiTipp": "Der häufigste Fehler an dieser Stelle ist, dem Kunden das Konzept abzunehmen. Sag nicht: Für dich ist Konzept 2 das Richtige. Sag: Du hast gesagt, X ist dir am wichtigsten, dazu passt dieses Konzept. Und wenn ein Kunde mit niedrigem Steuersatz das Steuerkonzept wählt, sag offen, dass die Steuerwirkung bei ihm kleiner ausfällt als in der Musterrechnung.",
+        "links": [
+          {
+            "label": "AfA-Sätze im Glossar",
+            "to": "/vertriebsakademie/glossar-zahlen?vaScrollTo=afa",
+            "hinweis": "Regel-AfA und erhöhte AfA im Überblick"
+          },
+          {
+            "label": "Kapitel 6: das Objekt zum Konzept",
+            "to": "/vertriebsakademie/objektauswahl?vaScrollTo=auswahlkriterien",
+            "hinweis": "Wie aus Konzept und Selbstauskunft eine Empfehlung für die Objektvorstellung wird"
+          }
+        ],
+        "aufgaben": [
+          {
+            "id": "konzeptbegriffe-zuordnen-qe",
+            "typ": "zuordnen",
+            "pfad": "quereinsteiger",
+            "punkte": 10,
+            "titel": "Welches Objekt gehört zu welchem Konzept?",
+            "hinweis": "Drei Objekte, zwei Konzepte. Ein Konzept bekommt zwei Objekte, deshalb sind die Karten rechts verschieden beschriftet.",
+            "paare": [
+              {
+                "links": "Hauffstraße 38, Schwielowsee bei Potsdam",
+                "rechts": "Zusatzrente, Wohnung mit Garage"
+              },
+              {
+                "links": "Doppelhaushälften Zossen-Wünsdorf",
+                "rechts": "Zusatzrente, eigenes Grundstück ohne Hausgeld"
+              },
+              {
+                "links": "Barfusstraße 9, Berlin-Wedding",
+                "rechts": "Steuerersparnis, Gründerzeit-Altbau"
+              }
+            ]
+          },
+          {
+            "id": "konzeptfrage-zuordnen-profi",
+            "typ": "zuordnen",
+            "pfad": "profi",
+            "punkte": 15,
+            "titel": "Zieh jeden Baustein zu seiner ehrlichen Einschränkung",
+            "hinweis": "Vier Bausteine, vier Grenzen. Zwei Karten sind Sätze, die wir nie sagen.",
+            "paare": [
+              {
+                "links": "Miete",
+                "rechts": "Trägt den größten Teil, Leerstand ist trotzdem möglich"
+              },
+              {
+                "links": "Tilgung",
+                "rechts": "Baut Vermögen auf, auch ganz ohne Wertsteigerung"
+              },
+              {
+                "links": "Steuer",
+                "rechts": "Hängt vom persönlichen Steuersatz ab"
+              },
+              {
+                "links": "Wert",
+                "rechts": "Kann wachsen, ist aber ein Szenario"
+              }
+            ],
+            "ablenker": [
+              "Das trägt sich durch die Steuer von selbst",
+              "Immobilien verlieren nie an Wert"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "musterrechnung",
+        "ueberschrift": "Abschnitte 08 bis 10: So funktioniert es, die Objekte und die Rechnung Zeile für Zeile",
+        "intro": "Hier fallen die Zahlen. Jede Zahl stammt aus einem Exposé, jede Belastung steht vor und nach Steuern da, und neben der erhöhten AfA steht die Regel-AfA.",
+        "absaetze": [
+          "Abschnitt 08 zeigt, wie das gewählte Konzept funktioniert. Bei der Zusatzrente in vier Schritten: heute kaufen, finanziert durch die Bank, Eigenkapital nur für die Nebenkosten. 30 Jahre tragen Mieter und Steuerwirkung den größten Teil der Rate. Im Ruhestand ist die Immobilie weitgehend abbezahlt, und die Miete fließt als Zusatzrente. Danach entscheidet der Kunde: behalten, verkaufen oder vererben. Beim Steuerkonzept zeigt die Folie Brutto, Netto und Steuerwirkung im Monat.",
+          "Abschnitt 09 zeigt die Objekte des Konzepts. Hauffstraße 38: Baujahr 2000, 46 Wohnungen, 42 bis 80 Quadratmeter, mit Garage und Aufzug, ab 176.000 Euro. Doppelhaushälften Zossen-Wünsdorf: eigenes Grundstück von 600 bis 800 Quadratmetern, kein Hausgeld, ab 379.000 Euro. Barfusstraße 9: Gründerzeit-Altbau um 1900 im Wedding, 28 verfügbare Wohnungen von 37 bis 92 Quadratmetern, 186.850 bis 469.000 Euro.",
+          "Abschnitt 10 ist die Rechnung Zeile für Zeile, im ersten Jahr und im Monat. Hauffstraße 38, WE 01, 176.000 Euro: Miete 553 Euro, Garage 100 Euro, Zins und Tilgung 880 Euro, Hausgeld nicht umlagefähig 164 Euro. Das Ergebnis vor Steuern ist minus 391 Euro. Mit der Steuerwirkung von 241 Euro bei 3,1 Prozent AfA und 42 Prozent Steuersatz bleibt ein Eigenanteil von 151 Euro nach Steuern. Mit Regel-AfA von 2 Prozent, ohne Gutachten, sind es rund 210 Euro.",
+          "Barfusstraße 9, WE 03, 361.600 Euro: Miete 976 Euro, Zins und Tilgung 1.808 Euro, Hausgeld samt Rücklage 112 Euro. Vor Steuern minus 943 Euro. Mit 5,6 Prozent AfA laut Ersteinschätzung, für die ein Gutachten nötig ist, und 42 Prozent Steuersatz bleiben nach Steuern minus 4 Euro. Mit Regel-AfA von 2,5 Prozent sind es rund minus 390 Euro im Monat. Beide Zeilen gehören auf den Tisch, nicht nur die schönere.",
+          "In beiden Rechnungen steckt Tilgung, also Vermögen, das dem Kunden gehört: bei der Hauffstraße 176 Euro im Monat und nach 10 Jahren 26.318 Euro, bei der Barfusstraße 362 Euro im Monat und nach 10 Jahren 54.071 Euro. Dazu das Eigenkapital für die Nebenkosten: 14.960 Euro beziehungsweise 28.928 Euro. Im Termin stellst du die Rechnung mit dem Investmentrechner auf die Zahlen des Kunden um, denn die Musterperson mit 80.000 Euro brutto ist nicht er."
         ],
         "visuals": [
           {
             "beispielrechnung": {
-              "titel": "Der Finanzierungsrahmen, live gerechnet",
-              "untertitel": "Mit den Beispielwerten aus den Platzhaltern der Präsentation",
+              "titel": "Hauffstraße 38, WE 01 · 42,53 m² · 176.000 €",
+              "untertitel": "Im Monat, 1. Jahr, Zahlen aus dem Exposé, Musterperson 80.000 € brutto",
               "zeilen": [
                 {
-                  "label": "Einnahmen im Monat",
-                  "wert": "4.000 €"
+                  "label": "Miete vom Mieter",
+                  "wert": "553 €",
+                  "op": "+"
                 },
                 {
-                  "label": "Ausgaben im Monat",
-                  "wert": "2.400 €",
+                  "label": "Garagenmiete",
+                  "wert": "100 €",
+                  "op": "+"
+                },
+                {
+                  "label": "Zins und Tilgung (4,8 % / 1,2 %)",
+                  "wert": "880 €",
                   "op": "−"
                 },
                 {
-                  "label": "Überschuss im Monat",
-                  "wert": "1.600 €",
-                  "op": "="
+                  "label": "Hausgeld, nicht umlagefähig",
+                  "wert": "164 €",
+                  "op": "−"
                 },
                 {
-                  "label": "Davon tragbar, 80 Prozent",
-                  "wert": "1.280 €",
-                  "op": "→",
-                  "hinweis": "Der Puffer ist der Unterschied zwischen tragbar und maximal genehmigt."
+                  "label": "Ergebnis vor Steuern",
+                  "wert": "−391 €",
+                  "op": "=",
+                  "ergebnis": true
                 },
                 {
-                  "label": "Mal 12 Monate, geteilt durch 6 Prozent Annuität",
-                  "wert": "256.000 €",
-                  "op": "→",
-                  "hinweis": "1.280 mal 12 sind 15.360 Euro im Jahr, geteilt durch 0,06. Die 6 Prozent liegen bewusst über den 5,5 Prozent der Musterrechnungen, also über 4 Prozent Zins plus 1,5 Prozent Anfangstilgung."
+                  "label": "Steuerwirkung (3,1 % AfA, 42 %)",
+                  "wert": "241 €",
+                  "op": "+"
                 },
                 {
-                  "label": "Plus Eigenkapital, der liquide verfügbare Teil",
-                  "wert": "25.000 €",
-                  "op": "+",
-                  "hinweis": "Von 80.000 Euro gesamt. Gekauft wird nur mit dem, was greifbar ist."
-                },
-                {
-                  "label": "Finanzierungsrahmen",
-                  "wert": "281.000 €",
+                  "label": "Eigenanteil nach Steuern",
+                  "wert": "−151 €",
                   "op": "=",
                   "ergebnis": true,
-                  "hinweis": "Eine Orientierung, keine Zusage. Die verbindliche Haushaltsrechnung macht die Bank."
+                  "hinweis": "Mit Regel-AfA 2 % ohne Gutachten rund −210 €"
                 }
               ],
-              "fazit": "Dieselbe Formel rechnet auch die Karte im Kundenprofil. Läge im Gespräch eine andere Zahl als später im System, wäre das Gespräch beschädigt."
+              "fazit": "Darin stecken 176 € Tilgung im Monat. Nach 10 Jahren sind 26.318 € getilgt."
             }
           },
           {
-            "timeline": {
-              "titel": "Station 04: Der Weg, den wir gemeinsam gehen",
-              "schritte": [
+            "beispielrechnung": {
+              "titel": "Barfusstraße 9, WE 03 · 72,32 m² · 361.600 €",
+              "untertitel": "Im Monat, 1. Jahr, Zahlen aus dem Exposé, Musterperson 80.000 € brutto",
+              "zeilen": [
                 {
-                  "label": "Erstgespräch",
-                  "dauer": "Heute",
-                  "beschreibung": "Situation, Ziele und Wünsche verstehen.",
-                  "status": "start"
+                  "label": "Miete vom Mieter",
+                  "wert": "976 €",
+                  "op": "+"
                 },
                 {
-                  "label": "Selbstauskunft",
-                  "dauer": "Am Ende dieses Termins",
-                  "beschreibung": "Einkommen, Ausgaben, Eigenkapital und bestehende Kredite prüfen.",
-                  "status": "ziel"
+                  "label": "Zins und Tilgung (4,8 % / 1,2 %)",
+                  "wert": "1.808 €",
+                  "op": "−"
                 },
                 {
-                  "label": "Strategie entwickeln",
-                  "dauer": "Wir im Hintergrund",
-                  "beschreibung": "Passendes Konzept und möglichen Finanzierungsrahmen bestimmen."
+                  "label": "Hausgeld, nicht umlagefähig, inkl. Rücklage",
+                  "wert": "112 €",
+                  "op": "−"
                 },
                 {
-                  "label": "Objektvorschlag",
-                  "dauer": "Nächster Termin",
-                  "beschreibung": "Eine konkrete Immobilie inklusive vollständiger Rechnung."
+                  "label": "Ergebnis vor Steuern",
+                  "wert": "−943 €",
+                  "op": "=",
+                  "ergebnis": true
                 },
                 {
-                  "label": "Finanzierung und Kauf",
-                  "dauer": "Nur wenn du Ja sagst",
-                  "beschreibung": "Bankprüfung, Kaufvertrag und Notartermin."
+                  "label": "Steuerwirkung (5,6 % AfA, 42 %)",
+                  "wert": "940 €",
+                  "op": "+",
+                  "hinweis": "AfA laut Ersteinschätzung, Gutachten nötig"
                 },
                 {
-                  "label": "Vermietung und Betreuung",
-                  "dauer": "Dauerhaft",
-                  "beschreibung": "Vermietung, Verwaltung und langfristiger Portfolioaufbau."
+                  "label": "Ergebnis nach Steuern",
+                  "wert": "−4 €",
+                  "op": "=",
+                  "ergebnis": true,
+                  "hinweis": "Mit Regel-AfA 2,5 % ohne Gutachten rund −390 €"
+                }
+              ],
+              "fazit": "Darin stecken 362 € Tilgung im Monat. Nach 10 Jahren sind 54.071 € getilgt."
+            }
+          }
+        ],
+        "skripte": [
+          {
+            "titel": "Abschnitt 10 · Vor und nach Steuern",
+            "kontext": "Wenn die Zeile Ergebnis vor Steuern erscheint.",
+            "text": "„Bevor wir über Steuern reden: Vor Steuern zahlst du hier [Betrag] im Monat dazu. Das muss für dich tragbar sein, auch wenn die Steuerwirkung kleiner ausfällt. Mit deinem Steuersatz bleiben nach Steuern [Betrag].“",
+            "warum": "Die Rechnung muss vor Steuern tragen, alles darüber ist ein möglicher Bonus. Wer zuerst die Zahl nach Steuern zeigt, verkauft das Ergebnis, bevor der Kunde die Belastung gesehen hat."
+          },
+          {
+            "titel": "Abschnitt 10 · Regel-AfA daneben",
+            "kontext": "Bei jeder Rechnung mit erhöhter AfA.",
+            "text": "„Diese Zeile rechnet mit erhöhter AfA laut Ersteinschätzung. Dafür braucht es ein Gutachten, und das Finanzamt muss es anerkennen. Mit der normalen AfA sähe es so aus: [Betrag]. Entscheide bitte mit beiden Zahlen.“",
+            "warum": "Der Kunde soll auch mit der vorsichtigeren Zahl leben können. Das schützt ihn vor einer Enttäuschung und dich vor dem Vorwurf, nur die schöne Hälfte gezeigt zu haben."
+          }
+        ],
+        "goldNugget": {
+          "titel": "Die Musterperson ist nicht dein Kunde",
+          "text": "Alle Exposé-Zahlen sind für eine Musterperson mit 80.000 Euro brutto und 42 Prozent Grenzsteuersatz gerechnet. Liegt dein Kunde darunter, ist seine Steuerwirkung kleiner und sein Eigenanteil höher. Deshalb fragt das Erstgespräch nach dem Brutto, und deshalb stellst du die Rechnung im Termin mit dem Investmentrechner auf seine Zahlen um. Eine Musterzahl, die der Kunde für seine eigene hält, ist das sicherste Rezept für eine Absage beim Notar.",
+          "bullets": [
+            "Brutto aus Schritt 11 des Erstgesprächs bereithalten.",
+            "Erst vor Steuern, dann nach Steuern, dann Regel-AfA.",
+            "Jede Abweichung von der Musterzahl laut aussprechen."
+          ]
+        },
+        "quereinsteigerHinweis": "Nicht umlagefähig heißt: Diesen Teil des Hausgelds darf der Vermieter nicht auf den Mieter umlegen, zum Beispiel die Verwaltung und die Rücklage für spätere Reparaturen. Er bleibt beim Eigentümer und steht deshalb als eigene Zeile in der Rechnung. Und die Steuerwirkung ist der Betrag, um den die Einkommensteuer durch Zinsen, Kosten und Abschreibung sinkt, umgerechnet auf den Monat.",
+        "aufgaben": [
+          {
+            "id": "beitrag-rechnen-qe",
+            "typ": "rechnen",
+            "pfad": "quereinsteiger",
+            "punkte": 10,
+            "titel": "Rechne das Ergebnis vor Steuern nach",
+            "hinweis": "Hauffstraße 38, WE 01, im Monat und im ersten Jahr.",
+            "fall": "Miete 553 Euro, Garagenmiete 100 Euro, Zins und Tilgung 880 Euro, nicht umlagefähiges Hausgeld 164 Euro.",
+            "gesucht": "Wie viel zahlt der Kunde vor Steuern im Monat dazu?",
+            "zielwert": 391,
+            "toleranzProzent": 1,
+            "einheit": "€",
+            "rechenweg": {
+              "titel": "So kommst du auf den Wert",
+              "zeilen": [
+                {
+                  "label": "Einnahmen: 553 plus 100",
+                  "wert": "653 €"
+                },
+                {
+                  "label": "Ausgaben: 880 plus 164",
+                  "wert": "1.044 €",
+                  "op": "−"
+                },
+                {
+                  "label": "Zuzahlung vor Steuern",
+                  "wert": "391 €",
+                  "op": "=",
+                  "ergebnis": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "afa-differenz-rechnen-profi",
+            "typ": "rechnen",
+            "pfad": "profi",
+            "punkte": 15,
+            "titel": "Was die Regel-AfA im Monat ausmacht",
+            "hinweis": "Barfusstraße 9, WE 03, Musterperson mit 42 Prozent.",
+            "fall": "Mit 5,6 Prozent AfA laut Ersteinschätzung liegt das Ergebnis nach Steuern bei minus 4 Euro im Monat, mit Regel-AfA von 2,5 Prozent bei rund minus 390 Euro.",
+            "gesucht": "Um wie viel Euro im Monat ist die Belastung mit Regel-AfA höher?",
+            "zielwert": 386,
+            "toleranzProzent": 2,
+            "einheit": "€",
+            "wegErstNachVersuch": true,
+            "rechenweg": {
+              "titel": "Zwei AfA-Sätze, eine Wohnung",
+              "zeilen": [
+                {
+                  "label": "Ergebnis mit Regel-AfA",
+                  "wert": "−390 €"
+                },
+                {
+                  "label": "Ergebnis mit erhöhter AfA",
+                  "wert": "−4 €",
+                  "op": "−"
+                },
+                {
+                  "label": "Unterschied im Monat",
+                  "wert": "386 €",
+                  "op": "=",
+                  "ergebnis": true,
+                  "hinweis": "Genau diese Spanne muss der Kunde kennen, bevor er sich entscheidet"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "pruefung-einwaende",
+        "ueberschrift": "Abschnitte 11 und 12: Sicherheit, Plan und die Einwände",
+        "intro": "Eine Rechnung, die nur funktioniert, wenn alles glatt läuft, ist nichts wert. Deshalb kommt nach den Zahlen der Stresstest, und erst danach der Plan.",
+        "absaetze": [
+          "Abschnitt 11 fragt: Was, wenn es nicht nach Plan läuft? Am Beispiel Hauffstraße 38: Steigt der Zins ab Jahr 11 um einen Punkt, sind es rund 72 Euro mehr im Monat nach Steuern. Drei Monate Leerstand kosten einmalig rund 1.970 Euro aus der Reserve. Erkennt das Finanzamt das Gutachten nicht an, sind es rund 59 Euro mehr im Monat. Im CRM rechnet der Investmentrechner den Stresstest für das gewählte Objekt.",
+          "Dazu gehört die Sorge des Kunden aus dem Erstgespräch. Sie steht auf derselben Seite, und genau hier beantwortest du sie. Die Frage am Ende: Wo liegt deine Grenze, auch im Stressfall? Der Kunde hat sie in Schritt 13 schon einmal genannt. Liegt die Belastung im Stressfall darüber, passt das Objekt nicht, und das sagst du.",
+          "Abschnitt 12 zeigt den Plan: Eine Wohnung ist der Anfang, drei sind ein Plan. Wir starten mit einer Wohnung, jede weitere entscheidet der Kunde neu. Der Regler Wertentwicklung geht von 0 bis 4 Prozent. Jede Zahl auf dieser Seite ist ein Szenario mit genannter Annahme, keine Zusage. Und die Zusatzrente von 2061 entspricht heute weniger Kaufkraft, auch das steht auf der Folie.",
+          "Einwände beantwortest du nach fünf Schritten: anerkennen, nachfragen, einordnen, belegen und dann die Zustimmung prüfen. Den Kunden bestätigen, nicht den Einwand widerlegen. Die eigentliche Sorge finden. Mit Zahlen, Unterlagen oder ehrlicher Unsicherheit antworten. Und danach schweigen und warten. Klingt ein Einwand wie ein Vorwand, hilft die Frage: Wenn dieser Punkt geklärt wäre, gäbe es dann noch etwas, das dich zurückhält?",
+          "Die 15 häufigsten Einwände stehen mit Kernsatz, Nachfrage, Belegen und den Sätzen, die wir nie sagen, im Leitfaden Einwandbehandlung. Dort werden sie gepflegt, dieses Kapitel übernimmt sie nicht doppelt. Für Steuern verweist du auf die Steuerberatung des Kunden, für Recht auf Notar oder Anwalt, für die Finanzierung auf Bank und Finanzierungspartner. Und über die Zukunft weiß niemand Bescheid: Szenarien nur mit genannten Annahmen."
+        ],
+        "visuals": [
+          {
+            "kpis": [
+              {
+                "label": "Zins steigt ab Jahr 11 um 1 Punkt",
+                "wert": "+ 72 €",
+                "hinweis": "im Monat nach Steuern, Hauffstraße 38",
+                "farbe": "amber"
+              },
+              {
+                "label": "Drei Monate Leerstand",
+                "wert": "≈ 1.970 €",
+                "hinweis": "einmalig, aus der Reserve",
+                "farbe": "rose"
+              },
+              {
+                "label": "Gutachten nicht anerkannt",
+                "wert": "+ 59 €",
+                "hinweis": "im Monat nach Steuern",
+                "farbe": "indigo"
+              }
+            ]
+          }
+        ],
+        "checkliste": [
+          "Belastung vor Steuern genannt",
+          "Steuerwirkung mit dem persönlichen Steuersatz erklärt",
+          "Regel-AfA neben der erhöhten AfA gezeigt",
+          "Stresstest gezeigt und mit der Grenze des Kunden verglichen",
+          "Sorge aus dem Erstgespräch beantwortet",
+          "Zukunftszahlen als Szenario benannt"
+        ],
+        "einwaende": [
+          {
+            "einwand": "Die Steuervorteile sind doch unsicher.",
+            "antwort": "Die Rechnung muss vor Steuern und mit regulärer AfA tragen. Alles darüber ist ein möglicher Bonus. Deshalb zeige ich dir beide Zahlen.",
+            "warum": "Der Kernsatz aus dem Leitfaden nimmt den Einwand ernst, statt ihn wegzureden. Wer die vorsichtige Zahl selbst zeigt, muss keine Steuerzusage verteidigen."
+          },
+          {
+            "einwand": "Und wenn der Mieter nicht zahlt?",
+            "antwort": "Das kann passieren. Deshalb planen wir Reserve und Stresstest von Anfang an ein. Drei Monate Leerstand wären hier rund 1.970 Euro einmalig aus deiner Reserve.",
+            "warum": "Erst das echte Risiko anerkennen, dann die Absicherung mit einer konkreten Zahl. Eine Mietgarantie ohne schriftliche Vereinbarung versprechen wir nie."
+          },
+          {
+            "einwand": "Ich überlege es mir noch.",
+            "antwort": "Gern. Worüber genau? Dann klären wir genau diesen Punkt bis zu einem festen Termin.",
+            "warum": "Bedenkzeit ist in Ordnung. Wir finden den eigentlichen Punkt und setzen einen Termin, ohne Druck und ohne Verknappung. Das Angebot gilt nur bis heute sagen wir nie."
+          }
+        ],
+        "profiTipp": "Lass den Kunden den Regler in Abschnitt 12 selbst auf null ziehen. Was dann bleibt, kommt allein aus der Tilgung. Alles darüber ist Zugabe, nicht Grundlage. Nach diesem Moment nicht sofort die große Zahl nachschieben: Wer den Null-Prozent-Moment mit der Zahl bei zwei Prozent zuschüttet, nimmt dem Kunden seine eigene Schlussfolgerung.",
+        "links": [
+          {
+            "label": "Leitfaden Einwandbehandlung",
+            "to": "/leitfaeden/einwandbehandlung",
+            "hinweis": "Die 15 häufigsten Einwände mit Kernsatz, Nachfrage, Belegen und den Sätzen, die wir nie sagen"
+          },
+          {
+            "label": "Einwand-Bibliothek im CRM",
+            "to": "/einwaende",
+            "hinweis": "Weitere Einwände mit Techniken und Formulierungen"
+          }
+        ],
+        "aufgaben": [
+          {
+            "id": "einwand-zuordnen-qe",
+            "typ": "zuordnen",
+            "pfad": "quereinsteiger",
+            "punkte": 10,
+            "titel": "Fünf Einwände, fünf Kernsätze",
+            "hinweis": "Die Kernsätze stammen aus dem Leitfaden Einwandbehandlung.",
+            "paare": [
+              {
+                "links": "Die Zinsen sind heute viel zu hoch.",
+                "rechts": "Entscheidend ist die Gesamtrechnung, nicht der Zinssatz allein"
+              },
+              {
+                "links": "Das ist mir zu teuer.",
+                "rechts": "Liegt die Belastung über deiner Grenze, passt das Objekt nicht"
+              },
+              {
+                "links": "Die Preise fallen doch noch.",
+                "rechts": "Wir rechnen auch ohne Wertsteigerung, die Tilgung baut Vermögen auf"
+              },
+              {
+                "links": "Ich lege mein Geld lieber in ETFs an.",
+                "rechts": "Die Immobilie ist eine Ergänzung, kein Ersatz"
+              },
+              {
+                "links": "Das muss ich mit meinem Partner besprechen.",
+                "rechts": "Richtig so, den nächsten Termin machen wir zu dritt"
+              }
+            ]
+          },
+          {
+            "id": "einwand-szenario",
+            "typ": "szenario",
+            "pfad": "beide",
+            "titel": "Der Wertverlust-Einwand mitten im Plan",
+            "hinweis": "Du bist in Abschnitt 12, Ihr Plan, der Kunde unterbricht dich, und du führst das Gespräch.",
+            "punkte": 20,
+            "startSzene": "s1",
+            "szenen": [
+              {
+                "id": "s1",
+                "text": "Du zeigst den Plan für die Hauffstraße 38 über 30 Jahre, der Regler steht auf 2 Prozent Wertentwicklung. Der Kunde lehnt sich zurück: Und was ist, wenn die Wohnung in zehn Jahren gar nichts mehr wert ist? Mein Nachbar hat bei seiner ordentlich draufgezahlt.",
+                "optionen": [
+                  {
+                    "text": "Ein Totalverlust ist bei Immobilien praktisch ausgeschlossen, so etwas passiert nicht.",
+                    "weiterZu": "s2",
+                    "konsequenz": "Der Kunde zieht die Augenbrauen hoch. Du hast etwas versprochen, das du nicht halten kannst, und sein Nachbar ist der lebende Gegenbeweis.",
+                    "bewertung": "schwach"
+                  },
+                  {
+                    "text": "Gute Frage. Du gibst ihm die Maus: Zieh den Regler Wertentwicklung selbst auf null.",
+                    "weiterZu": "s3",
+                    "konsequenz": "Der Kunde zieht den Regler auf null und sieht: Es bleiben rund 136.000 Euro Vermögen nach 30 Jahren.",
+                    "bewertung": "gut"
+                  },
+                  {
+                    "text": "Du sagst deine Standardantwort zum Wertverlust auf, ohne den Bildschirm zu benutzen.",
+                    "weiterZu": "s3",
+                    "konsequenz": "Inhaltlich richtig, aber der Kunde nickt nur höflich. Du merkst es und lässt ihn den Regler selbst auf null ziehen.",
+                    "bewertung": "tragbar"
+                  }
+                ]
+              },
+              {
+                "id": "s2",
+                "text": "Der Kunde hakt nach: Und warum hat mein Nachbar dann verloren? Du merkst, dass er dir gerade weniger glaubt als vor deiner Antwort.",
+                "optionen": [
+                  {
+                    "text": "Stimmt, möglich ist es. Zieh den Regler mal selbst auf null, dann siehst du, was ohne Wertsteigerung bleibt.",
+                    "weiterZu": "s3",
+                    "konsequenz": "Du rettest die Situation mit dem Regler. Der Umweg hat Vertrauen gekostet, aber die Mechanik überzeugt.",
+                    "bewertung": "tragbar"
+                  },
+                  {
+                    "text": "Das war sicher eine schlechte Lage, bei uns kann das nicht passieren.",
+                    "weiterZu": "e1",
+                    "konsequenz": "Jetzt stehst du im Rechtfertigungsmodus. Der Kunde nickt höflich und wird unverbindlich.",
+                    "bewertung": "schwach"
+                  }
+                ]
+              },
+              {
+                "id": "s3",
+                "text": "Der Kunde schaut auf die rund 136.000 Euro bei null Prozent. Er sagt langsam: Das heißt, selbst wenn der Markt nichts macht, gehört mir am Ende mehr als am Anfang.",
+                "optionen": [
+                  {
+                    "text": "Genau. Nicht weil der Markt etwas schenkt, sondern weil jeden Monat getilgt wird. Alles darüber ist Zugabe.",
+                    "weiterZu": "e2",
+                    "konsequenz": "Der Kunde hat seine eigene Schlussfolgerung gezogen, du hast sie nur bestätigt. Stärker geht es nicht.",
+                    "bewertung": "gut"
+                  },
+                  {
+                    "text": "Und bei zwei Prozent sind es sogar rund 278.000 Euro, wahrscheinlich eher mehr!",
+                    "weiterZu": "e1",
+                    "konsequenz": "Du hast den Null-Prozent-Moment sofort wieder zugeschüttet. Der Kunde erinnert sich an die große Zahl, und sein Misstrauen gegen große Zahlen gleich mit.",
+                    "bewertung": "tragbar"
+                  }
+                ]
+              },
+              {
+                "id": "e1",
+                "text": "Das Gespräch läuft weiter, aber der Einwand ist nicht ausgeräumt. Bei der Selbstauskunft sagt der Kunde: Ich möchte erst noch eine Nacht darüber schlafen.",
+                "fazit": "Ein nicht ausgeräumter Einwand verschwindet nicht, er wandert ans Ende des Gesprächs. Die Regel bleibt: zuerst das echte Risiko anerkennen, dann die Absicherung zeigen. Das stärkste Werkzeug dafür ist der Regler, nicht das Argument. Und nach dem Null-Prozent-Moment ist Schweigen Gold."
+              },
+              {
+                "id": "e2",
+                "text": "Der Kunde sagt: Okay, das leuchtet mir ein. Was wäre denn der nächste Schritt? Ihr seid bereit für Abschnitt 15 und die Selbstauskunft.",
+                "fazit": "Musterlösung: Risiko anerkennen, Kontrolle abgeben, den Kunden selbst schlussfolgern lassen und seine Schlussfolgerung nur noch bestätigen. Der Einwand ist nicht widerlegt, er ist entkräftet, von der eigenen Hand des Kunden."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "vier-fragen",
+        "ueberschrift": "Abschnitt 13: Die Kriterien des Kunden und der Finanzierungsrahmen",
+        "intro": "Bevor du fragst, ob der Kunde weitergehen möchte, legt er selbst fest, was passen muss. Diese Kriterien sind später der Maßstab für die Objektvorstellung.",
+        "absaetze": [
+          "Abschnitt 13 heißt Ihre Kriterien: Du entscheidest, was passen muss. Der Kunde legt fest: sein Konzept, höchstens im Monat vor Steuern, seine Grenze im Stressfall, Eigenkapital höchstens, die Reserve, die unangetastet bleibt, und was ihm am wichtigsten ist. Vieles ist aus dem Erstgespräch vorbelegt, er bestätigt oder ändert es.",
+          "Dazu die Frage in seinen Worten: Warum ist das für dich der richtige Zeitpunkt? Du hältst die Antwort wörtlich fest. Sie steht später in der Objektvorstellung wieder vorn, und der Kunde begründet seine Entscheidung dann mit seinen eigenen Sätzen.",
+          "Auf derselben Seite steht der Finanzierungsrahmen, gerechnet statt geschätzt, mit derselben Formel wie im Kundenprofil: 80 Prozent des monatlichen Überschusses gelten als tragbare Rate, mal 12 und geteilt durch 6 Prozent Annuität aus Zins und Tilgung, plus das liquide Eigenkapital. Die Zahl ist eine Orientierung, keine Zusage. Die Bank rechnet anders und prüft selbst.",
+          "Nie sagst du an dieser Stelle: Das bekommen wir bei der Bank schon hin. Ob und wie viel die Bank finanziert, entscheidet die Bank. Deine Aufgabe ist, dass die Kriterien des Kunden ehrlich sind, und dass er mit seiner Stressgrenze auch dann leben kann, wenn etwas nicht nach Plan läuft."
+        ],
+        "visuals": [
+          {
+            "beispielrechnung": {
+              "titel": "Der Finanzierungsrahmen in Abschnitt 13",
+              "untertitel": "Beispiel: 4.000 € Einnahmen, 2.400 € Ausgaben, 25.000 € liquides Eigenkapital",
+              "zeilen": [
+                {
+                  "label": "Überschuss im Monat",
+                  "wert": "1.600 €"
+                },
+                {
+                  "label": "Tragbare Rate: 80 Prozent davon",
+                  "wert": "1.280 €",
+                  "op": "→"
+                },
+                {
+                  "label": "Darlehen: mal 12, geteilt durch 0,06",
+                  "wert": "256.000 €",
+                  "op": "→"
+                },
+                {
+                  "label": "Plus Eigenkapital",
+                  "wert": "25.000 €",
+                  "op": "+"
+                },
+                {
+                  "label": "Finanzierungsrahmen, Orientierung",
+                  "wert": "281.000 €",
+                  "op": "=",
+                  "ergebnis": true
                 }
               ]
             }
@@ -9435,56 +9983,13 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         ],
         "skripte": [
           {
-            "titel": "Überleitung zu den fünf Fragen",
-            "kontext": "Dritte Überleitung, direkt nach der Vorstellung.",
-            "text": "\"Unser Motto! Erst deine Ziele. Dann die passende Immobilie. Nicht umgekehrt.\"",
-            "warum": "Der Satz stellt die Arbeitsweise als Haltung vor die Fragen und holt damit die Erlaubnis ein, jetzt Fragen zu stellen statt Objekte zu zeigen. Fast jeder Kunde kennt das Gegenteil aus eigener Erfahrung, das musst du nicht einmal aussprechen."
-          },
-          {
-            "titel": "Frage 1: Welche Erfahrungen hast du bereits mit Immobilien gemacht?",
-            "kontext": "Freitextfeld, steht ganz oben und allein.",
-            "text": "\"Fünf Dinge müssen wir wissen, bevor wir über eine konkrete Wohnung reden. Und ich schreibe deine Antworten gleich hier mit. Das Erste: Welche Erfahrungen hast du bisher mit Immobilien gemacht? Eine eigengenutzte Wohnung, eine vermietete Einheit, oder ist das hier dein erstes Mal?\"",
-            "warumTitel": "Warum die Erfahrung vor allem anderen kommt",
-            "warum": "Die Antwort entscheidet über das Niveau des ganzen Gesprächs. Wer schon vermietet, will Zahlen und keine Grundlagen. Wer zum ersten Mal darüber nachdenkt, braucht Inflation, AfA und Hebel erklärt. Und die Frage ist leicht zu beantworten, deshalb steht sie vorn: Sie bringt den Kunden ins Reden, bevor es um Geld geht."
-          },
-          {
-            "titel": "Frage 2: Welche Ziele sind dir besonders wichtig?",
-            "kontext": "Auswahlliste mit neun Anlagezielen, höchstens drei. Das zuerst gewählte trägt die Marke Hauptziel. Dieselbe Liste wie in der Selbstauskunft.",
-            "text": "\"Welche Ziele sind dir besonders wichtig? Vermögensaufbau und Werte schaffen, Steuervorteile sichern, Inflationsschutz, finanzielle Freiheit durch passives Einkommen, ein eigenes Portfolio aufbauen, Kapital fürs spätere Eigenheim, sorgenfrei im Alter durch eine Immobilienrente, eine sichere Zukunft für die Kinder oder der Fremdkapitalhebel mit wenig Eigenkapital. Such dir bis zu drei heraus, und sag mir das Wichtigste zuerst.\"",
-            "warumTitel": "Warum der Kunde das Ziel wählt und nicht das Konzept",
-            "warum": "Jedes Ziel trägt intern eine feste Konzeptzuordnung, und das zuerst gewählte führt: Es bestimmt Konzept und Musterrechnung. Der Kunde entscheidet, was ihm wichtig ist, die Ableitung bleibt unsere Arbeit. So muss er nicht raten, und die spätere Empfehlung wirkt wie eine Diagnose statt wie ein Verkaufsvorschlag. Höchstens drei Ziele sind Absicht: Wer alles wichtig findet, hat sich für nichts entschieden. Und weil es dieselben neun Ziele wie in der Selbstauskunft sind, findet der Kunde seine Wahl dort wieder, schon angehakt."
-          },
-          {
-            "titel": "Frage 3: Welcher monatliche Eigenaufwand ist gut darstellbar?",
-            "kontext": "Ein Eingabefeld mit festem Euro-Zeichen. Pflichtfeld.",
-            "text": "\"Welcher monatliche Eigenaufwand ist für dich gut darstellbar? Keine Grenze, die du nie überschreiten darfst, sondern eine Größenordnung, mit der du dich wohlfühlst. Zweihundert, zweihundertfünfzig?\"",
-            "warumTitel": "Warum du eine Zahl brauchst und keine Stimmung",
-            "warum": "Eine genannte Größenordnung ist später deine stärkste Rückversicherung: Wenn die Rechnung darunter liegt, hat der Kunde selbst gesagt, dass es passt. Antwortet er möglichst wenig, frag nach einer Spanne. Ohne Zahl rechnet der nächste Termin ins Blaue."
-          },
-          {
-            "titel": "Frage 4: Die Finanzierung, live gerechnet",
-            "kontext": "Vier Zahlenfelder: Einnahmen, Ausgaben, Eigenkapital gesamt und davon liquide verfügbar. Der Rahmen erscheint automatisch.",
-            "text": "\"Welche Finanzierung ist realistisch? Das schätzen wir nicht, das rechnen wir. Was kommt bei dir im Monat rein, was geht raus, wie viel Eigenkapital hast du insgesamt, und wie viel davon ist wirklich greifbar? Gerechnet wird mit 80 Prozent deines Überschusses als tragbarer Rate, einer Annuität von 6 Prozent und dem liquiden Eigenkapital obendrauf. Das ist eine Orientierung, keine Zusage. Die verbindliche Haushaltsrechnung macht die Bank.\"",
-            "warumTitel": "Warum du live rechnest statt schätzt",
-            "warum": "Eine Zahl, die vor den Augen des Kunden aus seinen eigenen Angaben entsteht, ist unangreifbar. Die 80 Prozent zeigen Seriosität, weil wir bewusst unter dem bleiben, was die Bank genehmigen würde. Die Trennung zwischen Eigenkapital gesamt und liquide verfügbar verhindert die häufigste Selbsttäuschung: Ein Betriebsvermögen oder eine Lebensversicherung kauft keine Wohnung. Und weil dieselbe Formel im Kundenprofil rechnet, steht im System später exakt dieselbe Zahl wie im Gespräch."
-          },
-          {
-            "titel": "Frage 5: Was ist dir besonders wichtig?",
-            "kontext": "Freitextfeld am Ende des Fragenblocks, in seinen eigenen Worten.",
-            "text": "\"Und zum Schluss: Was ist dir bei einem Immobilieninvestment besonders wichtig? Eine sichere Lage, wenig Aufwand, ein planbarer Ertrag? Sag es ruhig deutlich, daran messen wir jedes Objekt, das ich dir später zeige.\"",
-            "warumTitel": "Warum diese Antwort der Maßstab für alles Weitere ist",
-            "warum": "Wer sagt, worauf es ihm ankommt, nennt damit den Maßstab, an dem er jedes spätere Angebot misst. Danach musst du nicht mehr raten, was überzeugt: Sicherheit, Rendite, Aufwand oder Lage. Notiere wörtlich, die Antwort kommt in der Rückspiegelung zurück, und beim Objektvorschlag greifst du genau diese Worte wieder auf. Hörst du dabei einen Zweifel heraus, ist auch der wertvoll: Ein ausgesprochener Zweifel ist bearbeitbar, ein verschwiegener wandert ans Ende des Gesprächs und heißt dort, man wolle noch eine Nacht darüber schlafen."
-          },
-          {
-            "titel": "Station 04: Der gemeinsame Weg",
-            "kontext": "Dunkler Abschnitt, die Bahn mit sechs Schritten zeichnet sich beim Hereinscrollen.",
-            "text": "\"Sechs Schritte. Du weißt jederzeit, wo du stehst und was als Nächstes kommt. Heute machen wir Schritt eins und zwei: das Gespräch, das wir gerade führen, und am Ende die Selbstauskunft. Danach entwickeln wir im Hintergrund deine Strategie, beim nächsten Termin siehst du einen konkreten Objektvorschlag mit vollständiger Rechnung. Schritt fünf heißt bewusst: nur wenn du Ja sagst. Und danach begleiten wir dich dauerhaft. Wir stehen heute bei Schritt eins. Am Ende dieses Gesprächs stehen wir bei Schritt zwei.\"",
-            "warumTitel": "Warum der Weg die Kaufangst senkt",
-            "warum": "Der Kunde sieht, dass zwischen heute und einer Unterschrift noch vier Schritte liegen und dass der Kauf ausdrücklich an sein Ja gebunden ist. Gleichzeitig setzt du unmissverständlich das Tagesziel Selbstauskunft. Kleinschrittigkeit gibt Sicherheit, und Sicherheit macht entscheidungsfähig."
+            "titel": "Abschnitt 13 · Deine Worte",
+            "kontext": "Nach den Kriterien.",
+            "text": "„Warum ist das für dich der richtige Zeitpunkt?“",
+            "warum": "Der Kunde formuliert seine Gründe selbst. Wir halten sie wörtlich fest, und in der Objektvorstellung stehen sie wieder vorn. So entscheidet er nach seinen Gründen und nicht nach unseren."
           }
         ],
         "quereinsteigerHinweis": "Annuität heißt: Zins plus Tilgung zusammen, als Prozentsatz des Darlehens pro Jahr. Mit 6 Prozent Annuität und einer tragbaren Rate von 1.280 Euro im Monat ergibt sich das mögliche Darlehen so: 1.280 mal 12 gleich 15.360 Euro im Jahr, geteilt durch 0,06 gleich 256.000 Euro. Das Eigenkapital kommt obendrauf. Merk dir die Richtung, dann verrechnest du dich nie: Je höher die Annuität, desto kleiner der Rahmen, weil jeder geliehene Euro teurer bedient wird. Und liquide verfügbar heißt Geld, das du morgen überweisen könntest, also Konto, Tagesgeld oder ein Depot, das sich verkaufen lässt. Eine Lebensversicherung, ein Bausparvertrag in der Ansparphase oder Geld in der eigenen GmbH sind Eigenkapital, aber nicht liquide.",
-        "profiTipp": "Der Rahmen aus Station 03 ist nicht die Rechnung der Bank, und du solltest den Unterschied kennen, bevor der Kunde ihn entdeckt. Die Bank rechnet nicht mit den Ausgaben, die der Kunde nennt, sondern mit einer Haushaltspauschale für die Lebenshaltung, üblicherweise in der Größenordnung von 800 bis 1.200 Euro für den ersten Erwachsenen, und sie setzt die künftige Mieteinnahme nur mit einem Abschlag an, oft 70 bis 80 Prozent, weil sie Leerstand und nicht umlagefähige Kosten einkalkuliert. Daraus folgen zwei Dinge für dein Gespräch. Erstens: Nennt der Kunde unrealistisch niedrige Ausgaben, wird sein Rahmen im Gespräch größer und im Bankgespräch kleiner. Frag deshalb lieber nach, als eine schöne Zahl stehen zu lassen. Zweitens: Bei Selbstständigen ist der Monatsüberschuss die falsche Größe, dort zählt der Durchschnitt der letzten drei Jahresabschlüsse. Rechne bei ihnen im Termin bewusst konservativ und sag auch, warum. Und wenn du beide Rechenwege nebeneinander im Kopf haben willst: Aus 1.600 Euro Überschuss werden bei uns 1.280 Euro tragbare Rate, bei der Bank 1.333 Euro. Die 53 Euro Unterschied sind bei 6 Prozent Annuität rund 10.700 Euro Darlehensspielraum. Unsere Zahl ist also die vorsichtigere, und genau deshalb ist sie die, die du im Termin sagst.",
         "links": [
           {
             "label": "Finanzierungszahlen im Glossar",
@@ -9582,1304 +10087,71 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               ]
             }
           }
-        ],
-        "bullets": [
-          "Die fünf Fragen: Erfahrung, Ziele, monatlicher Eigenaufwand, Finanzierung, was ihm besonders wichtig ist.",
-          "Frage 4 hat vier Felder: Einnahmen, Ausgaben, Eigenkapital gesamt und davon liquide verfügbar. In den Rahmen geht nur der liquide Teil.",
-          "Finanzierungsrahmen: 80 Prozent des Überschusses, mal 12, geteilt durch 6 Prozent Annuität, plus liquides Eigenkapital.",
-          "Dieselbe Formel rechnet die Software an jeder anderen Stelle auch. Deshalb steht im System später dieselbe Zahl wie im Gespräch.",
-          "Die Bank rechnet anders: geteilt durch 1,2, also rund 83 Prozent, und mit der erwarteten Kaltmiete des Objekts zu 70 bis 80 Prozent. Sie kommt bei Kapitalanlagen deshalb meist auf mehr als wir.",
-          "Das Konzept wählt nicht der Kunde. Es wird aus seinem Hauptziel abgeleitet und erst in der Rückspiegelung benannt."
-        ]
-      },
-      {
-        "id": "bausteine-vergleich",
-        "ueberschrift": "Station 05 und 06: Vier Bausteine und der ehrliche Vergleich",
-        "intro": "Bevor der Kunde Konzepte versteht, muss er verstehen, womit eine Kapitalanlage überhaupt ihr Geld verdient. Station 05 erklärt die Mechanik, Station 06 stellt sie ehrlich neben Aktien und Tagesgeld.",
-        "absaetze": [
-          "Das Besondere an einer Kapitalanlageimmobilie ist nicht ein einzelner Vorteil, sondern dass vier Dinge gleichzeitig arbeiten: Die Miete bezahlt einen großen Teil der Finanzierung, die Steuer kann die persönliche Steuerlast reduzieren, mit jeder Rate wird getilgt, und die Wertentwicklung kann dazukommen, garantiert ist sie nicht.",
-          "Der Aha-Moment steckt im dunklen Einschub: Wer trägt eigentlich deine monatliche Rate? Der Ring beantwortet das schneller als jeder Satz, der eigene Anteil ist der kleine Rest. Damit du die Zahlen begründen kannst, rechne sie aus der Musterrechnung, die du gleich danach zeigst. Bezugsgröße ist die Rate selbst, denn genau danach fragt die Folie. Beim sanierten Bestand sind das 1.604 Euro im Monat. Davon trägt der Mieter 1.250 Euro, nämlich seine Kaltmiete von 1.400 Euro abzüglich der 150 Euro nicht umlagefähigen Kosten, die aus der Miete bezahlt werden müssen und nicht für die Rate zur Verfügung stehen. Das sind 78 Prozent. Das Finanzamt trägt die Steuerentlastung, ab dem zweiten Jahr 126 Euro, also 8 Prozent. Und beim Kunden bleiben 228 Euro, also 14 Prozent. Die drei Teile ergeben zusammen genau die Rate.",
-          "Die WG-Wohnung landet mit derselben Rechnung bei 81 Prozent Mieter, 9 Prozent Finanzamt und 10 Prozent Eigenanteil. Die Botschaft ist bei beiden Konzepten dieselbe und sie ist stark genug, ohne dass man sie schönt: Rund vier Fünftel der Rate kommen vom Mieter, der eigene Anteil ist ein Zehntel bis ein Siebtel.",
-          "Zwei Dinge musst du dazu wissen. Erstens: Gerechnet wird mit dem Dauerzustand ab dem zweiten Jahr, nicht mit dem ersten. Im ersten Jahr trägt das Finanzamt beim Bestand 826 Euro, also mehr als die Hälfte der Rate, und der Eigenanteil ist rechnerisch negativ, der Kunde hat also im ersten Jahr einen Überschuss von rund 472 Euro im Monat. Eine Aufteilung, die nur zwölf Monate hält, wäre keine Botschaft, sondern eine Enttäuschung mit Verzögerung. Zweitens: Die Folie zeigt dieselben Werte, die du hier lernst, also 78, 8 und 14 Prozent. Sie werden aus der Bestandsrechnung abgeleitet und nicht getippt, du kannst sie also Zeile für Zeile belegen, und genau diese Rechnung zeigst du zwei Stationen später.",
-          "Station 06 vergleicht dann ehrlich: Die Immobilienspalte ist hervorgehoben, aber die anderen Spalten bleiben voll lesbar, sonst wäre der Vergleich nicht mehr ehrlich. Verfügbarkeit gering steht offen in der Tabelle. Das eine entscheidende Argument bleibt der Hebel: Für ein Aktiendepot leiht dir keine Bank 350.000 Euro."
-        ],
-        "visuals": [
-          {
-            "beispielrechnung": {
-              "titel": "Wer trägt die Rate, Zeile für Zeile",
-              "untertitel": "Sanierter Bestand, Dauerzustand ab dem zweiten Jahr. Bezugsgröße ist die Rate von 1.604 Euro im Monat.",
-              "zeilen": [
-                {
-                  "label": "Kaltmiete des Mieters",
-                  "wert": "1.400 €",
-                  "op": "+"
-                },
-                {
-                  "label": "Davon gehen für nicht umlagefähige Kosten ab",
-                  "wert": "150 €",
-                  "op": "−",
-                  "hinweis": "Verwaltergebühr und Zuführung zur Instandhaltungsrücklage. Dieses Geld steht für die Rate nicht zur Verfügung."
-                },
-                {
-                  "label": "Beitrag des Mieters zur Rate",
-                  "wert": "1.250 €",
-                  "op": "=",
-                  "hinweis": "1.250 geteilt durch 1.604 sind 78 Prozent."
-                },
-                {
-                  "label": "Beitrag des Finanzamts, Steuerentlastung ab dem zweiten Jahr",
-                  "wert": "126 €",
-                  "op": "+",
-                  "hinweis": "126 geteilt durch 1.604 sind 8 Prozent. Im ersten Jahr sind es 826 Euro, also 51 Prozent."
-                },
-                {
-                  "label": "Dein eigener Beitrag",
-                  "wert": "228 €",
-                  "op": "+",
-                  "hinweis": "228 geteilt durch 1.604 sind 14 Prozent. Dieselbe Zahl steht in Station 11 als monatlicher Cashflow nach Steuer."
-                },
-                {
-                  "label": "Monatliche Rate",
-                  "wert": "1.604 €",
-                  "op": "=",
-                  "ergebnis": true,
-                  "hinweis": "78 plus 8 plus 14 ergeben 100 Prozent. Die drei Anteile summieren sich genau auf die Rate."
-                }
-              ],
-              "fazit": "Bei der WG-Wohnung ergibt dieselbe Rechnung 81, 9 und 10 Prozent: 1.527 Euro Mieteranteil, 168 Euro Finanzamt und 200 Euro Eigenanteil auf eine Rate von 1.895 Euro."
-            }
-          },
-          {
-            "donut": {
-              "titel": "Wer trägt eigentlich deine monatliche Rate?",
-              "untertitel": "Sanierter Bestand, Rate 1.604 Euro, Dauerzustand ab dem zweiten Jahr",
-              "daten": [
-                {
-                  "label": "Mieter",
-                  "wert": 78
-                },
-                {
-                  "label": "Finanzamt",
-                  "wert": 8
-                },
-                {
-                  "label": "Du selbst",
-                  "wert": 14
-                }
-              ],
-              "zentrumLabel": "Dein Anteil",
-              "zentrumWert": "14 %"
-            }
-          },
-          {
-            "vergleich": {
-              "titel": "Der eine entscheidende Unterschied",
-              "untertitel": "Station 06 in einem Bild",
-              "optionA": {
-                "label": "Immobilie",
-                "punkte": [
-                  "Finanzierung mit Fremdkapital möglich",
-                  "Laufende Mieteinnahmen",
-                  "Abschreibung und Kosten steuerlich nutzbar",
-                  "Hohe eigene Einflussmöglichkeiten",
-                  "Verfügbarkeit gering, das bleibt der ehrliche Nachteil"
-                ],
-                "badge": "Der Hebel"
-              },
-              "optionB": {
-                "label": "Aktien und Tagesgeld",
-                "punkte": [
-                  "Fremdfinanzierung normalerweise nicht möglich",
-                  "Dividenden oder Zinsen möglich",
-                  "Steuerliche Gestaltung eingeschränkt",
-                  "Hohe Verfügbarkeit, tägliche Schwankungen sichtbar"
-                ]
-              },
-              "fazit": "Für ein Aktiendepot leiht dir keine Bank 350.000 Euro. Wer aber in zwei Jahren an sein Geld muss, ist woanders besser aufgehoben. Beides gehört ins Gespräch."
-            }
-          }
-        ],
-        "skripte": [
-          {
-            "titel": "Überleitung zu den Bausteinen",
-            "kontext": "Vierte Überleitung, nach dem gemeinsamen Weg.",
-            "text": "\"Bevor wir über Konzepte sprechen: Werfen wir einen Blick darauf, wie eine Immobilie Vermögen aufbaut.\"",
-            "warum": "Die Überleitung stellt das Verstehen vor die Auswahl. Frag ruhig zusätzlich, ob der Kunde spontan sagen kann, womit eine Kapitalanlage ihr Geld verdient. Fast niemand kann das vollständig, und genau das öffnet die Aufmerksamkeit für die vier Bausteine."
-          },
-          {
-            "titel": "Station 05: Vier Bausteine, die zusammenarbeiten",
-            "kontext": "Vier Kacheln: Miete, Steuer, Tilgung, Wertentwicklung.",
-            "text": "\"Das Besondere an einer Kapitalanlageimmobilie ist nicht ein einzelner Vorteil. Es ist, dass vier Dinge gleichzeitig für dich arbeiten. Der Mieter bezahlt einen großen Teil der monatlichen Finanzierung. Abschreibung und Kosten können deine Steuerlast reduzieren. Mit jeder Kreditrate gehört dir ein Stück mehr von der Wohnung. Und die Immobilie kann langfristig an Wert gewinnen, garantiert ist das nicht.\"",
-            "warumTitel": "Warum du die Wertsteigerung sofort relativierst",
-            "warum": "Der Satz garantiert ist das nicht gehört zum Skript, nicht zur Defensive. Wer die schwächste Annahme selbst benennt, macht die drei starken Bausteine glaubwürdig. Die Rechnung später steht bewusst auch ganz ohne Wertsteigerung."
-          },
-          {
-            "titel": "Einschub: Wer trägt eigentlich deine monatliche Rate?",
-            "kontext": "Dunkler Kasten in Station 05, Balken und Ring zeigen 78, 8 und 14 Prozent.",
-            "text": "\"Und jetzt die entscheidende Frage: Wer trägt eigentlich deine monatliche Rate? Mieter, Steuerersparnis und dein eigener Beitrag bauen gemeinsam Vermögen auf. Nehmen wir die Wohnung, die wir gleich durchrechnen: Die Rate beträgt 1.604 Euro. Davon trägt der Mieter 1.250 Euro, das sind 78 Prozent. Das Finanzamt trägt 126 Euro, das sind 8 Prozent. Und bei dir bleiben 228 Euro, also 14 Prozent. Den größten Teil trägt nicht dein Konto. Genau das kann eine Kapitalanlageimmobilie, und ein Sparplan kann es nicht.\"",
-            "warumTitel": "Warum dieser Ring der Aha-Moment ist",
-            "warum": "Der Kunde kommt mit dem Gefühl, eine Immobilie hieße, eine zweite Miete zu zahlen. Der Ring dreht das Bild: Sein Anteil ist der kleine Rest. Lass die Zahlen wirken und widerstehe dem Reflex, sofort weiterzuklicken. Das ist der Satz, den der Kunde zu Hause seinem Partner erzählt. Entscheidend ist dabei, dass du die Anteile aus der Rechnung nimmst, die gleich kommt, und nicht aus dem Gedächtnis: Der Mieteranteil ist die Kaltmiete abzüglich der nicht umlagefähigen Kosten, der Anteil des Finanzamts ist die Steuerentlastung ab dem zweiten Jahr, der Rest ist der Eigenbeitrag. Drei Zahlen, die sich genau auf die Rate summieren, hältst du jeder Nachfrage stand. Drei Zahlen aus einer alten Folie nicht, und der Kunde rechnet in Station 10 selbst nach."
-          },
-          {
-            "titel": "Überleitung zum Vergleich",
-            "kontext": "Fünfte Überleitung.",
-            "text": "\"Und die Frage, die sich hier jeder stellt: Warum dann nicht einfach sparen oder Aktien kaufen?\"",
-            "warum": "Du sprichst den Einwand aus, bevor der Kunde ihn stellt. Damit gehört die Frage dir, und die Antwort kommt aus dem Vergleich statt aus der Verteidigung."
-          },
-          {
-            "titel": "Station 06: Immobilie, Aktien, Tagesgeld",
-            "kontext": "Vergleichstabelle, Immobilienspalte hervorgehoben, zwei Karten darunter.",
-            "text": "\"Ein ehrlicher Vergleich: Immobilien sind nicht grundsätzlich besser. Aktien sind schneller verfügbar, Tagesgeld schwankt kaum. Immobilien können nur eines, was die anderen beiden nicht können: Sie können mit Bankkapital einen großen Sachwert erwerben, während der Mieter einen Teil der Finanzierung übernimmt. Für ein Aktiendepot leiht dir keine Bank 350.000 Euro. Und die ehrliche Einschränkung gehört dazu: Wer in zwei Jahren an sein Geld muss, ist woanders besser aufgehoben.\"",
-            "warumTitel": "Warum die Einschränkung das stärkste Argument schützt",
-            "warum": "Zweiseitige Argumentation: Das offene Zugeben der Nachteile kauft Glaubwürdigkeit für das eine starke Argument, den Hebel. Ein Kunde, dem du die Einschränkung selbst genannt hast, kann sie dir später nicht mehr entgegenhalten. Der Begriff stammt aus der Überzeugungsforschung und meint, beide Seiten zu nennen statt nur die eigene. Er wirkt vor allem bei Zuhörern, die dem Thema skeptisch gegenüberstehen, und genau das ist die Ausgangslage im Beratungsgespräch."
-          }
-        ],
-        "quereinsteigerHinweis": "Drei Begriffe für diesen Abschnitt. Nicht umlagefähige Kosten sind die Nebenkosten, die der Eigentümer selbst trägt und nicht auf den Mieter umlegen darf, vor allem die Verwaltergebühr und die Zuführung zur Instandhaltungsrücklage. Steuerentlastung heißt nicht, dass Geld zurückkommt, sondern dass weniger Steuer festgesetzt wird, weil die Immobilie einen Verlust erzeugt, der das übrige Einkommen mindert. Und Hebel oder Leverage bedeutet: Du kaufst mit fremdem Geld einen Sachwert und behältst trotzdem die volle Wertentwicklung, während die Bank nur ihren Zins bekommt. Für die Aufteilung der Rate merk dir eine Reihenfolge: erst die Miete, davon die nicht umlagefähigen Kosten abziehen, dann die Steuerentlastung, der Rest ist der eigene Beitrag.",
-        "profiTipp": "Zwei Feinheiten, mit denen du den Ring gegen jede Nachfrage absicherst. Erstens die Frage nach dem ersten Jahr: Wenn ein Kunde merkt, dass die Steuerentlastung im ersten Jahr 826 statt 126 Euro beträgt, wird der Ring für zwölf Monate viel besser und danach wieder schlechter. Nimm ihm das ab, bevor er es entdeckt, mit einem Satz: Im ersten Jahr trägt das Finanzamt sogar über die Hälfte, weil der Erhaltungsaufwand einmalig wirkt, ich zeige dir bewusst den Zustand, der dauerhaft gilt. Wer im Ring das erste Jahr zeigt, verkauft eine Zahl, die in zwölf Monaten kippt. Zweitens die Frage nach der Tilgung: Von den 228 Euro Eigenanteil sind rechnerisch alle in der Tilgung enthalten, denn die Tilgung liegt im Monatsschnitt bei 525 Euro. Der Kunde zahlt also weniger ein, als er im selben Monat an Schulden abbaut. Dieser Satz ist stärker als jeder Prozentwert, weil er den Eigenanteil nicht kleinredet, sondern einordnet.",
-        "aufgaben": [
-          {
-            "id": "rate-quiz-qe",
-            "typ": "quiz",
-            "pfad": "quereinsteiger",
-            "titel": "Wer trägt die Rate, und warum?",
-            "punkte": 10,
-            "fragen": [
-              {
-                "frage": "Warum trägt der Mieter nur 1.250 Euro zur Rate bei und nicht seine vollen 1.400 Euro Kaltmiete?",
-                "optionen": [
-                  "Weil der Mieter erfahrungsgemäß nicht jeden Monat vollständig zahlt",
-                  "Weil aus der Miete zuerst 150 Euro nicht umlagefähige Kosten bezahlt werden",
-                  "Weil die Bank 150 Euro Gebühren einbehält"
-                ],
-                "korrekt": 1,
-                "aufloesung": "Verwaltergebühr und Rücklage darf der Eigentümer nicht auf den Mieter umlegen. Sie gehen von der Miete ab, bevor etwas für die Rate übrig ist: 1.400 minus 150 sind 1.250 Euro."
-              },
-              {
-                "frage": "Welchen der vier Bausteine relativierst du im Skript selbst?",
-                "optionen": [
-                  "Die Miete",
-                  "Die Tilgung",
-                  "Die Wertentwicklung"
-                ],
-                "korrekt": 2,
-                "aufloesung": "Die Wertentwicklung kann dazukommen, garantiert ist sie nicht. Wer die schwächste Annahme selbst nennt, macht die drei starken Bausteine glaubwürdig."
-              },
-              {
-                "frage": "Was kann eine Immobilie, was Aktien und Tagesgeld nicht können?",
-                "optionen": [
-                  "Sie schwankt nie im Preis",
-                  "Mit Bankkapital einen großen Sachwert kaufen, den der Mieter mitfinanziert",
-                  "Sie ist jederzeit sofort verfügbar"
-                ],
-                "korrekt": 1,
-                "aufloesung": "Für ein Aktiendepot leiht dir keine Bank 350.000 Euro. Der Hebel plus der Mieter, der mitträgt, ist der eine entscheidende Unterschied."
-              }
-            ]
-          },
-          {
-            "id": "ring-wahrfalsch-profi",
-            "typ": "wahrfalsch",
-            "pfad": "profi",
-            "titel": "Hält der Ring jeder Nachfrage stand?",
-            "hinweis": "Wische nach rechts, wenn die Aussage stimmt, und lass dich nicht täuschen, einige klingen nur richtig.",
-            "punkte": 15,
-            "karten": [
-              {
-                "aussage": "Der Ring zeigt den Dauerzustand ab dem zweiten Jahr, nicht das erste Jahr.",
-                "stimmt": true,
-                "aufloesung": "Eine Aufteilung, die nur zwölf Monate hält, wäre eine Enttäuschung mit Verzögerung. Deshalb 78, 8 und 14 Prozent."
-              },
-              {
-                "aussage": "Im ersten Jahr trägt das Finanzamt beim Bestand mehr als die Hälfte der Rate.",
-                "stimmt": true,
-                "aufloesung": "826 von 1.604 Euro sind 51 Prozent. Sag es dem Kunden, bevor er es entdeckt, und zeig bewusst den Zustand, der dauerhaft gilt."
-              },
-              {
-                "aussage": "Der Mieteranteil im Ring ist die volle Kaltmiete.",
-                "stimmt": false,
-                "aufloesung": "Erst gehen die nicht umlagefähigen Kosten ab. Beim Bestand bleiben 1.250 von 1.400 Euro."
-              },
-              {
-                "aussage": "Mit 228 Euro Eigenanteil zahlt der Kunde mehr ein, als er im selben Monat tilgt.",
-                "stimmt": false,
-                "aufloesung": "Die Tilgung liegt im Monatsschnitt bei 525 Euro. Der Kunde zahlt weniger ein, als er an Schulden abbaut. Dieser Satz ist stärker als jeder Prozentwert."
-              },
-              {
-                "aussage": "Bei der WG-Wohnung trägt der Mieter einen kleineren Anteil der Rate als beim Bestand.",
-                "stimmt": false,
-                "aufloesung": "Bei der WG sind es 81 Prozent, beim Bestand 78. Beide Male gilt: Rund vier Fünftel kommen vom Mieter."
-              },
-              {
-                "aussage": "Die Spalten Aktien und Tagesgeld blendest du in Station 06 bewusst ab.",
-                "stimmt": false,
-                "aufloesung": "Die Immobilienspalte ist hervorgehoben, die anderen bleiben voll lesbar. Sonst wäre der Vergleich nicht mehr ehrlich."
-              },
-              {
-                "aussage": "Wer in zwei Jahren an sein Geld muss, dem rätst du nach Station 06 ab.",
-                "stimmt": true,
-                "aufloesung": "Verfügbarkeit gering steht offen in der Tabelle. Das sagst du lieber jetzt als später, und genau das kauft dir Glaubwürdigkeit für den Hebel."
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "konzepte-matching",
-        "ueberschrift": "Station 07 und 08: Drei Konzepte und ihre Ziele",
-        "intro": "Drei Konzepte, drei Ziele: Sie unterscheiden sich nicht in der Qualität, sondern darin, was sie für den Kunden leisten sollen. Das passende Konzept leitet sich automatisch aus dem Ziel ab, das der Kunde vorhin gewählt hat, ein eigener Matching-Bildschirm ist dafür nicht mehr nötig. Die Referenzen folgen später, als Einschub nach der Steuerwirkung.",
-        "absaetze": [
-          "Station 07 zeigt drei klickbare Bildkarten: Sanierter Bestand für etablierte Lagen und starken Steuereffekt, WG und Co-Living für höhere Mieteinnahmen und Renditefokus, KfW 40 QNG für Neubau, Förderung und Planbarkeit. Ein Klick öffnet Station 08, die Detailansicht mit drei Reitern. Alle drei Reiter tragen dieselbe Nummer 08, du wechselst also innerhalb eines Abschnitts und verlässt die Präsentation nicht. Einen Knopf in eine separate Detailpräsentation gibt es nicht mehr, vertieft wird gleich danach in der Musterrechnung mit echten Zahlen. Und der Reiter, den du hier wählst, stellt auch die Musterrechnung um.",
-          "Ein eigener Matching-Bildschirm ist nicht mehr nötig: Das Konzept ergibt sich automatisch aus dem Ziel, das der Kunde in Station 03 gewählt hat. Zu jedem Ziel gehört genau ein Konzept, und der Kunde bekommt später die Rechnung, die zu seiner eigenen Antwort passt, ohne dass jemand umschalten muss. Die Empfehlung kommt so sichtbar nicht aus dem Bauch, sie folgt aus seiner eigenen Antwort.",
-          "Die endgültige Auswahl hängt zusätzlich von Einkommen, Bonität, Steuerlast und gewünschtem Monatsbeitrag ab. Genau deshalb brauchen wir als Nächstes die Zahlen des Kunden."
-        ],
-        "visuals": [
-          {
-            "kpis": [
-              {
-                "label": "Sanierter Bestand",
-                "wert": "Lage und Steuer",
-                "hinweis": "Etablierte Lagen, reguläre AfA, möglicher sofort abzugsfähiger Erhaltungsaufwand",
-                "farbe": "primary"
-              },
-              {
-                "label": "WG und Co-Living",
-                "wert": "Miete und Rendite",
-                "hinweis": "Möblierte Zimmer einzeln vermietet, Standorte München und Nürnberg",
-                "farbe": "emerald"
-              },
-              {
-                "label": "KfW 40 QNG",
-                "wert": "Neubau und Planbarkeit",
-                "hinweis": "Förderkredite, Sonderabschreibung nach Paragraf 7b, geringer Sanierungsbedarf",
-                "farbe": "sky"
-              }
-            ]
-          }
-        ],
-        "skripte": [
-          {
-            "titel": "Überleitung zu den Konzepten",
-            "kontext": "Sechste Überleitung, nach dem Vergleich.",
-            "text": "\"Wenn das für dich passt, bleibt nur noch eine Frage: Welches der drei Konzepte passt zu deinem Ziel?\"",
-            "warum": "Die Formulierung setzt voraus, dass die Grundsatzfrage geklärt ist, und lenkt die Energie auf die Auswahl. Wer hier noch Grundsatzzweifel spürt, geht zurück statt weiter."
-          },
-          {
-            "titel": "Station 07: Drei Konzepte, drei Ziele",
-            "kontext": "Drei Bildkarten, Klick wechselt in die Detailansicht.",
-            "text": "\"Wir arbeiten mit drei Konzepten. Sie unterscheiden sich nicht in der Qualität, sondern darin, was sie für dich leisten sollen. Sanierter Bestand: etablierte Lagen und ein starker Steuereffekt. WG und Co-Living: höhere Mieteinnahmen und Renditefokus. KfW 40 QNG: Neubau, Förderung und Planbarkeit. Schauen wir uns das an, das zu deinem Ziel passt, und die anderen beiden im Schnelldurchlauf.\"",
-            "warumTitel": "Warum du mit dem abgeleiteten Konzept beginnst",
-            "warum": "Das Konzept aus Station 03 ist die Antwort auf das selbstgewählte Ziel des Kunden. Wer damit beginnt, bestätigt seine Wahl. Die anderen beiden kurz zu zeigen beweist, dass die Empfehlung eine Auswahl war und kein Einheitsprodukt."
-          },
-          {
-            "titel": "Konzept Sanierter Bestand in 30 Sekunden",
-            "kontext": "Reiter Bestand in Station 08.",
-            "text": "\"Ausgewählte Bestandswohnungen in etablierten Lagen. Bewährte Wohnlagen, direkte Vermietbarkeit nach Fertigstellung, mögliche Wertsteigerung durch die Sanierung, reguläre Gebäudeabschreibung und unter Umständen sofort abzugsfähiger Erhaltungsaufwand. Geeignet für gutverdienende Angestellte, Kunden mit höherer Steuerlast und alle, die Lage und Steueroptimierung verbinden möchten.\"",
-            "warum": "Der Bestand ist das Konzept hinter den Zielen Vermögensaufbau, Steuervorteile und Inflationsschutz. Der Steuerhebel des ersten Jahres kommt später in der Musterrechnung mit echten Zahlen, hier bleibt es beim Prinzip."
-          },
-          {
-            "titel": "Konzept WG und Co-Living in 30 Sekunden",
-            "kontext": "Reiter WG in Station 08, mit den Standortblöcken München und Nürnberg.",
-            "text": "\"Hier werden Wohnungen möbliert und zimmerweise vermietet. Das bringt deutlich höhere Mieteinnahmen je Quadratmeter, die Nachfrage kommt von Studierenden, Azubis und Berufspendlern, das Vermietungsmanagement läuft professionell, und das Risiko verteilt sich über mehrere Mietverhältnisse in einer Wohnung. In München mit sehr hoher Nachfrage und starker Lage, in Nürnberg mit geringerem Einstiegspreis und attraktiven Mietrenditen.\"",
-            "warum": "WG ist das Konzept hinter passivem Einkommen, Portfolioaufbau und dem Kapitalaufbau fürs spätere Eigenheim. Wichtig für später: WG hat inzwischen eine eigene, vollständige Musterrechnung mit einer echten WG-Wohnung. Es rechnet also nicht mehr wie der Bestand mit höherer Miete, sondern mit eigenen Zahlen bis zur Steuerwirkung."
-          },
-          {
-            "titel": "Konzept KfW 40 QNG in 30 Sekunden",
-            "kontext": "Reiter KfW in Station 08.",
-            "text": "\"Energieeffiziente Neubauimmobilien mit QNG-Zertifizierung. Moderner Neubau, mögliche KfW-Förderkredite, mögliche steuerliche Sonderabschreibung, geringer Sanierungsbedarf, gute Planbarkeit und hohe Attraktivität für Mieter. Geeignet für sicherheitsorientierte Anleger und alle, die Planbarkeit und Förderung nutzen möchten.\"",
-            "warum": "KfW ist das Konzept hinter der Immobilienrente, der Zukunft der Kinder und dem Fremdkapitalhebel. Die Details zu Sonderabschreibung und degressiver AfA kommen in der Steuerstation, hier reicht das Prinzip Förderung plus Planbarkeit."
-          }
-        ],
-        "quereinsteigerHinweis": "Die drei Konzeptnamen tragen vier Begriffe, die du erklären können musst. Sanierter Bestand meint eine ältere Wohnung, die vor dem Verkauf umfassend instand gesetzt wurde. Co-Living und WG bedeuten, dass die einzelnen Zimmer einer Wohnung möbliert und getrennt vermietet werden, jedes mit eigenem Mietvertrag. KfW 40 steht für den Standard Effizienzhaus 40 der Kreditanstalt für Wiederaufbau, das Gebäude braucht also nur 40 Prozent der Energie eines gesetzlichen Referenzgebäudes. QNG ist das Qualitätssiegel Nachhaltiges Gebäude des Bundesministeriums für Wohnen, Stadtentwicklung und Bauwesen, es prüft zusätzlich Ökologie, Wirtschaftlichkeit und Schadstofffreiheit und ist Voraussetzung für mehrere Förderungen. Und das Restnutzungsdauergutachten ist ein Sachverständigengutachten darüber, wie lange ein Gebäude noch nutzbar ist. Es kann die jährliche Abschreibung erhöhen, weil sich derselbe Gebäudewert dann auf weniger Jahre verteilt.",
-        "profiTipp": "Die drei Konzepte unterscheiden sich nicht nur im Produkt, sondern in der Frage, die über den Abschluss entscheidet. Beim sanierten Bestand ist es der Umfang der Sanierung, denn er entscheidet über zweierlei zugleich: über die Höhe des sofort abziehbaren Erhaltungsaufwands und darüber, ob die Mietpreisbremse bei der ersten Vermietung nach der Sanierung entfällt (§ 556f Bürgerliches Gesetzbuch). Beim WG- und Co-Living-Konzept ist es der Betreiber, denn die höhere Miete je Quadratmeter entsteht nicht aus der Lage, sondern aus einem Konzept, das jemand dauerhaft managen muss. Frag deshalb immer nach der Verwaltung und nach der Mietgarantie, nicht nach der Rendite. Und beim Neubau ist es die Fertigstellung: Zwischen Kauf und erster Miete vergehen Monate bis Jahre, in denen der Kunde Bereitstellungszinsen zahlt und noch keine Einnahme hat. Wer das erst in der Finanzierung anspricht, hat es zu spät angesprochen.",
-        "links": [
-          {
-            "label": "Mietrecht und die Ausnahmen der Mietpreisbremse",
-            "to": "/vertriebsakademie/grundlagen?vaScrollTo=mietrecht",
-            "hinweis": "§ 556f Bürgerliches Gesetzbuch, warum Neubau und umfassende Modernisierung ausgenommen sind"
-          }
-        ],
-        "aufgaben": [
-          {
-            "id": "konzeptbegriffe-zuordnen-qe",
-            "typ": "zuordnen",
-            "pfad": "quereinsteiger",
-            "titel": "Was steckt in den Konzeptnamen?",
-            "hinweis": "Ziehe jede Erklärung auf den passenden Begriff.",
-            "punkte": 10,
-            "paare": [
-              {
-                "links": "Sanierter Bestand",
-                "rechts": "Ältere Wohnung, vor dem Verkauf umfassend instand gesetzt"
-              },
-              {
-                "links": "WG und Co-Living",
-                "rechts": "Zimmer einzeln möbliert vermietet, jedes mit eigenem Mietvertrag"
-              },
-              {
-                "links": "KfW 40",
-                "rechts": "Gebäude braucht nur 40 Prozent der Energie eines Referenzgebäudes"
-              },
-              {
-                "links": "QNG",
-                "rechts": "Siegel für nachhaltiges Bauen, Voraussetzung für Förderungen"
-              },
-              {
-                "links": "Restnutzungsdauergutachten",
-                "rechts": "Kann die jährliche Abschreibung erhöhen, weil weniger Jahre bleiben"
-              }
-            ]
-          },
-          {
-            "id": "konzeptfrage-zuordnen-profi",
-            "typ": "zuordnen",
-            "pfad": "profi",
-            "titel": "Die Frage, die über den Abschluss entscheidet",
-            "hinweis": "Ziehe zu jedem Konzept die Frage, die du vor dem Kunden stellen musst, zwei Karten passen zu keinem.",
-            "punkte": 15,
-            "paare": [
-              {
-                "links": "Sanierter Bestand",
-                "rechts": "Wie umfangreich war die Sanierung?"
-              },
-              {
-                "links": "WG und Co-Living",
-                "rechts": "Wer betreibt und verwaltet das Konzept dauerhaft?"
-              },
-              {
-                "links": "KfW 40 QNG",
-                "rechts": "Wann ist die Fertigstellung, und was kostet die Zeit bis dahin?"
-              }
-            ],
-            "ablenker": [
-              "Wie hoch ist die Miete je Quadratmeter?",
-              "Wie lang ist die Zinsbindung?"
-            ]
-          }
-        ]
-      },
-      {
-        "id": "musterrechnung",
-        "ueberschrift": "Station 09 und 10: Drei Objekte und die Rechnung Zeile für Zeile",
-        "intro": "Kein Idealfall, sondern ein typischer Fall. Der Umschalter oben in Station 09 gilt für alle Zahlenstationen bis zur Steuerwirkung, und er hat drei Stellungen: Sanierter Bestand, WG und Co-Living, Neubau KfW 40 QNG.",
-        "absaetze": [
-          "Vorbelegt ist die Rechnung, die zum Hauptziel aus Station 03 passt. Der Kunde bekommt also die Rechnung, die zu seiner eigenen Antwort gehört, ohne dass jemand umschalten muss. Jedes der drei Konzepte hat inzwischen eine eigene, vollständig durchgerechnete Wohnung. Die alte Aussage, WG rechne einfach wie der Bestand mit höherer Miete, gilt nicht mehr: Zimmerweise Vermietung bedeutet je Zimmer ein eigenes Mietverhältnis, Möblierung, die ersetzt werden muss, und ein anderes Ausfallrisiko. Genau diese Posten stehen jetzt in der WG-Rechnung.",
-          "Wichtig, damit du dich im Termin nicht selbst widersprichst: Die Zahl der Mietverhältnisse entspricht immer der Zahl der einzeln vermieteten Zimmer. Die Musterwohnung im Umschalter hat 38,33 Quadratmeter und 2 Zimmer, also zwei Mietverhältnisse. Der allgemeine Konzepttext beschreibt daneben den größeren Regelfall mit vier Zimmern und vier Mietverhältnissen. Sag im Gespräch die Zahl, die zur gezeigten Wohnung gehört, und erkläre das Prinzip an der größeren.",
-          "Zur WG-Wohnung gehört noch eine Zahl, die im Termin garantiert kommt: 413.500 Euro für 38,33 Quadratmeter sind 10.788 Euro je Quadratmeter. Das liegt weit über dem, was jemand von einer normalen Eigentumswohnung kennt. Erkläre den Grund, statt auszuweichen: Ein zimmerweise vermietetes Objekt wird nicht über die Fläche bewertet, sondern über die erzielbare Miete. Vergleichbar wird es über die Bruttomietrendite, und die liegt hier mit 4,64 Prozent nur wenig unter den 4,8 Prozent des Bestandsobjekts mit seinen 3.500 Euro je Quadratmeter. Führe die Diskussion deshalb immer über die Rendite. Über den Quadratmeterpreis kannst du sie nicht gewinnen, und du müsstest es auch nicht.",
-          "Gezeigt werden echte Objekte mit Adresse und Bildern aus den Unterlagen, dazu der Kasten Woher diese Zahlen kommen: Er sagt bei jedem Objekt offen, was aus den Unterlagen stammt und was hergeleitet ist. Sag das im Termin auch so. Diese Offenheit trägt die ganze Zahlenstrecke. Bei Bestand und WG stammen Objekt, Lage, Kaufpreis, Fläche, Miete und Sanierungsanteil aus den Objektunterlagen, während Grenzsteuersatz, Eigenkapital und Abschreibung angesetzte Annahmen sind. Beim Neubau folgen die Zahlen der vorliegenden Immobilienberechnung zum Projekt Park-Living in Ansbach, umgerechnet auf eine kleinere Einheit.",
-          "Die persönliche Situation ist bei Bestand und WG dieselbe: 4.600 Euro Nettoeinkommen im Monat, Grundtabelle, 42 Prozent Grenzsteuersatz, Ziel langfristiger Vermögensaufbau. Der Neubau rechnet bewusst mit einem anderen Kunden, nämlich 150.000 Euro zu versteuerndem Einkommen nach der Splittingtabelle mit rund 40.728 Euro Einkommensteuer, ebenfalls 42 Prozent Grenzsteuersatz, Ziel Steuerwirkung und Planbarkeit. Nenne das im Termin, wenn du zwischen den Reitern wechselst, sonst wirkt die höhere Steuerentlastung beim Neubau wie ein Produktvorteil, obwohl sie zum Teil aus der anderen Ausgangslage kommt. Die letzte Zeile ist jeweils das Eigenkapital, und es entspricht genau den Kaufnebenkosten: 19.250 Euro beim Bestand, 22.743 Euro bei der WG, 17.050 Euro beim Neubau, in allen drei Fällen 5,5 Prozent des Kaufpreises. Der Kunde bringt also die Nebenkosten mit, finanziert wird der Kaufpreis.",
-          "Die Bestandsrechnung: 350.000 Euro Kaufpreis, 100 Quadratmeter, 1.400 Euro Kaltmiete, 4,8 Prozent Bruttomietrendite, finanziert mit 4 Prozent Zins und 1,5 Prozent anfänglicher Tilgung. Monatlich stehen 1.400 Euro Miete gegen 1.604 Euro Zins und Tilgung und 150 Euro nicht umlagefähige Kosten, macht rund 354 Euro Beitrag vor Steuer. Dagegen stehen 826 Euro Steuerentlastung pro Monat im ersten Jahr und im Schnitt 525 Euro Tilgung pro Monat. Das ist kein Aufwand, das ist Vermögen.",
-          "Die WG-Rechnung: eine sanierte WG-Wohnung mit 38,33 Quadratmetern, 2 Zimmer, 3. OG, Baujahr 1968. Kaufpreis 413.500 Euro, Kaltmiete 1.600 Euro im Monat, das sind 41,74 Euro je Quadratmeter und 4,64 Prozent Bruttomietrendite. Monatlich stehen 1.600 Euro Miete gegen 1.895 Euro Zins und Tilgung, ebenfalls 4 Prozent Zins und 1,5 Prozent Tilgung, und 73 Euro nicht umlagefähige Kosten, macht rund 368 Euro Beitrag vor Steuer. Nach zehn Jahren sind 74.468 Euro getilgt.",
-          "Die Neubaurechnung, jetzt mit allen Positionen: 310.000 Euro Kaufpreis für 38,30 Quadratmeter im Projekt Park-Living in Ansbach, Fertigstellung 2027, Eigenkapital 17.050 Euro. Der Kaufvertrag weist die Aufteilung ausdrücklich aus, nämlich 160.000 Euro Grund und Boden, also 51,61 Prozent, und 150.000 Euro Gebäude, also 48,39 Prozent. Monatlich stehen 824 Euro Kaltmiete gegen 986 Euro Zins und Tilgung für Bankdarlehen und KfW-Darlehen sowie 60 Euro Verwaltung für Sondereigentum und Gemeinschaft, macht rund 222 Euro Beitrag vor Steuer. Im Jahr sind das 9.886 Euro Kaltmiete gegen 14.992 Euro Abschreibung, 9.762 Euro Schuldzinsen bei 3,80 Prozent für die Bank und 2,50 Prozent für die KfW und 717 Euro Verwaltung, also ein steuerliches Ergebnis von minus 15.585 Euro. Bei 42 Prozent Grenzsteuersatz sind das 6.546 Euro im Jahr oder rund 545 Euro im Monat. Getragen wird das von der Sonderabschreibung nach Paragraf 7b und der degressiven AfA. Nach zehn Jahren sind 49.344 Euro getilgt.",
-          "Das Herzstück von Station 10 ist die Immobilienschere mit dem Wertsteigerungsregler. Links der Einstieg, rechts der Blick nach zehn Jahren: Immobilienwert oben, Restschuld unten, dazwischen das Vermögen. Der Regler geht von null bis vier Prozent, voreingestellt sind drei. Und der wichtigste Handgriff des ganzen Gesprächs: Zieh ihn selbst auf null."
-        ],
-        "visuals": [
-          {
-            "beispielrechnung": {
-              "titel": "Die Monatsrechnung Sanierter Bestand",
-              "untertitel": "Station 10, linke Spalte, nichts davon ist geschönt",
-              "zeilen": [
-                {
-                  "label": "Kaltmiete",
-                  "wert": "1.400 €",
-                  "op": "+"
-                },
-                {
-                  "label": "Zins und Tilgung, 4 Prozent Zins, 1,5 Prozent Tilgung",
-                  "wert": "1.604 €",
-                  "op": "−"
-                },
-                {
-                  "label": "Nicht umlagefähige Kosten",
-                  "wert": "150 €",
-                  "op": "−"
-                },
-                {
-                  "label": "Dein monatlicher Beitrag vor Steuer",
-                  "wert": "ca. −354 €",
-                  "op": "=",
-                  "ergebnis": true,
-                  "hinweis": "Dagegen stehen 826 Euro Steuerentlastung im ersten Jahr und 525 Euro Tilgung im Monatsschnitt."
-                }
-              ],
-              "fazit": "Unverbindliches Berechnungsbeispiel. Es zeigt die Mechanik, nicht eine Zusage."
-            }
-          },
-          {
-            "beispielrechnung": {
-              "titel": "Die Monatsrechnung WG und Co-Living",
-              "untertitel": "413.500 Euro, 38,33 Quadratmeter, saniert, zimmerweise vermietet",
-              "zeilen": [
-                {
-                  "label": "Kaltmiete, 41,74 Euro je Quadratmeter",
-                  "wert": "1.600 €",
-                  "op": "+"
-                },
-                {
-                  "label": "Zins und Tilgung, 4 Prozent Zins, 1,5 Prozent Tilgung",
-                  "wert": "1.895 €",
-                  "op": "−"
-                },
-                {
-                  "label": "Nicht umlagefähige Kosten",
-                  "wert": "73 €",
-                  "op": "−"
-                },
-                {
-                  "label": "Dein monatlicher Beitrag vor Steuer",
-                  "wert": "ca. −368 €",
-                  "op": "=",
-                  "ergebnis": true,
-                  "hinweis": "Dagegen stehen 1.246 Euro Steuerentlastung im ersten Jahr und 621 Euro Tilgung im Monatsschnitt."
-                }
-              ],
-              "fazit": "Die höchste Miete je Quadratmeter, aber auch der höchste Aufwand: je vermietetem Zimmer ein eigenes Mietverhältnis, mehr Wechsel, Möblierung, die ersetzt werden muss. Der Quadratmeterpreis von 10.788 Euro erklärt sich über die Miete, nicht über die Fläche: 4,64 Prozent Bruttomietrendite gegenüber 4,8 Prozent beim Bestand."
-            }
-          },
-          {
-            "beispielrechnung": {
-              "titel": "Die Monatsrechnung Neubau KfW 40 QNG",
-              "untertitel": "310.000 Euro, 38,30 Quadratmeter, Projekt Park-Living in Ansbach, Fertigstellung 2027",
-              "zeilen": [
-                {
-                  "label": "Kaltmiete",
-                  "wert": "824 €",
-                  "op": "+",
-                  "hinweis": "9.886 Euro im Jahr."
-                },
-                {
-                  "label": "Zins und Tilgung, Bank 3,80 Prozent und KfW 2,50 Prozent",
-                  "wert": "986 €",
-                  "op": "−",
-                  "hinweis": "Das KfW-Darlehen ist die ersten zwei Jahre tilgungsfrei, die Bank tilgt mit 1,25 Prozent."
-                },
-                {
-                  "label": "Verwaltung Sondereigentum und Gemeinschaft",
-                  "wert": "60 €",
-                  "op": "−",
-                  "hinweis": "717 Euro im Jahr."
-                },
-                {
-                  "label": "Dein monatlicher Beitrag vor Steuer",
-                  "wert": "ca. −222 €",
-                  "op": "=",
-                  "ergebnis": true,
-                  "hinweis": "Dagegen stehen 545 Euro Steuerentlastung im ersten vollen Jahr."
-                }
-              ],
-              "fazit": "Ab dem fünften Jahr kehrt sich das Bild: Die Sonderabschreibung nach Paragraf 7b läuft nach vier Jahren aus und gleichzeitig beginnt die Tilgung des KfW-Darlehens. Dann stehen rund 155 Euro Entlastung gegen rund 260 Euro Beitrag. Wer nur die ersten vier Jahre zeigt, verkauft eine Illusion."
-            }
-          },
-          {
-            "beispielrechnung": {
-              "titel": "Woher die 63.032 Euro kommen",
-              "untertitel": "Sanierter Bestand, Darlehen 350.000 Euro, 4 Prozent Sollzins, 1,5 Prozent anfängliche Tilgung, zehn Jahre",
-              "zeilen": [
-                {
-                  "label": "Annuität: 4 Prozent Zins plus 1,5 Prozent Tilgung",
-                  "wert": "5,5 %",
-                  "hinweis": "5,5 Prozent von 350.000 Euro sind 19.250 Euro im Jahr, geteilt durch 12 ergibt das die Rate von 1.604 Euro."
-                },
-                {
-                  "label": "Tilgung im ersten Jahr: 1,5 Prozent von 350.000 Euro",
-                  "wert": "5.250 €",
-                  "op": "→",
-                  "hinweis": "Der Rest der Annuität, nämlich 14.000 Euro, ist Zins."
-                },
-                {
-                  "label": "Jedes weitere Jahr wächst die Tilgung um 4 Prozent",
-                  "wert": "× 1,04",
-                  "op": "→",
-                  "hinweis": "Weil die Rate gleich bleibt, die Restschuld aber sinkt, wird jedes Jahr weniger Zins fällig. Genau dieser gesparte Zins tilgt zusätzlich mit, und zwar mit dem Zinssatz."
-                },
-                {
-                  "label": "Summe der zehn Jahrestilgungen: 5.250 mal (1,04 hoch 10 minus 1) geteilt durch 0,04",
-                  "wert": "63.032 €",
-                  "op": "=",
-                  "ergebnis": true,
-                  "hinweis": "5.250 mal 12,006 ergibt 63.032 Euro. Geteilt durch 120 Monate sind das die 525 Euro Tilgung im Monatsschnitt."
-                },
-                {
-                  "label": "Restschuld nach zehn Jahren: 350.000 minus 63.032",
-                  "wert": "286.968 €",
-                  "op": "→",
-                  "hinweis": "Dieselbe Zahl steht in der Immobilienschere unter dem Balken."
-                }
-              ],
-              "fazit": "Bei der WG-Wohnung läuft dieselbe Rechnung mit 413.500 Euro: Anfangstilgung 6.202,50 Euro, mal 12,006 ergibt 74.468 Euro. Wer den Rechenweg kennt, kann jede Tilgungssumme im Kopf überschlagen, statt sie auswendig zu lernen."
-            }
-          },
-          {
-            "kpis": [
-              {
-                "label": "Steuerentlastung Bestand",
-                "wert": "826 € / Monat",
-                "hinweis": "Im ersten Jahr, mit einmaligem Erhaltungsaufwand von 20.000 Euro. Ab dem zweiten Jahr 126 Euro.",
-                "farbe": "emerald"
-              },
-              {
-                "label": "Tilgung Bestand",
-                "wert": "525 € / Monat",
-                "hinweis": "Im Schnitt über 10 Jahre. Das ist kein Aufwand, das ist Vermögen.",
-                "farbe": "primary"
-              },
-              {
-                "label": "Getilgt nach 10 Jahren",
-                "wert": "63.032 €",
-                "hinweis": "5.250 Euro Anfangstilgung, jedes Jahr mal 1,04, über zehn Jahre summiert. Bleibt auch bei null Prozent Wertsteigerung stehen.",
-                "farbe": "indigo"
-              },
-              {
-                "label": "Vermögen bei 3 Prozent",
-                "wert": "ca. 183.403 €",
-                "hinweis": "Immobilienwert rund 470.371 Euro minus Restschuld 286.968 Euro.",
-                "farbe": "sky"
-              }
-            ]
-          },
-          {
-            "advanced": true,
-            "vergleich": {
-              "titel": "Bestand und Neubau nebeneinander",
-              "untertitel": "Zwei der drei Rechnungen aus dem Umschalter",
-              "optionA": {
-                "label": "Sanierter Bestand",
-                "punkte": [
-                  "350.000 Euro, 100 Quadratmeter, Miete 1.400 Euro",
-                  "Beitrag vor Steuer ca. 354 Euro",
-                  "Steuerentlastung 826 Euro im ersten Jahr, dann 126 Euro",
-                  "Getilgt nach 10 Jahren: 63.032 Euro",
-                  "AfA 2 Prozent nach Paragraf 7 Absatz 4, Erhaltungsaufwand 20.000 Euro einmalig"
-                ],
-                "badge": "Steuereffekt Jahr 1"
-              },
-              "optionB": {
-                "label": "Neubau KfW 40 QNG",
-                "punkte": [
-                  "310.000 Euro, 38,3 Quadratmeter Augsburg, Miete 824 Euro",
-                  "Beitrag vor Steuer ca. 222 Euro",
-                  "Steuerentlastung 545 Euro, ab dem fünften Jahr 155 Euro",
-                  "Getilgt nach 10 Jahren: 49.344 Euro",
-                  "Sonder-AfA 5 Prozent nach Paragraf 7b plus degressive AfA 5 Prozent"
-                ],
-                "badge": "Planbarkeit"
-              },
-              "fazit": "Beide Rechnungen zeigen auch die unbequeme Wahrheit: Der große Steuereffekt des ersten Jahres kommt beim Bestand genau einmal, beim Neubau endet die Sonderabschreibung nach vier Jahren. Wer nur die guten Jahre zeigt, verkauft eine Illusion."
-            }
-          },
-          {
-            "advanced": true,
-            "kpis": [
-              {
-                "label": "WG: Kaufpreis und Fläche",
-                "wert": "413.500 € / 38,33 m²",
-                "hinweis": "2 Zimmer, 3. OG, Baujahr 1968, saniert.",
-                "farbe": "primary"
-              },
-              {
-                "label": "WG: Kaltmiete",
-                "wert": "1.600 € / Monat",
-                "hinweis": "41,74 Euro je Quadratmeter, Bruttomietrendite 4,64 Prozent.",
-                "farbe": "emerald"
-              },
-              {
-                "label": "WG: Steuerentlastung",
-                "wert": "1.246 € / Monat",
-                "hinweis": "Im ersten Jahr, mit 30.800 Euro Erhaltungsaufwand. Ab dem zweiten Jahr 168 Euro.",
-                "farbe": "sky"
-              },
-              {
-                "label": "WG: Getilgt nach 10 Jahren",
-                "wert": "74.468 €",
-                "hinweis": "4 Prozent Zins, 1,5 Prozent anfängliche Tilgung, Eigenkapital 22.743 Euro.",
-                "farbe": "indigo"
-              }
-            ]
-          }
-        ],
-        "skripte": [
-          {
-            "titel": "Überleitung zur Rechnung",
-            "kontext": "Siebte Überleitung, nach den Konzepten.",
-            "text": "\"Klingt das bis hierhin nach deiner Situation? Dann rechnen wir es Zahl für Zahl durch.\"",
-            "warum": "Die Frage holt ein Zwischencommitment ab. Ein Ja an dieser Stelle trägt durch die Zahlenstrecke, ein Zögern zeigt dir, dass vorher etwas offen geblieben ist."
-          },
-          {
-            "titel": "Station 09: Drei Objekte, Zahl für Zahl",
-            "kontext": "Umschalter mit drei Stellungen, Bildergalerie des Objekts, zwei Karten mit Situation und Wohnung.",
-            "text": "\"Kein Idealfall, sondern ein typischer Fall: 4.600 Euro netto, Grenzsteuersatz 42 Prozent, Ziel langfristiger Vermögensaufbau, und als Eigenkapital genau die Kaufnebenkosten. Beim sanierten Bestand: 350.000 Euro, 100 Quadratmeter, 1.400 Euro Kaltmiete, 4,8 Prozent Bruttomietrendite, 19.250 Euro Eigenkapital. Alle drei Konzepte rechnen wir dir durch, damit du den Unterschied siehst und nicht glauben musst.\"",
-            "warumTitel": "Warum ein typischer Fall überzeugt",
-            "warum": "Ein Idealfall weckt Misstrauen, ein typischer Fall Wiedererkennung. Der Satz sehen statt glauben ist das Leitmotiv der ganzen Zahlenstrecke. Und wenn das Hauptziel des Kunden feststeht, zeigt der Umschalter automatisch die passende Rechnung, das darfst du aussprechen: Das ist die Rechnung, die zu deiner Antwort von vorhin passt. Nenne auch, woher die Zahlen kommen, das steht im Kasten darunter."
-          },
-          {
-            "titel": "Station 10: Die Rechnung Zeile für Zeile",
-            "kontext": "Dunkler Abschnitt. Links die Monatsrechnung, rechts Steuerentlastung und Tilgung.",
-            "text": "\"1.400 Euro Miete kommen rein. 1.604 Euro Zins und Tilgung gehen raus, dazu 150 Euro Kosten, die nicht auf den Mieter umlegbar sind. Bleiben rund 354 Euro im Monat, die du vor Steuer selbst beiträgst. Jetzt die andere Seite: 826 Euro Steuerentlastung pro Monat im ersten Jahr. Und 525 Euro Tilgung im Monatsschnitt, das ist kein Aufwand, das ist dein Vermögen. Nichts davon ist geschönt.\"",
-            "warumTitel": "Warum du den Beitrag zuerst nennst",
-            "warum": "Wer die 354 Euro zuerst und ohne Umschweife nennt, hat danach freie Bahn: Alles Weitere macht die Zahl kleiner oder verwandelt sie in Vermögen. Die Reihenfolge Belastung, dann Entlastung, dann Tilgung ist ein Glaubwürdigkeitsaufbau. Andersherum klänge es nach Schönrechnen."
-          },
-          {
-            "titel": "Die WG-Rechnung in einem Absatz",
-            "kontext": "Wenn der Umschalter auf WG und Co-Living steht.",
-            "text": "\"Bei der WG-Wohnung: 1.600 Euro Kaltmiete auf 38,33 Quadratmetern, das sind 41,74 Euro je Quadratmeter. Dagegen 1.895 Euro Zins und Tilgung und 73 Euro nicht umlagefähige Kosten, macht rund 368 Euro Beitrag vor Steuer. Im ersten Jahr stehen dem 1.246 Euro Steuerentlastung im Monat gegenüber, weil hier 30.800 Euro Erhaltungsaufwand einmalig wirken. Und nach zehn Jahren sind 74.468 Euro getilgt.\"",
-            "warumTitel": "Warum WG eine eigene Rechnung braucht",
-            "warum": "Die höhere Miete je Quadratmeter ist nur die eine Seite. Vier einzeln vermietete Zimmer bedeuten vier Mietverhältnisse, mehr Wechsel, Möblierung, die ersetzt werden muss, und eine Verwaltung, die Co-Living beherrschen muss. Wer WG als Bestand mit mehr Miete verkauft, unterschlägt genau diese Posten. Und sag den offenen Punkt selbst: Ob der Sanierungsanteil in voller Höhe sofort abziehbar ist oder ob daraus Herstellungskosten werden, entscheidet das Finanzamt und nicht der Verkäufer."
-          },
-          {
-            "titel": "Die Immobilienschere: Der Regler auf null",
-            "kontext": "Der interaktive Höhepunkt von Station 10.",
-            "text": "\"Nach zehn Jahren: Der Immobilienwert steigt bei drei Prozent auf rund 470.000 Euro, die Restschuld sinkt auf 286.968 Euro, dazwischen liegen rund 183.000 Euro, die dir gehören. Und jetzt das Wichtigste: Zieh den Regler ruhig auf null. Selbst wenn die Immobilie in zehn Jahren keinen Euro mehr wert ist als heute, bleiben 63.032 Euro übrig, weil die Tilgung unabhängig von jeder Wertentwicklung läuft. Alles darüber ist Zugabe, nicht Grundlage.\"",
-            "warumTitel": "Warum der Regler wichtiger ist als jede Zahl",
-            "warum": "Der Regler übergibt dem Kunden die Kontrolle über die kritischste Annahme. Wer selbst auf null zieht und sieht, dass ein Vermögen bleibt, entkräftet seinen eigenen Haupteinwand. Du bist glaubwürdiger, wenn du null vorrechnest, als wenn du drei Prozent behauptest. Gib dem Kunden die Maus. Und lass den Regler ruhig stehen, wo der Kunde ihn hingezogen hat: Die nächste Station rechnet damit weiter."
-          }
-        ],
-        "goldNugget": {
-          "titel": "Der Regler kennt kein Minus, und genau das sagst du selbst",
-          "text": "Die stärkste Geste der ganzen Präsentation kostet nichts: Gib dem Kunden die Kontrolle über den Wertsteigerungsregler. Die Feinheit, die den Unterschied macht, ist aber die Grenze des Werkzeugs. Der Regler läuft von null bis vier Prozent, er kann keinen Wertverlust darstellen. Ein aufmerksamer Kunde merkt das, und wenn er es vor dir merkt, wirkt der ganze Regler wie ein Trick. Nimm es ihm ab: Der Regler hört bei null auf, ein Wertverlust ist damit nicht abgebildet. Rechne den Fall dann mündlich vor, er ist beherrschbar. Zehn Prozent Wertverlust auf 350.000 Euro sind 35.000 Euro, den 63.032 Euro Tilgung stehen dann immer noch rund 28.000 Euro Vermögen gegenüber. Erst bei rund 18 Prozent Wertverlust wäre die Tilgung aufgezehrt. Wer diese Rechnung ungefragt anbietet, gewinnt mehr Vertrauen als mit jedem Prozentpunkt Wertsteigerung.",
-          "skript": {
-            "titel": "Der Null-Prozent-Moment",
-            "text": "\"Zieh den Regler ruhig selbst auf null. Das ist der schlechteste Fall, den dieser Regler darstellen kann: kein Euro Wertsteigerung in zehn Jahren. Was bleibt? 63.032 Euro. Nicht weil der Markt etwas geschenkt hat, sondern weil jeden Monat getilgt wurde. Und weil du es sicher gleich fragst: Einen Wertverlust zeigt der Regler nicht. Rechnen wir ihn kurz zusammen. Zehn Prozent weniger wären 35.000 Euro, dann blieben von den 63.032 Euro noch rund 28.000. Alles, was der Markt dazulegt, ist Zugabe.\"",
-            "warum": "Kontrolle abgeben ist die glaubwürdigste Form von Sicherheit. Der Kunde bedient, der Kunde sieht, der Kunde schlussfolgert. Der zweite Teil des Skripts ist der eigentliche Profi-Anteil: Du benennst die Grenze deines eigenen Werkzeugs, bevor der Kunde sie findet. Damit verwandelst du den einzigen Angriffspunkt der Station in einen Beleg für deine Ehrlichkeit. Wichtig ist die Reihenfolge, erst null, dann der Verlustfall, nie umgekehrt. Und rechne den Verlustfall wirklich vor, statt ihn nur zuzugeben, sonst bleibt vom Moment nur die Sorge übrig."
-          },
-          "bullets": [
-            "Der Regler läuft von null bis vier Prozent, voreingestellt sind drei. Ein Minus gibt es nicht.",
-            "Die Tilgung ist die einzige Größe der Rechnung, die nicht vom Markt abhängt. Deshalb trägt sie den Moment.",
-            "Bei 350.000 Euro wäre die Tilgung von 63.032 Euro erst bei rund 18 Prozent Wertverlust aufgezehrt."
-          ]
-        },
-        "quereinsteigerHinweis": "Drei Begriffe für diese Station. Bruttomietrendite ist die Jahreskaltmiete geteilt durch den Kaufpreis, beim Bestand also 16.800 Euro geteilt durch 350.000 Euro, das sind 4,8 Prozent. Anfängliche Tilgung heißt: Im ersten Jahr wird dieser Prozentsatz des Darlehens zurückgezahlt, danach steigt der Betrag jedes Jahr, weil bei gleichbleibender Rate immer weniger Zins anfällt. Und die Immobilienschere zeigt zwei Linien, die auseinanderlaufen: oben der Wert der Wohnung, unten die Restschuld. Der Abstand dazwischen ist dein Vermögen. Merk dir für den Null-Prozent-Moment nur einen Satz: Bei null Prozent Wertsteigerung ist das Vermögen genau die getilgte Summe, weil der Wert oben stehen bleibt und nur die Schuld unten sinkt.",
-        "aufgaben": [
-          {
-            "id": "beitrag-rechnen-qe",
-            "typ": "rechnen",
-            "pfad": "quereinsteiger",
-            "titel": "Rechne den Monatsbeitrag beim Bestand nach",
-            "hinweis": "Rechne die linke Spalte von Station 10 nach und gib den Beitrag als positive Zahl an.",
-            "punkte": 10,
-            "fall": "Kaltmiete 1.400 Euro, Zins und Tilgung 1.604 Euro, nicht umlagefähige Kosten 150 Euro.",
-            "gesucht": "Wie viel Euro beträgt der monatliche Beitrag vor Steuer?",
-            "zielwert": 354,
-            "toleranzProzent": 1,
-            "einheit": "€",
-            "rechenweg": {
-              "titel": "Kaltmiete minus Rate minus Kosten",
-              "zeilen": [
-                {
-                  "label": "Kaltmiete",
-                  "wert": "1.400 €",
-                  "op": "+"
-                },
-                {
-                  "label": "Zins und Tilgung",
-                  "wert": "1.604 €",
-                  "op": "−"
-                },
-                {
-                  "label": "Nicht umlagefähige Kosten",
-                  "wert": "150 €",
-                  "op": "−"
-                },
-                {
-                  "label": "Beitrag vor Steuer",
-                  "wert": "354 €",
-                  "op": "=",
-                  "ergebnis": true,
-                  "hinweis": "Dagegen stehen 826 Euro Steuerentlastung im ersten Jahr und 525 Euro Tilgung im Monatsschnitt."
-                }
-              ]
-            }
-          },
-          {
-            "id": "wertverlust-rechnen-profi",
-            "typ": "rechnen",
-            "pfad": "profi",
-            "titel": "Der Fall, den der Regler nicht zeigt",
-            "hinweis": "Der Regler hört bei null auf, deshalb rechnest du dem Kunden die zehn Prozent Wertverlust im Kopf vor.",
-            "punkte": 15,
-            "zeitlimitSek": 90,
-            "fall": "Bestandsrechnung: Kaufpreis 350.000 Euro, nach zehn Jahren sind 63.032 Euro getilgt. Der Kunde fragt: Und wenn die Wohnung in zehn Jahren zehn Prozent weniger wert ist?",
-            "gesucht": "Wie viel Vermögen in Euro bleibt dann nach zehn Jahren?",
-            "zielwert": 28032,
-            "toleranzProzent": 2,
-            "einheit": "€",
-            "wegErstNachVersuch": true,
-            "rechenweg": {
-              "titel": "Tilgung minus Wertverlust",
-              "zeilen": [
-                {
-                  "label": "Getilgt nach zehn Jahren",
-                  "wert": "63.032 €"
-                },
-                {
-                  "label": "Wertverlust: 10 Prozent von 350.000 Euro",
-                  "wert": "35.000 €",
-                  "op": "−"
-                },
-                {
-                  "label": "Verbleibendes Vermögen",
-                  "wert": "28.032 €",
-                  "op": "=",
-                  "ergebnis": true,
-                  "hinweis": "Erst bei rund 18 Prozent Wertverlust wäre die Tilgung aufgezehrt. Wer diese Rechnung ungefragt anbietet, gewinnt mehr Vertrauen als mit jedem Prozentpunkt Wertsteigerung."
-                }
-              ]
-            }
-          }
-        ]
-      },
-      {
-        "id": "sparplan-rendite",
-        "ueberschrift": "Station 11: Was ein Sparplan leisten müsste",
-        "intro": "Diese Station übersetzt die ganze Rechnung in eine einzige Zahl, die jeder Kunde einordnen kann: die Rendite, die ein Sparplan Jahr für Jahr abwerfen müsste, um mit demselben Einsatz dasselbe Vermögen aufzubauen. Netto steuerfrei.",
-        "absaetze": [
-          "Der Vorspann sagt es in einem Satz: Dasselbe Vermögen mit reinem Sparen aufzubauen verlangt eine Rendite, die kaum eine Anlage netto steuerfrei liefert. Genau das rechnet der Abschnitt für das gewählte Konzept aus.",
-          "Links steht der Rechenweg in drei Zeilen. Erste Zeile: das Eigenkapital, einmalig, und das sind genau die Kaufnebenkosten, beim sanierten Bestand 19.250 Euro. Zweite Zeile: der monatliche Cashflow nach Steuer, mal 120 Monate, also über zehn Jahre. Dritte Zeile: Dein Vermögen nach zehn Jahren. Das ist dieselbe Zahl wie in der Immobilienschere eine Station davor, nämlich das getilgte Darlehen plus der angenommene Wertzuwachs.",
-          "Rechts steht das Ergebnis groß und allein: die nötige Sparplan-Rendite pro Jahr, mit dem Zusatz netto steuerfrei. Darunter der Satz, der es für den Kunden zusammenzieht. Beim sanierten Bestand lautet er in Zahlen: Eigenkapital 19.250 Euro plus Cashflow monatlich nach Steuer 228 Euro ergibt eine Rendite von 19,0 Prozent netto steuerfrei. Das gilt bei der Voreinstellung von drei Prozent Wertsteigerung und einem Endvermögen von 183.403 Euro. Zieht der Kunde den Regler auf null, bleibt ein Endvermögen von 63.032 Euro und die nötige Sparplan-Rendite sinkt auf 4,2 Prozent. Beide Zahlen musst du kennen, denn die erste beeindruckt und die zweite überzeugt.",
-          "Die beiden anderen Konzepte rechnen mit ihren eigenen Werten. Die WG-Wohnung setzt 22.743 Euro Eigenkapital und 200 Euro Cashflow nach Steuer an, das ergibt bei null Prozent 6,2 Prozent und bei drei Prozent 20,5 Prozent. Der Neubau setzt 17.050 Euro und 260 Euro an, allerdings den Cashflow ab dem fünften Jahr, also nach dem Auslaufen der Sonderabschreibung. Daraus werden 0,3 Prozent bei null und 16,9 Prozent bei drei Prozent Wertsteigerung. Der Neubau zeigt damit am deutlichsten, was diese Station wirklich misst: Sie misst nicht die Qualität der Immobilie, sondern das Verhältnis von eingesetztem Geld zu Endvermögen. Beim Neubau ist der Eigenanteil über zehn Jahre am höchsten und die Tilgung am niedrigsten, deshalb bleibt ohne Wertsteigerung fast nichts an Rendite übrig. Sag das offen, wenn ein Kunde die drei Zahlen vergleicht.",
-          "Warum netto steuerfrei? Weil ein Verkauf nach mehr als zehn Jahren im Privatvermögen nach Paragraf 23 EStG steuerfrei ist. Eine Sparplan-Rendite müsste der Kunde dagegen versteuern. Um netto dasselbe übrig zu haben, läge die nötige Rendite vor Steuer also noch höher. Genau dieser Satz steht auch auf der Folie, sprich ihn mit.",
-          "Wichtig für die Praxis: Die Station hängt am selben Wertsteigerungsregler wie die Immobilienschere und rechnet live mit. Zieht der Kunde den Regler dort auf null, sinkt hier das Endvermögen und mit ihm die Rendite, sie bleibt aber positiv, weil die Tilgung unabhängig vom Markt läuft. Das ist der ehrlichste Weg, diese Station zu zeigen: erst der Wert bei der Voreinstellung, dann derselbe Blick bei null."
-        ],
-        "visuals": [
-          {
-            "beispielrechnung": {
-              "titel": "Von deinem Einsatz zum Endvermögen",
-              "untertitel": "Sanierter Bestand, bei null Prozent angenommener Wertsteigerung",
-              "zeilen": [
-                {
-                  "label": "Eigenkapital, einmalig",
-                  "wert": "19.250 €",
-                  "hinweis": "Entspricht genau den Kaufnebenkosten."
-                },
-                {
-                  "label": "Monatlicher Cashflow nach Steuer, mal 120 Monate",
-                  "wert": "228 € × 120",
-                  "op": "+",
-                  "hinweis": "Der Beitrag ab dem zweiten Jahr, also nach dem einmaligen Erhaltungsaufwand."
-                },
-                {
-                  "label": "Dein Vermögen nach zehn Jahren",
-                  "wert": "63.032 €",
-                  "op": "=",
-                  "ergebnis": true,
-                  "hinweis": "Bei null Prozent Wertsteigerung genau das getilgte Darlehen. Mit der Voreinstellung von drei Prozent sind es 183.403 Euro, nämlich 63.032 Euro Tilgung plus 120.371 Euro Wertzuwachs auf 350.000 Euro."
-                },
-                {
-                  "label": "Nötige Sparplan-Rendite bei null Prozent Wertsteigerung",
-                  "wert": "4,2 % p. a.",
-                  "op": "→",
-                  "hinweis": "Netto steuerfrei. Das ist die Zahl, die auch dann steht, wenn der Markt zehn Jahre lang nichts tut."
-                },
-                {
-                  "label": "Nötige Sparplan-Rendite bei drei Prozent Wertsteigerung",
-                  "wert": "19,0 % p. a.",
-                  "op": "→",
-                  "ergebnis": true,
-                  "hinweis": "Netto steuerfrei, bei einem Endvermögen von 183.403 Euro. Der große Sprung kommt vom Fremdkapitalhebel: Die Wertsteigerung läuft auf 350.000 Euro, der Einsatz beträgt nur 19.250 Euro plus 228 Euro im Monat."
-                }
-              ],
-              "fazit": "Aus Einsatz und Endvermögen errechnet die Station die effektive Jahresrendite, die ein Sparplan bräuchte. Eine Vergleichsrechnung, keine Zusage: Je höher die angenommene Wertsteigerung, desto größer die Zahl. WG-Wohnung: 6,2 Prozent bei null und 20,5 Prozent bei drei. Neubau, gerechnet mit dem Cashflow ab dem fünften Jahr: 0,3 Prozent bei null und 16,9 Prozent bei drei."
-            }
-          }
-        ],
-        "skripte": [
-          {
-            "titel": "Überleitung zur Sparplan-Rendite",
-            "kontext": "Kein eigener Überleitungs-Bildschirm. Du sprichst sie im Übergang von der Schere zu Station 11.",
-            "text": "\"Und jetzt drehen wir die Rechnung einmal um: Was müsste ein Sparplan leisten, um in zehn Jahren dasselbe aufzubauen?\"",
-            "warum": "Die Umkehrung holt den Kunden dort ab, wo er sich auskennt. Fast jeder hat ein Tagesgeldkonto oder ein Depot und eine Vorstellung davon, was das bringt. Erst dieser Bezugspunkt macht die Immobilienzahlen greifbar."
-          },
-          {
-            "titel": "Station 11: Was ein Sparplan leisten müsste",
-            "kontext": "Links der Rechenweg in drei Zeilen, rechts die Rendite groß mit dem Zusatz netto steuerfrei.",
-            "text": "\"Dein Einsatz sind genau zwei Dinge: das Eigenkapital für die Kaufnebenkosten, beim sanierten Bestand 19.250 Euro, und dein monatlicher Cashflow nach Steuer über 120 Monate. Daraus entsteht bis zum zehnten Jahr genau das Vermögen, das du eben in der Schere gesehen hast. Und rechts steht, welche Rendite ein Sparplan Jahr für Jahr abwerfen müsste, um mit demselben Einsatz genau dort anzukommen. Netto steuerfrei, denn ein Verkauf nach mehr als zehn Jahren ist im Privatvermögen nach Paragraf 23 steuerfrei. Vor Steuer müsste ein Sparplan also noch mehr bringen. Und zieh den Regler im Abschnitt davor gern noch einmal auf null, diese Zahl rechnet live mit.\"",
-            "warumTitel": "Warum eine einzige Zahl mehr wirkt als zehn",
-            "warum": "Hier wird aus vielen Einzelzahlen eine, die der Kunde selbst einordnen kann. Der Vergleich mit dem Sparplan ist deshalb der Moment, in dem die Rechnung greifbar wird. Der Regler auf null zeigt, dass auch ohne jede Wertsteigerung eine Rendite bleibt. Kenne beide Zahlen deines Konzepts auswendig: Beim sanierten Bestand sind es 19,0 Prozent bei drei Prozent Wertsteigerung und 4,2 Prozent bei null, bei der WG 20,5 und 6,2 Prozent, beim Neubau 16,9 und 0,3 Prozent. Wichtig: nicht übertreiben. Es ist eine Vergleichsrechnung und keine Zusage, und je höher die angenommene Wertsteigerung, desto größer die Zahl. Sag das selbst, sonst denkt es der Kunde."
-          }
-        ],
-        "quereinsteigerHinweis": "Effektive Jahresrendite heißt: der Zinssatz, bei dem aus Einmalanlage plus Sparrate am Ende genau das Endvermögen herauskommt. Die Präsentation sucht ihn durch Probieren, weil er sich nicht direkt auflösen lässt. Du musst das nicht rechnen können, du musst die drei Bausteine erklären können: Eigenkapital einmalig, Cashflow mal 120 Monate, Endvermögen nach zehn Jahren. Und merk dir, warum die Zahl so groß werden kann: Der Kunde setzt nur 19.250 Euro plus 228 Euro im Monat ein, die Wertsteigerung läuft aber auf den vollen Kaufpreis von 350.000 Euro. Das ist der Fremdkapitalhebel in einer einzigen Zahl. Genau deshalb wirkt er in die andere Richtung ebenso stark, und deshalb zeigst du zuerst den Wert bei null Prozent.",
-        "profiTipp": "Diese Station ist die stärkste und zugleich die angreifbarste des Gesprächs, weil sie den Hebel in eine einzige Prozentzahl presst. Drei Feinheiten machen sie belastbar. Erstens die Reihenfolge: Zeig zuerst den Wert bei null Prozent und dann den bei drei. Wer mit 19 Prozent beginnt, redet danach jede Minute gegen den eigenen ersten Satz an. Zweitens die Definition: Die Zahl ist eine Rendite auf das eingesetzte Eigenkapital, nicht auf den Kaufpreis. Die Objektrendite liegt bei 4,8 Prozent brutto, das ist eine völlig andere Größe. Wer beides verwechselt, kann die Rückfrage des Steuerberaters nicht beantworten. Drittens die Lücke, die die Rechnung offen lässt: Das Endvermögen ist nicht liquide. Es steckt in der Wohnung und wird erst durch Verkauf oder Beleihung greifbar, und ein Verkauf kostet Makler, Notar und gegebenenfalls Vorfälligkeitsentschädigung. Der Vergleich mit dem Sparplan ist an dieser Stelle nicht ganz fair, und wenn du es selbst sagst, glaubt der Kunde dir den Rest umso mehr.",
-        "aufgaben": [
-          {
-            "id": "rendite-quiz-qe",
-            "typ": "quiz",
-            "pfad": "quereinsteiger",
-            "titel": "Die Sparplan-Rendite erklären",
-            "punkte": 10,
-            "fragen": [
-              {
-                "frage": "Warum steht bei der Rendite der Zusatz netto steuerfrei?",
-                "optionen": [
-                  "Weil Mieteinnahmen grundsätzlich steuerfrei sind",
-                  "Weil ein Verkauf nach mehr als zehn Jahren im Privatvermögen steuerfrei ist",
-                  "Weil die Steuer schon in der Rate enthalten ist"
-                ],
-                "korrekt": 1,
-                "aufloesung": "Nach Ablauf von zehn Jahren ist der Verkaufsgewinn im Privatvermögen steuerfrei (§ 23 EStG). Eine Sparplan-Rendite müsste der Kunde versteuern, vor Steuer müsste sie also noch höher liegen."
-              },
-              {
-                "frage": "Der Kunde zieht den Wertsteigerungsregler auf null. Was passiert mit der Sparplan-Rendite?",
-                "optionen": [
-                  "Sie bleibt unverändert, die Station rechnet ohne Regler",
-                  "Sie sinkt, bleibt aber positiv, weil die Tilgung unabhängig vom Markt läuft",
-                  "Sie fällt auf null"
-                ],
-                "korrekt": 1,
-                "aufloesung": "Das Endvermögen folgt demselben Regler wie die Immobilienschere. Beim Bestand sinkt die Rendite von 19,0 auf 4,2 Prozent. Die erste Zahl beeindruckt, die zweite überzeugt."
-              }
-            ]
-          },
-          {
-            "id": "rendite-wahrfalsch-profi",
-            "typ": "wahrfalsch",
-            "pfad": "profi",
-            "titel": "Feinheiten der Sparplan-Rendite",
-            "hinweis": "Wische nach rechts, was stimmt, denn diese Station ist die stärkste und zugleich die angreifbarste des Gesprächs.",
-            "punkte": 15,
-            "karten": [
-              {
-                "aussage": "Die Sparplan-Rendite ist eine Rendite auf das eingesetzte Eigenkapital, nicht auf den Kaufpreis.",
-                "stimmt": true,
-                "aufloesung": "Die Objektrendite liegt bei 4,8 Prozent brutto, das ist eine ganz andere Größe. Wer beides verwechselt, kann die Rückfrage des Steuerberaters nicht beantworten."
-              },
-              {
-                "aussage": "Zeig zuerst die 19 Prozent, damit der Kunde beeindruckt ist, und dann den Wert bei null.",
-                "stimmt": false,
-                "aufloesung": "Andersherum: erst null, dann drei Prozent. Wer mit 19 Prozent beginnt, redet danach jede Minute gegen den eigenen ersten Satz an."
-              },
-              {
-                "aussage": "Das Endvermögen nach zehn Jahren steht dem Kunden sofort als Geld zur Verfügung.",
-                "stimmt": false,
-                "aufloesung": "Es steckt in der Wohnung und wird erst durch Verkauf oder Beleihung greifbar. Sag das selbst, dann glaubt dir der Kunde den Rest umso mehr."
-              },
-              {
-                "aussage": "Vor Steuer müsste ein Sparplan noch mehr bringen als die gezeigte Zahl.",
-                "stimmt": true,
-                "aufloesung": "Die Zahl gilt netto steuerfrei, weil der Verkauf nach zehn Jahren steuerfrei ist. Eine Sparplan-Rendite wäre zu versteuern."
-              },
-              {
-                "aussage": "Beim Neubau bleibt ohne Wertsteigerung fast nichts an Rendite übrig.",
-                "stimmt": true,
-                "aufloesung": "0,3 Prozent bei null, weil der Eigenanteil über zehn Jahre am höchsten und die Tilgung am niedrigsten ist. Die Station misst das Verhältnis von Einsatz zu Endvermögen, nicht die Qualität der Immobilie."
-              },
-              {
-                "aussage": "Die Station rechnet mit dem Regler aus der Immobilienschere live mit.",
-                "stimmt": true,
-                "aufloesung": "Zieht der Kunde dort auf null, sinkt hier das Endvermögen und mit ihm die Rendite. Das ist der ehrlichste Weg, die Station zu zeigen."
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "steuerwirkung",
-        "ueberschrift": "Station 12: Die Steuerwirkung Position für Position",
-        "intro": "Was der Kunde ohnehin an Steuern zahlt, floss bisher ab, ohne dass etwas zurückbleibt. Mit einer vermieteten Immobilie ändert sich, wohin ein Teil davon geht. Station 12 rechnet das Position für Position vor.",
-        "absaetze": [
-          "Oben stehen die AfA-Kacheln, darunter die Tabelle der Einkünfte aus Vermietung und Verpachtung, daneben der bernsteinfarbene Kasten Was wir ehrlich dazusagen. Der Kasten entwertet die Zahl nicht, er beglaubigt sie.",
-          "Bevor du eine einzige Steuerzahl nennst, musst du die Bemessungsgrundlage erklären können, denn die 2 Prozent gelten nicht auf den Kaufpreis. Abgeschrieben wird nur das Gebäude, der Grund und Boden nutzt sich nicht ab. Die Objektkarten von Bestand und WG weisen deshalb einen Gebäudeanteil von 80 Prozent aus, und gerechnet wird er auf die gesamten Anschaffungskosten, also Kaufpreis plus Kaufnebenkosten. Beim Bestand sind das 350.000 plus 19.250 Euro gleich 369.250 Euro, davon 80 Prozent gleich 295.400 Euro, und davon 2 Prozent nach § 7 Absatz 4 Einkommensteuergesetz gleich 5.908 Euro im Jahr. Bei der WG sind es 413.500 plus 22.743 Euro gleich 436.243 Euro, davon 80 Prozent gleich 348.994 Euro, und davon 2 Prozent gleich 6.980 Euro.",
-          "Die 80 Prozent liegen über der Faustregel für mittlere Städte aus dem Glossarkapitel, die 75 zu 25 vorsieht, und unter der für ländliche Lagen mit 85 zu 15. Faustregeln sind nur Behelf, maßgeblich ist der Einzelfall, ermittelt über den Bodenrichtwert oder ein Sachverständigengutachten. Rechne den Unterschied einmal durch, dann kannst du im Termin ehrlich antworten: Mit 75 statt 80 Prozent sänke die Gebäude-AfA beim Bestand von 5.908 auf 5.539 Euro. Das sind 369 Euro weniger Werbungskosten, bei 42 Prozent Grenzsteuersatz rund 155 Euro weniger Entlastung im Jahr und damit rund 13 Euro im Monat. Die Botschaft der Station ändert sich dadurch nicht, aber du kennst die Bandbreite und redest nicht ins Blaue.",
-          "Beim sanierten Bestand: 16.800 Euro Kaltmiete im Jahr stehen gegen 5.908 Euro Gebäude-AfA, 14.000 Euro Schuldzinsen nach § 9 Absatz 1 Satz 3 Nummer 1 Einkommensteuergesetz, 480 Euro Verwaltergebühr und 20.000 Euro einmaligen Erhaltungsaufwand. Steuerliches Ergebnis minus 23.588 Euro, bei 42 Prozent Grenzsteuersatz sind das 9.907 Euro im Jahr oder rund 826 Euro im Monat. Ab dem zweiten Jahr bleibt ein steuerliches Ergebnis von minus 3.588 Euro, also rund 1.507 Euro im Jahr und 126 Euro im Monat.",
-          "Zwei Positionen der Monatsrechnung tauchen in der Steuertabelle bewusst nicht auf, und beide Male fragt irgendwann jemand nach. Erstens: Von den 150 Euro nicht umlagefähigen Kosten ist nur die Verwaltergebühr sofort abziehbar, in der Tabelle als 480 Euro im Jahr. Die Zuführung zur Instandhaltungsrücklage wirkt steuerlich erst dann, wenn die Eigentümergemeinschaft das Geld tatsächlich für eine Maßnahme ausgibt. Sie ist also nicht verloren, nur später wirksam. Zweitens: Von der monatlichen Rate zählt nur der Zinsanteil, nicht die Tilgung. Die Tilgung ist kein Aufwand, sondern Vermögensaufbau, deshalb steht sie nicht in der Steuerrechnung, aber sehr wohl in der Immobilienschere.",
-          "Und die Grenze, an der die ganze Rechnung des ersten Jahres hängt: Der Erhaltungsaufwand ist nur sofort abziehbar, solange er unter der 15-Prozent-Grenze des § 6 Absatz 1 Nummer 1a Einkommensteuergesetz bleibt. Gemeint sind Instandsetzungs- und Modernisierungsaufwendungen innerhalb von drei Jahren nach der Anschaffung, ohne Umsatzsteuer gerechnet, gemessen an den Anschaffungskosten des Gebäudes. Beim Bestand sind das 15 Prozent von 295.400 Euro, also 44.310 Euro, und die angesetzten 20.000 Euro bleiben deutlich darunter. Bei der WG sind es 15 Prozent von 348.994 Euro, also 52.349 Euro gegen 30.800 Euro Erhaltungsaufwand. Entscheidend ist die Rechtsfolge bei Überschreiten: Dann kippt der gesamte Betrag in anschaffungsnahe Herstellungskosten, nicht nur der Teil über der Grenze, und statt eines sofortigen Abzugs bleibt eine Abschreibung über Jahrzehnte. Genau deshalb ist es keine Kleinigkeit, wenn ein Kunde nach dem Kauf noch schnell selbst renoviert.",
-          "Bei der WG-Wohnung: 19.200 Euro Kaltmiete gegen 6.980 Euro Gebäude-AfA, 16.540 Euro Schuldzinsen, 480 Euro Verwaltergebühr und 30.800 Euro einmaligen Erhaltungsaufwand. Steuerliches Ergebnis minus 35.600 Euro, das sind 14.952 Euro im Jahr oder rund 1.246 Euro im Monat. Ab dem zweiten Jahr bleiben minus 4.800 Euro, also rund 2.016 Euro im Jahr und 168 Euro im Monat. Die AfA-Grundlage liegt bei 348.994 Euro.",
-          "Neu und ein starkes Argument: Bei Bestand und WG steht auf der Folie der Hinweis, dass die Gebäude-AfA mit einem Restnutzungsdauergutachten in vielen Fällen deutlich höher ausfallen kann. Statt der pauschalen 2 Prozent nach Paragraf 7 Absatz 4 wird dann die tatsächliche Restnutzungsdauer angesetzt, und ein kürzerer Zeitraum bedeutet einen höheren Jahresbetrag. Das verstärkt den steuerlichen Effekt zusätzlich. Sag es als Möglichkeit, nicht als Zusage: Das Gutachten kostet Geld, und anerkennen muss es das Finanzamt.",
-          "Beim Neubau arbeiten stattdessen zwei Abschreibungen nebeneinander, die Sonderabschreibung von 5 Prozent nach § 7b Einkommensteuergesetz über vier Jahre und die degressive AfA von 5 Prozent vom jeweiligen Restbuchwert nach § 7 Absatz 5a Einkommensteuergesetz. Dass beides nebeneinander zulässig ist, steht ausdrücklich in § 7b Absatz 1 Satz 1. Die Bemessungsgrundlage ist hier eine ganz andere: Der Kaufvertrag weist 150.000 Euro Gebäude und 160.000 Euro Grund und Boden aus, angesetzt sind 151.500 Euro. Der Bodenanteil von 51,61 Prozent liegt weit über den 20 Prozent der beiden Bestandsobjekte, und das hat einen sachlichen Grund: Bei einer Etagenwohnung teilen sich viele Einheiten dasselbe Grundstück, bei einem Quartiersprojekt mit eigenem Grundstücksanteil ist der Bodenanteil je Einheit deutlich größer. Trotzdem fällt die Entlastung höher aus, weil 5 plus 5 Prozent auf 151.500 Euro rund 15.150 Euro ergeben, während 2 Prozent auf 295.400 Euro nur 5.908 Euro bringen. Nicht die größere Grundlage entscheidet, sondern der Satz.",
-          "Auch beim Neubau gehört die unbequeme Wahrheit dazu: Nach vier Jahren läuft die Sonderabschreibung aus, gleichzeitig beginnt die Tilgung des KfW-Darlehens, das die ersten zwei Jahre tilgungsfrei ist. Aus rund 545 Euro Entlastung bei rund 222 Euro Beitrag werden ab dem fünften Jahr rund 155 Euro Entlastung bei rund 260 Euro Beitrag. Die Voraussetzungen des § 7b solltest du kennen, weil der Steuerberater des Kunden genau danach fragt: Bauantrag oder Bauanzeige zwischen 2023 und 2029, Baukosten höchstens 5.200 Euro je Quadratmeter, abschreibungsfähige Bemessungsgrundlage höchstens 4.000 Euro je Quadratmeter, Standard Effizienzhaus 40 mit QNG-Siegel. Beim sanierten Bestand gibt es weder die Sonderabschreibung noch die degressive AfA."
-        ],
-        "skripte": [
-          {
-            "titel": "Überleitung zur Steuer",
-            "kontext": "Achte Überleitung, direkt nach der Sparplan-Rendite.",
-            "text": "\"Was zahlst du eigentlich im Jahr an Steuern, und was bleibt davon bei dir? Genau hier wird es interessant.\"",
-            "warum": "Die Frage verschiebt den Blick: Es geht nicht um neue Kosten, sondern um Geld, das ohnehin abfließt und jetzt teilweise zurückkommt. Damit ist Station 12 als Rückholaktion gerahmt, nicht als Steuertrick."
-          },
-          {
-            "titel": "Station 12: Die Steuerwirkung Position für Position",
-            "kontext": "AfA-Kacheln, die Tabelle der Einkünfte aus Vermietung und Verpachtung, daneben der Ehrlichkeitskasten.",
-            "text": "\"Was du ohnehin an Steuern zahlst, floss bisher ab, ohne dass etwas zurückbleibt. Mit einer vermieteten Immobilie ändert sich, wohin ein Teil davon geht. Beim Bestand: 16.800 Euro Miete stehen gegen Abschreibung, Zinsen, Verwaltung und den einmaligen Erhaltungsaufwand von 20.000 Euro. Steuerliches Ergebnis: minus 23.588 Euro. Bei 42 Prozent Grenzsteuersatz sind das 9.907 Euro im Jahr, rund 826 Euro im Monat. Und ganz wichtig: Der große Effekt des ersten Jahres kommt genau einmal. Ab dem zweiten Jahr sind es rund 126 Euro im Monat.\"",
-            "warumTitel": "Warum du das zweite Jahr ungefragt nennst",
-            "warum": "Wer nur das erste Jahr zeigt, verkauft eine Illusion, und der Kunde merkt es spätestens in zwölf Monaten. Die ungefragte Ehrlichkeit an genau dieser Stelle ist der Unterschied zwischen einem Abschluss und einer Empfehlung. Der bernsteinfarbene Kasten auf der Folie sagt es wörtlich: Wer dir etwas anderes verspricht, rechnet dir etwas vor."
-          },
-          {
-            "titel": "Die WG-Variante in einem Absatz",
-            "kontext": "Wenn der Umschalter auf WG und Co-Living steht.",
-            "text": "\"Bei der WG-Wohnung stehen 19.200 Euro Miete gegen 6.980 Euro Gebäude-AfA, 16.540 Euro Zinsen, 480 Euro Verwaltung und 30.800 Euro Erhaltungsaufwand. Steuerliches Ergebnis minus 35.600 Euro, das sind 14.952 Euro im Jahr oder rund 1.246 Euro im Monat. Ab dem zweiten Jahr, ohne den einmaligen Erhaltungsaufwand, sind es rund 168 Euro im Monat.\"",
-            "warum": "Die WG hat den größten Steuereffekt im ersten Jahr, weil der Sanierungsanteil hier am höchsten ist. Genau deshalb gehört der Vorbehalt dazu: Ob dieser Anteil in voller Höhe sofort abziehbar ist oder ob Paragraf 6 Absatz 1 Nummer 1a greift und daraus Herstellungskosten werden, entscheidet das Finanzamt. Diese Rechnung ersetzt kein Gespräch mit dem Steuerberater, und das sagst du auch so."
-          },
-          {
-            "titel": "Der AfA-Hinweis: Restnutzungsdauergutachten",
-            "kontext": "Der Hinweis steht bei Bestand und WG im Ehrlichkeitskasten unter der Steuertabelle.",
-            "text": "\"Ein Punkt noch, der viele überrascht: Wir rechnen hier mit der pauschalen Abschreibung von 2 Prozent im Jahr. Bei einem Gebäude von 1968 ist die tatsächliche Restnutzungsdauer aber oft deutlich kürzer als die unterstellten fünfzig Jahre. Mit einem Restnutzungsdauergutachten kann die Gebäude-AfA deshalb in vielen Fällen deutlich höher ausfallen, und das verstärkt den steuerlichen Effekt zusätzlich. Ich verspreche dir das nicht, anerkennen muss es das Finanzamt. Aber prüfen sollten wir es.\"",
-            "warumTitel": "Warum du das als Möglichkeit verkaufst und nicht als Zahl",
-            "warum": "Ein Argument, das der Kunde vom Steuerberater bestätigt bekommt, ist doppelt so stark wie eines, das du behauptest. Deshalb nennst du die Mechanik, nicht einen Betrag: kürzere Restnutzungsdauer, höherer Jahresbetrag. Und du sagst offen, dass ein Gutachten Geld kostet und das Finanzamt entscheidet. Wer hier eine Zahl verspricht, verliert später mehr, als er heute gewinnt."
-          },
-          {
-            "titel": "Die Neubau-Variante in einem Absatz",
-            "kontext": "Wenn der Umschalter auf Neubau KfW 40 QNG steht.",
-            "text": "\"Beim Neubau arbeiten zwei Abschreibungen nebeneinander: die Sonderabschreibung von 5 Prozent nach Paragraf 7b, vier Jahre lang, und die degressive AfA von 5 Prozent vom Restbuchwert. Das ergibt 545 Euro Entlastung im Monat im ersten vollen Jahr, bei rund 222 Euro Beitrag. Und auch hier die ehrliche Ansage: Nach vier Jahren läuft die Sonderabschreibung aus, gleichzeitig beginnt die Tilgung des KfW-Darlehens. Ab dem fünften Jahr sind es rund 155 Euro Entlastung bei rund 260 Euro Beitrag.\"",
-            "warum": "Die Voraussetzungen gehören ins Hinterzimmerwissen: Bauantrag zwischen 2023 und 2029, Baukosten höchstens 5.200 Euro je Quadratmeter, Bemessungsgrundlage höchstens 4.000 Euro, Effizienzhaus 40 mit QNG-Siegel. Beim Bestand gibt es beides nicht. Wer das parat hat, beantwortet die Rückfrage des Steuerberaters, bevor sie zum Einwand wird."
-          },
-          {
-            "titel": "Überleitung zu den Referenzen",
-            "kontext": "Neunte Überleitung, nach der Steuerwirkung.",
-            "text": "\"Und wie sieht so etwas am Ende wirklich aus? Sieh selbst.\"",
-            "warum": "Der Kunde hat gerade die Zahlen gesehen und fragt sich jetzt, wie das in der Wirklichkeit aussieht. Genau deshalb stehen die Referenzen hier, nach der Rechnung und der Steuerwirkung. Lass die Bilder sprechen und kommentiere sparsam."
-          }
-        ],
-        "quereinsteigerHinweis": "AfA heißt Absetzung für Abnutzung, also die steuerliche Abschreibung des Gebäudes. Nicht umlagefähige Kosten sind die Nebenkosten, die der Eigentümer trägt und nicht auf den Mieter umlegen darf, zum Beispiel die Verwaltergebühr. Und der Grenzsteuersatz ist der Steuersatz auf den letzten verdienten Euro, deshalb wirkt eine Einkommensminderung genau mit diesem Satz. Drei Merksätze für diese Station: Erstens, Prozentsätze der AfA gelten immer auf den Gebäudeanteil, nie auf den Kaufpreis. Zweitens, Erhaltungsaufwand ist Reparatur und im Jahr der Zahlung voll abziehbar, Herstellungskosten sind Verbesserung und werden über Jahrzehnte abgeschrieben. Drittens, Steuerentlastung heißt weniger festgesetzte Steuer, nicht Geld vom Staat. Wer keine Steuer zahlt, bekommt auch keine Entlastung.",
-        "profiTipp": "Drei Feinheiten, die dieser Station standhalten, wenn ein Steuerberater mitliest. Erstens die Anrechnung im laufenden Jahr: Die Entlastung kommt nicht automatisch monatlich, sondern erst mit dem Steuerbescheid. Wer sie schon im ersten Jahr im Cashflow spüren will, braucht einen Lohnsteuer-Freibetrag nach § 39a Einkommensteuergesetz, den der Kunde beim Finanzamt beantragt. Das ist der Unterschied zwischen einer Entlastung auf dem Papier und mehr Geld auf dem Konto, und kaum jemand spricht es an. Zweitens die Kaufnebenkosten: Sie sind nicht sofort abziehbar, sondern gehören zu den Anschaffungskosten und erhöhen nur anteilig für das Gebäude die Bemessungsgrundlage. Genau deshalb steht in dieser Station 295.400 Euro und nicht 280.000 Euro. Drittens der Zeitanteil im Anschaffungsjahr: Im Jahr der Anschaffung wird die Gebäude-AfA zeitanteilig abgezogen, also monatsweise gezwölftelt (R 7.4 Absatz 2 der Einkommensteuer-Richtlinien). Wer im Oktober übernimmt, bekommt im ersten Kalenderjahr drei Zwölftel, nicht das volle Jahr. Sag das vorher, sonst ist der erste Steuerbescheid eine Enttäuschung.",
-        "links": [
-          {
-            "label": "Steuer-Grundlagen in Kapitel 0",
-            "to": "/vertriebsakademie/grundlagen?vaScrollTo=steuer",
-            "hinweis": "Gebäudeanteil, AfA-Sätze und die hergeleitete Steuervorteilsrechnung"
-          },
-          {
-            "label": "AfA-Sätze im Glossar",
-            "to": "/vertriebsakademie/glossar-zahlen?vaScrollTo=afa",
-            "hinweis": "Die Sätze im Überblick, dazu die Faustregeln 60/40, 75/25 und 85/15 für die Aufteilung"
-          },
-          {
-            "label": "Kapitel 15: wenn der Kunde nach Denkmal oder GmbH fragt",
-            "to": "/vertriebsakademie/steuer-deep-dive?vaScrollTo=denkmal-7i",
-            "hinweis": "Der Deep Dive für Kunden mit hoher Steuerlast, von § 7i über § 6b bis zur vermögensverwaltenden GmbH"
-          }
-        ],
-        "aufgaben": [
-          {
-            "id": "steuer-rechnen-qe",
-            "typ": "rechnen",
-            "pfad": "quereinsteiger",
-            "titel": "Rechne die Steuerentlastung im ersten Jahr aus",
-            "hinweis": "Rechne vom steuerlichen Ergebnis zum Monatsbetrag und runde auf ganze Euro.",
-            "punkte": 10,
-            "fall": "Sanierter Bestand: steuerliches Ergebnis minus 23.588 Euro, Grenzsteuersatz 42 Prozent.",
-            "gesucht": "Wie hoch ist die Steuerentlastung pro Monat?",
-            "zielwert": 826,
-            "toleranzProzent": 1,
-            "einheit": "€",
-            "rechenweg": {
-              "titel": "Ergebnis mal Steuersatz, geteilt durch 12",
-              "zeilen": [
-                {
-                  "label": "Steuerliches Ergebnis",
-                  "wert": "23.588 €"
-                },
-                {
-                  "label": "Mal 42 Prozent Grenzsteuersatz",
-                  "wert": "9.907 €",
-                  "op": "→"
-                },
-                {
-                  "label": "Geteilt durch 12 Monate",
-                  "wert": "826 €",
-                  "op": "=",
-                  "ergebnis": true,
-                  "hinweis": "Ab dem zweiten Jahr, ohne den Erhaltungsaufwand, sind es 126 Euro."
-                }
-              ]
-            }
-          },
-          {
-            "id": "steuerberater-quiz-profi",
-            "typ": "quiz",
-            "pfad": "profi",
-            "titel": "Drei Fragen, die der Steuerberater stellt",
-            "hinweis": "Jede dieser Fragen kommt in der Praxis, die Auflösung siehst du am Ende.",
-            "punkte": 15,
-            "aufloesungAmEnde": true,
-            "fragen": [
-              {
-                "frage": "Der Kunde will die Entlastung schon im ersten Jahr jeden Monat auf dem Konto spüren. Was braucht er dafür?",
-                "optionen": [
-                  "Nichts, die Bank verrechnet die Entlastung mit der Rate",
-                  "Einen Lohnsteuer-Freibetrag, den er beim Finanzamt beantragt",
-                  "Eine Bescheinigung von OS Immobilien für den Arbeitgeber"
-                ],
-                "korrekt": 1,
-                "aufloesung": "Ohne Freibetrag kommt die Entlastung erst mit dem Steuerbescheid. Der Freibetrag nach § 39a EStG macht aus einer Entlastung auf dem Papier mehr Geld auf dem Konto."
-              },
-              {
-                "frage": "Womit kann die Gebäude-AfA bei Bestand und WG über die pauschalen 2 Prozent hinaus steigen?",
-                "optionen": [
-                  "Mit einem höheren Kaufpreis",
-                  "Mit einem Gutachten, das eine kürzere tatsächliche Restnutzungsdauer nachweist",
-                  "Mit einer längeren Zinsbindung"
-                ],
-                "korrekt": 1,
-                "aufloesung": "Weniger Jahre, höherer Jahresbetrag. Sag es als Möglichkeit, nicht als Zusage: Das Gutachten kostet Geld, und anerkennen muss es das Finanzamt."
-              },
-              {
-                "frage": "Von den 150 Euro nicht umlagefähigen Kosten steht in der Steuertabelle nur die Verwaltergebühr. Wann wirkt der Rest, die Zuführung zur Rücklage?",
-                "optionen": [
-                  "Nie, die Rücklage ist steuerlich verloren",
-                  "Sofort, sie gehört zu den Werbungskosten des Jahres",
-                  "Erst wenn die Eigentümergemeinschaft das Geld tatsächlich für eine Maßnahme ausgibt"
-                ],
-                "korrekt": 2,
-                "aufloesung": "Die Zuführung ist nicht verloren, nur später wirksam. Genau danach fragt irgendwann jemand, und dann hast du die Antwort."
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "pruefung-einwaende",
-        "ueberschrift": "Station 13: Die Prüfung, und deine Antworten auf die fünf Standardfragen",
-        "intro": "Station 13 zeigt, warum wir dem Kunden nicht jede Wohnung zeigen, die auf den Markt kommt. Danach folgen die fünf Fragen, die sich fast jeder Kunde stellt. Sie haben keinen eigenen Abschnitt in der Präsentation mehr, deshalb liegen sie jetzt bei dir: Du bringst sie dort ein, wo sie im Gespräch auftauchen.",
-        "absaetze": [
-          "Der Prüfkatalog hat zehn Punkte, von Standort und Miethöhe über Rücklagen der Eigentümergemeinschaft bis zur langfristigen Wiederverkaufbarkeit. Die Botschaft ist Knappheit durch Auswahl statt durch Fristen: nicht das Objekt ist gleich weg, sondern wir zeigen dir bewusst nicht alles.",
-          "Die fünf Standardfragen weiter unten stehen nicht mehr als eigene Folie in der Präsentation. Sie stehen nur noch hier, im Wortlaut, und das heißt: Du musst sie können. Es gibt keinen Bildschirm, der dich an dieser Stelle trägt. Sprich sie aktiv an, wenn du merkst, dass eine im Raum steht, und spätestens vor der Rückspiegelung. Ein guter Moment ist direkt nach dem Prüfkatalog, weil der Kunde dort gerade über Risiken nachdenkt.",
-          "Lerne dabei nicht die fünf Antworten auswendig, sondern das Muster dahinter: echtes Risiko zugeben, konkrete Absicherung zeigen, im Zweifel abraten. Mit diesem Muster beantwortest du auch jede sechste Frage, die hier nicht steht.",
-          "Das Prinzip der Antworten ist nicht verhandelbar: Jede Antwort nennt zuerst das echte Risiko und dann, was dagegen getan wird. Andersherum klänge es nach Beschwichtigung und würde das Gegenteil bewirken. Solange ein unausgesprochenes Ja-aber im Raum steht, unterschreibt niemand.",
-          "Und stelle danach die offene Frage: Wenn dir eine Frage fehlt, ist jetzt der beste Moment dafür. Halte diese Pause aus. Was hier auf den Tisch kommt, kommt sonst später am Telefon, ohne dich daneben."
-        ],
-        "checkliste": [
-          "Standort und Wohnraumnachfrage",
-          "Realistische Miethöhe",
-          "Kaufpreis und Vergleichspreise",
-          "Zustand der Immobilie",
-          "Unterlagen der Eigentümergemeinschaft und Rücklagen",
-          "Nicht umlagefähige Kosten",
-          "Mögliche Sanierungsrisiken",
-          "Finanzierung und monatliche Belastung",
-          "Steuerliche Gestaltungsmöglichkeiten",
-          "Langfristige Wiederverkaufbarkeit"
-        ],
-        "skripte": [
-          {
-            "titel": "Deine eigene Überleitung zu den Einwänden",
-            "kontext": "Ohne Folie, frei gesprochen nach dem Prüfkatalog.",
-            "text": "\"Und jetzt die Fragen, die du dir seit zwanzig Minuten stellst. Stellen wir sie lieber selbst.\"",
-            "warum": "Wer die kritischen Fragen selbst stellt, beweist, dass er sie kennt und aushält. Der Kunde entspannt sich, weil er merkt, dass er nichts verstecken muss. Für diesen Satz gibt es keinen eigenen Bildschirm mehr, er gehört zu deinem freien Teil des Gesprächs."
-          },
-          {
-            "titel": "Station 13: Was wir bei jedem Objekt prüfen",
-            "kontext": "Zehn nummerierte Kacheln.",
-            "text": "\"Diese Liste ist der Grund, warum wir dir nicht jede Wohnung zeigen, die auf den Markt kommt. Zehn Punkte, die jedes Objekt durchläuft, vom Standort über die Rücklagen der Eigentümergemeinschaft bis zur Frage, ob sich die Wohnung in fünfzehn Jahren wieder verkaufen lässt. Eine zu dünne Rücklage zum Beispiel ist für uns ein Grund, ein Objekt gar nicht erst anzubieten.\"",
-            "warumTitel": "Warum Auswahl stärker wirkt als Dringlichkeit",
-            "warum": "Knappheit über Fristen erzeugt Druck und Misstrauen. Knappheit über Auswahl erzeugt Vertrauen: Der Kunde versteht, dass ein Vorschlag von uns bereits ein Filterergebnis ist. Das wertet den späteren Objektvorschlag auf, bevor er existiert."
-          }
-        ],
-        "einwaende": [
-          {
-            "einwand": "Was, wenn der Mieter nicht zahlt?",
-            "technik": "Risiko zuerst, dann Absicherung",
-            "antwort": "Das kommt vor. Deshalb wird jeder Mieter vor Einzug geprüft, und deshalb rechnen wir von Anfang an mit nicht umlagefähigen Kosten statt mit einer Punktlandung. Für den Ernstfall gibt es die Mietausfallversicherung. Was bleibt, ist ein Risiko über wenige Monate, nicht über Jahre.",
-            "warumTitel": "Warum die Antwort mit Das kommt vor beginnt",
-            "warum": "Die ersten drei Wörter entscheiden. Wer mit einer Beruhigung beginnt, bestätigt genau den Verdacht, den der Kunde gerade prüft, nämlich dass hier ein Risiko kleingeredet wird. Das offene Zugeben nimmt der Frage die Spannung und macht den zweiten Teil erst hörbar. Inhaltlich stützt sich die Antwort auf drei ganz verschiedene Ebenen, und das ist Absicht: Prüfung vor Einzug ist Vorbeugung, der eingerechnete Puffer ist Rechnung, die Versicherung ist Absicherung. Drei Ebenen wirken belastbarer als drei Argumente derselben Art. Und der Schlusssatz begrenzt das Risiko zeitlich, statt es zu bestreiten. Der Kunde hat am Ende eine Größenordnung im Kopf, keine Beruhigung."
-          },
-          {
-            "einwand": "Was, wenn ich meinen Job verliere?",
-            "technik": "Risiko zuerst, dann Absicherung",
-            "antwort": "Die Rate läuft weiter, die Miete allerdings auch. Offen bleibt der Teil, den du heute selbst trägst. Genau deshalb legen wir den Monatsbeitrag so aus, dass er auch in einem schlechten Jahr tragbar ist, und nicht am oberen Rand dessen, was die Bank genehmigen würde.",
-            "warumTitel": "Warum diese Antwort den Betrag verkleinert statt das Risiko",
-            "warum": "Die Angst hinter der Frage ist, im Ernstfall die ganze Rate allein zu schultern. Die Antwort korrigiert genau diese Vorstellung, ohne sie zu entkräften: Nicht die Rate steht im Feuer, sondern der Eigenanteil, beim Bestand also 228 Euro und nicht 1.604 Euro. Das ist der eigentliche Trost, und er ist rechnerisch belegbar. Der zweite Satz zahlt außerdem auf die 80 Prozent aus Station 03 ein, die du dort schon als Sicherheitsabschlag erklärt hast. Damit ist diese Antwort keine neue Behauptung, sondern die Einlösung eines Versprechens von vorhin, und das merkt der Kunde."
-          },
-          {
-            "einwand": "Was, wenn ich verkaufen muss?",
-            "technik": "Risiko zuerst, notfalls abraten",
-            "antwort": "Eine Immobilie ist nicht schnell verfügbar, das ist ihr größter Nachteil. Ein Verkauf vor Ablauf von zehn Jahren ist zudem steuerlich ungünstig, weil der Gewinn dann steuerpflichtig ist. Wer damit rechnet, in wenigen Jahren an das Geld zu müssen, sollte das hier nicht tun. Das sagen wir lieber jetzt als später.",
-            "warumTitel": "Warum hier ausdrücklich abgeraten wird",
-            "warum": "Das ist die einzige der fünf Antworten, die im Ergebnis Nein sagen kann, und genau das macht die anderen vier glaubwürdig. Ein Verkäufer, der bei einer Frage abrät, wird bei den übrigen geglaubt. Die steuerliche Aussage dahinter ist § 23 Absatz 1 Satz 1 Nummer 1 Einkommensteuergesetz: Bei einem Verkauf innerhalb von zehn Jahren nach dem Kauf ist der Gewinn als privates Veräußerungsgeschäft steuerpflichtig, danach nicht. Die Frist läuft von Notarvertrag zu Notarvertrag. Nenne die Regel, nicht ein Datum, denn das Datum hängt am Vertrag und nicht am Einzug. Und sag das Wort ungünstig statt verboten, denn verkaufen darf der Kunde jederzeit, es kostet ihn nur Steuer."
-          },
-          {
-            "einwand": "Wer zahlt das Dach?",
-            "technik": "Risiko zuerst, dann Absicherung",
-            "antwort": "Am Gemeinschaftseigentum die Rücklage der Eigentümergemeinschaft, in die du monatlich einzahlst. Wir sehen uns vor dem Kauf an, wie hoch diese Rücklage tatsächlich ist und was in den Protokollen der letzten Jahre steht. Eine zu dünne Rücklage ist für uns ein Grund, ein Objekt nicht anzubieten.",
-            "warumTitel": "Warum die Protokolle in der Antwort stehen",
-            "warum": "Die Frage zielt auf die große unbekannte Zahl, und die Antwort ersetzt sie durch einen nachprüfbaren Vorgang. Der Kunde hört nicht das ist abgesichert, sondern wir schauen in die Unterlagen, und das ist etwas, das er selbst nachvollziehen kann. Die Protokolle der Eigentümerversammlungen gehören deshalb ausdrücklich in den Satz: Dort steht, was beschlossen, vertagt oder abgelehnt wurde, und eine dreimal vertagte Dachsanierung ist eine Sonderumlage mit Anlauf. Nach § 19 Absatz 2 Nummer 4 Wohnungseigentumsgesetz gehört eine angemessene Erhaltungsrücklage ohnehin zur ordnungsmäßigen Verwaltung. Wichtig für dich: Sondereigentum, also alles innerhalb der Wohnung, zahlt der Eigentümer selbst. Die Rücklage trägt nur das Gemeinschaftseigentum, und das Dach gehört dazu."
-          },
-          {
-            "einwand": "Was, wenn die Immobilie an Wert verliert?",
-            "technik": "Risiko zuerst, Verweis auf die Rechnung ohne Wertsteigerung",
-            "antwort": "Möglich, und niemand kann es ausschließen. Deshalb steht in unserer Rechnung keine Wertsteigerung. Was auch ohne sie bleibt, ist die Tilgung: Nach zehn Jahren gehört dir ein deutlich größerer Anteil der Wohnung als am Anfang, unabhängig davon, was der Markt in der Zwischenzeit macht.",
-            "warumTitel": "Warum du hier auf ein Bild verweist statt zu argumentieren",
-            "warum": "Diese Antwort ist die einzige der fünf, die ein Werkzeug auf dem Bildschirm hat. Nutze es: Geh zurück zur Immobilienschere und lass den Kunden den Regler selbst auf null ziehen. Gehört zu haben, dass die Tilgung bleibt, überzeugt selten. Es selbst zu sehen, fast immer. Die Antwort trägt außerdem eine Umdeutung: Sie verschiebt den Blick vom Preis, den niemand steuert, auf die Tilgung, die planmäßig läuft. Die Grenze der Antwort solltest du kennen, sonst wirkt sie zu glatt. Ein Wertverlust vernichtet die Tilgung nicht, aber er verringert das Vermögen, und bei rund 18 Prozent Wertverlust wäre die getilgte Summe von 63.032 Euro rechnerisch aufgezehrt. Wer diese Zahl kennt, bleibt auch beim Nachhaken ruhig."
-          }
-        ],
-        "profiTipp": "Woran erkennst du eigentlich eine zu dünne Rücklage? Der Satz steht dreimal im Kapitel und ist bisher nirgends beziffert, dabei ist er im Gespräch der stärkste Beleg dafür, dass die Prüfliste echte Objekte aussortiert. Eine gebräuchliche Orientierung liefert § 28 Absatz 2 der Zweiten Berechnungsverordnung. Sie nennt Höchstbeträge für Instandhaltungskosten je Quadratmeter Wohnfläche und Jahr, gestaffelt nach dem Alter zum Ende des Kalenderjahres: höchstens 7,10 Euro, wenn die Bezugsfertigkeit weniger als 22 Jahre zurückliegt, höchstens 9 Euro ab 22 Jahren und höchstens 11,50 Euro ab 32 Jahren. Ursprünglich gilt das für die Kostenmiete im geförderten Wohnungsbau, in der Praxis dient es als Maßstab für die Rücklage. Rechne es einmal am Musterobjekt durch: 100 Quadratmeter, Bezugsfertigkeit vor mehr als 32 Jahren, also 11,50 Euro je Quadratmeter, ergibt 1.150 Euro im Jahr oder rund 96 Euro im Monat. In der Monatsrechnung stehen 150 Euro nicht umlagefähige Kosten, davon 40 Euro Verwaltergebühr, es bleiben also rund 110 Euro Rücklage. Das liegt über dem Orientierungswert, dieses Objekt ist an der Stelle also solide aufgestellt. Wer im Objektvorschlag deutlich darunter liegt, hat kein günstiges Hausgeld, sondern eine aufgeschobene Sonderumlage. Diese eine Rechnung macht aus dem Prüfkatalog eine überprüfbare Aussage.",
-        "goldNugget": {
-          "titel": "Die sechste Frage, auf die niemand vorbereitet ist",
-          "text": "Fünf Fragen stehen im Kapitel. Die sechste kommt in der Praxis öfter als drei davon und lautet: Und was ist, wenn ich sterbe? Sie klingt hart, ist aber selten dramatisch gemeint, sondern eine Ordnungsfrage. Antworte in derselben Struktur wie bei den anderen: Das Darlehen erlischt nicht, es geht mit der Wohnung auf die Erben über, samt Miete und samt Tilgung. Wer das nicht will, deckt die Restschuld über eine Risikolebensversicherung ab, und die ist bei einer vermieteten Immobilie deutlich günstiger als bei einem Eigenheim, weil die Miete weiterläuft. Für Ehepaare kommt hinzu, dass die Wohnung in die Erbschaftsteuer fällt, während der Freibetrag zwischen Ehegatten bei 500.000 Euro und je Kind bei 400.000 Euro liegt (§ 16 Erbschaftsteuer- und Schenkungsteuergesetz). Zwei Sätze dazu, und der Kunde erlebt dich als jemanden, der zu Ende denkt.",
-          "bullets": [
-            "Struktur bleibt gleich: echtes Risiko zuerst, dann die konkrete Absicherung.",
-            "Nie eine Versicherung empfehlen, sondern die Frage benennen und an den Fachmann verweisen. Für die Vermittlung von Versicherungen braucht es eine eigene Erlaubnis nach § 34d Gewerbeordnung.",
-            "Die Freibeträge nennst du als Größenordnung, nicht als Beratung. Was im Einzelfall gilt, klärt der Steuerberater."
-          ]
-        },
-        "links": [
-          {
-            "label": "Einwand-Bibliothek im CRM",
-            "to": "/einwaende",
-            "hinweis": "Alle Einwände mit Techniken und Formulierungen, auch außerhalb der Präsentation"
-          },
-          {
-            "label": "Steuerfristen im Glossar",
-            "to": "/vertriebsakademie/glossar-zahlen?vaScrollTo=steuerfristen",
-            "hinweis": "Spekulationsfrist, 3-Objekt-Grenze und die Fristen, die bei Verkauf und Vermietung zählen"
-          }
-        ],
-        "aufgaben": [
-          {
-            "id": "einwand-zuordnen-qe",
-            "typ": "zuordnen",
-            "pfad": "quereinsteiger",
-            "titel": "Fünf Kundenfragen, fünf Antwortkerne",
-            "hinweis": "Ziehe zu jeder Kundenfrage den Kern deiner Antwort.",
-            "punkte": 10,
-            "paare": [
-              {
-                "links": "Was, wenn der Mieter nicht zahlt?",
-                "rechts": "Prüfung vor Einzug, Puffer eingerechnet, Mietausfallversicherung"
-              },
-              {
-                "links": "Was, wenn ich meinen Job verliere?",
-                "rechts": "Der Beitrag ist so ausgelegt, dass er auch ein schlechtes Jahr trägt"
-              },
-              {
-                "links": "Was, wenn ich verkaufen muss?",
-                "rechts": "Größter Nachteil der Immobilie, wer bald Geld braucht, sollte es lassen"
-              },
-              {
-                "links": "Wer zahlt das Dach?",
-                "rechts": "Die Rücklage der Eigentümergemeinschaft, vor dem Kauf geprüft"
-              },
-              {
-                "links": "Was, wenn die Wohnung an Wert verliert?",
-                "rechts": "In der Rechnung steht keine Wertsteigerung, die Tilgung bleibt trotzdem"
-              }
-            ]
-          },
-          {
-            "id": "einwand-szenario",
-            "typ": "szenario",
-            "pfad": "beide",
-            "titel": "Der Wertverlust-Einwand mitten in der Schere",
-            "hinweis": "Du bist in Station 10, der Kunde unterbricht dich, und du führst das Gespräch.",
-            "punkte": 20,
-            "startSzene": "s1",
-            "szenen": [
-              {
-                "id": "s1",
-                "text": "Du zeigst die Immobilienschere bei drei Prozent Wertsteigerung. Der Kunde lehnt sich zurück: Und was ist, wenn die Wohnung in zehn Jahren gar nichts mehr wert ist? Mein Nachbar hat bei seiner ordentlich draufgezahlt.",
-                "optionen": [
-                  {
-                    "text": "Ein Totalverlust ist bei Immobilien praktisch ausgeschlossen, so etwas passiert nicht.",
-                    "weiterZu": "s2",
-                    "konsequenz": "Der Kunde zieht die Augenbrauen hoch. Du hast etwas versprochen, das du nicht halten kannst, und sein Nachbar ist der lebende Gegenbeweis.",
-                    "bewertung": "schwach"
-                  },
-                  {
-                    "text": "Gute Frage. Du gibst ihm die Maus: Zieh den Regler selbst auf null.",
-                    "weiterZu": "s3",
-                    "konsequenz": "Der Kunde zieht den Regler auf null und sieht: Es bleiben 63.032 Euro.",
-                    "bewertung": "gut"
-                  },
-                  {
-                    "text": "Du sagst deine Standardantwort zum Wertverlust auf, ohne den Bildschirm zu benutzen.",
-                    "weiterZu": "s3",
-                    "konsequenz": "Inhaltlich richtig, aber der Kunde nickt nur höflich. Du merkst es, gehst zurück zur Schere und lässt ihn den Regler selbst auf null ziehen.",
-                    "bewertung": "tragbar"
-                  }
-                ]
-              },
-              {
-                "id": "s2",
-                "text": "Der Kunde hakt nach: Und warum hat mein Nachbar dann verloren? Du merkst, dass er dir gerade weniger glaubt als vor deiner Antwort.",
-                "optionen": [
-                  {
-                    "text": "Stimmt, möglich ist es. Zieh den Regler mal selbst auf null, dann siehst du, was ohne Wertsteigerung bleibt.",
-                    "weiterZu": "s3",
-                    "konsequenz": "Du rettest die Situation mit dem Regler. Der Umweg hat Vertrauen gekostet, aber die Mechanik überzeugt.",
-                    "bewertung": "tragbar"
-                  },
-                  {
-                    "text": "Das war sicher eine schlechte Lage, bei uns kann das nicht passieren.",
-                    "weiterZu": "e1",
-                    "konsequenz": "Jetzt stehst du im Rechtfertigungsmodus. Der Kunde nickt höflich und wird unverbindlich.",
-                    "bewertung": "schwach"
-                  }
-                ]
-              },
-              {
-                "id": "s3",
-                "text": "Der Kunde schaut auf die 63.032 Euro bei null Prozent. Er sagt langsam: Das heißt, selbst wenn der Markt nichts macht, gehört mir am Ende mehr als am Anfang.",
-                "optionen": [
-                  {
-                    "text": "Genau. Nicht weil der Markt etwas schenkt, sondern weil jeden Monat getilgt wird. Alles darüber ist Zugabe.",
-                    "weiterZu": "e2",
-                    "konsequenz": "Der Kunde hat seine eigene Schlussfolgerung gezogen, du hast sie nur bestätigt. Stärker geht es nicht.",
-                    "bewertung": "gut"
-                  },
-                  {
-                    "text": "Und bei drei Prozent Wertsteigerung sind es sogar 183.000 Euro, wahrscheinlich eher mehr!",
-                    "weiterZu": "e1",
-                    "konsequenz": "Du hast den Null-Prozent-Moment sofort wieder zugeschüttet. Der Kunde erinnert sich an die große Zahl, und sein Misstrauen gegen große Zahlen gleich mit.",
-                    "bewertung": "tragbar"
-                  }
-                ]
-              },
-              {
-                "id": "e1",
-                "text": "Das Gespräch läuft weiter, aber der Einwand ist nicht ausgeräumt. Bei der Selbstauskunft sagt der Kunde: Ich möchte erst noch eine Nacht darüber schlafen.",
-                "fazit": "Ein nicht ausgeräumter Einwand verschwindet nicht, er wandert ans Ende des Gesprächs. Die Regel bleibt: zuerst das echte Risiko anerkennen, dann die Absicherung zeigen. Das stärkste Werkzeug dafür ist der Regler, nicht das Argument. Und nach dem Null-Prozent-Moment ist Schweigen Gold."
-              },
-              {
-                "id": "e2",
-                "text": "Der Kunde sagt: Okay, das leuchtet mir ein. Was wäre denn der nächste Schritt? Ihr seid bereit für die Rückspiegelung und Station 14.",
-                "fazit": "Musterlösung: Risiko anerkennen, Kontrolle abgeben, den Kunden selbst schlussfolgern lassen und seine Schlussfolgerung nur noch bestätigen. Der Einwand ist nicht widerlegt, er ist entkräftet, von der eigenen Hand des Kunden."
-              }
-            ]
-          }
         ]
       },
       {
         "id": "selbstauskunft-abschluss",
-        "ueberschrift": "Rückspiegelung, Station 14 und 15: Die Selbstauskunft",
-        "intro": "Alles, was bis hier besprochen wurde, war allgemein. Ab jetzt geht es um den Kunden. Die Rückspiegelung holt seine eigenen Worte zurück, Station 14 ist die Bühne für den einzigen Schritt, der heute verlangt wird, und Station 15 zeigt, was er dafür bekommt.",
+        "ueberschrift": "Abschnitte 14 bis 16: Der Weg, der nächste Schritt und die Selbstauskunft",
+        "intro": "Das Ende der Präsentation ist kein Abschluss, sondern eine Einladung: Möchtest du den nächsten Schritt gehen, wenn wir eine Immobilie finden, die deine Kriterien erfüllt?",
         "absaetze": [
-          "Der Einschub Deine Angaben erscheint nur, wenn in Station 03 tatsächlich mitgeschrieben wurde, eine leere Zusammenfassung wäre peinlich. Gespiegelt werden die Ziele, der Finanzierungsrahmen, der Monatsbeitrag, das daraus abgeleitete Konzept sowie die Erfahrung und die Sicht des Kunden auf Immobilien. Wenn ein Mensch seine eigenen Worte hört, ist die Schlussfolgerung seine und nicht die des Verkäufers. Und hier, nicht im Fragenblock, wird das abgeleitete Konzept zum ersten Mal ausdrücklich benannt.",
-          "Station 14 steht optisch als Bühne da, mit Lichtkegel, weil sie das Ziel des gesamten Gesprächs ist. Die Selbstauskunft wird gemeinsam im Termin ausgefüllt, nicht als Hausaufgabe und nicht per Mail hinterher. Der Knopf öffnet sie mit Kunde und Investment aus der Adresszeile, wenn du aus dem Kundenprofil gestartet bist. Und zweimal wird ausdrücklich gesagt: Die Selbstauskunft ist noch keine Kaufentscheidung und verpflichtet zu nichts.",
-          "Station 15 nimmt den letzten Widerstand: Sechs konkrete Dinge gibt es beim nächsten Termin, vom Objektvorschlag bis zur Chancen- und Risikoanalyse. Und der Schluss erlaubt ausdrücklich das Nein: Passt dieses Objekt zu dir, oder suchen wir weiter? Beides ist ein gutes Ergebnis.",
-          "Für dein CRM gilt danach eine Reihenfolge, die viele noch falsch im Kopf haben. Sobald die Selbstauskunft verschickt ist und beim Kunden zur Unterschrift liegt, verlässt er die Stufe Beratungsgespräch und steht auf Selbstauskunft. Erst die unterschriebene Selbstauskunft bringt ihn auf Objektauswahl. Das ist bewusst zweistufig gebaut: Vorher ließ sich die Stufe Selbstauskunft gar nicht aus den Daten ableiten, sie war nur von Hand zu setzen. Wer auf eine Unterschrift wartete, stand deshalb weiter unter Beratungsgespräch, und von außen sah es aus, als geschehe nichts, obwohl der Vorgang lief. Für dich ändert das nichts am Ziel: Ein guter Termin ohne ausgefüllte Selbstauskunft ist ein offener Termin und kein abgeschlossener, und die Unterschrift holst du im Termin und nicht per Mail hinterher."
+          "Abschnitt 14 zeigt den Weg in zehn Schritten: Erstgespräch, Beratung, Selbstauskunft, Unterlagen bis Tag 7, Objektvorstellung am Tag 7 mit Exposé, Kalkulation und Reservierung, Besichtigung, Bankgutachter, Finanzierung, Notar und Kaufpreis. Darunter der Satz: Nach jedem Schritt entscheidest du, ob es weitergeht. Die Reservierung ist kostenfrei.",
+          "Vor Abschnitt 15 spiegelst du zurück, was der Kunde heute gesagt hat: Erwartung, Erfahrung, Ziele, Monatsbeitrag, Haushaltsrechnung und Finanzierungsrahmen. Er soll hören, dass seine Angaben angekommen sind. Erst dann stellst du die Frage.",
+          "Abschnitt 15 ist die Frage: Wenn wir eine Immobilie finden, die deine Kriterien erfüllt, möchtest du den nächsten Schritt gehen? Frage stellen, dann schweigen. Die Antwort hältst du im CRM fest: Ja, Nein oder Ja unter Bedingung, und bei einer Bedingung schreibst du sie wörtlich mit.",
+          "Bei Ja füllt ihr die Selbstauskunft jetzt gemeinsam aus, das dauert etwa 15 Minuten. Der Knopf Selbstauskunft jetzt gemeinsam ausfüllen öffnet sie mit Kunde und Investment verknüpft. Nicht als Hausaufgabe und nicht per Mail hinterher: Zu Hause bleibt das Formular erfahrungsgemäß liegen, und die Objektvorstellung müsste dann mit einem Beispiel statt mit seinen Zahlen rechnen. Sobald die Selbstauskunft zur Unterschrift beim Kunden liegt, rückt er auf die Stufe Selbstauskunft und Unterlagen, mit der Unterschrift auf Objektvorstellung.",
+          "Abschnitt 16 zeigt, was der Kunde in der Objektvorstellung bekommt: eine Empfehlung und höchstens eine Alternative, passend zu seinen Kriterien. Seine Kalkulation, gerechnet mit seiner Selbstauskunft, vor und nach Steuern, mit Stresstest. Das Exposé mit Lage, Grundriss, Unterlagen und Kosten. Und seine Entscheidung: Passt es, reserviert er direkt, kostenfrei. Bis zum Termin legt er Personalausweis, Vorder- und Rückseite, und die letzte Gehaltsabrechnung bereit und lädt beides im Kundenportal hoch.",
+          "Den Termin für die Objektvorstellung vereinbarst du noch im Gespräch, rund 7 Tage nach der Beratung. Danach gilt der Nachfassplan: Innerhalb von 2 Stunden geht die Zusammenfassung an den Kunden. Fehlt nach 24 Stunden noch eine Unterlage, erinnerst du daran. Nach 48 Stunden rufst du an. Nach drei Versuchen schickst du eine letzte freundliche Nachricht und pausierst den Vorgang. Zwei Tage vor der Objektvorstellung erinnert dich das CRM mit einer Aufgabe, wenn Ausweis oder Gehaltsabrechnung noch fehlen."
+        ],
+        "visuals": [
+          {
+            "timeline": {
+              "titel": "Der Nachfassplan nach der Beratung",
+              "schritte": [
+                {
+                  "label": "Innerhalb von 2 Stunden",
+                  "beschreibung": "Zusammenfassung an den Kunden, mit Termin der Objektvorstellung und der Liste der Unterlagen",
+                  "status": "start"
+                },
+                {
+                  "label": "Nach 24 Stunden",
+                  "beschreibung": "Erinnerung an die fehlende Unterlage"
+                },
+                {
+                  "label": "Nach 48 Stunden",
+                  "beschreibung": "Anruf"
+                },
+                {
+                  "label": "Nach 3 Versuchen",
+                  "beschreibung": "Letzte freundliche Nachricht, Vorgang pausieren",
+                  "status": "ziel"
+                }
+              ]
+            }
+          }
         ],
         "skripte": [
           {
-            "titel": "Die Scharnier-Überleitung",
-            "kontext": "Zehnte Überleitung, vor der Rückspiegelung. Die wichtigste der Präsentation.",
-            "text": "\"Alles, was wir bis hier besprochen haben, war allgemein. Ab jetzt geht es um dich.\"",
-            "warum": "Ein Satz, der das Gespräch in zwei Hälften teilt: Wissen vorne, Entscheidung hinten. Sprich ihn langsam und mach danach eine Pause. Der Kunde spürt den Wechsel, und genau das soll er."
+            "titel": "Abschnitt 15 · Der nächste Schritt",
+            "kontext": "Nach der Rückspiegelung. Frage stellen, dann schweigen.",
+            "text": "„Wenn wir eine Immobilie finden, die deine Kriterien erfüllt: Möchtest du den nächsten Schritt gehen?“",
+            "warum": "Der Kunde entscheidet über seine eigenen Kriterien, nicht über ein Produkt. Ja, Nein und Ja unter Bedingung sind alle in Ordnung, und jede Antwort sagt dir, wie es weitergeht."
           },
           {
-            "titel": "Die Rückspiegelung: Was du heute gesagt hast",
-            "kontext": "Einschub Deine Angaben, erscheint nur bei ausgefüllten Antworten.",
-            "text": "\"Kurz zusammengefasst, damit wir beide sicher sind, dass ich dich richtig verstanden habe: deine Ziele, dein Finanzierungsrahmen, dein monatlicher Beitrag, daraus folgt das Konzept, dazu deine Erfahrung und deine Sicht auf Immobilien. Genau dafür brauchen wir jetzt deine vollständigen Zahlen. Alles, was du oben gesagt hast, ist die halbe Selbstauskunft. Den Rest füllen wir gleich gemeinsam aus, dann rechnet der nächste Termin mit deinen Zahlen statt mit einem Beispiel.\"",
-            "warumTitel": "Warum die halbe Selbstauskunft der Schlüssel ist",
-            "warum": "Die Selbstauskunft ist plötzlich kein neues Formular mehr, sondern die Fortsetzung eines schon begonnenen Vorgangs. Der Kunde hat die Hälfte längst geliefert, freiwillig, in Station 03. Einen halben Weg bricht man ungern ab, das ist das Konsistenzprinzip in seiner freundlichsten Form."
-          },
-          {
-            "titel": "Station 14: Der Selbstauskunft-Close",
-            "kontext": "Die dunkle Bühne. Links die sieben Punkte, rechts der Kasten Warum genau jetzt.",
-            "text": "\"Wir füllen deine Selbstauskunft direkt hier im Termin zusammen aus. Nicht als Hausaufgabe, nicht per Mail hinterher, sondern jetzt, solange ich deine Fragen sofort beantworten kann. Ohne diese Angaben ist jeder Objektvorschlag geraten. Mit ihnen bekommst du beim nächsten Termin eine Rechnung auf deine Zahlen statt auf ein Beispiel. Und ganz wichtig: Die Selbstauskunft ist ausdrücklich noch keine Kaufentscheidung und verpflichtet dich zu nichts.\"",
-            "warumTitel": "Warum der Close eine Arbeitshandlung ist und keine Verpflichtung",
-            "warum": "Es gibt kein Möchtest-du und kein Ja oder Nein, sondern eine gemeinsame Tätigkeit, deren Verweigerung nur einen Nachteil für den Kunden hätte: weiter Beispiele statt eigener Zahlen. Die doppelte Betonung der Unverbindlichkeit ist kein Weichmacher, sie ist die Bedingung dafür, dass der Kunde jetzt mitmacht."
-          },
-          {
-            "titel": "Station 15: Was der Kunde beim nächsten Termin bekommt",
-            "kontext": "Sechs Kacheln, dann die Schlusskarte mit dem erlaubten Nein.",
-            "text": "\"Und das bekommst du dafür beim nächsten Termin, konkret und auf deine Zahlen gerechnet: einen Objektvorschlag, eine verständliche Wirtschaftlichkeitsberechnung, deine persönliche Cashflow-Berechnung, die Einordnung der Steuerwirkung, einen Finanzierungsvorschlag und eine klare Chancen- und Risikoanalyse. Danach entscheidest du in Ruhe: Passt dieses Objekt zu dir, oder suchen wir weiter? Beides ist ein gutes Ergebnis. Ein Nein zum falschen Objekt ist uns lieber als ein Ja, das du in zwei Jahren bereust.\"",
-            "warumTitel": "Warum das erlaubte Nein den Abschluss trägt",
-            "warum": "Der ausdrücklich erlaubte Ausstieg senkt den Widerstand gegen den einzigen Schritt, der heute wirklich verlangt wird. Wer weiter suchen darf, muss sich vor der Selbstauskunft nicht fürchten. Und der Satz über das bereute Ja ist gelebtes Erwartungsmanagement, er schützt dich auch nach dem Kauf. Beachte, was du hier zusagst: sechs konkrete Ergebnisse beim nächsten Termin. Diese Zusage ist der Grund, warum die Selbstauskunft heute Sinn ergibt, und sie ist zugleich der Maßstab, an dem der Kunde den Folgetermin misst. Versprich nichts, was du bis dahin nicht liefern kannst."
+            "titel": "Abschnitt 15 · Die Selbstauskunft",
+            "kontext": "Bei Ja oder Ja unter Bedingung.",
+            "text": "„Dafür brauchen wir deine Selbstauskunft. Wir füllen sie jetzt gemeinsam aus, das dauert etwa 15 Minuten. Bis zur Objektvorstellung in einer Woche fehlen dann nur noch Ausweis und letzte Gehaltsabrechnung.“",
+            "warum": "Gemeinsam ausgefüllt ist sie vollständig und richtig, und jede Frage wird sofort beantwortet. Die Objektvorstellung rechnet dann mit den echten Zahlen des Kunden."
           }
         ],
-        "quereinsteigerHinweis": "Die Selbstauskunft ist das Formular, mit dem die Bank später prüft, ob sie finanziert: Einkommen, Ausgaben, Eigenkapital, bestehende Kredite und Unterhaltspflichten. Zwei Zustände musst du auseinanderhalten. Verschickt heißt, das Formular liegt beim Kunden zur Unterschrift, und schon das bewegt ihn im CRM eine Stufe weiter, auf Selbstauskunft. Signiert heißt, dass er es digital unterschrieben hat, und erst das bringt ihn auf Objektauswahl. Rückspiegelung ist kein Fachbegriff der Branche, sondern beschreibt schlicht, dass du dem Kunden seine eigenen Antworten zusammengefasst vorliest. Und wenn du dich fragst, warum das wirkt: Menschen widersprechen ungern dem, was sie selbst gesagt haben. Das ist derselbe Mechanismus wie am Anfang des Kapitels, nur am Ende des Gesprächs.",
-        "profiTipp": "Der Termin ist gut gelaufen, die Selbstauskunft steht, und trotzdem gibt es zwei Situationen, die den Fortschritt still auffressen. Erste Situation: Der Mitentscheider war nicht dabei. Dann ist die Selbstauskunft nur halb so viel wert, denn beim nächsten Termin sitzt ein Mensch am Tisch, der weder den Preis des Nichtstuns noch den Regler gesehen hat. Frag deshalb vor Station 14, ob jemand mitentscheidet, und wenn ja, dann fülle die Selbstauskunft trotzdem aus, aber vereinbare den Folgetermin ausdrücklich zu zweit und plane fünf Minuten für die Kurzfassung der Zahlenstrecke ein. Zweite Situation: Der Kunde nennt in Station 03 einen Monatsbeitrag, den die spätere Rechnung überschreitet. Kläre das noch im Termin und nicht im Objektvorschlag, denn dort wirkt es wie eine Überraschung. Ein Satz genügt: Du hattest 250 Euro genannt, in der Rechnung landen wir bei 228 Euro im Dauerzustand und im ersten Jahr sogar im Plus. Damit hast du seine eigene Zahl bestätigt, statt sie später zu unterlaufen.",
+        "quereinsteigerHinweis": "Das Kundenportal ist der geschützte Bereich, in dem der Kunde seine Unterlagen hochlädt und später Exposé, Finanzierung und nächste Schritte sieht. Personalausweis und letzte Gehaltsabrechnung sind die zwei Unterlagen, die bis zur Objektvorstellung da sein müssen. Selbstständige haben keine Gehaltsabrechnung, bei ihnen zählt bis dahin nur der Ausweis.",
+        "profiTipp": "Bei Ja unter Bedingung ist die Bedingung dein Auftrag. Schreib sie wörtlich mit und sag dem Kunden, dass die Objektvorstellung genau daran gemessen wird. Und lass die Reservierung in diesem Termin bewusst weg: Der Kunde hat noch kein Objekt gesehen. Wer jetzt schon von Reservieren spricht, erzeugt den Druck, den Abschnitt 01 herausgenommen hat.",
         "checkliste": [
-          "Selbstauskunft im Termin gemeinsam ausgefüllt oder fester Kurztermin dafür vereinbart",
-          "Antworten aus Station 03 vollständig mitgeschrieben, sie sind am Kunden gespeichert",
-          "Nächsten Termin direkt vereinbart, mit klarem Versprechen aus Station 15",
-          "Gesprächsnotiz im Kundenprofil ergänzt, besonders den freien Wunsch des Kunden",
-          "Pipeline-Stufe nachgesehen: verschickt heißt Selbstauskunft, unterschrieben heißt Objektauswahl. Beides setzt das System selbst"
+          "Rückspiegelung vor der Frage",
+          "Frage gestellt und geschwiegen",
+          "Antwort im CRM: Ja, Nein oder Ja unter Bedingung",
+          "Selbstauskunft gemeinsam ausgefüllt",
+          "Termin Objektvorstellung rund 7 Tage später im CRM",
+          "Unterlagen benannt: Personalausweis und letzte Gehaltsabrechnung",
+          "Zusammenfassung innerhalb von 2 Stunden"
         ],
         "links": [
           {
@@ -10888,19 +10160,14 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "hinweis": "Aus der Präsentation heraus öffnet sie sich mit Kunde und Investment verknüpft"
           },
           {
-            "label": "Kapitel 6: aus der Zusage wird ein Vorschlag",
+            "label": "Kapitel 6: die Objektvorstellung",
             "to": "/vertriebsakademie/objektauswahl?vaScrollTo=auswahlkriterien",
-            "hinweis": "Wo gesucht wird, mit welchen fünf Filtern ausgewählt wird und wie das Objekt in das Investment des Kunden kommt"
+            "hinweis": "Wie aus Selbstauskunft und Kriterien eine Empfehlung wird"
           },
           {
             "label": "Pipeline-Stufen im Glossar",
             "to": "/vertriebsakademie/glossar-zahlen?vaScrollTo=pipeline-glossar",
-            "hinweis": "Alle 16 Stufen und ihre Auslöser, samt der am 06.08.2026 gedrehten Reihenfolge"
-          },
-          {
-            "label": "Objekte in Investagon",
-            "to": "/objekte-neu",
-            "hinweis": "Die Objektplattform. Hier beginnt die Vorbereitung des nächsten Termins"
+            "hinweis": "Alle Stufen und ihre Auslöser"
           }
         ],
         "aufgaben": [
@@ -10908,39 +10175,39 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "id": "abschluss-wahrfalsch-qe",
             "typ": "wahrfalsch",
             "pfad": "quereinsteiger",
-            "titel": "Stimmt das über das Ende des Gesprächs?",
-            "hinweis": "Wische nach rechts, wenn die Aussage stimmt, und nach links, wenn nicht.",
             "punkte": 10,
+            "titel": "Stimmt das über das Ende des Gesprächs?",
+            "hinweis": "Wische jede Aussage nach rechts, wenn sie stimmt, und nach links, wenn nicht.",
             "karten": [
               {
-                "aussage": "Die Selbstauskunft füllt ihr gemeinsam im Termin aus, nicht als Hausaufgabe.",
+                "aussage": "Am Ende der Beratung füllt ihr die Selbstauskunft gemeinsam aus.",
                 "stimmt": true,
-                "aufloesung": "Jetzt, solange du jede Frage sofort beantworten kannst. Als Hausaufgabe bleibt sie erfahrungsgemäß liegen."
+                "aufloesung": "Etwa 15 Minuten, mit Kunde und Investment verknüpft. Nicht als Hausaufgabe hinterher."
               },
               {
-                "aussage": "Mit der Selbstauskunft hat sich der Kunde für den Kauf entschieden.",
+                "aussage": "In der Beratung reserviert der Kunde schon eine Wohnung, damit sie sicher ist.",
                 "stimmt": false,
-                "aufloesung": "Sie ist ausdrücklich noch keine Kaufentscheidung und verpflichtet zu nichts. Das sagst du gleich zweimal."
+                "aufloesung": "Reserviert wird erst in der Objektvorstellung rund 7 Tage später, wenn der Kunde sein Objekt mit Exposé und Kalkulation gesehen hat. Und die Reservierung ist kostenfrei."
               },
               {
-                "aussage": "In der Rückspiegelung hört der Kunde seine eigenen Antworten aus Station 03 noch einmal.",
+                "aussage": "Bis zur Objektvorstellung reicht der Kunde Personalausweis und letzte Gehaltsabrechnung nach.",
                 "stimmt": true,
-                "aufloesung": "Wenn ein Mensch seine eigenen Worte hört, ist die Schlussfolgerung seine und nicht die des Verkäufers."
+                "aufloesung": "Upload im Kundenportal. Zwei Tage vor dem Termin erinnert dich das CRM, wenn noch etwas fehlt."
               },
               {
-                "aussage": "Das passende Konzept nennst du dem Kunden zum ersten Mal in der Rückspiegelung.",
-                "stimmt": true,
-                "aufloesung": "Vorher wird es still aus dem Hauptziel abgeleitet. Erst hier wird es ausdrücklich benannt."
-              },
-              {
-                "aussage": "Am Ende von Station 15 darf der Kunde ausdrücklich Nein zum Objekt sagen.",
-                "stimmt": true,
-                "aufloesung": "Passt dieses Objekt zu dir, oder suchen wir weiter? Beides ist ein gutes Ergebnis. Der erlaubte Ausstieg nimmt der Selbstauskunft die Schwere."
-              },
-              {
-                "aussage": "Wenn der Kunde die Selbstauskunft lieber zu Hause ausfüllen will, schickst du sie ihm per Mail hinterher.",
+                "aussage": "Ja unter Bedingung ist ein gescheitertes Gespräch.",
                 "stimmt": false,
-                "aufloesung": "Besser ein fester Kurztermin dafür. Ein guter Termin ohne ausgefüllte Selbstauskunft ist ein offener Termin, kein abgeschlossener."
+                "aufloesung": "Ganz im Gegenteil. Die Bedingung ist der Auftrag für die Objektvorstellung, wörtlich festgehalten."
+              },
+              {
+                "aussage": "Nach drei Nachfassversuchen ohne Antwort schickst du eine letzte Nachricht und pausierst den Vorgang.",
+                "stimmt": true,
+                "aufloesung": "Der Nachfassplan ist bewusst begrenzt. Kein Druck, kein Dauerklingeln."
+              },
+              {
+                "aussage": "Mit einem Hinweis auf wenige freie Wohnungen lässt sich die Selbstauskunft beschleunigen.",
+                "stimmt": false,
+                "aufloesung": "Verknappung gibt es bei uns nicht. Der Kunde entscheidet nach seinen Kriterien, nicht nach einer Frist."
               }
             ]
           },
@@ -10948,123 +10215,204 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "id": "abschluss-quiz-profi",
             "typ": "quiz",
             "pfad": "profi",
-            "titel": "Die Psychologie des Schlussdrittels",
             "punkte": 15,
+            "titel": "Das letzte Drittel der Präsentation",
+            "hinweis": "Drei Feinheiten, die über die Objektvorstellung entscheiden.",
             "aufloesungAmEnde": true,
             "fragen": [
               {
-                "frage": "Warum wirkt die Formulierung die halbe Selbstauskunft so gut?",
+                "frage": "Warum fragt Abschnitt 15 nach den Kriterien des Kunden und nicht nach einem Objekt?",
                 "optionen": [
-                  "Sie macht das Formular objektiv kürzer",
-                  "Sie rahmt die Selbstauskunft als Fortsetzung eines begonnenen Vorgangs",
-                  "Sie verspricht dem Kunden einen Rabatt"
-                ],
-                "korrekt": 1,
-                "aufloesung": "Konsistenzprinzip: Der Kunde hat die Hälfte in Station 03 freiwillig geliefert. Einen halben Weg bricht man ungern ab."
-              },
-              {
-                "frage": "Welche Funktion hat der Satz: Ein Nein zum falschen Objekt ist uns lieber als ein Ja, das du in zwei Jahren bereust?",
-                "optionen": [
-                  "Er senkt den Widerstand gegen die Selbstauskunft, weil der Ausstieg erlaubt bleibt",
-                  "Er bereitet den Kunden auf eine Absage durch OS Immobilien vor",
-                  "Er ist eine rechtliche Pflichtangabe"
+                  "Weil der Kunde noch kein Objekt gesehen hat und über seine eigenen Bedingungen entscheiden soll",
+                  "Weil die Objekte erst nach der Finanzierungszusage feststehen",
+                  "Weil Objekte grundsätzlich erst beim Notar gezeigt werden"
                 ],
                 "korrekt": 0,
-                "aufloesung": "Wer weiter suchen darf, füllt die Selbstauskunft entspannter aus. Zugleich ist der Satz Erwartungsmanagement für die Zeit nach dem Kauf."
+                "aufloesung": "Die Kriterien aus Abschnitt 13 hat er selbst festgelegt. Die Objektvorstellung wird an genau diesen Kriterien gemessen.",
+                "sprungZuAbschnitt": "selbstauskunft-abschluss"
               },
               {
-                "frage": "Der Kunde hat in Station 03 250 Euro Monatsbeitrag genannt. Die Musterrechnung landet bei 228 Euro. Wann sprichst du das an?",
+                "frage": "Wann verlässt der Kunde die Pipeline-Stufe Beratungspräsentation?",
                 "optionen": [
-                  "Gar nicht, 228 liegt ja darunter",
-                  "Noch im Termin, mit einem Satz, der seine eigene Zahl bestätigt",
-                  "Erst im Objektvorschlag, wenn die echten Zahlen da sind"
+                  "Wenn der Termin als erschienen eingetragen ist",
+                  "Wenn die Selbstauskunft zur Unterschrift beim Kunden liegt",
+                  "Erst wenn die Reservierung unterschrieben ist"
                 ],
                 "korrekt": 1,
-                "aufloesung": "Du hattest 250 Euro genannt, wir landen bei 228 im Dauerzustand und im ersten Jahr sogar im Plus. Damit bestätigst du seine Zahl, statt sie später zu unterlaufen. Im Objektvorschlag wirkt es wie eine Überraschung."
+                "aufloesung": "Schon das Verschicken zur Unterschrift schaltet auf die Stufe Selbstauskunft und Unterlagen, die Unterschrift dann weiter auf Objektvorstellung.",
+                "sprungZuAbschnitt": "selbstauskunft-abschluss"
+              },
+              {
+                "frage": "Der Kunde hat nach 24 Stunden die Gehaltsabrechnung noch nicht hochgeladen. Was ist dran?",
+                "optionen": [
+                  "Eine kurze Erinnerung an genau diese Unterlage",
+                  "Den Termin der Objektvorstellung absagen",
+                  "Drei Anrufe am selben Tag"
+                ],
+                "korrekt": 0,
+                "aufloesung": "Nach 24 Stunden die Erinnerung an die fehlende Unterlage, nach 48 Stunden ein Anruf, nach drei Versuchen eine letzte Nachricht und Pause.",
+                "sprungZuAbschnitt": "selbstauskunft-abschluss"
               }
             ]
           }
+        ]
+      },
+      {
+        "id": "haltung-wording",
+        "ueberschrift": "Haltung und Wording: was wir sagen und was wir nie sagen",
+        "intro": "Die Präsentation ist ehrlich gebaut. Ob sie ehrlich wirkt, entscheidet, was du dazu sagst.",
+        "absaetze": [
+          "Erst verstehen, dann empfehlen gilt in jedem Abschnitt. Wenn Reserve oder Lebensplanung des Kunden nicht passen, ist Warten die bessere Wahl, und das sagst du offen. Eine Beratung, die mit Nein endet, ist eine gute Beratung, wenn das Nein stimmt.",
+          "Drei Regeln für alle Zahlen: Die Belastung immer vor und nach Steuern. Die Regel-AfA immer neben einer erhöhten AfA. Jede Zahl über die Zukunft als Szenario mit genannter Annahme, also Wertentwicklung, Zusatzrente oder Mieterhöhung.",
+          "Keine Verknappung, kein Zeitdruck. Es gibt bei uns keine Frist, die wir erfinden, und keine Wohnung, die morgen angeblich weg ist. Der Kunde entscheidet nach jedem Schritt selbst, ob es weitergeht, und die Reservierung ist kostenfrei.",
+          "Vier Sätze fallen in keinem Gespräch: „Das bekommen wir bei der Bank schon hin.“ „Das trägt sich durch die Steuer von selbst.“ „Immobilien für 150 € im Monat.“ „Das Angebot gilt nur noch heute.“ Jeder dieser Sätze verspricht etwas, das wir nicht in der Hand haben, oder erzeugt Druck, den wir nicht wollen."
         ],
         "bullets": [
-          "Selbstauskunft verschickt und beim Kunden zur Unterschrift: Stufe Selbstauskunft.",
-          "Selbstauskunft unterschrieben: Stufe Objektauswahl. Nicht die Bonitätsfreigabe, die Unterlagen kommen erst nach der Reservierung.",
-          "Beide Stufen setzt das System selbst. Du musst nur nachsehen, dass der Stand stimmt.",
-          "Station 14 ist das Ziel des Termins. Die Selbstauskunft wird gemeinsam ausgefüllt, nicht als Hausaufgabe mitgegeben.",
-          "Station 15 zählt sechs Zusagen für den nächsten Termin auf. Sie sind der Maßstab, an dem der Kunde ihn misst.",
-          "Der Einschub Deine Angaben erscheint nur, wenn in Station 03 tatsächlich mitgeschrieben wurde."
+          "Erst verstehen, dann empfehlen.",
+          "Vor und nach Steuern, Regel-AfA daneben, Zukunft als Szenario.",
+          "Keine Verknappung, keine Fristen, keine Garantien.",
+          "Steuer-, Rechts- und Finanzierungsberatung machen Steuerberater, Notare und Banken."
+        ],
+        "visuals": [
+          {
+            "vergleich": {
+              "titel": "So sagen wir es, so nie",
+              "optionA": {
+                "label": "So sagen wir es",
+                "punkte": [
+                  "Die Rechnung muss vor Steuern tragen, alles darüber ist ein möglicher Bonus.",
+                  "Ob und wie viel die Bank finanziert, entscheidet die Bank.",
+                  "Das ist ein Szenario mit 2 Prozent Wertentwicklung, keine Zusage.",
+                  "Nach jedem Schritt entscheidest du, ob es weitergeht."
+                ]
+              },
+              "optionB": {
+                "label": "Das sagen wir nie",
+                "badge": "Nie",
+                "punkte": [
+                  "Das bekommen wir bei der Bank schon hin.",
+                  "Das trägt sich durch die Steuer von selbst.",
+                  "Immobilien für 150 € im Monat.",
+                  "Das Angebot gilt nur noch heute."
+                ]
+              },
+              "fazit": "Ehrlichkeit ist kein Stilmittel, sondern der Grund, warum Kunden uns weiterempfehlen."
+            }
+          }
+        ],
+        "aufgaben": [
+          {
+            "id": "wording-wahrfalsch-qe",
+            "typ": "wahrfalsch",
+            "pfad": "beide",
+            "punkte": 10,
+            "titel": "Darf dieser Satz fallen?",
+            "hinweis": "Nach rechts, wenn der Satz in Ordnung ist, nach links, wenn wir ihn nie sagen.",
+            "karten": [
+              {
+                "aussage": "„Vor Steuern zahlst du hier 391 Euro im Monat dazu, nach Steuern rund 151 Euro.“",
+                "stimmt": true,
+                "aufloesung": "Beide Zahlen, in der richtigen Reihenfolge. Genau so."
+              },
+              {
+                "aussage": "„Das trägt sich durch die Steuer von selbst.“",
+                "stimmt": false,
+                "aufloesung": "Steht auf der Liste der Sätze, die wir nie sagen. Die Rechnung muss vor Steuern tragen."
+              },
+              {
+                "aussage": "„Mit Regel-AfA sähe es so aus, entscheide bitte mit beiden Zahlen.“",
+                "stimmt": true,
+                "aufloesung": "Die vorsichtige Zahl gehört auf den Tisch, nicht nur die schöne."
+              },
+              {
+                "aussage": "„Das Angebot gilt nur noch heute.“",
+                "stimmt": false,
+                "aufloesung": "Keine Verknappung, keine erfundenen Fristen."
+              },
+              {
+                "aussage": "„Die Zusatzrente von 920 Euro ist ein Szenario und entspricht heute weniger Kaufkraft.“",
+                "stimmt": true,
+                "aufloesung": "Zukunftszahlen nennen wir als Szenario mit Annahme."
+              },
+              {
+                "aussage": "„Das bekommen wir bei der Bank schon hin.“",
+                "stimmt": false,
+                "aufloesung": "Über die Finanzierung entscheidet die Bank. Wir versprechen nichts, was wir nicht in der Hand haben."
+              }
+            ]
+          }
         ]
       },
       {
         "id": "uebungen-praesentation",
         "ueberschrift": "Übungen: Bring die Präsentation ins Blut",
-        "intro": "Die Präsentation ist so gebaut, dass sie dich trägt. Aber sie trägt nur, wer sie kennt. Diese Übungen bringen dich vom Mitlesen zum freien Führen.",
+        "intro": "Die Präsentation sitzt, wenn du sie ohne Ablesen führst und jede Zahl vor und nach Steuern erklären kannst.",
         "absaetze": [
-          "Regel wie in jedem Kapitel: nicht ablesen. Die Skripte sind Orientierung, deine eigenen Worte machen sie glaubwürdig. Was sitzen muss, sind die zehn Überleitungen, die Zahlenmomente und der Regler.",
-          "Am Ende dieses Termins steht ein Versprechen, und es ist ein konkretes: ein Objektvorschlag, der zu den Zahlen passt, die ihr gerade gemeinsam gerechnet habt. Das nächste Kapitel ist genau dieser Termin, und sein Untertitel sagt es schon: der Termin, den du in Kapitel 5 versprochen hast."
+          "Übe in dieser Reihenfolge: erst einmal komplett durchklicken, dann die Rechnungen frei erklären, dann ein Rollenspiel mit einem Kollegen, der Einwände bringt. Wer die zwei Musterrechnungen und den Stresstest sicher erklärt, hat den schwierigsten Teil."
         ],
         "uebungen": [
           {
             "id": "praes-komplett-durchgehen",
-            "titel": "Einmal komplett im Trainer-Modus durchgehen",
-            "beschreibung": "Öffne die Beratungspräsentation im Trainer-Modus (Link unten) und geh sie von der Begrüßung bis Station 15 laut sprechend durch, allein, ohne Publikum. Unter jeder Station steht dein Sprechskript. Fülle Station 03 mit erfundenen Werten aus und schau dir an, was die Rückspiegelung daraus macht. Schalte in Station 09 einmal alle drei Konzepte durch.",
-            "xp": 20,
-            "antwortTyp": "text",
-            "antwortLabel": "Wie lange hast du gebraucht?",
-            "antwortPlaceholder": "z.B. 45 Minuten",
-            "mindestZeichen": 3
+            "titel": "Einmal komplett durchgehen",
+            "beschreibung": "Öffne die Beratungspräsentation, geh alle 16 Abschnitte durch und sprich zu jedem einen Satz laut. Schalte einmal zwischen Zusatzrente und Steuerersparnis um und achte darauf, was sich ändert.",
+            "xp": 40,
+            "antwortTyp": "textarea",
+            "antwortLabel": "Was dir aufgefallen ist und wo du unsicher warst",
+            "antwortPlaceholder": "Abschnitt __: … Beim Umschalten ändert sich: …",
+            "mindestZeichen": 120
           },
           {
-            "id": "ueberleitungen-auswendig",
-            "titel": "Die zehn Überleitungen aus dem Kopf",
-            "beschreibung": "Schreibe alle zehn Überleitungen sinngemäß aus dem Gedächtnis auf, in der richtigen Reihenfolge. Sie sind das Gerüst, mit dem du die Präsentation frei führen kannst.",
-            "xp": 25,
-            "antwortTyp": "liste",
-            "antwortLabel": "Deine zehn Überleitungen",
-            "antwortPlaceholder": "1. Was passiert eigentlich, wenn du gar nichts tust ...",
+            "id": "rechnungen-frei-erklaeren",
+            "titel": "Beide Musterrechnungen frei erklären",
+            "beschreibung": "Erkläre die Rechnung der Hauffstraße 38 und der Barfusstraße 9 Zeile für Zeile, jeweils erst vor Steuern, dann nach Steuern, dann mit Regel-AfA. Ohne Folie, nur mit den Zahlen auf einem Zettel.",
+            "xp": 50,
+            "antwortTyp": "textarea",
+            "antwortLabel": "Deine Erklärung in eigenen Worten",
+            "antwortPlaceholder": "Hauffstraße: vor Steuern … nach Steuern … Regel-AfA … Barfusstraße: …",
             "mindestZeichen": 200
           },
           {
             "id": "rahmen-dreimal-rechnen",
             "titel": "Den Finanzierungsrahmen dreimal frei rechnen",
-            "beschreibung": "Denk dir drei verschiedene Haushalte aus und rechne den Finanzierungsrahmen jeweils im Kopf oder auf Papier: 80 Prozent des Überschusses, mal 12, geteilt durch 0,06, plus Eigenkapital. Notiere die drei Ergebnisse.",
-            "xp": 15,
-            "antwortTyp": "liste",
+            "beschreibung": "Denk dir drei Kunden mit Einnahmen, Ausgaben und Eigenkapital aus und rechne den Rahmen mit der Formel aus Abschnitt 13. Prüf das Ergebnis danach in der Präsentation.",
+            "xp": 30,
+            "antwortTyp": "textarea",
             "antwortLabel": "Deine drei Rechnungen",
-            "antwortPlaceholder": "3.500 Einnahmen, 2.200 Ausgaben, 20.000 EK ergibt ...",
-            "mindestZeichen": 60
+            "antwortPlaceholder": "Kunde 1: Einnahmen … Ausgaben … Überschuss … Rahmen …",
+            "mindestZeichen": 120
           },
           {
             "id": "rollenspiel-regler",
             "titel": "Rollenspiel mit Kollegen, inklusive Null-Prozent-Moment",
-            "beschreibung": "Führe die Präsentation einem Kollegen vor, der einen skeptischen Kunden spielt. Pflicht: Er bringt den Wertverlust-Einwand, und du beantwortest ihn mit dem Regler, nicht mit Argumenten. Hol dir danach Feedback zu deinen Überleitungen.",
-            "xp": 30,
+            "beschreibung": "Ein Kollege spielt den Kunden und bringt mindestens drei Einwände aus dem Leitfaden. Du antwortest nach den fünf Schritten und lässt ihn in Abschnitt 12 den Regler selbst auf null ziehen. Am Ende stellst du die Frage aus Abschnitt 15.",
+            "xp": 60,
             "antwortTyp": "textarea",
-            "antwortLabel": "Was hat funktioniert, was noch nicht?",
-            "antwortPlaceholder": "Der Null-Prozent-Moment saß, aber bei der Überleitung zur Steuer ...",
-            "mindestZeichen": 80
+            "antwortLabel": "Feedback aus dem Rollenspiel",
+            "antwortPlaceholder": "Einwände: … Was gut lief: … Wo ich Druck gemacht habe: …",
+            "mindestZeichen": 200
           },
           {
             "id": "praes-ohne-bildschirm",
             "titel": "Advanced: Die Präsentation ohne Bildschirm erzählen",
-            "beschreibung": "Erzähle die komplette Gesprächsdramaturgie in fünf Minuten frei, ohne die Präsentation zu öffnen: alle Stationen, die Zahlenmomente, die Überleitungen. Wenn du das kannst, führt dich die Präsentation nie wieder, sondern du sie.",
-            "xp": 40,
+            "beschreibung": "Erzähl die ganze Präsentation in zehn Minuten ohne Folien, so wie du sie einem Bekannten am Küchentisch erklären würdest. Mit beiden Konzepten, einer Rechnung vor und nach Steuern und dem Stresstest.",
+            "xp": 80,
             "advanced": true,
             "antwortTyp": "textarea",
-            "antwortLabel": "Dein Fünf-Minuten-Gerüst in Stichworten",
-            "antwortPlaceholder": "Druck raus, Nichtstun kostet 2.400, wir und ich, fünf Fragen ...",
-            "mindestZeichen": 120
+            "antwortLabel": "Deine Zehn-Minuten-Fassung in Stichpunkten",
+            "antwortPlaceholder": "Einstieg: … Prinzip: … Konzept: … Zahlen: … Sicherheit: … Frage: …",
+            "mindestZeichen": 250
           }
         ],
         "links": [
           {
-            "label": "Beratungspräsentation im Trainer-Modus",
-            "to": "/beratungspraesentation-osimmobilien?trainer=1",
-            "hinweis": "Mit eingeblendeten Sprechskripten unter jeder Station, zum Üben"
+            "label": "Beratungspräsentation",
+            "to": "/beratungspraesentation-osimmobilien",
+            "hinweis": "So wie der Kunde sie sieht"
           },
           {
-            "label": "Beratungspräsentation OS Immobilien",
-            "to": "/beratungspraesentation-osimmobilien",
-            "hinweis": "Ohne Skripte, so wie der Kunde sie sieht"
+            "label": "Leitfaden Einwandbehandlung",
+            "to": "/leitfaeden/einwandbehandlung",
+            "hinweis": "Für das Rollenspiel"
           }
         ]
       }
@@ -11074,15 +10422,15 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
     "slug": "objektauswahl",
     "nummer": "6",
     "icon": "building",
-    "titel": "Objektauswahl",
-    "kicker": "Der Termin, den du in Kapitel 5 versprochen hast",
-    "teaser": "Aus Selbstauskunft, Rahmen und Wunschbeitrag wird ein Suchprofil, daraus ein Vorschlag, daraus eine Rechnung und eine ehrliche Risikoseite. Und am Ende steht der Schritt, der den Kunden nichts kostet und trotzdem alles verändert: die Reservierung.",
-    "ziel": "Du kannst aus den Zahlen der Selbstauskunft einen Kaufpreiskorridor und eine Mindestrendite herleiten, begründest jeden Vorschlag mit Filtern statt mit Geschmack, erklärst Wirtschaftlichkeitsberechnung, Cashflow und Steuerwirkung am konkreten Objekt, benennst die Risiken beim Namen und führst den Kunden sauber in die Reservierung und von dort in die Finanzierung.",
+    "titel": "Objektvorstellung und Reservierung",
+    "kicker": "Rund 7 Tage nach der Beratung, mit Exposé und Kalkulation",
+    "teaser": "Aus Selbstauskunft, Kriterien und Konzept wird eine Empfehlung, daraus eine Kalkulation vor und nach Steuern und eine ehrliche Risikoseite. Passt alles, reserviert der Kunde im selben Termin, kostenfrei. Danach folgen Besichtigung und Termin Bankgutachter.",
+    "ziel": "Du bereitest die Objektvorstellung aus Selbstauskunft und Kriterien vor, zeigst eine Empfehlung und höchstens eine Alternative mit Exposé und Investmentkalkulation, nennst die Risiken beim Namen, gehst vor der Reservierung die Checkliste durch und lässt kostenfrei reservieren, wenn der Kunde seine Entscheidung selbst begründen kann.",
     "abschlusstest": {
       "bestehensquote": 70,
       "fragen": [
         {
-          "frage": "Der Finanzierungsrahmen aus Station 03 beträgt 281.000 Euro. Was ist diese Zahl?",
+          "frage": "Der Finanzierungsrahmen aus Abschnitt 13 der Beratungspräsentation beträgt 281.000 Euro. Was ist diese Zahl?",
           "optionen": [
             "Der höchstmögliche Kaufpreis, die Kaufnebenkosten kommen darauf noch obendrauf",
             "Die gesamte Investitionssumme, also Kaufpreis plus Kaufnebenkosten",
@@ -11137,14 +10485,14 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "sprungZuAbschnitt": "chancen-risiken"
         },
         {
-          "frage": "Wie viele Objekte zeigst du im Objekttermin?",
+          "frage": "Wie viele Objekte zeigst du in der Objektvorstellung?",
           "optionen": [
-            "Drei gleichwertige, damit der Kunde eine echte Wahl hat und sich nicht bevormundet fühlen muss",
-            "Eines als begründete Empfehlung, dazu zwei genannte und mit Grund verworfene Alternativen",
-            "Zwei gleichwertige, damit er vergleichen kann und die Entscheidung wirklich ihm gehört"
+            "Drei gleichwertige, damit der Kunde eine echte Wahl hat",
+            "Eine begründete Empfehlung und höchstens eine Alternative, passend zu seinen Kriterien",
+            "Alle verfügbaren Einheiten des Konzepts, damit nichts fehlt"
           ],
           "korrekt": 1,
-          "aufloesung": "Mehrere gleichwertige Vorschläge verschieben die Auswahl auf den Kunden, und der vertagt dann. Ein einziger Vorschlag wirkt alternativlos. Die verworfenen Alternativen beweisen, dass eine Auswahl stattgefunden hat, und genau das hat Kapitel 5 ihm versprochen.",
+          "aufloesung": "So steht es in Abschnitt 16 der Beratungspräsentation, und genau das hat der Kunde zugesagt bekommen. Mehrere gleichwertige Vorschläge verschieben die Auswahl auf den Kunden, und der vertagt dann. Was du mit Grund verworfen hast, darfst du nennen.",
           "sprungZuAbschnitt": "objektpraesentation"
         },
         {
@@ -11159,25 +10507,47 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "sprungZuAbschnitt": "auswahlkriterien"
         },
         {
-          "frage": "Was schaltet die Pipeline-Stufe von Objektauswahl auf Reservierung?",
+          "frage": "Was passiert in der Pipeline, wenn der Kunde die Reservierungsvereinbarung unterschreibt?",
           "optionen": [
-            "Das mündliche Ja des Kunden im Objekttermin, festgehalten als Notiz im Kundenprofil",
-            "Die eröffnete und versendete Reservierungsvereinbarung, auch ohne Unterschrift des Kunden",
-            "Die Freigabe der sechs Bonitätsunterlagen durch den zuständigen Vertriebspartner des Kunden"
+            "Er rückt auf Bonitätsunterlagen und sammelt erst jetzt Ausweis und Gehaltsnachweis",
+            "Er bleibt auf Reservierung, und du bekommst die Aufgabe Besichtigung vereinbaren",
+            "Er springt direkt auf Finanzierung"
           ],
           "korrekt": 1,
-          "aufloesung": "Die Stufe Reservierung schaltet, sobald die Reservierungsvereinbarung eröffnet und versendet ist. Die Unterschrift des Kunden schaltet einen Schritt weiter auf Bonitätsunterlagen, und erst die Freigabe aller sechs Pflichtdokumente schaltet auf Finanzierung. Seit dem 06.08.2026 steht die Bonität hinter der Reservierung. Dieselbe Kette steht im Glossarkapitel.",
+          "aufloesung": "Die versendete Reservierungsvereinbarung schaltet auf Reservierung, die Unterschrift bringt die Aufgabe Besichtigung vereinbaren. Besichtigung und Termin Bankgutachter setzt du mit Datum und Uhrzeit, und Stattgefunden rückt jeweils weiter, nach dem Bankgutachter auf Finanzierung.",
           "sprungZuAbschnitt": "reservierung-uebergabe"
         },
         {
           "frage": "Was steht in der Reservierungsvereinbarung an Kosten für den Kunden?",
           "optionen": [
             "Eine Reservierungsgebühr von einem Prozent des Kaufpreises, die später verrechnet wird",
-            "Eine feste Reservierungsgebühr, die bei der Beurkundung zurückfließt, dazu die Notarkosten bei selbst verschuldetem Rücktritt",
+            "Keine Reservierungsgebühr, einziger Kostenpunkt sind die Notarkosten bei selbst verschuldetem Rücktritt",
             "Eine Bearbeitungspauschale, die in jedem Fall einbehalten wird"
           ],
           "korrekt": 1,
-          "aufloesung": "Die Gebühr ist fest und nicht prozentual: 1.000 Euro, ab einem Kaufpreis von 300.000 Euro 1.500 Euro, zahlbar innerhalb von sieben Tagen. Am Tag der notariellen Beurkundung wird sie vollständig zurücküberwiesen; einbehalten wird sie nur, wenn der Kunde selbst vor dem Notartermin abspringt. Scheitert der Kauf aus Gründen, die nicht bei ihm liegen, bekommt er sie ebenfalls vollständig zurück. Daneben steht weiterhin die Kostenübernahme aus der Notar-Beauftragung bei selbst zu vertretendem Rücktritt. Mehr dazu in Kapitel 13.",
+          "aufloesung": "Die Reservierung ist kostenfrei: keine Reservierungsgebühr, keine Anzahlung, keine Pauschale, und die Vereinbarung sagt ausdrücklich, dass keine Gebühr erhoben wird. Daneben steht weiterhin die Kostenübernahme aus der Notar-Beauftragung bei selbst zu vertretendem Rücktritt. Mehr dazu in Kapitel 13.",
+          "sprungZuAbschnitt": "reservierung-uebergabe"
+        },
+        {
+          "frage": "Wann findet die Objektvorstellung statt, und was bringst du mit?",
+          "optionen": [
+            "Rund 7 Tage nach der Beratung, mit Exposé und Investmentkalkulation auf Basis der Selbstauskunft",
+            "Direkt nach dem Erstgespräch, mit einer Preisliste",
+            "Erst nach der Finanzierungszusage, mit dem Kaufvertragsentwurf"
+          ],
+          "korrekt": 0,
+          "aufloesung": "Bis dahin liegen Personalausweis und letzte Gehaltsabrechnung vor. Dann kann die Reservierung im selben Termin fallen.",
+          "sprungZuAbschnitt": "objektpraesentation"
+        },
+        {
+          "frage": "Was muss vor der Reservierung auf jeden Fall stimmen?",
+          "optionen": [
+            "Der Kunde kann seine Entscheidung selbst begründen, die Checkliste vor der Reservierung ist durchgegangen",
+            "Der Kunde hat zugesagt, dass er bis morgen unterschreibt",
+            "Die Bank hat die Finanzierung schon zugesagt"
+          ],
+          "korrekt": 0,
+          "aufloesung": "Die Checkliste reicht von Ziel und Motiv über Belastungsgrenze, vor und nach Steuern getrennt und Risiken ohne Garantien bis zu den Terminen im CRM. Ihr letzter Punkt ist der wichtigste: Der Kunde kann die Entscheidung selbst begründen.",
           "sprungZuAbschnitt": "reservierung-uebergabe"
         }
       ]
@@ -11185,7 +10555,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
     "abwaegungsfall": {
       "id": "heimatstadt-gegen-suchprofil",
       "titel": "Das Objekt in der Heimatstadt rechnet sich nicht",
-      "fall": "Aus der Selbstauskunft folgt ein Kaufpreiskorridor bis 256.000 Euro und eine Mindest-Bruttomietrendite von 4,84 Prozent. Dein Vorschlag erfüllt beides. Der Kunde will aber lieber die Wohnung in seiner eigenen Stadt, die er sich ansehen und zeigen kann. Dort liegt die Bruttomietrendite bei 3,9 Prozent: bei gleichem Kaufpreis 809 Euro Miete statt 995 Euro, also rund 432 Euro Beitrag statt 246 Euro. Er sagt, die Nähe sei ihm das wert. Das Kapitel sagt zwei Dinge, die sich hier nicht auflösen lassen: Das Suchprofil folgt aus seiner eigenen Zahl aus Station 03, und das erlaubte Nein gilt in beide Richtungen. Wähle einen Weg und begründe ihn in zwei Sätzen.",
+      "fall": "Aus der Selbstauskunft folgt ein Kaufpreiskorridor bis 256.000 Euro und eine Mindest-Bruttomietrendite von 4,84 Prozent. Dein Vorschlag erfüllt beides. Der Kunde will aber lieber die Wohnung in seiner eigenen Stadt, die er sich ansehen und zeigen kann. Dort liegt die Bruttomietrendite bei 3,9 Prozent: bei gleichem Kaufpreis 809 Euro Miete statt 995 Euro, also rund 432 Euro Beitrag statt 246 Euro. Er sagt, die Nähe sei ihm das wert. Das Kapitel sagt zwei Dinge, die sich hier nicht auflösen lassen: Das Suchprofil folgt aus seiner eigenen Zahl aus der Beratungspräsentation, und das erlaubte Nein gilt in beide Richtungen. Wähle einen Weg und begründe ihn in zwei Sätzen.",
       "wege": [
         {
           "id": "a",
@@ -11208,20 +10578,20 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
       {
         "id": "suchprofil",
         "ueberschrift": "Von der Selbstauskunft zum Suchprofil",
-        "intro": "Der Kunde steht in der Pipeline auf Objektauswahl. Geschaltet hat diese Stufe die unterschriebene Selbstauskunft, nicht die Bonitätsfreigabe. Damit liegen drei Zahlen auf dem Tisch, und aus genau diesen dreien wird ein Suchprofil: der Finanzierungsrahmen, der Monatsbeitrag und das Hauptziel.",
+        "intro": "Der Kunde steht in der Pipeline auf Objektvorstellung. Geschaltet hat diese Stufe die unterschriebene Selbstauskunft, die ihr am Ende der Beratung gemeinsam ausgefüllt habt. Damit liegen drei Dinge auf dem Tisch, und aus genau diesen dreien wird ein Suchprofil: der Finanzierungsrahmen, der Monatsbeitrag mit der Stressgrenze und das Konzept, das der Kunde gewählt hat.",
         "absaetze": [
-          "Der häufigste Fehler passiert in der ersten Minute: Der Finanzierungsrahmen ist nicht der Kaufpreis. Der Rahmen aus Station 03 ist Darlehen plus liquides Eigenkapital, also alles, was der Kunde insgesamt bewegen kann. Vom Kaufpreis gehen die Kaufnebenkosten noch ab, und die liegen je nach Bundesland zwischen 5,5 und 12 Prozent. Wer den Rahmen als Kaufpreis liest, sucht dauerhaft zu teuer und muss dem Kunden später eine Zahl nach unten korrigieren. Genau davor warnt schon Station 03: Eine Zahl, die im Bankgespräch nach unten korrigiert wird, kostet dich das Vertrauen des ganzen Gesprächs.",
+          "Der häufigste Fehler passiert in der ersten Minute: Der Finanzierungsrahmen ist nicht der Kaufpreis. Der Rahmen aus Abschnitt 13 der Beratungspräsentation ist Darlehen plus liquides Eigenkapital, also alles, was der Kunde insgesamt bewegen kann. Vom Kaufpreis gehen die Kaufnebenkosten noch ab, und die liegen je nach Bundesland zwischen 5,5 und 12 Prozent. Wer den Rahmen als Kaufpreis liest, sucht dauerhaft zu teuer und muss dem Kunden später eine Zahl nach unten korrigieren. Genau davor warnt schon die Präsentation: Eine Zahl, die im Bankgespräch nach unten korrigiert wird, kostet dich das Vertrauen des ganzen Gesprächs.",
           "Sauber wird es mit zwei Obergrenzen, und die niedrigere von beiden gewinnt. Die erste ist die Ratengrenze: Sie kommt aus dem tragbaren Überschuss und begrenzt die Darlehenssumme. Die zweite ist die Eigenkapitalgrenze: Das liquide verfügbare Eigenkapital muss die Kaufnebenkosten decken, sonst greift der Standardweg aus Kapitel 7 nicht mehr, nach dem mindestens die Kaufnebenkosten aus Eigenkapital kommen sollen. Im Beispiel der Präsentation liegt die Ratengrenze bei 256.000 Euro Kaufpreis und die Eigenkapitalgrenze bei rund 454.000 Euro. Bindend ist also die Rate, und beim Eigenkapital bleiben rund 10.900 Euro Puffer.",
-          "Die zweite Schraube ist der Monatsbeitrag, und die wird fast nie benutzt. Er begrenzt nicht den Kaufpreis, sondern die Lücke zwischen Miete und Rate. Der Kunde hat in Station 03 eine Zahl genannt, mit der er gut leben kann, sagen wir 250 Euro. Daraus lässt sich die Miete zurückrechnen, die das Objekt bringen muss, und aus der Miete im Verhältnis zum Kaufpreis wird die Mindest-Bruttomietrendite. Bei 256.000 Euro Kaufpreis, 5,5 Prozent Annuität und rund 110 Euro nicht umlagefähigen Kosten sind das 4,84 Prozent.",
-          "Und jetzt entscheidet diese Zahl die Region, nicht der Geschmack. Das Glossarkapitel nennt für 2026 marktübliche Bruttorenditen von 3 bis 4,5 Prozent in A-Städten, 4,5 bis 6 Prozent in B- und C-Städten und 6 Prozent und mehr in Randlagen mit erhöhtem Risiko. Eine Mindestrendite von 4,84 Prozent schließt A-Städte rechnerisch aus, ohne dass jemand über München diskutieren muss. Das ist die vielleicht wichtigste Wirkung des Suchprofils: Es nimmt die Regionsfrage aus der Meinung heraus und stellt sie in die Rechnung.",
-          "Der Objekttyp folgt zuletzt, und er ist schon entschieden. Kapitel 5 leitet ihn still aus dem Hauptziel der Station 03 ab und benennt ihn erst in der Rückspiegelung: Vermögensaufbau, Steuervorteile und Inflationsschutz führen zum sanierten Bestand, passives Einkommen, Portfolioaufbau und Kapitalaufbau fürs spätere Eigenheim zu WG und Co-Living, Immobilienrente, Zukunft der Kinder und Fremdkapitalhebel zum Neubau nach KfW 40 QNG. Das Suchprofil schreibt es nur noch auf.",
-          "Zum Schluss der Punkt, den hier fast jeder falsch im Kopf hat: An dieser Stelle gibt es noch keine Bonitätsfreigabe. Die Bonitätsunterlagen kommen erst nach der Reservierung, so ist die Reihenfolge seit dem 06.08.2026. Was auf dem Tisch liegt, ist die unterschriebene Selbstauskunft und der daraus gerechnete Rahmen, mehr nicht. Also übernimmst du wörtlich, was in der Selbstauskunft steht: ein zweiter Kreditnehmer, laufende Kredite, Bürgschaften, Unterhaltspflichten, ein Vermerk zur SCHUFA, den der Kunde selbst nennt. Und du merkst dir, wo dieser Weg seinen Preis hat: Du reservierst, bevor die Finanzierbarkeit geprüft ist. Wer vorher nicht sauber gerechnet hat, blockiert eine Einheit für jemanden, der sie nie bekommen wird. Die Rechnung dauert fünf Minuten, den Bonitätsrechner findest du unten in den Verweisen.",
+          "Die zweite Schraube ist der Monatsbeitrag, und die wird fast nie benutzt. Er begrenzt nicht den Kaufpreis, sondern die Lücke zwischen Miete und Rate. Der Kunde hat im Erstgespräch und in Abschnitt 13 eine Zahl vor Steuern genannt, mit der er gut leben kann, sagen wir 250 Euro. Daraus lässt sich die Miete zurückrechnen, die das Objekt bringen muss, und aus der Miete im Verhältnis zum Kaufpreis wird die Mindest-Bruttomietrendite. Bei 256.000 Euro Kaufpreis, 5,5 Prozent Annuität und rund 110 Euro nicht umlagefähigen Kosten sind das 4,84 Prozent.",
+          "Und jetzt entscheidet diese Zahl die Region, nicht der Geschmack. Das Glossarkapitel nennt für 2026 marktübliche Bruttorenditen von 3 bis 4,5 Prozent in A-Städten, 4,5 bis 6 Prozent in B- und C-Städten und 6 Prozent und mehr in Randlagen mit erhöhtem Risiko. Eine Mindestrendite von 4,84 Prozent schließt A-Städte rechnerisch aus, ohne dass jemand über einzelne Städte diskutieren muss. Das ist die vielleicht wichtigste Wirkung des Suchprofils: Es nimmt die Regionsfrage aus der Meinung heraus und stellt sie in die Rechnung.",
+          "Das Konzept folgt zuletzt, und es ist schon entschieden: Der Kunde hat es in Abschnitt 07 der Beratungspräsentation selbst gewählt, vorbelegt aus dem Schwerpunkt im Erstgespräch. Zur Zusatzrente gehören Hauffstraße 38 in Schwielowsee bei Potsdam und die Doppelhaushälften in Zossen-Wünsdorf, zur Steuerersparnis die Barfusstraße 9 in Berlin-Wedding. Im Kundenprofil zeigt die Objektauswahl die Einheiten des gewählten Konzepts zuerst, auf Wunsch nur diese. Das Suchprofil schreibt das Konzept nur noch auf.",
+          "Zum Schluss der Punkt, der sich mit dem neuen Ablauf geändert hat: Bis zur Objektvorstellung liegen Selbstauskunft, Personalausweis und letzte Gehaltsabrechnung vor. Erst dann startet im CRM die Reservierung, und genau deshalb kann sie im selben Termin fallen. Was noch fehlt, ist die Prüfung durch die Bank. Also übernimmst du wörtlich, was in der Selbstauskunft steht: ein zweiter Kreditnehmer, laufende Kredite, Bürgschaften, Unterhaltspflichten, ein Vermerk zur Schufa, den der Kunde selbst nennt. Wer vorher nicht sauber gerechnet hat, lässt eine Einheit reservieren, die der Kunde am Ende nicht finanziert bekommt. Die Rechnung dauert fünf Minuten, den Bonitätsrechner findest du unten in den Verweisen.",
           "Und dann geht das Profil in die Suche. Die vier Zahlen sind kein Merkzettel, sondern die Filter, mit denen du in Investagon arbeitest: der Kaufpreiskorridor als Preisspanne, die Mindestrendite als Prüfgröße gegen Kaufpreis und Miete, das Konzept als Objektart, die Region als Ort. Was danach übrig bleibt, ist deine Auswahlmenge, und die ist meistens klein genug, um sie an einem Vormittag ernsthaft anzusehen. Wie es von dort weitergeht, steht im nächsten Abschnitt."
         ],
         "bullets": [
           "Kaufpreiskorridor: untere und obere Grenze in Euro, hergeleitet aus Ratengrenze und Eigenkapitalgrenze, die niedrigere gewinnt.",
           "Mindest-Bruttomietrendite: aus dem Wunschbeitrag zurückgerechnet, sie legt die Region fest.",
-          "Konzept: aus dem Hauptziel der Station 03, also Bestand, WG und Co-Living oder Neubau KfW 40 QNG.",
+          "Konzept: in Abschnitt 07 vom Kunden gewählt, Zusatzrente mit Hauffstraße 38 und Zossen-Wünsdorf oder Steuerersparnis mit Barfusstraße 9.",
           "Eigenkapital: der liquide verfügbare Teil, nicht das Gesamtvermögen. Er muss die Kaufnebenkosten decken.",
           "Angaben aus der Selbstauskunft, wörtlich übernommen: zweiter Kreditnehmer, laufende Kredite, Bürgschaften, Unterhaltspflichten.",
           "Ausschlüsse des Kunden, wörtlich übernommen, etwa Erdgeschoss, Hochhaus oder eine bestimmte Stadt."
@@ -11230,7 +10600,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           {
             "beispielrechnung": {
               "titel": "Vom Finanzierungsrahmen zum Kaufpreiskorridor",
-              "untertitel": "Mit den Werten aus Station 03: 4.000 Euro Einnahmen, 2.400 Euro Ausgaben, 80.000 Euro Eigenkapital, davon 25.000 Euro liquide",
+              "untertitel": "Mit den Werten aus Abschnitt 13: 4.000 Euro Einnahmen, 2.400 Euro Ausgaben, 80.000 Euro Eigenkapital, davon 25.000 Euro liquide",
               "zeilen": [
                 {
                   "label": "Grenze 1, Rate: tragbarer Überschuss 1.280 Euro, mal 12, geteilt durch 6 Prozent Annuität",
@@ -11239,10 +10609,10 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                   "hinweis": "Das ist die Darlehenssumme. Trägt der Kunde die Kaufnebenkosten aus Eigenkapital, entspricht sie zugleich dem höchsten Kaufpreis."
                 },
                 {
-                  "label": "Kaufnebenkosten dazu, Bayern: 3,5 Prozent Grunderwerbsteuer plus 2 Prozent Notar und Grundbuch",
+                  "label": "Kaufnebenkosten dazu, im Beispiel 5,5 Prozent für Grunderwerbsteuer, Notar und Grundbuch",
                   "wert": "14.080 €",
                   "op": "→",
-                  "hinweis": "5,5 Prozent von 256.000 Euro. In Nordrhein-Westfalen wären es bei 6,5 Prozent Grunderwerbsteuer 21.760 Euro, also 7.680 Euro mehr."
+                  "hinweis": "5,5 Prozent von 256.000 Euro. In Berlin mit 6 und in Brandenburg mit 6,5 Prozent Grunderwerbsteuer liegen die Nebenkosten bei rund 8 bis 8,5 Prozent, hier also rund 20.500 bis 21.800 Euro. Für unsere Objekte gilt der Wert aus dem Exposé."
                 },
                 {
                   "label": "Grenze 2, Eigenkapital: 25.000 Euro liquide, geteilt durch 5,5 Prozent",
@@ -11264,13 +10634,13 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           {
             "beispielrechnung": {
               "titel": "Vom Wunschbeitrag zur Mindest-Bruttomietrendite",
-              "untertitel": "Der Kunde hat in Station 03 rund 250 Euro im Monat genannt",
+              "untertitel": "Der Kunde hat im Erstgespräch rund 250 Euro im Monat vor Steuern genannt",
               "zeilen": [
                 {
                   "label": "Jahresrate bei 256.000 Euro Darlehen und 5,5 Prozent Annuität",
                   "wert": "14.080 €",
                   "op": "+",
-                  "hinweis": "4 Prozent Zins plus 1,5 Prozent anfängliche Tilgung, dieselbe Annuität wie in den Musterrechnungen der Station 10."
+                  "hinweis": "4 Prozent Zins plus 1,5 Prozent anfängliche Tilgung, die Annuität dieses Beispiels."
                 },
                 {
                   "label": "Nicht umlagefähige Kosten im Jahr",
@@ -11333,7 +10703,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           {
             "titel": "Das Suchprofil dem Kunden vorlegen",
             "kontext": "Kurzer Anruf oder erste Minute des Objekttermins, bevor irgendein Objekt gezeigt wird.",
-            "text": "\"Ich fasse zusammen, womit ich gesucht habe, damit du siehst, dass da nichts geraten ist. Aus deinen Zahlen ergibt sich ein Kaufpreis bis 256.000 Euro. Aus dem Betrag von 250 Euro, den du selbst genannt hast, folgt eine Mietrendite von mindestens 4,8 Prozent. Und daraus folgt die Region, denn diese Rendite gibt es in München nicht. Wenn eine dieser drei Zahlen für dich nicht mehr stimmt, sag es jetzt, dann suche ich neu.\"",
+            "text": "\"Ich fasse zusammen, womit ich gesucht habe, damit du siehst, dass da nichts geraten ist. Aus deinen Zahlen ergibt sich ein Kaufpreis bis 256.000 Euro. Aus dem Betrag von 250 Euro, den du selbst genannt hast, folgt eine Mietrendite von mindestens 4,8 Prozent. Und daraus folgt die Lage, denn diese Rendite gibt es in den teuersten Lagen der großen Städte nicht. Wenn eine dieser drei Zahlen für dich nicht mehr stimmt, sag es jetzt, dann suche ich neu.\"",
             "warumTitel": "Warum du das Profil vor dem Objekt zeigst",
             "warum": "Der Kunde prüft danach nicht mehr, ob das Objekt ihm gefällt, sondern ob es zum Profil passt, und das Profil ist seine eigene Ableitung. Damit verlagerst du die Entscheidung von Geschmack auf Logik, und du bekommst einen Einwand gegen die Region jetzt, wo er nichts kostet, statt später am Objekt, wo er den Termin beendet."
           },
@@ -11346,7 +10716,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           }
         ],
         "quereinsteigerHinweis": "Ein Suchprofil ist nichts anderes als eine Einkaufsliste mit Grenzen: bis zu welchem Preis, mit welcher Mindestmiete, welcher Art, in welcher Gegend. Neu an diesem Abschnitt ist die Richtung, in die gerechnet wird: Sonst rechnet man von der Wohnung zur Rendite, hier vom Wunsch des Kunden zur Wohnung. A-Städte sind die sieben größten deutschen Städte, B- und C-Städte die Groß- und Mittelstädte darunter. Und liquide verfügbar heißt: Geld, an das der Kunde nächste Woche herankommt. Ein Bausparvertrag, der 2029 zuteilungsreif wird, gehört zum Vermögen, aber nicht in diese Rechnung.",
-        "profiTipp": "Zwei Stellen, an denen dein Suchprofil und die Bank auseinanderlaufen, und beide kosten Zeit, wenn du sie erst in der Finanzierung merkst. Erstens die Miete: Der Rahmen aus Station 03 rechnet ohne Mieteinnahme, die Bank rechnet mit ihr, aber nur zu einem Teil, weil sie Mietausfall und Bewirtschaftung abzieht. Dadurch fällt der reale Rahmen bei einer Kapitalanlage regelmäßig höher aus als die Zahl aus der Präsentation. Wie hoch der Abschlag ist, legt jede Bank für sich fest, verlässlich ist erst, was in der Zusage steht. Nutz den Unterschied als Reserve, nicht als Argument, denn eine Zahl, die du nicht belegen kannst, ist im Objekttermin keine Zahl. Zweitens der Beleihungswert bei WG- und Co-Living-Objekten: Der Ertragswert wird aus nachhaltig erzielbaren Erträgen abgeleitet (§ 12 Beleihungswertermittlungsverordnung, verbindlich für Pfandbriefbanken nach § 16 Pfandbriefgesetz, faktisch Maßstab weit darüber hinaus). Die Konzeptmiete aus zimmerweiser Vermietung liegt über der ortsüblichen Miete für dieselbe Wohnung am Stück. Die Rendite, mit der dein Suchprofil arbeitet, ist also nicht die Rendite, mit der die Bank bewertet. Bei WG-Objekten deshalb den Kaufpreiskorridor lieber am unteren Rand ansetzen.",
+        "profiTipp": "Eine Stelle, an der dein Suchprofil und die Bank auseinanderlaufen, und sie kostet Zeit, wenn du sie erst in der Finanzierung merkst. Die Miete: Der Rahmen aus Abschnitt 13 rechnet ohne Mieteinnahme, die Bank rechnet mit ihr, aber nur zu einem Teil, weil sie Mietausfall und Bewirtschaftung abzieht. Dadurch fällt der reale Rahmen bei einer Kapitalanlage regelmäßig höher aus als die Zahl aus der Präsentation. Wie hoch der Abschlag ist, legt jede Bank für sich fest, verlässlich ist erst, was in der Zusage steht. Nutz den Unterschied als Reserve, nicht als Argument, denn eine Zahl, die du nicht belegen kannst, ist im Objekttermin keine Zahl.",
         "goldNugget": {
           "titel": "Die Zahl, die im Suchprofil fehlt: der Zeitpunkt",
           "text": "Ein Suchprofil ohne Datum ist eine Wunschliste. Die Selbstauskunft veraltet, Einkommen und Familiensituation ändern sich, und Zinssätze bewegen sich. Trag deshalb in jedes Profil ein Verfallsdatum ein, sechs bis acht Wochen ab der unterschriebenen Selbstauskunft, und sag es dem Kunden. Das erzeugt keinen Druck, sondern erklärt, warum du dich meldest, und es ist der einzige ehrliche Grund für einen Anruf ohne neues Objekt.",
@@ -11368,7 +10738,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "hinweis": "Die Sätze und die Faustformel für Notar und Grundbuch"
           },
           {
-            "label": "Der Finanzierungsrahmen in Station 03",
+            "label": "Der Finanzierungsrahmen in Abschnitt 13",
             "to": "/vertriebsakademie/beratungsgespraech?vaScrollTo=vier-fragen",
             "hinweis": "Woher die Zahlen kommen, mit denen dieser Abschnitt weiterrechnet"
           },
@@ -11395,7 +10765,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "titel": "Vom Rahmen zum höchsten Kaufpreis",
             "hinweis": "Der Rahmen ist nicht der Kaufpreis, also zieh das Eigenkapital ab und prüfe, ob es die Nebenkosten deckt.",
             "punkte": 10,
-            "fall": "Der Finanzierungsrahmen aus Station 03 beträgt 281.000 Euro, darin stecken 25.000 Euro liquides Eigenkapital. Der Kunde zahlt die Kaufnebenkosten von 5,5 Prozent aus dem Eigenkapital.",
+            "fall": "Der Finanzierungsrahmen aus Abschnitt 13 beträgt 281.000 Euro, darin stecken 25.000 Euro liquides Eigenkapital. Der Kunde zahlt die Kaufnebenkosten von 5,5 Prozent aus dem Eigenkapital.",
             "gesucht": "Wie hoch darf der Kaufpreis höchstens sein?",
             "zielwert": 256000,
             "toleranzProzent": 1,
@@ -11490,7 +10860,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Zum Objektfilter gehört seit 2024 auch die Heizung. Für neu eingebaute Heizungen gilt die Pflicht, dass sie mindestens 65 Prozent der Wärme aus erneuerbaren Energien erzeugen (§ 71 Absatz 1 Gebäudeenergiegesetz). In bestehenden Gebäuden greift diese Pflicht erst mit der kommunalen Wärmeplanung, und die Übergangsfristen des § 71 Absatz 8 Gebäudeenergiegesetz laufen für Gemeinden über 100.000 Einwohner bis zum 31. Oktober 2026 und für alle übrigen bis zum 30. Juni 2028. Die Frist für die großen Gemeinden lautete ursprünglich 30. Juni 2026 und wurde verschoben: Der Bundestag hat die Verlängerung am 21. Mai 2026 beschlossen (Bundestags-Drucksache 21/5141), der Bundesrat hat am 12. Juni 2026 zugestimmt (Bundesrats-Drucksache 302/26 Beschluss). Stand September 2026. Für die Auswahl heißt das ganz praktisch: Eine Gasheizung von 2004 in einem Haus ohne Beschluss und ohne Rücklage ist eine Sonderumlage mit Datum.",
           "Filter 4, die Rechnung. Erst jetzt wird gerechnet, und zwar nicht nur brutto. Die Bruttomietrendite ist der Vergleichswert für die Vorauswahl, die Nettomietrendite ist die Zahl, die stimmt: Jahreskaltmiete minus nicht umlagefähige Kosten, geteilt durch Kaufpreis plus Kaufnebenkosten. Sie liegt bei denselben Objekten regelmäßig einen halben bis einen ganzen Prozentpunkt niedriger. Geprüft wird gegen zwei Zielwerte des Suchprofils: die Mindestrendite und den Wunschbeitrag.",
           "Filter 5, die Verfügbarkeit. In Investagon trägt jede Einheit den Status frei, reserviert oder verkauft, und das ist die Quelle, gegen die du prüfst. Ein Objekt zu zeigen, das reserviert ist, kostet mehr Vertrauen, als drei Alternativen zurückholen können, denn der Kunde lernt daraus nicht, dass das Objekt weg ist, sondern dass du es nicht wusstest. Prüf die Verfügbarkeit am Tag des Termins, nicht am Tag der Vorbereitung.",
-          "Und dann die drei häufigsten Gründe, aus denen ein Objekt aussortiert wird: Die Miete ist optimistisch angesetzt und hält dem Mietspiegel nicht stand. Die Gemeinschaft hat eine erkennbare Maßnahme vor sich und zu wenig Rücklage. Der Preis je Quadratmeter passt zwar zur Rendite, aber nicht zum Wiederverkauf, weil er über dem liegt, was am Ort für eine gebrauchte Wohnung erzielt wird. Nenn diese Gründe dem Kunden. Ein Vorschlag mit zwei begründet verworfenen Alternativen ist etwas völlig anderes als ein Vorschlag allein."
+          "Und dann die drei häufigsten Gründe, aus denen ein Objekt aussortiert wird: Die Miete ist optimistisch angesetzt und hält dem Mietspiegel nicht stand. Die Gemeinschaft hat eine erkennbare Maßnahme vor sich und zu wenig Rücklage. Der Preis je Quadratmeter passt zwar zur Rendite, aber nicht zum Wiederverkauf, weil er über dem liegt, was am Ort für eine gebrauchte Wohnung erzielt wird. Nenn diese Gründe dem Kunden. Ein Vorschlag, zu dem du begründet verworfene Objekte nennen kannst, ist etwas völlig anderes als ein Vorschlag allein."
         ],
         "bullets": [
           "Objektplattform: Investagon. Seitenleiste, Immobilien, Objekte. Eigenes System mit eigener Anmeldung, öffnet in einem eigenen Tab.",
@@ -11719,20 +11089,19 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
       {
         "id": "wirtschaftlichkeit",
         "ueberschrift": "Die Wirtschaftlichkeitsberechnung lesen und erklären",
-        "intro": "Zwei der sechs Zusagen aus Station 15 stehen hier: die verständliche Wirtschaftlichkeitsberechnung und die persönliche Cashflow-Berechnung. Das sind zwei verschiedene Dinge, und wer sie vermischt, kann später nicht erklären, warum dasselbe Objekt für zwei Kunden zwei Zahlen ergibt.",
+        "intro": "Die zweite Zusage aus Abschnitt 16 der Beratungspräsentation steht hier: deine Kalkulation, gerechnet mit deiner Selbstauskunft, vor und nach Steuern, mit Stresstest. Darin stecken zwei verschiedene Dinge, die Wirtschaftlichkeitsberechnung des Objekts und die persönliche Cashflow-Berechnung, und wer sie vermischt, kann später nicht erklären, warum dasselbe Objekt für zwei Kunden zwei Zahlen ergibt.",
         "absaetze": [
           "Die Wirtschaftlichkeitsberechnung gehört dem Objekt: Kaufpreis, Miete, Kosten, Rendite. Sie ist für jeden Interessenten gleich. Der Cashflow gehört dem Kunden: seine Finanzierung, sein Eigenkapital, sein Grenzsteuersatz. Deshalb liegt der Beitrag desselben Objekts bei einem Kunden mit 42 Prozent Grenzsteuersatz um rund achtzig Euro günstiger als bei einem mit 30 Prozent, ohne dass sich am Objekt irgendetwas ändert. Sag das im Termin ausdrücklich, sonst hält der Kunde die Zahl für eine Objekteigenschaft und vergleicht sie mit dem, was der Kollege seinem Nachbarn gerechnet hat.",
-          "Die Wirtschaftlichkeitsberechnung hat sechs Zeilen, immer in derselben Reihenfolge: Kaltmiete, Zins und Tilgung, nicht umlagefähige Kosten, Beitrag vor Steuer, Steuerwirkung, Beitrag nach Steuer. Daneben steht die Tilgung als Gegenposten. Diese Reihenfolge ist dieselbe wie in Station 10, und das ist kein Zufall: Der Kunde hat sie im Beratungsgespräch an einem Musterobjekt gelernt und liest sie jetzt an seinem eigenen. Ändere sie nicht.",
+          "Die Wirtschaftlichkeitsberechnung hat sechs Zeilen, immer in derselben Reihenfolge: Kaltmiete, Zins und Tilgung, nicht umlagefähige Kosten, Beitrag vor Steuer, Steuerwirkung, Beitrag nach Steuer. Daneben steht die Tilgung als Gegenposten. Diese Reihenfolge ist dieselbe wie in Abschnitt 10 der Beratungspräsentation, und das ist kein Zufall: Der Kunde hat sie im Beratungsgespräch an einem Musterobjekt gelernt und liest sie jetzt an seinem eigenen. Ändere sie nicht.",
           "Der dritte Posten ist der, an dem die meisten Rechnungen unehrlich werden, und in Kapitel 7 fehlt er im Kundenskript vollständig: die nicht umlagefähigen Kosten. Auf den Mieter umlegen darf man nur die Betriebskosten, die in § 2 Betriebskostenverordnung aufgezählt sind, und auch die nur, wenn der Mietvertrag es vereinbart (§ 556 Absatz 1 Bürgerliches Gesetzbuch). Ausdrücklich nicht dazu gehören die Verwaltungskosten und die Instandhaltungskosten (§ 1 Absatz 2 Nummern 1 und 2 Betriebskostenverordnung). Genau diese beiden trägt der Eigentümer, dazu die Verwaltung des Sondereigentums, falls er sie beauftragt.",
-          "In der Praxis sind das drei Posten. Erstens die Gebühr der WEG-Verwaltung, üblicherweise 25 bis 35 Euro je Einheit und Monat. Zweitens die Sondereigentumsverwaltung, also die Mietverwaltung der eigenen Wohnung, wenn sie beauftragt ist, üblicherweise 20 bis 30 Euro. Drittens die Zuführung zur Erhaltungsrücklage, die die Gemeinschaft beschließt und die ihr seit der Reform des Wohnungseigentumsgesetzes in angemessener Höhe vorgeschrieben ist (§ 19 Absatz 2 Nummer 4 Wohnungseigentumsgesetz). Zusammen ergibt das eine Größenordnung, die du prüfen kannst, statt sie zu glauben: Die drei Musterobjekte aus Station 10 liegen bei 1,50, 1,57 und 1,90 Euro je Quadratmeter im Monat. Wer in einer Rechnung 0,60 Euro je Quadratmeter findet, hat keine günstige Wohnung gefunden, sondern eine geschönte Rechnung.",
-          "Die zweite Falle ist die Tilgung. Sie steckt in der Rate und sieht aus wie eine Ausgabe, ist aber keine, sondern Vermögensaufbau. Station 12 sagt es genau so, und deshalb steht sie auch nicht in der Steuerrechnung. Im Objekttermin rechnest du sie gegen, nicht weg: Beim Beispielobjekt stehen 145 Euro Beitrag nach Steuer gegen 374 Euro Tilgung im Monatsschnitt der ersten zehn Jahre. Der Kunde zahlt also 145 Euro und baut dafür monatlich 374 Euro Vermögen auf. Das ist die ehrlichste Zahl des ganzen Termins, weil sie ohne jede Annahme über Wertsteigerung auskommt.",
+          "In der Praxis sind das drei Posten. Erstens die Gebühr der WEG-Verwaltung, üblicherweise 25 bis 35 Euro je Einheit und Monat. Zweitens die Sondereigentumsverwaltung, also die Mietverwaltung der eigenen Wohnung, wenn sie beauftragt ist, üblicherweise 20 bis 30 Euro. Drittens die Zuführung zur Erhaltungsrücklage, die die Gemeinschaft beschließt und die ihr seit der Reform des Wohnungseigentumsgesetzes in angemessener Höhe vorgeschrieben ist (§ 19 Absatz 2 Nummer 4 Wohnungseigentumsgesetz). Die Zahl prüfst du an der Hausgeldabrechnung, statt sie zu glauben. Bei der Barfusstraße 9, WE 03 stehen 112 Euro samt Rücklage auf 72,32 Quadratmetern in der Rechnung, also rund 1,55 Euro je Quadratmeter im Monat. Wer in einer Rechnung 0,60 Euro je Quadratmeter findet, hat keine günstige Wohnung gefunden, sondern eine geschönte Rechnung.",
+          "Die zweite Falle ist die Tilgung. Sie steckt in der Rate und sieht aus wie eine Ausgabe, ist aber keine, sondern Vermögensaufbau. Die Beratungspräsentation sagt es genau so, und deshalb steht sie auch nicht in der Steuerrechnung. Im Objekttermin rechnest du sie gegen, nicht weg: Beim Beispielobjekt stehen 145 Euro Beitrag nach Steuer gegen 374 Euro Tilgung im Monatsschnitt der ersten zehn Jahre. Der Kunde zahlt also 145 Euro und baut dafür monatlich 374 Euro Vermögen auf. Das ist die ehrlichste Zahl des ganzen Termins, weil sie ohne jede Annahme über Wertsteigerung auskommt.",
           "Drei Prüfungen, bevor du die Rechnung zeigst. Erstens die Miete: Steht sie so im Mietvertrag, oder ist sie angesetzt? Bei vermieteten Bestandswohnungen zählt der laufende Vertrag, nicht die erzielbare Miete. Zweitens der Zins: Ist mit dem gerechnet, den der Finanzierungspartner heute nennt, oder noch mit den 4 Prozent der Musterrechnung? Ein halber Prozentpunkt sind bei 249.000 Euro rund 104 Euro im Monat. Drittens das Eigenkapital: Steht in der Rechnung das, was der Kunde tatsächlich liquide hat? Eine Rechnung mit fremden Zahlen ist im Objekttermin schlimmer als gar keine, weil der Kunde sie jetzt zum ersten Mal auf sich selbst bezieht."
         ],
         "bullets": [
           "Wirtschaftlichkeitsberechnung gehört dem Objekt, Cashflow gehört dem Kunden. Immer beide zeigen, immer getrennt benennen.",
-          "Sechs Zeilen in fester Reihenfolge, dieselbe wie in Station 10 des Beratungsgesprächs.",
+          "Sechs Zeilen in fester Reihenfolge, dieselbe wie in Abschnitt 10 der Beratungspräsentation.",
           "Nicht umlagefähig sind Verwaltungskosten und Instandhaltungskosten (§ 1 Absatz 2 Betriebskostenverordnung), umlagefähig nur die Betriebskosten des § 2 Betriebskostenverordnung, und auch die nur bei entsprechender Vereinbarung im Mietvertrag.",
-          "Größenordnung zum Prüfen: 1,50 bis 1,90 Euro je Quadratmeter im Monat, hergeleitet aus den drei Musterobjekten der Station 10.",
           "Die Tilgung wird gegengerechnet, nicht weggerechnet.",
           "Vor dem Zeigen prüfen: Miete aus dem Mietvertrag, aktueller Zins, tatsächliches Eigenkapital."
         ],
@@ -11740,7 +11109,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           {
             "beispielrechnung": {
               "titel": "Die Monatsrechnung des Beispielobjekts",
-              "untertitel": "Sanierter Bestand, 62 Quadratmeter, 249.000 Euro, 995 Euro Kaltmiete, Bayern",
+              "untertitel": "Beispielobjekt, 62 Quadratmeter, 249.000 Euro, 995 Euro Kaltmiete",
               "zeilen": [
                 {
                   "label": "Kaltmiete",
@@ -11765,7 +11134,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                   "wert": "ca. −246 €",
                   "op": "=",
                   "ergebnis": true,
-                  "hinweis": "Der Kunde hatte in Station 03 rund 250 Euro genannt. Diese Zahl ist der Grund, warum genau dieses Objekt vorgeschlagen wird."
+                  "hinweis": "Der Kunde hatte im Erstgespräch rund 250 Euro vor Steuern genannt. Diese Zahl ist der Grund, warum genau dieses Objekt vorgeschlagen wird."
                 },
                 {
                   "label": "Steuerwirkung im ersten vollen Jahr",
@@ -11781,40 +11150,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                   "hinweis": "Dagegen stehen 374 Euro Tilgung im Monatsschnitt der ersten zehn Jahre."
                 }
               ],
-              "fazit": "Unverbindliches Berechnungsbeispiel, gerechnet mit den Konventionen der Station 10. Es zeigt die Mechanik, nicht eine Zusage."
-            }
-          },
-          {
-            "beispielrechnung": {
-              "titel": "Woher die Größenordnung der nicht umlagefähigen Kosten kommt",
-              "untertitel": "Die drei Musterobjekte aus Station 10, umgerechnet auf den Quadratmeter",
-              "zeilen": [
-                {
-                  "label": "Sanierter Bestand: 150 Euro auf 100 Quadratmeter",
-                  "wert": "1,50 €/qm",
-                  "op": "→"
-                },
-                {
-                  "label": "Neubau KfW 40 QNG: 60 Euro auf 38,30 Quadratmeter",
-                  "wert": "1,57 €/qm",
-                  "op": "→",
-                  "hinweis": "Verwaltung von Sondereigentum und Gemeinschaft. Beim Neubau ist die Rücklage in den ersten Jahren klein, weil kaum etwas ansteht."
-                },
-                {
-                  "label": "WG und Co-Living: 73 Euro auf 38,33 Quadratmeter",
-                  "wert": "1,90 €/qm",
-                  "op": "→",
-                  "hinweis": "Der höchste Wert, und das ist folgerichtig: mehrere Mietverhältnisse in einer Wohnung, mehr Wechsel, Möblierung, die ersetzt werden muss."
-                },
-                {
-                  "label": "Spanne, mit der du jede fremde Rechnung prüfen kannst",
-                  "wert": "1,50 bis 1,90 €/qm",
-                  "op": "=",
-                  "ergebnis": true,
-                  "hinweis": "Beispielobjekt: 100 Euro auf 62 Quadratmeter gleich 1,61 Euro je Quadratmeter, also mittig in der Spanne."
-                }
-              ],
-              "fazit": "Für den Überschlag im Kopf: rund 1,60 Euro je Quadratmeter im Monat, bei WG und Co-Living eher 1,90. Wer eine Rechnung mit deutlich weniger sieht, sucht zuerst die Zuführung zur Erhaltungsrücklage, sie fehlt fast immer."
+              "fazit": "Unverbindliches Berechnungsbeispiel, gerechnet in der Reihenfolge von Abschnitt 10. Es zeigt die Mechanik, nicht eine Zusage."
             }
           },
           {
@@ -11846,7 +11182,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "kontext": "Nach der Objektvorstellung, die Wirtschaftlichkeitsberechnung liegt vor dem Kunden.",
             "text": "\"Wir gehen die Rechnung Zeile für Zeile durch, so wie im letzten Termin. Oben die Miete, 995 Euro. Darunter Zins und Tilgung, 1.141 Euro. Dann die Kosten, die du als Eigentümer trägst und nicht auf den Mieter umlegen dürfen, 100 Euro. Bleibt dein Beitrag vor Steuer: rund 246 Euro. Du hattest 250 gesagt. Deshalb sitzen wir bei genau diesem Objekt.\"",
             "warumTitel": "Warum du die eigene Zahl des Kunden am Ende der Rechnung wiederholst",
-            "warum": "Die Rechnung wird damit nicht zu deiner Behauptung, sondern zur Bestätigung seiner Vorgabe. Er hat 250 gesagt, du lieferst 246. Das ist die Einlösung einer Zusage, und sie wirkt stärker als jede Rendite. Nenn die Zahl aus Station 03 wörtlich, notfalls liest du sie ab, denn die Genauigkeit ist hier der ganze Punkt."
+            "warum": "Die Rechnung wird damit nicht zu deiner Behauptung, sondern zur Bestätigung seiner Vorgabe. Er hat 250 gesagt, du lieferst 246. Das ist die Einlösung einer Zusage, und sie wirkt stärker als jede Rendite. Nenn die Zahl aus dem Erstgespräch wörtlich, notfalls liest du sie ab, denn die Genauigkeit ist hier der ganze Punkt."
           },
           {
             "titel": "Die nicht umlagefähigen Kosten erklären",
@@ -11903,7 +11239,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "hinweis": "Die Grundmechanik, hergeleitet, bevor sie hier auf ein Objekt trifft"
           },
           {
-            "label": "Die Musterrechnung in Station 10",
+            "label": "Die Rechnung Zeile für Zeile in Abschnitt 10",
             "to": "/vertriebsakademie/beratungsgespraech?vaScrollTo=musterrechnung",
             "hinweis": "Dieselben sechs Zeilen an den drei Musterobjekten, aus denen die Spanne von 1,50 bis 1,90 Euro je Quadratmeter stammt"
           },
@@ -11958,7 +11294,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "typ": "rechnen",
             "pfad": "profi",
             "titel": "Rechne die Tilgung im Zehnjahresschnitt aus",
-            "hinweis": "Der Rechenweg steht in Station 10 des Beratungsgesprächs, Ergebnis auf ganze Euro.",
+            "hinweis": "Die Reihenfolge ist dieselbe wie in Abschnitt 10 der Beratungspräsentation, Ergebnis auf ganze Euro.",
             "punkte": 15,
             "fall": "Darlehen 249.000 Euro, 4 Prozent Sollzins, 1,5 Prozent anfängliche Tilgung, zehn Jahre. Der Faktor für die Summe der zehn Jahrestilgungen beträgt 12,006.",
             "gesucht": "Durchschnittliche Tilgung je Monat in Euro",
@@ -12001,13 +11337,13 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
       {
         "id": "steuerwirkung-objekt",
         "ueberschrift": "Die Steuerwirkung einordnen",
-        "intro": "Die vierte Zusage aus Station 15. Station 12 hat die Mechanik erklärt, an einem Musterobjekt und mit angenommenen 42 Prozent Grenzsteuersatz. Hier steht ein echtes Objekt und ein echter Kunde, und beides verändert die Zahl.",
+        "intro": "Die Steuerwirkung gehört zur Kalkulation aus Abschnitt 16. In der Beratungspräsentation hast du die Mechanik an einem Musterobjekt mit angenommenen 42 Prozent Grenzsteuersatz gezeigt. Hier steht ein echtes Objekt und ein echter Kunde, und beides verändert die Zahl.",
         "absaetze": [
           "Drei Größen prüfst du, bevor du eine einzige Steuerzahl nennst: den tatsächlichen Grenzsteuersatz des Kunden, den Gebäudeanteil dieses Objekts und die Frage, ob im ersten Jahr sofort abziehbarer Erhaltungsaufwand anfällt. Erst dann rechnest du. Wer die Zahl aus dem Beratungsgespräch übernimmt, weil sie schöner ist, verliert den Kunden spätestens beim ersten Steuerbescheid.",
           "Der Grenzsteuersatz kommt aus der Selbstauskunft, nicht aus der Annahme. 42 Prozent gelten in der Grundtabelle ab 69.879 Euro zu versteuerndem Einkommen, bei Zusammenveranlagung entsprechend ab dem doppelten Betrag; der Grundfreibetrag liegt bei 12.348 Euro und die Eckwerte des Tarifs werden jährlich angepasst (§ 32a Absatz 1 und Absatz 5 Einkommensteuergesetz, Werte für den Veranlagungszeitraum 2026). Ein Kunde mit 55.000 Euro zu versteuerndem Einkommen liegt bei rund 36 Prozent. Beim Beispielobjekt bedeutet das statt 1.211 Euro Entlastung im Jahr rund 1.038 Euro, also 86 statt 101 Euro im Monat. Fünfzehn Euro klingen wenig, aber es sind fünfzehn Euro, die du sonst versprochen hättest.",
           "Nach oben geht es genauso: Die Kirchensteuer beträgt 8 Prozent der Einkommensteuer in Bayern und Baden-Württemberg und 9 Prozent in den übrigen Ländern. Sie senkt sich mit der Einkommensteuer mit, und weil sie ihrerseits als Sonderausgabe abziehbar ist (§ 10 Absatz 1 Nummer 4 Einkommensteuergesetz), liegt die tatsächliche Entlastung eines kirchensteuerpflichtigen Kunden spürbar über dem reinen Grenzsteuersatz. Rechne es nicht in die Hauptzahl hinein, sondern nenn es als Zusatz. Eine Rechnung, die auch ohne diesen Effekt trägt, ist die stärkere Rechnung.",
-          "Der Gebäudeanteil ist die zweite Stellschraube. Station 12 rechnet mit 80 Prozent, das Glossarkapitel nennt die Faustregeln 60 zu 40, 75 zu 25 und 85 zu 15. Maßgeblich ist der Einzelfall, ermittelt über den Bodenrichtwert, den die Gutachterausschüsse der Länder ermitteln und veröffentlichen (§ 196 Baugesetzbuch), oder über ein Sachverständigengutachten. Die Finanzverwaltung stellt eine Arbeitshilfe zur Kaufpreisaufteilung bereit; der Bundesfinanzhof hat mit Urteil vom 21. Juli 2020 (Aktenzeichen IX R 26/19) entschieden, dass diese Arbeitshilfe die Gerichte nicht bindet. Beim Beispielobjekt sind 80 statt 75 Prozent ein Unterschied von 263 Euro Abschreibung im Jahr, bei 42 Prozent also rund 110 Euro im Jahr oder 9 Euro im Monat. Nenn diese Bandbreite von dir aus, dann bist du im Gespräch mit dem Steuerberater vorbereitet statt überrascht.",
-          "Und dann kommt der Punkt, an dem dieser Termin am ehesten Vertrauen verliert. Station 12 zeigt beim sanierten Bestand 826 Euro Steuerentlastung im Monat, weil dort ein einmaliger Erhaltungsaufwand von 20.000 Euro angesetzt ist. Das Beispielobjekt hier hat keinen, und deshalb steht in seiner Rechnung 101 Euro. Der Kunde erinnert sich an die große Zahl. Wenn du den Unterschied nicht von dir aus erklärst, erklärt er ihn sich selbst, und zwar zu deinen Ungunsten. Ein Satz genügt, und dieser Satz gehört vor die Zahl, nicht nach der Rückfrage.",
+          "Der Gebäudeanteil ist die zweite Stellschraube. Viele Musterrechnungen setzen 80 Prozent an, das Glossarkapitel nennt die Faustregeln 60 zu 40, 75 zu 25 und 85 zu 15. Maßgeblich ist der Einzelfall, ermittelt über den Bodenrichtwert, den die Gutachterausschüsse der Länder ermitteln und veröffentlichen (§ 196 Baugesetzbuch), oder über ein Sachverständigengutachten. Die Finanzverwaltung stellt eine Arbeitshilfe zur Kaufpreisaufteilung bereit; der Bundesfinanzhof hat mit Urteil vom 21. Juli 2020 (Aktenzeichen IX R 26/19) entschieden, dass diese Arbeitshilfe die Gerichte nicht bindet. Beim Beispielobjekt sind 80 statt 75 Prozent ein Unterschied von 263 Euro Abschreibung im Jahr, bei 42 Prozent also rund 110 Euro im Jahr oder 9 Euro im Monat. Nenn diese Bandbreite von dir aus, dann bist du im Gespräch mit dem Steuerberater vorbereitet statt überrascht.",
+          "Und dann kommt der Punkt, an dem dieser Termin am ehesten Vertrauen verliert. In der Beratungspräsentation hat der Kunde Zahlen der Musterperson gesehen, bei der Barfusstraße 9 sogar mit erhöhter AfA laut Ersteinschätzung, für die ein Gutachten nötig ist. In seiner Kalkulation steht seine eigene Zahl, mit seinem Steuersatz, und daneben die Zahl mit Regel-AfA. Der Kunde erinnert sich an die schönere Zahl. Wenn du den Unterschied nicht von dir aus erklärst, erklärt er ihn sich selbst, und zwar zu deinen Ungunsten. Ein Satz genügt, und dieser Satz gehört vor die Zahl, nicht nach der Rückfrage.",
           "Die letzte Frage des Kunden ist immer dieselbe: Wann habe ich das Geld? Nicht sofort. Die Entlastung entsteht mit dem Steuerbescheid, es sei denn, der Kunde lässt sich einen Freibetrag für die Lohnsteuer eintragen, dann wirkt sie monatlich (§ 39a Absatz 1 Satz 1 Nummer 5 Einkommensteuergesetz). Dafür gibt es eine Schwelle, die kaum jemand parat hat: Eingetragen wird erst, wenn die Summe der eintragungsfähigen Beträge 600 Euro übersteigt (§ 39a Absatz 2 Satz 4 Einkommensteuergesetz). Beim Beispielobjekt liegt das negative Ergebnis bei 2.883 Euro, die Schwelle ist also klar überschritten.",
           "Bleibt der Zeitanteil im Anschaffungsjahr, und der entscheidet sich beim Notartermin, nicht in der Steuererklärung. Die Gebäudeabschreibung wird im Jahr der Anschaffung monatsweise gezwölftelt (R 7.4 Absatz 2 der Einkommensteuer-Richtlinien), und die Schuldzinsen fallen ohnehin erst ab Auszahlung an. Wer im Oktober übernimmt, bekommt im ersten Kalenderjahr drei Zwölftel der Abschreibung, beim Beispielobjekt also 1.051 statt 4.203 Euro. Sag das im Objekttermin, wenn der Notartermin im Herbst liegt. Es ändert nichts an der Sache und alles an der Erwartung."
         ],
@@ -12098,7 +11434,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                   "ergebnis": true
                 }
               ],
-              "fazit": "Deshalb heißt die Zusage aus Station 15 persönliche Cashflow-Berechnung und nicht Objektrechnung. Wer einem Kunden die Zahl eines anderen zeigt, zeigt ihm eine fremde Rechnung."
+              "fazit": "Deshalb heißt die Zusage aus Abschnitt 16 deine Kalkulation, gerechnet mit deiner Selbstauskunft, und nicht Objektrechnung. Wer einem Kunden die Zahl eines anderen zeigt, zeigt ihm eine fremde Rechnung."
             }
           },
           {
@@ -12132,11 +11468,11 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         ],
         "skripte": [
           {
-            "titel": "Warum hier nicht 826 Euro stehen",
+            "titel": "Warum hier eine andere Zahl steht als in der Beratung",
             "kontext": "Direkt bevor die Steuerzahl genannt wird. Der Kunde erinnert sich an die Musterrechnung.",
-            "text": "\"Eine Sache vorweg, weil du dich sonst wunderst. Im letzten Termin stand in der Musterrechnung eine Steuerentlastung von 826 Euro im Monat. Diese Zahl war ehrlich, aber sie gehörte zu einem Objekt mit 20.000 Euro Sanierungskosten, die im ersten Jahr sofort abziehbar waren, und sie galt genau ein Jahr lang. Dein Objekt hat das nicht. Deshalb stehen hier 101 Euro, und die gelten dafür jedes Jahr. Ich könnte dir jetzt ein Objekt mit hohem Sanierungsanteil suchen, dann sähe das erste Jahr besser aus. Sag mir, was du lieber möchtest: einen großen einmaligen Effekt oder eine gleichmäßige Rechnung.\"",
+            "text": "\"Eine Sache vorweg, weil du dich sonst wunderst. In der Beratung standen die Zahlen einer Musterperson mit 80.000 Euro brutto und 42 Prozent Steuersatz. Das hier ist deine Rechnung, mit deinem Steuersatz, und deshalb ist die Steuerwirkung eine andere. Daneben steht die Rechnung mit der normalen AfA, falls das Gutachten für die erhöhte AfA nicht anerkannt wird. Vor Steuern zahlst du in beiden Fällen dasselbe dazu, und diese Zahl muss für dich tragbar sein.\"",
             "warumTitel": "Warum du die Erwartung selbst korrigierst, bevor sie zur Enttäuschung wird",
-            "warum": "Die große Zahl aus Station 12 ist im Kopf des Kunden, und sie kommt in diesem Termin garantiert hoch. Wer sie ignoriert, lässt den Kunden mit dem Verdacht allein, das Angebot sei schlechter geworden. Wer sie erklärt und daraus eine Wahl macht, verwandelt einen drohenden Einwand in eine Frage nach der Vorliebe. Und ganz nebenbei beweist der Satz, dass die Zahl im Beratungsgespräch keine Verkaufszahl war."
+            "warum": "Die Zahl der Musterperson ist im Kopf des Kunden, und sie kommt in diesem Termin garantiert hoch. Wer sie ignoriert, lässt den Kunden mit dem Verdacht allein, das Angebot sei schlechter geworden. Wer den Unterschied von sich aus erklärt und die Regel-AfA daneben stellt, beweist, dass die Zahl in der Beratung keine Verkaufszahl war."
           },
           {
             "titel": "Wann das Geld ankommt",
@@ -12166,18 +11502,18 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "profiTipp": "Wer als Ehepaar kauft, entscheidet mit dem Grundbucheintrag zugleich über die Zuordnung der Einkünfte, und diese Entscheidung ist später nur mit einem neuen notariellen Vertrag zu ändern. Bei Zusammenveranlagung fällt das steuerlich zunächst nicht auf, weil beide gemeinsam veranlagt werden. Es fällt in drei Fällen auf, und alle drei kommen häufiger vor, als man denkt: bei Einzelveranlagung, bei Trennung und bei einem Verkauf innerhalb der Spekulationsfrist von zehn Jahren (§ 23 Absatz 1 Satz 1 Nummer 1 Einkommensteuergesetz), denn dann trifft der Veräußerungsgewinn genau den, der im Grundbuch steht. Frag deshalb vor der Reservierung, wer eingetragen werden soll, und frag es als sachliche Gestaltungsfrage, nicht als Andeutung. Ein Trost, der die Frage entspannt: Eine spätere Übertragung zwischen Ehegatten ist von der Grunderwerbsteuer befreit (§ 3 Nummer 4 Grunderwerbsteuergesetz), Notar- und Grundbuchkosten fallen aber erneut an, und bei einer noch laufenden Finanzierung muss die Bank mitspielen. Die Entscheidung ist also nicht unumkehrbar, aber sie kostet.",
         "goldNugget": {
           "titel": "Woher der Erhaltungsaufwand in einer Rechnung kommt, und warum das alles entscheidet",
-          "text": "Der große Erstjahreseffekt aus Station 12 entsteht nur, wenn der Sanierungsanteil beim Käufer als sofort abziehbarer Erhaltungsaufwand landet. Ob er das tut, hängt daran, wie er in den Vertrag kommt. Frag deshalb vor jedem Termin, aus welchem der drei Fälle die Zahl in der Rechnung stammt. Wer diese drei Fälle unterscheiden kann, beantwortet die einzige Frage, die der Steuerberater des Kunden zu diesem Objekt stellen wird.",
+          "text": "Ein großer Erstjahreseffekt entsteht nur, wenn der Sanierungsanteil beim Käufer als sofort abziehbarer Erhaltungsaufwand landet. Ob er das tut, hängt daran, wie er in den Vertrag kommt. Frag deshalb vor jedem Termin, aus welchem der drei Fälle die Zahl in der Rechnung stammt. Wer diese drei Fälle unterscheiden kann, beantwortet die einzige Frage, die der Steuerberater des Kunden zu diesem Objekt stellen wird.",
           "bullets": [
             "Fall 1: Der Sanierungsanteil steckt im Kaufpreis der bereits fertig sanierten Wohnung. Dann ist er Teil der Anschaffungskosten und wird über die Abschreibung verteilt, nicht sofort abgezogen.",
             "Fall 2: Die Sanierung wird nach dem Erwerb gesondert beauftragt und bezahlt. Dann ist sie Erhaltungsaufwand und im Jahr der Zahlung abziehbar, solange sie innerhalb von drei Jahren nach der Anschaffung unter 15 Prozent der Gebäude-Anschaffungskosten bleibt (§ 6 Absatz 1 Nummer 1a Einkommensteuergesetz). Wird die Grenze überschritten, kippt der gesamte Betrag in anschaffungsnahe Herstellungskosten, nicht nur der Teil darüber.",
             "Fall 3: Die Gemeinschaft beschließt eine Maßnahme und finanziert sie aus der Rücklage. Dann wirkt sie anteilig im Jahr der Verausgabung durch die Gemeinschaft, nicht im Jahr der Einzahlung.",
-            "Beim Beispielobjekt liegt Fall 1 vor. Deshalb 101 Euro statt 826, und deshalb dieselbe Zahl auch im zweiten und dritten Jahr."
+            "Bei jedem Objekt prüfst du vor dem Termin, welcher Fall vorliegt. Das Exposé und die Objektunterlagen sagen es, und der Steuerberater des Kunden wird danach fragen."
           ]
         },
         "links": [
           {
-            "label": "Die Steuerwirkung in Station 12",
-            "to": "/vertriebsakademie/beratungsgespraech?vaScrollTo=steuerwirkung",
+            "label": "Die Rechnung vor und nach Steuern in Abschnitt 10",
+            "to": "/vertriebsakademie/beratungsgespraech?vaScrollTo=musterrechnung",
             "hinweis": "Die Mechanik am Musterobjekt, dazu die 15-Prozent-Grenze und das Restnutzungsdauergutachten"
           },
           {
@@ -12241,20 +11577,20 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "id": "erstjahr-szenario",
             "typ": "szenario",
             "pfad": "beide",
-            "titel": "Der Kunde erinnert sich an 826 Euro",
+            "titel": "Der Kunde erinnert sich an die Zahl aus der Beratung",
             "hinweis": "Mitten im Objekttermin, direkt vor der Steuerzeile.",
             "punkte": 20,
             "startSzene": "s1",
             "szenen": [
               {
                 "id": "s1",
-                "text": "Du bist bei der Steuerzeile angekommen. Der Kunde sagt: Moment, letztes Mal standen da 826 Euro im Monat. Jetzt sind es 101. Habe ich etwas falsch verstanden?",
+                "text": "Du bist bei der Steuerzeile angekommen. Der Kunde sagt: Moment, in der Beratung stand bei der Barfusstraße fast null nach Steuern. Jetzt sind es bei mir über hundert Euro mehr. Habe ich etwas falsch verstanden?",
                 "optionen": [
                   {
-                    "text": "Den Unterschied sofort erklären: einmaliger Erhaltungsaufwand, galt genau ein Jahr. Dann die Wahl anbieten.",
+                    "text": "Den Unterschied sofort erklären: Musterperson mit 42 Prozent, sein Steuersatz ist niedriger, und die Regel-AfA steht daneben.",
                     "weiterZu": "e2",
                     "bewertung": "gut",
-                    "konsequenz": "Du erklärst, dass die 826 Euro zu einem Objekt mit 20.000 Euro Sanierungskosten gehörten, und fragst, ob er lieber einen großen Einmaleffekt oder eine gleichmäßige Rechnung möchte."
+                    "konsequenz": "Du erklärst, dass die Zahl aus der Beratung für eine Musterperson galt, zeigst seine Zahl vor und nach Steuern und die Zeile mit Regel-AfA, und fragst, ob die Belastung vor Steuern für ihn tragbar ist."
                   },
                   {
                     "text": "Sagen, das seien verschiedene Objekte, und zur nächsten Zeile weitergehen.",
@@ -12263,25 +11599,25 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                     "konsequenz": "Der Kunde nickt, aber die Frage bleibt im Raum."
                   },
                   {
-                    "text": "Anbieten, ein Objekt mit hohem Sanierungsanteil zu suchen, damit die Zahl wieder stimmt.",
+                    "text": "Anbieten, mit einem höheren Steuersatz zu rechnen, damit die Zahl wieder stimmt.",
                     "weiterZu": "s3",
                     "bewertung": "schwach",
-                    "konsequenz": "Du machst die Steuerzahl zum Auswahlkriterium und stellst das ganze Suchprofil zur Disposition."
+                    "konsequenz": "Du rechnest dem Kunden eine Zahl schön, die nicht seine ist, und machst die Steuer zum Verkaufsargument."
                   }
                 ]
               },
               {
                 "id": "s2",
-                "text": "Zwei Wochen später, kurz vor der Reservierung, ruft er an: Ich habe nochmal in die Unterlagen vom ersten Termin geschaut. Da sieht das deutlich besser aus. Warum eigentlich?",
+                "text": "Zwei Tage später ruft er an, die Reservierung ist noch nicht unterschrieben: Ich habe nochmal in die Unterlagen aus der Beratung geschaut. Da sah das deutlich besser aus. Warum eigentlich?",
                 "optionen": [
                   {
-                    "text": "Jetzt vollständig erklären und die Wahl anbieten.",
+                    "text": "Jetzt vollständig erklären: Musterperson, sein Steuersatz, Regel-AfA daneben.",
                     "weiterZu": "e1",
                     "bewertung": "tragbar",
-                    "konsequenz": "Die Erklärung stimmt immer noch, aber sie kommt auf Nachfrage und nicht von dir. Der Kunde verschiebt die Reservierung um eine Woche."
+                    "konsequenz": "Die Erklärung stimmt immer noch, aber sie kommt auf Nachfrage und nicht von dir. Der Kunde will erst noch einmal darüber schlafen."
                   },
                   {
-                    "text": "Die Frage abtun und auf den Reservierungstermin drängen.",
+                    "text": "Die Frage abtun und auf die Unterschrift drängen.",
                     "weiterZu": "e1",
                     "bewertung": "schwach",
                     "konsequenz": "Er sagt, er meldet sich. Er meldet sich nicht."
@@ -12290,30 +11626,30 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               },
               {
                 "id": "s3",
-                "text": "Du findest ein Objekt mit hohem Sanierungsanteil. Es kostet 289.000 Euro und liegt damit über dem Korridor, der Beitrag steigt auf 390 Euro, und das erste Jahr sieht großartig aus.",
+                "text": "Du rechnest mit 42 statt mit seinen 36 Prozent. Nach Steuern sieht die Zahl wieder fast aus wie in der Beratung, aber sie gehört nicht zu ihm.",
                 "optionen": [
                   {
-                    "text": "Zurück zum Suchprofil: den Unterschied erklären und den Kunden wählen lassen.",
+                    "text": "Zurück zu seinem Steuersatz: den Unterschied erklären und beide Zahlen zeigen.",
                     "weiterZu": "e2",
                     "bewertung": "gut",
-                    "konsequenz": "Du legst beide Rechnungen nebeneinander, die einmalige und die gleichmäßige, und lässt ihn entscheiden."
+                    "konsequenz": "Du legst seine Rechnung vor und nach Steuern neben die Zeile mit Regel-AfA und lässt ihn entscheiden, ob die Belastung für ihn tragbar ist."
                   },
                   {
-                    "text": "Es trotzdem vorschlagen.",
+                    "text": "Die geschönte Rechnung trotzdem zeigen.",
                     "weiterZu": "e1",
                     "bewertung": "schwach",
-                    "konsequenz": "Der Kunde sieht ein Objekt außerhalb seines eigenen Rahmens, und die Zahl, die es rechtfertigt, gilt für ein Jahr."
+                    "konsequenz": "Der Kunde entscheidet mit einer Zahl, die nicht seine ist. Spätestens der erste Steuerbescheid zeigt ihm das."
                   }
                 ]
               },
               {
                 "id": "e1",
-                "text": "Die Reservierung liegt auf Eis. Der Kunde hat sich den Unterschied zwischen 826 und 101 Euro selbst erklärt, und zwar zu deinen Ungunsten.",
-                "fazit": "Dieselbe Erklärung wirkt völlig verschieden, je nachdem ob sie vor der Frage kommt oder danach. Vorher ist sie Offenheit, nachher Rechtfertigung. Sag die Zahl des zweiten Jahres im selben Atemzug wie die des ersten. Der Steuereffekt ist der Rabatt, nicht das Produkt."
+                "text": "Die Reservierung liegt auf Eis. Der Kunde hat sich den Unterschied zwischen der Zahl aus der Beratung und seiner eigenen selbst erklärt, und zwar zu deinen Ungunsten.",
+                "fazit": "Dieselbe Erklärung wirkt völlig verschieden, je nachdem ob sie vor der Frage kommt oder danach. Vorher ist sie Offenheit, nachher Rechtfertigung. Sag seine Zahl im selben Atemzug wie die der Musterperson, und die Regel-AfA gleich dazu. Die Steuerwirkung ist ein möglicher Bonus, nicht das Produkt."
               },
               {
                 "id": "e2",
-                "text": "Der Kunde denkt kurz nach und sagt: Ehrlich gesagt ist mir eine gleichmäßige Rechnung lieber, ich will keine Überraschung im zweiten Jahr.",
+                "text": "Der Kunde denkt kurz nach und sagt: Ehrlich gesagt ist mir die vorsichtige Zahl lieber. Wenn es mit der normalen AfA auch passt, bin ich beruhigt.",
                 "fazit": "Bester Weg. Die Erwartung ist korrigiert, bevor sie enttäuscht wird, und der Kunde hat selbst entschieden, welche Art von Rechnung er will. Nebenbei hast du bewiesen, dass die Zahl aus dem Beratungsgespräch keine Verkaufszahl war."
               }
             ]
@@ -12323,13 +11659,13 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
       {
         "id": "chancen-risiken",
         "ueberschrift": "Chancen- und Risikoanalyse, und das erlaubte Nein",
-        "intro": "Die sechste Zusage aus Station 15, und zugleich der Träger des Satzes, mit dem das Beratungsgespräch endet: Passt dieses Objekt zu dir, oder suchen wir weiter? Beides ist ein gutes Ergebnis. Dieses Nein ist nur ernst gemeint, wenn der Kunde weiß, wogegen er es aussprechen könnte.",
+        "intro": "Der Stresstest aus Abschnitt 16, und zugleich der Träger des Satzes, mit dem die Objektvorstellung endet: Passt dieses Objekt zu dir, oder suchen wir weiter? Beides ist ein gutes Ergebnis. Dieses Nein ist nur ernst gemeint, wenn der Kunde weiß, wogegen er es aussprechen könnte.",
         "absaetze": [
           "Ein Risiko, das du benennst, gehört dir. Ein Risiko, das der Kunde später selbst entdeckt, gehört ihm, und er entdeckt es garantiert, spätestens beim ersten Schreiben der Hausverwaltung. Deshalb steht die Risikoseite in diesem Termin vor der Entscheidung und nicht danach, und deshalb ist sie genauso lang wie die Chancenseite. Eine Risikospalte mit zwei Zeilen neben acht Chancen liest sich als Werbung, und der Kunde liest sie auch so.",
           "Risiko eins, Mietausfall. Kapitel 7 rechnet deshalb mit einem Sicherheitspuffer von 20 Prozent auf die Rate. Beim Beispielobjekt sind das 228 Euro im Monat, also 2.740 Euro im Jahr. Rechne dem Kunden vor, was das bedeutet: Bei einer Miete von 995 Euro sind das rund 2,7 Monatsmieten. Ehrlicher wird es, wenn du dazusagst, dass bei Leerstand auch die umlagefähigen Kosten am Eigentümer hängen bleiben, also rund 140 Euro im Monat zusätzlich. Dann reicht der Puffer für rund 2,4 Monate. Genau diese Größenordnung meint Kapitel 7 mit zwei bis drei Monaten.",
           "Risiko zwei, das Ende der Zinsbindung. Nach zehn Jahren beträgt die Restschuld 204.158 Euro. Steht der Anschlusszins dann bei 6 statt 4 Prozent und bleibt die Tilgung bei 1,5 Prozent, steigt die Rate von 1.141 auf 1.276 Euro, also um 135 Euro. Das ist die Zahl, die der Kunde hören muss, und sie ist beherrschbar: Die Miete wird in zehn Jahren nicht dieselbe sein, das gesetzliche Kündigungsrecht nach zehn Jahren mit sechs Monaten Frist steht dem Kunden ohnehin zu (§ 489 Absatz 1 Nummer 2 Bürgerliches Gesetzbuch), und eine Sondertilgung von 5 Prozent im Jahr kostet meist nichts extra, senkt die Restschuld aber spürbar.",
           "Risiko drei, Sonderumlage und Instandhaltung. Beschlüsse der Eigentümergemeinschaft binden auch den, der dagegen gestimmt hat oder gar nicht da war. Die Gegenmaßnahme ist keine Beruhigung, sondern eine Prüfung, und die hast du in Filterstufe 3 bereits gemacht: Beschlusssammlung gelesen, Protokolle gelesen, Rücklagenstand neben dem Baujahr der teuren Bauteile gelesen. Sag im Termin, was du gefunden hast, und sag auch, was du nicht ausschließen kannst.",
-          "Risiko vier, die Wertentwicklung. Hier gehört der Handgriff aus Station 10 hin, und zwar wörtlich: Zieh den Regler selbst auf null. Beim Beispielobjekt sieht das so aus: Nach zehn Jahren steht der Wert unverändert bei 249.000 Euro, die Restschuld bei 204.158 Euro, das Vermögen also bei 44.842 Euro. Eingezahlt hat der Kunde in diesen zehn Jahren rund 17.400 Euro. Selbst ohne einen einzigen Euro Wertsteigerung bleibt ein Plus von rund 27.400 Euro. Wer diese Zahl auf dem Tisch hat, braucht keine Prognose.",
+          "Risiko vier, die Wertentwicklung. Hier gehört der Handgriff aus Abschnitt 12 der Beratungspräsentation hin, und zwar wörtlich: Zieh den Regler selbst auf null. Beim Beispielobjekt sieht das so aus: Nach zehn Jahren steht der Wert unverändert bei 249.000 Euro, die Restschuld bei 204.158 Euro, das Vermögen also bei 44.842 Euro. Eingezahlt hat der Kunde in diesen zehn Jahren rund 17.400 Euro. Selbst ohne einen einzigen Euro Wertsteigerung bleibt ein Plus von rund 27.400 Euro. Wer diese Zahl auf dem Tisch hat, braucht keine Prognose.",
           "Risiko fünf, Liquidität und Verkauf. Eine Wohnung ist nicht in einer Woche verkauft, sondern in Monaten, und innerhalb der Spekulationsfrist von zehn Jahren ist der Gewinn steuerpflichtig (§ 23 Absatz 1 Satz 1 Nummer 1 Einkommensteuergesetz). Wer das Geld in fünf Jahren zwingend braucht, kauft keine Immobilie. Das ist kein Verkaufshindernis, sondern die Frage, mit der du dir einen Kunden ersparst, der in drei Jahren unter Druck verkaufen muss.",
           "Risiko sechs, Mieter und Mietrecht. Eigenbedarf ist bei einer Kapitalanlage kein Thema, das gehört klargestellt, bevor es jemand fragt. Mieterhöhungen sind an die ortsübliche Vergleichsmiete gebunden und zusätzlich an die Kappungsgrenze von 20 Prozent in drei Jahren, in angespannten Wohnungsmärkten 15 Prozent (§ 558 Absatz 3 Bürgerliches Gesetzbuch). Eine Rechnung, die mit jährlichen Mietsteigerungen arbeitet, ist deshalb an dieser Stelle zu prüfen und nicht am Wunschdenken.",
           "Und die Chancen, in derselben Nüchternheit und in dieser Reihenfolge: Der Mieter tilgt mit, das ist die einzige Position ohne Annahme. Die Steuerwirkung, sie ist der Rabatt und nicht das Produkt. Der Inflationsschutz, weil Mieten und Sachwerte langfristig mitziehen, während die Schuld nominal gleich bleibt. Der Fremdkapitalhebel, der aus 13.695 Euro eingesetztem Eigenkapital eine Anlage von 249.000 Euro macht. Und die Wertsteigerung, als Möglichkeit und ausdrücklich nicht als Rechengröße."
@@ -12378,7 +11714,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                   "hinweis": "Das eingesetzte Eigenkapital von 13.695 Euro für die Kaufnebenkosten ist hier noch nicht abgezogen. Zieht man es ab, bleiben 13.747 Euro."
                 }
               ],
-              "fazit": "Diese Rechnung braucht keine Prognose und keinen Optimismus. Sie ist der Grund, warum der Regler in Station 10 überhaupt bis null geht."
+              "fazit": "Diese Rechnung braucht keine Prognose und keinen Optimismus. Sie ist der Grund, warum der Regler in Abschnitt 12 überhaupt bis null geht."
             }
           },
           {
@@ -12431,7 +11767,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "kontext": "Ganz am Ende des Objekttermins, nach Chancen und Risiken.",
             "text": "\"Im letzten Termin habe ich dir gesagt: Am Ende entscheidest du in Ruhe, ob dieses Objekt zu dir passt oder ob wir weitersuchen, und beides ist ein gutes Ergebnis. Das gilt jetzt. Du hast die Rechnung, du hast die Risiken, du hast die schlechteste Annahme gesehen. Wenn etwas nicht passt, sag mir was, dann suche ich weiter, und zwar ohne dass sich zwischen uns irgendetwas ändert. Und wenn es passt, sage ich dir jetzt, was der nächste Schritt ist.\"",
             "warumTitel": "Warum der Ausstieg wörtlich wiederholt wird",
-            "warum": "Der Satz stammt aus Station 15, und der Kunde erinnert sich daran. Wer ihn wörtlich einlöst, beweist, dass Zusagen aus dem letzten Termin gelten, und genau das ist die Währung dieses Gesprächs. Der Zusatz, dass sich zwischen euch nichts ändert, nimmt die letzte soziale Hürde: Viele Kunden sagen nicht Nein zum Objekt, sondern trauen sich nicht, dir Nein zu sagen."
+            "warum": "Der Satz knüpft an Abschnitt 15 der Beratungspräsentation an, und der Kunde erinnert sich daran. Wer ihn wörtlich einlöst, beweist, dass Zusagen aus dem letzten Termin gelten, und genau das ist die Währung dieses Gesprächs. Der Zusatz, dass sich zwischen euch nichts ändert, nimmt die letzte soziale Hürde: Viele Kunden sagen nicht Nein zum Objekt, sondern trauen sich nicht, dir Nein zu sagen."
           }
         ],
         "einwaende": [
@@ -12477,8 +11813,8 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         },
         "links": [
           {
-            "label": "Die Immobilienschere in Station 10",
-            "to": "/vertriebsakademie/beratungsgespraech?vaScrollTo=musterrechnung",
+            "label": "Der Plan mit dem Regler in Abschnitt 12",
+            "to": "/vertriebsakademie/beratungsgespraech?vaScrollTo=pruefung-einwaende",
             "hinweis": "Der Wertsteigerungsregler und der Handgriff, ihn selbst auf null zu ziehen"
           },
           {
@@ -12568,48 +11904,48 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
       },
       {
         "id": "objektpraesentation",
-        "ueberschrift": "Die Objektpräsentation im Termin",
-        "intro": "Die ersten fünf Abschnitte sind Vorbereitung. Dieser ist der Termin selbst: 45 bis 60 Minuten, sechs Schritte, eine Empfehlung und zwei begründet verworfene Alternativen.",
+        "ueberschrift": "Die Objektvorstellung im Termin",
+        "intro": "Die ersten Abschnitte sind Vorbereitung. Dieser ist der Termin selbst, rund 7 Tage nach der Beratung: etwa eine Stunde, sechs Schritte, eine Empfehlung und höchstens eine Alternative.",
         "absaetze": [
-          "Der Ablauf: erstens die sechs Zusagen aus Station 15 aufzählen und ankündigen, dass sie heute alle eingelöst werden. Zweitens das Suchprofil zeigen, damit die Auswahl nachvollziehbar wird. Drittens das Objekt selbst, Lage vor Haus, Haus vor Wohnung. Viertens die Rechnung, sechs Zeilen von oben nach unten. Fünftens Chancen und Risiken, beide Spalten gleich lang. Sechstens die Entscheidung oder die Weitersuche. Der Einstieg dauert dreißig Sekunden und ist der stärkste Vertrauensbeweis, den dieser Termin hat: Der Kunde hört, dass du weißt, was du zugesagt hast.",
-          "Ein Objekt oder drei? Eines, mit zwei benannten Alternativen. Drei gleichwertige Vorschläge verschieben die Auswahl auf den Kunden, und der entscheidet dann nicht, sondern vertagt, weil er die Kriterien nicht hat, um zu vergleichen. Ein einziger Vorschlag ohne Alternativen wirkt alternativlos und lädt zum Misstrauen ein. Die Lösung ist beides zusammen: eine Empfehlung mit Begründung, dazu zwei Objekte, die du geprüft und mit Grund verworfen hast.",
+          "Der Ablauf: erstens die vier Zusagen aus Abschnitt 16 der Beratungspräsentation nennen und ankündigen, dass sie heute eingelöst werden: deine Immobilie, deine Kalkulation, das Exposé und deine Entscheidung. Zweitens das Suchprofil und die Kriterien zeigen, die der Kunde in Abschnitt 13 selbst festgelegt hat. Drittens das Objekt selbst, Lage vor Haus, Haus vor Wohnung, mit dem Exposé. Viertens die Kalkulation, sechs Zeilen von oben nach unten, vor und nach Steuern, mit Regel-AfA daneben. Fünftens Chancen und Risiken mit Stresstest, beide Spalten gleich lang. Sechstens die Entscheidung: Passt es, reserviert der Kunde im selben Termin, kostenfrei. Passt es nicht, sucht ihr weiter.",
+          "Ein Objekt oder drei? Eine Empfehlung und höchstens eine Alternative, so steht es in Abschnitt 16. Drei gleichwertige Vorschläge verschieben die Auswahl auf den Kunden, und der entscheidet dann nicht, sondern vertagt. Ein einziger Vorschlag ohne jede Begründung lädt zum Misstrauen ein. Deshalb sagst du offen, was du geprüft und mit Grund verworfen hast, auch wenn du es nicht zeigst.",
           "Die Reihenfolge innerhalb der Vorstellung ist nicht beliebig. Erst die Lage, weil sie das Einzige ist, was sich nie ändern lässt. Dann das Haus, Baujahr, Zustand, Gemeinschaft. Dann die Wohnung, Grundriss, Zuschnitt, Ausstattung, Vermietungsstand. Erst danach die Zahlen. Wer mit dem Preis beginnt, bekommt eine Preisdiskussion, bevor der Kunde weiß, wofür der Preis gilt.",
-          "Vier Werkzeuge, und für jedes gibt es genau einen richtigen Moment. Investagon gehört in deine Vorbereitung, nicht in den Termin: dort suchst du aus, und am Morgen des Termins siehst du dort noch einmal nach, ob die Einheit tatsächlich frei ist, denn dort steht der Status frei, reserviert oder verkauft. Die Objektverwaltung im CRM und den Einheitenspiegel pflegt vorerst nur die Verwaltung, sie gehören nicht in deinen Ablauf. Steht die Einheit fest, trägst du sie im Kundenprofil ein: im Investment unter Objektauswahl mit Objekt eintragen. Danach geht es mit der Reservierung weiter. Im Termin zeigst du nie die Plattform, sondern das Objekt. Die Investment-Analyse und die Investmentkalkulation zeigst du dort, sie sind die Wirtschaftlichkeitsberechnung. Das Exposé bekommt der Kunde mit, es ist die Objektdarstellung ohne Rechnung. Und die Objektvorstellung mit Zugangslink ist das, was zwischen zwei Terminen bei ihm liegt. Es gibt außerdem eine Kundenansicht des Objekts, also dieselbe Seite ohne interne Angaben, für den Fall, dass du im Termin den Bildschirm teilst.",
-          "Zum Schluss die Frage, die den Termin beendet. Sie lautet nicht, ob der Kunde kaufen möchte, sondern ob dieses Objekt zu ihm passt. Das ist derselbe Satz wie in Station 15, und er hat zwei erlaubte Antworten. Wenn die Antwort Ja lautet, folgt der nächste Abschnitt. Wenn sie Nein lautet, brauchst du genau eine Rückfrage: Woran lag es? Denn diese Antwort ist die Korrektur deines Suchprofils, und mit ihr ist der nächste Vorschlag besser als dieser."
+          "Vier Werkzeuge, und für jedes gibt es genau einen richtigen Moment. Investagon gehört in deine Vorbereitung, nicht in den Termin: dort suchst du aus, und am Morgen des Termins siehst du dort noch einmal nach, ob die Einheit tatsächlich frei ist, denn dort steht der Status frei, reserviert oder verkauft. Die Objektverwaltung im CRM und den Einheitenspiegel pflegt vorerst nur die Verwaltung, sie gehören nicht in deinen Ablauf. Steht die Einheit fest, trägst du sie im Kundenprofil ein: im Investment unter Objektauswahl mit Objekt eintragen. Danach geht es mit der Reservierung weiter, und die startet im CRM erst, wenn Selbstauskunft, Personalausweis und letzte Gehaltsabrechnung vorliegen. Im Termin zeigst du nie die Plattform, sondern das Objekt. Die Investment-Analyse und die Investmentkalkulation zeigst du dort, sie sind die Wirtschaftlichkeitsberechnung. Das Exposé bekommt der Kunde mit, es ist die Objektdarstellung ohne Rechnung. Und die Objektvorstellung mit Zugangslink ist das, was zwischen zwei Terminen bei ihm liegt. Es gibt außerdem eine Kundenansicht des Objekts, also dieselbe Seite ohne interne Angaben, für den Fall, dass du im Termin den Bildschirm teilst.",
+          "Zum Schluss die Frage, die den Termin beendet. Sie lautet nicht, ob der Kunde kaufen möchte, sondern ob dieses Objekt zu ihm passt. Er knüpft an die Frage aus Abschnitt 15 der Beratungspräsentation an und hat zwei erlaubte Antworten. Wenn die Antwort Ja lautet, gehst du die Checkliste vor der Reservierung durch, und dann folgt der nächste Abschnitt. Wenn sie Nein lautet, brauchst du genau eine Rückfrage: Woran lag es? Denn diese Antwort ist die Korrektur deines Suchprofils, und mit ihr ist der nächste Vorschlag besser als dieser."
         ],
         "bullets": [
-          "Sechs Schritte: Zusagen einlösen, Suchprofil zeigen, Objekt vorstellen, Rechnung, Chancen und Risiken, Entscheidung.",
-          "Ein empfohlenes Objekt, zwei begründet verworfene Alternativen.",
+          "Sechs Schritte: Zusagen nennen, Suchprofil und Kriterien zeigen, Objekt mit Exposé vorstellen, Kalkulation vor und nach Steuern, Chancen und Risiken mit Stresstest, Entscheidung.",
+          "Eine Empfehlung, höchstens eine Alternative. Was du verworfen hast, nennst du mit Grund.",
           "Reihenfolge: Lage, Haus, Wohnung, Zahlen. Nie umgekehrt.",
           "Investagon in die Vorbereitung, die Einheit über Objekt eintragen ins Investment. Investment-Analyse und Investmentkalkulation im Termin, Exposé zum Mitnehmen, Objektvorstellung als Link für die Zeit dazwischen.",
-          "Schlussfrage aus Station 15, wörtlich, mit zwei erlaubten Antworten.",
+          "Schlussfrage: Passt dieses Objekt zu dir, oder suchen wir weiter? Zwei erlaubte Antworten.",
           "Bei Nein genau eine Rückfrage: Woran lag es? Sie korrigiert das Suchprofil."
         ],
         "visuals": [
           {
             "timeline": {
-              "titel": "Der Objekttermin, 45 bis 60 Minuten",
+              "titel": "Die Objektvorstellung, etwa eine Stunde",
               "schritte": [
                 {
-                  "label": "Die sechs Zusagen aus Station 15",
+                  "label": "Die vier Zusagen aus Abschnitt 16",
                   "dauer": "30 Sekunden",
-                  "beschreibung": "Aufzählen und ankündigen, dass heute alle eingelöst werden.",
+                  "beschreibung": "Immobilie, Kalkulation, Exposé, Entscheidung. Ankündigen, dass heute alle eingelöst werden.",
                   "status": "start"
                 },
                 {
                   "label": "Suchprofil",
                   "dauer": "3 Minuten",
-                  "beschreibung": "Kaufpreiskorridor, Mindestrendite, Region, Konzept. Aus seinen eigenen Zahlen."
+                  "beschreibung": "Kaufpreiskorridor, Mindestrendite, Konzept und die Kriterien aus Abschnitt 13. Aus seinen eigenen Zahlen."
                 },
                 {
                   "label": "Das Objekt",
                   "dauer": "15 Minuten",
-                  "beschreibung": "Lage, Haus, Wohnung. Dazu die zwei verworfenen Alternativen mit Grund."
+                  "beschreibung": "Lage, Haus, Wohnung, mit dem Exposé. Dazu, was du mit Grund verworfen hast."
                 },
                 {
                   "label": "Die Rechnung",
                   "dauer": "15 Minuten",
-                  "beschreibung": "Sechs Zeilen, dann Steuerwirkung, dann Tilgung als Gegenposten.",
+                  "beschreibung": "Sechs Zeilen, vor und nach Steuern, Regel-AfA daneben, Tilgung als Gegenposten.",
                   "status": "trigger"
                 },
                 {
@@ -12618,9 +11954,9 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                   "beschreibung": "Beide Spalten gleich lang, Regler auf null, Zehn-Sekunden-Frage."
                 },
                 {
-                  "label": "Entscheidung oder Weitersuche",
+                  "label": "Entscheidung und Reservierung oder Weitersuche",
                   "dauer": "5 Minuten",
-                  "beschreibung": "Die Schlussfrage aus Station 15, wörtlich.",
+                  "beschreibung": "Checkliste vor der Reservierung, dann kostenfrei reservieren oder weitersuchen.",
                   "status": "ziel"
                 }
               ]
@@ -12637,7 +11973,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               {
                 "label": "Investmentkalkulation",
                 "wert": "Im Termin",
-                "hinweis": "Die Rechnung in der Darstellung, die der Kunde aus Station 10 kennt",
+                "hinweis": "Die Rechnung in der Darstellung, die der Kunde aus Abschnitt 10 der Beratungspräsentation kennt",
                 "farbe": "emerald"
               },
               {
@@ -12657,32 +11993,32 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         ],
         "skripte": [
           {
-            "titel": "Der Einstieg: die sechs Zusagen einlösen",
+            "titel": "Der Einstieg: die vier Zusagen einlösen",
             "kontext": "Erste dreißig Sekunden, bevor irgendetwas gezeigt wird.",
-            "text": "\"Beim letzten Mal habe ich dir sechs Dinge für heute zugesagt: einen Objektvorschlag, eine verständliche Wirtschaftlichkeitsberechnung, deine persönliche Cashflow-Berechnung, die Einordnung der Steuerwirkung, einen Finanzierungsvorschlag und eine klare Chancen- und Risikoanalyse. Alle sechs liegen heute auf dem Tisch, in dieser Reihenfolge. Am Ende entscheidest du in Ruhe, ob das Objekt zu dir passt oder ob wir weitersuchen.\"",
+            "text": "\"In der Beratung habe ich dir vier Dinge für heute zugesagt: eine Immobilie, die zu deinen Kriterien passt, deine Kalkulation mit deiner Selbstauskunft, vor und nach Steuern und mit Stresstest, das Exposé zum Nachlesen und deine Entscheidung. Alle vier liegen heute auf dem Tisch. Am Ende entscheidest du in Ruhe, ob das Objekt zu dir passt oder ob wir weitersuchen.\"",
             "warumTitel": "Warum du die eigene Zusage wörtlich wiederholst",
-            "warum": "Der Kunde erinnert sich an das Versprechen, aber nicht an alle sechs Punkte. Wer sie vollständig aufzählt, beweist zweierlei in einem Satz: dass die Zusage keine Floskel war und dass der Termin eine Struktur hat. Beides senkt die Anspannung, mit der Menschen in einen Termin gehen, in dem eine Entscheidung ansteht. Und du setzt damit die Tagesordnung, ohne sie als Tagesordnung anzukündigen."
+            "warum": "Der Kunde erinnert sich an das Versprechen, aber nicht an alle Punkte. Wer sie vollständig aufzählt, beweist zweierlei in einem Satz: dass die Zusage keine Floskel war und dass der Termin eine Struktur hat. Beides senkt die Anspannung, mit der Menschen in einen Termin gehen, in dem eine Entscheidung ansteht."
           },
           {
             "titel": "Warum genau dieses Objekt",
             "kontext": "Nach dem Suchprofil, beim Aufschlagen des Objekts.",
-            "text": "\"Das hier ist mein Vorschlag, und ich sage dir die Kette dahinter. Dein Rahmen erlaubt bis 256.000 Euro, dieses Objekt kostet 249.000. Deine 250 Euro Eigenaufwand verlangen mindestens 4,8 Prozent Bruttorendite, dieses Objekt bringt 4,80. Dein Ziel war Vermögensaufbau, dazu passt sanierter Bestand. Und die Wohnung ist vermietet, der Mietvertrag liegt vor, die Miete ist keine Annahme. Vier Kriterien, vier Treffer. Deshalb sitzen wir hier.\"",
+            "text": "\"Das hier ist mein Vorschlag, und ich sage dir die Kette dahinter. Du hast in der Beratung das Konzept Zusatzrente gewählt, dazu gehört dieses Objekt. Dein Rahmen erlaubt bis 256.000 Euro, diese Wohnung liegt darunter. Vor Steuern hast du höchstens 250 Euro im Monat als tragbar genannt, und die Kalkulation liegt darunter, auch im Stresstest. Und die Wohnung ist vermietet, der Mietvertrag liegt vor, die Miete ist keine Annahme. Deine Kriterien, Punkt für Punkt erfüllt. Deshalb sitzen wir hier.\"",
             "warumTitel": "Warum die Kette wichtiger ist als das Objekt",
             "warum": "Der Kunde bewertet ab diesem Moment nicht mehr eine Wohnung, sondern eine Herleitung, und die besteht aus seinen eigenen Angaben. Wer widersprechen will, müsste seiner eigenen Zahl widersprechen. Achte darauf, jede der vier Zahlen mit seiner Vorgabe zu paaren, nicht mit einem Marktwert. Die Wirkung entsteht aus der Paarung, nicht aus der Höhe."
           },
           {
-            "titel": "Die zwei verworfenen Alternativen",
+            "titel": "Was du verworfen hast",
             "kontext": "Unmittelbar nach der Vorstellung des empfohlenen Objekts.",
-            "text": "\"Zwei andere waren nah dran, und ich sage dir, warum sie es nicht geworden sind. Das eine hatte eine Bruttorendite von 5,2 Prozent, also besser als deins. Im Protokoll der Eigentümerversammlung stand aber eine Dachsanierung, und die Rücklage deckt davon knapp ein Fünftel. Das andere lag im Preis richtig, dort war die angesetzte Miete aber 18 Prozent über dem Mietspiegel. Beides hätte auf dem Papier besser ausgesehen als deins.\"",
+            "text": "\"Ein anderes Objekt war nah dran, und ich sage dir, warum es das nicht geworden ist. Die Zahlen sahen auf dem Papier besser aus, aber im Protokoll der Eigentümerversammlung stand eine Dachsanierung, und die Rücklage deckt davon knapp ein Fünftel. Das hätte deine Reserve angegriffen, und die soll unangetastet bleiben.\"",
             "warumTitel": "Warum die Absagen den Vorschlag tragen",
-            "warum": "Zwei verworfene Objekte, die auf dem Papier besser aussahen, beweisen, dass du nicht nach der schönsten Zahl ausgewählt hast, sondern nach der belastbarsten. Das ist genau der Beweis, den Station 05 mit dem ehrlichen Vergleich vorbereitet hat. Nenn die Absagen konkret, mit Zahl und Grund. Eine vage Absage wirkt erfunden, eine konkrete wirkt wie ein Aktenauszug."
+            "warum": "Ein verworfenes Objekt, das auf dem Papier besser aussah, beweist, dass du nicht nach der schönsten Zahl ausgewählt hast, sondern nach den Kriterien des Kunden. Nenn die Absage konkret, mit Grund. Eine vage Absage wirkt erfunden, eine konkrete wirkt wie ein Aktenauszug."
           },
           {
             "titel": "Die Schlussfrage",
             "kontext": "Nach Chancen und Risiken. Danach schweigen.",
             "text": "\"Passt dieses Objekt zu dir, oder suchen wir weiter?\"",
             "warumTitel": "Warum nach dieser Frage nichts mehr kommt",
-            "warum": "Die Frage stammt aus Station 15, sie ist dem Kunden vertraut und sie enthält beide Antworten gleichwertig. Jeder Zusatz danach, jedes und wenn, jedes ich meine damit, verschiebt das Gewicht auf eine Seite und nimmt der Frage ihre Ehrlichkeit. Die Pause danach gehört dem Kunden, auch wenn sie lang wird."
+            "warum": "Die Frage knüpft an Abschnitt 15 der Beratungspräsentation an, sie ist dem Kunden vertraut und sie enthält beide Antworten gleichwertig. Jeder Zusatz danach, jedes und wenn, jedes ich meine damit, verschiebt das Gewicht auf eine Seite und nimmt der Frage ihre Ehrlichkeit. Die Pause danach gehört dem Kunden, auch wenn sie lang wird."
           },
           {
             "titel": "Bei Nein: die eine Rückfrage",
@@ -12705,7 +12041,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "technik": "Vergleichsmaßstab wechseln",
             "antwort": "\"Der Quadratmeterpreis vergleicht zwei Dinge, die nichts miteinander zu tun haben: eine Wohnung, in der jemand wohnt, und eine, die jemand vermietet. Bei einer Kapitalanlage entscheidet nicht die Fläche, sondern was die Fläche einbringt. Deshalb vergleichen wir über die Rendite. Deine liegt bei 4,80 Prozent brutto und 4,09 Prozent netto. Wenn du mir eine Wohnung bei dir zeigst, die das schafft, rechne ich sie dir durch, und wenn sie besser ist, sage ich dir das auch.\"",
             "warumTitel": "Warum du über die Rendite führst und nicht über den Quadratmeterpreis",
-            "warum": "Über den Quadratmeterpreis kannst du diese Diskussion nicht gewinnen, und du musst es auch nicht, denn er misst die falsche Sache. Diesen Wechsel des Maßstabs macht schon Station 10 bei der WG-Wohnung mit ihren 10.788 Euro je Quadratmeter vor. Wichtig ist, dass du netto und brutto beide nennst: Wer nur die schönere Zahl sagt, verliert den Maßstabswechsel wieder, sobald der Kunde selbst nachrechnet."
+            "warum": "Über den Quadratmeterpreis kannst du diese Diskussion nicht gewinnen, und du musst es auch nicht, denn er misst die falsche Sache. Denselben Wechsel des Maßstabs macht die Beratungspräsentation, wenn sie die Belastung im Monat zeigt statt den Kaufpreis. Wichtig ist, dass du netto und brutto beide nennst: Wer nur die schönere Zahl sagt, verliert den Maßstabswechsel wieder, sobald der Kunde selbst nachrechnet."
           },
           {
             "einwand": "Das ist mir zu weit weg, ich kann da nicht mal eben hinfahren.",
@@ -12717,9 +12053,9 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           {
             "einwand": "Ich möchte mir das erst mal in Ruhe ansehen und dann entscheiden.",
             "technik": "Erlaubnis und Struktur",
-            "antwort": "\"Selbstverständlich, und das ist auch richtig so. Damit das kein Warten wird, machen wir zwei Dinge: Ich schicke dir einen Zugang zu dieser Objektvorstellung, dort findest du alles von heute, immer auf dem aktuellen Stand. Und wir setzen jetzt einen Termin in den Kalender, Freitag oder Anfang nächster Woche. Eine Sache muss ich dir dazu ehrlich sagen: Die Einheit ist bis dahin nicht für dich reserviert. Wenn du das möchtest, ist das der nächste Schritt, und über den sprechen wir gleich.\"",
-            "warumTitel": "Warum die fehlende Reservierung hier hingehört und nicht als Druckmittel",
-            "warum": "Der Satz ist eine Tatsache, keine Verknappung, und genau so klingt er auch, wenn er neben einem konkreten Folgetermin steht. Wer die Verfügbarkeit dagegen erst im Nachfassen erwähnt, benutzt sie als Druckmittel, und das merkt der Kunde. Die Kombination aus erlaubtem Nachdenken, festem Termin und offener Information ist der Grund, warum aus diesem Einwand keine Absage wird."
+            "antwort": "\"Selbstverständlich, und das ist auch richtig so. Damit das kein Warten wird, machen wir zwei Dinge: Ich schicke dir innerhalb von zwei Stunden eine Zusammenfassung mit dem Zugang zu dieser Objektvorstellung, dort findest du alles von heute. Und wir setzen jetzt einen festen Termin für deine Rückmeldung. Die Reservierung kostet dich nichts, und wenn du dich danach anders entscheidest, ist das in Ordnung.\"",
+            "warumTitel": "Warum Bedenkzeit hier ausdrücklich erlaubt ist",
+            "warum": "Verknappung gibt es bei uns nicht, also auch keinen Satz, der die Bedenkzeit teuer macht. Der Kunde bekommt Zeit, eine schriftliche Zusammenfassung und einen festen Termin. Danach gilt der Nachfassplan: nach 24 Stunden eine Erinnerung, nach 48 Stunden ein Anruf, nach drei Versuchen eine letzte Nachricht und Pause."
           }
         ],
         "quereinsteigerHinweis": "Exposé ist die Objektdarstellung mit Bildern, Grundriss und Eckdaten, ohne interne Angaben. Die Investment-Analyse ist die Rechnung zum Objekt im CRM, aufrufbar je Wohneinheit. Objektvorstellung heißt bei uns die Seite mit Zugangslink, die der Kunde zwischen zwei Terminen öffnen kann. Und Vermietungsstand meint, ob die Wohnung vermietet ist oder leer steht. Vermietet ist bei einer Kapitalanlage der Regelfall und der bessere: Der Mieter ist dann keine Annahme, sondern steht im Vertrag, und die Miete auch.",
@@ -12751,17 +12087,17 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "hinweis": "Weitere Einwände zu Lage, Preis und Objekt, mit Techniken"
           },
           {
-            "label": "Der ehrliche Vergleich in Station 05",
-            "to": "/vertriebsakademie/beratungsgespraech?vaScrollTo=bausteine-vergleich",
-            "hinweis": "Die Vorarbeit, auf der die zwei verworfenen Alternativen aufbauen"
+            "label": "Das Prinzip mit vier Bausteinen in Abschnitt 06",
+            "to": "/vertriebsakademie/beratungsgespraech?vaScrollTo=konzepte-matching",
+            "hinweis": "Die Vorarbeit, auf der deine Auswahl aufbaut"
           }
         ],
         "checkliste": [
-          "Sechs Zusagen aus Station 15 aufgezählt und im Termin alle eingelöst",
+          "Vier Zusagen aus Abschnitt 16 genannt und im Termin alle eingelöst",
           "Suchprofil gezeigt und vom Kunden bestätigen lassen",
           "Verfügbarkeit am Morgen des Termins geprüft",
-          "Zwei verworfene Alternativen mit Zahl und Grund parat",
-          "Rechnung in derselben Reihenfolge wie in Station 10",
+          "Was du verworfen hast, mit Grund parat",
+          "Kalkulation in derselben Reihenfolge wie in Abschnitt 10, vor und nach Steuern, Regel-AfA daneben",
           "Netto- und Bruttorendite beide genannt",
           "Chancen- und Risikoseite gleich lang",
           "Schlussfrage wörtlich gestellt und danach geschwiegen",
@@ -12772,7 +12108,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           {
             "id": "objekt-kette-formulieren",
             "titel": "Die Begründungskette in vier Sätzen",
-            "beschreibung": "Nimm ein echtes Objekt aus Investagon und einen echten Kunden aus deiner Pipeline. Schreib die Kette auf: Rahmen und Preis, Wunschbeitrag und Rendite, Ziel und Konzept, Miete und Beleg. Vier Sätze, keiner länger als eine Zeile.",
+            "beschreibung": "Nimm ein echtes Objekt aus Investagon und einen echten Kunden aus deiner Pipeline. Schreib die Kette auf: Rahmen und Preis, tragbarer Betrag vor Steuern und Kalkulation, gewähltes Konzept und Objekt, Miete und Beleg. Vier Sätze, keiner länger als eine Zeile.",
             "xp": 15,
             "antwortTyp": "textarea",
             "antwortLabel": "Deine vier Sätze",
@@ -12817,12 +12153,12 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "punkte": 10,
             "randVorgegeben": true,
             "schritte": [
-              "Die sechs Zusagen aus Station 15 aufzählen",
+              "Die vier Zusagen aus Abschnitt 16 nennen",
               "Suchprofil zeigen und bestätigen lassen",
               "Objekt vorstellen: Lage, Haus, Wohnung",
-              "Die Rechnung, sechs Zeilen von oben nach unten",
+              "Die Kalkulation, vor und nach Steuern",
               "Chancen und Risiken, beide Spalten gleich lang",
-              "Die Schlussfrage aus Station 15"
+              "Die Schlussfrage und die Checkliste vor der Reservierung"
             ]
           },
           {
@@ -12859,7 +12195,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 "frage": "Der Kunde sagt Nein. Was ist jetzt der wertvollste Teil des Termins?",
                 "optionen": [
                   "Die Rückfrage nach dem Grund, in vier Kategorien",
-                  "Ein sofortiger Alternativvorschlag aus Investagon",
+                  "Ein sofortiger Alternativvorschlag aus dem Bestand",
                   "Die Bitte, es sich noch einmal zu überlegen"
                 ],
                 "korrekt": 0,
@@ -12872,31 +12208,31 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
       },
       {
         "id": "reservierung-uebergabe",
-        "ueberschrift": "Reservierung und Übergabe an die Finanzierung",
-        "intro": "Der Kunde hat Ja gesagt. Jetzt kommt der Schritt, den viele teurer machen, als er ist, und der in Wahrheit eines deiner stärksten Argumente enthält. Dieser Abschnitt sagt dir, welche Stufe wann schaltet, was die Reservierung leistet und was sie den Kunden kostet.",
+        "ueberschrift": "Checkliste, Reservierung und der Weg zur Finanzierung",
+        "intro": "Der Kunde hat Ja gesagt. Bevor er reserviert, gehst du die Checkliste vor der Reservierung durch. Dann reserviert er im selben Termin, kostenfrei, und danach folgen Besichtigung, Termin Bankgutachter und Finanzierung.",
         "absaetze": [
-          "Fünf Auslöser tragen die Kette von der Beratung bis zur Finanzierung, und sie stehen vollständig im Glossarkapitel. Für diesen Abschnitt zählen sie in dieser Reihenfolge. Die verschickte Selbstauskunft, die beim Kunden zur Unterschrift liegt, schaltet auf Selbstauskunft. Die unterschriebene Selbstauskunft schaltet auf Objektauswahl, nicht die Bonitätsfreigabe. Die eröffnete und versendete Reservierungsvereinbarung schaltet auf Reservierung, und zwar bevor der Kunde sie unterschrieben hat. Die unterschriebene Reservierungsvereinbarung schaltet einen Schritt weiter auf Bonitätsunterlagen. Und erst wenn alle sechs Pflichtdokumente vom zuständigen Vertriebspartner freigegeben sind, steht der Kunde auf Finanzierung. Freigegeben heißt angesehen und geprüft, nicht hochgeladen. In dieser Pipeline schaltet immer ein prüfbares Dokument, nie ein Gefühl und nie ein mündliches Ja.",
-          "Diese Reihenfolge überrascht jeden, der schon länger dabei ist, denn die Bonität stand früher vor der Objektauswahl. Getauscht wurde am 06.08.2026, und der Grund ist verkäuferisch. Erst prüfen, was der Kunde tragen kann, und dann Objekte zeigen, bremst genau in dem Moment, in dem er nach dem Beratungsgespräch am heißesten ist. Ein konkretes Objekt bringt jemanden dazu, drei Gehaltsnachweise herauszusuchen, eine abstrakte Anforderung tut das nicht. Der Preis dafür ist bekannt und ausdrücklich in Kauf genommen: Eine Einheit ist reserviert, bevor die Finanzierbarkeit feststeht. Deshalb meldet die nächtliche Prüfung jede Reservierung, die länger als vierzehn Tage ohne freigegebene Bonität steht, und deshalb hebt sie keine davon von selbst auf. Vierzehn Tage, weil Gehaltsnachweise und Kontoauszüge zusammenzusuchen realistisch ein bis zwei Wochen dauert. Was danach passiert, entscheidet ein Mensch, und zwar nach einem Anruf.",
+          "Vor jeder Reservierung steht die Checkliste, Punkt für Punkt: Ziel und Motiv sind klar. Alle Entscheider waren dabei. Die Selbstauskunft liegt vor. Die Belastungsgrenze ist bekannt, auch im Stressfall. Eigenkapital und Nebenkosten sind geklärt. Basis und Stress sind erklärt. Vor und nach Steuern wurde getrennt gezeigt. Die Risiken sind benannt, ohne Garantien. Die Objektunterlagen sind geprüft. Preis, Miete, Hausgeld und Rücklage sind bestätigt. Offene Punkte stehen schriftlich fest. Die Reservierungsbedingungen sind erklärt. Die Termine stehen im CRM. Und der Kunde kann die Entscheidung selbst begründen. Fehlt ein Punkt, wird nicht reserviert, sondern zuerst dieser Punkt geklärt.",
+          "Die Kette im CRM ist kurz. Die unterschriebene Selbstauskunft schaltet auf Objektvorstellung. Die Reservierung startet erst, wenn Selbstauskunft, Personalausweis und letzte Gehaltsabrechnung vorliegen; fehlen zwei Tage vor der Objektvorstellung noch Unterlagen, bekommst du eine Aufgabe zum Nachfassen. Die eröffnete und versendete Reservierungsvereinbarung schaltet auf Reservierung, und zwar bevor der Kunde sie unterschrieben hat. Mit der Unterschrift bekommst du die Aufgabe Besichtigung vereinbaren. Besichtigung und Termin Bankgutachter setzt du von Hand, jeweils mit Datum und Uhrzeit, und Stattgefunden rückt den Vorgang weiter, nach dem Bankgutachter auf Finanzierung. In dieser Pipeline schaltet immer ein prüfbares Dokument oder ein stattgefundener Termin, nie ein mündliches Ja.",
           "Was eine Reservierung ist und was nicht: Sie ist kein Kaufvertrag. Ein Vertrag über den Erwerb eines Grundstücks oder einer Eigentumswohnung bedarf der notariellen Beurkundung (§ 311b Absatz 1 Bürgerliches Gesetzbuch). Eine Reservierungsvereinbarung kann also gar keinen Anspruch auf Eigentum begründen. Sie ist eine Absprache mit dem Verkäufer, die Einheit für eine bestimmte Zeit nicht anderweitig anzubieten. Genau so erklärst du sie auch, denn ein Kunde, der glaubt, er habe unterschrieben, dass er kaufen muss, unterschreibt nicht.",
-          "Zur Kostenfrage, denn sie kommt an dieser Stelle immer: Die Reservierung kostet 1.000 Euro, ab einem Kaufpreis von 300.000 Euro sind es 1.500 Euro, zahlbar innerhalb von sieben Tagen nach Unterzeichnung. Am Tag der Beurkundung fließt der Betrag vollständig zurück, und auch dann, wenn der Kauf ohne Verschulden des Kunden scheitert; einbehalten wird er nur, wenn der Kunde selbst vor dem Notartermin abspringt. Sie enthält genau vier Punkte: die Absichtserklärung des Kunden, die Einheit erwerben zu wollen, seine Bestätigung, dass er Verkaufsprospekt, Preisliste und Objektunterlagen vollständig erhalten hat, den Auftrag an uns, alle Vorbereitungen für den Kaufvertrag zu treffen, und die Zusage, die Kosten aus der Notar-Beauftragung zu tragen, falls er aus Gründen zurücktritt, die er selbst zu vertreten hat. Mehr steht nicht darin, und genau das kannst du ihm im Formular zeigen. Behandle es nicht als Fußnote, sondern als Argument: Fast jeder Kunde, der schon einmal bei einem Makler war, rechnet hier mit einer Anzahlung. Wer stattdessen hört, dass ihn die Reservierung nichts kostet, entscheidet leichter, und du hast im selben Satz erklärt, warum die Wohnung trotzdem für ihn freigehalten wird.",
+          "Zur Kostenfrage, denn sie kommt an dieser Stelle immer: Die Reservierung ist kostenfrei. Es gibt keine Reservierungsgebühr, keine Anzahlung und keine Pauschale, und die Vereinbarung sagt ausdrücklich, dass keine Gebühr erhoben wird. Sie enthält genau vier Punkte: die Absichtserklärung des Kunden, die Einheit erwerben zu wollen, seine Bestätigung, dass er Verkaufsprospekt, Preisliste und Objektunterlagen vollständig erhalten hat, den Auftrag an uns, alle Vorbereitungen für den Kaufvertrag zu treffen, und die Zusage, die Kosten aus der Notar-Beauftragung zu tragen, falls er aus Gründen zurücktritt, die er selbst zu vertreten hat. Mehr steht nicht darin, und genau das kannst du ihm im Formular zeigen. Behandle es nicht als Fußnote, sondern als Argument: Fast jeder Kunde, der schon einmal bei einem Makler war, rechnet hier mit einer Anzahlung. Wer stattdessen hört, dass ihn die Reservierung nichts kostet, entscheidet leichter, und du hast im selben Satz erklärt, warum die Wohnung trotzdem für ihn freigehalten wird.",
           "Warum wir keine nehmen, ist in Kapitel 13 ausgearbeitet, und drei Sätze davon solltest du parat haben, weil Kunden von anderswo eine Gebühr kennen. Der Bundesgerichtshof hat mit Urteil vom 20. April 2023, Aktenzeichen I ZR 113/22, entschieden, dass eine in Allgemeinen Geschäftsbedingungen vereinbarte Reservierungsgebühr den Kunden unangemessen benachteiligt und deshalb unwirksam ist; Folge ist die Rückzahlung. Dazu kommt die Formfrage: Eine Reservierungsvereinbarung, die den Käufer mittelbar zum Kauf drängt, ist nach § 311b Absatz 1 Bürgerliches Gesetzbuch beurkundungspflichtig und ohne Beurkundung nach § 125 Bürgerliches Gesetzbuch nichtig. Und die Regel, die für dich daraus folgt, steht in Kapitel 13 in einem Satz: Sag nichts über eine Gebühr zu, die es bei uns nicht gibt, und erst recht nichts über ihre Rückzahlbarkeit.",
-          "Das Reservierungsformular im CRM verlangt mehr Angaben, als der Kunde erwartet, und jede davon hat einen Grund. Zu Käufer 1 und, falls zu zweit gekauft wird, zu Käufer 2: Vorname, Nachname, Geburtsdatum, Staatsangehörigkeit, vollständige Anschrift, Telefon, E-Mail und Güterstand. Dazu die Objektdaten mit Wohneinheit, Anschrift und Gesamtpreis sowie die Verkäuferdaten. Eine Angabe, die früher in dieser Liste stand, fehlt seit dem 22.09.2026: die Steuer-Identifikationsnummer. Sie wird im Reservierungsformular weder abgefragt noch ins PDF gedruckt, und warum das so ist, steht weiter unten in diesem Abschnitt. Wer das Formular im Termin gemeinsam ausfüllt, so wie in Station 14 die Selbstauskunft, ist in zehn Minuten fertig. Wer es als Hausaufgabe mitgibt, wartet eine Woche auf eine Unterschrift, die er im Termin schon gehabt hätte.",
+          "Das Reservierungsformular im CRM verlangt mehr Angaben, als der Kunde erwartet, und jede davon hat einen Grund. Zu Käufer 1 und, falls zu zweit gekauft wird, zu Käufer 2: Vorname, Nachname, Geburtsdatum, Staatsangehörigkeit, vollständige Anschrift, Telefon, E-Mail und Güterstand. Dazu die Objektdaten mit Wohneinheit, Anschrift und Gesamtpreis sowie die Verkäuferdaten. Eine Angabe, die früher in dieser Liste stand, fehlt seit dem 22.09.2026: die Steuer-Identifikationsnummer. Sie wird im Reservierungsformular weder abgefragt noch ins PDF gedruckt, und warum das so ist, steht weiter unten in diesem Abschnitt. Wer das Formular im Termin gemeinsam ausfüllt, so wie am Ende der Beratung die Selbstauskunft, ist in zehn Minuten fertig. Wer es als Hausaufgabe mitgibt, wartet eine Woche auf eine Unterschrift, die er im Termin schon gehabt hätte.",
           "Die Objektangaben in diesem Formular kommen aus Investagon, und das Formular sagt dir das auch: Eine Reservierung, deren Objekt dort liegt, trägt im CRM ein eigenes Kennzeichen und ein Feld für die Objektreferenz oder den Link zum Investagon-Objekt. Trag ihn ein, es kostet zehn Sekunden. Der Link steht danach in der Karte Finanzierung des Kunden und bringt jeden, der die vollständigen Objektunterlagen sucht, mit einem Klick dorthin, wo sie liegen. Das ist besonders dann etwas wert, wenn nicht du derjenige bist, der sie sucht, sondern das Backoffice oder der Finanzierungspartner. Sind Wohneinheit, Anschrift und Gesamtpreis vorher sauber im Investment eingetragen, füllt das Formular sie von selbst und du prüfst nur noch nach.",
           "Ein Feld in dieser Liste erklärst du am besten von selbst, sonst wirkt es übergriffig: der Güterstand. Er entscheidet, wer im Grundbuch steht und wem damit die Einkünfte und die Werbungskosten zugerechnet werden. Bei Gütergemeinschaft fällt der Erwerb ins Gesamtgut (§ 1416 Bürgerliches Gesetzbuch), dann handeln beide gemeinsam. Bei Zugewinngemeinschaft, dem gesetzlichen Regelfall, kann jeder allein erwerben.",
           "Und damit zur Steuer-Identifikationsnummer, denn sie ist nicht aus der Welt, sie hat nur ihren Platz gewechselt. Gebraucht wird sie ganz sicher: Der Notar muss den Erwerbsvorgang dem Finanzamt anzeigen, und die Anzeige enthält die Identifikationsnummer nach § 139b Abgabenordnung der Beteiligten (§ 20 Absatz 1 Nummer 1 Grunderwerbsteuergesetz). Gebraucht wird sie aber erst dort und nicht schon hier. Die Reservierung ist eine Absichtserklärung, und eine Nummer, die kaum jemand auswendig kennt, hat einen Vorgang aufgehalten, der von ihr gar nicht abhängt. Deshalb wird sie seit dem 22.09.2026 an zwei anderen Stellen eingesammelt: freiwillig in der Selbstauskunft, und spätestens im Notar-Aufnahmebogen, der sie mit rotem Sternchen und Begründung deutlich einfordert. Liegt sie aus der Selbstauskunft schon vor, steht sie dort von selbst.",
           "Für dich folgt daraus eine einzige Gewohnheit, und sie ist der ganze Unterschied zwischen einem ruhigen und einem hektischen Notartermin: Frag früh nach der Nummer, nicht am Vortag. Sie steht auf dem letzten Steuerbescheid oder auf der Lohnsteuerbescheinigung, und viele Menschen müssen beides erst suchen. Ein Satz in der Woche nach der Reservierung genügt, dann liegt sie da, wenn der Aufnahmebogen ausgefüllt wird. Wer stattdessen wartet, bis der Bogen offen ist, telefoniert am Abend vor dem Termin hinterher. Kapitel 8 sagt dir dasselbe noch einmal aus der Sicht des Notars, dort ist es der erste von drei Profi-Punkten.",
-          "Und dann die Übergabe an Kapitel 7. Nach der Unterschrift steht der Kunde auf Bonitätsunterlagen, und jetzt sammelst du zwei Stapel gleichzeitig ein. Der erste ist die Personenseite, also die sechs Pflichtdokumente: Selbstauskunft, Personalausweis, die drei letzten Gehaltsnachweise und der Gehaltsnachweis vom Dezember des Vorjahres. Sind sie freigegeben, schaltet die Stufe auf Finanzierung. Der zweite Stapel ist die Objektseite, und die fehlt in der Zeitleiste von Kapitel 7, obwohl sich ohne sie nichts bewegt: Die Bank kann ohne Objektangaben keinen Beleihungswert ermitteln und ohne Beleihungswert keine verbindliche Zusage geben. Dazu gehören Exposé, Grundriss, Wohnflächenberechnung, Teilungserklärung, aktuelle Mietverträge oder Mietaufstellung, die letzte Hausgeldabrechnung, die Protokolle der letzten Eigentümerversammlungen, der Energieausweis und, beim Neubau, Baubeschreibung und Zahlungsplan sowie der Kaufvertragsentwurf. Der Energieausweis ist dem Käufer spätestens bei Vertragsabschluss zu übergeben, und schon in der Immobilienanzeige sind seine Kennwerte anzugeben (§§ 80 und 87 Gebäudeenergiegesetz).",
-          "Bleibt die gefährlichste Zeit des ganzen Prozesses, und sie steht in keiner Zeitleiste: die zwei bis vier Wochen zwischen Reservierung und Notartermin. Der Kunde hat entschieden und unterschrieben, und dann passiert wochenlang nichts, was er sehen kann. Genau hier springen Kunden ab, nicht im Objekttermin. Vereinbare deshalb im selben Atemzug mit der Reservierung einen festen Rückmeldetakt, auch wenn es nichts zu melden gibt. Ein Anruf, in dem du sagst, dass die Unterlagen bei der Bank liegen und die Zusage in der zweiten Wochenhälfte erwartet wird, ist mehr wert als drei perfekte Präsentationen. Und er hat einen zweiten Zweck: Solange die Bonität nicht freigegeben ist, läuft im Hintergrund die Vierzehn-Tage-Uhr.",
+          "Und dann der Weg zur Finanzierung. Nach der Unterschrift vereinbarst du die Besichtigung, danach den Termin mit dem Gutachter der Bank. Parallel sammelst du zwei Stapel ein. Der erste ist die Personenseite: Personalausweis und letzte Gehaltsabrechnung liegen schon vor, die Bank braucht je nach Beschäftigungsart weitere Unterlagen, etwa die drei letzten Gehaltsnachweise und den vom Dezember des Vorjahres. Sind alle freigegeben, wird der Finanzierungspartner gerufen. Der zweite Stapel ist die Objektseite, und ohne sie bewegt sich nichts: Die Bank kann ohne Objektangaben keinen Beleihungswert ermitteln und ohne Beleihungswert keine verbindliche Zusage geben. Dazu gehören Exposé, Grundriss, Wohnflächenberechnung, Teilungserklärung, aktuelle Mietverträge oder Mietaufstellung, die letzte Hausgeldabrechnung, die Protokolle der letzten Eigentümerversammlungen und der Energieausweis. Der Energieausweis ist dem Käufer spätestens bei Vertragsabschluss zu übergeben, und schon in der Immobilienanzeige sind seine Kennwerte anzugeben (§§ 80 und 87 Gebäudeenergiegesetz).",
+          "Bleibt die gefährlichste Zeit des ganzen Prozesses: die Wochen zwischen Reservierung und Notartermin. Der Kunde hat entschieden und unterschrieben, und dann passiert eine Weile wenig, was er sehen kann. Genau hier springen Kunden ab, nicht in der Objektvorstellung. Die Besichtigung hilft, denn der Kunde sieht seine Immobilie. Vereinbare trotzdem im selben Atemzug mit der Reservierung einen festen Rückmeldetakt, auch wenn es nichts zu melden gibt. Ein Anruf, in dem du sagst, dass der Bankgutachter am Donnerstag kommt und die Zusage danach erwartet wird, ist mehr wert als drei perfekte Präsentationen.",
           "Damit ist deine Arbeit am Objekt getan, und der Vorgang wechselt die Hand. Das nächste Kapitel ist die Finanzierung: drei Wege, eine Zeitleiste und die Zusage, an der alles Weitere hängt."
         ],
         "bullets": [
+          "Checkliste vor der Reservierung: Ziel und Motiv, alle Entscheider, Selbstauskunft, Belastungsgrenze, Eigenkapital und Nebenkosten, Basis und Stress erklärt, vor und nach Steuern getrennt, Risiken ohne Garantien, Objektunterlagen geprüft, Preis, Miete, Hausgeld und Rücklage bestätigt, offene Punkte schriftlich, Reservierungsbedingungen erklärt, Termine im CRM, Kunde kann die Entscheidung selbst begründen.",
+          "Die Reservierung startet erst, wenn Selbstauskunft, Personalausweis und letzte Gehaltsabrechnung vorliegen.",
           "Auslöser Reservierung: Die Reservierungsvereinbarung ist eröffnet und versendet, die Unterschrift steht noch aus.",
-          "Auslöser Bonitätsunterlagen: Die Reservierungsvereinbarung ist unterschrieben.",
-          "Auslöser Finanzierung: Alle sechs Pflichtdokumente sind vom zuständigen Vertriebspartner freigegeben, also angesehen und geprüft, nicht nur hochgeladen.",
-          "Seit dem 06.08.2026 steht die Bonität hinter der Reservierung. Die nächtliche Prüfung meldet jede Reservierung, die länger als vierzehn Tage ohne freigegebene Bonität steht, hebt sie aber nie von selbst auf.",
+          "Nach der Unterschrift: Aufgabe Besichtigung vereinbaren. Besichtigung und Termin Bankgutachter mit Datum und Uhrzeit, Stattgefunden rückt weiter bis Finanzierung.",
           "Die Reservierung ist kein Kaufvertrag. Ein Kauf bedarf der notariellen Beurkundung (§ 311b Absatz 1 Bürgerliches Gesetzbuch).",
-          "Reservierungsgebühr: 1.000 Euro, ab 300.000 Euro Kaufpreis 1.500 Euro, innerhalb von sieben Tagen. Am Tag der Beurkundung vollständig zurück. Zweiter Kostenpunkt der Vereinbarung: die Übernahme der Notarkosten bei selbst zu vertretendem Rücktritt.",
-          "Warum die Rückzahlung immer mitgesprochen wird: BGH, Urteil vom 20.04.2023, I ZR 113/22. Dort war die Rückzahlung ausnahmslos ausgeschlossen, und genau daran scheiterte die Gebühr. Ausführlich in Kapitel 13.",
+          "Reservierungsgebühr: keine, die Reservierung ist kostenfrei. Einziger Kostenpunkt der Vereinbarung: die Übernahme der Notarkosten bei selbst zu vertretendem Rücktritt.",
+          "Warum wir keine nehmen: BGH, Urteil vom 20.04.2023, I ZR 113/22, eine Reservierungsgebühr in Allgemeinen Geschäftsbedingungen benachteiligt den Kunden unangemessen. Ausführlich in Kapitel 13.",
           "Formular im Termin gemeinsam ausfüllen, nicht als Hausaufgabe. Den Güterstand vorher ankündigen und erklären, sonst wirkt die Frage übergriffig.",
           "Die Steuer-Identifikationsnummer steht seit dem 22.09.2026 nicht mehr im Reservierungsformular. Gebraucht wird sie erst beim Notar, eingesammelt wird sie freiwillig in der Selbstauskunft und spätestens im Notar-Aufnahmebogen. Frag trotzdem früh danach.",
           "Objektreferenz oder Link zum Investagon-Objekt im Reservierungsformular eintragen. Er führt später jeden, der die Objektunterlagen sucht, mit einem Klick dorthin.",
@@ -12906,36 +12242,36 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "visuals": [
           {
             "timeline": {
-              "titel": "Die Auslöser der Kette, von der Objektauswahl bis zum Notar",
+              "titel": "Die Kette von der Objektvorstellung bis zum Notar",
               "schritte": [
                 {
-                  "label": "Objektauswahl",
-                  "dauer": "Ab unterschriebener Selbstauskunft",
-                  "beschreibung": "Suchprofil, Vorschlag, Objekttermin.",
+                  "label": "Objektvorstellung",
+                  "dauer": "Rund 7 Tage nach der Beratung",
+                  "beschreibung": "Exposé, Kalkulation, Checkliste vor der Reservierung.",
                   "status": "start"
                 },
                 {
                   "label": "Reservierung",
-                  "dauer": "Auslöser",
-                  "beschreibung": "Die Reservierungsvereinbarung ist eröffnet und versendet. Unterschrieben sein muss sie dafür nicht.",
+                  "dauer": "Im selben Termin",
+                  "beschreibung": "Kostenfrei. Die versendete Vereinbarung schaltet die Stufe, die Unterschrift bringt die Aufgabe Besichtigung vereinbaren.",
                   "status": "trigger"
                 },
                 {
-                  "label": "Bonitätsunterlagen",
-                  "dauer": "Auslöser",
-                  "beschreibung": "Die Reservierungsvereinbarung ist unterschrieben. Jetzt sammelst du die sechs Pflichtdokumente ein.",
+                  "label": "Besichtigung",
+                  "dauer": "Termin mit Datum",
+                  "beschreibung": "Der Kunde sieht seine Immobilie. Stattgefunden rückt weiter.",
                   "status": "trigger"
                 },
                 {
-                  "label": "Finanzierung",
-                  "dauer": "Auslöser",
-                  "beschreibung": "Alle sechs Pflichtdokumente sind freigegeben. Ab hier läuft die Zeitleiste aus Kapitel 7.",
+                  "label": "Termin Bankgutachter",
+                  "dauer": "Termin mit Datum",
+                  "beschreibung": "Der Gutachter der Bank bewertet das Objekt. Stattgefunden rückt auf Finanzierung.",
                   "status": "trigger"
                 },
                 {
-                  "label": "Notar",
-                  "dauer": "Tag 5 bis 14 plus Terminvergabe",
-                  "beschreibung": "Buchbar, sobald die Finanzierungszusage vorliegt und das Objekt reserviert ist.",
+                  "label": "Finanzierung und Notar",
+                  "dauer": "Nach der Zusage",
+                  "beschreibung": "Notartermin, sobald die Finanzierungszusage vorliegt.",
                   "status": "ziel"
                 }
               ]
@@ -12949,7 +12285,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 {
                   "label": "Reservierungsgebühr",
                   "wert": "0 €",
-                  "hinweis": "Es gibt sie bei uns nicht. Im CRM existiert dafür weder ein Feld noch ein Text in der Vereinbarung."
+                  "hinweis": "Es gibt sie bei uns nicht. Im CRM gibt es dafür kein Feld, und die Vereinbarung sagt ausdrücklich, dass keine erhoben wird."
                 },
                 {
                   "label": "Anzahlung auf den Kaufpreis",
@@ -12985,7 +12321,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           {
             "titel": "Die Reservierung erklären",
             "kontext": "Direkt nach dem Ja des Kunden, bevor das Formular geöffnet wird.",
-            "text": "\"Der nächste Schritt heißt Reservierung, und ich sage dir zuerst, was er nicht ist: kein Kaufvertrag. Ein Kauf geht in Deutschland ausschließlich über den Notar, das kann kein Formular ersetzen. Die Reservierung sagt nur: Diese Wohnung wird für dich freigehalten, solange deine Finanzierung geprüft wird. Dafür fällt eine Reservierungsgebühr an, 1.000 Euro, ab 300.000 Euro Kaufpreis 1.500 Euro. Am Tag der Beurkundung bekommst du den Betrag vollständig zurück. Er bleibt nur dann bei uns, wenn du selbst abspringst. Und einen zweiten Punkt sage ich dir von mir aus: Wenn du später aus einem Grund zurücktrittst, der bei dir liegt, trägst du die Kosten, die beim Notar bis dahin entstanden sind. Beide Stellen lese ich dir vor deiner Unterschrift vor. Sonst steht nichts darin.\"",
+            "text": "\"Der nächste Schritt heißt Reservierung, und ich sage dir zuerst, was er nicht ist: kein Kaufvertrag. Ein Kauf geht in Deutschland ausschließlich über den Notar, das kann kein Formular ersetzen. Die Reservierung sagt nur: Diese Wohnung wird für dich freigehalten, während du sie besichtigst und die Bank deine Finanzierung prüft. Das kostet dich nichts, eine Reservierungsgebühr gibt es bei uns nicht. Einen Punkt sage ich dir von mir aus: Wenn du später aus einem Grund zurücktrittst, der bei dir liegt, trägst du die Kosten, die beim Notar bis dahin entstanden sind. Diese Stelle lese ich dir vor deiner Unterschrift vor. Sonst steht nichts darin.\"",
             "warumTitel": "Warum du mit dem beginnst, was es nicht ist",
             "warum": "Die häufigste unausgesprochene Sorge lautet: Unterschreibe ich hier, dass ich kaufen muss? Solange diese Frage im Raum steht, hört der Kunde nichts anderes. Wer sie zuerst beantwortet und dazu den Notar als objektiven Grund nennt, räumt sie in einem Satz aus. Danach kommt der Satz, mit dem fast niemand rechnet: Es kostet nichts. Wer schon einmal bei einem Makler war, erwartet an dieser Stelle eine Anzahlung, und eine erwartete Hürde, die ausbleibt, wirkt stärker als jedes Argument. Dass du den einen echten Kostenpunkt von dir aus nennst und ihn vorliest, statt ihn zu überblättern, macht die gute Nachricht erst glaubwürdig."
           },
@@ -12999,9 +12335,9 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           {
             "titel": "Der Rückmeldetakt",
             "kontext": "Unmittelbar nach der Unterschrift, im selben Atemzug.",
-            "text": "\"Jetzt passiert eine Weile wenig, was du sehen kannst, und genau darüber will ich vorher sprechen. Deine Unterlagen gehen morgen zum Finanzierungspartner. Die Zusage der Bank kommt üblicherweise zwischen dem fünften und dem vierzehnten Tag. Ich melde mich jeden Dienstag bei dir, auch wenn es nichts Neues gibt, und ich sage dir dann jedes Mal, woran es gerade liegt. Sobald die Zusage da ist, machen wir den Notartermin.\"",
+            "text": "\"Jetzt passiert eine Weile wenig, was du sehen kannst, und genau darüber will ich vorher sprechen. Als Nächstes vereinbaren wir deine Besichtigung, danach kommt der Gutachter der Bank. Ich melde mich jeden Dienstag bei dir, auch wenn es nichts Neues gibt, und ich sage dir dann jedes Mal, woran es gerade liegt. Sobald die Zusage der Bank da ist, machen wir den Notartermin.\"",
             "warumTitel": "Warum ein Anruf ohne Neuigkeit der wichtigste des Prozesses ist",
-            "warum": "Zwischen Reservierung und Notartermin hat der Kunde entschieden, gezahlt und unterschrieben, und dann bricht die Kommunikation ab. Stille wird in dieser Lage nicht als Ruhe gelesen, sondern als Problem, und der Kunde beginnt, seine Entscheidung selbst zu prüfen. Ein angekündigter fester Takt nimmt der Stille ihre Bedeutung, denn was angekündigt ist, ist kein Schweigen mehr."
+            "warum": "Zwischen Reservierung und Notartermin hat der Kunde entschieden und unterschrieben, und dann wird es still. Stille wird in dieser Lage nicht als Ruhe gelesen, sondern als Problem, und der Kunde beginnt, seine Entscheidung selbst zu prüfen. Ein angekündigter fester Takt nimmt der Stille ihre Bedeutung, denn was angekündigt ist, ist kein Schweigen mehr."
           }
         ],
         "einwaende": [
@@ -13015,27 +12351,27 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           {
             "einwand": "Was kostet mich die Reservierung? Beim letzten Anbieter sollte ich ein Prozent anzahlen.",
             "technik": "Unterschied benennen, ohne den anderen schlechtzumachen",
-            "antwort": "\"1.000 Euro, ab einem Kaufpreis von 300.000 sind es 1.500. Das Wichtige daran: Am Tag der Beurkundung bekommst du den Betrag vollständig zurück. Er bleibt nur dann bei uns, wenn du selbst abspringst. Kommt der Kauf aus Gründen nicht zustande, die nicht bei dir liegen, bekommst du ihn ebenfalls vollständig zurück. Ob der andere Anbieter das auch so hält, weiß ich nicht. Dort lohnt die Frage, unter welchen Umständen du dein Prozent wiedersiehst.\"",
-            "warumTitel": "Warum die Rückzahlung im selben Atemzug steht",
-            "warum": "Die Zahl allein klingt wie eine Hürde, die Zahl mit der Rückzahlung klingt wie eine Formalie. Wer erst den Betrag nennt und die Rückzahlung nachschiebt, hat den Kunden schon verloren: In der Pause dazwischen rechnet er. Deshalb beides in einem Zug. Den Wettbewerber bewertest du nicht, du stellst nur die Frage, die sich der Kunde dort ohnehin stellen sollte. Wer über andere herzieht, wirkt unsicher; wer eine sachliche Frage formuliert, wirkt informiert."
+            "antwort": "\"Nichts. Eine Reservierungsgebühr gibt es bei uns nicht, und das steht auch so in der Vereinbarung. Der einzige Punkt, der dich etwas kosten kann, ist ein Rücktritt aus einem Grund, der bei dir liegt: Dann trägst du die Kosten, die beim Notar bis dahin entstanden sind. Ob der andere Anbieter sein Prozent zurückzahlt, weiß ich nicht. Dort lohnt die Frage, unter welchen Umständen du es wiedersiehst.\"",
+            "warumTitel": "Warum das Nichts zuerst kommt",
+            "warum": "Der Kunde rechnet mit einer Zahl. Wer mit einer Erklärung beginnt, lässt ihn in der Pause rechnen; das klare Nichts zuerst nimmt ihm die Sorge in einem Wort. Den Wettbewerber bewertest du nicht, du stellst nur die Frage, die sich der Kunde dort ohnehin stellen sollte. Wer über andere herzieht, wirkt unsicher; wer eine sachliche Frage formuliert, wirkt informiert."
           },
           {
             "einwand": "Und wenn die Bank am Ende doch absagt?",
             "technik": "Risiko benennen und sofort verkürzen",
-            "antwort": "\"Dann bekommst du die Reservierungsgebühr vollständig zurück. Eine Absage der Bank ist kein Grund, der bei dir liegt, und genau für diesen Fall ist die Rückzahlung in der Vereinbarung geregelt. Wir schauen uns dann gemeinsam an, woran es lag, und in den meisten Fällen liegt es an einer Kleinigkeit in den Unterlagen. Damit es gar nicht erst so weit kommt, machen wir jetzt zwei Dinge in dieser Reihenfolge: du unterschreibst die Reservierung, und direkt danach stellen wir deine sechs Unterlagen für die Bonität zusammen. Je schneller die durch sind, desto kürzer ist die Strecke, auf der überhaupt etwas offen ist.\"",
+            "antwort": "\"Dann hat dich die Reservierung nichts gekostet, denn sie ist kostenfrei. Wir schauen uns dann gemeinsam an, woran es lag. Damit es gar nicht erst so weit kommt, haben wir vorher sauber gerechnet: deine Selbstauskunft, Ausweis und Gehaltsabrechnung liegen schon vor, und die Belastung liegt auch im Stresstest unter deiner Grenze. Ob und wie viel die Bank finanziert, entscheidet am Ende die Bank. Was dafür noch fehlt, stellen wir direkt nach der Besichtigung zusammen.\"",
             "warumTitel": "Warum du die Unterlagen im selben Atemzug ansprichst",
-            "warum": "Seit die Bonität hinter der Reservierung liegt, ist die Sorge des Kunden berechtigt: Er bindet sich, bevor die Finanzierbarkeit bestätigt ist. Das kleinzureden wäre falsch. Stattdessen benennst du das offene Stück und verkürzt es sofort, indem du den nächsten Schritt an den heutigen anhängst. Das nutzt außerdem den Moment, in dem der Kunde am zugänglichsten ist: Direkt nach einer Entscheidung liefert er Unterlagen, die er zwei Wochen später verschleppt. Und es hält dich aus der Vierzehn-Tage-Meldung heraus."
+            "warum": "Die Sorge des Kunden ist berechtigt, denn die Zusage der Bank steht noch aus. Das kleinzureden wäre falsch, und „Das bekommen wir bei der Bank schon hin“ sagen wir nie. Stattdessen zeigst du, was schon geprüft ist, nennst das offene Stück und verkürzt es, indem du den nächsten Schritt an den heutigen anhängst."
           }
         ],
-        "quereinsteigerHinweis": "Reservierungsvereinbarung heißt: Der Verkäufer nimmt die Einheit für eine bestimmte Zeit aus dem Verkauf, und der Kunde erklärt schriftlich, dass er sie erwerben möchte. Bezahlt wird dafür nichts. Beurkundung meint, dass ein Notar den Vertrag vorliest und beide unterschreiben, ohne diesen Schritt gibt es keinen Immobilienkauf. Bonitätsunterlagen ist der Name der Pipeline-Stufe, die nach der Reservierung kommt: sechs Pflichtdokumente, die zeigen, dass der Kunde die Rate tragen kann. Güterstand ist die vermögensrechtliche Lage eines Ehepaars, Zugewinngemeinschaft ist der Normalfall, wenn nichts vereinbart wurde. Steuer-Identifikationsnummer ist die elfstellige Nummer, die jeder Mensch in Deutschland ein Leben lang behält, sie steht auf dem Steuerbescheid; im Reservierungsformular wird sie nicht mehr abgefragt, gebraucht wird sie erst beim Notar. Und wenn der Kunde fragt, warum die Bank das Objekt selbst bewertet, obwohl der Preis doch feststeht: Sie prüft nicht den Preis, sondern was sie im Ernstfall dafür bekäme. Deshalb liegt ihr Wert bewusst darunter.",
-        "profiTipp": "Kapitel 7 sagt: Notartermin, sobald die Zusage vorliegt und das Objekt reserviert ist. Dieser Satz lässt zwei Reihenfolgen zu, und sie sind nicht gleichwertig. Erst finanzieren und dann reservieren klingt vorsichtiger, funktioniert aber nicht: Ohne konkretes Objekt gibt es keine Beleihungswertermittlung und damit keine verbindliche Zusage, sondern nur eine Machbarkeitsaussage. Also gilt in der Praxis: erst reservieren, dann finanzieren, und genau deshalb ist die Pipeline seit dem 06.08.2026 so gebaut. Daraus folgt eine Prüfung, die zwanzig Sekunden dauert und regelmäßig vergessen wird: Die Reservierungsfrist in der Vereinbarung muss die Zusagezeit aus Kapitel 7 abdecken, also die fünf bis vierzehn Tage bis zur Zusage plus die Terminvergabe beim Notar. Eine Frist von zwei Wochen ist zu kurz und erzeugt Druck, der niemandem nützt. Lies das Datum, bevor du unterschreiben lässt, und lass es notfalls ändern. Zweite Feinheit derselben Art: Frag den Verkäufer vor der Unterschrift, ob die Vereinbarung eine Finanzierungsbedingung enthält. Mit Bedingung ist geregelt, was gilt, wenn die Bank absagt, ohne Bedingung hängt es an seiner Kulanz. Und drittens eine Zahl, die deine Reihenfolge erklärt: Der Forecast rechnet die Stufe Reservierung mit 60 Prozent Abschlusswahrscheinlichkeit und die Stufe Bonitätsunterlagen mit 75 Prozent. Das ist der größte Sprung der ganzen Kette, und er sitzt genau dort, wo der Kunde seine Unterlagen abgibt. Wer nach der Unterschrift zwei Wochen wartet, verschenkt ihn.",
+        "quereinsteigerHinweis": "Reservierungsvereinbarung heißt: Der Verkäufer nimmt die Einheit für eine bestimmte Zeit aus dem Verkauf, und der Kunde erklärt schriftlich, dass er sie erwerben möchte. Bezahlt wird dafür nichts. Beurkundung meint, dass ein Notar den Vertrag vorliest und beide unterschreiben, ohne diesen Schritt gibt es keinen Immobilienkauf. Der Bankgutachter ist der Sachverständige, den die Bank schickt, um das Objekt selbst zu bewerten. Erst mit seiner Bewertung gibt die Bank eine verbindliche Zusage. Güterstand ist die vermögensrechtliche Lage eines Ehepaars, Zugewinngemeinschaft ist der Normalfall, wenn nichts vereinbart wurde. Steuer-Identifikationsnummer ist die elfstellige Nummer, die jeder Mensch in Deutschland ein Leben lang behält, sie steht auf dem Steuerbescheid; im Reservierungsformular wird sie nicht mehr abgefragt, gebraucht wird sie erst beim Notar. Und wenn der Kunde fragt, warum die Bank das Objekt selbst bewertet, obwohl der Preis doch feststeht: Sie prüft nicht den Preis, sondern was sie im Ernstfall dafür bekäme. Deshalb liegt ihr Wert bewusst darunter.",
+        "profiTipp": "Kapitel 7 sagt: Notartermin, sobald die Zusage vorliegt und das Objekt reserviert ist. Erst reservieren, dann finanzieren, denn ohne konkretes Objekt gibt es keine Beleihungswertermittlung und damit keine verbindliche Zusage, sondern nur eine Machbarkeitsaussage. Weil die Unterlagen schon vor der Objektvorstellung vorliegen, ist das Risiko dabei kleiner geworden, aber nicht null. Daraus folgt eine Prüfung, die zwanzig Sekunden dauert und regelmäßig vergessen wird: Die Reservierungsfrist in der Vereinbarung muss Besichtigung, Bankgutachter, Zusage und die Terminvergabe beim Notar abdecken. Eine Frist von zwei Wochen ist zu kurz und erzeugt Druck, der niemandem nützt. Lies das Datum, bevor du unterschreiben lässt, und lass es notfalls ändern. Zweite Feinheit derselben Art: Frag den Verkäufer vor der Unterschrift, ob die Vereinbarung eine Finanzierungsbedingung enthält. Mit Bedingung ist geregelt, was gilt, wenn die Bank absagt, ohne Bedingung hängt es an seiner Kulanz.",
         "goldNugget": {
           "titel": "Der Tag nach der Reservierung",
           "text": "Es gibt einen Tag in diesem Prozess, an dem du fast nichts tun musst und trotzdem alles entscheidest: den Tag nach der Unterschrift. An diesem Tag ist der Kunde am zugänglichsten und zugleich am unsichersten, das ist derselbe Zustand. Drei Handlungen, zusammen eine halbe Stunde.",
           "bullets": [
             "Erstens: Schick eine kurze schriftliche Zusammenfassung dessen, was jetzt passiert, mit Datum. Was du gestern gesagt hast, ist heute schon halb vergessen, und schriftlich wird es zu etwas, das der Kunde einem Mitentscheider zeigen kann.",
-            "Zweitens: Hol die sechs Bonitätsunterlagen. Nicht per Sammelmail, sondern als benannte Liste mit einem Datum. Seit die Bonität hinter der Reservierung liegt, läuft ab der Unterschrift die Vierzehn-Tage-Uhr, und die meldet nicht dich, sondern deinen Kunden als Hänger.",
-            "Drittens: Frag nach der Empfehlung. Nicht später, wenn alles durch ist, sondern jetzt. Kapitel 5 hat das Beratungsgespräch mit einem erlaubten Nein beendet, dieser Schritt endet mit einer Entscheidung, auf die der Kunde stolz ist. Stolz hält nicht sechs Wochen bis zum Grundbucheintrag.",
+            "Zweitens: Vereinbare die Besichtigung, das CRM hat dir dafür schon die Aufgabe angelegt. Und nenn die Unterlagen, die die Bank noch braucht, als benannte Liste mit einem Datum, nicht per Sammelmail.",
+            "Drittens: Frag nach der Empfehlung. Nicht später, wenn alles durch ist, sondern jetzt. Kapitel 5 hat die Beratung mit einer Frage beendet, auf die auch ein Nein erlaubt war, dieser Schritt endet mit einer Entscheidung, auf die der Kunde stolz ist. Stolz hält nicht sechs Wochen bis zum Grundbucheintrag.",
             "Und was du an diesem Tag nicht tust: die Entscheidung noch einmal bestätigen. Wer nachträglich erklärt, wie richtig die Entscheidung war, sät den Zweifel, den er zerstreuen will."
           ]
         },
@@ -13053,60 +12389,63 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           {
             "label": "Pipeline-Stufen im Glossar",
             "to": "/vertriebsakademie/glossar-zahlen?vaScrollTo=pipeline-glossar",
-            "hinweis": "Alle 16 Stufen und ihre Auslöser, vollständig und mit dem Datum der Umstellung"
+            "hinweis": "Alle Stufen und ihre Auslöser"
           },
           {
             "label": "Kapitel 13, später im Pfad: Preis, Sonderwünsche und Zahlungsplan",
             "to": "/vertriebsakademie/verhandlung?vaScrollTo=verhandlung-kunde",
-            "hinweis": "Wie die Reservierungsgebühr geregelt ist, was in der Vereinbarung steht und wie du über Preise sprichst"
+            "hinweis": "Warum die Reservierung kostenfrei ist, was in der Vereinbarung steht und wie du über Preise sprichst"
           },
           {
             "label": "Bonitäts-Checkliste",
             "to": "/bonitaet/checkliste",
-            "hinweis": "Die sechs Pflichtdokumente. Du sammelst sie ein, nachdem die Reservierungsvereinbarung unterschrieben ist"
+            "hinweis": "Die Unterlagen für die Bank. Personalausweis und letzte Gehaltsabrechnung liegen schon vor der Objektvorstellung vor"
           }
         ],
         "checkliste": [
+          "Checkliste vor der Reservierung vollständig durchgegangen, der Kunde kann die Entscheidung selbst begründen",
+          "Selbstauskunft, Personalausweis und letzte Gehaltsabrechnung liegen vor",
           "Reservierungsvereinbarung im CRM eröffnet und an den Kunden versendet, damit ist die Stufe Reservierung erreicht",
           "Formular im Termin gemeinsam ausgefüllt, den Güterstand vorher angekündigt und erklärt",
           "Steuer-Identifikationsnummer beiläufig angekündigt: nicht im Reservierungsformular, aber später beim Notar. Der Kunde weiß, dass sie auf dem Steuerbescheid oder der Lohnsteuerbescheinigung steht",
           "Die Kostenstelle vor der Unterschrift vorgelesen: Notarkosten nur bei selbst zu vertretendem Rücktritt, sonst nichts",
-          "Reservierungsfrist gelesen: deckt sie die fünf bis vierzehn Tage bis zur Zusage plus Terminvergabe ab?",
+          "Reservierungsfrist gelesen: deckt sie Besichtigung, Bankgutachter, Zusage und Terminvergabe beim Notar ab?",
           "Beim Verkäufer geklärt, ob die Vereinbarung eine Finanzierungsbedingung enthält",
-          "Nach der Unterschrift steht der Kunde auf Bonitätsunterlagen. Die sechs Pflichtdokumente als benannte Liste mit Datum angefordert",
+          "Nach der Unterschrift: Besichtigung vereinbart und im CRM mit Datum und Uhrzeit eingetragen",
+          "Nach der Besichtigung: Termin Bankgutachter vereinbart und eingetragen",
           "Objektunterlagen zusammengestellt: Exposé, Grundriss, Wohnflächenberechnung, Teilungserklärung, Mietverträge oder Mietaufstellung, Hausgeldabrechnung, Protokolle, Energieausweis",
           "Beim Neubau zusätzlich: Baubeschreibung, Zahlungsplan, Kaufvertragsentwurf",
-          "Pflichtdokumente angesehen und freigegeben, erst danach steht der Kunde auf Finanzierung",
+          "Weitere Unterlagen für die Bank als benannte Liste mit Datum angefordert und freigegeben",
           "Fester Rückmeldetakt vereinbart und im Kalender hinterlegt",
-          "Am Tag danach: schriftliche Zusammenfassung mit Datum, Unterlagenliste raus, und nach der Empfehlung gefragt"
+          "Am Tag danach: schriftliche Zusammenfassung mit Datum, Besichtigung vereinbart, und nach der Empfehlung gefragt"
         ],
         "aufgaben": [
           {
             "id": "trigger-zuordnen-qe",
             "typ": "zuordnen",
             "pfad": "quereinsteiger",
-            "titel": "Welches Dokument schaltet welche Stufe?",
-            "hinweis": "In dieser Pipeline schaltet immer ein prüfbares Dokument, achte also darauf, ob es verschickt oder unterschrieben ist.",
+            "titel": "Was schaltet welche Stufe?",
+            "hinweis": "In dieser Pipeline schaltet ein prüfbares Dokument oder ein stattgefundener Termin, achte also genau darauf.",
             "punkte": 10,
             "paare": [
               {
                 "links": "Selbstauskunft verschickt, Unterschrift steht aus",
-                "rechts": "Stufe Selbstauskunft"
+                "rechts": "Stufe Selbstauskunft und Unterlagen"
               },
               {
                 "links": "Selbstauskunft unterschrieben",
-                "rechts": "Stufe Objektauswahl"
+                "rechts": "Stufe Objektvorstellung"
               },
               {
                 "links": "Reservierungsvereinbarung eröffnet und versendet",
                 "rechts": "Stufe Reservierung"
               },
               {
-                "links": "Reservierungsvereinbarung unterschrieben",
-                "rechts": "Stufe Bonitätsunterlagen"
+                "links": "Besichtigung als stattgefunden eingetragen",
+                "rechts": "Stufe Termin Bankgutachter"
               },
               {
-                "links": "Alle sechs Pflichtdokumente freigegeben",
+                "links": "Termin Bankgutachter als stattgefunden eingetragen",
                 "rechts": "Stufe Finanzierung"
               }
             ]
@@ -13127,13 +12466,13 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                   "Weil die Reservierung sonst erst nach dem Notartermin möglich wäre"
                 ],
                 "korrekt": 1,
-                "aufloesung": "Ohne Objekt gibt es nur eine Machbarkeitsaussage, keine verbindliche Zusage. Der Preis dieser Reihenfolge: Eine Einheit ist reserviert, bevor die Finanzierbarkeit feststeht.",
+                "aufloesung": "Ohne Objekt gibt es nur eine Machbarkeitsaussage, keine verbindliche Zusage. Weil Selbstauskunft, Ausweis und Gehaltsabrechnung schon vor der Objektvorstellung vorliegen, ist die Reservierung trotzdem gut vorbereitet.",
                 "sprungZuAbschnitt": "reservierung-uebergabe"
               },
               {
                 "frage": "Die Reservierungsvereinbarung des Verkäufers läuft zwei Wochen. Was prüfst du, bevor der Kunde unterschreibt?",
                 "optionen": [
-                  "Ob die Frist die fünf bis vierzehn Tage bis zur Zusage plus Notartermin abdeckt",
+                  "Ob die Frist Besichtigung, Bankgutachter, Zusage und Notartermin abdeckt",
                   "Ob der Kunde in zwei Wochen Urlaub hat",
                   "Nichts, die Frist setzt der Verkäufer"
                 ],
@@ -13142,14 +12481,14 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 "sprungZuAbschnitt": "reservierung-uebergabe"
               },
               {
-                "frage": "Die sechs Pflichtdokumente sind hochgeladen. Welche Unterlagen brauchst du außerdem, bevor die Bank überhaupt anfangen kann?",
+                "frage": "Personalausweis und letzte Gehaltsabrechnung liegen vor. Welche Unterlagen brauchst du außerdem, bevor die Bank überhaupt bewerten kann?",
                 "optionen": [
                   "Keine, die Personenseite genügt für die Zusage",
                   "Die Objektunterlagen, etwa Teilungserklärung, Mietverträge und Hausgeldabrechnung",
                   "Eine SCHUFA-Auskunft, die der Kunde selbst beantragt"
                 ],
                 "korrekt": 1,
-                "aufloesung": "Die Zeitleiste aus Kapitel 7 beginnt mit der Personenseite, aber ohne Objektseite kann die Bank nicht bewerten. Der Energieausweis gehört dazu, beim Neubau auch Baubeschreibung und Zahlungsplan.",
+                "aufloesung": "Ohne Objektseite kann die Bank nicht bewerten, und der Bankgutachter braucht sie auch. Der Energieausweis gehört dazu.",
                 "sprungZuAbschnitt": "reservierung-uebergabe"
               }
             ]
@@ -13159,7 +12498,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "typ": "szenario",
             "pfad": "beide",
             "titel": "Die Woche nach der Reservierung",
-            "hinweis": "Der Kunde hat die Reservierungsvereinbarung unterschrieben, damit steht er auf Bonitätsunterlagen.",
+            "hinweis": "Der Kunde hat die Reservierungsvereinbarung unterschrieben, die Besichtigung ist vereinbart.",
             "punkte": 20,
             "startSzene": "s1",
             "szenen": [
@@ -13180,7 +12519,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                     "konsequenz": "Der Verwalter meldet sich am Donnerstag. Vier Tage der Reservierungsfrist sind vorbei, ohne dass die Bank etwas gesehen hat."
                   },
                   {
-                    "text": "Die Pipeline-Stufe schon auf Finanzierung schieben, die Unterlagen folgen.",
+                    "text": "Die Pipeline-Stufe schon auf Finanzierung schieben, Besichtigung und Bankgutachter laufen ja.",
                     "weiterZu": "s3",
                     "bewertung": "schwach",
                     "konsequenz": "Im CRM steht der Kunde in der Finanzierung, tatsächlich hat die Bank nichts gesehen. Die Stufe ist nicht mehr prüfbar."
@@ -13207,7 +12546,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               },
               {
                 "id": "s3",
-                "text": "Der Kunde steht im CRM auf Finanzierung. Die Bonität ist nicht freigegeben, die Bank hat keine Objektunterlagen, und im Hintergrund läuft die Vierzehn-Tage-Uhr.",
+                "text": "Der Kunde steht im CRM auf Finanzierung. Besichtigung und Bankgutachter haben nicht stattgefunden, und die Bank hat keine Objektunterlagen.",
                 "optionen": [
                   {
                     "text": "Zurückstufen, die Unterlagen fertigstellen und sofort übergeben, den Kunden anrufen.",
@@ -13230,8 +12569,8 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               },
               {
                 "id": "e2",
-                "text": "Zwei Tage später fragt die Teamleitung in der Pipeline-Durchsicht nach dem Stand der Bankprüfung. Es gibt keinen.",
-                "fazit": "Eine Stufe, die ohne ihr Dokument geschoben wird, macht die ganze Pipeline unbrauchbar, denn ab da misst die Auswertung Absichten statt Tatsachen. Die eröffnete Vereinbarung schaltet auf Reservierung, die unterschriebene auf Bonitätsunterlagen, und erst die sechs freigegebenen Pflichtdokumente auf Finanzierung."
+                "text": "Zwei Tage später fragt die Vertriebsleitung in der Pipeline-Durchsicht nach dem Stand der Bankprüfung. Es gibt keinen.",
+                "fazit": "Eine Stufe, die ohne ihr Dokument geschoben wird, macht die ganze Pipeline unbrauchbar, denn ab da misst die Auswertung Absichten statt Tatsachen. Die eröffnete Vereinbarung schaltet auf Reservierung, die stattgefundene Besichtigung auf Termin Bankgutachter, und erst der stattgefundene Termin mit dem Bankgutachter auf Finanzierung."
               }
             ]
           }
@@ -13768,7 +13107,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "randVorgegeben": true,
             "schritte": [
               "Objektunterlagen komplett",
-              "Selbstauskunft und Bonitätsunterlagen komplett",
+              "Selbstauskunft und Unterlagen für die Bank komplett",
               "Bonitätsprüfung intern, Unterlagen zum Finanzierungspartner",
               "SCHUFA, Bewertung und Beschlussvorlage bei der Bank",
               "Finanzierungszusage der Bank",
@@ -13815,7 +13154,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         ],
         "bullets": [
           "Tag minus 1: Objektunterlagen komplett. Ohne Exposé, Grundriss, Wohnflächenberechnung, Teilungserklärung, Mietverträge, Hausgeldabrechnung, Versammlungsprotokolle und Energieausweis ermittelt die Bank keinen Beleihungswert, und ohne Beleihungswert gibt sie keine verbindliche Zusage. Die vollständige Liste steht in Kapitel 6.",
-          "Tag 0: Selbstauskunft und Bonitätsunterlagen komplett. Komplett heißt komplett, eine fehlende Gehaltsabrechnung kostet die ganze Woche.",
+          "Tag 0: Selbstauskunft und Unterlagen für die Bank komplett. Komplett heißt komplett, eine fehlende Gehaltsabrechnung kostet die ganze Woche.",
           "Tag 1 bis 2: Bonitätsprüfung intern, Unterlagen an den Finanzierungspartner.",
           "Tag 3 bis 7: SCHUFA, Bewertung, Beschlussvorlage bei der Bank.",
           "Tag 5 bis 14: Finanzierungszusage. Sie ist der Auslöser für alles Weitere.",
@@ -13828,12 +13167,36 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "timeline": {
               "titel": "Von SA-Signatur bis Notartermin",
               "schritte": [
-                { "label": "Objektunterlagen komplett", "dauer": "Tag minus 1", "beschreibung": "Personenseite und Objektseite laufen parallel. Ohne Objektangaben kein Beleihungswert, ohne Beleihungswert keine Zusage." },
-                { "label": "Selbstauskunft und Bonitätsunterlagen komplett", "dauer": "Tag 0", "status": "start" },
-                { "label": "Bonitätsprüfung intern, Unterlagen zum Finanzierungspartner", "dauer": "Tag 1 bis 2" },
-                { "label": "SCHUFA, Bewertung, Beschlussvorlage bei der Bank", "dauer": "Tag 3 bis 7" },
-                { "label": "Finanzierungszusage der Bank", "dauer": "Tag 5 bis 14", "status": "trigger", "beschreibung": "Ab hier ist der Notartermin buchbar." },
-                { "label": "Notartermin, Grundschuldbestellung im selben Termin", "dauer": "ca. Woche 3 bis 4", "status": "ziel", "beschreibung": "Möglich durch die Belastungsvollmacht im Kaufvertrag." }
+                {
+                  "label": "Objektunterlagen komplett",
+                  "dauer": "Tag minus 1",
+                  "beschreibung": "Personenseite und Objektseite laufen parallel. Ohne Objektangaben kein Beleihungswert, ohne Beleihungswert keine Zusage."
+                },
+                {
+                  "label": "Selbstauskunft und Unterlagen für die Bank komplett",
+                  "dauer": "Tag 0",
+                  "status": "start"
+                },
+                {
+                  "label": "Bonitätsprüfung intern, Unterlagen zum Finanzierungspartner",
+                  "dauer": "Tag 1 bis 2"
+                },
+                {
+                  "label": "SCHUFA, Bewertung, Beschlussvorlage bei der Bank",
+                  "dauer": "Tag 3 bis 7"
+                },
+                {
+                  "label": "Finanzierungszusage der Bank",
+                  "dauer": "Tag 5 bis 14",
+                  "status": "trigger",
+                  "beschreibung": "Ab hier ist der Notartermin buchbar."
+                },
+                {
+                  "label": "Notartermin, Grundschuldbestellung im selben Termin",
+                  "dauer": "ca. Woche 3 bis 4",
+                  "status": "ziel",
+                  "beschreibung": "Möglich durch die Belastungsvollmacht im Kaufvertrag."
+                }
               ]
             }
           }
@@ -14231,15 +13594,49 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           {
             "beispielrechnung": {
               "titel": "Wie sich die Darlehenssumme errechnet",
-              "untertitel": "Beispiel: 300.000 € Kaufpreis, Bayern mit 3,5 % Grunderwerbsteuer, 30.000 € Eigenkapital, ohne Makler",
+              "untertitel": "Beispiel: 300.000 € Kaufpreis, Brandenburg mit 6,5 % Grunderwerbsteuer, 30.000 € Eigenkapital, ohne Makler",
               "zeilen": [
-                { "label": "Kaufpreis", "wert": "300.000 €" },
-                { "label": "Grunderwerbsteuer 3,5 %", "wert": "+ 10.500 €", "op": "+", "hinweis": "300.000 × 3,5 % = 10.500. In Nordrhein-Westfalen mit 6,5 Prozent wären es 19.500 €." },
-                { "label": "Notar und Grundbuch rund 2 %", "wert": "+ 6.000 €", "op": "+", "hinweis": "300.000 × 2 % = 6.000" },
-                { "label": "Zwischensumme, Kaufpreis plus Kaufnebenkosten", "wert": "316.500 €", "op": "=", "ergebnis": true, "hinweis": "Das sind 5,5 Prozent Nebenkosten. Käme ein Makler mit 3,57 Prozent dazu, wären es 9,07 Prozent und 327.210 €." },
-                { "label": "Eigenkapital", "wert": "− 30.000 €", "op": "−", "hinweis": "Deckt die Nebenkosten und lässt 13.500 € Puffer" },
-                { "label": "Darlehenssumme der Bank", "wert": "286.500 €", "op": "=", "ergebnis": true },
-                { "label": "Monatsrate bei 4 % Sollzins und 2 % Tilgung", "wert": "≈ 1.433 €", "op": "×", "hinweis": "286.500 × 6 % = 17.190 im Jahr, geteilt durch 12 sind 1.432,50 €" }
+                {
+                  "label": "Kaufpreis",
+                  "wert": "300.000 €"
+                },
+                {
+                  "label": "Grunderwerbsteuer 6,5 %",
+                  "wert": "+ 19.500 €",
+                  "op": "+",
+                  "hinweis": "300.000 × 6,5 % = 19.500. In Berlin mit 6 Prozent wären es 18.000 €."
+                },
+                {
+                  "label": "Notar und Grundbuch rund 2 %",
+                  "wert": "+ 6.000 €",
+                  "op": "+",
+                  "hinweis": "300.000 × 2 % = 6.000"
+                },
+                {
+                  "label": "Zwischensumme, Kaufpreis plus Kaufnebenkosten",
+                  "wert": "325.500 €",
+                  "op": "=",
+                  "ergebnis": true,
+                  "hinweis": "Das sind 8,5 Prozent Nebenkosten. Käme ein Makler mit 3,57 Prozent dazu, wären es 12,07 Prozent und 336.210 €."
+                },
+                {
+                  "label": "Eigenkapital",
+                  "wert": "− 30.000 €",
+                  "op": "−",
+                  "hinweis": "Deckt die Nebenkosten und lässt 4.500 € Puffer"
+                },
+                {
+                  "label": "Darlehenssumme der Bank",
+                  "wert": "295.500 €",
+                  "op": "=",
+                  "ergebnis": true
+                },
+                {
+                  "label": "Monatsrate bei 4 % Sollzins und 2 % Tilgung",
+                  "wert": "≈ 1.478 €",
+                  "op": "×",
+                  "hinweis": "295.500 × 6 % = 17.730 im Jahr, geteilt durch 12 sind 1.477,50 €"
+                }
               ],
               "fazit": "Diese Rechnung ist der Bauplan jedes Kundengesprächs. Wer die vier Bausteine Kaufpreis, Kaufnebenkosten, Eigenkapital und Darlehen sauber trennt, verliert nie den Faden. Merke dir dazu die eine Zahl, die je Bundesland um bis zu 9.000 Euro schwankt: die Grunderwerbsteuer."
             }
@@ -14566,11 +13963,35 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               "titel": "Der 20-Prozent-Puffer, in Monatsraten übersetzt",
               "untertitel": "Die Rechnung, die den Puffer im Gespräch überzeugend macht",
               "zeilen": [
-                { "label": "Reale Rate: 4,0 % Sollzins plus 2,0 % Tilgung auf 300.000 €", "wert": "1.500 €/Mon.", "hinweis": "300.000 × 6 % = 18.000 im Jahr, geteilt durch 12" },
-                { "label": "20 % Sicherheitspuffer", "wert": "+ 300 €", "op": "+", "hinweis": "1.500 × 20 % = 300" },
-                { "label": "Rate, mit der wir die Kapitaldienstfähigkeit prüfen", "wert": "1.800 €/Mon.", "op": "=", "ergebnis": true },
-                { "label": "Der Puffer auf ein Jahr gerechnet", "wert": "3.600 €", "op": "→", "hinweis": "300 × 12 = 3.600. Geteilt durch die Rate von 1.500 € sind das 2,4 Monatsraten." },
-                { "label": "In Monatsraten", "wert": "2,4 Raten", "op": "=", "ergebnis": true }
+                {
+                  "label": "Reale Rate: 4,0 % Sollzins plus 2,0 % Tilgung auf 300.000 €",
+                  "wert": "1.500 €/Mon.",
+                  "hinweis": "300.000 × 6 % = 18.000 im Jahr, geteilt durch 12"
+                },
+                {
+                  "label": "20 % Sicherheitspuffer",
+                  "wert": "+ 300 €",
+                  "op": "+",
+                  "hinweis": "1.500 × 20 % = 300"
+                },
+                {
+                  "label": "Rate, mit der wir die Kapitaldienstfähigkeit prüfen",
+                  "wert": "1.800 €/Mon.",
+                  "op": "=",
+                  "ergebnis": true
+                },
+                {
+                  "label": "Der Puffer auf ein Jahr gerechnet",
+                  "wert": "3.600 €",
+                  "op": "→",
+                  "hinweis": "300 × 12 = 3.600. Geteilt durch die Rate von 1.500 € sind das 2,4 Monatsraten."
+                },
+                {
+                  "label": "In Monatsraten",
+                  "wert": "2,4 Raten",
+                  "op": "=",
+                  "ergebnis": true
+                }
               ],
               "fazit": "Genau das ist der Satz für das Gespräch: Wir planen von Anfang an gut zwei Monatsraten im Jahr ein, damit ein Leerstand oder eine Sonderumlage dich nicht trifft. Wer diesen Puffer nicht rechnet, verkauft dem Kunden eine Rate, die zwölf Monate gut aussieht und im dreizehnten wehtut."
             }
@@ -14887,10 +14308,22 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           }
         ],
         "links": [
-          { "label": "Bonitätsrechner, Rate und Rahmen live durchrechnen", "to": "/bonitaetsrechner" },
-          { "label": "Kapitel 0: der Steuervorteil vollständig hergeleitet", "to": "/vertriebsakademie/grundlagen?vaScrollTo=steuer" },
-          { "label": "Einwand-Bibliothek", "to": "/vertriebsakademie/einwaende" },
-          { "label": "AfA-Rechner", "to": "/afa-rechner" }
+          {
+            "label": "Bonitätsrechner, Rate und Rahmen live durchrechnen",
+            "to": "/bonitaetsrechner"
+          },
+          {
+            "label": "Kapitel 0: der Steuervorteil vollständig hergeleitet",
+            "to": "/vertriebsakademie/grundlagen?vaScrollTo=steuer"
+          },
+          {
+            "label": "Einwand-Bibliothek",
+            "to": "/vertriebsakademie/einwaende"
+          },
+          {
+            "label": "AfA-Rechner",
+            "to": "/afa-rechner"
+          }
         ],
         "goldNugget": {
           "titel": "Wann macht KfW 261 wirklich Sinn, und woran scheitert sie tatsächlich?",
@@ -17665,7 +17098,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "frage": "Warum liegt die zweite Schwelle bei einer Durststrecke von mehr als 30 Tagen?",
           "optionen": [
             "Weil der Provisionsanspruch verfällt, wenn ein Vorgang länger als 30 Tage ohne Fortschritt in der Pipeline steht und der Kontakt dann neu zugeteilt wird",
-            "Weil 30 Tage kürzer sind als ein voller Verkaufszyklus, das Gespräch mit dem Teamleiter deshalb der Pipeline gilt und nicht dem Abschlussvermögen",
+            "Weil 30 Tage kürzer sind als ein voller Verkaufszyklus, das Gespräch mit der Vertriebsleitung deshalb der Pipeline gilt und nicht dem Abschlussvermögen",
             "Weil das CRM Kontakte nach 30 Tagen ohne Aktivität archiviert und sie danach aus der Pipeline verschwinden"
           ],
           "korrekt": 1,
@@ -17714,7 +17147,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
       "wege": [
         {
           "id": "a",
-          "label": "Termin mit dem Teamleiter",
+          "label": "Termin mit der Vertriebsleitung",
           "beschreibung": "Du machst einen Termin und analysierst die Pipeline gemeinsam. Der Abschnitt nennt das ab einer Durststrecke von mehr als 30 Tagen, und 30 Tage sind kürzer als ein voller Verkaufszyklus. Zwei Augenpaare sehen mehr, dafür kostet es Zeit und du gibst ein Stück Deutungshoheit ab. Den Wortlaut für den ersten Satz findest du im Abschnitt Durststrecken."
         },
         {
@@ -18307,14 +17740,14 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "intro": "Zwei Schwellen stehen in diesem Abschnitt, fünf Absagen und dreißig Tage. Beide sind erklärbar, und wer weiß, warum sie dort liegen, reagiert anders auf sie.",
         "absaetze": [
           "Die erste Schwelle ist ein Prüfauslöser, kein Alarmsignal. Rechne sie nach: Nach der Faustformel wird aus zwei Beratungen eine Selbstauskunft und aus zwei Selbstauskünften ein Abschluss. Je Beratung ist das eine Abschlusswahrscheinlichkeit von 25 Prozent, also 75 Prozent Nein. Fünf Neins in Folge treten damit rein rechnerisch in rund 24 Prozent der Fälle auf, das ist etwa jede vierte Serie. Fünf Absagen sind also nichts Ungewöhnliches. Die Schwelle liegt trotzdem dort, weil ein Blick auf Skript und Präsentation billig ist. Ein echtes Signal wären rund zehn Neins in Folge, die treten nur noch in etwa 6 Prozent der Fälle auf.",
-          "Die zweite Schwelle folgt aus der Dauer eines Verkaufszyklus. Zwischen Erstgespräch und Notartermin liegen Beratung, Objektauswahl, Selbstauskunft und Finanzierungszusage, und allein zwischen dem fertigen Vertragsentwurf und der Beurkundung liegen bei Verbraucherverträgen nach § 17 Absatz 2a Satz 2 Nummer 2 Beurkundungsgesetz zwei Wochen. Dreißig Tage sind damit kürzer als ein voller Zyklus. Über dein Abschlussvermögen sagen sie nichts, über deine Pipeline sagen sie viel. Genau deshalb ist der Termin mit dem Teamleiter eine gemeinsame Pipeline-Analyse und keine Krisensitzung, und genau deshalb fällt er vielen so schwer: Sie halten ihn für ein Eingeständnis.",
+          "Die zweite Schwelle folgt aus der Dauer eines Verkaufszyklus. Zwischen Erstgespräch und Notartermin liegen Beratung mit Selbstauskunft, Objektvorstellung, Reservierung, Besichtigung, Bankgutachter und Finanzierungszusage, und allein zwischen dem fertigen Vertragsentwurf und der Beurkundung liegen bei Verbraucherverträgen nach § 17 Absatz 2a Satz 2 Nummer 2 Beurkundungsgesetz zwei Wochen. Dreißig Tage sind damit kürzer als ein voller Zyklus. Über dein Abschlussvermögen sagen sie nichts, über deine Pipeline sagen sie viel. Genau deshalb ist der Termin mit der Vertriebsleitung eine gemeinsame Pipeline-Analyse und keine Krisensitzung, und genau deshalb fällt er vielen so schwer: Sie halten ihn für ein Eingeständnis.",
           "Der dritte Punkt hat mit Motivation nichts zu tun, obwohl er meistens dort einsortiert wird. Schlaf und Bewegung sind ein Kapazitätsthema. Sie entscheiden darüber, ob der Akquise-Block am Ende eines langen Tages noch stattfindet, und der Akquise-Block ist die einzige Größe im Tagesplan, die den Trichter oben füllt. Deshalb stehen unten Handlungen und keine Appelle."
         ],
         "bullets": [
           "Jede Absage ist ein Datenpunkt, kein persönlicher Angriff.",
           "Fünf Absagen in Serie: Skript und Präsentation reviewen, nicht die Motivation. Die Zahl ist ein günstiger Prüfauslöser, kein statistisches Alarmsignal, denn fünf Neins in Folge treten nach der Faustformel in rund 24 Prozent der Fälle auf.",
           "Zehn Absagen in Serie: nur noch rund 6 Prozent Wahrscheinlichkeit. Ab hier ist die Abweichung ein Befund und keine Schwankung.",
-          "Durststrecke über 30 Tage: Termin mit dem Teamleiter, Pipeline gemeinsam analysieren. 30 Tage sind kürzer als ein Verkaufszyklus, deshalb geht es um die Pipeline und nicht um dein Abschlussvermögen.",
+          "Durststrecke über 30 Tage: Termin mit der Vertriebsleitung, Pipeline gemeinsam analysieren. 30 Tage sind kürzer als ein Verkaufszyklus, deshalb geht es um die Pipeline und nicht um dein Abschlussvermögen.",
           "Schlaf und Bewegung sind ein Kapazitätsthema, kein Motivationsthema. Sie entscheiden darüber, ob der Akquise-Block abends noch stattfindet.",
           "Handlung 1: feste Aufstehzeit, auch am Wochenende, Abweichung höchstens eine Stunde. Sie ist der einzige Hebel auf den Schlaf, den du selbst setzen kannst, denn die Einschlafzeit lässt sich nicht befehlen.",
           "Handlung 2: drei feste Bewegungstermine pro Woche à 50 Minuten, mit Ort und Uhrzeit im Kalender wie ein Kundentermin. Damit sind die 150 Minuten moderater Ausdaueraktivität pro Woche erreicht, die die Leitlinien der Weltgesundheitsorganisation zu körperlicher Aktivität und sedentärem Verhalten von 2020 für Erwachsene nennen. Die Leitlinien empfehlen zusätzlich an mindestens zwei Tagen muskelkräftigende Aktivität.",
@@ -18322,8 +17755,8 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Handlung 4: nach der letzten Nachbereitung Feierabend erklären, auch wenn die INBOX nicht leer ist. Eine Liste ist nie leer, ein Tag schon.",
           "Als Orientierung für den Schlaf nennen die schlafmedizinischen Fachgesellschaften für Erwachsene 7 bis 9 Stunden. Wer darunter liegt, verliert zuerst die Blöcke ohne Absender, und das ist die Akquise."
         ],
-        "quereinsteigerHinweis": "Durststrecke heißt in diesem Zusammenhang: eine längere Zeit ohne Abschluss, obwohl du normal arbeitest. Das gehört zum Beruf und ist kein Zeichen dafür, dass du falsch liegst. Der Grund ist einfach: Ein Abschluss braucht viele Wochen von der ersten Nachricht bis zum Notartermin, und in einer einzelnen Woche kannst du deshalb gar nicht ablesen, wie gut du bist. Zwei Wörter, die dabei fallen. Review heißt hier nichts anderes als durchsehen und prüfen, du liest also dein eigenes Skript und deine Präsentation noch einmal durch und suchst die Stelle, an der Kunden aussteigen. Und Pipeline ist die Liste aller Kontakte, mit denen du gerade arbeitest, sortiert danach, wie weit sie sind. Wenn dein Teamleiter mit dir die Pipeline analysiert, schaut ihr also gemeinsam auf diese Liste und sucht, wo Kontakte hängen bleiben.",
-        "profiTipp": "Der Fehler, den fast alle in einer Durststrecke machen, ist die Suche nach einer einzigen Ursache. Trenne stattdessen zwei Fragen, die verschiedene Antworten haben. Erstens die Bestandsfrage: Wie viele Kontakte hast du in jeder Stufe, und ist eine davon leer? Eine leere Stufe zwei Ebenen über dem Abschluss erklärt eine Durststrecke vollständig und hat nichts mit deiner Gesprächsführung zu tun. Zweitens die Flussfrage: Wie viele Kontakte sind in den letzten dreißig Tagen von einer Stufe in die nächste gewechselt? Stehen viele Kontakte in der Pipeline und bewegt sich nichts, ist das ein anderes Problem als eine leere Pipeline, und es braucht eine andere Maßnahme. Die erste Frage beantwortest du mit dem Pipeline-Board, die zweite mit den Conversion Rates. Wer beide beantwortet hat, geht nicht mit einem Gefühl in den Termin mit dem Teamleiter, sondern mit zwei Zahlen.",
+        "quereinsteigerHinweis": "Durststrecke heißt in diesem Zusammenhang: eine längere Zeit ohne Abschluss, obwohl du normal arbeitest. Das gehört zum Beruf und ist kein Zeichen dafür, dass du falsch liegst. Der Grund ist einfach: Ein Abschluss braucht viele Wochen von der ersten Nachricht bis zum Notartermin, und in einer einzelnen Woche kannst du deshalb gar nicht ablesen, wie gut du bist. Zwei Wörter, die dabei fallen. Review heißt hier nichts anderes als durchsehen und prüfen, du liest also dein eigenes Skript und deine Präsentation noch einmal durch und suchst die Stelle, an der Kunden aussteigen. Und Pipeline ist die Liste aller Kontakte, mit denen du gerade arbeitest, sortiert danach, wie weit sie sind. Wenn die Vertriebsleitung mit dir die Pipeline analysiert, schaut ihr also gemeinsam auf diese Liste und sucht, wo Kontakte hängen bleiben.",
+        "profiTipp": "Der Fehler, den fast alle in einer Durststrecke machen, ist die Suche nach einer einzigen Ursache. Trenne stattdessen zwei Fragen, die verschiedene Antworten haben. Erstens die Bestandsfrage: Wie viele Kontakte hast du in jeder Stufe, und ist eine davon leer? Eine leere Stufe zwei Ebenen über dem Abschluss erklärt eine Durststrecke vollständig und hat nichts mit deiner Gesprächsführung zu tun. Zweitens die Flussfrage: Wie viele Kontakte sind in den letzten dreißig Tagen von einer Stufe in die nächste gewechselt? Stehen viele Kontakte in der Pipeline und bewegt sich nichts, ist das ein anderes Problem als eine leere Pipeline, und es braucht eine andere Maßnahme. Die erste Frage beantwortest du mit dem Pipeline-Board, die zweite mit den Conversion Rates. Wer beide beantwortet hat, geht nicht mit einem Gefühl in den Termin mit der Vertriebsleitung, sondern mit zwei Zahlen.",
         "goldNugget": {
           "titel": "Warum fünf und nicht drei, warum dreißig und nicht sieben",
           "text": "Beide Schwellen sind Kompromisse zwischen zwei Fehlern. Der eine Fehler ist, zu früh zu reagieren und an einem Skript zu schrauben, das nur eine normale Schwankung erwischt hat. Der andere ist, zu spät zu reagieren und einen Monat mit einem Fehler zu arbeiten, der am ersten Tag sichtbar gewesen wäre. Bei drei Absagen wäre der erste Fehler die Regel, denn drei Neins in Folge treten nach der Faustformel in 42 Prozent der Fälle auf. Bei zehn wäre der zweite Fehler teuer. Fünf liegt dazwischen und ist deshalb sinnvoll, weil die Prüfung selbst wenig kostet: Skript und Präsentation durchzugehen dauert eine Stunde und schadet auch dann nicht, wenn nichts zu finden war.",
@@ -18335,14 +17768,14 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         },
         "skripte": [
           {
-            "titel": "Den Termin beim Teamleiter erbitten",
+            "titel": "Den Termin bei der Vertriebsleitung erbitten",
             "kontext": "Vierte Woche ohne Abschluss. Der schwierigste Satz des Kapitels, deshalb steht er hier wörtlich.",
             "text": "Ich hätte gern dreißig Minuten mit dir, am besten diese Woche. Ich habe seit vier Wochen keinen Abschluss und will vermeiden, dass daraus acht werden. Ich habe mir die Zahlen vorher angesehen, damit wir nicht bei null anfangen: In der Pipeline stehen achtzehn Kontakte, aber in den letzten dreißig Tagen ist nur einer eine Stufe weitergekommen. Meine Conversion vom Erstgespräch zur Beratung liegt bei 40 Prozent statt bei den üblichen zwei Dritteln. Mein Verdacht ist, dass ich zu früh über Objekte spreche. Ich will von dir wissen, ob du dasselbe siehst oder etwas anderes.",
             "warum": "Die Hemmschwelle liegt nicht im Bitten, sondern in der Befürchtung, als Problemfall dazustehen. Der Aufbau nimmt diese Befürchtung an drei Stellen weg. Erstens die Zeitangabe zuerst: Eine begrenzte Bitte ist leichter zu stellen und leichter zu gewähren als ein offenes Gespräch. Zweitens die eigene Vorarbeit, und zwar mit Zahlen statt mit Gefühlen. Wer mit zwei Kennzahlen kommt, führt das Gespräch, statt darin vorzukommen. Drittens die eigene Hypothese: Sie macht aus dem Termin eine fachliche Frage. Der letzte Satz ist der wichtigste, denn er lädt zum Widerspruch ein. Damit bekommst du das, wofür du eigentlich kommst, nämlich einen zweiten Blick, und nicht die Bestätigung deiner eigenen Vermutung.",
             "warumTitel": "Warum du mit zwei Zahlen kommst und nicht mit einem Gefühl"
           },
           {
-            "titel": "Wenn dein Teamleiter zuerst fragt, wie es dir geht",
+            "titel": "Wenn die Vertriebsleitung zuerst fragt, wie es dir geht",
             "kontext": "Im Termin selbst, wenn das Gespräch ins Persönliche zu kippen droht.",
             "text": "Ehrlich gesagt nervt es mich, aber ich glaube nicht, dass das hier das Thema ist. Ich habe die letzten Wochen normal gearbeitet, die Kontaktzahl stimmt, und die Absagen sind alle im selben Abschnitt gekommen. Deshalb würde ich lieber zuerst in die Zahlen schauen und danach entscheiden, ob es doch an mir liegt. Wenn wir in den Zahlen nichts finden, komme ich auf deine Frage zurück, versprochen.",
             "warum": "Gut gemeinte Fragen nach dem Befinden führen in Durststrecken oft dazu, dass eine Stunde über Motivation gesprochen wird und die Pipeline unangesehen bleibt. Der erste Halbsatz bestätigt das Gefühl kurz und ehrlich, weil ein Abstreiten das Gespräch erst recht dorthin zieht. Danach die Umlenkung mit einer Begründung, nicht mit einem Widerspruch. Der letzte Satz hält die Tür offen und verhindert, dass die Umlenkung wie Abwehr wirkt. Das ist der Unterschied zwischen einer Priorisierung und einer Zurückweisung.",
@@ -18367,7 +17800,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               {
                 "label": "Durststrecke",
                 "wert": "über 30 Tage",
-                "hinweis": "kürzer als ein Verkaufszyklus, deshalb Pipeline-Analyse mit dem Teamleiter",
+                "hinweis": "kürzer als ein Verkaufszyklus, deshalb Pipeline-Analyse mit der Vertriebsleitung",
                 "farbe": "rose"
               },
               {
@@ -18435,7 +17868,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 "aufloesung": "Nur noch rund 6 Prozent Wahrscheinlichkeit. Ab hier lohnt der Blick auf die Ursache wirklich."
               },
               {
-                "aussage": "Im Gespräch mit dem Teamleiter nach 30 Tagen geht es um dein Abschlussvermögen.",
+                "aussage": "Im Gespräch mit der Vertriebsleitung nach 30 Tagen geht es um dein Abschlussvermögen.",
                 "stimmt": false,
                 "aufloesung": "30 Tage sind kürzer als ein Verkaufszyklus. Es geht um die Pipeline, und der Termin ist eine gemeinsame Analyse, keine Krisensitzung."
               },
@@ -18505,7 +17938,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 "text": "Freitagabend, die vierte Woche ohne Abschluss ist vorbei. Die Kontaktzahl stimmt, du hast normal gearbeitet, und trotzdem nagt es. Was tust du am Montag?",
                 "optionen": [
                   {
-                    "text": "Pipeline-Board und Conversion Rates ansehen, dann 30 Minuten beim Teamleiter erbitten, mit Zahlen.",
+                    "text": "Pipeline-Board und Conversion Rates ansehen, dann 30 Minuten bei der Vertriebsleitung erbitten, mit Zahlen.",
                     "weiterZu": "s2",
                     "bewertung": "gut",
                     "konsequenz": "Du findest: 18 Kontakte in der Pipeline, in 30 Tagen ist nur einer weitergekommen, Erstgespräch zu Beratung liegt bei 40 Prozent."
@@ -18517,7 +17950,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                     "konsequenz": "Aus vier Wochen werden sechs. Der Fehler, der am ersten Tag sichtbar gewesen wäre, arbeitet weiter."
                   },
                   {
-                    "text": "Den Teamleiter fragen, ob er dir mehr Leads geben kann.",
+                    "text": "Die Vertriebsleitung fragen, ob sie dir mehr Leads geben kann.",
                     "weiterZu": "s3",
                     "bewertung": "tragbar",
                     "konsequenz": "Er fragt zurück: Wie viele Kontakte hast du gerade, und wo hängen sie? Du weißt es nicht genau."
@@ -18526,7 +17959,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               },
               {
                 "id": "s2",
-                "text": "Im Termin fragt der Teamleiter zuerst: Wie geht es dir denn damit? Was antwortest du?",
+                "text": "Im Termin fragt die Vertriebsleitung zuerst: Wie geht es dir denn damit? Was antwortest du?",
                 "optionen": [
                   {
                     "text": "Kurz ehrlich, dann umlenken: Es nervt, aber ich glaube nicht, dass das hier das Thema ist. Schauen wir zuerst in die Zahlen.",
@@ -18544,7 +17977,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               },
               {
                 "id": "s3",
-                "text": "Der Teamleiter wartet auf eine Antwort. Du hast die Zahlen nicht dabei.",
+                "text": "Die Vertriebsleitung wartet auf eine Antwort. Du hast die Zahlen nicht dabei.",
                 "optionen": [
                   {
                     "text": "Zugeben, Pipeline-Board und Conversion Rates aufmachen und gemeinsam durchgehen.",
@@ -19591,7 +19024,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Der Kunde reicht die Empfehlung im Portal ein, sie landet als Lead in den Kontakten und trägt die Quelle und das hinterlegte Konditionsmodell. Ab da bearbeitest du sie wie jeden anderen Lead, und jeder Schritt in der Pipeline wird für den empfehlenden Kunden im Portal sichtbar.",
           "Die Stufen, die er dort sieht, hießen in diesem Kapitel früher Angesprochen, Termin vereinbart, Beratung, Bonität, Notar und Abgeschlossen. Diese Bezeichnungen gibt es im Produkt nicht. Das Kundenportal zeigt sieben Anzeigen: Eingereicht, In Bearbeitung, Termin vereinbart, In Beratung, Abschluss in Abwicklung, Abgeschlossen und Kein Interesse. Dazu kommt Bereits bekannt, wenn der empfohlene Kontakt schon im System stand.",
           "Das Tippgeberportal zeigt dieselbe Sache mit anderen Wörtern: Eingegangen, Kontakt aufgenommen, Im Gespräch, In Beratung, Abschluss in Abwicklung, Abgeschlossen und Nicht zustande gekommen. Wenn ein Tippgeber und ein Kunde nebeneinandersitzen und beide auf ihr Portal schauen, sehen sie zwei verschiedene Wörter für denselben Stand. Das ist kein Fehler, sondern die Trennung zwischen Kundensicht und Partnersicht, und du solltest es wissen, bevor jemand es dich fragt.",
-          "Hinter beidem steht die interne Pipeline mit ihren 16 Stufen aus Kapitel R. Jede Gruppe fasst mehrere davon zusammen. In Beratung entspricht Selbstauskunft, Objektauswahl und Follow-Up nach Objektauswahl. Abschluss in Abwicklung entspricht Reservierung, Bonitätsunterlagen, Finanzierung und Notar. Abgeschlossen entspricht Fälligkeit, Abrechnung und Abgeschlossen. Quelle: src/lib/empfehlungenStore.ts.",
+          "Hinter beidem steht die interne Pipeline mit ihren 17 Stufen aus Kapitel R. Jede Gruppe fasst mehrere davon zusammen. In Beratung entspricht Selbstauskunft und Unterlagen, Objektvorstellung und Follow-Up nach der Objektvorstellung. Abschluss in Abwicklung entspricht Reservierung, Besichtigung, Termin Bankgutachter, Finanzierung und Notar. Abgeschlossen entspricht Fälligkeit, Abrechnung und Abgeschlossen. Quelle: src/lib/empfehlungenStore.ts.",
           "Aus der letzten Zeile folgt der Punkt, an dem es um Geld geht. Die Empfehlung wird im Portal als Abgeschlossen angezeigt, sobald der empfohlene Kontakt die Pipelinestufe Fälligkeit erreicht, also nicht schon beim Notartermin. Im selben Moment setzt die Automatik den Prämienstatus von Ausstehend auf Berechtigt. Berechtigt heißt: Der Anspruch steht dem Grunde nach, ausgezahlt ist noch nichts. Die dritte Stufe Ausgezahlt setzt ein Mensch, nachdem das Geld geflossen ist.",
           "Damit sagen Vertrag, Software und Portal dasselbe. § 4 Absatz 3 des Vertriebspartnervertrags verlangt Beurkundung und Provisionseingang, die Pipelinestufe Fälligkeit ist genau der Punkt, an dem der Kaufpreis fällig wird und damit die Provision des Bauträgers zur Zahlung ansteht, und die Prämie springt keinen Schritt früher auf Berechtigt. Der Notartermin allein bewegt nichts davon."
         ],
@@ -19610,7 +19043,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Kunde öffnet im Kundenportal den Bereich Investment und darin das Empfehlungsprogramm",
           "Kunde füllt das Formular aus: Name, Beziehung, E-Mail, Telefon und eine Anmerkung zur Situation",
           "Die Empfehlung landet automatisch als Lead in den Kontakten, mit der Quelle Empfehlung und dem hinterlegten Konditionsmodell",
-          "Du bearbeitest den Lead wie jeden anderen: Erstansprache, Erstgespräch, Beratung, Selbstauskunft, Objektauswahl, Reservierung, Bonität, Finanzierung, Notar",
+          "Du bearbeitest den Lead wie jeden anderen: Erstansprache, Erstgespräch, Beratung, Selbstauskunft, Objektvorstellung, Reservierung, Besichtigung, Bankgutachter, Finanzierung, Notar",
           "Jeder Statuswechsel wird für den empfehlenden Kunden im Portal sichtbar, in der Sprache des Kundenportals von Eingereicht bis Abgeschlossen",
           "Erreicht der empfohlene Kontakt die Pipelinestufe Fälligkeit, springt die Anzeige im Portal auf Abgeschlossen und der Prämienstatus auf Berechtigt",
           "Berechtigt heißt: Anspruch dem Grunde nach. Der Anspruch selbst entsteht nach § 4 Absatz 3 des Vertriebspartnervertrags mit Beurkundung und Provisionseingang bei der Gesellschaft",
@@ -19637,7 +19070,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 },
                 {
                   "label": "Du bearbeitest den Lead wie jeden anderen",
-                  "beschreibung": "Erstansprache, Erstgespräch, Beratung, Selbstauskunft, Objektauswahl. Im Portal wandert die Anzeige von In Bearbeitung über Termin vereinbart nach In Beratung."
+                  "beschreibung": "Erstansprache, Erstgespräch, Beratung, Selbstauskunft, Objektvorstellung. Im Portal wandert die Anzeige von In Bearbeitung über Termin vereinbart nach In Beratung."
                 },
                 {
                   "label": "Reservierung, Bonität, Finanzierung und Notar",
@@ -19694,9 +19127,9 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "to": "/alle-kontakte"
           },
           {
-            "label": "Die 16 Pipeline-Stufen in Kapitel R",
+            "label": "Die 17 Pipeline-Stufen in Kapitel R",
             "to": "/vertriebsakademie/glossar-zahlen?vaScrollTo=pipeline-glossar",
-            "hinweis": "Dort steht auch, warum die Bonität hinter der Reservierung liegt"
+            "hinweis": "Dort steht auch, warum die Unterlagen vor der Objektvorstellung vorliegen"
           }
         ],
         "aufgaben": [
@@ -20788,34 +20221,34 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         {
           "frage": "Wie viele Beratungspräsentationen klickst du in Woche 4 bis 6 durch?",
           "optionen": [
-            "Drei verschiedene Präsentationen, je eine für sanierten Bestand, WG und Co-Living und Neubau KfW 40 QNG",
-            "Eine, die Beratungspräsentation OS Immobilien, dafür in allen drei Stellungen des Umschalters in Station 09",
-            "Fünf, eine je Konzept, weil jedes Konzept eine eigene Musterrechnung mitbringt"
+            "Drei verschiedene Präsentationen, je eine pro Objekt",
+            "Eine, die Beratungspräsentation von OS Real Estate, dafür in beiden Stellungen des Konzeptschalters",
+            "Zwei getrennte Präsentationen, eine für jedes Konzept"
           ],
           "korrekt": 1,
-          "aufloesung": "Im Vertrieb gibt es nur noch eine Präsentation. Der Umschalter in Station 09 hat drei Stellungen: Sanierter Bestand, WG und Co-Living, Neubau KfW 40 QNG. Die drei alten Fassungen tragen ein Alt-Kennzeichen und sind für die Leitung.",
+          "aufloesung": "Im Vertrieb gibt es eine Präsentation. Der Konzeptschalter in Abschnitt 07 hat zwei Stellungen: Zusatzrente und Steuerersparnis. Mit ihm ändern sich Funktion, Objekte, Rechnung und Plan.",
           "sprungZuAbschnitt": "woche-4-6"
         },
         {
-          "frage": "Welche fünf Kern-Slides gehören auswendig?",
+          "frage": "Welche fünf Abschnitte gehören in den Kopf?",
           "optionen": [
-            "Station 01 der Einstieg, Station 02 die Vorstellung, Station 05 die vier Bausteine, Station 07 die drei Konzepte und Station 09 die drei Objekte",
-            "Der Preis des Nichtstuns, Station 03 mit den fünf Fragen, Station 04 der gemeinsame Weg, Station 10 die Immobilienschere und Station 14 die Selbstauskunft",
-            "Station 05 die vier Bausteine, Station 06 der ehrliche Vergleich, Station 10 die Rechnung Zeile für Zeile, Station 11 der Sparplan und Station 12 die Steuerwirkung"
+            "Abschnitt 01 der Termin, 05 wer wir sind, 06 das Prinzip, 09 die Objekte und 14 der Weg",
+            "Abschnitt 02 die Ziele, 07 die Konzeptwahl, 10 die Rechnung vor und nach Steuern, 11 der Stresstest und 15 die Frage mit der Selbstauskunft",
+            "Abschnitt 03 die Rentenlücke, 04 der Preis des Nichtstuns, 08 die Funktion, 12 der Plan und 16 der nächste Termin"
           ],
           "korrekt": 1,
-          "aufloesung": "Vier davon sind die dunklen Abschnitte, die Kapitel 5 ausdrücklich als Höhepunkte des Gesprächs benennt. Die fünfte ist Station 03, weil dort der Kunde spricht und nicht du.",
+          "aufloesung": "Das sind die Abschnitte, in denen der Kunde selbst denkt, wählt oder entscheidet. Sitzen sie, trägt sich der Rest.",
           "sprungZuAbschnitt": "woche-4-6"
         },
         {
-          "frage": "Wie viele Einwände enthält Kapitel 5, und welche sind gemeint?",
+          "frage": "Wo stehen die Einwände für die Beratung, und wie lernst du sie?",
           "optionen": [
-            "Die Top 10 Einwände, die dort im Abschnitt Station 13 mit Technik und Antwort stehen",
-            "Fünf Standardfragen, von Mietausfall bis Wertverlust, mit dem Muster Risiko zuerst, dann Absicherung",
-            "Sechzehn Einwände zur Objektauswahl, jeder mit passender Technik und einem ausformulierten Antwortmuster"
+            "Als Top 10 direkt in Kapitel 5, zum Auswendiglernen",
+            "Im Leitfaden Einwandbehandlung, 15 Einwände, gelernt wird das Muster in fünf Schritten",
+            "Nur in Kapitel 6, für die Beratung gibt es keine"
           ],
           "korrekt": 1,
-          "aufloesung": "Kapitel 5 enthält fünf Einwände im Abschnitt Station 13. Der Plan verlangte früher die Top 10, die es dort nie gab. Die sechzehn Einwände zur Objektauswahl stehen in Kapitel 6 und kommen erst in Woche 7.",
+          "aufloesung": "Kapitel 5 verweist auf den Leitfaden, damit nichts doppelt gepflegt wird. Das Muster: anerkennen, nachfragen, einordnen, belegen, Zustimmung prüfen.",
           "sprungZuAbschnitt": "woche-4-6"
         },
         {
@@ -20833,11 +20266,11 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "frage": "Was heißt eine Beratungspräsentation reviewed im Selbst-Check-in?",
           "optionen": [
             "Du hast sie allein durchgeklickt und dabei jede Station laut mitgesprochen",
-            "Du hast sie einem Kollegen vorgeführt und dir Rückmeldung zu deinen Überleitungen geholt",
-            "Dein Teamleiter hat sie freigegeben, nachdem du sie ihm im Weekly Sales Call vorgeführt hast"
+            "Du hast sie einem Kollegen vorgeführt und dir Rückmeldung zu deinen Übergängen geholt",
+            "Die Vertriebsleitung hat sie freigegeben, nachdem du sie ihr im Weekly Sales Call vorgeführt hast"
           ],
           "korrekt": 1,
-          "aufloesung": "Gemeint ist das Rollenspiel aus Kapitel 5: einem Kollegen vorführen, der einen skeptischen Kunden spielt, danach Rückmeldung zu den zehn Überleitungen. Allein durchklicken ist Üben, nicht Review.",
+          "aufloesung": "Gemeint ist das Rollenspiel aus Kapitel 5: einem Kollegen vorführen, der einen skeptischen Kunden spielt, danach Rückmeldung zu den Übergängen. Allein durchklicken ist Üben, nicht Review.",
           "sprungZuAbschnitt": "check-ins"
         },
         {
@@ -20856,7 +20289,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
     "abwaegungsfall": {
       "id": "welcher-block-faellt-aus",
       "titel": "Woche 5, und die Zeit reicht nicht",
-      "fall": "Du bist nebenberuflich gestartet und stehst in Woche 5. Diese Woche standen an: Kapitel 5 zu Ende lesen, die zehn Überleitungen üben, drei warme Erstansprachen und ein Erstgespräch am Donnerstagabend. Am Mittwoch kommt beruflich etwas dazwischen, du hast diese Woche nur noch drei statt fünf Abende. Was streichst du?",
+      "fall": "Du bist nebenberuflich gestartet und stehst in Woche 5. Diese Woche standen an: Kapitel 5 zu Ende lesen, die Übergänge der Präsentation üben, drei warme Erstansprachen und ein Erstgespräch am Donnerstagabend. Am Mittwoch kommt beruflich etwas dazwischen, du hast diese Woche nur noch drei statt fünf Abende. Was streichst du?",
       "wege": [
         {
           "id": "a",
@@ -20865,13 +20298,13 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         },
         {
           "id": "b",
-          "label": "Das Üben der zehn Überleitungen",
+          "label": "Das Üben der Übergänge",
           "beschreibung": "Akquise und Erstgespräch bleiben, du bist weiter im Kontakt mit Menschen. Nachteil: Genau dieses Üben ist die Voraussetzung dafür, dass das erste Beratungsgespräch in Woche 6 überhaupt geht. Der Punkt wandert also in eine Woche, die schon voll ist."
         },
         {
           "id": "c",
           "label": "Kapitel 5 nur bis zur Musterrechnung lesen, den Rest in Woche 6",
-          "beschreibung": "Du schiebst genau einen Punkt weiter, so wie es die Regel des Programms vorsieht. Nachteil: Der Abschnitt zu den fünf Standardfragen bleibt liegen, und der wird im ersten Beratungsgespräch gebraucht."
+          "beschreibung": "Du schiebst genau einen Punkt weiter, so wie es die Regel des Programms vorsieht. Nachteil: Der Abschnitt zu Sicherheit und Einwänden bleibt liegen, und der wird im ersten Beratungsgespräch gebraucht."
         },
         {
           "id": "d",
@@ -20896,7 +20329,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Zum Zeitbudget. Der Plan ist für rund zwölf Stunden in der Woche gerechnet, das entspricht ungefähr der Vollzeit-Routine aus Kapitel 10 mit 12,5 Akquisestunden. Wer nebenberuflich startet, kommt nach derselben Rechnung auf rund fünf Stunden, also etwa 40 Prozent. Daraus folgt eine ehrliche Ansage: Nebenberuflich werden aus 90 Tagen realistisch fünf bis sechs Monate. Das ist keine Schwäche des Plans, sondern die Rechnung. Wer nebenberuflich mit der Vollzeiterwartung startet, hält die Routine keine acht Wochen durch.",
           "Die Reihenfolge innerhalb einer Woche ist nicht beliebig. Zuerst der Teil, der einen anderen Menschen braucht, also Termine und Ansprachen, denn er hängt an fremden Kalendern. Dann der Teil, der Ruhe braucht, also Lesen und Üben. Zum Schluss die Nachbereitung. Wer umgekehrt anfängt, verschiebt die Termine, weil er noch nicht fertig gelesen hat, und liest dann in einer Woche ohne Termine.",
           "Ein Arbeitstag hat in diesem Plan drei Blöcke, und sie stehen in dieser Reihenfolge: 15 Minuten Planung, dann der Hauptblock der Woche, dann 20 bis 30 Minuten Nachbereitung im CRM. Nebenberuflich sind das 15 Minuten Planung, 75 Minuten Hauptblock und 30 Minuten Nachbereitung, also genau die Zwei-Stunden-Variante aus Kapitel 10.",
-          "Und die Regel für den Fall, dass eine Woche nicht funktioniert hat: Höchstens ein Checkpunkt wandert in die Folgewoche. Zwei sind das Zeichen, dass nicht der Plan zu voll ist, sondern das Zeitbudget zu klein angesetzt war. Was du nie tust: einen Punkt streichen. Jeder Punkt wird später gebraucht, und wer in Woche 5 die Überleitungen streicht, merkt es in Woche 6 im Beratungsgespräch."
+          "Und die Regel für den Fall, dass eine Woche nicht funktioniert hat: Höchstens ein Checkpunkt wandert in die Folgewoche. Zwei sind das Zeichen, dass nicht der Plan zu voll ist, sondern das Zeitbudget zu klein angesetzt war. Was du nie tust: einen Punkt streichen. Jeder Punkt wird später gebraucht, und wer in Woche 5 die Übergänge streicht, merkt es in Woche 6 im Beratungsgespräch."
         ],
         "bullets": [
           "Zeitbudget Vollzeit: rund 12 Stunden in der Woche, entspricht der Tagesroutine aus Kapitel 10.",
@@ -20928,13 +20361,13 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 {
                   "label": "Erste Beratungen",
                   "dauer": "Woche 4 bis 6",
-                  "beschreibung": "Kapitel 5, die Präsentation in allen drei Stellungen, fünf Kern-Slides, fünf Standardfragen, erstes eigenes Beratungsgespräch.",
+                  "beschreibung": "Kapitel 5, die Präsentation in beiden Stellungen des Konzeptschalters, fünf Kernabschnitte, Einwände nach dem Muster, erste eigene Beratung.",
                   "status": "trigger"
                 },
                 {
                   "label": "Ins Machen kommen",
                   "dauer": "Woche 7 bis 12",
-                  "beschreibung": "Kapitel 6 bis 11, erste Bonitätsunterlagen, erste Finanzierung, erster Notartermin, erster Tippgeber, Freitagabend-Review.",
+                  "beschreibung": "Kapitel 6 bis 11, erste Unterlagen für die Bank, erste Finanzierung, erster Notartermin, erster Tippgeber, Freitagabend-Review.",
                   "status": "ziel"
                 }
               ]
@@ -21378,61 +20811,60 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "ueberschrift": "Woche 4 bis 6, erste Beratungen",
         "intro": "Drei Wochen, ein Ziel: Du führst die Beratungspräsentation, statt von ihr geführt zu werden.",
         "absaetze": [
-          "Zur Zahl der Präsentationen, die dieses Kapitel bisher falsch geführt hat. Im Vertrieb gibt es nur noch eine Präsentation, die Beratungspräsentation OS Immobilien. Die drei früheren Fassungen tragen ein Alt-Kennzeichen und dienen der Leitung als Nachschlagewerk. Was es dreimal gibt, ist etwas anderes: der Umschalter in Station 09 mit den drei Stellungen Sanierter Bestand, WG und Co-Living sowie Neubau KfW 40 QNG. Alle drei gehören einmal komplett durchgeklickt, weil jede eine eigene, vollständig durchgerechnete Wohnung hat.",
-          "Die fünf Kern-Slides waren bisher nirgends benannt. Es sind die, an denen der Kunde selbst denkt oder spricht: der Preis des Nichtstuns, Station 03 mit den fünf Fragen, Station 04 mit dem gemeinsamen Weg, Station 10 mit der Immobilienschere und dem Regler und Station 14 mit der Selbstauskunft. Vier davon sind die dunklen Abschnitte, die Kapitel 5 ausdrücklich als Höhepunkte des Gesprächs benennt. Die fünfte ist Station 03, weil dort der Kunde antwortet und nicht du.",
-          "Und die Aufgabe, die in diesem Kapitel nie erfüllbar war: Die Top 10 Einwände aus Kapitel 5 gibt es nicht. Kapitel 5 enthält fünf Standardfragen, im Abschnitt Station 13: Was, wenn der Mieter nicht zahlt? Was, wenn ich meinen Job verliere? Was, wenn ich verkaufen muss? Wer zahlt das Dach? Was, wenn die Immobilie an Wert verliert? Sie folgen alle demselben Muster: erst das echte Risiko zugeben, dann die konkrete Absicherung zeigen, im Zweifel abraten. Genau dieses Muster sollst du können, nicht die fünf Antworten auswendig. Die sechzehn Einwände zur Objektauswahl stehen in Kapitel 6 und kommen erst in Woche 7."
+          "Im Vertrieb gibt es eine Präsentation, die Beratungspräsentation von OS Real Estate, mit 16 Abschnitten. Was es zweimal gibt, ist der Konzeptschalter in Abschnitt 07: Zusatzrente mit Hauffstraße 38 und Zossen-Wünsdorf, Steuerersparnis mit Barfusstraße 9. Beide Stellungen gehören einmal komplett durchgeklickt, weil Funktion, Objekte, Rechnung und Plan sich mit dem Schalter ändern.",
+          "Fünf Abschnitte trägst du im Kopf, weil dort der Kunde selbst denkt, wählt oder entscheidet: Abschnitt 02 mit den Zielen des Kunden, Abschnitt 07 mit der Konzeptwahl, Abschnitt 10 mit der Rechnung vor und nach Steuern, Abschnitt 11 mit dem Stresstest und Abschnitt 15 mit der Frage und der Selbstauskunft. Wenn diese fünf sitzen, trägt sich der Rest, weil er dazwischen liegt.",
+          "Und die Einwände: Kapitel 5 übernimmt sie nicht doppelt, sondern verweist auf den Leitfaden Einwandbehandlung mit den 15 häufigsten Einwänden. Lernen sollst du das Muster in fünf Schritten: anerkennen, nachfragen, einordnen, belegen und die Zustimmung prüfen. Mit dem Muster beantwortest du auch den Einwand, der nirgends steht. Die sechzehn Einwände zur Objektvorstellung stehen in Kapitel 6 und kommen erst in Woche 7."
         ],
         "checkliste": [
-          "Woche 4, Tag 1 bis 3, je rund 2 Stunden: Kapitel 5 lesen, alle elf Abschnitte, in der Reihenfolge des Kapitels",
-          "Woche 4, Tag 4, rund 1 Stunde: die Beratungspräsentation im Trainer-Modus einmal komplett durchgehen, laut sprechend und allein",
-          "Woche 4, Tag 5: in Station 09 alle drei Stellungen des Umschalters durchklicken und die drei Monatsrechnungen nebeneinander verstehen",
-          "Woche 5, Tag 1 und 2: die zehn Überleitungen aus dem Gedächtnis aufschreiben, bis sie sitzen",
-          "Woche 5, Tag 3: die fünf Kern-Slides frei sprechen können, ohne Bildschirm",
-          "Woche 5, Tag 4: die fünf Standardfragen aus Kapitel 5 üben, mit dem Muster Risiko zuerst, dann Absicherung",
+          "Woche 4, Tag 1 bis 3, je rund 2 Stunden: Kapitel 5 lesen, alle Abschnitte, in der Reihenfolge des Kapitels",
+          "Woche 4, Tag 4, rund 1 Stunde: die Beratungspräsentation einmal komplett durchgehen, laut sprechend und allein",
+          "Woche 4, Tag 5: den Konzeptschalter in beiden Stellungen durchklicken und die Rechnungen der Hauffstraße 38 und der Barfusstraße 9 vor und nach Steuern verstehen, mit Regel-AfA",
+          "Woche 5, Tag 1 und 2: die Übergänge zwischen den Abschnitten in eigenen Worten aufschreiben, bis sie sitzen",
+          "Woche 5, Tag 3: die fünf Kernabschnitte frei sprechen können, ohne Bildschirm",
+          "Woche 5, Tag 4: drei Einwände aus dem Leitfaden üben, mit den fünf Schritten von anerkennen bis Zustimmung",
           "Woche 5, Tag 5: Rollenspiel mit einem Kollegen, der einen skeptischen Kunden spielt, Pflicht ist der Einwand zum Wertverlust und der Regler auf null",
           "Woche 6, Tag 1 bis 3: erstes Beratungsgespräch mit einem eigenen Kunden. Ist deine Erlaubnis nach § 34c GewO da, führst du es selbst. Ist sie es noch nicht, führt die Gesellschaft und du sitzt dabei (Kapitel 1). Danach Rückmeldung einholen",
-          "Woche 6, Tag 4: erste Selbstauskunft eigenständig versenden",
+          "Woche 6, Tag 4: erste Selbstauskunft gemeinsam mit dem Kunden ausfüllen, am Ende der Beratungspräsentation",
           "Woche 6, Tag 5: Abschlusstest von Kapitel 5, danach das Freitagabend-Review",
           "Durchgehend in allen drei Wochen: täglich drei Ansprachen nach der 3-2-1-Regel, davon mindestens drei neue warme Erstansprachen je Woche"
         ],
         "bullets": [
-          "Eine Präsentation, die Beratungspräsentation OS Immobilien. Die drei alten Fassungen sind gekennzeichnet und nicht für den Vertrieb.",
-          "Drei Stellungen im Umschalter der Station 09: Sanierter Bestand, WG und Co-Living, Neubau KfW 40 QNG. Alle drei einmal komplett durchklicken.",
-          "Die fünf Kern-Slides: Preis des Nichtstuns, Station 03 die fünf Fragen, Station 04 der gemeinsame Weg, Station 10 die Immobilienschere mit dem Regler, Station 14 die Selbstauskunft.",
-          "Kapitel 5 enthält fünf Standardfragen, keine Top 10. Sie stehen im Abschnitt Station 13.",
-          "Das Muster hinter den fünf Antworten: erst das echte Risiko zugeben, dann die konkrete Absicherung zeigen, im Zweifel abraten.",
-          "Die zehn Überleitungen sind das Gerüst. Wer sie frei sprechen kann, kann die ganze Präsentation frei führen.",
-          "Trainer-Modus: dieselbe Präsentation mit dem Sprechskript unter jeder Station, zum Üben allein.",
-          "Die sechzehn Einwände zur Objektauswahl stehen in Kapitel 6 und kommen in Woche 7.",
+          "Eine Präsentation, die Beratungspräsentation von OS Real Estate, 16 Abschnitte, rund eine Stunde.",
+          "Zwei Stellungen im Konzeptschalter: Zusatzrente und Steuerersparnis. Beide einmal komplett durchklicken.",
+          "Die fünf Kernabschnitte: Abschnitt 02 mit den Zielen des Kunden, Abschnitt 07 mit der Konzeptwahl, Abschnitt 10 mit der Rechnung vor und nach Steuern, Abschnitt 11 mit dem Stresstest und Abschnitt 15 mit der Frage und der Selbstauskunft.",
+          "Die 15 Einwände stehen im Leitfaden Einwandbehandlung, Kapitel 5 verweist darauf.",
+          "Das Muster hinter jeder Antwort: anerkennen, nachfragen, einordnen, belegen, Zustimmung prüfen. Im Zweifel abraten.",
+          "Zahlen immer vor und nach Steuern, Regel-AfA neben der erhöhten AfA, Zukunft als Szenario.",
+          "Die sechzehn Einwände zur Objektvorstellung stehen in Kapitel 6 und kommen in Woche 7.",
           "Das erste Beratungsgespräch führst du selbst, sobald deine Erlaubnis nach § 34c GewO vorliegt. Vorher führt die Gesellschaft und du sitzt dabei, das zählt für diesen Block genauso."
         ],
-        "quereinsteigerHinweis": "Was eine Überleitung ist und warum sie mehr zählt als die Folie. Eine Überleitung ist der Satz zwischen zwei Stationen, mit dem du erklärst, warum jetzt das Nächste kommt. Ohne sie ist eine Präsentation eine Reihe von Bildern, mit ihr wird sie ein Gespräch. Kapitel 5 hat zehn davon, und sie sind der Grund, warum du irgendwann nicht mehr auf den Bildschirm schauen musst: Wer weiß, warum Station 10 nach Station 09 kommt, findet die richtigen Worte auch dann, wenn der Kunde dazwischenfragt. Und zum Trainer-Modus: Das ist dieselbe Präsentation, nur mit dem Sprechskript unter jeder Station eingeblendet. Du öffnest sie allein, sprichst laut und liest dabei mit. Nach dem dritten Durchgang brauchst du das Skript nicht mehr, und das merkst du daran, dass du schneller bist als der Text.",
-        "profiTipp": "Es gibt zwei Reihenfolgen, das Beratungsgespräch zu üben, und die naheliegende ist die schwächere. Die naheliegende geht Station für Station von vorn nach hinten. Sie hat den Nachteil, dass du am Anfang jedes Durchgangs frisch bist und am Ende müde, weshalb Station 12 bis 15 nach zehn Durchgängen immer noch am schlechtesten sitzen. Die bessere Reihenfolge beginnt beim Ziel: Übe zuerst Station 14, die Selbstauskunft, denn dort entscheidet sich, ob das Gespräch etwas hervorbringt. Dann Station 10 mit dem Regler, dann Station 03 mit den fünf Fragen, dann der Preis des Nichtstuns, dann Station 04. Das sind genau die fünf Kern-Slides, und wenn sie sitzen, trägt der Rest sich von selbst, weil er dazwischen liegt. Zweiter Punkt: Nimm dein erstes echtes Beratungsgespräch nicht als Prüfung, sondern als Messung. Notiere danach nur drei Zahlen, nämlich wie lange es gedauert hat, an welcher Station du am längsten gebraucht hast und an welcher Stelle der Kunde zum ersten Mal von sich aus gefragt hat. Diese dritte Zahl sagt dir mehr über dein Gespräch als jede Selbsteinschätzung.",
+        "quereinsteigerHinweis": "Was ein Übergang ist und warum er mehr zählt als die Folie. Ein Übergang ist der Satz zwischen zwei Abschnitten, mit dem du erklärst, warum jetzt das Nächste kommt. Ohne ihn ist eine Präsentation eine Reihe von Bildern, mit ihm wird sie ein Gespräch. Wer weiß, warum die Rechnung in Abschnitt 10 nach den Objekten kommt und der Stresstest danach, findet die richtigen Worte auch dann, wenn der Kunde dazwischenfragt.",
+        "profiTipp": "Es gibt zwei Reihenfolgen, die Beratung zu üben, und die naheliegende ist die schwächere. Die naheliegende geht Abschnitt für Abschnitt von vorn nach hinten. Dann bist du am Anfang jedes Durchgangs frisch und am Ende müde, und genau das Ende entscheidet. Die bessere Reihenfolge beginnt beim Ziel: Übe zuerst Abschnitt 15, die Frage und die Selbstauskunft. Dann Abschnitt 10, die Rechnung vor und nach Steuern. Dann Abschnitt 11 mit dem Stresstest, dann Abschnitt 07 mit der Konzeptwahl, dann Abschnitt 02 mit den Zielen. Zweiter Punkt: Nimm deine erste echte Beratung nicht als Prüfung, sondern als Messung. Notiere danach nur drei Zahlen, nämlich wie lange sie gedauert hat, an welchem Abschnitt du am längsten gebraucht hast und an welcher Stelle der Kunde zum ersten Mal von sich aus gefragt hat.",
         "visuals": [
           {
             "kpis": [
               {
                 "label": "Beratungspräsentation",
                 "wert": "genau 1",
-                "hinweis": "die Beratungspräsentation OS Immobilien, 15 Stationen plus drei Einschübe",
+                "hinweis": "16 Abschnitte, rund eine Stunde",
                 "farbe": "primary"
               },
               {
-                "label": "Stellungen im Umschalter",
-                "wert": "3",
-                "hinweis": "Sanierter Bestand, WG und Co-Living, Neubau KfW 40 QNG, alle drei durchklicken",
+                "label": "Stellungen im Konzeptschalter",
+                "wert": "2",
+                "hinweis": "Zusatzrente und Steuerersparnis, beide durchklicken",
                 "farbe": "sky"
               },
               {
-                "label": "Kern-Slides",
+                "label": "Kernabschnitte",
                 "wert": "5",
-                "hinweis": "Preis des Nichtstuns, Station 03, Station 04, Station 10, Station 14",
+                "hinweis": "02, 07, 10, 11 und 15",
                 "farbe": "indigo"
               },
               {
-                "label": "Standardfragen aus Kapitel 5",
-                "wert": "5, nicht 10",
-                "hinweis": "im Abschnitt Station 13, alle nach dem Muster Risiko zuerst",
+                "label": "Einwände im Leitfaden",
+                "wert": "15",
+                "hinweis": "an einer Stelle gepflegt, fünf Schritte als Muster",
                 "farbe": "amber"
               }
             ]
@@ -21440,11 +20872,11 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         ],
         "links": [
           {
-            "label": "Kapitel 5, Aufbau der Präsentation und die zehn Überleitungen",
+            "label": "Kapitel 5, Aufbau der Präsentation",
             "to": "/vertriebsakademie/beratungsgespraech?vaScrollTo=ueberblick-dramaturgie"
           },
           {
-            "label": "Kapitel 5, die fünf Standardfragen",
+            "label": "Kapitel 5, Sicherheit und Einwände",
             "to": "/vertriebsakademie/beratungsgespraech?vaScrollTo=pruefung-einwaende"
           },
           {
@@ -21452,12 +20884,12 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "to": "/vertriebsakademie/beratungsgespraech?vaScrollTo=uebungen-praesentation"
           },
           {
-            "label": "Beratungspräsentation im Trainer-Modus",
-            "to": "/beratungspraesentation-osimmobilien?trainer=1",
-            "hinweis": "Mit Sprechskript unter jeder Station, zum Üben allein"
+            "label": "Leitfaden Einwandbehandlung",
+            "to": "/leitfaeden/einwandbehandlung",
+            "hinweis": "Die 15 häufigsten Einwände"
           },
           {
-            "label": "Beratungspräsentation OS Immobilien",
+            "label": "Beratungspräsentation",
             "to": "/beratungspraesentation-osimmobilien"
           },
           {
@@ -21475,25 +20907,25 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "punkte": 10,
             "fragen": [
               {
-                "frage": "Was sollst du an den fünf Standardfragen aus Kapitel 5 lernen?",
+                "frage": "Was sollst du an den Einwänden lernen?",
                 "optionen": [
-                  "Die fünf Antworten wörtlich auswendig",
-                  "Das Muster: erst das echte Risiko zugeben, dann die Absicherung zeigen, im Zweifel abraten",
+                  "Die 15 Antworten wörtlich auswendig",
+                  "Das Muster: anerkennen, nachfragen, einordnen, belegen, Zustimmung prüfen",
                   "Die Reihenfolge, in der sie im Gespräch auftauchen"
                 ],
                 "korrekt": 1,
-                "aufloesung": "Mit dem Muster beantwortest du auch die sechste Frage, die nirgends steht.",
+                "aufloesung": "Mit dem Muster beantwortest du auch den Einwand, der nirgends steht. Die Einwände selbst stehen im Leitfaden Einwandbehandlung.",
                 "sprungZuAbschnitt": "woche-4-6"
               },
               {
-                "frage": "Was ist der Trainer-Modus?",
+                "frage": "In welcher Reihenfolge zeigst du die Belastung in Abschnitt 10?",
                 "optionen": [
-                  "Eine Kurzfassung der Präsentation für Anfänger",
-                  "Dieselbe Präsentation mit dem Sprechskript unter jeder Station, zum Üben allein",
-                  "Ein Rollenspiel mit dem Teamleiter"
+                  "Erst nach Steuern, weil die Zahl kleiner ist",
+                  "Erst vor Steuern, dann nach Steuern, mit Regel-AfA daneben",
+                  "Nur nach Steuern"
                 ],
                 "korrekt": 1,
-                "aufloesung": "Du öffnest sie allein, sprichst laut und liest mit. Nach dem dritten Durchgang bist du schneller als der Text, dann brauchst du das Skript nicht mehr.",
+                "aufloesung": "Die Rechnung muss vor Steuern tragen, alles darüber ist ein möglicher Bonus. Wo mit erhöhter AfA gerechnet wird, steht die Regel-AfA daneben.",
                 "sprungZuAbschnitt": "woche-4-6"
               },
               {
@@ -21513,27 +20945,27 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "id": "ueben-sortieren-profi",
             "typ": "sortieren",
             "titel": "Vom Ziel her üben",
-            "hinweis": "Zieh die fünf Kern-Slides in die Übungsreihenfolge aus dem Profitipp, die nicht von vorn nach hinten läuft.",
+            "hinweis": "Zieh die fünf Kernabschnitte in die Übungsreihenfolge aus dem Profitipp, die nicht von vorn nach hinten läuft.",
             "pfad": "profi",
             "punkte": 15,
             "schritte": [
-              "Station 14, die Selbstauskunft",
-              "Station 10, die Immobilienschere mit dem Regler",
-              "Station 03, die fünf Fragen",
-              "Der Preis des Nichtstuns",
-              "Station 04, der gemeinsame Weg"
+              "Abschnitt 15, die Frage und die Selbstauskunft",
+              "Abschnitt 10, die Rechnung vor und nach Steuern",
+              "Abschnitt 11, der Stresstest",
+              "Abschnitt 07, die Konzeptwahl",
+              "Abschnitt 02, die Ziele des Kunden"
             ]
           }
         ],
         "uebungen": [
           {
             "id": "w4-uebung-kernslides",
-            "titel": "Die fünf Kern-Slides ohne Bildschirm",
-            "beschreibung": "Erzähle die fünf Kern-Slides frei, ohne die Präsentation zu öffnen: der Preis des Nichtstuns, Station 03, Station 04, Station 10 und Station 14. Notiere dein Gerüst in Stichworten.",
+            "titel": "Die fünf Kernabschnitte ohne Bildschirm",
+            "beschreibung": "Erzähle die fünf Kernabschnitte frei, ohne die Präsentation zu öffnen: Ziele, Konzeptwahl, Rechnung vor und nach Steuern, Stresstest und die Frage mit der Selbstauskunft. Notiere dein Gerüst in Stichworten.",
             "xp": 40,
             "antwortTyp": "textarea",
             "antwortLabel": "Dein Gerüst in Stichworten",
-            "antwortPlaceholder": "Nichtstun kostet 2.400 in zehn Jahren, dann die fünf Fragen ...",
+            "antwortPlaceholder": "Ziele: … Konzept: … vor Steuern … nach Steuern … Stresstest: … Frage: …",
             "mindestZeichen": 200
           }
         ]
@@ -21549,8 +20981,8 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "In Woche 12 kommt Kapitel 10 an die Reihe, obwohl das Freitagabend-Review schon seit Woche 1 läuft. Das ist kein Widerspruch: Ab Woche 1 machst du das Review, in Woche 12 verstehst du, warum es so aufgebaut ist, und stellst deine eigenen Kennzahlen darauf um."
         ],
         "checkliste": [
-          "Woche 7: Kapitel 6 Objektauswahl lesen, dazu die sechzehn Einwände. Parallel weiter täglich drei Ansprachen",
-          "Woche 8: Kapitel 7 Finanzierung lesen. Erste Bonitätsunterlagen vollständig bearbeiten und erste Finanzierung anfragen",
+          "Woche 7: Kapitel 6 Objektvorstellung und Reservierung lesen, dazu die sechzehn Einwände. Parallel weiter täglich drei Ansprachen",
+          "Woche 8: Kapitel 7 Finanzierung lesen. Erste Unterlagen für die Bank vollständig bearbeiten und erste Finanzierung anfragen",
           "Woche 9: Kapitel 8 Notar lesen. Ersten Notartermin begleiten, auch als Zuschauer",
           "Woche 10: Kapitel 9 Nach dem Notar lesen, mit dem Abschnitt Aftersales-Rhythmus",
           "Woche 11: Kapitel 11 Empfehlungssystem lesen, dazu die Grenze der erlaubnisfreien Tippgebertätigkeit. Ersten Tippgeber-Kandidaten ansprechen",
@@ -21559,8 +20991,8 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Am Ende von Woche 12: die Abschlusstests der Kapitel 6 bis 11 bestanden"
         ],
         "bullets": [
-          "Woche 7: Kapitel 6 Objektauswahl, sechzehn Einwände inklusive.",
-          "Woche 8: Kapitel 7 Finanzierung, erste Bonitätsunterlagen, erste Finanzierungsanfrage.",
+          "Woche 7: Kapitel 6 Objektvorstellung, sechzehn Einwände inklusive.",
+          "Woche 8: Kapitel 7 Finanzierung, erste Unterlagen für die Bank, erste Finanzierungsanfrage.",
           "Woche 9: Kapitel 8 Notar, erster Notartermin begleitet, auch als Zuschauer.",
           "Woche 10: Kapitel 9 Nach dem Notar, mit dem Abschnitt Aftersales-Rhythmus. Das Kapitel heißt nicht Aftersales, wer danach sucht, findet es dort.",
           "Woche 11: Kapitel 11 Empfehlungssystem, erster Tippgeber angesprochen. Nicht Kapitel 10, dort steht Mindset.",
@@ -21575,13 +21007,13 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               "titel": "Sechs Wochen, sechs Kapitel, sechs Handlungen",
               "schritte": [
                 {
-                  "label": "Woche 7: Kapitel 6 Objektauswahl",
+                  "label": "Woche 7: Kapitel 6 Objektvorstellung",
                   "beschreibung": "Sechzehn Einwände inklusive. Parallel weiter täglich drei Ansprachen.",
                   "status": "start"
                 },
                 {
                   "label": "Woche 8: Kapitel 7 Finanzierung",
-                  "beschreibung": "Erste Bonitätsunterlagen vollständig bearbeiten, erste Finanzierung anfragen.",
+                  "beschreibung": "Erste Unterlagen für die Bank vollständig bearbeiten, erste Finanzierung anfragen.",
                   "status": "trigger"
                 },
                 {
@@ -21607,7 +21039,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         ],
         "links": [
           {
-            "label": "Kapitel 6, Objektauswahl",
+            "label": "Kapitel 6, Objektvorstellung und Reservierung",
             "to": "/vertriebsakademie/objektauswahl"
           },
           {
@@ -21650,11 +21082,11 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               },
               {
                 "links": "Woche 4 bis 6, erste Beratungen",
-                "rechts": "Alle drei Stellungen des Umschalters, fünf Kern-Slides, erste Selbstauskunft"
+                "rechts": "Beide Stellungen des Konzeptschalters, fünf Kernabschnitte, erste Selbstauskunft"
               },
               {
                 "links": "Woche 7 bis 12, ins Machen kommen",
-                "rechts": "Erste Bonitätsunterlagen, erste Finanzierung, erster Notartermin"
+                "rechts": "Erste Unterlagen für die Bank, erste Finanzierung, erster Notartermin"
               }
             ]
           }
@@ -21667,14 +21099,14 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "absaetze": [
           "Die Check-ins gelten ab Woche 3 und bleiben danach dauerhaft. Sie kosten fünf Minuten und gehören in dasselbe Viertelstündchen wie das Freitagabend-Review aus Kapitel 10.",
           "Zwei der fünf brauchen eine Definition, sonst lassen sie sich nicht ehrlich beantworten. Drei warme Kontakte pro Woche meint drei neue warme Erstansprachen, also drei Menschen, die du in dieser Woche zum ersten Mal angesprochen hast. Das ist dieselbe Zahl wie die Wochen-Routine in Kapitel 3 und nicht dasselbe wie die zehn aus Woche 2, die ein einmaliger Startschub waren.",
-          "Und reviewed heißt nicht durchgeklickt. Gemeint ist das Rollenspiel aus Kapitel 5: Du führst die Präsentation einem Kollegen vor, der einen skeptischen Kunden spielt, und holst dir danach Rückmeldung zu deinen Überleitungen. Allein zu üben ist Üben, mit einem Zuhörer ist Review. Wenn niemand greifbar ist, gilt ersatzweise die Aufnahme mit dem Telefon und das eigene Anhören, denn auch dabei hörst du dich zum ersten Mal von außen."
+          "Und reviewed heißt nicht durchgeklickt. Gemeint ist das Rollenspiel aus Kapitel 5: Du führst die Präsentation einem Kollegen vor, der einen skeptischen Kunden spielt, und holst dir danach Rückmeldung zu deinen Übergängen. Allein zu üben ist Üben, mit einem Zuhörer ist Review. Wenn niemand greifbar ist, gilt ersatzweise die Aufnahme mit dem Telefon und das eigene Anhören, denn auch dabei hörst du dich zum ersten Mal von außen."
         ],
         "bullets": [
           "Kann ich in 30 Sekunden erklären, was ich mache?",
           "Kann ich einem Fremden am Küchentisch den Unterschied zwischen Bruttomietrendite und Nettomietrendite erklären, ohne ein zweites Fachwort?",
           "Weiß ich, wo im CRM ich Selbstauskunft, Pipeline, Follow-up und Statistiken finde, ohne zu suchen?",
           "Habe ich diese Woche mindestens drei neue warme Erstansprachen gemacht? Gemeint sind drei Menschen, die ich zum ersten Mal angesprochen habe.",
-          "Habe ich diese Woche mindestens eine Beratungspräsentation reviewed? Reviewed heißt: einem Kollegen vorgeführt und Rückmeldung zu den Überleitungen geholt.",
+          "Habe ich diese Woche mindestens eine Beratungspräsentation reviewed? Reviewed heißt: einem Kollegen vorgeführt und Rückmeldung zu den Übergängen geholt.",
           "Die Check-ins beginnen in Woche 3 und bleiben danach dauerhaft. Fünf Minuten, im selben Termin wie das Freitagabend-Review.",
           "Wenn keine Antwort ja lautet, ist nicht die Woche schuld, sondern die Reihenfolge in der Woche."
         ],
@@ -21698,7 +21130,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               {
                 "label": "Beratungspräsentation reviewed",
                 "wert": "mindestens 1",
-                "hinweis": "einem Kollegen vorgeführt und Rückmeldung zu den Überleitungen geholt",
+                "hinweis": "einem Kollegen vorgeführt und Rückmeldung zu den Übergängen geholt",
                 "farbe": "sky"
               },
               {
@@ -21736,7 +21168,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               {
                 "aussage": "Du hast die Präsentation dreimal allein durchgeklickt. Zählt als reviewed.",
                 "stimmt": false,
-                "aufloesung": "Allein üben ist Üben. Review braucht einen Zuhörer, der einen skeptischen Kunden spielt und dir zu den Überleitungen etwas sagt."
+                "aufloesung": "Allein üben ist Üben. Review braucht einen Zuhörer, der einen skeptischen Kunden spielt und dir zu den Übergängen etwas sagt."
               },
               {
                 "aussage": "Niemand war greifbar, du hast dich mit dem Telefon aufgenommen und angehört. Zählt ersatzweise.",
@@ -21772,7 +21204,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "ueberschrift": "Wenn es klemmt",
         "intro": "Kein Plan läuft zwölf Wochen ohne Störung. Hier stehen die vier häufigsten Fälle und was du in jedem tust.",
         "absaetze": [
-          "Die Grundregel steht schon im ersten Abschnitt: Höchstens ein Checkpunkt wandert in die Folgewoche, nie zwei, und gestrichen wird nichts. Der Grund ist einfach. Jeder Punkt wird später gebraucht, und die Kosten fallen nicht in der Woche an, in der du ihn liegen lässt, sondern zwei bis vier Wochen später. Wer in Woche 5 die Überleitungen streicht, merkt es in Woche 6 im ersten Beratungsgespräch.",
+          "Die Grundregel steht schon im ersten Abschnitt: Höchstens ein Checkpunkt wandert in die Folgewoche, nie zwei, und gestrichen wird nichts. Der Grund ist einfach. Jeder Punkt wird später gebraucht, und die Kosten fallen nicht in der Woche an, in der du ihn liegen lässt, sondern zwei bis vier Wochen später. Wer in Woche 5 die Übergänge streicht, merkt es in Woche 6 im ersten Beratungsgespräch.",
           "Sind zwei oder mehr Punkte offen, ist nicht der Plan zu voll, sondern das Zeitbudget war zu groß angesetzt. Dann ändert sich nicht die Woche, sondern die Rechnung: Wer nur fünf statt zwölf Stunden hat, arbeitet nach dem nebenberuflichen Maßstab, und dann werden aus 90 Tagen fünf bis sechs Monate. Das ist eine Umstellung des Plans und kein Scheitern.",
           "Und ein Satz zu dem Fall, der sich am schlimmsten anfühlt: Du hast drei Wochen gar nichts gemacht. Der Fehler wäre jetzt, von vorn anzufangen. Steig in der Woche wieder ein, in der du aufgehört hast, und mach genau einen Punkt, und zwar den, für den du einen anderen Menschen brauchst. Eine einzige Ansprache bringt dich zurück in den Plan, ein neu gelesenes Kapitel 0 nicht.",
           "Der Plan steht. Was er bewusst nicht abdeckt, sind die Momente, in denen jemand über Preis, Konditionen oder Zinsen reden will. Drei Gegenüber, dreimal andere Regeln, ein Kapitel: Das ist Kapitel 13."
@@ -21853,7 +21285,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "szenen": [
               {
                 "id": "s1",
-                "text": "Ende Woche 6. Das erste Beratungsgespräch ist zweimal abgesagt worden, die Überleitungen sitzen halb, von drei warmen Erstansprachen hast du eine gemacht. Der Freitagabend ist da. Was tust du zuerst?",
+                "text": "Ende Woche 6. Das erste Beratungsgespräch ist zweimal abgesagt worden, die Übergänge sitzen halb, von drei warmen Erstansprachen hast du eine gemacht. Der Freitagabend ist da. Was tust du zuerst?",
                 "optionen": [
                   {
                     "text": "Das Review trotzdem machen, die drei Zahlen aufschreiben, dann entscheiden",
@@ -21877,7 +21309,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               },
               {
                 "id": "s2",
-                "text": "Die Zahlen liegen vor: eine Erstansprache statt drei, kein Beratungsgespräch, Überleitungen zur Hälfte sicher. Zwei Checkpunkte sind offen, nicht einer. Was folgt daraus?",
+                "text": "Die Zahlen liegen vor: eine Erstansprache statt drei, kein Beratungsgespräch, Übergänge zur Hälfte sicher. Zwei Checkpunkte sind offen, nicht einer. Was folgt daraus?",
                 "optionen": [
                   {
                     "text": "Zeitbudget ehrlich neu ansetzen, einen Punkt mitnehmen, Ansprachen in Woche 7 zuerst",
@@ -21892,10 +21324,10 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                     "konsequenz": "Woche 7 ist bereits voll. Zwei zusätzliche Punkte machen aus einer schwachen Woche zwei."
                   },
                   {
-                    "text": "Die Überleitungen streichen, das Beratungsgespräch ist wichtiger",
+                    "text": "Die Übergänge streichen, die Beratung ist wichtiger",
                     "weiterZu": "ende-verloren",
                     "bewertung": "schwach",
-                    "konsequenz": "Ohne Überleitungen wird das Beratungsgespräch zum Vorlesen. Der Punkt fehlt genau dort, wo er gebraucht wird."
+                    "konsequenz": "Ohne Übergänge wird die Beratung zum Vorlesen. Der Punkt fehlt genau dort, wo er gebraucht wird."
                   }
                 ]
               },
@@ -22037,14 +21469,14 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "sprungZuAbschnitt": "grundprinzipien"
         },
         {
-          "frage": "Woran erkennst du, ob eine Verknappung echt ist?",
+          "frage": "Was sagst du, wenn der Kunde fragt, wie viele Einheiten noch frei sind?",
           "optionen": [
-            "Daran, ob der Bauträger sie dir am Telefon ausdrücklich bestätigt",
-            "Daran, ob du sie im CRM belegen kannst, ohne jemanden anzurufen",
-            "Daran, ob sie sich im Gespräch für dich glaubwürdig anfühlt"
+            "Dass er sich beeilen sollte, weil die Nachfrage groß ist",
+            "Nur, was du im CRM belegen kannst, etwa den Status in Investagon, ohne daraus Druck zu machen",
+            "Eine Schätzung, die sich im Gespräch glaubwürdig anfühlt"
           ],
           "korrekt": 1,
-          "aufloesung": "Die Probe ist die Belegbarkeit im System: der Status der freien Einheiten in Investagon, eine versendete Reservierungsvereinbarung, ein dokumentierter Vermarktungsstopp. Was du erst erfragen müsstest, sagst du nicht als Tatsache.",
+          "aufloesung": "Keine Verknappung. Auf Nachfrage nennst du belegbare Fakten: den Status der freien Einheiten in Investagon, eine versendete Reservierungsvereinbarung, einen dokumentierten Vermarktungsstopp. Was du erst erfragen müsstest, sagst du nicht als Tatsache.",
           "sprungZuAbschnitt": "grundprinzipien"
         },
         {
@@ -22062,11 +21494,11 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "frage": "Der Kunde fragt nach der Reservierungsgebühr. Was antwortest du?",
           "optionen": [
             "Standard sind 1 Prozent vom Kaufpreis, sie wird später auf den Kaufpreis angerechnet",
-            "1.000 Euro, ab 300.000 Euro Kaufpreis 1.500 Euro, und am Tag der Beurkundung vollständig zurück",
+            "Es gibt keine, die Reservierung ist kostenfrei",
             "Die Gebühr verfällt bei einem Rücktritt, deshalb sollte er sich vor der Unterschrift wirklich sicher sein"
           ],
           "korrekt": 1,
-          "aufloesung": "Die Zahl allein genügt nicht, die Rückzahlung gehört in denselben Satz. Wer erst den Betrag nennt und die Rückzahlung nachschiebt, verliert den Kunden in der Pause dazwischen: Dort rechnet er. Und die dritte Antwort ist inhaltlich falsch, denn die Gebühr verfällt gerade nicht in jedem Fall. Einbehalten wird sie nur, wenn der Kunde selbst abspringt.",
+          "aufloesung": "Die Reservierung ist kostenfrei, und die Vereinbarung sagt ausdrücklich, dass keine Gebühr erhoben wird. Die erste und die dritte Antwort beschreiben eine Gebühr, die es bei uns nicht gibt. Wer sie nennt, sagt dem Kunden etwas zu, das im Papier anders steht.",
           "sprungZuAbschnitt": "verhandlung-kunde"
         },
         {
@@ -22172,28 +21604,28 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "intro": "Verhandeln in unserem Geschäft ist keine Feilscherei. Es ist ruhiges, ehrliches Rahmensetzen.",
         "absaetze": [
           "Die vier Prinzipien gelten in allen drei Situationen dieses Kapitels, beim Kunden, beim Bauträger und bei der Bank. Was sich unterscheidet, ist die Währung: Beim Kunden verhandelst du über Sicherheit, beim Bauträger über Verlässlichkeit, bei der Bank über Risiko.",
-          "Das Prinzip, das am häufigsten falsch angewendet wird, ist die Verknappung. Der Satz nur echte Verknappung kommunizieren stand bisher ohne ein einziges Beispiel im Kapitel, und ohne Beispiel ist er wirkungslos. Deshalb hier die Probe, die im Alltag trägt: Echt ist eine Verknappung, wenn du sie im CRM belegen kannst, ohne jemanden anzurufen.",
-          "Belegbar sind zum Beispiel der Status der tatsächlich freien Einheiten in Investagon, eine bereits versendete oder unterschriebene Reservierungsvereinbarung eines anderen Interessenten und ein vom Bauträger dokumentierter Vermarktungsstopp. Nicht belegbar sind eine Frist, die du selbst gesetzt hast, der Satz so ein Objekt kommt so schnell nicht wieder, ein zweiter Interessent, den es nicht gibt, und ein Preis, der angeblich nur heute gilt.",
-          "Der Unterschied ist nicht moralisch, sondern praktisch. Eine belegbare Verknappung hältst du auch dann durch, wenn der Kunde nachfragt oder zwei Wochen später zurückkommt. Eine erfundene fällt beim ersten Nachhaken auseinander, und danach glaubt dir der Kunde auch die Zahlen nicht mehr, die stimmen."
+          "Das Prinzip, das am häufigsten falsch angewendet wird, betrifft die Verfügbarkeit. Bei uns gilt: keine Verknappung. Wir setzen knappe Einheiten, Fristen oder andere Interessenten nie als Druckmittel ein. Fragt der Kunde selbst, wie viele Einheiten noch frei sind, antwortest du ehrlich, und zwar nur mit dem, was du im CRM belegen kannst, ohne jemanden anzurufen.",
+          "Belegbar sind zum Beispiel der Status der tatsächlich freien Einheiten in Investagon, eine bereits versendete oder unterschriebene Reservierungsvereinbarung eines anderen Interessenten und ein vom Bauträger dokumentierter Vermarktungsstopp. Nie gesagt werden eine Frist, die du selbst gesetzt hast, der Satz so ein Objekt kommt so schnell nicht wieder, ein zweiter Interessent, den es nicht gibt, und ein Preis, der angeblich nur heute gilt. Das Angebot gilt nur noch heute steht auf der Liste der Sätze, die wir nie sagen.",
+          "Der Unterschied ist nicht nur moralisch, sondern praktisch. Eine ehrliche Auskunft hältst du auch dann durch, wenn der Kunde nachfragt oder zwei Wochen später zurückkommt. Eine erfundene Verknappung fällt beim ersten Nachhaken auseinander, und danach glaubt dir der Kunde auch die Zahlen nicht mehr, die stimmen."
         ],
         "bullets": [
           "Reziprozität: Wer zuerst gibt, also Zeit, Information und Zugang, bekommt eher etwas zurück.",
-          "Verknappung ehrlich einsetzen: Nur kommunizieren, was du belegen kannst. Die Probe ist der Blick ins CRM ohne Anruf.",
-          "Echt und belegbar: freie Einheiten laut Status in Investagon, eine versendete oder unterschriebene Reservierungsvereinbarung, ein dokumentierter Vermarktungsstopp des Bauträgers.",
-          "Nicht belegbar: eine selbst gesetzte Frist, so ein Objekt kommt so schnell nicht wieder, ein erfundener zweiter Interessent, ein Preis nur für heute.",
+          "Keine Verknappung: Verfügbarkeit nennst du nur, wenn der Kunde fragt, und nur, was du im CRM belegen kannst. Nie als Druckmittel.",
+          "Belegbar auf Nachfrage: freie Einheiten laut Status in Investagon, eine versendete oder unterschriebene Reservierungsvereinbarung, ein dokumentierter Vermarktungsstopp des Bauträgers.",
+          "Nie gesagt: eine selbst gesetzte Frist, so ein Objekt kommt so schnell nicht wieder, ein erfundener zweiter Interessent, ein Preis nur für heute.",
           "Autorität durch Vorbereitung: Wer Zahlen, Vergleiche und Marktdaten parat hat, verhandelt aus Stärke statt aus Lautstärke.",
           "Anker setzen: Die erste genannte Zahl prägt die Verhandlung. Lass nie den Kunden zuerst eine Zahl nennen.",
           "Und die Regel über allen vieren: Sag nichts zu, was dir nicht gehört. Preis, Zahlungsplan und Fertigstellung gehören dem Bauträger, der Zins gehört der Bank."
         ],
         "quereinsteigerHinweis": "Zwei Begriffe aus diesem Abschnitt. Reziprozität heißt Gegenseitigkeit: Menschen geben eher etwas zurück, wenn sie zuerst etwas bekommen haben, und das gilt auch für Zeit und Aufmerksamkeit. Ein Anker ist die erste Zahl, die im Gespräch fällt. Sie wirkt, weil alle folgenden Zahlen daran gemessen werden, auch wenn sie mit der Sache wenig zu tun hat. Deshalb nennst du im Verkaufsgespräch die erste Zahl und nicht der Kunde. Und die wichtigste Regel für den Anfang: Du verhandelst über nichts, was dir nicht gehört. Der Preis gehört dem Bauträger, der Zins gehört der Bank, der Zahlungsplan hängt an einer Verordnung. Was dir gehört, ist deine Zeit, deine Vorbereitung und deine Priorität, und das ist mehr, als es zunächst klingt.",
-        "profiTipp": "Die vier Prinzipien haben eine Reihenfolge, die selten jemand ausspricht, und sie entscheidet über den Ausgang. Reziprozität und Vorbereitung wirken vor dem Gespräch, Anker und Verknappung im Gespräch. Wer die ersten beiden auslässt und mit den letzten beiden beginnt, verhandelt aus dem Nichts: Er setzt einen Anker, ohne ihn begründen zu können, und knappt etwas, ohne es belegen zu können. Genau so entstehen die Gespräche, die sich für beide Seiten unangenehm anfühlen. Praktisch heißt das: Bevor du in ein Preisgespräch gehst, sammle drei Belege, die du zeigen kannst, und eine Sache, die du bereits gegeben hast. Drei Belege sind zum Beispiel die freien Einheiten laut Investagon, ein Vergleichspreis aus der Marktanalyse und die Dauer, die das Objekt im Portal steht. Die Sache, die du gegeben hast, ist meistens Zeit: eine Rechnung, die du zusätzlich erstellt hast, oder eine Frage, die du außerhalb deiner Zuständigkeit geklärt hast. Beides zusammen macht aus einer Behauptung eine Position.",
+        "profiTipp": "Die vier Prinzipien haben eine Reihenfolge, die selten jemand ausspricht, und sie entscheidet über den Ausgang. Reziprozität und Vorbereitung wirken vor dem Gespräch, der Anker und die ehrliche Auskunft zur Verfügbarkeit im Gespräch. Wer die Vorbereitung auslässt, verhandelt aus dem Nichts: Er setzt einen Anker, ohne ihn begründen zu können, und greift dann zu Druck, weil ihm Belege fehlen. Genau so entstehen die Gespräche, die sich für beide Seiten unangenehm anfühlen. Praktisch heißt das: Bevor du in ein Preisgespräch gehst, sammle drei Belege, die du zeigen kannst, und eine Sache, die du bereits gegeben hast. Drei Belege sind zum Beispiel die freien Einheiten laut Investagon, ein Vergleichspreis aus der Marktanalyse und die Dauer, die das Objekt im Portal steht. Die Sache, die du gegeben hast, ist meistens Zeit: eine Rechnung, die du zusätzlich erstellt hast, oder eine Frage, die du außerhalb deiner Zuständigkeit geklärt hast. Beides zusammen macht aus einer Behauptung eine Position.",
         "visuals": [
           {
             "vergleich": {
-              "titel": "Echte und unechte Verknappung",
-              "untertitel": "Die Probe: Kannst du es im CRM oder in Investagon zeigen, ohne jemanden anzurufen?",
+              "titel": "Ehrliche Auskunft und Druck",
+              "untertitel": "Die Probe: Kannst du es im CRM oder in Investagon zeigen, ohne jemanden anzurufen? Und hat der Kunde danach gefragt?",
               "optionA": {
-                "label": "Echt, weil belegbar",
+                "label": "Auf Nachfrage erlaubt, weil belegbar",
                 "punkte": [
                   "Investagon zeigt zwei freie Einheiten",
                   "Für eine andere Einheit ist eine Reservierungsvereinbarung versendet oder unterschrieben",
@@ -22203,7 +21635,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 "ergebnis": "Hält auch beim Nachhaken"
               },
               "optionB": {
-                "label": "Unecht, weil nicht belegbar",
+                "label": "Nie, weil Druck oder erfunden",
                 "punkte": [
                   "Eine Frist, die du selbst gesetzt hast",
                   "So ein Objekt kommt so schnell nicht wieder",
@@ -22212,7 +21644,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 ],
                 "ergebnis": "Fällt beim ersten Nachhaken auseinander"
               },
-              "fazit": "Der Schaden einer erfundenen Verknappung entsteht nicht im Moment der Aussage, sondern zwei Wochen später: Danach glaubt der Kunde auch die Zahlen nicht mehr, die stimmen."
+              "fazit": "Keine Verknappung bei uns. Der Schaden einer erfundenen entsteht nicht im Moment der Aussage, sondern zwei Wochen später: Danach glaubt der Kunde auch die Zahlen nicht mehr, die stimmen."
             }
           }
         ],
@@ -22227,8 +21659,8 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           {
             "id": "verknappung-wahrfalsch-qe",
             "typ": "wahrfalsch",
-            "titel": "Echt oder erfunden?",
-            "hinweis": "Wisch nach rechts, wenn die Verknappung im Satz echt und belegbar ist, nach links, wenn sie erfunden ist.",
+            "titel": "Belegbare Auskunft oder Druck?",
+            "hinweis": "Wisch nach rechts, wenn du die Aussage auf Nachfrage des Kunden machen darfst, weil sie belegbar ist, nach links, wenn sie Druck erzeugt oder erfunden ist.",
             "pfad": "quereinsteiger",
             "punkte": 10,
             "karten": [
@@ -22255,7 +21687,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               {
                 "aussage": "Du musst dich bis Freitag entscheiden, das ist meine Frist.",
                 "stimmt": false,
-                "aufloesung": "Eine selbst gesetzte Frist ist keine Verknappung, sondern Druck. Sie hält keiner Nachfrage stand."
+                "aufloesung": "Eine selbst gesetzte Frist ist Druck, und den machen wir nicht. Sie hält keiner Nachfrage stand."
               },
               {
                 "aussage": "Der Bauträger hat den Vermarktungsstopp angekündigt, das steht in der Objektnotiz.",
@@ -22278,14 +21710,14 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "aufloesungAmEnde": true,
             "fragen": [
               {
-                "frage": "Warum verhandelt jemand aus dem Nichts, der mit Anker und Verknappung beginnt?",
+                "frage": "Warum verhandelt jemand aus dem Nichts, der ohne Vorbereitung ins Gespräch geht?",
                 "optionen": [
-                  "Weil Anker und Verknappung nur beim Bauträger wirken",
-                  "Weil ihm Vorbereitung und Reziprozität fehlen: der Anker hat keine Begründung, die Verknappung keinen Beleg",
+                  "Weil Anker nur beim Bauträger wirken",
+                  "Weil ihm Belege und Reziprozität fehlen: der Anker hat keine Begründung, und am Ende bleibt nur Druck",
                   "Weil der Kunde die erste Zahl nennen sollte"
                 ],
                 "korrekt": 1,
-                "aufloesung": "Reziprozität und Vorbereitung wirken vor dem Gespräch, Anker und Verknappung im Gespräch. Wer die ersten beiden auslässt, setzt einen Anker ohne Begründung und knappt ohne Beleg. Genau daraus entstehen die unangenehmen Gespräche.",
+                "aufloesung": "Reziprozität und Vorbereitung wirken vor dem Gespräch. Wer sie auslässt, setzt einen Anker ohne Begründung und greift zu Druck, weil ihm Belege fehlen. Verknappung als Mittel gibt es bei uns nicht.",
                 "sprungZuAbschnitt": "grundprinzipien"
               },
               {
@@ -22308,17 +21740,17 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "ueberschrift": "Verhandlung mit dem Kunden",
         "absaetze": [
           "Der Kunde will meistens nicht wirklich den Preis drücken. Er will das Gefühl haben, nicht über den Tisch gezogen zu werden. Gib ihm dieses Gefühl aktiv, ohne einen echten Preisnachlass zu geben, und du hast beide Ziele erreicht.",
-          "Zur Reservierung, und hier hat sich etwas geändert: Seit September 2026 erheben wir eine Reservierungsgebühr. Sie beträgt 1.000 Euro und ab einem Kaufpreis von 300.000 Euro 1.500 Euro, zahlbar innerhalb von sieben Tagen nach Unterzeichnung. Entscheidend ist, was danach damit geschieht: Am Tag der notariellen Beurkundung wird sie vollständig zurücküberwiesen. Sie bleibt nur dann bei uns, wenn der Kunde selbst vor dem Notartermin abspringt; kommt der Kauf aus Gründen nicht zustande, die nicht bei ihm liegen, bekommt er sie ebenfalls vollständig zurück. Daneben enthält die Vereinbarung wie bisher die Absichtserklärung des Interessenten, seine Bestätigung über die vollständig erhaltenen Unterlagen, den Auftrag an uns, die Vorbereitungen für den Kaufvertrag zu treffen, und die Zusage, die Kosten aus der Notar-Beauftragung zu tragen, wenn er aus von ihm zu vertretenden Gründen zurücktritt.",
+          "Zur Reservierung: Sie ist kostenfrei. Wir erheben keine Reservierungsgebühr, und die Vereinbarung sagt das ausdrücklich. Sie enthält die Absichtserklärung des Interessenten, seine Bestätigung über die vollständig erhaltenen Unterlagen, den Auftrag an uns, die Vorbereitungen für den Kaufvertrag zu treffen, und die Zusage, die Kosten aus der Notar-Beauftragung zu tragen, wenn er aus von ihm zu vertretenden Gründen zurücktritt.",
           "Das ist die Auskunft, die der Kunde bekommt, und sie ist besser als jede Gebührenerklärung: Er zahlt nichts, um zu reservieren. Er trägt nur die Kosten, die entstanden sind, wenn er selbst abspringt, und auch das nur, wenn der Grund bei ihm liegt.",
-          "Warum die Rückzahlungsregel der wichtigste Teil unserer Gebühr ist, und warum du sie immer mitsprichst: Der Bundesgerichtshof hat mit Urteil vom 20. April 2023, Aktenzeichen I ZR 113/22, eine Reservierungsgebühr für unwirksam erklärt. Seine Begründung führt drei Punkte an, und der erste ist der entscheidende: Die Rückzahlung war in jenem Fall ausnahmslos ausgeschlossen, dem Kunden entstanden keine nennenswerten Vorteile, und eine nennenswerte Gegenleistung schuldete die andere Seite nicht. Genau daran unterscheidet sich unsere Regelung: Bei uns ist die Rückzahlung der Normalfall, nicht die Ausnahme. Am Tag der Beurkundung fließt der Betrag vollständig zurück, und auch dann, wenn der Kauf ohne Verschulden des Kunden scheitert. Deshalb sprich die Rückzahlung nie als Nebensatz, sondern im selben Atemzug wie die Zahl. Wer nur den Betrag nennt, beschreibt etwas anderes als das, was in unserer Vereinbarung steht.",
+          "Warum wir keine Reservierungsgebühr nehmen, damit du es dem Kunden erklären kannst, der von anderswo eine kennt: Der Bundesgerichtshof hat mit Urteil vom 20. April 2023, Aktenzeichen I ZR 113/22, eine Reservierungsgebühr für unwirksam erklärt. Seine Begründung führt drei Punkte an: Die Rückzahlung war in jenem Fall ausnahmslos ausgeschlossen, dem Kunden entstanden keine nennenswerten Vorteile, und eine nennenswerte Gegenleistung schuldete die andere Seite nicht. Bei uns stellt sich die Frage gar nicht, denn die Reservierung kostet nichts.",
           "Für dich folgt daraus eine einfache Regel. Sag nichts über eine Gebühr zu, die es bei uns nicht gibt, und sag erst recht nichts über ihre Rückzahlbarkeit. Was du zusagen kannst, steht in der Reservierungsvereinbarung, und die kannst du dem Kunden zeigen.",
           "Beim Preis gilt dieselbe Regel in anderer Form: Der Preis gehört dem Bauträger. Ein Nachlass kommt nur infrage, wenn er von sich aus Spielraum hat, etwa bei einem Restposten oder bei Vermarktungsdruck. Ungeprüft nachzufragen kostet dich beim Bauträger den Ruf und dem Kunden nichts ein.",
           "Sonderwünsche laufen immer in derselben Reihenfolge: Anfrage, bauliche Prüfung durch den Bauträger, Angebot mit Preis, Nachtrag im Kaufvertrag. Wer einen Preis nennt, bevor die Prüfung gelaufen ist, nennt einen Preis für etwas, von dem noch niemand weiß, ob es baulich geht."
         ],
         "bullets": [
-          "Reservierung: 1.000 Euro Reservierungsgebühr, ab 300.000 Euro Kaufpreis 1.500 Euro, zahlbar innerhalb von sieben Tagen. Am Tag der Beurkundung vollständig zurück. Einbehalten nur, wenn der Kunde selbst abspringt.",
+          "Reservierung: kostenfrei, keine Reservierungsgebühr. Die Vereinbarung sagt das ausdrücklich.",
           "Was in der Reservierungsvereinbarung steht: Absichtserklärung zum Erwerb, Bestätigung über die erhaltenen Unterlagen, Auftrag zur Vorbereitung des Kaufvertrags, Übernahme der Kosten aus der Notar-Beauftragung bei selbst zu vertretendem Rücktritt.",
-          "Rechtlicher Hintergrund, den du kennen solltest: BGH, Urteil vom 20.04.2023, I ZR 113/22. Dort war die Rückzahlung ausnahmslos ausgeschlossen, und genau deshalb war die Gebühr unwirksam. Unsere Rückzahlungsregel ist der Unterschied dazu, also sprich sie immer mit.",
+          "Rechtlicher Hintergrund, den du kennen solltest: BGH, Urteil vom 20.04.2023, I ZR 113/22. Dort war die Rückzahlung ausnahmslos ausgeschlossen, und genau deshalb war die Gebühr unwirksam. Bei uns gibt es keine Gebühr, also auch nichts zurückzuzahlen.",
           "Dazu die Formfrage: Eine Reservierungsvereinbarung mit mittelbarem Kaufzwang ist nach § 311b Absatz 1 BGB beurkundungspflichtig, ohne Beurkundung nach § 125 BGB nichtig.",
           "Sonderwünsche zu Küche, Boden oder Grundriss: immer erst prüfen lassen, was baulich möglich ist, dann den Preis nennen. Anfrage, Prüfung, Angebot, Nachtrag im Kaufvertrag.",
           "Kaufpreis-Nachlass: nur wenn der Bauträger echten Spielraum hat, etwa Restposten oder Vermarktungsdruck. Ein Objekt über 60 Tage im Portal ist ein Anhaltspunkt, den du selbst sehen kannst.",
@@ -22333,7 +21765,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               {
                 "label": "Reservierungsgebühr",
                 "wert": "gibt es bei uns nicht",
-                "hinweis": "kein Feld im CRM, kein Text in der Reservierungsvereinbarung",
+                "hinweis": "kein Feld im CRM, die Vereinbarung sagt ausdrücklich: keine Gebühr",
                 "farbe": "primary"
               },
               {
@@ -22393,7 +21825,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           {
             "titel": "Die Reservierungsvereinbarung erklären",
             "kontext": "Der Kunde fragt, was ihn die Reservierung kostet und ob er sich damit bindet.",
-            "text": "Zwei klare Antworten. Erstens zur Gebühr: 1.000 Euro, ab 300.000 Euro Kaufpreis 1.500 Euro, und am Tag der Beurkundung bekommst du sie vollständig zurück. Sie bleibt nur bei uns, wenn du selbst abspringst. Zweitens: Du bindest dich damit nicht zum Kauf. Die Vereinbarung hält fest, dass du diese Einheit erwerben möchtest, dass du alle Unterlagen bekommen hast und dass wir jetzt die Vorbereitungen für den Kaufvertrag starten. Einen Punkt sage ich dir dabei von mir aus, damit er dich später nicht überrascht: Wenn du aus Gründen abspringst, die bei dir liegen, trägst du die Kosten, die durch die Beauftragung des Notars schon entstanden sind. Das ist der einzige Kostenpunkt in dem Papier, und du kannst ihn hier nachlesen.",
+            "text": "Zwei klare Antworten. Erstens: Die Reservierung kostet dich nichts, eine Reservierungsgebühr gibt es bei uns nicht. Zweitens: Du bindest dich damit nicht zum Kauf. Die Vereinbarung hält fest, dass du diese Einheit erwerben möchtest, dass du alle Unterlagen bekommen hast und dass wir jetzt die Vorbereitungen für den Kaufvertrag starten. Einen Punkt sage ich dir dabei von mir aus, damit er dich später nicht überrascht: Wenn du aus Gründen abspringst, die bei dir liegen, trägst du die Kosten, die durch die Beauftragung des Notars schon entstanden sind. Das ist der einzige Kostenpunkt in dem Papier, und du kannst ihn hier nachlesen.",
             "warumTitel": "Warum du den einen unangenehmen Satz selbst nennst",
             "warum": "Der Kunde stellt zwei Fragen und meint eine dritte, nämlich woran bin ich, wenn ich es mir anders überlege. Wer nur die beiden gestellten Fragen beantwortet, lässt die dritte offen, und offene Fragen werden zu Hause am Küchentisch beantwortet, meist zu deinen Ungunsten. Deshalb kommt die Kostenübernahme von dir und nicht auf Nachfrage. Sie klingt aus deinem Mund nach Fairness und beim späteren Selbstlesen nach Kleingedrucktem. Der zweite Grund für den Aufbau ist die Reihenfolge kostet nichts, bindet nicht, ein Punkt zu den Kosten. Zwei Entlastungen tragen eine Einschränkung. Umgekehrt trägt eine Einschränkung keine zwei Entlastungen. Und der Schlusssatz du kannst ihn hier nachlesen ist der eigentliche Beweis: Was man vorzeigen kann, wird selten geprüft."
           }
@@ -22651,7 +22083,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                     "text": "Von einer Reservierungsgebühr von einem Prozent sprechen, die später verrechnet wird",
                     "weiterZu": "ende-kein-abschluss",
                     "bewertung": "schwach",
-                    "konsequenz": "Beides falsch. Unsere Gebühr ist ein fester Betrag, kein Prozentsatz, und sie wird nicht verrechnet, sondern zurücküberwiesen. Der Kunde findet im Papier etwas anderes und fragt sich, was sonst noch nicht stimmt."
+                    "konsequenz": "Falsch. Eine Reservierungsgebühr gibt es bei uns nicht, die Reservierung ist kostenfrei. Der Kunde findet im Papier etwas anderes und fragt sich, was sonst noch nicht stimmt."
                   },
                   {
                     "text": "Die Antwort nachreichen, weil du nicht sicher bist, was in der Vereinbarung steht",
@@ -24124,7 +23556,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Drei Zahlen aus diesem Gespräch standen bisher ohne Herleitung im Kapitel, obwohl der Kunde sie direkt zu hören bekommt. Hier stehen sie mit Rechenweg.",
           "Erstens die 25 bis 30 Jahre, bis die erste Wohnung abbezahlt ist. Sie folgen aus 2 Prozent Anfangstilgung: Bei 4 Prozent Zins ist ein Annuitätendarlehen nach rund 28 Jahren getilgt, bei 3 Prozent nach rund 31, bei 5 Prozent nach rund 26. Kapitel 3 rechnet dieselbe Zahl vor, dort als Begründung für die Altersgrenze im Perfect Client Profile. Die Spanne 25 bis 30 entspricht also einem Zinsniveau zwischen etwa 3 und 5 Prozent bei 2 Prozent Tilgung. Sag dem Kunden deshalb nicht 25 bis 30 Jahre, sondern bei deinem Zins und deiner Tilgung rund so viele Jahre, und rechne es ihm vor.",
           "Zweitens die 300.000 bis 500.000 Euro zusätzliches Vermögen. Sie sind kein Gewinn, sondern der Kaufpreis eines zweiten Objekts, das in derselben Zeit vollständig getilgt ist, gerechnet ganz ohne Wertsteigerung. Die drei Musterobjekte in Kapitel 5 liegen bei 310.000, 350.000 und 413.500 Euro, und damit ist die Spanne erklärt. Das ist zugleich die vorsichtigste mögliche Rechnung, weil unsere Kalkulationen grundsätzlich keine Wertsteigerung enthalten.",
-          "Drittens der monatliche Eigenaufwand von rund 300 bis 400 Euro. Das ist der Beitrag vor Steuer aus den Musterrechnungen in Kapitel 5: 222 Euro beim Neubau, 354 Euro beim sanierten Bestand, 368 Euro bei der WG-Wohnung. Nach Steuer liegt der Betrag darunter, und er ändert sich über die Jahre. Beim Neubau kehrt sich das Bild ab dem fünften Jahr sogar teilweise um, weil die Sonderabschreibung ausläuft und gleichzeitig die Tilgung des Förderdarlehens beginnt. Deshalb gilt hier dieselbe Regel wie in Kapitel R: Sag immer dazu, ob die Zahl vor oder nach Steuer gilt und für welches Jahr.",
+          "Drittens der monatliche Eigenaufwand. In den Musterrechnungen aus Kapitel 5 sind das vor Steuern 391 Euro bei der Hauffstraße 38 und 943 Euro bei der Barfusstraße 9, nach Steuern für die Musterperson rund 151 Euro beziehungsweise rund 4 Euro. Nach Steuern hängt der Betrag am persönlichen Steuersatz und an der AfA, und er ändert sich über die Jahre. Deshalb gilt hier dieselbe Regel wie in Kapitel R: Sag immer dazu, ob die Zahl vor oder nach Steuer gilt, mit welcher AfA und für welches Jahr.",
           "Die Reihenfolge im Gespräch nach dem Steuerbescheid ist nicht beliebig. Erst der Erfolg, den der Kunde selbst belegen kann. Dann das Bonitäts-Update, weil fast jeder Kunde annimmt, ein Kredit verschlechtere seine Bonität, und das Gegenteil hört. Und erst dann das Angebot, und zwar als kleine Zusage, ausdrücklich unverbindlich."
         ],
         "bullets": [
@@ -25961,10 +25393,10 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "optionen": [
             "Die Bonitätsvorprüfung, weil an ihr der Provisionsanspruch hängt",
             "Die Objekt-Vorselektion, weil nur du den Bestand in Investagon kennst",
-            "Die Kundenberatung und die Freigabe der Bonitätsunterlagen"
+            "Die Kundenberatung und die Freigabe der Unterlagen für die Bank"
           ],
           "korrekt": 2,
-          "aufloesung": "Die Reihenfolge lautet Terminierung, Doku sammeln, Bonitätsvorprüfung, Objekt-Vorselektion. Die Beratung selbst wird nie delegiert, und die Freigabe der Bonitätsunterlagen macht im CRM immer der zuständige Vertriebspartner.",
+          "aufloesung": "Die Reihenfolge lautet Terminierung, Doku sammeln, Bonitätsvorprüfung, Objekt-Vorselektion. Die Beratung selbst wird nie delegiert, und die Freigabe der Unterlagen für die Bank macht im CRM immer der zuständige Vertriebspartner.",
           "sprungZuAbschnitt": "prozesse-delegieren"
         },
         {
@@ -26010,7 +25442,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
     "nummer": "16",
     "icon": "rocket",
     "titel": "Skalierung und Team-Aufbau (Profi)",
-    "kicker": "Vom Einzelkämpfer zum Team-Leader",
+    "kicker": "Vom Einzelkämpfer zum eigenen Büro",
     "teaser": "So könnte es aussehen, wenn du dein Geschäft über deine eigene Arbeitszeit hinaus wachsen lässt. Alles hier ist eine Möglichkeit für dich als Unternehmer, keine Vorgabe der Gesellschaft: OS Immobilien arbeitet derzeit ohne Setter. Wer hier jemanden einstellt, bist du, auf eigene Rechnung und eigenes Risiko.",
     "ziel": "Du kannst einschätzen, ob und wann sich eine eigene Stelle für dich rechnet, du weißt, was sie wirklich kostet, du kennst die Regeln, die für Beschäftigte gelten, und du kannst unterscheiden, ob eine Setterin unterperformt oder ob ihr schlicht die Leads fehlen.",
     "sections": [
@@ -26640,9 +26072,9 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 "aufloesung": "Das ist die Bonitätsvorprüfung. Sie ist beschreibbar und deshalb delegierbar."
               },
               {
-                "aussage": "Die Bonitätsunterlagen im CRM freigeben.",
+                "aussage": "Die Unterlagen für die Bank im CRM freigeben.",
                 "stimmt": false,
-                "aufloesung": "Die Freigabe bleibt beim zuständigen Vertriebspartner, weil an ihr das automatische Vorrücken auf die Stufe Finanzierung hängt."
+                "aufloesung": "Die Freigabe bleibt beim zuständigen Vertriebspartner, weil an ihr der Ruf an den Finanzierungspartner hängt."
               },
               {
                 "aussage": "In Investagon filtern, was zur tragbaren Rate, zum Bundesland und zur Rendite passt.",
@@ -26681,14 +26113,14 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "intro": "Skalieren heißt delegieren. Aber nur delegieren, was vorher beschrieben ist.",
         "absaetze": [
           "Der Maßstab für jede Abgabe ist ein Satz: Eine Person, die dich nicht fragen kann, muss die Aufgabe damit ausführen können. Ein Ein-Seiter genügt, aber mit Screenshots aus dem CRM, denn die meisten Rückfragen betreffen nicht das Was, sondern das Wo. Diese Beschreibung entsteht vor der Einstellung, nicht danach.",
-          "Zwei der Aufgaben brauchen eine klare Grenze. Die Bonitätsvorprüfung besteht darin, die Pflichtdokumente einzusammeln und zu prüfen: Selbstauskunft, Personalausweis, die letzten drei Gehaltsnachweise und den Gehaltsnachweis vom Dezember des Vorjahres. Geprüft wird auf Lesbarkeit, Vollständigkeit und Aktualität, danach werden die Zahlen in die Kapitaldienstrechnung übertragen und Auffälligkeiten notiert. Die Freigabe dieser Unterlagen gehört ausdrücklich nicht dazu: Freigegeben heißt im CRM angesehen und geprüft, nicht nur hochgeladen, und an der vollständigen Freigabe hängt das automatische Vorrücken auf die Stufe Finanzierung. Deshalb macht sie immer der zuständige Vertriebspartner.",
+          "Zwei der Aufgaben brauchen eine klare Grenze. Die Bonitätsvorprüfung besteht darin, die Pflichtdokumente einzusammeln und zu prüfen: Selbstauskunft, Personalausweis, die letzten drei Gehaltsnachweise und den Gehaltsnachweis vom Dezember des Vorjahres. Geprüft wird auf Lesbarkeit, Vollständigkeit und Aktualität, danach werden die Zahlen in die Kapitaldienstrechnung übertragen und Auffälligkeiten notiert. Die Freigabe dieser Unterlagen gehört ausdrücklich nicht dazu: Freigegeben heißt im CRM angesehen und geprüft, nicht nur hochgeladen, und an der vollständigen Freigabe hängt der Ruf an den Finanzierungspartner. Deshalb macht sie immer der zuständige Vertriebspartner.",
           "Die Objekt-Vorselektion besteht darin, in Investagon die Einheiten zu filtern, die zum Fall passen: Kaufpreis innerhalb der tragbaren Rate, Bundesland und damit Grunderwerbsteuer, gewünschte Bruttomietrendite, Bauträger und Verfügbarkeit. Ergebnis ist eine Liste mit einer kurzen Notiz je Einheit. Was daraus dem Kunden gezeigt wird und in welcher Reihenfolge, entscheidest du, denn dort wird aus einer Liste ein Vorschlag mit Begründung."
         ],
         "bullets": [
           "Beschreibe jede Aufgabe, bevor du sie abgibst: Ein-Seiter, Schritt für Schritt, mit Screenshots. Prüfmaßstab: Eine fremde Person führt sie ohne Rückfrage aus.",
           "Reihenfolge: 1. Terminierung, 2. Doku sammeln und Selbstauskunft nachfassen, 3. Bonitätsvorprüfung, 4. Objekt-Vorselektion, 5. Kundenberatung, und die wird nie delegiert.",
           "Bonitätsvorprüfung heißt: Pflichtdokumente einsammeln (Selbstauskunft, Personalausweis, die letzten drei Gehaltsnachweise, Gehaltsnachweis Dezember Vorjahr), auf Lesbarkeit, Vollständigkeit und Aktualität prüfen, Zahlen in die Kapitaldienstrechnung übertragen, Auffälligkeiten notieren.",
-          "Die Freigabe der Bonitätsunterlagen bleibt beim zuständigen Vertriebspartner. An ihr hängt das automatische Vorrücken auf die Stufe Finanzierung.",
+          "Die Freigabe der Unterlagen für die Bank bleibt beim zuständigen Vertriebspartner. An ihr hängt der Ruf an den Finanzierungspartner.",
           "Objekt-Vorselektion heißt: filtern und je Einheit eine kurze Notiz schreiben. Die Auswahl für den Termin triffst du.",
           "Ein fester Rhythmus hält es zusammen: ein kurzer Wochenstart, ein kurzer Wochenabschluss, einmal im Monat ein Einzelgespräch.",
           "CRM-Disziplin: Nur was im CRM ist, existiert. Keine Nebenlisten in Tabellen, keine Notizen im Messenger. Das ist zugleich eine Datenschutzregel, denn Kundendaten gehören nur dorthin."
@@ -27081,25 +26513,25 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "sprungZuAbschnitt": "renditen"
         },
         {
-          "frage": "Welche Stufe folgt im normalen Verlauf auf die Objektauswahl?",
+          "frage": "Welche Stufe folgt im normalen Verlauf auf die Reservierung?",
           "optionen": [
             "Bonitätsunterlagen",
-            "Reservierung",
-            "Finanzierung"
+            "Besichtigung",
+            "Notar"
           ],
           "korrekt": 1,
-          "aufloesung": "Nach der Objektauswahl folgt die Reservierung, und erst danach die Bonitätsunterlagen. Die Reihenfolge wurde am 06.08.2026 getauscht: Erst das Objekt sichern, dann die Unterlagen einsammeln. Daneben gibt es die nur von Hand setzbare Stufe Follow-Up (nach Objektauswahl), für Kunden, die nach der Objektvorstellung noch überlegen. Sie wird nie automatisch gesetzt.",
+          "aufloesung": "Nach der Reservierung folgen Besichtigung und Termin Bankgutachter, beide mit Datum und Uhrzeit von Hand gesetzt. Die Unterlagen liegen seit dem neuen Ablauf schon vor der Objektvorstellung vor. Daneben gibt es die nur von Hand setzbare Stufe Follow-Up für Kunden, die nach der Objektvorstellung noch überlegen.",
           "sprungZuAbschnitt": "pipeline-glossar"
         },
         {
-          "frage": "Was schaltet ein Investment auf die Stufe Objektauswahl?",
+          "frage": "Was schaltet ein Investment auf die Stufe Objektvorstellung?",
           "optionen": [
             "Die Admin-Freigabe der Bonität",
             "Die unterschriebene Selbstauskunft",
             "Die unterschriebene Reservierungsvereinbarung"
           ],
           "korrekt": 1,
-          "aufloesung": "Die unterschriebene Selbstauskunft schaltet auf Objektauswahl. Die unterschriebene Reservierungsvereinbarung schaltet weiter auf Bonitätsunterlagen, und die vollständige Freigabe dieser Unterlagen schaltet auf Finanzierung.",
+          "aufloesung": "Die unterschriebene Selbstauskunft schaltet auf Objektvorstellung. Die versendete Reservierungsvereinbarung schaltet auf Reservierung, die stattgefundene Besichtigung auf Termin Bankgutachter und der stattgefundene Termin mit dem Bankgutachter auf Finanzierung.",
           "sprungZuAbschnitt": "pipeline-glossar"
         },
         {
@@ -27290,7 +26722,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "paare": [
               {
                 "links": "RV",
-                "rechts": "Reservierungsvereinbarung, mit ihrer Unterschrift rückt der Vorgang auf Bonitätsunterlagen"
+                "rechts": "Reservierungsvereinbarung, mit ihrem Versand rückt der Vorgang auf Reservierung"
               },
               {
                 "links": "LTV",
@@ -27330,7 +26762,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "GrESt: Grunderwerbsteuer.",
           "HH-Netto: Haushaltsnetto, alle Nettoeinkünfte des Haushalts im Monat. Grundlage der Kapitaldienstrechnung.",
           "SA: Selbstauskunft, das Formular, mit dem der Kunde der Bank Einkommen, Ausgaben, Vermögen und Verbindlichkeiten offenlegt.",
-          "RV: Reservierungsvereinbarung. Mit ihrem Versand rückt der Vorgang auf Reservierung, mit ihrer Unterschrift auf Bonitätsunterlagen.",
+          "RV: Reservierungsvereinbarung. Mit ihrem Versand rückt der Vorgang auf Reservierung, mit ihrer Unterschrift bekommst du die Aufgabe Besichtigung vereinbaren. Sie ist kostenfrei.",
           "EG und BG: Erstgespräch und Beratungsgespräch. EG NoShow und BG NoShow sind die Nebenstufen für geplatzte Termine.",
           "VP: Vertriebspartner, im CRM der für den Kontakt Zuständige. Closer ist ein anderes Wort dafür, wenn eine Setterin den Termin übergibt.",
           "LTV: Loan to Value, deutsch Beleihungsauslauf. Darlehen geteilt durch den Wert der Immobilie.",
@@ -28525,39 +27957,43 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                   "status": "trigger"
                 },
                 {
-                  "label": "Beratungsgespräch",
-                  "beschreibung": "Auslöser: der Termin wird in der Karte „Beratungsgespräch vereinbaren“ im Investment-Reiter eingetragen. Danach das Ergebnis setzen. Nebenstufe: BG NoShow, sie heilt sich, sobald ein neuer Termin steht."
+                  "label": "Beratungspräsentation",
+                  "beschreibung": "Auslöser: der Termin wird in der Karte „Beratungsgespräch vereinbaren“ im Investment-Reiter eingetragen. Danach das Ergebnis setzen. Nebenstufe: BP NoShow, sie heilt sich, sobald ein neuer Termin steht."
                 },
                 {
-                  "label": "Selbstauskunft",
-                  "beschreibung": "Auslöser: die Selbstauskunft liegt beim Kunden zur Unterschrift."
+                  "label": "Selbstauskunft und Unterlagen",
+                  "beschreibung": "Auslöser: die gemeinsam ausgefüllte Selbstauskunft liegt beim Kunden zur Unterschrift. Bis zur Objektvorstellung folgen Personalausweis und letzte Gehaltsabrechnung."
                 },
                 {
-                  "label": "Objektauswahl",
-                  "beschreibung": "Auslöser: die Selbstauskunft ist unterschrieben. Nicht die Bonitätsfreigabe."
+                  "label": "Objektvorstellung",
+                  "beschreibung": "Auslöser: die Selbstauskunft ist unterschrieben. Die Objektvorstellung findet rund 7 Tage nach der Beratung statt."
                 },
                 {
-                  "label": "Follow-Up (nach Objektauswahl)",
+                  "label": "Follow-Up (nach der Objektvorstellung)",
                   "beschreibung": "Nur manuell. Für Kunden, die nach der Objektvorstellung noch überlegen. Keine Automatik setzt diese Stufe."
                 },
                 {
                   "label": "Reservierung",
-                  "beschreibung": "Auslöser: die Reservierungsvereinbarung ist eröffnet und versendet, aber noch nicht unterschrieben."
+                  "beschreibung": "Auslöser: die Reservierungsvereinbarung ist eröffnet und versendet. Sie startet erst, wenn Selbstauskunft, Ausweis und Gehaltsabrechnung vorliegen, und ist kostenfrei."
                 },
                 {
-                  "label": "Bonitätsunterlagen",
-                  "beschreibung": "Auslöser: die Reservierungsvereinbarung ist unterschrieben. Seit dem 06.08.2026 steht diese Stufe HINTER der Reservierung."
+                  "label": "Besichtigung",
+                  "beschreibung": "Von Hand gesetzt, mit Datum und Uhrzeit. Nach der unterschriebenen Reservierung bekommst du die Aufgabe, sie zu vereinbaren."
+                },
+                {
+                  "label": "Termin Bankgutachter",
+                  "beschreibung": "Auslöser: die Besichtigung ist als stattgefunden eingetragen. Auch dieser Termin steht mit Datum und Uhrzeit im CRM."
                 },
                 {
                   "label": "Finanzierung",
-                  "beschreibung": "Auslöser: alle sechs Pflichtdokumente sind vom zuständigen Vertriebspartner freigegeben."
+                  "beschreibung": "Auslöser: der Termin mit dem Bankgutachter ist als stattgefunden eingetragen."
                 },
                 {
                   "label": "Notar",
                   "beschreibung": "Auslöser: Datum und Uhrzeit des Notartermins stehen im Investment-Reiter oder sind im Portal bestätigt."
                 },
                 {
-                  "label": "Fälligkeit",
+                  "label": "Kaufpreisfälligkeit",
                   "beschreibung": "Auslöser: der Notartermin liegt in der Vergangenheit. Das System zieht selbst nach."
                 },
                 {
@@ -28576,13 +28012,13 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "kpis": [
               {
                 "label": "Stufen mit eigenem Schritt",
-                "wert": "16",
+                "wert": "17",
                 "hinweis": "von Neuer Lead bis Abgeschlossen",
                 "farbe": "primary"
               },
               {
                 "label": "Nebenstufen",
-                "wert": "EG NoShow, BG NoShow",
+                "wert": "EG NoShow, BP NoShow",
                 "hinweis": "kein Fortschritt, sie bleiben beim zugehörigen Gespräch",
                 "farbe": "amber"
               },
@@ -28593,9 +28029,9 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 "farbe": "rose"
               },
               {
-                "label": "Reihenfolge getauscht am",
-                "wert": "06.08.2026",
-                "hinweis": "Bonität steht seither hinter der Reservierung",
+                "label": "Neuer Ablauf seit",
+                "wert": "16.10.2026",
+                "hinweis": "Unterlagen vor der Objektvorstellung, danach Besichtigung und Bankgutachter",
                 "farbe": "emerald"
               }
             ]
@@ -28612,21 +28048,22 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "randVorgegeben": true,
             "schritte": [
               "Erstgespräch",
-              "Beratungsgespräch",
-              "Selbstauskunft",
-              "Objektauswahl",
+              "Beratungspräsentation",
+              "Selbstauskunft und Unterlagen",
+              "Objektvorstellung",
               "Reservierung",
-              "Bonitätsunterlagen",
+              "Besichtigung",
+              "Termin Bankgutachter",
               "Finanzierung",
               "Notar",
-              "Fälligkeit",
+              "Kaufpreisfälligkeit",
               "Abgeschlossen"
             ]
           },
           {
             "id": "pipeline-sortieren-profi",
             "typ": "sortieren",
-            "titel": "Alle 16 Pipeline-Stufen",
+            "titel": "Alle 17 Pipeline-Stufen",
             "hinweis": "Ohne Vorgabe, und die beiden Follow-Up-Stufen liegen an verschiedenen Stellen.",
             "pfad": "profi",
             "punkte": 15,
@@ -28636,15 +28073,16 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               "Erreicht",
               "Follow-Up (frühe Wiedervorlage)",
               "Erstgespräch",
-              "Beratungsgespräch",
-              "Selbstauskunft",
-              "Objektauswahl",
-              "Follow-Up (nach Objektauswahl)",
+              "Beratungspräsentation",
+              "Selbstauskunft und Unterlagen",
+              "Objektvorstellung",
+              "Follow-Up (nach der Objektvorstellung)",
               "Reservierung",
-              "Bonitätsunterlagen",
+              "Besichtigung",
+              "Termin Bankgutachter",
               "Finanzierung",
               "Notar",
-              "Fälligkeit",
+              "Kaufpreisfälligkeit",
               "Abrechnung",
               "Abgeschlossen"
             ]
@@ -28653,48 +28091,47 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "ueberschrift": "Pipeline-Stufen im CRM (Reihenfolge auswendig)",
         "intro": "Diese Reihenfolge ist die im Produkt tatsächlich gültige. Sie steht in src/lib/pipelineStufen.ts und wird durch einen Test geschützt.",
         "absaetze": [
-          "Die Pipeline hat 16 Stufen mit eigenem Schritt, dazu zwei Nebenstufen und drei Sonderzustände. Die Reihenfolge lautet: Neuer Lead, Nicht erreicht, Erreicht, Follow-Up, Erstgespräch, Beratungsgespräch, Selbstauskunft, Objektauswahl, Follow-Up nach Objektauswahl, Reservierung, Bonitätsunterlagen, Finanzierung, Notar, Fälligkeit, Abrechnung, Abgeschlossen. Die Nebenstufen sind EG NoShow und BG NoShow; sie sind kein Fortschritt, sondern bleiben beim zugehörigen Gespräch stehen. Die Sonderzustände sind Bestandskunden Import, Archiviert und Verloren; sie sind kein laufender Vorgang, und keine Automatik bewegt einen Kontakt aus ihnen heraus.",
-          "Der wichtigste Punkt für alle, die schon länger dabei sind: Die Bonitätsunterlagen stehen HINTER der Reservierung, nicht davor. Getauscht wurde am 06.08.2026. Vorher galt: erst wissen, was der Kunde tragen kann, dann Objekte zeigen. Das bremste genau in dem Moment, in dem der Kunde nach dem Beratungsgespräch am heißesten ist. Jetzt gilt: Objekt zeigen, reservieren, und erst dann die Unterlagen einsammeln, weil ein konkretes Objekt dazu deutlich mehr motiviert als eine abstrakte Anforderung. Der Preis dafür ist bekannt und wird abgesichert: Eine Einheit ist reserviert, bevor die Finanzierbarkeit feststeht, und deshalb meldet die Nachtprüfung jede Reservierung, die länger als vierzehn Tage ohne freigegebene Bonität steht.",
-          "Zwei Stufen tragen denselben Namen und liegen an verschiedenen Stellen. Das frühe Follow-Up ist die Wiedervorlage nach dem ersten Kontakt. Das späte Follow-Up ist die Stufe für Kunden, die nach der Objektvorstellung noch überlegen; in Auswahllisten heißt es zur Unterscheidung „Follow-Up (nach Objektauswahl)“. Diese späte Stufe setzt ausschließlich ein Mensch. Keine Automatik darf einen Kontakt dorthin bewegen, und ein dort von Hand abgelegter Kontakt darf von einer Automatik nur nach vorn überholt werden, etwa auf Reservierung, nie zurückgezogen.",
+          "Die Pipeline hat 17 Stufen mit eigenem Schritt, dazu zwei Nebenstufen und drei Sonderzustände. Die Reihenfolge lautet: Neuer Lead, Nicht erreicht, Erreicht, Follow-Up, Erstgespräch, Beratungspräsentation, Selbstauskunft und Unterlagen, Objektvorstellung, Follow-Up nach der Objektvorstellung, Reservierung, Besichtigung, Termin Bankgutachter, Finanzierung, Notar, Kaufpreisfälligkeit, Abrechnung, Abgeschlossen. Die Nebenstufen sind EG NoShow und BP NoShow; sie sind kein Fortschritt, sondern bleiben beim zugehörigen Gespräch stehen. Die Sonderzustände sind Bestandskunden Import, Archiviert und Verloren; sie sind kein laufender Vorgang, und keine Automatik bewegt einen Kontakt aus ihnen heraus.",
+          "Der wichtigste Punkt für alle, die schon länger dabei sind: Seit dem 16.10.2026 gilt der neue Ablauf. Die Selbstauskunft füllt ihr am Ende der Beratungspräsentation gemeinsam aus, Personalausweis und letzte Gehaltsabrechnung liegen bis zur Objektvorstellung vor, und die Reservierung fällt im selben Termin, kostenfrei. Danach folgen Besichtigung und Termin Bankgutachter, beide mit Datum und Uhrzeit von Hand gesetzt und mit Stattgefunden weitergeschaltet. Die frühere Stufe Bonitätsunterlagen hinter der Reservierung ist ausgeblendet und steht nur noch für alte Vorgänge im System.",
+          "Zwei Stufen tragen denselben Namen und liegen an verschiedenen Stellen. Das frühe Follow-Up ist die Wiedervorlage nach dem ersten Kontakt. Das späte Follow-Up ist die Stufe für Kunden, die nach der Objektvorstellung noch überlegen; in Auswahllisten heißt es zur Unterscheidung „Follow-Up“ mit dem Zusatz nach der Objektvorstellung. Diese späte Stufe setzt ausschließlich ein Mensch. Keine Automatik darf einen Kontakt dorthin bewegen, und ein dort von Hand abgelegter Kontakt darf von einer Automatik nur nach vorn überholt werden, etwa auf Reservierung, nie zurückgezogen.",
           "Zur Empfehlungsprovision, weil die Frage hier regelmäßig auftaucht: Der Anspruch entsteht nach § 4 Absatz 3 des Vertriebspartnervertrags, sobald der Kaufvertrag notariell beurkundet ist UND die Gesellschaft die auf diesen Abschluss entfallende Provision erhalten hat. Der Provisionseingang liegt regelmäßig bei Kaufpreisfälligkeit. Der Notartermin allein begründet also noch keinen Anspruch, und ausgezahlt wird 14 Tage nach Rechnungsstellung. Im Empfehlungsportal wird eine Empfehlung ab der Stufe Fälligkeit als abgeschlossen angezeigt."
         ],
         "bullets": [
-          "Reihenfolge: Neuer Lead, Nicht erreicht, Erreicht, Follow-Up, Erstgespräch, Beratungsgespräch, Selbstauskunft, Objektauswahl, Follow-Up (nach Objektauswahl), Reservierung, Bonitätsunterlagen, Finanzierung, Notar, Fälligkeit, Abrechnung, Abgeschlossen.",
-          "Nebenstufen: EG NoShow und BG NoShow. Sie sind kein Fortschritt und bleiben beim zugehörigen Gespräch. BG NoShow heilt sich selbst, sobald wieder ein Beratungstermin in der Zukunft steht.",
+          "Reihenfolge: Neuer Lead, Nicht erreicht, Erreicht, Follow-Up, Erstgespräch, Beratungspräsentation, Selbstauskunft und Unterlagen, Objektvorstellung, Follow-Up nach der Objektvorstellung, Reservierung, Besichtigung, Termin Bankgutachter, Finanzierung, Notar, Kaufpreisfälligkeit, Abrechnung, Abgeschlossen.",
+          "Nebenstufen: EG NoShow und BP NoShow. Sie sind kein Fortschritt und bleiben beim zugehörigen Gespräch. BP NoShow heilt sich selbst, sobald wieder ein Beratungstermin in der Zukunft steht.",
           "Sonderzustände: Bestandskunden Import, Archiviert, Verloren. Kein laufender Vorgang, keine Automatik fasst sie an.",
           "Auslöser Erstgespräch: Die Setterin klickt „Erstgespräch gebucht und Lead an Vertriebspartner zuweisen“, oder der Anruf wird mit dem Ergebnis „Erstgespräch vereinbart“ samt Termin protokolliert.",
           "Setterin heißt hier die Rolle im CRM, nicht eine Stelle im Haus. OS Immobilien arbeitet derzeit ohne eigene Setter, die Rolle übernimmt in der Regel der Vertriebspartner selbst. Er klickt dann denselben Knopf. Wer sich eine eigene Setterin leistet, findet die Rechnung dazu in Kapitel 16.",
-          "Auslöser Beratungsgespräch: Der Termin wird in der Karte „Beratungsgespräch vereinbaren“ im Investment-Reiter eingetragen. Nach dem Termin das Ergebnis setzen: erschienen, No-Show oder verschoben.",
-          "Auslöser Selbstauskunft: Die Selbstauskunft liegt beim Kunden zur Unterschrift.",
-          "Auslöser Objektauswahl: Die Selbstauskunft ist unterschrieben. Nicht die Bonitätsfreigabe.",
-          "Arbeit auf der Stufe Objektauswahl: freie Einheiten im System und in Investagon prüfen, passende vorschlagen, das gewählte Objekt im Investment eintragen und die Reservierung vorbereiten, sobald der Kunde sich entschieden hat. Denselben Fahrplan zeigt das CRM auf dieser Stufe im Kundenprofil an.",
-          "Auslöser Reservierung: Die Reservierungsvereinbarung ist eröffnet und versendet, aber noch nicht unterschrieben.",
-          "Auslöser Bonitätsunterlagen: Die Reservierungsvereinbarung ist unterschrieben.",
-          "Auslöser Finanzierung: Alle sechs Pflichtdokumente sind vom zuständigen Vertriebspartner freigegeben, also angesehen und geprüft, nicht nur hochgeladen.",
+          "Auslöser Beratungspräsentation: Der Termin wird in der Karte „Beratungsgespräch vereinbaren“ im Investment-Reiter eingetragen. Nach dem Termin das Ergebnis setzen: erschienen, No-Show oder verschoben.",
+          "Auslöser Selbstauskunft und Unterlagen: Die gemeinsam ausgefüllte Selbstauskunft liegt beim Kunden zur Unterschrift.",
+          "Auslöser Objektvorstellung: Die Selbstauskunft ist unterschrieben.",
+          "Arbeit auf der Stufe Objektvorstellung: passende Einheiten des gewählten Konzepts prüfen, die Empfehlung im Investment unter Objektauswahl eintragen, Exposé und Investmentkalkulation vorbereiten und darauf achten, dass Ausweis und Gehaltsabrechnung bis zum Termin vorliegen.",
+          "Auslöser Reservierung: Die Reservierungsvereinbarung ist eröffnet und versendet. Sie startet erst, wenn Selbstauskunft, Personalausweis und letzte Gehaltsabrechnung vorliegen.",
+          "Besichtigung und Termin Bankgutachter: von Hand mit Datum und Uhrzeit gesetzt. Stattgefunden schaltet von der Besichtigung auf Termin Bankgutachter und von dort auf Finanzierung.",
+          "Freigegebene Unterlagen für die Bank rufen den Finanzierungspartner, schalten die Stufe aber nicht weiter.",
           "Auslöser Notar: Datum und Uhrzeit des Notartermins stehen im Investment-Reiter oder sind im Portal bestätigt.",
-          "Auslöser Fälligkeit: Der Notartermin liegt in der Vergangenheit. Das System zieht selbst nach.",
+          "Auslöser Kaufpreisfälligkeit: Der Notartermin liegt in der Vergangenheit. Das System zieht selbst nach.",
           "Auslöser Abrechnung: Haken „Provisionsrechnung gestellt“ in der Karte Abwicklung. Auslöser Abgeschlossen: Haken „Auszahlung bestätigt“.",
-          "Ohne automatischen Auslöser, also nur von Hand: Erreicht, das frühe Follow-Up und das Follow-Up nach Objektauswahl.",
+          "Ohne automatischen Auslöser, also nur von Hand: Erreicht, das frühe Follow-Up, das Follow-Up nach der Objektvorstellung, Besichtigung und Termin Bankgutachter.",
           "Empfehlungsprovision: Der Anspruch entsteht mit Beurkundung UND Provisionseingang bei der Gesellschaft (§ 4 Absatz 3 Vertriebspartnervertrag), also regelmäßig ab Kaufpreisfälligkeit. Auszahlung 14 Tage nach Rechnungsstellung. Der Notartermin allein begründet noch keinen Anspruch."
         ],
-        "quereinsteigerHinweis": "Warum es zwei Stufen mit dem Namen Follow-Up gibt: Ein Kunde kann an zwei ganz verschiedenen Stellen ins Warten geraten. Ganz vorn, wenn er beim ersten Kontakt gerade keine Zeit hat, und viel später, wenn er ein Objekt gesehen hat und darüber nachdenkt. Beides heißt Wiedervorlage, aber der Wert des Vorgangs ist völlig verschieden. Deshalb sind es zwei Stufen, und in Auswahllisten trägt die späte den Zusatz „nach Objektauswahl“.",
-        "profiTipp": "Merke dir nicht die Liste, merke dir die drei Unterschriften. Sie geben der zweiten Hälfte der Pipeline ihre Struktur, und alles dazwischen ist Vorbereitung. Erste Unterschrift: die Selbstauskunft, sie schaltet auf Objektauswahl. Zweite Unterschrift: die Reservierungsvereinbarung, sie schaltet auf Bonitätsunterlagen. Dritte Unterschrift: der Kaufvertrag beim Notar, er schaltet auf Notar und nach dem Termin auf Fälligkeit. Wer die drei kennt, kann jederzeit sagen, wo ein Vorgang steht und was als Nächstes fehlt, ohne die Stufenliste im Kopf zu haben.",
+        "quereinsteigerHinweis": "Warum es zwei Stufen mit dem Namen Follow-Up gibt: Ein Kunde kann an zwei ganz verschiedenen Stellen ins Warten geraten. Ganz vorn, wenn er beim ersten Kontakt gerade keine Zeit hat, und viel später, wenn er ein Objekt gesehen hat und darüber nachdenkt. Beides heißt Wiedervorlage, aber der Wert des Vorgangs ist völlig verschieden. Deshalb sind es zwei Stufen, und in Auswahllisten trägt die späte den Zusatz „nach der Objektvorstellung“.",
+        "profiTipp": "Merke dir nicht die Liste, merke dir die Unterschriften und die zwei Termine. Erste Unterschrift: die Selbstauskunft, sie schaltet auf Objektvorstellung. Zweite Unterschrift: die Reservierungsvereinbarung, danach kommen Besichtigung und Termin Bankgutachter, jeweils mit Stattgefunden weitergeschaltet. Dritte Unterschrift: der Kaufvertrag beim Notar, er schaltet auf Notar und nach dem Termin auf Kaufpreisfälligkeit. Wer das kennt, kann jederzeit sagen, wo ein Vorgang steht und was als Nächstes fehlt.",
         "goldNugget": {
-          "titel": "Die Stelle, an der die neue Reihenfolge Aufmerksamkeit verlangt",
-          "text": "Der Tausch vom 06.08.2026 hat den Ablauf schneller gemacht und dafür eine Lücke geöffnet, die man kennen muss, weil sie beim Kunden ankommt.",
+          "titel": "Die Stelle, an der der neue Ablauf Aufmerksamkeit verlangt",
+          "text": "Der neue Ablauf legt die Unterlagen vor die Objektvorstellung. Damit kann die Reservierung im selben Termin fallen, und genau deshalb muss vorher alles stimmen.",
           "bullets": [
-            "Zwischen Reservierung und freigegebener Bonität liegt eine Phase, in der eine Einheit für den Kunden gesperrt ist, ohne dass feststeht, ob er sie finanzieren kann.",
-            "Für den Kunden heißt das: Er unterschreibt eine Reservierung, bevor die Bank ihr Wort gegeben hat. Sag ihm das von dir aus, mit der Formulierung aus dem Reservierungstext, statt es ihn selbst entdecken zu lassen.",
-            "Für dich heißt es: Die vierzehn Tage bis zur Nachtprüfung sind kein Puffer, sondern ein Zeitplan. Fordere die sechs Pflichtdokumente noch im selben Gespräch an, in dem die Reservierung unterschrieben wird.",
-            "Die sechs Pflichtdokumente sind Selbstauskunft, Personalausweis, die letzten drei Gehaltsnachweise und der Gehaltsnachweis vom Dezember des Vorjahres. Die SCHUFA-Auskunft ist optional.",
-            "Und die Regel, die daraus folgt: Reserviere nie, ohne die Kapitaldienstrechnung im Kopf gemacht zu haben. Die Freigabe kommt später, die Rechnung kannst du sofort machen."
+            "Fehlen zwei Tage vor der Objektvorstellung noch Ausweis oder Gehaltsabrechnung, bekommst du eine Aufgabe zum Nachfassen. Nimm sie ernst, sonst startet die Reservierung im Termin nicht.",
+            "Vor der Reservierung gehst du die Checkliste aus Kapitel 6 durch. Der letzte Punkt entscheidet: Der Kunde kann die Entscheidung selbst begründen.",
+            "Nach der Unterschrift ist die Bank noch nicht durch. Sag dem Kunden von dir aus, dass Besichtigung, Bankgutachter und Zusage noch kommen, und versprich nichts, was die Bank entscheidet.",
+            "Und die Regel, die daraus folgt: Reserviere nie, ohne die Kapitaldienstrechnung gemacht zu haben. Die Zusage kommt später, die Rechnung kannst du sofort machen."
           ]
         },
         "links": [
           {
-            "label": "Kapitel 6: die Stufe Objektauswahl in voller Länge",
+            "label": "Kapitel 6: Objektvorstellung und Reservierung",
             "to": "/vertriebsakademie/objektauswahl?vaScrollTo=suchprofil",
-            "hinweis": "Suchprofil, Auswahlkriterien, Objekttermin und die Übergabe in die Reservierung"
+            "hinweis": "Suchprofil, Auswahl, Objektvorstellung, Checkliste und Reservierung"
           },
           {
             "label": "Objekte in Investagon",

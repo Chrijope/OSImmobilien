@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Globe, Calculator, Plane, ArrowRight } from "lucide-react";
-import logoImg from "@/assets/osimmobilien-logo.png";
+import logoImg from "@/assets/os-real-estate-logo-quer.png";
 import { SeitenSpracheProvider, SeitenSprachUmschalter, useSeitenSprache, useSeitenTexte } from "@/components/SeitenSprache";
 import { mitSeitenSprache, type Sprache } from "@/lib/seitenSprache";
 import { LINKS_TEXTE, type LinksTexte } from "./linksTexte";
@@ -193,7 +193,7 @@ function LinksPublicInhalt() {
           <SeitenSprachUmschalter />
         </div>
         <div className="mx-auto w-full max-w-md text-center">
-          <img src={logoImg} alt="OS Immobilien" className="h-9 object-contain mx-auto mb-6" />
+          <img src={logoImg} alt="OS Real Estate GmbH" className="h-9 object-contain mx-auto mb-6" />
           <h1 className="text-2xl font-bold tracking-tight">{t.titel}</h1>
           {/*
             Der einzige erklärende Satz der Seite. Er gilt für alles darunter,

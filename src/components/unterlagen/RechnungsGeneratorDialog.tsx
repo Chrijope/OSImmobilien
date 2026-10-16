@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/contexts/UserContext";
-import { Download, FileText, Building2, Save, RotateCcw, ArrowLeft } from "lucide-react";
+import { Download, FileText, Building2, Save, RotateCcw, ArrowLeft, ExternalLink } from "lucide-react";
 
 interface Props {
   open?: boolean;
@@ -233,6 +233,233 @@ export function RechnungsGeneratorDialog({ open = true, onOpenChange, asPage = f
   const ustNum = useMemo(() => bruttoNum - nettoNum, [bruttoNum, nettoNum]);
   const bruttoTotal = bruttoNum;
 
+  // Zeichnet die Rechnung. Gemeinsam genutzt von Download und Live-Vorschau,
+  // damit die Vorschau genau das spätere PDF zeigt.
+  const erzeugePdf = async (finalRechnungsnummer: string) => {
+    const { jsPDF } = await import("jspdf");
+    const doc = new jsPDF({ unit: "mm", format: "a4" });
+    const pageW = 210;
+    const pageH = 297;
+    const M = 20;
+    const ink = (g = 0) => doc.setTextColor(g, g, g);
+
+    // ── Briefkopf: Absender-Zeile (klein, oben links) ──
+    const absenderZeile = [
+      absenderFirma || absenderName,
+      absenderAdresse,
+      absenderPlzOrt,
+    ].filter(Boolean).join(" · ");
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    ink(120);
+    doc.text(absenderZeile, M, 22);
+
+    // ── Empfänger-Block (links) ──
+    let y = 38;
+    doc.setFontSize(10);
+    ink(0);
+    doc.text(EMPFAENGER.firma, M, y); y += 5;
+    doc.text(EMPFAENGER.ansprechpartner, M, y); y += 5;
+    doc.text(EMPFAENGER.strasse, M, y); y += 5;
+    doc.text(EMPFAENGER.plzOrt, M, y); y += 5;
+    doc.text(EMPFAENGER.land, M, y);
+
+    // ── Meta-Block (rechts) ──
+    let yMeta = 38;
+    doc.setFontSize(9);
+    ink(110);
+    doc.text("Rechnungsnummer", pageW - M, yMeta, { align: "right" }); yMeta += 4;
+    ink(0);
+    doc.setFont("helvetica", "bold");
+    doc.text(finalRechnungsnummer, pageW - M, yMeta, { align: "right" }); yMeta += 6;
+    doc.setFont("helvetica", "normal");
+    ink(110);
+    doc.setFontSize(9);
+    doc.text("Rechnungsdatum", pageW - M, yMeta, { align: "right" }); yMeta += 4;
+    ink(0);
+    doc.setFontSize(10);
+    doc.text(datum, pageW - M, yMeta, { align: "right" });
+
+    // ── Titel ──
+    y = 78;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(20);
+    ink(0);
+    doc.text(`Rechnung ${finalRechnungsnummer}`, M, y);
+    doc.setFont("helvetica", "normal");
+    y += 8;
+
+    // ── Anrede ──
+    doc.setFontSize(10);
+    ink(0);
+    doc.text("Sehr geehrte Damen und Herren,", M, y); y += 6;
+    const anredeLines = doc.splitTextToSize(
+      "gemäß unserer vertraglichen Vereinbarung erlaube ich mir, Ihnen die nachfolgende Leistung in Rechnung zu stellen:",
+      pageW - 2 * M,
+    );
+    doc.text(anredeLines, M, y);
+    y += anredeLines.length * 5 + 4;
+
+    // ── Positionstabelle ──
+    doc.setFontSize(10);
+    doc.setFillColor(245, 245, 247);
+    doc.rect(M, y, pageW - 2 * M, 9, "F");
+    doc.setFont("helvetica", "bold");
+    ink(0);
+    doc.text("Leistung", M + 2, y + 6);
+    doc.text("Betrag", pageW - M - 2, y + 6, { align: "right" });
+    doc.setFont("helvetica", "normal");
+    y += 14;
+
+    const leistungLines = doc.splitTextToSize(leistung, 130);
+    doc.text(leistungLines, M + 2, y);
+    doc.text(fmtEUR(nettoNum), pageW - M - 2, y, { align: "right" });
+    y += leistungLines.length * 5 + 6;
+
+    doc.setDrawColor(220);
+    doc.line(M, y, pageW - M, y); y += 7;
+
+    if (ustSatz === "0") {
+      doc.text("Zwischensumme (netto)", 130, y);
+      doc.text(fmtEUR(nettoNum), pageW - M - 2, y, { align: "right" });
+      y += 6;
+    } else {
+      doc.text("Netto", 130, y);
+      doc.text(fmtEUR(nettoNum), pageW - M - 2, y, { align: "right" });
+      y += 6;
+      doc.text(`zzgl. ${ustSatz}% USt`, 130, y);
+      doc.text(fmtEUR(ustNum), pageW - M - 2, y, { align: "right" });
+      y += 6;
+    }
+
+    // Gesamtbetrag — dunkle Box
+    doc.setFillColor(20, 20, 22);
+    doc.rect(M, y, pageW - 2 * M, 11, "F");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.setTextColor(255, 255, 255);
+    doc.text("Gesamtbetrag", M + 2, y + 7.5);
+    doc.text(fmtEUR(bruttoTotal), pageW - M - 2, y + 7.5, { align: "right" });
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    ink(0);
+    y += 18;
+
+    // ── USt-Hinweis (Kleinunternehmer) ──
+    if (ustSatz === "0") {
+      doc.setFontSize(9);
+      ink(110);
+      const hinweis = doc.splitTextToSize(
+        "Gemäß § 19 UStG wird keine Umsatzsteuer ausgewiesen (Kleinunternehmerregelung).",
+        pageW - 2 * M,
+      );
+      doc.text(hinweis, M, y);
+      y += hinweis.length * 4 + 4;
+      doc.setFontSize(10);
+      ink(0);
+    }
+
+    // ── Zahlungshinweis ──
+    doc.text("Bitte überweisen Sie den Gesamtbetrag innerhalb von 14 Tagen auf folgendes Konto:", M, y);
+    y += 8;
+    doc.setFont("helvetica", "bold");
+    doc.text("Bankverbindung", M, y); y += 5;
+    doc.setFont("helvetica", "normal");
+    if (absenderBank) { doc.text(`Bank: ${absenderBank}`, M, y); y += 5; }
+    doc.text(`Kontoinhaber: ${absenderName}`, M, y); y += 5;
+    doc.text(`IBAN: ${formatIban(absenderIban)}`, M, y); y += 5;
+    if (absenderBic) { doc.text(`BIC: ${formatBic(absenderBic)}`, M, y); y += 5; }
+
+    // ── Schlussformel ──
+    y += 6;
+    doc.text("Vielen Dank für die angenehme Zusammenarbeit.", M, y); y += 6;
+    doc.text("Mit freundlichen Grüßen", M, y); y += 10;
+    doc.setFont("helvetica", "bold");
+    doc.text(absenderName, M, y);
+    doc.setFont("helvetica", "normal");
+
+    // ── Footer: 3-Spalten mit Absender-Stammdaten ──
+    const footerY = pageH - 32;
+    doc.setDrawColor(220);
+    doc.line(M, footerY, pageW - M, footerY);
+
+    const colW = (pageW - 2 * M) / 3;
+    const fY = footerY + 5;
+    doc.setFontSize(8);
+    ink(90);
+
+    // Spalte 1: Absender
+    let cy = fY;
+    doc.setFont("helvetica", "bold");
+    doc.text("Absender", M, cy); cy += 4;
+    doc.setFont("helvetica", "normal");
+    if (absenderFirma) { doc.text(absenderFirma, M, cy); cy += 4; }
+    doc.text(absenderName, M, cy); cy += 4;
+    doc.text(absenderAdresse, M, cy); cy += 4;
+    doc.text(absenderPlzOrt, M, cy);
+
+    // Spalte 2: Kontakt / Steuer
+    cy = fY;
+    const cx2 = M + colW;
+    doc.setFont("helvetica", "bold");
+    doc.text("Kontakt", cx2, cy); cy += 4;
+    doc.setFont("helvetica", "normal");
+    if (absenderTelefon) { doc.text(`Tel.: ${absenderTelefon}`, cx2, cy); cy += 4; }
+    if (absenderEmail) { doc.text(absenderEmail, cx2, cy); cy += 4; }
+    if (absenderSteuernr) {
+      const isUstId = /^[A-Z]{2}/i.test(absenderSteuernr.trim());
+      const label = isUstId ? "USt-IdNr." : "Steuer-Nr.";
+      doc.text(`${label}: ${absenderSteuernr}`, cx2, cy); cy += 4;
+    }
+
+    // Spalte 3: Bank
+    cy = fY;
+    const cx3 = M + 2 * colW;
+    doc.setFont("helvetica", "bold");
+    doc.text("Bankverbindung", cx3, cy); cy += 4;
+    doc.setFont("helvetica", "normal");
+    if (absenderBank) { doc.text(absenderBank, cx3, cy); cy += 4; }
+    doc.text(`IBAN: ${formatIban(absenderIban)}`, cx3, cy); cy += 4;
+    if (absenderBic) { doc.text(`BIC: ${formatBic(absenderBic)}`, cx3, cy); }
+    return doc;
+  };
+
+  // Live-Vorschau (nur Seitenansicht): kurz nach der letzten Eingabe neu zeichnen.
+  // Zeigt die vorläufige Nummer, reserviert wird erst beim Download.
+  const [vorschauUrl, setVorschauUrl] = useState<string | null>(null);
+  const [vorschauFehler, setVorschauFehler] = useState(false);
+  const vorschauUrlRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!asPage) return;
+    let abgebrochen = false;
+    const timer = setTimeout(async () => {
+      try {
+        const doc = await erzeugePdf(rechnungsnummer);
+        if (abgebrochen) return;
+        const url = URL.createObjectURL(doc.output("blob"));
+        if (vorschauUrlRef.current) URL.revokeObjectURL(vorschauUrlRef.current);
+        vorschauUrlRef.current = url;
+        setVorschauUrl(url);
+        setVorschauFehler(false);
+      } catch (err) {
+        console.error(err);
+        if (!abgebrochen) setVorschauFehler(true);
+      }
+    }, 400);
+    return () => {
+      abgebrochen = true;
+      clearTimeout(timer);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    asPage, rechnungsnummer, brutto, ustSatz, absenderName, absenderFirma, absenderAdresse,
+    absenderPlzOrt, absenderSteuernr, absenderIban, absenderBic, absenderBank, absenderTelefon, absenderEmail,
+  ]);
+  // Beim Verlassen der Seite die letzte Blob-Adresse freigeben.
+  useEffect(() => () => {
+    if (vorschauUrlRef.current) URL.revokeObjectURL(vorschauUrlRef.current);
+  }, []);
+
   const handleGenerate = async () => {
     if (!absenderName || !absenderAdresse || !absenderPlzOrt) {
       toast({ title: "Bitte Absenderdaten vollständig ausfüllen", variant: "destructive" });
@@ -268,192 +495,7 @@ export function RechnungsGeneratorDialog({ open = true, onOpenChange, asPage = f
         finalRechnungsnummer = buildRechnungsnummer(vpId, next);
         setRechnungsnummer(finalRechnungsnummer);
       }
-      const { jsPDF } = await import("jspdf");
-      const doc = new jsPDF({ unit: "mm", format: "a4" });
-      const pageW = 210;
-      const pageH = 297;
-      const M = 20;
-      const ink = (g = 0) => doc.setTextColor(g, g, g);
-
-      // ── Briefkopf: Absender-Zeile (klein, oben links) ──
-      const absenderZeile = [
-        absenderFirma || absenderName,
-        absenderAdresse,
-        absenderPlzOrt,
-      ].filter(Boolean).join(" · ");
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(8);
-      ink(120);
-      doc.text(absenderZeile, M, 22);
-
-      // ── Empfänger-Block (links) ──
-      let y = 38;
-      doc.setFontSize(10);
-      ink(0);
-      doc.text(EMPFAENGER.firma, M, y); y += 5;
-      doc.text(EMPFAENGER.ansprechpartner, M, y); y += 5;
-      doc.text(EMPFAENGER.strasse, M, y); y += 5;
-      doc.text(EMPFAENGER.plzOrt, M, y); y += 5;
-      doc.text(EMPFAENGER.land, M, y);
-
-      // ── Meta-Block (rechts) ──
-      let yMeta = 38;
-      doc.setFontSize(9);
-      ink(110);
-      doc.text("Rechnungsnummer", pageW - M, yMeta, { align: "right" }); yMeta += 4;
-      ink(0);
-      doc.setFont("helvetica", "bold");
-      doc.text(finalRechnungsnummer, pageW - M, yMeta, { align: "right" }); yMeta += 6;
-      doc.setFont("helvetica", "normal");
-      ink(110);
-      doc.setFontSize(9);
-      doc.text("Rechnungsdatum", pageW - M, yMeta, { align: "right" }); yMeta += 4;
-      ink(0);
-      doc.setFontSize(10);
-      doc.text(datum, pageW - M, yMeta, { align: "right" });
-
-      // ── Titel ──
-      y = 78;
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(20);
-      ink(0);
-      doc.text(`Rechnung ${finalRechnungsnummer}`, M, y);
-      doc.setFont("helvetica", "normal");
-      y += 8;
-
-      // ── Anrede ──
-      doc.setFontSize(10);
-      ink(0);
-      doc.text("Sehr geehrte Damen und Herren,", M, y); y += 6;
-      const anredeLines = doc.splitTextToSize(
-        "gemäß unserer vertraglichen Vereinbarung erlaube ich mir, Ihnen die nachfolgende Leistung in Rechnung zu stellen:",
-        pageW - 2 * M,
-      );
-      doc.text(anredeLines, M, y);
-      y += anredeLines.length * 5 + 4;
-
-      // ── Positionstabelle ──
-      doc.setFontSize(10);
-      doc.setFillColor(245, 245, 247);
-      doc.rect(M, y, pageW - 2 * M, 9, "F");
-      doc.setFont("helvetica", "bold");
-      ink(0);
-      doc.text("Leistung", M + 2, y + 6);
-      doc.text("Betrag", pageW - M - 2, y + 6, { align: "right" });
-      doc.setFont("helvetica", "normal");
-      y += 14;
-
-      const leistungLines = doc.splitTextToSize(leistung, 130);
-      doc.text(leistungLines, M + 2, y);
-      doc.text(fmtEUR(nettoNum), pageW - M - 2, y, { align: "right" });
-      y += leistungLines.length * 5 + 6;
-
-      doc.setDrawColor(220);
-      doc.line(M, y, pageW - M, y); y += 7;
-
-      if (ustSatz === "0") {
-        doc.text("Zwischensumme (netto)", 130, y);
-        doc.text(fmtEUR(nettoNum), pageW - M - 2, y, { align: "right" });
-        y += 6;
-      } else {
-        doc.text("Netto", 130, y);
-        doc.text(fmtEUR(nettoNum), pageW - M - 2, y, { align: "right" });
-        y += 6;
-        doc.text(`zzgl. ${ustSatz}% USt`, 130, y);
-        doc.text(fmtEUR(ustNum), pageW - M - 2, y, { align: "right" });
-        y += 6;
-      }
-
-      // Gesamtbetrag — dunkle Box
-      doc.setFillColor(20, 20, 22);
-      doc.rect(M, y, pageW - 2 * M, 11, "F");
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(12);
-      doc.setTextColor(255, 255, 255);
-      doc.text("Gesamtbetrag", M + 2, y + 7.5);
-      doc.text(fmtEUR(bruttoTotal), pageW - M - 2, y + 7.5, { align: "right" });
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
-      ink(0);
-      y += 18;
-
-      // ── USt-Hinweis (Kleinunternehmer) ──
-      if (ustSatz === "0") {
-        doc.setFontSize(9);
-        ink(110);
-        const hinweis = doc.splitTextToSize(
-          "Gemäß § 19 UStG wird keine Umsatzsteuer ausgewiesen (Kleinunternehmerregelung).",
-          pageW - 2 * M,
-        );
-        doc.text(hinweis, M, y);
-        y += hinweis.length * 4 + 4;
-        doc.setFontSize(10);
-        ink(0);
-      }
-
-      // ── Zahlungshinweis ──
-      doc.text("Bitte überweisen Sie den Gesamtbetrag innerhalb von 14 Tagen auf folgendes Konto:", M, y);
-      y += 8;
-      doc.setFont("helvetica", "bold");
-      doc.text("Bankverbindung", M, y); y += 5;
-      doc.setFont("helvetica", "normal");
-      if (absenderBank) { doc.text(`Bank: ${absenderBank}`, M, y); y += 5; }
-      doc.text(`Kontoinhaber: ${absenderName}`, M, y); y += 5;
-      doc.text(`IBAN: ${formatIban(absenderIban)}`, M, y); y += 5;
-      if (absenderBic) { doc.text(`BIC: ${formatBic(absenderBic)}`, M, y); y += 5; }
-
-      // ── Schlussformel ──
-      y += 6;
-      doc.text("Vielen Dank für die angenehme Zusammenarbeit.", M, y); y += 6;
-      doc.text("Mit freundlichen Grüßen", M, y); y += 10;
-      doc.setFont("helvetica", "bold");
-      doc.text(absenderName, M, y);
-      doc.setFont("helvetica", "normal");
-
-      // ── Footer: 3-Spalten mit Absender-Stammdaten ──
-      const footerY = pageH - 32;
-      doc.setDrawColor(220);
-      doc.line(M, footerY, pageW - M, footerY);
-
-      const colW = (pageW - 2 * M) / 3;
-      const fY = footerY + 5;
-      doc.setFontSize(8);
-      ink(90);
-
-      // Spalte 1: Absender
-      let cy = fY;
-      doc.setFont("helvetica", "bold");
-      doc.text("Absender", M, cy); cy += 4;
-      doc.setFont("helvetica", "normal");
-      if (absenderFirma) { doc.text(absenderFirma, M, cy); cy += 4; }
-      doc.text(absenderName, M, cy); cy += 4;
-      doc.text(absenderAdresse, M, cy); cy += 4;
-      doc.text(absenderPlzOrt, M, cy);
-
-      // Spalte 2: Kontakt / Steuer
-      cy = fY;
-      const cx2 = M + colW;
-      doc.setFont("helvetica", "bold");
-      doc.text("Kontakt", cx2, cy); cy += 4;
-      doc.setFont("helvetica", "normal");
-      if (absenderTelefon) { doc.text(`Tel.: ${absenderTelefon}`, cx2, cy); cy += 4; }
-      if (absenderEmail) { doc.text(absenderEmail, cx2, cy); cy += 4; }
-      if (absenderSteuernr) {
-        const isUstId = /^[A-Z]{2}/i.test(absenderSteuernr.trim());
-        const label = isUstId ? "USt-IdNr." : "Steuer-Nr.";
-        doc.text(`${label}: ${absenderSteuernr}`, cx2, cy); cy += 4;
-      }
-
-      // Spalte 3: Bank
-      cy = fY;
-      const cx3 = M + 2 * colW;
-      doc.setFont("helvetica", "bold");
-      doc.text("Bankverbindung", cx3, cy); cy += 4;
-      doc.setFont("helvetica", "normal");
-      if (absenderBank) { doc.text(absenderBank, cx3, cy); cy += 4; }
-      doc.text(`IBAN: ${formatIban(absenderIban)}`, cx3, cy); cy += 4;
-      if (absenderBic) { doc.text(`BIC: ${formatBic(absenderBic)}`, cx3, cy); }
-
+      const doc = await erzeugePdf(finalRechnungsnummer);
       const filename = `Rechnung_${finalRechnungsnummer}_OS-Immobilien.pdf`;
       doc.save(filename);
       // Stammdaten automatisch persistieren, damit sie beim nächsten Mal vorausgefüllt sind
@@ -591,14 +633,52 @@ export function RechnungsGeneratorDialog({ open = true, onOpenChange, asPage = f
             Erstelle eine fertige Rechnung an die OS Immobilien. Felder ausfüllen, PDF herunterladen, an die Buchhaltung senden.
           </p>
         </div>
-        {body}
-        <div className="flex justify-end">
-          {/*
-            Hauptaktion der Seite Rechnungsvorlage, deshalb Marken-Orange.
-            Im Dialog weiter unten bleibt derselbe Knopf normal: dort hebt
-            ihn schon die Fussleiste neben "Abbrechen" heraus.
-          */}
-          <Button onClick={handleGenerate} variant="brand"><Download className="h-4 w-4 mr-2" />Rechnung als PDF erstellen</Button>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+          <div className="min-w-0">
+            {body}
+            <div className="flex justify-end">
+              {/*
+                Hauptaktion der Seite Rechnungsvorlage, deshalb Marken-Orange.
+                Im Dialog weiter unten bleibt derselbe Knopf normal: dort hebt
+                ihn schon die Fussleiste neben "Abbrechen" heraus.
+              */}
+              <Button onClick={handleGenerate} variant="brand"><Download className="h-4 w-4 mr-2" />Rechnung als PDF erstellen</Button>
+            </div>
+          </div>
+
+          {/* Rechte Spalte bleibt beim Scrollen stehen; auf schmalen Bildschirmen unter der Maske. */}
+          <section className="min-w-0 space-y-2 lg:sticky lg:top-0">
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Vorschau</h3>
+              {vorschauUrl && (
+                <a
+                  href={vorschauUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" /> In neuem Tab öffnen
+                </a>
+              )}
+            </div>
+            <div className="rounded-lg border bg-muted/30 overflow-hidden">
+              {vorschauUrl ? (
+                // key: neues iframe je Vorschau, sonst zeichnet der PDF-Betrachter
+                // in Chrome nach einem Adresswechsel nur eine graue Fläche.
+                <iframe
+                  key={vorschauUrl}
+                  src={`${vorschauUrl}#toolbar=0&navpanes=0&view=FitH`}
+                  title="Vorschau der Rechnung"
+                  className="w-full block bg-white"
+                  style={{ height: "min(calc(100vh - 8rem), 141vw)" }}
+                />
+              ) : (
+                <div className="flex items-center justify-center text-sm text-muted-foreground p-6" style={{ height: "min(calc(100vh - 8rem), 141vw)" }}>
+                  {vorschauFehler ? "Vorschau konnte nicht erstellt werden." : "Vorschau wird erstellt …"}
+                </div>
+              )}
+            </div>
+          </section>
         </div>
       </div>
     );

@@ -70,7 +70,6 @@ import {
   finanzierungIntern,
 } from "@/lib/investmentFreischaltung";
 import {
-  bonitaetsunterlagenErforderlich,
   darfSelbstauskunftEntfallen,
   getSelbstauskunftEntfaellt,
   nimmSelbstauskunftEntfaelltZurueck,
@@ -129,6 +128,11 @@ import { kontaktQuelleAnzeige } from "@/lib/kontaktQuelle";
 import { UebergabeGrundFeld } from "@/components/kunden/UebergabeGrundFeld";
 import { grundSatz, grundVollstaendig, type UebergabeGrund } from "@/lib/uebergabeGrund";
 import { getAktivitaeten, addAktivitaet, addAktivitaetSicher, addGeteilteAufgabe, updateAktivitaet, ART_LABELS, type AktivitaetEntry, setzeAktivitaetErledigt, setzeNotizAngepinnt } from "@/lib/aktivitaetenStore";
+import { addProzessAufgabe } from "@/lib/prozessAufgabe";
+import { speichereMeeting } from "@/lib/meetingSpeichern";
+import { TERMINE_AKTUALISIERT_EVENT } from "@/lib/terminAnzeige";
+import { istErstgespraech, legeNachfassNachErstgespraechAn, NACHFASS_FEHLER_TEXT, NACHFASS_FEHLER_TITEL } from "@/lib/nachfassNachErstgespraech";
+import { DREI_VERSUCHE, DREI_VERSUCHE_TITEL, dreiVersucheSchluessel, fehlversucheSeitGespraech, gespraechsArt, legeZusammenfassungAn } from "@/lib/nachfassplan";
 import { darfEintragEntfernen, darfNotizBearbeiten, darfVorgangBearbeiten, istSystemEintrag, LEITUNG_ROLLEN, type Rechtekontext } from "@/lib/aktivitaetRechte";
 import {
   alleFormulierungen,
@@ -153,13 +157,16 @@ import { describeActivityAction, categorizeActivityAction } from "@/lib/activity
 import { StickyPagination, usePagination } from "@/components/kunden/StickyPagination";
 import { addFollowUp, completeFollowUp, getFollowUpsByKunde, uncompleteFollowUp } from "@/lib/followUpStore";
 import { aufgabenSchluessel, erledigeAufgabe, findeAufgabeZuAktivitaet, getAufgabenFuerKunde, oeffneAufgabe, offeneAufgabenOhneAktivitaet } from "@/lib/aufgabenStore";
-import { baueKundenAufgabenListe, zaehleKundenAufgaben, type KundenAufgabe } from "@/lib/kundenAufgabenListe";
+import type { KundenAufgabe } from "@/lib/kundenAufgabenListe";
 import { aktionZeitpunktText, neuerGespraechsterminNachNoShow, noShowListe, type GeplanteAktion } from "@/lib/kundenNaechsteAktion";
 import { abschlussWeg, sammelbareAufgaben, sammelwegBeschreibung } from "@/lib/aktionAbschluss";
 import { findeErgebnisTermin, ladeErgebnisTermine, lokalesDatum, type ErgebnisKontext, type ErgebnisTermin } from "@/lib/terminErgebnis";
 import { TerminErgebnisDialog } from "@/components/kunden/TerminErgebnisDialog";
+import { StufenTerminDialog } from "@/components/kunden/StufenTerminDialog";
+import { brauchtStufenTermin, terminFehlerText, type TerminStufe } from "@/lib/stufenTermin";
+import { speichereStufenTermin, stelleBesichtigungsAufgabeSicher } from "@/lib/stufenTerminAktionen";
 import { berechneInaktivitaetsAmpel } from "@/lib/inaktivitaetsAmpel";
-import { useNaechsteAktionKachel, useOffeneAufgabenKachel } from "@/components/kunden/profil/useOffeneAufgabenKachel";
+import { useNaechsteAktionKachel } from "@/components/kunden/profil/useOffeneAufgabenKachel";
 import { ToastAction } from "@/components/ui/toast";
 import { getNextSteps } from "@/lib/nextStepsGuide";
 import { loadBeraterUsers, loadAllUsers } from "@/lib/loadAllUsers";
@@ -242,6 +249,8 @@ import {
 import { FinanzierungCard } from "@/components/finanzierung/FinanzierungCard";
 import { TerminseiteKnopf } from "@/components/kunden/TerminseiteKnopf";
 import { EigenfinanzierungSection } from "@/components/finanzierung/EigenfinanzierungSection";
+import { FinanzierungspartnerKarte } from "@/components/finanzierung/FinanzierungspartnerKarte";
+import { darfFinanzierungspartnerMelden } from "../../supabase/functions/_shared/finanzierung-partner-benachrichtigen";
 import { getFinanzierung } from "@/lib/finanzierungStore";
 import { meldeBonitaetFreigabe } from "@/lib/bonitaetFreigabeMeldung";
 import { finanzierungIstFrei } from "@/lib/finanzierungFreigabe";
@@ -349,6 +358,9 @@ import {
   clearNotarTerminBestaetigt,
   switchNotarTerminModus,
   getWartendeRvUnterschriften,
+  setzeStufeFruehePhase,
+  kontaktVerlorenAnInvestments,
+  kontaktWiederaufnahmeAnInvestments,
   type NotarTerminVorschlag,
 } from "@/lib/investmentsStore";
 import { KaufvertragForm } from "@/components/notar/KaufvertragForm";
@@ -387,7 +399,9 @@ import {
 } from "@/lib/notarterminMail";
 import { BUERO_EMAIL } from "@/lib/impressumKontakt";
 import { objektDialogNoetig, vorhandeneObjektDaten, objektDatenFehlen, BESTANDSWOHNUNG_AKTIV, investmentKaufpreis } from "@/lib/objektDatenPflicht";
-import { darfReservierungStarten } from "@/lib/reservierungStart";
+import { darfReservierungStarten, fehlendeUnterlagenFuerReservierung } from "@/lib/reservierungStart";
+import { darfAufObjektauswahl } from "@/lib/objektauswahlWaechter";
+import { mindestunterlagenText } from "@/lib/mindestunterlagen";
 import { verkaeuferArt, verkaeuferNotarFelder, verkaeuferVollerName } from "@/lib/verkaeuferName";
 import { FOLLOW_UP_GEPLANT, ERSTGESPRAECH_VEREINBART } from "../../supabase/functions/_shared/follow-up-eskalation.ts";
 
@@ -850,6 +864,10 @@ const STEP_TO_CARD_ID: Record<string, string> = {
   // Follow-Up nach der Objektvorstellung: dieselbe Karte wie die Objektauswahl.
   follow_up_objekt: "card-objektauswahl",
   reservierung: "card-reservierung",
+  // Seit 16.10.2026: Die Termine stehen unter „Nächste Aktionen"; die Karte
+  // daneben ist die Reservierung bzw. die Finanzierung.
+  besichtigung: "card-reservierung",
+  bankgutachter: "card-finanzierung",
   finanzierung: "card-finanzierung",
   notar: "card-notar",
   faelligkeit: "card-abwicklung",
@@ -888,7 +906,7 @@ const INVESTMENT_ABSCHNITTE: { key: string; label: string; karten: string[] }[] 
    * Bildschirm; die Karte zu verschieben wäre ein sehr großer Eingriff in
    * diese Seite.
    */
-  { key: "objektauswahl", label: "Objektauswahl", karten: [STEP_TO_CARD_ID.objektauswahl] },
+  { key: "objektauswahl", label: "Objektvorstellung", karten: [STEP_TO_CARD_ID.objektauswahl] },
   { key: "reservierung", label: "Reservierung", karten: [STEP_TO_CARD_ID.reservierung] },
   { key: "bonitaet", label: "Bonität und Bankprüfung", karten: [STEP_TO_CARD_ID.bonitaetsunterlagen] },
   { key: "finanzierung", label: "Finanzierung", karten: [STEP_TO_CARD_ID.finanzierung] },
@@ -950,7 +968,10 @@ const PRE_SA_PIPELINE_STEPS = new Set<string>([
  * vorne und damit als zugedeckt. Das ist die sichere Richtung: Lieber einmal
  * zu viel zugedeckt als Unterlagen aufgedeckt, die noch niemand angefasst hat.
  */
-const BONITAET_AB_INDEX = PIPELINE_STEPS.findIndex((s) => s.key === "bonitaetsunterlagen");
+// Seit 16.10.2026 die Besichtigung: Die Bonitaetsunterlagen haben keinen
+// eigenen Schritt mehr, und die Besichtigung ist der Schritt hinter der
+// Reservierung, so wie es die Bonitaet bis dahin war.
+const BONITAET_AB_INDEX = fortschrittsRang("besichtigung");
 
 // Alle drei Funktionen gehen über `fortschrittsRang`. Der kennt auch die
 // Stufen ohne eigenes Kästchen (NoShow, Legacy-Aliase) und hält an der
@@ -1167,7 +1188,6 @@ export default function KundenDetail() {
    * Reiter in ihren eigenen Effekten und ueberschreiben diesen Startwert.
    */
   const aktivitaetenLeiste = useAktivitaetenLeiste();
-  const offeneAufgabenKachel = useOffeneAufgabenKachel();
   const naechsteAktionKachel = useNaechsteAktionKachel();
   const offeneAufgabenVersion = useLiveVersion(OFFENE_AUFGABEN_TABELLEN);
   const profilKennzahlenBereit = useCacheReady(PROFIL_KENNZAHL_TABELLEN);
@@ -3468,32 +3488,57 @@ export default function KundenDetail() {
         nichtErreichtCount: count,
         setter: kunde?.setter || (isSetterinRole ? user.name : undefined),
       });
+      /*
+       * Nachfassplan (16.10.2026): Der dritte Fehlversuch seit dem letzten
+       * Gespräch bringt statt „morgen erneut anrufen“ die Aufgabe, die letzte
+       * Nachricht zu senden und den Vorgang zu pausieren. Gezählt vor dem
+       * Vermerk unten, deshalb plus eins.
+       */
+      const fehlversuche = fehlversucheSeitGespraech(getAktivitaeten(id));
+      const dreiVersuche = fehlversuche.anzahl + 1 === DREI_VERSUCHE;
       addAktivitaet({ kundeId: id, art: "anruf", beschreibung: `Kontaktversuch ${count} – Nicht erreicht (Stufe „${effStufe}"). Keine Wartezeit, bitte manuell nachfassen.`, von: user.name });
-      if (!opts.ohneNachfassAufgabe) {
+      if (dreiVersuche) {
+        void addProzessAufgabe({
+          titel: DREI_VERSUCHE_TITEL,
+          beschreibung: `${`${kunde.vorname} ${kunde.nachname}`.trim()} ist seit dem letzten Gespräch dreimal nicht erreicht worden. Bitte die letzte Nachricht senden (Vorlage „Letzte Nachricht“) und den Vorgang pausieren.`,
+          prioritaet: "hoch",
+          typ: "follow_up",
+          faellig_am: lokalesDatum(new Date()),
+          uhrzeit: "10:00",
+          kundeId: id,
+          kundeName: `${kunde.vorname} ${kunde.nachname}`.trim(),
+          erstelltVonName: user.name,
+          ausloeserSchluessel: dreiVersucheSchluessel(id, fehlversuche.seit),
+        }, kunde.zustaendig_id || undefined);
+      }
+      if (!opts.ohneNachfassAufgabe && !dreiVersuche) {
         try {
-          addGeteilteAufgabe({
-            titel: `Nachfassen: ${kunde.vorname} ${kunde.nachname}`.trim(),
-            beschreibung: `Kunde nicht erreicht in fortgeschrittener Stufe „${effStufe}". Bitte Termin klären.`,
+          void addProzessAufgabe({
+            titel: "Nicht erreicht: morgen erneut anrufen",
+            beschreibung: `${`${kunde.vorname} ${kunde.nachname}`.trim()} nicht erreicht in fortgeschrittener Stufe „${effStufe}". Bitte Termin klären.`,
             prioritaet: "hoch",
             typ: "aufgabe",
             faellig_am: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
             uhrzeit: "10:00",
             kundeId: id,
             kundeName: `${kunde.vorname} ${kunde.nachname}`.trim(),
+            erstelltVonName: user.name,
             // Kennzeichnet die Aufgabe als selbst erzeugte Wiedervorlage aus
             // einem Kontaktversuch. Die Pipeline-Ampel darf sie deshalb nicht
             // als versäumten Termin werten: Es gab nie einen Termin, nur einen
             // Anruf, bei dem niemand rangegangen ist.
             ausloeserSchluessel: `nicht_erreicht:${id}`,
-          });
+          }, kunde.zustaendig_id || undefined);
         } catch (e) { console.warn("addInboxTask (advanced-stage nicht erreicht) failed:", e); }
       }
       reloadKunde();
       toast({
         title: "Nicht erreicht protokolliert",
-        description: opts.ohneNachfassAufgabe
-          ? "Deine Aufgabe steht in der Inbox."
-          : `Aufgabe „Nachfassen" wurde in der Inbox erstellt.`,
+        description: dreiVersuche
+          ? "Drei Versuche ohne Erfolg: Aufgabe „letzte Nachricht senden und Vorgang pausieren“ wurde erstellt."
+          : opts.ohneNachfassAufgabe
+            ? "Deine Aufgabe steht in der Inbox."
+            : "Aufgabe „Nicht erreicht: morgen erneut anrufen“ wurde in der Inbox erstellt.",
       });
       return;
     }
@@ -3610,18 +3655,9 @@ export default function KundenDetail() {
       followUpEsk2Sent: null,
       followUpEsk3Sent: null,
     });
-    updateKontakt(id, { setterSkriptNotizen: setterNotizen, pipelineStufe: "follow_up", status: "kontaktiert" as any, verstecktBis, setter: kunde?.setter || (isSetterinRole ? user.name : undefined) });
-    // Investments, die noch in einer frühen Stufe stehen, ebenfalls auf "follow_up"
-    // setzen — sonst überschreibt die Investment-zentrische Bucket-Logik den
-    // Kontakt-Status und der Lead taucht nicht auf der Follow-Up-Seite auf.
-    try {
-      const earlyInvStufen = new Set(["neuer_lead", "zugewiesen", "kontaktversuche", "erstgespraech_geplant", "erstgespraech"]);
-      for (const _inv of investments) {
-        if (earlyInvStufen.has(String(_inv?.pipelineStufe || ""))) {
-          updateInvestment(_inv.id, { pipelineStufe: "follow_up" });
-        }
-      }
-    } catch (e) { console.error("updateInvestment (followUp) error:", e); }
+    updateKontakt(id, { setterSkriptNotizen: setterNotizen, status: "kontaktiert" as any, verstecktBis, setter: kunde?.setter || (isSetterinRole ? user.name : undefined) });
+    // Die Stufe haengt am Investment (11.10.2026): alle, die noch frueh stehen.
+    setzeStufeFruehePhase(id, "follow_up");
     addAktivitaet({ kundeId: id, art: "notiz", beschreibung: `${FOLLOW_UP_GEPLANT} "${followUpTitel}" am ${followUpDatum} um ${followUpUhrzeit} Uhr`, von: user.name });
     notifyFollowUpErstellt(`${kunde.vorname} ${kunde.nachname}`, followUpTitel, id);
     reloadKunde();
@@ -3653,7 +3689,8 @@ export default function KundenDetail() {
         },
       }).catch(e => console.error(`${templateName} E-Mail Fehler:`, e));
     }
-    updateKontakt(id, { setterSkriptNotizen: setterNotizen, status: "verloren" as any, pipelineStufe: "verloren", verlorenGrund: "ne_daten_falsch", verlorenAm: new Date().toISOString(), setter: kunde?.setter || (isSetterinRole ? user.name : undefined) });
+    kontaktVerlorenAnInvestments(id, "ne_daten_falsch", new Date().toISOString());
+    updateKontakt(id, { setterSkriptNotizen: setterNotizen, status: "verloren" as any, verlorenGrund: "ne_daten_falsch", verlorenAm: new Date().toISOString(), setter: kunde?.setter || (isSetterinRole ? user.name : undefined) });
     addAktivitaet({ kundeId: id, art: "notiz", beschreibung: "Kontaktdaten falsch, Lead als verloren markiert", von: user.name });
     reloadKunde();
     toast({ title: "Kontaktdaten falsch", description: "Lead wurde als verloren markiert.", variant: "destructive" });
@@ -3679,7 +3716,8 @@ export default function KundenDetail() {
         },
       }).catch(e => console.error("vp-kein-interesse E-Mail Fehler:", e));
     }
-    updateKontakt(id, { setterSkriptNotizen: setterNotizen, status: "verloren" as any, pipelineStufe: "verloren", verlorenGrund: "kb_kein_interesse", verlorenAm: new Date().toISOString(), setter: kunde?.setter || (isSetterinRole ? user.name : undefined) });
+    kontaktVerlorenAnInvestments(id, "kb_kein_interesse", new Date().toISOString());
+    updateKontakt(id, { setterSkriptNotizen: setterNotizen, status: "verloren" as any, verlorenGrund: "kb_kein_interesse", verlorenAm: new Date().toISOString(), setter: kunde?.setter || (isSetterinRole ? user.name : undefined) });
     addAktivitaet({ kundeId: id, art: "notiz", beschreibung: "Kein Interesse, Lead als verloren markiert", von: user.name });
     reloadKunde();
     toast({ title: "Kein Interesse", description: "Lead wurde als verloren markiert.", variant: "destructive" });
@@ -3687,10 +3725,10 @@ export default function KundenDetail() {
 
   const handleSetterVermoegenGeeignet = () => {
     if (!id || !kunde) return;
+    setzeStufeFruehePhase(id, "vermoegensaufbau");
     updateKontakt(id, {
       setterSkriptNotizen: setterNotizen,
       status: "verloren" as any,
-      pipelineStufe: "vermoegensaufbau",
       verlorenGrund: "pn_vermoegensaufbau",
       verlorenAm: new Date().toISOString(),
       versicherungGeeignet: true,
@@ -3849,7 +3887,10 @@ export default function KundenDetail() {
        * so nicht mehr an der gesetzten Stufe vorbeilaufen.
        */
       const ersteStufe = "kontaktversuche";
-      updateKontakt(id, { pipelineStufe: ersteStufe } as any);
+      // Nur die Investments, die noch auf "zugewiesen" stehen (11.10.2026).
+      for (const inv of getInvestmentsByKontakt(id)) {
+        if (inv.pipelineStufe === "zugewiesen") updateInvestment(inv.id, { pipelineStufe: ersteStufe });
+      }
       notiereStufenwechsel(ERSTER_KONTAKTVERSUCH, ersteStufe);
       reloadKunde();
     }
@@ -3873,10 +3914,10 @@ export default function KundenDetail() {
    * zurückspringen, sonst verliert ein Kunde in der Finanzierung seinen Stand,
    * weil jemand die Selbstauskunft erneut verschickt.
    */
-  const hebeAufSelbstauskunft = () => {
-    if (!id || !kunde) return;
-    if (!PRE_SA_PIPELINE_STEPS.has(String(kunde.pipelineStufe || ""))) return;
-    updateKontakt(id, { pipelineStufe: "selbstauskunft" as any });
+  const hebeAufSelbstauskunft = (investmentId: string) => {
+    const inv = getInvestmentsByKontakt(id || "").find((i) => i.id === investmentId);
+    if (!inv || !PRE_SA_PIPELINE_STEPS.has(String(inv.pipelineStufe || ""))) return;
+    updateInvestment(investmentId, { pipelineStufe: "selbstauskunft" });
   };
 
   /**
@@ -4002,14 +4043,17 @@ export default function KundenDetail() {
     // auf "Erstgespräch"). Die effektive Stufe rechnet es beim BG ohnehin so,
     // hier wird es zusaetzlich gespeichert, damit die rohe Stufe stimmt.
     const art = setterTerminName(kunde);
-    const geheilt = stufeNachVerschieben(festeGespraechsArt(art), String(kunde.pipelineStufe || ""));
+    // Seit 11.10.2026 je Investment: jedes, das auf der NoShow-Stufe steht.
+    for (const inv of getInvestmentsByKontakt(id)) {
+      const geheilt = stufeNachVerschieben(festeGespraechsArt(art), String(inv.pipelineStufe || ""));
+      if (geheilt) updateInvestment(inv.id, { pipelineStufe: geheilt });
+    }
     updateKontakt(id, {
       terminErgebnis: "verschoben",
       terminErgebnisAm: new Date().toISOString(),
       terminErgebnisVon: user.name,
       setterTerminDatum: verschiebenDatum,
       setterTerminUhrzeit: verschiebenUhrzeit,
-      ...(geheilt ? { pipelineStufe: geheilt as any } : {}),
     });
     addAktivitaet({
       kundeId: id,
@@ -4424,6 +4468,8 @@ export default function KundenDetail() {
    * previous render" ab. Gemeldet von Christian am 16.09.2026.
    */
   const [aktionTermin, setAktionTermin] = useState<ErgebnisTermin | null>(null);
+  /** Stufe Besichtigung oder Termin Bankgutachter von Hand: erst der Termin, dann die Stufe. */
+  const [stufenTermin, setStufenTermin] = useState<{ investmentId: string; investmentLabel?: string; stufe: TerminStufe; label: string } | null>(null);
 
   /*
    * Die beiden Listen der Kachel "Naechste Aktion".
@@ -4435,48 +4481,34 @@ export default function KundenDetail() {
    * brach ab mit "Rendered fewer hooks than expected".
    */
   /**
-   * Die offenen Vorgänge dieses Kunden für die Kachel "Offene Aufgaben".
-   *
-   * Zwei Quellen, beide hängen am Kunden: die Tabelle `aufgaben` und die
-   * Follow-ups. Die persönliche Inbox-Liste aus den Nutzereinstellungen bleibt
-   * bewusst draußen, sie gehört einem einzelnen Nutzer und wäre für alle
-   * anderen am selben Kunden unsichtbar.
-   */
-  const offeneKundenAufgaben = useMemo<KundenAufgabe[]>(() => {
-    if (!id || !profilKennzahlenBereit) return [];
-    try {
-      return baueKundenAufgabenListe(getAufgabenFuerKunde(id), getFollowUpsByKunde(id));
-    } catch (fehler) {
-      console.error("Offene Aufgaben des Kunden konnten nicht gelesen werden:", fehler);
-      return [];
-    }
-    // `offeneAufgabenVersion` zählt hoch, sobald sich eine der beiden Tabellen
-    // im Zwischenspeicher ändert. Genau das hält die Liste aktuell.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, profilKennzahlenBereit, offeneAufgabenVersion]);
-
-  /**
-   * Die geplanten Aktionen für die Kachel "Nächste Aktion".
+   * Alles Offene dieses Kunden für die Kachel "Nächste Aktionen".
    *
    * Dieselben Quellen, aus denen die Ampel hinter dem Namen ihre Antwort
    * zieht: Aufgaben, Follow-ups, Meetings im Verlauf und die fest gebuchten
-   * Termine. `_liveV` deckt dabei die Investments ab, an denen ein Termin
-   * hängen kann.
+   * Termine, dazu mit `alleOffenen` auch Einträge ohne Termin, Wiedervorlagen
+   * und Vorstellungsaufträge. Die frühere Kachel "Offene Aufgaben" ist darin
+   * aufgegangen. `_liveV` deckt die Investments ab, an denen ein Termin hängen
+   * kann; `offeneAufgabenVersion` zählt hoch, sobald sich Aufgaben oder
+   * Follow-ups im Zwischenspeicher ändern.
    */
-  const geplanteAktionen = useMemo<GeplanteAktion[]>(() => {
+  const kachelAktionen = useMemo<GeplanteAktion[]>(() => {
     if (!id || !kunde || !profilKennzahlenBereit) return [];
     try {
       // Dieselbe Sammlung wie Ampel und Pipelinekachel (M20, geplanteAktionenFuer).
       return geplanteAktionenFuer(kunde, undefined, {
         aktivitaeten,
         unterschriften: getWartendeRvUnterschriften(id),
+        alleOffenen: true,
       });
     } catch (fehler) {
-      console.error("Geplante Aktionen des Kunden konnten nicht gelesen werden:", fehler);
+      console.error("Aktionen des Kunden konnten nicht gelesen werden:", fehler);
       return [];
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, kunde, profilKennzahlenBereit, offeneAufgabenVersion, aktivitaeten, _liveV]);
+
+  /** Nur die geplanten Schritte: für No-Show-Hinweis und Ergebnis-Kästen, wie die Ampel sie zählt. */
+  const geplanteAktionen = useMemo(() => kachelAktionen.filter((a) => !a.nichtGeplant), [kachelAktionen]);
   if (loadingKunde) {
     return (
       <DashboardLayout>
@@ -5027,9 +5059,9 @@ export default function KundenDetail() {
               // Stufe 2/3 und 3/3 werden erst on-demand erzeugt
               // (siehe useFollowUpInboxEscalation) – nur wenn Lead noch in
               // Follow-Up steht und kein neuer Termin in der Zukunft liegt.
+              setzeStufeFruehePhase(id, "follow_up");
               updateKontakt(id, {
                 setterSkriptNotizen: setterNotizen,
-                pipelineStufe: "follow_up",
                 status: "kontaktiert" as any,
                 verstecktBis,
                 setter: kunde?.setter || (isSetterinRole ? user.name : undefined),
@@ -5851,10 +5883,54 @@ export default function KundenDetail() {
       console.error("Ergebnis-Termin konnte nicht geladen werden:", fehler);
     }
     if (!gefunden) {
-      await hinweisDialog({
-        title: "Zu diesem Termin gibt es kein Ergebnis-Feld",
-        description: "Der Termin steht im Verlauf, aber er ist dort nicht mehr als offener Termin hinterlegt. Bitte den Eintrag im Verlauf selbst bearbeiten.",
+      /*
+       * Kein Ergebnis-Feld mehr, etwa weil das Ergebnis schon als eigener
+       * Eintrag gespeichert wurde und der Termin dabei offen blieb. Bisher
+       * endete der Haken hier in einem Hinweis, und der Termin blieb als
+       * naechste Aktion stehen. Jetzt laesst er sich trotzdem abschliessen;
+       * beim Erstgespraech folgt der Nachfass-Anruf wie auf jedem anderen Weg.
+       */
+      const wahl = await auswahlDialog({
+        title: `${aktion.titel}: abschließen`,
+        description: [
+          `Termin: ${aktionZeitpunktText(aktion)}.`,
+          "Für diesen Termin gibt es kein eigenes Ergebnis-Feld mehr. Du kannst ihn trotzdem als stattgefunden abschließen, er fällt dann aus den nächsten Aktionen.",
+        ].join("\n"),
+        optionen: [
+          { wert: "erledigt", text: "Als stattgefunden abschließen" },
+          { wert: "behalten", text: "Behalten" },
+        ],
       });
+      if (wahl !== "erledigt" || !aktion.aktivitaetId) return;
+      try {
+        await setzeAktivitaetErledigt(aktion.aktivitaetId);
+      } catch {
+        toast({ title: "Konnte nicht gespeichert werden", variant: "destructive" });
+        return;
+      }
+      reloadKunde();
+      toast({ title: "Erledigt ✓", description: aktion.titel });
+      if (kunde && istErstgespraech(aktion.titel)) {
+        const nachfass = await legeNachfassNachErstgespraechAn({
+          kontaktId: id,
+          kundeName: `${kunde.vorname || ""} ${kunde.nachname || ""}`.trim() || "Kunde",
+          gespraech: new Date(aktion.zeitpunkt),
+          rueckfallZustaendig: kunde.zustaendig_id || undefined,
+          erstelltVonName: user.name,
+        });
+        if (nachfass === "fehler") toast({ title: NACHFASS_FEHLER_TITEL, description: NACHFASS_FEHLER_TEXT, variant: "destructive" });
+      }
+      const art = kunde ? gespraechsArt(aktion.titel) : null;
+      if (kunde && art) {
+        await legeZusammenfassungAn({
+          kontaktId: id,
+          kundeName: `${kunde.vorname || ""} ${kunde.nachname || ""}`.trim() || "Kunde",
+          art,
+          beginn: new Date(aktion.zeitpunkt),
+          rueckfallZustaendig: kunde.zustaendig_id || undefined,
+          erstelltVonName: user.name,
+        });
+      }
       return;
     }
     setAktionTermin(gefunden);
@@ -5876,11 +5952,11 @@ export default function KundenDetail() {
    * auf, was betroffen ist, damit nichts stillschweigend verschwindet.
    */
   const alleUeberfaelligenAufgabenErledigen = async () => {
-    const betroffen = sammelbareAufgaben(geplanteAktionen);
+    const betroffen = sammelbareAufgaben(kachelAktionen);
     if (betroffen.length === 0) return;
     const bestaetigt = await confirmDialog({
       title: "Alle überfälligen Aufgaben erledigen?",
-      description: sammelwegBeschreibung(geplanteAktionen),
+      description: sammelwegBeschreibung(kachelAktionen),
       confirmText: "Erledigen",
       cancelText: "Behalten",
     });
@@ -6096,17 +6172,12 @@ export default function KundenDetail() {
     if (!profilKennzahlenBereit) return <Card className="p-4 mb-4 text-sm text-muted-foreground" role="status">Übersicht wird geladen …</Card>;
     // Die bestehenden Quellen liefern weiterhin Aufgaben, Termine und Schritte.
     const letzter = aktivitaeten.find((a) => !istSystemEintrag(a) && ["anruf_protokoll", "meeting_protokoll", "email"].includes(a.art));
-    // Gezählt wird jetzt dieselbe Liste, die aufgeklappt zu sehen ist. Vorher
-    // zählte die Kachel nur Aufgaben, die Liste zeigt zusätzlich Follow-ups.
-    const { gesamt, ueberfaellig } = zaehleKundenAufgaben(offeneKundenAufgaben);
     const aktuellstesInvestment = investmentFuerNaechstenSchritt(investments, activeTab === "investments" ? gewaehltesInvestment : null);
     const schritt = aktuellstesInvestment ? getNextSteps(aktuellstesInvestment.pipelineStufe, isAdminOrInhaber || (user.role as string) === "vertriebsleiter") : null;
     return <KundenprofilKennzahlen
       schritt={schritt}
       investmentNummer={aktuellstesInvestment?.nummer}
       letzter={letzter ? { artLabel: ART_LABELS[letzter.art], datum: letzter.datum } : undefined}
-      aufgabenAnzahl={gesamt}
-      ueberfaellig={ueberfaellig}
       onUebersicht={() => wechsleReiter("uebersicht")}
       /*
        * "Alle nächsten Schritte" führte bisher in den Reiter Übersicht. Von
@@ -6127,17 +6198,9 @@ export default function KundenDetail() {
         }, 300);
       } : undefined}
       onVerlauf={() => { setAktivitaetenAnsicht("manuell"); wechsleReiter("aktivitaeten"); }}
-      onAufgaben={() => { setAktivitaetenAnsicht("manuell"); setAktivitaetenFilter("aufgabe"); wechsleReiter("aktivitaeten"); }}
-      aufgaben={offeneKundenAufgaben}
-      listeOffen={offeneAufgabenKachel.offen}
-      onListeUmschalten={offeneAufgabenKachel.umschalten}
-      // Der Finanzierungspartner liest das Kundenprofil nur. Maßgeblich bleibt
-      // die Zugriffskontrolle der Datenbank, das Häkchen fehlt zusätzlich.
-      onErledigen={isFinanzierer ? undefined : erledigeKundenAufgabe}
-      onAufgabeAnlegen={isFinanzierer ? undefined : () => setActionDialog("aufgabe")}
-      // Die Kachel "Nächste Aktion": dieselbe Ampel wie hinter dem Namen, eine
+      // Die Kachel "Nächste Aktionen": dieselbe Ampel wie hinter dem Namen, eine
       // Rechnung an einer Stelle, damit Kopf und Kachel nie auseinanderlaufen.
-      aktionen={geplanteAktionen}
+      aktionen={kachelAktionen}
       ampel={berechneInaktivitaetsAmpel(kunde)}
       aktionenOffen={naechsteAktionKachel.offen}
       onAktionenUmschalten={naechsteAktionKachel.umschalten}
@@ -8009,7 +8072,7 @@ export default function KundenDetail() {
         }
         // saPdf setzt die Datenbank, nachdem sie die Datei im Eimer gefunden hat.
         await vermerkeSaPdf(inv.id, datei.name, pfad);
-        hebeAufSelbstauskunft();
+        hebeAufSelbstauskunft(inv.id);
         addAktivitaet({ kundeId: id || "", art: "notiz", beschreibung: felder > 0 ? `Selbstauskunft (PDF) hochgeladen und automatisch ausgelesen (${felder} Angaben)` : "Selbstauskunft (Papier/Scan) hochgeladen", von: user.name });
         toast(felder > 0
           ? { title: "Selbstauskunft ausgelesen ✓", description: `${felder} Angaben wurden automatisch übernommen. Einnahmen, Ausgaben und Finanzierungsrahmen liegen bei diesem Investment.` }
@@ -8613,43 +8676,42 @@ export default function KundenDetail() {
     }
 
     /*
-      Auto-advance: RV unterschrieben → Bonitaetsunterlagen.
+      Seit 16.10.2026 (neuer Ablauf): Die unterschriebene Reservierung
+      schliesst die Reservierung ab, als naechstes kommt die Besichtigung.
+      Die Stufe bleibt deshalb auf „Reservierung" (oder rueckt von der
+      Objektvorstellung dorthin), und der Zustaendige bekommt die Aufgabe
+      „Besichtigung vereinbaren". Die Besichtigung selbst setzt jemand von
+      Hand mit Termin (`StufenTerminDialog`).
 
-      Bis zum 11.09.2026 sprang der Vorgang von hier direkt auf "finanzierung"
-      und uebersprang die Stufe dazwischen. Damit galt die Finanzierung als
-      begonnen, bevor auch nur eine Bonitaetsunterlage vorlag, und der
-      Finanzierungspartner wurde gerufen, obwohl er nichts zu pruefen hatte.
+      Bisher ging es von hier auf „Bonitätsunterlagen" bzw. beim
+      Selbstfinanzierer direkt auf „Finanzierung". Beide Spruenge entfallen:
+      Die Unterlagen liegen jetzt vor der Objektvorstellung vor.
 
-      Der Ablauf lautet: Objektauswahl, Reservierung, Bonitaetsunterlagen,
-      Finanzierung, Notar. Die unterschriebene Reservierung schliesst also die
-      Reservierung ab und oeffnet die Bonitaetsunterlagen, nicht mehr.
-      Entscheidung Christians vom 11.09.2026.
+      Die Glocke an den Kunden kommt einmal je Investment, gemerkt in
+      `rvUnterschriftVerarbeitetAm`; vorher sorgte der Stufenwechsel selbst
+      dafuer, dass sie nur einmal kam.
     */
-    /*
-      Wer selbst finanziert, ueberspringt die Bonitaetsunterlagen.
-
-      Der Vermerk "Kunde finanziert selbst" versprach das seit jeher in seinem
-      Beschreibungstext, bewirkt hat er es nie: Die Funktion
-      `bonitaetsunterlagenErforderlich` gab es, sie wurde nur von keiner Stelle
-      aufgerufen. Ein Selbstfinanzierer landete deshalb auf einer Stufe, aus der
-      ihn nur die Freigabe von Unterlagen herausbringt, die es bei ihm gar nicht
-      gibt. Er blieb dort stehen, bis jemand ihn von Hand weiterschob.
-
-      Christian am 21.09.2026: "wer selbst finanziert, da braucht man die
-      Bonitaetsunterlagen und so weiter dann nicht".
-    */
-    const naechsteStufeNachRv = bonitaetsunterlagenErforderlich(inv.id)
-      ? "bonitaetsunterlagen"
-      : "finanzierung";
-
-    if (rvSignedForAutoAdvance && ["objektauswahl", "follow_up_objekt", "reservierung"].includes(inv.pipelineStufe)) {
-      stufenwechsel(inv.id, naechsteStufeNachRv, () => {
-        updateInvestment(inv.id, { pipelineStufe: naechsteStufeNachRv });
-        updateKontakt(id || "", { pipelineStufe: naechsteStufeNachRv, status: "qualifiziert" });
-        notifyPipelineChange(`${kunde.vorname} ${kunde.nachname}`, naechsteStufeNachRv, id || "");
+    const rvSchonVerarbeitet = !!getInvestmentMetaField<string | null>(inv.id, "rvUnterschriftVerarbeitetAm", null);
+    if (rvSignedForAutoAdvance && !rvSchonVerarbeitet && ["objektauswahl", "follow_up_objekt", "reservierung"].includes(inv.pipelineStufe)) {
+      const warSchonReservierung = inv.pipelineStufe === "reservierung";
+      stufenwechsel(inv.id, "reservierung_unterschrieben", () => {
+        setInvestmentMetaFields(inv.id, { rvUnterschriftVerarbeitetAm: new Date().toISOString() });
+        if (!warSchonReservierung) {
+          updateInvestment(inv.id, { pipelineStufe: "reservierung" });
+          updateKontakt(id || "", { pipelineStufe: "reservierung", status: "qualifiziert" });
+          notifyPipelineChange(`${kunde.vorname} ${kunde.nachname}`, "reservierung", id || "");
+          notifyKundePipelineStufe(id || "", "reservierung");
+        }
         notifyKundeReservierung(id || "");
-        notifyKundePipelineStufe(id || "", naechsteStufeNachRv);
-        notiereStufenwechsel(RV_UNTERSCHRIEBEN, naechsteStufeNachRv);
+        notiereStufenwechsel(RV_UNTERSCHRIEBEN, "reservierung");
+        void stelleBesichtigungsAufgabeSicher({
+          kundeId: id || "",
+          kundeName: `${kunde.vorname || ""} ${kunde.nachname || ""}`.trim() || "Kunde",
+          investmentId: inv.id,
+          investmentLabel: inv.label,
+          erstelltVonName: user.name,
+          rueckfallZustaendig: kunde.zustaendig_id || undefined,
+        });
         reloadKunde();
       });
     }
@@ -8658,7 +8720,8 @@ export default function KundenDetail() {
       Der Vermerk kam erst, als der Vorgang schon auf den
       Bonitaetsunterlagen stand. Dann bliebe er dort haengen, denn die
       Freigabe, die ihn sonst weiterschiebt, kommt beim Selbstfinanzierer nie.
-      Er rueckt deshalb wie oben direkt auf Finanzierung (05.10.2026).
+      Er rueckt deshalb direkt auf Finanzierung (05.10.2026). Seit dem
+      16.10.2026 betrifft das nur noch Bestandsfaelle der ausgeblendeten Stufe.
     */
     if (rvSignedForAutoAdvance && saEntfaellt && inv.pipelineStufe === "bonitaetsunterlagen") {
       stufenwechsel(inv.id, "finanzierung", () => {
@@ -8694,8 +8757,9 @@ export default function KundenDetail() {
       saData: getInvestmentMetaField<Record<string, unknown> | null>(inv.id, "saData", null),
       saSnapshot: getInvestmentMetaField<Record<string, unknown> | null>(inv.id, "saSnapshot", null),
     });
-    if (bonitaetFrei &&
-        ["reservierung", "bonitaetsunterlagen"].includes(inv.pipelineStufe)) {
+    // Seit 16.10.2026 nur noch fuer Bestandsfaelle auf der ausgeblendeten
+    // Stufe: Aus der Reservierung geht es ueber Besichtigung und Bankgutachter.
+    if (bonitaetFrei && inv.pipelineStufe === "bonitaetsunterlagen") {
       stufenwechsel(inv.id, "finanzierung", () => {
         updateInvestment(inv.id, { pipelineStufe: "finanzierung" });
         updateKontakt(id || "", { pipelineStufe: "finanzierung", status: "qualifiziert" });
@@ -8707,7 +8771,7 @@ export default function KundenDetail() {
     }
 
     // ── Auto-advance: Notartermin gesetzt (Datum+Uhrzeit) → notar ──
-    if (inv.notarTermin && inv.notarUhrzeit && ["finanzierung", "reservierung"].includes(inv.pipelineStufe)) {
+    if (inv.notarTermin && inv.notarUhrzeit && ["finanzierung", "bankgutachter", "besichtigung", "bonitaetsunterlagen", "reservierung"].includes(inv.pipelineStufe)) {
       stufenwechsel(inv.id, "notar", () => {
         updateInvestment(inv.id, { pipelineStufe: "notar" });
         updateKontakt(id || "", { pipelineStufe: "notar" });
@@ -8966,6 +9030,12 @@ export default function KundenDetail() {
                         cancelText: "Abbrechen",
                       });
                       if (hin) springeZuObjektauswahl(inv.id);
+                      return;
+                    }
+                    // Besichtigung und Termin Bankgutachter nur mit Termin
+                    // (16.10.2026). Die Stufe setzt das Fenster nach dem Speichern.
+                    if (brauchtStufenTermin(s.key)) {
+                      setStufenTermin({ investmentId: inv.id, investmentLabel: inv.label, stufe: s.key, label: s.label });
                       return;
                     }
                     updateInvestment(inv.id, { pipelineStufe: s.key });
@@ -9309,7 +9379,7 @@ export default function KundenDetail() {
                                 }
                                 setSaInvitationSentAt(inv.id);
                                 // Die Selbstauskunft ist beim Kunden, also Stufe anheben.
-                                hebeAufSelbstauskunft();
+                                hebeAufSelbstauskunft(inv.id);
                                 // Schedule 48h/96h follow-up reminders
                                 const kontaktRow = cacheGet("kontakte").find((k: any) => k.id === id);
                                 const vpId = kontaktRow?.zustaendig_id || authUser?.id;
@@ -10550,6 +10620,8 @@ export default function KundenDetail() {
                  * ist, auch wenn die Stufe längst erreicht ist.
                  */
                 const saFuerRv = darfReservierungStarten(inv.id);
+                // Seit 16.10.2026 gehoeren Ausweis und Gehaltsabrechnung dazu.
+                const unterlagenFuerRv = fehlendeUnterlagenFuerReservierung(inv.id);
                 // Find the gesetzt wohnung for this investment
                 const allObjForRv = getObjekte().filter(o => o.sichtbar);
                 let rvWohnung: any = null;
@@ -11021,7 +11093,9 @@ export default function KundenDetail() {
                           <span>
                             {saNeuAusstehend
                               ? "Die korrigierte Selbstauskunft ist noch nicht neu unterschrieben. Danach wird die Reservierung freigeschaltet."
-                              : "Wird nach der unterschriebenen Selbstauskunft freigeschaltet."}
+                              : unterlagenFuerRv.length > 0 && darfAufObjektauswahl(inv.id)
+                                ? `Wird freigeschaltet, sobald im Portal vorliegt: ${mindestunterlagenText(unterlagenFuerRv)}.`
+                                : "Wird nach der unterschriebenen Selbstauskunft freigeschaltet."}
                           </span>
                         </div>
                       </div>
@@ -11092,6 +11166,23 @@ export default function KundenDetail() {
                   />
                 ) : null}
               >
+              {/*
+                Finanzierungspartner waehlen und benachrichtigen, dazu die
+                Unterlagen als ZIP (Inhaber, 16.10.2026). Waehlen nur interne
+                Rollen mit Bearbeitungsrecht, Vertriebspartner nur beim
+                eigenen Kunden; der Finanzierungspartner sieht die Karte lesend.
+              */}
+              <FinanzierungspartnerKarte
+                investmentId={inv.id}
+                kontaktId={id || ""}
+                rvSigned={getRvSigned(inv.id)}
+                darfBearbeiten={darfFinanzierungspartnerMelden(user.role) && (user.role !== "vertriebspartner" || darfKundeBearbeiten)}
+                docFileUrls={docFileUrls}
+                objektId={inv.objektId}
+                wohnungId={inv.wohnungId}
+                objektTitel={inv.objektTitel}
+                weNr={inv.weNr}
+              />
               {(() => {
                 const m = inv.meta || {};
                 // Nur zu einem eingetragenen Objekt. Ohne Objekt zeigte der
@@ -11443,16 +11534,18 @@ export default function KundenDetail() {
                         // zur gleichen Uhrzeit – nie rückdatiert.
                         const empMs = Math.max(Date.now(), terminDate.getTime());
                         const empUhr = (terminUhrzeit && /^\d{1,2}:\d{2}$/.test(terminUhrzeit)) ? terminUhrzeit : "10:00";
-                        addGeteilteAufgabe({
-                          titel: `Empfehlungsprogramm einrichten: ${kunde.vorname} ${kunde.nachname}`,
-                          beschreibung: `Der Notartermin für ${kunde.vorname} ${kunde.nachname} (${inv.label}) ist abgeschlossen. Bitte richte das Empfehlungsprogramm ein.`,
+                        // Das Vorstellen steckt seit 15.10.2026 hier, nicht mehr in der Follow-up-Kette.
+                        void addProzessAufgabe({
+                          titel: "Nach dem Notartermin: Empfehlungsprogramm einrichten und vorstellen",
+                          beschreibung: `Der Notartermin für ${kunde.vorname} ${kunde.nachname} (${inv.label}) ist abgeschlossen. Bitte richte das Empfehlungsprogramm ein und stelle es dem Kunden vor.`,
                           prioritaet: "mittel",
                           typ: "aufgabe",
                           faellig_am: new Date(empMs).toISOString().split("T")[0],
                           uhrzeit: empUhr,
                           kundeId: id || "",
                           kundeName: `${kunde.vorname} ${kunde.nachname}`,
-                        });
+                          investmentId: inv.id,
+                        }, kunde.zustaendig_id || undefined);
                       }
 
                       const notarNameVal = notarData.name || inv.notarName || "";
@@ -11464,51 +11557,37 @@ export default function KundenDetail() {
                         const anruf7Ms = Math.max(Date.now(), terminDate.getTime() + 7 * 86400000);
                         const fälligDatum = new Date(anruf7Ms).toISOString().split("T")[0];
 
-                        addGeteilteAufgabe({
-                          titel: `Notar kontaktieren: Bewilligung abzulösende Bank – ${kunde.vorname} ${kunde.nachname}`,
-                          beschreibung: `Bitte bei ${notarNameVal || "dem Notar"}${notarTelefonVal ? ` (Tel.: ${notarTelefonVal})` : ""} anrufen.`,
+                        // Frueher zwei Aufgaben (Notar, Grundbuchamt), jetzt eine.
+                        void addProzessAufgabe({
+                          titel: "Eine Woche nach Notar: Bewilligung und Vormerkung nachfragen",
+                          beschreibung: `${kunde.vorname} ${kunde.nachname} (${inv.label}): Bitte bei ${notarNameVal || "dem Notar"}${notarTelefonVal ? ` (Tel.: ${notarTelefonVal})` : ""} nach der Bewilligung der abzulösenden Bank fragen und beim zuständigen Grundbuchamt nach der Auflassungsvormerkung.`,
                           prioritaet: "hoch",
                           typ: "anruf",
                           faellig_am: fälligDatum,
                           uhrzeit: "09:00",
                           kundeId: id || "",
                           kundeName: `${kunde.vorname} ${kunde.nachname}`,
-                        });
-
-                        addGeteilteAufgabe({
-                          titel: `Grundbuchamt kontaktieren: Auflassungsvormerkung – ${kunde.vorname} ${kunde.nachname}`,
-                          beschreibung: `Bitte beim zuständigen Grundbuchamt anrufen und nachfragen.`,
-                          prioritaet: "hoch",
-                          typ: "anruf",
-                          faellig_am: fälligDatum,
-                          uhrzeit: "10:00",
-                          kundeId: id || "",
-                          kundeName: `${kunde.vorname} ${kunde.nachname}`,
-                        });
+                          investmentId: inv.id,
+                        }, kunde.zustaendig_id || undefined);
                       }
 
                       const asReminderKey = `osimmo_as_upload_reminders_${inv.id}`;
                       if (!localStorage.getItem(asReminderKey)) {
                         localStorage.setItem(asReminderKey, "true");
-                        const reminderDays = [7, 14, 28, 44];
-                        // Eskalations-Kette: gestaffelt anhand max(heute, Notar+N).
-                        // Wenn Notar in der Vergangenheit liegt, werden die 4 Reminder
-                        // ab heute weiter-versetzt, statt alle gleichzeitig zu erscheinen.
-                        const baseShiftMs = Math.max(0, Date.now() - (terminDate.getTime() + 7 * 86400000));
-                        reminderDays.forEach((days, idx) => {
-                          const reminderMs = terminDate.getTime() + days * 86400000 + baseShiftMs;
-                          const reminderDate = new Date(Math.max(Date.now(), reminderMs)).toISOString().split("T")[0];
-                          addGeteilteAufgabe({
-                            titel: `Fälligkeit Unterlagen hochladen (${idx + 1}/4): ${kunde.vorname} ${kunde.nachname}`,
-                            beschreibung: `Bitte die Fälligkeit Unterlagen für ${kunde.vorname} ${kunde.nachname} hochladen. ${days}-Tage-Erinnerung.`,
-                            prioritaet: days <= 14 ? "mittel" : "hoch",
-                            typ: "aufgabe",
-                            faellig_am: reminderDate,
-                            uhrzeit: "09:00",
-                            kundeId: id || "",
-                            kundeName: `${kunde.vorname} ${kunde.nachname}`,
-                          });
-                        });
+                        // Frueher vier gestaffelte Aufgaben (Tag 7, 14, 28, 44), jetzt
+                        // eine am Tag 7 nach dem Notar, nie rueckdatiert.
+                        const unterlagenMs = Math.max(Date.now(), terminDate.getTime() + 7 * 86400000);
+                        void addProzessAufgabe({
+                          titel: "Nach dem Notar: Fälligkeitsunterlagen hochladen",
+                          beschreibung: `Bitte die Fälligkeitsunterlagen für ${kunde.vorname} ${kunde.nachname} (${inv.label}) hochladen.`,
+                          prioritaet: "mittel",
+                          typ: "aufgabe",
+                          faellig_am: new Date(unterlagenMs).toISOString().split("T")[0],
+                          uhrzeit: "09:00",
+                          kundeId: id || "",
+                          kundeName: `${kunde.vorname} ${kunde.nachname}`,
+                          investmentId: inv.id,
+                        }, kunde.zustaendig_id || undefined);
                       }
 
                       reloadKunde();
@@ -13815,23 +13894,40 @@ export default function KundenDetail() {
             // entkoppelt vom Sales-Prozess. Es wird KEIN setterTermin*, KEIN
             // pipelineStufe-Wechsel und keine „Beratungsgespräch"-Logik
             // getriggert. Das Meeting steht als Meeting in der Timeline und
-            // als Aufgabe am gewaehlten Investment.
+            // als gekoppelte Aufgabe am gewaehlten Investment.
             //
-            // Auf die Datenbank wird gewartet, sonst überholt das Neuladen
-            // weiter unten den Schreibvorgang und der Eintrag verschwindet
-            // gleich wieder. Die Beschreibung ist nur das Thema: Sie steht
-            // auch in der Terminerinnerung an den Kunden.
-            const eintrag = await addAktivitaetSicher({
-              kundeId: id,
-              art: "meeting",
-              beschreibung: m.thema,
-              details: m.agenda || undefined,
-              faelligAm: m.datum,
-              uhrzeit: m.uhrzeit,
-              dauer: String(m.dauer),
-              von: user.name,
-            });
-            if (!eintrag) {
+            // Seit 15.10.2026 in einem Schritt ueber `speichereMeeting`:
+            // Meeting im Verlauf und Aufgabe (Kopplung meeting_aktivitaet_id)
+            // in einer Transaktion. Die lose Aufgabe "Meeting: {Thema}" ist
+            // entfallen. Das Investment steht zusaetzlich lesbar in den
+            // Details, die Verlaufstabelle hat dafuer keine Spalte. Die
+            // Beschreibung ist nur das Thema: Sie steht auch in der
+            // Terminerinnerung an den Kunden.
+            const inv = gewaehltesInvestment ? investments.find((i) => i.id === gewaehltesInvestment) : undefined;
+            const investmentZeile = inv ? `Investment: ${inv.label || inv.objektTitel || "Investment"}` : "";
+            try {
+              await speichereMeeting(crypto.randomUUID(), {
+                kundeId: id,
+                art: "meeting",
+                beschreibung: m.thema,
+                details: [m.agenda, investmentZeile].filter(Boolean).join("\n") || undefined,
+                faelligAm: m.datum,
+                uhrzeit: m.uhrzeit,
+                dauer: String(m.dauer),
+                von: user.name,
+              }, {
+                kontaktId: id,
+                investmentId: gewaehltesInvestment,
+                typ: "meeting",
+                prioritaet: "hoch",
+                titel: m.thema,
+                beschreibung: m.agenda || undefined,
+                faelligAm: m.datum,
+                uhrzeit: m.uhrzeit,
+                erstelltVonName: user.name,
+              });
+            } catch (fehler) {
+              console.error("Meeting nicht gespeichert:", fehler);
               toast({
                 title: "Meeting nicht gespeichert",
                 description: "Der Termin ist nicht in der Kundenakte angekommen. Bitte versuch es noch einmal.",
@@ -13839,30 +13935,8 @@ export default function KundenDetail() {
               });
               return false;
             }
-            // `addGeteilteAufgabe` wirft nicht, sondern liefert `false`. Ohne
-            // die Pruefung fiel der Termin still aus der Aufgabenliste.
-            const kName = `${kunde?.vorname || ""} ${kunde?.nachname || ""}`.trim();
-            const aufgabeOk = await addGeteilteAufgabe({
-              titel: `Meeting: ${m.thema}`,
-              beschreibung: [kName, `${m.datum} ${m.uhrzeit} Uhr`, m.agenda].filter(Boolean).join(" · "),
-              prioritaet: "hoch",
-              typ: "meeting",
-              faellig_am: m.datum,
-              uhrzeit: m.uhrzeit,
-              kundeId: id,
-              kundeName: kName,
-              // Damit der Termin auf der richtigen Pipeline-Kachel steht.
-              investmentId: gewaehltesInvestment,
-            });
-            if (aufgabeOk) {
-              toast({ title: "Meeting erstellt ✓", description: `${m.datum} um ${m.uhrzeit} Uhr` });
-            } else {
-              toast({
-                title: "Meeting steht nicht in den Aufgaben",
-                description: "Das Meeting ist in der Kundenakte, aber es wurde keine Aufgabe dafür erstellt. Bitte den Termin von Hand eintragen.",
-                variant: "destructive",
-              });
-            }
+            window.dispatchEvent(new CustomEvent(TERMINE_AKTUALISIERT_EVENT));
+            toast({ title: "Meeting erstellt ✓", description: `${m.datum} um ${m.uhrzeit} Uhr` });
             reloadKunde();
           }}
         />
@@ -14392,6 +14466,39 @@ export default function KundenDetail() {
           />
         )}
 
+        {/* Termin zur Stufe Besichtigung oder Termin Bankgutachter. Abbrechen
+            setzt nichts; Speichern legt den Termin am Investment an und setzt
+            danach die Stufe, mit demselben Vermerk wie das manuelle Setzen. */}
+        <StufenTerminDialog
+          stufe={stufenTermin?.stufe ?? null}
+          kundeName={kunde ? `${kunde.vorname || ""} ${kunde.nachname || ""}`.trim() : undefined}
+          onAbbrechen={() => setStufenTermin(null)}
+          onSpeichern={async (eingabe) => {
+            if (!stufenTermin || !id || !kunde) return null;
+            const { investmentId, investmentLabel, stufe, label } = stufenTermin;
+            try {
+              await speichereStufenTermin(stufe, eingabe, {
+                kundeId: id,
+                kundeName: `${kunde.vorname || ""} ${kunde.nachname || ""}`.trim() || "Kunde",
+                investmentId,
+                investmentLabel,
+                userName: user.name,
+              });
+            } catch (fehler) {
+              return terminFehlerText(fehler);
+            }
+            setStufenTermin(null);
+            if (!(await updateInvestment(investmentId, { pipelineStufe: stufe }))) {
+              toast({ title: "Termin gespeichert, Stufe nicht gesetzt", description: "Bitte die Stufe erneut setzen.", variant: "destructive" });
+              return null;
+            }
+            addAktivitaet({ kundeId: id, art: "notiz", beschreibung: `⚠️ Pipeline-Stufe manuell auf "${label}" gesetzt (Manueller Override durch ${user.name}, ${user.role})`, von: user.name });
+            toast({ title: "Termin eingetragen ✓", description: `${label}: ${eingabe.datum} um ${eingabe.uhrzeit} Uhr` });
+            reloadKunde();
+            return null;
+          }}
+        />
+
         {/* ── Termin verschieben Dialog ── */}
         <AlertDialog open={verschiebenDialog} onOpenChange={setVerschiebenDialog}>
           <AlertDialogContent overlayClassName={NUR_POPUP_OVERLAY}>
@@ -14481,8 +14588,8 @@ export default function KundenDetail() {
                   // Die bisherige Stufe merken, damit eine spaetere
                   // Wiederaufnahme dort weitermacht statt ganz vorne.
                   const stufeVorher = getEffectivePipelineStufe(kunde);
+                  kontaktVerlorenAnInvestments(id, verlorenGrund, new Date().toISOString());
                   updateKontakt(id, {
-                    pipelineStufe: "verloren",
                     status: "verloren" as any,
                     verlorenGrund,
                     verlorenAm: new Date().toISOString(),
@@ -14533,8 +14640,8 @@ export default function KundenDetail() {
                     && kunde.stufeVorVerlust !== "archiviert")
                     ? kunde.stufeVorVerlust
                     : "erreicht";
+                  kontaktWiederaufnahmeAnInvestments(id, zielStufe);
                   updateKontakt(id, {
-                    pipelineStufe: zielStufe as any,
                     status: "kontaktiert" as any,
                     archiviert: false,
                     archivGrund: undefined,

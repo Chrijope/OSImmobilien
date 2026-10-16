@@ -471,13 +471,14 @@ describe("Exposé-Seite seit dem 23.09.2026", () => {
      */
     renderMit("/objekte/o1/einheiten/w7/expose");
     const zeitplan = screen.getByTestId("zeitplan");
-    // Sechs Stationen, davor die abgehakte Beratung.
-    expect(zeitplan.querySelectorAll("li")).toHaveLength(7);
-    expect(zeitplan.querySelectorAll("[data-testid^='zeitplan-station-']")).toHaveLength(6);
-    expect(screen.getByTestId("zeitplan-station-1")).toHaveTextContent("ReservierungMit Anzahlung wirksam");
-    expect(screen.getByTestId("zeitplan-station-6")).toHaveTextContent("Übergabe an die Verwaltung");
-    expect(screen.getByTestId("zeitplan-station-6").querySelector(".zeitplan-kasten")).toBeNull();
-    expect(screen.getAllByTestId("zeitplan-zahlung").map((k) => k.textContent)).toEqual(["Mit Anzahlung wirksam", "nach Regelung im Kaufvertrag"]);
+    // Seit dem 16.10.2026 elf Stationen vom Erstgespräch bis zur Kaufpreisfälligkeit, nichts vorab abgehakt.
+    expect(zeitplan.querySelectorAll("li")).toHaveLength(11);
+    expect(zeitplan.querySelectorAll("[data-testid^='zeitplan-station-']")).toHaveLength(11);
+    expect(screen.getByTestId("zeitplan-station-1")).toHaveTextContent("Erstgespräch");
+    expect(screen.getByTestId("zeitplan-station-1").querySelector(".zeitplan-kasten")).toBeNull();
+    expect(screen.getByTestId("zeitplan-station-6")).toHaveTextContent("ReservierungKostenfrei, wirksam mit deiner Unterschrift");
+    expect(screen.getAllByTestId("zeitplan-zahlung").map((k) => k.textContent)).toEqual(["nach Regelung im Kaufvertrag"]);
+    expect(zeitplan).not.toHaveTextContent(/Anzahlung/);
     expect(zeitplan).not.toHaveTextContent(/Reservierungsgebühr|Werkvertrag/);
     await waitFor(() => expect(screen.getByTestId("speicher-status")).toBeInTheDocument());
   });

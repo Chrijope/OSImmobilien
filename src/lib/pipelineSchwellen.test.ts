@@ -136,7 +136,7 @@ describe("schwellenFuerStufe", () => {
 
 describe("Hilfsfunktionen", () => {
   it("stufenLabel fällt auf den rohen Schlüssel zurück", () => {
-    expect(stufenLabel("selbstauskunft")).toBe("Selbstauskunft");
+    expect(stufenLabel("selbstauskunft")).toBe("Selbstauskunft & Unterlagen");
     expect(stufenLabel("gibt_es_nicht")).toBe("gibt_es_nicht");
     expect(stufenLabel(null)).toBe("ohne Stufe");
   });

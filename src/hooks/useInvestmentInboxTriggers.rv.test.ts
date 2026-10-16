@@ -27,7 +27,12 @@ vi.mock("@/lib/investmentsStore", () => ({
   getRvSigned: (id: string) => zustand.meta[id]?.rvSigned === true,
 }));
 vi.mock("@/lib/aktivitaetenStore", () => ({
-  addInboxTask: (t: { titel: string; beschreibung: string; prioritaet: string; kundeId?: string }) => { zustand.inbox.push(t); },
+  // Wie die echte Funktion: gibt die angelegte Erinnerung mit Kennung zurueck.
+  addInboxTask: (t: { titel: string; beschreibung: string; prioritaet: string; kundeId?: string }) => {
+    const neu = { ...t, id: `t-${zustand.inbox.length + 1}` };
+    zustand.inbox.push(neu);
+    return neu;
+  },
   getInboxTasks: () => zustand.inbox,
   setInboxTasks: (t: typeof zustand.inbox) => { zustand.inbox = t; },
 }));
@@ -85,8 +90,28 @@ describe("Reservierung ohne Unterschrift im Inbox-Hook", () => {
   it("legt nach 2, 5 und 10 Tagen je genau eine Aufgabe an, auch bei vielen Laeufen", () => {
     for (const n of [0, 1, 2, 2, 3, 5, 5, 6, 10, 10, 12]) laufAm(n);
     expect(rvAufgaben().map((t) => t.prioritaet)).toEqual(["mittel", "dringend", "dringend"]);
-    expect(rvAufgaben()[0].titel).toBe("Reservierung unterschreiben lassen: Anna Berger");
-    expect(rvAufgaben()[2].titel).toBe("Eskalation Reservierung ohne Unterschrift: Anna Berger");
+    expect(rvAufgaben()[0].titel).toBe("Reservierung versendet: beim Kunden nachfassen");
+    expect(rvAufgaben()[2].titel).toBe("Eskalation Reservierung ohne Unterschrift: heute Kontakt aufnehmen");
+  });
+
+  it("entdoppelt am Schlüssel: dieselbe Stufe kommt für zwei Kunden je einmal", () => {
+    zustand.investments.push({ id: "inv-2", kontaktId: "k-2", label: "Investment 2", pipelineStufe: "reservierung" });
+    zustand.kontakte.push({ id: "k-2", vorname: "Bert", nachname: "Beispiel", berater: "Paula Partner" });
+    zustand.meta["inv-2"] = { ...zustand.meta["inv-1"] };
+    laufAm(2);
+    laufAm(2);
+    expect(rvAufgaben().map((t) => t.kundeId)).toEqual(["k-1", "k-2"]);
+    expect(rvAufgaben().map((t) => (t as { schluessel?: string }).schluessel)).toEqual(["rv_unterschrift_2d:inv-1", "rv_unterschrift_2d:inv-2"]);
+  });
+
+  it("setzt die Merkmarke nur, wenn die Erinnerung wirklich in der Liste steht", () => {
+    const echt = zustand.inbox;
+    // Speichern scheitert: die Liste bleibt leer.
+    zustand.inbox = new Proxy(echt, { get: (z, p) => (p === "push" ? () => 0 : Reflect.get(z, p)) });
+    laufAm(2);
+    zustand.inbox = [];
+    laufAm(3);
+    expect(rvAufgaben()).toHaveLength(1);
   });
 
   it("meldet die erste Stufe dem Partner und nur die letzte der Vertriebsleitung, jeweils einmal", () => {

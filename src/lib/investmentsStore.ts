@@ -4,7 +4,7 @@ import { eigeneSaDataFuerInvestmentRow, saVomVorherigenInvestment } from "./saQu
 import { validateKontaktMetaPatch } from "./kontaktMetaSchema";
 import { isTestAccount, localGet, localSet } from "./dbStoreHelper";
 import { withTestFlag } from "./previewFlag";
-import { darfVorruecken } from "./pipelineStufen";
+import { darfVorruecken, fortschrittsRang, istEndzustand } from "./pipelineStufen";
 import { toast } from "@/hooks/use-toast";
 import { normalizePipelineStufe } from "./kontaktPipeline";
 import { supabase } from "@/integrations/supabase/client";
@@ -524,8 +524,82 @@ export function kontaktIdZumInvestment(investmentId: string): string | null {
   return getInvestmentById(investmentId)?.kontaktId || null;
 }
 
+/**
+ * Stufe fuer eine Aktion am Kontakt, die keinem bestimmten Investment gehoert
+ * (Setter-Skript, erster Anruf, Termin verschieben, Verloren im Profil).
+ *
+ * Seit dem 11.10.2026 haengt die Pipeline nur am Investment. Gesetzt wird an
+ * allen Investments, die noch in der fruehen Phase laufen, also vor der
+ * Selbstauskunft. Ein weiter gediehenes, abgeschlossenes oder beendetes
+ * Investment bleibt, wie es ist: Ein Setter-Ergebnis betrifft nicht den Kauf,
+ * der schon beim Notar liegt. Gibt die Zahl der geaenderten Investments zurueck.
+ */
+export function setzeStufeFruehePhase(kontaktId: string, stufe: string): number {
+  const grenze = fortschrittsRang("selbstauskunft");
+  let geaendert = 0;
+  for (const inv of getInvestmentsByKontakt(kontaktId)) {
+    if (inv.pipelineStufe === stufe) continue;
+    if (istEndzustand(inv.pipelineStufe) || fortschrittsRang(inv.pipelineStufe) >= grenze) continue;
+    updateInvestment(inv.id, { pipelineStufe: stufe });
+    geaendert++;
+  }
+  return geaendert;
+}
+
+/**
+ * Der ganze Kontakt geht verloren (Profil, Setter): Jedes laufende Investment
+ * wird verloren gesetzt und merkt sich seine Stufe, damit eine Wiederaufnahme
+ * dort weitermacht (11.10.2026). Abgeschlossene und schon beendete bleiben.
+ */
+export function kontaktVerlorenAnInvestments(kontaktId: string, verlorenGrund: string, verlorenAm: string): void {
+  for (const inv of getInvestmentsByKontakt(kontaktId)) {
+    if (istEndzustand(inv.pipelineStufe) || inv.pipelineStufe === "abgeschlossen") continue;
+    setInvestmentMetaFields(inv.id, { verlorenGrund, verlorenAm, stufeVorVerlust: inv.pipelineStufe, verlorenMitKontakt: true });
+    updateInvestment(inv.id, { pipelineStufe: "verloren" });
+  }
+}
+
+/**
+ * Gegenstück zu `kontaktVerlorenAnInvestments`: Die mit dem Kontakt verlorenen
+ * Investments kehren in ihre alte Stufe zurück. Einzeln verlorene bleiben
+ * verloren. Gibt es keine solchen (Altfall) und läuft auch keines mehr, kommt
+ * das jüngste beendete Investment in `rueckfallStufe` zurück, damit der Kunde
+ * in der Pipeline wieder eine Karte hat.
+ */
+export function kontaktWiederaufnahmeAnInvestments(kontaktId: string, rueckfallStufe: string): void {
+  const invs = getInvestmentsByKontakt(kontaktId);
+  const mitKontakt = invs.filter((inv) => inv.pipelineStufe === "verloren" && getInvestmentMeta(inv.id, "verlorenMitKontakt", false));
+  for (const inv of mitKontakt) {
+    const vorher = getInvestmentMeta<string | null>(inv.id, "stufeVorVerlust", null);
+    setInvestmentMetaFields(inv.id, { verlorenGrund: null, verlorenAm: null, stufeVorVerlust: null, verlorenMitKontakt: null });
+    updateInvestment(inv.id, { pipelineStufe: vorher || rueckfallStufe });
+  }
+  if (mitKontakt.length > 0) return;
+  if (invs.some((inv) => !istEndzustand(inv.pipelineStufe) && inv.pipelineStufe !== "abgeschlossen")) return;
+  const juengstes = [...invs]
+    .filter((inv) => inv.pipelineStufe === "verloren" || inv.pipelineStufe === "archiviert")
+    .sort((a, b) => (b.nummer || 0) - (a.nummer || 0))[0];
+  if (juengstes) updateInvestment(juengstes.id, { pipelineStufe: rueckfallStufe });
+}
+
 export async function createInvestment(kontaktId: string, label?: string): Promise<Investment> {
   const existing = getInvestmentsByKontakt(kontaktId);
+
+  /*
+   * Bestandskunden haben seit dem 11.10.2026 ein Investment 1 in der Stufe
+   * "bestandsimport". Ein neues Investment anzulegen hiess bei ihnen bisher
+   * "aktivieren": Das erste Investment begann im Beratungsgespraech. Genau das
+   * passiert jetzt mit dem vorhandenen, statt daneben ein zweites anzulegen.
+   */
+  if (existing.length > 0 && existing.every((e) => e.pipelineStufe === "bestandsimport")) {
+    const inv = existing[0];
+    await updateInvestment(inv.id, { pipelineStufe: "beratungsgespraech", ...(label ? { label } : {}) });
+    try {
+      const { addAktivitaet } = await import("./aktivitaetenStore");
+      addAktivitaet({ kundeId: kontaktId, art: "notiz", beschreibung: "Bestandskunde aktiviert (Investment → Beratungsgespräch)", von: "System" });
+    } catch { /* Vermerk ist Beiwerk */ }
+    return { ...inv, pipelineStufe: "beratungsgespraech", ...(label ? { label } : {}) };
+  }
   const nummer = existing.length > 0 ? Math.max(...existing.map(e => e.nummer)) + 1 : 1;
 
   /*
@@ -534,7 +608,7 @@ export async function createInvestment(kontaktId: string, label?: string): Promi
    * Das ERSTE Investment übernimmt die Stufe des Kontakts. So wird ein frisch
    * reingekommener Meta- oder Zapier-Lead nicht fälschlich als „Erstgespräch
    * geführt" markiert, obwohl er noch nie erreicht wurde. Bestandsimport-
-   * Kontakte gehen weiterhin direkt in „Beratungsgespräch" (Pre-Funnel → Funnel).
+   * Kontakte bekommen die Stufe "bestandsimport" wie im Datenbank-Trigger.
    *
    * JEDES WEITERE Investment beginnt dagegen immer ganz vorne, unabhängig
    * davon, wie weit der Kunde bei seinem ersten Investment schon ist. Vorher
@@ -569,17 +643,10 @@ export async function createInvestment(kontaktId: string, label?: string): Promi
         ? "selbstauskunft"
         : aktuelleStufe;
     }
-    if (aktuelleStufe === "bestandsimport" && existing.length === 0) {
-      initialStufe = "beratungsgespraech";
-      try {
-        const { updateKontakt } = await import("./kundenStore");
-        updateKontakt(kontaktId, { pipelineStufe: "beratungsgespraech" as any });
-      } catch (e) { console.warn("Bestandsimport→Beratungsgespräch update failed", e); }
-      try {
-        const { addAktivitaet } = await import("./aktivitaetenStore");
-        addAktivitaet({ kundeId: kontaktId, art: "notiz", beschreibung: "Bestandskunde aktiviert (Investment angelegt → Beratungsgespräch)", von: "System" });
-      } catch {}
-    }
+    // Erstes Investment eines Bestandskunden: dieselbe Stufe wie der
+    // Datenbank-Trigger (seit 11.10.2026). Aktiviert wird oben, ueber den
+    // Zweig "nur Bestandsimport".
+    if (aktuelleStufe === "bestandsimport" && existing.length === 0) initialStufe = "bestandsimport";
   } catch {}
 
   const inv: Investment = { id: crypto.randomUUID(), kontaktId, nummer, label: label || `Investment ${nummer}`, pipelineStufe: initialStufe, erstellt_am: new Date().toISOString() };
@@ -634,6 +701,9 @@ const STUFEN_STEMPEL: Record<string, string> = {
   bonitaetsunterlagen: "bonitaetSeit",
   objektauswahl: "objektauswahlSeit",
   reservierung: "reserviertAm",
+  // Neu seit 16.10.2026: wann die Besichtigung bzw. der Bankgutachter dran war.
+  besichtigung: "besichtigungSeit",
+  bankgutachter: "bankgutachterSeit",
   finanzierung: "finanzierungSeit",
 };
 
@@ -701,46 +771,50 @@ export function updateInvestment(id: string, fields: Partial<Investment>): Promi
     ergebnis = cacheZeileSchreiben("investments", id, geaendert, patch).then(() => true, () => false);
     zeilenSchreibung.set(id, ergebnis.then(() => undefined));
   }
-  // Kontakt-Stufe mit Investment-Stufe synchronisieren, damit Pipeline &
-  // Kundenprofil nicht mehr divergieren. Wir schreiben nur, wenn die neue
-  // Investment-Stufe echt „weiter" ist als die aktuelle Kontakt-Stufe.
+  /*
+   * Die Kontaktstufe wird seit dem 11.10.2026 nicht mehr im Browser
+   * nachgezogen, das macht der Datenbank-Trigger kontakt_stufe_nachfuehren
+   * (höchste Stufe der laufenden Investments). Hier bleiben die Automatiken,
+   * die an einem Stufenwechsel hängen: Empfehlungsstatus und Follow-Up-Ketten.
+   */
   if (fields.pipelineStufe) {
-    try {
-      const invRow = (cacheGet("investments") as any[]).find((r: any) => r.id === id);
-      const kundeId = invRow?.kunde_id;
-      if (!kundeId) return ergebnis;
-      const kRow: any = (cacheGet("kontakte") as any[]).find((r: any) => r.id === kundeId);
-      if (!kRow) return ergebnis;
-      const currentK = normalizePipelineStufe(kRow?.meta?.pipelineStufe);
-      const nextI = normalizePipelineStufe(fields.pipelineStufe);
-      // Dieselbe Regel wie überall (pipelineStufen.ts, M20): nur nach vorn,
-      // Endzustände nie. Vorher zählte die Position in PIPELINE_STUFEN, ein
-      // Investment auf „verloren“ zog den ganzen Kontakt mit.
-      if (nextI && darfVorruecken(currentK, nextI)) {
-        // Nur der eine Schlüssel. Eine Ablehnung meldet der Zwischenspeicher selbst.
-        cacheMetaZusammenfuehren("kontakte", kundeId, { pipelineStufe: nextI }).catch(() => {});
+    const kundeId = (cacheGet("investments") as any[]).find((r: any) => r.id === id)?.kunde_id
+      || (isTestAccount() ? getInvestmentById(id)?.kontaktId : undefined);
+    if (!kundeId) return ergebnis;
+    const neueStufe = String(fields.pipelineStufe);
+    // Dynamischer Import, weil ein statischer den Kreis investmentsStore ->
+    // kundenStore/empfehlungenStore -> kontaktPipeline -> investmentsStore
+    // schliessen wuerde.
+    void (async () => {
+      try {
+        const [{ getKontaktById }, { syncEmpfehlungFuerKontakt }] = await Promise.all([
+          import("./kundenStore"),
+          import("./empfehlungenStore"),
+        ]);
+        const kunde = getKontaktById(kundeId);
+        if (kunde) syncEmpfehlungFuerKontakt(kunde);
+      } catch (fehler) {
+        console.error("Empfehlungs-Sync fehlgeschlagen:", fehler);
       }
-      // Empfehlungs-Automatik: Dieser Pfad schreibt die Kontakt-Stufe per
-      // direktem cacheUpdate an kundenStore.updateKontakt vorbei, deshalb
-      // wird der Statusabgleich der Empfehlung hier mit der effektiven Stufe
-      // nachgezogen. Dynamischer Import, weil ein statischer den Kreis
-      // investmentsStore -> empfehlungenStore -> kontaktPipeline ->
-      // investmentsStore schliessen wuerde.
-      void (async () => {
-        try {
-          const [{ getKontaktById }, { syncEmpfehlungFuerKontakt }] = await Promise.all([
-            import("./kundenStore"),
-            import("./empfehlungenStore"),
-          ]);
-          const kunde = getKontaktById(kundeId);
-          if (kunde) syncEmpfehlungFuerKontakt(kunde);
-        } catch (fehler) {
-          console.error("Empfehlungs-Sync fehlgeschlagen:", fehler);
+      try {
+        const [{ getKontaktById }, fu] = await Promise.all([import("./kundenStore"), import("./followUpStore")]);
+        const kunde = getKontaktById(kundeId);
+        if (!kunde) return;
+        // Offene automatische Follow-ups bleiben, solange irgendein laufendes
+        // Investment in ihrer Stufe steht, sonst entfielen die Erinnerungen
+        // fuer Investment 1, sobald Investment 2 weiterrueckt.
+        const stufen = getInvestmentsByKontakt(kundeId).map((inv) => (inv.id === id ? neueStufe : inv.pipelineStufe));
+        fu.cancelStaleAutoFollowUps(kundeId, stufen);
+        const offen = fu.getFollowUpsByKunde(kundeId).some((f) =>
+          f.automatisch && f.pipelineStufe === neueStufe && (f.status === "offen" || f.status === "ueberfallig"));
+        if (!offen) {
+          const name = `${kunde.vorname || ""} ${kunde.nachname || ""}`.trim();
+          fu.generateFollowUpsFromKette(kundeId, name, kunde.berater || "", neueStufe);
         }
-      })();
-    } catch (err) {
-      console.warn("kontakt-stufe sync skipped", err);
-    }
+      } catch (fehler) {
+        console.error("Follow-Up-Automatik fehlgeschlagen:", fehler);
+      }
+    })();
   }
   return ergebnis;
 }

@@ -105,15 +105,8 @@ function zeigeFormular() {
   );
 }
 
-/**
- * Vom ersten Schritt weiterklicken. Die Käuferdaten stehen aus dem Kontakt,
- * nur die IBAN (Pflicht seit dem 15.09.2026) kennt der Kontakt nicht; sie
- * wird eingetragen, solange das Feld sichtbar und leer ist.
- */
+/** Vom ersten Schritt weiterklicken. Die Käuferdaten stehen aus dem Kontakt. */
 function weiter() {
-  for (const feld of screen.queryAllByPlaceholderText("DE00 0000 0000 0000 0000 00")) {
-    if (!(feld as HTMLInputElement).value) fireEvent.change(feld, { target: { value: "DE02120300000000202051" } });
-  }
   fireEvent.click(screen.getByRole("button", { name: "Weiter" }));
 }
 

@@ -20,7 +20,7 @@ export const NAECHSTE_AKTION_SCHLUESSEL = "kundenprofilNaechsteAktionAufgeklappt
  * zum Kunden. Standard ist zugeklappt, damit das Profil nicht plötzlich anders
  * aussieht als bisher.
  */
-function useKachelAufgeklappt(schluessel: string) {
+function useKachelAufgeklappt(schluessel: string, rueckfallSchluessel?: string) {
   const { authUser } = useUser();
   const userId = authUser?.id || "";
   const bereit = useCacheReady(TABELLEN);
@@ -31,9 +31,13 @@ function useKachelAufgeklappt(schluessel: string) {
     // Erst lesen, wenn die Einstellungen geladen und dem angemeldeten Nutzer
     // zugeordnet sind. Sonst gilt kurzzeitig die Einstellung des Vorgängers.
     if (!bereit || !userId || getCurrentUserId() !== userId) return;
-    const wert = getUserSetting<unknown>(schluessel, false);
+    const eigener = getUserSetting<unknown>(schluessel, undefined);
+    // Nie selbst geschaltet: dann gilt einmal der alte Schalter, nur lesend.
+    const wert = eigener === undefined && rueckfallSchluessel
+      ? getUserSetting<unknown>(rueckfallSchluessel, false)
+      : eigener;
     setEntscheidung({ userId, offen: wert === true });
-  }, [bereit, userId, version, schluessel]);
+  }, [bereit, userId, version, schluessel, rueckfallSchluessel]);
 
   const offen = entscheidung?.userId === userId ? entscheidung.offen : false;
 
@@ -48,12 +52,12 @@ function useKachelAufgeklappt(schluessel: string) {
   return { offen, umschalten };
 }
 
-/** Die Kachel "Offene Aufgaben". */
-export function useOffeneAufgabenKachel() {
-  return useKachelAufgeklappt(OFFENE_AUFGABEN_SCHLUESSEL);
-}
-
-/** Die Kachel "Nächste Aktion", eigener Schalter, gleiches Verhalten. */
+/**
+ * Die Kachel "Nächste Aktionen". Die frühere Kachel "Offene Aufgaben" ist seit
+ * dem 15.10.2026 in ihr aufgegangen. Wer deren Liste offen hatte und die neue
+ * Kachel nie geschaltet hat, findet sie beim ersten Mal ebenfalls offen vor;
+ * der alte Schalter wird dafür nur gelesen, nie mehr geschrieben.
+ */
 export function useNaechsteAktionKachel() {
-  return useKachelAufgeklappt(NAECHSTE_AKTION_SCHLUESSEL);
+  return useKachelAufgeklappt(NAECHSTE_AKTION_SCHLUESSEL, OFFENE_AUFGABEN_SCHLUESSEL);
 }

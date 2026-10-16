@@ -1,4 +1,5 @@
 import { type DocBlock, generateSimpleDocPdf } from "./simpleDocPdf";
+import { OS_EINWAENDE, OS_FUENF_SCHRITTE, OS_GRENZEN, OS_VORWAND_TEST } from "./osEinwaende";
 import { buildBankpruefungBaseDocs } from "./bankpruefungDocs";
 import type { FormatSprache } from "./sprachFormat";
 
@@ -719,7 +720,7 @@ export const generateLeitfadenKaltakquisePDF = () => generateSimpleDocPdf({
       "Stehe auf, halte aufrechte Körperhaltung – das verändert deine Stimme.",
     ]},
     { type: "h2", text: "Phase 1: Einstieg (10 Sekunden)" },
-    { type: "callout", text: "„Hallo [Vorname], hier ist [dein Name] von OS Immobilien in München. Ich rufe an, weil [konkreter Anlass / Empfehlung / Recherche]. Hast du 2 Minuten?\"" },
+    { type: "callout", text: "„Hallo [Vorname], hier ist [dein Name] von OS Real Estate. Wir vermitteln Kapitalanlage-Wohnungen in Berlin und Brandenburg. Ich rufe an, weil [konkreter Anlass / Empfehlung / Recherche]. Hast du 2 Minuten?\"" },
     { type: "p", text: "Wichtig: Konkreter Anlass = Vertrauen. Z. B. 'Du hast dir auf unserer Website das Analysetool angeschaut' oder 'Du wurdest uns von Herrn X empfohlen'." },
     { type: "h2", text: "Phase 2: Bedarfsanalyse (offene Fragen)" },
     { type: "list", items: [
@@ -929,36 +930,30 @@ export const generateSteuersaetzePDF = () => generateSimpleDocPdf({
 // ─────────────────────────────────────────
 // 15. Einwandbehandlung Kapitalanlage
 // ─────────────────────────────────────────
+/**
+ * Die 15 Einwände des OS-Handbuchs (Stand 15.10.2026), aus derselben Quelle
+ * wie die Seite des Leitfadens (`osEinwaende.ts`). Bis zum 16.10.2026 stand
+ * hier der Text des Ursprungsprojekts mit Zahlen ohne Beleg.
+ */
 export const generateEinwandbehandlungPDF = () => generateSimpleDocPdf({
-  title: "Einwandbehandlung Kapitalanlage-Immobilie",
-  subtitle: "Antworten auf typische Einwände im Immobilienvertrieb",
-  filename: "OS-Immobilien_Einwandbehandlung.pdf",
-  deckblatt: { kennung: "Gesprächsleitfaden", titel: "Einwandbehandlung Kapitalanlage-Immobilie", untertitel: "Antworten auf typische Einwände im Immobilienvertrieb", nummer: "LTF-03" },
+  title: "Einwandbehandlung",
+  subtitle: "Die 15 häufigsten Einwände bei vermieteten Kapitalanlage-Wohnungen",
+  filename: "OS-Real-Estate_Einwandbehandlung.pdf",
+  deckblatt: { kennung: "Gesprächsleitfaden", titel: "Einwandbehandlung", untertitel: "Die 15 häufigsten Einwände bei vermieteten Kapitalanlage-Wohnungen", nummer: "LTF-03" },
   blocks: [
-    { type: "p", text: "Einwände sind ein Zeichen von Interesse. Wer keine Einwände hat, hat meist auch keine Kaufabsicht. Antworten ehrlich, sachlich und mit Zahlen – nie defensiv." },
-    { type: "h2", text: "„Das ist mir zu teuer / zu hoher Eigenkapital-Bedarf\"" },
-    { type: "callout", variant: "info", text: "„Verstehe ich. Lass uns kurz rechnen: Bei 12 % Kaufnebenkosten auf 250.000 € sind das 30.000 € EK. Die Bank finanziert die restlichen 250.000 €. Bei einer Bruttomiete von 900 €/Monat und 800 €/Monat Annuität ist dein Cashflow nahezu neutral. Dein EK arbeitet, dein Vermögen wächst – ohne dass du monatlich was draufzahlst.\"" },
-    { type: "h2", text: "„Ich habe keine Zeit, mich um eine Immobilie zu kümmern\"" },
-    { type: "callout", variant: "info", text: "„Das ist genau der Grund, warum wir das Property-Management mitliefern. Du investierst genau einmal Zeit – beim Kauf. Danach kümmert sich die Hausverwaltung um Mieterauswahl, Reparaturen, Nebenkostenabrechnung. Deine einzige Aufgabe: einmal im Jahr die Steuererklärung an deinen Steuerberater geben.\"" },
-    { type: "h2", text: "„Was ist, wenn der Mieter nicht zahlt?\"" },
-    { type: "callout", variant: "info", text: "„Eine berechtigte Frage. Wir haben drei Sicherungsmechanismen: 1) SCHUFA-Prüfung jeder Mietinteressenten, 2) Drei-Monats-Kaution, 3) Mietausfall-Versicherung als Option für 12-15 € pro Monat. Statistisch liegt die Mietausfallquote in unseren Objekten bei unter 0,8 %.\"" },
-    { type: "h2", text: "„Ich glaube, Immobilien-Markt ist zu hoch / blasenartig\"" },
-    { type: "callout", variant: "info", text: "„Eine berechtigte Wahrnehmung – allerdings für die A-Städte. Wir investieren bewusst in B/C-Lagen mit positivem Bevölkerungstrend, dort sind Kaufpreisfaktoren von 14-18 normal. Außerdem hat sich der Markt 2023-2024 bereits um rund 13 % korrigiert. Wir sind in der Bodenbildungsphase, nicht in einer Blase.\"" },
-    { type: "h2", text: "„Aktien sind doch viel rentabler\"" },
-    /*
-      Bis zum 21.09.2026 stand hier „Mit dem Hebel kommst du auf eine
-      Eigenkapitalrendite von 22-30 %". Die Zahl kam aus keiner Rechnung: Die
-      8,0 Prozent sind Wertsteigerung PLUS Mietrendite und wurden trotzdem wie
-      eine Mietrendite gehebelt, ohne Tilgung, Kosten, Steuer und Zeitverlauf.
-      Der Partner nennt jetzt keine Renditezahl mehr, sondern erzeugt sie live
-      im Investmentrechner. Eine Rechnung auf dem Bildschirm ist im Gespraech
-      staerker als eine Faustformel, und sie haelt jeder Nachfrage stand.
-    */
-    { type: "callout", variant: "info", text: "„Verstehe ich, das höre ich oft. Darf ich kurz fragen: Geht es dir um die Prozentzahl oder darum, was am Ende bei dir ankommt? Die Prozentzahl liegt bei beiden ähnlich. Der Unterschied ist, wessen Geld arbeitet: Für ein Depot bekommst du kaum Kredit, für eine vermietete Wohnung finanziert die Bank 80 bis 100 Prozent, und den größten Teil der Rate zahlt der Mieter. Fair ist auch die andere Seite: Dieser Hebel wirkt in beide Richtungen, deshalb schauen wir uns Lage und Miete genauso genau an wie die Rendite. Was dabei für dich herauskommt, rechnen wir jetzt gemeinsam für dieses Objekt aus, mit deiner Finanzierung und deinem Steuersatz.\"" },
-    { type: "h2", text: "„Ich muss das erst mit meinem Steuerberater besprechen\"" },
-    { type: "callout", variant: "info", text: "„Sehr gerne, das machen die meisten unserer Kunden. Damit dein Steuerberater alle Infos hat, schicke ich dir eine vollständige steuerliche Rechnung mit AfA, Schuldzinsen und deinem persönlichen Steuersatz. Wann passt dir unser Folgegespräch – diese oder nächste Woche?\"" },
-    { type: "h2", text: "„Ich brauche noch Bedenkzeit\"" },
-    { type: "callout", variant: "info", text: "„Absolut, eine Immobilie kauft man nicht aus dem Bauch heraus. Was genau möchtest du noch klären? Ist es eine Frage zur Finanzierung, zum Objekt selbst oder zu uns als Anbieter?\"" },
-    { type: "callout", variant: "success", text: "Goldene Regel: Den Einwand erst paraphrasieren, dann mit einer Frage öffnen, dann mit Fakten antworten. Niemals widersprechen, immer 'verstehe ich' voranstellen." },
+    { type: "p", text: "Ein Einwand ist ein Informationswunsch. Erst verstehen, dann antworten. Keine Zusagen zu Rendite, Wert oder Steuer, Belastung vor Steuern zuerst, keine künstliche Verknappung." },
+    { type: "h2", text: "Die fünf Schritte" },
+    { type: "list", ordered: true, items: OS_FUENF_SCHRITTE.map((s) => `${s.schritt}: ${s.ziel}`) },
+    { type: "callout", variant: "info", text: `Vorwand-Test: „${OS_VORWAND_TEST}“` },
+    { type: "table", head: ["Thema", "Verweisen an"], rows: OS_GRENZEN.map((g) => [g.thema, g.verweis]), spalten: [1, 3] },
+    ...OS_EINWAENDE.flatMap((e): DocBlock[] => [
+      { type: "h2", text: `${e.nr}. ${e.thema}: „${e.einwand}“` },
+      { type: "callout", variant: "success", text: `Kernsatz: „${e.kernsatz}“` },
+      { type: "kv", label: "Nachfrage", value: `„${e.nachfrage}“` },
+      { type: "list", items: e.belege },
+      { type: "kv", label: "Zustimmung", value: `„${e.zustimmung}“` },
+      { type: "callout", variant: "warn", text: `Das sagen wir nie: ${e.nie.map((n) => `„${n}“`).join(" · ")}` },
+    ]),
+    { type: "p", text: "Keine Steuer-, Rechts- oder Finanzierungsberatung; alle Zahlen sind Beispiele. OS Real Estate GmbH, Teil der OS Immobilien Holding." },
   ],
 });

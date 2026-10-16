@@ -266,7 +266,7 @@ export function notifyBackoffice(params: NotifyParams) {
 }
 
 /** Kennungen aller Nutzer mit einer dieser Rollen, jede Person einmal. */
-function kennungenMitRolle(rollen: readonly string[]): string[] {
+export function kennungenMitRolle(rollen: readonly string[]): string[] {
   return [
     ...new Set(
       cacheGet("user_roles")
@@ -295,7 +295,7 @@ export function aktuellerZustaendiger(kundeId: string | undefined, beraterId?: s
 }
 
 /** Wer eine Prozess-Glocke bekommt: der aktuelle Zustaendige, ohne ihn die Leitung. */
-function zustaendigOderLeitung(kundeId: string, beraterId?: string): string[] {
+export function zustaendigOderLeitung(kundeId: string, beraterId?: string): string[] {
   const zustaendig = aktuellerZustaendiger(kundeId, beraterId);
   return zustaendig ? [zustaendig] : kennungenMitRolle(LEITUNG_ROLLEN);
 }
@@ -629,14 +629,16 @@ export function notifySelbstauskunftUnterschrieben(kundeName: string, kundeId: s
 }
 
 export function notifyPipelineChange(kundeName: string, neueStufe: string, kundeId: string, beraterId?: string) {
-  // Primär läuft der DB-Trigger trg_notify_vp_pipeline_change – dieser Client-Aufruf ist
-  // ein Fallback für Legacy-Codepfade, die pipelineStufe außerhalb von kontakte.meta setzen.
+  // Primär läuft der DB-Trigger trg_notify_vp_investment_stufe (je Investment, seit
+  // 11.10.2026) – dieser Client-Aufruf ist ein Fallback für Legacy-Codepfade.
   const stufeLabel: Record<string, string> = {
     neuer_lead: "Neuer Lead", kontaktversuche: "Kontaktversuche", follow_up: "Follow-Up",
-    erstgespraech: "Erstgespräch", beratungsgespraech: "Beratungsgespräch",
-    bonitaetsunterlagen: "Bonitätsunterlagen", objektauswahl: "Objektauswahl",
+    erstgespraech: "Erstgespräch", beratungsgespraech: "Beratungspräsentation",
+    selbstauskunft: "Selbstauskunft & Unterlagen",
+    bonitaetsunterlagen: "Bonitätsunterlagen", objektauswahl: "Objektvorstellung",
     follow_up_objekt: "Follow-Up",
-    reservierung: "Reservierung", finanzierung: "Finanzierung", notar: "Notar",
+    reservierung: "Reservierung", besichtigung: "Besichtigung", bankgutachter: "Termin Bankgutachter",
+    finanzierung: "Finanzierung", notar: "Notar",
     faelligkeit: "Kaufpreisfälligkeit", abgeschlossen: "Abgeschlossen", verloren: "Verloren",
   };
   const label = stufeLabel[neueStufe] || neueStufe;
@@ -893,20 +895,38 @@ export function scheduleSaFollowUpReminders(
       dedupeKey: `sa-followup-${r.hours}h-${investmentId}`,
     });
 
-    // Backup als Aufgabe (Inbox) für sichtbare Übersicht
-    if (!isTestAccount()) {
-      cacheInsert("aufgaben", {
+    // Dazu genau eine Aufgabe, faellig nach 48 Stunden. Die zweite nach 96
+    // Stunden ist seit 15.10.2026 gestrichen, beide Glocken bleiben.
+    if (r.hours === 48 && !isTestAccount() && !hatOffenenSaNachfass(kundeId, investmentId)) {
+      void cacheInsert("aufgaben", {
         id: crypto.randomUUID(),
         benutzer_id: empfaenger,
-        titel: "SA-Nachfass: " + kundeName,
-        beschreibung: `Die Selbstauskunft wurde seit ${r.text} nicht ausgefüllt. Bitte beim Kunden nachfragen, ob Unterstützung benötigt wird. (/kunden/${kundeId})`,
+        titel: SA_NACHFASS_TITEL,
+        beschreibung: `${kundeName}: Die Selbstauskunft wurde seit ${r.text} nicht ausgefüllt. Bitte beim Kunden nachfragen, ob Unterstützung benötigt wird.`,
         typ: "follow_up",
         prioritaet: "hoch",
         status: "offen",
         faellig_am: triggerAt.toISOString(),
         kontakt_id: kundeId,
+        investment_id: investmentId || null,
         zugewiesen_an: empfaenger,
-      });
+        ausloeser_schluessel: saNachfassSchluessel(kundeId, investmentId),
+      }, { silent: true }).catch((fehler) => console.error("SA-Nachfass-Aufgabe nicht angelegt:", fehler));
     }
   }
+}
+
+export const SA_NACHFASS_TITEL = "Selbstauskunft offen: Kunden anrufen und Hilfe anbieten";
+
+export function saNachfassSchluessel(kundeId: string, investmentId?: string): string {
+  return `sa_nachfass:${investmentId || kundeId}`;
+}
+
+/** Offen ist sie auch als Altbestand mit dem frueheren Titel "SA-Nachfass: {Name}". */
+function hatOffenenSaNachfass(kundeId: string, investmentId?: string): boolean {
+  const schluessel = saNachfassSchluessel(kundeId, investmentId);
+  return cacheGet("aufgaben").some((a: any) =>
+    a.kontakt_id === kundeId &&
+    a.status !== "erledigt" && a.status !== "abgesagt" &&
+    (a.ausloeser_schluessel === schluessel || String(a.titel || "").startsWith("SA-Nachfass:")));
 }

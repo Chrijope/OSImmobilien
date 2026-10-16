@@ -1,5 +1,5 @@
 /**
- * Die Aufgabe „Dolmetscher für Notartermin klären“ fürs Backoffice.
+ * Die Aufgabe „Kunde spricht Englisch: Dolmetscher für den Notar klären“.
  *
  * Plan Kundensprache vom 25.09.2026, Abschnitt 4.3: Die Notarurkunde ist
  * deutsch. Spricht der Käufer Englisch, muss vor der Terminplanung geklärt
@@ -7,18 +7,20 @@
  * entsteht deshalb schon beim Versand der Reservierung, also Wochen vor dem
  * Notartermin.
  *
- * Über den vorhandenen Mechanismus: `addGeteilteAufgabe` legt sie in der
- * Tabelle `aufgaben` am Kunden an, sichtbar für jeden, der ihn betreut, und
- * `notifyBackoffice` meldet sie in der Glocke von Backoffice, Admin und
- * Inhaber. Der Auslöser verhindert, dass sie bei einem zweiten Versand
- * doppelt entsteht; einmal abgehakt, kommt sie für dieses Investment nicht
- * wieder.
+ * Seit 15.10.2026 bekommt jede Person mit der Rolle Backoffice eine eigene
+ * Aufgabe, alle mit demselben Auslöser. Hakt eine sie ab oder sagt sie ab,
+ * schließt die Datenbank die übrigen mit (siehe `geschwisterAufgabenSchliessen`
+ * in `aufgabenStore.ts`). Ohne Backoffice gilt die Empfängerregel aus
+ * `prozessAufgabe.ts`. Die Glocke an das Backoffice kommt einmal. Der
+ * Auslöser verhindert, dass sie bei einem zweiten Versand doppelt entsteht;
+ * einmal abgehakt, kommt sie für dieses Investment nicht wieder.
  */
 import { addGeteilteAufgabe } from "./aktivitaetenStore";
 import { hatOffeneAutomatikAufgabe, wurdeAutomatikAufgabeErledigt } from "./aufgabenStore";
-import { notifyBackoffice } from "./bellNotifications";
+import { kennungenMitRolle, notifyBackoffice } from "./bellNotifications";
 import { isTableLoaded } from "./dataCache";
 import { DOLMETSCHER_AUFGABE_TITEL, dolmetscherAufgabeBeschreibung } from "./notarSprache";
+import { addProzessAufgabe } from "./prozessAufgabe";
 import type { Sprache } from "./kundenSprache";
 
 /** Der Auslöser, an dem die Aufgabe wiedererkannt wird. */
@@ -31,13 +33,15 @@ export function dolmetscherAusloeser(kundeId: string, investmentId?: string | nu
  * gibt. Wirft nie: Eine fehlende Aufgabe darf den Versand der Reservierung
  * nicht aufhalten.
  *
- * @returns true, wenn eine neue Aufgabe entstanden ist
+ * @returns true, wenn neue Aufgaben entstanden sind
  */
 export async function stelleDolmetscherAufgabeSicher(args: {
   sprache: Sprache;
   kundeId: string;
   kundeName: string;
   investmentId?: string | null;
+  /** Kennung des Zuständigen, falls der Kontakt im Zwischenspeicher fehlt. */
+  rueckfallZustaendig?: string;
 }): Promise<boolean> {
   if (args.sprache !== "en" || !args.kundeId) return false;
   try {
@@ -47,22 +51,30 @@ export async function stelleDolmetscherAufgabeSicher(args: {
     if (isTableLoaded("aufgaben")) {
       if (hatOffeneAutomatikAufgabe(ausloeser) || wurdeAutomatikAufgabeErledigt(ausloeser)) return false;
     }
-    const heute = new Date().toISOString().slice(0, 10);
-    const angelegt = await addGeteilteAufgabe({
-      titel: `${DOLMETSCHER_AUFGABE_TITEL}: ${args.kundeName}`,
+    const aufgabe = {
+      titel: DOLMETSCHER_AUFGABE_TITEL,
       beschreibung: dolmetscherAufgabeBeschreibung(args.kundeName),
-      prioritaet: "mittel",
-      typ: "aufgabe",
+      prioritaet: "mittel" as const,
+      typ: "aufgabe" as const,
       kundeId: args.kundeId,
       kundeName: args.kundeName,
-      faellig_am: heute,
+      faellig_am: new Date().toISOString().slice(0, 10),
       uhrzeit: "09:00",
       investmentId: args.investmentId || undefined,
       ausloeserSchluessel: ausloeser,
-    });
+    };
+    const backoffice = kennungenMitRolle(["backoffice"]).sort();
+    let angelegt = false;
+    if (backoffice.length === 0) {
+      angelegt = await addProzessAufgabe(aufgabe, args.rueckfallZustaendig);
+    } else {
+      for (const uid of backoffice) {
+        if (await addGeteilteAufgabe({ ...aufgabe, zugewiesenAn: uid })) angelegt = true;
+      }
+    }
     if (angelegt) {
       notifyBackoffice({
-        titel: DOLMETSCHER_AUFGABE_TITEL,
+        titel: "Dolmetscher für Notartermin klären",
         nachricht: `${args.kundeName} hat Englisch als Sprache. Die Notarurkunde ist deutsch; bitte vor der Terminplanung den Dolmetscher klären.`,
         link: `/kunden/${args.kundeId}`,
       });

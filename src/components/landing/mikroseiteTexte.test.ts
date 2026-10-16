@@ -9,6 +9,7 @@ describe("MIKROSEITE_TEXTE", () => {
   });
 
   it("Englisch ist wirklich übersetzt und nicht der deutsche Wortlaut", () => {
-    expect(gleicheTexte(MIKROSEITE_TEXTE)).toEqual([]);
+    // „OS Finanzierung“ ist ein Markenname und in beiden Sprachen gleich.
+    expect(gleicheTexte(MIKROSEITE_TEXTE).filter((p) => p !== "bento.finanzierung.titel")).toEqual([]);
   });
 });

@@ -4,14 +4,6 @@
  * damit Admins editieren können und alle Nutzer dieselbe Struktur sehen.
  */
 
-import zoomDesktopHintergrundbild1 from "@/assets/zoom-desktop-hintergrundbild-1.png.asset.json";
-import zoomDesktopHintergrundbild2 from "@/assets/zoom-desktop-hintergrundbild-2.png.asset.json";
-import zoomDesktopHintergrundbild3 from "@/assets/zoom-desktop-hintergrundbild-3.png.asset.json";
-import zoomDesktopHintergrundbild4 from "@/assets/zoom-desktop-hintergrundbild-4.png.asset.json";
-import zoomDesktopHintergrundbild5 from "@/assets/zoom-desktop-hintergrundbild-5.png.asset.json";
-import zoomDesktopHintergrundbild6 from "@/assets/zoom-desktop-hintergrundbild-6.png.asset.json";
-import zoomDesktopHintergrundbild7 from "@/assets/zoom-desktop-hintergrundbild-7.png.asset.json";
-import zoomDesktopHintergrundbild8 from "@/assets/zoom-desktop-hintergrundbild-8.png.asset.json";
 
 export type UnterlagenAktion =
   | "pdf-download"        // generiert ein PDF on-the-fly über pdfKey
@@ -49,7 +41,7 @@ export interface UnterlagenAbschnitt {
   dokumente: UnterlagenDokument[];
 }
 
-export const UNTERLAGEN_VERSION = "33";
+export const UNTERLAGEN_VERSION = "34";
 
 /**
  * Einträge, die es nicht mehr gibt.
@@ -83,6 +75,15 @@ export const ENTFERNTE_DOKUMENT_IDS: string[] = [
   "m-zoom-desktop-10",
   // "Lead-Pakete & Zuteilung verstehen": veraltet, am 29.09.2026 gelöscht.
   "la-pakete",
+  // Vertragsmuster unter "Karriere & Finanzen": am 16.10.2026 entfernt, es bleibt nur die Zielplanung.
+  "k-hvv-vertrag",
+  "k-hvv-anlage-1",
+  "k-hvv-anlage-2",
+  "k-hvv-anlage-3",
+  "k-hvv-anlage-4",
+  "k-hvv-anlage-5",
+  "k-hvv-anlage-6",
+  "k-hvv-anlage-7",
 ];
 
 export function seedUnterlagen(): UnterlagenAbschnitt[] {
@@ -314,70 +315,14 @@ export function seedUnterlagen(): UnterlagenAbschnitt[] {
     {
       id: "karriere",
       name: "Karriere & Finanzen",
-      beschreibung: "Karriereplan, Zielplanung und Vertriebsunterlagen",
+      beschreibung: "Zielplanung",
       dokumente: [
         {
           id: "k-zielplanung",
           name: "Zielplanung",
-          beschreibung: "Berechne und speichere deine Karriere- und Provisionsziele",
+          beschreibung: "Berechne und speichere deine Provisionsziele",
           aktion: "internal-link",
           interneRoute: "/zielplanung",
-        },
-        {
-          id: "k-hvv-vertrag",
-          name: "Leadberatervertrag (Muster)",
-          beschreibung: "Hauptvertrag für Lead Partner – mit Max Mustermann als Beispiel-Vertriebspartner",
-          aktion: "pdf-download",
-          pdfKey: "hvv-muster-vertrag",
-        },
-        {
-          id: "k-hvv-anlage-1",
-          name: "Leadberatervertrag · Anlage 1 – AGB (Muster)",
-          beschreibung: "Allgemeine Geschäftsbedingungen",
-          aktion: "pdf-download",
-          pdfKey: "hvv-muster-anlage-1",
-        },
-        {
-          id: "k-hvv-anlage-2",
-          name: "Leadberatervertrag · Anlage 2 – Grundgebühr-Paket (Muster)",
-          beschreibung: "Leistungs- und Preisvereinbarung",
-          aktion: "pdf-download",
-          pdfKey: "hvv-muster-anlage-2",
-        },
-        {
-          id: "k-hvv-anlage-3",
-          name: "Leadberatervertrag · Anlage 3 – DSGVO-AVV & Verschwiegenheit (Muster)",
-          beschreibung: "Auftragsverarbeitungsvereinbarung inkl. Verschwiegenheitserklärung",
-          aktion: "pdf-download",
-          pdfKey: "hvv-muster-anlage-3",
-        },
-        {
-          id: "k-hvv-anlage-4",
-          name: "Leadberatervertrag · Anlage 4 – Provisionsordnung (Muster)",
-          beschreibung: "Verbindliche Provisionsregelung",
-          aktion: "pdf-download",
-          pdfKey: "hvv-muster-anlage-4",
-        },
-        {
-          id: "k-hvv-anlage-5",
-          name: "Leadberatervertrag · Anlage 5 – CRM- & Leadnutzung (Muster)",
-          beschreibung: "Nutzung von CRM, Leads und Vertriebsinfrastruktur",
-          aktion: "pdf-download",
-          pdfKey: "hvv-muster-anlage-5",
-        },
-        {
-          id: "k-hvv-anlage-6",
-          name: "Leadberatervertrag · Anlage 6 – Compliance & Beratungsrichtlinien (Muster)",
-          beschreibung: "Verbindliche Vorgaben für Beratung & Kommunikation",
-          aktion: "pdf-download",
-          pdfKey: "hvv-muster-anlage-6",
-        },
-        {
-          id: "k-hvv-anlage-7",
-          name: "Leadberatervertrag · Anlage 7 – Team & Lizenzpartner Struktur (Muster)",
-          beschreibung: "Aufbau, Führung und Vergütung eigener Strukturen",
-          aktion: "pdf-download",
-          pdfKey: "hvv-muster-anlage-7",
         },
       ],
     },
@@ -416,75 +361,93 @@ export function seedUnterlagen(): UnterlagenAbschnitt[] {
           download: true,
         },
         {
-          id: "m-zoom-desktop-1",
-          name: "Zoom / Desktop Hintergrundbild 1",
-          beschreibung: "Hochauflösendes Hintergrundbild für Zoom und Desktop",
+          id: "m-logo-real-estate-gestapelt",
+          name: "OS Real Estate GmbH Logo, gestapelt (transparent)",
+          beschreibung: "OS oben, darunter REAL ESTATE und GMBH. PNG ohne Hintergrund",
           aktion: "external-link",
-          url: zoomDesktopHintergrundbild1.url,
-          vorschauUrl: zoomDesktopHintergrundbild1.url,
+          url: "/images/os-real-estate-logo-gestapelt.png",
+          vorschauUrl: "/images/os-real-estate-logo-gestapelt.png",
+          download: true,
+        },
+        {
+          id: "m-logo-real-estate-quer",
+          name: "OS Real Estate GmbH Logo, quer (transparent)",
+          beschreibung: "OS groß links, rechts REAL ESTATE und darunter GMBH. PNG ohne Hintergrund",
+          aktion: "external-link",
+          url: "/images/os-real-estate-logo-quer.png",
+          vorschauUrl: "/images/os-real-estate-logo-quer.png",
+          download: true,
+        },
+        {
+          id: "m-zoom-desktop-1",
+          name: "Zoom-Hintergrund 1: Konferenzraum, Milchglas",
+          beschreibung: "Wirkt wie unser Büro: 1920 × 1080, mit OS Real Estate Logo",
+          aktion: "external-link",
+          url: "/images/zoom/os-real-estate-buero-1.jpg",
+          vorschauUrl: "/images/zoom/os-real-estate-buero-1.jpg",
           download: true,
         },
         {
           id: "m-zoom-desktop-2",
-          name: "Zoom / Desktop Hintergrundbild 2",
-          beschreibung: "Hochauflösendes Hintergrundbild für Zoom und Desktop",
+          name: "Zoom-Hintergrund 2: Schreibtisch, Betonwand",
+          beschreibung: "Wirkt wie unser Büro: 1920 × 1080, mit OS Real Estate Logo",
           aktion: "external-link",
-          url: zoomDesktopHintergrundbild2.url,
-          vorschauUrl: zoomDesktopHintergrundbild2.url,
+          url: "/images/zoom/os-real-estate-buero-2.jpg",
+          vorschauUrl: "/images/zoom/os-real-estate-buero-2.jpg",
           download: true,
         },
         {
           id: "m-zoom-desktop-3",
-          name: "Zoom / Desktop Hintergrundbild 3",
-          beschreibung: "Hochauflösendes Hintergrundbild für Zoom und Desktop",
+          name: "Zoom-Hintergrund 3: Konferenzraum, Abendlicht",
+          beschreibung: "Wirkt wie unser Büro: 1920 × 1080, mit OS Real Estate Logo",
           aktion: "external-link",
-          url: zoomDesktopHintergrundbild3.url,
-          vorschauUrl: zoomDesktopHintergrundbild3.url,
+          url: "/images/zoom/os-real-estate-buero-3.jpg",
+          vorschauUrl: "/images/zoom/os-real-estate-buero-3.jpg",
           download: true,
         },
         {
           id: "m-zoom-desktop-4",
-          name: "Zoom / Desktop Hintergrundbild 4",
-          beschreibung: "Hochauflösendes Hintergrundbild für Zoom und Desktop",
+          name: "Zoom-Hintergrund 4: Chefbüro, Holzwand",
+          beschreibung: "Wirkt wie unser Büro: 1920 × 1080, mit OS Real Estate Logo",
           aktion: "external-link",
-          url: zoomDesktopHintergrundbild4.url,
-          vorschauUrl: zoomDesktopHintergrundbild4.url,
+          url: "/images/zoom/os-real-estate-buero-4.jpg",
+          vorschauUrl: "/images/zoom/os-real-estate-buero-4.jpg",
           download: true,
         },
         {
           id: "m-zoom-desktop-5",
-          name: "Zoom / Desktop Hintergrundbild 5",
-          beschreibung: "Hochauflösendes Hintergrundbild für Zoom und Desktop",
+          name: "Zoom-Hintergrund 5: Besprechungsraum, Grün",
+          beschreibung: "Wirkt wie unser Büro: 1920 × 1080, mit OS Real Estate Logo",
           aktion: "external-link",
-          url: zoomDesktopHintergrundbild5.url,
-          vorschauUrl: zoomDesktopHintergrundbild5.url,
+          url: "/images/zoom/os-real-estate-buero-5.jpg",
+          vorschauUrl: "/images/zoom/os-real-estate-buero-5.jpg",
           download: true,
         },
         {
           id: "m-zoom-desktop-6",
-          name: "Zoom / Desktop Hintergrundbild 6",
-          beschreibung: "Hochauflösendes Hintergrundbild für Zoom und Desktop",
+          name: "Zoom-Hintergrund 6: Großraumbüro, Blick über Berlin",
+          beschreibung: "Wirkt wie unser Büro: 1920 × 1080, mit OS Real Estate Logo",
           aktion: "external-link",
-          url: zoomDesktopHintergrundbild6.url,
-          vorschauUrl: zoomDesktopHintergrundbild6.url,
+          url: "/images/zoom/os-real-estate-buero-6.jpg",
+          vorschauUrl: "/images/zoom/os-real-estate-buero-6.jpg",
           download: true,
         },
         {
           id: "m-zoom-desktop-7",
-          name: "Zoom / Desktop Hintergrundbild 7",
-          beschreibung: "Hochauflösendes Hintergrundbild für Zoom und Desktop",
+          name: "Zoom-Hintergrund 7: Beratungsraum, hell",
+          beschreibung: "Wirkt wie unser Büro: 1920 × 1080, mit OS Real Estate Logo",
           aktion: "external-link",
-          url: zoomDesktopHintergrundbild7.url,
-          vorschauUrl: zoomDesktopHintergrundbild7.url,
+          url: "/images/zoom/os-real-estate-buero-7.jpg",
+          vorschauUrl: "/images/zoom/os-real-estate-buero-7.jpg",
           download: true,
         },
         {
           id: "m-zoom-desktop-8",
-          name: "Zoom / Desktop Hintergrundbild 8",
-          beschreibung: "Hochauflösendes Hintergrundbild für Zoom und Desktop",
+          name: "Zoom-Hintergrund 8: Schreibtisch, Abend",
+          beschreibung: "Wirkt wie unser Büro: 1920 × 1080, mit OS Real Estate Logo",
           aktion: "external-link",
-          url: zoomDesktopHintergrundbild8.url,
-          vorschauUrl: zoomDesktopHintergrundbild8.url,
+          url: "/images/zoom/os-real-estate-buero-8.jpg",
+          vorschauUrl: "/images/zoom/os-real-estate-buero-8.jpg",
           download: true,
         },
       ],

@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { resolveImageUrl } from "@/lib/objekteImages";
+import { nachKonzept, type KonzeptModus, type ObjektKonzept } from "@/lib/objektKonzept";
 import { dez, eur0, prozent } from "@/lib/objektKennzahlen";
 import { weNrAnzeige } from "@/lib/objektDatenPflicht";
 import {
@@ -49,6 +50,9 @@ interface ObjektauswahlFensterProps {
   entfernungLaedt?: boolean;
   bezug: KundenBezug;
   onNavigate: (pfad: string) => void;
+  /** Schwerpunkt des Kunden und wie danach geordnet wird, siehe `objektKonzept.ts`. */
+  schwerpunkt?: ObjektKonzept;
+  konzeptModus?: KonzeptModus;
 }
 
 /** Warum keine Entfernung dasteht. Ein Satz, einmal für die ganze Liste statt an jedem Objekt. */
@@ -69,7 +73,7 @@ const ENTFERNUNG_FEHLT: Record<Exclude<WohnortStand, "bekannt">, string> = {
  */
 export function ObjektauswahlFenster({
   offen, onOffenChange, titel, kopfzeile, liste, rahmenVorhanden, standardSortierung, scores, scoreJeObjekt,
-  wohnortStand, wohnortName, entfernungLaedt = false, bezug, onNavigate,
+  wohnortStand, wohnortName, entfernungLaedt = false, bezug, onNavigate, schwerpunkt, konzeptModus = "aus",
 }: ObjektauswahlFensterProps) {
   const [sortierung, setSortierung] = useState<ListenSortierung>(standardSortierung);
   const [nurPassende, setNurPassende] = useState(false);
@@ -79,8 +83,9 @@ export function ObjektauswahlFenster({
   const wirksameSortierung: ListenSortierung = !rahmenVorhanden && (sortierung === "passende" || sortierung === "score") ? "entfernung" : sortierung;
   const zeilen = useMemo(() => {
     const gefiltert = rahmenVorhanden && nurPassende ? liste.filter((e) => e.anzahlPassend > 0) : liste;
-    return sortiereObjektListe(gefiltert, wirksameSortierung, scoreJeObjekt);
-  }, [liste, rahmenVorhanden, nurPassende, wirksameSortierung, scoreJeObjekt]);
+    // Passende Konzepte vorn wie in der Objektauswahl; „Nur passende“ ist dort schon gefiltert.
+    return nachKonzept(sortiereObjektListe(gefiltert, wirksameSortierung, scoreJeObjekt), (e) => e.objekt.konzept, schwerpunkt, konzeptModus);
+  }, [liste, rahmenVorhanden, nurPassende, wirksameSortierung, scoreJeObjekt, schwerpunkt, konzeptModus]);
 
   const anzahlEinheiten = liste.reduce((s, e) => s + e.einheiten.length, 0);
   const anzahlPassend = liste.reduce((s, e) => s + e.anzahlPassend, 0);

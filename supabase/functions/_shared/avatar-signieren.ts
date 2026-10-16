@@ -53,10 +53,10 @@ export const MAIL_BASIS = 'https://osimmobilien.netlify.app'
 
 /**
  * Das Logo jeder Mail. PNG, weil viele Mailprogramme kein SVG zeigen; die
- * Datei liegt unter `public/osimmobilien-logo-mail.png`. Warum diese Fassung,
+ * Datei liegt unter `public/images/os-real-estate-logo-mail.png`. Warum diese Fassung,
  * steht bei `MARKE.logo` in `transactional-email-templates/_layout.tsx`.
  */
-export const MAIL_LOGO_URL = `${MAIL_BASIS}/osimmobilien-logo-mail.png`
+export const MAIL_LOGO_URL = `${MAIL_BASIS}/images/os-real-estate-logo-mail.png`
 
 /** Hosts der Lovable-Vorschau, hinter einer Anmeldesperre. */
 const VORSCHAU_HOST = /(^|\.)(lovable\.app|lovableproject\.com)$/i

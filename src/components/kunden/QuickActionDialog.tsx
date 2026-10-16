@@ -919,6 +919,10 @@ export function QuickActionDialog({
               : undefined,
             treffpunkt: videoWeg === "vor_ort" ? treffpunkt.trim() : undefined,
             kundeTelefon: videoWeg === "telefon" ? (kundeTelefon || undefined) : undefined,
+            // Beratungspraesentation und Objektvorstellung haben eigene Mails
+            // (Nachfassplan, 16.10.2026), siehe meetingVorlage.
+            anlass: gewaehlteTerminart?.anlass,
+            investmentId: investmentId && investmentId !== "__allgemein__" ? investmentId : undefined,
           }).then((erfolg) => {
             /*
              * Was der Vertriebspartner im Verlauf liest.

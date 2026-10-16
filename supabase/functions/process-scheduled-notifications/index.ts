@@ -147,10 +147,13 @@ Deno.serve(async (req) => {
               zugewiesen_an: vpId,
               kontakt_id: row.kontakt_id,
               investment_id: row.investment_id,
-              typ: "callback",
+              // "anruf": Den Wert "callback" kennt die Datenbank nicht, das
+              // Anlegen scheiterte daran still (bis 15.10.2026).
+              typ: "anruf",
               prioritaet: "hoch",
               status: "offen",
-              titel: row.titel,
+              // Titel nach Anlass, ohne Namen; die Glocke oben behaelt ihn.
+              titel: "Selbstauskunft seit 14 Tagen offen: persönlich anrufen",
               beschreibung: row.nachricht || "",
               faellig_am: new Date().toISOString().slice(0, 10),
               ausloeser_schluessel: `selbstauskunft_offen:${row.investment_id || row.kontakt_id}`,

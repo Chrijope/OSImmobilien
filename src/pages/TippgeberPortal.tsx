@@ -32,7 +32,7 @@ import {
   ListChecks,
   FileText,
 } from "lucide-react";
-import logoImg from "@/assets/osimmobilien-logo.png";
+import logoImg from "@/assets/os-real-estate-logo-quer.png";
 import { toast } from "sonner";
 import { buildVpUrl } from "@/lib/publicUrl";
 import {
@@ -287,7 +287,7 @@ export default function TippgeberPortal() {
         <header data-lg="kopfscheibe" className="sticky top-0 z-40 border-b bg-background/85 backdrop-blur">
           <div className="mx-auto max-w-6xl flex items-center justify-between gap-3 px-4 py-3">
             <div className="flex items-center gap-2.5">
-              <img src={logoImg} alt="OS Immobilien" className="h-8 w-auto" />
+              <img src={logoImg} alt="OS Real Estate GmbH" className="h-8 w-auto" />
               <div className="hidden sm:block">
                 <div className="text-xs font-semibold uppercase tracking-widest text-primary">Tippgeber-Portal</div>
                 <div className="text-[11px] text-muted-foreground -mt-0.5">

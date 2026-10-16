@@ -125,6 +125,8 @@ beforeEach(() => {
   for (const k of Object.keys(metaFelder)) delete metaFelder[k];
   // Seit 29.09.2026 prueft das Formular vorab die Selbstauskunft, wie der Server.
   metaFelder.saSigned = true;
+  // Seit 16.10.2026 auch Ausweis und letzte Gehaltsabrechnung (mindestunterlagen.ts).
+  metaFelder.docStatuses = { Personalausweis: "uploaded", "Letzter Gehaltsnachweis": "uploaded" };
   for (const k of Object.keys(t.entwuerfe)) delete t.entwuerfe[k];
   delete investment.objektId;
   delete investment.wohnungId;
@@ -221,15 +223,15 @@ async function privatBisZumAbsenden() {
   fireEvent.click(document.getElementById("aufteilung-nicht_aufgeteilt")!);
   weiter();
   fireEvent.click(document.getElementById("erk")!);
-  fireEvent.click(document.getElementById("widerruf-sofort")!);
 }
 
 describe("Absenden: das Haus wird vorgemerkt, nie eine Einheit", () => {
   it("merkt das Haus vor allem anderen vor und schickt die Globalfassung", async () => {
     await privatBisZumAbsenden();
     expect(screen.getByText(/Fassung des Vertragstextes: 2026-09-23 Gesamtobjekt/)).toBeTruthy();
-    expect(screen.getByText("Reservierungsgebühr für ein Gesamtobjekt")).toBeTruthy();
-    expect(screen.getByText("3.000,00 EUR")).toBeTruthy();
+    // Seit dem 16.10.2026 kostenfrei, auch beim ganzen Haus.
+    expect(screen.queryByText("Reservierungsgebühr für ein Gesamtobjekt")).toBeNull();
+    expect(screen.queryByText("3.000,00 EUR")).toBeNull();
     expect(screen.queryByText(/Kaufpreis unter/)).toBeNull();
     fireEvent.click(absendeKnopf());
     await waitFor(() => expect(ablauf).toContain("versand:send-reservation-signature"));
@@ -252,6 +254,16 @@ describe("Absenden: das Haus wird vorgemerkt, nie eine Einheit", () => {
     expect(investmentUpdates[0].wohnungId).toBeUndefined();
     expect(metaFelder.globalObjekt).toBe(true);
     expect((metaFelder.rvVirtualWohnung as Record<string, unknown>).weNr).toBe("");
+  });
+
+  it("merkt ohne Personalausweis das Haus nicht vor und ändert nichts (16.10.2026)", async () => {
+    metaFelder.docStatuses = { "Letzter Gehaltsnachweis": "uploaded" };
+    await privatBisZumAbsenden();
+    fireEvent.click(absendeKnopf());
+    await waitFor(() => expect(hinweise).toHaveLength(1));
+    expect(String(hinweise[0].description)).toContain("Für die Reservierung fehlen noch: Personalausweis.");
+    expect(ablauf).toEqual([]);
+    expect(investmentUpdates).toHaveLength(0);
   });
 
   it("schickt bei einem vergebenen Haus nichts hinaus und ändert nichts", async () => {
@@ -310,13 +322,13 @@ describe("Die Gesellschaft als Käuferin", () => {
     };
   });
 
-  it("hat keine Widerrufswahl, schickt nur an den Vertreter und nennt die Firma im Verwendungszweck", async () => {
+  it("hat keine Widerrufswahl, keinen Verwendungszweck und schickt nur an den Vertreter", async () => {
     zeigeFormular();
     weiter();
     weiter();
     expect(document.getElementById("widerruf-sofort")).toBeNull();
     expect(screen.queryByText("Widerrufsrecht")).toBeNull();
-    expect(screen.getByText("Reservierungsgebühr Musterstraße 1 Gesamtobjekt, Muster Immobilien GmbH")).toBeTruthy();
+    expect(screen.queryByText(/Verwendungszweck|Reservierungsgebühr Musterstraße/)).toBeNull();
     fireEvent.click(document.getElementById("erk")!);
     fireEvent.click(absendeKnopf());
     await waitFor(() => expect(ablauf).toContain("versand:send-reservation-signature"));

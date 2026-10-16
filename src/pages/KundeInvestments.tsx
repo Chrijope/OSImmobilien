@@ -22,6 +22,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { sichereUnterlagenPruefaufgabe } from "@/lib/unterlagenMitteilung";
 import { useUser } from "@/contexts/UserContext";
 import { toast } from "sonner";
 import { LiquiditaetCard } from "@/components/kunde/LiquiditaetCard";
@@ -1900,7 +1901,7 @@ export function BonitaetsSection({ inv, invMeta, kontakt, kontaktMeta, onRefresh
         registriert = true;
         // Jetzt mit Dateipfad, damit „Ansehen“ sofort die neue Datei öffnet.
         setzeSollstand(docName, { status: "uploaded", url: path });
-        await notifyVP(kontakt, docName);
+        await notifyVP(kontakt, docName, inv.id);
         toast.success(files.length > 1 ? t("portal.investments.bon.multi_pdfs_merged", { n: files.length }) : t("portal.investments.bon.doc_uploaded"));
         onRefresh();
       } catch (err) {
@@ -2336,7 +2337,7 @@ export function BonitaetsSection({ inv, invMeta, kontakt, kontaktMeta, onRefresh
               return;
             }
             setzeSollstand(upload.docTyp, { status: "uploaded", url: upload.fileUrl });
-            await notifyVP(kontakt, upload.docTyp);
+            await notifyVP(kontakt, upload.docTyp, inv.id);
             toast.success(t("portal.investments.bon.scan_uploaded", { doc: docAnzeige(upload.docTyp) }));
             onRefresh();
           } catch (err: any) {
@@ -2349,33 +2350,32 @@ export function BonitaetsSection({ inv, invMeta, kontakt, kontaktMeta, onRefresh
   );
 }
 
-/** Notify VP that customer uploaded a document */
-async function notifyVP(kontakt: any, docName: string) {
+/**
+ * Meldet einen Upload: Glocke je Upload an den Zuständigen, dazu die eine
+ * Prüfaufgabe je Investment (siehe `unterlagenMitteilung.ts`). Ohne
+ * Zuständigen keine Glocke, denn der Kunde darf die Leitung nicht direkt
+ * anschreiben; die Aufgabe bekommt dann die Leitung über die Datenbank.
+ */
+async function notifyVP(kontakt: any, docName: string, investmentId: string) {
   try {
     const beraterId = kontakt?.zustaendig_id;
-    if (!beraterId) return;
     const kundeName = `${kontakt.vorname} ${kontakt.nachname}`;
-    await supabase.from("benachrichtigungen" as any).insert({
-      benutzer_id: beraterId,
-      titel: `Unterlage prüfen: ${kundeName}`,
-      nachricht: `${kundeName} hat „${docName}" hochgeladen. Bitte prüfen und freigeben.`,
-      link: `/kunden/${kontakt.id}`,
-      ziel_rolle: "vertriebspartner",
-    } as any);
-    // Die Aufgabe geht an den Berater, nicht an den Kunden. Vorher landete
-    // sie in der Inbox des eingeloggten Kunden, der den Text nie brauchte.
-    const { addAufgabe } = await import("@/lib/aufgabenStore");
-    await addAufgabe({
+    if (beraterId) {
+      await supabase.from("benachrichtigungen" as any).insert({
+        benutzer_id: beraterId,
+        titel: `Unterlage prüfen: ${kundeName}`,
+        nachricht: `${kundeName} hat „${docName}" hochgeladen. Bitte prüfen und freigeben.`,
+        link: `/kunden/${kontakt.id}`,
+        ziel_rolle: "vertriebspartner",
+      } as any);
+    }
+    await sichereUnterlagenPruefaufgabe({
       kontaktId: kontakt.id,
-      typ: "aufgabe",
-      prioritaet: "hoch",
-      titel: `Unterlagen prüfen: ${kundeName}`,
-      beschreibung: `${kundeName} hat „${docName}" im Kundenportal hochgeladen. Bitte die Bonitätscheck- und Bankprüfungsunterlagen prüfen und freigeben.`,
-      faelligAm: new Date().toISOString().slice(0, 10),
-      uhrzeit: "09:00",
-      zugewiesenAn: beraterId,
+      investmentId,
+      beschreibung: `${kundeName} hat neue Unterlagen im Kundenportal hochgeladen, zuletzt „${docName}". Bitte die Bonitätscheck- und Bankprüfungsunterlagen prüfen und freigeben.`,
+      tageBisFaellig: 0,
+      zustaendigId: beraterId || undefined,
       erstelltVonName: kundeName,
-      ausloeserSchluessel: `portal:unterlage:${kontakt.id}:${docName}`,
     });
   } catch (err) {
     console.error("VP notification failed:", err);
@@ -2389,8 +2389,8 @@ async function notifyVPMinReservierungsDocs(kontakt: any) {
     const kundeName = `${kontakt.vorname} ${kontakt.nachname}`;
     await supabase.from("benachrichtigungen" as any).insert({
       benutzer_id: beraterId,
-      titel: `Vorbereitung Objektauswahl: ${kundeName}`,
-      nachricht: `${kundeName} hat Personalausweis und letzten Gehaltsnachweis hochgeladen. Bitte prüfen, freigeben und das Objektauswahlgespräch vorbereiten.`,
+      titel: `Vorbereitung Objektvorstellung: ${kundeName}`,
+      nachricht: `${kundeName} hat Personalausweis und letzten Gehaltsnachweis hochgeladen. Bitte prüfen, freigeben und die Objektvorstellung vorbereiten.`,
       link: `/kunden/${kontakt.id}`,
       ziel_rolle: "vertriebspartner",
     } as any);
@@ -2399,8 +2399,8 @@ async function notifyVPMinReservierungsDocs(kontakt: any) {
       kontaktId: kontakt.id,
       typ: "aufgabe",
       prioritaet: "hoch",
-      titel: `Objektauswahlgespräch vorbereiten: ${kundeName}`,
-      beschreibung: `${kundeName} hat die Mindest-Bonitätsunterlagen hochgeladen, Personalausweis und letzter Gehaltsnachweis. Unterlagen prüfen, freigeben und Objektauswahlgespräch terminieren.`,
+      titel: "Mindestunterlagen da: Objektvorstellung terminieren",
+      beschreibung: `${kundeName} hat die Mindestunterlagen hochgeladen, Personalausweis und letzter Gehaltsnachweis. Unterlagen prüfen, freigeben und die Objektvorstellung terminieren.`,
       faelligAm: new Date().toISOString().slice(0, 10),
       uhrzeit: "09:00",
       zugewiesenAn: beraterId,

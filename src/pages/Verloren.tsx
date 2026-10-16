@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { getKontakte, updateKontakt, type KundeData } from "@/lib/kundenStore";
+import { kontaktWiederaufnahmeAnInvestments } from "@/lib/investmentsStore";
 import { addAktivitaet } from "@/lib/aktivitaetenStore";
 import { PIPELINE_STUFEN } from "@/lib/pipelineStufen";
 import { getCurrentUserId } from "@/lib/currentUser";
@@ -123,8 +124,8 @@ export function VerloreneListe() {
       && k.stufeVorVerlust !== "archiviert")
       ? k.stufeVorVerlust
       : "erreicht";
+    kontaktWiederaufnahmeAnInvestments(k.id, zielStufe);
     updateKontakt(k.id, {
-      pipelineStufe: zielStufe as any,
       status: "kontaktiert" as any,
       archiviert: false,
       archivGrund: undefined,

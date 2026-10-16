@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import logoImg from "@/assets/osimmobilien-logo.png";
+import logoImg from "@/assets/os-real-estate-logo-quer-dunkel.png";
 
 /**
  * Gemeinsamer Hintergrund aller Videoraum-Seiten: dunkle Buehne, feines Karo
@@ -91,7 +91,7 @@ export function Buehne({ children, schlank = false }: { children: React.ReactNod
       {!schlank && (
         <div className="absolute left-6 top-6 z-20 sm:left-11 sm:top-8">
           <Link to="/" aria-label="OS Immobilien">
-            <img src={logoImg} alt="OS Immobilien" className="h-6 object-contain brightness-0 invert sm:h-7" />
+            <img src={logoImg} alt="OS Real Estate GmbH" className="h-6 object-contain sm:h-7" />
           </Link>
         </div>
       )}

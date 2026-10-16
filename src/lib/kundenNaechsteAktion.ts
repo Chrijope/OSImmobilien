@@ -1,9 +1,9 @@
 /**
  * Die geplanten Aktionen eines Kunden als eine chronologische Liste.
  *
- * Im Kundenprofil steht oben die Kachel "Nächste Aktion". Sie zeigt zugeklappt
+ * Im Kundenprofil steht oben die Kachel "Nächste Aktionen". Sie zeigt zugeklappt
  * den zeitlich nächsten geplanten Schritt mit Datum und Uhrzeit, aufgeklappt
- * alle geplanten Schritte. Die Quellen sind dieselben, aus denen die
+ * alles Offene dieses Kunden, jeden Eintrag genau einmal. Die Quellen sind dieselben, aus denen die
  * Inaktivitätsampel ihre Antwort zieht (siehe `kontaktTermine.ts`), nur eben
  * einzeln und mit einem Sprungziel je Eintrag:
  *
@@ -15,13 +15,14 @@
  *                               hierhin, siehe Entdopplung unten)
  *   - feste Termine am Kontakt  (Erstgespräch, Beratungsgespräch, Notartermin)
  *
- * Bewusst nicht dabei: Aufgaben ohne Fälligkeit, denn ohne Zeitpunkt ist
- * nichts "geplant", sie stehen in der Kachel "Offene Aufgaben". Ebenso nicht
- * die Wiedervorlagen, die das System nach einem "nicht erreicht" anlegt: Das
- * ist eine Sperrfrist, kein vereinbarter Schritt, und so zählt sie auch die
- * Ampel. Und nicht die Aufgabe "Objekt-Vorstellungstermin vereinbaren" für
- * Handbuch-Leads: Sie ist ein Auftrag, einen Termin erst zu machen, und steht
- * nach Christians Vorgabe nur unter "Offene Aufgaben".
+ * Ohne den Schalter `alleOffenen` nicht dabei: Aufgaben und Follow-ups ohne
+ * Fälligkeit, denn ohne Zeitpunkt ist nichts "geplant"; die Wiedervorlagen,
+ * die das System nach einem "nicht erreicht" anlegt, denn das ist eine
+ * Sperrfrist, kein vereinbarter Schritt; und die Aufträge, einen
+ * Vorstellungstermin erst zu vereinbaren. So rechnen Ampel und Pipeline.
+ * Seit dem 15.10.2026 gibt es die frühere Kachel "Offene Aufgaben" nicht
+ * mehr. Die Kachel "Nächste Aktionen" nimmt diese drei Gruppen deshalb mit
+ * dem Schalter auf und markiert sie als `nichtGeplant`.
  *
  * Hier steht ausschließlich Rechnerei: zusammenführen, entdoppeln, sortieren,
  * beschriften. Anzeige und Klickverhalten bleiben in der Komponente.
@@ -80,7 +81,20 @@ export interface GeplanteAktion {
   zeitpunktUnbekannt?: boolean;
   /** Nur bei festen Terminen am Kontakt, siehe `festerTerminSchluessel`. */
   terminSchluessel?: string;
+  /** Nur bei Aufgaben und Follow-ups: niedrig, mittel, hoch oder dringend. */
+  prioritaet?: string;
+  /**
+   * Steht in der Kachel, ist aber kein geplanter Schritt (ohne Fälligkeit,
+   * Wiedervorlage, Vorstellungsauftrag). Kommt nur mit `alleOffenen`; Ampel,
+   * No-Show-Hinweis und Ergebnis-Kästen lassen solche Einträge weg.
+   */
+  nichtGeplant?: boolean;
+  /** Ohne Fälligkeit. `zeitpunkt` ist dann nur ein Platzhalter, der ans Ende sortiert. */
+  ohneTermin?: boolean;
 }
+
+/** Platzhalter für Einträge ohne Termin: sortiert hinter alles Datierte. */
+const OHNE_TERMIN_ZEITPUNKT = Number.MAX_SAFE_INTEGER;
 
 /**
  * Eine versendete Unterschrift, die noch aussteht.
@@ -264,12 +278,22 @@ function ankerAktivitaet(id: string): AktionSprungziel {
   return { reiter: "aktivitaeten", ankerId: `aktivitaet-${id}` };
 }
 
-export function baueGeplanteAktionen(e: AktionenEingabe, jetzt: Date = new Date()): GeplanteAktion[] {
+export interface AktionenOptionen {
+  /** Auch was nicht geplant ist, für die Kachel "Nächste Aktionen". */
+  alleOffenen?: boolean;
+}
+
+export function baueGeplanteAktionen(
+  e: AktionenEingabe,
+  jetzt: Date = new Date(),
+  optionen: AktionenOptionen = {},
+): GeplanteAktion[] {
   const jetztMs = jetzt.getTime();
+  const alleOffenen = !!optionen.alleOffenen;
   const liste: GeplanteAktion[] = [];
   const eintrag = (
     teil: Omit<GeplanteAktion, "ueberfaellig">,
-  ) => liste.push({ ...teil, ueberfaellig: teil.zeitpunkt <= jetztMs });
+  ) => liste.push({ ...teil, ueberfaellig: !teil.ohneTermin && teil.zeitpunkt <= jetztMs });
 
   // Die Kopien in der Aktivitätsliste, erreichbar über Titel und Tag. Genau
   // dieser Schlüssel verbindet in `kontaktTermine` und in der Zeitleiste die
@@ -285,8 +309,9 @@ export function baueGeplanteAktionen(e: AktionenEingabe, jetzt: Date = new Date(
   const aktivitaetNachId = new Map((e.aktivitaeten || []).filter(Boolean).map((a) => [a.id, a]));
 
   for (const a of e.aufgaben || []) {
-    if (!a || !aufgabeIstOffen(a) || a.bewerbungId || istWiedervorlage(a)) continue;
-    if (istVorstellungsAufgabe(a.ausloeserSchluessel)) continue;
+    if (!a || !aufgabeIstOffen(a) || a.bewerbungId) continue;
+    const keinSchritt = istWiedervorlage(a) || istVorstellungsAufgabe(a.ausloeserSchluessel);
+    if (keinSchritt && !alleOffenen) continue;
     /*
      * Meeting und Aufgabe aus einem Guss (Terminseite, Meeting-Dialog,
      * Buchung) sind über `meetingAktivitaetId` gekoppelt und tragen oft
@@ -300,7 +325,7 @@ export function baueGeplanteAktionen(e: AktionenEingabe, jetzt: Date = new Date(
     // (Trigger `meeting_folgeobjekte`), bis dahin nichts mehr anzeigen.
     if (gekoppelt?.erledigtAm) continue;
     const zeitpunkt = zuZeitpunkt(a.faelligAm, a.uhrzeit);
-    if (zeitpunkt === null) continue;
+    if (zeitpunkt === null && !alleOffenen) continue;
     const k = titelTagSchluessel(a.titel, a.faelligAm);
     const kopie = gekoppelt || kopien.get(k);
     verbraucht.add(k);
@@ -319,8 +344,8 @@ export function baueGeplanteAktionen(e: AktionenEingabe, jetzt: Date = new Date(
       art,
       // Der Titel des Meetings: Im Profil des Kunden ist "mit <Kunde>" doppelt.
       titel: (gekoppelt?.beschreibung || "").trim() || (a.titel || "").trim() || "Ohne Titel",
-      zeitpunkt,
-      hatUhrzeit: !!alsUhrzeit(a.uhrzeit),
+      zeitpunkt: zeitpunkt ?? OHNE_TERMIN_ZEITPUNKT,
+      hatUhrzeit: zeitpunkt !== null && !!alsUhrzeit(a.uhrzeit),
       // Ohne Kopie im Verlauf zeigt die Zeitleiste die Aufgabe selbst als
       // Zeile "aufgabe-<id>", aber nur für von Hand angelegte.
       sprungziel: meetingId
@@ -329,11 +354,30 @@ export function baueGeplanteAktionen(e: AktionenEingabe, jetzt: Date = new Date(
         ? null
         : ankerAktivitaet(`aufgabe-${a.id}`),
       aktivitaetId: meetingId,
+      prioritaet: a.prioritaet,
+      ...(keinSchritt || zeitpunkt === null ? { nichtGeplant: true } : {}),
+      ...(zeitpunkt === null ? { ohneTermin: true } : {}),
     });
   }
 
   for (const f of e.followUps || []) {
-    if (!f || !followUpIstOffen(f) || !f.faelligAm) continue;
+    if (!f || !followUpIstOffen(f)) continue;
+    if (!f.faelligAm) {
+      if (alleOffenen) {
+        eintrag({
+          schluessel: `follow_up:${f.id}`,
+          art: "follow_up",
+          titel: (f.titel || "").trim() || "Ohne Titel",
+          zeitpunkt: OHNE_TERMIN_ZEITPUNKT,
+          hatUhrzeit: false,
+          sprungziel: null,
+          prioritaet: f.prioritaet,
+          nichtGeplant: true,
+          ohneTermin: true,
+        });
+      }
+      continue;
+    }
     const k = titelTagSchluessel(f.titel, f.faelligAm);
     // Der Follow-up-Dialog legt denselben Vorgang auch als Aufgabe an.
     if (verbraucht.has(k)) continue;
@@ -353,6 +397,7 @@ export function baueGeplanteAktionen(e: AktionenEingabe, jetzt: Date = new Date(
       hatUhrzeit: !!uhrzeit,
       sprungziel: kopie ? ankerAktivitaet(kopie.id) : null,
       aktivitaetId: kopie?.id,
+      prioritaet: f.prioritaet,
     });
   }
 
@@ -377,7 +422,7 @@ export function baueGeplanteAktionen(e: AktionenEingabe, jetzt: Date = new Date(
   // Feste Termine am Kontakt. Kontakt und Investment tragen oft denselben
   // Termin, und ein gebuchter Videocall steht zusätzlich als Meeting im
   // Verlauf. Gleicher Zeitpunkt heißt: derselbe Termin, einmal reicht.
-  const belegteZeiten = new Set(liste.filter((x) => x.art === "termin" || x.art === "videotermin").map((x) => x.zeitpunkt));
+  const belegteZeiten = new Set(liste.filter((x) => (x.art === "termin" || x.art === "videotermin") && !x.ohneTermin).map((x) => x.zeitpunkt));
   const gesehen = new Set<string>();
   for (const t of e.termine || []) {
     if (!t?.datum) continue;
@@ -447,7 +492,10 @@ function vergleiche(a: GeplanteAktion, b: GeplanteAktion): number {
  * geblieben. Dieselbe Wahl trifft `naechsterKontakt` für die Ampel.
  */
 export function naechsteAktion(liste: GeplanteAktion[]): GeplanteAktion | null {
-  const eintraege = liste || [];
+  const alle = liste || [];
+  // Ohne Termin nur, wenn es sonst nichts gibt.
+  const eintraege = alle.filter((x) => !x.ohneTermin);
+  if (eintraege.length === 0) return alle[0] ?? null;
   const bevorstehend = eintraege.find((x) => !x.ueberfaellig);
   if (bevorstehend) return bevorstehend;
   const ueberfaellige = eintraege.filter((x) => x.ueberfaellig);
@@ -476,12 +524,32 @@ export function aktionZeitpunktText(aktion: GeplanteAktion, jetzt: Date = new Da
  * seit" dem Versandtag waere falsch, dort steht deshalb "versendet am".
  */
 export function aktionFaelligkeitText(aktion: GeplanteAktion, jetzt: Date = new Date()): string {
+  if (aktion.ohneTermin) return "Ohne Termin";
   const text = aktionZeitpunktText(aktion, jetzt);
   if (aktion.art === "unterschrift") {
     if (aktion.zeitpunktUnbekannt) return "Versanddatum nicht erfasst";
     return text.startsWith("heute") ? `versendet ${text}` : `versendet am ${text}`;
   }
   return aktion.ueberfaellig ? `überfällig seit ${text}` : text;
+}
+
+/** Klartext der Priorität für die Marke; fehlt sie oder ist sie unbekannt, gilt "Mittel". */
+export function aktionPrioritaetLabel(prioritaet?: string): string {
+  switch (prioritaet) {
+    case "niedrig": return "Niedrig";
+    case "hoch": return "Hoch";
+    case "dringend": return "Dringend";
+    default: return "Mittel";
+  }
+}
+
+/** Zählung neben der Überschrift. Wartende Unterschriften zählen nicht als überfällig. */
+export function aktionenZaehlung(liste: GeplanteAktion[]): { offen: number; ueberfaellig: number } {
+  const eintraege = liste || [];
+  return {
+    offen: eintraege.length,
+    ueberfaellig: eintraege.filter((a) => a.ueberfaellig && a.art !== "unterschrift").length,
+  };
 }
 
 /** Klartext der Art, für die kleine Marke vor dem Titel. */

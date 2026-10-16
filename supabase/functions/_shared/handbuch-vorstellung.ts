@@ -29,9 +29,16 @@
  * Läuft hier etwas schief, wird es nur protokolliert: Weder die Unterschrift
  * noch die Zuweisung dürfen an dieser Aufgabe scheitern.
  */
-import { handbuchRahmen, istKonfiguratorQuelle, pruefeAntworten, rahmenText } from "./handbuch-funnel.ts";
+import { handbuchRahmen, pruefeAntworten, rahmenText } from "./handbuch-funnel.ts";
 
-export const VORSTELLUNG_TITEL = "Objekt-Vorstellungstermin vereinbaren";
+/*
+ * Seit 16.10.2026 fuer jeden Lead, nicht mehr nur fuer Handbuch-Leads
+ * (neuer Ablauf, Umsetzungsstrategie Vertrieb Abschnitt 3): Ist die
+ * Selbstauskunft fertig, wird die Objektvorstellung etwa sieben Tage nach
+ * der Beratungspraesentation terminiert. Der Ausloeser-Schluessel bleibt,
+ * damit offene Aufgaben weiter erkannt werden.
+ */
+export const VORSTELLUNG_TITEL = "Selbstauskunft fertig: Objektvorstellung in 7 Tagen terminieren";
 export const VORSTELLUNG_PRAEFIX = "objekt_vorstellung:";
 
 export function vorstellungSchluessel(kontaktId: string): string {
@@ -75,7 +82,7 @@ export function vorstellungBeschreibung(kontaktMeta: Record<string, unknown> | n
   const funnel = kontaktMeta?.handbuchFunnel as Record<string, unknown> | undefined;
   const antworten = funnel ? pruefeAntworten(funnel.antworten) : null;
   const rahmen = antworten ? ` Rahmen laut Konfigurator: ${rahmenText(handbuchRahmen(antworten))}.` : "";
-  return `Selbstauskunft liegt vor.${rahmen} Vereinbare einen Termin, um passende Wohnungen vorzustellen.`;
+  return `Selbstauskunft liegt vor.${rahmen} Vereinbare die Objektvorstellung in etwa 7 Tagen. Bis dahin sollen Personalausweis und letzte Gehaltsabrechnung im Portal liegen.`;
 }
 
 /** Heute in Berlin als JJJJ-MM-TT. So steht die Aufgabe in der Inbox unter „heute“. */
@@ -95,7 +102,6 @@ export function planeVorstellungsAufgabe(e: {
   investments: InvestmentZeile[];
   vorhandene: AufgabeKurz[];
 }): VorstellungsPlan {
-  if (!istKonfiguratorQuelle(e.quelle)) return { aktion: "nichts", grund: "kein_handbuch_lead" };
   const partnerId = (e.partnerId || "").trim();
   if (!partnerId) return { aktion: "nichts", grund: "kein_partner" };
 

@@ -41,7 +41,7 @@ import { IMPRESSUM_EMAIL, IMPRESSUM_TELEFON } from "./impressumKontakt";
 import { ANLAGE_4_BETROFFENEN_TEXT, ANLAGE_4_BETROFFENEN_TITEL } from "./vertragAnlage4";
 
 /** Interne Fassungskennung, steht im Fuß der Seite. */
-export const DATENSCHUTZ_FASSUNG = "2026-09-27e";
+export const DATENSCHUTZ_FASSUNG = "2026-10-16";
 
 /** Adresse für Datenschutzanfragen, so auch in den Einwilligungstexten der Formulare. */
 export const DATENSCHUTZ_EMAIL = "os@os-immobilien.com";
@@ -82,7 +82,7 @@ export function abschnittNummer(index: number): string {
 
 const de: DatenschutzFassung = {
   titel: "Datenschutzerklärung",
-  stand: "Stand: September 2026",
+  stand: "Stand: Oktober 2026",
   inhaltTitel: "Inhalt",
   abschnitte: [
     {
@@ -422,7 +422,6 @@ const de: DatenschutzFassung = {
             {
               liste: [
                 "Vorname, Nachname, Geburtsname, Geburtsdatum und freiwillig Geburtsort, Staatsangehörigkeit, Anschrift, Telefonnummer, E-Mail-Adresse und Güterstand",
-                "freiwillig Ihre Bankverbindung (IBAN) für die Rückzahlung einer Reservierungsgebühr",
                 "Angaben zum gewünschten Objekt (Wohneinheit, Stellplatz oder Garage, Adresse, Kaufpreis) und zu den Verkäufern",
                 "beim Kauf eines ganzen Hauses durch eine Gesellschaft zusätzlich Firma, Rechtsform, Anschrift, Registergericht und Registernummer sowie die Funktion der vertretenden Person",
                 "ob Sie zur Beurkundung eine Dolmetscherin oder einen Dolmetscher benötigen und in welcher Sprache, die Vertragssprache und freiwillige Angaben im Freitext",
@@ -703,7 +702,7 @@ const de: DatenschutzFassung = {
 
 const en: DatenschutzFassung = {
   titel: "Privacy Policy",
-  stand: "Last updated: September 2026",
+  stand: "Last updated: October 2026",
   inhaltTitel: "Contents",
   abschnitte: [
     {
@@ -1049,7 +1048,6 @@ const en: DatenschutzFassung = {
             {
               liste: [
                 "first name, last name, birth name, date of birth and optionally place of birth, nationality, address, phone number, email address and matrimonial property regime",
-                "optionally your bank details (IBAN) for the refund of a reservation fee",
                 "details of the desired property (unit, parking space or garage, address, purchase price) and of the sellers",
                 "if a whole building is bought by a company, additionally company name, legal form, address, register court and register number and the role of the representative",
                 "whether you need an interpreter for the notarisation and in which language, the contract language and optional free text",

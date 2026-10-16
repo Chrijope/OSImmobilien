@@ -38,8 +38,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import type { ReservierungUnterschrift } from "@/lib/reservierungPdf";
 import type { ReservierungData } from "@/components/reservierung/ReservierungsForm";
 import { Input } from "@/components/ui/input";
-import logoLight from "@/assets/osimmobilien-logo.png";
-import logoDark from "@/assets/osimmobilien-logo-dark.png";
+import logoLight from "@/assets/os-real-estate-logo-quer.png";
+import logoDark from "@/assets/os-real-estate-logo-quer-dunkel.png";
 import { Download } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { SelbstauskunftForm, loescheLokalenSaEntwurf } from "@/components/selbstauskunft/SelbstauskunftForm";
@@ -89,9 +89,10 @@ export default function SignaturSeite() {
    *
    * Seit dem 22.09.2026 kann die interne Vorbereitung eine Reservierung ohne
    * Reservierungsgebühr anlegen. Dann entfällt die Widerrufsthematik, und
-   * damit auch die Wahl zum Beginn auf dieser Seite. Ein fehlendes
-   * `gebuehrEntfaellt`, wie es jede ältere Reservierung hat, heißt „mit
-   * Gebühr" und ändert nichts.
+   * damit auch die Wahl zum Beginn auf dieser Seite. Seit dem 16.10.2026 ist
+   * jede neue Reservierung kostenfrei. Ein fehlendes `gebuehrEntfaellt`, wie
+   * es jede ältere Reservierung hat, heißt weiterhin „mit Gebühr", damit ein
+   * alter Vorgang genau das Dokument zeigt, das damals hinausging.
    */
   /*
    * Seit dem 23.09.2026 auch beim ganzen Haus (Globalobjekt): Kauft dort eine
@@ -686,8 +687,8 @@ export default function SignaturSeite() {
       <div className="w-full max-w-2xl">
         {/* Logo – Original (schwarze Schrift) im Light Mode, weiße Variante im Dark Mode */}
         <div className="flex justify-center mb-6">
-          <img src={logoLight} alt="OS Immobilien" className="h-14 object-contain block dark:hidden" />
-          <img src={logoDark} alt="OS Immobilien" className="h-14 object-contain hidden dark:block" />
+          <img src={logoLight} alt="OS Real Estate GmbH" className="h-14 object-contain block dark:hidden" />
+          <img src={logoDark} alt="OS Real Estate GmbH" className="h-14 object-contain hidden dark:block" />
         </div>
 
         {status === "loading" && (

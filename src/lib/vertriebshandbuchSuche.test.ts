@@ -148,9 +148,15 @@ describe("Sprungknoepfe und Ablaufbild", () => {
 
   it("bildet die Kette in der Reihenfolge des Prozesses ab", () => {
     const titel = PROZESS_KETTE.map((s) => s.titel);
-    // Die drei Stellen, an denen die Reihenfolge frueher falsch war.
-    expect(titel.indexOf("Reservierung")).toBeLessThan(titel.indexOf("Bonitätsunterlagen"));
-    expect(titel.indexOf("Bonitätsunterlagen")).toBeLessThan(titel.indexOf("Finanzierung"));
+    // Neuer Ablauf seit 16.10.2026: Unterlagen vor der Objektvorstellung,
+    // danach Reservierung, Besichtigung, Termin Bankgutachter, Finanzierung.
+    expect(titel).not.toContain("Bonitätsunterlagen");
+    expect(titel).not.toContain("Objektauswahl");
+    expect(titel.indexOf("Selbstauskunft und Unterlagen")).toBeLessThan(titel.indexOf("Objektvorstellung"));
+    expect(titel.indexOf("Objektvorstellung")).toBeLessThan(titel.indexOf("Reservierung"));
+    expect(titel.indexOf("Reservierung")).toBeLessThan(titel.indexOf("Besichtigung"));
+    expect(titel.indexOf("Besichtigung")).toBeLessThan(titel.indexOf("Termin Bankgutachter"));
+    expect(titel.indexOf("Termin Bankgutachter")).toBeLessThan(titel.indexOf("Finanzierung"));
     expect(titel.indexOf("Finanzierung")).toBeLessThan(titel.indexOf("Notar"));
     expect(titel[0]).toBe("Lead");
     expect(titel[titel.length - 1]).toBe("Abgeschlossen");

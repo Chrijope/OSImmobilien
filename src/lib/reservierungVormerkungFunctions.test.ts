@@ -189,12 +189,12 @@ describe("send-reservierung-eskalation", () => {
 describe("Die Vertragskopie im Konfliktfall", () => {
   const vorlage = lies("supabase/functions/_shared/transactional-email-templates/reservierung-kopie.tsx");
 
-  it("fordert keine Zahlung an, sondern bittet, nicht zu zahlen", () => {
+  it("fordert keine Zahlung an; nur ein alter Vorgang mit Gebühr bittet, nicht zu zahlen", () => {
     // Der Zweig zeigt den Text `vergeben`, der seit Etappe 2 der Kundensprache
     // je Sprache im Objekt TEXTE steht.
     const zweig = vorlage.slice(vorlage.indexOf("{einheitVergeben ? ("), vorlage.indexOf(") : ohneGebuehr ? ("));
     expect(zweig).toContain("t.vergeben(");
-    for (const anfang of ["\n  vergeben: (gesamt: boolean) =>", "\n    vergeben: (gesamt: boolean) =>"]) {
+    for (const anfang of ["\n  vergeben: (gesamt: boolean, altMitGebuehr: boolean) =>", "\n    vergeben: (gesamt: boolean, altMitGebuehr: boolean) =>"]) {
       const i = vorlage.indexOf(anfang);
       expect(i, anfang).toBeGreaterThan(-1);
       const text = vorlage.slice(i, vorlage.indexOf("ohneGebuehr:", i));
@@ -202,7 +202,9 @@ describe("Die Vertragskopie im Konfliktfall", () => {
       expect(text).not.toMatch(/receipt of/);
       expect(text).not.toMatch(/[–—]/);
     }
-    expect(vorlage).toContain("Bitte zahlen Sie keine Reservierungsgebühr");
+    // Seit dem 16.10.2026 kostenfrei: der Satz zur Gebühr nur bei einem alten Vorgang.
+    expect(vorlage).toContain("altMitGebuehr ? ' Bitte zahlen Sie keine Reservierungsgebühr");
+    expect(vorlage).toContain("t.vergeben(gesamt, !ohneGebuehr)");
     expect(vorlage).toContain("Please do not pay a reservation fee");
   });
 });

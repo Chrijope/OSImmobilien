@@ -29,8 +29,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
 import { KontaktTypBadge } from "@/components/kunden/KontaktTypBadge";
-import { getEffectivePipelineStufe, calculateLogicalPipelineStufe, PIPELINE_STUFEN, buildBucketEntries, type PipelineStufe } from "@/lib/kontaktPipeline";
-import { stufenFilterLabel, kontaktGanzVerloren } from "@/lib/pipelineStufen";
+import { getEffectivePipelineStufe, calculateLogicalPipelineStufe, buildPipelineKarten, getInvestmentStufenFuerKunde, PIPELINE_STUFEN, buildBucketEntries, type PipelineStufe } from "@/lib/kontaktPipeline";
+import { stufenFilterLabel, kontaktGanzVerloren, darfVorruecken, PIPELINE_SPALTEN, spaltenStufe } from "@/lib/pipelineStufen";
 import { sichtfenster } from "@/lib/pipelineSichtfenster";
 import { getInboxTasks } from "@/lib/aktivitaetenStore";
 import { getFollowUps } from "@/lib/followUpStore";
@@ -57,6 +57,9 @@ import { verlustGrundLabel } from "@/lib/verlustgruende";
 import { getAbwicklungDaten as abwicklungLesen, ABSCHLUSS_HINWEIS, ABSCHLUSS_NUR_ROLLEN, ABSCHLUSS_STUFEN, darfAbschlussStufeWechseln } from "@/lib/abwicklungStore";
 import { tarnName, unscharfKlasse } from "@/lib/vorfuehrmodus";
 import { PipelineSummenLeiste, type SummenSpalte } from "@/components/pipeline/PipelineSummenLeiste";
+import { StufenTerminDialog } from "@/components/kunden/StufenTerminDialog";
+import { brauchtStufenTermin, terminFehlerText, type TerminStufe } from "@/lib/stufenTermin";
+import { speichereStufenTermin } from "@/lib/stufenTerminAktionen";
 
 type AbwDaten = {
   kaufpreisfaelligkeitDatum?: string;
@@ -80,14 +83,6 @@ function getAbwicklungDaten(investmentId: string): AbwDaten {
 
 function getStufe(k: KundeData): PipelineStufe {
   return getEffectivePipelineStufe(k);
-}
-
-// Normalisierung wie in kontaktPipeline.ts (lokal, damit kein Export nötig)
-function normalizeStufeKey(stufe?: string | null): PipelineStufe | null {
-  if (!stufe) return null;
-  let n = stufe === "after_sales" || stufe === "aftersales" ? "faelligkeit" : stufe;
-  if (n === "closing") n = "objektauswahl";
-  return (PIPELINE_STUFEN as readonly { key: string }[]).some(s => s.key === n) ? (n as PipelineStufe) : null;
 }
 
 type PipelineEntry = { kunde: KundeData; stufe: PipelineStufe; investmentId?: string; entryKey: string };
@@ -119,33 +114,13 @@ const KACHELN_JE_SPALTE = 25;
  */
 const GESAMT_STUFEN = new Set([
   "objektauswahl", "follow_up_objekt",
-  "bonitaetsunterlagen", "reservierung", "finanzierung", "notar",
+  "bonitaetsunterlagen", "reservierung", "besichtigung", "bankgutachter", "finanzierung", "notar",
   "faelligkeit", "abrechnung", "abgeschlossen", "bestandskunden", "bestandsimport",
 ]);
 
-function buildPipelineEntries(kunden: KundeData[]): PipelineEntry[] {
-  const entries: PipelineEntry[] = [];
-  for (const k of kunden) {
-    // Archivierte Kontakte bleiben EINE Karte in "archiviert"
-    if (k.archiviert) {
-      entries.push({ kunde: k, stufe: "archiviert", entryKey: k.id });
-      continue;
-    }
-    const invs = getInvestmentsByKontakt(k.id);
-    // Bei mehreren Investments: pro Investment eine eigene Karte in dessen Stufe
-    if (invs.length >= 2) {
-      for (const inv of invs) {
-        const s = normalizeStufeKey(inv.pipelineStufe) || getStufe(k);
-        entries.push({ kunde: k, stufe: s, investmentId: inv.id, entryKey: `${k.id}__${inv.id}` });
-      }
-      continue;
-    }
-    // 0 oder 1 Investment → bisheriges Verhalten (effektive Stufe des Kunden)
-    entries.push({ kunde: k, stufe: getStufe(k), investmentId: invs[0]?.id, entryKey: k.id });
-  }
-  return entries;
-}
-
+// Die Kartenlogik liegt in kontaktPipeline.ts (buildPipelineKarten), damit
+// die lokale Vorschau dieselbe Regel zeigt wie diese Seite.
+const buildPipelineEntries = (kunden: KundeData[]): PipelineEntry[] => buildPipelineKarten(kunden);
 
 const isSetterRole = (role: string) => role === "setterin";
 const isVersicherungsexperte = (role: string) => role === "versicherungsexperte";
@@ -162,6 +137,8 @@ const headerColor = (key: string): string => {
     objektauswahl: "bg-amber-500",
     follow_up_objekt: "bg-lime-600",
     reservierung: "bg-purple-500",
+    besichtigung: "bg-fuchsia-500",
+    bankgutachter: "bg-pink-500",
     finanzierung: "bg-yellow-500",
     notar: "bg-indigo-500",
     // aftersales removed
@@ -382,13 +359,13 @@ function KundeCard({ kunde, stufe, investmentId, zusatzBereit, datenstand, onCli
 
   // Get investment data for stages that need it
   const invData = useMemo(() => {
-    const needsInv = ["erstgespraech_geplant", "erstgespraech", "beratungsgespraech", "bonitaetsunterlagen", "objektauswahl", "follow_up_objekt", "reservierung", "finanzierung", "notar", "faelligkeit", "abrechnung", "abgeschlossen"];
+    const needsInv = ["erstgespraech_geplant", "erstgespraech", "beratungsgespraech", "bonitaetsunterlagen", "objektauswahl", "follow_up_objekt", "reservierung", "besichtigung", "bankgutachter", "finanzierung", "notar", "faelligkeit", "abrechnung", "abgeschlossen"];
     if (!needsInv.includes(stufe)) return null;
     return getInvestmentData(kunde.id, investmentId);
   }, [kunde.id, stufe, investmentId]);
 
   // Deal value: show from erstgespraech onwards (inkl. Bestandskunden)
-  const showDealValue = ["erstgespraech_geplant", "erstgespraech", "beratungsgespraech", "bonitaetsunterlagen", "objektauswahl", "follow_up_objekt", "reservierung", "finanzierung", "notar", "faelligkeit", "abrechnung", "abgeschlossen", "bestandskunden"].includes(stufe);
+  const showDealValue = ["erstgespraech_geplant", "erstgespraech", "beratungsgespraech", "bonitaetsunterlagen", "objektauswahl", "follow_up_objekt", "reservierung", "besichtigung", "bankgutachter", "finanzierung", "notar", "faelligkeit", "abrechnung", "abgeschlossen", "bestandskunden"].includes(stufe);
   /*
    * Der Kaufpreis des Investments hat Vorrang vor dem am Kontakt.
    *
@@ -527,6 +504,9 @@ function KundeCard({ kunde, stufe, investmentId, zusatzBereit, datenstand, onCli
         const docSt = invData ? getDocStatus(invData.meta) : { label: "–", className: "text-muted-foreground" };
         return (
           <>
+            {/* Seit 16.10.2026 ohne eigene Spalte: Die Kachel steht unter
+                „Reservierung", der Hinweis sagt warum. */}
+            <div className="text-xs font-medium text-[hsl(var(--warning))]">Alte Stufe Bonitätsunterlagen, weiter über die Besichtigung</div>
             {kunde.finanzierbarkeit && (
               <div className="text-xs text-muted-foreground"><span className="font-medium">Bonität:</span>{" "}
                 <span className={kunde.finanzierbarkeit === "Positiv" ? "text-green-600 font-semibold" : "text-amber-600 font-semibold"}>{kunde.finanzierbarkeit}</span>
@@ -576,6 +556,12 @@ function KundeCard({ kunde, stufe, investmentId, zusatzBereit, datenstand, onCli
             </>
           );
         })()
+      )}
+
+      {/* Besichtigung und Termin Bankgutachter (seit 16.10.2026). Der Termin
+          selbst steht als nächste Aktion auf der Kachel. */}
+      {(stufe === "besichtigung" || stufe === "bankgutachter") && kunde.objekt && (
+        <div className="text-xs text-muted-foreground flex items-start gap-1"><Building2 className="h-3 w-3 mt-0.5 shrink-0" /><span>{kunde.objekt}</span></div>
       )}
 
       {/* 9. Finanzierung. Finanzierungspartner und Bank stehen in der
@@ -869,12 +855,9 @@ export default function Pipeline() {
       // Erst auf die Datenbank warten. Lehnt sie ab (Zeilenregel oder ein
       // Wächter wie bei Abrechnung und Abgeschlossen), meldet das der
       // Zwischenspeicher und stellt die Kachel zurück; dann kein „aktualisiert“.
-      if (investmentId && !(await updateInvestment(investmentId, { pipelineStufe: to } as any))) return;
-      try {
-        await updateKontakt(kundeId, { pipelineStufe: to } as any);
-      } catch {
-        return;
-      }
+      // Die Stufe haengt nur am Investment (11.10.2026); die Kontaktstufe
+      // fuehrt die Datenbank nach.
+      if (!investmentId || !(await updateInvestment(investmentId, { pipelineStufe: to } as any))) return;
 
       /*
        * Sagen, wenn die Automatik den Zug wieder einholen wird.
@@ -886,8 +869,11 @@ export default function Pipeline() {
        * es sah nach einem Fehler aus. Jetzt steht da, warum.
        */
       const kunde = getKontakte().find((k) => k.id === kundeId);
-      const automatisch = kunde ? calculateLogicalPipelineStufe(kunde) : null;
-      if (automatisch && automatisch !== to) {
+      // Nur die Daten dieses Investments, nicht die eines anderen (11.10.2026).
+      const automatisch = kunde ? calculateLogicalPipelineStufe(kunde, investmentId) : null;
+      // Nur wenn die Automatik den Vorgang weiter vorn sieht: Sie rueckt nie
+      // zurueck, ein Zug nach vorn (etwa auf die Besichtigung) bleibt stehen.
+      if (automatisch && darfVorruecken(to, automatisch)) {
         const autoLabel = PIPELINE_STUFEN.find((st) => st.key === automatisch)?.label || automatisch;
         toast({
           title: "Stufe gesetzt, die Automatik hat aber Vorrang",
@@ -927,7 +913,6 @@ export default function Pipeline() {
       const ganz = kontaktGanzVerloren(getInvestmentsByKontakt(kundeId), investmentId);
       if (ganz) {
         await updateKontakt(kundeId, {
-          pipelineStufe: "verloren",
           status: "verloren" as any,
           verlorenGrund: verlustGrundId,
           verlorenAm,
@@ -960,6 +945,8 @@ export default function Pipeline() {
    * Spalte bleibt leer. Genau dagegen war das Fenster einmal gebaut worden.
    */
   const [objektHinweis, setObjektHinweis] = useState<{ state: MoveDialogState; invId?: string } | null>(null);
+  /** Zug auf Besichtigung oder Termin Bankgutachter: erst der Termin, dann die Stufe. */
+  const [stufenTermin, setStufenTermin] = useState<{ state: MoveDialogState; invId: string; stufe: TerminStufe } | null>(null);
 
   const proceedConfirm = () => {
     if (!moveConfirm) return;
@@ -991,6 +978,12 @@ export default function Pipeline() {
       setMoveConfirm(null);
       return;
     }
+    // Besichtigung und Termin Bankgutachter nur mit Termin (16.10.2026).
+    if (brauchtStufenTermin(moveConfirm.to) && invId) {
+      setStufenTermin({ state: { ...moveConfirm, investmentId: invId }, invId, stufe: moveConfirm.to });
+      setMoveConfirm(null);
+      return;
+    }
     setStufeOnly(moveConfirm);
     setMoveConfirm(null);
   };
@@ -1018,11 +1011,7 @@ export default function Pipeline() {
     try {
       updateInvestment(invId, { pipelineStufe: "beratungsgespraech" } as any);
       setInvestmentMetaFields(invId, { beratungsgespraechAm: bgDatum, beratungsgespraechUhrzeit: bgUhrzeit } as any);
-      // Erst den Termin in meta schreiben und den Zwischenspeicher nachziehen,
-      // danach erst updateKontakt. Sonst baut updateKontakt das meta aus dem
-      // alten Zwischenspeicher neu auf und loescht den Termin im selben Klick.
       await mergeKontaktMeta(kundeId, { beratungsgespraechAm: bgDatum, beratungsgespraechUhrzeit: bgUhrzeit });
-      updateKontakt(kundeId, { pipelineStufe: "beratungsgespraech" } as any);
       toast({ title: "Beratungsgespräch eingetragen ✓", description: `${moveConfirm.kundeName}: ${bgDatum} um ${bgUhrzeit}` });
     } catch {
       toast({ title: "Fehler beim Speichern", variant: "destructive" });
@@ -1171,13 +1160,18 @@ export default function Pipeline() {
         if (!matches) return false;
       }
       if (statusFilter !== "alle") {
-        if (getStufe(k) !== statusFilter) return false;
+        // Ein Kunde bleibt, wenn eines seiner Investments in der Stufe steht (11.10.2026).
+        if (!getInvestmentStufenFuerKunde(k).some((e) => e.stufe === statusFilter)) return false;
       }
       return true;
     });
   }, [kontakte, filter, statusFilter, beraterFilter, teamView, showArchived, isTeamLead, siehtGanzesHaus, teamIds, isSetter, isVExperte, myUserId]);
 
-  const pipelineEntries = useMemo(() => buildPipelineEntries(filteredKontakte), [filteredKontakte, liveVersion]);
+  // Mit Stufenfilter nur die Karten dieser Stufe, nicht die anderen Investments desselben Kunden.
+  const pipelineEntries = useMemo(
+    () => buildPipelineEntries(filteredKontakte).filter((e) => statusFilter === "alle" || e.stufe === statusFilter),
+    [filteredKontakte, liveVersion, statusFilter],
+  );
 
   // Virtuelle Spalte "Bestandskunden" – spiegelt die Sidebar-Liste 'Bestandskunden' wider.
   const bestandskundenEntries: PipelineEntry[] = useMemo(() => {
@@ -1192,7 +1186,8 @@ export default function Pipeline() {
   // Render-Reihenfolge: virtuelle "Bestandskunden"-Spalte direkt vor "Bestandskunden Import"
   const RENDER_STUFEN = useMemo(() => {
     const arr: { key: string; label: string }[] = [];
-    for (const s of PIPELINE_STUFEN) {
+    // Ohne ausgeblendete Stufen (Bonitaetsunterlagen seit 16.10.2026).
+    for (const s of PIPELINE_SPALTEN) {
       if (s.key === "bestandsimport") {
         arr.push({ key: "bestandskunden", label: "Bestandskunden" });
       }
@@ -1210,9 +1205,11 @@ export default function Pipeline() {
   const entriesJeStufe = useMemo(() => {
     const nachStufe = new Map<string, PipelineEntry[]>();
     for (const e of pipelineEntries) {
-      const vorhanden = nachStufe.get(e.stufe);
+      // Eine ausgeblendete Stufe steht in der Spalte, deren Rang sie teilt.
+      const spalte = spaltenStufe(e.stufe);
+      const vorhanden = nachStufe.get(spalte);
       if (vorhanden) vorhanden.push(e);
-      else nachStufe.set(e.stufe, [e]);
+      else nachStufe.set(spalte, [e]);
     }
     // Die virtuelle Spalte kommt aus einer eigenen Quelle und ueberschreibt
     // bewusst, genau wie vorher die Abfrage oben in getEntriesForStufe.
@@ -1675,6 +1672,32 @@ export default function Pipeline() {
         springt genau dorthin, mit der Kennung des Investments, um das es
         geht, damit bei mehreren Investments nicht das falsche geoeffnet wird.
       */}
+      {/* Termin zur Stufe: Abbrechen setzt nichts, Speichern legt erst den
+          Termin an und setzt danach die Stufe. */}
+      <StufenTerminDialog
+        stufe={stufenTermin?.stufe ?? null}
+        kundeName={stufenTermin?.state.kundeName}
+        onAbbrechen={() => setStufenTermin(null)}
+        onSpeichern={async (eingabe) => {
+          if (!stufenTermin) return null;
+          const { state, invId, stufe } = stufenTermin;
+          try {
+            await speichereStufenTermin(stufe, eingabe, {
+              kundeId: state.kundeId,
+              kundeName: state.kundeName,
+              investmentId: invId,
+              investmentLabel: getInvestmentById(invId)?.label,
+              userName: user.name,
+            });
+          } catch (fehler) {
+            return terminFehlerText(fehler);
+          }
+          setStufenTermin(null);
+          await setStufeOnly(state);
+          return null;
+        }}
+      />
+
       <AlertDialog open={!!objektHinweis} onOpenChange={(o) => { if (!o) setObjektHinweis(null); }}>
         <AlertDialogContent>
           {objektHinweis && (

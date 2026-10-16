@@ -119,7 +119,7 @@ describe("Datenschutzerklärung, Texte", () => {
   });
 
   it("zeigt öffentlich nur den Monat, nicht den internen Entwurfsvermerk", () => {
-    expect(de.stand).toBe("Stand: September 2026");
+    expect(de.stand).toBe("Stand: Oktober 2026");
     for (const t of [...alleTexte(de), ...alleTexte(en)]) {
       expect(t).not.toMatch(/\bEntwurf\b|anwaltlich|26\.09\.2026|\bdraft\b/i);
     }

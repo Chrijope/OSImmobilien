@@ -3,7 +3,7 @@ import {
   Mic, MicOff, Video, VideoOff, MonitorUp, PhoneOff, Loader2, WifiOff, Minimize2, Settings2, X,
   ChevronDown, ChevronUp, Users,
 } from "lucide-react";
-import logoImg from "@/assets/osimmobilien-logo.png";
+import logoImg from "@/assets/os-real-estate-logo-quer-dunkel.png";
 import type { Gegenstelle, Verbindung, VerbindungsZustand } from "@/lib/videoraumVerbindung";
 import { bestimmeBuehne, merkeTeilende, type GeteilterInhalt } from "@/lib/videoraumBuehne";
 import { spiegeltVorschau, type HintergrundArt } from "@/lib/videocallEinstellungen";
@@ -797,7 +797,7 @@ export function Gespraech({
         className={`flex ${rahmen === "flaeche" ? "h-full" : "h-[100dvh]"} min-h-0 flex-col overflow-hidden bg-[#0B1119] text-white`}
       >
       <header className="flex h-[62px] shrink-0 items-center gap-4 border-b border-white/[0.07] bg-[#0F1621]/70 px-4 sm:px-6">
-        <img src={logoImg} alt="OS Immobilien" className="h-[22px] object-contain brightness-0 invert" />
+        <img src={logoImg} alt="OS Real Estate GmbH" className="h-[22px] object-contain" />
         <span className="hidden text-[13px] text-white/60 sm:inline">{titel}</span>
         {kopfHinweis}
         {/* `shrink-0`: Ein langer Hinweis daneben darf die Uhr nicht zerquetschen. */}

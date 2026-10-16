@@ -321,6 +321,21 @@ describe("Eine Sammlung für Kachel, Ampel und Pipeline (M20, 04.10.2026)", () =
     expect(hatGeplantenTermin(kontaktQuellen(kunde), JETZT)).toBe(false);
   });
 
+  it("ein Meeting, dessen Aufgabe an einem anderen Investment hängt, fehlt in der Ansicht dieses Investments", async () => {
+    const { geplanteAktionenFuer } = await import("@/lib/kontaktTermine");
+    aktivitaeten.liste = [
+      { id: "akt-a", kundeId: "k1", art: "meeting", beschreibung: "Termin zu A", faelligAm: "2026-08-12", uhrzeit: "10:00" },
+      { id: "akt-x", kundeId: "k1", art: "meeting", beschreibung: "Ohne Investment", faelligAm: "2026-08-13", uhrzeit: "10:00" },
+    ];
+    aufgaben.liste = [
+      { id: "a1", kontaktId: "k1", investmentId: "inv-a", meetingAktivitaetId: "akt-a", status: "offen", titel: "Termin zu A", faelligAm: "2026-08-12" },
+    ];
+    const titel = (inv?: string) => geplanteAktionenFuer(kunde, inv, {}, new Date(JETZT)).map((a) => a.titel);
+    expect(titel("inv-b")).toEqual(["Ohne Investment"]);
+    expect(titel("inv-a")).toContain("Termin zu A");
+    expect(titel()).toContain("Termin zu A");
+  });
+
   it("Wiedervorlagen bleiben für die Ampel Wartephase", () => {
     offeneAufgaben.liste = [
       { id: "w1", kontaktId: "k1", titel: "Erneut anrufen", faelligAm: "2026-08-01", status: "offen", ausloeserSchluessel: "nicht_erreicht:k1" } as never,

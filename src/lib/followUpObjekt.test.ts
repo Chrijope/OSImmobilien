@@ -39,7 +39,7 @@ describe("Anzeigename", () => {
   });
 
   it("traegt in Auswahllisten den unterscheidenden Zusatz", () => {
-    expect(stufenFilterLabel("follow_up_objekt")).toBe("Follow-Up (nach Objektauswahl)");
+    expect(stufenFilterLabel("follow_up_objekt")).toBe("Follow-Up (nach Objektvorstellung)");
     // Die fruehe Wiedervorlage-Stufe bleibt ohne Zusatz.
     expect(stufenFilterLabel("follow_up")).toBe("Follow-Up");
   });

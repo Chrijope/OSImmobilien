@@ -1,5 +1,5 @@
 import { useId, type ReactNode } from "react";
-import logoImg from "@/assets/osimmobilien-logo.png";
+import logoImg from "@/assets/os-real-estate-logo-quer.png";
 import type { InvestmentEingabe, InvestmentErgebnis } from "@/lib/investmentrechner/rechenkern";
 import type { UnterlagenDaten } from "@/lib/investmentrechner/unterlagenAuslesen";
 import { formatEuro, formatEuroCent, formatProzent, formatProzentEineStelle, formatZahl } from "@/lib/investmentrechner/formatierer";
@@ -55,7 +55,7 @@ function Kopf({ input, marke, sprache }: Pick<DeckblattProps, "input" | "marke" 
   return (
     <div className="expose-brand-row">
       <div className="brand-lockup dark-text">
-        <img className="brand-logo expose-logo" src={logoImg} alt="OS Immobilien" />
+        <img className="brand-logo expose-logo" src={logoImg} alt="OS Real Estate GmbH" />
       </div>
       <div className="client-block">
         {name && <strong>{d.fuer(name)}</strong>}

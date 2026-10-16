@@ -13,6 +13,7 @@ import {
   rvSperrSchluessel,
   rvUnterschriftStand,
   rvVertriebsleitungTexte,
+  rvGlockenTitel,
   rvWartetKachelText,
   tageText,
   type RvMeta,
@@ -197,10 +198,18 @@ describe("Texte", () => {
     expect(zwei.beschreibung).toContain("seit 2 Tagen");
     expect(fuenf.beschreibung).toContain("Ruf den Kunden heute an");
     expect(zehn.beschreibung).toContain("Vertriebsleitung");
+    // Seit 15.10.2026: Titel nach Anlass, ohne Kundennamen; der Name steht in der Beschreibung.
+    expect([zwei.titel, fuenf.titel, zehn.titel]).toEqual([
+      "Reservierung versendet: beim Kunden nachfassen",
+      "Reservierung seit 5 Tagen offen: Kunden anrufen",
+      "Eskalation Reservierung ohne Unterschrift: heute Kontakt aufnehmen",
+    ]);
     for (const t of [zwei, fuenf, zehn]) {
-      expect(t.titel).toContain("Anna Berger");
+      expect(t.titel).not.toContain("Anna Berger");
+      expect(t.beschreibung).toContain("Anna Berger");
       expect(t.beschreibung).toContain("Investment 1");
     }
+    expect(rvGlockenTitel("Anna Berger")).toBe("Reservierung nicht unterschrieben: Anna Berger");
   });
 
   it("gibt jeder Stufe einen eigenen Titel, damit keine die andere verdrängt", () => {

@@ -526,15 +526,11 @@ describe("Objektdaten, Schritte und Zeitstrahl", () => {
     expect(block.querySelector(".services")).toBeNull();
   });
 
-  it("hakt die Beratung im Zeitplan als erledigt ab, die Stationen bleiben nummeriert", () => {
+  it("hakt seit dem 16.10.2026 nichts vorab ab, die Stationen sind durchnummeriert", () => {
     zeigen();
-    const beratung = screen.getByTestId("zeitplan-erledigt");
-    expect(beratung).toHaveClass("erledigt");
-    expect(text(beratung.querySelector("h3"))).toBe("Beratung");
-    expect(beratung).toHaveTextContent("Erledigt");
-    expect(text(beratung.querySelector(".zeitplan-nr"))).toBe("");
-    expect(beratung.querySelector(".zeitplan-nr svg")).not.toBeNull();
+    expect(screen.queryByTestId("zeitplan-erledigt")).toBeNull();
     expect(text(screen.getByTestId("zeitplan-station-1").querySelector(".zeitplan-nr"))).toBe("1");
+    expect(text(screen.getByTestId("zeitplan-station-11").querySelector(".zeitplan-nr"))).toBe("11");
   });
 
   it("führt Nächste Schritte und Zeitplan zusammen: ein Abschnitt, je Station Kasten und Erklärung", () => {
@@ -545,13 +541,13 @@ describe("Objektdaten, Schritte und Zeitstrahl", () => {
     expect(text(abschnitt.querySelector(".section-head span"))).toBe("Der Weg zum Eigentum");
     const plan = screen.getByTestId("zeitplan");
     expect(Array.from(plan.querySelectorAll("h3")).map((h) => text(h))).toEqual([
-      "Beratung", "Reservierung", "Finanzierung", "Beantragung Kaufvertrag beim Notariat", "Notartermin", "Kaufpreisfälligkeit", "Übergabe an die Verwaltung",
+      "Erstgespräch", "Beratungspräsentation", "Selbstauskunft", "Unterlagen", "Objektvorstellung", "Reservierung",
+      "Besichtigung", "Termin Bankgutachter", "Finanzierung", "Notar", "Kaufpreisfälligkeit",
     ]);
-    expect(Array.from(plan.querySelectorAll(".zeitplan-kasten.zahlung")).map((k) => text(k))).toEqual(["Mit Anzahlung wirksam", "nach Regelung im Kaufvertrag"]);
-    // Jede Station trägt ihre Erklärung, der Notar-Text ist auf Beantragung und Termin verteilt.
-    expect(plan.querySelectorAll("[data-testid^='zeitplan-station-'] .zeitplan-text")).toHaveLength(6);
-    expect(text(screen.getByTestId("zeitplan-station-3").querySelector(".zeitplan-text"))).toBe("Der Kaufvertrag geht dir vorab zu, wir besprechen ihn Punkt für Punkt.");
-    expect(text(screen.getByTestId("zeitplan-station-4").querySelector(".zeitplan-text"))).toBe("Beurkundet wird beim Notar, vor Ort oder per Vollmacht.");
+    expect(Array.from(plan.querySelectorAll(".zeitplan-kasten.zahlung")).map((k) => text(k))).toEqual(["nach Regelung im Kaufvertrag"]);
+    // Jede Station trägt ihre Erklärung.
+    expect(plan.querySelectorAll("[data-testid^='zeitplan-station-'] .zeitplan-text")).toHaveLength(11);
+    expect(text(screen.getByTestId("zeitplan-station-10").querySelector(".zeitplan-text"))).toBe("Der Kaufvertrag geht dir vorab zu, wir besprechen ihn Punkt für Punkt. Beurkundet wird beim Notar, vor Ort oder per Vollmacht.");
     expect(text(plan)).not.toMatch(/[–—]|\d ?- ?\d/);
   });
 });

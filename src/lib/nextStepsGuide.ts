@@ -120,17 +120,17 @@ const GUIDE: Partial<Record<PipelineStufe, NextStepsGuide>> = {
     hinweis: "Der No-Show-Hinweis im Kundenprofil verschwindet automatisch, sobald ein neuer Erstgesprächstermin gebucht ist.",
   },
   beratungsgespraech: {
-    titel: "Beratungsgespräch vorbereiten & durchführen",
+    titel: "Beratungspräsentation vorbereiten & durchführen",
     aktionen: [
       { text: "Beratungspräsentation öffnen und auf den Kunden vorbereiten" },
-      { text: "Beratungsgespräch führen, Bedarf & Bonität gemeinsam qualifizieren" },
+      { text: "Beratungspräsentation führen, Bedarf & Bonität gemeinsam qualifizieren" },
       { text: "Selbstauskunft direkt im Gespräch gemeinsam mit dem Kunden ausfüllen" },
     ],
     // Geprüft in kontaktPipeline.calculateLogicalPipelineStufe: Sobald die
     // Selbstauskunft beim Kunden liegt und die Unterschrift aussteht, ist die
     // Stufe "Selbstauskunft". Die Unterschrift selbst führt auf
     // "Objektauswahl", nicht auf "Bonitätsunterlagen".
-    hinweis: 'Sobald die Selbstauskunft beim Kunden ist, rückt der Deal auf „Selbstauskunft".',
+    hinweis: 'Sobald die Selbstauskunft beim Kunden ist, rückt der Deal auf „Selbstauskunft & Unterlagen".',
   },
   bg_noshow: {
     titel: "Neuen Beratungstermin vereinbaren",
@@ -144,9 +144,10 @@ const GUIDE: Partial<Record<PipelineStufe, NextStepsGuide>> = {
       "nach 48 Stunden erneut, solange kein neuer Beratungstermin eingetragen ist.",
   },
   selbstauskunft: {
-    titel: "Selbstauskunft unterschreiben lassen",
+    titel: "Selbstauskunft und Unterlagen einholen",
     aktionen: [
       { text: "Selbstauskunft an den Kunden senden oder gemeinsam im Gespräch ausfüllen" },
+      { text: "Personalausweis und letzte Gehaltsabrechnung im Portal hochladen lassen" },
       { text: "Nachfassen, solange die Unterschrift aussteht" },
       { text: "Parallel schon freie Wohnungen sichten, damit du direkt nach der Unterschrift Objekte zeigen kannst" },
     ],
@@ -159,15 +160,18 @@ const GUIDE: Partial<Record<PipelineStufe, NextStepsGuide>> = {
     hinweis:
       "Der Kunde wird nach 3, 7 und 11 Tagen automatisch per E-Mail erinnert, jeweils mit dir als " +
       "Ansprechpartner. Füllt er sie bis Tag 14 nicht aus, landet eine Aufgabe in deiner Inbox. " +
-      'Sobald der Kunde unterschreibt, springt der Deal automatisch auf „Objektauswahl".',
+      'Sobald der Kunde unterschreibt, springt der Deal automatisch auf „Objektvorstellung" und du bekommst die Aufgabe, die Objektvorstellung in 7 Tagen zu terminieren.',
   },
   objektauswahl: {
-    titel: "Passende Wohnung vorschlagen",
+    titel: "Objektvorstellung durchführen",
     aktionen: [
       { text: "Freie Wohnungen im System und in Investagon prüfen und passende Einheiten vorschlagen" },
-      { text: "Kunde Objekte / Einheiten vorstellen" },
-      { text: "Reservierung vorbereiten, sobald Kunde sich entschieden hat" },
+      { text: "Kunde das Objekt mit Exposé und Investmentkalkulation vorstellen" },
+      { text: "Reservierung im selben Termin starten, sobald Selbstauskunft, Ausweis und Gehaltsabrechnung da sind" },
     ],
+    // Zwei Tage vor dem Termin prueft useInvestmentInboxTriggers, ob Ausweis
+    // und letzte Gehaltsabrechnung fehlen.
+    hinweis: "Fehlen zwei Tage vor dem Termin noch Ausweis oder Gehaltsabrechnung, bekommst du eine Aufgabe zum Nachfassen.",
   },
   follow_up_objekt: {
     titel: "Follow-Up nach der Objektvorstellung",
@@ -187,10 +191,29 @@ const GUIDE: Partial<Record<PipelineStufe, NextStepsGuide>> = {
       { text: "Warte auf Kundenunterschrift (digitale Signatur)" },
       { text: "Empfehlungsprogramm aktiv ansprechen" },
     ],
-    hinweis: 'Mit der digitalen Gegenzeichnung durch den Kunden ist die Reservierung abgeschlossen und der Deal rückt automatisch auf „Bonitätsunterlagen". Eine zusätzliche Admin-Bestätigung ist nicht nötig.',
+    // Seit 16.10.2026: Nach der Unterschrift bleibt die Stufe, es entsteht
+    // die Aufgabe "Besichtigung vereinbaren" (KundenDetail).
+    hinweis: 'Mit der digitalen Gegenzeichnung durch den Kunden ist die Reservierung abgeschlossen, und du bekommst die Aufgabe „Besichtigung vereinbaren". Setzt du die Stufe auf „Besichtigung", trägst du dabei den Termin ein.',
   },
+  besichtigung: {
+    titel: "Besichtigung durchführen",
+    aktionen: [
+      { text: "Besichtigung mit dem Kunden wahrnehmen" },
+      { text: 'Danach unter „Nächste Aktionen" das Ergebnis eintragen' },
+    ],
+    hinweis: 'Mit „Stattgefunden" rückt der Deal auf „Termin Bankgutachter", und du bekommst die Aufgabe, den Termin mit dem Gutachter zu vereinbaren.',
+  },
+  bankgutachter: {
+    titel: "Termin Bankgutachter begleiten",
+    aktionen: [
+      { text: "Termin mit dem Gutachter der Bank abstimmen und begleiten" },
+      { text: 'Danach unter „Nächste Aktionen" das Ergebnis eintragen' },
+    ],
+    hinweis: 'Mit „Stattgefunden" rückt der Deal auf „Finanzierung".',
+  },
+  // Ausgeblendete Altstufe (16.10.2026), nur noch fuer Bestandsfaelle.
   bonitaetsunterlagen: {
-    titel: "Bonität vervollständigen",
+    titel: "Bonität vervollständigen (alte Stufe)",
     aktionen: [
       { text: "Kundenportal für den Kunden freischalten (optional: alle Unterlagen freischalten)" },
       { text: "Bonitätscheck / Bankprüfungs-Unterlagen" },
@@ -219,7 +242,7 @@ const GUIDE: Partial<Record<PipelineStufe, NextStepsGuide>> = {
     ],
   },
   faelligkeit: {
-    titel: "Kaufpreis-Fälligkeit überwachen",
+    titel: "Kaufpreisfälligkeit überwachen",
     aktionen: [
       { text: "Fälligstellungsschreiben des Notars im Investment-Tab hinterlegen", adminOnly: true },
       { text: "Zahlungseingang des Kaufpreises überwachen", adminOnly: true },

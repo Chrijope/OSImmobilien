@@ -23,7 +23,7 @@ describe("sucheInAkademie mit echten Fragen", () => {
     ["Wie schreibe ich eine WhatsApp an einen alten Bekannten?", "leadgenerierung", "textbausteine-whatsapp"],
     ["Brauche ich eine 34c Erlaubnis?", "positionierung", "34c-erlaubnis"],
     ["Wie gehe ich mit Absagen und Durststrecken um?", "mindset", "durststrecken"],
-    ["Was ist eine Ampel-Qualifizierung?", "erstgespraech", "ampel"],
+    ["Welche Ausstiegskriterien gibt es im Erstgespräch?", "erstgespraech", "einschaetzung"],
   ];
 
   for (const [frage, kapitel, abschnitt] of faelle) {

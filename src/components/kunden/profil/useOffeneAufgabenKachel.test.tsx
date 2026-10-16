@@ -1,6 +1,7 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
-import { useNaechsteAktionKachel, useOffeneAufgabenKachel, NAECHSTE_AKTION_SCHLUESSEL, OFFENE_AUFGABEN_SCHLUESSEL } from "./useOffeneAufgabenKachel";
+import { useNaechsteAktionKachel, NAECHSTE_AKTION_SCHLUESSEL, OFFENE_AUFGABEN_SCHLUESSEL } from "./useOffeneAufgabenKachel";
 
+// Einstellungen je Nutzer und Schluessel, wie in der Tabelle user_settings.
 const mocks = vi.hoisted(() => ({
   userId: "a",
   currentId: "a",
@@ -14,9 +15,11 @@ vi.mock("@/hooks/useCacheReady", () => ({ useCacheReady: () => mocks.bereit }));
 vi.mock("@/hooks/useLiveData", () => ({ useLiveVersion: () => mocks.version }));
 vi.mock("@/lib/currentUser", () => ({ getCurrentUserId: () => mocks.currentId }));
 vi.mock("@/lib/userSettingsCache", () => ({
-  getUserSetting: (_: string, fallback: boolean) => mocks.werte[mocks.currentId] ?? fallback,
+  getUserSetting: (key: string, fallback: unknown) => mocks.werte[`${mocks.currentId}|${key}`] ?? fallback,
   setUserSetting: mocks.save,
 }));
+
+const setze = (user: string, key: string, wert: boolean) => { mocks.werte[`${user}|${key}`] = wert; };
 
 beforeEach(() => {
   mocks.userId = "a";
@@ -24,26 +27,24 @@ beforeEach(() => {
   mocks.bereit = true;
   mocks.version = 0;
   mocks.werte = {};
-  mocks.save.mockReset().mockImplementation((_: string, wert: boolean) => {
-    mocks.werte[mocks.currentId] = wert;
-  });
+  mocks.save.mockReset().mockImplementation((key: string, wert: boolean) => setze(mocks.currentId, key, wert));
 });
 
-it("startet zugeklappt und merkt das Aufklappen", async () => {
-  const h = renderHook(useOffeneAufgabenKachel);
+it("startet zugeklappt und merkt das Aufklappen unter dem eigenen Schlüssel", async () => {
+  const h = renderHook(useNaechsteAktionKachel);
   expect(h.result.current.offen).toBe(false);
   await act(async () => h.result.current.umschalten());
   expect(h.result.current.offen).toBe(true);
-  expect(mocks.save).toHaveBeenCalledWith(OFFENE_AUFGABEN_SCHLUESSEL, true);
+  expect(mocks.save).toHaveBeenCalledWith(NAECHSTE_AKTION_SCHLUESSEL, true);
   h.unmount();
-  const neu = renderHook(useOffeneAufgabenKachel);
+  const neu = renderHook(useNaechsteAktionKachel);
   expect(neu.result.current.offen).toBe(true);
 });
 
 it("speichert nichts, solange die Einstellungen noch laden", async () => {
   mocks.bereit = false;
-  mocks.werte.a = true;
-  const h = renderHook(useOffeneAufgabenKachel);
+  setze("a", NAECHSTE_AKTION_SCHLUESSEL, true);
+  const h = renderHook(useNaechsteAktionKachel);
   expect(h.result.current.offen).toBe(false);
   await act(async () => h.result.current.umschalten());
   expect(mocks.save).not.toHaveBeenCalled();
@@ -53,8 +54,8 @@ it("speichert nichts, solange die Einstellungen noch laden", async () => {
 });
 
 it("übernimmt beim Nutzerwechsel keine fremde Einstellung", () => {
-  mocks.werte.a = true;
-  const h = renderHook(useOffeneAufgabenKachel);
+  setze("a", NAECHSTE_AKTION_SCHLUESSEL, true);
+  const h = renderHook(useNaechsteAktionKachel);
   expect(h.result.current.offen).toBe(true);
   mocks.userId = "b";
   mocks.currentId = "b";
@@ -62,11 +63,20 @@ it("übernimmt beim Nutzerwechsel keine fremde Einstellung", () => {
   expect(h.result.current.offen).toBe(false);
 });
 
-it("merkt die Kachel Nächste Aktion unter einem eigenen Schlüssel", async () => {
-  const h = renderHook(useNaechsteAktionKachel);
-  expect(h.result.current.offen).toBe(false);
-  await act(async () => h.result.current.umschalten());
-  expect(h.result.current.offen).toBe(true);
-  expect(mocks.save).toHaveBeenCalledWith(NAECHSTE_AKTION_SCHLUESSEL, true);
-  expect(NAECHSTE_AKTION_SCHLUESSEL).not.toBe(OFFENE_AUFGABEN_SCHLUESSEL);
+describe("Rückfall auf den Schalter der früheren Kachel Offene Aufgaben", () => {
+  it("öffnet die Kachel, wenn die alte Liste offen war und die neue nie geschaltet wurde", () => {
+    setze("a", OFFENE_AUFGABEN_SCHLUESSEL, true);
+    const h = renderHook(useNaechsteAktionKachel);
+    expect(h.result.current.offen).toBe(true);
+  });
+
+  it("der eigene Schlüssel schlägt den alten, und der alte wird nie geschrieben", async () => {
+    setze("a", OFFENE_AUFGABEN_SCHLUESSEL, true);
+    setze("a", NAECHSTE_AKTION_SCHLUESSEL, false);
+    const h = renderHook(useNaechsteAktionKachel);
+    expect(h.result.current.offen).toBe(false);
+    await act(async () => h.result.current.umschalten());
+    expect(mocks.save).toHaveBeenCalledTimes(1);
+    expect(mocks.save).toHaveBeenCalledWith(NAECHSTE_AKTION_SCHLUESSEL, true);
+  });
 });

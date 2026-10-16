@@ -112,13 +112,10 @@ export interface SchrittKarte {
 }
 
 /**
- * Sechs Schritte in der Reihenfolge unseres Prozesses. Im Exposé steht seit
- * dem 01.10.2026 nur noch der erledigte Schritt (Beratung) als eigene Zeile
- * vor dem Zeitplan, die übrigen Erklärungen tragen die Zeitplan-Stationen.
- *
- * Die Beratung ist seit dem 23.09.2026 abgehakt (Christian): Wer das Exposé
- * in der Hand hat, ist beraten, der nächste Schritt ist die Reservierung.
- * Der Text steht deshalb ohne Zeitform, er passt vor wie nach dem Gespräch.
+ * Sechs Schritte in der Reihenfolge unseres Prozesses. Bis zum 16.10.2026
+ * stand die Beratung abgehakt vor dem Zeitplan. Seitdem nennt der Zeitplan
+ * den ganzen Ablauf vom Erstgespräch bis zur Kaufpreisfälligkeit selbst,
+ * deshalb ist hier kein Schritt mehr als erledigt markiert.
  */
 export const NAECHSTE_SCHRITTE: SchrittKarte[] = EXPOSE_INHALT_TEXTE.de.naechsteSchritte;
 
@@ -132,7 +129,7 @@ export interface ZeitplanStation {
   titel: string;
   /** Die kurze Angabe im kleinen Kasten, etwa „2 bis 6 Wochen“. Leer heißt: kein Kasten. */
   frist: string;
-  /** Hier wird gezahlt (Reservierung, Kaufpreis): Der Kasten ist hervorgehoben. */
+  /** Hier wird gezahlt (Kaufpreis): Der Kasten ist hervorgehoben. */
   zahlung?: boolean;
   /** Erklärung unter dem Titel. Ein von Hand gepflegter Zeitplan hat keine. */
   text?: string;
@@ -140,9 +137,9 @@ export interface ZeitplanStation {
 
 /**
  * Der Standardablauf, im Wortlaut und Aufbau der Vorlage: kurze Stationen,
- * je eine kurze Angabe (Christian am 23.09.2026). Der lange Text zur
- * Reservierungsgebühr mit Betrag, Frist und Rückzahlung steht nicht mehr im
- * Zeitstrahl, sondern allein in der Reservierungsvereinbarung.
+ * je eine kurze Angabe (Christian am 23.09.2026). Ein Text zu einer
+ * Reservierungsgebühr steht hier nicht; seit dem 16.10.2026 ist die
+ * Reservierung ohnehin kostenfrei.
  *
  * Eine Station „Werkvertrag“ wie in der Vorlage gibt es bewusst nicht, auch
  * nicht bei Sanierungsobjekten (Christian, 23.09.2026). Ein von Hand
@@ -155,9 +152,9 @@ export function zeitplanStandard(sprache?: Sprache): ZeitplanStation[] {
 
 export const ZEITPLAN_STANDARD: ZeitplanStation[] = zeitplanStandard();
 
-/** Zahlungsrelevant auch in einem von Hand gepflegten Zeitplan, am Titel erkannt. */
+/** Zahlungsrelevant auch in einem von Hand gepflegten Zeitplan, am Titel erkannt. Die Reservierung ist seit dem 16.10.2026 kostenfrei und zählt nicht mehr dazu. */
 function istZahlungsstation(titel: string): boolean {
-  return /reservier|werkvertrag|kaufpreis|zahlung/i.test(titel);
+  return /werkvertrag|kaufpreis|zahlung/i.test(titel);
 }
 
 export interface ChanceRisiko {

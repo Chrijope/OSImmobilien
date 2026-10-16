@@ -8,7 +8,7 @@ import {
   HandCoins, Calendar, MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import logo from "@/assets/osimmobilien-logo.png";
+import logo from "@/assets/os-real-estate-logo-quer.png";
 import { PraesentationPdfButton } from "@/components/presentation/PraesentationPdfButton";
 import { PartnerLogo } from "@/components/presentation/PartnerLogo";
 import { BERATUNG_TEXTE, inAnrede } from "@/lib/beratungspraesentationTexte";
@@ -187,7 +187,7 @@ export default function BeratungspraesentationWG() {
       <header data-lg="kopfscheibe" className="sticky top-0 z-50 backdrop-blur-xl bg-background/80 border-b border-border/60">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link to="/beratungspraesentation-wg" className="flex items-center gap-3">
-            <img src={logo} alt="OS Immobilien" className="h-8 w-auto" />
+            <img src={logo} alt="OS Real Estate GmbH" className="h-8 w-auto" />
             <span className="hidden md:inline text-xs tracking-[0.25em] uppercase text-muted-foreground font-semibold">
               WG · Co-Living
             </span>
@@ -259,7 +259,7 @@ export default function BeratungspraesentationWG() {
           <div className="rounded-3xl bg-card border border-border shadow-2xl p-6 md:p-12">
             <div className="grid grid-cols-2 gap-3 md:gap-5 mb-10">
               <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-muted flex items-center justify-center p-8 md:p-12">
-                <img src={logo} alt="OS Immobilien" className="max-h-full max-w-full object-contain" />
+                <img src={logo} alt="OS Real Estate GmbH" className="max-h-full max-w-full object-contain" />
               </div>
               <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-muted">
                 <img src={modellWg} alt="WG & Co-Living mit OS Immobilien" className="w-full h-full object-cover" />
@@ -1704,7 +1704,7 @@ export default function BeratungspraesentationWG() {
       <footer className="bg-background border-t border-border py-10 px-6">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <img src={logo} alt="OS Immobilien" className="h-7 w-auto" />
+            <img src={logo} alt="OS Real Estate GmbH" className="h-7 w-auto" />
             <span className="text-xs text-muted-foreground">
               WG &amp; Co-Living Investments mit OS Immobilien · osimmobilien.netlify.app
             </span>

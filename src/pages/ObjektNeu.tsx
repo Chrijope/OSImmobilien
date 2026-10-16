@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { KONZEPTE, type ObjektKonzept } from "@/lib/objektKonzept";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Plus, Upload, X, ImagePlus, ArrowLeft, Pencil, Trash2, FileText, AlertCircle, Search, Copy, ChevronDown, ChevronUp, Building2, TrendingUp, Star, Users } from "lucide-react";
@@ -20,7 +21,7 @@ import { DateInput } from "@/components/ui/date-input";
 // Im CRM rollt der Inhaltskasten, nicht das Fenster. Siehe lib/rollen.ts.
 import { rolleSeiteNachOben } from "@/lib/rollen";
 import { EuroInput } from "@/components/ui/euro-input";
-import { saveObjekt, getObjekte, getObjektById, getLastObjektSaveError, getLastObjektSaveHinweise, defaultDokumente, DEFAULT_WOHNUNG_DOCS, type ObjektData, type ObjektWohnung } from "@/lib/objekteStore";
+import { saveObjekt, speichereObjektKonzept, getObjekte, getObjektById, getLastObjektSaveError, getLastObjektSaveHinweise, defaultDokumente, DEFAULT_WOHNUNG_DOCS, type ObjektData, type ObjektWohnung } from "@/lib/objekteStore";
 import { AfaRechnerEmbed, type AfaErgebnis, type AfaRechnerDraft } from "@/components/objekte/AfaRechnerEmbed";
 import { ObjektUploadAnalyse, type ExtractedObjektData } from "@/components/objekte/ObjektUploadAnalyse";
 import { EinheitVerkaufsstatus } from "@/components/objekte/EinheitVerkaufsstatus";
@@ -335,6 +336,8 @@ export default function ObjektNeu() {
     }));
   }, [afaErgebnis]);
   const [anlageklasse, setAnlageklasse] = useState<string>("");
+  // Leer heißt „nicht gepflegt“. Eigener Wert, weil Radix-Select keinen leeren Eintrag kennt.
+  const [konzept, setKonzept] = useState<ObjektKonzept | "">("");
   const [verwaltungsart, setVerwaltungsart] = useState<string>("");
   const [verwaltungskostenWeg, setVerwaltungskostenWeg] = useState<number>(0);
   const [verwaltungskostenSev, setVerwaltungskostenSev] = useState<number>(0);
@@ -379,6 +382,7 @@ export default function ObjektNeu() {
       setEinzelProfilBildId(String((existingObjekt.meta as any)?.einzelProfilBildId || ""));
       setSanierungskosten(existingObjekt.sanierungskosten || 0);
       setAnlageklasse((existingObjekt.meta as any)?.anlageklasse || "");
+      setKonzept(existingObjekt.konzept ?? "");
       setVerwaltungsart(normalizeVerwaltungsart((existingObjekt.meta as any)?.verwaltungsart) || "");
       setVerwaltungskostenWeg(Number((existingObjekt.meta as any)?.verwaltungskostenWeg) || 0);
       setVerwaltungskostenSev(Number((existingObjekt.meta as any)?.verwaltungskostenSev) || 0);
@@ -2147,6 +2151,11 @@ export default function ObjektNeu() {
       setIsSaving(false);
       return;
     }
+    // Das Konzept getrennt, damit das Speichern auch ohne die neue Spalte gelingt.
+    if ((konzept || undefined) !== (isEditMode ? existingObjekt?.konzept : undefined)) {
+      const konzeptFehler = await speichereObjektKonzept(objektId, konzept || null);
+      if (konzeptFehler) toast({ title: "Konzept nicht gespeichert", description: konzeptFehler, variant: "destructive" });
+    }
     // Gespeichert, aber nicht alles übernommen: etwa eine reservierte Einheit,
     // die nicht entfernt wird.
     const speicherHinweise = getLastObjektSaveHinweise();
@@ -2680,6 +2689,16 @@ export default function ObjektNeu() {
                   )}
                   </>
                   )}
+                </div>
+                <div>
+                  <Label className="text-xs" htmlFor="objekt-konzept">Konzept</Label>
+                  <Select value={konzept || "keins"} onValueChange={(w) => setKonzept(w === "keins" ? "" : (w as ObjektKonzept))}>
+                    <SelectTrigger id="objekt-konzept"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="keins">Nicht festgelegt</SelectItem>
+                      {KONZEPTE.map((k) => <SelectItem key={k.wert} value={k.wert}>{k.label}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               {/* Verwaltung */}

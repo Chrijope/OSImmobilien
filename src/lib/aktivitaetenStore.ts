@@ -386,6 +386,12 @@ export interface InboxTask {
   prioritaet: "niedrig" | "mittel" | "hoch" | "dringend";
   typ: "anruf" | "meeting" | "follow_up" | "aufgabe" | "deadline";
   faellig_am: string; uhrzeit: string; kundeId: string; kundeName: string;
+  /**
+   * Anlass und Investment ("{anlass}:{investment}"), bei Geburtstagen Anlass,
+   * Person und Jahr. Seit die Titel keinen Kundennamen mehr tragen, wird hieran
+   * entdoppelt statt am Titel. Ältere Einträge haben ihn nicht.
+   */
+  schluessel?: string;
 }
 
 const INBOX_KEY = "osimmo_inbox_tasks";

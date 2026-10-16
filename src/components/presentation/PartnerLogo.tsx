@@ -1,4 +1,4 @@
-import osLogo from "@/assets/osimmobilien-logo.png";
+import osLogo from "@/assets/os-real-estate-logo-quer.png";
 
 /*
  * Kleiner Partnerhinweis mit Logo in den Leistungskarten der

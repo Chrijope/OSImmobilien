@@ -22,20 +22,39 @@ vi.mock("@/lib/selbstauskunftEntfaellt", () => ({
   getSelbstauskunftEntfaellt: (id: string) => ({ aktiv: entfaellt.has(id) }),
 }));
 
-const { ampelAus, darfReservierungStarten, investmentAmpel, rvWirksamAusMeta } = await import("@/lib/reservierungStart");
+const { ampelAus, darfReservierungStarten, fehlendeUnterlagenFuerReservierung, investmentAmpel, rvWirksamAusMeta } = await import("@/lib/reservierungStart");
+
+/** Ausweis und letzte Gehaltsabrechnung hochgeladen (seit 16.10.2026 Pflicht). */
+const UNTERLAGEN_DA = { docStatuses: { Personalausweis: "uploaded", "Letzter Gehaltsnachweis": "approved" } };
 
 describe("Einheitliche Freigabe: Selbstauskunft unterschrieben oder finanziert selbst", () => {
   it("lässt eine unterschriebene Selbstauskunft durch", () => {
     stufen["inv-sa"] = "objektauswahl";
-    meta["inv-sa"] = { saSigned: true };
+    meta["inv-sa"] = { saSigned: true, ...UNTERLAGEN_DA };
     expect(darfReservierungStarten("inv-sa")).toBe(true);
   });
 
   it("lässt den Vermerk „Kunde finanziert selbst“ durch", () => {
     stufen["inv-selbst"] = "beratungsgespraech";
-    meta["inv-selbst"] = {};
+    // Beim Selbstfinanzierer reicht der Ausweis.
+    meta["inv-selbst"] = { docStatuses: { Personalausweis: "uploaded" } };
     entfaellt.add("inv-selbst");
     expect(darfReservierungStarten("inv-selbst")).toBe(true);
+  });
+
+  it("sperrt ohne Ausweis oder letzte Gehaltsabrechnung (neuer Ablauf)", () => {
+    stufen["inv-ohne"] = "objektauswahl";
+    meta["inv-ohne"] = { saSigned: true };
+    expect(darfReservierungStarten("inv-ohne")).toBe(false);
+    expect(fehlendeUnterlagenFuerReservierung("inv-ohne")).toEqual(["Personalausweis", "Letzter Gehaltsnachweis"]);
+
+    meta["inv-ohne"] = { saSigned: true, docStatuses: { Personalausweis: "uploaded", "Letzter Gehaltsnachweis": "rejected" } };
+    expect(darfReservierungStarten("inv-ohne")).toBe(false);
+    expect(fehlendeUnterlagenFuerReservierung("inv-ohne")).toEqual(["Letzter Gehaltsnachweis"]);
+
+    // Selbststaendige haben keine Gehaltsabrechnung.
+    meta["inv-ohne"] = { saSigned: true, saData: { beschaeftigungsart: "selbstaendig" }, docStatuses: { Personalausweis: "approved" } };
+    expect(darfReservierungStarten("inv-ohne")).toBe(true);
   });
 
   it("sperrt ohne beides und ohne Investment", () => {
@@ -60,6 +79,9 @@ describe("Die Ampel", () => {
     expect(ampelAus({ stufe: "reservierung", saOk: true })).toBe("hat_reservierung");
     expect(ampelAus({ stufe: "objektauswahl", saOk: true, rvSigned: true })).toBe("hat_reservierung");
     expect(ampelAus({ stufe: "finanzierung", saOk: true })).toBe("hat_reservierung");
+    expect(ampelAus({ stufe: "besichtigung", saOk: true, rvEntfallen: true })).toBe("hat_reservierung");
+    // Die ausgeblendete Altstufe teilt den Rang der Reservierung.
+    expect(ampelAus({ stufe: "bonitaetsunterlagen", saOk: true, rvEntfallen: true })).toBe("bereit");
   });
 
   it("gibt ein Investment nach einer entfallenen Reservierung wieder frei", () => {
@@ -78,6 +100,8 @@ describe("Die Ampel", () => {
     meta["inv-a"] = { saSigned: true, rvSignaturePending: true };
     expect(investmentAmpel("inv-a")).toBe("hat_reservierung");
     meta["inv-a"] = { saSigned: true };
+    expect(investmentAmpel("inv-a")).toBe("selbstauskunft_fehlt");
+    meta["inv-a"] = { saSigned: true, ...UNTERLAGEN_DA };
     expect(investmentAmpel("inv-a")).toBe("bereit");
   });
 });

@@ -68,7 +68,8 @@ describe("versendeMeetingEinladung", () => {
     });
     expect(ok).toBe(true);
     const body = letzterAufruf();
-    expect(body.templateName).toBe("zoom-meeting-einladung");
+    // Seit 16.10.2026 hat die Beratungspraesentation eine eigene Vorlage.
+    expect(body.templateName).toBe("termin-beratungspraesentation");
     expect(body.templateData.terminModus).toBe("video");
     expect(body.templateData.zoomJoinUrl).toBe("https://crm.osimmobilien.netlify.app/raum/abc");
     expect(body.templateData.terminDauer).toBe(90);
@@ -271,5 +272,35 @@ describe("Berater in der Einladung", () => {
     expect(daten.berater).toBeUndefined();
     expect(warnung).toHaveBeenCalled();
     warnung.mockRestore();
+  });
+});
+
+describe("Vorlage je Anlass (Nachfassplan, 16.10.2026)", () => {
+  it("Beratung und Objektvorstellung bekommen eigene Mails, alles andere die allgemeine", async () => {
+    const { meetingVorlage } = await import("./meetingEinladung");
+    expect(meetingVorlage("beratung")).toBe("termin-beratungspraesentation");
+    expect(meetingVorlage("objektvorstellung")).toBe("einladung-objektvorstellung");
+    expect(meetingVorlage("erstgespraech", "Beratungsgespräch")).toBe("zoom-meeting-einladung");
+    // Ohne Anlass entscheidet der Titel, etwa beim erneuten Senden.
+    expect(meetingVorlage(undefined, "Objektvorstellung Musterstraße")).toBe("einladung-objektvorstellung");
+    expect(meetingVorlage(undefined, "Beratungspräsentation")).toBe("termin-beratungspraesentation");
+    expect(meetingVorlage(undefined, "Notartermin")).toBe("zoom-meeting-einladung");
+  });
+
+  it("die Objektvorstellung schickt den Upload-Link zur Bonität des Investments mit", async () => {
+    await versendeMeetingEinladung({ ...basis, titel: "Termin", anlass: "objektvorstellung", investmentId: "inv-9", modus: "video" });
+    const body = letzterAufruf();
+    expect(body.templateName).toBe("einladung-objektvorstellung");
+    expect(body.templateData.uploadUrl).toContain("inv=inv-9");
+    expect(body.templateData.uploadUrl).toContain("highlight=bonitaetsunterlagen");
+  });
+
+  it("Gäste bekommen immer die allgemeine Einladung", async () => {
+    const { kundeName: _n, kundeEmail: _e, ...ohneKunde } = basis;
+    await versendeGastEinladungen([{ name: "Gast", email: "gast@example.com" }], {
+      ...ohneKunde, anlass: "objektvorstellung", modus: "video",
+    });
+    expect(letzterAufruf().templateName).toBe("zoom-meeting-einladung");
+    expect(letzterAufruf().templateData.uploadUrl).toBeUndefined();
   });
 });

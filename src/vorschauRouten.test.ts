@@ -20,9 +20,11 @@ describe("Vorschau-Route der Investmentkalkulation", () => {
   it("fehlt im Produktions-Build", async () => {
     vi.stubEnv("DEV", false);
     vi.stubEnv("PROD", true);
-    const { VorschauInvestmentrechner, VorschauProvision } = await import("./vorschauRouten");
+    const { VorschauInvestmentrechner, VorschauProvision, VorschauMikroseite, VorschauRechnungsvorlage } = await import("./vorschauRouten");
     expect(VorschauInvestmentrechner).toBeNull();
     expect(VorschauProvision).toBeNull();
+    expect(VorschauMikroseite).toBeNull();
+    expect(VorschauRechnungsvorlage).toBeNull();
   });
 
   it("App.tsx bindet die Seite nur über den abgesicherten Weg ein", () => {
@@ -44,5 +46,49 @@ describe("Vorschau-Route der Investmentkalkulation", () => {
     const app = readFileSync("src/App.tsx", "utf8");
     expect(app).not.toMatch(/pages\/Vorschau(Beratungspraesentation|Erstgespraech)/);
     expect(app).toMatch(/\{VorschauBeratungspraesentation && VorschauErstgespraech && \(/);
+  });
+});
+
+describe("Vorschau-Route der Kachel Nächste Aktionen", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+
+  it("existiert nur im Entwicklungsmodus", async () => {
+    vi.stubEnv("DEV", true);
+    expect((await import("./vorschauRouten")).VorschauNaechsteAktionen).not.toBeNull();
+    vi.resetModules();
+    vi.stubEnv("DEV", false);
+    vi.stubEnv("PROD", true);
+    expect((await import("./vorschauRouten")).VorschauNaechsteAktionen).toBeNull();
+  });
+
+  it("App.tsx bindet die Seite nur über den abgesicherten Weg ein", () => {
+    const app = readFileSync("src/App.tsx", "utf8");
+    expect(app).not.toMatch(/pages\/VorschauNaechsteAktionen/);
+    expect(app).toMatch(/\{VorschauNaechsteAktionen && \(/);
+  });
+});
+
+describe("Vorschau-Route Pipeline am Investment", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+
+  it("existiert nur im Entwicklungsmodus", async () => {
+    vi.stubEnv("DEV", true);
+    expect((await import("./vorschauRouten")).VorschauPipeline).not.toBeNull();
+    vi.resetModules();
+    vi.stubEnv("DEV", false);
+    vi.stubEnv("PROD", true);
+    expect((await import("./vorschauRouten")).VorschauPipeline).toBeNull();
+  });
+
+  it("App.tsx bindet sie nur über den abgesicherten Weg ein", () => {
+    const app = readFileSync("src/App.tsx", "utf8");
+    expect(app).not.toMatch(/pages\/VorschauPipeline/);
+    expect(app).toMatch(/\{VorschauPipeline && <Route path="\/vorschau\/pipeline"/);
   });
 });

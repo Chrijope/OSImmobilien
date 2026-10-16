@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { PIPELINE_STUFEN } from "./pipelineStufen";
 
@@ -14,6 +14,20 @@ const DATEI = "20260929140000_provisionssatz_ab_reservierung.sql";
 const SQL = readFileSync(`supabase/migrations/${DATEI}`, "utf8");
 const KORB_PFAD = `supabase/migrations-inbox/${DATEI}`;
 
+/**
+ * Die juengste Migration, die eine Funktion neu schreibt. Seit 16.10.2026
+ * schreibt 20261016208000_pipeline_neuer_ablauf.sql die Stufenlisten neu, und
+ * gilt in der Datenbank immer die zuletzt eingespielte Fassung.
+ */
+function juengsteMigrationMit(kopf: string): string {
+  const treffer = readdirSync("supabase/migrations")
+    .filter((f) => f.endsWith(".sql"))
+    .sort()
+    .filter((f) => readFileSync(`supabase/migrations/${f}`, "utf8").includes(kopf));
+  expect(treffer.length, kopf).toBeGreaterThan(0);
+  return readFileSync(`supabase/migrations/${treffer[treffer.length - 1]}`, "utf8");
+}
+
 function funktion(sql: string, kopf: string): string {
   const a = sql.indexOf(kopf);
   expect(a).toBeGreaterThanOrEqual(0);
@@ -28,7 +42,8 @@ describe("Migration provisionssatz_ab_reservierung", () => {
   it("die Kaufphase ist genau reservierung bis abgeschlossen aus pipelineStufen.ts", () => {
     const keys: string[] = PIPELINE_STUFEN.map((s) => s.key);
     const erwartet = keys.slice(keys.indexOf("reservierung"), keys.indexOf("abgeschlossen") + 1);
-    const liste = funktion(SQL, "CREATE OR REPLACE FUNCTION public.pipelinestufe_ist_kaufphase(")
+    const kopf = "CREATE OR REPLACE FUNCTION public.pipelinestufe_ist_kaufphase(";
+    const liste = funktion(juengsteMigrationMit(kopf), kopf)
       .match(/IN \(([^)]*)\)/)![1]
       .match(/'([a-z_]+)'/g)!
       .map((s) => s.replace(/'/g, ""));

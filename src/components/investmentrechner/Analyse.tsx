@@ -5,7 +5,7 @@ import type { InvestmentEingabe, InvestmentErgebnis } from "@/lib/investmentrech
 import type { UnterlagenDaten, UnterlagenDokument } from "@/lib/investmentrechner/unterlagenAuslesen";
 import { DECKBLATT_STANDARD, type DeckblattVariante } from "@/lib/investmentrechner/deckblattWerte";
 import { hinweisOhneSteuerwirkung } from "@/lib/investmentrechner/dokumentTexte";
-import { AmpelLeiste, Bankgespraech, Kaufpreisdetails, Kennzahlen, Steuerprofil, UnterlagenEinblicke } from "./Auswertungen";
+import { AmpelLeiste, Bankgespraech, Kaufpreisdetails, Kennzahlen, Rechenstandards, Steuerprofil, UnterlagenEinblicke } from "./Auswertungen";
 import { Neu } from "./Felder";
 import { DeckblattWahl, ErgebnisAltersvorsorge, ErgebnisAufEinenBlick, ErgebnisJahrFuerJahr } from "./Deckblatt";
 import { Minidiagramm, Vermoegensdiagramm, Zusammensetzung } from "./Diagramme";
@@ -132,6 +132,17 @@ export function Analyse({
         <Bankgespraech input={input} result={result} />
       </article>
       )}
+      <article className="content-card bank-card" data-testid="karte-stresstest">
+        <div className="card-heading">
+          <div>
+            <span className="eyebrow">Rechenstandards</span>
+            <h3>
+              Belastung, AfA und Stresstest <Neu />
+            </h3>
+          </div>
+        </div>
+        <Rechenstandards input={input} result={result} />
+      </article>
       <article className="content-card document-analysis-card">
         <div className="card-heading">
           <div>

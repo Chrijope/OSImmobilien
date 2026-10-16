@@ -22,7 +22,8 @@
 import { cacheGet, cacheSet, gleicherWert, onCacheChange } from "@/lib/dataCache";
 import { supabase } from "@/integrations/supabase/client";
 import { removeReservierung, hebeHausReservierungAuf } from "@/lib/objekteStore";
-import { updateInvestmentMetaZuerst, investmentGespeichert } from "@/lib/investmentsStore";
+import { updateInvestmentMetaZuerst, investmentGespeichert, getInvestmentsByKontakt } from "@/lib/investmentsStore";
+import { istEndzustand } from "@/lib/pipelineStufen";
 import { updateKontakt } from "@/lib/kundenStore";
 import { objektVerlaufPatch } from "@/lib/objektDatenPflicht";
 
@@ -264,8 +265,12 @@ export interface AufhebenMittel {
   offeneLinksLoeschen: (kontaktId: string, investmentId: string) => Promise<number | null>;
   /** Was vom Objekt in den Verlauf gehört und was abgeräumt wird, als meta-Patch. Schreibt nichts. */
   objektInVerlauf: (investmentId: string, o: { gewechseltVon: string; objektId?: string; wohnungId?: string }) => Record<string, unknown>;
-  /** Der Kontakt zurück auf die Objektauswahl. */
-  zuruecksetzen: (kontaktId: string) => Promise<boolean>;
+  /**
+   * Objekt und Kaufpreis am Kontakt leeren, wenn kein anderes Investment
+   * mehr läuft. Die Stufe steht seit 11.10.2026 nur am Investment und ist
+   * mit `metaSchreiben` schon zurück auf der Objektauswahl.
+   */
+  zuruecksetzen: (kontaktId: string, investmentId: string) => Promise<boolean>;
 }
 
 export const AUFHEBEN_STANDARD: AufhebenMittel = {
@@ -328,7 +333,15 @@ export const AUFHEBEN_STANDARD: AufhebenMittel = {
     }
   },
   objektInVerlauf: (investmentId, o) => objektVerlaufPatch(investmentId, o),
-  zuruecksetzen: (kontaktId) => updateKontakt(kontaktId, { pipelineStufe: "objektauswahl", objekt: "", kaufpreis: 0 }),
+  zuruecksetzen: async (kontaktId, investmentId) => {
+    // Bisher wurde hier der ganze Kontakt auf die Objektauswahl gesetzt und
+    // Objekt und Kaufpreis geleert, auch wenn ein zweites Investment beim
+    // Notar stand. Die Kontaktfelder gehören dem ganzen Kunden.
+    const andereLaufen = getInvestmentsByKontakt(kontaktId)
+      .some((inv) => inv.id !== investmentId && !istEndzustand(inv.pipelineStufe));
+    if (andereLaufen) return true;
+    return updateKontakt(kontaktId, { objekt: "", kaufpreis: 0 });
+  },
 };
 
 /**
@@ -447,6 +460,6 @@ export async function reservierungAufheben(e: AufhebenEingabe, mittel: AufhebenM
     linksUngueltig = anzahl === null ? null : anzahl > 0;
   }
 
-  const zurueck = await mittel.zuruecksetzen(e.kontaktId);
+  const zurueck = await mittel.zuruecksetzen(e.kontaktId, e.investmentId);
   return { ok: true, linksUngueltig, pdfArchiviert, ...(zurueck && investmentVollstaendig ? {} : { zuruecksetzenUnsicher: true }) };
 }

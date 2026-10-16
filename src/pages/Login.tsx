@@ -53,16 +53,13 @@ function anmeldeMeldung(meldung: unknown, t: (k: string) => string): string {
 }
 
 /**
- * Die blaue Bildmarke ohne Schriftzug.
+ * Das OS-Real-Estate-Logo, wie oben in der Sidebar.
  *
- * Hausregel, dieselbe wie in src/lib/pdfBranding.ts: Auf hellem Grund steht
- * das Originallogo, auf DUNKLEM Grund die blaue Bildmarke plus einen hell
- * gesetzten Schriftzug. Der Schriftzug des Originallogos ist schwarz und
- * würde auf der dunklen Bühne verschwinden.
+ * Hausregel, dieselbe wie in src/lib/pdfBranding.ts: Auf hellem Grund die
+ * helle Fassung, auf DUNKLEM Grund die dunkle (Zusatz GMBH hell statt grau).
  */
-const BILDMARKE_URL = "/images/osimmobilien-icon-blau.png";
-// Fuer den dunklen Bildteil: dunkles Gruen der Bildmarke als Weiss.
-const BILDMARKE_HELL_URL = "/images/os-bildmarke-hell.png";
+const LOGO_URL = "/images/os-real-estate-logo-quer.png";
+const LOGO_DUNKEL_URL = "/images/os-real-estate-logo-quer-dunkel.png";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -583,11 +580,11 @@ const Login = () => {
             darunter faellt die Buehne weg und die Seite waere sonst voellig
             unmarkiert. Steht hier ausserhalb der drei Schritte, damit beim
             Wechsel auf die Zwei-Faktor-Abfrage nichts springt.
-            Auf hellem Grund ist der Schriftzug dunkel, nicht weiss wie rechts.
+            Auf hellem Grund die helle Logofassung, rechts auf der Buehne die dunkle.
           */}
-          <div className="mb-9 flex items-center gap-2.5 lg:hidden">
-            <img src={BILDMARKE_URL} alt="" className="h-[26px] w-auto object-contain" />
-            <span className="text-[19px] font-semibold tracking-[-0.01em] text-foreground">Immobilien</span>
+          <div className="mb-9 flex items-center lg:hidden">
+            <img src={LOGO_URL} alt="OS Real Estate GmbH" className="h-9 w-auto object-contain dark:hidden" />
+            <img src={LOGO_DUNKEL_URL} alt="OS Real Estate GmbH" className="hidden h-9 w-auto object-contain dark:block" />
           </div>
 
           {/*
@@ -660,10 +657,9 @@ const Login = () => {
           }}
         />
 
-        {/* Marke oben rechts: blaue Bildmarke plus hell gesetzter Schriftzug. */}
-        <div className="absolute right-14 top-11 z-10 flex items-center gap-2.5">
-          <img src={BILDMARKE_HELL_URL} alt="" className="h-[26px] w-auto object-contain" />
-          <span className="text-[19px] font-semibold tracking-[-0.01em] text-white">Immobilien</span>
+        {/* Marke oben rechts: das Logo in der Fassung fuer dunklen Grund. */}
+        <div className="absolute right-14 top-11 z-10 flex items-center">
+          <img src={LOGO_DUNKEL_URL} alt="OS Real Estate GmbH" className="h-9 w-auto object-contain" />
         </div>
 
         <div className="relative z-10 max-w-[430px]">

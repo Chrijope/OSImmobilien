@@ -15,6 +15,8 @@ export type PhaseKey =
   | "objektauswahl"
   | "reservierung"
   | "bonitaetsunterlagen"
+  | "besichtigung"
+  | "bankgutachter"
   | "finanzierung"
   | "notar"
   | "aftersalesBeratung"
@@ -48,6 +50,9 @@ const STAGE_ORDER: PhaseKey[] = [
   "objektauswahl",
   "reservierung",
   "bonitaetsunterlagen",
+  // Seit 16.10.2026; ohne sie galt dort jede Phase als gesperrt (Index -1).
+  "besichtigung",
+  "bankgutachter",
   "finanzierung",
   "notar",
   "aftersalesBeratung",

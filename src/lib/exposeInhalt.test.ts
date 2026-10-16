@@ -154,16 +154,22 @@ describe("Seit dem 23.09.2026", () => {
   it("zeigt den Zeitstrahl kurz wie die Vorlage, ohne Gebührentext und ohne Werkvertrag", () => {
     const inhalt = baueExposeInhalt({ objekt, wohnung: w, heute });
     expect(inhalt.zeitplan.map((z) => [z.nr, z.titel, z.frist])).toEqual([
-      [1, "Reservierung", "Mit Anzahlung wirksam"],
-      [2, "Finanzierung", "2 bis 6 Wochen"],
-      [3, "Beantragung Kaufvertrag beim Notariat", "14-Tage-Frist"],
-      [4, "Notartermin", "in ca. 4 bis 6 Wochen"],
-      [5, "Kaufpreisfälligkeit", "nach Regelung im Kaufvertrag"],
-      [6, "Übergabe an die Verwaltung", ""],
+      [1, "Erstgespräch", ""],
+      [2, "Beratungspräsentation", ""],
+      [3, "Selbstauskunft", ""],
+      [4, "Unterlagen", "Ausweis, letzte Gehaltsabrechnung"],
+      [5, "Objektvorstellung", ""],
+      [6, "Reservierung", "Kostenfrei, wirksam mit deiner Unterschrift"],
+      [7, "Besichtigung", ""],
+      [8, "Termin Bankgutachter", ""],
+      [9, "Finanzierung", "2 bis 6 Wochen"],
+      [10, "Notar", "14-Tage-Frist"],
+      [11, "Kaufpreisfälligkeit", "nach Regelung im Kaufvertrag"],
     ]);
-    // Hervorgehoben wird, wo gezahlt wird.
-    expect(inhalt.zeitplan.filter((z) => z.zahlung).map((z) => z.titel)).toEqual(["Reservierung", "Kaufpreisfälligkeit"]);
-    expect(ZEITPLAN_STANDARD).toHaveLength(6);
+    // Hervorgehoben wird, wo gezahlt wird. Die Reservierung ist seit dem 16.10.2026 kostenfrei.
+    expect(inhalt.zeitplan.filter((z) => z.zahlung).map((z) => z.titel)).toEqual(["Kaufpreisfälligkeit"]);
+    expect(JSON.stringify(inhalt.zeitplan)).not.toMatch(/Anzahlung/);
+    expect(ZEITPLAN_STANDARD).toHaveLength(11);
     for (const z of ZEITPLAN_STANDARD) expect(z.frist).not.toMatch(/[–—]|\d\s?-\s?\d/);
     // Auch bei Sanierungsobjekten nie ein Werkvertrag, und nirgends der Gebührentext.
     const saniert = baueExposeInhalt({ objekt: { ...objekt, meta: { ...objekt.meta, objektart: "sanierter_bestand" } } as ObjektData, wohnung: { ...w, sanierungAnteilBetrag: 8000 }, heute });
@@ -172,10 +178,11 @@ describe("Seit dem 23.09.2026", () => {
   });
 
   it("lässt einem von Hand gepflegten Zeitplan den Vorrang und hebt dort die Zahlungen hervor", () => {
-    const inhalt = baueExposeInhalt({ objekt: { ...objekt, meta: { ...objekt.meta, zeitplan: [{ titel: "Beratung", frist: "heute" }, { titel: "" }, { titel: "Reservierung unterzeichnen", frist: "diese Woche" }] } } as ObjektData, wohnung: w, heute });
+    const inhalt = baueExposeInhalt({ objekt: { ...objekt, meta: { ...objekt.meta, zeitplan: [{ titel: "Beratung", frist: "heute" }, { titel: "" }, { titel: "Reservierung unterzeichnen", frist: "diese Woche" }, { titel: "Kaufpreis zahlen", frist: "später" }] } } as ObjektData, wohnung: w, heute });
     expect(inhalt.zeitplan).toEqual([
       { nr: 1, titel: "Beratung", frist: "heute" },
-      { nr: 2, titel: "Reservierung unterzeichnen", frist: "diese Woche", zahlung: true },
+      { nr: 2, titel: "Reservierung unterzeichnen", frist: "diese Woche" },
+      { nr: 3, titel: "Kaufpreis zahlen", frist: "später", zahlung: true },
     ]);
   });
 
@@ -363,9 +370,9 @@ describe("Seit dem 23.09.2026", () => {
     });
   });
 
-  it("hakt in den nächsten Schritten die Beratung als erledigt ab", () => {
-    expect(NAECHSTE_SCHRITTE.filter((s) => s.erledigt).map((s) => s.titel)).toEqual(["Beratung"]);
-    expect(baueExposeInhalt({ objekt, wohnung: w, heute }).naechsteSchritte[0].erledigt).toBe(true);
+  it("hakt seit dem 16.10.2026 keinen Schritt mehr vorab ab, der Zeitplan nennt den ganzen Ablauf", () => {
+    expect(NAECHSTE_SCHRITTE.filter((s) => s.erledigt)).toEqual([]);
+    expect(baueExposeInhalt({ objekt, wohnung: w, heute }).naechsteSchritte[0].erledigt).toBeUndefined();
   });
 });
 

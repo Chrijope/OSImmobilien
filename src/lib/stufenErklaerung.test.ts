@@ -44,15 +44,17 @@ describe("Erklärungen zu den Pipelinestufen", () => {
   });
 
   it("beschreibt die Reihenfolge, die das System wirklich läuft", () => {
-    // Beratungsgespräch führt auf die Selbstauskunft, diese auf die
-    // Objektauswahl, die Reservierung auf die Bonität und die Bonität auf die
-    // Finanzierung. Vorher stand hier durchgehend die alte Reihenfolge.
+    // Neuer Ablauf seit 16.10.2026: Beratungspräsentation, Selbstauskunft &
+    // Unterlagen, Objektvorstellung, Reservierung, Besichtigung, Termin
+    // Bankgutachter, Finanzierung.
     expect(STUFEN_ERKLAERUNG.beratungsgespraech).toContain("Selbstauskunft");
     expect(STUFEN_ERKLAERUNG.beratungsgespraech).not.toContain("Bonitätsunterlagen");
-    expect(STUFEN_ERKLAERUNG.selbstauskunft).toContain("Objektauswahl");
+    expect(STUFEN_ERKLAERUNG.selbstauskunft).toContain("Objektvorstellung");
     expect(STUFEN_ERKLAERUNG.objektauswahl).toContain("Reservierung");
-    expect(STUFEN_ERKLAERUNG.reservierung).toContain("Bonitätsunterlagen");
-    expect(STUFEN_ERKLAERUNG.bonitaetsunterlagen).toContain("Finanzierung");
+    expect(STUFEN_ERKLAERUNG.reservierung).toContain("Besichtigung");
+    expect(STUFEN_ERKLAERUNG.reservierung).not.toContain("Bonitätsunterlagen");
+    expect(STUFEN_ERKLAERUNG.besichtigung).toContain("Termin Bankgutachter");
+    expect(STUFEN_ERKLAERUNG.bankgutachter).toContain("Finanzierung");
   });
 
   it("behauptet in der Objektauswahl nicht, es sei schon reserviert", () => {

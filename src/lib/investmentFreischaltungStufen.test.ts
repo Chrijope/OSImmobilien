@@ -97,18 +97,20 @@ describe("Die Freischaltung von Finanzierung und Notar", () => {
  * herausbringt, die es bei ihm gar nicht gibt.
  */
 describe("Wer selbst finanziert, wartet nicht auf Bonitätsunterlagen", () => {
-  it("fragt beim Stufensprung nach der Reservierung den Vermerk ab", () => {
-    expect(QUELLE).toContain("bonitaetsunterlagenErforderlich(inv.id)");
+  it("bleibt nach der unterschriebenen Reservierung auf Reservierung, die Besichtigung folgt", () => {
+    // Seit 16.10.2026 (neuer Ablauf): kein Sprung mehr auf Bonitaetsunterlagen
+    // oder, beim Selbstfinanzierer, auf Finanzierung. Es entsteht die
+    // Aufgabe „Besichtigung vereinbaren“.
+    expect(QUELLE).not.toContain("naechsteStufeNachRv");
+    const block = QUELLE.match(/if \(rvSignedForAutoAdvance && !rvSchonVerarbeitet[\s\S]{0,1600}/);
+    expect(block, "der Block nach der Unterschrift").toBeTruthy();
+    expect(block![0]).toContain('pipelineStufe: "reservierung"');
+    expect(block![0]).toContain("stelleBesichtigungsAufgabeSicher");
+    expect(block![0]).not.toContain('pipelineStufe: "finanzierung"');
   });
 
-  it("springt bei gesetztem Vermerk direkt auf Finanzierung", () => {
-    const block = QUELLE.match(
-      /const naechsteStufeNachRv = bonitaetsunterlagenErforderlich\(inv\.id\)([\s\S]{0,120})/,
-    );
-
-    expect(block, "die Entscheidung über die nächste Stufe").toBeTruthy();
-    expect(block![1]).toContain('"bonitaetsunterlagen"');
-    expect(block![1]).toContain('"finanzierung"');
+  it("schiebt einen Selbstfinanzierer nur noch aus der alten Bonitaetsstufe auf Finanzierung", () => {
+    expect(QUELLE).toContain('if (rvSignedForAutoAdvance && saEntfaellt && inv.pipelineStufe === "bonitaetsunterlagen")');
   });
 
   it("verspricht im Schaltertext nur noch, was der Schalter tut", () => {

@@ -15,7 +15,11 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/contexts/UserContext";
 import { Copy, Download, Mail, CheckCircle2, ArrowLeft } from "lucide-react";
-const LOGO_PFAD = "/images/osimmobilien-logo.png";
+/* Das OS-Real-Estate-Logo wie oben in der Sidebar, als eigene Datei in genau
+   der Anzeigebreite (120 Pixel). Beim Einfuegen in Apple Mail geht die
+   width-Angabe verloren, Mail zeigt dann die natuerliche Groesse des Bildes.
+   Ist die Datei selbst 120 Pixel breit, kann sie die Signatur nicht sprengen. */
+const LOGO_PFAD = "/images/os-real-estate-logo-signatur.png";
 import { cacheGet } from "@/lib/dataCache";
 import { OEFFENTLICHE_BASIS } from "@/lib/oeffentlicheBasis";
 
@@ -33,9 +37,10 @@ const splitName = (full: string): { vorname: string; nachname: string } => {
   return { vorname: parts[0], nachname: parts.slice(1).join(" ") };
 };
 
-/* Die Adresse, die in der Signatur stehen bleibt, falls das eingebettete Bild
-   nicht entsteht. Fest auf die veroeffentlichte Seite statt
-   die Herkunft des Browsers: Aus der Lovable-Vorschau heraus stand sonst deren
+/* Die Signatur verweist auf das Logo per absoluter Adresse statt es
+   einzubetten: Eingebettete Bilder (base64) zeigen viele Mailprogramme nicht
+   an oder haengen sie als Anhang an. Fest auf die veroeffentlichte Seite statt
+   die Herkunft des Browsers: Aus einer Vorschau heraus stand sonst deren
    Adresse in jeder Mail, und die laedt ohne Anmeldung kein Bild. */
 const absoluteLogoUrl = () => new URL(LOGO_PFAD, OEFFENTLICHE_BASIS).href;
 
@@ -97,7 +102,7 @@ const buildSignaturHtml = (p: {
   <table cellpadding="0" cellspacing="0" border="0" style="margin-top: 14px; border-collapse: collapse;">
     <tr>
       <td valign="top" style="padding-right: 18px;">
-        <img src="${p.logoUrl}" alt="OS Immobilien" width="${LOGO_BREITE}" style="display:block; border:0; outline:none; max-width:${LOGO_BREITE}px; height:auto;" />
+        <img src="${p.logoUrl}" alt="OS Real Estate GmbH" width="${LOGO_BREITE}" style="display:block; border:0; outline:none; max-width:${LOGO_BREITE}px; height:auto;" />
       </td>
       <td valign="top" style="font-family: ${SIG_FONT}; font-size: 12px; color: ${SIG_TINTE}; line-height: 1.5;">
         ${p.telefon ? `Telefon <a href="tel:${telHref}" style="color:${SIG_TINTE}; text-decoration:none;">${p.telefon}</a><br/>` : ""}
@@ -110,7 +115,7 @@ const buildSignaturHtml = (p: {
   <div style="margin-top: 16px; border-top: 1px solid ${SIG_LINIE}; font-size: 0; line-height: 0;">&nbsp;</div>
 
   <div style="margin-top: 10px; font-size: 10px; color: ${SIG_LEISE};">
-    OS Immobilien Holding GmbH, Am Ostbahnhof 1, 15749 Mittenwalde &middot; USt-IdNr.: DEINE-UST-ID
+    OS Real Estate GmbH, Am Ostbahnhof 1, 15749 Mittenwalde &middot; USt-IdNr.: DEINE-UST-ID
   </div>
   <div style="margin-top: 8px; font-size: 10px; color: ${SIG_LEISE}; line-height: 1.45;">
     Datenschutzhinweis: Soweit Sie mit uns per E-Mail kommunizieren, werden dabei Daten erhoben und verarbeitet. Informationen dazu, welche Daten zu welchen Zwecken und auf welcher gesetzlichen Grundlage erhoben werden sowie über Ihre diesbezüglichen Rechte finden Sie auf unserer Webseite in der Datenschutzerklärung unter <a href="https://osimmobilien.netlify.app/datenschutz" style="color:${SIG_BLAU_700}; text-decoration:none;">osimmobilien.netlify.app/datenschutz</a>.
@@ -120,44 +125,6 @@ const buildSignaturHtml = (p: {
 
 /** Anzeigebreite des Logos in der Signatur, in Pixeln. */
 const LOGO_BREITE = 120;
-
-/**
- * Lädt das Logo und verkleinert es auf exakt die Anzeigegröße.
- *
- * Vorher wurde die Originaldatei eingebettet, 1920 Pixel breit, und nur per
- * width-Angabe auf 120 gestellt. Beim Kopieren und Einfügen in Apple Mail
- * geht diese Angabe verloren, Mail zeigt dann die natürliche Größe des
- * Bildes, und das Logo sprengt die Signatur. Ist die Bilddatei selbst nur
- * 120 Pixel breit, kann kein Mailprogramm sie größer machen, egal was beim
- * Einfügen verloren geht.
- */
-async function imageToDataUri(url: string): Promise<string | null> {
-  try {
-    return await new Promise<string | null>((resolve) => {
-      const img = new Image();
-      img.onload = () => {
-        try {
-          const hoehe = Math.round((img.naturalHeight / img.naturalWidth) * LOGO_BREITE);
-          const canvas = document.createElement("canvas");
-          canvas.width = LOGO_BREITE;
-          canvas.height = hoehe;
-          const ctx = canvas.getContext("2d");
-          if (!ctx) { resolve(null); return; }
-          ctx.imageSmoothingEnabled = true;
-          ctx.imageSmoothingQuality = "high";
-          ctx.drawImage(img, 0, 0, LOGO_BREITE, hoehe);
-          resolve(canvas.toDataURL("image/png"));
-        } catch {
-          resolve(null);
-        }
-      };
-      img.onerror = () => resolve(null);
-      img.src = url;
-    });
-  } catch {
-    return null;
-  }
-}
 
 export function EmailSignaturDialog({ open = true, onOpenChange, asPage = false, backTo, backLabel }: Props) {
   const { user, authUser } = useUser();
@@ -186,7 +153,6 @@ export function EmailSignaturDialog({ open = true, onOpenChange, asPage = false,
   const [nachname, setNachname] = useState(stored?.nachname ?? initial.nachname);
   const [email, setEmail] = useState(stored?.email ?? authUser?.email ?? "");
   const [telefon, setTelefon] = useState(stored?.telefon ?? initialTelefon);
-  const [logoDataUri, setLogoDataUri] = useState<string | null>(null);
   const previewRef = useRef<HTMLDivElement>(null);
 
   // Beim Öffnen: lokal gespeicherte Werte bevorzugen, sonst aus Profil vorbefüllen.
@@ -217,15 +183,7 @@ export function EmailSignaturDialog({ open = true, onOpenChange, asPage = false,
     }
   }, [storageKey, vorname, nachname, email, telefon]);
 
-  useEffect(() => {
-    // Zum Einbetten die eigene Herkunft lesen, sonst sperrt CORS das Canvas.
-    imageToDataUri(LOGO_PFAD).then(setLogoDataUri);
-  }, []);
-
-  const logoUrl = useMemo(
-    () => logoDataUri || absoluteLogoUrl(),
-    [logoDataUri],
-  );
+  const logoUrl = absoluteLogoUrl();
 
   const html = useMemo(
     () => buildSignaturHtml({ vorname, nachname, email, telefon, logoUrl }),
@@ -273,7 +231,7 @@ export function EmailSignaturDialog({ open = true, onOpenChange, asPage = false,
 
   const downloadHtml = () => {
     const blob = new Blob([
-      `<!DOCTYPE html><html><head><meta charset="utf-8"><title>OS Immobilien Signatur – ${vorname} ${nachname}</title></head><body>${html}</body></html>`,
+      `<!DOCTYPE html><html><head><meta charset="utf-8"><title>OS Real Estate Signatur – ${vorname} ${nachname}</title></head><body>${html}</body></html>`,
     ], { type: "text/html" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

@@ -37,15 +37,21 @@ vi.mock("@/lib/buchungStore", () => ({
 
 vi.mock("@/lib/aktivitaetenStore", () => ({
   addAktivitaet: () => {},
-  addGeteilteAufgabe: async (a: unknown) => { folgeaufgaben.push(a); },
+  addGeteilteAufgabe: async (a: unknown) => { folgeaufgaben.push(a); return true; },
   getAktivitaeten: () => [],
   setzeAktivitaetErledigt: async (id: string) => { erledigteAktivitaeten.push(id); },
   verschiebeAktivitaetTermin: async () => {},
   loescheAktivitaet: async () => true,
 }));
 
+// Die Stufe haengt am Investment (11.10.2026): Ein Investment in der Stufe
+// des Kontakts, gesetzte Stufen kommen ueber updateInvestment.
 vi.mock("@/lib/investmentsStore", () => ({
-  getInvestmentsByKontakt: () => [],
+  getInvestmentsByKontakt: () => [{ id: "inv-1", pipelineStufe: kontakt.pipelineStufe }],
+  updateInvestment: (_id: string, f: Record<string, unknown>) => {
+    gesetzteStufen.push({ id: "k-1", stufe: f.pipelineStufe });
+    return Promise.resolve(true);
+  },
   getSaSigned: () => false,
   getRvSigned: () => false,
   getSaSignaturePending: () => false,
@@ -54,6 +60,9 @@ vi.mock("@/lib/investmentsStore", () => ({
 vi.mock("@/lib/dataCache", () => ({
   onCacheChange: () => () => {},
   cacheGet: () => [],
+  isTableLoaded: () => true,
+  ladeTabellen: async () => {},
+  cacheLadeZeilenFuer: async () => true,
   // Der Kontakt aus dem Zwischenspeicher, fuer den Bestandsfall mit meta.
   cacheGetById: () => kontakt,
 }));
@@ -70,6 +79,7 @@ vi.mock("@/lib/oeffentlicheBasis", () => ({ oeffentlicheAdresse: (p: string) => 
 vi.mock("@/lib/videoraumStore", () => ({ beendeRaumMitToken: async () => true }));
 vi.mock("@/lib/aufgabenStore", () => ({
   getAufgabenFuerKunde: () => [],
+  getAufgaben: () => [],
   erledigeAufgabe: async () => {},
   // Die echte Aufgabe hinter einem von Hand angelegten Meeting wird beim
   // Abschliessen mitgezogen; hier gibt es keine.
@@ -84,8 +94,7 @@ vi.mock("@/hooks/use-toast", () => ({ useToast: () => ({ toast: () => {} }) }));
 
 vi.mock("@/lib/kundenStore", () => ({
   getKontaktById: () => kontakt,
-  updateKontakt: (id: string, updates: Record<string, unknown>) => {
-    gesetzteStufen.push({ id, stufe: updates.pipelineStufe });
+  updateKontakt: (_id: string, updates: Record<string, unknown>) => {
     Object.assign(kontakt, updates);
   },
   mergeKontaktMetaMitGrund: async (_id: string, patch: Record<string, unknown>) => {
@@ -208,6 +217,36 @@ describe("Knoepfe sind jederzeit klickbar, auch vor dem Termin", () => {
     }
     fireEvent.click(screen.getByRole("button", { name: /Stattgefunden/ }));
     await waitFor(() => expect(gesetzteStatus).toEqual([{ id: "b-erstgespraech", status: "wahrgenommen" }]));
+  });
+});
+
+describe("Nachfass-Anruf nach dem Erstgespräch (15.10.2026)", () => {
+  it("entsteht nach Stattgefunden beim Erstgespräch, beim Zuständigen", async () => {
+    buchungen.push(buchung("erstgespraech", "Erstgespräch"));
+    zeige();
+    fireEvent.click(await screen.findByRole("button", { name: /Stattgefunden/ }));
+    // Dazu seit 16.10.2026 die Aufgabe, das Gespräch zusammenzufassen.
+    await waitFor(() => expect(folgeaufgaben).toHaveLength(2));
+    expect(folgeaufgaben[0]).toMatchObject({
+      titel: "Nach dem Erstgespräch: Kunden anrufen und Fragen klären",
+      typ: "anruf",
+      prioritaet: "hoch",
+      zugewiesenAn: "u-1",
+    });
+    expect(folgeaufgaben[1]).toMatchObject({
+      titel: "Gespräch zusammenfassen: Nachfass-Mail innerhalb von 2 Stunden senden",
+      zugewiesenAn: "u-1",
+    });
+  });
+
+  it("entsteht nicht nach einem Beratungsgespräch", async () => {
+    buchungen.push(buchung("beratung", "Beratungsgespräch"));
+    zeige();
+    fireEvent.click(await screen.findByRole("button", { name: /Stattgefunden/ }));
+    await waitFor(() => expect(gesetzteStatus).toHaveLength(1));
+    // Kein Nachfass-Anruf, nur die Zusammenfassung (seit 16.10.2026).
+    await waitFor(() => expect(folgeaufgaben).toHaveLength(1));
+    expect(folgeaufgaben[0]).toMatchObject({ titel: "Gespräch zusammenfassen: Nachfass-Mail innerhalb von 2 Stunden senden" });
   });
 });
 

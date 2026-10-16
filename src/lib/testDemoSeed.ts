@@ -5,7 +5,13 @@
 
 import type { KundeData } from "./kundenStore";
 
-const SEED_FLAG = "osimmo_demo_seeded_v2";
+/*
+ * v3 (16.10.2026): ohne die Demo-Objekte des Ursprungsprojekts (Memmingen,
+ * Augsburg, Regensburg, Straubing, Waldachtal). Neuer Schlüssel, damit ein
+ * schon befülltes Testkonto einmal neu befüllt wird.
+ */
+const SEED_FLAG = "osimmo_demo_seeded_v3";
+const ALTE_SEED_FLAGS = ["osimmo_demo_seeded_v2"];
 
 export function seedTestDemoData() {
   if (localStorage.getItem(SEED_FLAG)) return;
@@ -19,7 +25,7 @@ export function seedTestDemoData() {
       strasse: "Musterstraße", hausnummer: "12", plz: "80331", ort: "München",
       quelle: "Website", berater: "Christian Peetz", erstellt_am: "2025-12-01T10:00:00Z",
       archiviert: false, status: "kontaktiert", firma: "", position: "",
-      objekt: "Memmingen – Kalchstraße", kaufpreis: 189000, finanzierbarkeit: "gut",
+      objekt: "", kaufpreis: 0, finanzierbarkeit: "gut",
       pipelineStufe: "erstgespraech_geplant", leadTyp: "website",
       qualZiel: "Altersvorsorge, Vermögensaufbau", qualEinkommen: "4.200 €",
       qualEigenkapital: "35.000 €", qualBeruflicheSituation: "Angestellt",
@@ -33,7 +39,7 @@ export function seedTestDemoData() {
       strasse: "Lindenweg", hausnummer: "5", plz: "86150", ort: "Augsburg",
       quelle: "Empfehlung", berater: "Christian Peetz", erstellt_am: "2025-11-15T14:30:00Z",
       archiviert: false, status: "qualifiziert", firma: "", position: "",
-      objekt: "Augsburg – Gögginger Str.", kaufpreis: 245000, finanzierbarkeit: "sehr gut",
+      objekt: "", kaufpreis: 0, finanzierbarkeit: "sehr gut",
       pipelineStufe: "bonitaetsunterlagen", leadTyp: "manuell",
       qualZiel: "Steueroptimierung", qualEinkommen: "5.800 €",
       qualEigenkapital: "60.000 €", qualBeruflicheSituation: "Beamtin",
@@ -61,7 +67,7 @@ export function seedTestDemoData() {
       strasse: "Schillerstr.", hausnummer: "22", plz: "68159", ort: "Mannheim",
       quelle: "Meta Ads", berater: "Christian Peetz", erstellt_am: "2025-09-05T16:45:00Z",
       archiviert: false, status: "kunde", firma: "", position: "",
-      objekt: "Memmingen – Kalchstraße", kaufpreis: 175000, finanzierbarkeit: "sehr gut",
+      objekt: "", kaufpreis: 0, finanzierbarkeit: "sehr gut",
       pipelineStufe: "reservierung", leadTyp: "meta",
       reservierungsDatum: "2026-01-15",
       qualZiel: "Altersvorsorge", qualEinkommen: "4.800 €",
@@ -76,7 +82,7 @@ export function seedTestDemoData() {
       strasse: "Beethovenstr.", hausnummer: "3", plz: "94315", ort: "Straubing",
       quelle: "Website", berater: "Christian Peetz", erstellt_am: "2025-08-12T11:00:00Z",
       archiviert: false, status: "kunde", firma: "", position: "",
-      objekt: "Straubing – Am Stadtgraben", kaufpreis: 210000, finanzierbarkeit: "gut",
+      objekt: "", kaufpreis: 0, finanzierbarkeit: "gut",
       pipelineStufe: "finanzierung", leadTyp: "website",
       reservierungsDatum: "2025-12-01",
       finanzierungsStatus: "offen", finanzierungsBank: "Sparkasse",
@@ -93,7 +99,7 @@ export function seedTestDemoData() {
       strasse: "Goethestr.", hausnummer: "17", plz: "72178", ort: "Waldachtal",
       quelle: "Empfehlung", berater: "Christian Peetz", erstellt_am: "2025-07-20T08:30:00Z",
       archiviert: false, status: "kunde", firma: "", position: "",
-      objekt: "Waldachtal – Im Wiesengrund", kaufpreis: 195000, finanzierbarkeit: "sehr gut",
+      objekt: "", kaufpreis: 0, finanzierbarkeit: "sehr gut",
       pipelineStufe: "notar", leadTyp: "manuell",
       reservierungsDatum: "2025-11-10",
       finanzierungsStatus: "bestaetigt", finanzierungsBank: "DKB",
@@ -111,7 +117,7 @@ export function seedTestDemoData() {
       strasse: "Hauptstr.", hausnummer: "45", plz: "84028", ort: "Landshut",
       quelle: "Google Ads", berater: "Christian Peetz", erstellt_am: "2025-06-01T13:20:00Z",
       archiviert: false, status: "kunde", firma: "", position: "",
-      objekt: "Memmingen – Kalchstraße", kaufpreis: 165000, finanzierbarkeit: "gut",
+      objekt: "", kaufpreis: 0, finanzierbarkeit: "gut",
       pipelineStufe: "faelligkeit", leadTyp: "google",
       reservierungsDatum: "2025-09-15",
       finanzierungsStatus: "bestaetigt", finanzierungsBank: "Commerzbank",
@@ -129,7 +135,7 @@ export function seedTestDemoData() {
       strasse: "Am Marktplatz", hausnummer: "1", plz: "88400", ort: "Biberach",
       quelle: "Website", berater: "Christian Peetz", erstellt_am: "2025-04-10T15:00:00Z",
       archiviert: false, status: "kunde", firma: "", position: "",
-      objekt: "Augsburg – Gögginger Str.", kaufpreis: 280000, finanzierbarkeit: "sehr gut",
+      objekt: "", kaufpreis: 0, finanzierbarkeit: "sehr gut",
       pipelineStufe: "abgeschlossen", leadTyp: "website",
       reservierungsDatum: "2025-06-01",
       finanzierungsStatus: "bestaetigt", finanzierungsBank: "HypoVereinsbank",
@@ -166,7 +172,7 @@ export function seedTestDemoData() {
       objekt: "", kaufpreis: 0, finanzierbarkeit: "",
       pipelineStufe: "neuer_lead", leadTyp: "google",
       setter: "Setterin Demo",
-      setterSkriptNotizen: "Sehr interessiert, möchte Infos zu Memmingen.",
+      setterSkriptNotizen: "Sehr interessiert, möchte Infos zu freien Objekten.",
       setterTerminGebucht: true, setterTerminDatum: "2026-03-25", setterTerminUhrzeit: "15:00",
       setterCloser: "Christian Peetz",
       funnelKontaktzeit: "Vormittags", funnelInvestitionsvolumen: "200.000 – 300.000 €",
@@ -210,7 +216,7 @@ export function seedTestDemoData() {
       strasse: "Friedrichstr.", hausnummer: "88", plz: "70174", ort: "Stuttgart",
       quelle: "Website", berater: "Christian Peetz", erstellt_am: "2025-10-10T10:00:00Z",
       archiviert: false, status: "qualifiziert", firma: "", position: "",
-      objekt: "Memmingen – Kalchstraße", kaufpreis: 199000, finanzierbarkeit: "sehr gut",
+      objekt: "", kaufpreis: 0, finanzierbarkeit: "sehr gut",
       pipelineStufe: "reservierung", leadTyp: "website",
       reservierungsDatum: "2026-02-20",
       qualZiel: "Altersvorsorge, Vermögensaufbau", qualEinkommen: "5.200 €",
@@ -249,7 +255,7 @@ export function seedTestDemoData() {
       strasse: "Kastanienallee", hausnummer: "15", plz: "10435", ort: "Berlin",
       quelle: "Empfehlung", berater: "Christian Peetz", erstellt_am: "2025-05-20T09:00:00Z",
       archiviert: false, status: "kunde", firma: "", position: "",
-      objekt: "Regensburg – Am Galgenberg", kaufpreis: 220000, finanzierbarkeit: "gut",
+      objekt: "", kaufpreis: 0, finanzierbarkeit: "gut",
       pipelineStufe: "abrechnung", leadTyp: "manuell",
       reservierungsDatum: "2025-07-01",
       finanzierungsStatus: "bestaetigt", finanzierungsBank: "PSD Bank",
@@ -265,18 +271,15 @@ export function seedTestDemoData() {
   localStorage.setItem("osimmo_kontakte", JSON.stringify(kontakte));
 
   // ── Investments ──
-  const investments = [
-    { id: "inv-001", kundeId: "demo-007", objekt: "Memmingen – Kalchstraße", wohnung: "WHG 19", kaufpreis: 165000, kaufdatum: "2025-12-20", status: "aktiv", notizen: "" },
-    { id: "inv-002", kundeId: "demo-008", objekt: "Augsburg – Gögginger Str.", wohnung: "WHG 5", kaufpreis: 280000, kaufdatum: "2025-09-10", status: "aktiv", notizen: "Zweites Investment geplant" },
-    { id: "inv-003", kundeId: "demo-015", objekt: "Regensburg – Am Galgenberg", wohnung: "WHG 12", kaufpreis: 220000, kaufdatum: "2025-10-05", status: "aktiv", notizen: "" },
-  ];
-  localStorage.setItem("osimmo_investments", JSON.stringify(investments));
+  // Die früheren Demo-Investments hingen an Objekten des Ursprungsprojekts
+  // und hatten nicht die Form, die `investmentsStore` liest. Leer anfangen.
+  localStorage.setItem("osimmo_investments", JSON.stringify([]));
 
   // ── Aktivitäten ──
   const aktivitaeten = [
     { id: "akt-001", kundeId: "demo-001", art: "anruf", beschreibung: "Erstgespräch geführt, großes Interesse", datum: "2025-12-05T10:00:00Z", von: "Christian Peetz", ergebnis: "Termin vereinbart" },
     { id: "akt-002", kundeId: "demo-002", art: "email", beschreibung: "Bonitätsunterlagen angefordert", datum: "2025-11-20T14:00:00Z", von: "Christian Peetz", ergebnis: "Unterlagen eingegangen" },
-    { id: "akt-003", kundeId: "demo-004", art: "meeting", beschreibung: "Objektbesichtigung Memmingen WHG 19", datum: "2026-01-10T14:00:00Z", von: "Christian Peetz", ergebnis: "Reservierung gewünscht" },
+    { id: "akt-003", kundeId: "demo-004", art: "meeting", beschreibung: "Objektbesichtigung", datum: "2026-01-10T14:00:00Z", von: "Christian Peetz", ergebnis: "Reservierung gewünscht" },
     { id: "akt-004", kundeId: "demo-005", art: "anruf", beschreibung: "Finanzierungsstatus besprochen", datum: "2026-02-15T11:00:00Z", von: "Christian Peetz", ergebnis: "Sparkasse prüft" },
     { id: "akt-005", kundeId: "demo-006", art: "notiz", beschreibung: "Notartermin bestätigt für 15.04.", datum: "2026-03-01T09:00:00Z", von: "Christian Peetz" },
     { id: "akt-006", kundeId: "demo-009", art: "anruf", beschreibung: "Erstkontakt versucht – AB besprochen", datum: new Date().toISOString(), von: "Setterin Demo", ergebnis: "Rückruf erwartet" },
@@ -329,6 +332,7 @@ export function resetTestDemoSeed() {
 export function clearTestDemoData() {
   const keys = [
     SEED_FLAG,
+    ...ALTE_SEED_FLAGS,
     "osimmo_kontakte",
     "osimmo_investments",
     "osimmo_aktivitaeten",

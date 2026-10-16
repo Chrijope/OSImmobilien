@@ -27,26 +27,20 @@ function keFromDb(r: any): FollowUpKette {
   return { id: r.id, name: r.name, pipelineStufe: r.pipeline_stufe || "", schritte: r.schritte || [], aktiv: r.aktiv !== false };
 }
 
+/*
+ * Seit 15.10.2026 bleibt nur ein Kettenschritt. Gestrichen sind "Nach
+ * Erstgespräch" (der Nachfass-Anruf entsteht jetzt erst nach dem
+ * stattgefundenen Gespräch, siehe `nachfassNachErstgespraech.ts`),
+ * "Bonitätsunterlagen angefordert" (lief doppelt zum Selbstauskunft-Nachfass),
+ * "Nach Reservierung" (die Finanzierung bekommt ohnehin eine Benachrichtigung)
+ * und aus "Nach Abschluss" Glückwunsch-Anruf und Empfehlungsprogramm (steckt
+ * in der Notar-Aufgabe). Follow-ups haben keinen Empfänger, deshalb so wenige
+ * wie möglich.
+ */
 function defaultKetten(): FollowUpKette[] {
   return [
-    { id: "fk-erstgespraech", name: "Nach Erstgespräch", pipelineStufe: "erstgespraech_geplant", aktiv: true, schritte: [
-      { id: "s1", tageNachEvent: 1, typ: "email", titel: "Danke-Mail senden", beschreibung: "Persönliche Danke-Mail nach Erstgespräch", prioritaet: "hoch" },
-      { id: "s2", tageNachEvent: 3, typ: "anruf", titel: "Nachfass-Anruf", beschreibung: "Rückfragen klären", prioritaet: "hoch" },
-      { id: "s3", tageNachEvent: 7, typ: "email", titel: "Unterlagen zusenden", beschreibung: "Passende Objektunterlagen zusenden", prioritaet: "mittel" },
-      { id: "s4", tageNachEvent: 14, typ: "anruf", titel: "Entscheidung nachfragen", beschreibung: "Hat sich der Interessent beschäftigt?", prioritaet: "hoch" },
-    ]},
-    { id: "fk-bonitaet", name: "Bonitätsunterlagen angefordert", pipelineStufe: "bonitaetsunterlagen", aktiv: true, schritte: [
-      { id: "s1", tageNachEvent: 2, typ: "erinnerung", titel: "Erinnerung Unterlagen", beschreibung: "Freundliche Erinnerung", prioritaet: "mittel" },
-      { id: "s2", tageNachEvent: 5, typ: "anruf", titel: "Telefonische Nachfrage", beschreibung: "Probleme bei Zusammenstellung?", prioritaet: "hoch" },
-    ]},
-    { id: "fk-reservierung", name: "Nach Reservierung", pipelineStufe: "reservierung", aktiv: true, schritte: [
-      { id: "s1", tageNachEvent: 1, typ: "email", titel: "Reservierungsbestätigung", beschreibung: "Schriftliche Bestätigung", prioritaet: "hoch" },
-      { id: "s2", tageNachEvent: 3, typ: "anruf", titel: "Finanzierung besprechen", beschreibung: "Finanzierungsoptionen klären", prioritaet: "hoch" },
-    ]},
     { id: "fk-aftersales", name: "Nach Abschluss", pipelineStufe: "faelligkeit", aktiv: true, schritte: [
-      { id: "s1", tageNachEvent: 1, typ: "anruf", titel: "Glückwunsch-Anruf", beschreibung: "Herzlichen Glückwunsch!", prioritaet: "hoch" },
-      { id: "s2", tageNachEvent: 7, typ: "email", titel: "Empfehlungsprogramm vorstellen", beschreibung: "Empfehlungsprogramm mit Prämie", prioritaet: "mittel" },
-      { id: "s3", tageNachEvent: 30, typ: "anruf", titel: "Zufriedenheits-Check", beschreibung: "Wie geht es dem Kunden?", prioritaet: "mittel" },
+      { id: "s3", tageNachEvent: 30, typ: "anruf", titel: "Einen Monat nach dem Notar: Zufriedenheit abfragen", beschreibung: "Wie geht es dem Kunden?", prioritaet: "mittel" },
     ]},
   ];
 }
@@ -145,12 +139,17 @@ export function deleteFollowUp(id: string) {
  * die NICHT zur aktuellen Pipeline-Stufe gehören. Wird beim Stufenwechsel
  * aufgerufen, damit alte Erinnerungen nicht "überfällig" auflaufen.
  */
-export function cancelStaleAutoFollowUps(kundeId: string, neueStufe: string): number {
+/**
+ * Storniert offene automatische Follow-ups aus Stufen, in denen kein
+ * Investment des Kunden mehr steht. Seit dem 11.10.2026 eine Liste: Jedes
+ * Investment hat seine eigene Stufe und behaelt seine Erinnerungen.
+ */
+export function cancelStaleAutoFollowUps(kundeId: string, aktuelleStufen: string[]): number {
   const all = getFollowUps().filter(
     f => f.kundeId === kundeId
       && f.automatisch
       && (f.status === "offen" || f.status === "ueberfallig")
-      && f.pipelineStufe !== neueStufe
+      && !aktuelleStufen.includes(f.pipelineStufe)
   );
   all.forEach(f => deleteFollowUp(f.id));
   return all.length;

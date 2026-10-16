@@ -1,4 +1,5 @@
 import { cacheGet, cacheInsert, cacheUpdate, cacheDelete, cacheFilter, cacheSet, cacheReload, cacheUpsert, SchreibenAbgelehnt } from "./dataCache";
+import { konzeptLesen, type ObjektKonzept } from "@/lib/objektKonzept";
 import { EXKLUSIV_KENNUNG_SCHLUESSEL, exklusivKennungenFuerNamen, exklusivKennungenLesen } from "../../supabase/functions/_shared/objekt-zugang.ts";
 import { supabase } from "@/integrations/supabase/client";
 import { isTestAccount, localGet, localSet } from "./dbStoreHelper";
@@ -462,6 +463,13 @@ export interface ObjektData {
     firma?: string;
   };
   meta?: Record<string, any>;
+  /**
+   * Wofür sich das Objekt vor allem eignet (Migration 20261016207000). Fehlt
+   * die Spalte noch, bleibt das Feld leer. `saveObjekt` schreibt es bewusst
+   * nicht mit, sonst scheiterte jedes Speichern vor der Migration; dafür
+   * gibt es `speichereObjektKonzept`.
+   */
+  konzept?: ObjektKonzept;
 }
 
 export const DEFAULT_WOHNUNG_DOCS: WohnungDokument[] = [
@@ -584,6 +592,7 @@ export function dbRowToObjekt(row: any, bilder: any[], dokumente: any[], wohnung
     wohnungen: wohnungen.map(w => dbRowToWohnung(w, wohnungsBilder.filter((b: any) => b.wohnung_id === w.id), mitDokumentenCache)),
     meta: row.meta || {},
     verkaeuferDaten: (row.meta as any)?.verkaeuferDaten || undefined,
+    ...(konzeptLesen(row.konzept) ? { konzept: konzeptLesen(row.konzept) } : {}),
   };
 }
 
@@ -1698,6 +1707,24 @@ export async function updateObjektFieldFast(id: string, dbFields: Record<string,
   if (error) throw error;
   if (Array.isArray(data) && data.length === 0) {
     throw new SchreibenAbgelehnt("Dieses Objekt darfst du nicht ändern. Das können Admin, Inhaber und der Objektpartner am eigenen Objekt.");
+  }
+}
+
+/**
+ * Das Konzept eines Objekts speichern, getrennt vom übrigen Objekt. Gibt
+ * einen Fehlertext zurück, sonst null. Fehlt die Spalte (Migration
+ * 20261016207000 noch nicht eingespielt), sagt der Text das.
+ */
+export async function speichereObjektKonzept(id: string, konzept: ObjektKonzept | null): Promise<string | null> {
+  try {
+    await updateObjektFieldFast(id, { konzept });
+    return null;
+  } catch (err) {
+    const e = err as { code?: string; message?: string };
+    if (e?.code === "42703" || e?.code === "PGRST204" || /konzept/i.test(e?.message || "")) {
+      return "Das Konzept lässt sich erst nach der Datenbank-Aktualisierung speichern.";
+    }
+    return e?.message || "Das Konzept konnte nicht gespeichert werden.";
   }
 }
 

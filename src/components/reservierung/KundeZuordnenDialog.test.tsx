@@ -87,7 +87,9 @@ beforeEach(() => {
     { id: "inv-ohne-sa", kontaktId: "k-1", nummer: 2, label: "Investment 2", pipelineStufe: "beratungsgespraech" },
     { id: "inv-reserviert", kontaktId: "k-1", nummer: 3, label: "Investment 3", pipelineStufe: "reservierung" },
   ];
-  t.meta = {};
+  // Seit 16.10.2026 verlangt „bereit“ auch Ausweis und letzte Gehaltsabrechnung.
+  const unterlagen = { docStatuses: { Personalausweis: "uploaded", "Letzter Gehaltsnachweis": "uploaded" } };
+  t.meta = { "inv-bereit": { ...unterlagen }, "inv-reserviert": { ...unterlagen } };
   t.saOk = new Set(["inv-bereit", "inv-reserviert"]);
   t.eingetragen = {};
   t.rueckfrage = true;
@@ -105,7 +107,7 @@ describe("Kunde suchen und Investment mit Ampel wählen", () => {
     const ohneSa = screen.getByRole("radio", { name: /Investment 2/ });
     const reserviert = screen.getByRole("radio", { name: /Investment 3/ });
     expect(bereit.textContent).toContain("bereit");
-    expect(ohneSa.textContent).toContain("Selbstauskunft fehlt");
+    expect(ohneSa.textContent).toContain("Selbstauskunft oder Unterlagen fehlen");
     expect(reserviert.textContent).toContain("hat schon eine Reservierung");
     expect(bereit).not.toBeDisabled();
     expect(ohneSa).toBeDisabled();
@@ -114,6 +116,17 @@ describe("Kunde suchen und Investment mit Ampel wählen", () => {
     expect(weiterKnopf()).toBeDisabled();
     fireEvent.click(bereit);
     expect(weiterKnopf()).not.toBeDisabled();
+  });
+
+  it("sperrt ein Investment mit Selbstauskunft, aber ohne Unterlagen (16.10.2026)", () => {
+    delete t.meta["inv-bereit"];
+    zeige();
+    fireEvent.change(screen.getByPlaceholderText("Name suchen…"), { target: { value: "anna" } });
+    fireEvent.click(screen.getByRole("button", { name: "Anna Beispiel" }));
+
+    const ohneUnterlagen = screen.getByRole("radio", { name: /Investment 1/ });
+    expect(ohneUnterlagen.textContent).toContain("Unterlagen fehlen");
+    expect(ohneUnterlagen).toBeDisabled();
   });
 
   it("zeigt den Weg zu neuen Kunden, legt sie aber nicht selbst an", () => {

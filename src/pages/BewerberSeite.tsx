@@ -34,7 +34,7 @@ import {
   FARBE_DUNKEL,
   Hauptknopf,
 } from "@/components/bewerberformular/FragebogenBausteine";
-import logo from "@/assets/osimmobilien-logo.png";
+import logo from "@/assets/os-real-estate-logo-quer.png";
 // Liquid Glass fuer die Bewerberseiten (Huelle `.bewerber-seite`, Karte `.bewerber-karte`).
 import "@/styles/lp-theme-liquid.css";
 
@@ -147,7 +147,7 @@ export default function BewerberSeite() {
     return (
       <Seite><Karte>
         <div className="text-center space-y-3 py-4">
-          <img src={logo} alt="OS Immobilien" className="h-[26px] sm:h-[34px] mx-auto mb-5" />
+          <img src={logo} alt="OS Real Estate GmbH" className="h-[26px] sm:h-[34px] mx-auto mb-5" />
           <AlertTriangle className="h-8 w-8 mx-auto text-amber-500" aria-hidden />
           <h1 className="text-2xl" style={{ color: FARBE_DUNKEL }}>Diesen Link kennen wir nicht</h1>
           <p className="text-[15px] leading-relaxed" style={{ color: "#6E6E73" }}>
@@ -170,7 +170,7 @@ export default function BewerberSeite() {
   return (
     <Seite>
       <div className="w-full max-w-[1040px]">
-        <img src={logo} alt="OS Immobilien" className="h-[26px] sm:h-[30px] mb-6" />
+        <img src={logo} alt="OS Real Estate GmbH" className="h-[26px] sm:h-[30px] mb-6" />
 
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:gap-5 lg:items-start">
           <div className="space-y-4">

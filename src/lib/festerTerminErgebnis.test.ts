@@ -135,8 +135,8 @@ describe("No-Show beim Erstgespräch: der Lead bleibt beim Partner", () => {
       noShowTermine: ["2026-09-20 10:00"],
     });
     const patches = t.update.mock.calls.map((c) => c[1] as Record<string, unknown>);
-    expect(patches.some((p) => p.pipelineStufe === "eg_noshow")).toBe(true);
-    expect(patches.some((p) => p.pipelineStufe === "bg_noshow")).toBe(false);
+    // Die Stufe haengt nur am Investment (11.10.2026), nie am Kontakt.
+    expect(patches.some((p) => "pipelineStufe" in p)).toBe(false);
     expect(patches.some((p) => p.terminErgebnis === "noshow")).toBe(true);
     for (const p of patches) {
       for (const feld of ["zustaendig_id", "berater", "setter", "setterId"]) expect(p).not.toHaveProperty(feld);
@@ -147,14 +147,19 @@ describe("No-Show beim Erstgespräch: der Lead bleibt beim Partner", () => {
     expect(t.invUpdate).not.toHaveBeenCalledWith("inv-weit", expect.anything());
     expect(getNextSteps("eg_noshow", false)?.titel).toBe("Neuen Erstgesprächstermin vereinbaren");
 
-    // Glocke und Aufgaben nur an den Zuständigen.
+    // Glocke und genau eine Aufgabe (seit 15.10.2026, vorher drei) nur an den Zuständigen.
     expect(t.glocke).toHaveBeenCalledTimes(1);
     expect(t.glocke.mock.calls[0][0]).toBe("vp-1");
-    expect(t.aufgabe).toHaveBeenCalledTimes(3);
-    for (const [aufgabe] of t.aufgabe.mock.calls) {
-      expect(aufgabe.zugewiesenAn).toBe("vp-1");
-      expect(aufgabe.titel).toContain("neuen Erstgesprächstermin vereinbaren");
-    }
+    expect(t.glocke.mock.calls[0][1].titel).toContain("neuen Erstgesprächstermin vereinbaren");
+    expect(t.aufgabe).toHaveBeenCalledTimes(1);
+    expect(t.aufgabe.mock.calls[0][0]).toMatchObject({
+      zugewiesenAn: "vp-1",
+      titel: "Kunde nicht erschienen: anrufen und neuen Termin vereinbaren",
+      typ: "anruf",
+      prioritaet: "hoch",
+      uhrzeit: "09:00",
+      ausloeserSchluessel: "termin_noshow_fest_k-1_2026-09-20 10:00",
+    });
 
     const texte = sichtbareTexte();
     expect(texte).not.toMatch(/setter/i);
@@ -175,25 +180,30 @@ describe("No-Show beim Erstgespräch: der Lead bleibt beim Partner", () => {
 describe("Beratungsgespräch: dieselbe Nachfrage wie beim Erstgespräch", () => {
   it("No-Show setzt BG NoShow und plant einen neuen Beratungstermin", async () => {
     const k = kunde({ pipelineStufe: "beratungsgespraech", setterTerminDatum: "" });
+    t.investments = [{ id: "inv-1", pipelineStufe: "beratungsgespraech" }];
     await f.festerTerminNichtStattgefunden({ titel: "Beratungsgespräch", datum: "2026-06-24", uhrzeit: "14:00" }, ctx(k));
     const patches = t.update.mock.calls.map((c) => c[1] as Record<string, unknown>);
-    expect(patches).toContainEqual({ pipelineStufe: "bg_noshow" });
+    expect(t.invUpdate).toHaveBeenCalledWith("inv-1", { pipelineStufe: "bg_noshow" });
     // Kein Setter-Feld: Ergebnis und Historie am Kontakt bleiben unberührt.
     expect(patches.some((p) => "terminErgebnis" in p || "noShowHistorie" in p)).toBe(false);
-    expect(t.aufgabe.mock.calls[0][0].titel).toContain("neuen Beratungstermin vereinbaren");
+    expect(t.glocke.mock.calls[0][1].titel).toContain("neuen Beratungstermin vereinbaren");
+    expect(t.aufgabe.mock.calls[0][0].titel).toBe("Kunde nicht erschienen: anrufen und neuen Termin vereinbaren");
     expect(getNextSteps("bg_noshow", false)?.titel).toBe(f.neuerTerminSchritt("Beratungsgespräch"));
   });
 
   it("wirft einen weiter gediehenen Vorgang nicht zurück", async () => {
     const k = kunde({ pipelineStufe: "selbstauskunft", setterTerminDatum: "" });
+    t.investments = [{ id: "inv-1", pipelineStufe: "selbstauskunft" }];
     await f.festerTerminNichtStattgefunden({ titel: "Beratungsgespräch", datum: "2026-06-24", uhrzeit: "14:00" }, ctx(k));
     expect(t.update.mock.calls.some((c) => "pipelineStufe" in (c[1] as object))).toBe(false);
+    expect(t.invUpdate).not.toHaveBeenCalled();
   });
 
   it("Stattgefunden hebt BG NoShow wieder auf Beratungsgespräch", async () => {
     const k = kunde({ pipelineStufe: "bg_noshow", setterTerminDatum: "" });
+    t.investments = [{ id: "inv-1", pipelineStufe: "bg_noshow" }, { id: "inv-2", pipelineStufe: "notar" }];
     await f.festerTerminStattgefunden({ titel: "Beratungsgespräch", datum: "2026-06-24", uhrzeit: "14:00" }, ctx(k));
-    expect(t.update).toHaveBeenCalledWith("k-1", { pipelineStufe: "beratungsgespraech" });
+    expect(t.invUpdate.mock.calls).toEqual([["inv-1", { pipelineStufe: "beratungsgespraech" }]]);
     expect(t.aktivitaet.mock.calls[0][0].beschreibung).toBe("Beratungsgespräch stattgefunden ✓");
   });
 
@@ -219,6 +229,7 @@ describe("No-Show schliesst den geplanten Termin (Punkt 1 und 2)", () => {
     buchungUm("b-anders", "2026-06-25", "14:00");
     t.meetings.push({ id: "m-1", art: "meeting", beschreibung: "Beratungsgespräch", faelligAm: "2026-06-24", uhrzeit: "14:00" });
     const k = kunde({ pipelineStufe: "beratungsgespraech", setterTerminDatum: "" });
+    t.investments = [{ id: "inv-1", pipelineStufe: "beratungsgespraech" }];
     await f.festerTerminNichtStattgefunden({ titel: "Beratungsgespräch", datum: "2026-06-24", uhrzeit: "14:00" }, ctx(k));
 
     expect(t.buchungStatus.mock.calls).toEqual([["b-gleich", "nicht_erschienen"]]);
@@ -226,7 +237,7 @@ describe("No-Show schliesst den geplanten Termin (Punkt 1 und 2)", () => {
     // Abgesagt, nicht erledigt: zählt nicht als geführtes Gespräch.
     expect(t.abgesagt.mock.calls.map((c) => c[0]).sort()).toEqual(["aufgabe-akt-b-gleich", "aufgabe-m-1"]);
     // Kein Vorrücken: nur die NoShow-Stufe.
-    const stufen = t.update.mock.calls.map((c) => (c[1] as { pipelineStufe?: string }).pipelineStufe).filter(Boolean);
+    const stufen = t.invUpdate.mock.calls.map((c) => (c[1] as { pipelineStufe?: string }).pipelineStufe);
     expect(stufen).toEqual(["bg_noshow"]);
   });
 
@@ -301,12 +312,12 @@ describe("Bestandsfall: No-Show schon erfasst (Punkt 6)", () => {
     const k = kunde({ pipelineStufe: "beratungsgespraech", setterTerminDatum: "" });
     const termin = { titel: "Beratungsgespräch", datum: "2026-06-24", uhrzeit: "14:00" };
     await f.festerTerminNichtStattgefunden(termin, ctx(k));
-    expect(t.aufgabe).toHaveBeenCalledTimes(3);
+    expect(t.aufgabe).toHaveBeenCalledTimes(1);
     // Der Kontakt traegt jetzt den No-Show; so kommt er beim naechsten Laden.
     const merged = t.merge.mock.calls[0][1] as Record<string, unknown>;
     const k2 = kunde({ pipelineStufe: "bg_noshow", setterTerminDatum: "", meta: merged });
     await f.festerTerminNichtStattgefunden(termin, ctx(k2));
-    expect(t.aufgabe).toHaveBeenCalledTimes(3);
+    expect(t.aufgabe).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -382,13 +393,14 @@ describe("Verschoben bleibt wie bisher", () => {
   it("verschiebt den Termin und schließt nichts", async () => {
     buchungUm("b-1", "2026-06-24", "14:00");
     const k = kunde({ pipelineStufe: "bg_noshow", setterTerminDatum: "" });
+    t.investments = [{ id: "inv-1", pipelineStufe: "bg_noshow" }];
     const ok = await f.festerTerminVerschieben({ titel: "Beratungsgespräch", datum: "2026-06-24", uhrzeit: "14:00" }, "2026-10-01", "15:00", ctx(k));
     expect(ok).toBe(true);
     expect(t.buchungStatus).not.toHaveBeenCalled();
     expect(t.abgesagt).not.toHaveBeenCalled();
     expect(t.merge.mock.calls[0][1]).toMatchObject({ beratungsgespraechAm: "2026-10-01", beratungsgespraechUhrzeit: "15:00" });
     expect(t.merge.mock.calls[0][1]).not.toHaveProperty("noShowTermine");
-    expect(t.update).toHaveBeenCalledWith("k-1", { pipelineStufe: "beratungsgespraech" });
+    expect(t.invUpdate).toHaveBeenCalledWith("inv-1", { pipelineStufe: "beratungsgespraech" });
   });
 });
 

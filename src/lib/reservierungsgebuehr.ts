@@ -1,5 +1,17 @@
 /**
- * Die Reservierungsgebühr, eingeführt am 14.09.2026.
+ * NUR NOCH FÜR ALTE VORGÄNGE.
+ *
+ * Seit dem 16.10.2026 ist jede Reservierung kostenfrei (Entscheidung des
+ * Inhabers). Neue Reservierungen kommen hier nie mehr an: Das Formular setzt
+ * `gebuehrEntfaellt` immer auf `true`, und `vertragsAufbau` zeigt den
+ * Gebührenabschnitt nur für einen gespeicherten Datensatz, in dem eine
+ * Gebühr vereinbart war. Die Werte bleiben, damit PDF und Signaturseite
+ * solcher alten Vorgänge weiter genau den Text zeigen, der damals
+ * unterschrieben wurde. Bitte hier nichts ändern, sonst ändert sich
+ * rückwirkend ein unterschriebener Vertrag. `reservierungOhneGebuehr.test.ts`
+ * wacht darüber, dass nichts davon in eine neue Vereinbarung gelangt.
+ *
+ * Bisheriger Stand: die Reservierungsgebühr, eingeführt am 14.09.2026.
  *
  * Gestaffelt nach Kaufpreis, zahlbar innerhalb von sieben Tagen nach
  * Unterzeichnung. Am Tag der notariellen Beurkundung fließt sie vollständig

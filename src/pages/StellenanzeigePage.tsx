@@ -18,7 +18,8 @@ import {
   type StellenMerkmal,
   type Stellenanzeige,
 } from "@/lib/stellenanzeigen";
-import logoImg from "@/assets/osimmobilien-logo.png";
+import logoImg from "@/assets/os-real-estate-logo-quer.png";
+import logoImgDunkel from "@/assets/os-real-estate-logo-quer-dunkel.png";
 import {
   ArrowRight, BadgeCheck, Building2, CalendarCheck, Calculator, Check, CheckCircle,
   ChevronDown, Clock, Compass, Gift, Handshake, HeartHandshake, KeyRound, Landmark, Layers, Lightbulb,
@@ -329,7 +330,8 @@ const StellenanzeigePage = () => {
       <header className="relative z-10">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-5 sm:px-6">
           <Link to="/karriere" aria-label="Zur Karriereübersicht">
-            <img src={logoImg} alt="OS Immobilien" className="h-8 object-contain dark:brightness-0 dark:invert" />
+            <img src={logoImg} alt="OS Real Estate GmbH" className="h-8 object-contain dark:hidden" />
+            <img src={logoImgDunkel} alt="OS Real Estate GmbH" className="h-8 object-contain hidden dark:block" />
           </Link>
           <Link to="/partner-werden" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
             Mehr zur Partnerschaft
@@ -447,7 +449,8 @@ const StellenanzeigePage = () => {
 
       <footer className="border-t border-border/40">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 py-8 sm:flex-row sm:px-6">
-          <img src={logoImg} alt="OS Immobilien" className="h-7 object-contain opacity-60 dark:brightness-0 dark:invert" />
+          <img src={logoImg} alt="OS Real Estate GmbH" className="h-7 object-contain opacity-60 dark:hidden" />
+          <img src={logoImgDunkel} alt="OS Real Estate GmbH" className="h-7 object-contain opacity-60 hidden dark:block" />
           <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
             <Link to="/impressum" className="hover:text-foreground">Impressum</Link>
             <Link to="/datenschutz" className="hover:text-foreground">Datenschutz</Link>

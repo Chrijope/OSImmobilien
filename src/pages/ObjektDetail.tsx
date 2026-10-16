@@ -308,7 +308,12 @@ export default function ObjektDetail() {
   // Einheit noch frei ist, und überschreibt keinen anderen Kunden.
   useEffect(() => {
     if (!objekt || !id || !wohnungenReady) return;
-    const reservedStages = new Set(["reservierung", "finanzierung", "notar", "faelligkeit", "abrechnung"]);
+    // Alle Stufen ab Reservierung ausser „abgeschlossen“ (oben eigens). Seit
+    // 16.10.2026 auch Bonitaetsunterlagen, Besichtigung und Bankgutachter.
+    const reservedStages = new Set([
+      "reservierung", "bonitaetsunterlagen", "besichtigung", "bankgutachter",
+      "finanzierung", "notar", "faelligkeit", "abrechnung",
+    ]);
     const allInv = getInvestments().filter(inv => inv.objektId === id && inv.wohnungId);
     (async () => {
       for (const inv of allInv) {

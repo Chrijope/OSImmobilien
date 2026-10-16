@@ -111,11 +111,13 @@ describe("Objekt-Vorstellungstermin für Handbuch-Leads", () => {
     expect(plan.aktion).toBe("nichts");
   });
 
-  it("andere Quellen bleiben unberührt, die alte Quelle „Handbuch-Seite“ zählt mit", async () => {
+  it("gilt seit 16.10.2026 für jede Quelle, die alte Quelle „Handbuch-Seite“ zählt weiter", async () => {
+    // Neuer Ablauf: Selbstauskunft fertig, Objektvorstellung in 7 Tagen
+    // terminieren, für jeden Lead.
     const meta = { quelle: "Meta Ads", meta: {} };
     const { db, log } = fakeDb({ kontakt: meta, investments: [SA_FERTIG], aufgaben: [] });
-    expect((await stelleVorstellungsAufgabeSicher(db, "k1", "partner1")).aktion).toBe("nichts");
-    expect(log.inserts).toHaveLength(0);
+    expect((await stelleVorstellungsAufgabeSicher(db, "k1", "partner1")).aktion).toBe("anlegen");
+    expect(log.inserts[0]).toMatchObject({ titel: "Selbstauskunft fertig: Objektvorstellung in 7 Tagen terminieren" });
 
     const alt = planeVorstellungsAufgabe({ quelle: "Handbuch-Seite", partnerId: "p", investments: [SA_FERTIG], vorhandene: [] });
     expect(alt.aktion).toBe("anlegen");
@@ -173,7 +175,7 @@ describe("Objekt-Vorstellungstermin für Handbuch-Leads", () => {
 
   it("offene Selbstauskunft ohne Konfigurator: Text ohne Rahmen", () => {
     expect(vorstellungBeschreibung({})).toBe(
-      "Selbstauskunft liegt vor. Vereinbare einen Termin, um passende Wohnungen vorzustellen.",
+      "Selbstauskunft liegt vor. Vereinbare die Objektvorstellung in etwa 7 Tagen. Bis dahin sollen Personalausweis und letzte Gehaltsabrechnung im Portal liegen.",
     );
   });
 });
@@ -185,17 +187,22 @@ vi.mock("@/lib/dbStoreHelper", () => ({ isTestAccount: () => false }));
 describe("vorstellungsAufgabeNachZuweisung (Browser)", () => {
   beforeEach(() => supabaseFrom.mockReset());
 
-  it("fragt bei Leads anderer Quellen nicht einmal die Datenbank", async () => {
+  it("fragt seit 16.10.2026 auch bei Leads anderer Quellen die Datenbank", async () => {
+    const { db } = fakeDb({ kontakt: { quelle: "Empfehlung", meta: {} }, investments: [], aufgaben: [] });
+    supabaseFrom.mockImplementation((t: string) => db.from(t));
     const { vorstellungsAufgabeNachZuweisung } = await import("./vorstellungsAufgabe");
     await vorstellungsAufgabeNachZuweisung({ id: "k1", quelle: "Empfehlung" }, "partner1", "leitung1");
+    expect(supabaseFrom).toHaveBeenCalled();
+  });
+
+  it("fragt ohne Partner nicht die Datenbank", async () => {
+    const { vorstellungsAufgabeNachZuweisung } = await import("./vorstellungsAufgabe");
+    await vorstellungsAufgabeNachZuweisung({ id: "k1", quelle: "Empfehlung" }, "", "leitung1");
     expect(supabaseFrom).not.toHaveBeenCalled();
   });
 
-  it("Rückgabe in den Pool: bei anderen Quellen keine Abfrage, beim Handbuch-Lead wird geschlossen", async () => {
+  it("Rückgabe in den Pool: die offene Aufgabe wird geschlossen", async () => {
     const { vorstellungsAufgabeNachPoolRueckgabe } = await import("./vorstellungsAufgabe");
-    await vorstellungsAufgabeNachPoolRueckgabe({ id: "k1", quelle: "Empfehlung" });
-    expect(supabaseFrom).not.toHaveBeenCalled();
-
     const { db, log } = fakeDb({ kontakt: HANDBUCH, investments: [], aufgaben: [{ id: "a1", status: "offen" }] });
     supabaseFrom.mockImplementation((t: string) => db.from(t));
     await vorstellungsAufgabeNachPoolRueckgabe({ id: "k1", quelle: "Konfigurator" });

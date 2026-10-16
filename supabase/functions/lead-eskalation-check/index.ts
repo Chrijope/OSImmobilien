@@ -231,9 +231,9 @@ Deno.serve(async (req) => {
       continue
     }
 
-    const titel = sendeFinal
-      ? `Finale Eskalation: ${leadName} (${label}), ${tage} Tage ohne Aktivität`
-      : `Eskalation: ${leadName} (${label}), ${tage} Tage ohne Aktivität`
+    // Titel nach Anlass, ohne Namen; rote und finale Stufe unterscheiden sich
+    // nur in Prioritaet und Beschreibung. Der Name steht in der Beschreibung.
+    const titel = `Seit ${tage} Tagen still: Kunden kontaktieren oder Vorgang schließen`
     const beschreibung = sendeFinal
       ? `Letzte Erinnerung: "${leadName}" liegt seit ${tage} Tagen in der Stufe "${label}" (finale Schwelle ${schwellen.final} Tage). Bitte jetzt entscheiden: weiterführen, verloren oder archivieren.`
       : `"${leadName}" ist seit ${tage} Tagen in der Stufe "${label}" ohne Aktivität. Bitte zeitnah nachfassen.`
@@ -249,6 +249,7 @@ Deno.serve(async (req) => {
         titel,
         beschreibung,
         faellig_am: new Date().toISOString(),
+        ausloeser_schluessel: `lead-eskalation:${k.id}:${stufe}:${sendeFinal ? 'final' : 'rot'}`,
       })
       if (insErr) errors.push(`aufgabe ${k.id}: ${insErr.message}`)
       else z.aufgaben++

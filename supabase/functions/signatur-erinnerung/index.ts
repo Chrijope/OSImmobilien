@@ -123,7 +123,7 @@ Deno.serve(async (req: Request) => {
         benutzer_id: besitzer,
         zugewiesen_an: besitzer,
         kontakt_id: s.kontakt_id,
-        titel: `Unterschrift abgelaufen: ${s.name}`,
+        titel: 'Unterschrift fehlt: Erinnerung oder neuen Link senden',
         beschreibung:
           `${s.name} hat den Link zur Unterschrift bekommen und nicht unterschrieben. ` +
           `Er ist am ${fristText(s.expires_at)} abgelaufen. ` +

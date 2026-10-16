@@ -112,6 +112,22 @@ describe("berechneDashboardKpis", () => {
     expect(r.conversionProzent).toBeNull();
   });
 
+  it("zählt je Investment, nicht je Kunde (11.10.2026)", () => {
+    const r = berechneDashboardKpis({
+      von, bis, jetzt: HEUTE,
+      kontakte: [{ id: "k", pipelineStufe: "notar", erstellt_am: "2026-07-02" }],
+      investments: [
+        { id: "i1", kontaktId: "k", pipelineStufe: "reservierung", kaufpreis: 200000 },
+        { id: "i2", kontaktId: "k", pipelineStufe: "reservierung", kaufpreis: 150000 },
+        { id: "i3", kontaktId: "k", pipelineStufe: "notar", kaufpreis: 99000 },
+      ],
+    });
+    // Zwei Reservierungen eines Kunden sind zwei, mit ihrem eigenen Kaufpreis;
+    // die Kontaktstufe "notar" zählt nicht mehr.
+    expect(r.offeneReservierungen).toBe(2);
+    expect(r.reservierungEintraege.map((e) => [e.investmentId, e.betrag])).toEqual([["i1", 200000], ["i2", 150000]]);
+  });
+
   it("setzt Umsatz gegen Ziel", () => {
     const r = berechneDashboardKpis({ ...basis, ziel: 600000 });
     expect(r.zielProzent).toBe(50);

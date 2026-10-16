@@ -69,7 +69,7 @@ const Mail = ({
       <Absatz letzter>
         {kunde} hat die Reservierungsvereinbarung{objektTitel ? ` für ${objektTitel}` : ''} digital unterschrieben.{' '}
         {einheitVergeben
-          ? `${gegenstand} war zum Zeitpunkt der Unterschrift aber schon anderweitig vergeben. Eine Reservierung ist deshalb nicht zustande gekommen, und an den Kunden ging keine Zahlungsaufforderung. Bitte den Kunden informieren.`
+          ? `${gegenstand} war zum Zeitpunkt der Unterschrift aber schon anderweitig vergeben. Eine Reservierung ist deshalb nicht zustande gekommen. Bitte den Kunden informieren.`
           : reservierungAb
           ? `Der Kunde wartet die Widerrufsfrist ab. Die Reservierung wird am ${reservierungAb} wirksam, bis dahin bleibt ${gesamtobjekt ? 'das Objekt' : 'die Einheit'} frei.`
           : `${gegenstand} ist damit verbindlich reserviert.`}

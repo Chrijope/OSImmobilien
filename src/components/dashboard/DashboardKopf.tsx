@@ -30,7 +30,7 @@ import { sammleOffenePunkte, zaehleOffenePunkte } from "@/lib/offenePunkte";
 import { getFollowUps } from "@/lib/followUpStore";
 import { getAufgaben } from "@/lib/aufgabenStore";
 import { liegtInZukunft } from "@/lib/faelligkeit";
-import { kontaktKaufpreis } from "@/lib/objektDatenPflicht";
+import { kontaktKaufpreis, investmentKaufpreis } from "@/lib/objektDatenPflicht";
 import { tarnName, unscharfKlasse } from "@/lib/vorfuehrmodus";
 import {
   berechneDashboardKpis,
@@ -121,9 +121,13 @@ export function DashboardKopf() {
       investments: investments.map((i) => ({
         id: i.id,
         kontaktId: i.kontaktId,
-        kaufpreis: (i as { kaufpreis?: number }).kaufpreis,
+        // Der Kaufpreis steht in den Objektdaten des Investments, nicht als
+        // Feld am Investment. Vorher stand hier ein Feld, das es nicht gibt,
+        // und Umsatz und Beträge blieben bei null (11.10.2026).
+        kaufpreis: investmentKaufpreis(i.id),
         notarTermin: i.notarTermin,
         pipelineStufe: i.pipelineStufe,
+        erstellt_am: i.erstellt_am,
       })),
       aufgaben: [],
       von,
@@ -246,9 +250,13 @@ export function DashboardKopf() {
       investments: getInvestments().map((i) => ({
         id: i.id,
         kontaktId: i.kontaktId,
-        kaufpreis: (i as { kaufpreis?: number }).kaufpreis,
+        // Der Kaufpreis steht in den Objektdaten des Investments, nicht als
+        // Feld am Investment. Vorher stand hier ein Feld, das es nicht gibt,
+        // und Umsatz und Beträge blieben bei null (11.10.2026).
+        kaufpreis: investmentKaufpreis(i.id),
         notarTermin: i.notarTermin,
         pipelineStufe: i.pipelineStufe,
+        erstellt_am: i.erstellt_am,
       })),
       aufgaben: [],
       von,
@@ -302,12 +310,12 @@ export function DashboardKopf() {
       label: "Offene Reservierungen",
       wert: String(kpis.offeneReservierungen),
       eintraege: kpis.reservierungEintraege,
-      detailZusatz: "Unterschrieben, noch nicht beim Notar. Zählt die Stufen Reservierung UND Finanzierung.",
+      detailZusatz: "Unterschrieben, noch nicht beim Notar. Zählt die Stufen Reservierung, Besichtigung, Termin Bankgutachter UND Finanzierung.",
       zusatz: "unterschrieben, noch nicht beim Notar",
       erklaerung:
-        "Zählt zwei Pipelinestufen zusammen: Reservierung und Finanzierung. " +
+        "Zählt vier Pipelinestufen zusammen: Reservierung, Besichtigung, Termin Bankgutachter und Finanzierung. " +
         "Deshalb ist die Zahl höher als die Stufe Reservierung allein. " +
-        "Wer bereits in der Finanzierung steht, hat die Reservierung unterschrieben, " +
+        "Wer bereits bei Besichtigung, Bankgutachter oder Finanzierung steht, hat die Reservierung unterschrieben, " +
         "ist aber noch nicht beim Notar, und genau das ist hier gemeint. " +
         "Nicht mitgezählt werden archivierte Kontakte und alles ab dem Notartermin.",
     },
@@ -331,9 +339,10 @@ export function DashboardKopf() {
       label: "In Bearbeitung",
       wert: String(kpis.aktiveLeads),
       erklaerung:
-        "Alle nicht archivierten Kontakte in diesen sechzehn Stufen: Nicht erreicht, Erreicht, Follow-Up, " +
-        "Kontaktversuche, Vermögensaufbau, Erstgespräch geplant, Erstgespräch, EG NoShow, Beratungsgespräch, " +
-        "BG NoShow, Selbstauskunft, Bonitätsunterlagen, Objektauswahl, Follow-Up Objekt, Reservierung, Finanzierung. " +
+        "Alle nicht archivierten Kontakte in diesen 18 Stufen: Nicht erreicht, Erreicht, Follow-Up, " +
+        "Kontaktversuche, Vermögensaufbau, Erstgespräch geplant, Erstgespräch, EG NoShow, Beratungspräsentation, " +
+        "BP NoShow, Selbstauskunft & Unterlagen, Bonitätsunterlagen (alte Stufe), Objektvorstellung, Follow-Up Objekt, " +
+        "Reservierung, Besichtigung, Termin Bankgutachter, Finanzierung. " +
         "Die offenen Reservierungen sind darin also enthalten. " +
         "Nicht mitgezählt: Neuer Lead und Zugewiesen (die stehen als unbearbeitete Leads darunter), " +
         "alles ab dem Notartermin, Verloren und Archiviert.",

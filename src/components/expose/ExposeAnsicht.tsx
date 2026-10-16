@@ -233,7 +233,7 @@ export function ExposeAnsicht(p: ExposeAnsichtProps) {
   const nurDeutsch = c.nurDeutsch ?? { beschreibung: false, standortargumente: false, marktargumente: false };
 
   return <div className="premium-expose" ref={root}>
-    <header><img src="/images/osimmobilien-logo.png" alt="OS Immobilien" /><span>{t.slogan}</span><button type="button" className="btn primary" onClick={pdfLaden} disabled={pdfLaeuft} aria-busy={pdfLaeuft} data-testid="expose-pdf"><PdfSymbol size={14} className={pdfLaeuft ? "animate-spin" : undefined} /> {pdfText}</button></header>
+    <header><img src="/images/os-real-estate-logo-quer.png" alt="OS Real Estate GmbH" /><span>{t.slogan}</span><button type="button" className="btn primary" onClick={pdfLaden} disabled={pdfLaeuft} aria-busy={pdfLaeuft} data-testid="expose-pdf"><PdfSymbol size={14} className={pdfLaeuft ? "animate-spin" : undefined} /> {pdfText}</button></header>
     {(p.leisteObenLinks || p.kopfRechts) && <div className="expose-editor-bar">{p.leisteObenLinks}{p.kopfRechts}</div>}
     <nav aria-label={t.navLabel}>{abschnitte.map((a, i) => { const Icon = icons[i]; if (!sichtbareAbschnitte.includes(a)) return null; return <button key={a.id} className={aktiv === a.id ? "active" : ""} aria-current={aktiv === a.id ? "location" : undefined} aria-label={a.titel} title={a.titel} onClick={() => springeZuAbschnitt(a.id)}><Icon size={19} /><span className="nav-tip">{a.titel}</span></button>; })}<button type="button" title={pdfText} aria-label={pdfText} onClick={pdfLaden} disabled={pdfLaeuft} data-testid="expose-pdf-leiste"><PdfSymbol size={18} className={pdfLaeuft ? "animate-spin" : undefined} /></button></nav>
     <span className="sr-only" data-testid="leiste-zaehler">{nr} / {sichtbareAbschnitte.length}</span>

@@ -20,6 +20,7 @@ import { getBewerber, updateBewerber } from "@/lib/bewerbungStore";
 import { bewerberErinnerungen, istBewerberErinnerungId } from "@/lib/bewerberErinnerungen";
 import { siehtBewerberMeldungen } from "@/lib/bewerberRechte";
 import { getKontakte } from "@/lib/kundenStore";
+import { getInvestments } from "@/lib/investmentsStore";
 import { kontaktBelongsToUser } from "@/lib/kontaktOwnership";
 import { format, isToday, startOfWeek, endOfWeek, isWithinInterval } from "date-fns";
 import { de } from "date-fns/locale";
@@ -378,15 +379,19 @@ const Inbox = () => {
     let allOpen = [...storedTasks, ...aufgabenTasks, ...followUpTasks, ...bewerberFollowUps];
 
     // Finanzierungspartner: nur Aufgaben zu Kunden, die ihn betreffen.
+    // Seit 11.10.2026 zählt jedes Investment: Steht eines in Reservierung
+    // oder Finanzierung, gehören die Aufgaben des Kunden dazu. Vorher zählte
+    // nur die Kontaktstufe, und die Aufgaben eines zweiten Investments fielen
+    // weg, sobald ein anderes weiter war.
     if (!isViewingOther && (user.role || "").toLowerCase() === "finanzierungspartner") {
-      const FIN_STAGES = new Set(["reservierung", "finanzierung"]);
-      const stageByKunde = new Map<string, string>();
+      const FIN_STAGES = new Set(["reservierung", "besichtigung", "bankgutachter", "finanzierung"]);
+      const finKunden = new Set<string>();
       try {
-        getKontakte().forEach((k: any) => {
-          stageByKunde.set(k.id, String(k.pipelineStufe || "").toLowerCase());
+        getInvestments().forEach((inv) => {
+          if (FIN_STAGES.has(String(inv.pipelineStufe || "").toLowerCase())) finKunden.add(inv.kontaktId);
         });
       } catch { /* ignore */ }
-      allOpen = allOpen.filter(t => FIN_STAGES.has(stageByKunde.get(t.kundeId) || ""));
+      allOpen = allOpen.filter(t => finKunden.has(t.kundeId || ""));
     }
 
     const offen = isViewingOther ? allOpen : allOpen.filter(t => !doneIds.includes(t.id));

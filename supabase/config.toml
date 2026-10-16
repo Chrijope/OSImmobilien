@@ -79,6 +79,9 @@ verify_jwt = true
 [functions.bonitaet-freigabe-mail]
 verify_jwt = true
 
+[functions.finanzierung-partner-benachrichtigen]
+verify_jwt = true
+
 # Ruft der Absender einer Chatnachricht auf, im CRM wie im Kundenportal.
 # Deshalb mit Anmeldung; die Function prueft zusaetzlich, dass der Aufrufer
 # der Absender genau dieser Nachricht ist.

@@ -2,36 +2,55 @@ import { describe, it, expect } from "vitest";
 import { PIPELINE_STUFEN, STUFEN_WAHRSCHEINLICHKEIT } from "@/lib/pipelineStufen";
 
 /**
- * Wacht über die neue Reihenfolge, die am 06.08.2026 gedreht wurde:
- * Objektauswahl und Reservierung stehen jetzt VOR den Bonitätsunterlagen.
+ * Wacht über die Reihenfolge des neuen Ablaufs vom 16.10.2026
+ * (Umsetzungsstrategie Vertrieb, Abschnitt 3): Reservierung, Besichtigung,
+ * Termin Bankgutachter, Finanzierung, Notar, Kaufpreisfälligkeit. Die
+ * Bonitätsunterlagen sind ausgeblendet und teilen den Rang der Reservierung.
  */
 
 const pos = (key: string) => PIPELINE_STUFEN.findIndex((s) => s.key === key);
 
 describe("Reihenfolge der Pipelinestufen", () => {
-  it("stellt Objektauswahl und Reservierung vor die Bonitaet", () => {
-    expect(pos("objektauswahl")).toBeLessThan(pos("bonitaetsunterlagen"));
-    expect(pos("reservierung")).toBeLessThan(pos("bonitaetsunterlagen"));
-  });
-
-  it("laesst die Selbstauskunft vor der Objektauswahl", () => {
-    // Erst unterschreibt der Kunde die Selbstauskunft, dann sucht er ein Objekt.
-    expect(pos("selbstauskunft")).toBeLessThan(pos("objektauswahl"));
-    expect(pos("beratungsgespraech")).toBeLessThan(pos("selbstauskunft"));
-  });
-
-  it("haelt die Reihenfolge Objektauswahl, Reservierung, Bonitaet, Finanzierung ein", () => {
-    const kette = ["objektauswahl", "reservierung", "bonitaetsunterlagen", "finanzierung", "notar"];
+  it("haelt den neuen Ablauf ein", () => {
+    const kette = [
+      "erstgespraech_geplant", "beratungsgespraech", "selbstauskunft", "objektauswahl",
+      "reservierung", "besichtigung", "bankgutachter", "finanzierung", "notar", "faelligkeit",
+    ];
     for (let i = 1; i < kette.length; i++) {
       expect(pos(kette[i]), `${kette[i]} muss hinter ${kette[i - 1]} liegen`)
         .toBeGreaterThan(pos(kette[i - 1]));
     }
   });
 
-  it("bewertet eine Reservierung ohne Bonitaet niedriger als mit", () => {
-    // Sie ist weniger wert als frueher, wo die Bonitaet schon dahinter lag.
-    expect(STUFEN_WAHRSCHEINLICHKEIT.reservierung)
-      .toBeLessThan(STUFEN_WAHRSCHEINLICHKEIT.bonitaetsunterlagen);
+  it("traegt die neuen Anzeigenamen, die Schluessel bleiben", () => {
+    const name = (key: string) => PIPELINE_STUFEN.find((s) => s.key === key)?.label;
+    expect(name("beratungsgespraech")).toBe("Beratungspräsentation");
+    expect(name("bg_noshow")).toBe("BP NoShow");
+    expect(name("selbstauskunft")).toBe("Selbstauskunft & Unterlagen");
+    expect(name("objektauswahl")).toBe("Objektvorstellung");
+    expect(name("besichtigung")).toBe("Besichtigung");
+    expect(name("bankgutachter")).toBe("Termin Bankgutachter");
+    expect(name("faelligkeit")).toBe("Kaufpreisfälligkeit");
+  });
+
+  it("blendet die Bonitaetsunterlagen aus, ohne Bestandsfaelle zu verlieren", async () => {
+    const { PIPELINE_SPALTEN, spaltenStufe, fortschrittsRang, FORTSCHRITT_STUFEN, darfVorruecken } = await import("@/lib/pipelineStufen");
+    expect(PIPELINE_SPALTEN.map((s) => s.key)).not.toContain("bonitaetsunterlagen");
+    expect(FORTSCHRITT_STUFEN.map((s) => s.key)).not.toContain("bonitaetsunterlagen");
+    // Die Kachel steht unter „Reservierung“, im selben Rang.
+    expect(spaltenStufe("bonitaetsunterlagen")).toBe("reservierung");
+    expect(fortschrittsRang("bonitaetsunterlagen")).toBe(fortschrittsRang("reservierung"));
+    // Von dort geht es ueber die Besichtigung weiter, nie zurueck.
+    expect(darfVorruecken("bonitaetsunterlagen", "besichtigung")).toBe(true);
+    expect(darfVorruecken("bonitaetsunterlagen", "objektauswahl")).toBe(false);
+  });
+
+  it("bewertet die neuen Stufen zwischen Reservierung und Finanzierung", () => {
+    const w = STUFEN_WAHRSCHEINLICHKEIT;
+    expect(w.reservierung).toBeLessThan(w.besichtigung);
+    expect(w.besichtigung).toBeLessThan(w.bankgutachter);
+    expect(w.bankgutachter).toBeLessThan(w.finanzierung);
+    expect(w.bonitaetsunterlagen).toBe(w.reservierung);
   });
 });
 
@@ -81,7 +100,7 @@ describe("Investments in den neuen Stufen zaehlen weiterhin", () => {
     const { PIPELINE_STUFEN } = await import("@/lib/pipelineStufen");
     const stelle = (k: string) => PIPELINE_STUFEN.findIndex((s) => s.key === k);
     const grenze = stelle("selbstauskunft");
-    for (const stufe of ["objektauswahl", "reservierung", "bonitaetsunterlagen", "finanzierung"]) {
+    for (const stufe of ["objektauswahl", "reservierung", "bonitaetsunterlagen", "besichtigung", "bankgutachter", "finanzierung"]) {
       expect(stelle(stufe), `${stufe} muss hinter der Grenze liegen`).toBeGreaterThanOrEqual(grenze);
     }
     // Und die Stubs davor bleiben draussen.
@@ -139,5 +158,8 @@ describe("Bereichs-Zuordnung, wie sie das Info-Fenster im Kundenprofil zeigt", (
     expect(getProzessBereichForStufe("abrechnung")).toBe("abwicklung");
     expect(getProzessBereichForStufe("follow_up")).toBe("followup");
     expect(getProzessBereichForStufe("abgeschlossen")).toBe("bestandskunden");
+    // Neu seit 16.10.2026: hinter der Reservierung, also Abwicklung.
+    expect(getProzessBereichForStufe("besichtigung")).toBe("abwicklung");
+    expect(getProzessBereichForStufe("bankgutachter")).toBe("abwicklung");
   });
 });

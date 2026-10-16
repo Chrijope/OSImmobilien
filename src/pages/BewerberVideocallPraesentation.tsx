@@ -25,7 +25,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import logo from "@/assets/osimmobilien-logo.png";
+import logo from "@/assets/os-real-estate-logo-quer-dunkel.png";
 import { useBewerberAusCache } from "@/components/bewerbung/useBewerberAusCache";
 import {
   useKennenlernenAntworten,
@@ -413,7 +413,7 @@ function OhneKennenlernen({ titel, text }: { titel: string; text?: string }) {
   return (
     <div className="h-full w-full flex items-center justify-center px-6 text-center">
       <div className="max-w-lg">
-        <img src={logo} alt="OS Immobilien" className="h-8 w-auto mx-auto mb-6 brightness-0 invert" />
+        <img src={logo} alt="OS Real Estate GmbH" className="h-8 w-auto mx-auto mb-6" />
         <p className="text-lg font-semibold">{titel}</p>
         <p className="mt-3 text-sm" style={{ color: GEDIMMT }}>
           {text ||
@@ -459,7 +459,7 @@ export function BewerberVideocallBuehne({
         style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}
       >
         <div className="flex items-center gap-3">
-          <img src={logo} alt="OS Immobilien" className="h-7 w-auto brightness-0 invert" />
+          <img src={logo} alt="OS Real Estate GmbH" className="h-7 w-auto" />
           <span className="text-xs uppercase tracking-[0.3em] font-semibold hidden sm:inline" style={{ color: GEDIMMTER }}>
             Partner
           </span>

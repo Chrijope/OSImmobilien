@@ -1,5 +1,5 @@
 import { notifyByRole } from "@/lib/bellNotifications";
-import { addGeteilteAufgabe } from "@/lib/aktivitaetenStore";
+import { addProzessAufgabe } from "@/lib/prozessAufgabe";
 import { supabase } from "@/integrations/supabase/client";
 
 /**
@@ -68,13 +68,11 @@ export async function meldeBonitaetFreigabe(
     });
 
     /*
-     * Die Aufgabe hängt am Kontakt, nicht an einer Person.
-     *
-     * So sieht sie jeder, der den Kunden betreut, auch wenn der
-     * Finanzierungspartner wechselt oder im Urlaub ist.
+     * Die Aufgabe hängt am Kontakt und geht an den Zuständigen, ohne ihn an
+     * die Leitung, nicht mehr an den, der gerade freigegeben hat.
      */
-    await addGeteilteAufgabe({
-      titel: `Finanzierung starten: ${kundeName}`,
+    await addProzessAufgabe({
+      titel: "Bonität freigegeben: Finanzierung starten",
       beschreibung:
         `Die Bonitätsunterlagen von ${kundeName} sind vollständig geprüft und freigegeben. ` +
         `Die Finanzierung kann jetzt angestoßen werden.`,

@@ -60,13 +60,14 @@ export function Diagramm({ zeichnung, className }: { zeichnung: Zeichnung; class
   return <div className={className} dangerouslySetInnerHTML={{ __html: svg }} />;
 }
 
-/** Bildmarke plus Schriftzug, wie auf dem Deckblatt: auf hellem wie dunklem Grund lesbar. */
+/** Das OS-Real-Estate-Logo. `hell` heisst: dunkler Grund, also die dunkle Fassung (Zusatz GMBH hell). */
 export function Wortmarke({ hell = false, groesse = 22 }: { hell?: boolean; groesse?: number }) {
   return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: 9, fontSize: groesse, lineHeight: 1 }} aria-label="OS Immobilien">
-      <img src={hell ? "/images/os-bildmarke-hell.png" : "/images/osimmobilien-icon-blau.png"} alt="" style={{ height: groesse * 1.35, width: "auto" }} />
-      <b style={{ color: hell ? "#fff" : "var(--hb-tinte)", fontWeight: 700 }}>Immobilien</b>
-    </span>
+    <img
+      src={hell ? "/images/os-real-estate-logo-quer-dunkel.png" : "/images/os-real-estate-logo-quer.png"}
+      alt="OS Real Estate GmbH"
+      style={{ display: "inline-block", height: groesse * 1.6, width: "auto" }}
+    />
   );
 }
 

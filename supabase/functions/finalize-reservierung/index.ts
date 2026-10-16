@@ -267,10 +267,13 @@ async function kopieAblegenUndVerschicken(
         widerrufWahl: rvData.widerrufWahl || undefined,
         reservierungAb: meta.rvReservierungAb ? datumDe(meta.rvReservierungAb) : undefined,
         // Ohne Gebuehr darf die Kopie weder eine Zahlung noch eine
-        // Widerrufsbelehrung ankuendigen, die im PDF gar nicht steht.
+        // Widerrufsbelehrung ankuendigen, die im PDF gar nicht steht. Seit
+        // dem 16.10.2026 ist jede neue Reservierung kostenfrei; `false` gibt
+        // es nur noch bei einem alten Vorgang mit Gebuehr.
         ohneGebuehr: rvData.gebuehrEntfaellt === true,
         // Einheit bei der Unterschrift schon vergeben: keine
-        // Zahlungsaufforderung, stattdessen der Hinweis, nicht zu zahlen.
+        // Zahlungsaufforderung, bei einem alten Vorgang mit Gebuehr der
+        // Hinweis, nicht zu zahlen.
         ...(meta.rvEinheitVergeben ? { einheitVergeben: true } : {}),
         // Das ganze Haus: Die Mail sagt dann „das Objekt“ statt „die Wohnung“.
         ...(rvData.gesamtobjekt === true ? { gesamtobjekt: true } : {}),
@@ -587,6 +590,13 @@ Deno.serve(async (req) => {
        * Entwurf noch im Datensatz liegt, darf dann nicht dazu fuehren, dass
        * die Wohnung vierzehn Tage lang frei bleibt. Nur ein ausdrueckliches
        * `true` zaehlt, jede aeltere Reservierung verhaelt sich unveraendert.
+       *
+       * Seit dem 16.10.2026 ist jede neue Reservierung kostenfrei, das
+       * Formular schreibt immer `true`. Damit gilt fuer jede neue
+       * Reservierung: keine Widerrufsfrist, Wahl "sofort", wirksam mit der
+       * letzten Unterschrift. Der andere Zweig bleibt fuer eine noch offene
+       * Unterschrift aus der Zeit davor, deren Dokument eine Gebuehr und eine
+       * Widerrufsbelehrung enthaelt.
        */
       const ohneGebuehr = rvData.gebuehrEntfaellt === true;
       /*

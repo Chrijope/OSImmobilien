@@ -111,6 +111,37 @@ describe("baueGeplanteAktionen: Quellen und Arten", () => {
     );
     expect(liste.map((x) => x.schluessel)).toEqual(["aufgabe:a5"]);
   });
+
+  it("nimmt mit alleOffenen die drei Gruppen dazu, als nicht geplant, ohne Termin am Ende", () => {
+    const eingabe = {
+      aufgaben: [
+        aufgabe({ id: "a2", titel: "Ohne Termin", prioritaet: "hoch" }),
+        aufgabe({ id: "a4", ausloeserSchluessel: "nicht_erreicht:1", faelligAm: "2026-09-20" }),
+        aufgabe({ id: "a5", titel: "Zählt", faelligAm: "2026-09-20" }),
+        aufgabe({ id: "a6", titel: "Vorstellungstermin vereinbaren", ausloeserSchluessel: "objekt_vorstellung:k1", faelligAm: "2026-09-15" }),
+      ],
+      followUps: [followUp({ id: "f1", titel: "Irgendwann", faelligAm: "" })],
+    };
+    const liste = baueGeplanteAktionen(eingabe, JETZT, { alleOffenen: true });
+    expect(liste.map((x) => x.schluessel)).toEqual(["aufgabe:a6", "aufgabe:a4", "aufgabe:a5", "follow_up:f1", "aufgabe:a2"]);
+    const nach = Object.fromEntries(liste.map((x) => [x.schluessel, x]));
+    expect(nach["aufgabe:a5"].nichtGeplant).toBeUndefined();
+    expect(nach["aufgabe:a4"].nichtGeplant).toBe(true);
+    expect(nach["aufgabe:a6"].nichtGeplant).toBe(true);
+    expect(nach["aufgabe:a2"]).toMatchObject({ nichtGeplant: true, ohneTermin: true, ueberfaellig: false, prioritaet: "hoch" });
+    expect(aktionFaelligkeitText(nach["aufgabe:a2"], JETZT)).toBe("Ohne Termin");
+    // Ohne den Schalter bleibt alles wie bisher: Ampel und Pipeline zählen nur Geplantes.
+    expect(baueGeplanteAktionen(eingabe, JETZT).map((x) => x.schluessel)).toEqual(["aufgabe:a5"]);
+  });
+
+  it("wählt nie einen Eintrag ohne Termin, außer es gibt nur solche", () => {
+    const beide = baueGeplanteAktionen({
+      aufgaben: [aufgabe({ id: "a1", titel: "Ohne" }), aufgabe({ id: "a2", faelligAm: "2026-09-01" })],
+    }, JETZT, { alleOffenen: true });
+    expect(naechsteAktion(beide)?.schluessel).toBe("aufgabe:a2");
+    const nurOhne = baueGeplanteAktionen({ aufgaben: [aufgabe({ id: "a1", titel: "Ohne" })] }, JETZT, { alleOffenen: true });
+    expect(naechsteAktion(nurOhne)?.schluessel).toBe("aufgabe:a1");
+  });
 });
 
 describe("baueGeplanteAktionen: Entdopplung und Sprungziele", () => {

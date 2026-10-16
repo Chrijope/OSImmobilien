@@ -28,14 +28,14 @@
 /* Breite Investmenttabellen bleiben innerhalb ihres Bereichs scrollbar. */
 .kundenprofil-inhalt > * { min-width: 0; max-width: 100%; }
 .kundenprofil-inhalt { overflow-x: auto; }
-.kundenprofil-kennzahlen { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 18px; }
+.kundenprofil-kennzahlen { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 18px; }
 .kundenprofil-kennzahl { padding: 14px; min-width: 0; }
 .kundenprofil-kennzahl h3 { font-size: 10px; letter-spacing: .04em; text-transform: uppercase; color: hsl(var(--muted-foreground)); }
 .kundenprofil-kennzahl p { overflow-wrap: anywhere; }
 /* Die Ergebnis-Kaesten zu Terminen stehen in voller Breite unter den Kacheln. Ohne Termin faellt die Zeile weg. */
 .kundenprofil-terminkaesten { grid-column: 1 / -1; min-width: 0; display: grid; gap: 10px; }
 .kundenprofil-terminkaesten:empty { display: none; }
-/* Die aufgeklappten Listen (Aktionen, Aufgaben) stehen unter allen vier Kacheln, nicht neben ihnen. */
+/* Die aufgeklappte Aktionsliste steht unter allen Kacheln, nicht neben ihnen. */
 .kundenprofil-aufgabenliste { grid-column: 1 / -1; min-width: 0; }
 .kundenprofil-aufgabenliste li { overflow-wrap: anywhere; }
 @container (max-width: 1399px) {
@@ -49,8 +49,9 @@
   .kundenprofil-layout, .kundenprofil-layout[data-aktivitaeten="zu"] { grid-template-columns: 210px minmax(0, 1fr) 44px; }
   .kundenprofil-aktivitaeten { grid-column: 3; grid-row: 1; }
   .kundenprofil-layout[data-aktivitaeten="offen"] .kundenprofil-aktivitaeten { overflow: visible; min-height: 44px; max-height: none; z-index: 40; }
-  /* Vier Kacheln nebeneinander werden hier zu schmal: zwei mal zwei. */
+  /* Drei Kacheln nebeneinander werden hier zu schmal: zwei Spalten, die Aktionen darunter in voller Breite. */
   .kundenprofil-kennzahlen { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kundenprofil-kennzahl-aktionen { grid-column: 1 / -1; }
   .kundenprofil-layout[data-aktivitaeten="offen"] .kundenprofil-verlauf { position: absolute; top: 0; right: 0; width: min(340px, calc(100vw - 60px)); max-height: calc(100dvh - 115px); overflow-y: auto; scrollbar-width: thin; box-shadow: -8px 8px 30px hsl(var(--foreground) / .12); }
 }
 @container (max-width: 899px) {

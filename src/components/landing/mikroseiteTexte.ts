@@ -87,34 +87,34 @@ const de = {
   },
 
   bento: {
-    kicker: "Was du bekommst",
-    titelZeile1: "Alles, was du für dein",
-    titelZeile2: "erstes Investment brauchst.",
-    text: "Geprüfte Objekte, steueroptimierte Konzepte und ein Berater, der dich über Jahre hinweg begleitet. Aus einer Hand.",
+    kicker: "Was Sie bekommen",
+    titelZeile1: "Alles, was Sie für ein",
+    titelZeile2: "erstes Investment brauchen.",
+    text: "Geprüfte Objekte, zwei klare Konzepte und ein Ansprechpartner, der Sie über Jahre begleitet. Aus einer Unternehmensgruppe.",
     objekte: {
       eyebrow: "Objekte",
-      titel: "Geprüfte Kapitalanlagen in deutschen Top-Lagen.",
-      text: "Jede Immobilie durchläuft eine bauliche, rechtliche und steuerliche Prüfung, bevor sie dir vorgelegt wird.",
+      titel: "Geprüfte Kapitalanlagen in Berlin und Umland.",
+      text: "Lage, Miete, Zustand und Unterlagen prüfen wir, bevor wir Ihnen ein Objekt vorstellen.",
     },
     steuern: {
       eyebrow: "Steuern",
-      titel: "AfA, Sonder-AfA, Erhaltungsaufwand.",
-      text: "Maximiere deine Steuerersparnis.",
+      titel: "AfA, Zinsen, Werbungskosten.",
+      text: "Die Steuerwirkung ist in jeder Rechnung eingeplant.",
     },
     finanzierung: {
       eyebrow: "Finanzierung",
-      titel: "700+ Bankpartner.",
-      text: "Wir holen die Konditionen, die zu deiner Situation passen.",
+      titel: "OS Finanzierung.",
+      text: "Begleitung auf dem Weg zur Bank, von den Unterlagen bis zur Zusage.",
     },
     strategie: {
       eyebrow: "Strategie",
       titel: "Portfolio-Aufbau über 10 bis 15 Jahre.",
-      text: "Klarer Plan statt Einzeldeal, Schritt für Schritt zur finanziellen Freiheit.",
+      text: "Klarer Plan statt Einzelkauf, Schritt für Schritt zum eigenen Vermögen.",
     },
     betreuung: {
       eyebrow: "Betreuung",
       titel: "Ein Ansprechpartner. Über Jahre.",
-      text: "Kein Call-Center, kein Hand-Off. Du sprichst immer mit derselben Person.",
+      text: "Kein Callcenter, keine Weitergabe. Sie sprechen immer mit derselben Person.",
     },
   },
 
@@ -469,13 +469,13 @@ const de = {
     titelVor: "Vier Investoren-Profile,",
     titelVarianten: ["ein klares Konzept", "eine klare Strategie", "ein klarer Plan"],
     intro:
-      "Es gibt nicht die eine richtige Kapitalanlage. Es gibt die richtige für deine Steuerlast, deine Bonität und deinen Zeithorizont. Welcher Weg das ist, entscheidet deine Situation, nicht unser Angebot.",
+      "Es gibt nicht die eine richtige Kapitalanlage. Es gibt die richtige für Ihre Steuerlast, Ihre Bonität und Ihren Zeithorizont. Welcher Weg das ist, entscheidet Ihre Situation, nicht unser Angebot.",
     bahnLabel: "Vier Investoren-Profile, seitlich blätterbar",
     profile: [
       {
         kicker: "Unternehmer",
-        titel: "Du führst dein eigenes Unternehmen.",
-        text: "Du erzielst regelmäßig starke Gewinne und möchtest nicht dein gesamtes Vermögen im Unternehmen binden. Mit der richtigen Immobilienstrategie schaffst du planbare Sachwerte, Steuereffekte und Vermögenswachstum außerhalb des operativen Geschäfts.",
+        titel: "Sie führen Ihr eigenes Unternehmen.",
+        text: "Sie erzielen regelmäßig starke Gewinne und möchten nicht Ihr gesamtes Vermögen im Unternehmen binden. Mit der richtigen Immobilienstrategie schaffen Sie planbare Sachwerte, Steuereffekte und Vermögenswachstum außerhalb des operativen Geschäfts.",
         punkte: [
           "GmbH- oder Holding-Strukturen sinnvoll einbinden",
           "Steuerliche Gestaltungspotenziale strategisch nutzen",
@@ -485,8 +485,8 @@ const de = {
       },
       {
         kicker: "Gutverdiener",
-        titel: "Du verdienst überdurchschnittlich.",
-        text: "Du arbeitest erfolgreich, zahlst hohe Steuern und hast wenig Zeit, dich selbst um Objektauswahl, Finanzierung und Strategie zu kümmern. OS Immobilien hilft dir, deine Bonität gezielt für ein Immobilienportfolio einzusetzen.",
+        titel: "Sie verdienen überdurchschnittlich.",
+        text: "Sie arbeiten erfolgreich, zahlen hohe Steuern und haben wenig Zeit, sich selbst um Objektauswahl, Finanzierung und Strategie zu kümmern. OS Real Estate hilft Ihnen, Ihre Bonität gezielt für ein Immobilienportfolio einzusetzen.",
         punkte: [
           "Starke Bonität als Investmentvorteil nutzen",
           "Immobilienstrategie mit Steuerfokus entwickeln",
@@ -496,19 +496,19 @@ const de = {
       },
       {
         kicker: "Selbstständige",
-        titel: "Du bist selbstständig oder Freiberufler.",
-        text: "Dein Einkommen ist stark, aber nicht immer gleichmäßig. Viele Banken bewerten Selbstständige zu pauschal. Wir strukturieren deine Unterlagen professionell und prüfen Finanzierungen mit Partnern, die unternehmerische Einkommenssituationen verstehen.",
+        titel: "Sie sind selbstständig oder freiberuflich tätig.",
+        text: "Ihr Einkommen ist stark, aber nicht immer gleichmäßig. Viele Banken bewerten Selbstständige zu pauschal. Wir bereiten Ihre Unterlagen sorgfältig auf und prüfen Finanzierungen mit Partnern, die unternehmerische Einkommen verstehen.",
         punkte: [
           "Finanzierungspartner mit Erfahrung bei Selbstständigen",
-          "Professionelle Aufbereitung deines Bonitätsprofils",
+          "Sorgfältige Aufbereitung Ihres Bonitätsprofils",
           "Schritt für Schritt zu einem robusten Portfolio",
         ],
         hinweis: "Geeignet ab ca. 3 Jahren Selbstständigkeit",
       },
       {
         kicker: "Angestellte",
-        titel: "Du bist festangestellt und willst strukturiert starten.",
-        text: "Stabiles Einkommen und gute Bonität sind ideale Voraussetzungen für den Einstieg in deine erste Kapitalanlage-Immobilie. OS Immobilien hilft dir, Finanzierung sauber zu planen und Steuervorteile sinnvoll zu nutzen.",
+        titel: "Sie sind festangestellt und wollen strukturiert starten.",
+        text: "Stabiles Einkommen und gute Bonität sind ideale Voraussetzungen für den Einstieg in Ihre erste Kapitalanlage-Immobilie. OS Real Estate hilft Ihnen, die Finanzierung sauber zu planen und Steuervorteile sinnvoll zu nutzen.",
         punkte: [
           "Erste Kapitalanlage sicher und planbar angehen",
           "Einkommen und Bonität gezielt einsetzen",
@@ -591,26 +591,26 @@ const en: MikroseiteTexte = {
     kicker: "What you get",
     titelZeile1: "Everything you need for your",
     titelZeile2: "first investment.",
-    text: "Vetted properties, tax-optimised concepts and one contact person who supports you for years. All from a single source.",
+    text: "Checked properties, two clear concepts and one contact person who supports you for years. All from one group of companies.",
     objekte: {
       eyebrow: "Properties",
-      titel: "Vetted investment properties in top German locations.",
-      text: "Every property goes through a structural, legal and tax review before it is presented to you.",
+      titel: "Checked investment properties in Berlin and the surrounding region.",
+      text: "We check location, rent, condition and documents before we present a property to you.",
     },
     steuern: {
       eyebrow: "Taxes",
-      titel: "Building depreciation (AfA), special depreciation, maintenance expenses.",
-      text: "Maximise your tax relief.",
+      titel: "Depreciation (AfA), interest, expenses.",
+      text: "The tax effect is part of every calculation.",
     },
     finanzierung: {
       eyebrow: "Financing",
-      titel: "700+ partner banks.",
-      text: "We obtain the terms that suit your situation.",
+      titel: "OS Finanzierung.",
+      text: "Support on the way to the bank, from the documents to the approval.",
     },
     strategie: {
       eyebrow: "Strategy",
       titel: "Portfolio building over 10 to 15 years.",
-      text: "A clear plan instead of a one-off deal, step by step towards financial freedom.",
+      text: "A clear plan instead of a one-off purchase, step by step towards your own wealth.",
     },
     betreuung: {
       eyebrow: "Support",
@@ -986,7 +986,7 @@ const en: MikroseiteTexte = {
       {
         kicker: "High earners",
         titel: "You earn above average.",
-        text: "You're successful at work, pay high taxes and have little time to handle property selection, financing and strategy yourself. OS Immobilien helps you use your creditworthiness specifically for a property portfolio.",
+        text: "You're successful at work, pay high taxes and have little time to handle property selection, financing and strategy yourself. OS Real Estate helps you use your creditworthiness specifically for a property portfolio.",
         punkte: [
           "Use strong creditworthiness as an investment advantage",
           "Develop a property strategy with a tax focus",
@@ -1008,7 +1008,7 @@ const en: MikroseiteTexte = {
       {
         kicker: "Employees",
         titel: "You're permanently employed and want a structured start.",
-        text: "A stable income and good creditworthiness are ideal for getting into your first investment property. OS Immobilien helps you plan financing properly and use tax advantages sensibly.",
+        text: "A stable income and good creditworthiness are ideal for getting into your first investment property. OS Real Estate helps you plan financing properly and use tax advantages sensibly.",
         punkte: [
           "Approach your first investment safely and predictably",
           "Use income and creditworthiness purposefully",

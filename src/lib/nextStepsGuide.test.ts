@@ -66,7 +66,7 @@ describe("Leitfaden „Nächste Schritte\"", () => {
     // der alten Reihenfolge.
     expect(getNextSteps("beratungsgespraech", true)?.hinweis).toContain("Selbstauskunft");
     expect(getNextSteps("bonitaetsunterlagen", true)?.hinweis).toContain("Finanzierung");
-    expect(getNextSteps("selbstauskunft", true)?.hinweis).toContain("Objektauswahl");
+    expect(getNextSteps("selbstauskunft", true)?.hinweis).toContain("Objektvorstellung");
   });
 
   it("enthält keine Gedankenstriche in den Texten, die Nutzer sehen", () => {

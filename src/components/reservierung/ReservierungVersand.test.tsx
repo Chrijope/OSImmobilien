@@ -117,14 +117,11 @@ function bisZumAbsenden() {
   );
   // Käufer- und Objektdaten sind vorbefüllt. Seit dem 14.09.2026 sind es zwei
   // Schritte bis zur Erklärung, der Verkäuferschritt ist entfallen. Seit dem
-  // 15.09.2026 ist die IBAN Pflicht, und im Abschluss kommt die Wahl zum
-  // Beginn der Reservierung dazu. Der Datenschutz-Haken ist am selben Tag
-  // wieder entfallen, das Einverständnis gilt mit der Unterschrift.
-  fireEvent.change(screen.getByPlaceholderText("DE00 0000 0000 0000 0000 00"), { target: { value: "DE02120300000000202051" } });
+  // 16.10.2026 ist die Reservierung kostenfrei: keine IBAN, keine Wahl zum
+  // Beginn. Das Einverständnis zum Datenschutz gilt mit der Unterschrift.
   fireEvent.click(screen.getByRole("button", { name: "Weiter" }));
   fireEvent.click(screen.getByRole("button", { name: "Weiter" }));
   fireEvent.click(document.getElementById("erk")!);
-  fireEvent.click(document.getElementById("widerruf-sofort")!);
 }
 
 const absendeKnopf = () => screen.getByRole("button", { name: /Unterschrift anfordern|Versand erneut versuchen|Unterschrift angefordert/ });
@@ -134,6 +131,8 @@ beforeEach(() => {
   for (const k of Object.keys(metaFelder)) delete metaFelder[k];
   // Seit 29.09.2026 prueft das Formular vorab die Selbstauskunft, wie der Server.
   metaFelder.saSigned = true;
+  // Seit 16.10.2026 auch Ausweis und letzte Gehaltsabrechnung (mindestunterlagen.ts).
+  metaFelder.docStatuses = { Personalausweis: "uploaded", "Letzter Gehaltsnachweis": "uploaded" };
   for (const k of Object.keys(kontaktAenderungen)) delete kontaktAenderungen[k];
   investment.pipelineStufe = "beratungsgespraech";
   benachrichtigungen.length = 0;
@@ -203,6 +202,21 @@ describe("Vorabprüfung wie auf dem Server (29.09.2026)", () => {
     await waitFor(() => expect(hinweise.length).toBe(1));
     expect(hinweise[0].title).toBe("Die Reservierung geht noch nicht");
     expect(String(hinweise[0].description)).toContain("Die Selbstauskunft ist noch nicht unterschrieben.");
+    expect(versandAufrufe).toHaveLength(0);
+    expect(investment.pipelineStufe).toBe("beratungsgespraech");
+    expect(kontaktAenderungen).toEqual({});
+  });
+});
+
+describe("Mindestunterlagen vor der Reservierung (16.10.2026)", () => {
+  it("schickt ohne letzte Gehaltsabrechnung nichts hinaus und nennt sie", async () => {
+    metaFelder.docStatuses = { Personalausweis: "approved", "Letzter Gehaltsnachweis": "rejected" };
+    bisZumAbsenden();
+    fireEvent.click(absendeKnopf());
+
+    await waitFor(() => expect(hinweise.length).toBe(1));
+    expect(String(hinweise[0].description)).toContain("Für die Reservierung fehlen noch: letzte Gehaltsabrechnung.");
+    expect(String(hinweise[0].description)).not.toContain("Personalausweis");
     expect(versandAufrufe).toHaveLength(0);
     expect(investment.pipelineStufe).toBe("beratungsgespraech");
     expect(kontaktAenderungen).toEqual({});
@@ -326,6 +340,8 @@ describe("Der gelungene Versand meldet weiterhin Erfolg", () => {
     expect(hinweise.length).toBe(0);
     expect(benachrichtigungen.length).toBe(1);
     expect(versandAufrufe[0].name).toBe("send-reservation-signature");
+    // Seit dem 16.10.2026 kostenfrei: der Datensatz trägt das ausdrücklich.
+    expect(versandAufrufe[0].opts?.body?.rvData?.gebuehrEntfaellt).toBe(true);
   });
 });
 
