@@ -143,11 +143,13 @@ export function KundenDetailDialog({ open, onOpenChange, title, kunden, variant 
               <TableBody>
                 {kunden.map((k) => (
                   <TableRow
-                    key={k.id}
+                    // Zeilen je Investment (PotenzialCard, 11.10.2026) tragen _investmentId.
+                    key={(k as { _investmentId?: string })._investmentId || k.id}
                     className="cursor-pointer hover:bg-muted/50"
                     onClick={() => {
                       onOpenChange(false);
-                      navigate(`/kunden/${k.id}`);
+                      const invId = (k as { _investmentId?: string })._investmentId;
+                      navigate(invId ? `/kunden/${k.id}?investment=${invId}` : `/kunden/${k.id}`);
                     }}
                   >
                     <TableCell className="font-medium">

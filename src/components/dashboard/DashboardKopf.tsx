@@ -30,7 +30,7 @@ import { sammleOffenePunkte, zaehleOffenePunkte } from "@/lib/offenePunkte";
 import { getFollowUps } from "@/lib/followUpStore";
 import { getAufgaben } from "@/lib/aufgabenStore";
 import { liegtInZukunft } from "@/lib/faelligkeit";
-import { kontaktKaufpreis } from "@/lib/objektDatenPflicht";
+import { kontaktKaufpreis, investmentKaufpreis } from "@/lib/objektDatenPflicht";
 import { tarnName, unscharfKlasse } from "@/lib/vorfuehrmodus";
 import {
   berechneDashboardKpis,
@@ -121,9 +121,13 @@ export function DashboardKopf() {
       investments: investments.map((i) => ({
         id: i.id,
         kontaktId: i.kontaktId,
-        kaufpreis: (i as { kaufpreis?: number }).kaufpreis,
+        // Der Kaufpreis steht in den Objektdaten des Investments, nicht als
+        // Feld am Investment. Vorher stand hier ein Feld, das es nicht gibt,
+        // und Umsatz und Beträge blieben bei null (11.10.2026).
+        kaufpreis: investmentKaufpreis(i.id),
         notarTermin: i.notarTermin,
         pipelineStufe: i.pipelineStufe,
+        erstellt_am: i.erstellt_am,
       })),
       aufgaben: [],
       von,
@@ -246,9 +250,13 @@ export function DashboardKopf() {
       investments: getInvestments().map((i) => ({
         id: i.id,
         kontaktId: i.kontaktId,
-        kaufpreis: (i as { kaufpreis?: number }).kaufpreis,
+        // Der Kaufpreis steht in den Objektdaten des Investments, nicht als
+        // Feld am Investment. Vorher stand hier ein Feld, das es nicht gibt,
+        // und Umsatz und Beträge blieben bei null (11.10.2026).
+        kaufpreis: investmentKaufpreis(i.id),
         notarTermin: i.notarTermin,
         pipelineStufe: i.pipelineStufe,
+        erstellt_am: i.erstellt_am,
       })),
       aufgaben: [],
       von,

@@ -44,8 +44,14 @@ vi.mock("@/lib/aktivitaetenStore", () => ({
   loescheAktivitaet: async () => true,
 }));
 
+// Die Stufe haengt am Investment (11.10.2026): Ein Investment in der Stufe
+// des Kontakts, gesetzte Stufen kommen ueber updateInvestment.
 vi.mock("@/lib/investmentsStore", () => ({
-  getInvestmentsByKontakt: () => [],
+  getInvestmentsByKontakt: () => [{ id: "inv-1", pipelineStufe: kontakt.pipelineStufe }],
+  updateInvestment: (_id: string, f: Record<string, unknown>) => {
+    gesetzteStufen.push({ id: "k-1", stufe: f.pipelineStufe });
+    return Promise.resolve(true);
+  },
   getSaSigned: () => false,
   getRvSigned: () => false,
   getSaSignaturePending: () => false,
@@ -88,8 +94,7 @@ vi.mock("@/hooks/use-toast", () => ({ useToast: () => ({ toast: () => {} }) }));
 
 vi.mock("@/lib/kundenStore", () => ({
   getKontaktById: () => kontakt,
-  updateKontakt: (id: string, updates: Record<string, unknown>) => {
-    gesetzteStufen.push({ id, stufe: updates.pipelineStufe });
+  updateKontakt: (_id: string, updates: Record<string, unknown>) => {
     Object.assign(kontakt, updates);
   },
   mergeKontaktMetaMitGrund: async (_id: string, patch: Record<string, unknown>) => {

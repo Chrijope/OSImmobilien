@@ -47,53 +47,70 @@ export function StatistikOpportunity({ kontakte }: { kontakte: any[] }) {
     [kontakte]
   );
 
+  /*
+   * Je Investment, nicht je Kunde (11.10.2026): Jedes laufende Investment ist
+   * ein Vorgang mit eigener Stufe, eigenem Volumen und eigenem Notartermin.
+   * Vorher zählte der Kunde einmal mit der Kontaktstufe, aber mit dem Volumen
+   * aller seiner Investments. Ein Kontakt ohne Investment zählt selbst.
+   */
+  const vorgaenge = useMemo(() => {
+    return activeKontakte.flatMap(k => {
+      const name = `${k.vorname || ""} ${k.nachname || ""}`.trim() || "Ohne Namen";
+      const invs = (invByKontakt.get(k.id) || []).filter(i => !["verloren", "archiviert"].includes(i.meta?.pipelineStufe));
+      if (invs.length === 0) {
+        return [{ id: k.id, name, stufe: k.meta?.pipelineStufe || "neuer_lead", volume: 0, notar: null as string | null, seit: k.aktualisiert_am || k.erstellt_am }];
+      }
+      return invs.map(i => ({
+        id: i.id as string,
+        name: invs.length > 1 ? `${name} (Inv. ${i.meta?.nummer ?? "?"})` : name,
+        stufe: (i.meta?.pipelineStufe || "neuer_lead") as string,
+        volume: getInvestmentVolume(i),
+        notar: (i.meta?.notarTermin || i.meta?.notarData?.datum || null) as string | null,
+        seit: i.meta?.pipelineSeit || k.aktualisiert_am || k.erstellt_am,
+      }));
+    });
+  }, [activeKontakte, invByKontakt]);
+
   const stageRows = useMemo(() => {
     return PIPELINE_STUFEN.filter(s => !["archiviert", "verloren"].includes(s.key)).map(s => {
-      const list = activeKontakte.filter(k => (k.meta?.pipelineStufe || "neuer_lead") === s.key);
-      const volume = list.reduce((sum, k) => {
-        const invs = invByKontakt.get(k.id) || [];
-        return sum + invs.reduce((a, i) => a + getInvestmentVolume(i), 0);
-      }, 0);
+      const list = vorgaenge.filter(v => v.stufe === s.key);
+      const volume = list.reduce((sum, v) => sum + v.volume, 0);
       const prob = wahrscheinlichkeitFuerStufe(s.key);
       return { key: s.key, label: s.label, count: list.length, volume, weighted: volume * prob };
     });
-  }, [activeKontakte, invByKontakt]);
+  }, [vorgaenge]);
 
   const totalForecast = stageRows.reduce((s, r) => s + r.weighted, 0);
   const totalVolume = stageRows.reduce((s, r) => s + r.volume, 0);
 
   const hotDeals = useMemo(() => {
     const in30 = Date.now() + 30 * 86400000;
-    return activeKontakte
-      .map(k => {
-        const invs = invByKontakt.get(k.id) || [];
-        const notar = invs.map(i => i.meta?.notarTermin || i.meta?.notarData?.datum).find(Boolean);
-        const stufe = k.meta?.pipelineStufe;
-        if (!["reservierung", "finanzierung", "notar"].includes(stufe || "")) return null;
-        const notarDate = notar ? new Date(notar).getTime() : null;
+    return vorgaenge
+      .map(v => {
+        if (!["reservierung", "finanzierung", "notar"].includes(v.stufe)) return null;
+        const notarDate = v.notar ? new Date(v.notar).getTime() : null;
         if (notarDate && notarDate > in30) return null;
-        return { id: k.id, name: `${k.vorname || ""} ${k.nachname || ""}`.trim() || "Ohne Namen", stufe, notar: notarDate, volume: invs.reduce((s, i) => s + getInvestmentVolume(i), 0) };
+        return { id: v.id, name: v.name, stufe: v.stufe, notar: notarDate, volume: v.volume };
       })
       .filter(Boolean)
       .sort((a: any, b: any) => (a.notar ?? Infinity) - (b.notar ?? Infinity))
       .slice(0, 12) as any[];
-  }, [activeKontakte, invByKontakt]);
+  }, [vorgaenge]);
 
   const stuckDeals = useMemo(() => {
-    return activeKontakte
-      .map(k => {
-        const stufe = k.meta?.pipelineStufe || "neuer_lead";
-        const sla = STAGE_SLA_DAYS[stufe];
+    return vorgaenge
+      .map(v => {
+        const sla = STAGE_SLA_DAYS[v.stufe];
         if (!sla) return null;
-        const since = k.aktualisiert_am || k.erstellt_am;
-        const days = daysSince(since);
+        // Seit dem Stufeneintritt des Investments, sonst der letzten Änderung.
+        const days = daysSince(v.seit);
         if (days < sla.warn) return null;
-        return { id: k.id, name: `${k.vorname || ""} ${k.nachname || ""}`.trim() || "Ohne Namen", stufe, days, severity: days >= sla.alert ? "alert" : "warn" };
+        return { id: v.id, name: v.name, stufe: v.stufe, days, severity: days >= sla.alert ? "alert" : "warn" };
       })
       .filter(Boolean)
       .sort((a: any, b: any) => b.days - a.days)
       .slice(0, 15) as any[];
-  }, [activeKontakte]);
+  }, [vorgaenge]);
 
 
   // ── Lead-Qualität (Score-Verteilung) ──

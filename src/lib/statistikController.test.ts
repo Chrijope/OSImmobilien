@@ -236,6 +236,18 @@ describe("Pipeline und Quoten", () => {
     expect(result.budget).toBe(100000);
     expect(result.rows.reduce((s, r) => s + r.count, 0)).toBe(3);
   });
+  it("zählt je Investment: Investment 2 erscheint in seiner eigenen Stufe (11.10.2026)", () => {
+    const result = pipeline(
+      [contact("k", { meta: { pipelineStufe: "notar" } })],
+      [
+        deal("i1", "k", { kaufdatum: null, meta: { pipelineStufe: "notar" } }),
+        deal("i2", "k", { kaufdatum: null, meta: { pipelineStufe: "neuer_lead" } }),
+      ],
+    );
+    const zahl = (key: string) => result.rows.find((r) => r.key === key)?.count;
+    expect(zahl("notar")).toBe(1);
+    expect(zahl("neuer_lead")).toBe(1);
+  });
   it("trennt künftige, vergangene und fehlende Notartermine", () => {
     const contacts = ["a", "b", "c"].map((id) =>
       contact(id, { meta: { pipelineStufe: "notar" } }),

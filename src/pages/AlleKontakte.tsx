@@ -33,7 +33,7 @@ import { ImportExportButton } from "@/components/kunden/ImportExportButton";
 import { DuplikatBanner } from "@/components/kunden/DuplikatBanner";
 import { cacheRefreshTable } from "@/lib/dataCache";
 import { StickyPagination, usePagination } from "@/components/kunden/StickyPagination";
-import { getEffectivePipelineStufe, PIPELINE_STUFEN, getProzessBereich, type ProzessBereich } from "@/lib/kontaktPipeline";
+import { getEffectivePipelineStufe, getInvestmentStufenFuerKunde, investmentStufenText, PIPELINE_STUFEN, getProzessBereich, type ProzessBereich } from "@/lib/kontaktPipeline";
 import { stufenFilterLabel } from "@/lib/pipelineStufen";
 import { loadAllUsers } from "@/lib/loadAllUsers";
 import { reassignBeraterBulk, leadsAnZentraleZurueckgeben } from "@/lib/beraterHistorie";
@@ -409,7 +409,8 @@ export default function AlleKontakte() {
     }
     if (stufenFilter.length > 0) {
       const set = new Set(stufenFilter);
-      result = result.filter((k) => set.has(getEffectivePipelineStufe(k)));
+      // Ein Kontakt passt, wenn eines seiner Investments in der Stufe steht.
+      result = result.filter((k) => getInvestmentStufenFuerKunde(k).some((e) => set.has(e.stufe)));
     }
     if (ohneFollowUp) {
       result = result.filter((k) => !futureFuKundeIds.has(k.id));
@@ -466,9 +467,11 @@ export default function AlleKontakte() {
 
   const stufenCounts = useMemo(() => {
     const map: Record<string, number> = {};
+    // Je Kontakt einmal in jeder Stufe, in der eines seiner Investments steht.
     for (const k of baseKontakte) {
-      const s = getEffectivePipelineStufe(k);
-      map[s] = (map[s] || 0) + 1;
+      for (const s of new Set(getInvestmentStufenFuerKunde(k).map((e) => e.stufe))) {
+        map[s] = (map[s] || 0) + 1;
+      }
     }
     return map;
   }, [baseKontakte]);
@@ -920,8 +923,7 @@ export default function AlleKontakte() {
                 if (filtered.length === 0) return <TableRow><TableCell colSpan={colSpan} className="text-center py-8 text-muted-foreground">Keine Kontakte gefunden.</TableCell></TableRow>;
                 return paged.map(k => {
                   const kat = kategorieLabel(k);
-                  const stufe = getEffectivePipelineStufe(k);
-                  const stufeLabel = PIPELINE_STUFEN.find(s => s.key === stufe)?.label || stufe;
+                  const stufeLabel = investmentStufenText(k);
                   const checked = selectedIds.has(k.id);
                   const waitUntil = isInWaitingPeriod(k) ? k.verstecktBis ?? null : null;
                   const profilUrl = `/kunden/${k.id}`;

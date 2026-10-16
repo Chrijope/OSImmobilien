@@ -14,7 +14,6 @@ import { getEffectivePipelineStufe } from "./kontaktPipeline";
 // Gleiches Muster fuer die Follow-Up-Automatik: das require weiter unten war
 // tot, die Ketten liefen nie. followUpStore importiert nur dataCache und
 // dbStoreHelper, es entsteht kein Kreis.
-import { generateFollowUpsFromKette, getFollowUpsByKunde, cancelStaleAutoFollowUps } from "./followUpStore";
 
 export interface KundeData {
   id: string;
@@ -944,9 +943,8 @@ export async function addKontakt(partial: Partial<KundeData> & { vorname: string
 
   // Auto-Anlage „Investment 1" — im Test-Modus (localStorage) hier explizit,
   // im echten Betrieb übernimmt das ein DB-Trigger auf public.kontakte.
-  // Bestandskunden (Pre-Funnel) bleiben ausgenommen, damit sie nicht
-  // versehentlich in „Beratungsgespräch" springen.
-  if (isTestAccount() && newKunde.pipelineStufe !== "bestandsimport") {
+  // Seit dem 11.10.2026 ohne Ausnahme, auch für Bestandskunden.
+  if (isTestAccount()) {
     try {
       const { createInvestment } = await import("./investmentsStore");
       await createInvestment(newKunde.id, "Investment 1");
@@ -1273,7 +1271,15 @@ function kontaktZeileSchreiben(id: string, dbUpdates: Record<string, any>): Prom
   return cacheZeileSchreiben("kontakte", id, geaendert, patch);
 }
 
-export function updateKontakt(id: string, updates: Partial<KundeData>): Promise<boolean> {
+export function updateKontakt(id: string, aenderungen: Partial<KundeData>): Promise<boolean> {
+  /*
+   * Die Pipeline-Stufe gehoert seit dem 11.10.2026 nur ans Investment. Am
+   * Kontakt fuehrt sie der Datenbank-Trigger kontakt_stufe_nachfuehren aus
+   * den Investments nach. Ein direkter Schreibversuch wird deshalb verworfen,
+   * sonst stuende am Kontakt die Stufe des zuletzt angefassten Investments.
+   * Stufen setzt man mit updateInvestment oder setzeStufeFruehePhase.
+   */
+  const { pipelineStufe: _verworfen, ...updates } = aenderungen;
   if (isTestAccount()) {
     const kontakte = lsGetKontakte();
     const idx = kontakte.findIndex(k => k.id === id);
@@ -1300,13 +1306,12 @@ export function updateKontakt(id: string, updates: Partial<KundeData>): Promise<
   if (!("berater" in updates)) delete (dbUpdates as any).berater;
   const gespeichert = kontaktZeileSchreiben(id, dbUpdates);
 
-  // Empfehlungsstatus abgleichen, wenn sich die Pipeline aendern kann. Neben
-  // pipelineStufe zaehlen auch status und archiviert, weil die effektive Stufe
-  // daraus abgeleitet wird (verloren/archiviert schlagen alles).
+  // Empfehlungsstatus abgleichen, wenn sich die Pipeline aendern kann: status
+  // und archiviert, weil verloren/archiviert alles schlagen. Stufenwechsel am
+  // Investment gleicht updateInvestment ab.
   const rawMeta = (existing as any).meta || (cacheGet("kontakte").find((r: any) => r.id === id) as any)?.meta;
   const empfehlungId = rawMeta?.empfehlungId;
-  const pipelineRelevant = updates.pipelineStufe !== undefined
-    || updates.status !== undefined
+  const pipelineRelevant = updates.status !== undefined
     || updates.archiviert !== undefined;
   if (pipelineRelevant && empfehlungId) {
     try {
@@ -1319,30 +1324,6 @@ export function updateKontakt(id: string, updates: Partial<KundeData>): Promise<
       // Fehlschlag soll sichtbar sein (frueher hat ein leerer catch den toten
       // require-Aufruf jahrelang verborgen).
       console.error("Empfehlungs-Sync fehlgeschlagen:", fehler);
-    }
-  }
-
-  // Auto-Generierung der Follow-Up-Ketten bei Pipeline-Stufen-Wechsel.
-  // Der fruehere require-Aufruf existierte im Vite/ESM-Bundle nicht, der
-  // leere catch hat das jahrelang verborgen; jetzt statischer Import (oben).
-  if (updates.pipelineStufe && updates.pipelineStufe !== existing.pipelineStufe) {
-    try {
-      // 1) Alte automatische, noch offene FUs aus früheren Stufen stornieren
-      cancelStaleAutoFollowUps(id, updates.pipelineStufe);
-      // 2) Nur OFFENE auto-FUs der neuen Stufe blockieren ein Re-Seeding
-      const offeneNeueStufe = getFollowUpsByKunde(id).filter((f) =>
-        f.automatisch
-          && f.pipelineStufe === updates.pipelineStufe
-          && (f.status === "offen" || f.status === "ueberfallig")
-      );
-      if (offeneNeueStufe.length === 0) {
-        const name = `${merged.vorname || ""} ${merged.nachname || ""}`.trim();
-        generateFollowUpsFromKette(id, name, merged.berater || "", updates.pipelineStufe);
-      }
-    } catch (fehler) {
-      // Die Follow-Up-Automatik darf das Speichern nicht verhindern, ein
-      // Fehlschlag soll aber sichtbar sein statt still zu verschwinden.
-      console.error("Follow-Up-Automatik fehlgeschlagen:", fehler);
     }
   }
 

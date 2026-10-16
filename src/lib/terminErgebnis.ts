@@ -152,7 +152,7 @@ export function lokaleUhrzeit(d: Date): string {
 }
 
 /**
- * Setzt nach einem No-Show die passende NoShow-Stufe am Kontakt.
+ * Setzt nach einem No-Show die passende NoShow-Stufe an den Investments.
  *
  * Fehlschlaege sind hier bewusst still. Der No-Show selbst ist zu diesem
  * Zeitpunkt schon gespeichert, und eine Fehlermeldung ueber eine nicht
@@ -160,18 +160,17 @@ export function lokaleUhrzeit(d: Date): string {
  */
 export function setzeNoShowStufe(kundeId: string, ziel: "eg_noshow" | "bg_noshow"): boolean {
   try {
-    const kunde = getKontaktById(kundeId);
-    if (!kunde) return false;
-    if (!darfNoShowStufeSetzen(getEffectivePipelineStufe(kunde), ziel)) return false;
-    updateKontakt(kundeId, { pipelineStufe: ziel });
-    // Die Kachel "Naechster Schritt" liest die Stufe des Investments, nicht
-    // die des Kontakts. Ohne das Nachziehen stand dort nach einem No-Show
-    // weiter der Schritt des geplatzten Termins statt "Neuen ... vereinbaren".
-    // Dieselbe Sperre wie am Kontakt: Ein weiter gediehenes Investment bleibt.
+    if (!getKontaktById(kundeId)) return false;
+    // Seit 11.10.2026 nur am Investment: jedes, das noch vor dem Termin steht.
+    // Ein weiter gediehenes Investment bleibt (darfNoShowStufeSetzen).
+    let gesetzt = false;
     for (const inv of getInvestmentsByKontakt(kundeId)) {
-      if (darfNoShowStufeSetzen(inv.pipelineStufe, ziel)) updateInvestment(inv.id, { pipelineStufe: ziel });
+      if (darfNoShowStufeSetzen(inv.pipelineStufe, ziel)) {
+        updateInvestment(inv.id, { pipelineStufe: ziel });
+        gesetzt = true;
+      }
     }
-    return true;
+    return gesetzt;
   } catch (fehler) {
     console.error("NoShow-Stufe nicht gesetzt:", fehler);
     return false;

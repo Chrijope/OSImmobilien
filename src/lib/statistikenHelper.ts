@@ -93,6 +93,33 @@ function normStufe(s: string | null | undefined): string {
 }
 
 /**
+ * Offene Vorgänge mit Stufe und Wert, je Investment (11.10.2026).
+ *
+ * Ein Kunde mit zwei Käufen sind zwei Vorgänge, jeder mit seiner Stufe und
+ * seinem Kaufpreis. Vorher zählte der Kunde einmal, mit der Kontaktstufe und
+ * dem Kaufpreis am Kontakt. Ein Kontakt ohne Investment zählt wie bisher
+ * selbst. Rohzeilen aus dem Zwischenspeicher (`kunde_id`, `meta`, `kaufpreis`).
+ */
+export function vorgaengeJeInvestment(kontakte: any[], investments: any[]): Array<{ kontakt: any; stufe: string; wert: number }> {
+  const jeKontakt = new Map<string, any[]>();
+  for (const i of investments) {
+    if (i.status === "storniert" || i.status === "geloescht") continue;
+    const id = String(i.kunde_id);
+    jeKontakt.set(id, [...(jeKontakt.get(id) || []), i]);
+  }
+  const out: Array<{ kontakt: any; stufe: string; wert: number }> = [];
+  for (const k of kontakte) {
+    const invs = jeKontakt.get(String(k.id));
+    if (invs && invs.length > 0) {
+      for (const i of invs) out.push({ kontakt: k, stufe: normStufe(i.meta?.pipelineStufe), wert: Number(i.kaufpreis) || 0 });
+    } else {
+      out.push({ kontakt: k, stufe: normStufe(k.meta?.pipelineStufe), wert: Number(k.kaufpreis) || Number(k.budget) || 0 });
+    }
+  }
+  return out;
+}
+
+/**
  * Liefert alle internen Personen mit ihrer aktiven Rolle (für ROI-Tabelle).
  */
 export function getAllInternalPersons(): PersonRow[] {
@@ -126,13 +153,11 @@ export function computeFinanzKPIs(
   zeitraumStart: Date,
   zeitraumEnd: Date,
 ): FinanzKPIs {
-  // Pipeline-Volumen: alle nicht-abgeschlossenen, nicht-verlorenen Kontakte mit Kaufpreis/Budget
+  // Pipeline-Volumen: alle offenen Vorgänge (je Investment) mit Kaufpreis
   let pipelineVolumen = 0;
   let pipelineGewichtet = 0;
-  kontakte.forEach(k => {
-    const stufe = normStufe(k.meta?.pipelineStufe);
-    if (stufe === "verloren" || ABGESCHLOSSEN_STUFEN.has(stufe)) return;
-    const wert = Number(k.kaufpreis) || Number(k.budget) || 0;
+  vorgaengeJeInvestment(kontakte, investments).forEach(({ stufe, wert }) => {
+    if (stufe === "verloren" || stufe === "archiviert" || stufe === "bestandsimport" || ABGESCHLOSSEN_STUFEN.has(stufe)) return;
     pipelineVolumen += wert;
     pipelineGewichtet += wert * wahrscheinlichkeitFuerStufe(stufe);
   });
@@ -372,12 +397,11 @@ export function computeVPKPIs(
     return istZustaendig(k, { userId: vpUserId, userName: vpName });
   });
 
-  // Pipeline-Volumen (offen)
+  // Pipeline-Volumen (offen), je Investment
   let pipelineVolumen = 0;
-  vpKontakte.forEach(k => {
-    const stufe = normStufe(k.meta?.pipelineStufe);
-    if (stufe === "verloren" || ABGESCHLOSSEN_STUFEN.has(stufe)) return;
-    pipelineVolumen += Number(k.kaufpreis) || Number(k.budget) || 0;
+  vorgaengeJeInvestment(vpKontakte, investments).forEach(({ stufe, wert }) => {
+    if (stufe === "verloren" || stufe === "archiviert" || stufe === "bestandsimport" || ABGESCHLOSSEN_STUFEN.has(stufe)) return;
+    pipelineVolumen += wert;
   });
 
   // Eigenumsatz (Investments im Zeitraum)

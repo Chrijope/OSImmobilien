@@ -35,6 +35,8 @@ export interface KpiInvestment {
   notarTermin?: string;
   pipelineStufe?: string;
   status?: string;
+  /** Anlagedatum des Investments, für die Conversion im Zeitraum. */
+  erstellt_am?: string;
 }
 
 export interface KpiAufgabe {
@@ -244,23 +246,53 @@ export function berechneDashboardKpis(e: KpiEingabe): DashboardKpis {
   let erstgespraecheGesamt = 0;
   let davonAbReservierung = 0;
 
+  /*
+   * Gezählt wird je Investment, nicht je Kunde (Freigabe Christian,
+   * 11.10.2026): Ein Kunde mit zwei Käufen ist zwei Vorgänge, jeder in seiner
+   * eigenen Stufe und mit seinem eigenen Kaufpreis. Vorher zählte der Kunde
+   * einmal, mit der Stufe des zuletzt angefassten Investments und der Summe
+   * aller Kaufpreise. Ein Kontakt ohne Investment zählt wie bisher selbst.
+   */
+  const invsJeKontakt = new Map<string, KpiInvestment[]>();
+  for (const inv of e.investments) {
+    if (!inv.kontaktId || inv.status === "storniert" || inv.status === "geloescht") continue;
+    const liste = invsJeKontakt.get(inv.kontaktId) || [];
+    liste.push(inv);
+    invsJeKontakt.set(inv.kontaktId, liste);
+  }
+  const vorgaenge: Array<{ kontaktId: string; investmentId?: string; stufe: string; betrag: number; erstellt_am?: string }> = [];
   for (const k of e.kontakte) {
-    const s = stufe(k.pipelineStufe);
     if (k.archiviert) continue;
+    const invs = invsJeKontakt.get(k.id);
+    if (invs && invs.length > 0) {
+      for (const inv of invs) {
+        vorgaenge.push({
+          kontaktId: k.id, investmentId: inv.id, stufe: stufe(inv.pipelineStufe),
+          betrag: Number(inv.kaufpreis) || 0, erstellt_am: inv.erstellt_am || k.erstellt_am,
+        });
+      }
+    } else {
+      vorgaenge.push({ kontaktId: k.id, stufe: stufe(k.pipelineStufe), betrag: Number(k.kaufpreis) || 0, erstellt_am: k.erstellt_am });
+    }
+  }
+
+  for (const v of vorgaenge) {
+    const s = v.stufe;
+    const eintrag: KpiEintrag = { kontaktId: v.kontaktId, investmentId: v.investmentId, betrag: v.betrag };
 
     if (OFFENE_RESERVIERUNG.has(s)) {
       offeneReservierungen += 1;
-      reservierungEintraege.push({ kontaktId: k.id, betrag: Number(k.kaufpreis) || 0 });
+      reservierungEintraege.push(eintrag);
     }
     if (IN_BEARBEITUNG.has(s)) {
       aktiveLeads += 1;
-      leadEintraege.push({ kontaktId: k.id, betrag: Number(k.kaufpreis) || 0 });
+      leadEintraege.push(eintrag);
     }
     if (UNBEARBEITET.has(s)) unbearbeiteteLeads += 1;
 
-    // Für die Conversion zählen nur Kontakte, die im Zeitraum angelegt wurden.
+    // Für die Conversion zählen nur Vorgänge, die im Zeitraum angelegt wurden.
     // Sonst verzerrt der Altbestand jede Quote.
-    const angelegt = leseDatum(k.erstellt_am);
+    const angelegt = leseDatum(v.erstellt_am);
     if (angelegt && angelegt >= e.von && angelegt < e.bis) {
       if (NACH_ERSTGESPRAECH.has(s)) erstgespraecheGesamt += 1;
       if (AB_RESERVIERUNG.has(s)) davonAbReservierung += 1;

@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
 import { KontaktTypBadge } from "@/components/kunden/KontaktTypBadge";
-import { getEffectivePipelineStufe, calculateLogicalPipelineStufe, PIPELINE_STUFEN, buildBucketEntries, type PipelineStufe } from "@/lib/kontaktPipeline";
+import { getEffectivePipelineStufe, calculateLogicalPipelineStufe, buildPipelineKarten, getInvestmentStufenFuerKunde, PIPELINE_STUFEN, buildBucketEntries, type PipelineStufe } from "@/lib/kontaktPipeline";
 import { stufenFilterLabel, kontaktGanzVerloren } from "@/lib/pipelineStufen";
 import { sichtfenster } from "@/lib/pipelineSichtfenster";
 import { getInboxTasks } from "@/lib/aktivitaetenStore";
@@ -82,14 +82,6 @@ function getStufe(k: KundeData): PipelineStufe {
   return getEffectivePipelineStufe(k);
 }
 
-// Normalisierung wie in kontaktPipeline.ts (lokal, damit kein Export nötig)
-function normalizeStufeKey(stufe?: string | null): PipelineStufe | null {
-  if (!stufe) return null;
-  let n = stufe === "after_sales" || stufe === "aftersales" ? "faelligkeit" : stufe;
-  if (n === "closing") n = "objektauswahl";
-  return (PIPELINE_STUFEN as readonly { key: string }[]).some(s => s.key === n) ? (n as PipelineStufe) : null;
-}
-
 type PipelineEntry = { kunde: KundeData; stufe: PipelineStufe; investmentId?: string; entryKey: string };
 
 /** Eine einzige leere Liste für alle leeren Spalten, damit kein neues Feld entsteht. */
@@ -123,29 +115,9 @@ const GESAMT_STUFEN = new Set([
   "faelligkeit", "abrechnung", "abgeschlossen", "bestandskunden", "bestandsimport",
 ]);
 
-function buildPipelineEntries(kunden: KundeData[]): PipelineEntry[] {
-  const entries: PipelineEntry[] = [];
-  for (const k of kunden) {
-    // Archivierte Kontakte bleiben EINE Karte in "archiviert"
-    if (k.archiviert) {
-      entries.push({ kunde: k, stufe: "archiviert", entryKey: k.id });
-      continue;
-    }
-    const invs = getInvestmentsByKontakt(k.id);
-    // Bei mehreren Investments: pro Investment eine eigene Karte in dessen Stufe
-    if (invs.length >= 2) {
-      for (const inv of invs) {
-        const s = normalizeStufeKey(inv.pipelineStufe) || getStufe(k);
-        entries.push({ kunde: k, stufe: s, investmentId: inv.id, entryKey: `${k.id}__${inv.id}` });
-      }
-      continue;
-    }
-    // 0 oder 1 Investment → bisheriges Verhalten (effektive Stufe des Kunden)
-    entries.push({ kunde: k, stufe: getStufe(k), investmentId: invs[0]?.id, entryKey: k.id });
-  }
-  return entries;
-}
-
+// Die Kartenlogik liegt in kontaktPipeline.ts (buildPipelineKarten), damit
+// die lokale Vorschau dieselbe Regel zeigt wie diese Seite.
+const buildPipelineEntries = (kunden: KundeData[]): PipelineEntry[] => buildPipelineKarten(kunden);
 
 const isSetterRole = (role: string) => role === "setterin";
 const isVersicherungsexperte = (role: string) => role === "versicherungsexperte";
@@ -869,12 +841,9 @@ export default function Pipeline() {
       // Erst auf die Datenbank warten. Lehnt sie ab (Zeilenregel oder ein
       // Wächter wie bei Abrechnung und Abgeschlossen), meldet das der
       // Zwischenspeicher und stellt die Kachel zurück; dann kein „aktualisiert“.
-      if (investmentId && !(await updateInvestment(investmentId, { pipelineStufe: to } as any))) return;
-      try {
-        await updateKontakt(kundeId, { pipelineStufe: to } as any);
-      } catch {
-        return;
-      }
+      // Die Stufe haengt nur am Investment (11.10.2026); die Kontaktstufe
+      // fuehrt die Datenbank nach.
+      if (!investmentId || !(await updateInvestment(investmentId, { pipelineStufe: to } as any))) return;
 
       /*
        * Sagen, wenn die Automatik den Zug wieder einholen wird.
@@ -886,7 +855,8 @@ export default function Pipeline() {
        * es sah nach einem Fehler aus. Jetzt steht da, warum.
        */
       const kunde = getKontakte().find((k) => k.id === kundeId);
-      const automatisch = kunde ? calculateLogicalPipelineStufe(kunde) : null;
+      // Nur die Daten dieses Investments, nicht die eines anderen (11.10.2026).
+      const automatisch = kunde ? calculateLogicalPipelineStufe(kunde, investmentId) : null;
       if (automatisch && automatisch !== to) {
         const autoLabel = PIPELINE_STUFEN.find((st) => st.key === automatisch)?.label || automatisch;
         toast({
@@ -927,7 +897,6 @@ export default function Pipeline() {
       const ganz = kontaktGanzVerloren(getInvestmentsByKontakt(kundeId), investmentId);
       if (ganz) {
         await updateKontakt(kundeId, {
-          pipelineStufe: "verloren",
           status: "verloren" as any,
           verlorenGrund: verlustGrundId,
           verlorenAm,
@@ -1018,11 +987,7 @@ export default function Pipeline() {
     try {
       updateInvestment(invId, { pipelineStufe: "beratungsgespraech" } as any);
       setInvestmentMetaFields(invId, { beratungsgespraechAm: bgDatum, beratungsgespraechUhrzeit: bgUhrzeit } as any);
-      // Erst den Termin in meta schreiben und den Zwischenspeicher nachziehen,
-      // danach erst updateKontakt. Sonst baut updateKontakt das meta aus dem
-      // alten Zwischenspeicher neu auf und loescht den Termin im selben Klick.
       await mergeKontaktMeta(kundeId, { beratungsgespraechAm: bgDatum, beratungsgespraechUhrzeit: bgUhrzeit });
-      updateKontakt(kundeId, { pipelineStufe: "beratungsgespraech" } as any);
       toast({ title: "Beratungsgespräch eingetragen ✓", description: `${moveConfirm.kundeName}: ${bgDatum} um ${bgUhrzeit}` });
     } catch {
       toast({ title: "Fehler beim Speichern", variant: "destructive" });
@@ -1171,13 +1136,18 @@ export default function Pipeline() {
         if (!matches) return false;
       }
       if (statusFilter !== "alle") {
-        if (getStufe(k) !== statusFilter) return false;
+        // Ein Kunde bleibt, wenn eines seiner Investments in der Stufe steht (11.10.2026).
+        if (!getInvestmentStufenFuerKunde(k).some((e) => e.stufe === statusFilter)) return false;
       }
       return true;
     });
   }, [kontakte, filter, statusFilter, beraterFilter, teamView, showArchived, isTeamLead, siehtGanzesHaus, teamIds, isSetter, isVExperte, myUserId]);
 
-  const pipelineEntries = useMemo(() => buildPipelineEntries(filteredKontakte), [filteredKontakte, liveVersion]);
+  // Mit Stufenfilter nur die Karten dieser Stufe, nicht die anderen Investments desselben Kunden.
+  const pipelineEntries = useMemo(
+    () => buildPipelineEntries(filteredKontakte).filter((e) => statusFilter === "alle" || e.stufe === statusFilter),
+    [filteredKontakte, liveVersion, statusFilter],
+  );
 
   // Virtuelle Spalte "Bestandskunden" – spiegelt die Sidebar-Liste 'Bestandskunden' wider.
   const bestandskundenEntries: PipelineEntry[] = useMemo(() => {

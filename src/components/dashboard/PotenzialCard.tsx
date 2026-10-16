@@ -13,7 +13,8 @@ import { useMemo, useState } from "react";
 import { KundenDetailDialog } from "./KundenDetailDialog";
 import { useLiveVersion } from "@/hooks/useLiveData";
 import { Info } from "lucide-react";
-import { kontaktKaufpreis } from "@/lib/objektDatenPflicht";
+import { kontaktKaufpreis, investmentKaufpreis } from "@/lib/objektDatenPflicht";
+import { getInvestmentsByKontakt } from "@/lib/investmentsStore";
 
 export function PotenzialCard() {
   const { user, authUser } = useUser();
@@ -101,8 +102,25 @@ export function PotenzialCard() {
       "beratungsgespraech", "bg_noshow", "selbstauskunft", "bonitaetsunterlagen",
       "objektauswahl", "follow_up_objekt", "reservierung", "finanzierung",
     ]);
-    const offene = filtered.filter(k => k.status !== "verloren" && OFFEN.has(normStufe(k)));
-    const complete = filtered.filter(k => k.status !== "verloren" && AB_OBJEKTAUSWAHL.has(normStufe(k)));
+    /*
+     * Je Investment, nicht je Kunde (11.10.2026): Jedes Investment zählt mit
+     * seiner eigenen Stufe und seinem eigenen Kaufpreis. Ein Kontakt ohne
+     * Investment zählt wie bisher selbst.
+     */
+    const vorgaenge: any[] = filtered.flatMap((k: any) => {
+      const invs = getInvestmentsByKontakt(k.id);
+      if (invs.length === 0) return [k];
+      return invs.map((inv) => ({
+        ...k,
+        _investmentId: inv.id,
+        pipelineStufe: inv.pipelineStufe,
+        objekt: inv.objektTitel || k.objekt,
+        kaufpreis: investmentKaufpreis(inv.id),
+        meta: { ...(k.meta || {}), pipelineStufe: inv.pipelineStufe },
+      }));
+    });
+    const offene = vorgaenge.filter(k => k.status !== "verloren" && OFFEN.has(normStufe(k)));
+    const complete = vorgaenge.filter(k => k.status !== "verloren" && AB_OBJEKTAUSWAHL.has(normStufe(k)));
 
     /*
      * Erst die Investments, dann der Kontakt.
@@ -112,7 +130,7 @@ export function PotenzialCard() {
      * Am Kontakt steht dann nichts. Genau diese Kunden waeren hier mit null
      * Euro in die Prognose eingegangen, obwohl Objekt und Preis feststehen.
      */
-    const preis = (k: any) => kontaktKaufpreis(k.id, k.kaufpreis);
+    const preis = (k: any) => (k._investmentId ? investmentKaufpreis(k._investmentId) : kontaktKaufpreis(k.id, k.kaufpreis));
     /*
      * Der volle Kaufpreis, nicht gewichtet.
      *

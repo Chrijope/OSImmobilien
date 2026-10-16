@@ -22,3 +22,11 @@ export const VorschauProvision = import.meta.env.DEV
 export const VorschauNaechsteAktionen = import.meta.env.DEV
   ? lazy(() => import("./pages/VorschauNaechsteAktionen"))
   : null;
+/*
+ * Lokale Vorschau "Pipeline am Investment", seit dem 15.10.2026:
+ * /vorschau/pipeline. Gleiche Absicherung wie oben, nur `npm run dev`.
+ */
+export const VorschauPipeline = import.meta.env.DEV
+  ? lazy(() => import("./pages/VorschauPipeline"))
+  : null;
+

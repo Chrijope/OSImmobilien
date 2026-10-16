@@ -44,6 +44,10 @@ export function normalizePipelineStufe(stufe?: string | null): PipelineStufe | n
    * Zuordnung fallen und der Kontakt in keiner Spalte mehr auftaucht.
    */
   if (normalized === "erstgespraech") normalized = "erstgespraech_geplant";
+  // Terminleads aus submit-lead tragen am Kontakt "termin_gebucht", eine
+  // Stufe, die es in der Pipeline nicht gibt. Gemeint ist das Erstgespräch,
+  // so legt auch der Datenbank-Trigger Investment 1 an (11.10.2026).
+  if (normalized === "termin_gebucht") normalized = "erstgespraech_geplant";
   // "zugewiesen", "kontaktversuche" und "vermoegensaufbau" wurden hier frueher
   // auf andere Stufen umgeschrieben. Sie sind aber keine Altlasten, sondern
   // Teil des Ablaufs: Der Versicherungsexperte sieht in der Pipeline sogar
@@ -72,38 +76,20 @@ function getHighestInvestmentStufe(kundeId: string): PipelineStufe | null {
   const pool = aktive.length > 0 ? aktive : investments;
 
   // IMMER die HÖCHSTE erreichte Stufe gewinnt — der Kunde wird in der weitest fortgeschrittenen
-  // Pipeline-Spalte angezeigt. Alte "erstgespraech"-Stub-Investments dürfen einen Kunden NICHT
-  // aus "reservierung"/"finanzierung" zurückziehen.
-  //
+  // Pipeline-Spalte angezeigt.
   /*
-   * Ab welcher Stufe ein Investment ein echter Vorgang ist und kein Altrest.
+   * Seit dem 11.10.2026 zählt jede Stufe des Investments. Vorher galten
+   * Stufen vor der Selbstauskunft als Altreste, und die Kontaktstufe gewann:
+   * Ein Kunde mit einem Investment stand bis zur Selbstauskunft dort, wo der
+   * Kontakt stand, nicht wo sein Investment stand. Die Pipeline hängt jetzt
+   * nur am Investment; die Altreste hat die Migration 20261011160000 an die
+   * Kontaktstufe angeglichen.
    *
-   * Frühere Stufen ("erstgespraech", "beratungsgespraech", "eg_noshow",
-   * "bg_noshow") an einem Investment sind Legacy-Stubs und dürfen den Kunden
-   * nicht aus einer früheren Kontakt-Stufe nach vorne ziehen, etwa nach einer
-   * Neuzuweisung als "neuer_lead".
-   *
-   * Die Grenze lag auf "bonitaetsunterlagen", solange diese Stufe die erste
-   * war, an der ein Investment entsteht. Seit die Reihenfolge gedreht ist,
-   * steht sie hinter der Reservierung, und die Grenze hätte Investments in
-   * "objektauswahl" und "reservierung" verschluckt: Ein Kunde mit
-   * unterschriebener Reservierungsvereinbarung wäre aus der Pipeline gefallen.
-   *
-   * Jetzt "selbstauskunft", und zwar nicht als Zahl, sondern über den Namen:
-   * Ab dort hängen echte Daten am Investment, die Selbstauskunft selbst mit
-   * ihren Angaben und ihrer Unterschrift.
-   */
-  /*
    * Rangfolge über `fortschrittsRang` und Endzustände über `istEndzustand`
    * aus `pipelineStufen.ts`, dieselbe Regel wie die Fortschrittsleiste
-   * (M20, 04.10.2026). Vorher zählte die Position in PIPELINE_STUFEN, und
-   * dort stehen Verloren, Archiviert und die Altstufe Vermögensaufbau ganz
-   * hinten: Sie schlugen jeden echten Fortschritt.
-   *
-   * Ein Endzustand gilt nur, wenn es nichts anderes gibt (alle Investments
-   * beendet).
+   * (M20, 04.10.2026). Ein Endzustand gilt nur, wenn es nichts anderes gibt
+   * (alle Investments beendet).
    */
-  const MINDESTRANG = fortschrittsRang("selbstauskunft");
   let ergebnis: PipelineStufe | null = null;
   let ergebnisRang = -1;
   let endzustand: PipelineStufe | null = null;
@@ -115,7 +101,6 @@ function getHighestInvestmentStufe(kundeId: string): PipelineStufe | null {
       continue;
     }
     const rang = fortschrittsRang(normalized);
-    if (rang < MINDESTRANG) continue;
     if (rang > ergebnisRang) {
       ergebnisRang = rang;
       ergebnis = normalized;
@@ -237,6 +222,12 @@ function getDocStatuses(investmentId: string): Record<string, string> {
   return (row?.meta?.docStatuses as Record<string, string>) || {};
 }
 
+/** Investments eines Kontakts, auf eines eingeschränkt, wenn `investmentId` gesetzt ist. */
+function investmentsFuer(kundeId: string, investmentId?: string) {
+  const alle = getInvestmentsByKontakt(kundeId);
+  return investmentId ? alle.filter((inv) => inv.id === investmentId) : alle;
+}
+
 export function hasMinReservierungsDocs(kundeId: string): boolean {
   // Kein separater Zwischenschritt mehr: SA unterschrieben ⇒ Reservierung freigeschaltet.
   const investments = getInvestmentsByKontakt(kundeId);
@@ -256,8 +247,8 @@ export function hasMinReservierungsDocs(kundeId: string): boolean {
  * je Unterlagen abgegeben zu haben. Der alte Name bleibt als Weiterleitung
  * bestehen, weil er an mehreren Stellen aufgerufen wird.
  */
-export function istBereitFuerObjektauswahl(kunde: KundeData): boolean {
-  const investments = getInvestmentsByKontakt(kunde.id);
+export function istBereitFuerObjektauswahl(kunde: KundeData, investmentId?: string): boolean {
+  const investments = investmentsFuer(kunde.id, investmentId);
   if (investments.length === 0) return false;
   return investments.some((inv) => getSaSigned(inv.id));
 }
@@ -276,8 +267,8 @@ export const areBonitaetsDocsApprovedAndReleased = istBereitFuerObjektauswahl;
  * Hochgeladen allein reicht nicht. "uploaded" heißt, dass eine Datei da ist,
  * nicht dass jemand hineingeschaut hat.
  */
-export function sindBonitaetsunterlagenFreigegeben(kunde: KundeData): boolean {
-  const investments = getInvestmentsByKontakt(kunde.id);
+export function sindBonitaetsunterlagenFreigegeben(kunde: KundeData, investmentId?: string): boolean {
+  const investments = investmentsFuer(kunde.id, investmentId);
   if (investments.length === 0) return false;
 
   return investments.some((inv) => {
@@ -305,8 +296,8 @@ export function sindDokumenteFreigegeben(
   return pflichtBonitaetDocs(beschaeftigungsart).every((name) => status[name] === "approved");
 }
 
-export function hasOpenReservierung(kundeId: string): boolean {
-  const investments = getInvestmentsByKontakt(kundeId);
+export function hasOpenReservierung(kundeId: string, investmentId?: string): boolean {
+  const investments = investmentsFuer(kundeId, investmentId);
   return investments.some((inv) => {
     const row = (cacheGet("investments") || []).find((r: any) => r.id === inv.id);
     const meta = row?.meta || {};
@@ -315,8 +306,8 @@ export function hasOpenReservierung(kundeId: string): boolean {
   });
 }
 
-export function hasNotarTerminSet(kundeId: string): boolean {
-  const investments = getInvestmentsByKontakt(kundeId);
+export function hasNotarTerminSet(kundeId: string, investmentId?: string): boolean {
+  const investments = investmentsFuer(kundeId, investmentId);
   return investments.some((inv) => !!inv.notarTermin || !!(inv as any)?.notarTerminPortalFreigabe);
 }
 
@@ -324,19 +315,21 @@ export function hasNotarTerminSet(kundeId: string): boolean {
  * Berechnet die "logisch korrekte" Pipeline-Stufe basierend auf realen Daten.
  * Wird von Auto-Triggern verwendet — manuelle pipelineStufe hat in der UI weiterhin Vorrang.
  */
-export function calculateLogicalPipelineStufe(kunde: KundeData): PipelineStufe | null {
+export function calculateLogicalPipelineStufe(kunde: KundeData, investmentId?: string): PipelineStufe | null {
   if (kunde.archiviert) return "archiviert";
   if (kunde.status === "verloren" || kunde.status === "inaktiv") return "verloren";
 
-  // Reverse-Order: höchste Stufe zuerst prüfen
-  const investments = getInvestmentsByKontakt(kunde.id);
+  // Reverse-Order: höchste Stufe zuerst prüfen. Mit `investmentId` nur für
+  // dieses eine Investment (11.10.2026): Die Pipeline hat eine Karte je
+  // Investment, und die Daten eines anderen Investments gehören nicht dazu.
+  const investments = investmentsFuer(kunde.id, investmentId);
 
   // Notartermin vorbei → faelligkeit
   if (investments.some((i) => isNotarTerminVorbei(i.notarTermin, i.notarUhrzeit))) {
     return "faelligkeit";
   }
   // Notartermin gesetzt oder portal-bestätigt → notar
-  if (hasNotarTerminSet(kunde.id)) return "notar";
+  if (hasNotarTerminSet(kunde.id, investmentId)) return "notar";
   /*
    * Reihenfolge seit 06.08.2026 gedreht.
    *
@@ -355,14 +348,14 @@ export function calculateLogicalPipelineStufe(kunde: KundeData): PipelineStufe |
    * Geprueft wird von hinten nach vorne, die hoechste erreichte Stufe gewinnt.
    */
   // Bonitaet vollstaendig und freigegeben → finanzierung
-  if (sindBonitaetsunterlagenFreigegeben(kunde)) return "finanzierung";
+  if (sindBonitaetsunterlagenFreigegeben(kunde, investmentId)) return "finanzierung";
   // RV unterschrieben → bonitaetsunterlagen (jetzt der Schritt danach)
   const rvSigned = investments.some((i) => getRvSigned(i.id));
   if (rvSigned) return "bonitaetsunterlagen";
   // RV eröffnet, noch nicht unterschrieben → reservierung
-  if (hasOpenReservierung(kunde.id)) return "reservierung";
+  if (hasOpenReservierung(kunde.id, investmentId)) return "reservierung";
   // SA unterschrieben → objektauswahl
-  if (istBereitFuerObjektauswahl(kunde)) return "objektauswahl";
+  if (istBereitFuerObjektauswahl(kunde, investmentId)) return "objektauswahl";
   /*
    * SA verschickt, Unterschrift steht aus → selbstauskunft.
    *
@@ -376,6 +369,24 @@ export function calculateLogicalPipelineStufe(kunde: KundeData): PipelineStufe |
   return null;
 }
 
+/**
+ * BG NoShow heilt sich selbst, sobald wieder ein Beratungstermin in der
+ * Zukunft steht: Der geplatzte Termin ist dann neu vereinbart, der Vorgang
+ * gehört zurück in die Spalte "Beratungsgespräch". Ohne diese Regel lief die
+ * Pipeline auseinander, je nachdem, über welchen Weg der neue Termin
+ * eingetragen wurde. Automatik wiegt hier wie überall schwerer als die
+ * gespeicherte Stufe. Seit dem 11.10.2026 je Investment.
+ */
+function heileNoShow(stufe: PipelineStufe, kunde: KundeData): PipelineStufe {
+  return stufe === "bg_noshow" && hatKuenftigenBeratungstermin(kunde) ? "beratungsgespraech" : stufe;
+}
+
+/** Stufe, in der die Karte eines Investments steht: normalisiert und geheilt. */
+export function investmentAnzeigeStufe(kunde: KundeData, investmentStufe: string | null | undefined): PipelineStufe | null {
+  const stufe = normalizePipelineStufe(investmentStufe);
+  return stufe ? heileNoShow(stufe, kunde) : null;
+}
+
 export function getEffectivePipelineStufe(kunde: KundeData): PipelineStufe {
   // Archived contacts go to "archiviert" column
   if (kunde.archiviert) return "archiviert";
@@ -386,29 +397,10 @@ export function getEffectivePipelineStufe(kunde: KundeData): PipelineStufe {
   if (kunde.status === "verloren" || kunde.status === "inaktiv") return "verloren";
 
   // Die Investment-Stufe ist die alleinige Wahrheit, sobald mindestens ein
-  // Investment existiert. Die am Kontakt gespeicherte Stufe (Legacy /
-  // Setter-Workflow) wird nur genutzt, wenn kein Investment vorhanden ist.
-  const investmentStufe = getHighestInvestmentStufe(kunde.id);
-  if (investmentStufe) {
-    return investmentStufe;
-  }
-
-  const direkteStufe = normalizePipelineStufe(kunde.pipelineStufe);
-  if (direkteStufe) {
-    /*
-     * BG NoShow heilt sich selbst, sobald wieder ein Beratungstermin in der
-     * Zukunft steht: Der geplatzte Termin ist dann neu vereinbart, der Kunde
-     * gehört zurück in die Spalte "Beratungsgespräch". Ohne diese Regel lief
-     * die Pipeline auseinander, je nachdem, über welchen Weg der neue Termin
-     * eingetragen wurde: Einige Wege setzen die Kontakt-Stufe mit, andere
-     * (etwa das Verschieben-Dialogfeld) schrieben nur den Termin. Automatik
-     * wiegt hier wie überall schwerer als die gespeicherte Stufe.
-     */
-    if (direkteStufe === "bg_noshow" && hatKuenftigenBeratungstermin(kunde)) {
-      return "beratungsgespraech";
-    }
-    return direkteStufe;
-  }
+  // Investment existiert (höchste laufende). Die Kontaktstufe zählt nur noch,
+  // wenn es keines gibt; seit dem 11.10.2026 hat jeder Kontakt eines.
+  const stufe = getHighestInvestmentStufe(kunde.id) ?? normalizePipelineStufe(kunde.pipelineStufe);
+  if (stufe) return heileNoShow(stufe, kunde);
 
   // Status-basierter Fallback (kein Investment, keine manuelle Stufe)
   if (kunde.status === "kunde" && kunde.objekt) return "abgeschlossen";
@@ -424,6 +416,32 @@ export function getEffectivePipelineStufe(kunde: KundeData): PipelineStufe {
   if (nichtErreichtCount > 0) return "nicht_erreicht";
   if (kunde.status === "kontaktiert") return "erreicht";
   return "neuer_lead";
+}
+
+/**
+ * Die Stufen aller Investments eines Kontakts, für Listen je Kontakt
+ * (11.10.2026). Ein Kunde mit Investment 1 beim Notar und Investment 2 als
+ * neuer Lead steht in beiden Stufen; vorher sah man nur die höchste.
+ * Archiviert und verloren gelten für den ganzen Kontakt. Beendete
+ * Investments zählen nur, wenn keines mehr läuft.
+ */
+export function getInvestmentStufenFuerKunde(kunde: KundeData): { nummer?: number; stufe: PipelineStufe }[] {
+  const effektiv = getEffectivePipelineStufe(kunde);
+  if (effektiv === "archiviert" || effektiv === "verloren") return [{ stufe: effektiv }];
+  const alle = getInvestmentsByKontakt(kunde.id)
+    .map((inv) => ({ nummer: inv.nummer, stufe: investmentAnzeigeStufe(kunde, inv.pipelineStufe) }))
+    .filter((e): e is { nummer: number; stufe: PipelineStufe } => !!e.stufe);
+  const laufend = alle.filter((e) => e.stufe !== "verloren" && e.stufe !== "archiviert");
+  const liste = laufend.length > 0 ? laufend : alle;
+  return liste.length > 0 ? liste : [{ stufe: effektiv }];
+}
+
+/** Anzeige der Stufen je Kontakt: "Notar" oder "Inv. 1: Notar · Inv. 2: Neuer Lead". */
+export function investmentStufenText(kunde: KundeData): string {
+  const liste = getInvestmentStufenFuerKunde(kunde);
+  const label = (s: string) => PIPELINE_STUFEN.find((x) => x.key === s)?.label || s;
+  if (liste.length === 1) return label(liste[0].stufe);
+  return liste.map((e) => `Inv. ${e.nummer}: ${label(e.stufe)}`).join(" · ");
 }
 
 export function getProzessBereich(kunde: KundeData): ProzessBereich {
@@ -543,7 +561,7 @@ export function getBucketEntriesForKunde(kunde: KundeData): KundeBucketEntry[] {
 
   const entries: KundeBucketEntry[] = [];
   for (const inv of investments) {
-    const stufe = normalizePipelineStufe(inv.pipelineStufe) || "neuer_lead";
+    const stufe = investmentAnzeigeStufe(kunde, inv.pipelineStufe) || "neuer_lead";
     // Verlorene/archivierte Investments tauchen nicht in den aktiven Buckets auf.
     if (stufe === "verloren" || stufe === "archiviert") continue;
     entries.push({
@@ -581,3 +599,42 @@ export function buildBucketEntries(kontakte: KundeData[], bucket: ProzessBereich
   }
   return out;
 }
+
+/** Eine Karte der Pipeline-Seite. */
+export interface PipelineKarte {
+  kunde: KundeData;
+  stufe: PipelineStufe;
+  investmentId?: string;
+  entryKey: string;
+}
+
+/**
+ * Die Karten der Pipeline-Seite (11.10.2026): eine Karte je Investment, in
+ * dessen eigener Stufe, auch bei nur einem. Bis dahin stand ein Kunde mit
+ * einem Investment bis zur Selbstauskunft in der Stufe des Kontakts.
+ * Investment 2 erscheint so von Anfang an als eigene Karte, unabhängig von
+ * Investment 1. Archivierte und als Ganzes verlorene Kontakte bleiben EINE
+ * Karte; ein Kontakt ohne Investment (vor der Migration 20261011160000)
+ * steht in seiner eigenen Stufe.
+ */
+export function buildPipelineKarten(kunden: KundeData[]): PipelineKarte[] {
+  const karten: PipelineKarte[] = [];
+  for (const k of kunden) {
+    if (k.archiviert) {
+      karten.push({ kunde: k, stufe: "archiviert", entryKey: k.id });
+      continue;
+    }
+    if (k.status === "verloren" || k.status === "inaktiv") {
+      karten.push({ kunde: k, stufe: "verloren", entryKey: k.id });
+      continue;
+    }
+    const invs = getInvestmentsByKontakt(k.id);
+    for (const inv of invs) {
+      const s = investmentAnzeigeStufe(k, inv.pipelineStufe) || "neuer_lead";
+      karten.push({ kunde: k, stufe: s, investmentId: inv.id, entryKey: `${k.id}__${inv.id}` });
+    }
+    if (invs.length === 0) karten.push({ kunde: k, stufe: getEffectivePipelineStufe(k), entryKey: k.id });
+  }
+  return karten;
+}
+

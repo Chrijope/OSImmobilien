@@ -243,7 +243,9 @@ describe("Reservierung aufheben ohne Aufblitzen", () => {
     expect(zeile.meta.einheitGewechseltVon).toBe("Vera Partner");
     expect(zeile.objekt).toBeNull();
     expect(db.altesEcho).toBeNull();
-    expect(db.zeilen.kontakte.get("k-1")!.meta.pipelineStufe).toBe("objektauswahl");
+    // Die Kontaktstufe schreibt der Browser nicht mehr, sie fuehrt die
+    // Datenbank aus den Investments nach (11.10.2026).
+    expect(db.zeilen.kontakte.get("k-1")!.meta.pipelineStufe).toBe(KONTAKT.meta.pipelineStufe);
   });
   it("scheitert meta, bleibt das Investment unberührt, auch die Spalten", async () => {
     db.zeilen.investments = new Map([["inv-1", structuredClone(INVESTMENT)]]);
