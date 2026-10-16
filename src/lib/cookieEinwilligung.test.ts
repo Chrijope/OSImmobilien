@@ -106,6 +106,8 @@ describe("Wo der Banner hingehört", () => {
       // Lokale Vorschau, nur im Entwicklungsmodus (vorschauRouten.ts), nie auf Netlify.
       "/vorschau/investmentrechner",
       "/vorschau/investmentrechner-plus",
+      "/vorschau/beratungspraesentation",
+      "/vorschau/erstgespraech",
       "/vorschau/provision",
       "/vorschau/naechste-aktionen",
       "/vorschau/pipeline",

@@ -92,6 +92,22 @@ export const RATE_EINGANG = {
    * ganz zu den nicht umlagefähigen Kosten. Ergibt 56, 23 und 21 Prozent.
    * In der Vergleichstabelle standen dafür früher 75 und rund 12,5 Prozent.
    */
+  /**
+   * Hauffstraße 38 WE01 der neuen Beratungspräsentation (Entwurf 15.10.2026,
+   * Abschnitt „Vier Bausteine“), Zahlen aus dem Exposé, Musterrechnung S. 9.
+   * Bezugsgröße ist hier, wie auf der Folie, die Rate samt Hausgeld:
+   * 880 € Zins und Tilgung plus 164 € Hausgeld. Getragen von 653 € Miete
+   * (553 € Wohnung, 100 € Garage), 241 € Steuerwirkung und 151 € Eigenanteil;
+   * zusammen 1.045 €, ein Euro mehr als 880 + 164, weil das Exposé die
+   * Steuerwirkung rundet. Ergibt 62, 23 und 15 Prozent.
+   */
+  hauffstrasse: {
+    kaltmiete: 653,
+    nichtUmlagefaehig: 0,
+    rate: 1045,
+    entlastungAbJahrZwei: 241,
+    eigenbeitragAbJahrZwei: 151,
+  },
   memmingen: {
     kaltmiete: 429,
     nichtUmlagefaehig: 62,

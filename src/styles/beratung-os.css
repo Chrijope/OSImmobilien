@@ -1,0 +1,111 @@
+/*
+ * CI der Beratungspräsentation (Entwurf 15.10.2026): Waldgrün, Schwarz,
+ * Papier, Gold nur als Akzent. Schriften liegen selbst gehostet unter
+ * public/fonts, weil die Sicherheitsrichtlinie fremde Schriftserver
+ * ausschließt (font-src 'self').
+ *
+ * Alles hängt an `.bos`, damit die übrige App unberührt bleibt.
+ */
+@font-face {
+  font-family: "BOS Playfair";
+  src: url("/fonts/playfair-display-latin.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "BOS Playfair";
+  src: url("/fonts/playfair-display-italic-latin.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "BOS Outfit";
+  src: url("/fonts/outfit-latin.woff2") format("woff2");
+  font-weight: 300 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: "BOS Montserrat";
+  src: url("/fonts/montserrat-latin.woff2") format("woff2");
+  font-weight: 400 600;
+  font-display: swap;
+}
+
+.bos {
+  --bos-gruen: #1b2a22;
+  --bos-schwarz: #121512;
+  --bos-papier: #f4f1ea;
+  --bos-gold: #ccac05;
+  /* Gold auf Papier ist zu hell zum Lesen, dort steht das dunklere Gold. */
+  --bos-gold-dunkel: #93761f;
+  --bos-tinte: #1a1d1a;
+  --bos-grau: #5f625d;
+  --bos-linie: #e4dfd3;
+  --bos-rot: #a8402f;
+  --bos-salbei: #6f9a7e;
+  font-family: "BOS Outfit", -apple-system, "Helvetica Neue", Arial, sans-serif;
+  color: var(--bos-tinte);
+  background: var(--bos-papier);
+  -webkit-font-smoothing: antialiased;
+}
+.bos .bos-serif {
+  font-family: "BOS Playfair", Georgia, "Times New Roman", serif;
+}
+.bos .bos-mont {
+  font-family: "BOS Montserrat", "BOS Outfit", Arial, sans-serif;
+}
+/* Kleine Kapitälchen-Zeile über jedem Abschnitt. */
+.bos .bos-kicker {
+  font-family: "BOS Montserrat", "BOS Outfit", Arial, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+}
+/* Eingabefelder, die wie gesetzter Text aussehen sollen. */
+.bos .bos-feld {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px dashed transparent;
+  outline: none;
+  min-width: 0;
+  width: 100%;
+  font: inherit;
+  color: inherit;
+  transition: border-color 0.15s;
+}
+.bos .bos-feld:hover {
+  border-bottom-color: var(--bos-linie);
+}
+.bos .bos-feld:focus {
+  border-bottom-color: var(--bos-gold);
+}
+.bos .bos-feld::placeholder {
+  color: #a7a49c;
+  font-weight: 400;
+}
+.bos .bos-dunkel .bos-feld::placeholder {
+  color: rgba(244, 241, 234, 0.35);
+}
+.bos .bos-dunkel .bos-feld:hover {
+  border-bottom-color: rgba(244, 241, 234, 0.25);
+}
+@media print {
+  .bos [data-pdf-exclude] {
+    display: none !important;
+  }
+}
+/*
+ * index.css setzt auf dem Handy jedes Eingabefeld auf 0,875rem. In der
+ * Präsentation sollen die Felder wie gesetzter Text aussehen und die Größe
+ * ihrer Umgebung tragen, mindestens 16px, damit Safari beim Tippen nicht
+ * heranzoomt. Die zwei :not() wie in index.css, sonst gewinnt die dortige Regel.
+ */
+@media (max-width: 767px) {
+  .bos input.bos-feld:not([type="checkbox"]):not([type="radio"]),
+  .bos textarea.bos-feld {
+    font-size: max(16px, 1em) !important;
+  }
+}

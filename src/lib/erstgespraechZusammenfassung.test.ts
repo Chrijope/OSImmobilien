@@ -230,7 +230,8 @@ describe("ERSTGESPRAECH_SCHRITTE", () => {
 
   it("enthält alle Antwortschlüssel, die in die Kurzfassung einfließen", () => {
     const schluessel = new Set(ERSTGESPRAECH_SCHRITTE.flatMap(s => s.fragenSchluessel));
-    for (const k of ["beruf", "arbeitgeber", "sparformen", "zweiPunkte", "investitionMonat", "offeneFragen", "erfahrung"]) {
+    // zweiPunkte gibt es seit dem Skript vom 15.10.2026 nur noch in alten Ständen.
+    for (const k of ["beruf", "arbeitgeber", "sparformen", "investitionMonat", "offeneFragen", "erfahrung", "schwerpunkt", "reserve", "sorgen"]) {
       expect(schluessel.has(k)).toBe(true);
     }
   });
@@ -238,10 +239,11 @@ describe("ERSTGESPRAECH_SCHRITTE", () => {
   it("kennt die Schritte, deren Notizen verwendet werden", () => {
     const mitNotiz = ERSTGESPRAECH_SCHRITTE.filter(s => s.hatNotiz).map(s => s.id);
     expect(mitNotiz).toContain("warmup");
-    expect(mitNotiz).toContain("pattern_interrupt");
+    expect(mitNotiz).toContain("netto");
     expect(mitNotiz).toContain("ziele");
-    // Brückenfrage 4a (Familiäre Situation) trägt ein eigenes Notizfeld.
     expect(mitNotiz).toContain("familiaere_situation");
+    // Die Einwand-Vorwegnahme ist entfallen; ihre alten Notizen stehen nur noch in der ausführlichen Fassung.
+    expect(mitNotiz).not.toContain("pattern_interrupt");
   });
 
   it("führt den gestrichenen Vorabschluss nicht mehr als Schritt", () => {
@@ -250,12 +252,13 @@ describe("ERSTGESPRAECH_SCHRITTE", () => {
 
   it("liefert mit dem echten Skript eine sinnvolle Fortschrittsangabe", () => {
     const z = baueErstgespraechZusammenfassung(VOLL, { schritte: ERSTGESPRAECH_SCHRITTE });
-    // Weiterhin 17: Brückenfrage 4a kam hinzu, der Vorabschluss entfiel.
-    expect(z.schritteGesamt).toBe(17);
-    // beruf/arbeitgeber, erfahrung, sparformen, investitionMonat, zweiPunkte,
-    // offeneFragen, mitentscheider, warmup, pattern_interrupt, netto, ziele
-    expect(z.beantworteteSchritte).toBe(11);
-    expect(z.fortschritt).toBe("11 von 17 Schritten beantwortet");
+    // 16 der 23 Schritte haben ein Eingabefeld (Skript vom 15.10.2026).
+    expect(z.schritteGesamt).toBe(16);
+    // warmup, Familie und Mitentscheider, Beruf, Ziele, Vorsorge und Erfahrung,
+    // Netto (Notiz), tragbarer Betrag, erste Frage. zweiPunkte und die Notiz der
+    // Einwand-Vorwegnahme gehören zu entfallenen Schritten und zählen nicht.
+    expect(z.beantworteteSchritte).toBe(8);
+    expect(z.fortschritt).toBe("8 von 16 Schritten beantwortet");
   });
 });
 
@@ -336,7 +339,8 @@ describe("baueErstgespraechDetails", () => {
 
 describe("ERSTGESPRAECH_SCHRITTE_DETAIL", () => {
   it("beschriftet jedes Feld des echten Skripts", () => {
-    expect(ERSTGESPRAECH_SCHRITTE_DETAIL.length).toBe(ERSTGESPRAECH_SCHRITTE.length);
+    // Dazu kommen die vier entfallenen Schritte, deren alte Antworten lesbar bleiben.
+    expect(ERSTGESPRAECH_SCHRITTE_DETAIL.filter(s => s.nrText !== "früher").length).toBe(ERSTGESPRAECH_SCHRITTE.length);
     for (const s of ERSTGESPRAECH_SCHRITTE_DETAIL) {
       expect(s.titel.length).toBeGreaterThan(0);
       for (const f of s.felder) expect(f.label.length).toBeGreaterThan(0);
@@ -350,19 +354,32 @@ describe("ERSTGESPRAECH_SCHRITTE_DETAIL", () => {
     expect(schluessel.has("familienstand")).toBe(true);
   });
 
-  it("führt die Brückenfrage als 4a und reicht die Anzeige-Nummer durch", () => {
+  it("führt Familie und Mitentscheider als Schritt 5", () => {
     const schritt = ERSTGESPRAECH_SCHRITTE_DETAIL.find(s => s.id === "familiaere_situation");
-    expect(schritt?.nrText).toBe("4a");
+    expect(schritt?.nr).toBe(5);
+    expect(schritt?.nrText).toBeUndefined();
 
     const abschnitte = baueErstgespraechDetails(
-      { antworten: { familienstand: "verheiratet" }, notizen: { familiaere_situation: "Frau arbeitet Teilzeit" } },
+      { antworten: { familienstand: "verheiratet", mitentscheider: "Ehemann" }, notizen: { familiaere_situation: "Frau arbeitet Teilzeit" } },
       ERSTGESPRAECH_SCHRITTE_DETAIL,
     );
     const abschnitt = abschnitte.find(a => a.id === "familiaere_situation");
-    expect(abschnitt?.nrText).toBe("4a");
     expect(abschnitt?.eintraege).toEqual([
-      { frage: "Familiäre Situation", antwort: "verheiratet" },
+      { frage: "Mitentscheider (Name, wird zum Termin eingeladen)", antwort: "Ehemann" },
+      { frage: "Familienstand", antwort: "verheiratet" },
       { frage: "Notiz", antwort: "Frau arbeitet Teilzeit" },
+    ]);
+  });
+
+  it("zeigt Antworten und Notizen entfallener Schritte als „früher“", () => {
+    const abschnitte = baueErstgespraechDetails(
+      { antworten: { zweiPunkte: "Sicherheit", cashflowPraeferenz: "mix" }, notizen: { pattern_interrupt: "Partner fragen" } },
+      ERSTGESPRAECH_SCHRITTE_DETAIL,
+    );
+    expect(abschnitte.map(a => [a.id, a.nrText])).toEqual([
+      ["zwei_punkte", "früher"],
+      ["cashflow_erwartung", "früher"],
+      ["pattern_interrupt", "früher"],
     ]);
   });
 
@@ -386,9 +403,9 @@ describe("waehleMitentscheiderVariante", () => {
     const v = waehleMitentscheiderVariante("verheiratet");
     expect(v).toBeDefined();
     const du = typeof v?.text === "string" ? v.text : v?.text.du || "";
-    expect(du).toContain("verheiratet");
-    expect(du).toContain("beide Partner");
-    expect(du).toContain("Beratungsgespräch");
+    // Wortlaut nach dem Skript vom 15.10.2026
+    expect(du).toContain("deiner Frau oder deinem Mann");
+    expect(du).toContain("zu dritt");
   });
 
   it("liefert bei Partnerschaft den Partner-Text", () => {
@@ -396,7 +413,7 @@ describe("waehleMitentscheiderVariante", () => {
     expect(v).toBeDefined();
     const du = typeof v?.text === "string" ? v.text : v?.text.du || "";
     expect(du).toContain("Partnerin");
-    expect(du).toContain("Beratungsgespräch");
+    expect(du).toContain("zum nächsten Termin");
   });
 
   it("liefert bei ledig, geschieden und verwitwet den Allein-Text mit offener Rückfrage", () => {

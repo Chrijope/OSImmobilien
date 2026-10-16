@@ -1,57 +1,39 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { fireEvent, render, screen, within } from "@testing-library/react";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import BeratungspraesentationHV from "./BeratungspraesentationHV";
 
 /*
- * Sprachwechsel der Beratungspräsentation OS Immobilien.
+ * Beratungspräsentation, neue Fassung (Entwurf 15.10.2026).
  *
- * Die Präsentation erscheint an zwei Stellen: unter Unterlagen und
- * Präsentation ohne Kunden und im Kundenprofil beim Investment mit Kunde,
- * Kontakt und Investment in der Adresse. Beide öffnen dieselbe Seite, also
- * muss an beiden derselbe Schalter stehen und dasselbe tun.
+ * Bis zum 16.10.2026 prüfte diese Datei den Sprachwechsel Deutsch/Englisch.
+ * Die neue Fassung ist bis zur Freigabe der Texte nur deutsch; die englische
+ * Übersetzung kommt danach. Geprüft wird hier, was beim Umbau nicht verloren
+ * gehen darf: die Übernahme aus dem Erstgespräch, die Anrede, der
+ * Konzeptschalter und der Sprung in die Selbstauskunft.
  */
 
-const zustand = vi.hoisted(() => ({ nutzerId: "nutzer-1" }));
+const zustand = vi.hoisted(() => ({
+  skript: null as Record<string, unknown> | null,
+}));
 
 vi.mock("@/contexts/UserContext", () => ({
-  useUser: () => ({
-    user: { name: "Maria Muster", role: "vertriebspartner", osImmoId: "M-0001", email: "maria@example.com" },
-    authUser: { id: zustand.nutzerId, email: "maria@example.com" },
-  }),
-}));
-vi.mock("@/hooks/useUserSettings", () => ({
-  useUserSettings: () => ({ settings: { profil: { telefon: "0911 000000" } } }),
+  useUser: () => ({ user: { name: "Maria Muster", role: "vertriebspartner" }, authUser: { id: "nutzer-1" } }),
 }));
 vi.mock("@/hooks/useCacheReady", () => ({ useCacheReady: () => true }));
 vi.mock("@/lib/dataCache", () => ({ onCacheChange: () => () => {} }));
 vi.mock("@/lib/kundenStore", () => ({
-  // Der erfundene Kontakt aus dem Kundenprofil wird gesiezt.
-  getKontaktById: (id: string) => (id === "k-1" ? { setterSkript: { anrede: "sie" } } : undefined),
+  getKontaktById: (id: string) =>
+    id === "k-1"
+      ? { anrede: "Frau", vorname: "Anna", nachname: "Muster", qualEinkommen: "3.980", qualEigenkapital: "20.000 €" }
+      : undefined,
 }));
 vi.mock("@/lib/investmentsStore", () => ({
-  getInvestmentMetaField: (_id: string, _feld: string, rueckfall: unknown) => rueckfall,
-}));
-/*
- * Das Radix-Menü des Schalters wird hier durch ein schlichtes Double ersetzt.
- * In jsdom gibt es keine Positionen, das offene Menü rendert sich deshalb
- * laufend neu und bremst die Testumgebung für alle folgenden Tests aus. Im
- * Browser und im Kundenportal läuft dasselbe Menü unauffällig. Geprüft wird
- * hier die Verdrahtung: welcher Wert angezeigt wird und was ein Eintrag tut.
- */
-vi.mock("@/components/ui/dropdown-menu", () => ({
-  DropdownMenu: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  DropdownMenuTrigger: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  DropdownMenuContent: ({ children }: { children: React.ReactNode }) => <div role="menu">{children}</div>,
-  DropdownMenuItem: ({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) => (
-    <button type="button" role="menuitem" onClick={onClick}>
-      {children}
-    </button>
-  ),
+  getInvestmentMetaField: (_id: string, feld: string, rueckfall: unknown) =>
+    feld === "setterSkript" ? zustand.skript ?? rueckfall : rueckfall,
 }));
 
-// jsdom kennt weder die Beobachter noch einen localStorage.
 class Beobachter {
   observe() {}
   unobserve() {}
@@ -60,9 +42,8 @@ class Beobachter {
 const ablage = new Map<string, string>();
 beforeEach(() => {
   ablage.clear();
-  zustand.nutzerId = "nutzer-1";
+  zustand.skript = null;
   vi.stubGlobal("IntersectionObserver", Beobachter);
-  vi.stubGlobal("ResizeObserver", Beobachter);
   vi.stubGlobal("localStorage", {
     getItem: (k: string) => ablage.get(k) ?? null,
     setItem: (k: string, v: string) => void ablage.set(k, v),
@@ -73,139 +54,138 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllGlobals());
 
 const UNTERLAGEN = "/beratungspraesentation-osimmobilien";
-const KUNDENPROFIL = "/beratungspraesentation-osimmobilien?kunde=Max%20Muster&kundeId=k-1&investmentId=i-1";
+const KUNDENPROFIL = "/beratungspraesentation-osimmobilien?kunde=Anna%20Muster&kundeId=k-1&investmentId=i-1";
+
+function Ziel() {
+  const ort = useLocation();
+  return <p data-testid="ziel">{`${ort.pathname}${ort.search}`}</p>;
+}
 
 function zeige(adresse: string) {
   return render(
     <MemoryRouter initialEntries={[adresse]}>
       <Routes>
         <Route path="/beratungspraesentation-osimmobilien" element={<BeratungspraesentationHV />} />
+        <Route path="/selbstauskunft" element={<Ziel />} />
       </Routes>
     </MemoryRouter>,
   );
 }
 
-function schalteAuf(sprache: "Deutsch" | "English") {
-  // Nur im Menü des Schalters suchen, eine Rollenabfrage über die ganze Seite dauert Sekunden.
-  const menue = screen.getByTestId("sprachwechsel").parentElement?.querySelector("[role='menu']") as HTMLElement;
-  fireEvent.click(within(menue).getByRole("menuitem", { name: new RegExp(sprache) }));
-}
-
-/**
- * Eine Abschnittsüberschrift über ihren Text. Nicht über getByRole: Auf einer
- * Seite dieser Größe braucht die Rollenabfrage Sekunden je Aufruf.
- */
 const ueberschriften = () => Array.from(document.querySelectorAll("h2")).map((h) => h.textContent);
-const ueberschrift = (name: string) => {
-  const treffer = Array.from(document.querySelectorAll("h2")).find((h) => h.textContent === name);
-  if (!treffer) throw new Error(`Keine Überschrift "${name}", vorhanden: ${ueberschriften().join(" | ")}`);
-  return treffer;
-};
 
-describe("Sprachwechsel der Beratungspräsentation", () => {
-  it("startet auf Deutsch und schaltet die Texte auf Englisch um", () => {
+describe("Aufbau nach dem Entwurf", () => {
+  it("zeigt die Abschnitte in der Reihenfolge des Entwurfs", () => {
     zeige(UNTERLAGEN);
-    expect(ueberschrift("Was machen wir heute?")).toBeInTheDocument();
-    expect(screen.getByTestId("sprachwechsel")).toHaveTextContent("DE");
-    expect(screen.getByTestId("sprachwechsel")).toHaveAccessibleName("Sprache");
-
-    schalteAuf("English");
-
-    expect(ueberschrift("What are we doing today?")).toBeInTheDocument();
-    expect(ueberschrift("The calculation, line by line")).toBeInTheDocument();
-    expect(ueberschriften()).not.toContain("Was machen wir heute?");
-    expect(screen.getByTestId("sprachwechsel")).toHaveTextContent("EN");
-    expect(screen.getByTestId("sprachwechsel")).toHaveAccessibleName("Language");
-    // Referenzen und Beträge folgen mit.
-    expect(document.body.textContent).toContain("Our projects");
-    expect(document.body.textContent).toContain("€350,000");
-
-    schalteAuf("Deutsch");
-    expect(ueberschrift("Was machen wir heute?")).toBeInTheDocument();
+    const reihenfolge = [
+      "Was machen wir heute?",
+      "Das hast du uns gesagt.",
+      "Deine Rentenlücke in Zahlen.",
+      "Geld auf dem Konto wird jedes Jahr weniger wert.",
+      "OS Real Estate in einem Satz.",
+      "Alles aus einer Hand, unter einem Dach.",
+      "Vier Bausteine, die zusammenarbeiten.",
+      "Welches Ziel steht für dich an erster Stelle?",
+      "Heute kaufen. Abbezahlen lassen. Später Zusatzrente.",
+      "Was, wenn es nicht nach Plan läuft?",
+      "Eine Wohnung ist der Anfang. Drei sind ein Plan.",
+      "Du entscheidest, was passen muss.",
+      "So geht es weiter.",
+      "Wenn wir eine Immobilie finden, die deine Kriterien erfüllt: Möchtest du den nächsten Schritt gehen?",
+      "Das bekommst du in der Objektvorstellung.",
+    ];
+    const ist = ueberschriften();
+    const positionen = reihenfolge.map((t) => ist.indexOf(t));
+    expect(positionen, `vorhanden: ${ist.join(" | ")}`).not.toContain(-1);
+    expect([...positionen].sort((a, b) => a - b)).toEqual(positionen);
   });
 
-  it("merkt die Wahl je Nutzer", () => {
+  it("zeigt die Beispielobjekte des Ursprungsprojekts nicht mehr", () => {
     zeige(UNTERLAGEN);
-    schalteAuf("English");
-    expect(ablage.get("beratungspraesentation-sprache:nutzer-1")).toBe("en");
-  });
-
-  it("öffnet in der gemerkten Sprache, aber nur für diesen Nutzer", () => {
-    ablage.set("beratungspraesentation-sprache:nutzer-1", "en");
-    const { unmount } = zeige(UNTERLAGEN);
-    expect(ueberschrift("What are we doing today?")).toBeInTheDocument();
-    unmount();
-
-    zustand.nutzerId = "nutzer-2";
-    zeige(UNTERLAGEN);
-    expect(ueberschrift("Was machen wir heute?")).toBeInTheDocument();
-  });
-
-  it("zeigt in Abschnitt 02 die Partner OS Immobilien und Finanzierungspartner in beiden Sprachen", () => {
-    zeige(KUNDENPROFIL);
-    const partner = () => screen.getAllByTestId("partner-logo");
-    expect(partner()).toHaveLength(2);
-    expect(within(partner()[0]).getByAltText("OS Immobilien")).toBeInTheDocument();
-    expect(partner()[0]).toHaveTextContent("Objektpartner");
-    expect(partner()[0]).toHaveTextContent("Über OS Immobilien vertreiben wir die Objekte und Einheiten.");
-    // Der Finanzierungspartner steht ohne Namen und Logo da.
-    expect(within(partner()[1]).queryByRole("img")).toBeNull();
-    expect(partner()[1]).toHaveTextContent("Finanzierungspartner");
-    expect(partner()[1]).toHaveTextContent("Unser Finanzierungspartner übernimmt die Finanzierung.");
-
-    schalteAuf("English");
-    expect(partner()[0]).toHaveTextContent("Property partner");
-    expect(partner()[0]).toHaveTextContent("We market the properties and units through OS Immobilien.");
-    expect(partner()[1]).toHaveTextContent("Financing partner");
-    expect(partner()[1]).toHaveTextContent("Our financing partner handles the financing.");
-  });
-
-  it("zeigt auf Englisch keinen Gedankenstrich", () => {
-    zeige(KUNDENPROFIL);
-    schalteAuf("English");
-    expect(document.body.textContent).not.toMatch(/[—–]/);
-  });
-
-  it("sitzt in der Kopfleiste, bleibt also beim Durchblättern sichtbar, und fehlt im Druck", () => {
-    zeige(UNTERLAGEN);
-    const kopf = document.querySelector("header[data-lg='kopfscheibe']") as HTMLElement;
-    expect(within(kopf).getByTestId("sprachwechsel")).toBeInTheDocument();
-    expect(kopf.className).toContain("sticky");
-    const huelle = screen.getByTestId("sprachwechsel").closest("[data-pdf-exclude]");
-    expect(huelle?.className).toContain("print:hidden");
+    const text = document.body.textContent ?? "";
+    for (const alt of ["Nürnberg", "Ansbach", "Memmingen", "Co-Living", "KfW 40"]) {
+      expect(text).not.toContain(alt);
+    }
+    expect(screen.queryAllByTestId("partner-logo")).toHaveLength(0);
   });
 });
 
-describe("An beiden Einbindungsstellen derselbe Schalter", () => {
-  it.each([
-    ["Unterlagen und Präsentation", UNTERLAGEN],
-    ["Kundenprofil beim Investment", KUNDENPROFIL],
-  ])("%s: genau ein Schalter, der umschaltet", (_stelle, adresse) => {
-    zeige(adresse);
-    expect(screen.getAllByTestId("sprachwechsel")).toHaveLength(1);
-    schalteAuf("English");
-    expect(ueberschrift("What are we doing today?")).toBeInTheDocument();
-    expect(document.documentElement.querySelector("[data-praesentation='beratung']")).toHaveAttribute("lang", "en");
-  });
-
-  it("im Kundenprofil bleibt der Kundenname unübersetzt, die Anrede wird zu you", () => {
+describe("Übernahme aus dem Erstgespräch", () => {
+  it("siezt, begrüßt mit Namen und füllt Ziele, Rahmen und Rentenlücke", () => {
+    zustand.skript = {
+      anrede: "sie",
+      ziele: ["Altersvorsorge"],
+      antworten: {
+        motivWoertlich: "Ich möchte jetzt anfangen.",
+        investitionMonat: "400 €",
+        reserve: "15.000",
+        mitentscheider: "Partner",
+        wunschNetto: "3.000",
+        renteErwartet: "1.800",
+        schwerpunkt: "steuer",
+        offeneFragen: "Was passiert bei Leerstand?",
+      },
+    };
     zeige(KUNDENPROFIL);
-    // Deutsch mit der Sie-Form aus dem Erstgespräch.
-    expect(document.body.textContent).toContain("dass Sie am Ende wissen");
-    schalteAuf("English");
-    expect(document.body.textContent).toContain("Welcome Max Muster");
-    expect(document.body.textContent).toContain("by the end you know which options suit your situation");
+
+    expect(document.body.textContent).toContain("Herzlich willkommen, Frau Muster.");
+    expect(ueberschriften()).toContain("Das haben Sie uns gesagt.");
+    expect(screen.getByDisplayValue("Ich möchte jetzt anfangen.")).toBeInTheDocument();
+    // Das Euro-Zeichen aus dem Erstgespräch fällt weg, das Feld führt sein eigenes.
+    expect(screen.getAllByDisplayValue("400").length).toBeGreaterThan(0);
+    expect(screen.getAllByDisplayValue("15.000").length).toBeGreaterThan(0);
+    expect(screen.getByDisplayValue("Partner")).toBeInTheDocument();
+    // Lücke 1.200 € im Monat, über 25 Jahre 360.000 €
+    expect(document.getElementById("rentenluecke")?.textContent).toContain("1.200 €");
+    expect(document.getElementById("rentenluecke")?.textContent).toContain("360.000 €");
+    expect(document.body.textContent).toContain("Was passiert bei Leerstand?");
+    // Der Schwerpunkt belegt den Konzeptschalter vor.
+    expect(screen.getByTestId("konzept-karte-steuer")).toHaveAttribute("aria-pressed", "true");
+    expect(ueberschriften()).toContain("Mehr Netto vom Brutto. Steuer wird zu Vermögen.");
   });
 
+  it("sieht ohne Erstgespräch sauber aus und bleibt beim Du", () => {
+    zeige(UNTERLAGEN);
+    expect(document.body.textContent).toContain("Herzlich willkommen.");
+    expect(document.body.textContent).not.toContain("undefined");
+    expect(document.body.textContent).not.toContain("NaN");
+    expect(screen.getByTestId("konzept-karte-zusatzrente")).toHaveAttribute("aria-pressed", "true");
+  });
+});
+
+describe("Konzeptschalter und Regler", () => {
+  it("schaltet alle Konzept-Abschnitte zugleich um", () => {
+    zeige(UNTERLAGEN);
+    fireEvent.click(screen.getAllByRole("radio", { name: "Konzept 2 · Steuerersparnis" })[0]);
+    expect(document.getElementById("objekte")?.textContent).toContain("Barfusstraße 9");
+    expect(document.getElementById("rechnung")?.textContent).toContain("Barfusstraße 9, WE 03");
+    expect(document.getElementById("plan")?.textContent).toContain("572.000 €");
+  });
+
+  it("rechnet das Vermögen mit der Wertentwicklung aus dem Regler", () => {
+    zeige(UNTERLAGEN);
+    expect(document.getElementById("plan")?.textContent).toContain("278.000 €");
+    fireEvent.change(screen.getByLabelText(/Wertentwicklung pro Jahr/), { target: { value: "0" } });
+    // 176.000 € Kaufpreis minus 40.470 € Restschuld, auf Tausend gerundet
+    expect(document.getElementById("plan")?.textContent).toContain("136.000 €");
+  });
+});
+
+describe("Sprung in die Selbstauskunft", () => {
+  it("nimmt Kunde, Investment und das führende Ziel mit", () => {
+    zustand.skript = { anrede: "sie", ziele: ["Altersvorsorge"], antworten: {} };
+    zeige(KUNDENPROFIL);
+    fireEvent.click(screen.getByRole("button", { name: /Selbstauskunft jetzt gemeinsam ausfüllen/ }));
+    expect(screen.getByTestId("ziel")).toHaveTextContent("/selbstauskunft?kundeId=k-1&investmentId=i-1&ziel=rente");
+  });
+});
+
+describe("Einbindung", () => {
   it("alle Wege führen auf dieselbe Seite", () => {
     const lies = (pfad: string) => readFileSync(resolve(process.cwd(), pfad), "utf8");
-    // Sidebar Präsentation
     expect(lies("src/pages/Praesentation.tsx")).toContain('internalRoute: "/beratungspraesentation-osimmobilien"');
-    // Sidebar Unterlagen
     expect(lies("src/lib/unterlagenSeed.ts")).toContain('interneRoute: "/beratungspraesentation-osimmobilien"');
-    // Kundenprofil beim Investment
     expect(lies("src/pages/KundenDetail.tsx")).toContain("window.open(`/beratungspraesentation-osimmobilien?${params.toString()}`");
-    // Und die Route zeigt genau diese Komponente.
     expect(lies("src/App.tsx")).toMatch(
       /path="\/beratungspraesentation-osimmobilien" element=\{<PraesentationGuard><BeratungspraesentationHV \/><\/PraesentationGuard>\}/,
     );

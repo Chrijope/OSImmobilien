@@ -7,11 +7,11 @@ import {
 
 /** Die Schritt-IDs des Erstgesprächsskripts, gegen die verlinkt wird. */
 const SKRIPT_SCHRITTE = [
-  "einleitung", "anrede", "ziel_gespraech", "warmup", "mitentscheider", "erfahrung",
-  "sparformen", "investitionsbereitschaft", "zwei_punkte", "zusammenarbeit",
-  "berufliche_situation", "schufa", "netto", "ziele", "cashflow_erwartung",
-  "osimmobilien_vorstellung", "pattern_interrupt", "skala_verbindlichkeit",
-  "terminvereinbarung", "einladung_check", "offene_fragen", "verabschiedung",
+  "einleitung", "anrede", "ziel_gespraech", "warmup", "familiaere_situation", "berufliche_situation",
+  "ziele", "rentenluecke", "sparformen", "ueberleitung_rahmen", "netto", "eigenkapital",
+  "investitionsbereitschaft", "schufa", "osimmobilien_vorstellung", "ablauf", "zusammenfassung",
+  "einschaetzung", "skala_verbindlichkeit", "terminvereinbarung", "einladung_check", "offene_fragen",
+  "verabschiedung",
 ];
 
 describe("Einwand-Bibliothek", () => {
@@ -84,10 +84,10 @@ describe("Einwand-Bibliothek", () => {
 
   it("jeder Gesprächsschritt mit Einwänden hat höchstens eine Handvoll davon", () => {
     // Sonst wird die Schnellhilfe im Skript zur Liste, durch die niemand scrollt.
-    // Ausnahme: Der Schritt "pattern_interrupt" heißt Einwand-Vorwegnahme, dort
-    // gehören viele Einwände hin. Die Schnellhilfe zeigt dort zunächst vier und
-    // blendet den Rest auf Klick ein.
-    for (const s of SKRIPT_SCHRITTE.filter((x) => x !== "pattern_interrupt")) {
+    // Ausnahme: Die ehrliche Einschätzung (Schritt 18, früher die
+    // Einwand-Vorwegnahme) ist die Stelle, an der versteckte Einwände kommen.
+    // Die Schnellhilfe zeigt dort zunächst vier und blendet den Rest auf Klick ein.
+    for (const s of SKRIPT_SCHRITTE.filter((x) => x !== "einschaetzung")) {
       const n = EINWAND_BIBLIOTHEK.filter((e) => e.skriptSchritte?.includes(s)).length;
       expect(n, s).toBeLessThanOrEqual(8);
     }
