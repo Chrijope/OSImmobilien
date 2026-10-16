@@ -2,6 +2,11 @@ import { describe, expect, it } from "vitest";
 import { berechneInvestment, standardEingabe, type InvestmentEingabe } from "./rechenkern";
 import { rechenwege, werteAus } from "./kennzahlErklaerungen";
 
+// Die erwarteten Werte stammen aus der Zeit vor 10/2026, als der Rechner mit
+// 3,5 % Grunderwerbsteuer und 1,0 % Notar startete. Sie prüfen die Mechanik,
+// nicht die Standardsätze, deshalb stehen die alten Sätze hier fest.
+const basisEingabe: InvestmentEingabe = { ...standardEingabe, transferTaxRate: 3.5, notaryRate: 1 };
+
 /*
  * KfW-Darlehen im Rechenkern, seit dem 07.10.2026.
  *
@@ -12,7 +17,7 @@ import { rechenwege, werteAus } from "./kennzahlErklaerungen";
  * Formeln nach, nicht mit dem Rechenkern.
  */
 const OHNE_KFW: InvestmentEingabe = {
-  ...standardEingabe,
+  ...basisEingabe,
   taxableIncomeCustomer: 80000,
   purchasePrice: 405000,
   equity: 20250,

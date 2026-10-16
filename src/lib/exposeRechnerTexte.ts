@@ -57,7 +57,7 @@ export interface ExposeRechnerTexte {
   ertragBeiVerkauf: string;
   nkInfo: (e: {
     prozentGesamt: string; grunderwerbsteuer: string; bundesland: string | null; notarGrundbuch: string;
-    makler: string | null; quelle: "manuell" | "mittelwert" | "bundesland"; verkaeuferBetrag: string | null;
+    makler: string | null; quelle: "manuell" | "rueckfall" | "bundesland"; verkaeuferBetrag: string | null;
   }) => string;
   gesamtinvestitionZusatz: string;
   eigenkapitalersatzInfo: string;
@@ -181,7 +181,7 @@ export const EXPOSE_RECHNER_TEXTE: ZweiSprachen<ExposeRechnerTexte> = {
     immobilienwert: "Immobilienwert",
     restschuld: "Restschuld",
     ertragBeiVerkauf: "Ertrag bei Verkauf",
-    nkInfo: (e) => `${e.prozentGesamt} % der Gesamtinvestition: Grunderwerbsteuer ${e.grunderwerbsteuer} %${e.bundesland ? ` (${e.bundesland})` : ""}, Notar und Grundbuch ${e.notarGrundbuch} %${e.makler ? `, Makler ${e.makler} %` : ", keine Maklerprovision"}. ${e.quelle === "manuell" ? "Satz laut Objektangaben." : e.quelle === "mittelwert" ? "Bundesland unbekannt, Mittelwert aller Länder." : "Satz nach Bundesland."}${e.verkaeuferBetrag ? ` Die ${e.verkaeuferBetrag} übernimmt der Verkäufer.` : " Die Kaufnebenkosten trägst du aus Eigenkapital."}`,
+    nkInfo: (e) => `${e.prozentGesamt} % der Gesamtinvestition: Grunderwerbsteuer ${e.grunderwerbsteuer} %${e.bundesland ? ` (${e.bundesland})` : ""}, Notar und Grundbuch ${e.notarGrundbuch} %${e.makler ? `, Makler ${e.makler} %` : ", keine Maklerprovision"}. ${e.quelle === "manuell" ? "Satz laut Objektangaben." : e.quelle === "rueckfall" ? "Bundesland unbekannt, Satz wie in Brandenburg." : "Satz nach Bundesland."}${e.verkaeuferBetrag ? ` Die ${e.verkaeuferBetrag} übernimmt der Verkäufer.` : " Die Kaufnebenkosten trägst du aus Eigenkapital."}`,
     gesamtinvestitionZusatz: "(Kaufnebenkosten zahlst du zusätzlich)",
     eigenkapitalersatzInfo: "Ein zweites Darlehen ersetzt diesen Teil deines Eigenkapitals.",
     darlehen: "Über ein Darlehen finanziert:",
@@ -302,7 +302,7 @@ export const EXPOSE_RECHNER_TEXTE: ZweiSprachen<ExposeRechnerTexte> = {
     immobilienwert: "Property value",
     restschuld: "Remaining debt",
     ertragBeiVerkauf: "Proceeds on sale",
-    nkInfo: (e) => `${e.prozentGesamt}% of the total investment: real estate transfer tax (Grunderwerbsteuer) ${e.grunderwerbsteuer}%${e.bundesland ? ` (${e.bundesland})` : ""}, notary and land register ${e.notarGrundbuch}%${e.makler ? `, broker ${e.makler}%` : ", no broker’s commission"}. ${e.quelle === "manuell" ? "Rate as per the property information." : e.quelle === "mittelwert" ? "Federal state unknown, average of all states." : "Rate according to the federal state."}${e.verkaeuferBetrag ? ` The seller pays the ${e.verkaeuferBetrag}.` : " You pay the incidental purchase costs from your equity."}`,
+    nkInfo: (e) => `${e.prozentGesamt}% of the total investment: real estate transfer tax (Grunderwerbsteuer) ${e.grunderwerbsteuer}%${e.bundesland ? ` (${e.bundesland})` : ""}, notary and land register ${e.notarGrundbuch}%${e.makler ? `, broker ${e.makler}%` : ", no broker’s commission"}. ${e.quelle === "manuell" ? "Rate as per the property information." : e.quelle === "rueckfall" ? "Federal state unknown, Brandenburg rate." : "Rate according to the federal state."}${e.verkaeuferBetrag ? ` The seller pays the ${e.verkaeuferBetrag}.` : " You pay the incidental purchase costs from your equity."}`,
     gesamtinvestitionZusatz: "(plus incidental purchase costs)",
     eigenkapitalersatzInfo: "A second loan replaces this part of your equity.",
     darlehen: "Financed by a loan:",
@@ -414,8 +414,8 @@ function sonder7bEn(detail: string): string {
 }
 
 const FESTE_HINWEISE_EN: Record<string, string> = {
-  "Bundesland unbekannt, Grunderwerbsteuer als Mittelwert aller Länder angesetzt.":
-    "Federal state unknown, real estate transfer tax (Grunderwerbsteuer) set at the average of all states.",
+  "Bundesland unbekannt, Grunderwerbsteuer wie in Brandenburg angesetzt.":
+    "Federal state unknown, real estate transfer tax (Grunderwerbsteuer) set at the Brandenburg rate.",
   "Kaufnebenkosten übernimmt der Verkäufer: kein Eigenkapital dafür, sie erhöhen auch nicht die AfA-Grundlage.":
     "The seller pays the incidental purchase costs: no equity is needed for them, and they do not increase the depreciation (AfA) base either.",
   "Zweites Darlehen auf den Eigenkapitaleinsatz begrenzt, mehr gibt es nicht zu ersetzen.":

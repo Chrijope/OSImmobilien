@@ -148,7 +148,7 @@ describe("Die Auswahl auf der Objektseite", () => {
     expect(a.vorname).toBe("Max");
     expect(a.kontaktId).toBe("kunde-1");
     expect(a.rahmen).toEqual({ von: 250000, bis: 300000 });
-    expect(a.nebenkostenProzent).toBe(5);
+    expect(a.nebenkostenProzent).toBe(5.5);
     // Seit dem 23.09.2026 zählt nur der Kaufpreis: der Kaufpreisrahmen ist der Rahmen.
     expect(a.kaufpreisRahmen).toEqual({ von: 250000, bis: 300000 });
     expect(a.empfohleneIds).toEqual(["passt"]);

@@ -15,8 +15,11 @@ export const GREST_BY_BUNDESLAND: Record<string, number> = Object.fromEntries(
   BUNDESLAENDER.map((land) => [land.name, land.grunderwerbsteuer]),
 );
 
-/** Rückfall, wenn kein Bundesland erkannt wurde. */
-export const DEFAULT_GREST_P = 3.5;
+/**
+ * Rückfall, wenn kein Bundesland erkannt wurde: Brandenburg. Bis 10/2026 stand
+ * hier der bayerische Satz 3,5 aus dem Ursprungsprojekt.
+ */
+export const DEFAULT_GREST_P = 6.5;
 
 /**
  * Bundesland aus der Postleitzahl ableiten.
@@ -41,7 +44,10 @@ export function detectBundesland(plz?: string, ort?: string, hint?: string): str
   if (zwei === 6) return "Sachsen-Anhalt";
   if (zwei === 7) return "Thüringen";
 
-  if (zwei >= 10 && zwei <= 14) return "Berlin";
+  // Berlin endet bei 14199. Ab 144 beginnt Brandenburg: Potsdam, Werder,
+  // Schwielowsee. Bis 10/2026 lag der ganze Bereich 14 bei Berlin.
+  if (zwei >= 10 && zwei <= 13) return "Berlin";
+  if (zwei === 14) return drei <= 141 ? "Berlin" : "Brandenburg";
   if (zwei === 15 || zwei === 16) return "Brandenburg";
   if (zwei >= 17 && zwei <= 19) return "Mecklenburg-Vorpommern";
   if (zwei >= 20 && zwei <= 22) return "Hamburg";

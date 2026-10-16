@@ -102,7 +102,7 @@ export function ZahlenDatenFaktenGrid({
       tip: "Monatliche Kaltmiete geteilt durch Wohnfläche. Vergleichswert für die lokale Mietpreislage.",
       value: w.groesse > 0 ? fmt(w.mieteGesamt / w.groesse) : "–",
     },
-    { label: "Kaufpreis", value: fmt(w.vkGesamt), tip: "Verkaufspreis dieser Einheit ohne Kaufnebenkosten (Grunderwerbsteuer, Notar, Makler)." },
+    { label: "Kaufpreis", value: fmt(w.vkGesamt), tip: "Verkaufspreis dieser Einheit ohne Kaufnebenkosten (Grunderwerbsteuer, Notar, Grundbuch)." },
     { label: "Rendite", value: `${w.rendite.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} %`, tip: "Bruttomietrendite = Jahreskaltmiete ÷ Kaufpreis × 100. Ohne Hausgeld, Steuern und Finanzierung." },
     { label: "Hausgeld", value: `${fmt(wHausgeld)} / mtl.`, tip: "Monatliches Hausgeld an die WEG (Betriebskosten, Rücklage, WEG-Verwaltung). Bei Einzelwohnungen wird der hinterlegte Wohnungswert zu 100 % übernommen." },
     { label: "davon nicht umlegbar", value: `${fmt(nuW)} / mtl.`, tip: "Anteil des Hausgelds, der nicht auf den Mieter umgelegt werden kann (Verwaltungskosten, Instandhaltungsrücklage) und vom Eigentümer getragen wird." },

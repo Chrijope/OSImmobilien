@@ -77,8 +77,8 @@ describe("Abgeleitete Tabellen", () => {
       const zentral = BUNDESLAENDER.find((b) => b.name === eintrag.label);
       expect(zentral, `Bundesland ${eintrag.label} fehlt zentral`).toBeDefined();
       expect(eintrag.grEstP).toBe(zentral!.grunderwerbsteuer);
-      // Notar 1,0 plus Grundbuch 0,5 Prozent, Makler bleibt außen vor.
-      expect(eintrag.pct).toBeCloseTo(zentral!.grunderwerbsteuer + 1.5, 5);
+      // Notar 1,5 plus Grundbuch 0,5 Prozent, Makler bleibt außen vor.
+      expect(eintrag.pct).toBeCloseTo(zentral!.grunderwerbsteuer + 2, 5);
     }
   });
 
