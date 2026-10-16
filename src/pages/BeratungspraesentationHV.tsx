@@ -25,7 +25,7 @@
  */
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { CalendarClock, Check, ChevronDown, ClipboardList, FileText, Mail, Menu, Phone, X } from "lucide-react";
+import { ArrowRight, CalendarClock, Check, ChevronDown, ClipboardList, FileText, Mail, Menu, Phone, X } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 import { usePersistedState } from "@/hooks/usePersistedState";
 import { SPRECHSKRIPT_NACH_ID, sprechskriptFuerAnrede } from "@/lib/beratungSprechskripte";
@@ -55,6 +55,7 @@ import {
   type KonzeptOs,
 } from "@/lib/beratungOsDaten";
 import { DOKUMENTE_B, KAUFKRAFT_B, OS_TEXTE_B, dokumenteFuer } from "@/lib/beratungOsDatenB";
+import logoHell from "@/assets/os-real-estate-logo.png";
 import logoDunkel from "@/assets/os-real-estate-logo-dark.png";
 import logoQuer from "@/assets/os-real-estate-logo-quer.png";
 import logoQuerDunkel from "@/assets/os-real-estate-logo-quer-dunkel.png";
@@ -102,6 +103,9 @@ const FARBE = {
   /** Schrift auf Gold. */
   aufGold: "#14231B",
 };
+
+/** Primärgrün der hellen CRM-Fassung, fest: die Hero-Karte bleibt auch im dunklen CRM hell. */
+const HERO_GRUEN = "#15724F";
 
 const TrainerContext = createContext(false);
 
@@ -868,27 +872,77 @@ export default function BeratungspraesentationHV({
             </header>
 
             {/* ─── Einstieg ─── */}
-            <section id="hero" className="relative overflow-hidden px-4 sm:px-8 md:px-12 py-16 md:py-24 min-h-[70vh] flex items-center" style={{ background: FARBE.tief, color: FARBE.hellText }}>
-              <div className="absolute inset-0" style={{ backgroundImage: `url(${fotoHauff})`, backgroundSize: "cover", backgroundPosition: "center" }} />
-              <div className="absolute inset-0" style={{ background: "linear-gradient(90deg, hsl(158 38% 9% / 0.95) 0%, hsl(157 42% 11% / 0.86) 45%, hsl(157 42% 13% / 0.72) 100%)" }} />
-              <div className="relative max-w-6xl mx-auto w-full">
-                <img src={logoDunkel} alt="OS Real Estate GmbH" className="h-24 md:h-28 w-auto" />
-                <p className="bos-kicker mt-10" style={{ color: FARBE.gold }}>
-                  {T.hero.kicker}
-                </p>
-                <h1 className="font-semibold mt-4 leading-[1.08] text-[2.4rem] sm:text-[3.2rem] md:text-[4rem]">
-                  {T.hero.titel1}
-                  <br />
-                  {T.hero.titel2}
-                  <br />
-                  {T.hero.titel3} <span style={{ color: FARBE.gold }}>{T.hero.titelAkzent}</span>
-                </h1>
-                <div className="mt-6 h-[3px] w-14" style={{ background: FARBE.gold }} />
-                <p className="mt-6 text-lg md:text-xl break-words">
-                  {T.hero.willkommen}
-                  {kundenName ? `, ${kundenName}.` : "."}
-                </p>
-                <Trainer id="hero" dunkel />
+            {/*
+             * Hero nach dem Vorbild vom 16.10.2026: Objektfoto weichgezeichnet,
+             * davor eine helle Glaskarte mit dem Logo oben. Die Karte bleibt
+             * auch im dunklen CRM hell, darum feste Farben statt Tokens.
+             */}
+            <section id="hero" className="relative overflow-hidden px-4 sm:px-8 py-10 md:py-16 min-h-[70vh] flex items-center" style={{ background: FARBE.tief }}>
+              <div
+                aria-hidden
+                className="absolute -inset-6"
+                style={{ backgroundImage: `url(${fotoZossen})`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(6px)" }}
+              />
+              <div aria-hidden className="absolute inset-0" style={{ background: "hsl(158 38% 9% / 0.25)" }} />
+              <div
+                data-testid="hero-karte"
+                className="relative mx-auto w-full max-w-4xl min-w-0 rounded-[28px] border p-3 sm:p-4 text-center"
+                style={{
+                  color: FARBE.aufGold,
+                  background: "rgba(255,255,255,0.72)",
+                  borderColor: "rgba(255,255,255,0.7)",
+                  backdropFilter: "blur(18px) saturate(1.4)",
+                  WebkitBackdropFilter: "blur(18px) saturate(1.4)",
+                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.9), 0 30px 60px -30px rgba(0,0,0,0.55)",
+                }}
+              >
+                <div
+                  className="flex items-center justify-center rounded-[20px] border h-36 sm:h-52"
+                  style={{ background: "rgba(255,255,255,0.6)", borderColor: "rgba(255,255,255,0.8)" }}
+                >
+                  <img src={logoHell} alt="OS Real Estate GmbH" className="h-24 sm:h-36 w-auto" />
+                </div>
+                <div className="px-2 sm:px-10 pt-8 pb-6 sm:pt-10 sm:pb-10">
+                  <p className="bos-kicker" style={{ color: HERO_GRUEN }}>
+                    {T.hero.kicker}
+                  </p>
+                  <h1 className="mt-4 font-light leading-[1.1] tracking-[-0.02em] text-[2rem] sm:text-[3rem] md:text-[3.6rem] break-words">
+                    {T.hero.titel}
+                    <br />
+                    <span style={{ color: HERO_GRUEN }}>{T.hero.titelAkzent}</span>
+                  </h1>
+                  <p className="mt-6 text-lg md:text-xl font-semibold break-words">
+                    {T.hero.willkommen}
+                    {kundenName ? `, ${kundenName}.` : "."}
+                  </p>
+                  <p className="mt-2 text-base md:text-lg" style={{ color: "rgba(20,35,27,0.72)" }}>
+                    {T.hero.unterzeile}
+                  </p>
+                  <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
+                    <button
+                      type="button"
+                      data-no-shrink
+                      data-ui="button"
+                      onClick={() => springeZu("heute")}
+                      className="inline-flex items-center justify-center gap-2 rounded-full px-6 h-12 font-semibold text-white"
+                      style={{ background: HERO_GRUEN }}
+                    >
+                      {T.hero.start}
+                      <ArrowRight className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      data-no-shrink
+                      data-ui="button"
+                      onClick={() => springeZu("konzept")}
+                      className="inline-flex items-center justify-center rounded-full px-6 h-12 font-semibold border"
+                      style={{ background: "rgba(255,255,255,0.7)", borderColor: "rgba(20,35,27,0.15)" }}
+                    >
+                      {T.hero.konzepte}
+                    </button>
+                  </div>
+                  <Trainer id="hero" />
+                </div>
               </div>
             </section>
 

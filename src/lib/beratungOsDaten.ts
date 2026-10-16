@@ -76,11 +76,12 @@ export const PLAN_OBJEKT: Record<KonzeptOs, { name: string; kaufpreis: number; r
 export const OS_TEXTE = {
   hero: {
     kicker: "OS Real Estate · Vermögensaufbau mit Immobilien",
-    titel1: "Strategischer",
-    titel2: "Vermögensaufbau",
-    titel3: "mit",
-    titelAkzent: "vermieteten Immobilien.",
+    titel: "Strategischer Vermögensaufbau",
+    titelAkzent: "mit vermieteten Immobilien",
     willkommen: "Herzlich willkommen",
+    unterzeile: "Steuern sparen. Zusatzrente aufbauen. Persönlich begleitet.",
+    start: "Beratung starten",
+    konzepte: "Konzepte ansehen",
   },
 
   heute: {
