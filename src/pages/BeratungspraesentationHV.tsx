@@ -338,69 +338,6 @@ function MarkenLogo({ name, zusatz, farbe, gross }: { name: string; zusatz: stri
   );
 }
 
-/**
- * Fassung B, Abschnitt 02: was im Erstgespräch hinterlegt ist, zum Lesen.
- * Ohne Angaben rendert nichts, dann steht dort nur die Überschrift.
- */
-function ZieleAusErstgespraech({ daten }: { daten: Record<string, string> }) {
-  const a = useA();
-  const T = OS_TEXTE_B;
-  const ziele = (daten.ziel || "")
-    .split(";")
-    .map((t) => zielNachLabel(t.trim())?.label)
-    .filter(Boolean) as string[];
-  const zeilen = [
-    { label: T.ziele.tragbar, wert: daten.beitrag, euro: true },
-    { label: T.ziele.reserve, wert: daten.reserve, euro: true },
-    { label: T.ziele.eigenkapital, wert: daten.eigenkapital, euro: true },
-    { label: T.ziele.mitentscheider, wert: daten.mitentscheider },
-    { label: "Erfahrung mit Immobilien", wert: daten.erfahrung },
-    { label: a(T.ziele.ersteFrage), wert: daten.ersteFrage },
-  ].filter((z) => z.wert?.trim());
-  const motiv = daten.motiv?.trim();
-  if (!motiv && !ziele.length && !zeilen.length) return null;
-  return (
-    <div data-testid="ziele-erstgespraech">
-      {motiv && (
-        <p className="mt-7 border-l-[3px] pl-5 bos-serif italic text-xl md:text-[1.7rem] leading-snug break-words" style={{ borderColor: FARBE.gold }}>
-          „{motiv}“
-        </p>
-      )}
-      <div className="mt-8 grid lg:grid-cols-[1.1fr_1fr] gap-8 items-start">
-        {ziele.length > 0 && (
-          <div className="min-w-0">
-            <Kopf>{a(T.ziele.zielKopf)}</Kopf>
-            <ul className="mt-3 flex flex-wrap gap-2">
-              {ziele.map((z) => (
-                <li key={z} className="rounded-full px-3.5 py-1.5 text-sm" style={{ background: FARBE.goldDunkel, color: "#FFFFFF" }}>
-                  {z}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        {zeilen.length > 0 && (
-          <Karte>
-            <p className="font-semibold text-lg">{a(T.ziele.rahmen)}</p>
-            <dl className="mt-2 divide-y divide-[#E4DFD3]">
-              {zeilen.map((z) => (
-                <div key={z.label} className="py-2.5 flex items-start justify-between gap-4">
-                  <dt className="text-sm pt-0.5 shrink-0 max-w-[50%]">{z.label}</dt>
-                  <dd className="text-right font-semibold min-w-0 break-words">
-                    {z.wert}
-                    {z.euro && mitEuro(z.wert!) && " €"}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </Karte>
-        )}
-      </div>
-      <p className="mt-6">{a(T.ziele.nachfrage)}</p>
-    </div>
-  );
-}
-
 /** Fassung B, Abschnitt 04: Kaufkraft als Balken, der Verlust in Rot. */
 function KaufkraftGrafik() {
   const max = Math.max(...KAUFKRAFT_B.balken.map((b) => b.wert));
@@ -861,9 +798,7 @@ export default function BeratungspraesentationHV({
 
             {/* ─── 02 Ihre Ziele ─── */}
             <Folie id="ziele" ton="papier" kicker={a(T.ziele.kicker)} titel={a(T.ziele.titel)}>
-              {istB ? (
-                <ZieleAusErstgespraech daten={ausErstgespraech} />
-              ) : (
+              {/* B zeigt seit dem 16.10.2026 dieselbe Ziele-Seite wie die normale Präsentation (Wunsch Christian). */}
               <>
               <div className="mt-7 border-l-[3px] pl-5" style={{ borderColor: FARBE.gold }}>
                 <div className="bos-serif italic text-xl md:text-[1.7rem] leading-snug flex">
@@ -962,7 +897,6 @@ export default function BeratungspraesentationHV({
                 </Karte>
               </div>
               </>
-              )}
               <Trainer id="arbeitsweise" hinweis="Werte aus dem Erstgespräch kurz bestätigen lassen: „Stimmt das noch so?“" />
             </Folie>
 
