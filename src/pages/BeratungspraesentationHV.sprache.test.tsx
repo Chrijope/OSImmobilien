@@ -189,6 +189,46 @@ describe("Begrüßung im Hero", () => {
   });
 });
 
+describe("Hero als Glaskarte", () => {
+  it.each([
+    ["A", "/beratungspraesentation-osimmobilien"],
+    ["B", "/beratungspraesentation-osimmobilien-b"],
+  ])("Fassung %s zeigt Logo, Kicker, Überschrift, Begrüßung und zwei Knöpfe, kein Teambild", (_f, pfad) => {
+    render(
+      <MemoryRouter initialEntries={[`${pfad}?kunde=Anna%20Muster&vorname=Anna&kundeId=k-1&investmentId=i-1`]}>
+        <Routes>
+          <Route path="*" element={<BeratungspraesentationHV variante={pfad.endsWith("-b") ? "b" : "a"} />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+    const hero = document.getElementById("hero")!;
+    const bilder = hero.querySelectorAll("img");
+    expect(bilder).toHaveLength(1);
+    expect(bilder[0]).toHaveAttribute("alt", "OS Real Estate GmbH");
+    expect(hero.textContent).toContain("OS Real Estate · Vermögensaufbau mit Immobilien");
+    expect(hero.querySelector("h1")?.textContent).toBe("Strategischer Vermögensaufbaumit vermieteten Immobilien");
+    expect(hero.textContent).toContain("Herzlich willkommen, Anna.");
+    expect(hero.textContent).toContain("Steuern sparen. Zusatzrente aufbauen. Persönlich begleitet.");
+    expect([...hero.querySelectorAll("button")].map((b) => b.textContent)).toEqual(["Beratung starten", "Konzepte ansehen"]);
+  });
+
+  it("springt mit den Knöpfen zum ersten Abschnitt und zum Konzeptschalter", () => {
+    zeige(UNTERLAGEN);
+    const gesprungen: string[] = [];
+    const vorher = Element.prototype.scrollIntoView;
+    Element.prototype.scrollIntoView = function (this: Element) {
+      gesprungen.push(this.id);
+    };
+    try {
+      fireEvent.click(screen.getByRole("button", { name: "Beratung starten" }));
+      fireEvent.click(screen.getByRole("button", { name: "Konzepte ansehen" }));
+    } finally {
+      Element.prototype.scrollIntoView = vorher;
+    }
+    expect(gesprungen).toEqual(["heute", "konzept"]);
+  });
+});
+
 describe("Konzeptschalter und Regler", () => {
   it("schaltet alle Konzept-Abschnitte zugleich um", () => {
     zeige(UNTERLAGEN);

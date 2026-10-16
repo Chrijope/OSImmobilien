@@ -65,6 +65,21 @@ describe.each(["a", "b"] as const)("Ansprechpartner in Fassung %s", (variante) =
   });
 });
 
+describe.each(["a", "b"] as const)("Vorteile der Gruppe in Fassung %s", (variante) => {
+  it("zeigt die vier Vorteile unter den Logos, über der Ansprechpartner-Karte", () => {
+    karte("/", variante);
+    const leiste = screen.getByTestId("gruppe-vorteile");
+    expect(document.getElementById("gruppe")!.contains(leiste)).toBe(true);
+    const v = within(leiste);
+    for (const titel of ["Rundum-sorglos", "Provisionsfrei", "Verwaltung", "Finanzierung"]) {
+      expect(v.getByText(titel)).toBeInTheDocument();
+    }
+    expect(v.getByText("Du kaufst direkt vom Bauträger, ohne Maklerprovision.")).toBeInTheDocument();
+    expect(v.getByText("Finanzierung auch ohne Eigenkapital möglich.")).toBeInTheDocument();
+    expect(leiste.compareDocumentPosition(screen.getByTestId("ansprechpartner")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+});
+
 describe("Ansprechpartner, Einzelfälle", () => {
   it("zeigt das Foto statt der Initialen", () => {
     zustand.eigen.bild = "https://example.com/alex.jpg";

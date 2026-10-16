@@ -76,11 +76,12 @@ export const PLAN_OBJEKT: Record<KonzeptOs, { name: string; kaufpreis: number; r
 export const OS_TEXTE = {
   hero: {
     kicker: "OS Real Estate · Vermögensaufbau mit Immobilien",
-    titel1: "Strategischer",
-    titel2: "Vermögensaufbau",
-    titel3: "mit",
-    titelAkzent: "vermieteten Immobilien.",
+    titel: "Strategischer Vermögensaufbau",
+    titelAkzent: "mit vermieteten Immobilien",
     willkommen: "Herzlich willkommen",
+    unterzeile: "Steuern sparen. Zusatzrente aufbauen. Persönlich begleitet.",
+    start: "Beratung starten",
+    konzepte: "Konzepte ansehen",
   },
 
   heute: {
@@ -178,6 +179,13 @@ export const OS_TEXTE = {
       },
     ] as ReadonlyArray<{ name: string; zusatz: string; farbe: string; text: string }>,
     fuss: "Ein Haus, kurze Wege: Objekt, Verwaltung und Finanzierung sind aufeinander abgestimmt.",
+    // Vorteile unter den Logos. `marke` ordnet eine Kachel farblich einer Marke oben zu.
+    vorteile: [
+      { titel: "Rundum-sorglos", text: "Wir begleiten dich von der Auswahl bis nach der Vermietung." },
+      { titel: "Provisionsfrei", text: "Du kaufst direkt vom Bauträger, ohne Maklerprovision." },
+      { titel: "Verwaltung", text: "Hausverwaltung und Mietsonderverwaltung auf Wunsch aus einer Hand.", marke: "Verwaltung" },
+      { titel: "Finanzierung", text: "Finanzierung auch ohne Eigenkapital möglich.", marke: "Finanzierung" },
+    ] as ReadonlyArray<{ titel: string; text: string; marke?: string }>,
   },
 
   prinzip: {
