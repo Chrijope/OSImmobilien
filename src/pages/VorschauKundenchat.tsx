@@ -59,7 +59,7 @@ export default function VorschauKundenchat() {
   };
 
   return (
-    <div className="min-h-screen bg-muted/30 p-4 space-y-4">
+    <div data-lg="seite" className="min-h-screen bg-muted/30 p-4 space-y-4">
       <div className="flex flex-wrap items-center gap-3">
         <h1 className="text-xl font-bold">Vorschau Kundenchat</h1>
         <span className="text-sm text-muted-foreground">Beispieldaten, nichts wird gespeichert oder verschickt.</span>
