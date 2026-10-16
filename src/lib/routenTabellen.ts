@@ -139,6 +139,7 @@ export const ROUTEN_TABELLEN: Record<string, readonly string[]> = {
   // holen sich ihre Tabellen ueber `useCacheReady` selbst.
   "/beratungspraesentation": [],
   "/beratungspraesentation-osimmobilien": [...KONTAKT_TABELLEN],
+  "/beratungspraesentation-osimmobilien-b": [...KONTAKT_TABELLEN],
   "/beratungspraesentation-hv": [],
   "/beratungspraesentation-neu": [],
   "/beratungspraesentation-wg": [],

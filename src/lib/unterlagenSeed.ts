@@ -51,6 +51,14 @@ export const UNTERLAGEN_VERSION = "34";
  * Seed gestrichener Eintrag bliebe deshalb in bestehenden Installationen
  * stehen. Diese Ids werden beim Laden gezielt entfernt.
  */
+/**
+ * Neue Seed-Einträge, die auch in einer schon gespeicherten Liste erscheinen
+ * sollen. Ein Versionssprung würde die gespeicherte Liste durch den Seed
+ * ersetzen und selbst angelegte Dokumente verwerfen; deshalb werden diese Ids
+ * beim Laden gezielt hinter ihrem Vorgänger im Seed eingefügt, falls sie fehlen.
+ */
+export const NACHGETRAGENE_DOKUMENT_IDS: string[] = ["p-beratung-b"];
+
 export const ENTFERNTE_DOKUMENT_IDS: string[] = [
   // Haushaltsrechner / Bonitätsrechner: die Seite gibt es nicht mehr.
   "b-haushalt",
@@ -112,6 +120,13 @@ export function seedUnterlagen(): UnterlagenAbschnitt[] {
           beschreibung: "Der aktuelle Gesprächsablauf mit Fragenblock, drei durchgerechneten Objekten und der Selbstauskunft am Ende",
           aktion: "internal-link",
           interneRoute: "/beratungspraesentation-osimmobilien",
+        },
+        {
+          id: "p-beratung-b",
+          name: "Beratungspräsentation B (zum Vergleich)",
+          beschreibung: "Vergleichsfassung mit verkaufspsychologisch überarbeiteten Texten und den Vertriebsdokumenten zu Steuerersparnis und Altersvorsorge",
+          aktion: "internal-link",
+          interneRoute: "/beratungspraesentation-osimmobilien-b",
         },
         {
           id: "p-beratung-pdf",
@@ -498,4 +513,26 @@ export function seedUnterlagen(): UnterlagenAbschnitt[] {
       ],
     },
   ];
+}
+
+/**
+ * Fuegt neue Seed-Eintraege (NACHGETRAGENE_DOKUMENT_IDS) in eine gespeicherte
+ * Liste ein, hinter ihren Vorgaenger im Seed, sonst ans Ende des Abschnitts.
+ */
+export function mitNachgetragenen(abschnitte: UnterlagenAbschnitt[]): { daten: UnterlagenAbschnitt[]; geaendert: boolean } {
+  const seed = seedUnterlagen();
+  let geaendert = false;
+  const daten = abschnitte.map((a) => {
+    const seedDoks = seed.find((s) => s.id === a.id)?.dokumente || [];
+    let dokumente = a.dokumente;
+    for (const id of NACHGETRAGENE_DOKUMENT_IDS) {
+      const i = seedDoks.findIndex((d) => d.id === id);
+      if (i < 0 || dokumente.some((d) => d.id === id)) continue;
+      const pos = i > 0 ? dokumente.findIndex((d) => d.id === seedDoks[i - 1].id) : -1;
+      dokumente = pos < 0 ? [...dokumente, seedDoks[i]] : [...dokumente.slice(0, pos + 1), seedDoks[i], ...dokumente.slice(pos + 1)];
+      geaendert = true;
+    }
+    return dokumente === a.dokumente ? a : { ...a, dokumente };
+  });
+  return { daten, geaendert };
 }

@@ -9158,6 +9158,21 @@ export default function KundenDetail() {
                 >
                   <ExternalLink className="h-4 w-4 mr-1" /> Beratungspräsentation OS Immobilien
                 </Button>
+                {/* Vergleichsfassung B, mit denselben Parametern. */}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    const params = new URLSearchParams({
+                      kunde: `${kunde.vorname} ${kunde.nachname}`,
+                      kundeId: id || "",
+                      investmentId: inv.id,
+                    });
+                    window.open(`/beratungspraesentation-osimmobilien-b?${params.toString()}`, "_blank");
+                  }}
+                >
+                  <ExternalLink className="h-4 w-4 mr-1" /> Beratungspräsentation B
+                </Button>
                 <span className="relative inline-flex">
                   <Button
                     size="sm"
