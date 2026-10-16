@@ -109,3 +109,54 @@
     font-size: max(16px, 1em) !important;
   }
 }
+
+/*
+ * Beratungspräsentation im CI des CRM (16.10.2026), nur mit `.bos-crm`.
+ * Die Mikroseite der Berater nutzt `.bos` weiter mit ihren eigenen Schriften
+ * und bleibt deshalb unberührt.
+ *
+ *   * Schrift: die des CRM (body in index.css), also keine eigenen Schriften.
+ *   * Grund: durchsichtig, darunter liegt der Grund der Glasschicht bzw.
+ *     ohne sie der body (bg-background).
+ *   * Gold nur als Akzent: --bos-akzent für Akzentwörter auf hellem Grund.
+ */
+.bos.bos-crm {
+  font-family: inherit;
+  color: hsl(var(--foreground));
+  background: transparent;
+  -webkit-font-smoothing: antialiased;
+  --bos-akzent: var(--bos-gold-dunkel);
+}
+/* Im dunklen CRM liegen die hellen Abschnitte auf dunklem Grund: dort das helle Gold. */
+.dark .bos.bos-crm {
+  --bos-akzent: var(--bos-gold);
+}
+.bos.bos-crm .bos-kicker {
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+}
+/*
+ * Die dunkle Scheibe auf den dunkelgrünen Abschnitten. Gleiche Form wie die
+ * Karten der Glasschicht (Radius, helle Oberkante, Glanzverlauf), nur hell
+ * auf dunkel. Keine Weichzeichnung: Unter der Scheibe liegt eine glatte
+ * Fläche, es gäbe nichts zu verwischen.
+ */
+.bos.bos-crm .bos-glas-dunkel {
+  border-radius: var(--lg-radius, 1rem);
+  border-color: rgba(243, 247, 245, 0.16);
+  background-color: rgba(255, 255, 255, 0.06);
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.07), transparent 40%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 10px 30px -18px rgba(0, 0, 0, 0.6);
+}
+/* Hauptknopf in Gold auf Dunkelgrün, mit der Lichtkante der gewölbten Tasten. */
+.bos.bos-crm .bos-knopf-gold {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), inset 0 -1px 0 rgba(0, 0, 0, 0.14), 0 10px 24px -12px rgba(204, 172, 5, 0.7);
+}
+.bos.bos-crm .bos-feld::placeholder {
+  color: hsl(var(--muted-foreground) / 0.75);
+}
+.bos.bos-crm .bos-dunkel .bos-feld::placeholder {
+  color: rgba(243, 247, 245, 0.45);
+}

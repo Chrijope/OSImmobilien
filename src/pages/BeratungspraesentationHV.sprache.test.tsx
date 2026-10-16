@@ -111,7 +111,8 @@ describe("Aufbau nach dem Entwurf", () => {
 });
 
 describe("Übernahme aus dem Erstgespräch", () => {
-  it("siezt, begrüßt mit Namen und füllt Ziele, Rahmen und Rentenlücke", () => {
+  it("duzt auch bei gespeichertem Sie, begrüßt mit Vornamen und füllt Ziele, Rahmen und Rentenlücke", () => {
+    // Hausregel „immer duzen“: Ein altes „sie“ aus dem Erstgespräch zählt nicht mehr.
     zustand.skript = {
       anrede: "sie",
       ziele: ["Altersvorsorge"],
@@ -128,8 +129,9 @@ describe("Übernahme aus dem Erstgespräch", () => {
     };
     zeige(KUNDENPROFIL);
 
-    expect(document.body.textContent).toContain("Herzlich willkommen, Frau Muster.");
-    expect(ueberschriften()).toContain("Das haben Sie uns gesagt.");
+    expect(document.getElementById("hero")?.textContent).toContain("Herzlich willkommen, Anna.");
+    expect(ueberschriften()).toContain("Das hast du uns gesagt.");
+    expect(document.body.textContent).not.toContain("Frau Muster");
     expect(screen.getByDisplayValue("Ich möchte jetzt anfangen.")).toBeInTheDocument();
     // Das Euro-Zeichen aus dem Erstgespräch fällt weg, das Feld führt sein eigenes.
     expect(screen.getAllByDisplayValue("400").length).toBeGreaterThan(0);
@@ -150,6 +152,40 @@ describe("Übernahme aus dem Erstgespräch", () => {
     expect(document.body.textContent).not.toContain("undefined");
     expect(document.body.textContent).not.toContain("NaN");
     expect(screen.getByTestId("konzept-karte-zusatzrente")).toHaveAttribute("aria-pressed", "true");
+  });
+});
+
+describe("Begrüßung im Hero", () => {
+  const hero = () => document.getElementById("hero")?.textContent ?? "";
+
+  it.each([
+    ["A", "/beratungspraesentation-osimmobilien"],
+    ["B", "/beratungspraesentation-osimmobilien-b"],
+  ])("Fassung %s nennt den Vornamen aus dem Kundenprofil", (_f, pfad) => {
+    render(
+      <MemoryRouter initialEntries={[`${pfad}?kunde=Anna%20Muster&vorname=Anna&kundeId=k-1&investmentId=i-1`]}>
+        <Routes>
+          <Route path="*" element={<BeratungspraesentationHV variante={pfad.endsWith("-b") ? "b" : "a"} />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+    expect(hero()).toContain("Herzlich willkommen, Anna.");
+  });
+
+  it("nimmt den Namen aus den Parametern, solange der Kontakt nicht geladen ist", () => {
+    zeige("/beratungspraesentation-osimmobilien?kunde=Anna%20Maria%20Muster&vorname=Anna%20Maria&kundeId=k-unbekannt&investmentId=i-1");
+    expect(hero()).toContain("Herzlich willkommen, Anna Maria.");
+  });
+
+  it("grüßt ohne Namen neutral", () => {
+    zeige(UNTERLAGEN);
+    expect(hero()).toContain("Herzlich willkommen.");
+  });
+
+  it("macht aus einem kaputten Namen im Parameter keinen Namen", () => {
+    zeige("/beratungspraesentation-osimmobilien?kunde=undefined%20undefined&kundeId=k-unbekannt&investmentId=i-1");
+    expect(hero()).not.toContain("undefined");
+    expect(hero()).toContain("Herzlich willkommen.");
   });
 });
 

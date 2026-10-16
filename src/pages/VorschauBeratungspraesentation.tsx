@@ -127,8 +127,8 @@ export default function VorschauBeratungspraesentation() {
         echter Kunden. Eingaben merkt sich nur dieser Browser.
         <div className="mt-2 flex flex-wrap gap-2">
           {[
-            ["zusatzrente", "Frau Muster, Zusatzrente, Sie"],
-            ["steuer", "Jonas, Steuerersparnis, Du"],
+            ["zusatzrente", "Anna, Zusatzrente"],
+            ["steuer", "Jonas, Steuerersparnis"],
             ["leer", "ohne Erstgespräch"],
             ["lang", "lange Werte"],
             ["erstgespraech", "aus der Erstgespräch-Vorschau"],
