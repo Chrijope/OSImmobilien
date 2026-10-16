@@ -86,10 +86,12 @@ describe("Aufbau nach dem Entwurf", () => {
       "Alles aus einer Hand, unter einem Dach.",
       "Vier Bausteine, die zusammenarbeiten.",
       "Welches Ziel steht für dich an erster Stelle?",
-      "Heute kaufen. Abbezahlen lassen. Später Zusatzrente.",
-      "Was, wenn es nicht nach Plan läuft?",
-      "Eine Wohnung ist der Anfang. Drei sind ein Plan.",
+      // 08: Inhalt des PDFs „Arbeitsleistung und Immobilienvermögen“ (Konzept Altersvorsorge)
+      "Wir zeigen dir, wie du Sozialabgaben in Vermögen umwandelst.",
+      "Deine vorzeitige Rente mit 58 Jahren.",
+      // 09 Kriterien vor 10 Objekte
       "Du entscheidest, was passen muss.",
+      "Drei Standorte, geprüft und vermietet.",
       "So geht es weiter.",
       "Wenn wir eine Immobilie finden, die deine Kriterien erfüllt: Möchtest du den nächsten Schritt gehen?",
       "Das bekommst du in der Objektvorstellung.",
@@ -143,7 +145,8 @@ describe("Übernahme aus dem Erstgespräch", () => {
     expect(document.body.textContent).toContain("Was passiert bei Leerstand?");
     // Der Schwerpunkt belegt den Konzeptschalter vor.
     expect(screen.getByTestId("konzept-karte-steuer")).toHaveAttribute("aria-pressed", "true");
-    expect(ueberschriften()).toContain("Mehr Netto vom Brutto. Steuer wird zu Vermögen.");
+    expect(ueberschriften()).toContain("Mehr Netto vom Brutto.");
+    expect(screen.queryByTestId("konzept-inhalt-alter")).toBeNull();
   });
 
   it("sieht ohne Erstgespräch sauber aus und bleibt beim Du", () => {
@@ -229,21 +232,73 @@ describe("Hero als Glaskarte", () => {
   });
 });
 
-describe("Konzeptschalter und Regler", () => {
-  it("schaltet alle Konzept-Abschnitte zugleich um", () => {
+describe("Konzeptschalter und Abschnitt 08", () => {
+  it("zeigt nur das gewählte Konzept und schaltet um", () => {
     zeige(UNTERLAGEN);
+    expect(screen.getByTestId("konzept-inhalt-alter")).toBeInTheDocument();
+    expect(screen.queryByTestId("konzept-inhalt-steuer")).toBeNull();
     fireEvent.click(screen.getAllByRole("radio", { name: "Konzept 2 · Steuerersparnis" })[0]);
-    expect(document.getElementById("objekte")?.textContent).toContain("Barfusstraße 9");
-    expect(document.getElementById("rechnung")?.textContent).toContain("Barfusstraße 9, WE 03");
-    expect(document.getElementById("plan")?.textContent).toContain("572.000 €");
+    expect(screen.getByTestId("konzept-inhalt-steuer").textContent).toContain("+274 €");
+    expect(screen.queryByTestId("konzept-inhalt-alter")).toBeNull();
   });
 
-  it("rechnet das Vermögen mit der Wertentwicklung aus dem Regler", () => {
+  it("zeigt auf Wunsch beide Konzepte, Steuer zuerst, danach Kriterien und Objekte", () => {
     zeige(UNTERLAGEN);
-    expect(document.getElementById("plan")?.textContent).toContain("278.000 €");
-    fireEvent.change(screen.getByLabelText(/Wertentwicklung pro Jahr/), { target: { value: "0" } });
-    // 176.000 € Kaufpreis minus 40.470 € Restschuld, auf Tausend gerundet
-    expect(document.getElementById("plan")?.textContent).toContain("136.000 €");
+    fireEvent.click(screen.getByTestId("konzept-beide"));
+    const ids = Array.from(document.querySelectorAll("section[id]")).map((el) => el.id);
+    const reihe = ["konzept", "steuer-titel", "steuer-4", "alter-titel", "alter-8", "kriterien", "objekte", "weg", "schritt", "termin"].map((id) =>
+      ids.indexOf(id),
+    );
+    expect(reihe, ids.join(" | ")).not.toContain(-1);
+    expect([...reihe].sort((a, b) => a - b)).toEqual(reihe);
+  });
+
+  it("startet bei Schwerpunkt „beides“ mit beiden Konzepten", () => {
+    zustand.skript = { anrede: "du", antworten: { schwerpunkt: "beides" } };
+    zeige(KUNDENPROFIL);
+    expect(screen.getByTestId("konzept-beide")).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByTestId("konzept-inhalt-steuer")).toBeInTheDocument();
+    expect(screen.getByTestId("konzept-inhalt-alter")).toBeInTheDocument();
+  });
+
+  it("hat die alte Objektrechnung nicht mehr", () => {
+    zeige(UNTERLAGEN);
+    for (const id of ["funktion", "rechnung", "sicherheit", "plan"]) expect(document.getElementById(id), id).toBeNull();
+    expect(screen.queryByTestId("regler-wertentwicklung")).toBeNull();
+    expect(document.body.textContent).not.toContain("WE 03");
+  });
+});
+
+describe("Kriterien und Objekte", () => {
+  it("rechnet ehrlich mit „Was, wenn …?“ und zeigt die Sorge aus dem Erstgespräch", () => {
+    zustand.skript = { anrede: "du", antworten: { sorgen: "Was, wenn der Mieter nicht zahlt?" } };
+    zeige(KUNDENPROFIL);
+    const box = screen.getByTestId("was-wenn");
+    expect(box.textContent).toContain("+155 € statt +274 €");
+    expect(box.textContent).toContain("bis 440 € im Monat");
+    expect(box.textContent).toContain("Was, wenn der Mieter nicht zahlt?");
+  });
+
+  it("zeigt alle drei Objekte mit Bildern und markiert, was zum Konzept passt", () => {
+    zeige(UNTERLAGEN);
+    const objekte = screen.getAllByTestId("objekt");
+    expect(objekte.map((o) => o.querySelector("h3")?.textContent)).toEqual(["Barfusstraße 9", "Hauffstraße 38", "Doppelhaushälften"]);
+    for (const o of objekte) expect(o.querySelectorAll("img")).toHaveLength(7);
+    expect(objekte[0].textContent).toContain("Konzept Steuerersparnis");
+    expect(objekte[1].textContent).toContain("passt zu deinem Konzept");
+    expect(objekte[0].textContent).not.toContain("passt zu deinem Konzept");
+  });
+
+  it("blättert in der Diashow", () => {
+    zeige(UNTERLAGEN);
+    const show = screen.getAllByTestId("diashow")[0];
+    const sichtbar = () => Array.from(show.querySelectorAll("img")).findIndex((b) => b.getAttribute("aria-hidden") === "false");
+    expect(sichtbar()).toBe(0);
+    fireEvent.click(show.querySelector('button[aria-label="Nächstes Bild"]')!);
+    expect(sichtbar()).toBe(1);
+    fireEvent.click(show.querySelector('button[aria-label="Vorheriges Bild"]')!);
+    fireEvent.click(show.querySelector('button[aria-label="Vorheriges Bild"]')!);
+    expect(sichtbar()).toBe(6);
   });
 });
 

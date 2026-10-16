@@ -308,9 +308,13 @@ describe("Die Beratungspräsentationen A und B duzen durchgehend", () => {
   it("enthält in den Texten von A und B keine Sie-Anrede und kein Sie-Paar mehr", async () => {
     const a = await import("@/lib/beratungOsDaten");
     const b = await import("@/lib/beratungOsDatenB");
+    const k = await import("@/lib/beratungKonzeptDaten");
     const alle = [
       ...texte(a.OS_TEXTE, "OS_TEXTE"),
-      ...texte(a.PLAN_ZEILEN, "PLAN_ZEILEN"),
+      ...texte(a.OBJEKTE, "OBJEKTE"),
+      ...texte(k.KONZEPT_STEUER, "KONZEPT_STEUER"),
+      ...texte(k.KONZEPT_ALTER, "KONZEPT_ALTER"),
+      ...texte(k.WAS_WENN, "WAS_WENN"),
       ...texte(b.OS_TEXTE_B, "OS_TEXTE_B"),
       ...texte(b.KAUFKRAFT_B, "KAUFKRAFT_B"),
       ...texte(b.DOKUMENTE_B, "DOKUMENTE_B"),
@@ -344,10 +348,13 @@ describe("Die Beratungspräsentationen A und B duzen durchgehend", () => {
     }
   });
 
-  it("hat im sichtbaren Text der Seite keine Sie-Anrede", () => {
-    const quelle = readFileSync(join(__dirname, "..", "pages", "BeratungspraesentationHV.tsx"), "utf8")
-      .replace(/\/\*[\s\S]*?\*\//g, " ")
-      .replace(/(^|[^:])\/\/.*$/gm, "$1");
-    expect(sieTreffer(quelle)).toEqual([]);
-  });
+  it.each(["pages/BeratungspraesentationHV.tsx", "components/beratung/KonzeptFolien.tsx", "components/beratung/folienBausteine.tsx"])(
+    "hat im sichtbaren Text von %s keine Sie-Anrede",
+    (datei) => {
+      const quelle = readFileSync(join(__dirname, "..", datei), "utf8")
+        .replace(/\/\*[\s\S]*?\*\//g, " ")
+        .replace(/(^|[^:])\/\/.*$/gm, "$1");
+      expect(sieTreffer(quelle)).toEqual([]);
+    },
+  );
 });

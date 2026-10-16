@@ -3,7 +3,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import BeratungspraesentationHV from "./BeratungspraesentationHV";
 
 /*
- * Abschnitte 15 und 16 (16.10.2026), in A und B: Knopf „Objektvorstellung
+ * Abschnitte 12 und 13 (16.10.2026), in A und B: Knopf „Objektvorstellung
  * buchen“ mit dem Link des zuständigen Partners, keine Ja/Nein-Knöpfe mehr,
  * Kundenportal erst nach der unterschriebenen Selbstauskunft.
  */
@@ -70,7 +70,7 @@ function zeige(adresse: string, variante: "a" | "b") {
   );
 }
 
-describe.each(["a", "b"] as const)("Beratungspräsentation %s, Abschnitte 15 und 16", (variante) => {
+describe.each(["a", "b"] as const)("Beratungspräsentation %s, Abschnitte 12 und 13", (variante) => {
   it("öffnet mit Kunde den Objektvorstellungs-Link des zuständigen Partners im neuen Tab", () => {
     zustand.profile = [
       { id: "nutzer-1", name: "Maria Muster", objektlink: "https://termin.example/eigen" },
