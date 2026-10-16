@@ -36,10 +36,9 @@ describe("Grunderwerbsteuer", () => {
     expect(kaufnebenkostenProzent("nw")).toBe(8.5);
   });
 
-  it("nimmt ohne Bundesland den Mittelwert", () => {
-    const mittel = kaufnebenkostenProzent(null);
-    expect(mittel).toBeGreaterThan(kaufnebenkostenProzent("by"));
-    expect(mittel).toBeLessThan(kaufnebenkostenProzent("nw"));
+  it("nimmt ohne Bundesland Brandenburg", () => {
+    expect(kaufnebenkostenProzent(null)).toBe(kaufnebenkostenProzent("bb"));
+    expect(kaufnebenkostenProzent("unbekannt")).toBe(8.5);
   });
 });
 

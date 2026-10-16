@@ -7,13 +7,18 @@ import { EingabeFinanzierung } from "./Eingabebereiche";
 import { ExposeDokument } from "./ExposeDokument";
 import { Analyse } from "./Analyse";
 
+// Die erwarteten Werte stammen aus der Zeit vor 10/2026, als der Rechner mit
+// 3,5 % Grunderwerbsteuer und 1,0 % Notar startete. Sie prüfen die Mechanik,
+// nicht die Standardsätze, deshalb stehen die alten Sätze hier fest.
+const basisEingabe: InvestmentEingabe = { ...standardEingabe, transferTaxRate: 3.5, notaryRate: 1 };
+
 /*
  * KfW-Darlehen in Eingabe, Analyse und Berechnung, seit dem 07.10.2026.
  * Ohne Schalter darf nirgends etwas davon stehen.
  */
 
 const OHNE: InvestmentEingabe = {
-  ...standardEingabe,
+  ...basisEingabe,
   clientName: "Musterkunde",
   taxableIncomeCustomer: 80000,
   purchasePrice: 405000,

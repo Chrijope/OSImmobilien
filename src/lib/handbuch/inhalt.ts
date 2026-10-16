@@ -213,17 +213,17 @@ export function diagrammHaushalt(breite = 660, hoehe = 270): Zeichnung {
 function diagrammNebenkosten(kaufpreis: number): Zeichnung {
   return ring({
     teile: [
-      { bezeichnung: `${tx("Grunderwerbsteuer 3,5 %", "Transfer tax 3.5%")}: ${betrag(kaufpreis * 0.035)}`, wert: kaufpreis * 0.035, farbe: "akzent" },
-      { bezeichnung: `${tx("Notar 1,0 %", "Notary 1.0%")}: ${betrag(kaufpreis * 0.01)}`, wert: kaufpreis * 0.01, farbe: "tinte" },
+      { bezeichnung: `${tx("Grunderwerbsteuer 6,5 %", "Transfer tax 6.5%")}: ${betrag(kaufpreis * 0.065)}`, wert: kaufpreis * 0.065, farbe: "akzent" },
+      { bezeichnung: `${tx("Notar 1,5 %", "Notary 1.5%")}: ${betrag(kaufpreis * 0.015)}`, wert: kaufpreis * 0.015, farbe: "tinte" },
       { bezeichnung: `${tx("Grundbuch 0,5 %", "Land register 0.5%")}: ${betrag(kaufpreis * 0.005)}`, wert: kaufpreis * 0.005, farbe: "akzentHell" },
     ],
-    mitteOben: betrag(kaufpreis * 0.05),
-    mitteUnten: tx("5,0 % in Bayern", "5.0% in Bavaria"),
+    mitteOben: betrag(kaufpreis * 0.085),
+    mitteUnten: tx("8,5 % in Brandenburg", "8.5% in Brandenburg"),
     breite: 440,
     hoehe: 190,
     beschreibung: tx(
-      `Kaufnebenkosten in Bayern für ${betrag(kaufpreis)}: zusammen ${betrag(kaufpreis * 0.05)}.`,
-      `Incidental purchase costs in Bavaria for ${betrag(kaufpreis)}: ${betrag(kaufpreis * 0.05)} in total.`,
+      `Kaufnebenkosten in Brandenburg für ${betrag(kaufpreis)}: zusammen ${betrag(kaufpreis * 0.085)}.`,
+      `Incidental purchase costs in Brandenburg for ${betrag(kaufpreis)}: ${betrag(kaufpreis * 0.085)} in total.`,
     ),
   });
 }
@@ -673,7 +673,7 @@ function schwerpunkt(ang: HandbuchAngaben, a: HandbuchAuswertung): { titel: stri
     ],
     [
       tx("Kaufnebenkosten", "Incidental purchase costs"),
-      tx("Grunderwerbsteuer, Notar und Grundbuch. In Bayern rund 5 % des Kaufpreises.", "Real estate transfer tax, notary and land register. In Bavaria about 5% of the purchase price."),
+      tx("Grunderwerbsteuer, Notar und Grundbuch. In Berlin rund 8,0 %, in Brandenburg rund 8,5 % des Kaufpreises.", "Real estate transfer tax, notary and land register. About 8.0% of the purchase price in Berlin, about 8.5% in Brandenburg."),
     ],
     [tx("Restschuld", "Remaining debt"), tx("Der Teil des Darlehens, der noch offen ist.", "The part of the loan still outstanding.")],
     [
@@ -1156,7 +1156,8 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
   });
 
   // Kapitel 5
-  const knkRahmen = r.empf * 0.05;
+  // Brandenburg, der höhere unserer beiden Sätze. Berlin liegt bei 8,0 %.
+  const knkRahmen = r.empf * 0.085;
   const ekKasten: Block =
     r.eigenkapital >= knkRahmen && r.eigenkapital > 0
       ? {
@@ -1164,8 +1165,8 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
           ton: "ok",
           titel: tx("Eigenkapital", "Equity"),
           text: tx(
-            `Mit ${betrag(r.eigenkapital)} deckt Ihr Eigenkapital die Kaufnebenkosten einer Wohnung in Ihrem Rahmen. In Bayern sind das bei ${betrag(r.empf)} rund ${betrag(knkRahmen)} (5,0 %). In anderen Bundesländern liegen die Nebenkosten höher, siehe Kapitel 10.`,
-            `At ${betrag(r.eigenkapital)}, your equity covers the incidental purchase costs of a flat within your budget. In Bavaria, at ${betrag(r.empf)}, these are about ${betrag(knkRahmen)} (5.0%). In other federal states the costs are higher, see chapter 10.`,
+            `Mit ${betrag(r.eigenkapital)} deckt Ihr Eigenkapital die Kaufnebenkosten einer Wohnung in Ihrem Rahmen. In Brandenburg sind das bei ${betrag(r.empf)} rund ${betrag(knkRahmen)} (8,5 %), in Berlin rund ${betrag(r.empf * 0.08)} (8,0 %), siehe Kapitel 10.`,
+            `At ${betrag(r.eigenkapital)}, your equity covers the incidental purchase costs of a flat within your budget. In Brandenburg, at ${betrag(r.empf)}, these are about ${betrag(knkRahmen)} (8.5%), in Berlin about ${betrag(r.empf * 0.08)} (8.0%), see chapter 10.`,
           ),
         }
       : {
@@ -1175,12 +1176,12 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
           text:
             r.eigenkapital > 0
               ? tx(
-                  `Mit ${betrag(r.eigenkapital)} Eigenkapital wird es für die Nebenkosten knapp. Für eine Wohnung um ${betrag(r.empf)} liegen sie in Bayern bei rund ${betrag(knkRahmen)}, in anderen Bundesländern bis rund ${betrag(r.empf * 0.08)}. Wie Sie den fehlenden Betrag aufbauen, bespricht Ihr Berater mit Ihnen.`,
-                  `With ${betrag(r.eigenkapital)} of equity, the purchase costs will be tight. For a flat around ${betrag(r.empf)}, they are about ${betrag(knkRahmen)} in Bavaria and up to about ${betrag(r.empf * 0.08)} in other federal states. Your contact will discuss with you how to build up the missing amount.`,
+                  `Mit ${betrag(r.eigenkapital)} Eigenkapital wird es für die Nebenkosten knapp. Für eine Wohnung um ${betrag(r.empf)} liegen sie in Brandenburg bei rund ${betrag(knkRahmen)}, in Berlin bei rund ${betrag(r.empf * 0.08)}. Wie Sie den fehlenden Betrag aufbauen, bespricht Ihr Berater mit Ihnen.`,
+                  `With ${betrag(r.eigenkapital)} of equity, the purchase costs will be tight. For a flat around ${betrag(r.empf)}, they are about ${betrag(knkRahmen)} in Brandenburg and about ${betrag(r.empf * 0.08)} in Berlin. Your contact will discuss with you how to build up the missing amount.`,
                 )
               : tx(
-                  `Bei Eigenkapital unter 10.000 € rechnen wir vorsichtig mit 0 €. Für eine Wohnung um ${betrag(r.empf)} liegen die Nebenkosten in Bayern bei rund ${betrag(knkRahmen)}, in anderen Bundesländern bis rund ${betrag(r.empf * 0.08)}. Schon ein Betrag in dieser Höhe würde reichen. Wie Sie ihn aufbauen, bespricht Ihr Berater mit Ihnen.`,
-                  `With equity under €10,000 we calculate cautiously with €0. For a flat around ${betrag(r.empf)}, the purchase costs are about ${betrag(knkRahmen)} in Bavaria and up to about ${betrag(r.empf * 0.08)} in other federal states. An amount of that size would already be enough. Your contact will discuss with you how to build it up.`,
+                  `Bei Eigenkapital unter 10.000 € rechnen wir vorsichtig mit 0 €. Für eine Wohnung um ${betrag(r.empf)} liegen die Nebenkosten in Brandenburg bei rund ${betrag(knkRahmen)}, in Berlin bei rund ${betrag(r.empf * 0.08)}. Schon ein Betrag in dieser Höhe würde reichen. Wie Sie ihn aufbauen, bespricht Ihr Berater mit Ihnen.`,
+                  `With equity under €10,000 we calculate cautiously with €0. For a flat around ${betrag(r.empf)}, the purchase costs are about ${betrag(knkRahmen)} in Brandenburg and about ${betrag(r.empf * 0.08)} in Berlin. An amount of that size would already be enough. Your contact will discuss with you how to build it up.`,
                 ),
         };
   const ausgangKasten: Block[] =
@@ -1409,8 +1410,8 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
       {
         typ: "lead",
         text: tx(
-          `Die Modellwohnung in Ihrem Rahmen: Bestand in Bayern, Baujahr 1965, ${w.flaeche} m², Kaufpreis ${betrag(kp)}, vermietet für ${betrag(w.kaltmiete)} kalt im Monat.`,
-          `The model flat within your budget: an existing building in Bavaria, built in 1965, ${w.flaeche} m², purchase price ${betrag(kp)}, let for ${betrag(w.kaltmiete)} net cold rent a month.`,
+          `Die Modellwohnung in Ihrem Rahmen: Bestand in Brandenburg, Baujahr 1965, ${w.flaeche} m², Kaufpreis ${betrag(kp)}, vermietet für ${betrag(w.kaltmiete)} kalt im Monat.`,
+          `The model flat within your budget: an existing building in Brandenburg, built in 1965, ${w.flaeche} m², purchase price ${betrag(kp)}, let for ${betrag(w.kaltmiete)} net cold rent a month.`,
         ),
       },
       {
@@ -1439,8 +1440,8 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
             rechtsAb: 1,
             zeilen: [
               { zellen: [tx("Kaufpreis, finanziert", "Purchase price, financed"), betrag(kp)] },
-              { zellen: [tx("Grunderwerbsteuer 3,5 %", "Transfer tax 3.5%"), betrag(kp * 0.035)] },
-              { zellen: [tx("Notar 1,0 % und Grundbuch 0,5 %", "Notary 1.0% and land register 0.5%"), betrag(kp * 0.015)] },
+              { zellen: [tx("Grunderwerbsteuer 6,5 %", "Transfer tax 6.5%"), betrag(kp * 0.065)] },
+              { zellen: [tx("Notar 1,5 % und Grundbuch 0,5 %", "Notary 1.5% and land register 0.5%"), betrag(kp * 0.02)] },
               { zellen: [tx("Finanzierungsnebenkosten 0,2 %", "Financing costs 0.2%"), betrag(e.finanzierungsnebenkosten)] },
               { zellen: [tx("aus Eigenkapital", "from equity"), betrag(e.purchaseCosts + e.finanzierungsnebenkosten)], summe: true },
             ],
@@ -1553,31 +1554,24 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
 
   // Kapitel 10
   const laender: Array<[string, string, number]> = [
-    ["Bayern", "Bavaria", 3.5],
-    ["Baden-Württemberg", "Baden-Württemberg", 5.0],
-    ["Rheinland-Pfalz", "Rhineland-Palatinate", 5.0],
-    ["Sachsen-Anhalt", "Saxony-Anhalt", 5.0],
-    ["Sachsen", "Saxony", 5.5],
     ["Berlin", "Berlin", 6.0],
-    ["Mecklenburg-Vorpommern", "Mecklenburg-Western Pomerania", 6.0],
     ["Brandenburg", "Brandenburg", 6.5],
-    ["Nordrhein-Westfalen", "North Rhine-Westphalia", 6.5],
   ];
   const ekText = antwort("eigenkapital", A.eigenkapital);
   const ekCheck =
-    r.eigenkapital >= r.empf * 0.08
+    r.eigenkapital >= r.empf * 0.085
       ? tx(
           `Ihr Eigenkapital (${ekText}, gerechnet mit ${betrag(r.eigenkapital)}) deckt die Nebenkosten einer Wohnung für ${betrag(r.empf)} in allen Bundesländern der Tabelle.`,
           `Your equity (${ekText}, calculated as ${betrag(r.eigenkapital)}) covers the purchase costs of a flat for ${betrag(r.empf)} in all the federal states in the table.`,
         )
-      : r.eigenkapital >= r.empf * 0.05
+      : r.eigenkapital >= r.empf * 0.08
         ? tx(
-            `Ihr Eigenkapital (${ekText}, gerechnet mit ${betrag(r.eigenkapital)}) deckt die Nebenkosten einer Wohnung für ${betrag(r.empf)} in Bayern, aber nicht in jedem Bundesland.`,
-            `Your equity (${ekText}, calculated as ${betrag(r.eigenkapital)}) covers the purchase costs of a flat for ${betrag(r.empf)} in Bavaria, but not in every federal state.`,
+            `Ihr Eigenkapital (${ekText}, gerechnet mit ${betrag(r.eigenkapital)}) deckt die Nebenkosten einer Wohnung für ${betrag(r.empf)} in Berlin, in Brandenburg noch nicht ganz.`,
+            `Your equity (${ekText}, calculated as ${betrag(r.eigenkapital)}) covers the purchase costs of a flat for ${betrag(r.empf)} in Berlin, but not quite in Brandenburg.`,
           )
         : tx(
-            `Mit Eigenkapital ${ekText} rechnen wir vorsichtig mit ${betrag(r.eigenkapital)}. Für die Nebenkosten einer Wohnung um ${betrag(r.empf)} brauchen Sie je nach Land ${betrag(r.empf * 0.05)} bis ${betrag(r.empf * 0.08)}.`,
-            `With equity of ${ekText} we calculate cautiously with ${betrag(r.eigenkapital)}. For the purchase costs of a flat around ${betrag(r.empf)} you need ${betrag(r.empf * 0.05)} to ${betrag(r.empf * 0.08)}, depending on the state.`,
+            `Mit Eigenkapital ${ekText} rechnen wir vorsichtig mit ${betrag(r.eigenkapital)}. Für die Nebenkosten einer Wohnung um ${betrag(r.empf)} brauchen Sie je nach Land ${betrag(r.empf * 0.08)} bis ${betrag(r.empf * 0.085)}.`,
+            `With equity of ${ekText} we calculate cautiously with ${betrag(r.eigenkapital)}. For the purchase costs of a flat around ${betrag(r.empf)} you need ${betrag(r.empf * 0.08)} to ${betrag(r.empf * 0.085)}, depending on the state.`,
           );
   seiten.push({
     id: "kapitel-10",
@@ -1599,8 +1593,8 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
           {
             typ: "absatz",
             text: tx(
-              `In Bayern rund 5,0 % des Kaufpreises, für die Modellwohnung aus Kapitel 7 also ${betrag(kp * 0.05)}: 3,5 % Grunderwerbsteuer, rund 1,0 % Notar und 0,5 % Grundbuch.`,
-              `In Bavaria about 5.0% of the purchase price, so ${betrag(kp * 0.05)} for the model flat from chapter 7: 3.5% real estate transfer tax, about 1.0% notary and 0.5% land register.`,
+              `In Brandenburg rund 8,5 % des Kaufpreises, für die Modellwohnung aus Kapitel 7 also ${betrag(kp * 0.085)}: 6,5 % Grunderwerbsteuer, rund 1,5 % Notar und 0,5 % Grundbuch. In Berlin sind es mit 6,0 % Grunderwerbsteuer rund 8,0 %.`,
+              `In Brandenburg about 8.5% of the purchase price, so ${betrag(kp * 0.085)} for the model flat from chapter 7: 6.5% real estate transfer tax, about 1.5% notary and 0.5% land register. In Berlin, with 6.0% transfer tax, it is about 8.0%.`,
             ),
           },
           {
@@ -1622,13 +1616,13 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
           tx(`bei ${betrag(r.empf)}`, `at ${betrag(r.empf)}`),
         ],
         rechtsAb: 1,
-        zeilen: laender.map(([de, en, g]) => ({ zellen: [tx(de, en), prozent(g), prozent(g + 1.5), betrag((r.empf * (g + 1.5)) / 100)] })),
+        zeilen: laender.map(([de, en, g]) => ({ zellen: [tx(de, en), prozent(g), prozent(g + 2), betrag((r.empf * (g + 2)) / 100)] })),
       },
       {
         typ: "fussnote",
         text: tx(
-          "Länder, in denen unser Angebot derzeit Wohnungen enthält. Notar und Grundbuch mit 1,5 % angesetzt, wie in unserem Investmentrechner; der tatsächliche Betrag richtet sich nach der Gebührenordnung.",
-          "States in which our current offer includes flats. Notary and land register estimated at 1.5%, as in our investment calculator; the actual amount follows the official fee schedule.",
+          "Länder, in denen unser Angebot derzeit Wohnungen enthält. Notar mit 1,5 % und Grundbuch mit 0,5 % angesetzt, wie in unserem Investmentrechner; der tatsächliche Betrag richtet sich nach der Gebührenordnung.",
+          "States in which our current offer includes flats. Notary estimated at 1.5% and land register at 0.5%, as in our investment calculator; the actual amount follows the official fee schedule.",
         ),
       },
       { typ: "kasten", ton: "dich", titel: tx("Das heißt für Sie", "What this means for you"), text: ekCheck },

@@ -9,13 +9,18 @@ import { EingabeObjekt } from "./Eingabebereiche";
 import { ExposeDokument } from "./ExposeDokument";
 import { Analyse } from "./Analyse";
 
+// Die erwarteten Werte stammen aus der Zeit vor 10/2026, als der Rechner mit
+// 3,5 % Grunderwerbsteuer und 1,0 % Notar startete. Sie prüfen die Mechanik,
+// nicht die Standardsätze, deshalb stehen die alten Sätze hier fest.
+const basisEingabe: InvestmentEingabe = { ...standardEingabe, transferTaxRate: 3.5, notaryRate: 1 };
+
 /*
  * All-inclusive-Modell in Eingabe, Analyse und Berechnung, seit dem 09.10.2026.
  * 200.000 € Kaufpreis mit 5 Prozent Kaufnebenkosten ergeben 210.000 € all-inclusive.
  */
 
 const NORMAL: InvestmentEingabe = {
-  ...standardEingabe,
+  ...basisEingabe,
   clientName: "Musterkunde",
   taxableIncomeCustomer: 70000,
   purchasePrice: 200000,

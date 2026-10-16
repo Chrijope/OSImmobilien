@@ -81,7 +81,7 @@ describe("Kaufnebenkosten je Bundesland", () => {
       const zentral = BUNDESLAENDER.find((land) => land.name === eintrag.label);
       expect(zentral).toBeDefined();
       expect(eintrag.grEstP).toBe(zentral?.grunderwerbsteuer);
-      expect(eintrag.pct).toBeCloseTo((zentral?.grunderwerbsteuer ?? 0) + 1.5, 5);
+      expect(eintrag.pct).toBeCloseTo((zentral?.grunderwerbsteuer ?? 0) + 2, 5);
     }
   });
 
@@ -102,10 +102,10 @@ describe("Kaufnebenkosten je Bundesland", () => {
 
   it("nimmt den gespeicherten Satz vor der Postleitzahl", () => {
     expect(kaufnebenkostenPct({ plz: "80331", metaPct: 7.2 })).toBe(7.2);
-    // Bayern: 3,5 plus 1,5
-    expect(kaufnebenkostenPct({ plz: "80331" })).toBeCloseTo(5.0, 5);
-    // Thüringen nach der Senkung: 5,0 plus 1,5
-    expect(kaufnebenkostenPct({ plz: "07545" })).toBeCloseTo(6.5, 5);
+    // Bayern: 3,5 plus 2,0
+    expect(kaufnebenkostenPct({ plz: "80331" })).toBeCloseTo(5.5, 5);
+    // Thüringen nach der Senkung: 5,0 plus 2,0
+    expect(kaufnebenkostenPct({ plz: "07545" })).toBeCloseTo(7.0, 5);
     expect(kaufnebenkostenPct({})).toBe(0);
   });
 });

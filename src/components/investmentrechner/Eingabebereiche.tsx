@@ -243,9 +243,9 @@ export interface EingabeObjektProps extends EingabeProps {
 /** Erklärungen zu den drei Sätzen, in beiden Wegen dieselben. */
 const KNK_ERKLAERUNG: Record<string, string> = {
   transferTaxRate:
-    "Der Satz richtet sich nach dem Bundesland des Objekts und liegt je nach Land zwischen 3,5 und 6,5 Prozent. Er wird auf den Kaufpreis der Immobilie gerechnet, also auf den Gesamtkaufpreis ohne Erhaltungsaufwand und ohne Möbel. Er erhöht die Gesamtkosten und fließt anteilig in die Abschreibung des Gebäudes.",
+    "Der Satz richtet sich nach dem Bundesland des Objekts: Berlin 6,0 Prozent, Brandenburg 6,5 Prozent. Er wird auf den Kaufpreis der Immobilie gerechnet, also auf den Gesamtkaufpreis ohne Erhaltungsaufwand und ohne Möbel. Er erhöht die Gesamtkosten und fließt anteilig in die Abschreibung des Gebäudes.",
   notaryRate:
-    "Notarkosten für Beurkundung und Abwicklung. Der Rechner setzt als Richtwert 1,0 Prozent des Gesamtkaufpreises ohne Erhaltungsaufwand und Möbel an, die genaue Rechnung kommt erst nach dem Notartermin.",
+    "Notarkosten für Beurkundung und Abwicklung. Der Rechner setzt als Richtwert 1,5 Prozent des Gesamtkaufpreises ohne Erhaltungsaufwand und Möbel an, weil bei voller Finanzierung die Grundschuld dazukommt. Die genaue Rechnung kommt erst nach dem Notartermin.",
   landRegisterRate:
     "Gebühren des Grundbuchamts für Eigentumsumschreibung und Eintragung der Grundschuld. Der Rechner setzt als Richtwert 0,5 Prozent des Gesamtkaufpreises ohne Erhaltungsaufwand und Möbel an.",
 };
@@ -417,7 +417,7 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
             label="Bundesland des Objekts"
             value={knk.bundesland}
             onChange={(wert) => setzeKnk({ ...knk, bundesland: wert })}
-            tooltip="Die Grunderwerbsteuer ist Ländersache und liegt zwischen 3,5 und 6,5 Prozent. Aus der Auswahl werden Grunderwerbsteuer, Notar mit 1,0 Prozent und Grundbuch mit 0,5 Prozent gesetzt. Passt ein Satz im Einzelfall nicht, hilft der Weg mit eigener Eingabe."
+            tooltip="Die Grunderwerbsteuer ist Ländersache, in Berlin 6,0 und in Brandenburg 6,5 Prozent. Aus der Auswahl werden Grunderwerbsteuer, Notar mit 1,5 Prozent und Grundbuch mit 0,5 Prozent gesetzt. Passt ein Satz im Einzelfall nicht, hilft der Weg mit eigener Eingabe."
           >
             <option value="">Bitte Bundesland wählen</option>
             {BUNDESLAND_AUSWAHL.map((land) => (

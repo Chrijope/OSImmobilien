@@ -203,26 +203,26 @@ describe("Kandidaten", () => {
     const bayern = objekt("by", [we("w1", { vkGesamt: 280000 })]);
     const sachsen = objekt("sn", [we("w2", { vkGesamt: 280000 })], { plz: "04109", ort: "Leipzig" });
     const [a, b] = empfehlungsKandidaten([bayern, sachsen], optionen({ mitNebenkosten: true }));
-    expect(a.nebenkostenProzent).toBe(5);
-    expect(a.gesamtkosten).toBeCloseTo(294000, 2);
+    expect(a.nebenkostenProzent).toBe(5.5);
+    expect(a.gesamtkosten).toBeCloseTo(295400, 2);
     expect(a.passt).toBe(true);
-    // Dieselbe Wohnung in Sachsen: 7 Prozent, 299.600, passt gerade noch.
-    expect(b.nebenkostenProzent).toBe(7);
-    expect(b.gesamtkosten).toBeCloseTo(299600, 2);
-    expect(b.passt).toBe(true);
+    // Dieselbe Wohnung in Sachsen: 7,5 Prozent, 301.000, passt nicht mehr.
+    expect(b.nebenkostenProzent).toBe(7.5);
+    expect(b.gesamtkosten).toBeCloseTo(301000, 2);
+    expect(b.passt).toBe(false);
   });
 
   it("ein Kaufpreis im Rahmen passt nicht, wenn die Nebenkosten ihn hinausschieben", () => {
     const o = objekt("a", [we("w1", { vkGesamt: 290000 })]);
     const [k] = empfehlungsKandidaten([o], optionen({ mitNebenkosten: true }));
-    expect(k.gesamtkosten).toBeCloseTo(304500, 2);
+    expect(k.gesamtkosten).toBeCloseTo(305950, 2);
     expect(k.passt).toBe(false);
   });
 
   it("der Stellplatz zählt mit", () => {
     const o = objekt("a", [we("w1", { vkGesamt: 275000, stellplatzPreis: 15000 })]);
     const [k] = empfehlungsKandidaten([o], optionen({ mitNebenkosten: true }));
-    expect(k.gesamtkosten).toBeCloseTo(304500, 2);
+    expect(k.gesamtkosten).toBeCloseTo(305950, 2);
     expect(k.passt).toBe(false);
   });
 
@@ -240,7 +240,7 @@ describe("Kandidaten", () => {
     const k = empfehlungsKandidaten([g], optionen({ mitNebenkosten: true }));
     expect(k).toHaveLength(1);
     expect(k[0]).toMatchObject({ schluessel: "g", global: true, wohnungId: null, kaufpreis: 270000 });
-    expect(k[0].gesamtkosten).toBeCloseTo(283500, 2);
+    expect(k[0].gesamtkosten).toBeCloseTo(284850, 2);
     expect(k[0].passt).toBe(true);
   });
 

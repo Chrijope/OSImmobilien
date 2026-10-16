@@ -349,7 +349,7 @@ export function EinheitFinanzen({ objekt, wohnung: w, heute = new Date(), kunden
   const nebenkostenKarte = (
     <div className={KARTE} data-testid="karte-nebenkosten">
       <KartenTitel zusatz={nk.quelle === "manuell" ? t.satzGepflegt : undefined}>{t.nebenkostenTitel}</KartenTitel>
-      <Zeile label={t.grunderwerbsteuer(nk.bundeslandName ?? (nk.quelle === "mittelwert" ? t.bundeslandUnbekannt : t.bundesland), prozent(nk.grunderwerbsteuerProzent, 1))} wert={eur0(nk.grunderwerbsteuer)} testId="nk-grest" />
+      <Zeile label={t.grunderwerbsteuer(nk.bundeslandName ?? (nk.quelle === "rueckfall" ? t.bundeslandUnbekannt : t.bundesland), prozent(nk.grunderwerbsteuerProzent, 1))} wert={eur0(nk.grunderwerbsteuer)} testId="nk-grest" />
       <Zeile label={t.notar} wert={eur0(nk.gebuehren.zeileNotarKaufvertrag)} testId="nk-notar" info={t.notarInfo} />
       <Zeile label={t.grundschuld} wert={eur0(nk.gebuehren.zeileGrundschuld)} testId="nk-grundschuld" info={t.grundschuldInfo(eur0(nk.gebuehren.grundschuldbetrag))} />
       <Zeile label={t.grundbuch} wert={eur0(nk.gebuehren.zeileGrundbuch)} testId="nk-grundbuch" info={t.grundbuchInfo} />
