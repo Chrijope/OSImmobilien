@@ -120,8 +120,8 @@ export default function VorschauPipeline() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stand]);
 
-  const belegt = SPALTEN.filter((s) => daten.karten.some((k) => spaltenStufe(k.stufe) === s.key)
-    || ["neuer_lead", "reservierung", "finanzierung", "bankgutachter", "besichtigung", "notar"].includes(s.key));
+  // Spalte, ueber der gerade eine Karte gezogen wird (nur zur Hervorhebung).
+  const [ziel, setZiel] = useState<string | null>(null);
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8 space-y-6" data-lg="seite">
@@ -129,10 +129,10 @@ export default function VorschauPipeline() {
         <h1 className="text-2xl font-bold">Vorschau: Pipeline am Investment</h1>
         <p className="text-sm text-muted-foreground max-w-3xl">
           Beispielkunden, nur in diesem Browserfenster, nichts wird gespeichert. Jede Karte ist ein Investment.
-          Über die Auswahl auf einer Karte lässt sich ihre Stufe ändern: Die anderen Investments desselben
+          Eine Karte in eine andere Spalte ziehen, um ihre Stufe zu ändern: Die anderen Investments desselben
           Kunden bleiben, wo sie sind, und Lead-Verwaltung, „Alle Kontakte“ und die Zahlen rechnen sofort neu.
           Ablauf nach der Reservierung: Finanzierung, Termin Bankgutachter, Besichtigung, Notar. Wer eine Karte
-          auf „Termin Bankgutachter“ oder „Besichtigung“ setzt, trägt im Fenster den Termin ein; „Stattgefunden“
+          auf „Termin Bankgutachter“ oder „Besichtigung“ zieht, trägt im Fenster den Termin ein; „Stattgefunden“
           rückt die Stufe weiter (Bankgutachter auf Besichtigung, Besichtigung auf Notar). Bei Gustav steht schon
           ein Notartermin, das Besichtigungs-Fenster schlägt deshalb Notartag und Vortag vor. Die alte Stufe
           Bonitätsunterlagen hat keine eigene Spalte mehr und steht unter „Reservierung“.
@@ -142,10 +142,23 @@ export default function VorschauPipeline() {
       <section>
         <h2 className="font-semibold mb-2">Pipeline</h2>
         <div className="flex gap-3 overflow-x-auto pb-2">
-          {belegt.map((spalte) => {
+          {SPALTEN.map((spalte) => {
             const karten = daten.karten.filter((k) => spaltenStufe(k.stufe) === spalte.key);
             return (
-              <div key={spalte.key} className="min-w-[220px] w-[220px] shrink-0 rounded-lg bg-muted/40 p-2">
+              <div
+                key={spalte.key}
+                data-testid={`spalte-${spalte.key}`}
+                className={`min-w-[220px] w-[220px] shrink-0 rounded-lg p-2 ${ziel === spalte.key ? "bg-primary/10 ring-2 ring-primary" : "bg-muted/40"}`}
+                onDragOver={(e) => { e.preventDefault(); setZiel(spalte.key); }}
+                onDragLeave={() => setZiel(null)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setZiel(null);
+                  const [investmentId, kundeName] = e.dataTransfer.getData("text/plain").split("|");
+                  const inv = getInvestments().find((i) => i.id === investmentId);
+                  if (inv && spaltenStufe(inv.pipelineStufe) !== spalte.key) waehleStufe(investmentId, spalte.key, kundeName);
+                }}
+              >
                 <div className="text-xs font-semibold uppercase tracking-wide mb-2">
                   {spalte.label} <span className="text-muted-foreground">({karten.length})</span>
                 </div>
@@ -153,21 +166,17 @@ export default function VorschauPipeline() {
                   {karten.map((k) => {
                     const inv = getInvestments().find((i) => i.id === k.investmentId);
                     return (
-                      <Card key={k.entryKey} className="p-2 text-sm">
+                      <Card
+                        key={k.entryKey}
+                        data-testid={inv ? `karte-${inv.id}` : undefined}
+                        className={`p-2 text-sm ${inv ? "cursor-grab" : ""}`}
+                        draggable={!!inv}
+                        onDragStart={(e) => inv && e.dataTransfer.setData("text/plain", `${inv.id}|${k.kunde.vorname} ${k.kunde.nachname}`)}
+                      >
                         <div className="font-medium">{k.kunde.vorname} {k.kunde.nachname}</div>
                         {inv && <Badge variant="secondary" className="text-[10px] mt-1">Investment {inv.nummer}</Badge>}
                         {istAusgeblendeteStufe(k.stufe) && (
                           <div className="text-[10px] mt-1 text-[hsl(var(--warning))]">Alte Stufe {label(k.stufe)}, weiter über die Finanzierung</div>
-                        )}
-                        {inv && (
-                          <select
-                            aria-label={`Stufe von Investment ${inv.nummer}`}
-                            className="mt-2 w-full rounded border bg-background text-xs p-1"
-                            value={spaltenStufe(inv.pipelineStufe)}
-                            onChange={(e) => waehleStufe(inv.id, e.target.value, `${k.kunde.vorname} ${k.kunde.nachname}`)}
-                          >
-                            {SPALTEN.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}
-                          </select>
                         )}
                       </Card>
                     );
@@ -183,7 +192,7 @@ export default function VorschauPipeline() {
         <CardHeader className="pb-2"><CardTitle className="text-base">Nächste Aktionen (eingetragene Termine)</CardTitle></CardHeader>
         <CardContent className="text-sm space-y-2">
           {termine.length === 0 && (
-            <p className="text-muted-foreground">Noch kein Termin. Eine Karte auf „Termin Bankgutachter“ oder „Besichtigung“ setzen.</p>
+            <p className="text-muted-foreground">Noch kein Termin. Eine Karte auf „Termin Bankgutachter“ oder „Besichtigung“ ziehen.</p>
           )}
           {termine.map((t, i) => (
             <div key={`${t.investmentId}-${i}`} className="flex flex-wrap items-center gap-2">

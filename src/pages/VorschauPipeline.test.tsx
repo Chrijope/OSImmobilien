@@ -16,12 +16,16 @@ describe("Vorschau Pipeline, neuer Ablauf", () => {
     expect(screen.getByText("Alte Stufe Bonitätsunterlagen, weiter über die Finanzierung")).toBeTruthy();
   });
 
-  it("öffnet beim Wechsel auf Besichtigung das Termin-Fenster, Abbrechen setzt nichts", () => {
+  it("öffnet beim Ziehen auf Besichtigung das Termin-Fenster, Abbrechen setzt nichts", () => {
     render(<VorschauPipeline />);
-    const auswahl = (screen.getAllByLabelText(/Stufe von Investment/) as HTMLSelectElement[])
-      .find((s) => s.value === "reservierung")!;
-    expect(auswahl).toBeTruthy();
-    fireEvent.change(auswahl, { target: { value: "besichtigung" } });
+    expect(screen.queryByLabelText(/Stufe von Investment/)).toBeNull();
+    // jsdom kennt kein DataTransfer, deshalb ein einfacher Ersatz.
+    const daten: Record<string, string> = {};
+    const dataTransfer = { setData: (t: string, v: string) => { daten[t] = v; }, getData: (t: string) => daten[t] ?? "" };
+    fireEvent.dragStart(screen.getByTestId("karte-vi-6"), { dataTransfer });
+    const spalte = screen.getByTestId("spalte-besichtigung");
+    fireEvent.dragOver(spalte, { dataTransfer });
+    fireEvent.drop(spalte, { dataTransfer });
     expect(screen.getByText("Besichtigung eintragen")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Abbrechen" }));
     expect(screen.queryByText("Besichtigung eintragen")).toBeNull();
