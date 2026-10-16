@@ -2,17 +2,17 @@
  * Das Schulungsmaterial und die Reservierungsvereinbarung müssen dasselbe
  * sagen.
  *
- * Bis zum 14.09.2026 erhob OS Immobilien keine Reservierungsgebühr, und die
- * Vertriebsakademie lehrte das an neunzehn Stellen: in Kapiteltexten, in zwei
- * wörtlichen Einwandskripten, in drei Prüfungsfragen und in einer
- * Entscheidungsübung. Mit der neuen Vereinbarung gilt das Gegenteil.
+ * Vom 14.09. bis zum 16.10.2026 kannte die Vereinbarung eine
+ * Reservierungsgebühr, und die Akademie lehrte an einigen Stellen die Gebühr,
+ * an anderen „keine Gebühr". Seit dem 16.10.2026 ist die Reservierung
+ * kostenfrei, und das Material sagt nur noch das.
  *
  * Das ist die gefährlichste Art von Widerspruch, die ein Haus haben kann: Ein
  * Partner lernt einen Satz auswendig, sagt ihn beim Kunden, und liest dem
  * dann ein Formular vor, in dem etwas anderes steht. Deshalb dieser Wächter.
  *
- * Er prüft nicht den Wortlaut, sondern nur, dass die alte Aussage nirgends
- * mehr steht und die neuen Eckdaten überall dieselben sind.
+ * Er prüft nicht den Wortlaut, sondern nur, dass die Gebührenaussagen
+ * nirgends mehr stehen und die geltende Aussage da ist.
  */
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -21,16 +21,19 @@ import { describe, expect, it } from "vitest";
 
 const inhalt = readFileSync(resolve(__dirname, "vertriebsakademieContent.ts"), "utf8");
 
-/** Sätze, die das Gegenteil der heutigen Regelung behaupten. */
+/** Sätze aus der Zeit mit Gebühr, die der heutigen Regelung widersprechen. */
 const ALTE_AUSSAGEN = [
-  "erheben keine Reservierungsgebühr",
-  "nehmen keine Reservierungsgebühr",
-  "zahlen Sie ja nichts",
-  "Reservierung kostet dich nichts",
-  "Bei uns kostet sie nichts",
+  "erheben wir eine Reservierungsgebühr",
+  "fällt eine Reservierungsgebühr an",
+  "1.000 Euro Reservierungsgebühr",
+  "Reservierungsgebühr vollständig zurück",
+  "Unsere Gebühr",
+  "unserer Gebühr",
+  "Unsere Rückzahlungsregel",
+  "zahlbar innerhalb von sieben Tagen",
 ];
 
-describe("Die Akademie lehrt die geltende Regelung", () => {
+describe("Die Akademie lehrt die geltende Regelung: die Reservierung ist kostenfrei", () => {
   for (const satz of ALTE_AUSSAGEN) {
     it(`sagt nicht mehr „${satz}"`, () => {
       expect(
@@ -40,22 +43,13 @@ describe("Die Akademie lehrt die geltende Regelung", () => {
     });
   }
 
-  it("nennt beide Beträge der Staffel", () => {
-    expect(inhalt).toContain("1.000 Euro");
-    expect(inhalt).toContain("1.500 Euro");
+  it("nennt keinen Betrag für eine Reservierungsgebühr", () => {
+    expect(inhalt).not.toMatch(/Reservierungsgebühr[^"\n]{0,80}\d\.\d{3}(,\d{2})? (Euro|€|EUR)/);
+    expect(inhalt).not.toMatch(/\d\.\d{3}(,\d{2})? (Euro|€|EUR)[^"\n]{0,40}Reservierungsgebühr/);
   });
 
-  it("nennt die Grenze von 300.000 Euro", () => {
-    expect(inhalt).toMatch(/300\.000 Euro/);
-  });
-
-  it("spricht die Rückzahlung immer mit", () => {
-    /*
-     * Der Kern der Schulung: Die Zahl allein beschreibt etwas anderes als
-     * das, was in der Vereinbarung steht. Wer nur den Betrag nennt, lässt
-     * den Kunden mit einer Hürde zurück statt mit einer Formalie.
-     */
-    expect(inhalt).toContain("vollständig zurück");
+  it("sagt, dass die Reservierung kostenfrei ist", () => {
+    expect(inhalt).toContain("Die Reservierung ist kostenfrei");
   });
 });
 
@@ -70,7 +64,6 @@ describe("Das BGH-Urteil bleibt erklärt", () => {
   });
 
   it("erklärt, woran die Gebühr dort scheiterte", () => {
-    // Der Unterschied zur eigenen Regelung liegt genau in diesem Punkt.
     expect(inhalt).toContain("Rückzahlung ausnahmslos ausgeschlossen");
   });
 });

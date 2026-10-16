@@ -45,7 +45,6 @@ const AppleHeroSection = ({ berater, onOpenFunnel }: Props) => {
   }, [berater.bild]);
   const showPortrait = !!berater.bild && failedImage !== berater.bild;
   const bullets = t.punkte;
-  const stats = t.kennzahlen;
   const initial = (berater.name || "?").charAt(0).toUpperCase();
 
   return (
@@ -139,15 +138,12 @@ const AppleHeroSection = ({ berater, onOpenFunnel }: Props) => {
           </button>
         </div>
 
-        {/* Trust strip */}
-        <div className="mt-12 md:mt-14 flex flex-wrap justify-center gap-x-6 md:gap-x-8 gap-y-2 text-[13px] md:text-[14px]" style={{ color: "hsl(var(--muted-foreground))" }}>
-          {stats.map((s) => (
-            <span key={s} className="inline-flex items-center gap-1.5">
-              <Check className="w-3.5 h-3.5 text-[hsl(var(--primary))]" strokeWidth={3} />
-              {s}
-            </span>
-          ))}
-        </div>
+        {/*
+          Die Kennzahlenleiste (betreute Investoren, vermittelte Einheiten,
+          Bankpartner, Berater) ist seit dem 16.10.2026 ausgeblendet: Die Zahlen
+          stammen aus dem Ursprungsprojekt. Texte stehen weiter in
+          `mikroseiteTexte.ts` (hero.kennzahlen), bis echte Zahlen vorliegen.
+        */}
       </div>
 
       <div className="hero-media">

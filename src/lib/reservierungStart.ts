@@ -8,6 +8,8 @@
 import { getInvestmentById, getInvestmentMetaField } from "@/lib/investmentsStore";
 import { darfAufObjektauswahl } from "@/lib/objektauswahlWaechter";
 import { istEndzustand, stufeErreicht } from "@/lib/pipelineStufen";
+import { fehlendeMindestunterlagen } from "@/lib/mindestunterlagen";
+import { getSelbstauskunftEntfaellt } from "@/lib/selbstauskunftEntfaellt";
 
 /* ────────────────────────────────────────────────────────────────────────
  * Darf für dieses Investment eine Reservierung beginnen?
@@ -25,10 +27,33 @@ import { istEndzustand, stufeErreicht } from "@/lib/pipelineStufen";
 export function darfReservierungStarten(investmentId?: string | null): boolean {
   if (!investmentId) return false;
   try {
-    return darfAufObjektauswahl(investmentId);
+    return darfAufObjektauswahl(investmentId) && fehlendeUnterlagenFuerReservierung(investmentId).length === 0;
   } catch {
     return false;
   }
+}
+
+/**
+ * Welche Mindestunterlagen der Reservierung noch fehlen (seit 16.10.2026).
+ *
+ * Neuer Ablauf: Die Reservierung faellt im Termin der Objektvorstellung, und
+ * bis dahin liegen Personalausweis und letzte Gehaltsabrechnung im Portal
+ * (Umsetzungsstrategie Vertrieb, Abschnitt 6). Die Regel steht in
+ * `mindestunterlagen.ts`. Laesst sich das Investment nicht lesen, fehlt
+ * alles: lieber einmal zu frueh gesperrt als ohne Ausweis reserviert.
+ */
+export function fehlendeUnterlagenFuerReservierung(investmentId: string): string[] {
+  const lies = (key: string) => getInvestmentMetaField<unknown>(investmentId, key, undefined);
+  // Der Vermerk „Kunde finanziert selbst" ueber dieselbe Stelle wie der
+  // Objektauswahl-Waechter.
+  let selbstFinanziert = false;
+  try { selbstFinanziert = !!getSelbstauskunftEntfaellt(investmentId).aktiv; } catch { /* gilt als nicht gesetzt */ }
+  return fehlendeMindestunterlagen({
+    docStatuses: lies("docStatuses"),
+    saData: lies("saData"),
+    saSnapshot: lies("saSnapshot"),
+    selbstauskunftEntfaellt: { aktiv: selbstFinanziert },
+  });
 }
 
 /** Die Ampel eines Investments im Dialog „Kunde zuordnen“. */
@@ -36,6 +61,7 @@ export type InvestmentAmpel = "bereit" | "selbstauskunft_fehlt" | "hat_reservier
 
 export interface AmpelEingabe {
   stufe?: string | null;
+  /** Selbstauskunft erledigt und, seit 16.10.2026, Ausweis und Gehaltsabrechnung da. */
   saOk: boolean;
   rvSigned?: boolean;
   rvSignaturePending?: boolean;
@@ -57,8 +83,10 @@ export interface AmpelEingabe {
  */
 export function ampelAus(e: AmpelEingabe): InvestmentAmpel {
   if (istEndzustand(e.stufe) || e.stufe === "abgeschlossen") return "beendet";
-  // Hinter der Reservierung (Bonität, Finanzierung, Notar) gibt es kein Zurück.
-  if (stufeErreicht(e.stufe, "bonitaetsunterlagen")) return "hat_reservierung";
+  // Hinter der Reservierung (Besichtigung, Finanzierung, Notar) gibt es kein
+  // Zurück. Seit 16.10.2026 die Besichtigung: Die Bonitaetsunterlagen teilen
+  // den Rang der Reservierung und fallen unten unter "stufeErreicht reservierung".
+  if (stufeErreicht(e.stufe, "besichtigung")) return "hat_reservierung";
   if (!e.rvEntfallen && (e.rvSigned || e.rvSignaturePending || stufeErreicht(e.stufe, "reservierung"))) {
     return "hat_reservierung";
   }
@@ -68,7 +96,8 @@ export function ampelAus(e: AmpelEingabe): InvestmentAmpel {
 
 export const AMPEL_TEXT: Record<InvestmentAmpel, string> = {
   bereit: "bereit",
-  selbstauskunft_fehlt: "Selbstauskunft fehlt",
+  // Seit 16.10.2026 auch, wenn Ausweis oder Gehaltsabrechnung fehlen.
+  selbstauskunft_fehlt: "Selbstauskunft oder Unterlagen fehlen",
   hat_reservierung: "hat schon eine Reservierung",
   beendet: "Vorgang beendet",
 };
@@ -77,7 +106,8 @@ export const AMPEL_TEXT: Record<InvestmentAmpel, string> = {
 export const AMPEL_ERKLAERUNG: Record<InvestmentAmpel, string> = {
   bereit: "",
   selbstauskunft_fehlt:
-    "Reservieren geht erst mit unterschriebener Selbstauskunft oder mit dem Vermerk „Kunde finanziert selbst“ im Kundenprofil.",
+    "Reservieren geht erst mit unterschriebener Selbstauskunft oder mit dem Vermerk „Kunde finanziert selbst“ im Kundenprofil, " +
+    "und wenn Personalausweis und letzte Gehaltsabrechnung im Portal liegen.",
   hat_reservierung:
     "Für dieses Investment ist schon eine Reservierungsvereinbarung unterwegs oder unterschrieben. Einen weiteren Kauf legst du im Kundenprofil als neues Investment an.",
   beendet: "Dieser Vorgang ist abgeschlossen oder verloren.",

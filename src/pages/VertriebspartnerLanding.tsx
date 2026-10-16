@@ -1,31 +1,23 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { getStellen, type Stelle } from "@/lib/bewerbungStore";
 import { ChaosZuOrdnung, type ChaosPaar } from "@/components/landing/vp/ChaosZuOrdnung";
 import { PartnerBewerbungFormular } from "@/components/landing/PartnerBewerbungFormular";
 import { SpamHinweis } from "@/components/bewerbung/SpamHinweis";
 import { LIZENZ_PAKETE, OVERHEAD_AKTIV } from "@/lib/lizenzPakete";
 import logoImg from "@/assets/osimmobilien-logo.png";
-import test1Img from "@/assets/vp-testimonial-1.jpg";
-import test2Img from "@/assets/vp-testimonial-2.jpg";
-import test3Img from "@/assets/vp-testimonial-3.jpg";
-import test4Img from "@/assets/vp-testimonial-4.jpg";
-import test5Img from "@/assets/vp-testimonial-5.jpg";
-import danielImg from "@/assets/vp-testimonial-daniel.jpg";
 import {
   ArrowRight, CheckCircle, Users, Target, Sparkles,
   GraduationCap, Euro, Trophy, ShieldCheck, Rocket, Heart,
-  Clock, Star, X,
+  Clock, X,
   Building, Handshake, Layers, Network,
   Gift, Zap, Award, ChevronRight, ChevronDown,
 } from "lucide-react";
-import { useCountUp } from "@/hooks/use-count-up";
 import {
   nutztReduzierteBewegung, Reveal, LoopBuehne, ZeichnenBuehne, Worte,
   NetzwerkSchleife, HeroVideo, KurveGedeckelt, GehaltsTreppe, TippWanderung,
@@ -476,29 +468,6 @@ const KarriereTreppe = ({ scrollToForm }: { scrollToForm: () => void }) => {
   );
 };
 
-/* ─── G11 · 98-%-Ring mit sichtbarer Lücke (dunkle Beweis-Insel) ─── */
-const ZufriedenheitsRing = () => {
-  const { ref, display } = useCountUp({ end: 98, suffix: " %", duration: 1200 });
-  return (
-    <ZeichnenBuehne dekorativ={false} schwelle={0.4} className="flex flex-col items-center">
-      <div className="relative h-44 w-44">
-        <svg viewBox="0 0 120 120" className="h-full w-full -rotate-90" aria-hidden="true">
-          <circle cx="60" cy="60" r="52" fill="none" stroke="hsl(215 16% 28%)" strokeWidth="7" />
-          <circle
-            cx="60" cy="60" r="52" fill="none"
-            stroke="#30E19E" strokeWidth="7" strokeLinecap="round"
-            pathLength={100} className="vp-ring-bogen"
-          />
-        </svg>
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span ref={ref} className="text-3xl font-bold text-[#30E19E]">{display}</span>
-        </div>
-      </div>
-      <div className="mt-2 text-sm text-slate-400">Partnerzufriedenheit</div>
-    </ZeichnenBuehne>
-  );
-};
-
 /* ─── Abschnitt 4 · Der Schnitt: Lichtschalter von Nacht auf Hell ─── */
 const SchnittAbschnitt = ({ lesart }: { lesart: Lesart }) => {
   const kopfRef = useRef<HTMLDivElement>(null);
@@ -776,69 +745,6 @@ const VertriebspartnerLanding = () => {
     { step: "2", title: "Kontakt empfehlen", desc: "Teile Deinen persönlichen Link oder melde Kontakte direkt." },
     { step: "3", title: "Erfolgshonorar", desc: "Bei Abschluss erhältst Du Deine Vergütung. Transparent und pünktlich." },
   ];
-
-  // Abschnitt 7 · Testimonials, profilabhängig sortiert (keine neuen Stimmen)
-  const testimonials = useMemo(() => {
-    const alle = [
-      {
-        id: "daniel",
-        img: danielImg,
-        name: "Daniel B.",
-        rolle: "Vertriebspartner seit 2024",
-        vorher: "Vorher: Versicherungsmakler. Viele Produkte, wenig Substanz. Provisionen oft Wochen hinterhergerannt.",
-        jetzt: "Heute: Fokus auf Immobilien-Kapitalanlage. Geprüfte Objekte, Provision punktgenau nach Notar.",
-      },
-      {
-        id: "marco",
-        img: test1Img,
-        name: "Marco S.",
-        rolle: "Vertriebspartner seit 2025",
-        vorher: "Vorher: Quereinsteiger aus dem Außendienst. Null Plan vom Immobilienvertrieb, dafür Lust auf etwas Echtes.",
-        jetzt: "Heute: Erster Abschluss nach 4 Monaten, zweiter im selben Quartal. Academy + Mentor haben mich getragen.",
-      },
-      {
-        id: "julia",
-        img: test2Img,
-        name: "Julia W.",
-        rolle: "Vertriebspartnerin seit 2024",
-        vorher: "Vorher: Bankberaterin in der Filiale. Eingesperrt in Produktkataloge und Quartalsziele.",
-        jetzt: "Heute: Eigene Pipeline, geprüfte Objekte vom Bauträger, faires Provisionsmodell. Vertrieb mit gutem Gewissen.",
-      },
-      {
-        id: "stefan",
-        img: test3Img,
-        name: "Dr. Stefan K.",
-        rolle: "Senior Partner seit 2023",
-        vorher: "Vorher: 20 Jahre Bankenvertrieb, am Ende ausgebrannt und desillusioniert. Wollte alles hinwerfen.",
-        jetzt: "Heute: OS Immobilien ist mein Hauptstandbein. Qualität der Objekte und Kultur im Team haben mich zurückgeholt.",
-      },
-      {
-        id: "anna",
-        img: test4Img,
-        name: "Anna B.",
-        rolle: "Tippgeberin seit 2024",
-        vorher: "Vorher: Steuerfachangestellte mit großem Netzwerk, aber kein Weg, Empfehlungen sauber zu monetarisieren.",
-        jetzt: "Heute: Nebenberuflich aktiv, 2. Einkommen aufgebaut. Microseite, CRM, Abrechnung: alles digital, null Stress.",
-      },
-      {
-        id: "tobias",
-        img: test5Img,
-        name: "Tobias R.",
-        rolle: "Vertriebspartner seit 2025",
-        vorher: "Vorher: Selbstständiger Finanzberater. Allein unterwegs, ohne Team, ohne Backoffice, ohne Mentor.",
-        jetzt: "Heute: Persönlicher Mentor, festes Team, klare Prozesse. Ich hatte nie das Gefühl, allein dazustehen.",
-      },
-    ];
-    const zuerst =
-      lesart === "tg" ? ["anna"]
-      : lesart === "vpq" ? ["marco", "tobias"]
-      : lesart === "vpe" ? ["daniel", "julia", "stefan"]
-      : [];
-    return [
-      ...zuerst.map((id) => alle.find((t) => t.id === id)!),
-      ...alle.filter((t) => !zuerst.includes(t.id)),
-    ];
-  }, [lesart]);
 
   // Abschnitt 8 · Match-Check, eine Karte wird je Profil getauscht
   const matchKarten = [
@@ -1486,56 +1392,11 @@ const VertriebspartnerLanding = () => {
         </div>
       </section>
 
-      {/* Die dunkle Beweis-Insel: bewusstes Echo der Nachtstrecke mit G11 */}
-      <section className="vp-nacht py-14">
-        <div className="mx-auto flex max-w-4xl flex-col items-center gap-8 px-6 md:flex-row md:justify-center md:gap-16">
-          <ZufriedenheitsRing />
-          <div className="max-w-sm text-center md:text-left">
-            <p className="text-xl font-bold text-white">Die eine Zahl, an der wir uns messen lassen.</p>
-            <p className="mt-2 text-sm leading-relaxed text-slate-400">
-              98 % Partnerzufriedenheit. Die fehlenden 2 % zeigen wir bewusst mit: der Ring bleibt offen.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Stimmen unserer Partner, sortiert nach Deiner Auswahl */}
-      <section className="border-b border-border/40 bg-gradient-to-b from-background via-primary/5 to-background py-20">
-        <div className="mx-auto max-w-6xl px-6">
-          <Reveal className="mx-auto mb-12 max-w-2xl text-center">
-            <Badge variant="outline" className="mb-3">Stimmen unserer Partner</Badge>
-            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Was unsere Partner sagen</h2>
-          </Reveal>
-          <Reveal>
-            <Carousel key={`stimmen-${lesart}`} opts={{ align: "start", loop: true }} className="w-full">
-              <CarouselContent className="-ml-4">
-                {testimonials.map((t) => (
-                  <CarouselItem key={t.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
-                    <Card className="h-full border-border/40 bg-card/80 p-7 shadow-sm backdrop-blur-sm transition-all hover:shadow-lg">
-                      <Star className="mb-4 h-6 w-6 fill-primary/20 text-primary" />
-                      <blockquote className="min-h-[160px] space-y-2 text-sm leading-relaxed text-foreground">
-                        <p className="text-muted-foreground">{t.vorher}</p>
-                        <p className="font-medium">{t.jetzt}</p>
-                      </blockquote>
-                      <div className="mt-6 flex items-center gap-3">
-                        <img src={t.img} alt={t.name} loading="lazy" width={48} height={48} className="h-12 w-12 rounded-full object-cover ring-2 ring-primary/20" />
-                        <div>
-                          <div className="text-sm font-semibold">{t.name}</div>
-                          <div className="text-xs text-muted-foreground">{t.rolle}</div>
-                        </div>
-                      </div>
-                    </Card>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <div className="mt-8 flex items-center justify-center gap-2">
-                <CarouselPrevious className="static translate-y-0" />
-                <CarouselNext className="static translate-y-0" />
-              </div>
-            </Carousel>
-          </Reveal>
-        </div>
-      </section>
+      {/*
+        98-%-Ring und Partnerstimmen ausgeblendet (16.10.2026): Zahl und Stimmen
+        stammen aus dem Ursprungsprojekt. Wieder einsetzen, sobald echte Stimmen
+        mit Einverständnis vorliegen.
+      */}
 
       {/* ═══════ ABSCHNITT 8 · DER SPIEGEL: MATCH-CHECK UND FAQ ═══════ */}
       <section className="border-b border-border/40 py-20">

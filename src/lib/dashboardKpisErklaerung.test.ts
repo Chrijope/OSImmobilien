@@ -46,13 +46,15 @@ const STUFE_ZU_WORT: Record<string, string> = {
   erstgespraech_geplant: "Erstgespräch geplant",
   erstgespraech: "Erstgespräch",
   eg_noshow: "EG NoShow",
-  beratungsgespraech: "Beratungsgespräch",
-  bg_noshow: "BG NoShow",
-  selbstauskunft: "Selbstauskunft",
+  beratungsgespraech: "Beratungspräsentation",
+  bg_noshow: "BP NoShow",
+  selbstauskunft: "Selbstauskunft & Unterlagen",
   bonitaetsunterlagen: "Bonitätsunterlagen",
-  objektauswahl: "Objektauswahl",
+  objektauswahl: "Objektvorstellung",
   follow_up_objekt: "Follow-Up Objekt",
   reservierung: "Reservierung",
+  besichtigung: "Besichtigung",
+  bankgutachter: "Termin Bankgutachter",
   finanzierung: "Finanzierung",
 };
 
@@ -73,9 +75,10 @@ describe("Erklaerungen der Dashboard-Kacheln", () => {
     expect(text).toContain(`${gezaehlt.length === 16 ? "sechzehn" : String(gezaehlt.length)}`);
   });
 
-  it("sagt bei 'Offene Reservierungen', dass zwei Stufen zusammengezaehlt werden", () => {
+  it("sagt bei 'Offene Reservierungen', welche Stufen zusammengezaehlt werden", () => {
+    // Seit 16.10.2026 mit Besichtigung und Termin Bankgutachter.
     const gezaehlt = mengeAusQuelle(kpi, "OFFENE_RESERVIERUNG");
-    expect(gezaehlt.sort()).toEqual(["finanzierung", "reservierung"]);
+    expect(gezaehlt.sort()).toEqual(["bankgutachter", "besichtigung", "finanzierung", "reservierung"]);
 
     const block = kopf.slice(kopf.indexOf('label: "Offene Reservierungen"'));
     const text = block.slice(0, block.indexOf("},"));

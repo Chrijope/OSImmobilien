@@ -89,9 +89,10 @@ export default function SignaturSeite() {
    *
    * Seit dem 22.09.2026 kann die interne Vorbereitung eine Reservierung ohne
    * Reservierungsgebühr anlegen. Dann entfällt die Widerrufsthematik, und
-   * damit auch die Wahl zum Beginn auf dieser Seite. Ein fehlendes
-   * `gebuehrEntfaellt`, wie es jede ältere Reservierung hat, heißt „mit
-   * Gebühr" und ändert nichts.
+   * damit auch die Wahl zum Beginn auf dieser Seite. Seit dem 16.10.2026 ist
+   * jede neue Reservierung kostenfrei. Ein fehlendes `gebuehrEntfaellt`, wie
+   * es jede ältere Reservierung hat, heißt weiterhin „mit Gebühr", damit ein
+   * alter Vorgang genau das Dokument zeigt, das damals hinausging.
    */
   /*
    * Seit dem 23.09.2026 auch beim ganzen Haus (Globalobjekt): Kauft dort eine

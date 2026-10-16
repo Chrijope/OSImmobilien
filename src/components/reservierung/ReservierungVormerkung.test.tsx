@@ -118,7 +118,6 @@ function bisZumAbsenden(props: Record<string, unknown> = {}) {
   fireEvent.click(screen.getByRole("button", { name: "Weiter" }));
   fireEvent.click(screen.getByRole("button", { name: "Weiter" }));
   fireEvent.click(document.getElementById("erk")!);
-  fireEvent.click(document.getElementById("widerruf-sofort")!);
 }
 
 const absendeKnopf = () => screen.getByRole("button", { name: /Unterschrift anfordern|Versand erneut versuchen|Unterschrift angefordert/ });
@@ -131,6 +130,8 @@ beforeEach(() => {
   for (const k of Object.keys(metaFelder)) delete metaFelder[k];
   // Seit 29.09.2026 prueft das Formular vorab die Selbstauskunft, wie der Server.
   metaFelder.saSigned = true;
+  // Seit 16.10.2026 auch Ausweis und letzte Gehaltsabrechnung (mindestunterlagen.ts).
+  metaFelder.docStatuses = { Personalausweis: "uploaded", "Letzter Gehaltsnachweis": "uploaded" };
   for (const k of Object.keys(t.entwuerfe)) delete t.entwuerfe[k];
   investment.pipelineStufe = "objektauswahl";
   // Das Absenden schreibt Objekt und Wohnung ans Investment; jeder Test beginnt ohne.
@@ -160,6 +161,16 @@ describe("Erst vormerken, dann Investment, Kontakt und Versand", () => {
     await waitFor(() => expect(toasts.some((x) => x.title === "Unterschrift angefordert ✓")).toBe(true));
     const erfolg = toasts.find((x) => x.title === "Unterschrift angefordert ✓");
     expect(erfolg?.description).toContain("vorgemerkt");
+  });
+
+  it("merkt ohne Ausweis und Gehaltsabrechnung nichts vor und nennt, was fehlt (16.10.2026)", async () => {
+    delete metaFelder.docStatuses;
+    bisZumAbsenden();
+    fireEvent.click(absendeKnopf());
+    await waitFor(() => expect(hinweise).toHaveLength(1));
+    expect(hinweise[0].title).toBe("Die Reservierung geht noch nicht");
+    expect(String(hinweise[0].description)).toContain("Personalausweis, letzte Gehaltsabrechnung");
+    expect(ablauf).toEqual([]);
   });
 
   it("schickt bei einer vergebenen Einheit nichts hinaus und ändert nichts", async () => {

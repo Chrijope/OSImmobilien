@@ -673,7 +673,7 @@ export function brandedRow(
   /**
    * Auch die Beschriftung fett und in der Textfarbe des Werts setzen, statt
    * grau und normal. Für die eine Zeile eines Abschnitts, die der Leser
-   * mitnehmen soll, etwa die Reservierungsgebühr für genau diesen Kaufpreis.
+   * mitnehmen soll, etwa einen Betrag, der genau für diesen Fall gilt.
    */
   labelFett = false,
 ): number {

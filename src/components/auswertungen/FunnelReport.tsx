@@ -33,6 +33,8 @@ const FUNNEL_STUFEN: PipelineStufe[] = [
   "objektauswahl",
   "reservierung",
   "bonitaetsunterlagen",
+  "besichtigung",
+  "bankgutachter",
   "finanzierung",
   "notar",
   "faelligkeit",

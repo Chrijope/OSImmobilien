@@ -22,17 +22,17 @@ beforeAll(() => {
 describe("Prozesslinie im Ausschnitt", () => {
   it("Partner: endet an Fälligkeit, Ziel ist der Haken im Kreis", () => {
     const { container } = render(<ProzessstrasseAusschnitt stufe="reservierung" rolle="vertriebspartner" />);
-    expect(screen.getByText("Station 10 von 14")).toBeTruthy();
+    expect(screen.getByText("Station 10 von 15")).toBeTruthy();
     expect(screen.queryByText("Abrechnung")).toBeNull();
     expect(screen.queryByText("Abgeschlossen")).toBeNull();
-    expect(screen.getByText("Ziel: Fälligkeit")).toBeTruthy();
+    expect(screen.getByText("Ziel: Kaufpreisfälligkeit")).toBeTruthy();
     expect(container.querySelector(".lucide-circle-check")).toBeTruthy();
     expect(container.querySelector(".lucide-key-round")).toBeNull();
   });
 
   it("Admin: Ziel Abgeschlossen mit Schlüssel", () => {
     const { container } = render(<ProzessstrasseAusschnitt stufe="reservierung" rolle="admin" />);
-    expect(screen.getByText("Station 10 von 16")).toBeTruthy();
+    expect(screen.getByText("Station 10 von 17")).toBeTruthy();
     expect(screen.getByText("Ziel: Abgeschlossen")).toBeTruthy();
     expect(container.querySelector(".lucide-key-round")).toBeTruthy();
   });
@@ -45,15 +45,15 @@ describe("Prozesslinie im Ausschnitt", () => {
 
   it("zeigt fünf Stationen um die aktuelle", () => {
     render(<ProzessstrasseAusschnitt stufe="reservierung" rolle="admin" />);
-    expect(screen.getByText("Zeigt Station 8 bis 12 von 16")).toBeTruthy();
+    expect(screen.getByText("Zeigt Station 8 bis 12 von 17")).toBeTruthy();
   });
 
   it("Klick auf eine Station meldet sie dem Kundenprofil", async () => {
     const onStation = vi.fn();
     render(<ProzessstrasseAusschnitt stufe="reservierung" rolle="admin" onStation={onStation} />);
-    fireEvent.click(await screen.findByRole("button", { name: "Bonitätsunterlagen, noch offen" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Besichtigung, noch offen" }));
     expect(onStation).toHaveBeenCalledTimes(1);
-    expect(onStation.mock.calls[0][0].key).toBe("bonitaetsunterlagen");
+    expect(onStation.mock.calls[0][0].key).toBe("besichtigung");
   });
 
   it("GS-Kennzeichnung an Notar ab der Stufe Notar", async () => {
@@ -71,7 +71,10 @@ describe("Ebenen je Etappe", () => {
     // Kleinere y-Werte liegen weiter oben.
     expect(y.erstgespraech_geplant).toBeLessThan(y.follow_up);
     expect(y.objektauswahl).toBeLessThan(y.selbstauskunft);
-    expect(y.bonitaetsunterlagen).toBeLessThan(y.reservierung);
+    // Seit 16.10.2026: Besichtigung zum Objekt, Bankgutachter zur Finanzierung.
+    expect(y.besichtigung).toBe(y.reservierung);
+    expect(y.bankgutachter).toBeLessThan(y.reservierung);
+    expect(y.bankgutachter).toBe(y.finanzierung);
     expect(y.notar).toBeLessThan(y.finanzierung);
   });
 });

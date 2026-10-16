@@ -3,7 +3,8 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 
 /**
- * IBAN und Familienstand kommen aus der Selbstauskunft des Investments.
+ * Der Familienstand kommt aus der Selbstauskunft des Investments. Eine IBAN
+ * fragt das Formular seit dem 16.10.2026 nicht mehr ab.
  *
  * Beides stand schon im Formular, lief aber bis zum 29.09.2026 ins Leere:
  * `getInvestmentsByKontakt` lieferte das Investment ohne `meta`, und die
@@ -94,21 +95,14 @@ describe("Selbstauskunft im Reservierungsformular, Investment in echter Form", (
     expect((inv.meta?.saData as Record<string, unknown>)?.familienstand).toBe("verheiratet");
   });
 
-  it("übernimmt die IBAN beider Käufer aus der Selbstauskunft", () => {
+  it("fragt keine IBAN ab, auch wenn die Selbstauskunft eine nennt (seit 16.10.2026 kostenfrei)", () => {
     zeilen.investments = [zeile({
       bankkonten: [{ iban: "DE02120300000000202051" }],
       person2Data: { bankkonten: [{ iban: "DE02500105170137075030" }] },
     })];
     zeigeFormular();
-    const werte = ibanFelder().map((f) => f.value.replace(/\s/g, ""));
-    expect(werte).toContain("DE02120300000000202051");
-    expect(werte).toContain("DE02500105170137075030");
-  });
-
-  it("lässt die IBAN leer, wenn die Selbstauskunft keine nennt", () => {
-    zeilen.investments = [zeile({ bankkonten: [] })];
-    zeigeFormular();
-    expect(ibanFelder().every((f) => f.value === "")).toBe(true);
+    expect(ibanFelder()).toHaveLength(0);
+    expect(screen.queryByText(/IBAN/)).toBeNull();
   });
 
   it("fragt den Güterstand, wenn die Selbstauskunft beide als verheiratet führt", () => {

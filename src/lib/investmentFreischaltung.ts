@@ -147,6 +147,8 @@ export function reservierungFreigeschaltet(e: {
 export const FREIGESCHALTET_AB_RESERVIERUNG: readonly string[] = [
   "reservierung",
   "bonitaetsunterlagen",
+  "besichtigung",
+  "bankgutachter",
   "finanzierung",
   "notar",
   "faelligkeit",

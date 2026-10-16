@@ -44,6 +44,8 @@ const MIGRATION = neuesteMigration();
 
 /** Die Legacy-Aliase sind alte Namen früher Stufen und bewusst umgehängt. */
 const LEGACY: Record<string, string> = {
+  // Seit 16.10.2026 ausgeblendet, teilt den Rang der Reservierung.
+  bonitaetsunterlagen: "reservierung",
   zugewiesen: "neuer_lead",
   kontaktversuche: "erreicht",
   vermoegensaufbau: "follow_up",
@@ -115,5 +117,13 @@ describe("buchung_pipeline_rang", () => {
     const geplant = raenge.get("erstgespraech_geplant") ?? -1;
     expect(geplant).toBeGreaterThan(raenge.get("neuer_lead") ?? -1);
     expect(geplant).toBeLessThan(raenge.get("finanzierung") ?? -1);
+  });
+
+  it("legt Besichtigung und Bankgutachter zwischen Reservierung und Finanzierung", () => {
+    // Ohne Rang machte pipeline_stufe_normalisieren die neuen Stufen zu NULL.
+    const r = (k: string) => raenge.get(k) ?? -1;
+    expect(r("besichtigung")).toBeGreaterThan(r("reservierung"));
+    expect(r("bankgutachter")).toBeGreaterThan(r("besichtigung"));
+    expect(r("finanzierung")).toBeGreaterThan(r("bankgutachter"));
   });
 });

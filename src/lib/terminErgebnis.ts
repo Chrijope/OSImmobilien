@@ -39,6 +39,7 @@ import { festerTerminSchluessel, noShowErfasst, noShowMetaPatch } from "./kunden
 import { meetingZeitISO } from "./meetingZeit";
 import { mitKontaktMeta } from "./kontaktTermine";
 import { addProzessAufgabe } from "./prozessAufgabe";
+import { rueckeNachStufenTermin } from "./stufenTerminAktionen";
 import {
   istErstgespraech, legeNachfassNachErstgespraechAn, NACHFASS_FEHLER_TEXT, NACHFASS_FEHLER_TITEL,
 } from "./nachfassNachErstgespraech";
@@ -369,7 +370,25 @@ export async function terminErschienen(t: ErgebnisTermin, ctx: ErgebnisKontext):
   if (fehler !== null) { meldeStatusFehler(ctx, fehler); return false; }
   await schliesseAufgabe(aufgabe);
   protokolliere(ctx, `${t.titel} erschienen ✓`, `Termin: ${terminText(t.startAt)}`);
-  ctx.melde({ title: `${t.titel} erschienen ✓` });
+  /*
+   * Besichtigung und Termin Bankgutachter ruecken die Stufe ihres
+   * Investments vor (16.10.2026, `stufenTermin.ts`). Das Investment kommt
+   * aus der gekoppelten Aufgabe des Meetings; ohne sie bleibt die Stufe.
+   */
+  const neueStufe = await rueckeNachStufenTermin(t.titel, aufgabe?.investmentId, {
+    kundeId: ctx.kundeId,
+    kundeName: ctx.kundeName,
+    erstelltVonName: ctx.userName,
+    rueckfallZustaendig: empfaenger(t, ctx),
+  });
+  ctx.melde({
+    title: `${t.titel} erschienen ✓`,
+    description: neueStufe === "bankgutachter"
+      ? "Das Investment steht jetzt auf „Termin Bankgutachter“, die Aufgabe zum Vereinbaren ist angelegt."
+      : neueStufe === "finanzierung"
+        ? "Das Investment steht jetzt auf „Finanzierung“."
+        : undefined,
+  });
   // Nach einem Erstgespraech der Nachfass-Anruf drei Tage spaeter.
   if (istErstgespraech(t.titel, t.buchung?.anlass)) {
     const nachfass = await legeNachfassNachErstgespraechAn({

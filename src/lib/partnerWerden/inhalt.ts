@@ -213,31 +213,19 @@ export const UEBER_UNS = {
 };
 
 /**
- * Stimmen unserer Kunden, also von Käufern, nicht von Partnern. Wörtlich von
- * osimmobilien.netlify.app (`OS Immobilien-Website/src/components/TestimonialsSection.tsx`,
- * gelesen am 30.09.2026), mit Namenskürzel und Ort wie dort. Ausgewählt sind
- * Stimmen ohne Steuer- oder Tempoversprechen, wie auf der Handbuch-Seite.
+ * Stimmen unserer Kunden, also von Käufern, nicht von Partnern. Leer seit dem
+ * 16.10.2026, weil die bisherigen aus dem Ursprungsprojekt stammen; siehe
+ * `KUNDENSTIMMEN` in `lib/handbuch/firma.ts`.
  */
-export const STIMMEN = [
-  ...KUNDENSTIMMEN,
-  {
-    name: "Markus H.",
-    ort: "Ingolstadt",
-    text: "Als Unternehmer war mir klar: Immobilien gehören ins Portfolio. Aber die Umsetzung allein? Keine Chance. Christian und sein Team haben mir den kompletten Prozess abgenommen, von der Objektauswahl bis zum Notar. Ich war beeindruckt, wie reibungslos alles lief.",
-  },
-  {
-    name: "Michael G.",
-    ort: "Landshut",
-    // Gekürzt (Rechtsbefund G5): Der Satz über „Verkäufer“ und „Berater“ ist entfallen.
-    text: "Die Transparenz, die Struktur, die Nachbetreuung: alles auf höchstem Niveau. Ich plane bereits mein zweites Objekt mit dem Team.",
-  },
-];
+export const STIMMEN = [...KUNDENSTIMMEN];
 
 export const STIMMEN_TEXTE = {
   augenbraue: "Unsere Kunden",
   h2: "Das sagen unsere Kunden",
   lead: "Wem du uns empfiehlst, der soll gut aufgehoben sein. So erleben Käufer die Zusammenarbeit mit uns.",
-  fuss: "Stimmen von Kunden, die über OS Immobilien eine Immobilie gekauft haben, von osimmobilien.netlify.app, teils gekürzt. Es sind keine Stimmen von Partnern.",
+  fuss: "Stimmen von Kunden, die über OS Immobilien eine Immobilie gekauft haben, teils gekürzt. Es sind keine Stimmen von Partnern.",
+  /** Steht statt der Stimmen da, solange es keine gibt. */
+  folgen: "Kundenstimmen folgen, sobald echte Stimmen mit Einverständnis vorliegen.",
 };
 
 export const ABLAUF = {

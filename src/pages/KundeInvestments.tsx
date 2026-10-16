@@ -2389,8 +2389,8 @@ async function notifyVPMinReservierungsDocs(kontakt: any) {
     const kundeName = `${kontakt.vorname} ${kontakt.nachname}`;
     await supabase.from("benachrichtigungen" as any).insert({
       benutzer_id: beraterId,
-      titel: `Vorbereitung Objektauswahl: ${kundeName}`,
-      nachricht: `${kundeName} hat Personalausweis und letzten Gehaltsnachweis hochgeladen. Bitte prüfen, freigeben und das Objektauswahlgespräch vorbereiten.`,
+      titel: `Vorbereitung Objektvorstellung: ${kundeName}`,
+      nachricht: `${kundeName} hat Personalausweis und letzten Gehaltsnachweis hochgeladen. Bitte prüfen, freigeben und die Objektvorstellung vorbereiten.`,
       link: `/kunden/${kontakt.id}`,
       ziel_rolle: "vertriebspartner",
     } as any);
@@ -2399,8 +2399,8 @@ async function notifyVPMinReservierungsDocs(kontakt: any) {
       kontaktId: kontakt.id,
       typ: "aufgabe",
       prioritaet: "hoch",
-      titel: "Mindestunterlagen da: Objektauswahlgespräch terminieren",
-      beschreibung: `${kundeName} hat die Mindest-Bonitätsunterlagen hochgeladen, Personalausweis und letzter Gehaltsnachweis. Unterlagen prüfen, freigeben und Objektauswahlgespräch terminieren.`,
+      titel: "Mindestunterlagen da: Objektvorstellung terminieren",
+      beschreibung: `${kundeName} hat die Mindestunterlagen hochgeladen, Personalausweis und letzter Gehaltsnachweis. Unterlagen prüfen, freigeben und die Objektvorstellung terminieren.`,
       faelligAm: new Date().toISOString().slice(0, 10),
       uhrzeit: "09:00",
       zugewiesenAn: beraterId,

@@ -53,6 +53,8 @@ vi.mock("jspdf", () => {
 const { generateReservierungPDF } = await import("@/lib/reservierungPdf");
 const { TEXT_FASSUNG, WIDERRUF_WAHL_SOFORT, WIDERRUF_WAHL_ABWARTEN, VEREINBARUNG_ZIFFERN } = await import("@/lib/reservierungErklaerung");
 
+const { GEBUEHR_IBAN } = await import("@/lib/reservierungsgebuehr");
+
 const enthaelt = (text: string) => zeilen.some((z) => z.includes(text));
 
 const daten = (over: Partial<ReservierungData>): ReservierungData =>
@@ -268,4 +270,35 @@ describe("Das PDF ohne Reservierungsgebühr", () => {
     await generateReservierungPDF(daten({ gebuehrEntfaellt: false }));
     expect(zeilen).toEqual(mitFeld);
   });
+});
+
+/*
+ * Wächter seit dem 16.10.2026: Jede neue Reservierung ist kostenfrei, das
+ * Formular schreibt immer `gebuehrEntfaellt: true`. In keinem der möglichen
+ * Fälle darf das PDF dann eine Bankverbindung, einen Betrag oder einen
+ * Gebührenabschnitt enthalten. Alte Datensätze mit Gebühr prüfen die Tests
+ * darüber; sie müssen unverändert bleiben.
+ */
+describe("Wächter: eine neue, kostenfreie Reservierung im PDF", () => {
+  const faelle: [string, Partial<ReservierungData>][] = [
+    ["Wohnung", {}],
+    ["Wohnung, zweisprachig", { vertragssprache: "en" }],
+    ["Haus, privat", { gesamtobjekt: true, kaeuferArt: "privat", anzahlEinheiten: "8", aufteilung: "nicht_aufgeteilt" }],
+    ["Haus, Gesellschaft", { gesamtobjekt: true, kaeuferArt: "gesellschaft", firma: "Muster GmbH", anzahlEinheiten: "8", aufteilung: "aufgeteilt" }],
+  ];
+  for (const [name, extra] of faelle) {
+    it(`${name}: keine IBAN, kein Konto, kein Betrag, kein Gebührenabschnitt`, async () => {
+      await generateReservierungPDF(daten({
+        gesamtpreis: "350.000", iban: "DE02 1203 0000 0000 2020 51", ...extra, gebuehrEntfaellt: true,
+      }));
+      const alles = zeilen.join("\n");
+      expect(alles).not.toContain(GEBUEHR_IBAN);
+      expect(alles).not.toContain("DE02 1203");
+      expect(alles).not.toMatch(/IBAN|Kontoinhaber|Kontoverbindung|Verwendungszweck|account holder|bank details/i);
+      expect(alles).not.toMatch(/Reservierungsgebühr und|Reservation fee and/i);
+      expect(alles).not.toMatch(/1\.000,00 EUR|1\.500,00 EUR|3\.000,00 EUR/);
+      expect(alles).not.toMatch(/zurücküberwiesen|nicht erstattet|Rückzahlung/);
+      expect(alles).toContain("Für diese Reservierung wird keine Reservierungsgebühr erhoben.");
+    });
+  }
 });

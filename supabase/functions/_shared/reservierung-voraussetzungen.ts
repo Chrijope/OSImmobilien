@@ -109,6 +109,40 @@ export function objektAngabenAusInvestment(zeile: { meta?: unknown; wohnung?: un
   };
 }
 
+/**
+ * Die Mindestunterlagen der Reservierung (seit 16.10.2026).
+ *
+ * Dieselbe Regel wie `fehlendeMindestunterlagen` in
+ * `src/lib/mindestunterlagen.ts`, dort mit Begruendung. Die Oberflaeche liest
+ * Dateien aus `src`, die Function nicht, deshalb steht sie hier ein zweites
+ * Mal. Ein Gleichlauftest haelt beide zusammen
+ * (`src/lib/reservierungVoraussetzungen.test.ts`).
+ */
+export const RV_AUSWEIS = "Personalausweis";
+export const RV_LETZTE_GEHALTSABRECHNUNG = "Letzter Gehaltsnachweis";
+const UNTERLAGE_DA = new Set(["uploaded", "approved"]);
+
+/** Wie `istSelbststaendig` in `src/lib/bonitaetDocs.ts`. */
+function selbststaendig(beschaeftigungsart: unknown): boolean {
+  const art = typeof beschaeftigungsart === "string" ? beschaeftigungsart.toLowerCase().trim() : "";
+  return art.startsWith("selbst") || art.startsWith("freiberuf");
+}
+
+export function fehlendeMindestunterlagenAusMeta(meta: unknown): string[] {
+  const m = alsObjekt(meta);
+  const status = alsObjekt(m.docStatuses);
+  const sa = alsObjekt(m.saData || m.saSnapshot);
+  const ohneGehalt = selbststaendig(sa.beschaeftigungsart) || !!alsObjekt(m[SA_ENTFAELLT_META_SCHLUESSEL]).aktiv;
+  const pflicht = ohneGehalt ? [RV_AUSWEIS] : [RV_AUSWEIS, RV_LETZTE_GEHALTSABRECHNUNG];
+  return pflicht.filter((name) => !UNTERLAGE_DA.has(String(status[name] ?? "")));
+}
+
+/** „Für die Reservierung fehlen noch: Personalausweis, letzte Gehaltsabrechnung. …“ */
+export function rvUnterlagenFehlen(fehlend: string[]): string {
+  const namen = fehlend.map((d) => (d === RV_LETZTE_GEHALTSABRECHNUNG ? "letzte Gehaltsabrechnung" : d)).join(", ");
+  return `Für die Reservierung fehlen noch: ${namen}. Sie müssen zuerst im Portal liegen.`;
+}
+
 /** Meldungen an die Oberfläche. Sie stehen dort wörtlich im Hinweis. */
 export const RV_OHNE_INVESTMENT =
   "Zu dieser Reservierung fehlt das Investment. Bitte starte sie aus dem Kundenprofil.";
@@ -147,6 +181,10 @@ export function pruefeReservierungsVoraussetzungen(
   if (!selbstauskunftErledigt(meta)) {
     const fehler = saNeueUnterschriftAusstehend(meta) ? RV_SA_NEU_AUSSTEHEND : RV_SA_FEHLT;
     return { ok: false, status: 409, fehler };
+  }
+  const fehlend = fehlendeMindestunterlagenAusMeta(meta);
+  if (fehlend.length > 0) {
+    return { ok: false, status: 409, fehler: rvUnterlagenFehlen(fehlend) };
   }
   if (!objektEingetragen(objektAngabenAusInvestment(investment))) {
     return { ok: false, status: 409, fehler: RV_OBJEKT_FEHLT };

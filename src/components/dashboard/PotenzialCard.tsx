@@ -64,6 +64,8 @@ export function PotenzialCard() {
       "objektauswahl",
       "follow_up_objekt",
       "reservierung",
+      "besichtigung",
+      "bankgutachter",
       "finanzierung",
       "notar",
       "faelligkeit",
@@ -73,6 +75,8 @@ export function PotenzialCard() {
       "objektauswahl",
       "follow_up_objekt",
       "reservierung",
+      "besichtigung",
+      "bankgutachter",
       "finanzierung",
       "notar",
       "faelligkeit",
@@ -100,7 +104,7 @@ export function PotenzialCard() {
      */
     const OFFEN = new Set([
       "beratungsgespraech", "bg_noshow", "selbstauskunft", "bonitaetsunterlagen",
-      "objektauswahl", "follow_up_objekt", "reservierung", "finanzierung",
+      "objektauswahl", "follow_up_objekt", "reservierung", "besichtigung", "bankgutachter", "finanzierung",
     ]);
     /*
      * Je Investment, nicht je Kunde (11.10.2026): Jedes Investment zählt mit
@@ -144,7 +148,7 @@ export function PotenzialCard() {
 
     // Nach Naehe zum Abschluss gruppiert, damit sichtbar ist, worauf die
     // Prognose steht: auf wenigen Reservierungen oder auf vielen Gespraechen.
-    const AB_RESERVIERUNG = new Set(["reservierung", "finanzierung"]);
+    const AB_RESERVIERUNG = new Set(["reservierung", "besichtigung", "bankgutachter", "finanzierung"]);
     const AB_OBJEKT = new Set(["objektauswahl", "follow_up_objekt"]);
     const summe = (liste: any[]) => liste.reduce((s, k) => s + preis(k), 0);
     const spaet = offene.filter(k => AB_RESERVIERUNG.has(normStufe(k)));

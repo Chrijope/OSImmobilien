@@ -167,8 +167,6 @@ function preisImFormular(): string {
       <ReservierungsForm kundeId="k-1" investmentId="inv-1" />
     </MemoryRouter>,
   );
-  // Die IBAN ist seit dem 15.09.2026 Pflicht, ohne sie geht es nicht weiter.
-  fireEvent.change(screen.getByPlaceholderText("DE00 0000 0000 0000 0000 00"), { target: { value: "DE02120300000000202051" } });
   fireEvent.click(screen.getByRole("button", { name: "Weiter" }));
   const feld = screen.getByPlaceholderText("z.B. 363.000") as HTMLInputElement;
   const wert = feld.value;

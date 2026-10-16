@@ -33,7 +33,10 @@ const PIPELINE_ORDER = [
   "neuer_lead", "nicht_erreicht", "erreicht", "follow_up",
   "erstgespraech_geplant", "erstgespraech", "eg_noshow",
   "beratungsgespraech", "bg_noshow", "selbstauskunft", "objektauswahl",
-  "follow_up_objekt", "reservierung", "bonitaetsunterlagen", "finanzierung", "notar",
+  // "bonitaetsunterlagen" ist seit 16.10.2026 ausgeblendet und steht im Rang
+  // der Reservierung, deshalb direkt davor.
+  "follow_up_objekt", "bonitaetsunterlagen", "reservierung", "besichtigung", "bankgutachter",
+  "finanzierung", "notar",
   "faelligkeit", "abrechnung", "abgeschlossen", "bestandsimport",
   "archiviert", "verloren",
 ];
@@ -76,6 +79,8 @@ function stufeZuStatus(stufe: string | null | undefined): string | null {
       return "in_beratung";
     case "reservierung":
     case "bonitaetsunterlagen":
+    case "besichtigung":
+    case "bankgutachter":
     case "finanzierung":
     case "notar":
       return "in_abwicklung";

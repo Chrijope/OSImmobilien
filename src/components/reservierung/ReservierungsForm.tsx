@@ -6,7 +6,6 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -31,8 +30,9 @@ import {
 } from "@/lib/objektBelegung";
 import { useOptionalUser } from "@/contexts/UserContext";
 import { updateInvestment, getInvestmentsByKontakt, setInvestmentMetaFields, getInvestmentMetaField, investmentGespeichert } from "@/lib/investmentsStore";
-import { darfReservierungStarten } from "@/lib/reservierungStart";
-import { RV_OHNE_INVESTMENT, RV_SA_FEHLT } from "../../../supabase/functions/_shared/reservierung-voraussetzungen.ts";
+import { fehlendeUnterlagenFuerReservierung } from "@/lib/reservierungStart";
+import { darfAufObjektauswahl } from "@/lib/objektauswahlWaechter";
+import { RV_OHNE_INVESTMENT, RV_SA_FEHLT, rvUnterlagenFehlen } from "../../../supabase/functions/_shared/reservierung-voraussetzungen.ts";
 import { vorhandeneObjektDaten, hatBestandsWohnung } from "@/lib/objektDatenPflicht";
 import { verkaeuferArt, type VerkaeuferArt } from "@/lib/verkaeuferName";
 import { zahlAusText, textAusZahl } from "@/lib/zahlAusText";
@@ -45,7 +45,6 @@ import {
   WIDERRUF_WAHL_EINLEITUNG,
   AUFTEILUNG_AUSWAHL,
   KAUFGEGENSTAND_GESAMTOBJEKT,
-  gebuehrAbschnitt,
   objektEinleitung,
   preisBeschriftung,
   reservierungTexte,
@@ -79,54 +78,6 @@ function formatTausender(raw: string): string {
 
 function plzOnly(raw: string): string {
   return raw.replace(/\D/g, "").slice(0, 5);
-}
-
-/**
- * IBAN: Großbuchstaben, in Vierergruppen, deutsche IBAN mit 22 Zeichen.
- *
- * Eingetippt wird sie in jeder Schreibweise, mal mit, mal ohne Leerzeichen.
- * Gespeichert und gedruckt wird sie in Vierergruppen, so wie sie auf jeder
- * Bankkarte steht; das ist die Form, die sich beim Abtippen am wenigsten
- * verliest. Die Begrenzung ist dieselbe wie in der Selbstauskunft:
- * 22 Zeichen, mit Leerzeichen 27.
- */
-export function ibanEingabe(raw: string): string {
-  const zeichen = raw.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 22);
-  return zeichen.replace(/(.{4})(?=.)/g, "$1 ");
-}
-
-/**
- * IBAN-Prüfziffer nach ISO 13616 (Modulo 97).
- *
- * Die ersten vier Zeichen wandern ans Ende, Buchstaben werden zu Zahlen
- * (A = 10 bis Z = 35), die entstehende Zahl muss durch 97 geteilt Rest 1
- * lassen. Damit fallen Vertipper auf, bevor sie ins Dokument laufen.
- * Eine deutsche IBAN hat genau 22 Zeichen.
- */
-export function ibanGueltig(raw: string): boolean {
-  const iban = raw.toUpperCase().replace(/[^A-Z0-9]/g, "");
-  if (!/^[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}$/.test(iban)) return false;
-  if (iban.startsWith("DE") && iban.length !== 22) return false;
-  const umgestellt = iban.slice(4) + iban.slice(0, 4);
-  let rest = 0;
-  for (const z of umgestellt) {
-    const wert = z >= "0" && z <= "9" ? z : String(z.charCodeAt(0) - 55);
-    for (const d of wert) rest = (rest * 10 + Number(d)) % 97;
-  }
-  return rest === 1;
-}
-
-/**
- * Dasselbe für ein freiwilliges Feld: leer ist in Ordnung, getippt wird geprüft.
- *
- * Seit dem 22.09.2026 ist die IBAN freiwillig. `ibanGueltig("")` sagt nein,
- * und das ist dort auch richtig; wer nur das Sternchen am Feld entfernt hätte,
- * hätte deshalb nichts gewonnen. Leerzeichen zählen nicht als Eingabe, sonst
- * blockiert ein versehentlicher Tastendruck das Formular.
- */
-export function ibanLeerOderGueltig(raw: string | null | undefined): boolean {
-  const eingabe = (raw || "").trim();
-  return eingabe === "" || ibanGueltig(eingabe);
 }
 
 /** Die Wahl zum Beginn der Reservierung, siehe Abschnitt 7 des Dokuments. */
@@ -169,17 +120,10 @@ export interface ReservierungData {
   strasse: string; hausnummer: string; plz: string; ort: string;
   telefon: string; email: string; gueterstand: string;
   /**
-   * Das Konto, auf das die Reservierungsgebühr zurückfließt.
-   *
-   * Am 15.09.2026 wurde das Feld Pflicht: Der Text versprach die Rückzahlung
-   * „auf das benannte Konto", aber es gab kein Feld dafür, und die Rückzahlung
-   * stockte an einer Rückfrage.
-   *
-   * Seit dem 22.09.2026 ist es wieder freiwillig. Der Grund für die Pflicht
-   * ist entfallen, denn der Vertrag regelt den Fall der fehlenden
-   * Bankverbindung jetzt selbst (Punkt zur Rückzahlung: Der Kaufinteressent
-   * teilt sie dann vor der Beurkundung mit). Eine getippte IBAN wird
-   * weiterhin geprüft, siehe `ibanLeerOderGueltig`.
+   * Das Konto für die Rückzahlung einer Reservierungsgebühr. Nur noch in
+   * alten Datensätzen von vor dem 16.10.2026; seitdem ist die Reservierung
+   * kostenfrei und das Formular fragt kein Konto mehr ab. Das PDF eines
+   * alten Vorgangs liest es weiter.
    */
   iban?: string;
 
@@ -190,6 +134,7 @@ export interface ReservierungData {
   p2Telefon: string; p2Email: string;
   p2Geburtsname?: string;
   p2Geburtsort?: string;
+  /** Wie `iban`, nur noch in alten Datensätzen. */
   p2Iban?: string;
   // Objekt
   wohneinheit: string; objStrasse: string; objPlz: string; objOrt: string; gesamtpreis: string;
@@ -274,17 +219,14 @@ export interface ReservierungData {
   /** @deprecated Entfallen am 15.09.2026, nur noch in alten Datensätzen. */
   bankEinwilligung?: boolean;
   /**
-   * Zahlt dieser Kunde ausnahmsweise keine Reservierungsgebühr?
+   * Seit dem 16.10.2026 ist jede Reservierung kostenfrei, das Formular setzt
+   * das Feld deshalb immer auf `true` (Entscheidung des Inhabers).
    *
-   * Bewusst negativ benannt und bewusst nur `true` als Ja. Jede Reservierung
-   * von vor dem 22.09.2026 kennt das Feld gar nicht; „nicht entfallen" ergibt
-   * dann von selbst den Regelfall „zahlt eine Gebühr", und alte Vorgänge
-   * verhalten sich unverändert. Ein positiv benanntes Feld hätte sie alle
-   * stillschweigend auf „zahlt nicht" gedreht.
-   *
-   * Die Entscheidung trifft die interne Vorbereitung, nicht der Kunde:
-   * Das Formular sehen nur Vertriebspartner, Vertriebsleitung, Backoffice,
-   * Inhaber und Admin, der Kunde bekommt nur die Signaturseite und das PDF.
+   * Das Feld bleibt, weil alte Datensätze es nicht kennen: Jede Reservierung
+   * von vor dem 22.09.2026 hat es gar nicht und war eine mit Gebühr, und
+   * zwischen dem 22.09. und dem 16.10.2026 stand es auf `false`, wenn eine
+   * Gebühr vereinbart war. PDF und Signaturseite solcher Vorgänge müssen
+   * weiter genau das zeigen, was damals hinausging.
    */
   gebuehrEntfaellt?: boolean;
   /**
@@ -322,7 +264,7 @@ const EMPTY: ReservierungData = {
   vkName: "", vkStrasse: "", vkPlz: "", vkOrt: "",
   sonstigeInformationen: "",
   erklaerungAkzeptiert: false,
-  gebuehrEntfaellt: false,
+  gebuehrEntfaellt: true,
   widerrufWahl: "",
   textFassung: "",
   abgeschlossen: false,
@@ -458,12 +400,6 @@ function Field({ label, children, className, required, error, hinweis }: { label
  */
 export function validateRvStep(step: number, data: ReservierungData, showGueterstand: boolean): Set<string> {
   const errs = new Set<string>();
-  /*
-   * Ohne Gebühr stehen die IBAN-Felder und die Widerrufswahl gar nicht im
-   * Formular. Sie dürfen dann auch nichts blockieren: Eine unsichtbare Pflicht
-   * hält den Schritt an, ohne dass etwas markiert wäre.
-   */
-  const mitGebuehr = data.gebuehrEntfaellt !== true;
   const gesamtobjekt = data.gesamtobjekt === true;
   switch (step) {
     case 0:
@@ -471,8 +407,7 @@ export function validateRvStep(step: number, data: ReservierungData, showGueters
        * Beim Globalobjekt zuerst die Wahl, wer kauft. Solange sie fehlt, steht
        * im Formular nichts weiter, und nur die Wahl ist markiert. Bei einer
        * Gesellschaft gelten die Felder aus Tabelle B; Geburtsdatum,
-       * Staatsangehörigkeit und Güterstand fallen weg, die IBAN bleibt
-       * freiwillig.
+       * Staatsangehörigkeit und Güterstand fallen weg.
        */
       if (gesamtobjekt) {
         if (data.kaeuferArt !== "privat" && data.kaeuferArt !== "gesellschaft") {
@@ -487,7 +422,6 @@ export function validateRvStep(step: number, data: ReservierungData, showGueters
           for (const feld of pflicht) {
             if (!String(data[feld] ?? "").trim()) errs.add(feld);
           }
-          if (mitGebuehr && !ibanLeerOderGueltig(data.iban)) errs.add("iban");
           break;
         }
       }
@@ -501,8 +435,6 @@ export function validateRvStep(step: number, data: ReservierungData, showGueters
       if (!data.ort.trim()) errs.add("ort");
       if (!data.telefon.trim()) errs.add("telefon");
       if (!data.email.trim()) errs.add("email");
-      // Freiwillig seit dem 22.09.2026: leer kommt durch, falsch getippt nicht.
-      if (mitGebuehr && !ibanLeerOderGueltig(data.iban)) errs.add("iban");
       if (showGueterstand && !data.gueterstand) errs.add("gueterstand");
 
       if (data.hatPerson2) {
@@ -516,7 +448,6 @@ export function validateRvStep(step: number, data: ReservierungData, showGueters
         if (!data.p2Ort.trim()) errs.add("p2Ort");
         if (!data.p2Telefon.trim()) errs.add("p2Telefon");
         if (!data.p2Email.trim()) errs.add("p2Email");
-        if (mitGebuehr && !ibanLeerOderGueltig(data.p2Iban)) errs.add("p2Iban");
       }
       break;
     case 1:
@@ -747,26 +678,13 @@ export function ReservierungsForm({ kundeId, objektTitel, wohnungData, verkaeufe
       }
     }
     /*
-     * Die IBAN für die Rückzahlung aus der Selbstauskunft, wenn es sie gibt.
-     *
-     * Die Selbstauskunft fragt die Bankkonten ab, das erste ist in aller
-     * Regel das Girokonto. Wer sie schon ausgefüllt hat, soll die IBAN hier
-     * nicht ein zweites Mal abtippen. Nur ergänzt, nie überschrieben, und
-     * im Formular weiter änderbar.
+     * Die Reservierung ist seit dem 16.10.2026 kostenfrei. Auch ein Entwurf
+     * von vorher geht deshalb ohne Gebühr hinaus, und ein dort noch
+     * gespeichertes Rückzahlungskonto wird nicht weitergetragen.
      */
-    if (investmentId && (!loaded.iban || (loaded.hatPerson2 && !loaded.p2Iban))) {
-      try {
-        const inv = getInvestmentsByKontakt(kundeId).find(i => i.id === investmentId) as { meta?: Record<string, unknown> } | undefined;
-        const saData = (inv?.meta?.saData ?? {}) as { bankkonten?: unknown; person2Data?: { bankkonten?: unknown } };
-        const erstesKonto = (konten: unknown): string => {
-          if (!Array.isArray(konten)) return "";
-          const mitIban = (konten as { iban?: unknown }[]).find((b) => typeof b?.iban === "string" && b.iban.trim());
-          return typeof mitIban?.iban === "string" ? mitIban.iban : "";
-        };
-        if (!loaded.iban) loaded.iban = ibanEingabe(erstesKonto(saData.bankkonten));
-        if (loaded.hatPerson2 && !loaded.p2Iban) loaded.p2Iban = ibanEingabe(erstesKonto(saData.person2Data?.bankkonten));
-      } catch { /* ohne Selbstauskunft bleibt das Feld leer */ }
-    }
+    loaded.gebuehrEntfaellt = true;
+    loaded.iban = "";
+    loaded.p2Iban = "";
     return loaded;
   });
   /*
@@ -836,13 +754,12 @@ export function ReservierungsForm({ kundeId, objektTitel, wohnungData, verkaeufe
    * Der Aufbau des Dokuments für diese Reservierung.
    *
    * Von hier kommen die Abschnittsnummern und die Punkte der Vereinbarung,
-   * und zwar genau so, wie sie auch im PDF stehen. Beides hängt am
-   * Schieberegler unten: Ohne Gebühr fallen der Gebührenabschnitt, die IBAN
-   * und die ganze Widerrufsthematik weg, und alles Folgende rückt auf.
+   * und zwar genau so, wie sie auch im PDF stehen. Seit dem 16.10.2026 immer
+   * ohne Gebühr, also ohne Gebührenabschnitt und (solange
+   * `WIDERRUF_ENTFAELLT_OHNE_GEBUEHR` gilt) ohne Widerrufsthematik.
    */
   const optionen = vertragsOptionenAus(data);
   const aufbau = vertragsAufbau(optionen);
-  const mitGebuehr = aufbau.mitGebuehr;
   /*
    * Die Sprache des Kunden (Plan Kundensprache, Etappe 4). Bei Englisch geht
    * die Vereinbarung zweisprachig hinaus, Deutsch maßgeblich. Dieses Formular
@@ -961,7 +878,18 @@ export function ReservierungsForm({ kundeId, objektTitel, wohnungData, verkaeufe
      * Kontaktstatus schon auf „Reservierung“. Das Objekt prüft allein der
      * Server: Es kann in genau diesem Formular erst eingetragen werden.
      */
-    const vorabGrund = !investmentId ? RV_OHNE_INVESTMENT : !darfReservierungStarten(investmentId) ? RV_SA_FEHLT : "";
+    // Wie `darfReservierungStarten`, aber mit Grund: erst die Selbstauskunft,
+    // dann konkret die fehlenden Mindestunterlagen (seit 16.10.2026).
+    const vorabGrund = (() => {
+      if (!investmentId) return RV_OHNE_INVESTMENT;
+      try {
+        if (!darfAufObjektauswahl(investmentId)) return RV_SA_FEHLT;
+        const fehlend = fehlendeUnterlagenFuerReservierung(investmentId);
+        return fehlend.length > 0 ? rvUnterlagenFehlen(fehlend) : "";
+      } catch {
+        return RV_SA_FEHLT;
+      }
+    })();
     if (vorabGrund) {
       setVersandFehler(vorabGrund);
       await hinweisDialog({ title: "Die Reservierung geht noch nicht", description: `${vorabGrund} Es ist nichts hinausgegangen.`, buttonText: "Verstanden" });
@@ -1460,11 +1388,6 @@ export function ReservierungsForm({ kundeId, objektTitel, wohnungData, verkaeufe
         <Field label="Funktion" required error={errors.has("vertreterFunktion")}><Input value={data.vertreterFunktion || ""} onChange={e => update("vertreterFunktion", e.target.value)} placeholder="z. B. Geschäftsführer" /></Field>
         <Field label="Telefon" required error={errors.has("telefon")}><PhoneInput value={data.telefon} onChange={v => update("telefon", v)} /></Field>
         <Field label="E-Mailadresse" required error={errors.has("email")}><Input value={data.email} onChange={e => update("email", e.target.value)} /></Field>
-        {mitGebuehr && (
-          <Field label="IBAN für die Rückzahlung der Reservierungsgebühr (freiwillig)" error={errors.has("iban")} hinweis="Diese IBAN ist ungültig. Eine deutsche IBAN hat 22 Zeichen und beginnt mit DE.">
-            <Input value={data.iban || ""} onChange={e => update("iban", ibanEingabe(e.target.value))} placeholder="DE00 0000 0000 0000 0000 00" autoComplete="off" maxLength={27} />
-          </Field>
-        )}
       </div>
     </>
   );
@@ -1495,16 +1418,6 @@ export function ReservierungsForm({ kundeId, objektTitel, wohnungData, verkaeufe
         <Field label="Ort" required error={errors.has("ort")}><Input value={data.ort} onChange={e => update("ort", e.target.value)} /></Field>
         <Field label="Telefon" required error={errors.has("telefon")}><PhoneInput value={data.telefon} onChange={v => update("telefon", v)} /></Field>
         <Field label="E-Mailadresse" required error={errors.has("email")}><Input value={data.email} onChange={e => update("email", e.target.value)} /></Field>
-        {/*
-          Das Konto für die Rückzahlung der Gebühr, im Abschnitt „Käuferdaten".
-          Freiwillig seit dem 22.09.2026, und ganz weg, wenn keine Gebühr
-          erhoben wird: Dann gibt es nichts zurückzuzahlen.
-        */}
-        {mitGebuehr && (
-          <Field label="IBAN für die Rückzahlung der Reservierungsgebühr (freiwillig)" error={errors.has("iban")} hinweis="Diese IBAN ist ungültig. Eine deutsche IBAN hat 22 Zeichen und beginnt mit DE.">
-            <Input value={data.iban || ""} onChange={e => update("iban", ibanEingabe(e.target.value))} placeholder="DE00 0000 0000 0000 0000 00" autoComplete="off" maxLength={27} />
-          </Field>
-        )}
         {showGueterstand && (
           <Field label="Güterstand" required error={errors.has("gueterstand")}>
             <Select value={data.gueterstand} onValueChange={v => update("gueterstand", v)}>
@@ -1533,11 +1446,6 @@ export function ReservierungsForm({ kundeId, objektTitel, wohnungData, verkaeufe
             <Field label="Ort" required error={errors.has("p2Ort")}><Input value={data.p2Ort} onChange={e => update("p2Ort", e.target.value)} /></Field>
             <Field label="Telefon" required error={errors.has("p2Telefon")}><PhoneInput value={data.p2Telefon} onChange={v => update("p2Telefon", v)} /></Field>
             <Field label="E-Mailadresse" required error={errors.has("p2Email")}><Input value={data.p2Email} onChange={e => update("p2Email", e.target.value)} /></Field>
-            {mitGebuehr && (
-              <Field label="IBAN für die Rückzahlung der Reservierungsgebühr (freiwillig)" error={errors.has("p2Iban")} hinweis="Diese IBAN ist ungültig. Eine deutsche IBAN hat 22 Zeichen und beginnt mit DE.">
-                <Input value={data.p2Iban || ""} onChange={e => update("p2Iban", ibanEingabe(e.target.value))} placeholder="DE00 0000 0000 0000 0000 00" autoComplete="off" maxLength={27} />
-              </Field>
-            )}
           </div>
         </div>
       )}
@@ -1643,19 +1551,6 @@ export function ReservierungsForm({ kundeId, objektTitel, wohnungData, verkaeufe
     </div>
   );
 
-  /*
-   * Der Gebührenbetrag hängt am Kaufpreis aus Schritt 2 und wird bei jeder
-   * Eingabe dort neu berechnet. Deshalb steht er hier und nicht im Zustand:
-   * eine gespeicherte Kopie liefe auseinander, sobald jemand den Preis ändert.
-   */
-  const gebuehrDaten = gebuehrAbschnitt(
-    data.gesamtpreis,
-    data.objStrasse,
-    data.wohneinheit,
-    istGesellschaft ? (data.firma || "") : data.nachname,
-    { gesamtobjekt },
-  );
-
   const renderStep2 = () => (
     <div>
       <h2 className="text-lg font-bold mb-1">Reservierung</h2>
@@ -1663,8 +1558,7 @@ export function ReservierungsForm({ kundeId, objektTitel, wohnungData, verkaeufe
         Alle Texte dieses Schritts stehen in `reservierungErklaerung.ts`, damit
         hier genau das steht, was der Kunde später im PDF unterschreibt. Auch
         die Abschnittsnummern kommen von dort und werden nicht hier getippt:
-        Ohne Reservierungsgebühr fallen Abschnitte weg, und alles Folgende
-        rückt auf.
+        Welche Abschnitte im Dokument stehen, entscheidet der Aufbau dort.
       */}
       <p className="text-xs text-muted-foreground mb-5">
         Fassung des Vertragstextes: {aufbau.textFassung}
@@ -1687,53 +1581,6 @@ export function ReservierungsForm({ kundeId, objektTitel, wohnungData, verkaeufe
         </div>
       )}
 
-      {/* ── Der Schieberegler zur Reservierungsgebühr ──
-        Er steht hier und nicht beim Kunden: Dieses Formular füllt die interne
-        Vorbereitung aus, der Kunde bekommt nur die Signaturseite und das PDF.
-        Über die eigene Gebühr entscheidet niemand selbst.
-
-        Standard ist „zahlt eine Gebühr". Der Regler steht unmittelbar über
-        dem Abschnitt, den er ein- und ausblendet, damit die Wirkung
-        unmittelbar zu sehen ist.
-      */}
-      <div className="rounded-lg border border-border bg-muted/20 p-4 mb-6">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <label htmlFor="gebuehr-entfaellt" className="text-sm font-semibold cursor-pointer">
-              Kunde zahlt keine Reservierungsgebühr
-            </label>
-            <p className="text-xs text-muted-foreground mt-1">
-              Standard ist, dass eine Gebühr erhoben wird. Wird der Regler umgelegt, entfallen der
-              Gebührenabschnitt, die IBAN für die Rückzahlung und die Widerrufsbelehrung samt der
-              Wahl zum Beginn der Reservierung. Die Reservierung wird dann sofort mit der
-              Unterschrift wirksam.
-            </p>
-          </div>
-          <Switch
-            id="gebuehr-entfaellt"
-            checked={!!data.gebuehrEntfaellt}
-            onCheckedChange={(v) => {
-              /*
-               * Die Widerrufswahl wird beim Umlegen zurückgesetzt. Sonst
-               * reiste eine Wahl mit, die im Dokument gar nicht mehr steht,
-               * und `finalize-reservierung` würde die Wohnung vierzehn Tage
-               * lang frei lassen, obwohl es keine Widerrufsfrist gibt.
-               */
-              setData(prev => {
-                const next = { ...prev, gebuehrEntfaellt: !!v, ...(v ? { widerrufWahl: "" as WiderrufWahlWert } : {}) };
-                save(storageKey, next);
-                return next;
-              });
-              setErrors(prev => {
-                const n = new Set(prev);
-                n.delete("iban"); n.delete("p2Iban"); n.delete("widerrufWahl");
-                return n;
-              });
-            }}
-          />
-        </div>
-      </div>
-
       {/* ── Notar und Abwicklung ──
         Nur der Hinweis und der Freitext. Die Felder für ein vorgeschlagenes
         Notariat sind am 15.09.2026 entfallen.
@@ -1753,50 +1600,6 @@ export function ReservierungsForm({ kundeId, objektTitel, wohnungData, verkaeufe
           />
         </Field>
       </div>
-
-      {/* ── Reservierungsgebühr ──
-        Der Gebührenblock nennt den Betrag dieser Reservierung, nicht die
-        allgemeine Regel: Er wird aus dem eingetragenen Kaufpreis berechnet.
-        Fehlt der Kaufpreis, steht hier die Staffel. Die Rückzahlungsregel
-        steht direkt darunter in den Punkten zur Rückzahlung und zum Verfall.
-      */}
-      {mitGebuehr && (
-      <div className="rounded-lg border border-border bg-muted/30 p-4 mb-6">
-        <h3 className="text-sm font-semibold mb-3">{aufbau.ueberschrift("gebuehr")}<EnglischerTitel titel={aufbauEn?.abschnitt("gebuehr")?.titel} /></h3>
-        <div className="mb-3">
-          <p className="text-sm text-muted-foreground">{gebuehrDaten.einleitung}</p>
-          {zeigtEnglisch && <EnglischeFassung text={textEn.gebuehrEinleitung} />}
-        </div>
-        {/*
-          Die Staffel steht immer da, auch wenn der Kaufpreis den Betrag schon
-          festlegt: Sie ist der Vertragstext und gilt unabhängig vom Einzelfall.
-        */}
-        {/* Beim ganzen Haus gibt es keine Staffel, nur den festen Betrag darunter. */}
-        {gebuehrDaten.staffel.length > 0 && (
-        <ul className="space-y-1 text-sm mb-3">
-          {gebuehrDaten.staffel.map((stufe) => (
-            <li key={stufe.bereich} className="flex justify-between gap-4 border-b border-border/60 pb-1">
-              <span className="text-muted-foreground">{stufe.bereich}</span>
-              <span className="font-medium">{stufe.betrag}</span>
-            </li>
-          ))}
-        </ul>
-        )}
-        <dl className="grid grid-cols-1 gap-y-2 text-sm">
-          {gebuehrDaten.zeilen.map((z) => (
-            <div key={z.label} className="flex justify-between gap-4 border-b border-border/60 pb-1">
-              {/*
-                Die betonte Zeile traegt den Betrag fuer genau diesen
-                Kaufpreis. Beschriftung und Zahl stehen fett, damit sie sich
-                von Kontoinhaber und IBAN darunter abhebt.
-              */}
-              <dt className={z.betont ? "font-bold text-foreground" : "text-muted-foreground"}>{z.label}</dt>
-              <dd className={z.betont ? "font-bold text-right" : "font-medium text-right"}>{z.wert}</dd>
-            </div>
-          ))}
-        </dl>
-      </div>
-      )}
 
       {/* ── Reservierungsvereinbarung ── */}
       <h3 className="text-sm font-semibold mb-2">{aufbau.ueberschrift("vereinbarung")}<EnglischerTitel titel={aufbauEn?.abschnitt("vereinbarung")?.titel} /></h3>

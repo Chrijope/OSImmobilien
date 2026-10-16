@@ -35,6 +35,8 @@ export function normalizeStufe(stufe: string | null | undefined): string {
   if (stufe === "erstgespraech") return "erstgespraech_geplant";
   if (stufe === "after_sales" || stufe === "aftersales") return "faelligkeit";
   if (stufe === "closing") return "objektauswahl";
+  // Seit 16.10.2026 ausgeblendet, zaehlt wie in der Pipeline zur Reservierung.
+  if (stufe === "bonitaetsunterlagen") return "reservierung";
   /*
    * "zugewiesen" heißt: Ein Partner ist zuständig, angerufen hat ihn noch
    * niemand. Diese Stufe stand hier auf "nicht_erreicht" und war damit als

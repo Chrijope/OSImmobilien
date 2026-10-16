@@ -146,6 +146,8 @@ Deno.serve(async (req) => {
     'objektauswahl',
     'follow_up_objekt',
     'reservierung',
+    'besichtigung',
+    'bankgutachter',
     'finanzierung',
     'notar',
     'faelligkeit',

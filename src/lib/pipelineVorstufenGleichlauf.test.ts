@@ -46,7 +46,7 @@ describe("Die Stufenreihenfolge der Edge Functions", () => {
   it("führt die Aliasnamen für Stufen ohne eigenen Schritt", () => {
     // Ohne sie bliebe ein Vorgang auf "bg_noshow" liegen, obwohl
     // "beratungsgespraech" in der Vorstufenmenge steht.
-    for (const alias of ["eg_noshow", "erstgespraech", "bg_noshow", "zugewiesen", "kontaktversuche", "vermoegensaufbau"]) {
+    for (const alias of ["eg_noshow", "erstgespraech", "bg_noshow", "bonitaetsunterlagen", "zugewiesen", "kontaktversuche", "vermoegensaufbau"]) {
       expect(quelle).toContain(`${alias}:`);
     }
   });
@@ -65,15 +65,14 @@ describe("Die Stufenreihenfolge der Edge Functions", () => {
     }
   });
 
-  it("hat die Selbstauskunft vor der Objektauswahl und die Bonität dahinter", () => {
+  it("hat den neuen Ablauf: Objektauswahl, Reservierung, Besichtigung, Bankgutachter, Finanzierung", () => {
     const liste = leseListe(quelle, "FORTSCHRITT_REIHENFOLGE");
-    const sa = liste.indexOf("selbstauskunft");
-    const oa = liste.indexOf("objektauswahl");
-    const res = liste.indexOf("reservierung");
-    const bon = liste.indexOf("bonitaetsunterlagen");
-
-    expect(sa).toBeLessThan(oa);
-    expect(oa).toBeLessThan(res);
-    expect(res).toBeLessThan(bon);
+    const kette = ["selbstauskunft", "objektauswahl", "reservierung", "besichtigung", "bankgutachter", "finanzierung"];
+    for (let i = 1; i < kette.length; i++) {
+      expect(liste.indexOf(kette[i]), kette[i]).toBeGreaterThan(liste.indexOf(kette[i - 1]));
+    }
+    // Ausgeblendet seit 16.10.2026, nur noch als Alias auf die Reservierung.
+    expect(liste).not.toContain("bonitaetsunterlagen");
+    expect(quelle).toContain('bonitaetsunterlagen: "reservierung"');
   });
 });

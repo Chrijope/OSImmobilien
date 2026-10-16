@@ -74,3 +74,18 @@ Deno.test('portalZugangFuer erkennt Person 1, Person 2 und die Sperre', () => {
   pruefe(portalZugangFuer({ authUserId: 'u1', portalGesperrt: true }, 'kaeufer1') === undefined, 'gesperrt')
   pruefe(portalZugangFuer(null, 'kaeufer1') === false, 'ohne Meta')
 })
+
+// Seit dem 16.10.2026 kostenfrei: Die Gebühr steht nur noch bei einem alten Vorgang in der Mail.
+for (const sprache of ['de', 'en'] as const) {
+  Deno.test(`${sprache}: kostenfrei auch im Konfliktfall und beim Abwarten kein Gebührensatz, ein alter Vorgang behält ihn`, async () => {
+    const gebuehr = /Reservierungsgebühr|reservation fee/
+    const neu = await text({ ...GRUND, sprache, ohneGebuehr: true, einheitVergeben: true })
+    pruefe(!/Bitte zahlen Sie keine|Please do not pay/.test(neu), 'Zahlungshinweis trotz kostenfreier Reservierung')
+    const neuAbwarten = await text({ ...GRUND, sprache, ohneGebuehr: true, einheitVergeben: true, widerrufWahl: 'abwarten', reservierungAb: '30.09.2026' })
+    pruefe(!/bereits gezahlte|already paid/.test(neuAbwarten), 'Rückzahlung trotz kostenfreier Reservierung')
+    const alt = await text({ ...GRUND, sprache, einheitVergeben: true })
+    pruefe(gebuehr.test(alt), 'Alter Vorgang mit Gebühr verliert den Hinweis')
+    const altAbwarten = await text({ ...GRUND, sprache, widerrufWahl: 'abwarten', reservierungAb: '30.09.2026' })
+    pruefe(/bereits gezahlte|already paid/.test(altAbwarten), 'Alter Vorgang beim Abwarten verliert die Rückzahlung')
+  })
+}

@@ -1,5 +1,4 @@
-import { MapPin, Award, Handshake, Wrench, Users, BarChart3 } from "lucide-react";
-import CountUp from "./CountUp";
+import { MapPin, Award, Handshake, Wrench, Users } from "lucide-react";
 import { useSeitenTexte } from "@/components/SeitenSprache";
 import { MIKROSEITE_TEXTE } from "@/components/landing/mikroseiteTexte";
 
@@ -8,20 +7,9 @@ const VORTEIL_SYMBOLE = [MapPin, Award, Wrench, Handshake, Users];
 
 const CompanySection = () => {
   const t = useSeitenTexte(MIKROSEITE_TEXTE).unternehmen;
-  const advantages = [
-    ...t.vorteile.map((v, i) => ({ icon: VORTEIL_SYMBOLE[i], title: v.titel, desc: v.text as React.ReactNode })),
-    {
-      icon: BarChart3,
-      title: t.bilanzTitel,
-      desc: (
-        <>
-          <CountUp end={350} className="font-semibold" />
-          {t.bilanzInvestoren} <CountUp end={450} className="font-semibold" />
-          {t.bilanzEinheiten}
-        </>
-      ),
-    },
-  ];
+  // Die Karte „Belastbare Bilanz“ (350+ Investoren, 450+ Einheiten) ist seit dem
+  // 16.10.2026 ausgeblendet: Die Zahlen stammen aus dem Ursprungsprojekt.
+  const advantages = t.vorteile.map((v, i) => ({ icon: VORTEIL_SYMBOLE[i], title: v.titel, desc: v.text as React.ReactNode }));
 
   return (
     <section className="py-16 md:py-28 lp-section-alt">

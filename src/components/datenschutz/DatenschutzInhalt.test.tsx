@@ -28,7 +28,7 @@ describe("Datenschutzseite", () => {
 
   it("zeigt den Stand und öffnet die Cookie-Einstellungen aus dem Abschnitt Cookies", () => {
     zeige("/datenschutz");
-    expect(screen.getByText("Stand: September 2026")).toBeInTheDocument();
+    expect(screen.getByText("Stand: Oktober 2026")).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 3, name: "3.1 Hosting und Datenbank" })).toBeInTheDocument();
     const cookies = document.getElementById("cookies")!;
     expect(cookies.querySelector("button")?.textContent).toBe("Cookie-Einstellungen");

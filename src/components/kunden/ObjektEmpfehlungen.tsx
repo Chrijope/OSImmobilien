@@ -9,7 +9,8 @@ import { useLiveVersion } from "@/hooks/useLiveData";
 import { useCacheReady } from "@/hooks/useCacheReady";
 import { cn } from "@/lib/utils";
 import { getObjekte, type ObjektData } from "@/lib/objekteStore";
-import { getEigeneSaData, type Investment } from "@/lib/investmentsStore";
+import { getEigeneSaData, getInvestmentMetaField, type Investment } from "@/lib/investmentsStore";
+import { konzeptLabel, nachKonzept, schwerpunktAusSkript, type KonzeptModus } from "@/lib/objektKonzept";
 import type { KundeData } from "@/lib/kundenStore";
 import { selbstauskunftEntfaellt } from "@/lib/selbstauskunftEntfaellt";
 import { getCachedCoords } from "@/lib/geocodeCache";
@@ -30,6 +31,12 @@ import {
 } from "@/lib/wohnortKoordinate";
 import { einheitOeffnenLink, objektOeffnenLink, rueckwegImVerlaufMerken, type KundenBezug } from "@/lib/empfehlungAuswahl";
 import { ObjektauswahlFenster, Vorschaubild } from "./ObjektauswahlFenster";
+
+const KONZEPT_MODI: { wert: KonzeptModus; label: string }[] = [
+  { wert: "zuerst", label: "Passende zuerst" },
+  { wert: "nur", label: "Nur passende" },
+  { wert: "aus", label: "Alle gleich" },
+];
 
 type WohnortErgebnis = { stand: WohnortStand | "laedt"; koordinate: Koordinate | null };
 
@@ -169,11 +176,25 @@ export function ObjektEmpfehlungen({ kunde, inv, minRahmen, maxRahmen, userRole,
   }, [objekte, nutzer, kunde.id]);
   const objektKoordinate = useObjektKoordinaten();
 
-  const kandidaten = useMemo(
+  const alleKandidaten = useMemo(
     () => empfehlungsKandidaten(relevanteObjekte, {
       nutzer, kundeId: kunde.id, rahmen, wohnort: wohnortKoordinate, objektKoordinate,
     }),
     [relevanteObjekte, nutzer, kunde.id, rahmen, wohnortKoordinate, objektKoordinate],
+  );
+
+  /*
+   * Schwerpunkt des Kunden aus dem Erstgesprächsskript (16.10.2026). Fehlt
+   * er, gibt es weder Filter noch Umsortierung. Standard ist „zuerst“: Nichts
+   * verschwindet, nur die passenden Konzepte stehen vorn.
+   */
+  const schwerpunkt = schwerpunktAusSkript(
+    getInvestmentMetaField<unknown>(inv.id, "setterSkript", null) ?? inv.meta?.setterSkript,
+  );
+  const [konzeptModus, setKonzeptModus] = useState<KonzeptModus>("zuerst");
+  const kandidaten = useMemo(
+    () => (konzeptModus === "nur" ? nachKonzept(alleKandidaten, (k) => k.konzept, schwerpunkt, "nur") : alleKandidaten),
+    [alleKandidaten, konzeptModus, schwerpunkt],
   );
 
   /*
@@ -226,8 +247,8 @@ export function ObjektEmpfehlungen({ kunde, inv, minRahmen, maxRahmen, userRole,
       .filter((e) => !schonDa.has(e.kandidat.objektId))
       .slice(0, ANZAHL_EMPFEHLUNGEN - beste.length)
       .map((e) => ({ ...e, score: scores.get(e.kandidat.schluessel) ?? null }));
-    return [...beste, ...auffuellen];
-  }, [kandidaten, scores, ergebnis.empfehlungen, wohnortStand, wohnortName]);
+    return nachKonzept([...beste, ...auffuellen], (t) => t.kandidat.konzept, schwerpunkt, konzeptModus);
+  }, [kandidaten, scores, ergebnis.empfehlungen, wohnortStand, wohnortName, schwerpunkt, konzeptModus]);
 
   const liste = useMemo(() => objektListe(kandidaten, relevanteObjekte), [kandidaten, relevanteObjekte]);
   const standardSortierung: ListenSortierung = rahmen ? "score" : "entfernung";
@@ -242,8 +263,8 @@ export function ObjektEmpfehlungen({ kunde, inv, minRahmen, maxRahmen, userRole,
   const wirksameSortierung: ListenSortierung = !rahmen && (sortierung === "score" || sortierung === "passende") ? "entfernung" : sortierung;
   const gesamtliste = useMemo(() => {
     const gefiltert = rahmen && nurPassende ? liste.filter((e) => e.anzahlPassend > 0) : liste;
-    return sortiereObjektListe(gefiltert, wirksameSortierung, scoreJeObjekt);
-  }, [liste, rahmen, nurPassende, wirksameSortierung, scoreJeObjekt]);
+    return nachKonzept(sortiereObjektListe(gefiltert, wirksameSortierung, scoreJeObjekt), (e) => e.objekt.konzept, schwerpunkt, konzeptModus);
+  }, [liste, rahmen, nurPassende, wirksameSortierung, scoreJeObjekt, schwerpunkt, konzeptModus]);
   const kaufpreis = rahmen ? kaufpreisRahmenUeberSaetze(rahmen, kandidaten.map((k) => k.nebenkostenProzent)) : null;
 
   const keinRahmenGrund: KeinRahmenGrund | null = rahmen
@@ -310,6 +331,29 @@ export function ObjektEmpfehlungen({ kunde, inv, minRahmen, maxRahmen, userRole,
           <Maximize2 className="mr-1 h-3 w-3" /> Objektauswahl vergrößern
         </Button>
       </div>
+
+      {schwerpunkt && (
+        <div className="flex flex-wrap items-center gap-2" data-testid="konzept-filter">
+          <span className="text-[11px] text-muted-foreground">Schwerpunkt {konzeptLabel(schwerpunkt)}:</span>
+          <div className="inline-flex overflow-hidden rounded-lg border border-border bg-background/70" role="group" aria-label="Konzept">
+            {KONZEPT_MODI.map((m) => (
+              <button
+                key={m.wert}
+                type="button"
+                data-no-min
+                aria-pressed={konzeptModus === m.wert}
+                onClick={() => setKonzeptModus(m.wert)}
+                className={cn(
+                  "border-l border-border px-2.5 py-1 text-[11px] first:border-l-0",
+                  konzeptModus === m.wert ? "bg-primary font-semibold text-primary-foreground" : "text-muted-foreground",
+                )}
+              >
+                {m.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {rahmen && <ScoreHinweis />}
 
@@ -505,6 +549,8 @@ export function ObjektEmpfehlungen({ kunde, inv, minRahmen, maxRahmen, userRole,
         wohnortName={wohnortName}
         entfernungLaedt={wohnortLaedt}
         bezug={bezug}
+        schwerpunkt={schwerpunkt}
+        konzeptModus={konzeptModus}
         onNavigate={(pfad) => { setFensterOffen(false); oeffne(pfad); }}
       />
     </section>

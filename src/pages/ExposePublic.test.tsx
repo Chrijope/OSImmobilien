@@ -146,7 +146,7 @@ describe("Öffentliches Exposé", () => {
     expect(screen.getByTestId("abschnitt-objektdaten")).toHaveTextContent("Dach erneuert (Angabe des Bauträgers)");
     expect(screen.getByTestId("mikrolage-einkaufen")).toHaveTextContent("REWE");
     // Der Zeitstrahl kurz wie die Vorlage, die Zahlungen hervorgehoben (seit 23.09.2026).
-    expect(screen.getAllByTestId("zeitplan-zahlung").map((k) => k.textContent)).toEqual(["Mit Anzahlung wirksam", "nach Regelung im Kaufvertrag"]);
+    expect(screen.getAllByTestId("zeitplan-zahlung").map((k) => k.textContent)).toEqual(["nach Regelung im Kaufvertrag"]);
     expect(screen.getByTestId("abschnitt-zeitplan")).not.toHaveTextContent("Reservierungsgebühr");
   });
 

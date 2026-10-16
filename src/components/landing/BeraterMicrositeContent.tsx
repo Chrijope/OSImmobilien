@@ -6,11 +6,9 @@ import InvestmentweltenSection from "@/components/landing/InvestmentweltenSectio
 import NeubauBeispielSection from "@/components/landing/NeubauBeispielSection";
 import InvestorBenefitsSection from "@/components/landing/InvestorBenefitsSection";
 import TaxSection from "@/components/landing/TaxSection";
-import BeforeAfterSection from "@/components/landing/BeforeAfterSection";
 import CompanySection from "@/components/landing/CompanySection";
 import ProcessSection from "@/components/landing/ProcessSection";
 import ComparisonSection from "@/components/landing/ComparisonSection";
-import SocialProofSection from "@/components/landing/SocialProofSection";
 import BankPartnersSection from "@/components/landing/BankPartnersSection";
 import FAQSection from "@/components/landing/FAQSection";
 import CTASection from "@/components/landing/CTASection";
@@ -37,8 +35,19 @@ export default function BeraterMicrositeContent({ berater, onOpenFunnel }: Props
     <div className="micro-abschnitt micro-abschnitt-7"><InvestorBenefitsSection /></div>
     <div className="micro-abschnitt micro-abschnitt-8"><AppleBentoSection /></div>
     <div className="micro-abschnitt micro-abschnitt-9"><CompanySection /></div>
-    <div className="micro-abschnitt micro-abschnitt-10"><BeforeAfterSection /></div>
-    <div className="micro-abschnitt micro-abschnitt-11"><SocialProofSection onOpenFunnel={onOpenFunnel} /></div>
+    {/*
+      Vorher/Nachher-Referenzen ausgeblendet (16.10.2026): Sie stammen aus dem
+      Ursprungsprojekt. Wieder einsetzen, sobald echte Referenzen mit
+      Einverständnis vorliegen. Der leere Abschnitt hält den Farbwechsel der
+      Abschnitte (gerade/ungerade) unverändert.
+    */}
+    <div className="micro-abschnitt micro-abschnitt-10" />
+    {/*
+      Kundenstimmen, Sterne und Kennzahlen ausgeblendet (16.10.2026): Sie
+      stammen aus dem Ursprungsprojekt. Wieder einsetzen, sobald echte Stimmen
+      mit Einverständnis vorliegen. Leer aus demselben Grund wie Abschnitt 10.
+    */}
+    <div className="micro-abschnitt micro-abschnitt-11" />
     <div className="micro-abschnitt micro-abschnitt-12"><ProcessSection onOpenFunnel={onOpenFunnel} /></div>
     <div className="micro-abschnitt micro-abschnitt-13"><ComparisonSection /></div>
     <div className="micro-abschnitt micro-abschnitt-14"><BankPartnersSection /></div>

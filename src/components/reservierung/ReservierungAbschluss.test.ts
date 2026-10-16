@@ -1,8 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 
 /**
- * Die Pflichtangaben des Abschlussschritts und die IBAN-Eingabe, ohne das
- * Formular zu rendern.
+ * Die Pflichtangaben des Abschlussschritts, ohne das Formular zu rendern.
  *
  * Seit dem 15.09.2026 reicht ein Haken nicht mehr: Der Kunde muss die
  * Vereinbarung akzeptieren und genau eine der beiden Wahlmöglichkeiten zum
@@ -19,7 +18,7 @@ vi.mock("@/lib/investmentsStore", () => ({
 }));
 vi.mock("@/lib/notificationStore", () => ({ addDocNotification: () => {} }));
 
-const { abschlussVollstaendig, ibanEingabe, ibanLeerOderGueltig, validateRvStep } = await import("./ReservierungsForm");
+const { abschlussVollstaendig, validateRvStep } = await import("./ReservierungsForm");
 type ReservierungData = import("./ReservierungsForm").ReservierungData;
 
 const abschluss = (over: Partial<ReservierungData>): ReservierungData =>
@@ -51,85 +50,25 @@ describe("Der Abschlussschritt ist erst vollständig, wenn alles Pflichtige da i
   });
 });
 
-describe("Die IBAN-Eingabe", () => {
-  it("schreibt groß und in Vierergruppen", () => {
-    expect(ibanEingabe("de02120300000000202051")).toBe("DE02 1203 0000 0000 2020 51");
-  });
-
-  it("nimmt Leerzeichen und Sonderzeichen heraus, bevor sie neu gruppiert", () => {
-    expect(ibanEingabe("DE02 1203-0000 0000.2020 51")).toBe("DE02 1203 0000 0000 2020 51");
-  });
-
-  it("begrenzt auf die 22 Zeichen einer deutschen IBAN", () => {
-    expect(ibanEingabe("A".repeat(50)).replace(/ /g, "")).toHaveLength(22);
-  });
-});
-
-/**
- * Die IBAN ist seit dem 22.09.2026 freiwillig.
- *
- * Die Falle dabei: `ibanGueltig("")` sagt nein, denn die Prüfziffer braucht
- * mindestens fünf Zeichen. Wer nur das Sternchen am Feld entfernt hätte,
- * hätte deshalb nichts gewonnen, das Formular wäre weiterhin hängen
- * geblieben.
- */
-describe("Die freiwillige IBAN", () => {
-  const GUELTIG = "DE02 1203 0000 0000 2020 51";
-
-  it("lässt leer durch, in jeder Schreibweise von leer", () => {
-    for (const leer of ["", "   ", undefined, null]) {
-      expect(ibanLeerOderGueltig(leer), String(leer)).toBe(true);
-    }
-  });
-
-  it("prüft eine getippte IBAN weiterhin", () => {
-    expect(ibanLeerOderGueltig(GUELTIG)).toBe(true);
-    // Eine geänderte Ziffer bricht die Prüfsumme.
-    expect(ibanLeerOderGueltig("DE02 1203 0000 0000 2020 52")).toBe(false);
-    expect(ibanLeerOderGueltig("DE02 1203")).toBe(false);
-    expect(ibanLeerOderGueltig("Sparkasse")).toBe(false);
-  });
-
-  /** Ein Käuferschritt, bei dem alles außer der IBAN stimmt. */
-  const kaeufer = (over: Partial<ReservierungData>): ReservierungData =>
-    ({
+/** Seit dem 16.10.2026 fragt das Formular keine IBAN mehr ab und prüft keine. */
+describe("Keine IBAN mehr im Käuferschritt", () => {
+  it("hält den Käuferschritt auch an einer falsch getippten Alt-IBAN nicht auf", () => {
+    const daten = {
       vorname: "Erika", nachname: "Muster", geburtsdatum: "1980-01-01",
       staatsangehoerigkeit: "Deutsch", strasse: "Roonstraße", hausnummer: "3",
       plz: "83022", ort: "Rosenheim", telefon: "0800 1", email: "e@example.de",
-      hatPerson2: false,
-      ...over,
-    }) as ReservierungData;
-
-  it("hält den Käuferschritt nicht mehr an einer leeren IBAN auf", () => {
-    expect(validateRvStep(0, kaeufer({ iban: "" }), false).size).toBe(0);
-    expect(validateRvStep(0, kaeufer({}), false).size).toBe(0);
-  });
-
-  it("markiert eine falsch getippte IBAN weiterhin", () => {
-    expect(validateRvStep(0, kaeufer({ iban: "DE02 1203 0000 0000 2020 52" }), false)).toContain("iban");
-  });
-
-  it("prüft die IBAN des zweiten Käufers nach denselben Regeln", () => {
-    const mitP2 = (iban: string) => kaeufer({
-      hatPerson2: true, p2Vorname: "Max", p2Nachname: "Muster", p2Geburtsdatum: "1980-01-01",
-      p2Staatsangehoerigkeit: "Deutsch", p2Strasse: "Roonstraße", p2Hausnummer: "3",
-      p2Plz: "83022", p2Ort: "Rosenheim", p2Telefon: "0800 2", p2Email: "m@example.de",
-      p2Iban: iban,
-    });
-    expect(validateRvStep(0, mitP2(""), false).size).toBe(0);
-    expect(validateRvStep(0, mitP2(GUELTIG), false).size).toBe(0);
-    expect(validateRvStep(0, mitP2("DE02 1203 0000 0000 2020 52"), false)).toContain("p2Iban");
+      hatPerson2: false, iban: "DE02 1203 0000 0000 2020 52",
+    } as unknown as ReservierungData;
+    expect(validateRvStep(0, daten, false).size).toBe(0);
   });
 });
 
 /**
- * Der Schieberegler „Kunde zahlt keine Reservierungsgebühr".
- *
- * Standard ist „zahlt". Bei umgelegtem Regler stehen weder die IBAN-Felder
- * noch die Widerrufswahl im Formular; sie dürfen dann auch nichts blockieren,
- * sonst hängt der Schritt an einer Pflicht, die niemand sehen kann.
+ * Ohne Gebühr (seit dem 16.10.2026 jede neue Reservierung) steht keine
+ * Widerrufswahl im Formular; sie darf dann auch nichts blockieren. Alte
+ * Datensätze mit Gebühr verlangen sie weiter.
  */
-describe("Der Regler zur Reservierungsgebühr", () => {
+describe("Ohne Reservierungsgebühr", () => {
   it("lässt den Abschluss ohne Widerrufswahl durch, wenn keine Gebühr erhoben wird", () => {
     expect(abschlussVollstaendig(abschluss({ gebuehrEntfaellt: true, widerrufWahl: "" }))).toBe(true);
     expect(abschlussVollstaendig(abschluss({ gebuehrEntfaellt: true, widerrufWahl: undefined }))).toBe(true);

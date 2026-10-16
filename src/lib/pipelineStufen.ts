@@ -34,10 +34,17 @@ export const PIPELINE_STUFEN = [
    */
   { key: "erstgespraech_geplant", label: "Erstgespräch" },
   { key: "eg_noshow", label: "EG NoShow" },
-  { key: "beratungsgespraech", label: "Beratungsgespräch" },
-  { key: "bg_noshow", label: "BG NoShow" },
-  { key: "selbstauskunft", label: "Selbstauskunft" },
-  { key: "objektauswahl", label: "Objektauswahl" },
+  /*
+   * Neuer Ablauf seit 16.10.2026 (Umsetzungsstrategie Vertrieb, Abschnitt 3):
+   * Die Schluessel bleiben, nur die Anzeigenamen folgen dem neuen Ablauf.
+   * Ein Umbenennen der Schluessel haette jede Stufe in Dutzenden Dateien und
+   * eine Datenmigration bedeutet.
+   */
+  { key: "beratungsgespraech", label: "Beratungspräsentation" },
+  { key: "bg_noshow", label: "BP NoShow" },
+  // Gilt, bis Selbstauskunft, Ausweis und letzte Gehaltsabrechnung da sind.
+  { key: "selbstauskunft", label: "Selbstauskunft & Unterlagen" },
+  { key: "objektauswahl", label: "Objektvorstellung" },
   /*
    * NUR MANUELL: Diese Stufe setzt ausschliesslich ein Partner von Hand,
    * wenn der Kunde nach der Objektvorstellung noch ueberlegt. Keine Automatik
@@ -54,10 +61,21 @@ export const PIPELINE_STUFEN = [
    */
   { key: "follow_up_objekt", label: "Follow-Up" },
   { key: "reservierung", label: "Reservierung" },
+  /*
+   * AUSGEBLENDET seit 16.10.2026: Die Unterlagen kommen jetzt vor die
+   * Objektvorstellung. Die Stufe bleibt fuer laufende Faelle bestehen
+   * (Entscheidung Christian, Strategie Frage 3), hat aber keine eigene
+   * Spalte und kein eigenes Kaestchen mehr. Sie teilt den Rang der
+   * Reservierung (`RANG_ALIAS`) und erscheint im Board in deren Spalte, mit
+   * Hinweis auf der Kachel (`spaltenStufe`). Automatiken setzen sie nicht
+   * mehr; von dort rueckt ein Fall ueber die Besichtigung weiter.
+   */
   { key: "bonitaetsunterlagen", label: "Bonitätsunterlagen" },
+  { key: "besichtigung", label: "Besichtigung" },
+  { key: "bankgutachter", label: "Termin Bankgutachter" },
   { key: "finanzierung", label: "Finanzierung" },
   { key: "notar", label: "Notar" },
-  { key: "faelligkeit", label: "Fälligkeit" },
+  { key: "faelligkeit", label: "Kaufpreisfälligkeit" },
   { key: "abrechnung", label: "Abrechnung" },
   { key: "abgeschlossen", label: "Abgeschlossen" },
   { key: "bestandsimport", label: "Bestandskunden Import" },
@@ -94,16 +112,13 @@ export const STUFEN_WAHRSCHEINLICHKEIT: Record<string, number> = {
   follow_up_objekt: 0.45,
   reservierung: 0.6,
   /*
-   * Die Bonitaet steht jetzt hinter der Reservierung, ihre Zahl steigt
-   * entsprechend. Der Sprung von 0,60 auf 0,75 ist der groesste im Verlauf,
-   * und das ist gewollt: Wer reserviert hat UND die Bonitaet beisammen hat,
-   * springt selten wieder ab.
-   *
-   * Reservierung faellt von 0,70 auf 0,60, weil eine Reservierung ohne
-   * geprueft Bonitaet weniger wert ist als vorher, wo die Bonitaet schon
-   * dahinter lag.
+   * Seit 16.10.2026: Die Bonitaetsunterlagen sind ausgeblendet und teilen den
+   * Rang der Reservierung, also auch deren Wert. Besichtigung und
+   * Bankgutachter liegen zwischen Reservierung (0,60) und Finanzierung (0,80).
    */
-  bonitaetsunterlagen: 0.75,
+  bonitaetsunterlagen: 0.6,
+  besichtigung: 0.7,
+  bankgutachter: 0.75,
   finanzierung: 0.8,
   notar: 0.9,
   faelligkeit: 1,
@@ -145,6 +160,8 @@ const OHNE_EIGENEN_SCHRITT = new Set<string>([
   // Seit der Zusammenlegung ein Alias auf "erstgespraech_geplant".
   "erstgespraech",
   "bg_noshow",
+  // Ausgeblendete Altstufe seit 16.10.2026, Rang der Reservierung.
+  "bonitaetsunterlagen",
   "bestandsimport",
   "archiviert",
   "verloren",
@@ -184,6 +201,9 @@ const RANG_ALIAS: Record<string, string> = {
   eg_noshow: "erstgespraech_geplant",
   erstgespraech: "erstgespraech_geplant",
   bg_noshow: "beratungsgespraech",
+  // Ausgeblendet seit 16.10.2026: Wer dort steht, hat unterschrieben
+  // reserviert, die Besichtigung steht noch aus.
+  bonitaetsunterlagen: "reservierung",
   zugewiesen: "neuer_lead",
   kontaktversuche: "nicht_erreicht",
   vermoegensaufbau: "follow_up",
@@ -291,16 +311,42 @@ export function darfVorruecken(aktuell: string | null | undefined, ziel: string)
  * Stufe den Zusatz.
  */
 export function stufenFilterLabel(key: string): string {
-  if (key === "follow_up_objekt") return "Follow-Up (nach Objektauswahl)";
+  if (key === "follow_up_objekt") return "Follow-Up (nach Objektvorstellung)";
   return PIPELINE_STUFEN.find((s) => s.key === key)?.label ?? key;
 }
+
+/**
+ * Stufen ohne eigene Spalte im Pipeline-Board und die Spalte, in der ihre
+ * Kacheln stattdessen stehen.
+ *
+ * Nur die Bonitaetsunterlagen (seit 16.10.2026). Bestandsfaelle verschwinden
+ * so nicht aus dem Board: Sie stehen unter „Reservierung", weil sie dort im
+ * Rang stehen, und tragen auf der Kachel einen Hinweis auf die alte Stufe.
+ */
+const AUSGEBLENDETE_SPALTEN: Record<string, string> = {
+  bonitaetsunterlagen: "reservierung",
+};
+
+/** Die Spalte, in der eine Kachel dieser Stufe steht. */
+export function spaltenStufe(stufe: string): string {
+  return AUSGEBLENDETE_SPALTEN[stufe] ?? stufe;
+}
+
+/** Steht die Kachel in einer fremden Spalte, weil ihre Stufe ausgeblendet ist? */
+export function istAusgeblendeteStufe(stufe?: string | null): boolean {
+  return !!stufe && stufe in AUSGEBLENDETE_SPALTEN;
+}
+
+/** Die Spalten des Pipeline-Boards, in der Reihenfolge von `PIPELINE_STUFEN`. */
+export const PIPELINE_SPALTEN = PIPELINE_STUFEN.filter((s) => !istAusgeblendeteStufe(s.key));
 
 /** Zentraler Zod-Enum für pipelineStufe – einzige Quelle der Wahrheit. */
 export const PipelineStufeZodEnum = z.enum([
   "bestandsimport", "neuer_lead", "nicht_erreicht", "erreicht",
   "follow_up", "erstgespraech_geplant", "eg_noshow",
   "beratungsgespraech", "bg_noshow", "selbstauskunft", "objektauswahl",
-  "follow_up_objekt", "reservierung", "bonitaetsunterlagen", "finanzierung", "notar", "faelligkeit",
+  "follow_up_objekt", "reservierung", "bonitaetsunterlagen", "besichtigung", "bankgutachter",
+  "finanzierung", "notar", "faelligkeit",
   "abrechnung", "abgeschlossen", "archiviert", "verloren",
   // Legacy — bleiben im Enum für Altdaten
   "erstgespraech", "zugewiesen", "kontaktversuche", "vermoegensaufbau",

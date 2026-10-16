@@ -116,7 +116,7 @@ Deno.serve(async (req) => {
     const d = a.erledigt_am || a.datum; if (!d) continue
     if (!letzteAktMap.has(a.kunde_id)) letzteAktMap.set(a.kunde_id, new Date(d))
   }
-  const aktivStufen = ['erstgespraech_geplant', 'erstgespraech', 'beratungsgespraech', 'bonitaet', 'bonitaetsunterlagen', 'objektauswahl', 'follow_up_objekt', 'reservierung', 'finanzierung', 'notar']
+  const aktivStufen = ['erstgespraech_geplant', 'erstgespraech', 'beratungsgespraech', 'bonitaet', 'bonitaetsunterlagen', 'objektauswahl', 'follow_up_objekt', 'reservierung', 'besichtigung', 'bankgutachter', 'finanzierung', 'notar']
 
   // Ranking: Abschlüsse Woche > Reservierungen Woche > neue Leads
   const zustMap = new Map<string, string>()
@@ -159,7 +159,7 @@ Deno.serve(async (req) => {
 
     // Pipeline-Health
     const myAllKontakte = kAll.filter(c => c.zustaendig_id === userId)
-    const heisseDeals = myAllKontakte.filter(c => ['reservierung', 'finanzierung', 'notar', 'faelligkeit'].includes(getStufe(c))).length
+    const heisseDeals = myAllKontakte.filter(c => ['reservierung', 'besichtigung', 'bankgutachter', 'finanzierung', 'notar', 'faelligkeit'].includes(getStufe(c))).length
     // Punkt 4: Stagnierend über Aktivitäten
     const stagnierendeDeals = myAllKontakte.filter(c => {
       const s = getStufe(c); if (!aktivStufen.includes(s)) return false

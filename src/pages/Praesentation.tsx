@@ -20,7 +20,6 @@ import { useToast } from "@/hooks/use-toast";
 import { confirmDialog } from "@/lib/confirm";
 import { addKontakt, getKontakte } from "@/lib/kundenStore";
 import { getAppConfig, setAppConfig } from "@/lib/appConfigStore";
-import { KundenstimmenSection } from "@/components/praesentation/KundenstimmenSection";
 import { WissenswertSection } from "@/components/praesentation/WissenswertSection";
 import { PhoneInput } from "@/components/ui/phone-input";
 
@@ -487,7 +486,13 @@ export default function Praesentation() {
                   <CardContent className="p-4">
                     {/* Custom-Render: Kundenstimmen / Wissenswert */}
                     {abschnitt.customRender === "kundenstimmen" ? (
-                      <KundenstimmenSection />
+                      /*
+                        Kundenstimmen ausgeblendet (16.10.2026): Die bisherigen stammen aus dem
+                        Ursprungsprojekt. Echte Stimmen nur mit Einverständnis der Kunden.
+                      */
+                      <p className="py-6 text-center text-sm text-muted-foreground">
+                        Kundenstimmen folgen, sobald echte Stimmen mit Einverständnis vorliegen.
+                      </p>
                     ) : abschnitt.customRender === "wissenswert" ? (
                       <WissenswertSection />
                     ) : abschnitt.dokumente.length === 0 ? (

@@ -11,6 +11,10 @@ import {
   investmentStufenText,
 } from "@/lib/kontaktPipeline";
 import { berechneDashboardKpis, zeitraumGrenzen } from "@/lib/dashboardKpis";
+import { PIPELINE_SPALTEN, spaltenStufe, istAusgeblendeteStufe } from "@/lib/pipelineStufen";
+import { brauchtStufenTermin, stufeNachStattgefunden, TERMIN_STUFEN, type StufenTerminEingabe, type TerminStufe } from "@/lib/stufenTermin";
+import { StufenTerminDialog } from "@/components/kunden/StufenTerminDialog";
+import { Button } from "@/components/ui/button";
 
 /*
  * Lokale Vorschau "Pipeline am Investment" (11.10.2026). Nur im
@@ -30,6 +34,8 @@ const KONTAKTE = [
   { id: "vk-3", vorname: "Carla", nachname: "Probe", status: "kontaktiert", meta: { pipelineStufe: "objektauswahl" } },
   { id: "vk-4", vorname: "Dieter", nachname: "Test (3 Investments)", status: "kunde", meta: { pipelineStufe: "reservierung" } },
   { id: "vk-5", vorname: "Eva", nachname: "Bestand", status: "kunde", meta: { pipelineStufe: "bestandsimport" } },
+  { id: "vk-6", vorname: "Frieda", nachname: "Altfall (Bonitätsunterlagen)", status: "qualifiziert", meta: { pipelineStufe: "bonitaetsunterlagen" } },
+  { id: "vk-7", vorname: "Gustav", nachname: "Besichtigung", status: "qualifiziert", meta: { pipelineStufe: "besichtigung" } },
 ].map((k) => ({
   ...k,
   email: "", telefon: "", archiviert: false, geloescht: false,
@@ -46,6 +52,8 @@ const INVESTMENTS = [
   ["vi-6", "vk-4", 2, "reservierung", 179000],
   ["vi-7", "vk-4", 3, "erreicht", 0],
   ["vi-8", "vk-5", 1, "bestandsimport", 0],
+  ["vi-9", "vk-6", 1, "bonitaetsunterlagen", 215000],
+  ["vi-10", "vk-7", 1, "besichtigung", 232000],
 ].map(([id, kunde_id, nummer, stufe, kaufpreis]) => ({
   id, kunde_id, kaufpreis, erstellt_am: JETZT,
   meta: { nummer, label: `Investment ${nummer}`, pipelineStufe: stufe, kaufpreis },
@@ -61,7 +69,11 @@ function setzeStufe(investmentId: string, stufe: string) {
   );
 }
 
-const SPALTEN = PIPELINE_STUFEN.filter((s) => !["zugewiesen", "kontaktversuche", "vermoegensaufbau", "archiviert"].includes(s.key));
+// Spalten wie im Board: ohne ausgeblendete Stufen (Bonitaetsunterlagen seit 16.10.2026).
+const SPALTEN = PIPELINE_SPALTEN.filter((s) => !["zugewiesen", "kontaktversuche", "vermoegensaufbau", "archiviert"].includes(s.key));
+
+/** Ein in der Vorschau eingetragener Termin, nur im Arbeitsspeicher. */
+interface VorschauTermin { investmentId: string; titel: string; eingabe: StufenTerminEingabe }
 const label = (key: string) => PIPELINE_STUFEN.find((s) => s.key === key)?.label || key;
 const euro = (n: number) => n.toLocaleString("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
 
@@ -73,6 +85,20 @@ export default function VorschauPipeline() {
     return 0;
   });
   const neu = () => setStand((v) => v + 1);
+  // Termin-Fenster wie im Board: Besichtigung und Bankgutachter nur mit Termin.
+  const [terminFuer, setTerminFuer] = useState<{ investmentId: string; stufe: TerminStufe; kundeName: string } | null>(null);
+  const [termine, setTermine] = useState<VorschauTermin[]>([]);
+  const waehleStufe = (investmentId: string, stufe: string, kundeName: string) => {
+    if (brauchtStufenTermin(stufe)) { setTerminFuer({ investmentId, stufe, kundeName }); return; }
+    setzeStufe(investmentId, stufe); neu();
+  };
+  const stattgefunden = (t: VorschauTermin) => {
+    const inv = getInvestments().find((i) => i.id === t.investmentId);
+    const ziel = stufeNachStattgefunden(t.titel, inv?.pipelineStufe);
+    if (ziel) setzeStufe(t.investmentId, ziel);
+    setTermine((liste) => liste.filter((x) => x !== t));
+    neu();
+  };
 
   const daten = useMemo(() => {
     const kontakte = getKontakte();
@@ -90,7 +116,8 @@ export default function VorschauPipeline() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stand]);
 
-  const belegt = SPALTEN.filter((s) => daten.karten.some((k) => k.stufe === s.key) || ["neuer_lead", "reservierung", "notar"].includes(s.key));
+  const belegt = SPALTEN.filter((s) => daten.karten.some((k) => spaltenStufe(k.stufe) === s.key)
+    || ["neuer_lead", "reservierung", "besichtigung", "bankgutachter", "notar"].includes(s.key));
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8 space-y-6" data-lg="seite">
@@ -100,6 +127,9 @@ export default function VorschauPipeline() {
           Beispielkunden, nur in diesem Browserfenster, nichts wird gespeichert. Jede Karte ist ein Investment.
           Über die Auswahl auf einer Karte lässt sich ihre Stufe ändern: Die anderen Investments desselben
           Kunden bleiben, wo sie sind, und Lead-Verwaltung, „Alle Kontakte“ und die Zahlen rechnen sofort neu.
+          Neuer Ablauf: Wer eine Karte auf „Besichtigung“ oder „Termin Bankgutachter“ setzt, trägt im Fenster
+          den Termin ein; „Stattgefunden“ rückt die Stufe weiter. Die alte Stufe Bonitätsunterlagen hat keine
+          eigene Spalte mehr und steht unter „Reservierung“.
         </p>
       </div>
 
@@ -107,7 +137,7 @@ export default function VorschauPipeline() {
         <h2 className="font-semibold mb-2">Pipeline</h2>
         <div className="flex gap-3 overflow-x-auto pb-2">
           {belegt.map((spalte) => {
-            const karten = daten.karten.filter((k) => k.stufe === spalte.key);
+            const karten = daten.karten.filter((k) => spaltenStufe(k.stufe) === spalte.key);
             return (
               <div key={spalte.key} className="min-w-[220px] w-[220px] shrink-0 rounded-lg bg-muted/40 p-2">
                 <div className="text-xs font-semibold uppercase tracking-wide mb-2">
@@ -120,12 +150,15 @@ export default function VorschauPipeline() {
                       <Card key={k.entryKey} className="p-2 text-sm">
                         <div className="font-medium">{k.kunde.vorname} {k.kunde.nachname}</div>
                         {inv && <Badge variant="secondary" className="text-[10px] mt-1">Investment {inv.nummer}</Badge>}
+                        {istAusgeblendeteStufe(k.stufe) && (
+                          <div className="text-[10px] mt-1 text-[hsl(var(--warning))]">Alte Stufe {label(k.stufe)}, weiter über die Besichtigung</div>
+                        )}
                         {inv && (
                           <select
                             aria-label={`Stufe von Investment ${inv.nummer}`}
                             className="mt-2 w-full rounded border bg-background text-xs p-1"
-                            value={inv.pipelineStufe}
-                            onChange={(e) => { setzeStufe(inv.id, e.target.value); neu(); }}
+                            value={spaltenStufe(inv.pipelineStufe)}
+                            onChange={(e) => waehleStufe(inv.id, e.target.value, `${k.kunde.vorname} ${k.kunde.nachname}`)}
                           >
                             {SPALTEN.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}
                           </select>
@@ -139,6 +172,37 @@ export default function VorschauPipeline() {
           })}
         </div>
       </section>
+
+      <Card>
+        <CardHeader className="pb-2"><CardTitle className="text-base">Nächste Aktionen (eingetragene Termine)</CardTitle></CardHeader>
+        <CardContent className="text-sm space-y-2">
+          {termine.length === 0 && (
+            <p className="text-muted-foreground">Noch kein Termin. Eine Karte auf „Besichtigung“ oder „Termin Bankgutachter“ setzen.</p>
+          )}
+          {termine.map((t, i) => (
+            <div key={`${t.investmentId}-${i}`} className="flex flex-wrap items-center gap-2">
+              <span className="font-medium">{t.titel}</span>
+              <span className="text-muted-foreground">{t.eingabe.datum} um {t.eingabe.uhrzeit} Uhr{t.eingabe.ort ? `, ${t.eingabe.ort}` : ""}</span>
+              <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => stattgefunden(t)}>Stattgefunden</Button>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      <StufenTerminDialog
+        stufe={terminFuer?.stufe ?? null}
+        kundeName={terminFuer?.kundeName}
+        onAbbrechen={() => setTerminFuer(null)}
+        onSpeichern={async (eingabe) => {
+          if (!terminFuer) return null;
+          // Vorschau: kein meeting_anlegen, nur Arbeitsspeicher.
+          setTermine((liste) => [...liste, { investmentId: terminFuer.investmentId, titel: TERMIN_STUFEN[terminFuer.stufe].titel, eingabe }]);
+          setzeStufe(terminFuer.investmentId, terminFuer.stufe);
+          setTerminFuer(null);
+          neu();
+          return null;
+        }}
+      />
 
       <div className="grid gap-4 md:grid-cols-3">
         <Card>

@@ -67,8 +67,8 @@ describe("Textdateien sind vollständig", () => {
 describe("Die deutschen Konstanten bleiben wortgleich", () => {
   it("die PDFs lesen weiter dieselben deutschen Texte", () => {
     expect(EXPOSE_ABSCHNITTE[6]).toEqual({ id: "verwaltung", nr: 7, titel: "Verwaltung vor Ort", kurz: "Verwaltung" });
-    expect(ZEITPLAN_STANDARD[5]).toEqual({ nr: 6, titel: "Übergabe an die Verwaltung", frist: "", text: NAECHSTE_SCHRITTE[5].text });
-    expect(ZEITPLAN_STANDARD[0]).toEqual({ nr: 1, titel: "Reservierung", frist: "Mit Anzahlung wirksam", zahlung: true, text: NAECHSTE_SCHRITTE[1].text });
+    expect(ZEITPLAN_STANDARD[5]).toEqual({ nr: 6, titel: "Reservierung", frist: "Kostenfrei, wirksam mit deiner Unterschrift", text: NAECHSTE_SCHRITTE[1].text });
+    expect(ZEITPLAN_STANDARD[0]).toEqual({ nr: 1, titel: "Erstgespräch", frist: "", text: "Wir lernen uns kennen und klären, was du mit einer Immobilie erreichen willst." });
     expect(NAECHSTE_SCHRITTE[0].titel).toBe("Beratung");
     expect(MARKT_QUELLE_HINWEIS).toBe("Aus der Marktanalyse, Quelle und Stand je Aussage.");
     expect(marktQuelleHinweis("de")).toBe(MARKT_QUELLE_HINWEIS);
@@ -92,8 +92,9 @@ describe("baueExposeInhalt mit Sprache", () => {
     expect(kaufpreis?.label).toBe("Purchase price");
     expect(kaufpreis?.wert).toMatch(/^€\d{1,3}(,\d{3})+$/);
     expect(en.naechsteSchritte[1].titel).toBe("Reservation");
-    expect(en.zeitplan[3].titel).toBe("Notary appointment (Notartermin)");
-    expect(en.zeitplan[3].text).toBe("The contract is notarised at the notary’s office, in person or by power of attorney.");
+    expect(en.zeitplan[5]).toMatchObject({ titel: "Reservation", frist: "Free of charge, effective upon your signature" });
+    expect(en.zeitplan[5].zahlung).toBeUndefined();
+    expect(en.zeitplan[9].titel).toBe("Notary");
     expect(en.chancenRisiken[0].titel).toBe("Rental income and loss of rent");
     expect(en.rechtliches.hinweise[0]).toEqual(RECHTLICHE_HINWEISE_VORRANG_EN);
     expect(en.rechtliches.hinweise).toHaveLength(RECHTLICHE_HINWEISE_ENTWURF.length + 1);

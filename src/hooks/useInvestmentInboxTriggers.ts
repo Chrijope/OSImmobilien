@@ -1,7 +1,12 @@
 import { useEffect } from "react";
 import { istKontaktStumm } from "@/lib/kontaktStumm";
 import { getInvestments, getRvSigned } from "@/lib/investmentsStore";
-import { addInboxTask, getInboxTasks, setInboxTasks } from "@/lib/aktivitaetenStore";
+import { addInboxTask, getAlleTermine, getInboxTasks, setInboxTasks } from "@/lib/aktivitaetenStore";
+import { addProzessAufgabe } from "@/lib/prozessAufgabe";
+import {
+  fehlendeMindestunterlagen, mindestunterlagenText, objektvorstellungSteht, STUFEN_VOR_OBJEKTVORSTELLUNG, UNTERLAGEN_FEHLEN_TITEL,
+} from "@/lib/mindestunterlagen";
+import { stelleBesichtigungsAufgabeSicher } from "@/lib/stufenTerminAktionen";
 import { getKontakte } from "@/lib/kundenStore";
 import { getUserSetting, setUserSetting } from "@/lib/userSettingsCache";
 import { isTestAccount } from "@/lib/dbStoreHelper";
@@ -26,6 +31,23 @@ import {
  */
 
 const REMINDER_KEY = "osimmo_investment_inbox_triggers_sent";
+
+/**
+ * Der naechste offene Termin „Objektvorstellung" des Kunden in den kommenden
+ * zwei Tagen, sonst `null`. Gelesen aus den Meetings im Verlauf; eine
+ * Selbstbuchung legt dort ebenfalls eine Zeile an.
+ */
+function naechsteObjektvorstellung(kundeId: string, jetzt: number): { ms: number; tag: string } | null {
+  let treffer: { ms: number; tag: string } | null = null;
+  for (const t of getAlleTermine()) {
+    if (t.kundeId !== kundeId || t.erledigtAm || !t.faelligAm) continue;
+    if (!/objektvorstellung/i.test(t.beschreibung || "")) continue;
+    const ms = new Date(`${t.faelligAm}T${(t.uhrzeit || "10:00").slice(0, 5)}:00`).getTime();
+    if (!objektvorstellungSteht(ms, jetzt)) continue;
+    if (!treffer || ms < treffer.ms) treffer = { ms, tag: t.faelligAm.slice(0, 10) };
+  }
+  return treffer;
+}
 /** Der Titel seit 15.10.2026. Der alte wird beim Aufräumen weiter erkannt. */
 const INAKTIV_TITEL = "Seit 14 Tagen inaktiv: Kunden erneut kontaktieren";
 const RE_ENGAGEMENT_TITEL = "Re-Engagement (14 Tage inaktiv)";
@@ -318,11 +340,52 @@ export function useInvestmentInboxTriggers(userRole?: string, userName?: string,
               const d = daysBetween(seit, new Date(now));
               for (const s of [{ k: "bonitaet_3d", d: 3, p: "mittel" as const }, { k: "bonitaet_7d", d: 7, p: "hoch" as const }, { k: "bonitaet_14d", d: 14, p: "dringend" as const }]) {
                 if (d < s.d || wasSent(inv.id, s.k)) continue;
-                if (add(`${s.k}:${inv.id}`, "Bonitätsunterlagen fehlen: beim Kunden nachfassen", `Seit ${d} Tagen sind noch Bonitätsunterlagen offen für ${kundeName} (${inv.label}). Fehlend: ${fehlend.join(", ")}. Bitte beim Kunden nachfassen.`, s.p, "follow_up", inv.kontaktId, kundeName))
+                // Titel seit 16.10.2026 wie die Aufgabe vor der Objektvorstellung.
+                if (add(`${s.k}:${inv.id}`, UNTERLAGEN_FEHLEN_TITEL, `Seit ${d} Tagen sind noch Unterlagen offen für ${kundeName} (${inv.label}). Fehlend: ${fehlend.join(", ")}. Bitte beim Kunden nachfassen.`, s.p, "follow_up", inv.kontaktId, kundeName))
                   markSent(inv.id, s.k);
               }
             }
           }
+        }
+
+        /*
+         * Unterlagen vor der Objektvorstellung (16.10.2026): Zwei Tage vor
+         * einem Termin „Objektvorstellung" fehlen noch Ausweis oder letzte
+         * Gehaltsabrechnung, dann eine Aufgabe an den Zustaendigen. Je Termin
+         * einmal (Merkmarke mit dem Termintag).
+         */
+        if (isVp && STUFEN_VOR_OBJEKTVORSTELLUNG.includes(stage)) {
+          const fehlend = fehlendeMindestunterlagen(meta);
+          const termin = fehlend.length > 0 ? naechsteObjektvorstellung(inv.kontaktId, now) : null;
+          const merk = termin ? `unterlagen_vor_ov_${termin.tag}` : "";
+          if (termin && !wasSent(inv.id, merk)) {
+            void addProzessAufgabe({
+              titel: UNTERLAGEN_FEHLEN_TITEL,
+              beschreibung: `Am ${new Date(termin.ms).toLocaleDateString("de-DE")} ist die Objektvorstellung mit ${kundeName} (${inv.label}). Es fehlen noch: ${mindestunterlagenText(fehlend)}. Bitte vorher beim Kunden nachfassen.`,
+              prioritaet: "hoch",
+              typ: "follow_up",
+              faellig_am: todayISO(),
+              uhrzeit: "09:00",
+              kundeId: inv.kontaktId,
+              kundeName,
+              investmentId: inv.id,
+              erstelltVonName: userName,
+              ausloeserSchluessel: `unterlagen_vor_objektvorstellung:${inv.id}:${termin.tag}`,
+            }, userId).then((ok) => { if (ok) markSent(inv.id, merk); });
+          }
+        }
+
+        // Reservierung unterschrieben: „Besichtigung vereinbaren", je
+        // Investment einmal (16.10.2026). Dieselbe Pruefung wie im Kundenprofil.
+        if (isVp && getRvSigned(inv.id) && ["reservierung", "bonitaetsunterlagen"].includes(stage)) {
+          void stelleBesichtigungsAufgabeSicher({
+            kundeId: inv.kontaktId,
+            kundeName,
+            investmentId: inv.id,
+            investmentLabel: inv.label,
+            erstelltVonName: userName,
+            rueckfallZustaendig: userId,
+          });
         }
 
         // =========== PHASE 3 – Objektauswahl ===========

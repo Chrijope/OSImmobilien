@@ -48,31 +48,38 @@ export const STUFEN_ERKLAERUNG: Record<string, string> = {
   // Hier stand bis zuletzt „Bonitätsunterlagen", eine Stufe aus der alten
   // Reihenfolge, die heute drei Schritte weiter hinten liegt.
   beratungsgespraech:
-    "Der Lead ist beim Vertriebspartner, das Beratungsgespräch läuft. Sobald die Selbstauskunft beim " +
-    "Kunden zur Unterschrift liegt, rückt der Vorgang auf „Selbstauskunft\".",
-  bg_noshow: "Der Kunde ist zum Beratungstermin nicht erschienen. Der Lead bleibt beim Vertriebspartner, ein neuer Termin ist nötig.",
+    "Der Lead ist beim Vertriebspartner, die Beratungspräsentation läuft. Sobald die Selbstauskunft beim " +
+    "Kunden zur Unterschrift liegt, rückt der Vorgang auf „Selbstauskunft & Unterlagen\".",
+  bg_noshow: "Der Kunde ist zur Beratungspräsentation nicht erschienen. Der Lead bleibt beim Vertriebspartner, ein neuer Termin ist nötig.",
   selbstauskunft:
-    "Die Selbstauskunft liegt beim Kunden, die Unterschrift steht aus. " +
-    "Mit der Unterschrift rückt der Vorgang auf „Objektauswahl\".",
+    "Die Selbstauskunft liegt beim Kunden, die Unterschrift steht aus. Dazu lädt er Personalausweis und " +
+    "letzte Gehaltsabrechnung im Portal hoch. Mit der Unterschrift rückt der Vorgang auf „Objektvorstellung\".",
   // Der alte Text beschrieb hier die Reservierung („RV-PDF erzeugt").
   objektauswahl:
-    "Die Selbstauskunft ist unterschrieben, jetzt werden passende Einheiten vorgestellt. " +
+    "Die Selbstauskunft ist unterschrieben, in der Objektvorstellung wird ein passendes Objekt vorgestellt. " +
     "Sobald eine Reservierungsvereinbarung erstellt ist, rückt der Vorgang auf „Reservierung\".",
   // Nur manuell, siehe pipelineStufen.ts: Keine Automatik setzt diese Stufe.
   follow_up_objekt:
     "Der Kunde hat Objekte gesehen und überlegt noch. Diese Stufe wird ausschließlich von Hand " +
     "gesetzt, keine Automatik führt hierher. Sobald eine Reservierungsvereinbarung erstellt ist, " +
     "rückt der Vorgang auf „Reservierung\".",
+  // Seit 16.10.2026: Nach der Unterschrift bleibt die Stufe, der Partner
+  // bekommt die Aufgabe „Besichtigung vereinbaren" (KundenDetail).
   reservierung:
-    "Eine Reservierungsvereinbarung ist erstellt, die Unterschrift des Kunden steht aus. " +
-    "Mit der Unterschrift rückt der Vorgang auf „Bonitätsunterlagen\".",
-  // Geprüft in sindBonitaetsunterlagenFreigegeben: Jedes Pflichtdokument muss
-  // auf „approved" stehen, hochgeladen allein reicht nicht.
+    "Eine Reservierungsvereinbarung ist erstellt oder unterschrieben. Nach der Unterschrift wird die " +
+    "Besichtigung vereinbart; mit dem eingetragenen Termin steht der Vorgang auf „Besichtigung\".",
+  // Ausgeblendet seit 16.10.2026, siehe pipelineStufen.ts.
   bonitaetsunterlagen:
-    "Die Reservierung ist unterschrieben, jetzt werden die Bonitätsunterlagen eingesammelt. " +
-    "Erst wenn jedes Pflichtdokument freigegeben ist, rückt der Vorgang auf „Finanzierung\". " +
-    "Hochgeladen allein genügt nicht.",
-  finanzierung: "Alle Pflicht-Bonitätsunterlagen sind freigegeben. Der Finanzierungspartner erstellt jetzt das Darlehensangebot.",
+    "Alte Stufe aus dem früheren Ablauf, ohne eigene Spalte. Laufende Fälle stehen unter „Reservierung\" " +
+    "und gehen über die Besichtigung weiter.",
+  // Geprüft in stufenTerminAktionen.rueckeNachStufenTermin.
+  besichtigung:
+    "Die Besichtigung des reservierten Objekts ist als Termin eingetragen. Ist sie stattgefunden, " +
+    "rückt der Vorgang auf „Termin Bankgutachter\".",
+  bankgutachter:
+    "Der Termin mit dem Gutachter der Bank ist eingetragen. Ist er stattgefunden, rückt der Vorgang " +
+    "auf „Finanzierung\".",
+  finanzierung: "Das Gutachten liegt vor. Die Bank prüft und sagt zu, der Finanzierungspartner begleitet den Darlehensvertrag.",
   notar: "Ein Notartermin ist im Investment hinterlegt oder vom Kunden im Portal bestätigt.",
   faelligkeit: "Der Notartermin liegt in der Vergangenheit, Kaufpreisfälligkeit und Übergabe laufen.",
   // Geprüft in KundenDetail, Karte „Abwicklung": Erst die gestellte
@@ -85,7 +92,7 @@ export const STUFEN_ERKLAERUNG: Record<string, string> = {
   // Geprüft in investmentsStore.createInvestment.
   bestandsimport:
     "Importierte Bestandskunden. Sie bleiben getrennt, bis das erste Investment angelegt wird, " +
-    "dann rücken sie auf „Beratungsgespräch\".",
+    "dann rücken sie auf „Beratungspräsentation\".",
   archiviert: "Manuell archivierter Kontakt. Bleibt im System, ist aber aus der aktiven Pipeline ausgeblendet.",
   verloren:
     `Status „verloren" oder „inaktiv", etwa nach ${MAX_KONTAKTVERSUCHE} erfolglosen Kontaktversuchen, ` +

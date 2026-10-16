@@ -109,16 +109,16 @@ const IN_BEARBEITUNG = new Set([
   "erstgespraech_geplant", "erstgespraech", "eg_noshow",
   "beratungsgespraech", "bg_noshow", "selbstauskunft",
   "bonitaetsunterlagen", "objektauswahl", "follow_up_objekt",
-  "reservierung", "finanzierung",
+  "reservierung", "besichtigung", "bankgutachter", "finanzierung",
 ]);
 
 /** Noch von niemandem angefasst. */
 const UNBEARBEITET = new Set(["neuer_lead", "zugewiesen"]);
 const AB_RESERVIERUNG = new Set([
-  "reservierung", "finanzierung", "notar", "notar_ohne_gs", "notar_mit_gs",
+  "reservierung", "besichtigung", "bankgutachter", "finanzierung", "notar", "notar_ohne_gs", "notar_mit_gs",
   "faelligkeit", "abrechnung", "kunde", "aftersales",
 ]);
-const OFFENE_RESERVIERUNG = new Set(["reservierung", "finanzierung"]);
+const OFFENE_RESERVIERUNG = new Set(["reservierung", "besichtigung", "bankgutachter", "finanzierung"]);
 /** Stufen, die belegen, dass ein Erstgespräch stattgefunden hat. */
 const NACH_ERSTGESPRAECH = new Set([
   "erstgespraech_geplant", "erstgespraech", "bonitaetsunterlagen", "objektauswahl", "follow_up_objekt", ...AB_RESERVIERUNG,

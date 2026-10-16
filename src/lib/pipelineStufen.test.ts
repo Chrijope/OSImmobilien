@@ -89,7 +89,7 @@ describe("Abschlusswahrscheinlichkeit je Pipelinestufe", () => {
 });
 
 describe("Fortschrittsleiste im Kundenprofil", () => {
-  it("zeigt genau die sechzehn Schritte in Prozessreihenfolge", () => {
+  it("zeigt genau die siebzehn Schritte in Prozessreihenfolge", () => {
     expect(FORTSCHRITT_STUFEN.map((s) => s.key)).toEqual([
       "neuer_lead",
       "nicht_erreicht",
@@ -101,7 +101,10 @@ describe("Fortschrittsleiste im Kundenprofil", () => {
       "objektauswahl",
       "follow_up_objekt",
       "reservierung",
-      "bonitaetsunterlagen",
+      // Seit 16.10.2026: Bonitaetsunterlagen ausgeblendet, neu Besichtigung
+      // und Termin Bankgutachter.
+      "besichtigung",
+      "bankgutachter",
       "finanzierung",
       "notar",
       "faelligkeit",

@@ -224,6 +224,9 @@ export function pipelineToEmpfehlungStatus(stufe: string | null | undefined): Em
       return "in_beratung";
     case "reservierung":
     case "bonitaetsunterlagen":
+    // Seit 16.10.2026, wie in recompute-pipeline.
+    case "besichtigung":
+    case "bankgutachter":
     case "finanzierung":
     case "notar":
       return "in_abwicklung";

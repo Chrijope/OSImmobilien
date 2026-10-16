@@ -20,6 +20,8 @@ export type PortalStepKey =
   | "objektauswahl"
   | "reservierung"
   | "bonitaetsunterlagen"
+  | "besichtigung"
+  | "bankgutachter"
   | "finanzierung"
   | "notar"
   | "faelligkeit"
@@ -48,7 +50,15 @@ const STEP_ZU_STUFE: Record<PortalStepKey, string> = {
   selbstauskunft: "selbstauskunft",
   objektauswahl: "objektauswahl",
   reservierung: "reservierung",
-  bonitaetsunterlagen: "bonitaetsunterlagen",
+  /*
+   * Seit 16.10.2026 heisst der Schritt „Unterlagen" und liegt vor der
+   * Objektvorstellung: Ausweis und Gehaltsabrechnung kommen zusammen mit der
+   * Selbstauskunft. Er teilt deren Rang und steht dahinter (stabile
+   * Sortierung).
+   */
+  bonitaetsunterlagen: "selbstauskunft",
+  besichtigung: "besichtigung",
+  bankgutachter: "bankgutachter",
   finanzierung: "finanzierung",
   notar: "notar",
   faelligkeit: "faelligkeit",
@@ -88,6 +98,8 @@ function normalize(stufe?: string | null): PortalStepKey {
   if (s.startsWith("erst") || s === "eg_noshow") return "erstgespraech";
   if (s.startsWith("berat") || s === "bg_noshow") return "beratungsgespraech";
   if (s.startsWith("selbst")) return "selbstauskunft";
+  // Die ausgeblendete Altstufe (16.10.2026) behaelt ihren Schritt: Der
+  // Kunde soll weiter sehen, dass Unterlagen fehlen und wohin er sie laedt.
   if (s.startsWith("bonit")) return "bonitaetsunterlagen";
   if (s.startsWith("clos")) return "objektauswahl";
   if (s.startsWith("objekt")) return "objektauswahl";
@@ -95,6 +107,8 @@ function normalize(stufe?: string | null): PortalStepKey {
   // ist das weiterhin die Objektauswahl-Phase.
   if (s === "follow_up_objekt") return "objektauswahl";
   if (s.startsWith("reserv")) return "reservierung";
+  if (s.startsWith("besicht")) return "besichtigung";
+  if (s.startsWith("bankgut")) return "bankgutachter";
   if (s.startsWith("finanz")) return "finanzierung";
   if (s.startsWith("notar")) return "notar";
   if (s.startsWith("faellig") || s.startsWith("fällig")) return "faelligkeit";
@@ -227,7 +241,9 @@ export function getNextStepAbschnitt(stufe?: string | null): PortalAbschnitt | n
     case "objektauswahl":
       return "objektauswahl";
     case "reservierung":
+    case "besichtigung":
       return "reservierung";
+    case "bankgutachter":
     case "finanzierung":
       return "finanzierung";
     case "notar":
@@ -262,6 +278,8 @@ export function getNextStepRoute(stufe?: string | null): string {
     case "selbstauskunft":
     case "objektauswahl":
     case "reservierung":
+    case "besichtigung":
+    case "bankgutachter":
     case "finanzierung":
     case "notar":
     case "faelligkeit":

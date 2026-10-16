@@ -49,7 +49,10 @@ export const FORTSCHRITT_REIHENFOLGE = [
   "objektauswahl",
   "follow_up_objekt",
   "reservierung",
-  "bonitaetsunterlagen",
+  // Seit 16.10.2026 haben die Bonitaetsunterlagen keinen eigenen Schritt
+  // mehr, sie stehen unten in RANG_ALIAS auf dem Rang der Reservierung.
+  "besichtigung",
+  "bankgutachter",
   "finanzierung",
   "notar",
   "faelligkeit",
@@ -70,6 +73,7 @@ const RANG_ALIAS: Record<string, string> = {
   eg_noshow: "erstgespraech_geplant",
   erstgespraech: "erstgespraech_geplant",
   bg_noshow: "beratungsgespraech",
+  bonitaetsunterlagen: "reservierung",
   zugewiesen: "neuer_lead",
   kontaktversuche: "nicht_erreicht",
   vermoegensaufbau: "follow_up",

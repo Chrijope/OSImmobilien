@@ -54,6 +54,8 @@ export const NOTAR_DURCHLAUFEN_STUFEN: readonly PipelineStufe[] = [
 export const ABWICKLUNG_STUFEN: readonly PipelineStufe[] = [
   "reservierung",
   "bonitaetsunterlagen",
+  "besichtigung",
+  "bankgutachter",
   "finanzierung",
 ];
 

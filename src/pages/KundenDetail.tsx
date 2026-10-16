@@ -70,7 +70,6 @@ import {
   finanzierungIntern,
 } from "@/lib/investmentFreischaltung";
 import {
-  bonitaetsunterlagenErforderlich,
   darfSelbstauskunftEntfallen,
   getSelbstauskunftEntfaellt,
   nimmSelbstauskunftEntfaelltZurueck,
@@ -162,6 +161,9 @@ import { aktionZeitpunktText, neuerGespraechsterminNachNoShow, noShowListe, type
 import { abschlussWeg, sammelbareAufgaben, sammelwegBeschreibung } from "@/lib/aktionAbschluss";
 import { findeErgebnisTermin, ladeErgebnisTermine, lokalesDatum, type ErgebnisKontext, type ErgebnisTermin } from "@/lib/terminErgebnis";
 import { TerminErgebnisDialog } from "@/components/kunden/TerminErgebnisDialog";
+import { StufenTerminDialog } from "@/components/kunden/StufenTerminDialog";
+import { brauchtStufenTermin, terminFehlerText, type TerminStufe } from "@/lib/stufenTermin";
+import { speichereStufenTermin, stelleBesichtigungsAufgabeSicher } from "@/lib/stufenTerminAktionen";
 import { berechneInaktivitaetsAmpel } from "@/lib/inaktivitaetsAmpel";
 import { useNaechsteAktionKachel } from "@/components/kunden/profil/useOffeneAufgabenKachel";
 import { ToastAction } from "@/components/ui/toast";
@@ -394,7 +396,9 @@ import {
 } from "@/lib/notarterminMail";
 import { BUERO_EMAIL } from "@/lib/impressumKontakt";
 import { objektDialogNoetig, vorhandeneObjektDaten, objektDatenFehlen, BESTANDSWOHNUNG_AKTIV, investmentKaufpreis } from "@/lib/objektDatenPflicht";
-import { darfReservierungStarten } from "@/lib/reservierungStart";
+import { darfReservierungStarten, fehlendeUnterlagenFuerReservierung } from "@/lib/reservierungStart";
+import { darfAufObjektauswahl } from "@/lib/objektauswahlWaechter";
+import { mindestunterlagenText } from "@/lib/mindestunterlagen";
 import { verkaeuferArt, verkaeuferNotarFelder, verkaeuferVollerName } from "@/lib/verkaeuferName";
 import { FOLLOW_UP_GEPLANT, ERSTGESPRAECH_VEREINBART } from "../../supabase/functions/_shared/follow-up-eskalation.ts";
 
@@ -857,6 +861,10 @@ const STEP_TO_CARD_ID: Record<string, string> = {
   // Follow-Up nach der Objektvorstellung: dieselbe Karte wie die Objektauswahl.
   follow_up_objekt: "card-objektauswahl",
   reservierung: "card-reservierung",
+  // Seit 16.10.2026: Die Termine stehen unter „Nächste Aktionen"; die Karte
+  // daneben ist die Reservierung bzw. die Finanzierung.
+  besichtigung: "card-reservierung",
+  bankgutachter: "card-finanzierung",
   finanzierung: "card-finanzierung",
   notar: "card-notar",
   faelligkeit: "card-abwicklung",
@@ -895,7 +903,7 @@ const INVESTMENT_ABSCHNITTE: { key: string; label: string; karten: string[] }[] 
    * Bildschirm; die Karte zu verschieben wäre ein sehr großer Eingriff in
    * diese Seite.
    */
-  { key: "objektauswahl", label: "Objektauswahl", karten: [STEP_TO_CARD_ID.objektauswahl] },
+  { key: "objektauswahl", label: "Objektvorstellung", karten: [STEP_TO_CARD_ID.objektauswahl] },
   { key: "reservierung", label: "Reservierung", karten: [STEP_TO_CARD_ID.reservierung] },
   { key: "bonitaet", label: "Bonität und Bankprüfung", karten: [STEP_TO_CARD_ID.bonitaetsunterlagen] },
   { key: "finanzierung", label: "Finanzierung", karten: [STEP_TO_CARD_ID.finanzierung] },
@@ -957,7 +965,10 @@ const PRE_SA_PIPELINE_STEPS = new Set<string>([
  * vorne und damit als zugedeckt. Das ist die sichere Richtung: Lieber einmal
  * zu viel zugedeckt als Unterlagen aufgedeckt, die noch niemand angefasst hat.
  */
-const BONITAET_AB_INDEX = PIPELINE_STEPS.findIndex((s) => s.key === "bonitaetsunterlagen");
+// Seit 16.10.2026 die Besichtigung: Die Bonitaetsunterlagen haben keinen
+// eigenen Schritt mehr, und die Besichtigung ist der Schritt hinter der
+// Reservierung, so wie es die Bonitaet bis dahin war.
+const BONITAET_AB_INDEX = fortschrittsRang("besichtigung");
 
 // Alle drei Funktionen gehen über `fortschrittsRang`. Der kennt auch die
 // Stufen ohne eigenes Kästchen (NoShow, Legacy-Aliase) und hält an der
@@ -4430,6 +4441,8 @@ export default function KundenDetail() {
    * previous render" ab. Gemeldet von Christian am 16.09.2026.
    */
   const [aktionTermin, setAktionTermin] = useState<ErgebnisTermin | null>(null);
+  /** Stufe Besichtigung oder Termin Bankgutachter von Hand: erst der Termin, dann die Stufe. */
+  const [stufenTermin, setStufenTermin] = useState<{ investmentId: string; investmentLabel?: string; stufe: TerminStufe; label: string } | null>(null);
 
   /*
    * Die beiden Listen der Kachel "Naechste Aktion".
@@ -8625,43 +8638,42 @@ export default function KundenDetail() {
     }
 
     /*
-      Auto-advance: RV unterschrieben → Bonitaetsunterlagen.
+      Seit 16.10.2026 (neuer Ablauf): Die unterschriebene Reservierung
+      schliesst die Reservierung ab, als naechstes kommt die Besichtigung.
+      Die Stufe bleibt deshalb auf „Reservierung" (oder rueckt von der
+      Objektvorstellung dorthin), und der Zustaendige bekommt die Aufgabe
+      „Besichtigung vereinbaren". Die Besichtigung selbst setzt jemand von
+      Hand mit Termin (`StufenTerminDialog`).
 
-      Bis zum 11.09.2026 sprang der Vorgang von hier direkt auf "finanzierung"
-      und uebersprang die Stufe dazwischen. Damit galt die Finanzierung als
-      begonnen, bevor auch nur eine Bonitaetsunterlage vorlag, und der
-      Finanzierungspartner wurde gerufen, obwohl er nichts zu pruefen hatte.
+      Bisher ging es von hier auf „Bonitätsunterlagen" bzw. beim
+      Selbstfinanzierer direkt auf „Finanzierung". Beide Spruenge entfallen:
+      Die Unterlagen liegen jetzt vor der Objektvorstellung vor.
 
-      Der Ablauf lautet: Objektauswahl, Reservierung, Bonitaetsunterlagen,
-      Finanzierung, Notar. Die unterschriebene Reservierung schliesst also die
-      Reservierung ab und oeffnet die Bonitaetsunterlagen, nicht mehr.
-      Entscheidung Christians vom 11.09.2026.
+      Die Glocke an den Kunden kommt einmal je Investment, gemerkt in
+      `rvUnterschriftVerarbeitetAm`; vorher sorgte der Stufenwechsel selbst
+      dafuer, dass sie nur einmal kam.
     */
-    /*
-      Wer selbst finanziert, ueberspringt die Bonitaetsunterlagen.
-
-      Der Vermerk "Kunde finanziert selbst" versprach das seit jeher in seinem
-      Beschreibungstext, bewirkt hat er es nie: Die Funktion
-      `bonitaetsunterlagenErforderlich` gab es, sie wurde nur von keiner Stelle
-      aufgerufen. Ein Selbstfinanzierer landete deshalb auf einer Stufe, aus der
-      ihn nur die Freigabe von Unterlagen herausbringt, die es bei ihm gar nicht
-      gibt. Er blieb dort stehen, bis jemand ihn von Hand weiterschob.
-
-      Christian am 21.09.2026: "wer selbst finanziert, da braucht man die
-      Bonitaetsunterlagen und so weiter dann nicht".
-    */
-    const naechsteStufeNachRv = bonitaetsunterlagenErforderlich(inv.id)
-      ? "bonitaetsunterlagen"
-      : "finanzierung";
-
-    if (rvSignedForAutoAdvance && ["objektauswahl", "follow_up_objekt", "reservierung"].includes(inv.pipelineStufe)) {
-      stufenwechsel(inv.id, naechsteStufeNachRv, () => {
-        updateInvestment(inv.id, { pipelineStufe: naechsteStufeNachRv });
-        updateKontakt(id || "", { pipelineStufe: naechsteStufeNachRv, status: "qualifiziert" });
-        notifyPipelineChange(`${kunde.vorname} ${kunde.nachname}`, naechsteStufeNachRv, id || "");
+    const rvSchonVerarbeitet = !!getInvestmentMetaField<string | null>(inv.id, "rvUnterschriftVerarbeitetAm", null);
+    if (rvSignedForAutoAdvance && !rvSchonVerarbeitet && ["objektauswahl", "follow_up_objekt", "reservierung"].includes(inv.pipelineStufe)) {
+      const warSchonReservierung = inv.pipelineStufe === "reservierung";
+      stufenwechsel(inv.id, "reservierung_unterschrieben", () => {
+        setInvestmentMetaFields(inv.id, { rvUnterschriftVerarbeitetAm: new Date().toISOString() });
+        if (!warSchonReservierung) {
+          updateInvestment(inv.id, { pipelineStufe: "reservierung" });
+          updateKontakt(id || "", { pipelineStufe: "reservierung", status: "qualifiziert" });
+          notifyPipelineChange(`${kunde.vorname} ${kunde.nachname}`, "reservierung", id || "");
+          notifyKundePipelineStufe(id || "", "reservierung");
+        }
         notifyKundeReservierung(id || "");
-        notifyKundePipelineStufe(id || "", naechsteStufeNachRv);
-        notiereStufenwechsel(RV_UNTERSCHRIEBEN, naechsteStufeNachRv);
+        notiereStufenwechsel(RV_UNTERSCHRIEBEN, "reservierung");
+        void stelleBesichtigungsAufgabeSicher({
+          kundeId: id || "",
+          kundeName: `${kunde.vorname || ""} ${kunde.nachname || ""}`.trim() || "Kunde",
+          investmentId: inv.id,
+          investmentLabel: inv.label,
+          erstelltVonName: user.name,
+          rueckfallZustaendig: kunde.zustaendig_id || undefined,
+        });
         reloadKunde();
       });
     }
@@ -8670,7 +8682,8 @@ export default function KundenDetail() {
       Der Vermerk kam erst, als der Vorgang schon auf den
       Bonitaetsunterlagen stand. Dann bliebe er dort haengen, denn die
       Freigabe, die ihn sonst weiterschiebt, kommt beim Selbstfinanzierer nie.
-      Er rueckt deshalb wie oben direkt auf Finanzierung (05.10.2026).
+      Er rueckt deshalb direkt auf Finanzierung (05.10.2026). Seit dem
+      16.10.2026 betrifft das nur noch Bestandsfaelle der ausgeblendeten Stufe.
     */
     if (rvSignedForAutoAdvance && saEntfaellt && inv.pipelineStufe === "bonitaetsunterlagen") {
       stufenwechsel(inv.id, "finanzierung", () => {
@@ -8706,8 +8719,9 @@ export default function KundenDetail() {
       saData: getInvestmentMetaField<Record<string, unknown> | null>(inv.id, "saData", null),
       saSnapshot: getInvestmentMetaField<Record<string, unknown> | null>(inv.id, "saSnapshot", null),
     });
-    if (bonitaetFrei &&
-        ["reservierung", "bonitaetsunterlagen"].includes(inv.pipelineStufe)) {
+    // Seit 16.10.2026 nur noch fuer Bestandsfaelle auf der ausgeblendeten
+    // Stufe: Aus der Reservierung geht es ueber Besichtigung und Bankgutachter.
+    if (bonitaetFrei && inv.pipelineStufe === "bonitaetsunterlagen") {
       stufenwechsel(inv.id, "finanzierung", () => {
         updateInvestment(inv.id, { pipelineStufe: "finanzierung" });
         updateKontakt(id || "", { pipelineStufe: "finanzierung", status: "qualifiziert" });
@@ -8719,7 +8733,7 @@ export default function KundenDetail() {
     }
 
     // ── Auto-advance: Notartermin gesetzt (Datum+Uhrzeit) → notar ──
-    if (inv.notarTermin && inv.notarUhrzeit && ["finanzierung", "reservierung"].includes(inv.pipelineStufe)) {
+    if (inv.notarTermin && inv.notarUhrzeit && ["finanzierung", "bankgutachter", "besichtigung", "bonitaetsunterlagen", "reservierung"].includes(inv.pipelineStufe)) {
       stufenwechsel(inv.id, "notar", () => {
         updateInvestment(inv.id, { pipelineStufe: "notar" });
         updateKontakt(id || "", { pipelineStufe: "notar" });
@@ -8978,6 +8992,12 @@ export default function KundenDetail() {
                         cancelText: "Abbrechen",
                       });
                       if (hin) springeZuObjektauswahl(inv.id);
+                      return;
+                    }
+                    // Besichtigung und Termin Bankgutachter nur mit Termin
+                    // (16.10.2026). Die Stufe setzt das Fenster nach dem Speichern.
+                    if (brauchtStufenTermin(s.key)) {
+                      setStufenTermin({ investmentId: inv.id, investmentLabel: inv.label, stufe: s.key, label: s.label });
                       return;
                     }
                     updateInvestment(inv.id, { pipelineStufe: s.key });
@@ -10547,6 +10567,8 @@ export default function KundenDetail() {
                  * ist, auch wenn die Stufe längst erreicht ist.
                  */
                 const saFuerRv = darfReservierungStarten(inv.id);
+                // Seit 16.10.2026 gehoeren Ausweis und Gehaltsabrechnung dazu.
+                const unterlagenFuerRv = fehlendeUnterlagenFuerReservierung(inv.id);
                 // Find the gesetzt wohnung for this investment
                 const allObjForRv = getObjekte().filter(o => o.sichtbar);
                 let rvWohnung: any = null;
@@ -11018,7 +11040,9 @@ export default function KundenDetail() {
                           <span>
                             {saNeuAusstehend
                               ? "Die korrigierte Selbstauskunft ist noch nicht neu unterschrieben. Danach wird die Reservierung freigeschaltet."
-                              : "Wird nach der unterschriebenen Selbstauskunft freigeschaltet."}
+                              : unterlagenFuerRv.length > 0 && darfAufObjektauswahl(inv.id)
+                                ? `Wird freigeschaltet, sobald im Portal vorliegt: ${mindestunterlagenText(unterlagenFuerRv)}.`
+                                : "Wird nach der unterschriebenen Selbstauskunft freigeschaltet."}
                           </span>
                         </div>
                       </div>
@@ -14371,6 +14395,39 @@ export default function KundenDetail() {
             onClose={() => setAktionTermin(null)}
           />
         )}
+
+        {/* Termin zur Stufe Besichtigung oder Termin Bankgutachter. Abbrechen
+            setzt nichts; Speichern legt den Termin am Investment an und setzt
+            danach die Stufe, mit demselben Vermerk wie das manuelle Setzen. */}
+        <StufenTerminDialog
+          stufe={stufenTermin?.stufe ?? null}
+          kundeName={kunde ? `${kunde.vorname || ""} ${kunde.nachname || ""}`.trim() : undefined}
+          onAbbrechen={() => setStufenTermin(null)}
+          onSpeichern={async (eingabe) => {
+            if (!stufenTermin || !id || !kunde) return null;
+            const { investmentId, investmentLabel, stufe, label } = stufenTermin;
+            try {
+              await speichereStufenTermin(stufe, eingabe, {
+                kundeId: id,
+                kundeName: `${kunde.vorname || ""} ${kunde.nachname || ""}`.trim() || "Kunde",
+                investmentId,
+                investmentLabel,
+                userName: user.name,
+              });
+            } catch (fehler) {
+              return terminFehlerText(fehler);
+            }
+            setStufenTermin(null);
+            if (!(await updateInvestment(investmentId, { pipelineStufe: stufe }))) {
+              toast({ title: "Termin gespeichert, Stufe nicht gesetzt", description: "Bitte die Stufe erneut setzen.", variant: "destructive" });
+              return null;
+            }
+            addAktivitaet({ kundeId: id, art: "notiz", beschreibung: `⚠️ Pipeline-Stufe manuell auf "${label}" gesetzt (Manueller Override durch ${user.name}, ${user.role})`, von: user.name });
+            toast({ title: "Termin eingetragen ✓", description: `${label}: ${eingabe.datum} um ${eingabe.uhrzeit} Uhr` });
+            reloadKunde();
+            return null;
+          }}
+        />
 
         {/* ── Termin verschieben Dialog ── */}
         <AlertDialog open={verschiebenDialog} onOpenChange={setVerschiebenDialog}>

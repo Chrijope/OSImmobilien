@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Building2, LayoutGrid, List, Plus, Ruler, Euro, TrendingUp, MapPin, ChevronDown, ChevronUp, Loader2, UserPlus, Pencil, Trash2, BedDouble, CalendarDays, Home, Tag, Hammer, Star } from "lucide-react";
+import { Building2, LayoutGrid, List, Plus, Ruler, Euro, TrendingUp, MapPin, ChevronDown, ChevronUp, Loader2, UserPlus, Pencil, Trash2, BedDouble, CalendarDays, Home, Tag, Hammer, Star, Target } from "lucide-react";
 import { getObjekteImAngebot, type ObjektData, markObjekteSeen, updateWohnung, deleteObjekt, removeReservierung, setObjektSichtbar } from "@/lib/objekteStore";
 import { einheitLoeschenMitRueckfrage } from "@/lib/einheitLoeschen";
 import { zielRouteFuerObjekt } from "@/lib/objektseiteDaten";
@@ -27,6 +27,8 @@ import { ausInvestagon } from "@/lib/investagonHerkunft";
 import { BelegungsAngaben } from "@/components/objektseite/BelegungsAngaben";
 import { PortfolioKacheln } from "@/components/objekte/PortfolioKacheln";
 import { InvestagonImportDialog } from "@/components/objekte/InvestagonImportDialog";
+import { ExposeZuordnenDialog } from "@/components/objekte/ExposeZuordnenDialog";
+import { konzeptLabel } from "@/lib/objektKonzept";
 import { ObjektTexteSammellauf } from "@/components/objekte/ObjektTexteSammellauf";
 import { useObjektFavorites } from "@/lib/objektFavorites";
 import { objektGruppen } from "@/lib/objektFavoritenGruppen";
@@ -677,13 +679,16 @@ export default function Objekte() {
                       <div className="flex items-center gap-1"><TrendingUp className="h-3 w-3" /><span className="text-[10px] text-muted-foreground/70">AfA</span><span>{Number(obj.afaDaten!.afaSatz).toFixed(2).replace(".", ",")} %</span></div>
                     )}
                   </div>
-                  {(bauzustand || anlageklasse || canEdit(user.role)) && (
+                  {(bauzustand || anlageklasse || obj.konzept || canEdit(user.role)) && (
                     <div className="flex flex-wrap items-center gap-1.5 pt-1">
                       {bauzustand && (
                         <Badge variant="outline" className="text-[10px] gap-1"><Hammer className="h-3 w-3" />{bauzustand}</Badge>
                       )}
                       {anlageklasse && (
                         <Badge variant="secondary" className="text-[10px] gap-1"><Tag className="h-3 w-3" />{anlageklasse}</Badge>
+                      )}
+                      {obj.konzept && (
+                        <Badge variant="outline" className="text-[10px] gap-1" title="Konzept"><Target className="h-3 w-3" />{konzeptLabel(obj.konzept)}</Badge>
                       )}
                       {canEdit(user.role) && viewMode === "grid" && (
                         <button
@@ -961,6 +966,8 @@ export default function Objekte() {
           <div className="flex w-full flex-wrap items-center gap-1 sm:ml-auto sm:w-auto">
             {/* Nur Sichtbarkeit: Die Edge Function prüft Admin und Inhaber selbst noch einmal. */}
             {isAdmin(user.role) && <InvestagonImportDialog />}
+            {/* Nicht im Testkonto: Dort gibt es keinen Speicher, in den hochgeladen werden könnte. */}
+            {isAdmin(user.role) && !isTestAccount() && <ExposeZuordnenDialog />}
             {/* „Lotse: Unterlagen auswerten“ ausgeblendet (05.10.2026): Der Zeitplan wertet über die Warteschlange aus, nachts kommen alle Objekte einmal hinein. */}
             {/*
               * Beschreibung und Standortargumente für viele Objekte auf einmal.

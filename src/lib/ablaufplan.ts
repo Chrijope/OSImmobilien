@@ -5,9 +5,11 @@ import { PIPELINE_STUFEN } from "@/lib/pipelineStufen";
  * bis "Provisionszahlung", allgemein zusammengefasst in acht Stationen.
  *
  * Jede Station buendelt eine oder mehrere echte Pipelinestufen aus
- * `PIPELINE_STUFEN`. Die Reihenfolge folgt der realen Pipeline, insbesondere
- * liegen die Bonitaetsunterlagen seit dem 06.08.2026 HINTER der Reservierung
- * (siehe kontaktPipeline.ts) und gehoeren deshalb zur Station Finanzierung.
+ * `PIPELINE_STUFEN`. Die Reihenfolge folgt der realen Pipeline. Seit dem
+ * 16.10.2026 (neuer Ablauf) kommen die Unterlagen vor die Objektvorstellung,
+ * und zwischen Reservierung und Finanzierung liegen Besichtigung und Termin
+ * Bankgutachter. Die ausgeblendeten Bonitaetsunterlagen stehen nur noch fuer
+ * Bestandsfaelle bei der Station Finanzierung.
  *
  * Die Zeitangaben je Termin sind die Vorgaben der Geschaeftsfuehrung fuer
  * diesen Ueberblick. Seite und PDF lesen beide aus diesem Modul, damit die
@@ -117,7 +119,8 @@ export const ABLAUF_STATIONEN: AblaufStation[] = [
     imCrm: [
       "Mit der unterschriebenen Selbstauskunft rückt der Kunde automatisch auf Objektauswahl. Ab hier siehst du die passenden Einheiten im Profil.",
       "Überlegt der Kunde nach der Objektvorstellung noch, ziehst du ihn in der Pipeline von Hand in die Spalte „Follow-Up\" und legst eine Aufgabe mit Rückruftermin an. Diese Stufe setzt keine Automatik, sie ist ausdrücklich deine Entscheidung.",
-      "Die Reservierungsvereinbarung schickst du im Investment-Reiter über die Karte „Reservierung\". Ab dem Versand rückt der Kunde auf Reservierung, mit der Unterschrift weiter auf Bonitätsunterlagen.",
+      "Die Reservierung startet erst, wenn Selbstauskunft, Personalausweis und letzte Gehaltsabrechnung vorliegen. Fehlen zwei Tage vor der Objektvorstellung noch Unterlagen, bekommst du eine Aufgabe zum Nachfassen.",
+      "Die Reservierungsvereinbarung schickst du im Investment-Reiter über die Karte „Reservierung\". Ab dem Versand rückt der Kunde auf Reservierung. Mit der Unterschrift bekommst du die Aufgabe „Besichtigung vereinbaren\".",
       "Bleibt die Unterschrift aus, erinnert das System den Kunden nach 2, 5 und 10 Tagen. Nach 14 Tagen bekommst du eine Aufgabe mit hoher Priorität. Der Link läuft dabei nicht ab.",
     ],
   },
@@ -127,11 +130,12 @@ export const ABLAUF_STATIONEN: AblaufStation[] = [
     zeit: "ca. 45 Min.",
     zeitZusatz: "zusammen mit der Finanzierungsabteilung",
     beschreibung:
-      "Die Bonitätsunterlagen werden eingesammelt und freigegeben, danach findet das Finanzierungsgespräch zusammen mit der Finanzierungsabteilung statt.",
-    stufen: ["bonitaetsunterlagen", "finanzierung"],
+      "Nach der Reservierung besichtigt der Kunde das Objekt, danach bewertet der Gutachter der Bank. Dann prüft die Bank und sagt zu, begleitet von der Finanzierungsabteilung.",
+    stufen: ["bonitaetsunterlagen", "besichtigung", "bankgutachter", "finanzierung"],
     imCrm: [
-      "Die Bonitätsunterlagen lädst du im Investment-Reiter unter „Bonitätsunterlagen\" hoch und gibst sie dort selbst frei. Das macht immer der zuständige Vertriebspartner. Erst mit der vollständigen Freigabe rückt der Kunde automatisch auf Finanzierung.",
-      "Steht eine Reservierung länger als vierzehn Tage ohne freigegebene Bonität, meldet das die Nachtprüfung. Das ist der Preis dafür, dass reserviert wird, bevor die Finanzierbarkeit feststeht.",
+      "Setzt du die Stufe auf „Besichtigung\" oder „Termin Bankgutachter\", trägst du im Fenster gleich Datum und Uhrzeit ein. Der Termin steht danach unter „Nächste Aktionen\" am Investment.",
+      "Trägst du dort „Stattgefunden\" ein, rückt der Vorgang weiter: nach der Besichtigung auf Termin Bankgutachter, mit der Aufgabe, ihn zu vereinbaren, danach auf Finanzierung.",
+      "Die Unterlagen gibst du im Investment-Reiter unter „Bonitätsunterlagen\" selbst frei. Das macht immer der zuständige Vertriebspartner.",
     ],
   },
   {

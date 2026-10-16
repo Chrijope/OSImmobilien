@@ -57,13 +57,18 @@ describe("Der Trichter der Statistik folgt der Pipeline", () => {
     pruefeReihenfolge(TRICHTER_STUFEN, "TRICHTER_STUFEN");
   });
 
-  it("führt Objektauswahl und Reservierung vor der Bonität", () => {
-    // Der Kern des Widerspruchs, ausdrücklich benannt, damit der Grund im
-    // Fehlertext steht und nicht nur in der Schleife darüber.
+  it("zeigt den neuen Ablauf und zaehlt die alte Bonitaetsstufe zur Reservierung", () => {
+    // Seit 16.10.2026: Besichtigung und Termin Bankgutachter zwischen
+    // Reservierung und Finanzierung; die Bonitaetsunterlagen haben keinen
+    // eigenen Balken mehr.
     const pos = (k: string) => TRICHTER_STUFEN.indexOf(k);
-    expect(pos("objektauswahl")).toBeLessThan(pos("bonitaetsunterlagen"));
-    expect(pos("reservierung")).toBeLessThan(pos("bonitaetsunterlagen"));
     expect(pos("selbstauskunft")).toBeLessThan(pos("objektauswahl"));
+    expect(pos("objektauswahl")).toBeLessThan(pos("reservierung"));
+    expect(pos("reservierung")).toBeLessThan(pos("besichtigung"));
+    expect(pos("besichtigung")).toBeLessThan(pos("bankgutachter"));
+    expect(pos("bankgutachter")).toBeLessThan(pos("finanzierung"));
+    expect(TRICHTER_STUFEN).not.toContain("bonitaetsunterlagen");
+    expect(normalizeStufe("bonitaetsunterlagen")).toBe("reservierung");
   });
 
   it("lässt keine Stufe aus, die im Trichter einen Balken bekommt", () => {
@@ -123,7 +128,7 @@ describe("Der Funnel der Auswertungen folgt derselben Reihenfolge", () => {
 });
 
 describe("Die Fortschrittsleiste der Kundenprofilseite folgt derselben Reihenfolge", () => {
-  it("zeigt dem Kunden die Bonität erst hinter der Reservierung", () => {
+  it("zeigt dem Kunden die Schritte des neuen Ablaufs in Pipeline-Reihenfolge", () => {
     /*
      * Diese Leiste teilt den Notar in zwei Schritte und lässt Stufen aus, sie
      * kann deshalb nicht aus `FORTSCHRITT_STUFEN` abgeleitet werden. Geprüft
@@ -132,8 +137,9 @@ describe("Die Fortschrittsleiste der Kundenprofilseite folgt derselben Reihenfol
     const schritte = leseListe(kundenprofilseite, "PIPELINE_STEPS").filter(
       (key) => pipelinePos(key) >= 0,
     );
-    expect(schritte).toContain("objektauswahl");
-    expect(schritte).toContain("bonitaetsunterlagen");
+    expect(schritte).toContain("reservierung");
+    expect(schritte).toContain("besichtigung");
+    expect(schritte).toContain("bankgutachter");
     pruefeReihenfolge(schritte, "PIPELINE_STEPS der Kundenprofilseite");
   });
 });

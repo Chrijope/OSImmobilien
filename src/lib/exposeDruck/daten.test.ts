@@ -54,14 +54,14 @@ describe("Druckdaten der Exposé-Entwürfe", () => {
     expect(ids.filter((id) => id === "zeitplan")).toHaveLength(1);
     expect(d.abschnitte.find((a) => a.id === "zeitplan")).toMatchObject({ titel: "Nächste Schritte und Zeitplan", claim: "Der Weg zum Eigentum" });
     expect(d).not.toHaveProperty("schritte");
-    expect(d.zeitplan.erledigt.map((e) => e.titel)).toEqual(["Beratung"]);
-    expect(d.zeitplan.stationen).toHaveLength(6);
+    expect(d.zeitplan.erledigt).toEqual([]);
+    expect(d.zeitplan.stationen).toHaveLength(11);
     expect(d.zeitplan.stationen.every((s) => !!s.text)).toBe(true);
-    expect(d.zeitplan.stationen.filter((s) => s.zahlung).map((s) => s.titel)).toEqual(["Reservierung", "Kaufpreisfälligkeit"]);
+    expect(d.zeitplan.stationen.filter((s) => s.zahlung).map((s) => s.titel)).toEqual(["Kaufpreisfälligkeit"]);
     const en = daten("en");
     expect(en.abschnitte.find((a) => a.id === "zeitplan")?.titel).toBe("Next steps and timeline");
     expect(en.zeitplan.erledigtLabel).toBe("Done");
-    expect(en.zeitplan.stationen[3].text).toBe("The contract is notarised at the notary’s office, in person or by power of attorney.");
+    expect(en.zeitplan.stationen[9].text).toBe("You receive the purchase contract in advance and we go through it point by point. The contract is notarised at the notary’s office, in person or by power of attorney.");
   });
 
   it("nutzt keine Zeichen, die in Plus Jakarta Sans fehlen", () => {

@@ -13,6 +13,7 @@ import {
 } from "../../supabase/functions/_shared/objekt-belegung";
 import { hausFrei, hausGesamtStand } from "../../supabase/functions/_shared/haus-stand";
 import { vergleicheScore, type ObjektScore } from "@/lib/objektScore";
+import type { ObjektKonzept } from "@/lib/objektKonzept";
 
 /**
  * Welche Einheiten passen zu diesem Kunden?
@@ -278,6 +279,8 @@ export interface EmpfehlungsKandidat {
   passt: boolean;
   /** Die Einheit ist für genau diesen Kunden vorgemerkt. */
   vorgemerktFuerKunde: boolean;
+  /** Das Konzept des Objekts, für Filter und Sortierung nach dem Schwerpunkt (`objektKonzept.ts`). */
+  konzept?: ObjektKonzept;
 }
 
 export interface KandidatenOptionen {
@@ -347,6 +350,7 @@ export function empfehlungsKandidaten(objekte: ObjektData[], opt: KandidatenOpti
       ort: objekt.ort || "",
       nebenkostenProzent: nk,
       entfernungKm: km,
+      ...(objekt.konzept ? { konzept: objekt.konzept } : {}),
     };
 
     if (objekt.globalObjekt) {

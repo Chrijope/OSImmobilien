@@ -94,7 +94,8 @@ describe("Karte „Passende Kunden“", () => {
     expect(karte).toHaveTextContent("nur Stufen Selbstauskunft bis Follow-Up Objekt");
     const eins = screen.getByTestId("passender-kunde-k-1");
     expect(Number(within(eins).getByTestId("score-ring").getAttribute("data-wert"))).toBeGreaterThan(0);
-    expect(eins).toHaveTextContent("Objektauswahl");
+    // Anzeigename seit 16.10.2026.
+    expect(eins).toHaveTextContent("Objektvorstellung");
     expect(eins).toHaveTextContent(/Partner 1 · Rahmen \d{3}\.\d{3}\s€ bis \d{3}\.\d{3}\s€/);
     expect(screen.queryByTestId("passender-kunde-k-3")).not.toBeInTheDocument();
   });

@@ -154,7 +154,9 @@ describe("investmentsOhneKaufpreis", () => {
 
 describe("Kaufphase gegen die Datenbank", () => {
   it("Abwicklung plus Abschluss ist genau pipelinestufe_ist_kaufphase", () => {
-    const sql = readFileSync("supabase/migrations/20260929140000_provisionssatz_ab_reservierung.sql", "utf8");
+    // Seit 16.10.2026 schreibt 20261016150000_pipeline_neuer_ablauf.sql die
+    // Liste neu (mit Besichtigung und Termin Bankgutachter); es gilt die juengste.
+    const sql = readFileSync("supabase/migrations/20261016150000_pipeline_neuer_ablauf.sql", "utf8");
     const rumpf = /pipelinestufe_ist_kaufphase\(_stufe text\)[\s\S]*?IN \(([\s\S]*?)\);/.exec(sql)?.[1] ?? "";
     const db = [...rumpf.matchAll(/'([a-z_]+)'/g)].map((m) => m[1]).sort();
     expect(db.length).toBeGreaterThan(5);
@@ -162,7 +164,7 @@ describe("Kaufphase gegen die Datenbank", () => {
     for (const s of db) expect(istProvisionsrelevant(s)).toBe(true);
   });
   it("Prognose ohne Notardatum: Reservierung bis Notar, nicht danach", () => {
-    for (const s of ["reservierung", "bonitaetsunterlagen", "finanzierung", "notar"]) {
+    for (const s of ["reservierung", "bonitaetsunterlagen", "besichtigung", "bankgutachter", "finanzierung", "notar"]) {
       expect(istKaufphaseVorNotar(s)).toBe(true);
     }
     for (const s of ["faelligkeit", "abrechnung", "abgeschlossen", "objektauswahl", "verloren", "notartermin"]) {

@@ -17,6 +17,8 @@ const STAGE_SLA_DAYS: Record<string, { warn: number; alert: number }> = {
   closing: { warn: 5, alert: 14 },
   objektauswahl: { warn: 7, alert: 21 },
   reservierung: { warn: 7, alert: 14 },
+  besichtigung: { warn: 5, alert: 10 },
+  bankgutachter: { warn: 7, alert: 14 },
   finanzierung: { warn: 14, alert: 30 },
   notar: { warn: 7, alert: 14 },
 };
@@ -87,7 +89,7 @@ export function StatistikOpportunity({ kontakte }: { kontakte: any[] }) {
     const in30 = Date.now() + 30 * 86400000;
     return vorgaenge
       .map(v => {
-        if (!["reservierung", "finanzierung", "notar"].includes(v.stufe)) return null;
+        if (!["reservierung", "besichtigung", "bankgutachter", "finanzierung", "notar"].includes(v.stufe)) return null;
         const notarDate = v.notar ? new Date(v.notar).getTime() : null;
         if (notarDate && notarDate > in30) return null;
         return { id: v.id, name: v.name, stufe: v.stufe, notar: notarDate, volume: v.volume };

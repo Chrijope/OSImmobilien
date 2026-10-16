@@ -63,26 +63,10 @@ export const FIRMEN_KENNZAHLEN_EN: Array<{ wert: string; text: string }> = [
   { wert: "around 20", text: "specialists in the team" },
 ];
 
-/** Wörtlich von osimmobilien.netlify.app, Abschnitt „Was unsere Kunden sagen“, gelesen am 26.09.2026. */
-export const KUNDENSTIMMEN: Array<{ name: string; ort: string; text: string }> = [
-  {
-    name: "Stefan L.",
-    ort: "Regensburg",
-    text: "Ich habe über Oliver Skowrnowski und sein Team meine erste Kapitalanlagewohnung gekauft und hätte mir keinen besseren Einstieg vorstellen können. Die Beratung war ehrlich, transparent und ohne dieses typische Makler-Blabla. Danke für die starke Begleitung!",
-  },
-  {
-    name: "Miriam K.",
-    ort: "Würzburg",
-    text: "Ich hatte lange gezögert, in Immobilien zu investieren. zu komplex, dachte ich. Christian hat mir das Thema so verständlich erklärt, dass ich mich endlich sicher gefühlt habe. Keine leeren Versprechen, sondern ehrliche Beratung mit Plan. Absolute Empfehlung!",
-  },
-  {
-    name: "Sandra W.",
-    ort: "Nürnberg",
-    text: "Ich hatte bereits Kontakt mit anderen Anbietern. vieles wirkte aufgeblasen oder unkonkret. Ganz anders hier: Kein Verkaufsdruck, sondern echtes Interesse an meiner Situation. Die perfekte Kombi aus persönlicher Betreuung und digitaler Effizienz.",
-  },
-  {
-    name: "Katrin P.",
-    ort: "Bayreuth",
-    text: "Als alleinerziehende Mutter hatte ich Angst vor dem finanziellen Risiko. Das Team hat sich so viel Zeit genommen, mir alles zu erklären und eine Strategie zu finden, die zu meiner Situation passt. Ich fühle mich sicher und gut aufgehoben.",
-  },
-];
+/**
+ * Kundenstimmen. Leer seit dem 16.10.2026: Die bisherigen Stimmen stammen aus
+ * dem Ursprungsprojekt. Hier erst wieder eintragen, wenn echte Stimmen mit
+ * Einverständnis der Kunden vorliegen. Ohne Einträge zeigt die Handbuch-Seite
+ * den Block nicht, die Partnerseite nur den Hinweis `STIMMEN_TEXTE.folgen`.
+ */
+export const KUNDENSTIMMEN: Array<{ name: string; ort: string; text: string }> = [];

@@ -154,7 +154,7 @@ export function statusGruppe(stufe: string | null | undefined): StatusGruppe {
   if (["erreicht", "follow_up"].includes(s)) return "bearbeitung";
   if (["erstgespraech_geplant", "eg_noshow", "beratungsgespraech", "bg_noshow"].includes(s)) return "termin";
   if (["selbstauskunft", "objektauswahl", "follow_up_objekt"].includes(s)) return "objektauswahl";
-  if (["reservierung", "bonitaetsunterlagen", "finanzierung", "notar"].includes(s)) return "kaufphase";
+  if (["reservierung", "bonitaetsunterlagen", "besichtigung", "bankgutachter", "finanzierung", "notar"].includes(s)) return "kaufphase";
   if (["faelligkeit", "abrechnung", "abgeschlossen", "bestandsimport"].includes(s)) return "abgeschlossen";
   if (["verloren", "archiviert"].includes(s)) return "verloren";
   return "neu";

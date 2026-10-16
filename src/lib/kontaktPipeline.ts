@@ -347,11 +347,20 @@ export function calculateLogicalPipelineStufe(kunde: KundeData, investmentId?: s
    *
    * Geprueft wird von hinten nach vorne, die hoechste erreichte Stufe gewinnt.
    */
-  // Bonitaet vollstaendig und freigegeben → finanzierung
-  if (sindBonitaetsunterlagenFreigegeben(kunde, investmentId)) return "finanzierung";
-  // RV unterschrieben → bonitaetsunterlagen (jetzt der Schritt danach)
+  /*
+   * Seit 16.10.2026 (neuer Ablauf): Nach der unterschriebenen Reservierung
+   * folgen Besichtigung und Termin Bankgutachter, beide als Termin von Hand
+   * gesetzt und mit „stattgefunden" weitergeschaltet (`stufenTermin.ts`).
+   * Daraus laesst sich nichts ableiten, deshalb endet die Automatik hier bei
+   * der Reservierung.
+   *
+   * Die frueheren Regeln „Bonitaet freigegeben → Finanzierung" und
+   * „Reservierung unterschrieben → Bonitaetsunterlagen" entfallen: Die
+   * Unterlagen liegen jetzt schon vor der Objektvorstellung vor und wuerden
+   * sonst Besichtigung und Bankgutachter ueberspringen.
+   */
   const rvSigned = investments.some((i) => getRvSigned(i.id));
-  if (rvSigned) return "bonitaetsunterlagen";
+  if (rvSigned) return "reservierung";
   // RV eröffnet, noch nicht unterschrieben → reservierung
   if (hasOpenReservierung(kunde.id, investmentId)) return "reservierung";
   // SA unterschrieben → objektauswahl
@@ -405,7 +414,9 @@ export function getEffectivePipelineStufe(kunde: KundeData): PipelineStufe {
   // Status-basierter Fallback (kein Investment, keine manuelle Stufe)
   if (kunde.status === "kunde" && kunde.objekt) return "abgeschlossen";
   if (kunde.status === "kunde") return "faelligkeit";
-  if (kunde.status === "qualifiziert") return "bonitaetsunterlagen";
+  // Frueher "bonitaetsunterlagen", die Stufe ist seit 16.10.2026 ausgeblendet
+  // und teilt den Rang der Reservierung.
+  if (kunde.status === "qualifiziert") return "reservierung";
   // Neue Fallback-Logik: „kontaktiert" allein ist nicht mehr aussagekräftig,
   // seit der `status`-Wert offiziell entfernt ist. Wir stützen uns auf reale
   // Signale — Kontaktversuche und geplante Termine.
@@ -464,8 +475,9 @@ export function getProzessBereich(kunde: KundeData): ProzessBereich {
   else if (["zugewiesen", "erstgespraech_geplant", "erstgespraech", "eg_noshow", "beratungsgespraech", "bg_noshow"].includes(stufe)) manuellerBereich = "kontakte";
   // "follow_up_objekt" gehoert zur Objektauswahl-Phase (nur manuell gesetzt,
   // siehe pipelineStufen.ts), deshalb derselbe Bereich wie "objektauswahl".
-  else if (["selbstauskunft", "bonitaetsunterlagen", "objektauswahl", "follow_up_objekt"].includes(stufe)) manuellerBereich = "neukunden";
-  else if (["reservierung", "finanzierung", "notar", "faelligkeit", "abrechnung"].includes(stufe)) manuellerBereich = "abwicklung";
+  else if (["selbstauskunft", "objektauswahl", "follow_up_objekt"].includes(stufe)) manuellerBereich = "neukunden";
+  // "bonitaetsunterlagen" liegt seit 16.10.2026 im Rang der Reservierung.
+  else if (["reservierung", "bonitaetsunterlagen", "besichtigung", "bankgutachter", "finanzierung", "notar", "faelligkeit", "abrechnung"].includes(stufe)) manuellerBereich = "abwicklung";
   else manuellerBereich = "bestandskunden";
 
   // Wenn die Automatik einen "späteren" Bereich ergibt als die manuelle Stufe,
@@ -523,8 +535,9 @@ export function getProzessBereichForStufe(stufe: string | null | undefined): Pro
    */
   if (["zugewiesen", "erstgespraech_geplant", "erstgespraech", "eg_noshow", "beratungsgespraech", "bg_noshow"].includes(s)) return "kontakte";
   // "follow_up_objekt" liegt in der Objektauswahl-Phase, siehe getProzessBereich.
-  if (["selbstauskunft", "bonitaetsunterlagen", "objektauswahl", "follow_up_objekt"].includes(s)) return "neukunden";
-  if (["reservierung", "finanzierung", "notar", "faelligkeit", "abrechnung"].includes(s)) return "abwicklung";
+  if (["selbstauskunft", "objektauswahl", "follow_up_objekt"].includes(s)) return "neukunden";
+  // "bonitaetsunterlagen" liegt seit 16.10.2026 im Rang der Reservierung.
+  if (["reservierung", "bonitaetsunterlagen", "besichtigung", "bankgutachter", "finanzierung", "notar", "faelligkeit", "abrechnung"].includes(s)) return "abwicklung";
   return "bestandskunden";
 }
 

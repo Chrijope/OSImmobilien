@@ -701,6 +701,9 @@ const STUFEN_STEMPEL: Record<string, string> = {
   bonitaetsunterlagen: "bonitaetSeit",
   objektauswahl: "objektauswahlSeit",
   reservierung: "reserviertAm",
+  // Neu seit 16.10.2026: wann die Besichtigung bzw. der Bankgutachter dran war.
+  besichtigung: "besichtigungSeit",
+  bankgutachter: "bankgutachterSeit",
   finanzierung: "finanzierungSeit",
 };
 

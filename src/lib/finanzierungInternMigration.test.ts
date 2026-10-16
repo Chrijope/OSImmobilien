@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { FREIGESCHALTET_AB_RESERVIERUNG } from "./investmentFreischaltung";
 
@@ -13,6 +13,20 @@ import { FREIGESCHALTET_AB_RESERVIERUNG } from "./investmentFreischaltung";
 const DATEI = "20260925120000_finanzierung_intern_frei.sql";
 const SQL = readFileSync(`supabase/migrations/${DATEI}`, "utf8");
 const KORB_PFAD = `supabase/migrations-inbox/${DATEI}`;
+
+/**
+ * Die juengste Migration, die eine Funktion neu schreibt. Seit 16.10.2026
+ * schreibt 20261016150000_pipeline_neuer_ablauf.sql die Stufenlisten neu, und
+ * gilt in der Datenbank immer die zuletzt eingespielte Fassung.
+ */
+function juengsteMigrationMit(kopf: string): string {
+  const treffer = readdirSync("supabase/migrations")
+    .filter((f) => f.endsWith(".sql"))
+    .sort()
+    .filter((f) => readFileSync(`supabase/migrations/${f}`, "utf8").includes(kopf));
+  expect(treffer.length, kopf).toBeGreaterThan(0);
+  return readFileSync(`supabase/migrations/${treffer[treffer.length - 1]}`, "utf8");
+}
 
 /** Der Rumpf einer Funktion, vom CREATE bis zum schließenden $$. */
 function rumpf(name: string): string {
@@ -55,7 +69,8 @@ describe("Migration finanzierung_intern_frei", () => {
   });
 
   it("prüft dieselben Stufen wie das Frontend", () => {
-    const liste = rumpf("finanzierung_intern_frei_meta");
+    const neuste = juengsteMigrationMit("CREATE OR REPLACE FUNCTION public.finanzierung_intern_frei_meta(");
+    const liste = neuste.match(/CREATE OR REPLACE FUNCTION public\.finanzierung_intern_frei_meta\([\s\S]*?\$\$([\s\S]*?)\$\$/)![1];
     const genannt = [...liste.matchAll(/'([a-z_]+)'/g)].map((m) => m[1]).filter((s) => !["rvSigned", "pipelineStufe", "false", "true"].includes(s));
     expect(genannt.sort()).toEqual([...FREIGESCHALTET_AB_RESERVIERUNG].sort());
   });

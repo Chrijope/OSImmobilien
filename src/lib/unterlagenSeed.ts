@@ -49,7 +49,7 @@ export interface UnterlagenAbschnitt {
   dokumente: UnterlagenDokument[];
 }
 
-export const UNTERLAGEN_VERSION = "33";
+export const UNTERLAGEN_VERSION = "34";
 
 /**
  * Einträge, die es nicht mehr gibt.
@@ -75,6 +75,15 @@ export const ENTFERNTE_DOKUMENT_IDS: string[] = [
   "m-zoom-desktop-10",
   // "Lead-Pakete & Zuteilung verstehen": veraltet, am 29.09.2026 gelöscht.
   "la-pakete",
+  // Vertragsmuster unter "Karriere & Finanzen": am 16.10.2026 entfernt, es bleibt nur die Zielplanung.
+  "k-hvv-vertrag",
+  "k-hvv-anlage-1",
+  "k-hvv-anlage-2",
+  "k-hvv-anlage-3",
+  "k-hvv-anlage-4",
+  "k-hvv-anlage-5",
+  "k-hvv-anlage-6",
+  "k-hvv-anlage-7",
 ];
 
 export function seedUnterlagen(): UnterlagenAbschnitt[] {
@@ -299,70 +308,14 @@ export function seedUnterlagen(): UnterlagenAbschnitt[] {
     {
       id: "karriere",
       name: "Karriere & Finanzen",
-      beschreibung: "Karriereplan, Zielplanung und Vertriebsunterlagen",
+      beschreibung: "Zielplanung",
       dokumente: [
         {
           id: "k-zielplanung",
           name: "Zielplanung",
-          beschreibung: "Berechne und speichere deine Karriere- und Provisionsziele",
+          beschreibung: "Berechne und speichere deine Provisionsziele",
           aktion: "internal-link",
           interneRoute: "/zielplanung",
-        },
-        {
-          id: "k-hvv-vertrag",
-          name: "Leadberatervertrag (Muster)",
-          beschreibung: "Hauptvertrag für Lead Partner – mit Max Mustermann als Beispiel-Vertriebspartner",
-          aktion: "pdf-download",
-          pdfKey: "hvv-muster-vertrag",
-        },
-        {
-          id: "k-hvv-anlage-1",
-          name: "Leadberatervertrag · Anlage 1 – AGB (Muster)",
-          beschreibung: "Allgemeine Geschäftsbedingungen",
-          aktion: "pdf-download",
-          pdfKey: "hvv-muster-anlage-1",
-        },
-        {
-          id: "k-hvv-anlage-2",
-          name: "Leadberatervertrag · Anlage 2 – Grundgebühr-Paket (Muster)",
-          beschreibung: "Leistungs- und Preisvereinbarung",
-          aktion: "pdf-download",
-          pdfKey: "hvv-muster-anlage-2",
-        },
-        {
-          id: "k-hvv-anlage-3",
-          name: "Leadberatervertrag · Anlage 3 – DSGVO-AVV & Verschwiegenheit (Muster)",
-          beschreibung: "Auftragsverarbeitungsvereinbarung inkl. Verschwiegenheitserklärung",
-          aktion: "pdf-download",
-          pdfKey: "hvv-muster-anlage-3",
-        },
-        {
-          id: "k-hvv-anlage-4",
-          name: "Leadberatervertrag · Anlage 4 – Provisionsordnung (Muster)",
-          beschreibung: "Verbindliche Provisionsregelung",
-          aktion: "pdf-download",
-          pdfKey: "hvv-muster-anlage-4",
-        },
-        {
-          id: "k-hvv-anlage-5",
-          name: "Leadberatervertrag · Anlage 5 – CRM- & Leadnutzung (Muster)",
-          beschreibung: "Nutzung von CRM, Leads und Vertriebsinfrastruktur",
-          aktion: "pdf-download",
-          pdfKey: "hvv-muster-anlage-5",
-        },
-        {
-          id: "k-hvv-anlage-6",
-          name: "Leadberatervertrag · Anlage 6 – Compliance & Beratungsrichtlinien (Muster)",
-          beschreibung: "Verbindliche Vorgaben für Beratung & Kommunikation",
-          aktion: "pdf-download",
-          pdfKey: "hvv-muster-anlage-6",
-        },
-        {
-          id: "k-hvv-anlage-7",
-          name: "Leadberatervertrag · Anlage 7 – Team & Lizenzpartner Struktur (Muster)",
-          beschreibung: "Aufbau, Führung und Vergütung eigener Strukturen",
-          aktion: "pdf-download",
-          pdfKey: "hvv-muster-anlage-7",
         },
       ],
     },

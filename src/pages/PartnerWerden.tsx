@@ -356,33 +356,40 @@ export default function PartnerWerden() {
         <div className="hb-wrap">
           <span className="hb-augenbraue">{STIMMEN_TEXTE.augenbraue}</span>
           <h2 className="hb-h2">{STIMMEN_TEXTE.h2}</h2>
-          <p className="hb-lead">{STIMMEN_TEXTE.lead}</p>
-          {/* Laufband von rechts nach links, nahtlos: zwei gleiche Sätze, der zweite
-              nur fürs Auge (aria-hidden). Maus darüber hält es an. Bei „weniger
-              Bewegung“ steht es und lässt sich seitlich wischen, der zweite Satz entfällt. */}
-          <div className="pw-laufband">
-            <div className="lp-marquee-track pw-laufband-spur">
-              {[0, 1].map((kopie) => (
-                <div key={kopie} className="pw-laufband-satz" role={kopie === 0 ? "list" : undefined} aria-hidden={kopie === 1 ? true : undefined}>
-                  {STIMMEN.map((s) => (
-                    <figure className="hb-stimme hb-karte" key={s.name} role={kopie === 0 ? "listitem" : undefined}>
-                      <div className="sterne" aria-label={kopie === 0 ? "Kundenstimme" : undefined}>
-                        {[0, 1, 2, 3, 4].map((i) => (
-                          <Star key={i} aria-hidden="true" />
-                        ))}
-                      </div>
-                      <blockquote>„{s.text}“</blockquote>
-                      <figcaption>
-                        <b>{s.name}</b>
-                        <span>{s.ort}</span>
-                      </figcaption>
-                    </figure>
+          {/* Ohne echte Stimmen nur der Hinweis, damit der Farbwechsel der Abschnitte bleibt (16.10.2026). */}
+          {STIMMEN.length === 0 ? (
+            <p className="hb-lead">{STIMMEN_TEXTE.folgen}</p>
+          ) : (
+            <>
+              <p className="hb-lead">{STIMMEN_TEXTE.lead}</p>
+              {/* Laufband von rechts nach links, nahtlos: zwei gleiche Sätze, der zweite
+                  nur fürs Auge (aria-hidden). Maus darüber hält es an. Bei „weniger
+                  Bewegung“ steht es und lässt sich seitlich wischen, der zweite Satz entfällt. */}
+              <div className="pw-laufband">
+                <div className="lp-marquee-track pw-laufband-spur">
+                  {[0, 1].map((kopie) => (
+                    <div key={kopie} className="pw-laufband-satz" role={kopie === 0 ? "list" : undefined} aria-hidden={kopie === 1 ? true : undefined}>
+                      {STIMMEN.map((s) => (
+                        <figure className="hb-stimme hb-karte" key={s.name} role={kopie === 0 ? "listitem" : undefined}>
+                          <div className="sterne" aria-label={kopie === 0 ? "Kundenstimme" : undefined}>
+                            {[0, 1, 2, 3, 4].map((i) => (
+                              <Star key={i} aria-hidden="true" />
+                            ))}
+                          </div>
+                          <blockquote>„{s.text}“</blockquote>
+                          <figcaption>
+                            <b>{s.name}</b>
+                            <span>{s.ort}</span>
+                          </figcaption>
+                        </figure>
+                      ))}
+                    </div>
                   ))}
                 </div>
-              ))}
-            </div>
-          </div>
-          <p className="hb-fussnote">{STIMMEN_TEXTE.fuss}</p>
+              </div>
+              <p className="hb-fussnote">{STIMMEN_TEXTE.fuss}</p>
+            </>
+          )}
         </div>
       </section>
 

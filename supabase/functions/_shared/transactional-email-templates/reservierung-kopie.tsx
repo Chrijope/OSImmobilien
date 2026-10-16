@@ -37,7 +37,9 @@ interface Props {
   /**
    * Wird fuer diese Reservierung keine Gebuehr erhoben? Dann steht im PDF
    * weder ein Gebuehrenabschnitt noch eine Widerrufsbelehrung, und diese Mail
-   * darf beides ebenfalls nicht ankuendigen (seit 22.09.2026).
+   * darf beides ebenfalls nicht ankuendigen (seit 22.09.2026). Seit dem
+   * 16.10.2026 ist jede neue Reservierung kostenfrei; `false` oder ein
+   * fehlender Wert kommt nur noch von einem alten Vorgang mit Gebuehr.
    */
   ohneGebuehr?: boolean
   /**
@@ -77,12 +79,12 @@ const DE = {
   einleitung: (objekt: string, mitWiderruf: boolean) =>
     `anbei erhalten Sie Ihre Reservierungsvereinbarung${objekt ? ` für ${objekt}` : ''} als PDF. Sie ist von allen Kaufinteressenten digital unterschrieben${mitWiderruf ? ' und enthält die Widerrufsbelehrung' : ''}. Bitte bewahren Sie das Dokument auf.`,
   nurDeutsch: '',
-  vergeben: (gesamt: boolean) =>
-    `Leider war ${gesamt ? 'das Objekt' : 'die Wohnung'} zum Zeitpunkt Ihrer Unterschrift bereits an einen anderen Kaufinteressenten vergeben. Die Reservierung ist deshalb nicht zustande gekommen. Bitte zahlen Sie keine Reservierungsgebühr; eine bereits gezahlte Gebühr erhalten Sie vollständig zurück. Ihr persönlicher Ansprechpartner meldet sich bei Ihnen.`,
+  vergeben: (gesamt: boolean, altMitGebuehr: boolean) =>
+    `Leider war ${gesamt ? 'das Objekt' : 'die Wohnung'} zum Zeitpunkt Ihrer Unterschrift bereits an einen anderen Kaufinteressenten vergeben. Die Reservierung ist deshalb nicht zustande gekommen.${altMitGebuehr ? ' Bitte zahlen Sie keine Reservierungsgebühr; eine bereits gezahlte Gebühr erhalten Sie vollständig zurück.' : ''} Ihr persönlicher Ansprechpartner meldet sich bei Ihnen.`,
   ohneGebuehr:
     'Für diese Reservierung wird keine Reservierungsgebühr erhoben. Die Reservierung und die Leistungen von OS Immobilien beginnen mit der Unterzeichnung dieser Vereinbarung.',
-  abwarten: (ab: string, gesamt: boolean) =>
-    `Sie haben gewählt, das Ende der Widerrufsfrist abzuwarten. Die Reservierung beginnt deshalb am ${ab}. Bis dahin ist ${gesamt ? 'das Objekt' : 'die Wohnung'} nicht für Sie reserviert und kann anderen Kaufinteressenten angeboten werden; kommt es dazu, erhalten Sie eine bereits gezahlte Reservierungsgebühr vollständig zurück.`,
+  abwarten: (ab: string, gesamt: boolean, altMitGebuehr: boolean) =>
+    `Sie haben gewählt, das Ende der Widerrufsfrist abzuwarten. Die Reservierung beginnt deshalb am ${ab}. Bis dahin ist ${gesamt ? 'das Objekt' : 'die Wohnung'} nicht für Sie reserviert und kann anderen Kaufinteressenten angeboten werden${altMitGebuehr ? '; kommt es dazu, erhalten Sie eine bereits gezahlte Reservierungsgebühr vollständig zurück' : ''}.`,
   portal:
     'Ihre Reservierungsvereinbarung finden Sie jederzeit in Ihrem Kundenportal unter Ihrem Investment im Abschnitt Reservierung als PDF zum Herunterladen.',
   portalKnopf: 'Zum Kundenportal',
@@ -103,12 +105,12 @@ const TEXTE: Zweisprachig<typeof DE> = {
       `Please find attached your reservation agreement${objekt ? ` for ${objekt}` : ''} as a PDF. It has been signed digitally by all prospective buyers${mitWiderruf ? ' and contains the information on your right of withdrawal (Widerrufsbelehrung)' : ''}. Please keep this document.`,
     nurDeutsch:
       'The attached agreement is drawn up in German. Your contact person at OS Immobilien will be glad to explain any part of it to you.',
-    vergeben: (gesamt: boolean) =>
-      `Unfortunately, at the time of your signature the ${gesamt ? 'property' : 'apartment'} had already been allocated to another prospective buyer. The reservation has therefore not come into effect. Please do not pay a reservation fee; any fee you have already paid will be refunded in full. Your personal contact person will get in touch with you.`,
+    vergeben: (gesamt: boolean, altMitGebuehr: boolean) =>
+      `Unfortunately, at the time of your signature the ${gesamt ? 'property' : 'apartment'} had already been allocated to another prospective buyer. The reservation has therefore not come into effect.${altMitGebuehr ? ' Please do not pay a reservation fee; any fee you have already paid will be refunded in full.' : ''} Your personal contact person will get in touch with you.`,
     ohneGebuehr:
       'No reservation fee is charged for this reservation. The reservation and the services of OS Immobilien begin when this agreement is signed.',
-    abwarten: (ab: string, gesamt: boolean) =>
-      `You have chosen to wait until the end of the withdrawal period. The reservation therefore begins on ${ab}. Until then, the ${gesamt ? 'property' : 'apartment'} is not reserved for you and may be offered to other prospective buyers; should this happen, any reservation fee you have already paid will be refunded in full.`,
+    abwarten: (ab: string, gesamt: boolean, altMitGebuehr: boolean) =>
+      `You have chosen to wait until the end of the withdrawal period. The reservation therefore begins on ${ab}. Until then, the ${gesamt ? 'property' : 'apartment'} is not reserved for you and may be offered to other prospective buyers${altMitGebuehr ? '; should this happen, any reservation fee you have already paid will be refunded in full' : ''}.`,
     portal:
       'You can find your reservation agreement at any time in your customer portal under your investment, in the Reservation section, as a PDF to download.',
     portalKnopf: 'Go to the customer portal',
@@ -135,11 +137,11 @@ const Mail = ({ name, objektTitel, widerrufWahl, reservierungAb, ohneGebuehr, ei
       {t.nurDeutsch && <Absatz>{t.nurDeutsch}</Absatz>}
 
       {einheitVergeben ? (
-        <Absatz>{t.vergeben(gesamt)}</Absatz>
+        <Absatz>{t.vergeben(gesamt, !ohneGebuehr)}</Absatz>
       ) : ohneGebuehr ? (
         <Absatz>{t.ohneGebuehr}</Absatz>
       ) : widerrufWahl === 'abwarten' && reservierungAb ? (
-        <Absatz>{t.abwarten(datumFuer(reservierungAb, sprache), gesamt)}</Absatz>
+        <Absatz>{t.abwarten(datumFuer(reservierungAb, sprache), gesamt, !ohneGebuehr)}</Absatz>
       ) : null}
 
       {portalZugang === true ? (
@@ -165,8 +167,7 @@ export const template = {
   previewData: {
     name: 'Erika Muster',
     objektTitel: 'Musterstraße 12, WE 6',
-    widerrufWahl: 'abwarten',
-    reservierungAb: '30.09.2026',
+    ohneGebuehr: true,
     portalZugang: true,
     berater: {
       name: 'Christian Peetz',
