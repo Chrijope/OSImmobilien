@@ -208,3 +208,11 @@ export const BERATUNG_SPRECHSKRIPTE: BeratungSprechskript[] = [
 export const SPRECHSKRIPT_NACH_ID: Record<string, BeratungSprechskript> = Object.fromEntries(
   BERATUNG_SPRECHSKRIPTE.map((s) => [s.id, s]),
 );
+
+/**
+ * Seit 16.10.2026 gibt es nur noch die Du-Fassung. Bleibt für Aufrufer, die
+ * noch eine Anrede mitgeben; das Skript kommt unverändert zurück.
+ */
+export function sprechskriptFuerAnrede(s: BeratungSprechskript, _anrede: "sie" | "du"): BeratungSprechskript {
+  return s;
+}

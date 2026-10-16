@@ -1666,3 +1666,11 @@ export const formatierer = (sprache: PraesentationsSprache) => ({
   zahl: (n: number, nachkomma = 0) => zahlText(n, sprache, nachkomma),
   prozent: (n: number, nachkomma = 1) => prozentText(n, sprache, nachkomma),
 });
+
+/** Ein Text oder ein Anrede-Paar aus älteren Fassungen. Seit 16.10.2026 gilt immer Du. */
+export type AnredeWert = string | { readonly sie: string; readonly du: string };
+
+/** Liefert immer die Du-Form; ein reiner Text kommt unverändert zurück. */
+export function inAnrede(wert: AnredeWert, _anrede: "du" | "sie"): string {
+  return typeof wert === "string" ? wert : wert.du;
+}
