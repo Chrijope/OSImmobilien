@@ -20,12 +20,13 @@ describe("Vorschau-Route der Investmentkalkulation", () => {
   it("fehlt im Produktions-Build", async () => {
     vi.stubEnv("DEV", false);
     vi.stubEnv("PROD", true);
-    const { VorschauInvestmentrechner, VorschauProvision, VorschauMikroseite, VorschauRechnungsvorlage, VorschauKundeKomplett } = await import("./vorschauRouten");
+    const { VorschauInvestmentrechner, VorschauProvision, VorschauMikroseite, VorschauRechnungsvorlage, VorschauKundeKomplett, VorschauKundenchat } = await import("./vorschauRouten");
     expect(VorschauInvestmentrechner).toBeNull();
     expect(VorschauProvision).toBeNull();
     expect(VorschauMikroseite).toBeNull();
     expect(VorschauRechnungsvorlage).toBeNull();
     expect(VorschauKundeKomplett).toBeNull();
+    expect(VorschauKundenchat).toBeNull();
   });
 
   it("App.tsx bindet die Seite nur über den abgesicherten Weg ein", () => {

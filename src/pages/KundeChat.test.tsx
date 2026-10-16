@@ -11,21 +11,34 @@
  */
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import KundeChat from "./KundeChat";
 
 const lies = (pfad: string) => readFileSync(resolve(__dirname, "..", "..", pfad), "utf8");
 
-const { tabellen, echtzeit } = vi.hoisted(() => ({
+const { tabellen, echtzeit, eingefuegt, einfuegen } = vi.hoisted(() => ({
   tabellen: {} as Record<string, unknown[]>,
   echtzeit: {} as Record<string, (payload: unknown) => void>,
+  eingefuegt: [] as Record<string, unknown>[],
+  // Antwort der Datenbank auf ein Einfuegen; Standard: angenommen.
+  einfuegen: { antwort: () => Promise.resolve({ data: null, error: null as unknown }) },
 }));
 
 // Wie der PostgREST-Builder: jede Methode verkettet, am Ende ein Thenable.
 function abfrage(tabelle: string) {
   const ergebnis = Promise.resolve({ data: tabellen[tabelle] ?? [], error: null });
   const builder: Record<string | symbol, unknown> = new Proxy({}, {
-    get: (_ziel, name) => (name === "then" ? ergebnis.then.bind(ergebnis) : () => builder),
+    get: (_ziel, name) => {
+      if (name === "then") return ergebnis.then.bind(ergebnis);
+      if (name === "insert") {
+        return (zeile: Record<string, unknown>) => {
+          eingefuegt.push(zeile);
+          const antwort = einfuegen.antwort();
+          return { then: antwort.then.bind(antwort) };
+        };
+      }
+      return () => builder;
+    },
   });
   return builder;
 }
@@ -56,6 +69,7 @@ vi.mock("@/contexts/UserContext", () => ({ useUser: () => nutzer }));
 vi.mock("@/lib/chatStore", () => ({ getInitials: () => "KK" }));
 vi.mock("@/lib/pushNotifications", () => ({ showPushNotification: vi.fn() }));
 vi.mock("@/lib/storage", () => ({ openUnterlage: vi.fn() }));
+vi.mock("@/lib/chatBenachrichtigungAnstossen", () => ({ chatBenachrichtigungAnstossen: vi.fn() }));
 
 const nachricht = (i: number, absender = "berater-1") => ({
   id: `n${i}`,
@@ -69,6 +83,8 @@ const nachricht = (i: number, absender = "berater-1") => ({
 
 beforeEach(() => {
   for (const k of Object.keys(echtzeit)) delete echtzeit[k];
+  eingefuegt.length = 0;
+  einfuegen.antwort = () => Promise.resolve({ data: null, error: null });
   tabellen.kontakte = [{ id: "k1", vorname: "Kim", nachname: "Kunde", zustaendig_id: "berater-1" }];
   tabellen.chat_teilnehmer = [{ chat_id: "chat-1" }];
   tabellen.chat_gruppen = [{ id: "chat-1" }];
@@ -197,5 +213,61 @@ describe("Kundenportal-Chat: Gestaltung im Projektstil (CI-Prüfung 25.09.2026)"
     await geoeffneterChat();
     const kopf = screen.getByRole("heading", { level: 1 }).closest(".rounded-2xl")!;
     expect(kopf).toHaveClass("bg-card");
+  });
+});
+
+describe("Kundenportal-Chat: Senden (Prüfung 16.10.2026)", () => {
+  it("Doppelklick schickt die Nachricht nur einmal", async () => {
+    await geoeffneterChat();
+    let freigeben: (wert: { data: null; error: null }) => void = () => {};
+    einfuegen.antwort = () => new Promise((fertig) => { freigeben = fertig; });
+
+    const eingabe = screen.getByRole("textbox");
+    fireEvent.change(eingabe, { target: { value: "Hallo" } });
+    const formular = eingabe.closest("form")!;
+    act(() => {
+      fireEvent.submit(formular);
+      fireEvent.submit(formular);
+    });
+    await act(async () => { freigeben({ data: null, error: null }); });
+
+    expect(eingefuegt).toHaveLength(1);
+    expect(eingefuegt[0]).toMatchObject({ chat_id: "chat-1", absender_id: "kunde-1", inhalt: "Hallo" });
+  });
+
+  it("nach einem Fehlschlag behaelt der zweite Versuch dieselbe Kennung, ein Doppel zaehlt als gesendet", async () => {
+    await geoeffneterChat();
+    einfuegen.antwort = () => Promise.resolve({ data: null, error: { code: "08006", message: "Verbindung weg" } });
+    const eingabe = screen.getByRole("textbox");
+    fireEvent.change(eingabe, { target: { value: "Bitte zurückrufen" } });
+    await act(async () => { fireEvent.submit(eingabe.closest("form")!); });
+    expect(eingabe).toHaveValue("Bitte zurückrufen");
+
+    // Die erste Nachricht war doch angekommen: die Datenbank meldet ein Doppel.
+    einfuegen.antwort = () => Promise.resolve({ data: null, error: { code: "23505", message: "duplicate key" } });
+    await act(async () => { fireEvent.submit(eingabe.closest("form")!); });
+
+    expect(eingefuegt).toHaveLength(2);
+    expect(eingefuegt[1].id).toBe(eingefuegt[0].id);
+    expect(eingabe).toHaveValue("");
+  });
+
+  it("das Eingabefeld begrenzt auf die Laenge, die die Datenbank annimmt", async () => {
+    await geoeffneterChat();
+    expect(screen.getByRole("textbox")).toHaveAttribute("maxLength", "10000");
+  });
+
+  it("zeigt den Kundenchat, auch wenn ein anderer Chat zuletzt geaendert wurde", async () => {
+    tabellen.chat_teilnehmer = [{ chat_id: "video-1" }, { chat_id: "chat-1" }];
+    tabellen.chat_gruppen = [{ id: "video-1", typ: "intern" }, { id: "chat-1", typ: "kundenkommunikation" }];
+    tabellen.chat_nachrichten = [nachricht(30)];
+    await geoeffneterChat();
+    expect(echtzeit["kunde-chat-chat-1:INSERT"]).toBeTypeOf("function");
+    expect(echtzeit["kunde-chat-video-1:INSERT"]).toBeUndefined();
+  });
+
+  it("zeigt im Browser des Kunden keine Meldung ueber seine eigene Nachricht", () => {
+    expect(lies("src/pages/KundeChat.tsx")).not.toContain("showPushNotification(");
+    expect(lies("src/components/chat/ChatVerlauf.tsx")).not.toContain("showPushNotification(");
   });
 });

@@ -11,6 +11,7 @@ import {
   getChats,
   getInitials,
   getUnreadChatCountForChat,
+  kundenchatSicherstellen,
   type ChatData,
   type ChatParticipant,
 } from "@/lib/chatStore";
@@ -96,6 +97,9 @@ export function KommunikationReiter({
   const [eigeneVersion, setEigeneVersion] = useState(0);
   /** Chatbauarten, für die das Anlegen schon läuft. Verhindert zwei Gruppen. */
   const anlageLaeuft = useRef<Set<string>>(new Set());
+  /** Warum der Kundenchat hier nicht steht, etwa weil ein anderer Partner zuständig ist. */
+  const [kundenchatHinweis, setKundenchatHinweis] = useState<string | null>(null);
+  useEffect(() => setKundenchatHinweis(null), [kontaktId]);
 
   const kundenchatGesperrt = !portalFreigeschalten;
 
@@ -155,6 +159,26 @@ export function KommunikationReiter({
       if (aktiv === "intern") {
         await createChat(kontaktId, `${kundeName} (Intern)`, kundeStatus, user.name, "intern", undefined, authUserId);
       } else {
+        const ergebnis = await kundenchatSicherstellen(kontaktId);
+        if ("chatId" in ergebnis) {
+          if (!abgebrochen) setEigeneVersion((v) => v + 1);
+          anlageLaeuft.current.delete(aktiv);
+          return;
+        }
+        if (ergebnis.grund !== "funktion_fehlt") {
+          if (!abgebrochen) {
+            setKundenchatHinweis(
+              ergebnis.grund === "nicht_zustaendig"
+                ? "Den Kundenchat führt der zuständige Partner. Er und der Kunde schreiben hier zu zweit, die Geschäftsleitung liest mit."
+                : ergebnis.grund === "kein_partner"
+                  ? "Für diesen Kunden ist noch kein Partner zuständig. Sobald einer eingetragen ist, steht hier der Kundenchat."
+                  : "Der Kundenchat konnte gerade nicht geladen werden. Bitte lade die Seite neu.",
+            );
+          }
+          anlageLaeuft.current.delete(aktiv);
+          return;
+        }
+        // Rueckfall, solange die Migration 20261016231000 fehlt: der alte Weg.
         // Die Kennung des Kunden steht im `meta` seiner Kontaktzeile. Ohne sie
         // hat er noch keinen Zugang und kann den Verlauf nicht sehen.
         const rawKontakt = (cacheGet<any>("kontakte") || []).find((k: any) => k.id === kontaktId);
@@ -388,6 +412,14 @@ export function KommunikationReiter({
                 Schalte zuerst das Portal frei, die Karte „Kundenportal“ steht im Reiter Übersicht. Danach steht
                 der Verlauf hier zur Verfügung.
               </AlertDescription>
+            </Alert>
+          </div>
+        ) : kundenchatOffen && !offenerChat && kundenchatHinweis ? (
+          <div className="p-4">
+            <Alert>
+              <MessageCircle className="h-4 w-4" />
+              <AlertTitle>Kundenchat</AlertTitle>
+              <AlertDescription>{kundenchatHinweis}</AlertDescription>
             </Alert>
           </div>
         ) : offenerChat ? (
