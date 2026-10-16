@@ -1,5 +1,5 @@
 /**
- * Der Beispielkunde „Max Mustermann (Beispiel)“ (Christian, 16.10.2026).
+ * Der Beispielkunde „Max Mustermann“ (Christian, 16.10.2026).
  *
  * Zeigt, wie ein Vorgang aussieht, wenn alles vorliegt. Alle Angaben sind
  * erfunden. Die Selbstauskunft ist absichtlich vollständig und mit krummen
@@ -12,7 +12,7 @@ import type { SelbstauskunftData } from "@/components/selbstauskunft/Selbstausku
 export const BEISPIEL_SA = {
   wuenscheZiele: ["vermoegen", "rente", "steuer"],
   person2: true,
-  anrede: "Herr", vorname: "Max", nachname: "Mustermann (Beispiel)",
+  anrede: "Herr", vorname: "Max", nachname: "Mustermann",
   geburtsdatum: "1986-04-12", steuerId: "",
   strasse: "Beispielweg", hausnummer: "1", plz: "10115", ort: "Berlin",
   telefon: "+49 30 0000000", email: "max.mustermann@example.com",
@@ -48,7 +48,7 @@ export const BEISPIEL_SA = {
   hinweise: "Beispieldaten, kein echter Kunde.",
   abgeschlossen: true,
   person2Data: {
-    anrede: "Frau", vorname: "Erika", nachname: "Mustermann (Beispiel)",
+    anrede: "Frau", vorname: "Erika", nachname: "Mustermann",
     geburtsdatum: "1988-02-03",
     beschaeftigungsart: "angestellt",
     einkommen: { netto: "2.400", gewerbe: "", miet: "", zinsen: "", rente: "", kindergeld: "0", sonstige: "" },
@@ -82,7 +82,7 @@ const OBJEKT = {
 export function beispielkundeZeilen(eigeneNutzerId: string) {
   const angelegt = "2026-08-01T10:00:00Z";
   const kontakt = {
-    id: BEISPIEL_KONTAKT_ID, vorname: "Max", nachname: "Mustermann (Beispiel)",
+    id: BEISPIEL_KONTAKT_ID, vorname: "Max", nachname: "Mustermann",
     email: "max.mustermann@example.com", telefon: "+49 30 0000000", status: "kunde",
     archiviert: false, geloescht: false, erstellt_am: angelegt, aktualisiert_am: angelegt,
     zustaendig_id: eigeneNutzerId, berater: "Beispiel Partner", quelle: "Beispiel",
@@ -114,7 +114,7 @@ export function beispielkundeZeilen(eigeneNutzerId: string) {
       objektGrundbuch: { amtsgericht: "Leipzig", gemarkung: "Beispielgemarkung", blatt: "0000", flurstueck: "0/0", miteigentumsanteil: 45, wohnungsnummer: "5" },
       // Reservierung ausgefüllt und unterschrieben, kostenfrei
       rvData: {
-        vorname: "Max", nachname: "Mustermann (Beispiel)", objAdresse: OBJEKT.adresse, objPlz: OBJEKT.plz, objOrt: OBJEKT.ort,
+        vorname: "Max", nachname: "Mustermann", objAdresse: OBJEKT.adresse, objPlz: OBJEKT.plz, objOrt: OBJEKT.ort,
         weNr: OBJEKT.weNr, kaufpreis: OBJEKT.kaufpreis, reservierungsgebuehr: 0, kostenfrei: true,
       },
       rvPdf: "Reservierung_Mustermann_Beispiel.pdf", rvSigned: true, rvSignedAt: "2026-08-10T10:00:00Z",
@@ -129,7 +129,7 @@ export function beispielkundeZeilen(eigeneNutzerId: string) {
       notarEmail: "notarin@example.com", notarGesendet: true, notarGesendetAt: "2026-09-10T10:00:00Z",
       notarterminEingetragenAt: "2026-09-08T10:00:00Z",
       kaufvertragData: {
-        vk_art: "firma", vk_name: "Bauträger Beispiel GmbH", k_vorname: "Max", k_name: "Mustermann (Beispiel)",
+        vk_art: "firma", vk_name: "Bauträger Beispiel GmbH", k_vorname: "Max", k_name: "Mustermann",
         obj_adresse: `${OBJEKT.adresse}, ${OBJEKT.plz} ${OBJEKT.ort}`, we_nr: OBJEKT.weNr, kaufpreis: String(OBJEKT.kaufpreis),
       },
       kaufvertragPdf: "Kaufvertragsentwurf_Beispiel.pdf", kaufvertragUpdatedAt: "2026-09-12T10:00:00Z",

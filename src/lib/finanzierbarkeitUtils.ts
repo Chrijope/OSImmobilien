@@ -225,9 +225,22 @@ export function bankLebenshaltung(eingetragen: number, nettoEinkommen: number): 
 import { rahmenAusUeberschuss } from "../../supabase/functions/_shared/rahmen-formel.ts";
 export { RAHMEN_PUFFER, RAHMEN_ANNUITAET, rahmenAusUeberschuss } from "../../supabase/functions/_shared/rahmen-formel.ts";
 
+/**
+ * Mieteinnahmen setzt der Finanzierungsrahmen nur zu 80 Prozent an, als Puffer
+ * fuer Leerstand und Instandhaltung, so wie es Banken meist tun (Christian,
+ * 16.10.2026). Die Anzeige im Investment zeigt weiter die volle Kaltmiete.
+ */
+export const BANK_MIETE_ANTEIL = 0.8;
+
+/** Einkuenfte nach Bankansatz: alles wie eingetragen, Mieteinnahmen zu 80 Prozent. */
+export function bankEinkuenfte(data: any) {
+  const e = extractEinkuenfte(data);
+  return { ...e, mieteinnahmen: e.mieteinnahmen * BANK_MIETE_ANTEIL };
+}
+
 export function calculateFinanzierbarkeitFromSaData(saData: any) {
   if (!saData) return null;
-  const einkuenfte = extractEinkuenfte(saData);
+  const einkuenfte = bankEinkuenfte(saData);
   const ausgaben = extractAusgaben(saData);
   let sumEink = Object.values(einkuenfte).reduce((s, v) => s + v, 0);
   let sumAusg = Object.values(ausgaben).reduce((s, v) => s + v, 0);
@@ -239,7 +252,7 @@ export function calculateFinanzierbarkeitFromSaData(saData: any) {
   let sumEinkP2 = 0;
   let sumAusgP2 = 0;
   if (p2) {
-    const e2 = extractEinkuenfte(p2);
+    const e2 = bankEinkuenfte(p2);
     const a2 = extractAusgaben(p2);
     sumEinkP2 = Object.values(e2).reduce((s, v) => s + v, 0);
     sumAusgP2 = Object.values(a2).reduce((s, v) => s + v, 0);

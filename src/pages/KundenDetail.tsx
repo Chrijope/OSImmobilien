@@ -13459,7 +13459,7 @@ export default function KundenDetail() {
                   <div className="flex justify-between"><span>Ausgaben</span><span>– {fmt(saFin.sumAusg)}</span></div>
                   <div className="flex justify-between font-semibold text-foreground border-t pt-1"><span>Monatl. Überschuss</span><span>{fmt(bankUeberschuss)}</span></div>
                   <p className="pt-1 leading-snug">
-                    Hinweis, wie Banken häufig rechnen: Lebenshaltung mit rund 30 % des Nettos, mindestens {fmt(BANK_LEBENSHALTUNG_MINDEST)} je Person, wenn der eingetragene Betrag darunter liegt. Mieteinnahmen sind hier voll angesetzt, viele Banken rechnen nur 70 bis 80 % der Kaltmiete. Die Bank entscheidet im Einzelfall.
+                    Hinweis, wie Banken häufig rechnen: Lebenshaltung mit rund 30 % des Nettos, mindestens {fmt(BANK_LEBENSHALTUNG_MINDEST)} je Person, wenn der eingetragene Betrag darunter liegt, und Mieteinnahmen mit 80 % der Kaltmiete. Die Bank entscheidet im Einzelfall.
                   </p>
                 </div>
               )}

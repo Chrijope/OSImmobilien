@@ -69,7 +69,10 @@ describe("Selbstauskunft → Investment, eins zu eins", () => {
     // Lebenshaltung: P1 hebt die Bank auf 30 % von 3.850,50, P2 auf 800.
     const lhBank = bankLebenshaltung(700, 3850.5) + bankLebenshaltung(300, 2400);
     expect(lhBank).toBe(1155 + 800);
-    expect(z.bank?.ueberschuss).toBeCloseTo(z.ueberschuss - (lhBank - 1000), 2);
+    // Mieteinnahmen setzt der Rahmen nur zu 80 % an: 650 € Kaltmiete zählen 520 €.
+    expect(z.bank?.sumEink).toBeCloseTo(z.sumEinkGes - 650 * 0.2, 2);
+    expect(z.bank?.ueberschuss).toBeCloseTo(z.ueberschuss - (lhBank - 1000) - 650 * 0.2, 2);
+    expect(z.eink.mieteinnahmen).toBe(650);
     expect(extractAusgaben(BEISPIEL_SA).lebenshaltung).toBe(1155);
     expect(z.ausg.lebenshaltung).toBe(700);
   });
