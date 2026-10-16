@@ -100,7 +100,9 @@ function anlassAnzeige(
 /**
  * Der Termin dieser Gesprächsart, dessen Zeit sich noch korrigieren lässt.
  * Nur ihn ändert ein neues Eintragen; jeder andere Fall legt einen neuen an
- * (Migration 20260929130000).
+ * (Migration 20260929130000). Seit 16.10.2026 nur noch, solange er offen ist
+ * und noch nicht begonnen hat oder vor höchstens 15 Minuten eingetragen wurde
+ * (20261016120000, `partnertermin_korrigierbar`).
  */
 function offenerTermin(z: PartnerterminZugang | null, anlass: string): Termin | undefined {
   if (!z || !anlass) return undefined;
