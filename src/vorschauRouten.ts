@@ -29,3 +29,8 @@ export const VorschauErstgespraech = import.meta.env.DEV
 export const VorschauProvision = import.meta.env.DEV
   ? lazy(() => import("./pages/VorschauProvision"))
   : null;
+
+/** Vorschau Rechnungsvorlage mit Live-PDF (16.10.2026): /vorschau/rechnungsvorlage. Gleiche Regeln wie oben. */
+export const VorschauRechnungsvorlage = import.meta.env.DEV
+  ? lazy(() => import("./pages/VorschauRechnungsvorlage"))
+  : null;
