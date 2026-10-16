@@ -9150,6 +9150,8 @@ export default function KundenDetail() {
                   onClick={() => {
                     const params = new URLSearchParams({
                       kunde: `${kunde.vorname} ${kunde.nachname}`,
+                      // Für „Herzlich willkommen, Vorname“, auch bei Doppelnamen.
+                      vorname: kunde.vorname || "",
                       kundeId: id || "",
                       investmentId: inv.id,
                     });
@@ -9165,6 +9167,7 @@ export default function KundenDetail() {
                   onClick={() => {
                     const params = new URLSearchParams({
                       kunde: `${kunde.vorname} ${kunde.nachname}`,
+                      vorname: kunde.vorname || "",
                       kundeId: id || "",
                       investmentId: inv.id,
                     });

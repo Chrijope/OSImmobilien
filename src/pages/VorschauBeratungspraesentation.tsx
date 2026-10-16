@@ -19,7 +19,7 @@ const BEISPIELE: Record<string, Omit<BeratungVorschau, "schluessel">> = {
     kundenName: "Anna Muster",
     kontakt: { anrede: "Frau", vorname: "Anna", nachname: "Muster", qualEinkommen: "3.980", qualEigenkapital: "20.000" },
     skript: {
-      anrede: "du",
+      anrede: "sie",
       ziele: ["Altersvorsorge", "Vermögensaufbau"],
       antworten: {
         motivWoertlich: "Ich merke, dass meine Rente später nicht reicht, und ich möchte jetzt anfangen, statt in zehn Jahren.",
@@ -69,7 +69,7 @@ const BEISPIELE: Record<string, Omit<BeratungVorschau, "schluessel">> = {
     kundenName: "Maximiliane Alexandra von Musterhausen-Beispielstedt",
     kontakt: { anrede: "Frau", vorname: "Maximiliane", nachname: "von Musterhausen-Beispielstedt", qualEinkommen: "3.000-3.500 €", qualEigenkapital: "ca. 30.000 bis 50.000, teilweise im Depot gebunden" },
     skript: {
-      anrede: "du",
+      anrede: "sie",
       ziele: ["Altersvorsorge", "Familie absichern", "Vererben", "Inflationsschutz"],
       antworten: {
         motivWoertlich:
@@ -127,7 +127,7 @@ export default function VorschauBeratungspraesentation() {
         echter Kunden. Eingaben merkt sich nur dieser Browser.
         <div className="mt-2 flex flex-wrap gap-2">
           {[
-            ["zusatzrente", "Anna Muster, Zusatzrente"],
+            ["zusatzrente", "Anna, Zusatzrente"],
             ["steuer", "Jonas, Steuerersparnis"],
             ["leer", "ohne Erstgespräch"],
             ["lang", "lange Werte"],

@@ -11,7 +11,6 @@
  */
 import { OS_TEXTE, type KonzeptOs } from "@/lib/beratungOsDaten";
 
-const p = (sie: string, du: string) => ({ sie, du }) as const;
 const A = OS_TEXTE;
 
 export const OS_TEXTE_B: typeof OS_TEXTE = {
@@ -19,29 +18,23 @@ export const OS_TEXTE_B: typeof OS_TEXTE = {
 
   heute: {
     ...A.heute,
-    text: p(
-      "Heute unterschreiben Sie nichts. Wir prüfen gemeinsam, ob eine vermietete Immobilie Sie Ihren Zielen näher bringt. Mit Ihren Zahlen, vor und nach Steuern.",
-      "Heute unterschreibst du nichts. Wir prüfen gemeinsam, ob eine vermietete Immobilie dich deinen Zielen näher bringt. Mit deinen Zahlen, vor und nach Steuern.",
-    ),
+    text: "Heute unterschreibst du nichts. Wir prüfen gemeinsam, ob eine vermietete Immobilie dich deinen Zielen näher bringt. Mit deinen Zahlen, vor und nach Steuern.",
     punkte: [
-      { titel: p("Ihre Ziele", "Deine Ziele"), text: p("Was Ihnen wichtig ist.", "Was dir wichtig ist.") },
-      { titel: "Das Konzept", text: p("Wie Mieter und Steuer für Sie mitzahlen.", "Wie Mieter und Steuer für dich mitzahlen.") },
+      { titel: "Deine Ziele", text: "Was dir wichtig ist." },
+      { titel: "Das Konzept", text: "Wie Mieter und Steuer für dich mitzahlen." },
       { titel: "Echte Objekte", text: "Geprüft, mit den Zahlen aus unseren Exposés." },
-      { titel: p("Ihre Entscheidung", "Deine Entscheidung"), text: "Passt es? Dann gehen wir den nächsten Schritt." },
+      { titel: "Deine Entscheidung", text: "Passt es? Dann gehen wir den nächsten Schritt." },
     ],
   },
 
   ziele: {
     ...A.ziele,
-    nachfrage: p("Stimmt das so? Möchten Sie etwas ergänzen?", "Stimmt das so? Möchtest du etwas ergänzen?"),
+    nachfrage: "Stimmt das so? Möchtest du etwas ergänzen?",
   },
 
   luecke: {
     ...A.luecke,
-    frage: p(
-      "Stellen Sie sich vor, diese Lücke ist geschlossen. Wäre das ein gutes Gefühl?",
-      "Stell dir vor, diese Lücke ist geschlossen. Wäre das ein gutes Gefühl?",
-    ),
+    frage: "Stell dir vor, diese Lücke ist geschlossen. Wäre das ein gutes Gefühl?",
   },
 
   nichtstun: {
@@ -51,21 +44,15 @@ export const OS_TEXTE_B: typeof OS_TEXTE = {
       { kopf: "Kontostand in 10 Jahren", wert: "60.950 €", text: "Sieht nach mehr aus." },
       { kopf: "Was das Geld dann noch kauft", wert: "47.615 €", text: "Rund 2.400 € weniger als heute. Das ist der Verlust.", warnung: true },
     ],
-    satz: p(
-      "Heute verliert Ihr Erspartes leise an Wert. Mit einer vermieteten Immobilie tragen Mieter und Steuerwirkung einen großen Teil der Rate, und mit jeder Tilgung wächst Ihr Vermögen.",
-      "Heute verliert dein Erspartes leise an Wert. Mit einer vermieteten Immobilie tragen Mieter und Steuerwirkung einen großen Teil der Rate, und mit jeder Tilgung wächst dein Vermögen.",
-    ),
+    satz: "Heute verliert dein Erspartes leise an Wert. Mit einer vermieteten Immobilie tragen Mieter und Steuerwirkung einen großen Teil der Rate, und mit jeder Tilgung wächst dein Vermögen.",
   },
 
   werWirSind: {
     ...A.werWirSind,
-    text: p(
-      "Wir finden geprüfte, vermietete Wohnungen in Berlin und Brandenburg, die zu Ihren Zielen passen. Und wir begleiten Sie vom ersten Gespräch bis zur Kaufpreiszahlung.",
-      "Wir finden geprüfte, vermietete Wohnungen in Berlin und Brandenburg, die zu deinen Zielen passen. Und wir begleiten dich vom ersten Gespräch bis zur Kaufpreiszahlung.",
-    ),
+    text: "Wir finden geprüfte, vermietete Wohnungen in Berlin und Brandenburg, die zu deinen Zielen passen. Und wir begleiten dich vom ersten Gespräch bis zur Kaufpreiszahlung.",
     karten: [
-      { titel: "Geprüfte Objekte", text: p("Sie sehen nur, was wir vorher geprüft haben: Lage, Miete, Zustand, Unterlagen.", "Du siehst nur, was wir vorher geprüft haben: Lage, Miete, Zustand, Unterlagen.") },
-      { titel: p("Ihre Zahlen", "Deine Zahlen"), text: p("Jede Rechnung mit Ihrem Einkommen. Vor und nach Steuern, mit Stresstest.", "Jede Rechnung mit deinem Einkommen. Vor und nach Steuern, mit Stresstest.") },
+      { titel: "Geprüfte Objekte", text: "Du siehst nur, was wir vorher geprüft haben: Lage, Miete, Zustand, Unterlagen." },
+      { titel: "Deine Zahlen", text: "Jede Rechnung mit deinem Einkommen. Vor und nach Steuern, mit Stresstest." },
       { titel: "Ein Ansprechpartner", text: "Einer für alles: Konzept, Bank, Notar, Übergabe." },
       // Pflichthinweis, wörtlich wie in A.
       A.werWirSind.karten[3],
@@ -77,43 +64,28 @@ export const OS_TEXTE_B: typeof OS_TEXTE = {
     karten: {
       zusatzrente: {
         ...A.konzept.karten.zusatzrente,
-        text: p(
-          "Stellen Sie sich vor: Sie gehen in Rente, die Wohnung gehört Ihnen, und die Miete kommt jeden Monat als zweite Rente dazu. Bis dahin tragen Mieter und Steuer den größten Teil.",
-          "Stell dir vor: Du gehst in Rente, die Wohnung gehört dir, und die Miete kommt jeden Monat als zweite Rente dazu. Bis dahin tragen Mieter und Steuer den größten Teil.",
-        ),
+        text: "Stell dir vor: Du gehst in Rente, die Wohnung gehört dir, und die Miete kommt jeden Monat als zweite Rente dazu. Bis dahin tragen Mieter und Steuer den größten Teil.",
       },
       steuer: {
         ...A.konzept.karten.steuer,
-        text: p(
-          "Heute geht ein Teil Ihres Gehalts ans Finanzamt und ist weg. Mit diesem Konzept fließt ein Teil davon in Ihr eigenes Vermögen. Für Einkommen mit hohem Steuersatz.",
-          "Heute geht ein Teil deines Gehalts ans Finanzamt und ist weg. Mit diesem Konzept fließt ein Teil davon in dein eigenes Vermögen. Für Einkommen mit hohem Steuersatz.",
-        ),
+        text: "Heute geht ein Teil deines Gehalts ans Finanzamt und ist weg. Mit diesem Konzept fließt ein Teil davon in dein eigenes Vermögen. Für Einkommen mit hohem Steuersatz.",
       },
     },
   },
 
   sicherheit: {
     ...A.sicherheit,
-    satz: p(
-      "Eine gute Rechnung hält auch, wenn es mal nicht glatt läuft. Darum rechnen wir den Stressfall gleich mit. Wo liegt Ihre Grenze?",
-      "Eine gute Rechnung hält auch, wenn es mal nicht glatt läuft. Darum rechnen wir den Stressfall gleich mit. Wo liegt deine Grenze?",
-    ),
+    satz: "Eine gute Rechnung hält auch, wenn es mal nicht glatt läuft. Darum rechnen wir den Stressfall gleich mit. Wo liegt deine Grenze?",
   },
 
   plan: {
     ...A.plan,
-    satz: p(
-      "Wir starten mit einer Wohnung. Jede weitere entscheiden Sie neu, in Ihrem Tempo.",
-      "Wir starten mit einer Wohnung. Jede weitere entscheidest du neu, in deinem Tempo.",
-    ),
+    satz: "Wir starten mit einer Wohnung. Jede weitere entscheidest du neu, in deinem Tempo.",
   },
 
   schritt: {
     ...A.schritt,
-    text: p(
-      "Dafür brauchen wir Ihre Selbstauskunft. Wir füllen sie jetzt zusammen aus, in etwa 15 Minuten. Bis zur Objektvorstellung in einer Woche fehlen dann nur noch Ausweis und letzte Gehaltsabrechnung.",
-      "Dafür brauchen wir deine Selbstauskunft. Wir füllen sie jetzt zusammen aus, in etwa 15 Minuten. Bis zur Objektvorstellung in einer Woche fehlen dann nur noch Ausweis und letzte Gehaltsabrechnung.",
-    ),
+    text: "Dafür brauchen wir deine Selbstauskunft. Wir füllen sie jetzt zusammen aus, in etwa 15 Minuten. Bis zur Objektvorstellung in einer Woche fehlen dann nur noch Ausweis und letzte Gehaltsabrechnung.",
   },
 };
 

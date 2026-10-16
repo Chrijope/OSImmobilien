@@ -10,8 +10,14 @@
  * Aus der bisherigen Präsentation bleibt der interaktive Teil: die Fragen
  * (Erwartung, Erfahrung, Ziele, Monatsbeitrag, Haushaltsrechnung,
  * Finanzierungsrahmen, „besonders wichtig“), die Rückspiegelung „Ihre
- * Angaben“, der Regler, Trainer-Modus mit Sprechskripten, Du und Sie und der
- * Sprung in die Selbstauskunft. Die Antworten liegen wie bisher im Browser
+ * Angaben“, der Regler, Trainer-Modus mit Sprechskripten und der Sprung in
+ * die Selbstauskunft. Angesprochen wird immer per Du (Hausregel seit dem
+ * 15.09.2026), eine Sie-Fassung gibt es nicht mehr.
+ *
+ * Design seit dem 16.10.2026 im CI des CRM: Schrift des CRM, Farben aus den
+ * Tokens in index.css, Karten und Knöpfe aus der Glasschicht
+ * (design-liquid.css), dunkelgrüne Abschnitte im Wechsel mit hellen. Gold
+ * bleibt für die Akzentwörter der Überschriften, passend zum Logo. Die Antworten liegen wie bisher im Browser
  * unter demselben Schlüssel; das Speichern am Investment kommt nach der
  * Freigabe.
  *
@@ -23,7 +29,6 @@ import { CalendarClock, Check, ChevronDown, ClipboardList, FileText, Menu, X } f
 import { useUser } from "@/contexts/UserContext";
 import { usePersistedState } from "@/hooks/usePersistedState";
 import { SPRECHSKRIPT_NACH_ID, sprechskriptFuerAnrede } from "@/lib/beratungSprechskripte";
-import { anredeAusSkript, type Anrede } from "@/lib/beratungAnrede";
 import { rahmenAusUeberschuss } from "@/lib/finanzierbarkeitUtils";
 import { RATE_EINGANG, rateAnteile } from "@/lib/rateAnteile";
 import { useCacheReady } from "@/hooks/useCacheReady";
@@ -38,6 +43,7 @@ import {
   PLAN_OBJEKT,
   PLAN_ZEILEN,
   aufTausend,
+  begruessungsName,
   konzeptAusSchwerpunkt,
   rentenluecke,
   uebernahmeAusSkript,
@@ -47,6 +53,8 @@ import {
 } from "@/lib/beratungOsDaten";
 import { DOKUMENTE_B, KAUFKRAFT_B, OS_TEXTE_B, dokumenteFuer } from "@/lib/beratungOsDatenB";
 import logoDunkel from "@/assets/os-real-estate-logo-dark.png";
+import logoQuer from "@/assets/os-real-estate-logo-quer.png";
+import logoQuerDunkel from "@/assets/os-real-estate-logo-quer-dunkel.png";
 import osZeichen from "@/assets/beratung/os-zeichen-gold.png";
 import fotoHauff from "@/assets/beratung/hauffstrasse-38.jpg";
 import fotoZossen from "@/assets/beratung/zossen-wuensdorf.jpg";
@@ -63,33 +71,41 @@ export interface BeratungVorschau {
   skript: { anrede?: string; antworten?: Record<string, string>; ziele?: string[] } | null;
 }
 
-type Ton = "papier" | "gruen" | "schwarz";
+/** Hell liegt auf dem Grund der Glasschicht, Grün und Tief sind dunkelgrüne Abschnitte. */
+type Ton = "hell" | "gruen" | "tief";
 
+/*
+ * Farben aus den Tokens des CRM (index.css, design-liquid.css). Die beiden
+ * Grüntöne haben den Farbton von --primary, nur dunkel. Gold bleibt als
+ * Akzent, wie im Logo; auf hellem Grund das dunklere Gold (--bos-akzent).
+ */
 const FARBE = {
-  gruen: "#1B2A22",
-  schwarz: "#121512",
-  papier: "#F4F1EA",
+  gruen: "hsl(157 42% 13%)",
+  tief: "hsl(158 38% 9%)",
   gold: "#CCAC05",
-  goldDunkel: "#93761F",
-  hellText: "#F4F1EA",
-  hellGedaempft: "rgba(244,241,234,0.68)",
+  goldDunkel: "var(--bos-akzent)",
+  /** Grün als Schrift, auf Glas die dunklere Stufe der Glasschicht. */
+  gruenText: "hsl(var(--lg-schrift-blau, var(--primary)))",
+  primaer: "hsl(var(--primary))",
+  tinte: "hsl(var(--foreground))",
+  grau: "hsl(var(--muted-foreground))",
+  linie: "hsl(var(--border))",
+  hellText: "#F3F7F5",
+  // 0,8 statt 0,68: kleine Schrift auf Dunkelgrün braucht 4,5:1 (gerechnet etwa 9:1).
+  hellGedaempft: "rgba(243,247,245,0.8)",
   salbei: "#6F9A7E",
+  /** Schrift auf Gold. */
+  aufGold: "#14231B",
 };
 
-const AnredeContext = createContext<Anrede>("du");
 const TrainerContext = createContext(false);
 
-function useA() {
-  const anrede = useContext(AnredeContext);
-  return (w: AnredeWert) => inAnrede(w, anrede);
-}
-
-/** Überschrift mit [[Akzent]]: auf Papier dunkles Gold, auf Grün und Schwarz helles. */
+/** Überschrift mit [[Akzent]]: auf hellem Grund dunkles Gold, auf Grün helles. */
 function Titel({ text, ton, className = "" }: { text: string; ton: Ton; className?: string }) {
   const teile = text.split(/\[\[|\]\]/);
-  const akzent = ton === "papier" ? FARBE.goldDunkel : FARBE.gold;
+  const akzent = ton === "hell" ? FARBE.goldDunkel : FARBE.gold;
   return (
-    <h2 className={`bos-serif font-semibold leading-[1.12] tracking-[-0.01em] text-[2rem] sm:text-[2.6rem] md:text-[3.1rem] ${className}`}>
+    <h2 className={`font-semibold leading-[1.12] tracking-[-0.022em] text-[2rem] sm:text-[2.6rem] md:text-[3.1rem] ${className}`}>
       {teile.map((t, i) =>
         i % 2 ? (
           <span key={i} style={{ color: akzent }}>
@@ -103,7 +119,7 @@ function Titel({ text, ton, className = "" }: { text: string; ton: Ton; classNam
   );
 }
 
-/** Ein Abschnitt in einer der drei Tonlagen des Entwurfs. */
+/** Ein Abschnitt: hell auf dem Grund der Glasschicht oder dunkelgrün hinterlegt. */
 function Folie({
   id,
   ton,
@@ -122,32 +138,34 @@ function Folie({
   oben?: React.ReactNode;
   ohneStrich?: boolean;
 }) {
-  const dunkel = ton !== "papier";
+  const dunkel = ton !== "hell";
   return (
     <section
       id={id}
+      data-ton={ton}
       className={`relative scroll-mt-16 px-4 sm:px-8 md:px-12 py-14 md:py-20 ${dunkel ? "bos-dunkel" : ""}`}
-      style={{
-        background: ton === "gruen" ? FARBE.gruen : ton === "schwarz" ? FARBE.schwarz : FARBE.papier,
-        color: dunkel ? FARBE.hellText : undefined,
-      }}
+      style={dunkel ? { background: ton === "gruen" ? FARBE.gruen : FARBE.tief, color: FARBE.hellText } : undefined}
     >
       <div className="max-w-6xl mx-auto">
         {oben && <div className="mb-8">{oben}</div>}
         {kicker && (
-          <p className="bos-kicker mb-3" style={{ color: dunkel ? FARBE.gold : FARBE.goldDunkel }}>
+          <p className="bos-kicker mb-3" style={{ color: dunkel ? FARBE.gold : FARBE.gruenText }}>
             {kicker}
           </p>
         )}
         {titel && <Titel text={titel} ton={ton} />}
-        {titel && !ohneStrich && <div className="mt-5 h-[3px] w-14" style={{ background: FARBE.gold }} />}
+        {titel && !ohneStrich && <div className="mt-5 h-[3px] w-14 rounded-full" style={{ background: dunkel ? FARBE.gold : FARBE.primaer }} />}
         {children}
       </div>
     </section>
   );
 }
 
-/** Karte: weiß auf Papier, leicht aufgehellt auf Grün. */
+/**
+ * Karte. Hell: eine Karte der Glasschicht (`data-ui="card"` mit `bg-card`,
+ * design-liquid.css macht sie zu Glas). Dunkel: die dunkle Scheibe
+ * `.bos-glas-dunkel` aus beratung-os.css.
+ */
 function Karte({
   dunkel,
   children,
@@ -161,11 +179,9 @@ function Karte({
 }) {
   return (
     <div
-      className={`rounded-2xl border p-5 md:p-6 min-w-0 ${className}`}
-      style={{
-        background: dunkel ? "rgba(255,255,255,0.06)" : "#FFFFFF",
-        borderColor: rand ?? (dunkel ? "rgba(244,241,234,0.14)" : "#E4DFD3"),
-      }}
+      data-ui={dunkel ? undefined : "card"}
+      className={`rounded-2xl border p-5 md:p-6 min-w-0 ${dunkel ? "bos-glas-dunkel" : "bg-card text-card-foreground"} ${className}`}
+      style={rand ? { borderColor: rand } : undefined}
     >
       {children}
     </div>
@@ -175,17 +191,17 @@ function Karte({
 /** Kleine Kopfzeile in Karten. */
 function Kopf({ children, dunkel }: { children: React.ReactNode; dunkel?: boolean }) {
   return (
-    <p className="text-[0.7rem] uppercase tracking-[0.06em]" style={{ color: dunkel ? FARBE.hellGedaempft : "#5F625D" }}>
+    <p className="text-xs font-medium uppercase tracking-[0.06em]" style={{ color: dunkel ? FARBE.hellGedaempft : FARBE.grau }}>
       {children}
     </p>
   );
 }
 
-/** Große Zahl in Playfair, wie im Entwurf. */
+/** Große Zahl. */
 function Wert({ children, farbe, klein }: { children: React.ReactNode; farbe?: string; klein?: boolean }) {
   return (
     <p
-      className={`bos-serif font-semibold tabular-nums mt-2 leading-none break-words ${klein ? "text-[1.7rem]" : "text-[2rem] md:text-[2.4rem]"}`}
+      className={`font-semibold tracking-[-0.02em] tabular-nums mt-2 leading-none break-words ${klein ? "text-[1.7rem]" : "text-[2rem] md:text-[2.4rem]"}`}
       style={{ color: farbe }}
     >
       {children}
@@ -195,7 +211,7 @@ function Wert({ children, farbe, klein }: { children: React.ReactNode; farbe?: s
 
 function Fussnote({ children, dunkel }: { children: React.ReactNode; dunkel?: boolean }) {
   return (
-    <p className="mt-4 text-xs leading-relaxed" style={{ color: dunkel ? "rgba(244,241,234,0.55)" : "#77786F" }}>
+    <p className="mt-4 text-xs leading-relaxed" style={{ color: dunkel ? "rgba(243,247,245,0.72)" : FARBE.grau }}>
       {children}
     </p>
   );
@@ -239,7 +255,7 @@ function Freitext({
 function AusErstgespraech({ sichtbar, dunkel }: { sichtbar: boolean; dunkel?: boolean }) {
   if (!sichtbar) return null;
   return (
-    <span className="block mt-1 text-[10px] font-normal" style={{ color: dunkel ? FARBE.gold : FARBE.goldDunkel }}>
+    <span className="block mt-1 text-[10px] font-normal" style={{ color: dunkel ? FARBE.gold : FARBE.gruenText }}>
       aus dem Erstgespräch
     </span>
   );
@@ -248,10 +264,9 @@ function AusErstgespraech({ sichtbar, dunkel }: { sichtbar: boolean; dunkel?: bo
 /** Sprechskript im Trainer-Modus. Nie im PDF (data-pdf-exclude). */
 function Trainer({ id, hinweis, dunkel }: { id?: string; hinweis?: string; dunkel?: boolean }) {
   const an = useContext(TrainerContext);
-  const anrede = useContext(AnredeContext);
   if (!an) return null;
   const roh = id ? SPRECHSKRIPT_NACH_ID[id] : undefined;
-  const s = roh ? sprechskriptFuerAnrede(roh, anrede) : undefined;
+  const s = roh ? sprechskriptFuerAnrede(roh, "du") : undefined;
   if (!s && !hinweis) return null;
   return (
     <div
@@ -288,8 +303,8 @@ function KonzeptSchalter({
       data-testid="konzept-schalter"
       className="inline-flex max-w-full rounded-full border p-1 gap-1"
       style={{
-        background: dunkel ? "rgba(255,255,255,0.06)" : "#FFFFFF",
-        borderColor: dunkel ? "rgba(244,241,234,0.2)" : "#E4DFD3",
+        background: dunkel ? "rgba(255,255,255,0.07)" : "hsl(var(--card) / 0.7)",
+        borderColor: dunkel ? "rgba(243,247,245,0.2)" : FARBE.linie,
       }}
     >
       {(["zusatzrente", "steuer"] as const).map((k) => {
@@ -306,9 +321,9 @@ function KonzeptSchalter({
             style={
               aktiv
                 ? dunkel
-                  ? { background: FARBE.gold, color: FARBE.schwarz }
-                  : { background: FARBE.gruen, color: FARBE.papier }
-                : { color: dunkel ? FARBE.hellGedaempft : "#55584F" }
+                  ? { background: FARBE.gold, color: FARBE.aufGold }
+                  : { background: FARBE.primaer, color: "hsl(var(--primary-foreground))" }
+                : { color: dunkel ? FARBE.hellGedaempft : FARBE.grau }
             }
           >
             {OS_TEXTE.konzept.schalter[k]}
@@ -325,78 +340,15 @@ function MarkenLogo({ name, zusatz, farbe, gross }: { name: string; zusatz: stri
     <div className="flex flex-col items-center text-center">
       <img src={osZeichen} alt="" aria-hidden className={gross ? "h-14 md:h-16 w-auto" : "h-10 md:h-11 w-auto"} />
       <p
-        className={`bos-mont uppercase mt-2 ${gross ? "text-lg md:text-xl tracking-[0.42em]" : "text-sm md:text-[0.95rem] tracking-[0.32em]"}`}
+        className={`uppercase mt-2 ${gross ? "text-lg md:text-xl tracking-[0.42em]" : "text-sm md:text-[0.95rem] tracking-[0.32em]"}`}
         style={{ color: farbe }}
       >
         {name}
       </p>
-      <p className="bos-mont uppercase text-[0.55rem] tracking-[0.28em] mt-1" style={{ color: "rgba(244,241,234,0.55)" }}>
+      <p className="uppercase text-[0.55rem] tracking-[0.28em] mt-1" style={{ color: "rgba(243,247,245,0.65)" }}>
         {zusatz}
       </p>
       <div className={`mt-2 h-[2px] ${gross ? "w-36" : "w-24"}`} style={{ background: farbe }} />
-    </div>
-  );
-}
-
-/**
- * Fassung B, Abschnitt 02: was im Erstgespräch hinterlegt ist, zum Lesen.
- * Ohne Angaben rendert nichts, dann steht dort nur die Überschrift.
- */
-function ZieleAusErstgespraech({ daten }: { daten: Record<string, string> }) {
-  const a = useA();
-  const T = OS_TEXTE_B;
-  const ziele = (daten.ziel || "")
-    .split(";")
-    .map((t) => zielNachLabel(t.trim())?.label)
-    .filter(Boolean) as string[];
-  const zeilen = [
-    { label: T.ziele.tragbar, wert: daten.beitrag, euro: true },
-    { label: T.ziele.reserve, wert: daten.reserve, euro: true },
-    { label: T.ziele.eigenkapital, wert: daten.eigenkapital, euro: true },
-    { label: T.ziele.mitentscheider, wert: daten.mitentscheider },
-    { label: "Erfahrung mit Immobilien", wert: daten.erfahrung },
-    { label: a(T.ziele.ersteFrage), wert: daten.ersteFrage },
-  ].filter((z) => z.wert?.trim());
-  const motiv = daten.motiv?.trim();
-  if (!motiv && !ziele.length && !zeilen.length) return null;
-  return (
-    <div data-testid="ziele-erstgespraech">
-      {motiv && (
-        <p className="mt-7 border-l-[3px] pl-5 bos-serif italic text-xl md:text-[1.7rem] leading-snug break-words" style={{ borderColor: FARBE.gold }}>
-          „{motiv}“
-        </p>
-      )}
-      <div className="mt-8 grid lg:grid-cols-[1.1fr_1fr] gap-8 items-start">
-        {ziele.length > 0 && (
-          <div className="min-w-0">
-            <Kopf>{a(T.ziele.zielKopf)}</Kopf>
-            <ul className="mt-3 flex flex-wrap gap-2">
-              {ziele.map((z) => (
-                <li key={z} className="rounded-full px-3.5 py-1.5 text-sm" style={{ background: FARBE.goldDunkel, color: "#FFFFFF" }}>
-                  {z}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        {zeilen.length > 0 && (
-          <Karte>
-            <p className="font-semibold text-lg">{a(T.ziele.rahmen)}</p>
-            <dl className="mt-2 divide-y divide-[#E4DFD3]">
-              {zeilen.map((z) => (
-                <div key={z.label} className="py-2.5 flex items-start justify-between gap-4">
-                  <dt className="text-sm pt-0.5 shrink-0 max-w-[50%]">{z.label}</dt>
-                  <dd className="text-right font-semibold min-w-0 break-words">
-                    {z.wert}
-                    {z.euro && mitEuro(z.wert!) && " €"}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </Karte>
-        )}
-      </div>
-      <p className="mt-6">{a(T.ziele.nachfrage)}</p>
     </div>
   );
 }
@@ -406,7 +358,7 @@ function KaufkraftGrafik() {
   const max = Math.max(...KAUFKRAFT_B.balken.map((b) => b.wert));
   const farbe = { neutral: FARBE.salbei, papier: "#D8C7A0", verlust: ROT };
   return (
-    <figure className="mt-8 rounded-2xl border bg-white p-5 md:p-6" style={{ borderColor: "#E4DFD3" }} data-testid="kaufkraft-grafik">
+    <figure data-ui="card" className="mt-8 rounded-2xl border bg-card p-5 md:p-6" data-testid="kaufkraft-grafik">
       <figcaption className="font-semibold">{KAUFKRAFT_B.grafikTitel}</figcaption>
       <div className="mt-4 space-y-3">
         {KAUFKRAFT_B.balken.map((b) => (
@@ -414,7 +366,7 @@ function KaufkraftGrafik() {
             <span style={{ color: b.ton === "verlust" ? ROT : undefined }} className={b.ton === "verlust" ? "font-semibold" : ""}>
               {b.label}
             </span>
-            <div className="h-8 rounded-md bg-[#F4F1EA] overflow-hidden">
+            <div className="h-8 rounded-md bg-muted overflow-hidden">
               <div
                 className="h-full rounded-md flex items-center justify-end px-2 text-xs font-semibold tabular-nums whitespace-nowrap"
                 style={{ width: `${(b.wert / max) * 100}%`, background: farbe[b.ton], color: b.ton === "verlust" ? "#FFFFFF" : "#1A1D1A" }}
@@ -439,8 +391,8 @@ function DokumenteB({ konzepte }: { konzepte: KonzeptOs[] }) {
           href={DOKUMENTE_B[k].href}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gap-2 rounded-full px-6 h-12 font-semibold transition-transform hover:scale-[1.02]"
-          style={{ background: FARBE.gold, color: FARBE.schwarz }}
+          className="bos-knopf-gold inline-flex items-center justify-center gap-2 rounded-full px-6 h-12 font-semibold transition-transform hover:scale-[1.02]"
+          style={{ background: FARBE.gold, color: FARBE.aufGold }}
         >
           <FileText className="h-5 w-5" />
           {DOKUMENTE_B[k].knopf}
@@ -518,25 +470,17 @@ export default function BeratungspraesentationHV({
     return { kontakt, skript: ausInvestment ?? (kontakt?.setterSkript as Record<string, any> | undefined) ?? null };
   };
 
-  // Anrede aus dem Erstgespräch. Ohne gespeicherte Wahl gilt Du (beratungAnrede.ts).
-  const anrede: Anrede = kundeId ? anredeAusSkript(leseQuelle().skript) : "du";
-  const a = (w: AnredeWert) => inAnrede(w, anrede);
+  // Immer Du, auch wenn im Erstgespräch früher „Sie“ gespeichert wurde (Hausregel).
+  const a = (w: AnredeWert) => inAnrede(w, "du");
   const tx = BERATUNG_TEXTE.de;
   const fmt = formatierer("de");
 
-  // Name für die Begrüßung: per Sie „Frau Muster“, per Du der Vorname.
-  const kundenName = (() => {
-    const roh = vorschau?.kundenName ?? suchParameter.get("kunde")?.trim() ?? "";
-    const k = leseQuelle().kontakt;
-    if (!k) return roh;
-    if (anrede === "du") return (k.vorname || roh).trim();
-    const anredeWort = String(k.anrede || "").toLowerCase().startsWith("frau")
-      ? "Frau"
-      : String(k.anrede || "").toLowerCase().startsWith("herr")
-      ? "Herr"
-      : "";
-    return anredeWort && k.nachname ? `${anredeWort} ${k.nachname}` : roh;
-  })();
+  // Vorname für „Herzlich willkommen, …“: aus dem Kontakt, sonst aus den Parametern.
+  const kundenName = begruessungsName(
+    leseQuelle().kontakt?.vorname,
+    suchParameter.get("vorname"),
+    vorschau ? vorschau.kundenName : suchParameter.get("kunde"),
+  );
 
   // Antworten im Gespräch. Schlüssel wie bisher, damit Mitgeschriebenes erhalten bleibt.
   const [antworten, setAntworten] = usePersistedState<Record<string, string>>(
@@ -689,7 +633,7 @@ export default function BeratungspraesentationHV({
 
   // ─── 05 Wer wir sind ─── (als Variable, weil B die Reihenfolge mit 05b tauscht)
   const folieWerWirSind = (
-    <Folie id="werwirsind" ton="papier" kicker={T.werWirSind.kicker} titel={T.werWirSind.titel}>
+    <Folie id="werwirsind" ton="hell" kicker={T.werWirSind.kicker} titel={T.werWirSind.titel}>
       <p className="mt-6 text-base md:text-lg max-w-4xl leading-relaxed">{a(T.werWirSind.text)}</p>
       <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {T.werWirSind.karten.map((k, i) => (
@@ -705,15 +649,15 @@ export default function BeratungspraesentationHV({
 
   // ─── 05b Unternehmensgruppe (Konzept C der Markenfamilie) ───
   const folieGruppe = (
-    <Folie id="gruppe" ton="schwarz">
+    <Folie id="gruppe" ton="tief">
       <div className="text-center">
         <p className="bos-kicker" style={{ color: FARBE.gold }}>
           {T.gruppe.kicker}
         </p>
-        <Titel text={T.gruppe.titel} ton="schwarz" className="mt-2" />
+        <Titel text={T.gruppe.titel} ton="tief" className="mt-2" />
       </div>
       <div className="mt-10 flex flex-col items-center">
-        <MarkenLogo name="Immobilien" zusatz="Berlin · Brandenburg" farbe="#F4F1EA" gross />
+        <MarkenLogo name="Immobilien" zusatz="Berlin · Brandenburg" farbe={FARBE.hellText} gross />
         <p className="mt-5 text-sm text-center" style={{ color: FARBE.hellGedaempft }}>
           <strong className="font-semibold" style={{ color: FARBE.hellText }}>
             {T.gruppe.dach}
@@ -722,12 +666,12 @@ export default function BeratungspraesentationHV({
         </p>
       </div>
       {/* Verbindungslinien nur ab Tablet; auf dem Handy stehen die Marken untereinander. */}
-      <div aria-hidden className="hidden md:block mx-auto mt-6 w-2/3 h-6 border-x border-t" style={{ borderColor: "rgba(204,172,5,0.55)" }} />
+      <div aria-hidden className="hidden md:block mx-auto mt-6 w-2/3 h-6 border-x border-t" style={{ borderColor: "rgba(204,172,5,0.6)" }} />
       <div className="mt-6 md:mt-4 grid md:grid-cols-3 gap-10 md:gap-6">
         {T.gruppe.marken.map((m) => (
           <div key={m.name} className="text-center">
             <MarkenLogo name={m.name} zusatz={m.zusatz} farbe={m.farbe} />
-            <p className="mt-4 text-sm leading-relaxed max-w-xs mx-auto" style={{ color: "rgba(244,241,234,0.85)" }}>
+            <p className="mt-4 text-sm leading-relaxed max-w-xs mx-auto" style={{ color: FARBE.hellGedaempft }}>
               {a(m.text)}
             </p>
           </div>
@@ -740,10 +684,10 @@ export default function BeratungspraesentationHV({
   );
 
   return (
-    <AnredeContext.Provider value={anrede}>
+    <>
       <TrainerContext.Provider value={trainerVerfuegbar && trainerAn}>
         <div className="min-h-screen bg-background text-foreground font-sans" data-lg="seite" data-praesentation="beratung" lang="de">
-          <div className="bos min-h-screen">
+          <div className="bos bos-crm min-h-screen">
             {trainerVerfuegbar && (
               <button
                 type="button"
@@ -760,15 +704,17 @@ export default function BeratungspraesentationHV({
             </div>
 
             {/* ─── Kopfleiste ─── */}
-            <header data-lg="kopfscheibe" className="sticky top-0 z-50 border-b" style={{ background: "rgba(18,21,18,0.94)", borderColor: "rgba(244,241,234,0.1)" }}>
+            {/* Die Scheibe macht die Glasschicht (data-lg="kopfscheibe"); bg-background/90 gilt nur ohne sie. */}
+            <header data-lg="kopfscheibe" className="sticky top-0 z-50 border-b bg-background/90">
               <div className="max-w-6xl mx-auto px-4 sm:px-8 h-14 flex items-center justify-between gap-3">
                 <Link to={BERATUNG_ROUTE[variante]} className="shrink-0">
-                  <img src={logoDunkel} alt="OS Real Estate" className="h-9 w-auto" />
+                  <img src={logoQuer} alt="OS Real Estate" className="h-8 w-auto dark:hidden" />
+                  <img src={logoQuerDunkel} alt="OS Real Estate" className="h-8 w-auto hidden dark:block" />
                 </Link>
                 <nav className="hidden lg:flex items-center gap-6">
                   {NAV.map(([id, label]) => (
                     <button key={id} type="button"
-            data-no-shrink onClick={() => springeZu(id)} className="text-sm transition-colors hover:text-white" style={{ color: FARBE.hellGedaempft }}>
+            data-no-shrink onClick={() => springeZu(id)} className="text-sm text-muted-foreground transition-colors hover:text-foreground">
                       {label}
                     </button>
                   ))}
@@ -778,22 +724,22 @@ export default function BeratungspraesentationHV({
                     type="button"
             data-no-shrink
                     onClick={() => springeZu("schritt")}
-                    className="hidden sm:inline-flex rounded-full px-4 h-9 items-center text-sm font-semibold"
-                    style={{ background: FARBE.gold, color: FARBE.schwarz }}
+                    data-ui="button"
+                    className="hidden sm:inline-flex rounded-full px-4 h-9 items-center text-sm font-semibold bg-primary text-primary-foreground"
                   >
                     Selbstauskunft
                   </button>
                   <button type="button"
-            data-no-shrink className="lg:hidden p-2" style={{ color: FARBE.hellText }} onClick={() => setNavOffen((v) => !v)} aria-label="Menü">
+            data-no-shrink className="lg:hidden p-2 text-foreground" onClick={() => setNavOffen((v) => !v)} aria-label="Menü">
                     {navOffen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                   </button>
                 </div>
               </div>
               {navOffen && (
-                <div className="lg:hidden px-4 pb-4 flex flex-col gap-3" style={{ background: FARBE.schwarz }}>
+                <div className="lg:hidden px-4 pb-4 flex flex-col gap-3">
                   {[...NAV].map(([id, label]) => (
                     <button key={id} type="button"
-            data-no-shrink onClick={() => springeZu(id)} className="text-left text-sm" style={{ color: FARBE.hellText }}>
+            data-no-shrink onClick={() => springeZu(id)} className="text-left text-sm text-foreground">
                       {label}
                     </button>
                   ))}
@@ -802,15 +748,15 @@ export default function BeratungspraesentationHV({
             </header>
 
             {/* ─── Einstieg ─── */}
-            <section id="hero" className="relative overflow-hidden px-4 sm:px-8 md:px-12 py-16 md:py-24 min-h-[70vh] flex items-center" style={{ background: FARBE.schwarz, color: FARBE.hellText }}>
+            <section id="hero" className="relative overflow-hidden px-4 sm:px-8 md:px-12 py-16 md:py-24 min-h-[70vh] flex items-center" style={{ background: FARBE.tief, color: FARBE.hellText }}>
               <div className="absolute inset-0" style={{ backgroundImage: `url(${fotoHauff})`, backgroundSize: "cover", backgroundPosition: "center" }} />
-              <div className="absolute inset-0" style={{ background: "linear-gradient(90deg, rgba(18,21,18,0.95) 0%, rgba(18,21,18,0.86) 45%, rgba(18,21,18,0.7) 100%)" }} />
+              <div className="absolute inset-0" style={{ background: "linear-gradient(90deg, hsl(158 38% 9% / 0.95) 0%, hsl(157 42% 11% / 0.86) 45%, hsl(157 42% 13% / 0.72) 100%)" }} />
               <div className="relative max-w-6xl mx-auto w-full">
                 <img src={logoDunkel} alt="OS Real Estate GmbH" className="h-24 md:h-28 w-auto" />
                 <p className="bos-kicker mt-10" style={{ color: FARBE.gold }}>
                   {T.hero.kicker}
                 </p>
-                <h1 className="bos-serif font-semibold mt-4 leading-[1.08] text-[2.4rem] sm:text-[3.2rem] md:text-[4rem]">
+                <h1 className="font-semibold mt-4 leading-[1.08] text-[2.4rem] sm:text-[3.2rem] md:text-[4rem]">
                   {T.hero.titel1}
                   <br />
                   {T.hero.titel2}
@@ -827,12 +773,12 @@ export default function BeratungspraesentationHV({
             </section>
 
             {/* ─── 01 Agenda ─── */}
-            <Folie id="heute" ton="papier" kicker={T.heute.kicker} titel={T.heute.titel}>
+            <Folie id="heute" ton="hell" kicker={T.heute.kicker} titel={T.heute.titel}>
               <p className="mt-6 text-base md:text-lg max-w-3xl leading-relaxed">{a(T.heute.text)}</p>
               <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {T.heute.punkte.map((pkt, i) => (
                   <Karte key={i}>
-                    <p className="bos-serif text-3xl font-semibold" style={{ color: FARBE.goldDunkel }}>
+                    <p className="text-3xl font-semibold" style={{ color: FARBE.gruenText }}>
                       {i + 1}
                     </p>
                     <p className="mt-2 font-semibold">{a(pkt.titel)}</p>
@@ -852,21 +798,19 @@ export default function BeratungspraesentationHV({
                   onChange={(e) => setzeAntwort("erwartung", e.target.value)}
                   rows={2}
                   placeholder={tx.arbeitsweise.erwartungPlatzhalter as string}
-                  className="mt-3 w-full rounded-xl border px-3 py-2.5 text-sm outline-none focus:border-[#CCAC05] resize-y bg-[#FBFAF6]"
-                  style={{ borderColor: "#E4DFD3" }}
+                  className="mt-3 w-full rounded-xl border px-3 py-2.5 text-sm outline-none focus:border-primary resize-y bg-background"
+                  style={{ borderColor: FARBE.linie }}
                 />
               </Karte>
               <Trainer id="heute" />
             </Folie>
 
             {/* ─── 02 Ihre Ziele ─── */}
-            <Folie id="ziele" ton="papier" kicker={a(T.ziele.kicker)} titel={a(T.ziele.titel)}>
-              {istB ? (
-                <ZieleAusErstgespraech daten={ausErstgespraech} />
-              ) : (
+            <Folie id="ziele" ton="hell" kicker={a(T.ziele.kicker)} titel={a(T.ziele.titel)}>
+              {/* B zeigt seit dem 16.10.2026 dieselbe Ziele-Seite wie die normale Präsentation (Wunsch Christian). */}
               <>
               <div className="mt-7 border-l-[3px] pl-5" style={{ borderColor: FARBE.gold }}>
-                <div className="bos-serif italic text-xl md:text-[1.7rem] leading-snug flex">
+                <div className="italic text-xl md:text-[1.7rem] leading-snug flex">
                   <span aria-hidden>„</span>
                   <Freitext
                     label="Motiv in den Worten des Kunden"
@@ -882,7 +826,7 @@ export default function BeratungspraesentationHV({
 
               <div className="mt-8 grid lg:grid-cols-[1.1fr_1fr] gap-8 items-start">
                 <div className="min-w-0">
-                  <p className="text-[0.7rem] uppercase tracking-[0.06em] text-[#5F625D]">
+                  <p className="text-xs font-medium uppercase tracking-[0.06em] text-muted-foreground">
                     {a(T.ziele.zielKopf)} · {gewaehlteZiele.length} / {ZIELE_MAX}
                   </p>
                   <div
@@ -903,8 +847,8 @@ export default function BeratungspraesentationHV({
                           className="rounded-full border px-3.5 py-1.5 text-sm text-left transition-colors disabled:opacity-40"
                           style={
                             aktiv
-                              ? { background: FARBE.goldDunkel, borderColor: FARBE.goldDunkel, color: "#FFFFFF" }
-                              : { borderColor: FARBE.goldDunkel, color: "#1A1D1A" }
+                              ? { background: FARBE.primaer, borderColor: FARBE.primaer, color: "hsl(var(--primary-foreground))" }
+                              : { borderColor: FARBE.linie, background: "hsl(var(--card) / 0.6)", color: FARBE.tinte }
                           }
                         >
                           {z.label}
@@ -915,7 +859,7 @@ export default function BeratungspraesentationHV({
                   <AusErstgespraech sichtbar={uebernommen.has("ziel")} />
                   <p className="mt-5">{a(T.ziele.nachfrage)}</p>
 
-                  <label className="block mt-6 text-[0.7rem] uppercase tracking-[0.06em] text-[#5F625D]" htmlFor="frage-erfahrung">
+                  <label className="block mt-6 text-xs font-medium uppercase tracking-[0.06em] text-muted-foreground" htmlFor="frage-erfahrung">
                     {a(tx.arbeitsweise.erfahrungFrage)}
                   </label>
                   <Freitext
@@ -928,8 +872,8 @@ export default function BeratungspraesentationHV({
                   <AusErstgespraech sichtbar={uebernommen.has("erfahrung")} />
 
                   {w("ersteFrage").trim() && (
-                    <div className="mt-6 rounded-xl border p-4" style={{ borderColor: FARBE.gold, background: "#FFFDF4" }}>
-                      <p className="text-[0.7rem] uppercase tracking-[0.06em]" style={{ color: FARBE.goldDunkel }}>
+                    <div data-ui="card" className="mt-6 rounded-xl border p-4 bg-primary/5">
+                      <p className="text-xs font-medium uppercase tracking-[0.06em]" style={{ color: FARBE.gruenText }}>
                         {a(T.ziele.ersteFrage)}
                       </p>
                       <p className="mt-1 font-medium break-words">„{w("ersteFrage")}“</p>
@@ -939,9 +883,9 @@ export default function BeratungspraesentationHV({
 
                 <Karte>
                   <p className="font-semibold text-lg">{a(T.ziele.rahmen)}</p>
-                  <div className="mt-2 divide-y" style={{ borderColor: "#E4DFD3" }}>
+                  <div className="mt-2 divide-y" style={{ borderColor: FARBE.linie }}>
                     {rahmenZeilen.map((z) => (
-                      <div key={z.schluessel} className="py-2.5 flex items-start justify-between gap-4 border-[#E4DFD3]">
+                      <div key={z.schluessel} className="py-2.5 flex items-start justify-between gap-4 border-border">
                         <span className="text-sm pt-0.5 shrink-0 max-w-[50%]">{z.label}</span>
                         <div className="text-right min-w-0 flex-1">
                           <div className="flex items-baseline justify-end gap-1 font-semibold">
@@ -962,7 +906,6 @@ export default function BeratungspraesentationHV({
                 </Karte>
               </div>
               </>
-              )}
               <Trainer id="arbeitsweise" hinweis="Werte aus dem Erstgespräch kurz bestätigen lassen: „Stimmt das noch so?“" />
             </Folie>
 
@@ -975,7 +918,7 @@ export default function BeratungspraesentationHV({
                 ].map((k) => (
                   <Karte key={k.schluessel} dunkel>
                     <Kopf dunkel>{k.kopf}</Kopf>
-                    <div className="flex items-baseline gap-1 bos-serif font-semibold text-[2rem] md:text-[2.4rem] mt-2" style={{ color: FARBE.gold }}>
+                    <div className="flex items-baseline gap-1 font-semibold text-[2rem] md:text-[2.4rem] mt-2" style={{ color: FARBE.gold }}>
                       <input
                         aria-label={k.kopf}
                         inputMode="decimal"
@@ -1020,21 +963,21 @@ export default function BeratungspraesentationHV({
             </Folie>
 
             {/* ─── 04 Preis des Nichtstuns ─── */}
-            <Folie id="nichtstun" ton="papier" kicker={T.nichtstun.kicker} titel={T.nichtstun.titel}>
+            <Folie id="nichtstun" ton="hell" kicker={T.nichtstun.kicker} titel={T.nichtstun.titel}>
               {istB && <p className="mt-6 text-base md:text-lg">{KAUFKRAFT_B.vorspann}</p>}
               <div className="mt-8 grid md:grid-cols-3 gap-4">
                 {T.nichtstun.karten.map((k) =>
                   istB && k.warnung ? (
                     // In B ist die Verlustkarte ganz rot, damit der Verlust auf einen Blick steht.
                     <div key={k.kopf} data-testid="kaufkraft-verlust" className="rounded-2xl border-2 p-5 md:p-6 min-w-0" style={{ background: ROT, borderColor: ROT, color: "#FFFFFF" }}>
-                      <p className="text-[0.7rem] uppercase tracking-[0.06em]">{k.kopf}</p>
+                      <p className="text-xs font-medium uppercase tracking-[0.06em]">{k.kopf}</p>
                       <Wert>{k.wert}</Wert>
                       <p className="mt-2 text-sm font-medium">{k.text}</p>
                     </div>
                   ) : (
-                    <Karte key={k.kopf} rand={k.warnung ? "#A8402F" : undefined}>
+                    <Karte key={k.kopf} rand={k.warnung ? ROT : undefined}>
                       <Kopf>{k.kopf}</Kopf>
-                      <Wert farbe={k.warnung ? "#A8402F" : FARBE.goldDunkel}>{k.wert}</Wert>
+                      <Wert farbe={k.warnung ? ROT : FARBE.gruenText}>{k.wert}</Wert>
                       <p className="mt-2 text-sm">{k.text}</p>
                     </Karte>
                   ),
@@ -1064,7 +1007,7 @@ export default function BeratungspraesentationHV({
               <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {T.prinzip.bausteine.map((b) => (
                   <Karte key={b.titel} dunkel>
-                    <p className="bos-serif text-3xl md:text-[2.2rem] font-semibold" style={{ color: FARBE.gold }}>
+                    <p className="text-3xl md:text-[2.2rem] font-semibold" style={{ color: FARBE.gold }}>
                       {b.titel}
                     </p>
                     <p className="mt-2 text-sm leading-relaxed">{a(b.text)}</p>
@@ -1072,7 +1015,7 @@ export default function BeratungspraesentationHV({
                 ))}
               </div>
               <div className="mt-8 flex flex-col md:flex-row md:items-center gap-4">
-                <div className="flex-1 flex h-10 rounded-md overflow-hidden text-xs font-semibold" style={{ color: FARBE.schwarz }}>
+                <div className="flex-1 flex h-10 rounded-md overflow-hidden text-xs font-semibold" style={{ color: FARBE.aufGold }}>
                   {T.prinzip.anteile.map((t, i) => (
                     <div key={i} className="flex items-center px-2 sm:px-3 whitespace-nowrap overflow-hidden" style={{ width: `${RATE_HAUFF[t.teil]}%`, background: t.farbe }}>
                       {a(t.label)} {RATE_HAUFF[t.teil]} %
@@ -1085,7 +1028,7 @@ export default function BeratungspraesentationHV({
             </Folie>
 
             {/* ─── 07 Konzeptschalter ─── */}
-            <Folie id="konzept" ton="papier" kicker={a(T.konzept.kicker)} titel={a(T.konzept.titel)}>
+            <Folie id="konzept" ton="hell" kicker={a(T.konzept.kicker)} titel={a(T.konzept.titel)}>
               <div className="mt-8 grid md:grid-cols-2 gap-5">
                 {(["zusatzrente", "steuer"] as const).map((k) => {
                   const karte = T.konzept.karten[k];
@@ -1098,20 +1041,21 @@ export default function BeratungspraesentationHV({
                       onClick={() => setKonzept(k)}
                       aria-pressed={aktiv}
                       data-testid={`konzept-karte-${k}`}
-                      className="text-left rounded-2xl bg-white p-6 md:p-7 transition-shadow hover:shadow-md min-w-0"
-                      style={{ border: aktiv ? `2px solid ${FARBE.gruen}` : "1px solid #E4DFD3" }}
+                      data-ui="card"
+                      className="text-left rounded-2xl border bg-card p-6 md:p-7 transition-shadow hover:shadow-md min-w-0"
+                      style={aktiv ? { borderColor: FARBE.primaer, boxShadow: `0 0 0 1px ${FARBE.primaer}` } : undefined}
                     >
-                      <p className="text-[0.7rem] uppercase tracking-[0.06em] text-[#5F625D]">{karte.nummer}</p>
-                      <p className="bos-serif font-semibold text-2xl md:text-[1.9rem] leading-tight mt-2">
+                      <p className="text-xs font-medium uppercase tracking-[0.06em] text-muted-foreground">{karte.nummer}</p>
+                      <p className="font-semibold text-2xl md:text-[1.9rem] leading-tight mt-2">
                         {karte.titel1}
                         <br />
                         {karte.titel2}
                       </p>
                       <p className="mt-3 leading-relaxed">{a(karte.text)}</p>
-                      <p className="mt-3 text-sm text-[#77786F]">{karte.objekte}</p>
+                      <p className="mt-3 text-sm text-muted-foreground">{karte.objekte}</p>
                       <span
                         className="mt-5 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium"
-                        style={aktiv ? { background: FARBE.goldDunkel, color: "#FFFFFF" } : { border: `1px solid ${FARBE.goldDunkel}` }}
+                        style={aktiv ? { background: FARBE.primaer, color: "hsl(var(--primary-foreground))" } : { border: `1px solid ${FARBE.primaer}`, color: FARBE.gruenText }}
                       >
                         {aktiv && <Check className="h-3.5 w-3.5" />}
                         {aktiv ? T.konzept.ausgewaehlt : T.konzept.auswaehlen}
@@ -1140,12 +1084,12 @@ export default function BeratungspraesentationHV({
               {konzept === "zusatzrente" ? (
                 <>
                   <ol className="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-6 relative">
-                    <div aria-hidden className="hidden lg:block absolute left-0 right-0 top-4 h-px" style={{ background: "rgba(244,241,234,0.3)" }} />
+                    <div aria-hidden className="hidden lg:block absolute left-0 right-0 top-4 h-px" style={{ background: "rgba(243,247,245,0.3)" }} />
                     {T.funktion.zusatzrente.schritte.map((s, i) => (
                       <li key={i} className="relative text-center">
                         <span
                           className="mx-auto flex h-8 w-8 items-center justify-center rounded-full border text-sm font-semibold"
-                          style={i === 0 ? { background: FARBE.gold, borderColor: FARBE.gold, color: FARBE.schwarz } : { background: FARBE.gruen, borderColor: "rgba(244,241,234,0.7)" }}
+                          style={i === 0 ? { background: FARBE.gold, borderColor: FARBE.gold, color: FARBE.aufGold } : { background: FARBE.gruen, borderColor: "rgba(243,247,245,0.7)" }}
                         >
                           {i + 1}
                         </span>
@@ -1213,7 +1157,7 @@ export default function BeratungspraesentationHV({
             </Folie>
 
             {/* ─── 09 Objekte ─── */}
-            <Folie id="objekte" ton="papier" oben={<KonzeptSchalter konzept={konzept} setKonzept={setKonzept} />} kicker={a(T.objekte.kicker[konzept])}>
+            <Folie id="objekte" ton="hell" oben={<KonzeptSchalter konzept={konzept} setKonzept={setKonzept} />} kicker={a(T.objekte.kicker[konzept])}>
               {konzept === "zusatzrente" ? (
                 <>
                   <div className="mt-2 grid md:grid-cols-2 gap-5">
@@ -1221,7 +1165,7 @@ export default function BeratungspraesentationHV({
                       { foto: fotoHauff, o: T.objekte.hauff },
                       { foto: fotoZossen, o: T.objekte.zossen },
                     ].map(({ foto, o }) => (
-                      <div key={o.titel} className="rounded-2xl overflow-hidden bg-white border border-[#E4DFD3] min-w-0">
+                      <div key={o.titel} data-ui="card" className="rounded-2xl overflow-hidden bg-card border min-w-0">
                         <img src={foto} alt={o.titel} className="w-full aspect-[16/7] object-cover" />
                         <div className="p-5">
                           <p className="font-semibold">{o.titel}</p>
@@ -1239,13 +1183,13 @@ export default function BeratungspraesentationHV({
                 <div className="mt-2 grid md:grid-cols-[1.2fr_1fr] gap-6 items-start">
                   <img src={fotoBarfuss} alt={T.objekte.barfuss.titel1} className="w-full rounded-2xl object-cover aspect-[4/3] md:aspect-[5/4]" />
                   <div className="min-w-0">
-                    <p className="bos-serif font-semibold text-2xl md:text-[2rem] leading-tight">
+                    <p className="font-semibold text-2xl md:text-[2rem] leading-tight">
                       {T.objekte.barfuss.titel1}
                       <br />
                       {T.objekte.barfuss.titel2}
                     </p>
                     <p className="mt-3 leading-relaxed">{T.objekte.barfuss.text}</p>
-                    <div className="mt-4 divide-y divide-[#E4DFD3] border-y border-[#E4DFD3] text-sm">
+                    <div className="mt-4 divide-y divide-border border-y border-border text-sm">
                       {T.objekte.barfuss.zeilen.map(([l, v]) => (
                         <p key={l} className="flex justify-between gap-4 py-2.5 px-2">
                           <span>{l}</span>
@@ -1260,13 +1204,13 @@ export default function BeratungspraesentationHV({
             </Folie>
 
             {/* ─── 10 Rechnung ─── */}
-            <Folie id="rechnung" ton="papier" oben={<KonzeptSchalter konzept={konzept} setKonzept={setKonzept} />} kicker={T.rechnung.kicker}>
+            <Folie id="rechnung" ton="hell" oben={<KonzeptSchalter konzept={konzept} setKonzept={setKonzept} />} kicker={T.rechnung.kicker}>
               <div className="mt-2 grid lg:grid-cols-[1.3fr_1fr] gap-6 items-start">
-                <div className="min-w-0">
-                  <p className="bos-serif font-semibold text-xl md:text-2xl">{T.rechnung[konzept].titel}</p>
-                  <table className="mt-4 w-full text-sm">
+                <div data-ui="card" className="min-w-0 rounded-2xl border bg-card p-4 md:p-6">
+                  <p className="font-semibold text-lg md:text-2xl">{T.rechnung[konzept].titel}</p>
+                  <table className="mt-4 w-full text-[0.95rem] md:text-base">
                     <thead>
-                      <tr className="text-[0.7rem] uppercase tracking-[0.06em] text-[#5F625D]">
+                      <tr className="text-xs font-medium uppercase tracking-[0.06em] text-muted-foreground">
                         <th className="text-left font-medium py-2 px-2">{T.rechnung.spalteZeile}</th>
                         <th className="text-right font-medium py-2 px-2">{T.rechnung.spalteBetrag}</th>
                       </tr>
@@ -1277,13 +1221,13 @@ export default function BeratungspraesentationHV({
                         return (
                           <tr
                             key={i}
-                            className={fett ? "font-semibold" : z.ton === "klein" ? "text-xs text-[#5F625D]" : ""}
-                            style={{ borderTop: fett ? "1.5px solid #1A1D1A" : "1px solid #E4DFD3", borderBottom: "1px solid #E4DFD3" }}
+                            className={fett ? "font-semibold" : z.ton === "klein" ? "text-sm text-muted-foreground" : ""}
+                            style={{ borderTop: fett ? `1.5px solid ${FARBE.tinte}` : `1px solid ${FARBE.linie}`, borderBottom: `1px solid ${FARBE.linie}` }}
                           >
                             <td className="py-2.5 px-2">{a(z.text)}</td>
                             <td
                               className="py-2.5 px-2 text-right whitespace-nowrap tabular-nums"
-                              style={{ color: z.ton === "plus" ? "#2E6B47" : z.ton === "minus" ? "#A8402F" : undefined }}
+                              style={{ color: z.ton === "plus" ? "hsl(var(--success))" : z.ton === "minus" ? "hsl(var(--destructive))" : undefined }}
                             >
                               {z.betrag}
                             </td>
@@ -1297,7 +1241,7 @@ export default function BeratungspraesentationHV({
                   {T.rechnung[konzept].karten.map((k) => (
                     <Karte key={k.kopf}>
                       <Kopf>{k.kopf}</Kopf>
-                      <Wert farbe={FARBE.goldDunkel} klein>
+                      <Wert farbe={FARBE.gruenText} klein>
                         {k.wert}
                       </Wert>
                       {a(k.text) && <p className="mt-2 text-sm">{a(k.text)}</p>}
@@ -1322,7 +1266,7 @@ export default function BeratungspraesentationHV({
               {w("sorgen").trim() && (
                 <div className="mt-6 rounded-2xl border p-5" style={{ borderColor: FARBE.gold }}>
                   <Kopf dunkel>{a(T.sicherheit.sorge)}</Kopf>
-                  <p className="mt-1 bos-serif italic text-lg break-words">„{w("sorgen")}“</p>
+                  <p className="mt-1 italic text-lg break-words">„{w("sorgen")}“</p>
                 </div>
               )}
               <p className="mt-7 text-lg md:text-xl">{a(T.sicherheit.satz)}</p>
@@ -1331,11 +1275,11 @@ export default function BeratungspraesentationHV({
             </Folie>
 
             {/* ─── 12 Ihr Plan ─── */}
-            <Folie id="plan" ton="papier" oben={<KonzeptSchalter konzept={konzept} setKonzept={setKonzept} />} kicker={a(T.plan.kicker)} titel={T.plan.titel} ohneStrich>
-              <div className="mt-6 overflow-x-auto">
-                <table className="w-full text-sm md:text-base min-w-[420px]">
+            <Folie id="plan" ton="hell" oben={<KonzeptSchalter konzept={konzept} setKonzept={setKonzept} />} kicker={a(T.plan.kicker)} titel={T.plan.titel} ohneStrich>
+              <div data-ui="card" className="mt-6 overflow-x-auto rounded-2xl border bg-card p-2 md:p-4">
+                <table className="w-full text-[0.95rem] md:text-base min-w-[420px]">
                   <thead>
-                    <tr className="text-[0.7rem] uppercase tracking-[0.06em] text-[#5F625D] border-b border-[#E4DFD3]">
+                    <tr className="text-xs font-medium uppercase tracking-[0.06em] text-muted-foreground border-b border-border">
                       <th className="text-left font-medium py-2 px-2">{planObjekt.name}</th>
                       <th className="text-right font-medium py-2 px-2">{T.plan.eins}</th>
                       <th className="text-right font-medium py-2 px-2">{T.plan.drei}</th>
@@ -1343,7 +1287,7 @@ export default function BeratungspraesentationHV({
                   </thead>
                   <tbody>
                     {PLAN_ZEILEN[konzept].map((z, i) => (
-                      <tr key={i} className="border-b border-[#E4DFD3]">
+                      <tr key={i} className="border-b border-border">
                         <td className="py-2.5 px-2">{a(z.text)}</td>
                         <td className="py-2.5 px-2 text-right tabular-nums whitespace-nowrap">{z.vermoegen ? fmt.euro(vermoegen1) : z.eins}</td>
                         <td className={`py-2.5 px-2 text-right tabular-nums whitespace-nowrap ${z.fett ? "font-semibold" : ""}`}>
@@ -1367,7 +1311,7 @@ export default function BeratungspraesentationHV({
                   step={0.5}
                   value={wertentwicklung}
                   onChange={(e) => setWertentwicklung(Number(e.target.value))}
-                  className="w-full sm:w-72 accent-[#93761F]"
+                  className="w-full sm:w-72 accent-primary"
                 />
               </div>
               <p className="mt-6 text-base md:text-lg">{a(T.plan.satz)}</p>
@@ -1375,9 +1319,9 @@ export default function BeratungspraesentationHV({
             </Folie>
 
             {/* ─── 13 Ihre Kriterien ─── */}
-            <Folie id="kriterien" ton="papier" kicker={a(T.kriterien.kicker)} titel={a(T.kriterien.titel)}>
+            <Folie id="kriterien" ton="hell" kicker={a(T.kriterien.kicker)} titel={a(T.kriterien.titel)}>
               <div className="mt-8 grid lg:grid-cols-[1.1fr_1fr] gap-6 items-start">
-                <div className="divide-y divide-[#E4DFD3] border-y border-[#E4DFD3] min-w-0">
+                <div data-ui="card" className="divide-y divide-border rounded-2xl border bg-card px-2 min-w-0">
                   <div className="flex justify-between gap-4 py-2.5 px-2">
                     <span>{T.kriterien.konzept}</span>
                     <strong>{konzept === "zusatzrente" ? "Zusatzrente" : "Steuerersparnis"}</strong>
@@ -1409,7 +1353,7 @@ export default function BeratungspraesentationHV({
                 </div>
                 <Karte>
                   <Kopf>{a(T.kriterien.worteKopf)}</Kopf>
-                  <p className="mt-2 bos-serif italic text-xl">{a(T.kriterien.worteFrage)}</p>
+                  <p className="mt-2 italic text-xl">{a(T.kriterien.worteFrage)}</p>
                   <Freitext
                     label="Gründe des Kunden, wörtlich"
                     wert={w("warumJetzt")}
@@ -1417,14 +1361,14 @@ export default function BeratungspraesentationHV({
                     platzhalter="Wörtlich mitschreiben …"
                     className="mt-3 text-base"
                   />
-                  <p className="mt-3 text-sm text-[#77786F]">{T.kriterien.worteText}</p>
+                  <p className="mt-3 text-sm text-muted-foreground">{T.kriterien.worteText}</p>
                 </Karte>
               </div>
 
               {/* Haushaltsrechnung und Finanzierungsrahmen aus der bisherigen Präsentation, gerechnet statt geschätzt. */}
-              <div className="mt-8 rounded-2xl bg-white border-2 p-5 md:p-6" style={{ borderColor: pflicht(hatHaushalt) ?? "#E4DFD3" }}>
+              <div data-ui="card" className="mt-8 rounded-2xl bg-card border-2 p-5 md:p-6" style={{ borderColor: pflicht(hatHaushalt) ?? FARBE.linie }}>
                 <p className="font-semibold">{T.kriterien.rahmenKopf}</p>
-                <p className="text-sm text-[#5F625D] mt-1">{tx.arbeitsweise.finanzierungText as string}</p>
+                <p className="text-sm text-muted-foreground mt-1">{tx.arbeitsweise.finanzierungText as string}</p>
                 <div className="mt-4 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   {[
                     { schluessel: "einnahmen", label: tx.arbeitsweise.feldEinnahmen as string, platzhalter: "4.000" },
@@ -1433,7 +1377,7 @@ export default function BeratungspraesentationHV({
                     { schluessel: "eigenkapital", label: tx.arbeitsweise.feldEigenkapital as string, platzhalter: "25.000" },
                   ].map((f) => (
                     <div key={f.schluessel} className="min-w-0">
-                      <label htmlFor={`frage-${f.schluessel}`} className="text-[0.7rem] uppercase tracking-[0.06em] text-[#5F625D]">
+                      <label htmlFor={`frage-${f.schluessel}`} className="text-xs font-medium uppercase tracking-[0.06em] text-muted-foreground">
                         {f.label}
                       </label>
                       <input
@@ -1442,15 +1386,15 @@ export default function BeratungspraesentationHV({
                         value={w(f.schluessel)}
                         onChange={(e) => setzeAntwort(f.schluessel, e.target.value)}
                         placeholder={`${f.platzhalter} €`}
-                        className="mt-1 w-full rounded-xl border px-3 h-11 tabular-nums outline-none focus:border-[#CCAC05] bg-[#FBFAF6]"
-                        style={{ borderColor: (w(f.schluessel) || "").trim() ? "#E4DFD3" : "#D97706" }}
+                        className="mt-1 w-full rounded-xl border px-3 h-11 tabular-nums outline-none focus:border-primary bg-background"
+                        style={{ borderColor: (w(f.schluessel) || "").trim() ? FARBE.linie : "#D97706" }}
                       />
                       <AusErstgespraech sichtbar={uebernommen.has(f.schluessel)} />
                     </div>
                   ))}
                 </div>
                 {rahmen && (
-                  <div className="mt-5 grid sm:grid-cols-3 gap-4 rounded-xl p-4" style={{ background: "#F7F3E3" }}>
+                  <div className="mt-5 grid sm:grid-cols-3 gap-4 rounded-xl p-4 bg-primary/10">
                     <div>
                       <Kopf>{tx.arbeitsweise.ueberschuss as string}</Kopf>
                       <p className="text-xl font-semibold tabular-nums mt-1">{fmt.euro(rahmen.ueberschuss)}</p>
@@ -1461,11 +1405,11 @@ export default function BeratungspraesentationHV({
                     </div>
                     <div>
                       <Kopf>{tx.arbeitsweise.rahmen as string}</Kopf>
-                      <p className="text-2xl font-semibold tabular-nums mt-1" style={{ color: FARBE.goldDunkel }}>
+                      <p className="text-2xl font-semibold tabular-nums mt-1" style={{ color: FARBE.gruenText }}>
                         {fmt.euro(rahmen.empfRahmen)}
                       </p>
                     </div>
-                    <p className="sm:col-span-3 text-xs text-[#5F625D]">
+                    <p className="sm:col-span-3 text-xs text-muted-foreground">
                       {a(tx.arbeitsweise.rahmenErklaerung)} {a(tx.arbeitsweise.orientierung)}
                     </p>
                   </div>
@@ -1477,7 +1421,7 @@ export default function BeratungspraesentationHV({
             {/* ─── 14 Ihr Weg ─── */}
             <Folie id="weg" ton="gruen" kicker={a(T.weg.kicker)} titel={T.weg.titel}>
               <ol className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-10 gap-x-2 gap-y-5 relative">
-                <div aria-hidden className="hidden lg:block absolute left-[5%] right-[5%] top-4 h-px" style={{ background: "rgba(244,241,234,0.3)" }} />
+                <div aria-hidden className="hidden lg:block absolute left-[5%] right-[5%] top-4 h-px" style={{ background: "rgba(243,247,245,0.3)" }} />
                 {T.weg.schritte.map((s, i) => (
                   <li key={s.titel} className="relative flex lg:flex-col items-start lg:items-center gap-3 lg:gap-0 lg:text-center">
                     <span
@@ -1486,19 +1430,19 @@ export default function BeratungspraesentationHV({
                         s.stand === "erledigt"
                           ? { background: FARBE.salbei, borderColor: FARBE.salbei }
                           : s.stand === "heute"
-                          ? { background: FARBE.gold, borderColor: FARBE.gold, color: FARBE.schwarz }
+                          ? { background: FARBE.gold, borderColor: FARBE.gold, color: FARBE.aufGold }
                           : { background: FARBE.gruen, borderColor: "#D8C7A0" }
                       }
                     >
                       {s.stand === "erledigt" ? <Check className="h-4 w-4" /> : i + 1}
                     </span>
                     <div className="min-w-0">
-                      <p className="lg:mt-2 font-semibold text-sm">{s.titel}</p>
+                      <p className="lg:mt-2 font-semibold text-sm hyphens-auto break-words">{s.titel}</p>
                       <p className="text-xs leading-snug mt-0.5" style={{ color: FARBE.hellGedaempft }}>
                         {a(s.text)}
                       </p>
                       {s.marke && (
-                        <p className="bos-mont mt-1 text-[0.6rem] uppercase tracking-[0.18em]" style={{ color: FARBE.gold }}>
+                        <p className="mt-1 text-[0.6rem] uppercase tracking-[0.18em]" style={{ color: FARBE.gold }}>
                           {s.marke}
                         </p>
                       )}
@@ -1511,7 +1455,7 @@ export default function BeratungspraesentationHV({
 
             {/* ─── Rückspiegelung „Ihre Angaben“ ─── */}
             {(beantwortet.length > 1 || erwartung) && (
-              <Folie id="rueckblick" ton="papier" kicker={a(tx.rueckblick.nummer)} titel={a(tx.rueckblick.titel)}>
+              <Folie id="rueckblick" ton="hell" kicker={a(tx.rueckblick.nummer)} titel={a(tx.rueckblick.titel)}>
                 <p className="mt-6 max-w-3xl">{a(tx.rueckblick.vorspann)}</p>
                 <div className="mt-6 grid md:grid-cols-2 gap-4">
                   {beantwortet.map((f) => (
@@ -1525,7 +1469,7 @@ export default function BeratungspraesentationHV({
                   <Karte className="mt-4">
                     <Kopf>{a(tx.rueckblick.erwartung)}</Kopf>
                     <p className="mt-2 text-lg font-semibold leading-snug break-words">{erwartung}</p>
-                    <p className="mt-3 pt-3 border-t border-[#E4DFD3] font-medium" style={{ color: FARBE.goldDunkel }}>
+                    <p className="mt-3 pt-3 border-t border-border font-medium" style={{ color: FARBE.gruenText }}>
                       {tx.rueckblick.erfuellt as string}
                     </p>
                   </Karte>
@@ -1535,15 +1479,15 @@ export default function BeratungspraesentationHV({
             )}
 
             {/* ─── 15 Der nächste Schritt ─── */}
-            <Folie id="schritt" ton="schwarz" kicker={T.schritt.kicker} titel={a(T.schritt.titel)}>
+            <Folie id="schritt" ton="gruen" kicker={T.schritt.kicker} titel={a(T.schritt.titel)}>
               <p className="mt-6 text-base md:text-lg max-w-3xl leading-relaxed">{a(T.schritt.text)}</p>
               <div className="mt-8 flex flex-col sm:flex-row flex-wrap gap-3">
                 <button
                   type="button"
             data-no-shrink
                   onClick={oeffneSelbstauskunft}
-                  className="inline-flex items-center justify-center gap-2 rounded-full px-6 h-12 font-semibold transition-transform hover:scale-[1.02]"
-                  style={{ background: FARBE.gold, color: FARBE.schwarz }}
+                  className="bos-knopf-gold inline-flex items-center justify-center gap-2 rounded-full px-6 h-12 font-semibold transition-transform hover:scale-[1.02]"
+                  style={{ background: FARBE.gold, color: FARBE.aufGold }}
                 >
                   <ClipboardList className="h-5 w-5" />
                   {T.schritt.knopf}
@@ -1576,8 +1520,8 @@ export default function BeratungspraesentationHV({
                     className="rounded-full border px-3 py-1"
                     style={
                       w("abschlussAntwort") === ant
-                        ? { background: FARBE.papier, color: FARBE.schwarz, borderColor: FARBE.papier }
-                        : { borderColor: "rgba(244,241,234,0.3)" }
+                        ? { background: FARBE.gold, color: FARBE.aufGold, borderColor: FARBE.gold }
+                        : { borderColor: "rgba(243,247,245,0.35)" }
                     }
                   >
                     {ant}
@@ -1597,7 +1541,7 @@ export default function BeratungspraesentationHV({
             </Folie>
 
             {/* ─── 16 Nächster Termin ─── */}
-            <Folie id="termin" ton="papier" kicker={a(T.termin.kicker)} titel={a(T.termin.titel)}>
+            <Folie id="termin" ton="hell" kicker={a(T.termin.kicker)} titel={a(T.termin.titel)}>
               <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {T.termin.karten.map((k, i) => (
                   <Karte key={i}>
@@ -1612,10 +1556,10 @@ export default function BeratungspraesentationHV({
               </Karte>
             </Folie>
 
-            <footer className="px-4 sm:px-8 py-10" style={{ background: FARBE.schwarz }}>
+            <footer className="px-4 sm:px-8 py-10" style={{ background: FARBE.tief }}>
               <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
                 <img src={logoDunkel} alt="OS Real Estate" className="h-10 w-auto opacity-80" />
-                <p className="text-xs text-center md:text-right max-w-xl" style={{ color: "rgba(244,241,234,0.55)" }}>
+                <p className="text-xs text-center md:text-right max-w-xl" style={{ color: "rgba(243,247,245,0.72)" }}>
                   {T.fuss}
                 </p>
               </div>
@@ -1627,8 +1571,8 @@ export default function BeratungspraesentationHV({
             data-no-shrink
               data-pdf-exclude
               onClick={() => springeZu("schritt")}
-              className="fixed bottom-5 right-4 z-40 rounded-full shadow-2xl px-4 h-11 flex items-center gap-2 text-sm font-semibold"
-              style={{ background: FARBE.gruen, color: FARBE.papier }}
+              data-ui="button"
+              className="fixed bottom-5 right-4 z-40 rounded-full shadow-2xl px-4 h-11 flex items-center gap-2 text-sm font-semibold bg-primary text-primary-foreground"
             >
               <ChevronDown className="h-4 w-4" />
               Zur Selbstauskunft
@@ -1636,7 +1580,7 @@ export default function BeratungspraesentationHV({
           </div>
         </div>
       </TrainerContext.Provider>
-    </AnredeContext.Provider>
+    </>
   );
 }
 

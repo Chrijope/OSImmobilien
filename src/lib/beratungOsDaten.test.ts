@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   PLAN_OBJEKT,
   aufTausend,
+  begruessungsName,
   konzeptAusSchwerpunkt,
   rentenluecke,
   uebernahmeAusSkript,
@@ -82,5 +83,19 @@ describe("Übernahme aus dem Erstgespräch", () => {
   it("verkraftet leere und kaputte Stände", () => {
     expect(uebernahmeAusSkript(null, null)).toEqual({});
     expect(uebernahmeAusSkript({ antworten: { reserve: "   ", sorgen: { x: 1 } as unknown as string }, ziele: "x" as unknown as string[] }, {})).toEqual({});
+  });
+});
+
+describe("Vorname für die Begrüßung", () => {
+  it("nimmt den Kontakt vor den Parametern", () => {
+    expect(begruessungsName("Anna", "Anne", "Anne Muster")).toBe("Anna");
+    expect(begruessungsName(undefined, "Anna Maria", "Anna Maria Muster")).toBe("Anna Maria");
+    expect(begruessungsName(undefined, null, " Jonas Beispiel ")).toBe("Jonas");
+  });
+
+  it("macht aus leeren und kaputten Werten keinen Namen", () => {
+    expect(begruessungsName(undefined, null, null)).toBe("");
+    expect(begruessungsName("  ", "", "undefined undefined")).toBe("");
+    expect(begruessungsName(42, "null", "")).toBe("");
   });
 });

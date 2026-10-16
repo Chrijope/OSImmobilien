@@ -61,33 +61,12 @@ const ueberschriften = () => Array.from(document.querySelectorAll("h2")).map((h)
 const ziele = () => document.getElementById("ziele")!;
 
 describe("Abschnitt 02 in B", () => {
-  it("zeigt ohne Erstgespräch nur die Überschrift", () => {
+  it("zeigt dieselbe Ziele-Seite wie die normale Präsentation", () => {
     zeige(B);
     expect(ziele().querySelector("h2")?.textContent).toBe("Das hast du uns gesagt.");
-    expect(screen.queryByTestId("ziele-erstgespraech")).toBeNull();
-    expect(ziele().querySelectorAll("textarea, input, button")).toHaveLength(0);
-  });
-
-  it("zeigt ohne Angaben im Skript ebenfalls nur die Überschrift", () => {
-    zustand.skript = { anrede: "sie", ziele: [], antworten: { motivWoertlich: "  ", reserve: "" } };
-    zeige(B_KUNDE);
-    expect(ziele().querySelector("h2")?.textContent).toBe("Das haben Sie uns gesagt.");
-    expect(screen.queryByTestId("ziele-erstgespraech")).toBeNull();
-  });
-
-  it("zeigt die Angaben aus dem Erstgespräch unter der Überschrift", () => {
-    zustand.skript = {
-      anrede: "sie",
-      ziele: ["Altersvorsorge"],
-      antworten: { motivWoertlich: "Ich möchte jetzt anfangen.", investitionMonat: "400 €", mitentscheider: "Partner" },
-    };
-    zeige(B_KUNDE);
-    const text = screen.getByTestId("ziele-erstgespraech").textContent;
-    expect(text).toContain("„Ich möchte jetzt anfangen.“");
-    expect(text).toContain("Sorgenfrei im Alter durch eine Immobilienrente");
-    expect(text).toContain("400 €");
-    expect(text).toContain("Partner");
-    expect(text).not.toContain("Reserve");
+    expect(screen.getByLabelText("Motiv in den Worten des Kunden")).toBeInTheDocument();
+    expect(screen.getByLabelText("Erfahrung mit Immobilien")).toBeInTheDocument();
+    expect(ziele().querySelectorAll("button").length).toBeGreaterThan(0);
   });
 });
 
