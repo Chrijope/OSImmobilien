@@ -133,21 +133,24 @@ export function versicherungenGesamt(data: any): number {
  * SA-Form mit einkommen-Objekt; bei Altdaten wären gleichnamige Felder etwas
  * anderes und bleiben deshalb außen vor.
  */
-export function extractAusgaben(data: any) {
+export function extractAusgaben(data: any, ansatz: "bank" | "kunde" = "bank") {
   const hasIncomeObject = !!data?.einkommen;
   const income = data?.einkommen;
   const kredite = data?.kredite || [];
   const buckets = { hypothek: 0, auto: 0, privat: 0, sonstige: 0 };
   for (const k of kredite) buckets[kreditArt(k?.art, k?.kategorie)] += parseFinanzNum(k?.rate);
-  const buergschaften = data?.buergschaften || [];
-  const buergschaftSumme = buergschaften.reduce((acc: number, b: any) => acc + parseFinanzNum(b?.betrag), 0);
+  const lebenshaltungEingetragen = hasIncomeObject ? parseFinanzNum(data?.lebenshaltungskosten) : parseFinanzNum(data?.lebenshaltung);
   return {
     miete: hasIncomeObject ? parseFinanzNum(data?.mieteWarm) : parseFinanzNum(data?.miete),
-    // Die Bankpauschale greift hier, nicht im Formular. Siehe bankLebenshaltung.
-    lebenshaltung: bankLebenshaltung(
-      hasIncomeObject ? parseFinanzNum(data?.lebenshaltungskosten) : parseFinanzNum(data?.lebenshaltung),
-      hasIncomeObject ? parseFinanzNum(income?.netto) : parseFinanzNum(data?.gehalt),
-    ),
+    /*
+     * "bank" (Standard): die Bankpauschale, Grundlage des Finanzierungsrahmens.
+     * "kunde": genau der eingetragene Betrag, fuer die Anzeige im Investment,
+     * die eins zu eins zeigen soll, was in der Selbstauskunft steht
+     * (Christian, 16.10.2026). Siehe bankLebenshaltung.
+     */
+    lebenshaltung: ansatz === "kunde"
+      ? lebenshaltungEingetragen
+      : bankLebenshaltung(lebenshaltungEingetragen, hasIncomeObject ? parseFinanzNum(income?.netto) : parseFinanzNum(data?.gehalt)),
     privateKV: parseFinanzNum(data?.privateKV),
     zinsTilgung: hasIncomeObject ? buckets.hypothek : parseFinanzNum(data?.zinsTilgung),
     autokredite: hasIncomeObject ? buckets.auto : parseFinanzNum(data?.autokredite),
@@ -156,7 +159,12 @@ export function extractAusgaben(data: any) {
     // Unterhalt zaehlt immer, so wie im Kundenprofil. Vorher wurde er hier
     // bei der neuen SA-Form auf null gesetzt und fehlte im Portal-Rahmen.
     unterhalt: parseFinanzNum(data?.unterhalt),
-    buergschaften: hasIncomeObject ? buergschaftSumme : 0,
+    /*
+     * Buergschaften fehlen hier bewusst. Das Formular fragt die verbuergte
+     * Gesamtsumme ab, keine Monatsrate. Bis zum 16.10.2026 stand sie hier als
+     * monatliche Ausgabe, eine Mietbuergschaft ueber 3.000 Euro drueckte den
+     * Ueberschuss also um 3.000 Euro im Monat. Siehe buergschaftenSumme.
+     */
     /*
      * Versicherungen: entweder die Aufschluesselung oder das Sammelfeld, nie
      * beides. Das Formular hat ein Sammelfeld "Versicherungsbeitraege" und
@@ -170,6 +178,11 @@ export function extractAusgaben(data: any) {
     kfzKosten: hasIncomeObject ? parseFinanzNum(data?.kfzKosten) : 0,
     sonstige: parseFinanzNum(data?.sonstigeAusgaben),
   };
+}
+
+/** Die verbuergte Gesamtsumme einer Person, keine Monatsrate. */
+export function buergschaftenSumme(data: any): number {
+  return (data?.buergschaften || []).reduce((acc: number, b: any) => acc + parseFinanzNum(b?.betrag), 0);
 }
 
 /**
@@ -301,4 +314,34 @@ export function getFinanzierbarkeitLabelFuerInvestment(investmentId: string | nu
   const calc = calculateFinanzierbarkeitFromSaData(sa);
   if (!calc) return null;
   return calc.empfRahmen > 0 ? "Positiv" : "Negativ";
+}
+/**
+ * Die Zahlen des Finanzblocks im Investment (Einkuenfte, Ausgaben,
+ * Ueberschussrechnung), an einer Stelle, damit ein Test sie gegen die
+ * Selbstauskunft pruefen kann.
+ *
+ * Kundenwerte stehen eins zu eins wie eingetragen (Christian, 16.10.2026).
+ * `bank` ist die Schaetzung nach Bankansatz, dieselbe Grundlage wie der
+ * Finanzierungsrahmen. Person 2 zaehlt nur, wenn die Selbstauskunft sie fuehrt.
+ */
+export function investmentFinanzZahlen(sd: any) {
+  const summe = (o: Record<string, number>) => Object.values(o).reduce((a, b) => a + b, 0);
+  const p2d = sd?.person2 ? sd.person2Data || null : null;
+  const eink = extractEinkuenfte(sd);
+  const ausg = extractAusgaben(sd, "kunde");
+  const p2Eink = p2d ? extractEinkuenfte(p2d) : null;
+  const p2Ausg = p2d ? extractAusgaben(p2d, "kunde") : null;
+  const sumEink = summe(eink);
+  const sumAusg = summe(ausg);
+  const sumEinkP2 = p2Eink ? summe(p2Eink) : 0;
+  const sumAusgP2 = p2Ausg ? summe(p2Ausg) : 0;
+  const sumEinkGes = sumEink + sumEinkP2;
+  const sumAusgGes = sumAusg + sumAusgP2;
+  return {
+    p2d, eink, ausg, p2Eink, p2Ausg,
+    sumEink, sumAusg, sumEinkP2, sumAusgP2, sumEinkGes, sumAusgGes,
+    ueberschuss: sumEinkGes - sumAusgGes,
+    buergschaften: buergschaftenSumme(sd) + (p2d ? buergschaftenSumme(p2d) : 0),
+    bank: calculateFinanzierbarkeitFromSaData(sd),
+  };
 }

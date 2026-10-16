@@ -51,6 +51,15 @@ export type SaTextWerte = Readonly<Record<string, string | number>>;
  * im Quelltext stehen (auch Emojis und Anführungszeichen).
  */
 export const SA_UI_EN: Readonly<Record<string, string>> = {
+  // Bank-Hinweise (BANK_HINWEISE im Formular)
+  "Hinweis, wie Banken häufig rechnen: Für die Lebenshaltung setzen Banken meist rund 30 % des Nettoeinkommens oder eine Pauschale je Person an, auch wenn der tatsächliche Betrag niedriger ist. Bitte trotzdem den tatsächlichen Betrag eintragen. Die Bank entscheidet im Einzelfall.":
+    "Note on how banks often calculate: for living costs, banks usually assume around 30% of net income or a flat amount per person, even if the actual amount is lower. Please still enter the actual amount. The bank decides case by case.",
+  "Hinweis, wie Banken häufig rechnen: Mieteinnahmen zählen meist nur mit 70 bis 80 % der Kaltmiete, als Puffer für Leerstand und Instandhaltung. Bitte die volle Kaltmiete eintragen. Die Bank entscheidet im Einzelfall.":
+    "Note on how banks often calculate: rental income usually counts at only 70 to 80% of the net cold rent, as a buffer for vacancy and maintenance. Please enter the full net cold rent. The bank decides case by case.",
+  "Hinweis, wie Banken häufig rechnen: Bestehende Kredite zählen mit der vollen monatlichen Rate. Die Bank entscheidet im Einzelfall.":
+    "Note on how banks often calculate: existing loans count with the full monthly instalment. The bank decides case by case.",
+  "Hinweis, wie Banken häufig rechnen: Die Kaufnebenkosten (Grunderwerbsteuer, Notar, Grundbuch) sollen meist aus Eigenkapital bezahlt werden. Die Bank entscheidet im Einzelfall.":
+    "Note on how banks often calculate: the purchase costs (property transfer tax, notary, land register) are usually expected to be paid from equity. The bank decides case by case.",
   /* ── Rahmen, Schritte, Knöpfe ─────────────────────────────── */
   Selbstauskunft: "Self-disclosure",
   "Wünsche & Ziele": "Goals and objectives",
