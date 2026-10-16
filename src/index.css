@@ -3119,3 +3119,32 @@
 [data-sidebar="sidebar"][data-mobile="true"] {
   top: calc(5rem + var(--leisten-hoehe, 0px));
 }
+
+/* Aktiver Eintrag der Seitenleiste (16.10.2026, Wunsch Christian): keine volle
+   Pille mehr, sondern ein Gruenverlauf, der nach rechts auslaeuft, dazu ein
+   schmaler Strich links. Schrift und Icon in Primaergruen. Gilt in allen
+   Designs; der Hover darunter bleibt die dezente Flaeche aus Tailwind bzw.
+   design-liquid.css. Zwei Attribute, damit die Schriftfarbe die
+   Tailwind-Klassen am Link (auch :hover) schlaegt. */
+[data-sidebar].sidebar-aktiv {
+  /* Erste Ebene: der Strich, 3px breit, mittig auf 60 % Hoehe, damit er
+     nicht der Rundung folgt. Zweite Ebene: der Verlauf. */
+  background-image:
+    linear-gradient(hsl(var(--primary)), hsl(var(--primary))),
+    linear-gradient(90deg,
+      hsl(var(--primary) / .22) 0%,
+      hsl(var(--primary) / .08) 60%,
+      transparent 100%);
+  background-size: 3px 60%, 100% 100%;
+  background-position: left center, 0 0;
+  background-repeat: no-repeat;
+  font-weight: 600;
+}
+/* Unterpunkte bringen aus sidebar.tsx eine graue Flaeche mit (data-active). */
+[data-sidebar].sidebar-aktiv:not(:hover) {
+  background-color: transparent;
+}
+[data-sidebar].sidebar-aktiv,
+[data-sidebar].sidebar-aktiv:hover {
+  color: hsl(var(--primary));
+}

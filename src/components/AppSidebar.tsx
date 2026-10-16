@@ -172,7 +172,8 @@ function NavGroup({
   if (filteredItems.length === 0) return null;
 
   const location = useLocation();
-  const activeClasses = "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground";
+  // Aussehen in index.css (.sidebar-aktiv): Verlauf statt voller Pille.
+  const activeClasses = "sidebar-aktiv";
   const isItemActive = (url: string) => {
     const [path, query] = url.split("?");
     if (path === "/vertriebsakademie" && location.pathname.startsWith(path + "/")) return true;
@@ -194,7 +195,7 @@ function NavGroup({
     const isSettingsItem = item.url === "/einstellungen";
     const isLocked = onboardingLocked && !isSettingsItem;
     const active = isItemActive(item.url);
-    // Apple-style icon tint – nur wenn nicht aktiv (aktiv = weiß auf Primary).
+    // Apple-style icon tint – nur wenn nicht aktiv (aktiv = Primaergruen aus .sidebar-aktiv).
     const tintClass = !active && iconTint ? iconTint : "";
 
     if (isLocked) {
@@ -264,7 +265,7 @@ function NavGroup({
         <Collapsible key={item.title} defaultOpen={anyChildActive}>
           <SidebarMenuItem>
             <CollapsibleTrigger asChild>
-              <SidebarMenuButton className="w-full justify-between">
+              <SidebarMenuButton className={cn("w-full justify-between", collapsed && anyChildActive && activeClasses)}>
                 <span className="flex items-center gap-2">
                   <item.icon className={cn("h-4 w-4", tintClass)} />
                   {!collapsed && <span>{item.title}</span>}
@@ -276,7 +277,7 @@ function NavGroup({
               <SidebarMenuSub>
                 {visibleChildren.map(child => (
                   <SidebarMenuSubItem key={child.title}>
-                    <SidebarMenuSubButton asChild isActive={isItemActive(child.url)}>
+                    <SidebarMenuSubButton asChild isActive={isItemActive(child.url)} className={cn(isItemActive(child.url) && activeClasses)}>
                       <NavLink to={child.url} end className="flex items-center gap-2">
                         <child.icon className={cn("h-4 w-4 shrink-0", !isItemActive(child.url) && iconTint)} />
                         <span>{child.title}</span>

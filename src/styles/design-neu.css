@@ -279,6 +279,9 @@
   `SidebarMenuButton` uebergeben, und `activeClasses` entfernen. Die
   Spezifitaet reicht dann aus, drei Attributselektoren schlagen eine
   Tailwind-Klasse.
+
+  Seit dem 16.10.2026 ist der aktive Eintrag keine volle Flaeche mehr, sondern
+  ein auslaufender Verlauf: `.sidebar-aktiv` in `index.css`.
 */
 [data-design="neu"] [data-sidebar="sidebar"] {
   border-right: 1px solid hsl(var(--border));
