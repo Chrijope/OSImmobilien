@@ -53,7 +53,8 @@ AS $$
     AND NOT EXISTS (
       SELECT 1 FROM public.aktivitaeten a
       WHERE a.id = _b.aktivitaet_id
-        AND a.erledigt_am IS NOT NULL
+        -- Text-Spalte; leer zaehlt wie im Frontend als nicht erledigt.
+        AND NULLIF(btrim(a.erledigt_am), '') IS NOT NULL
     )
     AND NOT EXISTS (
       SELECT 1 FROM public.aufgaben g

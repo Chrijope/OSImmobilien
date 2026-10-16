@@ -21,7 +21,8 @@ const PRAEDIKAT = `  SELECT _b.status = 'offen'
     AND NOT EXISTS (
       SELECT 1 FROM public.aktivitaeten a
       WHERE a.id = _b.aktivitaet_id
-        AND a.erledigt_am IS NOT NULL
+        -- Text-Spalte; leer zaehlt wie im Frontend als nicht erledigt.
+        AND NULLIF(btrim(a.erledigt_am), '') IS NOT NULL
     )
     AND NOT EXISTS (
       SELECT 1 FROM public.aufgaben g
@@ -121,6 +122,8 @@ describe("Reparatur: falsch verschobene Termine wieder öffnen", () => {
   it("nimmt nur abgeschlossene Terminseiten-Buchungen, die nach dem Abschluss geändert wurden", () => {
     expect(REPARATUR).toContain("JOIN public.buchung_links l ON l.id = b.link_id AND l.ziel = 'extern'");
     expect(REPARATUR).toContain("WHERE b.status IN ('wahrgenommen', 'nicht_erschienen')");
-    expect(REPARATUR).toContain("AND b.updated_at > a.erledigt_am + interval '1 minute'");
+    expect(REPARATUR).toContain("THEN a.erledigt_am::timestamptz END + interval '1 minute'");
+    // erledigt_am ist Text: nie ohne Prüfung umwandeln oder rechnen.
+    expect(REPARATUR.replace(/^--.*$/gm, "")).not.toMatch(/a\.erledigt_am \+|a\.erledigt_am IS NOT NULL/);
   });
 });

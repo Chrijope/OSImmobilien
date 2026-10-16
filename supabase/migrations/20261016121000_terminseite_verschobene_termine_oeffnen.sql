@@ -45,8 +45,8 @@
 --   JOIN public.buchung_links l ON l.id = b.link_id AND l.ziel = 'extern'
 --   JOIN public.aktivitaeten a ON a.id = b.aktivitaet_id
 --   WHERE b.status IN ('wahrgenommen', 'nicht_erschienen')
---     AND a.erledigt_am IS NOT NULL
---     AND b.updated_at > a.erledigt_am + interval '1 minute'
+--     AND b.updated_at > CASE WHEN a.erledigt_am ~ '^\d{4}-\d{2}-\d{2}([ T]\d{2}:\d{2}(:\d{2}(\.\d+)?)?)?(Z|[+-]\d{2}(:?\d{2})?)?$'
+--                        THEN a.erledigt_am::timestamptz END + interval '1 minute'
 --     AND NOT EXISTS (
 --       SELECT 1 FROM public.buchungen d
 --       WHERE d.id <> b.id AND d.status = 'offen'
@@ -73,8 +73,10 @@ FROM public.buchungen b
 JOIN public.buchung_links l ON l.id = b.link_id AND l.ziel = 'extern'
 JOIN public.aktivitaeten a ON a.id = b.aktivitaet_id
 WHERE b.status IN ('wahrgenommen', 'nicht_erschienen')
-  AND a.erledigt_am IS NOT NULL
-  AND b.updated_at > a.erledigt_am + interval '1 minute'
+  -- erledigt_am ist in aktivitaeten Text. Nur ein lesbarer Zeitpunkt wird
+  -- umgewandelt, alles andere (leer, Unsinn) faellt heraus, statt den Lauf abzubrechen.
+  AND b.updated_at > CASE WHEN a.erledigt_am ~ '^\d{4}-\d{2}-\d{2}([ T]\d{2}:\d{2}(:\d{2}(\.\d+)?)?)?(Z|[+-]\d{2}(:?\d{2})?)?$'
+                     THEN a.erledigt_am::timestamptz END + interval '1 minute'
   AND NOT EXISTS (
     SELECT 1 FROM public.buchungen d
     WHERE d.id <> b.id AND d.status = 'offen'
