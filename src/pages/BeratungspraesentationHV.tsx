@@ -25,16 +25,19 @@
  */
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { CalendarClock, Check, ChevronDown, ClipboardList, FileText, Menu, X } from "lucide-react";
+import { CalendarClock, Check, ChevronDown, ClipboardList, FileText, Mail, Menu, Phone, X } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 import { usePersistedState } from "@/hooks/usePersistedState";
 import { SPRECHSKRIPT_NACH_ID, sprechskriptFuerAnrede } from "@/lib/beratungSprechskripte";
 import { rahmenAusUeberschuss } from "@/lib/finanzierbarkeitUtils";
 import { RATE_EINGANG, rateAnteile } from "@/lib/rateAnteile";
 import { useCacheReady } from "@/hooks/useCacheReady";
-import { onCacheChange } from "@/lib/dataCache";
 import { getKontaktById } from "@/lib/kundenStore";
 import { getInvestmentMetaField } from "@/lib/investmentsStore";
+import { cacheGet, onCacheChange } from "@/lib/dataCache";
+import { ladeBerater } from "@/lib/beraterProfil";
+import { initialen, vertriebspartnerFuerExpose, type ProfilZeile, type RollenZeile } from "@/lib/exposeAnsprechpartner";
+import type { Person } from "@/lib/exposeInhalt";
 import { ANLAGE_ZIELE, zielNachLabel } from "@/lib/anlageZiele";
 import { zuZahl } from "@/lib/beratungspraesentationSprache";
 import { BERATUNG_TEXTE, formatierer, inAnrede, type AnredeWert } from "@/lib/beratungspraesentationTexte";
@@ -69,6 +72,8 @@ export interface BeratungVorschau {
   kundenName: string;
   kontakt: { anrede?: string; vorname?: string; nachname?: string; qualEinkommen?: string; qualEigenkapital?: string };
   skript: { anrede?: string; antworten?: Record<string, string>; ziele?: string[] } | null;
+  /** Erfundener Beispielpartner für die Karte „Dein persönlicher Ansprechpartner“. */
+  ansprechpartner?: Person;
 }
 
 /** Hell liegt auf dem Grund der Glasschicht, Grün und Tief sind dunkelgrüne Abschnitte. */
@@ -353,6 +358,70 @@ function MarkenLogo({ name, zusatz, farbe, gross }: { name: string; zusatz: stri
   );
 }
 
+/**
+ * Persönlicher Ansprechpartner unter der Unternehmensgruppe. Rundes Foto,
+ * sonst Initialen; Telefon und Mail erscheinen nur, wenn sie hinterlegt sind.
+ */
+function AnsprechpartnerKarte({ person, dunkel, etikett, satz }: { person: Person; dunkel?: boolean; etikett: string; satz: string }) {
+  const telefon = person.telefon?.trim();
+  const email = person.email?.trim();
+  const ring = { boxShadow: `0 0 0 2px ${dunkel ? FARBE.gold : FARBE.goldDunkel}` };
+  const knopf = "inline-flex max-w-full items-center justify-center gap-2 rounded-full px-5 h-11 text-sm font-semibold transition-transform hover:scale-[1.02]";
+  return (
+    <Karte dunkel={dunkel} className="mt-12 md:p-8">
+      <div data-testid="ansprechpartner" className="flex flex-col sm:flex-row items-center sm:items-start gap-5 sm:gap-7 text-center sm:text-left">
+        {person.avatarUrl ? (
+          <img src={person.avatarUrl} alt={person.name} className="h-24 w-24 md:h-28 md:w-28 shrink-0 rounded-full object-cover" style={ring} />
+        ) : (
+          <div
+            data-testid="ansprechpartner-initialen"
+            aria-hidden
+            className="h-24 w-24 md:h-28 md:w-28 shrink-0 rounded-full flex items-center justify-center text-[1.6rem] md:text-[1.9rem] font-semibold bg-primary text-primary-foreground"
+            style={ring}
+          >
+            {initialen(person.name)}
+          </div>
+        )}
+        <div className="min-w-0 flex-1">
+          <p className="bos-kicker" style={{ color: dunkel ? FARBE.gold : FARBE.gruenText }}>
+            {etikett}
+          </p>
+          <p className="mt-2 text-[1.6rem] md:text-[2rem] leading-tight font-semibold tracking-tight break-words">{person.name}</p>
+          {/* Der Rückfall „Dein Ansprechpartner“ stünde doppelt unter dem Etikett. */}
+          {person.rolle && person.rolle !== "Dein Ansprechpartner" && (
+            <p className="mt-1 text-sm" style={{ color: dunkel ? FARBE.hellGedaempft : FARBE.grau }}>
+              {person.rolle}
+            </p>
+          )}
+          <p className="mt-4 text-base leading-relaxed max-w-2xl" style={{ color: dunkel ? FARBE.hellGedaempft : FARBE.grau }}>
+            {satz}
+          </p>
+          {(telefon || email) && (
+            <div className="mt-5 flex flex-col sm:flex-row flex-wrap justify-center sm:justify-start gap-3">
+              {telefon && (
+                <a href={`tel:${telefon.replace(/[^\d+]/g, "")}`} className={`${knopf} bg-primary text-primary-foreground`}>
+                  <Phone className="h-4 w-4 shrink-0" />
+                  {telefon}
+                </a>
+              )}
+              {email && (
+                <a
+                  href={`mailto:${email}`}
+                  className={`${knopf} border ${dunkel ? "" : "bg-card"}`}
+                  style={dunkel ? { borderColor: "rgba(243,247,245,0.35)", color: FARBE.hellText } : { borderColor: FARBE.linie, color: FARBE.tinte }}
+                >
+                  <Mail className="h-4 w-4 shrink-0" />
+                  <span className="truncate">{email}</span>
+                </a>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </Karte>
+  );
+}
+
 /** Fassung B, Abschnitt 04: Kaufkraft als Balken, der Verlust in Rot. */
 function KaufkraftGrafik() {
   const max = Math.max(...KAUFKRAFT_B.balken.map((b) => b.wert));
@@ -449,7 +518,7 @@ export default function BeratungspraesentationHV({
   const istB = variante === "b";
   const [suchParameter] = useSearchParams();
   const navigate = useNavigate();
-  const { user } = useUser();
+  const { user, authUser } = useUser();
   const [navOffen, setNavOffen] = useState(false);
   const [fortschritt, setFortschritt] = useState(0);
 
@@ -481,6 +550,31 @@ export default function BeratungspraesentationHV({
     suchParameter.get("vorname"),
     vorschau ? vorschau.kundenName : suchParameter.get("kunde"),
   );
+
+  /*
+   * Ansprechpartner: mit Kunde dessen zuständiger Partner, sonst der
+   * angemeldete Nutzer (Regel wie im Exposé, exposeAnsprechpartner.ts). Für
+   * den Angemeldeten Telefon, Position, Mail und Bild aus Einstellungen und
+   * Profil (ladeBerater, wie Mikroseite und Signatur).
+   */
+  const ansprechpartner: Person | undefined = (() => {
+    if (vorschau) return vorschau.ansprechpartner;
+    const eigen = ladeBerater();
+    const eigenePerson: Person = {
+      name: user.name,
+      rolle: eigen.position || "",
+      email: eigen.email || user.email || undefined,
+      telefon: eigen.telefon || undefined,
+      avatarUrl: eigen.bild || user.avatar || undefined,
+    };
+    return vertriebspartnerFuerExpose({
+      kundeZustaendigId: leseQuelle().kontakt?.zustaendig_id,
+      eigeneId: authUser?.id,
+      eigenePerson,
+      profile: cacheGet<ProfilZeile>("profiles"),
+      rollen: cacheGet<RollenZeile>("user_roles"),
+    });
+  })();
 
   // Antworten im Gespräch. Schlüssel wie bisher, damit Mitgeschriebenes erhalten bleibt.
   const [antworten, setAntworten] = usePersistedState<Record<string, string>>(
@@ -680,6 +774,14 @@ export default function BeratungspraesentationHV({
       <Fussnote dunkel>
         <span className="block text-center">{T.gruppe.fuss}</span>
       </Fussnote>
+      {ansprechpartner && (
+        <AnsprechpartnerKarte
+          person={ansprechpartner}
+          dunkel
+          etikett={a(tx.ueberUns.ansprechpartner)}
+          satz={`${a(tx.ueberUns.fest)} ${tx.ueberUns.bisNotar}`}
+        />
+      )}
     </Folie>
   );
 

@@ -17,7 +17,7 @@ vi.mock("@/contexts/UserContext", () => ({
   useUser: () => ({ user: { name: "Maria Muster", role: "vertriebspartner" }, authUser: { id: "nutzer-1" } }),
 }));
 vi.mock("@/hooks/useCacheReady", () => ({ useCacheReady: () => true }));
-vi.mock("@/lib/dataCache", () => ({ onCacheChange: () => () => {} }));
+vi.mock("@/lib/dataCache", () => ({ onCacheChange: () => () => {}, cacheGet: () => [] }));
 vi.mock("@/lib/kundenStore", () => ({
   getKontaktById: (id: string) => (id === "k-1" ? { anrede: "Frau", vorname: "Anna", nachname: "Muster" } : undefined),
 }));
