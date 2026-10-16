@@ -25,7 +25,7 @@
  */
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowRight, CalendarClock, Check, ChevronDown, ClipboardList, FileText, Mail, Menu, Phone, X } from "lucide-react";
+import { ArrowRight, CalendarCheck, CalendarClock, Check, ChevronDown, ClipboardList, FileText, KeyRound, Mail, Menu, Phone, X } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 import { usePersistedState } from "@/hooks/usePersistedState";
 import { SPRECHSKRIPT_NACH_ID, sprechskriptFuerAnrede } from "@/lib/beratungSprechskripte";
@@ -33,7 +33,9 @@ import { rahmenAusUeberschuss } from "@/lib/finanzierbarkeitUtils";
 import { RATE_EINGANG, rateAnteile } from "@/lib/rateAnteile";
 import { useCacheReady } from "@/hooks/useCacheReady";
 import { getKontaktById } from "@/lib/kundenStore";
-import { getInvestmentMetaField } from "@/lib/investmentsStore";
+import { getInvestmentMetaField, getInvestmentsByKontakt } from "@/lib/investmentsStore";
+import { kundenportalFreischalten, portalMetaLesen } from "@/lib/kundenportalFreischalten";
+import { toast } from "@/hooks/use-toast";
 import { cacheGet, onCacheChange } from "@/lib/dataCache";
 import { ladeBerater } from "@/lib/beraterProfil";
 import { initialen, vertriebspartnerFuerExpose, type ProfilZeile, type RollenZeile } from "@/lib/exposeAnsprechpartner";
@@ -75,6 +77,10 @@ export interface BeratungVorschau {
   skript: { anrede?: string; antworten?: Record<string, string>; ziele?: string[] } | null;
   /** Erfundener Beispielpartner für die Karte „Dein persönlicher Ansprechpartner“. */
   ansprechpartner?: Person;
+  /** Buchungslink „Objektvorstellung“ des Beispielpartners. */
+  objektlink?: string;
+  /** Simuliert die unterschriebene Selbstauskunft (Abschnitt 16). */
+  saUnterschrieben?: boolean;
 }
 
 /** Hell liegt auf dem Grund der Glasschicht, Grün und Tief sind dunkelgrüne Abschnitte. */
@@ -580,6 +586,19 @@ export default function BeratungspraesentationHV({
     });
   })();
 
+  /*
+   * Buchungslink „Objektvorstellung“ (Einstellungen, profiles.objektlink):
+   * mit Kunde der des zuständigen Partners, sonst der des Angemeldeten.
+   * Dieselbe Reihenfolge wie beim Ansprechpartner.
+   */
+  const objektLink = (() => {
+    if (vorschau) return vorschau.objektlink?.trim() || "";
+    const profile = cacheGet<ProfilZeile & { objektlink?: string | null }>("profiles");
+    const zustaendig = leseQuelle().kontakt?.zustaendig_id as string | undefined;
+    const id = zustaendig && profile.some((p) => p.id === zustaendig) ? zustaendig : authUser?.id;
+    return profile.find((p) => p.id === id)?.objektlink?.trim() || "";
+  })();
+
   // Antworten im Gespräch. Schlüssel wie bisher, damit Mitgeschriebenes erhalten bleibt.
   const [antworten, setAntworten] = usePersistedState<Record<string, string>>(
     `beratung-antworten-${kundeId || "ohne-kunde"}`,
@@ -718,6 +737,40 @@ export default function BeratungspraesentationHV({
     // In der Vorschau gibt es keinen Kunden und keine Anmeldung: zeigen, wohin es ginge.
     if (vorschau) setVorschauSprung(selbstauskunftAdresse());
     else navigate(selbstauskunftAdresse());
+  };
+
+  /*
+   * Abschnitt 16: Kundenportal freigeben, derselbe Weg wie im Kundenprofil
+   * (kundenportalFreischalten.ts). Erst mit unterschriebener Selbstauskunft
+   * am Investment; die Vorschau simuliert nur.
+   */
+  const saUnterschrieben = vorschau
+    ? !!vorschau.saUnterschrieben
+    : hatKundenKontext && getInvestmentMetaField<boolean>(investmentId, "saSigned", false) === true;
+  const [portalFreigabeLaeuft, setPortalFreigabeLaeuft] = useState(false);
+  const [vorschauPortal, setVorschauPortal] = useState(false);
+  const portalFreigegeben = vorschau ? vorschauPortal : !!kundeId && portalMetaLesen(kundeId).status !== "none";
+  const portalFreigeben = async () => {
+    if (vorschau) {
+      setVorschauPortal(true);
+      return;
+    }
+    const kunde = getKontaktById(kundeId);
+    if (!kunde) return;
+    setPortalFreigabeLaeuft(true);
+    try {
+      await kundenportalFreischalten({
+        kontaktId: kundeId,
+        kunde,
+        investmentIds: getInvestmentsByKontakt(kundeId).map((iv) => iv.id),
+        vonName: user.name,
+        toast,
+        geaendert: () => setCacheTakt((n) => n + 1),
+      });
+    } finally {
+      setPortalFreigabeLaeuft(false);
+      setCacheTakt((n) => n + 1);
+    }
   };
 
   const rahmenZeilen: Array<{ label: string; schluessel: string; einheit?: string; platzhalter: string }> = [
@@ -1666,6 +1719,31 @@ export default function BeratungspraesentationHV({
                   <ClipboardList className="h-5 w-5" />
                   {T.schritt.knopf}
                 </button>
+                {objektLink ? (
+                  <a
+                    href={objektLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-no-shrink
+                    className="inline-flex items-center justify-center gap-2 rounded-full px-6 h-12 border font-semibold transition-transform hover:scale-[1.02]"
+                    style={{ borderColor: FARBE.gold, color: FARBE.hellText }}
+                  >
+                    <CalendarCheck className="h-5 w-5" />
+                    {T.schritt.knopfObjekt}
+                  </a>
+                ) : (
+                  <button
+                    type="button"
+                    data-no-shrink
+                    disabled
+                    aria-describedby="objektlink-fehlt"
+                    className="inline-flex items-center justify-center gap-2 rounded-full px-6 h-12 border font-semibold opacity-50 cursor-not-allowed"
+                    style={{ borderColor: "rgba(243,247,245,0.35)" }}
+                  >
+                    <CalendarCheck className="h-5 w-5" />
+                    {T.schritt.knopfObjekt}
+                  </button>
+                )}
                 <span className="inline-flex items-center justify-center gap-2 rounded-full px-6 h-12 border text-sm" style={{ borderColor: "#D8C7A0" }}>
                   <CalendarClock className="h-4 w-4" />
                   {T.schritt.termin}: {inSiebenTagen()}
@@ -1681,36 +1759,11 @@ export default function BeratungspraesentationHV({
                   {tx.schritt.kontextHinweis as string}
                 </p>
               )}
-              {/* Die Antwort auf die Abschlussfrage, für den Berater. Speichern am Investment kommt nach der Freigabe. */}
-              <div data-pdf-exclude className="mt-8 flex flex-wrap items-center gap-2 text-sm">
-                <span style={{ color: FARBE.hellGedaempft }}>{T.schritt.antwortKopf}:</span>
-                {T.schritt.antworten.map((ant) => (
-                  <button
-                    key={ant}
-                    type="button"
-            data-no-shrink
-                    aria-pressed={w("abschlussAntwort") === ant}
-                    onClick={() => setzeAntwort("abschlussAntwort", w("abschlussAntwort") === ant ? "" : ant)}
-                    className="rounded-full border px-3 py-1"
-                    style={
-                      w("abschlussAntwort") === ant
-                        ? { background: FARBE.gold, color: FARBE.aufGold, borderColor: FARBE.gold }
-                        : { borderColor: "rgba(243,247,245,0.35)" }
-                    }
-                  >
-                    {ant}
-                  </button>
-                ))}
-                {w("abschlussAntwort") === "Ja unter Bedingung" && (
-                  <input
-                    aria-label={T.schritt.bedingung}
-                    value={w("abschlussBedingung")}
-                    onChange={(e) => setzeAntwort("abschlussBedingung", e.target.value)}
-                    placeholder={T.schritt.bedingung}
-                    className="bos-feld flex-1 min-w-[12rem]"
-                  />
-                )}
-              </div>
+              {!objektLink && (
+                <p id="objektlink-fehlt" className="mt-3 text-xs" style={{ color: FARBE.hellGedaempft }}>
+                  {T.schritt.ohneObjektLink}
+                </p>
+              )}
               <Trainer id="schritt" dunkel hinweis={T.schritt.hinweis} />
             </Folie>
 
@@ -1725,8 +1778,38 @@ export default function BeratungspraesentationHV({
                 ))}
               </div>
               <Karte className="mt-4" rand={FARBE.gold}>
-                <p className="font-semibold">{T.termin.bereitlegen}</p>
-                <p className="mt-1 text-sm">{T.termin.bereitlegenText}</p>
+                <p className="text-sm leading-relaxed">{T.termin.portalSatz}</p>
+                {portalFreigegeben ? (
+                  <p data-testid="portal-freigegeben" className="mt-4 inline-flex items-center gap-2 font-semibold" style={{ color: FARBE.gruenText }}>
+                    <Check className="h-5 w-5" />
+                    {T.termin.portalFreigegeben}
+                  </p>
+                ) : (
+                  <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3">
+                    <button
+                      type="button"
+                      data-no-shrink
+                      onClick={portalFreigeben}
+                      disabled={!saUnterschrieben || portalFreigabeLaeuft}
+                      aria-describedby={saUnterschrieben ? undefined : "portal-vor-unterschrift"}
+                      data-ui="button"
+                      className="inline-flex items-center justify-center gap-2 rounded-full px-6 h-12 font-semibold bg-primary text-primary-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <KeyRound className="h-5 w-5" />
+                      {T.termin.portalKnopf}
+                    </button>
+                    {!saUnterschrieben && (
+                      <p id="portal-vor-unterschrift" className="text-xs" style={{ color: FARBE.grau }}>
+                        {T.termin.portalVorUnterschrift}
+                      </p>
+                    )}
+                  </div>
+                )}
+                {vorschau && vorschauPortal && (
+                  <p data-testid="vorschau-portal" className="mt-3 rounded-xl border border-dashed p-3 text-sm" style={{ borderColor: FARBE.gold }}>
+                    Vorschau: Im CRM geht jetzt die Einladung ins Kundenportal an den Kunden, nichts wurde versendet.
+                  </p>
+                )}
               </Karte>
             </Folie>
 

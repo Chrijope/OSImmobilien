@@ -415,10 +415,10 @@ export const OS_TEXTE = {
     text: "Dafür brauchen wir deine Selbstauskunft. Wir füllen sie jetzt gemeinsam aus, das dauert etwa 15 Minuten. Bis zur Objektpräsentation in einer Woche fehlen dann nur noch Ausweis und letzte Gehaltsabrechnung.",
     knopf: "Selbstauskunft jetzt gemeinsam ausfüllen",
     termin: "Objektvorstellung",
-    hinweis: "Gesprächshinweis: Frage stellen, dann schweigen. Antwort Ja, Nein oder Ja unter Bedingung im CRM festhalten.",
-    antwortKopf: "Antwort festhalten",
-    antworten: ["Ja", "Nein", "Ja unter Bedingung"],
-    bedingung: "Welche Bedingung?",
+    hinweis: "Gesprächshinweis: Frage stellen, dann schweigen.",
+    /** Öffnet den Buchungslink „Objektvorstellung“ aus den Einstellungen (profiles.objektlink). */
+    knopfObjekt: "Objektvorstellung buchen",
+    ohneObjektLink: "Kein Buchungslink für die Objektvorstellung in den Einstellungen hinterlegt",
   },
 
   termin: {
@@ -430,8 +430,10 @@ export const OS_TEXTE = {
       { titel: "Das Exposé", text: "Lage, Grundriss, Unterlagen, Kosten. Alles zum Nachlesen." },
       { titel: "Deine Entscheidung", text: "Passt es, reservierst du direkt. Kostenfrei." },
     ] as ReadonlyArray<{ titel: string; text: string }>,
-    bereitlegen: "Bitte bis zum Termin bereitlegen",
-    bereitlegenText: "Personalausweis (Vorder- und Rückseite) · letzte Gehaltsabrechnung · Upload einfach im Kundenportal",
+    portalSatz: "Nach der gemeinsam ausgefüllten und von dir unterschriebenen Selbstauskunft lädst du Personalausweis und letzte Gehaltsabrechnung im Kundenportal hoch.",
+    portalKnopf: "Kundenportal freigeben",
+    portalVorUnterschrift: "Erst nach der unterschriebenen Selbstauskunft",
+    portalFreigegeben: "Kundenportal ist freigegeben",
   },
 
   fuss: "Szenarien, keine Zusagen. Wir vermitteln Immobilien; Steuer-, Rechts- und Finanzierungsberatung leisten Steuerberater, Notare und Banken.",

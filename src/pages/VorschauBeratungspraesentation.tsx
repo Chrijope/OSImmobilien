@@ -10,6 +10,8 @@ import BeratungspraesentationHV, { type BeratungVorschau } from "./Beratungsprae
  *   erstgespraech: der Stand aus /vorschau/erstgespraech (Knopf „In der
  *   Präsentation ansehen“), über sessionStorage weitergereicht.
  * &variante=b zeigt die Vergleichsfassung B.
+ * &sa=1 tut so, als läge die unterschriebene Selbstauskunft vor (Abschnitt 16).
+ * Ohne Erstgespräch („leer“) fehlt der Objektvorstellungs-Link.
  */
 
 /** Erfundener Beispielpartner, keine echte Person. Ohne Foto, damit die Initialen zu sehen sind. */
@@ -19,6 +21,9 @@ const BEISPIEL_PARTNER: NonNullable<BeratungVorschau["ansprechpartner"]> = {
   telefon: "+49 30 123456789",
   email: "alex.beispiel@example.com",
 };
+
+/** Erfundener Buchungslink, führt nirgendwohin Echtes. */
+const BEISPIEL_OBJEKTLINK = "https://example.com/termin/alex-beispiel/objektvorstellung";
 
 export const VORSCHAU_ERSTGESPRAECH_SCHLUESSEL = "vorschau-erstgespraech-stand";
 
@@ -113,7 +118,8 @@ export default function VorschauBeratungspraesentation() {
   const beispiel = suche.get("beispiel") || "zusatzrente";
   const daten = beispiel === "erstgespraech" ? ausErstgespraech() : BEISPIELE[beispiel] ?? BEISPIELE.zusatzrente;
   const variante = suche.get("variante") === "b" ? "b" : "a";
-  const zusatz = variante === "b" ? "&variante=b" : "";
+  const saUnterschrieben = suche.get("sa") === "1";
+  const zusatz = `${variante === "b" ? "&variante=b" : ""}${saUnterschrieben ? "&sa=1" : ""}`;
   const schluessel = `vorschau-${beispiel}`;
 
   const zuruecksetzen = () => {
@@ -150,11 +156,18 @@ export default function VorschauBeratungspraesentation() {
               {label}
             </Link>
           ))}
+          <Link
+            to={`/vorschau/beratungspraesentation?beispiel=${beispiel}${variante === "b" ? "&variante=b" : ""}${saUnterschrieben ? "" : "&sa=1"}`}
+            reloadDocument
+            className={`rounded-full border px-3 py-1 ${saUnterschrieben ? "bg-[#1b2a22] text-white border-[#1b2a22]" : "border-[#1b2a22]/30 bg-white"}`}
+          >
+            Selbstauskunft unterschrieben
+          </Link>
           <Link to={`/vorschau/beratungspraesentation?beispiel=${beispiel}&trainer=1${zusatz}`} reloadDocument className="rounded-full border border-amber-500 bg-amber-50 px-3 py-1">
             mit Trainer-Modus
           </Link>
           <Link
-            to={`/vorschau/beratungspraesentation?beispiel=${beispiel}${variante === "b" ? "" : "&variante=b"}`}
+            to={`/vorschau/beratungspraesentation?beispiel=${beispiel}${variante === "b" ? "" : "&variante=b"}${saUnterschrieben ? "&sa=1" : ""}`}
             reloadDocument
             className="rounded-full border border-[#1b2a22] bg-white px-3 py-1 font-semibold"
           >
@@ -168,7 +181,13 @@ export default function VorschauBeratungspraesentation() {
           </Link>
         </div>
       </div>
-      <BeratungspraesentationHV key={`${schluessel}-${variante}`} vorschau={{ ...daten, schluessel, ansprechpartner: BEISPIEL_PARTNER }} variante={variante} />
+      <BeratungspraesentationHV key={`${schluessel}-${variante}`} vorschau={{
+          ...daten,
+          schluessel,
+          ansprechpartner: BEISPIEL_PARTNER,
+          objektlink: beispiel === "leer" ? undefined : BEISPIEL_OBJEKTLINK,
+          saUnterschrieben,
+        }} variante={variante} />
     </>
   );
 }

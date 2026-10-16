@@ -275,7 +275,8 @@ describe("A3: merge_kontakt_meta und Eigentum am Kontakt", () => {
       .sort();
     expect(zuweisungen).toEqual([
       // Nur der Zwischenspeicher nach der Freischaltung, die Datenbank schreibt invite-user.
-      "src/pages/KundenDetail.tsx",
+      // Seit dem 16.10.2026 in kundenportalFreischalten.ts (Kundenprofil und Beratungspräsentation).
+      "src/lib/kundenportalFreischalten.ts",
       "supabase/functions/invite-user/index.ts",
       "supabase/functions/invite-user/index.ts",
     ]);
