@@ -46,9 +46,9 @@ BEGIN
           jsonb_build_object('beispiel', true, 'pipelineStufe', 'faelligkeit'));
 
   -- Investment 1 legt der Trigger trg_auto_create_investment an; hier wird es befüllt.
-  SELECT id INTO _investment FROM public.investments WHERE kunde_id = _kontakt::text ORDER BY erstellt_am LIMIT 1;
+  SELECT id INTO _investment FROM public.investments WHERE kunde_id = _kontakt ORDER BY erstellt_am LIMIT 1;
   IF _investment IS NULL THEN
-    INSERT INTO public.investments (kunde_id, meta) VALUES (_kontakt::text, '{}'::jsonb) RETURNING id INTO _investment;
+    INSERT INTO public.investments (kunde_id, meta) VALUES (_kontakt, '{}'::jsonb) RETURNING id INTO _investment;
   END IF;
 
   UPDATE public.investments
