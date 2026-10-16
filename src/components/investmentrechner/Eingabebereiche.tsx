@@ -187,7 +187,19 @@ export function EingabeKunde({ input, result, setzeZahl, setzeText, aendere, her
         <Auswahlfeld
           label="Berechnungsmodus"
           value={input.taxCalculationMode}
-          onChange={(wert) => aendere({ taxCalculationMode: wert as Steuerberechnungsmodus })}
+          onChange={(wert) =>
+            aendere({
+              taxCalculationMode: wert as Steuerberechnungsmodus,
+              /*
+                Vertriebspaket, 16.10.2026: Der feste Satz startet beim
+                Grenzsteuersatz aus dem zvE statt pauschal bei 42 Prozent. Ohne
+                zvE bleibt der eingetragene Satz.
+              */
+              ...(wert === "manual" && result.combinedTaxableIncome > 0
+                ? { marginalTaxRate: Math.round(result.marginalTotalTaxRate * 1000) / 10 }
+                : {}),
+            })
+          }
           tooltip="ESt-Tarif 2026 rechnet die Steuer vor und nach dem Kauf nach dem gesetzlichen Tarif und ist der Normalfall. Manueller Grenzsteuersatz nimmt stattdessen einen festen Prozentsatz auf das Ergebnis der Immobilie, gröber, aber gut für schnelle Vergleichsrechnungen."
         >
           <option value="tariff">ESt-Tarif 2026</option>
@@ -206,7 +218,7 @@ export function EingabeKunde({ input, result, setzeZahl, setzeText, aendere, her
           value={input.marginalTaxRate}
           suffix="%"
           onChange={(wert) => setzeZahl("marginalTaxRate", wert)}
-          tooltip="Prozentsatz, mit dem das anteilige Ergebnis der Immobilie besteuert wird, üblich sind 42 Prozent im Spitzensatz. Die Steuerwirkung ist genau Ergebnis mal Satz, auch ohne eingetragenes Einkommen. Ein Verlust bringt also immer eine Ersparnis in dieser Höhe."
+          tooltip="Prozentsatz, mit dem das anteilige Ergebnis der Immobilie besteuert wird. Beim Umschalten steht hier der Grenzsteuersatz aus dem zvE, etwa 35 Prozent bei 60.000 Euro brutto ledig; 42 Prozent gelten erst ab rund 70.000 Euro zvE. Die Steuerwirkung ist genau Ergebnis mal Satz, auch ohne eingetragenes Einkommen. Ein Verlust bringt also immer eine Ersparnis in dieser Höhe."
           hint="Vereinfachte Rechnung mit festem Satz, wie in Investagon. Genauer ist die Rechnung mit dem zu versteuernden Einkommen."
         />
       )}

@@ -225,11 +225,16 @@ describe("Nachfass-Anruf nach dem Erstgespräch (15.10.2026)", () => {
     buchungen.push(buchung("erstgespraech", "Erstgespräch"));
     zeige();
     fireEvent.click(await screen.findByRole("button", { name: /Stattgefunden/ }));
-    await waitFor(() => expect(folgeaufgaben).toHaveLength(1));
+    // Dazu seit 16.10.2026 die Aufgabe, das Gespräch zusammenzufassen.
+    await waitFor(() => expect(folgeaufgaben).toHaveLength(2));
     expect(folgeaufgaben[0]).toMatchObject({
       titel: "Nach dem Erstgespräch: Kunden anrufen und Fragen klären",
       typ: "anruf",
       prioritaet: "hoch",
+      zugewiesenAn: "u-1",
+    });
+    expect(folgeaufgaben[1]).toMatchObject({
+      titel: "Gespräch zusammenfassen: Nachfass-Mail innerhalb von 2 Stunden senden",
       zugewiesenAn: "u-1",
     });
   });
@@ -239,7 +244,9 @@ describe("Nachfass-Anruf nach dem Erstgespräch (15.10.2026)", () => {
     zeige();
     fireEvent.click(await screen.findByRole("button", { name: /Stattgefunden/ }));
     await waitFor(() => expect(gesetzteStatus).toHaveLength(1));
-    expect(folgeaufgaben).toHaveLength(0);
+    // Kein Nachfass-Anruf, nur die Zusammenfassung (seit 16.10.2026).
+    await waitFor(() => expect(folgeaufgaben).toHaveLength(1));
+    expect(folgeaufgaben[0]).toMatchObject({ titel: "Gespräch zusammenfassen: Nachfass-Mail innerhalb von 2 Stunden senden" });
   });
 });
 

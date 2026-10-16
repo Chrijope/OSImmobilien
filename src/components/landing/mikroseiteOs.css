@@ -1,0 +1,555 @@
+/*
+ * Partner-Landingpage in der OS-CI (Umbau 16.10.2026): Waldgrün #1B2A22,
+ * Schwarz #121512, Papier #F4F1EA, Gold #CCAC05 nur als Akzent. Schriften
+ * und Farbwerte kommen aus `styles/beratung-os.css` (Klasse `.bos`).
+ *
+ * Dunkle und helle Abschnitte wechseln sich ab. Alles hängt an `.osm`,
+ * davor `.lp-theme`, damit die Regeln die allgemeinen Landingpage-Regeln
+ * aus index.css überstimmen. Maße in px, weil das CRM die Wurzelschrift auf
+ * 90 % setzt.
+ */
+.lp-theme .osm {
+  --osm-gold-hsl: 52 95% 41%;
+  --primary: 146 22% 14%;
+  --primary-foreground: 40 33% 94%;
+  --background: 40 33% 94%;
+  --foreground: 120 7% 11%;
+  --muted-foreground: 90 3% 37%;
+  background: var(--bos-papier);
+  color: var(--bos-tinte);
+  font-family: "BOS Outfit", -apple-system, "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  /* Nichts darf seitlich überstehen, auch nicht auf 375 px. */
+  overflow-x: clip;
+}
+.lp-theme .osm :is(h1, h2, h3, h4) {
+  font-family: "BOS Playfair", Georgia, "Times New Roman", serif;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+.lp-theme .osm :is(a, button, [tabindex="0"]):focus-visible {
+  outline: 3px solid var(--bos-gold);
+  outline-offset: 3px;
+}
+.lp-theme .osm .osm-wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+.lp-theme .osm .osm-kicker {
+  font-size: 12px;
+  color: var(--bos-gold-dunkel);
+  margin: 0 0 14px;
+}
+
+/* Kopf: Logo über dem dunklen Hero. */
+.lp-theme .osm .osm-kopf {
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  right: 0;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 26px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.lp-theme .osm .osm-kopf img {
+  width: 192px;
+  height: 40px;
+  object-fit: contain;
+  object-position: left;
+  flex-shrink: 0;
+}
+.lp-theme .osm .osm-sprache { flex-shrink: 0; }
+.lp-theme .osm { position: relative; }
+/* Schwebender Ansprechpartner und Dialoge der Seite im Waldgrün statt im CRM-Grün. */
+.lp-theme:has(> .osm) { --primary: 146 22% 14%; --primary-foreground: 40 33% 94%; --ring: 146 22% 14%; }
+
+/* Hero */
+.lp-theme .osm .osm-hero {
+  position: relative;
+  min-height: min(92vh, 860px);
+  display: flex;
+  align-items: flex-end;
+  color: var(--bos-papier);
+  background: var(--bos-schwarz);
+  isolation: isolate;
+}
+.lp-theme .osm .osm-hero-bild {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -2;
+}
+.lp-theme .osm .osm-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(180deg, rgba(18, 21, 18, .72) 0%, rgba(18, 21, 18, .2) 32%, rgba(18, 21, 18, .35) 55%, rgba(27, 42, 34, .94) 100%),
+    linear-gradient(90deg, rgba(18, 21, 18, .82) 0%, rgba(18, 21, 18, .45) 45%, rgba(18, 21, 18, 0) 75%);
+}
+.lp-theme .osm .osm-hero-inhalt {
+  width: 100%;
+  padding-top: 150px;
+  padding-bottom: 88px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 40px;
+}
+.lp-theme .osm .osm-hero .osm-kicker { color: var(--bos-gold); }
+.lp-theme .osm .osm-hero h1 {
+  /* !important, weil index.css am Handy jede h1 ohne text-Klasse verkleinert. */
+  font-size: clamp(38px, 6vw, 76px) !important;
+  line-height: 1.05 !important;
+  max-width: 15ch;
+  margin: 0;
+  color: var(--bos-papier);
+}
+.lp-theme .osm .osm-hero h1 em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--bos-gold);
+}
+.lp-theme .osm .osm-hero-text {
+  max-width: 54ch;
+  font-size: 19px;
+  line-height: 1.6;
+  margin: 24px 0 0;
+  color: rgba(244, 241, 234, .9);
+}
+.lp-theme .osm .osm-bildort {
+  position: absolute;
+  right: 32px;
+  bottom: 18px;
+  margin: 0;
+  font-size: 12px;
+  color: rgba(244, 241, 234, .6);
+}
+.lp-theme .osm .osm-portraetkarte {
+  width: 210px;
+  background: rgba(18, 21, 18, .6);
+  border: 1px solid rgba(204, 172, 5, .35);
+  border-radius: 14px;
+  overflow: hidden;
+  backdrop-filter: blur(6px);
+}
+.lp-theme .osm .osm-portraet {
+  display: block;
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+}
+.lp-theme .osm .osm-portraetkarte > div { padding: 14px 16px 16px; }
+.lp-theme .osm .osm-portraetkarte small {
+  display: block;
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--bos-gold);
+  margin-bottom: 4px;
+}
+.lp-theme .osm .osm-portraetkarte strong {
+  font-family: "BOS Playfair", Georgia, serif;
+  font-size: 19px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.lp-theme .osm .osm-initialen {
+  display: grid;
+  place-items: center;
+  background: var(--bos-gruen);
+  color: var(--bos-gold);
+  font-family: "BOS Playfair", Georgia, serif;
+  font-size: 64px;
+}
+
+/* Knöpfe */
+.lp-theme .osm .osm-knoepfe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+}
+.lp-theme .osm .osm-knopf {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 50px;
+  padding: 12px 26px;
+  border-radius: 999px;
+  font-family: "BOS Montserrat", "BOS Outfit", Arial, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color .2s, color .2s, border-color .2s;
+}
+.lp-theme .osm .osm-knopf svg { width: 18px; height: 18px; flex-shrink: 0; }
+.lp-theme .osm .osm-gold { background: var(--bos-gold); color: var(--bos-schwarz); border: 1px solid var(--bos-gold); }
+.lp-theme .osm .osm-gold:hover { background: #e0bf1a; }
+.lp-theme .osm .osm-rand { background: transparent; color: var(--bos-papier); border: 1px solid rgba(244, 241, 234, .45); }
+.lp-theme .osm .osm-rand:hover { border-color: var(--bos-gold); color: var(--bos-gold); }
+
+/* Abschnitte */
+.lp-theme .osm .osm-abschnitt { padding: 96px 0; scroll-margin-top: 20px; }
+.lp-theme .osm .osm-hell { background: var(--bos-papier); color: var(--bos-tinte); }
+.lp-theme .osm .osm-dunkel { background: var(--bos-schwarz); color: var(--bos-papier); }
+.lp-theme .osm .osm-gruen { background: var(--bos-gruen); color: var(--bos-papier); }
+.lp-theme .osm :is(.osm-dunkel, .osm-gruen) .osm-kicker { color: var(--bos-gold); }
+.lp-theme .osm .osm-titelblock { max-width: 760px; margin-bottom: 44px; }
+.lp-theme .osm .osm-abschnitt h2 {
+  font-size: clamp(30px, 4.2vw, 48px) !important;
+  line-height: 1.12 !important;
+  margin: 0;
+}
+.lp-theme .osm .osm-intro {
+  font-size: 18px;
+  line-height: 1.65;
+  margin: 18px 0 0;
+  opacity: .85;
+}
+.lp-theme .osm .osm-karte {
+  border-radius: 14px;
+  padding: 28px;
+  background: #fff;
+  border: 1px solid var(--bos-linie);
+}
+.lp-theme .osm :is(.osm-dunkel, .osm-gruen) .osm-karte {
+  background: rgba(244, 241, 234, .05);
+  border-color: rgba(244, 241, 234, .14);
+}
+.lp-theme .osm .osm-karte h3 { font-size: 23px; line-height: 1.25; margin: 0 0 10px; }
+.lp-theme .osm .osm-karte p { margin: 0; line-height: 1.65; opacity: .88; }
+.lp-theme .osm .osm-drei { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.lp-theme .osm .osm-zwei { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.lp-theme .osm .osm-nummer {
+  display: block;
+  font-family: "BOS Playfair", Georgia, serif;
+  font-size: 34px;
+  color: var(--bos-gold-dunkel);
+  margin-bottom: 12px;
+}
+.lp-theme .osm .osm-schluss {
+  max-width: 760px;
+  margin: 40px 0 0;
+  font-size: 19px;
+  line-height: 1.6;
+  border-left: 3px solid var(--bos-gold);
+  padding-left: 20px;
+}
+.lp-theme .osm .osm-fussnote { margin: 28px 0 0; font-size: 13px; line-height: 1.6; opacity: .7; max-width: 900px; }
+
+/* Konzepte */
+.lp-theme .osm .osm-konzept { display: flex; flex-direction: column; gap: 6px; }
+.lp-theme .osm .osm-konzept h3 { font-size: 30px; }
+.lp-theme .osm .osm-marke {
+  align-self: flex-start;
+  font-family: "BOS Montserrat", "BOS Outfit", Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--bos-gold);
+  margin-bottom: 10px;
+}
+.lp-theme .osm .osm-konzept-objekte {
+  margin-top: auto !important;
+  padding-top: 16px;
+  border-top: 1px solid rgba(244, 241, 234, .14);
+  font-size: 14px;
+  color: var(--bos-gold);
+  opacity: 1 !important;
+}
+
+/* Objekte mit Diashow */
+.lp-theme .osm .osm-objekte { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+.lp-theme .osm .osm-objekt {
+  background: #fff;
+  border: 1px solid var(--bos-linie);
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.lp-theme .osm .osm-objekt-text { padding: 22px 24px 26px; display: flex; flex-direction: column; flex: 1; }
+.lp-theme .osm .osm-objekt .osm-marke {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: var(--bos-gruen);
+  color: var(--bos-gold);
+  margin-bottom: 14px;
+}
+.lp-theme .osm .osm-objekt .osm-marke-steuer { background: var(--bos-schwarz); }
+.lp-theme .osm .osm-ort { margin: 0; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--bos-grau); }
+.lp-theme .osm .osm-objekt h3 { font-size: 26px; margin: 4px 0 12px; }
+.lp-theme .osm .osm-objekt ul { margin: 0 0 16px; padding: 0; list-style: none; }
+.lp-theme .osm .osm-objekt li { padding: 6px 0; border-bottom: 1px solid var(--bos-linie); font-size: 15px; }
+.lp-theme .osm .osm-preis {
+  margin: auto 0 0;
+  font-family: "BOS Playfair", Georgia, serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--bos-gruen);
+}
+.lp-theme .osm .osm-diashow { position: relative; aspect-ratio: 4 / 3; background: var(--bos-gruen); overflow: hidden; }
+.lp-theme .osm .osm-diashow img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity .8s ease;
+}
+.lp-theme .osm .osm-diashow img.an { opacity: 1; }
+.lp-theme .osm .osm-pfeil {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(18, 21, 18, .55);
+  color: var(--bos-papier);
+  border: 0;
+  cursor: pointer;
+}
+.lp-theme .osm .osm-pfeil svg { width: 20px; height: 20px; }
+.lp-theme .osm .osm-pfeil.links { left: 10px; }
+.lp-theme .osm .osm-pfeil.rechts { right: 10px; }
+.lp-theme .osm .osm-punkte { position: absolute; left: 0; right: 0; bottom: 6px; display: flex; justify-content: center; }
+.lp-theme .osm .osm-punkte button { width: 28px; height: 28px; display: grid; place-items: center; background: none; border: 0; cursor: pointer; }
+.lp-theme .osm .osm-punkte span { width: 8px; height: 8px; border-radius: 999px; background: rgba(244, 241, 234, .55); }
+.lp-theme .osm .osm-punkte button[aria-current="true"] span { background: var(--bos-gold); width: 20px; }
+@media (prefers-reduced-motion: reduce) {
+  .lp-theme .osm .osm-diashow img { transition: none; }
+}
+
+/* Musterrechnung */
+.lp-theme .osm .osm-rechnung-raster { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.lp-theme .osm .osm-rechnung {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(244, 241, 234, .04);
+  border: 1px solid rgba(244, 241, 234, .14);
+  border-radius: 14px;
+  overflow: hidden;
+  font-size: 16px;
+}
+.lp-theme .osm .osm-rechnung th {
+  text-align: left;
+  padding: 16px 22px;
+  font-family: "BOS Montserrat", "BOS Outfit", Arial, sans-serif;
+  font-size: 12px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--bos-gold);
+  background: transparent;
+  border-bottom: 1px solid rgba(244, 241, 234, .14);
+}
+.lp-theme .osm .osm-rechnung td { padding: 12px 22px; border-bottom: 1px solid rgba(244, 241, 234, .08); }
+.lp-theme .osm .osm-rechnung td:last-child { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.lp-theme .osm .osm-rechnung .plus td:last-child { color: #9ec6a8; }
+.lp-theme .osm .osm-rechnung .minus td:last-child { color: #e2a091; }
+.lp-theme .osm .osm-rechnung .summe td { font-weight: 600; border-top: 1px solid rgba(244, 241, 234, .3); }
+.lp-theme .osm .osm-rechnung .ergebnis td { font-weight: 600; font-size: 18px; background: rgba(204, 172, 5, .14); color: var(--bos-gold); }
+.lp-theme .osm .osm-rechnung .klein td { font-size: 14px; opacity: .7; border-bottom: 0; }
+.lp-theme .osm .osm-kennzahlen { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.lp-theme .osm .osm-kennzahl {
+  border: 1px solid rgba(244, 241, 234, .14);
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.lp-theme .osm .osm-kennzahl:first-child { grid-column: 1 / -1; border-color: rgba(204, 172, 5, .5); }
+.lp-theme .osm .osm-kennzahl b { font-size: 30px; font-weight: 600; color: var(--bos-gold); }
+.lp-theme .osm .osm-kennzahl span { font-size: 14px; line-height: 1.5; opacity: .85; }
+
+/* Warum */
+.lp-theme .osm .osm-gruppe { background: var(--bos-gruen) !important; color: var(--bos-papier); border-color: var(--bos-gruen) !important; }
+.lp-theme .osm .osm-gruppe h3 { color: var(--bos-gold); }
+
+/* Referenzen */
+.lp-theme .osm .osm-galerie { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.lp-theme .osm .osm-galerie figure { position: relative; margin: 0; border-radius: 12px; overflow: hidden; aspect-ratio: 4 / 3; }
+.lp-theme .osm .osm-galerie img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.lp-theme .osm .osm-galerie figcaption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 28px 16px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  background: linear-gradient(180deg, rgba(18, 21, 18, 0), rgba(18, 21, 18, .8));
+}
+
+/* Prozess */
+.lp-theme .osm .osm-schritte {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.lp-theme .osm .osm-schritte li {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  background: #fff;
+  border: 1px solid var(--bos-linie);
+  border-radius: 12px;
+  padding: 16px;
+}
+.lp-theme .osm .osm-schritt-nr {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: var(--bos-gruen);
+  color: var(--bos-gold);
+  font-family: "BOS Montserrat", "BOS Outfit", Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+}
+.lp-theme .osm .osm-schritte b { display: block; font-size: 16px; margin-bottom: 2px; }
+.lp-theme .osm .osm-schritte span:not(.osm-schritt-nr) { display: block; font-size: 14px; line-height: 1.45; color: var(--bos-grau); }
+
+/* Kontakt */
+.lp-theme .osm .osm-kontakt { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 48px; align-items: center; }
+.lp-theme .osm .osm-partner {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  padding: 22px;
+  border-radius: 16px;
+  background: rgba(244, 241, 234, .06);
+  border: 1px solid rgba(204, 172, 5, .35);
+  min-width: 0;
+}
+.lp-theme .osm .osm-partner-bild { width: 112px; height: 136px; border-radius: 12px; object-fit: cover; flex-shrink: 0; font-size: 40px; }
+.lp-theme .osm .osm-partner-text { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.lp-theme .osm .osm-partner-text strong { font-size: 24px; font-weight: 600; overflow-wrap: anywhere; }
+.lp-theme .osm .osm-partner-text > span { font-size: 14px; opacity: .75; }
+.lp-theme .osm .osm-partner-text a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--bos-papier);
+  text-decoration: none;
+  font-size: 15px;
+  overflow-wrap: anywhere;
+  min-height: 32px;
+}
+.lp-theme .osm .osm-partner-text a:hover { color: var(--bos-gold); }
+.lp-theme .osm .osm-partner-text svg { width: 16px; height: 16px; color: var(--bos-gold); flex-shrink: 0; }
+
+/* Fuß */
+.lp-theme .osm .osm-fuss { background: var(--bos-schwarz); color: rgba(244, 241, 234, .75); padding: 56px 0 32px; font-size: 14px; }
+.lp-theme .osm .osm-fuss-oben { display: flex; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
+.lp-theme .osm .osm-fuss-oben img { width: 168px; height: 35px; object-fit: contain; object-position: left; }
+.lp-theme .osm .osm-fuss-oben p { max-width: 42ch; margin: 14px 0 0; line-height: 1.6; }
+.lp-theme .osm .osm-fuss nav { display: flex; flex-direction: column; gap: 10px; }
+.lp-theme .osm .osm-fuss nav a,
+.lp-theme .osm .osm-fuss-link { color: rgba(244, 241, 234, .85); text-decoration: none; font-size: 14px; text-align: left; }
+.lp-theme .osm .osm-fuss nav a:hover,
+.lp-theme .osm .osm-fuss-link:hover { color: var(--bos-gold); }
+.lp-theme .osm .osm-fuss-pixel { margin-top: 28px; max-width: 760px; }
+.lp-theme .osm .osm-fuss-rechte { margin: 28px 0 0; padding-top: 18px; border-top: 1px solid rgba(244, 241, 234, .1); font-size: 12px; }
+
+/* Die behaltenen Abschnitte (Investorenprofile, Leistungen) in der CI. */
+.lp-theme .osm .osm-alt section { padding-top: 96px !important; padding-bottom: 96px !important; }
+.lp-theme .osm .osm-alt .w-8.h-1,
+.lp-theme .osm .osm-alt .w-4.h-1 { display: none; }
+.lp-theme .osm .osm-alt h2 { font-weight: 600 !important; letter-spacing: -0.01em !important; }
+.lp-theme .osm .osm-alt .lp-text-gradient {
+  background: none !important;
+  color: var(--bos-gold-dunkel) !important;
+  -webkit-text-fill-color: var(--bos-gold-dunkel) !important;
+}
+.lp-theme .osm .osm-hell.osm-alt section { background: var(--bos-papier); }
+.lp-theme .osm .osm-alt .investor-profile-card { border-color: var(--bos-linie) !important; border-radius: 14px !important; display: flex; flex-direction: column; }
+.lp-theme .osm .osm-alt .investor-profile-card > img,
+.lp-theme .osm .osm-alt .investor-profile-card > .absolute { display: none; }
+.lp-theme .osm .osm-alt .investor-profile-card > p:last-child { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--bos-linie); font-style: normal; }
+
+.lp-theme .osm .osm-dunkel.osm-alt {
+  --background: 120 8% 8%;
+  --foreground: 40 33% 94%;
+  --muted-foreground: 40 12% 72%;
+  --primary: var(--osm-gold-hsl);
+}
+.lp-theme .osm .leistung-card {
+  height: 100%;
+  overflow: hidden;
+  border-radius: 14px;
+  background: rgba(244, 241, 234, .05);
+  border: 1px solid rgba(244, 241, 234, .12);
+  color: var(--bos-papier);
+}
+.lp-theme .osm .leistung-card > img { display: block; width: 100%; height: 150px; object-fit: cover; }
+.lp-theme .osm .leistung-card-large > img { height: 325px; }
+.lp-theme .osm .leistung-copy { padding: 24px 26px 26px; }
+.lp-theme .osm .leistung-eyebrow { color: var(--bos-gold); font-size: 12px; text-transform: uppercase; letter-spacing: .14em; margin-bottom: 10px; }
+.lp-theme .osm .leistung-card h3 { font-size: 23px; line-height: 1.25; }
+.lp-theme .osm .leistung-card-large h3 { font-size: 30px; }
+.lp-theme .osm .leistung-card p { font-size: 15px; margin-top: 10px; color: rgba(244, 241, 234, .75); }
+
+/* Tablet */
+@media (max-width: 1023px) {
+  .lp-theme .osm .osm-objekte { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .lp-theme .osm .osm-schritte { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lp-theme .osm .osm-rechnung-raster,
+  .lp-theme .osm .osm-kontakt { grid-template-columns: minmax(0, 1fr); }
+  .lp-theme .osm .osm-drei { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Telefon */
+@media (max-width: 767px) {
+  .lp-theme .osm .osm-wrap,
+  .lp-theme .osm .osm-kopf { padding-left: 16px; padding-right: 16px; }
+  .lp-theme .osm .osm-kopf { padding-top: 18px; }
+  .lp-theme .osm .osm-kopf img { width: 150px; height: 32px; }
+  .lp-theme .osm .osm-abschnitt,
+  .lp-theme .osm .osm-alt section { padding-top: 64px !important; padding-bottom: 64px !important; }
+  .lp-theme .osm .osm-hero { min-height: 0; }
+  .lp-theme .osm .osm-hero-inhalt { grid-template-columns: minmax(0, 1fr); padding-top: 120px; padding-bottom: 64px; gap: 28px; }
+  .lp-theme .osm .osm-hero h1 { overflow-wrap: break-word; }
+  .lp-theme .osm .osm-hero-text { font-size: 17px; }
+  .lp-theme .osm .osm-knoepfe { flex-direction: column; align-items: stretch; }
+  .lp-theme .osm .osm-knopf { width: 100%; text-align: center; }
+  .lp-theme .osm .osm-portraetkarte { width: 100%; display: flex; align-items: center; }
+  .lp-theme .osm .osm-portraet { width: 84px; height: 100px; flex-shrink: 0; }
+  .lp-theme .osm .osm-portraetkarte .osm-initialen { font-size: 32px; }
+  .lp-theme .osm .osm-bildort { right: 16px; bottom: 10px; font-size: 11px; }
+  .lp-theme .osm .osm-drei,
+  .lp-theme .osm .osm-zwei,
+  .lp-theme .osm .osm-objekte,
+  .lp-theme .osm .osm-schritte,
+  .lp-theme .osm .osm-kennzahlen { grid-template-columns: minmax(0, 1fr); }
+  .lp-theme .osm .osm-galerie { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+  .lp-theme .osm .osm-galerie figcaption { font-size: 12px; padding: 22px 10px 8px; }
+  .lp-theme .osm .osm-karte { padding: 22px; }
+  .lp-theme .osm .osm-rechnung { font-size: 14px; }
+  .lp-theme .osm .osm-rechnung td,
+  .lp-theme .osm .osm-rechnung th { padding-left: 14px; padding-right: 14px; }
+  .lp-theme .osm .osm-partner { flex-direction: column; align-items: flex-start; }
+  .lp-theme .osm .leistung-card > img,
+  .lp-theme .osm .leistung-card-large > img { height: auto; aspect-ratio: 1.8; }
+}

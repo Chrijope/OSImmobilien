@@ -31,6 +31,7 @@ import { fortschrittsRang, istEndzustand } from "./pipelineStufen";
 import { lokalesDatum, NOSHOW_TITEL, schliesseOffeneTermineZumZeitpunkt, setzeNoShowStufe } from "./terminErgebnis";
 import { addProzessAufgabe } from "./prozessAufgabe";
 import { legeNachfassNachErstgespraechAn, NACHFASS_FEHLER_TEXT, NACHFASS_FEHLER_TITEL } from "./nachfassNachErstgespraech";
+import { legeZusammenfassungAn } from "./nachfassplan";
 
 export type FesteGespraechsArt = "Erstgespräch" | "Beratungsgespräch";
 
@@ -207,6 +208,17 @@ export async function festerTerminStattgefunden(t: FesterTerminAngabe, ctx: Fest
       erstelltVonName: ctx.userName,
     });
     if (nachfass === "fehler") ctx.melde({ title: NACHFASS_FEHLER_TITEL, description: NACHFASS_FEHLER_TEXT, variant: "destructive" });
+  }
+  // Nachfassplan: nach Erst- und Beratungsgespraech zusammenfassen.
+  if (art) {
+    await legeZusammenfassungAn({
+      kontaktId: ctx.kunde.id,
+      kundeName: kundenName(ctx.kunde),
+      art: art === "Erstgespräch" ? "erstgespraech" : "beratung",
+      beginn: new Date(`${t.datum}T${(t.uhrzeit || "10:00").slice(0, 5)}:00`),
+      rueckfallZustaendig: ctx.kunde.zustaendig_id || undefined,
+      erstelltVonName: ctx.userName,
+    });
   }
   return true;
 }

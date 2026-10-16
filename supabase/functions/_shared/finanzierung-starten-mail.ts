@@ -8,10 +8,14 @@
  * Function, geprueft werden sie in einem Test unter `src`.
  */
 
-/** Der Betreff, den der Finanzierungspartner im Postfach sieht. */
-export function finanzierungBetreff(kundeName?: string): string {
-  const name = (kundeName || '').trim()
-  return name ? `Finanzierung starten: ${name}` : 'Eine neue Finanzierung kann starten'
+/**
+ * Der Betreff, den der Finanzierungspartner im Postfach sieht.
+ *
+ * Seit dem 16.10.2026 ohne Kundennamen: Der Betreff ist auf jedem
+ * Sperrbildschirm lesbar, der Name steht in der Mail selbst.
+ */
+export function finanzierungBetreff(): string {
+  return 'Reservierung unterschrieben: Finanzierung kann starten'
 }
 
 /**

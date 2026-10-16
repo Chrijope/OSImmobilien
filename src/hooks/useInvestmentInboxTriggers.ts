@@ -7,10 +7,13 @@ import {
   fehlendeMindestunterlagen, mindestunterlagenText, objektvorstellungSteht, STUFEN_VOR_OBJEKTVORSTELLUNG, UNTERLAGEN_FEHLEN_TITEL,
 } from "@/lib/mindestunterlagen";
 import { stelleBesichtigungsAufgabeSicher } from "@/lib/stufenTerminAktionen";
+import {
+  BP_ENDE_META, beratungsNachfassSchluessel, beratungsNachfassTexte, nachfassNachBeratung, offenNachBeratung,
+} from "@/lib/nachfassplan";
 import { getKontakte } from "@/lib/kundenStore";
 import { getUserSetting, setUserSetting } from "@/lib/userSettingsCache";
 import { isTestAccount } from "@/lib/dbStoreHelper";
-import { cacheGet, wennTabellenGeladen } from "@/lib/dataCache";
+import { cacheGet, isTableLoaded, wennTabellenGeladen } from "@/lib/dataCache";
 import { pflichtBonitaetDocs } from "@/lib/bonitaetDocs";
 import { getFinanzierungDocStatus } from "@/lib/finanzierungStore";
 import { kontaktBelongsToUser } from "@/lib/kontaktOwnership";
@@ -48,6 +51,20 @@ function naechsteObjektvorstellung(kundeId: string, jetzt: number): { ms: number
   }
   return treffer;
 }
+/** Steht fuer den Kunden ein offener Termin in der Zukunft? */
+function hatKuenftigenTermin(kundeId: string, jetzt: number): boolean {
+  return getAlleTermine().some((t) => {
+    if (t.kundeId !== kundeId || t.erledigtAm || !t.faelligAm) return false;
+    const ms = new Date(`${t.faelligAm.slice(0, 10)}T${(t.uhrzeit || "10:00").slice(0, 5)}:00`).getTime();
+    return Number.isFinite(ms) && ms > jetzt;
+  });
+}
+
+function getKontaktMeta(kundeId: string): Record<string, any> {
+  const row = (cacheGet("kontakte") || []).find((r: any) => r.id === kundeId);
+  return (row?.meta as Record<string, any>) || {};
+}
+
 /** Der Titel seit 15.10.2026. Der alte wird beim Aufräumen weiter erkannt. */
 const INAKTIV_TITEL = "Seit 14 Tagen inaktiv: Kunden erneut kontaktieren";
 const RE_ENGAGEMENT_TITEL = "Re-Engagement (14 Tage inaktiv)";
@@ -372,6 +389,44 @@ export function useInvestmentInboxTriggers(userRole?: string, userName?: string,
               erstelltVonName: userName,
               ausloeserSchluessel: `unterlagen_vor_objektvorstellung:${inv.id}:${termin.tag}`,
             }, userId).then((ok) => { if (ok) markSent(inv.id, merk); });
+          }
+        }
+
+        /*
+         * Nachfassplan nach der Beratungspraesentation (16.10.2026,
+         * `nachfassplan.ts`): nach 24 Stunden fehlen Selbstauskunft oder
+         * Unterlagen, dann erinnern; nach 48 Stunden ohne Reaktion anrufen.
+         * Je Kunde und Gespraech einmal, auch bei mehreren Investments.
+         */
+        const bpEnde = String(getKontaktMeta(inv.kontaktId)[BP_ENDE_META] || "");
+        if (isVp && bpEnde) {
+          const offen = offenNachBeratung(meta);
+          const faellig = nachfassNachBeratung({
+            endeMs: new Date(bpEnde).getTime(),
+            jetztMs: now,
+            stufe: stage,
+            offen,
+            // Ohne geladene Termine lieber kein Anruf-Hinweis als ein falscher.
+            hatKuenftigenTermin: !isTableLoaded("aktivitaeten") || hatKuenftigenTermin(inv.kontaktId, now),
+          });
+          for (const art of faellig) {
+            const schluessel = beratungsNachfassSchluessel(art, inv.kontaktId, bpEnde);
+            if (angelegtImLauf.has(schluessel) || wasSent(inv.kontaktId, schluessel)) continue;
+            angelegtImLauf.add(schluessel);
+            const texte = beratungsNachfassTexte(art, kundeName, offen);
+            void addProzessAufgabe({
+              titel: texte.titel,
+              beschreibung: texte.beschreibung,
+              prioritaet: "hoch",
+              typ: texte.typ,
+              faellig_am: todayISO(),
+              uhrzeit: "09:00",
+              kundeId: inv.kontaktId,
+              kundeName,
+              investmentId: inv.id,
+              erstelltVonName: userName,
+              ausloeserSchluessel: schluessel,
+            }, userId).then((ok) => { if (ok) markSent(inv.kontaktId, schluessel); });
           }
         }
 

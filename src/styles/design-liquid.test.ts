@@ -432,12 +432,11 @@ describe("Liquid Glass auf der Berater-Mikroseite", () => {
   const mikroRegelwerk = mikroCss.replace(/\/\*[\s\S]*?\*\//g, "");
   const mikro = regeln(mikroRegelwerk);
 
-  it("wird von der Mikroseite geladen, nach der Datei, die sie ueberstimmt", () => {
+  it("wird seit dem Umbau auf die OS-CI (16.10.2026) nicht mehr geladen, die Seite ist bewusst deckend", () => {
     const inhalt = readFileSync(resolve(landing, "BeraterMicrositeContent.tsx"), "utf8");
-    const alt = inhalt.indexOf('import "./beraterMicroseite.css"');
-    const glas = inhalt.indexOf('import "./beraterMicroseiteLiquid.css"');
-    expect(alt).toBeGreaterThan(-1);
-    expect(glas).toBeGreaterThan(alt);
+    expect(inhalt).not.toContain('import "./beraterMicroseite.css"');
+    expect(inhalt).not.toContain('import "./beraterMicroseiteLiquid.css"');
+    expect(inhalt).toContain('import "./mikroseiteOs.css"');
   });
 
   it("haengt jede Regel an Liquid Glass und entscheidet ausdruecklich zwischen hell und dunkel", () => {

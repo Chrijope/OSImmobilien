@@ -132,6 +132,7 @@ import { addProzessAufgabe } from "@/lib/prozessAufgabe";
 import { speichereMeeting } from "@/lib/meetingSpeichern";
 import { TERMINE_AKTUALISIERT_EVENT } from "@/lib/terminAnzeige";
 import { istErstgespraech, legeNachfassNachErstgespraechAn, NACHFASS_FEHLER_TEXT, NACHFASS_FEHLER_TITEL } from "@/lib/nachfassNachErstgespraech";
+import { DREI_VERSUCHE, DREI_VERSUCHE_TITEL, dreiVersucheSchluessel, fehlversucheSeitGespraech, gespraechsArt, legeZusammenfassungAn } from "@/lib/nachfassplan";
 import { darfEintragEntfernen, darfNotizBearbeiten, darfVorgangBearbeiten, istSystemEintrag, LEITUNG_ROLLEN, type Rechtekontext } from "@/lib/aktivitaetRechte";
 import {
   alleFormulierungen,
@@ -248,6 +249,8 @@ import {
 import { FinanzierungCard } from "@/components/finanzierung/FinanzierungCard";
 import { TerminseiteKnopf } from "@/components/kunden/TerminseiteKnopf";
 import { EigenfinanzierungSection } from "@/components/finanzierung/EigenfinanzierungSection";
+import { FinanzierungspartnerKarte } from "@/components/finanzierung/FinanzierungspartnerKarte";
+import { darfFinanzierungspartnerMelden } from "../../supabase/functions/_shared/finanzierung-partner-benachrichtigen";
 import { getFinanzierung } from "@/lib/finanzierungStore";
 import { meldeBonitaetFreigabe } from "@/lib/bonitaetFreigabeMeldung";
 import { finanzierungIstFrei } from "@/lib/finanzierungFreigabe";
@@ -3485,8 +3488,30 @@ export default function KundenDetail() {
         nichtErreichtCount: count,
         setter: kunde?.setter || (isSetterinRole ? user.name : undefined),
       });
+      /*
+       * Nachfassplan (16.10.2026): Der dritte Fehlversuch seit dem letzten
+       * Gespräch bringt statt „morgen erneut anrufen“ die Aufgabe, die letzte
+       * Nachricht zu senden und den Vorgang zu pausieren. Gezählt vor dem
+       * Vermerk unten, deshalb plus eins.
+       */
+      const fehlversuche = fehlversucheSeitGespraech(getAktivitaeten(id));
+      const dreiVersuche = fehlversuche.anzahl + 1 === DREI_VERSUCHE;
       addAktivitaet({ kundeId: id, art: "anruf", beschreibung: `Kontaktversuch ${count} – Nicht erreicht (Stufe „${effStufe}"). Keine Wartezeit, bitte manuell nachfassen.`, von: user.name });
-      if (!opts.ohneNachfassAufgabe) {
+      if (dreiVersuche) {
+        void addProzessAufgabe({
+          titel: DREI_VERSUCHE_TITEL,
+          beschreibung: `${`${kunde.vorname} ${kunde.nachname}`.trim()} ist seit dem letzten Gespräch dreimal nicht erreicht worden. Bitte die letzte Nachricht senden (Vorlage „Letzte Nachricht“) und den Vorgang pausieren.`,
+          prioritaet: "hoch",
+          typ: "follow_up",
+          faellig_am: lokalesDatum(new Date()),
+          uhrzeit: "10:00",
+          kundeId: id,
+          kundeName: `${kunde.vorname} ${kunde.nachname}`.trim(),
+          erstelltVonName: user.name,
+          ausloeserSchluessel: dreiVersucheSchluessel(id, fehlversuche.seit),
+        }, kunde.zustaendig_id || undefined);
+      }
+      if (!opts.ohneNachfassAufgabe && !dreiVersuche) {
         try {
           void addProzessAufgabe({
             titel: "Nicht erreicht: morgen erneut anrufen",
@@ -3509,9 +3534,11 @@ export default function KundenDetail() {
       reloadKunde();
       toast({
         title: "Nicht erreicht protokolliert",
-        description: opts.ohneNachfassAufgabe
-          ? "Deine Aufgabe steht in der Inbox."
-          : "Aufgabe „Nicht erreicht: morgen erneut anrufen“ wurde in der Inbox erstellt.",
+        description: dreiVersuche
+          ? "Drei Versuche ohne Erfolg: Aufgabe „letzte Nachricht senden und Vorgang pausieren“ wurde erstellt."
+          : opts.ohneNachfassAufgabe
+            ? "Deine Aufgabe steht in der Inbox."
+            : "Aufgabe „Nicht erreicht: morgen erneut anrufen“ wurde in der Inbox erstellt.",
       });
       return;
     }
@@ -5892,6 +5919,17 @@ export default function KundenDetail() {
           erstelltVonName: user.name,
         });
         if (nachfass === "fehler") toast({ title: NACHFASS_FEHLER_TITEL, description: NACHFASS_FEHLER_TEXT, variant: "destructive" });
+      }
+      const art = kunde ? gespraechsArt(aktion.titel) : null;
+      if (kunde && art) {
+        await legeZusammenfassungAn({
+          kontaktId: id,
+          kundeName: `${kunde.vorname || ""} ${kunde.nachname || ""}`.trim() || "Kunde",
+          art,
+          beginn: new Date(aktion.zeitpunkt),
+          rueckfallZustaendig: kunde.zustaendig_id || undefined,
+          erstelltVonName: user.name,
+        });
       }
       return;
     }
@@ -11113,6 +11151,23 @@ export default function KundenDetail() {
                   />
                 ) : null}
               >
+              {/*
+                Finanzierungspartner waehlen und benachrichtigen, dazu die
+                Unterlagen als ZIP (Inhaber, 16.10.2026). Waehlen nur interne
+                Rollen mit Bearbeitungsrecht, Vertriebspartner nur beim
+                eigenen Kunden; der Finanzierungspartner sieht die Karte lesend.
+              */}
+              <FinanzierungspartnerKarte
+                investmentId={inv.id}
+                kontaktId={id || ""}
+                rvSigned={getRvSigned(inv.id)}
+                darfBearbeiten={darfFinanzierungspartnerMelden(user.role) && (user.role !== "vertriebspartner" || darfKundeBearbeiten)}
+                docFileUrls={docFileUrls}
+                objektId={inv.objektId}
+                wohnungId={inv.wohnungId}
+                objektTitel={inv.objektTitel}
+                weNr={inv.weNr}
+              />
               {(() => {
                 const m = inv.meta || {};
                 // Nur zu einem eingetragenen Objekt. Ohne Objekt zeigte der

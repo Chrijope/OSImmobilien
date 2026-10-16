@@ -14,6 +14,7 @@ import {
   fuenfzehnProzentGrenze,
   zinsrisiko,
 } from "@/lib/investmentrechner/bankgespraech";
+import { regelAfa, stresstest, wertszenarien } from "@/lib/investmentrechner/rechenstandards";
 import { sanierungenBereinigt, type UnterlagenDaten } from "@/lib/investmentrechner/unterlagenAuslesen";
 import {
   ENERGIEKLASSEN,
@@ -837,6 +838,96 @@ export function Kennzahlen({ result, input }: { result: InvestmentErgebnis; inpu
         )}
         rechenweg={wege.selbstEingezahlt}
       />
+    </div>
+  );
+}
+
+/**
+ * Rechenstandards aus dem Vertriebspaket, seit dem 16.10.2026: Belastung vor
+ * und nach Steuer, Regel-AfA neben erhöhter AfA, Stresstest und
+ * Wertentwicklung 0/1/2 %. Nur Anzeige, siehe rechenstandards.ts.
+ */
+export function Rechenstandards({ input, result }: { input: InvestmentEingabe; result: InvestmentErgebnis }) {
+  const erstes = result.years[0];
+  if (!erstes) return null;
+  const afa = regelAfa(input);
+  const faelle = stresstest(input, result);
+  const wert = wertszenarien(input);
+  const belastung = (betrag: number) => `${formatEuroCent(betrag)} im Monat`;
+  const regelErstes = afa.mitRegelAfa?.years[0];
+
+  const bloecke: { titel: string; zeilen: [string, string][]; hinweis?: string }[] = [
+    {
+      titel: `Belastung ${erstes.year}`,
+      zeilen: [
+        ["Zuzahlung vor Steuer", belastung(-erstes.cashflowBeforeTax / 12)],
+        ["Zuzahlung nach Steuer", belastung(-erstes.cashflowAfterTax / 12)],
+      ],
+      hinweis: "Negativ heißt: Überschuss statt Zuzahlung.",
+    },
+    {
+      titel: "AfA",
+      zeilen: [
+        [
+          "Eingestellt",
+          `${formatZahl(input.buildingDepreciationRate, "de", 2)} % ${input.depreciationMethod === "declining" ? "degressiv" : "linear"}`,
+        ],
+        ["Regel-AfA", `${formatZahl(afa.regel.satz, "de", 1)} % linear (${afa.regel.grund}, ${afa.regel.paragraf})`],
+        ...(afa.mitRegelAfa && regelErstes
+          ? ([
+              [`Zuzahlung nach Steuer ${regelErstes.year} mit Regel-AfA`, belastung(-regelErstes.cashflowAfterTax / 12)],
+              ["Steuerwirkung gesamt mit Regel-AfA", formatEuro(afa.mitRegelAfa.cumulativeTaxEffect)],
+            ] as [string, string][])
+          : []),
+      ],
+      hinweis: afa.erhoeht
+        ? "Erhöhte AfA nur mit anerkanntem Gutachten (Restnutzungsdauer)."
+        : afa.degressiv
+          ? "Degressive AfA 5 % nur bei Baubeginn 10/2023 bis 9/2029."
+          : undefined,
+    },
+    {
+      titel: "Stresstest",
+      zeilen: faelle.map((fall): [string, string] => [
+        `${fall.titel} (${fall.jahr}): ${fall.beschreibung}`,
+        fall.entfaellt
+          ? `entfällt, ${fall.entfaellt}`
+          : fall.einheit === "einmalig"
+            ? `einmalig ${formatEuro(fall.stress.vorSteuer)} vor, ${formatEuro(fall.stress.nachSteuer)} nach Steuer`
+            : `${formatEuroCent(fall.stress.vorSteuer)} vor, ${formatEuroCent(fall.stress.nachSteuer)} nach Steuer im Monat (bisher ${formatEuroCent(fall.basis.nachSteuer)} nach Steuer)`,
+      ]),
+      hinweis: "Zuzahlung je Monat, Leerstand als einmalige Mehrbelastung. Jeder Fall für sich, die Steuer mit derselben Rechnung wie oben.",
+    },
+    ...(wert
+      ? [
+          {
+            titel: `Wertentwicklung bis ${wert.jahr}`,
+            zeilen: wert.szenarien.flatMap((s): [string, string][] => [
+              [`${s.prozent} % im Jahr: Wert / Wert minus Restschuld`, `${formatEuro(s.wert)} / ${formatEuro(s.vermoegen)}`],
+              [`… ${s.prozent} % in heutiger Kaufkraft`, `${formatEuro(s.wertKaufkraft)} / ${formatEuro(s.vermoegenKaufkraft)}`],
+            ]),
+            hinweis: `Kaufkraft abgezinst mit ${formatZahl(wert.inflation, "de", 1)} % Inflation im Jahr. Szenarien, keine Prognose.`,
+          },
+        ]
+      : []),
+  ];
+
+  return (
+    <div className="bankgespraech karte-innen" data-testid="rechenstandards">
+      {bloecke.map((block) => (
+        <section key={block.titel}>
+          <h4>{block.titel}</h4>
+          <div className="tax-profile-grid">
+            {block.zeilen.map(([label, wert]) => (
+              <div key={label}>
+                <span>{label}</span>
+                <strong>{wert}</strong>
+              </div>
+            ))}
+          </div>
+          {block.hinweis && <p className="kachel-hinweis">{block.hinweis}</p>}
+        </section>
+      ))}
     </div>
   );
 }

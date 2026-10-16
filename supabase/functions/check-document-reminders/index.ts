@@ -5,6 +5,86 @@ import { bonitaetPfadFuerInvestment, bonitaetUrlFuerInvestment } from "../_share
 import { spracheAusMeta } from "../_shared/kunden-sprache.ts";
 import { saGlockeLeitung } from "../_shared/sa-glocke.ts";
 import { unterlagenErinnerungText } from "../_shared/kunden-glocke.ts";
+import { sendeVorlage } from "../_shared/transactional-versand.ts";
+import {
+  ovDatumUhrzeit, ovFehlendeUnterlagen, ovSperrSchluessel, ovTerminFaellig, type OvTermin,
+} from "../_shared/objektvorstellung-unterlagen.ts";
+
+/**
+ * Kundenerinnerung zwei Tage vor der Objektvorstellung (Nachfassplan, seit
+ * 16.10.2026): Fehlen Ausweis oder letzte Gehaltsabrechnung noch, bekommt der
+ * Kunde einmal je Termin die Mail `erinnerung-unterlagen-objektvorstellung`.
+ * Die Regel steht in `_shared/objektvorstellung-unterlagen.ts`, die Liste der
+ * Unterlagen in `fehlendeMindestunterlagenAusMeta`.
+ *
+ * Gegen doppelten Versand steht dieselbe Sperre wie bei den
+ * Terminerinnerungen (`buchung_mail_claim`), je Termin und Zeitpunkt. Ohne
+ * Sperre geht nichts hinaus. Die Partner-Aufgabe zum selben Anlass legt das
+ * CRM an (`useInvestmentInboxTriggers`).
+ */
+async function erinnereVorObjektvorstellung(supabase: any, jetzt: Date): Promise<number> {
+  const { data: termine, error } = await supabase
+    .from("aktivitaeten")
+    .select("id, kunde_id, beschreibung, faellig_am, uhrzeit, erledigt_am")
+    .eq("art", "meeting")
+    .is("erledigt_am", null)
+    .ilike("beschreibung", "%objektvorstellung%");
+  if (error) {
+    console.error("[ov-unterlagen] Termine nicht ladbar", error);
+    return 0;
+  }
+  let gesendet = 0;
+  for (const t of (termine || []) as OvTermin[]) {
+    const zeit = ovTerminFaellig(t, jetzt);
+    if (!zeit) continue;
+    const { data: kontakt } = await supabase
+      .from("kontakte")
+      .select("id, anrede, vorname, nachname, email, archiviert, geloescht")
+      .eq("id", t.kunde_id)
+      .maybeSingle();
+    const email = String(kontakt?.email || "").trim();
+    if (!kontakt || kontakt.archiviert || kontakt.geloescht || !email) continue;
+    const { data: investments } = await supabase.from("investments").select("id, meta").eq("kunde_id", kontakt.id);
+    const offen = ovFehlendeUnterlagen(investments || []);
+    if (!offen) continue;
+
+    const sperre = ovSperrSchluessel(t.id, zeit);
+    const { data: claim, error: claimFehler } = await supabase.rpc("buchung_mail_claim", { _schluessel: sperre });
+    if (claimFehler) {
+      console.error("[ov-unterlagen] Sperre nicht moeglich, es wird nichts gesendet", claimFehler);
+      return gesendet;
+    }
+    if (claim !== "frei") continue;
+
+    const { datum, uhrzeit } = ovDatumUhrzeit(zeit);
+    const a = String(kontakt.anrede || "").toLowerCase();
+    const titel = a.includes("frau") ? "Frau" : a.includes("herr") ? "Herr" : "";
+    const nachname = String(kontakt.nachname || "").trim();
+    const kundeName = titel && nachname ? `${titel} ${nachname}` : `${kontakt.vorname || ""} ${nachname}`.trim();
+    const beraterSignatur = await zustaendigerAnsprechpartner(supabase, kontakt.id);
+    const ergebnis = await sendeVorlage(supabase, {
+      templateName: "erinnerung-unterlagen-objektvorstellung",
+      recipientEmail: email,
+      idempotencyKey: sperre,
+      kontaktId: kontakt.id,
+      templateData: {
+        kundeName,
+        terminDatum: datum,
+        terminUhrzeit: uhrzeit,
+        fehlend: offen.fehlend,
+        uploadUrl: bonitaetUrlFuerInvestment(offen.investmentId),
+        ...(beraterSignatur ? { berater: beraterSignatur } : {}),
+      },
+    });
+    // ponytail: ein Fehlschlag gibt die Sperre frei und der naechste Lauf
+    // versucht es erneut, begrenzt durch das Zwei-Tage-Fenster. Eine
+    // Versuchszaehlung wie in send-termin-erinnerungen, falls das stoert.
+    await supabase.rpc("buchung_mail_fertig", { _schluessel: sperre, _erfolg: ergebnis.ok });
+    if (ergebnis.ok) gesendet++;
+    else console.error(`[ov-unterlagen] Kontakt ${kontakt.id}: ${ergebnis.grund}`);
+  }
+  return gesendet;
+}
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -189,8 +269,16 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Ein Fehler hier haelt die Unterlagen-Erinnerungen oben nicht auf.
+    let ovErinnerungen = 0;
+    try {
+      ovErinnerungen = await erinnereVorObjektvorstellung(supabase, now);
+    } catch (fehler) {
+      console.error("[ov-unterlagen] unerwarteter Fehler", fehler);
+    }
+
     return new Response(
-      JSON.stringify({ success: true, remindersSent }),
+      JSON.stringify({ success: true, remindersSent, ovErinnerungen }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {

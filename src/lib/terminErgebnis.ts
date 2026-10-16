@@ -43,6 +43,7 @@ import { rueckeNachStufenTermin } from "./stufenTerminAktionen";
 import {
   istErstgespraech, legeNachfassNachErstgespraechAn, NACHFASS_FEHLER_TEXT, NACHFASS_FEHLER_TITEL,
 } from "./nachfassNachErstgespraech";
+import { gespraechsArt, legeZusammenfassungAn } from "./nachfassplan";
 
 /** Titel der einen Aufgabe nach einem No-Show, gleich auf allen Wegen. */
 export const NOSHOW_TITEL = "Kunde nicht erschienen: anrufen und neuen Termin vereinbaren";
@@ -399,6 +400,20 @@ export async function terminErschienen(t: ErgebnisTermin, ctx: ErgebnisKontext):
       erstelltVonName: ctx.userName,
     });
     if (nachfass === "fehler") ctx.melde({ title: NACHFASS_FEHLER_TITEL, description: NACHFASS_FEHLER_TEXT, variant: "destructive" });
+  }
+  // Nachfassplan: nach Erstgespraech und Beratungspraesentation zusammenfassen.
+  const art = gespraechsArt(t.titel, t.buchung?.anlass);
+  if (art) {
+    await legeZusammenfassungAn({
+      kontaktId: ctx.kundeId,
+      kundeName: ctx.kundeName,
+      art,
+      beginn: t.startAt,
+      dauerMinuten: t.dauerMinuten,
+      rueckfallZustaendig: empfaenger(t, ctx),
+      erstelltVonName: ctx.userName,
+      investmentId: aufgabe?.investmentId,
+    });
   }
   return true;
 }

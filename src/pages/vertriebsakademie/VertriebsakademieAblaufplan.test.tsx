@@ -32,7 +32,7 @@ describe("VertriebsakademieAblaufplan", () => {
     }
 
     // Die vorgegebenen Zeitnoten je Termin
-    expect(screen.getByText("ca. 15 bis 30 Min.")).toBeInTheDocument();
+    expect(screen.getByText("ca. 25 bis 30 Min.")).toBeInTheDocument();
     expect(screen.getByText("ca. 60 bis 90 Min.")).toBeInTheDocument();
     expect(screen.getByText("ca. 45 Min.")).toBeInTheDocument();
     expect(screen.getAllByText("ca. 1 Std.").length).toBe(2);

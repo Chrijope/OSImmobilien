@@ -81,9 +81,9 @@ export const ABLAUF_STATIONEN: AblaufStation[] = [
   {
     id: "erstgespraech",
     titel: "Erstgespräch",
-    zeit: "ca. 15 bis 30 Min.",
+    zeit: "ca. 25 bis 30 Min.",
     beschreibung:
-      "Kurzer Kennenlern-Check am Telefon: Passt der Kunde, passt das Timing, passt das Konzept? Ziel ist der feste Termin für das Beratungsgespräch.",
+      "Das Gespräch nach dem Erstgesprächsskript: erst verstehen, dann empfehlen. Ziel, Motiv und finanzieller Rahmen des Kunden werden klar, und wo es nicht passt, sagen wir das offen. Ziel ist der feste Termin für die Beratungspräsentation.",
     stufen: ["erstgespraech_geplant"],
     imCrm: [
       "Im Normalfall ist das Erstgespräch der Anruf selbst. Du führst es mit dem Erstgesprächsskript unter „Stammdaten\", Ziel ist der feste Termin für das Beratungsgespräch.",
@@ -94,10 +94,10 @@ export const ABLAUF_STATIONEN: AblaufStation[] = [
   },
   {
     id: "beratungsgespraech",
-    titel: "Beratungsgespräch",
+    titel: "Beratungspräsentation",
     zeit: "ca. 1 Std.",
     beschreibung:
-      "Die komplette Beratung mit Strategie, Zahlen und Konzept. Im Anschluss geht die Selbstauskunft zur Unterschrift an den Kunden.",
+      "Die Beratung mit Zahlen und der Wahl des Konzepts: Zusatzrente oder Steuerersparnis. Am Ende füllt ihr die Selbstauskunft gemeinsam aus. Personalausweis und letzte Gehaltsabrechnung reicht der Kunde bis zur Objektvorstellung nach.",
     stufen: ["beratungsgespraech", "selbstauskunft"],
     imCrm: [
       "Den Termin trägst du über die Karte „Beratungsgespräch vereinbaren\" ein, und zwar im Reiter des jeweiligen Investments, nicht unter „Stammdaten\". Nur so ist er dem richtigen Vorgang zugeordnet, wenn der Kunde mehrere hat. Der Kunde rückt damit automatisch auf die Stufe Beratungsgespräch.",
@@ -105,19 +105,20 @@ export const ABLAUF_STATIONEN: AblaufStation[] = [
       "Bei No-Show erscheint oben im Profil ein Banner mit dem versäumten Termin, damit jeder sofort sieht, woran er ist. Er verschwindet von selbst, sobald du einen neuen Termin eingetragen hast.",
       "Bei No-Show wandert der Kunde auf die Stufe BG NoShow, du bekommst sofort eine Aufgabe und nach 24 und 48 Stunden eine Erinnerung, solange kein neuer Termin steht. Trägst du einen neuen ein, springt er automatisch zurück auf Beratungsgespräch.",
       "Sobald die Selbstauskunft zur Unterschrift beim Kunden liegt, rückt er von selbst auf die Stufe Selbstauskunft. Dafür musst du nichts weiter tun.",
+      "Personalausweis und letzte Gehaltsabrechnung prüfst du im Investment-Reiter unter „Bonitätsunterlagen\" und gibst sie dort frei. Das macht immer der zuständige Vertriebspartner.",
     ],
   },
   {
     id: "objektauswahl",
-    titel: "Objektvorstellung und Objektauswahl",
+    titel: "Objektvorstellung und Reservierung",
     zeit: "ca. 1 Std.",
     beschreibung:
-      "Der Kunde bekommt das passende Objekt vorgestellt und sichert es sich mit der Reservierungsvereinbarung.",
+      "Rund 7 Tage nach der Beratung stellst du das passende Objekt vor, mit Exposé und einer Investmentkalkulation auf Basis der Selbstauskunft. Passt alles, reserviert der Kunde im selben Termin, kostenfrei.",
     // "follow_up_objekt" ist die manuelle Follow-Up-Stufe nach der
     // Objektvorstellung und gehoert fachlich zu dieser Station.
     stufen: ["objektauswahl", "follow_up_objekt", "reservierung"],
     imCrm: [
-      "Mit der unterschriebenen Selbstauskunft rückt der Kunde automatisch auf Objektauswahl. Ab hier siehst du die passenden Einheiten im Profil.",
+      "Mit der unterschriebenen Selbstauskunft rückt der Kunde automatisch auf Objektvorstellung. Ab hier siehst du die passenden Einheiten im Profil.",
       "Überlegt der Kunde nach der Objektvorstellung noch, ziehst du ihn in der Pipeline von Hand in die Spalte „Follow-Up\" und legst eine Aufgabe mit Rückruftermin an. Diese Stufe setzt keine Automatik, sie ist ausdrücklich deine Entscheidung.",
       "Die Reservierung startet erst, wenn Selbstauskunft, Personalausweis und letzte Gehaltsabrechnung vorliegen. Fehlen zwei Tage vor der Objektvorstellung noch Unterlagen, bekommst du eine Aufgabe zum Nachfassen.",
       "Die Reservierungsvereinbarung schickst du im Investment-Reiter über die Karte „Reservierung\". Ab dem Versand rückt der Kunde auf Reservierung. Mit der Unterschrift bekommst du die Aufgabe „Besichtigung vereinbaren\".",
@@ -126,7 +127,7 @@ export const ABLAUF_STATIONEN: AblaufStation[] = [
   },
   {
     id: "finanzierung",
-    titel: "Finanzierung",
+    titel: "Besichtigung, Bankgutachter und Finanzierung",
     zeit: "ca. 45 Min.",
     zeitZusatz: "zusammen mit der Finanzierungsabteilung",
     beschreibung:
@@ -135,7 +136,6 @@ export const ABLAUF_STATIONEN: AblaufStation[] = [
     imCrm: [
       "Setzt du die Stufe auf „Besichtigung\" oder „Termin Bankgutachter\", trägst du im Fenster gleich Datum und Uhrzeit ein. Der Termin steht danach unter „Nächste Aktionen\" am Investment.",
       "Trägst du dort „Stattgefunden\" ein, rückt der Vorgang weiter: nach der Besichtigung auf Termin Bankgutachter, mit der Aufgabe, ihn zu vereinbaren, danach auf Finanzierung.",
-      "Die Unterlagen gibst du im Investment-Reiter unter „Bonitätsunterlagen\" selbst frei. Das macht immer der zuständige Vertriebspartner.",
     ],
   },
   {

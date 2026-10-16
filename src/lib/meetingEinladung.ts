@@ -14,8 +14,30 @@ import { meetingZeitISO } from "./meetingZeit";
  */
 import { supabase } from "@/integrations/supabase/client";
 import { beraterMailFelder, findeBerater } from "./mailBerater";
+import { bonitaetUrlFuerInvestment, PORTAL_BASIS_URL } from "../../supabase/functions/_shared/unterlagen-erinnerung-link.ts";
 
 const ICS_BASIS = "https://irwdgutegmivbtgmftyc.supabase.co/functions/v1/get-ics";
+
+/**
+ * Welche Vorlage die Einladung nimmt (Strategie Vertrieb, Abschnitt 8,
+ * 16.10.2026): Beratungspräsentation und Objektvorstellung haben eigene
+ * Mails, alles andere bleibt bei der allgemeinen Meeting-Einladung.
+ * Massgeblich ist der Anlass der Terminart, ohne ihn der Titel, denn beim
+ * erneuten Senden oder ohne Videoraum ist keine Terminart gewählt.
+ */
+export function meetingVorlage(anlass?: string, titel?: string): string {
+  if (anlass === "beratung") return "termin-beratungspraesentation";
+  if (anlass === "objektvorstellung") return "einladung-objektvorstellung";
+  if (anlass) return "zoom-meeting-einladung";
+  if (/objektvorstellung/i.test(titel || "")) return "einladung-objektvorstellung";
+  if (/beratungs(gespr|präsent|praesent)/i.test(titel || "")) return "termin-beratungspraesentation";
+  return "zoom-meeting-einladung";
+}
+
+/** Wohin die Objektvorstellung zum Hochladen schickt: zur Bonität des Investments, sonst ins Portal. */
+export function uploadUrlFuer(investmentId?: string): string {
+  return investmentId ? bonitaetUrlFuerInvestment(investmentId) : `${PORTAL_BASIS_URL}/kunde/investments`;
+}
 
 export interface MeetingEinladung {
   kundeId: string;
@@ -58,6 +80,15 @@ export interface MeetingEinladung {
    * sonst verschluckt die Edge Function die Wiederholung.
    */
   schluesselZusatz?: string;
+  /** Anlass der Terminart, etwa "beratung" oder "objektvorstellung". */
+  anlass?: string;
+  /** Investment des Termins, fuer den Upload-Link der Objektvorstellung. */
+  investmentId?: string;
+  /**
+   * Gaeste bekommen immer die allgemeine Einladung. Die Anlass-Mails sprechen
+   * den Kunden an (Mitentscheider willkommen, Ausweis hochladen).
+   */
+  alsGast?: boolean;
 }
 
 /**
@@ -156,10 +187,12 @@ export async function versendeMeetingEinladung(e: MeetingEinladung): Promise<boo
       `&location=${encodeURIComponent(ort)}`
     : undefined;
 
+  const vorlage = e.alsGast ? "zoom-meeting-einladung" : meetingVorlage(e.anlass, e.titel);
+
   try {
     const { data, error } = await supabase.functions.invoke("send-transactional-email", {
       body: {
-        templateName: "zoom-meeting-einladung",
+        templateName: vorlage,
         recipientEmail: e.kundeEmail,
         // Stabile Meeting-ID verhindert Doppelversand bei Wiederholung.
         idempotencyKey: `meeting-${e.meetingId || e.kundeId}-${e.datum}-${e.uhrzeit}${e.schluesselZusatz ? `-${e.schluesselZusatz}` : ""}`,
@@ -180,6 +213,7 @@ export async function versendeMeetingEinladung(e: MeetingEinladung): Promise<boo
           icsUrl,
           googleCalendarUrl,
           agenda: e.agenda || undefined,
+          ...(vorlage === "einladung-objektvorstellung" ? { uploadUrl: uploadUrlFuer(e.investmentId) } : {}),
         },
         metadata: { kontaktId: e.kundeId, quelle: "meeting-dialog" },
       },
@@ -220,6 +254,7 @@ export async function versendeGastEinladungen(
     if (!email) continue;
     const ok = await versendeMeetingEinladung({
       ...einladung,
+      alsGast: true,
       kundeName: gast.name.trim() || email,
       kundeEmail: email,
       // Eigener Schluessel je Gast, sonst verschluckt der Doppelversand-Schutz

@@ -11,14 +11,9 @@ import {
 } from "../../supabase/functions/_shared/finanzierung-starten-mail.ts";
 
 describe("Betreff der Mail an den Finanzierungspartner", () => {
-  it("nennt die Aufgabe und den Kunden", () => {
-    expect(finanzierungBetreff("Otto Hans")).toBe("Finanzierung starten: Otto Hans");
-  });
-
-  it("faellt ohne Kundennamen auf einen vollstaendigen Satz zurueck", () => {
-    // Nie "Finanzierung starten: undefined" im Postfach.
-    expect(finanzierungBetreff(undefined)).toBe("Eine neue Finanzierung kann starten");
-    expect(finanzierungBetreff("   ")).toBe("Eine neue Finanzierung kann starten");
+  it("nennt den Anlass ohne Kundennamen", () => {
+    // Der Betreff ist auf jedem Sperrbildschirm lesbar, der Name steht in der Mail.
+    expect(finanzierungBetreff()).toBe("Reservierung unterschrieben: Finanzierung kann starten");
   });
 });
 

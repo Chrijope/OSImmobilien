@@ -42,3 +42,7 @@ export const VorschauPipeline = import.meta.env.DEV
   ? lazy(() => import("./pages/VorschauPipeline"))
   : null;
 
+/** /vorschau/mikroseite: die Partner-Landingpage mit Beispielpartner, seit 16.10.2026. */
+export const VorschauMikroseite = import.meta.env.DEV
+  ? lazy(() => import("./pages/VorschauMikroseite"))
+  : null;
