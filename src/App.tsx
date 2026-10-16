@@ -23,7 +23,7 @@ import { KundenMfaGuard } from "@/components/kunde/KundenMfaGuard";
 
 // Oeffentliche Seiten (eager, klein und immer noetig)
 import Login from "./pages/Login";
-import { VorschauBeratungspraesentation, VorschauErstgespraech, VorschauInvestmentrechner, VorschauNaechsteAktionen, VorschauMikroseite, VorschauPipeline, VorschauProvision, VorschauRechnungsvorlage, VorschauKundeKomplett, VorschauKundenchat, VorschauObjektAnlegen } from "./vorschauRouten";
+import { VorschauBeratungspraesentation, VorschauErstgespraech, VorschauInvestmentrechner, VorschauNaechsteAktionen, VorschauMikroseite, VorschauPipeline, VorschauProvision, VorschauRechnungsvorlage, VorschauKundeKomplett, VorschauKundenchat, VorschauObjektAnlegen, VorschauGrundriss3d } from "./vorschauRouten";
 
 /** /investmentrechner-plus → /investmentrechner mit Schalter „Bankgespräch & Bankunterlagen“, Parameter bleiben. */
 function InvestmentrechnerPlusWeiterleitung() {
@@ -414,6 +414,7 @@ const App = () => (
                 )}
                 {VorschauKundenchat && <Route path="/vorschau/kundenchat" element={<VorschauKundenchat />} />}
                 {VorschauObjektAnlegen && <Route path="/vorschau/objekt-anlegen" element={<VorschauObjektAnlegen />} />}
+                {VorschauGrundriss3d && <Route path="/vorschau/grundriss-3d" element={<VorschauGrundriss3d />} />}
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/portal-aktivieren" element={<PortalAktivieren />} />
                 <Route path="/aktivieren" element={<Aktivieren />} />

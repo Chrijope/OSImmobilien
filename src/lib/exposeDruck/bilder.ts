@@ -89,7 +89,17 @@ export async function ladeDruckBilder(inhalt: ExposeInhalt, lader: BildLader): P
   for (const d of inhalt.grundriss.dokumente.slice(0, 12)) {
     plaene.push(d.istBild ? await lader.bild(d.url, 2400, true) : IST_PDF_PLAN.test(d.url) ? await lader.pdfSeite(d.url) : null);
   }
-  return { fotos: fotos.filter((f): f is DruckBild => f !== null), plaene, karte, logo, logoHell, person };
+  // Der 3D-Grundriss als Standbild, das PDF ist nicht interaktiv. three.js lädt nur hier und nur mit Plan.
+  let plan3d: DruckBild | null = null;
+  if (inhalt.grundriss.plaene3d?.length) {
+    try {
+      const { standbild } = await import("@/components/grundriss3d/standbild");
+      plan3d = await standbild(inhalt.grundriss.plaene3d);
+    } catch {
+      plan3d = null;
+    }
+  }
+  return { fotos: fotos.filter((f): f is DruckBild => f !== null), plaene, karte, logo, logoHell, person, plan3d };
 }
 
 /* ── Browser ─────────────────────────────────────────────────────────── */

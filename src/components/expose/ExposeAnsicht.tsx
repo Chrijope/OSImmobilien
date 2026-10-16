@@ -8,6 +8,7 @@ import { Mikrolage } from "./Mikrolage";
 import { GrundrissVorschau } from "./GrundrissVorschau";
 import { grundrisseFuerAnsicht } from "./grundrissAuswahl";
 import { GrundrissStreifen } from "./GrundrissStreifen";
+import { Grundriss3dBlock } from "@/components/grundriss3d/Grundriss3dBlock";
 import { abschnittAnker, besonderheitenAnzeige, exposeAbschnitte, marktQuelleHinweis, mikrolageZeigen, ohneDoppelte, sichtbareZeilen, verwaltungKostenText, type ExposeAbschnittId, type ExposeInhalt, type Person } from "@/lib/exposeInhalt";
 import { eur0, dez, zimmerText } from "@/lib/objektKennzahlen";
 import { resolveImageUrl } from "@/lib/objekteImages";
@@ -128,7 +129,7 @@ export function ExposeAnsicht(p: ExposeAnsichtProps) {
     standort: standortZeigen,
     mikrolage: mikrolageZeigen(c.mikrolage),
     // Nur mit Plan. Die übrigen Unterlagen hielten den Abschnitt bis zum 23.09.2026 offen, auch ganz ohne Grundriss.
-    grundriss: plaene.length > 0,
+    grundriss: plaene.length > 0 || !!c.grundriss.plaene3d?.length,
   };
   const sichtbareAbschnitte = abschnitte.filter(a => zeigen[a.id] !== false);
 
@@ -290,6 +291,8 @@ export function ExposeAnsicht(p: ExposeAnsichtProps) {
       </section>
       {zeigen.grundriss && <section className="section" id={abschnittAnker("grundriss")} data-testid="abschnitt-grundriss">{header("grundriss")}
         <div className="grundriss-plaene" data-testid="grundriss-plaene">{plaene.length > 1 ? <GrundrissStreifen plaene={plaene} onZoom={setLightbox} /> : plaene.map(d => <GrundrissVorschau key={d.url} dokument={d} onZoom={setLightbox} />)}</div>
+        {/* 3D-Grundriss neben dem normalen Plan (16.10.2026); three.js lädt erst in Sichtweite. */}
+        {!!c.grundriss.plaene3d?.length && <div className="grundriss-3d" style={{ marginTop: 24 }}><Grundriss3dBlock einheiten={c.grundriss.plaene3d} kompakt hoehe={460} titel="Grundriss in 3D, zum Drehen mit der Maus" /></div>}
         <p className="caption grundriss-hinweis">{t.grundrissHinweis}</p>
       </section>}
       {/* Hell und grau im Wechsel; seit der Abschnitt Wirtschaftlichkeit fehlt (16.10.2026), ab hier umgekehrt. */}
