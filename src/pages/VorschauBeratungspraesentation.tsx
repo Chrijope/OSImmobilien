@@ -12,6 +12,14 @@ import BeratungspraesentationHV, { type BeratungVorschau } from "./Beratungsprae
  * &variante=b zeigt die Vergleichsfassung B.
  */
 
+/** Erfundener Beispielpartner, keine echte Person. Ohne Foto, damit die Initialen zu sehen sind. */
+const BEISPIEL_PARTNER: NonNullable<BeratungVorschau["ansprechpartner"]> = {
+  name: "Alex Beispiel",
+  rolle: "Immobilienberater",
+  telefon: "+49 30 123456789",
+  email: "alex.beispiel@example.com",
+};
+
 export const VORSCHAU_ERSTGESPRAECH_SCHLUESSEL = "vorschau-erstgespraech-stand";
 
 const BEISPIELE: Record<string, Omit<BeratungVorschau, "schluessel">> = {
@@ -160,7 +168,7 @@ export default function VorschauBeratungspraesentation() {
           </Link>
         </div>
       </div>
-      <BeratungspraesentationHV key={`${schluessel}-${variante}`} vorschau={{ ...daten, schluessel }} variante={variante} />
+      <BeratungspraesentationHV key={`${schluessel}-${variante}`} vorschau={{ ...daten, schluessel, ansprechpartner: BEISPIEL_PARTNER }} variante={variante} />
     </>
   );
 }
