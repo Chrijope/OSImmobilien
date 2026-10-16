@@ -6,10 +6,13 @@ const db = vi.hoisted(() => ({
   meta: {} as Record<string, unknown> | null,
   geschrieben: null as Record<string, unknown> | null,
   zeilen: 1,
+  rpc: { data: null as unknown, error: { code: "PGRST202", message: "fehlt" } as { code: string; message: string } | null },
+  rpcAufruf: null as unknown,
 }));
 
 vi.mock("@/integrations/supabase/client", () => ({
   supabase: {
+    rpc: async (name: string, args: unknown) => { db.rpcAufruf = { name, args }; return db.rpc; },
     from: () => ({
       select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: db.meta === null ? null : { meta: db.meta }, error: null }) }) }),
       update: (werte: Record<string, unknown>) => {
@@ -28,10 +31,28 @@ describe("Plan speichern", () => {
     db.meta = { dokumente: [{ id: "d1" }], moebelPreis: 5000 };
     db.geschrieben = null;
     db.zeilen = 1;
+    db.rpc = { data: null, error: { code: "PGRST202", message: "fehlt" } };
+    db.rpcAufruf = null;
     setzeSpeicherAttrappe();
   });
 
-  it("ersetzt nur meta.grundriss3d, alles andere in meta bleibt", async () => {
+  it("speichert über die Datenbankfunktion, die jede interne Rolle nutzen darf", async () => {
+    db.rpc = { data: true, error: null };
+    await speichereEinheitPlan("w1", WE03_PLAN);
+    const aufruf = db.rpcAufruf as { name: string; args: { _wohnung_id: string; _plan: { waende: unknown[] } } };
+    expect(aufruf.name).toBe("grundriss3d_speichern");
+    expect(aufruf.args._wohnung_id).toBe("w1");
+    expect(aufruf.args._plan.waende).toHaveLength(WE03_PLAN.waende.length);
+    expect(db.geschrieben).toBeNull();
+  });
+
+  it("meldet die Ablehnung der Datenbankfunktion, ohne auf den alten Weg auszuweichen", async () => {
+    db.rpc = { data: null, error: { code: "42501", message: "Den 3D-Grundriss können nur Mitarbeiter speichern." } };
+    await expect(speichereEinheitPlan("w1", WE03_PLAN)).rejects.toThrow(/nur Mitarbeiter/);
+    expect(db.geschrieben).toBeNull();
+  });
+
+  it("ersetzt ohne Datenbankfunktion nur meta.grundriss3d, alles andere in meta bleibt", async () => {
     await speichereEinheitPlan("w1", WE03_PLAN);
     const meta = db.geschrieben?.meta as Record<string, unknown>;
     expect(meta.dokumente).toEqual([{ id: "d1" }]);

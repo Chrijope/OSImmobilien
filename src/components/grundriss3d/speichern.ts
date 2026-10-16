@@ -15,6 +15,9 @@ import { PLAN_VERSION, type Grundriss3dPlan } from "./plan";
 
 export const META_SCHLUESSEL = "grundriss3d";
 
+/** Fehlercodes, wenn es die Datenbankfunktion noch nicht gibt. */
+const FUNKTION_FEHLT = new Set(["PGRST202", "42883"]);
+
 /** Bildadressen, die nur in diesem Browser gelten, werden nicht gespeichert. */
 export function zumSpeichern(plan: Grundriss3dPlan, jetzt = new Date()): Grundriss3dPlan {
   const h = plan.hintergrund;
@@ -30,6 +33,20 @@ export function zumSpeichern(plan: Grundriss3dPlan, jetzt = new Date()): Grundri
 export async function speichereEinheitPlan(wohnungId: string, plan: Grundriss3dPlan): Promise<void> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- wie in objekteStore: Tabellentypen ohne meta-Feldtypen
   const db = supabase as any;
+  /*
+   * Seit 17.10.2026 über `grundriss3d_speichern`: Jede interne Rolle darf
+   * genau diesen einen Schlüssel setzen, in einem Schritt (jsonb_set).
+   * Fehlt die Funktion noch (Migration nicht eingespielt), der alte Weg
+   * darunter, der nur Admin, Inhaber und Objektpartner durchlässt.
+   */
+  const rpc = await db.rpc("grundriss3d_speichern", { _wohnung_id: wohnungId, _plan: zumSpeichern(plan) });
+  if (!rpc.error) {
+    if (rpc.data !== true) throw new Error("Einheit nicht gefunden.");
+    entwurfLoeschen(wohnungId);
+    await cacheReload("wohnungen");
+    return;
+  }
+  if (!FUNKTION_FEHLT.has(String(rpc.error.code))) throw new Error(`Nicht gespeichert: ${rpc.error.message}`);
   const { data: zeile, error: lesefehler } = await db.from("wohnungen").select("meta").eq("id", wohnungId).maybeSingle();
   if (lesefehler) throw new Error(`Einheit konnte nicht gelesen werden: ${lesefehler.message}`);
   if (!zeile) throw new Error("Einheit nicht gefunden.");

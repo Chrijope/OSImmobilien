@@ -50,6 +50,7 @@ import { ladeAlsZip } from "@/lib/unterlagenZip";
 import { dokumente as investagonDokumente } from "@/lib/investagonFelder";
 import { istGlobalobjekt } from "@/lib/objektKlassen";
 import { kundenansichtZiel } from "@/lib/kundenansichtZiel";
+import { istInterneRolle } from "@/lib/sidebarPermissions";
 import { EinheitGrundriss3dKarte, ObjektGrundriss3dKarte } from "@/components/grundriss3d/Grundriss3dKarte";
 
 const fmt = (v: number) => new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(v);
@@ -1236,7 +1237,7 @@ export default function ObjektDetail() {
                 </div>
               </div>
               {/* 3D-Grundriss der Einheit (16.10.2026), siehe components/grundriss3d. */}
-              <div className="mt-6"><EinheitGrundriss3dKarte wohnung={w} darfBearbeiten={isEditor} onGespeichert={reload} /></div>
+              <div className="mt-6"><EinheitGrundriss3dKarte wohnung={w} darfBearbeiten={istInterneRolle(user.role)} onGespeichert={reload} /></div>
             </TabsContent>
 
           </Tabs>
@@ -1496,7 +1497,7 @@ export default function ObjektDetail() {
           {/* Right */}
           <div className="lg:col-span-2 space-y-6">
             {/* Das Haus in 3D aus den Grundrissen der Einheiten (16.10.2026). */}
-            <ObjektGrundriss3dKarte objekt={objekt} darfBearbeiten={isEditor} />
+            <ObjektGrundriss3dKarte objekt={objekt} darfBearbeiten={istInterneRolle(user.role)} />
             {/* Objektunterlagen */}
             <Card className="p-6">
               <div className="w-8 h-1 bg-primary mb-3" />

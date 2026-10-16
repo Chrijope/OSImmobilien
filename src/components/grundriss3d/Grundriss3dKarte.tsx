@@ -16,7 +16,7 @@ export function plaeneDesObjekts(objekt: Pick<ObjektData, "wohnungen" | "wohnung
   return plaeneAusEinheiten([...objekt.wohnungen, ...(objekt.wohnungenNichtImAngebot ?? [])]);
 }
 
-/** Editor im großen Fenster, nur für die, die schreiben dürfen. */
+/** Editor im großen Fenster. Seit 17.10.2026 für jede interne Rolle (Datenbankfunktion grundriss3d_speichern). */
 export function Grundriss3dEditorDialog({ offen, onOpenChange, wohnung, titel, onGespeichert }: {
   offen: boolean;
   onOpenChange: (o: boolean) => void;
