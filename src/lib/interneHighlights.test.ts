@@ -164,3 +164,24 @@ describe("nie beim Kunden", () => {
     }
   });
 });
+
+describe("von Hand gepflegte Highlights (16.10.2026)", () => {
+  it("stehen vorn, die der Einheit vor denen des Objekts, leere Zeilen fallen weg", () => {
+    const o = objekt({ meta: { interneHighlightsHand: ["Objektpunkt", "  "] } });
+    const w = einheit({ interneHighlightsHand: ["Einheitspunkt"] });
+    const punkte = interneHighlights(o, w).punkte;
+    expect(punkte.slice(0, 2)).toEqual([
+      { text: "Einheitspunkt", herkunft: "hand" },
+      { text: "Objektpunkt", herkunft: "hand" },
+    ]);
+    expect(interneHighlights(o).punkte[0]).toEqual({ text: "Objektpunkt", herkunft: "hand" });
+  });
+
+  it("gehen weder ins öffentliche Exposé noch in die Kundenansicht", () => {
+    const meta = { interneHighlightsHand: [GEHEIM] };
+    expect(JSON.stringify(oeffentlichesMeta(meta))).not.toContain(GEHEIM);
+    for (const art of ["objekt", "wohnung", "wohnung_global"] as const) {
+      expect(JSON.stringify(kundenMeta(meta, art))).not.toContain(GEHEIM);
+    }
+  });
+});

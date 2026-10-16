@@ -172,12 +172,14 @@ export interface ObjektWohnung {
    */
   moebelPreis?: number;
   /*
-   * Rechenwerte aus Investagon, seit dem 25.09.2026. Setzt nur der Import,
-   * das CRM pflegt sie nicht; beim Speichern bleiben sie über das vorhandene
-   * `meta` erhalten. Der Investmentrechner übernimmt sie in die Vorbelegung.
+   * Rechenwerte, seit dem 25.09.2026 aus Investagon. Seit dem 16.10.2026
+   * auch im Objektformular pflegbar, damit Objekte ohne Investagon dieselben
+   * Werte tragen. Der Investmentrechner übernimmt sie in die Vorbelegung.
    */
   /** Monatliche Zuführung zur Instandhaltungsrücklage in € (kein Rücklagenbestand) */
   ruecklageZufuehrungMonat?: number;
+  /** Umlagefähiger Hausgeld-Anteil dieser Wohnung in €/Monat, siehe `_shared/einheit-hausgeld.ts` */
+  hausgeldUmlagefaehigEuro?: number;
   /** Nutzungsdauer der Möbel in Jahren */
   moebelNutzungsdauerJahre?: number;
   /** Finanzierungsnebenkosten in % der Darlehenssumme */
@@ -219,6 +221,8 @@ export interface ObjektWohnung {
   sevErstesJahrInklusive?: boolean;
   /** Seit wann die Einheit vermietet ist (YYYY-MM-DD oder YYYY-MM) */
   vermietetSeit?: string;
+  /** Von Hand gepflegte interne Highlights, nur intern, siehe `interneHighlights.ts` */
+  interneHighlightsHand?: string[];
 }
 
 /** Zahl aus `meta` lesen, leer und ungültig werden zu undefined. */
@@ -672,6 +676,7 @@ function dbRowToWohnung(w: any, tableBilder: any[] = [], mitDokumentenCache = tr
     stellplatzMiete: meta.stellplatzMiete ?? undefined,
     moebelPreis: metaZahl(meta.moebelPreis),
     ruecklageZufuehrungMonat: metaZahl(meta.ruecklageZufuehrungMonat),
+    hausgeldUmlagefaehigEuro: metaZahl(meta.hausgeldUmlagefaehigEuro),
     moebelNutzungsdauerJahre: metaZahl(meta.moebelNutzungsdauerJahre),
     finanzierungsnebenkostenSatz: metaZahl(meta.finanzierungsnebenkostenSatz),
     neueMiete: meta.neueMiete ?? undefined,
@@ -692,6 +697,7 @@ function dbRowToWohnung(w: any, tableBilder: any[] = [], mitDokumentenCache = tr
     verwaltungSevMonat: metaZahl(meta.verwaltungSevMonat),
     sevErstesJahrInklusive: meta.sevErstesJahrInklusive === true ? true : undefined,
     vermietetSeit: metaText(meta.vermietetSeit),
+    ...(Array.isArray(meta.interneHighlightsHand) ? { interneHighlightsHand: meta.interneHighlightsHand.filter((t: unknown) => typeof t === "string") } : {}),
   };
 }
 
@@ -844,8 +850,14 @@ export function wohnungToDbRow(
       // `updateWohnung` die vorhandene Kennung ueberschreiben.
       ...(w.investagonId ? { investagonId: w.investagonId } : {}),
       ...(w.investagonRaw ? { investagonRaw: w.investagonRaw } : {}),
-      // Ebenso: Den Möbelpreis setzt nur der Import, ein null löschte ihn.
+      // Ebenso: Ohne Wert bleibt, was der Import gesetzt hat; ein null löschte es.
+      // Seit dem 16.10.2026 pflegt das Objektformular diese Werte auch selbst.
       ...(w.moebelPreis !== undefined ? { moebelPreis: w.moebelPreis } : {}),
+      ...(w.moebelNutzungsdauerJahre !== undefined ? { moebelNutzungsdauerJahre: w.moebelNutzungsdauerJahre } : {}),
+      ...(w.finanzierungsnebenkostenSatz !== undefined ? { finanzierungsnebenkostenSatz: w.finanzierungsnebenkostenSatz } : {}),
+      ...(w.ruecklageZufuehrungMonat !== undefined ? { ruecklageZufuehrungMonat: w.ruecklageZufuehrungMonat } : {}),
+      ...(w.interneHighlightsHand !== undefined ? { interneHighlightsHand: w.interneHighlightsHand } : {}),
+      ...(w.hausgeldUmlagefaehigEuro !== undefined ? { hausgeldUmlagefaehigEuro: w.hausgeldUmlagefaehigEuro } : {}),
     },
   };
 }

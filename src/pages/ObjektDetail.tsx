@@ -1618,7 +1618,8 @@ export default function ObjektDetail() {
                 </Badge>
               )}
               {(() => {
-                const wge = (objekt.globalDaten as any)?.wohneinheitenGesamt || 0;
+                // `wohneinheitenGesamt` wurde nie gespeichert; die Zahl steht in `meta.einheitenImHaus`.
+                const wge = Number((objekt.meta as any)?.einheitenImHaus) || (objekt.globalDaten as any)?.wohneinheitenGesamt || 0;
                 if (wge > 0 && wge > objekt.wohnungen.length) {
                   return <Badge variant="outline" className="text-[10px]">{objekt.wohnungen.length} von {wge} Einheiten im Vertrieb</Badge>;
                 }

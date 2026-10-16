@@ -64,3 +64,25 @@ describe("Wohnung speichern: Investagon-Felder überleben", () => {
     expect("investagonRaw" in zeile.meta).toBe(false);
   });
 });
+
+describe("Wohnung speichern: Felder aus dem Objektformular (16.10.2026)", () => {
+  it("schreibt Hausgeld-Teile, Möbel, Finanzierungsnebenkosten und Hand-Highlights und liest sie zurück", () => {
+    const { w } = gespeicherteWohnung();
+    const zeile = wohnungToDbRow({
+      ...w, hausgeldUmlagefaehigEuro: 120, ruecklageZufuehrungMonat: 40, moebelNutzungsdauerJahre: 10,
+      finanzierungsnebenkostenSatz: 1.5, interneHighlightsHand: ["Südbalkon"],
+    }, "o1");
+    expect(zeile.meta).toMatchObject({
+      hausgeldUmlagefaehigEuro: 120, ruecklageZufuehrungMonat: 40, moebelNutzungsdauerJahre: 10,
+      finanzierungsnebenkostenSatz: 1.5, interneHighlightsHand: ["Südbalkon"],
+    });
+    rows.wohnungen = [{ ...rows.wohnungen[0], meta: zeile.meta }];
+    expect(getObjekte()[0].wohnungen[0]).toMatchObject({ hausgeldUmlagefaehigEuro: 120, ruecklageZufuehrungMonat: 40, interneHighlightsHand: ["Südbalkon"] });
+  });
+
+  it("lässt Importwerte stehen, wenn das Formular nichts nennt", () => {
+    const { w, altesMeta } = gespeicherteWohnung();
+    const zeile = wohnungToDbRow({ ...w, ruecklageZufuehrungMonat: undefined }, "o1", { ...altesMeta, ruecklageZufuehrungMonat: 33 });
+    expect(zeile.meta.ruecklageZufuehrungMonat).toBe(33);
+  });
+});
