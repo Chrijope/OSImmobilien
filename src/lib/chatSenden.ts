@@ -13,7 +13,7 @@
  * die zweite Zeile dann als Doppel ab, und das zaehlt als gesendet.
  */
 
-/** Hoechstlaenge einer Nachricht, wie die Datenbankregel (Migration 20261016231000). */
+/** Hoechstlaenge einer Nachricht, wie die Datenbankregel (Migration 20261016236000). */
 export const CHAT_MAX_ZEICHEN = 10000;
 
 export interface SendeVersuch {

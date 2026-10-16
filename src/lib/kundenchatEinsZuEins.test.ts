@@ -11,7 +11,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
  */
 
 const lies = (pfad: string) => readFileSync(resolve(__dirname, "../..", pfad), "utf-8");
-const SQL = lies("supabase/migrations/20261016231000_kundenchat_eins_zu_eins.sql");
+const SQL = lies("supabase/migrations/20261016236000_kundenchat_eins_zu_eins.sql");
 const CODE = SQL.split("\n").filter((z) => !z.trim().startsWith("--")).join("\n");
 
 function funktion(name: string): string {

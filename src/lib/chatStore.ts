@@ -203,7 +203,7 @@ export type KundenchatErgebnis =
 
 /**
  * Die eine Kundengruppe eines Kontakts, ueber `kundenchat_sicherstellen`
- * (Migration 20261016231000).
+ * (Migration 20261016236000).
  *
  * Vorher legte das Kundenprofil selbst eine Gruppe an, sobald der Lesende
  * keine sah. Gesehen wird eine Gruppe aber nur von ihren Teilnehmern. Ein

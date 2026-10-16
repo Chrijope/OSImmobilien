@@ -12,7 +12,7 @@ import { CHAT_MAX_ZEICHEN } from "@/lib/chatSenden";
  * Nur `npm run dev`, siehe vorschauRouten.ts. Beide Seiten nebeneinander mit
  * Beispieldaten im Speicher, ohne Datenbank: links das Kundenportal, rechts
  * der Zugang des Partners. Die Regeln sind die der Migration
- * 20261016231000: eine Gruppe je Kunde, nur der Zustaendige sitzt drin, beim
+ * 20261016236000: eine Gruppe je Kunde, nur der Zustaendige sitzt drin, beim
  * Wechsel geht der alte hinaus und der neue sieht den ganzen Verlauf. Wer
  * welche Nachricht lesen darf, prueft die Datenbank; hier ist es
  * nachgestellt, damit man den Ablauf ansehen kann.

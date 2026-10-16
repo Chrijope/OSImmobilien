@@ -178,7 +178,7 @@ export function KommunikationReiter({
           anlageLaeuft.current.delete(aktiv);
           return;
         }
-        // Rueckfall, solange die Migration 20261016231000 fehlt: der alte Weg.
+        // Rueckfall, solange die Migration 20261016236000 fehlt: der alte Weg.
         // Die Kennung des Kunden steht im `meta` seiner Kontaktzeile. Ohne sie
         // hat er noch keinen Zugang und kann den Verlauf nicht sehen.
         const rawKontakt = (cacheGet<any>("kontakte") || []).find((k: any) => k.id === kontaktId);
