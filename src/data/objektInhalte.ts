@@ -37,16 +37,8 @@ export const OBJEKT_INHALTE: ObjektInhalt[] = [
   {
     adresse: "Barfusstraße 9",
     kurzbeschreibung:
-      // [B] S. 2, 3, 8: Baujahr um 1900, Vorderhaus, Seitenflügel, Quergebäude, Innenhof, Wohnungseigentum
-      "Das Ensemble Barfusstraße 9 entstand um 1900 und gliedert sich in Vorderhaus, Seitenflügel und Quergebäude rund um einen gemeinsamen Innenhof. "
-      // [B] S. 8: EG und 4 OG, hohe Decken, Dielen bzw. Laminat, Kachelöfen in einzelnen Wohnungen
-      + "Das Haus hat ein Erdgeschoss und vier Obergeschosse, typische Altbau-Raumhöhen und in einzelnen Wohnungen noch Kachelöfen. "
-      // [B] S. 2, 8: Gas-Etagenheizungen
-      + "Beheizt werden die Wohnungen über Gas-Etagenheizungen. "
-      // [B] S. 3: aufgeteilt, Verwaltung durch die HWS, Wirtschaftsplan 2025
-      + "Die Wohnungen sind als Wohnungseigentum aufgeteilt, die Gemeinschaft wird von der HWS verwaltet. "
-      // [B] S. 3, 8: Bauantrag Balkone 2022, Vorplanung Aufzüge und Dachgeschoss 10/2024, unverbindlich
-      + "Für Balkone zum Hof liegt ein Bauantrag aus 2022 vor, für Aufzüge und einen Dachgeschossausbau eine Vorplanung; beschlossen ist davon noch nichts.",
+      // Standortbezogen, höchstens 1000 Zeichen (Christian, 16.10.2026). Quellen wie bei den Standortargumenten.
+      "Die Barfusstraße 9 liegt im Wedding und damit im Berliner Bezirk Mitte. Der Gründerzeitbau von um 1900 mit Vorderhaus, Seitenflügel und Quergebäude rund um einen Innenhof bietet typische Altbau-Raumhöhen. Die U-Bahn-Linie U6 mit den Bahnhöfen Rehberge und Afrikanische Straße ist schnell erreicht, über sie geht es ohne Umsteigen bis in die Friedrichstraße. Mit der Müllerstraße liegt die Einkaufs- und Versorgungsachse des Kiezes um die Ecke, Schulen und Gastronomie sind in der Nähe. Volkspark Rehberge und Schillerpark bieten viel Grün direkt vor der Tür. Die Straße entwickelt sich: Gegenüber entsteht ein Neubau, und viele Häuser werden modernisiert. Innenstadtnahe Lage, gute Anbindung und Grün machen den Standort bei Mietern dauerhaft gefragt.",
     standortargumente: [
       // [B] S. 4, Argument 01
       "Wedding gehört zum Berliner Bezirk Mitte.",
@@ -83,16 +75,8 @@ export const OBJEKT_INHALTE: ObjektInhalt[] = [
   {
     adresse: "Hauffstraße 38",
     kurzbeschreibung:
-      // [H] S. 1, 3: Baujahr 2000, 46 ETW, Häuser 38 a bis f, Aufzüge, Keller, Garagen
-      "Die Wohnanlage Hauffstraße 38 a bis f in Geltow wurde im Jahr 2000 errichtet und umfasst 46 Eigentumswohnungen mit Aufzügen, Kellern und Garagen. "
-      // [H] S. 7: Massivbau, Dämmfassade, Ziegeldach, Isolierverglasung
-      + "Die Häuser sind massiv gebaut, haben eine Dämmfassade, ein Ziegeldach und isolierverglaste Fenster. "
-      // [H] S. 3, 7: Einbauküche, Fußbodenheizung, Bad mit Dusche und Wanne, Balkon oder Garten
-      + "Zur Ausstattung gehören Einbauküche, Fußbodenheizung, Bad mit Dusche und Wanne sowie Balkon oder Garten. "
-      // [H] S. 3, 7: rund 350.000 € 2020 bis 2026, Gasheizung 2017
-      + "Von 2020 bis 2026 flossen rund 350.000 € in die Instandhaltung, unter anderem in Heizung, Leitungen, Dach, Aufzug und Fenster; die Gas-Zentralheizung stammt von 2017. "
-      // [H] S. 3: Stein & Co. aus Werder (Havel), seit 1990
-      + "Verwaltet wird die Anlage von der Stein & Co. Vermögensverwaltung GmbH aus Werder (Havel).",
+      // Standortbezogen, höchstens 1000 Zeichen (Christian, 16.10.2026). Quellen wie bei den Standortargumenten.
+      "Die Wohnanlage Hauffstraße 38 a bis f liegt in Geltow, einem Ortsteil der Gemeinde Schwielowsee mitten in der Havelseen-Landschaft. Die Landeshauptstadt Potsdam schließt unmittelbar an, Werder (Havel) ist der direkte Nachbarort, und Berlin ist über den Speckgürtel gut erreichbar. Wer hier wohnt, verbindet Wasser und Natur mit der Nähe zu Arbeitsplätzen in Potsdam und Berlin. Die 46 Eigentumswohnungen aus dem Jahr 2000 haben Aufzüge, Keller, Garagen, Einbauküche, Fußbodenheizung und Balkon oder Garten. Seit 2020 flossen rund 350.000 € in die Instandhaltung. Das Mietniveau in Geltow liegt laut Portal 2026 bei 14,79 €/m². Die Lage zwischen See, Potsdam und Berlin macht die Anlage für Paare und Familien attraktiv.",
     standortargumente: [
       // [H] S. 4, Argument 01
       "Geltow gehört zur Gemeinde Schwielowsee und liegt in der Havelseen-Landschaft.",
@@ -127,14 +111,8 @@ export const OBJEKT_INHALTE: ObjektInhalt[] = [
   {
     adresse: "Luisenstraße 72",
     kurzbeschreibung:
-      // [L72] S. 3; [KfW] S. 7: DHH 1, 91 m², 4 Zimmer, ca. 600 m², Baujahr 1937
-      "Die Luisenstraße 72 ist eine Doppelhaushälfte von 1937 mit vier Zimmern auf 91 m² und einem eigenen Grundstück von rund 600 m². "
-      // [L72] S. 3: rund 70 Häuser gleicher Bauart, ruhige Anliegerstraßen
-      + "Sie liegt in der Waldsiedlung Wünsdorf, die rund 70 Häuser gleicher Bauart in ruhigen Anliegerstraßen umfasst. "
-      // [L72] S. 2, 3: saniert, leer, keine WEG, kein Hausgeld
-      + "Das Haus ist saniert und steht leer. Es gibt keine Eigentümergemeinschaft und kein Hausgeld. "
-      // [L72] S. 4: Paket A, Paket B, getrennte Verträge
-      + "Optional kommen eine Teilsanierung (Paket A) oder eine Vollsanierung (Paket B, unter anderem Fassade und Dach) hinzu; der Leistungsumfang wird im Werkvertrag festgelegt.",
+      // Standortbezogen, höchstens 1000 Zeichen (Christian, 16.10.2026). Quellen wie bei den Standortargumenten.
+      "Die Luisenstraße 72 liegt in der Waldsiedlung Wünsdorf in Zossen, rund 70 Häuser gleicher Bauart in ruhigen Anliegerstraßen. Der Bahnhof Wünsdorf-Waldstadt ist rund 650 m entfernt, von dort fahren der RE nach Berlin und die RB 24 zum Flughafen BER. Supermärkte, Kitas und Schulen erreicht man in rund einem Kilometer, der Kleine Wünsdorfer See liegt rund 800 m entfernt. Über die B96 und den Berliner Ring sind Ludwigsfelde mit seinem Industriepark in rund 20 km und der BER in rund 22 km erreichbar. Die Doppelhaushälfte von 1937 hat vier Zimmer auf 91 m² und ein eigenes Grundstück von rund 600 m². Sie ist saniert, es gibt keine Eigentümergemeinschaft und kein Hausgeld. Ruhiges Wohnen im Grünen mit guter Anbindung an Berlin macht den Standort für Familien gefragt.",
     standortargumente: [
       // [L72] S. 3, 5: Bahnhof 650 m bzw. 0,7 km, RB/RE nach Berlin Hbf, RB 24 zum BER
       "Bahnhof Wünsdorf-Waldstadt rund 650 m entfernt, mit RE nach Berlin und RB 24 zum BER.",
@@ -171,14 +149,8 @@ export const OBJEKT_INHALTE: ObjektInhalt[] = [
   {
     adresse: "Agnesstraße 29",
     kurzbeschreibung:
-      // [A29] S. 2, 3; [KfW] S. 7: DHH 2, 121,5 m², 5 Zimmer, ca. 800 m², Baujahr 1937
-      "Die Agnesstraße 29 ist eine Doppelhaushälfte von 1937 mit fünf Zimmern auf 121,5 m² und einem eigenen Grundstück von rund 800 m². "
-      // [A29] S. 3
-      + "Sie liegt in der Waldsiedlung Wünsdorf, die rund 70 Häuser gleicher Bauart in ruhigen Anliegerstraßen umfasst. "
-      // [A29] S. 2, 3
-      + "Das Haus ist derzeit vermietet. Es gibt keine Eigentümergemeinschaft und kein Hausgeld. "
-      // [A29] S. 2, 4: Vollsanierung 50.000 € im Kaufpreis, nach Auszug, 2 bis 3 Monate
-      + "Eine Vollsanierung ist im Kaufpreis enthalten; sie ist nach dem Auszug des Mieters geplant und dauert etwa zwei bis drei Monate.",
+      // Standortbezogen, höchstens 1000 Zeichen (Christian, 16.10.2026). Quellen wie bei den Standortargumenten.
+      "Die Agnesstraße 29 liegt in der Waldsiedlung Wünsdorf in Zossen, rund 70 Häuser gleicher Bauart in ruhigen Anliegerstraßen. Der Bahnhof Wünsdorf-Waldstadt ist rund 650 m entfernt, von dort fahren der RE nach Berlin und die RB 24 zum Flughafen BER. Supermärkte, Kitas und Schulen erreicht man in rund einem Kilometer, der Kleine Wünsdorfer See liegt rund 800 m entfernt. Über die B96 und den Berliner Ring sind Ludwigsfelde mit seinem Industriepark in rund 20 km und der BER in rund 22 km erreichbar. Die Doppelhaushälfte von 1937 hat fünf Zimmer auf 121,5 m² und ein eigenes Grundstück von rund 800 m². Es gibt keine Eigentümergemeinschaft und kein Hausgeld, eine Vollsanierung ist im Kaufpreis enthalten. Viel Platz im Grünen mit guter Anbindung an Berlin macht den Standort für Familien gefragt.",
     standortargumente: [
       // [A29] S. 3, 5
       "Bahnhof Wünsdorf-Waldstadt rund 650 m entfernt, mit RE nach Berlin und RB 24 zum BER.",
@@ -214,14 +186,8 @@ export const OBJEKT_INHALTE: ObjektInhalt[] = [
   {
     adresse: "Agnesstraße 30",
     kurzbeschreibung:
-      // [A30] S. 2, 3; [KfW] S. 7
-      "Die Agnesstraße 30 ist eine Doppelhaushälfte von 1937 mit fünf Zimmern auf 121,5 m² und einem eigenen Grundstück von rund 800 m². "
-      // [A30] S. 3
-      + "Sie liegt in der Waldsiedlung Wünsdorf, die rund 70 Häuser gleicher Bauart in ruhigen Anliegerstraßen umfasst. "
-      // [A30] S. 2, 3
-      + "Das Haus steht leer im Rohbauzustand. Es gibt keine Eigentümergemeinschaft und kein Hausgeld. "
-      // [A30] S. 3, 4
-      + "Die Vollsanierung ist im Kaufpreis enthalten und dauert etwa zwei bis drei Monate, danach folgt die Neuvermietung.",
+      // Standortbezogen, höchstens 1000 Zeichen (Christian, 16.10.2026). Quellen wie bei den Standortargumenten.
+      "Die Agnesstraße 30 liegt in der Waldsiedlung Wünsdorf in Zossen, rund 70 Häuser gleicher Bauart in ruhigen Anliegerstraßen. Der Bahnhof Wünsdorf-Waldstadt ist rund 650 m entfernt, von dort fahren der RE nach Berlin und die RB 24 zum Flughafen BER. Supermärkte, Kitas und Schulen erreicht man in rund einem Kilometer, der Kleine Wünsdorfer See liegt rund 800 m entfernt. Über die B96 und den Berliner Ring sind Ludwigsfelde mit seinem Industriepark in rund 20 km und der BER in rund 22 km erreichbar. Die Doppelhaushälfte von 1937 hat fünf Zimmer auf 121,5 m² und ein eigenes Grundstück von rund 800 m². Es gibt keine Eigentümergemeinschaft und kein Hausgeld, die Vollsanierung ist im Kaufpreis enthalten. Viel Platz im Grünen mit guter Anbindung an Berlin macht den Standort für Familien gefragt.",
     standortargumente: [
       // [A30] S. 3, 5
       "Bahnhof Wünsdorf-Waldstadt rund 650 m entfernt, mit RE nach Berlin und RB 24 zum BER.",

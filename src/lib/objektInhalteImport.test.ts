@@ -124,3 +124,12 @@ describe("manuelle interne Highlights", () => {
     }
   });
 });
+
+describe("Kurzbeschreibungen", () => {
+  it("sind standortbezogen und höchstens 1000 Zeichen lang (Christian, 16.10.2026)", () => {
+    for (const o of OBJEKT_INHALTE) {
+      expect(o.kurzbeschreibung.length, o.adresse).toBeLessThanOrEqual(1000);
+      expect(o.kurzbeschreibung, o.adresse).toMatch(/liegt/);
+    }
+  });
+});
