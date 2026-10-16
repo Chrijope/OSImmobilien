@@ -12,7 +12,8 @@ import {
 } from "@/lib/kontaktPipeline";
 import { berechneDashboardKpis, zeitraumGrenzen } from "@/lib/dashboardKpis";
 import { PIPELINE_SPALTEN, spaltenStufe, istAusgeblendeteStufe } from "@/lib/pipelineStufen";
-import { brauchtStufenTermin, stufeNachStattgefunden, TERMIN_STUFEN, type StufenTerminEingabe, type TerminStufe } from "@/lib/stufenTermin";
+import { besichtigungsVorschlag, brauchtStufenTermin, stufeNachStattgefunden, TERMIN_STUFEN, type StufenTerminEingabe, type TerminStufe } from "@/lib/stufenTermin";
+import { BankgutachterTerminZeile } from "@/components/finanzierung/BankgutachterTerminZeile";
 import { StufenTerminDialog } from "@/components/kunden/StufenTerminDialog";
 import { Button } from "@/components/ui/button";
 
@@ -26,6 +27,7 @@ import { Button } from "@/components/ui/button";
  */
 
 const JETZT = new Date().toISOString();
+const NOTAR_TAG = new Date(Date.now() + 21 * 86400000).toISOString().slice(0, 10);
 
 /** Rohzeilen wie aus der Datenbank: Kontakte mit der (abgeleiteten) Kontaktstufe. */
 const KONTAKTE = [
@@ -35,7 +37,7 @@ const KONTAKTE = [
   { id: "vk-4", vorname: "Dieter", nachname: "Test (3 Investments)", status: "kunde", meta: { pipelineStufe: "reservierung" } },
   { id: "vk-5", vorname: "Eva", nachname: "Bestand", status: "kunde", meta: { pipelineStufe: "bestandsimport" } },
   { id: "vk-6", vorname: "Frieda", nachname: "Altfall (Bonitätsunterlagen)", status: "qualifiziert", meta: { pipelineStufe: "bonitaetsunterlagen" } },
-  { id: "vk-7", vorname: "Gustav", nachname: "Besichtigung", status: "qualifiziert", meta: { pipelineStufe: "besichtigung" } },
+  { id: "vk-7", vorname: "Gustav", nachname: "Finanzierung (Notar steht)", status: "qualifiziert", meta: { pipelineStufe: "finanzierung" } },
 ].map((k) => ({
   ...k,
   email: "", telefon: "", archiviert: false, geloescht: false,
@@ -53,10 +55,12 @@ const INVESTMENTS = [
   ["vi-7", "vk-4", 3, "erreicht", 0],
   ["vi-8", "vk-5", 1, "bestandsimport", 0],
   ["vi-9", "vk-6", 1, "bonitaetsunterlagen", 215000],
-  ["vi-10", "vk-7", 1, "besichtigung", 232000],
+  ["vi-10", "vk-7", 1, "finanzierung", 232000],
 ].map(([id, kunde_id, nummer, stufe, kaufpreis]) => ({
   id, kunde_id, kaufpreis, erstellt_am: JETZT,
-  meta: { nummer, label: `Investment ${nummer}`, pipelineStufe: stufe, kaufpreis },
+  // Gustav hat schon einen Notartermin: Das Besichtigungs-Fenster schlaegt
+  // dann Notartag und Vortag vor.
+  meta: { nummer, label: `Investment ${nummer}`, pipelineStufe: stufe, kaufpreis, ...(id === "vi-10" ? { notarTermin: NOTAR_TAG, notarUhrzeit: "10:30" } : {}) },
 }));
 
 /** Nur in dieser Vorschau: die Stufe eines Investments direkt im Speicher setzen. */
@@ -117,7 +121,7 @@ export default function VorschauPipeline() {
   }, [stand]);
 
   const belegt = SPALTEN.filter((s) => daten.karten.some((k) => spaltenStufe(k.stufe) === s.key)
-    || ["neuer_lead", "reservierung", "besichtigung", "bankgutachter", "notar"].includes(s.key));
+    || ["neuer_lead", "reservierung", "finanzierung", "bankgutachter", "besichtigung", "notar"].includes(s.key));
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8 space-y-6" data-lg="seite">
@@ -127,9 +131,11 @@ export default function VorschauPipeline() {
           Beispielkunden, nur in diesem Browserfenster, nichts wird gespeichert. Jede Karte ist ein Investment.
           Über die Auswahl auf einer Karte lässt sich ihre Stufe ändern: Die anderen Investments desselben
           Kunden bleiben, wo sie sind, und Lead-Verwaltung, „Alle Kontakte“ und die Zahlen rechnen sofort neu.
-          Neuer Ablauf: Wer eine Karte auf „Besichtigung“ oder „Termin Bankgutachter“ setzt, trägt im Fenster
-          den Termin ein; „Stattgefunden“ rückt die Stufe weiter. Die alte Stufe Bonitätsunterlagen hat keine
-          eigene Spalte mehr und steht unter „Reservierung“.
+          Ablauf nach der Reservierung: Finanzierung, Termin Bankgutachter, Besichtigung, Notar. Wer eine Karte
+          auf „Termin Bankgutachter“ oder „Besichtigung“ setzt, trägt im Fenster den Termin ein; „Stattgefunden“
+          rückt die Stufe weiter (Bankgutachter auf Besichtigung, Besichtigung auf Notar). Bei Gustav steht schon
+          ein Notartermin, das Besichtigungs-Fenster schlägt deshalb Notartag und Vortag vor. Die alte Stufe
+          Bonitätsunterlagen hat keine eigene Spalte mehr und steht unter „Reservierung“.
         </p>
       </div>
 
@@ -151,7 +157,7 @@ export default function VorschauPipeline() {
                         <div className="font-medium">{k.kunde.vorname} {k.kunde.nachname}</div>
                         {inv && <Badge variant="secondary" className="text-[10px] mt-1">Investment {inv.nummer}</Badge>}
                         {istAusgeblendeteStufe(k.stufe) && (
-                          <div className="text-[10px] mt-1 text-[hsl(var(--warning))]">Alte Stufe {label(k.stufe)}, weiter über die Besichtigung</div>
+                          <div className="text-[10px] mt-1 text-[hsl(var(--warning))]">Alte Stufe {label(k.stufe)}, weiter über die Finanzierung</div>
                         )}
                         {inv && (
                           <select
@@ -177,7 +183,7 @@ export default function VorschauPipeline() {
         <CardHeader className="pb-2"><CardTitle className="text-base">Nächste Aktionen (eingetragene Termine)</CardTitle></CardHeader>
         <CardContent className="text-sm space-y-2">
           {termine.length === 0 && (
-            <p className="text-muted-foreground">Noch kein Termin. Eine Karte auf „Besichtigung“ oder „Termin Bankgutachter“ setzen.</p>
+            <p className="text-muted-foreground">Noch kein Termin. Eine Karte auf „Termin Bankgutachter“ oder „Besichtigung“ setzen.</p>
           )}
           {termine.map((t, i) => (
             <div key={`${t.investmentId}-${i}`} className="flex flex-wrap items-center gap-2">
@@ -189,14 +195,34 @@ export default function VorschauPipeline() {
         </CardContent>
       </Card>
 
+      <Card>
+        <CardHeader className="pb-2"><CardTitle className="text-base">Gustav, Investment 1: Abschnitt Finanzierung</CardTitle></CardHeader>
+        <CardContent className="text-sm">
+          <BankgutachterTerminZeile
+            investmentId="vi-10"
+            aufgaben={termine.map((t) => ({
+              investmentId: t.investmentId, titel: t.titel, status: "offen" as const, faelligAm: t.eingabe.datum,
+              uhrzeit: t.eingabe.uhrzeit, beschreibung: t.eingabe.ort ? `Treffpunkt: ${t.eingabe.ort}` : "", erstelltVonName: "Vorschau Backoffice",
+            }))}
+            darfEintragen
+            onEintragen={() => setTerminFuer({ investmentId: "vi-10", stufe: "bankgutachter", kundeName: "Gustav Finanzierung" })}
+          />
+        </CardContent>
+      </Card>
+
       <StufenTerminDialog
         stufe={terminFuer?.stufe ?? null}
         kundeName={terminFuer?.kundeName}
+        notarVorschlag={(() => {
+          const inv = terminFuer ? getInvestments().find((i) => i.id === terminFuer.investmentId) : undefined;
+          return besichtigungsVorschlag(inv?.notarTermin, inv?.notarUhrzeit);
+        })()}
         onAbbrechen={() => setTerminFuer(null)}
         onSpeichern={async (eingabe) => {
           if (!terminFuer) return null;
           // Vorschau: kein meeting_anlegen, nur Arbeitsspeicher.
-          setTermine((liste) => [...liste, { investmentId: terminFuer.investmentId, titel: TERMIN_STUFEN[terminFuer.stufe].titel, eingabe }]);
+          const titel = TERMIN_STUFEN[terminFuer.stufe].titel;
+          setTermine((liste) => [...liste, { investmentId: terminFuer.investmentId, titel, eingabe }]);
           setzeStufe(terminFuer.investmentId, terminFuer.stufe);
           setTerminFuer(null);
           neu();

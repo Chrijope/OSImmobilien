@@ -384,7 +384,7 @@ const Inbox = () => {
     // nur die Kontaktstufe, und die Aufgaben eines zweiten Investments fielen
     // weg, sobald ein anderes weiter war.
     if (!isViewingOther && (user.role || "").toLowerCase() === "finanzierungspartner") {
-      const FIN_STAGES = new Set(["reservierung", "besichtigung", "bankgutachter", "finanzierung"]);
+      const FIN_STAGES = new Set(["reservierung", "finanzierung", "bankgutachter", "besichtigung"]);
       const finKunden = new Set<string>();
       try {
         getInvestments().forEach((inv) => {

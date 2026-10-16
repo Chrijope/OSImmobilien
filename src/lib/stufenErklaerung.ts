@@ -34,15 +34,15 @@ export const STUFEN_ERKLAERUNG: Record<string, string> = {
   follow_up:
     "Der Lead liegt auf Wiedervorlage. Bis zum vereinbarten Zeitpunkt ist er ausgeblendet, danach " +
     "meldet er sich über die Inbox zurück.",
-  erstgespraech_geplant: "Ein Erstgesprächstermin ist eingetragen, das Gespräch hat noch nicht stattgefunden.",
+  erstgespraech_geplant: "Ein Termin für das Qualifizierungsgespräch ist eingetragen, das Gespräch hat noch nicht stattgefunden.",
   // Geprüft in SetterSkript.handleErstgespraechUndZuweisen: Die Buchung setzt
   // Stufe, Vertriebspartner und Zuständigkeit in einem Vorgang.
   erstgespraech:
-    "Der Erstgesprächstermin ist gebucht. Mit der Buchung über das Setter-Skript geht der Lead " +
+    "Der Termin für das Qualifizierungsgespräch ist gebucht. Mit der Buchung über das Setter-Skript geht der Lead " +
     "zugleich an den gewählten Vertriebspartner über.",
   // Siehe KundenDetail: Der NoShow-Knopf im Beratungsgespräch setzt immer
   // „BG NoShow". EG NoShow wird ausschließlich von Hand gesetzt.
-  eg_noshow: "Der Lead ist zum Erstgespräch nicht erschienen. Diese Stufe wird von Hand gesetzt, ein neuer Termin ist nötig.",
+  eg_noshow: "Der Lead ist zum Qualifizierungsgespräch nicht erschienen. Diese Stufe wird von Hand gesetzt, ein neuer Termin ist nötig.",
   // Geprüft in calculateLogicalPipelineStufe: Die verschickte Selbstauskunft
   // führt auf „Selbstauskunft", die Unterschrift danach auf „Objektauswahl".
   // Hier stand bis zuletzt „Bonitätsunterlagen", eine Stufe aus der alten
@@ -53,33 +53,37 @@ export const STUFEN_ERKLAERUNG: Record<string, string> = {
   bg_noshow: "Der Kunde ist zur Beratungspräsentation nicht erschienen. Der Lead bleibt beim Vertriebspartner, ein neuer Termin ist nötig.",
   selbstauskunft:
     "Die Selbstauskunft liegt beim Kunden, die Unterschrift steht aus. Dazu lädt er Personalausweis und " +
-    "letzte Gehaltsabrechnung im Portal hoch. Mit der Unterschrift rückt der Vorgang auf „Objektvorstellung\".",
+    "letzte Gehaltsabrechnung im Portal hoch. Mit der Unterschrift rückt der Vorgang auf „Objektpräsentation / Closing\".",
   // Der alte Text beschrieb hier die Reservierung („RV-PDF erzeugt").
   objektauswahl:
-    "Die Selbstauskunft ist unterschrieben, in der Objektvorstellung wird ein passendes Objekt vorgestellt. " +
-    "Sobald eine Reservierungsvereinbarung erstellt ist, rückt der Vorgang auf „Reservierung\".",
+    "Die Selbstauskunft ist unterschrieben. In der Objektpräsentation (Closing) werden das Objekt mit Exposé und " +
+    "Investmentkalkulation und das Finanzierungskonzept besprochen. Sobald eine Reservierungsvereinbarung " +
+    "erstellt ist, rückt der Vorgang auf „Reservierung\".",
   // Nur manuell, siehe pipelineStufen.ts: Keine Automatik setzt diese Stufe.
   follow_up_objekt:
     "Der Kunde hat Objekte gesehen und überlegt noch. Diese Stufe wird ausschließlich von Hand " +
     "gesetzt, keine Automatik führt hierher. Sobald eine Reservierungsvereinbarung erstellt ist, " +
     "rückt der Vorgang auf „Reservierung\".",
-  // Seit 16.10.2026: Nach der Unterschrift bleibt die Stufe, der Partner
-  // bekommt die Aufgabe „Besichtigung vereinbaren" (KundenDetail).
+  // Seit 16.10.2026 (zweite Fassung): Nach der Unterschrift bleibt die Stufe,
+  // bis die Finanzierung angefragt ist (KundenDetail).
   reservierung:
-    "Eine Reservierungsvereinbarung ist erstellt oder unterschrieben. Nach der Unterschrift wird die " +
-    "Besichtigung vereinbart; mit dem eingetragenen Termin steht der Vorgang auf „Besichtigung\".",
+    "Eine Reservierungsvereinbarung ist erstellt oder unterschrieben, ohne Gebühr. Nach der Unterschrift " +
+    "wird die Finanzierung angefragt; ist die Bonität gemeldet oder ein Finanzierungspartner benachrichtigt, " +
+    "rückt der Vorgang auf „Finanzierung\".",
   // Ausgeblendet seit 16.10.2026, siehe pipelineStufen.ts.
   bonitaetsunterlagen:
     "Alte Stufe aus dem früheren Ablauf, ohne eigene Spalte. Laufende Fälle stehen unter „Reservierung\" " +
-    "und gehen über die Besichtigung weiter.",
+    "und gehen über die Finanzierung weiter.",
   // Geprüft in stufenTerminAktionen.rueckeNachStufenTermin.
-  besichtigung:
-    "Die Besichtigung des reservierten Objekts ist als Termin eingetragen. Ist sie stattgefunden, " +
-    "rückt der Vorgang auf „Termin Bankgutachter\".",
+  finanzierung:
+    "Die Finanzierung ist angefragt, die Bank prüft und sagt zu. Danach meldet sich der Gutachter der Bank. " +
+    "Ist die Finanzierung positiv, wird der Kaufvertragsentwurf beim Notar in Auftrag gegeben.",
   bankgutachter:
-    "Der Termin mit dem Gutachter der Bank ist eingetragen. Ist er stattgefunden, rückt der Vorgang " +
-    "auf „Finanzierung\".",
-  finanzierung: "Das Gutachten liegt vor. Die Bank prüft und sagt zu, der Finanzierungspartner begleitet den Darlehensvertrag.",
+    "Der Termin mit dem Gutachter der Bank ist eingetragen (Backoffice, Abschnitt Finanzierung). Ist er " +
+    "stattgefunden, rückt der Vorgang auf „Besichtigung\".",
+  besichtigung:
+    "Die Besichtigung ist als Termin eingetragen, am Tag des Notartermins oder am Vortag, alternativ online. " +
+    "Ist sie stattgefunden, rückt der Vorgang auf „Notar\".",
   notar: "Ein Notartermin ist im Investment hinterlegt oder vom Kunden im Portal bestätigt.",
   faelligkeit: "Der Notartermin liegt in der Vergangenheit, Kaufpreisfälligkeit und Übergabe laufen.",
   // Geprüft in KundenDetail, Karte „Abwicklung": Erst die gestellte

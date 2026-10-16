@@ -9,11 +9,11 @@ import VorschauPipeline from "./VorschauPipeline";
 describe("Vorschau Pipeline, neuer Ablauf", () => {
   it("zeigt die neuen Spalten und keine Spalte Bonitätsunterlagen", () => {
     render(<VorschauPipeline />);
-    for (const spalte of ["Besichtigung", "Termin Bankgutachter", "Objektvorstellung", "Kaufpreisfälligkeit"]) {
+    for (const spalte of ["Finanzierung", "Besichtigung", "Termin Bankgutachter", "Objektpräsentation / Closing", "Kaufpreisfälligkeit"]) {
       expect(screen.getAllByText(spalte).length, spalte).toBeGreaterThan(0);
     }
     // Der Altfall steht unter „Reservierung“ und traegt den Hinweis.
-    expect(screen.getByText("Alte Stufe Bonitätsunterlagen, weiter über die Besichtigung")).toBeTruthy();
+    expect(screen.getByText("Alte Stufe Bonitätsunterlagen, weiter über die Finanzierung")).toBeTruthy();
   });
 
   it("öffnet beim Wechsel auf Besichtigung das Termin-Fenster, Abbrechen setzt nichts", () => {

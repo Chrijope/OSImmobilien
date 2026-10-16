@@ -123,15 +123,15 @@ function getAbwicklungDaten(investmentId: string): AbwicklungDaten {
  * Welche Pipelinestufe auf welchen Schritt faellt, steht in `STUFE_ZU_SCHRITT`.
  */
 const PIPELINE_STEPS = [
-  { key: "erstgespraech", label: "Erstgespräch", icon: User },
+  { key: "erstgespraech", label: "Qualifizierungsgespräch", icon: User },
   { key: "beratung", label: "Beratung", icon: User },
   { key: "selbstauskunft", label: "Selbstauskunft", icon: ShieldCheck },
   { key: "unterlagen", label: "Unterlagen", icon: ShieldCheck },
-  { key: "objektvorstellung", label: "Objektvorstellung", icon: Home },
+  { key: "objektvorstellung", label: "Objektpräsentation", icon: Home },
   { key: "reservierung", label: "Reservierung", icon: FileText },
-  { key: "besichtigung", label: "Besichtigung", icon: Home },
-  { key: "bankgutachter", label: "Bankgutachter", icon: Landmark },
   { key: "finanzierung", label: "Finanzierung", icon: Landmark },
+  { key: "bankgutachter", label: "Bankgutachter", icon: Landmark },
+  { key: "besichtigung", label: "Besichtigung", icon: Home },
   { key: "notar", label: "Notar", icon: Briefcase },
   { key: "faelligkeit", label: "Kaufpreisfälligkeit", icon: Briefcase },
 ];

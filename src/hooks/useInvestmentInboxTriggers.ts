@@ -6,7 +6,8 @@ import { addProzessAufgabe } from "@/lib/prozessAufgabe";
 import {
   fehlendeMindestunterlagen, mindestunterlagenText, objektvorstellungSteht, STUFEN_VOR_OBJEKTVORSTELLUNG, UNTERLAGEN_FEHLEN_TITEL,
 } from "@/lib/mindestunterlagen";
-import { stelleBesichtigungsAufgabeSicher } from "@/lib/stufenTerminAktionen";
+import { stelleKveAufgabeSicher, stelleVereinbarenAufgabeSicher } from "@/lib/stufenTerminAktionen";
+import { finanzierungPositiv } from "@/lib/stufenTermin";
 import {
   BP_ENDE_META, beratungsNachfassSchluessel, beratungsNachfassTexte, nachfassNachBeratung, offenNachBeratung,
 } from "@/lib/nachfassplan";
@@ -15,7 +16,7 @@ import { getUserSetting, setUserSetting } from "@/lib/userSettingsCache";
 import { isTestAccount } from "@/lib/dbStoreHelper";
 import { cacheGet, isTableLoaded, wennTabellenGeladen } from "@/lib/dataCache";
 import { pflichtBonitaetDocs } from "@/lib/bonitaetDocs";
-import { getFinanzierungDocStatus } from "@/lib/finanzierungStore";
+import { getFinanzierung, getFinanzierungDocStatus } from "@/lib/finanzierungStore";
 import { kontaktBelongsToUser } from "@/lib/kontaktOwnership";
 import { hatVereinbartenKontakt } from "@/lib/kontaktTermine";
 import { notifyUser, notifyVertriebsleitung } from "@/lib/bellNotifications";
@@ -430,17 +431,34 @@ export function useInvestmentInboxTriggers(userRole?: string, userName?: string,
           }
         }
 
-        // Reservierung unterschrieben: „Besichtigung vereinbaren", je
-        // Investment einmal (16.10.2026). Dieselbe Pruefung wie im Kundenprofil.
-        if (isVp && getRvSigned(inv.id) && ["reservierung", "bonitaetsunterlagen"].includes(stage)) {
-          void stelleBesichtigungsAufgabeSicher({
+        /*
+         * Ablauf nach der Reservierung (Vorgabe Christian, 16.10.2026):
+         * Finanzierung → Termin Bankgutachter → Besichtigung → Notar. Je
+         * Investment einmal:
+         *   - Finanzierung angefragt: „Termin Bankgutachter vereinbaren"
+         *   - Notartermin steht: „Besichtigung vereinbaren" (am Notartag oder
+         *     am Vortag, alternativ online). Nach dem Bankgutachter legt
+         *     `rueckeNachStufenTermin` dieselbe Aufgabe an.
+         *   - Finanzierung positiv: Kaufvertragsentwurf beim Notar beauftragen
+         */
+        if (isVp && getRvSigned(inv.id)) {
+          const vereinbarenCtx = {
             kundeId: inv.kontaktId,
             kundeName,
             investmentId: inv.id,
             investmentLabel: inv.label,
             erstelltVonName: userName,
             rueckfallZustaendig: userId,
-          });
+          };
+          if (stage === "finanzierung") void stelleVereinbarenAufgabeSicher("bankgutachter", vereinbarenCtx);
+          if (inv.notarTermin && ["finanzierung", "bankgutachter", "besichtigung", "notar"].includes(stage)
+            && String(inv.notarTermin).slice(0, 10) >= todayISO()) {
+            void stelleVereinbarenAufgabeSicher("besichtigung", vereinbarenCtx);
+          }
+          if (["reservierung", "bonitaetsunterlagen", "finanzierung", "bankgutachter", "besichtigung", "notar"].includes(stage)
+            && finanzierungPositiv(getFinanzierung(inv.id))) {
+            void stelleKveAufgabeSicher(vereinbarenCtx);
+          }
         }
 
         // =========== PHASE 3 – Objektauswahl ===========

@@ -14,7 +14,7 @@ describe("Reihenfolge der Pipelinestufen", () => {
   it("haelt den neuen Ablauf ein", () => {
     const kette = [
       "erstgespraech_geplant", "beratungsgespraech", "selbstauskunft", "objektauswahl",
-      "reservierung", "besichtigung", "bankgutachter", "finanzierung", "notar", "faelligkeit",
+      "reservierung", "finanzierung", "bankgutachter", "besichtigung", "notar", "faelligkeit",
     ];
     for (let i = 1; i < kette.length; i++) {
       expect(pos(kette[i]), `${kette[i]} muss hinter ${kette[i - 1]} liegen`)
@@ -27,7 +27,9 @@ describe("Reihenfolge der Pipelinestufen", () => {
     expect(name("beratungsgespraech")).toBe("Beratungspräsentation");
     expect(name("bg_noshow")).toBe("BP NoShow");
     expect(name("selbstauskunft")).toBe("Selbstauskunft & Unterlagen");
-    expect(name("objektauswahl")).toBe("Objektvorstellung");
+    expect(name("erstgespraech_geplant")).toBe("Qualifizierungsgespräch");
+    expect(name("eg_noshow")).toBe("QG NoShow");
+    expect(name("objektauswahl")).toBe("Objektpräsentation / Closing");
     expect(name("besichtigung")).toBe("Besichtigung");
     expect(name("bankgutachter")).toBe("Termin Bankgutachter");
     expect(name("faelligkeit")).toBe("Kaufpreisfälligkeit");
@@ -40,16 +42,17 @@ describe("Reihenfolge der Pipelinestufen", () => {
     // Die Kachel steht unter „Reservierung“, im selben Rang.
     expect(spaltenStufe("bonitaetsunterlagen")).toBe("reservierung");
     expect(fortschrittsRang("bonitaetsunterlagen")).toBe(fortschrittsRang("reservierung"));
-    // Von dort geht es ueber die Besichtigung weiter, nie zurueck.
-    expect(darfVorruecken("bonitaetsunterlagen", "besichtigung")).toBe(true);
+    // Von dort geht es ueber die Finanzierung weiter, nie zurueck.
+    expect(darfVorruecken("bonitaetsunterlagen", "finanzierung")).toBe(true);
     expect(darfVorruecken("bonitaetsunterlagen", "objektauswahl")).toBe(false);
   });
 
-  it("bewertet die neuen Stufen zwischen Reservierung und Finanzierung", () => {
+  it("bewertet Finanzierung, Bankgutachter und Besichtigung zwischen Reservierung und Notar", () => {
     const w = STUFEN_WAHRSCHEINLICHKEIT;
-    expect(w.reservierung).toBeLessThan(w.besichtigung);
-    expect(w.besichtigung).toBeLessThan(w.bankgutachter);
-    expect(w.bankgutachter).toBeLessThan(w.finanzierung);
+    expect(w.reservierung).toBeLessThan(w.finanzierung);
+    expect(w.finanzierung).toBeLessThan(w.bankgutachter);
+    expect(w.bankgutachter).toBeLessThan(w.besichtigung);
+    expect(w.besichtigung).toBeLessThan(w.notar);
     expect(w.bonitaetsunterlagen).toBe(w.reservierung);
   });
 });
@@ -100,7 +103,7 @@ describe("Investments in den neuen Stufen zaehlen weiterhin", () => {
     const { PIPELINE_STUFEN } = await import("@/lib/pipelineStufen");
     const stelle = (k: string) => PIPELINE_STUFEN.findIndex((s) => s.key === k);
     const grenze = stelle("selbstauskunft");
-    for (const stufe of ["objektauswahl", "reservierung", "bonitaetsunterlagen", "besichtigung", "bankgutachter", "finanzierung"]) {
+    for (const stufe of ["objektauswahl", "reservierung", "bonitaetsunterlagen", "finanzierung", "bankgutachter", "besichtigung"]) {
       expect(stelle(stufe), `${stufe} muss hinter der Grenze liegen`).toBeGreaterThanOrEqual(grenze);
     }
     // Und die Stubs davor bleiben draussen.

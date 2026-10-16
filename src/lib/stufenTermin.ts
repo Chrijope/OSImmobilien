@@ -1,23 +1,28 @@
 /**
  * Besichtigung und Termin Bankgutachter: Stufen mit Termin (16.10.2026).
  *
- * Neuer Ablauf laut Umsetzungsstrategie Vertrieb, Abschnitt 2: Nach der
- * unterschriebenen Reservierung besichtigt der Kunde das Objekt, danach
- * bewertet der Gutachter der Bank. Beide Stufen haengen an einem echten
- * Termin. Wer ein Investment von Hand auf eine dieser Stufen setzt (Board,
- * Prozessstrasse im Investment), traegt im Fenster `StufenTerminDialog`
- * Datum und Uhrzeit ein. Gespeichert wird ueber `meeting_anlegen`, also als
+ * Reihenfolge nach der Vorgabe von Christian (zweite Fassung, 16.10.2026):
+ * Reservierung → Finanzierung → Termin Bankgutachter → Besichtigung → Notar.
+ * Ist die Finanzierung angefragt, meldet sich der Gutachter der Bank; das
+ * Backoffice traegt den Termin ein. Besichtigt wird am Notartag oder am
+ * Vortag, alternativ online.
+ *
+ * Beide Stufen haengen an einem echten Termin. Wer ein Investment von Hand
+ * auf eine dieser Stufen setzt (Board, Prozessstrasse im Investment) oder im
+ * Abschnitt Finanzierung den Gutachtertermin eintraegt, fuellt das Fenster
+ * `StufenTerminDialog` aus. Gespeichert wird ueber `meeting_anlegen`, also als
  * Meeting mit gekoppelter Aufgabe am Investment, genau wie „Termin
  * festlegen". Damit steht der Termin in der Kachel „Nächste Aktionen", und
  * sein Haken fuehrt in das Terminergebnis (`terminErgebnis.ts`).
  *
- * „Stattgefunden" rueckt die Stufe vor: Besichtigung → Termin Bankgutachter,
- * Termin Bankgutachter → Finanzierung, nie zurueck (`darfVorruecken`).
+ * „Stattgefunden" rueckt die Stufe vor: Termin Bankgutachter → Besichtigung,
+ * Besichtigung → Notar, nie zurueck (`darfVorruecken`).
  *
- * Die Aufgaben „Besichtigung vereinbaren" (nach unterschriebener
- * Reservierung) und „Termin Bankgutachter vereinbaren" (nach der
- * Besichtigung) laufen ueber `addProzessAufgabe`: Empfaenger ist der
- * Zustaendige, ohne ihn die Leitung, je Ausloeser hoechstens eine offene.
+ * Die Aufgaben „Termin Bankgutachter vereinbaren" (sobald die Finanzierung
+ * angefragt ist) und „Besichtigung vereinbaren" (nach dem Bankgutachter oder
+ * sobald der Notartermin steht) laufen ueber `addProzessAufgabe`: Empfaenger
+ * ist der Zustaendige, ohne ihn die Leitung, je Ausloeser hoechstens eine
+ * offene.
  */
 import { darfVorruecken } from "./pipelineStufen";
 import { meetingZeitInZukunft } from "./meetingZeit";
@@ -28,7 +33,7 @@ interface TerminStufeInfo {
   /** Titel des Termins, zugleich Erkennungsmerkmal beim Ergebnis. */
   titel: string;
   /** Wohin „stattgefunden" die Stufe rueckt. */
-  folgeStufe: "bankgutachter" | "finanzierung";
+  folgeStufe: "besichtigung" | "notar";
   /** Erklaerung im Fenster. */
   hinweis: string;
 }
@@ -36,12 +41,12 @@ interface TerminStufeInfo {
 export const TERMIN_STUFEN: Record<TerminStufe, TerminStufeInfo> = {
   besichtigung: {
     titel: "Besichtigung",
-    folgeStufe: "bankgutachter",
-    hinweis: "Der Kunde besichtigt das reservierte Objekt.",
+    folgeStufe: "notar",
+    hinweis: "Der Kunde besichtigt das Objekt, am Tag des Notartermins oder am Vortag. Alternativ online.",
   },
   bankgutachter: {
     titel: "Termin Bankgutachter",
-    folgeStufe: "finanzierung",
+    folgeStufe: "besichtigung",
     hinweis: "Der Gutachter der Bank bewertet das Objekt.",
   },
 };
@@ -90,7 +95,7 @@ export function terminStufeAusTitel(titel: string | null | undefined): TerminStu
 export function stufeNachStattgefunden(
   titel: string | null | undefined,
   aktuelleStufe: string | null | undefined,
-): "bankgutachter" | "finanzierung" | null {
+): "besichtigung" | "notar" | null {
   const terminStufe = terminStufeAusTitel(titel);
   if (!terminStufe) return null;
   const ziel = TERMIN_STUFEN[terminStufe].folgeStufe;
@@ -107,6 +112,36 @@ export const VEREINBAREN_TITEL: Record<TerminStufe, string> = {
   bankgutachter: "Termin Bankgutachter vereinbaren",
 };
 
+/** Ortsangabe fuer eine Besichtigung per Video. */
+export const ORT_ONLINE = "Online (Video)";
+
+/**
+ * Vorschlag fuer den Besichtigungstermin: der Notartermin selbst, sonst leer.
+ * Liegt der Notartermin noch mindestens einen Tag entfernt, bietet das Fenster
+ * zusaetzlich den Vortag an (`vortagIso`).
+ */
+export function besichtigungsVorschlag(
+  notarTermin: string | null | undefined,
+  notarUhrzeit: string | null | undefined,
+): { datum: string; uhrzeit: string } | null {
+  const datum = (notarTermin || "").slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(datum)) return null;
+  return { datum, uhrzeit: /^\d{2}:\d{2}/.test(notarUhrzeit || "") ? (notarUhrzeit || "").slice(0, 5) : "" };
+}
+
+/** Der Kalendertag vor `datum` (JJJJ-MM-TT), ohne Zeitzonen-Verschiebung. */
+export function vortagIso(datum: string): string {
+  const [j, m, t] = datum.split("-").map(Number);
+  const d = new Date(Date.UTC(j, m - 1, t - 1));
+  return d.toISOString().slice(0, 10);
+}
+
+/** Der Treffpunkt aus den Details bzw. der Beschreibung eines Stufentermins. */
+export function treffpunktAusText(text: string | null | undefined): string {
+  const zeile = (text || "").split("\n").find((z) => z.startsWith("Treffpunkt: "));
+  return zeile ? zeile.slice("Treffpunkt: ".length).trim() : "";
+}
+
 /** Die Zeilen fuer die Details des Meetings, wie sie `terminErgebnis.ts` liest. */
 export function stufenTerminDetails(e: StufenTerminEingabe, investmentLabel?: string): string | undefined {
   const zeilen = [
@@ -122,4 +157,57 @@ export function stufenTerminDetails(e: StufenTerminEingabe, investmentLabel?: st
 export function terminFehlerText(fehler: unknown): string {
   const text = (fehler as { message?: unknown } | null)?.message;
   return typeof text === "string" && text.trim() ? text : "Der Termin konnte nicht gespeichert werden.";
+}
+
+/**
+ * Ist die Finanzierung positiv? Dann liegt ein Finanzierungsangebot der Bank
+ * vor (in der Finanzierungskarte „Angebot liegt vor") oder der
+ * Darlehensvertrag ist unterschrieben. Ab hier gibt das Backoffice den
+ * Kaufvertragsentwurf beim Notar in Auftrag (Vorgabe Christian, 16.10.2026).
+ */
+export function finanzierungPositiv(
+  daten: { angebote?: Array<{ dokumente?: Array<{ name: string; status: string }> }> } | null | undefined,
+): boolean {
+  return (daten?.angebote || []).some((a) => (a.dokumente || []).some((d) =>
+    (d.name === "Finanzierungsangebot" && d.status !== "none")
+    || (d.name === "Darlehensvertrag" && d.status === "signed")));
+}
+
+/** Ausloeser-Schluessel der Aufgabe „Kaufvertragsentwurf beauftragen" je Investment. */
+export function kveSchluessel(investmentId: string): string {
+  return `kve_beauftragen:${investmentId}`;
+}
+
+export const KVE_TITEL = "Finanzierung positiv: Kaufvertragsentwurf beim Notar in Auftrag geben";
+
+export interface EingetragenerStufenTermin {
+  datum: string;
+  uhrzeit: string;
+  ort: string;
+  eingetragenVon: string;
+  erledigt: boolean;
+}
+
+/**
+ * Der zuletzt eingetragene Termin einer Terminstufe an einem Investment, aus
+ * den Aufgaben, die `meeting_anlegen` mit dem Termin anlegt. Abgesagte zaehlen
+ * nicht. Fuer die Zeile „Termin Bankgutachter" im Abschnitt Finanzierung.
+ */
+export function eingetragenerStufenTermin(
+  aufgaben: ReadonlyArray<{ investmentId?: string; titel: string; status: string; faelligAm?: string; uhrzeit?: string; beschreibung?: string; erstelltVonName?: string }>,
+  investmentId: string,
+  stufe: TerminStufe,
+): EingetragenerStufenTermin | null {
+  const titel = TERMIN_STUFEN[stufe].titel.toLowerCase();
+  const treffer = aufgaben
+    .filter((a) => a.investmentId === investmentId && a.titel.trim().toLowerCase() === titel && a.status !== "abgesagt" && a.faelligAm)
+    .sort((a, b) => `${b.faelligAm}${b.uhrzeit || ""}`.localeCompare(`${a.faelligAm}${a.uhrzeit || ""}`))[0];
+  if (!treffer) return null;
+  return {
+    datum: (treffer.faelligAm || "").slice(0, 10),
+    uhrzeit: (treffer.uhrzeit || "").slice(0, 5),
+    ort: treffpunktAusText(treffer.beschreibung),
+    eingetragenVon: treffer.erstelltVonName || "",
+    erledigt: treffer.status === "erledigt",
+  };
 }

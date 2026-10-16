@@ -5,7 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { heuteIso } from "@/lib/kontaktPipeline";
-import { pruefeStufenTermin, terminFehlerText, TERMIN_STUFEN, type StufenTerminEingabe, type TerminStufe } from "@/lib/stufenTermin";
+import {
+  ORT_ONLINE, pruefeStufenTermin, terminFehlerText, TERMIN_STUFEN, vortagIso, type StufenTerminEingabe, type TerminStufe,
+} from "@/lib/stufenTermin";
 
 /**
  * Das Fenster beim Setzen von „Besichtigung" oder „Termin Bankgutachter".
@@ -15,16 +17,26 @@ import { pruefeStufenTermin, terminFehlerText, TERMIN_STUFEN, type StufenTerminE
  * `stufenTerminAktionen.ts`). Abbrechen setzt nichts. Liefert `onSpeichern`
  * eine Meldung zurueck, bleibt das Fenster offen und zeigt sie an, damit die
  * Eingabe nicht verloren geht.
+ *
+ * Bei der Besichtigung schlaegt das Fenster den Notartermin bzw. dessen Vortag
+ * vor (`notarVorschlag`, siehe `besichtigungsVorschlag`) und bietet „online"
+ * als Ort an.
  */
 export function StufenTerminDialog({
   stufe,
   kundeName,
+  notarVorschlag,
+  ortVorschlag,
   onAbbrechen,
   onSpeichern,
 }: {
   /** `null` heisst geschlossen. */
   stufe: TerminStufe | null;
   kundeName?: string;
+  /** Notartermin des Investments, falls eingetragen (nur Besichtigung). */
+  notarVorschlag?: { datum: string; uhrzeit: string } | null;
+  /** Vorbelegung fuer den Ort, z. B. die Adresse des Objekts. */
+  ortVorschlag?: string;
   onAbbrechen: () => void;
   /** `null` bei Erfolg, sonst die Meldung fuer das Fenster. */
   onSpeichern: (eingabe: StufenTerminEingabe) => Promise<string | null>;
@@ -39,7 +51,10 @@ export function StufenTerminDialog({
   // Bei jedem Oeffnen leer beginnen.
   useEffect(() => {
     if (!stufe) return;
-    setDatum(""); setUhrzeit(""); setOrt(""); setNotiz(""); setFehler(null); setLaeuft(false);
+    const notar = stufe === "besichtigung" ? notarVorschlag : null;
+    setDatum(notar?.datum || ""); setUhrzeit(notar?.uhrzeit || ""); setOrt(ortVorschlag || ""); setNotiz(""); setFehler(null); setLaeuft(false);
+    // Nur beim Oeffnen vorbelegen, nicht bei jeder neuen Vorschlags-Referenz.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stufe]);
 
   if (!stufe) return null;
@@ -82,9 +97,31 @@ export function StufenTerminDialog({
             <Input id="stufen-termin-uhrzeit" type="time" className="mt-1" value={uhrzeit} onChange={(e) => setUhrzeit(e.target.value)} />
           </div>
         </div>
+        {stufe === "besichtigung" && notarVorschlag && (
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            <span className="text-muted-foreground">Vorschlag:</span>
+            <Button type="button" size="sm" variant="outline" className="h-7 text-xs"
+              onClick={() => { setDatum(notarVorschlag.datum); if (notarVorschlag.uhrzeit) setUhrzeit(notarVorschlag.uhrzeit); }}>
+              Am Notartag
+            </Button>
+            {vortagIso(notarVorschlag.datum) >= heuteIso() && (
+              <Button type="button" size="sm" variant="outline" className="h-7 text-xs"
+                onClick={() => setDatum(vortagIso(notarVorschlag.datum))}>
+                Am Vortag
+              </Button>
+            )}
+          </div>
+        )}
         <div>
           <Label className="text-xs" htmlFor="stufen-termin-ort">Ort (optional)</Label>
-          <Input id="stufen-termin-ort" className="mt-1" value={ort} onChange={(e) => setOrt(e.target.value)} placeholder="Adresse oder Treffpunkt" />
+          <div className="mt-1 flex gap-2">
+            <Input id="stufen-termin-ort" value={ort} onChange={(e) => setOrt(e.target.value)} placeholder="Adresse oder Treffpunkt" />
+            {stufe === "besichtigung" && (
+              <Button type="button" size="sm" variant={ort === ORT_ONLINE ? "default" : "outline"} className="shrink-0" onClick={() => setOrt(ORT_ONLINE)}>
+                Online
+              </Button>
+            )}
+          </div>
         </div>
         <div>
           <Label className="text-xs" htmlFor="stufen-termin-notiz">Notiz (optional)</Label>

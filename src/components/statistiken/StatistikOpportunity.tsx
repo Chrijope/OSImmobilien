@@ -89,7 +89,7 @@ export function StatistikOpportunity({ kontakte }: { kontakte: any[] }) {
     const in30 = Date.now() + 30 * 86400000;
     return vorgaenge
       .map(v => {
-        if (!["reservierung", "besichtigung", "bankgutachter", "finanzierung", "notar"].includes(v.stufe)) return null;
+        if (!["reservierung", "finanzierung", "bankgutachter", "besichtigung", "notar"].includes(v.stufe)) return null;
         const notarDate = v.notar ? new Date(v.notar).getTime() : null;
         if (notarDate && notarDate > in30) return null;
         return { id: v.id, name: v.name, stufe: v.stufe, notar: notarDate, volume: v.volume };

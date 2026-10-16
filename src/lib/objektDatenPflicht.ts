@@ -49,9 +49,9 @@ export const BESTANDSWOHNUNG_AKTIV = false;
 const PFLICHT_STUFEN = new Set<string>([
   "reservierung",
   "bonitaetsunterlagen",
-  "besichtigung",
-  "bankgutachter",
   "finanzierung",
+  "bankgutachter",
+  "besichtigung",
 ]);
 
 /**

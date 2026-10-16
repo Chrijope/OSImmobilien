@@ -38,23 +38,23 @@ const SLA_DAYS: Partial<Record<PipelineStufe, number>> = {
   objektauswahl: 10,
   follow_up_objekt: 10,
   reservierung: 14,
-  // Neu seit 16.10.2026, Werte wie die Orange-Schwelle der Ampel.
-  besichtigung: 5,
-  bankgutachter: 7,
+  // Seit 16.10.2026, Werte wie die Orange-Schwelle der Ampel.
   finanzierung: 10,
+  bankgutachter: 7,
+  besichtigung: 10,
 };
 
 const STUFE_LABEL: Partial<Record<PipelineStufe, string>> = {
-  erstgespraech_geplant: "Erstgespräch",
+  erstgespraech_geplant: "Qualifizierungsgespräch",
   beratungsgespraech: "Beratungspräsentation",
   selbstauskunft: "Selbstauskunft & Unterlagen",
   bonitaetsunterlagen: "Bonitätsunterlagen",
-  objektauswahl: "Objektvorstellung",
+  objektauswahl: "Objektpräsentation / Closing",
   follow_up_objekt: "Follow-Up",
   reservierung: "Reservierung",
-  besichtigung: "Besichtigung",
-  bankgutachter: "Termin Bankgutachter",
   finanzierung: "Finanzierung",
+  bankgutachter: "Termin Bankgutachter",
+  besichtigung: "Besichtigung",
 };
 
 function getSent(): Record<string, string[]> {

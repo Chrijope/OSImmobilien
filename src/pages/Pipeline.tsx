@@ -54,11 +54,11 @@ import { loadAllUsers } from "@/lib/loadAllUsers";
 import { finanzierungspartnerAnzeige } from "@/lib/finanzierungspartner";
 import { VerlustGrundAuswahl } from "@/components/verlust/VerlustGrundAuswahl";
 import { verlustGrundLabel } from "@/lib/verlustgruende";
-import { getAbwicklungDaten as abwicklungLesen, ABSCHLUSS_HINWEIS, ABSCHLUSS_NUR_ROLLEN, ABSCHLUSS_STUFEN, darfAbschlussStufeWechseln } from "@/lib/abwicklungStore";
+import { getAbwicklungDaten as abwicklungLesen, ABSCHLUSS_HINWEIS, ABSCHLUSS_NUR_ROLLEN, ABSCHLUSS_STUFEN, abschlussRolleDarfStufe, darfAbschlussStufeWechseln } from "@/lib/abwicklungStore";
 import { tarnName, unscharfKlasse } from "@/lib/vorfuehrmodus";
 import { PipelineSummenLeiste, type SummenSpalte } from "@/components/pipeline/PipelineSummenLeiste";
 import { StufenTerminDialog } from "@/components/kunden/StufenTerminDialog";
-import { brauchtStufenTermin, terminFehlerText, type TerminStufe } from "@/lib/stufenTermin";
+import { besichtigungsVorschlag, brauchtStufenTermin, terminFehlerText, type TerminStufe } from "@/lib/stufenTermin";
 import { speichereStufenTermin } from "@/lib/stufenTerminAktionen";
 
 type AbwDaten = {
@@ -114,7 +114,7 @@ const KACHELN_JE_SPALTE = 25;
  */
 const GESAMT_STUFEN = new Set([
   "objektauswahl", "follow_up_objekt",
-  "bonitaetsunterlagen", "reservierung", "besichtigung", "bankgutachter", "finanzierung", "notar",
+  "bonitaetsunterlagen", "reservierung", "finanzierung", "bankgutachter", "besichtigung", "notar",
   "faelligkeit", "abrechnung", "abgeschlossen", "bestandskunden", "bestandsimport",
 ]);
 
@@ -359,13 +359,13 @@ function KundeCard({ kunde, stufe, investmentId, zusatzBereit, datenstand, onCli
 
   // Get investment data for stages that need it
   const invData = useMemo(() => {
-    const needsInv = ["erstgespraech_geplant", "erstgespraech", "beratungsgespraech", "bonitaetsunterlagen", "objektauswahl", "follow_up_objekt", "reservierung", "besichtigung", "bankgutachter", "finanzierung", "notar", "faelligkeit", "abrechnung", "abgeschlossen"];
+    const needsInv = ["erstgespraech_geplant", "erstgespraech", "beratungsgespraech", "bonitaetsunterlagen", "objektauswahl", "follow_up_objekt", "reservierung", "finanzierung", "bankgutachter", "besichtigung", "notar", "faelligkeit", "abrechnung", "abgeschlossen"];
     if (!needsInv.includes(stufe)) return null;
     return getInvestmentData(kunde.id, investmentId);
   }, [kunde.id, stufe, investmentId]);
 
   // Deal value: show from erstgespraech onwards (inkl. Bestandskunden)
-  const showDealValue = ["erstgespraech_geplant", "erstgespraech", "beratungsgespraech", "bonitaetsunterlagen", "objektauswahl", "follow_up_objekt", "reservierung", "besichtigung", "bankgutachter", "finanzierung", "notar", "faelligkeit", "abrechnung", "abgeschlossen", "bestandskunden"].includes(stufe);
+  const showDealValue = ["erstgespraech_geplant", "erstgespraech", "beratungsgespraech", "bonitaetsunterlagen", "objektauswahl", "follow_up_objekt", "reservierung", "finanzierung", "bankgutachter", "besichtigung", "notar", "faelligkeit", "abrechnung", "abgeschlossen", "bestandskunden"].includes(stufe);
   /*
    * Der Kaufpreis des Investments hat Vorrang vor dem am Kontakt.
    *
@@ -833,8 +833,9 @@ export default function Pipeline() {
     const kunde = getKontakte().find((k) => k.id === dragEntry.kundeId);
     const echteVon = (dragEntry.investmentId && getInvestmentById(dragEntry.investmentId)?.pipelineStufe)
       || (kunde ? getEffectivePipelineStufe(kunde) : dragEntry.from);
-    // Backoffice und Buchhaltung ziehen nur nach Abrechnung und Abgeschlossen.
-    const nurAbschluss = ABSCHLUSS_NUR_ROLLEN.includes(user.role) && !ABSCHLUSS_STUFEN.includes(toKey);
+    // Backoffice und Buchhaltung ziehen nur nach Abrechnung und Abgeschlossen,
+    // das Backoffice zusaetzlich auf „Termin Bankgutachter" (mit Termin).
+    const nurAbschluss = ABSCHLUSS_NUR_ROLLEN.includes(user.role) && !abschlussRolleDarfStufe(user.role, toKey);
     if (nurAbschluss || !darfAbschlussStufeWechseln(user.role, echteVon, toKey)) {
       setDragEntry(null);
       toast({ title: "Verschieben nicht möglich", description: ABSCHLUSS_HINWEIS, variant: "destructive" });
@@ -1677,6 +1678,7 @@ export default function Pipeline() {
       <StufenTerminDialog
         stufe={stufenTermin?.stufe ?? null}
         kundeName={stufenTermin?.state.kundeName}
+        notarVorschlag={stufenTermin ? besichtigungsVorschlag(getInvestmentById(stufenTermin.invId)?.notarTermin, getInvestmentById(stufenTermin.invId)?.notarUhrzeit) : null}
         onAbbrechen={() => setStufenTermin(null)}
         onSpeichern={async (eingabe) => {
           if (!stufenTermin) return null;

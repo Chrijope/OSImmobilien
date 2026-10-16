@@ -64,9 +64,9 @@ describe("Der Trichter der Statistik folgt der Pipeline", () => {
     const pos = (k: string) => TRICHTER_STUFEN.indexOf(k);
     expect(pos("selbstauskunft")).toBeLessThan(pos("objektauswahl"));
     expect(pos("objektauswahl")).toBeLessThan(pos("reservierung"));
-    expect(pos("reservierung")).toBeLessThan(pos("besichtigung"));
-    expect(pos("besichtigung")).toBeLessThan(pos("bankgutachter"));
-    expect(pos("bankgutachter")).toBeLessThan(pos("finanzierung"));
+    expect(pos("reservierung")).toBeLessThan(pos("finanzierung"));
+    expect(pos("finanzierung")).toBeLessThan(pos("bankgutachter"));
+    expect(pos("bankgutachter")).toBeLessThan(pos("besichtigung"));
     expect(TRICHTER_STUFEN).not.toContain("bonitaetsunterlagen");
     expect(normalizeStufe("bonitaetsunterlagen")).toBe("reservierung");
   });

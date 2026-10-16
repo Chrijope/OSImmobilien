@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
-  brauchtStufenTermin, pruefeStufenTermin, stufeNachStattgefunden, stufenTerminDetails,
-  terminFehlerText, terminStufeAusTitel, TERMIN_STUFEN, vereinbarenSchluessel,
+  besichtigungsVorschlag, brauchtStufenTermin, eingetragenerStufenTermin, finanzierungPositiv, pruefeStufenTermin,
+  stufeNachStattgefunden, stufenTerminDetails, terminFehlerText, terminStufeAusTitel, TERMIN_STUFEN, treffpunktAusText,
+  vereinbarenSchluessel, vortagIso,
 } from "./stufenTermin";
 import { fehlendeMindestunterlagen, mindestunterlagenText } from "./mindestunterlagen";
 
@@ -57,17 +58,18 @@ describe("Pruefung im Termin-Fenster", () => {
 });
 
 describe("Vorruecken nach „stattgefunden“", () => {
-  it("Besichtigung fuehrt auf Termin Bankgutachter, der Bankgutachter auf Finanzierung", () => {
-    expect(stufeNachStattgefunden("Besichtigung", "besichtigung")).toBe("bankgutachter");
-    expect(stufeNachStattgefunden("Termin Bankgutachter", "bankgutachter")).toBe("finanzierung");
-    // Auch wenn die Stufe noch davor steht, etwa noch auf Reservierung.
-    expect(stufeNachStattgefunden("Besichtigung", "reservierung")).toBe("bankgutachter");
+  it("Bankgutachter fuehrt auf Besichtigung, die Besichtigung auf Notar", () => {
+    expect(stufeNachStattgefunden("Termin Bankgutachter", "bankgutachter")).toBe("besichtigung");
+    expect(stufeNachStattgefunden("Besichtigung", "besichtigung")).toBe("notar");
+    // Auch wenn die Stufe noch davor steht, etwa noch auf Finanzierung.
+    expect(stufeNachStattgefunden("Termin Bankgutachter", "finanzierung")).toBe("besichtigung");
   });
 
   it("wirft nie zurueck und laesst beendete Vorgaenge stehen", () => {
-    expect(stufeNachStattgefunden("Besichtigung", "finanzierung")).toBeNull();
-    expect(stufeNachStattgefunden("Besichtigung", "bankgutachter")).toBeNull();
+    expect(stufeNachStattgefunden("Termin Bankgutachter", "besichtigung")).toBeNull();
     expect(stufeNachStattgefunden("Termin Bankgutachter", "notar")).toBeNull();
+    expect(stufeNachStattgefunden("Besichtigung", "notar")).toBeNull();
+    expect(stufeNachStattgefunden("Besichtigung", "faelligkeit")).toBeNull();
     expect(stufeNachStattgefunden("Besichtigung", "verloren")).toBeNull();
   });
 
@@ -98,5 +100,51 @@ describe("Unterlagen vor der Objektvorstellung", () => {
 
   it("nennt die Unterlagen im Text so, wie der Kunde sie kennt", () => {
     expect(mindestunterlagenText(["Personalausweis", "Letzter Gehaltsnachweis"])).toBe("Personalausweis, letzte Gehaltsabrechnung");
+  });
+});
+
+describe("Besichtigung am Notartag oder am Vortag", () => {
+  it("schlaegt den Notartermin vor, ohne Notartermin nichts", () => {
+    expect(besichtigungsVorschlag("2026-11-05", "10:30")).toEqual({ datum: "2026-11-05", uhrzeit: "10:30" });
+    expect(besichtigungsVorschlag("2026-11-05T00:00:00", undefined)).toEqual({ datum: "2026-11-05", uhrzeit: "" });
+    expect(besichtigungsVorschlag(undefined, "10:30")).toBeNull();
+    expect(besichtigungsVorschlag("05.11.2026", "10:30")).toBeNull();
+  });
+
+  it("rechnet den Vortag ueber Monats- und Jahresgrenzen", () => {
+    expect(vortagIso("2026-11-05")).toBe("2026-11-04");
+    expect(vortagIso("2026-11-01")).toBe("2026-10-31");
+    expect(vortagIso("2027-01-01")).toBe("2026-12-31");
+  });
+});
+
+describe("Finanzierung positiv", () => {
+  it("ab einem Finanzierungsangebot oder unterschriebenem Darlehensvertrag", () => {
+    expect(finanzierungPositiv({ angebote: [] })).toBe(false);
+    expect(finanzierungPositiv(null)).toBe(false);
+    expect(finanzierungPositiv({ angebote: [{ dokumente: [{ name: "Finanzierungsangebot", status: "none" }] }] })).toBe(false);
+    expect(finanzierungPositiv({ angebote: [{ dokumente: [{ name: "Finanzierungsangebot", status: "uploaded" }] }] })).toBe(true);
+    expect(finanzierungPositiv({ angebote: [{ dokumente: [{ name: "Darlehensvertrag", status: "uploaded" }] }] })).toBe(false);
+    expect(finanzierungPositiv({ angebote: [{ dokumente: [{ name: "Darlehensvertrag", status: "signed" }] }] })).toBe(true);
+  });
+});
+
+describe("Termin Bankgutachter im Abschnitt Finanzierung", () => {
+  const aufgabe = (f: Record<string, unknown>) => ({ investmentId: "inv-1", titel: "Termin Bankgutachter", status: "offen", ...f });
+
+  it("zeigt den zuletzt eingetragenen Termin dieses Investments mit Ort und Eintragendem", () => {
+    const termin = eingetragenerStufenTermin([
+      aufgabe({ faelligAm: "2026-10-20", uhrzeit: "09:00", beschreibung: "x\nTreffpunkt: Alt", erstelltVonName: "A" }),
+      aufgabe({ faelligAm: "2026-10-22", uhrzeit: "14:30:00", beschreibung: "Termin Bankgutachter mit Erika\nTreffpunkt: Hauptstr. 1\nInvestment: Investment 1", erstelltVonName: "Backoffice" }),
+      aufgabe({ investmentId: "inv-2", faelligAm: "2026-12-01", uhrzeit: "09:00" }),
+      aufgabe({ faelligAm: "2026-12-01", uhrzeit: "09:00", status: "abgesagt" }),
+      aufgabe({ titel: "Besichtigung", faelligAm: "2026-12-01", uhrzeit: "09:00" }),
+    ], "inv-1", "bankgutachter");
+    expect(termin).toEqual({ datum: "2026-10-22", uhrzeit: "14:30", ort: "Hauptstr. 1", eingetragenVon: "Backoffice", erledigt: false });
+  });
+
+  it("ohne Termin null", () => {
+    expect(eingetragenerStufenTermin([], "inv-1", "bankgutachter")).toBeNull();
+    expect(treffpunktAusText(undefined)).toBe("");
   });
 });

@@ -145,7 +145,7 @@ describe("No-Show beim Erstgespräch: der Lead bleibt beim Partner", () => {
     // Nächster Schritt: die Kachel liest die Investment-Stufe.
     expect(t.invUpdate).toHaveBeenCalledWith("inv-frueh", { pipelineStufe: "eg_noshow" });
     expect(t.invUpdate).not.toHaveBeenCalledWith("inv-weit", expect.anything());
-    expect(getNextSteps("eg_noshow", false)?.titel).toBe("Neuen Erstgesprächstermin vereinbaren");
+    expect(getNextSteps("eg_noshow", false)?.titel).toBe("Neuen Termin für das Qualifizierungsgespräch vereinbaren");
 
     // Glocke und genau eine Aufgabe (seit 15.10.2026, vorher drei) nur an den Zuständigen.
     expect(t.glocke).toHaveBeenCalledTimes(1);

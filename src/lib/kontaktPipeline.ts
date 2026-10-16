@@ -348,16 +348,16 @@ export function calculateLogicalPipelineStufe(kunde: KundeData, investmentId?: s
    * Geprueft wird von hinten nach vorne, die hoechste erreichte Stufe gewinnt.
    */
   /*
-   * Seit 16.10.2026 (neuer Ablauf): Nach der unterschriebenen Reservierung
-   * folgen Besichtigung und Termin Bankgutachter, beide als Termin von Hand
-   * gesetzt und mit „stattgefunden" weitergeschaltet (`stufenTermin.ts`).
-   * Daraus laesst sich nichts ableiten, deshalb endet die Automatik hier bei
+   * Seit 16.10.2026 (neuer Ablauf, zweite Fassung): Nach der unterschriebenen
+   * Reservierung folgen Finanzierung, Termin Bankgutachter und Besichtigung.
+   * Die Finanzierung setzt das Kundenprofil, sobald sie angefragt ist; die
+   * beiden Termine werden von Hand mit Termin gesetzt und mit „stattgefunden"
+   * weitergeschaltet (`stufenTermin.ts`). Hier endet die Ableitung deshalb bei
    * der Reservierung.
    *
-   * Die frueheren Regeln „Bonitaet freigegeben → Finanzierung" und
-   * „Reservierung unterschrieben → Bonitaetsunterlagen" entfallen: Die
-   * Unterlagen liegen jetzt schon vor der Objektvorstellung vor und wuerden
-   * sonst Besichtigung und Bankgutachter ueberspringen.
+   * Die fruehere Regel „Reservierung unterschrieben → Bonitaetsunterlagen"
+   * entfaellt: Die Unterlagen liegen jetzt schon vor der Objektpraesentation
+   * vor.
    */
   const rvSigned = investments.some((i) => getRvSigned(i.id));
   if (rvSigned) return "reservierung";
@@ -477,7 +477,7 @@ export function getProzessBereich(kunde: KundeData): ProzessBereich {
   // siehe pipelineStufen.ts), deshalb derselbe Bereich wie "objektauswahl".
   else if (["selbstauskunft", "objektauswahl", "follow_up_objekt"].includes(stufe)) manuellerBereich = "neukunden";
   // "bonitaetsunterlagen" liegt seit 16.10.2026 im Rang der Reservierung.
-  else if (["reservierung", "bonitaetsunterlagen", "besichtigung", "bankgutachter", "finanzierung", "notar", "faelligkeit", "abrechnung"].includes(stufe)) manuellerBereich = "abwicklung";
+  else if (["reservierung", "bonitaetsunterlagen", "finanzierung", "bankgutachter", "besichtigung", "notar", "faelligkeit", "abrechnung"].includes(stufe)) manuellerBereich = "abwicklung";
   else manuellerBereich = "bestandskunden";
 
   // Wenn die Automatik einen "späteren" Bereich ergibt als die manuelle Stufe,
@@ -537,7 +537,7 @@ export function getProzessBereichForStufe(stufe: string | null | undefined): Pro
   // "follow_up_objekt" liegt in der Objektauswahl-Phase, siehe getProzessBereich.
   if (["selbstauskunft", "objektauswahl", "follow_up_objekt"].includes(s)) return "neukunden";
   // "bonitaetsunterlagen" liegt seit 16.10.2026 im Rang der Reservierung.
-  if (["reservierung", "bonitaetsunterlagen", "besichtigung", "bankgutachter", "finanzierung", "notar", "faelligkeit", "abrechnung"].includes(s)) return "abwicklung";
+  if (["reservierung", "bonitaetsunterlagen", "finanzierung", "bankgutachter", "besichtigung", "notar", "faelligkeit", "abrechnung"].includes(s)) return "abwicklung";
   return "bestandskunden";
 }
 

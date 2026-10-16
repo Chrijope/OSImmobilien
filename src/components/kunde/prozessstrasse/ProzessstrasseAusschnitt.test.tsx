@@ -71,11 +71,12 @@ describe("Ebenen je Etappe", () => {
     // Kleinere y-Werte liegen weiter oben.
     expect(y.erstgespraech_geplant).toBeLessThan(y.follow_up);
     expect(y.objektauswahl).toBeLessThan(y.selbstauskunft);
-    // Seit 16.10.2026: Besichtigung zum Objekt, Bankgutachter zur Finanzierung.
-    expect(y.besichtigung).toBe(y.reservierung);
-    expect(y.bankgutachter).toBeLessThan(y.reservierung);
+    // Seit 16.10.2026 (zweite Fassung): Bankgutachter zur Finanzierung,
+    // Besichtigung (am Notartag) zum Abschluss.
+    expect(y.finanzierung).toBeLessThan(y.reservierung);
     expect(y.bankgutachter).toBe(y.finanzierung);
-    expect(y.notar).toBeLessThan(y.finanzierung);
+    expect(y.besichtigung).toBeLessThan(y.finanzierung);
+    expect(y.besichtigung).toBe(y.notar);
   });
 });
 

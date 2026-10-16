@@ -67,7 +67,7 @@ describe("Die Stufenreihenfolge der Edge Functions", () => {
 
   it("hat den neuen Ablauf: Objektauswahl, Reservierung, Besichtigung, Bankgutachter, Finanzierung", () => {
     const liste = leseListe(quelle, "FORTSCHRITT_REIHENFOLGE");
-    const kette = ["selbstauskunft", "objektauswahl", "reservierung", "besichtigung", "bankgutachter", "finanzierung"];
+    const kette = ["selbstauskunft", "objektauswahl", "reservierung", "finanzierung", "bankgutachter", "besichtigung"];
     for (let i = 1; i < kette.length; i++) {
       expect(liste.indexOf(kette[i]), kette[i]).toBeGreaterThan(liste.indexOf(kette[i - 1]));
     }

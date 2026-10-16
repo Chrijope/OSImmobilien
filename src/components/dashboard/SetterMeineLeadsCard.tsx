@@ -14,7 +14,7 @@ import { kontaktBelongsToUser } from "@/lib/kontaktOwnership";
 import { datumSortierwert } from "@/lib/datumsformate";
 
 const NEUKUNDE_STUFEN = ["neuer_lead", "kontaktversuche", "follow_up", "erstgespraech_geplant", "erstgespraech", "beratungsgespraech", "bonitaetsunterlagen", "objektauswahl", "follow_up_objekt"];
-const ABWICKLUNG_STUFEN = ["reservierung", "besichtigung", "bankgutachter", "finanzierung", "notar"];
+const ABWICKLUNG_STUFEN = ["reservierung", "finanzierung", "bankgutachter", "besichtigung", "notar"];
 const BESTANDSKUNDE_STUFEN = ["faelligkeit", "abrechnung", "abgeschlossen"];
 
 

@@ -140,7 +140,7 @@ export const ALL_COLUMNS: ColumnDef[] = [
       const stage = (k as any)?.pipelineStufe || "";
       const beratungOrLater = [
         "beratungsgespraech","bonitaetsunterlagen","objektauswahl","follow_up_objekt",
-        "reservierung","besichtigung","bankgutachter","finanzierung","notar","faelligkeit","abrechnung","abgeschlossen",
+        "reservierung","finanzierung","bankgutachter","besichtigung","notar","faelligkeit","abrechnung","abgeschlossen",
       ].includes(stage);
       if (beratungOrLater && (k as any)?.setterTerminDatum) {
         am = (k as any).setterTerminDatum;

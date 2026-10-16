@@ -310,12 +310,12 @@ export function DashboardKopf() {
       label: "Offene Reservierungen",
       wert: String(kpis.offeneReservierungen),
       eintraege: kpis.reservierungEintraege,
-      detailZusatz: "Unterschrieben, noch nicht beim Notar. Zählt die Stufen Reservierung, Besichtigung, Termin Bankgutachter UND Finanzierung.",
+      detailZusatz: "Unterschrieben, noch nicht beim Notar. Zählt die Stufen Reservierung, Finanzierung, Termin Bankgutachter UND Besichtigung.",
       zusatz: "unterschrieben, noch nicht beim Notar",
       erklaerung:
-        "Zählt vier Pipelinestufen zusammen: Reservierung, Besichtigung, Termin Bankgutachter und Finanzierung. " +
+        "Zählt vier Pipelinestufen zusammen: Reservierung, Finanzierung, Termin Bankgutachter und Besichtigung. " +
         "Deshalb ist die Zahl höher als die Stufe Reservierung allein. " +
-        "Wer bereits bei Besichtigung, Bankgutachter oder Finanzierung steht, hat die Reservierung unterschrieben, " +
+        "Wer bereits bei Finanzierung, Bankgutachter oder Besichtigung steht, hat die Reservierung unterschrieben, " +
         "ist aber noch nicht beim Notar, und genau das ist hier gemeint. " +
         "Nicht mitgezählt werden archivierte Kontakte und alles ab dem Notartermin.",
     },
@@ -340,9 +340,9 @@ export function DashboardKopf() {
       wert: String(kpis.aktiveLeads),
       erklaerung:
         "Alle nicht archivierten Kontakte in diesen 18 Stufen: Nicht erreicht, Erreicht, Follow-Up, " +
-        "Kontaktversuche, Vermögensaufbau, Erstgespräch geplant, Erstgespräch, EG NoShow, Beratungspräsentation, " +
-        "BP NoShow, Selbstauskunft & Unterlagen, Bonitätsunterlagen (alte Stufe), Objektvorstellung, Follow-Up Objekt, " +
-        "Reservierung, Besichtigung, Termin Bankgutachter, Finanzierung. " +
+        "Kontaktversuche, Vermögensaufbau, Erstgespräch geplant, Qualifizierungsgespräch, QG NoShow, Beratungspräsentation, " +
+        "BP NoShow, Selbstauskunft & Unterlagen, Bonitätsunterlagen (alte Stufe), Objektpräsentation / Closing, Follow-Up Objekt, " +
+        "Reservierung, Finanzierung, Termin Bankgutachter, Besichtigung. " +
         "Die offenen Reservierungen sind darin also enthalten. " +
         "Nicht mitgezählt: Neuer Lead und Zugewiesen (die stehen als unbearbeitete Leads darunter), " +
         "alles ab dem Notartermin, Verloren und Archiviert.",

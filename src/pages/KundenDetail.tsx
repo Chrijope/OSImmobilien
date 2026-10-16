@@ -103,7 +103,7 @@ import { cn } from "@/lib/utils";
 import { PIPELINE_STUFEN, getEffectivePipelineStufe, getProzessBereichForStufe, istTerminInZukunft, heuteIso, TERMIN_ZUKUNFT_MELDUNG, type ProzessBereich } from "@/lib/kontaktPipeline";
 // Was eine Stufe bedeutet, steht an einer Stelle, siehe stufenErklaerung.ts.
 import { STUFEN_ERKLAERUNG } from "@/lib/stufenErklaerung";
-import { FORTSCHRITT_STUFEN, fortschrittsRang, fortschrittsStufe, istNoShowStufe, stufeErreicht, stufenFilterLabel } from "@/lib/pipelineStufen";
+import { darfVorruecken, FORTSCHRITT_STUFEN, fortschrittsRang, fortschrittsStufe, istNoShowStufe, stufeErreicht, stufenFilterLabel } from "@/lib/pipelineStufen";
 import { InactivityAmpel } from "@/components/kunden/InactivityAmpel";
 import { BuchungErgebnisKarten } from "@/components/kunden/BuchungErgebnisKarten";
 import RechnerAngaben from "@/components/kunden/RechnerAngaben";
@@ -163,8 +163,9 @@ import { abschlussWeg, sammelbareAufgaben, sammelwegBeschreibung } from "@/lib/a
 import { findeErgebnisTermin, ladeErgebnisTermine, lokalesDatum, type ErgebnisKontext, type ErgebnisTermin } from "@/lib/terminErgebnis";
 import { TerminErgebnisDialog } from "@/components/kunden/TerminErgebnisDialog";
 import { StufenTerminDialog } from "@/components/kunden/StufenTerminDialog";
-import { brauchtStufenTermin, terminFehlerText, type TerminStufe } from "@/lib/stufenTermin";
-import { speichereStufenTermin, stelleBesichtigungsAufgabeSicher } from "@/lib/stufenTerminAktionen";
+import { besichtigungsVorschlag, brauchtStufenTermin, terminFehlerText, type TerminStufe } from "@/lib/stufenTermin";
+import { BankgutachterTerminZeile } from "@/components/finanzierung/BankgutachterTerminZeile";
+import { speichereStufenTermin } from "@/lib/stufenTerminAktionen";
 import { berechneInaktivitaetsAmpel } from "@/lib/inaktivitaetsAmpel";
 import { useNaechsteAktionKachel } from "@/components/kunden/profil/useOffeneAufgabenKachel";
 import { ToastAction } from "@/components/ui/toast";
@@ -361,6 +362,7 @@ import {
   setzeStufeFruehePhase,
   kontaktVerlorenAnInvestments,
   kontaktWiederaufnahmeAnInvestments,
+  getInvestmentById,
   type NotarTerminVorschlag,
 } from "@/lib/investmentsStore";
 import { KaufvertragForm } from "@/components/notar/KaufvertragForm";
@@ -386,7 +388,7 @@ import { verlustGrundLabel } from "@/lib/verlustgruende";
 import { NUR_POPUP_OVERLAY } from "@/lib/popupOverlay";
 // Abwicklungsdaten liegen am Investment, nicht mehr in den persoenlichen
 // Einstellungen des Eintragenden. Siehe Kommentar in abwicklungStore.ts.
-import { getAbwicklungDaten, saveAbwicklungDaten, abwicklungGespeichert, ABWICKLUNG_ROLLEN, ABWICKLUNG_GELD_ROLLEN, ABSCHLUSS_HINWEIS, ABSCHLUSS_NUR_ROLLEN, ABSCHLUSS_STUFEN, darfAbschlussStufeWechseln, type AbwicklungDaten } from "@/lib/abwicklungStore";
+import { getAbwicklungDaten, saveAbwicklungDaten, abwicklungGespeichert, ABWICKLUNG_ROLLEN, ABWICKLUNG_GELD_ROLLEN, ABSCHLUSS_HINWEIS, ABSCHLUSS_NUR_ROLLEN, ABSCHLUSS_STUFEN, abschlussRolleDarfStufe, darfAbschlussStufeWechseln, type AbwicklungDaten } from "@/lib/abwicklungStore";
 import { AktionVerweigert } from "@/lib/investmentGepruefteWege";
 // Mailversand mit gepruefter Feldliste. Wird Aufrufstelle fuer Aufrufstelle
 // eingefuehrt, siehe Kommentar in mailVersand.ts.
@@ -967,10 +969,10 @@ const PRE_SA_PIPELINE_STEPS = new Set<string>([
  * vorne und damit als zugedeckt. Das ist die sichere Richtung: Lieber einmal
  * zu viel zugedeckt als Unterlagen aufgedeckt, die noch niemand angefasst hat.
  */
-// Seit 16.10.2026 die Besichtigung: Die Bonitaetsunterlagen haben keinen
-// eigenen Schritt mehr, und die Besichtigung ist der Schritt hinter der
+// Seit 16.10.2026 die Finanzierung: Die Bonitaetsunterlagen haben keinen
+// eigenen Schritt mehr, und die Finanzierung ist der Schritt hinter der
 // Reservierung, so wie es die Bonitaet bis dahin war.
-const BONITAET_AB_INDEX = fortschrittsRang("besichtigung");
+const BONITAET_AB_INDEX = fortschrittsRang("finanzierung");
 
 // Alle drei Funktionen gehen über `fortschrittsRang`. Der kennt auch die
 // Stufen ohne eigenes Kästchen (NoShow, Legacy-Aliase) und hält an der
@@ -4468,7 +4470,10 @@ export default function KundenDetail() {
    */
   const [aktionTermin, setAktionTermin] = useState<ErgebnisTermin | null>(null);
   /** Stufe Besichtigung oder Termin Bankgutachter von Hand: erst der Termin, dann die Stufe. */
-  const [stufenTermin, setStufenTermin] = useState<{ investmentId: string; investmentLabel?: string; stufe: TerminStufe; label: string } | null>(null);
+  // `ausFinanzierung`: aus der Zeile „Termin Bankgutachter" im Abschnitt
+  // Finanzierung. Dann rueckt die Stufe nur vor, nie zurueck, und es gibt
+  // keinen Vermerk „manuell gesetzt".
+  const [stufenTermin, setStufenTermin] = useState<{ investmentId: string; investmentLabel?: string; stufe: TerminStufe; label: string; ausFinanzierung?: boolean } | null>(null);
 
   /*
    * Die beiden Listen der Kachel "Naechste Aktion".
@@ -8675,12 +8680,12 @@ export default function KundenDetail() {
     }
 
     /*
-      Seit 16.10.2026 (neuer Ablauf): Die unterschriebene Reservierung
-      schliesst die Reservierung ab, als naechstes kommt die Besichtigung.
-      Die Stufe bleibt deshalb auf „Reservierung" (oder rueckt von der
-      Objektvorstellung dorthin), und der Zustaendige bekommt die Aufgabe
-      „Besichtigung vereinbaren". Die Besichtigung selbst setzt jemand von
-      Hand mit Termin (`StufenTerminDialog`).
+      Seit 16.10.2026 (neuer Ablauf, zweite Fassung): Die unterschriebene
+      Reservierung schliesst die Reservierung ab, als naechstes kommt die
+      Finanzierung. Die Stufe bleibt deshalb auf „Reservierung" (oder rueckt
+      von der Objektpraesentation dorthin), bis die Finanzierung angefragt
+      ist (siehe unten). „Besichtigung vereinbaren" entsteht nicht mehr hier,
+      sondern nach dem Bankgutachter bzw. sobald der Notartermin steht.
 
       Bisher ging es von hier auf „Bonitätsunterlagen" bzw. beim
       Selbstfinanzierer direkt auf „Finanzierung". Beide Spruenge entfallen:
@@ -8703,14 +8708,6 @@ export default function KundenDetail() {
         }
         notifyKundeReservierung(id || "");
         notiereStufenwechsel(RV_UNTERSCHRIEBEN, "reservierung");
-        void stelleBesichtigungsAufgabeSicher({
-          kundeId: id || "",
-          kundeName: `${kunde.vorname || ""} ${kunde.nachname || ""}`.trim() || "Kunde",
-          investmentId: inv.id,
-          investmentLabel: inv.label,
-          erstelltVonName: user.name,
-          rueckfallZustaendig: kunde.zustaendig_id || undefined,
-        });
         reloadKunde();
       });
     }
@@ -8756,9 +8753,15 @@ export default function KundenDetail() {
       saData: getInvestmentMetaField<Record<string, unknown> | null>(inv.id, "saData", null),
       saSnapshot: getInvestmentMetaField<Record<string, unknown> | null>(inv.id, "saSnapshot", null),
     });
-    // Seit 16.10.2026 nur noch fuer Bestandsfaelle auf der ausgeblendeten
-    // Stufe: Aus der Reservierung geht es ueber Besichtigung und Bankgutachter.
-    if (bonitaetFrei && inv.pipelineStufe === "bonitaetsunterlagen") {
+    /*
+      Seit 16.10.2026 (zweite Fassung): Nach der unterschriebenen Reservierung
+      kommt die Finanzierung. Sie gilt als angefragt, sobald die Bonitaet
+      freigegeben und gemeldet ist oder ein Finanzierungspartner benachrichtigt
+      wurde. Danach folgen Bankgutachter und Besichtigung.
+    */
+    const finanzierungAngefragt = bonitaetFrei
+      || [getInvestmentMetaField<unknown>(inv.id, "finanzierungPartnerMeldungen", [])].flat().filter(Boolean).length > 0;
+    if (finanzierungAngefragt && rvSignedForAutoAdvance && ["reservierung", "bonitaetsunterlagen"].includes(inv.pipelineStufe)) {
       stufenwechsel(inv.id, "finanzierung", () => {
         updateInvestment(inv.id, { pipelineStufe: "finanzierung" });
         updateKontakt(id || "", { pipelineStufe: "finanzierung", status: "qualifiziert" });
@@ -8969,7 +8972,7 @@ export default function KundenDetail() {
             // „Abgeschlossen“ (seit 04.10.2026). Die Datenbank prüft dasselbe
             // (pipeline_abschluss_schuetzen).
             const istAbschlussRolle = ABSCHLUSS_NUR_ROLLEN.includes(user.role);
-            const darfSetzen = (key: string) => isAdminOverride || (istAbschlussRolle && ABSCHLUSS_STUFEN.includes(key));
+            const darfSetzen = (key: string) => isAdminOverride || (istAbschlussRolle && abschlussRolleDarfStufe(user.role, key));
             const istAktuell = (key: string) => PIPELINE_STEPS[invStep]?.key === key;
             // "Abrechnung" und "Abgeschlossen" setzen und verlassen nur Admin, Inhaber, Backoffice.
             const abschlussGesperrtFuer = (key: string) =>
@@ -9045,6 +9048,12 @@ export default function KundenDetail() {
                     return;
                   }
                   if (!isAdminOverride && istAbschlussRolle && darfSetzen(s.key) && !e.altKey && !isCurrent) {
+                    // Backoffice: Termin Bankgutachter nur mit Termin, die
+                    // Stufe rueckt dabei nur vor (wie im Abschnitt Finanzierung).
+                    if (brauchtStufenTermin(s.key)) {
+                      setStufenTermin({ investmentId: inv.id, investmentLabel: inv.label, stufe: s.key, label: s.label, ausFinanzierung: true });
+                      return;
+                    }
                     const ok = await confirmDialog({
                       title: `Stufe auf „${s.label}" setzen?`,
                       description: s.key === "abgeschlossen"
@@ -11185,6 +11194,18 @@ export default function KundenDetail() {
                 objektTitel={inv.objektTitel}
                 weNr={inv.weNr}
               />
+              {/*
+                Termin Bankgutachter (Vorgabe Christian, 16.10.2026): Nach der
+                Finanzierungsanfrage traegt das Backoffice hier Datum, Uhrzeit
+                und Ort ein. Dieselben Rollen wie beim Finanzierungspartner.
+              */}
+              {stufeErreicht(inv.pipelineStufe, "reservierung") && (
+                <BankgutachterTerminZeile
+                  investmentId={inv.id}
+                  darfEintragen={darfFinanzierungspartnerMelden(user.role) && (user.role !== "vertriebspartner" || darfKundeBearbeiten)}
+                  onEintragen={() => setStufenTermin({ investmentId: inv.id, investmentLabel: inv.label, stufe: "bankgutachter", label: "Termin Bankgutachter", ausFinanzierung: true })}
+                />
+              )}
               {(() => {
                 const m = inv.meta || {};
                 // Nur zu einem eingetragenen Objekt. Ohne Objekt zeigte der
@@ -14488,10 +14509,14 @@ export default function KundenDetail() {
         <StufenTerminDialog
           stufe={stufenTermin?.stufe ?? null}
           kundeName={kunde ? `${kunde.vorname || ""} ${kunde.nachname || ""}`.trim() : undefined}
+          notarVorschlag={(() => {
+            const terminInv = stufenTermin ? getInvestmentById(stufenTermin.investmentId) : undefined;
+            return besichtigungsVorschlag(terminInv?.notarTermin, terminInv?.notarUhrzeit);
+          })()}
           onAbbrechen={() => setStufenTermin(null)}
           onSpeichern={async (eingabe) => {
             if (!stufenTermin || !id || !kunde) return null;
-            const { investmentId, investmentLabel, stufe, label } = stufenTermin;
+            const { investmentId, investmentLabel, stufe, label, ausFinanzierung } = stufenTermin;
             try {
               await speichereStufenTermin(stufe, eingabe, {
                 kundeId: id,
@@ -14504,6 +14529,17 @@ export default function KundenDetail() {
               return terminFehlerText(fehler);
             }
             setStufenTermin(null);
+            if (ausFinanzierung) {
+              // Nur nach vorn: Steht der Vorgang schon bei Besichtigung oder
+              // Notar, bleibt die Stufe, der Termin ist trotzdem eingetragen.
+              if (darfVorruecken(getInvestmentById(investmentId)?.pipelineStufe, stufe)) {
+                await updateInvestment(investmentId, { pipelineStufe: stufe });
+              }
+              addAktivitaet({ kundeId: id, art: "notiz", beschreibung: `${label} eingetragen: ${eingabe.datum} um ${eingabe.uhrzeit} Uhr${eingabe.ort ? `, ${eingabe.ort}` : ""} (${user.name})`, von: user.name });
+              toast({ title: "Termin eingetragen ✓", description: `${label}: ${eingabe.datum} um ${eingabe.uhrzeit} Uhr` });
+              reloadKunde();
+              return null;
+            }
             if (!(await updateInvestment(investmentId, { pipelineStufe: stufe }))) {
               toast({ title: "Termin gespeichert, Stufe nicht gesetzt", description: "Bitte die Stufe erneut setzen.", variant: "destructive" });
               return null;

@@ -16,7 +16,7 @@ describe("finanzierungIntern", () => {
     expect(stand.offen).toBe(false);
     expect(stand.sperrgrund).toContain("ab der Stufe Reservierung");
     // Anzeigename seit 16.10.2026.
-    expect(stand.sperrgrund).toContain("Objektvorstellung");
+    expect(stand.sperrgrund).toContain("Objektpräsentation / Closing");
   });
 
   it("ist bei offener Reservierung ohne Unterschrift zu und sagt das", () => {
