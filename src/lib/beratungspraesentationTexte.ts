@@ -3,17 +3,15 @@
  * (`src/pages/BeratungspraesentationHV.tsx`, Route `/beratungspraesentation-osimmobilien`),
  * auf Deutsch und auf Englisch.
  *
- * Warum eine eigene Datei und nicht `src/i18n/locales/*.json`: Die Präsentation
- * spricht den Kunden auf Deutsch wahlweise mit Du oder Sie an, das ist ein
- * zweites Merkmal neben der Sprache. Ein deutscher Eintrag ist deshalb entweder
- * ein Text oder ein Paar `{ sie, du }`. Das JSON des Portals kennt das nicht,
- * und seine Sprache gilt browserweit (siehe `beratungspraesentationSprache.ts`).
+ * Warum eine eigene Datei und nicht `src/i18n/locales/*.json`: Die Sprache des
+ * Portals gilt browserweit (siehe `beratungspraesentationSprache.ts`). Auf
+ * Deutsch duzt die Präsentation den Kunden durchgehend (seit 16.10.2026).
  *
  * Aufbau:
  * - `[[Wort]]` hebt ein Wort in einer Überschrift blau hervor (Akzent).
  * - Funktionen nehmen Zahlen entgegen und formatieren sie selbst in der
  *   Schreibweise ihrer Sprache. Beträge bleiben immer in Euro.
- * - Das Englische hat keine Anrede-Varianten, "Du" und "Sie" werden zu "you".
+ * - Im Englischen wird "du" zu "you".
  * - Deutsche Rechts- und Steuerbegriffe, die es so nur in Deutschland gibt,
  *   stehen im Englischen beim ersten Auftreten mit dem deutschen Begriff in
  *   Klammern.
@@ -30,18 +28,13 @@ import {
   type PraesentationsSprache,
 } from "@/lib/beratungspraesentationSprache";
 
-/** Ein Text, der auf Deutsch von der Anrede abhängen kann. */
-export type AnredeWert = string | { readonly sie: string; readonly du: string };
-
 /**
  * Macht aus dem Typ der deutschen Texte den Typ, den jede Sprache erfüllen
- * muss: gleiche Schlüssel, gleiche Listenlängen, gleiche Funktionsparameter,
- * und an jeder Textstelle wahlweise ein Text oder ein Anrede-Paar.
+ * muss: gleiche Schlüssel, gleiche Listenlängen, gleiche Funktionsparameter.
+ * Seit dem 16.10.2026 gibt es nur noch die Du-Fassung, keine Anrede-Paare.
  */
 type Breit<T> = T extends string
-  ? AnredeWert
-  : T extends { readonly sie: string; readonly du: string }
-  ? AnredeWert
+  ? string
   : T extends (...args: infer A) => infer R
   ? (...args: A) => Breit<R>
   : { readonly [K in keyof T]: Breit<T[K]> };
@@ -102,10 +95,7 @@ const de = {
 
   heute: {
     titel: "Was machen wir [[heute]]?",
-    vorspann: {
-      sie: "Bevor wir starten: Heute geht es nicht ums Entscheiden, sondern ums Verstehen. Unser Ziel ist, dass Sie am Ende wissen, welche Möglichkeiten zu Ihrer Situation passen.",
-      du: "Bevor wir starten: Heute geht es nicht ums Entscheiden, sondern ums Verstehen. Unser Ziel ist, dass du am Ende weißt, welche Möglichkeiten zu deiner Situation passen.",
-    },
+    vorspann: "Bevor wir starten: Heute geht es nicht ums Entscheiden, sondern ums Verstehen. Unser Ziel ist, dass du am Ende weißt, welche Möglichkeiten zu deiner Situation passen.",
     agenda: [
       "Aktuelle Situation & Ziele",
       "Funktionsweise Kapitalanlageimmobilie",
@@ -122,27 +112,15 @@ const de = {
   ueberleitungen: {
     nichtstun: {
       text: "Bevor wir über Immobilien reden, eine Frage:",
-      betont: {
-        sie: "Was passiert eigentlich, wenn Sie gar nichts tun?",
-        du: "Was passiert eigentlich, wenn du gar nichts tust?",
-      },
+      betont: "Was passiert eigentlich, wenn du gar nichts tust?",
     },
     ueberUns: {
-      text: {
-        sie: "Damit Sie einschätzen können, ob unsere Arbeitsweise zu Ihnen passt, kurz",
-        du: "Damit du einschätzen kannst, ob unsere Arbeitsweise zu dir passt, kurz",
-      },
-      betont: {
-        sie: "wer hier eigentlich vor Ihnen sitzt.",
-        du: "wer hier eigentlich vor dir sitzt.",
-      },
+      text: "Damit du einschätzen kannst, ob unsere Arbeitsweise zu dir passt, kurz",
+      betont: "wer hier eigentlich vor dir sitzt.",
     },
     motto: {
       text: "Unser Motto!",
-      betont: {
-        sie: "Erst Ihre Ziele. Dann die passende Immobilie. Nicht umgekehrt.",
-        du: "Erst deine Ziele. Dann die passende Immobilie. Nicht umgekehrt.",
-      },
+      betont: "Erst deine Ziele. Dann die passende Immobilie. Nicht umgekehrt.",
     },
     funktion: {
       text: "Bevor wir über Konzepte sprechen:",
@@ -153,36 +131,24 @@ const de = {
       betont: "Warum dann nicht einfach sparen oder Aktien kaufen?",
     },
     konzepte: {
-      text: {
-        sie: "Wenn das für Sie passt, bleibt nur noch eine Frage:",
-        du: "Wenn das für dich passt, bleibt nur noch eine Frage:",
-      },
-      betont: {
-        sie: "Welches der drei Konzepte passt zu Ihrem Ziel?",
-        du: "Welches der drei Konzepte passt zu deinem Ziel?",
-      },
+      text: "Wenn das für dich passt, bleibt nur noch eine Frage:",
+      betont: "Welches der drei Konzepte passt zu deinem Ziel?",
     },
     beispiel: {
-      text: {
-        sie: "Klingt das bis hierhin nach Ihrer Situation?",
-        du: "Klingt das bis hierhin nach deiner Situation?",
-      },
+      text: "Klingt das bis hierhin nach deiner Situation?",
       betont: "Dann rechnen wir es Zahl für Zahl durch.",
     },
     steuer: {
-      text: {
-        sie: "Was zahlen Sie eigentlich im Jahr an Steuern, und was bleibt davon bei Ihnen?",
-        du: "Was zahlst du eigentlich im Jahr an Steuern, und was bleibt davon bei dir?",
-      },
+      text: "Was zahlst du eigentlich im Jahr an Steuern, und was bleibt davon bei dir?",
       betont: "Genau hier wird es interessant.",
     },
     referenzen: {
       text: "Und wie sieht so etwas am Ende wirklich aus?",
-      betont: { sie: "Sehen Sie selbst.", du: "Schau selbst." },
+      betont: "Schau selbst.",
     },
     rueckblick: {
       text: "Alles, was wir bis hier besprochen haben, war allgemein.",
-      betont: { sie: "Ab jetzt geht es um Sie.", du: "Ab jetzt geht es um dich." },
+      betont: "Ab jetzt geht es um dich.",
     },
   },
 
@@ -198,10 +164,7 @@ const de = {
     korb: "In 10 Jahren, im Einkaufskorb",
     korbText: "Das ist die Kaufkraft in heutigem Geld. Rund 2.400 Euro weniger als zu Beginn.",
     fazit: "Die Zinsen holen die Geldentwertung nicht ein.",
-    fazitFrage: {
-      sie: "Was macht Ihr Erspartes gerade?",
-      du: "Was macht dein Erspartes gerade?",
-    },
+    fazitFrage: "Was macht dein Erspartes gerade?",
     fazitText:
       "Das ist kein Argument für eine Immobilie. Es ist nur der Grund, warum es sich lohnt, sich die nächste Stunde Zeit zu nehmen.",
   },
@@ -234,28 +197,16 @@ const de = {
       { titel: "Steuerliche Gestaltung", text: "Steuerliche Potenziale frühzeitig erkennen und gezielt nutzen." },
       {
         titel: "Kaufbegleitung",
-        text: {
-          sie: "Von der Reservierung über den Notartermin bis zur erfolgreichen Umsetzung Ihrer Vermögensstrategie.",
-          du: "Von der Reservierung über den Notartermin bis zur erfolgreichen Umsetzung deiner Vermögensstrategie.",
-        },
+        text: "Von der Reservierung über den Notartermin bis zur erfolgreichen Umsetzung deiner Vermögensstrategie.",
       },
       {
         titel: "Vermietung und Verwaltung",
-        text: {
-          sie: "Professionell organisiert, damit Sie sich um nichts kümmern müssen.",
-          du: "Professionell organisiert, damit du dich um nichts kümmern musst.",
-        },
+        text: "Professionell organisiert, damit du dich um nichts kümmern musst.",
       },
     ],
     anspruch: "Unser Anspruch: persönlich, transparent und langfristig gedacht.",
-    ansprechpartner: {
-      sie: "Ihr persönlicher Ansprechpartner",
-      du: "Dein persönlicher Ansprechpartner",
-    },
-    fest: {
-      sie: "Sie haben ab heute einen festen Ansprechpartner, nicht eine Hotline.",
-      du: "Du hast ab heute einen festen Ansprechpartner, nicht eine Hotline.",
-    },
+    ansprechpartner: "Dein persönlicher Ansprechpartner",
+    fest: "Du hast ab heute einen festen Ansprechpartner, nicht eine Hotline.",
     bisNotar: "Vom Erstgespräch bis lange nach dem Notartermin.",
   },
 
@@ -264,29 +215,17 @@ const de = {
     vorspann:
       "Die richtige Immobilie beginnt mit den richtigen Fragen. Bevor wir über konkrete Angebote sprechen, beantworten wir gemeinsam sechs zentrale Fragen.",
     frage: (nummer: number) => `Frage ${nummer}`,
-    erwartungFrage: {
-      sie: "Was ist Ihre Erwartungshaltung an das heutige Gespräch?",
-      du: "Was ist deine Erwartungshaltung an das heutige Gespräch?",
-    },
+    erwartungFrage: "Was ist deine Erwartungshaltung an das heutige Gespräch?",
     erwartungPlatzhalter:
       "z.B. einen ehrlichen Überblick bekommen, konkrete Zahlen sehen, offene Fragen klären",
-    erfahrungFrage: {
-      sie: "Welche Erfahrungen haben Sie bereits mit Immobilien gemacht?",
-      du: "Welche Erfahrungen hast du bereits mit Immobilien gemacht?",
-    },
+    erfahrungFrage: "Welche Erfahrungen hast du bereits mit Immobilien gemacht?",
     erfahrungPlatzhalter: "z.B. eigengenutzte Wohnung, eine vermietete Einheit, oder bisher keine",
     zieleGewaehlt: (anzahl: number, hoechstens: number) => `${anzahl} / ${hoechstens} gewählt`,
-    zieleFrage: {
-      sie: "Welche Ziele sind Ihnen besonders wichtig?",
-      du: "Welche Ziele sind dir besonders wichtig?",
-    },
+    zieleFrage: "Welche Ziele sind dir besonders wichtig?",
     zieleHinweis: (hoechstens: number) =>
       `Mehrfachauswahl möglich, höchstens ${hoechstens}. Das zuerst gewählte Ziel führt.`,
     hauptziel: "Hauptziel",
-    beitragFrage: {
-      sie: "Welcher monatliche Eigenaufwand ist für Sie gut darstellbar?",
-      du: "Welcher monatliche Eigenaufwand ist für dich gut darstellbar?",
-    },
+    beitragFrage: "Welcher monatliche Eigenaufwand ist für dich gut darstellbar?",
     beitragPlatzhalter: "z.B. 200 bis 250",
     finanzierungFrage: "Welche Finanzierung ist realistisch?",
     finanzierungText: "Wir schätzen nicht, wir rechnen. Was bleibt am Monatsende übrig?",
@@ -297,15 +236,9 @@ const de = {
     ueberschuss: "Überschuss im Monat",
     tragbar: "Davon tragbar",
     rahmen: "Finanzierungsrahmen",
-    rahmenErklaerung: {
-      sie: "Gerechnet mit 80 Prozent des Überschusses als tragbarer Rate, einer Annuität aus Zins und Tilgung von 6 Prozent und Ihrem Eigenkapital obendrauf.",
-      du: "Gerechnet mit 80 Prozent des Überschusses als tragbarer Rate, einer Annuität aus Zins und Tilgung von 6 Prozent und deinem Eigenkapital obendrauf.",
-    },
+    rahmenErklaerung: "Gerechnet mit 80 Prozent des Überschusses als tragbarer Rate, einer Annuität aus Zins und Tilgung von 6 Prozent und deinem Eigenkapital obendrauf.",
     orientierung: "Eine Orientierung, keine Zusage. Die verbindliche Haushaltsrechnung macht die Bank.",
-    wichtigFrage: {
-      sie: "Was ist Ihnen bei einem Immobilieninvestment besonders wichtig?",
-      du: "Was ist dir bei einem Immobilieninvestment besonders wichtig?",
-    },
+    wichtigFrage: "Was ist dir bei einem Immobilieninvestment besonders wichtig?",
     wichtigPlatzhalter: "z.B. sichere Lage, wenig Aufwand, planbarer Ertrag",
     uebernommen: "Aus Erstgespräch übernommen",
   },
@@ -334,7 +267,7 @@ const de = {
       {
         titel: "Finanzierung und Kauf",
         text: "Bankprüfung, Kaufvertrag und Notartermin.",
-        marke: { sie: "Nur wenn Sie Ja sagen", du: "Nur wenn du Ja sagst" },
+        marke: "Nur wenn du Ja sagst",
       },
       {
         titel: "Vermietung und Betreuung",
@@ -344,14 +277,11 @@ const de = {
     ],
     fazit: "Schritt eins machen wir heute.",
     fazitBetont: "Schritt zwei ist der nächste, das Tempo bestimmen wir gemeinsam.",
-    grundlage: {
-      sie: "Heute schaffen wir die Grundlage. Am Ende des Gesprächs haben Sie Klarheit über Ihre Möglichkeiten, und wir besprechen gemeinsam das weitere Vorgehen.",
-      du: "Heute schaffen wir die Grundlage. Am Ende des Gesprächs hast du Klarheit über deine Möglichkeiten, und wir besprechen gemeinsam das weitere Vorgehen.",
-    },
+    grundlage: "Heute schaffen wir die Grundlage. Am Ende des Gesprächs hast du Klarheit über deine Möglichkeiten, und wir besprechen gemeinsam das weitere Vorgehen.",
   },
 
   mockup: {
-    frage: { sie: "Was möchten Sie erreichen?", du: "Was möchtest du erreichen?" },
+    frage: "Was möchtest du erreichen?",
     antwort: "Vorsorge fürs Alter.",
     nettoeinkommen: "Nettoeinkommen",
     ausgaben: "Ausgaben",
@@ -387,10 +317,7 @@ const de = {
       },
       {
         titel: "Tilgung",
-        text: {
-          sie: "Ein Teil jeder Finanzierung fliesst direkt in Ihren Vermögensaufbau.",
-          du: "Ein Teil jeder Finanzierung fliesst direkt in deinen Vermögensaufbau.",
-        },
+        text: "Ein Teil jeder Finanzierung fliesst direkt in deinen Vermögensaufbau.",
       },
       {
         titel: "Wertentwicklung",
@@ -398,27 +325,15 @@ const de = {
       },
     ],
     kicker: "Die entscheidende Frage",
-    frage: {
-      sie: "Wer trägt eigentlich Ihre monatliche Rate?",
-      du: "Wer trägt eigentlich deine monatliche Rate?",
-    },
-    text: {
-      sie: "Mieter, Steuerersparnis und Ihr eigener Beitrag bauen gemeinsam Vermögen auf. Den größten Teil davon trägt nicht Ihr Konto.",
-      du: "Mieter, Steuerersparnis und dein eigener Beitrag bauen gemeinsam Vermögen auf. Den größten Teil davon trägt nicht dein Konto.",
-    },
+    frage: "Wer trägt eigentlich deine monatliche Rate?",
+    text: "Mieter, Steuerersparnis und dein eigener Beitrag bauen gemeinsam Vermögen auf. Den größten Teil davon trägt nicht dein Konto.",
     textZusatz: "Genau das kann eine Kapitalanlageimmobilie, und ein Sparplan kann es nicht.",
     mieter: "Der Mieter",
-    mieterText: {
-      sie: "trägt mit der Miete den größten Teil Ihrer monatlichen Rate.",
-      du: "trägt mit der Miete den größten Teil deiner monatlichen Rate.",
-    },
+    mieterText: "trägt mit der Miete den größten Teil deiner monatlichen Rate.",
     finanzamt: "Das Finanzamt",
     finanzamtText: "kommt über die Steuerwirkung dazu, statt einfach abzufließen.",
-    selbst: { sie: "Sie selbst", du: "Du selbst" },
-    selbstText: {
-      sie: "bleiben als Ihr eigener Beitrag jeden Monat übrig.",
-      du: "bleibt als dein eigener Beitrag jeden Monat übrig.",
-    },
+    selbst: "Du selbst",
+    selbstText: "bleibt als dein eigener Beitrag jeden Monat übrig.",
     /** Der deutsche Rechenweg kommt unverändert aus `rateAnteile.ts`. */
     rechenweg: (
       kaltmiete: number,
@@ -435,7 +350,7 @@ const de = {
   vergleich: {
     titel: "[[Immobilie]], Aktien, Tagesgeld",
     vorspann:
-      "Ein ehrlicher Vergleich. Immobilien sind nicht grundsätzlich besser. Sie können nur eines, was die anderen beiden nicht können.",
+      "Ein ehrlicher Vergleich. Immobilien sind nicht grundsätzlich besser. Nur eines können sie, was die anderen beiden nicht können.",
     kopf: ["Eigenschaft", "Immobilie", "Aktien und Fonds", "Tagesgeld"],
     zeilen: [
       ["Finanzierung mit Fremdkapital", "möglich", "normalerweise nicht", "nicht möglich"],
@@ -446,21 +361,15 @@ const de = {
       ["Schwankungen", "weniger sichtbar", "täglich sichtbar", "gering"],
     ],
     unterschied: "Der eine entscheidende Unterschied",
-    unterschiedText: {
-      sie: "Sie können mit Bankkapital einen großen Sachwert erwerben, während der Mieter einen Teil der Finanzierung übernimmt. Für ein Aktiendepot leiht Ihnen keine Bank 350.000 Euro.",
-      du: "Du kannst mit Bankkapital einen großen Sachwert erwerben, während der Mieter einen Teil der Finanzierung übernimmt. Für ein Aktiendepot leiht dir keine Bank 350.000 Euro.",
-    },
+    unterschiedText: "Du kannst mit Bankkapital einen großen Sachwert erwerben, während der Mieter einen Teil der Finanzierung übernimmt. Für ein Aktiendepot leiht dir keine Bank 350.000 Euro.",
     einschraenkung: "Und die ehrliche Einschränkung",
     einschraenkungText:
-      "Eine Immobilie ist nicht schnell verfügbar und nicht für jeden das Richtige. Sie eignet sich für langfristigen, kreditfinanzierten Vermögensaufbau. Wer in zwei Jahren an sein Geld muss, ist woanders besser aufgehoben.",
+      "Eine Immobilie ist nicht schnell verfügbar und nicht für jeden das Richtige. Dafür eignet sie sich für langfristigen, kreditfinanzierten Vermögensaufbau. Wer in zwei Jahren an sein Geld muss, ist woanders besser aufgehoben.",
   },
 
   konzepte: {
     titel: "Drei Konzepte, drei Ziele",
-    vorspann: {
-      sie: "Jedes Konzept verfolgt einen anderen Schwerpunkt, passend zu Ihren persönlichen Zielen.",
-      du: "Jedes Konzept verfolgt einen anderen Schwerpunkt, passend zu deinen persönlichen Zielen.",
-    },
+    vorspann: "Jedes Konzept verfolgt einen anderen Schwerpunkt, passend zu deinen persönlichen Zielen.",
     ansehen: "Ansehen",
     konzeptTitel: (name: string) => `Konzept: ${name}`,
     vorteile: "Vorteile",
@@ -549,17 +458,11 @@ const de = {
     titel: "Drei Objekte, [[Zahl für Zahl]]",
     vorspann:
       "Drei Beispielberechnungen zu Wohnungen aus unserem Bestand in Nürnberg, Ansbach und München, jede vollständig durchgerechnet. Wir rechnen mit den echten Zahlen dieser Objekte: Kaufpreis, Wohnfläche, Miete und Sanierungsanteil stammen aus den Objektunterlagen, nicht aus einem Musterfall.",
-    passtZuZiel: {
-      sie: " · passt zu Ihrem Ziel aus Abschnitt 03",
-      du: " · passt zu deinem Ziel aus Abschnitt 03",
-    },
+    passtZuZiel: " · passt zu deinem Ziel aus Abschnitt 03",
     situation: "Persönliche Situation",
     wohnung: "Die Wohnung",
     herkunftTitel: "Woher diese Zahlen kommen",
-    mechanik: {
-      sie: "Die Rechnung zeigt die Mechanik, sie ist keine Zusage. Die tatsächlichen Zahlen hängen vom konkreten Objekt, den Konditionen der Bank und Ihrer persönlichen Steuersituation ab.",
-      du: "Die Rechnung zeigt die Mechanik, sie ist keine Zusage. Die tatsächlichen Zahlen hängen vom konkreten Objekt, den Konditionen der Bank und deiner persönlichen Steuersituation ab.",
-    },
+    mechanik: "Die Rechnung zeigt die Mechanik, sie ist keine Zusage. Die tatsächlichen Zahlen hängen vom konkreten Objekt, den Konditionen der Bank und deiner persönlichen Steuersituation ab.",
   },
 
   /**
@@ -787,10 +690,7 @@ const de = {
         beitragMonat: "−200 €",
         text: "Ohne den einmaligen Erhaltungsaufwand bleibt ein steuerliches Ergebnis von −4.800 Euro, also rund 2.016 Euro Entlastung im Jahr. Der grosse Effekt des ersten Jahres kommt genau einmal.",
       },
-      hinweis: {
-        sie: "Vier einzeln vermietete Zimmer bringen die höchste Miete je Quadratmeter, aber auch den höchsten Aufwand: vier Mietverhältnisse, mehr Wechsel, Möblierung, die ersetzt werden muss, und eine Verwaltung, die Co-Living beherrschen muss. Ob der Sanierungsanteil in voller Höhe sofort abziehbar ist oder ob § 6 Abs. 1 Nr. 1a EStG greift und daraus Herstellungskosten werden, entscheidet das Finanzamt und nicht der Verkäufer. Diese Rechnung ersetzt deshalb kein Gespräch mit Ihrem Steuerberater. Hinweis: Mit einem Restnutzungsdauergutachten kann die Gebäude-AfA in vielen Fällen deutlich höher ausfallen. Das verstärkt den steuerlichen Effekt zusätzlich.",
-        du: "Vier einzeln vermietete Zimmer bringen die höchste Miete je Quadratmeter, aber auch den höchsten Aufwand: vier Mietverhältnisse, mehr Wechsel, Möblierung, die ersetzt werden muss, und eine Verwaltung, die Co-Living beherrschen muss. Ob der Sanierungsanteil in voller Höhe sofort abziehbar ist oder ob § 6 Abs. 1 Nr. 1a EStG greift und daraus Herstellungskosten werden, entscheidet das Finanzamt und nicht der Verkäufer. Diese Rechnung ersetzt deshalb kein Gespräch mit deinem Steuerberater. Hinweis: Mit einem Restnutzungsdauergutachten kann die Gebäude-AfA in vielen Fällen deutlich höher ausfallen. Das verstärkt den steuerlichen Effekt zusätzlich.",
-      },
+      hinweis: "Vier einzeln vermietete Zimmer bringen die höchste Miete je Quadratmeter, aber auch den höchsten Aufwand: vier Mietverhältnisse, mehr Wechsel, Möblierung, die ersetzt werden muss, und eine Verwaltung, die Co-Living beherrschen muss. Ob der Sanierungsanteil in voller Höhe sofort abziehbar ist oder ob § 6 Abs. 1 Nr. 1a EStG greift und daraus Herstellungskosten werden, entscheidet das Finanzamt und nicht der Verkäufer. Diese Rechnung ersetzt deshalb kein Gespräch mit deinem Steuerberater. Hinweis: Mit einem Restnutzungsdauergutachten kann die Gebäude-AfA in vielen Fällen deutlich höher ausfallen. Das verstärkt den steuerlichen Effekt zusätzlich.",
       tilgungText: "4 % Zins, 1,5 % anfängliche Tilgung",
     },
   },
@@ -798,34 +698,25 @@ const de = {
   rechnung: {
     titel: "Die Rechnung, [[Zeile für Zeile]]",
     vorspann: (name: string, tilgungText: string) => `${name}. ${tilgungText}. Nichts davon ist geschönt.`,
-    beitragVorSteuer: {
-      sie: "Ihr monatlicher Beitrag vor Steuer",
-      du: "Dein monatlicher Beitrag vor Steuer",
-    },
+    beitragVorSteuer: "Dein monatlicher Beitrag vor Steuer",
     entlastungProMonat: "Steuerentlastung pro Monat",
     tilgungProMonat: "Tilgung pro Monat im Schnitt",
-    tilgungHinweis: {
-      sie: "Das ist kein Aufwand, das ist Ihr Vermögen.",
-      du: "Das ist kein Aufwand, das ist dein Vermögen.",
-    },
+    tilgungHinweis: "Das ist kein Aufwand, das ist dein Vermögen.",
   },
 
   schere: {
     kicker: "Nach zehn Jahren",
-    titel: { sie: "Was am Ende Ihnen gehört", du: "Was am Ende dir gehört" },
+    titel: "Was am Ende dir gehört",
     vermoegensaufbau: "Vermögensaufbau",
     kaufpreis: "Kaufpreis",
     laufzeit: "Laufzeit",
     jahre: (anzahl: number) => `${anzahl} Jahre`,
     immobilienwert: "Immobilienwert",
-    vermoegen: { sie: "Ihr Vermögen", du: "Dein Vermögen" },
+    vermoegen: "Dein Vermögen",
     restschuld: "Restschuld bei der Bank",
     getilgt: (betrag: number) => `${eDe(betrag)} getilgt`,
     regler: "Angenommene Wertsteigerung pro Jahr",
-    reglerNull: {
-      sie: "Ziehen Sie den Regler ruhig auf null.",
-      du: "Zieh den Regler ruhig auf null.",
-    },
+    reglerNull: "Zieh den Regler ruhig auf null.",
     selbstDann: "Selbst dann bleiben",
     selbstDannRest:
       "übrig, weil die Tilgung unabhängig von jeder Wertentwicklung läuft. Alles darüber ist Zugabe, nicht Grundlage.",
@@ -835,68 +726,44 @@ const de = {
 
   rendite: {
     titel: "Was ein Sparplan [[leisten müsste]]",
-    vorspann: {
-      sie: "Dasselbe Vermögen mit reinem Sparen aufzubauen, verlangt eine Rendite, die kaum eine Anlage netto steuerfrei liefert. Genau das rechnet dieser Abschnitt für Ihr Konzept aus.",
-      du: "Dasselbe Vermögen mit reinem Sparen aufzubauen, verlangt eine Rendite, die kaum eine Anlage netto steuerfrei liefert. Genau das rechnet dieser Abschnitt für dein Konzept aus.",
-    },
-    weg: {
-      sie: "Von Ihrem Einsatz zum Endvermögen",
-      du: "Von deinem Einsatz zum Endvermögen",
-    },
+    vorspann: "Dasselbe Vermögen mit reinem Sparen aufzubauen, verlangt eine Rendite, die kaum eine Anlage netto steuerfrei liefert. Genau das rechnet dieser Abschnitt für dein Konzept aus.",
+    weg: "Von deinem Einsatz zum Endvermögen",
     ek: "Eigenkapital, einmalig",
     cashflow: "Monatlicher Cashflow nach Steuer × 120 Monate",
-    vermoegen10: {
-      sie: "Ihr Vermögen nach zehn Jahren",
-      du: "Dein Vermögen nach zehn Jahren",
-    },
+    vermoegen10: "Dein Vermögen nach zehn Jahren",
     endText: (getilgt: number, wertsteigerung: number) =>
       `Das Endvermögen folgt demselben Regler wie die Immobilienschere: ${zDe(getilgt)} Euro getilgtes Darlehen plus die angenommene Wertsteigerung von ${zDe(wertsteigerung, 1)} Prozent pro Jahr.`,
-    live: {
-      sie: "Ziehen Sie den Regler dort, rechnet diese Zahl live mit.",
-      du: "Ziehst du den Regler dort, rechnet diese Zahl live mit.",
-    },
+    live: "Ziehst du den Regler dort, rechnet diese Zahl live mit.",
     noetig: "Nötige Sparplan-Rendite pro Jahr",
     netto: "netto steuerfrei",
     soViel:
       "So viel müsste ein Sparplan Jahr für Jahr abwerfen, um mit demselben Einsatz dasselbe Vermögen zu erreichen.",
-    bedeutet: { sie: "Bedeutet für Sie:", du: "Bedeutet für dich:" },
+    bedeutet: "Bedeutet für dich:",
     bedeutetText: (eigenkapital: number, sparrate: number, rendite: number) =>
       `Eigenkapital ${zDe(eigenkapital)} Euro plus Cashflow monatlich nach Steuer ${zDe(sparrate)} Euro ergibt eine Rendite von ${zDe(rendite, 1)} Prozent netto steuerfrei.`,
     steuerfrei:
       "Steuerfrei, weil ein Verkauf nach mehr als zehn Jahren im Privatvermögen nach § 23 EStG steuerfrei ist.",
-    versteuern: {
-      sie: "Eine Sparplan-Rendite müssten Sie versteuern, um netto dasselbe übrig zu haben, läge die nötige Rendite vor Steuer noch höher.",
-      du: "Eine Sparplan-Rendite müsstest du versteuern, um netto dasselbe übrig zu haben, läge die nötige Rendite vor Steuer noch höher.",
-    },
+    versteuern: "Eine Sparplan-Rendite müsstest du versteuern, um netto dasselbe übrig zu haben, läge die nötige Rendite vor Steuer noch höher.",
   },
 
   steuer: {
     titel: "Die Steuerwirkung, [[Position für Position]]",
-    vorspann: {
-      sie: "Was Sie ohnehin an Steuern zahlen, fliesst bisher ab, ohne dass etwas zurückbleibt. Mit einer vermieteten Immobilie ändert sich, wohin ein Teil davon geht.",
-      du: "Was du ohnehin an Steuern zahlst, fliesst bisher ab, ohne dass etwas zurückbleibt. Mit einer vermieteten Immobilie ändert sich, wohin ein Teil davon geht.",
-    },
+    vorspann: "Was du ohnehin an Steuern zahlst, fliesst bisher ab, ohne dass etwas zurückbleibt. Mit einer vermieteten Immobilie ändert sich, wohin ein Teil davon geht.",
     vuv: "Einkünfte aus Vermietung und Verpachtung",
     ergebnis: "Steuerliches Ergebnis",
     beiGrenzsteuersatz: "Bei 42 Prozent Grenzsteuersatz ergibt das",
     proJahr: "pro Jahr",
     alsoRund: (monat: number, label: string) => `also rund ${zDe(monat)} Euro im Monat. ${label}.`,
     entlastung: "Entlastung",
-    beitrag: { sie: "Ihr Beitrag", du: "Dein Beitrag" },
+    beitrag: "Dein Beitrag",
     proMonat: "pro Monat",
     ehrlich: "Was wir ehrlich dazusagen",
-    haftung: {
-      sie: "Unverbindliches Berechnungsbeispiel. Die genaue Wirkung hängt von Ihrem persönlichen Steuersatz und der steuerlichen Anerkennung ab und gehört zu Ihrem Steuerberater. Wer Ihnen etwas anderes verspricht, rechnet Ihnen etwas vor.",
-      du: "Unverbindliches Berechnungsbeispiel. Die genaue Wirkung hängt von deinem persönlichen Steuersatz und der steuerlichen Anerkennung ab und gehört zu deinem Steuerberater. Wer dir etwas anderes verspricht, rechnet dir etwas vor.",
-    },
+    haftung: "Unverbindliches Berechnungsbeispiel. Die genaue Wirkung hängt von deinem persönlichen Steuersatz und der steuerlichen Anerkennung ab und gehört zu deinem Steuerberater. Wer dir etwas anderes verspricht, rechnet dir etwas vor.",
   },
 
   pruefung: {
     titel: "Was wir bei [[jedem]] Objekt prüfen",
-    vorspann: {
-      sie: "Diese Liste ist der Grund, warum wir Ihnen nicht jede Wohnung zeigen, die auf den Markt kommt.",
-      du: "Diese Liste ist der Grund, warum wir dir nicht jede Wohnung zeigen, die auf den Markt kommt.",
-    },
+    vorspann: "Diese Liste ist der Grund, warum wir dir nicht jede Wohnung zeigen, die auf den Markt kommt.",
     katalog: [
       "Standort und Wohnraumnachfrage",
       "realistische Miethöhe",
@@ -912,44 +779,26 @@ const de = {
   },
 
   rueckblick: {
-    nummer: { sie: "Ihre Angaben", du: "Deine Angaben" },
-    titel: { sie: "Was [[Sie]] heute gesagt haben", du: "Was [[du]] heute gesagt hast" },
-    vorspann: {
-      sie: "Kurz zusammengefasst, damit wir beide sicher sind, dass ich Sie richtig verstanden habe.",
-      du: "Kurz zusammengefasst, damit wir beide sicher sind, dass ich dich richtig verstanden habe.",
-    },
-    ziele: { sie: "Ihre Ziele", du: "Deine Ziele" },
-    ziel: { sie: "Ihr wichtigstes Ziel", du: "Dein wichtigstes Ziel" },
-    rahmen: { sie: "Ihr Finanzierungsrahmen", du: "Dein Finanzierungsrahmen" },
+    nummer: "Deine Angaben",
+    titel: "Was [[du]] heute gesagt hast",
+    vorspann: "Kurz zusammengefasst, damit wir beide sicher sind, dass ich dich richtig verstanden habe.",
+    ziele: "Deine Ziele",
+    ziel: "Dein wichtigstes Ziel",
+    rahmen: "Dein Finanzierungsrahmen",
     rund: (betrag: number) => `rund ${eDe(betrag)}`,
-    beitrag: { sie: "Ihr monatlicher Beitrag", du: "Dein monatlicher Beitrag" },
-    erfahrung: { sie: "Ihre Erfahrung mit Immobilien", du: "Deine Erfahrung mit Immobilien" },
-    wichtig: { sie: "Das ist Ihnen besonders wichtig", du: "Das ist dir besonders wichtig" },
-    erwartung: {
-      sie: "Ihre Erwartung an das heutige Gespräch",
-      du: "Deine Erwartung an das heutige Gespräch",
-    },
+    beitrag: "Dein monatlicher Beitrag",
+    erfahrung: "Deine Erfahrung mit Immobilien",
+    wichtig: "Das ist dir besonders wichtig",
+    erwartung: "Deine Erwartung an das heutige Gespräch",
     erfuellt: "Haben wir diese Erwartung im heutigen Gespräch erfüllt?",
-    zahlen1: {
-      sie: "Genau dafür brauchen wir jetzt Ihre vollständigen Zahlen.",
-      du: "Genau dafür brauchen wir jetzt deine vollständigen Zahlen.",
-    },
-    zahlen2: {
-      sie: "Alles, was Sie oben gesagt haben, ist die halbe Selbstauskunft.",
-      du: "Alles, was du oben gesagt hast, ist die halbe Selbstauskunft.",
-    },
-    zahlen3: {
-      sie: "Den Rest füllen wir gleich gemeinsam aus, dann rechnet der nächste Termin mit Ihren Zahlen statt mit einem Beispiel.",
-      du: "Den Rest füllen wir gleich gemeinsam aus, dann rechnet der nächste Termin mit deinen Zahlen statt mit einem Beispiel.",
-    },
+    zahlen1: "Genau dafür brauchen wir jetzt deine vollständigen Zahlen.",
+    zahlen2: "Alles, was du oben gesagt hast, ist die halbe Selbstauskunft.",
+    zahlen3: "Den Rest füllen wir gleich gemeinsam aus, dann rechnet der nächste Termin mit deinen Zahlen statt mit einem Beispiel.",
   },
 
   schritt: {
     titel: "Den nächsten Schritt machen wir [[jetzt gemeinsam]]",
-    text: {
-      sie: "Wir füllen Ihre Selbstauskunft direkt hier im Termin zusammen aus. Nicht als Hausaufgabe, nicht per Mail hinterher, sondern jetzt, solange ich Ihre Fragen sofort beantworten kann.",
-      du: "Wir füllen deine Selbstauskunft direkt hier im Termin zusammen aus. Nicht als Hausaufgabe, nicht per Mail hinterher, sondern jetzt, solange ich deine Fragen sofort beantworten kann.",
-    },
+    text: "Wir füllen deine Selbstauskunft direkt hier im Termin zusammen aus. Nicht als Hausaufgabe, nicht per Mail hinterher, sondern jetzt, solange ich deine Fragen sofort beantworten kann.",
     erfassen: "Das erfassen wir zusammen",
     inhalt: [
       "Einkommen und berufliche Situation",
@@ -961,10 +810,7 @@ const de = {
       "persönliche Ziele",
     ],
     warum: "Warum genau jetzt",
-    warumText: {
-      sie: "Ohne diese Angaben ist jeder Objektvorschlag geraten. Mit ihnen bekommen Sie beim nächsten Termin eine Rechnung auf Ihre Zahlen statt auf ein Beispiel. Die Selbstauskunft ist dabei ausdrücklich noch keine Kaufentscheidung und verpflichtet Sie zu nichts.",
-      du: "Ohne diese Angaben ist jeder Objektvorschlag geraten. Mit ihnen bekommst du beim nächsten Termin eine Rechnung auf deine Zahlen statt auf ein Beispiel. Die Selbstauskunft ist dabei ausdrücklich noch keine Kaufentscheidung und verpflichtet dich zu nichts.",
-    },
+    warumText: "Ohne diese Angaben ist jeder Objektvorschlag geraten. Mit ihnen bekommst du beim nächsten Termin eine Rechnung auf deine Zahlen statt auf ein Beispiel. Die Selbstauskunft ist dabei ausdrücklich noch keine Kaufentscheidung und verpflichtet dich zu nichts.",
     knopf: "Selbstauskunft jetzt gemeinsam ausfüllen",
     kontextHinweis:
       "Aus dem Kundenprofil geöffnet, ist die Selbstauskunft direkt mit diesem Kunden und Investment verbunden.",
@@ -973,14 +819,8 @@ const de = {
   },
 
   termin: {
-    titel: {
-      sie: "Was Sie beim [[nächsten Termin]] bekommen",
-      du: "Was du beim [[nächsten Termin]] bekommst",
-    },
-    vorspann: {
-      sie: "Ihre Selbstauskunft ist die Grundlage, mit der wir uns intern gezielt auf genau diese Punkte vorbereiten. Wenn wir uns wiedersehen, liegen Ihre persönliche Strategie, passende Objekte und die durchgerechneten Zahlen bereits fertig auf dem Tisch, zugeschnitten auf Sie. Sechs Dinge, konkret und auf Ihre Zahlen gerechnet.",
-      du: "Deine Selbstauskunft ist die Grundlage, mit der wir uns intern gezielt auf genau diese Punkte vorbereiten. Wenn wir uns wiedersehen, liegen deine persönliche Strategie, passende Objekte und die durchgerechneten Zahlen bereits fertig auf dem Tisch, zugeschnitten auf dich. Sechs Dinge, konkret und auf deine Zahlen gerechnet.",
-    },
+    titel: "Was du beim [[nächsten Termin]] bekommst",
+    vorspann: "Deine Selbstauskunft ist die Grundlage, mit der wir uns intern gezielt auf genau diese Punkte vorbereiten. Wenn wir uns wiedersehen, liegen deine persönliche Strategie, passende Objekte und die durchgerechneten Zahlen bereits fertig auf dem Tisch, zugeschnitten auf dich. Sechs Dinge, konkret und auf deine Zahlen gerechnet.",
     punkte: [
       "einen konkreten Objektvorschlag",
       "eine verständliche Wirtschaftlichkeitsberechnung",
@@ -989,27 +829,15 @@ const de = {
       "einen möglichen Finanzierungsvorschlag",
       "eine klare Chancen- und Risikoanalyse",
     ],
-    katalog: {
-      sie: "Nichts davon kommt aus einem Katalog. Jeder dieser sechs Punkte wird aus Ihrer Selbstauskunft heraus für Sie vorbereitet, bevor wir uns wiedersehen. Beim nächsten Termin geht es deshalb nicht mehr darum, ob eine Immobilie für Sie funktioniert, sondern welche.",
-      du: "Nichts davon kommt aus einem Katalog. Jeder dieser sechs Punkte wird aus deiner Selbstauskunft heraus für dich vorbereitet, bevor wir uns wiedersehen. Beim nächsten Termin geht es deshalb nicht mehr darum, ob eine Immobilie für dich funktioniert, sondern welche.",
-    },
-    entscheiden: {
-      sie: "Danach entscheiden Sie in Ruhe: Passt dieses Objekt zu Ihnen,",
-      du: "Danach entscheidest du in Ruhe: Passt dieses Objekt zu dir,",
-    },
+    katalog: "Nichts davon kommt aus einem Katalog. Jeder dieser sechs Punkte wird aus deiner Selbstauskunft heraus für dich vorbereitet, bevor wir uns wiedersehen. Beim nächsten Termin geht es deshalb nicht mehr darum, ob eine Immobilie für dich funktioniert, sondern welche.",
+    entscheiden: "Danach entscheidest du in Ruhe: Passt dieses Objekt zu dir,",
     weiter: "oder suchen wir weiter?",
-    beides: {
-      sie: "Beides ist ein gutes Ergebnis. Ein Nein zum falschen Objekt ist uns lieber als ein Ja, das Sie in zwei Jahren bereuen.",
-      du: "Beides ist ein gutes Ergebnis. Ein Nein zum falschen Objekt ist uns lieber als ein Ja, das du in zwei Jahren bereust.",
-    },
+    beides: "Beides ist ein gutes Ergebnis. Ein Nein zum falschen Objekt ist uns lieber als ein Ja, das du in zwei Jahren bereust.",
     knopf: "Selbstauskunft ausfüllen",
   },
 
   fuss: {
-    haftung: {
-      sie: "Alle Zahlen in dieser Präsentation dienen der Veranschaulichung. Die steuerliche Wirkung hängt von Ihrer persönlichen Situation ab und ist mit einem Steuerberater zu prüfen. Eine Wertsteigerung ist nicht garantiert.",
-      du: "Alle Zahlen in dieser Präsentation dienen der Veranschaulichung. Die steuerliche Wirkung hängt von deiner persönlichen Situation ab und ist mit einem Steuerberater zu prüfen. Eine Wertsteigerung ist nicht garantiert.",
-    },
+    haftung: "Alle Zahlen in dieser Präsentation dienen der Veranschaulichung. Die steuerliche Wirkung hängt von deiner persönlichen Situation ab und ist mit einem Steuerberater zu prüfen. Eine Wertsteigerung ist nicht garantiert.",
   },
 
   galerie: {
@@ -1828,11 +1656,6 @@ const en: BeratungTexte = {
 };
 
 export const BERATUNG_TEXTE: Record<PraesentationsSprache, BeratungTexte> = { de, en };
-
-/** Löst einen Text in der aktiven Anrede auf. Englische Texte sind immer schon fertig. */
-export function inAnrede(wert: AnredeWert, anrede: "du" | "sie"): string {
-  return typeof wert === "string" ? wert : wert[anrede];
-}
 
 /**
  * Beträge, Zahlen und Prozent in der Sprache der Präsentation, damit die Seite

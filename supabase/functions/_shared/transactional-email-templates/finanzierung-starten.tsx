@@ -1,7 +1,7 @@
 import * as React from 'npm:react@18.3.1'
 import type { TemplateEntry } from './registry.ts'
 import { EmailLayout, Absatz, Handlung, Angaben } from './_layout.tsx'
-import { foermlich } from './_anrede.ts'
+import { hallo } from './_anrede.ts'
 import { finanzierungBetreff } from '../finanzierung-starten-mail.ts'
 
 /**
@@ -27,7 +27,7 @@ const Mail = ({ finanzierungspartnerName, kundeName, objektTitel, kaufpreis, unt
     augenbraue="Finanzierung"
     titel="Reservierung unterschrieben"
     vorschau="Der Finanzierungsprozess kann gestartet werden."
-    anrede={foermlich(finanzierungspartnerName)}
+    anrede={hallo(finanzierungspartnerName)}
     intern
     ohneUnterschrift
   >

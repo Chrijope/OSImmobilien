@@ -292,9 +292,9 @@ export function RechnungsGeneratorDialog({ open = true, onOpenChange, asPage = f
     // ── Anrede ──
     doc.setFontSize(10);
     ink(0);
-    doc.text("Sehr geehrte Damen und Herren,", M, y); y += 6;
+    doc.text("Hallo zusammen,", M, y); y += 6;
     const anredeLines = doc.splitTextToSize(
-      "gemäß unserer vertraglichen Vereinbarung erlaube ich mir, Ihnen die nachfolgende Leistung in Rechnung zu stellen:",
+      "wie vertraglich vereinbart stelle ich euch die folgende Leistung in Rechnung:",
       pageW - 2 * M,
     );
     doc.text(anredeLines, M, y);
@@ -360,7 +360,7 @@ export function RechnungsGeneratorDialog({ open = true, onOpenChange, asPage = f
     }
 
     // ── Zahlungshinweis ──
-    doc.text("Bitte überweisen Sie den Gesamtbetrag innerhalb von 14 Tagen auf folgendes Konto:", M, y);
+    doc.text("Bitte überweist den Gesamtbetrag innerhalb von 14 Tagen auf folgendes Konto:", M, y);
     y += 8;
     doc.setFont("helvetica", "bold");
     doc.text("Bankverbindung", M, y); y += 5;
@@ -373,7 +373,7 @@ export function RechnungsGeneratorDialog({ open = true, onOpenChange, asPage = f
     // ── Schlussformel ──
     y += 6;
     doc.text("Vielen Dank für die angenehme Zusammenarbeit.", M, y); y += 6;
-    doc.text("Mit freundlichen Grüßen", M, y); y += 10;
+    doc.text("Viele Grüße", M, y); y += 10;
     doc.setFont("helvetica", "bold");
     doc.text(absenderName, M, y);
     doc.setFont("helvetica", "normal");

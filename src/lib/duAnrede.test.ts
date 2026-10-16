@@ -215,3 +215,69 @@ describe("Die Bewerbermails sind durchgehend im Du", () => {
     expect(sieTreffer(ohneKommentare(quelle))).toEqual([]);
   });
 });
+
+/**
+ * Präsentation, Erstgesprächsskript, Partner-Mikroseite, Einwandleitfaden und
+ * die Mails aus Strategie Vertrieb Abschnitt 8.
+ *
+ * Am 16.10.2026 waren genau diese Stellen in Sie-Form entstanden, obwohl die
+ * Hausregel seit dem 15.09.2026 Du sagt. Christian am selben Tag: „bitte
+ * immer und überall duzen“. Präsentation und Skript hatten dafür einen
+ * Du/Sie-Schalter; die Sie-Fassung ist entfallen, und dieser Wächter hält sie
+ * draußen. Geprüft wird der Quelltext ohne Kommentare, wie oben bei den
+ * Bewerbermails. Ein „Sie“ in der dritten Person am Satzanfang („Sie steht
+ * …“) löst ihn ebenfalls aus; solche Sätze sind hier umformuliert.
+ *
+ * Englische Texte stehen in denselben Dateien, enthalten aber kein Sie.
+ */
+describe("Präsentation, Skript, Mikroseite und Vertriebsmails duzen", () => {
+  const wurzel = join(__dirname, "..", "..");
+  const vorlagen = join("supabase", "functions", "_shared", "transactional-email-templates");
+
+  function ohneKommentare(quelle: string): string {
+    return quelle
+      .replace(/\/\*[\s\S]*?\*\//g, " ")
+      .replace(/(^|[^:])\/\/.*$/gm, "$1");
+  }
+
+  const dateien = [
+    "src/pages/BeratungspraesentationHV.tsx",
+    "src/lib/beratungOsDaten.ts",
+    "src/lib/beratungspraesentationTexte.ts",
+    "src/lib/beratungSprechskripte.ts",
+    "src/components/setter/SetterErstgespraechsSkript.tsx",
+    "src/components/landing/BeraterMicrositeContent.tsx",
+    "src/components/landing/mikroseiteOsTexte.ts",
+    "src/components/landing/mikroseiteTexte.ts",
+    "src/components/landing/mikroseiteAbschlussTexte.ts",
+    "src/lib/osEinwaende.ts",
+    ...[
+      "termin-beratungspraesentation.tsx",
+      "einladung-objektvorstellung.tsx",
+      "erinnerung-unterlagen-objektvorstellung.tsx",
+      "nachfass-zusammenfassung.tsx",
+      "letzte-nachricht.tsx",
+      "finanzierung-starten.tsx",
+    ].map((d) => join(vorlagen, d)),
+  ];
+
+  for (const datei of dateien) {
+    it(`${datei} enthält keine Sie-Anrede`, () => {
+      const text = ohneKommentare(readFileSync(join(wurzel, datei), "utf8"));
+      expect(sieTreffer(text), `in ${datei}`).toEqual([]);
+    });
+  }
+
+  it("die Mails grüßen mit Hallo und Vorname, nicht förmlich", () => {
+    for (const datei of dateien.filter((d) => d.startsWith(vorlagen))) {
+      const text = ohneKommentare(readFileSync(join(wurzel, datei), "utf8"));
+      expect(text, datei).toMatch(/anrede=\{hallo\(/);
+      expect(text, datei).not.toMatch(/foermlich|Guten Tag/);
+    }
+  });
+
+  it("das Erstgesprächsskript bietet keine Sie-Form mehr an", () => {
+    const text = ohneKommentare(readFileSync(join(wurzel, "src/components/setter/SetterErstgespraechsSkript.tsx"), "utf8"));
+    expect(text).not.toMatch(/Sie-Form|"sie"\s*\?|setAnrede/);
+  });
+});

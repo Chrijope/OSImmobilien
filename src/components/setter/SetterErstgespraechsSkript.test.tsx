@@ -153,18 +153,24 @@ describe("Der Sprechtext steht offen da", () => {
   it("zeigt den Wortlaut ohne Klick auf einen Formulierungsvorschlag", () => {
     zeichne();
 
-    // Punkt 3, der erste Punkt in der gewählten Anrede. Stand in der
-    // Stichpunktfassung hinter einem zugeklappten Kasten.
+    // Punkt 3. Stand in der Stichpunktfassung hinter einem zugeklappten Kasten.
     expect(screen.getByText(/Kurz zum Ablauf, damit du weißt/)).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Formulierungsvorschlag/ })).not.toBeInTheDocument();
   });
 
-  it("schaltet den Wortlaut auf die Sie-Form um", () => {
+  it("duzt vom ersten Satz an und bietet keine Sie-Form mehr an (seit 16.10.2026)", () => {
     zeichne();
 
-    fireEvent.click(screen.getByRole("button", { name: /Sie-Form/ }));
+    expect(screen.getByText(/hier ist .* von der OS Real Estate\. Du hattest dich/)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Sie-Form/ })).not.toBeInTheDocument();
+    expect(screen.getByText("2. Hinweis: Wir duzen")).toBeInTheDocument();
+  });
 
-    expect(screen.getByText(/Dazu stelle ich Ihnen ein paar Fragen/)).toBeInTheDocument();
+  it("duzt auch bei einer alten Sie-Wahl im gespeicherten Skript", () => {
+    zeichne({ ...ALTBESTAND, anrede: "sie" });
+
+    expect(screen.getByText(/Kurz zum Ablauf, damit du weißt/)).toBeInTheDocument();
+    expect(screen.queryByText(/Dazu stelle ich Ihnen/)).not.toBeInTheDocument();
   });
 });
 
@@ -373,7 +379,6 @@ describe("Antworten, die das CRM übernimmt", () => {
     expect(rahmenUm(screen.getByPlaceholderText("z.B. 300-500 €"))).toBe("investitionMonat");
     expect(rahmenUm(screen.getByText("Steuern sparen / mehr Netto"))).toBe("ziele");
     expect(rahmenUm(screen.getByText("Steuerersparnis"))).toBe("schwerpunkt");
-    expect(rahmenUm(screen.getByText("Sie-Form"))).toBe("anrede");
   });
 
   it("lässt Notizen und Antworten ohne Weiterverarbeitung unmarkiert", () => {

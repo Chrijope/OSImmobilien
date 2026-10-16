@@ -57,10 +57,8 @@ async function erinnereVorObjektvorstellung(supabase: any, jetzt: Date): Promise
     if (claim !== "frei") continue;
 
     const { datum, uhrzeit } = ovDatumUhrzeit(zeit);
-    const a = String(kontakt.anrede || "").toLowerCase();
-    const titel = a.includes("frau") ? "Frau" : a.includes("herr") ? "Herr" : "";
-    const nachname = String(kontakt.nachname || "").trim();
-    const kundeName = titel && nachname ? `${titel} ${nachname}` : `${kontakt.vorname || ""} ${nachname}`.trim();
+    // Die Mail duzt und grüßt mit dem Vornamen (seit 16.10.2026).
+    const kundeName = `${kontakt.vorname || ""} ${kontakt.nachname || ""}`.trim();
     const beraterSignatur = await zustaendigerAnsprechpartner(supabase, kontakt.id);
     const ergebnis = await sendeVorlage(supabase, {
       templateName: "erinnerung-unterlagen-objektvorstellung",

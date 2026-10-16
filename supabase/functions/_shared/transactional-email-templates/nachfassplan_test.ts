@@ -3,7 +3,7 @@
  *
  *   deno test -A --no-lock supabase/functions/_shared/transactional-email-templates/nachfassplan_test.ts
  *
- * Sie-Form, kein Du, keine Gedankenstriche, und die Inhalte, die der
+ * Du-Form wie alle Kundenmails (seit 16.10.2026), kein Sie, keine Gedankenstriche, und die Inhalte, die der
  * Drive-Prozessstandard verlangt.
  */
 import * as React from 'npm:react@18.3.1'
@@ -23,14 +23,14 @@ function erwarte(inhalt: string, teile: string[]) {
   for (const teil of teile) if (!inhalt.includes(teil)) throw new Error(`fehlt: ${teil}\n${inhalt}`)
 }
 
-const DU = /\b(du|dir|dich|dein|deine|deinen|deinem|deiner|Hallo)\b/
+const SIE = /\b(Sie|Ihnen|Ihr|Ihre|Ihrem|Ihren|Ihrer|Ihres)\b|Guten Tag/
 
 for (const name of ['termin-beratungspraesentation', 'einladung-objektvorstellung', 'erinnerung-unterlagen-objektvorstellung', 'nachfass-zusammenfassung', 'letzte-nachricht']) {
-  Deno.test(`${name}: siezt, ohne Du und ohne Gedankenstrich`, async () => {
+  Deno.test(`${name}: duzt, ohne Sie und ohne Gedankenstrich`, async () => {
     const t = await text(name)
-    erwarte(t, ['Guten Tag Herr Mustermann,'])
-    const du = t.match(DU)
-    if (du) throw new Error(`${name}: Du-Form gefunden: ${du[0]}`)
+    erwarte(t, ['Hallo Max,'])
+    const sie = t.match(SIE)
+    if (sie) throw new Error(`${name}: Sie-Form gefunden: ${sie[0]}`)
     if (/[–—]/.test(t)) throw new Error(`${name}: Gedankenstrich gefunden`)
   })
 }
@@ -45,7 +45,7 @@ Deno.test('termin-beratungspraesentation: eine Stunde, nichts unterschreiben, Mi
     anrede: 'Frau', vorname: 'Erika', nachname: 'Musterfrau', zugangUrl: 'https://example.com/raum/x',
     verwaltenUrl: 'https://example.com/verwalten',
   })
-  erwarte(buchung, ['Guten Tag Frau Musterfrau,', 'Zum Videogespräch', 'Termin verschieben oder absagen'])
+  erwarte(buchung, ['Hallo Erika,', 'Zum Videogespräch', 'Termin verschieben oder absagen'])
   // Im Büro: kein Videoknopf.
   const buero = await text('termin-beratungspraesentation', { terminModus: 'vor_ort', treffpunkt: 'Musterstraße 1' })
   erwarte(buero, ['Unser Büro', 'Musterstraße 1'])
@@ -66,13 +66,13 @@ Deno.test('erinnerung-unterlagen-objektvorstellung: nennt nur, was fehlt', async
 
 Deno.test('nachfass-zusammenfassung: vier Felder, leere fallen weg', async () => {
   erwarte(await text('nachfass-zusammenfassung'), [
-    'Ihr Ziel, in Ihren Worten', 'Was Ihnen wichtig ist', 'Offene Fragen', 'Die nächsten Schritte',
+    'Dein Ziel, in deinen Worten', 'Was dir wichtig ist', 'Offene Fragen', 'Die nächsten Schritte',
   ])
   const nurZiel = await text('nachfass-zusammenfassung', { wichtig: '', offeneFragen: '', naechsteSchritte: '' })
   if (nurZiel.includes('Offene Fragen')) throw new Error('leeres Feld erscheint')
 })
 
 Deno.test('letzte-nachricht: nicht aufdringlich, Vorgang ruht', async () => {
-  erwarte(await text('letzte-nachricht'), ['Ich möchte nicht aufdringlich sein', 'lasse ich Ihren Vorgang vorerst ruhen'])
+  erwarte(await text('letzte-nachricht'), ['Ich möchte nicht aufdringlich sein', 'lasse ich deinen Vorgang vorerst ruhen'])
   erwarte(await text('letzte-nachricht', { berater: {} }), ['Wir möchten nicht aufdringlich sein'])
 })

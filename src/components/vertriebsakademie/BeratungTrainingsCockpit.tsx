@@ -17,13 +17,11 @@ import { ExternalLink, Monitor, MessageSquareQuote, Download, Loader2 } from "lu
 import { toast } from "sonner";
 import {
   BERATUNG_SPRECHSKRIPTE,
-  sprechskriptFuerAnrede,
   type BeratungSprechskript,
 } from "@/lib/beratungSprechskripte";
 
-// Das Cockpit zeigt die Du-Fassung, seit die Beratungspraesentation duzt.
-// Stationen ohne eigene Du-Fassung fallen auf ihren Text zurueck.
-const SPRECHSKRIPTE_DU: BeratungSprechskript[] = BERATUNG_SPRECHSKRIPTE.map((s) => sprechskriptFuerAnrede(s, "du"));
+// Die Skripte gibt es nur in der Du-Fassung.
+const SPRECHSKRIPTE_DU: BeratungSprechskript[] = BERATUNG_SPRECHSKRIPTE;
 import { buildBeratungSkriptPdf } from "@/lib/beratungSkriptPdf";
 
 const PRAESENTATION_URL = "/beratungspraesentation-osimmobilien";

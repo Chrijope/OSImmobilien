@@ -111,7 +111,9 @@ describe("Aufbau nach dem Entwurf", () => {
 });
 
 describe("Übernahme aus dem Erstgespräch", () => {
-  it("siezt, begrüßt mit Namen und füllt Ziele, Rahmen und Rentenlücke", () => {
+  it("duzt auch bei einer alten Sie-Wahl, begrüßt mit Vornamen und füllt Ziele, Rahmen und Rentenlücke", () => {
+    // Altdaten: Vor dem 16.10.2026 konnte das Erstgespräch Sie speichern. Die
+    // Präsentation duzt trotzdem (Entscheidung Christian).
     zustand.skript = {
       anrede: "sie",
       ziele: ["Altersvorsorge"],
@@ -128,8 +130,8 @@ describe("Übernahme aus dem Erstgespräch", () => {
     };
     zeige(KUNDENPROFIL);
 
-    expect(document.body.textContent).toContain("Herzlich willkommen, Frau Muster.");
-    expect(ueberschriften()).toContain("Das haben Sie uns gesagt.");
+    expect(document.body.textContent).toContain("Herzlich willkommen, Anna.");
+    expect(ueberschriften()).toContain("Das hast du uns gesagt.");
     expect(screen.getByDisplayValue("Ich möchte jetzt anfangen.")).toBeInTheDocument();
     // Das Euro-Zeichen aus dem Erstgespräch fällt weg, das Feld führt sein eigenes.
     expect(screen.getAllByDisplayValue("400").length).toBeGreaterThan(0);

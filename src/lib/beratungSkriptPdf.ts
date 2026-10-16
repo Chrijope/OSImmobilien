@@ -26,7 +26,7 @@ import {
   addBrandedFooter,
   brandedSectionTitle,
 } from "@/lib/pdfBranding";
-import { BERATUNG_SPRECHSKRIPTE, sprechskriptFuerAnrede } from "@/lib/beratungSprechskripte";
+import { BERATUNG_SPRECHSKRIPTE } from "@/lib/beratungSprechskripte";
 
 // A4 Hochformat in Millimetern
 const SEITE_B = 210;
@@ -52,9 +52,8 @@ export async function buildBeratungSkriptPdf(): Promise<{ blob: Blob; dateiname:
   // Das Deckblatt ist dunkel, dort traegt nur die Bildmarke.
   const icon = await loadIcon();
 
-  // Das ganze Projekt spricht per Du. Ohne Du-Fassung bleibt die Sie-Fassung,
-  // sie enthält dann keine direkte Anrede.
-  const skripte = BERATUNG_SPRECHSKRIPTE.map((s) => sprechskriptFuerAnrede(s, "du"));
+  // Die Skripte gibt es nur in der Du-Fassung.
+  const skripte = BERATUNG_SPRECHSKRIPTE;
   let y = 0;
 
   const neueSeite = () => {

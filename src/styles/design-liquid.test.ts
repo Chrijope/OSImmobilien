@@ -418,99 +418,6 @@ describe("Schrift auf der blauen Taste", () => {
   });
 });
 
-/* ── Die Berater-Mikroseite ───────────────────────────────────────────────── */
-
-/*
- * Die Mikroseite (`/vp/:slug` und die Vorschau `/berater-microseite`) malt
- * ihre Flaechen mit `!important` fest an. Ihre Glasregeln stehen deshalb in
- * einer eigenen Datei neben ihr. Fuer diese Datei gelten dieselben Grenzen
- * wie fuer die Schicht, bis auf `!important`, das sie zum Ueberstimmen braucht.
- */
-describe("Liquid Glass auf der Berater-Mikroseite", () => {
-  const landing = resolve(__dirname, "../components/landing");
-  const mikroCss = readFileSync(resolve(landing, "beraterMicroseiteLiquid.css"), "utf8");
-  const mikroRegelwerk = mikroCss.replace(/\/\*[\s\S]*?\*\//g, "");
-  const mikro = regeln(mikroRegelwerk);
-
-  it("wird seit dem Umbau auf die OS-CI (16.10.2026) nicht mehr geladen, die Seite ist bewusst deckend", () => {
-    const inhalt = readFileSync(resolve(landing, "BeraterMicrositeContent.tsx"), "utf8");
-    expect(inhalt).not.toContain('import "./beraterMicroseite.css"');
-    expect(inhalt).not.toContain('import "./beraterMicroseiteLiquid.css"');
-    expect(inhalt).toContain('import "./mikroseiteOs.css"');
-  });
-
-  it("haengt jede Regel an Liquid Glass und entscheidet ausdruecklich zwischen hell und dunkel", () => {
-    expect(mikro.length).toBeGreaterThan(0);
-    const ohneAnker = mikro.filter((r) =>
-      teile(r.selektor).some(
-        (teil) => !teil.startsWith('[data-glas="liquid"]:not(.dark) ') && !teil.startsWith('[data-glas="liquid"].dark '),
-      ),
-    );
-    expect(ohneAnker.map((r) => r.selektor)).toEqual([]);
-  });
-
-  it("wirkt nur auf dem Bildschirm", () => {
-    const ohneScreen = mikro.filter((r) => !r.rahmen.some((k) => k.startsWith("@media") && k.includes("screen")));
-    expect(ohneScreen.map((r) => r.selektor)).toEqual([]);
-  });
-
-  it("neigt keine Kachel", () => {
-    expect(mikroRegelwerk).not.toMatch(/rotate[XY]|perspective\(|--rx|--ry|data-lg-neigung/);
-  });
-
-  it("zeichnet nur ueber die Tokens der Schicht weich", () => {
-    // So gelten deren Ruecksichten mit: am Handy und bei weniger Transparenz keine Weichzeichnung.
-    const weich = mikro.filter((r) => /backdrop-filter:(?!\s*none)/.test(r.inhalt));
-    expect(weich.length).toBeGreaterThan(0);
-    for (const r of weich) {
-      expect(r.inhalt, r.selektor).toMatch(/(^|;)\s*backdrop-filter:\s*var\(--lg-filter-(karte|leiste|schwebend)\)/);
-    }
-  });
-
-  it("macht die Karten mit dem Karten-Token zu Glas, in der Deckkraft der Schicht", () => {
-    const karte = mikro.find((r) => r.selektor.includes(".investment-card"));
-    expect(karte?.inhalt).toMatch(/backdrop-filter:\s*var\(--lg-filter-karte\)/);
-    expect(karte?.inhalt).toMatch(/background-color:\s*hsl\(var\(--lg-glas\) \/ var\(--lg-deckkraft\)\)/);
-  });
-
-  it("bringt keine eigene Farbe mit", () => {
-    // Keine Hex- und keine rgb-Werte. Jeder feste hsl-Wert steht genau so
-    // schon in der Schicht (Schatten, Lichtkanten); alles andere laeuft ueber Tokens.
-    // Nur die Werte zaehlen; in den Selektoren stehen die Klassen der Seite, die hier gemeint sind.
-    const werte = mikro.map((r) => r.inhalt).join("\n");
-    expect(werte).not.toMatch(/#[0-9a-f]{3,8}\b/i);
-    expect(werte).not.toMatch(/rgba?\(/);
-    const fest = [...werte.matchAll(/hsl\((\d[^)]*)\)/g)].map((m) => m[0]);
-    const fremd = fest.filter((wert) => !regelwerk.includes(wert));
-    expect(fremd).toEqual([]);
-  });
-
-  it("macht den Grund sichtbar, laesst den dunklen Schlussabschnitt aber dunkel", () => {
-    const abschnitte = mikro.find((r) => r.selektor.includes(".micro-abschnitt:not(.micro-abschnitt-16) section"));
-    expect(abschnitte?.inhalt).toMatch(/background:\s*transparent/);
-  });
-
-  it("holt die dunklere Grauschrift der Schicht zurueck, statt sie zu wiederholen", () => {
-    const huelle = mikro.find((r) => r.selektor.endsWith(".lp-theme:has(> .berater-mikroseite)"));
-    expect(huelle?.inhalt).toMatch(/--muted-foreground:\s*inherit/);
-  });
-
-  it("schreibt Blau auf Glas in Blau 700 wie die Schicht", () => {
-    const blau = mikro.filter((r) => /color:\s*hsl\(var\(--lg-schrift-blau\)\)/.test(r.inhalt));
-    expect(blau.length).toBeGreaterThan(0);
-  });
-
-  it("zeigt die Vorschau im Dunkeln mit dem Blau der Seite, nicht mit dem hellen Blau fuer dunkles Glas", () => {
-    // Blau 300 auf der weissen Seite waeren 1,9:1.
-    const dunkel = mikro.find((r) => r.selektor.startsWith('[data-glas="liquid"].dark') && r.selektor.includes(".text-primary"));
-    expect(dunkel?.inhalt).toMatch(/color:\s*hsl\(var\(--primary\)\)/);
-    const glasImDunkeln = mikro.filter(
-      (r) => r.selektor.startsWith('[data-glas="liquid"].dark') && /backdrop-filter|--lg-glas/.test(r.inhalt),
-    );
-    expect(glasImDunkeln.map((r) => r.selektor)).toEqual([]);
-  });
-});
-
 /* ── Die Seitenleiste im Dunkeln ──────────────────────────────────────────── */
 
 /*
@@ -590,7 +497,7 @@ describe("Vollbildseiten zeigen den Grund", () => {
     "pages/Beratungspraesentation.tsx": "Beratungspraesentationen bleiben unberuehrt",
     "pages/BeratungspraesentationHV.tsx": "Beratungspraesentationen bleiben unberuehrt",
     "pages/BeratungspraesentationWG.tsx": "Beratungspraesentationen bleiben unberuehrt",
-    "pages/BeraterMicroseite.tsx": "eigene Glasregeln in beraterMicroseiteLiquid.css",
+    "pages/BeraterMicroseite.tsx": "seit dem Umbau auf die OS-CI (16.10.2026) bewusst deckend, eigene Regeln in mikroseiteOs.css",
   };
 
   /* Ein oeffnendes Element mit voller Hoehe und eigener deckender Flaeche. */

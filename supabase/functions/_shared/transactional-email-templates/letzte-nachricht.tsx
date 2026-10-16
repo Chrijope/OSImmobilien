@@ -1,7 +1,7 @@
 import * as React from 'npm:react@18.3.1'
 import type { TemplateEntry } from './registry.ts'
 import { EmailLayout, Absatz, type Ansprechpartner } from './_layout.tsx'
-import { foermlich } from './_anrede.ts'
+import { hallo } from './_anrede.ts'
 import { DE_EN, type MailSprache, texteFuer, type Zweisprachig } from './_sprache.ts'
 import { istTeam } from './_nicht-erreicht.ts'
 
@@ -15,7 +15,7 @@ import { istTeam } from './_nicht-erreicht.ts'
  * wieder meldet. Absender ist der zuständige Partner.
  *
  * Nicht zu verwechseln mit `nicht-erreicht-mail-3`: Die geht an Leads vor dem
- * Erstgespräch und duzt.
+ * Erstgespräch.
  */
 
 interface Props {
@@ -26,19 +26,19 @@ interface Props {
 }
 
 const DE = {
-  betreff: 'Ich lasse Ihren Vorgang vorerst ruhen',
-  betreffTeam: 'Wir lassen Ihren Vorgang vorerst ruhen',
+  betreff: 'Ich lasse deinen Vorgang vorerst ruhen',
+  betreffTeam: 'Wir lassen deinen Vorgang vorerst ruhen',
   augenbraue: 'Kurze Nachricht',
-  titel: (team: boolean) => (team ? 'Wir lassen Ihren Vorgang vorerst ruhen' : 'Ich lasse Ihren Vorgang vorerst ruhen'),
+  titel: (team: boolean) => (team ? 'Wir lassen deinen Vorgang vorerst ruhen' : 'Ich lasse deinen Vorgang vorerst ruhen'),
   vorschau: (team: boolean) => (team ? 'Wir möchten nicht aufdringlich sein.' : 'Ich möchte nicht aufdringlich sein.'),
   text: (team: boolean) =>
     team
-      ? 'wir haben in den letzten Tagen mehrmals versucht, Sie zu erreichen. Wir möchten nicht aufdringlich sein, deshalb lassen wir Ihren Vorgang vorerst ruhen.'
-      : 'ich habe in den letzten Tagen mehrmals versucht, Sie zu erreichen. Ich möchte nicht aufdringlich sein, deshalb lasse ich Ihren Vorgang vorerst ruhen.',
+      ? 'wir haben in den letzten Tagen mehrmals versucht, dich zu erreichen. Wir möchten nicht aufdringlich sein, deshalb lassen wir deinen Vorgang vorerst ruhen.'
+      : 'ich habe in den letzten Tagen mehrmals versucht, dich zu erreichen. Ich möchte nicht aufdringlich sein, deshalb lasse ich deinen Vorgang vorerst ruhen.',
   schluss: (team: boolean) =>
     team
-      ? 'Wenn das Thema für Sie wieder passt, antworten Sie einfach auf diese Mail. Wir melden uns dann gern.'
-      : 'Wenn das Thema für Sie wieder passt, antworten Sie einfach auf diese Mail oder rufen Sie mich an. Ich melde mich dann gern.',
+      ? 'Wenn das Thema für dich wieder passt, antworte einfach auf diese Mail. Wir melden uns dann gern.'
+      : 'Wenn das Thema für dich wieder passt, antworte einfach auf diese Mail oder ruf mich an. Ich melde mich dann gern.',
 }
 
 const TEXTE: Zweisprachig<typeof DE> = {
@@ -60,7 +60,7 @@ const TEXTE: Zweisprachig<typeof DE> = {
   },
 }
 
-const Mail = ({ kundeName, kundeAnrede, berater, sprache }: Props) => {
+const Mail = ({ kundeName, berater, sprache }: Props) => {
   const t = texteFuer(TEXTE, sprache)
   const team = istTeam(berater)
   return (
@@ -69,7 +69,7 @@ const Mail = ({ kundeName, kundeAnrede, berater, sprache }: Props) => {
       augenbraue={t.augenbraue}
       titel={t.titel(team)}
       vorschau={t.vorschau(team)}
-      anrede={foermlich(kundeName, sprache, kundeAnrede)}
+      anrede={hallo(kundeName, sprache)}
       person={berater}
     >
       <Absatz>{t.text(team)}</Absatz>
@@ -88,7 +88,7 @@ export const template = {
   sprachen: DE_EN,
   absender: 'zustaendiger-partner',
   previewData: {
-    kundeName: 'Herr Mustermann',
+    kundeName: 'Max Mustermann',
     berater: {
       name: 'Vorname Nachname',
       rolle: 'Vertriebspartner',

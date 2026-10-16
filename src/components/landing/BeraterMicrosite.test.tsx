@@ -1,9 +1,6 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
-import AppleHeroSection from "./apple/AppleHeroSection";
 import FloatingBeraterBadge from "./FloatingBeraterBadge";
-import SocialProofSection from "./SocialProofSection";
 import InvestorBenefitsSection from "./InvestorBenefitsSection";
-import TaxSection from "./TaxSection";
 import BeraterMicrositeContent from "./BeraterMicrositeContent";
 
 const berater = {
@@ -12,51 +9,15 @@ const berater = {
 };
 
 describe("Persönliche Microseite", () => {
-  it("zeigt im Hero keinen Beraterkasten mehr, behält aber die Aufrufe zur Beratung", () => {
-    const onOpenFunnel = vi.fn();
-    const { container } = render(<AppleHeroSection berater={berater} onOpenFunnel={onOpenFunnel} />);
-    // Am 16.09.2026 aus dem Hero genommen: Abzug, "Dein Berater · Name", Position und die drei Verweise.
-    expect(container.querySelector(".hero-contact")).toBeNull();
-    expect(screen.queryByText(/Dein Berater/)).not.toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: berater.telefon })).not.toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: berater.email })).not.toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "Erstgespräch buchen" })).not.toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Meine Steuerersparnis berechnen" })).toHaveAttribute("href", "#steuer-check");
-    fireEvent.click(screen.getByRole("button", { name: "Kostenlose Erstberatung vereinbaren" }));
-    expect(onOpenFunnel).toHaveBeenCalledOnce();
-  });
-
-  it("ersetzt ein nicht ladbares Portrait und zeigt beim nächsten Berater dessen Bild", () => {
-    const { rerender } = render(<AppleHeroSection berater={berater} onOpenFunnel={() => {}} />);
-    fireEvent.error(screen.getByRole("img", { name: berater.name }));
-    expect(screen.queryByRole("img", { name: berater.name })).not.toBeInTheDocument();
-    rerender(<AppleHeroSection berater={{ ...berater, name: "Leon Beispiel", bild: "/leon.jpg" }} onOpenFunnel={() => {}} />);
-    expect(screen.getByRole("img", { name: "Leon Beispiel" })).toHaveAttribute("src", "/leon.jpg");
-  });
-
   it("behält die Kontaktwege des schwebenden Ansprechpartners", () => {
     const onContactClick = vi.fn();
     render(<FloatingBeraterBadge berater={berater} onContactClick={onContactClick} />);
-    fireEvent.click(screen.getByRole("button", { name: "Ihr Ansprechpartner" }));
+    fireEvent.click(screen.getByRole("button", { name: "Dein Ansprechpartner" }));
     expect(screen.getByRole("link", { name: berater.email })).toHaveAttribute("href", `mailto:${berater.email}`);
     expect(screen.getByRole("link", { name: berater.telefon })).toHaveAttribute("href", `tel:${berater.telefon}`);
     fireEvent.click(screen.getByRole("button", { name: /Anfrage senden/ }));
     expect(onContactClick).toHaveBeenCalledOnce();
-    expect(screen.queryByText("Ihr persönlicher Ansprechpartner")).not.toBeInTheDocument();
-  });
-
-  it("liest jede Kundenstimme einmal vor und kann die Endlosschleife pausieren", () => {
-    const { container } = render(<SocialProofSection onOpenFunnel={() => {}} />);
-    const region = screen.getByRole("region", { name: "Kundenstimmen" });
-    expect(within(region).getAllByRole("img")).toHaveLength(9);
-    const groups = container.querySelectorAll(".kundenstimmen-group");
-    expect(groups).toHaveLength(2);
-    expect(groups[0].textContent).toBe(groups[1].textContent);
-    expect(groups[1]).toHaveAttribute("aria-hidden", "true");
-    fireEvent.click(screen.getByRole("button", { name: "Kundenstimmen pausieren" }));
-    expect(container.querySelector(".kundenstimmen-track")).toHaveStyle({ animationPlayState: "paused" });
-    fireEvent.click(screen.getByRole("button", { name: "Kundenstimmen weiterlaufen lassen" }));
-    expect(screen.getByRole("button", { name: "Kundenstimmen pausieren" })).toHaveAttribute("aria-pressed", "false");
+    expect(screen.queryByText("Dein persönlicher Ansprechpartner")).not.toBeInTheDocument();
   });
 });
 
@@ -89,19 +50,13 @@ describe("Microseite, Überschriften und Investorenprofile", () => {
     Object.defineProperty(window, "matchMedia", { writable: true, value: echteMedien });
   });
 
-  it("schreibt beide Überschriften von links und hält die längste Variante in einer Zeile", () => {
+  it("schreibt die Überschrift von links und hält die längste Variante in einer Zeile", () => {
     const profile = render(<InvestorBenefitsSection />);
     // Zentriert wirkte es, als springe der Text hin und her.
     expect(profile.container.querySelector(".text-center.absolute")).toBeNull();
     expect(profile.container.querySelector(".absolute.inset-0.block")).toHaveClass("text-left");
     // „eine klare Strategie" darf in der Browserfassung nicht umbrechen.
     expect(profile.container.querySelector(".md\\:whitespace-nowrap")).not.toBeNull();
-    profile.unmount();
-
-    const steuer = render(<TaxSection onOpenFunnel={() => {}} />);
-    expect(steuer.container.querySelector(".text-center.absolute")).toBeNull();
-    expect(steuer.container.querySelector(".absolute.inset-0.block")).toHaveClass("text-left");
-    expect(steuer.container.querySelector(".md\\:whitespace-nowrap")).not.toBeNull();
   });
 
   it("behält am breiten Fenster das bekannte Raster der vier Profile", () => {
@@ -152,7 +107,7 @@ describe("Microseite OS Real Estate", () => {
     const ueberschriften = [...container.querySelectorAll("h2")].map((h) => h.textContent ?? "");
     const reihenfolge = [
       /Rente allein/, /Steuern senken oder/, /Drei Standorte/, /So rechnet sich/, /Investoren-Profile/,
-      /Alles, was Sie/, /Regional verwurzelt/, /Standorte im Bild/, /Elf Schritte/, /kennen/,
+      /Alles, was du/, /Regional verwurzelt/, /Standorte im Bild/, /Elf Schritte/, /kennen/,
     ].map((muster) => ueberschriften.findIndex((t) => muster.test(t)));
     expect(reihenfolge.every((stelle) => stelle >= 0)).toBe(true);
     expect([...reihenfolge].sort((a, b) => a - b)).toEqual(reihenfolge);

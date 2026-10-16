@@ -4,8 +4,9 @@
  *
  * Inhalte nur, was belegt ist: Objektdaten und Musterrechnung aus den
  * Exposés (Stand Oktober 2026, siehe auch `src/lib/beratungOsDaten.ts`),
- * keine Kennzahlen zur Firma, keine Kundenstimmen. Anrede Sie, wie in
- * Handbuch und Beratungspräsentation. Englisch britisch, „you“.
+ * keine Kennzahlen zur Firma, keine Kundenstimmen. Anrede Du, wie die
+ * Beratungspräsentation (Entscheidung Christian, 16.10.2026). Englisch
+ * britisch, „you“.
  *
  * Keine Gedankenstriche, in keiner der beiden Sprachen. Minuszeichen in
  * Beträgen sind das echte Minus (U+2212).
@@ -28,7 +29,7 @@ const de = {
     knopfObjekte: "Unsere Objekte ansehen",
     bildAlt: "Doppelhaushälfte mit Garten in Zossen-Wünsdorf",
     bildOrt: "Zossen-Wünsdorf, Doppelhaushälfte mit Garten",
-    portraetUeber: "Ihr persönlicher Ansprechpartner",
+    portraetUeber: "Dein persönlicher Ansprechpartner",
   },
 
   problem: {
@@ -49,26 +50,26 @@ const de = {
       },
     ],
     schluss:
-      "Eine vermietete Immobilie setzt an allen drei Punkten an: Mieter und Steuerwirkung tragen einen großen Teil der Rate, und am Ende steht ein Sachwert, der Ihnen gehört.",
+      "Eine vermietete Immobilie setzt an allen drei Punkten an: Mieter und Steuerwirkung tragen einen großen Teil der Rate, und am Ende steht ein Sachwert, der dir gehört.",
   },
 
   konzepte: {
     kicker: "Zwei Konzepte",
     titel: "Steuern senken oder fürs Alter vorsorgen.",
     intro:
-      "Welches Konzept passt, hängt von Ihrem Einkommen, Ihrem Steuersatz und Ihrem Ziel ab. Das klären wir gemeinsam im Erstgespräch.",
+      "Welches Konzept passt, hängt von deinem Einkommen, deinem Steuersatz und deinem Ziel ab. Das klären wir gemeinsam im Erstgespräch.",
     nummer: (n: number) => `Konzept ${n}`,
     karten: {
       steuer: {
         marke: "Steuerhebel",
         titel: "Mehr Netto vom Brutto.",
-        text: "Für Einkommen mit hohem Steuersatz. Abschreibung, Zinsen und Kosten der vermieteten Wohnung senken das zu versteuernde Einkommen. So fließt ein Teil Ihrer Lohnsteuer in Ihr eigenes Vermögen statt ans Finanzamt.",
+        text: "Für Einkommen mit hohem Steuersatz. Abschreibung, Zinsen und Kosten der vermieteten Wohnung senken das zu versteuernde Einkommen. So fließt ein Teil deiner Lohnsteuer in dein eigenes Vermögen statt ans Finanzamt.",
         objekte: "Unser Objekt: Barfusstraße 9, Berlin-Wedding",
       },
       alter: {
         marke: "Altersvorsorge",
         titel: "Heute kaufen, später Zusatzrente.",
-        text: "Für den langfristigen Vermögensaufbau. Mieter und Steuerwirkung zahlen die Immobilie über die Jahre ab. Im Ruhestand gehört sie Ihnen, und die Miete wird zu Ihrer zweiten Rente.",
+        text: "Für den langfristigen Vermögensaufbau. Mieter und Steuerwirkung zahlen die Immobilie über die Jahre ab. Im Ruhestand gehört sie dir, und die Miete wird zu deiner zweiten Rente.",
         objekte: "Unsere Objekte: Hauffstraße 38 bei Potsdam und Doppelhaushälften in Zossen-Wünsdorf",
       },
     } satisfies Record<KonzeptOs, { marke: string; titel: string; text: string; objekte: string }>,
@@ -78,7 +79,7 @@ const de = {
     kicker: "Unsere Objekte",
     titel: "Drei Standorte in Berlin und Umland.",
     intro:
-      "Zu jedem Objekt gibt es Exposé, Musterrechnung und Unterlagen. Ihr Ansprechpartner stellt Ihnen vor, was zu Ihrem Konzept passt.",
+      "Zu jedem Objekt gibt es Exposé, Musterrechnung und Unterlagen. Dein Ansprechpartner stellt dir vor, was zu deinem Konzept passt.",
     marke: { steuer: "Steuersparobjekt", alter: "Altersvorsorgeobjekt" } satisfies Record<KonzeptOs, string>,
     liste: [
       {
@@ -123,18 +124,18 @@ const de = {
       { text: "Hausgeld, nicht umlagefähig", betrag: "− 164 €", ton: "minus" },
       { text: "Ergebnis vor Steuern", betrag: "− 391 €", ton: "summe" },
       { text: "Steuerwirkung (3,1 % AfA, 42 %)", betrag: "+ 241 €", ton: "plus" },
-      { text: "Ihr Eigenanteil nach Steuern", betrag: "− 151 €", ton: "ergebnis" },
+      { text: "Dein Eigenanteil nach Steuern", betrag: "− 151 €", ton: "ergebnis" },
       { text: "mit Regel-AfA 2 %", betrag: "≈ − 210 €", ton: "klein" },
     ] as ReadonlyArray<{ text: string; betrag: string; ton: "plus" | "minus" | "summe" | "ergebnis" | "klein" }>,
     karten: [
-      { wert: "176 €", text: "Tilgung im Monat, schon im Eigenanteil enthalten. Das ist Vermögen, das Ihnen gehört." },
+      { wert: "176 €", text: "Tilgung im Monat, schon im Eigenanteil enthalten. Das ist Vermögen, das dir gehört." },
       { wert: "26.318 €", text: "nach 10 Jahren getilgt" },
       { wert: "278.000 €", text: "Vermögen nach 30 Jahren" },
       { wert: "rund 920 €", text: "Zusatzrente im Monat ab 2061, nach laufenden Kosten rund 590 €" },
       { wert: "14.960 €", text: "Nebenkosten aus Eigenkapital" },
     ],
     fuss:
-      "Szenario aus dem Exposé, keine Zusage und keine Steuerberatung. Steuerwirkung als Ersteinschätzung mit 3,1 % AfA (setzt ein Gutachten voraus) und 42 % Grenzsteuersatz einer Musterperson mit 80.000 € brutto im Jahr. Ihr Ergebnis hängt von Einkommen, Steuersatz und Finanzierung ab. Die Zusatzrente von 2061 entspricht heute weniger Kaufkraft.",
+      "Szenario aus dem Exposé, keine Zusage und keine Steuerberatung. Steuerwirkung als Ersteinschätzung mit 3,1 % AfA (setzt ein Gutachten voraus) und 42 % Grenzsteuersatz einer Musterperson mit 80.000 € brutto im Jahr. Dein Ergebnis hängt von Einkommen, Steuersatz und Finanzierung ab. Die Zusatzrente von 2061 entspricht heute weniger Kaufkraft.",
   },
 
   warum: {
@@ -145,7 +146,7 @@ const de = {
     punkte: [
       { titel: "Fokus Berlin und Umland", text: "Berlin, Potsdam, Cottbus und weitere Standorte in Brandenburg statt Objekten quer durch Deutschland." },
       { titel: "Geprüfte Objekte", text: "Lage, Miete, Zustand und Unterlagen prüfen wir, bevor wir ein Objekt anbieten." },
-      { titel: "Ihre Zahlen zuerst", text: "Jede Rechnung mit Ihrem Einkommen, vor und nach Steuern. Passt es nicht, sagen wir es offen." },
+      { titel: "Deine Zahlen zuerst", text: "Jede Rechnung mit deinem Einkommen, vor und nach Steuern. Passt es nicht, sagen wir es offen." },
       { titel: "Ein Ansprechpartner", text: "Vom Erstgespräch über Bank und Notar bis zur Übergabe." },
       { titel: "Offen gesagt", text: "Wir verdienen an der Vermittlung. Steuer-, Rechts- und Finanzierungsberatung leisten Steuerberater, Notare und Banken." },
     ],
@@ -171,15 +172,15 @@ const de = {
   prozess: {
     kicker: "Unser Prozess",
     titel: "Elf Schritte bis zum Eigentum.",
-    intro: "In fester Reihenfolge. Sie wissen bei jedem Schritt, was als Nächstes kommt.",
+    intro: "In fester Reihenfolge. Du weißt bei jedem Schritt, was als Nächstes kommt.",
     schritte: [
-      { titel: "Erstgespräch", text: "Ihre Situation und Ihre Ziele." },
-      { titel: "Beratungspräsentation", text: "Konzept, Objekte und Rechnung mit Ihren Zahlen." },
+      { titel: "Erstgespräch", text: "Deine Situation und deine Ziele." },
+      { titel: "Beratungspräsentation", text: "Konzept, Objekte und Rechnung mit deinen Zahlen." },
       { titel: "Selbstauskunft", text: "Einkommen, Ausgaben und Vermögen." },
       { titel: "Unterlagen", text: "Nachweise für die Bank." },
-      { titel: "Objektvorstellung", text: "Das Objekt, das zu Ihrem Konzept passt." },
+      { titel: "Objektvorstellung", text: "Das Objekt, das zu deinem Konzept passt." },
       { titel: "Reservierung", text: "Kostenfrei." },
-      { titel: "Besichtigung", text: "Sie sehen das Objekt vor Ort." },
+      { titel: "Besichtigung", text: "Du siehst das Objekt vor Ort." },
       { titel: "Termin Bankgutachter", text: "Die Bank bewertet das Objekt." },
       { titel: "Finanzierung", text: "Die Zusage der Bank." },
       { titel: "Notar", text: "Beurkundung des Kaufvertrags." },
@@ -188,11 +189,11 @@ const de = {
   },
 
   kontakt: {
-    kicker: "Ihr Ansprechpartner",
+    kicker: "Dein Ansprechpartner",
     titel: "Lernen wir uns kennen.",
     text:
-      "Im Erstgespräch klären wir Ihre Ausgangslage, Ihr Ziel und welches Konzept zu Ihnen passt. Kostenlos und unverbindlich.",
-    ersatzName: "Ihr Ansprechpartner",
+      "Im Erstgespräch klären wir deine Ausgangslage, dein Ziel und welches Konzept zu dir passt. Kostenlos und unverbindlich.",
+    ersatzName: "Dein Ansprechpartner",
     terminBuchen: "Termin direkt buchen",
     anfrage: "Anfrage senden",
   },

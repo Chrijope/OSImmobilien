@@ -905,10 +905,10 @@ export default function AlleKontakte() {
                   { key: "telefon", label: "Telefon" },
                   { key: "email", label: "E-Mail" },
                   { key: "pipelineStufe", label: "Pipeline-Status" },
-                  { key: "quelle", label: "Quelle" },
-                  { key: "kontaktTyp", label: "Typ" },
-                  { key: "kategorie", label: "Kategorie" },
                   { key: "berater", label: "Vertriebspartner" },
+                  { key: "kategorie", label: "Kategorie" },
+                  { key: "kontaktTyp", label: "Typ" },
+                  { key: "quelle", label: "Quelle" },
                 ].map(col => (
                   <TableHead key={col.key} className="cursor-pointer select-none" onClick={() => toggleSort(col.key)}>
                     <span className="flex items-center gap-1 text-xs">{col.label} <SortIcon field={col.key} /></span>
@@ -1002,6 +1002,9 @@ export default function AlleKontakte() {
                       </TableCell>
                       <TableCell>{tarnEmail(k.email)}</TableCell>
                       <TableCell><Badge className="text-[10px] bg-primary/10 text-primary">{stufeLabel}</Badge></TableCell>
+                      <TableCell>{tarnName(resolveBerater(k), "partner") || <span className="text-muted-foreground">–</span>}</TableCell>
+                      <TableCell><span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${kategorieColor(kat)}`}>{kat === "Bestand" ? "📇 Bestand" : kat}</span></TableCell>
+                      <TableCell><KontaktTypBadge kunde={k} size="xs" /></TableCell>
                       <TableCell>
                         {kontaktQuelleAnzeige(k) ? (
                           <div className="flex flex-col gap-1">
@@ -1016,9 +1019,6 @@ export default function AlleKontakte() {
                           </div>
                         ) : "–"}
                       </TableCell>
-                      <TableCell><KontaktTypBadge kunde={k} size="xs" /></TableCell>
-                      <TableCell><span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${kategorieColor(kat)}`}>{kat === "Bestand" ? "📇 Bestand" : kat}</span></TableCell>
-                      <TableCell>{tarnName(resolveBerater(k), "partner") || <span className="text-muted-foreground">–</span>}</TableCell>
                     </TableRow>
                   );
                 });

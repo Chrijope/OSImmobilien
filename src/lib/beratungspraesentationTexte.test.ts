@@ -1,6 +1,6 @@
 import { ANLAGE_ZIELE } from "@/lib/anlageZiele";
 import { RATE_EINGANG, rateRechenweg } from "@/lib/rateAnteile";
-import { ANLAGE_ZIELE_EN, BERATUNG_TEXTE, inAnrede } from "@/lib/beratungspraesentationTexte";
+import { ANLAGE_ZIELE_EN, BERATUNG_TEXTE } from "@/lib/beratungspraesentationTexte";
 import { REFERENZ_TEXTE } from "@/lib/referenzenTexte";
 
 /*
@@ -14,12 +14,9 @@ import { REFERENZ_TEXTE } from "@/lib/referenzenTexte";
 
 type Knoten = unknown;
 
-const istAnredePaar = (w: Knoten): w is { sie: string; du: string } =>
-  typeof w === "object" && w !== null && !Array.isArray(w) && Object.keys(w).sort().join() === "du,sie";
-
-/** Alle Pfade bis zu den Blättern. Anrede-Paare und Funktionen gelten als Blatt. */
+/** Alle Pfade bis zu den Blättern. Funktionen gelten als Blatt. */
 function pfade(w: Knoten, praefix = ""): string[] {
-  if (typeof w === "string" || typeof w === "function" || istAnredePaar(w)) return [praefix];
+  if (typeof w === "string" || typeof w === "function") return [praefix];
   if (Array.isArray(w)) return w.flatMap((x, i) => pfade(x, `${praefix}[${i}]`));
   if (typeof w === "object" && w !== null) {
     return Object.entries(w).flatMap(([k, v]) => pfade(v, praefix ? `${praefix}.${k}` : k));
@@ -27,14 +24,13 @@ function pfade(w: Knoten, praefix = ""): string[] {
   return [`${praefix}:${typeof w}`];
 }
 
-/** Alle sichtbaren Texte, Funktionen mit Beispielwerten aufgerufen, beide Anreden. */
+/** Alle sichtbaren Texte, Funktionen mit Beispielwerten aufgerufen. */
 function texte(w: Knoten): string[] {
   if (typeof w === "string") return [w];
   if (typeof w === "function") {
     const beispiel = Array.from({ length: w.length }, (_, i) => (i === 0 ? 12345.5 : 678));
     return texte((w as (...a: unknown[]) => unknown)(...beispiel));
   }
-  if (istAnredePaar(w)) return [w.sie, w.du];
   if (Array.isArray(w)) return w.flatMap(texte);
   if (typeof w === "object" && w !== null) return Object.values(w).flatMap(texte);
   return [];
@@ -77,16 +73,16 @@ describe("Übersetzungen der Beratungspräsentation: vollständig", () => {
     }
   });
 
-  it("Englisch kennt keine Anrede-Paare, dort gibt es nur you", () => {
-    const paare = pfade(en).filter((p) => istAnredePaar(blatt(en, p)));
-    expect(paare).toEqual([]);
+  it("Deutsch duzt durchgehend, eine Sie-Fassung gibt es nicht (seit 16.10.2026)", () => {
+    const sie = texte(de).filter((t) => /\b(Sie|Ihnen|Ihr|Ihre|Ihrem|Ihren|Ihrer|Ihres)\b/.test(t));
+    expect(sie).toEqual([]);
   });
 
   it("jedes Anlageziel hat eine englische Beschriftung", () => {
     for (const ziel of ANLAGE_ZIELE) {
       expect(ANLAGE_ZIELE_EN[ziel.id], ziel.id).toBeTruthy();
-      expect(inAnrede(en.zielLabel(ziel.id), "du")).toBe(ANLAGE_ZIELE_EN[ziel.id]);
-      expect(inAnrede(de.zielLabel(ziel.id), "du")).toBe(ziel.label);
+      expect(en.zielLabel(ziel.id)).toBe(ANLAGE_ZIELE_EN[ziel.id]);
+      expect(de.zielLabel(ziel.id)).toBe(ziel.label);
     }
   });
 
@@ -120,7 +116,6 @@ describe("Übersetzungen der Beratungspräsentation: Zahlen", () => {
     for (const p of pfade(de.rechnungen)) {
       const deutsch = texte(blatt(de.rechnungen, p)).map(ziffern);
       const englisch = texte(blatt(en.rechnungen, p)).map(ziffern);
-      // Bei Anrede-Paaren genügt die Sie-Fassung, Du hat dieselben Zahlen.
       expect(englisch[0], p).toBe(deutsch[0]);
     }
   });
@@ -128,8 +123,8 @@ describe("Übersetzungen der Beratungspräsentation: Zahlen", () => {
   it("die Beträge folgen der Sprache: 1.400 € auf Deutsch, €1,400 auf Englisch", () => {
     expect(de.rechnungen.bestand.zeilen[0].betrag).toBe("+1.400 €");
     expect(en.rechnungen.bestand.zeilen[0].betrag).toBe("+€1,400");
-    expect(inAnrede(en.rueckblick.rund(350000), "du")).toBe("around €350,000");
-    expect(inAnrede(de.rueckblick.rund(350000), "du")).toBe("rund 350.000 €");
+    expect(en.rueckblick.rund(350000)).toBe("around €350,000");
+    expect(de.rueckblick.rund(350000)).toBe("rund 350.000 €");
   });
 
   it("der deutsche Rechenweg ist wörtlich der aus rateAnteile.ts", () => {
@@ -146,10 +141,7 @@ describe("Übersetzungen der Beratungspräsentation: Zahlen", () => {
 
   it("der englische Rechenweg nennt dieselben Beträge", () => {
     const e = RATE_EINGANG.bestand;
-    const englisch = inAnrede(
-      en.funktion.rechenweg(e.kaltmiete, e.nichtUmlagefaehig, e.rate, e.entlastungAbJahrZwei, e.eigenbeitragAbJahrZwei),
-      "du",
-    );
+    const englisch = en.funktion.rechenweg(e.kaltmiete, e.nichtUmlagefaehig, e.rate, e.entlastungAbJahrZwei, e.eigenbeitragAbJahrZwei);
     for (const betrag of ["€1,400", "€150", "€1,250", "€126", "€228", "€1,604"]) {
       expect(englisch).toContain(betrag);
     }

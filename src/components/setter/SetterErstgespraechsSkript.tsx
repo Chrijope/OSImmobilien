@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ClipboardList, Loader2, Save, CalendarClock, Smile, UserRound, PhoneForwarded, Check, ChevronDown, ChevronUp, ArrowRightLeft } from "lucide-react";
+import { ClipboardList, Loader2, Save, CalendarClock, PhoneForwarded, Check, ChevronDown, ChevronUp, ArrowRightLeft } from "lucide-react";
 import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
@@ -22,13 +22,15 @@ import type { DetailFeld, DetailSchritt, ZusammenfassungSchritt } from "@/lib/er
 /*
  * Erstgesprächsskript im Investment, Fassung nach dem Entwurf vom 15.10.2026:
  * 23 Schritte in 6 Phasen (A Einstieg bis F Abschluss), Wortlaut in der
- * Sie-Form, die Du-Fassung steht daneben. Grundlage ist das Gesprächsskript
+ * Du-Form, und nur in dieser (Entscheidung Christian, 16.10.2026: „bitte immer
+ * und überall duzen“). Grundlage ist das Gesprächsskript
  * aus dem Vertriebspaket im Google Drive, angepasst an den Ablauf
  * Erstgespräch → Beratungspräsentation → Selbstauskunft am Ende der
  * Präsentation. Die Selbstauskunft kommt hier deshalb nicht vor.
  *
  * Gespeichert wird wie bisher in investment.meta.setterSkript (antworten,
- * notizen, ziele, erledigt, anrede). Bestehende Schlüssel behalten Ort und
+ * notizen, ziele, erledigt, anrede). `anrede` bleibt für Altdaten im
+ * Snapshot und wird immer als "du" gespeichert. Bestehende Schlüssel behalten Ort und
  * Namen; neu sind nur zusätzliche Antwortfelder (siehe NEUE_FELDER).
  */
 
@@ -73,15 +75,6 @@ export interface SetterErstgespraechsSkriptHandle {
   stand: () => SkriptDaten;
 }
 
-// ── Lokalisiert: Du / Sie Variante ──
-type LocText = string | { du: string; sie: string };
-function pickText(t: LocText | undefined, anrede: Anrede): string {
-  if (!t) return "";
-  if (typeof t === "string") return t;
-  return anrede === "sie" ? t.sie : t.du;
-}
-
-type Anrede = "du" | "sie";
 
 /**
  * Lokal kontrollierter Input für Qualifizierungs-Felder (qualEinkommen / qualEigenkapital).
@@ -177,13 +170,11 @@ function Pflichtmarke({ gefuellt }: { gefuellt: boolean }) {
  *   Beratungspräsentation (uebernahmeAusSkript in beratungOsDaten.ts):
  *   qualEinkommen, qualEigenkapital, investitionMonat, erfahrung, ziele,
  *   schwerpunkt, motivWoertlich, mitentscheider, wunschNetto, renteErwartet,
- *   ruhestandAb, reserve, grenzeStress, sorgen, offeneFragen; die Anrede
- *   über beratungAnrede.ts.
+ *   ruhestandAb, reserve, grenzeStress, sorgen, offeneFragen.
  */
 export const UEBERNAHME_ZIELE: Record<string, string> = {
-  anrede: "Du oder Sie in der Beratungspräsentation",
-  motivWoertlich: "Zitat auf der Seite „Ihre Ziele“ der Beratungspräsentation",
-  mitentscheider: "„Ihr Rahmen“ in der Beratungspräsentation",
+  motivWoertlich: "Zitat auf der Seite „Deine Ziele“ der Beratungspräsentation",
+  mitentscheider: "„Dein Rahmen“ in der Beratungspräsentation",
   beruf: "Berufliche Situation in der Qualifizierung im Kundenprofil und in der Lead-Verwaltung",
   ziele: "Ziel in der Qualifizierung im Kundenprofil, Pipeline, Lead-Verwaltung und Beratungspräsentation",
   schwerpunkt: "Konzeptschalter der Beratungspräsentation (Zusatzrente oder Steuerersparnis)",
@@ -193,11 +184,11 @@ export const UEBERNAHME_ZIELE: Record<string, string> = {
   erfahrung: "Beratungspräsentation, Feld Erfahrung",
   qualEinkommen: "Qualifizierung im Kundenprofil, Lead-Verwaltung und Einnahmen in der Beratungspräsentation",
   qualEigenkapital: "Qualifizierung im Kundenprofil, Lead-Verwaltung und Eigenkapital in der Beratungspräsentation",
-  reserve: "„Ihr Rahmen“ und „Ihre Kriterien“ in der Beratungspräsentation",
-  investitionMonat: "Monatsbeitrag in „Ihr Rahmen“ und „Ihre Kriterien“ der Beratungspräsentation",
-  grenzeStress: "„Ihre Kriterien“ in der Beratungspräsentation",
+  reserve: "„Dein Rahmen“ und „Deine Kriterien“ in der Beratungspräsentation",
+  investitionMonat: "Monatsbeitrag in „Dein Rahmen“ und „Deine Kriterien“ der Beratungspräsentation",
+  grenzeStress: "„Deine Kriterien“ in der Beratungspräsentation",
   sorgen: "Abschnitt „Sicherheit“ der Beratungspräsentation",
-  offeneFragen: "Seite „Ihre Ziele“ der Beratungspräsentation",
+  offeneFragen: "Seite „Deine Ziele“ der Beratungspräsentation",
 };
 
 /**
@@ -240,7 +231,7 @@ function UebernahmeRahmen({ feld, children }: { feld: string; children: ReactNod
 
 interface Frage {
   key: string;
-  label: LocText;
+  label: string;
   placeholder?: string;
   multiline?: boolean;
   /** Auswahl als Knöpfe; „mehrfach“ speichert eine Komma-Liste. */
@@ -259,15 +250,15 @@ interface Schritt {
   titel: string;
   /** Badge neben dem Titel, etwa „NEU: Schwerpunkt“. */
   marke?: string;
-  text?: LocText;
-  tipp?: LocText;
+  text?: string;
+  tipp?: string;
   /** Optionaler ausklappbarer "Mehr Kontext"-Text. */
-  tippMehr?: LocText;
+  tippMehr?: string;
   optional?: boolean;
   fragen?: Frage[];
   notiz?: boolean; // Freitext-Notiz aktivieren
   notizLabel?: string;
-  special?: "anrede" | "einleitung" | "netto" | "eigenkapital" | "skala" | "familienstand" | "ziele" | "rentenluecke" | "zusammenfassung" | "einschaetzung";
+  special?: "einleitung" | "netto" | "eigenkapital" | "skala" | "familienstand" | "ziele" | "rentenluecke" | "zusammenfassung" | "einschaetzung";
 }
 
 /**
@@ -295,40 +286,30 @@ const SCHWERPUNKT_WERTE: Record<string, string> = {
 
 const SCHRITTE: Schritt[] = [
   // ── Phase A: Einstieg ──
-  // Schritte 1 bis 3 immer in der Sie-Form: Die Anrede wird erst in Schritt 2 geklärt.
   { id: "einleitung", nr: 1, phase: { kennung: "A", titel: "Einstieg" }, titel: "Begrüßung und Erlaubnis",
     special: "einleitung",
-    text: `„Guten Tag [Anrede] [Nachname], hier ist [Ihr Name] von der OS Real Estate. Sie hatten sich [Quelle] für Immobilien als Kapitalanlage interessiert. Passt es Ihnen gerade für etwa zwanzig Minuten, oder soll ich Sie lieber zu einem festen Zeitpunkt zurückrufen, zum Beispiel heute um 18 Uhr?“`,
-    tipp: `Hat der Kunde keine Zeit, vereinbaren Sie den Rückruf mit Datum und Uhrzeit. Ein „irgendwann“ reicht nicht.` },
+    text: `„Hallo [Vorname], hier ist [Dein Name] von der OS Real Estate. Du hattest dich [Quelle] für Immobilien als Kapitalanlage interessiert. Passt es dir gerade für etwa zwanzig Minuten, oder soll ich dich lieber zu einem festen Zeitpunkt zurückrufen, zum Beispiel heute um 18 Uhr?“`,
+    tipp: `Hat der Kunde keine Zeit, vereinbare den Rückruf mit Datum und Uhrzeit. Ein „irgendwann“ reicht nicht.` },
 
-  { id: "anrede", nr: 2, titel: "Anrede klären",
-    special: "anrede",
-    text: `„Bevor wir einsteigen: Bleiben wir beim Sie, oder sind Sie lieber per Du unterwegs?“`,
-    tipp: `Die Wahl gilt für das Skript ab Schritt 3, die Beratungspräsentation und die Mails.` },
+  // Früher „Anrede klären“. Seit dem 16.10.2026 nur noch ein Hinweis ohne
+  // Sprechtext; Nummer und Kennung bleiben, damit gespeicherte Haken passen.
+  { id: "anrede", nr: 2, titel: "Hinweis: Wir duzen",
+    tipp: `Wir duzen jeden Kunden vom ersten Satz an, im Skript, in der Beratungspräsentation und in den Mails. Hier ist nichts zu fragen und nichts zu wählen.` },
 
   { id: "ziel_gespraech", nr: 3, titel: "Ablauf und Ziel des Gesprächs",
-    text: {
-      sie: `„Kurz zum Ablauf, damit Sie wissen, was Sie erwartet: Ich möchte heute vor allem verstehen, wo Sie stehen und was Sie erreichen möchten. Dazu stelle ich Ihnen ein paar Fragen. Einige davon sind persönlich, und Sie entscheiden, was Sie mir erzählen. Danach sage ich Ihnen kurz, wer wir sind und wie wir arbeiten. Am Ende sagen wir beide ehrlich, ob ein zweites Gespräch Sinn ergibt. Eine konkrete Immobilie schauen wir heute nicht an, und es wird nichts unterschrieben. Ist das für Sie ein guter Ablauf?“\n\n„Darf ich mir dabei ein paar Notizen machen? Und gibt es etwas, das Sie heute auf jeden Fall geklärt haben möchten?“`,
-      du: `„Kurz zum Ablauf, damit du weißt, was dich erwartet: Ich möchte heute vor allem verstehen, wo du stehst und was du erreichen möchtest. Dazu stelle ich dir ein paar Fragen. Einige davon sind persönlich, und du entscheidest, was du mir erzählst. Danach sage ich dir kurz, wer wir sind und wie wir arbeiten. Am Ende sagen wir beide ehrlich, ob ein zweites Gespräch Sinn ergibt. Eine konkrete Immobilie schauen wir heute nicht an, und es wird nichts unterschrieben. Ist das für dich ein guter Ablauf?“\n\n„Darf ich mir dabei ein paar Notizen machen? Und gibt es etwas, das du heute auf jeden Fall geklärt haben möchtest?“`,
-    },
+    text: `„Kurz zum Ablauf, damit du weißt, was dich erwartet: Ich möchte heute vor allem verstehen, wo du stehst und was du erreichen möchtest. Dazu stelle ich dir ein paar Fragen. Einige davon sind persönlich, und du entscheidest, was du mir erzählst. Danach sage ich dir kurz, wer wir sind und wie wir arbeiten. Am Ende sagen wir beide ehrlich, ob ein zweites Gespräch Sinn ergibt. Eine konkrete Immobilie schauen wir heute nicht an, und es wird nichts unterschrieben. Ist das für dich ein guter Ablauf?“\n\n„Darf ich mir dabei ein paar Notizen machen? Und gibt es etwas, das du heute auf jeden Fall geklärt haben möchtest?“`,
     notiz: true, notizLabel: "Was der Kunde heute geklärt haben möchte" },
 
   // ── Phase B: Kundenrahmen ──
   { id: "warmup", nr: 4, phase: { kennung: "B", titel: "Kundenrahmen" }, titel: "Motiv: Warum gerade jetzt?",
-    text: {
-      sie: `„Was hat Sie dazu gebracht, sich gerade jetzt mit Immobilien als Kapitalanlage zu beschäftigen?“`,
-      du: `„Was hat dich dazu gebracht, dich gerade jetzt mit Immobilien als Kapitalanlage zu beschäftigen?“`,
-    },
-    tipp: `Nachfragen statt bewerten: „Was meinen Sie genau mit …?“ · „Wie kam es dazu?“ Pausen aushalten. Den wichtigsten Satz des Kunden wörtlich notieren. Er erscheint in der Beratungspräsentation als Zitat auf der Seite „Ihre Ziele“.`,
+    text: `„Was hat dich dazu gebracht, dich gerade jetzt mit Immobilien als Kapitalanlage zu beschäftigen?“`,
+    tipp: `Nachfragen statt bewerten: „Was meinst du genau mit …?“ · „Wie kam es dazu?“ Pausen aushalten. Den wichtigsten Satz des Kunden wörtlich notieren. Er erscheint in der Beratungspräsentation als Zitat auf der Seite „Deine Ziele“.`,
     fragen: [{ key: "motivWoertlich", label: "Motiv in den Worten des Kunden (wörtlich)", placeholder: "z.B. „Ich merke, dass meine Rente später nicht reicht, und ich möchte jetzt anfangen.“", multiline: true }],
     notiz: true },
 
   { id: "familiaere_situation", nr: 5, titel: "Familie und Mitentscheider",
     special: "familienstand",
-    text: {
-      sie: `„Damit ich Ihre Situation richtig einordne: Sind Sie ledig, verheiratet oder in einer Partnerschaft?“`,
-      du: `„Damit ich deine Situation richtig einordne: Bist du ledig, verheiratet oder in einer Partnerschaft?“`,
-    },
+    text: `„Damit ich deine Situation richtig einordne: Bist du ledig, verheiratet oder in einer Partnerschaft?“`,
     tipp: `Je nach Antwort blendet das CRM den passenden Folgesatz ein.`,
     fragen: [
       { key: "mitentscheider", label: "Mitentscheider (Name, wird zum Termin eingeladen)", placeholder: "z.B. Partnerin, soll beim nächsten Termin dabei sein" },
@@ -337,10 +318,7 @@ const SCHRITTE: Schritt[] = [
     notiz: true },
 
   { id: "berufliche_situation", nr: 6, titel: "Beruf",
-    text: {
-      sie: `„Was machen Sie beruflich? Sind Sie angestellt, selbstständig oder verbeamtet? Und seit wann sind Sie dort?“`,
-      du: `„Was machst du beruflich? Bist du angestellt, selbstständig oder verbeamtet? Und seit wann bist du dort?“`,
-    },
+    text: `„Was machst du beruflich? Bist du angestellt, selbstständig oder verbeamtet? Und seit wann bist du dort?“`,
     tipp: `Probezeit oder Befristung notieren. Die Bank fragt später danach.`,
     fragen: [
       { key: "beruf", label: "Berufliche Situation", pflicht: true },
@@ -351,20 +329,14 @@ const SCHRITTE: Schritt[] = [
   // ── Phase C: Ziele und Ausgangslage ──
   { id: "ziele", nr: 7, phase: { kennung: "C", titel: "Ziele und Ausgangslage" }, titel: "Ziele und Schwerpunkt", marke: "NEU: Schwerpunkt",
     special: "ziele",
-    text: {
-      sie: `„Was soll eine Immobilie in zehn bis zwanzig Jahren für Sie leisten?“\n\n„Und wenn Sie sich für eines entscheiden müssten: Geht es Ihnen eher darum, später im Ruhestand ein zusätzliches Einkommen zu haben, oder eher darum, heute weniger Steuern zu zahlen und mehr Netto vom Brutto zu behalten?“\n\n„Warum ist Ihnen genau das gerade jetzt wichtig?“`,
-      du: `„Was soll eine Immobilie in zehn bis zwanzig Jahren für dich leisten?“\n\n„Und wenn du dich für eines entscheiden müsstest: Geht es dir eher darum, später im Ruhestand ein zusätzliches Einkommen zu haben, oder eher darum, heute weniger Steuern zu zahlen und mehr Netto vom Brutto zu behalten?“\n\n„Warum ist dir genau das gerade jetzt wichtig?“`,
-    },
+    text: `„Was soll eine Immobilie in zehn bis zwanzig Jahren für dich leisten?“\n\n„Und wenn du dich für eines entscheiden müsstest: Geht es dir eher darum, später im Ruhestand ein zusätzliches Einkommen zu haben, oder eher darum, heute weniger Steuern zu zahlen und mehr Netto vom Brutto zu behalten?“\n\n„Warum ist dir genau das gerade jetzt wichtig?“`,
     tipp: `Bis zu drei Ziele. Der Schwerpunkt ist Pflicht und belegt den Konzeptschalter der Beratungspräsentation vor.`,
     fragen: [{ key: "schwerpunkt", label: "Schwerpunkt", typ: "auswahl", optionen: ["zusatzrente", "steuer", "beides"], werte: SCHWERPUNKT_WERTE, pflicht: true }],
     notiz: true, notizLabel: "Warum gerade jetzt wichtig" },
 
   { id: "rentenluecke", nr: 8, titel: "Ruhestand und Rentenlücke",
     special: "rentenluecke",
-    text: {
-      sie: `„Wie stellen Sie sich Ihren Ruhestand vor, und ab wann?“\n\n„Wissen Sie ungefähr, mit wie viel Rente Sie rechnen können? Eine grobe Zahl aus Ihrer letzten Renteninformation reicht mir.“\n\n„Und mit wie viel Netto im Monat würden Sie im Ruhestand gern leben?“`,
-      du: `„Wie stellst du dir deinen Ruhestand vor, und ab wann?“\n\n„Weißt du ungefähr, mit wie viel Rente du rechnen kannst? Eine grobe Zahl aus deiner letzten Renteninformation reicht mir.“\n\n„Und mit wie viel Netto im Monat würdest du im Ruhestand gern leben?“`,
-    },
+    text: `„Wie stellst du dir deinen Ruhestand vor, und ab wann?“\n\n„Weißt du ungefähr, mit wie viel Rente du rechnen kannst? Eine grobe Zahl aus deiner letzten Renteninformation reicht mir.“\n\n„Und mit wie viel Netto im Monat würdest du im Ruhestand gern leben?“`,
     fragen: [
       { key: "ruhestandAb", label: "Ruhestand ab (Alter)", placeholder: "z.B. 67" },
       { key: "renteErwartet", label: "Erwartete Rente netto im Monat (€)", placeholder: "z.B. 1.800" },
@@ -372,10 +344,7 @@ const SCHRITTE: Schritt[] = [
     ] },
 
   { id: "sparformen", nr: 9, titel: "Heutige Vorsorge und Erfahrung",
-    text: {
-      sie: `„Was tun Sie heute bereits für Ihre Altersvorsorge und Ihren Vermögensaufbau? Und wie zufrieden sind Sie damit?“\n\n„Haben Sie schon Erfahrung mit Immobilien, selbst genutzt oder vermietet? Und planen Sie in den nächsten Jahren ein eigenes Zuhause?“`,
-      du: `„Was tust du heute bereits für deine Altersvorsorge und deinen Vermögensaufbau? Und wie zufrieden bist du damit?“\n\n„Hast du schon Erfahrung mit Immobilien, selbst genutzt oder vermietet? Und planst du in den nächsten Jahren ein eigenes Zuhause?“`,
-    },
+    text: `„Was tust du heute bereits für deine Altersvorsorge und deinen Vermögensaufbau? Und wie zufrieden bist du damit?“\n\n„Hast du schon Erfahrung mit Immobilien, selbst genutzt oder vermietet? Und planst du in den nächsten Jahren ein eigenes Zuhause?“`,
     fragen: [
       { key: "sparformen", label: "Sparformen", typ: "mehrfach", optionen: ["Tagesgeld", "ETF/Aktien", "Bausparvertrag", "Rentenversicherung", "betriebliche Vorsorge", "Immobilie"] },
       { key: "vorsorgeZufriedenheit", label: "Zufriedenheit", placeholder: "z.B. eher unzufrieden, bringt zu wenig" },
@@ -385,17 +354,11 @@ const SCHRITTE: Schritt[] = [
 
   // ── Phase D: Finanzieller Rahmen ──
   { id: "ueberleitung_rahmen", nr: 10, phase: { kennung: "D", titel: "Finanzieller Rahmen" }, titel: "Überleitung",
-    text: {
-      sie: `„Eine Immobilie ist nur dann gut, wenn sie zu Ihrem Ziel und zu Ihrer Situation passt. Damit ich Ihnen im nächsten Termin mit echten Zahlen statt mit Wunschwerten rechne, brauche ich ein paar Eckdaten. Eine Spanne reicht mir jeweils.“`,
-      du: `„Eine Immobilie ist nur dann gut, wenn sie zu deinem Ziel und zu deiner Situation passt. Damit ich dir im nächsten Termin mit echten Zahlen statt mit Wunschwerten rechne, brauche ich ein paar Eckdaten. Eine Spanne reicht mir jeweils.“`,
-    } },
+    text: `„Eine Immobilie ist nur dann gut, wenn sie zu deinem Ziel und zu deiner Situation passt. Damit ich dir im nächsten Termin mit echten Zahlen statt mit Wunschwerten rechne, brauche ich ein paar Eckdaten. Eine Spanne reicht mir jeweils.“` },
 
   { id: "netto", nr: 11, titel: "Einkommen und Verpflichtungen",
     special: "netto",
-    text: {
-      sie: `„Wie hoch ist ungefähr Ihr monatliches Nettoeinkommen? Und Ihr Bruttojahresgehalt?“\n\n„Laufen aktuell Kredite, Leasingraten oder Unterhaltszahlungen?“`,
-      du: `„Wie hoch ist ungefähr dein monatliches Nettoeinkommen? Und dein Bruttojahresgehalt?“\n\n„Laufen aktuell Kredite, Leasingraten oder Unterhaltszahlungen?“`,
-    },
+    text: `„Wie hoch ist ungefähr dein monatliches Nettoeinkommen? Und dein Bruttojahresgehalt?“\n\n„Laufen aktuell Kredite, Leasingraten oder Unterhaltszahlungen?“`,
     tipp: `Das Brutto brauchen wir für den persönlichen Steuersatz. Die Präsentation rechnet nicht mit pauschal 42 %, sondern mit dem Wert des Kunden.`,
     fragen: [
       { key: "bruttoJahr", label: "Brutto im Jahr (€)", placeholder: "z.B. 80.000", pflicht: true },
@@ -405,28 +368,19 @@ const SCHRITTE: Schritt[] = [
 
   { id: "eigenkapital", nr: 12, titel: "Eigenkapital und Reserve",
     special: "eigenkapital",
-    text: {
-      sie: `„Welche Rücklage soll auf jeden Fall unangetastet bleiben, egal was passiert?“\n\n„Und welcher Betrag stünde darüber hinaus für die Kaufnebenkosten zur Verfügung? Wichtig: Nachweisen heißt nicht einsetzen. Was Sie davon wirklich einsetzen, entscheiden Sie später.“`,
-      du: `„Welche Rücklage soll auf jeden Fall unangetastet bleiben, egal was passiert?“\n\n„Und welcher Betrag stünde darüber hinaus für die Kaufnebenkosten zur Verfügung? Wichtig: Nachweisen heißt nicht einsetzen. Was du davon wirklich einsetzt, entscheidest du später.“`,
-    },
+    text: `„Welche Rücklage soll auf jeden Fall unangetastet bleiben, egal was passiert?“\n\n„Und welcher Betrag stünde darüber hinaus für die Kaufnebenkosten zur Verfügung? Wichtig: Nachweisen heißt nicht einsetzen. Was du davon wirklich einsetzt, entscheidest du später.“`,
     fragen: [{ key: "reserve", label: "Reserve, unantastbar (€)", placeholder: "z.B. 15.000", pflicht: true }] },
 
   { id: "investitionsbereitschaft", nr: 13, titel: "Monatlich tragbarer Betrag",
-    text: {
-      sie: `„Welcher Betrag im Monat wäre für Sie dauerhaft gut tragbar, wenn das Konzept für Sie nachvollziehbar ist? Ich meine den Betrag vor Steuern.“\n\n„Und wo wäre Ihre Grenze, wenn einmal etwas nicht nach Plan läuft?“`,
-      du: `„Welcher Betrag im Monat wäre für dich dauerhaft gut tragbar, wenn das Konzept für dich nachvollziehbar ist? Ich meine den Betrag vor Steuern.“\n\n„Und wo wäre deine Grenze, wenn einmal etwas nicht nach Plan läuft?“`,
-    },
+    text: `„Welcher Betrag im Monat wäre für dich dauerhaft gut tragbar, wenn das Konzept für dich nachvollziehbar ist? Ich meine den Betrag vor Steuern.“\n\n„Und wo wäre deine Grenze, wenn einmal etwas nicht nach Plan läuft?“`,
     fragen: [
       { key: "investitionMonat", label: "Tragbar im Monat vor Steuern (€)", placeholder: "z.B. 300-500 €" },
       { key: "grenzeStress", label: "Grenze im Stressfall (€ im Monat)", placeholder: "z.B. 500" },
     ] },
 
   { id: "schufa", nr: 14, titel: "Sorgen und Schufa",
-    text: {
-      sie: `„Was sind Ihre größten Sorgen, wenn Sie an eine vermietete Immobilie denken?“\n\n„Und eine letzte Frage, die ich allen stelle: Gab es in der Vergangenheit Schwierigkeiten mit einer Bank oder mit der Schufa? Ich frage nur, damit wir später keine Überraschung erleben.“`,
-      du: `„Was sind deine größten Sorgen, wenn du an eine vermietete Immobilie denkst?“\n\n„Und eine letzte Frage, die ich allen stelle: Gab es in der Vergangenheit Schwierigkeiten mit einer Bank oder mit der Schufa? Ich frage nur, damit wir später keine Überraschung erleben.“`,
-    },
-    tipp: `Sorgen wörtlich notieren. Sie werden in der Beratungspräsentation im Abschnitt „Sicherheit“ gezielt beantwortet.`,
+    text: `„Was sind deine größten Sorgen, wenn du an eine vermietete Immobilie denkst?“\n\n„Und eine letzte Frage, die ich allen stelle: Gab es in der Vergangenheit Schwierigkeiten mit einer Bank oder mit der Schufa? Ich frage nur, damit wir später keine Überraschung erleben.“`,
+    tipp: `Sorgen wörtlich notieren. Die Beratungspräsentation beantwortet sie im Abschnitt „Sicherheit“ gezielt.`,
     fragen: [
       { key: "sorgen", label: "Größte Sorgen (wörtlich)", placeholder: "z.B. „Was ist, wenn der Mieter nicht zahlt?“", multiline: true },
       { key: "schufa", label: "Schufa auffällig", typ: "auswahl", optionen: ["ja", "nein", "unklar"] },
@@ -435,26 +389,17 @@ const SCHRITTE: Schritt[] = [
 
   // ── Phase E: Wer wir sind ──
   { id: "osimmobilien_vorstellung", nr: 15, phase: { kennung: "E", titel: "Wer wir sind" }, titel: "Unternehmen",
-    text: {
-      sie: `„Danke für Ihre Offenheit. Damit Sie wissen, mit wem Sie sprechen: Wir sind die OS Real Estate GmbH, Teil der OS Immobilien Holding mit Sitz in Mittenwalde bei Berlin. Wir vermitteln vermietete Wohnimmobilien als Kapitalanlage, mit Schwerpunkt Berlin und Brandenburg, heute zum Beispiel in Berlin-Wedding, am Schwielowsee bei Potsdam und in Zossen-Wünsdorf. Jedes Objekt prüfen wir vorher auf Lage, Miete, Zustand und Unterlagen.“\n\n„Und ich sage es Ihnen ganz offen: Wir verdienen an der Vermittlung. Gerade deshalb rechnen wir mit echten Zahlen, vor und nach Steuern und mit einem Stresstest. Steuer-, Rechts- und Finanzierungsberatung machen wir nicht. Dafür arbeiten wir mit Steuerberatern, Notaren und Banken zusammen.“`,
-      du: `„Danke für deine Offenheit. Damit du weißt, mit wem du sprichst: Wir sind die OS Real Estate GmbH, Teil der OS Immobilien Holding mit Sitz in Mittenwalde bei Berlin. Wir vermitteln vermietete Wohnimmobilien als Kapitalanlage, mit Schwerpunkt Berlin und Brandenburg, heute zum Beispiel in Berlin-Wedding, am Schwielowsee bei Potsdam und in Zossen-Wünsdorf. Jedes Objekt prüfen wir vorher auf Lage, Miete, Zustand und Unterlagen.“\n\n„Und ich sage es dir ganz offen: Wir verdienen an der Vermittlung. Gerade deshalb rechnen wir mit echten Zahlen, vor und nach Steuern und mit einem Stresstest. Steuer-, Rechts- und Finanzierungsberatung machen wir nicht. Dafür arbeiten wir mit Steuerberatern, Notaren und Banken zusammen.“`,
-    },
-    tipp: `Persönlich ergänzen: Ihr Werdegang in zwei Sätzen und Ihr ehrlicher Grund für diese Arbeit. Keine erfundenen Zahlen, keine fremden Siegel.`,
+    text: `„Danke für deine Offenheit. Damit du weißt, mit wem du sprichst: Wir sind die OS Real Estate GmbH, Teil der OS Immobilien Holding mit Sitz in Mittenwalde bei Berlin. Wir vermitteln vermietete Wohnimmobilien als Kapitalanlage, mit Schwerpunkt Berlin und Brandenburg, heute zum Beispiel in Berlin-Wedding, am Schwielowsee bei Potsdam und in Zossen-Wünsdorf. Jedes Objekt prüfen wir vorher auf Lage, Miete, Zustand und Unterlagen.“\n\n„Und ich sage es dir ganz offen: Wir verdienen an der Vermittlung. Gerade deshalb rechnen wir mit echten Zahlen, vor und nach Steuern und mit einem Stresstest. Steuer-, Rechts- und Finanzierungsberatung machen wir nicht. Dafür arbeiten wir mit Steuerberatern, Notaren und Banken zusammen.“`,
+    tipp: `Persönlich ergänzen: dein Werdegang in zwei Sätzen und dein ehrlicher Grund für diese Arbeit. Keine erfundenen Zahlen, keine fremden Siegel.`,
     notiz: true },
 
   { id: "ablauf", nr: 16, titel: "So arbeiten wir: der Ablauf",
-    text: {
-      sie: `„So gehen wir vor: Im nächsten Termin zeige ich Ihnen in etwa einer Stunde unser Konzept, gerechnet mit Ihren Zahlen, und dazu unsere Objekte. Passt das für Sie, füllen wir am Ende gemeinsam Ihre Selbstauskunft aus. Rund eine Woche später stelle ich Ihnen die konkrete Immobilie vor, die zu Ihnen passt, mit Exposé und Ihrer persönlichen Kalkulation. Erst dann entscheiden Sie über eine Reservierung, und die ist kostenfrei. Danach folgen Besichtigung, Bankgutachter, Finanzierung und Notar. Nach jedem Schritt entscheiden Sie, ob es weitergeht.“`,
-      du: `„So gehen wir vor: Im nächsten Termin zeige ich dir in etwa einer Stunde unser Konzept, gerechnet mit deinen Zahlen, und dazu unsere Objekte. Passt das für dich, füllen wir am Ende gemeinsam deine Selbstauskunft aus. Rund eine Woche später stelle ich dir die konkrete Immobilie vor, die zu dir passt, mit Exposé und deiner persönlichen Kalkulation. Erst dann entscheidest du über eine Reservierung, und die ist kostenfrei. Danach folgen Besichtigung, Bankgutachter, Finanzierung und Notar. Nach jedem Schritt entscheidest du, ob es weitergeht.“`,
-    } },
+    text: `„So gehen wir vor: Im nächsten Termin zeige ich dir in etwa einer Stunde unser Konzept, gerechnet mit deinen Zahlen, und dazu unsere Objekte. Passt das für dich, füllen wir am Ende gemeinsam deine Selbstauskunft aus. Rund eine Woche später stelle ich dir die konkrete Immobilie vor, die zu dir passt, mit Exposé und deiner persönlichen Kalkulation. Erst dann entscheidest du über eine Reservierung, und die ist kostenfrei. Danach folgen Besichtigung, Bankgutachter, Finanzierung und Notar. Nach jedem Schritt entscheidest du, ob es weitergeht.“` },
 
   // ── Phase F: Abschluss ──
   { id: "zusammenfassung", nr: 17, phase: { kennung: "F", titel: "Abschluss" }, titel: "Zusammenfassung",
     special: "zusammenfassung",
-    text: {
-      sie: `„Lassen Sie mich kurz zusammenfassen, ob ich Sie richtig verstanden habe: Sie sind [Beruf] und möchten [wichtigstes Ziel]. Wichtig ist Ihnen das gerade jetzt, weil [Motiv]. Heute haben Sie [Vorsorge], und es fehlen Ihnen später etwa [Lücke] im Monat. Eine Reserve von [Reserve] soll unangetastet bleiben, und monatlich wären für Sie etwa [tragbarer Betrag] vor Steuern gut tragbar. Am meisten Sorgen macht Ihnen [Sorge], und mitentscheiden wird [Mitentscheider].“\n\n„Habe ich das richtig verstanden? Was würden Sie ändern oder ergänzen?“`,
-      du: `„Lass mich kurz zusammenfassen, ob ich dich richtig verstanden habe: Du bist [Beruf] und möchtest [wichtigstes Ziel]. Wichtig ist dir das gerade jetzt, weil [Motiv]. Heute hast du [Vorsorge], und es fehlen dir später etwa [Lücke] im Monat. Eine Reserve von [Reserve] soll unangetastet bleiben, und monatlich wären für dich etwa [tragbarer Betrag] vor Steuern gut tragbar. Am meisten Sorgen macht dir [Sorge], und mitentscheiden wird [Mitentscheider].“\n\n„Habe ich das richtig verstanden? Was würdest du ändern oder ergänzen?“`,
-    },
+    text: `„Lass mich kurz zusammenfassen, ob ich dich richtig verstanden habe: Du bist [Beruf] und möchtest [wichtigstes Ziel]. Wichtig ist dir das gerade jetzt, weil [Motiv]. Heute hast du [Vorsorge], und es fehlen dir später etwa [Lücke] im Monat. Eine Reserve von [Reserve] soll unangetastet bleiben, und monatlich wären für dich etwa [tragbarer Betrag] vor Steuern gut tragbar. Am meisten Sorgen macht dir [Sorge], und mitentscheiden wird [Mitentscheider].“\n\n„Habe ich das richtig verstanden? Was würdest du ändern oder ergänzen?“`,
     tipp: `Das CRM setzt die Werte aus den Schritten 4 bis 14 automatisch ein. Was noch in eckigen Klammern steht, ist offen.` },
 
   { id: "einschaetzung", nr: 18, titel: "Ehrliche Einschätzung",
@@ -468,55 +413,34 @@ const SCHRITTE: Schritt[] = [
 
   { id: "skala_verbindlichkeit", nr: 19, titel: "Verbindlichkeit",
     special: "skala",
-    text: {
-      sie: `„Auf einer Skala von 1 bis 10: Wie wichtig ist es Ihnen, das Thema in den nächsten Wochen anzugehen?“\n\n„Was müsste passieren, damit es eine 10 wird?“`,
-      du: `„Auf einer Skala von 1 bis 10: Wie wichtig ist es dir, das Thema in den nächsten Wochen anzugehen?“\n\n„Was müsste passieren, damit es eine 10 wird?“`,
-    },
+    text: `„Auf einer Skala von 1 bis 10: Wie wichtig ist es dir, das Thema in den nächsten Wochen anzugehen?“\n\n„Was müsste passieren, damit es eine 10 wird?“`,
     notiz: true },
 
   { id: "terminvereinbarung", nr: 20, titel: "Termin für die Beratungspräsentation",
-    text: {
-      sie: `„Ich brauche zwei bis drei Tage, um Ihr Konzept mit Ihren Zahlen vorzubereiten. Passt Ihnen [Tag 1] um [Uhrzeit] oder [Tag 2] um [Uhrzeit] besser? Wir brauchen etwa eine Stunde, per Video oder bei uns im Büro.“\n\n„[Mitentscheider] sollte idealerweise dabei sein. Passt der Termin auch für [ihn/sie]?“`,
-      du: `„Ich brauche zwei bis drei Tage, um dein Konzept mit deinen Zahlen vorzubereiten. Passt dir [Tag 1] um [Uhrzeit] oder [Tag 2] um [Uhrzeit] besser? Wir brauchen etwa eine Stunde, per Video oder bei uns im Büro.“\n\n„[Mitentscheider] sollte idealerweise dabei sein. Passt der Termin auch für [ihn/sie]?“`,
-    } },
+    text: `„Ich brauche zwei bis drei Tage, um dein Konzept mit deinen Zahlen vorzubereiten. Passt dir [Tag 1] um [Uhrzeit] oder [Tag 2] um [Uhrzeit] besser? Wir brauchen etwa eine Stunde, per Video oder bei uns im Büro.“\n\n„[Mitentscheider] sollte idealerweise dabei sein. Passt der Termin auch für [ihn/sie]?“` },
 
   { id: "einladung_check", nr: 21, titel: "Einladung prüfen und Vorbereitung",
-    text: {
-      sie: `„Sie bekommen gleich eine Einladung per E-Mail. Schauen Sie bitte kurz nach, ob sie angekommen ist? Manchmal landet sie im Spam-Ordner.“\n\n„Vorbereiten müssen Sie für den Termin nichts. Wenn Sie mögen, legen Sie Ihre letzte Renteninformation bereit, dann rechnen wir noch genauer.“`,
-      du: `„Du bekommst gleich eine Einladung per E-Mail. Schau bitte kurz nach, ob sie angekommen ist? Manchmal landet sie im Spam-Ordner.“\n\n„Vorbereiten musst du für den Termin nichts. Wenn du magst, leg deine letzte Renteninformation bereit, dann rechnen wir noch genauer.“`,
-    },
+    text: `„Du bekommst gleich eine Einladung per E-Mail. Schau bitte kurz nach, ob sie angekommen ist? Manchmal landet sie im Spam-Ordner.“\n\n„Vorbereiten musst du für den Termin nichts. Wenn du magst, leg deine letzte Renteninformation bereit, dann rechnen wir noch genauer.“`,
     notiz: true },
 
   { id: "offene_fragen", nr: 22, titel: "Offene Fragen",
-    text: {
-      sie: `„Welche Frage soll ich Ihnen im nächsten Termin als Allererstes beantworten?“`,
-      du: `„Welche Frage soll ich dir im nächsten Termin als Allererstes beantworten?“`,
-    },
+    text: `„Welche Frage soll ich dir im nächsten Termin als Allererstes beantworten?“`,
     fragen: [{ key: "offeneFragen", label: "Erste Frage für die Beratung", placeholder: "Die Frage des Kunden, möglichst wörtlich", multiline: true }] },
 
   { id: "verabschiedung", nr: 23, titel: "Verabschiedung",
-    text: {
-      sie: `„Dann halten wir fest: [Tag], [Datum] um [Uhrzeit], gemeinsam mit [Mitentscheider]. Ich freue mich auf unser Gespräch. Bis [Tag], [Anrede] [Nachname]!“`,
-      du: `„Dann halten wir fest: [Tag], [Datum] um [Uhrzeit], gemeinsam mit [Mitentscheider]. Ich freue mich auf unser Gespräch. Bis [Tag], [Vorname]!“`,
-    },
+    text: `„Dann halten wir fest: [Tag], [Datum] um [Uhrzeit], gemeinsam mit [Mitentscheider]. Ich freue mich auf unser Gespräch. Bis [Tag], [Vorname]!“`,
     tipp: `Abschluss-Checkliste: Ziel und Schwerpunkt · Mitentscheider · Rahmen und Reserve · Sorgen · Termin mit Einladung · Nachfass-E-Mail innerhalb 2 Stunden.` },
 ];
 
 /** Die drei Sätze in Schritt 18, je nach Ergebnis. */
-const EINSCHAETZUNG: Record<"passt" | "passtNicht", { sie: string; du: string }> = {
-  passt: {
-    sie: `Wenn es passt: „Nach dem, was Sie mir erzählt haben, kann eine vermietete Immobilie ein sinnvoller Baustein für Sie sein. Ob die Zahlen wirklich aufgehen, zeige ich Ihnen im nächsten Termin, offen und mit Stresstest.“`,
-    du: `Wenn es passt: „Nach dem, was du mir erzählt hast, kann eine vermietete Immobilie ein sinnvoller Baustein für dich sein. Ob die Zahlen wirklich aufgehen, zeige ich dir im nächsten Termin, offen und mit Stresstest.“`,
-  },
-  passtNicht: {
-    sie: `Wenn es nicht passt: „Danke für Ihre Offenheit. Ehrlich gesagt passt unser Konzept im Moment nicht zu Ihnen, weil [Grund]. Ich möchte Ihnen nichts empfehlen, das nicht zu Ihnen passt. Wenn sich an [Grund] etwas ändert, melden Sie sich gern wieder bei mir.“`,
-    du: `Wenn es nicht passt: „Danke für deine Offenheit. Ehrlich gesagt passt unser Konzept im Moment nicht zu dir, weil [Grund]. Ich möchte dir nichts empfehlen, das nicht zu dir passt. Wenn sich an [Grund] etwas ändert, melde dich gern wieder bei mir.“`,
-  },
+const EINSCHAETZUNG: Record<"passt" | "passtNicht", string> = {
+  passt: `Wenn es passt: „Nach dem, was du mir erzählt hast, kann eine vermietete Immobilie ein sinnvoller Baustein für dich sein. Ob die Zahlen wirklich aufgehen, zeige ich dir im nächsten Termin, offen und mit Stresstest.“`,
+  passtNicht: `Wenn es nicht passt: „Danke für deine Offenheit. Ehrlich gesagt passt unser Konzept im Moment nicht zu dir, weil [Grund]. Ich möchte dir nichts empfehlen, das nicht zu dir passt. Wenn sich an [Grund] etwas ändert, melde dich gern wieder bei mir.“`,
 };
 
 /** Die Phasen im Überblick oben im Skript. */
 const PHASEN: ReadonlyArray<{ kennung: string; titel: string; schritte: string; dauer: string; ziel: string }> = [
-  { kennung: "A", titel: "Einstieg", schritte: "1 bis 3", dauer: "3 Min.", ziel: "Erlaubnis, Anrede, Ablauf" },
+  { kennung: "A", titel: "Einstieg", schritte: "1 bis 3", dauer: "3 Min.", ziel: "Erlaubnis, Ablauf" },
   { kennung: "B", titel: "Kundenrahmen", schritte: "4 bis 6", dauer: "5 Min.", ziel: "Motiv in den Worten des Kunden, Mitentscheider, Beruf" },
   { kennung: "C", titel: "Ziele", schritte: "7 bis 9", dauer: "6 Min.", ziel: "Ziele, Rentenlücke, heutige Vorsorge, Schwerpunkt" },
   { kennung: "D", titel: "Finanzieller Rahmen", schritte: "10 bis 14", dauer: "6 Min.", ziel: "Einkommen, Eigenkapital, Reserve, tragbarer Betrag, Sorgen" },
@@ -526,18 +450,18 @@ const PHASEN: ReadonlyArray<{ kennung: string; titel: string; schritte: string; 
 
 /** Reaktionen am Telefon, als Schnellhilfe über dem Skript. */
 const REAKTIONEN: ReadonlyArray<{ kunde: string; antwort: string }> = [
-  { kunde: "„Schicken Sie mir einfach etwas zu.“", antwort: "„Mache ich gern. Damit ich Ihnen das Richtige schicke: Was interessiert Sie am meisten? Und lassen Sie uns gleich einen kurzen Termin machen, dann gehen wir es zusammen durch.“" },
-  { kunde: "„Was kostet so eine Wohnung?“", antwort: "„Unsere Wohnungen liegen zwischen etwa 176.000 und 470.000 Euro. Was das für Sie im Monat bedeutet, hängt von Ihrer Situation ab. Genau das klären wir im nächsten Gespräch.“" },
-  { kunde: "„Ich habe gerade keine Zeit.“", antwort: "„Verstehe ich. Wann passt es Ihnen besser, heute Abend oder morgen?“ Rückruf mit Datum und Uhrzeit festhalten." },
-  { kunde: "„Ich will nur Steuern sparen.“", antwort: "„Die Steuerwirkung ist ein wichtiger Baustein, aber allein kein Grund für einen Kauf. Die Immobilie muss auch ohne Steuervorteil zu Ihnen passen. Darf ich Ihnen dazu zwei Fragen stellen?“" },
-  { kunde: "„Woher haben Sie meine Nummer?“", antwort: "Quelle offen nennen. Auf Wunsch die Daten löschen und das im CRM vermerken." },
-  { kunde: "„Ich muss erst mit meinem Partner sprechen.“", antwort: "„Richtig so. Dann machen wir den nächsten Termin am besten zu dritt. Wann passt es Ihnen beiden?“" },
+  { kunde: "„Schick mir einfach etwas zu.“", antwort: "„Mache ich gern. Damit ich dir das Richtige schicke: Was interessiert dich am meisten? Und lass uns gleich einen kurzen Termin machen, dann gehen wir es zusammen durch.“" },
+  { kunde: "„Was kostet so eine Wohnung?“", antwort: "„Unsere Wohnungen liegen zwischen etwa 176.000 und 470.000 Euro. Was das für dich im Monat bedeutet, hängt von deiner Situation ab. Genau das klären wir im nächsten Gespräch.“" },
+  { kunde: "„Ich habe gerade keine Zeit.“", antwort: "„Verstehe ich. Wann passt es dir besser, heute Abend oder morgen?“ Rückruf mit Datum und Uhrzeit festhalten." },
+  { kunde: "„Ich will nur Steuern sparen.“", antwort: "„Die Steuerwirkung ist ein wichtiger Baustein, aber allein kein Grund für einen Kauf. Die Immobilie muss auch ohne Steuervorteil zu dir passen. Darf ich dir dazu zwei Fragen stellen?“" },
+  { kunde: "„Woher habt ihr meine Nummer?“", antwort: "Quelle offen nennen. Auf Wunsch die Daten löschen und das im CRM vermerken." },
+  { kunde: "„Ich muss erst mit meinem Partner sprechen.“", antwort: "„Richtig so. Dann machen wir den nächsten Termin am besten zu dritt. Wann passt es euch beiden?“" },
 ];
 
 const NIE_SAGEN = [
   "„Das bekommen wir bei der Bank schon hin.“",
   "„Das trägt sich durch die Steuer von selbst.“",
-  "„Bei Ihrem Einkommen ist das kein Problem.“",
+  "„Bei deinem Einkommen ist das kein Problem.“",
   "„Immobilien für 150 Euro im Monat.“",
   "„Das Angebot gilt nur noch heute.“",
 ];
@@ -550,26 +474,17 @@ export const FAMILIENSTAND_OPTIONEN = ["ledig", "in Partnerschaft", "verheiratet
 export type Familienstand = (typeof FAMILIENSTAND_OPTIONEN)[number];
 
 /** Folgesatz in Schritt 5, je nach Familienstand. */
-const MITENTSCHEIDER_VARIANTEN: Record<"verheiratet" | "partnerschaft" | "allein", { text: LocText; tipp: LocText }> = {
+const MITENTSCHEIDER_VARIANTEN: Record<"verheiratet" | "partnerschaft" | "allein", { text: string; tipp: string }> = {
   verheiratet: {
-    text: {
-      sie: `„Entscheiden Sie solche Themen gemeinsam mit Ihrer Frau oder Ihrem Mann? Dann wäre es gut, wenn wir das nächste Gespräch zu dritt führen. So hören Sie beide dasselbe und müssen nichts nacherzählen.“`,
-      du: `„Entscheidest du solche Themen gemeinsam mit deiner Frau oder deinem Mann? Dann wäre es gut, wenn wir das nächste Gespräch zu dritt führen. So hört ihr beide dasselbe und müsst nichts nacherzählen.“`,
-    },
+    text: `„Entscheidest du solche Themen gemeinsam mit deiner Frau oder deinem Mann? Dann wäre es gut, wenn wir das nächste Gespräch zu dritt führen. So hört ihr beide dasselbe und müsst nichts nacherzählen.“`,
     tipp: `Den Mitentscheider mit Namen notieren, er wird zum Termin eingeladen.`,
   },
   partnerschaft: {
-    text: {
-      sie: `„Ist Ihr Partner oder Ihre Partnerin bei so einer Entscheidung mit im Boot? Dann laden wir sie oder ihn gern zum nächsten Termin mit ein.“`,
-      du: `„Ist dein Partner oder deine Partnerin bei so einer Entscheidung mit im Boot? Dann laden wir sie oder ihn gern zum nächsten Termin mit ein.“`,
-    },
+    text: `„Ist dein Partner oder deine Partnerin bei so einer Entscheidung mit im Boot? Dann laden wir sie oder ihn gern zum nächsten Termin mit ein.“`,
     tipp: `Den Mitentscheider mit Namen notieren, er wird zum Termin eingeladen.`,
   },
   allein: {
-    text: {
-      sie: `„Gibt es jemanden, dessen Meinung Ihnen bei so einer Entscheidung wichtig ist, etwa Eltern, Geschwister oder ein Steuerberater?“`,
-      du: `„Gibt es jemanden, dessen Meinung dir bei so einer Entscheidung wichtig ist, etwa Eltern, Geschwister oder ein Steuerberater?“`,
-    },
+    text: `„Gibt es jemanden, dessen Meinung dir bei so einer Entscheidung wichtig ist, etwa Eltern, Geschwister oder ein Steuerberater?“`,
     tipp: `Die offene Rückfrage fängt stille Mitentscheider ein, bevor sie in der Beratung überraschen.`,
   },
 };
@@ -579,7 +494,7 @@ const MITENTSCHEIDER_VARIANTEN: Record<"verheiratet" | "partnerschaft" | "allein
  * Unbeantwortet oder unbekannter Wert: undefined, dann steht nur die Frage da.
  * Exportiert, damit die Umschaltlogik testbar ist.
  */
-export function waehleMitentscheiderVariante(familienstand: string | undefined): { text: LocText; tipp: LocText } | undefined {
+export function waehleMitentscheiderVariante(familienstand: string | undefined): { text: string; tipp: string } | undefined {
   const stand = (familienstand || "").trim();
   if (stand === "verheiratet") return MITENTSCHEIDER_VARIANTEN.verheiratet;
   if (stand === "in Partnerschaft") return MITENTSCHEIDER_VARIANTEN.partnerschaft;
@@ -668,7 +583,7 @@ export const ERSTGESPRAECH_SCHRITTE_DETAIL: DetailSchritt[] = [
     nr: s.nr,
     titel: s.titel,
     felder: [
-      ...(s.fragen ?? []).map(f => ({ key: f.key, label: pickText(f.label, "sie"), ...(f.werte ? { werte: f.werte } : {}) })),
+      ...(s.fragen ?? []).map(f => ({ key: f.key, label: f.label, ...(f.werte ? { werte: f.werte } : {}) })),
       ...(ZUSATZFELDER[s.id] ?? []),
     ],
     hatNotiz: s.notiz === true,
@@ -677,16 +592,10 @@ export const ERSTGESPRAECH_SCHRITTE_DETAIL: DetailSchritt[] = [
 ];
 
 /**
- * Bausteine, die immer in der Sie-Form stehen: Beim Erstkontakt ist die Anrede
- * noch nicht geklärt, sie wird erst in Schritt 2 festgelegt.
- */
-const IMMER_SIE = new Set(["einleitung", "anrede"]);
-
-/**
  * Das Skript, reduziert auf das, was Kapitel 4 der Vertriebsakademie
  * beschreibt: je Schritt seine Nummer, sein Titel und sein Sprechtext, in der
- * Reihenfolge der Anzeige und mit der Anrede, die das Skript an dieser Stelle
- * zeigt. Platzhalter wie [Nachname] bleiben stehen.
+ * Reihenfolge der Anzeige. Schritte ohne Sprechtext (der Hinweis in Schritt 2)
+ * haben keinen Baustein. Platzhalter wie [Vorname] bleiben stehen.
  *
  * Die Akademie zitiert genau diese Sätze; `vertriebsakademieErstgespraech.test.ts`
  * vergleicht beide Stellen Satz für Satz. Schritt 18 hat keinen festen
@@ -703,9 +612,9 @@ export const ERSTGESPRAECH_WIZARD_UEBERSICHT: {
     id: s.id,
     titel: s.titel,
     text: s.special === "einschaetzung"
-      ? `${EINSCHAETZUNG.passt.du}\n\n${EINSCHAETZUNG.passtNicht.du}`
-      : pickText(s.text, IMMER_SIE.has(s.id) ? "sie" : "du"),
-  }],
+      ? `${EINSCHAETZUNG.passt}\n\n${EINSCHAETZUNG.passtNicht}`
+      : s.text ?? "",
+  }].filter((b) => b.text),
 }));
 
 /**
@@ -713,8 +622,8 @@ export const ERSTGESPRAECH_WIZARD_UEBERSICHT: {
  * Lead hat oft keine erkennbare Quelle; der Einstieg nennt dann das Interesse
  * ohne Quelle, statt die Auswahl in Klammern zu zeigen.
  */
-const VP_TEXT_OVERRIDES: Record<string, LocText> = {
-  einleitung: `„Guten Tag [Anrede] [Nachname], hier ist [Ihr Name] von der OS Real Estate. Sie hatten vor Kurzem Interesse an Immobilien als Kapitalanlage. Passt es Ihnen gerade für etwa zwanzig Minuten, oder soll ich Sie lieber zu einem festen Zeitpunkt zurückrufen, zum Beispiel heute um 18 Uhr?“`,
+const VP_TEXT_OVERRIDES: Record<string, string> = {
+  einleitung: `„Hallo [Vorname], hier ist [Dein Name] von der OS Real Estate. Du hattest vor Kurzem Interesse an Immobilien als Kapitalanlage. Passt es dir gerade für etwa zwanzig Minuten, oder soll ich dich lieber zu einem festen Zeitpunkt zurückrufen, zum Beispiel heute um 18 Uhr?“`,
 };
 
 export type SkriptDaten = {
@@ -722,7 +631,8 @@ export type SkriptDaten = {
   notizen: Record<string, string>;
   ziele: string[];
   erledigt: Record<string, boolean>;
-  anrede?: Anrede;
+  /** Altdaten: früher "sie" möglich. Gespeichert wird seit dem 16.10.2026 immer "du". */
+  anrede?: "du" | "sie";
   einleitungBestaetigt?: boolean;
   kiZusammenfassung?: string;
   aktualisiertAm?: string;
@@ -765,7 +675,7 @@ function loadInitial(kunde: KundeData, investmentId?: string, isFirstInvestment?
       notizen: dbDaten.notizen || {},
       ziele: dbDaten.ziele || [],
       erledigt: dbDaten.erledigt || {},
-      anrede: dbDaten.anrede || "du",
+      anrede: "du",
       kiZusammenfassung: dbDaten.kiZusammenfassung,
       aktualisiertAm: dbDaten.aktualisiertAm,
     };
@@ -777,7 +687,7 @@ function loadInitial(kunde: KundeData, investmentId?: string, isFirstInvestment?
       const raw = localStorage.getItem(LS_KEY(kunde.id));
       if (raw) {
         const p = JSON.parse(raw);
-        return { ...p, anrede: p.anrede || "du" };
+        return { ...p, anrede: "du" };
       }
     } catch {}
   }
@@ -831,7 +741,7 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
 ) {
   const { toast } = useToast();
   const { user } = useUser();
-  // Name des angemeldeten Nutzers für [Ihr Name] im Sprechtext.
+  // Name des angemeldeten Nutzers für [Dein Name] im Sprechtext.
   // Solange der Nutzer lädt, steht dort „Laden...“; dann lieber der Platzhalter.
   const callerFullName = /(\.\.\.|…)$/.test((user?.name || "").trim()) ? "" : (user?.name || "").trim();
   const isVpMode = mode === "vertriebspartner";
@@ -851,8 +761,6 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
   // Sekunden, sonst wuerde er bei jedem Tastendruck erneut aufpoppen.
   const speicherFehlerRef = useRef<number>(0);
   const letzterSpeicherHinweisRef = useRef<number>(0);
-  const anrede: Anrede = daten.anrede || "du";
-  const setAnrede = (a: Anrede) => setDaten(d => ({ ...d, anrede: a }));
 
   // Schritt 1: Bestätigung "Ja, hat Zeit"
   const [einleitungJa, setEinleitungJa] = useState<boolean>(
@@ -1094,12 +1002,6 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
     : undefined)
     ?? (isFirstInvestment ? ((kunde as any).berater || (kunde as any).setterCloser) : undefined);
 
-  const anredeWort = (() => {
-    const a = ((kunde as any).anrede || "").toString().toLowerCase();
-    if (a.startsWith("frau")) return "Frau";
-    if (a.startsWith("herr")) return "Herr";
-    return "Herr/Frau";
-  })();
   const nachname = (kunde.nachname || "").trim();
 
   /**
@@ -1127,10 +1029,9 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
 
   const interpolate = (s: string, mitZusammenfassung = false) => {
     let t = s
-      .replace(/\[Anrede\] \[Nachname\]/g, nachname ? `${anredeWort} ${nachname}` : "[Anrede] [Nachname]")
       .replace(/\[Vorname\]/g, kunde.vorname || "[Vorname]")
       .replace(/\[Nachname\]/g, nachname || "[Nachname]")
-      .replace(/\[Ihr Name\]/g, callerFullName || "[Ihr Name]")
+      .replace(/\[Dein Name\]/g, callerFullName || "[Dein Name]")
       .replace(/\[Quelle\]/g, quelleSatz(kunde as any));
     if (mitZusammenfassung || /\[Mitentscheider\]/.test(t)) {
       for (const [platzhalter, wert] of Object.entries(zusammenfassungWerte)) {
@@ -1139,9 +1040,6 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
     }
     return t;
   };
-
-  // Schritte 1 und 2 IMMER in Sie-Form (Erstkontakt, Anrede wird erst in Schritt 2 festgelegt).
-  const anredeFor = (s: Schritt): Anrede => (IMMER_SIE.has(s.id) ? "sie" : anrede);
 
   const [mehrOffen, setMehrOffen] = useState<Record<string, boolean>>({});
 
@@ -1167,7 +1065,7 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
         <div className="flex-1">
           <h3 className="font-bold">Erstgesprächs-Skript</h3>
           <p className="text-xs text-muted-foreground">
-            {SCHRITTE_EFFECTIVE.length} Schritte in 6 Phasen, etwa 25 bis 30 Minuten • {isVpMode ? <>Du qualifizierst und terminierst direkt für <strong>dich selbst</strong>.</> : <>Wird nur ausgefüllt, wenn der Lead <strong>erreicht</strong> wurde.</>} Auto-Save aktiv • aktuell <strong>{anrede === "sie" ? "Sie-Form" : "Du-Form"}</strong>.
+            {SCHRITTE_EFFECTIVE.length} Schritte in 6 Phasen, etwa 25 bis 30 Minuten • {isVpMode ? <>Du qualifizierst und terminierst direkt für <strong>dich selbst</strong>.</> : <>Wird nur ausgefüllt, wenn der Lead <strong>erreicht</strong> wurde.</>} Auto-Save aktiv • wir duzen.
           </p>
         </div>
         {filledCount > 0 && <Badge variant="secondary" className="text-xs">{filledCount} ausgefüllt</Badge>}
@@ -1240,12 +1138,9 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
               {s.marke && (
                 <Badge variant="outline" className="text-[10px] border-primary/40 text-primary">{s.marke}</Badge>
               )}
-              {s.special === "anrede" && (
-                <Badge variant="outline" className="ml-auto text-[10px]">{anrede === "sie" ? "Sie-Form aktiv" : "Du-Form aktiv"}</Badge>
-              )}
             </div>
             <div className="p-4 space-y-3">
-                  {s.text && <Sprechtext text={interpolate(pickText(s.text, anredeFor(s)), s.special === "zusammenfassung")} />}
+                  {s.text && <Sprechtext text={interpolate(s.text, s.special === "zusammenfassung")} />}
 
                   {/* Schritt 5: Folgesatz je nach Familienstand */}
                   {s.special === "familienstand" && (
@@ -1257,7 +1152,7 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
                         onChange={(v) => setAntwort("familienstand", v)}
                       />
                       {mitentscheiderVariante ? (
-                        <div className="mt-3"><Sprechtext text={pickText(mitentscheiderVariante.text, anrede)} /></div>
+                        <div className="mt-3"><Sprechtext text={mitentscheiderVariante.text} /></div>
                       ) : (
                         <p className="text-[10px] text-muted-foreground mt-1.5">Nach der Auswahl erscheint hier der passende Folgesatz.</p>
                       )}
@@ -1271,7 +1166,7 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
                         const ergebnis = daten.antworten.ergebnis;
                         const gedimmt = ergebnis && (ergebnis === "passt") !== (k === "passt");
                         const grund = daten.antworten.grundNichtPassend;
-                        const text = pickText(EINSCHAETZUNG[k], anrede);
+                        const text = EINSCHAETZUNG[k];
                         return (
                           <div key={k} className={gedimmt ? "opacity-40" : ""}>
                             <Sprechtext text={grund && k === "passtNicht" ? text.split("[Grund]").join(grund) : text} />
@@ -1312,31 +1207,6 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
                         Rückruf vereinbaren
                       </Button>
                     </div>
-                  )}
-
-                  {s.special === "anrede" && (
-                    <UebernahmeRahmen feld="anrede">
-                    <div className="grid grid-cols-2 gap-3">
-                      <button
-                        type="button"
-                        onClick={() => setAnrede("sie")}
-                        className={`flex items-center justify-center gap-2 rounded-lg border p-4 text-sm transition-colors ${
-                          anrede === "sie" ? "border-primary bg-primary/10 text-primary font-semibold" : "border-border hover:bg-muted/50"
-                        }`}
-                      >
-                        <UserRound className="h-4 w-4" /> Sie-Form
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setAnrede("du")}
-                        className={`flex items-center justify-center gap-2 rounded-lg border p-4 text-sm transition-colors ${
-                          anrede === "du" ? "border-primary bg-primary/10 text-primary font-semibold" : "border-border hover:bg-muted/50"
-                        }`}
-                      >
-                        <Smile className="h-4 w-4" /> Du-Form
-                      </button>
-                    </div>
-                    </UebernahmeRahmen>
                   )}
 
                   {s.special === "ziele" && (
@@ -1430,7 +1300,7 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
 
                   {s.tipp && (
                     <div className="bg-accent/30 rounded-lg p-2">
-                      <p className="text-xs text-muted-foreground"><strong>💡 Hinweis:</strong> {pickText(s.id === "familiaere_situation" && mitentscheiderVariante ? mitentscheiderVariante.tipp : s.tipp, anredeFor(s))}</p>
+                      <p className="text-xs text-muted-foreground"><strong>💡 Hinweis:</strong> {s.id === "familiaere_situation" && mitentscheiderVariante ? mitentscheiderVariante.tipp : s.tipp}</p>
                       {s.tippMehr && (
                         <>
                           <button
@@ -1442,7 +1312,7 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
                           </button>
                           {mehrOffen[s.id] && (
                             <p className="text-[11px] text-muted-foreground mt-1 pl-1 border-l-2 border-primary/30 ml-0.5">
-                              {pickText(s.tippMehr, anredeFor(s))}
+                              {s.tippMehr}
                             </p>
                           )}
                         </>
@@ -1468,7 +1338,7 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
                       <UebernahmeRahmen key={f.key} feld={f.key}>
                       <div>
                         <Label className="text-xs font-semibold">
-                          {pickText(f.label, anredeFor(s))}
+                          {f.label}
                           {isBerufField && <span className="ml-1 text-[10px] text-muted-foreground font-normal">— synchron mit Qualifizierungsfragen</span>}
                           {f.pflicht && <Pflichtmarke gefuellt={gefuellt} />}
                         </Label>

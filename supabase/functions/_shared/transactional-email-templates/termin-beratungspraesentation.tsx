@@ -1,7 +1,7 @@
 import * as React from 'npm:react@18.3.1'
 import type { TemplateEntry } from './registry.ts'
 import { EmailLayout, Absatz, Handlung, Nebenhandlung, Angaben, Liste, Haken, Hinweis } from './_layout.tsx'
-import { foermlichAusTeilen } from './_anrede.ts'
+import { hallo } from './_anrede.ts'
 import { DE_EN, type MailSprache, texteFuer, type Zweisprachig } from './_sprache.ts'
 import { terminAnsicht, type TerminArt, type TerminFelder } from './_termin-felder.ts'
 
@@ -14,7 +14,7 @@ import { terminAnsicht, type TerminArt, type TerminFelder } from './_termin-feld
  * (`buchung-bestaetigung`). Welche Vorlage geht, entscheiden
  * `src/lib/meetingEinladung.ts` und `send-buchung-bestaetigung`.
  *
- * Sie-Form, wie im Drive-Prozessstandard vorgegeben. Inhalt: etwa eine
+ * Du-Form wie alle Kundenmails (Entscheidung Christian, 16.10.2026). Inhalt: etwa eine
  * Stunde, Video oder Büro, es wird nichts unterschrieben, Mitentscheider sind
  * willkommen, die Renteninformation freiwillig bereitlegen.
  */
@@ -24,26 +24,26 @@ interface Props extends TerminFelder {
 }
 
 const DE = {
-  betreff: (datum: string) => (datum ? `Ihre Beratungspräsentation am ${datum}` : 'Ihre Beratungspräsentation ist bestätigt'),
+  betreff: (datum: string) => (datum ? `Deine Beratungspräsentation am ${datum}` : 'Deine Beratungspräsentation ist bestätigt'),
   augenbraue: 'Termin bestätigt',
-  titel: 'Ihre Beratungspräsentation',
-  vorschau: (datum: string) => `Ihr Termin${datum ? ` am ${datum}` : ''} steht. Es wird nichts unterschrieben.`,
+  titel: 'Deine Beratungspräsentation',
+  vorschau: (datum: string) => `Dein Termin${datum ? ` am ${datum}` : ''} steht. Es wird nichts unterschrieben.`,
   absatz:
-    'vielen Dank für Ihre Zeit. Ihr Termin für die Beratungspräsentation steht. Wir nehmen uns etwa eine Stunde, gehen Ihre Ziele gemeinsam durch und zeigen Ihnen, wie ein Immobilieninvestment dazu passen kann.',
+    'vielen Dank für deine Zeit. Dein Termin für die Beratungspräsentation steht. Wir nehmen uns etwa eine Stunde, gehen deine Ziele gemeinsam durch und zeigen dir, wie ein Immobilieninvestment dazu passen kann.',
   ort: (art: TerminArt) =>
     art === 'video'
-      ? 'Wir sprechen per Video. Zum Termin genügt ein Klick auf den Knopf, Sie brauchen keine zusätzliche Software.'
+      ? 'Wir sprechen per Video. Zum Termin genügt ein Klick auf den Knopf, du brauchst keine zusätzliche Software.'
       : art === 'telefon'
-        ? 'Wir sprechen am Telefon. Wir rufen Sie pünktlich zum Termin an.'
+        ? 'Wir sprechen am Telefon. Wir rufen dich pünktlich zum Termin an.'
         : 'Wir treffen uns in unserem Büro.',
   knopf: 'Zum Videogespräch',
   gutZuWissen: 'Gut zu wissen',
   punkte: [
     'Es wird nichts unterschrieben.',
-    'Wenn jemand mitentscheidet, etwa Ihr Partner oder Ihre Partnerin, ist er oder sie herzlich willkommen.',
-    'Wenn Sie mögen, legen Sie Ihre letzte Renteninformation bereit. Das ist freiwillig und hilft, Ihre Situation greifbar zu machen.',
+    'Wenn jemand mitentscheidet, etwa dein Partner oder deine Partnerin, ist er oder sie herzlich willkommen.',
+    'Wenn du magst, leg deine letzte Renteninformation bereit. Das ist freiwillig und hilft, deine Situation greifbar zu machen.',
   ],
-  termindaten: 'Ihre Termindaten',
+  termindaten: 'Deine Termindaten',
   datum: 'Datum',
   uhrzeit: 'Uhrzeit',
   dauer: 'Dauer',
@@ -51,12 +51,12 @@ const DE = {
   wo: 'Ort',
   woText: (art: TerminArt) => (art === 'video' ? 'Videogespräch' : art === 'telefon' ? 'Telefon' : 'Unser Büro'),
   treffpunkt: 'Adresse',
-  berater: 'Ihr Ansprechpartner',
-  kalenderTitel: 'In Ihren Kalender übernehmen',
+  berater: 'Dein Ansprechpartner',
+  kalenderTitel: 'In deinen Kalender übernehmen',
   kalenderIcs: 'Apple oder Outlook (.ics)',
   kalenderGoogle: 'Google Kalender',
   aendern: 'Termin verschieben oder absagen',
-  verschieben: 'Wenn Sie den Termin verschieben müssen, antworten Sie einfach auf diese Mail. Wir finden gemeinsam einen neuen.',
+  verschieben: 'Wenn du den Termin verschieben musst, antworte einfach auf diese Mail. Wir finden gemeinsam einen neuen.',
 }
 
 const TEXTE: Zweisprachig<typeof DE> = {
@@ -117,7 +117,7 @@ const Mail = (props: Props) => {
       augenbraue={t.augenbraue}
       titel={t.titel}
       vorschau={t.vorschau(v.datum)}
-      anrede={foermlichAusTeilen({ ...props, name: props.kundeName, anrede: props.kundeAnrede || props.anrede }, sprache)}
+      anrede={hallo(props.kundeName || props.vorname, sprache)}
       person={v.person.name ? v.person : undefined}
     >
       <Absatz>{t.absatz}</Absatz>

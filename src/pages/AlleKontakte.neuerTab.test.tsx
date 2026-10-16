@@ -96,11 +96,11 @@ describe("Alle Kontakte: Kundenprofil in neuem Tab", () => {
 describe("Alle Kontakte: Spaltenreihenfolge", () => {
   const kopf = () => Array.from(document.querySelectorAll("thead th")).slice(1).map((th) => th.textContent?.trim());
 
-  it("zeigt Pipeline-Status vor Quelle und Kategorie vor Vertriebspartner", () => {
+  it("zeigt Pipeline-Status, Vertriebspartner, Kategorie, Typ und Quelle in dieser Reihenfolge", () => {
     mount();
     expect(kopf()).toEqual([
       "Angelegt am", "Vorname", "Nachname", "Telefon", "E-Mail",
-      "Pipeline-Status", "Quelle", "Typ", "Kategorie", "Vertriebspartner",
+      "Pipeline-Status", "Vertriebspartner", "Kategorie", "Typ", "Quelle",
     ]);
   });
 

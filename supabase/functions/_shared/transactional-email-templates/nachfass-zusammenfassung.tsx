@@ -1,7 +1,7 @@
 import * as React from 'npm:react@18.3.1'
 import type { TemplateEntry } from './registry.ts'
 import { EmailLayout, Absatz, Textblock, type Ansprechpartner } from './_layout.tsx'
-import { foermlich } from './_anrede.ts'
+import { hallo } from './_anrede.ts'
 import { datumFuer, DE_EN, type MailSprache, texteFuer, type Zweisprachig } from './_sprache.ts'
 import { istTeam } from './_nicht-erreicht.ts'
 
@@ -39,15 +39,15 @@ const DE = {
   titel: 'Unser Gespräch in Kürze',
   vorschau: 'Was wir besprochen haben und wie es weitergeht.',
   dank: (datum: string, team: boolean) =>
-    `vielen Dank für das Gespräch${datum ? ` am ${datum}` : ''}. Hier ${team ? 'haben wir' : 'habe ich'} das Wichtigste für Sie zusammengefasst, damit Sie alles in Ruhe nachlesen können.`,
-  ziel: 'Ihr Ziel, in Ihren Worten',
-  wichtig: 'Was Ihnen wichtig ist',
+    `vielen Dank für das Gespräch${datum ? ` am ${datum}` : ''}. Hier ${team ? 'haben wir' : 'habe ich'} das Wichtigste für dich zusammengefasst, damit du alles in Ruhe nachlesen kannst.`,
+  ziel: 'Dein Ziel, in deinen Worten',
+  wichtig: 'Was dir wichtig ist',
   offeneFragen: 'Offene Fragen',
   naechsteSchritte: 'Die nächsten Schritte',
   schluss: (team: boolean) =>
     team
-      ? 'Wenn wir etwas falsch verstanden haben oder Ihnen noch etwas einfällt, antworten Sie einfach auf diese Mail.'
-      : 'Wenn ich etwas falsch verstanden habe oder Ihnen noch etwas einfällt, antworten Sie einfach auf diese Mail.',
+      ? 'Wenn wir etwas falsch verstanden haben oder dir noch etwas einfällt, antworte einfach auf diese Mail.'
+      : 'Wenn ich etwas falsch verstanden habe oder dir noch etwas einfällt, antworte einfach auf diese Mail.',
 }
 
 const TEXTE: Zweisprachig<typeof DE> = {
@@ -70,7 +70,7 @@ const TEXTE: Zweisprachig<typeof DE> = {
   },
 }
 
-const Mail = ({ kundeName, kundeAnrede, gespraechDatum, ziel, wichtig, offeneFragen, naechsteSchritte, berater, sprache }: Props) => {
+const Mail = ({ kundeName, gespraechDatum, ziel, wichtig, offeneFragen, naechsteSchritte, berater, sprache }: Props) => {
   const t = texteFuer(TEXTE, sprache)
   const team = istTeam(berater)
   const bloecke: Array<[string, string | undefined]> = [
@@ -86,7 +86,7 @@ const Mail = ({ kundeName, kundeAnrede, gespraechDatum, ziel, wichtig, offeneFra
       augenbraue={t.augenbraue}
       titel={t.titel}
       vorschau={t.vorschau}
-      anrede={foermlich(kundeName, sprache, kundeAnrede)}
+      anrede={hallo(kundeName, sprache)}
       person={berater}
     >
       <Absatz letzter>{t.dank(datumFuer(gespraechDatum, sprache), team)}</Absatz>
@@ -105,7 +105,7 @@ export const template = {
   sprachen: DE_EN,
   absender: 'zustaendiger-partner',
   previewData: {
-    kundeName: 'Herr Mustermann',
+    kundeName: 'Max Mustermann',
     gespraechDatum: '25.03.2026',
     ziel: '[Ziel des Kunden, in seinen eigenen Worten]',
     wichtig: '[Was dem Kunden wichtig ist]',

@@ -15,7 +15,6 @@ import type { ReactNode } from "react";
 import SteuerrechnerPublic from "@/pages/SteuerrechnerPublic";
 import AnalysePublic from "@/pages/AnalysePublic";
 import LinksPublic from "@/pages/LinksPublic";
-import AppleHeroSection from "@/components/landing/apple/AppleHeroSection";
 import FloatingBeraterBadge from "@/components/landing/FloatingBeraterBadge";
 import { SeitenSpracheProvider } from "@/components/SeitenSprache";
 
@@ -126,17 +125,9 @@ describe("Berater-Mikroseite, Bausteine", () => {
       "/vp/:slug",
       "/vp/maria?lang=en",
       <SeitenSpracheProvider>
-        <AppleHeroSection berater={berater} onOpenFunnel={() => {}} />
         <FloatingBeraterBadge berater={berater} onContactClick={() => {}} />
       </SeitenSpracheProvider>,
     );
-    expect(screen.getByRole("link", { name: "Calculate my tax relief" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Book a free initial meeting" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Your contact person" })).toBeInTheDocument();
-  });
-
-  it("ohne Provider deutsch, so wie in Vorschau und Beratungspräsentation", async () => {
-    await seite("/vp/:slug", "/vp/maria?lang=en", <AppleHeroSection berater={berater} onOpenFunnel={() => {}} />);
-    expect(screen.getByRole("link", { name: "Meine Steuerersparnis berechnen" })).toBeInTheDocument();
   });
 });

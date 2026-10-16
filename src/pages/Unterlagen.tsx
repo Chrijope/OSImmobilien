@@ -86,24 +86,33 @@ function ausSeedAktualisiert(daten: UnterlagenAbschnitt[]): UnterlagenAbschnitt[
   const seed = seedUnterlagen();
   return daten.map((a) => {
     const seedDoks = seed.find((s) => s.id === a.id)?.dokumente || [];
+    const bekannt = new Set(a.dokumente.map((d) => d.id));
     return {
       ...a,
-      dokumente: a.dokumente.map((d) => {
-        const sd = seedDoks.find((x) => x.id === d.id);
-        if (!sd) return d;
-        return {
-          ...d,
-          name: sd.name,
-          beschreibung: sd.beschreibung,
-          aktion: sd.aktion,
-          url: sd.url,
-          interneRoute: sd.interneRoute,
-          pdfKey: sd.pdfKey,
-          toolKey: sd.toolKey,
-          nurAdmin: sd.nurAdmin,
-          alt: sd.alt,
-        };
-      }),
+      dokumente: [
+        ...a.dokumente.map((d) => {
+          const sd = seedDoks.find((x) => x.id === d.id);
+          if (!sd) return d;
+          return {
+            ...d,
+            name: sd.name,
+            beschreibung: sd.beschreibung,
+            aktion: sd.aktion,
+            url: sd.url,
+            // Sonst zeigte die Kachel nach einem Bildtausch weiter das alte Vorschaubild.
+            vorschauUrl: sd.vorschauUrl,
+            download: sd.download,
+            interneRoute: sd.interneRoute,
+            pdfKey: sd.pdfKey,
+            toolKey: sd.toolKey,
+            nurAdmin: sd.nurAdmin,
+            alt: sd.alt,
+          };
+        }),
+        // Neue Einträge aus dem Code erscheinen auch ohne Versionssprung
+        // (z. B. die Zoom-Hintergründe und Logos vom 16.10.2026).
+        ...seedDoks.filter((sd) => !bekannt.has(sd.id)),
+      ],
     };
   });
 }

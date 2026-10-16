@@ -8195,17 +8195,17 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 {
                   "label": "Begrüßung und Erlaubnis",
                   "dauer": "Schritt 1",
-                  "beschreibung": "Phase A, Einstieg. Erstkontakt, deshalb im Sie. Die Quelle setzt das CRM aus dem Kontakt ein."
+                  "beschreibung": "Phase A, Einstieg. Vom ersten Satz an per Du. Die Quelle setzt das CRM aus dem Kontakt ein."
                 },
                 {
-                  "label": "Anrede klären",
+                  "label": "Hinweis: Wir duzen",
                   "dauer": "Schritt 2",
-                  "beschreibung": "Phase A. Noch im Sie, die Anrede wird hier geklärt."
+                  "beschreibung": "Phase A. Kein Sprechtext: Wir duzen jeden Kunden, hier ist nichts zu fragen."
                 },
                 {
                   "label": "Ablauf und Ziel des Gesprächs",
                   "dauer": "Schritt 3",
-                  "beschreibung": "Phase A. Ab hier in der gewählten Anrede. Notizfeld: was der Kunde heute geklärt haben möchte."
+                  "beschreibung": "Phase A. Notizfeld: was der Kunde heute geklärt haben möchte."
                 },
                 {
                   "label": "Motiv: Warum gerade jetzt?",
@@ -8322,7 +8322,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "randVorgegeben": true,
             "schritte": [
               "1. Begrüßung und Erlaubnis",
-              "2. Anrede klären",
+              "2. Hinweis: Wir duzen",
               "3. Ablauf und Ziel des Gesprächs",
               "4. Motiv: Warum gerade jetzt?",
               "5. Familie und Mitentscheider",
@@ -8391,10 +8391,10 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Im Kasten stehen alle 23 Schritte untereinander auf einer Seite, gegliedert in sechs Phasen: A Einstieg, B Kundenrahmen, C Ziele, D Finanzieller Rahmen, E Wer wir sind, F Abschluss. Du scrollst durch, während du sprichst, und siehst jederzeit, was noch kommt. An jedem Schritt sitzt ein Häkchen zum Abhaken, im Kopf des Kastens steht, wie viele Felder du schon gefüllt hast. Nichts blockiert, nichts hält das Gespräch an: Ein Skript, das ein gut laufendes Telefonat stoppt, wird umgangen statt ausgefüllt.",
           "Über den Schritten klappst du „So ist das Skript aufgebaut · Reaktionen am Telefon · Das sagen wir nie\" auf. Dort stehen die sechs Phasen mit ihrer Dauer, die Haltung, sechs typische Reaktionen am Telefon mit einer passenden Antwort und die Sätze, die in keinem unserer Gespräche fallen.",
           "Die Haltung ist die Grundlage von allem: Erst verstehen, dann empfehlen. Der Kunde spricht etwa zwei Drittel der Zeit. Im Erstgespräch zeigen wir kein Objekt, fragen nicht nach Steuer-ID oder Ausweis und nennen keine Renditen und keine Steuerzusagen. Wer im Erstgespräch schon verkauft, hat nicht zugehört.",
-          "Jeder Schritt trägt seinen Sprechtext offen, ausformuliert und in der Anrede, die ihr vereinbart habt. Darunter steht ein kurzer Hinweis, bei einigen Schritten zusätzlich „Mehr Kontext\" mit der längeren Begründung. Genau diese Sätze stehen weiter unten in diesem Kapitel noch einmal, Schritt für Schritt, mit der Begründung dahinter.",
-          "Die Schritte 1 und 2 stehen immer im Sie. Solange der Lead nicht gesagt hat, was ihm lieber ist, entscheidest du das nicht für ihn. Sobald er geantwortet hat, gilt ab Schritt 3 die gewählte Anrede, im ganzen Skript, in der Beratungspräsentation und in den Mails.",
+          "Jeder Schritt trägt seinen Sprechtext offen, ausformuliert und per Du. Darunter steht ein kurzer Hinweis, bei einigen Schritten zusätzlich „Mehr Kontext\" mit der längeren Begründung. Genau diese Sätze stehen weiter unten in diesem Kapitel noch einmal, Schritt für Schritt, mit der Begründung dahinter.",
+          "Wir duzen jeden Kunden, vom ersten Satz an, im ganzen Skript, in der Beratungspräsentation und in den Mails. Schritt 2 ist deshalb nur noch ein Hinweis ohne Sprechtext: Hier ist nichts zu fragen und nichts zu wählen.",
           "Acht Angaben brauchst du am Ende auf jeden Fall: Beruf, Ziele, Schwerpunkt, Netto, Brutto, laufende Raten, Reserve und Eigenkapital. Ohne sie lässt sich in der Beratungspräsentation nicht mit echten Zahlen rechnen. Sie sind orange umrandet und als Pflichtangabe benannt. Beruf, Netto, Eigenkapital und Ziele schreiben zugleich in die Qualifizierung der Stammdaten, du füllst also nichts doppelt aus.",
-          "Viele Antworten übernimmt die Beratungspräsentation von selbst, solche Felder tragen das Etikett „wird übernommen\": das Motiv in den Worten des Kunden als Zitat auf der Seite Ihre Ziele, der Schwerpunkt als Konzeptschalter, Ruhestand, erwartete Rente und Wunsch-Netto für die Rentenlücke, Reserve und tragbarer Betrag für Ihr Rahmen und Ihre Kriterien, die Sorgen für den Abschnitt Sicherheit und die erste Frage des Kunden. Deshalb lohnt es sich, wörtlich mitzuschreiben.",
+          "Viele Antworten übernimmt die Beratungspräsentation von selbst, solche Felder tragen das Etikett „wird übernommen\": das Motiv in den Worten des Kunden als Zitat auf der Seite Deine Ziele, der Schwerpunkt als Konzeptschalter, Ruhestand, erwartete Rente und Wunsch-Netto für die Rentenlücke, Reserve und tragbarer Betrag für Dein Rahmen und Deine Kriterien, die Sorgen für den Abschnitt Sicherheit und die erste Frage des Kunden. Deshalb lohnt es sich, wörtlich mitzuschreiben.",
           "Gespeichert wird von selbst, kurz nach dem letzten Tastendruck, und zusätzlich immer dann, wenn du den Tab wechselst oder die Seite verlässt. Im Kopf des Kastens blitzt dann „gespeichert\" auf. Geht zweimal hintereinander nichts durch, sagt das Skript das mit einem Hinweis, statt still zu scheitern.",
           "An den Schritten, an denen erfahrungsgemäß Einwände kommen, sitzt die Einwand-Schnellhilfe direkt im Kasten. Sie zeigt nur die Einwände, die genau hier typisch sind, und klappt die Behandlung darunter auf, ohne dass du die Seite wechselst. Die 15 häufigsten Einwände mit Kernsatz, Nachfrage und Belegen stehen gesammelt im Leitfaden Einwandbehandlung. Dort werden sie gepflegt, nicht in diesem Kapitel.",
           "Gegen Ende wächst der Kasten. In Schritt 20, Termin für die Beratungspräsentation, ist der Terminblock eingebaut. Unter dem Kasten liegt der Knopf, der das Gespräch abschließt: Er setzt den Lead auf die Pipeline-Stufe Beratungspräsentation, hält Vertriebspartner, Datum und Uhrzeit fest und stößt die KI-Zusammenfassung an.",
@@ -8412,7 +8412,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "In Schritt 20 der Terminblock, unter dem Kasten der Knopf, der das Gespräch abschließt."
         ],
         "quereinsteigerHinweis": "Zum Einarbeiten drei Handgriffe. Erstens: Klapp einmal den Aufbau über dem Skript auf und lies die Haltung und die Sätze, die wir nie sagen, bevor du den ersten Schritt sprichst. Zweitens: Nimm dir für das erste Rollenspiel einen Kollegen, spiel es einmal ab (da darfst du noch ablesen) und dann ein zweites Mal nur nach den Phasen. Nach dem zweiten Durchlauf sitzt der Ablauf, ab dann findest du deine eigenen Worte. Drittens, die wichtigste Regel für alle Zahlenfragen: Du fragst nach Spannen, nicht nach genauen Beträgen. Menschen nennen eine Spanne viel eher als eine genaue Zahl, weil eine Spanne sich nicht falsch anfühlt. Genaue Zahlen liefert später die Selbstauskunft, und die füllt ihr am Ende der Beratungspräsentation gemeinsam aus. Und keine Angst vor dem Kasten: Du kannst nichts kaputt machen, es blockiert nichts, und gespeichert wird von selbst.",
-        "profiTipp": "Vier Feinheiten, die den Unterschied zwischen Abarbeiten und Führen ausmachen. Erstens das Motiv in Schritt 4: Schreib den wichtigsten Satz wörtlich mit, nicht sinngemäß. Er steht in der Beratungspräsentation als Zitat auf der Seite Ihre Ziele, und der Kunde erkennt seine eigenen Worte sofort wieder. Zweitens die Reihenfolge im finanziellen Rahmen: Erst Einkommen, Reserve und tragbarer Betrag, dann die Sorgen, ganz zum Schluss die Schufa, und davor der Satz aus Schritt 10, dass es um echte Zahlen statt Wunschwerte geht. So kippt der Block nicht in einen Prüfungsmodus. Drittens Reserve und Stressgrenze: Frag in Schritt 12 zuerst, was unangetastet bleiben soll, und in Schritt 13 auch nach der Grenze, wenn etwas nicht nach Plan läuft. Beides prüft später der Stresstest der Präsentation, und ein Kunde, der seine Grenze selbst genannt hat, vertraut der Rechnung. Viertens die Skala in Schritt 19: Frag sie bei jedem, nicht nur bei lauwarmem Bauchgefühl. Der stärkste Zug kommt nach der Zahl: Was müsste passieren, damit es eine 10 wird? Die Antwort ist das Hindernis, um das sich die Beratung kümmern muss.",
+        "profiTipp": "Vier Feinheiten, die den Unterschied zwischen Abarbeiten und Führen ausmachen. Erstens das Motiv in Schritt 4: Schreib den wichtigsten Satz wörtlich mit, nicht sinngemäß. Er steht in der Beratungspräsentation als Zitat auf der Seite Deine Ziele, und der Kunde erkennt seine eigenen Worte sofort wieder. Zweitens die Reihenfolge im finanziellen Rahmen: Erst Einkommen, Reserve und tragbarer Betrag, dann die Sorgen, ganz zum Schluss die Schufa, und davor der Satz aus Schritt 10, dass es um echte Zahlen statt Wunschwerte geht. So kippt der Block nicht in einen Prüfungsmodus. Drittens Reserve und Stressgrenze: Frag in Schritt 12 zuerst, was unangetastet bleiben soll, und in Schritt 13 auch nach der Grenze, wenn etwas nicht nach Plan läuft. Beides prüft später der Stresstest der Präsentation, und ein Kunde, der seine Grenze selbst genannt hat, vertraut der Rechnung. Viertens die Skala in Schritt 19: Frag sie bei jedem, nicht nur bei lauwarmem Bauchgefühl. Der stärkste Zug kommt nach der Zahl: Was müsste passieren, damit es eine 10 wird? Die Antwort ist das Hindernis, um das sich die Beratung kümmern muss.",
         "links": [
           {
             "label": "Kontakte-Übersicht",
@@ -8438,19 +8438,13 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "skripte": [
           {
             "titel": "Schritt 1 · Begrüßung und Erlaubnis",
-            "kontext": "Phase A, Einstieg. Erstkontakt, deshalb im Sie. Die Quelle setzt das CRM aus dem Kontakt ein.",
-            "text": "„Guten Tag [Anrede] [Nachname], hier ist [Ihr Name] von der OS Real Estate. Sie hatten sich [Quelle] für Immobilien als Kapitalanlage interessiert. Passt es Ihnen gerade für etwa zwanzig Minuten, oder soll ich Sie lieber zu einem festen Zeitpunkt zurückrufen, zum Beispiel heute um 18 Uhr?“",
+            "kontext": "Phase A, Einstieg. Vom ersten Satz an per Du. Die Quelle setzt das CRM aus dem Kontakt ein.",
+            "text": "„Hallo [Vorname], hier ist [Dein Name] von der OS Real Estate. Du hattest dich [Quelle] für Immobilien als Kapitalanlage interessiert. Passt es dir gerade für etwa zwanzig Minuten, oder soll ich dich lieber zu einem festen Zeitpunkt zurückrufen, zum Beispiel heute um 18 Uhr?“",
             "warum": "Erlaubnis statt Überfall: Der Lead entscheidet, ob jetzt der richtige Moment ist. Ehrlich angekündigt sind etwa zwanzig Minuten, denn so lange dauert das Gespräch wirklich. Hat er keine Zeit, wird der Rückruf mit Datum und Uhrzeit vereinbart; ein irgendwann reicht nicht. Der Knopf Rückruf vereinbaren legt Termin und Aufgabe an."
           },
           {
-            "titel": "Schritt 2 · Anrede klären",
-            "kontext": "Phase A. Noch im Sie, die Anrede wird hier geklärt.",
-            "text": "„Bevor wir einsteigen: Bleiben wir beim Sie, oder sind Sie lieber per Du unterwegs?“",
-            "warum": "Der Lead entscheidet selbst, wie er angesprochen wird. Die Wahl gilt ab Schritt 3 für das Skript, die Beratungspräsentation und die Mails."
-          },
-          {
             "titel": "Schritt 3 · Ablauf und Ziel des Gesprächs",
-            "kontext": "Phase A. Ab hier in der gewählten Anrede. Notizfeld: was der Kunde heute geklärt haben möchte.",
+            "kontext": "Phase A. Notizfeld: was der Kunde heute geklärt haben möchte.",
             "text": "„Kurz zum Ablauf, damit du weißt, was dich erwartet: Ich möchte heute vor allem verstehen, wo du stehst und was du erreichen möchtest. Dazu stelle ich dir ein paar Fragen. Einige davon sind persönlich, und du entscheidest, was du mir erzählst. Danach sage ich dir kurz, wer wir sind und wie wir arbeiten. Am Ende sagen wir beide ehrlich, ob ein zweites Gespräch Sinn ergibt. Eine konkrete Immobilie schauen wir heute nicht an, und es wird nichts unterschrieben. Ist das für dich ein guter Ablauf?“\n\n„Darf ich mir dabei ein paar Notizen machen? Und gibt es etwas, das du heute auf jeden Fall geklärt haben möchtest?“",
             "warum": "Wer weiß, was ihn erwartet, redet offener. Der Satz nimmt den Druck heraus: kein Objekt, keine Unterschrift, und am Ende sagen beide ehrlich, ob ein zweites Gespräch Sinn ergibt."
           },
@@ -8458,7 +8452,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "titel": "Schritt 4 · Motiv: Warum gerade jetzt?",
             "kontext": "Phase B, Kundenrahmen. Feld: Motiv in den Worten des Kunden, wörtlich.",
             "text": "„Was hat dich dazu gebracht, dich gerade jetzt mit Immobilien als Kapitalanlage zu beschäftigen?“",
-            "warum": "Das Motiv ist der Grund für alles Weitere. Nachfragen statt bewerten, Pausen aushalten. Den wichtigsten Satz des Kunden wörtlich notieren: Er steht in der Beratungspräsentation als Zitat auf der Seite Ihre Ziele."
+            "warum": "Das Motiv ist der Grund für alles Weitere. Nachfragen statt bewerten, Pausen aushalten. Den wichtigsten Satz des Kunden wörtlich notieren: Er steht in der Beratungspräsentation als Zitat auf der Seite Deine Ziele."
           },
           {
             "titel": "Schritt 5 · Familie und Mitentscheider",
@@ -8512,7 +8506,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "titel": "Schritt 13 · Monatlich tragbarer Betrag",
             "kontext": "Phase D. Felder: tragbar im Monat vor Steuern, Grenze im Stressfall.",
             "text": "„Welcher Betrag im Monat wäre für dich dauerhaft gut tragbar, wenn das Konzept für dich nachvollziehbar ist? Ich meine den Betrag vor Steuern.“\n\n„Und wo wäre deine Grenze, wenn einmal etwas nicht nach Plan läuft?“",
-            "warum": "Vor Steuern, damit der Betrag ehrlich ist. Die Grenze im Stressfall steht in der Präsentation unter Ihre Kriterien und wird im Stresstest geprüft."
+            "warum": "Vor Steuern, damit der Betrag ehrlich ist. Die Grenze im Stressfall steht in der Präsentation unter Deine Kriterien und wird im Stresstest geprüft."
           },
           {
             "titel": "Schritt 14 · Sorgen und Schufa",
@@ -8566,7 +8560,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "titel": "Schritt 22 · Offene Fragen",
             "kontext": "Phase F. Feld: erste Frage für die Beratung.",
             "text": "„Welche Frage soll ich dir im nächsten Termin als Allererstes beantworten?“",
-            "warum": "Die Frage des Kunden erscheint in der Präsentation auf der Seite Ihre Ziele. So beginnt der nächste Termin mit seinem Thema."
+            "warum": "Die Frage des Kunden erscheint in der Präsentation auf der Seite Deine Ziele. So beginnt der nächste Termin mit seinem Thema."
           },
           {
             "titel": "Schritt 23 · Verabschiedung",
@@ -8841,7 +8835,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                   "Kunde ist steuerlich motiviert, Details im Gespräch"
                 ],
                 "korrekt": 1,
-                "aufloesung": "Mindestens ein Satz wörtlich, in den Worten des Leads. Er steht in der Präsentation als Zitat auf der Seite Ihre Ziele, und der Kunde erkennt seinen eigenen Satz sofort wieder. Eine Zusammenfassung taugt dafür nicht.",
+                "aufloesung": "Mindestens ein Satz wörtlich, in den Worten des Leads. Er steht in der Präsentation als Zitat auf der Seite Deine Ziele, und der Kunde erkennt seinen eigenen Satz sofort wieder. Eine Zusammenfassung taugt dafür nicht.",
                 "sprungZuAbschnitt": "danach"
               },
               {
@@ -9131,11 +9125,11 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
       {
         "id": "ueberblick-dramaturgie",
         "ueberschrift": "Eine Präsentation, 16 Abschnitte, ein Ziel",
-        "intro": "Im Vertrieb gibt es eine Präsentation: die Beratungspräsentation von OS Real Estate. Rund eine Stunde, per Video oder bei uns im Büro, in der Anrede, die im Erstgespräch vereinbart wurde.",
+        "intro": "Im Vertrieb gibt es eine Präsentation: die Beratungspräsentation von OS Real Estate. Rund eine Stunde, per Video oder bei uns im Büro, per Du wie das Erstgespräch.",
         "absaetze": [
-          "Die Präsentation hat 16 Abschnitte: 01 Unser Termin, 02 Ihre Ziele, 03 Ihre Rentenlücke, 04 Der Preis des Nichtstuns, 05 Wer wir sind und die Unternehmensgruppe, 06 Das Prinzip mit vier Bausteinen, 07 Ihr Konzept, 08 So funktioniert es, 09 Unsere Objekte, 10 Die Rechnung Zeile für Zeile, 11 Sicherheit, 12 Ihr Plan, 13 Ihre Kriterien, 14 Ihr Weg, 15 Der nächste Schritt und 16 Ihr nächster Termin.",
+          "Die Präsentation hat 16 Abschnitte: 01 Unser Termin, 02 Deine Ziele, 03 Deine Ausgangslage, 04 Der Preis des Nichtstuns, 05 Wer wir sind und die Unternehmensgruppe, 06 Das Prinzip mit vier Bausteinen, 07 Dein Konzept, 08 So funktioniert es, 09 Unsere Objekte, 10 Die Rechnung Zeile für Zeile, 11 Sicherheit, 12 Dein Plan, 13 Deine Kriterien, 14 Dein Weg, 15 Der nächste Schritt und 16 Dein nächster Termin.",
           "Der rote Faden ist einfach: erst der Kunde, dann das Prinzip, dann sein Konzept mit echten Zahlen, dann die Frage, was passieren muss, damit es für ihn passt. Ziel ist Abschnitt 15. Dort fragst du: Wenn wir eine Immobilie finden, die deine Kriterien erfüllt, möchtest du den nächsten Schritt gehen? Bei Ja füllt ihr die Selbstauskunft gemeinsam aus, das dauert etwa 15 Minuten. Eine Kaufentscheidung fällt heute nicht, und auch keine Reservierung.",
-          "Vieles ist schon vorbelegt, wenn du die Präsentation aus dem Kundenprofil öffnest: die Anrede, die Ziele und das Motiv als Zitat, Ruhestand, erwartete Rente und Wunsch-Netto für die Rentenlücke, Reserve, tragbarer Betrag und Stressgrenze, die Sorgen und die erste Frage des Kunden. Und der Schwerpunkt aus dem Erstgespräch belegt den Konzeptschalter vor. Was im Erstgespräch sauber notiert wurde, steht hier wieder vorn.",
+          "Vieles ist schon vorbelegt, wenn du die Präsentation aus dem Kundenprofil öffnest: die Ziele und das Motiv als Zitat, Ruhestand, erwartete Rente und Wunsch-Netto für die Rentenlücke, Reserve, tragbarer Betrag und Stressgrenze, die Sorgen und die erste Frage des Kunden. Und der Schwerpunkt aus dem Erstgespräch belegt den Konzeptschalter vor. Was im Erstgespräch sauber notiert wurde, steht hier wieder vorn.",
           "Die Haltung bleibt dieselbe wie im Erstgespräch: Erst verstehen, dann empfehlen. Dazu drei feste Regeln für alle Zahlen. Die Belastung zeigst du immer vor und nach Steuern. Wo mit erhöhter AfA gerechnet wird, steht die Regel-AfA daneben. Und jede Zahl über die Zukunft ist ein Szenario mit genannten Annahmen, keine Zusage.",
           "Nach der Präsentation geht es so weiter: Bis zur Objektvorstellung reicht der Kunde Personalausweis und letzte Gehaltsabrechnung nach, bequem über das Kundenportal. Rund 7 Tage nach der Beratung stellst du die passende Immobilie vor, mit Exposé und einer Investmentkalkulation auf Basis der Selbstauskunft. Passt alles, reserviert der Kunde im selben Termin, kostenfrei."
         ],
@@ -9319,7 +9313,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "warum": "Der Satz nimmt den Druck heraus, bevor die erste Zahl fällt. Wer weiß, dass er auch Nein sagen darf, hört zu, statt sich innerlich zu verteidigen."
           },
           {
-            "titel": "Abschnitt 02 · Ihre Ziele",
+            "titel": "Abschnitt 02 · Deine Ziele",
             "kontext": "Die Seite zeigt Ziele, Rahmen und Zitat aus dem Erstgespräch.",
             "text": "„Das hast du uns gesagt. Stimmt das noch so? Was würdest du heute ergänzen?“",
             "warum": "Der Kunde hört seine eigenen Worte und bestätigt oder korrigiert sie. Alles, was danach kommt, baut auf seinem Ziel auf und nicht auf unserem Produkt."
@@ -9858,7 +9852,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "typ": "szenario",
             "pfad": "beide",
             "titel": "Der Wertverlust-Einwand mitten im Plan",
-            "hinweis": "Du bist in Abschnitt 12, Ihr Plan, der Kunde unterbricht dich, und du führst das Gespräch.",
+            "hinweis": "Du bist in Abschnitt 12, Dein Plan, der Kunde unterbricht dich, und du führst das Gespräch.",
             "punkte": 20,
             "startSzene": "s1",
             "szenen": [
@@ -9941,7 +9935,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "ueberschrift": "Abschnitt 13: Die Kriterien des Kunden und der Finanzierungsrahmen",
         "intro": "Bevor du fragst, ob der Kunde weitergehen möchte, legt er selbst fest, was passen muss. Diese Kriterien sind später der Maßstab für die Objektvorstellung.",
         "absaetze": [
-          "Abschnitt 13 heißt Ihre Kriterien: Du entscheidest, was passen muss. Der Kunde legt fest: sein Konzept, höchstens im Monat vor Steuern, seine Grenze im Stressfall, Eigenkapital höchstens, die Reserve, die unangetastet bleibt, und was ihm am wichtigsten ist. Vieles ist aus dem Erstgespräch vorbelegt, er bestätigt oder ändert es.",
+          "Abschnitt 13 heißt Deine Kriterien: Du entscheidest, was passen muss. Der Kunde legt fest: sein Konzept, höchstens im Monat vor Steuern, seine Grenze im Stressfall, Eigenkapital höchstens, die Reserve, die unangetastet bleibt, und was ihm am wichtigsten ist. Vieles ist aus dem Erstgespräch vorbelegt, er bestätigt oder ändert es.",
           "Dazu die Frage in seinen Worten: Warum ist das für dich der richtige Zeitpunkt? Du hältst die Antwort wörtlich fest. Sie steht später in der Objektvorstellung wieder vorn, und der Kunde begründet seine Entscheidung dann mit seinen eigenen Sätzen.",
           "Auf derselben Seite steht der Finanzierungsrahmen, gerechnet statt geschätzt, mit derselben Formel wie im Kundenprofil: 80 Prozent des monatlichen Überschusses gelten als tragbare Rate, mal 12 und geteilt durch 6 Prozent Annuität aus Zins und Tilgung, plus das liquide Eigenkapital. Die Zahl ist eine Orientierung, keine Zusage. Die Bank rechnet anders und prüft selbst.",
           "Nie sagst du an dieser Stelle: Das bekommen wir bei der Bank schon hin. Ob und wie viel die Bank finanziert, entscheidet die Bank. Deine Aufgabe ist, dass die Kriterien des Kunden ehrlich sind, und dass er mit seiner Stressgrenze auch dann leben kann, wenn etwas nicht nach Plan läuft."

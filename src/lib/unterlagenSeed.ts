@@ -76,6 +76,10 @@ export const ENTFERNTE_DOKUMENT_IDS: string[] = [
   "k-hvv-anlage-5",
   "k-hvv-anlage-6",
   "k-hvv-anlage-7",
+  // Alte OS-Immobilien-Logos unter "Marketing": am 16.10.2026 entfernt, es bleiben die OS-Real-Estate-Logos.
+  "m-logo",
+  "m-logo-wortmarke",
+  "m-icon",
 ];
 
 export function seedUnterlagen(): UnterlagenAbschnitt[] {
@@ -318,33 +322,6 @@ export function seedUnterlagen(): UnterlagenAbschnitt[] {
       name: "Marketing",
       beschreibung: "Logos und Marketing-Materialien",
       dokumente: [
-        {
-          id: "m-logo",
-          name: "OS Immobilien Logo (Download)",
-          beschreibung: "Klick auf die Vorschau lädt das Logo ohne Hintergrund herunter",
-          aktion: "external-link",
-          url: "/images/osimmobilien-logo.png",
-          vorschauUrl: "/images/osimmobilien-logo.png",
-          download: true,
-        },
-        {
-          id: "m-logo-wortmarke",
-          name: "OS Immobilien Logo – Wortmarke (Icon + Schriftzug)",
-          beschreibung: "Vollständiges Logo mit Bildmarke und Schriftzug „Immo\" – ideal für Briefköpfe, Präsentationen und Werbemittel",
-          aktion: "external-link",
-          url: "/images/osimmobilien-logo-wortmarke.png",
-          vorschauUrl: "/images/osimmobilien-logo-wortmarke.png",
-          download: true,
-        },
-        {
-          id: "m-icon",
-          name: "OS Immobilien Bildmarke – Icon (nur Haus)",
-          beschreibung: "Reines Icon ohne Schriftzug – ideal für Social Media, Favicons und Avatare",
-          aktion: "external-link",
-          url: "/images/osimmobilien-icon.png",
-          vorschauUrl: "/images/osimmobilien-icon.png",
-          download: true,
-        },
         {
           id: "m-logo-real-estate-gestapelt",
           name: "OS Real Estate GmbH Logo, gestapelt (transparent)",

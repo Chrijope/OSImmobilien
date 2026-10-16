@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import logo from "@/assets/os-real-estate-logo-quer.png";
 import { PraesentationPdfButton } from "@/components/presentation/PraesentationPdfButton";
 import { PartnerLogo } from "@/components/presentation/PartnerLogo";
-import { BERATUNG_TEXTE, inAnrede } from "@/lib/beratungspraesentationTexte";
+import { BERATUNG_TEXTE } from "@/lib/beratungspraesentationTexte";
 import heroBg from "@/assets/hero-beratung-bg.jpg";
 import beratungSzene from "@/assets/beratung-szene.jpg";
 import modellWg from "@/assets/lp/modell-wg-coliving.jpg";
@@ -60,7 +60,7 @@ function BoldHeading({
 const partnerVon = (marke: string) => {
   for (const l of BERATUNG_TEXTE.de.ueberUns.leistungen) {
     if ("partner" in l && l.partner.marke === marke) {
-      return { marke, rolle: inAnrede(l.partner.rolle, "du"), satz: inAnrede(l.partner.satz, "du") };
+      return { marke, rolle: l.partner.rolle, satz: l.partner.satz };
     }
   }
   return undefined;

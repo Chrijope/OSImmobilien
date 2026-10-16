@@ -95,26 +95,3 @@ export function foermlich(name?: string | null, sprache?: unknown, anrede?: stri
   if (geschlecht) return `Dear ${geschlecht} ${nachname},`
   return `Dear ${teile.join(' ')},`
 }
-
-/**
- * Die Sie-Anrede aus den Teilen, die Buchung und Meeting-Dialog mitschicken
- * (seit 16.10.2026, Vorlagen der Strategie Abschnitt 8).
- *
- * Die Buchung liefert Anrede, Vor- und Nachname einzeln, der Meeting-Dialog
- * den ganzen Namen und send-transactional-email `kundeAnrede` dazu. Sind
- * Herr oder Frau und ein Nachname bekannt: "Guten Tag Herr Mustermann,",
- * sonst wie `foermlich` mit dem ganzen Namen.
- */
-export function foermlichAusTeilen(
-  teile: { name?: string | null; anrede?: string | null; vorname?: string | null; nachname?: string | null },
-  sprache?: unknown,
-): string {
-  const voll = String(teile.name || `${teile.vorname || ''} ${teile.nachname || ''}`).trim()
-  const a = String(teile.anrede || '').toLowerCase()
-  const titel = a.includes('frau') ? 'Frau' : a.includes('herr') ? 'Herr' : ''
-  const woerter = voll.split(/\s+/).filter(Boolean)
-  const nachname = String(teile.nachname || '').trim() || (woerter.length > 1 ? woerter[woerter.length - 1] : '')
-  const schonMitAnrede = VORANGESTELLT.has((woerter[0] || '').toLowerCase())
-  const deName = titel && nachname && !schonMitAnrede ? `${titel} ${nachname}` : voll
-  return foermlich(sprache === 'en' ? voll : deName, sprache, teile.anrede)
-}

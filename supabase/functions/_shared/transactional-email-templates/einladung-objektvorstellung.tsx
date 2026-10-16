@@ -1,7 +1,7 @@
 import * as React from 'npm:react@18.3.1'
 import type { TemplateEntry } from './registry.ts'
 import { EmailLayout, Absatz, Handlung, Nebenhandlung, Angaben, Liste, Haken, Hinweis } from './_layout.tsx'
-import { foermlichAusTeilen } from './_anrede.ts'
+import { hallo } from './_anrede.ts'
 import { DE_EN, type MailSprache, texteFuer, type Zweisprachig } from './_sprache.ts'
 import { terminAnsicht, type TerminArt, type TerminFelder } from './_termin-felder.ts'
 
@@ -28,22 +28,22 @@ interface Props extends TerminFelder {
 const DE = {
   betreff: (datum: string) => (datum ? `Einladung zur Objektvorstellung am ${datum}` : 'Einladung zur Objektvorstellung'),
   augenbraue: 'Einladung',
-  titel: 'Ihre Objektvorstellung',
-  vorschau: (datum: string) => `Wir laden Sie herzlich zur Objektvorstellung${datum ? ` am ${datum}` : ''} ein.`,
+  titel: 'Deine Objektvorstellung',
+  vorschau: (datum: string) => `Wir laden dich herzlich zur Objektvorstellung${datum ? ` am ${datum}` : ''} ein.`,
   absatz: (datum: string) =>
-    `wir laden Sie herzlich zur Objektvorstellung${datum ? ` am ${datum}` : ''} ein. Wir stellen Ihnen das Objekt vor, das zu Ihren Zielen passt, mit allen Zahlen, und beantworten Ihre Fragen.`,
+    `wir laden dich herzlich zur Objektvorstellung${datum ? ` am ${datum}` : ''} ein. Wir stellen dir das Objekt vor, das zu deinen Zielen passt, mit allen Zahlen, und beantworten deine Fragen.`,
   ort: (art: TerminArt) =>
     art === 'video'
-      ? 'Wir sprechen per Video, den Zugang finden Sie unten.'
+      ? 'Wir sprechen per Video, den Zugang findest du unten.'
       : art === 'telefon'
-        ? 'Wir sprechen am Telefon. Wir rufen Sie pünktlich zum Termin an.'
+        ? 'Wir sprechen am Telefon. Wir rufen dich pünktlich zum Termin an.'
         : 'Wir treffen uns in unserem Büro.',
-  bitte: 'Bitte laden Sie bis dahin diese zwei Unterlagen im Kundenportal hoch:',
-  unterlagen: ['Personalausweis, Vorder- und Rückseite', 'Ihre letzte Gehaltsabrechnung'],
+  bitte: 'Bitte lade bis dahin diese zwei Unterlagen im Kundenportal hoch:',
+  unterlagen: ['Personalausweis, Vorder- und Rückseite', 'Deine letzte Gehaltsabrechnung'],
   warum: 'Dann können wir im Termin alle nächsten Schritte direkt klären.',
   knopf: 'Unterlagen hochladen',
   zumVideo: 'Zum Videogespräch',
-  termindaten: 'Ihre Termindaten',
+  termindaten: 'Deine Termindaten',
   datum: 'Datum',
   uhrzeit: 'Uhrzeit',
   dauer: 'Dauer',
@@ -51,12 +51,12 @@ const DE = {
   wo: 'Ort',
   woText: (art: TerminArt) => (art === 'video' ? 'Videogespräch' : art === 'telefon' ? 'Telefon' : 'Unser Büro'),
   treffpunkt: 'Adresse',
-  berater: 'Ihr Ansprechpartner',
+  berater: 'Dein Ansprechpartner',
   zugangTitel: 'Zugang und Kalender',
   kalenderIcs: 'Apple oder Outlook (.ics)',
   kalenderGoogle: 'Google Kalender',
   aendern: 'Termin verschieben oder absagen',
-  verschieben: 'Wenn Sie den Termin verschieben müssen, antworten Sie einfach auf diese Mail. Wir finden gemeinsam einen neuen.',
+  verschieben: 'Wenn du den Termin verschieben musst, antworte einfach auf diese Mail. Wir finden gemeinsam einen neuen.',
 }
 
 const TEXTE: Zweisprachig<typeof DE> = {
@@ -117,7 +117,7 @@ const Mail = (props: Props) => {
       augenbraue={t.augenbraue}
       titel={t.titel}
       vorschau={t.vorschau(v.datum)}
-      anrede={foermlichAusTeilen({ ...props, name: props.kundeName, anrede: props.kundeAnrede || props.anrede }, sprache)}
+      anrede={hallo(props.kundeName || props.vorname, sprache)}
       person={v.person.name ? v.person : undefined}
     >
       <Absatz>{t.absatz(v.datum)}</Absatz>

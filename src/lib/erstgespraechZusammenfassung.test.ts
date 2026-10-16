@@ -402,7 +402,7 @@ describe("waehleMitentscheiderVariante", () => {
   it("liefert bei verheiratet den Ehepartner-Text mit beiden Partnern", () => {
     const v = waehleMitentscheiderVariante("verheiratet");
     expect(v).toBeDefined();
-    const du = typeof v?.text === "string" ? v.text : v?.text.du || "";
+    const du = v?.text ?? "";
     // Wortlaut nach dem Skript vom 15.10.2026
     expect(du).toContain("deiner Frau oder deinem Mann");
     expect(du).toContain("zu dritt");
@@ -411,7 +411,7 @@ describe("waehleMitentscheiderVariante", () => {
   it("liefert bei Partnerschaft den Partner-Text", () => {
     const v = waehleMitentscheiderVariante("in Partnerschaft");
     expect(v).toBeDefined();
-    const du = typeof v?.text === "string" ? v.text : v?.text.du || "";
+    const du = v?.text ?? "";
     expect(du).toContain("Partnerin");
     expect(du).toContain("zum nächsten Termin");
   });
@@ -420,7 +420,7 @@ describe("waehleMitentscheiderVariante", () => {
     for (const stand of ["ledig", "geschieden", "verwitwet"]) {
       const v = waehleMitentscheiderVariante(stand);
       expect(v).toBeDefined();
-      const du = typeof v?.text === "string" ? v.text : v?.text.du || "";
+      const du = v?.text ?? "";
       expect(du).toContain("Eltern");
       expect(du).toContain("Steuerberater");
     }
