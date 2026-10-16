@@ -51,3 +51,8 @@ export const VorschauMikroseite = import.meta.env.DEV
 export const VorschauRechnungsvorlage = import.meta.env.DEV
   ? lazy(() => import("./pages/VorschauRechnungsvorlage"))
   : null;
+
+/** /vorschau/kundenchat: Kundenportal und Partner nebeneinander, Beispieldaten (16.10.2026). Gleiche Regeln wie oben. */
+export const VorschauKundenchat = import.meta.env.DEV
+  ? lazy(() => import("./pages/VorschauKundenchat"))
+  : null;

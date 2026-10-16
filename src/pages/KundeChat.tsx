@@ -12,13 +12,13 @@ import { openUnterlage } from "@/lib/storage";
 import { useUser } from "@/contexts/UserContext";
 import { getInitials } from "@/lib/chatStore";
 import { toast } from "sonner";
-import { showPushNotification } from "@/lib/pushNotifications";
 import { chatBenachrichtigungAnstossen } from "@/lib/chatBenachrichtigungAnstossen";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
 import { portalLocale } from "@/i18n/portalSprache";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { stehtRechts } from "@/lib/chatSeite";
+import { CHAT_MAX_ZEICHEN, schonGespeichert, sendeVersuch, type SendeVersuch } from "@/lib/chatSenden";
 
 /** Kennzeichen einer Dateinachricht im gespeicherten Text, wie im CRM. */
 const DATEI_ZEICHEN = "📎";
@@ -43,6 +43,9 @@ export default function KundeChat() {
   const istHandy = useIsMobile();
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  // Doppelversand, siehe `lib/chatSenden.ts`.
+  const sendetGerade = useRef(false);
+  const letzterVersuch = useRef<SendeVersuch | null>(null);
 
   // Load kontakt, berater und chats
   const loadData = useCallback(async () => {
@@ -125,11 +128,20 @@ export default function KundeChat() {
           .from("chat_gruppen")
           .select("*")
           .in("id", chatIds)
-          .order("aktualisiert_am", { ascending: false });
+          .order("erstellt_am", { ascending: true });
         if (chatError) throw chatError;
-        setChats(chatData || []);
-        if (chatData && chatData.length > 0) {
-          setSelectedChatId(chatData[0].id);
+        /*
+         * Gezeigt wird der Kundenchat, und zwar der aelteste, wie im CRM
+         * (KommunikationReiter) und in `kundenchat_starten`. Vorher gewann der
+         * zuletzt geaenderte Chat irgendeiner Art. Sass der Kunde in zwei
+         * Gruppen, schrieb er in die eine und sein Partner in die andere.
+         */
+        const sortiert = [...(chatData || [])].sort(
+          (a: any, b: any) => Number(b.typ === "kundenkommunikation") - Number(a.typ === "kundenkommunikation"),
+        );
+        setChats(sortiert);
+        if (sortiert.length > 0) {
+          setSelectedChatId(sortiert[0].id);
         }
       } else {
         setChats([]);
@@ -333,7 +345,7 @@ export default function KundeChat() {
   };
 
   // Vertriebspartner benachrichtigen (Glocke + E-Mail) wenn Kunde sendet
-  const notifyBerater = async (nachrichtId: string, preview: string) => {
+  const notifyBerater = (nachrichtId: string) => {
     if (!selectedChatId || !authUser || !kontakt) return;
     /*
      * Glocke und Mail an den Partner schreibt seit dem 25.09.2026 die Edge
@@ -352,37 +364,18 @@ export default function KundeChat() {
      * fuer ihn gar nicht in der Seitenleiste, und die Mail kam nie an.
      */
     void chatBenachrichtigungAnstossen(nachrichtId);
-    try {
-      // Alle anderen Teilnehmer (= Vertriebspartner/Admins) ermitteln
-      const { data: teilnehmerRows } = await supabase
-        .from("chat_teilnehmer")
-        .select("benutzer_id")
-        .eq("chat_id", selectedChatId);
-      const others = (teilnehmerRows || [])
-        .map((t: any) => t.benutzer_id)
-        .filter((uid: string) => uid !== authUser.id);
-      if (others.length === 0) return;
-
-      const kundeName = `${kontakt.vorname || ""} ${kontakt.nachname || ""}`.trim() || "Kunde";
-      const shortPreview = preview.length > 80 ? preview.slice(0, 80) + "…" : preview;
-
-      // Push-Benachrichtigung (Browser) für alle Vertriebspartner
-      for (const uid of others) {
-        showPushNotification(`Neue Nachricht von ${kundeName}`, {
-          body: shortPreview,
-          tag: `chat-msg-${selectedChatId}`,
-          category: "chat",
-          onClick: () => { window.location.href = `/chat?id=${selectedChatId}`; },
-        });
-      }
-    } catch (err) {
-      console.error("Benachrichtigung fehlgeschlagen:", err);
-    }
+    /*
+     * Hier stand bis zum 16.10.2026 noch eine Browsermeldung "Neue Nachricht
+     * von <Kunde>", je Empfaenger eine. Sie erschien aber auf dem Geraet des
+     * KUNDEN, also beim Absender selbst. Die Meldung beim Partner kommt ueber
+     * die Glocke (`benachrichtigungen`, Web-Push-Ausloeser).
+     */
   };
 
   const handleSend = async () => {
-    if (!newMsg.trim() || !selectedChatId || !authUser || sending) return;
+    if (!newMsg.trim() || !selectedChatId || !authUser || sendetGerade.current) return;
     const text = newMsg.trim();
+    sendetGerade.current = true;
     setSending(true);
     try {
       // Absendername und Initialen gehoeren ins meta. Ohne sie steht die
@@ -404,7 +397,9 @@ export default function KundeChat() {
        */
       // Die Kennung entsteht hier, damit die Benachrichtigung genau diese
       // Nachricht nennen kann, ohne sie danach erst wieder zu suchen.
-      const nachrichtId = crypto.randomUUID();
+      const versuch = sendeVersuch(letzterVersuch.current, text);
+      letzterVersuch.current = versuch;
+      const nachrichtId = versuch.id;
       const { error: sendeFehler } = await supabase.from("chat_nachrichten").insert({
         id: nachrichtId,
         chat_id: selectedChatId,
@@ -413,18 +408,20 @@ export default function KundeChat() {
         gelesen_von: [authUser.id],
         meta: absender ? { senderName: absender, senderInitials: getInitials(absender) } : {},
       });
-      if (sendeFehler) throw sendeFehler;
+      if (sendeFehler && !schonGespeichert(sendeFehler)) throw sendeFehler;
+      letzterVersuch.current = null;
 
       // Die eigene Nachricht soll man sehen, auch wenn man gerade oben las.
       // Sie kommt über die Echtzeitleitung herein, dann springt der Verlauf.
       bleibUnten.current = true;
       setNewMsg("");
       // Vertriebspartner benachrichtigen (asynchron, blockiert UI nicht)
-      notifyBerater(nachrichtId, text);
+      notifyBerater(nachrichtId);
     } catch (err) {
       console.error("Fehler beim Senden:", err);
       toast.error(t("portal.chat.toast_send_failed"));
     } finally {
+      sendetGerade.current = false;
       setSending(false);
     }
   };
@@ -478,7 +475,7 @@ export default function KundeChat() {
       if (anhangFehler) throw anhangFehler;
       bleibUnten.current = true;
       toast.success(t("portal.chat.toast_file_sent", { name: file.name }));
-      notifyBerater(nachrichtId, `📎 Datei gesendet: ${file.name}`);
+      notifyBerater(nachrichtId);
     } catch (err) {
       console.error("Upload-Fehler:", err);
       toast.error(t("portal.chat.toast_upload_failed"));
@@ -806,6 +803,7 @@ export default function KundeChat() {
                   className="flex-1 h-9"
                   value={newMsg}
                   onChange={e => setNewMsg(e.target.value)}
+                  maxLength={CHAT_MAX_ZEICHEN}
                   disabled={sending}
                 />
                 <Button size="sm" variant="brand" className="h-9 px-3" type="submit" disabled={sending || !newMsg.trim()} aria-label={t("portal.chat.send")}>

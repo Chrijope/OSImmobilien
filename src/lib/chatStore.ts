@@ -197,6 +197,37 @@ export async function chatTeilnehmerEintragen(chatId: string, teilnehmer: ChatPa
   }
 }
 
+export type KundenchatErgebnis =
+  | { chatId: string }
+  | { grund: "nicht_zustaendig" | "kein_partner" | "funktion_fehlt" | "fehler"; meldung?: string };
+
+/**
+ * Die eine Kundengruppe eines Kontakts, ueber `kundenchat_sicherstellen`
+ * (Migration 20261016231000).
+ *
+ * Vorher legte das Kundenprofil selbst eine Gruppe an, sobald der Lesende
+ * keine sah. Gesehen wird eine Gruppe aber nur von ihren Teilnehmern. Ein
+ * neuer Zustaendiger, das Backoffice oder die Vertriebsleitung legten so eine
+ * zweite Gruppe an, der Kunde sass in zweien, und sein Portal zeigt nur eine.
+ * Die Datenbank liefert jetzt die vorhandene Gruppe und legt nur an, wenn es
+ * keine gibt. Aufrufen duerfen Admin, Inhaber und der Zustaendige.
+ */
+export async function kundenchatSicherstellen(kontaktId: string): Promise<KundenchatErgebnis> {
+  const { supabase: sb } = await import("@/integrations/supabase/client");
+  const { data, error } = await (sb as unknown as {
+    rpc: (name: string, args: Record<string, unknown>) => Promise<{ data: unknown; error: { code?: string; message?: string } | null }>;
+  }).rpc("kundenchat_sicherstellen", { p_kontakt_id: kontaktId });
+  if (error) {
+    if (funktionFehlt(error)) return { grund: "funktion_fehlt" };
+    if (error.code === "42501") return { grund: "nicht_zustaendig", meldung: error.message };
+    if (/kein Partner zustaendig/i.test(error.message || "")) return { grund: "kein_partner", meldung: error.message };
+    return { grund: "fehler", meldung: error.message };
+  }
+  if (typeof data !== "string" || !data) return { grund: "fehler" };
+  await Promise.all([cacheReload("chat_gruppen"), cacheReload("chat_teilnehmer")]);
+  return { chatId: data };
+}
+
 /**
  * Beendet die eigene Teilnahme an einem Chat.
  *

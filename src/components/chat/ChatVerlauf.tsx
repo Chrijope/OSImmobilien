@@ -12,7 +12,7 @@ import { spracheAusMeta } from "../../../supabase/functions/_shared/kunden-sprac
 import { KUNDEN_GLOCKE } from "@/lib/kundenGlocke";
 import { isTestAccount } from "@/lib/dbStoreHelper";
 import { useLiveVersion } from "@/hooks/useLiveData";
-import { showPushNotification } from "@/lib/pushNotifications";
+import { CHAT_MAX_ZEICHEN } from "@/lib/chatSenden";
 import { addMentionNotification, extractMentions } from "@/lib/notificationStore";
 import { supabase } from "@/integrations/supabase/client";
 import { getUserSetting, setUserSetting } from "@/lib/userSettingsCache";
@@ -110,6 +110,8 @@ export const ChatVerlauf = forwardRef<ChatVerlaufHandle, ChatVerlaufProps>(funct
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  /** Sperre gegen Doppelklick und zweimal Enter, siehe `lib/chatSenden.ts`. */
+  const sendetGerade = useRef(false);
   const [dragOver, setDragOver] = useState(false);
 
   // @-mention state
@@ -436,6 +438,12 @@ export const ChatVerlauf = forwardRef<ChatVerlaufHandle, ChatVerlaufProps>(funct
     return () => cancelAnimationFrame(frame);
   }, [activeChat?.id, activeChat?.nachrichten.length]);
 
+  /** Der Kontakt zu einem Portalkonto, als Person 1 oder Person 2. */
+  const kundenKontaktZu = (kontoId: string): any =>
+    (cacheGet("kontakte") || []).find(
+      (k: any) => (k.meta as any)?.authUserId === kontoId || (k.meta as any)?.person2?.authUserId === kontoId,
+    );
+
   const ensureParticipant = async () => {
     if (!activeChat || !myId || myId === "current") return;
     const isParticipant = activeChat.teilnehmer.some(t => t.id === myId);
@@ -460,9 +468,16 @@ export const ChatVerlauf = forwardRef<ChatVerlaufHandle, ChatVerlaufProps>(funct
     }
   };
   const handleSend = async () => {
-    if (!message.trim() || !activeChat) return;
-    const text = message.trim();
+    if (!message.trim() || !activeChat || sendetGerade.current) return;
+    sendetGerade.current = true;
+    try {
+      await sendeNachricht(activeChat, message.trim());
+    } finally {
+      sendetGerade.current = false;
+    }
+  };
 
+  const sendeNachricht = async (activeChat: ChatData, text: string) => {
     // Ensure sender is participant (RLS requirement)
     await ensureParticipant();
 
@@ -522,9 +537,7 @@ export const ChatVerlauf = forwardRef<ChatVerlaufHandle, ChatVerlaufProps>(funct
       if (isKunde) {
         // Glocke und Push in der Sprache aus dem Kundenprofil. Die Nachricht
         // selbst bleibt, wie der Berater sie geschrieben hat.
-        const empfaengerKontakt = cacheGet("kontakte").find(
-          (k: any) => (k.meta as any)?.authUserId === p.id || (k.meta as any)?.person2?.authUserId === p.id,
-        );
+        const empfaengerKontakt = kundenKontaktZu(p.id);
         const glocke = KUNDEN_GLOCKE.chatNachricht[spracheAusMeta(empfaengerKontakt?.meta)](
           user.name,
           `${activeChat.kundeName}: ${text.length > 60 ? text.slice(0, 60) + "…" : text}`,
@@ -537,13 +550,9 @@ export const ChatVerlauf = forwardRef<ChatVerlaufHandle, ChatVerlaufProps>(funct
         }).then(() => {});
       }
 
-      // Push-Benachrichtigung (Browser) für den Empfänger
-      showPushNotification(`Neue Nachricht von ${user.name}`, {
-        body: text.length > 80 ? text.slice(0, 80) + "…" : text,
-        tag: `chat-msg-${activeChat.id}`,
-        category: "chat",
-        onClick: () => { window.location.href = notifLink; },
-      });
+      // Bis zum 16.10.2026 stand hier eine Browsermeldung "Neue Nachricht von
+      // <Absender>". Sie erschien auf dem Geraet des ABSENDERS. Beim Empfaenger
+      // meldet sich die Glocke (Web-Push-Ausloeser an `benachrichtigungen`).
 
       // Send email notification to Kunde participants
       if (isKunde) {
@@ -557,11 +566,21 @@ export const ChatVerlauf = forwardRef<ChatVerlaufHandle, ChatVerlaufProps>(funct
          * um den Namen zu bilden.
          */
         const kundeProfile = cacheGet("profiles").find((pr: any) => pr.id === p.id);
-        const kontaktRows = cacheGet("kontakte");
-        const kundeKontakt = kontaktRows.find((k: any) => (k.meta as any)?.authUserId === p.id);
-        const kundeEmail = (kundeKontakt?.email || "").trim() || kundeProfile?.email;
+        const kundeKontakt = kundenKontaktZu(p.id);
+        /*
+         * Person 2 hat Adresse und Namen unter `meta.person2`. Bis zum
+         * 16.10.2026 wurde nur Person 1 gesucht: Person 2 bekam zwar die
+         * Glocke, aber keine Mail.
+         */
+        const istPerson2 = (kundeKontakt?.meta as any)?.person2?.authUserId === p.id;
+        const person2 = istPerson2 ? (kundeKontakt?.meta as any)?.person2 : null;
+        const kundeEmail = istPerson2
+          ? String(person2?.email || "").trim()
+          : (kundeKontakt?.email || "").trim() || kundeProfile?.email;
         if (kundeEmail) {
-          const kundeName = kundeKontakt ? `${kundeKontakt.vorname} ${kundeKontakt.nachname}` : kundeProfile?.name || "";
+          const kundeName = istPerson2
+            ? `${person2?.vorname || ""} ${person2?.nachname || ""}`.trim()
+            : kundeKontakt ? `${kundeKontakt.vorname} ${kundeKontakt.nachname}` : kundeProfile?.name || "";
           supabase.functions.invoke("send-transactional-email", {
             body: {
               templateName: "chat-nachricht",
@@ -1131,6 +1150,7 @@ export const ChatVerlauf = forwardRef<ChatVerlaufHandle, ChatVerlaufProps>(funct
               className="flex-1"
               placeholder="Nachricht schreiben... (@Name zum Erwähnen)"
               value={message}
+              maxLength={CHAT_MAX_ZEICHEN}
               onChange={handleInputChange}
               onKeyDown={handleInputKeyDown}
             />
