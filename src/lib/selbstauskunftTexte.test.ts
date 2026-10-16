@@ -78,9 +78,10 @@ describe("Wächter: jeder Formulartext hat eine englische Fassung", () => {
   });
 
   it("Schritte, Hinweisspalte und Feld-Hilfen", () => {
-    const { schritte, schrittHinweise, feldHilfen } = SA_FORMULAR_TEXTE;
+    const { schritte, schrittHinweise, feldHilfen, bankHinweise } = SA_FORMULAR_TEXTE;
     const alle = [
       ...schritte,
+      ...Object.values(bankHinweise),
       ...Object.values(schrittHinweise).flatMap((h) => [h.title, ...h.items]),
       ...Object.keys(feldHilfen),
       ...Object.values(feldHilfen),

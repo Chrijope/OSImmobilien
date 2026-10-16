@@ -139,6 +139,7 @@ export const ROUTEN_TABELLEN: Record<string, readonly string[]> = {
   // holen sich ihre Tabellen ueber `useCacheReady` selbst.
   "/beratungspraesentation": [],
   "/beratungspraesentation-osimmobilien": [...KONTAKT_TABELLEN],
+  "/beratungspraesentation-osimmobilien-b": [...KONTAKT_TABELLEN],
   "/beratungspraesentation-hv": [],
   "/beratungspraesentation-neu": [],
   "/beratungspraesentation-wg": [],
@@ -236,6 +237,8 @@ export const ROUTEN_TABELLEN: Record<string, readonly string[]> = {
   "/vorschau/pipeline": [],
   "/vorschau/mikroseite": [],
   "/vorschau/rechnungsvorlage": [],
+  "/vorschau/kunde-komplett": [],
+  "/vorschau/kunde-komplett/:id": [],
   // Ankaufstool rechnet nur mit Eingaben, laedt keine Daten.
   "/ankaufstool": [],
   // Mietsubvention liest Objekte und Einheiten fuer die Vorbelegung.

@@ -113,6 +113,8 @@ describe("Wo der Banner hingehört", () => {
       "/vorschau/pipeline",
       "/vorschau/mikroseite",
       "/vorschau/rechnungsvorlage",
+      "/vorschau/kunde-komplett",
+      "/vorschau/kunde-komplett/:id",
     ]);
     const ohneEntscheidung = routen
       // Hinter `PraesentationGuard` liegt eine Anmeldung, `Navigate` leitet

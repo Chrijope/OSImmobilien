@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { CreditCard, Download, Info } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
-import { bankLebenshaltung, rahmenAusUeberschuss, RAHMEN_PUFFER, RAHMEN_ANNUITAET } from "@/lib/finanzierbarkeitUtils";
+import { bankLebenshaltung, rahmenAusUeberschuss, RAHMEN_PUFFER, RAHMEN_ANNUITAET, BANK_MIETE_ANTEIL } from "@/lib/finanzierbarkeitUtils";
 
 const EINNAHME_FELDER = [
   "Lohn/Gehalt (netto)",
@@ -83,8 +83,11 @@ const Bonitaetsrechner = () => {
     const effAus1 = ersetzeLebenshaltung(ausgaben1, einnahmen1[0]);
     const effAus2 = ersetzeLebenshaltung(ausgaben2, einnahmen2[0]);
 
-    const ueberschuss1 = sumEin1 - effAus1;
-    const ueberschuss2 = sumEin2 - effAus2;
+    // Mieteinnahmen nur zu 80 Prozent, wie im Finanzierungsrahmen der Kundenakte.
+    const effEin = (ein: number[]) =>
+      ein.reduce((a, b, i) => a + (EINNAHME_FELDER[i].startsWith("Mieteinnahmen") ? b * BANK_MIETE_ANTEIL : b), 0);
+    const ueberschuss1 = effEin(einnahmen1) - effAus1;
+    const ueberschuss2 = effEin(einnahmen2) - effAus2;
     const ueberschussGesamt = ueberschuss1 + ueberschuss2;
 
     // Monatlich max tragbare Belastung, Sicherheitspuffer aus finanzierbarkeitUtils

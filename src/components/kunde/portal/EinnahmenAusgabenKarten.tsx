@@ -61,7 +61,6 @@ export function EinnahmenAusgabenKarten({ saData }: Props) {
     { key: "personal_loan", value: ausgabenValues.privatkredite },
     { key: "other_loans", value: ausgabenValues.sonstigeKredite },
     { key: "alimony", value: ausgabenValues.unterhalt },
-    { key: "guarantees", value: ausgabenValues.buergschaften },
     { key: "insurance", value: ausgabenValues.versicherungen },
     { key: "other", value: ausgabenValues.sonstige },
   ];

@@ -51,3 +51,8 @@ export const VorschauMikroseite = import.meta.env.DEV
 export const VorschauRechnungsvorlage = import.meta.env.DEV
   ? lazy(() => import("./pages/VorschauRechnungsvorlage"))
   : null;
+
+/** /vorschau/kunde-komplett: Beispielkunde mit komplett befülltem Investment (16.10.2026). Gleiche Regeln wie oben. */
+export const VorschauKundeKomplett = import.meta.env.DEV
+  ? lazy(() => import("./pages/VorschauKundeKomplett"))
+  : null;

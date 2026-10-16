@@ -28,7 +28,7 @@ import { RechnungsGeneratorDialog } from "@/components/unterlagen/RechnungsGener
 import { EmailSignaturDialog } from "@/components/unterlagen/EmailSignaturDialog";
 import { MarketingGrid } from "@/components/unterlagen/MarketingGrid";
 import {
-  seedUnterlagen, UNTERLAGEN_VERSION, ENTFERNTE_DOKUMENT_IDS,
+  seedUnterlagen, UNTERLAGEN_VERSION, ENTFERNTE_DOKUMENT_IDS, mitNachgetragenen,
   type UnterlagenAbschnitt, type UnterlagenDokument, type UnterlagenAktion,
 } from "@/lib/unterlagenSeed";
 import { OVERHEAD_AKTIV } from "@/lib/lizenzPakete";
@@ -139,8 +139,10 @@ function loadUnterlagen(darfSchreiben: boolean): UnterlagenAbschnitt[] {
   const gespeicherteVersion = Number(saved?.ver ?? -1);
   const eigeneVersion = Number(UNTERLAGEN_VERSION);
   if (saved && gespeicherteVersion >= eigeneVersion) {
-    const { daten, geaendert } = ohneEntfallene(saved.data);
-    const frisch = ausSeedAktualisiert(daten);
+    const bereinigt = ohneEntfallene(saved.data);
+    const ergaenzt = mitNachgetragenen(bereinigt.daten);
+    const geaendert = bereinigt.geaendert || ergaenzt.geaendert;
+    const frisch = ausSeedAktualisiert(ergaenzt.daten);
     // Aufraeumen im Hintergrund, nicht vom Nutzer ausgeloest: still.
     if (geaendert && darfSchreiben) {
       void setAppConfig(STORE_KEY, { ver: saved.ver, data: frisch }, { still: true });

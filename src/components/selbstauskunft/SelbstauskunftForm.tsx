@@ -1014,7 +1014,32 @@ function UebernommenMarke() {
 const UEBERNOMMEN_RAHMEN = "rounded-md border border-dashed border-accent-foreground/50 px-2 py-1.5";
 
 // ─── Form Field helpers ──────────────────────────────────────
-function Field({ label, tooltip, children, className, required, error, hint, filled, uebernommen }: { label: string; tooltip?: string; children: React.ReactNode; className?: string; required?: boolean; error?: boolean; hint?: string; filled?: boolean; uebernommen?: boolean }) {
+/**
+ * Hinweise, wie Banken haeufig rechnen (Christian, 16.10.2026).
+ *
+ * Nur Text. Die Eingabe bleibt genau das, was eingetragen wird; den Bankansatz
+ * rechnet der Finanzierungsrahmen selbst (bankLebenshaltung). Alle Hinweise
+ * beginnen gleich und enden mit dem Vorbehalt, damit niemand sie fuer eine
+ * Zusage haelt. Ohne Anrede formuliert, so passen sie zu jeder Fassung.
+ */
+const BANK_HINWEISE = {
+  lebenshaltung: "Hinweis, wie Banken häufig rechnen: Für die Lebenshaltung setzen Banken meist rund 30 % des Nettoeinkommens oder eine Pauschale je Person an, auch wenn der tatsächliche Betrag niedriger ist. Bitte trotzdem den tatsächlichen Betrag eintragen. Die Bank entscheidet im Einzelfall.",
+  miete: "Hinweis, wie Banken häufig rechnen: Mieteinnahmen zählen meist nur mit 70 bis 80 % der Kaltmiete, als Puffer für Leerstand und Instandhaltung. Bitte die volle Kaltmiete eintragen. Die Bank entscheidet im Einzelfall.",
+  kredite: "Hinweis, wie Banken häufig rechnen: Bestehende Kredite zählen mit der vollen monatlichen Rate. Die Bank entscheidet im Einzelfall.",
+  eigenkapital: "Hinweis, wie Banken häufig rechnen: Die Kaufnebenkosten (Grunderwerbsteuer, Notar, Grundbuch) sollen meist aus Eigenkapital bezahlt werden. Die Bank entscheidet im Einzelfall.",
+} as const;
+
+/** Ein Bank-Hinweis, ruhig gesetzt: Auskunft, keine Warnung und kein Fehler. */
+function BankHinweis({ text, className }: { text: string; className?: string }) {
+  const { t } = useSaText();
+  return (
+    <p className={cn("text-[11px] leading-snug text-muted-foreground mt-1 flex items-start gap-1", className)} data-testid="bank-hinweis">
+      <Info className="h-3 w-3 mt-0.5 shrink-0 text-primary/70" /> <span>{t(text)}</span>
+    </p>
+  );
+}
+
+function Field({ label, tooltip, children, className, required, error, hint, filled, uebernommen, bankHinweis }: { label: string; tooltip?: string; children: React.ReactNode; className?: string; required?: boolean; error?: boolean; hint?: string; filled?: boolean; uebernommen?: boolean; /** Ein Text aus BANK_HINWEISE. */ bankHinweis?: string }) {
   // Die Erklärung wird über die deutsche Beschriftung gefunden und erst in
   // `FeldInfo` übersetzt, so bleibt FELD_HILFEN die eine Quelle.
   const hilfe = tooltip ?? FELD_HILFEN[label];
@@ -1049,6 +1074,7 @@ function Field({ label, tooltip, children, className, required, error, hint, fil
           <Info className="h-3 w-3" /> {t(hint)}
         </p>
       )}
+      {bankHinweis && <BankHinweis text={bankHinweis} />}
     </div>
   );
 }
@@ -1292,7 +1318,7 @@ export function SelbstauskunftHinweise({ schritt, className, sprache = "de" }: {
  * Die Texte, die übersetzt werden müssen, für den Wächtertest in
  * `selbstauskunftTexte.test.ts`. Er prüft, dass jeder davon im Wörterbuch steht.
  */
-export const SA_FORMULAR_TEXTE = { schritte: STEPS, schrittHinweise: STEP_HINTS, feldHilfen: FELD_HILFEN } as const;
+export const SA_FORMULAR_TEXTE = { schritte: STEPS, schrittHinweise: STEP_HINTS, feldHilfen: FELD_HILFEN, bankHinweise: BANK_HINWEISE } as const;
 
 // ─── Main Component ──────────────────────────────────────────
 export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: propInvestmentId, onComplete, prefillKontakt, prefillSaData, isEditMode, customerMode, saToken, registerApi, vorgewaehltesZiel, korrekturMode, onKorrekturSave, onAnKundenSenden, onHinweisSchritt, ohneSteuerIdUndIban }: { kundeId: string; /** Kundensprache. Ohne Angabe Deutsch, also der bisherige Stand im CRM. Gespeichert wird immer deutsch. */ sprache?: Sprache; investmentId?: string; onComplete?: () => void; prefillKontakt?: SelbstauskunftKontaktPrefill | null; prefillSaData?: Partial<SelbstauskunftData> | null; isEditMode?: boolean; customerMode?: boolean; saToken?: string; registerApi?: (api: { saveDraft: () => Promise<void>; hatUngespeichertes: () => boolean }) => void; /** Kunde korrigiert die vom Berater ausgefuellte SA vor der Unterschrift. */ korrekturMode?: boolean; onKorrekturSave?: (data: SelbstauskunftData) => Promise<void> | void; /** Nur der Berater: den angefangenen Stand dem Kunden zum Fertigmachen schicken. */ onAnKundenSenden?: () => Promise<void> | void; /** Ziel aus der Beratungspraesentation, wird als eines der drei vorbelegt. */ vorgewaehltesZiel?: string; /**
@@ -2595,7 +2621,7 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
             <Input value={betragAus(data.einkommen.gewerbe)} onChange={e => { update("einkommen", { ...data.einkommen, gewerbe: betragEin(e.target.value) }); clearError("gewerbe"); }} inputMode="decimal" placeholder={t("0,00")} />
           </Field>
         )}
-        <Field label="Miet- & Pachteinnahmen (kalt)" uebernommen={istUebernommen("einkommen.miet")}><Input value={betragAus(data.einkommen.miet)} onChange={e => update("einkommen", { ...data.einkommen, miet: betragEin(e.target.value) })} inputMode="decimal" placeholder={t("0,00")} /></Field>
+        <Field label="Miet- & Pachteinnahmen (kalt)" bankHinweis={BANK_HINWEISE.miete} uebernommen={istUebernommen("einkommen.miet")}><Input value={betragAus(data.einkommen.miet)} onChange={e => update("einkommen", { ...data.einkommen, miet: betragEin(e.target.value) })} inputMode="decimal" placeholder={t("0,00")} /></Field>
         <Field label="Zinserträge" uebernommen={istUebernommen("einkommen.zinsen")}><Input value={betragAus(data.einkommen.zinsen)} onChange={e => update("einkommen", { ...data.einkommen, zinsen: betragEin(e.target.value) })} inputMode="decimal" placeholder={t("0,00")} /></Field>
         <Field label="Rente / Pension" uebernommen={istUebernommen("einkommen.rente")}><Input value={betragAus(data.einkommen.rente)} onChange={e => update("einkommen", { ...data.einkommen, rente: betragEin(e.target.value) })} inputMode="decimal" placeholder={t("0,00")} /></Field>
         {data.kinder.length > 0 && (
@@ -2760,7 +2786,7 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
                 <Input value={betragAus(data.person2Data.einkommen.gewerbe)} onChange={e => { updateP2("einkommen", { ...data.person2Data.einkommen, gewerbe: betragEin(e.target.value) }); clearError("p2_gewerbe"); }} inputMode="decimal" placeholder={t("0,00")} />
               </Field>
             )}
-            <Field label="Miet- & Pachteinnahmen (kalt)" uebernommen={istUebernommen("person2Data.einkommen.miet")}><Input value={betragAus(data.person2Data.einkommen.miet)} onChange={e => updateP2("einkommen", { ...data.person2Data.einkommen, miet: betragEin(e.target.value) })} inputMode="decimal" placeholder={t("0,00")} /></Field>
+            <Field label="Miet- & Pachteinnahmen (kalt)" bankHinweis={BANK_HINWEISE.miete} uebernommen={istUebernommen("person2Data.einkommen.miet")}><Input value={betragAus(data.person2Data.einkommen.miet)} onChange={e => updateP2("einkommen", { ...data.person2Data.einkommen, miet: betragEin(e.target.value) })} inputMode="decimal" placeholder={t("0,00")} /></Field>
             <Field label="Zinserträge" uebernommen={istUebernommen("person2Data.einkommen.zinsen")}><Input value={betragAus(data.person2Data.einkommen.zinsen)} onChange={e => updateP2("einkommen", { ...data.person2Data.einkommen, zinsen: betragEin(e.target.value) })} inputMode="decimal" placeholder={t("0,00")} /></Field>
             <Field label="Rente / Pension" uebernommen={istUebernommen("person2Data.einkommen.rente")}><Input value={betragAus(data.person2Data.einkommen.rente)} onChange={e => updateP2("einkommen", { ...data.person2Data.einkommen, rente: betragEin(e.target.value) })} inputMode="decimal" placeholder={t("0,00")} /></Field>
             <Field label="Sonstige Einkünfte" uebernommen={istUebernommen("person2Data.einkommen.sonstige")}><Input value={betragAus(data.person2Data.einkommen.sonstige)} onChange={e => updateP2("einkommen", { ...data.person2Data.einkommen, sonstige: betragEin(e.target.value) })} inputMode="decimal" placeholder={t("0,00")} /></Field>
@@ -3174,6 +3200,7 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
         )}
         <Field
           label="Lebenshaltungskosten"
+          bankHinweis={BANK_HINWEISE.lebenshaltung}
           required
           error={errors.has("lebenshaltungskosten")}
           filled={!!data.lebenshaltungskosten.trim()}
@@ -3211,6 +3238,7 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
       {data.kredite.length === 0 && (
         <p className="text-sm text-muted-foreground mb-2">{t("Keine Kredite hinterlegt. Falls vorhanden, bitte hinzufügen.")}</p>
       )}
+      <BankHinweis text={BANK_HINWEISE.kredite} className="mt-0 mb-2" />
       {renderKreditZeilen(1)}
 
       {/* ── Person 2 Ausgaben ── */}
@@ -3232,7 +3260,7 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
                 <Input value={betragAus(data.person2Data.mieteWarm)} onChange={e => { updateP2("mieteWarm", betragEin(e.target.value)); clearError("p2_mieteWarm"); }} inputMode="decimal" placeholder={t("0,00")} />
               </Field>
             )}
-            <Field label="Lebenshaltungskosten" uebernommen={istUebernommen("person2Data.lebenshaltungskosten")}>
+            <Field label="Lebenshaltungskosten" bankHinweis={BANK_HINWEISE.lebenshaltung} uebernommen={istUebernommen("person2Data.lebenshaltungskosten")}>
               <Input value={betragAus(data.person2Data.lebenshaltungskosten)} onChange={e => updateP2("lebenshaltungskosten", betragEin(e.target.value))} inputMode="decimal" placeholder={t("0,00")} />
             </Field>
             <Field label="Private Krankenversicherung" uebernommen={istUebernommen("person2Data.privateKV")}><Input value={betragAus(data.person2Data.privateKV)} onChange={e => updateP2("privateKV", betragEin(e.target.value))} inputMode="decimal" placeholder={t("0,00")} /></Field>
@@ -3364,6 +3392,7 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
     <div>
       <h2 className="text-xl font-bold mb-4">{t("Vermögenswerte: Angaben Person 1 (Gesamtbetrag)")}</h2>
       <h3 className="font-bold mb-3 flex items-center gap-2">{t("Vermögenswerte")}{istUebernommen("vermoegenswerte") && <UebernommenMarke />}</h3>
+      <BankHinweis text={BANK_HINWEISE.eigenkapital} className="mt-0 mb-2" />
       {data.vermoegenswerte.map((v, i) => (
         <div key={i} className="mb-2">
           <div className="grid max-w-4xl grid-cols-[160px_1fr_1fr_auto] gap-2 items-end">

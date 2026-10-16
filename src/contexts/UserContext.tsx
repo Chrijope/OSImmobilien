@@ -29,7 +29,8 @@ interface UserContextType {
   authUser: User | null;
 }
 
-const UserContext = createContext<UserContextType | undefined>(undefined);
+// Exportiert nur für die lokale Vorschau (VorschauKundeKomplett), die einen festen Nutzer setzt.
+export const UserContext = createContext<UserContextType | undefined>(undefined);
 
 const DEFAULT_PROFILE: UserProfile = { name: "Laden...", role: "kunde", osImmoId: "" };
 

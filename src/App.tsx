@@ -23,7 +23,7 @@ import { KundenMfaGuard } from "@/components/kunde/KundenMfaGuard";
 
 // Oeffentliche Seiten (eager, klein und immer noetig)
 import Login from "./pages/Login";
-import { VorschauBeratungspraesentation, VorschauErstgespraech, VorschauInvestmentrechner, VorschauNaechsteAktionen, VorschauMikroseite, VorschauPipeline, VorschauProvision, VorschauRechnungsvorlage } from "./vorschauRouten";
+import { VorschauBeratungspraesentation, VorschauErstgespraech, VorschauInvestmentrechner, VorschauNaechsteAktionen, VorschauMikroseite, VorschauPipeline, VorschauProvision, VorschauRechnungsvorlage, VorschauKundeKomplett } from "./vorschauRouten";
 
 /** /investmentrechner-plus → /investmentrechner mit Schalter „Bankgespräch & Bankunterlagen“, Parameter bleiben. */
 function InvestmentrechnerPlusWeiterleitung() {
@@ -406,6 +406,12 @@ const App = () => (
                 {VorschauPipeline && <Route path="/vorschau/pipeline" element={<VorschauPipeline />} />}
                 {VorschauMikroseite && <Route path="/vorschau/mikroseite" element={<VorschauMikroseite />} />}
                 {VorschauRechnungsvorlage && <Route path="/vorschau/rechnungsvorlage" element={<VorschauRechnungsvorlage />} />}
+                {VorschauKundeKomplett && (
+                  <>
+                    <Route path="/vorschau/kunde-komplett" element={<VorschauKundeKomplett />} />
+                    <Route path="/vorschau/kunde-komplett/:id" element={<VorschauKundeKomplett />} />
+                  </>
+                )}
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/portal-aktivieren" element={<PortalAktivieren />} />
                 <Route path="/aktivieren" element={<Aktivieren />} />
@@ -550,6 +556,8 @@ const App = () => (
                     kundenseitige Rollen (kunde/tippgeber) nicht durch. */}
                 <Route path="/beratungspraesentation" element={<PraesentationGuard><Beratungspraesentation /></PraesentationGuard>} />
                 <Route path="/beratungspraesentation-osimmobilien" element={<PraesentationGuard><BeratungspraesentationHV /></PraesentationGuard>} />
+                {/* Vergleichsfassung B, dieselbe Seite mit eigenen Texten (beratungOsDatenB.ts). */}
+                <Route path="/beratungspraesentation-osimmobilien-b" element={<PraesentationGuard><BeratungspraesentationHV variante="b" /></PraesentationGuard>} />
                 {/* Alte URLs bleiben gültig und leiten inklusive Kundenkontext (Query) weiter.
                     "-neu" war eine ältere Fassung der OS Immobilien-Präsentation, die Seite ist entfernt. */}
                 <Route path="/beratungspraesentation-hv" element={<Navigate to={`/beratungspraesentation-osimmobilien${window.location.search}`} replace />} />

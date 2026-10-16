@@ -523,7 +523,7 @@ const formatKundenId = (osImmoId?: number | null) => {
   return `OSI-${String(osImmoId).padStart(5, "0")}`;
 };
 
-import { kreditArt, kreditAuswahlLabel, RAHMEN_PUFFER, RAHMEN_ANNUITAET, extractEinkuenfte as extractFinanzEinkuenfte, extractAusgaben as extractFinanzAusgaben, calculateFinanzierbarkeitFromSaData } from "@/lib/finanzierbarkeitUtils";
+import { kreditArt, kreditAuswahlLabel, RAHMEN_PUFFER, RAHMEN_ANNUITAET, calculateFinanzierbarkeitFromSaData, investmentFinanzZahlen, BANK_LEBENSHALTUNG_MINDEST } from "@/lib/finanzierbarkeitUtils";
 import { eigeneSaDataFuerInvestmentRow } from "@/lib/saQuelle";
 import { bankpruefungListenFuerInvestment, OHNE_EIGENE_SA_HINWEIS } from "@/lib/bankpruefungListe";
 import { tarnEmail, tarnName, tarnTelefon, tarnVerweis } from "@/lib/vorfuehrmodus";
@@ -652,8 +652,7 @@ function DokumentSymbolKnopf({ art, titel, onClick }: {
  * der neuesten Selbstauskunft lagen hier lange als lokale Kopien. Sie sind in
  * die gemeinsamen Module gezogen (finanzierbarkeitUtils.ts, saQuelle.ts),
  * damit Kundenprofil und Kundenportal garantiert dieselben Zahlen zeigen.
- * Die Importe oben behalten die alten lokalen Namen bei
- * (extractFinanzEinkuenfte, extractFinanzAusgaben).
+ * Der Finanzblock im Investment holt seine Zahlen aus investmentFinanzZahlen.
  */
 
 /*
@@ -9159,6 +9158,21 @@ export default function KundenDetail() {
                 >
                   <ExternalLink className="h-4 w-4 mr-1" /> Beratungspräsentation OS Immobilien
                 </Button>
+                {/* Vergleichsfassung B, mit denselben Parametern. */}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    const params = new URLSearchParams({
+                      kunde: `${kunde.vorname} ${kunde.nachname}`,
+                      kundeId: id || "",
+                      investmentId: inv.id,
+                    });
+                    window.open(`/beratungspraesentation-osimmobilien-b?${params.toString()}`, "_blank");
+                  }}
+                >
+                  <ExternalLink className="h-4 w-4 mr-1" /> Beratungspräsentation B
+                </Button>
                 <span className="relative inline-flex">
                   <Button
                     size="sm"
@@ -13269,21 +13283,9 @@ export default function KundenDetail() {
     // und nicht das, wofuer der Kunde geradesteht. Die Zahlen bleiben
     // sichtbar, aber sie werden als ungeprueft gekennzeichnet.
     const saUnterschrieben = !!invRow?.meta?.saSigned;
-    const invEink = extractFinanzEinkuenfte(sd);
-    const invAusg = extractFinanzAusgaben(sd);
-    const invSumEink = Object.values(invEink).reduce((a, b) => a + b, 0);
-    const invSumAusg = Object.values(invAusg).reduce((a, b) => a + b, 0);
-
-    // Person 2 nur, wenn sie in dieser Selbstauskunft steht.
-    const p2d = sd?.person2 ? sd.person2Data || null : null;
-    const invP2Eink = p2d ? extractFinanzEinkuenfte(p2d) : null;
-    const invP2Ausg = p2d ? extractFinanzAusgaben(p2d) : null;
-    const invSumEinkP2 = invP2Eink ? Object.values(invP2Eink).reduce((a, b) => a + (b as number), 0) : 0;
-    const invSumAusgP2 = invP2Ausg ? Object.values(invP2Ausg).reduce((a, b) => a + (b as number), 0) : 0;
-    const invSumEinkGes = invSumEink + invSumEinkP2;
-    const invSumAusgGes = invSumAusg + invSumAusgP2;
-    const invUeberschuss = invSumEinkGes - invSumAusgGes;
-    const invDavon80 = invUeberschuss * RAHMEN_PUFFER;
+    // Kundenwerte eins zu eins, Bankansatz getrennt (investmentFinanzZahlen).
+    const fz = investmentFinanzZahlen(sd);
+    const { p2d, eink: invEink, ausg: invAusg, p2Eink: invP2Eink, p2Ausg: invP2Ausg, sumEink: invSumEink, sumAusg: invSumAusg, sumEinkP2: invSumEinkP2, sumAusgP2: invSumAusgP2, sumEinkGes: invSumEinkGes, sumAusgGes: invSumAusgGes, ueberschuss: invUeberschuss, buergschaften: invBuergschaften } = fz;
 
     const vw = sd?.vermoegenswerte || [];
     const p2Vw = p2d?.vermoegenswerte || [];
@@ -13301,11 +13303,15 @@ export default function KundenDetail() {
      * fruehere Rueckfall auf die kundenweiten Rahmenwerte ist entfallen, weil
      * er fremde Zahlen in einen Vorgang trug, der noch gar keine eigenen hat.
      */
-    const saFin = calculateFinanzierbarkeitFromSaData(sd);
+    const saFin = fz.bank;
     const effMinRahmen = saFin?.minRahmen || 0;
     const effEmpfRahmen = saFin?.empfRahmen || 0;
     const effMaxRahmen = saFin?.maxRahmen || 0;
     const effEK = saFin?.eigenkapital || 0;
+    // Tragfaehigkeit auf derselben Grundlage wie der Finanzierungsrahmen,
+    // also mit Bankansatz, damit beide Karten zusammenpassen.
+    const bankUeberschuss = saFin?.ueberschuss || 0;
+    const invDavon80 = bankUeberschuss * RAHMEN_PUFFER;
 
     const SA_ZIEL_LABELS_INV: Record<string, string> = {
       vermoegen: "Vermögensaufbau / Werte schaffen",
@@ -13418,7 +13424,7 @@ export default function KundenDetail() {
                 </summary>
                 <FinanzZeilen
                   kredite={sd?.kredite || []}
-                  zeilen={[["Miete", invAusg.miete], ["Nebenkosten", invAusg.nebenkosten], ["Lebenshaltungskosten (Bankansatz)", invAusg.lebenshaltung], ["Private Krankenversicherung", invAusg.privateKV], ["KFZ-Kosten", invAusg.kfzKosten], ["Zins/Tilgung aus Hypotheken", invAusg.zinsTilgung], ["Autokredite", invAusg.autokredite], ["Privatkredite", invAusg.privatkredite], ["Sonstige Kredite", invAusg.sonstigeKredite], ["Bürgschaften / Verbindlichkeiten", invAusg.buergschaften], ["Versicherungsbeiträge", invAusg.versicherungen], ["Unterhaltszahlungen", invAusg.unterhalt], ["Sonstige Ausgaben", invAusg.sonstige]]}
+                  zeilen={[["Miete", invAusg.miete], ["Nebenkosten", invAusg.nebenkosten], ["Lebenshaltungskosten", invAusg.lebenshaltung], ["Private Krankenversicherung", invAusg.privateKV], ["KFZ-Kosten", invAusg.kfzKosten], ["Zins/Tilgung aus Hypotheken", invAusg.zinsTilgung], ["Autokredite", invAusg.autokredite], ["Privatkredite", invAusg.privatkredite], ["Sonstige Kredite", invAusg.sonstigeKredite], ["Versicherungsbeiträge", invAusg.versicherungen], ["Unterhaltszahlungen", invAusg.unterhalt], ["Sonstige Ausgaben", invAusg.sonstige]]}
                 />
               </details>
               <div className="flex justify-between font-semibold border-t pt-1"><span>Summe P1</span><span>{fmt(invSumAusg)}</span></div>
@@ -13431,7 +13437,7 @@ export default function KundenDetail() {
                       <ChevronDown className="h-3 w-3 transition-transform group-open/zeile:rotate-180" />
                     </summary>
                     <div className="mt-1 space-y-1">
-                      {[["Miete", invP2Ausg.miete], ["Nebenkosten", invP2Ausg.nebenkosten], ["Lebenshaltungskosten (Bankansatz)", invP2Ausg.lebenshaltung], ["Private Krankenversicherung", invP2Ausg.privateKV], ["KFZ-Kosten", invP2Ausg.kfzKosten], ["Zins/Tilgung aus Hypotheken", invP2Ausg.zinsTilgung], ["Autokredite", invP2Ausg.autokredite], ["Privatkredite", invP2Ausg.privatkredite], ["Sonstige Kredite", invP2Ausg.sonstigeKredite], ["Bürgschaften / Verbindlichkeiten", invP2Ausg.buergschaften], ["Versicherungsbeiträge", invP2Ausg.versicherungen], ["Unterhaltszahlungen", invP2Ausg.unterhalt], ["Sonstige Ausgaben", invP2Ausg.sonstige]].filter(([, v]) => (v as number) > 0).map(([label, val], i) => (
+                      {[["Miete", invP2Ausg.miete], ["Nebenkosten", invP2Ausg.nebenkosten], ["Lebenshaltungskosten", invP2Ausg.lebenshaltung], ["Private Krankenversicherung", invP2Ausg.privateKV], ["KFZ-Kosten", invP2Ausg.kfzKosten], ["Zins/Tilgung aus Hypotheken", invP2Ausg.zinsTilgung], ["Autokredite", invP2Ausg.autokredite], ["Privatkredite", invP2Ausg.privatkredite], ["Sonstige Kredite", invP2Ausg.sonstigeKredite], ["Versicherungsbeiträge", invP2Ausg.versicherungen], ["Unterhaltszahlungen", invP2Ausg.unterhalt], ["Sonstige Ausgaben", invP2Ausg.sonstige]].filter(([, v]) => (v as number) > 0).map(([label, val], i) => (
                         <div key={`p2-${i}`} className="flex justify-between"><span>{label as string}</span><span>{fmt(val as number)}</span></div>
                       ))}
                     </div>
@@ -13440,6 +13446,12 @@ export default function KundenDetail() {
                 </>
               )}
               <div className="flex justify-between font-bold border-t-2 pt-1.5 text-primary"><span>Gesamt</span><span>{fmt(invSumAusgGes)}</span></div>
+              {invBuergschaften > 0 && (
+                <div className="flex justify-between text-muted-foreground pt-0.5">
+                  <span>Bürgschaften (verbürgte Summe, keine Monatsausgabe)</span>
+                  <span>{fmt(invBuergschaften)}</span>
+                </div>
+              )}
             </div>
           </Card>
           <Card className="p-4">
@@ -13450,8 +13462,24 @@ export default function KundenDetail() {
               <div className="flex justify-between"><span>Ausgaben</span><span className="font-medium text-destructive">– {fmt(invSumAusgGes)}</span></div>
               <div className="flex justify-between font-bold border-t-2 pt-1.5 text-primary"><span>Monatl. Überschuss</span><span>{fmt(invUeberschuss)}</span></div>
               <div className="flex justify-between text-muted-foreground pt-0.5"><span>Jahres-Ø</span><span>{fmt(invUeberschuss * 12)}</span></div>
+              {/*
+                Oben stehen die Zahlen des Kunden eins zu eins. Hier daneben,
+                klar getrennt, die Schaetzung nach Bankansatz: dieselbe
+                Grundlage wie der Finanzierungsrahmen rechts.
+              */}
+              {saFin && (
+                <div className="mt-3 p-2.5 rounded-lg border border-dashed text-[11px] text-muted-foreground space-y-0.5" data-testid="bankansatz-vergleich">
+                  <p className="font-semibold uppercase tracking-wide text-[10px] mb-1">Zum Vergleich: Bankansatz (Schätzung)</p>
+                  <div className="flex justify-between"><span>Einkünfte</span><span>{fmt(saFin.sumEink)}</span></div>
+                  <div className="flex justify-between"><span>Ausgaben</span><span>– {fmt(saFin.sumAusg)}</span></div>
+                  <div className="flex justify-between font-semibold text-foreground border-t pt-1"><span>Monatl. Überschuss</span><span>{fmt(bankUeberschuss)}</span></div>
+                  <p className="pt-1 leading-snug">
+                    Hinweis, wie Banken häufig rechnen: Lebenshaltung mit rund 30 % des Nettos, mindestens {fmt(BANK_LEBENSHALTUNG_MINDEST)} je Person, wenn der eingetragene Betrag darunter liegt, und Mieteinnahmen mit 80 % der Kaltmiete. Die Bank entscheidet im Einzelfall.
+                  </p>
+                </div>
+              )}
               <div className="mt-3 p-2.5 rounded-lg bg-muted/50 border text-[11px] text-muted-foreground space-y-0.5">
-                <p className="font-semibold uppercase tracking-wide text-[10px] mb-1">Tragfähigkeit</p>
+                <p className="font-semibold uppercase tracking-wide text-[10px] mb-1">Tragfähigkeit (Bankansatz)</p>
                 <div className="flex justify-between"><span>80% Puffer</span><span>{fmt(invDavon80)}</span></div>
                 <div className="flex justify-between"><span>Max. Annuität p.a.</span><span>{fmt(invDavon80 * 12)}</span></div>
               </div>
