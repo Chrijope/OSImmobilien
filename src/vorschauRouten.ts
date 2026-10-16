@@ -46,3 +46,8 @@ export const VorschauPipeline = import.meta.env.DEV
 export const VorschauMikroseite = import.meta.env.DEV
   ? lazy(() => import("./pages/VorschauMikroseite"))
   : null;
+
+/** Vorschau Rechnungsvorlage mit Live-PDF (16.10.2026): /vorschau/rechnungsvorlage. Gleiche Regeln wie oben. */
+export const VorschauRechnungsvorlage = import.meta.env.DEV
+  ? lazy(() => import("./pages/VorschauRechnungsvorlage"))
+  : null;

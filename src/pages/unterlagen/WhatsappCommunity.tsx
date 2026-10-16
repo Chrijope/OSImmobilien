@@ -17,7 +17,7 @@ export default function WhatsappCommunityPage() {
 
   return (
     <DashboardLayout>
-      <div className="p-4 md:p-6 max-w-2xl mx-auto space-y-4">
+      <div className="space-y-4">
         <Button variant="outline" size="sm" asChild>
           <Link to={backTo}>
             <ArrowLeft className="h-4 w-4 mr-2" />

@@ -63,7 +63,7 @@ export function UnterlagenDetailLayout({
 
   return (
     <DashboardLayout>
-      <div className="space-y-8 w-full max-w-[1200px] mx-auto">
+      <div className="space-y-8 w-full">
         <Button variant="ghost" size="sm" onClick={() => navigate("/unterlagen")} className="gap-1 -ml-2">
           <ArrowLeft className="h-4 w-4" /> Zurück zu Unterlagen
         </Button>

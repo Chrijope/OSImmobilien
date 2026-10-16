@@ -47,7 +47,7 @@ export function MarketingGrid({ dokumente, onClick }: MarketingGridProps) {
             <h3 className="text-sm font-semibold tracking-tight">Logos</h3>
             <span className="text-xs text-muted-foreground">({logos.length})</span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
             {logos.map((d) => (
               <Tile key={d.id} dok={d} onClick={() => onClick(d)} />
             ))}
@@ -61,7 +61,7 @@ export function MarketingGrid({ dokumente, onClick }: MarketingGridProps) {
             <h3 className="text-sm font-semibold tracking-tight">Hintergründe</h3>
             <span className="text-xs text-muted-foreground">({hintergruende.length})</span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
             {hintergruende.map((d) => (
               <Tile key={d.id} dok={d} onClick={() => onClick(d)} />
             ))}

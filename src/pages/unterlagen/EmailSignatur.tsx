@@ -9,7 +9,7 @@ export default function EmailSignaturPage() {
 
   return (
     <DashboardLayout>
-      <div className="p-4 md:p-6">
+      <div>
         <EmailSignaturDialog asPage backTo={backTo} backLabel={backLabel} />
       </div>
     </DashboardLayout>

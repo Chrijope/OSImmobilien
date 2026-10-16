@@ -235,6 +235,7 @@ export const ROUTEN_TABELLEN: Record<string, readonly string[]> = {
   "/vorschau/naechste-aktionen": [],
   "/vorschau/pipeline": [],
   "/vorschau/mikroseite": [],
+  "/vorschau/rechnungsvorlage": [],
   // Ankaufstool rechnet nur mit Eingaben, laedt keine Daten.
   "/ankaufstool": [],
   // Mietsubvention liest Objekte und Einheiten fuer die Vorbelegung.
