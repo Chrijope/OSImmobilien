@@ -10,8 +10,8 @@ import {
   navigationsGruppen, darfNavEintrag, entwurfGesperrt, type NavItem,
 } from "@/lib/sidebarNavigation";
 import { NavLink } from "@/components/NavLink";
-import logoImg from "@/assets/osimmobilien-logo.png";
-import logoImgDark from "@/assets/osimmobilien-logo-dark.png";
+import logoImg from "@/assets/os-real-estate-logo.png";
+import logoImgDark from "@/assets/os-real-estate-logo-dark.png";
 import iconImg from "@/assets/osimmobilien-icon.png";
 import { SidebarRoleSelector } from "@/components/SidebarRoleSelector";
 import { getUnreadChatCount } from "@/lib/chatStore";
@@ -801,11 +801,11 @@ export function AppSidebar() {
   if (isKundeRole(user.role)) {
     return (
       <Sidebar collapsible="icon" className="border-r border-sidebar-border">
-         <div className="hidden md:flex h-20 items-center justify-center px-2 border-b border-sidebar-border">
+         <div className="hidden md:flex h-28 items-center justify-center px-2 py-2 border-b border-sidebar-border">
             {!collapsed ? (
               <>
-                <img src={logoImg} alt="OS Immobilien" className="w-full h-full object-contain block dark:hidden" />
-                <img src={logoImgDark} alt="OS Immobilien" className="w-full h-full object-contain hidden dark:block" />
+                <img src={logoImg} alt="OS Real Estate GmbH" className="w-full h-full object-contain block dark:hidden" />
+                <img src={logoImgDark} alt="OS Real Estate GmbH" className="w-full h-full object-contain hidden dark:block" />
               </>
             ) : (
               <img src={iconImg} alt="OS Immobilien" className="h-8 w-8 object-contain" />
@@ -825,11 +825,11 @@ export function AppSidebar() {
   if (isTippgeberRole(user.role)) {
     return (
       <Sidebar collapsible="icon" className="border-r border-sidebar-border">
-        <div className="hidden md:flex h-20 items-center justify-center px-2 border-b border-sidebar-border">
+        <div className="hidden md:flex h-28 items-center justify-center px-2 py-2 border-b border-sidebar-border">
           {!collapsed ? (
             <>
-              <img src={logoImg} alt="OS Immobilien" className="w-full h-full object-contain block dark:hidden" />
-              <img src={logoImgDark} alt="OS Immobilien" className="w-full h-full object-contain hidden dark:block" />
+              <img src={logoImg} alt="OS Real Estate GmbH" className="w-full h-full object-contain block dark:hidden" />
+              <img src={logoImgDark} alt="OS Real Estate GmbH" className="w-full h-full object-contain hidden dark:block" />
             </>
           ) : (
             <img src={iconImg} alt="OS Immobilien" className="h-8 w-8 object-contain" />
@@ -872,11 +872,11 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
-       <div className="hidden md:flex h-20 items-center justify-center px-2 border-b border-sidebar-border">
+       <div className="hidden md:flex h-28 items-center justify-center px-2 py-2 border-b border-sidebar-border">
           {!collapsed ? (
             <>
-              <img src={logoImg} alt="OS Immobilien" className="w-full h-full object-contain block dark:hidden" />
-              <img src={logoImgDark} alt="OS Immobilien" className="w-full h-full object-contain hidden dark:block" />
+              <img src={logoImg} alt="OS Real Estate GmbH" className="w-full h-full object-contain block dark:hidden" />
+              <img src={logoImgDark} alt="OS Real Estate GmbH" className="w-full h-full object-contain hidden dark:block" />
             </>
           ) : (
             <img src={iconImg} alt="OS Immobilien" className="h-8 w-8 object-contain" />
