@@ -10,8 +10,7 @@ import { ERSATZ_TEXT, ERSATZ_TITEL } from "@/lib/grundrissErsatz";
  *
  * Die Bausteine lesen die Sprache über `useAnzeigeSprache()`; ohne
  * `SeitenSpracheProvider` (im CRM) gilt Deutsch, dort ändert sich nichts.
- * Die Texte des Rechners stehen in `src/lib/exposeRechnerTexte.ts`, die des
- * Inhalts (Kennzahlen, Schritte, Hinweise) in `src/lib/exposeInhaltTexte.ts`.
+ * Die Texte des Inhalts (Kennzahlen, Schritte, Hinweise) in `src/lib/exposeInhaltTexte.ts`.
  *
  * Englisch nach dem Glossar: britisch, der Berater heißt „your contact“.
  */
@@ -19,7 +18,6 @@ type KopfId = Exclude<ExposeAbschnittId, "start">;
 
 export interface ExposeSeitenTexte {
   koepfe: Record<KopfId, [string, string]>;
-  rechnerHinweisOhneSpeichern: string;
   slogan: string;
   pdfHerunterladen: string;
   pdfLaeuft: string;
@@ -64,13 +62,6 @@ export interface ExposeSeitenTexte {
   exposeEinheit: (nummer: string) => string;
   unterlagen: string;
   grundrissHinweis: string;
-  passendeEinheitTitel: string;
-  berechnungNichtVerfuegbar: string;
-  passendeEinheitText: string;
-  ohneKaufpreisText: string;
-  zuDenObjektdaten: string;
-  kaufpreisLabelObjekt: string;
-  kaufpreisLabelEinheit: string;
   verwaltungOffen: string;
   einblicke: string;
   objektbild: (nr: number) => string;
@@ -142,14 +133,12 @@ export const EXPOSE_SEITEN_TEXTE: ZweiSprachen<ExposeSeitenTexte> = {
       mikrolage: ["Mitten im Leben", "Mikrolage"],
       objektdaten: ["Deine Immobilie im Detail", "Objektdaten"],
       grundriss: ["Raum für deine Investition", "Der Grundriss"],
-      wirtschaftlichkeit: ["Deine Zahlen auf einen Blick", "Wirtschaftlichkeit"],
       verwaltung: ["Gut betreut", "Verwaltung vor Ort"],
       zeitplan: ["Der Weg zum Eigentum", "Nächste Schritte und Zeitplan"],
       "chancen-risiken": ["Informiert entscheiden", "Chancen und Risiken"],
       rechtliches: ["Transparent dokumentiert", "Wichtige Hinweise"],
       kontakt: ["OS Immobilien · Persönlich an deiner Seite", "Dein Ansprechpartner"],
     },
-    rechnerHinweisOhneSpeichern: "Die Regler sind zum Ausprobieren. Deine Einstellungen werden hier nicht gespeichert.",
     slogan: "IMMOBILIEN MIT PERSPEKTIVE",
     pdfHerunterladen: "Exposé herunterladen",
     pdfLaeuft: "Exposé wird erstellt",
@@ -194,13 +183,6 @@ export const EXPOSE_SEITEN_TEXTE: ZweiSprachen<ExposeSeitenTexte> = {
     exposeEinheit: (nummer) => `Exposé Einheit ${nummer}`,
     unterlagen: "Unterlagen zur Immobilie",
     grundrissHinweis: "Maße im Grundriss können vom Aufmaß abweichen. Möbel dienen nur der Veranschaulichung.",
-    passendeEinheitTitel: "Die passende Einheit macht den Unterschied.",
-    berechnungNichtVerfuegbar: "Berechnung noch nicht verfügbar",
-    passendeEinheitText: "Öffne das Exposé einer Einheit, um deren Kaufpreis, Miete und Finanzierung im Detail zu betrachten.",
-    ohneKaufpreisText: "Für die Berechnung fehlt ein hinterlegter Kaufpreis. Dein Ansprechpartner rechnet sie gern mit dir persönlich durch.",
-    zuDenObjektdaten: "Zu den Objektdaten",
-    kaufpreisLabelObjekt: "Kaufpreis Gesamtobjekt",
-    kaufpreisLabelEinheit: "Kaufpreis Wohnung",
     verwaltungOffen: "Der genaue Leistungsumfang der Verwaltung steht im Verwaltervertrag. Dein Ansprechpartner geht ihn im Beratungsgespräch mit dir durch.",
     einblicke: "Einblicke in die Immobilie",
     objektbild: (nr) => `Objektbild ${nr}`,
@@ -266,14 +248,12 @@ export const EXPOSE_SEITEN_TEXTE: ZweiSprachen<ExposeSeitenTexte> = {
       mikrolage: ["In the midst of life", "Neighbourhood"],
       objektdaten: ["Your property in detail", "Property details"],
       grundriss: ["Space for your investment", "The floor plan"],
-      wirtschaftlichkeit: ["Your figures at a glance", "Financials"],
       verwaltung: ["Well looked after", "Local management"],
       zeitplan: ["The path to ownership", "Next steps and timeline"],
       "chancen-risiken": ["Informed decisions", "Opportunities and risks"],
       rechtliches: ["Transparently documented", "Important notes"],
       kontakt: ["OS Immobilien · Personally at your side", "Your contact"],
     },
-    rechnerHinweisOhneSpeichern: "The sliders are for trying things out. Your settings are not saved here.",
     slogan: "PROPERTY WITH PERSPECTIVE",
     pdfHerunterladen: "Download exposé",
     pdfLaeuft: "Creating exposé",
@@ -318,13 +298,6 @@ export const EXPOSE_SEITEN_TEXTE: ZweiSprachen<ExposeSeitenTexte> = {
     exposeEinheit: (nummer) => `Exposé for unit ${nummer}`,
     unterlagen: "Property documents",
     grundrissHinweis: "Dimensions in the floor plan may differ from the actual measurements. Furniture is shown for illustration only.",
-    passendeEinheitTitel: "The right unit makes the difference.",
-    berechnungNichtVerfuegbar: "Calculation not yet available",
-    passendeEinheitText: "Open the exposé of a unit to look at its purchase price, rent and financing in detail.",
-    ohneKaufpreisText: "A purchase price is needed for the calculation. Your contact will be happy to go through it with you personally.",
-    zuDenObjektdaten: "Go to property details",
-    kaufpreisLabelObjekt: "Purchase price, whole property",
-    kaufpreisLabelEinheit: "Purchase price, apartment",
     verwaltungOffen: "The exact scope of the management’s services is set out in the management agreement. Your contact will go through it with you in the consultation.",
     einblicke: "Inside the property",
     objektbild: (nr) => `Property image ${nr}`,

@@ -30,6 +30,7 @@ const de = {
     bildAlt: "Doppelhaushälfte mit Garten in Zossen-Wünsdorf",
     bildOrt: "Zossen-Wünsdorf, Doppelhaushälfte mit Garten",
     portraetUeber: "Dein persönlicher Ansprechpartner",
+    portraetTermin: "Termin buchen",
   },
 
   problem: {
@@ -171,20 +172,16 @@ const de = {
 
   prozess: {
     kicker: "Unser Prozess",
-    titel: "Elf Schritte bis zum Eigentum.",
+    titel: "Sieben Schritte bis zum Eigentum.",
     intro: "In fester Reihenfolge. Du weißt bei jedem Schritt, was als Nächstes kommt.",
     schritte: [
-      { titel: "Erstgespräch", text: "Deine Situation und deine Ziele." },
-      { titel: "Beratungspräsentation", text: "Konzept, Objekte und Rechnung mit deinen Zahlen." },
-      { titel: "Selbstauskunft", text: "Einkommen, Ausgaben und Vermögen." },
-      { titel: "Unterlagen", text: "Nachweise für die Bank." },
-      { titel: "Objektvorstellung", text: "Das Objekt, das zu deinem Konzept passt." },
+      { titel: "Erstgespräch", text: "Deine Ziele und deine Lage." },
+      { titel: "Beratungsgespräch", text: "Konzept und Rechnung mit deinen Zahlen." },
+      { titel: "Objektvorstellung", text: "Das passende Objekt für dich." },
       { titel: "Reservierung", text: "Kostenfrei." },
       { titel: "Besichtigung", text: "Du siehst das Objekt vor Ort." },
-      { titel: "Termin Bankgutachter", text: "Die Bank bewertet das Objekt." },
       { titel: "Finanzierung", text: "Die Zusage der Bank." },
       { titel: "Notar", text: "Beurkundung des Kaufvertrags." },
-      { titel: "Kaufpreisfälligkeit", text: "Zahlung des Kaufpreises." },
     ],
   },
 
@@ -225,6 +222,7 @@ const en: MikroseiteOsTexte = {
     bildAlt: "Semi-detached house with garden in Zossen-Wünsdorf",
     bildOrt: "Zossen-Wünsdorf, semi-detached house with garden",
     portraetUeber: "Your personal contact",
+    portraetTermin: "Book a call",
   },
 
   problem: {
@@ -366,20 +364,16 @@ const en: MikroseiteOsTexte = {
 
   prozess: {
     kicker: "Our process",
-    titel: "Eleven steps to ownership.",
+    titel: "Seven steps to ownership.",
     intro: "In a fixed order. At every step you know what comes next.",
     schritte: [
-      { titel: "Initial consultation", text: "Your situation and your goals." },
-      { titel: "Consultation presentation", text: "Concept, properties and calculation with your figures." },
-      { titel: "Personal disclosure", text: "Income, outgoings and assets." },
-      { titel: "Documents", text: "Evidence for the bank." },
-      { titel: "Property presentation", text: "The property that suits your concept." },
+      { titel: "Initial consultation", text: "Your goals and your situation." },
+      { titel: "Consultation", text: "Concept and calculation with your figures." },
+      { titel: "Property presentation", text: "The right property for you." },
       { titel: "Reservation", text: "Free of charge." },
       { titel: "Viewing", text: "You see the property on site." },
-      { titel: "Bank valuation", text: "The bank values the property." },
       { titel: "Financing", text: "The bank’s approval." },
       { titel: "Notary", text: "Notarisation of the purchase contract." },
-      { titel: "Purchase price due", text: "Payment of the purchase price." },
     ],
   },
 

@@ -1,16 +1,12 @@
 import { describe, it, expect } from "vitest";
 import {
   berechneExpose,
-  businessCase,
   laufzeitAusTilgung,
-  monatsrechnung,
-  monatsuebersicht,
   tilgungAusLaufzeit,
   vermoegensaufbauNachJahren,
   STANDARD_GEBAEUDEANTEIL_PROZENT,
   type ExposeAnnahmen,
   type ExposeObjektdaten,
-  type Monatsposten,
 } from "@/lib/exposeRechner";
 import {
   annahmenAusSelbstauskunft,
@@ -611,9 +607,7 @@ describe("Vorbelegung aus der Selbstauskunft", () => {
   });
 });
 
-describe("Wirtschaftlichkeit wie in der Vorlage: Business Case, Monatsübersicht, Vermögensaufbau", () => {
-  const summe = (liste: Monatsposten[]) => liste.reduce((s, p) => s + p.betrag, 0);
-
+describe("Vermögensaufbau wie in der Vorlage", () => {
   /** Restschuld nach n Jahren aus der geschlossenen Annuitätenformel, unabhängig vom Tilgungsplan gerechnet. */
   function restschuldFormel(darlehen: number, zinsProzent: number, tilgungProzent: number, jahre: number): number {
     const i = zinsProzent / 100 / 12;
@@ -621,115 +615,6 @@ describe("Wirtschaftlichkeit wie in der Vorlage: Business Case, Monatsübersicht
     const q = Math.pow(1 + i, jahre * 12);
     return Math.max(0, darlehen * q - (rate * (q - 1)) / i);
   }
-
-  it("Business Case der Vorlage: 100 % Finanzierung, Kaufpreis plus Stellplatz, Eigenkapitaleinsatz gleich Nebenkosten", () => {
-    const e = vorlage();
-    const bc = businessCase(e);
-    expect(bc.finanzierungsquoteProzent).toBe(100);
-    expect(bc.darlehen).toBe(258800);
-    expect(bc.zeilen.map((z) => z.id)).toEqual(["kaufpreis", "stellplatz", "gesamtinvestition", "nebenkosten", "gesamteigenkapital"]);
-    expect(bc.zeilen.filter((z) => z.summe).map((z) => z.id)).toEqual(["gesamtinvestition", "gesamteigenkapital"]);
-    const wert = (id: string) => bc.zeilen.find((z) => z.id === id)?.betrag;
-    expect(wert("kaufpreis")).toBe(246800);
-    expect(wert("stellplatz")).toBe(12000);
-    expect(wert("gesamtinvestition")).toBe(258800);
-    expect(wert("nebenkosten")).toBeCloseTo(e.kauf.nebenkosten.summe, 6);
-    expect(wert("gesamteigenkapital")).toBeCloseTo(e.kauf.nebenkosten.summe, 6);
-  });
-
-  it("Business Case mit 5 % Eigenkapital: 95 % Finanzierung und eine eigene Zeile Eigenkapitaleinsatz wie in der Vorlage (12.940)", () => {
-    const e = berechneExpose(VORLAGE_OBJEKT, { ...VORLAGE_ANNAHMEN, eigenkapitalProzent: 5 });
-    const bc = businessCase(e);
-    expect(bc.finanzierungsquoteProzent).toBeCloseTo(95, 6);
-    expect(bc.darlehen).toBeCloseTo(245860, 6);
-    expect(bc.zeilen.find((z) => z.id === "eigenkapital")?.betrag).toBeCloseTo(12940, 6);
-    expect(bc.zeilen.find((z) => z.id === "gesamteigenkapital")?.betrag).toBeCloseTo(e.kauf.nebenkosten.summe + 12940, 6);
-  });
-
-  it("Business Case: die Positionen ergeben ihre Summe, auch mit Rabatt, zweitem Darlehen und Nebenkosten beim Verkäufer", () => {
-    const faelle: Partial<ExposeAnnahmen>[] = [
-      {},
-      { eigenkapitalProzent: 20 },
-      { preisanpassungProzent: -5 },
-      { zweitesDarlehenAktiv: true, zweitesDarlehenBetrag: 10000, zweitesDarlehenErsetzt: "eigenkapital" },
-      { eigenkapitalProzent: 10, zweitesDarlehenAktiv: true, zweitesDarlehenBetrag: 50000, zweitesDarlehenErsetzt: "eigenkapital" },
-      { eigenkapitalProzent: 10, zweitesDarlehenAktiv: true, zweitesDarlehenBetrag: 30000, zweitesDarlehenErsetzt: "bankdarlehen" },
-      { nebenkostenTraegtVerkaeufer: true },
-    ];
-    for (const fall of faelle) {
-      const e = berechneExpose(VORLAGE_OBJEKT, { ...VORLAGE_ANNAHMEN, ...fall });
-      const bc = businessCase(e);
-      let laufend = 0;
-      for (const z of bc.zeilen) {
-        if (!z.summe) { laufend += z.betrag; continue; }
-        expect(z.betrag).toBeCloseTo(laufend, 6);
-        laufend = 0;
-      }
-      expect(bc.zeilen.at(-1)?.betrag).toBeCloseTo(e.kauf.eigenkapitaleinsatz, 6);
-    }
-  });
-
-  it("Business Case: Eigenkapitalersatz als eigene Minuszeile, Rabatt als eigene Zeile, Nebenkosten beim Verkäufer mit 0", () => {
-    const ersatz = businessCase(berechneExpose(VORLAGE_OBJEKT, {
-      ...VORLAGE_ANNAHMEN, zweitesDarlehenAktiv: true, zweitesDarlehenBetrag: 10000, zweitesDarlehenErsetzt: "eigenkapital",
-    }));
-    expect(ersatz.zeilen.find((z) => z.id === "eigenkapitalersatz")?.betrag).toBe(-10000);
-    expect(ersatz.zeilen.some((z) => z.id === "eigenkapital")).toBe(false);
-    expect(ersatz.finanzierungsquoteProzent).toBeGreaterThan(100);
-    const rabatt = businessCase(berechneExpose(VORLAGE_OBJEKT, { ...VORLAGE_ANNAHMEN, preisanpassungProzent: -5 }));
-    expect(rabatt.zeilen.find((z) => z.id === "preisanpassung")?.betrag).toBeCloseTo(-12340, 6);
-    const verkaeufer = businessCase(berechneExpose(VORLAGE_OBJEKT, { ...VORLAGE_ANNAHMEN, nebenkostenTraegtVerkaeufer: true }));
-    expect(verkaeufer.zeilen.find((z) => z.id === "nebenkosten")?.betrag).toBe(0);
-  });
-
-  it("Monatsübersicht der Vorlage: Miete 863, Finanzierung 1.143, Rücklagen und Bewirtschaftung je 52, Eigeninvestition 188 (Vorlage 184)", () => {
-    const m = monatsuebersicht(vorlage().monat);
-    expect(m.kalenderjahr).toBe(2026);
-    expect(m.einnahmen.map((p) => p.id)).toEqual(["miete", "steuervorteil"]);
-    expect(m.ausgaben.map((p) => p.id)).toEqual(["finanzierung", "ruecklagen", "bewirtschaftung"]);
-    expect(m.einnahmen[0].betrag).toBeCloseTo(863, 6);
-    expect(Math.round(m.ausgaben[0].betrag)).toBe(1143);
-    expect(m.ausgaben[1].betrag).toBeCloseTo(52, 6);
-    expect(m.ausgaben[2].betrag).toBeCloseTo(52, 6);
-    expect(Math.round(m.summeAusgaben)).toBe(1247);
-    // Bis zum 30.09.2026 183; der Sanierungsanteil wirkt seitdem nicht mehr zusätzlich über die AfA.
-    expect(Math.round(m.eigeninvestition)).toBe(188);
-    expect(summe(m.einnahmen)).toBeCloseTo(m.summeEinnahmen, 6);
-    expect(summe(m.ausgaben)).toBeCloseTo(m.summeAusgaben, 6);
-    expect(m.eigeninvestition).toBeCloseTo(m.summeAusgaben - m.summeEinnahmen, 6);
-  });
-
-  it("Monatsübersicht ohne getrennte Rücklage: eine Zeile Hausgeld; Mietverwaltung und Mietausfall nur mit Betrag", () => {
-    const ohne = monatsuebersicht(berechneExpose({ ...VORLAGE_OBJEKT, ruecklageMonat: 0 }, VORLAGE_ANNAHMEN).monat);
-    expect(ohne.ausgaben.map((p) => p.id)).toEqual(["finanzierung", "hausgeld"]);
-    expect(ohne.ausgaben[1].betrag).toBeCloseTo(52, 6);
-    const mit = monatsuebersicht(berechneExpose({ ...VORLAGE_OBJEKT, mietverwaltungMonat: 30 }, { ...VORLAGE_ANNAHMEN, leerstandProzent: 5 }).monat);
-    expect(mit.ausgaben.map((p) => p.id)).toEqual(["finanzierung", "ruecklagen", "bewirtschaftung", "mietverwaltung", "mietausfall"]);
-    expect(summe(mit.ausgaben)).toBeCloseTo(mit.summeAusgaben, 6);
-  });
-
-  it("Monatsübersicht je Betrachtungsjahr: die Werte des gewählten Jahres geteilt durch zwölf", () => {
-    for (const jahr of [2026, 2030, 2035]) {
-      const e = berechneExpose(VORLAGE_OBJEKT, { ...VORLAGE_ANNAHMEN, betrachtungsjahr: jahr });
-      const zeile = e.jahresreihe[jahr - 2026];
-      const m = monatsuebersicht(e.monat);
-      expect(m.kalenderjahr).toBe(jahr);
-      expect(m.einnahmen[0].betrag).toBeCloseTo(zeile.mieteBrutto / 12, 6);
-      expect(m.einnahmen[1].betrag).toBeCloseTo(zeile.steuerwirkungZahlungswirksam / 12, 6);
-      expect(m.ausgaben[0].betrag).toBeCloseTo(zeile.rate / 12, 6);
-      expect(m.eigeninvestition).toBeCloseTo(-zeile.cashflow / 12, 6);
-    }
-  });
-
-  it("Lohnsteuerermäßigung (§ 39a EStG): Steuervorteil schon im laufenden Monat, ohne sie erst im Folgejahr", () => {
-    const mit = monatsuebersicht(vorlage().monat);
-    const ohne2026 = monatsuebersicht(berechneExpose(VORLAGE_OBJEKT, { ...VORLAGE_ANNAHMEN, lohnsteuerermaessigung: false }).monat);
-    const ohne2027 = monatsuebersicht(berechneExpose(VORLAGE_OBJEKT, { ...VORLAGE_ANNAHMEN, lohnsteuerermaessigung: false, betrachtungsjahr: 2027 }).monat);
-    expect(mit.einnahmen[1].betrag).toBeGreaterThan(0);
-    expect(ohne2026.einnahmen[1].betrag).toBe(0);
-    expect(ohne2027.einnahmen[1].betrag).toBeCloseTo(mit.einnahmen[1].betrag, 6);
-    expect(ohne2026.eigeninvestition).toBeGreaterThan(mit.eigeninvestition);
-  });
 
   it("Restschuld nach 10, 20, 30 und 40 Jahren folgt der Annuitätenformel, nach 40 Jahren ist das Darlehen getilgt", () => {
     const e = vorlage();
@@ -753,24 +638,6 @@ describe("Wirtschaftlichkeit wie in der Vorlage: Business Case, Monatsübersicht
     // Mehr Eigenkapital senkt den Hebel und damit die Eigenkapitalrendite.
     const mitEk = berechneExpose(VORLAGE_OBJEKT, { ...VORLAGE_ANNAHMEN, eigenkapitalProzent: 30 });
     expect(mitEk.vermoegensaufbau[0].eigenkapitalrenditeProzent as number).toBeLessThan(e.vermoegensaufbau[0].eigenkapitalrenditeProzent as number);
-  });
-
-  it("Business Case, Monatsübersicht und Vermögensaufbau rechnen mit denselben Zahlen", () => {
-    const e = berechneExpose(VORLAGE_OBJEKT, { ...VORLAGE_ANNAHMEN, eigenkapitalProzent: 10 });
-    const bc = businessCase(e);
-    const gesamtinvestition = bc.zeilen.find((z) => z.id === "gesamtinvestition")?.betrag;
-    const gesamteigenkapital = bc.zeilen.find((z) => z.id === "gesamteigenkapital")?.betrag;
-    for (const h of e.vermoegensaufbau) {
-      // Kasten „Kaufpreis" im Schaubild und Anfangsinvestition kommen aus dem Business Case.
-      expect(h.kaufpreisHeute).toBe(gesamtinvestition);
-      expect(h.eigenkapitaleinsatz).toBe(gesamteigenkapital);
-    }
-    // Der Vermögensaufbau zählt die monatlichen Eigeninvestitionen der Monatsübersicht Jahr für Jahr zusammen.
-    const zehn = e.vermoegensaufbau[0];
-    const eigeninvestitionen = e.jahresreihe.slice(0, 10).reduce((s, j) => s + monatsuebersicht(monatsrechnung(j)).eigeninvestition * 12, 0);
-    expect(zehn.kumCashflow).toBeCloseTo(-eigeninvestitionen, 6);
-    // „Finanzierung" in der Monatsübersicht ist die Rate auf das Darlehen aus dem Business Case.
-    expect(monatsuebersicht(e.monat).ausgaben[0].betrag).toBeCloseTo((bc.darlehen * (4.3 + 1)) / 100 / 12, 6);
   });
 });
 

@@ -1,5 +1,5 @@
 import { dbRowToObjekt, getHausgeldNichtUmlegbarMonat, type ObjektData, type ObjektWohnung } from "./objekteStore";
-import { baueExposeInhalt, grundrisseFuerExpose, hatWert, kennzahlSchluessel, kopfUeberschrift, mitSchluessel, ohneDoppelte, type EinheitZeile, type ExposeInhalt, type ExposeInhaltEingabe, type Kennzahl, type Person } from "./exposeInhalt";
+import { baueExposeInhalt, erhaltungsaufwandSatz, grundrisseFuerExpose, hatWert, kennzahlSchluessel, kopfUeberschrift, mitSchluessel, ohneDoppelte, type EinheitZeile, type ExposeInhalt, type ExposeInhaltEingabe, type Kennzahl, type Person } from "./exposeInhalt";
 import { EXPOSE_INHALT_TEXTE, exposeInhaltTexte } from "./exposeInhaltTexte";
 import type { Sprache } from "./seitenSprache";
 import { eur0, dez, prozent, kaltmieteVon, renditeProzent } from "./objektKennzahlen";
@@ -59,7 +59,8 @@ export function gesamtobjektZahlen(objekt: ObjektData, heute = new Date().toISOS
 }
 
 /**
- * Die Recheneinheit für den Rechner in der Objektansicht.
+ * Die Recheneinheit der Objektansicht: die Einheit, aus der `baueExposeInhalt`
+ * die Zahlen des ganzen Objekts baut.
  *
  * Beim Globalobjekt ist das das ganze Haus: Kaufpreis, Fläche, Miete und
  * Hausgeld des Hauses. Der nicht umlegbare Hausgeldanteil wird hier direkt
@@ -160,7 +161,6 @@ export function baueObjektExposeInhalt(e: Omit<ExposeInhaltEingabe, "wohnung">):
       { label: L.einheiten, wert: einheitenImHaus(objekt) ? String(einheitenImHaus(objekt)) : keine },
     ].filter(hatWert), sprache);
     inhalt.objektdaten.zeilen = gesamtobjektZeilen(objekt, inhalt, z, sprache);
-    inhalt.wirtschaftlichkeit.verfuegbar = z.kaufpreis > 0;
   } else {
     inhalt.start.kennzahlen = mitSchluessel([
       { label: L.kaufpreiseDerEinheiten, wert: spanne(objekt.wohnungen.map(w => w.vkGesamt + (w.stellplatzPreis || 0)), euro) },
@@ -171,7 +171,6 @@ export function baueObjektExposeInhalt(e: Omit<ExposeInhaltEingabe, "wohnung">):
       { label: L.verfuegbar, wert: String(objekt.wohnungen.filter(w => w.status === "frei").length) },
     ].filter(hatWert), sprache);
     inhalt.objektdaten.zeilen = inhalt.objektdaten.zeilen.filter(z => [DE.baujahr, DE.einheitenImHaus, DE.etagen, DE.energietraeger, DE.endenergie, DE.abschreibung].includes(kennzahlSchluessel(z)));
-    inhalt.wirtschaftlichkeit.verfuegbar = false;
   }
   /*
    * Beim Globalobjekt wird nur das Haus verkauft, nie eine Einheit einzeln
@@ -179,6 +178,19 @@ export function baueObjektExposeInhalt(e: Omit<ExposeInhaltEingabe, "wohnung">):
    * Mietenspiegel: Fläche, Zimmer, Miete, Vermietung, ohne Einzelpreis und
    * ohne Link auf ein Einheitsexposé.
    */
+  /*
+   * Der Erhaltungsaufwand unter „Besonderheiten“: beim Globalobjekt der
+   * Betrag für das ganze Haus, sonst die Spanne der Anteile der Einheiten.
+   */
+  const erhaltungsaufwand = erhaltungsaufwandSatz(objekt, global ? null : "spanne", sprache);
+  const crm = inhalt.besonderheiten ?? { texte: [], ausstattung: [] };
+  inhalt.besonderheiten = {
+    texte: crm.texte,
+    // Zimmer, Lage und Stellplatz gehören zu einer Einheit, nicht zum ganzen Objekt.
+    ausstattung: crm.ausstattung.filter((m) => ![L.zimmer, L.lageImGebaeude, L.stellplatz].includes(m.bezeichnung)),
+    ...(crm.erhaltungJahre ? { erhaltungJahre: crm.erhaltungJahre } : {}),
+    ...(erhaltungsaufwand ? { erhaltungsaufwand } : {}),
+  };
   inhalt.einheiten = objekt.wohnungen.map((w): EinheitZeile => ({
     id: w.id, nummer: w.weNr, flaeche: w.groesse, zimmer: w.zimmer,
     preis: w.vkGesamt + (w.stellplatzPreis || 0), status: w.status,

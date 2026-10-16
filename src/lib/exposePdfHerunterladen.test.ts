@@ -1,12 +1,12 @@
 import { describe, it, expect, vi } from "vitest";
 import type { ObjektData } from "@/lib/objekteStore";
-import { annahmenVorbelegen, baueExposeInhalt } from "@/lib/exposeInhalt";
+import { baueExposeInhalt } from "@/lib/exposeInhalt";
 
 /** „Exposé herunterladen“ baut seit 01.10.2026 das PDF im Design H3 (`exposeDruck`). */
 const druck = vi.hoisted(() => ({ optionen: [] as Array<Record<string, unknown>> }));
 vi.mock("./exposeDruck", async (original) => ({
   ...(await original<typeof import("./exposeDruck")>()),
-  exposeDruckPdf: async (_i: unknown, _a: unknown, _e: unknown, optionen: Record<string, unknown>) => {
+  exposeDruckPdf: async (_i: unknown, optionen: Record<string, unknown>) => {
     druck.optionen.push(optionen);
     return new Blob(["pdf"], { type: "application/pdf" });
   },
@@ -32,7 +32,6 @@ describe("exposePdfHerunterladen", () => {
     URL.revokeObjectURL = vi.fn();
     await exposePdfHerunterladen({
       inhalt: baueExposeInhalt({ objekt, wohnung: w, sprache: "en" }),
-      annahmen: annahmenVorbelegen(objekt, w, null).annahmen,
       sprache: "en",
       zusatz: { beschreibungen: ["Balkon nach Süden"], merkmale: [] },
     });

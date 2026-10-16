@@ -2,7 +2,7 @@ import { describe, it, expect, beforeAll, afterEach, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import type { ObjektData } from "@/lib/objekteStore";
-import { annahmenVorbelegen, baueExposeInhalt } from "@/lib/exposeInhalt";
+import { baueExposeInhalt } from "@/lib/exposeInhalt";
 import { SeitenSpracheProvider } from "@/lib/seitenSpracheKontext";
 import { ExposeAnsicht } from "./ExposeAnsicht";
 
@@ -33,11 +33,10 @@ const w = objekt.wohnungen[0];
 
 function zeigen(sprache: "de" | "en", onPdf?: () => void) {
   const inhalt = baueExposeInhalt({ objekt, wohnung: w, sprache });
-  const annahmen = annahmenVorbelegen(objekt, w, null).annahmen;
   return render(
     <MemoryRouter>
       <SeitenSpracheProvider sprache={sprache}>
-        <ExposeAnsicht inhalt={inhalt} rechner={{ annahmen, onAnnahmen: () => undefined, herkunft: {} }} pdfAktiv onPdf={onPdf} />
+        <ExposeAnsicht inhalt={inhalt} pdfAktiv onPdf={onPdf} />
       </SeitenSpracheProvider>
     </MemoryRouter>,
   );

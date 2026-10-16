@@ -149,18 +149,36 @@ function Hero({ berater, onOpenFunnel }: Props) {
             <a className="osm-knopf osm-rand" href="#objekte">{t.knopfObjekte}</a>
           </div>
         </div>
-        {berater && (
-          <div className="osm-portraetkarte">
-            <Portraet berater={berater} className="osm-portraet" />
-            <div>
-              <small>{t.portraetUeber}</small>
-              <strong>{berater.name}</strong>
-            </div>
-          </div>
-        )}
+        {berater && <HeroAnsprechpartner berater={berater} onOpenFunnel={onOpenFunnel} />}
       </div>
       <p className="osm-bildort">{t.bildOrt}</p>
     </section>
+  );
+}
+
+/**
+ * Glaskarte des Ansprechpartners im Hero: Foto (sonst Initialen), Name,
+ * Position und ein direkter Knopf. Mit Buchungslink geht der Knopf zum
+ * Kalender, ohne öffnet er das Anfrageformular.
+ */
+function HeroAnsprechpartner({ berater, onOpenFunnel }: { berater: BeraterInfo; onOpenFunnel: () => void }) {
+  const t = useSeitenTexte(MIKROSEITE_OS_TEXTE).hero;
+  const sprache = useSeitenSprache();
+  const inhalt = <><CalendarDays aria-hidden="true" /> {t.portraetTermin}</>;
+  return (
+    <aside className="osm-portraetkarte" aria-label={t.portraetUeber}>
+      <Portraet berater={berater} className="osm-portraet" />
+      <div className="osm-portraet-text">
+        <small>{t.portraetUeber}</small>
+        <strong>{berater.name}</strong>
+        <span>{positionFuerAnzeige(berater.position, sprache)}</span>
+      </div>
+      {berater.buchungslink ? (
+        <a className="osm-knopf osm-gold osm-portraet-knopf" href={berater.buchungslink} target="_blank" rel="noopener noreferrer">{inhalt}</a>
+      ) : (
+        <button type="button" className="osm-knopf osm-gold osm-portraet-knopf" onClick={onOpenFunnel}>{inhalt}</button>
+      )}
+    </aside>
   );
 }
 
@@ -354,6 +372,7 @@ function Prozess() {
   return (
     <Abschnitt ton="hell" id="ablauf">
       <Kopf kicker={t.kicker} titel={t.titel} intro={t.intro} />
+      {/* Die Linie zwischen den Kästchen zeichnet mikroseiteOs.css, als Schlange in zwei Reihen. */}
       <ol className="osm-schritte">
         {t.schritte.map((s, i) => (
           <li key={s.titel}>

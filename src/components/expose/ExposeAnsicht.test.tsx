@@ -1,21 +1,20 @@
 import { describe, it, expect, beforeAll, beforeEach, afterEach, vi } from "vitest";
 import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
-import type { ReactNode } from "react";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import type { ObjektData } from "@/lib/objekteStore";
 import type { Standort } from "@/data/marktanalyseSeed";
-import { annahmenVorbelegen, baueExposeInhalt, type Person } from "@/lib/exposeInhalt";
-import { ExposeAnsicht, RECHNER_HINWEIS_OHNE_SPEICHERN } from "./ExposeAnsicht";
+import { baueExposeInhalt, type ExposeInhalt, type Person } from "@/lib/exposeInhalt";
+import { ExposeAnsicht } from "./ExposeAnsicht";
 import { LEERE_ERGAENZUNG } from "./exposeInvestagon";
 
 /**
  * Die Premium-Ansicht des Exposés seit dem 23.09.2026: Kopf nach der Vorlage,
  * Merkmal-Chips, Standortargumente, Arbeitgeber, Merkmale als Liste, der
  * abgehakte erste Schritt, der kurze Zeitstrahl, der Terminknopf mit
- * lesbarer Schrift und der Druck. Die Wirtschaftlichkeit samt „Für jeden
- * eingesetzten Euro“ prüft `ExposeRechner.test.tsx`.
+ * lesbarer Schrift und der Druck. Den Abschnitt Wirtschaftlichkeit gibt es
+ * seit dem 16.10.2026 nicht mehr.
  */
 
 beforeAll(() => {
@@ -88,8 +87,6 @@ function zeigen(opt: {
   beschreibung?: string;
   analyse?: boolean;
   freitexte?: string[];
-  rechnerHinweis?: ReactNode;
-  gesperrt?: boolean;
   /** Andere Straße am Objekt, etwa leer oder ohne Straßennamen. */
   adresse?: string;
   /** Gespeicherte Lage `meta.koordinaten`. */
@@ -107,13 +104,10 @@ function zeigen(opt: {
     { name: "Universität Ulm", branche: "Wissenschaft", mitarbeiter: null, hauptsitz: true, quelle: null },
   ].slice(0, opt.arbeitgeber ?? 3);
   const inhalt = baueExposeInhalt({ objekt: o, wohnung: w, standort, standortArbeitgeber: arbeitgeber, ersteller: partner, heute });
-  const annahmen = annahmenVorbelegen(o, w, null, heute).annahmen;
   return render(
     <MemoryRouter>
       <ExposeAnsicht
         inhalt={inhalt}
-        rechner={{ annahmen, onAnnahmen: () => undefined, herkunft: {}, gesperrt: opt.gesperrt }}
-        rechnerHinweis={opt.rechnerHinweis}
         investagon={{ ...LEERE_ERGAENZUNG, beschreibungen: opt.freitexte ?? [], merkmale: [{ bezeichnung: "Einbauküche", wert: "inklusive" }, { bezeichnung: "Kellerabteil", wert: "" }] }}
       />
     </MemoryRouter>,
@@ -160,7 +154,6 @@ describe("Kopf nach der Vorlage", () => {
 
 /** Die Exposé-Gestaltung als Text, für Prüfungen der Regeln selbst (jsdom rechnet kein Layout). */
 const css = () => readFileSync(resolve(__dirname, "premiumExpose.css"), "utf-8");
-const rechnerCss = () => readFileSync(resolve(__dirname, "exposeRechner.css"), "utf-8");
 /**
  * Deklarationen der ersten Regel mit genau diesem Selektor, die am Zeilenanfang
  * steht: die Grundregel, vor den Abweichungen für Handy und Druck.
@@ -250,7 +243,6 @@ describe("Farben: kein Orange an Zahlen und Hervorhebungen", () => {
     const text = css();
     expect(text).not.toMatch(/var\(--akzent/);
     expect(text).toContain("--akzent:#BD550A");
-    expect(rechnerCss()).not.toMatch(/akzent|#BD550A|#A34A08|189,\s*85,\s*10/i);
     // Kaufpreis und Rendite: Symbol blau, die Zahl erbt die dunkle Textfarbe.
     expect(regel(text, ".premium-expose .stat-preis .round,.premium-expose .stat-rendite .round")).toBe("background:var(--pale);color:#13704D");
     expect(text).not.toMatch(/\.stat-preis strong|\.stat-rendite strong/);
@@ -328,29 +320,68 @@ describe("Quellenangaben einheitlich", () => {
   });
 });
 
-describe("Hinweis über dem Rechner", () => {
-  it("sagt ohne eigenen Hinweis der Seite zentriert, dass hier nichts gespeichert wird", () => {
-    zeigen();
-    const satz = screen.getByTestId("rechner-hinweis");
-    expect(satz).toHaveTextContent(RECHNER_HINWEIS_OHNE_SPEICHERN);
-    expect(RECHNER_HINWEIS_OHNE_SPEICHERN).toBe("Die Regler sind zum Ausprobieren. Deine Einstellungen werden hier nicht gespeichert.");
-    expect(satz).toHaveClass("rechner-hinweis-satz");
-    expect(satz).toHaveClass("screen-only");
-    // Er steht über dem Rechner.
-    expect(satz.compareDocumentPosition(screen.getByTestId("expose-rechner")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(regel(css(), ".premium-expose .rechner-hinweis-satz,.premium-expose .rechner-hinweis [data-testid=\"speicher-status\"]")).toContain("text-align:center");
+describe("Ohne Abschnitt Wirtschaftlichkeit (seit dem 16.10.2026)", () => {
+  it("zeigt weder Abschnitt noch Rechner noch Hinweis, und die Leiste zählt zehn Abschnitte", () => {
+    zeigen({ analyse: true });
+    expect(screen.queryByTestId("abschnitt-wirtschaftlichkeit")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("expose-rechner")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("rechner-hinweis")).not.toBeInTheDocument();
+    expect(document.getElementById("expose-wirtschaftlichkeit")).toBeNull();
+    expect(screen.getByRole("navigation").textContent).not.toMatch(/Wirtschaftlichkeit/);
+    // Ohne Grundriss-Plan fehlt auch der Grundriss: neun von zehn.
+    expect(screen.getByTestId("leiste-zaehler").textContent).toMatch(/\/ 9$/);
+    expect(document.querySelector(".premium-expose")).not.toHaveTextContent(/Modellrechnung|Regler sind zum Ausprobieren/);
+    expect(css()).not.toMatch(/\.finance|rechner-hinweis|expose-wirtschaftlichkeit/);
+  });
+});
+
+/*
+ * Besonderheiten und Ausstattung immer zeigen (Inhaber, 16.10.2026): Ohne
+ * Investagon-Text kommen sie aus den Feldern im CRM, der Erhaltungsaufwand
+ * steht sichtbar unter den Besonderheiten, leere Blöcke fallen weg.
+ */
+describe("Besonderheiten und Ausstattung aus dem CRM", () => {
+  const mitCrm = (investagon: Partial<{ beschreibungen: string[]; merkmale: Array<{ bezeichnung: string; wert: string; nummer?: number }> }>, aenderung: Partial<ObjektData> = {}, wohnung: Record<string, unknown> = {}) => {
+    // Mit gepflegter Kurzbeschreibung oben; die Beschreibung am Objekt ist dann ein eigener Text.
+    const o = { ...objekt, meta: { ...objekt.meta, kurzbeschreibung: "Helle Wohnung im Erdgeschoss." }, beschreibung: "Ruhige Lage am Park, Dachboden ausgebaut.", highlights: ["Einbauküche", "Aufzug", " "], sanierungskosten: 240000, erhaltungsaufwandJahre: 3, ...aenderung } as unknown as ObjektData;
+    const einheit = { ...w, sanierungAnteilProzent: 5, ...wohnung } as typeof w;
+    const inhalt: ExposeInhalt = baueExposeInhalt({ objekt: { ...o, wohnungen: [einheit] }, wohnung: einheit, ersteller: partner, heute });
+    return render(<MemoryRouter><ExposeAnsicht inhalt={inhalt} investagon={{ ...LEERE_ERGAENZUNG, beschreibungen: [], merkmale: [], ...investagon }} /></MemoryRouter>);
+  };
+
+  it("nimmt ohne Investagon Beschreibung und Highlights am Objekt, die Angaben der Einheit und nennt den Erhaltungsaufwand", () => {
+    mitCrm({});
+    const bes = screen.getByTestId("investagon-beschreibung");
+    expect(text(screen.getByTestId("besonderheit-erhaltungsaufwand"))).toBe("Erhaltungsaufwand: 12.000 € Anteil dieser Wohnung (240.000 € für das ganze Haus), verteilt auf 3 Jahre.");
+    expect(bes).toHaveTextContent("Ruhige Lage am Park");
+    expect(bes).toHaveTextContent("Einbauküche");
+    expect(bes).toHaveTextContent("Aufzug");
+    const liste = within(screen.getByTestId("investagon-merkmale")).getAllByRole("listitem").map(text);
+    expect(liste[0]).toMatch(/^Zimmer 3/);
+    expect(liste.slice(1)).toEqual(["Lage im Gebäude 0", "Stellplatz 12.000 €", "Balkon"]);
   });
 
-  it("zentriert den mitgebrachten Speicherstand der internen Seite und doppelt ihn nicht", () => {
-    zeigen({ rechnerHinweis: <p data-testid="speicher-status">Gespeichert am 23.09.26</p> });
-    const status = screen.getByTestId("speicher-status");
-    expect(status.closest(".rechner-hinweis")).not.toBeNull();
-    expect(screen.queryByTestId("rechner-hinweis")).not.toBeInTheDocument();
+  it("nimmt Investagon vor dem CRM und zeigt das Merkmal zum Erhaltungsaufwand nicht doppelt", () => {
+    mitCrm(
+      { beschreibungen: ["Text aus Investagon."], merkmale: [{ nummer: 1, bezeichnung: "1. Hoher Erhaltungsaufwand", wert: "45.000–55.000 €" }, { nummer: 2, bezeichnung: "2. Küche und Möbel inklusive", wert: "" }] },
+      { sanierungskosten: 0, erhaltungsaufwandJahre: 2 },
+      { sanierungAnteilProzent: 0 },
+    );
+    const bes = screen.getByTestId("investagon-beschreibung");
+    expect(bes).toHaveTextContent("Text aus Investagon.");
+    expect(bes).not.toHaveTextContent("Ruhige Lage am Park");
+    expect(text(screen.getByTestId("besonderheit-erhaltungsaufwand"))).toBe("Erhaltungsaufwand: 45.000 bis 55.000 €, verteilt auf 2 Jahre.");
+    const liste = within(screen.getByTestId("investagon-merkmale")).getAllByRole("listitem").map(text);
+    expect(liste).toEqual(["1. Küche und Möbel inklusive"]);
+    expect(document.querySelector(".premium-expose")!.textContent!.match(/Erhaltungsaufwand/g)).toHaveLength(1);
   });
 
-  it("verspricht keine Regler, wenn die Annahmen festgelegt sind", () => {
-    zeigen({ gesperrt: true });
-    expect(screen.queryByTestId("rechner-hinweis")).not.toBeInTheDocument();
+  it("blendet leere Blöcke aus und zeigt die Beschreibung nicht doppelt", () => {
+    // Ohne Kurzbeschreibung steht die Beschreibung am Objekt schon oben.
+    mitCrm({}, { meta: objekt.meta, highlights: [], sanierungskosten: 0 }, { sanierungAnteilProzent: 0, zimmer: 0, etage: "", stellplatzPreis: 0, investagonRaw: {} });
+    expect(screen.getByTestId("beschreibung")).toHaveTextContent("Ruhige Lage am Park");
+    expect(screen.queryByTestId("investagon-beschreibung")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("investagon-merkmale")).not.toBeInTheDocument();
   });
 });
 
@@ -380,8 +411,8 @@ describe("Karte öffnen und Mikrolage", () => {
   it("führt die Mikrolage wieder in der Abschnittsleiste und zählt sie mit", () => {
     zeigen();
     expect(screen.getByRole("navigation", { name: "Exposé-Abschnitte" }).querySelector("button[aria-label='Mikrolage']")).not.toBeNull();
-    // Elf Abschnitte, ohne Grundriss (kein Plan) zehn.
-    expect(screen.getByTestId("leiste-zaehler")).toHaveTextContent("1 / 10");
+    // Zehn Abschnitte, ohne Grundriss (kein Plan) neun.
+    expect(screen.getByTestId("leiste-zaehler")).toHaveTextContent("1 / 9");
   });
 
   it("zeigt ohne Analyse mit gespeicherter Lage die Karte mit der Nadel des Objekts, rechts Adresse und Hinweis", () => {
@@ -444,7 +475,7 @@ describe("Karte öffnen und Mikrolage", () => {
       expect(screen.queryByTestId("abschnitt-mikrolage"), adresse).not.toBeInTheDocument();
       expect(screen.queryByTestId("start-karte"), adresse).not.toBeInTheDocument();
       expect(screen.getByRole("navigation", { name: "Exposé-Abschnitte" }).querySelector("button[aria-label='Mikrolage']")).toBeNull();
-      expect(screen.getByTestId("leiste-zaehler")).toHaveTextContent("1 / 9");
+      expect(screen.getByTestId("leiste-zaehler")).toHaveTextContent("1 / 8");
       unmount();
     }
     expect(anfragen).toEqual([]);

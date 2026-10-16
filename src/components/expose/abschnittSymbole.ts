@@ -1,5 +1,5 @@
 import {
-  Building2, Calculator, CalendarDays, ClipboardList, FileText, Home, LayoutDashboard, Map as MapSymbol, MapPin, Phone, TrendingUp,
+  Building2, CalendarDays, ClipboardList, FileText, Home, LayoutDashboard, Map as MapSymbol, MapPin, Phone, TrendingUp,
   type LucideIcon,
 } from "lucide-react";
 import type { ExposeAbschnittId } from "@/lib/exposeInhalt";
@@ -11,7 +11,6 @@ export const ABSCHNITT_SYMBOLE: Record<ExposeAbschnittId, LucideIcon> = {
   mikrolage: MapSymbol,
   objektdaten: ClipboardList,
   grundriss: LayoutDashboard,
-  wirtschaftlichkeit: Calculator,
   verwaltung: Building2,
   zeitplan: CalendarDays,
   "chancen-risiken": TrendingUp,

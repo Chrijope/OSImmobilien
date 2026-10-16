@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, beforeAll, afterEach } from "vitest";
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -167,8 +167,6 @@ vi.mock("@/lib/appConfigStore", async (orig) => {
 vi.mock("@/hooks/useVertretungen", () => ({ useVertretungen: () => new Set<string>() }));
 
 const { default: ObjektExpose } = await import("./ObjektExpose");
-const { EXPOSE_MIGRATION_HINWEIS } = await import("@/lib/objektExposeStore");
-const { RECHNER_HINWEIS_OHNE_SPEICHERN } = await import("@/components/expose/ExposeAnsicht");
 const { istVomRoutenspeicherAusgenommen } = await import("@/components/LastRouteMemory");
 /*
  * Keine Adresssuche im Browser (Christian, 23.09.2026): Jede Anfrage an einen
@@ -253,39 +251,33 @@ describe("Exposé-Seite", () => {
     expect(screen.queryByText(/Paula Partner/)).not.toBeInTheDocument();
   });
 
-  it("zeigt Admin alle elf Abschnitte, die Vorschau ohne Kunden und den Standort", async () => {
+  it("zeigt Admin alle zehn Abschnitte, die Vorschau ohne Kunden und den Standort", async () => {
     renderMit("/objekte/o1/einheiten/w7/expose");
     // Der Grundriss steht da, sobald seine befristete Adresse geholt ist.
     await screen.findByTestId("abschnitt-grundriss");
-    for (const id of ["start", "standort", "mikrolage", "objektdaten", "grundriss", "wirtschaftlichkeit", "verwaltung", "zeitplan", "chancen-risiken", "rechtliches", "kontakt"]) {
+    for (const id of ["start", "standort", "mikrolage", "objektdaten", "grundriss", "verwaltung", "zeitplan", "chancen-risiken", "rechtliches", "kontakt"]) {
       expect(screen.getByTestId(`abschnitt-${id}`)).toBeInTheDocument();
     }
     expect(screen.queryByTestId("abschnitt-naechste-schritte")).not.toBeInTheDocument();
     expect(screen.getByTestId("kopf-kunde")).toHaveTextContent("Vorschau ohne Kunden");
-    expect(screen.getByTestId("leiste-zaehler")).toHaveTextContent("1 / 11");
-    expect(screen.getByTestId("gesamtinvestition")).toHaveTextContent("241.500 €");
-    expect(screen.queryByTestId("anzahl-selbstauskunft")).not.toBeInTheDocument();
+    expect(screen.getByTestId("leiste-zaehler")).toHaveTextContent("1 / 10");
+    // Seit dem 16.10.2026 ohne Wirtschaftlichkeit: kein Rechner, kein Speichern.
+    expect(screen.queryByTestId("abschnitt-wirtschaftlichkeit")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("expose-rechner")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("annahmen-speichern")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("speicher-status")).not.toBeInTheDocument();
     expect(screen.getByTestId("energiestufe-D")).toHaveAttribute("aria-current", "true");
     expect(screen.getByTestId("rechtliches-entwurf")).toBeInTheDocument();
     expect(screen.getByTestId("standort-argumente")).toHaveTextContent("Wirtschaft");
-    await waitFor(() => expect(screen.getByTestId("speicher-status")).toHaveTextContent("Die Regler sind zum Ausprobieren. Mit „Annahmen speichern“ bleiben deine Einstellungen für diese Einheit erhalten. Der Kundenlink rechnet immer mit den Standardwerten."));
   });
 
-  it("nennt den Kunden, übernimmt aber keine Zahlen aus einer Selbstauskunft", async () => {
-    /*
-     * Ein Exposé gehört zu einer Einheit, nicht zu einem Investment. Welche
-     * Selbstauskunft gemeint wäre, steht also gar nicht fest, und die eines
-     * anderen Kaufs wäre geraten. Deshalb bleiben die Annahmen Standardwerte,
-     * und statt einer stillen Leerstelle steht dort ein Hinweis
-     * (Entscheidung Christian, 10.09.2026).
-     */
-    renderMit("/objekte/o1/einheiten/w7/expose?kunde=k1");
+  it("nennt den Kunden, zeigt aber keine Zahlen aus einer Selbstauskunft", async () => {
+    // Ein Exposé gehört zu einer Einheit, nicht zu einem Investment (Entscheidung Christian, 10.09.2026).
+    const { container } = renderMit("/objekte/o1/einheiten/w7/expose?kunde=k1");
     expect(screen.getByTestId("kopf-kunde")).toHaveTextContent("für Anna Muster, erstellt von Max Mustermann");
     expect(screen.queryByTestId("anzahl-selbstauskunft")).not.toBeInTheDocument();
-    expect(screen.getByTestId("ohne-selbstauskunft-hinweis")).toHaveTextContent("Standardwerte");
-    expect(screen.getByTestId("regler-zve-wert")).not.toHaveTextContent("84.000 €");
-    expect(screen.getByTestId("schalter-verheiratet")).toHaveAttribute("aria-checked", "false");
-    await waitFor(() => expect(screen.getByTestId("speicher-status")).toHaveTextContent("Die Regler sind zum Ausprobieren. Mit „Annahmen speichern“ bleiben deine Einstellungen für diese Einheit erhalten. Der Kundenlink rechnet immer mit den Standardwerten."));
+    expect(text(container)).not.toContain("120.000");
+    await screen.findByTestId("abschnitt-kontakt");
   });
 
   it("zeigt den Grundriss dieser Einheit, aber weder den fremden noch den Mietvertrag", async () => {
@@ -337,73 +329,9 @@ describe("Exposé-Seite", () => {
     renderMit("/objekte/o2/einheiten/w7/expose");
     expect(screen.queryByTestId("abschnitt-grundriss")).not.toBeInTheDocument();
     expect(screen.getByTestId("abschnitt-objektdaten")).toBeInTheDocument();
-    expect(screen.getByTestId("leiste-zaehler")).toHaveTextContent("1 / 10");
+    expect(screen.getByTestId("leiste-zaehler")).toHaveTextContent("1 / 9");
   });
 
-  it("meldet ohne Migration sauber und zeigt das Exposé trotzdem", async () => {
-    db.antworten = { objekt_exposes: { data: null, error: { code: "42P01", message: "relation does not exist" } } };
-    renderMit("/objekte/o1/einheiten/w7/expose");
-    await waitFor(() => expect(screen.getByTestId("speicher-status")).toHaveTextContent(EXPOSE_MIGRATION_HINWEIS));
-    expect(screen.getByTestId("abschnitt-wirtschaftlichkeit")).toBeInTheDocument();
-    expect(screen.getByTestId("annahmen-speichern")).toBeEnabled();
-  });
-
-  it("zeigt den Hinweis zur Preisänderung, wenn der gespeicherte Preisstand abweicht, und übernimmt gespeicherte Annahmen", async () => {
-    db.antworten = {
-      objekt_exposes: {
-        data: [{ id: "e1", wohnung_id: "w7", objekt_id: "o1", kontakt_id: null, erstellt_von: "u1", token: "t", annahmen: { zinsProzent: 3.5 }, annahmen_gesperrt: true, sichtbare_abschnitte: [], preisstand: 225000, preisstand_am: "2026-08-01T00:00:00Z", aufrufe: 0, erstellt_am: "2026-08-01T00:00:00Z", aktualisiert_am: "2026-08-01T00:00:00Z" }],
-        error: null,
-      },
-    };
-    renderMit("/objekte/o1/einheiten/w7/expose");
-    await waitFor(() => expect(screen.getByTestId("preisstand-hinweis")).toBeInTheDocument());
-    expect(screen.getByTestId("preisstand-hinweis")).toHaveTextContent("225.000 €");
-    expect(screen.getByTestId("preisstand-hinweis")).toHaveTextContent("232.000 €");
-    expect(screen.getByTestId("regler-zins-wert")).toHaveTextContent("3,50 %");
-    expect(screen.getByTestId("schalter-sperren")).toHaveAttribute("aria-checked", "true");
-    expect(screen.getByTestId("speicher-status")).toHaveTextContent(/Gespeichert am/);
-  });
-
-  // Prüfung Codex vom 05.10.2026: `?expose=` übernimmt nur einen Datensatz zu Objekt, Einheit und erlaubtem Kunden.
-  it("startet neutral, wenn der Datensatz aus ?expose= zu einem anderen Kunden gehört", async () => {
-    db.antworten = {
-      objekt_exposes: {
-        data: { id: "e1", wohnung_id: "w7", objekt_id: "o1", kontakt_id: "k2", erstellt_von: "u2", token: "t", annahmen: { zinsProzent: 3.5 }, annahmen_gesperrt: true, sichtbare_abschnitte: [], preisstand: 225000, preisstand_am: "2026-08-01T00:00:00Z", aufrufe: 0, erstellt_am: "2026-08-01T00:00:00Z", aktualisiert_am: "2026-08-01T00:00:00Z" },
-        error: null,
-      },
-    };
-    renderMit("/objekte/o1/einheiten/w7/expose?expose=e1");
-    await waitFor(() => expect(screen.getByTestId("speicher-status")).toHaveTextContent("Die Regler sind zum Ausprobieren"));
-    expect(screen.getByTestId("regler-zins-wert")).not.toHaveTextContent("3,50 %");
-    expect(screen.getByTestId("schalter-sperren")).toHaveAttribute("aria-checked", "false");
-  });
-
-  it("färbt den Knopf nach bestätigter Speicherung grün und nimmt das bei der nächsten Änderung zurück", async () => {
-    renderMit("/objekte/o1/einheiten/w7/expose");
-    await waitFor(() => expect(screen.getByTestId("speicher-status")).toHaveTextContent("Die Regler sind zum Ausprobieren"));
-    // Ab hier antwortet die Datenbank auf das Anlegen mit der gespeicherten Zeile.
-    db.antworten = {
-      objekt_exposes: { data: { id: "e9", wohnung_id: "w7", objekt_id: "o1", kontakt_id: null, token: "t", annahmen: {}, annahmen_gesperrt: false, sichtbare_abschnitte: [], preisstand: 232000, preisstand_am: "2026-10-05T08:00:00Z", aufrufe: 0, erstellt_am: "2026-10-05T08:00:00Z", aktualisiert_am: "2026-10-05T08:00:00Z" }, error: null },
-    };
-    fireEvent.click(screen.getByTestId("annahmen-speichern"));
-    await waitFor(() => expect(screen.getByTestId("annahmen-speichern")).toHaveAttribute("data-zustand", "gespeichert"));
-    expect(screen.getByTestId("annahmen-speichern")).toHaveTextContent("Gespeichert");
-    expect(screen.getByTestId("annahmen-speichern")).toHaveClass("bg-success");
-
-    fireEvent.click(screen.getByTestId("schalter-sperren"));
-    expect(screen.getByTestId("annahmen-speichern")).not.toHaveAttribute("data-zustand");
-    expect(screen.getByTestId("annahmen-speichern")).toHaveTextContent("Annahmen speichern");
-  });
-
-  it("bleibt bei einem Fehler beim Speichern normal", async () => {
-    renderMit("/objekte/o1/einheiten/w7/expose");
-    await waitFor(() => expect(screen.getByTestId("speicher-status")).toHaveTextContent("Die Regler sind zum Ausprobieren"));
-    db.antworten = { objekt_exposes: { data: null, error: { code: "42501", message: "keine Berechtigung" } } };
-    fireEvent.click(screen.getByTestId("annahmen-speichern"));
-    await waitFor(() => expect(screen.getByTestId("annahmen-speichern")).toBeEnabled());
-    expect(screen.getByTestId("annahmen-speichern")).not.toHaveAttribute("data-zustand");
-    expect(screen.getByTestId("annahmen-speichern")).toHaveTextContent("Annahmen speichern");
-  });
 });
 
 /** Text eines Elements mit einfachen Leerzeichen, auch statt geschützter. */
@@ -445,7 +373,7 @@ describe("Exposé-Seite seit dem 23.09.2026", () => {
     expect(kasten).toHaveTextContent("max@example.com");
     // Oberhalb der Bilder: vor dem Startabschnitt im Dokument.
     expect(kasten.compareDocumentPosition(screen.getByTestId("abschnitt-start")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    await waitFor(() => expect(screen.getByTestId("speicher-status")).toBeInTheDocument());
+    await screen.findByTestId("abschnitt-kontakt");
   });
 
   it("nimmt den zuständigen Partner des Kunden, oben wie unten, und nie den Objektpartner", async () => {
@@ -460,7 +388,7 @@ describe("Exposé-Seite seit dem 23.09.2026", () => {
     expect(kontakt).not.toHaveTextContent("Max Mustermann");
     expect(text(container)).not.toContain("Otto Objektpartner");
     expect(text(container)).not.toContain("Objektpartner");
-    await waitFor(() => expect(screen.getByTestId("speicher-status")).toBeInTheDocument());
+    await screen.findByTestId("abschnitt-kontakt");
   });
 
   it("zeigt den Zeitstrahl kurz wie die Vorlage, ohne Gebührentext, die Zahlungen hervorgehoben", async () => {
@@ -480,7 +408,7 @@ describe("Exposé-Seite seit dem 23.09.2026", () => {
     expect(screen.getAllByTestId("zeitplan-zahlung").map((k) => k.textContent)).toEqual(["nach Regelung im Kaufvertrag"]);
     expect(zeitplan).not.toHaveTextContent(/Anzahlung/);
     expect(zeitplan).not.toHaveTextContent(/Reservierungsgebühr|Werkvertrag/);
-    await waitFor(() => expect(screen.getByTestId("speicher-status")).toBeInTheDocument());
+    await screen.findByTestId("abschnitt-kontakt");
   });
 
   it("zeigt die Mikrolage sofort: links die Karte, rechts der Kasten nach Kategorien, ohne Listen darunter", async () => {
@@ -503,7 +431,7 @@ describe("Exposé-Seite seit dem 23.09.2026", () => {
     expect(screen.getByTestId("mikrolage-karte")).not.toHaveTextContent(/Makrolage|Mikrolage/);
     expect(rechts).toHaveTextContent("Mikrolage");
     expect(within(rechts as HTMLElement).getByTestId("makrolage")).toHaveTextContent("Makrolage");
-    await waitFor(() => expect(screen.getByTestId("speicher-status")).toBeInTheDocument());
+    await screen.findByTestId("abschnitt-kontakt");
   });
 
   /*
@@ -522,7 +450,7 @@ describe("Exposé-Seite seit dem 23.09.2026", () => {
     expect(abschnitt).toHaveTextContent("Knappstraße 1, 86150 Augsburg");
     expect(abschnitt).toHaveTextContent("Die Auswertung der Umgebung liegt noch nicht vor.");
     expect(screen.queryByTestId("mikrolage-liste")).not.toBeInTheDocument();
-    await waitFor(() => expect(screen.getByTestId("speicher-status")).toBeInTheDocument());
+    await screen.findByTestId("abschnitt-kontakt");
     expect(geoAnfragen).toEqual([]);
   });
 
@@ -535,14 +463,14 @@ describe("Exposé-Seite seit dem 23.09.2026", () => {
     expect(screen.getByTestId("objektdaten-tabelle")).not.toHaveTextContent("Keine Angabe");
     expect(screen.getByTestId("verwaltung-ohne-leistungen")).toBeInTheDocument();
     expect(screen.getByTestId("kontakt-personen")).toHaveTextContent("Max Mustermann");
-    await waitFor(() => expect(screen.getByTestId("speicher-status")).toBeInTheDocument());
+    await screen.findByTestId("abschnitt-kontakt");
   });
 
   it("zeigt die Einzelwohnung sauber, ohne „Wohnung ?“ und ohne „1 Einheit im Haus“", async () => {
     const { container } = renderMit("/objekte/k-einzel/einheiten/ke1/expose");
     pruefeSauber(container);
     expect(screen.getByTestId("objektdaten-tabelle")).not.toHaveTextContent("Einheiten im Haus");
-    await waitFor(() => expect(screen.getByTestId("speicher-status")).toBeInTheDocument());
+    await screen.findByTestId("abschnitt-kontakt");
   });
 
   it("zeigt die WG sauber und nennt dort die WEG- und SEV-Verwaltung", async () => {
@@ -550,7 +478,7 @@ describe("Exposé-Seite seit dem 23.09.2026", () => {
     pruefeSauber(container);
     expect(screen.getByTestId("abschnitt-verwaltung")).toHaveTextContent("WEG- und SEV-Verwaltung");
     expect(screen.getByTestId("abschnitt-start")).toHaveTextContent("WG und Co-Living");
-    await waitFor(() => expect(screen.getByTestId("speicher-status")).toBeInTheDocument());
+    await screen.findByTestId("abschnitt-kontakt");
   });
 
   it("öffnet unter /objekte/:id/expose das Exposé des Globalobjekts mit Zahlen des ganzen Hauses", () => {
@@ -566,21 +494,18 @@ describe("Exposé-Seite seit dem 23.09.2026", () => {
     expect(text(spiegel)).toContain("610 €");
     expect(spiegel).not.toHaveTextContent("189.000");
     expect(screen.queryByRole("link", { name: /Exposé Einheit/ })).not.toBeInTheDocument();
-    // Der Rechner rechnet mit dem Kaufpreis des Hauses.
-    expect(text(screen.getByTestId("gesamtinvestition"))).toContain("1.400.000 €");
     // Der Zeitstrahl nennt auch beim ganzen Haus keinen Betrag mehr (23.09.2026).
     expect(screen.getByTestId("zeitplan")).not.toHaveTextContent("€");
     // Kopf: die Adresse des Hauses, ohne Wohneinheit.
     expect(screen.getByTestId("kopf-ueberschrift")).toHaveTextContent(/^Knappstraße 1, 86150 Augsburg$/);
     expect(screen.getByTestId("kopf-kunde")).toHaveTextContent("Vorschau ohne Kunden");
-    // Über dem Rechner derselbe Satz wie in der Kundenansicht (23.09.2026).
-    expect(screen.getByTestId("speicher-status")).toHaveTextContent(RECHNER_HINWEIS_OHNE_SPEICHERN);
+    expect(screen.queryByTestId("abschnitt-wirtschaftlichkeit")).not.toBeInTheDocument();
   });
 
-  it("zeigt ein Globalobjekt ohne Kaufpreis ehrlich, ohne Rechner und ohne leere Kacheln", () => {
+  it("zeigt ein Globalobjekt ohne Kaufpreis ehrlich und ohne leere Kacheln", () => {
     const { container } = renderMit("/objekte/k-global-leer/expose");
     pruefeSauber(container);
-    expect(screen.getByTestId("rechner-nicht-verfuegbar")).toHaveTextContent("Berechnung noch nicht verfügbar");
+    expect(screen.queryByTestId("rechner-nicht-verfuegbar")).not.toBeInTheDocument();
     // Fläche und Miete kommen als Summe der Einheiten, gekennzeichnet.
     expect(screen.getByTestId("objektdaten-tabelle")).toHaveTextContent("Summe der Einheiten");
   });
@@ -594,8 +519,7 @@ describe("Exposé-Seite seit dem 23.09.2026", () => {
     renderMit("/objekte/k-einzel/expose?kunde=k1");
     expect(screen.getByTestId("abschnitt-start")).toBeInTheDocument();
     expect(screen.getByTestId("kopf-kunde")).toHaveTextContent("für Anna Muster");
-    expect(screen.getByTestId("annahmen-speichern")).toBeInTheDocument();
-    await waitFor(() => expect(screen.getByTestId("speicher-status")).toBeInTheDocument());
+    await screen.findByTestId("abschnitt-kontakt");
   });
 
   it("leitet einen Vertriebspartner auch vom Objekt-Exposé auf die Verwaltungsansicht", () => {
@@ -633,20 +557,6 @@ describe("Vorschau aus „Exposé für Kunden“ (seit dem 23.09.2026)", () => {
     expect(screen.queryByTestId("kopf-kunde")).not.toBeInTheDocument();
   });
 
-  it("rechnet wie der Kundenlink mit Standardannahmen, nicht mit gespeicherten", async () => {
-    db.antworten = {
-      objekt_exposes: {
-        data: [{ id: "e1", wohnung_id: "w7", objekt_id: "o1", kontakt_id: null, token: "t", annahmen: { zinsProzent: 3.5 }, annahmen_gesperrt: true, sichtbare_abschnitte: [], preisstand: 232000, preisstand_am: "2026-08-01T00:00:00Z", aufrufe: 0, erstellt_am: "2026-08-01T00:00:00Z", aktualisiert_am: "2026-08-01T00:00:00Z" }],
-        error: null,
-      },
-    };
-    renderMit("/objekte/o1/einheiten/w7/expose?ansicht=kunde");
-    // Kurz warten, damit ein Laden der gespeicherten Annahmen Zeit gehabt hätte.
-    await new Promise((r) => setTimeout(r, 20));
-    expect(screen.getByTestId("regler-zins-wert")).not.toHaveTextContent("3,50 %");
-    expect(screen.queryByTestId("schalter-sperren")).not.toBeInTheDocument();
-  });
-
   it("blendet auch im Exposé des ganzen Objekts die interne Leiste aus", () => {
     renderMit("/objekte/k-global/expose?kunde=k2&ansicht=kunde");
     expect(screen.queryByTestId("an-kunden-senden")).not.toBeInTheDocument();
@@ -663,7 +573,7 @@ describe("Vorschau aus „Exposé für Kunden“ (seit dem 23.09.2026)", () => {
     expect(zumCrm).toHaveAttribute("href", "/objekte/o1/einheiten/w7");
     expect(zumCrm).not.toHaveAttribute("target");
     expect(screen.queryByText(/Zurück zur Einheit/)).not.toBeInTheDocument();
-    await waitFor(() => expect(screen.getByTestId("speicher-status")).toBeInTheDocument());
+    await screen.findByTestId("abschnitt-kontakt");
   });
 });
 
@@ -707,9 +617,9 @@ describe("Exposé im eigenen Tab ohne CRM-Rahmen (seit dem 23.09.2026)", () => {
     expect(istVomRoutenspeicherAusgenommen("/objekte/expose")).toBe(false);
   });
 
-  it("öffnet „Vermögensaufbau im Exposé“ auf der Einheitsseite in einem neuen Tab", () => {
-    const quelle = lies("src/components/objektseite/EinheitFinanzen.tsx").replace(/\s+/g, " ");
-    expect(quelle).toMatch(/<Link to=\{exposePfad\(objekt\.id, w\.id\)\} target="_blank" rel="noopener noreferrer">Vermögensaufbau im Exposé<\/Link>/);
+  it("verlinkt von der Einheitsseite nicht mehr auf einen Vermögensaufbau im Exposé (seit dem 16.10.2026)", () => {
+    const quelle = lies("src/components/objektseite/EinheitFinanzen.tsx");
+    expect(quelle).not.toMatch(/>Vermögensaufbau im Exposé</);
   });
 
   describe("die Symbolleiste links", () => {
@@ -763,9 +673,6 @@ describe("Exposé in der Sprache des Kunden", () => {
     // Für den Mitarbeiter: wer und welche Sprache, auf Deutsch.
     expect(screen.getByTestId("kopf-kunde")).toHaveTextContent("für Emma English, erstellt von Max Mustermann");
     expect(screen.getByTestId("kopf-sprache")).toHaveTextContent("Kundensprache Englisch: Exposé und PDF auf Englisch");
-    // Die deutschen Bedienelemente und Hinweise kommen nicht ins PDF des Kunden.
-    expect(screen.getByTestId("annahmen-speichern-bereich")).toHaveClass("screen-only");
-    expect(screen.getByTestId("rechner-hinweis-intern")).toHaveClass("screen-only");
     expect(container.querySelector("footer")?.textContent).not.toContain("Interne Vorschau");
   });
 
@@ -782,12 +689,11 @@ describe("Exposé in der Sprache des Kunden", () => {
     expect(screen.getByTestId("kopf-sprache")).toHaveTextContent("Kundensprache Deutsch");
   });
 
-  it("bleibt ohne Kunden deutsch wie bisher, ohne Sprachhinweis und mit Bedienelementen im Druck", async () => {
+  it("bleibt ohne Kunden deutsch wie bisher, ohne Sprachhinweis", async () => {
     const { container } = renderMit("/objekte/o1/einheiten/w7/expose");
     await screen.findByTestId("abschnitt-start");
     expect(screen.getByText("IMMOBILIEN MIT PERSPEKTIVE")).toBeInTheDocument();
     expect(screen.queryByTestId("kopf-sprache")).not.toBeInTheDocument();
-    expect(screen.getByTestId("annahmen-speichern-bereich")).not.toHaveClass("screen-only");
     expect(container.querySelector("footer")?.textContent).toContain("Interne Vorschau");
     expect(screen.getByTestId("zum-crm")).toHaveAttribute("href", "/objekte/o1/einheiten/w7");
     expect(screen.queryByTestId("zum-kundenprofil")).not.toBeInTheDocument();

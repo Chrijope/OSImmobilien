@@ -1,7 +1,9 @@
 /*
  * Partner-Landingpage in der OS-CI (Umbau 16.10.2026): Waldgrün #1B2A22,
- * Schwarz #121512, Papier #F4F1EA, Gold #CCAC05 nur als Akzent. Schriften
- * und Farbwerte kommen aus `styles/beratung-os.css` (Klasse `.bos`).
+ * Schwarz #121512, Papier #F4F1EA, Gold #CCAC05 nur als Akzent. Farbwerte
+ * kommen aus `styles/beratung-os.css` (Klasse `.bos`). Schrift, Glas und
+ * Schatten seit 16.10.2026 wie im CRM: Systemschrift aus index.css und die
+ * Glas-Tokens `--glass-*` (Schatten, Lichtkante, Weichzeichnung).
  *
  * Dunkle und helle Abschnitte wechseln sich ab. Alles hängt an `.osm`,
  * davor `.lp-theme`, damit die Regeln die allgemeinen Landingpage-Regeln
@@ -17,16 +19,24 @@
   --muted-foreground: 90 3% 37%;
   background: var(--bos-papier);
   color: var(--bos-tinte);
-  font-family: "BOS Outfit", -apple-system, "Helvetica Neue", Arial, sans-serif;
+  /* Dieselbe Schrift wie im CRM (index.css, tailwind.config.ts). */
+  --osm-schrift: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+  /* Glas auf hellem und dunklem Grund. Schatten und Lichtkante aus den CRM-Tokens. */
+  --osm-glas-hell: rgba(255, 255, 255, .66);
+  --osm-glas-dunkel: rgba(244, 241, 234, .07);
+  --osm-glas-kante-dunkel: rgba(244, 241, 234, .16);
+  font-family: var(--osm-schrift);
   font-size: 16px;
+  -webkit-font-smoothing: antialiased;
   /* Nichts darf seitlich überstehen, auch nicht auf 375 px. */
   overflow-x: clip;
 }
+.lp-theme .osm :is(h1, h2, h3, h4, .bos-serif, .bos-kicker, .bos-mont) { font-family: var(--osm-schrift); }
 .lp-theme .osm :is(h1, h2, h3, h4) {
-  font-family: "BOS Playfair", Georgia, "Times New Roman", serif;
-  letter-spacing: -0.01em;
-  font-weight: 600;
+  letter-spacing: -0.022em;
+  font-weight: 650;
 }
+.lp-theme .osm .bos-kicker { font-weight: 600; letter-spacing: .2em; }
 .lp-theme .osm :is(a, button, [tabindex="0"]):focus-visible {
   outline: 3px solid var(--bos-gold);
   outline-offset: 3px;
@@ -100,22 +110,22 @@
   padding-top: 150px;
   padding-bottom: 88px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) 320px;
   align-items: end;
-  gap: 40px;
+  gap: 56px;
 }
 .lp-theme .osm .osm-hero .osm-kicker { color: var(--bos-gold); }
 .lp-theme .osm .osm-hero h1 {
   /* !important, weil index.css am Handy jede h1 ohne text-Klasse verkleinert. */
   font-size: clamp(38px, 6vw, 76px) !important;
   line-height: 1.05 !important;
-  max-width: 15ch;
+  max-width: 20ch;
   margin: 0;
   color: var(--bos-papier);
 }
 .lp-theme .osm .osm-hero h1 em {
-  font-style: italic;
-  font-weight: 500;
+  font-style: normal;
+  font-weight: 650;
   color: var(--bos-gold);
 }
 .lp-theme .osm .osm-hero-text {
@@ -133,42 +143,56 @@
   font-size: 12px;
   color: rgba(244, 241, 234, .6);
 }
+/* Ansprechpartner im Hero als Glaskarte: Foto, Name, Position, Knopf. */
 .lp-theme .osm .osm-portraetkarte {
-  width: 210px;
-  background: rgba(18, 21, 18, .6);
-  border: 1px solid rgba(204, 172, 5, .35);
-  border-radius: 14px;
-  overflow: hidden;
-  backdrop-filter: blur(6px);
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  align-items: center;
+  gap: 16px 18px;
+  padding: 20px;
+  border-radius: 22px;
+  /* Dunkel getöntes Glas: Das Heldenbild ist dahinter teils hell (Hauswand). */
+  background: linear-gradient(150deg, rgba(27, 42, 34, .78), rgba(18, 21, 18, .72));
+  border: 1px solid rgba(244, 241, 234, .22);
+  box-shadow: 0 20px 50px -12px rgba(0, 0, 0, .55), inset 0 1px 0 0 rgba(255, 255, 255, .14);
+  color: var(--bos-papier);
+  backdrop-filter: blur(var(--glass-blur, 16px)) saturate(140%);
+  -webkit-backdrop-filter: blur(var(--glass-blur, 16px)) saturate(140%);
 }
 .lp-theme .osm .osm-portraet {
   display: block;
-  width: 100%;
-  height: 240px;
+  width: 88px;
+  height: 104px;
+  border-radius: 14px;
   object-fit: cover;
+  box-shadow: 0 0 0 1px rgba(204, 172, 5, .55);
 }
-.lp-theme .osm .osm-portraetkarte > div { padding: 14px 16px 16px; }
+.lp-theme .osm .osm-portraet-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .lp-theme .osm .osm-portraetkarte small {
-  display: block;
   font-size: 11px;
-  letter-spacing: .14em;
+  font-weight: 600;
+  letter-spacing: .12em;
   text-transform: uppercase;
   color: var(--bos-gold);
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 .lp-theme .osm .osm-portraetkarte strong {
-  font-family: "BOS Playfair", Georgia, serif;
-  font-size: 19px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 650;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
   overflow-wrap: anywhere;
 }
+.lp-theme .osm .osm-portraet-text > span { font-size: 14px; line-height: 1.4; color: rgba(244, 241, 234, .82); }
+.lp-theme .osm .osm-portraet-knopf { grid-column: 1 / -1; width: 100%; min-height: 46px; }
 .lp-theme .osm .osm-initialen {
   display: grid;
   place-items: center;
   background: var(--bos-gruen);
   color: var(--bos-gold);
-  font-family: "BOS Playfair", Georgia, serif;
-  font-size: 64px;
+  font-size: 34px;
+  font-weight: 650;
+  letter-spacing: .02em;
 }
 
 /* Knöpfe */
@@ -186,9 +210,10 @@
   min-height: 50px;
   padding: 12px 26px;
   border-radius: 999px;
-  font-family: "BOS Montserrat", "BOS Outfit", Arial, sans-serif;
+  font-family: var(--osm-schrift);
   font-size: 15px;
   font-weight: 600;
+  letter-spacing: -0.005em;
   text-decoration: none;
   cursor: pointer;
   transition: background-color .2s, color .2s, border-color .2s;
@@ -201,9 +226,28 @@
 
 /* Abschnitte */
 .lp-theme .osm .osm-abschnitt { padding: 96px 0; scroll-margin-top: 20px; }
-.lp-theme .osm .osm-hell { background: var(--bos-papier); color: var(--bos-tinte); }
-.lp-theme .osm .osm-dunkel { background: var(--bos-schwarz); color: var(--bos-papier); }
-.lp-theme .osm .osm-gruen { background: var(--bos-gruen); color: var(--bos-papier); }
+/* Weiche Lichtflecken im Grund, damit die Glasflächen darüber Tiefe bekommen. */
+.lp-theme .osm .osm-hell {
+  background:
+    radial-gradient(ellipse 60% 50% at 0% 0%, rgba(204, 172, 5, .08), transparent 70%),
+    radial-gradient(ellipse 50% 60% at 100% 100%, rgba(27, 42, 34, .07), transparent 70%),
+    var(--bos-papier);
+  color: var(--bos-tinte);
+}
+.lp-theme .osm .osm-dunkel {
+  background:
+    radial-gradient(ellipse 55% 45% at 100% 0%, rgba(204, 172, 5, .09), transparent 70%),
+    radial-gradient(ellipse 60% 60% at 0% 100%, rgba(111, 154, 126, .12), transparent 70%),
+    var(--bos-schwarz);
+  color: var(--bos-papier);
+}
+.lp-theme .osm .osm-gruen {
+  background:
+    radial-gradient(ellipse 55% 50% at 0% 0%, rgba(204, 172, 5, .1), transparent 70%),
+    radial-gradient(ellipse 50% 60% at 100% 100%, rgba(111, 154, 126, .18), transparent 70%),
+    var(--bos-gruen);
+  color: var(--bos-papier);
+}
 .lp-theme .osm :is(.osm-dunkel, .osm-gruen) .osm-kicker { color: var(--bos-gold); }
 .lp-theme .osm .osm-titelblock { max-width: 760px; margin-bottom: 44px; }
 .lp-theme .osm .osm-abschnitt h2 {
@@ -215,17 +259,23 @@
   font-size: 18px;
   line-height: 1.65;
   margin: 18px 0 0;
-  opacity: .85;
+  opacity: .88;
 }
-.lp-theme .osm .osm-karte {
-  border-radius: 14px;
-  padding: 28px;
-  background: #fff;
-  border: 1px solid var(--bos-linie);
+/* Glaskarten wie im CRM (.glass-card): halbdurchsichtig, Lichtkante oben, weicher Schatten. */
+.lp-theme .osm :is(.osm-karte, .osm-objekt, .osm-schritte li) {
+  background: var(--osm-glas-hell);
+  border: 1px solid rgba(255, 255, 255, .8);
+  box-shadow: var(--glass-shadow, 0 8px 32px 0 rgba(43, 43, 43, .08)), var(--glass-inner-highlight, inset 0 1px 0 0 rgba(255, 255, 255, .6));
+  backdrop-filter: blur(var(--glass-blur, 16px));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
 }
-.lp-theme .osm :is(.osm-dunkel, .osm-gruen) .osm-karte {
-  background: rgba(244, 241, 234, .05);
-  border-color: rgba(244, 241, 234, .14);
+.lp-theme .osm .osm-karte { border-radius: 18px; padding: 28px; }
+.lp-theme .osm :is(.osm-dunkel, .osm-gruen) :is(.osm-karte, .osm-kennzahl) {
+  background: linear-gradient(160deg, rgba(244, 241, 234, .1), var(--osm-glas-dunkel));
+  border: 1px solid var(--osm-glas-kante-dunkel);
+  box-shadow: 0 12px 40px -8px rgba(0, 0, 0, .45), inset 0 1px 0 0 rgba(255, 255, 255, .08);
+  backdrop-filter: blur(var(--glass-blur, 16px));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
 }
 .lp-theme .osm .osm-karte h3 { font-size: 23px; line-height: 1.25; margin: 0 0 10px; }
 .lp-theme .osm .osm-karte p { margin: 0; line-height: 1.65; opacity: .88; }
@@ -233,8 +283,9 @@
 .lp-theme .osm .osm-zwei { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
 .lp-theme .osm .osm-nummer {
   display: block;
-  font-family: "BOS Playfair", Georgia, serif;
-  font-size: 34px;
+  font-family: var(--osm-schrift);
+  font-size: 30px;
+  font-weight: 650;
   color: var(--bos-gold-dunkel);
   margin-bottom: 12px;
 }
@@ -246,14 +297,14 @@
   border-left: 3px solid var(--bos-gold);
   padding-left: 20px;
 }
-.lp-theme .osm .osm-fussnote { margin: 28px 0 0; font-size: 13px; line-height: 1.6; opacity: .7; max-width: 900px; }
+.lp-theme .osm .osm-fussnote { margin: 28px 0 0; font-size: 14px; line-height: 1.65; opacity: .78; max-width: 900px; }
 
 /* Konzepte */
 .lp-theme .osm .osm-konzept { display: flex; flex-direction: column; gap: 6px; }
 .lp-theme .osm .osm-konzept h3 { font-size: 30px; }
 .lp-theme .osm .osm-marke {
   align-self: flex-start;
-  font-family: "BOS Montserrat", "BOS Outfit", Arial, sans-serif;
+  font-family: var(--osm-schrift);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: .16em;
@@ -273,9 +324,7 @@
 /* Objekte mit Diashow */
 .lp-theme .osm .osm-objekte { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
 .lp-theme .osm .osm-objekt {
-  background: #fff;
-  border: 1px solid var(--bos-linie);
-  border-radius: 14px;
+  border-radius: 18px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -295,7 +344,7 @@
 .lp-theme .osm .osm-objekt li { padding: 6px 0; border-bottom: 1px solid var(--bos-linie); font-size: 15px; }
 .lp-theme .osm .osm-preis {
   margin: auto 0 0;
-  font-family: "BOS Playfair", Georgia, serif;
+  font-family: var(--osm-schrift);
   font-size: 22px;
   font-weight: 600;
   color: var(--bos-gruen);
@@ -338,45 +387,56 @@
 
 /* Musterrechnung */
 .lp-theme .osm .osm-rechnung-raster { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+/*
+ * Tabelle auf dunklem Grund: volle Papierfarbe statt Deckkraft, 17 px,
+ * großzügige Zeilen, Beträge in hellem Grün und Rot (beide über 9:1 auf
+ * Schwarz). Die Spaltenüberschrift steht größer und als Satz.
+ */
 .lp-theme .osm .osm-rechnung {
   width: 100%;
-  border-collapse: collapse;
-  background: rgba(244, 241, 234, .04);
-  border: 1px solid rgba(244, 241, 234, .14);
-  border-radius: 14px;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: linear-gradient(160deg, rgba(244, 241, 234, .1), rgba(244, 241, 234, .05));
+  border: 1px solid var(--osm-glas-kante-dunkel);
+  border-radius: 18px;
+  box-shadow: 0 12px 40px -8px rgba(0, 0, 0, .45), inset 0 1px 0 0 rgba(255, 255, 255, .08);
   overflow: hidden;
-  font-size: 16px;
+  font-size: 17px;
+  line-height: 1.45;
+  color: var(--bos-papier);
 }
+/* Die CRM-Tabellenregeln (design-neu, design-liquid) färben Kopfzeile und Hover hell. Hier nicht. */
+.lp-theme .osm .osm-rechnung tr,
+.lp-theme .osm .osm-rechnung tbody tr:hover { background-color: transparent; }
 .lp-theme .osm .osm-rechnung th {
   text-align: left;
-  padding: 16px 22px;
-  font-family: "BOS Montserrat", "BOS Outfit", Arial, sans-serif;
-  font-size: 12px;
-  letter-spacing: .14em;
-  text-transform: uppercase;
+  padding: 18px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: .02em;
   color: var(--bos-gold);
-  background: transparent;
-  border-bottom: 1px solid rgba(244, 241, 234, .14);
+  background: rgba(204, 172, 5, .08);
+  border-bottom: 1px solid rgba(244, 241, 234, .18);
 }
-.lp-theme .osm .osm-rechnung td { padding: 12px 22px; border-bottom: 1px solid rgba(244, 241, 234, .08); }
-.lp-theme .osm .osm-rechnung td:last-child { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.lp-theme .osm .osm-rechnung .plus td:last-child { color: #9ec6a8; }
-.lp-theme .osm .osm-rechnung .minus td:last-child { color: #e2a091; }
-.lp-theme .osm .osm-rechnung .summe td { font-weight: 600; border-top: 1px solid rgba(244, 241, 234, .3); }
-.lp-theme .osm .osm-rechnung .ergebnis td { font-weight: 600; font-size: 18px; background: rgba(204, 172, 5, .14); color: var(--bos-gold); }
-.lp-theme .osm .osm-rechnung .klein td { font-size: 14px; opacity: .7; border-bottom: 0; }
+.lp-theme .osm .osm-rechnung td { padding: 15px 24px; border-bottom: 1px solid rgba(244, 241, 234, .12); vertical-align: baseline; }
+.lp-theme .osm .osm-rechnung td:last-child { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; font-weight: 600; padding-left: 12px; }
+.lp-theme .osm .osm-rechnung .plus td:last-child { color: #a9dcb6; }
+.lp-theme .osm .osm-rechnung .minus td:last-child { color: #f2b3a5; }
+.lp-theme .osm .osm-rechnung .summe td { font-weight: 650; background: rgba(244, 241, 234, .06); border-top: 1px solid rgba(244, 241, 234, .3); }
+.lp-theme .osm .osm-rechnung .ergebnis td { font-weight: 700; font-size: 19px; padding-top: 18px; padding-bottom: 18px; background: rgba(204, 172, 5, .16); color: var(--bos-gold); }
+.lp-theme .osm .osm-rechnung .klein td { font-size: 15px; color: rgba(244, 241, 234, .8); border-bottom: 0; }
+.lp-theme .osm .osm-rechnung .klein td:last-child { font-weight: 500; }
 .lp-theme .osm .osm-kennzahlen { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .lp-theme .osm .osm-kennzahl {
-  border: 1px solid rgba(244, 241, 234, .14);
-  border-radius: 14px;
+  border-radius: 18px;
   padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
-.lp-theme .osm .osm-kennzahl:first-child { grid-column: 1 / -1; border-color: rgba(204, 172, 5, .5); }
-.lp-theme .osm .osm-kennzahl b { font-size: 30px; font-weight: 600; color: var(--bos-gold); }
-.lp-theme .osm .osm-kennzahl span { font-size: 14px; line-height: 1.5; opacity: .85; }
+.lp-theme .osm .osm-kennzahl:first-child { grid-column: 1 / -1; border-color: rgba(204, 172, 5, .5) !important; }
+.lp-theme .osm .osm-kennzahl b { font-size: 30px; font-weight: 650; letter-spacing: -0.02em; color: var(--bos-gold); }
+.lp-theme .osm .osm-kennzahl span { font-size: 15px; line-height: 1.55; color: rgba(244, 241, 234, .88); }
 
 /* Warum */
 .lp-theme .osm .osm-gruppe { background: var(--bos-gruen) !important; color: var(--bos-papier); border-color: var(--bos-gruen) !important; }
@@ -397,39 +457,79 @@
   background: linear-gradient(180deg, rgba(18, 21, 18, 0), rgba(18, 21, 18, .8));
 }
 
-/* Prozess */
+/*
+ * Prozess als Schlange: Reihe 1 läuft von links nach rechts (1 bis 4),
+ * biegt rechts in einem Bogen nach unten und läuft in Reihe 2 zurück
+ * (5 bis 7). Die Reihenfolge im Quelltext bleibt 1 bis 7, nur das Raster
+ * stellt Reihe 2 gespiegelt. Am Handy senkrecht mit Linie links.
+ */
 .lp-theme .osm .osm-schritte {
+  --osm-spalt: 32px;
+  --osm-linie: 2px;
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 0 34px 0 0;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
+  grid-auto-rows: 1fr;
+  gap: 44px var(--osm-spalt);
 }
 .lp-theme .osm .osm-schritte li {
+  position: relative;
   display: flex;
-  gap: 14px;
-  align-items: flex-start;
-  background: #fff;
-  border: 1px solid var(--bos-linie);
-  border-radius: 12px;
-  padding: 16px;
+  flex-direction: column;
+  gap: 12px;
+  border-radius: 18px;
+  padding: 20px;
+}
+.lp-theme .osm .osm-schritte li:nth-child(1) { grid-area: 1 / 1; }
+.lp-theme .osm .osm-schritte li:nth-child(2) { grid-area: 1 / 2; }
+.lp-theme .osm .osm-schritte li:nth-child(3) { grid-area: 1 / 3; }
+.lp-theme .osm .osm-schritte li:nth-child(4) { grid-area: 1 / 4; }
+.lp-theme .osm .osm-schritte li:nth-child(5) { grid-area: 2 / 4; }
+.lp-theme .osm .osm-schritte li:nth-child(6) { grid-area: 2 / 3; }
+.lp-theme .osm .osm-schritte li:nth-child(7) { grid-area: 2 / 2; }
+/* Verbindungen: waagerecht im Spalt, in Reihe 2 nach links. */
+.lp-theme .osm .osm-schritte li::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: var(--osm-spalt);
+  height: var(--osm-linie);
+  margin-top: calc(var(--osm-linie) / -2);
+  background: var(--bos-gold);
+}
+.lp-theme .osm .osm-schritte li:nth-child(-n + 3)::after { left: 100%; }
+.lp-theme .osm .osm-schritte li:nth-child(5)::after,
+.lp-theme .osm .osm-schritte li:nth-child(6)::after { right: 100%; }
+.lp-theme .osm .osm-schritte li:nth-child(7)::after { display: none; }
+/* Die Wendung: Bogen rechts von Schritt 4 hinunter zu Schritt 5. */
+.lp-theme .osm .osm-schritte li:nth-child(4)::after {
+  left: 100%;
+  width: 26px;
+  height: calc(100% + 44px);
+  margin-top: calc(var(--osm-linie) / -2);
+  background: none;
+  border: var(--osm-linie) solid var(--bos-gold);
+  border-left: 0;
+  border-radius: 0 28px 28px 0;
 }
 .lp-theme .osm .osm-schritt-nr {
   flex-shrink: 0;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 999px;
   display: grid;
   place-items: center;
   background: var(--bos-gruen);
   color: var(--bos-gold);
-  font-family: "BOS Montserrat", "BOS Outfit", Arial, sans-serif;
-  font-size: 14px;
-  font-weight: 600;
+  font-family: var(--osm-schrift);
+  font-size: 15px;
+  font-weight: 650;
+  box-shadow: 0 0 0 4px rgba(204, 172, 5, .18);
 }
-.lp-theme .osm .osm-schritte b { display: block; font-size: 16px; margin-bottom: 2px; }
-.lp-theme .osm .osm-schritte span:not(.osm-schritt-nr) { display: block; font-size: 14px; line-height: 1.45; color: var(--bos-grau); }
+.lp-theme .osm .osm-schritte b { display: block; font-size: 17px; font-weight: 650; letter-spacing: -0.01em; margin-bottom: 4px; }
+.lp-theme .osm .osm-schritte span:not(.osm-schritt-nr) { display: block; font-size: 15px; line-height: 1.45; color: var(--bos-grau); }
 
 /* Kontakt */
 .lp-theme .osm .osm-kontakt { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 48px; align-items: center; }
@@ -439,14 +539,17 @@
   align-items: center;
   padding: 22px;
   border-radius: 16px;
-  background: rgba(244, 241, 234, .06);
+  background: linear-gradient(150deg, rgba(244, 241, 234, .14), rgba(244, 241, 234, .05));
   border: 1px solid rgba(204, 172, 5, .35);
+  box-shadow: 0 16px 44px -10px rgba(0, 0, 0, .45), inset 0 1px 0 0 rgba(255, 255, 255, .1);
+  backdrop-filter: blur(var(--glass-blur, 16px));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
   min-width: 0;
 }
 .lp-theme .osm .osm-partner-bild { width: 112px; height: 136px; border-radius: 12px; object-fit: cover; flex-shrink: 0; font-size: 40px; }
 .lp-theme .osm .osm-partner-text { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-.lp-theme .osm .osm-partner-text strong { font-size: 24px; font-weight: 600; overflow-wrap: anywhere; }
-.lp-theme .osm .osm-partner-text > span { font-size: 14px; opacity: .75; }
+.lp-theme .osm .osm-partner-text strong { font-size: 24px; font-weight: 650; overflow-wrap: anywhere; }
+.lp-theme .osm .osm-partner-text > span { font-size: 15px; color: rgba(244, 241, 234, .82); }
 .lp-theme .osm .osm-partner-text a {
   display: inline-flex;
   align-items: center;
@@ -498,9 +601,10 @@
 .lp-theme .osm .leistung-card {
   height: 100%;
   overflow: hidden;
-  border-radius: 14px;
-  background: rgba(244, 241, 234, .05);
-  border: 1px solid rgba(244, 241, 234, .12);
+  border-radius: 18px;
+  background: linear-gradient(160deg, rgba(244, 241, 234, .1), var(--osm-glas-dunkel));
+  border: 1px solid var(--osm-glas-kante-dunkel);
+  box-shadow: 0 12px 40px -8px rgba(0, 0, 0, .45), inset 0 1px 0 0 rgba(255, 255, 255, .08);
   color: var(--bos-papier);
 }
 .lp-theme .osm .leistung-card > img { display: block; width: 100%; height: 150px; object-fit: cover; }
@@ -509,12 +613,15 @@
 .lp-theme .osm .leistung-eyebrow { color: var(--bos-gold); font-size: 12px; text-transform: uppercase; letter-spacing: .14em; margin-bottom: 10px; }
 .lp-theme .osm .leistung-card h3 { font-size: 23px; line-height: 1.25; }
 .lp-theme .osm .leistung-card-large h3 { font-size: 30px; }
-.lp-theme .osm .leistung-card p { font-size: 15px; margin-top: 10px; color: rgba(244, 241, 234, .75); }
+.lp-theme .osm .leistung-card p { font-size: 15px; line-height: 1.6; margin-top: 10px; color: rgba(244, 241, 234, .84); }
 
 /* Tablet */
 @media (max-width: 1023px) {
   .lp-theme .osm .osm-objekte { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  .lp-theme .osm .osm-schritte { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lp-theme .osm .osm-hero-inhalt { grid-template-columns: minmax(0, 1fr); }
+  .lp-theme .osm .osm-portraetkarte { max-width: 440px; }
+  .lp-theme .osm .osm-schritte { --osm-spalt: 20px; }
+  .lp-theme .osm .osm-schritte li { padding: 16px; }
   .lp-theme .osm .osm-rechnung-raster,
   .lp-theme .osm .osm-kontakt { grid-template-columns: minmax(0, 1fr); }
   .lp-theme .osm .osm-drei { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -534,21 +641,36 @@
   .lp-theme .osm .osm-hero-text { font-size: 17px; }
   .lp-theme .osm .osm-knoepfe { flex-direction: column; align-items: stretch; }
   .lp-theme .osm .osm-knopf { width: 100%; text-align: center; }
-  .lp-theme .osm .osm-portraetkarte { width: 100%; display: flex; align-items: center; }
-  .lp-theme .osm .osm-portraet { width: 84px; height: 100px; flex-shrink: 0; }
-  .lp-theme .osm .osm-portraetkarte .osm-initialen { font-size: 32px; }
+  .lp-theme .osm .osm-portraetkarte { max-width: none; grid-template-columns: 76px minmax(0, 1fr); padding: 16px; gap: 14px; }
+  .lp-theme .osm .osm-portraet { width: 76px; height: 90px; }
+  .lp-theme .osm .osm-portraetkarte strong { font-size: 18px; }
   .lp-theme .osm .osm-bildort { right: 16px; bottom: 10px; font-size: 11px; }
   .lp-theme .osm .osm-drei,
   .lp-theme .osm .osm-zwei,
   .lp-theme .osm .osm-objekte,
-  .lp-theme .osm .osm-schritte,
   .lp-theme .osm .osm-kennzahlen { grid-template-columns: minmax(0, 1fr); }
+  /* Prozess senkrecht: Nummern links auf einer durchgehenden Linie. */
+  .lp-theme .osm .osm-schritte { display: flex; flex-direction: column; gap: 12px; padding: 0; position: relative; }
+  .lp-theme .osm .osm-schritte::before {
+    content: "";
+    position: absolute;
+    left: 17px;
+    top: 24px;
+    bottom: 24px;
+    width: var(--osm-linie);
+    background: var(--bos-gold);
+  }
+  .lp-theme .osm .osm-schritte li { margin-left: 52px; padding: 14px 16px; gap: 0; }
+  .lp-theme .osm .osm-schritte li::after { display: none; }
+  .lp-theme .osm .osm-schritt-nr { position: absolute; left: -52px; top: 50%; margin-top: -18px; }
   .lp-theme .osm .osm-galerie { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
   .lp-theme .osm .osm-galerie figcaption { font-size: 12px; padding: 22px 10px 8px; }
   .lp-theme .osm .osm-karte { padding: 22px; }
-  .lp-theme .osm .osm-rechnung { font-size: 14px; }
+  .lp-theme .osm .osm-rechnung { font-size: 16px; }
   .lp-theme .osm .osm-rechnung td,
-  .lp-theme .osm .osm-rechnung th { padding-left: 14px; padding-right: 14px; }
+  .lp-theme .osm .osm-rechnung th { padding: 13px 14px; }
+  .lp-theme .osm .osm-rechnung .ergebnis td { font-size: 17px; }
+  .lp-theme .osm .osm-rechnung .klein td { font-size: 14px; }
   .lp-theme .osm .osm-partner { flex-direction: column; align-items: flex-start; }
   .lp-theme .osm .leistung-card > img,
   .lp-theme .osm .leistung-card-large > img { height: auto; aspect-ratio: 1.8; }

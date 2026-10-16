@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import type { ObjektData, ObjektDokument } from "@/lib/objekteStore";
-import { annahmenVorbelegen, baueExposeInhalt, type ExposeGrundriss } from "@/lib/exposeInhalt";
+import { baueExposeInhalt, type ExposeGrundriss } from "@/lib/exposeInhalt";
 import { baueObjektExposeInhalt } from "@/lib/exposePublicDaten";
 import { ExposeAnsicht } from "./ExposeAnsicht";
 import { LEERE_ERGAENZUNG } from "./exposeInvestagon";
@@ -46,10 +46,9 @@ function objektMit(dokumente: ObjektDokument[], meta: Record<string, unknown> = 
 function zeige(objekt: ObjektData, wohnungId: string | null, grundrisseVomServer: ExposeGrundriss[] = []) {
   const wohnung = objekt.wohnungen.find((w) => w.id === wohnungId);
   const inhalt = wohnung ? baueExposeInhalt({ objekt, wohnung, heute: new Date(2026, 8, 23) }) : baueObjektExposeInhalt({ objekt, heute: new Date(2026, 8, 23) });
-  const { annahmen } = annahmenVorbelegen(objekt, wohnung ?? objekt.wohnungen[0], null);
   render(
     <MemoryRouter>
-      <ExposeAnsicht inhalt={inhalt} rechner={{ annahmen, onAnnahmen: () => undefined, herkunft: {} }} investagon={{ ...LEERE_ERGAENZUNG, grundrisse: grundrisseVomServer }} />
+      <ExposeAnsicht inhalt={inhalt} investagon={{ ...LEERE_ERGAENZUNG, grundrisse: grundrisseVomServer }} />
     </MemoryRouter>,
   );
   return inhalt;

@@ -1,22 +1,21 @@
 import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Building2, MapPin, Compass, ClipboardList, LayoutGrid, Calculator, Building, ArrowUpRight, CalendarDays, ShieldCheck, FileText, Phone, Download, Loader2, ChevronLeft, ChevronRight, X, Users, TrendingUp, TrendingDown, Check, Euro, Maximize2, DoorOpen, KeyRound, Percent, Sun, Zap, Car, BarChart3, type LucideIcon } from "lucide-react";
+import { Building2, MapPin, Compass, ClipboardList, LayoutGrid, Building, ArrowUpRight, CalendarDays, ShieldCheck, FileText, Phone, Download, Loader2, ChevronLeft, ChevronRight, X, Users, TrendingUp, TrendingDown, Check, Euro, Maximize2, DoorOpen, KeyRound, Percent, Sun, Zap, Car, BarChart3, type LucideIcon } from "lucide-react";
 import { springeZuAbschnitt, useAktiverAbschnitt } from "./useAktiverAbschnitt";
 import { AbschnittObjektdaten, AbschnittKontakt } from "./ExposeAbschnitte";
 import { Partnerkasten } from "@/components/kundenansicht/Partnerkasten";
-import { ExposeRechner, type ExposeRechnerProps } from "./ExposeRechner";
 import { Mikrolage } from "./Mikrolage";
 import { GrundrissVorschau } from "./GrundrissVorschau";
 import { grundrisseFuerAnsicht } from "./grundrissAuswahl";
 import { GrundrissStreifen } from "./GrundrissStreifen";
-import { abschnittAnker, exposeAbschnitte, marktQuelleHinweis, mikrolageZeigen, ohneDoppelte, sichtbareZeilen, verwaltungKostenText, type ExposeAbschnittId, type ExposeInhalt, type Person } from "@/lib/exposeInhalt";
+import { abschnittAnker, besonderheitenAnzeige, exposeAbschnitte, marktQuelleHinweis, mikrolageZeigen, ohneDoppelte, sichtbareZeilen, verwaltungKostenText, type ExposeAbschnittId, type ExposeInhalt, type Person } from "@/lib/exposeInhalt";
 import { eur0, dez, zimmerText } from "@/lib/objektKennzahlen";
 import { resolveImageUrl } from "@/lib/objekteImages";
 import { datumText } from "@/lib/sprachFormat";
 import { useAnzeigeSprache } from "@/lib/seitenSpracheKontext";
 import { NurDeutschHinweis } from "@/components/kundensprache/NurDeutschHinweis";
 import { LEERE_ERGAENZUNG, ohneWidersprueche, zeilenErgaenzen, type InvestagonErgaenzung } from "./exposeInvestagon";
-import { EXPOSE_SEITEN_TEXTE, exposeSeitenTexte } from "./exposeTexte";
+import { exposeSeitenTexte } from "./exposeTexte";
 import { exposeInhaltTexte } from "@/lib/exposeInhaltTexte";
 import { toast } from "sonner";
 import { exposePdfHerunterladen } from "@/lib/exposePdfHerunterladen";
@@ -24,10 +23,8 @@ import "./premiumExpose.css";
 
 export interface ExposeAnsichtProps {
   inhalt: ExposeInhalt;
-  rechner: Omit<ExposeRechnerProps, "objektdaten">;
   kopfRechts?: ReactNode;
   leisteObenLinks?: ReactNode;
-  rechnerHinweis?: ReactNode;
   fussText?: string;
   pdfAktiv?: boolean;
   onPdf?: () => void;
@@ -50,7 +47,8 @@ export interface ExposeAnsichtProps {
    */
   einheitLink?: (wohnungId: string) => string;
 }
-const icons = [Building2, MapPin, Compass, ClipboardList, LayoutGrid, Calculator, Building, ArrowUpRight, CalendarDays, ShieldCheck, FileText, Phone];
+// Je Abschnitt ein Symbol, in der Reihenfolge von `exposeAbschnitte`.
+const icons = [Building2, MapPin, Compass, ClipboardList, LayoutGrid, Building, CalendarDays, ShieldCheck, FileText, Phone];
 
 /**
  * Art einer Kennzahl im Kopf, nach ihrer Beschriftung statt nach ihrer
@@ -69,15 +67,6 @@ function kennzahlArt(label: string): KennzahlArt {
   return "haus";
 }
 const KENNZAHL_SYMBOL: Record<KennzahlArt, LucideIcon> = { preis: Euro, rendite: Percent, flaeche: Maximize2, zimmer: DoorOpen, miete: KeyRound, haus: Building2 };
-
-/**
- * Satz über dem Rechner, wenn nichts gespeichert wird: im Kundenlink und in
- * der Kundenansicht. Dort rechnet das Exposé immer mit den Standardwerten,
- * jede Änderung an den Reglern gilt nur, solange die Seite offen ist
- * (`ExposePublic.tsx`, `aenderungen` im Zustand der Seite). Die interne
- * Ansicht bringt über `rechnerHinweis` ihren eigenen Stand mit.
- */
-export const RECHNER_HINWEIS_OHNE_SPEICHERN = EXPOSE_SEITEN_TEXTE.de.rechnerHinweisOhneSpeichern;
 
 /** Symbol zu einem Merkmal-Chip. */
 function chipSymbol(chip: string): LucideIcon {
@@ -122,6 +111,8 @@ export function ExposeAnsicht(p: ExposeAnsichtProps) {
   const weitereUnterlagen = (c.dokumente ?? []).filter(d => !alsPlan(d));
   // Erst ergänzen, dann „Keine Angabe“ herausnehmen: Die Ergänzung füllt
   // leere Zeilen an ihrer Stelle, was danach noch leer ist, bleibt weg.
+  // Besonderheiten und Ausstattung: Investagon, sonst die Felder im CRM, der Erhaltungsaufwand immer (`besonderheitenAnzeige`).
+  const besonderheiten = besonderheitenAnzeige(c, zusatz, sprache);
   const objektzeilen = sichtbareZeilen(zeilenErgaenzen(c.objektdaten.zeilen, ohneWidersprueche(zusatz.zeilen, c.objektdaten.energie)));
 
   /*
@@ -159,9 +150,6 @@ export function ExposeAnsicht(p: ExposeAnsichtProps) {
     try {
       await exposePdfHerunterladen({
         inhalt: { ...c, objektdaten: { ...c.objektdaten, zeilen: objektzeilen }, grundriss: { ...c.grundriss, dokumente: plaene } },
-        annahmen: p.rechner.annahmen,
-        herkunft: p.rechner.herkunft,
-        eigenkapitalEuro: p.rechner.eigenkapitalEuro,
         sprache,
         zusatz: { beschreibungen: zusatz.beschreibungen, merkmale: zusatz.merkmale },
       });
@@ -291,9 +279,9 @@ export function ExposeAnsicht(p: ExposeAnsichtProps) {
       {zeigen.mikrolage && <section className="section" id={abschnittAnker("mikrolage")} data-testid="abschnitt-mikrolage">{header("mikrolage")}<Mikrolage mikrolage={c.mikrolage} titel={c.kopf.adresse || c.kopf.titel} /></section>}
       <section className="section alt" id={abschnittAnker("objektdaten")} data-testid="abschnitt-objektdaten">{header("objektdaten")}<div className="data"><AbschnittObjektdaten objektdaten={{ ...c.objektdaten, zeilen: objektzeilen }} /></div>
         {/* Besonderheiten und Merkmale als weiße Karten wie die übrigen, sonst gingen sie auf dem grauen Grund unter. */}
-        {!!zusatz.beschreibungen.length && <div className="expose-freitexte" data-testid="investagon-beschreibung"><h3 className="subhead">{t.besonderheiten}</h3><div className="expose-karte">{zusatz.beschreibungen.map((text, i) => <p className="freitext" key={i}>{text}</p>)}{sprache === "en" && <NurDeutschHinweis className="mb-2" />}<p className="quellenzeile">{t.quelleAnbieter}</p></div></div>}
+        {(besonderheiten.erhaltungsaufwand || besonderheiten.texte.length > 0) && <div className="expose-freitexte" data-testid="investagon-beschreibung"><h3 className="subhead">{t.besonderheiten}</h3><div className="expose-karte">{besonderheiten.erhaltungsaufwand && <p className="freitext erhaltungsaufwand" data-testid="besonderheit-erhaltungsaufwand"><b>{besonderheiten.erhaltungsaufwand}</b></p>}{besonderheiten.texte.map((text, i) => <p className="freitext" key={i}>{text}</p>)}{sprache === "en" && besonderheiten.texte.length > 0 && <NurDeutschHinweis className="mb-2" />}<p className="quellenzeile">{t.quelleAnbieter}</p></div></div>}
         {/* Immer untereinander: Das Raster zu zweit sah bei zwei Merkmalen verloren aus. */}
-        {!!zusatz.merkmale.length && <div className="merkmale" data-testid="investagon-merkmale"><h3 className="subhead">{t.ausstattung}</h3><div className="expose-karte"><ul className="merkmal-liste">{zusatz.merkmale.map((m, i) => <li key={`${m.bezeichnung}-${i}`}><span className="merkmal-haken" aria-hidden="true"><Check size={12} strokeWidth={3} /></span><span>{m.wert ? <><b>{m.bezeichnung}</b> {m.wert}</> : m.bezeichnung}</span></li>)}</ul><p className="quellenzeile">{t.quelleAnbieter}</p></div></div>}
+        {besonderheiten.ausstattung.length > 0 && <div className="merkmale" data-testid="investagon-merkmale"><h3 className="subhead">{t.ausstattung}</h3><div className="expose-karte"><ul className="merkmal-liste">{besonderheiten.ausstattung.map((m, i) => <li key={`${m.bezeichnung}-${i}`}><span className="merkmal-haken" aria-hidden="true"><Check size={12} strokeWidth={3} /></span><span>{m.wert ? <><b>{m.bezeichnung}</b> {m.wert}</> : m.bezeichnung}</span></li>)}</ul><p className="quellenzeile">{t.quelleAnbieter}</p></div></div>}
         {!!c.einheiten?.length && (global
           ? <div className="unit-table" data-testid="einheiten-mietenspiegel"><h3 className="subhead">{t.mietenspiegelTitel}</h3><div className="table-scroll"><table><thead><tr><th>{t.spalteEinheit}</th><th>{t.spalteLage}</th><th>{t.spalteWohnflaeche}</th><th>{t.spalteZimmer}</th><th>{t.spalteKaltmiete}</th><th>{t.spalteVermietung}</th></tr></thead><tbody>{c.einheiten.map(w => <tr key={w.id}><td>{w.nummer || t.einheit}</td><td>{w.lage || keineAngabe}</td><td>{w.flaeche > 0 ? `${dez(w.flaeche,1,sprache)} m²` : keineAngabe}</td><td>{w.zimmer ? zimmerText(w.zimmer, sprache) : keineAngabe}</td><td>{w.miete && w.miete > 0 ? eur0(w.miete, sprache) : keineAngabe}</td><td>{w.vermietet ? t.vermietet : t.frei}</td></tr>)}</tbody></table></div><p className="caption">{t.hausImGanzen}</p></div>
           : <div className="unit-table" data-testid="einheiten-tabelle"><h3 className="subhead">{t.einheitenUeberblick}</h3><div className="table-scroll"><table><thead><tr><th>{t.spalteEinheit}</th><th>{t.spalteWohnflaeche}</th><th>{t.spalteZimmer}</th><th>{t.spalteKaufpreis}</th><th>{t.spalteStatus}</th><th className="screen-only">{t.spalteExpose}</th></tr></thead><tbody>{c.einheiten.map(w => <tr key={w.id}><td>{w.nummer}</td><td>{w.flaeche > 0 ? `${dez(w.flaeche,1,sprache)} m²` : keineAngabe}</td><td>{w.zimmer ? zimmerText(w.zimmer, sprache) : keineAngabe}</td><td>{w.preis > 0 ? eur0(w.preis, sprache) : keineAngabe}</td><td>{w.status === "frei" ? t.statusVerfuegbar : w.status === "reserviert" ? t.statusReserviert : t.statusVerkauft}</td><td className="screen-only"><Link to={unitUrl(w.id)} aria-label={t.exposeEinheit(w.nummer)}>{t.ansehen} <ArrowUpRight size={13} /></Link></td></tr>)}</tbody></table></div></div>)}
@@ -304,20 +292,15 @@ export function ExposeAnsicht(p: ExposeAnsichtProps) {
         <div className="grundriss-plaene" data-testid="grundriss-plaene">{plaene.length > 1 ? <GrundrissStreifen plaene={plaene} onZoom={setLightbox} /> : plaene.map(d => <GrundrissVorschau key={d.url} dokument={d} onZoom={setLightbox} />)}</div>
         <p className="caption grundriss-hinweis">{t.grundrissHinweis}</p>
       </section>}
-      <section className="section alt" id={abschnittAnker("wirtschaftlichkeit")} data-testid="abschnitt-wirtschaftlichkeit">{header("wirtschaftlichkeit")}<div className="finance">
-        {/* Der Satz zum Speichern steht zentriert über dem Rechner. Ohne eigenen Hinweis der Seite gilt: Hier wird nichts gespeichert. */}
-        {p.rechnerHinweis
-          ? <div className="rechner-hinweis">{p.rechnerHinweis}</div>
-          : c.wirtschaftlichkeit.verfuegbar !== false && !p.rechner.gesperrt && <p className="rechner-hinweis-satz screen-only" data-testid="rechner-hinweis">{t.rechnerHinweisOhneSpeichern}</p>}
-        {c.wirtschaftlichkeit.verfuegbar === false ? <div className="card" data-testid="rechner-nicht-verfuegbar"><h3>{c.ansicht === "objekt" && !global ? t.passendeEinheitTitel : t.berechnungNichtVerfuegbar}</h3><p>{c.ansicht === "objekt" && !global && c.einheiten?.length ? t.passendeEinheitText : t.ohneKaufpreisText}</p><button className="btn" onClick={() => springeZuAbschnitt("objektdaten")}>{t.zuDenObjektdaten}</button></div> : <ExposeRechner objektdaten={c.wirtschaftlichkeit.objektdaten} {...p.rechner} kaufpreisLabel={c.ansicht === "objekt" ? t.kaufpreisLabelObjekt : t.kaufpreisLabelEinheit} />}</div></section>
-      <section className="section" id={abschnittAnker("verwaltung")} data-testid="abschnitt-verwaltung">{header("verwaltung")}<h3 className="subhead">{c.verwaltung.bezeichnung}</h3>{verwaltungZeile && <p className="caption" data-testid="verwaltung-zeile">{verwaltungZeile}</p>}
+      {/* Hell und grau im Wechsel; seit der Abschnitt Wirtschaftlichkeit fehlt (16.10.2026), ab hier umgekehrt. */}
+      <section className="section alt" id={abschnittAnker("verwaltung")} data-testid="abschnitt-verwaltung">{header("verwaltung")}<h3 className="subhead">{c.verwaltung.bezeichnung}</h3>{verwaltungZeile && <p className="caption" data-testid="verwaltung-zeile">{verwaltungZeile}</p>}
         {c.verwaltung.leistungen.length > 0
           ? <div className="services" data-testid="verwaltung-leistungen">{c.verwaltung.leistungen.map(l => <div className="service" key={l}>{l}</div>)}</div>
           : <div className="card verwaltung-offen" data-testid="verwaltung-ohne-leistungen"><p>{t.verwaltungOffen}</p></div>}
         {bilder.length > 0 && <><h3 className="subhead" style={{marginTop:55}}>{t.einblicke}</h3><div className="gallery">{bilder.map((b,i) => <button key={b.url} onClick={() => setLightbox({url:resolveImageUrl(b.url),alt:b.alt || t.objektbild(i+1)})} aria-label={t.bildVergroessern(b.alt || String(i+1))}><img loading="lazy" src={resolveImageUrl(b.url)} alt={b.alt || t.objektbild(i+1)} /></button>)}</div></>}
       </section>
       {/* Seit 01.10.2026 ein Abschnitt: der Zeitstrahl mit Kasten je Station, darunter die Erklärung aus den früheren Schritt-Karten. Der erledigte Schritt (Beratung) steht abgehakt davor. */}
-      <section className="section alt" id={abschnittAnker("zeitplan")} data-testid="abschnitt-zeitplan">{header("zeitplan")}
+      <section className="section" id={abschnittAnker("zeitplan")} data-testid="abschnitt-zeitplan">{header("zeitplan")}
         <ol className="zeitplan mit-text" data-testid="zeitplan">
           {c.naechsteSchritte.filter(s => s.erledigt).map(s => <li className="zeitplan-station erledigt" key={`erledigt-${s.nr}`} data-testid="zeitplan-erledigt">
             <span className="zeitplan-nr" aria-hidden="true"><Check size={16} strokeWidth={3} /></span>
@@ -339,11 +322,11 @@ export function ExposeAnsicht(p: ExposeAnsichtProps) {
         </ol>
         <p className="caption">{t.zeitplanHinweis}</p>
       </section>
-      <section className="section" id={abschnittAnker("chancen-risiken")} data-testid="abschnitt-chancen-risiken">{header("chancen-risiken")}
+      <section className="section alt" id={abschnittAnker("chancen-risiken")} data-testid="abschnitt-chancen-risiken">{header("chancen-risiken")}
         <div className="themen-leiste screen-only"><button type="button" className="btn" data-testid="alle-aufklappen" onClick={() => setOffeneThemen(alleOffen ? [] : c.chancenRisiken.map(thema => thema.id))}>{alleOffen ? t.alleEinklappen : t.alleAufklappen}</button></div>
         {c.chancenRisiken.map(thema => <details key={thema.id} open={offeneThemen.includes(thema.id)} onToggle={e => { const offen = (e.currentTarget as HTMLDetailsElement).open; setOffeneThemen(alt => offen ? (alt.includes(thema.id) ? alt : [...alt, thema.id]) : alt.filter(x => x !== thema.id)); }}><summary>{thema.titel}</summary><p><b>{t.chance}</b> {thema.chance}</p><p><b>{t.risiko}</b> {thema.risiko}</p></details>)}
       </section>
-      <section className="section alt" id={abschnittAnker("rechtliches")} data-testid="abschnitt-rechtliches">{header("rechtliches")}<div className="card data">{c.rechtliches.entwurf && <p data-testid="rechtliches-entwurf"><b>{t.entwurf}</b></p>}{c.rechtliches.hinweise.map(h => <div key={h.titel}><h3>{h.titel}</h3><p>{h.text}</p></div>)}</div></section>
+      <section className="section" id={abschnittAnker("rechtliches")} data-testid="abschnitt-rechtliches">{header("rechtliches")}<div className="card data">{c.rechtliches.entwurf && <p data-testid="rechtliches-entwurf"><b>{t.entwurf}</b></p>}{c.rechtliches.hinweise.map(h => <div key={h.titel}><h3>{h.titel}</h3><p>{h.text}</p></div>)}</div></section>
       <section className="section contact" id={abschnittAnker("kontakt")} data-testid="abschnitt-kontakt">{header("kontakt")}<AbschnittKontakt kontakt={c.kontakt} /></section>
     </main>
     <footer><span>OS Immobilien · {[c.kopf.adresse, c.kopf.titel].filter(Boolean).join(" · ")}</span><span>{t.stand(sprache === "en" ? datumText(new Date(), sprache) : new Date().toLocaleDateString("de-DE"))}{p.fussText ? ` · ${p.fussText}` : ""}<br/><Link to="/impressum">{t.impressum}</Link> · <Link to="/datenschutz">{t.datenschutz}</Link></span></footer>

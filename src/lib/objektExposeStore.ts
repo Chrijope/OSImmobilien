@@ -5,8 +5,7 @@
  * entsteht erst mit der Migration, und eine fehlende Tabelle in der
  * Ladeliste des Zwischenspeichers reißt beim Start den Realtime-Kanal mit
  * (siehe abwesenheitStore.ts). Solange die Migration nicht gelaufen ist,
- * melden die Funktionen `migrationFehlt`, und die Exposé-Seite zeigt alles
- * an, nur ohne Speichern.
+ * melden die Funktionen `migrationFehlt`.
  */
 import { supabase } from "@/integrations/supabase/client";
 import { istTabelleUnbekannt } from "@/lib/abwesenheitStore";
@@ -30,8 +29,6 @@ export { KUNDENLINK_ART_STANDARD, kundenlinkArtName } from "../../supabase/funct
 const db = supabase as unknown as {
   from: (t: string) => any; // eslint-disable-line @typescript-eslint/no-explicit-any
 };
-
-export const OBJEKT_EXPOSE_MIGRATION = "20260902200000_objekt_exposes.sql";
 
 /**
  * `?ansicht=kunde`: die Vorschau aus „Exposé für Kunden“. Die Seite zeigt
@@ -64,167 +61,12 @@ export function objektExposePfad(objektId: string, kundeId?: string | null, kund
   return mitAbfrage(`/objekte/${objektId}/expose`, kundeId, kundenansicht);
 }
 
-/** Der Hinweis, den die Seite zeigt, solange die Tabelle fehlt. */
-export const EXPOSE_MIGRATION_HINWEIS =
-  `Migration ${OBJEKT_EXPOSE_MIGRATION} noch nicht ausgeführt. Das Exposé lässt sich ansehen, die Annahmen bleiben aber nur in diesem Browser.`;
-
-export interface ObjektExpose {
-  id: string;
-  /** Leer beim Exposé des ganzen Objekts (seit Migration 20260923151000). */
-  wohnung_id: string | null;
-  objekt_id: string;
-  kontakt_id: string | null;
-  erstellt_von: string | null;
-  token: string;
-  annahmen: Partial<ExposeAnnahmen>;
-  annahmen_gesperrt: boolean;
-  sichtbare_abschnitte: string[];
-  preisstand: number | null;
-  preisstand_am: string | null;
-  gueltig_bis: string | null;
-  aufrufe: number;
-  zuletzt_aufgerufen_am: string | null;
-  erstellt_am: string;
-  aktualisiert_am: string;
-}
-
-export interface ExposeLadeErgebnis {
-  expose: ObjektExpose | null;
-  /** Die Migration fehlt. Die Seite zeigt dann einen Hinweis statt Speichern. */
-  migrationFehlt: boolean;
-  fehler: string | null;
-}
-
-const SPALTEN =
-  "id, wohnung_id, objekt_id, kontakt_id, erstellt_von, token, annahmen, annahmen_gesperrt, sichtbare_abschnitte, preisstand, preisstand_am, gueltig_bis, aufrufe, zuletzt_aufgerufen_am, erstellt_am, aktualisiert_am";
-
-function zeileZuExpose(z: Record<string, unknown>): ObjektExpose {
-  const annahmen = z.annahmen && typeof z.annahmen === "object" ? (z.annahmen as Partial<ExposeAnnahmen>) : {};
-  const abschnitte = Array.isArray(z.sichtbare_abschnitte) ? (z.sichtbare_abschnitte as unknown[]).filter((a): a is string => typeof a === "string") : [];
-  return {
-    id: String(z.id),
-    wohnung_id: z.wohnung_id ? String(z.wohnung_id) : null,
-    objekt_id: String(z.objekt_id),
-    kontakt_id: (z.kontakt_id as string | null) ?? null,
-    erstellt_von: (z.erstellt_von as string | null) ?? null,
-    token: String(z.token ?? ""),
-    annahmen,
-    annahmen_gesperrt: !!z.annahmen_gesperrt,
-    sichtbare_abschnitte: abschnitte,
-    preisstand: z.preisstand === null || z.preisstand === undefined ? null : Number(z.preisstand),
-    preisstand_am: (z.preisstand_am as string | null) ?? null,
-    gueltig_bis: (z.gueltig_bis as string | null) ?? null,
-    aufrufe: Number(z.aufrufe ?? 0),
-    zuletzt_aufgerufen_am: (z.zuletzt_aufgerufen_am as string | null) ?? null,
-    erstellt_am: String(z.erstellt_am ?? ""),
-    aktualisiert_am: String(z.aktualisiert_am ?? ""),
-  };
-}
-
-function fehlerErgebnis(error: { code?: string; message?: string }): ExposeLadeErgebnis {
-  if (istTabelleUnbekannt(error)) return { expose: null, migrationFehlt: true, fehler: null };
-  return { expose: null, migrationFehlt: false, fehler: error.message || "Unbekannter Fehler" };
-}
-
-/**
- * Das jüngste Exposé zu einer Wohnung und einem Kunden. Ohne Kunde das
- * jüngste ohne Kundenbezug, also die neutrale Vorschau.
- *
- * Die neutrale Vorschau gehört seit dem 05.10.2026 dem, der sie gespeichert
- * hat (`eigeneId`, Prüfung Codex): Seit Vertriebspartner das Exposé öffnen,
- * bekäme der Admin sonst die Reglerstände eines Partners und umgekehrt. Ohne
- * eigene Kennung gibt es deshalb keine neutrale Zeile.
+/*
+ * Laden und Speichern der Rechnerannahmen je Einheit (`ladeExposeFuer`,
+ * `speichereExpose` und Verwandte) sind am 16.10.2026 mit dem Abschnitt
+ * Wirtschaftlichkeit entfallen. Die Spalten `annahmen` und
+ * `annahmen_gesperrt` der Tabelle bleiben unverändert stehen.
  */
-export async function ladeExposeFuer(wohnungId: string, kontaktId: string | null, eigeneId: string | null | undefined): Promise<ExposeLadeErgebnis> {
-  if (!kontaktId && !eigeneId) return { expose: null, migrationFehlt: false, fehler: null };
-  let abfrage = db.from("objekt_exposes").select(SPALTEN).eq("wohnung_id", wohnungId);
-  abfrage = kontaktId ? abfrage.eq("kontakt_id", kontaktId) : abfrage.is("kontakt_id", null).eq("erstellt_von", eigeneId as string);
-  const { data, error } = await abfrage.order("aktualisiert_am", { ascending: false }).limit(1);
-  if (error) return fehlerErgebnis(error);
-  const zeile = Array.isArray(data) && data[0] ? zeileZuExpose(data[0] as Record<string, unknown>) : null;
-  return { expose: zeile, migrationFehlt: false, fehler: null };
-}
-
-/**
- * Passt ein über `?expose=` geladener Datensatz zu dieser Seite?
- *
- * Nur, wenn Objekt und Einheit stimmen und der Kundenbezug genau der Kunde
- * ist, den die Seite gerade zeigen darf (`erlaubterKundeId`, nach aktiver
- * Rolle schon gefiltert, siehe `useExposeKunde`). Ohne Kundenbezug zählt
- * nur die eigene neutrale Vorschau. Sonst startet die Seite neutral.
- */
-export function exposeDatensatzPasst(
-  expose: Pick<ObjektExpose, "objekt_id" | "wohnung_id" | "kontakt_id" | "erstellt_von"> | null | undefined,
-  seite: { objektId: string; wohnungId: string | null; erlaubterKundeId: string | null; eigeneId: string | null | undefined },
-): boolean {
-  if (!expose) return false;
-  if (expose.objekt_id !== seite.objektId || (expose.wohnung_id ?? null) !== (seite.wohnungId ?? null)) return false;
-  if (expose.kontakt_id) return expose.kontakt_id === seite.erlaubterKundeId;
-  return !!seite.eigeneId && expose.erstellt_von === seite.eigeneId && !seite.erlaubterKundeId;
-}
-
-/** Ein Exposé über seine Kennung, etwa aus der Adresse `?expose=`. Vor dem Übernehmen `exposeDatensatzPasst` fragen. */
-export async function ladeExposeNachId(id: string): Promise<ExposeLadeErgebnis> {
-  const { data, error } = await db.from("objekt_exposes").select(SPALTEN).eq("id", id).maybeSingle();
-  if (error) return fehlerErgebnis(error);
-  return { expose: data ? zeileZuExpose(data as Record<string, unknown>) : null, migrationFehlt: false, fehler: null };
-}
-
-export interface ExposeSpeicherEingabe {
-  /** Vorhandenes Exposé ändern; ohne Kennung wird ein neues angelegt. */
-  id?: string;
-  wohnungId: string;
-  objektId: string;
-  kontaktId: string | null;
-  erstelltVon: string;
-  annahmen: ExposeAnnahmen;
-  annahmenGesperrt: boolean;
-  /** Kaufpreis der Wohnung zum Zeitpunkt des Speicherns (ohne Stellplatz). */
-  preisstand: number;
-}
-
-/**
- * Annahmen samt Preisstand speichern. Legt an oder ändert. Meldet
- * `migrationFehlt`, wenn die Tabelle noch nicht existiert, damit die Seite
- * ruhig weiterläuft und die Annahmen im Browser behält.
- */
-export async function speichereExpose(e: ExposeSpeicherEingabe): Promise<ExposeLadeErgebnis> {
-  const jetzt = new Date().toISOString();
-  const felder = {
-    annahmen: e.annahmen,
-    annahmen_gesperrt: e.annahmenGesperrt,
-    preisstand: e.preisstand,
-    preisstand_am: jetzt,
-  };
-  if (e.id) {
-    const { data, error } = await db.from("objekt_exposes").update(felder).eq("id", e.id).select(SPALTEN).maybeSingle();
-    if (error) return fehlerErgebnis(error);
-    if (data) return { expose: zeileZuExpose(data as Record<string, unknown>), migrationFehlt: false, fehler: null };
-    // Zeile nicht mehr da oder nicht mehr erlaubt: neu anlegen.
-  }
-  const { data, error } = await db
-    .from("objekt_exposes")
-    .insert({
-      wohnung_id: e.wohnungId,
-      objekt_id: e.objektId,
-      kontakt_id: e.kontaktId,
-      erstellt_von: e.erstelltVon,
-      ...felder,
-    })
-    .select(SPALTEN)
-    .single();
-  if (error) return fehlerErgebnis(error);
-  return { expose: zeileZuExpose(data as Record<string, unknown>), migrationFehlt: false, fehler: null };
-}
-
-/**
- * Hat sich der Kaufpreis seit dem gespeicherten Preisstand geändert?
- * Unter einem Euro Abweichung gilt als gleich (Rundung aus dem Import).
- */
-export function preisHatSichGeaendert(expose: Pick<ObjektExpose, "preisstand"> | null | undefined, aktuellerKaufpreis: number): boolean {
-  if (!expose || expose.preisstand === null || !Number.isFinite(expose.preisstand)) return false;
-  return Math.abs(expose.preisstand - aktuellerKaufpreis) >= 1;
-}
 
 /**
  * Gespeicherte Annahmen über die Vorbelegung legen. Es werden nur bekannte

@@ -1,12 +1,13 @@
 /**
- * Inhalt des Exposés je Wohneinheit: die elf Abschnitte, die festen Texte
+ * Inhalt des Exposés je Wohneinheit: die zehn Abschnitte, die festen Texte
  * und der Aufbau der Abschnittsdaten aus Objekt, Wohnung und Standort.
  *
  * Alles hier ist reine Logik ohne Oberfläche. Die Exposé-Seite (E3) rendert
  * `ExposeInhalt`, das PDF (E4) soll dieselbe Struktur in derselben
- * Reihenfolge ausgeben, damit Seite und PDF nicht auseinanderlaufen. Der
- * Rechner in Abschnitt 6 kommt aus exposeRechner.ts; hier stehen nur die
- * Objektdaten, die er braucht.
+ * Reihenfolge ausgeben, damit Seite und PDF nicht auseinanderlaufen. Den
+ * Abschnitt Wirtschaftlichkeit mit dem Rechner gibt es seit dem 16.10.2026
+ * nicht mehr (Wunsch des Inhabers). `exposeObjektdatenAus` und
+ * `annahmenVorbelegen` bleiben für den Reiter „Finanzen“ der Einheitenseite.
  *
  * Die Texte sind eigene Formulierungen in Du-Ansprache, wie im Kundenportal
  * und in der Objektvorstellung. Die rechtlichen Hinweise sind ein Entwurf
@@ -18,7 +19,7 @@ import type { ObjektBild, ObjektData, ObjektWohnung } from "@/lib/objekteStore";
 import { getHausgeldMonatForWohnung, getHausgeldNichtUmlegbarForWohnung } from "@/lib/objekteStore";
 import { einheitenImHaus, objektseiteFelder, objektartInfo, objektartAbleiten, istNeubauArt, type Sanierung } from "@/lib/objektseiteDaten";
 import { rundumVerwaltung, sanierungenAnzeige, verwaltungAnzeige } from "@/lib/objektdetailsAnzeige";
-import { objektDetails, rohdaten } from "@/lib/investagonFelder";
+import { nummeriereMerkmale, objektDetails, rohdaten } from "@/lib/investagonFelder";
 import { kaltmieteVon, renditeVon, eur0, dez, prozent, zimmerText } from "@/lib/objektKennzahlen";
 import { objektBauzustand, objektStruktur, type ObjektStruktur } from "@/lib/objektKlassen";
 import { ANZAHL_MARKTARGUMENTE, anzuzeigendeObjektTexte } from "@/lib/objektTexteKi";
@@ -52,7 +53,7 @@ import { EXPOSE_INHALT_TEXTE, RECHTLICHE_HINWEISE_VORRANG_EN, exposeInhaltTexte,
 // ── Abschnitte ──────────────────────────────────────────────────────────────
 
 export type ExposeAbschnittId =
-  | "start" | "standort" | "mikrolage" | "objektdaten" | "grundriss" | "wirtschaftlichkeit"
+  | "start" | "standort" | "mikrolage" | "objektdaten" | "grundriss"
   | "verwaltung" | "zeitplan" | "chancen-risiken" | "rechtliches" | "kontakt";
 
 export interface ExposeAbschnitt {
@@ -64,13 +65,14 @@ export interface ExposeAbschnitt {
 }
 
 const ABSCHNITT_REIHENFOLGE: ExposeAbschnittId[] = [
-  "start", "standort", "mikrolage", "objektdaten", "grundriss", "wirtschaftlichkeit",
+  "start", "standort", "mikrolage", "objektdaten", "grundriss",
   "verwaltung", "zeitplan", "chancen-risiken", "rechtliches", "kontakt",
 ];
+// „Wirtschaftlichkeit“ ist seit dem 16.10.2026 kein Abschnitt mehr, die Nummern der übrigen rücken nach.
 // „Nächste Schritte“ ist seit dem 01.10.2026 kein eigener Abschnitt mehr, die Erklärungen stehen im Zeitplan.
 
 /**
- * Die elf Abschnitte in der Sprache der Seite, in fester Reihenfolge wie
+ * Die zehn Abschnitte in der Sprache der Seite, in fester Reihenfolge wie
  * in der Vorlage. Ohne Sprache deutsch (Kundensprache, Etappe 3).
  */
 export function exposeAbschnitte(sprache?: Sprache): ExposeAbschnitt[] {
@@ -78,7 +80,7 @@ export function exposeAbschnitte(sprache?: Sprache): ExposeAbschnitt[] {
   return ABSCHNITT_REIHENFOLGE.map((id, i) => ({ id, nr: i + 1, titel: t.abschnitte[id].titel, kurz: t.abschnitte[id].kurz }));
 }
 
-/** Die elf Abschnitte in fester Reihenfolge, wie in der Vorlage. Deutsch, für PDF und CRM. */
+/** Die zehn Abschnitte in fester Reihenfolge, wie in der Vorlage. Deutsch, für PDF und CRM. */
 export const EXPOSE_ABSCHNITTE: ExposeAbschnitt[] = exposeAbschnitte();
 
 export const EXPOSE_ABSCHNITTE_ANZAHL = EXPOSE_ABSCHNITTE.length;
@@ -445,6 +447,147 @@ export function exposeObjektdatenAus(objekt: ObjektData, w: ObjektWohnung, heute
   };
 }
 
+// ── Besonderheiten und Ausstattung ─────────────────────────────────────────
+
+export interface CrmBesonderheiten {
+  /**
+   * Freitexte: die Beschreibung am Objekt, sofern sie nicht schon oben steht,
+   * und die öffentlichen Highlights (`objekte.highlights`). Die internen
+   * Highlights (`meta.interneHighlightsHand`, KI-Punkte) nie.
+   */
+  texte: string[];
+  /** Ausstattung aus den Feldern der Einheit (Zimmer, Lage, Stellplatz, Balkon, Heizung). */
+  ausstattung: Array<{ bezeichnung: string; wert: string }>;
+  /** Der fertige Satz zum Erhaltungsaufwand, wenn das CRM einen Betrag kennt. */
+  erhaltungsaufwand?: string;
+  /** Jahre der Verteilung, für den Satz aus einem Investagon-Merkmal. Nur über einem Jahr. */
+  erhaltungJahre?: number;
+}
+
+/** Der Erhaltungsaufwand am Objekt: die Spalte, sonst die Summe des gepflegten Sanierungspakets. */
+export function erhaltungsaufwandGesamt(objekt: Pick<ObjektData, "sanierungskosten" | "meta" | "globalDaten">): number {
+  if ((objekt.sanierungskosten || 0) > 0) return objekt.sanierungskosten || 0;
+  return objektseiteFelder(objekt).sanierungen.reduce((s, x) => s + (x.betrag || 0), 0);
+}
+
+/** Anteil einer Einheit am Erhaltungsaufwand: gepflegter Betrag, sonst Gesamtbetrag mal Anteil in Prozent. Wie im Rechenkern. */
+export function erhaltungsanteilEinheit(w: Pick<ObjektWohnung, "sanierungAnteilBetrag" | "sanierungAnteilProzent">, gesamt: number): number {
+  if ((w.sanierungAnteilBetrag || 0) > 0) return w.sanierungAnteilBetrag || 0;
+  if (gesamt > 0 && (w.sanierungAnteilProzent || 0) > 0) return (gesamt * (w.sanierungAnteilProzent || 0)) / 100;
+  return 0;
+}
+
+/** Jahre der Verteilung zum Nennen: 1 bis 5, sonst nichts. */
+function erhaltungJahre(objekt: Pick<ObjektData, "erhaltungsaufwandJahre">): number | undefined {
+  const j = Math.round(objekt.erhaltungsaufwandJahre || 0);
+  return j >= 1 && j <= 5 ? j : undefined;
+}
+
+/**
+ * Der Satz zum Erhaltungsaufwand für die Besonderheiten. Einheit: ihr Anteil,
+ * sonst der Betrag für das ganze Haus. Ganzes Objekt mit Einheiten: die
+ * Spanne der Anteile. Ohne Betrag im CRM `undefined`; dann kann noch das
+ * Investagon-Merkmal „Hoher Erhaltungsaufwand“ einspringen.
+ */
+export function erhaltungsaufwandSatz(
+  objekt: Pick<ObjektData, "sanierungskosten" | "erhaltungsaufwandJahre" | "meta" | "globalDaten" | "wohnungen">,
+  einheit: Pick<ObjektWohnung, "sanierungAnteilBetrag" | "sanierungAnteilProzent"> | "spanne" | null,
+  sprache?: Sprache,
+): string | undefined {
+  const t = exposeInhaltTexte(sprache);
+  const euro = (n: number) => eur0(Math.round(n), sprache);
+  const gesamt = erhaltungsaufwandGesamt(objekt);
+  let betrag: string | undefined;
+  if (einheit === "spanne") {
+    const anteile = objekt.wohnungen.map((w) => erhaltungsanteilEinheit(w, gesamt)).filter((n) => n > 0);
+    if (anteile.length) {
+      const von = Math.min(...anteile), bis = Math.max(...anteile);
+      betrag = t.erhaltungSpanne(Math.round(von) === Math.round(bis) ? euro(von) : t.spanne(euro(von), euro(bis)), gesamt > 0 ? euro(gesamt) : undefined);
+    } else if (gesamt > 0) betrag = t.erhaltungGesamt(euro(gesamt));
+  } else if (einheit) {
+    const anteil = erhaltungsanteilEinheit(einheit, gesamt);
+    if (anteil > 0) betrag = t.erhaltungAnteil(euro(anteil), gesamt > 0 ? euro(gesamt) : undefined);
+    else if (gesamt > 0) betrag = t.erhaltungGesamt(euro(gesamt));
+  } else if (gesamt > 0) betrag = t.erhaltungGesamt(euro(gesamt));
+  return betrag ? t.erhaltungsaufwand(betrag, erhaltungJahre(objekt)) : undefined;
+}
+
+/** Die Besonderheiten aus dem CRM für ein Exposé. `einheit` wie bei `erhaltungsaufwandSatz`. */
+export function crmBesonderheiten(
+  objekt: Pick<ObjektData, "beschreibung" | "highlights" | "sanierungskosten" | "erhaltungsaufwandJahre" | "meta" | "globalDaten" | "wohnungen">,
+  einheit: Parameters<typeof erhaltungsaufwandSatz>[1],
+  obenSchonBeschreibung: string,
+  ausstattung: CrmBesonderheiten["ausstattung"],
+  sprache?: Sprache,
+): CrmBesonderheiten {
+  const beschreibung = objekt.beschreibung?.trim() || "";
+  const jahre = erhaltungJahre(objekt);
+  const satz = erhaltungsaufwandSatz(objekt, einheit, sprache);
+  return {
+    texte: [
+      // Steht die Beschreibung schon oben als Text des Exposés, nicht ein zweites Mal.
+      ...(beschreibung && beschreibung !== obenSchonBeschreibung.trim() ? [beschreibung] : []),
+      ...(objekt.highlights || []).map((h) => (typeof h === "string" ? h.trim() : "")).filter(Boolean),
+    ],
+    ausstattung,
+    ...(satz ? { erhaltungsaufwand: satz } : {}),
+    ...(jahre && jahre > 1 ? { erhaltungJahre: jahre } : {}),
+  };
+}
+
+export interface BesonderheitenAnzeige {
+  texte: string[];
+  /** Der Satz zum Erhaltungsaufwand, hervorgehoben vor den Texten. */
+  erhaltungsaufwand?: string;
+  ausstattung: Array<{ bezeichnung: string; wert: string }>;
+}
+
+const ERHALTUNG_MERKMAL = /erhaltungsaufwand|maintenance expense/i;
+
+/**
+ * Was unter „Besonderheiten dieser Immobilie“ und „Ausstattung und
+ * Merkmale“ steht, für Seite und PDF gleich (Inhaber, 16.10.2026).
+ *
+ * Erst Investagon (`zusatz`, Freitexte und Merkmalsliste), dann je Block die
+ * Felder im CRM. Der Erhaltungsaufwand steht immer unter den Besonderheiten,
+ * sobald es einen gibt: aus dem CRM mit Betrag und Jahren, sonst aus dem
+ * Merkmal „Hoher Erhaltungsaufwand“. Das Merkmal fällt dann aus der Liste,
+ * damit er nicht doppelt dasteht. Leere Blöcke zeigt der Aufrufer nicht.
+ */
+export function besonderheitenAnzeige(
+  inhalt: Pick<ExposeInhalt, "besonderheiten">,
+  zusatz?: { beschreibungen: string[]; merkmale: Array<{ bezeichnung: string; wert: string; nummer?: number }> },
+  sprache?: Sprache,
+): BesonderheitenAnzeige {
+  const crm = inhalt.besonderheiten ?? { texte: [], ausstattung: [] };
+  const investagonTexte = zusatz?.beschreibungen ?? [];
+  const investagonMerkmale = zusatz?.merkmale ?? [];
+  const texte = investagonTexte.length ? investagonTexte : crm.texte;
+  let liste: Array<{ bezeichnung: string; wert: string; nummer?: number }> = investagonMerkmale.length
+    ? investagonMerkmale
+    : crm.ausstattung;
+
+  let erhaltungsaufwand = crm.erhaltungsaufwand;
+  const ausMerkmal = investagonMerkmale.find((m) => ERHALTUNG_MERKMAL.test(m.bezeichnung));
+  if (!erhaltungsaufwand && ausMerkmal) {
+    const t = exposeInhaltTexte(sprache);
+    // Die Spanne aus Investagon („45.000–55.000 €“) ohne Strich, wie alle Nutzertexte.
+    const wert = ausMerkmal.wert.trim().replace(/\s*[–—-]\s*(?=\d)/g, sprache === "en" ? " to " : " bis ");
+    const name = ausMerkmal.bezeichnung.replace(/^\d+\.\s*/, "").trim();
+    erhaltungsaufwand = wert ? t.erhaltungsaufwand(wert, crm.erhaltungJahre) : `${name}.`;
+  }
+  if (erhaltungsaufwand) {
+    // Nicht doppelt: weder das Merkmal noch ein Highlight zum Erhaltungsaufwand.
+    liste = liste.filter((m) => !ERHALTUNG_MERKMAL.test(m.bezeichnung));
+    if (investagonMerkmale.length) liste = nummeriereMerkmale(liste.map((m) => (m.nummer === undefined ? m : { ...m, bezeichnung: m.bezeichnung.replace(/^\d+\.\s*/, "") })));
+  }
+  return {
+    texte,
+    ...(erhaltungsaufwand ? { erhaltungsaufwand } : {}),
+    ausstattung: liste.map((m) => ({ bezeichnung: m.bezeichnung, wert: m.wert })),
+  };
+}
+
 export interface AnnahmenVorbelegung {
   annahmen: ExposeAnnahmen;
   /** Felder, die aus der Selbstauskunft kommen. */
@@ -580,6 +723,13 @@ export interface EinheitZeile {
 export interface ExposeInhalt {
   beschreibung?: string;
   /**
+   * Besonderheiten und Ausstattung aus den Feldern im CRM, für die Blöcke
+   * „Besonderheiten dieser Immobilie“ und „Ausstattung und Merkmale“. Sie
+   * gelten nur, wenn Investagon dazu nichts liefert; zusammengeführt wird in
+   * `besonderheitenAnzeige`. Ohne Angabe wie leer.
+   */
+  besonderheiten?: CrmBesonderheiten;
+  /**
    * Welche Objekttexte auf einer englischen Seite deutsch bleiben, weil es
    * (noch) keine englische Fassung in `meta.objekttexteKiEn` gibt
    * (Entscheidung 12). Die Seite setzt dann den Vermerk „Description available
@@ -678,11 +828,6 @@ export interface ExposeInhalt {
   grundriss: {
     /** `ersatz`: kein eigener Plan der Einheit, sondern der des Geschosses oder des Hauses (`ersatzArt`). */
     dokumente: Array<{ id: string; name: string; url: string; istBild: boolean; ersatz?: ErsatzArt }>;
-  };
-  wirtschaftlichkeit: {
-    objektdaten: ExposeObjektdaten;
-    bundesland?: string;
-    verfuegbar?: boolean;
   };
   verwaltung: {
     name?: string;
@@ -950,7 +1095,6 @@ export function baueExposeInhalt(e: ExposeInhaltEingabe): ExposeInhalt {
   const art = objektartInfo(felder.objektart) ?? objektartInfo(objektartAbleiten(objekt));
   const neubau = istNeubauArt(art?.id);
   const bauzustand = objektBauzustand(objekt) || undefined;
-  const bundesland = detectBundesland(objekt.plz, objekt.ort);
   const ort = [objekt.plz, objekt.ort].filter(Boolean).join(" ");
   const adresse = [objekt.adresse, ort].filter(Boolean).join(", ");
   const lage = koordinatenAus(meta[KOORDINATEN_META_SCHLUESSEL]);
@@ -1123,6 +1267,23 @@ export function baueExposeInhalt(e: ExposeInhaltEingabe): ExposeInhalt {
     { label: L.abschreibung, wert: afa ? (sprache === "en" ? `${prozent(afa.afaSatz, 1, sprache)} ${afa.afaModell}` : `${dez(afa.afaSatz, 1)} % ${afa.afaModell}`) : keine },
     { label: L.vermietung, wert: w.vermietet ? (w.vermietetSeit ? t.vermietetSeitMonat(w.vermietetSeit.slice(0, 7).split("-").reverse().join("/")) : t.vermietet) : neubau ? t.erstvermietung : t.leerstand },
   ], sprache);
+  /*
+   * Ausstattung aus dem CRM, wenn Investagon keine Merkmalsliste hat
+   * (16.10.2026): die belegten Angaben der Einheit. Energieausweis und
+   * Energieträger stehen schon in der eigenen Karte darüber.
+   */
+  // Die Rohdaten der Einheit liegen in `investagonRaw`; Balkon wie bei den Merkmal-Chips.
+  const einheitRoh = { meta: { investagonRaw: w.investagonRaw } };
+  const heizung = [...objektDetails(einheitRoh), ...objektDetails(objekt)].find((z) => z.label === "Heizung")?.wert;
+  const balkon = balkonMerkmal([einheitRoh, ...(struktur === "einzelwohnung" ? [objekt] : [])], t);
+  const ausstattung = [
+    ...zeilen
+      .filter((z) => [L.zimmer, L.lageImGebaeude, L.stellplatz].includes(z.label) && z.wert !== keine && z.wert !== t.keiner)
+      .map((z) => ({ bezeichnung: z.label, wert: z.wert })),
+    ...(balkon ? [{ bezeichnung: balkon, wert: "" }] : []),
+    ...(heizung ? [{ bezeichnung: sprache === "en" ? "Heating" : "Heizung", wert: katalogwert(heizung, sprache) || heizung }] : []),
+  ];
+  const besonderheiten = crmBesonderheiten(objekt, w, beschreibungDe, ausstattung, sprache);
   const fehlendePflichtangaben: string[] = [];
   if (!energie.art) fehlendePflichtangaben.push(t.pflichtArtDesEnergieausweises);
   if (!energie.kennwert) fehlendePflichtangaben.push(t.pflichtEndenergiekennwert);
@@ -1185,6 +1346,7 @@ export function baueExposeInhalt(e: ExposeInhaltEingabe): ExposeInhalt {
     struktur,
     objektId: objekt.id,
     beschreibung,
+    besonderheiten,
     nurDeutsch: {
       beschreibung: !!beschreibung && beschreibungAnzeige.nurDeutsch,
       standortargumente: argumente.length > 0 && argumenteAnzeige.nurDeutsch,
@@ -1254,7 +1416,6 @@ export function baueExposeInhalt(e: ExposeInhaltEingabe): ExposeInhalt {
       fehlendePflichtangaben,
     },
     grundriss: { dokumente: grundrisse },
-    wirtschaftlichkeit: { objektdaten: exposeObjektdatenAus(objekt, w, heute), bundesland, verfuegbar: w.vkGesamt > 0 },
     verwaltung: {
       name: verwaltungName,
       // Mit einem SEV-Betrag gehört die SEV in die Überschrift, wie auf der Objektseite.

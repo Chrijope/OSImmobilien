@@ -1,27 +1,24 @@
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft, Loader2, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useUser } from "@/contexts/UserContext";
 import type { ObjektData } from "@/lib/objekteStore";
-import type { ExposeAnnahmen } from "@/lib/exposeAnnahmen";
-import { annahmenVorbelegen } from "@/lib/exposeInhalt";
-import { baueObjektExposeInhalt, objektExposeRecheneinheit, wieImKundenlink } from "@/lib/exposePublicDaten";
+import { baueObjektExposeInhalt, wieImKundenlink } from "@/lib/exposePublicDaten";
 import { exposePfad, KUNDENANSICHT_PARAM, KUNDENANSICHT_WERT, type ExposeKunde } from "@/lib/objektExposeStore";
 import { springtInDieEinheit } from "@/lib/objektseiteDaten";
-import { ExposeAnsicht, RECHNER_HINWEIS_OHNE_SPEICHERN } from "@/components/expose/ExposeAnsicht";
+import { ExposeAnsicht } from "@/components/expose/ExposeAnsicht";
 import { ExposeErzeugenDialog } from "@/components/expose/ExposeErzeugenDialog";
 import { investagonErgaenzung } from "@/components/expose/exposeInvestagon";
 import { useExposeAnsprechpartner, useExposeKunde, useExposeObjekt, useExposeStandort, useGrundrissAdressen } from "@/components/expose/useExposeObjekt";
-import type { AnnahmenHerkunftKarte } from "@/components/expose/ExposeRechner";
 
 /**
  * Das Exposé eines ganzen Objekts, interne Ansicht.
  *
  * Adresse `/objekte/:id/expose`, optional `?kunde=`. Der Knopf „Exposé
  * anzeigen“ auf der Objektseite eines Globalobjekts zeigt hierhin. Beim
- * Globalobjekt rechnet das Exposé mit Kaufpreis, Fläche und Miete des ganzen
+ * Globalobjekt zeigt das Exposé Kaufpreis, Fläche und Miete des ganzen
  * Hauses (`objektExposeRecheneinheit`), die Einheiten stehen als Mietenspiegel
  * darin, ohne Einzelpreis: Verkauft wird nur das Haus (Entscheidung vom
  * 10.09.2026). Bei einem Objekt mit einzeln verkauften Einheiten ist es die
@@ -33,12 +30,10 @@ import type { AnnahmenHerkunftKarte } from "@/components/expose/ExposeRechner";
  * Wie das Exposé der Einheit im eigenen Tab ohne CRM-Rahmen; „Zum Objekt im
  * CRM“ führt im selben Tab zurück auf die Objektseite.
  *
- * Die Rechnerannahmen gelten nur in dieser Ansicht und werden nicht
- * gespeichert. Senden lässt sich das Exposé des ganzen Objekts trotzdem:
+ * Senden lässt sich das Exposé des ganzen Objekts:
  * „An Kunden senden“ legt über `send-kunden-expose` eine Zeile ohne Einheit
  * an (`objekt_exposes.wohnung_id` ist seit Migration 20260923151000
- * optional), der Kundenlink lautet dann `/expose/<objektId>?token=…` und
- * rechnet mit neutralen Standardannahmen.
+ * optional), der Kundenlink lautet dann `/expose/<objektId>?token=…`.
  */
 export function ObjektExposeGesamt({ id }: { id: string }) {
   const navigate = useNavigate();
@@ -81,18 +76,6 @@ function GesamtSeite({ objekt, kunde, kundenansicht = false }: { objekt: ObjektD
   const ansprechpartner = kundenansicht ? wieImKundenlink(partnerIntern) : partnerIntern;
   const ansprechpartnerSchluessel = JSON.stringify(ansprechpartner);
 
-  const recheneinheit = useMemo(() => objektExposeRecheneinheit(objekt), [objekt]);
-  const vorbelegung = useMemo(() => annahmenVorbelegen(objekt, recheneinheit, null), [objekt, recheneinheit]);
-  // Nur die Änderungen am Rechner werden gehalten; die Vorbelegung bleibt live.
-  const [aenderungen, setAenderungen] = useState<Partial<ExposeAnnahmen>>({});
-  const annahmen = useMemo(() => ({ ...vorbelegung.annahmen, ...aenderungen }), [vorbelegung, aenderungen]);
-  const onAnnahmen = useCallback((a: Partial<ExposeAnnahmen>) => setAenderungen((alt) => ({ ...alt, ...a })), []);
-  const herkunft = useMemo(() => {
-    const h: AnnahmenHerkunftKarte = {};
-    for (const k of vorbelegung.ausObjekt) if (!(k in aenderungen)) h[k] = "objekt";
-    return h;
-  }, [vorbelegung, aenderungen]);
-
   const inhaltMitZeigern = useMemo(
     () => baueObjektExposeInhalt({ objekt, standort, standortArbeitgeber, kundeName: kunde?.name, ersteller: ansprechpartner }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -123,18 +106,10 @@ function GesamtSeite({ objekt, kunde, kundenansicht = false }: { objekt: ObjektD
       <Link to={`/objekte/${objekt.id}`} data-testid="zum-crm"><ArrowLeft className="h-3.5 w-3.5" /> Zum Objekt im CRM</Link>
     </Button>
   );
-  // Derselbe Satz wie in der Kundenansicht, aus `ExposeAnsicht` übernommen statt kopiert.
-  const rechnerHinweis = inhalt.wirtschaftlichkeit.verfuegbar ? (
-    <p className="mb-3 text-xs text-muted-foreground" data-testid="speicher-status">
-      {RECHNER_HINWEIS_OHNE_SPEICHERN}
-    </p>
-  ) : undefined;
-
   if (kundenansicht) {
     return (
       <ExposeAnsicht
         inhalt={inhalt}
-        rechner={{ annahmen, onAnnahmen, herkunft }}
         pdfAktiv
         investagon={investagon}
         kundenAnsprechpartner={ansprechpartner}
@@ -147,10 +122,8 @@ function GesamtSeite({ objekt, kunde, kundenansicht = false }: { objekt: ObjektD
     <>
     <ExposeAnsicht
       inhalt={inhalt}
-      rechner={{ annahmen, onAnnahmen, herkunft, eigenkapitalEuro: vorbelegung.eigenkapitalEuro }}
       kopfRechts={kopfRechts}
       leisteObenLinks={leisteObenLinks}
-      rechnerHinweis={rechnerHinweis}
       fussText="Interne Vorschau"
       investagon={investagon}
       kundenAnsprechpartner={kunde ? ansprechpartner : undefined}

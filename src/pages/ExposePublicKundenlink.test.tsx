@@ -9,17 +9,17 @@ import { MemoryRouter, Routes, Route } from "react-router-dom";
  *     Kontaktdaten des Partners, sonst nichts.
  *   - Gezählt wird nur das erste Laden (`aufruf=1`), nicht das Nachladen beim
  *     Zurückwechseln in den Tab und nie die Vorschau des Partners.
- *   - Der Rechner läuft immer mit neutralen Standardannahmen, auch wenn in der
- *     Antwort etwas anderes stünde.
+ *   - Annahmen oder eine Selbstauskunft in der Antwort erreichen das Exposé
+ *     nie; einen Rechner gibt es seit dem 16.10.2026 ohnehin nicht mehr.
  *
- * `ExposeAnsicht` ist hier ersetzt, damit sich ablesen lässt, womit die Seite
- * rechnet. Das echte Exposé prüft `ExposePublic.test.tsx`.
+ * `ExposeAnsicht` ist hier ersetzt, damit sich ablesen lässt, was die Seite
+ * übergibt. Das echte Exposé prüft `ExposePublic.test.tsx`.
  */
 
 const t = vi.hoisted(() => ({
   aufrufe: [] as string[],
   antwort: { status: 200, body: {} as unknown },
-  ansicht: [] as Array<{ rechner: { annahmen: Record<string, unknown> } }>,
+  ansicht: [] as Array<Record<string, unknown>>,
 }));
 
 vi.mock("@/integrations/supabase/client", () => {
@@ -30,7 +30,7 @@ vi.mock("@/integrations/supabase/client", () => {
 });
 vi.mock("@/lib/storage", () => ({ objektUnterlagenBefristen: async <T,>(o: T) => o }));
 vi.mock("@/components/expose/ExposeAnsicht", () => ({
-  ExposeAnsicht: (p: { rechner: { annahmen: Record<string, unknown> } }) => {
+  ExposeAnsicht: (p: Record<string, unknown>) => {
     t.ansicht.push(p);
     return <div data-testid="expose-ansicht" />;
   },
@@ -42,8 +42,6 @@ vi.stubGlobal("fetch", (url: string) => {
 });
 
 const { default: ExposePublic } = await import("./ExposePublic");
-const { annahmenVorbelegen } = await import("@/lib/exposeInhalt");
-const { exposePayloadZuObjekt } = await import("@/lib/exposePublicDaten");
 
 const TOKEN = "cd".repeat(32);
 
@@ -122,8 +120,8 @@ describe("Zählen", () => {
   });
 });
 
-describe("neutrale Annahmen im Kundenlink", () => {
-  it("rechnet mit den Standardannahmen, auch wenn die Antwort Annahmen oder eine Selbstauskunft enthielte", async () => {
+describe("keine Annahmen im Kundenlink", () => {
+  it("gibt Annahmen oder eine Selbstauskunft aus der Antwort nie an das Exposé weiter", async () => {
     t.antwort = {
       status: 200,
       body: payload({
@@ -133,11 +131,8 @@ describe("neutrale Annahmen im Kundenlink", () => {
     };
     renderMit(`/expose/o1/wohnung/w7?token=${TOKEN}`);
     await screen.findByTestId("expose-ansicht");
-    const objekt = exposePayloadZuObjekt(payload());
-    const neutral = annahmenVorbelegen(objekt, objekt.wohnungen[0], null).annahmen;
-    const genutzt = t.ansicht[t.ansicht.length - 1].rechner.annahmen;
-    expect(genutzt).toEqual(neutral);
-    expect(genutzt.grenzsteuersatzManuellProzent).not.toBe(42);
-    expect(genutzt.zinsProzent).not.toBe(9.9);
+    const props = t.ansicht[t.ansicht.length - 1];
+    expect(props).not.toHaveProperty("rechner");
+    expect(JSON.stringify(props)).not.toMatch(/"netto":9000|grenzsteuersatzManuellProzent|zinsProzent/);
   });
 });

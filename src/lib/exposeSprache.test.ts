@@ -15,10 +15,9 @@ import { describe, it, expect, vi } from "vitest";
  */
 vi.stubGlobal("fetch", () => Promise.reject(new Error("kein Netz im Test")));
 
-import { annahmenVorbelegen, baueExposeInhalt } from "@/lib/exposeInhalt";
+import { baueExposeInhalt } from "@/lib/exposeInhalt";
 import { NUR_DEUTSCH_HINWEIS } from "@/lib/seitenSprache";
-import { EXPOSE_PDF_TEXTE_DE, EXPOSE_PDF_TEXTE_EN, rechnerHinweisEnglisch } from "@/lib/exposePdfTexte";
-import { berechneExpose } from "@/lib/exposeRechner";
+import { EXPOSE_PDF_TEXTE_DE, EXPOSE_PDF_TEXTE_EN } from "@/lib/exposePdfTexte";
 import { baueDruckDaten, type DruckDaten } from "@/lib/exposeDruck/daten";
 import { MUSTER_OBJEKT, MUSTER_STANDORT, MUSTER_WE7 } from "@/test/musterobjektWe7";
 import {
@@ -105,9 +104,7 @@ function objektNachLauf(extra: Record<string, unknown> = {}, mitEnglisch = true)
 
 function pdfBauen(objekt: typeof MUSTER_OBJEKT, sprache: "de" | "en") {
   const inhalt = baueExposeInhalt({ objekt, wohnung: MUSTER_WE7, standort: MUSTER_STANDORT, heute, kundeName: "Anna Muster", sprache });
-  const vb = annahmenVorbelegen(objekt, MUSTER_WE7, null, heute);
-  const ergebnis = berechneExpose(inhalt.wirtschaftlichkeit.objektdaten, vb.annahmen);
-  gedruckt = baueDruckDaten(inhalt, vb.annahmen, ergebnis, { fotos: [], plaene: [] }, { erstelltAm: heute, sprache });
+  gedruckt = baueDruckDaten(inhalt, { fotos: [], plaene: [] }, { erstelltAm: heute, sprache });
   return { inhalt, pdf: Promise.resolve(gedruckt) };
 }
 
@@ -123,12 +120,6 @@ describe("Textsammlungen des Exposés", () => {
       expect(GEDANKENSTRICH.test(text), pfad).toBe(false);
     }
   });
-
-  it("übersetzt die bekannten Hinweise des Rechners", () => {
-    expect(rechnerHinweisEnglisch("Gebäudeanteil nicht am Objekt gepflegt, 80 % angenommen.")).toBe("Building share not stated for the property, 80% assumed.");
-    // Ein unbekannter Satz bleibt stehen, statt zu verschwinden.
-    expect(rechnerHinweisEnglisch("Etwas Neues.")).toBe("Etwas Neues.");
-  });
 });
 
 describe("Exposé-PDF auf Englisch", () => {
@@ -136,7 +127,7 @@ describe("Exposé-PDF auf Englisch", () => {
     const { pdf } = pdfBauen(objektNachLauf(), "en");
     await pdf;
     const text = alleTexte();
-    for (const ueberschrift of ["Next steps", "Opportunities and risks", "Important notes", "Your contact", "Assumptions", "Purchase price and financing"]) {
+    for (const ueberschrift of ["Next steps", "Opportunities and risks", "Important notes", "Your contact"]) {
       expect(text, ueberschrift).toContain(ueberschrift);
     }
     for (const deutsch of ["Wirtschaftlichkeit", "Nächste Schritte", "Wichtige Hinweise", "Kaufpreis und Finanzierung", "Preisstand"]) {
@@ -152,7 +143,8 @@ describe("Exposé-PDF auf Englisch", () => {
     const { pdf } = pdfBauen(objektNachLauf(), "de");
     await pdf;
     const text = alleTexte();
-    expect(text).toContain("Wirtschaftlichkeit");
+    expect(text).toContain("Nächste Schritte");
+    expect(text).not.toContain("Wirtschaftlichkeit");
     expect(text).toContain("Ein saniertes Haus von 1962 mit neuem Dach.");
     expect(text).not.toContain("Financials");
     expect(text).not.toContain(NUR_DEUTSCH_HINWEIS);
@@ -167,7 +159,13 @@ describe("Exposé-PDF auf Englisch", () => {
     expect(inhalt.nurDeutsch).toEqual({ beschreibung: false, standortargumente: false, marktargumente: false });
     const text = alleTexte();
     expect(text).toContain(UEBERSETZUNG.kurzbeschreibung);
-    expect(text).not.toContain(NUR_DEUTSCH_HINWEIS);
+    /*
+     * Die Beschreibung am Objekt steht seit dem 16.10.2026 unter den
+     * Besonderheiten, deutsch und mit Vermerk wie die Investagon-Texte. Alles
+     * andere ist englisch.
+     */
+    expect(gedruckt?.objektdaten.besonderheiten?.hinweis).toBe(NUR_DEUTSCH_HINWEIS);
+    expect(JSON.stringify({ ...gedruckt, objektdaten: { ...gedruckt?.objektdaten, besonderheiten: undefined } })).not.toContain(NUR_DEUTSCH_HINWEIS);
   });
 
   it("lässt von Hand Geschriebenes deutsch und sagt es dazu", async () => {

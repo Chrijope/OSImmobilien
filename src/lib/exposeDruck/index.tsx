@@ -1,6 +1,4 @@
 import type { ExposeInhalt } from "../exposeInhalt";
-import type { ExposeAnnahmen } from "../exposeAnnahmen";
-import type { ExposeErgebnis } from "../exposeRechner";
 import { baueDruckDaten, type DruckOptionen } from "./daten";
 import { browserLader, ladeDruckBilder } from "./bilder";
 import { registriereHausschrift } from "./baukasten";
@@ -20,13 +18,11 @@ export { exposePdfDateiname } from "./daten";
  */
 export async function exposeDruckPdf(
   inhalt: ExposeInhalt,
-  annahmen: ExposeAnnahmen,
-  ergebnis: ExposeErgebnis,
   optionen: DruckOptionen = {},
 ): Promise<Blob> {
   const { pdf } = await import("@react-pdf/renderer");
   registriereHausschrift("");
   const bilder = await ladeDruckBilder(inhalt, browserLader);
-  const daten = baueDruckDaten(inhalt, annahmen, ergebnis, bilder, optionen);
+  const daten = baueDruckDaten(inhalt, bilder, optionen);
   return pdf(<H3Nachtblau d={daten} />).toBlob();
 }

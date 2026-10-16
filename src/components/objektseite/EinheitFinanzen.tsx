@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import { Calculator, ChevronDown, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +13,6 @@ import { berechneExpose, VERMOEGENS_HORIZONTE, type ExposeObjektdaten } from "@/
 import { ANNAHMEN_GRENZEN, eigenkapitalProzentAusBetrag, type ExposeAnnahmen, type Tilgungsmodus, type ZweitesDarlehenErsetzt } from "@/lib/exposeAnnahmen";
 import { annahmenVorbelegen, exposeObjektdatenAus } from "@/lib/exposeInhalt";
 import { linearerAfaSatz } from "@/lib/afaSaetze";
-import { exposePfad } from "@/lib/objektExposeStore";
 import { eur0 as eur0Basis, dez as dezBasis, prozent as prozentBasis } from "@/lib/objektKennzahlen";
 import { rechnerHinweis } from "@/lib/exposeRechnerTexte";
 import type { ObjektData, ObjektWohnung } from "@/lib/objekteStore";
@@ -394,7 +392,8 @@ export function EinheitFinanzen({ objekt, wohnung: w, heute = new Date(), kunden
 
   const entwicklungKarte = (
     <div className={cn(KARTE, "md:col-span-2")} data-testid="karte-entwicklung">
-      <KartenTitel rechts={kundenModus ? undefined : <Button asChild variant="ghost" size="sm" className="h-7 text-xs"><Link to={exposePfad(objekt.id, w.id)} target="_blank" rel="noopener noreferrer">Vermögensaufbau im Exposé</Link></Button>}>{t.entwicklung}</KartenTitel>
+      {/* Der Link „Vermögensaufbau im Exposé“ ist am 16.10.2026 entfallen: Das Exposé hat keinen Abschnitt Wirtschaftlichkeit mehr. */}
+      <KartenTitel>{t.entwicklung}</KartenTitel>
       <div className="grid gap-x-8 md:grid-cols-2">
         <div>
           <Zeile label={t.restschuld10} wert={eur0(restschuld10)} testId="restschuld-10" />

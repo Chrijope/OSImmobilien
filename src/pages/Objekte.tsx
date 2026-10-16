@@ -28,6 +28,7 @@ import { BelegungsAngaben } from "@/components/objektseite/BelegungsAngaben";
 import { PortfolioKacheln } from "@/components/objekte/PortfolioKacheln";
 import { InvestagonImportDialog } from "@/components/objekte/InvestagonImportDialog";
 import { ExposeZuordnenDialog } from "@/components/objekte/ExposeZuordnenDialog";
+import { ObjektInhalteDialog } from "@/components/objekte/ObjektInhalteDialog";
 import { konzeptLabel } from "@/lib/objektKonzept";
 import { ObjektTexteSammellauf } from "@/components/objekte/ObjektTexteSammellauf";
 import { useObjektFavorites } from "@/lib/objektFavorites";
@@ -968,6 +969,7 @@ export default function Objekte() {
             {isAdmin(user.role) && <InvestagonImportDialog />}
             {/* Nicht im Testkonto: Dort gibt es keinen Speicher, in den hochgeladen werden könnte. */}
             {isAdmin(user.role) && !isTestAccount() && <ExposeZuordnenDialog />}
+            {isAdmin(user.role) && !isTestAccount() && <ObjektInhalteDialog />}
             {/* „Lotse: Unterlagen auswerten“ ausgeblendet (05.10.2026): Der Zeitplan wertet über die Warteschlange aus, nachts kommen alle Objekte einmal hinein. */}
             {/*
               * Beschreibung und Standortargumente für viele Objekte auf einmal.

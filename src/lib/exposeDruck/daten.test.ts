@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import type { ObjektData } from "@/lib/objekteStore";
-import { annahmenVorbelegen, baueExposeInhalt } from "@/lib/exposeInhalt";
-import { berechneExpose } from "@/lib/exposeRechner";
+import { baueExposeInhalt } from "@/lib/exposeInhalt";
 import { baueDruckDaten, exposePdfDateiname } from "./daten";
 import { druckFotos, ladeDruckBilder, type BildLader } from "./bilder";
 import { KARO, karoPfade } from "./baukasten";
@@ -26,25 +25,24 @@ function daten(sprache: "de" | "en", vk = 246800) {
   const wohnung = { ...w, vkGesamt: vk };
   const o = { ...objekt, wohnungen: [wohnung] } as ObjektData;
   const inhalt = baueExposeInhalt({ objekt: o, wohnung, sprache });
-  const annahmen = annahmenVorbelegen(o, wohnung, null).annahmen;
-  return baueDruckDaten(inhalt, annahmen, berechneExpose(inhalt.wirtschaftlichkeit.objektdaten, annahmen), LEER, { sprache });
+  return baueDruckDaten(inhalt, LEER, { sprache });
 }
 
 describe("Druckdaten der Exposé-Entwürfe", () => {
-  it("enthält Finanzen und Kontakt, ohne Kaufpreis keine Wirtschaftlichkeit", () => {
+  it("enthält Kontakt, aber seit dem 16.10.2026 keine Wirtschaftlichkeit mehr, auch mit Kaufpreis", () => {
     const d = daten("de");
-    expect(d.finanzen?.hoehepunkte).toHaveLength(3);
-    expect(d.abschnitte.map((a) => a.id)).toContain("wirtschaftlichkeit");
+    expect(d).not.toHaveProperty("finanzen");
+    expect(d.abschnitte.map((a) => a.id)).not.toContain("wirtschaftlichkeit");
     expect(d.kontakt.satz).toBeTruthy();
-    const ohne = daten("de", 0);
-    expect(ohne.finanzen).toBeUndefined();
-    expect(ohne.abschnitte.map((a) => a.id)).not.toContain("wirtschaftlichkeit");
+    // Die Nummern rücken nach: ohne Standort und Grundriss folgt die Verwaltung direkt auf die Objektdaten.
+    expect(d.abschnitte.map((a) => `${a.nr} ${a.id}`).slice(0, 4)).toEqual(["01 start", "02 mikrolage", "03 objektdaten", "04 verwaltung"]);
+    expect(JSON.stringify(d)).not.toMatch(/Modellrechnung|Wirtschaftlichkeit/);
   });
 
   it("schreibt Englisch, wenn der Kunde Englisch spricht", () => {
     const d = daten("en");
     expect(d.w.inhalt).toBe("Contents");
-    expect(d.finanzen?.annahmenTitel).not.toBe(daten("de").finanzen?.annahmenTitel);
+    expect(d.abschnitte.find((a) => a.id === "verwaltung")?.titel).not.toBe(daten("de").abschnitte.find((a) => a.id === "verwaltung")?.titel);
   });
 
   it("führt Nächste Schritte und Zeitplan in einem Kapitel, mit Erklärung je Station, wie online", () => {

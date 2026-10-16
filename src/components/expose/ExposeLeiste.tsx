@@ -9,7 +9,7 @@ import { EXPOSE_ABSCHNITTE, EXPOSE_ABSCHNITTE_ANZAHL, type ExposeAbschnittId } f
 /**
  * Die feste Abschnittsleiste des Exposés.
  *
- * Auf dem Desktop eine Leiste links mit Logo, den elf Abschnitten als
+ * Auf dem Desktop eine Leiste links mit Logo, den zehn Abschnitten als
  * Sprungmarken und dem PDF-Knopf. Auf dem Handy eine Kopfzeile mit Zähler
  * („6 von 12") und Aufklappmenü. Beide zeigen denselben aktiven Abschnitt,
  * den `useAktiverAbschnitt` (useAktiverAbschnitt.ts) beim Scrollen bestimmt.

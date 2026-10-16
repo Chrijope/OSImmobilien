@@ -123,6 +123,14 @@ export interface ExposeInhaltTexte {
   gesamtobjekt: string;
   objektMitEinheiten: string;
   spanne: (von: string, bis: string) => string;
+  /**
+   * Erhaltungsaufwand unter „Besonderheiten dieser Immobilie“ (Inhaber,
+   * 16.10.2026): Betrag oder Spanne, dazu die Jahre der Verteilung.
+   */
+  erhaltungsaufwand: (betrag: string, jahre?: number) => string;
+  erhaltungAnteil: (anteil: string, gesamt?: string) => string;
+  erhaltungGesamt: (gesamt: string) => string;
+  erhaltungSpanne: (spanne: string, gesamt?: string) => string;
   summeDerEinheiten: string;
   mieteJeMonat: (betrag: string, ausEinheiten: boolean) => string;
   davonVermietet: (anzahl: number) => string;
@@ -142,7 +150,6 @@ export const EXPOSE_INHALT_TEXTE: ZweiSprachen<ExposeInhaltTexte> = {
       mikrolage: { titel: "Mikrolage", kurz: "Mikrolage" },
       objektdaten: { titel: "Objektdaten", kurz: "Objektdaten" },
       grundriss: { titel: "Grundriss", kurz: "Grundriss" },
-      wirtschaftlichkeit: { titel: "Wirtschaftlichkeit", kurz: "Wirtschaftlichkeit" },
       verwaltung: { titel: "Verwaltung vor Ort", kurz: "Verwaltung" },
       zeitplan: { titel: "Nächste Schritte und Zeitplan", kurz: "Zeitplan" },
       "chancen-risiken": { titel: "Chancen und Risiken", kurz: "Chancen und Risiken" },
@@ -163,7 +170,7 @@ export const EXPOSE_INHALT_TEXTE: ZweiSprachen<ExposeInhaltTexte> = {
       "Belege gesammelt für deine Steuererklärung",
     ],
     naechsteSchritte: [
-      { nr: 1, titel: "Beratung", text: "Das Exposé gemeinsam durchgehen, die Annahmen im Rechner prüfen und offene Fragen zur Wohnung klären." },
+      { nr: 1, titel: "Beratung", text: "Das Exposé gemeinsam durchgehen, deine Zahlen durchrechnen und offene Fragen zur Wohnung klären." },
       { nr: 2, titel: "Reservierung", text: "Gefällt dir die Wohnung, reservieren wir sie für dich. Damit ist sie für andere Interessenten gesperrt, solange die Finanzierung läuft." },
       { nr: 3, titel: "Finanzierung", text: "Unsere Finanzierungspartner holen Angebote ein. Du entscheidest, welches Darlehen zu dir passt." },
       { nr: 4, titel: "Notar", text: "Der Kaufvertrag geht dir vorab zu, wir besprechen ihn Punkt für Punkt. Beurkundet wird beim Notar, vor Ort oder per Vollmacht." },
@@ -175,7 +182,7 @@ export const EXPOSE_INHALT_TEXTE: ZweiSprachen<ExposeInhaltTexte> = {
       { nr: 2, titel: "Beratungspräsentation", text: "Wir zeigen dir, wie der Kauf einer vermieteten Wohnung funktioniert, mit Zahlen, Chancen und Risiken." },
       { nr: 3, titel: "Selbstauskunft", text: "Du gibst Einkommen, Ausgaben und Vermögen an. Daraus ergibt sich, welche Finanzierung zu dir passt." },
       { nr: 4, titel: "Unterlagen", frist: "Ausweis, letzte Gehaltsabrechnung", text: "Mit diesen Unterlagen prüfen die Finanzierungspartner deine Angaben." },
-      { nr: 5, titel: "Objektvorstellung", text: "Das Exposé gemeinsam durchgehen, die Annahmen im Rechner prüfen und offene Fragen zur Wohnung klären." },
+      { nr: 5, titel: "Objektvorstellung", text: "Das Exposé gemeinsam durchgehen, deine Zahlen durchrechnen und offene Fragen zur Wohnung klären." },
       { nr: 6, titel: "Reservierung", frist: "Kostenfrei, wirksam mit deiner Unterschrift", text: "Gefällt dir die Wohnung, reservieren wir sie für dich. Damit ist sie für andere Interessenten gesperrt, solange die Finanzierung läuft." },
       { nr: 7, titel: "Besichtigung", text: "Du siehst dir die Wohnung an und stellst deine Fragen vor Ort." },
       { nr: 8, titel: "Termin Bankgutachter", text: "Ein Gutachter der Bank sieht sich die Wohnung an und bewertet sie für die Finanzierung." },
@@ -187,12 +194,12 @@ export const EXPOSE_INHALT_TEXTE: ZweiSprachen<ExposeInhaltTexte> = {
       {
         id: "mietausfall", titel: "Mieteinnahmen und Mietausfall",
         chance: "Eine vermietete Wohnung bringt vom ersten Monat an Miete. Steigt die Miete mit dem Markt, wächst der Überschuss über die Jahre.",
-        risiko: "Ein Mieter kann ausfallen oder ausziehen. In dieser Zeit trägst du die Rate allein. Der Rechner setzt Leerstand als Annahme an, die tatsächliche Dauer kennt niemand im Voraus.",
+        risiko: "Ein Mieter kann ausfallen oder ausziehen. In dieser Zeit trägst du die Rate allein. Wie lange ein Leerstand dauert, weiß niemand im Voraus.",
       },
       {
         id: "zins", titel: "Zinsen und Anschlussfinanzierung",
         chance: "Ein fest vereinbarter Zins gibt dir über die Zinsbindung eine planbare Rate. Sinken die Zinsen, kann die Anschlussfinanzierung günstiger werden.",
-        risiko: "Nach der Zinsbindung wird neu verhandelt. Sind die Zinsen dann höher, steigt die Rate. Der Rechner rechnet mit einem Zins über die gesamte Laufzeit, das ist eine Vereinfachung.",
+        risiko: "Nach der Zinsbindung wird neu verhandelt. Sind die Zinsen dann höher, steigt die Rate.",
       },
       {
         id: "instandhaltung", titel: "Instandhaltung und Hausgeld",
@@ -202,12 +209,12 @@ export const EXPOSE_INHALT_TEXTE: ZweiSprachen<ExposeInhaltTexte> = {
       {
         id: "wertentwicklung", titel: "Wertentwicklung",
         chance: "Über lange Zeiträume sind Wohnimmobilien in gefragten Lagen im Wert gestiegen. Die Tilgung baut unabhängig davon Vermögen auf.",
-        risiko: "Preise können auch fallen, gerade nach Zinsanstiegen oder in schwächeren Lagen. Die Wertentwicklung im Rechner ist eine Annahme, keine Prognose.",
+        risiko: "Preise können auch fallen, gerade nach Zinsanstiegen oder in schwächeren Lagen. Wie sich der Wert entwickelt, lässt sich nicht vorhersagen.",
       },
       {
         id: "steuerrecht", titel: "Steuerrecht",
         chance: "Zinsen, Abschreibung und Kosten mindern dein zu versteuerndes Einkommen. Nach zehn Jahren ist ein Verkaufsgewinn nach heutigem Recht steuerfrei.",
-        risiko: "Gesetze und Rechtsprechung ändern sich. Der Steuervorteil hängt von deiner persönlichen Situation ab und ist im Rechner nur eine Modellrechnung. Verbindlich ist die Auskunft deines Steuerberaters.",
+        risiko: "Gesetze und Rechtsprechung ändern sich. Der Steuervorteil hängt von deiner persönlichen Situation ab. Verbindlich ist die Auskunft deines Steuerberaters.",
       },
       {
         id: "liquiditaet", titel: "Liquidität und Eigenanteil",
@@ -242,10 +249,6 @@ export const EXPOSE_INHALT_TEXTE: ZweiSprachen<ExposeInhaltTexte> = {
     ],
     rechtlicheHinweise: [
       {
-        titel: "Modellrechnung ohne Gewähr",
-        text: "Alle Zahlen im Abschnitt Wirtschaftlichkeit sind eine Modellrechnung auf Grundlage der angezeigten Annahmen. Sie sind keine Zusage über Miete, Wertentwicklung, Zinsen oder Steuerwirkung. Abweichungen nach oben wie nach unten sind möglich und wahrscheinlich.",
-      },
-      {
         titel: "Steuern",
         text: "Steuerliche Aussagen beruhen auf dem heutigen Stand von Gesetz und Rechtsprechung und auf deinen Angaben. Ob und in welcher Höhe sie bei dir eintreten, hängt von deiner persönlichen Situation ab. Eine Steuerberatung ersetzen sie nicht; verbindlich ist die Auskunft deines Steuerberaters.",
       },
@@ -259,7 +262,7 @@ export const EXPOSE_INHALT_TEXTE: ZweiSprachen<ExposeInhaltTexte> = {
       },
       {
         titel: "Vermittlung und Vergütung",
-        text: "OS Immobilien vermittelt diese Wohnung im Auftrag des Verkäufers. Für dich als Käufer fällt keine Maklerprovision an, sofern im Abschnitt Wirtschaftlichkeit nichts anderes ausgewiesen ist. OS Immobilien erhält vom Verkäufer eine Vergütung.",
+        text: "OS Immobilien vermittelt diese Wohnung im Auftrag des Verkäufers. Für dich als Käufer fällt keine Maklerprovision an, sofern nichts anderes vereinbart ist. OS Immobilien erhält vom Verkäufer eine Vergütung.",
       },
       {
         titel: "Haftung",
@@ -376,6 +379,10 @@ export const EXPOSE_INHALT_TEXTE: ZweiSprachen<ExposeInhaltTexte> = {
     gesamtobjekt: "Gesamtobjekt",
     objektMitEinheiten: "Objekt mit Einheiten",
     spanne: (von, bis) => `${von} bis ${bis}`,
+    erhaltungsaufwand: (betrag, jahre) => `Erhaltungsaufwand: ${betrag}${jahre ? `, verteilt auf ${jahre} ${jahre === 1 ? "Jahr" : "Jahre"}` : ""}.`,
+    erhaltungAnteil: (anteil, gesamt) => `${anteil} Anteil dieser Wohnung${gesamt ? ` (${gesamt} für das ganze Haus)` : ""}`,
+    erhaltungGesamt: (gesamt) => `${gesamt} für das ganze Haus`,
+    erhaltungSpanne: (spanne, gesamt) => `${spanne} je Wohnung${gesamt ? ` (${gesamt} für das ganze Haus)` : ""}`,
     summeDerEinheiten: "Summe der Einheiten",
     mieteJeMonat: (betrag, ausEinheiten) => `${betrag} je Monat${ausEinheiten ? ", Summe der Einheiten" : ""}`,
     davonVermietet: (anzahl) => `davon ${anzahl} vermietet`,
@@ -393,7 +400,6 @@ export const EXPOSE_INHALT_TEXTE: ZweiSprachen<ExposeInhaltTexte> = {
       mikrolage: { titel: "Neighbourhood", kurz: "Neighbourhood" },
       objektdaten: { titel: "Property details", kurz: "Details" },
       grundriss: { titel: "Floor plan", kurz: "Floor plan" },
-      wirtschaftlichkeit: { titel: "Financials", kurz: "Financials" },
       verwaltung: { titel: "Local management", kurz: "Management" },
       zeitplan: { titel: "Next steps and timeline", kurz: "Timeline" },
       "chancen-risiken": { titel: "Opportunities and risks", kurz: "Opportunities and risks" },
@@ -414,7 +420,7 @@ export const EXPOSE_INHALT_TEXTE: ZweiSprachen<ExposeInhaltTexte> = {
       "Receipts collected for your tax return",
     ],
     naechsteSchritte: [
-      { nr: 1, titel: "Consultation", text: "Go through the exposé together, check the assumptions in the calculator and clarify any open questions about the apartment." },
+      { nr: 1, titel: "Consultation", text: "Go through the exposé together, work through your figures and clarify any open questions about the apartment." },
       { nr: 2, titel: "Reservation", text: "If you like the apartment, we reserve it for you. It is then blocked for other interested parties while the financing is arranged." },
       { nr: 3, titel: "Financing", text: "Our financing partners obtain offers. You decide which loan suits you." },
       { nr: 4, titel: "Notary", text: "You receive the purchase contract in advance and we go through it point by point. The contract is notarised at the notary’s office, in person or by power of attorney." },
@@ -426,7 +432,7 @@ export const EXPOSE_INHALT_TEXTE: ZweiSprachen<ExposeInhaltTexte> = {
       { nr: 2, titel: "Consultation presentation", text: "We show you how buying a let apartment works, with figures, opportunities and risks." },
       { nr: 3, titel: "Financial self-disclosure (Selbstauskunft)", text: "You state your income, expenses and assets. This shows which financing suits you." },
       { nr: 4, titel: "Documents", frist: "ID, latest payslip", text: "With these documents, the financing partners check your details." },
-      { nr: 5, titel: "Property presentation", text: "Go through the exposé together, check the assumptions in the calculator and clarify any open questions about the apartment." },
+      { nr: 5, titel: "Property presentation", text: "Go through the exposé together, work through your figures and clarify any open questions about the apartment." },
       { nr: 6, titel: "Reservation", frist: "Free of charge, effective upon your signature", text: "If you like the apartment, we reserve it for you. It is then blocked for other interested parties while the financing is arranged." },
       { nr: 7, titel: "Viewing", text: "You view the apartment and ask your questions on site." },
       { nr: 8, titel: "Bank valuer appointment", text: "A valuer from the bank inspects the apartment and assesses it for the financing." },
@@ -438,12 +444,12 @@ export const EXPOSE_INHALT_TEXTE: ZweiSprachen<ExposeInhaltTexte> = {
       {
         id: "mietausfall", titel: "Rental income and loss of rent",
         chance: "A let apartment generates rent from the first month. If the rent rises with the market, the surplus grows over the years.",
-        risiko: "A tenant may default or move out. During this time you carry the instalment alone. The calculator assumes a vacancy rate; nobody knows the actual duration in advance.",
+        risiko: "A tenant may default or move out. During this time you carry the instalment alone. Nobody knows in advance how long a vacancy will last.",
       },
       {
         id: "zins", titel: "Interest and follow-up financing",
         chance: "A fixed interest rate gives you a predictable instalment for the fixed-interest period. If interest rates fall, the follow-up financing may become cheaper.",
-        risiko: "After the fixed-interest period, the terms are renegotiated. If interest rates are higher then, the instalment rises. The calculator uses one interest rate for the entire term, which is a simplification.",
+        risiko: "After the fixed-interest period, the terms are renegotiated. If interest rates are higher then, the instalment rises.",
       },
       {
         id: "instandhaltung", titel: "Maintenance and service charge",
@@ -453,12 +459,12 @@ export const EXPOSE_INHALT_TEXTE: ZweiSprachen<ExposeInhaltTexte> = {
       {
         id: "wertentwicklung", titel: "Value development",
         chance: "Over long periods, residential property in sought-after locations has increased in value. Regardless of this, repayment builds up wealth.",
-        risiko: "Prices can also fall, especially after interest rate rises or in weaker locations. The value development in the calculator is an assumption, not a forecast.",
+        risiko: "Prices can also fall, especially after interest rate rises or in weaker locations. Nobody can predict how the value will develop.",
       },
       {
         id: "steuerrecht", titel: "Tax law",
         chance: "Interest, depreciation and costs reduce your taxable income. Under current law, a gain on sale after ten years is tax free.",
-        risiko: "Laws and case law change. The tax benefit depends on your personal situation and is only a model calculation in the calculator. Only the advice of your tax adviser is binding.",
+        risiko: "Laws and case law change. The tax benefit depends on your personal situation. Only the advice of your tax adviser is binding.",
       },
       {
         id: "liquiditaet", titel: "Liquidity and own contribution",
@@ -493,10 +499,6 @@ export const EXPOSE_INHALT_TEXTE: ZweiSprachen<ExposeInhaltTexte> = {
     ],
     rechtlicheHinweise: [
       {
-        titel: "Model calculation without guarantee",
-        text: "All figures in the Financials section are a model calculation based on the assumptions shown. They are not a promise regarding rent, value development, interest or tax effects. Deviations upwards as well as downwards are possible and likely.",
-      },
-      {
         titel: "Taxes",
         text: "Statements on tax are based on current law and case law and on your information. Whether and to what extent they apply to you depends on your personal situation. They do not replace tax advice; only the advice of your tax adviser is binding.",
       },
@@ -510,7 +512,7 @@ export const EXPOSE_INHALT_TEXTE: ZweiSprachen<ExposeInhaltTexte> = {
       },
       {
         titel: "Brokerage and remuneration",
-        text: "OS Immobilien brokers this apartment on behalf of the seller. As the buyer, you do not pay a broker’s commission unless stated otherwise in the Financials section. OS Immobilien receives remuneration from the seller.",
+        text: "OS Immobilien brokers this apartment on behalf of the seller. As the buyer, you do not pay a broker’s commission unless agreed otherwise. OS Immobilien receives remuneration from the seller.",
       },
       {
         titel: "Liability",
@@ -627,6 +629,10 @@ export const EXPOSE_INHALT_TEXTE: ZweiSprachen<ExposeInhaltTexte> = {
     gesamtobjekt: "Whole property",
     objektMitEinheiten: "Property with units",
     spanne: (von, bis) => `${von} to ${bis}`,
+    erhaltungsaufwand: (betrag, jahre) => `Maintenance expenses (Erhaltungsaufwand): ${betrag}${jahre ? `, spread over ${jahre} ${jahre === 1 ? "year" : "years"}` : ""}.`,
+    erhaltungAnteil: (anteil, gesamt) => `${anteil} share of this apartment${gesamt ? ` (${gesamt} for the whole building)` : ""}`,
+    erhaltungGesamt: (gesamt) => `${gesamt} for the whole building`,
+    erhaltungSpanne: (spanne, gesamt) => `${spanne} per apartment${gesamt ? ` (${gesamt} for the whole building)` : ""}`,
     summeDerEinheiten: "total of the units",
     mieteJeMonat: (betrag, ausEinheiten) => `${betrag} per month${ausEinheiten ? ", total of the units" : ""}`,
     davonVermietet: (anzahl) => `of which ${anzahl} let`,

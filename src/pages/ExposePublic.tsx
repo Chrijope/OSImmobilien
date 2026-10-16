@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { Loader2, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,13 +6,12 @@ import { objektUnterlagenBefristen } from "@/lib/storage";
 import { ExposeAnsicht } from "@/components/expose/ExposeAnsicht";
 import { LinkNichtMehrGueltig } from "@/components/expose/LinkNichtMehrGueltig";
 import { investagonErgaenzung, type ExposeGrundriss } from "@/components/expose/exposeInvestagon";
-import { annahmenVorbelegen, baueExposeInhalt, type Person } from "@/lib/exposeInhalt";
+import { baueExposeInhalt, type Person } from "@/lib/exposeInhalt";
 import {
-  ansprechpartnerAusAntwort, baueObjektExposeInhalt, exposePayloadZuObjekt, grundrisseAusAntwort, objektExposeRecheneinheit,
+  ansprechpartnerAusAntwort, baueObjektExposeInhalt, exposePayloadZuObjekt, grundrisseAusAntwort,
   type KundenlinkGrundriss,
 } from "@/lib/exposePublicDaten";
 import type { ObjektData } from "@/lib/objekteStore";
-import type { ExposeAnnahmen } from "@/lib/exposeAnnahmen";
 import { useSeitenSprache, type Sprache } from "@/lib/seitenSprache";
 import { SeitenSpracheProvider } from "@/lib/seitenSpracheKontext";
 import { exposeSeitenTexte } from "@/components/expose/exposeTexte";
@@ -202,19 +201,7 @@ function PublicDokument({ objekt, wohnungId, beraterId, einheitenRoh, plaene, ku
     return () => { active = false; };
   }, [beraterId, kundenAnsprechpartner]);
   const ansprechpartner = kundenAnsprechpartner ?? berater;
-  /*
-   * Immer neutrale Standardannahmen, auch mit Token: keine Selbstauskunft und
-   * keine im CRM gespeicherten Annahmen (`objekt_exposes.annahmen`), denn der
-   * Link kann weitergeleitet werden (Entscheidung Christian, 23.09.2026).
-   * `get-expose` liefert solche Werte gar nicht erst aus.
-   */
-  const vorbelegung = useMemo(() => annahmenVorbelegen(objekt, wohnung || objektExposeRecheneinheit(objekt), null), [objekt, wohnung]);
-  // Only user edits persist when live object data is refreshed. Object defaults remain live.
-  const [aenderungen, setAenderungen] = useState<Partial<ExposeAnnahmen>>({});
-  const annahmen = useMemo(() => ({ ...vorbelegung.annahmen, ...aenderungen }), [vorbelegung, aenderungen]);
-  const onAnnahmen = useCallback((a: Partial<ExposeAnnahmen>) => setAenderungen(old => ({ ...old, ...a })), []);
   const inhalt = useMemo(() => wohnung ? baueExposeInhalt({objekt, wohnung, ersteller:ansprechpartner, sprache}) : baueObjektExposeInhalt({objekt, ersteller:ansprechpartner, sprache}), [objekt, wohnung, ansprechpartner, sprache]);
-  const herkunft = Object.fromEntries(vorbelegung.ausObjekt.filter(k => !(k in aenderungen)).map(k => [k,"objekt" as const]));
   /*
    * Dieselben Investagon-Ergaenzungen wie in der internen Ansicht: Grundriss,
    * Besonderheiten, Merkmale, Objektdaten. Christian hat am 16.09.2026
@@ -237,5 +224,5 @@ function PublicDokument({ objekt, wohnungId, beraterId, einheitenRoh, plaene, ku
     }),
     [objekt, wohnung, einheitenRoh, plaene, sprache],
   );
-  return <ExposeAnsicht inhalt={inhalt} rechner={{annahmen, onAnnahmen, herkunft}} pdfAktiv investagon={investagon} kundenAnsprechpartner={kundenAnsprechpartner} />;
+  return <ExposeAnsicht inhalt={inhalt} pdfAktiv investagon={investagon} kundenAnsprechpartner={kundenAnsprechpartner} />;
 }

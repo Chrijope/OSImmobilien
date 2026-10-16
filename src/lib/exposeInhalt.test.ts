@@ -35,13 +35,17 @@ const w = objekt.wohnungen[0];
 const heute = new Date(2026, 8, 2);
 
 describe("Feste Inhalte", () => {
-  it("hat elf Abschnitte, sechs Schritte, elf Themen und einen gekennzeichneten Rechtsentwurf", () => {
-    expect(EXPOSE_ABSCHNITTE).toHaveLength(11);
+  it("hat zehn Abschnitte, sechs Schritte, elf Themen und einen gekennzeichneten Rechtsentwurf", () => {
+    expect(EXPOSE_ABSCHNITTE).toHaveLength(10);
+    expect(EXPOSE_ABSCHNITTE.map((a) => a.id)).not.toContain("wirtschaftlichkeit");
     expect(EXPOSE_ABSCHNITTE.map((a) => a.id)).not.toContain("naechste-schritte");
     expect(NAECHSTE_SCHRITTE.map((s) => s.titel)).toEqual(["Beratung", "Reservierung", "Finanzierung", "Notar", "Übergabe", "Verwaltung"]);
     expect(CHANCEN_RISIKEN.map((t) => t.id)).toEqual(["mietausfall", "zins", "instandhaltung", "wertentwicklung", "steuerrecht", "liquiditaet", "standort", "bautraeger", "verwaltung", "wiederverkauf", "persoenlich"]);
     for (const t of CHANCEN_RISIKEN) { expect(t.chance.length).toBeGreaterThan(40); expect(t.risiko.length).toBeGreaterThan(40); }
-    expect(RECHTLICHE_HINWEISE_ENTWURF.some((h) => h.titel === "Modellrechnung ohne Gewähr")).toBe(true);
+    // Der Hinweis zur Modellrechnung gehörte zum Abschnitt Wirtschaftlichkeit und ist mit ihm weg.
+    expect(RECHTLICHE_HINWEISE_ENTWURF.some((h) => h.titel === "Modellrechnung ohne Gewähr")).toBe(false);
+    expect(JSON.stringify(RECHTLICHE_HINWEISE_ENTWURF)).not.toMatch(/Wirtschaftlichkeit|Rechner/);
+    expect(JSON.stringify([...NAECHSTE_SCHRITTE, ...CHANCEN_RISIKEN])).not.toMatch(/Rechner/);
   });
 });
 
@@ -127,7 +131,7 @@ describe("Exposé-Inhalt", () => {
     expect(inhalt.kontakt.vertrieb?.name).toBe("Max Mustermann");
     expect(inhalt.kontakt.firma).toContain("OS Immobilien");
     expect(inhalt.standort.kennzahlen).toEqual([]);
-    expect(inhalt.wirtschaftlichkeit.objektdaten.kaufpreis).toBe(232000);
+    expect(inhalt).not.toHaveProperty("wirtschaftlichkeit");
   });
 
   it("nennt fehlende Pflichtangaben zum Energieausweis", () => {

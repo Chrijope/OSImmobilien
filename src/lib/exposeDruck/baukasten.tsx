@@ -1,5 +1,5 @@
 import { Children, type ReactNode } from "react";
-import { Font, Image, Svg, Rect, Line, Text as SvgText, Circle, Path, Text, View, type Styles } from "@react-pdf/renderer";
+import { Font, Image, Svg, Circle, Path, Text, View, type Styles } from "@react-pdf/renderer";
 import type { DruckBild, DruckDaten, Tabelle, Zeile } from "./daten";
 
 /**
@@ -287,6 +287,18 @@ export function EnergieBand({ s, e, radius = 2 }: { s: Stil; e: DruckDaten["obje
   return (
     <View wrap={false}>
       <Text style={{ fontSize: 7.4, color: s.leise, marginBottom: 8 }}>{e.kopf}</Text>
+      {/*
+        Pfeil nach unten über der hervorgehobenen Klasse (Inhaber, 16.10.2026).
+        Eine eigene Zeile über dem Band, so hat er auch bei A+ und A Platz und
+        hält Abstand zur Kopfzeile.
+      */}
+      <View style={{ flexDirection: "row", height: 6, marginBottom: 5 }}>
+        {e.stufen.map((st, i) => (
+          <View key={st.klasse} style={{ flexGrow: 1, flexBasis: 0, marginLeft: i ? 1.5 : 0, alignItems: "center" }}>
+            {st.aktiv ? <Svg width={8} height={6}><Path d="M0 0 L8 0 L4 6 Z" fill={s.tinte} /></Svg> : null}
+          </View>
+        ))}
+      </View>
       <View style={{ flexDirection: "row", height: 18 }}>
         {e.stufen.map((st, i) => (
           <View key={st.klasse} style={{ flexGrow: 1, flexBasis: 0, marginLeft: i ? 1.5 : 0, backgroundColor: st.farbe, borderRadius: radius, justifyContent: "center", alignItems: "center", borderWidth: st.aktiv ? 1.4 : 0, borderColor: s.tinte, transform: st.aktiv ? "scaleY(1.25)" : undefined }}>
@@ -294,7 +306,8 @@ export function EnergieBand({ s, e, radius = 2 }: { s: Stil; e: DruckDaten["obje
           </View>
         ))}
       </View>
-      <View style={{ height: 22, position: "relative", marginTop: 3 }}>
+      {/* Abstand zur vergrößerten Stufe (scaleY 1.25 mit Rand), damit Marke und Satz nichts überdecken. */}
+      <View style={{ height: 22, position: "relative", marginTop: 7 }}>
         {e.positionProzent !== undefined && e.kennwert ? (
           <View style={{ position: "absolute", left: `${Math.min(88, Math.max(0, e.positionProzent - 6))}%`, top: 0, width: "16%", alignItems: e.positionProzent > 85 ? "flex-end" : e.positionProzent < 8 ? "flex-start" : "center" }}>
             <Svg width={7} height={5}><Path d="M3.5 0 L7 5 L0 5 Z" fill={s.tinte} /></Svg>
@@ -367,52 +380,6 @@ export function GrundrissBlock({ s, g, hoehe, radius = 0, rahmen }: { s: Stil; g
         </View>
       )} />
       <Notiz s={s}>{g.hinweis}</Notiz>
-    </View>
-  );
-}
-
-/** Balkendiagramm Vermögensaufbau: je Horizont Immobilienwert, Restschuld, Vermögen. */
-export function VermoegenDiagramm({ s, v, breite, hoehe, farben }: { s: Stil; v: NonNullable<NonNullable<DruckDaten["finanzen"]>["vermoegen"]>; breite: number; hoehe: number; farben: [string, string, string] }) {
-  const links = 40, unten = 18, oben = 6;
-  const diagH = hoehe - unten - oben;
-  const max = Math.max(1, ...v.balken.flatMap((b) => b.werte));
-  const roh = max / 4;
-  const zehner = Math.pow(10, Math.floor(Math.log10(roh)));
-  const schritt = [1, 2, 5, 10].map((f) => f * zehner).find((x) => x >= roh) ?? zehner * 10;
-  const achseMax = Math.ceil(max / schritt) * schritt;
-  const y = (w: number) => oben + diagH - (w / achseMax) * diagH;
-  const gruppeB = (breite - links) / v.balken.length;
-  const balkenB = Math.min(18, (gruppeB - 16) / 3);
-  const linien: number[] = [];
-  for (let w = 0; w <= achseMax + 0.001; w += schritt) linien.push(w);
-  return (
-    <View wrap={false}>
-      <Svg width={breite} height={hoehe}>
-        {linien.map((w) => (
-          <Line key={`l${w}`} x1={links} x2={breite} y1={y(w)} y2={y(w)} stroke={s.linie} strokeWidth={0.5} />
-        ))}
-        {linien.map((w) => (
-          <SvgText key={`t${w}`} x={links - 5} y={y(w) + 2.2} style={{ fontSize: 6, fill: s.leise, fontFamily: SCHRIFT }} textAnchor="end">{v.achse(w)}</SvgText>
-        ))}
-        {v.balken.map((b, gi) => {
-          const gx = links + gi * gruppeB + (gruppeB - 3 * balkenB - 6) / 2;
-          return b.werte.map((w, bi) => (
-            <Rect key={`${gi}-${bi}`} x={gx + bi * (balkenB + 3)} y={y(w)} width={balkenB} height={Math.max(0.5, oben + diagH - y(w))} fill={farben[bi]} rx={1.5} ry={1.5} />
-          ));
-        })}
-        {v.balken.map((b, gi) => (
-          <SvgText key={`x${gi}`} x={links + gi * gruppeB + gruppeB / 2} y={hoehe - 5} style={{ fontSize: 6.6, fill: s.tinte, fontFamily: SCHRIFT, fontWeight: 700 }} textAnchor="middle">{b.label}</SvgText>
-        ))}
-        <Line x1={links} x2={breite} y1={oben + diagH} y2={oben + diagH} stroke={s.tinte} strokeWidth={0.6} />
-      </Svg>
-      <View style={{ flexDirection: "row", marginTop: 4, marginLeft: links }}>
-        {v.legende.map((l, i) => (
-          <View key={l} style={{ flexDirection: "row", alignItems: "center", marginRight: 12 }}>
-            <View style={{ width: 7, height: 7, borderRadius: 1.5, backgroundColor: farben[i], marginRight: 4 }} />
-            <Text style={{ fontSize: 6.8, color: s.text }}>{l}</Text>
-          </View>
-        ))}
-      </View>
     </View>
   );
 }

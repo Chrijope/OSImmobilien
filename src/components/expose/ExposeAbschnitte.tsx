@@ -17,10 +17,10 @@ import { useAnzeigeSprache } from "@/lib/seitenSpracheKontext";
 import { exposeSeitenTexte } from "./exposeTexte";
 
 /**
- * Die Abschnitte des Exposés außer dem Rechner (Abschnitt 6, ExposeRechner)
- * und der Mikrolage (Abschnitt 3, Mikrolage). Jeder Abschnitt ist eine
- * eigene Komponente, die genau den Teil von `ExposeInhalt` bekommt, den sie
- * zeigt, damit das PDF (E4) später dieselben Datenstücke abgreifen kann.
+ * Die Abschnitte des Exposés außer der Mikrolage (Abschnitt 3, Mikrolage).
+ * Jeder Abschnitt ist eine eigene Komponente, die genau den Teil von
+ * `ExposeInhalt` bekommt, den sie zeigt, damit das PDF (E4) dieselben
+ * Datenstücke abgreifen kann.
  */
 
 const KARTE = "rounded-2xl border border-border/60 bg-card p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)] sm:p-5";
@@ -192,7 +192,7 @@ export function AbschnittObjektdaten({ objektdaten }: { objektdaten: ExposeInhal
         <div className="mb-3 text-xs text-muted-foreground">
           {[energie.art, energie.energietraeger, energie.baujahr ? t.baujahrMit(energie.baujahr) : "", energie.gueltigBis ? t.ausweisGueltig(energie.gueltigBis) : ""].filter(Boolean).join(" · ") || t.energieFehlt}
         </div>
-        <Energieskala klasse={energie.klasse} kennwert={energie.kennwert} positionProzent={energie.positionProzent} hinweis={energie.hinweis} />
+        <Energieskala klasse={energie.klasse} kennwert={energie.kennwert} positionProzent={energie.positionProzent} hinweis={energie.hinweis} pfeil />
         {objektdaten.fehlendePflichtangaben.length > 0 && (
           <p className="mt-3 flex items-start gap-2 rounded-lg bg-[hsl(var(--warning))]/10 px-3 py-2 text-xs text-foreground" data-testid="pflichtangaben-fehlen">
             <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[hsl(var(--warning))]" />
@@ -233,7 +233,7 @@ export function AbschnittGrundriss({ grundriss }: { grundriss: ExposeInhalt["gru
   );
 }
 
-// ── 7 Verwaltung ──
+// ── 6 Verwaltung ──
 
 export function AbschnittVerwaltung({ verwaltung }: { verwaltung: ExposeInhalt["verwaltung"] }) {
   return (
@@ -252,7 +252,7 @@ export function AbschnittVerwaltung({ verwaltung }: { verwaltung: ExposeInhalt["
   );
 }
 
-// ── 10 Chancen und Risiken ──
+// ── 8 Chancen und Risiken ──
 
 export function AbschnittChancenRisiken({ themen }: { themen: ExposeInhalt["chancenRisiken"] }) {
   const [offen, setOffen] = useState<string[]>([]);
@@ -282,7 +282,7 @@ export function AbschnittChancenRisiken({ themen }: { themen: ExposeInhalt["chan
   );
 }
 
-// ── 11 Rechtliche Hinweise ──
+// ── 9 Rechtliche Hinweise ──
 
 export function AbschnittRechtliches({ rechtliches }: { rechtliches: ExposeInhalt["rechtliches"] }) {
   return (
@@ -313,7 +313,7 @@ export function AbschnittRechtliches({ rechtliches }: { rechtliches: ExposeInhal
   );
 }
 
-// ── 12 Kontakt ──
+// ── 10 Kontakt ──
 
 /** Der Vertriebspartner mit Bild, Name, Rolle und den Wegen zu ihm. */
 function PersonKarte({ person, titel }: { person: Person; titel: string }) {

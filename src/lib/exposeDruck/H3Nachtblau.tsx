@@ -3,7 +3,7 @@ import { Document, Page, Text, View } from "@react-pdf/renderer";
 import type { DruckDaten } from "./daten";
 import {
   Absatz, Arbeitgeber, Karo, Argumente, ChanceRisiko, Chips, EnergieBand, Foto, GrundrissBlock, Hinweise, Karte, KartenBlock, Kicker, Leistungen, Logo, Notiz,
-  OrtsGruppe, Person, Saeulen, ortsGewicht, Raster, Reihe, SCHRIFT, TabelleBlock, Titel, VermoegenDiagramm, Werte, Zahl, Zeitplan, abschnitt, fotoNr, type Stil,
+  OrtsGruppe, Person, Saeulen, ortsGewicht, Raster, Reihe, SCHRIFT, TabelleBlock, Titel, Werte, Zahl, Zeitplan, abschnitt, fotoNr, type Stil,
 } from "./baukasten";
 
 /**
@@ -96,7 +96,6 @@ function Deckblatt({ d }: { d: DruckDaten }) {
 }
 
 export function H3Nachtblau({ d }: { d: DruckDaten }) {
-  const f = d.finanzen;
   const halb = <T,>(l: T[]): [T[], T[]] => [l.slice(0, Math.ceil(l.length / 2)), l.slice(Math.ceil(l.length / 2))];
   return (
     <Document title={d.meta.dokumentTitel} author="OS Immobilien" language={d.sprache}>
@@ -184,7 +183,9 @@ export function H3Nachtblau({ d }: { d: DruckDaten }) {
           {d.objektdaten.besonderheiten ? (
             <K wrap>
               <Titel s={S}>{d.objektdaten.besonderheiten.titel}</Titel>
+              {d.objektdaten.besonderheiten.erhaltungsaufwand ? <Absatz s={S} groesse={8.4} style={{ marginBottom: 5, fontWeight: 700, color: NACHT }}>{d.objektdaten.besonderheiten.erhaltungsaufwand}</Absatz> : null}
               {d.objektdaten.besonderheiten.texte.map((t, i) => <Absatz key={i} s={S} groesse={8.4} style={{ marginBottom: 5 }}>{t}</Absatz>)}
+              {d.objektdaten.besonderheiten.hinweis ? <Notiz s={S}>{d.objektdaten.besonderheiten.hinweis}</Notiz> : null}
               <Notiz s={S}>{d.objektdaten.besonderheiten.quelle}</Notiz>
             </K>
           ) : null}
@@ -210,67 +211,6 @@ export function H3Nachtblau({ d }: { d: DruckDaten }) {
           </Kapitel>
         ) : null}
 
-        {f ? (
-          <Kapitel d={d} id="wirtschaftlichkeit">
-            <Text style={{ fontSize: 8.2, color: S.leise, lineHeight: 1.5, marginBottom: 10, paddingHorizontal: 4 }}>{f.vorspann}</Text>
-            <Reihe abstand={8} wrap={false} style={{ marginBottom: 10 }}>
-              {f.hoehepunkte.map((z, i) => (
-                <View key={z.label} style={{ backgroundColor: i === 2 ? NACHT : "#ffffff", borderRadius: 14, padding: 14, borderWidth: i === 2 ? 0 : 0.6, borderColor: S.linie }}>
-                  <Text style={{ fontSize: 17, fontWeight: 700, color: i === 2 ? HELLBLAU : NACHT }}>{z.wert}</Text>
-                  <Text style={{ fontSize: 6.8, color: i === 2 ? "#A9B8CA" : S.leise, marginTop: 3 }}>{z.label}</Text>
-                </View>
-              ))}
-            </Reihe>
-            <K>
-              <Titel s={S}>{f.kaufTitel}</Titel>
-              <Reihe abstand={20}>{[<Werte key="l" s={S} zeilen={f.kaufLinks} groesse={8.2} />, <Werte key="r" s={S} zeilen={f.kaufRechts} groesse={8.2} />]}</Reihe>
-              <Notiz s={S}>{f.kaufNotiz}</Notiz>
-            </K>
-            <K>
-              <Titel s={S}>{f.monatTitel}</Titel>
-              <Reihe abstand={20}>
-                {[
-                  <View key="e"><Kicker s={S} style={{ marginBottom: 3 }}>{f.einnahmenTitel}</Kicker><Werte s={S} zeilen={f.einnahmen} groesse={8.2} /></View>,
-                  <View key="a"><Kicker s={S} style={{ marginBottom: 3 }}>{f.ausgabenTitel}</Kicker><Werte s={S} zeilen={f.ausgaben} groesse={8.2} /></View>,
-                ]}
-              </Reihe>
-              <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", backgroundColor: NACHT, borderRadius: 10, paddingVertical: 10, paddingHorizontal: 14, marginTop: 10 }}>
-                <Text style={{ fontSize: 9, fontWeight: 700, color: "#ffffff" }}>{f.ergebnis.label}</Text>
-                <Text style={{ fontSize: 15, fontWeight: 700, color: HELLBLAU }}>{f.ergebnis.wert}</Text>
-              </View>
-            </K>
-            {f.vermoegen ? (
-              <>
-                <K>
-                  <Titel s={S}>{f.vermoegen.titel}</Titel>
-                  <VermoegenDiagramm s={S} v={f.vermoegen} breite={BREITE - 38} hoehe={150} farben={["#8BEEC9", NACHT, S.akzent]} />
-                  <View style={{ marginTop: 10 }}><TabelleBlock s={S} t={f.vermoegen.tabelle} groesse={6.9} /></View>
-                </K>
-                <K>
-                  <Titel s={S}>{f.vermoegen.ekTitel}</Titel>
-                  <Raster liste={f.vermoegen.ek} spalten={4} abstand={10} render={(z) => <Zahl s={S} z={z} groesse={14} farbe={S.akzent} labelOben />} />
-                  <Notiz s={S}>{f.vermoegen.fuss}</Notiz>
-                </K>
-              </>
-            ) : <K><Absatz s={S}>{f.vermoegenLeer}</Absatz></K>}
-            {f.karten.length ? (
-              <Reihe abstand={10} wrap={false}>
-                {f.karten.map((k) => (
-                  <Karte key={k.titel} s={S} style={{ flexGrow: 1, marginBottom: 10 }}>
-                    <Text style={{ fontSize: 9, fontWeight: 700, color: NACHT }}>{k.titel}</Text>
-                    <Text style={{ fontSize: 7.2, color: S.leise, marginTop: 3, marginBottom: 6, lineHeight: 1.45 }}>{k.text}</Text>
-                    <Werte s={S} zeilen={k.zeilen} groesse={8} />
-                  </Karte>
-                ))}
-              </Reihe>
-            ) : null}
-            <K>
-              <Titel s={S}>{f.annahmenTitel}</Titel>
-              <TabelleBlock s={S} t={f.annahmen} groesse={7} />
-              {f.annahmenNotizen.map((n, i) => <Notiz key={i} s={S}>{n}</Notiz>)}
-            </K>
-          </Kapitel>
-        ) : null}
 
         <Kapitel d={d} id="verwaltung">
           <K>

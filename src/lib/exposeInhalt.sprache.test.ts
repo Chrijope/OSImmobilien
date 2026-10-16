@@ -66,7 +66,8 @@ describe("Textdateien sind vollständig", () => {
 
 describe("Die deutschen Konstanten bleiben wortgleich", () => {
   it("die PDFs lesen weiter dieselben deutschen Texte", () => {
-    expect(EXPOSE_ABSCHNITTE[6]).toEqual({ id: "verwaltung", nr: 7, titel: "Verwaltung vor Ort", kurz: "Verwaltung" });
+    // Seit dem 16.10.2026 ohne Wirtschaftlichkeit: Verwaltung ist Abschnitt 6.
+    expect(EXPOSE_ABSCHNITTE[5]).toEqual({ id: "verwaltung", nr: 6, titel: "Verwaltung vor Ort", kurz: "Verwaltung" });
     expect(ZEITPLAN_STANDARD[5]).toEqual({ nr: 6, titel: "Reservierung", frist: "Kostenfrei, wirksam mit deiner Unterschrift", text: NAECHSTE_SCHRITTE[1].text });
     expect(ZEITPLAN_STANDARD[0]).toEqual({ nr: 1, titel: "Erstgespräch", frist: "", text: "Wir lernen uns kennen und klären, was du mit einer Immobilie erreichen willst." });
     expect(NAECHSTE_SCHRITTE[0].titel).toBe("Beratung");

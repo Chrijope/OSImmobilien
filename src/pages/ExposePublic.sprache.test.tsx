@@ -68,16 +68,15 @@ beforeEach(() => {
 });
 
 describe("Sprache vom Server", () => {
-  it("mit Token und sprache en: Seite, Rechner und Kontakt englisch", async () => {
+  it("mit Token und sprache en: Seite und Kontakt englisch", async () => {
     antwort = payload({ sprache: "en" });
     renderMit(`/expose/o1/wohnung/w7?token=${TOKEN}`);
     const objektdaten = await screen.findByTestId("abschnitt-objektdaten");
     expect(objektdaten).toHaveTextContent("Property details");
     expect(screen.getByTestId("abschnitt-start")).toHaveTextContent("Your property as an investment");
-    const rechner = screen.getByTestId("expose-rechner");
-    expect(rechner).toHaveAttribute("lang", "en");
-    expect(within(rechner).getByTestId("finanzierungsparameter")).toHaveTextContent("Financing parameters");
-    expect(within(rechner).getByTestId("business-case-titel")).toHaveTextContent(/^Business case, [\d.]+% financing$/);
+    // Den Abschnitt Wirtschaftlichkeit gibt es seit dem 16.10.2026 nicht mehr.
+    expect(screen.queryByTestId("expose-rechner")).not.toBeInTheDocument();
+    expect(document.body.textContent).not.toMatch(/Financials|Business case/);
     expect(screen.getByTestId("abschnitt-kontakt")).toHaveTextContent("Your contact person at OS Immobilien");
     expect(screen.getByTestId("abschnitt-rechtliches")).toHaveTextContent("German version prevails");
     expect(document.documentElement.getAttribute("lang")).toBe("en");
@@ -101,7 +100,6 @@ describe("Rückfall Deutsch", () => {
   it("mit Token, aber ohne sprache: deutsch", async () => {
     renderMit(`/expose/o1/wohnung/w7?token=${TOKEN}`);
     expect(await screen.findByTestId("abschnitt-objektdaten")).toHaveTextContent("Objektdaten");
-    expect(screen.getByTestId("expose-rechner")).toHaveAttribute("lang", "de");
     expect(document.documentElement.getAttribute("lang")).toBe("de");
   });
 
@@ -117,7 +115,7 @@ describe("?lang= in der Adresse geht vor", () => {
     antwort = payload({ sprache: "en" });
     renderMit(`/expose/o1/wohnung/w7?token=${TOKEN}&lang=de`);
     expect(await screen.findByTestId("abschnitt-objektdaten")).toHaveTextContent("Objektdaten");
-    expect(screen.getByTestId("finanzierungsparameter")).toHaveTextContent("Finanzierungsparameter");
+    expect(screen.getByTestId("abschnitt-verwaltung")).toHaveTextContent("Verwaltung vor Ort");
   });
 
   it("Server de, ?lang=en: englisch", async () => {

@@ -5,7 +5,7 @@
  * Plan Kundensprache vom 25.09.2026, Etappe 5 (D10). Der Inhalt selbst
  * (Kennzahlen, Schritte, Hinweise) kommt schon in der Sprache des Kunden aus
  * `baueExposeInhalt`; hier steht nur, was das PDF selbst schreibt: Kopf,
- * Kacheltitel, Tabellenköpfe, Rechenhinweise, Fußzeile. Die deutschen Texte
+ * Kacheltitel, Tabellenköpfe, Fußzeile. Die deutschen Texte
  * sind wörtlich die bisherigen, ein Test prüft, dass beide Fassungen
  * dieselben Schlüssel haben (`exposeSprache.test.ts`).
  *
@@ -61,111 +61,6 @@ export interface ExposePdfTexte {
   weiterePlaene: (anzahl: number) => string;
   grundrissDateiTitel: string;
   grundrissDatei: (namen: string) => string;
-  wirtschaftlichkeitVorspann: string;
-  kaufFinanzierung: string;
-  kaufpreisWohnung: string;
-  preisanpassung: (wert: string) => string;
-  stellplatz: string;
-  gesamtinvestition: string;
-  nebenkosten: (satz: string, land: string) => string;
-  darlehen: (quote: string) => string;
-  eigenkapitaleinsatz: string;
-  nebenkostenNotiz: (a: {
-    grest: string;
-    notar: string;
-    makler: string | null;
-    quelle: "manuell" | "mittelwert" | "land";
-    rate: string;
-    zins: string;
-    tilgung: string;
-  }) => string;
-  annahmen: string;
-  annahme: string;
-  wert: string;
-  herkunft: string;
-  herkunftWerte: { selbstauskunft: string; objekt: string; standard: string; angepasst: string; tarif: string };
-  zeilen: {
-    eigenkapital: string;
-    zins: string;
-    tilgung: string;
-    zve: string;
-    verheiratet: string;
-    freibetrag: string;
-    freibetragNein: string;
-    grenzsteuersatz: string;
-    grenzFest: string;
-    grenzTarif: (jahr: number) => string;
-    mietsteigerung: string;
-    kostensteigerung: string;
-    wertentwicklung: string;
-    leerstand: string;
-    makler: string;
-    preisanpassung: string;
-    afa: string;
-    afaWert: (satz: string, anteil: string, angenommen: boolean) => string;
-    sonderAfa: string;
-    sonderAfaJa: (satz: string, jahre: number) => string;
-    sonderAfaNicht: string;
-    mietverwaltung: string;
-    sanierung: string;
-    sanierungErhaltung: (jahre: number) => string;
-    sanierungWerkvertrag: string;
-    sanierungNicht: string;
-    startHaltedauerTitel: string;
-    startHaltedauer: (start: number, jahre: number) => string;
-    ja: string;
-    nein: string;
-  };
-  eigenkapitalSa: (betrag: string) => string;
-  monatTitel: (jahr: number) => string;
-  einnahmen: string;
-  kaltmiete: string;
-  steuervorteil: string;
-  steuervorteilMonatlich: string;
-  steuervorteilErstattung: string;
-  summeEinnahmen: string;
-  ausgaben: string;
-  zinsTilgung: string;
-  hausgeldNu: string;
-  ruecklage: string;
-  mietverwaltung: string;
-  mietausfall: string;
-  summeAusgaben: string;
-  eigenanteil: string;
-  ueberschuss: string;
-  vermoegensaufbau: string;
-  nach: string;
-  immobilienwert: string;
-  restschuld: string;
-  verkaufsertrag: string;
-  eigenanteile: string;
-  vermoegen: string;
-  jahreKalender: (jahre: number, kalender: number) => string;
-  jahre: (jahre: number) => string;
-  achseMio: (wert: string) => string;
-  achseTsd: (wert: number) => string;
-  aufgebautesVermoegen: string;
-  ekRenditeTitel: string;
-  nachJahren: (jahre: number) => string;
-  nichtBestimmbar: string;
-  ausEinemEuro: (faktor: string) => string;
-  ohneEigenkapital: string;
-  vermoegenFuss: (wertsteigerung: string, eigenkapital: string) => string;
-  keinVermoegensaufbau: string;
-  sanierungTitel: string;
-  sanierungText: (wirksam: string) => string;
-  wirksamAb: (jahr: number) => string;
-  wirksamErstesJahr: string;
-  anteilMassnahme: string;
-  einmaligeErsparnis: string;
-  wirkung: string;
-  ueberAfa: string;
-  steuerlich: string;
-  nichtAngesetzt: string;
-  jeEuroTitel: string;
-  jeEuroText: (jahre: number) => string;
-  eingesetztesEk: string;
-  ausEinemEuroLabel: string;
   verwaltungTitel: (name: string) => string;
   verwaltungStandard: string;
   verwaltungOhneLeistungen: string;
@@ -186,13 +81,12 @@ export interface ExposePdfTexte {
   kontaktOsImmobilien: string;
   erstelltAm: (datum: string, fuer: string, von: string) => string;
   fussPreisstand: (firma: string, datum: string) => string;
-  fussModell: (seite: number) => string;
 }
 
 export const EXPOSE_PDF_TEXTE_DE: ExposePdfTexte = {
   kennung: "Exposé",
   dokumentTitel: (titel) => `Exposé ${titel}`,
-  deckblattFuss: (preisstand, firma) => `Preisstand ${preisstand}. Alle Zahlen sind Modellrechnungen, keine Zusage. ${firma}`,
+  deckblattFuss: (preisstand, firma) => `Preisstand ${preisstand}. ${firma}`,
   deineKapitalanlage: "Deine Kapitalanlage",
   einwohnerIn: (zahl, ort) => `${zahl} Einwohner in ${ort}`,
   wachstum: (prozent) => `${prozent} Einwohner in fünf Jahren`,
@@ -234,109 +128,6 @@ export const EXPOSE_PDF_TEXTE_DE: ExposePdfTexte = {
   weiterePlaene: (anzahl) => `Weitere ${anzahl} Pläne im Online-Exposé.`,
   grundrissDateiTitel: "Grundriss als Datei",
   grundrissDatei: (namen) => `Der Grundriss liegt als Datei vor: ${namen}. Im Online-Exposé lässt er sich öffnen.`,
-  wirtschaftlichkeitVorspann:
-    "Alle Zahlen sind eine Modellrechnung mit den Annahmen auf dieser Seite. Werte aus deiner Selbstauskunft sind in der Spalte Herkunft gekennzeichnet. Im Online-Exposé kannst du jeden Wert verändern, die Seite rechnet sofort neu.",
-  kaufFinanzierung: "Kaufpreis und Finanzierung",
-  kaufpreisWohnung: "Kaufpreis Wohnung",
-  preisanpassung: (wert) => `Preisanpassung ${wert}`,
-  stellplatz: "Stellplatz",
-  gesamtinvestition: "Gesamtinvestition",
-  nebenkosten: (satz, land) => `Kaufnebenkosten ${satz}${land ? ` (${land})` : ""}`,
-  darlehen: (quote) => `Darlehen (${quote} Finanzierung)`,
-  eigenkapitaleinsatz: "Eigenkapitaleinsatz",
-  nebenkostenNotiz: (a) =>
-    `Grunderwerbsteuer ${a.grest}, Notar und Grundbuch ${a.notar}${a.makler ? `, Makler ${a.makler}` : ", keine Maklerprovision"}. ${
-      a.quelle === "manuell" ? "Satz laut Objektangaben." : a.quelle === "mittelwert" ? "Bundesland unbekannt, Mittelwert aller Länder." : "Satz nach Bundesland."
-    } Der Eigenkapitaleinsatz ist Nebenkosten plus Eigenkapital an der Investition; die Nebenkosten trägst du immer selbst. Monatsrate ${a.rate} bei ${a.zins} Zins und ${a.tilgung} Tilgung.`,
-  annahmen: "Annahmen",
-  annahme: "Annahme",
-  wert: "Wert",
-  herkunft: "Herkunft",
-  herkunftWerte: { selbstauskunft: "Selbstauskunft", objekt: "Objekt", standard: "Standard", angepasst: "Angepasst", tarif: "Tarif" },
-  zeilen: {
-    eigenkapital: "Eigenkapital",
-    zins: "Zinssatz",
-    tilgung: "Anfangstilgung",
-    zve: "Zu versteuerndes Einkommen",
-    verheiratet: "Verheiratet, Splittingtarif",
-    freibetrag: "Steuervorteil monatlich über Freibetrag (§ 39a EStG)",
-    freibetragNein: "Nein, Erstattung im Folgejahr",
-    grenzsteuersatz: "Grenzsteuersatz",
-    grenzFest: "fest vorgegeben",
-    grenzTarif: (jahr) => `nach Tarif ${jahr}`,
-    mietsteigerung: "Mietsteigerung je Jahr",
-    kostensteigerung: "Kostensteigerung je Jahr",
-    wertentwicklung: "Wertentwicklung je Jahr",
-    leerstand: "Leerstand",
-    makler: "Maklerprovision",
-    preisanpassung: "Preisanpassung",
-    afa: "AfA je Jahr",
-    afaWert: (satz, anteil, angenommen) => `${satz} auf ${anteil} Gebäudeanteil${angenommen ? " (angenommen)" : ""}`,
-    sonderAfa: "Sonder-AfA (§ 7b EStG)",
-    sonderAfaJa: (satz, jahre) => `Ja, ${satz} über ${jahre} Jahre`,
-    sonderAfaNicht: "Ja, aber nicht ansetzbar",
-    mietverwaltung: "Mietverwaltung in den Ausgaben",
-    sanierung: "Sanierung steuerlich",
-    sanierungErhaltung: (jahre) => `Erhaltungsaufwand, sofort abziehbar, verteilt auf ${jahre} ${jahre === 1 ? "Jahr" : "Jahre"}`,
-    sanierungWerkvertrag: "Werkvertrag, erhöht die AfA-Grundlage",
-    sanierungNicht: "Nicht ansetzen",
-    startHaltedauerTitel: "Startjahr und Haltedauer",
-    startHaltedauer: (start, jahre) => `${start}, ${jahre} Jahre`,
-    ja: "Ja",
-    nein: "Nein",
-  },
-  eigenkapitalSa: (betrag) => `Laut Selbstauskunft stehen ${betrag} an liquidem Eigenkapital bereit.`,
-  monatTitel: (jahr) => `Monatliche Betrachtung, Werte im Jahr ${jahr}`,
-  einnahmen: "Einnahmen",
-  kaltmiete: "Kaltmiete",
-  steuervorteil: "Steuervorteil",
-  steuervorteilMonatlich: "monatlich über den Freibetrag",
-  steuervorteilErstattung: "Erstattung des Vorjahres, auf den Monat umgelegt",
-  summeEinnahmen: "Summe Einnahmen",
-  ausgaben: "Ausgaben",
-  zinsTilgung: "Zins und Tilgung",
-  hausgeldNu: "Hausgeld, nicht umlagefähig",
-  ruecklage: "Erhaltungsrücklage",
-  mietverwaltung: "Mietverwaltung",
-  mietausfall: "Mietausfall (Leerstand)",
-  summeAusgaben: "Summe Ausgaben",
-  eigenanteil: "Dein monatlicher Eigenanteil",
-  ueberschuss: "Dein monatlicher Überschuss",
-  vermoegensaufbau: "Vermögensaufbau",
-  nach: "Nach",
-  immobilienwert: "Immobilienwert",
-  restschuld: "Restschuld",
-  verkaufsertrag: "Verkaufsertrag",
-  eigenanteile: "Eigenanteile",
-  vermoegen: "Vermögen",
-  jahreKalender: (jahre, kalender) => `${jahre} Jahre (${kalender})`,
-  jahre: (jahre) => `${jahre} Jahre`,
-  achseMio: (wert) => `${wert} Mio. €`,
-  achseTsd: (wert) => `${wert} Tsd. €`,
-  aufgebautesVermoegen: "Aufgebautes Vermögen",
-  ekRenditeTitel: "Eigenkapitalrendite je Jahr",
-  nachJahren: (jahre) => `nach ${jahre} Jahren`,
-  nichtBestimmbar: "nicht bestimmbar",
-  ausEinemEuro: (faktor) => `aus 1 € werden ${faktor} €`,
-  ohneEigenkapital: "ohne Eigenkapital",
-  vermoegenFuss: (wertsteigerung, eigenkapital) =>
-    `Verkaufsertrag ist Immobilienwert minus Restschuld. Eigenanteile ist die Summe aller laufenden Eigenanteile und Überschüsse bis dahin, negativ heißt zugezahlt. Aufgebautes Vermögen ist beides zusammen, ohne die einmalige Steuerersparnis aus einer Sanierung. Immobilienwert bei ${wertsteigerung} Wertentwicklung je Jahr, eingesetztes Eigenkapital ${eigenkapital}. Modellrechnung, keine Zusage: Zinsen nach der Zinsbindung und Steuern können abweichen.`,
-  keinVermoegensaufbau: "Die Haltedauer ist kürzer als zehn Jahre, deshalb gibt es keinen Vermögensaufbau nach 10, 20, 30 und 40 Jahren.",
-  sanierungTitel: "Sanierung am Gemeinschaftseigentum",
-  sanierungText: (wirksam) =>
-    `Dein Anteil nach Miteigentumsanteil, ${wirksam}. Die einmalige Ersparnis steht gesondert und fließt nicht in Monatsrechnung, Vermögensaufbau und Eigenkapitalrendite ein.`,
-  wirksamAb: (jahr) => `wirksam ab ${jahr}`,
-  wirksamErstesJahr: "wirksam im ersten Jahr",
-  anteilMassnahme: "Dein Anteil an der Maßnahme",
-  einmaligeErsparnis: "Einmalige Steuerersparnis",
-  wirkung: "Wirkung",
-  ueberAfa: "über die AfA",
-  steuerlich: "Steuerlich",
-  nichtAngesetzt: "nicht angesetzt",
-  jeEuroTitel: "Für jeden eingesetzten Euro",
-  jeEuroText: (jahre) => `Aufgebautes Vermögen nach ${jahre} Jahren geteilt durch dein eingesetztes Eigenkapital.`,
-  eingesetztesEk: "Eingesetztes Eigenkapital",
-  ausEinemEuroLabel: "Aus 1 € werden",
   verwaltungTitel: (name) => `Leistungen der Verwaltung, ${name}`,
   verwaltungStandard: "Leistungen der Mietverwaltung",
   verwaltungOhneLeistungen:
@@ -361,13 +152,12 @@ export const EXPOSE_PDF_TEXTE_DE: ExposePdfTexte = {
   erstelltAm: (datum, fuer, von) =>
     `Dieses Exposé wurde am ${datum}${fuer ? ` für ${fuer}` : ""}${von ? ` von ${von}` : ""} erstellt. Es gibt den Stand des Online-Exposés zu diesem Zeitpunkt wieder, mit den dort eingestellten Annahmen.`,
   fussPreisstand: (firma, datum) => `${firma} · Preisstand ${datum}`,
-  fussModell: (seite) => `Alle Zahlen sind Modellrechnungen mit den auf Seite ${seite} genannten Annahmen.`,
 };
 
 export const EXPOSE_PDF_TEXTE_EN: ExposePdfTexte = {
   kennung: "Exposé",
   dokumentTitel: (titel) => `Exposé ${titel}`,
-  deckblattFuss: (preisstand, firma) => `Prices as of ${preisstand}. All figures are model calculations, not a promise. ${firma}`,
+  deckblattFuss: (preisstand, firma) => `Prices as of ${preisstand}. ${firma}`,
   deineKapitalanlage: "Your investment",
   einwohnerIn: (zahl, ort) => `${zahl} residents in ${ort}`,
   wachstum: (prozent) => `${prozent} residents over five years`,
@@ -413,114 +203,6 @@ export const EXPOSE_PDF_TEXTE_EN: ExposePdfTexte = {
   weiterePlaene: (anzahl) => `${anzahl} more plans in the online exposé.`,
   grundrissDateiTitel: "Floor plan as a file",
   grundrissDatei: (namen) => `The floor plan is available as a file: ${namen}. You can open it in the online exposé.`,
-  wirtschaftlichkeitVorspann:
-    "All figures are a model calculation with the assumptions on this page. Values from your self-disclosure (Selbstauskunft) are marked in the Source column. In the online exposé you can change every value and the page recalculates immediately.",
-  kaufFinanzierung: "Purchase price and financing",
-  kaufpreisWohnung: "Purchase price of the flat",
-  preisanpassung: (wert) => `Price adjustment ${wert}`,
-  stellplatz: "Parking space",
-  gesamtinvestition: "Total investment",
-  nebenkosten: (satz, land) => `Incidental purchase costs ${satz}${land ? ` (${land})` : ""}`,
-  darlehen: (quote) => `Loan (${quote} financing)`,
-  eigenkapitaleinsatz: "Equity invested",
-  nebenkostenNotiz: (a) =>
-    `Real estate transfer tax ${a.grest}, notary and land register ${a.notar}${a.makler ? `, agent ${a.makler}` : ", no agent’s commission"}. ${
-      a.quelle === "manuell"
-        ? "Rate as stated for the property."
-        : a.quelle === "mittelwert"
-          ? "Federal state unknown, average of all states."
-          : "Rate for the federal state."
-    } The equity invested is the incidental costs plus your equity in the investment; you always pay the incidental costs yourself. Monthly instalment ${a.rate} at ${a.zins} interest and ${a.tilgung} repayment.`,
-  annahmen: "Assumptions",
-  annahme: "Assumption",
-  wert: "Value",
-  herkunft: "Source",
-  herkunftWerte: { selbstauskunft: "Self-disclosure", objekt: "Property", standard: "Standard", angepasst: "Adjusted", tarif: "Tax scale" },
-  zeilen: {
-    eigenkapital: "Equity",
-    zins: "Interest rate",
-    tilgung: "Initial repayment",
-    zve: "Taxable income",
-    verheiratet: "Married, splitting tariff",
-    freibetrag: "Monthly tax benefit via tax allowance (Section 39a EStG)",
-    freibetragNein: "No, refund in the following year",
-    grenzsteuersatz: "Marginal tax rate",
-    grenzFest: "fixed",
-    grenzTarif: (jahr) => `under the ${jahr} tax scale`,
-    mietsteigerung: "Rent increase per year",
-    kostensteigerung: "Cost increase per year",
-    wertentwicklung: "Increase in value per year",
-    leerstand: "Vacancy",
-    makler: "Agent’s commission",
-    preisanpassung: "Price adjustment",
-    afa: "Depreciation (AfA) per year",
-    afaWert: (satz, anteil, angenommen) => `${satz} on ${anteil} building share${angenommen ? " (assumed)" : ""}`,
-    sonderAfa: "Special depreciation (Section 7b EStG)",
-    sonderAfaJa: (satz, jahre) => `Yes, ${satz} over ${jahre} years`,
-    sonderAfaNicht: "Yes, but not applicable",
-    mietverwaltung: "Rental management in the expenses",
-    sanierung: "Renovation for tax purposes",
-    sanierungErhaltung: (jahre) =>
-      `Maintenance expenses (Erhaltungsaufwand), deductible immediately, spread over ${jahre} ${jahre === 1 ? "year" : "years"}`,
-    sanierungWerkvertrag: "Contract for work, increases the depreciation basis",
-    sanierungNicht: "Not applied",
-    startHaltedauerTitel: "Start year and holding period",
-    startHaltedauer: (start, jahre) => `${start}, ${jahre} years`,
-    ja: "Yes",
-    nein: "No",
-  },
-  eigenkapitalSa: (betrag) => `According to your self-disclosure, ${betrag} of liquid equity is available.`,
-  monatTitel: (jahr) => `Monthly view, values for ${jahr}`,
-  einnahmen: "Income",
-  kaltmiete: "Net cold rent",
-  steuervorteil: "Tax benefit",
-  steuervorteilMonatlich: "monthly via the tax allowance",
-  steuervorteilErstattung: "refund for the previous year, spread over the month",
-  summeEinnahmen: "Total income",
-  ausgaben: "Expenses",
-  zinsTilgung: "Interest and repayment",
-  hausgeldNu: "Service charge, non-recoverable",
-  ruecklage: "Maintenance reserve",
-  mietverwaltung: "Rental management",
-  mietausfall: "Loss of rent (vacancy)",
-  summeAusgaben: "Total expenses",
-  eigenanteil: "Your monthly own contribution",
-  ueberschuss: "Your monthly surplus",
-  vermoegensaufbau: "Wealth building",
-  nach: "After",
-  immobilienwert: "Property value",
-  restschuld: "Remaining debt",
-  verkaufsertrag: "Sale proceeds",
-  eigenanteile: "Own contributions",
-  vermoegen: "Wealth",
-  jahreKalender: (jahre, kalender) => `${jahre} years (${kalender})`,
-  jahre: (jahre) => `${jahre} years`,
-  achseMio: (wert) => `€${wert}m`,
-  achseTsd: (wert) => `€${wert}k`,
-  aufgebautesVermoegen: "Wealth built up",
-  ekRenditeTitel: "Return on equity per year",
-  nachJahren: (jahre) => `after ${jahre} years`,
-  nichtBestimmbar: "not determinable",
-  ausEinemEuro: (faktor) => `€1 becomes €${faktor}`,
-  ohneEigenkapital: "without equity",
-  vermoegenFuss: (wertsteigerung, eigenkapital) =>
-    `Sale proceeds are the property value minus the remaining debt. Own contributions are the sum of all ongoing own contributions and surpluses up to that point; negative means paid in. Wealth built up is both together, without the one-off tax saving from a renovation. Property value at ${wertsteigerung} increase in value per year, equity invested ${eigenkapital}. Model calculation, not a promise: interest after the fixed-interest period and taxes may differ.`,
-  keinVermoegensaufbau: "The holding period is shorter than ten years, so there is no wealth building after 10, 20, 30 and 40 years.",
-  sanierungTitel: "Renovation of the common property",
-  sanierungText: (wirksam) =>
-    `Your share according to your co-ownership share, ${wirksam}. The one-off saving is shown separately and is not included in the monthly calculation, wealth building or return on equity.`,
-  wirksamAb: (jahr) => `effective from ${jahr}`,
-  wirksamErstesJahr: "effective in the first year",
-  anteilMassnahme: "Your share of the measure",
-  einmaligeErsparnis: "One-off tax saving",
-  wirkung: "Effect",
-  ueberAfa: "via depreciation",
-  steuerlich: "For tax purposes",
-  nichtAngesetzt: "not applied",
-  jeEuroTitel: "For every euro invested",
-  jeEuroText: (jahre) => `Wealth built up after ${jahre} years divided by the equity you invested.`,
-  eingesetztesEk: "Equity invested",
-  ausEinemEuroLabel: "€1 becomes",
   verwaltungTitel: (name) => `Management services, ${name}`,
   verwaltungStandard: "Rental management services",
   verwaltungOhneLeistungen:
@@ -545,7 +227,6 @@ export const EXPOSE_PDF_TEXTE_EN: ExposePdfTexte = {
   erstelltAm: (datum, fuer, von) =>
     `This exposé was prepared on ${datum}${fuer ? ` for ${fuer}` : ""}${von ? ` by ${von}` : ""}. It reflects the online exposé at that time, with the assumptions set there.`,
   fussPreisstand: (firma, datum) => `${firma} · Prices as of ${datum}`,
-  fussModell: (seite) => `All figures are model calculations with the assumptions stated on page ${seite}.`,
 };
 
 export const EXPOSE_PDF_TEXTE: Record<FormatSprache, ExposePdfTexte> = { de: EXPOSE_PDF_TEXTE_DE, en: EXPOSE_PDF_TEXTE_EN };
@@ -595,31 +276,4 @@ export function umgebungHinweisEnglisch(leer: boolean): string {
 export function entfernungFuer(meter: number, sprache: FormatSprache | undefined): string {
   if (meter < 1000) return `${Math.round(meter / 50) * 50} m`;
   return `${(meter / 1000).toLocaleString(sprache === "en" ? "en-GB" : "de-DE", { maximumFractionDigits: 1 })} km`;
-}
-
-/**
- * Die Hinweise des Rechners (`ergebnis.hinweise`, deutsch erzeugt) auf
- * Englisch. Bekannte Sätze werden übersetzt, ein unbekannter bleibt deutsch,
- * damit keine Annahme stillschweigend verschwindet.
- */
-export function rechnerHinweisEnglisch(hinweis: string): string {
-  const regeln: Array<[RegExp, (m: RegExpMatchArray) => string]> = [
-    [/^Nebenkosten ([\d.,]+) % wie am Objekt gepflegt\.$/, (m) => `Incidental costs ${m[1].replace(",", ".")}% as stated for the property.`],
-    [/^Bundesland unbekannt, Grunderwerbsteuer als Mittelwert aller Länder angesetzt\.$/, () => "Federal state unknown, real estate transfer tax applied as the average of all states."],
-    [/^Kaufnebenkosten übernimmt der Verkäufer/, () => "The seller pays the incidental purchase costs: no equity is needed for them, and they do not increase the depreciation basis."],
-    [/^Zweites Darlehen auf den Eigenkapitaleinsatz begrenzt/, () => "Second loan limited to the equity invested; there is nothing more to replace."],
-    [/^Zweites Darlehen auf das Bankdarlehen begrenzt/, () => "Second loan limited to the bank loan; there is nothing more to replace."],
-    [/^Gebäudeanteil nicht am Objekt gepflegt, ([\d.,]+) % angenommen\.$/, (m) => `Building share not stated for the property, ${m[1].replace(",", ".")}% assumed.`],
-    [/^Sanierung als Werkvertrag/, () => "Renovation as a contract for work: production costs that increase the depreciation basis instead of being deductible immediately."],
-    [/^Sonder-AfA ([\d.,]+) % auf den Gebäudeanteil über (\d+) Jahre\.$/, (m) => `Special depreciation ${m[1].replace(",", ".")}% on the building share over ${m[2]} years.`],
-    [/^Steuerwirkung flach mit ([\d.,]+) % Grenzsteuersatz statt nach Tarif\.$/, (m) => `Tax effect at a flat ${m[1].replace(",", ".")}% marginal tax rate instead of the tax scale.`],
-    [/^Kein zu versteuerndes Einkommen angegeben, Steuerwirkung 0\.$/, () => "No taxable income stated, tax effect 0."],
-    [/^Mieterhöhung ab (\d{2})\/(\d{4}) berücksichtigt\.$/, (m) => `Rent increase from ${m[1]}/${m[2]} taken into account.`],
-    [/^Ohne Lohnsteuerermäßigung kommt der Steuervorteil als Erstattung im Folgejahr an\.$/, () => "Without a wage tax reduction, the tax benefit arrives as a refund in the following year."],
-  ];
-  for (const [muster, uebersetzung] of regeln) {
-    const m = hinweis.match(muster);
-    if (m) return uebersetzung(m);
-  }
-  return hinweis;
 }

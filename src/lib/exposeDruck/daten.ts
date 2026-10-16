@@ -1,5 +1,6 @@
 import { COMPANY_LINE } from "../pdfBranding";
 import {
+  besonderheitenAnzeige,
   exposeAbschnitte,
   marktQuelleHinweis,
   mikrolageZeigen,
@@ -11,15 +12,12 @@ import {
   type Person,
 } from "../exposeInhalt";
 import { ENERGIESTUFEN, SKALA_MAXIMUM } from "../energieskala";
-import { STANDARD_ANNAHMEN, type ExposeAnnahmen } from "../exposeAnnahmen";
-import { VERMOEGENS_HORIZONTE, type ExposeErgebnis } from "../exposeRechner";
 import { eur0 as eur0Sprache, dez as dezSprache, prozent as prozentSprache, zimmerText } from "../objektKennzahlen";
 import { NUR_DEUTSCH_HINWEIS } from "../seitenSprache";
 import { glossarEnglisch } from "../kundenspracheGlossar";
 import { datumText as sprachDatum, type FormatSprache } from "../sprachFormat";
-import { entfernungFuer, exposePdfTexte, genauigkeitEnglisch, rechnerHinweisEnglisch, umgebungHinweisEnglisch, umgebungTitel } from "../exposePdfTexte";
+import { entfernungFuer, exposePdfTexte, genauigkeitEnglisch, umgebungHinweisEnglisch, umgebungTitel } from "../exposePdfTexte";
 import { genauigkeitHinweis, kartenPunkte, legende, umgebungFuerKunden } from "../umgebungspunkte";
-import type { AnnahmenHerkunftKarte } from "@/components/expose/ExposeRechner";
 import { exposeSeitenTexte } from "@/components/expose/exposeTexte";
 
 /**
@@ -68,9 +66,8 @@ export interface DruckDaten {
     firmenzeile: string;
     kunde?: string;
     deckblattFuss: string;
-    /** Linke und rechte Angabe der Fußzeile. */
+    /** Angabe der Fußzeile. */
     fussLinks: string;
-    fussModell: string;
   };
   kopf: {
     eyebrow: string;
@@ -134,7 +131,8 @@ export interface DruckDaten {
       hinweis?: string;
     };
     pflichtFehlen?: Punkt;
-    besonderheiten?: { titel: string; texte: string[]; quelle: string };
+    /** `erhaltungsaufwand` steht hervorgehoben vor den Texten. */
+    besonderheiten?: { titel: string; erhaltungsaufwand?: string; texte: string[]; quelle: string; hinweis?: string };
     merkmale?: { titel: string; liste: Array<{ bezeichnung: string; wert: string }>; quelle: string };
     einheiten?: { titel: string; tabelle: Tabelle; hinweis?: string };
   };
@@ -143,38 +141,6 @@ export interface DruckDaten {
     ersatz?: string;
     hinweis: string;
     dateiText?: string;
-  };
-  finanzen?: {
-    vorspann: string;
-    kaufTitel: string;
-    kaufLinks: Zeile[];
-    kaufRechts: Zeile[];
-    kaufNotiz: string;
-    /** Die drei wichtigsten Zahlen für große Darstellung. */
-    hoehepunkte: Zeile[];
-    annahmenTitel: string;
-    annahmen: Tabelle;
-    annahmenNotizen: string[];
-    monatTitel: string;
-    einnahmenTitel: string;
-    einnahmen: Zeile[];
-    ausgabenTitel: string;
-    ausgaben: Zeile[];
-    ergebnis: Zeile;
-    /** Monatlicher Eigenanteil (true) oder Überschuss (false). */
-    eigenanteil: boolean;
-    vermoegen?: {
-      titel: string;
-      tabelle: Tabelle;
-      balken: Array<{ label: string; werte: [number, number, number] }>;
-      legende: [string, string, string];
-      achse: (v: number) => string;
-      ekTitel: string;
-      ek: Zeile[];
-      fuss: string;
-    };
-    vermoegenLeer?: string;
-    karten: Array<{ titel: string; text: string; zeilen: Zeile[] }>;
   };
   verwaltung: { titel: string; unter?: string; leistungen: string[]; ohneLeistungen?: string; notiz: string; einblickeTitel: string };
   /**
@@ -211,7 +177,6 @@ export interface DruckWoerter {
   monatlich: string;
   monatlichKurz: string;
   objektdaten: string;
-  modellrechnung: string;
   einheit: string;
   ansprechpartner: string;
   fuer: string;
@@ -222,23 +187,24 @@ const WOERTER: Record<FormatSprache, DruckWoerter> = {
   de: {
     inhalt: "Inhalt", seite: "Seite", abschnitt: "Abschnitt", einblicke: "Einblicke", kennzahlen: "Kennzahlen",
     aufEinenBlick: "Auf einen Blick", monatlich: "Monatlich", monatlichKurz: "mtl.", objektdaten: "Objektdaten",
-    modellrechnung: "Modellrechnung", einheit: "Einheit", ansprechpartner: "Ansprechpartner", fuer: "Für", stand: "Stand",
+    einheit: "Einheit", ansprechpartner: "Ansprechpartner", fuer: "Für", stand: "Stand",
   },
   en: {
     inhalt: "Contents", seite: "Page", abschnitt: "Section", einblicke: "Impressions", kennzahlen: "Key figures",
     aufEinenBlick: "At a glance", monatlich: "Monthly", monatlichKurz: "p.m.", objektdaten: "Property details",
-    modellrechnung: "Model calculation", einheit: "Unit", ansprechpartner: "Contact", fuer: "For", stand: "As of",
+    einheit: "Unit", ansprechpartner: "Contact", fuer: "For", stand: "As of",
   },
 };
 
 export interface DruckOptionen {
   sprache?: FormatSprache;
-  herkunft?: AnnahmenHerkunftKarte;
-  eigenkapitalEuro?: number;
   erstelltAm?: Date;
   preisstandAm?: Date;
-  /** Besonderheiten und Merkmale aus Investagon, wie die Seite sie zeigt. */
-  zusatz?: { beschreibungen: string[]; merkmale: Array<{ bezeichnung: string; wert: string }> };
+  /**
+   * Besonderheiten und Merkmale aus Investagon, wie die Seite sie zeigt. Ohne
+   * Angabe gelten die Felder im CRM (`besonderheitenAnzeige`).
+   */
+  zusatz?: { beschreibungen: string[]; merkmale: Array<{ bezeichnung: string; wert: string; nummer?: number }> };
 }
 
 /** HSL-Text aus energieskala.ts („hsl(145 60% 36%)") als Hex. */
@@ -263,19 +229,6 @@ function initialen(name: string): string {
  */
 const ORTE_JE_GRUPPE = 5;
 
-const HERKUNFT_TEXT = { selbstauskunft: "Selbstauskunft", objekt: "Objekt" } as const;
-const HERKUNFT_TEXT_EN = { selbstauskunft: "Self-disclosure", objekt: "Property" } as const;
-
-/** Herkunft eines Annahmewerts: Selbstauskunft, Objekt, Standard oder vom Nutzer angepasst. */
-export function annahmeHerkunft(feld: keyof ExposeAnnahmen, annahmen: ExposeAnnahmen, herkunft: AnnahmenHerkunftKarte, sprache: FormatSprache = "de"): string {
-  const h = herkunft[feld];
-  const en = sprache === "en";
-  if (h) return (en ? HERKUNFT_TEXT_EN : HERKUNFT_TEXT)[h];
-  if (feld === "startjahr" || feld === "betrachtungsjahr") return "Standard";
-  const standard = STANDARD_ANNAHMEN[feld as keyof typeof STANDARD_ANNAHMEN];
-  if ((standard ?? null) === (annahmen[feld] ?? null)) return "Standard";
-  return en ? "Adjusted" : "Angepasst";
-}
 
 /** Dateiname „Expose-<Objekt>-<WE>-<Datum>.pdf", nur mit Buchstaben, Ziffern und Bindestrichen, ohne Personennamen. */
 export function exposePdfDateiname(inhalt: ExposeInhalt, datum: Date = new Date()): string {
@@ -302,8 +255,6 @@ function koordinatenText(k: { lat: number; lng: number } | undefined, sprache: F
 
 export function baueDruckDaten(
   inhalt: ExposeInhalt,
-  annahmen: ExposeAnnahmen,
-  ergebnis: ExposeErgebnis,
   bilder: DruckBilder,
   optionen: DruckOptionen = {},
 ): DruckDaten {
@@ -318,9 +269,6 @@ export function baueDruckDaten(
   const datum = (d: Date) => (en ? sprachDatum(d, "en") : d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" }));
   const erstelltAm = optionen.erstelltAm ?? new Date();
   const preisstandAm = optionen.preisstandAm ?? erstelltAm;
-  const herkunft = optionen.herkunft ?? {};
-  // „≈“ fehlt in der Hausschrift.
-  const ca = en ? "approx. " : "ca. ";
   const kundeName = (inhalt.kopf.kundeName ?? "").trim();
   const vertrieb = inhalt.kontakt.vertrieb;
 
@@ -335,12 +283,10 @@ export function baueDruckDaten(
   const standortZeigen = st.kennzahlen.length > 0 || st.argumente.length > 0 || st.marktargumente.length > 0 || st.arbeitgeber.length > 0;
   const umgebung = umgebungFuerKunden(inhalt.mikrolage.umgebung);
   const mikroZeigen = mikrolageZeigen(inhalt.mikrolage) || !!umgebung;
-  const finanzZeigen = inhalt.wirtschaftlichkeit.verfuegbar !== false;
   const vorhanden: Partial<Record<ExposeAbschnittId, boolean>> = {
     standort: standortZeigen,
     mikrolage: mikroZeigen,
     grundriss: inhalt.grundriss.dokumente.length > 0,
-    wirtschaftlichkeit: finanzZeigen,
   };
   const abschnitte = exposeAbschnitte(sprache)
     .filter((a) => vorhanden[a.id] !== false)
@@ -413,7 +359,7 @@ export function baueDruckDaten(
 
   /* ── Objektdaten ── */
   const eg = inhalt.objektdaten.energie;
-  const zusatz = optionen.zusatz;
+  const bes = besonderheitenAnzeige(inhalt, optionen.zusatz, sprache);
   const keineAngabe = en ? "Not specified" : "Keine Angabe";
   const global = inhalt.struktur === "globalobjekt";
   const einheiten = inhalt.einheiten?.length ? (global
@@ -452,8 +398,10 @@ export function baueDruckDaten(
       hinweis: eg.hinweis || undefined,
     },
     pflichtFehlen: inhalt.objektdaten.fehlendePflichtangaben.length ? { titel: T.pflichtFehlenTitel, text: T.pflichtFehlen(inhalt.objektdaten.fehlendePflichtangaben.join(", ")) } : undefined,
-    besonderheiten: zusatz?.beschreibungen.length ? { titel: S.besonderheiten, texte: zusatz.beschreibungen, quelle: S.quelleAnbieter } : undefined,
-    merkmale: zusatz?.merkmale.length ? { titel: S.ausstattung, liste: zusatz.merkmale, quelle: S.quelleAnbieter } : undefined,
+    besonderheiten: bes.erhaltungsaufwand || bes.texte.length
+      ? { titel: S.besonderheiten, ...(bes.erhaltungsaufwand ? { erhaltungsaufwand: bes.erhaltungsaufwand } : {}), texte: bes.texte, quelle: S.quelleAnbieter, ...(en && bes.texte.length ? { hinweis: NUR_DEUTSCH_HINWEIS } : {}) }
+      : undefined,
+    merkmale: bes.ausstattung.length ? { titel: S.ausstattung, liste: bes.ausstattung, quelle: S.quelleAnbieter } : undefined,
     einheiten,
   };
 
@@ -466,147 +414,6 @@ export function baueDruckDaten(
     hinweis: T.masseHinweis,
     dateiText: bilder.plaene.some(Boolean) ? undefined : T.grundrissDatei(dokumente.map((d) => planAnzeigename(d.name)).join(", ")),
   } : undefined;
-
-  /* ── Wirtschaftlichkeit ── */
-  let finanzen: DruckDaten["finanzen"];
-  if (finanzZeigen) {
-    const k = ergebnis.kauf;
-    const stx = ergebnis.steuer;
-    const mo = ergebnis.monat;
-    const nk = k.nebenkosten;
-    const hk = (feld: keyof ExposeAnnahmen) => annahmeHerkunft(feld, annahmen, herkunft, sprache);
-    const Z = T.zeilen;
-    const jaNein = (wert: boolean) => (wert ? Z.ja : Z.nein);
-    const annahmenZeilen: string[][] = [
-      [Z.eigenkapital, `${prozent(annahmen.eigenkapitalProzent, 1)} · ${eur0(k.eigenkapitalInvestition)}`, hk("eigenkapitalProzent")],
-      [Z.zins, prozent(annahmen.zinsProzent, 2), hk("zinsProzent")],
-      [Z.tilgung, prozent(annahmen.tilgungProzent, 2), hk("tilgungProzent")],
-      [Z.zve, eur0(annahmen.zvE), hk("zvE")],
-      [Z.verheiratet, jaNein(annahmen.verheiratet), hk("verheiratet")],
-      [Z.freibetrag, annahmen.lohnsteuerermaessigung ? Z.ja : Z.freibetragNein, hk("lohnsteuerermaessigung")],
-      [Z.grenzsteuersatz, `${prozent(stx.grenzsteuersatzProzent, 1)} ${stx.grenzsteuersatzManuell ? Z.grenzFest : Z.grenzTarif(stx.steuerjahr)}`, stx.grenzsteuersatzManuell ? T.herkunftWerte.angepasst : T.herkunftWerte.tarif],
-      [Z.mietsteigerung, prozent(annahmen.mietsteigerungProzent, 1), hk("mietsteigerungProzent")],
-      [Z.kostensteigerung, prozent(annahmen.kostensteigerungProzent, 1), hk("kostensteigerungProzent")],
-      [Z.wertentwicklung, prozent(annahmen.wertsteigerungProzent, 1), hk("wertsteigerungProzent")],
-      [Z.leerstand, prozent(annahmen.leerstandProzent, 1), hk("leerstandProzent")],
-      [Z.makler, prozent(annahmen.maklerProzent, 2), hk("maklerProzent")],
-      [Z.preisanpassung, `${annahmen.preisanpassungProzent > 0 ? "+" : ""}${prozent(annahmen.preisanpassungProzent, 1)}`, hk("preisanpassungProzent")],
-      [Z.afa, Z.afaWert(prozent(annahmen.afaProzent, 1), prozent(stx.gebaeudeanteilProzent, 0), stx.gebaeudeanteilAngenommen), hk("afaProzent")],
-      [Z.sonderAfa, annahmen.sonderAfa ? (stx.sonderAfaAktiv ? Z.sonderAfaJa(prozent(stx.sonderAfaProzent, 0), stx.sonderAfaJahre) : Z.sonderAfaNicht) : Z.nein, hk("sonderAfa")],
-      [Z.mietverwaltung, jaNein(annahmen.mietverwaltungEinrechnen), hk("mietverwaltungEinrechnen")],
-    ];
-    if (stx.sanierungsanteil > 0) {
-      const artText = annahmen.instandhaltungsart === "erhaltungsaufwand" ? Z.sanierungErhaltung(annahmen.instandhaltungJahre) : annahmen.instandhaltungsart === "werkvertrag" ? Z.sanierungWerkvertrag : Z.sanierungNicht;
-      annahmenZeilen.push([Z.sanierung, artText, hk("instandhaltungsart")]);
-    }
-    annahmenZeilen.push([Z.startHaltedauerTitel, Z.startHaltedauer(annahmen.startjahr, annahmen.haltedauerJahre), hk("haltedauerJahre")]);
-    const notizen: string[] = [];
-    if (typeof optionen.eigenkapitalEuro === "number" && optionen.eigenkapitalEuro > 0) notizen.push(T.eigenkapitalSa(eur0(optionen.eigenkapitalEuro)));
-    const hinweise = en ? ergebnis.hinweise.map(rechnerHinweisEnglisch) : ergebnis.hinweise;
-    if (hinweise.length) notizen.push(hinweise.join(" "));
-
-    const kaufLinks: Zeile[] = [{ label: T.kaufpreisWohnung, wert: eur0(k.kaufpreis) }];
-    if (k.preisanpassungProzent !== 0) kaufLinks.push({ label: T.preisanpassung(`${k.preisanpassungProzent > 0 ? "+" : ""}${prozent(k.preisanpassungProzent, 1)}`), wert: eur0(k.kaufpreisAngepasst - k.kaufpreis) });
-    if (k.stellplatz > 0) kaufLinks.push({ label: T.stellplatz, wert: eur0(k.stellplatz) });
-    kaufLinks.push({ label: T.gesamtinvestition, wert: eur0(k.gesamtinvestition), fett: true });
-    const kaufRechts: Zeile[] = [
-      { label: T.nebenkosten(prozent(nk.prozentGesamt, 1), nk.bundeslandName || ""), wert: eur0(nk.summe) },
-      { label: T.darlehen(prozent(k.finanzierungsquoteProzent, 0)), wert: eur0(k.darlehen) },
-      { label: T.eigenkapitaleinsatz, wert: eur0(k.eigenkapitaleinsatz), fett: true },
-    ];
-    const einnahmen: Zeile[] = [
-      { label: T.kaltmiete, wert: eur0(mo.miete) },
-      { label: T.steuervorteil, wert: eur0(mo.steuervorteil), unter: annahmen.lohnsteuerermaessigung ? T.steuervorteilMonatlich : T.steuervorteilErstattung },
-      { label: T.summeEinnahmen, wert: eur0(mo.einnahmen), fett: true },
-    ];
-    const ausgaben: Zeile[] = [{ label: T.zinsTilgung, wert: eur0(mo.zinsUndTilgung) }, { label: T.hausgeldNu, wert: eur0(mo.hausgeldNichtUmlegbar) }];
-    if (mo.ruecklage > 0) ausgaben.push({ label: T.ruecklage, wert: eur0(mo.ruecklage) });
-    ausgaben.push({ label: T.mietverwaltung, wert: eur0(mo.mietverwaltung) });
-    if (mo.leerstand > 0) ausgaben.push({ label: T.mietausfall, wert: eur0(mo.leerstand) });
-    ausgaben.push({ label: T.summeAusgaben, wert: eur0(mo.ausgaben), fett: true });
-    const ergebnisZeile: Zeile = { label: mo.eigenanteil >= 0 ? T.eigenanteil : T.ueberschuss, wert: eur0(Math.abs(mo.eigenanteil)), fett: true };
-
-    const horizonte = ergebnis.vermoegensaufbau.filter((h) => (VERMOEGENS_HORIZONTE as readonly number[]).includes(h.jahre));
-    const vermoegen = horizonte.length ? {
-      titel: T.vermoegensaufbau,
-      tabelle: {
-        spalten: [{ titel: T.nach, anteil: 20 }, { titel: T.immobilienwert, anteil: 16, rechts: true }, { titel: T.restschuld, anteil: 16, rechts: true }, { titel: T.verkaufsertrag, anteil: 16, rechts: true }, { titel: T.eigenanteile, anteil: 16, rechts: true }, { titel: T.vermoegen, anteil: 16, rechts: true }],
-        zeilen: horizonte.map((h) => [T.jahreKalender(h.jahre, h.kalenderjahr), eur0(h.immobilienwert), eur0(h.restschuld), eur0(h.ertragBeiVerkauf), eur0(h.kumCashflow), eur0(h.vermoegen)]),
-      },
-      balken: horizonte.map((h) => ({ label: T.jahre(h.jahre), werte: [h.immobilienwert, h.restschuld, h.vermoegen] as [number, number, number] })),
-      legende: [T.immobilienwert, T.restschuld, T.aufgebautesVermoegen] as [string, string, string],
-      achse: (v: number) => (v >= 1_000_000 ? T.achseMio(dez(v / 1_000_000, 1)) : T.achseTsd(Math.round(v / 1000))),
-      ekTitel: T.ekRenditeTitel,
-      ek: horizonte.map((h) => ({
-        label: T.nachJahren(h.jahre),
-        wert: h.eigenkapitalrenditeProzent != null ? prozent(h.eigenkapitalrenditeProzent, 1) : T.nichtBestimmbar,
-        unter: h.faktorJeEuro != null ? T.ausEinemEuro(dez(h.faktorJeEuro, 2)) : T.ohneEigenkapital,
-      })),
-      fuss: T.vermoegenFuss(prozent(annahmen.wertsteigerungProzent, 1), eur0(horizonte[0].eigenkapitaleinsatz)),
-    } : undefined;
-
-    const karten: NonNullable<DruckDaten["finanzen"]>["karten"] = [];
-    if (stx.sanierungsanteil > 0) {
-      karten.push({
-        titel: T.sanierungTitel,
-        text: T.sanierungText(stx.sanierungAbJahr > annahmen.startjahr ? T.wirksamAb(stx.sanierungAbJahr) : T.wirksamErstesJahr),
-        zeilen: [
-          { label: T.anteilMassnahme, wert: eur0(stx.sanierungsanteil) },
-          annahmen.instandhaltungsart === "erhaltungsaufwand"
-            ? { label: T.einmaligeErsparnis, wert: `${ca}${eur0(stx.einmaligeSteuerersparnisSanierung)}`, fett: true }
-            : annahmen.instandhaltungsart === "werkvertrag"
-              ? { label: T.wirkung, wert: T.ueberAfa, fett: true }
-              : { label: T.steuerlich, wert: T.nichtAngesetzt, fett: true },
-        ],
-      });
-    }
-    const h0 = ergebnis.vermoegensaufbau[0];
-    if (h0) {
-      karten.push({
-        titel: T.jeEuroTitel,
-        text: T.jeEuroText(h0.jahre),
-        zeilen: [
-          { label: T.aufgebautesVermoegen, wert: eur0(h0.vermoegen) },
-          { label: T.eingesetztesEk, wert: eur0(h0.eigenkapitaleinsatz) },
-          { label: T.ausEinemEuroLabel, wert: h0.faktorJeEuro != null ? `${ca}${en ? `€${dez(h0.faktorJeEuro, 2)}` : `${dez(h0.faktorJeEuro, 2)} €`}` : T.nichtBestimmbar, fett: true },
-        ],
-      });
-    }
-
-    finanzen = {
-      vorspann: T.wirtschaftlichkeitVorspann,
-      kaufTitel: T.kaufFinanzierung,
-      kaufLinks,
-      kaufRechts,
-      kaufNotiz: T.nebenkostenNotiz({
-        grest: prozent(nk.grunderwerbsteuerProzent, 1),
-        notar: prozent(nk.notarGrundbuchProzent, 1),
-        makler: nk.maklerProzent > 0 ? prozent(nk.maklerProzent, 2) : null,
-        quelle: nk.quelle === "manuell" ? "manuell" : nk.quelle === "mittelwert" ? "mittelwert" : "land",
-        rate: eur0(ergebnis.finanzierung.monatsrate),
-        zins: prozent(ergebnis.finanzierung.zinsProzent, 2),
-        tilgung: prozent(ergebnis.finanzierung.tilgungProzent, 2),
-      }),
-      hoehepunkte: [
-        { label: T.gesamtinvestition, wert: eur0(k.gesamtinvestition) },
-        { label: T.eigenkapitaleinsatz, wert: eur0(k.eigenkapitaleinsatz) },
-        ergebnisZeile,
-      ],
-      annahmenTitel: T.annahmen,
-      annahmen: { spalten: [{ titel: T.annahme, anteil: 44 }, { titel: T.wert, anteil: 38 }, { titel: T.herkunft, anteil: 18 }], zeilen: annahmenZeilen },
-      annahmenNotizen: notizen,
-      monatTitel: T.monatTitel(mo.kalenderjahr),
-      einnahmenTitel: T.einnahmen,
-      einnahmen,
-      ausgabenTitel: T.ausgaben,
-      ausgaben,
-      ergebnis: ergebnisZeile,
-      eigenanteil: mo.eigenanteil >= 0,
-      vermoegen,
-      vermoegenLeer: vermoegen ? undefined : T.keinVermoegensaufbau,
-      karten,
-    };
-  }
 
   /* ── Verwaltung bis Kontakt ── */
   const v = inhalt.verwaltung;
@@ -625,7 +432,6 @@ export function baueDruckDaten(
       kunde: kundeName || undefined,
       deckblattFuss: T.deckblattFuss(datum(preisstandAm), COMPANY_LINE),
       fussLinks: T.fussPreisstand(COMPANY_LINE, datum(preisstandAm)),
-      fussModell: S.koepfe.wirtschaftlichkeit[1],
     },
     kopf: {
       eyebrow: inhalt.ansicht === "objekt" ? S.eyebrowObjekt : S.eyebrowEinheit,
@@ -648,7 +454,6 @@ export function baueDruckDaten(
     mikrolage,
     objektdaten,
     grundriss,
-    finanzen,
     verwaltung: {
       titel: v.name ? T.verwaltungTitel(v.name) : v.bezeichnung || T.verwaltungStandard,
       unter: [v.name ? v.bezeichnung : v.zusatz, v.art, verwaltungKostenText(v, sprache)].filter(Boolean).join(" · ") || undefined,

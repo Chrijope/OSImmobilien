@@ -219,6 +219,8 @@ export interface ObjektWohnung {
   sevErstesJahrInklusive?: boolean;
   /** Seit wann die Einheit vermietet ist (YYYY-MM-DD oder YYYY-MM) */
   vermietetSeit?: string;
+  /** Von Hand gepflegte interne Highlights, nur intern, siehe `interneHighlights.ts` */
+  interneHighlightsHand?: string[];
 }
 
 /** Zahl aus `meta` lesen, leer und ungültig werden zu undefined. */
@@ -692,6 +694,7 @@ function dbRowToWohnung(w: any, tableBilder: any[] = [], mitDokumentenCache = tr
     verwaltungSevMonat: metaZahl(meta.verwaltungSevMonat),
     sevErstesJahrInklusive: meta.sevErstesJahrInklusive === true ? true : undefined,
     vermietetSeit: metaText(meta.vermietetSeit),
+    ...(Array.isArray(meta.interneHighlightsHand) ? { interneHighlightsHand: meta.interneHighlightsHand.filter((t: unknown) => typeof t === "string") } : {}),
   };
 }
 
@@ -1754,7 +1757,42 @@ export async function setObjektTitelbild(id: string, url: string): Promise<void>
   await cacheReload("objekte");
 }
 
+/**
+ * Einzelne Schlüssel in `objekte.meta` setzen, auf dem frischen Stand aus der
+ * Datenbank statt dem Zwischenspeicher, damit parallel geschriebene Schlüssel
+ * (etwa vom Investagon-Abgleich) erhalten bleiben. Für „Objektinhalte einspielen“.
+ */
+export async function objektMetaErgaenzen(id: string, patch: Record<string, unknown>): Promise<void> {
+  if (isTestAccount()) throw new Error("Im Testkonto nicht verfügbar");
+  const db = supabase as any;
+  const { data: current, error: readError } = await db.from("objekte").select("meta").eq("id", id).maybeSingle();
+  if (readError) throw readError;
+  if (!current) throw new Error("Objekt nicht gefunden");
+  const meta = { ...((current.meta as Record<string, unknown>) || {}), ...patch };
+  const { data, error } = await db.from("objekte").update({ meta }).eq("id", id).select("id");
+  if (error) throw error;
+  if (Array.isArray(data) && data.length === 0) {
+    throw new SchreibenAbgelehnt("Dieses Objekt darfst du nicht ändern. Das können Admin, Inhaber und der Objektpartner am eigenen Objekt.");
+  }
+  await cacheReload("objekte");
+}
 
+/**
+ * Ein Bild als Zeile anhängen, ohne den übrigen Bestand anzufassen (kein
+ * Abgleich, kein Löschen). Für „Objektinhalte einspielen“; der Zwischenspeicher
+ * wird danach vom Aufrufer einmal neu geladen.
+ */
+export async function bildZeileAnlegen(
+  ziel: { art: "objekt"; objektId: string } | { art: "einheit"; wohnungId: string },
+  bild: { url: string; alt: string; reihenfolge: number },
+): Promise<void> {
+  if (isTestAccount()) throw new Error("Im Testkonto nicht verfügbar");
+  const db = supabase as any;
+  const zeile = ziel.art === "objekt" ? { objekt_id: ziel.objektId, ...bild } : { wohnung_id: ziel.wohnungId, ...bild };
+  const { data, error } = await db.from(ziel.art === "objekt" ? "objekt_bilder" : "wohnungs_bilder").insert(zeile).select("id");
+  if (error) throw error;
+  if (Array.isArray(data) && data.length === 0) throw new SchreibenAbgelehnt("Bild durfte nicht eingetragen werden.");
+}
 
 export async function addDokument(objektId: string, dok: ObjektDokument): Promise<boolean> {
   if (isTestAccount()) {

@@ -107,7 +107,7 @@ describe("Microseite OS Real Estate", () => {
     const ueberschriften = [...container.querySelectorAll("h2")].map((h) => h.textContent ?? "");
     const reihenfolge = [
       /Rente allein/, /Steuern senken oder/, /Drei Standorte/, /So rechnet sich/, /Investoren-Profile/,
-      /Alles, was du/, /Regional verwurzelt/, /Standorte im Bild/, /Elf Schritte/, /kennen/,
+      /Alles, was du/, /Regional verwurzelt/, /Standorte im Bild/, /Sieben Schritte/, /kennen/,
     ].map((muster) => ueberschriften.findIndex((t) => muster.test(t)));
     expect(reihenfolge.every((stelle) => stelle >= 0)).toBe(true);
     expect([...reihenfolge].sort((a, b) => a - b)).toEqual(reihenfolge);
@@ -128,6 +128,28 @@ describe("Microseite OS Real Estate", () => {
     fireEvent.click(screen.getByRole("button", { name: /Anfrage senden/ }));
     fireEvent.click(screen.getByRole("button", { name: /Kostenloses Erstgespräch/ }));
     expect(onOpenFunnel).toHaveBeenCalledTimes(2);
+  });
+
+  it("zeigt den Ansprechpartner im Hero als Karte mit Position und direktem Terminknopf", () => {
+    const onOpenFunnel = vi.fn();
+    const { rerender } = render(<BeraterMicrositeContent berater={berater} onOpenFunnel={onOpenFunnel} />);
+    const karte = screen.getByRole("complementary", { name: "Dein persönlicher Ansprechpartner" });
+    expect(within(karte).getByText(berater.name)).toBeInTheDocument();
+    expect(within(karte).getByText(berater.position)).toBeInTheDocument();
+    expect(within(karte).getByRole("link", { name: "Termin buchen" })).toHaveAttribute("href", berater.buchungslink);
+    // Ohne Foto Initialen, ohne Buchungslink öffnet der Knopf das Anfrageformular.
+    rerender(<BeraterMicrositeContent berater={{ ...berater, bild: null, buchungslink: undefined }} onOpenFunnel={onOpenFunnel} />);
+    const ohne = screen.getByRole("complementary", { name: "Dein persönlicher Ansprechpartner" });
+    expect(within(ohne).getByLabelText(berater.name)).toHaveTextContent("MM");
+    fireEvent.click(within(ohne).getByRole("button", { name: "Termin buchen" }));
+    expect(onOpenFunnel).toHaveBeenCalledOnce();
+  });
+
+  it("zeigt den Prozess in sieben Schritten, Reservierung kostenfrei", () => {
+    const { container } = render(<BeraterMicrositeContent berater={berater} onOpenFunnel={() => {}} />);
+    const schritte = [...container.querySelectorAll(".osm-schritte li b")].map((b) => b.textContent);
+    expect(schritte).toEqual(["Erstgespräch", "Beratungsgespräch", "Objektvorstellung", "Reservierung", "Besichtigung", "Finanzierung", "Notar"]);
+    expect(screen.getByText("Kostenfrei.")).toBeInTheDocument();
   });
 
   it("blättert die Bilder eines Objekts mit Pfeil und Punkt", () => {

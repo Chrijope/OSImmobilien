@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import * as cache from "./dataCache";
 import { ansprechpartnerAusAntwort, exposePayloadZuObjekt, baueObjektExposeInhalt, gesamtobjektZahlen, grundrisseAusAntwort, objektExposeRecheneinheit, wieImKundenlink } from "./exposePublicDaten";
-import { baueExposeInhalt } from "./exposeInhalt";
+import { baueExposeInhalt, exposeObjektdatenAus } from "./exposeInhalt";
 
 function payload() {
   return {
@@ -24,8 +24,8 @@ describe("Live Exposé-Daten", () => {
   it("übernimmt Einheitspreis, Stellplatz und Bilder aus den Daten und ergänzt gemeinsame Bilder", () => {
     const o = exposePayloadZuObjekt(payload());
     const c = baueExposeInhalt({objekt:o,wohnung:o.wohnungen[0]});
-    expect(c.wirtschaftlichkeit.objektdaten.kaufpreis).toBe(240000);
-    expect(c.wirtschaftlichkeit.objektdaten.stellplatzpreis).toBe(10000);
+    expect(exposeObjektdatenAus(o, o.wohnungen[0]).kaufpreis).toBe(240000);
+    expect(exposeObjektdatenAus(o, o.wohnungen[0]).stellplatzpreis).toBe(10000);
     expect(c.start.bilder.map(b=>b.url)).toEqual(["https://example.org/unit.jpg","https://example.org/object.jpg","https://example.org/cover.jpg"]);
     expect(c.verwaltung.leistungen).toEqual(["Mieterbetreuung"]);
   });
@@ -34,7 +34,7 @@ describe("Live Exposé-Daten", () => {
     p.wohnungen[0].vk_gesamt=278000;
     p.wohnungen[0].meta.bilder[0].url="https://example.org/new.jpg";
     const o=exposePayloadZuObjekt(p), c=baueExposeInhalt({objekt:o,wohnung:o.wohnungen[0]});
-    expect(c.wirtschaftlichkeit.objektdaten.kaufpreis).toBe(278000);
+    expect(exposeObjektdatenAus(o, o.wohnungen[0]).kaufpreis).toBe(278000);
     expect(c.start.bilder[0].url).toBe("https://example.org/new.jpg");
   });
   it("liest für öffentliche Exposés niemals private Dokumente aus dem lokalen Cache", () => {
@@ -50,7 +50,6 @@ describe("Live Exposé-Daten", () => {
     const c=baueObjektExposeInhalt({objekt:exposePayloadZuObjekt(payload())});
     expect(c.kopf.weNr).toBe("");
     expect(c.kopf.titel).toBe("Objekt am Park");
-    expect(c.wirtschaftlichkeit.verfuegbar).toBe(false);
     expect(c.einheiten).toHaveLength(2);
     expect(c.start.kennzahlen.find(k=>k.label==="Verfügbar")?.wert).toBe("1");
     expect(c.objektdaten.zeilen.some(k=>k.label==="Vermietung")).toBe(false);
@@ -58,16 +57,28 @@ describe("Live Exposé-Daten", () => {
   it("rechnet beim Gesamtverkauf mit hinterlegten Globalzahlen", () => {
     const p=payload();
     Object.assign(p.objekt,{global_objekt:true,global_verkaufspreis:1400000,global_jahresnettomiete:72000,global_gesamt_qm:650});
-    const c=baueObjektExposeInhalt({objekt:exposePayloadZuObjekt(p)});
-    expect(c.wirtschaftlichkeit.verfuegbar).toBe(true);
-    expect(c.wirtschaftlichkeit.objektdaten.kaufpreis).toBe(1400000);
-    expect(c.wirtschaftlichkeit.objektdaten.kaltmieteMonat).toBe(6000);
+    const o=exposePayloadZuObjekt(p);
+    const d=exposeObjektdatenAus(o, objektExposeRecheneinheit(o));
+    expect(d.kaufpreis).toBe(1400000);
+    expect(d.kaltmieteMonat).toBe(6000);
   });
-  it("erfindet keine Verwaltungstätigkeiten und rechnet nicht mit fehlendem Kaufpreis", () => {
+  it("erfindet keine Verwaltungstätigkeiten", () => {
     const p=payload(); delete p.objekt.meta.verwaltungLeistungen; p.wohnungen[0].vk_gesamt=0;
     const o=exposePayloadZuObjekt(p), c=baueExposeInhalt({objekt:o,wohnung:o.wohnungen[0]});
     expect(c.verwaltung.leistungen).toEqual([]);
-    expect(c.wirtschaftlichkeit.verfuegbar).toBe(false);
+  });
+  it("nennt im Objekt-Exposé den Erhaltungsaufwand als Spanne je Wohnung, beim Globalobjekt für das ganze Haus", () => {
+    const p=payload();
+    Object.assign(p.objekt,{erhaltungsaufwand:200000,erhaltungsaufwand_jahre:4});
+    Object.assign(p.wohnungen[0].meta,{sanierungAnteilProzent:4});
+    Object.assign(p.wohnungen[1].meta,{sanierungAnteilProzent:6});
+    const o=exposePayloadZuObjekt(p);
+    // Geschützte Leerzeichen vor dem Eurozeichen als einfache.
+    const satz=(c: { besonderheiten?: { erhaltungsaufwand?: string } })=>(c.besonderheiten?.erhaltungsaufwand ?? "").replace(/[\u00A0\u202F]/g," ");
+    expect(satz(baueObjektExposeInhalt({objekt:o}))).toBe("Erhaltungsaufwand: 8.000 € bis 12.000 € je Wohnung (200.000 € für das ganze Haus), verteilt auf 4 Jahre.");
+    expect(satz(baueExposeInhalt({objekt:o,wohnung:o.wohnungen[1]}))).toBe("Erhaltungsaufwand: 12.000 € Anteil dieser Wohnung (200.000 € für das ganze Haus), verteilt auf 4 Jahre.");
+    Object.assign(p.objekt,{global_objekt:true});
+    expect(satz(baueObjektExposeInhalt({objekt:exposePayloadZuObjekt(p)}))).toBe("Erhaltungsaufwand: 200.000 € für das ganze Haus, verteilt auf 4 Jahre.");
   });
 });
 
@@ -105,7 +116,6 @@ describe("Globalobjekt und Kundenlink seit dem 23.09.2026", () => {
     const z = gesamtobjektZahlen(o);
     expect(z).toMatchObject({ kaufpreis: 0, flaeche: 145, flaecheAusEinheiten: true, mieteJahr: 1750 * 12, mieteAusEinheiten: true });
     const c = baueObjektExposeInhalt({ objekt: o });
-    expect(c.wirtschaftlichkeit.verfuegbar).toBe(false);
     expect(c.start.kennzahlen.find((k) => k.label === "Kaufpreis Gesamtobjekt")).toBeUndefined();
     expect(c.objektdaten.zeilen.find((k) => k.label === "Wohnfläche gesamt")?.unter).toBe("Summe der Einheiten");
   });

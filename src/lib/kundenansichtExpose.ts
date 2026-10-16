@@ -1,8 +1,5 @@
-import { annahmenVorbelegen, baueExposeInhalt, type ExposeInhalt, type Person } from "@/lib/exposeInhalt";
-import { baueObjektExposeInhalt, objektExposeRecheneinheit } from "@/lib/exposePublicDaten";
-import { berechneExpose, type ExposeErgebnis } from "@/lib/exposeRechner";
-import type { ExposeAnnahmen } from "@/lib/exposeAnnahmen";
-import type { AnnahmenHerkunftKarte } from "@/components/expose/ExposeRechner";
+import { baueExposeInhalt, type ExposeInhalt, type Person } from "@/lib/exposeInhalt";
+import { baueObjektExposeInhalt } from "@/lib/exposePublicDaten";
 import type { ObjektData, ObjektWohnung } from "@/lib/objekteStore";
 import { STANDARD_SPRACHE, type Sprache } from "@/lib/seitenSprache";
 
@@ -10,14 +7,13 @@ import { STANDARD_SPRACHE, type Sprache } from "@/lib/seitenSprache";
  * „Exposé herunterladen“ in der Kundenansicht (Bauplan vom 23.09.2026,
  * Frage 6): eine echte PDF-Datei, nicht der Druckdialog.
  *
- * Gerechnet wird wie im Kundenlink des Exposés: neutrale Standardannahmen,
- * dazu nur, was am Objekt steht (AfA-Satz, Erhaltungsaufwand). Nie Werte aus
- * der Selbstauskunft (`annahmenVorbelegen(…, null)`), denn die Seite kann
- * weitergeleitet werden. Standortzahlen aus der Standortdatenbank fehlen, sie
- * sind ohne Anmeldung nicht lesbar; das gilt im öffentlichen Exposé genauso.
+ * Inhalt wie im Kundenlink des Exposés, ohne Werte aus der Selbstauskunft,
+ * denn die Seite kann weitergeleitet werden. Eine Wirtschaftlichkeitsrechnung
+ * enthält das Exposé seit dem 16.10.2026 nicht mehr. Standortzahlen aus der
+ * Standortdatenbank fehlen, sie sind ohne Anmeldung nicht lesbar; das gilt im
+ * öffentlichen Exposé genauso.
  *
- * Beim Globalobjekt ist die Recheneinheit das ganze Haus
- * (`objektExposeRecheneinheit`), der Inhalt der des ganzen Objekts
+ * Beim Globalobjekt ist der Inhalt der des ganzen Objekts
  * (`baueObjektExposeInhalt`).
  *
  * `sprache` ist die Sprache der Seite, also die des Kunden aus
@@ -29,9 +25,6 @@ import { STANDARD_SPRACHE, type Sprache } from "@/lib/seitenSprache";
 
 export interface KundenExposeGrundlage {
   inhalt: ExposeInhalt;
-  annahmen: ExposeAnnahmen;
-  ergebnis: ExposeErgebnis;
-  herkunft: AnnahmenHerkunftKarte;
 }
 
 export function kundenExposeGrundlage(
@@ -41,16 +34,10 @@ export function kundenExposeGrundlage(
   heute: Date = new Date(),
   sprache: Sprache = STANDARD_SPRACHE,
 ): KundenExposeGrundlage {
-  const einheit = wohnung ?? objektExposeRecheneinheit(objekt);
   const inhalt = wohnung
     ? baueExposeInhalt({ objekt, wohnung, ersteller: partner, heute, sprache })
     : baueObjektExposeInhalt({ objekt, ersteller: partner, heute, sprache });
-  const vorbelegung = annahmenVorbelegen(objekt, einheit, null, heute);
-  // Dieselben Zahlen wie der Rechner im Exposé: Er rechnet mit genau diesen Objektdaten.
-  const ergebnis = berechneExpose(inhalt.wirtschaftlichkeit.objektdaten, vorbelegung.annahmen);
-  const herkunft: AnnahmenHerkunftKarte = {};
-  for (const k of vorbelegung.ausObjekt) herkunft[k] = "objekt";
-  return { inhalt, annahmen: vorbelegung.annahmen, ergebnis, herkunft };
+  return { inhalt };
 }
 
 /**
@@ -66,6 +53,6 @@ export async function kundenExposePdf(
 ): Promise<{ blob: Blob; dateiname: string }> {
   const { exposeDruckPdf, exposePdfDateiname } = await import("@/lib/exposeDruck");
   const g = kundenExposeGrundlage(objekt, wohnung, partner, heute, sprache);
-  const blob = await exposeDruckPdf(g.inhalt, g.annahmen, g.ergebnis, { herkunft: g.herkunft, erstelltAm: heute, sprache });
+  const blob = await exposeDruckPdf(g.inhalt, { erstelltAm: heute, sprache });
   return { blob, dateiname: exposePdfDateiname(g.inhalt, heute) };
 }

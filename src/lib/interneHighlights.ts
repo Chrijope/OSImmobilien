@@ -34,8 +34,8 @@ export const MAX_PUNKTE_KARTE = 10;
 
 export interface HighlightZeile {
   text: string;
-  /** Woher der Punkt stammt: feste Objektdaten oder KI aus Angaben und Unterlagen. */
-  herkunft: "daten" | "ki";
+  /** Woher der Punkt stammt: von Hand im Objektformular, feste Objektdaten oder KI aus Angaben und Unterlagen. */
+  herkunft: "hand" | "daten" | "ki";
   /** Nur bei KI-Punkten: die belegende Zeile oder Unterlage. */
   beleg?: string;
 }
@@ -151,6 +151,22 @@ function einheitPunkte(objekt: ObjektFuerHighlights, w: ObjektWohnung): string[]
 }
 
 /**
+ * Die von Hand gepflegten internen Highlights an Objekt oder Einheit,
+ * `meta.interneHighlightsHand`. Nur intern: Kundenansicht und Exposé geben
+ * `meta` nur über ihre Positivlisten heraus, Listen gar nicht.
+ */
+export const HAND_HIGHLIGHTS_SCHLUESSEL = "interneHighlightsHand";
+export const MAX_HAND_HIGHLIGHTS = 10;
+
+export function handHighlights(quelle: { meta?: Record<string, unknown> | null; interneHighlightsHand?: string[] } | null | undefined): string[] {
+  const roh = quelle?.interneHighlightsHand ?? quelle?.meta?.[HAND_HIGHLIGHTS_SCHLUESSEL];
+  return (Array.isArray(roh) ? roh : [])
+    .filter((t): t is string => typeof t === "string" && !!t.trim())
+    .map((t) => t.trim())
+    .slice(0, MAX_HAND_HIGHLIGHTS);
+}
+
+/**
  * Die Highlights für Objektseite (ohne `wohnung`) oder Einheitenseite.
  *
  * Auf der Einheitenseite stehen die Punkte der Einheit vorne, danach die
@@ -168,6 +184,11 @@ export function interneHighlights(objekt: ObjektFuerHighlights, wohnung?: Objekt
   const restnutzungsdauer = rndZeile(objekt, wohnung) ?? kiZeile("restnutzungsdauer");
   const oben = [erhaltungsaufwand, restnutzungsdauer].filter(Boolean).length;
 
+  // Von Hand im Objektformular gepflegt (seit 16.10.2026): die der Einheit,
+  // dann die des Objekts. Sie stehen vor allem Gerechneten, denn wer sie
+  // einträgt, will sie sehen.
+  const hand = [...(wohnung ? handHighlights(wohnung) : []), ...handHighlights(objekt)]
+    .map((text): HighlightZeile => ({ text, herkunft: "hand" }));
   const fest = (wohnung ? einheitPunkte(objekt, wohnung) : objektPunkte(objekt))
     .map((text): HighlightZeile => ({ text, herkunft: "daten" }));
   // Die KI-Punkte der beiden hervorgehobenen Arten stehen schon oben oder
@@ -175,7 +196,7 @@ export function interneHighlights(objekt: ObjektFuerHighlights, wohnung?: Objekt
   const sonstige = kiPunkte
     .filter((p) => p.art === "sonstiges")
     .map((p): HighlightZeile => ({ text: p.punkt, beleg: p.beleg, herkunft: "ki" }));
-  const punkte = [...fest, ...sonstige].slice(0, Math.max(0, MAX_PUNKTE_KARTE - oben));
+  const punkte = [...hand, ...fest, ...sonstige].slice(0, Math.max(0, MAX_PUNKTE_KARTE - oben));
 
   const stand = ki ? "fertig" : objektTexteStand(objekt) === "offen" ? "wird-erstellt" : "ohne-grundlage";
   return { ...(erhaltungsaufwand ? { erhaltungsaufwand } : {}), ...(restnutzungsdauer ? { restnutzungsdauer } : {}), punkte, stand };

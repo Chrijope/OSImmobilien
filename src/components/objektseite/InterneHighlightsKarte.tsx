@@ -25,7 +25,7 @@ function Zeile({ zeile, testId, hervorgehoben }: { zeile: HighlightZeile; testId
     <li
       className={cn("text-sm leading-snug", hervorgehoben ? "font-semibold text-foreground" : "text-foreground/90")}
       data-testid={testId}
-      title={zeile.beleg ? `Beleg: ${zeile.beleg}` : "Aus den Objektdaten"}
+      title={zeile.beleg ? `Beleg: ${zeile.beleg}` : zeile.herkunft === "hand" ? "Von Hand im Objektformular gepflegt" : "Aus den Objektdaten"}
     >
       {zeile.text}
     </li>

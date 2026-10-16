@@ -5,24 +5,24 @@ import { springeZuAbschnitt } from "./useAktiverAbschnitt";
 import { EXPOSE_ABSCHNITTE, EXPOSE_ABSCHNITTE_ANZAHL, abschnittAnker } from "@/lib/exposeInhalt";
 
 /**
- * Die Abschnittsleiste: elf Abschnitte in fester Reihenfolge, Zähler
- * „2 / 11", Sprungmarken und der PDF-Knopf mit Ladezustand.
+ * Die Abschnittsleiste: zehn Abschnitte in fester Reihenfolge, Zähler
+ * „2 / 10", Sprungmarken und der PDF-Knopf mit Ladezustand.
  */
 describe("Abschnittsleiste", () => {
-  it("kennt elf Abschnitte; „Nächste Schritte“ steckt seit dem 01.10.2026 im Zeitplan", () => {
-    expect(EXPOSE_ABSCHNITTE_ANZAHL).toBe(11);
+  it("kennt zehn Abschnitte; „Nächste Schritte“ steckt seit dem 01.10.2026 im Zeitplan, Wirtschaftlichkeit ist seit dem 16.10.2026 weg", () => {
+    expect(EXPOSE_ABSCHNITTE_ANZAHL).toBe(10);
     expect(EXPOSE_ABSCHNITTE.map((a) => a.id)).toEqual([
-      "start", "standort", "mikrolage", "objektdaten", "grundriss", "wirtschaftlichkeit",
+      "start", "standort", "mikrolage", "objektdaten", "grundriss",
       "verwaltung", "zeitplan", "chancen-risiken", "rechtliches", "kontakt",
     ]);
-    expect(EXPOSE_ABSCHNITTE.map((a) => a.nr)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+    expect(EXPOSE_ABSCHNITTE.map((a) => a.nr)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
     expect(abschnittAnker("standort")).toBe("expose-standort");
   });
 
   it("zeigt den Zähler zum aktiven Abschnitt und markiert ihn", () => {
     render(<ExposeLeiste aktiv="standort" onSpringen={() => undefined} titel="Exposé · Wohnung 7" adresse="Musterstraße 12, 86150 Augsburg" />);
-    expect(screen.getByTestId("leiste-zaehler")).toHaveTextContent("Abschnitt 2 / 11");
-    expect(screen.getByTestId("kopf-zaehler")).toHaveTextContent("Abschnitt 2 von 11");
+    expect(screen.getByTestId("leiste-zaehler")).toHaveTextContent("Abschnitt 2 / 10");
+    expect(screen.getByTestId("kopf-zaehler")).toHaveTextContent("Abschnitt 2 von 10");
     expect(screen.getByTestId("leiste-standort")).toHaveAttribute("aria-current", "true");
     expect(screen.getByTestId("leiste-start")).not.toHaveAttribute("aria-current");
     expect(screen.getByText("Musterstraße 12, 86150 Augsburg")).toBeInTheDocument();
