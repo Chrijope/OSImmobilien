@@ -3,7 +3,7 @@
 -- ===========================================================================
 --
 -- Hintergrund: Die Anzeige der Provisionssaetze (getEffectiveRateInfoForKontakt
--- in src/lib/karriereStufeHelper.ts) liest custom_provision_rate*,
+-- in src/lib/provisionssatz.ts) liest custom_provision_rate*,
 -- karriere_override und provision_locked aus dem user_settings-Cache. Lesen
 -- fremder Zeilen duerfen bisher nur der Nutzer selbst, Admin/Inhaber
 -- (20260404083625) sowie die App-Rollen buchhaltung und vertriebsleiter

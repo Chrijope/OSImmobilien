@@ -55,12 +55,7 @@ import { CrmTutorialProvider } from "@/components/tutorial/CrmTutorial";
 export function AppShell() {
   const { isLoggedIn, loading, user, authUser } = useUser();
   const location = useLocation();
-  const { loaded: settingsLoaded, onboardingComplete, customPermissions, settings } = useUserSettings();
-  // Karrierestufen-Gating ist Opt-In pro Nutzer (Bestandsschutz). Erst wenn
-  // `karriere_gating_active === true` im Profil gesetzt wurde, greift das
-  // Sidebar/Route-Gating nach Karrierestufe — sonst voller CRM-Zugriff.
-  const vpGatingActive = !!(settings as any)?.karriere_gating_active;
-  const vpStufeId = vpGatingActive ? ((settings as any)?.karriere_override ?? null) : null;
+  const { loaded: settingsLoaded, onboardingComplete, customPermissions } = useUserSettings();
   useNotarfotoReminder(user.role, user.name, authUser?.id);
   useKaufpreisFaelligkeitReminder(user.role, authUser?.id);
   useInvestmentInboxTriggers(user.role, user.name, authUser?.id);
@@ -198,7 +193,7 @@ export function AppShell() {
     const staticSegments = pathSegments.filter(s => !/^[0-9a-f-]{8,}$/i.test(s) && !/^\d+$/.test(s));
     for (let i = staticSegments.length; i >= 1; i--) {
       const candidate = "/" + staticSegments.slice(0, i).join("/");
-      if (isUrlAllowedForRole(candidate, user.role, customPermissions, vpStufeId, {
+      if (isUrlAllowedForRole(candidate, user.role, customPermissions, null, {
         email: authUser?.email,
         userId: authUser?.id,
       })) {
@@ -216,7 +211,6 @@ export function AppShell() {
     const objekteZu = objektbereichGesperrt(location.pathname, {
       rolle: user.role,
       customPermissions,
-      vpStufeId,
       identitaet: { email: authUser?.email, userId: authUser?.id },
     });
     if (!allowed || objekteZu || objektAdresseZu) {

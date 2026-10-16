@@ -18,9 +18,9 @@ import { getKontakte } from "@/lib/kundenStore";
 import { excludeStatsKontakte } from "@/lib/statsExclusion";
 import { loadAllUsers } from "@/lib/loadAllUsers";
 import { istZustaendig } from "@/lib/kontaktOwnership";
-import { calculateJuniorOverride, getUserPaket, getJuniorsForRecruiter } from "@/lib/juniorOverrideLogic";
-import { getLizenzPaket, OVERHEAD_AKTIV } from "@/lib/lizenzPakete";
-import { festgeschriebenerSatz, getEffectiveRateInfoForKontakt, getKarriereOverrideForUser } from "@/lib/karriereStufeHelper";
+import { differenzenAusKette, festgeschriebeneKette } from "@/lib/partnerstruktur";
+import { getLizenzPaket } from "@/lib/lizenzPakete";
+import { festgeschriebenerSatz, getEffectiveRateInfoForKontakt } from "@/lib/provisionssatz";
 import {
   getAbrechnungen, upsertAbrechnung, updateAbrechnungStatus, newId, entferneLeerenBescheid,
   monatLabel, fmtEUR, refreshAbrechnungen, abrechnungenPersistenz, bescheidVeraenderbar,
@@ -200,6 +200,39 @@ export default function Provisionsabrechnung() {
 
     let generated = 0;
     let gesperrt = 0;
+    const ohneSatz: string[] = [];
+    /*
+     * Differenz aus der Struktur (Christian, 16.10.2026): je Abschluss bekommt
+     * jede Ebene darueber die Differenz zur Ebene darunter, aus der bei der
+     * Reservierung festgeschriebenen Kette. Ohne Kette (vorher reserviert)
+     * und ohne Satz des Partners gibt es keine Differenz.
+     */
+    const differenzJeLeiter = new Map<string, AbrechnungOverride[]>();
+    for (const { inv, k, kaufpreis } of geschaefte) {
+      const kette = festgeschriebeneKette(inv.meta);
+      if (!kette || kette.length === 0) continue;
+      const verkaeufer = users.find((x) => istZustaendig(k, { userId: x.id, userName: x.name }, users));
+      if (!verkaeufer) continue;
+      const satz = getEffectiveRateInfoForKontakt(verkaeufer.id, k, festgeschriebenerSatz(inv.meta, verkaeufer.id)).rate;
+      if (satz === null) continue;
+      for (const d of differenzenAusKette(satz, kette)) {
+        const zeile: AbrechnungOverride = {
+          kontaktId: k.id,
+          investmentId: inv.id,
+          juniorUserId: verkaeufer.id,
+          juniorName: verkaeufer.name,
+          kundeName: "",
+          objekt: inv.objektTitel || k.objekt || "—",
+          kaufpreis,
+          ebene: d.ebene,
+          partnerSatz: satz,
+          leiterSatz: d.leiterSatz,
+          overridePercent: d.differenzSatz,
+          betrag: provisionCent(kaufpreis, d.differenzSatz) / 100,
+        };
+        differenzJeLeiter.set(d.leiterId, [...(differenzJeLeiter.get(d.leiterId) ?? []), zeile]);
+      }
+    }
     const fehler: string[] = [];
     for (const u of users) {
       // Kennung zuerst. Der Name zaehlt nur fuer Kontakte ohne Kennung und
@@ -208,12 +241,18 @@ export default function Provisionsabrechnung() {
         (g) => istZustaendig(g.k, { userId: u.id, userName: u.name }, users),
       );
 
-      const eigeneDeals: AbrechnungDeal[] = eigene.map(({ inv, k, kaufpreis }) => {
+      const eigeneDeals: AbrechnungDeal[] = eigene.flatMap(({ inv, k, kaufpreis }) => {
         // Der beim Eintritt in die Kaufphase festgeschriebene Satz gilt
         // (Entscheidung Christian vom 29.09.2026), jetzt der dieses
         // Investments und nicht mehr der erste des Kontakts.
-        const info = getEffectiveRateInfoForKontakt(u.id, k, festgeschriebenerSatz(inv.meta));
-        return {
+        const info = getEffectiveRateInfoForKontakt(u.id, k, festgeschriebenerSatz(inv.meta, u.id));
+        // Ohne Satz keine Provision und kein erfundener Betrag: Der Abschluss
+        // bleibt draussen, bis Admin oder Inhaber den Satz eintragen.
+        if (info.rate === null) {
+          ohneSatz.push(`${k.vorname} ${k.nachname}`.trim());
+          return [];
+        }
+        return [{
           investmentId: inv.id,
           kontaktId: k.id,
           kundeName: `${k.vorname} ${k.nachname}`,
@@ -223,46 +262,13 @@ export default function Provisionsabrechnung() {
           betrag: provisionCent(kaufpreis, info.rate) / 100,
           satzTyp: info.quelle,
           setterName: info.setterName,
-        };
+        }];
       });
 
-      // Wenn dieser User Junior ist → Override wird abgezogen
+      // Die Differenz wird dem Partner nicht abgezogen: Er bekommt seinen
+      // Satz, der Teamleiter die Differenz obendrauf (16.10.2026).
       const overheadsAbgezogen: AbrechnungOverhead[] = [];
-      if (getUserPaket(u.id) === "junior") {
-        for (const { inv, k, kaufpreis } of eigene) {
-          const ov = calculateJuniorOverride(u.id, kaufpreis);
-          if (!ov) continue;
-          overheadsAbgezogen.push({
-            anUserId: ov.recruiterUserId,
-            anName: ov.recruiterName,
-            objekt: inv.objektTitel || k.objekt || "—",
-            kaufpreis,
-            overheadRate: ov.overridePercent,
-            betrag: ov.betrag,
-          });
-        }
-      }
-
-      // Differenzprovision (Overrides), die dieser User als Teamleiter/Recruiter erhält
-      const overridesErhalten: AbrechnungOverride[] = [];
-      for (const j of getJuniorsForRecruiter(u.id)) {
-        const jGeschaefte = geschaefte.filter(
-          (g) => istZustaendig(g.k, { userId: j.userId, userName: j.name }, users),
-        );
-        for (const { k, kaufpreis } of jGeschaefte) {
-          const ov = calculateJuniorOverride(j.userId, kaufpreis);
-          if (!ov || ov.recruiterUserId !== u.id) continue;
-          overridesErhalten.push({
-            kontaktId: k.id,
-            juniorUserId: j.userId,
-            juniorName: j.name,
-            kundeName: `${k.vorname} ${k.nachname}`,
-            kaufpreis,
-            overridePercent: ov.overridePercent,
-            betrag: ov.betrag,
-          });
-        }
-      }
+      const overridesErhalten: AbrechnungOverride[] = differenzJeLeiter.get(u.id) ?? [];
 
       if (eigeneDeals.length === 0 && overridesErhalten.length === 0) continue;
       mitAbschluss.add(u.id);
@@ -276,11 +282,9 @@ export default function Provisionsabrechnung() {
         gesperrt++;
         continue;
       }
-      const karriere = getKarriereOverrideForUser(u.id) || undefined;
       const a: Provisionsabrechnung = {
         id: existing?.id || newId(),
         monat, userId: u.id, userName: u.name,
-        karriereStufe: karriere,
         eigeneDeals, overridesErhalten, overheadsAbgezogen,
         summeEigen: eigenCent / 100,
         summeOverridesErhalten: overridesCent / 100,
@@ -303,6 +307,12 @@ export default function Provisionsabrechnung() {
     }
     const entfernt = await leereEntfernen();
     setRows(getAbrechnungen());
+    if (ohneSatz.length > 0) {
+      void hinweisDialog({
+        title: "Satz nicht gepflegt",
+        description: `${ohneSatz.length === 1 ? "Ein Abschluss steht" : `${ohneSatz.length} Abschlüsse stehen`} nicht im Bescheid, weil für den Partner kein Provisionssatz hinterlegt ist: ${ohneSatz.join(", ")}. Bitte den Satz in der Nutzerverwaltung eintragen und die Abrechnung neu erstellen.`,
+      });
+    }
     if (fehler.length > 0) {
       toast.error(`${fehler.length} Bescheide wurden nicht gespeichert`, { description: fehler.join(" · ") });
     }
@@ -378,9 +388,7 @@ export default function Provisionsabrechnung() {
         <AbrechnungenTabs />
         <PageHeader
           title="Provisionsabrechnung"
-          subtitle={OVERHEAD_AKTIV
-            ? "Monatliche Provisionsbescheide: Eigenumsatz, Differenzumsatz aus Junior-Team und Overhead-Abzüge."
-            : "Monatliche Provisionsbescheide auf Basis der eigenen Abschlüsse."}
+          subtitle="Monatliche Provisionsbescheide: eigene Abschlüsse und Differenz aus der Struktur."
         />
 
         {abrechnungenPersistenz() === "lokal" && (
@@ -448,8 +456,7 @@ export default function Provisionsabrechnung() {
                     <TableHead>Vertriebspartner</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="text-right">Eigenumsatz</TableHead>
-                    {OVERHEAD_AKTIV && <TableHead className="text-right">Differenzumsatz</TableHead>}
-                    {OVERHEAD_AKTIV && <TableHead className="text-right">Overhead-Abzug</TableHead>}
+                    <TableHead className="text-right">Differenz</TableHead>
                     <TableHead className="text-right">Gesamt Netto</TableHead>
                     <TableHead className="text-right">Aktionen</TableHead>
                   </TableRow>
@@ -460,8 +467,7 @@ export default function Provisionsabrechnung() {
                       <TableCell className="font-medium">{r.userName}</TableCell>
                       <TableCell><Badge variant={STATUS_VARIANT[r.status]}>{STATUS_LABEL[r.status]}</Badge></TableCell>
                       <TableCell className="text-right">{fmtEUR(r.summeEigen)}</TableCell>
-                      {OVERHEAD_AKTIV && <TableCell className="text-right text-primary">{fmtEUR(r.summeOverridesErhalten)}</TableCell>}
-                      {OVERHEAD_AKTIV && <TableCell className="text-right text-destructive">-{fmtEUR(r.summeOverhead)}</TableCell>}
+                      <TableCell className="text-right text-primary">{r.summeOverridesErhalten > 0 ? fmtEUR(r.summeOverridesErhalten) : "–"}</TableCell>
                       <TableCell className="text-right font-bold">{fmtEUR(r.netto)}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
@@ -510,30 +516,27 @@ export default function Provisionsabrechnung() {
                       <span className="flex items-center gap-2 flex-wrap">
                         {d.kundeName} · {d.objekt}
                         {d.satzTyp && <SatzartBadge art={d.satzTyp} satz={d.satz} />}
-                        {false && (
-                          <Badge variant="outline" className="text-[10px]">Karrierestufe</Badge>
-                        )}
                       </span>
                       <span>{d.satz}% von {fmtEUR(d.kaufpreis)} = <b>{fmtEUR(d.betrag)}</b></span>
                     </div>
                   ))}
                 </div>
-                {OVERHEAD_AKTIV && (
+                {detail.overridesErhalten.length > 0 && (
                 <div>
-                  <div className="font-semibold mb-1">Differenzprovision aus Junior-Team (erhalten)</div>
+                  <div className="font-semibold mb-1">Differenz aus der Struktur</div>
                   {detail.overridesErhalten.length === 0 ? (
                     <div className="text-muted-foreground">Keine.</div>
                   ) : detail.overridesErhalten.map((o, i) => (
                     <div key={i} className="flex justify-between border-b border-border/50 py-1">
-                      <span>{o.juniorName} → {o.kundeName}</span>
-                      <span>{o.overridePercent}% = <b className="text-primary">{fmtEUR(o.betrag)}</b></span>
+                      <span>{o.juniorName} · {o.objekt || o.kundeName}{o.leiterSatz !== undefined && o.partnerSatz !== undefined ? ` (${o.leiterSatz} % − ${o.partnerSatz} %)` : ""}</span>
+                      <span>{o.overridePercent}% von {fmtEUR(o.kaufpreis)} = <b className="text-primary">{fmtEUR(o.betrag)}</b></span>
                     </div>
                   ))}
                 </div>
                 )}
-                {OVERHEAD_AKTIV && (
+                {detail.overheadsAbgezogen.length > 0 && (
                 <div>
-                  <div className="font-semibold mb-1">Overhead-Abzüge</div>
+                  <div className="font-semibold mb-1">Overhead-Abzüge (alter Bescheid)</div>
                   {detail.overheadsAbgezogen.length === 0 ? (
                     <div className="text-muted-foreground">Keine.</div>
                   ) : detail.overheadsAbgezogen.map((o, i) => (
@@ -545,7 +548,7 @@ export default function Provisionsabrechnung() {
                 </div>
                 )}
                 <div className="flex justify-between pt-2 border-t font-bold text-lg">
-                  <span>{OVERHEAD_AKTIV ? "Gesamt Netto (Eigen + Differenz − Overhead)" : "Gesamt Netto"}</span>
+                  <span>{detail.overridesErhalten.length > 0 ? "Gesamt Netto (Eigen + Differenz)" : "Gesamt Netto"}</span>
                   <span className="text-primary">{fmtEUR(detail.netto)}</span>
                 </div>
               </div>

@@ -166,7 +166,7 @@ const Marketing = () => {
    * stuenden dann Kundennamen auf der Karte.
    */
   const kundenSichtbar = isUrlAllowedForRole(
-    "/kunden", user.role, (user as any).customPermissions, (user as any).vpStufeId,
+    "/kunden", user.role, (user as any).customPermissions, null,
   );
   const [standorte, setStandorte] = useState<Standort[]>([]);
   const [loading, setLoading] = useState(true);

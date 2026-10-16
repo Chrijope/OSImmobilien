@@ -953,7 +953,7 @@ BEGIN
   --
   -- Die Summen der Abrechnung (netto, eigen, Overhead) bleiben ebenfalls
   -- draussen. Sie haengen am Provisionssatz je Deal, und der wird an mehreren
-  -- Stellen ermittelt (src/lib/karriereStufeHelper.ts:136 und :216).
+  -- Stellen ermittelt (src/lib/provisionssatz.ts:136 und :216).
 
   BEGIN
     SELECT count(*) INTO v_zahl FROM public.provisionsabrechnungen;

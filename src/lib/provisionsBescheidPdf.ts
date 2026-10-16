@@ -2,7 +2,6 @@ import { PDF_FONT, applyPdfFontSync } from "./pdfBranding";
 import jsPDF from "jspdf";
 import type { Provisionsabrechnung } from "./provisionsAbrechnungStore";
 import { monatLabel, fmtEUR } from "./provisionsAbrechnungStore";
-import { OVERHEAD_AKTIV } from "./lizenzPakete";
 
 export function buildProvisionsBescheidPdf(a: Provisionsabrechnung): Blob {
   const doc = new jsPDF({ unit: "pt", format: "a4" });
@@ -22,7 +21,7 @@ export function buildProvisionsBescheidPdf(a: Provisionsabrechnung): Blob {
 
   doc.setFont(PDF_FONT, "bold"); doc.setFontSize(11);
   doc.text(`Abrechnungsmonat: ${monatLabel(a.monat)}`, M, y); y += 16;
-  doc.text(`Empfänger: ${a.userName}${a.karriereStufe ? `  ·  ${a.karriereStufe}` : ""}`, M, y); y += 22;
+  doc.text(`Empfänger: ${a.userName}`, M, y); y += 22;
 
   const section = (title: string) => {
     doc.setFont(PDF_FONT, "bold"); doc.setFontSize(11);
@@ -55,31 +54,27 @@ export function buildProvisionsBescheidPdf(a: Provisionsabrechnung): Blob {
   doc.text(fmtEUR(a.summeEigen), W - M, y, { align: "right" });
   y += 24; doc.setFont(PDF_FONT, "normal");
 
-  // Junior-Overrides und Overhead-Abzüge erscheinen nur, solange die
-  // Overhead-Provision aktiv ist. Ohne sie zeigt der Bescheid nur die
-  // eigenen Abschlüsse und den Nettobetrag.
-  if (OVERHEAD_AKTIV) {
-  // Junior-Overrides
+  // Differenz aus der Struktur (seit 16.10.2026): erscheint, sobald es eine
+  // gibt. Die alten Overhead-Abzüge nur noch bei alten Bescheiden.
+  if (a.overridesErhalten.length > 0) {
   ensureSpace(80);
-  section("Junior-Overrides (erhalten)");
-  if (a.overridesErhalten.length === 0) {
-    doc.text("Keine Junior-Overrides im Abrechnungszeitraum.", M, y); y += 14;
-  } else {
-    a.overridesErhalten.forEach((o, i) => {
-      ensureSpace();
-      doc.text(`${i + 1}. ${o.juniorName} → ${o.kundeName}`, M, y);
-      doc.text(`${o.overridePercent}% von ${fmtEUR(o.kaufpreis)} = ${fmtEUR(o.betrag)}`, W - M, y, { align: "right" });
-      y += 14;
-    });
-  }
+  section("Differenz aus der Struktur");
+  a.overridesErhalten.forEach((o, i) => {
+    ensureSpace();
+    doc.text(`${i + 1}. ${o.juniorName} · ${o.objekt || o.kundeName}`, M, y);
+    doc.text(`${o.overridePercent}% von ${fmtEUR(o.kaufpreis)} = ${fmtEUR(o.betrag)}`, W - M, y, { align: "right" });
+    y += 14;
+  });
   y += 6; doc.setFont(PDF_FONT, "bold");
-  doc.text("Summe Overrides:", M, y);
+  doc.text("Summe Differenz:", M, y);
   doc.text(fmtEUR(a.summeOverridesErhalten), W - M, y, { align: "right" });
   y += 24; doc.setFont(PDF_FONT, "normal");
+  }
 
+  if (a.overheadsAbgezogen.length > 0) {
   // Overheads abgezogen
   ensureSpace(80);
-  section("Karriere-Overheads (abgezogen)");
+  section("Overhead-Abzüge (alter Bescheid)");
   if (a.overheadsAbgezogen.length === 0) {
     doc.text("Keine Overhead-Abzüge.", M, y); y += 14;
   } else {

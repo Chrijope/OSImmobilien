@@ -30,7 +30,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { confirmDialog } from "@/lib/confirm";
 import { beendeSitzungenVon, sitzungenNachSperreBeenden } from "@/lib/sitzungenBeenden";
 import { useUser } from "@/contexts/UserContext";
-import { getEffectiveRate, getKarriereOverrideForUser, getKarriereStufe, getCustomProvisionRateSetter, getCustomProvisionRateEigen, KARRIERE_STUFEN, NEUVERGABE_KARRIERE_STUFEN, formatStufenProvision } from "@/lib/karriereStufeHelper";
+import { ProvisionssatzBadges } from "@/components/abrechnung/ProvisionssatzBadges";
+import { istTeamleiterRolle } from "@/components/nutzerverwaltung/TeamleaderSelect";
+import { parseProvisionssatz, SATZ_UNGUELTIG_TEXT } from "@/lib/provisionssatz";
 import { useLiveVersion } from "@/hooks/useLiveData";
 import { cacheRefreshTable } from "@/lib/dataCache";
 import { PhoneInput } from "@/components/ui/phone-input";
@@ -56,7 +58,6 @@ export interface Nutzer {
   einladung: "angenommen" | "ausstehend" | "abgelaufen";
   erstelltAm: string;
   letzterLogin: string;
-  karriereStufe: string;
   isNew?: boolean;
   avatarUrl?: string;
   crmFreigeschaltet: boolean;
@@ -69,26 +70,6 @@ export interface Nutzer {
   gesperrt: boolean;
   gesperrtGrund?: string;
 }
-
-// Vorteile sind Anzeige-Texte dieser Seite. Kennung, Titel, Emoji und Saetze
-// kommen aus der kanonischen Stufen-Definition in karriereStufeHelper.
-const KARRIERE_STUFEN_VORTEILE: Record<string, string[]> = {
-  tippgeber: ["Vollzugriff CRM & Pipeline", "Academy Grundkurse", "Persönliches Vertriebspartner-Microsite", "Setterin-Leads (gegen Setter-Satz)"],
-  vertriebspartner: ["Einheitlich 4 % auf Lead- und Eigenkontakte", "Vollzugriff CRM & Pipeline", "Academy inkl. Aufbau- & Tax-Kursen", "Eigene Empfehlungsprogramme", "Erweiterte Beratungs-Präsentation"],
-  manager: ["Alles aus Vertriebspartner", "Vertriebspartner werben & coachen", "1,5 % Override auf jeden Junior-Abschluss", "Team-Dashboard & Statistiken", "Zielplanungs-Tool für das Team"],
-  vertriebsfirma: ["Alles aus Team Lead", "2 % Override auf jeden Junior-Abschluss", "Whitelabel-Optionen für eigene Marke", "Direkter Ansprechpartner aus der Geschäftsleitung", "Strategische Mitgestaltung"],
-};
-
-// Neuvergabe im Einladedialog: nur noch die einheitliche 4-%-Stufe.
-// Bestandsstufen bleiben in KARRIERE_STUFEN und werden fuer bestehende
-// Nutzer weiterhin korrekt angezeigt (getKarriereStufe unten).
-const karriereStufen = NEUVERGABE_KARRIERE_STUFEN.map((s) => ({
-  id: s.id,
-  titel: s.titel,
-  emoji: s.emoji,
-  provision: formatStufenProvision(s),
-  vorteile: KARRIERE_STUFEN_VORTEILE[s.id],
-}));
 
 const einladungConfig: Record<string, { icon: typeof CheckCircle; color: string; label: string }> = {
   angenommen: { icon: CheckCircle, color: "text-green-600", label: "Angenommen" },
@@ -138,19 +119,18 @@ export default function Nutzerverwaltung() {
   const [formNachname, setFormNachname] = useState("");
   const [formTelefon, setFormTelefon] = useState("");
   const [formPrivateEmail, setFormPrivateEmail] = useState("");
-  const [formKarriere, setFormKarriere] = useState("");
   const [formRollen, setFormRollen] = useState<string[]>([]);
   const [formTeamleader, setFormTeamleader] = useState("__none__");
-  const [formCustomRate, setFormCustomRate] = useState<string>("");
   const [formCustomRateSetter, setFormCustomRateSetter] = useState<string>("");
   const [formCustomRateEigen, setFormCustomRateEigen] = useState<string>("");
-  // Opt-In: Sidebar/Routen nach Karrierestufe einschränken (Default AUS = voller CRM-Zugriff)
-  const [formKarriereGating, setFormKarriereGating] = useState<boolean>(false);
   // Anzeige-Variante: Rolle bleibt vertriebspartner, nur der Anzeigename wird "Lead-Berater"
   const [formLeadBerater, setFormLeadBerater] = useState<boolean>(false);
 
   
-  const selectedKarriere = karriereStufen.find(k => k.id === formKarriere);
+  // Beide Sätze Pflicht, größer 0 bis 100, Komma oder Punkt ("10,5" = 10,5).
+  const leadSatz = parseProvisionssatz(formCustomRateSetter);
+  const eigenSatz = parseProvisionssatz(formCustomRateEigen);
+  const provisionssaetzeGueltig = leadSatz !== null && eigenSatz !== null;
 
   // Load users from DB
   const loadUsers = async () => {
@@ -209,7 +189,6 @@ export default function Nutzerverwaltung() {
           letzterLogin: lastLoginMap.has(p.id)
             ? new Date(lastLoginMap.get(p.id)!).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })
             : "–",
-          karriereStufe: "",
           avatarUrl: (p as any).avatar_url || undefined,
           crmFreigeschaltet,
           gesperrt: !!(p as any).gesperrt,
@@ -228,8 +207,8 @@ export default function Nutzerverwaltung() {
 
   useEffect(() => {
     loadUsers();
-    // user_settings Cache initial nachladen, damit Karrierestufen-Overrides
-    // (z. B. Lead Partner 4 %) sofort korrekt angezeigt werden.
+    // user_settings Cache initial nachladen, damit die Provisionssätze
+    // sofort korrekt angezeigt werden.
     cacheRefreshTable("user_settings").catch(() => {});
   }, []);
 
@@ -279,15 +258,14 @@ export default function Nutzerverwaltung() {
 
   const resetForm = () => {
     setFormVorname(""); setFormNachname(""); setFormTelefon(""); setFormPrivateEmail(""); 
-    setFormKarriere(""); setFormRollen([]); setFormTeamleader("");
-    setFormCustomRate(""); setFormCustomRateSetter(""); setFormCustomRateEigen("");
-    setFormKarriereGating(false);
+    setFormRollen([]); setFormTeamleader("");
+    setFormCustomRateSetter(""); setFormCustomRateEigen("");
     setFormLeadBerater(false);
   };
 
   const handleInvite = async () => {
-    const needsKarriere = formRollen.includes("vertriebspartner");
-    if (!formVorname || !formNachname || !formPrivateEmail || formRollen.length === 0 || (needsKarriere && !formKarriere)) return;
+    const brauchtSatz = formRollen.includes("vertriebspartner");
+    if (!formVorname || !formNachname || !formPrivateEmail || formRollen.length === 0 || (brauchtSatz && !provisionssaetzeGueltig)) return;
     setInviting(true);
 
     try {
@@ -305,12 +283,9 @@ export default function Nutzerverwaltung() {
           vorname: formVorname,
           nachname: formNachname,
           telefon: formTelefon || undefined,
-          karriereStufe: needsKarriere ? formKarriere : undefined,
           teamleaderId: formTeamleader && formTeamleader !== "__none__" ? formTeamleader : undefined,
-          customProvisionRate: formCustomRate !== "" ? parseFloat(formCustomRate) : undefined,
-          customProvisionRateSetter: formCustomRateSetter !== "" ? parseFloat(formCustomRateSetter) : undefined,
-          customProvisionRateEigen: formCustomRateEigen !== "" ? parseFloat(formCustomRateEigen) : undefined,
-          karriereGatingActive: formKarriereGating,
+          customProvisionRateSetter: brauchtSatz ? leadSatz : undefined,
+          customProvisionRateEigen: brauchtSatz ? eigenSatz : undefined,
           // Reine Anzeige-Variante, keine eigene Rolle (siehe rollenLabel.ts)
           rollenVariante: formLeadBerater && formRollen.includes("vertriebspartner") ? ROLLEN_VARIANTE_LEAD_BERATER : undefined,
         },
@@ -328,8 +303,7 @@ export default function Nutzerverwaltung() {
       setNutzerDialog(false);
       // Reload user list
       await loadUsers();
-      // user_settings Cache aktualisieren, damit Karrierestufen-Override (z.B. Lead Partner 4 %)
-      // direkt in der Liste angezeigt wird statt der Standard-Anzeige Vertriebspartner 3 %.
+      // user_settings Cache aktualisieren, damit der neue Satz direkt in der Liste steht.
       await cacheRefreshTable("user_settings");
     } catch (err: any) {
       console.error("Invite error:", err);
@@ -609,93 +583,41 @@ export default function Nutzerverwaltung() {
 
                   <div><Label>Telefonnummer (optional)</Label><PhoneInput value={formTelefon} onChange={v => setFormTelefon(v)} /></div>
 
-                  {/* Karrierestufe - nur bei Vertriebspartner */}
-                  {formRollen.includes("vertriebspartner") && (
-                  <div>
-                    <Label>Karrierestufe *</Label>
-                    <Select value={formKarriere} onValueChange={setFormKarriere}>
-                      <SelectTrigger><SelectValue placeholder="Stufe wählen..." /></SelectTrigger>
-                      <SelectContent>
-                        {karriereStufen.map(k => (
-                          <SelectItem key={k.id} value={k.id}>{k.emoji} {k.titel} – {k.provision}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {selectedKarriere && (
-                      <div className="mt-2 bg-muted rounded-lg p-3 text-xs space-y-1">
-                        <p className="font-semibold">{selectedKarriere.emoji} {selectedKarriere.titel} – {selectedKarriere.provision}</p>
-                        {selectedKarriere.vorteile.map((v, i) => (
-                          <p key={i} className="flex items-center gap-1"><CheckCircle className="h-3 w-3 text-green-500" /> {v}</p>
-                        ))}
-                      </div>
-                    )}
-                    <div className="mt-2 flex items-start gap-2 rounded-md border bg-background/60 p-2">
-                      <Switch
-                        checked={formKarriereGating}
-                        onCheckedChange={setFormKarriereGating}
-                      />
-                      <div className="space-y-0.5 text-[11px] leading-tight">
-                        <p className="font-medium">Sidebar nach Karrierestufe einschränken</p>
-                        <p className="text-muted-foreground">
-                          Standard AUS: Nutzer sieht das komplette CRM (Bestandsschutz). Aktivieren, um nur Module der gewählten Stufe zu zeigen — die Stufe kann später jederzeit im Nutzerprofil geändert werden.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  )}
-
-                  {/* Provisionssätze - synchron mit Nutzerprofil */}
+                  {/* Provisionssatz - das zentrale Feld bei Vertriebspartnern.
+                      Seit 15.10.2026 ohne Karrierestufe: es gilt genau dieser
+                      Satz, getrennt nach zugewiesenen Leads und eigenem Netzwerk. */}
                   {formRollen.includes("vertriebspartner") && (
                   <div data-ui="card" className="rounded-lg border bg-card p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <p className="text-sm font-semibold flex items-center gap-2">🔥 Karrierestufe & Provision</p>
-                      <Badge variant="outline" className="text-xs">
-                        {(() => {
-                          const stufe = KARRIERE_STUFEN.find(s => s.id === formKarriere);
-                          const custom = formCustomRate !== "" ? parseFloat(formCustomRate) : null;
-                          const rate = custom != null && !isNaN(custom) ? custom : (stufe?.rate ?? 3);
-                          return `${rate} %`;
-                        })()}
-                      </Badge>
-                    </div>
+                    <p className="text-sm font-semibold mb-3">Provisionssatz *</p>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <Label className="text-xs text-muted-foreground">Individueller Satz (%)</Label>
+                        <Label htmlFor="einladung-satz-lead" className="text-xs text-muted-foreground">Lead-Satz (%) *</Label>
                         <Input
-                          type="number" min={0} max={100} step={0.5}
-                          placeholder={`${KARRIERE_STUFEN.find(s => s.id === formKarriere)?.rate ?? 4} (Standard)`}
-                          value={formCustomRate}
-                          onChange={e => setFormCustomRate(e.target.value)}
-                        />
-                        <p className="text-[10px] text-muted-foreground">Allgemeiner Override</p>
-                      </div>
-                      <div className="space-y-1">
-                        <Label className="text-xs text-muted-foreground">Lead Satz (%)</Label>
-                        <Input
-                          type="number" min={0} max={100} step={0.01}
-                          placeholder="z. B. 3"
+                          id="einladung-satz-lead"
+                          inputMode="decimal"
+                          placeholder="z. B. 10"
                           value={formCustomRateSetter}
                           onChange={e => setFormCustomRateSetter(e.target.value)}
                         />
-                        <p className="text-[10px] text-muted-foreground">
-                          Provision für Leads, die dem Nutzer über OS Immobilien zugewiesen werden.
-                        </p>
+                        <p className="text-[10px] text-muted-foreground">Für Leads, die OS Immobilien zuweist.</p>
                       </div>
-                      <div className="space-y-1 col-span-2">
-                        <Label className="text-xs text-muted-foreground">Eigen Satz (%)</Label>
+                      <div className="space-y-1">
+                        <Label htmlFor="einladung-satz-eigen" className="text-xs text-muted-foreground">Eigen-Satz (%) *</Label>
                         <Input
-                          type="number" min={0} max={100} step={0.01}
-                          placeholder="z. B. 5"
+                          id="einladung-satz-eigen"
+                          inputMode="decimal"
+                          placeholder="z. B. 10"
                           value={formCustomRateEigen}
                           onChange={e => setFormCustomRateEigen(e.target.value)}
                         />
-                        <p className="text-[10px] text-muted-foreground">
-                          Honorarsatz für Interessenten &amp; Leads aus dem eigenen Netzwerk.
-                        </p>
+                        <p className="text-[10px] text-muted-foreground">Für Kontakte aus dem eigenen Netzwerk.</p>
                       </div>
                     </div>
+                    {!provisionssaetzeGueltig && (
+                      <p className="text-[11px] text-destructive mt-2">{SATZ_UNGUELTIG_TEXT}</p>
+                    )}
                     <p className="text-[10px] text-muted-foreground mt-3">
-                      💡 <strong>Individueller Satz</strong> gilt für Lead- und Eigenkontakte gemeinsam. Wenn du differenzieren willst, lass ihn leer und trage stattdessen <strong>Lead Satz</strong> (Leads über OS Immobilien) und <strong>Eigen Satz</strong> (eigenes Netzwerk) ein. Priorität: Individueller Satz → Lead/Eigen → Karrierestufe → Standard 3 %.
+                      Der Satz gilt ab sofort für neue Vorgänge. Ab der Reservierung wird er am Vorgang festgeschrieben; eine spätere Änderung wirkt dort nicht mehr.
                     </p>
                   </div>
                   )}
@@ -718,15 +640,8 @@ export default function Nutzerverwaltung() {
                             if (n.einladung === "ausstehend") return false;
                             const rollen = (n.rollen && n.rollen.length ? n.rollen : [n.rolle])
                               .map(r => (r || "").toLowerCase());
-                            // Immer erlaubt: Admin / Inhaber / Vertriebsleiter
-                            if (rollen.some(r => ["admin", "super admin", "inhaber", "vertriebsleiter"].includes(r))) {
-                              return true;
-                            }
-                            // Vertriebspartner nur ab Team Lead / Lizenzpartner
-                            if (rollen.includes("vertriebspartner")) {
-                              return n.karriereStufe === "manager" || n.karriereStufe === "vertriebsfirma";
-                            }
-                            return false;
+                            // Nur nach Rolle: Admin, Inhaber, Vertriebsleiter (seit 15.10.2026 ohne Stufen).
+                            return istTeamleiterRolle(rollen);
                           })
                           .map(n => (
                             <SelectItem key={n.id} value={n.id}>{n.vorname} {n.nachname} – {n.rolle}</SelectItem>
@@ -785,7 +700,7 @@ export default function Nutzerverwaltung() {
                     <Button
                       className="bg-primary hover:bg-primary/90 text-primary-foreground"
                       onClick={handleInvite}
-                      disabled={!formVorname || !formNachname || !formPrivateEmail || formRollen.length === 0 || (formRollen.includes("vertriebspartner") && !formKarriere) || inviting}
+                      disabled={!formVorname || !formNachname || !formPrivateEmail || formRollen.length === 0 || (formRollen.includes("vertriebspartner") && !provisionssaetzeGueltig) || inviting}
                     >
                       {inviting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <UserPlus className="h-4 w-4 mr-2" />}
                       {inviting ? "Wird eingeladen..." : "Nutzer einladen"}
@@ -963,29 +878,7 @@ export default function Nutzerverwaltung() {
                         {(() => {
                           const isVp = n.rollen.includes("vertriebspartner");
                           if (!isVp) return <span className="text-xs text-muted-foreground">–</span>;
-                          const override = getKarriereOverrideForUser(n.id);
-                          const stufe = override ? getKarriereStufe(0, override) : KARRIERE_STUFEN[0];
-                          const rate = getEffectiveRate(n.id, stufe);
-                          const setterRate = getCustomProvisionRateSetter(n.id);
-                          const eigenRate = getCustomProvisionRateEigen(n.id);
-                          const hasSplit = setterRate !== null || eigenRate !== null;
-                          return (
-                            <div className="flex items-center gap-1.5 flex-wrap">
-                              <span className="text-xs">{stufe.emoji} {stufe.titel}</span>
-                              {hasSplit ? (
-                                <>
-                                  <Badge variant="outline" className="text-[10px] px-1.5 py-0 font-bold" title="Lead Satz (Leads über OS Immobilien)">
-                                    Lead {setterRate ?? rate} %
-                                  </Badge>
-                                  <Badge variant="outline" className="text-[10px] px-1.5 py-0 font-bold" title="Eigen Satz (eigenes Netzwerk)">
-                                    Eigen {eigenRate ?? rate} %
-                                  </Badge>
-                                </>
-                              ) : (
-                                <Badge variant="outline" className="text-[10px] px-1.5 py-0 font-bold">{rate} %</Badge>
-                              )}
-                            </div>
-                          );
+                          return <ProvisionssatzBadges userId={n.id} />;
                         })()}
                       </TableCell>
                       <TableCell>

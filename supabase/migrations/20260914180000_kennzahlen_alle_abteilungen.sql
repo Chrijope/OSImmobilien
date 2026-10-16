@@ -1319,7 +1319,7 @@ BEGIN
    * steht, ist das beurkundete Kaufpreisvolumen, also das, was die Kunden
    * bezahlen. Der Erloes des Hauses ist die Provision daraus, und die haengt
    * je Vorgang an einem Satz, der an mehreren Stellen ermittelt wird
-   * (src/lib/karriereStufeHelper.ts:216). Eine Aufwandsseite gibt es
+   * (src/lib/provisionssatz.ts:216). Eine Aufwandsseite gibt es
    * ohnehin nicht. Empfehlung: Kachel umbenennen in "Beurkundeter Umsatz
    * Monat".
    *

@@ -179,14 +179,14 @@ describe("Anzeigen, die jetzt Daten bekommen", () => {
 
 describe("Provision: festgeschriebener Satz und Fälligkeit wirken (Entscheidung 29.09.2026)", () => {
   it("solange der Schalter aus ist, rechnen die Abrechnungen mit dem aktuellen Satz", async () => {
-    const { festgeschriebenerSatz, FESTGESCHRIEBENER_SATZ_IN_ABRECHNUNG } = await import("@/lib/karriereStufeHelper");
+    const { festgeschriebenerSatz, FESTGESCHRIEBENER_SATZ_IN_ABRECHNUNG } = await import("@/lib/provisionssatz");
     if (FESTGESCHRIEBENER_SATZ_IN_ABRECHNUNG) return;
     expect(festgeschriebenerSatz({ lockedProvisionRate: 5 })).toBeNull();
   });
 
   it("der festgeschriebene Satz aus dem Meta gilt vor dem aktuellen", async () => {
-    const { festgeschriebenerSatz, getEffectiveRateInfoForKontakt, FESTGESCHRIEBENER_SATZ_IN_ABRECHNUNG } = await import("@/lib/karriereStufeHelper");
-    // Gilt erst mit eingeschaltetem Schalter, siehe karriereStufeHelper.ts.
+    const { festgeschriebenerSatz, getEffectiveRateInfoForKontakt, FESTGESCHRIEBENER_SATZ_IN_ABRECHNUNG } = await import("@/lib/provisionssatz");
+    // Gilt erst mit eingeschaltetem Schalter, siehe provisionssatz.ts.
     if (!FESTGESCHRIEBENER_SATZ_IN_ABRECHNUNG) return;
     // 2,5 Prozent, damit er sich sicher vom Stufensatz unterscheidet.
     cache.investments = [zeile("inv-1", { pipelineStufe: "faelligkeit", lockedProvisionRate: 2.5 })];
@@ -197,14 +197,16 @@ describe("Provision: festgeschriebener Satz und Fälligkeit wirken (Entscheidung
     const info = getEffectiveRateInfoForKontakt("u-1", kontakt, festgeschriebenerSatz(inv.meta));
     expect(info.rate).toBe(2.5);
     expect(info.quelle).toBe("locked");
-    // Ohne festgeschriebenen Satz gilt der aktuelle, und der ist hier ein anderer.
+    // Ohne festgeschriebenen Satz gilt der aktuelle aus der Nutzerverwaltung;
+    // hier ist keiner gepflegt, und seit 15.10.2026 springt keine
+    // Karrierestufe mehr ein.
     const ohne = getEffectiveRateInfoForKontakt("u-1", kontakt, null);
-    expect(ohne.rate).not.toBe(2.5);
-    expect(info.heutigerSatz).toBe(ohne.rate);
+    expect(ohne).toMatchObject({ rate: null, quelle: "fehlt" });
+    expect(info.heutigerSatz).toBeUndefined();
   });
 
   it("nur eine Zahl größer null ist ein festgeschriebener Satz", async () => {
-    const { festgeschriebenerSatz, FESTGESCHRIEBENER_SATZ_IN_ABRECHNUNG } = await import("@/lib/karriereStufeHelper");
+    const { festgeschriebenerSatz, FESTGESCHRIEBENER_SATZ_IN_ABRECHNUNG } = await import("@/lib/provisionssatz");
     if (!FESTGESCHRIEBENER_SATZ_IN_ABRECHNUNG) return;
     expect(festgeschriebenerSatz(undefined)).toBeNull();
     expect(festgeschriebenerSatz({})).toBeNull();
@@ -216,7 +218,7 @@ describe("Provision: festgeschriebener Satz und Fälligkeit wirken (Entscheidung
   it("Provision ist Satz mal Kaufpreis des Investments, abrechenbar ab dem Fälligkeitsdatum", async () => {
     const { abwicklungAusMeta } = await import("@/lib/abwicklungStore");
     const { istAbrechenbar, postenProvision } = await import("@/lib/abrechnungRechnung");
-    const { festgeschriebenerSatz, getEffectiveRateInfoForKontakt } = await import("@/lib/karriereStufeHelper");
+    const { festgeschriebenerSatz, getEffectiveRateInfoForKontakt } = await import("@/lib/provisionssatz");
     cache.investments = [zeile("inv-1", {
       pipelineStufe: "faelligkeit",
       lockedProvisionRate: 3,
@@ -235,10 +237,10 @@ describe("Provision: festgeschriebener Satz und Fälligkeit wirken (Entscheidung
 
   it("Abrechnungen und Provisionsabrechnung reichen den festgeschriebenen Satz durch", () => {
     const abrechnungen = readFileSync(resolve(process.cwd(), "src/pages/Abrechnungen.tsx"), "utf8");
-    expect(abrechnungen).toContain("getEffectiveRateInfoForKontakt(u.id, k, festgeschriebenerSatz(inv.meta))");
+    expect(abrechnungen).toContain("getEffectiveRateInfoForKontakt(u.id, k, festgeschriebenerSatz(inv.meta, u.id))");
     const bescheide = readFileSync(resolve(process.cwd(), "src/pages/Provisionsabrechnung.tsx"), "utf8");
     // Seit dem 04.10.2026 je Investment: der Satz genau dieses Investments.
-    expect(bescheide).toContain("getEffectiveRateInfoForKontakt(u.id, k, festgeschriebenerSatz(inv.meta))");
+    expect(bescheide).toContain("getEffectiveRateInfoForKontakt(u.id, k, festgeschriebenerSatz(inv.meta, u.id))");
   });
 });
 

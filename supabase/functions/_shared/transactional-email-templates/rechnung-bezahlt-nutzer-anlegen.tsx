@@ -27,25 +27,24 @@ import { formatiereLeadPaketBetrag } from '../lead-paket.ts'
  *
  * Die Felder `paket` und `betrag` der alten Fassung hat der Aufrufer nie
  * geliefert; der Block zeigte deshalb nur den Namen. Jetzt stehen Betrag,
- * Leads und Karrierestufe darin, so wie der RechnungsTab sie übergibt.
+ * Leads darin, so wie der RechnungsTab sie übergibt (Karrierestufen gibt es
+ * seit dem 15.10.2026 nicht mehr).
  */
 
 interface Props {
   bewerberName?: string
   leadPaketBetragFormatiert?: string
   leadAnzahl?: number
-  karriereStufe?: string
   bewerberLink?: string
 }
 
-const Mail = ({ bewerberName, leadPaketBetragFormatiert, leadAnzahl, karriereStufe, bewerberLink }: Props) => {
+const Mail = ({ bewerberName, leadPaketBetragFormatiert, leadAnzahl, bewerberLink }: Props) => {
   const vorgang: Array<[string, string]> = []
   if (bewerberName) vorgang.push(['Bewerber', bewerberName])
   if (leadPaketBetragFormatiert) vorgang.push([LEAD_PAKET_RECHNUNG_ZEILE_BETRAG, leadPaketBetragFormatiert])
   if (typeof leadAnzahl === 'number' && leadAnzahl > 0) {
     vorgang.push([LEAD_PAKET_RECHNUNG_ZEILE_LEADS, leadPaketRechnungLeads(leadAnzahl)])
   }
-  if (karriereStufe) vorgang.push(['Karrierestufe', karriereStufe])
 
   return (
     <EmailLayout
@@ -73,7 +72,6 @@ export const template = {
     bewerberName: 'Julian Meyer',
     leadPaketBetragFormatiert: formatiereLeadPaketBetrag(VORSCHAU_LEAD_PAKET.betrag),
     leadAnzahl: VORSCHAU_LEAD_PAKET.anzahl,
-    karriereStufe: 'vertriebspartner',
     bewerberLink: 'https://osimmobilien.netlify.app/bewerberprozess?bewerber=example-id',
   },
 } satisfies TemplateEntry

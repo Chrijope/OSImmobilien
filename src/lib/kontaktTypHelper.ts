@@ -1,5 +1,5 @@
 import type { KundeData } from "@/lib/kundenStore";
-import { istEigenKontakt } from "@/lib/karriereStufeHelper";
+import { istEigenKontakt } from "@/lib/provisionssatz";
 import { User, Zap } from "lucide-react";
 
 /**

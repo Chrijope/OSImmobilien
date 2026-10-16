@@ -12,7 +12,7 @@ import { useLiveVersion } from "@/hooks/useLiveData";
 import { unscharfKlasse } from "@/lib/vorfuehrmodus";
 import { loadAllUsers } from "@/lib/loadAllUsers";
 import { kennungZuName } from "@/lib/beraterNamensabgleich";
-import { getKarriereOverrideForUser, getKarriereStufe, getEffectiveRate, getEffectiveRateForKontakt, getCustomProvisionRateSetter, getCustomProvisionRateEigen } from "@/lib/karriereStufeHelper";
+import { getEffectiveRateForKontakt, provisionssaetze, KEIN_SATZ_TEXT } from "@/lib/provisionssatz";
 import { cacheGet } from "@/lib/dataCache";
 import { calculateJuniorOverride, getJuniorsForRecruiter } from "@/lib/juniorOverrideLogic";
 import { OVERHEAD_AKTIV } from "@/lib/lizenzPakete";
@@ -46,19 +46,14 @@ export function ProvisionChart() {
   // Die Differenzprovision erscheint nur, solange die Overhead-Provision aktiv ist.
   const zeigeDifferenz = hasTeam && OVERHEAD_AKTIV;
 
-  // Anzeige der individuellen Sätze (Setter-Lead vs. Eigen) für den eingeloggten User
-  const setterRate = !isAdmin ? getCustomProvisionRateSetter(authUser?.id) : null;
-  const eigenRate = !isAdmin ? getCustomProvisionRateEigen(authUser?.id) : null;
-  const fallbackEffective = useMemo(() => {
-    if (isAdmin) return null;
-    const override = getKarriereOverrideForUser(authUser?.id);
-    const stufe = getKarriereStufe(0, override);
-    return getEffectiveRate(authUser?.id, stufe);
-  }, [authUser?.id, isAdmin, allUsers]);
+  // Anzeige der beiden Sätze aus der Nutzerverwaltung für den eingeloggten User.
+  const eigeneSaetze = !isAdmin ? provisionssaetze(authUser?.id) : { lead: null, eigen: null };
+  const setterRate = eigeneSaetze.lead;
+  const eigenRate = eigeneSaetze.eigen;
 
   // Lookup-Helfer: für jeden Kontakt+Investment den festgeschriebenen Satz oder den effektiven berechneten ermitteln
   const getRateForRow = useMemo(() => {
-    return (kontakt: any, invMeta: any): number => {
+    return (kontakt: any, invMeta: any): number | null => {
       // Kennung zuerst. Vorher gewann der erste Namenstreffer vor der Kennung.
       const beraterId = kontakt?.zustaendig_id || kennungZuName(kontakt?.berater, allUsers);
       const lockedRate = invMeta?.lockedProvisionRate;
@@ -105,7 +100,8 @@ export function ProvisionChart() {
 
       const rawInv = investmentsRawById.get(inv.id) || {};
       const rate = getRateForRow(k, rawInv.meta || {});
-      const provisionBetrag = provisionCent(kaufpreis, rate) / 100;
+      // Ohne Satz keine Provision.
+      const provisionBetrag = rate === null ? 0 : provisionCent(kaufpreis, rate) / 100;
       const override = juniorId ? calculateJuniorOverride(juniorId, kaufpreis) : null;
       const differenzBetrag = override?.betrag ?? 0;
 
@@ -162,14 +158,14 @@ export function ProvisionChart() {
             {!isAdmin && (setterRate != null || eigenRate != null) ? (
               <>
                 {setterRate != null && (
-                  <Badge variant="outline" className="text-[10px]">Setter-Lead: {setterRate} %</Badge>
+                  <Badge variant="outline" className="text-[10px]">Lead: {setterRate} %</Badge>
                 )}
                 {eigenRate != null && (
-                  <Badge variant="outline" className="text-[10px]">Eigen-Kontakt: {eigenRate} %</Badge>
+                  <Badge variant="outline" className="text-[10px]">Eigen: {eigenRate} %</Badge>
                 )}
               </>
-            ) : !isAdmin && fallbackEffective != null ? (
-              <Badge variant="outline" className="text-[10px]">{fallbackEffective} % Satz</Badge>
+            ) : !isAdmin ? (
+              <Badge variant="outline" className="text-[10px] text-destructive border-destructive/40">{KEIN_SATZ_TEXT}</Badge>
             ) : null}
             {ohneKaufpreis > 0 && (
               <Badge

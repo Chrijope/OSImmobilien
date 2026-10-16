@@ -177,14 +177,13 @@ export function leadPaketBezahltVorschau(bewerberName?: string): string {
 export function leadPaketBezahltText(bewerberName?: string): string {
   return (
     `die Zahlung für das Lead-Paket von ${bewerberName || 'einem Bewerber'} ist eingegangen. ` +
-    'Bitte lege den Zugang an und ordne die Karrierestufe zu, damit der Start nicht am Konto hängt.'
+    'Bitte lege den Zugang an und trage den Provisionssatz ein, damit der Start nicht am Konto hängt.'
   )
 }
 
 export interface LeadPaketBezahltEingabe {
   bewerberName: string
   leadPaket: unknown
-  karriereStufe?: string
   bewerberLink: string
 }
 
@@ -192,7 +191,6 @@ export interface LeadPaketBezahltDaten {
   bewerberName: string
   leadPaketBetragFormatiert: string
   leadAnzahl: number
-  karriereStufe: string
   bewerberLink: string
 }
 
@@ -204,7 +202,6 @@ export function leadPaketBezahltDaten(e: LeadPaketBezahltEingabe): LeadPaketBeza
     bewerberName: e.bewerberName,
     leadPaketBetragFormatiert: formatiereLeadPaketBetrag(paket.betrag),
     leadAnzahl: paket.anzahl,
-    karriereStufe: e.karriereStufe || '',
     bewerberLink: e.bewerberLink,
   }
 }

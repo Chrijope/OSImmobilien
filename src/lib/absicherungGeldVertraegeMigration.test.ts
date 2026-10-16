@@ -243,7 +243,7 @@ describe("invite-user: Provisionsbedingungen nur von Admin und Inhaber", () => {
   it("die Function nutzt die Prüfung vor dem Auslesen", () => {
     const fn = readFileSync("supabase/functions/invite-user/index.ts", "utf8");
     expect(fn).toContain("einladungOhneFremdeKonditionen(body, callerIsAdminGlobal)");
-    expect(fn).toMatch(/customProvisionRateEigen, tippgeberId, karriereGatingActive, rollenVariante \} = einladung;/);
+    expect(fn).toMatch(/customProvisionRateEigen, tippgeberId, rollenVariante, resend \} = einladung;/);
   });
 
   it("die Tippgeber-Prüfung läuft vor Kontoanlage und Mail und antwortet mit 403", () => {

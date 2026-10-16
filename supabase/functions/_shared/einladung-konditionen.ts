@@ -1,20 +1,17 @@
 /**
  * Provisionsbedingungen beim Einladen nur von Admin und Inhaber (seit 30.09.2026).
  *
- * invite-user schreibt Karrierestufe, eigene Provisionssätze, Teamleiter und
- * Karriere-Sperre mit dem Dienstschlüssel in `user_settings`. Der Wächter
+ * invite-user schreibt Lead- und Eigen-Satz und den Teamleiter mit dem
+ * Dienstschlüssel in `user_settings`. Der Wächter
  * `user_settings_provision_schuetzen` sieht diesen Weg nicht, weil ohne
  * angemeldeten Nutzer alles erlaubt ist. Vertriebspartner und
  * Vertriebsleitung dürfen die Function aufrufen (Kunden, Tippgeber); was sie
  * an Bedingungen mitschicken, fällt hier weg.
  */
 export const EINLADUNG_KONDITIONEN = [
-  "karriereStufe",
   "teamleaderId",
-  "customProvisionRate",
   "customProvisionRateSetter",
   "customProvisionRateEigen",
-  "karriereGatingActive",
 ] as const;
 
 export function einladungOhneFremdeKonditionen<T extends Record<string, unknown>>(
@@ -85,4 +82,65 @@ export function tippgeberKontoAblehnung(p: {
     return "Diese Adresse gehört schon zum Portal-Zugang eines anderen Tippgebers. Das klären Admin und Inhaber.";
   }
   return null;
+}
+
+/**
+ * Provisionssatz aus der Einladung: Zahl oder Text mit Komma oder Punkt
+ * ("10,5" = 10,5). Gültig ist größer 0 bis höchstens 100, sonst null.
+ * Dieselbe Regel wie parseProvisionssatz im Browser (provisionssatz.ts).
+ */
+export function provisionssatzAusEinladung(wert: unknown): number | null {
+  if (typeof wert !== "number" && typeof wert !== "string") return null;
+  const text = String(wert).trim().replace(",", ".");
+  if (!/^\d+(\.\d+)?$/.test(text)) return null;
+  const zahl = Number(text);
+  return zahl > 0 && zahl <= 100 ? zahl : null;
+}
+
+/**
+ * Seit 15.10.2026: Wer mit der Rolle Vertriebspartner angelegt wird, braucht
+ * einen Lead- und einen Eigen-Satz. Eine erneut versendete Einladung
+ * (`resend`) legt nichts neu an und ist ausgenommen. Liefert null, wenn es
+ * passt, sonst die Meldung für Status 400.
+ */
+export function provisionssatzAblehnung(p: {
+  rollen: readonly string[];
+  resend?: unknown;
+  lead: number | null;
+  eigen: number | null;
+}): string | null {
+  if (p.resend === true || !p.rollen.includes("vertriebspartner")) return null;
+  if (p.lead === null || p.eigen === null) {
+    return "Für Vertriebspartner sind Lead- und Eigen-Satz Pflicht. Bitte trag einen Provisionssatz zwischen 0 und 100 Prozent ein.";
+  }
+  return null;
+}
+
+/**
+ * Seit 16.10.2026: Ein Vertriebspartner lädt einen Vertriebspartner in seine
+ * Struktur ein (Christian). Er gibt einen Satz, der für Lead und Eigen gilt,
+ * höchstens seinen eigenen Eigen-Satz. Der Eingeladene hängt unter ihm.
+ * Liefert entweder die Meldung für Status 400 oder Satz und Teamleiter.
+ */
+export function strukturEinladung(p: {
+  aufruferId: string;
+  rollen: readonly string[];
+  satzRoh: unknown;
+  /** Eigen-Satz des Einladenden, im Altbestand der allgemeine Satz. */
+  obergrenze: number | null;
+}): { fehler: string } | { satz: number; teamleaderId: string } {
+  if (p.rollen.some((r) => r !== "vertriebspartner")) {
+    return { fehler: "Du kannst Vertriebspartner nur mit dieser einen Rolle einladen." };
+  }
+  if (p.obergrenze === null || !(p.obergrenze > 0)) {
+    return { fehler: "Für dich ist noch kein Provisionssatz hinterlegt. Bitte wende dich an die Geschäftsleitung." };
+  }
+  const satz = provisionssatzAusEinladung(p.satzRoh);
+  if (satz === null) {
+    return { fehler: "Bitte trag einen Provisionssatz zwischen 0 und 100 Prozent ein." };
+  }
+  if (satz > p.obergrenze) {
+    return { fehler: `Der Satz darf höchstens deinem Eigen-Satz entsprechen (${String(p.obergrenze).replace(".", ",")} %).` };
+  }
+  return { satz, teamleaderId: p.aufruferId };
 }

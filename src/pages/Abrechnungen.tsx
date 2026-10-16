@@ -9,7 +9,10 @@ import { getInvestments } from "@/lib/investmentsStore";
 import { loadAllUsers } from "@/lib/loadAllUsers";
 import { istZustaendig } from "@/lib/kontaktOwnership";
 import { kennungZuName } from "@/lib/beraterNamensabgleich";
-import { KARRIERE_STUFEN, findKarriereStufe, formatSatzProzent, getKarriereOverrideForUser, getKarriereStufe, getEffectiveRate, getCustomProvisionRate, getCustomProvisionRateSetter, getCustomProvisionRateEigen, getEffectiveRateInfoForKontakt, festgeschriebenerSatz, type Satzart } from "@/lib/karriereStufeHelper";
+import { formatSatzProzent, getEffectiveRate, provisionssaetze, getEffectiveRateInfoForKontakt, festgeschriebenerSatz, type Satzart } from "@/lib/provisionssatz";
+import { DeineProvisionKarte } from "@/components/abrechnung/DeineProvisionKarte";
+import { DifferenzAusStrukturKarte } from "@/components/abrechnung/DifferenzAusStrukturKarte";
+import { ProvisionssatzBadges } from "@/components/abrechnung/ProvisionssatzBadges";
 import { OVERHEAD_AKTIV } from "@/lib/lizenzPakete";
 import { SatzartBadge, SatzartLegende } from "@/components/abrechnung/SatzartBadge";
 import { logAudit } from "@/lib/auditLog";
@@ -63,25 +66,12 @@ import { abwicklungAusMeta } from "@/lib/abwicklungStore";
 import { toast } from "sonner";
 import { tarnName, unscharfKlasse } from "@/lib/vorfuehrmodus";
 
-// ── Karrierestufen mit Overhead-Rang ──
-// Satz und Titel kommen aus der kanonischen Stufen-Definition in
-// karriereStufeHelper (findKarriereStufe loest auch Legacy-Titel und
-// Kennungen auf). Der Rang fuer den Overhead-Vergleich ergibt sich aus der
-// Reihenfolge in KARRIERE_STUFEN, 1 ist die niedrigste Stufe.
-function findStufeMitRang(karriere: string): { rate: number; rang: number } | undefined {
-  const stufe = findKarriereStufe(karriere);
-  if (!stufe) return undefined;
-  return { rate: stufe.rate, rang: KARRIERE_STUFEN.indexOf(stufe) + 1 };
-}
-
 // ── Partner-Daten mit Teamzugehörigkeit ──
 interface PartnerData {
   userId: string;
   kuerzel: string;
   name: string;
   email: string;
-  karriere: string;
-  karriereIcon: string;
   status: string;
   /** Alles ab Reservierung: was kommen koennte, die Erwartung. */
   provision: number;
@@ -102,7 +92,8 @@ interface PartnerData {
    */
   vermittlungen: number;
   teamleaderId?: string;
-  effectiveRate: number;
+  /** `null`: kein Satz in der Nutzerverwaltung, dann keine Provision. */
+  effectiveRate: number | null;
   setterRate?: number | null;
   eigenRate?: number | null;
   abschluesse: {
@@ -125,7 +116,8 @@ interface PartnerData {
     abrechenbar: boolean;
     status: string;
     /** Welcher Satz auf genau diesen Abschluss angewandt wurde und warum. */
-    satz: number;
+    /** `null`: kein Satz hinterlegt, keine Provision. */
+    satz: number | null;
     satzart: Satzart;
     /** Nur bei festgeschriebenem Satz und nur, wenn er vom heutigen abweicht. */
     heutigerSatz?: number;
@@ -133,35 +125,14 @@ interface PartnerData {
   }[];
 }
 
-// ── Overhead-Berechnung (Funktion bleibt, wird jetzt dynamisch aufgerufen) ──
-function berechneOverhead(allPartner: PartnerData[]) {
-  const overheadEinnahmen: Record<string, { gesamt: number; details: { vonPartner: string; objekt: string; kaufpreis: number; overheadRate: number; betrag: number }[] }> = {};
-  const overheadAusgaben: Record<string, { anPartner: string; objekt: string; kaufpreis: number; overheadRate: number; betrag: number }[]> = {};
 
-  allPartner.forEach(p => {
-    const stufe = findStufeMitRang(p.karriere);
-    if (!stufe || !p.teamleaderId) return;
-    const teamleader = allPartner.find(tl => tl.userId === p.teamleaderId);
-    if (!teamleader) return;
-    const tlStufe = findStufeMitRang(teamleader.karriere);
-    if (!tlStufe || tlStufe.rang <= stufe.rang) return;
-    // Overhead = Differenz zwischen Teamleiter-Rate und Partner-Rate
-    const tlEffectiveRate = getEffectiveRate(teamleader.userId) ?? tlStufe.rate;
-    const pEffectiveRate = getEffectiveRate(p.userId) ?? stufe.rate;
-    const overheadRate = tlEffectiveRate - pEffectiveRate;
-    if (overheadRate <= 0) return;
-
-    p.abschluesse.forEach(a => {
-      const betrag = Math.round(a.kaufpreis * (overheadRate / 100));
-      if (!overheadEinnahmen[teamleader.kuerzel]) overheadEinnahmen[teamleader.kuerzel] = { gesamt: 0, details: [] };
-      overheadEinnahmen[teamleader.kuerzel].gesamt += betrag;
-      overheadEinnahmen[teamleader.kuerzel].details.push({ vonPartner: p.name, objekt: a.objekt, kaufpreis: a.kaufpreis, overheadRate, betrag });
-      if (!overheadAusgaben[p.kuerzel]) overheadAusgaben[p.kuerzel] = [];
-      overheadAusgaben[p.kuerzel].push({ anPartner: teamleader.name, objekt: a.objekt, kaufpreis: a.kaufpreis, overheadRate, betrag });
-    });
-  });
-  return { overheadEinnahmen, overheadAusgaben };
-}
+// Team-Overhead gibt es bei OS Immobilien nicht (OVERHEAD_AKTIV = false, seit
+// 15.10.2026 auch ohne Karrierestufen). Die Form bleibt fuer die Anzeigen
+// unten, die bei leeren Daten nichts zeigen.
+type OverheadErgebnis = {
+  overheadEinnahmen: Record<string, { gesamt: number; details: { vonPartner: string; objekt: string; kaufpreis: number; overheadRate: number; betrag: number }[] }>;
+  overheadAusgaben: Record<string, { anPartner: string; objekt: string; kaufpreis: number; overheadRate: number; betrag: number }[]>;
+};
 
 function gesamtAuszahlungWith(p: PartnerData, ohMap: Record<string, { gesamt: number; details: any[] }>) {
   return p.provision + (ohMap[p.kuerzel]?.gesamt || 0);
@@ -253,8 +224,7 @@ function ProvisionsEntwicklungChart({ partnerName, partnerId }: { partnerName: s
     // Ohne auffindbaren Nutzer gibt es keinen gepflegten Satz. Früher stand
     // hier ein stiller Notfallwert von 5 %; jetzt rechnet der Chart ehrlich
     // mit 0 und weist den fehlenden Satz im Kopf aus.
-    const override = u ? getKarriereOverrideForUser(u.id) : null;
-    const rate: number | null = u ? getEffectiveRate(u.id, getKarriereStufe(0, override)) : null;
+    const rate: number | null = u ? getEffectiveRate(u.id) : null;
 
     const now = new Date();
     const currentYear = now.getFullYear();
@@ -350,50 +320,6 @@ function ProvisionsEntwicklungChart({ partnerName, partnerId }: { partnerName: s
   );
 }
 
-// Titel und Saetze kommen aus KARRIERE_STUFEN, nur die Beispielrechnung ist
-// lokal: Mehrverdienst bei 1.000.000 € vermitteltem Volumen. Die Uebersichten
-// zeigen nur das aktuelle Modell (einheitliche 4-%-Stufe); Bestandsstufen
-// (nurBestand) erscheinen nur, wenn der betrachtete Partner selbst darauf
-// steht, damit seine Anzeige korrekt bleibt.
-const provisionsStufen = KARRIERE_STUFEN.map((s) => ({
-  id: s.id,
-  nurBestand: !!s.nurBestand,
-  volumen: s.titel,
-  provision: formatSatzProzent(s.rate),
-  beispiel: `${(s.rate * 10000).toLocaleString("de-DE")} €`,
-}));
-
-// Vorteile und Voraussetzungen sind Anzeige-Texte dieser Seite. Titel, Emoji
-// und Saetze kommen aus der kanonischen Stufen-Definition.
-const KARRIERE_STUFEN_ZUSATZ: Record<string, { vorteile: string[]; voraussetzungen: string[] }> = {
-  tippgeber: {
-    vorteile: ["Vollzugriff CRM & Pipeline", "Academy Grundkurse", "Persönliches Vertriebspartner-Microsite"],
-    voraussetzungen: ["Bestandsstufe, wird nicht mehr neu vergeben"],
-  },
-  vertriebspartner: {
-    vorteile: ["Einheitlich 4 % auf Lead- und Eigenkontakte", "Vollzugriff CRM & Pipeline", "Academy inkl. Aufbau- & Tax-Kursen", "Eigene Empfehlungsprogramme"],
-    voraussetzungen: ["Onboarding abgeschlossen", "Paket: Vertriebspartner"],
-  },
-  manager: {
-    vorteile: ["Alles aus Vertriebspartner", "Vertriebspartner werben & coachen", "1,5 % Override auf jeden Junior-Abschluss", "Team-Dashboard & Statistiken"],
-    voraussetzungen: ["Bestandsstufe, wird nicht mehr neu vergeben"],
-  },
-  vertriebsfirma: {
-    vorteile: ["Alles aus Team Lead", "2 % Override auf jeden Junior-Abschluss", "Whitelabel-Optionen für eigene Marke", "Direkter Ansprechpartner aus der Geschäftsleitung"],
-    voraussetzungen: ["Bestandsstufe, wird nicht mehr neu vergeben"],
-  },
-};
-
-const karriereStufen = KARRIERE_STUFEN.map((s) => ({
-  titel: s.titel,
-  emoji: s.emoji,
-  nurBestand: !!s.nurBestand,
-  provision: formatSatzProzent(s.rate),
-  extras: s.juniorOverride ? `+${formatSatzProzent(s.juniorOverride)} Junior-Override` : undefined,
-  vorteile: KARRIERE_STUFEN_ZUSATZ[s.id].vorteile,
-  voraussetzungen: KARRIERE_STUFEN_ZUSATZ[s.id].voraussetzungen,
-}));
-
 // kontaktPotenzial wird dynamisch in der Komponente berechnet
 
 // Abschluss-Boni gibt es in der Abrechnung nicht mehr.
@@ -424,7 +350,7 @@ function baueHistorie(
     abschluesse.map((a) => ({
       kaufpreis: a.kaufpreis,
       stufe: a.stufe,
-      satz: a.satz,
+      satz: a.satz ?? 0,
       kaufpreisfaelligAm: a.kaufpreisfaelligAm,
     })),
   ).map((zeile) => {
@@ -479,7 +405,6 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
   const { user } = useUser();
   const isBuchhaltung = ["admin", "buchhaltung"].includes(user.role);
 
-  const stufe = findStufeMitRang(p.karriere);
   const ownOverhead = overheadEinnahmen[p.kuerzel];
   const ownOverheadAusgaben = overheadAusgaben[p.kuerzel];
 
@@ -631,7 +556,9 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
     // Bescheid, damit „Faellig" sie danach nicht noch einmal zaehlt. Was
     // „bitte klären“ traegt, gehoert nicht dazu.
     const deals = p.abschluesse
-      .filter((a) => a.abrechenbar && !a.ausgezahlt && !a.klaeren)
+      // Ohne Satz gibt es keine Provision; der Abschluss kommt erst in einen
+      // Bescheid, wenn der Satz eingetragen ist.
+      .filter((a) => a.abrechenbar && !a.ausgezahlt && !a.klaeren && a.satz !== null)
       .map((a) => ({
         investmentId: a.investmentId,
         kontaktId: a.kontaktId,
@@ -647,7 +574,7 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
     let ergebnis: Awaited<ReturnType<typeof setzeRechnungBezahlt>> = null;
     try {
       ergebnis = await setzeRechnungBezahlt(
-        { userId: p.userId, name: p.name, karriere: p.karriere },
+        { userId: p.userId, name: p.name },
         monat,
         gesamtRechnung,
         true,
@@ -1041,8 +968,10 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {potenzialPhasen.map((kp) => {
           const volumen = kp.kunden.reduce((s, k) => s + (k.kaufpreis || 0), 0);
-          const provisionRate = stufe?.rate || 5;
-          const provisionBetrag = Math.round(volumen * (provisionRate / 100));
+          // Grobe Vorschau mit dem allgemeinen Satz aus der Nutzerverwaltung;
+          // bis 15.10.2026 stand hier der Stufensatz, sonst pauschal 5 %.
+          const provisionRate = p.effectiveRate;
+          const provisionBetrag = provisionRate === null ? null : Math.round(volumen * (provisionRate / 100));
           return (
             <Card
               key={kp.label}
@@ -1056,7 +985,9 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
               <p className="text-2xl font-bold text-foreground">{kp.kunden.length}</p>
               <div className="mt-2 space-y-0.5">
                 <p className="text-xs text-muted-foreground">Volumen: <span className="font-semibold text-foreground">{fmt(volumen)}</span></p>
-                <p className="text-xs text-muted-foreground">Provision: <span className="font-semibold text-primary">{fmt(provisionBetrag)}</span></p>
+                <p className="text-xs text-muted-foreground">Provision: {provisionBetrag === null
+                  ? <span className="font-semibold text-destructive">Satz nicht gepflegt</span>
+                  : <span className="font-semibold text-primary">{fmt(provisionBetrag)}</span>}</p>
               </div>
             </Card>
           );
@@ -1195,9 +1126,11 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
                     <TableCell className="text-sm font-medium">{a.objekt}</TableCell>
                     <TableCell className="text-sm tabular-nums">{fmt(a.kaufpreis)}</TableCell>
                     <TableCell>
-                      <SatzartBadge art={a.satzart} satz={a.satz} heutigerSatz={a.heutigerSatz} />
+                      <SatzartBadge art={a.satzart} satz={a.satz ?? undefined} heutigerSatz={a.heutigerSatz} />
                     </TableCell>
-                    <TableCell className="text-sm font-medium tabular-nums">{fmt(a.provision)}</TableCell>
+                    <TableCell className="text-sm font-medium tabular-nums">
+                      {a.satz === null ? <span className="text-destructive">Satz nicht gepflegt</span> : fmt(a.provision)}
+                    </TableCell>
                     <TableCell className="text-sm text-muted-foreground">{a.notarDatum}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">{a.kaufpreisfaellig}</TableCell>
                     <TableCell><Badge variant="outline" className="text-[10px]">{a.status}</Badge></TableCell>
@@ -1225,7 +1158,9 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
                         <SatzartBadge art={art} />
                         <span className="text-muted-foreground tabular-nums">
                           {e.anzahl} {e.anzahl === 1 ? "Abschluss" : "Abschlüsse"} · {fmt(e.volumen)} Volumen ·{" "}
-                          <span className="font-medium text-foreground">{fmt(e.provision)}</span>
+                          {art === "fehlt"
+                            ? <span className="font-medium text-destructive">keine Provision, Satz nicht gepflegt</span>
+                            : <span className="font-medium text-foreground">{fmt(e.provision)}</span>}
                         </span>
                       </div>
                     ))}
@@ -1239,72 +1174,9 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
         </Card>
       )}
 
-      {/* Karrierestufen */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-semibold font-sans flex items-center gap-2">🚀 Karrierestufen</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {karriereStufen.filter((s) => !s.nurBestand || s.titel === p.karriere).map((s, i) => {
-              const istAktuell = s.titel === p.karriere;
-              return (
-                <div key={i} className={`relative rounded-xl border p-5 ${istAktuell ? "border-primary bg-primary/5 shadow-md" : "border-border"}`}>
-                  {istAktuell && <Badge className="absolute -top-2 left-4 bg-primary text-primary-foreground text-[9px]">{isBuchhaltung ? p.name : "Deine Stufe"}</Badge>}
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-2xl">{s.emoji}</span>
-                    <p className="font-bold text-foreground">{s.titel}</p>
-                  </div>
-                  <div className="space-y-1 text-sm mb-3">
-                    <div className="flex justify-between"><span className="text-muted-foreground">Provision</span><span className="font-semibold">{s.provision}</span></div>
-                    {s.extras && <div className="flex justify-between"><span className="text-muted-foreground">Team-Overhead</span><span className="font-semibold text-primary">{s.extras}</span></div>}
-                  </div>
-                  <Separator className="my-3" />
-                  {s.vorteile.map((v, vi) => (<p key={vi} className="text-xs text-muted-foreground flex items-center gap-1.5"><span className="text-primary">◎</span> {v}</p>))}
-                  <Separator className="my-3" />
-                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Voraussetzungen</p>
-                  {s.voraussetzungen.map((v, vi) => (<p key={vi} className="text-xs text-muted-foreground">• {v}</p>))}
-                </div>
-              );
-            })}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Provisionsstaffel */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-semibold font-sans flex items-center gap-2">📊 Provisionsstaffel (Kapitalanlagen)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {/*
-            Die Spalte "Mehrverdienst*" ist am 14.09.2026 entfallen.
-
-            Sie zeigte `rate * 10000`, also schlicht die Provision bei einer
-            Million Euro Volumen, und war damit kein Mehrverdienst gegenueber
-            irgendeiner Vorstufe. Das Sternchen verwies zudem auf eine
-            Fussnote, die es auf der Seite nie gab. Da es seit der Umstellung
-            auf die vier Prozent ohnehin keine Staffel mit Mehrverdienst mehr
-            gibt, faellt die Spalte ersatzlos weg.
-          */}
-          <div className="grid grid-cols-3 gap-2 text-xs font-semibold text-muted-foreground uppercase mb-2 px-2">
-            <span>Stufe</span><span>Provision</span><span />
-          </div>
-          {provisionsStufen.filter((s) => {
-            const istAktuelleStufe = stufe && s.provision.replace(" ", "") === stufe.rate + "%";
-            return !s.nurBestand || istAktuelleStufe;
-          }).map((s, i) => {
-            const istAktuelleStufe = stufe && s.provision.replace(" ", "") === stufe.rate + "%";
-            return (
-              <div key={i} className={`grid grid-cols-3 gap-2 items-center px-2 py-3 rounded-lg text-sm ${istAktuelleStufe ? "bg-primary/5" : ""} border-b border-border last:border-0`}>
-                <span className="font-medium text-foreground flex items-center gap-2">{s.volumen}{istAktuelleStufe && <Badge className="bg-primary text-primary-foreground text-[9px] px-1.5 h-4">{isBuchhaltung ? p.kuerzel : "Du"}</Badge>}</span>
-                <span className="text-foreground">{s.provision}</span>
-                <span />
-              </div>
-            );
-          })}
-        </CardContent>
-      </Card>
+      {/* Fester Satz aus der Nutzerverwaltung, ersetzt Karrierestufen und Staffel */}
+      <DeineProvisionKarte userId={p.userId} partnerName={isBuchhaltung ? p.name : undefined} />
+      <DifferenzAusStrukturKarte userId={p.userId} />
 
       {/* Provisionsentwicklung Chart – Festgeschrieben + Prognose */}
       <ProvisionsEntwicklungChart partnerName={p.name} partnerId={p.userId} />
@@ -1565,14 +1437,9 @@ const Abrechnungen = () => {
     const partnerList: PartnerData[] = allUsers
       .filter(u => vpUserIds.has(u.id))
       .map(u => {
-        const override = getKarriereOverrideForUser(u.id);
-        const karriere = getKarriereStufe(0, override);
-        const customRate = getCustomProvisionRate(u.id);
-        // Bleibt für die Anzeige der Konditionen im Profil. Gerechnet wird
-        // nicht mehr damit: der Satz haengt am einzelnen Kontakt.
-        const effectiveRate = customRate ?? karriere.rate;
-        const setterRate = getCustomProvisionRateSetter(u.id);
-        const eigenRate = getCustomProvisionRateEigen(u.id);
+        // Nur fuer Anzeigen; gerechnet wird je Kontakt (siehe unten).
+        const effectiveRate = getEffectiveRate(u.id);
+        const { lead: setterRate, eigen: eigenRate } = provisionssaetze(u.id);
 
         // Kontakte dieses VPs
         // Kennung zuerst, der Name nur fuer Kontakte ohne Kennung und nur
@@ -1624,26 +1491,21 @@ const Abrechnungen = () => {
           const faelligAm = abwicklungAusMeta((inv as any)?.meta).kaufpreisfaelligkeitDatum || "";
 
           if (istProvisionsrelevant(inv.pipelineStufe)) {
-            // Der Satz gilt je Kontakt, nicht je Partner. Vorher rechnete diese
-            // Seite jeden Abschluss mit einem einzigen flachen Prozentsatz, und
-            // zwar ausschliesslich dem aus dem Feld "Individueller Satz". Wer
-            // nur Eigen- und Lead-Satz gepflegt hatte, wurde hier still mit dem
-            // Satz seiner Karrierestufe abgerechnet.
             /*
-             * Der beim Anlegen festgeschriebene Satz gilt (Entscheidung
-             * Christian vom 29.09.2026). Die Reihenfolge steht in
-             * `getEffectiveRateInfoForKontakt`: Festschreibung in der
-             * Nutzerverwaltung, dann dieser Satz, dann Eigen- oder Lead-Satz,
-             * dann die Stufe. Bis zum 29.09.2026 kam `inv.meta` hier nie an,
-             * es galt also immer der aktuelle Satz.
+             * Der Satz gilt je Kontakt, nicht je Partner. Ab Reservierung gilt
+             * der am Investment festgeschriebene Satz (Entscheidung Christian
+             * vom 29.09.2026, scharf seit 15.10.2026), davor Eigen- oder
+             * Lead-Satz aus der Nutzerverwaltung. Keine Karrierestufe; ohne
+             * Satz keine Provision (0 Cent) und „Satz nicht gepflegt“. Reihenfolge: siehe
+             * `getEffectiveRateInfoForKontakt`.
              */
-            const info = getEffectiveRateInfoForKontakt(u.id, k, festgeschriebenerSatz(inv.meta));
-            const cent = provisionCent(kp, info.rate);
+            const info = getEffectiveRateInfoForKontakt(u.id, k, festgeschriebenerSatz(inv.meta, u.id));
+            const cent = info.rate === null ? 0 : provisionCent(kp, info.rate);
             const betrag = cent / 100;
             provisionCentSumme += cent;
 
             const abrechenbar = istAbrechenbar(
-              { kaufpreis: kp, stufe: inv.pipelineStufe, satz: info.rate, kaufpreisfaelligAm: faelligAm },
+              { kaufpreis: kp, stufe: inv.pipelineStufe, satz: info.rate ?? 0, kaufpreisfaelligAm: faelligAm },
             );
             const stand = abrechnungsstand(
               abgerechnet,
@@ -1710,8 +1572,6 @@ const Abrechnungen = () => {
           kuerzel: initials,
           name: u.name,
           email,
-          karriere: karriere.titel,
-          karriereIcon: karriere.emoji,
           status: "Aktiv",
           provision: provisionCentSumme / 100,
           faellig: faelligCent / 100,
@@ -1730,11 +1590,7 @@ const Abrechnungen = () => {
         } satisfies PartnerData;
       });
 
-    // Ohne aktive Overhead-Provision wird kein Differenz-Overhead berechnet;
-    // die Funktion bleibt für eine spätere Reaktivierung stehen.
-    const oh: ReturnType<typeof berechneOverhead> = OVERHEAD_AKTIV
-      ? berechneOverhead(partnerList)
-      : { overheadEinnahmen: {}, overheadAusgaben: {} };
+    const oh: OverheadErgebnis = { overheadEinnahmen: {}, overheadAusgaben: {} };
     const total = partnerList.reduce((a, p) => a + p.provision + (oh.overheadEinnahmen[p.kuerzel]?.gesamt || 0), 0);
     const aktiv = partnerList.filter(p => p.status === "Aktiv").length;
 
@@ -1812,17 +1668,14 @@ const Abrechnungen = () => {
      * Rolle gebaut und enthaelt jeden Vertriebspartner. Was er darin sieht,
      * begrenzt die Datenbank ueber ihre Zugriffsregeln, nicht diese Seite.
      */
-    const ownOverride = getKarriereOverrideForUser(authUser?.id);
-    const ownKarriere = getKarriereStufe(0, ownOverride);
-    const ownEffectiveRate = getEffectiveRate(authUser?.id, ownKarriere);
-    const ownSetterRate = getCustomProvisionRateSetter(authUser?.id);
-    const ownEigenRate = getCustomProvisionRateEigen(authUser?.id);
+    const ownEffectiveRate = getEffectiveRate(authUser?.id);
+    const { lead: ownSetterRate, eigen: ownEigenRate } = provisionssaetze(authUser?.id);
     const eigener = partner.find((p) => p.userId === authUser?.id);
     // Der Rueckfall greift, wenn der Angemeldete gar kein Vertriebspartner
     // ist. Dann gibt es nichts abzurechnen, und null ist die Wahrheit.
     const ownPartner: PartnerData = eigener ?? {
       userId: authUser?.id || "", kuerzel: "", name: user.name, email: "",
-      karriere: ownKarriere.titel, karriereIcon: ownKarriere.emoji, status: "Aktiv",
+      status: "Aktiv",
       provision: 0, faellig: 0, bezahlt: 0, klaeren: 0, vermittlungen: 0,
       abschluesse: [],
       effectiveRate: ownEffectiveRate,
@@ -2002,7 +1855,6 @@ const Abrechnungen = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="text-[10px] uppercase tracking-wider">Overhead an</TableHead>
-                    <TableHead className="text-[10px] uppercase tracking-wider">Karrierestufe</TableHead>
                     <TableHead className="text-[10px] uppercase tracking-wider">Abschluss von</TableHead>
                     <TableHead className="text-[10px] uppercase tracking-wider">Objekt</TableHead>
                     <TableHead className="text-[10px] uppercase tracking-wider">Kaufpreis</TableHead>
@@ -2016,7 +1868,6 @@ const Abrechnungen = () => {
                     return data.details.map((d, i) => (
                       <TableRow key={`${kuerzel}-${i}`}>
                         <TableCell className="text-sm font-medium">{tarnName(empfaenger?.name, "partner") || kuerzel}</TableCell>
-                        <TableCell><Badge variant="outline" className="text-xs">{empfaenger?.karriereIcon} {empfaenger?.karriere}</Badge></TableCell>
                         <TableCell className="text-sm">{tarnName(d.vonPartner, "partner")}</TableCell>
                         <TableCell className="text-sm text-muted-foreground">{d.objekt}</TableCell>
                         <TableCell className="text-sm">{fmt(d.kaufpreis)}</TableCell>
@@ -2065,7 +1916,7 @@ const Abrechnungen = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead className="text-[10px] uppercase tracking-wider">Partner</TableHead>
-                  <TableHead className="text-[10px] uppercase tracking-wider">Karrierestufe</TableHead>
+                  <TableHead className="text-[10px] uppercase tracking-wider">Provision</TableHead>
                   <TableHead className="text-[10px] uppercase tracking-wider">Status</TableHead>
                   {/*
                     Vier Spalten, vier verschiedene Zahlen. Sie hiessen vorher
@@ -2103,15 +1954,7 @@ const Abrechnungen = () => {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1.5 flex-wrap">
-                          <Badge variant="outline" className="text-xs">{p.karriereIcon} {p.karriere}</Badge>
-                          {(p.setterRate != null || p.eigenRate != null) ? (
-                            <>
-                              <Badge variant="outline" className="text-[10px] px-1.5 py-0">Setter {p.setterRate ?? p.effectiveRate} %</Badge>
-                              <Badge variant="outline" className="text-[10px] px-1.5 py-0">Eigen {p.eigenRate ?? p.effectiveRate} %</Badge>
-                            </>
-                          ) : (
-                            <Badge variant="outline" className="text-[10px] px-1.5 py-0 font-bold">{p.effectiveRate} %</Badge>
-                          )}
+                          <ProvisionssatzBadges userId={p.userId} />
                         </div>
                       </TableCell>
                       <TableCell>

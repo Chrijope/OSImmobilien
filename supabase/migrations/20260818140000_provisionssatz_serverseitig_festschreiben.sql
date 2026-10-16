@@ -15,7 +15,7 @@
 -- wer das Investment anlegt. Der Client schreibt lockedProvisionRate nicht
 -- mehr selbst.
 --
--- Prioritaet (identisch zur Kette in src/lib/karriereStufeHelper.ts,
+-- Prioritaet (identisch zur Kette in src/lib/provisionssatz.ts,
 -- getEffectiveRateInfoForKontakt, ohne den Investment-Lock, der hier ja erst
 -- entsteht):
 --   1. custom_provision_rate_eigen bzw. custom_provision_rate_setter,
@@ -31,7 +31,7 @@
 -- ── 1. Die Karrierestufen als Tabelle ──────────────────────────────────────
 --
 -- WICHTIG: Diese Tabelle ist das SQL-Abbild von KARRIERE_STUFEN in
--- src/lib/karriereStufeHelper.ts (inklusive der Legacy-Aliase dort).
+-- src/lib/provisionssatz.ts (inklusive der Legacy-Aliase dort).
 -- Aendert sich dort eine Stufe, ein Satz oder ein Alias, muss eine Migration
 -- diese Tabelle nachziehen, sonst frieren Trigger und Datenbank andere Saetze
 -- ein als das Frontend anzeigt.
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS public.karriere_stufen (
 );
 
 COMMENT ON TABLE public.karriere_stufen IS
-  'SQL-Abbild von KARRIERE_STUFEN aus src/lib/karriereStufeHelper.ts. '
+  'SQL-Abbild von KARRIERE_STUFEN aus src/lib/provisionssatz.ts. '
   'Muss bei jeder Aenderung dort per Migration synchron gehalten werden. '
   'Befuellt nur ueber Migrationen, keine Schreibrechte fuer Clients.';
 

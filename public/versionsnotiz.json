@@ -2673,5 +2673,28 @@
     ],
     "soFindestDuEs": "Investmentrechner, Eingabe Finanzierung, Bereich KfW-Darlehen.",
     "kritisch": false
+  },
+  {
+    "nr": 130,
+    "datum": "2026-10-15",
+    "art": "geaendert",
+    "titel": "Fester Provisionssatz statt Karriereplan",
+    "zielrollen": [
+      "vertriebspartner",
+      "vertriebsleiter",
+      "backoffice",
+      "buchhaltung",
+      "admin",
+      "inhaber"
+    ],
+    "kurztext": "Jeder Vertriebspartner hat einen festen Lead-Satz und einen festen Eigen-Satz aus der Nutzerverwaltung. Karriereplan und Provisionsstaffel sind entfallen.",
+    "wasHeisstDasFuerDich": [
+      "Auswertungen und Abrechnungen zeigen und rechnen nur noch diese beiden Sätze, ohne Karrierestufe.",
+      "Ab der Reservierung gilt der Satz, der am Vorgang festgeschrieben ist. Eine spätere Änderung wirkt dort nicht mehr.",
+      "Ist kein Satz hinterlegt, wird keine Provision gerechnet und du siehst „Kein Provisionssatz hinterlegt“.",
+      "Die Sätze legen Admin und Inhaber beim Anlegen und im Nutzerprofil fest, auch mit Komma wie 10,5."
+    ],
+    "soFindestDuEs": "Auswertungen, Karte Dein Provisionssatz. Für die Leitung: Nutzerverwaltung, Spalte Provision.",
+    "kritisch": false
   }
 ]

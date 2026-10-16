@@ -193,7 +193,10 @@ describe("Rollenfilter deckt sich mit Seitenleiste und Routenschutz", () => {
     for (const rolle of ["vertriebspartner", "setterin", "backoffice"]) {
       const urls = seitenFuerSuche(kontext(rolle)).map((z) => z.url);
       expect(urls, rolle).not.toContain("/audit-log");
-      expect(urls, rolle).not.toContain("/nutzerverwaltung");
+      // Seit 16.10.2026 sieht der Vertriebspartner dort seine Struktur
+      // (StrukturVerwaltung), nicht die Verwaltung.
+      if (rolle === "vertriebspartner") expect(urls, rolle).toContain("/nutzerverwaltung");
+      else expect(urls, rolle).not.toContain("/nutzerverwaltung");
       // Die eigene Objektverwaltung traegt den Admin-Riegel.
       expect(urls, rolle).not.toContain("/objekte");
     }

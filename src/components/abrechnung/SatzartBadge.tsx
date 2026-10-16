@@ -7,8 +7,8 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Lock, UserPlus, Inbox, Layers, ShieldCheck } from "lucide-react";
-import { type Satzart, SATZART_LABEL, SATZART_ERKLAERUNG } from "@/lib/karriereStufeHelper";
+import { Lock, UserPlus, Inbox, Layers, ShieldCheck, AlertTriangle } from "lucide-react";
+import { type Satzart, SATZART_LABEL, SATZART_ERKLAERUNG } from "@/lib/provisionssatz";
 
 const STIL: Record<Satzart, { klasse: string; Icon: React.ComponentType<{ className?: string }> }> = {
   eigen: {
@@ -31,6 +31,10 @@ const STIL: Record<Satzart, { klasse: string; Icon: React.ComponentType<{ classN
     klasse: "border-violet-500/40 bg-violet-500/10 text-violet-700 dark:text-violet-400",
     Icon: ShieldCheck,
   },
+  fehlt: {
+    klasse: "border-destructive/40 bg-destructive/10 text-destructive",
+    Icon: AlertTriangle,
+  },
 };
 
 export function SatzartBadge({
@@ -52,7 +56,7 @@ export function SatzartBadge({
         <TooltipTrigger asChild>
           <Badge
             variant="outline"
-            className={`gap-1 font-medium cursor-help ${klein ? "h-4 px-1 text-[9px]" : "h-5 px-1.5 text-[10px]"} ${klasse}`}
+            className={`gap-1 font-medium cursor-help whitespace-nowrap shrink-0 ${klein ? "h-4 px-1 text-[9px]" : "h-5 px-1.5 text-[10px]"} ${klasse}`}
           >
             <Icon className={klein ? "h-2.5 w-2.5" : "h-3 w-3"} />
             {SATZART_LABEL[art]}
@@ -70,7 +74,7 @@ export function SatzartBadge({
             <p className="mt-1 text-[11px] text-muted-foreground">
               Heute würde für diesen Partner{" "}
               {heutigerSatz.toLocaleString("de-DE", { maximumFractionDigits: 2 })} % gelten. Der
-              Vorgang behält den Satz, der beim Anlegen galt.
+              Vorgang behält den Satz, der bei der Reservierung galt.
             </p>
           )}
         </TooltipContent>
@@ -81,7 +85,7 @@ export function SatzartBadge({
 
 /** Legende, die die Satzarten in einem Zug erklärt. */
 export function SatzartLegende({ className = "" }: { className?: string }) {
-  const arten: Satzart[] = ["eigen", "zugewiesen", "stufe", "locked", "nutzerverwaltung"];
+  const arten: Satzart[] = ["eigen", "zugewiesen", "locked", "fehlt"];
   return (
     <div className={`flex flex-wrap items-center gap-x-5 gap-y-2 text-xs ${className}`}>
       <span className="font-semibold text-foreground">Welcher Satz gilt:</span>

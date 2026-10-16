@@ -152,10 +152,10 @@ function SidebarInfoTooltip({ itemKey, text }: { itemKey: string; text: string }
 
 
 function NavGroup({
-  label, items, collapsed, defaultOpen, userRole, customPermissions, onboardingLocked, iconTint, vpStufeId,
+  label, items, collapsed, defaultOpen, userRole, customPermissions, onboardingLocked, iconTint,
   showBookmarks, isFavorite, toggleFavorite,
 }: {
-  label: string; items: NavItem[]; collapsed: boolean; defaultOpen?: boolean; userRole?: string; customPermissions?: string[]; onboardingLocked?: boolean; iconTint?: string; vpStufeId?: string | null;
+  label: string; items: NavItem[]; collapsed: boolean; defaultOpen?: boolean; userRole?: string; customPermissions?: string[]; onboardingLocked?: boolean; iconTint?: string;
   showBookmarks?: boolean; isFavorite?: (url: string) => boolean; toggleFavorite?: (url: string) => void;
 }) {
   // Wer ist angemeldet? Nur fuer persoenliche Ausnahmen wie den
@@ -165,7 +165,7 @@ function NavGroup({
   // Dieselbe Pruefung nutzt die globale Suche, siehe `sidebarNavigation.ts`.
   // Leere Rolle bleibt leer: Der Admin-Riegel soll dann greifen wie vor der
   // Umstellung; die Routenfreigabe faellt in darfNavEintrag selbst auf "admin" zurueck.
-  const navKontext = { rolle: userRole ?? "", customPermissions, vpStufeId, identitaet };
+  const navKontext = { rolle: userRole ?? "", customPermissions, identitaet };
 
   // Filter items by role permission + adminOnly
   const filteredItems = items.filter(item => darfNavEintrag(item, navKontext));
@@ -456,7 +456,6 @@ export function AppSidebar() {
   const [vertriebsakademieNew, setVertriebsakademieNew] = useState<boolean>(() => isNewBadgeActive(SEEN_KEYS.vertriebsakademie));
   const [customPermissions, setCustomPermissions] = useState<string[]>([]);
   const [onboardingComplete, setOnboardingComplete] = useState(true);
-  const [vpStufeId, setVpStufeId] = useState<string | null>(null);
 
   // Load onboarding status
   useEffect(() => {
@@ -714,9 +713,6 @@ export function AppSidebar() {
           .single();
         const perms = (data?.einstellungen as any)?.custom_permissions || [];
         setCustomPermissions(perms);
-        const gatingOn = !!(data?.einstellungen as any)?.karriere_gating_active;
-        const stufe = gatingOn ? ((data?.einstellungen as any)?.karriere_override ?? null) : null;
-        setVpStufeId(typeof stufe === "string" && stufe.trim() ? stufe.trim() : null);
       } catch { /* ignore */ }
     };
     loadPerms();
@@ -731,9 +727,6 @@ export function AppSidebar() {
         (payload: any) => {
           const perms = payload.new?.einstellungen?.custom_permissions || [];
           setCustomPermissions(perms);
-          const gatingOn = !!payload.new?.einstellungen?.karriere_gating_active;
-          const stufe = gatingOn ? (payload.new?.einstellungen?.karriere_override ?? null) : null;
-          setVpStufeId(typeof stufe === "string" && stufe.trim() ? stufe.trim() : null);
         }
       )
       .subscribe();
@@ -772,7 +765,6 @@ export function AppSidebar() {
   const gruppen = navigationsGruppen({
     rolle: user.role,
     customPermissions,
-    vpStufeId,
     identitaet: { email: authUser?.email, userId: authUser?.id },
     videocallFreigabe,
     handbuchFrei,
@@ -871,7 +863,7 @@ export function AppSidebar() {
         !siehtAdminOnlyNavigation(user.role) &&
         !(it.auchFuer || []).includes(user.role as string)
       ) return false;
-      return isUrlAllowedForRole(it.url, (user.role || "admin") as any, customPermissions, vpStufeId, {
+      return isUrlAllowedForRole(it.url, (user.role || "admin") as any, customPermissions, null, {
         email: authUser?.email,
         userId: authUser?.id,
       });
@@ -892,10 +884,10 @@ export function AppSidebar() {
        </div>
       <SidebarContent className="px-2 py-2 flex-1">
         {showFavoritesBlock && (
-          <NavGroup label="★ Favoriten" items={favoriteItems} collapsed={collapsed} userRole={user.role} customPermissions={customPermissions} onboardingLocked={locked} vpStufeId={vpStufeId} iconTint="text-amber-500" showBookmarks={!isMobile && !collapsed} isFavorite={isFavorite} toggleFavorite={toggleFavorite} />
+          <NavGroup label="★ Favoriten" items={favoriteItems} collapsed={collapsed} userRole={user.role} customPermissions={customPermissions} onboardingLocked={locked} iconTint="text-amber-500" showBookmarks={!isMobile && !collapsed} isFavorite={isFavorite} toggleFavorite={toggleFavorite} />
         )}
         {gruppenMitZaehler.map((gruppe) => (
-          <NavGroup key={gruppe.label || "haupt"} label={gruppe.label} items={gruppe.items} collapsed={collapsed} defaultOpen={gruppe.defaultOpen} userRole={user.role} customPermissions={customPermissions} onboardingLocked={locked} vpStufeId={vpStufeId} iconTint={gruppe.iconTint} showBookmarks={!isMobile && !collapsed} isFavorite={isFavorite} toggleFavorite={toggleFavorite} />
+          <NavGroup key={gruppe.label || "haupt"} label={gruppe.label} items={gruppe.items} collapsed={collapsed} defaultOpen={gruppe.defaultOpen} userRole={user.role} customPermissions={customPermissions} onboardingLocked={locked} iconTint={gruppe.iconTint} showBookmarks={!isMobile && !collapsed} isFavorite={isFavorite} toggleFavorite={toggleFavorite} />
         ))}
       </SidebarContent>
       <SidebarRoleSelector />

@@ -24,3 +24,8 @@ export const VorschauBeratungspraesentation = import.meta.env.DEV
 export const VorschauErstgespraech = import.meta.env.DEV
   ? lazy(() => import("./pages/VorschauErstgespraech"))
   : null;
+
+/** Vorschau „Provision je Partner“ (15.10.2026): /vorschau/provision. Gleiche Regeln wie oben. */
+export const VorschauProvision = import.meta.env.DEV
+  ? lazy(() => import("./pages/VorschauProvision"))
+  : null;

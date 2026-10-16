@@ -228,8 +228,10 @@ const hausverwaltungItems = [
 ];
 
 const teamAdminItems = [
-  { title: "Teampartner", url: "/teampartner", icon: UsersRound, adminOnly: true, auchFuer: ["hr"], suchbegriffe: ["team", "kollegen", "struktur", "partner"] },
-  { title: "Nutzerverwaltung", url: "/nutzerverwaltung", icon: UserCog, adminOnly: true, suchbegriffe: ["benutzer", "rollen", "rechte", "zugang", "user"] },
+  // Seit 16.10.2026 auch fuer Vertriebspartner und Vertriebsleitung: sie sehen
+  // dort ihre Struktur bzw. alle Partner (StrukturVerwaltung.tsx).
+  { title: "Teampartner", url: "/teampartner", icon: UsersRound, adminOnly: true, auchFuer: ["hr", "vertriebspartner", "vertriebsleiter"], suchbegriffe: ["team", "kollegen", "struktur", "partner"] },
+  { title: "Nutzerverwaltung", url: "/nutzerverwaltung", icon: UserCog, adminOnly: true, auchFuer: ["vertriebspartner", "vertriebsleiter"], suchbegriffe: ["benutzer", "rollen", "rechte", "zugang", "user", "struktur", "einladen"] },
   { title: "Ansprechpartner", url: "/ansprechpartner", icon: Contact, suchbegriffe: ["kontaktperson", "zustaendig"] },
   // Die oeffentliche Stellenanzeige, nur fuer Admin und Inhaber (`adminOnly`).
   // Die Adresse liegt unter `/karriere` und ist damit ohne eigene Freigabe in
@@ -322,8 +324,6 @@ export interface NavKontext {
   rolle: UserRole | string;
   /** Individuelle Freigaben aus `user_settings.einstellungen.custom_permissions`. */
   customPermissions?: string[];
-  /** Karrierestufe, nur wenn das Stufen-Gating für die Person aktiv ist. */
-  vpStufeId?: string | null;
   /** Nur für Freigaben, die an einer Person hängen (Videocall, Bewerberprozess). */
   identitaet?: NutzerIdentitaet;
   /** Videocall-Bereich, siehe `useVideocallFreigabe`. */
@@ -410,7 +410,7 @@ export function navigationsGruppen(ctx: NavKontext): NavGruppe[] {
 /** Erscheint dieser Eintrag für die Rolle? Admin-Riegel plus Routenfreigabe. */
 export function darfNavEintrag(item: Pick<NavItem, "url" | "adminOnly" | "auchFuer">, ctx: NavKontext): boolean {
   if (greiftAdminRiegel(item, ctx.rolle)) return false;
-  return isUrlAllowedForRole(item.url, (ctx.rolle || "admin") as UserRole, ctx.customPermissions, ctx.vpStufeId, ctx.identitaet);
+  return isUrlAllowedForRole(item.url, (ctx.rolle || "admin") as UserRole, ctx.customPermissions, null, ctx.identitaet);
 }
 
 /**

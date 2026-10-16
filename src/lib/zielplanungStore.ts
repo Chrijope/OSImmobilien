@@ -3,13 +3,11 @@
 import { supabase } from "@/integrations/supabase/client";
 import { getUserSetting, setUserSetting } from "./userSettingsCache";
 import { isTestAccount } from "./dbStoreHelper";
-import { KARRIERE_STUFEN } from "./karriereStufeHelper";
 
 export type ZielplanungModus = "volumen" | "anzahl";
 
 export interface ZielplanungConfig {
   modus: ZielplanungModus;
-  karrierestufe: string;
   /**
    * Wird nicht mehr gelesen. Gerechnet wird überall mit der Konstanten
    * `DURCHSCHNITTSKAUFPREIS`. Das Feld bleibt nur erhalten, damit die
@@ -56,7 +54,6 @@ export const DURCHSCHNITTSKAUFPREIS = 250000;
 
 const DEFAULT_CONFIG: ZielplanungConfig = {
   modus: "volumen",
-  karrierestufe: "tippgeber",
   durchschnittskaufpreis: DURCHSCHNITTSKAUFPREIS,
   verkaufsvolumen: Array(12).fill(0),
   verkaufsAnzahl: Array(12).fill(0),
@@ -133,10 +130,3 @@ export async function saveZielplanungForUser(userId: string, config: Zielplanung
   }
 }
 
-// Abgeleitet aus der kanonischen Stufen-Definition, damit die Saetze je Stufe
-// im Frontend nur an einer Stelle stehen.
-export const KARRIERESTUFEN = KARRIERE_STUFEN.map((stufe) => ({
-  id: stufe.id,
-  label: stufe.titel,
-  rate: stufe.rate,
-}));

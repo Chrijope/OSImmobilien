@@ -17,7 +17,7 @@ import { wahrscheinlichkeitFuerStufe } from "@/lib/kontaktPipeline";
 import { cacheGet } from "./dataCache";
 import { istZustaendig } from "./kontaktOwnership";
 import { istPerson } from "./beraterNamensabgleich";
-import { getEffectiveRateForKontakt } from "./karriereStufeHelper";
+import { getEffectiveRateForKontakt } from "./provisionssatz";
 
 export interface PersonRow {
   user_id: string;
@@ -162,6 +162,8 @@ export function computeFinanzKPIs(
     if (!kontakt) return;
     const lockedRate = i.meta?.lockedProvisionRate ?? null;
     const rate = getEffectiveRateForKontakt(kontakt.zustaendig_id, kontakt, lockedRate);
+    // Ohne Satz keine Provision, keine erfundene Zahl.
+    if (rate === null) return;
     provisionssumme += (Number(i.kaufpreis) || 0) * (rate / 100);
   });
 

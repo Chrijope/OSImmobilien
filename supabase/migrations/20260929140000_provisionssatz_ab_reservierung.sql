@@ -87,7 +87,7 @@
 -- (wenn sie davor lagen), beim Partnerwechsel oder durch die getrennte
 -- Datenkorrektur 20260929150000_provisionssatz_nachtrag.sql. Die Abrechnung im Browser liest den
 -- Satz erst, wenn FESTGESCHRIEBENER_SATZ_IN_ABRECHNUNG in
--- src/lib/karriereStufeHelper.ts auf true steht; das bleibt false.
+-- src/lib/provisionssatz.ts auf true steht; das bleibt false.
 --
 -- Die Anwendung laeuft auch ohne diese Migration, dann wie bisher.
 --

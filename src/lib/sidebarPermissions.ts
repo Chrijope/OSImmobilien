@@ -70,6 +70,8 @@ const ROLE_ALLOWED_URLS_FALLBACK: Partial<Record<UserRole, string[]>> = {
     "/afa-rechner", "/academy", "/immobilien-lexikon",
     "/praesentation", "/unterlagen", "/chat", "/support-kontaktieren",
     "/ansprechpartner", "/berater-microseite", "/teampartner",
+    // Die eigene Struktur (16.10.2026), nicht die Verwaltung; siehe App.tsx.
+    "/nutzerverwaltung",
     "/einstellungen", "/kunden", "/vertriebsakademie",
     // Sub-Routen, die aus Unterlagen/Präsentation heraus aufgerufen werden
     "/aftersales", "/leitfaeden", "/wissenswert", "/marketing", "/bonitaet",
@@ -123,6 +125,8 @@ const ROLE_ALLOWED_URLS_FALLBACK: Partial<Record<UserRole, string[]>> = {
      */
     "/chat", "/support-kontaktieren", "/helpdesk",
     "/teampartner", "/ansprechpartner", "/berater-microseite",
+    // Alle Vertriebspartner mit Teamleiter (16.10.2026), nicht die Verwaltung.
+    "/nutzerverwaltung",
     "/karriere",
     "/einstellungen", "/kunden",
     "/aftersales", "/leitfaeden", "/wissenswert", "/bonitaet",
@@ -528,70 +532,6 @@ export function istRouteGesperrt(url: string, role: UserRole, identitaet?: Nutze
 }
 
 /**
- * Karrierestufen-basiertes Gating für die Rolle `vertriebspartner`.
- * Jede URL hier setzt einen Mindest-Rank (1=Junior, 2=Lead, 3=Team, 4=Senior).
- * URLs, die hier NICHT auftauchen, sind für jeden VP sichtbar (Junior-Baseline).
- * Mapping wurde aus den Grundgebühr-Paket-Inhalten (LIZENZ_PAKETE in /closing) abgeleitet.
- */
-export type VPStufeRank = 1 | 2 | 3 | 4;
-const VP_STUFE_MIN_RANK: Record<string, VPStufeRank> = {
-  // Junior-Baseline (kein Eintrag = für alle VP sichtbar):
-  //   /zielplanung, /statistiken (laut Kundenwunsch schon ab Junior)
-  // Lead Partner (ab Rank 2)
-  "/empfehlungen": 2,
-  "/follow-ups": 2,
-  "/praesentation": 2,
-  "/marketing": 2,
-  "/wettbewerb": 2,
-  "/auswertungen": 2,
-  "/provisionsabrechnung": 2,
-  // Team Lead (ab Rank 3)
-  "/teampartner": 3,
-  // Lizenzpartner (ab Rank 4)
-  "/analysetool": 4,
-  // "/steuerrechner" stand hier bis zum 24.09.2026 ebenfalls auf Rang 4, nur
-  // aus Analogie zum Analysetool und nicht aus einem Lizenzpaket abgeleitet.
-  // Christian hat entschieden: Jeder Vertriebspartner bekommt ihn, gleich auf
-  // welcher Karrierestufe. Neue Partner stehen auf der Stufe
-  // "vertriebspartner" (Rang 2) und waeren sonst ausgesperrt, sobald das
-  // Stufen-Gating fuer sie eingeschaltet ist. Deshalb bewusst kein Eintrag.
-  // /karriere ist in `vertriebspartner` allowedRoutes nicht enthalten und
-  // damit für VPs grundsätzlich unsichtbar — kein Rank-Gating nötig.
-};
-
-/** Mappt die karriere_override-ID auf einen numerischen Rank. */
-export function vpStufeRank(stufeId?: string | null): VPStufeRank {
-  switch ((stufeId || "").trim().toLowerCase()) {
-    case "tippgeber": return 1; // Vertriebspartner
-    case "vertriebspartner": return 2; // Lead Partner
-    case "manager": return 3; // Team Lead
-    case "vertriebsfirma": return 4; // Lizenzpartner
-    // Default: Lizenzpartner (Rank 4) → Bestandsschutz: alle existierenden
-    // Vertriebspartner ohne explizit gesetzte Karrierestufe sehen weiterhin
-    // das komplette CRM. Erst wenn ein Admin im Nutzerprofil aktiv eine
-    // niedrigere Stufe wählt, greifen die Stufen-Gates.
-    default: return 4;
-  }
-}
-
-/** True, wenn die URL für die übergebene VP-Stufe freigeschaltet ist. */
-export function isUrlAllowedForVPStufe(url: string, stufeId?: string | null, customPermissions?: string[]): boolean {
-  const cleanUrl = url.split("?")[0].split("#")[0];
-  // Admin-Override pro Nutzer beachtet
-  if (customPermissions?.includes(url) || customPermissions?.includes(cleanUrl)) return true;
-  // Spezifischsten Match (Präfix) suchen und höchsten Rank wählen
-  let minRank: VPStufeRank | null = null;
-  for (const u of Object.keys(VP_STUFE_MIN_RANK)) {
-    if (cleanUrl === u || cleanUrl.startsWith(u + "/")) {
-      const r = VP_STUFE_MIN_RANK[u];
-      if (minRank == null || r > minRank) minRank = r;
-    }
-  }
-  if (minRank == null) return true;
-  return vpStufeRank(stufeId) >= minRank;
-}
-
-/**
  * Wer ist gerade angemeldet? Nur noetig fuer Routen, die einzelne Personen
  * zusaetzlich zu ihrer Rolle sehen duerfen.
  */
@@ -601,7 +541,10 @@ export function isUrlAllowedForRole(
   url: string,
   role: UserRole,
   customPermissions?: string[],
-  vpStufeId?: string | null,
+  // Früher die Karrierestufe für die Sidebar-Sperre. Die Sperre ist seit dem
+  // 15.10.2026 entfallen (keine Karrierestufen mehr); der Platz bleibt, damit
+  // die Aufrufer unverändert bleiben.
+  _ohneWirkung?: string | null,
   identitaet?: NutzerIdentitaet,
 ): boolean {
   // Bestehende Vorschau-Links erben die regulären Akademie-Berechtigungen.
@@ -640,14 +583,7 @@ export function isUrlAllowedForRole(
   const roleOk = allowed.some(
     (u) => cleanUrl === u || cleanUrl.startsWith(u + "/") || (!!elternRoute && elternRoute === u),
   );
-  if (!roleOk) return false;
-  // Innerhalb der Vertriebspartner-Rolle zusätzlich nach Karrierestufe gaten.
-  // Unterseiten werden dabei wie ihre Elternseite behandelt, sonst waere die
-  // Elternseite gesperrt und die Unterseite trotzdem offen.
-  if (role === "vertriebspartner") {
-    return isUrlAllowedForVPStufe(elternRoute || cleanUrl, vpStufeId, customPermissions);
-  }
-  return true;
+  return roleOk;
 }
 
 /** Rollen von aussen: Sie sehen nur ihr eigenes Portal. */
