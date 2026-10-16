@@ -61,3 +61,11 @@ export const VorschauKundeKomplett = import.meta.env.DEV
 export const VorschauKundenchat = import.meta.env.DEV
   ? lazy(() => import("./pages/VorschauKundenchat"))
   : null;
+
+/**
+ * /vorschau/objekt-anlegen: das Objektformular ohne Anmeldung und ohne
+ * Datenbank (16.10.2026). Gleiche Regeln wie oben.
+ */
+export const VorschauObjektAnlegen = import.meta.env.DEV
+  ? lazy(() => import("./pages/VorschauObjektAnlegen"))
+  : null;

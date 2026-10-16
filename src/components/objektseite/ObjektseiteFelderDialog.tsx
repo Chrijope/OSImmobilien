@@ -61,24 +61,6 @@ export function ObjektseiteFelderDialog({ objekt, offen, onOpenChange, onGespeic
     setF(objektseiteHandwerte(objekt));
   }, [offen, objekt]);
 
-  const setEa = (key: keyof ObjektseiteFelder["energieausweis"], wert: string) =>
-    setF((p) => ({ ...p, energieausweis: { ...p.energieausweis, [key]: key === "kennwert" ? (wert === "" ? undefined : Number(wert.replace(",", "."))) : wert } }));
-
-  const setSan = (i: number, key: "jahr" | "massnahme" | "betrag", wert: string) =>
-    setF((p) => {
-      const liste = p.sanierungen.map((s, j) => (j === i ? { ...s, [key]: key === "betrag" ? (wert === "" ? undefined : Number(wert.replace(",", "."))) : wert } : s));
-      return { ...p, sanierungen: liste };
-    });
-
-  // Was ohne Eintrag angezeigt wird, nur für die Hinweise unter den Feldern.
-  // Gerechnet am Objekt ohne Handwerte, aber mit der gerade gewählten
-  // Objektart, denn an ihr hängt die SEV-Verwaltung.
-  const ohneEintrag = { ...objekt, meta: objektseiteFelderInMeta(objekt.meta, { objektart: f.objektart, standortargumente: [], energieausweis: {}, sanierungen: [] }) };
-  const abgeleitet = objektdetailsAnzeige(ohneEintrag);
-  const eaAnzeige = objektseiteFelder(ohneEintrag).energieausweis;
-  const eaOhneEintrag = [eaAnzeige.art, eaAnzeige.klasse ? `Klasse ${eaAnzeige.klasse}` : ""].filter(Boolean).join(", ");
-  const eaLeer = !f.energieausweis.art && !f.energieausweis.klasse;
-
   const speichern = async () => {
     setSpeichert(true);
     try {
@@ -109,6 +91,55 @@ export function ObjektseiteFelderDialog({ objekt, offen, onOpenChange, onGespeic
           Was du hier einträgst, gewinnt vor den Angaben aus Investagon und vom Bauträger und erscheint auf Objektseite, Einheiten-Seite und im Exposé. Ein leeres Feld zeigt weiter, was darunter als Hinweis steht. Beschreibung und Standortargumente änderst du über den Stift an ihrer eigenen Karte.
         </p>
 
+        <ObjektseiteFelderFormular f={f} setF={setF} objekt={objekt} />
+
+        {/*
+          Auf dem Handy klebt die Knopfleiste unten im Dialog: Das Formular ist
+          länger als der Bildschirm, und Speichern oder Abbrechen standen erst
+          nach dem Scrollen bis ganz unten. -bottom-6 statt bottom-0, weil
+          „sticky" am Innenrand des Dialogs hält und darunter sonst der
+          Formularinhalt durchschaute. Ab sm wieder wie vorher.
+        */}
+        <div className="sticky -bottom-6 z-10 -mb-6 flex justify-end gap-2 border-t border-border/60 bg-card pb-6 pt-3 sm:static sm:mb-0 sm:border-t-0 sm:bg-transparent sm:pb-0 sm:pt-2">
+          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Abbrechen</Button>
+          <Button type="button" onClick={speichern} disabled={speichert}>{speichert ? "Speichert…" : "Speichern"}</Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+/**
+ * Die Eingabefelder des Dialogs, seit dem 16.10.2026 auch im Objektformular
+ * (`ObjektNeu`). So gibt es die Objektangaben nur einmal, mit denselben
+ * Regeln. `objekt` fehlt beim Anlegen; dann entfallen die Hinweise, was die
+ * Seite ohne Eintrag zeigen würde.
+ */
+export function ObjektseiteFelderFormular({ f, setF, objekt }: {
+  f: ObjektseiteFelder;
+  setF: (aendern: (p: ObjektseiteFelder) => ObjektseiteFelder) => void;
+  objekt?: ObjektData;
+}) {
+  const setEa = (key: keyof ObjektseiteFelder["energieausweis"], wert: string) =>
+    setF((p) => ({ ...p, energieausweis: { ...p.energieausweis, [key]: key === "kennwert" ? (wert === "" ? undefined : Number(wert.replace(",", "."))) : wert } }));
+
+  const setSan = (i: number, key: "jahr" | "massnahme" | "betrag", wert: string) =>
+    setF((p) => {
+      const liste = p.sanierungen.map((s, j) => (j === i ? { ...s, [key]: key === "betrag" ? (wert === "" ? undefined : Number(wert.replace(",", "."))) : wert } : s));
+      return { ...p, sanierungen: liste };
+    });
+
+  // Was ohne Eintrag angezeigt wird, nur für die Hinweise unter den Feldern.
+  // Gerechnet am Objekt ohne Handwerte, aber mit der gerade gewählten
+  // Objektart, denn an ihr hängt die SEV-Verwaltung.
+  const ohneEintrag = objekt ? { ...objekt, meta: objektseiteFelderInMeta(objekt.meta, { objektart: f.objektart, standortargumente: [], energieausweis: {}, sanierungen: [] }) } : undefined;
+  const abgeleitet = ohneEintrag ? objektdetailsAnzeige(ohneEintrag) : undefined;
+  const eaAnzeige = ohneEintrag ? objektseiteFelder(ohneEintrag).energieausweis : undefined;
+  const eaOhneEintrag = eaAnzeige ? [eaAnzeige.art, eaAnzeige.klasse ? `Klasse ${eaAnzeige.klasse}` : ""].filter(Boolean).join(", ") : "";
+  const eaLeer = !f.energieausweis.art && !f.energieausweis.klasse;
+
+  return (
+    <>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <Label className="text-xs">Objektart</Label>
@@ -123,7 +154,7 @@ export function ObjektseiteFelderDialog({ objekt, offen, onOpenChange, onGespeic
           <div>
             <Label className="text-xs">Verwaltung</Label>
             <Input value={f.verwaltung ?? ""} onChange={(e) => setF((p) => ({ ...p, verwaltung: e.target.value }))} placeholder="Hausverwaltung Beispiel GmbH, Augsburg" />
-            <p className="mt-1 text-xs text-muted-foreground">Name des Verwalters. Als Verwaltung steht immer „{abgeleitet.verwaltung.wert}“, der Name darunter.</p>
+            {abgeleitet && <p className="mt-1 text-xs text-muted-foreground">Name des Verwalters. Als Verwaltung steht immer „{abgeleitet.verwaltung.wert}“, der Name darunter.</p>}
           </div>
         </div>
 
@@ -185,7 +216,7 @@ export function ObjektseiteFelderDialog({ objekt, offen, onOpenChange, onGespeic
           <Label className="text-xs">Gemeinschaftseigentum</Label>
           <Textarea rows={3} value={f.gemeinschaftseigentum ?? ""} onChange={(e) => setF((p) => ({ ...p, gemeinschaftseigentum: e.target.value }))}
             placeholder="5 Etagen, kein Aufzug, Keller je Einheit, Fahrradraum, 8 Außenstellplätze, Grundstück 780 m²" />
-          {!f.gemeinschaftseigentum?.trim() && (
+          {abgeleitet && !f.gemeinschaftseigentum?.trim() && (
             <p className="mt-1 text-xs text-muted-foreground">
               Ohne Eintrag zeigt die Seite: {abgeleitet.gemeinschaftseigentum.angaben.length ? abgeleitet.gemeinschaftseigentum.angaben.join(", ") : abgeleitet.gemeinschaftseigentum.wert}.
             </p>
@@ -201,7 +232,7 @@ export function ObjektseiteFelderDialog({ objekt, offen, onOpenChange, onGespeic
           </div>
           {f.sanierungen.length === 0 && (
             <p className="text-xs text-muted-foreground">
-              Noch keine Sanierung eingetragen. Ohne Eintrag zeigt die Seite: {[abgeleitet.sanierungen.wert, abgeleitet.sanierungen.unter].filter(Boolean).join(", ")}.
+              Noch keine Sanierung eingetragen.{abgeleitet ? ` Ohne Eintrag zeigt die Seite: ${[abgeleitet.sanierungen.wert, abgeleitet.sanierungen.unter].filter(Boolean).join(", ")}.` : ""}
             </p>
           )}
           <div className="space-y-2">
@@ -217,19 +248,6 @@ export function ObjektseiteFelderDialog({ objekt, offen, onOpenChange, onGespeic
             ))}
           </div>
         </div>
-
-        {/*
-          Auf dem Handy klebt die Knopfleiste unten im Dialog: Das Formular ist
-          länger als der Bildschirm, und Speichern oder Abbrechen standen erst
-          nach dem Scrollen bis ganz unten. -bottom-6 statt bottom-0, weil
-          „sticky" am Innenrand des Dialogs hält und darunter sonst der
-          Formularinhalt durchschaute. Ab sm wieder wie vorher.
-        */}
-        <div className="sticky -bottom-6 z-10 -mb-6 flex justify-end gap-2 border-t border-border/60 bg-card pb-6 pt-3 sm:static sm:mb-0 sm:border-t-0 sm:bg-transparent sm:pb-0 sm:pt-2">
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Abbrechen</Button>
-          <Button type="button" onClick={speichern} disabled={speichert}>{speichert ? "Speichert…" : "Speichern"}</Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+    </>
   );
 }

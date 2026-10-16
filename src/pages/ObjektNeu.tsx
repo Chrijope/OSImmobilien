@@ -25,6 +25,11 @@ import { saveObjekt, speichereObjektKonzept, getObjekte, getObjektById, getLastO
 import { AfaRechnerEmbed, type AfaErgebnis, type AfaRechnerDraft } from "@/components/objekte/AfaRechnerEmbed";
 import { ObjektUploadAnalyse, type ExtractedObjektData } from "@/components/objekte/ObjektUploadAnalyse";
 import { EinheitVerkaufsstatus } from "@/components/objekte/EinheitVerkaufsstatus";
+import { BildSteuerung, verschiebeBild } from "@/components/objekte/BildReihenfolge";
+import { hausgeldTeile } from "../../supabase/functions/_shared/einheit-hausgeld";
+import { ObjektseiteFelderFormular } from "@/components/objektseite/ObjektseiteFelderDialog";
+import { objektseiteFelderInMeta, objektseiteHandwerte, type ObjektseiteFelder } from "@/lib/objektseiteDaten";
+import { HAND_HIGHLIGHTS_SCHLUESSEL, MAX_HAND_HIGHLIGHTS, handHighlights } from "@/lib/interneHighlights";
 import { useUser } from "@/contexts/UserContext";
 import { useToast } from "@/hooks/use-toast";
 import { confirmDialog, hinweisDialog } from "@/lib/confirm";
@@ -83,6 +88,8 @@ type ObjektNeuDraft = {
   afaDaten: typeof initialAfaDaten;
   afaDraft: AfaRechnerDraft | null;
   globalDaten: typeof initialGlobalDaten;
+  objektangaben?: ObjektseiteFelder;
+  interneHighlightsText?: string;
   einzelWohnungen: Partial<ObjektWohnung>[];
   hauptbildPreview: string;
   hauptbildFile: File | null;
@@ -158,6 +165,11 @@ const initialGlobalDaten = {
   wohneinheitenGesamt: 0,
 };
 
+const leereObjektangaben = (): ObjektseiteFelder => ({ standortargumente: [], energieausweis: {}, sanierungen: [] });
+
+/** Text mit einem Punkt je Zeile als Liste, leere Zeilen fallen weg. */
+const zeilenListe = (text: string) => text.split("\n").map(z => z.trim()).filter(Boolean).slice(0, MAX_HAND_HIGHLIGHTS);
+
 const isUuid = (value: string) =>
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 
@@ -228,6 +240,46 @@ function recalcWohnung(w: Partial<ObjektWohnung>, changedField: string): Partial
   return updated;
 }
 
+/**
+ * Die Objektunterlagen aus dem Bestand, so wie das Formular sie jetzt zeigt.
+ *
+ * Bis zum 16.10.2026 kam der Bestand unverändert durch: Eine im Formular
+ * entfernte Unterlage stand nach dem Speichern wieder da. Jetzt gilt:
+ * Weitere und interne Unterlagen (`typ: "custom"`) fallen hier heraus, sie
+ * hängt der Aufrufer aus dem Formularstand wieder an. Eine feste Kategorie
+ * ohne Datei im Formular wird leer, wie eine nie hochgeladene. Alles andere,
+ * etwa Unterlagen aus Investagon, bleibt, wie es ist.
+ */
+export function objektDokumenteZumSpeichern<D extends { name: string; url: string; typ: string }>(
+  bestand: D[],
+  imFormular: Record<string, string>,
+  hochgeladen: Record<string, string>,
+): D[] {
+  return bestand
+    .filter(d => d.typ !== "custom")
+    .map(d => {
+      const kategorie = OBJEKT_DOC_CATEGORIES.find(c => c.name === d.name)?.id;
+      if (!kategorie) return d;
+      if (hochgeladen[kategorie]) return { ...d, url: hochgeladen[kategorie] };
+      return imFormular[kategorie] ? d : { ...d, url: "" };
+    });
+}
+
+/**
+ * Das AfA-Modell aus dem AfA-Rechner. Wählt man dort „Gutachten“
+ * (Restnutzungsdauer laut Gutachten), muss das Objekt das auch tragen, sonst
+ * fehlt die Zeile in den internen Highlights. Ohne Rechnerstand bleibt es
+ * beim gespeicherten Modell.
+ */
+export function afaModellAusRechner(
+  draft: Pick<AfaRechnerDraft, "afaModus"> | null | undefined,
+  bisher: "linear" | "degressiv" | "gutachten",
+): "linear" | "degressiv" | "gutachten" {
+  if (draft?.afaModus === "gutachten") return "gutachten";
+  if (draft?.afaModus === "berechnen" && bisher === "gutachten") return "linear";
+  return bisher;
+}
+
 const isFileInstance = (value: unknown): value is File => typeof File !== "undefined" && value instanceof File;
 
 const DRAFT_BLOB_KEYS = {
@@ -244,7 +296,12 @@ const DRAFT_BLOB_KEYS = {
   uploadAnalyseSlotFile: "uploadAnalyseSlotFile::",
 } as const;
 
-export default function ObjektNeu() {
+/**
+ * `Rahmen` ist sonst immer das CRM-Layout. Nur die lokale Vorschau
+ * (`VorschauObjektAnlegen`, nur `npm run dev`) setzt einen schlichten Rahmen,
+ * weil das Layout ohne Anmeldung zum Login umleitet.
+ */
+export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React.ComponentType<{ children: React.ReactNode }> } = {}) {
   const navigate = useNavigate();
   const { id: editId } = useParams<{ id?: string }>();
   const { user, authUser } = useUser();
@@ -322,6 +379,14 @@ export default function ObjektNeu() {
   const [afaDraft, setAfaDraft] = useState<AfaRechnerDraft | null>(null);
   const [afaErgebnis, setAfaErgebnis] = useState<AfaErgebnis | null>(null);
   const [globalDaten, setGlobalDaten] = useState(initialGlobalDaten);
+  /*
+   * Die Objektangaben der Objekt- und Einheitenseite (Energieausweis,
+   * Sanierungen, Gemeinschaftseigentum, Verwalter, Einheiten im Haus). Bis
+   * zum 16.10.2026 nur über den Stift auf der Objektseite pflegbar, jetzt
+   * schon beim Anlegen. Die Objektart läuft weiter über `gewaehlteObjektart`.
+   */
+  const [objektangaben, setObjektangaben] = useState<ObjektseiteFelder>(leereObjektangaben);
+  const [interneHighlightsText, setInterneHighlightsText] = useState("");
 
   // Sync AfA-Rechner-Ergebnis in das persistente `afaDaten`, damit die
   // Kalkulationen die korrekten Werte (Grundstücksanteil, AfA-Satz, RND)
@@ -440,6 +505,8 @@ export default function ObjektNeu() {
         // Fallback: if no bilder entries but bildUrl exists, add as single image
         setSlideshowPreviews([{ id: crypto.randomUUID(), url: existingObjekt.bildUrl, alt: "Hauptbild" }]);
       }
+      setObjektangaben(objektseiteHandwerte(existingObjekt));
+      setInterneHighlightsText(handHighlights(existingObjekt).join("\n"));
       setEinzelWohnungen(existingObjekt.wohnungen || []);
       // Restore externen Unterlagen-Link
       if ((existingObjekt as any)?.meta?.unterlagenLink) {
@@ -874,6 +941,8 @@ export default function ObjektNeu() {
     afaDaten,
     afaDraft,
     globalDaten,
+    objektangaben,
+    interneHighlightsText,
     einzelWohnungen,
     hauptbildPreview,
     hauptbildFile,
@@ -912,7 +981,7 @@ export default function ObjektNeu() {
       interneDocs,
       customWohnungDocs,
     }),
-  }), [nf, isGlobalObjekt, isEinzelwohnung, gewaehlteObjektart, verkaeuferDaten, sanierungskosten, afaDaten, afaDraft, globalDaten,
+  }), [nf, isGlobalObjekt, isEinzelwohnung, gewaehlteObjektart, verkaeuferDaten, sanierungskosten, afaDaten, afaDraft, globalDaten, objektangaben, interneHighlightsText,
       einzelWohnungen, hauptbildPreview, hauptbildFile, slideshowPreviews, slideshowFiles,
       objektDocs, objektDocFiles, extraDocs, interneDocs, wohnungDocs, wohnungDocFiles,
       expandedWohnungDocs, customWohnungDocs, newCustomWohnungDocName, wohnungBilder,
@@ -1200,6 +1269,8 @@ export default function ObjektNeu() {
         if (draft.afaDaten) setAfaDaten(draft.afaDaten);
         if (draft.afaDraft) setAfaDraft(draft.afaDraft);
         if (draft.globalDaten) setGlobalDaten(draft.globalDaten);
+        if (draft.objektangaben) setObjektangaben(draft.objektangaben);
+        if (draft.interneHighlightsText !== undefined) setInterneHighlightsText(draft.interneHighlightsText);
         if (draft.einzelWohnungen) setEinzelWohnungen(draft.einzelWohnungen);
         if (draft.editingIdx !== undefined) setEditingIdx(draft.editingIdx);
         if (draft.hauptbildPreview !== undefined) setHauptbildPreview(draft.hauptbildPreview);
@@ -1905,11 +1976,7 @@ export default function ObjektNeu() {
 
     // Build dokumente array with real URLs
     const baseDocs = isEditMode && existingObjekt ? existingObjekt.dokumente : defaultDokumente();
-    const dokumente = baseDocs.map(d => {
-      const catKey = OBJEKT_DOC_CATEGORIES.find(c => c.name === d.name)?.id;
-      const uploadedUrl = catKey ? uploadedDocUrls[catKey] : undefined;
-      return { ...d, url: uploadedUrl || d.url };
-    });
+    const dokumente = objektDokumenteZumSpeichern(baseDocs, objektDocs, uploadedDocUrls);
 
     // Append extra docs with real URLs (preserve existing URL if not re-uploaded)
     for (const ed of extraDocs) {
@@ -1998,6 +2065,13 @@ export default function ObjektNeu() {
 
         uploadedWImages = Array.from(mergedImageMap.values());
       }
+
+      // Reihenfolge wie im Formular. Vorher standen beim Bearbeiten die
+      // gespeicherten Bilder immer vorn, und neue kamen in der Reihenfolge,
+      // in der ihr Upload fertig wurde.
+      const formReihenfolge = (wohnungBilder[origId] || wohnungBilder[wId] || []).map(b => b.id);
+      const rang = (id: string) => { const i = formReihenfolge.indexOf(id); return i < 0 ? Number.MAX_SAFE_INTEGER : i; };
+      uploadedWImages = [...uploadedWImages].sort((a: { id: string }, b: { id: string }) => rang(a.id) - rang(b.id));
       
       // Filter out data: URLs that didn't get uploaded
       uploadedWImages = uploadedWImages
@@ -2006,6 +2080,13 @@ export default function ObjektNeu() {
 
 
       return {
+        // Alles, was die Einheit schon trägt, zuerst. Vorher entstand die
+        // Einheit hier nur aus den Feldern darunter, und Stadtteil,
+        // Sanierungsanteil, Mietgarantie, Nebenkosten, Verwaltung und
+        // „vermietet seit“ gingen beim Speichern als leer an die Datenbank.
+        // Reservierung, Kunde und Investagon-Kennung schreibt `saveObjekt`
+        // ohnehin nie, siehe `objektSpeichernAbgleich.ts`.
+        ...(w as ObjektWohnung),
         id: wId,
         weNr: w.weNr || `${i + 1}`,
         etage: w.etage || "EG",
@@ -2025,9 +2106,12 @@ export default function ObjektNeu() {
         stellplatzPreis: w.stellplatzPreis ?? undefined,
         stellplatzMiete: w.stellplatzMiete ?? undefined,
         ruecklageWohnung: (w as any).ruecklageWohnung ?? undefined,
-        hausgeldMonat: isEinzelwohnung ? (kalkHausgeldMonat || undefined) : ((w as any).hausgeldMonat ?? undefined),
-        hausgeldNichtUmlagefaehigEuro: isEinzelwohnung ? (kalkHausgeldNuEuro || undefined) : ((w as any).hausgeldNichtUmlagefaehigEuro ?? undefined),
-        hausgeldNichtUmlagefaehigP: isEinzelwohnung ? (kalkHausgeldNuP ?? undefined) : ((w as any).hausgeldNichtUmlagefaehigP ?? undefined),
+        // Einzelwohnung: Die Objektwerte aus dem AfA-Schritt gelten für die
+        // eine Einheit. Ein leeres Feld dort löscht aber nicht, was an der
+        // Einheit selbst steht.
+        hausgeldMonat: isEinzelwohnung ? (kalkHausgeldMonat || w.hausgeldMonat || undefined) : (w.hausgeldMonat ?? undefined),
+        hausgeldNichtUmlagefaehigEuro: isEinzelwohnung ? (kalkHausgeldNuEuro || w.hausgeldNichtUmlagefaehigEuro || undefined) : (w.hausgeldNichtUmlagefaehigEuro ?? undefined),
+        hausgeldNichtUmlagefaehigP: isEinzelwohnung ? (kalkHausgeldNuP ?? undefined) : (w.hausgeldNichtUmlagefaehigP ?? undefined),
         neueMiete: w.neueMiete ?? undefined,
         mieterhoehungAb: w.mieterhoehungAb || undefined,
         vermietungsStatus: (w as any).vermietungsStatus,
@@ -2051,6 +2135,7 @@ export default function ObjektNeu() {
         ].filter(d => !!d.url),
         bilder: uploadedWImages,
         unterlagenLink: (w as any).unterlagenLink || undefined,
+        ...(w.interneHighlightsHand !== undefined ? { interneHighlightsHand: zeilenListe(w.interneHighlightsHand.join("\n")) } : {}),
       };
     });
 
@@ -2113,7 +2198,10 @@ export default function ObjektNeu() {
       globalObjekt: globalObjektWirksam || undefined,
       globalDaten: globalDaten,
       sanierungskosten: sanierungskosten ?? 0,
-      afaDaten: afaDaten,
+      // Die Verteilung auf 1 bis 5 Jahre wählt man im AfA-Rechner. Sie kam
+      // bisher nie hier an, und jedes Speichern setzte sie auf ein Jahr zurück.
+      erhaltungsaufwandJahre: afaDraft?.erhaltungsaufwandJahre ?? existingObjekt?.erhaltungsaufwandJahre ?? 1,
+      afaDaten: { ...afaDaten, afaModell: afaModellAusRechner(afaDraft, afaDaten.afaModell) },
       cloudOrdnerUrl: nf.cloudOrdnerUrl || undefined,
       verkaeuferDaten: verkaeuferDaten.name.trim() ? verkaeuferDaten : undefined,
       meta: {
@@ -2144,6 +2232,24 @@ export default function ObjektNeu() {
         },
       },
     };
+    // Objektangaben und Hand-Highlights wie im Pflegedialog der Objektseite:
+    // Kurzbeschreibung und Standortargumente bleiben wortgleich stehen, die
+    // pflegt deren eigene Karte.
+    const metaVorher = (newObj.meta || {}) as Record<string, unknown>;
+    const metaNeu = objektseiteFelderInMeta(metaVorher, { ...objektangaben, objektart: metaVorher.objektart as ObjektseiteFelder["objektart"], kurzbeschreibung: undefined, standortargumente: [] });
+    for (const schluessel of ["kurzbeschreibung", "standortargumente"]) {
+      if (schluessel in metaVorher) metaNeu[schluessel] = metaVorher[schluessel];
+      else delete metaNeu[schluessel];
+    }
+    const handPunkte = zeilenListe(interneHighlightsText);
+    if (handPunkte.length > 0) metaNeu[HAND_HIGHLIGHTS_SCHLUESSEL] = handPunkte;
+    else delete metaNeu[HAND_HIGHLIGHTS_SCHLUESSEL];
+    newObj.meta = metaNeu;
+    // Eine Energieklasse statt zwei: die aus dem Energieausweis gilt auch für die Objektspalte.
+    if (objektangaben.energieausweis.klasse && newObj.globalDaten) {
+      newObj.globalDaten = { ...newObj.globalDaten, energieeffizienzklasse: objektangaben.energieausweis.klasse };
+    }
+
     const saved = await saveObjekt(newObj);
     if (!saved) {
       const detail = getLastObjektSaveError();
@@ -2243,6 +2349,85 @@ export default function ObjektNeu() {
   };
   const objektDocsMitDatei = OBJEKT_DOC_CATEGORIES.filter(c => objektDocHatDatei(c.id)).length;
 
+  /**
+   * Die Einheitenfelder, die bisher nur der Stift auf der Einheitenseite
+   * (`EinheitFelderDialog`) oder der Investagon-Import setzen konnte
+   * (16.10.2026). Ohne sie trug ein im CRM angelegtes Objekt kein Hausgeld
+   * nach Teilen, keinen Erhaltungsaufwand je Einheit, keine Mietgarantie und
+   * keinen Möbelanteil, und Investmentrechner und Exposé blieben leer.
+   * Ein leeres Feld heißt „nicht erfasst“.
+   */
+  const renderEinheitZusatzfelder = (w: Partial<ObjektWohnung>, onChange: (field: string, value: any) => void) => {
+    const zahl = (feld: keyof ObjektWohnung, label: string, opts: { euro?: boolean; step?: string; hinweis?: string; platzhalter?: string } = {}) => (
+      <div key={feld}>
+        <Label className="text-xs">{label}</Label>
+        {opts.euro ? (
+          <EuroInput value={(w[feld] as number | undefined) || 0} onChange={v => onChange(feld, v || 0)} className="h-8" />
+        ) : (
+          // Geleert wird 0, nicht undefined: Sonst bliebe ein alter Wert in `meta` stehen. 0 gilt überall als „nicht erfasst“.
+          <Input type="number" step={opts.step ?? "1"} value={(w[feld] as number | undefined) || ""} placeholder={opts.platzhalter}
+            onChange={e => onChange(feld, parseFloat(e.target.value) || 0)} className="h-8" />
+        )}
+        {opts.hinweis && <p className="text-[10px] text-muted-foreground mt-0.5">{opts.hinweis}</p>}
+      </div>
+    );
+    const teile = hausgeldTeile(w);
+    return (
+      <details className="rounded-lg border border-dashed border-muted-foreground/30 p-3 group/zusatz">
+        <summary className="cursor-pointer text-xs font-semibold text-muted-foreground">
+          Hausgeld, Erhaltungsaufwand, Mietgarantie und weitere Angaben
+        </summary>
+        <div className="space-y-4 pt-3">
+          <div>
+            <p className="text-[11px] font-semibold text-muted-foreground mb-2">Hausgeld dieser Einheit je Monat</p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {zahl("hausgeldUmlagefaehigEuro", "Umlagefähig (€)", { euro: true })}
+              {zahl("hausgeldNichtUmlagefaehigEuro", "Nicht umlagefähig (€)", { euro: true })}
+              {zahl("ruecklageZufuehrungMonat", "Zuführung Rücklage (€)", { euro: true })}
+              {zahl("hausgeldMonat", "Hausgeld gesamt (€)", { euro: true, hinweis: teile.gesamt && !w.hausgeldMonat ? `Aus den drei Teilen: ${fmt(teile.gesamt)}` : "Leer lassen, wenn die drei Teile erfasst sind" })}
+            </div>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {zahl("nebenkostenMonat", "Nebenkosten Mieter / Monat (€)", { euro: true, hinweis: "Für die Warmmiete" })}
+            {zahl("verwaltungWegMonat", "WEG-Verwaltung / Monat (€)", { euro: true })}
+            {zahl("verwaltungSevMonat", "SEV / Monat (€)", { euro: true })}
+            <div className="flex items-end gap-2 pb-1">
+              <Switch checked={!!w.sevErstesJahrInklusive} onCheckedChange={v => onChange("sevErstesJahrInklusive", v || undefined)} />
+              <Label className="text-xs">SEV im ersten Jahr inklusive</Label>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {zahl("sanierungAnteilBetrag", "Erhaltungsaufwand Anteil (€)", { euro: true, hinweis: "Anteil dieser Einheit am Erhaltungsaufwand" })}
+            {zahl("sanierungAnteilProzent", "Erhaltungsaufwand Anteil (%)", { step: "0.01", hinweis: "Nach Miteigentumsanteil, wenn kein Betrag" })}
+            {zahl("sanierungsjahr", "Sanierungsjahr", { platzhalter: "2024" })}
+            <div>
+              <Label className="text-xs">Stadtteil</Label>
+              <Input value={w.stadtteil || ""} onChange={e => onChange("stadtteil", e.target.value || undefined)} className="h-8" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {zahl("mietgarantieKalt", "Mietgarantie kalt / Monat (€)", { euro: true, hinweis: "Nur bei Neubau oder Leerstand" })}
+            {zahl("mietgarantieMonate", "Mietgarantie (Monate)")}
+            <div>
+              <Label className="text-xs">Vermietet seit</Label>
+              <Input value={w.vermietetSeit || ""} onChange={e => onChange("vermietetSeit", e.target.value || undefined)} placeholder="2023-04" className="h-8" />
+            </div>
+          </div>
+          <div>
+            <Label className="text-xs">Interne Highlights dieser Einheit (ein Punkt je Zeile)</Label>
+            <Textarea rows={2} value={(w.interneHighlightsHand || []).join("\n")} onChange={e => onChange("interneHighlightsHand", e.target.value ? e.target.value.split("\n") : [])} />
+            <p className="text-[10px] text-muted-foreground mt-0.5">Nur intern, auf der Einheitenseite vor den Highlights des Objekts.</p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {zahl("moebelPreis", "Davon Möbel im Kaufpreis (€)", { euro: true })}
+            {zahl("moebelNutzungsdauerJahre", "Nutzungsdauer Möbel (Jahre)")}
+            {zahl("finanzierungsnebenkostenSatz", "Finanzierungsnebenkosten (%)", { step: "0.01", hinweis: "Grundschuld und Notar, in % des Darlehens" })}
+          </div>
+        </div>
+      </details>
+    );
+  };
+
   const renderWohnungFields = (w: Partial<ObjektWohnung>, onChange: (field: string, value: any) => void, showWeNr = true, wohnungId?: string) => (
     <div className="space-y-3">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -2332,6 +2517,7 @@ export default function ObjektNeu() {
           <p className="text-[10px] text-muted-foreground">Optional – leer lassen wenn keine Erhöhung geplant</p>
         )}
       </div>
+      {renderEinheitZusatzfelder(w, onChange)}
       {/* Inline Wohnungsunterlagen */}
       {wohnungId && (
         <div className="pt-3 border-t mt-3">
@@ -2347,39 +2533,34 @@ export default function ObjektNeu() {
           {/* Wohnungsbilder Upload */}
           <div className="pt-3 border-t mt-3">
             <p className="text-xs font-semibold text-muted-foreground mb-1 flex items-center gap-1"><ImagePlus className="h-3 w-3" /> Wohnungsbilder</p>
-            <p className="text-[10px] text-muted-foreground mb-2">ℹ️ Bilder werden in der Upload-Reihenfolge als Slideshow angezeigt.</p>
-            {(wohnungBilder[wohnungId] || []).length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-2">
-                {(wohnungBilder[wohnungId] || []).map(bild => (
-                  <div key={bild.id} className={`relative group w-16 h-16 rounded-lg overflow-hidden border-2 ${isEinzelwohnung && einzelProfilBildId === bild.id ? "border-primary ring-2 ring-primary/40" : "border-border"}`}>
-                    <img src={bild.url} alt={bild.alt} className="w-full h-full object-cover" />
-                    {isEinzelwohnung && (
-                      <button
-                        type="button"
-                        title={einzelProfilBildId === bild.id ? "Profilbild" : "Als Profilbild verwenden"}
-                        className={`absolute bottom-0.5 left-0.5 rounded-full p-1 transition ${einzelProfilBildId === bild.id ? "bg-primary text-primary-foreground" : "bg-background/80 text-muted-foreground opacity-0 group-hover:opacity-100 hover:bg-background"}`}
-                        onClick={(e) => { e.stopPropagation(); setEinzelProfilBildId(bild.id); markDirty(); }}
-                      >
-                        <Star className={`h-3 w-3 ${einzelProfilBildId === bild.id ? "fill-current" : ""}`} />
-                      </button>
-                    )}
-                    <button
-                      className="absolute top-0.5 right-0.5 bg-destructive text-destructive-foreground rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => removeWohnungBild(wohnungId, bild.id)}
-                    >
-                      <X className="h-2.5 w-2.5" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-            {isEinzelwohnung && (wohnungBilder[wohnungId] || []).length > 0 && (
-              <p className="text-[10px] text-muted-foreground mb-2">
-                ⭐ {einzelProfilBildId && (wohnungBilder[wohnungId] || []).some(b => b.id === einzelProfilBildId)
-                  ? "Profilbild ausgewählt – wird als Kachelbild in der Objektübersicht angezeigt."
-                  : "Bitte ein Bild als Profilbild (Kachel) auswählen – Stern-Icon klicken."}
-              </p>
-            )}
+            <p className="text-[10px] text-muted-foreground mb-2">
+              Das erste Bild ist das Titelbild der Einheit{isEinzelwohnung ? " und das Kachelbild in der Objektübersicht" : ""}. Stern und Pfeile ändern die Reihenfolge.
+            </p>
+            {(wohnungBilder[wohnungId] || []).length > 0 && (() => {
+              const bilder = wohnungBilder[wohnungId] || [];
+              // Ein früher per Stern gewähltes Profilbild der Einzelwohnung gilt, bis die Reihenfolge geändert wird.
+              const titelId = isEinzelwohnung && bilder.some(b => b.id === einzelProfilBildId) ? einzelProfilBildId : bilder[0]?.id;
+              return (
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {bilder.map((bild, idx) => (
+                    <div key={bild.id} className={`relative group w-24 h-24 rounded-lg overflow-hidden border-2 ${bild.id === titelId ? "border-primary" : "border-border"}`}>
+                      <img src={bild.url} alt={bild.alt} className="w-full h-full object-cover" />
+                      {bild.id === titelId && <Badge className="absolute bottom-1 left-1 text-[8px] bg-primary">Titelbild</Badge>}
+                      <BildSteuerung
+                        index={idx}
+                        anzahl={bilder.length}
+                        onVerschieben={ziel => {
+                          setWohnungBilder(prev => ({ ...prev, [wohnungId]: verschiebeBild(prev[wohnungId] || [], bild.id, ziel) }));
+                          if (isEinzelwohnung) setEinzelProfilBildId("");
+                          markDirty();
+                        }}
+                        onEntfernen={() => removeWohnungBild(wohnungId, bild.id)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
             <label
               className="flex flex-col items-center justify-center gap-1 p-3 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/30 transition-colors text-muted-foreground"
               onDragOver={e => { e.preventDefault(); e.currentTarget.classList.add("border-primary", "bg-primary/5"); }}
@@ -2402,14 +2583,14 @@ export default function ObjektNeu() {
 
   if (editNotReady) {
     return (
-      <DashboardLayout>
+      <Rahmen>
         <div className="flex items-center justify-center min-h-[40vh]">
           <div className="text-center space-y-3">
             <div className="h-8 w-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
             <p className="text-sm text-muted-foreground">Objekt wird geladen…</p>
           </div>
         </div>
-      </DashboardLayout>
+      </Rahmen>
     );
   }
 
@@ -2418,17 +2599,17 @@ export default function ObjektNeu() {
   // hinterher abgelehnt wird.
   if (isEditMode && user.role === "objektpartner" && !darfObjektBearbeiten(user.role, existingObjekt, authUser?.id)) {
     return (
-      <DashboardLayout>
+      <Rahmen>
         <div className="flex flex-col items-center justify-center py-20 gap-4">
           <p className="text-muted-foreground">Dieses Objekt kannst du nicht bearbeiten, es gehört nicht zu deinen Objekten.</p>
           <Button variant="outline" onClick={() => navigate("/objekte")}>Zurück zu Objekte</Button>
         </div>
-      </DashboardLayout>
+      </Rahmen>
     );
   }
 
   return (
-    <DashboardLayout>
+    <Rahmen>
       <div className="space-y-6 w-full">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" aria-label="Zurück" onClick={handleBack}><ArrowLeft className="h-5 w-5" /></Button>
@@ -2466,12 +2647,12 @@ export default function ObjektNeu() {
           // landen die dort hochgeladenen Bilder an der Einheit, weil es für
           // den Nutzer keine Objektseite gibt.
           const wizardSteps: string[] = isGlobalObjekt
-            ? ["upload", "0", "global", "afa", "2", "3"]
+            ? ["upload", "0", "global", "1", "afa", "2", "3"]
             : ["upload", "0", "1", "afa", "2", "3"];
           const labels: Record<string, string> = {
             upload: "Upload & Analyse",
             "0": "Basisdaten",
-            "1": isEinzelwohnung ? "Wohnung" : "Wohnungen",
+            "1": isGlobalObjekt ? "Einheiten" : isEinzelwohnung ? "Wohnung" : "Wohnungen",
             global: "Globaldaten",
             afa: "AfA-Rechner",
             "2": "Unterlagen",
@@ -2534,7 +2715,7 @@ export default function ObjektNeu() {
                 </div>
                 <div className="space-y-2">
                   <h3 className="text-lg font-semibold">Globalobjekt</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">Haus wird als Ganzes verkauft – keine einzelnen Wohneinheiten.</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">Das Haus wird als Ganzes verkauft. Einheiten kannst du freiwillig hinterlegen.</p>
                 </div>
                 <p className="text-[11px] text-muted-foreground/70 italic">z.B. MFH-Komplettkauf, Globalverkauf an Investor</p>
               </button>
@@ -2599,11 +2780,8 @@ export default function ObjektNeu() {
           <TabsList className="sr-only grid w-full grid-cols-6">
             <TabsTrigger value="upload">📄 Upload</TabsTrigger>
             <TabsTrigger value="0">1. Basisdaten</TabsTrigger>
-            {isGlobalObjekt ? (
-              <TabsTrigger value="global">2. Globaldaten</TabsTrigger>
-            ) : (
-              <TabsTrigger value="1">{isEinzelwohnung ? "2. Wohnung" : "2. Wohnungen"}</TabsTrigger>
-            )}
+            {isGlobalObjekt && <TabsTrigger value="global">2. Globaldaten</TabsTrigger>}
+            <TabsTrigger value="1">{isGlobalObjekt ? "Einheiten" : isEinzelwohnung ? "2. Wohnung" : "2. Wohnungen"}</TabsTrigger>
             <TabsTrigger value="afa">3. AfA-Rechner</TabsTrigger>
             <TabsTrigger value="2">4. Unterlagen</TabsTrigger>
             <TabsTrigger value="3">5. Medien</TabsTrigger>
@@ -2648,6 +2826,9 @@ export default function ObjektNeu() {
                       <SelectItem value="Neubau">Neubau</SelectItem>
                       <SelectItem value="renoviert">renoviert</SelectItem>
                       <SelectItem value="Sanierung">Sanierung</SelectItem>
+                      {/* Aus dem früheren zweiten Zustandsfeld der Globaldaten. */}
+                      <SelectItem value="Saniert">Saniert</SelectItem>
+                      <SelectItem value="Teilsaniert">Teilsaniert</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -2784,6 +2965,30 @@ export default function ObjektNeu() {
                   </div>
                 )}
                 {nf.highlights.length >= 10 && <p className="text-xs text-muted-foreground">Maximum von 10 Highlights erreicht.</p>}
+              </div>
+              {/* Interne Highlights, von Hand */}
+              <div>
+                <Label className="text-xs font-semibold" htmlFor="interne-highlights">Interne Highlights <span className="text-muted-foreground font-normal">(nur für das Team, ein Punkt je Zeile)</span></Label>
+                <Textarea id="interne-highlights" rows={3} value={interneHighlightsText} onChange={e => { setInterneHighlightsText(e.target.value); markDirty(); }}
+                  placeholder={"Restnutzungsdauergutachten liegt vor\nVerkäufer übernimmt Erhaltungsaufwand im ersten Jahr"} />
+                <p className="mt-1 text-[11px] text-muted-foreground">Erscheinen auf Objekt- und Einheitenseite im Kasten „Interne Highlights“, nie beim Kunden. Höchstens {MAX_HAND_HIGHLIGHTS}. Erhaltungsaufwand und AfA ergänzt das CRM selbst.</p>
+              </div>
+              {/* Objektangaben der Objekt- und Einheitenseite */}
+              <div className="pt-4 border-t space-y-4" data-testid="objektangaben">
+                <div>
+                  <h3 className="text-sm font-semibold">Objektangaben</h3>
+                  <p className="text-xs text-muted-foreground">Erscheinen auf Objektseite, Einheitenseite und im Exposé. Später auch über den Stift an den Objektdetails änderbar.</p>
+                </div>
+                <ObjektseiteFelderFormular
+                  f={{ ...objektangaben, objektart: gewaehlteObjektart }}
+                  setF={aendern => {
+                    const neu = aendern({ ...objektangaben, objektart: gewaehlteObjektart });
+                    setGewaehlteObjektart(neu.objektart);
+                    setObjektangaben({ ...neu, objektart: undefined });
+                    markDirty();
+                  }}
+                  objekt={isEditMode ? existingObjekt : undefined}
+                />
               </div>
               {/* Verkäuferdaten */}
               <div className="pt-4 border-t">
@@ -3093,36 +3298,15 @@ export default function ObjektNeu() {
                     <div><Label className="text-xs">Gesamt-Wohnfläche (m²) *</Label><Input type="number" value={globalDaten.gesamtQm || ""} onChange={e => updateGlobal("gesamtQm", parseFloat(e.target.value) || 0)} onBlur={e => pruefeGesamtflaeche(parseFloat(e.target.value) || 0)} className="h-8" /></div>
                     <div><Label className="text-xs">Grundstück (m²) *</Label><Input type="number" value={globalDaten.grundstueckQm || ""} onChange={e => updateGlobal("grundstueckQm", parseFloat(e.target.value) || 0)} className="h-8" /></div>
                     <div><Label className="text-xs">Etagen *</Label><Input type="number" value={globalDaten.etagen || ""} onChange={e => updateGlobal("etagen", parseInt(e.target.value) || 0)} className="h-8" /></div>
-                    <div><Label className="text-xs">Baujahr *</Label><Input type="number" value={globalDaten.baujahr || ""} onChange={e => updateGlobal("baujahr", parseInt(e.target.value) || 0)} className="h-8" /></div>
-                    <div className="col-span-2 md:col-span-4">
-                      <Label className="text-xs">Wohneinheiten gesamt im Objekt *</Label>
-                      <Input type="number" value={(globalDaten as any).wohneinheitenGesamt || ""} onChange={e => updateGlobal("wohneinheitenGesamt" as any, parseInt(e.target.value) || 0)} className="h-8" placeholder="z.B. 12 (alle Einheiten im Gebäude)" />
-                      <p className="text-[10px] text-muted-foreground mt-1">💡 Optional: Wenn nicht alle Wohnungen im Vertrieb sind, hier die <strong>Gesamtanzahl</strong> aller Einheiten im Objekt eintragen. Zusammen mit der <strong>Gesamt-Wohnfläche</strong> oben wird die Sanierungs-Aufteilung dann korrekt auf alle Einheiten berechnet (statt nur auf die angelegten). Wenn leer, wird auf Basis der angelegten Wohnungen berechnet.</p>
-                    </div>
+                    <div><Label className="text-xs">Stellplätze</Label><Input type="number" value={globalDaten.stellplaetze || ""} onChange={e => updateGlobal("stellplaetze", parseInt(e.target.value) || 0)} className="h-8" /></div>
                   </div>
-                </div>
-
-
-                {/* Zustand & Energie */}
-                <div>
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Zustand & Energie</p>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    <div>
-                      <Label className="text-xs">Zustand *</Label>
-                      <Select value={globalDaten.zustand} onValueChange={v => updateGlobal("zustand", v)}>
-                        <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Neubau">Neubau</SelectItem>
-                          <SelectItem value="Saniert">Saniert</SelectItem>
-                          <SelectItem value="Bestand">Bestand</SelectItem>
-                          <SelectItem value="Teilsaniert">Teilsaniert</SelectItem>
-                          <SelectItem value="Denkmal">Denkmal</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div><Label className="text-xs">Energieeffizienzklasse *</Label><Input value={globalDaten.energieeffizienzklasse} onChange={e => updateGlobal("energieeffizienzklasse", e.target.value)} placeholder="z.B. A+, B, C..." className="h-8 text-xs" /></div>
-                    <div><Label className="text-xs">Stellplätze *</Label><Input type="number" value={globalDaten.stellplaetze || ""} onChange={e => updateGlobal("stellplaetze", parseInt(e.target.value) || 0)} className="h-8" /></div>
-                  </div>
+                  {/*
+                    Baujahr, Zustand, Energieklasse und Einheiten im Haus stehen
+                    seit dem 16.10.2026 nur noch unter Basisdaten, Erhaltungsaufwand,
+                    Grundstücksanteil, Hausgeld und Kaufnebenkosten im AfA-Schritt.
+                    Vorher gab es sie hier ein zweites Mal; „Wohneinheiten gesamt“
+                    und der Grundstücksanteil von hier wurden nie gespeichert.
+                  */}
                 </div>
 
                 {/* Finanzen */}
@@ -3135,14 +3319,8 @@ export default function ObjektNeu() {
                      <div><Label className="text-xs">Jahresnettomiete (€) *</Label><EuroInput value={globalDaten.jahresnettomiete} onChange={v => updateGlobal("jahresnettomiete", v)} className="h-8" /></div>
                      <div><Label className="text-xs">Rendite (%) *</Label><Input type="number" step="0.01" value={globalDaten.rendite || ""} onChange={e => updateGlobal("rendite", parseFloat(e.target.value) || 0)} className="h-8" /></div>
                   </div>
-                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
-                    <div><Label className="text-xs">Hausgeld / Monat (€) *</Label><EuroInput value={globalDaten.hausgeldMonat} onChange={v => { updateGlobal("hausgeldMonat", v); setKalkHausgeldMonat(v); }} className="h-8" /></div>
-                    <div><Label className="text-xs">Kaufnebenkosten (%) *</Label><Input type="number" step="0.5" value={globalDaten.kaufnebenkosten || ""} onChange={e => updateGlobal("kaufnebenkosten", parseFloat(e.target.value) || 0)} className="h-8" /></div>
-                    <div><Label className="text-xs">Grundstücksanteil (%) *</Label><Input type="number" step="1" value={globalDaten.grundstueckAnteil || ""} onChange={e => updateGlobal("grundstueckAnteil", parseFloat(e.target.value) || 0)} className="h-8" /></div>
-                    <div><Label className="text-xs">Vermietungsstand (%) *</Label><Input type="number" step="1" value={globalDaten.vermietungsstand || ""} onChange={e => updateGlobal("vermietungsstand", parseFloat(e.target.value) || 0)} className="h-8" min={0} max={100} /></div>
-                  </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
-                    <div><Label className="text-xs">Erhaltungsaufwand (€) *</Label><EuroInput value={sanierungskosten} onChange={v => { setSanierungskosten(v); markDirty(); }} className="h-8" /></div>
+                    <div><Label className="text-xs">Vermietungsstand (%) *</Label><Input type="number" step="1" value={globalDaten.vermietungsstand || ""} onChange={e => updateGlobal("vermietungsstand", parseFloat(e.target.value) || 0)} className="h-8" min={0} max={100} /></div>
                   </div>
                 </div>
 
@@ -3162,13 +3340,20 @@ export default function ObjektNeu() {
               </Card>
               <div className="flex gap-2">
                 <Button variant="outline" className="flex-1" onClick={() => setStep("0")}>← Zurück</Button>
-                <Button className="flex-1" onClick={() => setStep("afa")}>Weiter: AfA-Rechner →</Button>
+                <Button className="flex-1" onClick={() => setStep("1")}>Weiter: Einheiten →</Button>
               </div>
             </TabsContent>
           )}
 
           {/* Step 2: Wohnungen */}
           <TabsContent value="1" forceMount className={`space-y-4 pt-4 ${step !== "1" ? "hidden" : ""}`}>
+            {isGlobalObjekt && (
+              <Card className="p-3 border-primary/40 bg-primary/5">
+                <p className="text-xs">
+                  <span className="font-semibold">Freiwillig:</span> Das Haus wird als Ganzes verkauft. Wenn du die Einheiten hier anlegst, bekommt jede ihre eigene Seite mit Bildern, Unterlagen, Miete und Hausgeld. Preise der Einheiten sind dafür nicht nötig.
+                </p>
+              </Card>
+            )}
             {isEinzelwohnung && (
               <Card className="p-3 border-primary/40 bg-primary/5">
                 <p className="text-xs">
@@ -3272,7 +3457,7 @@ export default function ObjektNeu() {
             )}
 
             <div className="flex gap-2">
-              <Button variant="outline" className="flex-1" onClick={() => setStep("0")}>← Zurück</Button>
+              <Button variant="outline" className="flex-1" onClick={() => setStep(isGlobalObjekt ? "global" : "0")}>← Zurück</Button>
               <Button className="flex-1" onClick={() => setStep("afa")}>Weiter: AfA-Rechner →</Button>
             </div>
           </TabsContent>
@@ -3293,6 +3478,7 @@ export default function ObjektNeu() {
               computedWohnflaeche={isGlobalObjekt ? (globalDaten.gesamtQm || 0) : einzelWohnungen.reduce((s, w) => s + (w.groesse || 0), 0)}
               computedBaujahr={globalDaten.baujahr || undefined}
               initialSanierungskosten={sanierungskosten}
+              initialErhaltungsaufwandJahre={existingObjekt?.erhaltungsaufwandJahre}
               draft={afaDraft}
               onSanierungskostenChange={setSanierungskosten}
               onResultChange={setAfaErgebnis}
@@ -3342,6 +3528,11 @@ export default function ObjektNeu() {
                       <EuroInput value={kalkSevMonat} onChange={v => { setKalkSevMonat(v); markDirty(); }} className="h-8" />
                     </div>
                     <div>
+                      <Label className="text-xs">Kaufnebenkosten (%)</Label>
+                      <Input type="number" step="0.5" min={0} value={globalDaten.kaufnebenkosten || ""} onChange={e => updateGlobal("kaufnebenkosten", parseFloat(e.target.value) || 0)} className="h-8" />
+                      <p className="text-[10px] text-muted-foreground mt-1">Grunderwerbsteuer, Notar, Grundbuch, Makler. Vorbelegung für Investmentrechner und Exposé.</p>
+                    </div>
+                    <div>
                       <Label className="text-xs">Mietausfall (%)</Label>
                       <Input type="number" step="0.5" min={0} max={100} value={kalkMietausfallP || ""} onChange={e => { setKalkMietausfallP(parseFloat(e.target.value) || 0); markDirty(); }} className="h-8" />
                     </div>
@@ -3385,7 +3576,7 @@ export default function ObjektNeu() {
               }
             />
             <div className="flex gap-2">
-              <Button variant="outline" className="flex-1" onClick={() => setStep(isGlobalObjekt ? "global" : "1")}>← Zurück</Button>
+              <Button variant="outline" className="flex-1" onClick={() => setStep("1")}>← Zurück</Button>
               <Button className="flex-1" onClick={() => setStep("2")}>Weiter: Objekt Unterlagen →</Button>
             </div>
           </TabsContent>
@@ -3563,7 +3754,7 @@ export default function ObjektNeu() {
                 <p className="text-xs text-muted-foreground">
                   Es ist noch keine Einheit übernommen. Lege sie im Schritt „{isEinzelwohnung ? "Wohnung" : "Wohnungen"}" an, danach erscheinen hier die Upload-Felder je Einheit.
                 </p>
-                <Button size="sm" variant="outline" className="mt-3" onClick={() => setStep("1")}>Zum Schritt „{isEinzelwohnung ? "Wohnung" : "Wohnungen"}"</Button>
+                <Button size="sm" variant="outline" className="mt-3" onClick={() => setStep("1")}>Zum Schritt „{isGlobalObjekt ? "Einheiten" : isEinzelwohnung ? "Wohnung" : "Wohnungen"}"</Button>
               </Card>
             )}
 
@@ -3708,10 +3899,10 @@ export default function ObjektNeu() {
                     ? "Diese Bilder gehören zur Wohnung und erscheinen auf der Einheitsseite. Eine eigene Objektseite gibt es bei einer Einzelwohnung nicht."
                     : "Bilder des Gebäudes: Außenansicht, Treppenhaus, Umgebung. Sie erscheinen auf der Objektseite."}
                 </p>
-                <p className="text-[10px] text-muted-foreground mb-2">ℹ️ Das erste Bild wird automatisch als Hauptbild verwendet. Die Reihenfolge entspricht der Upload-Reihenfolge.</p>
+                <p className="text-[10px] text-muted-foreground mb-2">Das erste Bild ist das Titelbild. Mit dem Stern machst du ein anderes Bild zum Titelbild, mit den Pfeilen änderst du die Reihenfolge.</p>
                 {regeln.wohnungBilder && regeln.medienZiel === "objekt" && (
                   <p className="text-[10px] text-muted-foreground mb-2">
-                    Bilder einzelner Einheiten gehören nicht hierher, sondern {isGlobalObjekt ? 'weiter unten unter „Bilder je Einheit“' : 'in den Schritt „Wohnungen“, direkt bei der jeweiligen Einheit'}.
+                    Bilder einzelner Einheiten gehören nicht hierher, sondern in den Schritt „{isGlobalObjekt ? "Einheiten" : "Wohnungen"}“, direkt bei der jeweiligen Einheit.
                   </p>
                 )}
                 <input ref={slideshowRef} type="file" accept="image/*,.heic,.heif,.avif" multiple className="hidden" onChange={async e => {
@@ -3730,9 +3921,14 @@ export default function ObjektNeu() {
                     <div key={img.id} className="relative group rounded-lg overflow-hidden border aspect-video">
                       <img src={img.url} alt={img.alt} className="w-full h-full object-cover" />
                       {idx === 0 && (
-                        <Badge className="absolute bottom-1 left-1 text-[8px] bg-primary">Hauptbild</Badge>
+                        <Badge className="absolute bottom-1 left-1 text-[8px] bg-primary">Titelbild</Badge>
                       )}
-                      <button className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); removeSlideshowImage(img.id); }}><X className="h-3 w-3" /></button>
+                      <BildSteuerung
+                        index={idx}
+                        anzahl={slideshowPreviews.length}
+                        onVerschieben={ziel => { setSlideshowPreviews(prev => verschiebeBild(prev, img.id, ziel)); markDirty(); }}
+                        onEntfernen={() => removeSlideshowImage(img.id)}
+                      />
                     </div>
                   ))}
                   <div className="border-2 border-dashed rounded-lg aspect-video flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-primary/50 hover:bg-muted/30 transition-colors" onClick={() => slideshowRef.current?.click()}>
@@ -3743,56 +3939,7 @@ export default function ObjektNeu() {
               </div>
 
               {/* Video */}
-              {/*
-                Bilder je Einheit im Globalobjekt.
-
-                Bei den anderen Arten läuft der Upload im Schritt „Wohnungen"
-                direkt an der Einheit. Das Globalobjekt hat diesen Schritt
-                nicht, kann aber Einheiten hinterlegt haben, deshalb steht der
-                Upload hier. Es bleibt bei genau einem Weg je Objektart.
-              */}
-              {isGlobalObjekt && regeln.wohnungBilder && einzelWohnungen.length > 0 && (
-                <div className="border-t pt-4">
-                  <Label className="text-xs font-semibold">Bilder je Einheit</Label>
-                  <p className="text-[10px] text-muted-foreground mt-1 mb-2">Diese Bilder erscheinen nur auf der Seite der jeweiligen Einheit, nicht in der Objektgalerie.</p>
-                  <div className="space-y-2">
-                    {einzelWohnungen.map((w, idx) => {
-                      const wId = w.id || `w-idx-${idx}`;
-                      const bilder = wohnungBilder[wId] || [];
-                      return (
-                        <div data-ui="card" key={wId} className="rounded-lg border bg-card p-3 space-y-2">
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold">WE {w.weNr || idx + 1}{w.lage ? ` – ${w.lage}` : ""}</span>
-                            <label className="cursor-pointer">
-                              <input type="file" accept="image/*,.heic,.heif,.avif" multiple className="hidden" onChange={e => { if (e.target.files) handleWohnungImageUpload(wId, e.target.files); e.target.value = ""; }} />
-                              <Badge variant="outline" className="cursor-pointer text-xs hover:bg-muted"><ImagePlus className="mr-1 h-3 w-3" /> Bilder hinzufügen</Badge>
-                            </label>
-                          </div>
-                          {bilder.length > 0 ? (
-                            <div className="flex flex-wrap gap-2">
-                              {bilder.map(bild => (
-                                <div key={bild.id} className="relative group h-16 w-16 overflow-hidden rounded-lg border">
-                                  <img src={bild.url} alt={bild.alt} className="h-full w-full object-cover" />
-                                  <button
-                                    type="button"
-                                    className="absolute right-0.5 top-0.5 rounded-full bg-destructive p-0.5 text-destructive-foreground opacity-0 transition-opacity group-hover:opacity-100"
-                                    onClick={() => removeWohnungBild(wId, bild.id)}
-                                  >
-                                    <X className="h-2.5 w-2.5" />
-                                  </button>
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <p className="text-[10px] text-muted-foreground">Noch keine Bilder. Ohne eigene Bilder zeigt die Einheitsseite die Fotos des Objekts.</p>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
+              {/* Bilder je Einheit: bei jeder Objektart im Schritt der Einheiten, ein Weg für alle (16.10.2026). */}
               <div><Label className="text-xs font-semibold">Video-URL</Label><Input value={nf.videoUrl} onChange={e => updateField("videoUrl", e.target.value)} placeholder="https://youtube.com/..." /></div>
 
 
@@ -4157,6 +4304,6 @@ export default function ObjektNeu() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </DashboardLayout>
+    </Rahmen>
   );
 }
