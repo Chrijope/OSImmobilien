@@ -10,15 +10,16 @@ import { cacheReload } from "@/lib/dataCache";
 import { logAudit } from "@/lib/auditLog";
 
 /**
- * Lädt alle Nutzer, die als Teamleiter in Frage kommen: Inhaber, Admin und
- * Vertriebsleiter. Seit dem 15.10.2026 entscheidet nur die Rolle; im Vertrieb
- * gibt es nur Vertriebspartner, ohne Stufen (Christian).
+ * Lädt alle Nutzer, die als Teamleiter in Frage kommen: Inhaber, Admin,
+ * Vertriebsleiter und Vertriebspartner. Es entscheidet nur die Rolle, ohne
+ * Stufen (15.10.2026); seit dem 16.10.2026 bauen Vertriebspartner eigene
+ * Strukturen auf und sind damit Teamleiter ihrer Partner.
  *
  * Speichert die Zuweisung als user_settings.einstellungen.teamleader_id
  * via merge_user_settings RPC (atomar).
  */
 /** Rollen, die Teamleiter sein dürfen. Gilt überall, wo ein Teamleiter gewählt wird. */
-export const TEAMLEITER_ROLLEN = ["inhaber", "admin", "vertriebsleiter"] as const;
+export const TEAMLEITER_ROLLEN = ["inhaber", "admin", "vertriebsleiter", "vertriebspartner"] as const;
 
 export function istTeamleiterRolle(rollen: readonly string[]): boolean {
   return rollen.some((r) => (TEAMLEITER_ROLLEN as readonly string[]).includes(r));

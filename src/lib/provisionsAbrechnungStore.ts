@@ -58,12 +58,25 @@ export interface AbrechnungDeal {
 
 export interface AbrechnungOverride {
   kontaktId: string;
+  /** Partner aus der Struktur, der den Abschluss gemacht hat. */
   juniorUserId: string;
   juniorName: string;
+  /**
+   * Seit 16.10.2026 leer: Der Teamleiter sieht die Kunden seiner Struktur
+   * nicht, im Bescheid steht stattdessen das Objekt. Alte Bescheide behalten
+   * den Namen.
+   */
   kundeName: string;
   kaufpreis: number;
+  /** Differenz in Prozentpunkten. */
   overridePercent: number;
   betrag: number;
+  /** Seit 16.10.2026: Differenz aus der festgeschriebenen Kette. */
+  investmentId?: string;
+  objekt?: string;
+  ebene?: number;
+  partnerSatz?: number;
+  leiterSatz?: number;
 }
 
 export interface AbrechnungOverhead {

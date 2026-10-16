@@ -115,3 +115,32 @@ export function provisionssatzAblehnung(p: {
   }
   return null;
 }
+
+/**
+ * Seit 16.10.2026: Ein Vertriebspartner lädt einen Vertriebspartner in seine
+ * Struktur ein (Christian). Er gibt einen Satz, der für Lead und Eigen gilt,
+ * höchstens seinen eigenen Eigen-Satz. Der Eingeladene hängt unter ihm.
+ * Liefert entweder die Meldung für Status 400 oder Satz und Teamleiter.
+ */
+export function strukturEinladung(p: {
+  aufruferId: string;
+  rollen: readonly string[];
+  satzRoh: unknown;
+  /** Eigen-Satz des Einladenden, im Altbestand der allgemeine Satz. */
+  obergrenze: number | null;
+}): { fehler: string } | { satz: number; teamleaderId: string } {
+  if (p.rollen.some((r) => r !== "vertriebspartner")) {
+    return { fehler: "Du kannst Vertriebspartner nur mit dieser einen Rolle einladen." };
+  }
+  if (p.obergrenze === null || !(p.obergrenze > 0)) {
+    return { fehler: "Für dich ist noch kein Provisionssatz hinterlegt. Bitte wende dich an die Geschäftsleitung." };
+  }
+  const satz = provisionssatzAusEinladung(p.satzRoh);
+  if (satz === null) {
+    return { fehler: "Bitte trag einen Provisionssatz zwischen 0 und 100 Prozent ein." };
+  }
+  if (satz > p.obergrenze) {
+    return { fehler: `Der Satz darf höchstens deinem Eigen-Satz entsprechen (${String(p.obergrenze).replace(".", ",")} %).` };
+  }
+  return { satz, teamleaderId: p.aufruferId };
+}

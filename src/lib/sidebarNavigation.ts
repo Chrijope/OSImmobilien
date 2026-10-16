@@ -228,8 +228,10 @@ const hausverwaltungItems = [
 ];
 
 const teamAdminItems = [
-  { title: "Teampartner", url: "/teampartner", icon: UsersRound, adminOnly: true, auchFuer: ["hr"], suchbegriffe: ["team", "kollegen", "struktur", "partner"] },
-  { title: "Nutzerverwaltung", url: "/nutzerverwaltung", icon: UserCog, adminOnly: true, suchbegriffe: ["benutzer", "rollen", "rechte", "zugang", "user"] },
+  // Seit 16.10.2026 auch fuer Vertriebspartner und Vertriebsleitung: sie sehen
+  // dort ihre Struktur bzw. alle Partner (StrukturVerwaltung.tsx).
+  { title: "Teampartner", url: "/teampartner", icon: UsersRound, adminOnly: true, auchFuer: ["hr", "vertriebspartner", "vertriebsleiter"], suchbegriffe: ["team", "kollegen", "struktur", "partner"] },
+  { title: "Nutzerverwaltung", url: "/nutzerverwaltung", icon: UserCog, adminOnly: true, auchFuer: ["vertriebspartner", "vertriebsleiter"], suchbegriffe: ["benutzer", "rollen", "rechte", "zugang", "user", "struktur", "einladen"] },
   { title: "Ansprechpartner", url: "/ansprechpartner", icon: Contact, suchbegriffe: ["kontaktperson", "zustaendig"] },
   // Die oeffentliche Stellenanzeige, nur fuer Admin und Inhaber (`adminOnly`).
   // Die Adresse liegt unter `/karriere` und ist damit ohne eigene Freigabe in

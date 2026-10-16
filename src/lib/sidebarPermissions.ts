@@ -70,6 +70,8 @@ const ROLE_ALLOWED_URLS_FALLBACK: Partial<Record<UserRole, string[]>> = {
     "/afa-rechner", "/academy", "/immobilien-lexikon",
     "/praesentation", "/unterlagen", "/chat", "/support-kontaktieren",
     "/ansprechpartner", "/berater-microseite", "/teampartner",
+    // Die eigene Struktur (16.10.2026), nicht die Verwaltung; siehe App.tsx.
+    "/nutzerverwaltung",
     "/einstellungen", "/kunden", "/vertriebsakademie",
     // Sub-Routen, die aus Unterlagen/Präsentation heraus aufgerufen werden
     "/aftersales", "/leitfaeden", "/wissenswert", "/marketing", "/bonitaet",
@@ -123,6 +125,8 @@ const ROLE_ALLOWED_URLS_FALLBACK: Partial<Record<UserRole, string[]>> = {
      */
     "/chat", "/support-kontaktieren", "/helpdesk",
     "/teampartner", "/ansprechpartner", "/berater-microseite",
+    // Alle Vertriebspartner mit Teamleiter (16.10.2026), nicht die Verwaltung.
+    "/nutzerverwaltung",
     "/karriere",
     "/einstellungen", "/kunden",
     "/aftersales", "/leitfaeden", "/wissenswert", "/bonitaet",

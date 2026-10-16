@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from "react-router-dom";
 import { LastRouteMemory } from "./components/LastRouteMemory";
 import { SeitenwechselRollen } from "@/components/SeitenwechselRollen";
-import { UserProvider } from "@/contexts/UserContext";
+import { UserProvider, useUser } from "@/contexts/UserContext";
 import { AppShell } from "@/components/DashboardLayout";
 import { VideoraumProvider } from "@/contexts/VideoraumContext";
 import { VideoraumLeiste } from "@/components/videoraum/VideoraumLeiste";
@@ -128,6 +128,13 @@ const Chat = lazyRoute(() => import("./pages/Chat"));
 const Teampartner = lazyRoute(() => import("./pages/Teampartner"));
 const TeampartnerProfil = lazyRoute(() => import("./pages/TeampartnerProfil"));
 const Nutzerverwaltung = lazyRoute(() => import("./pages/Nutzerverwaltung"));
+// Vertriebspartner und Vertriebsleitung sehen unter /nutzerverwaltung ihre Struktur (16.10.2026).
+const StrukturVerwaltung = lazyRoute(() => import("./pages/StrukturVerwaltung"));
+function NutzerverwaltungNachRolle() {
+  const { user } = useUser();
+  if (user.role === "vertriebspartner" || user.role === "vertriebsleiter") return <StrukturVerwaltung />;
+  return <IpAllowlistGuard><Nutzerverwaltung /></IpAllowlistGuard>;
+}
 const AuditLog = lazyRoute(() => import("./pages/AuditLog"));
 const SessionAnomalien = lazyRoute(() => import("./pages/SessionAnomalien"));
 const StorageAudit = lazyRoute(() => import("./pages/StorageAudit"));
@@ -627,7 +634,7 @@ const App = () => (
                   <Route path="/helpdesk" element={<Helpdesk />} />
                   <Route path="/teampartner" element={<Teampartner />} />
                   <Route path="/teampartner/:id" element={<TeampartnerProfil />} />
-                  <Route path="/nutzerverwaltung" element={<IpAllowlistGuard><Nutzerverwaltung /></IpAllowlistGuard>} />
+                  <Route path="/nutzerverwaltung" element={<NutzerverwaltungNachRolle />} />
                   <Route path="/audit-log" element={<AuditLog />} />
                   <Route path="/session-anomalien" element={<SessionAnomalien />} />
                   <Route path="/storage-audit" element={<StorageAudit />} />

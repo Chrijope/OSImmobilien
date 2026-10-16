@@ -6,6 +6,7 @@ import { ProvisionssatzBearbeiten } from "@/components/nutzerverwaltung/Provisio
 import { SatzartBadge, SatzartLegende } from "@/components/abrechnung/SatzartBadge";
 import { festgeschriebenerSatz, getEffectiveRateInfoForKontakt } from "@/lib/provisionssatz";
 import { provisionCent } from "@/lib/abrechnungRechnung";
+import { differenzenAusKette } from "@/lib/partnerstruktur";
 
 /*
  * Lokale Vorschau „Provision je Partner“ (15.10.2026). Nur im
@@ -31,6 +32,13 @@ const ABSCHLUESSE = [
   { kunde: "Frau Ost", partner: BEN, eigen: false, kaufpreis: 200000, meta: {}, hinweis: "Vor der Reservierung, zugewiesener Lead" },
   { kunde: "Herr Wolf", partner: BEN, eigen: false, kaufpreis: 180000, meta: { lockedProvisionRate: 6, lockedProvisionRatePartner: BEN }, hinweis: "Reserviert mit 6 %, Satz danach auf 8 % geändert" },
   { kunde: "Frau Neumann", partner: CEM, eigen: true, kaufpreis: 220000, meta: {}, hinweis: "Partner ohne Satz in der Nutzerverwaltung" },
+];
+
+// Struktur-Beispiel (16.10.2026): A 10 %, darunter B 8 %, darunter C 5 %.
+const STRUKTUR = [
+  { name: "A (Teamleiter oben)", ebene: 0, satz: 10 },
+  { name: "B (unter A)", ebene: 1, satz: 8 },
+  { name: "C (unter B)", ebene: 2, satz: 5 },
 ];
 
 const eur = (v: number) => v.toLocaleString("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
@@ -82,6 +90,34 @@ export default function VorschauProvision() {
           <ProvisionssatzBearbeiten userId={BEN} zielName="Ben Muster" lead={8} eigen={12} darfBearbeiten={false} />
         </div>
         <p className="text-xs text-muted-foreground">Links als Admin oder Inhaber, rechts als andere Rolle. Speichern geht in der Vorschau nicht (keine Datenbank).</p>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-lg font-semibold">Struktur: Differenz je Ebene</h2>
+        <div className="rounded-lg border divide-y max-w-xl text-sm">
+          {STRUKTUR.map((p) => (
+            <div key={p.name} className="flex justify-between px-3 py-2" style={{ paddingLeft: 12 + p.ebene * 20 }}>
+              <span>{p.name}</span><span className="tabular-nums">{p.satz} %</span>
+            </div>
+          ))}
+        </div>
+        {(() => {
+          const kaufpreis = 300000;
+          const differenzen = differenzenAusKette(5, [
+            { ebene: 1, partner: "B (unter A)", satz: 8 },
+            { ebene: 2, partner: "A (Teamleiter oben)", satz: 10 },
+          ]);
+          return (
+            <div className="rounded-lg border p-3 max-w-xl text-sm space-y-1" data-testid="vorschau-differenz">
+              <p className="font-medium">Abschluss von C, Kaufpreis {eur(kaufpreis)}</p>
+              <p>C (eigener Satz 5 %): {eur(provisionCent(kaufpreis, 5) / 100)}</p>
+              {differenzen.map((d) => (
+                <p key={d.leiterId}>{d.leiterId}: Differenz {d.differenzSatz} % = {eur(provisionCent(kaufpreis, d.differenzSatz) / 100)}</p>
+              ))}
+              <p className="text-muted-foreground">Zusammen 10 %, also nie mehr als der Satz ganz oben.</p>
+            </div>
+          );
+        })()}
       </section>
 
       <section className="space-y-3">

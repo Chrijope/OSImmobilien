@@ -11,6 +11,7 @@ import { istZustaendig } from "@/lib/kontaktOwnership";
 import { kennungZuName } from "@/lib/beraterNamensabgleich";
 import { formatSatzProzent, getEffectiveRate, provisionssaetze, getEffectiveRateInfoForKontakt, festgeschriebenerSatz, type Satzart } from "@/lib/provisionssatz";
 import { DeineProvisionKarte } from "@/components/abrechnung/DeineProvisionKarte";
+import { DifferenzAusStrukturKarte } from "@/components/abrechnung/DifferenzAusStrukturKarte";
 import { ProvisionssatzBadges } from "@/components/abrechnung/ProvisionssatzBadges";
 import { OVERHEAD_AKTIV } from "@/lib/lizenzPakete";
 import { SatzartBadge, SatzartLegende } from "@/components/abrechnung/SatzartBadge";
@@ -1175,6 +1176,7 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
 
       {/* Fester Satz aus der Nutzerverwaltung, ersetzt Karrierestufen und Staffel */}
       <DeineProvisionKarte userId={p.userId} partnerName={isBuchhaltung ? p.name : undefined} />
+      <DifferenzAusStrukturKarte userId={p.userId} />
 
       {/* Provisionsentwicklung Chart – Festgeschrieben + Prognose */}
       <ProvisionsEntwicklungChart partnerName={p.name} partnerId={p.userId} />

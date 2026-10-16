@@ -2,7 +2,7 @@ import { createClient } from "npm:@supabase/supabase-js@2.49.4";
 import { checkRateLimit, rateLimitErrorBody } from "../_shared/rate-limit.ts";
 import { kundenSprache, type Sprache } from "../_shared/kunden-sprache.ts";
 import { vorhandenesKontoPruefen } from "../_shared/portal-verknuepfung.ts";
-import { einladungOhneFremdeKonditionen, provisionssatzAblehnung, provisionssatzAusEinladung, tippgeberKontoAblehnung, tippgeberVerknuepfungAblehnung } from "../_shared/einladung-konditionen.ts";
+import { einladungOhneFremdeKonditionen, provisionssatzAblehnung, provisionssatzAusEinladung, strukturEinladung, tippgeberKontoAblehnung, tippgeberVerknuepfungAblehnung } from "../_shared/einladung-konditionen.ts";
 import { startrollenSetzen } from "../_shared/startrolle.ts";
 import { pruefeKundenportalRecht } from "../_shared/kundenportal-recht.ts";
 
@@ -72,7 +72,8 @@ Deno.serve(async (req) => {
     // ═══ ROLLENMATRIX — wer darf welche Rollen vergeben? ═══
     // - inhaber: jede Rolle (inkl. inhaber)
     // - admin:   jede Rolle AUSSER inhaber
-    // - vertriebspartner: ausschließlich 'kunde' und 'tippgeber'
+    // - vertriebspartner: 'kunde', 'tippgeber' und seit 16.10.2026
+    //   'vertriebspartner' in die eigene Struktur (siehe strukturEinladung)
     // Verhindert Privilege-Escalation (z.B. VP lädt sich selbst als admin ein).
     const callerRoleSet = new Set((callerRoles || []).map((r: any) => String(r.role)));
     const callerIsInhaberGlobal = callerRoleSet.has("inhaber");
@@ -88,7 +89,7 @@ Deno.serve(async (req) => {
       if (target === "bewerber") return false;
       if (callerIsInhaberGlobal) return true;
       if (callerIsAdminGlobal) return target !== "inhaber";
-      if (callerIsVpOnly) return target === "kunde" || target === "tippgeber";
+      if (callerIsVpOnly) return target === "kunde" || target === "tippgeber" || target === "vertriebspartner";
       if (callerIsVertriebsleiterOnly) return target === "kunde" || target === "tippgeber";
       return false;
     };
@@ -158,9 +159,10 @@ Deno.serve(async (req) => {
     }
     // Karrierestufe, allgemeiner Satz und Sidebar-Sperre gibt es seit dem
     // 15.10.2026 nicht mehr; was ein alter Browser noch mitschickt, bleibt liegen.
-    const { email, name, role, roles, osImmoId, kontaktId, vorname, nachname, telefon, person2, teamleaderId, customProvisionRateSetter, customProvisionRateEigen, tippgeberId, rollenVariante, resend } = einladung;
-    const leadSatz = provisionssatzAusEinladung(customProvisionRateSetter);
-    const eigenSatz = provisionssatzAusEinladung(customProvisionRateEigen);
+    const { email, name, role, roles, osImmoId, kontaktId, vorname, nachname, telefon, person2, customProvisionRateSetter, customProvisionRateEigen, tippgeberId, rollenVariante, resend } = einladung;
+    let teamleaderId: unknown = einladung.teamleaderId;
+    let leadSatz = provisionssatzAusEinladung(customProvisionRateSetter);
+    let eigenSatz = provisionssatzAusEinladung(customProvisionRateEigen);
 
     if (!email || !name || !role) {
       return new Response(JSON.stringify({ error: "Fehlende Pflichtfelder" }), {
@@ -212,6 +214,36 @@ Deno.serve(async (req) => {
         }),
         { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
+    }
+
+    // Ein Vertriebspartner laedt einen Vertriebspartner in seine Struktur ein:
+    // ein Satz fuer Lead und Eigen, hoechstens sein Eigen-Satz, er selbst wird
+    // Teamleiter. Satz und Teamleiter aus dem Browser zaehlen dafuer nicht,
+    // sie kommen hier aus der Pruefung (der Body ist oben bereinigt).
+    const vpStrukturEinladung = callerIsVpOnly && requestedRoles.includes("vertriebspartner");
+    if (vpStrukturEinladung) {
+      const { data: aufruferSettings } = await adminClient
+        .from("user_settings")
+        .select("einstellungen")
+        .eq("user_id", caller.id)
+        .maybeSingle();
+      const e = (aufruferSettings?.einstellungen ?? {}) as Record<string, unknown>;
+      const obergrenze = provisionssatzAusEinladung(e.custom_provision_rate_eigen) ?? provisionssatzAusEinladung(e.custom_provision_rate);
+      const ergebnis = strukturEinladung({
+        aufruferId: caller.id,
+        rollen: requestedRoles,
+        satzRoh: body.customProvisionRateEigen ?? body.customProvisionRateSetter,
+        obergrenze,
+      });
+      if ("fehler" in ergebnis) {
+        return new Response(JSON.stringify({ error: ergebnis.fehler }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      leadSatz = ergebnis.satz;
+      eigenSatz = ergebnis.satz;
+      teamleaderId = ergebnis.teamleaderId;
     }
 
     // Pflicht bei Vertriebspartnern: Lead- und Eigen-Satz, 0 bis 100 Prozent.
@@ -444,6 +476,15 @@ Deno.serve(async (req) => {
     let newUser: any = null;
 
     const existingUser = await findUserByEmail(email);
+
+    // Ein Vertriebspartner holt kein vorhandenes Konto in seine Struktur, sonst
+    // liesse sich jeder Nutzer samt Differenzprovision umhaengen.
+    if (vpStrukturEinladung && existingUser) {
+      return new Response(JSON.stringify({ error: "Diese Adresse hat schon einen Zugang. Die Zuordnung übernehmen Admin und Inhaber." }), {
+        status: 409,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     // Vorhandenes Konto eines anderen Tippgebers nicht umhaengen, bevor
     // irgendetwas verknuepft wird (Gegenpruefung vom 30.09.2026).
