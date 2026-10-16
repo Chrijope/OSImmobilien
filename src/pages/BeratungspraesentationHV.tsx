@@ -771,6 +771,24 @@ export default function BeratungspraesentationHV({
           </div>
         ))}
       </div>
+      <ul data-testid="gruppe-vorteile" className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {T.gruppe.vorteile.map((v) => {
+          const farbe = T.gruppe.marken.find((m) => m.name === v.marke)?.farbe ?? FARBE.gold;
+          return (
+            <li key={v.titel} className="min-w-0">
+              <Karte dunkel rand={v.marke ? farbe : undefined} className="h-full md:p-5">
+                <p className="flex items-center gap-2 font-semibold" style={{ color: FARBE.hellText }}>
+                  <Check aria-hidden className="h-5 w-5 shrink-0" style={{ color: farbe }} />
+                  {v.titel}
+                </p>
+                <p className="mt-2 text-sm leading-relaxed" style={{ color: FARBE.hellGedaempft }}>
+                  {v.text}
+                </p>
+              </Karte>
+            </li>
+          );
+        })}
+      </ul>
       <Fussnote dunkel>
         <span className="block text-center">{T.gruppe.fuss}</span>
       </Fussnote>

@@ -178,6 +178,13 @@ export const OS_TEXTE = {
       },
     ] as ReadonlyArray<{ name: string; zusatz: string; farbe: string; text: string }>,
     fuss: "Ein Haus, kurze Wege: Objekt, Verwaltung und Finanzierung sind aufeinander abgestimmt.",
+    // Vorteile unter den Logos. `marke` ordnet eine Kachel farblich einer Marke oben zu.
+    vorteile: [
+      { titel: "Rundum-sorglos", text: "Wir begleiten dich von der Auswahl bis nach der Vermietung." },
+      { titel: "Provisionsfrei", text: "Du kaufst direkt vom Bauträger, ohne Maklerprovision." },
+      { titel: "Verwaltung", text: "Hausverwaltung und Mietsonderverwaltung auf Wunsch aus einer Hand.", marke: "Verwaltung" },
+      { titel: "Finanzierung", text: "Finanzierung auch ohne Eigenkapital möglich.", marke: "Finanzierung" },
+    ] as ReadonlyArray<{ titel: string; text: string; marke?: string }>,
   },
 
   prinzip: {
