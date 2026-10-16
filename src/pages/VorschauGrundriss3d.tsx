@@ -38,7 +38,7 @@ export default function VorschauGrundriss3d() {
   const [plan, setPlan] = useState<Grundriss3dPlan>(gespeicherterPlan);
   const haus = useMemo(() => beispielHaus(), []);
   const einheit = useMemo(() => [{ plan, titel: "WE 03" }], [plan]);
-  // Startwerte aus der Adresse, etwa ?stil=altbau&schnitt=1&modus=begehung (für Bildschirmfotos).
+  // Startwerte aus der Adresse, etwa ?stil=altbau&schnitt=1&modus=begehung&licht=nacht&stunde=8&drehen=0 (für Bildschirmfotos).
   const startwerte = useMemo(() => {
     const q = new URLSearchParams(location.search);
     return {
@@ -47,6 +47,9 @@ export default function VorschauGrundriss3d() {
       ...(q.get("modus") ? { modus: q.get("modus") as "begehung" } : {}),
       ...(q.get("explosion") ? { explosion: Number(q.get("explosion")) } : {}),
       ...(q.get("wandhoehe") ? { wandhoehe: Number(q.get("wandhoehe")) } : {}),
+      ...(q.get("licht") ? { licht: q.get("licht") as "nacht" } : {}),
+      ...(q.get("stunde") ? { stunde: Number(q.get("stunde")) } : {}),
+      ...(q.get("drehen") ? { drehen: q.get("drehen") === "1" } : {}),
     };
   }, []);
 

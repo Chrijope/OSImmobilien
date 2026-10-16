@@ -55,6 +55,8 @@ export interface SzenenOptionen {
 
 export const SCHNITT_HOEHE = 1.2;
 
+export const GESCHOSS_TEXT = (g: number) => (g === 0 ? "Erdgeschoss" : g < 0 ? `${-g}. Untergeschoss` : `${g}. Obergeschoss`);
+
 export interface Einheit3d { plan: Grundriss3dPlan; titel?: string }
 
 export interface Szene {
@@ -69,6 +71,12 @@ export interface Szene {
   start: THREE.Vector3;
   /** Blickrichtung zum Start (Drehung um die Hochachse): entlang der langen Raumachse. */
   startBlick: number;
+  /** Fensterglas, nachts leuchtend. */
+  glas: THREE.MeshStandardMaterial;
+  /** Deckenleuchten je Raum (Weltkoordinaten), für das Nachtlicht. */
+  lichtpunkte: THREE.Vector3[];
+  /** Stationen des automatischen Rundgangs: Räume, im ganzen Haus die Geschosse. */
+  stationen: Array<{ ziel: THREE.Vector3; name: string }>;
   rahmen: THREE.Box3;
 }
 
@@ -445,11 +453,13 @@ export function baueSzene(einheiten: Einheit3d[], o: SzenenOptionen): Szene {
   const M: Mats = {
     wasser: mat("#d7e6ec", 0.1), holz: mat(stil.holz, 0.6), stoff: mat(stil.stoff, 0.95), akzent: mat(stil.akzent, 0.8), korpus: mat(stil.korpus, 0.5),
     metall: mat(stil.metall, 0.35, 0.6), teppich: mat(stil.teppich, 1), weiss: mat("#f7f7f5", 0.25), pflanze: mat("#4f7a4a", 0.9),
-    topf: mat("#d9d3c7", 0.7), glas, stein: mat(o.stil === "altbau" ? "#2f2f2f" : "#e7e5e0", 0.3),
+    topf: mat("#d9d3c7", 0.7), glas: glas.clone(), stein: mat(o.stil === "altbau" ? "#2f2f2f" : "#e7e5e0", 0.3),
   };
 
   let start: THREE.Vector3 | null = null;
   let startBlick = 0;
+  const lichtpunkte: THREE.Vector3[] = [];
+  const stationen: Szene["stationen"] = [];
   let groessterRaum = 0;
   const geschosse = einheiten.map((e) => e.plan.geschoss ?? 0);
   const unterstes = Math.min(...(o.nurGeschoss !== undefined ? [o.nurGeschoss] : geschosse));
@@ -492,6 +502,11 @@ export function baueSzene(einheiten: Einheit3d[], o: SzenenOptionen): Szene {
         ebene.add(label);
         nurRundum.push(label);
       }
+      if (typ !== "balkon") {
+        const s = schwerpunkt(raum.punkte);
+        lichtpunkte.push(new THREE.Vector3(ebene.position.x + s.x, ebene.position.y + o.wandhoehe - 0.25, ebene.position.z + s.y));
+        if (!hausAnsicht) stationen.push({ ziel: new THREE.Vector3(ebene.position.x + s.x, ebene.position.y + 0.8, ebene.position.z + s.y), name: `${einheiten.length > 1 && e.titel ? `${e.titel}, ` : ""}${raum.name}, ${qm(flaeche(raum.punkte))}` });
+      }
       const a = flaeche(raum.punkte);
       if (geschoss === unterstes && typ !== "balkon" && a > groessterRaum) {
         groessterRaum = a;
@@ -529,11 +544,17 @@ export function baueSzene(einheiten: Einheit3d[], o: SzenenOptionen): Szene {
       });
     }
     ebene.userData.geschoss = geschoss;
+    if (hausAnsicht && !stationen.some((x) => x.name === GESCHOSS_TEXT(geschoss))) {
+      const r = rahmen(e.plan.waende.flatMap((w) => [w.a, w.b]));
+      stationen.push({ ziel: new THREE.Vector3(v.x + (r.minX + r.maxX) / 2, ebene.position.y + 1, v.y + (r.minY + r.maxY) / 2), name: GESCHOSS_TEXT(geschoss) });
+    }
     gruppe.add(ebene);
   }
 
   const box = new THREE.Box3().setFromObject(gruppe);
-  return { gruppe, decken, nurRundum, hindernisse, start: start ?? box.getCenter(new THREE.Vector3()).setY(0), startBlick, rahmen: box };
+  // Im Haus von oben nach unten durch die Geschosse.
+  if (hausAnsicht) stationen.sort((a, b) => b.ziel.y - a.ziel.y);
+  return { gruppe, decken, nurRundum, hindernisse, start: start ?? box.getCenter(new THREE.Vector3()).setY(0), startBlick, rahmen: box, glas, lichtpunkte, stationen };
 }
 
 /** Speicher freigeben: Geometrien, Materialien und Muster. */
@@ -555,7 +576,7 @@ export function entsorge(obj: THREE.Object3D): void {
 
 /* ── Bühne: Licht, Umgebung, Boden ─────────────────────────────────── */
 
-export interface Buehne { licht: THREE.DirectionalLight; boden: THREE.Mesh; umgebung: THREE.Texture }
+export interface Buehne { licht: THREE.DirectionalLight; himmel: THREE.HemisphereLight; boden: THREE.Mesh; umgebung: THREE.Texture }
 
 /**
  * Licht und Umgebung, gemeinsam für Ansicht und Standbild. Die
@@ -574,7 +595,8 @@ export function richteBuehneEin(renderer: THREE.WebGLRenderer, scene: THREE.Scen
   scene.environment = umgebung;
   scene.environmentIntensity = 0.55;
   scene.background = new THREE.Color("#eef0f2");
-  scene.add(new THREE.HemisphereLight("#ffffff", "#d9d3c8", 0.75));
+  const himmel = new THREE.HemisphereLight("#ffffff", "#d9d3c8", 0.75);
+  scene.add(himmel);
   const licht = new THREE.DirectionalLight("#fff4e5", 2.0);
   licht.castShadow = schatten;
   licht.shadow.mapSize.set(2048, 2048);
@@ -585,7 +607,7 @@ export function richteBuehneEin(renderer: THREE.WebGLRenderer, scene: THREE.Scen
   boden.rotation.x = -Math.PI / 2;
   boden.receiveShadow = true;
   scene.add(boden);
-  return { licht, boden, umgebung };
+  return { licht, himmel, boden, umgebung };
 }
 
 /** Sonne und Boden an die Größe der Szene anpassen. */
@@ -594,6 +616,7 @@ export function buehneAnpassen(b: Buehne, box: THREE.Box3): void {
   const s = Math.max(4, box.getSize(new THREE.Vector3()).length());
   b.licht.position.set(c.x + s * 0.45, c.y + s * 1.1, c.z + s * 0.35);
   b.licht.target.position.copy(c);
+  b.licht.userData.abstand = s * 1.2;
   const k = b.licht.shadow.camera;
   k.left = -s * 0.7; k.right = s * 0.7; k.top = s * 0.7; k.bottom = -s * 0.7; k.near = 0.1; k.far = s * 4;
   k.updateProjectionMatrix();
@@ -616,4 +639,58 @@ export function kameraRundum(kamera: THREE.PerspectiveCamera, box: THREE.Box3): 
   }
   kamera.lookAt(c);
   return c;
+}
+
+/* ── Licht: Tageszeit und Nacht ────────────────────────────────────── */
+
+export type Lichtart = "tag" | "nacht";
+
+/**
+ * Sonnenstand vereinfacht für Berlin um die Tag-und-Nacht-Gleiche: um 6 Uhr
+ * im Osten, um 12 Uhr im Süden in rund 38 Grad Höhe, um 18 Uhr im Westen.
+ * Zurück kommt die Richtung zur Sonne in Szenenkoordinaten. Der Nordwinkel
+ * des Plans dreht sie mit, damit die Schatten zur echten Ausrichtung passen.
+ * ponytail: ohne Jahreszeit; mit Datum und Breitengrad genauer, falls nötig.
+ */
+export function sonnenRichtung(stunde: number, nordWinkel: number): THREE.Vector3 {
+  const t = Math.max(0, Math.min(1, (stunde - 6) / 12));
+  const kompass = 90 + t * 180; // Grad im Uhrzeigersinn ab Norden
+  const hoehe = Math.max(6, 38 * Math.sin(Math.PI * t)) * Math.PI / 180;
+  const imPlan = (nordWinkel + kompass) * Math.PI / 180; // im Uhrzeigersinn ab „oben im Plan“
+  return new THREE.Vector3(Math.sin(imPlan) * Math.cos(hoehe), Math.sin(hoehe), -Math.cos(imPlan) * Math.cos(hoehe)).normalize();
+}
+
+/** Tageslicht nach Uhrzeit oder Nacht mit dunklem Himmel und leuchtenden Fenstern. */
+export function lichtSetzen(scene: THREE.Scene, b: Buehne, szene: Szene, o: { art: Lichtart; stunde: number; nordWinkel: number }): void {
+  const c = szene.rahmen.getCenter(new THREE.Vector3());
+  const abstand = (b.licht.userData.abstand as number) || 20;
+  if (o.art === "tag") {
+    const r = sonnenRichtung(o.stunde, o.nordWinkel);
+    b.licht.position.copy(c).addScaledVector(r, abstand);
+    // Morgens und abends wärmer und schwächer.
+    const flach = 1 - Math.min(1, r.y / 0.6);
+    b.licht.color.setHSL(0.09, 0.4 + 0.5 * flach, 0.92 - 0.2 * flach);
+    b.licht.intensity = 2.2 - flach * 0.9;
+    b.himmel.intensity = 0.75;
+    b.himmel.color.set("#ffffff");
+    scene.environmentIntensity = 0.55;
+    scene.background = new THREE.Color(flach > 0.6 ? "#f1e6d8" : "#eef0f2");
+    szene.glas.emissive.set("#000000");
+    szene.glas.opacity = 0.3;
+    (b.boden.material as THREE.MeshStandardMaterial).color.set("#e4e2dd");
+  } else {
+    // Mondlicht von schräg oben, sehr schwach und bläulich.
+    b.licht.position.copy(c).add(new THREE.Vector3(-0.4, 1, 0.3).normalize().multiplyScalar(abstand));
+    b.licht.color.set("#9db4ff");
+    b.licht.intensity = 0.25;
+    b.himmel.color.set("#3a4a78");
+    b.himmel.intensity = 0.12;
+    scene.environmentIntensity = 0.08;
+    scene.background = new THREE.Color("#0d1526");
+    szene.glas.emissive.set("#ffcf87");
+    szene.glas.emissiveIntensity = 2.6;
+    szene.glas.opacity = 0.9;
+    (b.boden.material as THREE.MeshStandardMaterial).color.set("#1b2233");
+  }
+  b.licht.target.position.copy(c);
 }

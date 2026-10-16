@@ -24,6 +24,9 @@
 .g3d-nadel::before { content: ""; position: absolute; left: 50%; top: 8px; width: 0; height: 0; transform: translateX(-50%); border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 14px solid #c0392b; }
 .g3d-nadel span { position: absolute; left: 50%; top: -3px; transform: translateX(-50%); font-size: 9px; font-weight: 700; color: #c0392b; }
 .g3d-hilfe { position: absolute; left: 10px; bottom: 6px; right: 64px; margin: 0; font-size: 11px; color: #52606d; text-shadow: 0 0 3px #fff; pointer-events: none; }
+.g3d-station { position: absolute; left: 50%; top: 56px; transform: translateX(-50%); padding: 6px 14px; border-radius: 999px; background: rgba(31,58,95,.88); color: #fff; font-size: 13px; font-weight: 600; pointer-events: none; white-space: nowrap; }
+.g3d-nacht { background: #0d1526; }
+.g3d-nacht .g3d-hilfe { color: #cbd5e1; text-shadow: none; }
 .g3d-pad { position: absolute; left: 12px; bottom: 30px; display: grid; grid-template-columns: repeat(3, 44px); gap: 4px; }
 .g3d-pad-knopf { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: rgba(255,255,255,.92); box-shadow: 0 1px 4px rgba(0,0,0,.15); color: #1f2933; touch-action: none; user-select: none; }
 /* Touch: bis zum Antippen gehört der Finger der Seite (Scrollen), nicht dem Modell. */
