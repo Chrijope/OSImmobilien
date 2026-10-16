@@ -394,7 +394,7 @@ const SCHRITTE: Schritt[] = [
     notiz: true },
 
   { id: "ablauf", nr: 16, titel: "So arbeiten wir: der Ablauf",
-    text: `„So gehen wir vor: Im nächsten Termin zeige ich dir in etwa einer Stunde unser Konzept, gerechnet mit deinen Zahlen, und dazu unsere Objekte. Passt das für dich, füllen wir am Ende gemeinsam deine Selbstauskunft aus. Rund eine Woche später stelle ich dir die konkrete Immobilie vor, die zu dir passt, mit Exposé und deiner persönlichen Kalkulation. Erst dann entscheidest du über eine Reservierung, und die ist kostenfrei. Danach folgen Besichtigung, Bankgutachter, Finanzierung und Notar. Nach jedem Schritt entscheidest du, ob es weitergeht.“` },
+    text: `„So gehen wir vor: Im nächsten Termin zeige ich dir in etwa einer Stunde unser Konzept, gerechnet mit deinen Zahlen, und dazu unsere Objekte. Passt das für dich, füllen wir am Ende gemeinsam deine Selbstauskunft aus. Rund eine Woche später stelle ich dir die konkrete Immobilie vor, die zu dir passt, mit Exposé und deiner persönlichen Kalkulation. Erst dann entscheidest du über eine Reservierung, und die ist kostenfrei. Danach folgen Finanzierung, Bankgutachter, Besichtigung und Notar. Nach jedem Schritt entscheidest du, ob es weitergeht.“` },
 
   // ── Phase F: Abschluss ──
   { id: "zusammenfassung", nr: 17, phase: { kennung: "F", titel: "Abschluss" }, titel: "Zusammenfassung",

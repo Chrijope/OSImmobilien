@@ -64,6 +64,17 @@ const BACKOFFICE_STUFEN = ABSCHLUSS_STUFEN;
 export const ABSCHLUSS_NUR_ROLLEN: readonly string[] = ["backoffice", "buchhaltung"];
 
 /**
+ * Darf eine dieser Rollen die Stufe setzen? Abrechnung und Abgeschlossen wie
+ * bisher, das Backoffice zusaetzlich „Termin Bankgutachter": Es traegt den
+ * Termin des Gutachters ein (Vorgabe Christian, 16.10.2026). Gesetzt wird die
+ * Stufe dann nur ueber das Termin-Fenster.
+ */
+export function abschlussRolleDarfStufe(rolle: string, stufe: string): boolean {
+  if (ABSCHLUSS_STUFEN.includes(stufe)) return true;
+  return rolle === "backoffice" && stufe === "bankgutachter";
+}
+
+/**
  * Wer auf „Abrechnung“ oder „Abgeschlossen“ und wieder heraus stellen darf
  * (Abgeschlossen: Christians Entscheidung vom 29.09.2026, Abrechnung und die
  * Buchhaltung seit 01.10.2026). Die Buchhaltung setzt nur die Stufe, die

@@ -119,11 +119,13 @@ describe("buchung_pipeline_rang", () => {
     expect(geplant).toBeLessThan(raenge.get("finanzierung") ?? -1);
   });
 
-  it("legt Besichtigung und Bankgutachter zwischen Reservierung und Finanzierung", () => {
-    // Ohne Rang machte pipeline_stufe_normalisieren die neuen Stufen zu NULL.
+  it("legt nach der Reservierung Finanzierung, Bankgutachter und Besichtigung vor den Notar", () => {
+    // Ohne Rang machte pipeline_stufe_normalisieren die Stufen zu NULL.
+    // Reihenfolge seit 16.10.2026 (zweite Fassung, Vorgabe Christian).
     const r = (k: string) => raenge.get(k) ?? -1;
-    expect(r("besichtigung")).toBeGreaterThan(r("reservierung"));
-    expect(r("bankgutachter")).toBeGreaterThan(r("besichtigung"));
-    expect(r("finanzierung")).toBeGreaterThan(r("bankgutachter"));
+    expect(r("finanzierung")).toBeGreaterThan(r("reservierung"));
+    expect(r("bankgutachter")).toBeGreaterThan(r("finanzierung"));
+    expect(r("besichtigung")).toBeGreaterThan(r("bankgutachter"));
+    expect(r("notar")).toBeGreaterThan(r("besichtigung"));
   });
 });

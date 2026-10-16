@@ -103,9 +103,9 @@ describe("Fortschrittsleiste im Kundenprofil", () => {
       "reservierung",
       // Seit 16.10.2026: Bonitaetsunterlagen ausgeblendet, neu Besichtigung
       // und Termin Bankgutachter.
-      "besichtigung",
-      "bankgutachter",
       "finanzierung",
+      "bankgutachter",
+      "besichtigung",
       "notar",
       "faelligkeit",
       "abrechnung",

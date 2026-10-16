@@ -164,7 +164,7 @@ describe("Kaufphase gegen die Datenbank", () => {
     for (const s of db) expect(istProvisionsrelevant(s)).toBe(true);
   });
   it("Prognose ohne Notardatum: Reservierung bis Notar, nicht danach", () => {
-    for (const s of ["reservierung", "bonitaetsunterlagen", "besichtigung", "bankgutachter", "finanzierung", "notar"]) {
+    for (const s of ["reservierung", "bonitaetsunterlagen", "finanzierung", "bankgutachter", "besichtigung", "notar"]) {
       expect(istKaufphaseVorNotar(s)).toBe(true);
     }
     for (const s of ["faelligkeit", "abrechnung", "abgeschlossen", "objektauswahl", "verloren", "notartermin"]) {

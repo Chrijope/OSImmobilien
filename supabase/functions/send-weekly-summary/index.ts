@@ -141,7 +141,7 @@ Deno.serve(async (req) => {
     const d = a.erledigt_am || a.datum; if (!d) continue
     if (!letzteAktivitaetMap.has(a.kunde_id)) letzteAktivitaetMap.set(a.kunde_id, new Date(d))
   }
-  const aktivStufen = ['erstgespraech_geplant', 'erstgespraech', 'beratungsgespraech', 'bonitaet', 'bonitaetsunterlagen', 'objektauswahl', 'follow_up_objekt', 'reservierung', 'besichtigung', 'bankgutachter', 'finanzierung', 'notar']
+  const aktivStufen = ['erstgespraech_geplant', 'erstgespraech', 'beratungsgespraech', 'bonitaet', 'bonitaetsunterlagen', 'objektauswahl', 'follow_up_objekt', 'reservierung', 'finanzierung', 'bankgutachter', 'besichtigung', 'notar']
   const stagnierendeDeals = (kontakteAlle || []).filter((c: any) => {
     const s = (c.meta?.pipelineStufe || '').toLowerCase()
     if (!aktivStufen.includes(s)) return false

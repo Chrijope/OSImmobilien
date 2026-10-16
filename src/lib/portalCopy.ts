@@ -241,11 +241,12 @@ export function getNextStepAbschnitt(stufe?: string | null): PortalAbschnitt | n
     case "objektauswahl":
       return "objektauswahl";
     case "reservierung":
-    case "besichtigung":
       return "reservierung";
-    case "bankgutachter":
     case "finanzierung":
+    case "bankgutachter":
       return "finanzierung";
+    // Seit 16.10.2026: Besichtigt wird am Notartag oder am Vortag.
+    case "besichtigung":
     case "notar":
       return "notar";
     case "faelligkeit":

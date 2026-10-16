@@ -572,8 +572,8 @@ describe("Objektdaten, Schritte und Zeitstrahl", () => {
     expect(text(abschnitt.querySelector(".section-head span"))).toBe("Der Weg zum Eigentum");
     const plan = screen.getByTestId("zeitplan");
     expect(Array.from(plan.querySelectorAll("h3")).map((h) => text(h))).toEqual([
-      "Erstgespräch", "Beratungspräsentation", "Selbstauskunft", "Unterlagen", "Objektvorstellung", "Reservierung",
-      "Besichtigung", "Termin Bankgutachter", "Finanzierung", "Notar", "Kaufpreisfälligkeit",
+      "Qualifizierungsgespräch", "Beratungspräsentation", "Selbstauskunft", "Unterlagen", "Objektpräsentation", "Reservierung",
+      "Finanzierung", "Termin Bankgutachter", "Besichtigung", "Notar", "Kaufpreisfälligkeit",
     ]);
     expect(Array.from(plan.querySelectorAll(".zeitplan-kasten.zahlung")).map((k) => text(k))).toEqual(["nach Regelung im Kaufvertrag"]);
     // Jede Station trägt ihre Erklärung.

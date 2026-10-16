@@ -287,15 +287,15 @@ export function pipeline(
         [
           "reservierung",
           "bonitaetsunterlagen",
-          "besichtigung",
-          "bankgutachter",
           "finanzierung",
+          "bankgutachter",
+          "besichtigung",
           "notar",
         ].includes(stage(i)),
     );
     if (
       !near.length &&
-      !["reservierung", "besichtigung", "bankgutachter", "finanzierung", "notar"].includes(stage(k))
+      !["reservierung", "finanzierung", "bankgutachter", "besichtigung", "notar"].includes(stage(k))
     )
       continue;
     const dates = near
@@ -542,9 +542,9 @@ export function financingData(investments: Row[], financings: Row[]) {
       ![
         "reservierung",
         "bonitaetsunterlagen",
-        "besichtigung",
-        "bankgutachter",
         "finanzierung",
+        "bankgutachter",
+        "besichtigung",
         "notar",
       ].includes(stage(i))
     )

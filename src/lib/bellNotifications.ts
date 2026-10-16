@@ -633,12 +633,12 @@ export function notifyPipelineChange(kundeName: string, neueStufe: string, kunde
   // 11.10.2026) – dieser Client-Aufruf ist ein Fallback für Legacy-Codepfade.
   const stufeLabel: Record<string, string> = {
     neuer_lead: "Neuer Lead", kontaktversuche: "Kontaktversuche", follow_up: "Follow-Up",
-    erstgespraech: "Erstgespräch", beratungsgespraech: "Beratungspräsentation",
+    erstgespraech: "Qualifizierungsgespräch", erstgespraech_geplant: "Qualifizierungsgespräch", beratungsgespraech: "Beratungspräsentation",
     selbstauskunft: "Selbstauskunft & Unterlagen",
-    bonitaetsunterlagen: "Bonitätsunterlagen", objektauswahl: "Objektvorstellung",
+    bonitaetsunterlagen: "Bonitätsunterlagen", objektauswahl: "Objektpräsentation / Closing",
     follow_up_objekt: "Follow-Up",
-    reservierung: "Reservierung", besichtigung: "Besichtigung", bankgutachter: "Termin Bankgutachter",
-    finanzierung: "Finanzierung", notar: "Notar",
+    reservierung: "Reservierung", finanzierung: "Finanzierung", bankgutachter: "Termin Bankgutachter",
+    besichtigung: "Besichtigung", notar: "Notar",
     faelligkeit: "Kaufpreisfälligkeit", abgeschlossen: "Abgeschlossen", verloren: "Verloren",
   };
   const label = stufeLabel[neueStufe] || neueStufe;

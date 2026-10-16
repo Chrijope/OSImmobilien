@@ -47,7 +47,7 @@ vi.mock("@/lib/dataCache", () => ({
   wennTabellenGeladen: (_t: string[], aktion: () => void) => { aktion(); return () => {}; },
 }));
 vi.mock("@/lib/bonitaetDocs", () => ({ pflichtBonitaetDocs: () => [] }));
-vi.mock("@/lib/finanzierungStore", () => ({ getFinanzierungDocStatus: () => ({ uploaded: false }) }));
+vi.mock("@/lib/finanzierungStore", () => ({ getFinanzierungDocStatus: () => ({ uploaded: false }), getFinanzierung: () => ({ angebote: [] }) }));
 vi.mock("@/lib/kontaktOwnership", () => ({ kontaktBelongsToUser: () => true }));
 vi.mock("@/lib/bellNotifications", () => ({
   notifyUser: glocke.nutzer,

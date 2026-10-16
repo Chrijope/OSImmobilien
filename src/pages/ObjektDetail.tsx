@@ -311,8 +311,8 @@ export default function ObjektDetail() {
     // Alle Stufen ab Reservierung ausser „abgeschlossen“ (oben eigens). Seit
     // 16.10.2026 auch Bonitaetsunterlagen, Besichtigung und Bankgutachter.
     const reservedStages = new Set([
-      "reservierung", "bonitaetsunterlagen", "besichtigung", "bankgutachter",
-      "finanzierung", "notar", "faelligkeit", "abrechnung",
+      "reservierung", "bonitaetsunterlagen", "finanzierung", "bankgutachter",
+      "besichtigung", "notar", "faelligkeit", "abrechnung",
     ]);
     const allInv = getInvestments().filter(inv => inv.objektId === id && inv.wohnungId);
     (async () => {

@@ -148,7 +148,7 @@ describe("Microseite OS Real Estate", () => {
   it("zeigt den Prozess in sieben Schritten, Reservierung kostenfrei", () => {
     const { container } = render(<BeraterMicrositeContent berater={berater} onOpenFunnel={() => {}} />);
     const schritte = [...container.querySelectorAll(".osm-schritte li b")].map((b) => b.textContent);
-    expect(schritte).toEqual(["Erstgespräch", "Beratungsgespräch", "Objektvorstellung", "Reservierung", "Besichtigung", "Finanzierung", "Notar"]);
+    expect(schritte).toEqual(["Qualifizierungsgespräch", "Beratungspräsentation", "Objektpräsentation", "Reservierung", "Finanzierung", "Besichtigung", "Notar"]);
     expect(screen.getByText("Kostenfrei.")).toBeInTheDocument();
   });
 
