@@ -158,15 +158,15 @@ describe("Seit dem 23.09.2026", () => {
   it("zeigt den Zeitstrahl kurz wie die Vorlage, ohne Gebührentext und ohne Werkvertrag", () => {
     const inhalt = baueExposeInhalt({ objekt, wohnung: w, heute });
     expect(inhalt.zeitplan.map((z) => [z.nr, z.titel, z.frist])).toEqual([
-      [1, "Erstgespräch", ""],
+      [1, "Qualifizierungsgespräch", ""],
       [2, "Beratungspräsentation", ""],
       [3, "Selbstauskunft", ""],
       [4, "Unterlagen", "Ausweis, letzte Gehaltsabrechnung"],
-      [5, "Objektvorstellung", ""],
+      [5, "Objektpräsentation", ""],
       [6, "Reservierung", "Kostenfrei, wirksam mit deiner Unterschrift"],
-      [7, "Besichtigung", ""],
+      [7, "Finanzierung", "2 bis 6 Wochen"],
       [8, "Termin Bankgutachter", ""],
-      [9, "Finanzierung", "2 bis 6 Wochen"],
+      [9, "Besichtigung", "am Notartag oder am Vortag"],
       [10, "Notar", "14-Tage-Frist"],
       [11, "Kaufpreisfälligkeit", "nach Regelung im Kaufvertrag"],
     ]);

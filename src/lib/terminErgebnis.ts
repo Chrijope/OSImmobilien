@@ -195,6 +195,8 @@ function modusAusAktivitaet(a: AktivitaetEntry): { modus?: TerminModus; treffpun
   if (a.zoomLink) return { modus: "video" };
   const details = a.details || "";
   const treffer = details.match(/Treffpunkt: (.+)/);
+  // Besichtigung per Video (`ORT_ONLINE` in stufenTermin.ts).
+  if (treffer && /^online\b/i.test(treffer[1].trim())) return { modus: "video" };
   if (treffer) return { modus: "vor_ort", treffpunkt: treffer[1].trim() };
   if (details.includes("Telefontermin")) return { modus: "telefon" };
   return {};
@@ -384,10 +386,10 @@ export async function terminErschienen(t: ErgebnisTermin, ctx: ErgebnisKontext):
   });
   ctx.melde({
     title: `${t.titel} erschienen ✓`,
-    description: neueStufe === "bankgutachter"
-      ? "Das Investment steht jetzt auf „Termin Bankgutachter“, die Aufgabe zum Vereinbaren ist angelegt."
-      : neueStufe === "finanzierung"
-        ? "Das Investment steht jetzt auf „Finanzierung“."
+    description: neueStufe === "besichtigung"
+      ? "Das Investment steht jetzt auf „Besichtigung“, die Aufgabe zum Vereinbaren ist angelegt."
+      : neueStufe === "notar"
+        ? "Das Investment steht jetzt auf „Notar“."
         : undefined,
   });
   // Nach einem Erstgespraech der Nachfass-Anruf drei Tage spaeter.

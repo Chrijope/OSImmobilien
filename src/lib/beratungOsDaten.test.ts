@@ -1,26 +1,37 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import {
-  PLAN_OBJEKT,
-  aufTausend,
-  begruessungsName,
-  konzeptAusSchwerpunkt,
-  rentenluecke,
-  uebernahmeAusSkript,
-  vermoegenNach,
-  wertNach,
-} from "./beratungOsDaten";
+import { OBJEKTE, begruessungsName, konzeptAusSchwerpunkt, rentenluecke, uebernahmeAusSkript } from "./beratungOsDaten";
+import { MONATSVERLAUF, VERLAUF_WOHNUNG } from "./beratungKonzeptDaten";
 
 describe("Rechnungen der Beratungspräsentation", () => {
-  it("trifft bei 2 % Wertentwicklung die Exposé-Werte", () => {
-    // Exposé Hauffstraße 38 WE01: Wert 319.000 €, Vermögen 278.000 €, drei Wohnungen 835.000 €
-    const h = PLAN_OBJEKT.zusatzrente;
-    expect(aufTausend(wertNach(h.kaufpreis, 2))).toBe(319_000);
-    expect(aufTausend(vermoegenNach(h.kaufpreis, h.restschuld, 2))).toBe(278_000);
-    expect(aufTausend(3 * vermoegenNach(h.kaufpreis, h.restschuld, 2))).toBe(835_000);
-    // Exposé Barfusstraße 9 WE03: Vermögen 572.000 €, drei Wohnungen 1.716.000 €
-    const b = PLAN_OBJEKT.steuer;
-    expect(aufTausend(vermoegenNach(b.kaufpreis, b.restschuld, 2))).toBe(572_000);
-    expect(aufTausend(3 * vermoegenNach(b.kaufpreis, b.restschuld, 2))).toBe(1_716_000);
+  it("übernimmt die Reihen der Diagramme unverändert aus dem Rechenprotokoll", () => {
+    // Tabelle „Verlauf (eine Wohnung, Monatswerte)“ im Rechenprotokoll Überarbeitung 16.10.2026
+    const protokoll: Record<number, [number, number]> = {
+      25: [-325, -52], 30: [-275, -44], 40: [-166, -48], 49: [-56, -87],
+      50: [-43, -359], 57: [51, -440], 60: [1293, 757], 64: [1352, 792],
+    };
+    for (const [alter, [vor, nach]] of Object.entries(protokoll)) {
+      expect(MONATSVERLAUF.find((m) => m.alter === Number(alter)), `Alter ${alter}`).toMatchObject({ vor, nach });
+    }
+    // „Summe Zuzahlung nach Steuer bis 57: rund 53.900 €“
+    const zuzahlung = MONATSVERLAUF.filter((m) => m.alter <= 57).reduce((s, m) => s - m.nach * 12, 0);
+    expect(Math.abs(zuzahlung - 53_900)).toBeLessThan(300);
+    // Kredit nach 404 Monaten abgezahlt, mit 58; Wert mit 65: 529.930 €
+    expect(VERLAUF_WOHNUNG.find((p) => p.rest === 0)?.alter).toBe(59);
+    expect(VERLAUF_WOHNUNG.at(-1)).toEqual({ alter: 65, rest: 0, wert: 529_930 });
+  });
+
+  it("zeigt jedes Objekt mit sieben Bildern und Konzept", () => {
+    expect(OBJEKTE.map((o) => [o.titel, o.konzepte])).toEqual([
+      ["Barfusstraße 9", ["steuer"]],
+      ["Hauffstraße 38", ["zusatzrente"]],
+      ["Doppelhaushälften", ["zusatzrente"]],
+    ]);
+    for (const o of OBJEKTE) {
+      expect(o.bilder).toHaveLength(7);
+      for (const b of o.bilder) expect(existsSync(join(process.cwd(), "public", b.src)), b.src).toBe(true);
+    }
   });
 
   it("rechnet die Rentenlücke je Monat und über 25 Jahre", () => {

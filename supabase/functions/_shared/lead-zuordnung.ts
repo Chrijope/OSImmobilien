@@ -461,9 +461,9 @@ export function istRuhenderKontakt(k: { archiviert?: unknown; status?: unknown; 
 export const KAUFPHASE_STUFEN: ReadonlySet<string> = new Set([
   "reservierung",
   "bonitaetsunterlagen",
-  "besichtigung",
-  "bankgutachter",
   "finanzierung",
+  "bankgutachter",
+  "besichtigung",
   "notar",
   "faelligkeit",
   "abrechnung",

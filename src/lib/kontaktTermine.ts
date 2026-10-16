@@ -40,7 +40,7 @@ import { istVorstellungsAufgabe } from "../../supabase/functions/_shared/handbuc
  */
 const NACH_ERSTGESPRAECH = new Set<string>([
   "beratungsgespraech", "bg_noshow", "selbstauskunft", "bonitaetsunterlagen",
-  "objektauswahl", "follow_up_objekt", "reservierung", "besichtigung", "bankgutachter", "finanzierung", "notar", "faelligkeit",
+  "objektauswahl", "follow_up_objekt", "reservierung", "finanzierung", "bankgutachter", "besichtigung", "notar", "faelligkeit",
   "abrechnung", "abgeschlossen", "vermoegensaufbau",
 ]);
 

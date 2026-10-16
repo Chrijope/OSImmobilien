@@ -88,7 +88,7 @@ describe("Stufenwechsel", () => {
 
   it("unterscheidet die beiden Follow-Up-Stufen", () => {
     expect(stufenwechselNotiz("follow_up_objekt").text)
-      .toBe('Pipeline-Stufe gewechselt auf „Follow-Up (nach Objektvorstellung)"');
+      .toBe('Pipeline-Stufe gewechselt auf „Follow-Up (nach Objektpräsentation)"');
   });
 
   it("trennt das Ereignis vom Stufenwechsel", () => {

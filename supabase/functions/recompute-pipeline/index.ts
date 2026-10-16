@@ -35,8 +35,8 @@ const PIPELINE_ORDER = [
   "beratungsgespraech", "bg_noshow", "selbstauskunft", "objektauswahl",
   // "bonitaetsunterlagen" ist seit 16.10.2026 ausgeblendet und steht im Rang
   // der Reservierung, deshalb direkt davor.
-  "follow_up_objekt", "bonitaetsunterlagen", "reservierung", "besichtigung", "bankgutachter",
-  "finanzierung", "notar",
+  "follow_up_objekt", "bonitaetsunterlagen", "reservierung", "finanzierung", "bankgutachter",
+  "besichtigung", "notar",
   "faelligkeit", "abrechnung", "abgeschlossen", "bestandsimport",
   "archiviert", "verloren",
 ];

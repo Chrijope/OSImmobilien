@@ -32,8 +32,8 @@ export const PIPELINE_STUFEN = [
    * in der Datenbank ihn schreibt. "erstgespraech" wird in
    * `normalizePipelineStufe` auf ihn abgebildet.
    */
-  { key: "erstgespraech_geplant", label: "Erstgespräch" },
-  { key: "eg_noshow", label: "EG NoShow" },
+  { key: "erstgespraech_geplant", label: "Qualifizierungsgespräch" },
+  { key: "eg_noshow", label: "QG NoShow" },
   /*
    * Neuer Ablauf seit 16.10.2026 (Umsetzungsstrategie Vertrieb, Abschnitt 3):
    * Die Schluessel bleiben, nur die Anzeigenamen folgen dem neuen Ablauf.
@@ -44,7 +44,7 @@ export const PIPELINE_STUFEN = [
   { key: "bg_noshow", label: "BP NoShow" },
   // Gilt, bis Selbstauskunft, Ausweis und letzte Gehaltsabrechnung da sind.
   { key: "selbstauskunft", label: "Selbstauskunft & Unterlagen" },
-  { key: "objektauswahl", label: "Objektvorstellung" },
+  { key: "objektauswahl", label: "Objektpräsentation / Closing" },
   /*
    * NUR MANUELL: Diese Stufe setzt ausschliesslich ein Partner von Hand,
    * wenn der Kunde nach der Objektvorstellung noch ueberlegt. Keine Automatik
@@ -68,12 +68,18 @@ export const PIPELINE_STUFEN = [
    * Spalte und kein eigenes Kaestchen mehr. Sie teilt den Rang der
    * Reservierung (`RANG_ALIAS`) und erscheint im Board in deren Spalte, mit
    * Hinweis auf der Kachel (`spaltenStufe`). Automatiken setzen sie nicht
-   * mehr; von dort rueckt ein Fall ueber die Besichtigung weiter.
+   * mehr; von dort rueckt ein Fall zur Finanzierung weiter.
    */
   { key: "bonitaetsunterlagen", label: "Bonitätsunterlagen" },
-  { key: "besichtigung", label: "Besichtigung" },
-  { key: "bankgutachter", label: "Termin Bankgutachter" },
+  /*
+   * Reihenfolge seit 16.10.2026 (Vorgabe Christian, zweite Fassung): Nach der
+   * Reservierung kommt zuerst die Finanzierung. Ist die Bonitaet genehmigt,
+   * meldet sich der Gutachter der Bank. Besichtigt wird am Tag des Notars
+   * oder am Vortag, alternativ online.
+   */
   { key: "finanzierung", label: "Finanzierung" },
+  { key: "bankgutachter", label: "Termin Bankgutachter" },
+  { key: "besichtigung", label: "Besichtigung" },
   { key: "notar", label: "Notar" },
   { key: "faelligkeit", label: "Kaufpreisfälligkeit" },
   { key: "abrechnung", label: "Abrechnung" },
@@ -113,13 +119,14 @@ export const STUFEN_WAHRSCHEINLICHKEIT: Record<string, number> = {
   reservierung: 0.6,
   /*
    * Seit 16.10.2026: Die Bonitaetsunterlagen sind ausgeblendet und teilen den
-   * Rang der Reservierung, also auch deren Wert. Besichtigung und
-   * Bankgutachter liegen zwischen Reservierung (0,60) und Finanzierung (0,80).
+   * Rang der Reservierung, also auch deren Wert. Finanzierung, Bankgutachter
+   * und Besichtigung liegen in dieser Reihenfolge zwischen Reservierung
+   * (0,60) und Notar (0,90).
    */
   bonitaetsunterlagen: 0.6,
-  besichtigung: 0.7,
+  finanzierung: 0.7,
   bankgutachter: 0.75,
-  finanzierung: 0.8,
+  besichtigung: 0.8,
   notar: 0.9,
   faelligkeit: 1,
   abrechnung: 1,
@@ -202,7 +209,7 @@ const RANG_ALIAS: Record<string, string> = {
   erstgespraech: "erstgespraech_geplant",
   bg_noshow: "beratungsgespraech",
   // Ausgeblendet seit 16.10.2026: Wer dort steht, hat unterschrieben
-  // reserviert, die Besichtigung steht noch aus.
+  // reserviert, die Finanzierung steht noch aus.
   bonitaetsunterlagen: "reservierung",
   zugewiesen: "neuer_lead",
   kontaktversuche: "nicht_erreicht",
@@ -311,7 +318,7 @@ export function darfVorruecken(aktuell: string | null | undefined, ziel: string)
  * Stufe den Zusatz.
  */
 export function stufenFilterLabel(key: string): string {
-  if (key === "follow_up_objekt") return "Follow-Up (nach Objektvorstellung)";
+  if (key === "follow_up_objekt") return "Follow-Up (nach Objektpräsentation)";
   return PIPELINE_STUFEN.find((s) => s.key === key)?.label ?? key;
 }
 
@@ -345,8 +352,8 @@ export const PipelineStufeZodEnum = z.enum([
   "bestandsimport", "neuer_lead", "nicht_erreicht", "erreicht",
   "follow_up", "erstgespraech_geplant", "eg_noshow",
   "beratungsgespraech", "bg_noshow", "selbstauskunft", "objektauswahl",
-  "follow_up_objekt", "reservierung", "bonitaetsunterlagen", "besichtigung", "bankgutachter",
-  "finanzierung", "notar", "faelligkeit",
+  "follow_up_objekt", "reservierung", "bonitaetsunterlagen", "finanzierung", "bankgutachter",
+  "besichtigung", "notar", "faelligkeit",
   "abrechnung", "abgeschlossen", "archiviert", "verloren",
   // Legacy — bleiben im Enum für Altdaten
   "erstgespraech", "zugewiesen", "kontaktversuche", "vermoegensaufbau",

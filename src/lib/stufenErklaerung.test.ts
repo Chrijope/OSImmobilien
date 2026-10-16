@@ -44,17 +44,18 @@ describe("Erklärungen zu den Pipelinestufen", () => {
   });
 
   it("beschreibt die Reihenfolge, die das System wirklich läuft", () => {
-    // Neuer Ablauf seit 16.10.2026: Beratungspräsentation, Selbstauskunft &
-    // Unterlagen, Objektvorstellung, Reservierung, Besichtigung, Termin
-    // Bankgutachter, Finanzierung.
+    // Ablauf seit 16.10.2026 (zweite Fassung): Beratungspräsentation,
+    // Selbstauskunft & Unterlagen, Objektpräsentation / Closing, Reservierung,
+    // Finanzierung, Termin Bankgutachter, Besichtigung, Notar.
     expect(STUFEN_ERKLAERUNG.beratungsgespraech).toContain("Selbstauskunft");
     expect(STUFEN_ERKLAERUNG.beratungsgespraech).not.toContain("Bonitätsunterlagen");
-    expect(STUFEN_ERKLAERUNG.selbstauskunft).toContain("Objektvorstellung");
+    expect(STUFEN_ERKLAERUNG.selbstauskunft).toContain("Objektpräsentation");
     expect(STUFEN_ERKLAERUNG.objektauswahl).toContain("Reservierung");
-    expect(STUFEN_ERKLAERUNG.reservierung).toContain("Besichtigung");
+    expect(STUFEN_ERKLAERUNG.reservierung).toContain("Finanzierung");
     expect(STUFEN_ERKLAERUNG.reservierung).not.toContain("Bonitätsunterlagen");
-    expect(STUFEN_ERKLAERUNG.besichtigung).toContain("Termin Bankgutachter");
-    expect(STUFEN_ERKLAERUNG.bankgutachter).toContain("Finanzierung");
+    expect(STUFEN_ERKLAERUNG.finanzierung).toContain("Gutachter");
+    expect(STUFEN_ERKLAERUNG.bankgutachter).toContain("„Besichtigung");
+    expect(STUFEN_ERKLAERUNG.besichtigung).toContain("Notar");
   });
 
   it("behauptet in der Objektauswahl nicht, es sei schon reserviert", () => {

@@ -2,11 +2,11 @@
  * Inhalte der neuen Beratungspräsentation (Entwurf vom 15.10.2026).
  *
  * Texte und Zahlen stehen hier, die Darstellung in
- * `src/pages/BeratungspraesentationHV.tsx`. Die Zahlen der Objekte sind für
- * die Vorschau fest aus den Exposés übernommen (Stand 14.10.2026,
- * Musterperson 80.000 € brutto, 42 % Grenzsteuersatz). Nach der Freigabe
- * kommen die Objekte aus „Objekte“ im CRM, gefiltert nach dem Merkmal
- * „Konzept“, und die Rechnung aus dem Investmentrechner.
+ * `src/pages/BeratungspraesentationHV.tsx`. Die Inhalte der beiden
+ * Vertriebs-PDFs (Abschnitt 08) stehen in `beratungKonzeptDaten.ts`. Die
+ * frühere Objektrechnung (Abschnitte Rechnung, Stresstest, Plan) ist am
+ * 16.10.2026 entfallen; gerechnet wird mit den Kundenzahlen in der
+ * Objektvorstellung.
  *
  * Alle Texte stehen in Du-Form (Hausregel: immer duzen, auch Kunden). Eine
  * Sie-Fassung gibt es nicht mehr; bewacht in `duAnrede.test.ts`.
@@ -50,29 +50,6 @@ export function rentenluecke(wunschNetto: number, erwarteteRente: number): { mon
   return { monat, gesamt: monat * 12 * RUHESTAND_JAHRE };
 }
 
-/**
- * Vermögen nach 30 Jahren: Wert der Immobilie bei jährlicher Wertentwicklung
- * minus Restschuld. Die Restschuld ist je Objekt so gewählt, dass bei 2 %
- * genau die Exposé-Werte herauskommen (Hauffstraße 278.000 €, Barfusstraße
- * 572.000 €). ponytail: feste Restschuld aus dem Exposé; im Bau liefert sie
- * der Investmentrechner für das gewählte Objekt.
- */
-export const PLAN_JAHRE = 30;
-export function wertNach(kaufpreis: number, wertentwicklungProzent: number, jahre = PLAN_JAHRE): number {
-  return kaufpreis * Math.pow(1 + wertentwicklungProzent / 100, jahre);
-}
-export function vermoegenNach(kaufpreis: number, restschuld: number, wertentwicklungProzent: number): number {
-  return wertNach(kaufpreis, wertentwicklungProzent) - restschuld;
-}
-/** Auf volle Tausend, so wie die Exposés runden. */
-export const aufTausend = (n: number) => Math.round(n / 1000) * 1000;
-
-/** Rechengrundlage je Konzept für den Regler „Wertentwicklung“. */
-export const PLAN_OBJEKT: Record<KonzeptOs, { name: string; kaufpreis: number; restschuld: number }> = {
-  zusatzrente: { name: "Hauffstraße 38", kaufpreis: 176_000, restschuld: 40_470 },
-  steuer: { name: "Barfusstraße 9", kaufpreis: 361_600, restschuld: 82_990 },
-};
-
 export const OS_TEXTE = {
   hero: {
     kicker: "OS Real Estate · Vermögensaufbau mit Immobilien",
@@ -91,7 +68,7 @@ export const OS_TEXTE = {
     punkte: [
       { titel: "Deine Ziele", text: "Was du uns im Erstgespräch gesagt hast." },
       { titel: "Das Konzept", text: "Zusatzrente oder Steuerersparnis: Wie es funktioniert." },
-      { titel: "Echte Objekte", text: "Mit den Zahlen aus unseren Exposés." },
+      { titel: "Echte Objekte", text: "Unsere drei Standorte in Berlin und Brandenburg." },
       { titel: "Deine Entscheidung", text: "Passt das Konzept? Dann der nächste Schritt." },
     ] as ReadonlyArray<{ titel: string; text: string }>,
     fuss: "Am Ende entscheidest du: Ja, Nein oder Ja unter einer Bedingung. Alles ist in Ordnung.",
@@ -228,156 +205,22 @@ export const OS_TEXTE = {
     } as Record<KonzeptOs, { nummer: string; titel1: string; titel2: string; text: string; objekte: string }>,
     ausgewaehlt: "Ausgewählt",
     auswaehlen: "Auswählen",
-    fuss: "Der Schalter ist vorbelegt mit dem Schwerpunkt aus dem Erstgespräch. Die folgenden Abschnitte zeigen das gewählte Konzept; ein Klick wechselt jederzeit.",
+    fuss: "Der Schalter ist vorbelegt mit dem Schwerpunkt aus dem Erstgespräch. Abschnitt 08 zeigt das gewählte Konzept; ein Klick wechselt jederzeit.",
+    beide: "Beide Konzepte nacheinander zeigen",
     schalter: { zusatzrente: "Konzept 1 · Zusatzrente", steuer: "Konzept 2 · Steuerersparnis" } as Record<KonzeptOs, string>,
   },
 
-  funktion: {
-    kicker: "08 · So funktioniert es",
-    zusatzrente: {
-      titel: "Heute kaufen. Abbezahlen lassen. [[Später Zusatzrente.]]",
-      schritte: [
-        { titel: "Heute", text: "Du kaufst eine vermietete Wohnung, finanziert durch die Bank. Eigenkapital nur für die Nebenkosten." },
-        { titel: "30 Jahre", text: "Mieter und Steuerwirkung tragen den größten Teil der Rate. Dein Eigenanteil ist ein überschaubarer Monatsbetrag." },
-        { titel: "Ruhestand", text: "Die Immobilie ist weitgehend abbezahlt. Die Miete fließt als Zusatzrente zu dir." },
-        { titel: "Deine Wahl", text: "Behalten, verkaufen oder vererben. Du entscheidest dann." },
-      ] as ReadonlyArray<{ titel: string; text: string }>,
-      karteObjekt: "Hauffstraße 38, WE 01",
-      zusatzrente: "920 €",
-      zusatzrenteText: "Zusatzrente im Monat ab 2061, nach laufenden Kosten rund 590 €",
-      eigenanteilKopf: "Dein Eigenanteil heute",
-      eigenanteil: "151 €",
-      eigenanteilText: "im Monat nach Steuern (391 € vor Steuern)",
-      vermoegenKopf: `Vermögen nach ${PLAN_JAHRE} Jahren`,
-      fuss: "Zahlen aus dem Exposé (Stand 14.10.2026), Musterperson 80.000 € brutto. Szenario, keine Zusage. Die Zusatzrente von 2061 entspricht heute weniger Kaufkraft.",
-    },
-    steuer: {
-      titel: "Mehr Netto vom Brutto. [[Steuer wird zu Vermögen.]]",
-      heute: "Heute",
-      brutto: "Brutto im Monat",
-      bruttoWert: "6.667 €",
-      netto: "Netto im Monat",
-      nettoWert: "3.980 €",
-      mit: "Mit Barfusstraße 9, WE 03",
-      steuerwirkung: "Steuerwirkung im Monat",
-      steuerwirkungWert: "+ 940 €",
-      nettoNeu: "4.920 €",
-      karten: [
-        { kopf: "Steuerersparnis 1. Jahr", wert: "11.278 €", text: "" },
-        { kopf: "In 10 Jahren", wert: "106.477 €", text: "" },
-        { kopf: "Ergebnis nach Steuern", wert: "−4 €", text: "im Monat, darin 362 € Tilgung" },
-      ],
-      fuss: "Exposé-Rechnung mit 42 % Grenzsteuersatz und 5,6 % AfA laut Ersteinschätzung (Gutachten nötig). Mit Regel-AfA 2,5 % rund −390 € im Monat. Dein Wert hängt von deinem Steuersatz ab. Keine Steuerberatung.",
-    },
-  },
-
   objekte: {
-    kicker: { zusatzrente: "09 · Unsere Objekte für dein Konzept", steuer: "09 · Unser Objekt für dein Konzept" } as Record<KonzeptOs, string>,
-    hauff: {
-      titel: "Hauffstraße 38, Schwielowsee bei Potsdam",
-      text: "Baujahr 2000 · 46 Wohnungen · 42 bis 80 m² · mit Garage · Aufzug · 350.000 € Instandhaltung 2020 bis 2026",
-      preis: "ab 176.000 €",
-      preisRest: "inkl. Garage · Eigenanteil ab 151 € nach Steuern",
-    },
-    zossen: {
-      titel: "Doppelhaushälften Zossen-Wünsdorf",
-      text: "Eigenes Grundstück 600 bis 800 m² · kein Hausgeld · Bahnhof 650 m · BER 22 km",
-      preis: "ab 379.000 €",
-      preisRest: "inkl. Sanierungspaket · Überschuss ab +349 € im Monat nach Steuern",
-    },
-    barfuss: {
-      titel1: "Barfusstraße 9",
-      titel2: "Berlin-Wedding",
-      text: "Gründerzeit-Altbau um 1900, Bezirk Mitte, U6 vor der Tür, Volkspark Rehberge und Schillerpark nebenan.",
-      zeilen: [
-        ["Wohnungen", "28 verfügbar"],
-        ["Größen", "37 bis 92 m²"],
-        ["Kaufpreise", "186.850 bis 469.000 €"],
-        ["Steuerersparnis 1. Jahr", "5.828 bis 14.348 €"],
-        ["Ergebnis nach Steuern", "−23 bis +163 € im Monat"],
-      ] as ReadonlyArray<readonly [string, string]>,
-      fuss: "Laut Exposés mit 5,6 % AfA (Ersteinschätzung, Gutachten nötig) und 42 % Steuersatz.",
-    },
-    fuss: "Die Objekte kommen aus „Objekte“ im CRM, gefiltert nach dem Konzept-Merkmal am Objekt. Nur verfügbare Einheiten erscheinen.",
-  },
-
-  rechnung: {
-    kicker: "10 · Die Rechnung, Zeile für Zeile",
-    spalteZeile: "Im Monat, 1. Jahr",
-    spalteBetrag: "Betrag",
-    zusatzrente: {
-      titel: "Hauffstraße 38, WE 01 · 42,53 m² · 176.000 €",
-      zeilen: [
-        { text: "Miete vom Mieter", betrag: "+ 553 €", ton: "plus" },
-        { text: "Garagenmiete", betrag: "+ 100 €", ton: "plus" },
-        { text: "Zins und Tilgung (4,8 % / 1,2 %)", betrag: "− 880 €", ton: "minus" },
-        { text: "Hausgeld, nicht umlagefähig", betrag: "− 164 €", ton: "minus" },
-        { text: "Ergebnis vor Steuern", betrag: "− 391 €", ton: "summe" },
-        { text: "Steuerwirkung (3,1 % AfA, 42 %)", betrag: "+ 241 €", ton: "plus" },
-        { text: "Dein Eigenanteil nach Steuern", betrag: "− 151 €", ton: "ergebnis" },
-        { text: "mit Regel-AfA 2 % (ohne Gutachten)", betrag: "≈ − 210 €", ton: "klein" },
-      ],
-      karten: [
-        { kopf: "Darin stecken", wert: "176 €", text: "Tilgung im Monat. Das ist Vermögen, das dir gehört." },
-        { kopf: "Nach 10 Jahren getilgt", wert: "26.318 €", text: "" },
-        { kopf: "Eigenkapital für Nebenkosten", wert: "14.960 €", text: "" },
-      ],
-      fuss: "Quelle: Exposé Hauffstraße 38 WE01, Musterrechnung S. 9. In der Präsentation wird die Rechnung mit dem Investmentrechner auf die Zahlen des Kunden umgestellt. „≈“-Wert von uns nachgerechnet.",
-    },
-    steuer: {
-      titel: "Barfusstraße 9, WE 03 · 72,32 m² · 361.600 €",
-      zeilen: [
-        { text: "Miete vom Mieter", betrag: "+ 976 €", ton: "plus" },
-        { text: "Zins und Tilgung (4,8 % / 1,2 %)", betrag: "− 1.808 €", ton: "minus" },
-        { text: "Hausgeld, nicht umlagefähig, inkl. Rücklage", betrag: "− 112 €", ton: "minus" },
-        { text: "Ergebnis vor Steuern", betrag: "− 943 €", ton: "summe" },
-        { text: "Steuerwirkung (5,6 % AfA, 42 %)", betrag: "+ 940 €", ton: "plus" },
-        { text: "Dein Ergebnis nach Steuern", betrag: "− 4 €", ton: "ergebnis" },
-        { text: "mit Regel-AfA 2,5 % (ohne Gutachten)", betrag: "≈ − 390 €", ton: "klein" },
-      ],
-      karten: [
-        { kopf: "Darin stecken", wert: "362 €", text: "Tilgung im Monat, die dein Vermögen aufbaut." },
-        { kopf: "Nach 10 Jahren getilgt", wert: "54.071 €", text: "" },
-        { kopf: "Eigenkapital für Nebenkosten", wert: "28.928 €", text: "" },
-      ],
-      fuss: "Quelle: Exposé Barfusstraße 9 WE03, Musterrechnung S. 10; Regel-AfA-Zeile laut Gesprächsleitfaden Konzeptgespräch.",
-    },
-  } as {
-    kicker: string;
-    spalteZeile: string;
-    spalteBetrag: string;
-  } & Record<KonzeptOs, {
-    titel: string;
-    zeilen: ReadonlyArray<{ text: string; betrag: string; ton: "plus" | "minus" | "summe" | "ergebnis" | "klein" }>;
-    karten: ReadonlyArray<{ kopf: string; wert: string; text: string }>;
-    fuss: string;
-  }>,
-
-  sicherheit: {
-    kicker: "11 · Sicherheit",
-    titel: "Was, wenn es [[nicht nach Plan läuft?]]",
-    karten: [
-      { kopf: "Zins steigt ab Jahr 11 um 1 Punkt", wert: "+ 72 €", text: "im Monat nach Steuern" },
-      { kopf: "Drei Monate Leerstand", wert: "≈ 1.970 €", text: "einmalig, aus deiner Reserve" },
-      { kopf: "Finanzamt erkennt Gutachten nicht an", wert: "+ 59 €", text: "im Monat nach Steuern" },
-    ] as ReadonlyArray<{ kopf: string; wert: string; text: string }>,
-    satz: "Eine Rechnung, die nur funktioniert, wenn alles glatt läuft, ist nichts wert. Wo liegt deine Grenze, auch im Stressfall?",
-    fuss: "Beispiel Hauffstraße 38 WE01, von uns nachgerechnet. Im CRM rechnet der Investmentrechner den Stresstest für das gewählte Objekt.",
-    sorge: "Deine Sorge aus dem Erstgespräch",
-  },
-
-  plan: {
-    kicker: "12 · Dein Plan",
-    titel: "Eine Wohnung ist der Anfang. [[Drei sind ein Plan.]]",
-    eins: "1 Wohnung",
-    drei: "3 Wohnungen",
-    satz: "Wir starten mit einer Wohnung. Jede weitere entscheidest du neu.",
-    regler: "Wertentwicklung pro Jahr",
-    fuss: (prozent: string) => `Zahlen aus dem Exposé, Portfolio-Seite. Szenario mit ${prozent} Wertentwicklung, keine Zusage.`,
+    kicker: "10 · Unsere Objekte",
+    titel: "Drei Standorte, [[geprüft und vermietet.]]",
+    intro: "Zu jedem Objekt gibt es Exposé, Musterrechnung und Unterlagen. In der Objektvorstellung rechnen wir die Wohnung, die zu deinen Kriterien passt, mit deinen Zahlen.",
+    marke: { steuer: "Konzept Steuerersparnis", zusatzrente: "Konzept Altersvorsorge" } as Record<KonzeptOs, string>,
+    passt: "passt zu deinem Konzept",
+    fuss: "Angaben laut Exposé, Stand Oktober 2026. Verfügbarkeit und Preise können sich ändern.",
   },
 
   kriterien: {
-    kicker: "13 · Deine Kriterien",
+    kicker: "09 · Deine Kriterien",
     titel: "Du entscheidest, [[was passen muss.]]",
     konzept: "Mein Konzept",
     hoechstens: "Höchstens im Monat vor Steuern",
@@ -387,22 +230,23 @@ export const OS_TEXTE = {
     wichtig: "Das ist mir am wichtigsten",
     worteKopf: "Deine Worte",
     worteFrage: "„Warum ist das für dich der richtige Zeitpunkt?“",
-    worteText: "Der Kunde formuliert seine Gründe selbst. Wir halten sie wörtlich fest; sie stehen später in der Objektvorstellung wieder vorn.",
+    worteText: "Der Kunde formuliert seine Gründe selbst. Wir halten sie wörtlich fest; sie stehen später in der Objektpräsentation wieder vorn.",
     rahmenKopf: "Finanzierungsrahmen, gerechnet",
+    sorge: "Deine Sorge aus dem Erstgespräch",
   },
 
   weg: {
-    kicker: "14 · Dein Weg",
+    kicker: "11 · Dein Weg",
     titel: "So geht es [[weiter.]]",
     schritte: [
-      { titel: "Erstgespräch", text: "Ziele und Rahmen", stand: "erledigt" },
+      { titel: "Qualifizierungsgespräch", text: "Ziele und Rahmen", stand: "erledigt" },
       { titel: "Beratung", text: "Konzept und Objekte", marke: "Heute", stand: "heute" },
       { titel: "Selbstauskunft", text: "gleich im Anschluss gemeinsam", marke: "Heute", stand: "heute" },
       { titel: "Unterlagen", text: "Ausweis und letzte Gehaltsabrechnung", marke: "Bis Tag 7" },
-      { titel: "Objektvorstellung", text: "Exposé und deine Kalkulation, Reservierung", marke: "Tag 7" },
-      { titel: "Besichtigung", text: "Du siehst deine Immobilie" },
+      { titel: "Objektpräsentation", text: "Exposé, Kalkulation und Finanzierungskonzept, Reservierung", marke: "Tag 7" },
+      { titel: "Finanzierung", text: "Die Bank prüft und sagt zu" },
       { titel: "Bankgutachter", text: "Bewertung für die Bank" },
-      { titel: "Finanzierung", text: "Zusage der Bank" },
+      { titel: "Besichtigung", text: "Am Notartag oder am Vortag, auch online" },
       { titel: "Notar", text: "Kaufvertrag" },
       { titel: "Kaufpreis", text: "Fälligkeit und Übergabe" },
     ] as ReadonlyArray<{ titel: string; text: string; marke?: string; stand?: "erledigt" | "heute" }>,
@@ -410,19 +254,19 @@ export const OS_TEXTE = {
   },
 
   schritt: {
-    kicker: "15 · Der nächste Schritt",
+    kicker: "12 · Der nächste Schritt",
     titel: "Wenn wir eine Immobilie finden, die [[deine Kriterien erfüllt]]: Möchtest du den nächsten Schritt gehen?",
-    text: "Dafür brauchen wir deine Selbstauskunft. Wir füllen sie jetzt gemeinsam aus, das dauert etwa 15 Minuten. Bis zur Objektvorstellung in einer Woche fehlen dann nur noch Ausweis und letzte Gehaltsabrechnung.",
+    text: "Dafür brauchen wir deine Selbstauskunft. Wir füllen sie jetzt gemeinsam aus, das dauert etwa 15 Minuten. Bis zur Objektpräsentation in einer Woche fehlen dann nur noch Ausweis und letzte Gehaltsabrechnung.",
     knopf: "Selbstauskunft jetzt gemeinsam ausfüllen",
     termin: "Objektvorstellung",
-    hinweis: "Gesprächshinweis: Frage stellen, dann schweigen. Antwort Ja, Nein oder Ja unter Bedingung im CRM festhalten.",
-    antwortKopf: "Antwort festhalten",
-    antworten: ["Ja", "Nein", "Ja unter Bedingung"],
-    bedingung: "Welche Bedingung?",
+    hinweis: "Gesprächshinweis: Frage stellen, dann schweigen.",
+    /** Öffnet den Buchungslink „Objektvorstellung“ aus den Einstellungen (profiles.objektlink). */
+    knopfObjekt: "Objektvorstellung buchen",
+    ohneObjektLink: "Kein Buchungslink für die Objektvorstellung in den Einstellungen hinterlegt",
   },
 
   termin: {
-    kicker: "16 · Dein nächster Termin",
+    kicker: "13 · Dein nächster Termin",
     titel: "Das bekommst du [[in der Objektvorstellung.]]",
     karten: [
       { titel: "Deine Immobilie", text: "Eine Empfehlung, höchstens eine Alternative, passend zu deinen Kriterien." },
@@ -430,35 +274,86 @@ export const OS_TEXTE = {
       { titel: "Das Exposé", text: "Lage, Grundriss, Unterlagen, Kosten. Alles zum Nachlesen." },
       { titel: "Deine Entscheidung", text: "Passt es, reservierst du direkt. Kostenfrei." },
     ] as ReadonlyArray<{ titel: string; text: string }>,
-    bereitlegen: "Bitte bis zum Termin bereitlegen",
-    bereitlegenText: "Personalausweis (Vorder- und Rückseite) · letzte Gehaltsabrechnung · Upload einfach im Kundenportal",
+    portalSatz: "Nach der gemeinsam ausgefüllten und von dir unterschriebenen Selbstauskunft lädst du Personalausweis und letzte Gehaltsabrechnung im Kundenportal hoch.",
+    portalKnopf: "Kundenportal freigeben",
+    portalVorUnterschrift: "Erst nach der unterschriebenen Selbstauskunft",
+    portalFreigegeben: "Kundenportal ist freigegeben",
   },
 
   fuss: "Szenarien, keine Zusagen. Wir vermitteln Immobilien; Steuer-, Rechts- und Finanzierungsberatung leisten Steuerberater, Notare und Banken.",
 };
 
+/** Bilder der Objekte, dieselben wie auf der Mikroseite (public/images/mikroseite). */
+const BILD = "/images/mikroseite";
+
 /**
- * Plan je Konzept (Abschnitt 12). Die Vermögenszeile rechnet der Regler,
- * alles andere steht fest im Exposé.
- *
- * Konzept 2 zeigt der Entwurf nicht eigens; die Zahlen stammen aus der
- * Portfolio-Seite des Exposés Barfusstraße 9 WE03.
+ * Alle Objekte für Abschnitt 10, mit dem Konzept-Merkmal. Ein Objekt kann zu
+ * beiden Konzepten passen (dann zwei Einträge in `konzepte`). Zuordnung
+ * laut Vertrieb: Barfusstraße Steuerersparnis, Hauffstraße und Zossen
+ * Altersvorsorge. ponytail: fest wie die Mikroseite; aus „Objekte“ im CRM,
+ * sobald dort Bilder und Merkmal gepflegt sind.
  */
-export const PLAN_ZEILEN: Record<KonzeptOs, ReadonlyArray<{ text: string; eins: string; drei: string; vermoegen?: true; fett?: true }>> = {
-  zusatzrente: [
-    { text: "Kaufpreise", eins: "176.000 €", drei: "528.000 €" },
-    { text: "Dein Eigenanteil im Monat nach Steuern", eins: "151 €", drei: "452 €" },
-    { text: `Vermögen nach ${PLAN_JAHRE} Jahren`, eins: "", drei: "", vermoegen: true, fett: true },
-    { text: "Zusatzrente im Monat ab 2061", eins: "920 €", drei: "2.750 €", fett: true },
-  ],
-  steuer: [
-    { text: "Kaufpreise", eins: "362.000 €", drei: "1.085.000 €" },
-    { text: "Dein Ergebnis im Monat nach Steuern, 1. Jahr", eins: "−4 €", drei: "−11 €" },
-    { text: "Steuerersparnis in 10 Jahren", eins: "106.500 €", drei: "319.400 €" },
-    { text: `Vermögen nach ${PLAN_JAHRE} Jahren`, eins: "", drei: "", vermoegen: true, fett: true },
-    { text: "Zusatzrente im Monat ab 2061", eins: "1.300 €", drei: "3.910 €", fett: true },
-  ],
-};
+export const OBJEKTE: ReadonlyArray<{
+  titel: string;
+  ort: string;
+  text: string;
+  daten: ReadonlyArray<string>;
+  preis: string;
+  konzepte: ReadonlyArray<KonzeptOs>;
+  bilder: ReadonlyArray<{ src: string; alt: string }>;
+}> = [
+  {
+    titel: "Barfusstraße 9",
+    ort: "Berlin-Wedding",
+    text: "Gründerzeit-Altbau um 1900, Bezirk Mitte, U6 vor der Tür, Volkspark Rehberge und Schillerpark nebenan.",
+    daten: ["28 Wohnungen", "37 bis 92 m²"],
+    preis: "186.850 bis 469.000 €",
+    konzepte: ["steuer"],
+    bilder: [
+      ["barfuss-fassade", "Fassade des Gründerzeit-Altbaus"],
+      ["barfuss-luftbild", "Luftbild des Altbaus im Wedding"],
+      ["barfuss-altbau-innen", "Altbauwohnung von innen"],
+      ["barfuss-fassade-hell", "Helle Altbaufassade"],
+      ["barfuss-innenhof", "Innenhof des Altbaus"],
+      ["barfuss-zimmer", "Zimmer mit Dielenboden"],
+      ["barfuss-wohnungstuer", "Historische Wohnungstür"],
+    ].map(([datei, alt]) => ({ src: `${BILD}/${datei}.jpg`, alt })),
+  },
+  {
+    titel: "Hauffstraße 38",
+    ort: "Schwielowsee bei Potsdam",
+    text: "Gepflegte Wohnanlage mit Garten, Aufzug und Garage. 350.000 € Instandhaltung von 2020 bis 2026.",
+    daten: ["Baujahr 2000", "46 Wohnungen", "42 bis 80 m²"],
+    preis: "ab 176.000 € inkl. Garage",
+    konzepte: ["zusatzrente"],
+    bilder: [
+      ["hauff-fassade", "Fassade der Wohnanlage"],
+      ["hauff-garten", "Wohnanlage mit Garten"],
+      ["hauff-luftbild", "Luftbild der Wohnanlage am Schwielowsee"],
+      ["hauff-aufzug", "Gläserner Aufzugsturm"],
+      ["hauff-strassenseite", "Straßenseite der Wohnanlage"],
+      ["hauff-wohnraum", "Wohnraum mit Balkontür"],
+      ["hauff-zimmer", "Helles Zimmer"],
+    ].map(([datei, alt]) => ({ src: `${BILD}/${datei}.jpg`, alt })),
+  },
+  {
+    titel: "Doppelhaushälften",
+    ort: "Zossen-Wünsdorf",
+    text: "Eigenes Grundstück, kein Hausgeld. Bahnhof 650 m, Flughafen BER 22 km.",
+    daten: ["600 bis 800 m² Grundstück", "kein Hausgeld"],
+    preis: "ab 379.000 € inkl. Sanierungspaket",
+    konzepte: ["zusatzrente"],
+    bilder: [
+      ["zossen-haus-garten", "Doppelhaushälfte mit Garten"],
+      ["zossen-luisenstrasse", "Haus an der Luisenstraße in Zossen"],
+      ["zossen-strasse", "Hausansicht mit Garten in Zossen-Wünsdorf"],
+      ["zossen-rasen", "Großer Garten"],
+      ["zossen-treppe", "Flur mit Treppe"],
+      ["zossen-kueche", "Neue Küche"],
+      ["zossen-zimmer", "Helles Zimmer"],
+    ].map(([datei, alt]) => ({ src: `${BILD}/${datei}.jpg`, alt })),
+  },
+];
 
 /**
  * Ziele des Erstgesprächs in die Ziele der Präsentation (ANLAGE_ZIELE, gleiche

@@ -100,31 +100,32 @@ const GUIDE: Partial<Record<PipelineStufe, NextStepsGuide>> = {
     ],
   },
   erstgespraech_geplant: {
-    titel: "Erstgespräch führen & Lead an den Berater übergeben",
+    titel: "Qualifizierungsgespräch führen & Lead an den Berater übergeben",
     aktionen: [
       { text: "Termin gegenüber dem Lead bestätigen und kurz vorher an ihn erinnern" },
       { text: "Erstgesprächsskript und Unterlagen für den Termin vorbereiten" },
       { text: "Im Gespräch das Skript durchgehen und den Bedarf qualifizieren" },
       { text: "Nach dem Termin das Ergebnis eintragen: erschienen, verschoben oder No-Show" },
-      { text: "Beratungsgespräch vereinbaren" },
+      { text: "Beratungspräsentation vereinbaren, 2 bis 5 Tage nach dem Gespräch" },
     ],
     hinweis: 'Die Knöpfe für das Termin-Ergebnis erscheinen erst, wenn der Termin-Zeitpunkt erreicht ist. Sobald das Erstgesprächsskript gespeichert und das Beratungsgespräch eingebucht wurde, springt die Pipeline-Stufe automatisch auf „Beratungsgespräch".',
   },
   eg_noshow: {
-    titel: "Neuen Erstgesprächstermin vereinbaren",
+    titel: "Neuen Termin für das Qualifizierungsgespräch vereinbaren",
     aktionen: [
       { text: "Lead anrufen und den geplatzten Termin offen ansprechen" },
-      { text: "Neuen Erstgesprächstermin mit Datum und Uhrzeit eintragen" },
+      { text: "Neuen Termin für das Qualifizierungsgespräch mit Datum und Uhrzeit eintragen" },
       { text: 'Reagiert der Lead nicht mehr: Gesprächsausgang „Nicht erreicht" nutzen, damit die Versuche gezählt werden' },
     ],
-    hinweis: "Der No-Show-Hinweis im Kundenprofil verschwindet automatisch, sobald ein neuer Erstgesprächstermin gebucht ist.",
+    hinweis: "Der No-Show-Hinweis im Kundenprofil verschwindet automatisch, sobald ein neuer Termin für das Qualifizierungsgespräch gebucht ist.",
   },
   beratungsgespraech: {
     titel: "Beratungspräsentation vorbereiten & durchführen",
     aktionen: [
       { text: "Beratungspräsentation öffnen und auf den Kunden vorbereiten" },
       { text: "Beratungspräsentation führen, Bedarf & Bonität gemeinsam qualifizieren" },
-      { text: "Selbstauskunft direkt im Gespräch gemeinsam mit dem Kunden ausfüllen" },
+      { text: "Am Ende zur Selbstauskunft überleiten und sie direkt im Gespräch gemeinsam mit dem Kunden ausfüllen" },
+      { text: "Objektpräsentation / Closing für etwa 7 Tage später vereinbaren" },
     ],
     // Geprüft in kontaktPipeline.calculateLogicalPipelineStufe: Sobald die
     // Selbstauskunft beim Kunden liegt und die Unterschrift aussteht, ist die
@@ -147,7 +148,7 @@ const GUIDE: Partial<Record<PipelineStufe, NextStepsGuide>> = {
     titel: "Selbstauskunft und Unterlagen einholen",
     aktionen: [
       { text: "Selbstauskunft an den Kunden senden oder gemeinsam im Gespräch ausfüllen" },
-      { text: "Personalausweis und letzte Gehaltsabrechnung im Portal hochladen lassen" },
+      { text: "Personalausweis und letzte Gehaltsabrechnung bis Tag 7 im Portal hochladen lassen" },
       { text: "Nachfassen, solange die Unterschrift aussteht" },
       { text: "Parallel schon freie Wohnungen sichten, damit du direkt nach der Unterschrift Objekte zeigen kannst" },
     ],
@@ -160,21 +161,22 @@ const GUIDE: Partial<Record<PipelineStufe, NextStepsGuide>> = {
     hinweis:
       "Der Kunde wird nach 3, 7 und 11 Tagen automatisch per E-Mail erinnert, jeweils mit dir als " +
       "Ansprechpartner. Füllt er sie bis Tag 14 nicht aus, landet eine Aufgabe in deiner Inbox. " +
-      'Sobald der Kunde unterschreibt, springt der Deal automatisch auf „Objektvorstellung" und du bekommst die Aufgabe, die Objektvorstellung in 7 Tagen zu terminieren.',
+      'Sobald der Kunde unterschreibt, springt der Deal automatisch auf „Objektpräsentation / Closing" und du bekommst die Aufgabe, die Objektpräsentation in 7 Tagen zu terminieren.',
   },
   objektauswahl: {
-    titel: "Objektvorstellung durchführen",
+    titel: "Objektpräsentation / Closing durchführen",
     aktionen: [
       { text: "Freie Wohnungen im System und in Investagon prüfen und passende Einheiten vorschlagen" },
-      { text: "Kunde das Objekt mit Exposé und Investmentkalkulation vorstellen" },
-      { text: "Reservierung im selben Termin starten, sobald Selbstauskunft, Ausweis und Gehaltsabrechnung da sind" },
+      { text: "Kunde das Objekt mit Exposé und Investmentkalkulation auf Basis der Selbstauskunft vorstellen" },
+      { text: "Finanzierungskonzept besprechen: Hier soll der Kunde kaufen wollen" },
+      { text: "Reservierung im selben Termin starten (Reservierungsformular ohne Gebühr)" },
     ],
     // Zwei Tage vor dem Termin prueft useInvestmentInboxTriggers, ob Ausweis
     // und letzte Gehaltsabrechnung fehlen.
     hinweis: "Fehlen zwei Tage vor dem Termin noch Ausweis oder Gehaltsabrechnung, bekommst du eine Aufgabe zum Nachfassen.",
   },
   follow_up_objekt: {
-    titel: "Follow-Up nach der Objektvorstellung",
+    titel: "Follow-Up nach der Objektpräsentation",
     aktionen: [
       { text: "Kunde überlegt noch. Dranbleiben und Follow-Up-Termin vereinbaren" },
       { text: "Offene Fragen zum Objekt klären und fehlende Unterlagen nachreichen" },
@@ -191,25 +193,27 @@ const GUIDE: Partial<Record<PipelineStufe, NextStepsGuide>> = {
       { text: "Warte auf Kundenunterschrift (digitale Signatur)" },
       { text: "Empfehlungsprogramm aktiv ansprechen" },
     ],
-    // Seit 16.10.2026: Nach der Unterschrift bleibt die Stufe, es entsteht
-    // die Aufgabe "Besichtigung vereinbaren" (KundenDetail).
-    hinweis: 'Mit der digitalen Gegenzeichnung durch den Kunden ist die Reservierung abgeschlossen, und du bekommst die Aufgabe „Besichtigung vereinbaren". Setzt du die Stufe auf „Besichtigung", trägst du dabei den Termin ein.',
-  },
-  besichtigung: {
-    titel: "Besichtigung durchführen",
-    aktionen: [
-      { text: "Besichtigung mit dem Kunden wahrnehmen" },
-      { text: 'Danach unter „Nächste Aktionen" das Ergebnis eintragen' },
-    ],
-    hinweis: 'Mit „Stattgefunden" rückt der Deal auf „Termin Bankgutachter", und du bekommst die Aufgabe, den Termin mit dem Gutachter zu vereinbaren.',
+    // Seit 16.10.2026 (zweite Fassung): Nach der Unterschrift kommt die
+    // Finanzierung (KundenDetail, Automatik „Finanzierung angefragt").
+    hinweis: 'Mit der digitalen Gegenzeichnung durch den Kunden ist die Reservierung abgeschlossen. Als Nächstes wird die Finanzierung angefragt; sobald ein Finanzierungspartner benachrichtigt oder die Bonität gemeldet ist, rückt der Deal auf „Finanzierung".',
   },
   bankgutachter: {
     titel: "Termin Bankgutachter begleiten",
     aktionen: [
-      { text: "Termin mit dem Gutachter der Bank abstimmen und begleiten" },
+      { text: "Das Backoffice trägt den Termin des Gutachters im Abschnitt Finanzierung ein: Datum, Uhrzeit, Ort" },
+      { text: "Kunde über den Termin informieren und den Gutachter begleiten" },
       { text: 'Danach unter „Nächste Aktionen" das Ergebnis eintragen' },
     ],
-    hinweis: 'Mit „Stattgefunden" rückt der Deal auf „Finanzierung".',
+    hinweis: 'Mit „Stattgefunden" rückt der Deal auf „Besichtigung", und du bekommst die Aufgabe, die Besichtigung zu vereinbaren.',
+  },
+  besichtigung: {
+    titel: "Besichtigung durchführen",
+    aktionen: [
+      { text: "Besichtigung am Tag des Notartermins oder am Vortag vereinbaren, alternativ online" },
+      { text: "Besichtigung mit dem Kunden wahrnehmen" },
+      { text: 'Danach unter „Nächste Aktionen" das Ergebnis eintragen' },
+    ],
+    hinweis: 'Mit „Stattgefunden" rückt der Deal auf „Notar".',
   },
   // Ausgeblendete Altstufe (16.10.2026), nur noch fuer Bestandsfaelle.
   bonitaetsunterlagen: {
@@ -229,9 +233,10 @@ const GUIDE: Partial<Record<PipelineStufe, NextStepsGuide>> = {
     aktionen: [
       { text: "Finanzierungspartner prüft mit Banken Finanzierbarkeit und bewirkt Angebote" },
       { text: "Mit Finanzierungspartner Kunde Angebote vorstellen" },
-      { text: 'Finanzierungspartner lädt finales Darlehensangebot und Vertrag in Finanzierungs-Tab hoch. Stufe rückt dann automatisch auf „Notar".' },
+      { text: "Ist die Finanzierung positiv: Kaufvertragsentwurf beim Notar in Auftrag geben (Aufgabe kommt automatisch)" },
+      { text: "Meldet sich der Gutachter der Bank, trägt das Backoffice den Termin im Abschnitt Finanzierung ein" },
     ],
-    hinweis: "Der Finanzierungspartner lädt das Angebot hoch, der VP koordiniert. Ein separater Admin-Freigabeschritt ist nicht nötig.",
+    hinweis: "Der Finanzierungspartner lädt das Angebot hoch, der VP koordiniert. Danach folgen Termin Bankgutachter, Besichtigung und Notar.",
   },
   notar: {
     titel: "Notartermin organisieren",

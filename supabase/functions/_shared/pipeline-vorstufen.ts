@@ -51,9 +51,9 @@ export const FORTSCHRITT_REIHENFOLGE = [
   "reservierung",
   // Seit 16.10.2026 haben die Bonitaetsunterlagen keinen eigenen Schritt
   // mehr, sie stehen unten in RANG_ALIAS auf dem Rang der Reservierung.
-  "besichtigung",
-  "bankgutachter",
   "finanzierung",
+  "bankgutachter",
+  "besichtigung",
   "notar",
   "faelligkeit",
   "abrechnung",

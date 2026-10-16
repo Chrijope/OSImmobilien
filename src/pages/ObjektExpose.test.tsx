@@ -402,7 +402,7 @@ describe("Exposé-Seite seit dem 23.09.2026", () => {
     // Seit dem 16.10.2026 elf Stationen vom Erstgespräch bis zur Kaufpreisfälligkeit, nichts vorab abgehakt.
     expect(zeitplan.querySelectorAll("li")).toHaveLength(11);
     expect(zeitplan.querySelectorAll("[data-testid^='zeitplan-station-']")).toHaveLength(11);
-    expect(screen.getByTestId("zeitplan-station-1")).toHaveTextContent("Erstgespräch");
+    expect(screen.getByTestId("zeitplan-station-1")).toHaveTextContent("Qualifizierungsgespräch");
     expect(screen.getByTestId("zeitplan-station-1").querySelector(".zeitplan-kasten")).toBeNull();
     expect(screen.getByTestId("zeitplan-station-6")).toHaveTextContent("ReservierungKostenfrei, wirksam mit deiner Unterschrift");
     expect(screen.getAllByTestId("zeitplan-zahlung").map((k) => k.textContent)).toEqual(["nach Regelung im Kaufvertrag"]);

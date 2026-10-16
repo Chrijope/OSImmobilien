@@ -36,9 +36,9 @@ type Datenbank = {
  */
 const STUFEN_OHNE_ERINNERUNG = new Set<string>([
   'objektauswahl', 'follow_up_objekt', 'reservierung', 'bonitaetsunterlagen',
-  'besichtigung',
+  'finanzierung',
   'bankgutachter',
-  'finanzierung', 'notar', 'faelligkeit', 'abrechnung', 'abgeschlossen',
+  'besichtigung', 'notar', 'faelligkeit', 'abrechnung', 'abgeschlossen',
   'archiviert', 'verloren', 'vermoegensaufbau',
 ])
 

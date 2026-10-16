@@ -29,11 +29,12 @@ export const INACTIVITY_THRESHOLDS: Partial<Record<PipelineStufe, [number, numbe
   // wie die Objektauswahl, der Kunde soll nicht wochenlang "überlegen".
   follow_up_objekt: [7, 10],
   reservierung: [10, 20],
-  // Neu seit 16.10.2026. Die Besichtigung soll zuegig nach der Reservierung
-  // stattfinden; beim Bankgutachter wartet man teils auf die Bank.
-  besichtigung: [5, 10],
-  bankgutachter: [7, 14],
+  // Reihenfolge seit 16.10.2026: Finanzierung, Bankgutachter, Besichtigung.
+  // Beim Bankgutachter wartet man teils auf die Bank. Besichtigt wird erst
+  // am Notartag oder am Vortag, deshalb dieselben Schwellen wie beim Notar.
   finanzierung: [10, 20],
+  bankgutachter: [7, 14],
+  besichtigung: [10, 20],
   notar: [10, 20],
   faelligkeit: [10, 20],
   abrechnung: [10, 20],

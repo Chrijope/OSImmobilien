@@ -24,7 +24,7 @@ const ADMIN_ROLES = ["admin", "inhaber", "vertriebsleiter", "testaccount"];
 // damit der Kontakt im Kundenprofil korrekt weiterlaufen kann.
 const STUFEN_MIT_INVESTMENT = new Set<string>([
   "beratungsgespraech", "bonitaetsunterlagen", "objektauswahl",
-  "follow_up_objekt", "reservierung", "besichtigung", "bankgutachter", "finanzierung", "notar", "faelligkeit",
+  "follow_up_objekt", "reservierung", "finanzierung", "bankgutachter", "besichtigung", "notar", "faelligkeit",
   "abrechnung", "abgeschlossen",
 ]);
 

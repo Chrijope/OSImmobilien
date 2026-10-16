@@ -103,7 +103,7 @@ import { cn } from "@/lib/utils";
 import { PIPELINE_STUFEN, getEffectivePipelineStufe, getProzessBereichForStufe, istTerminInZukunft, heuteIso, TERMIN_ZUKUNFT_MELDUNG, type ProzessBereich } from "@/lib/kontaktPipeline";
 // Was eine Stufe bedeutet, steht an einer Stelle, siehe stufenErklaerung.ts.
 import { STUFEN_ERKLAERUNG } from "@/lib/stufenErklaerung";
-import { FORTSCHRITT_STUFEN, fortschrittsRang, fortschrittsStufe, istNoShowStufe, stufeErreicht, stufenFilterLabel } from "@/lib/pipelineStufen";
+import { darfVorruecken, FORTSCHRITT_STUFEN, fortschrittsRang, fortschrittsStufe, istNoShowStufe, stufeErreicht, stufenFilterLabel } from "@/lib/pipelineStufen";
 import { InactivityAmpel } from "@/components/kunden/InactivityAmpel";
 import { BuchungErgebnisKarten } from "@/components/kunden/BuchungErgebnisKarten";
 import RechnerAngaben from "@/components/kunden/RechnerAngaben";
@@ -163,8 +163,9 @@ import { abschlussWeg, sammelbareAufgaben, sammelwegBeschreibung } from "@/lib/a
 import { findeErgebnisTermin, ladeErgebnisTermine, lokalesDatum, type ErgebnisKontext, type ErgebnisTermin } from "@/lib/terminErgebnis";
 import { TerminErgebnisDialog } from "@/components/kunden/TerminErgebnisDialog";
 import { StufenTerminDialog } from "@/components/kunden/StufenTerminDialog";
-import { brauchtStufenTermin, terminFehlerText, type TerminStufe } from "@/lib/stufenTermin";
-import { speichereStufenTermin, stelleBesichtigungsAufgabeSicher } from "@/lib/stufenTerminAktionen";
+import { besichtigungsVorschlag, brauchtStufenTermin, terminFehlerText, type TerminStufe } from "@/lib/stufenTermin";
+import { BankgutachterTerminZeile } from "@/components/finanzierung/BankgutachterTerminZeile";
+import { speichereStufenTermin } from "@/lib/stufenTerminAktionen";
 import { berechneInaktivitaetsAmpel } from "@/lib/inaktivitaetsAmpel";
 import { useNaechsteAktionKachel } from "@/components/kunden/profil/useOffeneAufgabenKachel";
 import { ToastAction } from "@/components/ui/toast";
@@ -209,6 +210,7 @@ import { useKundenSprache, setzeKundenSprache, stelleKundenspracheSicher, kunden
 import { KUNDEN_GLOCKE } from "@/lib/kundenGlocke";
 import { schaltePortalSperre, portalSperreAmServer } from "@/components/kunde/kundenportalSperre";
 import { edgeFehlerMitGrund } from "@/lib/edgeFehler";
+import { kundenportalFreischalten, person2Einladen, portalMetaAendern, portalMetaLesen, type PortalStatus } from "@/lib/kundenportalFreischalten";
 
 import { supabase } from "@/integrations/supabase/client";
 import { getUnreadChatCountForKunde } from "@/lib/chatStore";
@@ -295,10 +297,8 @@ import {
   getNotarTerminModus,
   setNotarTerminModus,
   getUnterlagenFreigeschalten,
-  setUnterlagenFreigeschalten,
   getUnterlagenFreigeschaltetAt,
   getInvestmentUnterlagenFreigeschalten,
-  setInvestmentUnterlagenFreigeschalten,
   getInvestmentUnterlagenFreigeschaltetAt,
   getCustomBankDocs,
   addCustomBankDoc,
@@ -361,6 +361,7 @@ import {
   setzeStufeFruehePhase,
   kontaktVerlorenAnInvestments,
   kontaktWiederaufnahmeAnInvestments,
+  getInvestmentById,
   type NotarTerminVorschlag,
 } from "@/lib/investmentsStore";
 import { KaufvertragForm } from "@/components/notar/KaufvertragForm";
@@ -386,7 +387,7 @@ import { verlustGrundLabel } from "@/lib/verlustgruende";
 import { NUR_POPUP_OVERLAY } from "@/lib/popupOverlay";
 // Abwicklungsdaten liegen am Investment, nicht mehr in den persoenlichen
 // Einstellungen des Eintragenden. Siehe Kommentar in abwicklungStore.ts.
-import { getAbwicklungDaten, saveAbwicklungDaten, abwicklungGespeichert, ABWICKLUNG_ROLLEN, ABWICKLUNG_GELD_ROLLEN, ABSCHLUSS_HINWEIS, ABSCHLUSS_NUR_ROLLEN, ABSCHLUSS_STUFEN, darfAbschlussStufeWechseln, type AbwicklungDaten } from "@/lib/abwicklungStore";
+import { getAbwicklungDaten, saveAbwicklungDaten, abwicklungGespeichert, ABWICKLUNG_ROLLEN, ABWICKLUNG_GELD_ROLLEN, ABSCHLUSS_HINWEIS, ABSCHLUSS_NUR_ROLLEN, ABSCHLUSS_STUFEN, abschlussRolleDarfStufe, darfAbschlussStufeWechseln, type AbwicklungDaten } from "@/lib/abwicklungStore";
 import { AktionVerweigert } from "@/lib/investmentGepruefteWege";
 // Mailversand mit gepruefter Feldliste. Wird Aufrufstelle fuer Aufrufstelle
 // eingefuehrt, siehe Kommentar in mailVersand.ts.
@@ -967,10 +968,10 @@ const PRE_SA_PIPELINE_STEPS = new Set<string>([
  * vorne und damit als zugedeckt. Das ist die sichere Richtung: Lieber einmal
  * zu viel zugedeckt als Unterlagen aufgedeckt, die noch niemand angefasst hat.
  */
-// Seit 16.10.2026 die Besichtigung: Die Bonitaetsunterlagen haben keinen
-// eigenen Schritt mehr, und die Besichtigung ist der Schritt hinter der
+// Seit 16.10.2026 die Finanzierung: Die Bonitaetsunterlagen haben keinen
+// eigenen Schritt mehr, und die Finanzierung ist der Schritt hinter der
 // Reservierung, so wie es die Bonitaet bis dahin war.
-const BONITAET_AB_INDEX = fortschrittsRang("besichtigung");
+const BONITAET_AB_INDEX = fortschrittsRang("finanzierung");
 
 // Alle drei Funktionen gehen über `fortschrittsRang`. Der kennt auch die
 // Stufen ohne eigenes Kästchen (NoShow, Legacy-Aliase) und hält an der
@@ -2349,228 +2350,36 @@ export default function KundenDetail() {
     return () => { cancelled = true; clearInterval(interval); };
   }, [id, investments.map(i => `${i.id}-${getSaSignaturePending(i.id)}-${getSaSigned(i.id)}-${getRvSignaturePending(i.id)}-${getRvSigned(i.id)}`).join(",")]);
 
-  // Kundenportal status – stored in kontakte meta via dataCache
-  type PortalStatus = "none" | "eingeladen" | "aktiv" | "ausstehend" | "gesperrt";
-  const getPortalMeta = () => {
-    if (isTestAccount()) {
-      const raw = localStorage.getItem(`osimmo_portal_meta_${id || ""}`);
-      return raw ? JSON.parse(raw) : { status: localStorage.getItem(`osimmo_portal_${id || ""}`) === "true" ? "eingeladen" : "none" };
-    }
-    const rows = cacheGet("kontakte");
-    const row = rows.find((r: any) => r.id === id);
-    const meta = (row?.meta as any) || {};
-    if (meta.portalGesperrt) return { status: "gesperrt" as PortalStatus, ...meta };
-    if (meta.portalAktiv) return { status: "aktiv" as PortalStatus, ...meta };
-    if (meta.portalFreigeschalten) return { status: "eingeladen" as PortalStatus, ...meta };
-    return { status: "none" as PortalStatus, ...meta };
-  };
+  // Kundenportal status – stored in kontakte meta via dataCache (kundenportalFreischalten.ts)
+  const getPortalMeta = () => portalMetaLesen(id || "");
   const portalMeta = getPortalMeta();
   const portalFreigeschalten = portalMeta.status !== "none";
   const portalStatus: PortalStatus = portalMeta.status;
 
-  const updatePortalMeta = (updates: Record<string, any>) => {
-    if (isTestAccount()) {
-      const rows = cacheGet("kontakte");
-      const row = rows.find((r: any) => r.id === id);
-      const meta = { ...(row?.meta || {}), ...updates };
-      localStorage.setItem(`osimmo_portal_meta_${id || ""}`, JSON.stringify(meta));
-      localStorage.setItem(`osimmo_portal_${id || ""}`, "true");
-      forceUpdate(n => n + 1);
-      return;
-    }
-    // Optimistic local update
-    const rows = cacheGet("kontakte");
-    const row = rows.find((r: any) => r.id === id);
-    if (row) {
-      const idx = rows.findIndex((r: any) => r.id === id);
-      if (idx >= 0) {
-        const next = [...rows];
-        next[idx] = { ...rows[idx], meta: { ...(row.meta || {}), ...updates } };
-        cacheSet("kontakte", next);
-      }
-    }
-    forceUpdate(n => n + 1);
-    // Atomic server-side merge to prevent race conditions
-    supabase.rpc("merge_kontakt_meta", {
-      _kontakt_id: id,
-      _updates: updates,
-    }).then(({ data, error }) => {
-      if (error) console.error("merge_kontakt_meta error:", error);
-      else if (data) {
-        const arr = cacheGet("kontakte");
-        const i = arr.findIndex((r: any) => r.id === id);
-        if (i >= 0) {
-          const next = [...arr];
-          next[i] = { ...arr[i], meta: data };
-          cacheSet("kontakte", next);
-        }
-        forceUpdate(n => n + 1);
-      }
-    });
-  };
+  const updatePortalMeta = (updates: Record<string, any>) =>
+    portalMetaAendern(id || "", updates, () => forceUpdate(n => n + 1));
 
   const [portalLoading, setPortalLoading] = useState(false);
 
+  // Derselbe Weg wie in der Beratungspräsentation (Abschnitt 16).
   const handlePortalFreischalten = async () => {
-    if (!kunde?.email) {
-      toast({ title: "Keine E-Mail hinterlegt", description: "Bitte zuerst eine E-Mail-Adresse für den Kunden eintragen.", variant: "destructive" });
-      return;
-    }
-    // Einmalige Rückfrage „Deutsch oder English?“, falls noch nie gewählt (Plan Kundensprache 2.4).
-    await stelleKundenspracheSicher(id);
-
-    const now = new Date().toISOString();
-    if (isTestAccount()) {
-      updatePortalMeta({ portalFreigeschalten: true, portalActivatedAt: now });
-      // Unterlagen automatisch mit-freischalten (Kontakt- + Investment-Ebene)
-      try {
-        setUnterlagenFreigeschalten(id!, true);
-        investments.forEach((iv: any) => {
-          try { setInvestmentUnterlagenFreigeschalten(iv.id, true); } catch {}
-        });
-      } catch {}
-      toast({ title: "Kundenportal freigeschaltet ✓", description: `Login-Daten werden an ${kunde.email} gesendet.` });
-      return;
-    }
-
     setPortalLoading(true);
     try {
-      // Retry up to 2 times on transient errors (network blips, cold starts)
-      let data: any = null;
-      let error: any = null;
-      let lastMsg = "";
-      for (let attempt = 0; attempt < 2; attempt++) {
-        const res = await supabase.functions.invoke("invite-user", {
-          body: {
-            email: kunde.email,
-            name: `${kunde.vorname} ${kunde.nachname}`,
-            role: "kunde",
-            kontaktId: id,
-          },
-        });
-        data = res.data;
-        error = res.error;
-        if (!error && !data?.error) break;
-        // Bei einer Ablehnung steht der Grund im Rumpf der Antwort, nicht in
-        // `error.message` („Keine Berechtigung …“ bei fremden Kontakten).
-        const mitGrund = error ? ((await edgeFehlerMitGrund(error, { functionName: "invite-user" })) as Error) : null;
-        lastMsg = data?.error || mitGrund?.message || error?.message || "Unbekannter Fehler";
-        console.warn(`Portal freischalten attempt ${attempt + 1} failed:`, lastMsg);
-        // Don't retry on permission / validation errors
-        if (/berechtig|autoris|fehlend|email/i.test(lastMsg)) break;
-        await new Promise((r) => setTimeout(r, 800));
-      }
-
-      if (error || data?.error) {
-        console.error("Portal freischalten error (final):", lastMsg, error, data);
-        toast({ title: "Fehler beim Einladen", description: lastMsg, variant: "destructive" });
-        return;
-      }
-
-      // Edge Function already updated meta server-side, only update local cache
-      const rows = cacheGet("kontakte");
-      const row = rows.find((r: any) => r.id === id);
-      if (row) {
-        const idx = rows.findIndex((r: any) => r.id === id);
-        if (idx >= 0) { rows[idx] = { ...rows[idx], meta: { ...(row.meta || {}), portalFreigeschalten: true, portalActivatedAt: now, authUserId: data?.userId } }; }
-      }
-      forceUpdate(n => n + 1);
-      // Unterlagen automatisch mit-freischalten, damit der Kunde sofort
-      // alle Bonitätsunterlagen im Portal hochladen kann.
-      // Ueber mergeKontaktMeta statt setUnterlagenFreigeschalten: nur so wird
-      // der Schreibvorgang abgewartet und der Zwischenspeicher erst bei Erfolg
-      // auf "freigegeben" gestellt. Sonst zeigt das CRM eine Freigabe an, die
-      // der Kunde in seinem Portal gar nicht hat.
-      let unterlagenFreigabeOk = false;
-      try {
-        unterlagenFreigabeOk = await mergeKontaktMeta(id!, {
-          unterlagenFreigeschaltet: true,
-          unterlagenFreigeschaltetAt: now,
-        });
-      } catch (e) {
-        console.error("[Portal freischalten] Unterlagen-Freigabe fehlgeschlagen:", e);
-      }
-      if (unterlagenFreigabeOk) {
-        investments.forEach((iv: any) => {
-          try {
-            setInvestmentUnterlagenFreigeschalten(iv.id, true);
-          } catch (e) {
-            console.error("[Portal freischalten] Freigabe am Investment fehlgeschlagen:", iv?.id, e);
-          }
-        });
-      }
-      addAktivitaet({ kundeId: id!, art: "notiz", beschreibung: `Kundenportal freigeschaltet – Einladung an ${kunde.email} gesendet`, von: user.name });
-      toast({ title: "Kundenportal freigeschaltet ✓", description: `Einladung wurde an ${kunde.email} gesendet.` });
-      if (!unterlagenFreigabeOk) {
-        toast({
-          title: "Unterlagen sind noch gesperrt",
-          description: "Das Kundenportal ist offen, aber die Unterlagen konnten nicht freigegeben werden. Der Kunde sieht sie noch nicht. Bitte die Freigabe gleich noch einmal auslösen.",
-          variant: "destructive",
-        });
-      }
-
-      // Invite Person 2 if exists
-      if (kunde.person2) {
-        if (kunde.person2.email) {
-          handleInvitePerson2();
-        } else {
-          // Person 2 hat keine E-Mail → Vertriebspartner benachrichtigen
-          const kontaktRow = cacheGet("kontakte").find((k: any) => k.id === id);
-          const beraterId = kontaktRow?.zustaendig_id;
-          if (beraterId) {
-            notifyUser(beraterId, {
-              titel: "Person 2 ohne E-Mail-Adresse",
-              nachricht: `Beim Freischalten des Kundenportals für ${kunde.vorname} ${kunde.nachname} wurde festgestellt, dass Person 2 (${kunde.person2.vorname} ${kunde.person2.nachname}) keine E-Mail-Adresse hinterlegt hat. Bitte E-Mail nachtragen, damit Person 2 ebenfalls Zugang zum Portal erhält.`,
-              link: `/kunden/${id}`,
-            });
-          }
-          toast({ title: "Hinweis: Person 2 ohne E-Mail", description: `${kunde.person2.vorname} ${kunde.person2.nachname} hat keine E-Mail – Portal kann nur für Person 1 aktiviert werden. Vertriebspartner wurde benachrichtigt.` });
-        }
-      }
-    } catch (err) {
-      console.error("Portal freischalten error:", err);
-      toast({ title: "Fehler", description: "Kundenportal konnte nicht freigeschaltet werden.", variant: "destructive" });
+      await kundenportalFreischalten({
+        kontaktId: id!,
+        kunde,
+        investmentIds: investments.map((iv: any) => iv.id),
+        vonName: user.name,
+        toast,
+        geaendert: () => forceUpdate(n => n + 1),
+      });
     } finally {
       setPortalLoading(false);
     }
   };
 
-  const handleInvitePerson2 = async () => {
-    if (!kunde?.person2?.email) {
-      toast({ title: "Keine E-Mail für Person 2", description: "Bitte zuerst eine E-Mail-Adresse für Person 2 eintragen.", variant: "destructive" });
-      return;
-    }
-    // Eine Sprache je Kontakt, Person 2 bekommt dieselbe (Plan Entscheidung 11).
-    await stelleKundenspracheSicher(id);
-    if (isTestAccount()) {
-      updatePortalMeta({ person2Invited: true, person2InvitedAt: new Date().toISOString() });
-      toast({ title: "Person 2 eingeladen ✓", description: `Einladung an ${kunde.person2.email} gesendet.` });
-      return;
-    }
-    try {
-      const { data, error } = await supabase.functions.invoke("invite-user", {
-        body: {
-          email: kunde.person2.email,
-          name: `${kunde.person2.vorname} ${kunde.person2.nachname}`,
-          role: "kunde",
-          kontaktId: id,
-          person2: true,
-          vorname: kunde.person2.vorname,
-          nachname: kunde.person2.nachname,
-          telefon: kunde.person2.telefon,
-        },
-      });
-      if (error || data?.error) {
-        const mitGrund = error ? ((await edgeFehlerMitGrund(error, { functionName: "invite-user" })) as Error) : null;
-        toast({ title: "Fehler", description: data?.error || mitGrund?.message || error?.message, variant: "destructive" });
-        return;
-      }
-      updatePortalMeta({ person2Invited: true, person2InvitedAt: new Date().toISOString(), person2AuthUserId: data?.userId });
-      toast({ title: "Person 2 eingeladen ✓", description: `Einladung an ${kunde.person2.email} gesendet.` });
-    } catch (err) {
-      toast({ title: "Fehler", description: "Person 2 konnte nicht eingeladen werden.", variant: "destructive" });
-    }
-  };
+  const handleInvitePerson2 = () =>
+    person2Einladen({ kontaktId: id!, kunde, toast, geaendert: () => forceUpdate(n => n + 1) });
 
   const handlePortalSperren = async () => {
     const ok = await confirmDialog({
@@ -4468,7 +4277,10 @@ export default function KundenDetail() {
    */
   const [aktionTermin, setAktionTermin] = useState<ErgebnisTermin | null>(null);
   /** Stufe Besichtigung oder Termin Bankgutachter von Hand: erst der Termin, dann die Stufe. */
-  const [stufenTermin, setStufenTermin] = useState<{ investmentId: string; investmentLabel?: string; stufe: TerminStufe; label: string } | null>(null);
+  // `ausFinanzierung`: aus der Zeile „Termin Bankgutachter" im Abschnitt
+  // Finanzierung. Dann rueckt die Stufe nur vor, nie zurueck, und es gibt
+  // keinen Vermerk „manuell gesetzt".
+  const [stufenTermin, setStufenTermin] = useState<{ investmentId: string; investmentLabel?: string; stufe: TerminStufe; label: string; ausFinanzierung?: boolean } | null>(null);
 
   /*
    * Die beiden Listen der Kachel "Naechste Aktion".
@@ -8675,12 +8487,12 @@ export default function KundenDetail() {
     }
 
     /*
-      Seit 16.10.2026 (neuer Ablauf): Die unterschriebene Reservierung
-      schliesst die Reservierung ab, als naechstes kommt die Besichtigung.
-      Die Stufe bleibt deshalb auf „Reservierung" (oder rueckt von der
-      Objektvorstellung dorthin), und der Zustaendige bekommt die Aufgabe
-      „Besichtigung vereinbaren". Die Besichtigung selbst setzt jemand von
-      Hand mit Termin (`StufenTerminDialog`).
+      Seit 16.10.2026 (neuer Ablauf, zweite Fassung): Die unterschriebene
+      Reservierung schliesst die Reservierung ab, als naechstes kommt die
+      Finanzierung. Die Stufe bleibt deshalb auf „Reservierung" (oder rueckt
+      von der Objektpraesentation dorthin), bis die Finanzierung angefragt
+      ist (siehe unten). „Besichtigung vereinbaren" entsteht nicht mehr hier,
+      sondern nach dem Bankgutachter bzw. sobald der Notartermin steht.
 
       Bisher ging es von hier auf „Bonitätsunterlagen" bzw. beim
       Selbstfinanzierer direkt auf „Finanzierung". Beide Spruenge entfallen:
@@ -8703,14 +8515,6 @@ export default function KundenDetail() {
         }
         notifyKundeReservierung(id || "");
         notiereStufenwechsel(RV_UNTERSCHRIEBEN, "reservierung");
-        void stelleBesichtigungsAufgabeSicher({
-          kundeId: id || "",
-          kundeName: `${kunde.vorname || ""} ${kunde.nachname || ""}`.trim() || "Kunde",
-          investmentId: inv.id,
-          investmentLabel: inv.label,
-          erstelltVonName: user.name,
-          rueckfallZustaendig: kunde.zustaendig_id || undefined,
-        });
         reloadKunde();
       });
     }
@@ -8756,9 +8560,15 @@ export default function KundenDetail() {
       saData: getInvestmentMetaField<Record<string, unknown> | null>(inv.id, "saData", null),
       saSnapshot: getInvestmentMetaField<Record<string, unknown> | null>(inv.id, "saSnapshot", null),
     });
-    // Seit 16.10.2026 nur noch fuer Bestandsfaelle auf der ausgeblendeten
-    // Stufe: Aus der Reservierung geht es ueber Besichtigung und Bankgutachter.
-    if (bonitaetFrei && inv.pipelineStufe === "bonitaetsunterlagen") {
+    /*
+      Seit 16.10.2026 (zweite Fassung): Nach der unterschriebenen Reservierung
+      kommt die Finanzierung. Sie gilt als angefragt, sobald die Bonitaet
+      freigegeben und gemeldet ist oder ein Finanzierungspartner benachrichtigt
+      wurde. Danach folgen Bankgutachter und Besichtigung.
+    */
+    const finanzierungAngefragt = bonitaetFrei
+      || [getInvestmentMetaField<unknown>(inv.id, "finanzierungPartnerMeldungen", [])].flat().filter(Boolean).length > 0;
+    if (finanzierungAngefragt && rvSignedForAutoAdvance && ["reservierung", "bonitaetsunterlagen"].includes(inv.pipelineStufe)) {
       stufenwechsel(inv.id, "finanzierung", () => {
         updateInvestment(inv.id, { pipelineStufe: "finanzierung" });
         updateKontakt(id || "", { pipelineStufe: "finanzierung", status: "qualifiziert" });
@@ -8969,7 +8779,7 @@ export default function KundenDetail() {
             // „Abgeschlossen“ (seit 04.10.2026). Die Datenbank prüft dasselbe
             // (pipeline_abschluss_schuetzen).
             const istAbschlussRolle = ABSCHLUSS_NUR_ROLLEN.includes(user.role);
-            const darfSetzen = (key: string) => isAdminOverride || (istAbschlussRolle && ABSCHLUSS_STUFEN.includes(key));
+            const darfSetzen = (key: string) => isAdminOverride || (istAbschlussRolle && abschlussRolleDarfStufe(user.role, key));
             const istAktuell = (key: string) => PIPELINE_STEPS[invStep]?.key === key;
             // "Abrechnung" und "Abgeschlossen" setzen und verlassen nur Admin, Inhaber, Backoffice.
             const abschlussGesperrtFuer = (key: string) =>
@@ -9045,6 +8855,12 @@ export default function KundenDetail() {
                     return;
                   }
                   if (!isAdminOverride && istAbschlussRolle && darfSetzen(s.key) && !e.altKey && !isCurrent) {
+                    // Backoffice: Termin Bankgutachter nur mit Termin, die
+                    // Stufe rueckt dabei nur vor (wie im Abschnitt Finanzierung).
+                    if (brauchtStufenTermin(s.key)) {
+                      setStufenTermin({ investmentId: inv.id, investmentLabel: inv.label, stufe: s.key, label: s.label, ausFinanzierung: true });
+                      return;
+                    }
                     const ok = await confirmDialog({
                       title: `Stufe auf „${s.label}" setzen?`,
                       description: s.key === "abgeschlossen"
@@ -11185,6 +11001,18 @@ export default function KundenDetail() {
                 objektTitel={inv.objektTitel}
                 weNr={inv.weNr}
               />
+              {/*
+                Termin Bankgutachter (Vorgabe Christian, 16.10.2026): Nach der
+                Finanzierungsanfrage traegt das Backoffice hier Datum, Uhrzeit
+                und Ort ein. Dieselben Rollen wie beim Finanzierungspartner.
+              */}
+              {stufeErreicht(inv.pipelineStufe, "reservierung") && (
+                <BankgutachterTerminZeile
+                  investmentId={inv.id}
+                  darfEintragen={darfFinanzierungspartnerMelden(user.role) && (user.role !== "vertriebspartner" || darfKundeBearbeiten)}
+                  onEintragen={() => setStufenTermin({ investmentId: inv.id, investmentLabel: inv.label, stufe: "bankgutachter", label: "Termin Bankgutachter", ausFinanzierung: true })}
+                />
+              )}
               {(() => {
                 const m = inv.meta || {};
                 // Nur zu einem eingetragenen Objekt. Ohne Objekt zeigte der
@@ -14488,10 +14316,14 @@ export default function KundenDetail() {
         <StufenTerminDialog
           stufe={stufenTermin?.stufe ?? null}
           kundeName={kunde ? `${kunde.vorname || ""} ${kunde.nachname || ""}`.trim() : undefined}
+          notarVorschlag={(() => {
+            const terminInv = stufenTermin ? getInvestmentById(stufenTermin.investmentId) : undefined;
+            return besichtigungsVorschlag(terminInv?.notarTermin, terminInv?.notarUhrzeit);
+          })()}
           onAbbrechen={() => setStufenTermin(null)}
           onSpeichern={async (eingabe) => {
             if (!stufenTermin || !id || !kunde) return null;
-            const { investmentId, investmentLabel, stufe, label } = stufenTermin;
+            const { investmentId, investmentLabel, stufe, label, ausFinanzierung } = stufenTermin;
             try {
               await speichereStufenTermin(stufe, eingabe, {
                 kundeId: id,
@@ -14504,6 +14336,17 @@ export default function KundenDetail() {
               return terminFehlerText(fehler);
             }
             setStufenTermin(null);
+            if (ausFinanzierung) {
+              // Nur nach vorn: Steht der Vorgang schon bei Besichtigung oder
+              // Notar, bleibt die Stufe, der Termin ist trotzdem eingetragen.
+              if (darfVorruecken(getInvestmentById(investmentId)?.pipelineStufe, stufe)) {
+                await updateInvestment(investmentId, { pipelineStufe: stufe });
+              }
+              addAktivitaet({ kundeId: id, art: "notiz", beschreibung: `${label} eingetragen: ${eingabe.datum} um ${eingabe.uhrzeit} Uhr${eingabe.ort ? `, ${eingabe.ort}` : ""} (${user.name})`, von: user.name });
+              toast({ title: "Termin eingetragen ✓", description: `${label}: ${eingabe.datum} um ${eingabe.uhrzeit} Uhr` });
+              reloadKunde();
+              return null;
+            }
             if (!(await updateInvestment(investmentId, { pipelineStufe: stufe }))) {
               toast({ title: "Termin gespeichert, Stufe nicht gesetzt", description: "Bitte die Stufe erneut setzen.", variant: "destructive" });
               return null;

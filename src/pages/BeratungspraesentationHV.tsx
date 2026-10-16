@@ -25,7 +25,7 @@
  */
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowRight, CalendarClock, Check, ChevronDown, ClipboardList, FileText, Mail, Menu, Phone, X } from "lucide-react";
+import { ArrowRight, CalendarCheck, CalendarClock, Check, ChevronDown, ChevronLeft, ChevronRight, ClipboardList, FileText, KeyRound, Mail, Menu, Phone, X } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 import { usePersistedState } from "@/hooks/usePersistedState";
 import { SPRECHSKRIPT_NACH_ID, sprechskriptFuerAnrede } from "@/lib/beratungSprechskripte";
@@ -33,7 +33,9 @@ import { rahmenAusUeberschuss } from "@/lib/finanzierbarkeitUtils";
 import { RATE_EINGANG, rateAnteile } from "@/lib/rateAnteile";
 import { useCacheReady } from "@/hooks/useCacheReady";
 import { getKontaktById } from "@/lib/kundenStore";
-import { getInvestmentMetaField } from "@/lib/investmentsStore";
+import { getInvestmentMetaField, getInvestmentsByKontakt } from "@/lib/investmentsStore";
+import { kundenportalFreischalten, portalMetaLesen } from "@/lib/kundenportalFreischalten";
+import { toast } from "@/hooks/use-toast";
 import { cacheGet, onCacheChange } from "@/lib/dataCache";
 import { ladeBerater } from "@/lib/beraterProfil";
 import { initialen, vertriebspartnerFuerExpose, type ProfilZeile, type RollenZeile } from "@/lib/exposeAnsprechpartner";
@@ -42,27 +44,24 @@ import { ANLAGE_ZIELE, zielNachLabel } from "@/lib/anlageZiele";
 import { zuZahl } from "@/lib/beratungspraesentationSprache";
 import { BERATUNG_TEXTE, formatierer, inAnrede, type AnredeWert } from "@/lib/beratungspraesentationTexte";
 import {
+  OBJEKTE,
   OS_TEXTE,
-  PLAN_OBJEKT,
-  PLAN_ZEILEN,
-  aufTausend,
   begruessungsName,
   konzeptAusSchwerpunkt,
   rentenluecke,
   uebernahmeAusSkript,
-  vermoegenNach,
-  wertNach,
   type KonzeptOs,
 } from "@/lib/beratungOsDaten";
-import { DOKUMENTE_B, KAUFKRAFT_B, OS_TEXTE_B, dokumenteFuer } from "@/lib/beratungOsDatenB";
+import { DOKUMENTE_B, KAUFKRAFT_B, OS_TEXTE_B } from "@/lib/beratungOsDatenB";
+import { WAS_WENN } from "@/lib/beratungKonzeptDaten";
+import { FARBE, Folie, Fussnote, Karte, Kopf, Titel, Wert } from "@/components/beratung/folienBausteine";
+import { AltersvorsorgeFolien, SteuerFolien } from "@/components/beratung/KonzeptFolien";
 import logoHell from "@/assets/os-real-estate-logo.png";
 import logoDunkel from "@/assets/os-real-estate-logo-dark.png";
 import logoQuer from "@/assets/os-real-estate-logo-quer.png";
 import logoQuerDunkel from "@/assets/os-real-estate-logo-quer-dunkel.png";
 import osZeichen from "@/assets/beratung/os-zeichen-gold.png";
-import fotoHauff from "@/assets/beratung/hauffstrasse-38.jpg";
 import fotoZossen from "@/assets/beratung/zossen-wuensdorf.jpg";
-import fotoBarfuss from "@/assets/beratung/barfusstrasse-9.jpg";
 import "@/styles/praesentation-liquid.css";
 import "@/styles/beratung-os.css";
 
@@ -75,156 +74,18 @@ export interface BeratungVorschau {
   skript: { anrede?: string; antworten?: Record<string, string>; ziele?: string[] } | null;
   /** Erfundener Beispielpartner für die Karte „Dein persönlicher Ansprechpartner“. */
   ansprechpartner?: Person;
+  /** Buchungslink „Objektvorstellung“ des Beispielpartners. */
+  objektlink?: string;
+  /** Simuliert die unterschriebene Selbstauskunft (Abschnitt 16). */
+  saUnterschrieben?: boolean;
 }
 
-/** Hell liegt auf dem Grund der Glasschicht, Grün und Tief sind dunkelgrüne Abschnitte. */
-type Ton = "hell" | "gruen" | "tief";
-
-/*
- * Farben aus den Tokens des CRM (index.css, design-liquid.css). Die beiden
- * Grüntöne haben den Farbton von --primary, nur dunkel. Gold bleibt als
- * Akzent, wie im Logo; auf hellem Grund das dunklere Gold (--bos-akzent).
- */
-const FARBE = {
-  gruen: "hsl(157 42% 13%)",
-  tief: "hsl(158 38% 9%)",
-  gold: "#CCAC05",
-  goldDunkel: "var(--bos-akzent)",
-  /** Grün als Schrift, auf Glas die dunklere Stufe der Glasschicht. */
-  gruenText: "hsl(var(--lg-schrift-blau, var(--primary)))",
-  primaer: "hsl(var(--primary))",
-  tinte: "hsl(var(--foreground))",
-  grau: "hsl(var(--muted-foreground))",
-  linie: "hsl(var(--border))",
-  hellText: "#F3F7F5",
-  // 0,8 statt 0,68: kleine Schrift auf Dunkelgrün braucht 4,5:1 (gerechnet etwa 9:1).
-  hellGedaempft: "rgba(243,247,245,0.8)",
-  salbei: "#6F9A7E",
-  /** Schrift auf Gold. */
-  aufGold: "#14231B",
-};
 
 /** Primärgrün der hellen CRM-Fassung, fest: die Hero-Karte bleibt auch im dunklen CRM hell. */
 const HERO_GRUEN = "#15724F";
 
 const TrainerContext = createContext(false);
 
-/** Überschrift mit [[Akzent]]: auf hellem Grund dunkles Gold, auf Grün helles. */
-function Titel({ text, ton, className = "" }: { text: string; ton: Ton; className?: string }) {
-  const teile = text.split(/\[\[|\]\]/);
-  const akzent = ton === "hell" ? FARBE.goldDunkel : FARBE.gold;
-  return (
-    <h2 className={`font-semibold leading-[1.12] tracking-[-0.022em] text-[2rem] sm:text-[2.6rem] md:text-[3.1rem] ${className}`}>
-      {teile.map((t, i) =>
-        i % 2 ? (
-          <span key={i} style={{ color: akzent }}>
-            {t}
-          </span>
-        ) : (
-          t
-        ),
-      )}
-    </h2>
-  );
-}
-
-/** Ein Abschnitt: hell auf dem Grund der Glasschicht oder dunkelgrün hinterlegt. */
-function Folie({
-  id,
-  ton,
-  kicker,
-  titel,
-  children,
-  oben,
-  ohneStrich,
-}: {
-  id: string;
-  ton: Ton;
-  kicker?: string;
-  titel?: string;
-  children?: React.ReactNode;
-  /** Steht über dem Kicker, etwa der Konzeptschalter. */
-  oben?: React.ReactNode;
-  ohneStrich?: boolean;
-}) {
-  const dunkel = ton !== "hell";
-  return (
-    <section
-      id={id}
-      data-ton={ton}
-      className={`relative scroll-mt-16 px-4 sm:px-8 md:px-12 py-14 md:py-20 ${dunkel ? "bos-dunkel" : ""}`}
-      style={dunkel ? { background: ton === "gruen" ? FARBE.gruen : FARBE.tief, color: FARBE.hellText } : undefined}
-    >
-      <div className="max-w-6xl mx-auto">
-        {oben && <div className="mb-8">{oben}</div>}
-        {kicker && (
-          <p className="bos-kicker mb-3" style={{ color: dunkel ? FARBE.gold : FARBE.gruenText }}>
-            {kicker}
-          </p>
-        )}
-        {titel && <Titel text={titel} ton={ton} />}
-        {titel && !ohneStrich && <div className="mt-5 h-[3px] w-14 rounded-full" style={{ background: dunkel ? FARBE.gold : FARBE.primaer }} />}
-        {children}
-      </div>
-    </section>
-  );
-}
-
-/**
- * Karte. Hell: eine Karte der Glasschicht (`data-ui="card"` mit `bg-card`,
- * design-liquid.css macht sie zu Glas). Dunkel: die dunkle Scheibe
- * `.bos-glas-dunkel` aus beratung-os.css.
- */
-function Karte({
-  dunkel,
-  children,
-  className = "",
-  rand,
-}: {
-  dunkel?: boolean;
-  children: React.ReactNode;
-  className?: string;
-  rand?: string;
-}) {
-  return (
-    <div
-      data-ui={dunkel ? undefined : "card"}
-      className={`rounded-2xl border p-5 md:p-6 min-w-0 ${dunkel ? "bos-glas-dunkel" : "bg-card text-card-foreground"} ${className}`}
-      style={rand ? { borderColor: rand } : undefined}
-    >
-      {children}
-    </div>
-  );
-}
-
-/** Kleine Kopfzeile in Karten. */
-function Kopf({ children, dunkel }: { children: React.ReactNode; dunkel?: boolean }) {
-  return (
-    <p className="text-xs font-medium uppercase tracking-[0.06em]" style={{ color: dunkel ? FARBE.hellGedaempft : FARBE.grau }}>
-      {children}
-    </p>
-  );
-}
-
-/** Große Zahl. */
-function Wert({ children, farbe, klein }: { children: React.ReactNode; farbe?: string; klein?: boolean }) {
-  return (
-    <p
-      className={`font-semibold tracking-[-0.02em] tabular-nums mt-2 leading-none break-words ${klein ? "text-[1.7rem]" : "text-[2rem] md:text-[2.4rem]"}`}
-      style={{ color: farbe }}
-    >
-      {children}
-    </p>
-  );
-}
-
-function Fussnote({ children, dunkel }: { children: React.ReactNode; dunkel?: boolean }) {
-  return (
-    <p className="mt-4 text-xs leading-relaxed" style={{ color: dunkel ? "rgba(243,247,245,0.72)" : FARBE.grau }}>
-      {children}
-    </p>
-  );
-}
 
 /** Freitext, der mit dem Inhalt wächst, damit lange Antworten nicht abgeschnitten werden. */
 function Freitext({
@@ -295,7 +156,7 @@ function Trainer({ id, hinweis, dunkel }: { id?: string; hinweis?: string; dunke
   );
 }
 
-/** Der Schalter Konzept 1 / Konzept 2, oben in den Abschnitten 8 bis 10 und 12. */
+/** Der Schalter Konzept 1 / Konzept 2, oben auf der ersten Folie von Abschnitt 08. */
 function KonzeptSchalter({
   konzept,
   setKonzept,
@@ -454,7 +315,7 @@ function KaufkraftGrafik() {
   );
 }
 
-/** Fassung B: Vertriebsdokumente zum gewählten Konzept, öffnen als PDF in neuem Tab. */
+/** Fassung B: das Vertriebsdokument zum Konzept, am Ende seiner Folien; öffnet als PDF in neuem Tab. */
 function DokumenteB({ konzepte }: { konzepte: KonzeptOs[] }) {
   return (
     <div className="mt-8 flex flex-col sm:flex-row flex-wrap gap-3" data-testid="dokumente-b">
@@ -475,14 +336,90 @@ function DokumenteB({ konzepte }: { konzepte: KonzeptOs[] }) {
   );
 }
 
+/**
+ * Bilder eines Objekts im Wechsel (Abschnitt 10), wie auf der Mikroseite:
+ * läuft im Bild von selbst weiter, hält beim Überfahren und Fokussieren an und bei
+ * „Bewegung reduzieren“ gar nicht erst los. Pfeile und Punkte gehen immer.
+ */
+function Diashow({ bilder, label }: { bilder: ReadonlyArray<{ src: string; alt: string }>; label: string }) {
+  const [aktuell, setAktuell] = useState(0);
+  const [pause, setPause] = useState(false);
+  // Läuft erst, wenn die Diashow im Bild ist; sonst steht beim Hinscrollen schon das letzte Bild da.
+  const [imBild, setImBild] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const anzahl = bilder.length;
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const beobachter = new IntersectionObserver(([e]) => setImBild(e.isIntersecting), { threshold: 0.5 });
+    beobachter.observe(el);
+    return () => beobachter.disconnect();
+  }, []);
+  useEffect(() => {
+    const ruhig = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (!imBild || pause || ruhig || anzahl < 2) return;
+    const takt = window.setInterval(() => setAktuell((x) => (x + 1) % anzahl), 5000);
+    return () => window.clearInterval(takt);
+  }, [imBild, pause, anzahl]);
+  const gehe = (schritt: number) => setAktuell((x) => (x + schritt + anzahl) % anzahl);
+  const pfeil = "absolute top-1/2 -translate-y-1/2 h-10 w-10 rounded-full grid place-items-center text-white bg-black/45 hover:bg-black/65";
+  return (
+    <div
+      ref={ref}
+      role="group"
+      aria-roledescription="carousel"
+      aria-label={label}
+      data-testid="diashow"
+      className="relative aspect-[4/3] overflow-hidden rounded-2xl"
+      style={{ background: FARBE.gruen }}
+      onMouseEnter={() => setPause(true)}
+      onMouseLeave={() => setPause(false)}
+      onFocus={() => setPause(true)}
+      onBlur={() => setPause(false)}
+    >
+      {bilder.map((b, i) => (
+        <img
+          key={b.src}
+          src={b.src}
+          alt={b.alt}
+          aria-hidden={i !== aktuell}
+          loading="lazy"
+          className="absolute inset-0 h-full w-full object-cover transition-opacity duration-700 motion-reduce:transition-none"
+          style={{ opacity: i === aktuell ? 1 : 0 }}
+        />
+      ))}
+      <button type="button" data-no-shrink className={`${pfeil} left-3`} aria-label="Vorheriges Bild" onClick={() => gehe(-1)}>
+        <ChevronLeft aria-hidden className="h-5 w-5" />
+      </button>
+      <button type="button" data-no-shrink className={`${pfeil} right-3`} aria-label="Nächstes Bild" onClick={() => gehe(1)}>
+        <ChevronRight aria-hidden className="h-5 w-5" />
+      </button>
+      <div className="absolute bottom-2 inset-x-0 flex justify-center">
+        {bilder.map((b, i) => (
+          <button
+            key={b.src}
+            type="button"
+            data-no-shrink
+            aria-label={`Bild ${i + 1} von ${anzahl}`}
+            aria-current={i === aktuell}
+            onClick={() => setAktuell(i)}
+            className="p-1.5"
+          >
+            <span aria-hidden className="block h-2 w-2 rounded-full" style={{ background: i === aktuell ? FARBE.gold : "rgba(255,255,255,0.6)" }} />
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const ROT = "#A8402F";
 
 const NAV: Array<[string, string]> = [
   ["ziele", "Ziele"],
   ["konzept", "Konzept"],
-  ["objekte", "Objekte"],
-  ["rechnung", "Rechnung"],
   ["kriterien", "Kriterien"],
+  ["objekte", "Objekte"],
   ["schritt", "Nächster Schritt"],
 ];
 
@@ -580,6 +517,19 @@ export default function BeratungspraesentationHV({
     });
   })();
 
+  /*
+   * Buchungslink „Objektvorstellung“ (Einstellungen, profiles.objektlink):
+   * mit Kunde der des zuständigen Partners, sonst der des Angemeldeten.
+   * Dieselbe Reihenfolge wie beim Ansprechpartner.
+   */
+  const objektLink = (() => {
+    if (vorschau) return vorschau.objektlink?.trim() || "";
+    const profile = cacheGet<ProfilZeile & { objektlink?: string | null }>("profiles");
+    const zustaendig = leseQuelle().kontakt?.zustaendig_id as string | undefined;
+    const id = zustaendig && profile.some((p) => p.id === zustaendig) ? zustaendig : authUser?.id;
+    return profile.find((p) => p.id === id)?.objektlink?.trim() || "";
+  })();
+
   // Antworten im Gespräch. Schlüssel wie bisher, damit Mitgeschriebenes erhalten bleibt.
   const [antworten, setAntworten] = usePersistedState<Record<string, string>>(
     `beratung-antworten-${kundeId || "ohne-kunde"}`,
@@ -637,14 +587,13 @@ export default function BeratungspraesentationHV({
   const konzept: KonzeptOs = (w("konzept") as KonzeptOs) || konzeptAusSchwerpunkt(w("schwerpunkt"));
   const setKonzept = (k: KonzeptOs) => setzeAntwort("konzept", k);
 
-  // Regler: Wertentwicklung im Plan und in „So funktioniert es“.
-  const [wertentwicklung, setWertentwicklung] = useState(2);
-  const planObjekt = PLAN_OBJEKT[konzept];
-  const vermoegen1 = aufTausend(vermoegenNach(planObjekt.kaufpreis, planObjekt.restschuld, wertentwicklung));
-  const vermoegen3 = aufTausend(3 * vermoegenNach(planObjekt.kaufpreis, planObjekt.restschuld, wertentwicklung));
-  const hauffWert = aufTausend(wertNach(PLAN_OBJEKT.zusatzrente.kaufpreis, wertentwicklung));
-  const hauffVermoegen = aufTausend(vermoegenNach(PLAN_OBJEKT.zusatzrente.kaufpreis, PLAN_OBJEKT.zusatzrente.restschuld, wertentwicklung));
-  const prozentText = `${fmt.zahl(wertentwicklung, wertentwicklung % 1 ? 1 : 0)} %`;
+  /*
+   * Abschnitt 08 zeigt den Inhalt des gewählten Konzepts. Beide Konzepte
+   * nacheinander nur auf Wunsch (Knopf in 07) oder bei Schwerpunkt „beides“;
+   * dann Steuer zuerst, weil die Altersvorsorge auf den +274 € aufbaut.
+   */
+  const beide = w("konzeptBeide") ? w("konzeptBeide") === "ja" : w("schwerpunkt") === "beides";
+  const gezeigteKonzepte: KonzeptOs[] = beide ? ["steuer", "zusatzrente"] : [konzept];
 
   // Ziele, höchstens drei. Gespeichert als Beschriftungen, Semikolon-getrennt (wie bisher).
   const gewaehlteZiele = w("ziel")
@@ -718,6 +667,40 @@ export default function BeratungspraesentationHV({
     // In der Vorschau gibt es keinen Kunden und keine Anmeldung: zeigen, wohin es ginge.
     if (vorschau) setVorschauSprung(selbstauskunftAdresse());
     else navigate(selbstauskunftAdresse());
+  };
+
+  /*
+   * Abschnitt 16: Kundenportal freigeben, derselbe Weg wie im Kundenprofil
+   * (kundenportalFreischalten.ts). Erst mit unterschriebener Selbstauskunft
+   * am Investment; die Vorschau simuliert nur.
+   */
+  const saUnterschrieben = vorschau
+    ? !!vorschau.saUnterschrieben
+    : hatKundenKontext && getInvestmentMetaField<boolean>(investmentId, "saSigned", false) === true;
+  const [portalFreigabeLaeuft, setPortalFreigabeLaeuft] = useState(false);
+  const [vorschauPortal, setVorschauPortal] = useState(false);
+  const portalFreigegeben = vorschau ? vorschauPortal : !!kundeId && portalMetaLesen(kundeId).status !== "none";
+  const portalFreigeben = async () => {
+    if (vorschau) {
+      setVorschauPortal(true);
+      return;
+    }
+    const kunde = getKontaktById(kundeId);
+    if (!kunde) return;
+    setPortalFreigabeLaeuft(true);
+    try {
+      await kundenportalFreischalten({
+        kontaktId: kundeId,
+        kunde,
+        investmentIds: getInvestmentsByKontakt(kundeId).map((iv) => iv.id),
+        vonName: user.name,
+        toast,
+        geaendert: () => setCacheTakt((n) => n + 1),
+      });
+    } finally {
+      setPortalFreigabeLaeuft(false);
+      setCacheTakt((n) => n + 1);
+    }
   };
 
   const rahmenZeilen: Array<{ label: string; schluessel: string; einheit?: string; platzhalter: string }> = [
@@ -1238,6 +1221,18 @@ export default function BeratungspraesentationHV({
                   );
                 })}
               </div>
+              <button
+                type="button"
+                data-no-shrink
+                aria-pressed={beide}
+                data-testid="konzept-beide"
+                onClick={() => setzeAntwort("konzeptBeide", beide ? "nein" : "ja")}
+                className="mt-5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium"
+                style={beide ? { background: FARBE.primaer, borderColor: FARBE.primaer, color: "hsl(var(--primary-foreground))" } : { borderColor: FARBE.linie, color: FARBE.gruenText }}
+              >
+                {beide && <Check className="h-3.5 w-3.5" />}
+                {T.konzept.beide}
+              </button>
               <Fussnote>
                 {T.konzept.fuss}
                 {w("schwerpunkt") && !w("konzept") && (
@@ -1246,254 +1241,41 @@ export default function BeratungspraesentationHV({
               </Fussnote>
             </Folie>
 
-            {/* ─── 08 So funktioniert es ─── */}
-            <Folie
-              id="funktion"
-              ton="gruen"
-              oben={<KonzeptSchalter konzept={konzept} setKonzept={setKonzept} dunkel />}
-              kicker={T.funktion.kicker}
-              titel={konzept === "zusatzrente" ? T.funktion.zusatzrente.titel : T.funktion.steuer.titel}
-              ohneStrich
-            >
-              {konzept === "zusatzrente" ? (
-                <>
-                  <ol className="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-6 relative">
-                    <div aria-hidden className="hidden lg:block absolute left-0 right-0 top-4 h-px" style={{ background: "rgba(243,247,245,0.3)" }} />
-                    {T.funktion.zusatzrente.schritte.map((s, i) => (
-                      <li key={i} className="relative text-center">
-                        <span
-                          className="mx-auto flex h-8 w-8 items-center justify-center rounded-full border text-sm font-semibold"
-                          style={i === 0 ? { background: FARBE.gold, borderColor: FARBE.gold, color: FARBE.aufGold } : { background: FARBE.gruen, borderColor: "rgba(243,247,245,0.7)" }}
-                        >
-                          {i + 1}
-                        </span>
-                        <p className="mt-3 font-semibold">{a(s.titel)}</p>
-                        <p className="mt-1 text-xs leading-relaxed" style={{ color: FARBE.hellGedaempft }}>
-                          {a(s.text)}
-                        </p>
-                      </li>
-                    ))}
-                  </ol>
-                  <div className="mt-10 grid md:grid-cols-3 gap-4">
-                    <Karte dunkel>
-                      <Kopf dunkel>{T.funktion.zusatzrente.karteObjekt}</Kopf>
-                      <Wert farbe={FARBE.gold}>{T.funktion.zusatzrente.zusatzrente}</Wert>
-                      <p className="mt-2 text-sm">{T.funktion.zusatzrente.zusatzrenteText}</p>
-                    </Karte>
-                    <Karte dunkel>
-                      <Kopf dunkel>{a(T.funktion.zusatzrente.eigenanteilKopf)}</Kopf>
-                      <Wert farbe={FARBE.gold}>{T.funktion.zusatzrente.eigenanteil}</Wert>
-                      <p className="mt-2 text-sm">{T.funktion.zusatzrente.eigenanteilText}</p>
-                    </Karte>
-                    <Karte dunkel>
-                      <Kopf dunkel>{T.funktion.zusatzrente.vermoegenKopf}</Kopf>
-                      <Wert farbe={FARBE.gold}>{fmt.euro(hauffVermoegen)}</Wert>
-                      <p className="mt-2 text-sm">
-                        Wert {fmt.euro(hauffWert)} abzüglich Restschuld {fmt.euro(aufTausend(PLAN_OBJEKT.zusatzrente.restschuld))}
-                        {wertentwicklung !== 2 && <> · bei {prozentText} Wertentwicklung</>}
-                      </p>
-                    </Karte>
-                  </div>
-                  <Fussnote dunkel>{T.funktion.zusatzrente.fuss}</Fussnote>
-                </>
+            {/* ─── 08 Dein Konzept im Detail: die Vertriebs-PDFs als Folien ─── */}
+            {gezeigteKonzepte.map((k) => {
+              const schalter = beide ? undefined : <KonzeptSchalter konzept={konzept} setKonzept={setKonzept} dunkel />;
+              const dokument = istB ? <DokumenteB konzepte={[k]} /> : undefined;
+              return k === "steuer" ? (
+                <SteuerFolien key={k} oben={schalter} ende={dokument} />
               ) : (
-                <>
-                  <div className="mt-8 grid md:grid-cols-[1fr_auto_1fr] gap-4 items-center">
-                    <Karte dunkel>
-                      <Kopf dunkel>{T.funktion.steuer.heute}</Kopf>
-                      <div className="mt-2 divide-y divide-white/20 text-sm">
-                        <p className="flex justify-between py-2.5"><span>{T.funktion.steuer.brutto}</span><span>{T.funktion.steuer.bruttoWert}</span></p>
-                        <p className="flex justify-between py-2.5"><span>{T.funktion.steuer.netto}</span><strong>{T.funktion.steuer.nettoWert}</strong></p>
-                      </div>
-                    </Karte>
-                    <p aria-hidden className="text-3xl text-center rotate-90 md:rotate-0" style={{ color: FARBE.gold }}>→</p>
-                    <Karte dunkel rand={FARBE.gold}>
-                      <Kopf dunkel>{T.funktion.steuer.mit}</Kopf>
-                      <div className="mt-2 divide-y divide-white/20 text-sm">
-                        <p className="flex justify-between py-2.5"><span>{T.funktion.steuer.steuerwirkung}</span><span>{T.funktion.steuer.steuerwirkungWert}</span></p>
-                        <p className="flex justify-between py-2.5"><span>{T.funktion.steuer.netto}</span><strong>{T.funktion.steuer.nettoNeu}</strong></p>
-                      </div>
-                    </Karte>
-                  </div>
-                  <div className="mt-5 grid md:grid-cols-3 gap-4">
-                    {T.funktion.steuer.karten.map((k) => (
-                      <Karte key={k.kopf} dunkel>
-                        <Kopf dunkel>{k.kopf}</Kopf>
-                        <Wert farbe={FARBE.gold}>{k.wert}</Wert>
-                        {k.text && <p className="mt-2 text-sm">{k.text}</p>}
-                      </Karte>
-                    ))}
-                  </div>
-                  <Fussnote dunkel>{a(T.funktion.steuer.fuss)}</Fussnote>
-                </>
-              )}
-              {istB && <DokumenteB konzepte={dokumenteFuer(w("schwerpunkt"), konzept)} />}
-            </Folie>
+                <AltersvorsorgeFolien key={k} oben={schalter} ende={dokument} />
+              );
+            })}
 
-            {/* ─── 09 Objekte ─── */}
-            <Folie id="objekte" ton="hell" oben={<KonzeptSchalter konzept={konzept} setKonzept={setKonzept} />} kicker={a(T.objekte.kicker[konzept])}>
-              {konzept === "zusatzrente" ? (
-                <>
-                  <div className="mt-2 grid md:grid-cols-2 gap-5">
-                    {[
-                      { foto: fotoHauff, o: T.objekte.hauff },
-                      { foto: fotoZossen, o: T.objekte.zossen },
-                    ].map(({ foto, o }) => (
-                      <div key={o.titel} data-ui="card" className="rounded-2xl overflow-hidden bg-card border min-w-0">
-                        <img src={foto} alt={o.titel} className="w-full aspect-[16/7] object-cover" />
-                        <div className="p-5">
-                          <p className="font-semibold">{o.titel}</p>
-                          <p className="mt-1.5 text-sm leading-relaxed">{o.text}</p>
-                          <p className="mt-2 text-sm">
-                            <strong>{o.preis}</strong> {o.preisRest}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <Fussnote>{T.objekte.fuss}</Fussnote>
-                </>
-              ) : (
-                <div className="mt-2 grid md:grid-cols-[1.2fr_1fr] gap-6 items-start">
-                  <img src={fotoBarfuss} alt={T.objekte.barfuss.titel1} className="w-full rounded-2xl object-cover aspect-[4/3] md:aspect-[5/4]" />
-                  <div className="min-w-0">
-                    <p className="font-semibold text-2xl md:text-[2rem] leading-tight">
-                      {T.objekte.barfuss.titel1}
-                      <br />
-                      {T.objekte.barfuss.titel2}
-                    </p>
-                    <p className="mt-3 leading-relaxed">{T.objekte.barfuss.text}</p>
-                    <div className="mt-4 divide-y divide-border border-y border-border text-sm">
-                      {T.objekte.barfuss.zeilen.map(([l, v]) => (
-                        <p key={l} className="flex justify-between gap-4 py-2.5 px-2">
-                          <span>{l}</span>
-                          <span className="text-right">{v}</span>
-                        </p>
-                      ))}
-                    </div>
-                    <Fussnote>{T.objekte.barfuss.fuss}</Fussnote>
-                  </div>
-                </div>
-              )}
-            </Folie>
-
-            {/* ─── 10 Rechnung ─── */}
-            <Folie id="rechnung" ton="hell" oben={<KonzeptSchalter konzept={konzept} setKonzept={setKonzept} />} kicker={T.rechnung.kicker}>
-              <div className="mt-2 grid lg:grid-cols-[1.3fr_1fr] gap-6 items-start">
-                <div data-ui="card" className="min-w-0 rounded-2xl border bg-card p-4 md:p-6">
-                  <p className="font-semibold text-lg md:text-2xl">{T.rechnung[konzept].titel}</p>
-                  <table className="mt-4 w-full text-[0.95rem] md:text-base">
-                    <thead>
-                      <tr className="text-xs font-medium uppercase tracking-[0.06em] text-muted-foreground">
-                        <th className="text-left font-medium py-2 px-2">{T.rechnung.spalteZeile}</th>
-                        <th className="text-right font-medium py-2 px-2">{T.rechnung.spalteBetrag}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {T.rechnung[konzept].zeilen.map((z, i) => {
-                        const fett = z.ton === "summe" || z.ton === "ergebnis";
-                        return (
-                          <tr
-                            key={i}
-                            className={fett ? "font-semibold" : z.ton === "klein" ? "text-sm text-muted-foreground" : ""}
-                            style={{ borderTop: fett ? `1.5px solid ${FARBE.tinte}` : `1px solid ${FARBE.linie}`, borderBottom: `1px solid ${FARBE.linie}` }}
-                          >
-                            <td className="py-2.5 px-2">{a(z.text)}</td>
-                            <td
-                              className="py-2.5 px-2 text-right whitespace-nowrap tabular-nums"
-                              style={{ color: z.ton === "plus" ? "hsl(var(--success))" : z.ton === "minus" ? "hsl(var(--destructive))" : undefined }}
-                            >
-                              {z.betrag}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-                <div className="grid gap-4">
-                  {T.rechnung[konzept].karten.map((k) => (
+            {/* ─── 09 Deine Kriterien, vor den Objekten ─── */}
+            <Folie id="kriterien" ton="hell" kicker={a(T.kriterien.kicker)} titel={a(T.kriterien.titel)}>
+              {/* Seit der Stresstest entfallen ist: ehrlich gerechnet, nur mit Zahlen aus der Musterrechnung. */}
+              <div data-testid="was-wenn" className="mt-8">
+                <p className="font-semibold text-lg">{WAS_WENN.kopf}</p>
+                <div className="mt-4 grid md:grid-cols-3 gap-4">
+                  {WAS_WENN.karten.map((k) => (
                     <Karte key={k.kopf}>
-                      <Kopf>{k.kopf}</Kopf>
+                      <p className="font-medium">{k.kopf}</p>
                       <Wert farbe={FARBE.gruenText} klein>
                         {k.wert}
                       </Wert>
-                      {a(k.text) && <p className="mt-2 text-sm">{a(k.text)}</p>}
+                      <p className="mt-2 text-sm">{k.text}</p>
                     </Karte>
                   ))}
                 </div>
-              </div>
-              <Fussnote>{T.rechnung[konzept].fuss}</Fussnote>
-            </Folie>
-
-            {/* ─── 11 Sicherheit ─── */}
-            <Folie id="sicherheit" ton="gruen" kicker={T.sicherheit.kicker} titel={T.sicherheit.titel}>
-              <div className="mt-8 grid md:grid-cols-3 gap-4">
-                {T.sicherheit.karten.map((k) => (
-                  <Karte key={k.kopf} dunkel>
-                    <p className="font-semibold">{k.kopf}</p>
-                    <Wert farbe={FARBE.gold}>{k.wert}</Wert>
-                    <p className="mt-2 text-sm">{a(k.text)}</p>
+                {w("sorgen").trim() && (
+                  <Karte className="mt-4" rand={FARBE.goldDunkel}>
+                    <Kopf>{a(T.kriterien.sorge)}</Kopf>
+                    <p className="mt-1 italic text-lg break-words">„{w("sorgen")}“</p>
                   </Karte>
-                ))}
+                )}
+                <Fussnote>{WAS_WENN.fuss}</Fussnote>
               </div>
-              {w("sorgen").trim() && (
-                <div className="mt-6 rounded-2xl border p-5" style={{ borderColor: FARBE.gold }}>
-                  <Kopf dunkel>{a(T.sicherheit.sorge)}</Kopf>
-                  <p className="mt-1 italic text-lg break-words">„{w("sorgen")}“</p>
-                </div>
-              )}
-              <p className="mt-7 text-lg md:text-xl">{a(T.sicherheit.satz)}</p>
-              <Fussnote dunkel>{T.sicherheit.fuss}</Fussnote>
-              <Trainer dunkel hinweis="Die Sorge aus dem Erstgespräch hier gezielt beantworten, dann die Grenze im Stressfall in Abschnitt 13 eintragen." />
-            </Folie>
-
-            {/* ─── 12 Ihr Plan ─── */}
-            <Folie id="plan" ton="hell" oben={<KonzeptSchalter konzept={konzept} setKonzept={setKonzept} />} kicker={a(T.plan.kicker)} titel={T.plan.titel} ohneStrich>
-              <div data-ui="card" className="mt-6 overflow-x-auto rounded-2xl border bg-card p-2 md:p-4">
-                <table className="w-full text-[0.95rem] md:text-base min-w-[420px]">
-                  <thead>
-                    <tr className="text-xs font-medium uppercase tracking-[0.06em] text-muted-foreground border-b border-border">
-                      <th className="text-left font-medium py-2 px-2">{planObjekt.name}</th>
-                      <th className="text-right font-medium py-2 px-2">{T.plan.eins}</th>
-                      <th className="text-right font-medium py-2 px-2">{T.plan.drei}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {PLAN_ZEILEN[konzept].map((z, i) => (
-                      <tr key={i} className="border-b border-border">
-                        <td className="py-2.5 px-2">{a(z.text)}</td>
-                        <td className="py-2.5 px-2 text-right tabular-nums whitespace-nowrap">{z.vermoegen ? fmt.euro(vermoegen1) : z.eins}</td>
-                        <td className={`py-2.5 px-2 text-right tabular-nums whitespace-nowrap ${z.fett ? "font-semibold" : ""}`}>
-                          {z.vermoegen ? fmt.euro(vermoegen3) : z.drei}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              {/* Der Regler: Wer die Wertentwicklung selbst auf null zieht, sieht, was ohne sie bleibt. */}
-              <div className="mt-6 flex flex-col sm:flex-row sm:items-center gap-3" data-testid="regler-wertentwicklung">
-                <label htmlFor="wertentwicklung" className="text-sm font-medium">
-                  {T.plan.regler}: <span className="tabular-nums">{prozentText}</span>
-                </label>
-                <input
-                  id="wertentwicklung"
-                  type="range"
-                  min={0}
-                  max={4}
-                  step={0.5}
-                  value={wertentwicklung}
-                  onChange={(e) => setWertentwicklung(Number(e.target.value))}
-                  className="w-full sm:w-72 accent-primary"
-                />
-              </div>
-              <p className="mt-6 text-base md:text-lg">{a(T.plan.satz)}</p>
-              <Fussnote>{T.plan.fuss(prozentText)}</Fussnote>
-            </Folie>
-
-            {/* ─── 13 Ihre Kriterien ─── */}
-            <Folie id="kriterien" ton="hell" kicker={a(T.kriterien.kicker)} titel={a(T.kriterien.titel)}>
               <div className="mt-8 grid lg:grid-cols-[1.1fr_1fr] gap-6 items-start">
                 <div data-ui="card" className="divide-y divide-border rounded-2xl border bg-card px-2 min-w-0">
                   <div className="flex justify-between gap-4 py-2.5 px-2">
@@ -1589,7 +1371,66 @@ export default function BeratungspraesentationHV({
                   </div>
                 )}
               </div>
-              <Trainer hinweis="Kunde formuliert seine Kriterien selbst. Seine Gründe wörtlich mitschreiben." />
+              <Trainer hinweis="Erst die Sorge aus dem Erstgespräch beantworten, dann die Grenze im Stressfall eintragen. Der Kunde formuliert seine Kriterien selbst, seine Gründe wörtlich mitschreiben." />
+            </Folie>
+
+            {/* ─── 10 Unsere Objekte: alle drei, mit Bildern ─── */}
+            <Folie id="objekte" ton="tief" kicker={T.objekte.kicker} titel={T.objekte.titel}>
+              <p className="mt-6 max-w-3xl text-base md:text-lg" style={{ color: FARBE.hellGedaempft }}>
+                {a(T.objekte.intro)}
+              </p>
+              <div className="mt-10 space-y-10 md:space-y-14">
+                {OBJEKTE.map((o, i) => {
+                  const passt = o.konzepte.includes(konzept);
+                  return (
+                    <article
+                      key={o.titel}
+                      data-testid="objekt"
+                      className={`grid md:grid-cols-[1.35fr_1fr] gap-6 md:gap-10 items-center ${i % 2 ? "md:[&>*:first-child]:order-2" : ""}`}
+                    >
+                      <Diashow label={`Bilder ${o.titel}`} bilder={o.bilder} />
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap gap-2">
+                          {o.konzepte.map((k) => (
+                            <span
+                              key={k}
+                              data-testid="objekt-konzept"
+                              className="rounded-full px-3 py-1 text-xs font-semibold"
+                              style={k === konzept ? { background: FARBE.gold, color: FARBE.aufGold } : { border: "1px solid rgba(243,247,245,0.4)" }}
+                            >
+                              {T.objekte.marke[k]}
+                            </span>
+                          ))}
+                          {passt && (
+                            <span className="inline-flex items-center gap-1 text-xs font-medium" style={{ color: FARBE.gold }}>
+                              <Check aria-hidden className="h-3.5 w-3.5" />
+                              {a(T.objekte.passt)}
+                            </span>
+                          )}
+                        </div>
+                        <p className="mt-4 text-sm uppercase tracking-[0.14em]" style={{ color: FARBE.hellGedaempft }}>
+                          {o.ort}
+                        </p>
+                        <h3 className="mt-1 text-[1.8rem] md:text-[2.3rem] font-semibold leading-tight">{o.titel}</h3>
+                        <p className="mt-3 leading-relaxed" style={{ color: FARBE.hellGedaempft }}>
+                          {o.text}
+                        </p>
+                        <ul className="mt-4 flex flex-wrap gap-2 text-sm">
+                          {o.daten.map((d) => (
+                            <li key={d} className="rounded-full border px-3 py-1" style={{ borderColor: "rgba(243,247,245,0.25)" }}>
+                              {d}
+                            </li>
+                          ))}
+                        </ul>
+                        <p className="mt-5 text-2xl font-semibold" style={{ color: FARBE.gold }}>
+                          {o.preis}
+                        </p>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+              <Fussnote dunkel>{T.objekte.fuss}</Fussnote>
             </Folie>
 
             {/* ─── 14 Ihr Weg ─── */}
@@ -1666,6 +1507,31 @@ export default function BeratungspraesentationHV({
                   <ClipboardList className="h-5 w-5" />
                   {T.schritt.knopf}
                 </button>
+                {objektLink ? (
+                  <a
+                    href={objektLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-no-shrink
+                    className="inline-flex items-center justify-center gap-2 rounded-full px-6 h-12 border font-semibold transition-transform hover:scale-[1.02]"
+                    style={{ borderColor: FARBE.gold, color: FARBE.hellText }}
+                  >
+                    <CalendarCheck className="h-5 w-5" />
+                    {T.schritt.knopfObjekt}
+                  </a>
+                ) : (
+                  <button
+                    type="button"
+                    data-no-shrink
+                    disabled
+                    aria-describedby="objektlink-fehlt"
+                    className="inline-flex items-center justify-center gap-2 rounded-full px-6 h-12 border font-semibold opacity-50 cursor-not-allowed"
+                    style={{ borderColor: "rgba(243,247,245,0.35)" }}
+                  >
+                    <CalendarCheck className="h-5 w-5" />
+                    {T.schritt.knopfObjekt}
+                  </button>
+                )}
                 <span className="inline-flex items-center justify-center gap-2 rounded-full px-6 h-12 border text-sm" style={{ borderColor: "#D8C7A0" }}>
                   <CalendarClock className="h-4 w-4" />
                   {T.schritt.termin}: {inSiebenTagen()}
@@ -1681,36 +1547,11 @@ export default function BeratungspraesentationHV({
                   {tx.schritt.kontextHinweis as string}
                 </p>
               )}
-              {/* Die Antwort auf die Abschlussfrage, für den Berater. Speichern am Investment kommt nach der Freigabe. */}
-              <div data-pdf-exclude className="mt-8 flex flex-wrap items-center gap-2 text-sm">
-                <span style={{ color: FARBE.hellGedaempft }}>{T.schritt.antwortKopf}:</span>
-                {T.schritt.antworten.map((ant) => (
-                  <button
-                    key={ant}
-                    type="button"
-            data-no-shrink
-                    aria-pressed={w("abschlussAntwort") === ant}
-                    onClick={() => setzeAntwort("abschlussAntwort", w("abschlussAntwort") === ant ? "" : ant)}
-                    className="rounded-full border px-3 py-1"
-                    style={
-                      w("abschlussAntwort") === ant
-                        ? { background: FARBE.gold, color: FARBE.aufGold, borderColor: FARBE.gold }
-                        : { borderColor: "rgba(243,247,245,0.35)" }
-                    }
-                  >
-                    {ant}
-                  </button>
-                ))}
-                {w("abschlussAntwort") === "Ja unter Bedingung" && (
-                  <input
-                    aria-label={T.schritt.bedingung}
-                    value={w("abschlussBedingung")}
-                    onChange={(e) => setzeAntwort("abschlussBedingung", e.target.value)}
-                    placeholder={T.schritt.bedingung}
-                    className="bos-feld flex-1 min-w-[12rem]"
-                  />
-                )}
-              </div>
+              {!objektLink && (
+                <p id="objektlink-fehlt" className="mt-3 text-xs" style={{ color: FARBE.hellGedaempft }}>
+                  {T.schritt.ohneObjektLink}
+                </p>
+              )}
               <Trainer id="schritt" dunkel hinweis={T.schritt.hinweis} />
             </Folie>
 
@@ -1725,8 +1566,38 @@ export default function BeratungspraesentationHV({
                 ))}
               </div>
               <Karte className="mt-4" rand={FARBE.gold}>
-                <p className="font-semibold">{T.termin.bereitlegen}</p>
-                <p className="mt-1 text-sm">{T.termin.bereitlegenText}</p>
+                <p className="text-sm leading-relaxed">{T.termin.portalSatz}</p>
+                {portalFreigegeben ? (
+                  <p data-testid="portal-freigegeben" className="mt-4 inline-flex items-center gap-2 font-semibold" style={{ color: FARBE.gruenText }}>
+                    <Check className="h-5 w-5" />
+                    {T.termin.portalFreigegeben}
+                  </p>
+                ) : (
+                  <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3">
+                    <button
+                      type="button"
+                      data-no-shrink
+                      onClick={portalFreigeben}
+                      disabled={!saUnterschrieben || portalFreigabeLaeuft}
+                      aria-describedby={saUnterschrieben ? undefined : "portal-vor-unterschrift"}
+                      data-ui="button"
+                      className="inline-flex items-center justify-center gap-2 rounded-full px-6 h-12 font-semibold bg-primary text-primary-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <KeyRound className="h-5 w-5" />
+                      {T.termin.portalKnopf}
+                    </button>
+                    {!saUnterschrieben && (
+                      <p id="portal-vor-unterschrift" className="text-xs" style={{ color: FARBE.grau }}>
+                        {T.termin.portalVorUnterschrift}
+                      </p>
+                    )}
+                  </div>
+                )}
+                {vorschau && vorschauPortal && (
+                  <p data-testid="vorschau-portal" className="mt-3 rounded-xl border border-dashed p-3 text-sm" style={{ borderColor: FARBE.gold }}>
+                    Vorschau: Im CRM geht jetzt die Einladung ins Kundenportal an den Kunden, nichts wurde versendet.
+                  </p>
+                )}
               </Karte>
             </Folie>
 

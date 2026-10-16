@@ -83,10 +83,11 @@ export interface AmpelEingabe {
  */
 export function ampelAus(e: AmpelEingabe): InvestmentAmpel {
   if (istEndzustand(e.stufe) || e.stufe === "abgeschlossen") return "beendet";
-  // Hinter der Reservierung (Besichtigung, Finanzierung, Notar) gibt es kein
-  // Zurück. Seit 16.10.2026 die Besichtigung: Die Bonitaetsunterlagen teilen
-  // den Rang der Reservierung und fallen unten unter "stufeErreicht reservierung".
-  if (stufeErreicht(e.stufe, "besichtigung")) return "hat_reservierung";
+  // Hinter der Reservierung (Finanzierung, Bankgutachter, Besichtigung, Notar)
+  // gibt es kein Zurück. Seit 16.10.2026 die Finanzierung: Die
+  // Bonitaetsunterlagen teilen den Rang der Reservierung und fallen unten
+  // unter "stufeErreicht reservierung".
+  if (stufeErreicht(e.stufe, "finanzierung")) return "hat_reservierung";
   if (!e.rvEntfallen && (e.rvSigned || e.rvSignaturePending || stufeErreicht(e.stufe, "reservierung"))) {
     return "hat_reservierung";
   }

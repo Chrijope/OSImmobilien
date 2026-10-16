@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { ABSCHLUSS_NUR_ROLLEN, ABSCHLUSS_STUFEN, darfAbschlussStufeWechseln } from "./abwicklungStore";
+import { ABSCHLUSS_NUR_ROLLEN, ABSCHLUSS_STUFEN, abschlussRolleDarfStufe, darfAbschlussStufeWechseln } from "./abwicklungStore";
 
 /*
  * H9 (04.10.2026): Backoffice und Buchhaltung setzen „Abrechnung“ und
@@ -23,15 +23,22 @@ describe("Abschlussrollen", () => {
 
   it("Kundenprofil: Klick auf die Station setzt für diese Rollen nur die beiden Stufen", () => {
     const profil = lies("src/pages/KundenDetail.tsx");
-    expect(profil).toContain("const darfSetzen = (key: string) => isAdminOverride || (istAbschlussRolle && ABSCHLUSS_STUFEN.includes(key));");
+    expect(profil).toContain("const darfSetzen = (key: string) => isAdminOverride || (istAbschlussRolle && abschlussRolleDarfStufe(user.role, key));");
     expect(profil).toContain("if (!isAdminOverride && istAbschlussRolle && darfSetzen(s.key) && !e.altKey && !isCurrent) {");
     expect(profil).toContain("if (!(await updateInvestment(inv.id, { pipelineStufe: s.key }))) return;");
   });
 
-  it("Pipeline: ganzes Haus sichtbar, Ziehen nur nach Abrechnung und Abgeschlossen", () => {
+  it("Pipeline: ganzes Haus sichtbar, Ziehen nur nach Abrechnung und Abgeschlossen (Backoffice dazu Termin Bankgutachter)", () => {
     const pipeline = lies("src/pages/Pipeline.tsx");
     expect(pipeline).toContain('const siehtGanzesHaus = umfang === "haus" || ABSCHLUSS_NUR_ROLLEN.includes(user.role);');
-    expect(pipeline).toContain("const nurAbschluss = ABSCHLUSS_NUR_ROLLEN.includes(user.role) && !ABSCHLUSS_STUFEN.includes(toKey);");
+    expect(pipeline).toContain("const nurAbschluss = ABSCHLUSS_NUR_ROLLEN.includes(user.role) && !abschlussRolleDarfStufe(user.role, toKey);");
+  });
+
+  it("Backoffice darf Termin Bankgutachter setzen, die Buchhaltung nicht", () => {
+    expect(abschlussRolleDarfStufe("backoffice", "bankgutachter")).toBe(true);
+    expect(abschlussRolleDarfStufe("buchhaltung", "bankgutachter")).toBe(false);
+    expect(abschlussRolleDarfStufe("backoffice", "besichtigung")).toBe(false);
+    expect(abschlussRolleDarfStufe("buchhaltung", "abgeschlossen")).toBe(true);
   });
 
   it("Buchhaltung bekommt Kundenprofil und Pipeline, im Rückfall und in der Datenbank", () => {

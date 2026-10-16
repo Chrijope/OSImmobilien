@@ -73,16 +73,6 @@ export const OS_TEXTE_B: typeof OS_TEXTE = {
     },
   },
 
-  sicherheit: {
-    ...A.sicherheit,
-    satz: "Eine gute Rechnung hält auch, wenn es mal nicht glatt läuft. Darum rechnen wir den Stressfall gleich mit. Wo liegt deine Grenze?",
-  },
-
-  plan: {
-    ...A.plan,
-    satz: "Wir starten mit einer Wohnung. Jede weitere entscheidest du neu, in deinem Tempo.",
-  },
-
   schritt: {
     ...A.schritt,
     text: "Dafür brauchen wir deine Selbstauskunft. Wir füllen sie jetzt zusammen aus, in etwa 15 Minuten. Bis zur Objektvorstellung in einer Woche fehlen dann nur noch Ausweis und letzte Gehaltsabrechnung.",
@@ -105,12 +95,3 @@ export const DOKUMENTE_B: Record<KonzeptOs, { knopf: string; href: string }> = {
   steuer: { knopf: "Dokument öffnen: Steuerersparnis", href: "/vertriebsunterlagen/steuerersparnis-mit-immobilien.pdf" },
   zusatzrente: { knopf: "Dokument öffnen: Altersvorsorge", href: "/vertriebsunterlagen/arbeitsleistung-und-immobilienvermoegen.pdf" },
 };
-
-/**
- * Welche Dokumente in B erscheinen: bei Schwerpunkt „beides“ beide, sonst das
- * zum gerade gezeigten Konzept (vorbelegt aus dem Schwerpunkt, per Klick
- * umschaltbar).
- */
-export function dokumenteFuer(schwerpunkt: string, konzept: KonzeptOs): KonzeptOs[] {
-  return schwerpunkt === "beides" ? ["zusatzrente", "steuer"] : [konzept];
-}

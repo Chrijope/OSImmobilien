@@ -51,9 +51,9 @@ const STAGE_ORDER: PhaseKey[] = [
   "reservierung",
   "bonitaetsunterlagen",
   // Seit 16.10.2026; ohne sie galt dort jede Phase als gesperrt (Index -1).
-  "besichtigung",
-  "bankgutachter",
   "finanzierung",
+  "bankgutachter",
+  "besichtigung",
   "notar",
   "aftersalesBeratung",
   "faelligkeit",

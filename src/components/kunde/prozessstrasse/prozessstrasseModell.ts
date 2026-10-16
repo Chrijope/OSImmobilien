@@ -25,11 +25,13 @@ export type PhaseKey = "kontakt" | "beratung" | "objekt" | "finanzierung" | "abs
 export const PHASEN: { key: PhaseKey; label: string; stufen: string[] }[] = [
   { key: "kontakt", label: "Kontakt", stufen: ["neuer_lead", "nicht_erreicht", "erreicht", "follow_up"] },
   { key: "beratung", label: "Beratung", stufen: ["erstgespraech_geplant", "beratungsgespraech", "selbstauskunft"] },
-  // Seit 16.10.2026: Besichtigung gehoert zum Objekt, der Bankgutachter zur
-  // Finanzierung. "bonitaetsunterlagen" hat keine eigene Station mehr.
-  { key: "objekt", label: "Objekt", stufen: ["objektauswahl", "follow_up_objekt", "reservierung", "besichtigung"] },
-  { key: "finanzierung", label: "Finanzierung", stufen: ["bankgutachter", "finanzierung"] },
-  { key: "abschluss", label: "Abschluss", stufen: ["notar", "faelligkeit", "abrechnung", "abgeschlossen"] },
+  // Seit 16.10.2026 (zweite Fassung): Nach der Reservierung zuerst die
+  // Finanzierung, darin der Bankgutachter. Die Besichtigung liegt am Notartag
+  // oder am Vortag und gehoert deshalb zum Abschluss. "bonitaetsunterlagen"
+  // hat keine eigene Station mehr.
+  { key: "objekt", label: "Objekt", stufen: ["objektauswahl", "follow_up_objekt", "reservierung"] },
+  { key: "finanzierung", label: "Finanzierung", stufen: ["finanzierung", "bankgutachter"] },
+  { key: "abschluss", label: "Abschluss", stufen: ["besichtigung", "notar", "faelligkeit", "abrechnung", "abgeschlossen"] },
 ];
 
 const PHASE_JE_STUFE: Record<string, PhaseKey> = Object.fromEntries(

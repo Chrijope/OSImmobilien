@@ -11,7 +11,7 @@ import { erledigeAufgabe, getAufgaben } from "./aufgabenStore";
 import { getInvestmentById, updateInvestment } from "./investmentsStore";
 import { addProzessAufgabe } from "./prozessAufgabe";
 import {
-  stufenTerminDetails, stufeNachStattgefunden, TERMIN_STUFEN, VEREINBAREN_TITEL, vereinbarenSchluessel,
+  KVE_TITEL, kveSchluessel, stufenTerminDetails, stufeNachStattgefunden, TERMIN_STUFEN, VEREINBAREN_TITEL, vereinbarenSchluessel,
   type StufenTerminEingabe, type TerminStufe,
 } from "./stufenTermin";
 
@@ -85,8 +85,8 @@ export async function legeVereinbarenAufgabeAn(
   ctx: Omit<StufenTerminKontext, "userName"> & { erstelltVonName?: string; rueckfallZustaendig?: string },
 ): Promise<boolean> {
   const was = stufe === "besichtigung"
-    ? "Die Reservierung ist unterschrieben. Vereinbare mit dem Kunden die Besichtigung des Objekts."
-    : "Die Besichtigung hat stattgefunden. Vereinbare den Termin mit dem Gutachter der Bank.";
+    ? "Vereinbare mit dem Kunden die Besichtigung des Objekts, am Tag des Notartermins oder am Vortag. Alternativ online."
+    : "Die Finanzierung ist angefragt. Trage den Termin des Gutachters der Bank ein (Datum, Uhrzeit, Ort), sobald er sich meldet.";
   const heute = new Date();
   const tag = `${heute.getFullYear()}-${String(heute.getMonth() + 1).padStart(2, "0")}-${String(heute.getDate()).padStart(2, "0")}`;
   return addProzessAufgabe({
@@ -105,8 +105,8 @@ export async function legeVereinbarenAufgabeAn(
 }
 
 /**
- * Nach „stattgefunden": die Stufe des Investments vorruecken und nach der
- * Besichtigung die Aufgabe fuer den Bankgutachter anlegen.
+ * Nach „stattgefunden": die Stufe des Investments vorruecken und nach dem
+ * Bankgutachter die Aufgabe „Besichtigung vereinbaren" anlegen.
  *
  * Rueckgabe: die neue Stufe, oder `null`, wenn nichts zu tun war (anderer
  * Termin, Vorgang schon weiter, Investment unbekannt). Wirft nie: Das
@@ -124,8 +124,8 @@ export async function rueckeNachStufenTermin(
     const ziel = stufeNachStattgefunden(titel, inv.pipelineStufe);
     if (!ziel) return null;
     if (!(await updateInvestment(investmentId, { pipelineStufe: ziel }))) return null;
-    if (ziel === "bankgutachter") {
-      await legeVereinbarenAufgabeAn("bankgutachter", {
+    if (ziel === "besichtigung") {
+      await stelleVereinbarenAufgabeSicher("besichtigung", {
         kundeId: ctx.kundeId,
         kundeName: ctx.kundeName,
         investmentId,
@@ -142,17 +142,50 @@ export async function rueckeNachStufenTermin(
 }
 
 /**
- * „Besichtigung vereinbaren" nach der unterschriebenen Reservierung, je
- * Investment genau einmal, auch nach dem Abhaken nicht wieder.
+ * Die Aufgabe „… vereinbaren" je Investment genau einmal, auch nach dem
+ * Abhaken nicht wieder: „Termin Bankgutachter vereinbaren", sobald die
+ * Finanzierung angefragt ist, „Besichtigung vereinbaren", sobald der
+ * Bankgutachter da war oder der Notartermin steht.
  *
  * Solange die Aufgaben nicht geladen sind, entsteht nichts: Die Pruefung
  * faende sonst nie eine bestehende und legte bei jedem Lauf eine neue an.
  */
-export async function stelleBesichtigungsAufgabeSicher(
+export async function stelleVereinbarenAufgabeSicher(
+  stufe: TerminStufe,
   ctx: Omit<StufenTerminKontext, "userName"> & { erstelltVonName?: string; rueckfallZustaendig?: string },
 ): Promise<boolean> {
   if (!isTableLoaded("aufgaben")) return false;
-  const schluessel = vereinbarenSchluessel("besichtigung", ctx.investmentId);
+  const schluessel = vereinbarenSchluessel(stufe, ctx.investmentId);
   if (getAufgaben().some((a) => a.ausloeserSchluessel === schluessel)) return false;
-  return legeVereinbarenAufgabeAn("besichtigung", ctx);
+  return legeVereinbarenAufgabeAn(stufe, ctx);
+}
+
+/**
+ * „Finanzierung positiv: Kaufvertragsentwurf beim Notar in Auftrag geben",
+ * je Investment genau einmal (Vorgabe Christian, 16.10.2026: Der KVE wird
+ * waehrend der Finanzierungsphase beauftragt, sobald sie positiv ist).
+ * Empfaenger wie bei allen Prozessaufgaben: der Zustaendige, ohne ihn die
+ * Leitung.
+ */
+export async function stelleKveAufgabeSicher(
+  ctx: Omit<StufenTerminKontext, "userName"> & { erstelltVonName?: string; rueckfallZustaendig?: string },
+): Promise<boolean> {
+  if (!isTableLoaded("aufgaben")) return false;
+  const schluessel = kveSchluessel(ctx.investmentId);
+  if (getAufgaben().some((a) => a.ausloeserSchluessel === schluessel)) return false;
+  const heute = new Date();
+  const tag = `${heute.getFullYear()}-${String(heute.getMonth() + 1).padStart(2, "0")}-${String(heute.getDate()).padStart(2, "0")}`;
+  return addProzessAufgabe({
+    titel: KVE_TITEL,
+    beschreibung: `${ctx.kundeName}${ctx.investmentLabel ? ` (${ctx.investmentLabel})` : ""}: Die Bank hat ein Finanzierungsangebot gemacht. Beauftrage jetzt beim Notar den Kaufvertragsentwurf und lege ihn nach Eingang im Kundenordner unter „Kaufvertragsentwurf“ ab.`,
+    prioritaet: "hoch",
+    typ: "aufgabe",
+    faellig_am: tag,
+    uhrzeit: "09:00",
+    kundeId: ctx.kundeId,
+    kundeName: ctx.kundeName,
+    investmentId: ctx.investmentId,
+    erstelltVonName: ctx.erstelltVonName,
+    ausloeserSchluessel: schluessel,
+  }, ctx.rueckfallZustaendig);
 }

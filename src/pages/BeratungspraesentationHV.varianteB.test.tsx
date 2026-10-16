@@ -84,12 +84,13 @@ describe("Inhalte in B", () => {
     expect(screen.getByTestId("kaufkraft-verlust").style.background).toBeTruthy();
   });
 
-  it("zeigt das Dokument zum Konzept und bei „beides“ beide", () => {
+  it("zeigt das Dokument zum Konzept am Ende seiner Folien und bei „beides“ beide", () => {
     zeige(B);
     const link = () => screen.getByTestId("dokumente-b").querySelectorAll("a");
     expect(link()).toHaveLength(1);
     expect(link()[0]).toHaveTextContent("Dokument öffnen: Altersvorsorge");
     expect(link()[0]).toHaveAttribute("target", "_blank");
+    expect(screen.getByTestId("konzept-inhalt-alter")).toContainElement(screen.getByTestId("dokumente-b"));
     fireEvent.click(screen.getAllByRole("radio", { name: "Konzept 2 · Steuerersparnis" })[0]);
     expect(link()[0]).toHaveTextContent("Dokument öffnen: Steuerersparnis");
     expect(link()[0]).toHaveAttribute("href", "/vertriebsunterlagen/steuerersparnis-mit-immobilien.pdf");
@@ -98,7 +99,7 @@ describe("Inhalte in B", () => {
   it("zeigt bei Schwerpunkt beides beide Dokumente", () => {
     zustand.skript = { anrede: "du", antworten: { schwerpunkt: "beides" } };
     zeige(B_KUNDE);
-    expect(screen.getByTestId("dokumente-b").querySelectorAll("a")).toHaveLength(2);
+    expect(screen.getAllByTestId("dokumente-b").flatMap((d) => [...d.querySelectorAll("a")])).toHaveLength(2);
   });
 
   it("die PDFs liegen im Repo", () => {
