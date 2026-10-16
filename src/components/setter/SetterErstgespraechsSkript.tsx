@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ClipboardList, Sparkles, Loader2, CheckCircle2, Save, CalendarClock, Mic, Smile, UserRound, PhoneForwarded, Check, ChevronDown, ChevronUp, ArrowRightLeft } from "lucide-react";
+import { ClipboardList, Loader2, Save, CalendarClock, Smile, UserRound, PhoneForwarded, Check, ChevronDown, ChevronUp, ArrowRightLeft } from "lucide-react";
 import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
@@ -19,27 +19,38 @@ import { useUser } from "@/contexts/UserContext";
 import { setInvestmentMetaFields, getInvestmentMetaField } from "@/lib/investmentsStore";
 import type { DetailFeld, DetailSchritt, ZusammenfassungSchritt } from "@/lib/erstgespraechZusammenfassung";
 
+/*
+ * Erstgesprächsskript im Investment, Fassung nach dem Entwurf vom 15.10.2026:
+ * 23 Schritte in 6 Phasen (A Einstieg bis F Abschluss), Wortlaut in der
+ * Sie-Form, die Du-Fassung steht daneben. Grundlage ist das Gesprächsskript
+ * aus dem Vertriebspaket im Google Drive, angepasst an den Ablauf
+ * Erstgespräch → Beratungspräsentation → Selbstauskunft am Ende der
+ * Präsentation. Die Selbstauskunft kommt hier deshalb nicht vor.
+ *
+ * Gespeichert wird wie bisher in investment.meta.setterSkript (antworten,
+ * notizen, ziele, erledigt, anrede). Bestehende Schlüssel behalten Ort und
+ * Namen; neu sind nur zusätzliche Antwortfelder (siehe NEUE_FELDER).
+ */
+
 interface Props {
   kunde: KundeData;
   onUpdate: () => void;
   /** Optional Callback wenn KI-Zusammenfassung erzeugt wurde (für übergeordnete UI). */
   onSummaryGenerated?: (summary: string) => void;
-  /** Slot, der innerhalb von Schritt 14 (Terminvereinbarung) gerendert wird. */
+  /** Slot, der im Schritt „Termin für die Beratungspräsentation“ gerendert wird. */
   terminSlot?: ReactNode;
-  /** Slot, der innerhalb von Schritt 17 (Abschluss-Checkliste) gerendert wird. */
+  /** Slot, der unter den Schritten gerendert wird (Abschluss-Karte). */
   abschlussSlot?: ReactNode;
-  /** Callback für "Follow-Up" Button in Schritt 1 (öffnet Folgetermin-Dialog – gleiche Logik wie Gesprächsausgang). */
+  /** Callback für „Rückruf vereinbaren“ in Schritt 1 (Folgetermin-Dialog wie beim Gesprächsausgang). */
   onFollowUp?: () => void;
   /**
-   * Callback für den NEUEN Schritt 3 (Zeit-Check). Wird mit Datum + Uhrzeit aufgerufen,
-   * wenn der Lead jetzt keine Zeit für 15-20 Min hat. Logik wie Gesprächsausgang →
-   * Follow-Up, Titel "Erstgespräch (Vorname Nachname)".
+   * Callback, wenn der Lead jetzt keine Zeit hat (Datum + Uhrzeit). Wird von
+   * KundenDetail übergeben, das Skript selbst ruft ihn derzeit nicht auf.
    */
   onErstgespraechFollowUp?: (datum: string, uhrzeit: string) => void;
   /**
    * Modus: "setter" = Setterin qualifiziert für Vertriebspartner (Default).
    * "vertriebspartner" = VP ruft selbst an, qualifiziert und terminiert für sich selbst.
-   * Wirkt sich auf Wording einzelner Schritte (u.a. Schritt 18) aus.
    */
   mode?: "setter" | "vertriebspartner";
   /**
@@ -58,6 +69,8 @@ export interface SetterErstgespraechsSkriptHandle {
   hasInput: () => boolean;
   /** Erzwingt sofortiges Persistieren der aktuellen Skript-Daten. */
   persistNow: () => Promise<void>;
+  /** Der aktuelle Skriptstand, etwa für die lokale Vorschau der Präsentation. */
+  stand: () => SkriptDaten;
 }
 
 // ── Lokalisiert: Du / Sie Variante ──
@@ -130,17 +143,14 @@ function QualSyncInput({
 }
 
 /**
- * Die vier Pflichtangaben aus dem Erstgespräch: Beruf, Nettoeinkommen,
- * Eigenkapital und Ziele. Ohne sie lässt sich weder eine Finanzierung noch ein
- * passendes Objekt rechnen, und das Beratungsgespräch beginnt mit Nachfragen,
- * die ins Erstgespräch gehört hätten.
+ * Pflichtangaben: Beruf, Ziele und Schwerpunkt, Netto, Brutto, laufende
+ * Raten, Reserve und Eigenkapital. Ohne sie lässt sich in der
+ * Beratungspräsentation nicht mit echten Zahlen rechnen.
  *
  * Sie blockieren bewusst nichts. Ein Skript, das ein laufendes Telefonat
  * anhält, wird umgangen statt ausgefüllt. Sie sind nur sichtbar markiert,
- * orange umrandet und am Etikett benannt.
- *
- * Die Farbe allein trägt die Information nicht: Wer sie nicht unterscheiden
- * kann, liest das Wort „Pflichtangabe" daneben.
+ * orange umrandet und am Etikett benannt. Die Farbe allein trägt die
+ * Information nicht: Daneben steht das Wort „Pflichtangabe“.
  */
 const PFLICHT_RAHMEN = "border-[hsl(var(--warning))] focus-visible:ring-[hsl(var(--warning))]";
 
@@ -159,29 +169,46 @@ function Pflichtmarke({ gefuellt }: { gefuellt: boolean }) {
  *
  * Aufgenommen ist nur, was das Skript verlässt: in ein Feld des Kontakts
  * geschrieben oder von einer anderen Seite gezielt gelesen. Die
- * Erstgesprächs-Zusammenfassung und die KI-Zusammenfassung zählen nicht,
- * denn die lesen jede Antwort und jede Notiz. Zählten sie, wäre alles
- * markiert und die Markierung sagte nichts mehr.
+ * Zusammenfassungen zählen nicht, denn die lesen jede Antwort.
  *
  * Quellen, falls sich etwas ändert:
  *   qualEinkommen, qualEigenkapital, beruf (qualBeruflicheSituation),
- *   ziele (qualZiel): Qualifizierung im Kundenprofil und Lead-Verwaltung,
- *   Einkommen und Ziele auch in der Setter-Kennzahl „Qualifiziert“.
- *   Beratungspräsentation (BeratungspraesentationHV, holeAusErstgespraech):
- *   qualEinkommen, qualEigenkapital, investitionMonat, erfahrung, ziele;
- *   die Anrede über beratungAnrede.ts.
- *   cashflowPraeferenz: Kontakt-Meta qualCashflowPraeferenz.
+ *   ziele (qualZiel): Qualifizierung im Kundenprofil und Lead-Verwaltung.
+ *   Beratungspräsentation (uebernahmeAusSkript in beratungOsDaten.ts):
+ *   qualEinkommen, qualEigenkapital, investitionMonat, erfahrung, ziele,
+ *   schwerpunkt, motivWoertlich, mitentscheider, wunschNetto, renteErwartet,
+ *   ruhestandAb, reserve, grenzeStress, sorgen, offeneFragen; die Anrede
+ *   über beratungAnrede.ts.
  */
 export const UEBERNAHME_ZIELE: Record<string, string> = {
   anrede: "Du oder Sie in der Beratungspräsentation",
-  erfahrung: "Beratungspräsentation, Feld Erfahrung",
-  qualEigenkapital: "Qualifizierung im Kundenprofil, Lead-Verwaltung und Eigenkapital in der Beratungspräsentation",
-  investitionMonat: "Monatsbeitrag in der Beratungspräsentation",
+  motivWoertlich: "Zitat auf der Seite „Ihre Ziele“ der Beratungspräsentation",
+  mitentscheider: "„Ihr Rahmen“ in der Beratungspräsentation",
   beruf: "Berufliche Situation in der Qualifizierung im Kundenprofil und in der Lead-Verwaltung",
-  qualEinkommen: "Qualifizierung im Kundenprofil, Lead-Verwaltung und Einnahmen in der Beratungspräsentation",
   ziele: "Ziel in der Qualifizierung im Kundenprofil, Pipeline, Lead-Verwaltung und Beratungspräsentation",
-  cashflowPraeferenz: "Kundendaten, Erwartung Cashflow oder Qualität",
+  schwerpunkt: "Konzeptschalter der Beratungspräsentation (Zusatzrente oder Steuerersparnis)",
+  ruhestandAb: "Rentenlücke in der Beratungspräsentation",
+  renteErwartet: "Rentenlücke in der Beratungspräsentation",
+  wunschNetto: "Rentenlücke in der Beratungspräsentation",
+  erfahrung: "Beratungspräsentation, Feld Erfahrung",
+  qualEinkommen: "Qualifizierung im Kundenprofil, Lead-Verwaltung und Einnahmen in der Beratungspräsentation",
+  qualEigenkapital: "Qualifizierung im Kundenprofil, Lead-Verwaltung und Eigenkapital in der Beratungspräsentation",
+  reserve: "„Ihr Rahmen“ und „Ihre Kriterien“ in der Beratungspräsentation",
+  investitionMonat: "Monatsbeitrag in „Ihr Rahmen“ und „Ihre Kriterien“ der Beratungspräsentation",
+  grenzeStress: "„Ihre Kriterien“ in der Beratungspräsentation",
+  sorgen: "Abschnitt „Sicherheit“ der Beratungspräsentation",
+  offeneFragen: "Seite „Ihre Ziele“ der Beratungspräsentation",
 };
+
+/**
+ * Antwortfelder, die mit dem Skript vom 15.10.2026 neu sind. Alles andere
+ * gab es vorher schon unter demselben Schlüssel.
+ */
+export const NEUE_FELDER = [
+  "motivWoertlich", "kinder", "probezeit", "schwerpunkt", "ruhestandAb", "renteErwartet",
+  "wunschNetto", "vorsorgeZufriedenheit", "eigenheimGeplant", "bruttoJahr", "laufendeRaten",
+  "reserve", "grenzeStress", "sorgen", "schufa", "ergebnis", "grundNichtPassend",
+] as const;
 
 /**
  * Rahmen um eine Antwort, die das CRM übernimmt.
@@ -211,324 +238,346 @@ function UebernahmeRahmen({ feld, children }: { feld: string; children: ReactNod
   );
 }
 
+interface Frage {
+  key: string;
+  label: LocText;
+  placeholder?: string;
+  multiline?: boolean;
+  /** Auswahl als Knöpfe; „mehrfach“ speichert eine Komma-Liste. */
+  typ?: "auswahl" | "mehrfach";
+  optionen?: readonly string[];
+  /** Klartext für gespeicherte Kurzwerte, etwa schwerpunkt "steuer". */
+  werte?: Record<string, string>;
+  pflicht?: boolean;
+}
+
 interface Schritt {
   id: string;
   nr: number;
-  /**
-   * Anzeige-Nummer, wenn sie von `nr` abweicht (z.B. "4a" für den
-   * Zwischenschritt Familiäre Situation). So behalten alle Folgepunkte ihre
-   * gewohnten Nummern.
-   */
-  nrText?: string;
+  /** Phase, die mit diesem Schritt beginnt; davor steht ihr Kopf. */
+  phase?: { kennung: string; titel: string };
   titel: string;
+  /** Badge neben dem Titel, etwa „NEU: Schwerpunkt“. */
+  marke?: string;
   text?: LocText;
   tipp?: LocText;
-  /** Optionaler ausklappbarer "Mehr Kontext"-Text – längere Erklärungen, damit der Setter im Gespräch bleibt. */
+  /** Optionaler ausklappbarer "Mehr Kontext"-Text. */
   tippMehr?: LocText;
-  /** Optional-Badge, wenn ein Schritt nur situativ genutzt werden soll. */
   optional?: boolean;
-  fragen?: { key: string; label: LocText; placeholder?: string; multiline?: boolean }[];
+  fragen?: Frage[];
   notiz?: boolean; // Freitext-Notiz aktivieren
-  special?: "anrede" | "einleitung" | "netto" | "osVorstellung" | "sparformen" | "skala" | "cashflowErwartung" | "familienstand";
+  notizLabel?: string;
+  special?: "anrede" | "einleitung" | "netto" | "eigenkapital" | "skala" | "familienstand" | "ziele" | "rentenluecke" | "zusammenfassung" | "einschaetzung";
 }
 
-const ZIELE_OPTIONEN = [
-  "Altersvorsorge", "Steuern sparen", "Vermögensaufbau", "Passives Einkommen",
-  "Inflationsschutz", "Eigenkapitalaufbau", "Familie absichern", "Frühe Rente", "Unabhängigkeit",
+/**
+ * Ziele zur Auswahl. Gespeichert wird der Wert links, damit Qualifizierung,
+ * Pipeline, Lead-Verwaltung und Beratungspräsentation die bisherigen Werte
+ * weiter verstehen; angezeigt wird die Beschriftung aus dem neuen Skript.
+ */
+export const ZIELE_AUSWAHL: ReadonlyArray<{ wert: string; label: string }> = [
+  { wert: "Altersvorsorge", label: "Zusatzrente im Alter" },
+  { wert: "Steuern sparen", label: "Steuern sparen / mehr Netto" },
+  { wert: "Vermögensaufbau", label: "Vermögen aufbauen" },
+  { wert: "Familie absichern", label: "Familie absichern" },
+  { wert: "Vererben", label: "Vererben" },
+  { wert: "Unabhängigkeit", label: "unabhängig von der gesetzlichen Rente" },
 ];
+/** Ziele aus dem früheren Skript. Gespeicherte Werte bleiben gültig und abwählbar. */
+const ZIELE_FRUEHER = ["Passives Einkommen", "Inflationsschutz", "Eigenkapitalaufbau", "Frühe Rente"];
+const ZIELE_GUELTIG = [...ZIELE_AUSWAHL.map((z) => z.wert), ...ZIELE_FRUEHER];
+
+const SCHWERPUNKT_WERTE: Record<string, string> = {
+  zusatzrente: "Zusatzrente",
+  steuer: "Steuerersparnis",
+  beides: "beides",
+};
 
 const SCHRITTE: Schritt[] = [
-  // 1) Einleitung & Begrüßung — IMMER in Sie-Form (Erstkontakt, Anrede noch nicht geklärt)
-  { id: "einleitung", nr: 1, titel: "Einleitung & Begrüßung",
+  // ── Phase A: Einstieg ──
+  // Schritte 1 bis 3 immer in der Sie-Form: Die Anrede wird erst in Schritt 2 geklärt.
+  { id: "einleitung", nr: 1, phase: { kennung: "A", titel: "Einstieg" }, titel: "Begrüßung und Erlaubnis",
     special: "einleitung",
-    text: {
-      du:  `"Guten Tag [Vorname] [Nachname], hier ist [dein Name] von OS Immobilien, gut, dass ich Sie erreiche. Sie haben sich über unsere Social-Ads-Anzeige für Immobilien als Kapitalanlage interessiert. Ich brauche fünfzehn Minuten für das, was ich mit Ihnen durchgehen möchte. Haben Sie die jetzt, oder passt Ihnen heute Abend gegen 18 Uhr besser?"`,
-      sie: `"Guten Tag [Vorname] [Nachname], hier ist [dein Name] von OS Immobilien, gut, dass ich Sie erreiche. Sie haben sich über unsere Social-Ads-Anzeige für Immobilien als Kapitalanlage interessiert. Ich brauche fünfzehn Minuten für das, was ich mit Ihnen durchgehen möchte. Haben Sie die jetzt, oder passt Ihnen heute Abend gegen 18 Uhr besser?"`,
-    },
-    tipp: `Ehrlicher Zeitrahmen plus Alternativfrage. Auch ein Nein wird so zum Rückruftermin.`,
-    tippMehr: `Energie in die Stimme, nicht abgelesen klingen. Der Social-Ads-Hook holt den Aha-Moment: "Ach ja, stimmt!". Fuenfzehn Minuten sind ehrlich, "ein paar Minuten" war es nicht: Das Skript braucht sie wirklich, und ein Abbruch mitten in der Qualifizierung kostet den Termin ganz. Wer jetzt keine Zeit hat, bekommt sofort die Alternative genannt statt eines vagen "melde mich".` },
+    text: `„Guten Tag [Anrede] [Nachname], hier ist [Ihr Name] von der OS Real Estate. Sie hatten sich [Quelle] für Immobilien als Kapitalanlage interessiert. Passt es Ihnen gerade für etwa zwanzig Minuten, oder soll ich Sie lieber zu einem festen Zeitpunkt zurückrufen, zum Beispiel heute um 18 Uhr?“`,
+    tipp: `Hat der Kunde keine Zeit, vereinbaren Sie den Rückruf mit Datum und Uhrzeit. Ein „irgendwann“ reicht nicht.` },
 
-  // 2) Anrede klären — IMMER in Sie-Form (Anrede wird erst hier festgelegt)
-  { id: "anrede", nr: 2, titel: "Anrede klären (Du oder Sie?)",
+  { id: "anrede", nr: 2, titel: "Anrede klären",
     special: "anrede",
-    text: {
-      du:  `"Eine Sache vorweg: Sind Sie per Du unterwegs, oder bleiben wir beim Sie?"`,
-      sie: `"Eine Sache vorweg: Sind Sie per Du unterwegs, oder bleiben wir beim Sie?"`,
-    },
-    tipp: `Du = mehr Nähe, Sie = mehr Respekt. Lead entscheidet, Skript schaltet ab Punkt 3 automatisch um.`,
-    tippMehr: `Wer "Du" sagt, öffnet sich emotional schneller. Wenn der Lead beim Sie bleibt: ernst nehmen – das gesamte restliche Skript inkl. E-Mails respektiert das.` },
+    text: `„Bevor wir einsteigen: Bleiben wir beim Sie, oder sind Sie lieber per Du unterwegs?“`,
+    tipp: `Die Wahl gilt für das Skript ab Schritt 3, die Beratungspräsentation und die Mails.` },
 
-  // 3) Zielsetzung des Erstgesprächs erklären (ab hier: gewählte Anrede)
-  { id: "ziel_gespraech", nr: 3, titel: "Ziel des Erstgesprächs",
+  { id: "ziel_gespraech", nr: 3, titel: "Ablauf und Ziel des Gesprächs",
     text: {
-      du:  `"Kurz zum Ablauf: Ich stelle dir ein paar Fragen zu deiner Situation und deinen Zielen. Danach weißt du, ob wir zu dir passen, und ich weiß, was zu dir passt. Einverstanden?"`,
-      sie: `"Kurz zum Ablauf: Ich stelle Ihnen ein paar Fragen zu Ihrer Situation und Ihren Zielen. Danach wissen Sie, ob wir zu Ihnen passen, und ich weiß, was zu Ihnen passt. Einverstanden?"`,
+      sie: `„Kurz zum Ablauf, damit Sie wissen, was Sie erwartet: Ich möchte heute vor allem verstehen, wo Sie stehen und was Sie erreichen möchten. Dazu stelle ich Ihnen ein paar Fragen. Einige davon sind persönlich, und Sie entscheiden, was Sie mir erzählen. Danach sage ich Ihnen kurz, wer wir sind und wie wir arbeiten. Am Ende sagen wir beide ehrlich, ob ein zweites Gespräch Sinn ergibt. Eine konkrete Immobilie schauen wir heute nicht an, und es wird nichts unterschrieben. Ist das für Sie ein guter Ablauf?“\n\n„Darf ich mir dabei ein paar Notizen machen? Und gibt es etwas, das Sie heute auf jeden Fall geklärt haben möchten?“`,
+      du: `„Kurz zum Ablauf, damit du weißt, was dich erwartet: Ich möchte heute vor allem verstehen, wo du stehst und was du erreichen möchtest. Dazu stelle ich dir ein paar Fragen. Einige davon sind persönlich, und du entscheidest, was du mir erzählst. Danach sage ich dir kurz, wer wir sind und wie wir arbeiten. Am Ende sagen wir beide ehrlich, ob ein zweites Gespräch Sinn ergibt. Eine konkrete Immobilie schauen wir heute nicht an, und es wird nichts unterschrieben. Ist das für dich ein guter Ablauf?“\n\n„Darf ich mir dabei ein paar Notizen machen? Und gibt es etwas, das du heute auf jeden Fall geklärt haben möchtest?“`,
     },
-    tipp: `Klare Erwartung, weniger Druck. Kurz halten, in Sekunde vierzig will niemand eine Agenda hoeren.` },
+    notiz: true, notizLabel: "Was der Kunde heute geklärt haben möchte" },
 
-  { id: "warmup", nr: 4, titel: "Warm-up",
+  // ── Phase B: Kundenrahmen ──
+  { id: "warmup", nr: 4, phase: { kennung: "B", titel: "Kundenrahmen" }, titel: "Motiv: Warum gerade jetzt?",
     text: {
-      du:  `"Erzähl mir mal ganz kurz, [Vorname] – was hat dich aktuell zum Thema Immobilien als Kapitalanlage gebracht, und warum gerade jetzt? Was hat sich beruflich, privat oder finanziell verändert, dass du jetzt aktiv wirst – egal ob du neu einsteigst oder dein bestehendes Portfolio erweitern möchtest?"`,
-      sie: `"Erzählen Sie mir kurz, [Name] – was hat Sie aktuell zum Thema Immobilien als Kapitalanlage gebracht, und warum gerade jetzt? Was hat sich beruflich, privat oder finanziell verändert, dass Sie jetzt aktiv werden – egal ob Sie neu einsteigen oder Ihr bestehendes Portfolio erweitern möchten?"`,
+      sie: `„Was hat Sie dazu gebracht, sich gerade jetzt mit Immobilien als Kapitalanlage zu beschäftigen?“`,
+      du: `„Was hat dich dazu gebracht, dich gerade jetzt mit Immobilien als Kapitalanlage zu beschäftigen?“`,
     },
-    tipp: `Auslöser + "Warum jetzt" in einem – stärkster emotionaler Closing-Anker.`,
-    tippMehr: `Typische Trigger: neuer Job, Gehaltserhöhung, Kinder geboren, Erbe, Steuerlast gestiegen, Zinsen wieder attraktiv. Reden lassen, spiegeln ("Spannend, das hoer ich oft …"), Stichworte notieren.\n\nWICHTIG, immer nachfassen: "Und wenn du das jetzt nicht angehst, wo stehst du dann in fuenf Jahren?" Der Ausloeser allein ist nur Information. Erst der Preis des Nichthandelns macht den Termin wichtig. Danach Pause machen und aushalten.`,
+    tipp: `Nachfragen statt bewerten: „Was meinen Sie genau mit …?“ · „Wie kam es dazu?“ Pausen aushalten. Den wichtigsten Satz des Kunden wörtlich notieren. Er erscheint in der Beratungspräsentation als Zitat auf der Seite „Ihre Ziele“.`,
+    fragen: [{ key: "motivWoertlich", label: "Motiv in den Worten des Kunden (wörtlich)", placeholder: "z.B. „Ich merke, dass meine Rente später nicht reicht, und ich möchte jetzt anfangen.“", multiline: true }],
     notiz: true },
 
-  // 4a) Brücke zwischen Warm-up und Mitentscheider: Erst die familiäre
-  // Situation erfragen, dann ergibt die Mitentscheider-Frage in Punkt 5 Sinn
-  // und der Sprechtext dort kann sich an die Antwort anpassen. Bewusst als
-  // "4a" nummeriert, damit alle Folgepunkte ihre gewohnten Nummern behalten.
-  { id: "familiaere_situation", nr: 4, nrText: "4a", titel: "Familiäre Situation",
+  { id: "familiaere_situation", nr: 5, titel: "Familie und Mitentscheider",
     special: "familienstand",
     text: {
-      du:  `"Und wie ist denn deine familiäre Situation, [Vorname]? Bist du ledig, verheiratet oder in einer Partnerschaft?"`,
-      sie: `"Und wie ist denn Ihre familiäre Situation, [Name]? Sind Sie ledig, verheiratet oder in einer Partnerschaft?"`,
+      sie: `„Damit ich Ihre Situation richtig einordne: Sind Sie ledig, verheiratet oder in einer Partnerschaft?“`,
+      du: `„Damit ich deine Situation richtig einordne: Bist du ledig, verheiratet oder in einer Partnerschaft?“`,
     },
-    tipp: `Beiläufig stellen, direkt nach dem Warm-up wirkt die Frage natürlich. Die Antwort schaltet den Sprechtext in Punkt 5 automatisch um.`,
-    notiz: true },
-
-  { id: "mitentscheider", nr: 5, titel: "Mitentscheider",
-    // Neutraler Standardtext. Sobald die Brückenfrage 4a beantwortet ist,
-    // wird Text und Tipp über waehleMitentscheiderVariante() ersetzt.
-    text: {
-      du:  `"Eine kurze Frage – entscheidet ihr solche Themen gemeinsam? Falls ja, suchen wir gleich einen Termin, an dem ihr beide könnt. An welchen Abenden passt es euch zusammen?"`,
-      sie: `"Eine kurze Frage – entscheiden Sie solche Themen gemeinsam? Falls ja, suchen wir gleich einen Termin, an dem Sie beide können. An welchen Abenden passt es Ihnen zusammen?"`,
-    },
-    tipp: `Nicht empfehlen, sondern gleich gemeinsam terminieren. Ein Ratschlag laesst sich ignorieren, die Terminfrage nicht.`,
-    fragen: [{
-      key: "mitentscheider",
-      label: { du: "Mitentscheider:in & ob sie dabei sein sollte", sie: "Mitentscheider:in & ob sie dabei sein sollte" },
-      placeholder: "z.B. Ehefrau Anna, sollte beim Beratungsgespräch dabei sein",
-    }] },
-
-  { id: "erfahrung", nr: 6, titel: "Immobilien-Erfahrung",
-    text: {
-      du:  `"Welche Erfahrung hast du bisher mit Immobilien? Schon erste Informationen eingeholt oder noch Neuland?"`,
-      sie: `"Welche Erfahrung haben Sie bisher mit Immobilien? Schon erste Informationen eingeholt oder noch Neuland?"`,
-    },
-    tipp: `Erfahrungsstand abklaeren, das steuert die Tiefe deiner Beratung im Folgetermin.`,
-    fragen: [{
-      key: "erfahrung",
-      label: { du: "Immobilien-Erfahrung", sie: "Immobilien-Erfahrung" },
-      placeholder: "z.B. Schon Informationen eingeholt, noch Neuland...",
-    }] },
-
-  // 7) Bisherige Sparformen + Eigenkapital (sync mit Qualifizierungsfrage qualEigenkapital)
-  { id: "sparformen", nr: 7, titel: "Sparformen & Eigenkapital",
-    special: "sparformen",
-    text: {
-      du:  `"Welche Sparformen nutzt du aktuell – ETF, Tagesgeld, Bausparer, Aktien? Und wie viel Eigenkapital könntest du davon ungefähr nachweisen? In den meisten Fällen reicht es schon, das Eigenkapital nachzuweisen — du musst es nicht zwingend einsetzen. Eine Range reicht völlig."`,
-      sie: `"Welche Sparformen nutzen Sie aktuell – ETF, Tagesgeld, Bausparer, Aktien? Und wie viel Eigenkapital könnten Sie davon ungefähr nachweisen? In den meisten Fällen reicht es schon, das Eigenkapital nachzuweisen — Sie müssen es nicht zwingend einsetzen. Eine Range reicht völlig."`,
-    },
-    tipp: `Wichtig: nachweisen ≠ einsetzen. Nimmt sofort Druck raus.`,
-    tippMehr: `Banken verlangen i.d.R. einen Eigenkapital-Nachweis (Kontoauszug, Depot-Auszug), das Kapital muss aber nicht zwingend in den Kauf fließen. Diese Klarstellung holt viele "ich hab' aber nichts flüssig"-Leads zurück. Wert wird automatisch mit der Qualifizierungsfrage synchronisiert.`,
-    fragen: [{
-      key: "sparformen",
-      label: { du: "Aktuelle Sparformen", sie: "Aktuelle Sparformen" },
-      placeholder: "z.B. ETFs, Tagesgeld, Bausparvertrag, Aktien...",
-    }] },
-
-  { id: "investitionsbereitschaft", nr: 8, titel: "Monatliche Investitionsbereitschaft",
-    text: {
-      du:  `"Zur Einordnung, [Vorname]: Je nach Objektgröße liegt der monatliche Eigenanteil typischerweise im mittleren dreistelligen Bereich. Wo würdest du dich da einordnen? Eine Range reicht völlig."`,
-      sie: `"Zur Einordnung, [Name]: Je nach Objektgröße liegt der monatliche Eigenanteil typischerweise im mittleren dreistelligen Bereich. Wo würden Sie sich da einordnen? Eine Range reicht völlig."`,
-    },
-    tipp: `Erst einordnen, dann fragen. Ohne Bezugswert nennt der Lead eine defensive Zahl, und die steht danach im CRM und begrenzt die Objektauswahl.`,
-    fragen: [{
-      key: "investitionMonat",
-      label: { du: "Mtl. Investitionsbereitschaft", sie: "Mtl. Investitionsbereitschaft" },
-      placeholder: "z.B. 300-500 €",
-    }] },
-
-  { id: "zwei_punkte", nr: 9, titel: "Wichtigste 2 Punkte",
-    text: {
-      du:  `"Wenn du zwei Sachen rauspicken müsstest – was ist für dich das Wichtigste beim Investment?"`,
-      sie: `"Wenn Sie zwei Sachen rauspicken müssten – was ist für Sie das Wichtigste beim Investment?"`,
-    },
-    tipp: `Bewusst ohne Vorgaben fragen. Erst wenn gar nichts kommt, nachhelfen: Sicherheit, Rendite, Steuer, Lage, Passivitaet. Wer die Liste mitliefert, bekommt eine Antwort aus der Liste statt das echte Motiv.`,
-    fragen: [{
-      key: "zweiPunkte",
-      label: { du: "Die 2 wichtigsten Punkte", sie: "Die 2 wichtigsten Punkte" },
-      placeholder: "z.B. Sicherheit, Rendite, Steuerersparnis, Lage, Passivität...",
-      multiline: true,
-    }] },
-
-  { id: "zusammenarbeit", nr: 10, titel: "Wichtig in der Zusammenarbeit",
-    text: {
-      du:  `"Was ist dir in der Zusammenarbeit mit mir am wichtigsten?"`,
-      sie: `"Was ist Ihnen in der Zusammenarbeit mit mir am wichtigsten?"`,
-    },
-    tipp: `Liefert die Erwartungshaltung. Offen fragen, erst bei Stille nachhelfen: Erreichbarkeit, Transparenz, Tempo, persoenlich oder digital.`,
-    notiz: true },
-
-  { id: "berufliche_situation", nr: 11, titel: "Berufliche Situation",
-    text: {
-      du:  `"Damit ich dich später richtig einschätzen kann – was machst du beruflich und wo bist du beschäftigt?"`,
-      sie: `"Damit ich Sie später richtig einschätzen kann – was machen Sie beruflich und wo sind Sie beschäftigt?"`,
-    },
+    tipp: `Je nach Antwort blendet das CRM den passenden Folgesatz ein.`,
     fragen: [
-      { key: "beruf",
-        label: { du: "Was machst du beruflich? Position?", sie: "Was machen Sie beruflich? Position?" },
-        placeholder: "z.B. Angestellter Ingenieur, Beamter, Selbstständig..." },
-      { key: "arbeitgeber",
-        label: { du: "Arbeitgeber & seit wann?", sie: "Arbeitgeber & seit wann?" },
-        placeholder: "z.B. Siemens AG, seit 2019" },
+      { key: "mitentscheider", label: "Mitentscheider (Name, wird zum Termin eingeladen)", placeholder: "z.B. Partnerin, soll beim nächsten Termin dabei sein" },
+      { key: "kinder", label: "Kinder (Anzahl)", placeholder: "z.B. 2" },
+    ],
+    notiz: true },
+
+  { id: "berufliche_situation", nr: 6, titel: "Beruf",
+    text: {
+      sie: `„Was machen Sie beruflich? Sind Sie angestellt, selbstständig oder verbeamtet? Und seit wann sind Sie dort?“`,
+      du: `„Was machst du beruflich? Bist du angestellt, selbstständig oder verbeamtet? Und seit wann bist du dort?“`,
+    },
+    tipp: `Probezeit oder Befristung notieren. Die Bank fragt später danach.`,
+    fragen: [
+      { key: "beruf", label: "Berufliche Situation", pflicht: true },
+      { key: "arbeitgeber", label: "Arbeitgeber und seit wann (Jahr)", placeholder: "z.B. Musterfirma GmbH, seit 2019" },
+      { key: "probezeit", label: "Probezeit oder befristet", typ: "auswahl", optionen: ["ja", "nein"] },
     ] },
 
-  // Reihenfolge bewusst: erst das Einkommen, dann die Schufa. Umgekehrt fragt
-  // man erst nach Misstrauen und dann nach Geld, das ist die schlechteste
-  // aller Reihenfolgen. Vor der Schufa steht ein Nutzensatz, damit der Block
-  // nicht in einen Pruefungsmodus kippt.
-  { id: "netto", nr: 12, titel: "Netto-Einkommen",
+  // ── Phase C: Ziele und Ausgangslage ──
+  { id: "ziele", nr: 7, phase: { kennung: "C", titel: "Ziele und Ausgangslage" }, titel: "Ziele und Schwerpunkt", marke: "NEU: Schwerpunkt",
+    special: "ziele",
+    text: {
+      sie: `„Was soll eine Immobilie in zehn bis zwanzig Jahren für Sie leisten?“\n\n„Und wenn Sie sich für eines entscheiden müssten: Geht es Ihnen eher darum, später im Ruhestand ein zusätzliches Einkommen zu haben, oder eher darum, heute weniger Steuern zu zahlen und mehr Netto vom Brutto zu behalten?“\n\n„Warum ist Ihnen genau das gerade jetzt wichtig?“`,
+      du: `„Was soll eine Immobilie in zehn bis zwanzig Jahren für dich leisten?“\n\n„Und wenn du dich für eines entscheiden müsstest: Geht es dir eher darum, später im Ruhestand ein zusätzliches Einkommen zu haben, oder eher darum, heute weniger Steuern zu zahlen und mehr Netto vom Brutto zu behalten?“\n\n„Warum ist dir genau das gerade jetzt wichtig?“`,
+    },
+    tipp: `Bis zu drei Ziele. Der Schwerpunkt ist Pflicht und belegt den Konzeptschalter der Beratungspräsentation vor.`,
+    fragen: [{ key: "schwerpunkt", label: "Schwerpunkt", typ: "auswahl", optionen: ["zusatzrente", "steuer", "beides"], werte: SCHWERPUNKT_WERTE, pflicht: true }],
+    notiz: true, notizLabel: "Warum gerade jetzt wichtig" },
+
+  { id: "rentenluecke", nr: 8, titel: "Ruhestand und Rentenlücke",
+    special: "rentenluecke",
+    text: {
+      sie: `„Wie stellen Sie sich Ihren Ruhestand vor, und ab wann?“\n\n„Wissen Sie ungefähr, mit wie viel Rente Sie rechnen können? Eine grobe Zahl aus Ihrer letzten Renteninformation reicht mir.“\n\n„Und mit wie viel Netto im Monat würden Sie im Ruhestand gern leben?“`,
+      du: `„Wie stellst du dir deinen Ruhestand vor, und ab wann?“\n\n„Weißt du ungefähr, mit wie viel Rente du rechnen kannst? Eine grobe Zahl aus deiner letzten Renteninformation reicht mir.“\n\n„Und mit wie viel Netto im Monat würdest du im Ruhestand gern leben?“`,
+    },
+    fragen: [
+      { key: "ruhestandAb", label: "Ruhestand ab (Alter)", placeholder: "z.B. 67" },
+      { key: "renteErwartet", label: "Erwartete Rente netto im Monat (€)", placeholder: "z.B. 1.800" },
+      { key: "wunschNetto", label: "Wunsch-Netto im Ruhestand (€)", placeholder: "z.B. 3.000" },
+    ] },
+
+  { id: "sparformen", nr: 9, titel: "Heutige Vorsorge und Erfahrung",
+    text: {
+      sie: `„Was tun Sie heute bereits für Ihre Altersvorsorge und Ihren Vermögensaufbau? Und wie zufrieden sind Sie damit?“\n\n„Haben Sie schon Erfahrung mit Immobilien, selbst genutzt oder vermietet? Und planen Sie in den nächsten Jahren ein eigenes Zuhause?“`,
+      du: `„Was tust du heute bereits für deine Altersvorsorge und deinen Vermögensaufbau? Und wie zufrieden bist du damit?“\n\n„Hast du schon Erfahrung mit Immobilien, selbst genutzt oder vermietet? Und planst du in den nächsten Jahren ein eigenes Zuhause?“`,
+    },
+    fragen: [
+      { key: "sparformen", label: "Sparformen", typ: "mehrfach", optionen: ["Tagesgeld", "ETF/Aktien", "Bausparvertrag", "Rentenversicherung", "betriebliche Vorsorge", "Immobilie"] },
+      { key: "vorsorgeZufriedenheit", label: "Zufriedenheit", placeholder: "z.B. eher unzufrieden, bringt zu wenig" },
+      { key: "erfahrung", label: "Immobilienerfahrung", placeholder: "z.B. Eigentumswohnung selbst genutzt, noch nichts vermietet" },
+      { key: "eigenheimGeplant", label: "Eigenheim geplant", typ: "auswahl", optionen: ["ja", "nein", "später"] },
+    ] },
+
+  // ── Phase D: Finanzieller Rahmen ──
+  { id: "ueberleitung_rahmen", nr: 10, phase: { kennung: "D", titel: "Finanzieller Rahmen" }, titel: "Überleitung",
+    text: {
+      sie: `„Eine Immobilie ist nur dann gut, wenn sie zu Ihrem Ziel und zu Ihrer Situation passt. Damit ich Ihnen im nächsten Termin mit echten Zahlen statt mit Wunschwerten rechne, brauche ich ein paar Eckdaten. Eine Spanne reicht mir jeweils.“`,
+      du: `„Eine Immobilie ist nur dann gut, wenn sie zu deinem Ziel und zu deiner Situation passt. Damit ich dir im nächsten Termin mit echten Zahlen statt mit Wunschwerten rechne, brauche ich ein paar Eckdaten. Eine Spanne reicht mir jeweils.“`,
+    } },
+
+  { id: "netto", nr: 11, titel: "Einkommen und Verpflichtungen",
     special: "netto",
     text: {
-      du:  `"Damit ich dir wirklich passende Optionen rechnen kann – wie hoch ist dein monatliches Nettoeinkommen ungefähr? Eine Range reicht völlig. Und hast du aktuell laufende Kredite oder Leasingraten?"`,
-      sie: `"Damit ich Ihnen wirklich passende Optionen rechnen kann – wie hoch ist Ihr monatliches Nettoeinkommen ungefähr? Eine Range reicht völlig. Und haben Sie aktuell laufende Kredite oder Leasingraten?"`,
+      sie: `„Wie hoch ist ungefähr Ihr monatliches Nettoeinkommen? Und Ihr Bruttojahresgehalt?“\n\n„Laufen aktuell Kredite, Leasingraten oder Unterhaltszahlungen?“`,
+      du: `„Wie hoch ist ungefähr dein monatliches Nettoeinkommen? Und dein Bruttojahresgehalt?“\n\n„Laufen aktuell Kredite, Leasingraten oder Unterhaltszahlungen?“`,
     },
-    tipp: `Wert wird automatisch mit der Qualifizierungsfrage synchronisiert. Die laufenden Verpflichtungen mitfragen, sie kippen jede Bonitaetspruefung.`,
+    tipp: `Das Brutto brauchen wir für den persönlichen Steuersatz. Die Präsentation rechnet nicht mit pauschal 42 %, sondern mit dem Wert des Kunden.`,
+    fragen: [
+      { key: "bruttoJahr", label: "Brutto im Jahr (€)", placeholder: "z.B. 80.000", pflicht: true },
+      { key: "laufendeRaten", label: "Laufende Raten im Monat (€)", placeholder: "z.B. 0 oder 250 Leasing", pflicht: true },
+    ],
     notiz: true },
 
-  { id: "schufa", nr: 13, titel: "Schufa",
+  { id: "eigenkapital", nr: 12, titel: "Eigenkapital und Reserve",
+    special: "eigenkapital",
     text: {
-      du:  `"Kurz zum Hintergrund: Ich rechne dir vor dem Termin zwei Objekte durch, dafür muss ich wissen, mit welchen Bankkonditionen ich kalkulieren kann. Gibt es bei dir einen offenen Schufa-Eintrag, oder ist da alles glatt?"`,
-      sie: `"Kurz zum Hintergrund: Ich rechne Ihnen vor dem Termin zwei Objekte durch, dafür muss ich wissen, mit welchen Bankkonditionen ich kalkulieren kann. Gibt es bei Ihnen einen offenen Schufa-Eintrag, oder ist da alles glatt?"`,
+      sie: `„Welche Rücklage soll auf jeden Fall unangetastet bleiben, egal was passiert?“\n\n„Und welcher Betrag stünde darüber hinaus für die Kaufnebenkosten zur Verfügung? Wichtig: Nachweisen heißt nicht einsetzen. Was Sie davon wirklich einsetzen, entscheiden Sie später.“`,
+      du: `„Welche Rücklage soll auf jeden Fall unangetastet bleiben, egal was passiert?“\n\n„Und welcher Betrag stünde darüber hinaus für die Kaufnebenkosten zur Verfügung? Wichtig: Nachweisen heißt nicht einsetzen. Was du davon wirklich einsetzt, entscheidest du später.“`,
     },
-    tipp: `Erst den Grund nennen, dann fragen. "Alles sauber" impliziert "schmutzig" und macht aus einer Sachfrage einen Vorwurf.`,
-    notiz: true },
+    fragen: [{ key: "reserve", label: "Reserve, unantastbar (€)", placeholder: "z.B. 15.000", pflicht: true }] },
 
-  { id: "ziele", nr: 14, titel: "Ziele",
+  { id: "investitionsbereitschaft", nr: 13, titel: "Monatlich tragbarer Betrag",
     text: {
-      du:  `"Welche 3 Ziele, [Vorname], sind dir bei einem möglichen Immobilieninvestment denn am wichtigsten?"`,
-      sie: `"Welche 3 Ziele, [Name], sind Ihnen bei einem möglichen Immobilieninvestment denn am wichtigsten?"`,
+      sie: `„Welcher Betrag im Monat wäre für Sie dauerhaft gut tragbar, wenn das Konzept für Sie nachvollziehbar ist? Ich meine den Betrag vor Steuern.“\n\n„Und wo wäre Ihre Grenze, wenn einmal etwas nicht nach Plan läuft?“`,
+      du: `„Welcher Betrag im Monat wäre für dich dauerhaft gut tragbar, wenn das Konzept für dich nachvollziehbar ist? Ich meine den Betrag vor Steuern.“\n\n„Und wo wäre deine Grenze, wenn einmal etwas nicht nach Plan läuft?“`,
     },
-    tipp: `Maximal 3 Ziele anklicken oder freie Stichworte in den Notizen.`,
-    notiz: true },
+    fragen: [
+      { key: "investitionMonat", label: "Tragbar im Monat vor Steuern (€)", placeholder: "z.B. 300-500 €" },
+      { key: "grenzeStress", label: "Grenze im Stressfall (€ im Monat)", placeholder: "z.B. 500" },
+    ] },
 
-  // 15) NEU: Erwartungsrahmen Cashflow vs. Qualität — Einwand-Vorwegnahme + Einwand-Behandlung
-  { id: "cashflow_erwartung", nr: 15, titel: "Erwartungsrahmen — Cashflow vs. Qualität",
-    special: "cashflowErwartung",
+  { id: "schufa", nr: 14, titel: "Sorgen und Schufa",
     text: {
-      du:  `"Eine Sache, die ich dir vorher ehrlich sagen möchte, [Vorname]: Eine Immobilie, die sich vor Steuern komplett selbst trägt, ist möglich — aber nur über drei Hebel: sehr hohe Rendite-Lage (oft B-/C-Stadt, mehr Risiko), spezielles Mietkonzept (WG/Möbliert/Co-Living, mehr Aufwand) oder sehr günstiger Einkauf (Sanierungsstau). Wenn du gleichzeitig Top-Lage, Neubau, ruhige Mieter und wenig Aufwand willst, dann ist der Hebel nicht Cashflow vor Steuern, sondern Vermögensaufbau, Steuerersparnis und Tilgung durch den Mieter. Ich zeige dir im nächsten Termin beides — damit du sauber entscheidest, was zu dir passt."`,
-      sie: `"Eine Sache, die ich Ihnen vorher ehrlich sagen möchte, [Name]: Eine Immobilie, die sich vor Steuern vollständig selbst trägt, ist möglich — aber nur über drei Hebel: sehr hohe Rendite-Lage (oft B-/C-Stadt, mehr Risiko), spezielles Mietkonzept (WG/Möbliert/Co-Living, mehr Aufwand) oder sehr günstiger Einkauf (Sanierungsstau). Wenn Sie gleichzeitig Top-Lage, Neubau, ruhige Mieter und wenig Aufwand wünschen, ist der Hebel nicht Cashflow vor Steuern, sondern Vermögensaufbau, Steuerersparnis und Tilgung durch den Mieter. Ich zeige Ihnen im nächsten Termin beides — damit Sie sauber entscheiden, was zu Ihnen passt."`,
+      sie: `„Was sind Ihre größten Sorgen, wenn Sie an eine vermietete Immobilie denken?“\n\n„Und eine letzte Frage, die ich allen stelle: Gab es in der Vergangenheit Schwierigkeiten mit einer Bank oder mit der Schufa? Ich frage nur, damit wir später keine Überraschung erleben.“`,
+      du: `„Was sind deine größten Sorgen, wenn du an eine vermietete Immobilie denkst?“\n\n„Und eine letzte Frage, die ich allen stelle: Gab es in der Vergangenheit Schwierigkeiten mit einer Bank oder mit der Schufa? Ich frage nur, damit wir später keine Überraschung erleben.“`,
     },
-    tipp: `Erwartungsmanagement = besseres Closing. Bogen-Prinzip: Wer den Bogen am Anfang sauber spannt, trifft am Ende präzise.`,
-    tippMehr: `Diesen Schritt IMMER lesen, wenn der Lead bei "Zielen" oder "2 wichtigsten Punkten" Cashflow / "soll nichts kosten" / "selbsttragend" genannt hat. Der Toggle unten haelt die Erwartung des Leads fest. Sie ist im Beratungsgespraech sichtbar und steuert die Objektauswahl.`,
+    tipp: `Sorgen wörtlich notieren. Sie werden in der Beratungspräsentation im Abschnitt „Sicherheit“ gezielt beantwortet.`,
+    fragen: [
+      { key: "sorgen", label: "Größte Sorgen (wörtlich)", placeholder: "z.B. „Was ist, wenn der Mieter nicht zahlt?“", multiline: true },
+      { key: "schufa", label: "Schufa auffällig", typ: "auswahl", optionen: ["ja", "nein", "unklar"] },
+    ],
     notiz: true },
 
-  // Dank + OS Immobilien-Vorstellung (vor Terminvereinbarung)
-  { id: "osimmobilien_vorstellung", nr: 16, titel: "Dank + Wer ist OS Immobilien?",
-    special: "osVorstellung",
+  // ── Phase E: Wer wir sind ──
+  { id: "osimmobilien_vorstellung", nr: 15, phase: { kennung: "E", titel: "Wer wir sind" }, titel: "Unternehmen",
     text: {
-      du:  `"Danke, [Vorname], dass du mir so offen von dir erzählt hast. Kurz, wer wir sind:\n\n• Wir machen ausschließlich Immobilien als Kapitalanlage, kein Eigenheim.\n• Unsere Kunden sind Angestellte, Beamte und Selbstständige mit gutem Einkommen.\n• Wir arbeiten in wachstumsstarken deutschen A- und B-Lagen, mit saniertem Bestand, Neubau im KfW-40-Standard und Co-Living.\n• Wir begleiten dich von der Strategie über die Finanzierung bis nach dem Notar, alles aus einer Hand.\n• Seit [X] Jahren, [Y] begleitete Kunden.\n\nWas davon klingt für dich am ehesten nach dem, was du vorhin beschrieben hast?"`,
-      sie: `"Danke, [Name], dass Sie mir so offen von sich erzählt haben. Kurz, wer wir sind:\n\n• Wir machen ausschließlich Immobilien als Kapitalanlage, kein Eigenheim.\n• Unsere Kunden sind Angestellte, Beamte und Selbstständige mit gutem Einkommen.\n• Wir arbeiten in wachstumsstarken deutschen A- und B-Lagen, mit saniertem Bestand, Neubau im KfW-40-Standard und Co-Living.\n• Wir begleiten Sie von der Strategie über die Finanzierung bis nach dem Notar, alles aus einer Hand.\n• Seit [X] Jahren, [Y] begleitete Kunden.\n\nWas davon klingt für Sie am ehesten nach dem, was Sie vorhin beschrieben haben?"`,
+      sie: `„Danke für Ihre Offenheit. Damit Sie wissen, mit wem Sie sprechen: Wir sind die OS Real Estate GmbH, Teil der OS Immobilien Holding mit Sitz in Mittenwalde bei Berlin. Wir vermitteln vermietete Wohnimmobilien als Kapitalanlage, mit Schwerpunkt Berlin und Brandenburg, heute zum Beispiel in Berlin-Wedding, am Schwielowsee bei Potsdam und in Zossen-Wünsdorf. Jedes Objekt prüfen wir vorher auf Lage, Miete, Zustand und Unterlagen.“\n\n„Und ich sage es Ihnen ganz offen: Wir verdienen an der Vermittlung. Gerade deshalb rechnen wir mit echten Zahlen, vor und nach Steuern und mit einem Stresstest. Steuer-, Rechts- und Finanzierungsberatung machen wir nicht. Dafür arbeiten wir mit Steuerberatern, Notaren und Banken zusammen.“`,
+      du: `„Danke für deine Offenheit. Damit du weißt, mit wem du sprichst: Wir sind die OS Real Estate GmbH, Teil der OS Immobilien Holding mit Sitz in Mittenwalde bei Berlin. Wir vermitteln vermietete Wohnimmobilien als Kapitalanlage, mit Schwerpunkt Berlin und Brandenburg, heute zum Beispiel in Berlin-Wedding, am Schwielowsee bei Potsdam und in Zossen-Wünsdorf. Jedes Objekt prüfen wir vorher auf Lage, Miete, Zustand und Unterlagen.“\n\n„Und ich sage es dir ganz offen: Wir verdienen an der Vermittlung. Gerade deshalb rechnen wir mit echten Zahlen, vor und nach Steuern und mit einem Stresstest. Steuer-, Rechts- und Finanzierungsberatung machen wir nicht. Dafür arbeiten wir mit Steuerberatern, Notaren und Banken zusammen.“`,
     },
-    tipp: `Halb so lang wie vorher und endet mit einer Frage. Neunzig Sekunden Monolog sind der Punkt, an dem der Zuhoerer aussteigt.`,
-    tippMehr: `WICHTIG: [X] und [Y] einmal durch eure echten Zahlen ersetzen. Behauptete Kompetenz ueberzeugt niemanden, das Verhalten anderer Kunden schon. Wenn ihr die Zahlen nicht belegen koennt, die Zeile ersatzlos streichen statt zu schaetzen.`,
+    tipp: `Persönlich ergänzen: Ihr Werdegang in zwei Sätzen und Ihr ehrlicher Grund für diese Arbeit. Keine erfundenen Zahlen, keine fremden Siegel.`,
     notiz: true },
 
-  // NEU: Pattern Interrupt – versteckte Einwände vor dem Termin auflösen
-  { id: "pattern_interrupt", nr: 17, titel: "Pattern Interrupt – Einwand-Vorwegnahme",
+  { id: "ablauf", nr: 16, titel: "So arbeiten wir: der Ablauf",
     text: {
-      du:  `"Bevor wir gleich den Termin fixieren, [Vorname] – gibt es bei dir noch irgendwas im Kopf, das dich vom nächsten Schritt abhalten würde? Lieber jetzt raus damit, als dass wir uns nachher umsonst treffen."`,
-      sie: `"Bevor wir gleich den Termin fixieren, [Name] – gibt es bei Ihnen noch irgendetwas im Kopf, das Sie vom nächsten Schritt abhalten würde? Lieber jetzt heraus damit, als dass wir uns später umsonst treffen."`,
+      sie: `„So gehen wir vor: Im nächsten Termin zeige ich Ihnen in etwa einer Stunde unser Konzept, gerechnet mit Ihren Zahlen, und dazu unsere Objekte. Passt das für Sie, füllen wir am Ende gemeinsam Ihre Selbstauskunft aus. Rund eine Woche später stelle ich Ihnen die konkrete Immobilie vor, die zu Ihnen passt, mit Exposé und Ihrer persönlichen Kalkulation. Erst dann entscheiden Sie über eine Reservierung, und die ist kostenfrei. Danach folgen Besichtigung, Bankgutachter, Finanzierung und Notar. Nach jedem Schritt entscheiden Sie, ob es weitergeht.“`,
+      du: `„So gehen wir vor: Im nächsten Termin zeige ich dir in etwa einer Stunde unser Konzept, gerechnet mit deinen Zahlen, und dazu unsere Objekte. Passt das für dich, füllen wir am Ende gemeinsam deine Selbstauskunft aus. Rund eine Woche später stelle ich dir die konkrete Immobilie vor, die zu dir passt, mit Exposé und deiner persönlichen Kalkulation. Erst dann entscheidest du über eine Reservierung, und die ist kostenfrei. Danach folgen Besichtigung, Bankgutachter, Finanzierung und Notar. Nach jedem Schritt entscheidest du, ob es weitergeht.“`,
+    } },
+
+  // ── Phase F: Abschluss ──
+  { id: "zusammenfassung", nr: 17, phase: { kennung: "F", titel: "Abschluss" }, titel: "Zusammenfassung",
+    special: "zusammenfassung",
+    text: {
+      sie: `„Lassen Sie mich kurz zusammenfassen, ob ich Sie richtig verstanden habe: Sie sind [Beruf] und möchten [wichtigstes Ziel]. Wichtig ist Ihnen das gerade jetzt, weil [Motiv]. Heute haben Sie [Vorsorge], und es fehlen Ihnen später etwa [Lücke] im Monat. Eine Reserve von [Reserve] soll unangetastet bleiben, und monatlich wären für Sie etwa [tragbarer Betrag] vor Steuern gut tragbar. Am meisten Sorgen macht Ihnen [Sorge], und mitentscheiden wird [Mitentscheider].“\n\n„Habe ich das richtig verstanden? Was würden Sie ändern oder ergänzen?“`,
+      du: `„Lass mich kurz zusammenfassen, ob ich dich richtig verstanden habe: Du bist [Beruf] und möchtest [wichtigstes Ziel]. Wichtig ist dir das gerade jetzt, weil [Motiv]. Heute hast du [Vorsorge], und es fehlen dir später etwa [Lücke] im Monat. Eine Reserve von [Reserve] soll unangetastet bleiben, und monatlich wären für dich etwa [tragbarer Betrag] vor Steuern gut tragbar. Am meisten Sorgen macht dir [Sorge], und mitentscheiden wird [Mitentscheider].“\n\n„Habe ich das richtig verstanden? Was würdest du ändern oder ergänzen?“`,
     },
-    tipp: `Holt versteckte Einwände hoch — verhindert No-Shows und unsinnige Termine.`,
-    tippMehr: `Typische Antworten: "Ich muss noch mit meiner Frau sprechen", "Ich bin mir nicht sicher, ob ich überhaupt Zeit habe", "Wieviel kostet das eigentlich?". Was hier kommt, schreibst du in die Notiz. Im Beratungstermin greifst du es als Erstes auf.`,
+    tipp: `Das CRM setzt die Werte aus den Schritten 4 bis 14 automatisch ein. Was noch in eckigen Klammern steht, ist offen.` },
+
+  { id: "einschaetzung", nr: 18, titel: "Ehrliche Einschätzung",
+    special: "einschaetzung",
+    fragen: [
+      { key: "ergebnis", label: "Ergebnis", typ: "auswahl", optionen: ["passt", "passt nicht"] },
+      { key: "grundNichtPassend", label: "Grund, wenn es nicht passt", typ: "auswahl", optionen: ["kein Bedarf", "keine wirtschaftliche Basis", "nur Steuerrückerstattung gewünscht", "sonstiges"] },
+    ],
+    tipp: `Bei „passt nicht“ kommt der Kontakt in die Stufe „Verloren“ mit diesem Grund.`,
     notiz: true },
 
-  // NEU: Verbindlichkeits-Skala 1–10 (optional, nur wenn Setter es passend findet)
-  { id: "skala_verbindlichkeit", nr: 18, titel: "Verbindlichkeit (Skala 1–10)",
+  { id: "skala_verbindlichkeit", nr: 19, titel: "Verbindlichkeit",
     special: "skala",
     text: {
-      du:  `"Auf einer Skala von 1 bis 10 – wie ernst ist es dir, das Thema Immobilieninvestment jetzt wirklich anzugehen? 1 = nur mal informieren, 10 = ich will starten, sobald es Sinn ergibt."`,
-      sie: `"Auf einer Skala von 1 bis 10 – wie ernst ist es Ihnen, das Thema Immobilieninvestment jetzt wirklich anzugehen? 1 = nur mal informieren, 10 = ich will starten, sobald es Sinn ergibt."`,
+      sie: `„Auf einer Skala von 1 bis 10: Wie wichtig ist es Ihnen, das Thema in den nächsten Wochen anzugehen?“\n\n„Was müsste passieren, damit es eine 10 wird?“`,
+      du: `„Auf einer Skala von 1 bis 10: Wie wichtig ist es dir, das Thema in den nächsten Wochen anzugehen?“\n\n„Was müsste passieren, damit es eine 10 wird?“`,
     },
-    tipp: `Immer fragen, nicht nur bei lauwarmem Bauchgefuehl. Nur wer bei allen fragt, hat einen Vergleichswert, und der Wert steuert den naechsten Schritt.`,
-    tippMehr: `Werte 7+ = Show-Wahrscheinlichkeit deutlich höher. Werte ≤4 = freundlich klären, ob Termin wirklich Sinn ergibt oder besser auf "Vermögensaufbau" / Follow-Up umgeleitet werden sollte.` },
-
-  // Der fruehere Punkt 19 (Vorabschluss, Vorbereitung zusagen lassen) wurde
-  // auf Wunsch von Christian ersatzlos gestrichen. Die Folgepunkte ruecken
-  // nach, so wie bei frueheren Streichungen auch. Alte Notizen unter der
-  // Schritt-ID "vorabschluss" bleiben in gespeicherten Staenden liegen und
-  // werden ueber LEGACY_SCHRITT_TITEL weiterhin lesbar benannt.
-  { id: "terminvereinbarung", nr: 19, titel: "Terminvereinbarung",
-    text: {
-      du:  `"Danke dir, dann lass uns direkt den Termin festmachen. Ich zeige dir zwei konkrete Wohnungen mit vollständiger Rechnung: Kaufpreis, Rate, Miete, Steuerwirkung und was am Ende wirklich aus deiner Tasche geht. Das bereite ich individuell für dich vor, das ist gut eine Stunde Arbeit. Ich habe am [Tag 1] um [Uhrzeit] und am [Tag 2] um [Uhrzeit] etwas frei. Was passt dir besser?"`,
-      sie: `"Danke Ihnen, dann lassen Sie uns direkt den Termin festmachen. Ich zeige Ihnen zwei konkrete Wohnungen mit vollständiger Rechnung: Kaufpreis, Rate, Miete, Steuerwirkung und was am Ende wirklich aus Ihrer Tasche geht. Das bereite ich individuell für Sie vor, das ist gut eine Stunde Arbeit. Ich habe am [Tag 1] um [Uhrzeit] und am [Tag 2] um [Uhrzeit] etwas frei. Was passt Ihnen besser?"`,
-    },
-    tipp: `Zwei konkrete Zeitfenster, keine offene Frage. Und den Wert des Termins konkret benennen: zwei durchgerechnete Objekte, eine Stunde Vorbereitung. "In die Tiefe gehen" ist kein Wert.` },
-
-  { id: "einladung_check", nr: 20, titel: "Einladung per E-Mail prüfen",
-    text: {
-      du:  `"Schau bitte kurz in dein Postfach – ist die Einladung zu unserem Beratungsgespräch schon angekommen? Falls ja, füg' sie dir direkt deinem Kalender hinzu, damit der Termin wie besprochen stattfinden kann. In der E-Mail findest du auch den Link zum Videogespräch. Und falls doch mal was dazwischenkommt: Gib mir bitte spätestens am Vortag Bescheid, dann verschieben wir einfach. Ist das für dich in Ordnung?"`,
-      sie: `"Schauen Sie bitte kurz in Ihr Postfach – ist die Einladung zu unserem Beratungsgespräch bereits angekommen? Falls ja, fügen Sie sie direkt Ihrem Kalender hinzu, damit der Termin wie besprochen stattfinden kann. In der E-Mail finden Sie auch den Link zum Videogespräch. Und falls doch einmal etwas dazwischenkommt: Geben Sie mir bitte spätestens am Vortag Bescheid, dann verschieben wir einfach. Ist das für Sie in Ordnung?"`,
-    },
-    tipp: `Live verifizieren, das ist der staerkste No-Show-Schutz im Skript. Bei "nichts da": Spam pruefen oder zweite Adresse abfragen. Wer zusagt sich abzumelden, meldet sich ab oder erscheint.`,
     notiz: true },
 
-  { id: "offene_fragen", nr: 21, titel: "Offene Fragen klären",
+  { id: "terminvereinbarung", nr: 20, titel: "Termin für die Beratungspräsentation",
     text: {
-      du:  `"Welche Frage soll ich dir im Termin als Allererstes beantworten?"`,
-      sie: `"Welche Frage soll ich Ihnen im Termin als Allererstes beantworten?"`,
-    },
-    tipp: `Offen fragen statt geschlossen. Die alte Form lud zum bequemen "Nein" ein, die neue erzeugt eine Erwartung an den Termin und damit einen Grund zu erscheinen.`,
-    fragen: [{
-      key: "offeneFragen",
-      label: { du: "Offene Fragen / Einwände", sie: "Offene Fragen / Einwände" },
-      placeholder: "Was war dem Lead noch unklar? Welche Einwände kamen?",
-      multiline: true,
-    }] },
+      sie: `„Ich brauche zwei bis drei Tage, um Ihr Konzept mit Ihren Zahlen vorzubereiten. Passt Ihnen [Tag 1] um [Uhrzeit] oder [Tag 2] um [Uhrzeit] besser? Wir brauchen etwa eine Stunde, per Video oder bei uns im Büro.“\n\n„[Mitentscheider] sollte idealerweise dabei sein. Passt der Termin auch für [ihn/sie]?“`,
+      du: `„Ich brauche zwei bis drei Tage, um dein Konzept mit deinen Zahlen vorzubereiten. Passt dir [Tag 1] um [Uhrzeit] oder [Tag 2] um [Uhrzeit] besser? Wir brauchen etwa eine Stunde, per Video oder bei uns im Büro.“\n\n„[Mitentscheider] sollte idealerweise dabei sein. Passt der Termin auch für [ihn/sie]?“`,
+    } },
 
-  { id: "verabschiedung", nr: 22, titel: "Verabschiedung",
+  { id: "einladung_check", nr: 21, titel: "Einladung prüfen und Vorbereitung",
     text: {
-      du:  `"Danke, [Vorname], dann hast du den Termin sicher im Kalender. Ich freue mich, dich bei deinem Vorhaben zu begleiten. Bis [Tag] um [Uhrzeit]."`,
-      sie: `"Danke, [Name], dann haben Sie den Termin sicher im Kalender. Ich freue mich, Sie bei Ihrem Vorhaben zu begleiten. Bis [Tag] um [Uhrzeit]."`,
+      sie: `„Sie bekommen gleich eine Einladung per E-Mail. Schauen Sie bitte kurz nach, ob sie angekommen ist? Manchmal landet sie im Spam-Ordner.“\n\n„Vorbereiten müssen Sie für den Termin nichts. Wenn Sie mögen, legen Sie Ihre letzte Renteninformation bereit, dann rechnen wir noch genauer.“`,
+      du: `„Du bekommst gleich eine Einladung per E-Mail. Schau bitte kurz nach, ob sie angekommen ist? Manchmal landet sie im Spam-Ordner.“\n\n„Vorbereiten musst du für den Termin nichts. Wenn du magst, leg deine letzte Renteninformation bereit, dann rechnen wir noch genauer.“`,
     },
-    tipp: `Der Termin ist das letzte gesprochene Wort. Der frueher eingeschobene Vorbehalt "wenn alles passt" saete im letzten Satz genau den Zweifel, den zwanzig Minuten vorher abgebaut haben.` },
+    notiz: true },
+
+  { id: "offene_fragen", nr: 22, titel: "Offene Fragen",
+    text: {
+      sie: `„Welche Frage soll ich Ihnen im nächsten Termin als Allererstes beantworten?“`,
+      du: `„Welche Frage soll ich dir im nächsten Termin als Allererstes beantworten?“`,
+    },
+    fragen: [{ key: "offeneFragen", label: "Erste Frage für die Beratung", placeholder: "Die Frage des Kunden, möglichst wörtlich", multiline: true }] },
+
+  { id: "verabschiedung", nr: 23, titel: "Verabschiedung",
+    text: {
+      sie: `„Dann halten wir fest: [Tag], [Datum] um [Uhrzeit], gemeinsam mit [Mitentscheider]. Ich freue mich auf unser Gespräch. Bis [Tag], [Anrede] [Nachname]!“`,
+      du: `„Dann halten wir fest: [Tag], [Datum] um [Uhrzeit], gemeinsam mit [Mitentscheider]. Ich freue mich auf unser Gespräch. Bis [Tag], [Vorname]!“`,
+    },
+    tipp: `Abschluss-Checkliste: Ziel und Schwerpunkt · Mitentscheider · Rahmen und Reserve · Sorgen · Termin mit Einladung · Nachfass-E-Mail innerhalb 2 Stunden.` },
+];
+
+/** Die drei Sätze in Schritt 18, je nach Ergebnis. */
+const EINSCHAETZUNG: Record<"passt" | "passtNicht", { sie: string; du: string }> = {
+  passt: {
+    sie: `Wenn es passt: „Nach dem, was Sie mir erzählt haben, kann eine vermietete Immobilie ein sinnvoller Baustein für Sie sein. Ob die Zahlen wirklich aufgehen, zeige ich Ihnen im nächsten Termin, offen und mit Stresstest.“`,
+    du: `Wenn es passt: „Nach dem, was du mir erzählt hast, kann eine vermietete Immobilie ein sinnvoller Baustein für dich sein. Ob die Zahlen wirklich aufgehen, zeige ich dir im nächsten Termin, offen und mit Stresstest.“`,
+  },
+  passtNicht: {
+    sie: `Wenn es nicht passt: „Danke für Ihre Offenheit. Ehrlich gesagt passt unser Konzept im Moment nicht zu Ihnen, weil [Grund]. Ich möchte Ihnen nichts empfehlen, das nicht zu Ihnen passt. Wenn sich an [Grund] etwas ändert, melden Sie sich gern wieder bei mir.“`,
+    du: `Wenn es nicht passt: „Danke für deine Offenheit. Ehrlich gesagt passt unser Konzept im Moment nicht zu dir, weil [Grund]. Ich möchte dir nichts empfehlen, das nicht zu dir passt. Wenn sich an [Grund] etwas ändert, melde dich gern wieder bei mir.“`,
+  },
+};
+
+/** Die Phasen im Überblick oben im Skript. */
+const PHASEN: ReadonlyArray<{ kennung: string; titel: string; schritte: string; dauer: string; ziel: string }> = [
+  { kennung: "A", titel: "Einstieg", schritte: "1 bis 3", dauer: "3 Min.", ziel: "Erlaubnis, Anrede, Ablauf" },
+  { kennung: "B", titel: "Kundenrahmen", schritte: "4 bis 6", dauer: "5 Min.", ziel: "Motiv in den Worten des Kunden, Mitentscheider, Beruf" },
+  { kennung: "C", titel: "Ziele", schritte: "7 bis 9", dauer: "6 Min.", ziel: "Ziele, Rentenlücke, heutige Vorsorge, Schwerpunkt" },
+  { kennung: "D", titel: "Finanzieller Rahmen", schritte: "10 bis 14", dauer: "6 Min.", ziel: "Einkommen, Eigenkapital, Reserve, tragbarer Betrag, Sorgen" },
+  { kennung: "E", titel: "Wer wir sind", schritte: "15 bis 16", dauer: "3 Min.", ziel: "Unternehmen, Arbeitsweise, Ablauf" },
+  { kennung: "F", titel: "Abschluss", schritte: "17 bis 23", dauer: "5 Min.", ziel: "Zusammenfassung, Einschätzung, Termin Beratungspräsentation" },
+];
+
+/** Reaktionen am Telefon, als Schnellhilfe über dem Skript. */
+const REAKTIONEN: ReadonlyArray<{ kunde: string; antwort: string }> = [
+  { kunde: "„Schicken Sie mir einfach etwas zu.“", antwort: "„Mache ich gern. Damit ich Ihnen das Richtige schicke: Was interessiert Sie am meisten? Und lassen Sie uns gleich einen kurzen Termin machen, dann gehen wir es zusammen durch.“" },
+  { kunde: "„Was kostet so eine Wohnung?“", antwort: "„Unsere Wohnungen liegen zwischen etwa 176.000 und 470.000 Euro. Was das für Sie im Monat bedeutet, hängt von Ihrer Situation ab. Genau das klären wir im nächsten Gespräch.“" },
+  { kunde: "„Ich habe gerade keine Zeit.“", antwort: "„Verstehe ich. Wann passt es Ihnen besser, heute Abend oder morgen?“ Rückruf mit Datum und Uhrzeit festhalten." },
+  { kunde: "„Ich will nur Steuern sparen.“", antwort: "„Die Steuerwirkung ist ein wichtiger Baustein, aber allein kein Grund für einen Kauf. Die Immobilie muss auch ohne Steuervorteil zu Ihnen passen. Darf ich Ihnen dazu zwei Fragen stellen?“" },
+  { kunde: "„Woher haben Sie meine Nummer?“", antwort: "Quelle offen nennen. Auf Wunsch die Daten löschen und das im CRM vermerken." },
+  { kunde: "„Ich muss erst mit meinem Partner sprechen.“", antwort: "„Richtig so. Dann machen wir den nächsten Termin am besten zu dritt. Wann passt es Ihnen beiden?“" },
+];
+
+const NIE_SAGEN = [
+  "„Das bekommen wir bei der Bank schon hin.“",
+  "„Das trägt sich durch die Steuer von selbst.“",
+  "„Bei Ihrem Einkommen ist das kein Problem.“",
+  "„Immobilien für 150 Euro im Monat.“",
+  "„Das Angebot gilt nur noch heute.“",
 ];
 
 /**
- * Auswahlwerte der Brückenfrage 4a (Familiäre Situation). Bewusst als
- * Klartext gespeichert, dann sind sie in Zusammenfassung und KI-Payload ohne
- * Übersetzung lesbar.
+ * Auswahlwerte für den Familienstand. Bewusst als Klartext gespeichert, dann
+ * sind sie in Zusammenfassung und KI-Payload ohne Übersetzung lesbar.
  */
 export const FAMILIENSTAND_OPTIONEN = ["ledig", "in Partnerschaft", "verheiratet", "geschieden", "verwitwet"] as const;
 export type Familienstand = (typeof FAMILIENSTAND_OPTIONEN)[number];
 
-/**
- * Punkt 5 (Mitentscheider) passt Sprechtext und Tipp an die Antwort der
- * Brückenfrage 4a an. Ohne Antwort bleibt der neutrale Grundtext aus SCHRITTE
- * stehen.
- */
+/** Folgesatz in Schritt 5, je nach Familienstand. */
 const MITENTSCHEIDER_VARIANTEN: Record<"verheiratet" | "partnerschaft" | "allein", { text: LocText; tipp: LocText }> = {
   verheiratet: {
     text: {
-      du:  `"Du hast ja gesagt, dass du verheiratet bist. Bei Ehepaaren berücksichtigen wir grundsätzlich beide Partner und eure gemeinsame finanzielle Situation, das gehört bei uns immer zusammen. Deshalb holen wir deine Frau beziehungsweise deinen Mann am besten direkt mit ins Beratungsgespräch, dann klären wir alle Fragen von Beginn an gemeinsam. An welchen Abenden passt es euch beiden?"`,
-      sie: `"Sie haben ja gesagt, dass Sie verheiratet sind. Bei Ehepaaren berücksichtigen wir grundsätzlich beide Partner und Ihre gemeinsame finanzielle Situation, das gehört bei uns immer zusammen. Deshalb holen wir Ihre Frau beziehungsweise Ihren Mann am besten direkt mit ins Beratungsgespräch, dann klären wir alle Fragen von Beginn an gemeinsam. An welchen Abenden passt es Ihnen beiden?"`,
+      sie: `„Entscheiden Sie solche Themen gemeinsam mit Ihrer Frau oder Ihrem Mann? Dann wäre es gut, wenn wir das nächste Gespräch zu dritt führen. So hören Sie beide dasselbe und müssen nichts nacherzählen.“`,
+      du: `„Entscheidest du solche Themen gemeinsam mit deiner Frau oder deinem Mann? Dann wäre es gut, wenn wir das nächste Gespräch zu dritt führen. So hört ihr beide dasselbe und müsst nichts nacherzählen.“`,
     },
-    tipp: `Nicht empfehlen, sondern gleich gemeinsam terminieren. Ein Ratschlag laesst sich ignorieren, die Terminfrage nicht.`,
+    tipp: `Den Mitentscheider mit Namen notieren, er wird zum Termin eingeladen.`,
   },
   partnerschaft: {
     text: {
-      du:  `"Da du in einer Partnerschaft lebst: Am besten holen wir deine Partnerin beziehungsweise deinen Partner direkt mit ins Beratungsgespräch, dann klären wir alle Fragen von Beginn an gemeinsam, statt dass du hinterher alles weitererzählen musst. An welchen Abenden passt es euch beiden?"`,
-      sie: `"Da Sie in einer Partnerschaft leben: Am besten holen wir Ihre Partnerin beziehungsweise Ihren Partner direkt mit ins Beratungsgespräch, dann klären wir alle Fragen von Beginn an gemeinsam, statt dass Sie hinterher alles weitererzählen müssen. An welchen Abenden passt es Ihnen beiden?"`,
+      sie: `„Ist Ihr Partner oder Ihre Partnerin bei so einer Entscheidung mit im Boot? Dann laden wir sie oder ihn gern zum nächsten Termin mit ein.“`,
+      du: `„Ist dein Partner oder deine Partnerin bei so einer Entscheidung mit im Boot? Dann laden wir sie oder ihn gern zum nächsten Termin mit ein.“`,
     },
-    tipp: `Nicht empfehlen, sondern gleich gemeinsam terminieren. Ein Ratschlag laesst sich ignorieren, die Terminfrage nicht.`,
+    tipp: `Den Mitentscheider mit Namen notieren, er wird zum Termin eingeladen.`,
   },
   allein: {
     text: {
-      du:  `"Gut, dann entscheidest du das ganz für dich, das macht vieles einfacher. Eine Frage noch, damit uns nichts durchrutscht: Gibt es sonst jemanden, der bei so einer Entscheidung für dich eine Rolle spielt, zum Beispiel deine Eltern oder ein Steuerberater?"`,
-      sie: `"Gut, dann entscheiden Sie das ganz für sich, das macht vieles einfacher. Eine Frage noch, damit uns nichts durchrutscht: Gibt es sonst jemanden, der bei so einer Entscheidung für Sie eine Rolle spielt, zum Beispiel Ihre Eltern oder ein Steuerberater?"`,
+      sie: `„Gibt es jemanden, dessen Meinung Ihnen bei so einer Entscheidung wichtig ist, etwa Eltern, Geschwister oder ein Steuerberater?“`,
+      du: `„Gibt es jemanden, dessen Meinung dir bei so einer Entscheidung wichtig ist, etwa Eltern, Geschwister oder ein Steuerberater?“`,
     },
-    tipp: `Die offene Rückfrage fängt stille Mitentscheider wie Eltern oder Steuerberater ein, bevor sie im Beratungsgespräch überraschen.`,
+    tipp: `Die offene Rückfrage fängt stille Mitentscheider ein, bevor sie in der Beratung überraschen.`,
   },
 };
 
 /**
- * Wählt die Mitentscheider-Variante zur Antwort der Brückenfrage 4a.
- * Unbeantwortet oder unbekannter Wert: undefined, der neutrale Grundtext
- * bleibt stehen. Exportiert, damit die Umschaltlogik testbar ist.
+ * Wählt den Folgesatz zum Familienstand.
+ * Unbeantwortet oder unbekannter Wert: undefined, dann steht nur die Frage da.
+ * Exportiert, damit die Umschaltlogik testbar ist.
  */
 export function waehleMitentscheiderVariante(familienstand: string | undefined): { text: LocText; tipp: LocText } | undefined {
   const stand = (familienstand || "").trim();
@@ -539,12 +588,30 @@ export function waehleMitentscheiderVariante(familienstand: string | undefined):
 }
 
 /**
+ * Wie der Kontakt zu uns kam, als Satzteil für Schritt 1. Ohne erkennbare
+ * Quelle bleibt die Auswahl in Klammern stehen, dann wählt der Anrufer.
+ */
+export function quelleSatz(kunde: { quelle?: string; leadTyp?: string } | null | undefined): string {
+  const q = `${kunde?.leadTyp ?? ""} ${kunde?.quelle ?? ""}`.toLowerCase();
+  if (/empfehl|tippgeber/.test(q)) return "auf Empfehlung";
+  if (/meta|facebook|instagram|anzeige|ads|google|zapier/.test(q)) return "über unsere Anzeige";
+  if (/website|webseite|konfigurator|landing/.test(q)) return "über unsere Website";
+  return "[über unsere Anzeige / über unsere Website / auf Empfehlung]";
+}
+
+/**
  * Lesbare Titel für Schritt-IDs, die es im Skript nicht mehr gibt. Alte
  * gespeicherte Notizen unter diesen IDs sollen in der KI-Zusammenfassung
  * weiterhin benannt auftauchen statt als kryptischer Schlüssel.
  */
 const LEGACY_SCHRITT_TITEL: Record<string, string> = {
   vorabschluss: "Vorabschluss (Punkt entfernt)",
+  mitentscheider: "Mitentscheider (früheres Skript)",
+  erfahrung: "Immobilien-Erfahrung (früheres Skript)",
+  zwei_punkte: "Wichtigste 2 Punkte (früheres Skript)",
+  zusammenarbeit: "Wichtig in der Zusammenarbeit (früheres Skript)",
+  cashflow_erwartung: "Erwartungsrahmen, Cashflow oder Qualität (früheres Skript)",
+  pattern_interrupt: "Einwand-Vorwegnahme (früheres Skript)",
 };
 
 /**
@@ -560,123 +627,97 @@ export const ERSTGESPRAECH_SCHRITTE: ZusammenfassungSchritt[] = SCHRITTE.map(s =
 
 /**
  * Antwortfelder, die kein Eintrag in `fragen` sind, sondern über einen
- * Sonderblock (Skala, Cashflow-Toggle) in die Antworten geschrieben werden.
- * Ohne diese Liste fehlten sie in der ausführlichen Fassung.
+ * Sonderblock in die Antworten geschrieben werden.
  */
 const ZUSATZFELDER: Record<string, DetailFeld[]> = {
-  familiaere_situation: [
-    { key: "familienstand", label: "Familiäre Situation" },
-  ],
-  skala_verbindlichkeit: [
-    { key: "verbindlichkeitSkala", label: "Verbindlichkeit (1 bis 10)" },
-  ],
-  cashflow_erwartung: [
-    {
+  familiaere_situation: [{ key: "familienstand", label: "Familienstand" }],
+  skala_verbindlichkeit: [{ key: "verbindlichkeitSkala", label: "Verbindlichkeit (1 bis 10)" }],
+};
+
+/**
+ * Schritte des früheren Skripts (bis 15.10.2026), deren Antworten oder
+ * Notizen in gespeicherten Gesprächen liegen. Sie erscheinen in der
+ * ausführlichen Fassung nur, wenn dort etwas steht.
+ */
+const FRUEHERE_SCHRITTE_DETAIL: DetailSchritt[] = [
+  { id: "zwei_punkte", nr: 0, nrText: "früher", titel: "Wichtigste 2 Punkte", felder: [{ key: "zweiPunkte", label: "Die 2 wichtigsten Punkte" }], hatNotiz: false },
+  { id: "zusammenarbeit", nr: 0, nrText: "früher", titel: "Wichtig in der Zusammenarbeit", felder: [], hatNotiz: true },
+  {
+    id: "cashflow_erwartung", nr: 0, nrText: "früher", titel: "Erwartungsrahmen, Cashflow oder Qualität", hatNotiz: true,
+    felder: [{
       key: "cashflowPraeferenz",
       label: "Erwartung: Cashflow oder Qualität",
       werte: {
-        cashflow: "Cashflow — soll sich selbst tragen, mehr Risiko in Ordnung",
-        qualitaet: "Qualität — Top-Lage, Sicherheit, Vermögensaufbau",
-        mix: "Mix — ausgewogen, beides wichtig",
+        cashflow: "Cashflow, soll sich selbst tragen, mehr Risiko in Ordnung",
+        qualitaet: "Qualität, Top-Lage, Sicherheit, Vermögensaufbau",
+        mix: "Mix, ausgewogen, beides wichtig",
       },
-    },
-  ],
-};
+    }],
+  },
+  { id: "pattern_interrupt", nr: 0, nrText: "früher", titel: "Einwand-Vorwegnahme", felder: [], hatNotiz: true },
+];
 
 /**
  * Die Schritte für die ausführliche Fassung im Zusammenfassungs-Popup.
  * Beschriftungen in der Sie-Form, weil die Zusammenfassung gelesen und nicht
- * gesprochen wird. Ebenfalls aus SCHRITTE abgeleitet, damit die Fragen nur an
- * einer Stelle stehen.
+ * gesprochen wird. Ebenfalls aus SCHRITTE abgeleitet.
  */
-export const ERSTGESPRAECH_SCHRITTE_DETAIL: DetailSchritt[] = SCHRITTE.map(s => ({
-  id: s.id,
-  nr: s.nr,
-  ...(s.nrText ? { nrText: s.nrText } : {}),
-  titel: s.titel,
-  felder: [
-    ...(s.fragen ?? []).map(f => ({ key: f.key, label: pickText(f.label, "sie") })),
-    ...(ZUSATZFELDER[s.id] ?? []),
-  ],
-  hatNotiz: s.notiz === true,
-}));
+export const ERSTGESPRAECH_SCHRITTE_DETAIL: DetailSchritt[] = [
+  ...SCHRITTE.map(s => ({
+    id: s.id,
+    nr: s.nr,
+    titel: s.titel,
+    felder: [
+      ...(s.fragen ?? []).map(f => ({ key: f.key, label: pickText(f.label, "sie"), ...(f.werte ? { werte: f.werte } : {}) })),
+      ...(ZUSATZFELDER[s.id] ?? []),
+    ],
+    hatNotiz: s.notiz === true,
+  })),
+  ...FRUEHERE_SCHRITTE_DETAIL,
+];
 
 /**
  * Bausteine, die immer in der Sie-Form stehen: Beim Erstkontakt ist die Anrede
- * noch nicht geklärt, sie wird erst in Punkt 2 festgelegt.
+ * noch nicht geklärt, sie wird erst in Schritt 2 festgelegt.
  */
-const IMMER_SIE = new Set(["einleitung", "ziel_gespraech", "anrede"]);
+const IMMER_SIE = new Set(["einleitung", "anrede"]);
 
 /**
  * Das Skript, reduziert auf das, was Kapitel 4 der Vertriebsakademie
- * beschreibt: je Punkt seine Nummer, sein Titel und sein Sprechtext, in der
+ * beschreibt: je Schritt seine Nummer, sein Titel und sein Sprechtext, in der
  * Reihenfolge der Anzeige und mit der Anrede, die das Skript an dieser Stelle
- * wirklich zeigt. Platzhalter wie [Vorname] bleiben stehen, die ersetzt erst
- * die Oberfläche mit den Daten des Kontakts.
+ * zeigt. Platzhalter wie [Nachname] bleiben stehen.
  *
- * Warum das hier steht: Die Akademie zitiert genau diese Sätze, damit ein neuer
- * Partner im Kapitel dasselbe liest, was er später im CRM vor sich hat. Zwei
- * Fassungen desselben Satzes laufen früher oder später auseinander, und dann
- * lernt er den falschen. `vertriebsakademieErstgespraech.test.ts` vergleicht
- * beide Stellen Satz für Satz.
- *
- * Die Form mit `bausteine` stammt aus der Wizard-Fassung, in der ein Schritt
- * mehrere Bausteine bündelte. In der Listenfassung ist jeder Punkt sein eigener
- * Baustein. Die Form bleibt, damit Kapitel und Wächter unverändert weiterlaufen.
+ * Die Akademie zitiert genau diese Sätze; `vertriebsakademieErstgespraech.test.ts`
+ * vergleicht beide Stellen Satz für Satz. Schritt 18 hat keinen festen
+ * Sprechtext, dort stehen die beiden Fassungen für „passt“ und „passt nicht“.
  */
 export const ERSTGESPRAECH_WIZARD_UEBERSICHT: {
   nr: number;
   titel: string;
   bausteine: { id: string; titel: string; text: string }[];
-}[] = SCHRITTE.reduce((liste, s) => {
-  /*
-    Nach Punktnummer gebündelt, damit die Brückenfrage 4a unter Punkt 4 steht
-    und nicht als zweiter Eintrag mit derselben Nummer daneben. Die flache
-    Liste der Bausteine bleibt dadurch unverändert, nur die Gruppierung ändert
-    sich.
-  */
-  const baustein = {
+}[] = SCHRITTE.map((s) => ({
+  nr: s.nr,
+  titel: s.titel,
+  bausteine: [{
     id: s.id,
     titel: s.titel,
-    text: pickText(s.text, IMMER_SIE.has(s.id) ? "sie" : "du"),
-  };
-  const letzte = liste[liste.length - 1];
-  if (letzte && letzte.nr === s.nr) {
-    letzte.bausteine.push(baustein);
-    return liste;
-  }
-  liste.push({ nr: s.nr, titel: s.titel, bausteine: [baustein] });
-  return liste;
-}, [] as { nr: number; titel: string; bausteine: { id: string; titel: string; text: string }[] }[]);
+    text: s.special === "einschaetzung"
+      ? `${EINSCHAETZUNG.passt.du}\n\n${EINSCHAETZUNG.passtNicht.du}`
+      : pickText(s.text, IMMER_SIE.has(s.id) ? "sie" : "du"),
+  }],
+}));
 
 /**
- * Wording-Overrides für den Modus "vertriebspartner".
- *
- * Das Grundskript oben ist inzwischen selbst in der Ich-Form geschrieben, weil
- * bei OS Immobilien derselbe Berater das Erstgespräch führt, der anschließend auch
- * berät. Ein "der Berater" in dritter Person wäre falsch, wenn dieselbe Person
- * am Telefon sitzt. Deshalb sind die früheren Overrides für Beruf, Netto,
- * Schufa, Vorabschluss, Termin, Einladung, offene Fragen und Verabschiedung
- * entfallen: Sie sagten nur noch dasselbe wie das Grundskript, und zwei
- * Fassungen desselben Satzes laufen früher oder später auseinander.
- *
- * Übrig bleibt der Einstieg, weil sich dort der Inhalt unterscheidet und nicht
- * nur die Person: Ein manuell angelegter Lead kommt nicht zwingend über die
- * Social-Ads-Anzeige.
- *
- * Sollten später Setter dazukommen, gehören die Formulierungen in dritter
- * Person hierher zurück, nicht ins Grundskript.
+ * Wording-Overrides für den Modus "vertriebspartner". Ein selbst angelegter
+ * Lead hat oft keine erkennbare Quelle; der Einstieg nennt dann das Interesse
+ * ohne Quelle, statt die Auswahl in Klammern zu zeigen.
  */
 const VP_TEXT_OVERRIDES: Record<string, LocText> = {
-  // 1) Einleitung – allgemein halten, da manuell angelegte Leads aus
-  //    verschiedenen Quellen stammen können, nicht nur aus Social Ads.
-  einleitung: {
-    du:  `"Guten Tag [Vorname] [Nachname], hier ist [dein Name] von OS Immobilien, gut, dass ich Sie erreiche. Sie hatten vor Kurzem Interesse am Thema Immobilien als Kapitalanlage. Ich brauche fünfzehn Minuten für das, was ich mit Ihnen durchgehen möchte. Haben Sie die jetzt, oder passt Ihnen heute Abend gegen 18 Uhr besser?"`,
-    sie: `"Guten Tag [Vorname] [Nachname], hier ist [dein Name] von OS Immobilien, gut, dass ich Sie erreiche. Sie hatten vor Kurzem Interesse am Thema Immobilien als Kapitalanlage. Ich brauche fünfzehn Minuten für das, was ich mit Ihnen durchgehen möchte. Haben Sie die jetzt, oder passt Ihnen heute Abend gegen 18 Uhr besser?"`,
-  },
+  einleitung: `„Guten Tag [Anrede] [Nachname], hier ist [Ihr Name] von der OS Real Estate. Sie hatten vor Kurzem Interesse an Immobilien als Kapitalanlage. Passt es Ihnen gerade für etwa zwanzig Minuten, oder soll ich Sie lieber zu einem festen Zeitpunkt zurückrufen, zum Beispiel heute um 18 Uhr?“`,
 };
 
-type SkriptDaten = {
+export type SkriptDaten = {
   antworten: Record<string, string>;
   notizen: Record<string, string>;
   ziele: string[];
@@ -689,105 +730,17 @@ type SkriptDaten = {
 
 const LS_KEY = (id: string) => `osimmo_setterSkript_${id}`;
 
-/**
- * Cashflow-Erwartung – Toggle + Einwand-Behandlungs-Akkordeon.
- * Wird im Erstgespräch UND im Beratungsgespräch (gleicher Block, beide Touchpoints)
- * angezeigt. Schreibt zusätzlich in kontakt.meta.qualCashflowPraeferenz, damit der
- * Berater die Erwartung des Leads im Beratungsgespräch sieht und die Objektauswahl
- * danach ausrichten kann.
- */
-function CashflowErwartungBlock({
-  current,
-  onChange,
-}: {
-  kundeId: string;
-  current?: "cashflow" | "qualitaet" | "mix";
-  onChange: (v: "cashflow" | "qualitaet" | "mix") => void;
-}) {
-  const [einwandOffen, setEinwandOffen] = useState(false);
-  const OPTIONS: { value: "cashflow" | "qualitaet" | "mix"; label: string; sub: string }[] = [
-    { value: "cashflow",  label: "Cashflow",  sub: "Soll sich selbst tragen – mehr Risiko OK" },
-    { value: "qualitaet", label: "Qualität",  sub: "Top-Lage, Sicherheit, Vermögensaufbau" },
-    { value: "mix",       label: "Mix",       sub: "Ausgewogen, beides wichtig" },
-  ];
-  return (
-    <div className="space-y-3">
-      <div>
-        <Label className="text-xs font-semibold mb-2 block">
-          Cashflow vs. Qualität — was ist dem Lead wichtiger?
-        </Label>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-          {OPTIONS.map(opt => {
-            const active = current === opt.value;
-            return (
-              <button
-                key={opt.value}
-                type="button"
-                onClick={() => onChange(opt.value)}
-                className={`text-left rounded-lg border p-3 transition-colors ${
-                  active
-                    ? "border-primary bg-primary/10 text-primary"
-                    : "border-border hover:bg-muted/50"
-                }`}
-              >
-                <div className={`text-sm ${active ? "font-bold" : "font-semibold"}`}>
-                  {active && "✓ "}{opt.label}
-                </div>
-                <div className="text-[11px] text-muted-foreground mt-0.5">{opt.sub}</div>
-              </button>
-            );
-          })}
-        </div>
-        <p className="text-[10px] text-muted-foreground mt-1.5">
-          Wird im Beratungsgespräch beim Berater angezeigt und steuert die Objektauswahl.
-        </p>
-      </div>
-
-      <div className="rounded-lg border border-amber-500/30 bg-amber-50/40">
-        <button
-          type="button"
-          onClick={() => setEinwandOffen(o => !o)}
-          className="w-full flex items-center justify-between gap-2 px-3 py-2 text-left"
-        >
-          <span className="text-xs font-semibold text-amber-800">
-            🛡️ Einwand-Behandlung: „Soll sich vor Steuern komplett selbst tragen"
-          </span>
-          {einwandOffen
-            ? <ChevronUp className="h-3.5 w-3.5 text-amber-800" />
-            : <ChevronDown className="h-3.5 w-3.5 text-amber-800" />}
-        </button>
-        {einwandOffen && (
-          <div className="px-3 pb-3 space-y-3 text-xs text-foreground/90">
-            <div>
-              <div className="font-semibold mb-1">Die 3 Hebel — und ihre Trade-offs</div>
-              <ul className="space-y-1.5 list-disc list-inside marker:text-amber-700">
-                <li><strong>Sehr hohe Rendite-Lage</strong> — B-/C-/D-Lagen, 8–12 % Bruttorendite. Mehr Leerstand-, Mieter- und Wertstabilitäts-Risiko.</li>
-                <li><strong>Besonderes Mietkonzept</strong> — WG, Co-Living, möbliert, Kurzzeitvermietung. Mehr Aufwand, mehr Abnutzung, höhere rechtliche/operative Anforderungen (unser Full-Service deckt das ab).</li>
-                <li><strong>Sehr günstiger Einkauf</strong> — Off-Market, Sanierungsstau, Verkäuferdruck. Nur gut, wenn das Risiko sauber verstanden und beherrschbar ist.</li>
-              </ul>
-            </div>
-            <div>
-              <div className="font-semibold mb-1">Wenn der Kunde Top-Lage & Sicherheit will — Hebel ist nicht Cashflow, sondern:</div>
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-1 list-disc list-inside marker:text-primary">
-                <li>langfristiger Vermögensaufbau</li>
-                <li>Inflationsschutz</li>
-                <li>Wertstabilität</li>
-                <li>Steuerersparnis</li>
-                <li>Tilgung durch den Mieter</li>
-                <li>planbarer Kapitalaufbau über 10–20 Jahre</li>
-              </ul>
-            </div>
-            <div className="border-t border-amber-500/20 pt-2">
-              <div className="font-semibold mb-1 text-amber-900">🎯 Trainer-Tipp (nicht vorlesen): Das Bogen-Prinzip</div>
-              <p className="leading-relaxed text-[11px]">
-                Wer den Bogen nur halbherzig spannt, dessen Pfeil fliegt unkontrolliert. Wer ihn ruhig und mit voller Spannung aufzieht, trifft präzise. Genauso im Vertrieb: Das erste Gespräch ist der Moment, in dem du den Rahmen setzt, Erwartungen ordnest und ehrlich aufzeigst, was realistisch ist. Ein gutes Closing beginnt nicht beim Abschluss — es beginnt hier, durch Klarheit und sauberes Erwartungsmanagement.
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+/** Lücke im Monat aus Wunsch-Netto und erwarteter Rente, als Text; leer, wenn eines fehlt. */
+function lueckeText(wunsch?: string, rente?: string): string {
+  const zahl = (s?: string) => {
+    const roh = (s || "").replace(/[^0-9,.]/g, "").replace(/\.(?=\d{3}\b)/g, "").replace(",", ".");
+    const n = parseFloat(roh);
+    return Number.isFinite(n) ? n : NaN;
+  };
+  const w = zahl(wunsch);
+  const r = zahl(rente);
+  if (!Number.isFinite(w) || !Number.isFinite(r)) return "";
+  return `${Math.max(0, w - r).toLocaleString("de-DE")} €`;
 }
 
 function loadInitial(kunde: KundeData, investmentId?: string, isFirstInvestment?: boolean): SkriptDaten {
@@ -831,23 +784,64 @@ function loadInitial(kunde: KundeData, investmentId?: string, isFirstInvestment?
   return { antworten: {}, notizen: {}, ziele: [], erledigt: {}, anrede: "du" };
 }
 
+/** Knöpfe für Auswahlfragen; ein zweiter Klick hebt die Wahl auf. */
+function AuswahlKnoepfe({
+  optionen, wert, onChange, werte, mehrfach, pflichtLeer,
+}: {
+  optionen: readonly string[];
+  wert: string;
+  onChange: (v: string) => void;
+  werte?: Record<string, string>;
+  mehrfach?: boolean;
+  pflichtLeer?: boolean;
+}) {
+  const gewaehlt = mehrfach ? wert.split(",").map((t) => t.trim()).filter(Boolean) : [wert].filter(Boolean);
+  // Frei getippte Werte aus dem früheren Skript bleiben sichtbar und abwählbar.
+  const alle = mehrfach ? [...optionen, ...gewaehlt.filter((g) => !optionen.includes(g))] : optionen;
+  const umschalten = (opt: string) => {
+    if (!mehrfach) return onChange(wert === opt ? "" : opt);
+    const neu = gewaehlt.includes(opt) ? gewaehlt.filter((g) => g !== opt) : [...gewaehlt, opt];
+    onChange(neu.join(", "));
+  };
+  return (
+    <div className={`mt-1 flex flex-wrap gap-2 ${pflichtLeer ? `rounded-lg border p-2 ${PFLICHT_RAHMEN}` : ""}`}>
+      {alle.map((opt) => {
+        const aktiv = gewaehlt.includes(opt);
+        return (
+          <button
+            key={opt}
+            type="button"
+            aria-pressed={aktiv}
+            onClick={() => umschalten(opt)}
+            className={`text-xs px-3 py-2 rounded-lg border transition-colors text-left break-words ${
+              aktiv ? "border-primary bg-primary/10 text-primary font-semibold" : "border-border hover:bg-muted/50"
+            }`}
+          >
+            {aktiv && "✓ "}{werte?.[opt] ?? opt}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptHandle, Props>(function SetterErstgespraechsSkript(
-  { kunde, onUpdate, onSummaryGenerated, terminSlot, abschlussSlot, onFollowUp, onErstgespraechFollowUp, mode = "setter", investmentId, isFirstInvestment },
+  { kunde, onUpdate, onSummaryGenerated, terminSlot, abschlussSlot, onFollowUp, mode = "setter", investmentId, isFirstInvestment },
   ref,
 ) {
   const { toast } = useToast();
   const { user } = useUser();
-  // Vorname des angemeldeten Nutzers für die Personalisierung des Skripts
-  // ("Hallo …, hier ist [dein Name] von OS Immobilien …" → echter Name).
-  const callerFullName = (user?.name || "").trim();
-  const callerVorname = callerFullName.split(/\s+/)[0] || callerFullName || "";
+  // Name des angemeldeten Nutzers für [Ihr Name] im Sprechtext.
+  // Solange der Nutzer lädt, steht dort „Laden...“; dann lieber der Platzhalter.
+  const callerFullName = /(\.\.\.|…)$/.test((user?.name || "").trim()) ? "" : (user?.name || "").trim();
   const isVpMode = mode === "vertriebspartner";
   const SCHRITTE_EFFECTIVE: Schritt[] = isVpMode
-    ? SCHRITTE.map(s => (VP_TEXT_OVERRIDES[s.id] ? { ...s, text: VP_TEXT_OVERRIDES[s.id] } : s))
+    ? SCHRITTE.map(s => (VP_TEXT_OVERRIDES[s.id] && quelleSatz(kunde as any).startsWith("[") ? { ...s, text: VP_TEXT_OVERRIDES[s.id] } : s))
     : SCHRITTE;
   const [daten, setDaten] = useState<SkriptDaten>(() => loadInitial(kunde, investmentId, isFirstInvestment));
   const [savingAi, setSavingAi] = useState(false);
   const [savedFlash, setSavedFlash] = useState(false);
+  const [hilfeOffen, setHilfeOffen] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const latestRef = useRef<SkriptDaten>(daten);
   const dirtyRef = useRef<boolean>(false);
@@ -860,7 +854,7 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
   const anrede: Anrede = daten.anrede || "du";
   const setAnrede = (a: Anrede) => setDaten(d => ({ ...d, anrede: a }));
 
-  // Schritt 1 (Einleitung): Bestätigung "Ja, der Lead hat Zeit"
+  // Schritt 1: Bestätigung "Ja, hat Zeit"
   const [einleitungJa, setEinleitungJa] = useState<boolean>(
     () => {
       if (investmentId) {
@@ -872,7 +866,6 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
       return !!(kunde as any).meta?.setterSkript?.einleitungBestaetigt;
     },
   );
-  // Lokale Sync mit Skript-Daten (persistieren in einleitungBestaetigt)
   useEffect(() => {
     setDaten(d => ({ ...d, einleitungBestaetigt: einleitungJa } as any));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -909,15 +902,9 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
       } else {
         // mergeKontaktMeta zieht den Zwischenspeicher gleich mit nach. Ohne das
         // schreibt das naechste updateKontakt ein veraltetes meta zurueck und
-        // loescht das gerade gespeicherte Skript wieder, weil kundeToDbRow das
-        // meta aus genau diesem Zwischenspeicher neu aufbaut. Genau das
-        // passiert im selben Skript, sobald das Netto-Einkommen gespeichert
-        // wird.
+        // loescht das gerade gespeicherte Skript wieder.
         gespeichert = await mergeKontaktMeta(kunde.id, { setterSkript: snapshot });
       }
-      // Nur ein wirklich geschriebener Stand gilt als gespeichert. Sonst bleibt
-      // der Entwurf schmutzig und wird beim naechsten Tastendruck erneut
-      // geschrieben, so wie vor der Umstellung auf mergeKontaktMeta.
       if (!gespeichert) throw new Error("merge_kontakt_meta hat den Skriptstand nicht gespeichert");
       dirtyRef.current = false;
       speicherFehlerRef.current = 0;
@@ -955,7 +942,6 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
       window.removeEventListener("pagehide", flush);
       window.removeEventListener("beforeunload", flush);
       document.removeEventListener("visibilitychange", onVisibility);
-      // Bei Unmount (Navigation innerhalb der App) sofort persistieren.
       flush();
     };
   }, [persistNow]);
@@ -973,18 +959,16 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
       if (has) {
         nextZiele = d.ziele.filter(x => x !== z);
       } else {
-      if (d.ziele.length >= 3) {
-        toast({ title: "Max. 3 Ziele", description: "Bitte entferne zuerst ein anderes Ziel.", variant: "destructive" });
-        return d;
-      }
+        if (d.ziele.length >= 3) {
+          toast({ title: "Max. 3 Ziele", description: "Bitte entferne zuerst ein anderes Ziel.", variant: "destructive" });
+          return d;
+        }
         nextZiele = [...d.ziele, z];
       }
       // Bi-direktionale Sync mit Qualifizierungsfragen → qualZiel als Komma-Liste.
       try {
         updateKontakt(kunde.id, { qualZiel: nextZiele.join(", ") } as any);
       } catch (e) {
-        // Schreibt in die Datenbank: ein stiller Fehlschlag wuerde die Auswahl
-        // angehakt zeigen, ohne dass sie irgendwo gespeichert ist.
         console.error("[SetterErstgespraechsSkript] Ziele konnten nicht gespeichert werden", e);
         toast({
           title: "Ziel nicht gespeichert",
@@ -1001,10 +985,6 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
     setSavingAi(true);
     try {
       // Jede Notiz einzeln und mit dem Titel ihres Skript-Schritts benannt.
-      // Vorher gingen die Notizen nur als rohes JSON mit kryptischen
-      // Schluesseln mit, und die Netto-Notiz lief unter dem falschen Etikett
-      // "Reaktion auf Vorstellung". Die KI soll nur verwenden, was dasteht,
-      // also muss auch dastehen, was es ist.
       const notizenBenannt = Object.entries(daten.notizen)
         .filter(([, text]) => typeof text === "string" && text.trim() !== "")
         .map(([schrittId, text]) => {
@@ -1014,25 +994,31 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
           return `Notiz zu „${titel}": ${String(text).trim()}`;
         })
         .join("\n");
+      const a = daten.antworten;
       const payload = {
         modus: "kunde",
         vorname: kunde.vorname,
         nachname: kunde.nachname,
-        beruf: daten.antworten.beruf,
-        arbeitgeber: daten.antworten.arbeitgeber,
-        familienstand: daten.antworten.familienstand,
+        beruf: a.beruf,
+        arbeitgeber: a.arbeitgeber,
+        familienstand: a.familienstand,
         nettoEinkommen: (kunde as any).qualEinkommen || "",
         eigenkapital: (kunde as any).qualEigenkapital || "",
-        sparformen: daten.antworten.sparformen,
-        investitionMonat: daten.antworten.investitionMonat,
-        verbindlichkeit: daten.antworten.verbindlichkeitSkala,
-        cashflowPraeferenz: daten.antworten.cashflowPraeferenz,
+        sparformen: a.sparformen,
+        investitionMonat: a.investitionMonat,
+        verbindlichkeit: a.verbindlichkeitSkala,
+        // Frühere Gespräche tragen hier noch Cashflow oder Qualität; neu steht der Schwerpunkt im Motiv-Feld.
+        cashflowPraeferenz: a.cashflowPraeferenz,
         ziele: daten.ziele.join(", "),
-        motivation: daten.antworten.zweiPunkte,
-        erfahrung: daten.antworten.erfahrung,
-        offeneFragen: daten.antworten.offeneFragen,
+        motivation: [
+          a.schwerpunkt ? `Schwerpunkt: ${SCHWERPUNKT_WERTE[a.schwerpunkt] ?? a.schwerpunkt}` : "",
+          a.motivWoertlich ? `Motiv wörtlich: ${a.motivWoertlich}` : "",
+          a.zweiPunkte ?? "",
+        ].filter(Boolean).join(" · "),
+        erfahrung: a.erfahrung,
+        offeneFragen: a.offeneFragen,
         notizenBenannt,
-        antwortenJson: JSON.stringify(daten.antworten),
+        antwortenJson: JSON.stringify(a),
       };
       const { data, error } = await supabase.functions.invoke("erstgespraech-zusammenfassung", { body: payload });
       // Mit dem Grund aus der Antwort, etwa „Zusammenfassung gerade nicht möglich“ (503).
@@ -1044,13 +1030,10 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
       setDaten(updated);
 
       if (investmentId) {
-        // Per-Investment-Persistierung: Skript + KI-Zusammenfassung pro Investment.
         setInvestmentMetaFields(investmentId, { setterSkript: updated, gespraechsnotizenAI: summary });
       } else {
-        // Legacy-Kontakt-Scope (Fallback, sollte produktiv nicht mehr genutzt werden).
-        // mergeKontaktMeta zieht den Zwischenspeicher nach, sonst schreibt das
-        // direkt folgende updateKontakt den alten Stand zurueck und loescht
-        // Skript und KI-Zusammenfassung im selben Klick wieder.
+        // Legacy-Kontakt-Scope. mergeKontaktMeta zieht den Zwischenspeicher nach,
+        // sonst schreibt das direkt folgende updateKontakt den alten Stand zurueck.
         await mergeKontaktMeta(kunde.id, { setterSkript: updated, gespraechsnotizenAI: summary });
         updateKontakt(kunde.id, { gespraechsnotizenAI: summary } as any);
       }
@@ -1070,6 +1053,7 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
     generateAiSummary,
     hasInput: () => Object.keys(daten.antworten).length + Object.keys(daten.notizen).length + daten.ziele.length > 0,
     persistNow,
+    stand: () => latestRef.current,
   }), [generateAiSummary, daten, persistNow]);
 
   const filledCount =
@@ -1077,9 +1061,8 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
     Object.values(daten.notizen).filter(v => (v || "").trim().length > 0).length +
     (daten.ziele.length > 0 ? 1 : 0);
 
-  // Wenn das Skript noch keine Ziele hat, aber qualZiel in den Qualifizierungs-
-  // fragen schon gepflegt ist (oder über die Meta-Kampagne reinkam), übernehmen
-  // wir die Werte einmalig als Vorbefüllung in das Skript.
+  // Hat das Skript noch keine Ziele, aber qualZiel ist schon gepflegt (etwa
+  // über die Meta-Kampagne), wird es einmalig vorbefüllt.
   useEffect(() => {
     if (daten.ziele.length > 0) return;
     const qz = ((kunde as any).qualZiel || "").toString();
@@ -1088,7 +1071,7 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
       .split(/[,;\n]/)
       .map((p: string) => p.trim())
       .filter(Boolean)
-      .filter((p: string) => ZIELE_OPTIONEN.includes(p))
+      .filter((p: string) => ZIELE_GUELTIG.includes(p))
       .slice(0, 3);
     if (parts.length > 0) {
       setDaten(d => ({ ...d, ziele: parts }));
@@ -1097,12 +1080,7 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
   }, [(kunde as any).qualZiel]);
 
   // Termin-Daten STRIKT pro Investment lesen — Kontakt-Level nur als Fallback
-  // für das erste Investment (Legacy). Verhindert, dass Investment 2/3 die
-  // Buchung aus Investment 1 anzeigen.
-  const invMetaForTermin = investmentId
-    ? getInvestmentMetaField<any>(investmentId, "__termin_marker__", undefined) // marker only
-    : undefined;
-  void invMetaForTermin;
+  // für das erste Investment (Legacy).
   const terminDatum = (investmentId
     ? getInvestmentMetaField<string | undefined>(investmentId, "setterTerminDatum", undefined)
     : undefined)
@@ -1116,7 +1094,6 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
     : undefined)
     ?? (isFirstInvestment ? ((kunde as any).berater || (kunde as any).setterCloser) : undefined);
 
-  // Höfliche Anrede für Sie-Form: "Herr [Nachname]" / "Frau [Nachname]" – fällt sonst auf "Herr/Frau [Nachname]" zurück.
   const anredeWort = (() => {
     const a = ((kunde as any).anrede || "").toString().toLowerCase();
     if (a.startsWith("frau")) return "Frau";
@@ -1124,33 +1101,62 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
     return "Herr/Frau";
   })();
   const nachname = (kunde.nachname || "").trim();
-  const sieName = nachname ? `${anredeWort} ${nachname}` : anredeWort;
-  const interpolate = (s: string) =>
-    s
-      .replace(/\[Vorname\]/g, kunde.vorname || "")
-      .replace(/\[Nachname\]/g, kunde.nachname || "")
-      .replace(/\[Name\]/g, anrede === "sie" ? sieName : (kunde.vorname || ""))
-      // Personalisierung des Anrufers (Setter / Vertriebspartner): wir ersetzen
-      // sowohl die Skript-Platzhalter ([dein Name], [Dein Name], [dein Vorname])
-      // als auch die statische Beispiel-Formulierung „[dein Name]" aus dem
-      // historischen Skript-Text, damit alle Rollen ein vollständig
-      // personalisiertes Skript sehen.
-      .replace(/\[dein\s+Vorname\]/gi, callerVorname)
-      .replace(/\[dein\s+Name\]/gi, callerVorname || callerFullName);
 
-  // Schritte 1 & 2 IMMER in Sie-Form anzeigen (Erstkontakt, Anrede wird erst in Schritt 2 festgelegt).
-  const anredeFor = (s: Schritt): Anrede => (s.nr <= 2 ? "sie" : anrede);
+  /**
+   * Werte für die Zusammenfassung in Schritt 17. Fehlt ein Wert, bleibt der
+   * Platzhalter in eckigen Klammern stehen: Dann sieht der Anrufer, was offen ist.
+   */
+  const ant = daten.antworten;
+  const zielLabel = (wert: string) => ZIELE_AUSWAHL.find((z) => z.wert === wert)?.label ?? wert;
+  // Wörtliche Sätze des Kunden in Anführungszeichen, ohne doppelten Schlusspunkt.
+  const zitat = (t?: string) => {
+    const kern = (t || "").trim().replace(/^[„"“]+|[“"”]+$/g, "").replace(/\.$/, "").trim();
+    return kern ? `„${kern}“` : "";
+  };
+  const zusammenfassungWerte: Record<string, string> = {
+    "Beruf": [ant.beruf || (kunde as any).qualBeruflicheSituation, ant.arbeitgeber].filter(Boolean).join(" bei "),
+    "wichtigstes Ziel": daten.ziele[0] ? zielLabel(daten.ziele[0]) : "",
+    "Motiv": zitat(ant.motivWoertlich),
+    "Vorsorge": ant.sparformen || "",
+    "Lücke": lueckeText(ant.wunschNetto, ant.renteErwartet),
+    "Reserve": ant.reserve ? `${ant.reserve.replace(/\s*€\s*$/, "")} €` : "",
+    "tragbarer Betrag": ant.investitionMonat ? `${ant.investitionMonat.replace(/\s*€\s*$/, "")} €` : "",
+    "Sorge": zitat(ant.sorgen),
+    "Mitentscheider": ant.mitentscheider || "",
+  };
 
-  // Pro Schritt: "Mehr Kontext"-Ausklappstatus
+  const interpolate = (s: string, mitZusammenfassung = false) => {
+    let t = s
+      .replace(/\[Anrede\] \[Nachname\]/g, nachname ? `${anredeWort} ${nachname}` : "[Anrede] [Nachname]")
+      .replace(/\[Vorname\]/g, kunde.vorname || "[Vorname]")
+      .replace(/\[Nachname\]/g, nachname || "[Nachname]")
+      .replace(/\[Ihr Name\]/g, callerFullName || "[Ihr Name]")
+      .replace(/\[Quelle\]/g, quelleSatz(kunde as any));
+    if (mitZusammenfassung || /\[Mitentscheider\]/.test(t)) {
+      for (const [platzhalter, wert] of Object.entries(zusammenfassungWerte)) {
+        if (wert.trim()) t = t.split(`[${platzhalter}]`).join(wert.trim());
+      }
+    }
+    return t;
+  };
+
+  // Schritte 1 und 2 IMMER in Sie-Form (Erstkontakt, Anrede wird erst in Schritt 2 festgelegt).
+  const anredeFor = (s: Schritt): Anrede => (IMMER_SIE.has(s.id) ? "sie" : anrede);
+
   const [mehrOffen, setMehrOffen] = useState<Record<string, boolean>>({});
 
-  // Punkt 5 (Mitentscheider) schaltet seinen Sprechtext anhand der Antwort
-  // der Brückenfrage 4a um. Ohne Antwort bleibt der neutrale Grundtext.
   const mitentscheiderVariante = waehleMitentscheiderVariante(daten.antworten.familienstand);
-  const schritteAnzeige: Schritt[] = SCHRITTE_EFFECTIVE.map(s =>
-    s.id === "mitentscheider" && mitentscheiderVariante
-      ? { ...s, text: mitentscheiderVariante.text, tipp: mitentscheiderVariante.tipp }
-      : s,
+  const BERUF_OPTIONS = ["Angestellt", "Selbstständig", "Beamter", "Rentner", "Student", "Arbeitssuchend"];
+  const BERUF_MAP: Record<string, string> = {
+    "angestellt": "Angestellt", "selbststaendig": "Selbstständig", "selbstständig": "Selbstständig",
+    "unternehmer": "Selbstständig", "freiberufler": "Selbstständig", "beamter": "Beamter", "beamtin": "Beamter",
+    "rentner": "Rentner", "student": "Student", "arbeitslos": "Arbeitssuchend", "arbeitssuchend": "Arbeitssuchend",
+  };
+
+  const Sprechtext = ({ text }: { text: string }) => (
+    <div className="bg-muted/50 rounded-lg p-3 border-l-4 border-primary">
+      <p className="text-sm whitespace-pre-line">{text}</p>
+    </div>
   );
 
   return (
@@ -1161,7 +1167,7 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
         <div className="flex-1">
           <h3 className="font-bold">Erstgesprächs-Skript</h3>
           <p className="text-xs text-muted-foreground">
-            {SCHRITTE_EFFECTIVE.length} Schritte • {isVpMode ? <>Du qualifizierst und terminierst direkt für <strong>dich selbst</strong>.</> : <>Wird nur ausgefüllt, wenn der Lead <strong>erreicht</strong> wurde.</>} Auto-Save aktiv • aktuell <strong>{anrede === "sie" ? "Sie-Form" : "Du-Form"}</strong>.
+            {SCHRITTE_EFFECTIVE.length} Schritte in 6 Phasen, etwa 25 bis 30 Minuten • {isVpMode ? <>Du qualifizierst und terminierst direkt für <strong>dich selbst</strong>.</> : <>Wird nur ausgefüllt, wenn der Lead <strong>erreicht</strong> wurde.</>} Auto-Save aktiv • aktuell <strong>{anrede === "sie" ? "Sie-Form" : "Du-Form"}</strong>.
           </p>
         </div>
         {filledCount > 0 && <Badge variant="secondary" className="text-xs">{filledCount} ausgefüllt</Badge>}
@@ -1169,40 +1175,118 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
       </div>
 
       <div className="p-6 space-y-6">
-        {schritteAnzeige.map(s => (
+        {/* Aufbau, Haltung und Schnellhilfe: aufklappbar, damit das Skript selbst oben steht. */}
+        <div className="rounded-lg border bg-muted/20">
+          <button
+            type="button"
+            onClick={() => setHilfeOffen((o) => !o)}
+            aria-expanded={hilfeOffen}
+            className="w-full flex items-center justify-between gap-2 px-4 py-3 text-left text-sm font-semibold"
+          >
+            So ist das Skript aufgebaut · Reaktionen am Telefon · Das sagen wir nie
+            {hilfeOffen ? <ChevronUp className="h-4 w-4 shrink-0" /> : <ChevronDown className="h-4 w-4 shrink-0" />}
+          </button>
+          {hilfeOffen && (
+            <div className="px-4 pb-4 space-y-4 text-sm">
+              <ul className="text-xs divide-y">
+                {PHASEN.map((p) => (
+                  <li key={p.kennung} className="py-1.5">
+                    <span className="font-semibold">{p.kennung} {p.titel}</span>
+                    <span className="text-muted-foreground"> · Schritte {p.schritte} · {p.dauer}</span>
+                    <span className="block text-muted-foreground">{p.ziel}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="rounded-lg border-l-4 border-primary bg-primary/5 p-3 text-xs leading-relaxed">
+                <strong>Haltung:</strong> Erst verstehen, dann empfehlen. Der Kunde spricht etwa zwei Drittel der Zeit. Im Erstgespräch zeigen wir kein Objekt, fragen nicht nach Steuer-ID oder Ausweis und nennen keine Renditen und keine Steuerzusagen. Gesamtdauer etwa 25 bis 30 Minuten, am Telefon oder per Video.
+              </p>
+              <div>
+                <p className="font-semibold text-xs mb-2">Reaktionen am Telefon</p>
+                <div className="grid gap-2">
+                  {REAKTIONEN.map((r) => (
+                    <div key={r.kunde} className="grid sm:grid-cols-[minmax(0,14rem)_1fr] gap-1 sm:gap-3 text-xs border-t pt-2">
+                      <span className="font-medium">{r.kunde}</span>
+                      <span className="text-muted-foreground">{r.antwort}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="font-semibold text-xs mb-1">Das sagen wir nie</p>
+                <ul className="text-xs text-muted-foreground list-disc list-inside space-y-0.5">
+                  {NIE_SAGEN.map((s) => <li key={s}>{s}</li>)}
+                </ul>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {SCHRITTE_EFFECTIVE.map(s => (
           <Fragment key={s.id}>
+          {s.phase && (
+            <div className="flex items-center gap-3 pt-2" data-testid={`phase-${s.phase.kennung}`}>
+              <span className="rounded-md bg-primary px-2 py-1 text-[11px] font-bold tracking-wider text-primary-foreground">PHASE {s.phase.kennung}</span>
+              <span className="font-semibold">{s.phase.titel}</span>
+              <span className="h-px flex-1 bg-border" />
+            </div>
+          )}
           <div data-ui="card" className="rounded-lg border bg-card/40">
-            <div className="flex items-center gap-2 p-3 border-b bg-muted/30">
+            <div className="flex items-center gap-2 p-3 border-b bg-muted/30 flex-wrap">
               <Checkbox
                 checked={!!daten.erledigt[s.id]}
                 onCheckedChange={() => toggleErledigt(s.id)}
               />
-              <span className="font-semibold text-sm">{s.nrText ?? s.nr}. {s.titel}</span>
-              {s.optional && (
-                <Badge variant="outline" className="text-[10px] border-amber-500/40 text-amber-700 bg-amber-50">Optional</Badge>
+              <span className="font-semibold text-sm">{s.nr}. {s.titel}</span>
+              {s.marke && (
+                <Badge variant="outline" className="text-[10px] border-primary/40 text-primary">{s.marke}</Badge>
               )}
               {s.special === "anrede" && (
                 <Badge variant="outline" className="ml-auto text-[10px]">{anrede === "sie" ? "Sie-Form aktiv" : "Du-Form aktiv"}</Badge>
               )}
             </div>
             <div className="p-4 space-y-3">
-                  {s.text && (
-                    <div className="bg-muted/50 rounded-lg p-3 border-l-4 border-primary">
-                      <p className="text-sm whitespace-pre-line">
-                        {interpolate(pickText(s.text, anredeFor(s)))}
-                      </p>
+                  {s.text && <Sprechtext text={interpolate(pickText(s.text, anredeFor(s)), s.special === "zusammenfassung")} />}
+
+                  {/* Schritt 5: Folgesatz je nach Familienstand */}
+                  {s.special === "familienstand" && (
+                    <div>
+                      <Label className="text-xs font-semibold mb-2 block">Familienstand</Label>
+                      <AuswahlKnoepfe
+                        optionen={FAMILIENSTAND_OPTIONEN}
+                        wert={daten.antworten.familienstand || ""}
+                        onChange={(v) => setAntwort("familienstand", v)}
+                      />
+                      {mitentscheiderVariante ? (
+                        <div className="mt-3"><Sprechtext text={pickText(mitentscheiderVariante.text, anrede)} /></div>
+                      ) : (
+                        <p className="text-[10px] text-muted-foreground mt-1.5">Nach der Auswahl erscheint hier der passende Folgesatz.</p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Schritt 18: beide Fassungen, die zum Ergebnis passende hervorgehoben */}
+                  {s.special === "einschaetzung" && (
+                    <div className="space-y-2">
+                      {(["passt", "passtNicht"] as const).map((k) => {
+                        const ergebnis = daten.antworten.ergebnis;
+                        const gedimmt = ergebnis && (ergebnis === "passt") !== (k === "passt");
+                        const grund = daten.antworten.grundNichtPassend;
+                        const text = pickText(EINSCHAETZUNG[k], anrede);
+                        return (
+                          <div key={k} className={gedimmt ? "opacity-40" : ""}>
+                            <Sprechtext text={grund && k === "passtNicht" ? text.split("[Grund]").join(grund) : text} />
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
 
                   {/*
                     Einwandbehandlung an Ort und Stelle. Zeigt nur die Einwände,
-                    die in genau diesem Schritt typischerweise kommen, und
-                    klappt die Antwort darunter auf. Das Skript bleibt sichtbar,
-                    es gibt keinen Seitenwechsel.
+                    die in genau diesem Schritt typischerweise kommen.
                   */}
                   <EinwandSchnellhilfeKompakt skriptSchritt={s.id} />
 
-                  {/* Schritt 1 (Einleitung): Ja-Bestätigung + Follow-Up Button */}
                   {s.special === "einleitung" && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <button
@@ -1215,7 +1299,7 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
                         }`}
                       >
                         <Check className="h-4 w-4" />
-                        {einleitungJa ? "Ja, Lead hat Zeit ✓" : "Ja, Lead hat Zeit"}
+                        {einleitungJa ? "Ja, hat Zeit ✓" : "Ja, hat Zeit"}
                       </button>
                       <Button
                         type="button"
@@ -1225,69 +1309,64 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
                         className="gap-2 border-[hsl(var(--warning))]/50 hover:bg-[hsl(var(--warning))]/10 h-auto py-3"
                       >
                         <PhoneForwarded className="h-4 w-4 text-[hsl(var(--warning))]" />
-                        Erstgespräch Termin vereinbaren
+                        Rückruf vereinbaren
                       </Button>
                     </div>
                   )}
 
-                  {/* Schritt 1: Anrede-Auswahl */}
                   {s.special === "anrede" && (
                     <UebernahmeRahmen feld="anrede">
                     <div className="grid grid-cols-2 gap-3">
                       <button
                         type="button"
-                        onClick={() => setAnrede("du")}
-                        className={`flex items-center justify-center gap-2 rounded-lg border p-4 text-sm transition-colors ${
-                          anrede === "du"
-                            ? "border-primary bg-primary/10 text-primary font-semibold"
-                            : "border-border hover:bg-muted/50"
-                        }`}
-                      >
-                        <Smile className="h-4 w-4" /> Du-Form
-                      </button>
-                      <button
-                        type="button"
                         onClick={() => setAnrede("sie")}
                         className={`flex items-center justify-center gap-2 rounded-lg border p-4 text-sm transition-colors ${
-                          anrede === "sie"
-                            ? "border-primary bg-primary/10 text-primary font-semibold"
-                            : "border-border hover:bg-muted/50"
+                          anrede === "sie" ? "border-primary bg-primary/10 text-primary font-semibold" : "border-border hover:bg-muted/50"
                         }`}
                       >
                         <UserRound className="h-4 w-4" /> Sie-Form
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setAnrede("du")}
+                        className={`flex items-center justify-center gap-2 rounded-lg border p-4 text-sm transition-colors ${
+                          anrede === "du" ? "border-primary bg-primary/10 text-primary font-semibold" : "border-border hover:bg-muted/50"
+                        }`}
+                      >
+                        <Smile className="h-4 w-4" /> Du-Form
                       </button>
                     </div>
                     </UebernahmeRahmen>
                   )}
 
-                  {/* Schritt 4a: Familiäre Situation als Kachel-Auswahl */}
-                  {s.special === "familienstand" && (
+                  {s.special === "ziele" && (
+                    <UebernahmeRahmen feld="ziele">
                     <div>
-                      <Label className="text-xs font-semibold mb-2 block">Familiäre Situation des Leads</Label>
-                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                        {FAMILIENSTAND_OPTIONEN.map(opt => {
-                          const active = daten.antworten.familienstand === opt;
+                      <Label className="text-xs font-semibold mb-2 block">
+                        Bis zu drei Ziele auswählen
+                        <Pflichtmarke gefuellt={daten.ziele.length > 0} />
+                      </Label>
+                      <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 rounded-lg border p-2 ${PFLICHT_RAHMEN}`}>
+                        {[...ZIELE_AUSWAHL, ...daten.ziele.filter((z) => !ZIELE_AUSWAHL.some((a) => a.wert === z)).map((z) => ({ wert: z, label: `${z} (früher)` }))].map(z => {
+                          const selected = daten.ziele.includes(z.wert);
                           return (
                             <button
-                              key={opt}
+                              key={z.wert}
                               type="button"
-                              onClick={() => setAntwort("familienstand", active ? "" : opt)}
+                              onClick={() => toggleZiel(z.wert)}
                               className={`text-xs px-3 py-2 rounded-lg border transition-colors text-left ${
-                                active ? "border-primary bg-primary/10 text-primary font-semibold" : "border-border hover:bg-muted/50"
+                                selected ? "border-primary bg-primary/10 text-primary font-semibold" : "border-border hover:bg-muted/50"
                               }`}
                             >
-                              {active && "✓ "}{opt}
+                              {selected && "✓ "}{z.label}
                             </button>
                           );
                         })}
                       </div>
-                      <p className="text-[10px] text-muted-foreground mt-1.5">
-                        Die Auswahl passt den Sprechtext in Punkt 5 (Mitentscheider) automatisch an.
-                      </p>
                     </div>
+                    </UebernahmeRahmen>
                   )}
 
-                  {/* Schritt Netto: Wert mit qualEinkommen synchronisieren */}
                   {s.special === "netto" && (
                     <UebernahmeRahmen feld="qualEinkommen">
                     <div>
@@ -1303,21 +1382,15 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
                         onUpdate={onUpdate}
                         className={PFLICHT_RAHMEN}
                       />
-                      <p className="text-[10px] text-muted-foreground mt-1">
-                        {(kunde as any).qualEinkommen
-                          ? "Wert wurde bereits aus den Qualifizierungsfragen / Meta-Kampagne übernommen — bei Bedarf anpassen."
-                          : "Noch leer — Wert hier eintragen, wird automatisch in die Qualifizierungsfrage übernommen."}
-                      </p>
                     </div>
                     </UebernahmeRahmen>
                   )}
 
-                  {/* Schritt Sparformen: Eigenkapital synchron mit qualEigenkapital */}
-                  {s.special === "sparformen" && (
+                  {s.special === "eigenkapital" && (
                     <UebernahmeRahmen feld="qualEigenkapital">
                     <div>
                       <Label className="text-xs font-semibold">
-                        Verfügbares Eigenkapital (€) — synchron mit Qualifizierungsfragen
+                        Eigenkapital einsetzbar (€) — synchron mit Qualifizierungsfragen
                         <Pflichtmarke gefuellt={!!(kunde as any).qualEigenkapital} />
                       </Label>
                       <QualSyncInput
@@ -1328,19 +1401,13 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
                         onUpdate={onUpdate}
                         className={PFLICHT_RAHMEN}
                       />
-                      <p className="text-[10px] text-muted-foreground mt-1">
-                        {(kunde as any).qualEigenkapital
-                          ? "Wert wurde bereits aus den Qualifizierungsfragen / Meta-Kampagne übernommen — bei Bedarf anpassen."
-                          : "Noch leer — Wert hier eintragen, wird automatisch in die Qualifizierungsfrage übernommen."}
-                      </p>
                     </div>
                     </UebernahmeRahmen>
                   )}
 
-                  {/* Schritt Skala 1–10 Verbindlichkeit */}
                   {s.special === "skala" && (
                     <div>
-                      <Label className="text-xs font-semibold mb-2 block">Verbindlichkeit (1 = nur info, 10 = will starten)</Label>
+                      <Label className="text-xs font-semibold mb-2 block">Verbindlichkeit (1 bis 10)</Label>
                       <div className="grid grid-cols-10 gap-1">
                         {[1,2,3,4,5,6,7,8,9,10].map(n => {
                           const active = daten.antworten.verbindlichkeitSkala === String(n);
@@ -1350,9 +1417,7 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
                               type="button"
                               onClick={() => setAntwort("verbindlichkeitSkala", active ? "" : String(n))}
                               className={`h-9 text-xs rounded-md border transition-colors ${
-                                active
-                                  ? "border-primary bg-primary text-primary-foreground font-semibold"
-                                  : "border-border hover:bg-muted/50"
+                                active ? "border-primary bg-primary text-primary-foreground font-semibold" : "border-border hover:bg-muted/50"
                               }`}
                             >
                               {n}
@@ -1363,24 +1428,9 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
                     </div>
                   )}
 
-                  {/* Schritt Cashflow-Erwartung: Toggle + Einwand-Behandlung (Bausteine 1 & 3) */}
-                  {s.special === "cashflowErwartung" && (
-                    <UebernahmeRahmen feld="cashflowPraeferenz">
-                    <CashflowErwartungBlock
-                      kundeId={kunde.id}
-                      current={(daten.antworten.cashflowPraeferenz as "cashflow" | "qualitaet" | "mix" | undefined)
-                        || ((kunde as any).meta?.qualCashflowPraeferenz as "cashflow" | "qualitaet" | "mix" | undefined)}
-                      onChange={(v) => {
-                        setAntwort("cashflowPraeferenz", v);
-                        void mergeKontaktMeta(kunde.id, { qualCashflowPraeferenz: v });
-                      }}
-                    />
-                    </UebernahmeRahmen>
-                  )}
-
                   {s.tipp && (
                     <div className="bg-accent/30 rounded-lg p-2">
-                      <p className="text-xs text-muted-foreground"><strong>💡 Tipp:</strong> {pickText(s.tipp, anredeFor(s))}</p>
+                      <p className="text-xs text-muted-foreground"><strong>💡 Hinweis:</strong> {pickText(s.id === "familiaere_situation" && mitentscheiderVariante ? mitentscheiderVariante.tipp : s.tipp, anredeFor(s))}</p>
                       {s.tippMehr && (
                         <>
                           <button
@@ -1399,55 +1449,31 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
                       )}
                     </div>
                   )}
+
                   {s.fragen?.map(f => {
-                    // Bi-direktionale Sync mit den Qualifizierungsfragen:
-                    // Skript-Feld "beruf" ↔ qualBeruflicheSituation.
-                    // Vorbefüllt aus qualBeruflicheSituation, wenn das Skript-Feld leer ist.
+                    // Beruf ist mit der Qualifizierung synchron (qualBeruflicheSituation).
                     const isBerufField = f.key === "beruf";
                     const qualBeruf = (kunde as any).qualBeruflicheSituation || "";
                     const skriptValue = daten.antworten[f.key] || "";
                     const value = isBerufField ? (skriptValue || qualBeruf) : skriptValue;
                     const handleChange = (v: string) => {
                       setAntwort(f.key, v);
-                      if (isBerufField) {
-                        updateKontakt(kunde.id, { qualBeruflicheSituation: v } as any);
-                      }
+                      if (isBerufField) updateKontakt(kunde.id, { qualBeruflicheSituation: v } as any);
                     };
-                    // Dropdown-Optionen für "Berufliche Situation" – identisch zur Stammdaten-Qualifizierung
-                    const BERUF_OPTIONS = ["Angestellt", "Selbstständig", "Beamter", "Rentner", "Student", "Arbeitssuchend"];
-                    const BERUF_MAP: Record<string, string> = {
-                      "angestellt": "Angestellt",
-                      "selbststaendig": "Selbstständig",
-                      "selbstständig": "Selbstständig",
-                      "unternehmer": "Selbstständig",
-                      "freiberufler": "Selbstständig",
-                      "beamter": "Beamter",
-                      "beamtin": "Beamter",
-                      "rentner": "Rentner",
-                      "student": "Student",
-                      "arbeitslos": "Arbeitssuchend",
-                      "arbeitssuchend": "Arbeitssuchend",
-                    };
-                    const normalizedBerufValue = isBerufField
-                      ? (BERUF_MAP[(value || "").trim().toLowerCase()] || value)
-                      : value;
+                    const normalizedBerufValue = isBerufField ? (BERUF_MAP[(value || "").trim().toLowerCase()] || value) : value;
+                    const gefuellt = !!(isBerufField ? normalizedBerufValue : value).trim();
+                    // Der Grund erscheint nur, wenn es nicht passt.
+                    if (f.key === "grundNichtPassend" && daten.antworten.ergebnis !== "passt nicht") return null;
                     return (
                       <UebernahmeRahmen key={f.key} feld={f.key}>
                       <div>
                         <Label className="text-xs font-semibold">
                           {pickText(f.label, anredeFor(s))}
-                          {isBerufField && (
-                            <>
-                              <span className="ml-1 text-[10px] text-muted-foreground font-normal">— synchron mit Qualifizierungsfragen</span>
-                              <Pflichtmarke gefuellt={!!normalizedBerufValue} />
-                            </>
-                          )}
+                          {isBerufField && <span className="ml-1 text-[10px] text-muted-foreground font-normal">— synchron mit Qualifizierungsfragen</span>}
+                          {f.pflicht && <Pflichtmarke gefuellt={gefuellt} />}
                         </Label>
                         {isBerufField ? (
-                          <Select
-                            value={normalizedBerufValue}
-                            onValueChange={(v) => handleChange(v)}
-                          >
+                          <Select value={normalizedBerufValue} onValueChange={(v) => handleChange(v)}>
                             <SelectTrigger className={`mt-1 ${PFLICHT_RAHMEN}`}><SelectValue placeholder="Bitte wählen…" /></SelectTrigger>
                             <SelectContent>
                               {BERUF_OPTIONS.map(opt => (
@@ -1455,58 +1481,40 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
                               ))}
                             </SelectContent>
                           </Select>
-                        ) : f.multiline ? (
-                          <Textarea
-                            value={value}
-                            onChange={e => handleChange(e.target.value)}
-                            placeholder={f.placeholder}
-                            rows={3}
-                            className="mt-1"
+                        ) : f.typ ? (
+                          <AuswahlKnoepfe
+                            optionen={f.optionen ?? []}
+                            wert={value}
+                            onChange={handleChange}
+                            werte={f.werte}
+                            mehrfach={f.typ === "mehrfach"}
+                            pflichtLeer={f.pflicht && !gefuellt}
                           />
+                        ) : f.multiline ? (
+                          <Textarea value={value} onChange={e => handleChange(e.target.value)} placeholder={f.placeholder} rows={3} className="mt-1" />
                         ) : (
                           <Input
                             value={value}
                             onChange={e => handleChange(e.target.value)}
                             placeholder={f.placeholder}
-                            className="mt-1"
+                            className={`mt-1 ${f.pflicht ? PFLICHT_RAHMEN : ""}`}
                           />
                         )}
                       </div>
                       </UebernahmeRahmen>
                     );
                   })}
-                  {/* Ziele (Schritt 13) als Kachel-Picker */}
-                  {s.id === "ziele" && (
-                    <UebernahmeRahmen feld="ziele">
-                    <div>
-                      <Label className="text-xs font-semibold mb-2 block">
-                        Bis zu drei Ziele auswählen
-                        <Pflichtmarke gefuellt={daten.ziele.length > 0} />
-                      </Label>
-                      <div className={`grid grid-cols-2 sm:grid-cols-3 gap-2 rounded-lg border p-2 ${PFLICHT_RAHMEN}`}>
-                      {ZIELE_OPTIONEN.map(z => {
-                        const selected = daten.ziele.includes(z);
-                        return (
-                          <button
-                            key={z}
-                            type="button"
-                            onClick={() => toggleZiel(z)}
-                            className={`text-xs px-3 py-2 rounded-lg border transition-colors text-left ${
-                              selected ? "border-primary bg-primary/10 text-primary font-semibold" : "border-border hover:bg-muted/50"
-                            }`}
-                          >
-                            {selected && "✓ "}{z}
-                          </button>
-                        );
-                      })}
-                      </div>
-                    </div>
-                    </UebernahmeRahmen>
+
+                  {/* Schritt 8: die Lücke, sobald beide Werte da sind */}
+                  {s.special === "rentenluecke" && lueckeText(daten.antworten.wunschNetto, daten.antworten.renteErwartet) && (
+                    <p className="text-sm rounded-lg bg-primary/5 border border-primary/20 p-3">
+                      Lücke: <strong>{lueckeText(daten.antworten.wunschNetto, daten.antworten.renteErwartet)}</strong> im Monat. Die Beratungspräsentation rechnet daraus den Betrag über 25 Jahre.
+                    </p>
                   )}
-                  {/* Freitext-Notiz bei Punkten 8, 10, 11, 12 (= zusammenarbeit / schufa / netto / ziele) */}
+
                   {s.notiz && (
                     <div>
-                      <Label className="text-xs font-semibold">Notiz</Label>
+                      <Label className="text-xs font-semibold">{s.notizLabel ?? "Notiz"}</Label>
                       <Textarea
                         value={daten.notizen[s.id] || ""}
                         onChange={e => setNotiz(s.id, e.target.value)}
@@ -1517,12 +1525,10 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
                     </div>
                   )}
 
-                  {/* Schritt 13: Terminvereinbarung – Termin-UI direkt eingebettet */}
                   {s.id === "terminvereinbarung" && terminSlot && (
                     <div className="mt-3">{terminSlot}</div>
                   )}
 
-                  {/* Schritt 15: Verabschiedung – automatischer Termin-Hinweis */}
                   {s.id === "verabschiedung" && (terminDatum || terminUhrzeit) && (
                     <div className="flex items-start gap-2 rounded-lg border border-primary/30 bg-primary/5 p-3">
                       <CalendarClock className="h-4 w-4 text-primary mt-0.5 shrink-0" />
@@ -1535,22 +1541,15 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
                       </div>
                     </div>
                   )}
-
             </div>
           </div>
-
           </Fragment>
         ))}
 
-          {/* Abschluss-Buttons (frühere Schritt 22) – jetzt unabhängig von der Checkliste,
-              direkt unter den Skript-Schritten anzeigen. */}
           {abschlussSlot && (
             <div className="mt-2">{abschlussSlot}</div>
           )}
 
-          {/* KI-Zusammenfassung wird beim Klick auf "Beratungsgespräch gebucht & KI-Zusammenfassung erstellen"
-              automatisch erzeugt. Anzeige erfolgt ausschließlich in der Stammdaten-Investment-Übersicht
-              (Reiter Invest. 1 / Invest. 2 …). Hier nur Lade-Indikator während der Erzeugung. */}
           {savingAi && (
             <div className="border-t pt-4 flex items-center gap-2 text-xs text-muted-foreground">
               <Loader2 className="h-3.5 w-3.5 animate-spin" /> KI-Zusammenfassung wird erzeugt …

@@ -31,4 +31,15 @@ describe("Vorschau-Route der Investmentkalkulation", () => {
     const routen = readFileSync("src/vorschauRouten.ts", "utf8");
     expect(routen).toMatch(/import\.meta\.env\.DEV\s*\?\s*lazy\(\(\) => import\("\.\/pages\/VorschauInvestmentrechner"\)\)/);
   });
+
+  it("die Entwürfe Beratungspräsentation und Erstgespräch hängen ebenso nur am Entwicklungsmodus", async () => {
+    vi.stubEnv("DEV", false);
+    vi.stubEnv("PROD", true);
+    const routen = await import("./vorschauRouten");
+    expect(routen.VorschauBeratungspraesentation).toBeNull();
+    expect(routen.VorschauErstgespraech).toBeNull();
+    const app = readFileSync("src/App.tsx", "utf8");
+    expect(app).not.toMatch(/pages\/Vorschau(Beratungspraesentation|Erstgespraech)/);
+    expect(app).toMatch(/\{VorschauBeratungspraesentation && VorschauErstgespraech && \(/);
+  });
 });

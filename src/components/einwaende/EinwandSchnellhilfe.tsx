@@ -25,7 +25,7 @@ import { useZielgruppe, showGoldNugget } from "@/lib/vertriebsakademieZielgruppe
  */
 
 interface Props {
-  /** Schritt des Erstgesprächsskripts, etwa "mitentscheider". */
+  /** Schritt des Erstgesprächsskripts, etwa "familiaere_situation". */
   skriptSchritt?: string;
   /** Ohne Schrittbezug: freie Suche über alle Einwände. */
   freieSuche?: boolean;

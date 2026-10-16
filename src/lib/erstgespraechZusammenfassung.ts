@@ -123,6 +123,11 @@ const A_ZWEI_PUNKTE = "zweiPunkte";
 const A_INVESTITION_MONAT = "investitionMonat";
 const A_OFFENE_FRAGEN = "offeneFragen";
 const A_ERFAHRUNG = "erfahrung";
+// Neu mit dem Skript vom 15.10.2026
+const A_SCHWERPUNKT = "schwerpunkt";
+const A_RESERVE = "reserve";
+const A_SORGEN = "sorgen";
+const SCHWERPUNKT_KLARTEXT: Record<string, string> = { zusatzrente: "Zusatzrente", steuer: "Steuerersparnis", beides: "Zusatzrente und Steuerersparnis" };
 
 // Schritt-IDs, deren Freitext-Notiz in die Kurzfassung einfließt.
 const N_WARMUP = "warmup";
@@ -130,8 +135,10 @@ const N_PATTERN_INTERRUPT = "pattern_interrupt";
 const N_NETTO = "netto";
 
 // Schritt-IDs der Sonderbloecke, deren Wert im Kontakt liegt (qual*-Felder).
+// Das Eigenkapital steht seit dem Skript vom 15.10.2026 im Schritt
+// „Eigenkapital und Reserve“, vorher bei den Sparformen.
 const NETTO_SCHRITT_ID = "netto";
-const SPARFORMEN_SCHRITT_ID = "sparformen";
+const EIGENKAPITAL_SCHRITT_ID = "eigenkapital";
 
 /** Schritt-ID des Ziele-Blocks. Dort zählt zusätzlich die Zielauswahl. */
 const ZIELE_SCHRITT_ID = "ziele";
@@ -222,7 +229,7 @@ function zaehleFortschritt(
     if (s.id === ZIELE_SCHRITT_ID && ziele.length > 0) return true;
     // Netto und Eigenkapital liegen im Kontakt, nicht in den Antworten.
     if (s.id === NETTO_SCHRITT_ID && normalisiere(eingabe.qualEinkommen) !== "") return true;
-    if (s.id === SPARFORMEN_SCHRITT_ID && normalisiere(eingabe.qualEigenkapital) !== "") return true;
+    if (s.id === EIGENKAPITAL_SCHRITT_ID && normalisiere(eingabe.qualEigenkapital) !== "") return true;
     return false;
   }).length;
 
@@ -263,6 +270,10 @@ export const baueErstgespraechZusammenfassung: ZusammenfassungErzeuger = (eingab
   const nettoEinkommen = kurz(normalisiere(daten.qualEinkommen));
   const eigenkapital = kurz(normalisiere(daten.qualEigenkapital));
   const nettoNotiz = n(N_NETTO);
+  const schwerpunktRoh = wert(antworten, A_SCHWERPUNKT);
+  const schwerpunkt = kurz(SCHWERPUNKT_KLARTEXT[schwerpunktRoh] ?? schwerpunktRoh);
+  const reserve = a(A_RESERVE);
+  const sorgen = a(A_SORGEN);
 
   // Satz 1: Wer ist es. Arbeitgeber liest sich als Klammerzusatz besser.
   const satzBeruf = beruf && arbeitgeber
@@ -277,12 +288,14 @@ export const baueErstgespraechZusammenfassung: ZusammenfassungErzeuger = (eingab
     // Satz 2: Was will er.
     baueSatz([
       ziele.length > 0 ? `Ziele: ${ziele.join(", ")}` : "",
+      schwerpunkt ? `Schwerpunkt: ${schwerpunkt}` : "",
       zweiPunkte ? `am wichtigsten: ${zweiPunkte}` : "",
     ]),
     // Satz 3: Was kann er.
     baueSatz([
       nettoEinkommen ? `Netto/Monat: ${nettoEinkommen}` : "",
       eigenkapital ? `Eigenkapital: ${eigenkapital}` : "",
+      reserve ? `Reserve: ${reserve}` : "",
       investitionMonat ? `Monatlich möglich: ${investitionMonat}` : "",
       sparformen ? `Sparformen: ${sparformen}` : "",
       nettoNotiz ? `Notiz Einkommen: ${nettoNotiz}` : "",
@@ -290,6 +303,7 @@ export const baueErstgespraechZusammenfassung: ZusammenfassungErzeuger = (eingab
     // Satz 4: Was ist offen.
     baueSatz([
       offeneFragen ? `Offen: ${offeneFragen}` : "",
+      sorgen ? `Sorgen: ${sorgen}` : "",
       einwaende ? `Einwände: ${einwaende}` : "",
     ]),
     // Nachrangig, greift nur bei dünn gefülltem Skript.
@@ -353,7 +367,7 @@ export function baueErstgespraechDetails(
       const netto = normalisiere(daten.qualEinkommen);
       if (netto) eintraege.push({ frage: "Netto-Einkommen / Monat", antwort: netto });
     }
-    if (schritt.id === SPARFORMEN_SCHRITT_ID) {
+    if (schritt.id === EIGENKAPITAL_SCHRITT_ID) {
       const ek = normalisiere(daten.qualEigenkapital);
       if (ek) eintraege.push({ frage: "Verfügbares Eigenkapital", antwort: ek });
     }

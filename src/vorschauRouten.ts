@@ -12,3 +12,15 @@ import { lazy } from "react";
 export const VorschauInvestmentrechner = import.meta.env.DEV
   ? lazy(() => import("./pages/VorschauInvestmentrechner"))
   : null;
+
+/*
+ * Seit dem 16.10.2026: Entwürfe Beratungspräsentation und Erstgesprächsskript
+ * zur Freigabe, /vorschau/beratungspraesentation und /vorschau/erstgespraech.
+ * Gleiche Absicherung wie oben.
+ */
+export const VorschauBeratungspraesentation = import.meta.env.DEV
+  ? lazy(() => import("./pages/VorschauBeratungspraesentation"))
+  : null;
+export const VorschauErstgespraech = import.meta.env.DEV
+  ? lazy(() => import("./pages/VorschauErstgespraech"))
+  : null;

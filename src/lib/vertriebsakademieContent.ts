@@ -8107,147 +8107,151 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           {
             "kpis": [
               {
-                "label": "Punkte im Skript",
-                "wert": "22",
-                "hinweis": "Alle untereinander auf einer Seite, jeder mit Häkchen",
+                "label": "Schritte im Skript",
+                "wert": "23",
+                "hinweis": "In sechs Phasen, alle untereinander auf einer Seite, jeder mit Häkchen",
                 "farbe": "primary"
               },
               {
-                "label": "Ausformulierte Sätze",
-                "wert": "23",
-                "hinweis": "Jeder Sprechtext steht offen da, in Du- und in Sie-Form",
+                "label": "Phasen",
+                "wert": "6",
+                "hinweis": "Einstieg, Kundenrahmen, Ziele, Finanzieller Rahmen, Wer wir sind, Abschluss",
                 "farbe": "indigo"
               },
               {
                 "label": "Pflichtangaben",
-                "wert": "4",
-                "hinweis": "Beruf, Netto, Eigenkapital, Ziele. Alles andere ist freiwillig",
+                "wert": "8",
+                "hinweis": "Beruf, Ziele, Schwerpunkt, Netto, Brutto, laufende Raten, Reserve, Eigenkapital",
                 "farbe": "emerald"
               },
               {
                 "label": "Gesprächsdauer",
-                "wert": "15 Minuten",
-                "hinweis": "So viel kündigst du in Punkt 1 an, und so lang ist es wirklich",
+                "wert": "25 bis 30 Minuten",
+                "hinweis": "Am Telefon oder per Video, der Kunde spricht etwa zwei Drittel der Zeit",
                 "farbe": "sky"
               }
             ]
           },
           {
             "timeline": {
-              "titel": "Die 22 Punkte des Skripts, in der Reihenfolge der Liste",
+              "titel": "Die 23 Schritte des Skripts in sechs Phasen, in der Reihenfolge der Liste",
               "schritte": [
-                  {
-                    "label": "Einleitung & Begrüßung",
-                    "dauer": "Schritt 1",
-                    "beschreibung": "Name, wer du bist, woher der Kontakt. Fünfzehn Minuten, jetzt oder heute Abend.",
-                    "status": "start"
-                  },
-                  {
-                    "label": "Anrede klären (Du oder Sie?)",
-                    "dauer": "Schritt 2",
-                    "beschreibung": "Du oder Sie. Der Lead entscheidet, das Skript schaltet ab Punkt 3 um."
-                  },
-                  {
-                    "label": "Ziel des Erstgesprächs",
-                    "dauer": "Schritt 3",
-                    "beschreibung": "Kurz zum Ablauf, und ein Einverstanden als erstes kleines Ja."
-                  },
-                  {
-                    "label": "Warm-up",
-                    "dauer": "Schritt 4",
-                    "beschreibung": "Warum jetzt, was hat sich geändert, und wo stehst du in fünf Jahren ohne das. Dazu die familiäre Situation."
-                  },
-                  {
-                    "label": "Mitentscheider",
-                    "dauer": "Schritt 5",
-                    "beschreibung": "Wer entscheidet mit, und gleich gemeinsam terminieren statt es nur zu empfehlen."
-                  },
-                  {
-                    "label": "Immobilien-Erfahrung",
-                    "dauer": "Schritt 6",
-                    "beschreibung": "Erste Informationen eingeholt oder Neuland. Steuert die Tiefe im Folgetermin."
-                  },
-                  {
-                    "label": "Sparformen & Eigenkapital",
-                    "dauer": "Schritt 7",
-                    "beschreibung": "Welche Sparformen, wie viel davon nachweisbar, und der Satz: nachweisen ist nicht einsetzen."
-                  },
-                  {
-                    "label": "Monatliche Investitionsbereitschaft",
-                    "dauer": "Schritt 8",
-                    "beschreibung": "Erst einordnen, dann fragen, wo der Lead sich sieht. Eine Range reicht."
-                  },
-                  {
-                    "label": "Wichtigste 2 Punkte",
-                    "dauer": "Schritt 9",
-                    "beschreibung": "Die zwei wichtigsten Punkte, bewusst ohne Vorgaben gefragt."
-                  },
-                  {
-                    "label": "Wichtig in der Zusammenarbeit",
-                    "dauer": "Schritt 10",
-                    "beschreibung": "Was ihm in der Zusammenarbeit wichtig ist. Liefert die Erwartungshaltung."
-                  },
-                  {
-                    "label": "Berufliche Situation",
-                    "dauer": "Schritt 11",
-                    "beschreibung": "Was, wo, seit wann. Synchron mit den Qualifizierungsfragen."
-                  },
-                  {
-                    "label": "Netto-Einkommen",
-                    "dauer": "Schritt 12",
-                    "beschreibung": "Netto pro Monat, eine Range reicht. Laufende Kredite und Leasing mitfragen."
-                  },
-                  {
-                    "label": "Schufa",
-                    "dauer": "Schritt 13",
-                    "beschreibung": "Erst der Grund, dann die Frage. Sonst wird aus einer Sachfrage ein Vorwurf."
-                  },
-                  {
-                    "label": "Ziele",
-                    "dauer": "Schritt 14",
-                    "beschreibung": "Bis zu drei Ziele anklicken oder frei notieren."
-                  },
-                  {
-                    "label": "Erwartungsrahmen — Cashflow vs. Qualität",
-                    "dauer": "Schritt 15",
-                    "beschreibung": "Cashflow oder Qualität. Die Erwartung festhalten, bevor sie im Beratungstermin kippt."
-                  },
-                  {
-                    "label": "Dank + Wer ist OS Immobilien?",
-                    "dauer": "Schritt 16",
-                    "beschreibung": "Kurz, wer wir sind, und am Ende eine Frage statt eines Monologs."
-                  },
-                  {
-                    "label": "Pattern Interrupt – Einwand-Vorwegnahme",
-                    "dauer": "Schritt 17",
-                    "beschreibung": "Was hält dich noch ab. Holt versteckte Einwände vor dem Termin hoch."
-                  },
-                  {
-                    "label": "Verbindlichkeit (Skala 1–10)",
-                    "dauer": "Schritt 18",
-                    "beschreibung": "Skala von eins bis zehn, bei jedem. Ohne sie fehlt der Vergleichswert."
-                  },
-                  {
-                    "label": "Terminvereinbarung",
-                    "dauer": "Schritt 19",
-                    "beschreibung": "Zwei konkrete Zeitfenster und der Wert des Termins, nicht eine offene Frage."
-                  },
-                  {
-                    "label": "Einladung per E-Mail prüfen",
-                    "dauer": "Schritt 20",
-                    "beschreibung": "Live prüfen, ob die Einladung da ist. Der stärkste Schutz gegen No-Shows."
-                  },
-                  {
-                    "label": "Offene Fragen klären",
-                    "dauer": "Schritt 21",
-                    "beschreibung": "Welche Frage soll ich dir im Termin als Erstes beantworten."
-                  },
-                  {
-                    "label": "Verabschiedung",
-                    "dauer": "Schritt 22",
-                    "beschreibung": "Der Termin ist das letzte gesprochene Wort, ohne Vorbehalt."
-                  }
-                ]
+                {
+                  "label": "Begrüßung und Erlaubnis",
+                  "dauer": "Schritt 1",
+                  "beschreibung": "Phase A, Einstieg. Erstkontakt, deshalb im Sie. Die Quelle setzt das CRM aus dem Kontakt ein."
+                },
+                {
+                  "label": "Anrede klären",
+                  "dauer": "Schritt 2",
+                  "beschreibung": "Phase A. Noch im Sie, die Anrede wird hier geklärt."
+                },
+                {
+                  "label": "Ablauf und Ziel des Gesprächs",
+                  "dauer": "Schritt 3",
+                  "beschreibung": "Phase A. Ab hier in der gewählten Anrede. Notizfeld: was der Kunde heute geklärt haben möchte."
+                },
+                {
+                  "label": "Motiv: Warum gerade jetzt?",
+                  "dauer": "Schritt 4",
+                  "beschreibung": "Phase B, Kundenrahmen. Feld: Motiv in den Worten des Kunden, wörtlich."
+                },
+                {
+                  "label": "Familie und Mitentscheider",
+                  "dauer": "Schritt 5",
+                  "beschreibung": "Phase B. Je nach Familienstand blendet das CRM den passenden Folgesatz ein."
+                },
+                {
+                  "label": "Beruf",
+                  "dauer": "Schritt 6",
+                  "beschreibung": "Phase B. Felder: berufliche Situation, Arbeitgeber und seit wann, Probezeit oder befristet."
+                },
+                {
+                  "label": "Ziele und Schwerpunkt",
+                  "dauer": "Schritt 7",
+                  "beschreibung": "Phase C, Ziele. Bis zu drei Ziele, dazu der Schwerpunkt als Pflicht."
+                },
+                {
+                  "label": "Ruhestand und Rentenlücke",
+                  "dauer": "Schritt 8",
+                  "beschreibung": "Phase C. Felder: Ruhestand ab, erwartete Rente netto, Wunsch-Netto."
+                },
+                {
+                  "label": "Heutige Vorsorge und Erfahrung",
+                  "dauer": "Schritt 9",
+                  "beschreibung": "Phase C. Felder: Sparformen, Zufriedenheit, Immobilienerfahrung, Eigenheim geplant."
+                },
+                {
+                  "label": "Überleitung",
+                  "dauer": "Schritt 10",
+                  "beschreibung": "Phase D, Finanzieller Rahmen. Überleitung ohne Eingabefeld."
+                },
+                {
+                  "label": "Einkommen und Verpflichtungen",
+                  "dauer": "Schritt 11",
+                  "beschreibung": "Phase D. Pflicht: Netto im Monat, Brutto im Jahr, laufende Raten."
+                },
+                {
+                  "label": "Eigenkapital und Reserve",
+                  "dauer": "Schritt 12",
+                  "beschreibung": "Phase D. Pflicht: Reserve, unantastbar, und Eigenkapital einsetzbar."
+                },
+                {
+                  "label": "Monatlich tragbarer Betrag",
+                  "dauer": "Schritt 13",
+                  "beschreibung": "Phase D. Felder: tragbar im Monat vor Steuern, Grenze im Stressfall."
+                },
+                {
+                  "label": "Sorgen und Schufa",
+                  "dauer": "Schritt 14",
+                  "beschreibung": "Phase D. Felder: größte Sorgen wörtlich, Schufa auffällig."
+                },
+                {
+                  "label": "Unternehmen",
+                  "dauer": "Schritt 15",
+                  "beschreibung": "Phase E, Wer wir sind. Persönlich ergänzen: Werdegang in zwei Sätzen."
+                },
+                {
+                  "label": "So arbeiten wir: der Ablauf",
+                  "dauer": "Schritt 16",
+                  "beschreibung": "Phase E. Der Ablauf bis zur Kaufpreiszahlung."
+                },
+                {
+                  "label": "Zusammenfassung",
+                  "dauer": "Schritt 17",
+                  "beschreibung": "Phase F, Abschluss. Das CRM setzt die Werte aus den Schritten 4 bis 14 ein."
+                },
+                {
+                  "label": "Ehrliche Einschätzung",
+                  "dauer": "Schritt 18",
+                  "beschreibung": "Phase F. Ergebnis passt oder passt nicht, mit Grund."
+                },
+                {
+                  "label": "Verbindlichkeit",
+                  "dauer": "Schritt 19",
+                  "beschreibung": "Phase F. Skala 1 bis 10 und Notiz."
+                },
+                {
+                  "label": "Termin für die Beratungspräsentation",
+                  "dauer": "Schritt 20",
+                  "beschreibung": "Phase F. Terminkarte direkt im Schritt."
+                },
+                {
+                  "label": "Einladung prüfen und Vorbereitung",
+                  "dauer": "Schritt 21",
+                  "beschreibung": "Phase F. Notizfeld Einladung."
+                },
+                {
+                  "label": "Offene Fragen",
+                  "dauer": "Schritt 22",
+                  "beschreibung": "Phase F. Feld: erste Frage für die Beratung."
+                },
+                {
+                  "label": "Verabschiedung",
+                  "dauer": "Schritt 23",
+                  "beschreibung": "Phase F. Abschluss-Checkliste darunter."
+                }
+              ]
             }
           }
         ],
@@ -8257,32 +8261,33 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "typ": "sortieren",
             "pfad": "quereinsteiger",
             "punkte": 10,
-            "titel": "Bring die 22 Punkte des Skripts in die Reihenfolge",
+            "titel": "Bring die 23 Schritte des Skripts in die Reihenfolge",
             "hinweis": "Erster und letzter Schritt stehen fest. Achte darauf, wo das Netto steht und wo die Schufa.",
             "randVorgegeben": true,
             "schritte": [
-                "1. Einleitung & Begrüßung",
-                "2. Anrede klären (Du oder Sie?)",
-                "3. Ziel des Erstgesprächs",
-                "4. Warm-up",
-                "5. Mitentscheider",
-                "6. Immobilien-Erfahrung",
-                "7. Sparformen & Eigenkapital",
-                "8. Monatliche Investitionsbereitschaft",
-                "9. Wichtigste 2 Punkte",
-                "10. Wichtig in der Zusammenarbeit",
-                "11. Berufliche Situation",
-                "12. Netto-Einkommen",
-                "13. Schufa",
-                "14. Ziele",
-                "15. Erwartungsrahmen, Cashflow gegen Qualität",
-                "16. Dank + Wer ist OS Immobilien?",
-                "17. Pattern Interrupt, Einwand vorwegnehmen",
-                "18. Verbindlichkeit, Skala 1 bis 10",
-                "19. Terminvereinbarung",
-                "20. Einladung per E-Mail prüfen",
-                "21. Offene Fragen klären",
-                "22. Verabschiedung"
+                "1. Begrüßung und Erlaubnis",
+                "2. Anrede klären",
+                "3. Ablauf und Ziel des Gesprächs",
+                "4. Motiv: Warum gerade jetzt?",
+                "5. Familie und Mitentscheider",
+                "6. Beruf",
+                "7. Ziele und Schwerpunkt",
+                "8. Ruhestand und Rentenlücke",
+                "9. Heutige Vorsorge und Erfahrung",
+                "10. Überleitung",
+                "11. Einkommen und Verpflichtungen",
+                "12. Eigenkapital und Reserve",
+                "13. Monatlich tragbarer Betrag",
+                "14. Sorgen und Schufa",
+                "15. Unternehmen",
+                "16. So arbeiten wir: der Ablauf",
+                "17. Zusammenfassung",
+                "18. Ehrliche Einschätzung",
+                "19. Verbindlichkeit",
+                "20. Termin für die Beratungspräsentation",
+                "21. Einladung prüfen und Vorbereitung",
+                "22. Offene Fragen",
+                "23. Verabschiedung"
               ]
           },
           {
@@ -8324,7 +8329,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             ]
           }
         ],
-        "ueberschrift": "Das Erstgesprächs-Skript im CRM, 22 Punkte, alle untereinander",
+        "ueberschrift": "Das Erstgesprächs-Skript im CRM, 23 Schritte in sechs Phasen, alle untereinander",
         "absaetze": [
           "Das Erstgespräch führst du nicht an einem ausgedruckten Skript entlang, sondern im CRM. Du findest es auf der Kontaktseite: Kontakt öffnen, zum Investment scrollen, den Kasten „Erstgesprächs-Skript\" aufklappen. Er gehört zum Investment und nicht zum Kontakt. Wer später ein zweites Investment startet, bekommt dafür ein frisches, leeres Skript, und das erste bleibt unberührt.",
           "Im Kasten stehen alle 22 Punkte untereinander auf einer Seite, von der Begrüßung bis zur Verabschiedung. Du scrollst durch, während du sprichst, und siehst dabei jederzeit, was noch kommt. Links an jedem Punkt sitzt ein Häkchen zum Abhaken, im Kopf des Kastens steht, wie viele Felder du schon gefüllt hast. Nichts blockiert, nichts hält das Gespräch an: Ein Skript, das ein gut laufendes Telefonat stoppt, wird umgangen statt ausgefüllt.",
@@ -8371,142 +8376,142 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         ],
         "skripte": [
           {
-            "titel": "Schritt 1 · Einleitung & Begrüßung",
-            "kontext": "Erster Baustein des Einstiegs. Erstkontakt, deshalb noch im Sie.",
-            "text": "\"Guten Tag [Vorname] [Nachname], hier ist [dein Name] von OS Immobilien, gut, dass ich Sie erreiche. Sie haben sich über unsere Social-Ads-Anzeige für Immobilien als Kapitalanlage interessiert. Ich brauche fünfzehn Minuten für das, was ich mit Ihnen durchgehen möchte. Haben Sie die jetzt, oder passt Ihnen heute Abend gegen 18 Uhr besser?\"",
-            "warum": "Drei Dinge stecken in diesem Satz. Der Kontext-Anker, also der Hinweis auf die Anzeige, holt den Aha-Moment: Ach ja, stimmt. Ohne ihn verbringt der Lead die ersten dreißig Sekunden damit, sich zu fragen, wer da anruft, und hört nicht zu. Dann der ehrliche Zeitrahmen. Früher stand hier ein paar Minuten, und das war schlicht nicht wahr: Das Skript braucht die Viertelstunde wirklich, und ein Abbruch mitten in der Qualifizierung kostet den Termin ganz. Und drittens die Alternativfrage. Sie macht aus einem Nein einen Rückruftermin statt eines vagen ich melde mich. Wer jetzt keine Zeit hat, hört sofort einen zweiten Vorschlag. Im Skript liegt dafür in diesem Punkt der Knopf Erstgespräch Termin vereinbaren: Er legt den Rückruf als Aufgabe mit Datum und Uhrzeit an und schiebt den Lead nach Follow-Up, damit er nicht in einer Notiz versandet. Zur Sprechweise: Energie in die Stimme, nicht abgelesen klingen. Und qualifizierst du als Vertriebspartner deinen eigenen Lead, zeigt das Skript statt des Anzeigen-Bezugs die allgemeinere Fassung, weil ein selbst angelegter Lead aus jeder Quelle stammen kann."
+            "titel": "Schritt 1 · Begrüßung und Erlaubnis",
+            "kontext": "Phase A, Einstieg. Erstkontakt, deshalb im Sie. Die Quelle setzt das CRM aus dem Kontakt ein.",
+            "text": "„Guten Tag [Anrede] [Nachname], hier ist [Ihr Name] von der OS Real Estate. Sie hatten sich [Quelle] für Immobilien als Kapitalanlage interessiert. Passt es Ihnen gerade für etwa zwanzig Minuten, oder soll ich Sie lieber zu einem festen Zeitpunkt zurückrufen, zum Beispiel heute um 18 Uhr?“",
+            "warum": "Erlaubnis statt Überfall: Der Lead entscheidet, ob jetzt der richtige Moment ist. Ehrlich angekündigt sind etwa zwanzig Minuten, denn so lange dauert das Gespräch wirklich. Hat er keine Zeit, wird der Rückruf mit Datum und Uhrzeit vereinbart; ein irgendwann reicht nicht. Der Knopf Rückruf vereinbaren legt Termin und Aufgabe an."
           },
           {
-            "titel": "Schritt 2 · Anrede klären (Du oder Sie?)",
-            "kontext": "Eigener Schritt, weil er die Beziehungsebene für alles Weitere setzt. Noch im Sie.",
-            "text": "\"Eine Sache vorweg: Sind Sie per Du unterwegs, oder bleiben wir beim Sie?\"",
-            "warum": "Du öffnet emotional schneller, Sie signalisiert Respekt. Entscheidend ist nicht, was herauskommt, sondern dass der Lead es entscheidet. Genau das ist die betonte Entscheidungsfreiheit, in der Forschung But you are free genannt: Wer dem anderen die Wahl ausdrücklich lässt, erhöht die Zustimmungsquote deutlich, ohne Druck aufzubauen (Guéguen und Pascual, 2000). Hier steckt sie in der Oder-Frage, die beide Möglichkeiten gleichwertig nebeneinanderstellt, statt zum Du zu drängen. Wer sich früh gehört fühlt, öffnet sich später leichter bei Netto und Schufa. Ein Fallstrick: Die Frage ruhig stellen und die Antwort abwarten, statt sofort weiterzureden. Wer sie im Vorbeigehen wegnuschelt, hat die Wirkung verschenkt. Im Skript klickst du die Antwort an, und ab dem nächsten Schritt schaltet das gesamte Skript um."
+            "titel": "Schritt 2 · Anrede klären",
+            "kontext": "Phase A. Noch im Sie, die Anrede wird hier geklärt.",
+            "text": "„Bevor wir einsteigen: Bleiben wir beim Sie, oder sind Sie lieber per Du unterwegs?“",
+            "warum": "Der Lead entscheidet selbst, wie er angesprochen wird. Die Wahl gilt ab Schritt 3 für das Skript, die Beratungspräsentation und die Mails."
           },
           {
-            "titel": "Schritt 3 · Ziel des Erstgesprächs",
-            "kontext": "Zweiter Baustein des Einstiegs. Erwartungsrahmen setzen, dann sofort weiter.",
-            "text": "\"Kurz zum Ablauf: Ich stelle Ihnen ein paar Fragen zu Ihrer Situation und Ihren Zielen. Danach wissen Sie, ob wir zu Ihnen passen, und ich weiß, was zu Ihnen passt. Einverstanden?\"",
-            "warum": "Ein klarer Rahmen nimmt Verkaufsdruck heraus. Der Lead weiß: Hier wird jetzt nichts verkauft, hier wird gefragt. Das macht ihn auskunftsfreudig, und genau davon lebt der Rest des Gesprächs. Das Einverstanden am Ende ist eine Mini-Zustimmung, das erste kleine Ja, und damit das Commitment-Prinzip in seiner harmlosesten Form. Beachte die Kürze: Der Satz ist absichtlich zwei Zeilen lang. In Sekunde vierzig eines Anrufs will niemand eine Agenda hören, und eine ausführliche Erklärung des Ablaufs kostet genau die Aufmerksamkeit, die du gleich für den Auslöser brauchst."
+            "titel": "Schritt 3 · Ablauf und Ziel des Gesprächs",
+            "kontext": "Phase A. Ab hier in der gewählten Anrede. Notizfeld: was der Kunde heute geklärt haben möchte.",
+            "text": "„Kurz zum Ablauf, damit du weißt, was dich erwartet: Ich möchte heute vor allem verstehen, wo du stehst und was du erreichen möchtest. Dazu stelle ich dir ein paar Fragen. Einige davon sind persönlich, und du entscheidest, was du mir erzählst. Danach sage ich dir kurz, wer wir sind und wie wir arbeiten. Am Ende sagen wir beide ehrlich, ob ein zweites Gespräch Sinn ergibt. Eine konkrete Immobilie schauen wir heute nicht an, und es wird nichts unterschrieben. Ist das für dich ein guter Ablauf?“\n\n„Darf ich mir dabei ein paar Notizen machen? Und gibt es etwas, das du heute auf jeden Fall geklärt haben möchtest?“",
+            "warum": "Wer weiß, was ihn erwartet, redet offener. Der Satz nimmt den Druck heraus: kein Objekt, keine Unterschrift, und am Ende sagen beide ehrlich, ob ein zweites Gespräch Sinn ergibt."
           },
           {
-            "titel": "Schritt 4 · Warm-up",
-            "kontext": "Der stärkste emotionale Anker im ganzen Gespräch. Notizfeld Auslöser.",
-            "text": "\"Erzähl mir mal ganz kurz, [Vorname] – was hat dich aktuell zum Thema Immobilien als Kapitalanlage gebracht, und warum gerade jetzt? Was hat sich beruflich, privat oder finanziell verändert, dass du jetzt aktiv wirst – egal ob du neu einsteigst oder dein bestehendes Portfolio erweitern möchtest?\"",
-            "warum": "Die Doppelfrage deckt den Auslöser auf: neuer Job, Gehaltssprung, Kind geboren, Erbe, gestiegene Steuerlast, wieder attraktive Zinsen. Genau dieser Auslöser ist später beim Closing das Argument, weil er dem Lead selbst gehört. Reden lassen, spiegeln, mitschreiben, und zwar wörtlich. Dafür ist das Notizfeld Auslöser da. Und dann kommt der Zug, den die meisten auslassen: Frag nach. Und wenn du das jetzt nicht angehst, wo stehst du dann in fünf Jahren? Der Auslöser allein ist nur eine Information. Erst der Preis des Nichthandelns macht den Termin wichtig. Danach Pause machen und die Stille aushalten, auch wenn sie lang wird."
+            "titel": "Schritt 4 · Motiv: Warum gerade jetzt?",
+            "kontext": "Phase B, Kundenrahmen. Feld: Motiv in den Worten des Kunden, wörtlich.",
+            "text": "„Was hat dich dazu gebracht, dich gerade jetzt mit Immobilien als Kapitalanlage zu beschäftigen?“",
+            "warum": "Das Motiv ist der Grund für alles Weitere. Nachfragen statt bewerten, Pausen aushalten. Den wichtigsten Satz des Kunden wörtlich notieren: Er steht in der Beratungspräsentation als Zitat auf der Seite Ihre Ziele."
           },
           {
-            "titel": "Schritt 4a · Familiäre Situation",
-            "kontext": "Brücke zum nächsten Schritt. Klick-Auswahl im Skript, Notizfeld Familie.",
-            "text": "\"Und wie ist denn deine familiäre Situation, [Vorname]? Bist du ledig, verheiratet oder in einer Partnerschaft?\"",
-            "warum": "Diese Frage steht hier aus zwei Gründen. Erstens wirkt sie direkt nach dem Warm-up beiläufig und natürlich, während sie zwanzig Minuten später wie ein Formular klingen würde. Zweitens ist sie die Voraussetzung dafür, dass die Mitentscheider-Frage im nächsten Schritt überhaupt Sinn ergibt: Ohne sie fragst du ins Blaue, mit ihr fragst du gezielt. Im Skript klickst du die Antwort an, und der Sprechtext des nächsten Schritts stellt sich automatisch darauf ein, also eine eigene Fassung für verheiratet, eine für Partnerschaft und eine für alle, die allein entscheiden. Lass die Frage locker klingen, sie ist ein Übergang und kein Datenpunkt."
+            "titel": "Schritt 5 · Familie und Mitentscheider",
+            "kontext": "Phase B. Je nach Familienstand blendet das CRM den passenden Folgesatz ein.",
+            "text": "„Damit ich deine Situation richtig einordne: Bist du ledig, verheiratet oder in einer Partnerschaft?“",
+            "warum": "Wer mitentscheidet, gehört in den nächsten Termin. So hören beide dasselbe und müssen nichts nacherzählen. Name des Mitentscheiders und Kinder werden notiert."
           },
           {
-            "titel": "Schritt 5 · Mitentscheider",
-            "kontext": "Verhindert den Closing-Killer, dass jemand erst noch mit seiner Frau sprechen muss.",
-            "text": "\"Eine kurze Frage – entscheidet ihr solche Themen gemeinsam? Falls ja, suchen wir gleich einen Termin, an dem ihr beide könnt. An welchen Abenden passt es euch zusammen?\"",
-            "warum": "Später ist zu spät. Wer den Mitentscheider erst am Abschlusstag entdeckt, verliert den Termin und meistens den Kunden. Das ist keine Höflichkeitsfrage, sondern eine Absicherung, damit im Beratungsgespräch die entscheidende Person mit am Tisch sitzt. Neu und wichtig ist die zweite Hälfte des Satzes: Wir empfehlen nicht mehr, den Partner mitzubringen, wir terminieren gleich gemeinsam. Ein Ratschlag lässt sich ignorieren, die Terminfrage nicht. Bei Verheirateten nennt das Skript zusätzlich den Grund, nämlich dass wir bei Ehepaaren grundsätzlich beide Partner und die gemeinsame finanzielle Situation betrachten. Und wenn jemand allein entscheidet, kommt trotzdem eine offene Rückfrage, ob sonst jemand eine Rolle spielt, etwa Eltern oder ein Steuerberater. Genau diese stillen Mitentscheider tauchen sonst erst im Beratungsgespräch auf."
+            "titel": "Schritt 6 · Beruf",
+            "kontext": "Phase B. Felder: berufliche Situation, Arbeitgeber und seit wann, Probezeit oder befristet.",
+            "text": "„Was machst du beruflich? Bist du angestellt, selbstständig oder verbeamtet? Und seit wann bist du dort?“",
+            "warum": "Die Bank fragt später nach Beschäftigung, Dauer, Probezeit und Befristung. Wer es jetzt weiß, erlebt später keine Überraschung."
           },
           {
-            "titel": "Schritt 6 · Immobilien-Erfahrung",
-            "kontext": "Steuert die Tiefe der Beratung im nächsten Termin.",
-            "text": "\"Welche Erfahrung hast du bisher mit Immobilien? Schon erste Informationen eingeholt oder noch Neuland?\"",
-            "warum": "Ein Anfänger braucht Grundlagen, also Inflation, Abschreibung, Fremdkapitalhebel. Ein Erfahrener will Zahlen und den Vergleich zu dem, was er schon hat. Wer im Beratungsgespräch das falsche Niveau trifft, verliert den Lead in beide Richtungen: zu einfach heißt für mich zu banal, zu tief heißt ich verstehe nichts und traue mich nicht zu fragen. Die Frage ist bewusst offen gestellt und bewertet nicht. Neuland ist keine schlechte Antwort, sondern eine nützliche."
+            "titel": "Schritt 7 · Ziele und Schwerpunkt",
+            "kontext": "Phase C, Ziele. Bis zu drei Ziele, dazu der Schwerpunkt als Pflicht.",
+            "text": "„Was soll eine Immobilie in zehn bis zwanzig Jahren für dich leisten?“\n\n„Und wenn du dich für eines entscheiden müsstest: Geht es dir eher darum, später im Ruhestand ein zusätzliches Einkommen zu haben, oder eher darum, heute weniger Steuern zu zahlen und mehr Netto vom Brutto zu behalten?“\n\n„Warum ist dir genau das gerade jetzt wichtig?“",
+            "warum": "Der Schwerpunkt Zusatzrente oder Steuerersparnis belegt in der Beratungspräsentation den Konzeptschalter vor. Die Frage nach dem Warum macht aus einem Ziel eine Entscheidung des Kunden."
           },
           {
-            "titel": "Schritt 7 · Sparformen & Eigenkapital",
-            "kontext": "Der wichtigste Satz dieses Blocks: nachweisen ist nicht einsetzen. Pflichtangabe.",
-            "text": "\"Welche Sparformen nutzt du aktuell – ETF, Tagesgeld, Bausparer, Aktien? Und wie viel Eigenkapital könntest du davon ungefähr nachweisen? In den meisten Fällen reicht es schon, das Eigenkapital nachzuweisen — du musst es nicht zwingend einsetzen. Eine Range reicht völlig.\"",
-            "warum": "Nachweisen ist nicht einsetzen. Banken verlangen in der Regel einen Nachweis über vorhandenes Eigenkapital, also einen Kontoauszug oder einen Depotauszug, aber das Kapital muss nicht zwingend in den Kauf fließen. Diese eine Klarstellung holt all die Leads zurück, die beim Wort Eigenkapital sofort denken, sie hätten nichts flüssig, und innerlich schon aussteigen. Sag sie deshalb im selben Atemzug wie die Frage und nicht erst auf Nachfrage. Der Umweg über die Sparformen ist Absicht: Wer erzählt, was er bespart, beantwortet die Eigenkapitalfrage fast nebenbei mit, und die Frage klingt nach Interesse statt nach Kontostand. Auch hier die Range."
+            "titel": "Schritt 8 · Ruhestand und Rentenlücke",
+            "kontext": "Phase C. Felder: Ruhestand ab, erwartete Rente netto, Wunsch-Netto.",
+            "text": "„Wie stellst du dir deinen Ruhestand vor, und ab wann?“\n\n„Weißt du ungefähr, mit wie viel Rente du rechnen kannst? Eine grobe Zahl aus deiner letzten Renteninformation reicht mir.“\n\n„Und mit wie viel Netto im Monat würdest du im Ruhestand gern leben?“",
+            "warum": "Aus den beiden Beträgen rechnet das CRM die Rentenlücke je Monat und über 25 Jahre. Sie steht in der Beratungspräsentation in Abschnitt 3, mit den Zahlen des Kunden statt mit einem Beispiel."
           },
           {
-            "titel": "Schritt 8 · Monatliche Investitionsbereitschaft",
-            "kontext": "Erst einordnen, dann fragen. Der Wert steuert später die Objektauswahl.",
-            "text": "\"Zur Einordnung, [Vorname]: Je nach Objektgröße liegt der monatliche Eigenanteil typischerweise im mittleren dreistelligen Bereich. Wo würdest du dich da einordnen? Eine Range reicht völlig.\"",
-            "warum": "Der erste Halbsatz ist der eigentliche Trick. Ohne einen Bezugswert nennt fast jeder Lead eine defensive Zahl, weil er nicht weiß, worüber geredet wird, und im Zweifel zu tief greift. Diese Zahl steht danach im CRM und begrenzt die Objektauswahl, obwohl sie nur aus Unsicherheit entstanden ist. Deshalb ordnest du erst ein und fragst dann. Genauso wichtig ist, was du danach nicht tust: bewerten. Egal was kommt, du notierst es. Wer hier die Augenbraue hochzieht, bekommt beim nächsten Gespräch gar keine Zahl mehr. Eine Range reicht auch hier, und wer partout keine nennen will oder kann, sagt dir damit selbst etwas über seine Ernsthaftigkeit."
+            "titel": "Schritt 9 · Heutige Vorsorge und Erfahrung",
+            "kontext": "Phase C. Felder: Sparformen, Zufriedenheit, Immobilienerfahrung, Eigenheim geplant.",
+            "text": "„Was tust du heute bereits für deine Altersvorsorge und deinen Vermögensaufbau? Und wie zufrieden bist du damit?“\n\n„Hast du schon Erfahrung mit Immobilien, selbst genutzt oder vermietet? Und planst du in den nächsten Jahren ein eigenes Zuhause?“",
+            "warum": "Was heute schon passiert und wie zufrieden der Kunde damit ist, zeigt, wo die Immobilie ansetzt. Ein geplantes Eigenheim ändert den Rahmen für eine Kapitalanlage."
           },
           {
-            "titel": "Schritt 9 · Wichtigste 2 Punkte",
-            "kontext": "Der Priorisierungsfilter für die Objektauswahl. Bewusst ohne Vorgaben.",
-            "text": "\"Wenn du zwei Sachen rauspicken müsstest – was ist für dich das Wichtigste beim Investment?\"",
-            "warum": "Diese Frage wird bewusst offen gestellt, ohne die Antwortmöglichkeiten mitzuliefern. Das ist der Unterschied zur früheren Fassung, und er ist wichtig: Wer Sicherheit, Rendite, Steuer, Lage, Passivität mit aufzählt, bekommt eine Antwort aus genau dieser Liste und nicht das echte Motiv. Erst wenn gar nichts kommt, hilfst du mit einem oder zwei Beispielen nach. Rauspicken müssen erzwingt außerdem eine Entscheidung, und genau die braucht der Berater, um im nächsten Termin auf das Richtige zu zielen. Wenn hier Cashflow, selbsttragend oder soll nichts kosten fällt, hast du gleichzeitig die Bedingung für den Erwartungsrahmen im nächsten Schritt erfüllt."
+            "titel": "Schritt 10 · Überleitung",
+            "kontext": "Phase D, Finanzieller Rahmen. Überleitung ohne Eingabefeld.",
+            "text": "„Eine Immobilie ist nur dann gut, wenn sie zu deinem Ziel und zu deiner Situation passt. Damit ich dir im nächsten Termin mit echten Zahlen statt mit Wunschwerten rechne, brauche ich ein paar Eckdaten. Eine Spanne reicht mir jeweils.“",
+            "warum": "Der Satz begründet, warum jetzt Zahlen kommen: echte Zahlen statt Wunschwerte. Eine Spanne reicht, das senkt die Hemmschwelle."
           },
           {
-            "titel": "Schritt 10 · Wichtig in der Zusammenarbeit",
-            "kontext": "Die Erwartungshaltung an dich. Notizfeld Zusammenarbeit.",
-            "text": "\"Was ist dir in der Zusammenarbeit mit mir am wichtigsten?\"",
-            "warum": "Die Antwort sagt dir, wie du kommunizieren musst: kurze Nachrichten oder ausführliche Termine, schnelle Rückmeldung oder gründliche Vorbereitung, persönlich oder digital. Wer die Kommunikationspräferenz früh trifft, verliert später keinen Kunden daran, dass es menschlich nicht passt. Auch diese Frage bleibt offen, und erst bei Stille hilfst du nach: Erreichbarkeit, Transparenz, Tempo, persönlich oder digital. Beachte die Formulierung: mit mir, nicht mit einem Berater. Bei uns führt derselbe Mensch das Erstgespräch, der anschließend berät, und alles andere wäre ein Versprechen für jemand anderen."
+            "titel": "Schritt 11 · Einkommen und Verpflichtungen",
+            "kontext": "Phase D. Pflicht: Netto im Monat, Brutto im Jahr, laufende Raten.",
+            "text": "„Wie hoch ist ungefähr dein monatliches Nettoeinkommen? Und dein Bruttojahresgehalt?“\n\n„Laufen aktuell Kredite, Leasingraten oder Unterhaltszahlungen?“",
+            "warum": "Das Brutto braucht die Präsentation für den persönlichen Steuersatz, statt pauschal mit 42 Prozent zu rechnen. Laufende Raten entscheiden über die Haushaltsrechnung der Bank."
           },
           {
-            "titel": "Schritt 11 · Berufliche Situation",
-            "kontext": "Basis für die Bonitätseinschätzung. Pflichtangabe, als Auswahlliste im Skript.",
-            "text": "\"Damit ich dich später richtig einschätzen kann – was machst du beruflich und wo bist du beschäftigt?\"",
-            "warum": "Beamter, unbefristet Angestellter und Selbstständiger sind drei völlig verschiedene Bank-Welten mit unterschiedlichen Konditionen und damit unterschiedlichen Objekten. Deshalb ist das eine der vier Pflichtangaben. Der Rahmen damit ich dich richtig einschätzen kann macht aus der Frage einen Service und keine Prüfung, und das ist der ganze Unterschied in der Wirkung. Der Arbeitgeber samt seit wann ist freiwillig, aber nützlich: Die Probezeit ist für jede Bank ein Thema. Im Skript ist der Beruf eine Auswahlliste mit denselben Werten wie in den Stammdaten, damit später niemand angestellt, Angestellter und Festanstellung getrennt auswerten muss."
+            "titel": "Schritt 12 · Eigenkapital und Reserve",
+            "kontext": "Phase D. Pflicht: Reserve, unantastbar, und Eigenkapital einsetzbar.",
+            "text": "„Welche Rücklage soll auf jeden Fall unangetastet bleiben, egal was passiert?“\n\n„Und welcher Betrag stünde darüber hinaus für die Kaufnebenkosten zur Verfügung? Wichtig: Nachweisen heißt nicht einsetzen. Was du davon wirklich einsetzt, entscheidest du später.“",
+            "warum": "Die Reserve bleibt unangetastet, egal was passiert. Nachweisen heißt nicht einsetzen: Was der Kunde wirklich einsetzt, entscheidet er später."
           },
           {
-            "titel": "Schritt 12 · Netto-Einkommen",
-            "kontext": "Der harte Bonitäts-Anker. Pflichtangabe, synchron mit den Qualifizierungsfragen.",
-            "text": "\"Damit ich dir wirklich passende Optionen rechnen kann – wie hoch ist dein monatliches Nettoeinkommen ungefähr? Eine Range reicht völlig. Und hast du aktuell laufende Kredite oder Leasingraten?\"",
-            "warum": "Passende Optionen rechnen macht klar, wofür die Zahl da ist: für eine sinnvolle Empfehlung, nicht für eine Prüfung. Die Range nimmt den Druck, denn Menschen geben einen Bereich viel leichter preis als einen exakten Betrag. Der zweite Satz ist genauso wichtig wie der erste: Die laufenden Verpflichtungen kippen jede Bonitätsrechnung. Ein unbefristeter Vertrag ohne Konsumkredite trägt eine kleinere Wohnung locker, zwei Autofinanzierungen fressen dasselbe Netto auf. Wer nur nach dem Einkommen fragt, hat die halbe Zahl. Und die Stellung dieses Bausteins ist kein Zufall: Das Geld kommt vor der Schufa, nicht danach. Wer erst nach Misstrauen fragt und dann nach Geld, hat die schlechteste aller Reihenfolgen gewählt."
+            "titel": "Schritt 13 · Monatlich tragbarer Betrag",
+            "kontext": "Phase D. Felder: tragbar im Monat vor Steuern, Grenze im Stressfall.",
+            "text": "„Welcher Betrag im Monat wäre für dich dauerhaft gut tragbar, wenn das Konzept für dich nachvollziehbar ist? Ich meine den Betrag vor Steuern.“\n\n„Und wo wäre deine Grenze, wenn einmal etwas nicht nach Plan läuft?“",
+            "warum": "Vor Steuern, damit der Betrag ehrlich ist. Die Grenze im Stressfall steht in der Präsentation unter Ihre Kriterien und wird im Stresstest geprüft."
           },
           {
-            "titel": "Schritt 13 · Schufa",
-            "kontext": "Muss gefragt werden. Erst der Grund, dann die Frage.",
-            "text": "\"Kurz zum Hintergrund: Ich rechne dir vor dem Termin zwei Objekte durch, dafür muss ich wissen, mit welchen Bankkonditionen ich kalkulieren kann. Gibt es bei dir einen offenen Schufa-Eintrag, oder ist da alles glatt?\"",
-            "warum": "Die Tonalität entscheidet über die Antwort. Deshalb steht der Grund vor der Frage: Ich rechne dir zwei Objekte durch, dafür brauche ich die Konditionen. Damit ist die Schufa eine Rechengröße und kein Verhör. Achte auf die Formulierung am Ende: offener Eintrag oder alles glatt. Die frühere Fassung fragte, ob alles sauber sei, und sauber impliziert schmutzig. Aus einer Sachfrage wird dadurch ein Vorwurf, und auf Vorwürfe antwortet niemand ehrlich. Ehrliche Antworten sind hier alles wert, denn wer etwas verschweigt, wird spätestens bei der Finanzierungsprüfung entdeckt, und dann sind Wochen Arbeit umsonst. Und noch einmal zur Stellung: Die Schufa kommt nach dem Netto und nicht davor."
+            "titel": "Schritt 14 · Sorgen und Schufa",
+            "kontext": "Phase D. Felder: größte Sorgen wörtlich, Schufa auffällig.",
+            "text": "„Was sind deine größten Sorgen, wenn du an eine vermietete Immobilie denkst?“\n\n„Und eine letzte Frage, die ich allen stelle: Gab es in der Vergangenheit Schwierigkeiten mit einer Bank oder mit der Schufa? Ich frage nur, damit wir später keine Überraschung erleben.“",
+            "warum": "Die Sorgen werden in der Beratungspräsentation im Abschnitt Sicherheit gezielt beantwortet. Die Schufa-Frage stellen wir allen, damit später keine Überraschung kommt."
           },
           {
-            "titel": "Schritt 14 · Ziele",
-            "kontext": "Pflichtangabe, bis zu drei Ziele zum Anklicken.",
-            "text": "\"Welche 3 Ziele, [Vorname], sind dir bei einem möglichen Immobilieninvestment denn am wichtigsten?\"",
-            "warum": "Ziele sind emotional. Wer sie ausspricht, verpflichtet sich innerlich, und im Closing lässt sich darauf zurückkommen, weil es seine eigenen Worte sind. Die Begrenzung auf drei erzwingt eine Priorisierung: Wer alles wichtig findet, hat keine echte Präferenz, und der Berater bekommt eine Liste statt einer Richtung. Im Skript klickst du bis zu drei Kacheln an, ein viertes Ziel lehnt das Skript ab, statt die Liste stillschweigend wachsen zu lassen. Wer etwas nennt, das nicht in den Kacheln steht, kommt in die Notiz. Die Auswahl schreibt zugleich in die Qualifizierungsfragen der Stammdaten."
+            "titel": "Schritt 15 · Unternehmen",
+            "kontext": "Phase E, Wer wir sind. Persönlich ergänzen: Werdegang in zwei Sätzen.",
+            "text": "„Danke für deine Offenheit. Damit du weißt, mit wem du sprichst: Wir sind die OS Real Estate GmbH, Teil der OS Immobilien Holding mit Sitz in Mittenwalde bei Berlin. Wir vermitteln vermietete Wohnimmobilien als Kapitalanlage, mit Schwerpunkt Berlin und Brandenburg, heute zum Beispiel in Berlin-Wedding, am Schwielowsee bei Potsdam und in Zossen-Wünsdorf. Jedes Objekt prüfen wir vorher auf Lage, Miete, Zustand und Unterlagen.“\n\n„Und ich sage es dir ganz offen: Wir verdienen an der Vermittlung. Gerade deshalb rechnen wir mit echten Zahlen, vor und nach Steuern und mit einem Stresstest. Steuer-, Rechts- und Finanzierungsberatung machen wir nicht. Dafür arbeiten wir mit Steuerberatern, Notaren und Banken zusammen.“",
+            "warum": "Offen sagen, woran wir verdienen, schafft Vertrauen. Steuer-, Rechts- und Finanzierungsberatung machen wir nicht. Keine erfundenen Zahlen, keine fremden Siegel."
           },
           {
-            "titel": "Schritt 15 · Erwartungsrahmen — Cashflow vs. Qualität",
-            "kontext": "Nur wenn der Lead vorher selbst von Cashflow oder selbsttragend gesprochen hat.",
-            "text": "\"Eine Sache, die ich dir vorher ehrlich sagen möchte, [Vorname]: Eine Immobilie, die sich vor Steuern komplett selbst trägt, ist möglich — aber nur über drei Hebel: sehr hohe Rendite-Lage (oft B-/C-Stadt, mehr Risiko), spezielles Mietkonzept (WG/Möbliert/Co-Living, mehr Aufwand) oder sehr günstiger Einkauf (Sanierungsstau). Wenn du gleichzeitig Top-Lage, Neubau, ruhige Mieter und wenig Aufwand willst, dann ist der Hebel nicht Cashflow vor Steuern, sondern Vermögensaufbau, Steuerersparnis und Tilgung durch den Mieter. Ich zeige dir im nächsten Termin beides — damit du sauber entscheidest, was zu dir passt.\"",
-            "warum": "Das ist Einwand-Vorwegnahme in Reinform. Der klassische Killer-Einwand im Beratungsgespräch, nämlich warum kostet mich das im Monat etwas, wird hier schon entschärft. Der Berater kann später auf diese Rahmensetzung verweisen, und der Lead hat sie selbst mitbekommen. Das ist das Bogen-Prinzip: Wer den Bogen früh und ruhig spannt, trifft am Ende präzise. Wichtig ist, dass alle drei Hebel ihren Preis mitgenannt bekommen, sonst klingt der Satz wie ein Angebot statt wie eine Abwägung. Die hohe Rendite-Lage kostet Marktbreite, also Wiederverkaufbarkeit und Mieternachfrage. Das Mietkonzept kostet Aufwand, nämlich mehrere Mietverhältnisse, Möblierung, mehr Wechsel und eine Verwaltung, die das beherrschen muss. Und der günstige Einkauf über Sanierungsstau kostet Geld und Zeit nach dem Kauf, denn die aufgeschobene Instandhaltung verschwindet nicht, sie wandert in die Sonderumlage. Dazu kommt eine steuerliche Falle, die genau hier zuschlägt: Wer in den ersten drei Jahren mehr als 15 Prozent der Gebäude-Anschaffungskosten in Instandsetzung steckt, verliert nach § 6 Absatz 1 Nummer 1a Einkommensteuergesetz den sofortigen Abzug für den gesamten Betrag. Wer Sanierungsstau als reine Chance verkauft, verkauft die halbe Wahrheit. Im Skript hältst du darunter mit einem Klick fest, was dem Lead wichtiger ist, also Cashflow, Qualität oder ein Mix. Der Wert landet in der Zusammenfassung des Erstgesprächs, damit der Berater die Erwartung kennt. Und daneben liegt zugeklappt die ausführliche Einwand-Behandlung mit allen drei Hebeln und ihren Abwägungen, falls der Lead nachhakt."
+            "titel": "Schritt 16 · So arbeiten wir: der Ablauf",
+            "kontext": "Phase E. Der Ablauf bis zur Kaufpreiszahlung.",
+            "text": "„So gehen wir vor: Im nächsten Termin zeige ich dir in etwa einer Stunde unser Konzept, gerechnet mit deinen Zahlen, und dazu unsere Objekte. Passt das für dich, füllen wir am Ende gemeinsam deine Selbstauskunft aus. Rund eine Woche später stelle ich dir die konkrete Immobilie vor, die zu dir passt, mit Exposé und deiner persönlichen Kalkulation. Erst dann entscheidest du über eine Reservierung, und die ist kostenfrei. Danach folgen Besichtigung, Bankgutachter, Finanzierung und Notar. Nach jedem Schritt entscheidest du, ob es weitergeht.“",
+            "warum": "Der Kunde sieht, dass nach jedem Schritt er entscheidet und die Reservierung kostenfrei ist. Die Selbstauskunft kommt erst am Ende der Beratungspräsentation."
           },
           {
-            "titel": "Schritt 16 · Dank + Wer ist OS Immobilien?",
-            "kontext": "Der Vertrauensanker, und zwar erst jetzt. Notizfeld Reaktion auf die Vorstellung.",
-            "text": "\"Danke, [Vorname], dass du mir so offen von dir erzählt hast. Kurz, wer wir sind:\n\n• Wir machen ausschließlich Immobilien als Kapitalanlage, kein Eigenheim.\n• Unsere Kunden sind Angestellte, Beamte und Selbstständige mit gutem Einkommen.\n• Wir arbeiten in wachstumsstarken deutschen A- und B-Lagen, mit saniertem Bestand, Neubau im KfW-40-Standard und Co-Living.\n• Wir begleiten dich von der Strategie über die Finanzierung bis nach dem Notar, alles aus einer Hand.\n• Seit [X] Jahren, [Y] begleitete Kunden.\n\nWas davon klingt für dich am ehesten nach dem, was du vorhin beschrieben hast?\"",
-            "warum": "Die Reihenfolge ist der ganze Punkt: Erst erzählt der Lead, dann erzählen wir. Das ist Reziprozität. Er hat sich geöffnet, jetzt öffnen wir uns. Umgekehrt, also erst pitchen und dann fragen, wirkt es wie eine Verkaufsshow, und danach antwortet niemand mehr offen auf die Frage nach dem Netto. Zwei Dinge sind gegenüber früher bewusst anders. Erstens ist der Block halb so lang, denn neunzig Sekunden Monolog sind genau der Punkt, an dem ein Zuhörer aussteigt. Zweitens endet er mit einer Frage statt mit einem Punkt, damit aus dem Vortrag wieder ein Gespräch wird. Was der Lead darauf antwortet, gehört in die Notiz, es ist die beste Vorlage für den Einstieg ins Beratungsgespräch. Zwei Warnungen. Die Zeile mit [X] und [Y] ersetzt du durch eure echten Zahlen, und wenn du sie nicht belegen kannst, streichst du die Zeile ersatzlos, statt zu schätzen. Und die dritte Zeile enthält Fachwörter, die der Lead nicht kennt; du solltest sie in einem Halbsatz auflösen können. Sanierter Bestand heißt: eine ältere Wohnung, die vor dem Verkauf umfassend instand gesetzt wurde. KfW 40 ist der Effizienzhaus-Standard der Kreditanstalt für Wiederaufbau, das Gebäude braucht also nur rund 40 Prozent der Energie eines gesetzlichen Referenzgebäudes. Co-Living meint möblierte Wohnungen, deren Zimmer einzeln vermietet werden, jedes mit eigenem Mietvertrag. Sag im Zweifel die deutsche Fassung und nicht die Abkürzung: Dieser Block soll Vertrauen aufbauen und nicht Fachkenntnis beweisen."
+            "titel": "Schritt 17 · Zusammenfassung",
+            "kontext": "Phase F, Abschluss. Das CRM setzt die Werte aus den Schritten 4 bis 14 ein.",
+            "text": "„Lass mich kurz zusammenfassen, ob ich dich richtig verstanden habe: Du bist [Beruf] und möchtest [wichtigstes Ziel]. Wichtig ist dir das gerade jetzt, weil [Motiv]. Heute hast du [Vorsorge], und es fehlen dir später etwa [Lücke] im Monat. Eine Reserve von [Reserve] soll unangetastet bleiben, und monatlich wären für dich etwa [tragbarer Betrag] vor Steuern gut tragbar. Am meisten Sorgen macht dir [Sorge], und mitentscheiden wird [Mitentscheider].“\n\n„Habe ich das richtig verstanden? Was würdest du ändern oder ergänzen?“",
+            "warum": "Wer seine eigenen Worte hört, erkennt sich wieder und korrigiert, was nicht stimmt. Was noch in eckigen Klammern steht, ist offen."
           },
           {
-            "titel": "Schritt 17 · Pattern Interrupt – Einwand-Vorwegnahme",
-            "kontext": "Holt versteckte Einwände hoch, bevor sie zum No-Show werden. Notizfeld Einwände.",
-            "text": "\"Bevor wir gleich den Termin fixieren, [Vorname] – gibt es bei dir noch irgendwas im Kopf, das dich vom nächsten Schritt abhalten würde? Lieber jetzt raus damit, als dass wir uns nachher umsonst treffen.\"",
-            "warum": "Diese Frage ist der wirksamste Satz im ganzen Skript. Sie zwingt den Lead, seine stillen Zweifel jetzt auszusprechen, also ob das seriös ist, ob er sich das leisten kann, ob er nicht doch erst mit jemandem sprechen muss. Was hier auf den Tisch kommt, kann im Beratungsgespräch vorbereitet aufgelöst werden. Was hier verschwiegen wird, wird zum No-Show. Der zweite Halbsatz ist der Schlüssel: Er erlaubt dem Lead ausdrücklich, abzusagen, und genau deshalb sagt er die Wahrheit statt abzusagen. Schreib die Antwort in die Notiz Einwände. Im Beratungsgespräch greifst du sie als Erstes auf."
+            "titel": "Schritt 18 · Ehrliche Einschätzung",
+            "kontext": "Phase F. Ergebnis passt oder passt nicht, mit Grund.",
+            "text": "Wenn es passt: „Nach dem, was du mir erzählt hast, kann eine vermietete Immobilie ein sinnvoller Baustein für dich sein. Ob die Zahlen wirklich aufgehen, zeige ich dir im nächsten Termin, offen und mit Stresstest.“\n\nWenn es nicht passt: „Danke für deine Offenheit. Ehrlich gesagt passt unser Konzept im Moment nicht zu dir, weil [Grund]. Ich möchte dir nichts empfehlen, das nicht zu dir passt. Wenn sich an [Grund] etwas ändert, melde dich gern wieder bei mir.“",
+            "warum": "Ehrlichkeit statt Druck: Passt das Konzept nicht, sagen wir es und nennen den Grund. Bei passt nicht kommt der Kontakt in die Stufe Verloren."
           },
           {
-            "titel": "Schritt 18 · Verbindlichkeit (Skala 1–10)",
-            "kontext": "Bei jedem fragen, nicht nur im Zweifel. Klick-Skala im Skript.",
-            "text": "\"Auf einer Skala von 1 bis 10 – wie ernst ist es dir, das Thema Immobilieninvestment jetzt wirklich anzugehen? 1 = nur mal informieren, 10 = ich will starten, sobald es Sinn ergibt.\"",
-            "warum": "Früher galt diese Frage als Werkzeug für lauwarme Fälle. Das hat sich geändert, und zwar aus einem einfachen Grund: Nur wer bei allen fragt, hat einen Vergleichswert, und ohne Vergleichswert ist eine 6 einfach nur eine Zahl. Werte ab 7 stehen für eine deutlich höhere Show-Wahrscheinlichkeit, Werte von 4 und darunter dafür, offen zu klären, ob ein Termin überhaupt Sinn ergibt oder ein Follow-up in einigen Monaten passender ist. Woher die Schwellen kommen, solltest du wissen, sonst wirken sie willkürlich. Die Skalenfrage stammt aus der motivierenden Gesprächsführung, wo sie als Readiness Ruler eingesetzt wird, um Veränderungsbereitschaft messbar zu machen (Miller und Rollnick, Motivational Interviewing). Die 7 ist dort kein magischer Wert, sondern die Grenze, ab der eine Antwort eindeutig in der oberen Hälfte liegt: Wer 5 oder 6 sagt, meint in aller Regel unentschlossen, wer 7 sagt, hat sich innerlich schon auf ja zubewegt. Die OS Immobilien-Schwellen sind ein Erfahrungswert des Hauses und keine Statistik, behandle sie als Gesprächshilfe und nicht als Messgerät. Der stärkste Zug kommt ohnehin nach der Zahl: Frag bei jeder Antwort unter 10 nach, warum es nicht eine Zahl niedriger ist. Dann begründet der Lead seine eigene Motivation, statt dass du sie behauptest."
+            "titel": "Schritt 19 · Verbindlichkeit",
+            "kontext": "Phase F. Skala 1 bis 10 und Notiz.",
+            "text": "„Auf einer Skala von 1 bis 10: Wie wichtig ist es dir, das Thema in den nächsten Wochen anzugehen?“\n\n„Was müsste passieren, damit es eine 10 wird?“",
+            "warum": "Die Zahl zeigt, wie dringend das Thema für den Kunden ist. Die Nachfrage, was es zur 10 bräuchte, holt das Hindernis nach oben."
           },
           {
-            "titel": "Schritt 19 · Terminvereinbarung",
-            "kontext": "Annahme-Abschluss mit zwei Zeitfenstern. Der Terminblock ist hier eingebaut.",
-            "text": "\"Danke dir, dann lass uns direkt den Termin festmachen. Ich zeige dir zwei konkrete Wohnungen mit vollständiger Rechnung: Kaufpreis, Rate, Miete, Steuerwirkung und was am Ende wirklich aus deiner Tasche geht. Das bereite ich individuell für dich vor, das ist gut eine Stunde Arbeit. Ich habe am [Tag 1] um [Uhrzeit] und am [Tag 2] um [Uhrzeit] etwas frei. Was passt dir besser?\"",
-            "warum": "Zwei Dinge tragen diesen Satz. Erstens der Annahme-Abschluss: Nicht möchtest du einen Termin, denn auf eine Ja-Nein-Frage folgt in ungefähr der Hälfte der Fälle ein Nein. Zwei konkrete Zeitfenster verlagern die Entscheidung von ob auf wann. Zweitens der Wert des Termins, und zwar konkret benannt: zwei durchgerechnete Objekte, eine Stunde Vorbereitung, und die Zahlen, die den Lead wirklich interessieren. In die Tiefe gehen ist kein Wert, sondern eine Floskel, und für eine Floskel sagt niemand einen Abend ab. Der ausdrücklich genannte Aufwand wirkt zusätzlich: Ein Termin, für den jemand eine Stunde gearbeitet hat, wird seltener abgesagt. Im Skript liegt direkt unter diesem Baustein der Terminblock mit dem Buchungskalender, dem Datum und der Uhrzeit."
+            "titel": "Schritt 20 · Termin für die Beratungspräsentation",
+            "kontext": "Phase F. Terminkarte direkt im Schritt.",
+            "text": "„Ich brauche zwei bis drei Tage, um dein Konzept mit deinen Zahlen vorzubereiten. Passt dir [Tag 1] um [Uhrzeit] oder [Tag 2] um [Uhrzeit] besser? Wir brauchen etwa eine Stunde, per Video oder bei uns im Büro.“\n\n„[Mitentscheider] sollte idealerweise dabei sein. Passt der Termin auch für [ihn/sie]?“",
+            "warum": "Zwei konkrete Zeitfenster statt einer Ja-Nein-Frage. Der Mitentscheider wird ausdrücklich eingeladen."
           },
           {
-            "titel": "Schritt 20 · Einladung per E-Mail prüfen",
-            "kontext": "Der stärkste No-Show-Schutz im ganzen Skript. Notizfeld Einladung.",
-            "text": "\"Schau bitte kurz in dein Postfach – ist die Einladung zu unserem Beratungsgespräch schon angekommen? Falls ja, füg' sie dir direkt deinem Kalender hinzu, damit der Termin wie besprochen stattfinden kann. In der E-Mail findest du auch den Link zum Videogespräch. Und falls doch mal was dazwischenkommt: Gib mir bitte spätestens am Vortag Bescheid, dann verschieben wir einfach. Ist das für dich in Ordnung?\"",
-            "warum": "Dreißig Sekunden, die mehr Termine retten als jede Erinnerungsmail. Live verifizieren heißt: Der Lead schaut jetzt nach, während du dran bist. Kommt nichts an, prüft ihr gemeinsam den Spam-Ordner oder er gibt dir eine zweite Adresse, statt dass die Einladung tagelang unbemerkt verschwindet. Frag ausdrücklich auch nach dem Kalender und nicht nur nach der Mail, denn eine gelesene Einladung ist noch kein Eintrag. Der letzte Teil ist neu und wirkt stärker, als er klingt: Wer zusagt, sich im Fall der Fälle abzumelden, meldet sich entweder ab oder erscheint. Beides ist besser als ein stiller No-Show, und das Ist das für dich in Ordnung holt die Zusage ausdrücklich ein."
+            "titel": "Schritt 21 · Einladung prüfen und Vorbereitung",
+            "kontext": "Phase F. Notizfeld Einladung.",
+            "text": "„Du bekommst gleich eine Einladung per E-Mail. Schau bitte kurz nach, ob sie angekommen ist? Manchmal landet sie im Spam-Ordner.“\n\n„Vorbereiten musst du für den Termin nichts. Wenn du magst, leg deine letzte Renteninformation bereit, dann rechnen wir noch genauer.“",
+            "warum": "Live prüfen, ob die Einladung ankommt, ist der beste Schutz gegen einen verpassten Termin. Die Renteninformation macht die Rechnung genauer."
           },
           {
-            "titel": "Schritt 21 · Offene Fragen klären",
-            "kontext": "Offen gefragt, damit ein Nein nicht die bequemste Antwort ist.",
-            "text": "\"Welche Frage soll ich dir im Termin als Allererstes beantworten?\"",
-            "warum": "Die frühere Fassung fragte, ob noch Fragen offen seien, und lud damit zum bequemen Nein ein. Die neue Form setzt voraus, dass es eine Frage gibt, und erzeugt damit zweierlei: eine Erwartung an den Termin und einen Grund zu erscheinen. Was der Lead nennt, notierst du wörtlich. Der Berater greift es zu Beginn des Beratungsgesprächs auf, und für den Lead fühlt sich das an, als hätte ihm jemand zugehört, weil ihm jemand zugehört hat. Du beantwortest die Frage hier ausdrücklich nicht, das ist Sache des nächsten Termins."
+            "titel": "Schritt 22 · Offene Fragen",
+            "kontext": "Phase F. Feld: erste Frage für die Beratung.",
+            "text": "„Welche Frage soll ich dir im nächsten Termin als Allererstes beantworten?“",
+            "warum": "Die Frage des Kunden erscheint in der Präsentation auf der Seite Ihre Ziele. So beginnt der nächste Termin mit seinem Thema."
           },
           {
-            "titel": "Schritt 22 · Verabschiedung",
-            "kontext": "Der Termin ist das letzte gesprochene Wort.",
-            "text": "\"Danke, [Vorname], dann hast du den Termin sicher im Kalender. Ich freue mich, dich bei deinem Vorhaben zu begleiten. Bis [Tag] um [Uhrzeit].\"",
-            "warum": "Von einer Reihe von Informationen bleibt die letzte am besten hängen, das ist der Recency-Effekt. Deshalb steht der Termin mit Tag und Uhrzeit im letzten Satz und nicht irgendwo in der Mitte. Das Skript blendet dir den gebuchten Termin an dieser Stelle noch einmal ein, damit du ihn nicht aus dem Gedächtnis nennen musst. Und beachte, was nicht mehr dasteht: Früher hieß es hier, man freue sich, wenn alles passt. Genau dieser Vorbehalt säte im letzten Satz den Zweifel, den zwanzig Minuten Gespräch gerade abgebaut hatten. Freundlich rausgehen, ohne Einschränkung, das öffnet die Tür für den nächsten Schritt."
+            "titel": "Schritt 23 · Verabschiedung",
+            "kontext": "Phase F. Abschluss-Checkliste darunter.",
+            "text": "„Dann halten wir fest: [Tag], [Datum] um [Uhrzeit], gemeinsam mit [Mitentscheider]. Ich freue mich auf unser Gespräch. Bis [Tag], [Vorname]!“",
+            "warum": "Der Termin ist das letzte gesprochene Wort, mit Tag, Datum, Uhrzeit und Mitentscheider."
           }
         ],
         "uebungen": [
@@ -28933,7 +28938,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
   {
     id: "preis-01",
     technik: "zerlegung",
-    skriptSchritte: ["investitionsbereitschaft", "cashflow_erwartung"],
+    skriptSchritte: ["investitionsbereitschaft"],
     kategorie: "preis",
     einwand: "Das ist mir zu teuer.",
     meintEigentlich: "Ich sehe den Wert (noch) nicht, oder ich habe Angst, mich zu übernehmen.",
@@ -28969,7 +28974,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
   {
     id: "zeit-01",
     technik: "zerlegung",
-    skriptSchritte: ["pattern_interrupt", "terminvereinbarung"],
+    skriptSchritte: ["einschaetzung", "terminvereinbarung"],
     kategorie: "zeit",
     einwand: "Ich möchte mir erst mal noch andere Objekte anschauen.",
     meintEigentlich: "Ich fühle mich unter Druck, ich brauche Kontrolle.",
@@ -28980,7 +28985,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
   {
     id: "zeit-02",
     technik: "zeitumkehr",
-    skriptSchritte: ["pattern_interrupt", "skala_verbindlichkeit"],
+    skriptSchritte: ["einschaetzung", "skala_verbindlichkeit"],
     kategorie: "zeit",
     einwand: "Ich möchte noch 2 bis 3 Wochen darüber nachdenken.",
     meintEigentlich: "Ich habe eine konkrete Unsicherheit, die ich nicht ausspreche.",
@@ -29003,7 +29008,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
   {
     id: "produkt-01",
     technik: "kontextwechsel",
-    skriptSchritte: ["zwei_punkte"],
+    skriptSchritte: ["ziele"],
     kategorie: "produkt",
     einwand: "Die Lage überzeugt mich nicht.",
     meintEigentlich: "Ich vergleiche mit meiner Heimatstadt / meinem Bauchgefühl, nicht mit Marktdaten.",
@@ -29039,7 +29044,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
   {
     id: "familie-01",
     technik: "vorwegnahme",
-    skriptSchritte: ["mitentscheider", "pattern_interrupt"],
+    skriptSchritte: ["familiaere_situation", "einschaetzung"],
     kategorie: "familie",
     einwand: "Ich muss das erst mit meinem Partner besprechen.",
     meintEigentlich: "Ich habe die Entscheidungsmacht nicht allein, oder ich brauche einen Vorwand.",
@@ -29050,7 +29055,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
   {
     id: "denkezeit-01",
     technik: "isolierende-frage",
-    skriptSchritte: ["pattern_interrupt", "skala_verbindlichkeit", "terminvereinbarung"],
+    skriptSchritte: ["einschaetzung", "skala_verbindlichkeit", "terminvereinbarung"],
     kategorie: "denkezeit",
     einwand: "Ich denk drüber nach und melde mich.",
     meintEigentlich: "Ich sage nicht Ja, aber ich will auch nicht Nein sagen, höflicher Ausstieg.",
@@ -29063,7 +29068,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
     kategorie: "produkt",
     einwand: "Immobilien sind aktuell zu teuer.",
     technik: "bumerang",
-    skriptSchritte: ["warmup", "pattern_interrupt"],
+    skriptSchritte: ["warmup", "einschaetzung"],
     meintEigentlich: "Ich habe Angst, zum falschen Zeitpunkt einzusteigen und danach zuzusehen, wie der Wert fällt.",
     antwortKurz: "Genau deshalb solltest du jetzt kaufen: Die Preise haben 2022/23 13 Prozent korrigiert und stabilisieren sich. Wer in 5 Jahren zurückblickt, wird heute als günstigen Einstieg sehen.",
     antwortZahlen: "Der vdp-Index Q4/2025 zeigt erstmals wieder steigende Preise in den Top-7-Städten.",
@@ -29076,7 +29081,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
     kategorie: "preis",
     einwand: "Die Zinsen sind mit 4,5 % zu hoch.",
     technik: "kontextwechsel",
-    skriptSchritte: ["investitionsbereitschaft", "cashflow_erwartung"],
+    skriptSchritte: ["investitionsbereitschaft"],
     meintEigentlich: "Ich vergleiche mit den Zinsen von vor ein paar Jahren und habe das Gefühl, zu spät zu sein.",
     antwortKurz: "4,5 Prozent klingen viel, sind historisch betrachtet aber Durchschnitt, der Schnitt von 1980 bis 2020 lag bei etwa 5,2 Prozent. Wichtiger ist die Gesamtrechnung: Bei 4,5 Prozent Zins zahlt der Mieter im Schnitt 70 bis 80 Prozent deiner Rate. Der Rest läuft über Steuerersparnis und Wertentwicklung. Lass uns das mit deinen konkreten Zahlen rechnen.",
     antwortZahlen: "Bei 200.000 Euro Darlehen sind 4,5 Prozent Zins 9.000 Euro im Jahr. Davon sind 60 bis 80 Prozent steuerlich absetzbar, die effektive Belastung sinkt damit auf 4.000 bis 5.000 Euro.",
@@ -29101,7 +29106,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
     kategorie: "produkt",
     einwand: "Was, wenn der Mieter nicht zahlt?",
     technik: "vorwegnahme",
-    skriptSchritte: ["zwei_punkte", "pattern_interrupt"],
+    skriptSchritte: ["ziele", "einschaetzung"],
     meintEigentlich: "Ich sehe vor allem das Risiko, am Ende allein auf der Rate sitzenzubleiben.",
     antwortKurz: "Eine sehr berechtigte Sorge. Genau deshalb arbeiten wir mit professionellen Hausverwaltungen, die Mietausfallversicherungen vermitteln. Im schlimmsten Fall übernimmt die Versicherung 6 Monate Miete.",
     falle: "Das Risiko nicht kleinreden. Wer sagt, das komme praktisch nie vor, verliert genau bei sicherheitsorientierten Kunden die Glaubwürdigkeit.",
@@ -29113,7 +29118,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
     kategorie: "produkt",
     einwand: "Immobilien sind unflexibel.",
     technik: "bumerang",
-    skriptSchritte: ["zwei_punkte", "ziele"],
+    skriptSchritte: ["ziele"],
     meintEigentlich: "Ich will nicht, dass mein Geld jahrelang festliegt und ich im Notfall nicht drankomme.",
     antwortKurz: "Genau das ist ihr Vorteil: Sie zwingen dich zur langfristigen Disziplin. Die Spekulationsfrist beträgt 10 Jahre, danach ist der Verkauf steuerfrei.",
     falle: "Nicht behaupten, eine Immobilie sei jederzeit schnell verkäuflich. Der Kunde hört sofort den Widerspruch zu allem, was er sonst über Immobilien weiß.",
@@ -29125,7 +29130,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
     kategorie: "produkt",
     einwand: "ETFs sind transparenter und günstiger.",
     technik: "bumerang",
-    skriptSchritte: ["erfahrung", "sparformen"],
+    skriptSchritte: ["sparformen"],
     meintEigentlich: "Ich habe bereits eine Anlageform, mit der ich mich sicher fühle, und sehe keinen Grund zu wechseln.",
     antwortKurz: "Eine sehr gute Strategie. Genau deshalb passt eine Immobilie als Diversifikation: Sie korreliert nicht mit Aktien. Beste aller Welten: beides kombinieren.",
     falle: "Den ETF nicht schlechtreden. Wer die bisherige Entscheidung des Kunden angreift, zwingt ihn dazu, sie zu verteidigen.",
@@ -29137,7 +29142,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
     kategorie: "vertrauen",
     einwand: "Ich verstehe nichts von Immobilien.",
     technik: "zerlegung",
-    skriptSchritte: ["erfahrung", "osimmobilien_vorstellung"],
+    skriptSchritte: ["sparformen", "osimmobilien_vorstellung"],
     meintEigentlich: "Ich habe Angst, eine Entscheidung zu treffen, die ich selbst nicht beurteilen kann.",
     antwortKurz: "Musst du auch nicht, dafür gibt es uns. Wir nehmen dir das komplette Fachwissen ab, von der Standortanalyse bis zur Steuererklärung.",
     falle: "Nicht mit Fachbegriffen antworten, um Kompetenz zu zeigen. Das vergrößert genau den Abstand, den der Kunde gerade beschreibt.",
@@ -29149,7 +29154,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
     kategorie: "bank",
     einwand: "Was, wenn ich meinen Job verliere?",
     technik: "vorwegnahme",
-    skriptSchritte: ["berufliche_situation", "pattern_interrupt"],
+    skriptSchritte: ["berufliche_situation", "einschaetzung"],
     meintEigentlich: "Ich frage mich, ob ich diese Verpflichtung auch dann noch tragen kann, wenn sich mein Einkommen ändert.",
     antwortKurz: "Wichtige Frage. Die Bank kalkuliert immer mit Sicherheits-Puffern. Zusätzlich gibt es Ratenausfallversicherungen. Lass uns deine konkrete Lage rechnen.",
     falle: "Die Sorge nicht mit einem Satz abräumen. Wer hier zu schnell beruhigt, wirkt, als habe er das Szenario nie durchgerechnet.",
@@ -29161,7 +29166,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
     kategorie: "produkt",
     einwand: "Der Standort gefällt mir nicht zum Wohnen.",
     technik: "kontextwechsel",
-    skriptSchritte: ["zwei_punkte"],
+    skriptSchritte: ["ziele"],
     meintEigentlich: "Ich bewerte den Standort mit den Maßstäben, die ich für mein eigenes Zuhause anlegen würde.",
     antwortKurz: "Das ist auch nicht entscheidend, du wohnst ja nicht selbst dort. Entscheidend ist: Will jemand anderes dort wohnen? Wir zeigen dir die Vermietungsstatistik der letzten 3 Jahre.",
     falle: "Nicht über die Stadt diskutieren. Geschmacksfragen lassen sich nicht gewinnen und binden das ganze Gespräch.",
@@ -29173,7 +29178,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
     kategorie: "familie",
     einwand: "Mein Steuerberater rät ab.",
     technik: "isolierende-frage",
-    skriptSchritte: ["mitentscheider", "pattern_interrupt"],
+    skriptSchritte: ["familiaere_situation", "einschaetzung"],
     meintEigentlich: "Ich habe mir Rückendeckung bei jemandem geholt, dem ich mehr vertraue als dir.",
     antwortKurz: "Verstehe. Mal abgesehen vom Rat des Steuerberaters: Was ist deine eigene Meinung? Und wäre er offen für ein gemeinsames Gespräch mit unseren Zahlen?",
     falle: "Den Steuerberater nicht abwerten. Wer die Vertrauensperson des Kunden angreift, verliert den Kunden gleich mit.",
@@ -29185,7 +29190,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
     kategorie: "produkt",
     einwand: "Ich habe schon eine Eigentumswohnung.",
     technik: "bumerang",
-    skriptSchritte: ["warmup", "erfahrung"],
+    skriptSchritte: ["warmup", "sparformen"],
     meintEigentlich: "Ich halte das Thema Immobilie für mich bereits abgehakt.",
     antwortKurz: "Großartig, dann kennst du das System. Eine vermietete Wohnung funktioniert steuerlich komplett anders und schafft echtes Vermögen. Lass uns die Unterschiede zeigen.",
     falle: "Die vorhandene Wohnung nicht abwerten. Und nicht voraussetzen, dass der Kunde die steuerlichen Unterschiede zwischen Selbstnutzung und Vermietung kennt.",
@@ -29197,7 +29202,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
     kategorie: "produkt",
     einwand: "Was ist mit Sanierungspflicht (GEG)?",
     technik: "vorwegnahme",
-    skriptSchritte: ["pattern_interrupt", "offene_fragen"],
+    skriptSchritte: ["einschaetzung", "offene_fragen"],
     meintEigentlich: "Ich fürchte Kosten, die später kommen und heute in keiner Rechnung stehen.",
     antwortKurz: "Sehr aktuelles Thema. Wir kalkulieren Modernisierungsrücklagen schon heute ein und wählen nur Objekte mit Energieklasse C oder besser. Lass uns das im Detail anschauen.",
     falle: "Nicht in die Details der Gesetzeslage abrutschen. Wer sich in Paragrafen verliert, vergrößert die Unsicherheit, statt sie zu nehmen.",
@@ -29209,7 +29214,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
     kategorie: "produkt",
     einwand: "Ich will später noch selbst einziehen.",
     technik: "hypothetische-frage",
-    skriptSchritte: ["ziele", "zwei_punkte"],
+    skriptSchritte: ["ziele"],
     meintEigentlich: "Ich denke die Wohnung als späteres Zuhause und nicht als Anlage.",
     antwortKurz: "Auch das ist möglich. Angenommen, du wolltest in 12 Jahren einziehen: Die Wohnung wäre dann längst abbezahlt und Eigenbedarf rechtlich klar regelbar. Wäre das ein Plan?",
     falle: "Den Wunsch nicht wegdiskutieren. Wer ihn ausschließt, nimmt dem Kunden das Bild, das ihn überhaupt zum Kauf motiviert.",
@@ -29221,7 +29226,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
     kategorie: "produkt",
     einwand: "Was, wenn Mieten gedeckelt werden?",
     technik: "zerlegung",
-    skriptSchritte: ["pattern_interrupt", "offene_fragen"],
+    skriptSchritte: ["einschaetzung", "offene_fragen"],
     meintEigentlich: "Ich fürchte, dass mir die Politik nachträglich die Kalkulation verändert.",
     antwortKurz: "Die Mietpreisbremse gilt nur in Gebieten, die das jeweilige Bundesland durch Rechtsverordnung festgelegt hat. Ausgenommen ist außerdem die erste Vermietung nach umfassender Modernisierung, wobei umfassend nach der Gesetzesbegründung etwa ein Drittel des Aufwands eines vergleichbaren Neubaus meint; reine Instandsetzung genügt dafür nicht (§ 556f Satz 2 BGB). Wir wählen Standorte und Objekte gezielt, um die Risiken zu minimieren.",
     falle: "Nicht politisch werden. Und nicht pauschal sagen, bei saniertem Bestand gelte die Mietpreisbremse nicht. Das gilt nur bei umfassender Modernisierung und nur für die erste Vermietung danach.",
@@ -29257,7 +29262,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
     kategorie: "produkt",
     einwand: "Mir ist die Rendite zu niedrig.",
     technik: "isolierende-frage",
-    skriptSchritte: ["zwei_punkte", "cashflow_erwartung"],
+    skriptSchritte: ["ziele", "investitionsbereitschaft"],
     meintEigentlich: "Ich vergleiche die Bruttorendite mit anderen Anlagen und sehe die übrigen Effekte nicht.",
     antwortKurz: "Mal abgesehen von der Bruttorendite: Wie wichtig sind dir Steuerersparnis und Wertentwicklung? Die Gesamtrendite über 10 Jahre liegt typisch bei 7 bis 10 Prozent pro Jahr.",
     falle: "Nicht mit einer höheren Renditezahl kontern. Wer nachlegt, landet in einem Zahlenduell, das niemand gewinnt.",
@@ -29281,7 +29286,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
     kategorie: "vertrauen",
     einwand: "Das ist mir alles zu komplex.",
     technik: "zerlegung",
-    skriptSchritte: ["osimmobilien_vorstellung", "pattern_interrupt"],
+    skriptSchritte: ["osimmobilien_vorstellung", "einschaetzung"],
     meintEigentlich: "Ich weiß nicht, wo ich anfangen soll, und will mich nicht blamieren.",
     antwortKurz: "Genau dafür gibt es uns. Wir reduzieren Komplexität auf 5 Entscheidungen: Standort, Objekt, Bank, Notar, Verwaltung. Den Rest erledigen wir.",
     falle: "Nicht mit noch mehr Informationen antworten. Mehr Inhalt bestätigt genau den Eindruck, den der Kunde gerade beschreibt.",
@@ -29293,7 +29298,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
     kategorie: "denkezeit",
     einwand: "Ich denke nochmal drüber nach.",
     technik: "isolierende-frage",
-    skriptSchritte: ["pattern_interrupt", "skala_verbindlichkeit", "terminvereinbarung"],
+    skriptSchritte: ["einschaetzung", "skala_verbindlichkeit", "terminvereinbarung"],
     meintEigentlich: "Ich will das Gespräch höflich beenden, ohne Nein sagen zu müssen.",
     antwortKurz: "Selbstverständlich. Damit ich dir beim Nachdenken helfen kann: Was sind die 1 bis 2 Punkte, die dich noch nicht überzeugt haben? So kann ich dir passende Infos liefern.",
     falle: "Nicht fragen, wann er sich meldet. Damit gibt man die Führung ab und hört in den meisten Fällen nichts mehr.",

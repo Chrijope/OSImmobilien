@@ -65,6 +65,7 @@ vi.mock("@/hooks/use-toast", () => ({ useToast: () => ({ toast: vi.fn() }) }));
 import {
   SetterErstgespraechsSkript,
   ERSTGESPRAECH_SCHRITTE_DETAIL,
+  ERSTGESPRAECH_WIZARD_UEBERSICHT,
   UEBERNAHME_ZIELE,
   type SetterErstgespraechsSkriptHandle,
 } from "./SetterErstgespraechsSkript";
@@ -126,11 +127,10 @@ describe("Alle Punkte stehen gleichzeitig da", () => {
       es alle. Geprüft gegen die Schrittliste selbst, damit der Test nicht
       auseinanderläuft, wenn ein Punkt dazukommt oder wegfällt.
     */
-    for (const s of ERSTGESPRAECH_SCHRITTE_DETAIL) {
-      const nummer = s.nrText ?? String(s.nr);
+    for (const s of ERSTGESPRAECH_WIZARD_UEBERSICHT) {
       expect(
-        screen.getByText(`${nummer}. ${s.titel}`),
-        `Punkt ${nummer} (${s.titel}) fehlt in der Liste`,
+        screen.getByText(`${s.nr}. ${s.titel}`),
+        `Punkt ${s.nr} (${s.titel}) fehlt in der Liste`,
       ).toBeInTheDocument();
     }
   });
@@ -138,7 +138,7 @@ describe("Alle Punkte stehen gleichzeitig da", () => {
   it("nennt die Anzahl der Punkte im Kopf", () => {
     zeichne();
 
-    expect(screen.getByText(new RegExp(`${ERSTGESPRAECH_SCHRITTE_DETAIL.length} Schritte`))).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(`${ERSTGESPRAECH_WIZARD_UEBERSICHT.length} Schritte in 6 Phasen`))).toBeInTheDocument();
   });
 
   it("hat keine Weiter- und Zurueck-Knoepfe mehr", () => {
@@ -155,7 +155,7 @@ describe("Der Sprechtext steht offen da", () => {
 
     // Punkt 3, der erste Punkt in der gewählten Anrede. Stand in der
     // Stichpunktfassung hinter einem zugeklappten Kasten.
-    expect(screen.getByText(/Kurz zum Ablauf: Ich stelle/)).toBeInTheDocument();
+    expect(screen.getByText(/Kurz zum Ablauf, damit du weißt/)).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Formulierungsvorschlag/ })).not.toBeInTheDocument();
   });
 
@@ -164,7 +164,7 @@ describe("Der Sprechtext steht offen da", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /Sie-Form/ }));
 
-    expect(screen.getByText(/Ich stelle Ihnen ein paar Fragen/)).toBeInTheDocument();
+    expect(screen.getByText(/Dazu stelle ich Ihnen ein paar Fragen/)).toBeInTheDocument();
   });
 });
 
@@ -173,14 +173,15 @@ describe("Eingaben und Notizen", () => {
     zeichne();
 
     expect(screen.getAllByRole("checkbox").length).toBeGreaterThanOrEqual(
-      ERSTGESPRAECH_SCHRITTE_DETAIL.length,
+      ERSTGESPRAECH_WIZARD_UEBERSICHT.length,
     );
   });
 
-  it("zeigt das Haekchen Lead hat Zeit wieder an", () => {
+  it("zeigt das Haekchen hat Zeit und den Rückruf an", () => {
     zeichne();
 
-    expect(screen.getByRole("button", { name: /Lead hat Zeit/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /hat Zeit/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Rückruf vereinbaren/ })).toBeInTheDocument();
   });
 
   it("oeffnet ein vorhandenes Gespraech und zeigt seine Notizen an", () => {
@@ -188,7 +189,10 @@ describe("Eingaben und Notizen", () => {
 
     expect(screen.getByDisplayValue("Steuerlast gestiegen")).toBeInTheDocument();
     expect(screen.getByDisplayValue("Alles glatt")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("Muss mit der Frau sprechen")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("Frau arbeitet Teilzeit")).toBeInTheDocument();
+    // Die Notiz der früheren Einwand-Vorwegnahme hat keinen Schritt mehr, bleibt
+    // aber in der ausführlichen Zusammenfassung lesbar.
+    expect(ERSTGESPRAECH_SCHRITTE_DETAIL.some((s) => s.id === "pattern_interrupt" && s.hatNotiz)).toBe(true);
   });
 
   it("zeigt die gespeicherten Antwortfelder an", () => {
@@ -204,7 +208,8 @@ describe("Eingaben und Notizen", () => {
   it("nimmt die Zielauswahl entgegen und zeigt sie angehakt", () => {
     zeichne(ALTBESTAND);
 
-    const ziel = screen.getByRole("button", { name: /Altersvorsorge/ });
+    // Gespeichert bleibt „Altersvorsorge“, angezeigt wird die Beschriftung des neuen Skripts.
+    const ziel = screen.getByRole("button", { name: /Zusatzrente im Alter/ });
     expect(ziel.className).toMatch(/border-primary|bg-primary/);
   });
 });
@@ -292,37 +297,27 @@ describe("Alles Ausgefüllte landet in der KI-Zusammenfassung", () => {
 });
 
 /**
- * Die vier Pflichtangaben.
+ * Die Pflichtangaben.
  *
- * Christian hat am 21.09.2026 verlangt, dass Beruf, Nettoeinkommen,
- * Eigenkapital und Ziele orange umrandet sind, damit sie sofort auffallen, und
- * dass sonst nichts wie ein Pflichtfeld aussieht. Beides prüft dieser Block:
- * die vier müssen markiert sein, und es dürfen genau vier sein.
- *
- * Die zweite Hälfte ist die wichtigere. Wer später ein Feld ergänzt und dabei
- * aus Gewohnheit die Pflichtmarke mitkopiert, macht aus einer freiwilligen
- * Angabe still eine Pflicht, und niemand merkt es.
+ * Seit dem Skript vom 15.10.2026: Beruf, Ziele, Schwerpunkt, Netto, Brutto,
+ * laufende Raten, Reserve und Eigenkapital. Sie sind orange umrandet, und
+ * sonst darf nichts wie ein Pflichtfeld aussehen. Wer später ein Feld ergänzt
+ * und aus Gewohnheit die Pflichtmarke mitkopiert, fällt hier auf.
  */
-describe("Die vier Pflichtangaben sind markiert, sonst nichts", () => {
+describe("Die Pflichtangaben sind markiert, sonst nichts", () => {
   /** Alle Stellen, an denen „Pflichtangabe" steht, mit dem Text ihres Etiketts. */
   function pflichtEtiketten(): string[] {
     return screen.getAllByText(/^Pflichtangabe/).map((el) => el.parentElement?.textContent ?? "");
   }
 
-  it("markiert Beruf, Netto, Eigenkapital und Ziele", () => {
+  it("markiert genau die acht Pflichtangaben", () => {
     zeichne();
     const etiketten = pflichtEtiketten().join(" | ");
 
-    expect(etiketten).toMatch(/beruflich/i);
-    expect(etiketten).toMatch(/Netto-Einkommen/);
-    expect(etiketten).toMatch(/Eigenkapital/);
-    expect(etiketten).toMatch(/Ziele/);
-  });
-
-  it("markiert genau vier Angaben und keine fünfte", () => {
-    zeichne();
-
-    expect(pflichtEtiketten()).toHaveLength(4);
+    for (const muster of [/Berufliche Situation/, /Ziele/, /Schwerpunkt/, /Netto-Einkommen/, /Brutto im Jahr/, /Laufende Raten/, /Reserve/, /Eigenkapital einsetzbar/]) {
+      expect(etiketten).toMatch(muster);
+    }
+    expect(pflichtEtiketten()).toHaveLength(8);
   });
 
   it("markiert keine der Notizen als Pflicht", () => {
@@ -376,7 +371,8 @@ describe("Antworten, die das CRM übernimmt", () => {
     expect(rahmenUm(screen.getByPlaceholderText("z.B. 3.000-3.500"))).toBe("qualEinkommen");
     expect(rahmenUm(screen.getByPlaceholderText("z.B. 30.000-50.000"))).toBe("qualEigenkapital");
     expect(rahmenUm(screen.getByPlaceholderText("z.B. 300-500 €"))).toBe("investitionMonat");
-    expect(rahmenUm(screen.getByText("Steuern sparen"))).toBe("ziele");
+    expect(rahmenUm(screen.getByText("Steuern sparen / mehr Netto"))).toBe("ziele");
+    expect(rahmenUm(screen.getByText("Steuerersparnis"))).toBe("schwerpunkt");
     expect(rahmenUm(screen.getByText("Sie-Form"))).toBe("anrede");
   });
 
@@ -386,8 +382,8 @@ describe("Antworten, die das CRM übernimmt", () => {
       expect(rahmenUm(notiz)).toBeNull();
     }
     // Arbeitgeber und Sparformen gehen nur in die Zusammenfassung.
-    expect(rahmenUm(screen.getByPlaceholderText("z.B. Siemens AG, seit 2019"))).toBeNull();
-    expect(rahmenUm(screen.getByPlaceholderText("z.B. ETFs, Tagesgeld, Bausparvertrag, Aktien..."))).toBeNull();
+    expect(rahmenUm(screen.getByPlaceholderText("z.B. Musterfirma GmbH, seit 2019"))).toBeNull();
+    expect(rahmenUm(screen.getByRole("button", { name: "Tagesgeld" }))).toBeNull();
   });
 
   it("nennt im Hinweis, wohin die Angabe geht", () => {

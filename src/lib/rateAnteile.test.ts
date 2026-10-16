@@ -70,6 +70,10 @@ describe("Die Anteile der einzelnen Musterwohnungen", () => {
     expect(rateAnteile(RATE_EINGANG.wg)).toEqual({ mieter: 81, finanzamt: 9, kunde: 10 });
   });
 
+  it("Hauffstraße 38 WE01: 62, 23 und 15 Prozent wie im Entwurf", () => {
+    expect(rateAnteile(RATE_EINGANG.hauffstrasse)).toEqual({ mieter: 62, finanzamt: 23, kunde: 15 });
+  });
+
   it("Beispielwohnung Memmingen: 56, 23 und 21 Prozent", () => {
     expect(rateAnteile(RATE_EINGANG.memmingen)).toEqual({ mieter: 56, finanzamt: 23, kunde: 21 });
   });
@@ -110,7 +114,8 @@ describe("Die Musterrechnungen der Präsentationen tragen dieselben Zahlen", () 
 
 describe("Die Folien rechnen, statt Zahlen zu tippen", () => {
   it("die Präsentationen speisen ihre Anteile aus dem Modul", () => {
-    expect(osimmobilien).toContain("RATE_ANTEILE_BESTAND");
+    // Seit der neuen Fassung (Entwurf 15.10.2026) rechnet die Folie mit der Hauffstraße.
+    expect(osimmobilien).toContain("rateAnteile(RATE_EINGANG.hauffstrasse)");
     expect(osimmobilien).toContain('from "@/lib/rateAnteile"');
     expect(ersteFassung).toContain("ANTEILE_MEMMINGEN");
     expect(ersteFassung).toContain('from "@/lib/rateAnteile"');
