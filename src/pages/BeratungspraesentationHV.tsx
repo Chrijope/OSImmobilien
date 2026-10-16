@@ -19,7 +19,7 @@
  */
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { CalendarClock, Check, ChevronDown, ClipboardList, Menu, X } from "lucide-react";
+import { CalendarClock, Check, ChevronDown, ClipboardList, FileText, Menu, X } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 import { usePersistedState } from "@/hooks/usePersistedState";
 import { SPRECHSKRIPT_NACH_ID, sprechskriptFuerAnrede } from "@/lib/beratungSprechskripte";
@@ -34,7 +34,7 @@ import { ANLAGE_ZIELE, zielNachLabel } from "@/lib/anlageZiele";
 import { zuZahl } from "@/lib/beratungspraesentationSprache";
 import { BERATUNG_TEXTE, formatierer, inAnrede, type AnredeWert } from "@/lib/beratungspraesentationTexte";
 import {
-  OS_TEXTE as T,
+  OS_TEXTE,
   PLAN_OBJEKT,
   PLAN_ZEILEN,
   aufTausend,
@@ -45,6 +45,7 @@ import {
   wertNach,
   type KonzeptOs,
 } from "@/lib/beratungOsDaten";
+import { DOKUMENTE_B, KAUFKRAFT_B, OS_TEXTE_B, dokumenteFuer } from "@/lib/beratungOsDatenB";
 import logoDunkel from "@/assets/os-real-estate-logo-dark.png";
 import osZeichen from "@/assets/beratung/os-zeichen-gold.png";
 import fotoHauff from "@/assets/beratung/hauffstrasse-38.jpg";
@@ -310,7 +311,7 @@ function KonzeptSchalter({
                 : { color: dunkel ? FARBE.hellGedaempft : "#55584F" }
             }
           >
-            {T.konzept.schalter[k]}
+            {OS_TEXTE.konzept.schalter[k]}
           </button>
         );
       })}
@@ -336,6 +337,120 @@ function MarkenLogo({ name, zusatz, farbe, gross }: { name: string; zusatz: stri
     </div>
   );
 }
+
+/**
+ * Fassung B, Abschnitt 02: was im Erstgespräch hinterlegt ist, zum Lesen.
+ * Ohne Angaben rendert nichts, dann steht dort nur die Überschrift.
+ */
+function ZieleAusErstgespraech({ daten }: { daten: Record<string, string> }) {
+  const a = useA();
+  const T = OS_TEXTE_B;
+  const ziele = (daten.ziel || "")
+    .split(";")
+    .map((t) => zielNachLabel(t.trim())?.label)
+    .filter(Boolean) as string[];
+  const zeilen = [
+    { label: T.ziele.tragbar, wert: daten.beitrag, euro: true },
+    { label: T.ziele.reserve, wert: daten.reserve, euro: true },
+    { label: T.ziele.eigenkapital, wert: daten.eigenkapital, euro: true },
+    { label: T.ziele.mitentscheider, wert: daten.mitentscheider },
+    { label: "Erfahrung mit Immobilien", wert: daten.erfahrung },
+    { label: a(T.ziele.ersteFrage), wert: daten.ersteFrage },
+  ].filter((z) => z.wert?.trim());
+  const motiv = daten.motiv?.trim();
+  if (!motiv && !ziele.length && !zeilen.length) return null;
+  return (
+    <div data-testid="ziele-erstgespraech">
+      {motiv && (
+        <p className="mt-7 border-l-[3px] pl-5 bos-serif italic text-xl md:text-[1.7rem] leading-snug break-words" style={{ borderColor: FARBE.gold }}>
+          „{motiv}“
+        </p>
+      )}
+      <div className="mt-8 grid lg:grid-cols-[1.1fr_1fr] gap-8 items-start">
+        {ziele.length > 0 && (
+          <div className="min-w-0">
+            <Kopf>{a(T.ziele.zielKopf)}</Kopf>
+            <ul className="mt-3 flex flex-wrap gap-2">
+              {ziele.map((z) => (
+                <li key={z} className="rounded-full px-3.5 py-1.5 text-sm" style={{ background: FARBE.goldDunkel, color: "#FFFFFF" }}>
+                  {z}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {zeilen.length > 0 && (
+          <Karte>
+            <p className="font-semibold text-lg">{a(T.ziele.rahmen)}</p>
+            <dl className="mt-2 divide-y divide-[#E4DFD3]">
+              {zeilen.map((z) => (
+                <div key={z.label} className="py-2.5 flex items-start justify-between gap-4">
+                  <dt className="text-sm pt-0.5 shrink-0 max-w-[50%]">{z.label}</dt>
+                  <dd className="text-right font-semibold min-w-0 break-words">
+                    {z.wert}
+                    {z.euro && mitEuro(z.wert!) && " €"}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </Karte>
+        )}
+      </div>
+      <p className="mt-6">{a(T.ziele.nachfrage)}</p>
+    </div>
+  );
+}
+
+/** Fassung B, Abschnitt 04: Kaufkraft als Balken, der Verlust in Rot. */
+function KaufkraftGrafik() {
+  const max = Math.max(...KAUFKRAFT_B.balken.map((b) => b.wert));
+  const farbe = { neutral: FARBE.salbei, papier: "#D8C7A0", verlust: ROT };
+  return (
+    <figure className="mt-8 rounded-2xl border bg-white p-5 md:p-6" style={{ borderColor: "#E4DFD3" }} data-testid="kaufkraft-grafik">
+      <figcaption className="font-semibold">{KAUFKRAFT_B.grafikTitel}</figcaption>
+      <div className="mt-4 space-y-3">
+        {KAUFKRAFT_B.balken.map((b) => (
+          <div key={b.label} className="grid grid-cols-[minmax(0,9rem)_1fr] sm:grid-cols-[12rem_1fr] items-center gap-3 text-sm">
+            <span style={{ color: b.ton === "verlust" ? ROT : undefined }} className={b.ton === "verlust" ? "font-semibold" : ""}>
+              {b.label}
+            </span>
+            <div className="h-8 rounded-md bg-[#F4F1EA] overflow-hidden">
+              <div
+                className="h-full rounded-md flex items-center justify-end px-2 text-xs font-semibold tabular-nums whitespace-nowrap"
+                style={{ width: `${(b.wert / max) * 100}%`, background: farbe[b.ton], color: b.ton === "verlust" ? "#FFFFFF" : "#1A1D1A" }}
+              >
+                {b.wert.toLocaleString("de-DE")} €
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </figure>
+  );
+}
+
+/** Fassung B: Vertriebsdokumente zum gewählten Konzept, öffnen als PDF in neuem Tab. */
+function DokumenteB({ konzepte }: { konzepte: KonzeptOs[] }) {
+  return (
+    <div className="mt-8 flex flex-col sm:flex-row flex-wrap gap-3" data-testid="dokumente-b">
+      {konzepte.map((k) => (
+        <a
+          key={k}
+          href={DOKUMENTE_B[k].href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center justify-center gap-2 rounded-full px-6 h-12 font-semibold transition-transform hover:scale-[1.02]"
+          style={{ background: FARBE.gold, color: FARBE.schwarz }}
+        >
+          <FileText className="h-5 w-5" />
+          {DOKUMENTE_B[k].knopf}
+        </a>
+      ))}
+    </div>
+  );
+}
+
+const ROT = "#A8402F";
 
 const NAV: Array<[string, string]> = [
   ["ziele", "Ziele"],
@@ -370,7 +485,16 @@ function inSiebenTagen(): string {
   return d.toLocaleDateString("de-DE", { weekday: "short", day: "2-digit", month: "2-digit" }).replace(",", "");
 }
 
-export default function BeratungspraesentationHV({ vorschau }: { vorschau?: BeratungVorschau } = {}) {
+/** Route der jeweiligen Fassung. B ist die Vergleichsfassung (beratungOsDatenB.ts). */
+export const BERATUNG_ROUTE = { a: "/beratungspraesentation-osimmobilien", b: "/beratungspraesentation-osimmobilien-b" } as const;
+export type BeratungVariante = keyof typeof BERATUNG_ROUTE;
+
+export default function BeratungspraesentationHV({
+  vorschau,
+  variante = "a",
+}: { vorschau?: BeratungVorschau; variante?: BeratungVariante } = {}) {
+  const T = variante === "b" ? OS_TEXTE_B : OS_TEXTE;
+  const istB = variante === "b";
   const [suchParameter] = useSearchParams();
   const navigate = useNavigate();
   const { user } = useUser();
@@ -459,6 +583,13 @@ export default function BeratungspraesentationHV({ vorschau }: { vorschau?: Bera
     setUebernommen(new Set(leer));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [datenBereit, cacheTakt, kundeId, investmentId]);
+
+  // Fassung B, Abschnitt 02: nur, was im Erstgespräch wirklich hinterlegt ist.
+  const ausErstgespraech = (() => {
+    if (!istB || !kundeId) return {};
+    const { kontakt, skript } = leseQuelle();
+    return uebernahmeAusSkript(skript, kontakt);
+  })();
 
   // Konzeptschalter: vorbelegt aus dem Schwerpunkt, ein Klick überschreibt.
   const konzept: KonzeptOs = (w("konzept") as KonzeptOs) || konzeptAusSchwerpunkt(w("schwerpunkt"));
@@ -556,6 +687,58 @@ export default function BeratungspraesentationHV({ vorschau }: { vorschau?: Bera
 
   const pflicht = (gefuellt: boolean) => (gefuellt ? undefined : "#D97706");
 
+  // ─── 05 Wer wir sind ─── (als Variable, weil B die Reihenfolge mit 05b tauscht)
+  const folieWerWirSind = (
+    <Folie id="werwirsind" ton="papier" kicker={T.werWirSind.kicker} titel={T.werWirSind.titel}>
+      <p className="mt-6 text-base md:text-lg max-w-4xl leading-relaxed">{a(T.werWirSind.text)}</p>
+      <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {T.werWirSind.karten.map((k, i) => (
+          <Karte key={i}>
+            <p className="font-semibold">{a(k.titel)}</p>
+            <p className="mt-1.5 text-sm leading-relaxed">{a(k.text)}</p>
+          </Karte>
+        ))}
+      </div>
+      <Fussnote>{T.werWirSind.fuss}</Fussnote>
+    </Folie>
+  );
+
+  // ─── 05b Unternehmensgruppe (Konzept C der Markenfamilie) ───
+  const folieGruppe = (
+    <Folie id="gruppe" ton="schwarz">
+      <div className="text-center">
+        <p className="bos-kicker" style={{ color: FARBE.gold }}>
+          {T.gruppe.kicker}
+        </p>
+        <Titel text={T.gruppe.titel} ton="schwarz" className="mt-2" />
+      </div>
+      <div className="mt-10 flex flex-col items-center">
+        <MarkenLogo name="Immobilien" zusatz="Berlin · Brandenburg" farbe="#F4F1EA" gross />
+        <p className="mt-5 text-sm text-center" style={{ color: FARBE.hellGedaempft }}>
+          <strong className="font-semibold" style={{ color: FARBE.hellText }}>
+            {T.gruppe.dach}
+          </strong>{" "}
+          · {T.gruppe.dachText}
+        </p>
+      </div>
+      {/* Verbindungslinien nur ab Tablet; auf dem Handy stehen die Marken untereinander. */}
+      <div aria-hidden className="hidden md:block mx-auto mt-6 w-2/3 h-6 border-x border-t" style={{ borderColor: "rgba(204,172,5,0.55)" }} />
+      <div className="mt-6 md:mt-4 grid md:grid-cols-3 gap-10 md:gap-6">
+        {T.gruppe.marken.map((m) => (
+          <div key={m.name} className="text-center">
+            <MarkenLogo name={m.name} zusatz={m.zusatz} farbe={m.farbe} />
+            <p className="mt-4 text-sm leading-relaxed max-w-xs mx-auto" style={{ color: "rgba(244,241,234,0.85)" }}>
+              {a(m.text)}
+            </p>
+          </div>
+        ))}
+      </div>
+      <Fussnote dunkel>
+        <span className="block text-center">{T.gruppe.fuss}</span>
+      </Fussnote>
+    </Folie>
+  );
+
   return (
     <AnredeContext.Provider value={anrede}>
       <TrainerContext.Provider value={trainerVerfuegbar && trainerAn}>
@@ -579,7 +762,7 @@ export default function BeratungspraesentationHV({ vorschau }: { vorschau?: Bera
             {/* ─── Kopfleiste ─── */}
             <header data-lg="kopfscheibe" className="sticky top-0 z-50 border-b" style={{ background: "rgba(18,21,18,0.94)", borderColor: "rgba(244,241,234,0.1)" }}>
               <div className="max-w-6xl mx-auto px-4 sm:px-8 h-14 flex items-center justify-between gap-3">
-                <Link to="/beratungspraesentation-osimmobilien" className="shrink-0">
+                <Link to={BERATUNG_ROUTE[variante]} className="shrink-0">
                   <img src={logoDunkel} alt="OS Real Estate" className="h-9 w-auto" />
                 </Link>
                 <nav className="hidden lg:flex items-center gap-6">
@@ -678,6 +861,10 @@ export default function BeratungspraesentationHV({ vorschau }: { vorschau?: Bera
 
             {/* ─── 02 Ihre Ziele ─── */}
             <Folie id="ziele" ton="papier" kicker={a(T.ziele.kicker)} titel={a(T.ziele.titel)}>
+              {istB ? (
+                <ZieleAusErstgespraech daten={ausErstgespraech} />
+              ) : (
+              <>
               <div className="mt-7 border-l-[3px] pl-5" style={{ borderColor: FARBE.gold }}>
                 <div className="bos-serif italic text-xl md:text-[1.7rem] leading-snug flex">
                   <span aria-hidden>„</span>
@@ -774,6 +961,8 @@ export default function BeratungspraesentationHV({ vorschau }: { vorschau?: Bera
                   </div>
                 </Karte>
               </div>
+              </>
+              )}
               <Trainer id="arbeitsweise" hinweis="Werte aus dem Erstgespräch kurz bestätigen lassen: „Stimmt das noch so?“" />
             </Folie>
 
@@ -826,73 +1015,49 @@ export default function BeratungspraesentationHV({ vorschau }: { vorschau?: Bera
                   style={{ color: FARBE.hellText }}
                 />
               </div>
-              <p className="mt-8 text-lg md:text-xl">{T.luecke.frage}</p>
+              <p className="mt-8 text-lg md:text-xl">{a(T.luecke.frage)}</p>
               <Fussnote dunkel>{T.luecke.fuss}</Fussnote>
             </Folie>
 
             {/* ─── 04 Preis des Nichtstuns ─── */}
             <Folie id="nichtstun" ton="papier" kicker={T.nichtstun.kicker} titel={T.nichtstun.titel}>
+              {istB && <p className="mt-6 text-base md:text-lg">{KAUFKRAFT_B.vorspann}</p>}
               <div className="mt-8 grid md:grid-cols-3 gap-4">
-                {T.nichtstun.karten.map((k) => (
-                  <Karte key={k.kopf} rand={k.warnung ? "#A8402F" : undefined}>
-                    <Kopf>{k.kopf}</Kopf>
-                    <Wert farbe={k.warnung ? "#A8402F" : FARBE.goldDunkel}>{k.wert}</Wert>
-                    <p className="mt-2 text-sm">{k.text}</p>
-                  </Karte>
-                ))}
+                {T.nichtstun.karten.map((k) =>
+                  istB && k.warnung ? (
+                    // In B ist die Verlustkarte ganz rot, damit der Verlust auf einen Blick steht.
+                    <div key={k.kopf} data-testid="kaufkraft-verlust" className="rounded-2xl border-2 p-5 md:p-6 min-w-0" style={{ background: ROT, borderColor: ROT, color: "#FFFFFF" }}>
+                      <p className="text-[0.7rem] uppercase tracking-[0.06em]">{k.kopf}</p>
+                      <Wert>{k.wert}</Wert>
+                      <p className="mt-2 text-sm font-medium">{k.text}</p>
+                    </div>
+                  ) : (
+                    <Karte key={k.kopf} rand={k.warnung ? "#A8402F" : undefined}>
+                      <Kopf>{k.kopf}</Kopf>
+                      <Wert farbe={k.warnung ? "#A8402F" : FARBE.goldDunkel}>{k.wert}</Wert>
+                      <p className="mt-2 text-sm">{k.text}</p>
+                    </Karte>
+                  ),
+                )}
               </div>
-              <p className="mt-7 text-base md:text-lg">{T.nichtstun.satz}</p>
+              {istB && <KaufkraftGrafik />}
+              <p className="mt-7 text-base md:text-lg">{a(T.nichtstun.satz)}</p>
               <Fussnote>{a(T.nichtstun.fuss)}</Fussnote>
               <Trainer id="nichtstun" />
             </Folie>
 
-            {/* ─── 05 Wer wir sind ─── */}
-            <Folie id="werwirsind" ton="papier" kicker={T.werWirSind.kicker} titel={T.werWirSind.titel}>
-              <p className="mt-6 text-base md:text-lg max-w-4xl leading-relaxed">{a(T.werWirSind.text)}</p>
-              <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {T.werWirSind.karten.map((k, i) => (
-                  <Karte key={i}>
-                    <p className="font-semibold">{a(k.titel)}</p>
-                    <p className="mt-1.5 text-sm leading-relaxed">{a(k.text)}</p>
-                  </Karte>
-                ))}
-              </div>
-              <Fussnote>{T.werWirSind.fuss}</Fussnote>
-            </Folie>
-
-            {/* ─── 05b Unternehmensgruppe (Konzept C der Markenfamilie) ─── */}
-            <Folie id="gruppe" ton="schwarz">
-              <div className="text-center">
-                <p className="bos-kicker" style={{ color: FARBE.gold }}>
-                  {T.gruppe.kicker}
-                </p>
-                <Titel text={T.gruppe.titel} ton="schwarz" className="mt-2" />
-              </div>
-              <div className="mt-10 flex flex-col items-center">
-                <MarkenLogo name="Immobilien" zusatz="Berlin · Brandenburg" farbe="#F4F1EA" gross />
-                <p className="mt-5 text-sm text-center" style={{ color: FARBE.hellGedaempft }}>
-                  <strong className="font-semibold" style={{ color: FARBE.hellText }}>
-                    {T.gruppe.dach}
-                  </strong>{" "}
-                  · {T.gruppe.dachText}
-                </p>
-              </div>
-              {/* Verbindungslinien nur ab Tablet; auf dem Handy stehen die Marken untereinander. */}
-              <div aria-hidden className="hidden md:block mx-auto mt-6 w-2/3 h-6 border-x border-t" style={{ borderColor: "rgba(204,172,5,0.55)" }} />
-              <div className="mt-6 md:mt-4 grid md:grid-cols-3 gap-10 md:gap-6">
-                {T.gruppe.marken.map((m) => (
-                  <div key={m.name} className="text-center">
-                    <MarkenLogo name={m.name} zusatz={m.zusatz} farbe={m.farbe} />
-                    <p className="mt-4 text-sm leading-relaxed max-w-xs mx-auto" style={{ color: "rgba(244,241,234,0.85)" }}>
-                      {a(m.text)}
-                    </p>
-                  </div>
-                ))}
-              </div>
-              <Fussnote dunkel>
-                <span className="block text-center">{T.gruppe.fuss}</span>
-              </Fussnote>
-            </Folie>
+            {/* In B zuerst „Alles aus einer Hand“, dann „in einem Satz“. */}
+            {istB ? (
+              <>
+                {folieGruppe}
+                {folieWerWirSind}
+              </>
+            ) : (
+              <>
+                {folieWerWirSind}
+                {folieGruppe}
+              </>
+            )}
 
             {/* ─── 06 Vier Bausteine ─── */}
             <Folie id="prinzip" ton="gruen" kicker={T.prinzip.kicker} titel={T.prinzip.titel}>
@@ -1044,6 +1209,7 @@ export default function BeratungspraesentationHV({ vorschau }: { vorschau?: Bera
                   <Fussnote dunkel>{a(T.funktion.steuer.fuss)}</Fussnote>
                 </>
               )}
+              {istB && <DokumenteB konzepte={dokumenteFuer(w("schwerpunkt"), konzept)} />}
             </Folie>
 
             {/* ─── 09 Objekte ─── */}

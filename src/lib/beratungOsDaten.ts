@@ -111,7 +111,8 @@ export const OS_TEXTE = {
     lueckeText: "jeden Monat",
     gesamt: `Über ${RUHESTAND_JAHRE} Jahre Ruhestand`,
     gesamtText: "die fehlen",
-    frage: "Was passiert, wenn diese Lücke einfach bleibt?",
+    // Als AnredeWert, damit Fassung B (beratungOsDatenB.ts) hier siezen und duzen kann.
+    frage: "Was passiert, wenn diese Lücke einfach bleibt?" as AnredeWert,
     fuss: "Werte aus dem Erstgespräch. Rechnung ohne Inflation, als Größenordnung.",
     ruhestandAb: "Ruhestand ab (Alter)",
   },
@@ -124,7 +125,7 @@ export const OS_TEXTE = {
       { kopf: "Nach 10 Jahren auf dem Konto", wert: "60.950 €", text: "sieht nach mehr aus" },
       { kopf: "Kaufkraft bei 2,5 % Inflation", wert: "47.615 €", text: "tatsächlich weniger wert", warnung: true },
     ],
-    satz: "Und wer ein Jahr wartet, verschenkt ein Jahr Tilgung, die sonst Mieter und Steuerwirkung mittragen.",
+    satz: "Und wer ein Jahr wartet, verschenkt ein Jahr Tilgung, die sonst Mieter und Steuerwirkung mittragen." as AnredeWert,
     fuss: p(
       "Wenn Ihre Reserve oder Lebensplanung noch nicht passt, ist Warten die bessere Wahl. Das sagen wir Ihnen dann offen.",
       "Wenn deine Reserve oder Lebensplanung noch nicht passt, ist Warten die bessere Wahl. Das sagen wir dir dann offen.",

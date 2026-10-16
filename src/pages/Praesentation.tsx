@@ -68,6 +68,15 @@ function seedAbschnitte(): Abschnitt[] {
           action: "internal-link",
           internalRoute: "/beratungspraesentation-osimmobilien",
         },
+        // Vergleichsfassung B für die Geschäftsleitung (beratungOsDatenB.ts).
+        {
+          id: "1b",
+          name: "Beratungspräsentation B (zum Vergleich)",
+          url: "/beratungspraesentation-osimmobilien-b",
+          typ: "link",
+          action: "internal-link",
+          internalRoute: "/beratungspraesentation-osimmobilien-b",
+        },
         // Die PDF-Fassung zum Herunterladen und Praesentieren. Im Termin ist die
         // Webfassung darueber der bevorzugte Weg, das sagt auch der Name.
         {
@@ -176,10 +185,21 @@ function ergaenzeFehlendeSeedEintraege(gespeichert: Abschnitt[]): Abschnitt[] {
     const vorhandeneIds = new Set(abschnitt.dokumente.map((d) => d.id));
     const fehlende = seedAbschnitt.dokumente.filter((d) => !vorhandeneIds.has(d.id));
     if (fehlende.length === 0) return abschnitt;
-    // Die aktuelle Präsentation gehört nach oben, alles andere wird angehängt.
-    const nachVorne = fehlende.filter((d) => !d.alt);
-    const nachHinten = fehlende.filter((d) => d.alt);
-    return { ...abschnitt, dokumente: [...nachVorne, ...abschnitt.dokumente, ...nachHinten] };
+    // Steht der Vorgänger aus dem Seed schon in der Liste, kommt der neue
+    // Eintrag direkt dahinter (etwa Fassung B unter die aktuelle Präsentation).
+    const dokumente = [...abschnitt.dokumente];
+    const ohneVorgaenger = fehlende.filter((d) => {
+      const i = seedAbschnitt.dokumente.indexOf(d);
+      const vorgaenger = i > 0 ? seedAbschnitt.dokumente[i - 1].id : undefined;
+      const pos = vorgaenger ? dokumente.findIndex((x) => x.id === vorgaenger) : -1;
+      if (pos < 0) return true;
+      dokumente.splice(pos + 1, 0, d);
+      return false;
+    });
+    // Sonst wie bisher: Die aktuelle Präsentation gehört nach oben, alles andere wird angehängt.
+    const nachVorne = ohneVorgaenger.filter((d) => !d.alt);
+    const nachHinten = ohneVorgaenger.filter((d) => d.alt);
+    return { ...abschnitt, dokumente: [...nachVorne, ...dokumente, ...nachHinten] };
   });
   // Ganze Abschnitte, die im gespeicherten Stand fehlen, kommen ebenfalls dazu.
   const vorhandeneAbschnitte = new Set(ergebnis.map((a) => a.id));

@@ -544,6 +544,8 @@ const App = () => (
                     kundenseitige Rollen (kunde/tippgeber) nicht durch. */}
                 <Route path="/beratungspraesentation" element={<PraesentationGuard><Beratungspraesentation /></PraesentationGuard>} />
                 <Route path="/beratungspraesentation-osimmobilien" element={<PraesentationGuard><BeratungspraesentationHV /></PraesentationGuard>} />
+                {/* Vergleichsfassung B, dieselbe Seite mit eigenen Texten (beratungOsDatenB.ts). */}
+                <Route path="/beratungspraesentation-osimmobilien-b" element={<PraesentationGuard><BeratungspraesentationHV variante="b" /></PraesentationGuard>} />
                 {/* Alte URLs bleiben gültig und leiten inklusive Kundenkontext (Query) weiter.
                     "-neu" war eine ältere Fassung der OS Immobilien-Präsentation, die Seite ist entfernt. */}
                 <Route path="/beratungspraesentation-hv" element={<Navigate to={`/beratungspraesentation-osimmobilien${window.location.search}`} replace />} />

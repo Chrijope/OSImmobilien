@@ -9,6 +9,7 @@ import BeratungspraesentationHV, { type BeratungVorschau } from "./Beratungsprae
  * ?beispiel=zusatzrente | steuer | leer | lang | erstgespraech
  *   erstgespraech: der Stand aus /vorschau/erstgespraech (Knopf „In der
  *   Präsentation ansehen“), über sessionStorage weitergereicht.
+ * &variante=b zeigt die Vergleichsfassung B.
  */
 
 export const VORSCHAU_ERSTGESPRAECH_SCHLUESSEL = "vorschau-erstgespraech-stand";
@@ -103,6 +104,8 @@ export default function VorschauBeratungspraesentation() {
   const [suche] = useSearchParams();
   const beispiel = suche.get("beispiel") || "zusatzrente";
   const daten = beispiel === "erstgespraech" ? ausErstgespraech() : BEISPIELE[beispiel] ?? BEISPIELE.zusatzrente;
+  const variante = suche.get("variante") === "b" ? "b" : "a";
+  const zusatz = variante === "b" ? "&variante=b" : "";
   const schluessel = `vorschau-${beispiel}`;
 
   const zuruecksetzen = () => {
@@ -132,15 +135,22 @@ export default function VorschauBeratungspraesentation() {
           ].map(([id, label]) => (
             <Link
               key={id}
-              to={`/vorschau/beratungspraesentation?beispiel=${id}`}
+              to={`/vorschau/beratungspraesentation?beispiel=${id}${zusatz}`}
               reloadDocument
               className={`rounded-full border px-3 py-1 ${beispiel === id ? "bg-[#1b2a22] text-white border-[#1b2a22]" : "border-[#1b2a22]/30 bg-white"}`}
             >
               {label}
             </Link>
           ))}
-          <Link to={`/vorschau/beratungspraesentation?beispiel=${beispiel}&trainer=1`} reloadDocument className="rounded-full border border-amber-500 bg-amber-50 px-3 py-1">
+          <Link to={`/vorschau/beratungspraesentation?beispiel=${beispiel}&trainer=1${zusatz}`} reloadDocument className="rounded-full border border-amber-500 bg-amber-50 px-3 py-1">
             mit Trainer-Modus
+          </Link>
+          <Link
+            to={`/vorschau/beratungspraesentation?beispiel=${beispiel}${variante === "b" ? "" : "&variante=b"}`}
+            reloadDocument
+            className="rounded-full border border-[#1b2a22] bg-white px-3 py-1 font-semibold"
+          >
+            {variante === "b" ? "zu Fassung A" : "zu Fassung B"}
           </Link>
           <button type="button" onClick={zuruecksetzen} className="rounded-full border border-[#1b2a22]/30 bg-white px-3 py-1">
             Eingaben zurücksetzen
@@ -150,7 +160,7 @@ export default function VorschauBeratungspraesentation() {
           </Link>
         </div>
       </div>
-      <BeratungspraesentationHV key={schluessel} vorschau={{ ...daten, schluessel }} />
+      <BeratungspraesentationHV key={`${schluessel}-${variante}`} vorschau={{ ...daten, schluessel }} variante={variante} />
     </>
   );
 }
