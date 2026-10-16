@@ -185,7 +185,7 @@ export async function addAufgabe(neu: NeueAufgabe): Promise<Aufgabe | null> {
    * Nie an den Kunden. Ohne Empfaenger setzte diese Funktion die eigene
    * Kennung ein; im Kundenportal landete eine Aufgabe fuer den Berater damit
    * beim Kunden. Still, denn der Kunde kann daran nichts aendern. Aufgaben aus
-   * dem Portal legt die Datenbank an (Migration 20261015190000).
+   * dem Portal legt die Datenbank an (Migration 20261016205000).
    */
   if (aktiveCacheRolle() === "kunde" && (!neu.zugewiesenAn || neu.zugewiesenAn === uid)) {
     console.warn("addAufgabe: im Kundenportal ohne anderen Empfaenger, nicht gespeichert:", neu.titel);
@@ -482,7 +482,7 @@ export async function erledigeAufgabe(id: string, opts?: { silent?: boolean }): 
  * Auslöser, deren gleichnamige Aufgaben bei anderen Empfängern mit
  * geschlossen werden, sobald eine Person ihre abhakt oder absagt. Muss zur
  * Liste in der Datenbankfunktion `aufgaben_geschwister_schliessen` passen
- * (Migration 20261015200000); ein Test vergleicht beide.
+ * (Migration 20261016206000); ein Test vergleicht beide.
  */
 export const GESCHWISTER_AUSLOESER_PRAEFIXE = ["dolmetscher_notar:"] as const;
 

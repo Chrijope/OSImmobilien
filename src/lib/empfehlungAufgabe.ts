@@ -4,7 +4,7 @@
  * Bisher legte der Browser des Kunden sie an. Ohne Zuständigen landete sie
  * damit beim Kunden selbst, und eine Leitung kann der Kunde nicht bestimmen.
  * Jetzt legt sie die Datenbank an (`empfehlung_aufgabe_anlegen`, Migration
- * 20261015190000): für den Zuständigen, ohne ihn für jede Person der Leitung,
+ * 20261016205000): für den Zuständigen, ohne ihn für jede Person der Leitung,
  * je Empfehlung genau einmal, auch nach dem Abhaken.
  */
 import { supabase } from "@/integrations/supabase/client";

@@ -16,7 +16,7 @@ const KORB_PFAD = `supabase/migrations-inbox/${DATEI}`;
 
 /**
  * Die juengste Migration, die eine Funktion neu schreibt. Seit 16.10.2026
- * schreibt 20261016150000_pipeline_neuer_ablauf.sql die Stufenlisten neu, und
+ * schreibt 20261016208000_pipeline_neuer_ablauf.sql die Stufenlisten neu, und
  * gilt in der Datenbank immer die zuletzt eingespielte Fassung.
  */
 function juengsteMigrationMit(kopf: string): string {

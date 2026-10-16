@@ -9,7 +9,7 @@ import { describe, expect, it } from "vitest";
  * sonst 'neuer_lead'. Auch Bestandsimporte bekommen Investment 1, in ihrer
  * eigenen Stufe; nur ein Kontakt mit Investment bekommt keines dazu.
  */
-const SQL = readFileSync("supabase/migrations/20261011150000_investment1_startstufe_vom_kontakt.sql", "utf8");
+const SQL = readFileSync("supabase/migrations/20261016200000_investment1_startstufe_vom_kontakt.sql", "utf8");
 const ohneKommentare = SQL.split("\n").filter((z) => !z.trim().startsWith("--")).join("\n");
 
 describe("Migration investment1_startstufe_vom_kontakt", () => {

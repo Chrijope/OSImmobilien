@@ -154,9 +154,9 @@ describe("investmentsOhneKaufpreis", () => {
 
 describe("Kaufphase gegen die Datenbank", () => {
   it("Abwicklung plus Abschluss ist genau pipelinestufe_ist_kaufphase", () => {
-    // Seit 16.10.2026 schreibt 20261016150000_pipeline_neuer_ablauf.sql die
+    // Seit 16.10.2026 schreibt 20261016208000_pipeline_neuer_ablauf.sql die
     // Liste neu (mit Besichtigung und Termin Bankgutachter); es gilt die juengste.
-    const sql = readFileSync("supabase/migrations/20261016150000_pipeline_neuer_ablauf.sql", "utf8");
+    const sql = readFileSync("supabase/migrations/20261016208000_pipeline_neuer_ablauf.sql", "utf8");
     const rumpf = /pipelinestufe_ist_kaufphase\(_stufe text\)[\s\S]*?IN \(([\s\S]*?)\);/.exec(sql)?.[1] ?? "";
     const db = [...rumpf.matchAll(/'([a-z_]+)'/g)].map((m) => m[1]).sort();
     expect(db.length).toBeGreaterThan(5);

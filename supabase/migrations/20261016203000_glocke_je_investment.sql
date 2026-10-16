@@ -2,7 +2,7 @@
 -- laeutet je Investment (Freigabe Christian, 11.10.2026).
 --
 -- Bisher hing sie am Kontakt (trg_notify_vp_pipeline_change, 20260707093549)
--- und laeutete nur, wenn sich die Kontaktstufe aenderte. Seit 20261011160000
+-- und laeutete nur, wenn sich die Kontaktstufe aenderte. Seit 20261016201000
 -- ist die Kontaktstufe die hoechste Stufe der laufenden Investments: Rueckte
 -- Investment 2 vor, waehrend Investment 1 weiter war, erfuhr der Partner
 -- nichts. Jetzt meldet jeder Stufenwechsel eines Investments, mit dessen

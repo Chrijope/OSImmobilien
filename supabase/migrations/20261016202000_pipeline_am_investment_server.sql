@@ -1,5 +1,5 @@
 -- Pipeline am Investment, Etappe 2 (Server): nur noch das Investment schreiben
--- (Freigabe Christian, 11.10.2026). Setzt 20261011160000 voraus
+-- (Freigabe Christian, 11.10.2026). Setzt 20261016201000 voraus
 -- (kontakt_stufe_nachfuehren fuehrt die Kontaktstufe aus den Investments nach).
 --
 -- 1. buchung_investment_vorwaerts: Bisher passierte bei mehr als einem

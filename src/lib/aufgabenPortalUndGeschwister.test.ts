@@ -73,7 +73,7 @@ describe("Geschwister-Aufgaben", () => {
   });
 
   it("die Präfixliste im Browser passt zur Datenbankfunktion", () => {
-    const sql = ohneKommentare(lies("supabase/migrations/20261015200000_aufgaben_geschwister_schliessen.sql"));
+    const sql = ohneKommentare(lies("supabase/migrations/20261016206000_aufgaben_geschwister_schliessen.sql"));
     const imSql = [...sql.matchAll(/'([a-z_]+:)'/g)].map((m) => m[1]);
     expect([...new Set(imSql)].sort()).toEqual([...GESCHWISTER_AUSLOESER_PRAEFIXE].sort());
   });
@@ -81,9 +81,9 @@ describe("Geschwister-Aufgaben", () => {
 
 describe("Migrationen vom 15.10.2026", () => {
   const dateien = {
-    empfehlungsprogramm: "supabase/migrations/20261015140000_aufgabentitel_empfehlungsprogramm.sql",
-    portal: "supabase/migrations/20261015190000_unterlagen_pruefaufgabe.sql",
-    geschwister: "supabase/migrations/20261015200000_aufgaben_geschwister_schliessen.sql",
+    empfehlungsprogramm: "supabase/migrations/20261016204000_aufgabentitel_empfehlungsprogramm.sql",
+    portal: "supabase/migrations/20261016205000_unterlagen_pruefaufgabe.sql",
+    geschwister: "supabase/migrations/20261016206000_aufgaben_geschwister_schliessen.sql",
   };
 
   it("ohne BEGIN; und DO auf oberster Ebene, nie für anon", () => {

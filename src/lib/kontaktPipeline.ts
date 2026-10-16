@@ -82,7 +82,7 @@ function getHighestInvestmentStufe(kundeId: string): PipelineStufe | null {
    * Stufen vor der Selbstauskunft als Altreste, und die Kontaktstufe gewann:
    * Ein Kunde mit einem Investment stand bis zur Selbstauskunft dort, wo der
    * Kontakt stand, nicht wo sein Investment stand. Die Pipeline hängt jetzt
-   * nur am Investment; die Altreste hat die Migration 20261011160000 an die
+   * nur am Investment; die Altreste hat die Migration 20261016201000 an die
    * Kontaktstufe angeglichen.
    *
    * Rangfolge über `fortschrittsRang` und Endzustände über `istEndzustand`
@@ -627,7 +627,7 @@ export interface PipelineKarte {
  * einem Investment bis zur Selbstauskunft in der Stufe des Kontakts.
  * Investment 2 erscheint so von Anfang an als eigene Karte, unabhängig von
  * Investment 1. Archivierte und als Ganzes verlorene Kontakte bleiben EINE
- * Karte; ein Kontakt ohne Investment (vor der Migration 20261011160000)
+ * Karte; ein Kontakt ohne Investment (vor der Migration 20261016201000)
  * steht in seiner eigenen Stufe.
  */
 export function buildPipelineKarten(kunden: KundeData[]): PipelineKarte[] {

@@ -2,7 +2,7 @@
  * Das Konzept eines Objekts und der Schwerpunkt des Kunden (16.10.2026).
  *
  * Das Konzept steht in der Spalte `objekte.konzept` (Migration
- * 20261016130000). Der Schwerpunkt des Kunden kommt aus dem
+ * 20261016207000). Der Schwerpunkt des Kunden kommt aus dem
  * Erstgesprächsskript, `investments.meta.setterSkript.antworten.schwerpunkt`.
  * Beides wird tolerant gelesen: Fehlt es, gibt es keinen Filter.
  *

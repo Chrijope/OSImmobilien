@@ -7,7 +7,7 @@
  * freigeben". Die Glocke an den Zuständigen kommt weiter je Upload.
  *
  * Anlegen darf sie nur die Datenbank (`unterlagen_pruefaufgabe_sichern`,
- * Migration 20261015190000): Der Kunde sieht im Browser weder fremde Aufgaben
+ * Migration 20261016205000): Der Kunde sieht im Browser weder fremde Aufgaben
  * noch die Rollen der Leitung. Die Funktion gleicht unter einer Sperre alle
  * offenen Prüfaufgaben des Investments ab, auch nach einem Wechsel des
  * Zuständigen. Solange die Migration nicht gelaufen ist, gibt es einen

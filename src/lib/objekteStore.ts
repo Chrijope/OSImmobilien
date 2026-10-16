@@ -464,7 +464,7 @@ export interface ObjektData {
   };
   meta?: Record<string, any>;
   /**
-   * Wofür sich das Objekt vor allem eignet (Migration 20261016130000). Fehlt
+   * Wofür sich das Objekt vor allem eignet (Migration 20261016207000). Fehlt
    * die Spalte noch, bleibt das Feld leer. `saveObjekt` schreibt es bewusst
    * nicht mit, sonst scheiterte jedes Speichern vor der Migration; dafür
    * gibt es `speichereObjektKonzept`.
@@ -1713,7 +1713,7 @@ export async function updateObjektFieldFast(id: string, dbFields: Record<string,
 /**
  * Das Konzept eines Objekts speichern, getrennt vom übrigen Objekt. Gibt
  * einen Fehlertext zurück, sonst null. Fehlt die Spalte (Migration
- * 20261016130000 noch nicht eingespielt), sagt der Text das.
+ * 20261016207000 noch nicht eingespielt), sagt der Text das.
  */
 export async function speichereObjektKonzept(id: string, konzept: ObjektKonzept | null): Promise<string | null> {
   try {

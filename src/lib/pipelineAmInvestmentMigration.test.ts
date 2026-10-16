@@ -10,7 +10,7 @@ import { normalizePipelineStufe } from "@/lib/kontaktPipeline";
  * anlegen (sonst laeutete die Glocke fuer jeden Kontakt), und die
  * Normalisierung in SQL folgt `normalizePipelineStufe`.
  */
-const SQL = readFileSync("supabase/migrations/20261011160000_pipeline_am_investment.sql", "utf8");
+const SQL = readFileSync("supabase/migrations/20261016201000_pipeline_am_investment.sql", "utf8");
 const code = SQL.split("\n").filter((z) => !z.trim().startsWith("--")).join("\n");
 
 describe("Migration pipeline_am_investment", () => {
