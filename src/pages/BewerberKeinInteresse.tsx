@@ -8,7 +8,7 @@ import {
   ABMELDE_TOKEN_MUSTER,
 } from "../../supabase/functions/_shared/bewerber-nachfass";
 import { FARBE_BLAU, FARBE_DUNKEL, Hauptknopf } from "@/components/bewerberformular/FragebogenBausteine";
-import logo from "@/assets/osimmobilien-logo.png";
+import logo from "@/assets/os-real-estate-logo-quer.png";
 // Liquid Glass fuer die Bewerberseiten (Huelle `.bewerber-seite`, Karte `.bewerber-karte`).
 import "@/styles/lp-theme-liquid.css";
 
@@ -286,5 +286,5 @@ function Karte({ children }: { children: ReactNode }) {
 }
 
 function Logo() {
-  return <img src={logo} alt="OS Immobilien" className="h-[26px] sm:h-[34px] mx-auto mb-5 sm:mb-6" />;
+  return <img src={logo} alt="OS Real Estate GmbH" className="h-[26px] sm:h-[34px] mx-auto mb-5 sm:mb-6" />;
 }

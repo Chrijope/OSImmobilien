@@ -10,7 +10,7 @@ import { ChaosZuOrdnung, type ChaosPaar } from "@/components/landing/vp/ChaosZuO
 import { PartnerBewerbungFormular } from "@/components/landing/PartnerBewerbungFormular";
 import { SpamHinweis } from "@/components/bewerbung/SpamHinweis";
 import { LIZENZ_PAKETE, OVERHEAD_AKTIV } from "@/lib/lizenzPakete";
-import logoImg from "@/assets/osimmobilien-logo.png";
+import logoImg from "@/assets/os-real-estate-logo-quer.png";
 import {
   ArrowRight, CheckCircle, Users, Target, Sparkles,
   GraduationCap, Euro, Trophy, ShieldCheck, Rocket, Heart,
@@ -886,7 +886,7 @@ const VertriebspartnerLanding = () => {
       <header data-lg="kopfscheibe" className="sticky top-0 z-30 border-b border-border/40 bg-background/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-6 py-4">
           <Link to="/karriere" className="flex shrink-0 items-center gap-3">
-            <img src={logoImg} alt="OS Immobilien" className="h-9 object-contain" />
+            <img src={logoImg} alt="OS Real Estate GmbH" className="h-9 object-contain" />
           </Link>
           <div className="flex min-w-0 items-center gap-2">
             {gewaehlt && (
@@ -1568,7 +1568,7 @@ const VertriebspartnerLanding = () => {
       {/* Footer */}
       <footer className="border-t border-border/40 bg-card/40 backdrop-blur-sm">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-8 sm:flex-row">
-          <img src={logoImg} alt="OS Immobilien" className="h-7 object-contain opacity-60" />
+          <img src={logoImg} alt="OS Real Estate GmbH" className="h-7 object-contain opacity-60" />
           <div className="flex items-center gap-5 text-xs text-muted-foreground">
             <Link to="/impressum" className="hover:text-foreground">Impressum</Link>
             <Link to="/datenschutz" className="hover:text-foreground">Datenschutz</Link>

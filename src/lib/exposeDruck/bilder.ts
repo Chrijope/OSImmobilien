@@ -13,7 +13,7 @@ export const FOTOS_IM_DRUCK = 40;
 const GROSSE_FOTOS = 3;
 /** Kante für Fotos im Raster: halbe Seitenbreite reicht mit etwa 1200 Pixeln für 300 dpi. */
 const RASTER_KANTE = 1200;
-export const LOGO_ADRESSE = "/images/osimmobilien-logo.png";
+export const LOGO_ADRESSE = "/images/os-real-estate-logo-quer.png";
 const IST_PDF_PLAN = /\.pdf(?:[?#]|$)/i;
 
 /** Wie ein Bild geladen wird. Im Browser `browserLader`, für die Muster ein Lader in Node. */
@@ -36,7 +36,7 @@ interface PixelKontext {
 
 /**
  * Logo aufbereiten: den durchsichtigen Rand finden und, wenn `hell`, die
- * dunkle Schrift weiß färben. Die blaue Bildmarke bleibt, wie sie ist.
+ * graue Schrift (Zusatz GMBH) weiß färben. Gold und Beige bleiben, wie sie sind.
  * Gibt den Ausschnitt mit Inhalt zurück.
  */
 export function logoPixel(ctx: PixelKontext, breite: number, hoehe: number, hell: boolean): { x: number; y: number; w: number; h: number } {
@@ -48,8 +48,8 @@ export function logoPixel(ctx: PixelKontext, breite: number, hoehe: number, hell
       const i = (y * breite + x) * 4;
       if (d[i + 3] < 8) continue;
       if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
-      // Dunkel und ungesättigt ist die Schrift, nicht das Blau der Bildmarke.
-      if (hell && Math.max(d[i], d[i + 1], d[i + 2]) < 90) { d[i] = 255; d[i + 1] = 255; d[i + 2] = 255; }
+      // Dunkel ist nur die graue Schrift, Gold und Beige liegen deutlich darüber.
+      if (hell && Math.max(d[i], d[i + 1], d[i + 2]) < 130) { d[i] = 255; d[i + 1] = 255; d[i + 2] = 255; }
     }
   }
   if (hell) ctx.putImageData(bild, 0, 0);

@@ -218,7 +218,7 @@ describe("Anmeldemails: das gemeinsame Layout greift", () => {
     // stehen sie dort. Ohne sie sieht man einen leeren Kasten.
     const layout = lies(LAYOUT);
     expect(layout).toMatch(/const logoStil = \{[\s\S]*?fontFamily: T\.schrift/);
-    expect(layout).toMatch(/alt=\{MARKE\.name\}/);
+    expect(layout).toMatch(/alt=\{MARKE\.logoAlt\}/);
   });
 
   it("jede der sechs Mails hat einen Betreff auf Deutsch und einen auf Englisch", () => {

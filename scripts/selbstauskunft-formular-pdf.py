@@ -230,7 +230,7 @@ HELL = HexColor("#F4F7FA")      # BRAND.light
 WARN_BG = HexColor("#F4F7FA")
 WARN_RAND = HexColor("#0A6EDB")
 WARN_TEXT = HexColor("#0F1621")
-LOGO_PFAD = "public/images/osimmobilien-logo.png"
+LOGO_PFAD = "public/images/os-real-estate-logo-quer.png"
 FIRMENZEILE = "OS Immobilien Holding GmbH, Am Ostbahnhof 1, 15749 Mittenwalde"
 GESAMTSEITEN = 7
 
@@ -253,8 +253,8 @@ def kopf(titelzusatz=""):
     """Kopf wie addBrandedHeader: Logo links, Titel rechts gesperrt, Haarlinie."""
     seite[0] += 1
     try:
-        # Seitenverhaeltnis der Datei ist 1920 zu 575, also 20 x 6 mm.
-        c.drawImage(LOGO_PFAD, M, y_(15.2), width=20 * mm, height=6 * mm,
+        # Seitenverhaeltnis der Datei ist 2112 zu 440, also etwa 29 x 6 mm.
+        c.drawImage(LOGO_PFAD, M, y_(15.2), width=29 * mm, height=6 * mm,
                     preserveAspectRatio=True, mask="auto")
     except Exception:
         c.setFillColor(NAVY); c.setFont("Helvetica-Bold", 12)

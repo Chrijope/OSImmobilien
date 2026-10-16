@@ -8,7 +8,7 @@ import {
   Star, Quote,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import logo from "@/assets/osimmobilien-logo.png";
+import logo from "@/assets/os-real-estate-logo-quer.png";
 import { PraesentationPdfButton } from "@/components/presentation/PraesentationPdfButton";
 import heroBg from "@/assets/hero-beratung-bg.jpg";
 import beratungSzene from "@/assets/beratung-szene.jpg";
@@ -382,7 +382,7 @@ export default function Beratungspraesentation() {
       <header data-lg="kopfscheibe" className="sticky top-0 z-50 backdrop-blur-xl bg-background/80 border-b border-border/60">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link to="/beratungspraesentation" className="flex items-center gap-3">
-            <img src={logo} alt="OS Immobilien" className="h-8 w-auto" />
+            <img src={logo} alt="OS Real Estate GmbH" className="h-8 w-auto" />
           </Link>
           <nav className="hidden md:flex items-center gap-7">
             {NAV.map((n) => (
@@ -459,7 +459,7 @@ export default function Beratungspraesentation() {
               <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-muted flex items-center justify-center p-8 md:p-12">
                 <img
                   src={logo}
-                  alt="OS Immobilien"
+                  alt="OS Real Estate GmbH"
                   className="max-h-full max-w-full object-contain"
                 />
               </div>
@@ -1357,7 +1357,7 @@ export default function Beratungspraesentation() {
       <footer className="bg-background border-t border-border py-10 px-6">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <img src={logo} alt="OS Immobilien" className="h-7 w-auto" />
+            <img src={logo} alt="OS Real Estate GmbH" className="h-7 w-auto" />
             <span className="text-xs text-muted-foreground">
               Strategischer Vermögensaufbau mit Immobilien · osimmobilien.netlify.app
             </span>

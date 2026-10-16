@@ -5,7 +5,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import logoImg from "@/assets/osimmobilien-logo.png";
+import logoImg from "@/assets/os-real-estate-logo-quer.png";
 import { useUser } from "@/contexts/UserContext";
 import { darfGepflegtWerden } from "@/lib/investagonHerkunft";
 import { darfObjektBearbeiten } from "@/lib/objektBearbeitenRecht";

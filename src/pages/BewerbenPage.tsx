@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getStelleById, type Stelle } from "@/lib/bewerbungStore";
 import { supabase } from "@/integrations/supabase/client";
-import logoImg from "@/assets/osimmobilien-logo.png";
+import logoImg from "@/assets/os-real-estate-logo-quer.png";
 import { ArrowLeft, ArrowRight, CheckCircle, Send } from "lucide-react";
 import { SEITE_TOKEN_MUSTER, bewerberSeitePfad } from "@/lib/bewerberSeite";
 import { toast } from "@/hooks/use-toast";
@@ -169,7 +169,7 @@ const BewerbenPage = () => {
     <div data-lg="seite" className="min-h-screen bg-gradient-to-br from-muted/30 to-background">
       <header data-lg="kopfscheibe" className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-6 py-4 flex items-center justify-between">
-          <img src={logoImg} alt="OS Immobilien" className="h-10 object-contain" />
+          <img src={logoImg} alt="OS Real Estate GmbH" className="h-10 object-contain" />
           <Link to={`/karriere/${stelleId}`}>
             <Button variant="ghost" size="sm"><ArrowLeft className="h-4 w-4 mr-1" />Zurück</Button>
           </Link>

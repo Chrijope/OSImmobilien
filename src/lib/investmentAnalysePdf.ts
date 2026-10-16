@@ -20,7 +20,7 @@ const BG_LIGHT: [number, number, number] = [248, 248, 248];
 const BG_ACCENT: [number, number, number] = [240, 249, 255]; // #F0F9FF, Blau 50
 const LINE_COLOR: [number, number, number] = [200, 200, 200];
 
-const LOGO_URL = "/images/osimmobilien-logo.png";
+const LOGO_URL = "/images/os-real-estate-logo-quer.png";
 
 interface Tranche {
   bezeichnung: string;
@@ -537,8 +537,11 @@ export async function generateInvestmentAnalysePdf(data: InvestmentPdfData & { s
   // Logo
   if (logoBase64) {
     try {
-      doc.addImage(logoBase64, "PNG", PAGE_W / 2 - 28, y, 56, 14);
-      y += 20;
+      // Hoehe aus dem Seitenverhaeltnis der Datei, damit das Logo nicht verzerrt.
+      const bild = doc.getImageProperties(logoBase64);
+      const logoH = (56 * bild.height) / bild.width;
+      doc.addImage(logoBase64, "PNG", PAGE_W / 2 - 28, y, 56, logoH);
+      y += logoH + 6;
     } catch {
       y += 4;
     }

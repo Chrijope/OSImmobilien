@@ -48,7 +48,7 @@ export function LinkNichtMehrGueltig({ ansprechpartner, art = "expose", sprache 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12" data-testid="link-nicht-mehr-gueltig">
       <div className="w-full max-w-md rounded-2xl border border-border bg-card p-8 shadow-sm">
-        <img src="/images/osimmobilien-logo.png" alt="OS Immobilien" className="mb-8 h-7 w-auto" />
+        <img src="/images/os-real-estate-logo-quer.png" alt="OS Real Estate GmbH" className="mb-8 h-7 w-auto" />
         <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-accent text-primary">
           <Clock className="h-5 w-5" aria-hidden="true" />
         </div>

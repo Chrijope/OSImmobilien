@@ -1,5 +1,5 @@
 import { ArrowRight, Shield, Clock, Phone } from "lucide-react";
-import logo from "@/assets/osimmobilien-logo.png";
+import logo from "@/assets/os-real-estate-logo-quer-dunkel.png";
 import type { BeraterProfile } from "@/lib/beraterProfil";
 import { useSeitenSprache, useSeitenTexte } from "@/components/SeitenSprache";
 import { mitSeitenSprache } from "@/lib/seitenSprache";
@@ -72,7 +72,7 @@ const CTASection = ({ onOpenFunnel }: CTASectionProps) => {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 md:gap-10">
             {/* Brand */}
             <div className="col-span-2 md:col-span-3 lg:col-span-2">
-              <img src={logo} alt="OS Immobilien" className="h-7 md:h-8 mb-5 brightness-0 invert" />
+              <img src={logo} alt="OS Real Estate GmbH" className="h-7 md:h-8 mb-5" />
               <p className="text-sm text-[hsl(210,20%,65%)] leading-relaxed max-w-xs">
                 {f.marke}
               </p>

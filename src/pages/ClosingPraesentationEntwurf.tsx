@@ -60,7 +60,7 @@ import {
   Area, AreaChart, ReferenceDot, ReferenceLine, ResponsiveContainer, XAxis, YAxis,
 } from "recharts";
 import { Button } from "@/components/ui/button";
-import logo from "@/assets/osimmobilien-logo.png";
+import logo from "@/assets/os-real-estate-logo-quer-dunkel.png";
 import {
   GESTELLT_ZUSATZ_KURZ, LEAD_EINZELPREIS, LEAD_PAKET_ANZAHL, LEAD_PAKET_PREIS,
   formatPreis, ZAHLUNGSWEISEN, type LizenzPaketId, type Zahlungsweise,
@@ -2791,7 +2791,7 @@ export function Buehne({
           die Bühne gehört den Folien. */}
       <header className="relative shrink-0 h-14 px-5 md:px-8 flex items-center justify-between" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
         <div className="flex items-center gap-3">
-          <img src={logo} alt="OS Immobilien" className="h-7 w-auto brightness-0 invert" />
+          <img src={logo} alt="OS Real Estate GmbH" className="h-7 w-auto" />
           <span className="text-xs uppercase tracking-[0.3em] font-semibold hidden sm:inline" style={{ color: GEDIMMTER }}>
             Partner
           </span>

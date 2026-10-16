@@ -519,7 +519,7 @@ function Kopf({ onAufruf }: { onAufruf: (() => void) | null }) {
     <header className="hb-kopf">
       <div className="hb-kopf-marke">
         <a href="/partner-werden" aria-label="Zum Anfang der Seite" style={{ display: "inline-flex", color: "inherit", textDecoration: "none" }}>
-          {thema === "dunkel" ? <Wortmarke hell groesse={19} /> : <img src="/images/osimmobilien-logo.png" alt="OS Immobilien" />}
+          {thema === "dunkel" ? <Wortmarke hell groesse={19} /> : <img src="/images/os-real-estate-logo-quer.png" alt="OS Real Estate GmbH" />}
         </a>
       </div>
       {onAufruf && (

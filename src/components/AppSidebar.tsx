@@ -12,7 +12,7 @@ import {
 import { NavLink } from "@/components/NavLink";
 import logoImg from "@/assets/os-real-estate-logo.png";
 import logoImgDark from "@/assets/os-real-estate-logo-dark.png";
-import iconImg from "@/assets/osimmobilien-icon.png";
+import iconImg from "@/assets/os-real-estate-zeichen.png";
 import { SidebarRoleSelector } from "@/components/SidebarRoleSelector";
 import { getUnreadChatCount } from "@/lib/chatStore";
 import { useLiveVersion } from "@/hooks/useLiveData";
@@ -808,7 +808,7 @@ export function AppSidebar() {
                 <img src={logoImgDark} alt="OS Real Estate GmbH" className="w-full h-full object-contain hidden dark:block" />
               </>
             ) : (
-              <img src={iconImg} alt="OS Immobilien" className="h-8 w-8 object-contain" />
+              <img src={iconImg} alt="OS Real Estate GmbH" className="h-8 w-8 object-contain" />
             )}
          </div>
         <SidebarContent className="px-2 py-2 flex-1">
@@ -832,7 +832,7 @@ export function AppSidebar() {
               <img src={logoImgDark} alt="OS Real Estate GmbH" className="w-full h-full object-contain hidden dark:block" />
             </>
           ) : (
-            <img src={iconImg} alt="OS Immobilien" className="h-8 w-8 object-contain" />
+            <img src={iconImg} alt="OS Real Estate GmbH" className="h-8 w-8 object-contain" />
           )}
         </div>
         <SidebarContent className="px-2 py-2 flex-1">
@@ -879,7 +879,7 @@ export function AppSidebar() {
               <img src={logoImgDark} alt="OS Real Estate GmbH" className="w-full h-full object-contain hidden dark:block" />
             </>
           ) : (
-            <img src={iconImg} alt="OS Immobilien" className="h-8 w-8 object-contain" />
+            <img src={iconImg} alt="OS Real Estate GmbH" className="h-8 w-8 object-contain" />
           )}
        </div>
       <SidebarContent className="px-2 py-2 flex-1">

@@ -12,7 +12,7 @@ import ComparisonSection from "@/components/landing/ComparisonSection";
 import BankPartnersSection from "@/components/landing/BankPartnersSection";
 import FAQSection from "@/components/landing/FAQSection";
 import CTASection from "@/components/landing/CTASection";
-import logo from "@/assets/osimmobilien-logo.png";
+import logo from "@/assets/os-real-estate-logo-quer.png";
 import { SeitenSprachUmschalter } from "@/components/SeitenSprache";
 import type { BeraterInfo } from "./FloatingBeraterBadge";
 import "./beraterMicroseite.css";
@@ -25,7 +25,7 @@ interface Props { berater: BeraterInfo | null; onOpenFunnel: () => void; }
 export default function BeraterMicrositeContent({ berater, onOpenFunnel }: Props) {
   return <div className="berater-mikroseite">
     {/* Der Umschalter DE/EN sitzt rechts neben dem Logo. Ohne SeitenSpracheProvider zeigt er nichts. */}
-    <header className="brand-header"><img src={logo} alt="OS Immobilien" width="172" height="34" /><SeitenSprachUmschalter className="brand-header-sprache" /></header>
+    <header className="brand-header"><img src={logo} alt="OS Real Estate GmbH" width="172" height="34" /><SeitenSprachUmschalter className="brand-header-sprache" /></header>
     <div className="micro-abschnitt micro-abschnitt-1">{berater && <AppleHeroSection berater={berater} onOpenFunnel={onOpenFunnel} />}</div>
     <div className="micro-abschnitt micro-abschnitt-2"><SteuerlastSection onOpenFunnel={onOpenFunnel} /></div>
     <div className="micro-abschnitt micro-abschnitt-3"><AppleSteuerRechner onOpenFunnel={onOpenFunnel} /></div>

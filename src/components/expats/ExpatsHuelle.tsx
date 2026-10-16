@@ -31,7 +31,7 @@
  * Zahl, und sonst aendert sich nichts.
  * ────────────────────────────────────────────────────────────────────────────
  */
-import logoImg from "@/assets/osimmobilien-logo.png";
+import logoImg from "@/assets/os-real-estate-logo-quer-dunkel.png";
 import { mitSeitenSprache } from "@/lib/seitenSprache";
 import { CookieEinstellungenLink } from "@/components/cookie/CookieEinstellungenLink";
 
@@ -128,14 +128,9 @@ function Sterne({ sterne }: { sterne: number }) {
  * bewusst in den Kopf hinein (das `-mt-` steht in `ExpatsRechner.tsx`), damit
  * sie als das Naechste gelesen wird und nicht als eine weitere Sektion.
  *
- * WARUM DAS LOGO UMGEFAERBT WIRD: `osimmobilien-logo.png` traegt schwarze Schrift
- * und waere auf dem Marineton unlesbar. Eine helle Fassung liegt nicht im
- * Projekt (`osimmobilien-logo-dark.png` existiert nur als Lovable-Asset-Verweis,
- * nicht als Datei). `brightness-0 invert` faerbt das ganze Bild weiss und ist
- * im Projekt der eingefuehrte Weg fuer dunkle Flaechen, siehe
- * `landing/HeroSection.tsx`, `videoraum/Buehne.tsx` und die
- * Closing-Praesentation. Das hellblaue Haus wird dabei ebenfalls weiss, das
- * ist der bekannte und ueberall gleiche Kompromiss.
+ * WARUM DIE DUNKLE LOGOFASSUNG: Auf dem Marineton steht das OS-Real-Estate-Logo
+ * in der Fassung fuer dunklen Grund (`os-real-estate-logo-quer-dunkel.png`,
+ * Zusatz GMBH hell statt grau). Gold und Beige bleiben im Original.
  *
  * `mitHero` schaltet Ueberschrift und Untertitel ab. Auf der Ergebnisseite
  * bleibt nur die schmale Zeile mit Logo und Bewertung stehen, dort ist die
@@ -179,8 +174,8 @@ export function ExpatsKopfbereich({
         <header className="flex items-center justify-between gap-3">
           <img
             src={logoImg}
-            alt="OS Immobilien"
-            className="h-6 w-auto object-contain brightness-0 invert sm:h-7 lg:h-9"
+            alt="OS Real Estate GmbH"
+            className="h-6 w-auto object-contain sm:h-7 lg:h-9"
           />
           {BEWERTUNG ? (
             <div className="flex items-center gap-1.5 text-[11px] text-white/80 sm:text-xs lg:text-sm">

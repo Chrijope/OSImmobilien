@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { KeyRound, Loader2 } from "lucide-react";
-import logoImg from "@/assets/osimmobilien-logo.png";
+import logoImg from "@/assets/os-real-estate-logo-quer.png";
 import { useTranslation } from "react-i18next";
 import { portalSprache, useHtmlLang } from "@/i18n/portalSprache";
 
@@ -118,7 +118,7 @@ const PortalAktivieren = () => {
   return (
     <div data-lg="seite" data-portal={portal} className="portal-ui portal-activation min-h-screen flex items-center justify-center bg-background p-8">
       <div className="w-full max-w-md space-y-6 text-center">
-        <img src={logoImg} alt="OS Immobilien" className="h-10 mx-auto" />
+        <img src={logoImg} alt="OS Real Estate GmbH" className="h-10 mx-auto" />
         <div className="space-y-2">
           <h1 className="text-2xl font-bold text-foreground font-serif">
             {resolvedName
