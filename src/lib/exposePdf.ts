@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 import { loadLogo, BRAND, PDF_FONT, ensureUnicodeFont } from "./pdfBranding";
+import { kaufnebenkostenPct } from "@/lib/kaufnebenkosten";
 
 /**
  * Eine Zahl in deutscher Schreibweise, auch wenn sie als Text aus der
@@ -760,7 +761,9 @@ export async function generateExposePdf(data: ExposeData): Promise<Blob> {
     if (obj.global_jahresnettomiete) invEntries.push({ label: "Jahresnettomiete", value: fmt(obj.global_jahresnettomiete) });
     if (obj.global_rendite) invEntries.push({ label: "Rendite", value: `${zahlDe(obj.global_rendite)} %` });
     if (obj.global_hausgeld_monat) invEntries.push({ label: "Hausgeld / Monat", value: fmt(obj.global_hausgeld_monat) });
-    if (obj.global_kaufnebenkosten) invEntries.push({ label: "Kaufnebenkosten", value: `${zahlDe(obj.global_kaufnebenkosten)} %` });
+    // Gepflegter Satz, sonst nach Postleitzahl des Objekts (Berlin 8,0, Brandenburg 8,5).
+    const nkSatz = kaufnebenkostenPct({ plz: obj.plz, metaPct: obj.global_kaufnebenkosten });
+    if (nkSatz > 0) invEntries.push({ label: "Kaufnebenkosten", value: `${zahlDe(nkSatz)} %` });
     if (obj.global_vermietungsstand) invEntries.push({ label: "Vermietungsstand", value: `${zahlDe(obj.global_vermietungsstand)} %` });
     if (obj.global_etagen) invEntries.push({ label: "Etagen", value: `${obj.global_etagen}` });
 

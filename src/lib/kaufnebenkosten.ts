@@ -2,8 +2,8 @@
  * Kaufnebenkosten je Bundesland, abgeleitet aus der zentralen Tabelle.
  *
  * Gesamtsatz = Grunderwerbsteuer des Landes plus 1,5 Prozent Notar plus
- * 0,5 Prozent Grundbuch, also Berlin 8,0 und Brandenburg 8,5 Prozent. Notar
- * mit 1,5 Prozent, weil unsere Kunden fast immer voll finanzieren und die
+ * 0,5 Prozent Grundbuch, etwa Bayern 5,5, Berlin 8,0, Brandenburg 8,5 Prozent.
+ * Notar mit 1,5 Prozent, weil unsere Kunden fast immer voll finanzieren und die
  * Grundschuldbestellung dazukommt (Stand 16.10.2026, vorher 1,0 Prozent). Die Maklercourtage ist bewusst NICHT enthalten, sie
  * fällt in unserem Geschäft nicht beim Käufer an.
  *

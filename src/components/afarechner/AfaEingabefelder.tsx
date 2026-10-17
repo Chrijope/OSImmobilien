@@ -314,7 +314,7 @@ export function LageFeld({ antworten, aendern }: FeldProps) {
         </div>
       </div>
       <p className="text-xs leading-relaxed text-muted-foreground">
-        Enthalten sind Grunderwerbsteuer sowie rund 1,5 Prozent Notar und 0,5 Prozent Grundbuch, Stand Juli 2026: Berlin 8,0, Brandenburg 8,5 Prozent. Eine
+        Enthalten sind Grunderwerbsteuer sowie rund 1,5 Prozent Notar und 0,5 Prozent Grundbuch, Stand Juli 2026, je nach Bundesland also rund 5,5 bis 8,5 Prozent. Eine
         Maklercourtage ist nicht enthalten, sie lässt sich über den eigenen Satz ergänzen. Der auf das Gebäude
         entfallende Anteil der Nebenkosten wird mit abgeschrieben.
       </p>

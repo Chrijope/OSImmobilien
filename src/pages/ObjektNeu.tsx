@@ -162,7 +162,7 @@ const initialGlobalDaten = {
   gesamtQm: 0, etagen: 0, baujahr: new Date().getFullYear(), grundstueckQm: 0,
   verkaufspreis: 0, qmPreis: 0, rendite: 0, jahresnettomiete: 0, hausgeldMonat: 0,
   // 0 heißt: Satz nach Bundesland aus der Postleitzahl. Bis 10/2026 stand hier 5
-  // und schlug als gepflegter Wert den Landessatz (Berlin 8,0, Brandenburg 8,5).
+  // und schlug als gepflegter Wert den Landessatz des Objekts.
   kaufnebenkosten: 0, grundstueckAnteil: 20, zustand: "Bestand",
   energieeffizienzklasse: "", stellplaetze: 0, vermietungsstand: 100,
   wohneinheitenGesamt: 0,
@@ -3533,7 +3533,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
                     <div>
                       <Label className="text-xs">Kaufnebenkosten (%)</Label>
                       <Input type="number" step="0.5" min={0} value={globalDaten.kaufnebenkosten || ""} onChange={e => updateGlobal("kaufnebenkosten", parseFloat(e.target.value) || 0)} className="h-8" />
-                      <p className="text-[10px] text-muted-foreground mt-1">Grunderwerbsteuer, Notar, Grundbuch. Leer lassen: Satz nach Bundesland (Berlin 8,0 %, Brandenburg 8,5 %). Vorbelegung für Investmentrechner und Exposé.</p>
+                      <p className="text-[10px] text-muted-foreground mt-1">Grunderwerbsteuer, Notar, Grundbuch. Leer lassen: Satz nach Bundesland aus der Postleitzahl. Vorbelegung für Investmentrechner und Exposé.</p>
                     </div>
                     <div>
                       <Label className="text-xs">Mietausfall (%)</Label>
