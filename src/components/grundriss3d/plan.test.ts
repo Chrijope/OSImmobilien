@@ -134,3 +134,16 @@ describe("Hilfen", () => {
     expect(beispielHaus().map((x) => x.plan.geschoss)).toEqual([0, 0, 1, 1, 2, 2]);
   });
 });
+
+describe("Bibliothek nachgezeichneter Häuser", () => {
+  it("erkennt die Barfusstraße 9 in jeder Schreibweise, aber nicht die 91", async () => {
+    const { bekanntesHausFinden, weNummer } = await import("./planBibliothek");
+    for (const adresse of ["Barfußstraße 9", "Barfusstraße 9", "Barfußstr. 9", "Barfusstr 9", "BARFUSSSTRASSE 9, 13349 Berlin"]) {
+      expect(bekanntesHausFinden({ adresse }), adresse).toBeTruthy();
+    }
+    expect(bekanntesHausFinden({ adresse: "Gartenweg 1", titel: "Barfusstraße 9 – Wedding" })).toBeTruthy();
+    expect(bekanntesHausFinden({ adresse: "Barfusstraße 91" })).toBeUndefined();
+    expect(bekanntesHausFinden({ adresse: "Hauffstraße 38" })).toBeUndefined();
+    expect([weNummer("WE 03"), weNummer("3"), weNummer("WE11 (Vorderhaus)"), weNummer("")]).toEqual([3, 3, 11, null]);
+  });
+});
