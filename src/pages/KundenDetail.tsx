@@ -112,6 +112,7 @@ import { FreieWohnungenCard } from "@/components/kunden/FreieWohnungenCard";
 import { InvestmentBerechnungen } from "@/components/kunden/InvestmentBerechnungen";
 import { GesendeteExposes } from "@/components/kunden/GesendeteExposes";
 import { getKontaktById, updateKontakt, deleteKontakt, mergeKontaktMeta, type KundeData, dbRowToKunde } from "@/lib/kundenStore";
+import { GaragenUnterlagenAbschnitt } from "@/components/objektdaten/GaragenUnterlagen";
 import { abwicklungStufeNachziehen } from "@/lib/abwicklungStufe";
 import { versendeSaFormularPdf, saDatenAusPdfFormular, uebernehmePerson2InKontakt } from "@/lib/saPdfFormular";
 import { saStartstandFuerInvestment } from "@/lib/saStartstand";
@@ -12152,6 +12153,8 @@ export default function KundenDetail() {
                       disabled={!isAdminAbw}
                     />
                   </div>
+
+                  <GaragenUnterlagenAbschnitt inv={inv} darfSenden={isAdminAbw} onVersendet={() => forceUpdate(n => n + 1)} />
 
                   <div>
                     <Label className="text-xs font-semibold">Anmerkungen</Label>

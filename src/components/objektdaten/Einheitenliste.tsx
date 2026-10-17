@@ -44,6 +44,7 @@ import { cacheGet } from "@/lib/dataCache";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { excelDatumIso } from "@/lib/excelLesen";
+import { garagenUnterlagenFuer, garagenUnterlagenHerunterladen, versendetAm } from "@/lib/garagenUnterlagenVersand";
 
 /*
  * Einheitenliste der Objektdaten (17.10.2026). Jede Zahl kommt aus der Einheit
@@ -422,6 +423,7 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
     "Miete vorher": (x) => listenZahl(x.l, "mieteVorErhoehung"), "Erhöhung ab": (x) => x.erhoehung?.ab, "neue Miete": (x) => x.erhoehung?.neueMiete,
     "+ mtl.": (x) => x.erhoehung?.plus || null, Grenze: (x) => x.erhoehung?.begrenztDurch,
     "gekündigt zum": (x) => String(x.l?.werte.garageGekuendigtZum ?? ""),
+    "Unterlagen versendet": (x) => (x.inv && garagenUnterlagenFuer(x.inv) ? versendetAm(x.inv).slice(0, 10) || "offen" : null),
     "Mehrertrag mtl.": (x) => x.potenzial || null, Hinweise: (x) => x.hinweise.length || null,
     Stufe: (x) => (x.inv ? STUFE_TEXT[x.inv.pipelineStufe] || x.inv.pipelineStufe : null), Notartermin: (x) => x.inv?.notarTermin,
     Fälligkeit: (x) => (x.inv ? getAbwicklungDaten(x.inv.id).kaufpreisfaelligkeitDatum : null),
@@ -513,7 +515,7 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
     miete: ["WE", "Lage", "Ist-Kaltmiete", "Ist €/m²", "Sollmiete", "Soll €/m²", "Letzte Erhöhung", "Miete vorher", "Erhöhung ab", "neue Miete", "+ mtl.", "Grenze", "Nächste ab", "Miete danach", "in 3 Jahren"],
     subvention: ["WE", "Lage", "Ist-Kaltmiete", "Zielmiete", "Garantie mtl.", "Garantie Laufzeit", "Garagen-Subv. mtl.", "Einmalanteil", "Mietsubvention", "laut Liste"],
     hausgeld: ["WE", "Lage", "Hausgeld gesamt", "umlagefähig", "nicht umlagefähig", "Rücklage", "Eigentümerlast", "Überschuss mtl.", "laut Plan"],
-    garagen: ["WE", "Lage", "Garage/SP", "KP Garage", "Ist-Miete Garage", "Sollmiete Garage", "Garagen-Subv. mtl.", "gekündigt zum"],
+    garagen: ["WE", "Lage", "Garage/SP", "KP Garage", "Ist-Miete Garage", "Sollmiete Garage", "Garagen-Subv. mtl.", "gekündigt zum", "Unterlagen versendet"],
     verkauf: ["WE", "Lage", "Status", "Käufer", "Stufe", "Notartermin", "Fälligkeit", "Kaufpreis da", "Grundbuch am", "Grundbuch erfolgt", "Übergabe"],
   };
   const exportTabelle = (): ExportTabelle => {
@@ -741,6 +743,7 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
                 {ansicht === "garagen" && <>
                   {kopf("Garage/SP", false)}{kopf("KP Garage")}{kopf("Ist-Miete Garage")}{kopf("Sollmiete Garage")}
                   {mitGarantie && kopf("Garagen-Subv. mtl.")}{kopf("gekündigt zum", false)}
+                  {kopf("Unterlagen versendet", false, "Garagenunterlagen an den Käufer, versendet im Kundenprofil unter Abwicklung")}
                 </>}
               </TableRow>
             </TableHeader>
@@ -856,6 +859,14 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
                       <TableCell className={r}>{listenZelle(x, "garageSollMiete")}</TableCell>
                       {mitGarantie && <TableCell className={r}>{garantie?.garagenSubventionMonat ? eur(garantie.garagenSubventionMonat, 2) : "–"}</TableCell>}
                       <TableCell className="whitespace-nowrap text-xs">{listenTextZelle(x, "garageGekuendigtZum", "datum")}</TableCell>
+                      <TableCell className="whitespace-nowrap text-xs">
+                        {x.inv && garagenUnterlagenFuer(x.inv) ? <>
+                          {versendetAm(x.inv) ? datum(versendetAm(x.inv).slice(0, 10)) : <span className="text-muted-foreground">offen</span>}
+                          <button type="button" className="ml-1 rounded p-0.5 align-middle hover:bg-muted" title="Garagenunterlagen herunterladen" onClick={() => void garagenUnterlagenHerunterladen(x.inv!)}>
+                            <FileDown className="h-3.5 w-3.5" />
+                          </button>
+                        </> : "–"}
+                      </TableCell>
                     </>}
                   </TableRow>
                 );

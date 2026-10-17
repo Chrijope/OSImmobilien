@@ -136,6 +136,7 @@ import { template as nachtpruefungBericht } from './nachtpruefung-bericht.tsx'
 import { template as tagesbriefing } from './tagesbriefing.tsx'
 import { template as weeklyCallPunkte } from './weekly-call-punkte.tsx'
 import { template as anlageVAufstellung } from './anlage-v-aufstellung.tsx'
+import { template as garagenUnterlagen } from './garagen-unterlagen.tsx'
 import { template as kundenExpose } from './kunden-expose.tsx'
 import { template as bewerberZugangsdaten } from './bewerber-zugangsdaten.tsx'
 import { template as bewerberAbsage } from './bewerber-absage.tsx'
@@ -313,6 +314,7 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'tagesbriefing': tagesbriefing,
   'weekly-call-punkte': weeklyCallPunkte,
   'anlage-v-aufstellung': anlageVAufstellung,
+  'garagen-unterlagen': garagenUnterlagen,
   // Das persoenliche Exposé an den Kunden, aus send-kunden-expose.
   'kunden-expose': kundenExpose,
   'bewerber-zugangsdaten': bewerberZugangsdaten,
