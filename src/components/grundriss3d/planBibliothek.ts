@@ -32,6 +32,11 @@ const EINTRAEGE: Array<{ muster: RegExp; laden: () => Promise<BekanntesHaus> }> 
     })),
   },
   {
+    // Studentenwohnheim, Häuser Nr. 9 und 10: Geschosse aus den Wohnungsplänen des Bauträgers zusammengesetzt (beispielCottbus.ts).
+    muster: /jamlitzerstrasse(9|10)(?!\d)/,
+    laden: () => import("./beispielCottbus").then((m) => ({ name: m.COTTBUS.name, etagen: m.COTTBUS.etagen, einheiten: m.COTTBUS.einheiten, aussehen: m.COTTBUS.aussehen })),
+  },
+  {
     // Aufteilungspläne (Vektor) EG, 1. OG, DG; Wohnungen nach Teilungserklärung (beispielBrueck.ts).
     muster: /marktstrasse6(?!\d)/,
     laden: () => import("./beispielBrueck").then((m) => ({ name: m.BRUECK.name, etagen: m.BRUECK.etagen, einheiten: [], aussehen: m.BRUECK.aussehen })),
