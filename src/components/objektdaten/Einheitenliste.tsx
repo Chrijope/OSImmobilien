@@ -26,6 +26,7 @@ import { bruttoRendite, nettoRendite, renditeEingabe } from "@/lib/renditeBrutto
 import { hausgeldAusPlan, wirtschaftsplanFuerObjekt } from "@/lib/wirtschaftsplanObjekt";
 import { WirtschaftsplanKarte } from "@/components/objektdaten/WirtschaftsplanKarte";
 import { SortKopf } from "@/components/objektdaten/sortierung";
+import { SPALTEN, spaltenName } from "@/lib/objektdatenSpalten";
 import { useSortierung, type SortWert } from "@/lib/sortierung";
 import { handlungsbedarf, potenzialMonat, type HinweisArt } from "@/lib/handlungsbedarf";
 import { einheitVollstaendigkeit } from "@/lib/objektdaten";
@@ -290,16 +291,17 @@ function ErhoehungsKarte({ objekt, regel, darfSchreiben }: { objekt: ObjektData;
 }
 
 type Ansicht = "handlung" | "preise" | "miete" | "subvention" | "hausgeld" | "garagen" | "verkauf" | "kosten" | "fristen";
-const ANSICHTEN: { wert: Ansicht; titel: string }[] = [
-  { wert: "handlung", titel: "Handlungsbedarf" },
-  { wert: "preise", titel: "Preise & Rendite" },
-  { wert: "miete", titel: "Miete & Erhöhungen" },
-  { wert: "subvention", titel: "Mietsubvention" },
-  { wert: "hausgeld", titel: "Hausgeld" },
-  { wert: "garagen", titel: "Garagen" },
-  { wert: "verkauf", titel: "Verkaufsstand" },
-  { wert: "kosten", titel: "Kosten je Jahr" },
-  { wert: "fristen", titel: "Fristen" },
+// Gruppiert nach der Frage, mit der man kommt; `zweck` steht unter den Reitern.
+const ANSICHTEN: { wert: Ansicht; titel: string; gruppe: string; zweck: string }[] = [
+  { wert: "handlung", titel: "Handlungsbedarf", gruppe: "Überblick", zweck: "Was an welcher Einheit zu tun ist und wie viel Miete im Monat mehr möglich wäre." },
+  { wert: "preise", titel: "Preise & Rendite", gruppe: "Verkauf", zweck: "Kaufpreise, Exposé-Miete und Rendite je Einheit, so wie der Vertrieb sie anbietet." },
+  { wert: "verkauf", titel: "Verkaufsstand", gruppe: "Verkauf", zweck: "Wer welche Einheit gekauft hat und wie weit Notar, Kaufpreis, Grundbuch und Übergabe sind." },
+  { wert: "fristen", titel: "Fristen", gruppe: "Verkauf", zweck: "Alle Termine aus Verkauf, Vermietung und Subvention in einer Liste, nach Datum." },
+  { wert: "miete", titel: "Miete & Erhöhungen", gruppe: "Vermietung", zweck: "Ist- und Sollmiete, wann die nächste Mieterhöhung möglich ist und wie hoch." },
+  { wert: "subvention", titel: "Mietsubvention", gruppe: "Vermietung", zweck: "Was wir je Einheit an Mietsubvention zahlen, im Monat und über die Laufzeit." },
+  { wert: "garagen", titel: "Garagen", gruppe: "Vermietung", zweck: "Garagen und Stellplätze je Einheit: Kaufpreis, Miete, Subvention, Unterlagen an den Käufer." },
+  { wert: "hausgeld", titel: "Hausgeld", gruppe: "Bewirtschaftung", zweck: "Hausgeld je Einheit, was der Eigentümer davon trägt und was nach Kosten übrig bleibt." },
+  { wert: "kosten", titel: "Kosten je Jahr", gruppe: "Bewirtschaftung", zweck: "Einnahmen und Ausgaben je Monat, solange die Einheiten uns gehören, und unsere Subventionen danach." },
 ];
 
 const HINWEIS_FARBE: Record<HinweisArt, string> = {
@@ -542,7 +544,7 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
       if (["Kaufpreis da", "Grundbuch erfolgt"].includes(sp)) return v === 1 ? "ja" : v === 0 ? "nein" : null;
       return v ?? null;
     }));
-    const kopfZeile = spalten.map((sp) => (["Brutto Ist", "Brutto", "Netto"].includes(sp) ? `${sp} %` : sp));
+    const kopfZeile = spalten.map((sp) => (["Brutto Ist", "Brutto", "Netto"].includes(sp) ? `${spaltenName(sp)} %` : spaltenName(sp)));
     if (ansicht === "handlung") {
       kopfZeile.push("Hinweise");
       sort.sortiert(zeilen).forEach((x, i) => zeilenExport[i].push(x.hinweise.map((h) => h.text).join("; ")));
@@ -563,7 +565,8 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
   const kopf = (titel: string, rechts = true, hinweis?: string) => {
     const zeichen = BERECHNET.has(titel) ? "rechnet" : AUS_INVESTAGON.has(titel) && mitInvestagon ? "investagon" : null;
     const erklaerung = zeichen === "rechnet" ? "Wird automatisch berechnet." : zeichen === "investagon" ? "Bei Objekten aus Investagon dort ändern." : undefined;
-    return <SortKopf titel={`${titel}${zeichen === "rechnet" ? " ƒ" : zeichen === "investagon" ? " 🔒" : ""}`} schluessel={SORT[titel] ? titel : undefined}
+    hinweis = SPALTEN[titel]?.info ?? hinweis;
+    return <SortKopf titel={`${spaltenName(titel)}${zeichen === "rechnet" ? " ƒ" : zeichen === "investagon" ? " 🔒" : ""}`} schluessel={SORT[titel] ? titel : undefined}
       sort={sort} rechts={rechts} hinweis={[hinweis, erklaerung].filter(Boolean).join(" ") || undefined} />;
   };
   const r = "text-right tabular-nums whitespace-nowrap";
@@ -585,8 +588,8 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
         <Kennzahl titel="Fläche gesamt" wert={`${zahl(summe((x) => x.z.flaeche))} m²`} />
         <Kennzahl titel="Kaufpreise gesamt" wert={eur(kaufpreis)} />
         <Kennzahl titel="Ist-Kaltmiete im Monat" wert={eur(istMonat, 2)} />
-        <Kennzahl titel="Brutto Ist" wert={prozent(kaufpreis > 0 && istMonat > 0 ? (istMonat * 12) / kaufpreis : null)} />
-        <Kennzahl titel="Brutto Vertrieb" wert={prozent(kaufpreis > 0 && mieteVertrieb > 0 ? (mieteVertrieb * 12) / kaufpreis : null)} />
+        <Kennzahl titel="Rendite brutto Ist" wert={prozent(kaufpreis > 0 && istMonat > 0 ? (istMonat * 12) / kaufpreis : null)} />
+        <Kennzahl titel="Rendite brutto Exposé" wert={prozent(kaufpreis > 0 && mieteVertrieb > 0 ? (mieteVertrieb * 12) / kaufpreis : null)} />
         <Kennzahl titel="Mehrertrag möglich im Monat" wert={eur(summe((x) => x.potenzial), 2)} />
         {mitGarantie && <Kennzahl titel="Subvention im Monat" wert={eur(summe((x) => x.garantie?.garantieMonat), 2)} />}
         {mitGarantie && <Kennzahl titel="Subvention gesamt" wert={eur(summe((x) => (x.garantie?.summeLaufzeit ?? 0) + x.einmal))} />}
@@ -604,11 +607,19 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
         <span>ƒ <Calculator className="inline h-3 w-3" /> wird automatisch berechnet</span>
         {mitInvestagon && <span>🔒 kommt aus Investagon und wird dort geändert, sonst überschreibt es der Abgleich alle 15 Minuten</span>}
       </div>
-      <div className="flex flex-wrap gap-2" role="tablist">
-        {ANSICHTEN.map((a) => (
-          <Button key={a.wert} size="sm" variant={ansicht === a.wert ? "default" : "outline"} role="tab" aria-selected={ansicht === a.wert} onClick={() => setAnsicht(a.wert)}>{a.titel}</Button>
+      <div className="flex flex-wrap items-end gap-x-5 gap-y-2" role="tablist">
+        {[...new Set(ANSICHTEN.map((a) => a.gruppe))].map((g) => (
+          <div key={g} className="space-y-1">
+            <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{g}</div>
+            <div className="flex flex-wrap gap-2">
+              {ANSICHTEN.filter((a) => a.gruppe === g).map((a) => (
+                <Button key={a.wert} size="sm" variant={ansicht === a.wert ? "default" : "outline"} role="tab" aria-selected={ansicht === a.wert} onClick={() => setAnsicht(a.wert)}>{a.titel}</Button>
+              ))}
+            </div>
+          </div>
         ))}
       </div>
+      <p className="text-sm text-muted-foreground">{ANSICHTEN.find((a) => a.wert === ansicht)?.zweck}</p>
       {ansicht === "fristen" && (() => {
         const heute = new Date().toISOString().slice(0, 10);
         const alle = fristenBerechnen();
@@ -697,7 +708,8 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
       })() : (
       <Card>
         <CardContent className="p-0 overflow-x-auto">
-          <Table>
+          {/* Erste Spalte (WE oder Objekt) bleibt beim seitlichen Scrollen stehen. */}
+          <Table className="[&_tr>*:first-child]:sticky [&_tr>*:first-child]:left-0 [&_tr>*:first-child]:z-10 [&_tr>*:first-child]:bg-card">
             <TableHeader>
               <TableRow>
                 {mehrere && kopf("Objekt", false)}
