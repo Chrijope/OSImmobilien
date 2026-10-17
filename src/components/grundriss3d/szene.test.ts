@@ -94,3 +94,31 @@ describe("Dach und Fassade", () => {
     expect(new Set(barfuss.einheiten.map((e) => e.we)).size).toBe(barfuss.einheiten.length);
   });
 });
+
+describe("Dach aus einzelnen Flächen", () => {
+  it("baut jede Fläche und merkt sich die Dachhöhe je Rasterzelle, die höhere Fläche gewinnt", async () => {
+    const THREE = await import("three");
+    const { flaechenDach } = await import("./aussen");
+    const flaechen = [
+      // Pultfläche über 4 × 4 m: Traufe bei y 0 auf 1 m, oben bei y 4 auf 3 m (Geschoss 1 liegt auf Welthöhe 3).
+      { geschoss: 1, material: "ziegel" as const, punkte: [[0, 0, 1], [4, 0, 1], [4, 4, 3], [0, 4, 3]] as Array<[number, number, number]> },
+      // Gaube darüber, höher als die Hauptfläche.
+      { geschoss: 1, material: "blech" as const, punkte: [[1, 1, 2.8], [2, 1, 2.8], [2, 2, 2.8], [1, 2, 2.8]] as Array<[number, number, number]> },
+      // Giebel senkrecht: wird gebaut, zählt aber nicht für die Höhe.
+      { geschoss: 1, material: "fassade" as const, punkte: [[0, 0, 0], [0, 4, 0], [0, 4, 3]] as Array<[number, number, number]> },
+      // Geschoss nicht gezeigt: fällt weg.
+      { geschoss: 5, material: "ziegel" as const, punkte: [[0, 0, 0], [1, 0, 0], [1, 1, 0]] as Array<[number, number, number]> },
+    ];
+    const d = flaechenDach(flaechen, (g) => (g === 1 ? 3 : undefined), new THREE.MeshStandardMaterial(), 2.65);
+    expect(d.gruppe.children).toHaveLength(3);
+    const k = d.karte!;
+    const hoehe = (x: number, z: number) => {
+      const b = k.textur.image.width;
+      const i = Math.floor((x - k.rahmen.x) / 0.1), j = Math.floor((z - k.rahmen.y) / 0.1);
+      return (k.textur.image.data as unknown as Float32Array)[j * b + i];
+    };
+    // Welthöhe = 3 + 1 + z/4 · 2
+    expect(hoehe(3.05, 3.05)).toBeCloseTo(3 + 1 + (3.05 / 4) * 2, 1);
+    expect(hoehe(1.55, 1.55)).toBeCloseTo(5.8, 2);
+  });
+});

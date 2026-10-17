@@ -189,7 +189,21 @@ export type Dach =
   | { art: "flach"; farbe?: string }
   | { art: "sattel"; first: "x" | "y"; neigung: number; kniestock: number; farbe: string; ueberstand?: number }
   | { art: "walm"; neigung: number; kniestock: number; farbe: string; ueberstand?: number }
-  | { art: "mansarde"; tiefe: number; hoehe: number; traufe: Seite[]; farbe: string; flach: string };
+  | { art: "mansarde"; tiefe: number; hoehe: number; traufe: Seite[]; farbe: string; flach: string }
+  | { art: "flaechen"; flaechen: Dachflaeche[] };
+
+/**
+ * Eine ebene Dachfläche (oder ein Giebel) aus Dachaufsicht und Ansichten:
+ * Ecken in Hausmetern (x, y wie im Grundriss) und Höhe h über dem
+ * Fertigfußboden von `geschoss`. So lassen sich geknickte, gewalmte und
+ * verschnittene Dächer eins zu eins bauen.
+ */
+export interface Dachflaeche {
+  geschoss: number;
+  punkte: Array<[number, number, number]>;
+  material: "ziegel" | "blech" | "glas" | "flach" | "fassade" | "gruen";
+  farbe?: string;
+}
 
 /**
  * Gaube oder Zwerchgiebel auf einem Sattel- oder Walmdach. `von` und `b`
