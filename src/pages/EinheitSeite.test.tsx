@@ -355,12 +355,14 @@ describe("Anordnung der Einheiten-Seite", () => {
 
 describe("3D-Grundriss auf der Einheitsseite (17.10.2026)", () => {
   for (const rolle of ["admin", "vertriebspartner", "backoffice"]) {
-    it(`bietet ${rolle} im Reiter Übersicht den Editor an`, () => {
+    it(`bietet ${rolle} im Reiter 3D-Modell den Editor an`, () => {
       objekte.rolle = rolle;
       // Ob die Rolle das Objekt sehen darf, prüft der Zugang; hier geht es nur um die Karte.
       objekte.zugangUmgehen = true;
       objekte.liste = { o2: objekt("o2", [we("w1"), we("w2")]) };
       renderMit("/objekte/o2/einheiten/w1");
+      expect(screen.queryByTestId("einheit-grundriss-3d")).not.toBeInTheDocument();
+      fireEvent.mouseDown(screen.getByRole("tab", { name: "3D-Modell" }));
       expect(screen.getByTestId("einheit-grundriss-3d")).toBeInTheDocument();
       expect(screen.getByRole("button", { name: /Grundriss nachzeichnen/ })).toBeInTheDocument();
     });

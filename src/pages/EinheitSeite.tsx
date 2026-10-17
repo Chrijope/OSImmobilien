@@ -386,7 +386,7 @@ function EinheitAnsicht({ objekt, wohnung: w }: { objekt: ObjektData; wohnung: O
     () => (darfLotse && lotseGeoeffnet ? kalkulationFuerLotse(objekt, w, passenderRechnerStand, kundenkontext) : null),
     [darfLotse, lotseGeoeffnet, objekt, w, passenderRechnerStand, kundenkontext],
   );
-  const reiterZahl = 4 + (darfRechner ? 1 : 0) + (darfLotse ? 1 : 0);
+  const reiterZahl = 5 + (darfRechner ? 1 : 0) + (darfLotse ? 1 : 0);
   // Umbrechen statt überstehen: lieber zwei Zeilen als über den Nachbarn.
   // „Investmentkalkulation“ bricht an der Wortfuge, weil beide Teile eigene
   // Flex-Elemente sind. Den Namen ohne Leerzeichen hält dort ein aria-label.
@@ -613,7 +613,8 @@ function EinheitAnsicht({ objekt, wohnung: w }: { objekt: ObjektData; wohnung: O
           so breit wie ihre Reiter, die Spalten beginnen links statt mittig.
         */}
         <TabsList className={cn("mb-4 grid h-auto w-full justify-start gap-1 rounded-xl p-1 lg:w-fit lg:max-w-full",
-          reiterZahl === 6 ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-[repeat(6,auto)]"
+          reiterZahl === 7 ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-[repeat(7,auto)]"
+            : reiterZahl === 6 ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-[repeat(6,auto)]"
             : reiterZahl === 5 ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-[repeat(5,auto)]"
               : "grid-cols-2 lg:grid-cols-[repeat(4,auto)]")}>
           {/*
@@ -623,6 +624,8 @@ function EinheitAnsicht({ objekt, wohnung: w }: { objekt: ObjektData; wohnung: O
             danach, nicht umgekehrt.
           */}
           <TabsTrigger value="uebersicht" className={reiterKlasse}>Übersicht</TabsTrigger>
+          {/* Eigener Reiter zwischen Übersicht und Dokumente (Christian, 17.10.2026). */}
+          <TabsTrigger value="dreid" className={reiterKlasse}>3D-Modell</TabsTrigger>
           <TabsTrigger value="dokumente" className={reiterKlasse}>Dokumente</TabsTrigger>
           {/* Das Info-Symbol sagt vor dem Klick, welcher Reiter wofür da ist (Christian, 23.09.2026). */}
           <TabsTrigger value="finanzen" className={reiterKlasse}><ReiterBeschriftung info={FINANZEN_ERKLAERUNG}>Finanzen</ReiterBeschriftung></TabsTrigger>
@@ -705,9 +708,6 @@ function EinheitAnsicht({ objekt, wohnung: w }: { objekt: ObjektData; wohnung: O
               </div>
             </div>
 
-            {/* 3D-Grundriss der Einheit (17.10.2026), Editor für jede interne Rolle, siehe components/grundriss3d. */}
-            <EinheitGrundriss3dKarte wohnung={w} darfBearbeiten={istInterneRolle(user.role)} />
-
             {alleinigeEinheit ? objektangaben : (
             <div className={cn(KARTE, "min-w-0")}>
               <KartenTitel rechts={<span className="text-xs text-muted-foreground">{zaehler.frei} von {zaehler.gesamt} frei</span>}>Weitere Einheiten in diesem Haus</KartenTitel>
@@ -717,6 +717,11 @@ function EinheitAnsicht({ objekt, wohnung: w }: { objekt: ObjektData; wohnung: O
             </div>
             )}
           </div>
+        </TabsContent>
+
+        {/* Wird erst beim Öffnen eingehängt; three.js lädt also nur, wenn jemand den Reiter wählt. */}
+        <TabsContent value="dreid">
+          <EinheitGrundriss3dKarte wohnung={w} darfBearbeiten={istInterneRolle(user.role)} />
         </TabsContent>
 
         <TabsContent value="finanzen">

@@ -632,11 +632,18 @@ function ObjektAnsicht({ objekt, onPflege, eigeneId }: {
       */}
       <Tabs value={reiter} onValueChange={setReiter}>
         {/* Immer links, wie auf der Einheitsseite (Christian, 05.10.2026). */}
-        <TabsList className="mb-4 grid h-auto w-full max-w-lg grid-cols-3 justify-start gap-1 rounded-xl p-1">
+        <TabsList className="mb-4 grid h-auto w-full max-w-xl grid-cols-2 justify-start gap-1 rounded-xl p-1 sm:grid-cols-4">
           <TabsTrigger value="uebersicht" className={REITER_KLASSE}>Übersicht</TabsTrigger>
+          {/* Eigener Reiter zwischen Übersicht und Dokumente (Christian, 17.10.2026). */}
+          <TabsTrigger value="dreid" className={REITER_KLASSE}>3D-Modell</TabsTrigger>
           <TabsTrigger value="dokumente" className={REITER_KLASSE}>Dokumente{dokumenteMitDatei.length > 0 ? ` (${dokumenteMitDatei.length})` : ""}</TabsTrigger>
           <TabsTrigger value="karte" className={REITER_KLASSE}>Karte</TabsTrigger>
         </TabsList>
+
+        {/* Das Haus in 3D aus den Grundrissen der Einheiten; eingehängt erst beim Öffnen des Reiters. */}
+        <TabsContent value="dreid">
+          <ObjektGrundriss3dKarte objekt={objekt} darfBearbeiten={istInterneRolle(user.role)} />
+        </TabsContent>
 
         <TabsContent value="dokumente">
           {dokumenteMitDatei.length === 0 && !unterlagenLink ? (
@@ -750,9 +757,6 @@ function ObjektAnsicht({ objekt, onPflege, eigeneId }: {
           <InterneHighlightsKarte objekt={objekt} />
           </div>
         </div>
-
-        {/* Das Haus in 3D aus den Grundrissen der Einheiten (17.10.2026), siehe components/grundriss3d. */}
-        <ObjektGrundriss3dKarte objekt={objekt} darfBearbeiten={istInterneRolle(user.role)} />
       </div>
 
       {/* min-w-0 statt overflow-x: Die Tabelle scrollt in ihrer eigenen
