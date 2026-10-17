@@ -134,7 +134,7 @@ export function EinwandSchnellhilfe({ skriptSchritt, freieSuche, className }: Pr
     const q = suche.trim().toLowerCase();
     if (!q) return passend;
     return EINWAND_BIBLIOTHEK.filter((e) =>
-      [e.einwand, e.meintEigentlich, e.antwortKurz, ...(e.tags ?? [])]
+      [e.einwand, e.meintEigentlich, e.antwortKurz, e.nachfrage ?? "", ...(e.tags ?? [])]
         .join(" ")
         .toLowerCase()
         .includes(q),
@@ -263,6 +263,15 @@ export function EinwandAntwort({
         <div className="whitespace-pre-line">{eintrag.antwortKurz}</div>
       </div>
 
+      {eintrag.nachfrage && (
+        <div className="rounded-md border p-2.5">
+          <div className="text-[10px] uppercase tracking-wide text-muted-foreground mb-0.5">
+            Frag nach
+          </div>
+          <div className="text-foreground/90">„{eintrag.nachfrage}“</div>
+        </div>
+      )}
+
       {/*
         Der Weg dorthin. Ein Quereinsteiger braucht die drei Schritte als
         Handlungsanweisung, weil er die Technik noch nicht im Gefühl hat. Ein
@@ -288,6 +297,16 @@ export function EinwandAntwort({
         </div>
       )}
 
+      {/* Nach der Zustimmungsfrage schweigen, sagt das Handbuch. Deshalb steht sie für sich. */}
+      {eintrag.zustimmung && (
+        <div className="rounded-md border border-emerald-500/30 bg-emerald-500/5 p-2.5">
+          <div className="text-[10px] uppercase tracking-wide text-muted-foreground mb-0.5">
+            Zustimmungsfrage, danach schweigen
+          </div>
+          <div className="text-foreground/90">„{eintrag.zustimmung}“</div>
+        </div>
+      )}
+
       {/* Die Geschichte trägt nur, wer sie frei erzählen kann. */}
       {zeigeProfi && eintrag.antwortStory && (
         <div className="rounded-md border p-2.5">
@@ -302,6 +321,15 @@ export function EinwandAntwort({
         <span className="font-semibold shrink-0">Falle:</span>
         <span className="text-foreground/90">{eintrag.falle}</span>
       </div>
+
+      {eintrag.nie && eintrag.nie.length > 0 && (
+        <div className="text-xs">
+          <div className="font-semibold text-rose-700 dark:text-rose-400">Das sagen wir nie</div>
+          <ul className="list-disc list-inside text-foreground/90">
+            {eintrag.nie.map((n) => <li key={n}>„{n}“</li>)}
+          </ul>
+        </div>
+      )}
 
       <TechnikErklaerung
         technikId={eintrag.technik}

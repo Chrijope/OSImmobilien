@@ -69,7 +69,7 @@ export const OS_EINWAENDE: OsEinwand[] = [
     belege: [
       "Wert: Preis je m² und Verhältnis zur Jahresnettokaltmiete mit vergleichbaren Angeboten der Lage zeigen.",
       "Belastung: zuerst vor Steuern, dann nach Steuern, dann das Stressszenario.",
-      "Kaufnebenkosten offen nennen, nach Lage des Objekts: Bayern rund 5,5 %, Sachsen-Anhalt rund 7 %, Sachsen rund 7,5 %, Berlin rund 8 %, Brandenburg rund 8,5 %.",
+      "Kaufnebenkosten offen nennen: Berlin rund 8,0 % (Grunderwerbsteuer 6 %), Brandenburg rund 8,5 % (Grunderwerbsteuer 6,5 %). Keine Maklerprovision, wir verkaufen als Bauträger selbst.",
     ],
     zustimmung: "Wenn die Belastung sicher innerhalb deiner Grenze bleibt: Wäre der Preis dann noch ein Hindernis?",
     nie: ["Das ist ein Schnäppchen.", "Billiger bekommst du das nirgends.", "Nach Steuern ist die Belastung fast null."],
@@ -138,7 +138,7 @@ export const OS_EINWAENDE: OsEinwand[] = [
     kernsatz: "Ein guter Baustein. Die Immobilie ist eine Ergänzung, kein Ersatz.",
     nachfrage: "Was ist dir wichtiger: jederzeit verfügbar oder langfristig planbar Vermögen aufbauen?",
     belege: [
-      "Immobilie: üblich mit Bankdarlehen, Miete als Einnahme, Kaufnebenkosten rund 5,5 bis 8,5 % je nach Bundesland, weniger flexibel.",
+      "Immobilie: üblich mit Bankdarlehen, Miete als Einnahme, Kaufnebenkosten rund 8,0 % (Berlin) bzw. 8,5 % (Brandenburg), weniger flexibel.",
       "ETF: börsentäglich verfügbar, geringe Kosten, wenig Aufwand, Schwankung täglich sichtbar.",
     ],
     zustimmung: "Wäre es sinnvoll, beide Bausteine nebeneinander zu haben, wenn die Immobilie deine Sparrate nicht verdrängt?",
@@ -160,7 +160,7 @@ export const OS_EINWAENDE: OsEinwand[] = [
     kernsatz: "Das klären wir sachlich. Deine Reserve bleibt unangetastet.",
     nachfrage: "Wie viel Erspartes möchtest du auf jeden Fall als Reserve behalten?",
     belege: [
-      "Kaufnebenkosten in der Regel aus Eigenkapital: bei 300.000 € Kaufpreis je nach Bundesland rund 16.500 € (Bayern) bis 25.500 € (Brandenburg).",
+      "Kaufnebenkosten in der Regel aus Eigenkapital: bei 300.000 € Kaufpreis rund 24.000 € (Berlin) bis 25.500 € (Brandenburg).",
       "Die Finanzierung prüfen wir erst nach Konzept- und Objektentscheidung, mit Mandat und Unterlagen. Bis dahin Einschätzung, keine Zusage.",
     ],
     zustimmung: "Wenn Kaufnebenkosten und Reserve zusammen machbar sind: Möchtest du den nächsten Schritt gehen?",

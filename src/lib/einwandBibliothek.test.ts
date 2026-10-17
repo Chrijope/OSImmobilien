@@ -105,4 +105,53 @@ describe("Einwand-Bibliothek", () => {
     const neue = treffer.filter((id) => !/-0\d$/.test(id));
     expect(neue).toEqual([]);
   });
+
+  describe("nach dem OS-Handbuch Einwandbehandlung (Stand 15.10.2026)", () => {
+    // Die fünfzehn Einwände des Handbuchs, in seiner Reihenfolge.
+    const HANDBUCH = [
+      "preis-21", "produkt-40", "preis-01", "zeit-40", "familie-01", "produkt-23", "produkt-41",
+      "produkt-20", "produkt-25", "produkt-42", "bank-22", "produkt-43", "produkt-33",
+      "denkezeit-39", "vertrauen-01",
+    ];
+
+    it("führt alle fünfzehn vorn, mit Nachfrage, Zustimmungsfrage und Nie-Sätzen", () => {
+      expect(EINWAND_BIBLIOTHEK.slice(0, 15).map((e) => e.id)).toEqual(HANDBUCH);
+      for (const e of EINWAND_BIBLIOTHEK.slice(0, 15)) {
+        expect(e.nachfrage?.trim().length, e.id).toBeGreaterThan(0);
+        expect(e.zustimmung?.trim().length, e.id).toBeGreaterThan(0);
+        expect(e.nie?.length, e.id).toBeGreaterThan(0);
+        expect(e.antwortZahlen?.trim().length, e.id).toBeGreaterThan(0);
+      }
+    });
+
+    it("findet die neuen Einwände über Stichworte", () => {
+      const finde = (q: string) =>
+        EINWAND_BIBLIOTHEK.filter((e) =>
+          [e.einwand, e.meintEigentlich, e.antwortKurz, e.nachfrage ?? "", ...(e.tags ?? [])]
+            .join(" ")
+            .toLowerCase()
+            .includes(q),
+        ).map((e) => e.id);
+      expect(finde("weit weg")).toContain("produkt-40");
+      expect(finde("keine zeit")).toContain("zeit-40");
+      expect(finde("hausgeld")).toContain("produkt-41");
+      expect(finde("eigenheim")).toContain("produkt-42");
+      expect(finde("abschreibung")).toContain("produkt-43");
+    });
+
+    it("spricht per Du, ohne Gedankenstrich, Druck oder Fremdbezug", () => {
+      for (const e of EINWAND_BIBLIOTHEK) {
+        const text = [
+          e.einwand, e.meintEigentlich, e.antwortKurz, e.antwortStory ?? "", e.antwortZahlen ?? "",
+          e.nachfrage ?? "", e.zustimmung ?? "", e.falle, e.profiMove ?? "",
+        ].join(" ");
+        expect(/[–—]/.test(text), `${e.id}: Gedankenstrich`).toBe(false);
+        // „Sie“ ist am Satzanfang oft „sie“, deshalb nur die eindeutigen Formen.
+        expect(/\b(Ihnen|Ihre[mnrs]?)\b/.test(text), `${e.id}: Sie-Form`).toBe(false);
+        expect(/Bayern|Augsburg|Sachsen/.test(text), `${e.id}: Bundesland`).toBe(false);
+        // Kaufnebenkosten nur mit den Sätzen für Berlin und Brandenburg.
+        expect(/5,5 %|5,5 bis/.test(text), `${e.id}: Kaufnebenkosten`).toBe(false);
+      }
+    });
+  });
 });
