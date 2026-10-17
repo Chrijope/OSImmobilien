@@ -80,7 +80,7 @@ export function finanzierungsrahmen(min: number, max: number): Rahmen | null {
 const positiv = (n: number | undefined | null): number =>
   typeof n === "number" && Number.isFinite(n) && n > 0 ? n : 0;
 
-/** Faktor auf den Kaufpreis: 1,085 bei 8,5 Prozent Nebenkosten, 1 ohne. */
+/** Faktor auf den Kaufpreis: 1,055 bei 5,5 Prozent Nebenkosten, 1 ohne. */
 export function nebenkostenFaktor(nebenkostenProzent: number, mitNebenkosten = NEBENKOSTEN_IM_RAHMEN): number {
   return mitNebenkosten ? 1 + positiv(nebenkostenProzent) / 100 : 1;
 }

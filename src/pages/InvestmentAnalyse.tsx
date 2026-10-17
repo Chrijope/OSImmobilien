@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { InvestmentRechner } from "@/components/objekte/InvestmentRechner";
+import { gepflegterKaufnebenkostenSatz, kaufnebenkostenPct } from "@/lib/kaufnebenkosten";
 import { getObjekte, getAktuelleMiete } from "@/lib/objekteStore";
 import { useUser } from "@/contexts/UserContext";
 import { kundenSprache } from "@/lib/kundenSprache";
@@ -108,7 +109,7 @@ export default function InvestmentAnalyse() {
           initialBodenrichtwert={objekt.afaDaten?.bodenrichtwert}
           initialGrundstuecksflaeche={objekt.afaDaten?.grundstuecksflaeche || objekt.globalDaten?.grundstueckQm}
           initialBaujahr={objekt.globalDaten?.baujahr}
-          initialKaufnebenkosten={objekt.globalDaten?.kaufnebenkosten}
+          initialKaufnebenkosten={kaufnebenkostenPct({ plz: objekt.plz, metaPct: gepflegterKaufnebenkostenSatz(objekt) })}
           pdfSprache={kundenSprache(kundeId)}
           neueMiete={isWohnungModus && wohnung?.neueMiete ? wohnung.neueMiete : undefined}
           mieterhoehungAb={isWohnungModus && wohnung?.mieterhoehungAb ? wohnung.mieterhoehungAb : undefined}

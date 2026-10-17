@@ -6,6 +6,7 @@
 export const OBJEKTDATEN_ROUTE = "/objektdaten";
 export const OBJEKTDATEN_EINHEITEN_ROUTE = "/objektdaten/einheiten";
 export const OBJEKTDATEN_VOLLSTAENDIGKEIT_ROUTE = "/objektdaten/vollstaendigkeit";
+export const OBJEKTDATEN_MIETER_ROUTE = "/objektdaten/mieter";
 
 /**
  * Wer die Gruppe „Objektdaten“ sieht und ihre Seiten öffnen darf

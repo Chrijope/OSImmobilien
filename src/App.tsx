@@ -704,6 +704,7 @@ const App = () => (
                   {/* Objektdaten (17.10.2026): Listen aus Bauträger-Sicht, Rechte in `objektdaten.ts`. */}
                   <Route path="/objektdaten" element={<Objektdaten ansicht="cockpit" />} />
                   <Route path="/objektdaten/einheiten" element={<Objektdaten ansicht="einheiten" />} />
+                  <Route path="/objektdaten/mieter" element={<Objektdaten ansicht="mieter" />} />
                   <Route path="/objektdaten/vollstaendigkeit" element={<Objektdaten ansicht="vollstaendigkeit" />} />
                   <Route path="/musterkalkulation" element={<Navigate to="/investmentrechner" replace />} />
                   {/* Kalkulation 1, Team Pro Q und die Kalkulator-Beispiele sind entfernt

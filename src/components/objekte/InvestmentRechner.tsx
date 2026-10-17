@@ -17,6 +17,7 @@ import { isTestAccount } from "@/lib/dbStoreHelper";
 import { getUserSetting, setUserSetting } from "@/lib/userSettingsCache";
 import jsPDF from "jspdf";
 import { estimateGrenzsteuersatz, reverseSteuersatzZuZvE, berechneSteuerersparnis } from "@/lib/steuerHelper";
+import { kaufnebenkostenProzent } from "@/lib/grunderwerbsteuer";
 
 const fmt = (v: number) =>
   new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(v);
@@ -56,7 +57,7 @@ interface InvestmentRechnerProps {
   initialGrundstuecksflaeche?: number;
   /** Baujahr aus Objektdaten */
   initialBaujahr?: number;
-  /** Kaufnebenkosten % aus Objektdaten */
+  /** Kaufnebenkosten % des Objekts: gepflegter Satz, sonst nach Postleitzahl */
   initialKaufnebenkosten?: number;
   /** Sprache des Kunden für das PDF (Plan Kundensprache, D14). Ohne Angabe Deutsch. */
   pdfSprache?: "de" | "en";
@@ -144,7 +145,8 @@ export function InvestmentRechner({
     { id: "t1", bezeichnung: "Bankdarlehen", betrag: initialKaufpreis, zinssatz: 4.5, tilgung: 1.5 },
   ]);
 
-  const [nkPct, setNkPct] = useState(5);
+  // Satz nach Standort des Objekts. Bis 10/2026 fest 5 Prozent (Bayern).
+  const [nkPct, setNkPct] = useState(initialKaufnebenkosten || kaufnebenkostenProzent(null));
   // Nebenkosten & Hausgeld (Standard: 4,50 €/m² Wohnfläche, davon 3,00 € umlagefähig)
   const defaultHausgeld = initialGroesse > 0 ? Math.round(initialGroesse * 4.5) : Math.round(initialMiete * 0.25);
   const [hausgeldMonat, setHausgeldMonat] = useState(defaultHausgeld);

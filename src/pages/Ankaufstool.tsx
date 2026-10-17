@@ -98,7 +98,7 @@ const ABSCHNITTE: Abschnitt[] = [
     titel: "1. Ankauf",
     beschreibung: "Kaufpreis und Käuferprovision stehen oben bei den Objektdaten.",
     felder: [
-      { key: "grunderwerbsteuer", label: "Grunderwerbsteuer", einheit: "%", hinweis: "Berlin 6,0 % · Brandenburg 6,5 % · je Bundesland prüfen" },
+      { key: "grunderwerbsteuer", label: "Grunderwerbsteuer", einheit: "%", hinweis: "Bayern 3,5 % · Sachsen 5,5 % · Berlin 6,0 % · Brandenburg 6,5 % · je Bundesland prüfen" },
       { key: "notarAnkauf", label: "Notar & Grundbuch Ankauf", einheit: "%", hinweis: "Faustwert ca. 1,5–2 %" },
     ],
     zeilen: [
