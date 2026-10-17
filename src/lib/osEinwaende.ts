@@ -203,7 +203,7 @@ export const OS_EINWAENDE: OsEinwand[] = [
   },
   {
     nr: 15, thema: "Vertrauen", einwand: "Wer bist du überhaupt? Du willst mir doch nur etwas verkaufen.",
-    kernsatz: "Ja, wir vermitteln Immobilien und verdienen daran. Gerade deshalb rechne ich mit echten Zahlen.",
+    kernsatz: "Ja, wir verkaufen Immobilien aus erster Hand vom Bauträger und verdienen daran. Gerade deshalb rechne ich mit echten Zahlen.",
     nachfrage: "Was müsstest du von uns sehen oder wissen, um uns zu vertrauen?",
     belege: [
       "Drei getrennte Termine, die Entscheidung liegt nach jedem Schritt beim Kunden.",

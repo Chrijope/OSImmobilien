@@ -9279,7 +9279,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Abschnitt 02 zeigt, was der Kunde im Erstgespräch gesagt hat: seine wichtigsten Ziele, sein Rahmen mit tragbarem Betrag vor Steuern, Reserve, Eigenkapital für die Nebenkosten und Mitentscheider, dazu sein wichtigster Satz als Zitat und seine erste Frage. Die Nachfrage lautet: Stimmt das noch so? Was würdest du heute ergänzen? Beantworte seine erste Frage hier, nicht erst am Ende.",
           "Abschnitt 03 rechnet die Rentenlücke aus den Werten des Erstgesprächs: gewünschtes Netto im Ruhestand minus erwartete Rente, je Monat und über 25 Jahre Ruhestand. Die Rechnung ist ohne Inflation und ausdrücklich eine Größenordnung. Die Frage dazu: Was passiert, wenn diese Lücke einfach bleibt?",
           "Abschnitt 04 ist der Preis des Nichtstuns: 50.000 Euro auf dem Tagesgeld zu 2 Prozent sind nach 10 Jahren 60.950 Euro, bei 2,5 Prozent Inflation aber nur noch 47.615 Euro Kaufkraft. Zins und Inflation sind Annahmen, und genau so sagst du es auch. Der Abschnitt ist ein Anlass zum Nachdenken, kein Beweis und kein Zeitdruck. Wenn Reserve oder Lebensplanung noch nicht passen, ist Warten die bessere Wahl, und auch das sagt die Folie offen.",
-          "Abschnitt 05 stellt OS Real Estate vor: Wir vermitteln geprüfte, vermietete Wohnimmobilien in Berlin und Brandenburg als Kapitalanlage und begleiten vom ersten Gespräch bis zur Kaufpreiszahlung. Dazu die Unternehmensgruppe unter dem Dach der OS Immobilien Holding mit Real Estate, Verwaltung und Finanzierung. Und der Satz, der Vertrauen schafft: Wir verdienen an der Vermittlung. Steuer-, Rechts- und Finanzierungsberatung leisten Steuerberater, Notare und Banken."
+          "Abschnitt 05 stellt OS Real Estate vor: Wir verkaufen geprüfte, vermietete Wohnimmobilien in Berlin und Brandenburg als Kapitalanlage aus erster Hand vom Bauträger, ohne Maklerprovision, und begleiten vom ersten Gespräch bis zur Kaufpreiszahlung. Dazu die Unternehmensgruppe unter dem Dach der OS Immobilien Holding mit Real Estate, Verwaltung und Finanzierung. Und der Satz, der Vertrauen schafft: Wir verdienen am Verkauf. Steuer-, Rechts- und Finanzierungsberatung leisten Steuerberater, Notare und Banken."
         ],
         "visuals": [
           {
@@ -9321,7 +9321,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           {
             "titel": "Abschnitt 05 · Wer wir sind",
             "kontext": "Nach Rentenlücke und Preis des Nichtstuns.",
-            "text": "„Wir vermitteln geprüfte, vermietete Wohnimmobilien in Berlin und Brandenburg und verdienen an der Vermittlung. Gerade deshalb rechnen wir mit echten Zahlen. Steuer-, Rechts- und Finanzierungsberatung machen Steuerberater, Notare und Banken.“",
+            "text": "„Wir verkaufen geprüfte, vermietete Wohnimmobilien in Berlin und Brandenburg aus erster Hand vom Bauträger und verdienen am Verkauf. Gerade deshalb rechnen wir mit echten Zahlen. Steuer-, Rechts- und Finanzierungsberatung machen Steuerberater, Notare und Banken.“",
             "warum": "Offen zu sagen, woran wir verdienen, nimmt dem Misstrauen den Boden. Die Grenze zur Steuer-, Rechts- und Finanzierungsberatung schützt den Kunden und dich."
           }
         ],
@@ -28645,7 +28645,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
     kategorie: "vertrauen",
     einwand: "Wer seid ihr überhaupt? Du willst mir doch nur etwas verkaufen.",
     meintEigentlich: "Gesundes Misstrauen. Ich habe schlechte Erfahrungen mit Vertrieb gemacht oder davon gehört. Wer diesen Einwand abwehrt, bestätigt ihn.",
-    antwortKurz: "Ja, wir verkaufen Immobilien, das sage ich ganz offen, und wir verdienen daran. Gerade deshalb rechne ich mit echten Zahlen, zeige dir die Risiken und alle Unterlagen. Wir sind die OS Real Estate GmbH, Teil der OS Immobilien Holding, und verkaufen als Bauträger unsere eigenen Wohnungen, ohne Maklerprovision. Unser Grundsatz ist: erst deine Ziele, dann das Konzept, dann die passende Immobilie, erst danach die Finanzierung. Und wenn nichts passt, sagen wir das.",
+    antwortKurz: "Ja, wir verkaufen Immobilien, das sage ich ganz offen, und wir verdienen daran. Du kaufst bei uns aus erster Hand vom Bauträger. Gerade deshalb rechne ich mit echten Zahlen, zeige dir die Risiken und alle Unterlagen. Wir sind die OS Real Estate GmbH, Teil der OS Immobilien Holding, und es fällt keine Maklerprovision an. Unser Grundsatz ist: erst deine Ziele, dann das Konzept, dann die passende Immobilie, erst danach die Finanzierung. Und wenn nichts passt, sagen wir das.",
     nachfrage: "Was müsstest du von uns sehen oder wissen, um uns zu vertrauen?",
     antwortZahlen: "Offenlegen, wie wir arbeiten: drei getrennte Termine, die Entscheidung liegt nach jedem Schritt beim Kunden, jede Berechnung wird im Vier-Augen-Prinzip geprüft.\nUnterlagen vollständig vor der Entscheidung: Exposé, Protokolle, Wirtschaftsplan, Mietvertrag, Energieausweis, Kaufvertragsentwurf mit Prüffrist beim Notar.\nReferenzen nur, wenn es echte Kunden mit Einverständnis gibt. Keine erfundenen Bewertungen, keine fremden Siegel.\nDer Kunde darf jede Zahl mit seiner Steuerberatung und seiner Bank prüfen. Wir ermutigen ausdrücklich dazu.",
     zustimmung: "Wenn du alle Unterlagen vorab bekommst und jede Zahl unabhängig prüfen lassen kannst: Ist das für dich eine faire Grundlage für das nächste Gespräch?",
@@ -28672,14 +28672,19 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
   },
   {
     id: "preis-03",
-    technik: "kontextwechsel",
+    technik: "isolierende-frage",
+    skriptSchritte: ["investitionsbereitschaft"],
     kategorie: "preis",
     einwand: "Ich möchte 5 % Nachlass.",
-    meintEigentlich: "Ich will das Gefühl haben, verhandelt zu haben, nicht unbedingt echten Nachlass.",
-    antwortKurz: "Danke, dass du das offen ansprichst. Wir sind selbst der Bauträger, der Preis steht in unserer Kaufpreisliste. Ob es Spielraum gibt, entscheidet bei uns die Geschäftsführung, nicht ich im Gespräch. Bevor ich dort frage: Geht es dir um den Kaufpreis im Verhältnis zur Wohnung oder um die monatliche Belastung? Dann schauen wir genau dort hin.",
-    falle: "Keinen Nachlass und keine Zugabe zusagen, die nicht freigegeben ist. Und nicht so tun, als müsstest du bei einem fremden Bauträger nachfragen: Wir sind selbst der Bauträger.",
-    profiMove: "Kläre zuerst, ob der Preis oder die Belastung das Thema ist. Oft wird aus dem Wunsch nach Nachlass die Frage nach einer kleineren Wohnung oder einer anderen Finanzierungsstruktur.",
-    tags: ["nachlass", "rabatt", "verhandeln", "preis"],
+    meintEigentlich: "Ich will sicher sein, keinen schlechten Preis zu zahlen, und das Gefühl haben, verhandelt zu haben. Oft geht es nicht um echten Nachlass.",
+    antwortKurz: "Verstehe ich gut, bei so einer Entscheidung möchte jeder einen fairen Preis. Ganz offen: Unsere Preise sind fest kalkuliert und gelten für alle Käufer gleich. Das ist fair, denn so zahlt niemand im Haus mehr als sein Nachbar. Dazu kaufst du aus erster Hand vom Bauträger, ohne Maklerprovision. Lass uns deshalb lieber prüfen, ob der Preis zur Wohnung passt und ob die monatliche Belastung für dich stimmt. Wenn nicht, ist vielleicht eine andere Wohnung die bessere Wahl.",
+    nachfrage: "Ist der Preis der einzige Punkt, oder gibt es noch etwas, das dich zurückhält?",
+    antwortZahlen: "Wert zeigen: Preis je m² und Verhältnis von Kaufpreis zu Jahresnettokaltmiete mit vergleichbaren Angeboten der Lage.\nOhne Maklerprovision: Bei einem Kauf über einen Makler zahlen Käufer in Berlin und Brandenburg oft bis zu 3,57 % Provision. Bei 300.000 € Kaufpreis wären das bis zu rund 10.700 €, die hier nicht anfallen.\nBelastung: zuerst vor Steuern, dann nach Steuern, dann das Stressszenario.",
+    zustimmung: "Wenn Preis je m² und monatliche Belastung für dich nachvollziehbar sind: Wäre der Nachlass dann noch entscheidend?",
+    falle: "Nicht sofort nachgeben und keinen Nachlass oder keine Zugabe in Aussicht stellen. Wer beim Preis schnell nachgibt, lässt den Kunden zweifeln, ob der Preis vorher richtig war, und die anderen Käufer zahlen den Unterschied.",
+    profiMove: "Isoliere den Einwand mit der Nachfrage. Ist der Preis der einzige Punkt, sprich über Wert und Belastung statt über Prozente. Oft wird aus dem Wunsch nach Nachlass die Frage nach einer kleineren Wohnung.",
+    nie: ["Ich frag mal, ob da noch was geht.", "Wenn du heute unterschreibst, bekommst du Rabatt."],
+    tags: ["nachlass", "rabatt", "verhandeln", "preis", "makler", "provision"],
   },
   {
     id: "zeit-01",
