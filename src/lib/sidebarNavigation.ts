@@ -123,16 +123,9 @@ const toolsItems = [
 const leadGenItems = [
   { title: "Analysetool", url: "/analysetool", icon: Search, suchbegriffe: ["analyse", "auswertung", "kunde pruefen"] },
   { title: "Steuerrechner", url: "/steuerrechner", icon: Calculator, suchbegriffe: ["steuer", "steuerersparnis", "rechner", "eigener link"], tooltip: "Eigener öffentlicher Rechner mit Deinem persönlichen Link. Der Interessent sieht seine Steuerlast, seine Ersparnis und sein Vermögen nach zehn Jahren, und wer sich einträgt, landet als Lead direkt bei Dir." },
-  /* Die kurze, englische Fassung fuer Anzeigen an Expats. Sie steht unter dem
-     grossen Rechner, weil sie ihn nicht ersetzt, sondern ergaenzt: drei Fragen
-     statt acht, dafuer groebere Annahmen. Die alte Adresse
-     `/steuerrechner-kompakt` leitet in `App.tsx` auf `/expats-calculator`.
-     ACHTUNG, zwei verschiedene Dinge: Die Adresse selbst ist seit der Oeffnung
-     OEFFENTLICH und liegt vor dem Anmeldeschutz, denn sie ist die Zielseite
-     bezahlter Anzeigen. `adminOnly` hier steuert nur, wer den Eintrag in der
-     Navigation sieht, und das bleiben Admin und Inhaber. */
-  { title: "EXPATS Calculator", url: "/expats-calculator", icon: Calculator, adminOnly: true, adminBadge: true,
-    tooltip: "Die kurze englische Strecke für Meta-Anzeigen an Expats. Öffentlich erreichbar, auch ohne Anmeldung. Drei Fragen, dann die Kontaktdaten, danach das Ergebnis. Wer absendet, wird als Lead in der Lead-Verwaltung angelegt, mit der Quelle EXPATS Calculator." },
+  /* EXPATS Calculator (/expats-calculator) seit 17.10.2026 nicht mehr in der
+     Seitenleiste. Die Adresse bleibt öffentlich, sie ist Zielseite der
+     Meta-Anzeigen. */
   { title: "Vertriebspartner-Microseite", url: "/berater-microseite", icon: Globe, suchbegriffe: ["microseite", "mikroseite", "landingpage", "eigene seite", "visitenkarte"] },
   /*
    * Die Handbuch-Seite, seit dem 26.09.2026: Landingpage mit Konfigurator,
@@ -177,7 +170,7 @@ const wissenItems = [
     das am 11.09.2026 wieder herausgenommen, ein Menuepunkt an zwei Stellen
     verwirrt mehr, als der kurze Weg nuetzt.
   */
-  { title: "Vertriebshandbuch", url: "/vertriebshandbuch", icon: BookOpen, suchbegriffe: ["handbuch", "prozess", "ablauf", "eskalation", "anleitung"], tooltip: "Der ganze Kundenabwicklungsprozess von der Anlage bis zum Abschluss, mit allen Erinnerungen, Eskalationsstufen und Meldungen. Oben eine Suche, die ganze Fragen versteht." },
+  { title: "Vertriebshandbuch", url: "/vertriebshandbuch", icon: BookOpen, draft: true, suchbegriffe: ["handbuch", "prozess", "ablauf", "eskalation", "anleitung"], tooltip: "Der ganze Kundenabwicklungsprozess von der Anlage bis zum Abschluss, mit allen Erinnerungen, Eskalationsstufen und Meldungen. Oben eine Suche, die ganze Fragen versteht." },
   { title: "Unsere Kultur", url: "/kultur", icon: Heart, suchbegriffe: ["werte", "standards", "leitbild", "glaubenssaetze"], tooltip: "Werte, Standards, Glaubenssätze und wogegen wir antreten. Mit dem Glaubenssatz des Tages und dem PDF zum Aufhängen." },
 ];
 
