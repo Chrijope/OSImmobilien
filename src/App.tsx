@@ -151,6 +151,7 @@ const Investmentrechner = lazyRoute(() => import("./pages/Investmentrechner"));
 const Ankaufstool = lazyRoute(() => import("./pages/Ankaufstool"));
 const Mietsubvention = lazyRoute(() => import("./pages/Mietsubvention"));
 const Kaufpreisliste = lazyRoute(() => import("./pages/Kaufpreisliste"));
+const Objektdaten = lazyRoute(() => import("./pages/Objektdaten"));
 const KalkulationInvestagon = lazyRoute(() => import("./pages/KalkulationInvestagon"));
 const Kultur = lazyRoute(() => import("./pages/Kultur"));
 const WeeklyCall = lazyRoute(() => import("./pages/WeeklyCall"));
@@ -698,6 +699,10 @@ const App = () => (
                   <Route path="/ankaufstool" element={<Ankaufstool />} />
                   <Route path="/mietsubvention" element={<Mietsubvention />} />
                   <Route path="/kaufpreisliste" element={<Kaufpreisliste />} />
+                  {/* Objektdaten (17.10.2026): Listen aus Bauträger-Sicht, Rechte in `objektdaten.ts`. */}
+                  <Route path="/objektdaten" element={<Objektdaten ansicht="cockpit" />} />
+                  <Route path="/objektdaten/einheiten" element={<Objektdaten ansicht="einheiten" />} />
+                  <Route path="/objektdaten/vollstaendigkeit" element={<Objektdaten ansicht="vollstaendigkeit" />} />
                   <Route path="/musterkalkulation" element={<Navigate to="/investmentrechner" replace />} />
                   {/* Kalkulation 1, Team Pro Q und die Kalkulator-Beispiele sind entfernt
                       (30.09.2026). Alte Links landen in der Investmentkalkulation. */}

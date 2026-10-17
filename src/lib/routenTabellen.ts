@@ -247,6 +247,9 @@ export const ROUTEN_TABELLEN: Record<string, readonly string[]> = {
   "/mietsubvention": [...OBJEKT_TABELLEN],
   // Kaufpreisliste ebenso.
   "/kaufpreisliste": [...OBJEKT_TABELLEN],
+  "/objektdaten": [...OBJEKT_TABELLEN],
+  "/objektdaten/einheiten": [...OBJEKT_TABELLEN],
+  "/objektdaten/vollstaendigkeit": [...OBJEKT_TABELLEN],
   "/musterkalkulation": [],
   "/kalkulation-1": [],
   "/kalkulation-team-pro-q": [],
