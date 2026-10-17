@@ -23,7 +23,7 @@ import { KundenMfaGuard } from "@/components/kunde/KundenMfaGuard";
 
 // Oeffentliche Seiten (eager, klein und immer noetig)
 import Login from "./pages/Login";
-import { VorschauBeratungspraesentation, VorschauErstgespraech, VorschauInvestmentrechner, VorschauNaechsteAktionen, VorschauMikroseite, VorschauPipeline, VorschauProvision, VorschauRechnungsvorlage, VorschauKundeKomplett, VorschauKundenchat, VorschauObjektAnlegen, VorschauGrundriss3d } from "./vorschauRouten";
+import { VorschauBeratungspraesentation, VorschauErstgespraech, VorschauInvestmentrechner, VorschauNaechsteAktionen, VorschauMikroseite, VorschauPipeline, VorschauProvision, VorschauRechnungsvorlage, VorschauKundeKomplett, VorschauKundenchat, VorschauObjektAnlegen, VorschauGrundriss3d, VorschauAnalysetoolErgebnis } from "./vorschauRouten";
 
 /** /investmentrechner-plus → /investmentrechner mit Schalter „Bankgespräch & Bankunterlagen“, Parameter bleiben. */
 function InvestmentrechnerPlusWeiterleitung() {
@@ -415,6 +415,7 @@ const App = () => (
                 )}
                 {VorschauKundenchat && <Route path="/vorschau/kundenchat" element={<VorschauKundenchat />} />}
                 {VorschauObjektAnlegen && <Route path="/vorschau/objekt-anlegen" element={<VorschauObjektAnlegen />} />}
+                {VorschauAnalysetoolErgebnis && <Route path="/vorschau/analysetool-ergebnis" element={<VorschauAnalysetoolErgebnis />} />}
                 {VorschauGrundriss3d && <Route path="/vorschau/grundriss-3d" element={<VorschauGrundriss3d />} />}
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/portal-aktivieren" element={<PortalAktivieren />} />
@@ -703,6 +704,7 @@ const App = () => (
                   {/* Objektdaten (17.10.2026): Listen aus Bauträger-Sicht, Rechte in `objektdaten.ts`. */}
                   <Route path="/objektdaten" element={<Objektdaten ansicht="cockpit" />} />
                   <Route path="/objektdaten/einheiten" element={<Objektdaten ansicht="einheiten" />} />
+                  <Route path="/objektdaten/mieter" element={<Objektdaten ansicht="mieter" />} />
                   <Route path="/objektdaten/vollstaendigkeit" element={<Objektdaten ansicht="vollstaendigkeit" />} />
                   <Route path="/musterkalkulation" element={<Navigate to="/investmentrechner" replace />} />
                   {/* Kalkulation 1, Team Pro Q und die Kalkulator-Beispiele sind entfernt

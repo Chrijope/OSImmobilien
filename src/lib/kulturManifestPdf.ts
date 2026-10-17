@@ -5,7 +5,7 @@
 // damit PDF, Kulturseite, Akademie-Kapitel und Dashboard nie auseinanderlaufen.
 //
 // Aufbau: Jeder Abschnitt beginnt auf einer eigenen Seite, damit man das
-// Dokument auch abschnittsweise ausdrucken kann. Am Ende stehen die sieben
+// Dokument auch abschnittsweise ausdrucken kann. Am Ende stehen die
 // Glaubenssätze als Plakatseiten, je ein Satz groß in einem Kasten.
 
 import { type DocBlock, generateSimpleDocPdf } from "./simpleDocPdf";
@@ -15,6 +15,7 @@ import {
   KULTUR_FEINDBILDER,
   KULTUR_GLAUBENSSAETZE,
   KULTUR_VISION,
+  KULTUR_HERKUNFT,
 } from "./kulturContent";
 
 export const generateKulturManifestPDF = () => {
@@ -40,6 +41,10 @@ export const generateKulturManifestPDF = () => {
         "Feindbilder sagen, wogegen wir antreten, und das ist nie ein Mensch, sondern ein Verhalten.",
       ],
     },
+    { type: "spacer", size: 3 },
+    { type: "h2", text: "Wer wir sind" },
+    { type: "p", text: KULTUR_HERKUNFT.einleitung },
+    ...KULTUR_HERKUNFT.punkte.map((p): DocBlock => ({ type: "karte", titel: p.titel, text: p.text })),
     { type: "spacer", size: 3 },
     { type: "h2", text: "Ziele und Vision" },
   );
@@ -139,7 +144,7 @@ export const generateKulturManifestPDF = () => {
     { type: "h2", text: "Unsere Glaubenssätze" },
     {
       type: "p",
-      text: "Sieben Sätze in Ich-Form für die Tage, an denen es nicht von allein läuft. Einer davon begrüßt dich jeden Morgen im Dashboard, für alle im Team derselbe. Sie sind keine Poesie, sondern Arbeitswerkzeug: Der Satz, der dir heute schwerfällt, ist meist der, den du heute brauchst. Auf den folgenden Seiten steht jeder Satz einzeln und groß, zum Ausdrucken und Aufhängen.",
+      text: `${KULTUR_GLAUBENSSAETZE.length} Sätze in Ich-Form für die Tage, an denen es nicht von allein läuft. Einer davon begrüßt dich jeden Morgen im Dashboard, für alle im Team derselbe. Sie sind keine Poesie, sondern Arbeitswerkzeug: Der Satz, der dir heute schwerfällt, ist meist der, den du heute brauchst. Auf den folgenden Seiten steht jeder Satz einzeln und groß, zum Ausdrucken und Aufhängen.`,
     },
     { type: "list", items: KULTUR_GLAUBENSSAETZE, ordered: true },
     { type: "spacer", size: 3 },

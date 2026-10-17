@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
-  darfObjektdaten, einheitenSumme, einheitVollstaendigkeit, einheitZeile, fachBelegt, istObjektdatenRoute, objekteFuerRolle,
+  aktuellerMieter, mieterZeilen, darfObjektdaten, einheitenSumme, einheitVollstaendigkeit, einheitZeile, fachBelegt, istObjektdatenRoute, objekteFuerRolle,
 } from "./objektdaten";
 import type { ObjektData, ObjektWohnung } from "./objekteStore";
+import type { Mieter } from "./mieterStore";
 
 const we = (teil: Partial<ObjektWohnung>): ObjektWohnung => ({
   id: "w", weNr: "WE 1", etage: "EG", lage: "links", groesse: 65, zimmer: 2, mieteGesamt: 325, vkGesamt: 153500,
@@ -53,5 +54,23 @@ describe("Objektdaten", () => {
     expect(objekteFuerRolle(liste, "objektpartner", "u1").map((x) => x.id)).toEqual(["a"]);
     expect(objekteFuerRolle(liste, "objektpartner", null)).toEqual([]);
     expect(objekteFuerRolle(liste, "backoffice", null)).toHaveLength(3);
+  });
+
+  it("nimmt als aktuellen Mieter den belegenden mit dem spätesten Beginn", () => {
+    const m = (id: string, status: Mieter["status"], beginn: string, wohneinheitId = "w") =>
+      ({ id, status, mietvertragBeginn: beginn, wohneinheitId, kaltmiete: 325, dokumente: [] }) as unknown as Mieter;
+    const liste = [m("alt", "aktiv", "2019-11-01"), m("neu", "aktiv", "2024-01-01"), m("weg", "ausgezogen", "2025-01-01"), m("anders", "aktiv", "2025-01-01", "x")];
+    expect(aktuellerMieter(liste, "w")?.id).toBe("neu");
+    expect(aktuellerMieter([m("weg", "ausgezogen", "2025-01-01")], "w")).toBeUndefined();
+  });
+
+  it("meldet abweichende Miete und erkennt den Mietvertrag am Mieter", () => {
+    const objekt = { wohnungen: [we({})] } as unknown as ObjektData;
+    const mieter = { id: "m", status: "aktiv", mietvertragBeginn: "", wohneinheitId: "w", kaltmiete: 350,
+      dokumente: [{ id: "d", name: "MV", url: "u", typ: "mietvertrag", erstelltAm: "" }] } as unknown as Mieter;
+    const [z] = mieterZeilen(objekt, [mieter]);
+    expect(z.mieteAbweichend).toBe(true);
+    expect(z.vertragVorhanden).toBe(true);
+    expect(mieterZeilen(objekt, [{ ...mieter, kaltmiete: 325.2 }])[0].mieteAbweichend).toBe(false);
   });
 });

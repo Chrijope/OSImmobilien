@@ -38,6 +38,7 @@ import { EinheitFelderDialog } from "@/components/objektseite/EinheitFelderDialo
 import { ObjektseiteFelderDialog } from "@/components/objektseite/ObjektseiteFelderDialog";
 import { ObjektTexteKarte } from "@/components/objektseite/ObjektTexteKarte";
 import { InterneHighlightsKarte } from "@/components/objektseite/InterneHighlightsKarte";
+import { useGarantieZeilen } from "@/components/objektseite/mieteGarantie";
 import { PassendeKundenKarte } from "@/components/objektseite/PassendeKundenKarte";
 import { WeitereEinheitenTabelle } from "@/components/objektseite/EinheitenTabelle";
 import { EinheitFinanzen, FINANZEN_ERKLAERUNG } from "@/components/objektseite/EinheitFinanzen";
@@ -325,6 +326,8 @@ function EinheitAnsicht({ objekt, wohnung: w }: { objekt: ObjektData; wohnung: O
   const gesamt = (w.vkGesamt || 0) + (w.stellplatzPreis || 0);
   // Eine Regel überall (M20): Wohnungsmiete durch Wohnungspreis, Stellplatz getrennt.
   const rendite = renditeVon(w);
+  // Ist-Miete, Mietgarantie und Garage aus den Objektdaten, als Zeilen der Mietübersicht.
+  const garantieZeilen = useGarantieZeilen(objekt, w);
   // "X von Y frei" zaehlt nur, was im Angebot steht, genau wie die Liste
   // "Weitere Einheiten" darunter (Christians Regel vom 23.09.2026).
   const zaehler = zaehleEinheiten(objekt.wohnungen.filter(einheitImAngebot));
@@ -444,7 +447,7 @@ function EinheitAnsicht({ objekt, wohnung: w }: { objekt: ObjektData; wohnung: O
         </div>
         <div>
           <div className="mb-1 mt-4 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground md:mt-0">Mietübersicht</div>
-          {blick.miete.map((z) => <BlickZeileAnzeige key={z.label} zeile={z} />)}
+          {[...blick.miete, ...garantieZeilen].map((z) => <BlickZeileAnzeige key={z.label} zeile={z} />)}
         </div>
       </div>
     </div>

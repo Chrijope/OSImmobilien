@@ -24,6 +24,25 @@ export const MIETSUBVENTION_ROUTE = "/mietsubvention";
 /** Kaufpreisliste (Einheiten, Mieter, Hausgeld aus Wirtschaftsplan), seit dem 09.10.2026; dieselben Rollen wie das Ankaufstool. */
 export const KAUFPREISLISTE_ROUTE = "/kaufpreisliste";
 
+/**
+ * Die Hausverwaltung (Mieter, Kautionen, Vermietung und so weiter), seit dem
+ * 17.10.2026 eine feste Positivliste (Christian: kein Vertriebspartner sieht
+ * Hausverwaltung und Mieterdaten). Dieselben Rollen, die auch die Tabelle
+ * `mieter` lesen dürfen (`darf_mieterdaten`, Migration 20261017140000). Keine
+ * Freigabe in `role_permissions` und keine eigene Berechtigung öffnet sie
+ * für andere.
+ */
+const HAUSVERWALTUNG_ROUTEN: readonly string[] = [
+  "/hausverwaltung", "/mieter", "/mieterhoehung", "/vermietung", "/dienstleister", "/hv-tickets", "/hv-statistiken",
+  "/hv-kommunikation", "/zaehlerstaende", "/kautionen", "/betriebskostenabrechnung", "/uebergabeprotokoll",
+  "/eigentuemer", "/versicherungen", "/fristenueberwachung",
+];
+export const HAUSVERWALTUNG_ROLLEN: readonly string[] = ["admin", "inhaber", "backoffice", "hausverwaltung", "objektpartner"];
+export function istHausverwaltungRoute(url: string): boolean {
+  const clean = url.split("?")[0].split("#")[0];
+  return HAUSVERWALTUNG_ROUTEN.some((u) => clean === u || clean.startsWith(u + "/"));
+}
+
 // Roles that see everything
 // New routes: /follow-ups, /empfehlungen, /einheitenspiegel, /afa-rechner
 const FULL_ACCESS_ROLES: UserRole[] = ["inhaber", "admin", "individuell", "testaccount"];
@@ -529,6 +548,7 @@ export function istRouteGesperrt(url: string, role: UserRole, identitaet?: Nutze
    * Bewerbergespraeche) und einzelne Namen. Beides ist bewusst entfallen.
    */
   if (istVideocallRoute(cleanUrl)) return !darfVideocallBereich({ ...identitaet, rolle: role });
+  if (istHausverwaltungRoute(cleanUrl) && !HAUSVERWALTUNG_ROLLEN.includes(role)) return true;
   if (NUR_ADMIN_ROUTEN.includes(cleanUrl) && !["admin", "inhaber", "testaccount"].includes(role)) return true;
   return (ROLLEN_SPERREN[role] || []).some((u) => cleanUrl === u || cleanUrl.startsWith(u + "/"));
 }

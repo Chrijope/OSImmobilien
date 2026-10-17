@@ -1,31 +1,30 @@
 import { useState } from 'react';
 import type { AnalysisData, ScoreResult } from '@/lib/scoringEngine';
-import { calculateScore } from '@/lib/scoringEngine';
+import { calculateScore, zieleAusSchwerpunkt } from '@/lib/scoringEngine';
 import ProgressBar from './ProgressBar';
 import QuestionCard from './QuestionCard';
 import SelectOption from './SelectOption';
-import MultiSelect from './MultiSelect';
 import NumberInput from './NumberInput';
 import ResultsPage from './ResultsPage';
 import ErgebnisFreischalten from './ErgebnisFreischalten';
-import { BUNDESLAENDER } from '@/lib/grunderwerbsteuer';
 import { protokolliereAnalyseEreignis } from '@/lib/analysetoolEreignisse';
 import type { BeraterInfo } from '@/pages/AnalysePublic';
 import { useSeitenSprache, useSeitenTexte } from '@/components/SeitenSprache';
 import { ANALYSE_TEXTE, type AnalyseTexte } from './analyseTexte';
-import { bundeslandName } from './analyseRechenkernTexte';
 import { fett } from './fettText';
 
 /**
- * Vier Schritte statt acht. Alle Felder, die im Rechenkern nicht vorkommen,
- * sind entfallen: Haushaltsgröße, Branche, Bruttoeinkommen, Besoldungsgruppe,
- * Unterhaltsberechtigte, Finanzierungsbereitschaft. Die Erfahrungsfragen sind
- * geblieben, sie fließen seit dem Umbau in die Bewertung ein.
+ * Drei Schritte seit dem 17.10.2026. Entfallen sind Sparrate, Familienstand,
+ * Wohnsituation, Bundesland und die beiden Erfahrungsfragen: Sie gaben nur
+ * Punkte oder rechneten falsch (die Grunderwerbsteuer richtet sich nach dem
+ * Ort des Objekts, nicht nach dem Wohnort). Ziele und Steuerinteresse sind
+ * eine Frage geworden, der Schwerpunkt. Die Felder bleiben im Typ, damit
+ * gespeicherte Analysen lesbar bleiben.
  *
  * Die Beschriftungen stehen in `analyseTexte.ts` (`wizard.schritte`), hier
  * zählt nur die Anzahl.
  */
-const SCHRITT_ANZAHL = 4;
+const SCHRITT_ANZAHL = 3;
 
 /** Die Hilfetexte einer Frage als Absätze, `**…**` wird fett. */
 function Hilfe({ absaetze }: { absaetze: readonly string[] }) {
@@ -142,6 +141,8 @@ const AnalysisWizard = ({ berater, hideAdvancedSections, leadEintragung }: Wizar
         berater={berater}
         hideAdvancedSections={hideAdvancedSections}
         bereitsEingetragen={freigeschaltet}
+        // Der öffentliche Link zeigt das Logo schon über allen Schritten.
+        mitLogo={!leadEintragung && !hideAdvancedSections}
         onRestart={() => {
           setStep(-1);
           setData({ ...defaultData });
@@ -260,7 +261,6 @@ const AnalysisWizard = ({ berater, hideAdvancedSections, leadEintragung }: Wizar
         >
           <NumberInput label={t.monat.fixkosten} value={data.monthlyFixedCosts} onChange={v => update({ monthlyFixedCosts: v })} />
           <NumberInput label={t.monat.kredite} value={data.existingLoans} onChange={v => update({ existingLoans: v })} />
-          <NumberInput label={t.monat.sparrate} value={data.savingsRate} onChange={v => update({ savingsRate: v })} />
           <NumberInput label={t.monat.eigenkapital} value={data.equity} onChange={v => update({ equity: v })} />
           <NumberInput label={t.monat.reserve} value={data.liquidityReserve} onChange={v => update({ liquidityReserve: v })} />
         </QuestionCard>
@@ -268,14 +268,14 @@ const AnalysisWizard = ({ berater, hideAdvancedSections, leadEintragung }: Wizar
 
       {step === 2 && (
         <QuestionCard
-          title={t.steuer.titel}
-          subtitle={t.steuer.untertitel}
+          title={t.ziel.titel}
+          subtitle={t.ziel.untertitel}
           onNext={next}
           onBack={back}
-          canProceed={data.age >= 18 && !!data.incomeClass && data.goals.length > 0}
-          hilfeTitel={t.steuer.hilfeTitel}
-          hilfeText={<Hilfe absaetze={t.steuer.hilfe} />}
-          validierungsHinweis={t.steuer.validierung}
+          canProceed={data.age >= 18 && !!data.incomeClass && !!data.schwerpunkt}
+          hilfeTitel={t.ziel.hilfeTitel}
+          hilfeText={<Hilfe absaetze={t.ziel.hilfe} />}
+          validierungsHinweis={t.ziel.validierung}
         >
           <NumberInput label={t.steuer.alter} value={data.age} onChange={v => update({ age: v })} suffix={t.jahre} min={18} max={99} />
           <div>
@@ -289,96 +289,25 @@ const AnalysisWizard = ({ berater, hideAdvancedSections, leadEintragung }: Wizar
               {t.steuer.bruttoHinweis}
             </p>
           </div>
-          <div>
-            <label className="text-sm text-muted-foreground mb-2 block">{t.steuer.interesseLabel}</label>
-            <SelectOption
-              value={data.taxOptimizationInterest ? 'ja' : 'nein'}
-              onChange={v => update({ taxOptimizationInterest: v === 'ja' })}
-              options={optionen(['ja', 'nein'] as const, t.steuer.interesse)}
-            />
-          </div>
-          <div>
-            <label className="text-sm text-muted-foreground mb-2 block">{t.steuer.zieleLabel}</label>
-            <MultiSelect
-              values={data.goals}
-              onChange={v => update({ goals: v })}
-              options={optionen(
-                ['vermoegensaufbau', 'altersvorsorge', 'steuerersparnis', 'passives_einkommen', 'inflationsschutz', 'diversifikation'] as const,
-                t.steuer.ziele,
-              )}
-            />
-          </div>
-        </QuestionCard>
-      )}
-
-      {step === 3 && (
-        <QuestionCard
-          title={t.person.titel}
-          subtitle={t.person.untertitel}
-          onNext={next}
-          onBack={back}
-          canProceed={
-            !!data.familyStatus && !!data.livingSituation && !!data.bundeslandId &&
-            !!data.investmentExperience && !!data.realEstateExperience
-          }
-          hilfeTitel={t.person.hilfeTitel}
-          hilfeText={<Hilfe absaetze={t.person.hilfe} />}
-          validierungsHinweis={t.person.validierung}
-        >
-          <div>
-            <label className="text-sm text-muted-foreground mb-2 block">{t.person.familienstandLabel}</label>
-            <SelectOption
-              value={data.familyStatus}
-              onChange={v => update({ familyStatus: v })}
-              options={optionen(['ledig', 'verheiratet', 'geschieden', 'verwitwet'] as const, t.person.familienstand)}
-            />
-          </div>
-          <div>
-            <label className="text-sm text-muted-foreground mb-2 block">{t.person.wohnsituationLabel}</label>
-            <SelectOption
-              value={data.livingSituation}
-              onChange={v => update({ livingSituation: v })}
-              options={optionen(['miete', 'eigentum'] as const, t.person.wohnsituation)}
-            />
-          </div>
-          <div>
-            {/* Für die Kaufnebenkosten in der Musterrechnung. Die
-                Grunderwerbsteuer reicht von 3,5 bis 6,5 Prozent, das macht
-                bei 300.000 Euro rund 9.000 Euro Unterschied. */}
-            <label className="text-sm text-muted-foreground mb-2 block">{t.person.bundeslandLabel}</label>
-            <select
-              value={data.bundeslandId || ''}
-              onChange={e => update({ bundeslandId: e.target.value })}
-              className="w-full bg-card border border-border rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
-            >
-              <option value="">{t.person.bitteWaehlen}</option>
-              {BUNDESLAENDER.map(bl => (
-                <option key={bl.id} value={bl.id}>
-                  {t.person.bundeslandOption(bundeslandName(bl, sprache), bl.grunderwerbsteuer)}
-                </option>
-              ))}
-            </select>
-            <p className="text-xs text-muted-foreground mt-1.5">
-              {t.person.bundeslandHinweis}
-            </p>
-          </div>
           <NumberInput label={t.person.immobilien} value={data.existingProperties} onChange={v => update({ existingProperties: v })} suffix={t.stueck} />
           <div>
-            <label className="text-sm text-muted-foreground mb-2 block">{t.person.erfahrungAnlagen}</label>
+            {/* Die eine Zielfrage. Ziele und Steuerinteresse leiten sich daraus ab,
+                damit Bewertung und gespeicherte Analysen gleich bleiben. */}
+            <label className="text-sm text-muted-foreground mb-2 block">{t.ziel.schwerpunktLabel}</label>
             <SelectOption
-              value={data.investmentExperience}
-              onChange={v => update({ investmentExperience: v as AnalysisData['investmentExperience'] })}
-              options={optionen(['keine', 'wenig', 'mittel', 'viel'] as const, t.person.erfahrung)}
+              value={data.schwerpunkt ?? ''}
+              onChange={v => {
+                const s = v as NonNullable<AnalysisData['schwerpunkt']>;
+                update({ schwerpunkt: s, ...zieleAusSchwerpunkt(s) });
+              }}
+              options={(['altersvorsorge', 'steuer', 'beides'] as const).map(value => ({
+                value,
+                label: t.ziel.schwerpunkt[value].label,
+                description: t.ziel.schwerpunkt[value].beschreibung,
+              }))}
             />
           </div>
-          <div>
-            <label className="text-sm text-muted-foreground mb-2 block">{t.person.erfahrungImmobilien}</label>
-            <SelectOption
-              value={data.realEstateExperience}
-              onChange={v => update({ realEstateExperience: v as AnalysisData['realEstateExperience'] })}
-              options={optionen(['keine', 'wenig', 'mittel', 'viel'] as const, t.person.erfahrung)}
-            />
-          </div>
+          <NumberInput label={t.ziel.wunschrente} value={data.wunschZusatzrente ?? 0} onChange={v => update({ wunschZusatzrente: v })} />
         </QuestionCard>
       )}
     </div>

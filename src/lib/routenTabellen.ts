@@ -241,6 +241,7 @@ export const ROUTEN_TABELLEN: Record<string, readonly string[]> = {
   "/vorschau/kunde-komplett/:id": [],
   "/vorschau/objekt-anlegen": [],
   "/vorschau/kundenchat": [],
+  "/vorschau/analysetool-ergebnis": [],
   "/vorschau/grundriss-3d": [],
   // Ankaufstool rechnet nur mit Eingaben, laedt keine Daten.
   "/ankaufstool": [],
@@ -250,6 +251,7 @@ export const ROUTEN_TABELLEN: Record<string, readonly string[]> = {
   "/kaufpreisliste": [...OBJEKT_TABELLEN],
   "/objektdaten": [...OBJEKT_TABELLEN],
   "/objektdaten/einheiten": [...OBJEKT_TABELLEN],
+  "/objektdaten/mieter": [...OBJEKT_TABELLEN, "mieter"],
   "/objektdaten/vollstaendigkeit": [...OBJEKT_TABELLEN],
   "/musterkalkulation": [],
   "/kalkulation-1": [],

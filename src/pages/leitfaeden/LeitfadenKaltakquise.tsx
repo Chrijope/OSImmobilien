@@ -67,7 +67,7 @@ const KALT_EINWAENDE: EinwandItem[] = [
     einwand: "Ich habe kein Eigenkapital.",
     technik: "Klärung",
     antwort:
-      "Das hören wir oft – und meist ist mehr Spielraum vorhanden, als Kunden denken. Für die Kaufnebenkosten brauchst du rund 8 % des Kaufpreises in Berlin, rund 8,5 % in Brandenburg. Lass uns kurz schauen, was bei dir realistisch ist.",
+      "Das hören wir oft – und meist ist mehr Spielraum vorhanden, als Kunden denken. Für die Kaufnebenkosten brauchst du je nach Bundesland des Objekts rund 5,5 bis 8,5 % des Kaufpreises. Lass uns kurz schauen, was bei dir realistisch ist.",
   },
   {
     einwand: "Vielleicht in einem Jahr.",
