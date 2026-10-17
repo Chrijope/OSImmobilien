@@ -25,9 +25,26 @@
  */
 import { cacheGet } from "./dataCache";
 
+/**
+ * Wie die Mietsubvention eines Objekts gerechnet wird (17.10.2026, aus dem
+ * früheren Werkzeug „Mietsubvention“ und den Objektlisten zusammengeführt):
+ * - „ziel“: Zielmiete je m² (Barfußstraße 13,50 €, Hauffstraße 13 €), die
+ *   Differenz zur Ist-Miete monatlich über die Laufzeit;
+ * - „steigerung“: Sollmiete = Ist-Miete plus Steigerung in % (Kappungsgrenze
+ *   Umland 20 %, Berlin 15 %), die Differenz monatlich über die Laufzeit;
+ * - „einmal“: ein Betrag für das ganze Objekt, verteilt nach Kaufpreis
+ *   (Brück 75.000 €).
+ */
+export type SubventionsArt = "ziel" | "steigerung" | "einmal";
+
 export interface ObjektMietgarantie {
-  /** Zielmiete in € je m² Wohnfläche. */
+  art: SubventionsArt;
+  /** Zielmiete in € je m² Wohnfläche (Art „ziel“). */
   zielQm: number;
+  /** Steigerung als Anteil, 0,2 = 20 % (Art „steigerung“). */
+  steigerung: number;
+  /** Betrag für das ganze Objekt (Art „einmal“). */
+  einmalBetrag: number;
   /** Mit diesem Betrag zählt eine zugeordnete Garage zur Ist-Miete. */
   garageAnrechnung: number;
   /** Laufzeit der Mietdifferenz-Garantie in Monaten. */
@@ -63,10 +80,15 @@ const zahl = (v: unknown): number | null => {
 /** Die Regel aus `meta.mietgarantie`, oder null, wenn das Objekt keine hat. */
 export function mietgarantieAusMeta(meta: unknown): ObjektMietgarantie | null {
   const m = (meta as { mietgarantie?: Record<string, unknown> } | null)?.mietgarantie;
-  const zielQm = zahl(m?.zielQm);
-  if (!m || !zielQm || zielQm <= 0) return null;
+  if (!m) return null;
+  // Ältere Einträge ohne Art sind Zielmiete je m².
+  const art: SubventionsArt = m.art === "steigerung" || m.art === "einmal" ? m.art : "ziel";
+  const zielQm = zahl(m.zielQm) ?? 0;
+  const steigerung = zahl(m.steigerung) ?? 0;
+  const einmalBetrag = zahl(m.einmalBetrag) ?? 0;
+  if ((art === "ziel" && !(zielQm > 0)) || (art === "steigerung" && !(steigerung > 0)) || (art === "einmal" && !(einmalBetrag > 0))) return null;
   return {
-    zielQm,
+    art, zielQm, steigerung, einmalBetrag,
     garageAnrechnung: zahl(m.garageAnrechnung) ?? 0,
     laufzeitMonate: zahl(m.laufzeitMonate) ?? 36,
     garagenSubventionMonate: zahl(m.garagenSubventionMonate) ?? 12,
@@ -111,6 +133,15 @@ export function berechneGarantie(
   istKaltmiete: number,
   garage: EinheitGarage | null,
 ): GarantieErgebnis {
+  if (regel.art === "einmal") {
+    // Kein Monatsbetrag; der Anteil am Einmalbetrag hängt am Kaufpreis, siehe `einmalAnteil`.
+    return { zielMiete: istKaltmiete, garageInRechnung: 0, garantieMonat: 0, garagenSubventionMonat: 0, summeLaufzeit: 0 };
+  }
+  if (regel.art === "steigerung") {
+    const zielMiete = cent(istKaltmiete * (1 + regel.steigerung));
+    const garantieMonat = cent(zielMiete - istKaltmiete);
+    return { zielMiete, garageInRechnung: 0, garantieMonat, garagenSubventionMonat: 0, summeLaufzeit: cent(garantieMonat * regel.laufzeitMonate) };
+  }
   const zielMiete = cent(regel.zielQm * flaeche);
   const garageIst = garage?.istMiete ?? 0;
   const garageInRechnung = !garage ? 0
@@ -122,4 +153,10 @@ export function berechneGarantie(
     zielMiete, garageInRechnung, garantieMonat, garagenSubventionMonat,
     summeLaufzeit: cent(garantieMonat * regel.laufzeitMonate + garagenSubventionMonat * regel.garagenSubventionMonate),
   };
+}
+
+/** Anteil einer Einheit am Einmalbetrag, nach ihrem Anteil an den Kaufpreisen (wie die Kaufpreisliste). */
+export function einmalAnteil(regel: ObjektMietgarantie, kaufpreis: number, summeKaufpreise: number): number {
+  if (regel.art !== "einmal" || !(kaufpreis > 0) || !(summeKaufpreise > 0)) return 0;
+  return cent((regel.einmalBetrag * kaufpreis) / summeKaufpreise);
 }

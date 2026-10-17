@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { berechneGarantie, garageAusMeta, mietgarantieAusMeta, type ObjektMietgarantie } from "./mietgarantie";
+import { berechneGarantie, einmalAnteil, garageAusMeta, mietgarantieAusMeta, type ObjektMietgarantie } from "./mietgarantie";
 
 // Zahlen aus „Mietdifferenz Hauffstraße Abgleich.xlsx“ (Rechnung B, 15.10.2026).
-const HAUFF: ObjektMietgarantie = { zielQm: 13, garageAnrechnung: 100, laufzeitMonate: 36, garagenSubventionMonate: 12 };
+const HAUFF: ObjektMietgarantie = { art: "ziel", zielQm: 13, steigerung: 0, einmalBetrag: 0, garageAnrechnung: 100, laufzeitMonate: 36, garagenSubventionMonate: 12 };
 
 describe("Mietdifferenz-Garantie", () => {
   it("WE16: freie Garage zählt mit 100 €, Garantie 160,95 €, Garagen-Subvention 100 €", () => {
@@ -39,8 +39,20 @@ describe("Mietdifferenz-Garantie", () => {
   it("liest Regel und Garage robust aus meta", () => {
     expect(mietgarantieAusMeta({})).toBeNull();
     expect(mietgarantieAusMeta({ mietgarantie: { zielQm: "13,5" } })).toBeNull();
-    expect(mietgarantieAusMeta({ mietgarantie: { zielQm: 13.5 } })).toEqual({ zielQm: 13.5, garageAnrechnung: 0, laufzeitMonate: 36, garagenSubventionMonate: 12 });
+    expect(mietgarantieAusMeta({ mietgarantie: { zielQm: 13.5 } })).toEqual({ art: "ziel", zielQm: 13.5, steigerung: 0, einmalBetrag: 0, garageAnrechnung: 0, laufzeitMonate: 36, garagenSubventionMonate: 12 });
     expect(garageAusMeta({ garage: { nr: "SP7", art: "stellplatz", status: "eigener_mieter", istMiete: "20" } }))
       .toEqual({ nr: "SP7", art: "stellplatz", status: "eigener_mieter", istMiete: 20 });
+  });
+
+  it("Steigerung: Sollmiete = Ist plus 20 %, Differenz über die Laufzeit (früheres Werkzeug Mietsubvention)", () => {
+    const r = berechneGarantie({ ...HAUFF, art: "steigerung", steigerung: 0.2, laufzeitMonate: 24 }, 50, 400, null);
+    expect(r).toMatchObject({ zielMiete: 480, garantieMonat: 80, summeLaufzeit: 1920 });
+  });
+
+  it("Einmalbetrag nach Kaufpreis: Brück WE 1 bekommt von 75.000 € den Anteil 153.500 / 1.457.000", () => {
+    const regel = { ...HAUFF, art: "einmal" as const, einmalBetrag: 75000 };
+    expect(einmalAnteil(regel, 153500, 1457000)).toBe(7901.51);
+    expect(berechneGarantie(regel, 65, 325, null).garantieMonat).toBe(0);
+    expect(mietgarantieAusMeta({ mietgarantie: { art: "einmal", einmalBetrag: 75000 } })?.art).toBe("einmal");
   });
 });

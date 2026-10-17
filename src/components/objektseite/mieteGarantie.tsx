@@ -1,7 +1,7 @@
 import { CarFront, HandCoins } from "lucide-react";
 import { Detail } from "@/components/objektseite/Bausteine";
 import { useLiveVersion } from "@/hooks/useLiveData";
-import { GARAGEN_STATUS_TEXT, berechneGarantie, garageFuerEinheit, mietgarantieFuerObjekt } from "@/lib/mietgarantie";
+import { GARAGEN_STATUS_TEXT, berechneGarantie, einmalAnteil, garageFuerEinheit, mietgarantieFuerObjekt } from "@/lib/mietgarantie";
 import { useMietkennzahlen } from "@/lib/mietkennzahlen";
 import type { BlickZeile } from "@/lib/objektKennzahlen";
 import type { ObjektData, ObjektWohnung } from "@/lib/objekteStore";
@@ -39,10 +39,19 @@ export function useGarantieZeilen(objekt: ObjektData, w: ObjektWohnung): BlickZe
     zeilen.push({ id: "istKaltmiete", label: "Ist-Kaltmiete", wert: "kein Mieter erfasst", info: "Für diese Einheit ist kein Mieter erfasst. Die Garantie rechnet dann mit 0 € Ist-Miete." });
   }
 
-  if (regel && w.groesse > 0) {
+  if (regel?.art === "einmal") {
+    const summe = objekt.wohnungen.reduce((s, x) => s + (x.vkGesamt || 0), 0);
+    const anteil = einmalAnteil(regel, w.vkGesamt || 0, summe);
+    if (anteil > 0) zeilen.push({
+      id: "mietsubvention", label: "Mietsubvention", wert: `${eur(anteil)} einmalig`,
+      unter: `Anteil an ${eur(regel.einmalBetrag, 0)} für das Objekt, nach Kaufpreis`,
+      info: "Ein Betrag für das ganze Objekt, verteilt auf die Einheiten nach ihrem Anteil an den Kaufpreisen.",
+    });
+  } else if (regel && w.groesse > 0) {
     const g = berechneGarantie(regel, w.groesse, k?.kaltmiete ?? 0, garage);
     zeilen.push({
-      id: "zielmiete", label: "Zielmiete", wert: eur(g.zielMiete), unter: `${eur(regel.zielQm)} je m²`,
+      id: "zielmiete", label: "Zielmiete", wert: eur(g.zielMiete),
+      unter: regel.art === "steigerung" ? `Ist-Miete plus ${(regel.steigerung * 100).toLocaleString("de-DE", { maximumFractionDigits: 1 })} %` : `${eur(regel.zielQm)} je m²`,
       info: "Die Miete, die wir dem Käufer garantieren: Zielmiete je m² mal Wohnfläche.",
     });
     zeilen.push({
@@ -84,9 +93,11 @@ export function ObjektGarantieDetails({ objekt }: { objekt: ObjektData }) {
   return (
     <>
       {regel && (
-        <Detail icon={<HandCoins className="h-3.5 w-3.5" />} label="Mietgarantie"
-          wert={`${eur(regel.zielQm)} je m² für ${regel.laufzeitMonate} Monate`}
-          unter={[kennzahlen ? `Differenz zur Ist-Miete heute ${eur(summe, 0)} im Monat für alle Einheiten` : "",
+        <Detail icon={<HandCoins className="h-3.5 w-3.5" />} label="Mietsubvention"
+          wert={regel.art === "einmal" ? `${eur(regel.einmalBetrag, 0)} einmalig`
+            : regel.art === "steigerung" ? `Ist-Miete plus ${(regel.steigerung * 100).toLocaleString("de-DE", { maximumFractionDigits: 1 })} % für ${regel.laufzeitMonate} Monate`
+            : `${eur(regel.zielQm)} je m² für ${regel.laufzeitMonate} Monate`}
+          unter={[kennzahlen && regel.art !== "einmal" ? `Differenz zur Ist-Miete heute ${eur(summe, 0)} im Monat für alle Einheiten` : "",
             regel.garageAnrechnung > 0 ? `Garage zählt mit ${eur(regel.garageAnrechnung, 0)}, im ersten Jahr darauf subventioniert` : ""].filter(Boolean).join(". ")} />
       )}
       {anzahl > 0 && (

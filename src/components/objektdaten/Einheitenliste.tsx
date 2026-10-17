@@ -15,8 +15,8 @@ import { toast } from "@/hooks/use-toast";
 import { useLiveVersion } from "@/hooks/useLiveData";
 import { ausInvestagon, PFLEGE_GESPERRT_HINWEIS } from "@/lib/investagonHerkunft";
 import {
-  GARAGEN_STATUS_TEXT, berechneGarantie, garageFuerEinheit, mietgarantieFuerObjekt,
-  type EinheitGarage, type ObjektMietgarantie,
+  GARAGEN_STATUS_TEXT, berechneGarantie, einmalAnteil, garageFuerEinheit, mietgarantieFuerObjekt,
+  type EinheitGarage, type ObjektMietgarantie, type SubventionsArt,
 } from "@/lib/mietgarantie";
 import { getMieter, updateMieter } from "@/lib/mieterStore";
 import { objektMetaErgaenzen, updateWohnung, wohnungMetaErgaenzen, type ObjektData, type ObjektWohnung } from "@/lib/objekteStore";
@@ -33,6 +33,9 @@ import { getInvestments, setInvestmentNotarFields, type Investment } from "@/lib
 import { ABWICKLUNG_GELD_ROLLEN, ABWICKLUNG_ROLLEN, getAbwicklungDaten, saveAbwicklungDaten, type AbwicklungDaten } from "@/lib/abwicklungStore";
 import { abwicklungStufeNachziehen } from "@/lib/abwicklungStufe";
 import { PIPELINE_STUFEN } from "@/lib/pipelineStufen";
+import { erhoehungsRegelAusMeta, naechsteErhoehung, type ErhoehungsRegel } from "@/lib/mieterhoehung";
+import { bundeslandFromPlz } from "@/lib/kaufnebenkosten";
+import { cacheGet } from "@/lib/dataCache";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { excelDatumIso } from "@/lib/excelLesen";
@@ -120,7 +123,8 @@ function ZahlZelle({ wert, anzeige, speichern, gesperrt, art = "zahl" }: {
  * Investagon von dort und wird dort geändert. Alles andere ist hier pflegbar.
  */
 const BERECHNET = new Set(["VK €/m²", "Brutto Ist", "Brutto", "Netto", "Ist €/m²", "Soll €/m²", "Zielmiete", "Garantie mtl.", "Garantie Laufzeit",
-  "Eigentümerlast", "Überschuss mtl.", "laut Plan", "Garagen-Subv. mtl.", "Mehrertrag mtl.", "Hinweise"]);
+  "Eigentümerlast", "Überschuss mtl.", "laut Plan", "Garagen-Subv. mtl.", "Mehrertrag mtl.", "Hinweise", "Einmalanteil",
+  "Erhöhung ab", "neue Miete", "+ mtl.", "Grenze"]);
 const AUS_INVESTAGON = new Set(["Fläche m²", "Kaufpreis", "Miete Vertrieb", "KP Garage", "Hausgeld gesamt", "umlagefähig", "nicht umlagefähig", "Rücklage"]);
 
 function GarageDialog({ einheit, garage, onClose }: { einheit: ObjektWohnung | null; garage: EinheitGarage | null; onClose: () => void }) {
@@ -173,26 +177,91 @@ function GarageDialog({ einheit, garage, onClose }: { einheit: ObjektWohnung | n
   );
 }
 
+const ART_TEXT: Record<SubventionsArt, string> = {
+  ziel: "Zielmiete je m² (Differenz zur Ist-Miete monatlich)",
+  steigerung: "Steigerung der Ist-Miete in % (Kappungsgrenze)",
+  einmal: "Einmalbetrag für das Objekt, verteilt nach Kaufpreis",
+};
+
+/**
+ * Die Mietsubvention eines Objekts (17.10.2026): eine der drei Arten aus
+ * `mietgarantie.ts`, mit den Feldern, die die Art braucht. Ersetzt das frühere
+ * Werkzeug „Mietsubvention“ und die Excel-Rechnungen je Objekt.
+ */
 function MietgarantieKarte({ objekt, regel, darfSchreiben }: { objekt: ObjektData; regel: ObjektMietgarantie | null; darfSchreiben: boolean }) {
-  const [form, setForm] = useState({ zielQm: "", garageAnrechnung: "", laufzeitMonate: "36", garagenSubventionMonate: "12" });
+  const leer = { art: "ziel" as SubventionsArt, zielQm: "", steigerung: "", einmalBetrag: "", garageAnrechnung: "", laufzeitMonate: "36", garagenSubventionMonate: "12" };
+  const [form, setForm] = useState(leer);
+  const alsText = (n: number | undefined) => (n ? String(n).replace(".", ",") : "");
   useEffect(() => {
-    setForm({
-      zielQm: regel ? String(regel.zielQm).replace(".", ",") : "",
-      garageAnrechnung: regel ? String(regel.garageAnrechnung).replace(".", ",") : "",
-      laufzeitMonate: String(regel?.laufzeitMonate ?? 36),
-      garagenSubventionMonate: String(regel?.garagenSubventionMonate ?? 12),
-    });
+    setForm(regel ? {
+      art: regel.art, zielQm: alsText(regel.zielQm), steigerung: alsText(regel.steigerung ? Math.round(regel.steigerung * 10000) / 100 : 0),
+      einmalBetrag: alsText(regel.einmalBetrag), garageAnrechnung: alsText(regel.garageAnrechnung),
+      laufzeitMonate: String(regel.laufzeitMonate), garagenSubventionMonate: String(regel.garagenSubventionMonate),
+    } : leer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [regel]);
-  const speichern = async () => {
-    const zielQm = lesen(form.zielQm);
+  const setze = (teil: Partial<typeof leer>) => setForm((f) => ({ ...f, ...teil }));
+  const speichern = async (entfernen = false) => {
+    const regelNeu = entfernen ? null : {
+      art: form.art, zielQm: lesen(form.zielQm) ?? 0, steigerung: (lesen(form.steigerung) ?? 0) / 100, einmalBetrag: lesen(form.einmalBetrag) ?? 0,
+      garageAnrechnung: lesen(form.garageAnrechnung) ?? 0, laufzeitMonate: lesen(form.laufzeitMonate) ?? 36, garagenSubventionMonate: lesen(form.garagenSubventionMonate) ?? 12,
+    };
     try {
-      await objektMetaErgaenzen(objekt.id, {
-        mietgarantie: zielQm ? {
-          zielQm, garageAnrechnung: lesen(form.garageAnrechnung) ?? 0,
-          laufzeitMonate: lesen(form.laufzeitMonate) ?? 36, garagenSubventionMonate: lesen(form.garagenSubventionMonate) ?? 12,
-        } : null,
-      });
-      toast({ title: zielQm ? "Mietgarantie gespeichert" : "Mietgarantie entfernt" });
+      await objektMetaErgaenzen(objekt.id, { mietgarantie: regelNeu });
+      toast({ title: regelNeu ? "Mietsubvention gespeichert" : "Mietsubvention entfernt" });
+    } catch (e) {
+      toast({ title: "Nicht gespeichert", description: e instanceof Error ? e.message : undefined, variant: "destructive" });
+    }
+  };
+  const feld = (label: string, k: keyof typeof leer, modus: "decimal" | "numeric" = "decimal") => (
+    <div><Label>{label}</Label><Input disabled={!darfSchreiben} inputMode={modus} value={form[k] as string} onChange={(e) => setze({ [k]: e.target.value })} /></div>
+  );
+  return (
+    <Card>
+      <CardContent className="p-4">
+        <div className="mb-2 text-sm font-semibold">Mietsubvention</div>
+        <p className="mb-3 text-xs text-muted-foreground">
+          {form.art === "ziel" && "Ist-Kaltmiete plus Garage in der Rechnung plus Subvention ergibt Zielmiete je m² mal Fläche. Eine zugeordnete Garage zählt mit dem Anrechnungsbetrag und wird im ersten Jahr auf ihn subventioniert; ein Stellplatz zählt nur mit seiner Ist-Miete."}
+          {form.art === "steigerung" && "Sollmiete = Ist-Kaltmiete plus Steigerung (Kappungsgrenze: Umland 20 %, Berlin 15 %). Die Differenz zahlen wir über die Laufzeit."}
+          {form.art === "einmal" && "Ein Betrag für das ganze Objekt, verteilt auf die Einheiten nach ihrem Anteil an den Kaufpreisen."}
+        </p>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-6 md:items-end">
+          <div className="col-span-2">
+            <Label>Art</Label>
+            <Select value={form.art} onValueChange={(v) => setze({ art: v as SubventionsArt })} disabled={!darfSchreiben}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>{(Object.keys(ART_TEXT) as SubventionsArt[]).map((a) => <SelectItem key={a} value={a}>{ART_TEXT[a]}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          {form.art === "ziel" && <>{feld("Zielmiete €/m²", "zielQm")}{feld("Garage zählt mit (€)", "garageAnrechnung")}</>}
+          {form.art === "steigerung" && feld("Steigerung in %", "steigerung")}
+          {form.art === "einmal" && feld("Betrag gesamt (€)", "einmalBetrag")}
+          {form.art !== "einmal" && feld("Laufzeit (Monate)", "laufzeitMonate", "numeric")}
+          {form.art === "ziel" && feld("Garagen-Subvention (Monate)", "garagenSubventionMonate", "numeric")}
+        </div>
+        {darfSchreiben && (
+          <div className="mt-3 flex gap-2">
+            <Button onClick={() => speichern()}>Speichern</Button>
+            {regel && <Button variant="ghost" onClick={() => speichern(true)}>Keine Subvention</Button>}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+/** Kappungsgrenze und Vergleichsmiete eines Objekts für den Mieterhöhungsplaner (`objekte.meta.mieterhoehung`). */
+function ErhoehungsKarte({ objekt, regel, darfSchreiben }: { objekt: ObjektData; regel: ErhoehungsRegel; darfSchreiben: boolean }) {
+  const [kappung, setKappung] = useState("");
+  const [vergleich, setVergleich] = useState("");
+  useEffect(() => {
+    setKappung(String(Math.round(regel.kappungsgrenze * 1000) / 10).replace(".", ","));
+    setVergleich(regel.vergleichsmieteQm ? String(regel.vergleichsmieteQm).replace(".", ",") : "");
+  }, [regel.kappungsgrenze, regel.vergleichsmieteQm]);
+  const speichern = async () => {
+    try {
+      await objektMetaErgaenzen(objekt.id, { mieterhoehung: { kappungsgrenze: (lesen(kappung) ?? 20) / 100, vergleichsmieteQm: lesen(vergleich) } });
+      toast({ title: "Mieterhöhungsplaner gespeichert" });
     } catch (e) {
       toast({ title: "Nicht gespeichert", description: e instanceof Error ? e.message : undefined, variant: "destructive" });
     }
@@ -200,15 +269,13 @@ function MietgarantieKarte({ objekt, regel, darfSchreiben }: { objekt: ObjektDat
   return (
     <Card>
       <CardContent className="p-4">
-        <div className="mb-2 text-sm font-semibold">Mietdifferenz-Garantie</div>
+        <div className="mb-2 text-sm font-semibold">Mieterhöhungsplaner</div>
         <p className="mb-3 text-xs text-muted-foreground">
-          Ist-Kaltmiete plus Garage in der Rechnung plus Garantie ergibt Zielmiete je m² mal Fläche. Eine zugeordnete Garage zählt mit dem Anrechnungsbetrag und wird im ersten Jahr auf ihn subventioniert; ein Stellplatz zählt nur mit seiner Ist-Miete. Leeres Ziel heißt: keine Garantie.
+          Nach § 558 BGB: frühestens 15 Monate nach Mietbeginn oder letzter Erhöhung und ab dem dritten Monat nach Zugang des Schreibens (Versand heute angenommen); höchstens die Kappungsgrenze auf die Miete von vor drei Jahren und höchstens die ortsübliche Vergleichsmiete. Eine Planung, keine Rechtsberatung.
         </p>
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-5 md:items-end">
-          <div><Label>Zielmiete €/m²</Label><Input disabled={!darfSchreiben} inputMode="decimal" value={form.zielQm} onChange={(e) => setForm((f) => ({ ...f, zielQm: e.target.value }))} /></div>
-          <div><Label>Garage zählt mit (€)</Label><Input disabled={!darfSchreiben} inputMode="decimal" value={form.garageAnrechnung} onChange={(e) => setForm((f) => ({ ...f, garageAnrechnung: e.target.value }))} /></div>
-          <div><Label>Laufzeit (Monate)</Label><Input disabled={!darfSchreiben} inputMode="numeric" value={form.laufzeitMonate} onChange={(e) => setForm((f) => ({ ...f, laufzeitMonate: e.target.value }))} /></div>
-          <div><Label>Garagen-Subvention (Monate)</Label><Input disabled={!darfSchreiben} inputMode="numeric" value={form.garagenSubventionMonate} onChange={(e) => setForm((f) => ({ ...f, garagenSubventionMonate: e.target.value }))} /></div>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:items-end">
+          <div><Label>Kappungsgrenze in %</Label><Input disabled={!darfSchreiben} inputMode="decimal" value={kappung} onChange={(e) => setKappung(e.target.value)} /></div>
+          <div><Label>Vergleichsmiete €/m²</Label><Input disabled={!darfSchreiben} inputMode="decimal" value={vergleich} placeholder="ohne Angabe nur Kappungsgrenze" onChange={(e) => setVergleich(e.target.value)} /></div>
           {darfSchreiben && <Button onClick={speichern}>Speichern</Button>}
         </div>
       </CardContent>
@@ -216,11 +283,12 @@ function MietgarantieKarte({ objekt, regel, darfSchreiben }: { objekt: ObjektDat
   );
 }
 
-type Ansicht = "handlung" | "preise" | "miete" | "hausgeld" | "garagen" | "verkauf";
+type Ansicht = "handlung" | "preise" | "miete" | "subvention" | "hausgeld" | "garagen" | "verkauf";
 const ANSICHTEN: { wert: Ansicht; titel: string }[] = [
   { wert: "handlung", titel: "Handlungsbedarf" },
   { wert: "preise", titel: "Preise & Rendite" },
-  { wert: "miete", titel: "Miete & Garantie" },
+  { wert: "miete", titel: "Miete & Erhöhungen" },
+  { wert: "subvention", titel: "Mietsubvention" },
   { wert: "hausgeld", titel: "Hausgeld" },
   { wert: "garagen", titel: "Garagen" },
   { wert: "verkauf", titel: "Verkaufsstand" },
@@ -269,6 +337,8 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
    */
   const zeilen = objekte.flatMap((o) => {
     const regel = mietgarantieFuerObjekt(o.id);
+    const summeKaufpreise = o.wohnungen.reduce((s, w) => s + (w.vkGesamt || 0), 0);
+    const erhRegel = erhoehungsRegelAusMeta(cacheGet("objekte").find((r: { id: string }) => r.id === o.id)?.meta, bundeslandFromPlz(o.plz));
     return o.wohnungen.map((w) => {
       const z = einheitZeile(w);
       const m = aktuellerMieter(mieter, w.id);
@@ -286,10 +356,18 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
       const wp = wirtschaftsplanFuerObjekt(o.id);
       const hgPlan = wp ? hausgeldAusPlan(wp, listenZahl(l, "mea")) : null;
       const eingabe = renditeEingabe(o, w, z.mieteMonat ?? 0);
+      // Mieterhöhungsplaner (`mieterhoehung.ts`), für die Spalten und den Handlungsbedarf.
+      const erhoehung = ist && z.flaeche ? naechsteErhoehung({
+        istMiete: ist, flaeche: z.flaeche, mietbeginn: m?.mietvertragBeginn || "",
+        letzteErhoehung: excelDatumIso(typeof l?.werte.letzteErhoehung === "string" ? l.werte.letzteErhoehung : ""),
+        mieteVorErhoehung: listenZahl(l, "mieteVorErhoehung"),
+      }, erhRegel, new Date().toISOString().slice(0, 10)) : null;
       if (hg.nichtUml !== null && w.hausgeldNichtUmlagefaehigEuro === undefined) { eingabe.nichtUmlagefaehigMonat = hg.nichtUml; eingabe.ruecklageMonat = hg.ruecklage ?? 0; }
       return {
         objekt: o, w, z, m, ist, garage, regel, garantie, l, hg, hgPlan, gesperrt: ausInvestagon(w),
         inv: investmentFuerEinheit(investments, w.id),
+        einmal: regel ? einmalAnteil(regel, w.vkGesamt || 0, summeKaufpreise) : 0,
+        erhoehung,
         bruttoIst: ist ? bruttoRendite(ist, z.kaufpreis ?? 0) : null,
         brutto: z.rendite,
         netto: nettoRendite(eingabe),
@@ -298,11 +376,13 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
           // Eigentümersicht: was an dieser Wohnung zu tun ist (`handlungsbedarf.ts`).
           const last = hg.nichtUml !== null || hg.ruecklage !== null ? (hg.nichtUml ?? 0) + (hg.ruecklage ?? 0) : null;
           const v = einheitVollstaendigkeit(w, l?.werte);
-          const naechste = l?.werte.naechsteErhoehungAb;
+          // Der Planer geht vor; ohne ihn (etwa ohne Ist-Miete) der Termin laut Liste.
+          const planung = erhoehung;
+          const naechste = planung?.plus ? planung.ab : l?.werte.naechsteErhoehungAb;
           const hinweise = handlungsbedarf({
             verkauft: w.status === "verkauft", istMiete: ist, mieterGekuendigt: m?.status === "gekuendigt",
             sollMiete: listenZahl(l, "sollMiete"), mieteVertrieb: z.mieteMonat, befristetBis: m?.mietvertragEnde || "",
-            naechsteErhoehungAb: typeof naechste === "string" ? naechste : "", naechsteErhoehungMiete: listenZahl(l, "naechsteErhoehungMiete"),
+            naechsteErhoehungAb: typeof naechste === "string" ? naechste : "", naechsteErhoehungMiete: planung?.plus ? planung.neueMiete : listenZahl(l, "naechsteErhoehungMiete"),
             eigentuemerlast: last, garageFrei: garage?.status === "frei", garantieMonat: garantie?.garantieMonat ?? null,
             fehlendeUnterlagen: v.gesamt - v.vorhanden,
           }, new Date().toISOString().slice(0, 10));
@@ -327,7 +407,9 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
     "nicht umlagefähig": (x) => x.hg.nichtUml, Rücklage: (x) => x.hg.ruecklage, Eigentümerlast: (x) => x.last,
     "Überschuss mtl.": (x) => (x.last !== null && x.z.mieteMonat ? x.z.mieteMonat - x.last : null), "laut Plan": (x) => x.hgPlan?.gesamt,
     "Garage/SP": (x) => x.garage?.nr, "KP Garage": (x) => x.w.stellplatzPreis, "Ist-Miete Garage": (x) => x.garage?.istMiete,
-    "Sollmiete Garage": (x) => listenZahl(x.l, "garageSollMiete"), "Garagen-Subv. mtl.": (x) => x.garantie?.garagenSubventionMonat,
+    "Sollmiete Garage": (x) => listenZahl(x.l, "garageSollMiete"), "Garagen-Subv. mtl.": (x) => x.garantie?.garagenSubventionMonat, Einmalanteil: (x) => x.einmal || null,
+    "Miete vorher": (x) => listenZahl(x.l, "mieteVorErhoehung"), "Erhöhung ab": (x) => x.erhoehung?.ab, "neue Miete": (x) => x.erhoehung?.neueMiete,
+    "+ mtl.": (x) => x.erhoehung?.plus || null, Grenze: (x) => x.erhoehung?.begrenztDurch,
     "gekündigt zum": (x) => String(x.l?.werte.garageGekuendigtZum ?? ""),
     "Mehrertrag mtl.": (x) => x.potenzial || null, Hinweise: (x) => x.hinweise.length || null,
     Stufe: (x) => (x.inv ? STUFE_TEXT[x.inv.pipelineStufe] || x.inv.pipelineStufe : null), Notartermin: (x) => x.inv?.notarTermin,
@@ -415,10 +497,14 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
         <Kennzahl titel="Brutto Ist" wert={prozent(kaufpreis > 0 && istMonat > 0 ? (istMonat * 12) / kaufpreis : null)} />
         <Kennzahl titel="Brutto Vertrieb" wert={prozent(kaufpreis > 0 && mieteVertrieb > 0 ? (mieteVertrieb * 12) / kaufpreis : null)} />
         <Kennzahl titel="Mehrertrag möglich im Monat" wert={eur(summe((x) => x.potenzial), 2)} />
-        {mitGarantie && <Kennzahl titel="Garantie im Monat" wert={eur(summe((x) => x.garantie?.garantieMonat), 2)} />}
-        {mitGarantie && <Kennzahl titel="Garantie über Laufzeit" wert={eur(summe((x) => x.garantie?.summeLaufzeit))} />}
+        {mitGarantie && <Kennzahl titel="Subvention im Monat" wert={eur(summe((x) => x.garantie?.garantieMonat), 2)} />}
+        {mitGarantie && <Kennzahl titel="Subvention gesamt" wert={eur(summe((x) => (x.garantie?.summeLaufzeit ?? 0) + x.einmal))} />}
       </div>
-      {einzeln && ansicht !== "hausgeld" && <MietgarantieKarte objekt={einzeln} regel={mietgarantieFuerObjekt(einzeln.id)} darfSchreiben={darfSchreiben} />}
+      {einzeln && ansicht === "miete" && (
+        <ErhoehungsKarte objekt={einzeln} darfSchreiben={darfSchreiben}
+          regel={erhoehungsRegelAusMeta(cacheGet("objekte").find((r: { id: string }) => r.id === einzeln.id)?.meta, bundeslandFromPlz(einzeln.plz))} />
+      )}
+      {einzeln && ansicht === "subvention" && <MietgarantieKarte objekt={einzeln} regel={mietgarantieFuerObjekt(einzeln.id)} darfSchreiben={darfSchreiben} />}
       {einzeln && ansicht === "hausgeld" && <WirtschaftsplanKarte objekt={einzeln} wp={wirtschaftsplanFuerObjekt(einzeln.id)} darfSchreiben={darfSchreiben} />}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
         {darfSchreiben
@@ -457,8 +543,15 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
                 </>}
                 {ansicht === "miete" && <>
                   {kopf("Ist-Kaltmiete")}{kopf("Ist €/m²")}{kopf("Sollmiete")}{kopf("Soll €/m²")}
-                  {mitGarantie && <>{kopf("Zielmiete")}{kopf("Garantie mtl.")}{kopf("Garantie Laufzeit")}{kopf("laut Liste", true, "Garantie über die Laufzeit laut Excel, mit Mieterhöhungen")}</>}
-                  {kopf("Letzte Erhöhung", false)}{kopf("Nächste ab", false)}{kopf("Miete danach")}{kopf("in 3 Jahren", true, "Erreichbare Miete in 3 Jahren laut Liste (Kappungsgrenze)")}
+                  {kopf("Letzte Erhöhung", false)}{kopf("Miete vorher", true, "Miete vor der letzten Erhöhung, für die Kappungsgrenze")}
+                  {kopf("Erhöhung ab", false, "Frühester Termin laut Mieterhöhungsplaner")}{kopf("neue Miete", true, "Höchstmögliche Miete laut Planer")}{kopf("+ mtl.", true)}{kopf("Grenze", false)}
+                  {kopf("Nächste ab", false, "Termin laut Excel-Liste")}{kopf("Miete danach", true, "Miete laut Excel-Liste")}{kopf("in 3 Jahren", true, "Erreichbare Miete in 3 Jahren laut Liste (Kappungsgrenze)")}
+                </>}
+                {ansicht === "subvention" && <>
+                  {kopf("Ist-Kaltmiete")}{kopf("Zielmiete", true, "Die Miete, auf die wir subventionieren")}{kopf("Garantie mtl.", true, "Subvention je Monat")}
+                  {kopf("Garantie Laufzeit", true, "Summe über die Laufzeit, ohne Mieterhöhungen")}{kopf("Garagen-Subv. mtl.")}
+                  {kopf("Einmalanteil", true, "Anteil am Einmalbetrag nach Kaufpreis")}
+                  {kopf("Mietsubvention", true, "Mietsubvention laut Excel-Liste")}{kopf("laut Liste", true, "Garantie über die Laufzeit laut Excel, mit Mieterhöhungen")}
                 </>}
                 {ansicht === "hausgeld" && <>
                   {kopf("Hausgeld gesamt")}{kopf("umlagefähig")}{kopf("nicht umlagefähig")}{kopf("Rücklage")}
@@ -521,16 +614,25 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
                       <TableCell className={r}>{ist && z.flaeche ? zahl(ist / z.flaeche) : "–"}</TableCell>
                       <TableCell className={r}>{listenZelle(x, "sollMiete")}</TableCell>
                       <TableCell className={r}>{soll && z.flaeche ? zahl(soll / z.flaeche) : "–"}</TableCell>
-                      {mitGarantie && <>
-                        <TableCell className={r}>{garantie ? <span title={`${zahl(regel!.zielQm)} €/m²`}>{eur(garantie.zielMiete, 2)}</span> : "–"}</TableCell>
-                        <TableCell className={cn(r, garantie?.garantieMonat && "font-medium")}>{garantie ? eur(garantie.garantieMonat, 2) : "–"}</TableCell>
-                        <TableCell className={r}>{garantie ? eur(garantie.summeLaufzeit) : "–"}</TableCell>
-                        <TableCell className={r}>{listenZelle(x, "garantieLaufzeitListe", 0)}</TableCell>
-                      </>}
                       <TableCell className="whitespace-nowrap text-xs">{listenTextZelle(x, "letzteErhoehung")}</TableCell>
+                      <TableCell className={r}>{listenZelle(x, "mieteVorErhoehung")}</TableCell>
+                      <TableCell className="whitespace-nowrap text-xs" title={x.erhoehung?.hinweis}>{x.erhoehung ? datum(x.erhoehung.ab) : "–"}</TableCell>
+                      <TableCell className={r}>{x.erhoehung ? eur(x.erhoehung.neueMiete, 2) : "–"}</TableCell>
+                      <TableCell className={cn(r, x.erhoehung?.plus && "font-medium text-emerald-700")}>{x.erhoehung?.plus ? eur(x.erhoehung.plus, 2) : "–"}</TableCell>
+                      <TableCell className="whitespace-nowrap text-xs">{x.erhoehung ? x.erhoehung.begrenztDurch : "–"}</TableCell>
                       <TableCell className="whitespace-nowrap text-xs">{listenTextZelle(x, "naechsteErhoehungAb", "datum")}</TableCell>
                       <TableCell className={r}>{listenZelle(x, "naechsteErhoehungMiete")}</TableCell>
                       <TableCell className={r}>{listenZelle(x, "mieteIn3Jahren")}</TableCell>
+                    </>}
+                    {ansicht === "subvention" && <>
+                      <TableCell className={r}>{ist !== null ? eur(ist, 2) : <span className="text-xs text-muted-foreground">kein Mieter</span>}</TableCell>
+                      <TableCell className={r}>{garantie && regel?.art !== "einmal" ? <span title={regel?.art === "ziel" ? `${zahl(regel.zielQm)} €/m²` : `plus ${zahl((regel?.steigerung ?? 0) * 100, 1)} %`}>{eur(garantie.zielMiete, 2)}</span> : "–"}</TableCell>
+                      <TableCell className={cn(r, garantie?.garantieMonat && "font-medium")}>{garantie && regel?.art !== "einmal" ? eur(garantie.garantieMonat, 2) : "–"}</TableCell>
+                      <TableCell className={r}>{garantie && regel?.art !== "einmal" ? eur(garantie.summeLaufzeit) : "–"}</TableCell>
+                      <TableCell className={r}>{garantie?.garagenSubventionMonat ? eur(garantie.garagenSubventionMonat, 2) : "–"}</TableCell>
+                      <TableCell className={r}>{x.einmal ? eur(x.einmal, 2) : "–"}</TableCell>
+                      <TableCell className={r}>{listenZelle(x, "mietsubvention")}</TableCell>
+                      <TableCell className={r}>{listenZelle(x, "garantieLaufzeitListe", 0)}</TableCell>
                     </>}
                     {ansicht === "hausgeld" && <>
                       <TableCell className={r}>{hausgeldZelle(x, hg.gesamt, "hausgeldMonat")}</TableCell>

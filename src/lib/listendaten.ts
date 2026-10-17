@@ -43,6 +43,7 @@ export const LISTEN_FELDER: ListenFeld[] = [
   { schluessel: "bkVorauszahlung", label: "BK-Vorauszahlung", typ: "zahl", gruppe: "miete", erkennung: gleich("bk-vorausz.", "bkv") },
   { schluessel: "hkVorauszahlung", label: "HK-Vorauszahlung", typ: "zahl", gruppe: "miete", erkennung: gleich("hk-vorausz.", "hkv") },
   { schluessel: "letzteErhoehung", label: "Letzte Mieterhöhung", typ: "text", gruppe: "miete", erkennung: beginnt("letzte mieterhöhung") },
+  { schluessel: "mieteVorErhoehung", label: "Miete vor der letzten Erhöhung", typ: "zahl", gruppe: "miete", erkennung: beginnt("letzte erhöhung: miete vorher") },
   { schluessel: "naechsteErhoehungAb", label: "Nächste Erhöhung ab", typ: "datum", gruppe: "miete", erkennung: beginnt("erhöhung 1: wirksam ab") },
   { schluessel: "naechsteErhoehungMiete", label: "Miete nach nächster Erhöhung", typ: "zahl", gruppe: "miete", erkennung: beginnt("erhöhung 1: neue miete") },
   { schluessel: "mieteIn3Jahren", label: "Erreichbare Miete in 3 Jahren", typ: "zahl", gruppe: "miete", erkennung: beginnt("erreichbare miete in 3 j") },
