@@ -36,6 +36,8 @@ import { PIPELINE_STUFEN } from "@/lib/pipelineStufen";
 import { erhoehungsRegelAusMeta, naechsteErhoehung, type ErhoehungsRegel } from "@/lib/mieterhoehung";
 import { bundeslandFromPlz } from "@/lib/kaufnebenkosten";
 import { KOSTEN_ZEILEN, kostenJahr } from "@/lib/kostenJahr";
+import { fristenSammeln, type Frist } from "@/lib/fristenObjekt";
+import { objektseiteFelder } from "@/lib/objektseiteDaten";
 import { cacheGet } from "@/lib/dataCache";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
@@ -284,7 +286,7 @@ function ErhoehungsKarte({ objekt, regel, darfSchreiben }: { objekt: ObjektData;
   );
 }
 
-type Ansicht = "handlung" | "preise" | "miete" | "subvention" | "hausgeld" | "garagen" | "verkauf" | "kosten";
+type Ansicht = "handlung" | "preise" | "miete" | "subvention" | "hausgeld" | "garagen" | "verkauf" | "kosten" | "fristen";
 const ANSICHTEN: { wert: Ansicht; titel: string }[] = [
   { wert: "handlung", titel: "Handlungsbedarf" },
   { wert: "preise", titel: "Preise & Rendite" },
@@ -294,6 +296,7 @@ const ANSICHTEN: { wert: Ansicht; titel: string }[] = [
   { wert: "garagen", titel: "Garagen" },
   { wert: "verkauf", titel: "Verkaufsstand" },
   { wert: "kosten", titel: "Kosten je Jahr" },
+  { wert: "fristen", titel: "Fristen" },
 ];
 
 const HINWEIS_FARBE: Record<HinweisArt, string> = {
@@ -325,6 +328,9 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
   const [importOffen, setImportOffen] = useState(false);
   const [ansicht, setAnsicht] = useState<Ansicht>("handlung");
   const [jahr, setJahr] = useState(new Date().getFullYear());
+  const [nurKommende, setNurKommende] = useState(true);
+  type FristZeile = Frist & { objekt: string };
+  const fristSort = useSortierung<FristZeile>({ datum: (f) => f.datum, art: (f) => f.art, objekt: (f) => f.objekt, einheit: (f) => f.einheit });
   const darfSchreiben = SCHREIBT_OBJEKTE.includes(user.role);
   const mieter = getMieter();
   useLiveVersion(["investments"]);
@@ -521,7 +527,62 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
           <Button key={a.wert} size="sm" variant={ansicht === a.wert ? "default" : "outline"} role="tab" aria-selected={ansicht === a.wert} onClick={() => setAnsicht(a.wert)}>{a.titel}</Button>
         ))}
       </div>
-      {ansicht === "kosten" ? (() => {
+      {ansicht === "fristen" && (() => {
+        const heute = new Date().toISOString().slice(0, 10);
+        const alle: FristZeile[] = objekte.flatMap((o) => {
+          const eigene = zeilen.filter((x) => x.objekt.id === o.id);
+          const ausweis = objektseiteFelder(o).energieausweis.gueltigBis;
+          return fristenSammeln(eigene.map((x) => {
+            const abw = x.inv ? getAbwicklungDaten(x.inv.id) : null;
+            const gek = x.l?.werte.garageGekuendigtZum;
+            return {
+              weNr: x.z.weNr, befristetBis: x.m?.mietvertragEnde, erhoehungAb: x.erhoehung?.ab, erhoehungPlus: x.erhoehung?.plus,
+              garageGekuendigtZum: typeof gek === "string" ? gek : undefined, notartermin: x.inv?.notarTermin,
+              faelligkeit: abw?.kaufpreisfaelligkeitDatum, uebergabe: abw?.uebergabeDatum,
+              subventionMonate: x.regel?.art !== "einmal" && x.garantie?.garantieMonat ? x.regel?.laufzeitMonate : undefined,
+              garagenSubventionMonate: x.garantie?.garagenSubventionMonat ? x.regel?.garagenSubventionMonate : undefined,
+            };
+          }), ausweis ? excelDatumIso(ausweis) || (/^\d{4}$/.test(ausweis) ? `${ausweis}-12-31` : "") : "").map((f) => ({ ...f, objekt: o.titel }));
+        });
+        const liste = fristSort.sortiert(alle.filter((f) => !nurKommende || f.datum >= heute));
+        return (
+          <Card>
+            <CardContent className="space-y-3 p-4">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="text-sm font-semibold">Fristen</span>
+                <label className="flex items-center gap-2 text-sm"><Checkbox checked={nurKommende} onCheckedChange={(c) => setNurKommende(!!c)} /> nur kommende</label>
+              </div>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <SortKopf titel="Datum" schluessel="datum" sort={fristSort} />
+                      <SortKopf titel="Frist" schluessel="art" sort={fristSort} />
+                      {mehrere && <SortKopf titel="Objekt" schluessel="objekt" sort={fristSort} />}
+                      <SortKopf titel="Einheit" schluessel="einheit" sort={fristSort} />
+                      <TableHead>Hinweis</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {liste.map((f, i) => (
+                      <TableRow key={i}>
+                        <TableCell className={cn("whitespace-nowrap tabular-nums text-xs", f.datum < heute && "text-muted-foreground")}>{datum(f.datum)}</TableCell>
+                        <TableCell className="whitespace-nowrap text-xs">{f.art}</TableCell>
+                        {mehrere && <TableCell className="whitespace-nowrap text-xs">{f.objekt}</TableCell>}
+                        <TableCell className="whitespace-nowrap text-xs">{f.einheit || "ganzes Objekt"}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{f.detail || ""}</TableCell>
+                      </TableRow>
+                    ))}
+                    {liste.length === 0 && <TableRow><TableCell colSpan={5} className="py-8 text-center text-sm text-muted-foreground">Keine Fristen.</TableCell></TableRow>}
+                  </TableBody>
+                </Table>
+              </div>
+              <p className="text-xs text-muted-foreground">Gesammelt aus Mietern, Mieterhöhungsplaner, Abwicklung, Mietsubvention und Energieausweis. Ohne Erinnerungen oder Benachrichtigungen.</p>
+            </CardContent>
+          </Card>
+        );
+      })()}
+      {ansicht === "fristen" ? null : ansicht === "kosten" ? (() => {
         const k = kostenJahr(zeilen.filter((x) => x.w.status !== "verkauft" || x.inv).map((x) => ({
           istMiete: x.ist, eigentuemerlast: x.last, hausgeldGesamt: x.hg.gesamt,
           uebergabe: x.inv ? getAbwicklungDaten(x.inv.id).uebergabeDatum || "" : "",
