@@ -55,6 +55,21 @@ export interface Grundriss3dPlan {
   /** Lage der Einheit im Geschoss, in Metern. Für die Objektansicht. */
   versatz?: Punkt;
   geaendertAm?: string;
+  /**
+   * Wände als Flächen statt als Linien (seit 17.10.2026): so kommen Pläne,
+   * die aus CAD-Zeichnungen gelesen werden. Jede Wand ein Polygon mit
+   * Löchern, Fenster und Türen als Lückenflächen, dazu die Deckenplatte.
+   */
+  flaechen?: Flaechen;
+}
+
+export type XY = [number, number];
+export interface Flaechen {
+  /** Je Wand: äußerer Ring, danach die Löcher. */
+  waende: XY[][][];
+  fenster: XY[][];
+  tueren: XY[][];
+  decke?: XY[][];
 }
 
 export const RAUM_TYPEN: Array<{ id: RaumTyp; name: string }> = [
@@ -98,7 +113,8 @@ export function planAusMeta(roh: unknown): Grundriss3dPlan | null {
   const r = roh as Record<string, unknown>;
   const waende = (Array.isArray(r.waende) ? r.waende : []).filter((w): w is Wand =>
     !!w && typeof w.id === "string" && punktOk(w.a) && punktOk(w.b) && zahl(w.dicke) && w.dicke > 0 && laenge(w.a, w.b) > 0.01);
-  if (!waende.length) return null;
+  const flaechen = flaechenAusMeta(r.flaechen);
+  if (!waende.length && !flaechen) return null;
   const wandIds = new Set(waende.map((w) => w.id));
   const oeffnungen = (Array.isArray(r.oeffnungen) ? r.oeffnungen : []).filter((o): o is Oeffnung =>
     !!o && typeof o.id === "string" && wandIds.has(o.wandId) && (o.art === "tuer" || o.art === "fenster") && zahl(o.position) && zahl(o.breite) && o.breite > 0);
@@ -114,7 +130,20 @@ export function planAusMeta(roh: unknown): Grundriss3dPlan | null {
     ...(zahl(r.geschoss) ? { geschoss: r.geschoss } : {}),
     ...(punktOk(r.versatz) ? { versatz: r.versatz } : {}),
     ...(typeof r.geaendertAm === "string" ? { geaendertAm: r.geaendertAm } : {}),
+    ...(flaechen ? { flaechen } : {}),
   };
+}
+
+const xyOk = (p: unknown): p is XY => Array.isArray(p) && p.length === 2 && zahl(p[0]) && zahl(p[1]);
+const ringOk = (r: unknown): r is XY[] => Array.isArray(r) && r.length >= 3 && r.every(xyOk);
+
+function flaechenAusMeta(roh: unknown): Flaechen | null {
+  if (!roh || typeof roh !== "object") return null;
+  const r = roh as Record<string, unknown>;
+  const waende = (Array.isArray(r.waende) ? r.waende : []).filter((w): w is XY[][] => Array.isArray(w) && w.length >= 1 && w.every(ringOk));
+  if (!waende.length) return null;
+  const liste = (v: unknown) => (Array.isArray(v) ? v : []).filter(ringOk);
+  return { waende, fenster: liste(r.fenster), tueren: liste(r.tueren), ...(Array.isArray(r.decke) ? { decke: liste(r.decke) } : {}) };
 }
 
 /** Für den Kundenlink: ohne Bildadresse des Hintergrunds. */
@@ -214,7 +243,10 @@ export function rahmen(punkte: Punkt[]): { minX: number; minY: number; maxX: num
 }
 
 export function planRahmen(plan: Grundriss3dPlan) {
-  return rahmen(plan.waende.flatMap((w) => [w.a, w.b]));
+  const punkte = plan.waende.flatMap((w) => [w.a, w.b]);
+  for (const w of plan.flaechen?.waende ?? []) for (const [x, y] of w[0]) punkte.push({ x, y });
+  if (!punkte.length) for (const r of plan.raeume) punkte.push(...r.punkte);
+  return punkte.length ? rahmen(punkte) : { minX: 0, minY: 0, maxX: 1, maxY: 1 };
 }
 
 export function punktInPolygon(p: Punkt, poly: Punkt[]): boolean {

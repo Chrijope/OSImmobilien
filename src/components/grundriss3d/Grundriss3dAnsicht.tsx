@@ -24,7 +24,7 @@ export interface Grundriss3dAnsichtProps {
   /** Gebäudehülle des Objekts (Außenwände, Hof, Treppenhäuser, Aufzüge), optional. */
   haus?: HausPlan | null;
   /** Startwerte, etwa für einen Link auf eine bestimmte Ansicht. */
-  startwerte?: Partial<{ stil: StilId; schnitt: boolean; modus: Modus; explosion: number; wandhoehe: number; licht: Lichtart; stunde: number; drehen: boolean }>;
+  startwerte?: Partial<{ stil: StilId; schnitt: boolean; modus: Modus; explosion: number; wandhoehe: number; licht: Lichtart; stunde: number; drehen: boolean; geschoss: number }>;
 }
 
 export type Modus = "rundum" | "begehung";
@@ -51,7 +51,7 @@ export default function Grundriss3dAnsicht({ einheiten, kompakt, hoehe = 480, fa
   const [beschriftung, setBeschriftung] = useState(true);
   const [schnitt, setSchnitt] = useState(!!startwerte?.schnitt);
   const [explosion, setExplosion] = useState(startwerte?.explosion ?? 0);
-  const [nurGeschoss, setNurGeschoss] = useState<number | undefined>(undefined);
+  const [nurGeschoss, setNurGeschoss] = useState<number | undefined>(startwerte?.geschoss);
   const [vollbild, setVollbild] = useState(false);
   const [fehler, setFehler] = useState<string | null>(null);
   const [licht, setLicht] = useState<Lichtart>(startwerte?.licht ?? "tag");

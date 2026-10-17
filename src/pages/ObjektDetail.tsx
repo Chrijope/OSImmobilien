@@ -1237,7 +1237,7 @@ export default function ObjektDetail() {
                 </div>
               </div>
               {/* 3D-Grundriss der Einheit (16.10.2026), siehe components/grundriss3d. */}
-              <div className="mt-6"><EinheitGrundriss3dKarte wohnung={w} darfBearbeiten={istInterneRolle(user.role)} onGespeichert={reload} /></div>
+              <div className="mt-6"><EinheitGrundriss3dKarte wohnung={w} objekt={objekt} darfBearbeiten={istInterneRolle(user.role)} onGespeichert={reload} /></div>
             </TabsContent>
 
           </Tabs>

@@ -24,11 +24,12 @@ import {
   Gift, Key, Wrench, ClipboardList,
   Shield, Gauge, Banknote, MessageSquare, TrendingUp, Clock, ClipboardCheck,
   Trash2, ScrollText, ShieldAlert, Video, CalendarPlus, Star,
-  ShoppingBag, Settings, Heart, Moon, Route, Handshake,
+  ShoppingBag, Settings, Heart, Moon, Route, Handshake, Table2, ListChecks,
 } from "lucide-react";
 import type { UserRole } from "@/types/user";
 import { HANDBUCH_SEITE_ROUTE } from "@/lib/handbuch/zugang";
 import { isDraftRoute } from "@/lib/draftRoutes";
+import { OBJEKTDATEN_EINHEITEN_ROUTE, OBJEKTDATEN_ROUTE, OBJEKTDATEN_VOLLSTAENDIGKEIT_ROUTE, darfObjektdaten } from "@/lib/objektdatenZugang";
 import {
   ANKAUFSTOOL_ROUTE, KAUFPREISLISTE_ROUTE, MIETSUBVENTION_ROUTE, greiftAdminRiegel, isUrlAllowedForRole, isKundeRole, isTippgeberRole, objekteTestFreigabe, type NutzerIdentitaet,
 } from "@/lib/sidebarPermissions";
@@ -75,6 +76,18 @@ const immobilienItems = [
     tooltip: "Die eigene Objektverwaltung mit dem Investagon-Import. Fuer die Pflege, im Vertrieb wird der Eintrag darueber genutzt." },
   { title: "Objekt Akquise", url: "/objekt-akquise", icon: Search, adminOnly: true, suchbegriffe: ["ankauf", "einkauf", "neue objekte"] },
   { title: "Objekt Einreichungen", url: "/objekt-einreichungen", icon: ClipboardList, adminOnly: true, suchbegriffe: ["eingereicht", "vorschlaege"] },
+];
+
+/*
+ * Objektdaten (Christian, 17.10.2026): die Listen aus Bauträger-Sicht, als
+ * Ansichten auf Objekte und Einheiten. Nur Admin, Inhaber, Backoffice und
+ * Objektpartner (`OBJEKTDATEN_ROLLEN`); die Gruppe wird unten nur für sie
+ * eingefügt. Kaufpreisliste, Mietsubvention und Ankaufstool bleiben in Tools.
+ */
+const objektdatenItems = [
+  { title: "Objektcockpit", url: OBJEKTDATEN_ROUTE, icon: Building2, suchbegriffe: ["bautraeger", "objektdaten", "verkaufsstand", "eigene objekte", "uebersicht objekte"] },
+  { title: "Einheitenliste", url: OBJEKTDATEN_EINHEITEN_ROUTE, icon: Table2, suchbegriffe: ["einheiten", "wohnungen", "preise", "rendite", "kaufpreise", "vertriebsliste", "miete"] },
+  { title: "Vollständigkeit", url: OBJEKTDATEN_VOLLSTAENDIGKEIT_ROUTE, icon: ListChecks, suchbegriffe: ["fehlende unterlagen", "fehlt", "bilder fehlen", "mietvertrag fehlt", "dokumente", "luecken"] },
 ];
 
 const auswertungItems = [
@@ -363,6 +376,7 @@ export function navigationsGruppen(ctx: NavKontext): NavGruppe[] {
         : immobilienItems,
       iconTint: "text-apple-orange",
     },
+    ...(darfObjektdaten(rolle) ? [{ label: "Objektdaten", items: objektdatenItems, iconTint: "text-apple-brown" }] : []),
     // Junior-Override und Mentoring sind in Auswertungen (Tab "Mein Team")
     // und Abrechnungen (Differenzumsatz-Spalte) integriert.
     { label: "Auswertung", items: auswertungItems, iconTint: "text-apple-indigo" },

@@ -721,7 +721,7 @@ function EinheitAnsicht({ objekt, wohnung: w }: { objekt: ObjektData; wohnung: O
 
         {/* Wird erst beim Öffnen eingehängt; three.js lädt also nur, wenn jemand den Reiter wählt. */}
         <TabsContent value="dreid">
-          <EinheitGrundriss3dKarte wohnung={w} darfBearbeiten={istInterneRolle(user.role)} />
+          <EinheitGrundriss3dKarte wohnung={w} objekt={objekt} darfBearbeiten={istInterneRolle(user.role)} />
         </TabsContent>
 
         <TabsContent value="finanzen">

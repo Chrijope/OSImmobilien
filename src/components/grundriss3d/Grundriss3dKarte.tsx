@@ -8,12 +8,35 @@ import { resolveImageUrl } from "@/lib/objekteImages";
 import { Grundriss3dBlock } from "./Grundriss3dBlock";
 import { hausAusMeta, planAusMeta, plaeneAusEinheiten } from "./plan";
 import { speichereEinheitPlan } from "./speichern";
+import { useBekanntesHaus, weNummer, type BekanntesHaus } from "./planBibliothek";
 
 const Editor = lazy(() => import("./GrundrissEditor"));
 
 /** Die Pläne aller Einheiten eines Hauses, für die gestapelte Ansicht. */
 export function plaeneDesObjekts(objekt: Pick<ObjektData, "wohnungen" | "wohnungenNichtImAngebot">) {
   return plaeneAusEinheiten([...objekt.wohnungen, ...(objekt.wohnungenNichtImAngebot ?? [])]);
+}
+
+/** Plan einer Einheit aus der Bibliothek, über die Nummer der Einheit. */
+function bibliotheksPlan(bekannt: BekanntesHaus | null, weNr: string) {
+  const nr = weNummer(weNr);
+  return bekannt?.einheiten.find((e) => e.we === nr)?.plan ?? null;
+}
+
+/**
+ * Pläne aus der Datenbank, ergänzt um die der Bibliothek. Ein gespeicherter
+ * Plan geht vor; Bibliothekseinheiten ohne passende Einheit im CRM (etwa
+ * verkaufte) stehen trotzdem im Haus.
+ */
+function mitBibliothek(objekt: Pick<ObjektData, "wohnungen" | "wohnungenNichtImAngebot">, bekannt: BekanntesHaus | null) {
+  const eigene = plaeneDesObjekts(objekt);
+  if (!bekannt) return eigene;
+  const alle = [...objekt.wohnungen, ...(objekt.wohnungenNichtImAngebot ?? [])];
+  const mitEigenemPlan = new Set(alle.filter((w) => planAusMeta(w.grundriss3d)).map((w) => weNummer(w.weNr)));
+  const ergaenzt = bekannt.einheiten
+    .filter((e) => !mitEigenemPlan.has(e.we))
+    .map((e) => ({ plan: e.plan, titel: `WE ${String(e.we).padStart(2, "0")}` }));
+  return [...eigene, ...ergaenzt];
 }
 
 /** Editor im großen Fenster. Seit 17.10.2026 für jede interne Rolle (Datenbankfunktion grundriss3d_speichern). */
@@ -42,14 +65,20 @@ export function Grundriss3dEditorDialog({ offen, onOpenChange, wohnung, titel, o
 }
 
 /** Einheitenseite, Reiter Übersicht: nur der Grundriss dieser Einheit. */
-export function EinheitGrundriss3dKarte({ wohnung, darfBearbeiten, onGespeichert }: {
+export function EinheitGrundriss3dKarte({ wohnung, darfBearbeiten, onGespeichert, objekt }: {
   wohnung: ObjektWohnung;
   darfBearbeiten: boolean;
   onGespeichert?: () => void;
+  /** Für die Bibliothek nachgezeichneter Häuser (Erkennung an der Adresse). */
+  objekt?: Pick<ObjektData, "adresse" | "titel">;
 }) {
-  const plan = useMemo(() => planAusMeta(wohnung.grundriss3d), [wohnung.grundriss3d]);
+  const bekannt = useBekanntesHaus(objekt);
+  const eigenerPlan = useMemo(() => planAusMeta(wohnung.grundriss3d), [wohnung.grundriss3d]);
+  const plan = eigenerPlan ?? bibliotheksPlan(bekannt, wohnung.weNr);
+  // Ein ganzes Haus als eine Einheit (Doppelhaushälfte): alle Geschosse zeigen.
+  const hausEtagen = !plan && bekannt?.etagen && bekannt.einheiten.length === 0 ? bekannt.etagen : null;
   const [editor, setEditor] = useState(false);
-  if (!plan && !darfBearbeiten) return null;
+  if (!plan && !hausEtagen && !darfBearbeiten) return null;
   return (
     <Card className="p-4" data-testid="einheit-grundriss-3d">
       <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -63,8 +92,16 @@ export function EinheitGrundriss3dKarte({ wohnung, darfBearbeiten, onGespeichert
           </Button>
         )}
       </div>
-      {plan ? (
-        <Grundriss3dBlock einheiten={[{ plan, titel: `WE ${wohnung.weNr}` }]} hoehe={440} />
+      {hausEtagen ? (
+        <>
+          <Grundriss3dBlock einheiten={hausEtagen.map((e) => ({ plan: e.plan, titel: e.titel }))} hoehe={480} />
+          <p className="mt-1 text-[11px] text-muted-foreground">{bekannt?.name}: nachgezeichnet aus den Unterlagen; das einzelne Haus kann abweichen.</p>
+        </>
+      ) : plan ? (
+        <>
+          <Grundriss3dBlock einheiten={[{ plan: { ...plan, versatz: undefined }, titel: `WE ${wohnung.weNr}` }]} hoehe={440} />
+          {!eigenerPlan && bekannt && <p className="mt-1 text-[11px] text-muted-foreground">Nachgezeichnet aus dem Grundriss der Unterlagen ({bekannt.name}).</p>}
+        </>
       ) : (
         <p className="text-sm text-muted-foreground">
           Noch kein 3D-Grundriss. Lege den Grundriss als Bild oder PDF in den Editor, setze den Maßstab und zeichne Wände, Türen, Fenster und Räume nach. Danach erscheint er hier, auf der Objektseite und im Exposé.
@@ -112,8 +149,12 @@ export function dominanteFarbe(url: string): Promise<string | undefined> {
 
 /** Objektseite: alle Einheiten mit Plan, nach Geschoss gestapelt. */
 export function ObjektGrundriss3dKarte({ objekt, darfBearbeiten }: { objekt: ObjektData; darfBearbeiten: boolean }) {
-  const einheiten = useMemo(() => plaeneDesObjekts(objekt), [objekt]);
-  const haus = useMemo(() => hausAusMeta((objekt.meta as Record<string, unknown> | undefined)?.grundriss3dHaus), [objekt]);
+  const bekannt = useBekanntesHaus(objekt);
+  // Etagenpläne aus der Bibliothek zeigen das ganze Haus samt aller Einheiten; sonst die Einheiten einzeln.
+  const einheiten = useMemo(() => (bekannt?.etagen && !plaeneDesObjekts(objekt).length
+    ? bekannt.etagen.map((e) => ({ plan: e.plan, titel: e.titel }))
+    : mitBibliothek(objekt, bekannt)), [objekt, bekannt]);
+  const haus = useMemo(() => hausAusMeta((objekt.meta as Record<string, unknown> | undefined)?.grundriss3dHaus) ?? bekannt?.haus ?? null, [objekt, bekannt]);
   const titelbild = objekt.bilder?.[0]?.url;
   const [fassade, setFassade] = useState<string | undefined>();
   useEffect(() => {

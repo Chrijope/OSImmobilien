@@ -10,6 +10,7 @@ import {
 } from "@/lib/bewerberprozessFreigabe";
 import { darfHandbuchSeite, istHandbuchSeiteRoute } from "@/lib/handbuch/zugang";
 import { getAppConfig } from "@/lib/appConfigStore";
+import { darfObjektdaten, istObjektdatenRoute } from "@/lib/objektdatenZugang";
 
 /**
  * Ankaufstool (Bauträger-Kalkulator), seit dem 07.10.2026. Ein internes
@@ -558,6 +559,9 @@ export function isUrlAllowedForRole(
   // oder Bewerber oeffnen sie nichts.
   if (!istInterneRolle(role)) customPermissions = undefined;
   if (url.split('?')[0].split('#')[0] === '/statistiken') return getVisibleStatistikTabs(role, customPermissions || []).length > 0;
+  // Objektdaten: eine feste Rollenliste, auch vor den Rollen mit Vollzugriff
+  // (Christian, 17.10.2026: nur Admin, Inhaber, Backoffice, Objektpartner).
+  if (istObjektdatenRoute(url)) return darfObjektdaten(role);
   if (FULL_ACCESS_ROLES.includes(role)) return true;
   const cleanUrl = url.split("?")[0].split("#")[0];
   // Freigaben im Code, die vor der Rollenliste stehen. Siehe
