@@ -55,7 +55,7 @@ const de = {
       titelZeile1: "Immobilien-",
       titelAkzent: "Investmentanalyse",
       einleitung:
-        "Finde heraus, ob ein Immobilieninvestment zu Deiner aktuellen Lebenssituation passt. Und was es Dir nach 10 Jahren bringen kann.",
+        "Finde heraus, ob ein Immobilieninvestment zu Deiner aktuellen Lebenssituation passt. Und was es Dir jeden Monat und zur Rente bringen kann.",
       kurz: "Kostenlose Analyse. Vertraulich. In wenigen Minuten.",
       erwartung:
         "Die Auswertung beruht auf Deinen Angaben und gibt Dir eine erste Einordnung, was in Deiner Situation möglich ist. Die genaue Berechnung machen wir gemeinsam im persönlichen Termin.",
@@ -431,7 +431,7 @@ const en: AnalyseTexte = {
       titelZeile1: "Property",
       titelAkzent: "investment analysis",
       einleitung:
-        "Find out whether a property investment suits your current situation in life. And what it could do for you after 10 years.",
+        "Find out whether a property investment suits your current situation in life. And what it could do for you every month and at retirement.",
       kurz: "Free analysis. Confidential. In just a few minutes.",
       erwartung:
         "The result is based on your details and gives you a first idea of what's possible in your situation. We'll do the exact calculation together at a personal appointment.",

@@ -30,11 +30,39 @@ export interface KulturFeindbild {
   richtung: "intern" | "extern";
 }
 
+/**
+ * Wer wir sind: Bauträger und Vertrieb aus einer Hand. Steht auf der
+ * Kulturseite und im PDF ganz oben, weil alles Weitere darauf aufbaut.
+ * Fakten laut os-immobilien.com (Stand 17.10.2026).
+ */
+export const KULTUR_HERKUNFT = {
+  einleitung:
+    "Wir sind kein Vertrieb, der fremde Wohnungen weiterreicht. Wir bauen selbst und verkaufen selbst. Was du anbietest, kennen wir vom ersten Grundstücksgespräch bis zur Übergabe der Schlüssel.",
+  punkte: [
+    {
+      titel: "Wir bauen selbst",
+      text: "Die OS Immobilien Holding schafft regionalen Wohnraum in Berlin und Brandenburg: Mehrfamilienhäuser revitalisieren, Grundstücke entwickeln, altersgerechtes Wohnen planen. Über 50.000 m² Wohnfläche sind in Planung.",
+    },
+    {
+      titel: "Wir verkaufen selbst",
+      text: "Die OS Real Estate GmbH bringt diese Wohnungen über den eigenen Vertrieb zu Kapitalanlegern. Kein Zwischenhändler und keine Ware, die wir nur aus dem Exposé kennen.",
+    },
+    {
+      titel: "Wir kaufen vorsichtig ein",
+      text: "Bevor wir ein Haus kaufen, rechnen wir den ungünstigen Fall. Nur wenn auch der trägt, kaufen wir. Diese Vorsicht steckt in jeder Wohnung, die du vorstellst.",
+    },
+    {
+      titel: "Was das für dich heißt",
+      text: "Du sprichst über Häuser, deren Geschichte wir kennen, mit Zahlen, für die wir selbst geradestehen. Diese Sicherheit spürt dein Gegenüber, noch bevor er die erste Zahl gesehen hat.",
+    },
+  ],
+};
+
 /** Vier Werte. Werte werden gelebt, nicht plakatiert. */
 export const KULTUR_WERTE: KulturWert[] = [
   {
     titel: "Ehrlich rechnen",
-    text: "Wer uns vertraut, hat ein Recht auf die Zahl, die stimmt, auch wenn eine andere freundlicher aussähe. Wir nennen das gute Jahr und das schwierige im selben Atemzug. Ein Nein zum falschen Objekt ist uns lieber als ein Ja, das jemand in zwei Jahren bereut.",
+    text: "Wer uns vertraut, hat ein Recht auf die Zahl, die stimmt, auch wenn eine andere freundlicher aussähe. Wir nennen das gute Jahr und das schwierige im selben Atemzug. Ein Nein zum falschen Objekt ist uns lieber als ein Ja, das jemand in zwei Jahren bereut. Das beginnt schon beim Einkauf: Wir kaufen nur Häuser, deren ungünstiger Fall noch trägt.",
   },
   {
     titel: "Verstehen vor Zustimmung",
@@ -46,7 +74,7 @@ export const KULTUR_WERTE: KulturWert[] = [
   },
   {
     titel: "Begleiten statt abschließen",
-    text: "Unsere Arbeit endet nicht beim Notartermin, sie beginnt dort. Wir bleiben ansprechbar, wenn die erste Nebenkostenabrechnung kommt und wenn die zweite Immobilie ansteht. Dass ein Kunde ein zweites Mal mit uns arbeitet, ist der einzige Beweis, der wirklich zählt.",
+    text: "Unsere Arbeit endet nicht beim Notartermin, sie beginnt dort. Wir bleiben ansprechbar, wenn die erste Nebenkostenabrechnung kommt und wenn die zweite Immobilie ansteht. Weil wir die Häuser selbst entwickelt haben, kennen wir sie auch Jahre später noch. Dass ein Kunde ein zweites Mal mit uns arbeitet, ist der einzige Beweis, der wirklich zählt.",
   },
 ];
 
@@ -88,7 +116,7 @@ export const KULTUR_STANDARDS: KulturStandard[] = [
 ];
 
 /**
- * Sieben Glaubenssätze in Ich-Form. Positiv, kurz genug zum Merken.
+ * Acht Glaubenssätze in Ich-Form. Positiv, kurz genug zum Merken.
  * Einer davon steht jeden Tag im Dashboard, für alle im Team derselbe.
  */
 export const KULTUR_GLAUBENSSAETZE: string[] = [
@@ -99,11 +127,12 @@ export const KULTUR_GLAUBENSSAETZE: string[] = [
   "Aufs und Abs gehören dazu. Ich bleibe im Prozess, auch wenn die Woche nicht läuft.",
   "Wenn ich etwas nicht weiß, sage ich das und finde es heraus. Das kostet mich nichts und bringt meinem Kunden alles.",
   "Ich übernehme die Verantwortung für jeden Menschen, der in meiner Pipeline steht.",
+  "Ich stelle Wohnungen vor, die wir selbst gebaut haben. Darauf darf ich stolz sein, und das darf man mir anmerken.",
 ];
 
 /**
  * Feindbilder schweißen zusammen, aber sie richten sich gegen Verhalten,
- * nie gegen Menschen. Vier innere Gegner, zwei äußere, gegen die wir für
+ * nie gegen Menschen. Vier innere Gegner, drei äußere, gegen die wir für
  * unsere Kunden antreten.
  */
 export const KULTUR_FEINDBILDER: KulturFeindbild[] = [
@@ -133,6 +162,11 @@ export const KULTUR_FEINDBILDER: KulturFeindbild[] = [
     richtung: "extern",
   },
   {
+    titel: "Wohnraum ohne Seele",
+    text: "Quartiere, die nur aus Fläche und Rendite bestehen. Wir bauen Häuser, in denen Menschen gern wohnen, denn nur gut bewohnte Wohnungen bleiben auf Dauer gut vermietet.",
+    richtung: "extern",
+  },
+  {
     titel: "Versprechen ohne Deckung",
     text: "Anbieter, die nur die guten Jahre zeigen und Wertsteigerung als sicher verkaufen. Wir rechnen ehrlich, auch wenn die ehrliche Zahl kleiner ist. Genau daran soll man uns erkennen.",
     richtung: "extern",
@@ -147,9 +181,9 @@ export const KULTUR_FEINDBILDER: KulturFeindbild[] = [
 export const KULTUR_VISION = {
   /** Entwurf, von Christian zu bestätigen oder zu ersetzen */
   entwurf: true,
-  satz: "Wir machen den Aufbau von Vermögen mit Immobilien für Menschen erreichbar, die keine Millionen mitbringen: ehrlich gerechnet, persönlich begleitet und in Jahrzehnten gedacht statt in Abschlüssen.",
+  satz: "Wir schaffen Wohnraum in Berlin und Brandenburg und machen ihn für Menschen erreichbar, die keine Millionen mitbringen: selbst gebaut, ehrlich gerechnet, persönlich begleitet und in Jahrzehnten gedacht statt in Abschlüssen.",
   warum:
-    "Über Geld wird selten offen gesprochen, und wer sich nicht auskennt, traut sich am wenigsten zu fragen. OS Immobilien gibt es, damit gute Beratung nicht davon abhängt, wie viel jemand schon besitzt. Ehrliche Beratung im Immobilienvertrieb soll der Normalfall sein und nicht die Ausnahme.",
+    "Über Geld wird selten offen gesprochen, und wer sich nicht auskennt, traut sich am wenigsten zu fragen. OS Immobilien gibt es, damit gute Beratung nicht davon abhängt, wie viel jemand schon besitzt, und damit hinter jeder Empfehlung ein Haus steht, das wir selbst verantworten. Ehrliche Beratung im Immobilienvertrieb soll der Normalfall sein und nicht die Ausnahme.",
   ziele: [
     "Jeder Kunde versteht seine eigene Rechnung vollständig, auch die unbequemen Zahlen darin.",
     "Niemand unterschreibt bei uns etwas, das er nicht selbst erklären könnte.",

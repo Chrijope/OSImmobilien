@@ -205,6 +205,7 @@ function TransparenzBlock({
   appreciation,
   afaSatzProzent,
   kaufnebenkosten,
+  kaufnebenkostenProzent,
   gesamtinvestition,
 }: {
   interestRate: number;
@@ -212,6 +213,7 @@ function TransparenzBlock({
   appreciation: number;
   afaSatzProzent: number;
   kaufnebenkosten: number;
+  kaufnebenkostenProzent: number;
   gesamtinvestition: number;
 }) {
   const [open, setOpen] = useState(false);
@@ -240,7 +242,7 @@ function TransparenzBlock({
               <li>• {fett(t.zins(Math.round(interestRate * 1000) / 10), stark)}</li>
               <li>• {fett(t.tilgung(Math.round(repaymentRate * 1000) / 10), stark)}</li>
               <li>• {fett(t.wertsteigerung(Math.round(appreciation * 100)), stark)}</li>
-              <li>• {fett(t.kaufnebenkosten(ANNAHMEN.kaufnebenkostenProzent, kaufnebenkosten, gesamtinvestition), stark)}</li>
+              <li>• {fett(t.kaufnebenkosten(kaufnebenkostenProzent, kaufnebenkosten, gesamtinvestition), stark)}</li>
               <li>• {fett(t.mietrendite(ANNAHMEN.mietrenditeProzent), stark)}</li>
               <li>• {fett(t.gebaeudeanteil(ANNAHMEN.gebaeudeanteilProzent), stark)}</li>
               <li>• {fett(t.afa(afaSatzProzent), stark)}{afaSatzProzent > ANNAHMEN.afaSatzProzent ? t.afaGutachten : t.afaGesetz}</li>
@@ -566,6 +568,7 @@ const ResultsPage = ({ result: basisErgebnis, data, berater, onRestart, hideAdva
                     appreciation={p.appreciationRate}
                     afaSatzProzent={p.afaSatzProzent}
                     kaufnebenkosten={p.kaufnebenkosten}
+                    kaufnebenkostenProzent={p.kaufnebenkostenProzent}
                     gesamtinvestition={p.gesamtinvestition}
                   />
                 </div>

@@ -40,7 +40,7 @@ import {
 
 /**
  * Gesamtnebenkosten je Bundesland: Grunderwerbsteuer plus 1,5 Prozent Notar
- * und 0,5 Prozent Grundbuch, also Berlin 8,0 und Brandenburg 8,5 Prozent. Die
+ * und 0,5 Prozent Grundbuch, etwa Bayern 5,5 und Brandenburg 8,5 Prozent. Die
  * Maklercourtage steckt nicht darin, sie lässt sich über den manuellen Satz
  * ergänzen.
  *

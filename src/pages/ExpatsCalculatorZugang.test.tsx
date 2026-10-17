@@ -79,12 +79,10 @@ describe("Die neue Adresse ist ohne Anmeldung erreichbar", () => {
   });
 });
 
-describe("Der Menuepunkt bleibt trotzdem den Admins vorbehalten", () => {
-  it("traegt in der Seitenleiste die neue Adresse mit adminOnly und Abzeichen", () => {
-    const zeile = SIDEBAR_TSX.split("\n").find((z) => z.includes('url: "/expats-calculator"'));
-    expect(zeile, "Eintrag EXPATS Calculator in AppSidebar.tsx").toBeDefined();
-    expect(zeile).toContain("adminOnly: true");
-    expect(zeile).toContain("adminBadge: true");
+describe("Der Menuepunkt ist seit 17.10.2026 aus der Seitenleiste entfernt", () => {
+  it("steht nicht mehr in der Seitenleiste, die Adresse bleibt trotzdem offen", () => {
+    expect(SIDEBAR_TSX).not.toContain('url: "/expats-calculator"');
+    expect(istRouteGesperrt("/expats-calculator", "vertriebspartner")).toBe(false);
   });
 
   it("nennt die alte Adresse nirgends mehr als Ziel", () => {
