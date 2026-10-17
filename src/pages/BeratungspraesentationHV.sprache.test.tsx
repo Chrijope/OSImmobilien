@@ -287,6 +287,8 @@ describe("Kriterien und Objekte", () => {
     expect(objekte[0].textContent).toContain("Konzept Steuerersparnis");
     expect(objekte[1].textContent).toContain("passt zu deinem Konzept");
     expect(objekte[0].textContent).not.toContain("passt zu deinem Konzept");
+    expect(objekte[2].textContent).toContain("Konzept Steuerersparnis");
+    expect(objekte[2].textContent).not.toContain("passt zu deinem Konzept");
   });
 
   it("blättert in der Diashow", () => {

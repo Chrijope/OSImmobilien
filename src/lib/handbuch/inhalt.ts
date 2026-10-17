@@ -1045,7 +1045,7 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
   seiten.push({
     id: "kapitel-2b",
     kapitel: kapitel(2),
-    titel: tx("Wie wir auswählen und wie du finanzierst", "How we select and how you finance"),
+    titel: tx("Wie wir auswählen und wie wir finanzieren", "How we select and how we arrange financing"),
     bloecke: [
       {
         typ: "lead",
@@ -1074,21 +1074,14 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
           "Every property comes with a listing, a calculation and documents. In the property presentation we calculate the flat that fits your criteria with your own figures.",
         ),
       },
-      { typ: "h2", text: tx("Drei Wege zur Finanzierung", "Three routes to financing") },
+      { typ: "h2", text: tx("Die Finanzierung übernehmen wir", "We arrange the financing") },
       {
         typ: "karten",
         spalten: 3,
         karten: [
-          { symbol: "person", titel: tx("Dein eigener Berater", "Your own adviser"), text: tx("Wenn du schon jemanden hast, arbeiten wir gern mit ihm zusammen.", "If you already have someone, we are happy to work with them.") },
-          { symbol: "bank", titel: tx("Deine Hausbank", "Your own bank"), text: tx("Du kannst jederzeit bei deiner Bank anfragen, auch parallel.", "You can ask your bank at any time, in parallel too.") },
-          {
-            symbol: "schild",
-            titel: tx("OS Finanzierung", "OS Finanzierung"),
-            text: tx(
-              "Unsere Finanzierung aus der OS Immobilien Holding begleitet dich auf dem Weg zur Bank, von den Unterlagen bis zur Finanzierungszusage.",
-              "Our financing brand within the OS Immobilien Holding accompanies you on the way to the bank, from the documents to the financing commitment.",
-            ),
-          },
+          { symbol: "dokument", titel: tx("Unterlagen", "Documents"), text: tx("Wir stellen die Unterlagen zum Objekt und deine Selbstauskunft vollständig für die Bank zusammen.", "We put together the complete documents for the property and your self-disclosure for the bank.") },
+          { symbol: "bank", titel: tx("Anfrage", "Application"), text: tx("Mit unseren direkten Kontakten zu den Banken fragen wir für dich an, über unsere OS Finanzierung.", "With our direct contacts at the banks we apply on your behalf, through our OS Finanzierung.") },
+          { symbol: "schild", titel: tx("Zusage", "Approval"), text: tx("Die Bank prüft dich und die Wohnung und entscheidet über die Zusage. Möchtest du deine Hausbank dazunehmen, sag es deinem Berater.", "The bank assesses you and the flat and decides on approval. If you would like to include your own bank, tell your contact.") },
         ],
       },
       { typ: "h2", text: tx("Was kurze Wege bringen", "What short distances bring") },
@@ -2204,10 +2197,10 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
             ),
           ],
           [
-            tx("Kann ich über meine Hausbank finanzieren?", "Can I finance through my own bank?"),
+            tx("Wer kümmert sich um die Finanzierung?", "Who takes care of the financing?"),
             tx(
-              "Ja. Du kannst über deinen eigenen Berater, deine Hausbank oder OS Finanzierung finanzieren und auch parallel anfragen.",
-              "Yes. You can finance through your own adviser, your own bank or OS Finanzierung, and ask in parallel.",
+              "Das übernehmen wir mit unseren direkten Kontakten zu den Banken. Möchtest du deine Hausbank dazunehmen, sag es deinem Berater. Die Zusage gibt immer die Bank.",
+              "We do, with our direct contacts at the banks. If you would like to include your own bank, tell your contact. Approval is always given by the bank.",
             ),
           ],
           [

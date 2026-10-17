@@ -193,14 +193,14 @@ export const OS_TEXTE = {
         titel1: "Heute kaufen.",
         titel2: "Später Zusatzrente.",
         text: "Mieter und Steuer zahlen deine Immobilie ab. Im Ruhestand gehört sie dir, und die Miete wird zu deiner zweiten Rente.",
-        objekte: "Passende Objekte: Hauffstraße 38 bei Potsdam · Doppelhaushälften Zossen-Wünsdorf",
+        objekte: "Passendes Objekt: Hauffstraße 38 bei Potsdam",
       },
       steuer: {
         nummer: "Konzept 2",
         titel1: "Steuern sparen.",
         titel2: "Mehr Netto vom Brutto.",
         text: "Ein Teil deiner Lohnsteuer fließt in dein eigenes Vermögen statt ans Finanzamt. Für Einkommen mit hohem Steuersatz.",
-        objekte: "Passendes Objekt: Barfusstraße 9, Berlin-Wedding",
+        objekte: "Passende Objekte: Barfusstraße 9, Berlin-Wedding · Doppelhaushälften Zossen-Wünsdorf",
       },
     } as Record<KonzeptOs, { nummer: string; titel1: string; titel2: string; text: string; objekte: string }>,
     ausgewaehlt: "Ausgewählt",
@@ -293,9 +293,10 @@ const BILD = "/images/mikroseite";
 /**
  * Alle Objekte für Abschnitt 10, mit dem Konzept-Merkmal. Ein Objekt kann zu
  * beiden Konzepten passen (dann zwei Einträge in `konzepte`). Zuordnung
- * laut Vertrieb: Barfusstraße Steuerersparnis, Hauffstraße und Zossen
- * Altersvorsorge. ponytail: fest wie die Mikroseite; aus „Objekte“ im CRM,
- * sobald dort Bilder und Merkmal gepflegt sind.
+ * laut Christian (17.10.2026), wie Analysetool und Handbuch: Barfusstraße
+ * und Zossen Steuerersparnis, Hauffstraße Altersvorsorge. ponytail: fest wie
+ * die Mikroseite; aus „Objekte“ im CRM, sobald dort Bilder und Merkmal
+ * gepflegt sind.
  */
 export const OBJEKTE: ReadonlyArray<{
   titel: string;
@@ -346,7 +347,7 @@ export const OBJEKTE: ReadonlyArray<{
     text: "Eigenes Grundstück, kein Hausgeld. Bahnhof 650 m, Flughafen BER 22 km.",
     daten: ["600 bis 800 m² Grundstück", "kein Hausgeld"],
     preis: "ab 379.000 € inkl. Sanierungspaket",
-    konzepte: ["zusatzrente"],
+    konzepte: ["steuer"],
     bilder: [
       ["zossen-haus-garten", "Doppelhaushälfte mit Garten"],
       ["zossen-luisenstrasse", "Haus an der Luisenstraße in Zossen"],

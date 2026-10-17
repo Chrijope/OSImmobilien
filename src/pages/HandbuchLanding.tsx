@@ -49,12 +49,41 @@ import {
   User,
   X,
 } from "lucide-react";
+import kfwLogo from "@/assets/lp/logos/kfw.png";
+import ingLogo from "@/assets/lp/logos/ing-g.png";
+import commerzLogo from "@/assets/lp/logos/commerzbank.png";
+import sparkasseLogo from "@/assets/lp/logos/sparkasse-g.png";
+import deutscheBankLogo from "@/assets/lp/logos/deutsche-bank-g.png";
+import volksbankenLogo from "@/assets/lp/logos/volksbanken.png";
+import wuestenrotLogo from "@/assets/lp/logos/wuestenrot.png";
+import hvbLogo from "@/assets/lp/logos/hypovereinsbank.png";
+import dslBankLogo from "@/assets/lp/logos/dsl-bank.png";
+import dkbLogo from "@/assets/lp/logos/dkb.png";
+import psdBankLogo from "@/assets/lp/logos/psd-bank.png";
+/*
+ * Banklogos wie in der früheren Bankpartner-Leiste der Mikroseite (dieselben
+ * Dateien und Kacheln aus Logo und Name), seit dem 17.10.2026 im Band
+ * „Finanzierung“ (Wunsch Christian). Die alte Unterzeile „über 900 weitere
+ * Finanzierungspartner“ stammte aus dem Ursprungsprojekt und fehlt bewusst.
+ */
+const BANKEN = [
+  { name: "KfW", logo: kfwLogo },
+  { name: "ING", logo: ingLogo },
+  { name: "Wüstenrot", logo: wuestenrotLogo },
+  { name: "Commerzbank", logo: commerzLogo },
+  { name: "Sparkasse", logo: sparkasseLogo },
+  { name: "Volksbanken", logo: volksbankenLogo },
+  { name: "Deutsche Bank", logo: deutscheBankLogo },
+  { name: "HypoVereinsbank", logo: hvbLogo },
+  { name: "DSL Bank", logo: dslBankLogo },
+  { name: "DKB", logo: dkbLogo },
+  { name: "PSD Bank", logo: psdBankLogo },
+];
 // Startbild: Barfusstraße 9 in Berlin-Wedding, ein OS-Objekt (seit dem 17.10.2026).
 const heldenBild = "/images/mikroseite/barfuss-fassade.jpg";
 import { SeitenSpracheProvider, useSeitenSprache, useSeitenTexte } from "@/components/SeitenSprache";
 import { HandbuchHeft } from "@/components/handbuch/HandbuchHeft";
 import { HandbuchFuss, HandbuchKopf, useBeraterAusKuerzel, type HandbuchBerater } from "@/components/handbuch/Rahmen";
-import christianKurzFoto from "@/assets/handbuch/christian-kurz.webp";
 import { anteilig, Diagramm, Hochzaehlen, useEinblenden, useHandbuchThema, useSeitenTitel } from "@/components/handbuch/teile";
 import { useMetaPixelMitEinwilligung } from "@/hooks/useMetaPixelMitEinwilligung";
 import {
@@ -241,6 +270,32 @@ function Landing() {
         </div>
       </section>
 
+      {/* 1b Deine Vorteile, wie in der Beratungspräsentation (seit dem 17.10.2026) */}
+      <section className="hb-abschnitt hb-vorteile" id="vorteile">
+        <div className="hb-wrap">
+          <span className="hb-augenbraue">{L.vorteile.augenbraue}</span>
+          <h2 className="hb-h2">{L.vorteile.h2}</h2>
+          <p className="hb-lead">{L.vorteile.lead}</p>
+          <div className="hb-vier">
+            {L.vorteile.karten.map((k, i) => {
+              const Icon = [Home, ShieldCheck, KeyRound, Landmark][i] ?? Check;
+              return (
+                <div className="hb-kachel-karte hb-karte" key={k.t}>
+                  <span className="hb-rund">
+                    <Icon aria-hidden="true" />
+                  </span>
+                  <h3>{k.t}</h3>
+                  <p>{k.x}</p>
+                </div>
+              );
+            })}
+          </div>
+          <Link className="hb-knopf hb-orange" to={wizard}>
+            {L.vorteile.knopf} <ArrowRight aria-hidden="true" />
+          </Link>
+        </div>
+      </section>
+
       {/* 2 Der richtige Weg: erst das Problem */}
       <section className="hb-abschnitt hb-zweiter">
         <div className="hb-wrap">
@@ -407,11 +462,12 @@ function Landing() {
                     <div className="hb-klein">{o.ort}</div>
                     <p>{sprache === "en" ? o.text[1] : o.text[0]}</p>
                     <p style={{ marginTop: 8 }}>{sprache === "en" ? o.daten[1] : o.daten[0]}</p>
-                    <p style={{ marginTop: 8 }}>
-                      <b style={{ color: "var(--hb-tinte)" }}>{sprache === "en" ? o.preis[1] : o.preis[0]}</b>
-                      <br />
-                      {L.arbeit.kaufnebenkosten(nk)} · {o.konzepte.map((k) => L.arbeit.konzepte[k]).join(" · ")}
-                    </p>
+                    {/* Preis und Kaufnebenkosten je in einer Zeile, ohne Umbruch (Wunsch Christian, 17.10.2026). */}
+                    <div className="hb-objekt-zahlen">
+                      <b className="zeile">{sprache === "en" ? o.preis[1] : o.preis[0]}</b>
+                      <span className="zeile">{L.arbeit.kaufnebenkosten(nk)}</span>
+                      <span className="konzept">{o.konzepte.map((k) => L.arbeit.konzepte[k]).join(" · ")}</span>
+                    </div>
                   </div>
                 </div>
               );
@@ -430,6 +486,17 @@ function Landing() {
                   {w.x}
                 </div>
               ))}
+            </div>
+            <div className="hb-banken">
+              <div className="hb-klein">{L.arbeit.bankenTitel}</div>
+              <ul>
+                {BANKEN.map((b) => (
+                  <li key={b.name}>
+                    <img src={b.logo} alt={L.arbeit.bankLogo(b.name)} loading="lazy" width={32} height={32} />
+                    <span>{b.name}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
@@ -794,7 +861,8 @@ export function PartnerKarte({ berater }: { berater: Pick<HandbuchBerater, "name
 export function InhaberKarte() {
   const en = useSeitenSprache() === "en";
   const W = useSeitenTexte(HANDBUCH_SEITEN_TEXTE).landing.wer;
-  const bild = christianKurzFoto;
+  // Bisheriges Foto am 17.10.2026 entfernt, neues folgt. Bis dahin Initialen.
+  const bild: string | null = null;
   const [bildFehlt, setBildFehlt] = useState(false);
   const p = FIRMEN_ANSPRECHPARTNER;
   return (
