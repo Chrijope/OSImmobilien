@@ -163,6 +163,12 @@ describe("Galerie", () => {
     expect(screen.queryByRole("button", { name: /Vollbild öffnen/ })).not.toBeInTheDocument();
   });
 
+  it("zeigt ohne Galeriebilder das Titelbild statt des Leerzustands (Investagon liefert manchmal nur das)", () => {
+    render(<Galerie bilder={[]} adresse={ADRESSE} titel="Hauffstraße 38" titelbildUrl="https://beispiel.test/titel.png" />);
+    expect(screen.queryByText("Noch keine Fotos hinterlegt")).not.toBeInTheDocument();
+    expect(document.querySelector('img[src="https://beispiel.test/titel.png"]')).not.toBeNull();
+  });
+
   it("hat seit dem 01.10.2026 keine Reiter mehr, Dokumente und Karte liegen oben auf der Seite", () => {
     render(<Galerie bilder={bilder(6)} adresse={ADRESSE} titel="Musterhaus" />);
     for (const name of [/^Fotos/, /^Dokumente/, /^Karte/]) {

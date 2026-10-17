@@ -87,7 +87,7 @@ const WISCH_PX = 40;
 const GALERIE_HOEHE = "aspect-[4/3] sm:aspect-auto sm:h-80 lg:h-96";
 
 export function Galerie({
-  bilder, adresse, titel, hoehe = GALERIE_HOEHE, hinweis, titelbildObjektId, titelbildUrl,
+  bilder: galerieBilder, adresse, titel, hoehe = GALERIE_HOEHE, hinweis, titelbildObjektId, titelbildUrl,
   kundenModus = false,
 }: {
   bilder: ObjektBild[];
@@ -113,6 +113,9 @@ export function Galerie({
   const oeffner = useRef<HTMLButtonElement | null>(null);
   const reduzierteBewegung = useReduzierteBewegung();
 
+  // Ohne Galeriebilder, aber mit Titelbild (Investagon liefert manchmal nur das): das Titelbild zeigen.
+  // Nur Anzeige; gespeichert wird nichts, die Galerie in der Datenbank bleibt leer.
+  const bilder = galerieBilder.length > 0 || !titelbildUrl ? galerieBilder : [{ id: "titelbild", url: titelbildUrl, alt: titel, reihenfolge: 0 }];
   const a = galerieAufteilung(bilder);
   const gesamt = a.alle.length;
   const kachelAnzahl = a.feste.length + (a.wechsel.length > 0 ? 1 : 0);
