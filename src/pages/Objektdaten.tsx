@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { MieterDialog } from "@/components/mieter/MieterDialog";
 import { Einheitenliste } from "@/components/objektdaten/Einheitenliste";
 import { ObjektAusListeDialog } from "@/components/objektdaten/ObjektAusListeDialog";
+import { SortKopf } from "@/components/objektdaten/sortierung";
+import { useSortierung } from "@/lib/sortierung";
 import { getMieter, type Mieter } from "@/lib/mieterStore";
 import { listendatenFuerEinheit } from "@/lib/listendaten";
 import { DashboardLayout } from "@/components/DashboardLayout";
@@ -105,6 +107,12 @@ function Cockpit({ objekte, suche, setSuche }: { objekte: ObjektData[]; suche: s
   const [anlegenOffen, setAnlegenOffen] = useState(false);
   const q = suche.trim().toLocaleLowerCase("de-DE");
   const liste = objekte.filter((o) => !q || `${o.titel} ${o.adresse} ${o.plz} ${o.ort}`.toLocaleLowerCase("de-DE").includes(q));
+  const daten = liste.map((o) => ({ o, s: einheitenSumme(o.wohnungen.map(einheitZeile)), v: objektVollstaendigkeit(o, listenwerte) }));
+  type D = (typeof daten)[number];
+  const sort = useSortierung<D>({
+    titel: (d) => d.o.titel, einheiten: (d) => d.s.einheiten, frei: (d) => d.s.frei, reserviert: (d) => d.s.reserviert,
+    verkauft: (d) => d.s.verkauft, kaufpreis: (d) => d.s.kaufpreis, rendite: (d) => d.s.rendite, unterlagen: (d) => d.v.anteil,
+  });
   return (
     <>
       <PageHeader title="Objektcockpit" subtitle="Alle Objekte mit Verkaufsstand und Vollständigkeit der Unterlagen">
@@ -120,21 +128,19 @@ function Cockpit({ objekte, suche, setSuche }: { objekte: ObjektData[]; suche: s
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Objekt</TableHead>
-                <TableHead className="text-right">Einheiten</TableHead>
-                <TableHead className="text-right">frei</TableHead>
-                <TableHead className="text-right">reserviert</TableHead>
-                <TableHead className="text-right">verkauft</TableHead>
-                <TableHead className="text-right">Kaufpreise gesamt</TableHead>
-                <TableHead className="text-right">Mietrendite</TableHead>
-                <TableHead>Unterlagen</TableHead>
+                <SortKopf titel="Objekt" schluessel="titel" sort={sort} />
+                <SortKopf titel="Einheiten" schluessel="einheiten" sort={sort} rechts />
+                <SortKopf titel="frei" schluessel="frei" sort={sort} rechts />
+                <SortKopf titel="reserviert" schluessel="reserviert" sort={sort} rechts />
+                <SortKopf titel="verkauft" schluessel="verkauft" sort={sort} rechts />
+                <SortKopf titel="Kaufpreise gesamt" schluessel="kaufpreis" sort={sort} rechts />
+                <SortKopf titel="Mietrendite" schluessel="rendite" sort={sort} rechts />
+                <SortKopf titel="Unterlagen" schluessel="unterlagen" sort={sort} />
                 <TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {liste.map((o) => {
-                const s = einheitenSumme(o.wohnungen.map(einheitZeile));
-                const v = objektVollstaendigkeit(o, listenwerte);
+              {sort.sortiert(daten).map(({ o, s, v }) => {
                 return (
                   <TableRow key={o.id}>
                     <TableCell>
@@ -191,21 +197,26 @@ function Vollstaendigkeit({ objekte, objektWahl, einzeln }: { objekte: ObjektDat
 }
 
 function VollstaendigkeitUebersicht({ objekte }: { objekte: ObjektData[] }) {
+  const daten = objekte.map((o) => ({ o, v: objektVollstaendigkeit(o, listenwerte) }));
+  type D = (typeof daten)[number];
+  const sort = useSortierung<D>({
+    titel: (d) => d.o.titel, anteil: (d) => d.v.anteil, objekt: (d) => d.v.vorhanden,
+    ...Object.fromEntries(EINHEIT_FAECHER.map((f) => [f, (d: D) => (d.v.einheiten.length ? d.v.fehlendJeFach[f] : null)])),
+  });
   return (
     <Card>
       <CardContent className="p-0 overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Objekt</TableHead>
-              <TableHead>gesamt</TableHead>
-              <TableHead className="text-right">Objektunterlagen</TableHead>
-              {EINHEIT_FAECHER.map((f) => <TableHead key={f} className="text-right whitespace-nowrap">fehlt: {f}</TableHead>)}
+              <SortKopf titel="Objekt" schluessel="titel" sort={sort} />
+              <SortKopf titel="gesamt" schluessel="anteil" sort={sort} />
+              <SortKopf titel="Objektunterlagen" schluessel="objekt" sort={sort} rechts />
+              {EINHEIT_FAECHER.map((f) => <SortKopf key={f} titel={`fehlt: ${f}`} schluessel={f} sort={sort} rechts />)}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {objekte.map((o) => {
-              const v = objektVollstaendigkeit(o, listenwerte);
+            {sort.sortiert(daten).map(({ o, v }) => {
               return (
                 <TableRow key={o.id}>
                   <TableCell><Link to={`${OBJEKTDATEN_VOLLSTAENDIGKEIT_ROUTE}?objekt=${o.id}`} className="font-medium hover:underline">{o.titel}</Link></TableCell>
@@ -228,7 +239,12 @@ function VollstaendigkeitUebersicht({ objekte }: { objekte: ObjektData[] }) {
 
 function VollstaendigkeitObjekt({ objekt, nurLuecken }: { objekt: ObjektData; nurLuecken: boolean }) {
   const v = objektVollstaendigkeit(objekt, listenwerte);
-  const einheiten = v.einheiten.filter((e) => !nurLuecken || e.vorhanden < e.gesamt);
+  type E = (typeof v.einheiten)[number];
+  const sort = useSortierung<E>({
+    we: (e) => e.weNr, stand: (e) => e.vorhanden,
+    ...Object.fromEntries(EINHEIT_FAECHER.map((f) => [f, (e: E) => (e.faecher[f] ? 2 : e.lautListe[f] ? 1 : 0)])),
+  });
+  const einheiten = sort.sortiert(v.einheiten.filter((e) => !nurLuecken || e.vorhanden < e.gesamt));
   return (
     <>
       <Card>
@@ -248,9 +264,9 @@ function VollstaendigkeitObjekt({ objekt, nurLuecken }: { objekt: ObjektData; nu
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Einheit</TableHead>
-                {EINHEIT_FAECHER.map((f) => <TableHead key={f} className="text-center whitespace-nowrap">{f}</TableHead>)}
-                <TableHead className="text-right">Stand</TableHead>
+                <SortKopf titel="Einheit" schluessel="we" sort={sort} />
+                {EINHEIT_FAECHER.map((f) => <SortKopf key={f} titel={f} schluessel={f} sort={sort} className="text-center" />)}
+                <SortKopf titel="Stand" schluessel="stand" sort={sort} rechts />
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -300,6 +316,13 @@ function MieterListe({ objekte, objektWahl }: { objekte: ObjektData[]; objektWah
   const mehrere = objekte.length > 1;
   const zeilen = objekte.flatMap((o) => mieterZeilen(o, mieter).map((z) => ({ objekt: o, z })));
   const vermietet = zeilen.filter((x) => x.z.mieter).length;
+  type Z = (typeof zeilen)[number];
+  const sort = useSortierung<Z>({
+    objekt: (x) => x.objekt.titel, we: (x) => x.z.weNr, lage: (x) => x.z.lage, mieter: (x) => (x.z.mieter ? `${x.z.mieter.nachname} ${x.z.mieter.vorname}` : null),
+    status: (x) => x.z.mieter?.status, beginn: (x) => x.z.mieter?.mietvertragBeginn, befristet: (x) => x.z.mieter?.mietvertragEnde,
+    kaltmiete: (x) => x.z.mieter?.kaltmiete, nk: (x) => x.z.mieter?.nebenkosten, kaution: (x) => x.z.mieter?.kaution,
+    vertrag: (x) => (x.z.mieter ? (x.z.vertragVorhanden ? 1 : 0) : null),
+  });
   return (
     <>
       <PageHeader title="Mieter & Mietverträge" subtitle="Wer wohnt in welcher Einheit, seit wann, zu welcher Miete" />
@@ -315,22 +338,22 @@ function MieterListe({ objekte, objektWahl }: { objekte: ObjektData[]; objektWah
           <Table>
             <TableHeader>
               <TableRow>
-                {mehrere && <TableHead>Objekt</TableHead>}
-                <TableHead>WE</TableHead>
-                <TableHead>Lage</TableHead>
-                <TableHead>Mieter</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Beginn</TableHead>
-                <TableHead>befristet bis</TableHead>
-                <TableHead className="text-right">Kaltmiete</TableHead>
-                <TableHead className="text-right">NK</TableHead>
-                <TableHead className="text-right">Kaution</TableHead>
-                <TableHead className="text-center">Vertrag</TableHead>
+                {mehrere && <SortKopf titel="Objekt" schluessel="objekt" sort={sort} />}
+                <SortKopf titel="WE" schluessel="we" sort={sort} />
+                <SortKopf titel="Lage" schluessel="lage" sort={sort} />
+                <SortKopf titel="Mieter" schluessel="mieter" sort={sort} />
+                <SortKopf titel="Status" schluessel="status" sort={sort} />
+                <SortKopf titel="Beginn" schluessel="beginn" sort={sort} />
+                <SortKopf titel="befristet bis" schluessel="befristet" sort={sort} />
+                <SortKopf titel="Kaltmiete" schluessel="kaltmiete" sort={sort} rechts />
+                <SortKopf titel="NK" schluessel="nk" sort={sort} rechts />
+                <SortKopf titel="Kaution" schluessel="kaution" sort={sort} rechts />
+                <SortKopf titel="Vertrag" schluessel="vertrag" sort={sort} className="text-center" />
                 <TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {zeilen.map(({ objekt, z }) => {
+              {sort.sortiert(zeilen).map(({ objekt, z }) => {
                 const m = z.mieter;
                 return (
                   <TableRow key={z.wohnungId}>
