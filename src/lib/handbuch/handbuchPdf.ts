@@ -203,6 +203,8 @@ interface Kontext {
   en: boolean;
   logo: string | null;
   qr: Map<string, string>;
+  /** Objektbilder als JPEG-Daten, vorab verkleinert; fehlt eins, steht die Karte ohne Bild. */
+  bilder: Map<string, string>;
   seitenNummern: Map<string, number>;
 }
 
@@ -300,6 +302,43 @@ class Setzer {
               doc.roundedRect(kx + pad, y + h + pad - 0.4, 6, 0.9, 0.4, 0.4, "F");
               const th = this.text(k.titel, kx + pad, y + h + pad + 1.4, kb - pad * 2, 9.6, TINTE, { fett: true, zeichnen, faktor: 1.3 });
               this.text(k.text, kx + pad, y + h + pad + 2.4 + th, kb - pad * 2, 8.4, TEXT2, { zeichnen, faktor: 1.38 });
+            });
+          }
+          h += rh + abstand;
+        }
+        return h - abstand + 1.4;
+      }
+      case "objekte": {
+        // Zwei Karten je Reihe: Bild oben, darunter Ort, Titel, Text, Eckdaten, Preis.
+        const spalten = 2;
+        const abstand = 3.4;
+        const kb = (breite - abstand) / spalten;
+        const pad = 3.2;
+        const bildH = kb * 0.5;
+        const teile = (o: (typeof b.objekte)[number]) => [
+          { t: o.ort, g: 7.2, f: MUTED, fett: false },
+          { t: o.titel, g: 9.6, f: TINTE, fett: true },
+          { t: o.text, g: 8, f: TEXT2, fett: false },
+          { t: o.daten, g: 8, f: TEXT, fett: false },
+          { t: `${o.preis} · ${o.konzepte}`, g: 8.4, f: AKZENT, fett: true },
+        ];
+        const textH = (o: (typeof b.objekte)[number], kx: number, ky: number, z: boolean) =>
+          teile(o).reduce((h, t) => h + this.text(t.t, kx, ky + h, kb - pad * 2, t.g, t.f, { fett: t.fett, zeichnen: z, faktor: 1.32 }) + 0.9, 0);
+        let h = 0;
+        for (let i = 0; i < b.objekte.length; i += spalten) {
+          const reihe = b.objekte.slice(i, i + spalten);
+          const rh = bildH + pad * 2 + Math.max(...reihe.map((o) => textH(o, 0, 0, false)));
+          if (zeichnen) {
+            reihe.forEach((o, j) => {
+              const kx = x + j * (kb + abstand);
+              glasKarte(doc, kx, y + h, kb, rh, 2.4);
+              const bild = this.k.bilder.get(o.bild);
+              if (bild) doc.addImage(bild, "JPEG", kx, y + h, kb, bildH, undefined, "FAST");
+              const etikettB = Math.min(kb - 6, doc.getStringUnitWidth(sanitizePdfText(o.passung)) * 7 * 0.3528 + 5);
+              doc.setFillColor(...(o.passt ? AKZENT : TINTE));
+              doc.roundedRect(kx + 2.4, y + h + 2.4, etikettB, 5, 2.4, 2.4, "F");
+              this.text(o.passung, kx + 4.9, y + h + 3.4, etikettB, 7, [255, 255, 255], { fett: true, zeichnen });
+              textH(o, kx + pad, y + h + bildH + pad, true);
             });
           }
           h += rh + abstand;
@@ -796,6 +835,46 @@ async function qrFuer(links: string[]): Promise<Map<string, string>> {
   return karte;
 }
 
+/** Verkleinert ein Bild auf 640 px Breite als JPEG; ohne Canvas (Tests) oder bei Fehlern null. */
+async function bildAlsJpeg(url: string): Promise<string | null> {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const bitmap = await createImageBitmap(await res.blob());
+    const breite = Math.min(640, bitmap.width);
+    const canvas = document.createElement("canvas");
+    canvas.width = breite;
+    canvas.height = Math.round((bitmap.height * breite) / bitmap.width);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+    ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL("image/jpeg", 0.78);
+  } catch {
+    return null;
+  }
+}
+
+async function bilderFuer(handbuch: Handbuch): Promise<Map<string, string>> {
+  const urls = new Set<string>();
+  const durch = (bloecke: Block[]) =>
+    bloecke.forEach((b) => {
+      if (b.typ === "objekte") b.objekte.forEach((o) => urls.add(o.bild));
+      if (b.typ === "zweispaltig") {
+        durch(b.links);
+        durch(b.rechts);
+      }
+    });
+  handbuch.seiten.forEach((s) => durch(s.bloecke));
+  const karte = new Map<string, string>();
+  await Promise.all(
+    [...urls].map(async (u) => {
+      const d = await bildAlsJpeg(u);
+      if (d) karte.set(u, d);
+    }),
+  );
+  return karte;
+}
+
 function sammleLinks(handbuch: Handbuch): string[] {
   const links: string[] = [];
   const durch = (bloecke: Block[]) =>
@@ -810,7 +889,7 @@ function sammleLinks(handbuch: Handbuch): string[] {
   return links;
 }
 
-async function setze(handbuch: Handbuch, seitenNummern: Map<string, number>, qr: Map<string, string>, logo: string | null, icon: string | null): Promise<jsPDF> {
+async function setze(handbuch: Handbuch, seitenNummern: Map<string, number>, qr: Map<string, string>, bilder: Map<string, string>, logo: string | null, icon: string | null): Promise<jsPDF> {
   const doc = new jsPDF({ unit: "mm", format: "a4", compress: true });
   await ensureUnicodeFont(doc);
   const en = handbuch.sprache === "en";
@@ -821,11 +900,11 @@ async function setze(handbuch: Handbuch, seitenNummern: Map<string, number>, qr:
     empfaenger: handbuch.erstelltFuer,
     datum: handbuch.datum,
     fusszeile: en
-      ? "Model calculations with disclosed assumptions, not a commitment. OS Immobilien Holding GmbH, Am Ostbahnhof 1, 15749 Mittenwalde, Germany"
-      : "Modellrechnungen mit offengelegten Annahmen, keine Zusage. OS Immobilien Holding GmbH, Am Ostbahnhof 1, 15749 Mittenwalde",
+      ? "Example calculations with disclosed assumptions, not a commitment. OS Real Estate GmbH, part of OS Immobilien Holding, Am Ostbahnhof 1, 15749 Mittenwalde, Germany"
+      : "Beispielrechnungen mit offengelegten Annahmen, keine Zusage. OS Real Estate GmbH, Teil der OS Immobilien Holding, Am Ostbahnhof 1, 15749 Mittenwalde",
     sprache: handbuch.sprache,
   });
-  const setzer = new Setzer({ doc, en, logo, qr, seitenNummern });
+  const setzer = new Setzer({ doc, en, logo, qr, bilder, seitenNummern });
   for (const seite of handbuch.seiten) setzer.setzeSeite(seite);
   const gesamt = doc.getNumberOfPages();
   for (let i = 2; i <= gesamt; i++) {
@@ -834,7 +913,7 @@ async function setze(handbuch: Handbuch, seitenNummern: Map<string, number>, qr:
   }
   doc.setProperties({
     title: `${handbuch.titel} ${en ? "for" : "für"} ${handbuch.erstelltFuer}`,
-    author: "OS Immobilien",
+    author: "OS Real Estate",
     subject: en ? "Model calculations, not a commitment" : "Modellrechnungen, keine Zusage",
   });
   return doc;
@@ -842,20 +921,20 @@ async function setze(handbuch: Handbuch, seitenNummern: Map<string, number>, qr:
 
 /** Erzeugt das PDF. Zwei Durchgänge, damit das Inhaltsverzeichnis Seitenzahlen hat. */
 export async function erzeugeHandbuchPdf(handbuch: Handbuch): Promise<jsPDF> {
-  const [logo, icon, qr] = await Promise.all([loadLogo(), loadIcon(), qrFuer(sammleLinks(handbuch))]);
+  const [logo, icon, qr, bilder] = await Promise.all([loadLogo(), loadIcon(), qrFuer(sammleLinks(handbuch)), bilderFuer(handbuch)]);
   const nummern = new Map<string, number>();
-  await setze(handbuch, nummern, qr, logo, icon);
-  return setze(handbuch, nummern, qr, logo, icon);
+  await setze(handbuch, nummern, qr, bilder, logo, icon);
+  return setze(handbuch, nummern, qr, bilder, logo, icon);
 }
 
-/** Der Dateiname, etwa „OS-Immobilien_Immobilienhandbuch_Erika_Muster.pdf“, englisch „OS-Immobilien_Property_Handbook_…“. */
+/** Der Dateiname, etwa „OS-Real-Estate_Immobilienhandbuch_Erika_Muster.pdf“, englisch „OS-Real-Estate_Property_Handbook_…“. */
 export function handbuchDateiname(name: string, sprache: "de" | "en" = "de"): string {
   const sauber = name
     .normalize("NFKD")
     .replace(/[̀-ͯ]/g, "")
     .replace(/[^A-Za-z0-9]+/g, "_")
     .replace(/^_+|_+$/g, "");
-  return `OS-Immobilien_${sprache === "en" ? "Property_Handbook" : "Immobilienhandbuch"}${sauber ? `_${sauber}` : ""}.pdf`;
+  return `OS-Real-Estate_${sprache === "en" ? "Property_Handbook" : "Immobilienhandbuch"}${sauber ? `_${sauber}` : ""}.pdf`;
 }
 
 export async function ladeHandbuchPdfHerunter(handbuch: Handbuch): Promise<void> {

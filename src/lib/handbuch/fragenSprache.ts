@@ -68,7 +68,7 @@ export const FRAGEN_EN: Record<FrageSchluessel, FrageEn> = {
   },
   eigenkapital: {
     frage: "How much equity could you put in?",
-    warum: "You usually pay the incidental purchase costs from your own funds.",
+    warum: "You usually pay the incidental purchase costs (8.0 to 8.5% in Berlin and Brandenburg) from your own funds.",
     antworten: {
       unter_10: "under €10,000",
       "10_30": "€10,000 to €30,000",

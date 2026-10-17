@@ -12,7 +12,7 @@
  * ponytail: fest wie OBJEKTE in beratungOsDaten; aus „Objekte“ im CRM, sobald
  * die OS-Objekte dort mit Einheiten gepflegt sind.
  */
-import { berechneExpose, type ExposeObjektdaten } from "@/lib/exposeRechner";
+import { berechneExpose, type ExposeJahr, type ExposeObjektdaten } from "@/lib/exposeRechner";
 import { standardAnnahmen } from "@/lib/exposeAnnahmen";
 import { tilgungsplan } from "@/lib/finanzierung";
 import { RUHESTAND_JAHRE, OBJEKTE, type KonzeptOs } from "@/lib/beratungOsDaten";
@@ -96,9 +96,11 @@ export const OS_WOHNUNGEN: OsWohnung[] = [
   {
     id: "cottbus", titel: "Studentisches Wohnen", ort: "Cottbus", preisrahmen: "ab 79.995 €",
     konzept: "zusatzrente", bild: "/images/analysetool/cottbus-luftbild.jpg", beispiel: "WE 01, 22 m², 1 Zimmer",
-    // Gebäudeanteil 20 % laut Investagon, vermutlich vertauscht; bleibt wie im Exposé bis zur Klärung.
+    // Gebäudeanteil 80 %, Grund und Boden 20 % (Christian, 17.10.2026). Investagon führt
+    // 20 % Gebäude, das war vertauscht; im Drive ist die Aufteilung nicht belegt, das
+    // Restnutzungsdauer-Gutachten steht noch aus.
     // Miete im Exposé ohne Steigerung.
-    objekt: { kaufpreis: 79_995, wohnflaeche: 22, kaltmieteMonat: 340, ruecklageMonat: 22, bundeslandId: "bb", kaufnebenkostenProzent: 8.5, gebaeudeanteilProzent: 20 },
+    objekt: { kaufpreis: 79_995, wohnflaeche: 22, kaltmieteMonat: 340, ruecklageMonat: 22, bundeslandId: "bb", kaufnebenkostenProzent: 8.5, gebaeudeanteilProzent: 80 },
     afaProzent: 4, mieteZiel2060: 340 / 22, nebenkostenTraegtVerkaeufer: true,
   },
 ];
@@ -127,6 +129,8 @@ export interface WohnungRechnung {
   eigenanteilMonat: number;
   /** Erstes Jahr, wie die Monatsrechnung im Exposé. */
   jahr1: { steuerMonat: number; eigenanteilMonat: number };
+  /** Die ganze Zeile des ersten Jahres, für die Monatsrechnung im Handbuch (Kapitel 7). */
+  erstesJahr: ExposeJahr;
   verkaufswert: number;
   restschuld: number;
   verkaufskosten: number;
@@ -163,6 +167,7 @@ export function rechneWohnung(w: OsWohnung, kaufAlter: number, verkaufsAlter: nu
     steuerMonat: schnitt((j) => j.steuerwirkungOhneSanierung / 12),
     eigenanteilMonat: schnitt((j) => j.eigenanteilMonat),
     jahr1: { steuerMonat: Math.round(zehn[0].steuerwirkungOhneSanierung / 12), eigenanteilMonat: Math.round(zehn[0].eigenanteilMonat) },
+    erstesJahr: zehn[0],
     verkaufswert,
     restschuld,
     verkaufskosten,

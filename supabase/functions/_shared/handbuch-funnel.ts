@@ -1,6 +1,9 @@
 /**
  * Der Handbuch-Funnel: sechs Fragen, drei Ausgänge, ein Rahmen.
  *
+ * Texte der Fragen seit dem 17.10.2026 im Du (OS Real Estate); IDs, Werte
+ * und Regeln unverändert.
+ *
  * Grundlage ist die Strategie „Handbuch-Funnel für OS Immobilien“ vom 26.09.2026,
  * Teil A, Kapitel 3. Diese Datei ist die einzige Stelle, an der die Fragen,
  * ihre Antworten und die Regeln für den Ausgang stehen. Sie wird gelesen von
@@ -72,17 +75,17 @@ export const UEBERSCHUSS_WENN_UNBEKANNT = 500;
 
 /** Die kurze Rechenhilfe unter Frage 4, aufklappbar. */
 export const UEBERSCHUSS_RECHENHILFE = [
-  "Nehmen Sie Ihr monatliches Nettoeinkommen.",
-  "Ziehen Sie Miete oder Hausrate, Nebenkosten, Lebensmittel, Versicherungen, Auto und laufende Raten ab.",
-  "Was danach im Durchschnitt übrig bleibt, ist Ihr Überschuss. Sparraten, die Sie behalten wollen, zählen Sie nicht mit.",
+  "Nimm dein monatliches Nettoeinkommen.",
+  "Zieh Miete oder Hausrate, Nebenkosten, Lebensmittel, Versicherungen, Auto und laufende Raten ab.",
+  "Was danach im Durchschnitt übrig bleibt, ist dein Überschuss. Sparraten, die du behalten willst, zählst du nicht mit.",
 ];
 
 export const FRAGEN: Frage[] = [
   {
     nr: 1,
     schluessel: "ziel",
-    frage: "Was soll Ihre Wohnung für Sie leisten?",
-    warum: "Danach setzen wir die Schwerpunkte in Ihrem Handbuch.",
+    frage: "Was soll deine Wohnung für dich leisten?",
+    warum: "Danach setzen wir die Schwerpunkte in deinem Handbuch.",
     antworten: [
       { id: "vermoegen", text: "Vermögen aufbauen" },
       { id: "alter", text: "Fürs Alter vorsorgen" },
@@ -93,8 +96,8 @@ export const FRAGEN: Frage[] = [
   {
     nr: 2,
     schluessel: "beruf",
-    frage: "Was beschreibt Sie beruflich am besten?",
-    warum: "Banken prüfen jede Berufsgruppe anders. Davon hängt ab, welche Unterlagen Sie später brauchen.",
+    frage: "Was beschreibt dich beruflich am besten?",
+    warum: "Banken prüfen jede Berufsgruppe anders. Davon hängt ab, welche Unterlagen du später brauchst.",
     antworten: [
       { id: "angestellt", text: "Angestellt" },
       { id: "beamter", text: "Beamter oder Beamtin" },
@@ -105,8 +108,8 @@ export const FRAGEN: Frage[] = [
   {
     nr: 3,
     schluessel: "brutto",
-    frage: "Wie hoch ist Ihr Jahresbrutto ungefähr?",
-    warum: "Je höher Ihr Steuersatz, desto mehr trägt das Finanzamt mit.",
+    frage: "Wie hoch ist dein Jahresbrutto ungefähr?",
+    warum: "Je höher dein Steuersatz, desto mehr trägt das Finanzamt mit.",
     antworten: [
       // Stellvertretendes Brutto je Spanne für die Steuerrechnung, siehe
       // BRUTTO_STELLVERTRETER. `wert` ist hier bewusst die Untergrenze.
@@ -119,8 +122,8 @@ export const FRAGEN: Frage[] = [
   {
     nr: 4,
     schluessel: "ueberschuss",
-    frage: "Was bleibt Ihnen im Monat nach allen Fixkosten und Raten?",
-    warum: "Für die Bank zählt nicht Ihr Gehalt, sondern was am Monatsende übrig bleibt.",
+    frage: "Was bleibt dir im Monat nach allen Fixkosten und Raten?",
+    warum: "Für die Bank zählt nicht dein Gehalt, sondern was am Monatsende übrig bleibt.",
     antworten: [
       { id: "unter_500", text: "unter 500 €", wert: 0 },
       { id: "500_1000", text: "500 bis 1.000 €", wert: 500 },
@@ -136,8 +139,8 @@ export const FRAGEN: Frage[] = [
   {
     nr: 5,
     schluessel: "eigenkapital",
-    frage: "Wie viel Eigenkapital könnten Sie einsetzen?",
-    warum: "Die Kaufnebenkosten zahlen Sie in der Regel aus eigenen Mitteln.",
+    frage: "Wie viel Eigenkapital könntest du einsetzen?",
+    warum: "Die Kaufnebenkosten (in Berlin und Brandenburg 8,0 bis 8,5 %) zahlst du in der Regel aus eigenen Mitteln.",
     antworten: [
       { id: "unter_10", text: "unter 10.000 €", wert: 0 },
       { id: "10_30", text: "10.000 bis 30.000 €", wert: 10000 },
@@ -148,8 +151,8 @@ export const FRAGEN: Frage[] = [
   {
     nr: 6,
     schluessel: "start",
-    frage: "Wann möchten Sie starten?",
-    warum: "Damit wir wissen, ob Sie bald Wohnungen sehen wollen oder erst in Ruhe lesen möchten.",
+    frage: "Wann möchtest du starten?",
+    warum: "Damit wir wissen, ob du bald Wohnungen sehen willst oder erst in Ruhe lesen möchtest.",
     antworten: [
       { id: "sofort", text: "So bald wie möglich" },
       { id: "drei_monate", text: "In den nächsten drei Monaten" },

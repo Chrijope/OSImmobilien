@@ -19,6 +19,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { ArrowRight, Check, Download, Loader2, Mail } from "lucide-react";
 import HandbuchAnsicht from "@/components/handbuch/HandbuchAnsicht";
+import WegeAnsicht from "@/components/handbuch/WegeAnsicht";
+import { ALTER_STANDARD } from "@/lib/handbuch/osWege";
 import Agenda from "@/components/handbuch/Agenda";
 import { HandbuchFuss, HandbuchKopf, useBeraterAusKuerzel } from "@/components/handbuch/Rahmen";
 import { anteilig, Hochzaehlen, useEinblenden, useHandbuchThema, useSeitenTitel } from "@/components/handbuch/teile";
@@ -88,6 +90,8 @@ function Ergebnis() {
   }, [ausNavigation]);
   const [abruf, setAbruf] = useState<HandbuchAbruf | { status: "laden" } | null>(null);
   const [pdfLaeuft, setPdfLaeuft] = useState(false);
+  // Altersregler der zwei Wege; Handbuch und PDF rechnen damit (seit dem 17.10.2026).
+  const [alter, setAlter] = useState(ALTER_STANDARD);
 
   useSeitenTitel(E.titel);
 
@@ -179,8 +183,9 @@ function Ergebnis() {
       datum: daten.datum,
       partner: berater ? { name: berater.name, email: berater.email, telefon: berater.telefon, buchungslink: berater.buchungslink } : null,
       sprache,
+      alter,
     };
-  }, [daten, berater, sprache]);
+  }, [daten, berater, sprache, alter]);
 
   const handbuch = useMemo(
     () => (grundAngaben ? baueHandbuch({ ...grundAngaben, saLink, saPerMail }) : null),
@@ -338,6 +343,7 @@ function Ergebnis() {
           </div>
         </div>
       </section>
+      <WegeAnsicht antworten={daten.antworten} rahmenBis={r.bis} alter={alter} onAlter={setAlter} sprache={sprache} />
       <section className="hb-abschnitt" style={{ paddingTop: 48 }}>
         {handbuch && (
           <div className="hb-wrap hb-ergebnis-layout">

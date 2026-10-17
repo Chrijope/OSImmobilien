@@ -12,8 +12,12 @@
  * Seite (`HandbuchKonfigurator`), der Einstieg zeigt ein Beispielergebnis,
  * das Problem kommt vor dem Produkt, drei Ablaufdarstellungen sind eine
  * Zeitleiste. Zahlen nur aus dem Rechenkern (`lib/handbuch/modell.ts`), immer
- * als Beispiel oder Modell beschriftet. Kennzahlen und Kundenstimmen nur so,
- * wie sie auf osimmobilien.netlify.app veröffentlicht sind.
+ * als Beispiel oder Modell beschriftet. Kennzahlen und Kundenstimmen nur aus
+ * `lib/handbuch/firma.ts`.
+ *
+ * Seit dem 17.10.2026 OS Real Estate: Interessenten im Du, Beispielwohnung
+ * Hauffstraße 38, „So arbeiten wir“ zeigt die echten Objekte aus
+ * `lib/handbuch/osObjekte.ts` statt der früheren Wohnungstypen.
  *
  * Zweisprachig seit dem 26.09.2026: Texte in `lib/handbuch/seitenTexte.ts`,
  * Zahlen und Diagramme in der Sprache der Seite (`inSprache`). Die
@@ -43,13 +47,10 @@ import {
   ShieldCheck,
   Star,
   User,
-  Users,
   X,
-  Zap,
 } from "lucide-react";
-import heldenBild from "@/assets/login-hero-building.webp";
-import ObjektClip from "@/components/landing/ObjektClip";
-import { MIKROSEITE_TEXTE } from "@/components/landing/mikroseiteTexte";
+// Startbild: Barfusstraße 9 in Berlin-Wedding, ein OS-Objekt (seit dem 17.10.2026).
+const heldenBild = "/images/mikroseite/barfuss-fassade.jpg";
 import { SeitenSpracheProvider, useSeitenSprache, useSeitenTexte } from "@/components/SeitenSprache";
 import { HandbuchHeft } from "@/components/handbuch/HandbuchHeft";
 import { HandbuchFuss, HandbuchKopf, useBeraterAusKuerzel, type HandbuchBerater } from "@/components/handbuch/Rahmen";
@@ -72,6 +73,7 @@ import { rahmenTextIn } from "@/lib/handbuch/fragenSprache";
 import { zaehleHandbuch } from "@/lib/handbuch/ereignisse";
 import { konfiguratorPfad } from "@/lib/handbuch/wege";
 import { HANDBUCH_SEITEN_TEXTE } from "@/lib/handbuch/seitenTexte";
+import { KAUFNEBENKOSTEN, OS_OBJEKTE } from "@/lib/handbuch/osObjekte";
 import { mitSeitenSprache } from "@/lib/seitenSprache";
 import {
   FIRMEN_ANSPRECHPARTNER,
@@ -101,14 +103,8 @@ export const BEISPIEL_ANTWORTEN: HandbuchAntworten = {
   start: "drei_monate",
 };
 
-/** Die drei Modelle mit den Videos der Berater-Mikroseite (gleiche Dateien in /public/video). Texte in `seitenTexte.ts`. */
-const MODELLE = [
-  { clip: "typ-bestand", welt: 1, Icon: Home },
-  { clip: "typ-neubau", welt: 0, Icon: Zap },
-  { clip: "typ-wg", welt: 2, Icon: Users },
-];
-
-const ZEITLEISTE_SYMBOLE = [FileText, PenLine, User, KeyRound, Landmark, Mail, Landmark, Home];
+// OS-Ablauf: Handbuch, Gespräch, Selbstauskunft, Objektvorstellung, Reservierung, Finanzierung, Besichtigung, Notar.
+const ZEITLEISTE_SYMBOLE = [FileText, Phone, PenLine, Home, Lock, Landmark, KeyRound, ShieldCheck];
 
 /** Was beim Scrollen einblendet (`useEinblenden`): Köpfe, Karten, Reihen. */
 const EINBLENDEN = [
@@ -184,7 +180,6 @@ function Landing() {
 
   const zumWizard = () => navigate(wizard);
   const wartenDifferenz = warten[0].vermoegen - warten[2].vermoegen;
-  const welten = MIKROSEITE_TEXTE[sprache].investmentwelten.welten;
 
   return (
     <div className="hb hb-mit-mobil-cta" data-thema={thema}>
@@ -392,24 +387,31 @@ function Landing() {
         </div>
       </section>
 
-      {/* 7 So arbeiten wir: drei Modelle und die Bank */}
+      {/* 7 So arbeiten wir: unsere Objekte und die Bank */}
       <section className="hb-abschnitt" id="so-arbeiten-wir">
         <div className="hb-wrap">
           <span className="hb-augenbraue">{L.arbeit.augenbraue}</span>
           <h2 className="hb-h2">{L.arbeit.h2}</h2>
           <p className="hb-lead">{L.arbeit.lead}</p>
           <div className="hb-vier drei">
-            {MODELLE.map(({ clip, welt, Icon }, i) => {
-              const m = L.arbeit.modelle[i];
+            {OS_OBJEKTE.map((o) => {
+              const nk = KAUFNEBENKOSTEN[o.land].gesamt.toLocaleString(sprache === "en" ? "en-GB" : "de-DE", { minimumFractionDigits: 1 });
               return (
-                <div className="hb-kachel-karte hb-karte hb-modell" key={clip}>
-                  <ObjektClip name={clip} alt={welten[welt]?.clipAlt ?? m.t} lazy className="hb-modell-video" />
+                <div className="hb-kachel-karte hb-karte hb-modell" key={o.titel}>
+                  <img className="hb-modell-video" src={o.bild} alt={`${o.titel}, ${o.ort}`} loading="lazy" decoding="async" width={640} height={400} />
                   <div className="innen">
                     <span className="hb-rund">
-                      <Icon aria-hidden="true" />
+                      <Home aria-hidden="true" />
                     </span>
-                    <h3>{m.t}</h3>
-                    <p>{m.x}</p>
+                    <h3>{o.titel}</h3>
+                    <div className="hb-klein">{o.ort}</div>
+                    <p>{sprache === "en" ? o.text[1] : o.text[0]}</p>
+                    <p style={{ marginTop: 8 }}>{sprache === "en" ? o.daten[1] : o.daten[0]}</p>
+                    <p style={{ marginTop: 8 }}>
+                      <b style={{ color: "var(--hb-tinte)" }}>{sprache === "en" ? o.preis[1] : o.preis[0]}</b>
+                      <br />
+                      {L.arbeit.kaufnebenkosten(nk)} · {o.konzepte.map((k) => L.arbeit.konzepte[k]).join(" · ")}
+                    </p>
                   </div>
                 </div>
               );
@@ -690,8 +692,7 @@ function MobilerAufruf({ wizard, knopf }: { wizard: string; knopf: string }) {
  * Mikroseite, `get-vp-microsite`). Ohne Partner der Inhaber mit seinem
  * Foto (fest im Projekt, `assets/handbuch/christian-kurz.webp`), ohne
  * Telefon und E-Mail.
- * Kennzahlen und Kundenstimmen nur so, wie sie auf osimmobilien.netlify.app stehen
- * (`lib/handbuch/firma.ts`). Die Kundenstimmen bleiben auch auf Englisch im
+ * Kennzahlen und Kundenstimmen nur aus `lib/handbuch/firma.ts`. Die Kundenstimmen bleiben auch auf Englisch im
  * deutschen Wortlaut, weil es Zitate sind.
  */
 function WerDahinterSteht({ berater }: { berater: HandbuchBerater | null }) {
@@ -704,7 +705,7 @@ function WerDahinterSteht({ berater }: { berater: HandbuchBerater | null }) {
         <div className="hb-zwei gleich hb-wer">
           <div>
             <span className="hb-augenbraue">{W.augenbraue}</span>
-            <h2 className="hb-h2">OS Immobilien.</h2>
+            <h2 className="hb-h2">OS Real Estate.</h2>
             {(en ? OS_IMMOBILIEN_WARUM_EN : OS_IMMOBILIEN_WARUM).map((satz) => (
               <p key={satz} style={{ fontSize: 17, color: "var(--hb-text2)" }}>
                 {satz}

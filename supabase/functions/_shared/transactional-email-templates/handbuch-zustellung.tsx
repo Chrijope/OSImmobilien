@@ -1,7 +1,7 @@
 import * as React from 'npm:react@18.3.1'
 import type { TemplateEntry } from './registry.ts'
 import { EmailLayout, Absatz, Handlung, Nebenhandlung, Haken, Luft, type Ansprechpartner } from './_layout.tsx'
-import { foermlich, hallo } from './_anrede.ts'
+import { hallo } from './_anrede.ts'
 import { DE_EN, type MailSprache, texteFuer, type Zweisprachig } from './_sprache.ts'
 
 /**
@@ -20,10 +20,10 @@ import { DE_EN, type MailSprache, texteFuer, type Zweisprachig } from './_sprach
  *
  * Aufgerufen von `_shared/handbuch-anlage.ts`.
  *
- * Anrede: Seit dem 27.09.2026 siezt die ganze Handbuch-Strecke (Entscheidung
- * Christian, Ausnahme vom Du-Standard). Deutsch grüßt deshalb wie Gruppe F
- * über `foermlich` mit Vor- und Nachnamen („Guten Tag Erika Muster,“).
- * Englisch bleibt unverändert bei „Hello Erika,“.
+ * Anrede: Seit dem 17.10.2026 duzt die Handbuch-Strecke wieder (OS-Umbau,
+ * Freigabe Christian; vom 27.09. bis 16.10.2026 siezte sie). Gruß über
+ * `hallo` mit dem Vornamen, deutsch „Hallo Erika,“, englisch „Hello Erika,“.
+ * `kundeAnrede` kommt weiter mit, wird aber nicht mehr gebraucht.
  */
 
 interface Props {
@@ -47,29 +47,29 @@ function betrag(n: number | undefined, sprache: MailSprache): string {
 }
 
 const DE = {
-  betreff: 'Ihr persönliches Immobilienhandbuch ist da',
-  augenbraue: 'Ihr Handbuch',
-  titel: 'Ihr persönliches Immobilienhandbuch',
-  vorschau: 'Mit Ihrem Rahmen, Ihrer Steuerwirkung und Ihrem nächsten Schritt.',
+  betreff: 'Dein persönliches Immobilienhandbuch ist da',
+  augenbraue: 'Dein Handbuch',
+  titel: 'Dein persönliches Immobilienhandbuch',
+  vorschau: 'Mit deinem Rahmen, deiner Steuerwirkung, unseren Objekten und deinem nächsten Schritt.',
   einleitung:
-    'danke für Ihre Antworten. Ihr Handbuch ist fertig. Es zeigt Ihnen, wie eine Bank rechnet, was das Finanzamt mitträgt und welcher Rahmen zu Ihnen passt, mit Ihren eigenen Zahlen.',
-  rahmen: (von: string, bis: string) => `Ihr Rahmen als Modellrechnung: ${bis ? `${von} bis ${bis}` : von}. Keine Finanzierungszusage.`,
+    'danke für deine Antworten. Dein Handbuch ist fertig. Es zeigt dir, wie eine Bank rechnet, was das Finanzamt mitträgt, welcher Rahmen zu dir passt und welche unserer Objekte in Berlin und Brandenburg dazu passen, mit deinen eigenen Zahlen.',
+  rahmen: (von: string, bis: string) => `Dein Rahmen als Beispielrechnung: ${bis ? `${von} bis ${bis}` : von}. Keine Finanzierungszusage.`,
   inhalt: [
-    'Kapitel 5: Ihr Rahmen aus Überschuss und Eigenkapital',
-    'Kapitel 6 und 7: Ihre Steuerwirkung und eine Musterrechnung',
-    'Kapitel 11 und 12: Ihr Zeitplan und Ihre Unterlagenliste',
+    'Kapitel 5: dein Rahmen und unsere Objekte dazu',
+    'Kapitel 6 und 7: deine Steuerwirkung und eine Beispielrechnung an der Hauffstraße 38',
+    'Kapitel 11 und 12: der Ablauf bis zum Notar und deine Unterlagenliste',
   ],
   knopfHandbuch: 'Handbuch öffnen',
   hinweisHandbuch: (tage: number) => `Online lesen oder als PDF speichern · Der Link gilt ${tage} Tage`,
   naechsterSchritt: {
-    passt: 'Ihr nächster Schritt ist die Selbstauskunft. Damit rechnen wir Ihren Rahmen genau, und Ihr Berater kann Ihnen direkt passende Wohnungen vorstellen. Sie verpflichtet Sie zu nichts.',
-    vielleicht: 'Ihre Angaben passen knapp. Mit der Selbstauskunft sehen wir genau, was geht. Sie verpflichtet Sie zu nichts.',
-    noch_nicht: 'Noch passt es nicht, und das ist in Ordnung. Wenn sich Ihre Lage ändert, ist die Selbstauskunft der erste Schritt.',
+    passt: 'Dein nächster Schritt ist die Selbstauskunft. Damit rechnen wir deinen Rahmen genau, und dein Berater kann dir passende Objekte vorstellen. Das verpflichtet dich zu nichts.',
+    vielleicht: 'Deine Angaben passen knapp. Mit der Selbstauskunft sehen wir genau, was geht. Das verpflichtet dich zu nichts.',
+    noch_nicht: 'Noch passt es nicht, und das ist in Ordnung. Wenn sich deine Lage ändert, ist die Selbstauskunft der erste Schritt.',
   },
   knopfSa: 'Selbstauskunft starten',
-  schluss: 'Fragen zum Handbuch? Antworten Sie einfach auf diese Mail.',
-  hinweisModell: 'Alle Zahlen im Handbuch sind Modellrechnungen mit offengelegten Annahmen, keine Zusage und keine Steuer- oder Rechtsberatung.',
-  fuss: 'Sie haben das Handbuch auf der Handbuch-Seite von OS Immobilien angefordert.',
+  schluss: 'Fragen zum Handbuch? Antworte einfach auf diese Mail.',
+  hinweisModell: 'Alle Zahlen im Handbuch sind Beispielrechnungen mit offengelegten Annahmen, keine Zusage und keine Steuer- oder Rechtsberatung.',
+  fuss: 'Du hast das Handbuch auf der Handbuch-Seite von OS Real Estate angefordert.',
 }
 
 const TEXTE: Zweisprachig<typeof DE> = {
@@ -78,30 +78,30 @@ const TEXTE: Zweisprachig<typeof DE> = {
     betreff: 'Your personal property handbook is here',
     augenbraue: 'Your handbook',
     titel: 'Your personal property handbook',
-    vorschau: 'With your budget, your tax effect and your next step.',
+    vorschau: 'With your budget, your tax effect, our properties and your next step.',
     einleitung:
-      'thank you for your answers. Your handbook is ready. It shows you how a bank calculates, what the tax office contributes and which budget suits you, with your own figures.',
-    rahmen: (von: string, bis: string) => `Your budget as a model calculation: ${bis ? `${von} to ${bis}` : von}. Not a financing commitment.`,
+      'thank you for your answers. Your handbook is ready. It shows you how a bank calculates, what the tax office contributes, which budget suits you and which of our properties in Berlin and Brandenburg match it, with your own figures.',
+    rahmen: (von: string, bis: string) => `Your budget as an example calculation: ${bis ? `${von} to ${bis}` : von}. Not a financing commitment.`,
     inhalt: [
-      'Chapter 5: your budget from monthly surplus and equity',
-      'Chapters 6 and 7: your tax effect and a sample calculation',
-      'Chapters 11 and 12: your timeline and your document checklist',
+      'Chapter 5: your budget and our properties to match',
+      'Chapters 6 and 7: your tax effect and an example calculation for Hauffstraße 38',
+      'Chapters 11 and 12: the steps up to the notary and your document checklist',
     ],
     knopfHandbuch: 'Open handbook',
     hinweisHandbuch: (tage: number) => `Read online or save as PDF · The link is valid for ${tage} days`,
     naechsterSchritt: {
-      passt: 'Your next step is the self-disclosure form (Selbstauskunft). It lets us calculate your budget precisely, and your contact person can present suitable flats straight away. It does not commit you to anything.',
+      passt: 'Your next step is the self-disclosure form (Selbstauskunft). It lets us calculate your budget precisely, and your contact can present suitable properties to you. It does not commit you to anything.',
       vielleicht: 'Your details are a close fit. The self-disclosure form (Selbstauskunft) shows us exactly what is possible. It does not commit you to anything.',
       noch_nicht: 'It is not a fit yet, and that is fine. When your situation changes, the self-disclosure form (Selbstauskunft) is the first step.',
     },
     knopfSa: 'Start self-disclosure',
     schluss: 'Questions about the handbook? Simply reply to this email.',
-    hinweisModell: 'All figures in the handbook are model calculations with disclosed assumptions, not a commitment and not tax or legal advice.',
-    fuss: 'You requested the handbook on the OS Immobilien handbook page.',
+    hinweisModell: 'All figures in the handbook are example calculations with disclosed assumptions, not a commitment and not tax or legal advice.',
+    fuss: 'You requested the handbook on the OS Real Estate handbook page.',
   },
 }
 
-const Mail = ({ name, handbuchLink, saLink, ausgang, rahmenVon, rahmenBis, gueltigTage, berater, sprache, kundeAnrede }: Props) => {
+const Mail = ({ name, handbuchLink, saLink, ausgang, rahmenVon, rahmenBis, gueltigTage, berater, sprache }: Props) => {
   const t = texteFuer(TEXTE, sprache)
   const sp: MailSprache = sprache === 'en' ? 'en' : 'de'
   const tage = Number(gueltigTage) > 0 ? Number(gueltigTage) : 30
@@ -112,7 +112,7 @@ const Mail = ({ name, handbuchLink, saLink, ausgang, rahmenVon, rahmenBis, guelt
       augenbraue={t.augenbraue}
       titel={t.titel}
       vorschau={t.vorschau}
-      anrede={sp === 'en' ? hallo(name, sprache) : foermlich(name, sprache, kundeAnrede)}
+      anrede={hallo(name, sprache)}
       person={berater}
       fussHinweis={t.fuss}
     >
@@ -150,7 +150,7 @@ export const template = {
     gueltigTage: 30,
     berater: {
       name: 'Christian Peetz',
-      rolle: 'Ihr Ansprechpartner bei OS Immobilien',
+      rolle: 'Dein Ansprechpartner bei OS Real Estate',
       telefon: '+49 151 00000000',
       email: 'os@os-immobilien.com',
     },

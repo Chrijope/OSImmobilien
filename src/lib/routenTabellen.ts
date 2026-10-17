@@ -236,6 +236,7 @@ export const ROUTEN_TABELLEN: Record<string, readonly string[]> = {
   "/vorschau/naechste-aktionen": [],
   "/vorschau/pipeline": [],
   "/vorschau/mikroseite": [],
+  "/vorschau/handbuch-entwurf": [],
   "/vorschau/rechnungsvorlage": [],
   "/vorschau/kunde-komplett": [],
   "/vorschau/kunde-komplett/:id": [],

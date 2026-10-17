@@ -1,9 +1,9 @@
 /**
  * Rechnung und Zusammensetzung des Handbuchs je Profil.
  *
- * Die Zahlen der Beispielprofile stammen aus Teil B der Strategie vom
- * 26.09.2026 (dort in Python nachgebaut). Hier laufen sie durch den echten
- * Rechenkern des Investmentrechners und müssen dieselben sein.
+ * Die Zahlen der Beispielprofile laufen durch den echten Rechenkern des
+ * Investmentrechners. Seit dem 17.10.2026 mit der Beispielwohnung aus der
+ * Hauffstraße 38 (Annahmen wie ihr Exposé, siehe modell.ts).
  */
 import { describe, expect, it } from "vitest";
 import { baueHandbuch, type HandbuchAngaben } from "./inhalt";
@@ -42,21 +42,20 @@ function seite(h: Handbuch, id: string) {
 
 describe("Rechnung wie in der Strategie", () => {
   it.each([
-    // Seit 10/2026 mit 1,5 % Notar (5,5 % Kaufnebenkosten), die höhere AfA senkt den Eigenaufwand leicht.
-    ["A", A, 190000, 42, 94],
-    ["B", B, 300000, 42, 160],
-    ["C", C, 80000, 35, 55],
-  ])("Profil %s: Modellwohnung, Grenzsteuersatz, Eigenaufwand nach Steuer im ersten Jahr", (_n, p, kaufpreis, gs, eigenaufwand) => {
+    ["A", A, 185000, 42, 157],
+    ["B", B, 280170, 42, 248],
+    ["C", C, 79995, 35, 15],
+  ])("Profil %s: gemeinsame Beispielwohnung, Grenzsteuersatz, Eigenaufwand nach Steuer im ersten Jahr", (_n, p, kaufpreis, gs, eigenaufwand) => {
     const a = handbuchAuswertung(p);
     expect(a.kaufpreis).toBe(kaufpreis);
     expect(a.grenzsatz).toBe(gs);
     expect(Math.round(-a.jahr1.nachSteuer)).toBe(eigenaufwand);
   });
 
-  it("der Modellkaufpreis bleibt zwischen 80.000 und 300.000 €", () => {
-    expect(modellKaufpreis({ empf: 10000 })).toBe(80000);
-    expect(modellKaufpreis({ empf: 999999 })).toBe(300000);
-    expect(modellKaufpreis({ empf: 187654 })).toBe(180000);
+  it("die Beispielwohnung ist die Wohnung im Rahmen mit dem größten Steuervorteil, sonst die günstigste", () => {
+    expect(modellKaufpreis({ bis: 10000 })).toBe(79995);
+    expect(modellKaufpreis({ bis: 222000 })).toBe(185000);
+    expect(modellKaufpreis({ bis: 999999 })).toBe(374400);
   });
 });
 
@@ -71,11 +70,11 @@ describe("Zusammensetzung je Profil", () => {
   });
 
   it("Kapitel 9 wechselt mit dem Ziel", () => {
-    expect(seite(baueHandbuch(angaben(A)), "kapitel-9").titel).toBe("Ihr Schwerpunkt: Steuer im Detail");
-    expect(seite(baueHandbuch(angaben(B)), "kapitel-9").titel).toBe("Ihr Schwerpunkt: Von der ersten Wohnung zum Bestand");
-    expect(seite(baueHandbuch(angaben(C)), "kapitel-9").titel).toBe("Ihr Schwerpunkt: Ihre Wohnung im Ruhestand");
+    expect(seite(baueHandbuch(angaben(A)), "kapitel-9").titel).toBe("Dein Schwerpunkt: Deine Steuerersparnis im Detail");
+    expect(seite(baueHandbuch(angaben(B)), "kapitel-9").titel).toBe("Dein Schwerpunkt: Von der ersten Wohnung zum Bestand");
+    expect(seite(baueHandbuch(angaben(C)), "kapitel-9").titel).toBe("Dein Schwerpunkt: Deine Wohnung als zusätzliche Rente");
     const v = seite(baueHandbuch(angaben({ ...A, ziel: "verstehen" })), "kapitel-9");
-    expect(v.titel).toBe("Ihr Schwerpunkt: Die wichtigsten Begriffe");
+    expect(v.titel).toBe("Dein Schwerpunkt: Die wichtigsten Begriffe");
     expect(JSON.stringify(v.bloecke)).toContain("Abschreibung (AfA)");
   });
 
@@ -91,7 +90,7 @@ describe("Zusammensetzung je Profil", () => {
 
   it("Kapitel 11 zeigt den Zeitplan zum Start", () => {
     expect(JSON.stringify(seite(baueHandbuch(angaben(A)), "kapitel-11").bloecke)).toContain("In den nächsten Wochen");
-    expect(JSON.stringify(seite(baueHandbuch(angaben(C)), "kapitel-11").bloecke)).toContain("Bis zu Ihrem Start");
+    expect(JSON.stringify(seite(baueHandbuch(angaben(C)), "kapitel-11").bloecke)).toContain("Bis zu deinem Start");
   });
 
   it("Kapitel 5 warnt bei knappem Eigenkapital und bei „noch nicht“", () => {
@@ -114,6 +113,35 @@ describe("Zusammensetzung je Profil", () => {
   });
 });
 
+describe("OS-Konzept (seit dem 17.10.2026)", () => {
+  it("Kapitel 6 zeigt Mehr Netto vom Brutto, Kapitel 8 die Altersvorsorge mit dem Alter vom Regler", () => {
+    const k6 = JSON.stringify(seite(baueHandbuch(angaben(A)), "kapitel-6").bloecke);
+    expect(k6).toContain("Mehr Netto vom Brutto");
+    expect(k6).toContain("Vom Brutto zum Netto");
+    const mit = (alter?: number) => JSON.stringify(seite(baueHandbuch({ ...angaben(A), alter }), "kapitel-8").bloecke);
+    expect(mit()).toContain("Gerechnet mit 35 Jahren");
+    expect(mit(50)).toContain("Gerechnet mit 50 Jahren");
+    expect(mit(50)).not.toEqual(mit(35));
+  });
+
+  it("die Beispielwohnung ist dieselbe wie unter Mehr Netto vom Brutto", () => {
+    for (const p of [A, B, C]) {
+      const h = baueHandbuch(angaben(p));
+      const k7 = JSON.stringify(seite(h, "kapitel-7").bloecke);
+      const titel = handbuchAuswertung(p).wohnung.titel;
+      expect(k7).toContain(titel);
+      expect(JSON.stringify(seite(h, "kapitel-6").bloecke)).toContain(`mit ${titel}`);
+    }
+  });
+
+  it("Kapitel 5 zeigt die OS-Objekte, passende vorn", () => {
+    const k5 = seite(baueHandbuch(angaben(A)), "kapitel-5").bloecke.find((b) => b.typ === "objekte");
+    expect(k5 && k5.typ === "objekte" && k5.objekte.length).toBe(6);
+    expect(k5 && k5.typ === "objekte" && k5.objekte[0].passt).toBe(true);
+  });
+
+});
+
 describe("Was im Handbuch nicht stehen darf", () => {
   const texte = [A, B, C, { ...C, ueberschuss: "unter_500" as const, beruf: "anderes" as const, ziel: "verstehen" as const }].map((p) => alleTexte(baueHandbuch(angaben(p))));
 
@@ -130,6 +158,10 @@ describe("Was im Handbuch nicht stehen darf", () => {
 
   it("keine Gedankenstriche in sichtbaren Texten", () => {
     for (const t of texte) expect(t).not.toMatch(/[–—]/);
+  });
+
+  it("kein Bayern, kein Neubau, keine WG, kein Co-Living, keine Modellwohnung", () => {
+    for (const t of texte) expect(t).not.toMatch(/Bayern|Neubau|\bWG\b|Co-Living|Modellwohnung/);
   });
 
   it("keine Werbewörter der Verbotsliste", () => {

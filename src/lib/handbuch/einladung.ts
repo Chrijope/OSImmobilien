@@ -89,26 +89,26 @@ export async function sendeEinladung(args: {
       json = {};
     }
     if (!res.ok) {
-      return { ok: false, status: res.status, fehler: leadFehlermeldung(res.status, retryAfterSekunden(res.headers), sprache, "sie") };
+      return { ok: false, status: res.status, fehler: leadFehlermeldung(res.status, retryAfterSekunden(res.headers), sprache, "du") };
     }
     return { ok: true, handbuchToken: null, saToken: null, zustellung: json.zustellung === "fehler" ? "fehler" : "ok" };
   } catch {
-    return { ok: false, fehler: leadNetzfehlerMeldung(sprache, "sie") };
+    return { ok: false, fehler: leadNetzfehlerMeldung(sprache, "du") };
   }
 }
 
-/** Die Texte der Bestätigungskarte und der Seite, gesiezt wie die ganze Handbuch-Strecke. */
+/** Die Texte der Bestätigungskarte und der Seite, im Du wie die ganze Handbuch-Strecke (seit dem 17.10.2026). */
 export const EINLADUNG_TEXTE = {
   de: {
     titel: (vorname: string) => (vorname ? `Fast geschafft, ${vorname}` : "Fast geschafft"),
-    hinweis: "Ihre Kontaktdaten haben wir schon. Ihr Handbuch sehen Sie gleich hier, den Link bekommen Sie zusätzlich per E-Mail an:",
-    nichtIch: "Das sind nicht Sie?",
+    hinweis: "Deine Kontaktdaten haben wir schon. Dein Handbuch siehst du gleich hier, den Link bekommst du zusätzlich per E-Mail an:",
+    nichtIch: "Das bist nicht du?",
     nichtIchLink: "Zum allgemeinen Fragebogen",
-    fehlerAbgelaufen: "Dieser persönliche Link ist abgelaufen. Sie können Ihr Handbuch trotzdem über den allgemeinen Fragebogen anfordern.",
-    fehlerUnbekannt: "Diesen persönlichen Link kennen wir nicht. Sie können Ihr Handbuch über den allgemeinen Fragebogen anfordern.",
+    fehlerAbgelaufen: "Dieser persönliche Link ist abgelaufen. Du kannst dein Handbuch trotzdem über den allgemeinen Fragebogen anfordern.",
+    fehlerUnbekannt: "Diesen persönlichen Link kennen wir nicht. Du kannst dein Handbuch über den allgemeinen Fragebogen anfordern.",
     zumFragebogen: "Zum Fragebogen",
     laedt: "Einen Moment bitte",
-    lead: "Ein Klick pro Frage. Ihre Kontaktdaten haben wir schon.",
+    lead: "Ein Klick pro Frage. Deine Kontaktdaten haben wir schon.",
   },
   en: {
     titel: (vorname: string) => (vorname ? `Almost done, ${vorname}` : "Almost done"),

@@ -16,14 +16,14 @@ function zeige(adresse: string) {
 }
 
 describe("HandbuchHeft", () => {
-  it("zeigt Heft, Seiten, Kacheln und Notiz deutsch in der Sie-Form", () => {
+  it("zeigt Heft, Seiten, Kacheln und Notiz deutsch in der Du-Form", () => {
     const { container } = zeige("/handbuch?lang=de");
     const bild = screen.getByRole("img", { name: /Immobilienhandbuch als gebundenes Heft/ });
     // Deckblatt plus drei Innenseiten, alle als Teil des einen Bildes.
     expect(bild.querySelectorAll("img")).toHaveLength(4);
     expect(screen.getByText("14 Kapitel")).toBeInTheDocument();
-    expect(screen.getByText("Mit Ihren eigenen Zahlen")).toBeInTheDocument();
-    expect(screen.getByText("Ihr kostenloses Immobilienhandbuch")).toBeInTheDocument();
+    expect(screen.getByText("Mit deinen eigenen Zahlen")).toBeInTheDocument();
+    expect(screen.getByText("Dein kostenloses Immobilienhandbuch")).toBeInTheDocument();
     expect(screen.getByText("Beispielwerte")).toBeInTheDocument();
     // Nie die Klasse des Ergebnis-Handbuchs verwenden.
     expect(container.querySelector(".hb-buch")).toBeNull();

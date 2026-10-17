@@ -1,16 +1,11 @@
 /**
- * Die Handbuch-Strecke siezt (Entscheidung Christian vom 27.09.2026).
- *
- * Ausdrückliche Ausnahme vom Du-Standard des Projekts (15.09.2026), wie die
- * Gruppe F: Landingpage, Konfigurator, Ergebnisseite, offene Selbstauskunft,
- * PDF-Handbuch und die Zustellmail an den Interessenten. Nur die deutsche
- * Fassung, Englisch bleibt, wie es ist. Partnerseitiges (Verwaltungsseite
- * /handbuch-seite, Lead-Verwaltung, Mails an Partner) duzt weiter.
+ * Die Handbuch-Strecke duzt (seit dem 17.10.2026, OS-Umbau mit Freigabe
+ * Christian; vom 27.09. bis 16.10.2026 siezte sie als Ausnahme).
  *
  * Geprüft wird, was ein Interessent tatsächlich liest: die Werte der
  * Textdateien, das fertig gebaute Handbuch für jede Antwortkombination, die
  * Fragen, die Einwilligungs- und Fehlermeldungen. Die Zustellmail bewacht
- * `src/lib/mailAnredeRegeln.test.ts`, neben den Mails der Gruppe F.
+ * `src/lib/mailAnredeRegeln.test.ts`. Englisch bleibt „you“.
  */
 import { describe, expect, it } from "vitest";
 import { readdirSync, readFileSync } from "node:fs";
@@ -28,12 +23,16 @@ import {
   type HandbuchAntworten,
 } from "../../../supabase/functions/_shared/handbuch-funnel.ts";
 
-/** Du-Pronomen, auch das „ihr/euer“ an ein Paar, und die typischen Du-Imperative. */
-const DU = /\b(du|dich|dir|dein|deine|deinen|deinem|deiner|deines|euch|euer|eure|euren|eurem|eurer)\b/i;
-const DU_IMPERATIV = /\b(Lies|Nimm|Gib|Prüf|Prüfe|Schau|Fordere|Beantworte|Rechne|Melde|Buche|Antworte|Versuch|Versuche|Stell|Sieh|Zieh|Bestätige)\b/;
+/**
+ * Sie-Formen: „Ihr/Ihnen …“ immer, „Sie“ nur mitten im Satz. Am Satzanfang
+ * kann „Sie“ auch eine Sache meinen („Die Selbstauskunft … Sie verpflichtet
+ * dich zu nichts.“), das zählt nicht.
+ */
+const IHR = /\b(Ihnen|Ihr|Ihre|Ihrem|Ihren|Ihrer|Ihres)\b/;
+const SIE_IM_SATZ = /(?<![.!?:„"]\s*|^\s*)\bSie\b/;
 
-function duStellen(text: string): string[] {
-  return [text.match(DU)?.[0], text.match(DU_IMPERATIV)?.[0]].filter((x): x is string => Boolean(x));
+function sieStellen(text: string): string[] {
+  return [text.match(IHR)?.[0], text.match(SIE_IM_SATZ)?.[0]].filter((x): x is string => Boolean(x));
 }
 
 /** Alle Zeichenketten eines Textobjekts; Funktionen mit Beispielwerten aufgerufen. */
@@ -60,10 +59,10 @@ function texte(h: Handbuch): string[] {
   return alle;
 }
 
-describe("Handbuch-Strecke siezt (Ausnahme vom 27.09.2026)", () => {
+describe("Handbuch-Strecke duzt (seit dem 17.10.2026)", () => {
   it("Seitentexte: Landingpage, Konfigurator, Ergebnis, offene Selbstauskunft", () => {
     for (const [pfad, text] of werte(HANDBUCH_SEITEN_TEXTE.de)) {
-      expect(duStellen(text), `${pfad}: „${text}“`).toEqual([]);
+      expect(sieStellen(text), `${pfad}: „${text}“`).toEqual([]);
     }
   });
 
@@ -98,7 +97,7 @@ describe("Handbuch-Strecke siezt (Ausnahme vom 27.09.2026)", () => {
             sprache: "de",
           });
           for (const text of texte(h)) {
-            expect(duStellen(text), `${ziele[i]}: „${text.slice(0, 160)}“`).toEqual([]);
+            expect(sieStellen(text), `${ziele[i]}: „${text.slice(0, 160)}“`).toEqual([]);
           }
         }
       }
@@ -107,40 +106,35 @@ describe("Handbuch-Strecke siezt (Ausnahme vom 27.09.2026)", () => {
 
   it("die sechs Fragen, ihre Begründungen und die Rechenhilfe", () => {
     for (const f of FRAGEN) {
-      expect(duStellen(f.frage), f.frage).toEqual([]);
-      expect(duStellen(f.warum), f.warum).toEqual([]);
+      expect(sieStellen(f.frage), f.frage).toEqual([]);
+      expect(sieStellen(f.warum), f.warum).toEqual([]);
     }
-    for (const zeile of UEBERSCHUSS_RECHENHILFE) expect(duStellen(zeile), zeile).toEqual([]);
+    for (const zeile of UEBERSCHUSS_RECHENHILFE) expect(sieStellen(zeile), zeile).toEqual([]);
   });
 
   it("„Wer dahinter steht“", () => {
     for (const text of [FIRMEN_ANSPRECHPARTNER.zitat, ...OS_IMMOBILIEN_WARUM, OS_IMMOBILIEN_WERTE]) {
-      expect(duStellen(text), text).toEqual([]);
+      expect(sieStellen(text), text).toEqual([]);
     }
   });
 
   it("Einwilligung und Fehlermeldungen beider Formulare", () => {
     for (const art of ["handbuch", "sa"] as const) {
       const t = handbuchEinwilligungTexte("de", art);
-      for (const text of [t.text, t.kurz, t.fehlt, t.werbung]) expect(duStellen(text), text).toEqual([]);
+      for (const text of [t.text, t.kurz, t.fehlt, t.werbung]) expect(sieStellen(text), text).toEqual([]);
     }
     for (const status of [400, 401, 429, 500, undefined]) {
-      const text = leadFehlermeldung(status, 3600, "de", "sie");
-      expect(duStellen(text), text).toEqual([]);
+      const text = leadFehlermeldung(status, 3600, "de", "du");
+      expect(sieStellen(text), text).toEqual([]);
     }
-    expect(duStellen(leadNetzfehlerMeldung("de", "sie"))).toEqual([]);
-  });
-
-  it("die übrigen Formulare duzen weiter, ihre Meldungen bleiben zeichengleich", () => {
-    expect(leadFehlermeldung(500)).toContain("Bitte versuch es");
-    expect(leadFehlermeldung(500, null, "de", "sie")).toContain("Bitte versuchen Sie es");
-    expect(leadNetzfehlerMeldung()).toContain("Bitte prüfe deine Internetverbindung");
+    expect(sieStellen(leadNetzfehlerMeldung("de", "du"))).toEqual([]);
+    const absenden = readFileSync(join(__dirname, "leadAbsenden.ts"), "utf8");
+    expect(absenden).not.toContain('"sie"');
   });
 
   it("fest verdrahtete Texte in den öffentlichen Komponenten der Strecke", () => {
     // Texte, die nicht aus den Textdateien kommen, sondern im Code stehen:
-    // Zeichenketten und JSX-Text, ohne Kommentare. Die partnerseitigen
-    // Dateien (Verwaltung, Lead-Tabelle) duzen und sind ausgenommen.
+    // Zeichenketten und JSX-Text, ohne Kommentare.
     const wurzel = join(__dirname, "..", "..");
     const dateien = [
       ...readdirSync(join(wurzel, "components", "handbuch")).map((d) => join("components", "handbuch", d)),
@@ -157,25 +151,17 @@ describe("Handbuch-Strecke siezt (Ausnahme vom 27.09.2026)", () => {
         ...quelle.matchAll(/`([^`]{3,})`/g),
         ...quelle.matchAll(/>([^<>{}\n]*[A-Za-zÄÖÜäöüß][^<>{}\n]*)</g),
       ].map((m) => m[1]);
-      for (const text of kandidaten) expect(duStellen(text), `${datei}: „${text.slice(0, 120)}“`).toEqual([]);
+      for (const text of kandidaten) expect(sieStellen(text), `${datei}: „${text.slice(0, 120)}“`).toEqual([]);
     }
-  });
-
-  it("die Vorschau des Ansprechpartners in der Verwaltung beschriftet wie die öffentliche Seite", () => {
-    // Die Verwaltung duzt den Partner, die Karte zeigt aber, was Interessenten sehen.
-    const quelle = readFileSync(join(__dirname, "..", "..", "pages", "HandbuchSeiteVerwaltung.tsx"), "utf8");
-    expect(quelle).not.toContain("Dein Immobilienberater");
-    expect(quelle).toContain("HANDBUCH_SEITEN_TEXTE.de.landing.wer.deinBerater");
-    expect(HANDBUCH_SEITEN_TEXTE.de.landing.wer.deinBerater).toBe("Ihr Immobilienberater");
   });
 
   it("die Meldungen des Servers auf dem Handbuch-Weg", () => {
     const quelle = readFileSync(join(__dirname, "..", "..", "..", "supabase", "functions", "submit-lead", "index.ts"), "utf8");
     for (const satz of [
-      "Bitte bestätigen Sie die Einwilligung.",
-      "Bitte geben Sie eine gültige Handynummer an.",
-      "Bitte geben Sie Ihren Vor- und Nachnamen ohne Links an.",
-      "Bitte versuchen Sie es später noch einmal.",
+      "Bitte bestätige die Einwilligung.",
+      "Bitte gib eine gültige Handynummer an.",
+      "Bitte gib deinen Vor- und Nachnamen ohne Links an.",
+      "Bitte versuch es später noch einmal.",
     ]) {
       expect(quelle).toContain(satz);
     }

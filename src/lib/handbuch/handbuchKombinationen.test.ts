@@ -11,6 +11,7 @@
 import { describe, expect, it } from "vitest";
 import { baueHandbuch } from "./inhalt";
 import { handbuchAuswertung, modellKaufpreis } from "./modell";
+import { OS_WOHNUNGEN } from "@/lib/analyseVorsorge";
 import type { Block } from "./bausteine";
 import {
   ermittleAusgang,
@@ -127,7 +128,7 @@ describe("Ausgang für jede Kombination", () => {
 });
 
 describe("Modellrechnung für jede Zahlenkombination", () => {
-  it("der Eigenaufwand nach Steuer unterscheidet sich je Jahresbrutto, bei gleichem Kaufpreis", () => {
+  it("der Eigenaufwand nach Steuer sinkt mit dem Jahresbrutto, bei gleichem Kaufpreis", () => {
     for (const ue of UE)
       for (const ek of EK) {
         const werte = BRUTTO.map((brutto) => {
@@ -136,18 +137,27 @@ describe("Modellrechnung für jede Zahlenkombination", () => {
           return { kp: a.kaufpreis, nach: Math.round(a.jahr1.nachSteuer), gs: a.grenzsatz };
         });
         expect(new Set(werte.map((w) => w.kp)).size).toBe(1);
-        expect(new Set(werte.map((w) => w.nach)).size).toBe(4);
-        // Höheres Brutto, gleich hoher oder höherer Grenzsteuersatz.
-        for (let i = 1; i < werte.length; i++) expect(werte[i].gs).toBeGreaterThanOrEqual(werte[i - 1].gs);
+        // Wie im Exposé zählt nur der Grenzsteuersatz, ohne Soli: Die beiden
+        // obersten Spannen liegen beide bei 42 % und rechnen gleich.
+        expect(new Set(werte.map((w) => w.nach)).size).toBeGreaterThanOrEqual(3);
+        // Höheres Brutto, gleich hoher oder höherer Grenzsteuersatz, nie mehr Zuzahlung.
+        for (let i = 1; i < werte.length; i++) {
+          expect(werte[i].gs).toBeGreaterThanOrEqual(werte[i - 1].gs);
+          expect(werte[i].nach).toBeGreaterThanOrEqual(werte[i - 1].nach);
+        }
       }
   });
 
-  it("der Kaufpreis der Musterwohnung folgt dem Rahmen, begrenzt auf 80.000 bis 300.000 €", () => {
+  it("die Beispielwohnung ist eine der gemeinsamen OS-Wohnungen, im Rahmen, sonst die günstigste", () => {
+    const preise = OS_WOHNUNGEN.map((w) => w.objekt.kaufpreis);
+    const guenstigste = Math.min(...preise);
     for (const ue of UE)
       for (const ek of EK) {
         const r = handbuchRahmen({ ueberschuss: ue, eigenkapital: ek });
         const kp = modellKaufpreis(r);
-        expect(kp).toBe(Math.max(80000, Math.min(300000, Math.floor(r.empf / 10000) * 10000)));
+        expect(preise).toContain(kp);
+        if (preise.some((p) => p <= r.bis)) expect(kp).toBeLessThanOrEqual(r.bis);
+        else expect(kp).toBe(guenstigste);
       }
   });
 

@@ -155,7 +155,7 @@ export const HANDBUCH_EINWILLIGUNG_TEXT =
 export const HANDBUCH_WERBUNG_TEXT = LEAD_WERBUNG_TEXT;
 
 export const HANDBUCH_EINWILLIGUNG_FEHLT =
-  "Bitte bestätigen Sie die Einwilligung, sonst dürfen wir Ihnen Ihr Handbuch nicht schicken.";
+  "Bitte bestätige die Einwilligung, sonst dürfen wir dir dein Handbuch nicht schicken.";
 
 /**
  * Der sichtbare Kurzsatz über dem Haken (Westmont-Analyse, Punkt 5). Er sagt
@@ -163,7 +163,7 @@ export const HANDBUCH_EINWILLIGUNG_FEHLT =
  * direkt darunter und bleibt der Text, der gespeichert wird.
  */
 export const HANDBUCH_EINWILLIGUNG_KURZ =
-  "Ja, schicken Sie mir mein Handbuch per E-Mail, und OS Immobilien oder mein Berater dürfen mich dazu kontaktieren. Jederzeit widerrufbar.";
+  "Ja, schickt mir mein Handbuch per E-Mail, und OS Immobilien oder mein Berater dürfen mich dazu kontaktieren. Jederzeit widerrufbar.";
 
 /*
  * Die offene Selbstauskunft der Handbuch-Seite (seit dem 26.09.2026). Eigener
@@ -187,7 +187,7 @@ export const HANDBUCH_SA_EINWILLIGUNG_KURZ =
   "Ja, OS Immobilien oder mein Berater dürfen mich zu meiner Selbstauskunft kontaktieren. Jederzeit widerrufbar.";
 
 export const HANDBUCH_SA_EINWILLIGUNG_FEHLT =
-  "Bitte bestätigen Sie die Einwilligung, sonst dürfen wir Ihre Selbstauskunft nicht anlegen.";
+  "Bitte bestätige die Einwilligung, sonst dürfen wir deine Selbstauskunft nicht anlegen.";
 
 /*
  * Englische Fassungen der beiden Handbuch-Einwilligungen (seit dem

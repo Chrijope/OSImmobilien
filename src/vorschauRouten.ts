@@ -42,6 +42,11 @@ export const VorschauPipeline = import.meta.env.DEV
   ? lazy(() => import("./pages/VorschauPipeline"))
   : null;
 
+/** /vorschau/handbuch-entwurf: das echte Handbuch mit frei wählbaren Antworten, ohne Lead (seit 17.10.2026). Gleiche Regeln wie oben. */
+export const VorschauHandbuchEntwurf = import.meta.env.DEV
+  ? lazy(() => import("./pages/VorschauHandbuchEntwurf"))
+  : null;
+
 /** /vorschau/mikroseite: die Partner-Landingpage mit Beispielpartner, seit 16.10.2026. */
 export const VorschauMikroseite = import.meta.env.DEV
   ? lazy(() => import("./pages/VorschauMikroseite"))
