@@ -54,7 +54,7 @@ export default function WegeAnsicht({
   const netto = inSprache(sprache, () => nettoBloecke(nettoWeg(antworten, rahmenBis, alter)));
   const vorsorge = inSprache(sprache, () => vorsorgeBloecke(vorsorgeWeg(antworten, rahmenBis, alter)));
   return (
-    <section className="hb-abschnitt hb-wege" style={{ paddingTop: 48, paddingBottom: 0 }}>
+    <section className="hb-abschnitt hb-zwei-wege" style={{ paddingTop: 48, paddingBottom: 0 }}>
       <div className="hb-wrap">
         <h2 className="hb-h2">{T.titel}</h2>
         <p className="hb-lead">{T.lead}</p>
