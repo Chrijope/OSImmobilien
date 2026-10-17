@@ -104,14 +104,20 @@ function ziegel(farbe: string): THREE.Texture {
   const k = c.getContext("2d");
   if (k) {
     const basis = new THREE.Color(farbe);
-    const reihen = 3, spalten = 4, h = 128 / reihen, b = 128 / spalten;
+    // Biberschwanz-artig: 3 Reihen je Meter, versetzt, leichte Farbstreuung, weicher Schatten an der Unterkante.
+    const reihen = 3, spalten = 5, h = 128 / reihen, b = 128 / spalten;
     for (let r = 0; r < reihen; r++) for (let s = -1; s < spalten; s++) {
       const x = s * b + (r % 2 ? b / 2 : 0);
-      k.fillStyle = `#${basis.clone().offsetHSL(0, 0, (((r * 7 + s * 3) % 5) - 2) / 70).getHexString()}`;
+      const streu = ((((r * 17 + s * 7) % 9) + 9) % 9 - 4) / 160;
+      k.fillStyle = `#${basis.clone().offsetHSL(0, streu * 0.5, streu).getHexString()}`;
       k.fillRect(x, r * h, b, h);
-      k.fillStyle = `#${basis.clone().offsetHSL(0, 0, -0.12).getHexString()}`;
-      k.fillRect(x, r * h + h - 3, b, 3);
-      k.fillRect(x, r * h, 1.5, h);
+      const verlauf = k.createLinearGradient(0, r * h + h * 0.55, 0, r * h + h);
+      verlauf.addColorStop(0, "rgba(0,0,0,0)");
+      verlauf.addColorStop(1, "rgba(0,0,0,0.16)");
+      k.fillStyle = verlauf;
+      k.fillRect(x, r * h, b, h);
+      k.fillStyle = "rgba(0,0,0,0.12)";
+      k.fillRect(x, r * h, 1, h);
     }
   }
   const t = new THREE.CanvasTexture(c);
@@ -236,7 +242,8 @@ export function gauben(liste: Gaube[], r: { minX: number; minY: number; maxX: nu
     const u0 = q.von, u1 = q.von + q.b, um = (u0 + u1) / 2, v0 = q.abstand;
     const top = boden + q.hoehe;
     const unten = Math.min(dachAn(v0), top) - 0.05;
-    const firstH = q.art === "sattel" ? top + q.b / 2 : top;
+    const tq = Math.tan(((q.neigung ?? 45) * Math.PI) / 180);
+    const firstH = q.art === "sattel" ? top + (q.b / 2) * tq : top;
     const hinten = (h: number) => Math.max(v0 + 0.2, (h - y) / t + 0.05);
     // Vorderwand: Rechteck, bei Satteldach mit Giebeldreieck.
     g.add(flaeche3d(q.art === "sattel" ? [P(u0, unten, v0), P(u1, unten, v0), P(u1, top, v0), P(um, firstH, v0), P(u0, top, v0)] : [P(u0, unten, v0), P(u1, unten, v0), P(u1, top, v0), P(u0, top, v0)], fassade));
@@ -244,15 +251,18 @@ export function gauben(liste: Gaube[], r: { minX: number; minY: number; maxX: nu
     for (const u of [u0, u1]) g.add(flaeche3d([P(u, unten, v0), P(u, top, v0), P(u, top, hinten(top))], fassade));
     if (q.art === "sattel") {
       const ue = 0.25;
-      g.add(flaeche3d([P(u0 - ue * 0.7, top - ue * 0.7, v0 - ue), P(um, firstH, v0 - ue), P(um, firstH, hinten(firstH)), P(u0 - ue * 0.7, top - ue * 0.7, hinten(top))], deckung));
-      g.add(flaeche3d([P(um, firstH, v0 - ue), P(u1 + ue * 0.7, top - ue * 0.7, v0 - ue), P(u1 + ue * 0.7, top - ue * 0.7, hinten(top)), P(um, firstH, hinten(firstH))], deckung));
+      const ab = ue * 0.7 * tq;
+      g.add(flaeche3d([P(u0 - ue * 0.7, top - ab, v0 - ue), P(um, firstH, v0 - ue), P(um, firstH, hinten(firstH)), P(u0 - ue * 0.7, top - ab, hinten(top))], deckung));
+      g.add(flaeche3d([P(um, firstH, v0 - ue), P(u1 + ue * 0.7, top - ab, v0 - ue), P(u1 + ue * 0.7, top - ab, hinten(top)), P(um, firstH, hinten(firstH))], deckung));
     } else {
       // Flachdach mit leichtem Gefälle nach vorn und kleinem Überstand.
       g.add(flaeche3d([P(u0 - 0.15, top + 0.04, v0 - 0.2), P(u1 + 0.15, top + 0.04, v0 - 0.2), P(u1 + 0.15, top + 0.12, hinten(top + 0.12)), P(u0 - 0.15, top + 0.12, hinten(top + 0.12))], deckung));
     }
     // Fenster: dunkles Glas mit hellem Rahmen, knapp vor der Vorderwand.
     const fb = Math.min(q.b - 0.3, q.fenster ?? q.b - 0.5), fu0 = um - fb / 2, fu1 = um + fb / 2;
-    const fUnten = Math.max(unten + 0.15, top - 1.45), fOben = top - 0.2;
+    // Fenster in Brüstungshöhe bis Sturz; im Giebel darf es über die Wandkante reichen, solange es unter der Dachkante bleibt.
+    const unterDach = q.art === "sattel" ? firstH - (fb / 2) * tq - 0.15 : top - 0.2;
+    const fUnten = Math.max(unten + 0.15, boden + 0.85), fOben = Math.min(boden + 2.2, unterDach);
     if (fb > 0.3 && fOben - fUnten > 0.4) {
       g.add(flaeche3d([P(fu0 - 0.06, fUnten - 0.06, v0 - 0.01), P(fu1 + 0.06, fUnten - 0.06, v0 - 0.01), P(fu1 + 0.06, fOben + 0.06, v0 - 0.01), P(fu0 - 0.06, fOben + 0.06, v0 - 0.01)], rahmen));
       g.add(flaeche3d([P(fu0, fUnten, v0 - 0.02), P(fu1, fUnten, v0 - 0.02), P(fu1, fOben, v0 - 0.02), P(fu0, fOben, v0 - 0.02)], glas));

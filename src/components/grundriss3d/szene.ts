@@ -950,7 +950,7 @@ export interface Buehne { licht: THREE.DirectionalLight; himmel: THREE.Hemispher
 export function richteBuehneEin(renderer: THREE.WebGLRenderer, scene: THREE.Scene, schatten: boolean): Buehne {
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 0.9;
+  renderer.toneMappingExposure = 0.95;
   renderer.shadowMap.enabled = schatten;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   const pmrem = new THREE.PMREMGenerator(renderer);
@@ -998,7 +998,7 @@ export function kameraRundum(kamera: THREE.PerspectiveCamera, box: THREE.Box3, s
     // Ein Haus mit mehreren Geschossen: flach von schräg vorn auf die Straßenfassade, wie ein Passant mit etwas Abstand.
     const vorn = { rechts: [1, 0], links: [-1, 0], oben: [0, -1], unten: [0, 1] }[strasse];
     const quer = [-vorn[1], vorn[0]];
-    kamera.position.set(c.x + s * (0.66 * vorn[0] + 0.38 * quer[0]), c.y + s * 0.26, c.z + s * (0.66 * vorn[1] + 0.38 * quer[1]));
+    kamera.position.set(c.x + s * (0.82 * vorn[0] + 0.48 * quer[0]), c.y + s * 0.34, c.z + s * (0.82 * vorn[1] + 0.48 * quer[1]));
   } else {
     // Eine Wohnung steil von oben: Wände verdecken so wenig vom Boden dahinter.
     kamera.position.set(c.x + s * 0.05, c.y + s * 0.72, c.z + s * 0.32);

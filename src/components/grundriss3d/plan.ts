@@ -204,6 +204,8 @@ export interface Gaube {
   abstand: number;
   hoehe: number;
   art: "sattel" | "flach";
+  /** Neigung des Gaubendachs in Grad (nur Sattel), Standard 45°. */
+  neigung?: number;
   /** Fensterbreite; ohne Angabe Gaubenbreite minus 0,5 m. */
   fenster?: number;
 }

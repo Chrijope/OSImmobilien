@@ -212,6 +212,28 @@ const AUSSEHEN: Aussehen = {
   dach: { art: "sattel", first: "x", neigung: 35, kniestock: 0.15, farbe: "#d4524a", ueberstand: 0.2 },
   // Terrasse von WE 1 vor dem Westgiebel (17,28 m² laut Abgeschlossenheitsplan).
   balkone: [{ geschosse: [0], x: -2.49, y: 0.41, b: 2.49, t: 6.86 }],
+  /*
+   * Dachaufbauten, gemessen in den Ansichten Nord/West und Süd/Ost (1:100,
+   * 24,00 m = 1040 px bei 110 dpi), Lage gegen die Linien im DG-Plan und die
+   * Drohnenfotos 01, 02, 04 geprüft. Höhen über DG-Fußboden, der liegt nach
+   * Schnitt A rund 0,15 m unter der Traufe. Genauigkeit etwa 0,1 m.
+   * - oben (Nordwest): drei gleiche Gauben mit abgeknicktem Walmdach, als
+   *   „sattel“ genähert. Die Breite ist der Mittelwert aus Fuß (5,1 m) und
+   *   Oberkante der Vorderwand (3,7 m). Die Gauben sitzen knapp hinter der
+   *   Traufe; den Abstand von 0,2 m habe ich geschätzt.
+   * - unten (Südost): zwei Zwerchgiebel, bündig mit der Fassade.
+   * - unten Mitte: achteckiger Treppenhauserker, als Zwerchgiebel genähert.
+   *   Er springt in Wirklichkeit etwa 0,4 m hinter die Fassade zurück, hat ein
+   *   Zeltdach und drei Fenster (zusammen 3,1 m).
+   */
+  gauben: [
+    { seite: "oben", von: 3.45, b: 4.4, abstand: 0.2, hoehe: 2.6, art: "sattel", fenster: 2.95 },
+    { seite: "oben", von: 10.0, b: 4.4, abstand: 0.2, hoehe: 2.6, art: "sattel", fenster: 2.95 },
+    { seite: "oben", von: 16.8, b: 4.4, abstand: 0.2, hoehe: 2.6, art: "sattel", fenster: 2.95 },
+    { seite: "unten", von: 1.0, b: 7.8, abstand: 0, hoehe: 1.1, art: "sattel", neigung: 35, fenster: 2.95 },
+    { seite: "unten", von: 15.1, b: 7.8, abstand: 0, hoehe: 1.1, art: "sattel", neigung: 35, fenster: 3.0 },
+    { seite: "unten", von: 9.45, b: 4.1, abstand: 0, hoehe: 2.55, art: "sattel", fenster: 3.1 },
+  ],
 };
 
 export const BRUECK: { name: string; etagen: Array<{ geschoss: number; titel: string; plan: Grundriss3dPlan }>; aussehen: Aussehen } = {

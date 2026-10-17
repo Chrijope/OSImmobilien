@@ -5,10 +5,10 @@
 .g3d-flaeche { position: absolute; inset: 0; }
 .g3d-flaeche canvas { display: block; outline: none; }
 .g3d-labels { position: absolute; inset: 0; pointer-events: none; }
-.g3d-label { display: flex; flex-direction: column; align-items: center; padding: 3px 8px; border-radius: 999px; background: rgba(255,255,255,.88); box-shadow: 0 1px 4px rgba(0,0,0,.12); font-size: 11px; line-height: 1.2; color: #1f2933; white-space: nowrap; }
+.g3d-label { display: flex; flex-direction: column; align-items: center; padding: 3px 9px; border-radius: 999px; background: rgba(255,255,255,.82); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border: 1px solid rgba(31,41,51,.08); box-shadow: 0 2px 8px rgba(15,23,42,.10); font-size: 11px; line-height: 1.25; letter-spacing: .01em; color: #1f2933; white-space: nowrap; }
 .g3d-label b { font-weight: 600; }
-.g3d-label span { font-size: 10px; color: #52606d; }
-.g3d-label-einheit { background: #1f3a5f; color: #fff; font-weight: 600; }
+.g3d-label span { font-size: 10px; color: #5b6774; font-variant-numeric: tabular-nums; }
+.g3d-label-einheit { background: rgba(31,58,95,.9); border-color: rgba(255,255,255,.18); color: #fff; font-weight: 600; letter-spacing: .02em; }
 .g3d-leiste { position: absolute; left: 8px; right: 8px; top: 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; pointer-events: none; }
 .g3d-leiste > * { pointer-events: auto; }
 .g3d-gruppe { display: inline-flex; border-radius: 8px; background: rgba(255,255,255,.92); box-shadow: 0 1px 4px rgba(0,0,0,.12); overflow: hidden; }
