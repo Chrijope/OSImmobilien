@@ -12,6 +12,7 @@ import { Download, TrendingUp, Percent, Building2, Calculator, PiggyBank, Chevro
 import jsPDF from "jspdf";
 import { EuroInput } from "@/components/ui/euro-input";
 import { estimateGrenzsteuersatz, reverseSteuersatzZuZvE, berechneSteuerersparnis } from "@/lib/steuerHelper";
+import { kaufnebenkostenProzent } from "@/lib/grunderwerbsteuer";
 
 const fmt = (v: number) =>
   new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(v);
@@ -23,7 +24,7 @@ interface SteuerRechnerProps {
   modus: "objekt" | "wohnung";
   kaufpreis: number;
   mieteJahr: number;          // Jahresnettomiete
-  nebenkosten?: number;       // Kaufnebenkosten (default 5%)
+  nebenkosten?: number;       // Kaufnebenkosten (Standard: Brandenburg 8,5 %)
   grundAnteilt?: number;      // Grundstücksanteil % (default 20%)
   hausgeldJahr?: number;      // Hausgeld p.a. (nicht umlegbar)
   zinsSatz?: number;          // Darlehenszins p.a.
@@ -73,7 +74,7 @@ export function SteuerRechner({
   const [showTable, setShowTable] = useState(false);
 
   // Defaults
-  const nkPct = nebenkosten ?? 5;
+  const nkPct = nebenkosten ?? kaufnebenkostenProzent(null);
   const grundPct = grundAnteilt ?? 20;
   const hg = hausgeldJahr ?? Math.round(mieteJahr * 0.25);
   const zins = zinsSatz ?? 3.5;

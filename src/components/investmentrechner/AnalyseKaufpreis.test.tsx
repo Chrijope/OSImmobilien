@@ -6,6 +6,11 @@ import { leereUnterlagenDaten } from "@/lib/investmentrechner/unterlagenAuslesen
 import { Analyse } from "./Analyse";
 import { ExposeDokument } from "./ExposeDokument";
 
+// Die erwarteten Werte stammen aus der Zeit vor 10/2026, als der Rechner mit
+// 3,5 % Grunderwerbsteuer und 1,0 % Notar startete. Sie prüfen die Mechanik,
+// nicht die Standardsätze, deshalb stehen die alten Sätze hier fest.
+const basisEingabe: InvestmentEingabe = { ...standardEingabe, transferTaxRate: 3.5, notaryRate: 1 };
+
 /*
  * Kaufpreis und Möbel in der Analyse.
  *
@@ -49,7 +54,7 @@ function beideAnsichten(eingabe: InvestmentEingabe) {
 describe("Kaufpreisdetails in der Analyse", () => {
   it("zeigt den Gesamtkaufpreis, die Möbel als Anteil und die Gesamtkosten wie die Berechnung", () => {
     const { analyseZeilen, berechnungZeilen } = beideAnsichten({
-      ...standardEingabe,
+      ...basisEingabe,
       purchasePrice: 250000,
       furniturePrice: 8000,
       monthlyColdRent: 900,
@@ -77,7 +82,7 @@ describe("Kaufpreisdetails in der Analyse", () => {
 
   it("lässt die Zeile der Finanzierungsnebenkosten weg, wenn der Satz 0 ist", () => {
     const { analyseZeilen, berechnungZeilen } = beideAnsichten({
-      ...standardEingabe,
+      ...basisEingabe,
       purchasePrice: 250000,
       financingCostRate: 0,
     });
@@ -87,7 +92,7 @@ describe("Kaufpreisdetails in der Analyse", () => {
   });
 
   it("lässt die Möbelzeile weg, wenn es keine Möbel gibt", () => {
-    const { analyseZeilen, berechnungZeilen } = beideAnsichten({ ...standardEingabe, purchasePrice: 250000 });
+    const { analyseZeilen, berechnungZeilen } = beideAnsichten({ ...basisEingabe, purchasePrice: 250000 });
     expect(analyseZeilen).toEqual(berechnungZeilen);
     expect(analyseZeilen.map(([label]) => label)).not.toContain("davon Möbel/Inventar");
     expect(analyseZeilen[analyseZeilen.length - 1]).toEqual(["Gesamtkosten", "263.025 €"]);
@@ -97,7 +102,7 @@ describe("Kaufpreisdetails in der Analyse", () => {
     // Bis zum 25.09.2026 standen Kaufpreis und Möbel hier voll, die
     // Nebenkosten darunter aber schon anteilig.
     const { analyseZeilen, berechnungZeilen } = beideAnsichten({
-      ...standardEingabe,
+      ...basisEingabe,
       purchasePrice: 250000,
       furniturePrice: 8000,
       investmentShare: 50,
@@ -120,7 +125,7 @@ describe("Kaufpreisdetails in der Analyse", () => {
 
   it("zeigt mit Erhaltungsaufwand Kaufpreis der Immobilie, Posten mit Basis und den Hinweis (Christian, 30.09.2026)", () => {
     const eingabe: InvestmentEingabe = {
-      ...standardEingabe,
+      ...basisEingabe,
       purchasePrice: 300000,
       rehabExpense: 40000,
       transferTaxRate: 3.5,
@@ -156,7 +161,7 @@ describe("Kaufpreisdetails in der Analyse", () => {
 
   it("zieht auch die Möbel ab: 13.250 € auf 265.000 € (Christians Bild, 30.09.2026)", () => {
     const eingabe: InvestmentEingabe = {
-      ...standardEingabe,
+      ...basisEingabe,
       purchasePrice: 300000,
       rehabExpense: 20000,
       furniturePrice: 15000,

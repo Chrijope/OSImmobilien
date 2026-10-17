@@ -60,7 +60,7 @@ describe("gemeinsam veranlagt: Splittingtarif aus dem Rechenkern", () => {
     expect(h).toContain("gemeinsames Einkommen");
   });
 
-  it("Vergleichstabelle je Brutto-Spanne, Modellwohnung 240.000 € (steht so im Bericht vom 26.09.2026)", () => {
+  it("Vergleichstabelle je Brutto-Spanne, Modellwohnung 240.000 € (Bericht vom 26.09.2026, seit 10/2026 mit 8,5 % Kaufnebenkosten)", () => {
     const e = steuerTabelle(240000, false);
     const g = steuerTabelle(240000, true);
     const zeilen = BRUTTO_REIHENFOLGE.map((b, i) => ({
@@ -71,10 +71,10 @@ describe("gemeinsam veranlagt: Splittingtarif aus dem Rechenkern", () => {
       nachGemeinsam: Math.round(g[i].nach),
     }));
     expect(zeilen).toEqual([
-      { brutto: "unter_50", satzEinzeln: 29, satzGemeinsam: 20, nachEinzeln: 176, nachGemeinsam: 202 },
-      { brutto: "50_80", satzEinzeln: 35, satzGemeinsam: 26, nachEinzeln: 157, nachGemeinsam: 182 },
-      { brutto: "80_120", satzEinzeln: 42, satzGemeinsam: 32, nachEinzeln: 121, nachGemeinsam: 166 },
-      { brutto: "ueber_120", satzEinzeln: 42, satzGemeinsam: 38, nachEinzeln: 129, nachGemeinsam: 146 },
+      { brutto: "unter_50", satzEinzeln: 29, satzGemeinsam: 20, nachEinzeln: 173, nachGemeinsam: 200 },
+      { brutto: "50_80", satzEinzeln: 35, satzGemeinsam: 26, nachEinzeln: 153, nachGemeinsam: 179 },
+      { brutto: "80_120", satzEinzeln: 42, satzGemeinsam: 32, nachEinzeln: 116, nachGemeinsam: 163 },
+      { brutto: "ueber_120", satzEinzeln: 42, satzGemeinsam: 38, nachEinzeln: 124, nachGemeinsam: 141 },
     ]);
   });
 });

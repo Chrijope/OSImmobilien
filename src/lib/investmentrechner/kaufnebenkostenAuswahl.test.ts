@@ -55,7 +55,7 @@ describe("Posten als Prozentsatz und Betrag", () => {
     const posten = kaufnebenkostenposten(saetze!, 300000);
     expect(posten.map((eintrag) => [eintrag.label, eintrag.prozent, eintrag.betrag])).toEqual([
       ["Grunderwerbsteuer", 6.5, 19500],
-      ["Notar", 1, 3000],
+      ["Notar", 1.5, 4500],
       ["Grundbuch", 0.5, 1500],
     ]);
   });

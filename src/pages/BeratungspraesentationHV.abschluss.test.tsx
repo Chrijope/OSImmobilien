@@ -5,7 +5,9 @@ import BeratungspraesentationHV from "./BeratungspraesentationHV";
 /*
  * Abschnitte 12 und 13 (16.10.2026), in A und B: Knopf „Objektvorstellung
  * buchen“ mit dem Link des zuständigen Partners, keine Ja/Nein-Knöpfe mehr,
- * Kundenportal erst nach der unterschriebenen Selbstauskunft.
+ * Kundenportal erst nach der unterschriebenen Selbstauskunft. Ohne
+ * verbundenen Kunden (Sidebar, Unterlagen) entfallen Selbstauskunft und
+ * Kundenportal ganz.
  */
 
 const zustand = vi.hoisted(() => ({
@@ -71,6 +73,16 @@ function zeige(adresse: string, variante: "a" | "b") {
 }
 
 describe.each(["a", "b"] as const)("Beratungspräsentation %s, Abschnitte 12 und 13", (variante) => {
+  it("lässt ohne Kunde (Sidebar, Unterlagen) Selbstauskunft und Kundenportal weg, Objektvorstellung bleibt", () => {
+    zustand.profile = [{ id: "nutzer-1", name: "Maria Muster", objektlink: "https://termin.example/eigen" }];
+    zeige("/x", variante);
+    expect(screen.queryByRole("button", { name: /Selbstauskunft jetzt gemeinsam ausfüllen/ })).toBeNull();
+    expect(screen.queryByRole("button", { name: /Kundenportal freigeben/ })).toBeNull();
+    expect(screen.queryByText(/Gerechnet mit deiner Selbstauskunft/)).toBeNull();
+    expect(screen.getByText(/Dann vereinbaren wir deine Objektvorstellung/)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Objektvorstellung buchen/ })).toHaveAttribute("href", "https://termin.example/eigen");
+  });
+
   it("öffnet mit Kunde den Objektvorstellungs-Link des zuständigen Partners im neuen Tab", () => {
     zustand.profile = [
       { id: "nutzer-1", name: "Maria Muster", objektlink: "https://termin.example/eigen" },
@@ -114,10 +126,10 @@ describe.each(["a", "b"] as const)("Beratungspräsentation %s, Abschnitte 12 und
     expect(screen.getByText("Erst nach der unterschriebenen Selbstauskunft")).toBeInTheDocument();
   });
 
-  it("graut das Kundenportal ohne Kunde und Investment aus, auch wenn nichts unterschrieben sein kann", () => {
+  it("zeigt das Kundenportal ohne Investment gar nicht, auch wenn etwas unterschrieben wäre", () => {
     zustand.saSigned = true;
     zeige("/x?kundeId=k-1", variante);
-    expect(screen.getByRole("button", { name: /Kundenportal freigeben/ })).toBeDisabled();
+    expect(screen.queryByRole("button", { name: /Kundenportal freigeben/ })).toBeNull();
   });
 
   it("gibt nach der Unterschrift über den Weg des Kundenprofils frei", async () => {

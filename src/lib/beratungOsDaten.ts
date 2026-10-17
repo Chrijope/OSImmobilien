@@ -257,6 +257,8 @@ export const OS_TEXTE = {
     kicker: "12 · Der nächste Schritt",
     titel: "Wenn wir eine Immobilie finden, die [[deine Kriterien erfüllt]]: Möchtest du den nächsten Schritt gehen?",
     text: "Dafür brauchen wir deine Selbstauskunft. Wir füllen sie jetzt gemeinsam aus, das dauert etwa 15 Minuten. Bis zur Objektpräsentation in einer Woche fehlen dann nur noch Ausweis und letzte Gehaltsabrechnung.",
+    /** Ohne verbundenen Kunden (Aufruf über Sidebar oder Unterlagen): keine Selbstauskunft. */
+    textOhneKunde: "Dann vereinbaren wir deine Objektvorstellung. Dort zeigen wir dir die Immobilie, die zu deinen Kriterien passt, und rechnen sie mit deinen Zahlen durch.",
     knopf: "Selbstauskunft jetzt gemeinsam ausfüllen",
     termin: "Objektvorstellung",
     hinweis: "Gesprächshinweis: Frage stellen, dann schweigen.",
@@ -274,6 +276,8 @@ export const OS_TEXTE = {
       { titel: "Das Exposé", text: "Lage, Grundriss, Unterlagen, Kosten. Alles zum Nachlesen." },
       { titel: "Deine Entscheidung", text: "Passt es, reservierst du direkt. Kostenfrei." },
     ] as ReadonlyArray<{ titel: string; text: string }>,
+    /** Ersetzt die Kalkulations-Karte ohne verbundenen Kunden. */
+    kalkulationOhneKunde: "Gerechnet mit deinen Zahlen: vor und nach Steuern, mit Stresstest.",
     portalSatz: "Nach der gemeinsam ausgefüllten und von dir unterschriebenen Selbstauskunft lädst du Personalausweis und letzte Gehaltsabrechnung im Kundenportal hoch.",
     portalKnopf: "Kundenportal freigeben",
     portalVorUnterschrift: "Erst nach der unterschriebenen Selbstauskunft",
