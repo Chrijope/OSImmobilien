@@ -33,6 +33,9 @@ import { getInvestments, setInvestmentNotarFields, type Investment } from "@/lib
 import { ABWICKLUNG_GELD_ROLLEN, ABWICKLUNG_ROLLEN, getAbwicklungDaten, saveAbwicklungDaten, type AbwicklungDaten } from "@/lib/abwicklungStore";
 import { abwicklungStufeNachziehen } from "@/lib/abwicklungStufe";
 import { PIPELINE_STUFEN } from "@/lib/pipelineStufen";
+import { erhoehungsRegelAusMeta, naechsteErhoehung, type ErhoehungsRegel } from "@/lib/mieterhoehung";
+import { bundeslandFromPlz } from "@/lib/kaufnebenkosten";
+import { cacheGet } from "@/lib/dataCache";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { excelDatumIso } from "@/lib/excelLesen";
@@ -120,7 +123,8 @@ function ZahlZelle({ wert, anzeige, speichern, gesperrt, art = "zahl" }: {
  * Investagon von dort und wird dort geändert. Alles andere ist hier pflegbar.
  */
 const BERECHNET = new Set(["VK €/m²", "Brutto Ist", "Brutto", "Netto", "Ist €/m²", "Soll €/m²", "Zielmiete", "Garantie mtl.", "Garantie Laufzeit",
-  "Eigentümerlast", "Überschuss mtl.", "laut Plan", "Garagen-Subv. mtl.", "Mehrertrag mtl.", "Hinweise", "Einmalanteil"]);
+  "Eigentümerlast", "Überschuss mtl.", "laut Plan", "Garagen-Subv. mtl.", "Mehrertrag mtl.", "Hinweise", "Einmalanteil",
+  "Erhöhung ab", "neue Miete", "+ mtl.", "Grenze"]);
 const AUS_INVESTAGON = new Set(["Fläche m²", "Kaufpreis", "Miete Vertrieb", "KP Garage", "Hausgeld gesamt", "umlagefähig", "nicht umlagefähig", "Rücklage"]);
 
 function GarageDialog({ einheit, garage, onClose }: { einheit: ObjektWohnung | null; garage: EinheitGarage | null; onClose: () => void }) {
@@ -246,6 +250,39 @@ function MietgarantieKarte({ objekt, regel, darfSchreiben }: { objekt: ObjektDat
   );
 }
 
+/** Kappungsgrenze und Vergleichsmiete eines Objekts für den Mieterhöhungsplaner (`objekte.meta.mieterhoehung`). */
+function ErhoehungsKarte({ objekt, regel, darfSchreiben }: { objekt: ObjektData; regel: ErhoehungsRegel; darfSchreiben: boolean }) {
+  const [kappung, setKappung] = useState("");
+  const [vergleich, setVergleich] = useState("");
+  useEffect(() => {
+    setKappung(String(Math.round(regel.kappungsgrenze * 1000) / 10).replace(".", ","));
+    setVergleich(regel.vergleichsmieteQm ? String(regel.vergleichsmieteQm).replace(".", ",") : "");
+  }, [regel.kappungsgrenze, regel.vergleichsmieteQm]);
+  const speichern = async () => {
+    try {
+      await objektMetaErgaenzen(objekt.id, { mieterhoehung: { kappungsgrenze: (lesen(kappung) ?? 20) / 100, vergleichsmieteQm: lesen(vergleich) } });
+      toast({ title: "Mieterhöhungsplaner gespeichert" });
+    } catch (e) {
+      toast({ title: "Nicht gespeichert", description: e instanceof Error ? e.message : undefined, variant: "destructive" });
+    }
+  };
+  return (
+    <Card>
+      <CardContent className="p-4">
+        <div className="mb-2 text-sm font-semibold">Mieterhöhungsplaner</div>
+        <p className="mb-3 text-xs text-muted-foreground">
+          Nach § 558 BGB: frühestens 15 Monate nach Mietbeginn oder letzter Erhöhung und ab dem dritten Monat nach Zugang des Schreibens (Versand heute angenommen); höchstens die Kappungsgrenze auf die Miete von vor drei Jahren und höchstens die ortsübliche Vergleichsmiete. Eine Planung, keine Rechtsberatung.
+        </p>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:items-end">
+          <div><Label>Kappungsgrenze in %</Label><Input disabled={!darfSchreiben} inputMode="decimal" value={kappung} onChange={(e) => setKappung(e.target.value)} /></div>
+          <div><Label>Vergleichsmiete €/m²</Label><Input disabled={!darfSchreiben} inputMode="decimal" value={vergleich} placeholder="ohne Angabe nur Kappungsgrenze" onChange={(e) => setVergleich(e.target.value)} /></div>
+          {darfSchreiben && <Button onClick={speichern}>Speichern</Button>}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 type Ansicht = "handlung" | "preise" | "miete" | "subvention" | "hausgeld" | "garagen" | "verkauf";
 const ANSICHTEN: { wert: Ansicht; titel: string }[] = [
   { wert: "handlung", titel: "Handlungsbedarf" },
@@ -301,6 +338,7 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
   const zeilen = objekte.flatMap((o) => {
     const regel = mietgarantieFuerObjekt(o.id);
     const summeKaufpreise = o.wohnungen.reduce((s, w) => s + (w.vkGesamt || 0), 0);
+    const erhRegel = erhoehungsRegelAusMeta(cacheGet("objekte").find((r: { id: string }) => r.id === o.id)?.meta, bundeslandFromPlz(o.plz));
     return o.wohnungen.map((w) => {
       const z = einheitZeile(w);
       const m = aktuellerMieter(mieter, w.id);
@@ -318,11 +356,18 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
       const wp = wirtschaftsplanFuerObjekt(o.id);
       const hgPlan = wp ? hausgeldAusPlan(wp, listenZahl(l, "mea")) : null;
       const eingabe = renditeEingabe(o, w, z.mieteMonat ?? 0);
+      // Mieterhöhungsplaner (`mieterhoehung.ts`), für die Spalten und den Handlungsbedarf.
+      const erhoehung = ist && z.flaeche ? naechsteErhoehung({
+        istMiete: ist, flaeche: z.flaeche, mietbeginn: m?.mietvertragBeginn || "",
+        letzteErhoehung: excelDatumIso(typeof l?.werte.letzteErhoehung === "string" ? l.werte.letzteErhoehung : ""),
+        mieteVorErhoehung: listenZahl(l, "mieteVorErhoehung"),
+      }, erhRegel, new Date().toISOString().slice(0, 10)) : null;
       if (hg.nichtUml !== null && w.hausgeldNichtUmlagefaehigEuro === undefined) { eingabe.nichtUmlagefaehigMonat = hg.nichtUml; eingabe.ruecklageMonat = hg.ruecklage ?? 0; }
       return {
         objekt: o, w, z, m, ist, garage, regel, garantie, l, hg, hgPlan, gesperrt: ausInvestagon(w),
         inv: investmentFuerEinheit(investments, w.id),
         einmal: regel ? einmalAnteil(regel, w.vkGesamt || 0, summeKaufpreise) : 0,
+        erhoehung,
         bruttoIst: ist ? bruttoRendite(ist, z.kaufpreis ?? 0) : null,
         brutto: z.rendite,
         netto: nettoRendite(eingabe),
@@ -331,11 +376,13 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
           // Eigentümersicht: was an dieser Wohnung zu tun ist (`handlungsbedarf.ts`).
           const last = hg.nichtUml !== null || hg.ruecklage !== null ? (hg.nichtUml ?? 0) + (hg.ruecklage ?? 0) : null;
           const v = einheitVollstaendigkeit(w, l?.werte);
-          const naechste = l?.werte.naechsteErhoehungAb;
+          // Der Planer geht vor; ohne ihn (etwa ohne Ist-Miete) der Termin laut Liste.
+          const planung = erhoehung;
+          const naechste = planung?.plus ? planung.ab : l?.werte.naechsteErhoehungAb;
           const hinweise = handlungsbedarf({
             verkauft: w.status === "verkauft", istMiete: ist, mieterGekuendigt: m?.status === "gekuendigt",
             sollMiete: listenZahl(l, "sollMiete"), mieteVertrieb: z.mieteMonat, befristetBis: m?.mietvertragEnde || "",
-            naechsteErhoehungAb: typeof naechste === "string" ? naechste : "", naechsteErhoehungMiete: listenZahl(l, "naechsteErhoehungMiete"),
+            naechsteErhoehungAb: typeof naechste === "string" ? naechste : "", naechsteErhoehungMiete: planung?.plus ? planung.neueMiete : listenZahl(l, "naechsteErhoehungMiete"),
             eigentuemerlast: last, garageFrei: garage?.status === "frei", garantieMonat: garantie?.garantieMonat ?? null,
             fehlendeUnterlagen: v.gesamt - v.vorhanden,
           }, new Date().toISOString().slice(0, 10));
@@ -361,6 +408,8 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
     "Überschuss mtl.": (x) => (x.last !== null && x.z.mieteMonat ? x.z.mieteMonat - x.last : null), "laut Plan": (x) => x.hgPlan?.gesamt,
     "Garage/SP": (x) => x.garage?.nr, "KP Garage": (x) => x.w.stellplatzPreis, "Ist-Miete Garage": (x) => x.garage?.istMiete,
     "Sollmiete Garage": (x) => listenZahl(x.l, "garageSollMiete"), "Garagen-Subv. mtl.": (x) => x.garantie?.garagenSubventionMonat, Einmalanteil: (x) => x.einmal || null,
+    "Miete vorher": (x) => listenZahl(x.l, "mieteVorErhoehung"), "Erhöhung ab": (x) => x.erhoehung?.ab, "neue Miete": (x) => x.erhoehung?.neueMiete,
+    "+ mtl.": (x) => x.erhoehung?.plus || null, Grenze: (x) => x.erhoehung?.begrenztDurch,
     "gekündigt zum": (x) => String(x.l?.werte.garageGekuendigtZum ?? ""),
     "Mehrertrag mtl.": (x) => x.potenzial || null, Hinweise: (x) => x.hinweise.length || null,
     Stufe: (x) => (x.inv ? STUFE_TEXT[x.inv.pipelineStufe] || x.inv.pipelineStufe : null), Notartermin: (x) => x.inv?.notarTermin,
@@ -451,6 +500,10 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
         {mitGarantie && <Kennzahl titel="Subvention im Monat" wert={eur(summe((x) => x.garantie?.garantieMonat), 2)} />}
         {mitGarantie && <Kennzahl titel="Subvention gesamt" wert={eur(summe((x) => (x.garantie?.summeLaufzeit ?? 0) + x.einmal))} />}
       </div>
+      {einzeln && ansicht === "miete" && (
+        <ErhoehungsKarte objekt={einzeln} darfSchreiben={darfSchreiben}
+          regel={erhoehungsRegelAusMeta(cacheGet("objekte").find((r: { id: string }) => r.id === einzeln.id)?.meta, bundeslandFromPlz(einzeln.plz))} />
+      )}
       {einzeln && ansicht === "subvention" && <MietgarantieKarte objekt={einzeln} regel={mietgarantieFuerObjekt(einzeln.id)} darfSchreiben={darfSchreiben} />}
       {einzeln && ansicht === "hausgeld" && <WirtschaftsplanKarte objekt={einzeln} wp={wirtschaftsplanFuerObjekt(einzeln.id)} darfSchreiben={darfSchreiben} />}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
@@ -490,7 +543,9 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
                 </>}
                 {ansicht === "miete" && <>
                   {kopf("Ist-Kaltmiete")}{kopf("Ist €/m²")}{kopf("Sollmiete")}{kopf("Soll €/m²")}
-                  {kopf("Letzte Erhöhung", false)}{kopf("Nächste ab", false)}{kopf("Miete danach")}{kopf("in 3 Jahren", true, "Erreichbare Miete in 3 Jahren laut Liste (Kappungsgrenze)")}
+                  {kopf("Letzte Erhöhung", false)}{kopf("Miete vorher", true, "Miete vor der letzten Erhöhung, für die Kappungsgrenze")}
+                  {kopf("Erhöhung ab", false, "Frühester Termin laut Mieterhöhungsplaner")}{kopf("neue Miete", true, "Höchstmögliche Miete laut Planer")}{kopf("+ mtl.", true)}{kopf("Grenze", false)}
+                  {kopf("Nächste ab", false, "Termin laut Excel-Liste")}{kopf("Miete danach", true, "Miete laut Excel-Liste")}{kopf("in 3 Jahren", true, "Erreichbare Miete in 3 Jahren laut Liste (Kappungsgrenze)")}
                 </>}
                 {ansicht === "subvention" && <>
                   {kopf("Ist-Kaltmiete")}{kopf("Zielmiete", true, "Die Miete, auf die wir subventionieren")}{kopf("Garantie mtl.", true, "Subvention je Monat")}
@@ -560,6 +615,11 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
                       <TableCell className={r}>{listenZelle(x, "sollMiete")}</TableCell>
                       <TableCell className={r}>{soll && z.flaeche ? zahl(soll / z.flaeche) : "–"}</TableCell>
                       <TableCell className="whitespace-nowrap text-xs">{listenTextZelle(x, "letzteErhoehung")}</TableCell>
+                      <TableCell className={r}>{listenZelle(x, "mieteVorErhoehung")}</TableCell>
+                      <TableCell className="whitespace-nowrap text-xs" title={x.erhoehung?.hinweis}>{x.erhoehung ? datum(x.erhoehung.ab) : "–"}</TableCell>
+                      <TableCell className={r}>{x.erhoehung ? eur(x.erhoehung.neueMiete, 2) : "–"}</TableCell>
+                      <TableCell className={cn(r, x.erhoehung?.plus && "font-medium text-emerald-700")}>{x.erhoehung?.plus ? eur(x.erhoehung.plus, 2) : "–"}</TableCell>
+                      <TableCell className="whitespace-nowrap text-xs">{x.erhoehung ? x.erhoehung.begrenztDurch : "–"}</TableCell>
                       <TableCell className="whitespace-nowrap text-xs">{listenTextZelle(x, "naechsteErhoehungAb", "datum")}</TableCell>
                       <TableCell className={r}>{listenZelle(x, "naechsteErhoehungMiete")}</TableCell>
                       <TableCell className={r}>{listenZelle(x, "mieteIn3Jahren")}</TableCell>
