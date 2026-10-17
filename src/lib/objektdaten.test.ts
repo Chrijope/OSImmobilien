@@ -73,4 +73,11 @@ describe("Objektdaten", () => {
     expect(z.vertragVorhanden).toBe(true);
     expect(mieterZeilen(objekt, [{ ...mieter, kaltmiete: 325.2 }])[0].mieteAbweichend).toBe(false);
   });
+
+  it("meldet Unterlagen, die laut Liste vorhanden sind, aber im CRM fehlen", () => {
+    const v = einheitVollstaendigkeit(we({ dokumente: [{ id: "d", name: "Grundriss", url: "u", kategorie: "wohnungsunterlagen" }] }),
+      { unterlageGrundriss: true, unterlageMietvertrag: true, unterlageFotos: false });
+    expect(v.faecher["Grundriss"]).toBe(true);
+    expect(v.lautListe).toEqual({ Mietvertrag: true });
+  });
 });

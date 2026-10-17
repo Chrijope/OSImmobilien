@@ -4,7 +4,9 @@ import { AlertTriangle, Check, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MieterDialog } from "@/components/mieter/MieterDialog";
 import { Einheitenliste } from "@/components/objektdaten/Einheitenliste";
+import { ObjektAusListeDialog } from "@/components/objektdaten/ObjektAusListeDialog";
 import { getMieter, type Mieter } from "@/lib/mieterStore";
+import { listendatenFuerEinheit } from "@/lib/listendaten";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
@@ -99,11 +101,19 @@ export default function Objektdaten({ ansicht }: { ansicht: ObjektdatenAnsicht }
 }
 
 function Cockpit({ objekte, suche, setSuche }: { objekte: ObjektData[]; suche: string; setSuche: (s: string) => void }) {
+  const { user } = useUser();
+  const [anlegenOffen, setAnlegenOffen] = useState(false);
   const q = suche.trim().toLocaleLowerCase("de-DE");
   const liste = objekte.filter((o) => !q || `${o.titel} ${o.adresse} ${o.plz} ${o.ort}`.toLocaleLowerCase("de-DE").includes(q));
   return (
     <>
-      <PageHeader title="Objektcockpit" subtitle="Alle Objekte mit Verkaufsstand und Vollständigkeit der Unterlagen" />
+      <PageHeader title="Objektcockpit" subtitle="Alle Objekte mit Verkaufsstand und Vollständigkeit der Unterlagen">
+        {/* Neue Objekte direkt im CRM, aus der Excel-Liste (Stufe 3). Anlegen dürfen Admin, Inhaber und Objektpartner. */}
+        {["admin", "inhaber", "objektpartner"].includes(user.role) && (
+          <Button onClick={() => setAnlegenOffen(true)}><Plus className="mr-2 h-4 w-4" /> Objekt aus Excel anlegen</Button>
+        )}
+      </PageHeader>
+      <ObjektAusListeDialog open={anlegenOffen} onOpenChange={setAnlegenOffen} />
       <Input placeholder="Objekt, Straße oder Ort suchen" value={suche} onChange={(e) => setSuche(e.target.value)} className="w-full sm:w-[320px]" />
       <Card>
         <CardContent className="p-0 overflow-x-auto">
@@ -124,7 +134,7 @@ function Cockpit({ objekte, suche, setSuche }: { objekte: ObjektData[]; suche: s
             <TableBody>
               {liste.map((o) => {
                 const s = einheitenSumme(o.wohnungen.map(einheitZeile));
-                const v = objektVollstaendigkeit(o);
+                const v = objektVollstaendigkeit(o, listenwerte);
                 return (
                   <TableRow key={o.id}>
                     <TableCell>
@@ -171,7 +181,7 @@ function Vollstaendigkeit({ objekte, objektWahl, einzeln }: { objekte: ObjektDat
         )}
       </div>
       <p className="text-xs text-muted-foreground">
-        Geprüft werden die Unterlagenfächer aus dem Objektformular. Welche davon für den Vertriebsstart Pflicht sind, ist noch nicht festgelegt; bis dahin zählt jedes Fach gleich.
+        Geprüft werden die Unterlagenfächer aus dem Objektformular. „Liste“ heißt: Die Excel-Liste meldet die Unterlage als vorhanden, im CRM liegt aber noch keine Datei. Welche Unterlagen für den Vertriebsstart Pflicht sind, ist noch nicht festgelegt; bis dahin zählt jedes Fach gleich.
       </p>
       {einzeln && objekte[0]
         ? <VollstaendigkeitObjekt objekt={objekte[0]} nurLuecken={nurLuecken} />
@@ -195,7 +205,7 @@ function VollstaendigkeitUebersicht({ objekte }: { objekte: ObjektData[] }) {
           </TableHeader>
           <TableBody>
             {objekte.map((o) => {
-              const v = objektVollstaendigkeit(o);
+              const v = objektVollstaendigkeit(o, listenwerte);
               return (
                 <TableRow key={o.id}>
                   <TableCell><Link to={`${OBJEKTDATEN_VOLLSTAENDIGKEIT_ROUTE}?objekt=${o.id}`} className="font-medium hover:underline">{o.titel}</Link></TableCell>
@@ -217,7 +227,7 @@ function VollstaendigkeitUebersicht({ objekte }: { objekte: ObjektData[] }) {
 }
 
 function VollstaendigkeitObjekt({ objekt, nurLuecken }: { objekt: ObjektData; nurLuecken: boolean }) {
-  const v = objektVollstaendigkeit(objekt);
+  const v = objektVollstaendigkeit(objekt, listenwerte);
   const einheiten = v.einheiten.filter((e) => !nurLuecken || e.vorhanden < e.gesamt);
   return (
     <>
@@ -249,7 +259,13 @@ function VollstaendigkeitObjekt({ objekt, nurLuecken }: { objekt: ObjektData; nu
                   <TableCell className="whitespace-nowrap font-medium">
                     <Link to={`/objekte/${objekt.id}/einheiten/${e.id}`} className="hover:underline">{e.weNr || "ohne Nr."}</Link>
                   </TableCell>
-                  {EINHEIT_FAECHER.map((f) => <TableCell key={f}><Haken ja={e.faecher[f]} /></TableCell>)}
+                  {EINHEIT_FAECHER.map((f) => (
+                    <TableCell key={f}>
+                      {e.lautListe[f]
+                        ? <span className="mx-auto block w-fit rounded bg-amber-50 px-1.5 text-[11px] text-amber-700" title="Laut Excel-Liste vorhanden, aber keine Datei im CRM. Bitte hochladen.">Liste</span>
+                        : <Haken ja={e.faecher[f]} />}
+                    </TableCell>
+                  ))}
                   <TableCell className="text-right tabular-nums">{e.vorhanden} von {e.gesamt}</TableCell>
                 </TableRow>
               ))}
@@ -265,6 +281,9 @@ function VollstaendigkeitObjekt({ objekt, nurLuecken }: { objekt: ObjektData; nu
     </>
   );
 }
+
+/** Listendaten einer Einheit für die Vollständigkeit (Häkchen „Unterlage vorhanden“ der Excel-Listen). */
+const listenwerte = (wohnungId: string) => listendatenFuerEinheit(wohnungId)?.werte || {};
 
 const datum = (iso: string) => (/^\d{4}-\d{2}-\d{2}/.test(iso) ? `${iso.slice(8, 10)}.${iso.slice(5, 7)}.${iso.slice(0, 4)}` : iso || "–");
 

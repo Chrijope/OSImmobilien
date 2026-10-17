@@ -39,6 +39,7 @@ import { ObjektseiteFelderDialog } from "@/components/objektseite/ObjektseiteFel
 import { ObjektTexteKarte } from "@/components/objektseite/ObjektTexteKarte";
 import { InterneHighlightsKarte } from "@/components/objektseite/InterneHighlightsKarte";
 import { useGarantieZeilen } from "@/components/objektseite/mieteGarantie";
+import { nettoRenditeProzent } from "@/lib/renditeBruttoNetto";
 import { PassendeKundenKarte } from "@/components/objektseite/PassendeKundenKarte";
 import { WeitereEinheitenTabelle } from "@/components/objektseite/EinheitenTabelle";
 import { EinheitFinanzen, FINANZEN_ERKLAERUNG } from "@/components/objektseite/EinheitFinanzen";
@@ -326,6 +327,7 @@ function EinheitAnsicht({ objekt, wohnung: w }: { objekt: ObjektData; wohnung: O
   const gesamt = (w.vkGesamt || 0) + (w.stellplatzPreis || 0);
   // Eine Regel überall (M20): Wohnungsmiete durch Wohnungspreis, Stellplatz getrennt.
   const rendite = renditeVon(w);
+  const netto = nettoRenditeProzent(objekt, w);
   // Ist-Miete, Mietgarantie und Garage aus den Objektdaten, als Zeilen der Mietübersicht.
   const garantieZeilen = useGarantieZeilen(objekt, w);
   // "X von Y frei" zaehlt nur, was im Angebot steht, genau wie die Liste
@@ -683,8 +685,8 @@ function EinheitAnsicht({ objekt, wohnung: w }: { objekt: ObjektData; wohnung: O
                 <Kachel label="Gesamtinvestition" wert={gesamt > 0 ? eur0(gesamt) : "Keine Angabe"}
                   unter={gesamt > 0 ? <>{w.stellplatzPreis ? `Kaufpreis ${eur0(w.vkGesamt)} plus Stellplatz ${eur0(w.stellplatzPreis)}` : `Kaufpreis ${eur0(w.vkGesamt)}`}<br />{nkText}</> : undefined} />
                 <Kachel label="Monatsmiete kalt" wert={miete > 0 ? eur0(miete) : "Keine Angabe"}
-                  unter={miete > 0 ? <>{rendite > 0 ? `${prozent(rendite, 2)} Rendite, Jahreskaltmiete durch Kaufpreis` : ""}<br />{hausgeldNu > 0 ? `Hausgeld nicht umlegbar ${eur0(hausgeldNu)} je Monat` : ""}</> : undefined}
-                  info="Die eine Rendite im CRM: zwölf Kaltmieten geteilt durch den Kaufpreis." />
+                  unter={miete > 0 ? <>{rendite > 0 ? `Rendite ${prozent(rendite, 2)} brutto${netto !== null ? `, ${prozent(netto, 2)} netto` : ""}` : ""}<br />{hausgeldNu > 0 ? `Hausgeld nicht umlegbar ${eur0(hausgeldNu)} je Monat` : ""}</> : undefined}
+                  info="Brutto: zwölf Kaltmieten geteilt durch den Kaufpreis. Netto: zwölf Kaltmieten abzüglich nicht umlagefähigem Hausgeld und Rücklage, geteilt durch Kaufpreis plus Kaufnebenkosten." />
                 <Kachel label="Wohnfläche" wert={w.groesse > 0 ? `${dez(w.groesse, 1)} m²` : "Keine Angabe"} unter={preisJeQm(w.vkGesamt, w.groesse) > 0 ? `${eur0(preisJeQm(w.vkGesamt, w.groesse))} je m²` : undefined} info="Kaufpreis geteilt durch Wohnfläche." />
                 <Kachel label="Typ und Nutzung" wert={<span className="text-lg sm:text-xl">{anlageklasse || "Eigentumswohnung"}</span>}
                   unter={[w.vermietet ? "Kapitalanlage, vermietet" : "Kapitalanlage", afa ? `AfA ${afa.afaModell} ${dez(afa.afaSatz, 1)} %` : ""].filter(Boolean).join(" · ")} />

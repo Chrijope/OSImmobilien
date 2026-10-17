@@ -26,7 +26,7 @@ describe("Rechnungen der Beratungspräsentation", () => {
     expect(OBJEKTE.map((o) => [o.titel, o.konzepte])).toEqual([
       ["Barfusstraße 9", ["steuer"]],
       ["Hauffstraße 38", ["zusatzrente"]],
-      ["Doppelhaushälften", ["zusatzrente"]],
+      ["Doppelhaushälften", ["steuer"]],
     ]);
     for (const o of OBJEKTE) {
       expect(o.bilder).toHaveLength(7);
