@@ -48,6 +48,8 @@ export interface DruckBilder {
   logoHell?: DruckBild | null;
   /** Bild des Ansprechpartners, falls vorhanden. */
   person?: DruckBild | null;
+  /** Standbild des 3D-Grundrisses, falls die Einheit einen hat (seit 16.10.2026). */
+  plan3d?: DruckBild | null;
 }
 
 export interface Zeile { label: string; wert: string; unter?: string; fett?: boolean }
@@ -286,7 +288,7 @@ export function baueDruckDaten(
   const vorhanden: Partial<Record<ExposeAbschnittId, boolean>> = {
     standort: standortZeigen,
     mikrolage: mikroZeigen,
-    grundriss: inhalt.grundriss.dokumente.length > 0,
+    grundriss: inhalt.grundriss.dokumente.length > 0 || !!bilder.plan3d,
   };
   const abschnitte = exposeAbschnitte(sprache)
     .filter((a) => vorhanden[a.id] !== false)
@@ -408,11 +410,12 @@ export function baueDruckDaten(
   /* ── Grundriss ── */
   const dokumente = inhalt.grundriss.dokumente;
   const ersatzArt = dokumente.find((d) => d.ersatz)?.ersatz;
-  const grundriss: DruckDaten["grundriss"] = dokumente.length ? {
-    plaene: dokumente.map((d, i) => ({ name: planAnzeigename(d.name), bild: bilder.plaene[i] ?? null })),
+  const ansicht3d = bilder.plan3d ? [{ name: en ? "3D view, schematic" : "3D-Ansicht, schematisch", bild: bilder.plan3d }] : [];
+  const grundriss: DruckDaten["grundriss"] = dokumente.length || ansicht3d.length ? {
+    plaene: [...dokumente.map((d, i) => ({ name: planAnzeigename(d.name), bild: bilder.plaene[i] ?? null })), ...ansicht3d],
     ersatz: ersatzArt && dokumente.length === 1 ? `${T.ersatzTitel[ersatzArt]}. ${T.ersatzText[ersatzArt]}` : undefined,
     hinweis: T.masseHinweis,
-    dateiText: bilder.plaene.some(Boolean) ? undefined : T.grundrissDatei(dokumente.map((d) => planAnzeigename(d.name)).join(", ")),
+    dateiText: bilder.plaene.some(Boolean) || ansicht3d.length ? undefined : T.grundrissDatei(dokumente.map((d) => planAnzeigename(d.name)).join(", ")),
   } : undefined;
 
   /* ── Verwaltung bis Kontakt ── */

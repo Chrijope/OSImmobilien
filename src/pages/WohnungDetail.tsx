@@ -37,6 +37,8 @@ import { kaufnebenkostenPct, BUNDESLAND_NK } from "@/lib/kaufnebenkosten";
 import { ZahlenDatenFaktenGrid } from "@/components/objekte/ZahlenDatenFaktenGrid";
 import { darfObjektBearbeiten } from "@/lib/objektBearbeitenRecht";
 import { PassendeKundenKarte } from "@/components/objektseite/PassendeKundenKarte";
+import { istInterneRolle } from "@/lib/sidebarPermissions";
+import { EinheitGrundriss3dKarte } from "@/components/grundriss3d/Grundriss3dKarte";
 
 const fmt = (v: number) => new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(v);
 const canEditRole = (role: string) => ["admin", "inhaber", "objektpartner"].includes(role);
@@ -911,6 +913,8 @@ export default function WohnungDetail() {
               hier stehen deshalb seine eigenen passenden Kunden. Nur intern,
               die Rollen entscheidet die Karte selbst.
             */}
+            {/* 3D-Grundriss der Einheit (16.10.2026), siehe components/grundriss3d. */}
+            <div className="mt-6"><EinheitGrundriss3dKarte wohnung={w} objekt={objekt} darfBearbeiten={istInterneRolle(user.role)} onGespeichert={reload} /></div>
             <div className="mt-6"><PassendeKundenKarte objekt={objekt} wohnung={w} /></div>
         </div>
 

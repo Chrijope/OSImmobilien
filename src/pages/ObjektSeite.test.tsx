@@ -189,7 +189,7 @@ describe("Reiterleiste der Objektseite", () => {
     objekte.liste = { o7: objekt("o7", [we("w1"), we("w2")]) };
     renderMit(["/objekte/o7"]);
     const namen = screen.getAllByRole("tab").map((t) => t.textContent?.trim());
-    expect(namen).toEqual(["Übersicht", "Dokumente", "Karte"]);
+    expect(namen).toEqual(["Übersicht", "3D-Modell", "Dokumente", "Karte"]);
     expect(davor(screen.getByRole("tablist"), screen.getByText("Galerie"))).toBe(true);
   });
 
@@ -207,5 +207,16 @@ describe("Reiterleiste der Objektseite", () => {
     renderMit(["/objekte/o9"]);
     fireEvent.mouseDown(screen.getByRole("tab", { name: "Dokumente" }));
     expect(await screen.findByText("Noch keine Dateien hinterlegt")).toBeInTheDocument();
+  });
+});
+
+describe("Haus in 3D auf der Objektseite (17.10.2026)", () => {
+  it("zeigt die Karte im eigenen Reiter 3D-Modell, ohne Pläne mit dem Hinweis auf die Einheitenseiten", () => {
+    objekte.liste = { o2: objekt("o2", [we("w1"), we("w2")]) };
+    renderMit(["/objekte/o2"]);
+    expect(screen.queryByTestId("objekt-grundriss-3d")).not.toBeInTheDocument();
+    fireEvent.mouseDown(screen.getByRole("tab", { name: "3D-Modell" }));
+    expect(screen.getByTestId("objekt-grundriss-3d")).toBeInTheDocument();
+    expect(screen.getByText(/Noch keine Einheit hat einen 3D-Grundriss/)).toBeInTheDocument();
   });
 });

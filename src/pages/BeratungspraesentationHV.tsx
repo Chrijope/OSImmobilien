@@ -1495,8 +1495,9 @@ export default function BeratungspraesentationHV({
 
             {/* ─── 15 Der nächste Schritt ─── */}
             <Folie id="schritt" ton="gruen" kicker={T.schritt.kicker} titel={a(T.schritt.titel)}>
-              <p className="mt-6 text-base md:text-lg max-w-3xl leading-relaxed">{a(T.schritt.text)}</p>
+              <p className="mt-6 text-base md:text-lg max-w-3xl leading-relaxed">{a(hatKundenKontext ? T.schritt.text : T.schritt.textOhneKunde)}</p>
               <div className="mt-8 flex flex-col sm:flex-row flex-wrap gap-3">
+                {hatKundenKontext && (
                 <button
                   type="button"
             data-no-shrink
@@ -1507,6 +1508,7 @@ export default function BeratungspraesentationHV({
                   <ClipboardList className="h-5 w-5" />
                   {T.schritt.knopf}
                 </button>
+                )}
                 {objektLink ? (
                   <a
                     href={objektLink}
@@ -1542,11 +1544,6 @@ export default function BeratungspraesentationHV({
                   Vorschau: Im CRM öffnet sich jetzt die Selbstauskunft unter <code className="break-all">{vorschauSprung}</code>
                 </p>
               )}
-              {!hatKundenKontext && (
-                <p className="mt-3 text-xs" style={{ color: FARBE.hellGedaempft }}>
-                  {tx.schritt.kontextHinweis as string}
-                </p>
-              )}
               {!objektLink && (
                 <p id="objektlink-fehlt" className="mt-3 text-xs" style={{ color: FARBE.hellGedaempft }}>
                   {T.schritt.ohneObjektLink}
@@ -1561,10 +1558,11 @@ export default function BeratungspraesentationHV({
                 {T.termin.karten.map((k, i) => (
                   <Karte key={i}>
                     <p className="font-semibold">{a(k.titel)}</p>
-                    <p className="mt-1.5 text-sm leading-relaxed">{a(k.text)}</p>
+                    <p className="mt-1.5 text-sm leading-relaxed">{a(k.titel === "Deine Kalkulation" && !hatKundenKontext ? T.termin.kalkulationOhneKunde : k.text)}</p>
                   </Karte>
                 ))}
               </div>
+              {hatKundenKontext && (
               <Karte className="mt-4" rand={FARBE.gold}>
                 <p className="text-sm leading-relaxed">{T.termin.portalSatz}</p>
                 {portalFreigegeben ? (
@@ -1599,6 +1597,7 @@ export default function BeratungspraesentationHV({
                   </p>
                 )}
               </Karte>
+              )}
             </Folie>
 
             <footer className="px-4 sm:px-8 py-10" style={{ background: FARBE.tief }}>

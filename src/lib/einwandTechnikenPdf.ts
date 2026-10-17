@@ -77,7 +77,7 @@ export const generateHypothetischeFragePDF = () => generateSimpleDocPdf({
     { type: "h2", text: "Das Standardformat" },
     { type: "callout", variant: "success", text: "'Angenommen, [Einwand wäre gelöst] – wärst du dann grundsätzlich bereit, [Zielhandlung]?'" },
     { type: "h2", text: "Beispiel 1: 'Ich habe nicht genug Eigenkapital'" },
-    { type: "callout", variant: "info", text: "Verstehe. Angenommen, wir würden eine Bank finden, die mit nur 9 % Eigenkapital für die Nebenkosten finanziert – wärst du dann grundsätzlich bereit, in die nächste Phase zu gehen?" },
+    { type: "callout", variant: "info", text: "Verstehe. Angenommen, wir würden eine Bank finden, die mit nur 8,5 % Eigenkapital für die Nebenkosten finanziert – wärst du dann grundsätzlich bereit, in die nächste Phase zu gehen?" },
     { type: "h2", text: "Beispiel 2: 'Ich muss mit meiner Frau sprechen'" },
     { type: "callout", variant: "info", text: "Selbstverständlich. Angenommen, deine Frau wäre auch von der Idee überzeugt – würdest du persönlich dann zustimmen, dass wir die nächste Phase starten?" },
     { type: "h2", text: "Beispiel 3: 'Vielleicht in einem Jahr'" },

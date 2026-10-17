@@ -205,11 +205,10 @@ describe("Kaufpreisblock und Nebenkosten", () => {
     expect(e.kauf.nebenkosten.grunderwerbsteuer).toBeCloseTo(241500 * 0.065 - 3884.1, 6);
   });
 
-  it("ohne Bundesland gilt der Mittelwert mit Hinweis", () => {
+  it("ohne Bundesland gilt Brandenburg mit Hinweis", () => {
     const e = berechneExpose({ ...objekt, bundeslandId: null }, standardAnnahmen(2026));
-    expect(e.kauf.nebenkosten.quelle).toBe("mittelwert");
-    expect(e.kauf.nebenkosten.grunderwerbsteuerProzent).toBeGreaterThan(3.5);
-    expect(e.kauf.nebenkosten.grunderwerbsteuerProzent).toBeLessThan(6.5);
+    expect(e.kauf.nebenkosten.quelle).toBe("rueckfall");
+    expect(e.kauf.nebenkosten.grunderwerbsteuerProzent).toBeCloseTo(6.5, 6);
     expect(e.hinweise.some((h) => h.includes("Bundesland unbekannt"))).toBe(true);
   });
 

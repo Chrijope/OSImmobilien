@@ -1,5 +1,5 @@
 import { dbRowToObjekt, getHausgeldNichtUmlegbarMonat, type ObjektData, type ObjektWohnung } from "./objekteStore";
-import { baueExposeInhalt, erhaltungsaufwandSatz, grundrisseFuerExpose, hatWert, kennzahlSchluessel, kopfUeberschrift, mitSchluessel, ohneDoppelte, type EinheitZeile, type ExposeInhalt, type ExposeInhaltEingabe, type Kennzahl, type Person } from "./exposeInhalt";
+import { baueExposeInhalt, mitPlaenen3d, erhaltungsaufwandSatz, grundrisseFuerExpose, hatWert, kennzahlSchluessel, kopfUeberschrift, mitSchluessel, ohneDoppelte, type EinheitZeile, type ExposeInhalt, type ExposeInhaltEingabe, type Kennzahl, type Person } from "./exposeInhalt";
 import { EXPOSE_INHALT_TEXTE, exposeInhaltTexte } from "./exposeInhaltTexte";
 import type { Sprache } from "./seitenSprache";
 import { eur0, dez, prozent, kaltmieteVon, renditeProzent } from "./objektKennzahlen";
@@ -128,7 +128,7 @@ export function baueObjektExposeInhalt(e: Omit<ExposeInhaltEingabe, "wohnung">):
   const global = !!objekt.globalObjekt;
   inhalt.ansicht = "objekt";
   // Die Pläne des ganzen Objekts, nicht die einer Einheit ohne Nummer.
-  inhalt.grundriss = { dokumente: grundrisseFuerExpose(objekt, null) };
+  inhalt.grundriss = { dokumente: grundrisseFuerExpose(objekt, null), ...mitPlaenen3d([...objekt.wohnungen, ...(objekt.wohnungenNichtImAngebot ?? [])]) };
   inhalt.kopf.titel = objekt.titel;
   inhalt.kopf.untertitel = global ? t.gesamtobjekt : t.objektMitEinheiten;
   inhalt.kopf.weNr = "";

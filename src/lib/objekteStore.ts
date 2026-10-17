@@ -223,6 +223,8 @@ export interface ObjektWohnung {
   vermietetSeit?: string;
   /** Von Hand gepflegte interne Highlights, nur intern, siehe `interneHighlights.ts` */
   interneHighlightsHand?: string[];
+  /** Roh aus `meta.grundriss3d`, gelesen wird mit `planAusMeta` (`components/grundriss3d/plan.ts`). Geschrieben nur von dort. */
+  grundriss3d?: unknown;
 }
 
 /** Zahl aus `meta` lesen, leer und ungültig werden zu undefined. */
@@ -697,6 +699,7 @@ function dbRowToWohnung(w: any, tableBilder: any[] = [], mitDokumentenCache = tr
     verwaltungSevMonat: metaZahl(meta.verwaltungSevMonat),
     sevErstesJahrInklusive: meta.sevErstesJahrInklusive === true ? true : undefined,
     vermietetSeit: metaText(meta.vermietetSeit),
+    ...(meta.grundriss3d ? { grundriss3d: meta.grundriss3d } : {}),
     ...(Array.isArray(meta.interneHighlightsHand) ? { interneHighlightsHand: meta.interneHighlightsHand.filter((t: unknown) => typeof t === "string") } : {}),
   };
 }

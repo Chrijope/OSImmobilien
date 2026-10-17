@@ -32,8 +32,7 @@
 
 import {
   bundeslandById,
-  kaufnebenkostenProzent,
-  NOTAR_GRUNDBUCH_PROZENT,
+  RUECKFALL_BUNDESLAND_ID,
 } from "@/lib/grunderwerbsteuer";
 import { notarGrundbuchKosten, type NotarGrundbuchKosten } from "@/lib/notarGrundbuch";
 import { renditeProzent } from "@/lib/objektKennzahlen";
@@ -114,7 +113,7 @@ export interface ExposeObjektdaten {
 
 // ── Ergebnis ────────────────────────────────────────────────────────────────
 
-export type NebenkostenQuelle = "bundesland" | "manuell" | "mittelwert";
+export type NebenkostenQuelle = "bundesland" | "manuell" | "rueckfall";
 
 export interface ExposeNebenkosten {
   grunderwerbsteuerProzent: number;
@@ -497,9 +496,9 @@ export function berechneExpose(objekt: ExposeObjektdaten, annahmen: ExposeAnnahm
     quelle = "bundesland";
     grunderwerbsteuer = basis * (bundesland.grunderwerbsteuer / 100);
   } else {
-    quelle = "mittelwert";
-    grunderwerbsteuer = basis * ((kaufnebenkostenProzent(null) - NOTAR_GRUNDBUCH_PROZENT) / 100);
-    hinweise.push("Bundesland unbekannt, Grunderwerbsteuer als Mittelwert aller Länder angesetzt.");
+    quelle = "rueckfall";
+    grunderwerbsteuer = basis * (bundeslandById(RUECKFALL_BUNDESLAND_ID)!.grunderwerbsteuer / 100);
+    hinweise.push("Bundesland unbekannt, Grunderwerbsteuer wie in Brandenburg angesetzt.");
   }
   const prozentVon = (betrag: number) => (basis > 0 ? (betrag / basis) * 100 : 0);
   const grunderwerbsteuerProzent = prozentVon(grunderwerbsteuer);

@@ -280,7 +280,7 @@ export function vorbelegungAusEinheit(
   /*
    * Kaufnebenkosten. Ein am Objekt gepflegter Gesamtsatz geht vor, so hält es
    * das ganze CRM (kaufnebenkostenPct). Er ist dort als Grunderwerbsteuer plus
-   * Notar (1,0 Prozent) plus Grundbuch (0,5 Prozent) definiert und wird genau
+   * Notar (1,5 Prozent) plus Grundbuch (0,5 Prozent) definiert und wird genau
    * so wieder zerlegt, damit die Summe stimmt. Ohne gepflegten Satz entscheidet
    * das Bundesland aus der Postleitzahl, das ist der reguläre Weg des Rechners.
    */

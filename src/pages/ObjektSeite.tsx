@@ -6,6 +6,7 @@ import {
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ObjektGrundriss3dKarte } from "@/components/grundriss3d/Grundriss3dKarte";
 import { useUser } from "@/contexts/UserContext";
 import { useLiveVersion } from "@/hooks/useLiveData";
 import { useCacheReady } from "@/hooks/useCacheReady";
@@ -14,7 +15,7 @@ import { getObjektById, hebeHausReservierungAuf, objektImAngebot, type ObjektDat
 import { confirmDialog, hinweisDialog } from "@/lib/confirm";
 import { darfGepflegtWerden, PFLEGE_GESPERRT_HINWEIS } from "@/lib/investagonHerkunft";
 import { darfObjektBearbeiten } from "@/lib/objektBearbeitenRecht";
-import { darfKundenaktionen, siehtAdminOnlyNavigation } from "@/lib/sidebarPermissions";
+import { darfKundenaktionen, istInterneRolle, siehtAdminOnlyNavigation } from "@/lib/sidebarPermissions";
 import { objektKennzahlen, verkaufsstand, eur0, dez, prozent } from "@/lib/objektKennzahlen";
 import { objektseiteFelder, objektartAbleiten, objektartInfo, investagonStand, willVerwaltungsansicht, springtInDieEinheit, zielRouteFuerObjekt } from "@/lib/objektseiteDaten";
 import { istGlobalobjekt, objektAnlageklasse, objektBauzustand } from "@/lib/objektKlassen";
@@ -631,11 +632,18 @@ function ObjektAnsicht({ objekt, onPflege, eigeneId }: {
       */}
       <Tabs value={reiter} onValueChange={setReiter}>
         {/* Immer links, wie auf der Einheitsseite (Christian, 05.10.2026). */}
-        <TabsList className="mb-4 grid h-auto w-full max-w-lg grid-cols-3 justify-start gap-1 rounded-xl p-1">
+        <TabsList className="mb-4 grid h-auto w-full max-w-xl grid-cols-2 justify-start gap-1 rounded-xl p-1 sm:grid-cols-4">
           <TabsTrigger value="uebersicht" className={REITER_KLASSE}>Übersicht</TabsTrigger>
+          {/* Eigener Reiter zwischen Übersicht und Dokumente (Christian, 17.10.2026). */}
+          <TabsTrigger value="dreid" className={REITER_KLASSE}>3D-Modell</TabsTrigger>
           <TabsTrigger value="dokumente" className={REITER_KLASSE}>Dokumente{dokumenteMitDatei.length > 0 ? ` (${dokumenteMitDatei.length})` : ""}</TabsTrigger>
           <TabsTrigger value="karte" className={REITER_KLASSE}>Karte</TabsTrigger>
         </TabsList>
+
+        {/* Das Haus in 3D aus den Grundrissen der Einheiten; eingehängt erst beim Öffnen des Reiters. */}
+        <TabsContent value="dreid">
+          <ObjektGrundriss3dKarte objekt={objekt} darfBearbeiten={istInterneRolle(user.role)} />
+        </TabsContent>
 
         <TabsContent value="dokumente">
           {dokumenteMitDatei.length === 0 && !unterlagenLink ? (

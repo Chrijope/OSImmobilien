@@ -89,7 +89,7 @@ describe("Vorbelegung aus Objekt und Einheit", () => {
   it("setzt die Kaufnebenkosten über das Bundesland aus der Postleitzahl", () => {
     expect(v.knk).toEqual({ weg: "bundesland", bundesland: "bayern" });
     expect(v.eingabe.transferTaxRate).toBe(3.5);
-    expect(v.eingabe.notaryRate).toBe(1);
+    expect(v.eingabe.notaryRate).toBe(1.5);
     expect(v.eingabe.landRegisterRate).toBe(0.5);
     // Makler fällt bei uns nicht beim Käufer an.
     expect(v.eingabe.brokerRate).toBe(0);
@@ -188,8 +188,8 @@ describe("Am Objekt gepflegter Kaufnebenkostensatz", () => {
     const mitSatz = { ...objekt, meta: { ...objekt.meta, kaufnebenkostenPct: 9.5 } } as ObjektData;
     const v = vorbelegungAusEinheit(mitSatz, w, heute);
     expect(v.knk.weg).toBe("manuell");
-    expect(v.eingabe.transferTaxRate).toBe(8);
-    expect(v.eingabe.notaryRate).toBe(1);
+    expect(v.eingabe.transferTaxRate).toBe(7.5);
+    expect(v.eingabe.notaryRate).toBe(1.5);
     expect(v.eingabe.landRegisterRate).toBe(0.5);
     // Die Summe muss dem gepflegten Satz entsprechen, sonst rechnet der Reiter
     // andere Nebenkosten als die Kachel auf derselben Seite.
@@ -219,7 +219,7 @@ describe("Am Objekt gepflegter Kaufnebenkostensatz", () => {
     // Augsburg, also Bayern: 3,5 Prozent Grunderwerbsteuer plus Notar und Grundbuch.
     const v = vorbelegungAusEinheit(objekt, w, heute);
     expect(v.knk.weg).toBe("bundesland");
-    expect(v.eingabe.transferTaxRate + v.eingabe.notaryRate + v.eingabe.landRegisterRate).toBeCloseTo(5, 6);
+    expect(v.eingabe.transferTaxRate + v.eingabe.notaryRate + v.eingabe.landRegisterRate).toBeCloseTo(5.5, 6);
   });
 });
 
