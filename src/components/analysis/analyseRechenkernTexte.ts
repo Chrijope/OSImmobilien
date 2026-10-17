@@ -1,13 +1,13 @@
 /**
  * Englische Anzeige für die Texte, die NICHT aus den Bausteinen selbst kommen:
- * Rechenkern (`scoringEngine.ts`), Objekttypen (`objekttypen.ts`) und
- * Bundesländer (`grunderwerbsteuer.ts`).
+ * dem Rechenkern (`scoringEngine.ts`). Objekttypen und Bundesländer sind mit
+ * der Musterrechnung und der Bundeslandfrage am 17.10.2026 entfallen.
  *
  * Warum eine Zuordnung und kein Umschreiben dort: Die deutschen Texte des
  * Rechenkerns gehen teils ins CRM (Kategorie als `finanzierbarkeit`, der
  * Schnappschuss im Kundenprofil). Sie bleiben deshalb, wie sie sind. Die
  * englische Seite holt sich ihre Fassung hier, nach Kennung, wo es eine gibt
- * (Kategorie, Objekttyp, Bundesland), sonst nach dem deutschen Wortlaut, der
+ * (Kategorie), sonst nach dem deutschen Wortlaut, der
  * im Rechenkern fest steht (Ampel, Stärken, Steuerhinweise).
  *
  * Fehlt eine Zuordnung, bleibt der deutsche Text stehen, statt dass eine
@@ -16,7 +16,6 @@
  * fällt eine Änderung im Rechenkern sofort auf.
  */
 import type { ScoreResult } from "@/lib/scoringEngine";
-import type { ObjekttypId } from "@/lib/objekttypen";
 import type { Sprache } from "@/lib/seitenSprache";
 
 /* ── Kategorie, nach Kennung ─────────────────────────────────── */
@@ -160,63 +159,4 @@ export function rechenkernEn(text: string): string | null {
 export function rechenkernText(text: string, sprache: Sprache): string {
   if (sprache !== "en") return text;
   return rechenkernEn(text) ?? text;
-}
-
-/* ── Objekttypen, nach Kennung ───────────────────────────────── */
-
-export interface ObjekttypTexte {
-  name: string;
-  kurz: string;
-  passtWenn: string;
-  afaHinweis: string;
-}
-
-export const OBJEKTTYPEN_EN: Record<ObjekttypId, ObjekttypTexte> = {
-  sanierter_altbau: {
-    name: "Renovated period building",
-    kurz: "Existing property with completed renovation in an established location.",
-    passtWenn:
-      "The strongest tax lever. A remaining useful life appraisal (Restnutzungsdauergutachten) allows higher depreciation rates, and the higher your personal tax rate, the greater the effect.",
-    afaHinweis:
-      "4 percent with a property-specific remaining useful life appraisal. Without an appraisal, 2 percent applies.",
-  },
-  neubau: {
-    name: "New build",
-    kurz: "First occupancy with warranty and little need for maintenance.",
-    passtWenn:
-      "Little effort and long-term peace of mind. In addition to linear depreciation of 3 percent, special depreciation (Section 7b EStG) applies in the first four years if the conditions are met.",
-    afaHinweis: "3 percent for completion from 2023 under Section 7(4) EStG.",
-  },
-  wg_konzept: {
-    name: "Flat-share concept",
-    kurz: "Letting room by room, considerably higher rental income.",
-    passtWenn:
-      "When the monthly surplus is the priority. The rental yield is noticeably higher, in exchange for more administration and ongoing maintenance expenses (Erhaltungsaufwand).",
-    afaHinweis: "3 percent, or more for renovated existing buildings with an appraisal.",
-  },
-};
-
-/** Die Texte eines Objekttyps in der Seitensprache. */
-export function objekttypAnzeige(typ: { id: ObjekttypId } & ObjekttypTexte, sprache: Sprache): ObjekttypTexte {
-  if (sprache === "en" && OBJEKTTYPEN_EN[typ.id]) return OBJEKTTYPEN_EN[typ.id];
-  return { name: typ.name, kurz: typ.kurz, passtWenn: typ.passtWenn, afaHinweis: typ.afaHinweis };
-}
-
-/* ── Bundesländer, nach Kennung ──────────────────────────────── */
-
-/** Nur die Namen, die sich im Englischen unterscheiden. Die übrigen bleiben. */
-export const BUNDESLAND_NAMEN_EN: Readonly<Record<string, string>> = {
-  by: "Bavaria",
-  he: "Hesse",
-  mv: "Mecklenburg-Western Pomerania",
-  ni: "Lower Saxony",
-  nw: "North Rhine-Westphalia",
-  rp: "Rhineland-Palatinate",
-  sn: "Saxony",
-  st: "Saxony-Anhalt",
-  th: "Thuringia",
-};
-
-export function bundeslandName(bl: { id: string; name: string }, sprache: Sprache): string {
-  return sprache === "en" ? BUNDESLAND_NAMEN_EN[bl.id] ?? bl.name : bl.name;
 }

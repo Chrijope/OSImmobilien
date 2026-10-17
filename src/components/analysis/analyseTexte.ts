@@ -9,7 +9,7 @@
  * Aufbau (Plan Kundensprache, Etappe 6):
  * - `**Wort**` wird fett gesetzt, siehe `fettText.tsx`.
  * - Texte mit Zahlen sind Funktionen und formatieren selbst in ihrer Sprache.
- * - Texte aus Rechenkern, Objekttypen und Bundesländern stehen NICHT hier,
+ * - Texte aus dem Rechenkern stehen NICHT hier,
  *   sondern in `analyseRechenkernTexte.ts`, weil sie deutsch ins CRM gehen.
  * - Gespeicherte Antwortwerte (`angestellt`, `50k_80k` …) bleiben unverändert,
  *   übersetzt werden nur die Beschriftungen, Schlüssel ist der Wert.
@@ -250,7 +250,6 @@ const de = {
     kapitalHero: (n: number, rente: number) =>
       `nach Verkauf ${n === 1 ? "Deiner Wohnung" : `Deiner ${n} Wohnungen`}, rund ${eDe(rente)} im Monat zusätzlich zur Rente`,
     steuerfreiHero: "Musterberechnung · Verkauf nach mehr als zehn Jahren steuerfrei nach § 23 EStG",
-    machbarTitel: "Was ist für Dich machbar?",
     passtTitel: "Passt das zu Dir?",
     gesamt: {
       gruen: "Alle Ampeln auf Grün: Kaufen!",
@@ -325,54 +324,6 @@ const de = {
     leadQualitaet: (q: string) => `Lead-Qualität: ${q}`,
   },
 
-  muster: {
-    rahmenTitel: "Dein Rahmen",
-    rahmen: (von: number, bis: number) => `${eDe(von)} bis ${eDe(bis)}`,
-    rahmenText:
-      "In dieser Spanne liegt eine Kapitalanlage, die zu Deinem Einkommen, Deinen laufenden Belastungen und Deinem Eigenkapital passt. Nicht das Maximum, das eine Bank gerade noch machen würde, sondern was tragfähig ist.",
-    zuzahlungGrenze: (betrag: number) => `Deine monatliche Zuzahlung liegt dabei bei höchstens ${eDe(betrag)}`,
-    typTitel: "Welcher Objekttyp passt zu Dir?",
-    typText: "Wähle einen Typ, die Rechnung darunter passt sich an.",
-    zuzahlungImBeispiel: "Zuzahlung im Beispiel",
-    proMonat: "pro Monat",
-    musterTitel: (name: string) => `Musterrechnung: ${name}`,
-    derKauf: "Der Kauf",
-    kaufpreis: "Kaufpreis Beispielobjekt",
-    kaufnebenkosten: (land: string, prozent: number) => `Kaufnebenkosten ${land} ${z(prozent, "de")} %`,
-    mittelwert: "Mittelwert",
-    ausEigenkapital: "davon zahlst Du aus Eigenkapital",
-    darlehen: "Darlehen",
-    monatFuerMonat: "Monat für Monat",
-    kaltmiete: "Kaltmiete",
-    rate: "Rate bei 3,8 % Zins und 2 % Tilgung",
-    nichtUmlagefaehig: "nicht umlagefähige Kosten",
-    erhaltungsaufwandWg: "Erhaltungsaufwand WG-Konzept",
-    zwischenstand: "Zwischenstand aus eigener Tasche",
-    finanzamt: "Was das Finanzamt trägt",
-    abschreibungGebaeude: (satz: number) => `Abschreibung Gebäude ${z(satz, "de")} %`,
-    sonderAfa: "Sonderabschreibung § 7b (Jahre 1 bis 4)",
-    schuldzinsen: "Schuldzinsen im ersten Jahr",
-    mieteinnahmenDagegen: "Mieteinnahmen dagegen",
-    steuerlichesErgebnis: "steuerliches Ergebnis",
-    steuerwirkung: (satz: number) => `Steuerwirkung bei ${z(satz, "de")} %`,
-    imJahr: (betrag: number) => `${eDe(betrag)} im Jahr`,
-    deineZuzahlung: "Deine Zuzahlung",
-    ueberGrenze: (betrag: number) =>
-      `Bei diesem Typ liegt selbst das kleinste Beispielobjekt über ${eDe(betrag)}. Ein anderer Typ passt hier besser.`,
-    sonderAfaText:
-      "Die Sonderabschreibung nach § 7b läuft vier Jahre. Danach steigt die Zuzahlung entsprechend, dafür sinkt sie über die Jahre wieder durch steigende Mieten.",
-    immobilienwert10: "Immobilienwert nach 10 Jahren",
-    restschuld10: "Restschuld dann",
-    vermoegen10: "Dein Vermögen",
-    steuerfrei:
-      "Wer im Privatvermögen erst nach mehr als zehn Jahren verkauft, kann den Gewinn nach § 23 EStG steuerfrei vereinnahmen. Ob am Ende ein Gewinn steht, hängt von Lage, Objekt und Marktentwicklung ab.",
-    hinweisFett: "Musterrechnung zur Veranschaulichung.",
-    hinweisMitLand: (min: number, max: number, satz: number, land: string) =>
-      `Wir haben ein Beispielobjekt gewählt, das zu Deiner Situation passt. Es ist nicht Dein Objekt. Die Grunderwerbsteuer liegt je nach Bundesland zwischen ${z(min, "de")} und ${z(max, "de")} Prozent, hier gerechnet mit ${z(satz, "de")} % für ${land}. Welches Objekt aus unserem Bestand zu Dir passt und wie sich Deine Zahlen genau rechnen, sehen wir uns im Termin gemeinsam an.`,
-    hinweisOhneLand: (min: number, max: number) =>
-      `Wir haben ein Beispielobjekt gewählt, das zu Deiner Situation passt. Es ist nicht Dein Objekt. Die Grunderwerbsteuer liegt je nach Bundesland zwischen ${z(min, "de")} und ${z(max, "de")} Prozent, hier gerechnet mit dem Mittelwert. Welches Objekt aus unserem Bestand zu Dir passt und wie sich Deine Zahlen genau rechnen, sehen wir uns im Termin gemeinsam an.`,
-    terminKnopf: "Termin vereinbaren und mein Objekt finden",
-  },
 
   vorsorge: {
     titel: "Deine zwei Wege mit Immobilien",
@@ -675,7 +626,6 @@ const en: AnalyseTexte = {
     kapitalHero: (n: number, rente: number) =>
       `after selling ${n === 1 ? "your apartment" : `your ${n} apartments`}, around ${eEn(rente)} per month on top of your pension`,
     steuerfreiHero: "Sample calculation · sale after more than ten years tax free under Section 23 EStG",
-    machbarTitel: "What's feasible for you?",
     passtTitel: "Is this right for you?",
     gesamt: {
       gruen: "All lights on green: go for it!",
@@ -750,54 +700,6 @@ const en: AnalyseTexte = {
     leadQualitaet: (q: string) => `Lead quality: ${q}`,
   },
 
-  muster: {
-    rahmenTitel: "Your range",
-    rahmen: (von: number, bis: number) => `${eEn(von)} to ${eEn(bis)}`,
-    rahmenText:
-      "Within this range lies an investment property that suits your income, your ongoing commitments and your equity. Not the maximum a bank would just about approve, but what's sustainable.",
-    zuzahlungGrenze: (betrag: number) => `Your monthly top-up stays at ${eEn(betrag)} at most`,
-    typTitel: "Which property type suits you?",
-    typText: "Choose a type and the calculation below will adjust.",
-    zuzahlungImBeispiel: "Top-up in the example",
-    proMonat: "per month",
-    musterTitel: (name: string) => `Sample calculation: ${name}`,
-    derKauf: "The purchase",
-    kaufpreis: "Purchase price of sample property",
-    kaufnebenkosten: (land: string, prozent: number) => `Incidental purchase costs ${land} ${z(prozent, "en")}%`,
-    mittelwert: "average",
-    ausEigenkapital: "of which you pay from equity",
-    darlehen: "Loan",
-    monatFuerMonat: "Month by month",
-    kaltmiete: "Net cold rent (Kaltmiete)",
-    rate: "Instalment at 3.8% interest and 2% repayment",
-    nichtUmlagefaehig: "non-recoverable costs",
-    erhaltungsaufwandWg: "Maintenance expenses, flat-share concept",
-    zwischenstand: "Subtotal out of your own pocket",
-    finanzamt: "What the tax office covers",
-    abschreibungGebaeude: (satz: number) => `Building depreciation (AfA) ${z(satz, "en")}%`,
-    sonderAfa: "Special depreciation (Section 7b EStG), years 1 to 4",
-    schuldzinsen: "Loan interest in the first year",
-    mieteinnahmenDagegen: "Less rental income",
-    steuerlichesErgebnis: "taxable result",
-    steuerwirkung: (satz: number) => `Tax effect at ${z(satz, "en")}%`,
-    imJahr: (betrag: number) => `${eEn(betrag)} a year`,
-    deineZuzahlung: "Your top-up",
-    ueberGrenze: (betrag: number) =>
-      `For this type, even the smallest sample property is above ${eEn(betrag)}. Another type is a better fit here.`,
-    sonderAfaText:
-      "The special depreciation under Section 7b runs for four years. After that, the top-up rises accordingly, but it falls again over the years as rents increase.",
-    immobilienwert10: "Property value after 10 years",
-    restschuld10: "Remaining debt then",
-    vermoegen10: "Your wealth",
-    steuerfrei:
-      "If you hold the property as private assets (Privatvermögen) and sell only after more than ten years, the gain is tax-free under Section 23 EStG. Whether there is a gain in the end depends on the location, the property and how the market develops.",
-    hinweisFett: "Sample calculation for illustration.",
-    hinweisMitLand: (min: number, max: number, satz: number, land: string) =>
-      `We have chosen a sample property that suits your situation. It is not your property. Depending on the federal state, the real estate transfer tax (Grunderwerbsteuer) is between ${z(min, "en")} and ${z(max, "en")} percent, calculated here with ${z(satz, "en")}% for ${land}. We'll look together at the appointment at which property from our portfolio suits you and how your figures work out exactly.`,
-    hinweisOhneLand: (min: number, max: number) =>
-      `We have chosen a sample property that suits your situation. It is not your property. Depending on the federal state, the real estate transfer tax (Grunderwerbsteuer) is between ${z(min, "en")} and ${z(max, "en")} percent, calculated here with the average. We'll look together at the appointment at which property from our portfolio suits you and how your figures work out exactly.`,
-    terminKnopf: "Book an appointment and find my property",
-  },
 
   vorsorge: {
     titel: "Your two paths with real estate",
