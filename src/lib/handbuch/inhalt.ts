@@ -992,24 +992,24 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
             symbol: "haus",
             titel: tx("Doppelhaushälften in Zossen-Wünsdorf", "Semi-detached houses in Zossen-Wünsdorf"),
             text: tx(
-              "Luisenstraße 72 sowie Agnesstraße 5 und 6 in der Waldsiedlung: eigenes Grundstück, eigener Garten, kein Hausgeld. Konzept Altersvorsorge.",
-              "Luisenstraße 72 and Agnesstraße 5 and 6 in the forest estate: own plot, own garden, no service charge. Retirement provision concept.",
+              "Luisenstraße 72 sowie Agnesstraße 5 und 6 in der Waldsiedlung: eigenes Grundstück, eigener Garten, kein Hausgeld. Konzept Steuerersparnis.",
+              "Luisenstraße 72 and Agnesstraße 5 and 6 in the forest estate: own plot, own garden, no service charge. Tax savings concept.",
             ),
           },
           {
             symbol: "schluessel",
             titel: tx("Mehrfamilienhaus in Brück", "Apartment building in Brück"),
             text: tx(
-              "Marktstraße 6 bei Potsdam: 12 Wohnungen von 25 bis 90 m², ein Einstieg schon mit kleinem Kaufpreis. Konzepte Altersvorsorge und Steuerersparnis.",
-              "Marktstraße 6 near Potsdam: 12 flats from 25 to 90 m², an entry point even with a small budget. Retirement provision and tax savings concepts.",
+              "Marktstraße 6 bei Potsdam: 12 Wohnungen von 25 bis 90 m², ein Einstieg schon mit kleinem Kaufpreis. Konzept Altersvorsorge.",
+              "Marktstraße 6 near Potsdam: 12 flats from 25 to 90 m², an entry point even with a small budget. Retirement provision concept.",
             ),
           },
           {
             symbol: "person",
             titel: tx("Studentisches Wohnen in Cottbus", "Student living in Cottbus"),
             text: tx(
-              "Jamlitzer Straße 9/10: möbliertes Apartment mit 22 m², vermietet, rund 7.000 Studierende in der Stadt. Konzept Steuerersparnis.",
-              "Jamlitzer Straße 9/10: furnished 22 m² apartment, let, around 7,000 students in the city. Tax savings concept.",
+              "Jamlitzer Straße 9/10: möbliertes Apartment mit 22 m², vermietet, rund 7.000 Studierende in der Stadt. Konzept Altersvorsorge.",
+              "Jamlitzer Straße 9/10: furnished 22 m² apartment, let, around 7,000 students in the city. Retirement provision concept.",
             ),
           },
         ],

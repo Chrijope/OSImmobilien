@@ -5,7 +5,8 @@
  * Barfusstraße, Hauffstraße und Zossen wie `OBJEKTE` in beratungOsDaten.ts,
  * Luisenstraße 72, Agnesstraße, Brück und Cottbus aus den Exposé-Quellen
  * (Stand 16.10.2026). Brück: 12 Wohnungen, weil das EG geteilt wird.
- * Konzept bei Brück und Cottbus vorläufig, von Christian so belassen.
+ * Konzepte wie im Analysetool (17.10.2026, Christian): Barfuß und Zossen
+ * Steuerersparnis, Hauffstraße, Brück und Cottbus Altersvorsorge.
  * ponytail: fest wie die Mikroseite; aus „Objekte“ im CRM, sobald die
  * OS-Objekte dort mit Bildern gepflegt sind (heute stehen dort nur Objekte
  * aus dem Ursprungsprojekt).
@@ -81,7 +82,7 @@ export const OS_OBJEKTE: OsObjekt[] = [
     preisVon: 379000,
     preisBis: 379000,
     preis: ["379.000 € inkl. Sanierungspaket", "€379,000 incl. renovation package"],
-    konzepte: ["alter"],
+    konzepte: ["steuer"],
     bild: `${M}/zossen-luisenstrasse.jpg`,
   },
   {
@@ -96,7 +97,7 @@ export const OS_OBJEKTE: OsObjekt[] = [
     preisVon: 419000,
     preisBis: 419000,
     preis: ["419.000 € je Haus inkl. Vollsanierung", "€419,000 per house incl. full renovation"],
-    konzepte: ["alter"],
+    konzepte: ["steuer"],
     bild: `${H}/agnes-6.jpg`,
   },
   {
@@ -111,7 +112,7 @@ export const OS_OBJEKTE: OsObjekt[] = [
     preisVon: 64500,
     preisBis: 203500,
     preis: ["64.500 bis 203.500 €", "€64,500 to €203,500"],
-    konzepte: ["alter", "steuer"],
+    konzepte: ["alter"],
     bild: `${H}/brueck-1.jpg`,
   },
   {
@@ -126,7 +127,7 @@ export const OS_OBJEKTE: OsObjekt[] = [
     preisVon: 79995,
     preisBis: 79995,
     preis: ["79.995 €", "€79,995"],
-    konzepte: ["steuer"],
+    konzepte: ["alter"],
     bild: `${H}/cottbus-luftbild.jpg`,
   },
 ];
