@@ -614,7 +614,7 @@ export function AfaRechnerEmbed({
                   })()}
                 </button>
               )}
-              <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1"><Info className="h-3 w-3" /> Grunderwerbsteuer Stand Juli 2026, zuzüglich rund 2 % für Notar und Grundbuch. Eine Maklercourtage ist nicht enthalten, sie lässt sich über den manuellen Satz ergänzen.</p>
+              <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1"><Info className="h-3 w-3" /> Grunderwerbsteuer Stand Juli 2026, zuzüglich rund 1,5 % Notar und 0,5 % Grundbuch: Berlin 8,0 %, Brandenburg 8,5 %. Eine Maklercourtage ist nicht enthalten, sie lässt sich über den manuellen Satz ergänzen.</p>
             </div>
             <div className="grid grid-cols-3 gap-2">
               <div className="col-span-2">

@@ -355,6 +355,16 @@ export function oeffentlicheObjekttexteEn(v: unknown): ObjekttexteEn | undefined
   return Object.keys(ziel).length ? ziel : undefined;
 }
 
+/**
+ * Der 3D-Grundriss einer Einheit (seit 16.10.2026): nur die Geometrie.
+ * Ohne `hintergrund`, dessen Bildadresse ist nur zum Nachzeichnen im CRM.
+ */
+const GRUNDRISS3D_FELDER = ["version", "waende", "oeffnungen", "raeume", "nordWinkel", "geschoss", "versatz"] as const;
+export function oeffentlicherGrundriss3d(roh: unknown): Record<string, unknown> | undefined {
+  if (!roh || typeof roh !== "object" || Array.isArray(roh) || !Array.isArray((roh as { waende?: unknown }).waende)) return undefined;
+  return nurErlaubte(roh as Record<string, unknown>, GRUNDRISS3D_FELDER);
+}
+
 /** `meta` auf das Erlaubte zusammenstreichen. */
 export function oeffentlichesMeta(meta: unknown): Record<string, unknown> {
   if (!meta || typeof meta !== "object" || Array.isArray(meta)) return {};
@@ -376,6 +386,8 @@ export function oeffentlichesMeta(meta: unknown): Record<string, unknown> {
   if (automatisch) gefiltert.texteAutomatisch = automatisch;
   const englisch = oeffentlicheObjekttexteEn(quelle.objekttexteKiEn);
   if (englisch) gefiltert.objekttexteKiEn = englisch;
+  const plan3d = oeffentlicherGrundriss3d(quelle.grundriss3d);
+  if (plan3d) gefiltert.grundriss3d = plan3d;
   return gefiltert;
 }
 

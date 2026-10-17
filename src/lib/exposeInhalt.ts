@@ -44,11 +44,18 @@ import {
   dateinameAusAblage, eigeneEinheitNummer, einheitNummern, ersatzArt, grundrisseWaehlen, planIstBild, type ErsatzArt, type PlanKandidat,
 } from "../../supabase/functions/_shared/grundriss-erkennung.ts";
 import { darfZumKunden, internVonHandAusZeile, istInvestagonDatei } from "../../supabase/functions/_shared/dokument-freigabe.ts";
+import { plaeneAusEinheiten, type Grundriss3dPlan } from "@/components/grundriss3d/plan";
 export { planAnzeigename } from "../../supabase/functions/_shared/grundriss-erkennung.ts";
 import { investagonKategorieAusRohdaten } from "../../supabase/functions/_shared/dokument-gruppen.ts";
 import { KOORDINATEN_META_SCHLUESSEL, koordinatenAus } from "../../supabase/functions/_shared/objekt-koordinaten.ts";
 import { objekttextFuer, objekttexteFuer, oeffentlicheObjekttexteEn, type Sprache } from "@/lib/seitenSprache";
 import { EXPOSE_INHALT_TEXTE, RECHTLICHE_HINWEISE_VORRANG_EN, exposeInhaltTexte, herkunftHinweisEn, katalogwert, ortsartText, type ExposeInhaltTexte } from "@/lib/exposeInhaltTexte";
+
+/** `plaene3d` nur, wenn es Pläne gibt; sonst bleibt das Feld weg. */
+export function mitPlaenen3d(einheiten: Array<{ weNr: string; grundriss3d?: unknown }>): { plaene3d?: Array<{ plan: Grundriss3dPlan; titel?: string }> } {
+  const plaene3d = plaeneAusEinheiten(einheiten);
+  return plaene3d.length ? { plaene3d } : {};
+}
 
 // ── Abschnitte ──────────────────────────────────────────────────────────────
 
@@ -828,6 +835,8 @@ export interface ExposeInhalt {
   grundriss: {
     /** `ersatz`: kein eigener Plan der Einheit, sondern der des Geschosses oder des Hauses (`ersatzArt`). */
     dokumente: Array<{ id: string; name: string; url: string; istBild: boolean; ersatz?: ErsatzArt }>;
+    /** 3D-Grundrisse (seit 16.10.2026): der Einheit, in der Objektansicht aller Einheiten. Fehlt ohne Plan. */
+    plaene3d?: Array<{ plan: Grundriss3dPlan; titel?: string }>;
   };
   verwaltung: {
     name?: string;
@@ -1415,7 +1424,7 @@ export function baueExposeInhalt(e: ExposeInhaltEingabe): ExposeInhalt {
       },
       fehlendePflichtangaben,
     },
-    grundriss: { dokumente: grundrisse },
+    grundriss: { dokumente: grundrisse, ...mitPlaenen3d([w]) },
     verwaltung: {
       name: verwaltungName,
       // Mit einem SEV-Betrag gehört die SEV in die Überschrift, wie auf der Objektseite.

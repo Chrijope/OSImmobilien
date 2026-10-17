@@ -4,12 +4,15 @@ import {
   type AnkaufEingaben, type AnkaufVersion,
 } from "./ankaufstool";
 
+/** Die Eingaben der Excel-Vorlage. Sie rechnete mit 5,0 Prozent Grunderwerbsteuer, der Standard im Tool ist seit 10/2026 Brandenburg. */
+const EXCEL: AnkaufEingaben = { ...ANKAUF_STANDARD, grunderwerbsteuer: 0.05 };
+
 /*
  * Erwartete Werte: die gecachten Ergebnisse aus Ankaufstool.xlsx, Blatt
  * „Kalkulation“ (openpyxl, data_only=True), mit den Eingaben der Vorlage.
  */
 describe("berechneAnkauf: Rechenfall aus der Excel", () => {
-  const r = berechneAnkauf(ANKAUF_STANDARD);
+  const r = berechneAnkauf(EXCEL);
 
   it.each([
     ["verkaufserloes", 2744000], // C13
@@ -53,34 +56,34 @@ describe("berechneAnkauf: Rechenfall aus der Excel", () => {
 
 describe("berechneAnkauf: Ampel und Randfälle", () => {
   it("wird grün, wenn der Abgabepreis die Grün-Schwelle erreicht", () => {
-    const basis = berechneAnkauf(ANKAUF_STANDARD);
-    const r = berechneAnkauf({ ...ANKAUF_STANDARD, abgabepreisProQm: basis.abgabepreisGruen + 0.01 });
+    const basis = berechneAnkauf(EXCEL);
+    const r = berechneAnkauf({ ...EXCEL, abgabepreisProQm: basis.abgabepreisGruen + 0.01 });
     expect(r.urteil).toBe("LOHNT SICH");
-    expect(r.margeErloes).toBeGreaterThanOrEqual(ANKAUF_STANDARD.schwelleGruen);
+    expect(r.margeErloes).toBeGreaterThanOrEqual(EXCEL.schwelleGruen);
   });
 
   it("Mindest-Abgabepreis ergibt null Gewinn", () => {
-    const basis = berechneAnkauf(ANKAUF_STANDARD);
-    expect(berechneAnkauf({ ...ANKAUF_STANDARD, abgabepreisProQm: basis.mindestAbgabepreis }).gewinn).toBeCloseTo(0, 6);
+    const basis = berechneAnkauf(EXCEL);
+    expect(berechneAnkauf({ ...EXCEL, abgabepreisProQm: basis.mindestAbgabepreis }).gewinn).toBeCloseTo(0, 6);
   });
 
   it("teilt nie durch null", () => {
-    const r = berechneAnkauf({ ...ANKAUF_STANDARD, wohnflaeche: 0, wohneinheiten: 0 });
+    const r = berechneAnkauf({ ...EXCEL, wohnflaeche: 0, wohneinheiten: 0 });
     for (const wert of Object.values(r)) if (typeof wert === "number") expect(Number.isFinite(wert)).toBe(true);
     expect(r.mindestAbgabepreis).toBe(0);
   });
 
   it("keine negative Mietsubvention, wenn die Marktmiete höher ist", () => {
-    expect(berechneAnkauf({ ...ANKAUF_STANDARD, marktmieteProQm: 15 }).mietsubvention).toBe(0);
+    expect(berechneAnkauf({ ...EXCEL, marktmieteProQm: 15 }).mietsubvention).toBe(0);
   });
 });
 
 describe("berechneAnkauf: Gewerbe, Stellplätze, Mieten", () => {
-  const basis = berechneAnkauf(ANKAUF_STANDARD);
+  const basis = berechneAnkauf(EXCEL);
 
   it("Gewerbe = 0 und Exposé-Felder ohne Rechenwirkung ergeben exakt die Excel", () => {
     const r = berechneAnkauf({
-      ...ANKAUF_STANDARD, gewerbeflaeche: 0, gesamtflaecheManuell: 999, grundstuecksflaeche: 3000,
+      ...EXCEL, gewerbeflaeche: 0, gesamtflaecheManuell: 999, grundstuecksflaeche: 3000,
       abgabepreisGewerbeProQm: 3000, sanierungGewerbeProQm: 500, gewerbeeinheiten: 0,
     });
     for (const k of Object.keys(basis) as (keyof typeof basis)[]) {
@@ -91,7 +94,7 @@ describe("berechneAnkauf: Gewerbe, Stellplätze, Mieten", () => {
 
   it("Gewerbe wie Wohnen: gleiche Preise und Fläche verdoppeln Erlös und Sanierung", () => {
     const r = berechneAnkauf({
-      ...ANKAUF_STANDARD, gewerbeflaeche: 560, gewerbeeinheiten: 8,
+      ...EXCEL, gewerbeflaeche: 560, gewerbeeinheiten: 8,
       abgabepreisGewerbeProQm: 4900, sanierungGewerbeProQm: 650,
     });
     expect(r.verkaufserloes).toBe(2 * basis.verkaufserloes);
@@ -102,7 +105,7 @@ describe("berechneAnkauf: Gewerbe, Stellplätze, Mieten", () => {
 
   it("Mindest- und Grün-Preis gelten auch mit Gewerbe, Stellplätzen und Mieten", () => {
     const e: AnkaufEingaben = {
-      ...ANKAUF_STANDARD, gewerbeflaeche: 300, abgabepreisGewerbeProQm: 2500, stellplaetze: 6,
+      ...EXCEL, gewerbeflaeche: 300, abgabepreisGewerbeProQm: 2500, stellplaetze: 6,
       abgabepreisStellplatz: 15_000, istMieteGewerbeJahr: 30_000, bewirtschaftungJahr: 4_000,
     };
     const r = berechneAnkauf(e);
@@ -112,11 +115,11 @@ describe("berechneAnkauf: Gewerbe, Stellplätze, Mieten", () => {
   });
 
   it("Mietüberschuss läuft anteilig über die Laufzeit, Leerstandskosten mindern den Gewinn", () => {
-    const r = berechneAnkauf({ ...ANKAUF_STANDARD, istMieteWohnenJahr: 50_000, istMieteStellplaetzeJahr: 4_000, bewirtschaftungJahr: 6_000 });
+    const r = berechneAnkauf({ ...EXCEL, istMieteWohnenJahr: 50_000, istMieteStellplaetzeJahr: 4_000, bewirtschaftungJahr: 6_000 });
     expect(r.mieteinnahmen).toBeCloseTo(48_000 * 1.5 * 0.7, 6);
     expect(r.gewinn).toBeCloseTo(basis.gewinn + r.mieteinnahmen, 6);
     expect(r.kaufpreisFaktor).toBeCloseTo(1_400_000 / 54_000, 10);
-    expect(berechneAnkauf({ ...ANKAUF_STANDARD, bewirtschaftungJahr: 10_000 }).gewinn).toBeLessThan(basis.gewinn);
+    expect(berechneAnkauf({ ...EXCEL, bewirtschaftungJahr: 10_000 }).gewinn).toBeLessThan(basis.gewinn);
   });
 });
 
@@ -129,7 +132,7 @@ describe("berechneAnkauf: Gewerbe, Stellplätze, Mieten", () => {
  */
 describe("Exposé Borchmann, Seddiner See", () => {
   const e: AnkaufEingaben = {
-    ...ANKAUF_STANDARD,
+    ...EXCEL,
     kaufpreis: 1_800_000,
     maklerEinkauf: 0.0714,
     grunderwerbsteuer: 0.065,
@@ -172,7 +175,7 @@ describe("Versionen", () => {
   it("ergänzt fehlende Felder aus der Vorlage", () => {
     const e = eingabenAusVersion(version("a", "A"));
     expect(e.kaufpreis).toBe(1);
-    expect(e.wohnflaeche).toBe(ANKAUF_STANDARD.wohnflaeche);
+    expect(e.wohnflaeche).toBe(EXCEL.wohnflaeche);
     expect(e.gewerbeflaeche).toBe(0);
     expect(objektAusVersion(version("a", "A")).objektart).toBe("");
   });

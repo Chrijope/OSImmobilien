@@ -218,7 +218,7 @@ export const AKADEMIE_BEGRIFFE: readonly AkademieBegriff[] = [
     begriff: "Kaufnebenkosten",
     schreibweisen: ["KNK", "Kaufnebenkosten (KNK)", "Erwerbsnebenkosten", "Ankaufsnebenkosten"],
     erklaerung:
-      "Die Kosten neben dem Kaufpreis: Grunderwerbsteuer, Notar, Grundbuch und gegebenenfalls Makler. Zusammen sind es je nach Bundesland und Vermittlungsweg meist 8 bis 12 Prozent. Sie sind nicht sofort absetzbar, sondern erhöhen die Grundlage der Abschreibung.",
+      "Die Kosten neben dem Kaufpreis: Grunderwerbsteuer, Notar und Grundbuch. Bei uns sind es rund 8,0 Prozent in Berlin und rund 8,5 Prozent in Brandenburg, ein Makler fällt nicht an. Sie sind nicht sofort absetzbar, sondern erhöhen die Grundlage der Abschreibung.",
     imVerkauf:
       "Banken finanzieren sie oft nicht mit. Das ist der Betrag, den der Kunde bar braucht, und die häufigste Fehlannahme im Erstgespräch.",
     mehr: "/vertriebsakademie/glossar-zahlen?vaScrollTo=notar-knk",

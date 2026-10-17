@@ -48,15 +48,21 @@ export function grunderwerbsteuerSpanne(): { min: number; max: number } {
 }
 
 /**
+ * Bundesland, das gilt, wenn die Lage nicht bekannt ist. Wir verkaufen in
+ * Berlin und Brandenburg; Brandenburg ist dort der höhere Satz, und ein zu
+ * niedriger Ansatz wäre der schlechtere Fehler (siehe unten).
+ */
+export const RUECKFALL_BUNDESLAND_ID = "bb";
+
+/**
  * Kaufnebenkosten in Prozent: Grunderwerbsteuer plus Notar und Grundbuch.
- * Ohne Bundesland wird der Mittelwert genommen.
+ * Ohne Bundesland gilt Brandenburg, also 8,5 Prozent. Bis 10/2026 war es der
+ * Mittelwert aller Länder, rund 7,4 Prozent, und damit für unsere Objekte zu
+ * niedrig.
  */
 export function kaufnebenkostenProzent(bundeslandId?: string | null): number {
-  const bl = bundeslandById(bundeslandId);
-  if (bl) return bl.grunderwerbsteuer + NOTAR_GRUNDBUCH_PROZENT;
-  const schnitt =
-    BUNDESLAENDER.reduce((s, b) => s + b.grunderwerbsteuer, 0) / BUNDESLAENDER.length;
-  return Math.round((schnitt + NOTAR_GRUNDBUCH_PROZENT) * 10) / 10;
+  const bl = bundeslandById(bundeslandId) ?? bundeslandById(RUECKFALL_BUNDESLAND_ID)!;
+  return bl.grunderwerbsteuer + NOTAR_GRUNDBUCH_PROZENT;
 }
 
 /**

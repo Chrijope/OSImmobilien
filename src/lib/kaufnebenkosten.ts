@@ -1,8 +1,10 @@
 /**
  * Kaufnebenkosten je Bundesland, abgeleitet aus der zentralen Tabelle.
  *
- * Gesamtsatz = Grunderwerbsteuer des Landes plus 1,0 Prozent Notar plus
- * 0,5 Prozent Grundbuch. Die Maklercourtage ist bewusst NICHT enthalten, sie
+ * Gesamtsatz = Grunderwerbsteuer des Landes plus 1,5 Prozent Notar plus
+ * 0,5 Prozent Grundbuch, also Berlin 8,0 und Brandenburg 8,5 Prozent. Notar
+ * mit 1,5 Prozent, weil unsere Kunden fast immer voll finanzieren und die
+ * Grundschuldbestellung dazukommt (Stand 16.10.2026, vorher 1,0 Prozent). Die Maklercourtage ist bewusst NICHT enthalten, sie
  * fällt in unserem Geschäft nicht beim Käufer an.
  *
  * Die Sätze standen hier früher als eigene Liste und waren veraltet: Bremen
@@ -12,8 +14,8 @@
 import { BUNDESLAENDER } from "./grunderwerbsteuer";
 import { detectBundesland } from "./bundeslandGrEst";
 
-/** Notar 1,0 Prozent plus Grundbuch 0,5 Prozent, Richtwerte vom Kaufpreis. */
-export const NOTAR_PROZENT = 1.0;
+/** Notar 1,5 Prozent plus Grundbuch 0,5 Prozent, Richtwerte vom Kaufpreis. */
+export const NOTAR_PROZENT = 1.5;
 export const GRUNDBUCH_PROZENT = 0.5;
 
 /**

@@ -42,9 +42,10 @@ function seite(h: Handbuch, id: string) {
 
 describe("Rechnung wie in der Strategie", () => {
   it.each([
-    ["A", A, 190000, 42, 95],
-    ["B", B, 300000, 42, 161],
-    ["C", C, 80000, 35, 56],
+    // Seit 10/2026 mit Brandenburger Kaufnebenkosten (8,5 %), die höhere AfA senkt den Eigenaufwand.
+    ["A", A, 190000, 42, 91],
+    ["B", B, 300000, 42, 155],
+    ["C", C, 80000, 35, 54],
   ])("Profil %s: Modellwohnung, Grenzsteuersatz, Eigenaufwand nach Steuer im ersten Jahr", (_n, p, kaufpreis, gs, eigenaufwand) => {
     const a = handbuchAuswertung(p);
     expect(a.kaufpreis).toBe(kaufpreis);

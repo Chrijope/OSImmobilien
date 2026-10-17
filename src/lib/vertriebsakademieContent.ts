@@ -2004,7 +2004,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "frage": "Welche drei Sätze musst du vor dem ersten Kundengespräch sicher können?",
           "optionen": [
             "Die Höhe der Grunderwerbsteuer in allen sechzehn Bundesländern, dazu die Notarkosten, die Grundbuchgebühren und die übliche Maklercourtage, damit du im Gespräch nichts nachschlagen musst",
-            "Nur der Zins ist absetzbar und nicht die Tilgung, abgeschrieben wird nur der Gebäudeanteil und nie der Grund und Boden, Kaufnebenkosten von rund 8 bis 12 Prozent kommen zum Kaufpreis obendrauf",
+            "Nur der Zins ist absetzbar und nicht die Tilgung, abgeschrieben wird nur der Gebäudeanteil und nie der Grund und Boden, Kaufnebenkosten von rund 8 Prozent in Berlin und rund 8,5 Prozent in Brandenburg kommen zum Kaufpreis obendrauf",
             "Die fünf Renditekennzahlen mit ihren Formeln, dazu die Abschreibungssätze nach Baujahr und die steuerlichen Fristen, damit du jede Zahl im Kopf hast"
           ],
           "korrekt": 1,
@@ -2081,7 +2081,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "intro": "Das hier ist das längste Kapitel der Akademie, und du sollst es nicht am Stück lesen. Dieser Abschnitt sagt dir, was drinsteht, in welcher Reihenfolge es sich lohnt und was du wirklich schon vor dem ersten Kundengespräch können musst.",
         "absaetze": [
           "Kapitel 0 ist das Fundament. Danach kannst du die Sprache, die in jedem Beratungsgespräch gesprochen wird: Immobilientypen, Renditearten, Cashflow, Hebelwirkung, Steuer, Kaufnebenkosten, Wohnungseigentumsrecht, Finanzierung und Mietrecht. Zwölf weitere Abschnitte, jeder für sich lesbar. Wenn du in einem hängen bleibst, geh zum nächsten und komm später zurück, es baut nicht streng aufeinander auf.",
-          "Drei Dinge musst du sicher können, bevor du zum ersten Mal mit einem Interessenten sprichst, und nur drei. Erstens: Von der Monatsrate ist nur der Zinsanteil steuerlich absetzbar, die Tilgung nicht, denn sie ist kein Aufwand, sondern Vermögensaufbau. Zweitens: Abgeschrieben wird nur der Gebäudeanteil, nie der Grund und Boden, also nie der volle Kaufpreis. Drittens: Kaufnebenkosten von rund 8 bis 12 Prozent kommen zum Kaufpreis dazu und werden meist nicht mitfinanziert. Wer diese drei Sätze sicher hat, redet in keinem Erstgespräch Unsinn. Alles andere kannst du nachschlagen.",
+          "Drei Dinge musst du sicher können, bevor du zum ersten Mal mit einem Interessenten sprichst, und nur drei. Erstens: Von der Monatsrate ist nur der Zinsanteil steuerlich absetzbar, die Tilgung nicht, denn sie ist kein Aufwand, sondern Vermögensaufbau. Zweitens: Abgeschrieben wird nur der Gebäudeanteil, nie der Grund und Boden, also nie der volle Kaufpreis. Drittens: Kaufnebenkosten von rund 8 Prozent in Berlin und rund 8,5 Prozent in Brandenburg kommen zum Kaufpreis dazu und werden meist nicht mitfinanziert. Wer diese drei Sätze sicher hat, redet in keinem Erstgespräch Unsinn. Alles andere kannst du nachschlagen.",
           "Eine Regel für alle Zahlen in diesem Kapitel: Zu jeder Zahl gehört, worauf sie sich bezieht und von wann sie ist. Ein Abschreibungssatz gilt auf den Gebäudeanteil und nicht auf den Kaufpreis. Ein Grunderwerbsteuersatz gilt für ein bestimmtes Bundesland und für einen bestimmten Stichtag, denn die Länder ändern ihre Sätze. Ein Steuervorteil gilt für einen bestimmten Grenzsteuersatz und für ein bestimmtes Jahr, denn er sinkt mit dem Zinsanteil. Wo eine Zahl in diesem Kapitel eine Annahme des Hauses ist und keine Vorschrift, steht das ausdrücklich dabei.",
           "Zur Rechtslage gehört ein Punkt, der nicht warten sollte, weil er eine Erlaubnis betrifft. Wer als selbstständiger Vertriebspartner mehr tut, als Kontakte herzustellen, also selbst Objekte vorstellt, Zahlen erklärt und zum Kauf hinführt, braucht eine eigene Erlaubnis nach § 34c Gewerbeordnung. Die Erlaubnis der Gesellschaft deckt dich dabei nicht ab. Wo genau die Grenze zur reinen Tippgebung verläuft und wie der Antrag abläuft, steht ausführlich in Kapitel 1. Dieses Kapitel wiederholt es bewusst nicht, weil eine zweite Darstellung derselben Regel früher oder später von der ersten abweicht. Eine gute Nachricht dazu: Die Weiterbildungspflicht für Immobilienmakler ist zum 24. Juli 2026 entfallen, durch das Gesetz zum Bürokratierückbau in der Gewerbeordnung und im Energieverbrauchskennzeichnungsgesetz (BGBl. 2026 I Nr. 215). Bestehen bleibt sie nur für Wohnimmobilienverwalter.",
           "Und wo die Objekte stehen, auf die sich alle Rechenbeispiele dieses Kapitels beziehen: Unsere Objektplattform heißt Investagon. Dort liegt der Bestand mit allen Projekten und Einheiten, dort siehst du Preis, Fläche, Miete und ob eine Einheit frei, reserviert oder verkauft ist, und dort suchst du später das Objekt für deinen Kunden heraus. Im CRM erreichst du sie über den Eintrag Objekte in der Seitenleiste unter Immobilien, sie öffnet in einem eigenen Tab und hat eine eigene Anmeldung. Der Zugang gehört zu deiner Freischaltung, genauso wie der CRM-Zugang und deine OS Immobilien-Mailadresse.",
@@ -2090,7 +2090,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         ],
         "bullets": [
           "Zwölf Sachabschnitte, jeder einzeln lesbar. Nicht am Stück lesen.",
-          "Die drei Sätze für das erste Kundengespräch: Nur der Zins ist absetzbar, nicht die Tilgung. Abgeschrieben wird nur der Gebäudeanteil. Kaufnebenkosten von rund 8 bis 12 Prozent kommen obendrauf.",
+          "Die drei Sätze für das erste Kundengespräch: Nur der Zins ist absetzbar, nicht die Tilgung. Abgeschrieben wird nur der Gebäudeanteil. Kaufnebenkosten von rund 8 Prozent in Berlin und rund 8,5 Prozent in Brandenburg kommen obendrauf.",
           "Zu jeder Zahl gehört die Bezugsgröße und der Stand. Annahmen des Hauses sind als solche gekennzeichnet.",
           "Die eigene Erlaubnis nach § 34c Gewerbeordnung braucht jeder selbstständige Vertriebspartner, der mehr tut als Kontakte herstellen. Einzelheiten in Kapitel 1.",
           "Die Weiterbildungspflicht für Makler ist zum 24. Juli 2026 entfallen (BGBl. 2026 I Nr. 215) und gilt nur noch für Wohnimmobilienverwalter.",
@@ -2208,7 +2208,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               {
                 "aussage": "Die Kaufnebenkosten stecken schon im Kaufpreis drin.",
                 "stimmt": false,
-                "aufloesung": "Sie kommen mit rund 8 bis 12 Prozent obendrauf und werden meist nicht mitfinanziert."
+                "aufloesung": "Sie kommen obendrauf, bei uns rund 8 Prozent in Berlin und rund 8,5 Prozent in Brandenburg, und werden meist nicht mitfinanziert."
               },
               {
                 "aussage": "Nur der Zinsanteil der Rate mindert die Steuer.",
@@ -2221,7 +2221,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 "aufloesung": "Er gilt auf den Gebäudeanteil. Wer den vollen Kaufpreis nimmt, rechnet je nach Lage bis zu 40 Prozent zu hoch."
               },
               {
-                "aussage": "Kaufnebenkosten von rund 8 bis 12 Prozent kommen zum Kaufpreis dazu.",
+                "aussage": "Kaufnebenkosten von rund 8 Prozent in Berlin und rund 8,5 Prozent in Brandenburg kommen zum Kaufpreis dazu.",
                 "stimmt": true,
                 "aufloesung": "Richtig, und meist braucht der Kunde sie als bares Eigenkapital."
               }
@@ -2672,7 +2672,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "bullets": [
             "Frag bei jeder fremden Nettomietrendite zwei Dinge: Was steht im Zähler ab, und stecken die Kaufnebenkosten im Nenner? Ohne diese beiden Antworten ist die Zahl wertlos.",
             "Unsere Definition steht im Kapitel: Jahreskaltmiete abzüglich der nicht umlagefähigen Kosten, geteilt durch Kaufpreis plus Kaufnebenkosten. Nenne sie im Gespräch mit, dann ist deine Zahl überprüfbar.",
-            "Wer die Kaufnebenkosten im Nenner weglässt, hebt die Rendite je nach Bundesland um 8 bis 12 Prozent ihres eigenen Wertes an. Aus 4,0 Prozent werden so 4,4 Prozent, ohne dass sich am Objekt irgendetwas geändert hat.",
+            "Wer die Kaufnebenkosten im Nenner weglässt, hebt die Rendite bei unseren Objekten um rund 8 bis 8,5 Prozent ihres eigenen Wertes an. Aus 4,0 Prozent werden so rund 4,3 Prozent, ohne dass sich am Objekt irgendetwas geändert hat.",
             "Für den schnellen Vergleich mehrerer Objekte nimm die Bruttomietrendite, sie ist eindeutig. Für die Entscheidung nimm die Nettomietrendite mit genannter Definition."
           ]
         }
@@ -3559,10 +3559,10 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Grunderwerbsteuer: 3,5 bis 6,5 Prozent je Bundesland, Stand 2026. Berlin 6 Prozent, Brandenburg 6,5 Prozent. Rechtsgrundlage § 11 Grunderwerbsteuergesetz mit Abweichungsrecht der Länder nach Artikel 105 Absatz 2a Satz 2 Grundgesetz.",
           "Notar und Grundbuch: rund 2 Prozent zusammen, davon etwa 1,5 Prozent Notar und etwa 0,5 Prozent Grundbuch. Die Gebühren richten sich nach dem Gerichts- und Notarkostengesetz und sind nicht verhandelbar. Mit denselben 2 Prozent rechnet auch die zentrale Bundesländertabelle im CRM, aus der Analysetool und AfA-Rechner ihre Kaufnebenkosten ziehen.",
           "Maklercourtage, falls beauftragt: üblicherweise 3,0 Prozent netto plus 19 Prozent Umsatzsteuer, also 3,57 Prozent. Beim Wohnungskauf durch einen Verbraucher gilt die Kostenteilung nach den §§ 656a bis 656d Bürgerliches Gesetzbuch.",
-          "Faustformel: Kaufnebenkosten rund 8 bis 12 Prozent des Kaufpreises, meist als Eigenkapital erforderlich.",
+          "Kaufnebenkosten bei unseren Objekten ohne Makler: rund 8 Prozent in Berlin, rund 8,5 Prozent in Brandenburg, meist als Eigenkapital erforderlich. Die bundesweite Faustformel von 8 bis 12 Prozent gilt nur mit Makler.",
           "Steuerlich wichtig: Kaufnebenkosten sind keine sofort abziehbaren Werbungskosten. Sie erhöhen die Anschaffungskosten und damit die Bemessungsgrundlage der Abschreibung, wirken also über die gesamte Nutzungsdauer verteilt."
         ],
-        "quereinsteigerHinweis": "Kaufnebenkosten sind extra, sie kommen zusätzlich zum Kaufpreis obendrauf und werden meist nicht von der Bank mitfinanziert. Deshalb braucht der Kunde diese 8 bis 12 Prozent oft als bares Eigenkapital. Ausnahme ist die 110-Prozent-Finanzierung bei sehr guter Bonität, dazu mehr in Kapitel 7. Der Grund, warum die Bank hier zurückhaltend ist, lässt sich in einem Satz erklären: Die Nebenkosten sind weg, sobald sie gezahlt sind. Sie stecken nicht im Objekt und bringen der Bank im Ernstfall keine Sicherheit. Deshalb finanziert sie den Kaufpreis lieber als die Steuer darauf.",
+        "quereinsteigerHinweis": "Kaufnebenkosten sind extra, sie kommen zusätzlich zum Kaufpreis obendrauf und werden meist nicht von der Bank mitfinanziert. Deshalb braucht der Kunde diese rund 8 bis 8,5 Prozent oft als bares Eigenkapital. Ausnahme ist die 110-Prozent-Finanzierung bei sehr guter Bonität, dazu mehr in Kapitel 7. Der Grund, warum die Bank hier zurückhaltend ist, lässt sich in einem Satz erklären: Die Nebenkosten sind weg, sobald sie gezahlt sind. Sie stecken nicht im Objekt und bringen der Bank im Ernstfall keine Sicherheit. Deshalb finanziert sie den Kaufpreis lieber als die Steuer darauf.",
         "profiTipp": "Zwei Punkte, mit denen du im Erstgespräch Zeit sparst. Erstens: Frag nach dem verfügbaren Eigenkapital, bevor du über Objekte sprichst, und rechne die Nebenkosten des Ziel-Bundeslandes sofort dagegen. Ein Kunde mit 12.000 Euro Eigenkapital deckt damit in Brandenburg die Nebenkosten bis rund 141.000 Euro Kaufpreis, in Berlin bis 150.000 Euro. Diese eine Rechnung erspart dir eine ganze Beratung am falschen Objekt. Zweitens, und das übersehen viele: Die Kaufnebenkosten sind steuerlich kein verlorener Betrag. Sie gehören zu den Anschaffungskosten und erhöhen die Bemessungsgrundlage der Abschreibung, allerdings nur anteilig für den Gebäudeanteil. Bei 25.500 Euro Nebenkosten und 75 Prozent Gebäudeanteil sind das 19.125 Euro mehr Bemessungsgrundlage und damit bei 2 Prozent rund 383 Euro zusätzliche Abschreibung im Jahr. Das ist kein großes Argument, aber es ist das ehrliche Gegengewicht, wenn ein Kunde die Nebenkosten als reine Verschwendung empfindet.",
         "visuals": [
           {
@@ -3589,8 +3589,8 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           {
             "kpis": [
               {
-                "label": "Faustformel",
-                "wert": "8 bis 12 %",
+                "label": "Bei uns, ohne Makler",
+                "wert": "8 bis 8,5 %",
                 "farbe": "primary"
               }
             ]
@@ -4446,7 +4446,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Investagon: unsere Objektplattform, also das eigenständige System, in dem die Objekte und Einheiten mit Preis, Fläche, Miete und Verfügbarkeit stehen. Erreichbar im CRM über Immobilien und Objekte in der Seitenleiste, mit eigener Anmeldung.",
           "IRR, interner Zinsfuß: die Gesamtrendite über die Haltedauer, wenn man alle Ein- und Auszahlungen samt Wertsteigerung und Steuerwirkung zusammenrechnet. Wird von der Kalkulation ermittelt, nicht von Hand.",
           "Kapitaldienstfähigkeit: Haushaltsnetto plus vereinnahmte Kaltmiete, abzüglich Lebenshaltungspauschale, bestehender Kredite und einer eventuellen selbst gezahlten Miete, muss die neue Rate mit Sicherheitsaufschlag tragen.",
-          "Kaufnebenkosten, oft als KNK abgekürzt: Grunderwerbsteuer, Notar, Grundbuch und gegebenenfalls Maklercourtage. Faustformel 8 bis 12 Prozent des Kaufpreises.",
+          "Kaufnebenkosten, oft als KNK abgekürzt: Grunderwerbsteuer, Notar, Grundbuch und gegebenenfalls Maklercourtage. Bei uns ohne Makler rund 8 Prozent in Berlin und rund 8,5 Prozent in Brandenburg.",
           "Lebenshaltungspauschale: der Betrag, den die Bank pauschal für den Lebensunterhalt ansetzt, statt echte Ausgaben zu prüfen. Übliche Größenordnung 800 bis 1.200 Euro im Monat für den ersten Erwachsenen, je nach Institut.",
           "Leverage: der Fremdkapitalhebel auf das eingesetzte Eigenkapital. Er wirkt in beide Richtungen.",
           "MaBV: Makler- und Bauträgerverordnung. Regelt unter anderem die Ratenpläne beim Bauträgerkauf.",
@@ -10574,8 +10574,8 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "ueberschrift": "Von der Selbstauskunft zum Suchprofil",
         "intro": "Der Kunde steht in der Pipeline auf Objektpräsentation. Geschaltet hat diese Stufe die unterschriebene Selbstauskunft, die ihr am Ende der Beratung gemeinsam ausgefüllt habt. Damit liegen drei Dinge auf dem Tisch, und aus genau diesen dreien wird ein Suchprofil: der Finanzierungsrahmen, der Monatsbeitrag mit der Stressgrenze und das Konzept, das der Kunde gewählt hat.",
         "absaetze": [
-          "Der häufigste Fehler passiert in der ersten Minute: Der Finanzierungsrahmen ist nicht der Kaufpreis. Der Rahmen aus Abschnitt 13 der Beratungspräsentation ist Darlehen plus liquides Eigenkapital, also alles, was der Kunde insgesamt bewegen kann. Vom Kaufpreis gehen die Kaufnebenkosten noch ab, und die liegen je nach Bundesland zwischen 5,5 und 12 Prozent. Wer den Rahmen als Kaufpreis liest, sucht dauerhaft zu teuer und muss dem Kunden später eine Zahl nach unten korrigieren. Genau davor warnt schon die Präsentation: Eine Zahl, die im Bankgespräch nach unten korrigiert wird, kostet dich das Vertrauen des ganzen Gesprächs.",
-          "Sauber wird es mit zwei Obergrenzen, und die niedrigere von beiden gewinnt. Die erste ist die Ratengrenze: Sie kommt aus dem tragbaren Überschuss und begrenzt die Darlehenssumme. Die zweite ist die Eigenkapitalgrenze: Das liquide verfügbare Eigenkapital muss die Kaufnebenkosten decken, sonst greift der Standardweg aus Kapitel 7 nicht mehr, nach dem mindestens die Kaufnebenkosten aus Eigenkapital kommen sollen. Im Beispiel der Präsentation liegt die Ratengrenze bei 256.000 Euro Kaufpreis und die Eigenkapitalgrenze bei rund 454.000 Euro. Bindend ist also die Rate, und beim Eigenkapital bleiben rund 10.900 Euro Puffer.",
+          "Der häufigste Fehler passiert in der ersten Minute: Der Finanzierungsrahmen ist nicht der Kaufpreis. Der Rahmen aus Abschnitt 13 der Beratungspräsentation ist Darlehen plus liquides Eigenkapital, also alles, was der Kunde insgesamt bewegen kann. Vom Kaufpreis gehen die Kaufnebenkosten noch ab, und die liegen bei unseren Objekten bei rund 8 Prozent in Berlin und rund 8,5 Prozent in Brandenburg. Wer den Rahmen als Kaufpreis liest, sucht dauerhaft zu teuer und muss dem Kunden später eine Zahl nach unten korrigieren. Genau davor warnt schon die Präsentation: Eine Zahl, die im Bankgespräch nach unten korrigiert wird, kostet dich das Vertrauen des ganzen Gesprächs.",
+          "Sauber wird es mit zwei Obergrenzen, und die niedrigere von beiden gewinnt. Die erste ist die Ratengrenze: Sie kommt aus dem tragbaren Überschuss und begrenzt die Darlehenssumme. Die zweite ist die Eigenkapitalgrenze: Das liquide verfügbare Eigenkapital muss die Kaufnebenkosten decken, sonst greift der Standardweg aus Kapitel 7 nicht mehr, nach dem mindestens die Kaufnebenkosten aus Eigenkapital kommen sollen. Im Beispiel der Präsentation liegt die Ratengrenze bei 256.000 Euro Kaufpreis und die Eigenkapitalgrenze bei rund 294.000 Euro. Bindend ist also die Rate, und beim Eigenkapital bleiben rund 3.200 Euro Puffer.",
           "Die zweite Schraube ist der Monatsbeitrag, und die wird fast nie benutzt. Er begrenzt nicht den Kaufpreis, sondern die Lücke zwischen Miete und Rate. Der Kunde hat im Erstgespräch und in Abschnitt 13 eine Zahl vor Steuern genannt, mit der er gut leben kann, sagen wir 250 Euro. Daraus lässt sich die Miete zurückrechnen, die das Objekt bringen muss, und aus der Miete im Verhältnis zum Kaufpreis wird die Mindest-Bruttomietrendite. Bei 256.000 Euro Kaufpreis, 5,5 Prozent Annuität und rund 110 Euro nicht umlagefähigen Kosten sind das 4,84 Prozent.",
           "Und jetzt entscheidet diese Zahl die Region, nicht der Geschmack. Das Glossarkapitel nennt für 2026 marktübliche Bruttorenditen von 3 bis 4,5 Prozent in A-Städten, 4,5 bis 6 Prozent in B- und C-Städten und 6 Prozent und mehr in Randlagen mit erhöhtem Risiko. Eine Mindestrendite von 4,84 Prozent schließt A-Städte rechnerisch aus, ohne dass jemand über einzelne Städte diskutieren muss. Das ist die vielleicht wichtigste Wirkung des Suchprofils: Es nimmt die Regionsfrage aus der Meinung heraus und stellt sie in die Rechnung.",
           "Das Konzept folgt zuletzt, und es ist schon entschieden: Der Kunde hat es in Abschnitt 07 der Beratungspräsentation selbst gewählt, vorbelegt aus dem Schwerpunkt im Erstgespräch. Zur Zusatzrente gehören Hauffstraße 38 in Schwielowsee bei Potsdam und die Doppelhaushälften in Zossen-Wünsdorf, zur Steuerersparnis die Barfusstraße 9 in Berlin-Wedding. Im Kundenprofil zeigt die Objektauswahl die Einheiten des gewählten Konzepts zuerst, auf Wunsch nur diese. Das Suchprofil schreibt das Konzept nur noch auf.",
@@ -10603,14 +10603,14 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                   "hinweis": "Das ist die Darlehenssumme. Trägt der Kunde die Kaufnebenkosten aus Eigenkapital, entspricht sie zugleich dem höchsten Kaufpreis."
                 },
                 {
-                  "label": "Kaufnebenkosten dazu, im Beispiel 5,5 Prozent für Grunderwerbsteuer, Notar und Grundbuch",
-                  "wert": "14.080 €",
+                  "label": "Kaufnebenkosten dazu, im Beispiel 8,5 Prozent für Grunderwerbsteuer, Notar und Grundbuch in Brandenburg",
+                  "wert": "21.760 €",
                   "op": "→",
-                  "hinweis": "5,5 Prozent von 256.000 Euro. In Berlin mit 6 und in Brandenburg mit 6,5 Prozent Grunderwerbsteuer liegen die Nebenkosten bei rund 8 bis 8,5 Prozent, hier also rund 20.500 bis 21.800 Euro. Für unsere Objekte gilt der Wert aus dem Exposé."
+                  "hinweis": "8,5 Prozent von 256.000 Euro. In Berlin mit 6 Prozent Grunderwerbsteuer wären es rund 8 Prozent, hier also 20.480 Euro. Für unsere Objekte gilt der Wert aus dem Exposé."
                 },
                 {
-                  "label": "Grenze 2, Eigenkapital: 25.000 Euro liquide, geteilt durch 5,5 Prozent",
-                  "wert": "454.545 €",
+                  "label": "Grenze 2, Eigenkapital: 25.000 Euro liquide, geteilt durch 8,5 Prozent",
+                  "wert": "294.118 €",
                   "op": "→",
                   "hinweis": "So teuer dürfte das Objekt sein, wenn allein das Eigenkapital die Grenze wäre. Es ist hier nicht die bindende Grenze."
                 },
@@ -10619,10 +10619,10 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                   "wert": "256.000 €",
                   "op": "=",
                   "ergebnis": true,
-                  "hinweis": "Eigenkapitalpuffer: 25.000 minus 14.080 gleich 10.920 Euro. Der bleibt liegen und ist die erste Rücklage des Kunden."
+                  "hinweis": "Eigenkapitalpuffer: 25.000 minus 21.760 gleich 3.240 Euro. Der bleibt liegen und ist die erste Rücklage des Kunden."
                 }
               ],
-              "fazit": "Häufiger Rechenfehler an dieser Stelle: 281.000 Euro minus 5,5 Prozent ergibt 265.545 Euro und ist falsch, weil die Nebenkosten auf den Kaufpreis anfallen und nicht auf die Summe. Richtig wäre 281.000 geteilt durch 1,055 gleich 266.351 Euro. Beide Wege führen hier ohnehin nicht zum Ziel, weil nicht die Summe die Grenze setzt, sondern die Rate."
+              "fazit": "Häufiger Rechenfehler an dieser Stelle: 281.000 Euro minus 8,5 Prozent ergibt 257.115 Euro und ist falsch, weil die Nebenkosten auf den Kaufpreis anfallen und nicht auf die Summe. Richtig wäre 281.000 geteilt durch 1,085 gleich 258.986 Euro. Beide Wege führen hier ohnehin nicht zum Ziel, weil nicht die Summe die Grenze setzt, sondern die Rate."
             }
           },
           {
@@ -10686,7 +10686,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               },
               {
                 "label": "Eigenkapitalpuffer",
-                "wert": "10.920 €",
+                "wert": "3.240 €",
                 "hinweis": "Liquides Eigenkapital minus Kaufnebenkosten",
                 "farbe": "amber"
               }
@@ -10759,7 +10759,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "titel": "Vom Rahmen zum höchsten Kaufpreis",
             "hinweis": "Der Rahmen ist nicht der Kaufpreis, also zieh das Eigenkapital ab und prüfe, ob es die Nebenkosten deckt.",
             "punkte": 10,
-            "fall": "Der Finanzierungsrahmen aus Abschnitt 13 beträgt 281.000 Euro, darin stecken 25.000 Euro liquides Eigenkapital. Der Kunde zahlt die Kaufnebenkosten von 5,5 Prozent aus dem Eigenkapital.",
+            "fall": "Der Finanzierungsrahmen aus Abschnitt 13 beträgt 281.000 Euro, darin stecken 25.000 Euro liquides Eigenkapital. Der Kunde zahlt die Kaufnebenkosten von 8,5 Prozent (Brandenburg) aus dem Eigenkapital.",
             "gesucht": "Wie hoch darf der Kaufpreis höchstens sein?",
             "zielwert": 256000,
             "toleranzProzent": 1,
@@ -10784,10 +10784,10 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                   "hinweis": "Weil die Nebenkosten aus Eigenkapital kommen, wird nur der Kaufpreis finanziert."
                 },
                 {
-                  "label": "Kaufnebenkosten: 5,5 Prozent von 256.000 Euro",
-                  "wert": "14.080 €",
+                  "label": "Kaufnebenkosten: 8,5 Prozent von 256.000 Euro",
+                  "wert": "21.760 €",
                   "op": "→",
-                  "hinweis": "Das Eigenkapital deckt sie, es bleiben 10.920 Euro Puffer."
+                  "hinweis": "Das Eigenkapital deckt sie, es bleiben 3.240 Euro Puffer."
                 }
               ],
               "fazit": "Wer den Rahmen als Kaufpreis liest, sucht dauerhaft zu teuer und muss dem Kunden später eine Zahl nach unten korrigieren."
@@ -10904,7 +10904,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           {
             "vergleich": {
               "titel": "Brutto oder netto, dasselbe Objekt",
-              "untertitel": "249.000 Euro Kaufpreis, 995 Euro Kaltmiete, 100 Euro nicht umlagefähige Kosten, 13.695 Euro Kaufnebenkosten",
+              "untertitel": "249.000 Euro Kaufpreis, 995 Euro Kaltmiete, 100 Euro nicht umlagefähige Kosten, 21.165 Euro Kaufnebenkosten (8,5 Prozent, Brandenburg)",
               "optionA": {
                 "label": "Bruttomietrendite",
                 "badge": "Vorauswahl",
@@ -10920,12 +10920,12 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 "badge": "Die Zahl, die stimmt",
                 "punkte": [
                   "11.940 Euro minus 1.200 Euro nicht umlagefähige Kosten gleich 10.740 Euro",
-                  "geteilt durch 249.000 plus 13.695 gleich 262.695 Euro",
+                  "geteilt durch 249.000 plus 21.165 gleich 270.165 Euro",
                   "beides zusammen kostet fast einen Prozentpunkt"
                 ],
-                "ergebnis": "4,09 Prozent"
+                "ergebnis": "3,98 Prozent"
               },
-              "fazit": "Der Abstand von 0,71 Prozentpunkten ist keine Ungenauigkeit, sondern der Unterschied zwischen einer Vergleichszahl und einer Aussage. Zeig im Termin beide und erklär den Abstand, dann nimmst du dem Einwand die Luft, bevor er kommt."
+              "fazit": "Der Abstand von 0,82 Prozentpunkten ist keine Ungenauigkeit, sondern der Unterschied zwischen einer Vergleichszahl und einer Aussage. Zeig im Termin beide und erklär den Abstand, dann nimmst du dem Einwand die Luft, bevor er kommt."
             }
           }
         ],
@@ -11044,9 +11044,9 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "titel": "Rechne die Nettomietrendite aus",
             "hinweis": "Nicht umlagefähige Kosten runter, Kaufnebenkosten drauf, Ergebnis auf zwei Nachkommastellen.",
             "punkte": 15,
-            "fall": "Kaufpreis 249.000 Euro, Kaufnebenkosten 5,5 Prozent, Jahreskaltmiete 11.940 Euro, nicht umlagefähige Kosten 100 Euro im Monat.",
+            "fall": "Kaufpreis 249.000 Euro, Kaufnebenkosten 8,5 Prozent, Jahreskaltmiete 11.940 Euro, nicht umlagefähige Kosten 100 Euro im Monat.",
             "gesucht": "Nettomietrendite in Prozent",
-            "zielwert": 4.09,
+            "zielwert": 3.98,
             "toleranzProzent": 2,
             "einheit": "%",
             "wegErstNachVersuch": true,
@@ -11068,11 +11068,11 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                   "op": "="
                 },
                 {
-                  "label": "Geteilt durch Kaufpreis plus Nebenkosten: 249.000 plus 13.695",
-                  "wert": "4,09 %",
+                  "label": "Geteilt durch Kaufpreis plus Nebenkosten: 249.000 plus 21.165",
+                  "wert": "3,98 %",
                   "op": "÷",
                   "ergebnis": true,
-                  "hinweis": "Gegenüber 4,80 Prozent brutto sind das 0,71 Prozentpunkte weniger."
+                  "hinweis": "Gegenüber 4,80 Prozent brutto sind das 0,82 Prozentpunkte weniger."
                 }
               ],
               "fazit": "Faustregel für den Kopf: Die Nettorendite liegt regelmäßig einen halben bis einen ganzen Prozentpunkt unter der Bruttorendite. Wer das von sich aus sagt, wirkt nicht schwächer, sondern genauer."
@@ -11089,7 +11089,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Die Wirtschaftlichkeitsberechnung hat sechs Zeilen, immer in derselben Reihenfolge: Kaltmiete, Zins und Tilgung, nicht umlagefähige Kosten, Beitrag vor Steuer, Steuerwirkung, Beitrag nach Steuer. Daneben steht die Tilgung als Gegenposten. Diese Reihenfolge ist dieselbe wie in Abschnitt 10 der Beratungspräsentation, und das ist kein Zufall: Der Kunde hat sie im Beratungsgespräch an einem Musterobjekt gelernt und liest sie jetzt an seinem eigenen. Ändere sie nicht.",
           "Der dritte Posten ist der, an dem die meisten Rechnungen unehrlich werden, und in Kapitel 7 fehlt er im Kundenskript vollständig: die nicht umlagefähigen Kosten. Auf den Mieter umlegen darf man nur die Betriebskosten, die in § 2 Betriebskostenverordnung aufgezählt sind, und auch die nur, wenn der Mietvertrag es vereinbart (§ 556 Absatz 1 Bürgerliches Gesetzbuch). Ausdrücklich nicht dazu gehören die Verwaltungskosten und die Instandhaltungskosten (§ 1 Absatz 2 Nummern 1 und 2 Betriebskostenverordnung). Genau diese beiden trägt der Eigentümer, dazu die Verwaltung des Sondereigentums, falls er sie beauftragt.",
           "In der Praxis sind das drei Posten. Erstens die Gebühr der WEG-Verwaltung, üblicherweise 25 bis 35 Euro je Einheit und Monat. Zweitens die Sondereigentumsverwaltung, also die Mietverwaltung der eigenen Wohnung, wenn sie beauftragt ist, üblicherweise 20 bis 30 Euro. Drittens die Zuführung zur Erhaltungsrücklage, die die Gemeinschaft beschließt und die ihr seit der Reform des Wohnungseigentumsgesetzes in angemessener Höhe vorgeschrieben ist (§ 19 Absatz 2 Nummer 4 Wohnungseigentumsgesetz). Die Zahl prüfst du an der Hausgeldabrechnung, statt sie zu glauben. Bei der Barfusstraße 9, WE 03 stehen 112 Euro samt Rücklage auf 72,32 Quadratmetern in der Rechnung, also rund 1,55 Euro je Quadratmeter im Monat. Wer in einer Rechnung 0,60 Euro je Quadratmeter findet, hat keine günstige Wohnung gefunden, sondern eine geschönte Rechnung.",
-          "Die zweite Falle ist die Tilgung. Sie steckt in der Rate und sieht aus wie eine Ausgabe, ist aber keine, sondern Vermögensaufbau. Die Beratungspräsentation sagt es genau so, und deshalb steht sie auch nicht in der Steuerrechnung. Im Objekttermin rechnest du sie gegen, nicht weg: Beim Beispielobjekt stehen 145 Euro Beitrag nach Steuer gegen 374 Euro Tilgung im Monatsschnitt der ersten zehn Jahre. Der Kunde zahlt also 145 Euro und baut dafür monatlich 374 Euro Vermögen auf. Das ist die ehrlichste Zahl des ganzen Termins, weil sie ohne jede Annahme über Wertsteigerung auskommt.",
+          "Die zweite Falle ist die Tilgung. Sie steckt in der Rate und sieht aus wie eine Ausgabe, ist aber keine, sondern Vermögensaufbau. Die Beratungspräsentation sagt es genau so, und deshalb steht sie auch nicht in der Steuerrechnung. Im Objekttermin rechnest du sie gegen, nicht weg: Beim Beispielobjekt stehen 141 Euro Beitrag nach Steuer gegen 374 Euro Tilgung im Monatsschnitt der ersten zehn Jahre. Der Kunde zahlt also 141 Euro und baut dafür monatlich 374 Euro Vermögen auf. Das ist die ehrlichste Zahl des ganzen Termins, weil sie ohne jede Annahme über Wertsteigerung auskommt.",
           "Drei Prüfungen, bevor du die Rechnung zeigst. Erstens die Miete: Steht sie so im Mietvertrag, oder ist sie angesetzt? Bei vermieteten Bestandswohnungen zählt der laufende Vertrag, nicht die erzielbare Miete. Zweitens der Zins: Ist mit dem gerechnet, den der Finanzierungspartner heute nennt, oder noch mit den 4 Prozent der Musterrechnung? Ein halber Prozentpunkt sind bei 249.000 Euro rund 104 Euro im Monat. Drittens das Eigenkapital: Steht in der Rechnung das, was der Kunde tatsächlich liquide hat? Eine Rechnung mit fremden Zahlen ist im Objekttermin schlimmer als gar keine, weil der Kunde sie jetzt zum ersten Mal auf sich selbst bezieht."
         ],
         "bullets": [
@@ -11132,13 +11132,13 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 },
                 {
                   "label": "Steuerwirkung im ersten vollen Jahr",
-                  "wert": "101 €",
+                  "wert": "105 €",
                   "op": "+",
                   "hinweis": "Hergeleitet im nächsten Abschnitt. Kein Erstjahressprung, weil hier kein sofort abziehbarer Erhaltungsaufwand anfällt."
                 },
                 {
                   "label": "Beitrag nach Steuer",
-                  "wert": "ca. −145 €",
+                  "wert": "ca. −141 €",
                   "op": "=",
                   "ergebnis": true,
                   "hinweis": "Dagegen stehen 374 Euro Tilgung im Monatsschnitt der ersten zehn Jahre."
@@ -11188,7 +11188,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           {
             "titel": "Beitrag und Tilgung nebeneinander",
             "kontext": "Ganz am Ende der Rechnung, bevor die Steuerwirkung kommt.",
-            "text": "\"Und jetzt die Zeile, die fast immer übersehen wird. Von den 1.141 Euro Rate sind im ersten Jahr 311 Euro Tilgung, im Schnitt der ersten zehn Jahre 374 Euro. Das ist keine Ausgabe, das ist dein Geld, das von einem Konto auf ein anderes wandert. Du zahlst also 145 Euro im Monat und legst dafür 374 Euro zurück. Wenn du diese beiden Zahlen nebeneinander legst, ist die Frage nicht mehr, ob du dir das leisten kannst, sondern ob du es lieber sparen oder tilgen willst.\"",
+            "text": "\"Und jetzt die Zeile, die fast immer übersehen wird. Von den 1.141 Euro Rate sind im ersten Jahr 311 Euro Tilgung, im Schnitt der ersten zehn Jahre 374 Euro. Das ist keine Ausgabe, das ist dein Geld, das von einem Konto auf ein anderes wandert. Du zahlst also 141 Euro im Monat und legst dafür 374 Euro zurück. Wenn du diese beiden Zahlen nebeneinander legst, ist die Frage nicht mehr, ob du dir das leisten kannst, sondern ob du es lieber sparen oder tilgen willst.\"",
             "warumTitel": "Warum diese Gegenüberstellung ohne Wertsteigerung auskommt",
             "warum": "Jede Zahl, die eine Wertsteigerung unterstellt, ist angreifbar. Die Tilgung nicht: Sie steht im Tilgungsplan und wird vom Mieter bezahlt, egal wie sich der Markt entwickelt. Wer diesen Vergleich führt, gewinnt das Gespräch auf dem einzigen Feld, auf dem es keine Annahme braucht."
           }
@@ -11334,12 +11334,12 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "intro": "Die Steuerwirkung gehört zur Kalkulation aus Abschnitt 16. In der Beratungspräsentation hast du die Mechanik an einem Musterobjekt mit angenommenen 42 Prozent Grenzsteuersatz gezeigt. Hier steht ein echtes Objekt und ein echter Kunde, und beides verändert die Zahl.",
         "absaetze": [
           "Drei Größen prüfst du, bevor du eine einzige Steuerzahl nennst: den tatsächlichen Grenzsteuersatz des Kunden, den Gebäudeanteil dieses Objekts und die Frage, ob im ersten Jahr sofort abziehbarer Erhaltungsaufwand anfällt. Erst dann rechnest du. Wer die Zahl aus dem Beratungsgespräch übernimmt, weil sie schöner ist, verliert den Kunden spätestens beim ersten Steuerbescheid.",
-          "Der Grenzsteuersatz kommt aus der Selbstauskunft, nicht aus der Annahme. 42 Prozent gelten in der Grundtabelle ab 69.879 Euro zu versteuerndem Einkommen, bei Zusammenveranlagung entsprechend ab dem doppelten Betrag; der Grundfreibetrag liegt bei 12.348 Euro und die Eckwerte des Tarifs werden jährlich angepasst (§ 32a Absatz 1 und Absatz 5 Einkommensteuergesetz, Werte für den Veranlagungszeitraum 2026). Ein Kunde mit 55.000 Euro zu versteuerndem Einkommen liegt bei rund 36 Prozent. Beim Beispielobjekt bedeutet das statt 1.211 Euro Entlastung im Jahr rund 1.038 Euro, also 86 statt 101 Euro im Monat. Fünfzehn Euro klingen wenig, aber es sind fünfzehn Euro, die du sonst versprochen hättest.",
+          "Der Grenzsteuersatz kommt aus der Selbstauskunft, nicht aus der Annahme. 42 Prozent gelten in der Grundtabelle ab 69.879 Euro zu versteuerndem Einkommen, bei Zusammenveranlagung entsprechend ab dem doppelten Betrag; der Grundfreibetrag liegt bei 12.348 Euro und die Eckwerte des Tarifs werden jährlich angepasst (§ 32a Absatz 1 und Absatz 5 Einkommensteuergesetz, Werte für den Veranlagungszeitraum 2026). Ein Kunde mit 55.000 Euro zu versteuerndem Einkommen liegt bei rund 36 Prozent. Beim Beispielobjekt bedeutet das statt 1.261 Euro Entlastung im Jahr rund 1.081 Euro, also 90 statt 105 Euro im Monat. Fünfzehn Euro klingen wenig, aber es sind fünfzehn Euro, die du sonst versprochen hättest.",
           "Nach oben geht es genauso: Die Kirchensteuer beträgt 8 Prozent der Einkommensteuer in Bayern und Baden-Württemberg und 9 Prozent in den übrigen Ländern. Sie senkt sich mit der Einkommensteuer mit, und weil sie ihrerseits als Sonderausgabe abziehbar ist (§ 10 Absatz 1 Nummer 4 Einkommensteuergesetz), liegt die tatsächliche Entlastung eines kirchensteuerpflichtigen Kunden spürbar über dem reinen Grenzsteuersatz. Rechne es nicht in die Hauptzahl hinein, sondern nenn es als Zusatz. Eine Rechnung, die auch ohne diesen Effekt trägt, ist die stärkere Rechnung.",
           "Der Gebäudeanteil ist die zweite Stellschraube. Viele Musterrechnungen setzen 80 Prozent an, das Glossarkapitel nennt die Faustregeln 60 zu 40, 75 zu 25 und 85 zu 15. Maßgeblich ist der Einzelfall, ermittelt über den Bodenrichtwert, den die Gutachterausschüsse der Länder ermitteln und veröffentlichen (§ 196 Baugesetzbuch), oder über ein Sachverständigengutachten. Die Finanzverwaltung stellt eine Arbeitshilfe zur Kaufpreisaufteilung bereit; der Bundesfinanzhof hat mit Urteil vom 21. Juli 2020 (Aktenzeichen IX R 26/19) entschieden, dass diese Arbeitshilfe die Gerichte nicht bindet. Beim Beispielobjekt sind 80 statt 75 Prozent ein Unterschied von 263 Euro Abschreibung im Jahr, bei 42 Prozent also rund 110 Euro im Jahr oder 9 Euro im Monat. Nenn diese Bandbreite von dir aus, dann bist du im Gespräch mit dem Steuerberater vorbereitet statt überrascht.",
           "Und dann kommt der Punkt, an dem dieser Termin am ehesten Vertrauen verliert. In der Beratungspräsentation hat der Kunde Zahlen der Musterperson gesehen, bei der Barfusstraße 9 sogar mit erhöhter AfA laut Ersteinschätzung, für die ein Gutachten nötig ist. In seiner Kalkulation steht seine eigene Zahl, mit seinem Steuersatz, und daneben die Zahl mit Regel-AfA. Der Kunde erinnert sich an die schönere Zahl. Wenn du den Unterschied nicht von dir aus erklärst, erklärt er ihn sich selbst, und zwar zu deinen Ungunsten. Ein Satz genügt, und dieser Satz gehört vor die Zahl, nicht nach der Rückfrage.",
-          "Die letzte Frage des Kunden ist immer dieselbe: Wann habe ich das Geld? Nicht sofort. Die Entlastung entsteht mit dem Steuerbescheid, es sei denn, der Kunde lässt sich einen Freibetrag für die Lohnsteuer eintragen, dann wirkt sie monatlich (§ 39a Absatz 1 Satz 1 Nummer 5 Einkommensteuergesetz). Dafür gibt es eine Schwelle, die kaum jemand parat hat: Eingetragen wird erst, wenn die Summe der eintragungsfähigen Beträge 600 Euro übersteigt (§ 39a Absatz 2 Satz 4 Einkommensteuergesetz). Beim Beispielobjekt liegt das negative Ergebnis bei 2.883 Euro, die Schwelle ist also klar überschritten.",
-          "Bleibt der Zeitanteil im Anschaffungsjahr, und der entscheidet sich beim Notartermin, nicht in der Steuererklärung. Die Gebäudeabschreibung wird im Jahr der Anschaffung monatsweise gezwölftelt (R 7.4 Absatz 2 der Einkommensteuer-Richtlinien), und die Schuldzinsen fallen ohnehin erst ab Auszahlung an. Wer im Oktober übernimmt, bekommt im ersten Kalenderjahr drei Zwölftel der Abschreibung, beim Beispielobjekt also 1.051 statt 4.203 Euro. Sag das im Objekttermin, wenn der Notartermin im Herbst liegt. Es ändert nichts an der Sache und alles an der Erwartung."
+          "Die letzte Frage des Kunden ist immer dieselbe: Wann habe ich das Geld? Nicht sofort. Die Entlastung entsteht mit dem Steuerbescheid, es sei denn, der Kunde lässt sich einen Freibetrag für die Lohnsteuer eintragen, dann wirkt sie monatlich (§ 39a Absatz 1 Satz 1 Nummer 5 Einkommensteuergesetz). Dafür gibt es eine Schwelle, die kaum jemand parat hat: Eingetragen wird erst, wenn die Summe der eintragungsfähigen Beträge 600 Euro übersteigt (§ 39a Absatz 2 Satz 4 Einkommensteuergesetz). Beim Beispielobjekt liegt das negative Ergebnis bei 3.003 Euro, die Schwelle ist also klar überschritten.",
+          "Bleibt der Zeitanteil im Anschaffungsjahr, und der entscheidet sich beim Notartermin, nicht in der Steuererklärung. Die Gebäudeabschreibung wird im Jahr der Anschaffung monatsweise gezwölftelt (R 7.4 Absatz 2 der Einkommensteuer-Richtlinien), und die Schuldzinsen fallen ohnehin erst ab Auszahlung an. Wer im Oktober übernimmt, bekommt im ersten Kalenderjahr drei Zwölftel der Abschreibung, beim Beispielobjekt also 1.081 statt 4.323 Euro. Sag das im Objekttermin, wenn der Notartermin im Herbst liegt. Es ändert nichts an der Sache und alles an der Erwartung."
         ],
         "bullets": [
           "Grenzsteuersatz aus der Selbstauskunft, nicht aus der Annahme. 42 Prozent ab 69.879 Euro zu versteuerndem Einkommen in der Grundtabelle (Veranlagungszeitraum 2026), bei Zusammenveranlagung ab dem doppelten Betrag. Grundfreibetrag 12.348 Euro.",
@@ -11362,9 +11362,9 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 },
                 {
                   "label": "Gebäudeabschreibung, 2 Prozent nach § 7 Absatz 4 Einkommensteuergesetz",
-                  "wert": "4.203 €",
+                  "wert": "4.323 €",
                   "op": "−",
-                  "hinweis": "Bemessungsgrundlage: 249.000 plus 13.695 gleich 262.695 Euro Anschaffungskosten, davon 80 Prozent gleich 210.156 Euro, davon 2 Prozent."
+                  "hinweis": "Bemessungsgrundlage: 249.000 plus 21.165 gleich 270.165 Euro Anschaffungskosten, davon 80 Prozent gleich 216.132 Euro, davon 2 Prozent."
                 },
                 {
                   "label": "Schuldzinsen, 4 Prozent auf 249.000 Euro",
@@ -11380,24 +11380,24 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 },
                 {
                   "label": "Steuerliches Ergebnis aus Vermietung und Verpachtung",
-                  "wert": "− 2.883 €",
+                  "wert": "− 3.003 €",
                   "op": "="
                 },
                 {
                   "label": "Mal 42 Prozent Grenzsteuersatz",
-                  "wert": "1.211 €",
+                  "wert": "1.261 €",
                   "op": "×",
-                  "hinweis": "Im Jahr. Geteilt durch 12 ergibt das rund 101 Euro im Monat."
+                  "hinweis": "Im Jahr. Geteilt durch 12 ergibt das rund 105 Euro im Monat."
                 },
                 {
-                  "label": "Beitrag nach Steuer: 246 Euro minus 101 Euro",
-                  "wert": "ca. −145 €",
+                  "label": "Beitrag nach Steuer: 246 Euro minus 105 Euro",
+                  "wert": "ca. −141 €",
                   "op": "=",
                   "ergebnis": true,
                   "hinweis": "Dagegen stehen 374 Euro Tilgung im Monatsschnitt der ersten zehn Jahre."
                 }
               ],
-              "fazit": "Kein Erstjahressprung, weil kein sofort abziehbarer Erhaltungsaufwand anfällt. Die 101 Euro gelten ab dem ersten vollen Jahr und sinken danach langsam, weil mit der Restschuld auch die abziehbaren Zinsen sinken."
+              "fazit": "Kein Erstjahressprung, weil kein sofort abziehbarer Erhaltungsaufwand anfällt. Die 105 Euro gelten ab dem ersten vollen Jahr und sinken danach langsam, weil mit der Restschuld auch die abziehbaren Zinsen sinken."
             }
           },
           {
@@ -11407,19 +11407,19 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               "zeilen": [
                 {
                   "label": "Steuerliches Ergebnis, für beide gleich",
-                  "wert": "− 2.883 €"
+                  "wert": "− 3.003 €"
                 },
                 {
                   "label": "Kunde A, 42 Prozent Grenzsteuersatz",
-                  "wert": "101 €/Monat",
+                  "wert": "105 €/Monat",
                   "op": "→",
-                  "hinweis": "1.211 Euro im Jahr. Beitrag nach Steuer 145 Euro."
+                  "hinweis": "1.261 Euro im Jahr. Beitrag nach Steuer 141 Euro."
                 },
                 {
                   "label": "Kunde B, rund 36 Prozent Grenzsteuersatz bei 55.000 Euro zu versteuerndem Einkommen",
-                  "wert": "86 €/Monat",
+                  "wert": "90 €/Monat",
                   "op": "→",
-                  "hinweis": "1.038 Euro im Jahr. Beitrag nach Steuer 160 Euro."
+                  "hinweis": "1.081 Euro im Jahr. Beitrag nach Steuer 156 Euro."
                 },
                 {
                   "label": "Unterschied im Monat, ohne dass sich am Objekt etwas ändert",
@@ -11448,7 +11448,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               {
                 "label": "Abschreibung im Kaufjahr",
                 "wert": "monatsweise",
-                "hinweis": "Übernahme im Oktober bedeutet drei Zwölftel, also 1.051 statt 4.203 Euro",
+                "hinweis": "Übernahme im Oktober bedeutet drei Zwölftel, also 1.081 statt 4.323 Euro",
                 "farbe": "amber"
               },
               {
@@ -11470,7 +11470,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           },
           {
             "titel": "Wann das Geld ankommt",
-            "kontext": "Auf die Frage: Und wann habe ich diese 101 Euro?",
+            "kontext": "Auf die Frage: Und wann habe ich diese 105 Euro?",
             "text": "\"Standardmäßig einmal im Jahr, mit dem Steuerbescheid. Es geht aber auch monatlich: du beantragst beim Finanzamt einen Freibetrag für die Lohnsteuer, dann zieht dein Arbeitgeber jeden Monat weniger ab. Eingetragen wird das ab 600 Euro im Jahr, und du liegst bei rund 2.900 Euro. Der Antrag ist ein Formular und gilt für zwei Jahre. Ich schicke dir den Ablauf zu, sobald der Kaufvertrag steht.\"",
             "warumTitel": "Warum diese Antwort mehr wert ist als hundert Euro",
             "warum": "Fast niemand im Vertrieb kennt den Freibetrag, und für den Kunden ist er der Unterschied zwischen einer Entlastung auf dem Papier und mehr Geld auf dem Konto. Die konkrete Zahl von 600 Euro macht die Antwort überprüfbar, und die Zusage, den Ablauf zu schicken, gibt dir einen sachlichen Anlass für den nächsten Kontakt."
@@ -11480,19 +11480,19 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           {
             "einwand": "Mein Steuerberater sagt, mit 80 Prozent Gebäudeanteil komme ich beim Finanzamt nicht durch.",
             "technik": "Bandbreite zeigen",
-            "antwort": "\"Möglich, und darüber entscheidet am Ende nicht dein Steuerberater und auch nicht ich, sondern das Finanzamt anhand des Bodenrichtwerts. Deshalb habe ich dir beide Rechnungen mitgebracht. Mit 80 Prozent sind es 101 Euro im Monat, mit 75 Prozent 92 Euro. Das ist der ganze Unterschied. Wenn deine Entscheidung an diesen 9 Euro hängt, sollten wir sie nicht treffen, und wenn nicht, können wir die Frage in Ruhe deinem Steuerberater überlassen.\"",
+            "antwort": "\"Möglich, und darüber entscheidet am Ende nicht dein Steuerberater und auch nicht ich, sondern das Finanzamt anhand des Bodenrichtwerts. Deshalb habe ich dir beide Rechnungen mitgebracht. Mit 80 Prozent sind es 105 Euro im Monat, mit 75 Prozent 96 Euro. Das ist der ganze Unterschied. Wenn deine Entscheidung an diesen 9 Euro hängt, sollten wir sie nicht treffen, und wenn nicht, können wir die Frage in Ruhe deinem Steuerberater überlassen.\"",
             "warumTitel": "Warum du den Einwand kleinrechnest statt ihn zu bestreiten",
-            "warum": "Der Kunde erwartet Verteidigung und bekommt beide Zahlen. Damit ist der Einwand sachlich erledigt, und er ist es auf eine Weise, die den Steuerberater nicht angreift. Das ist wichtig, denn den Steuerberater wirst du im Zweifel noch brauchen. Die Zahlen: 75 Prozent von 262.695 Euro sind 197.021 Euro, davon 2 Prozent sind 3.940 Euro Abschreibung, das steuerliche Ergebnis sinkt auf minus 2.620 Euro, mal 42 Prozent gleich 1.100 Euro im Jahr oder 92 Euro im Monat."
+            "warum": "Der Kunde erwartet Verteidigung und bekommt beide Zahlen. Damit ist der Einwand sachlich erledigt, und er ist es auf eine Weise, die den Steuerberater nicht angreift. Das ist wichtig, denn den Steuerberater wirst du im Zweifel noch brauchen. Die Zahlen: 75 Prozent von 270.165 Euro sind 202.624 Euro, davon 2 Prozent sind 4.052 Euro Abschreibung, das steuerliche Ergebnis sinkt auf minus 2.732 Euro, mal 42 Prozent gleich 1.147 Euro im Jahr oder 96 Euro im Monat."
           },
           {
             "einwand": "Wenn ich weniger verdiene, bringt mir das Ganze doch nichts.",
             "technik": "Umdeutung",
-            "antwort": "\"Weniger Steuervorteil, ja. Aber der Steuervorteil ist bei dir ohnehin die kleinste der drei Wirkungen. Bei dir sind es 86 statt 101 Euro im Monat, also 15 Euro Unterschied. Die Tilgung von 374 Euro im Monatsschnitt bleibt gleich, und die Miete auch. Wer wegen der Steuer kauft, kauft aus dem falschen Grund. Die Steuer ist der Rabatt, nicht das Produkt.\"",
+            "antwort": "\"Weniger Steuervorteil, ja. Aber der Steuervorteil ist bei dir ohnehin die kleinste der drei Wirkungen. Bei dir sind es 90 statt 105 Euro im Monat, also 15 Euro Unterschied. Die Tilgung von 374 Euro im Monatsschnitt bleibt gleich, und die Miete auch. Wer wegen der Steuer kauft, kauft aus dem falschen Grund. Die Steuer ist der Rabatt, nicht das Produkt.\"",
             "warumTitel": "Warum der Steuervorteil im Objekttermin absichtlich kleingeredet wird",
             "warum": "Eine Rechnung, die ohne die Steuer trägt, ist unangreifbar. Wer den Steuereffekt zur Hauptsache macht, hat ein Produkt gebaut, das mit jeder Tarifänderung wackelt und beim Kunden mit sinkendem Einkommen zusammenbricht. Der Satz vom Rabatt statt Produkt ist zugleich die ehrlichste Zusammenfassung dieses ganzen Abschnitts."
           }
         ],
-        "quereinsteigerHinweis": "Zu versteuerndes Einkommen ist nicht das Bruttogehalt und auch nicht das Netto, sondern was nach Werbungskosten, Sonderausgaben und Freibeträgen übrig bleibt. Es steht im letzten Steuerbescheid des Kunden, meist auf der ersten Seite. Für diesen Abschnitt genügt ein Merksatz: Die Vermietung mindert das letzte Stück Einkommen, deshalb wirkt sie genau mit dem Grenzsteuersatz und nicht mit dem Durchschnittssatz, der im Steuerbescheid daneben steht. Anschaffungskosten sind Kaufpreis plus Kaufnebenkosten. Deshalb steht in der Rechnung 262.695 Euro und nicht 249.000, obwohl der Kunde nur den Kaufpreis überweist.",
+        "quereinsteigerHinweis": "Zu versteuerndes Einkommen ist nicht das Bruttogehalt und auch nicht das Netto, sondern was nach Werbungskosten, Sonderausgaben und Freibeträgen übrig bleibt. Es steht im letzten Steuerbescheid des Kunden, meist auf der ersten Seite. Für diesen Abschnitt genügt ein Merksatz: Die Vermietung mindert das letzte Stück Einkommen, deshalb wirkt sie genau mit dem Grenzsteuersatz und nicht mit dem Durchschnittssatz, der im Steuerbescheid daneben steht. Anschaffungskosten sind Kaufpreis plus Kaufnebenkosten. Deshalb steht in der Rechnung 270.165 Euro und nicht 249.000, obwohl der Kunde nur den Kaufpreis überweist.",
         "profiTipp": "Wer als Ehepaar kauft, entscheidet mit dem Grundbucheintrag zugleich über die Zuordnung der Einkünfte, und diese Entscheidung ist später nur mit einem neuen notariellen Vertrag zu ändern. Bei Zusammenveranlagung fällt das steuerlich zunächst nicht auf, weil beide gemeinsam veranlagt werden. Es fällt in drei Fällen auf, und alle drei kommen häufiger vor, als man denkt: bei Einzelveranlagung, bei Trennung und bei einem Verkauf innerhalb der Spekulationsfrist von zehn Jahren (§ 23 Absatz 1 Satz 1 Nummer 1 Einkommensteuergesetz), denn dann trifft der Veräußerungsgewinn genau den, der im Grundbuch steht. Frag deshalb vor der Reservierung, wer eingetragen werden soll, und frag es als sachliche Gestaltungsfrage, nicht als Andeutung. Ein Trost, der die Frage entspannt: Eine spätere Übertragung zwischen Ehegatten ist von der Grunderwerbsteuer befreit (§ 3 Nummer 4 Grunderwerbsteuergesetz), Notar- und Grundbuchkosten fallen aber erneut an, und bei einer noch laufenden Finanzierung muss die Bank mitspielen. Die Entscheidung ist also nicht unumkehrbar, aber sie kostet.",
         "goldNugget": {
           "titel": "Woher der Erhaltungsaufwand in einer Rechnung kommt, und warum das alles entscheidet",
@@ -11539,9 +11539,9 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "titel": "Rechne die Abschreibung im Jahr aus",
             "hinweis": "Nicht der Kaufpreis zählt, sondern Kaufpreis plus Nebenkosten, und davon nur der Gebäudeanteil.",
             "punkte": 10,
-            "fall": "Kaufpreis 249.000 Euro, Kaufnebenkosten 13.695 Euro, Gebäudeanteil 80 Prozent, Abschreibungssatz 2 Prozent.",
+            "fall": "Kaufpreis 249.000 Euro, Kaufnebenkosten 21.165 Euro, Gebäudeanteil 80 Prozent, Abschreibungssatz 2 Prozent.",
             "gesucht": "Gebäudeabschreibung im Jahr in Euro",
-            "zielwert": 4203,
+            "zielwert": 4323,
             "toleranzProzent": 1,
             "einheit": "€",
             "rechenweg": {
@@ -11549,22 +11549,22 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               "zeilen": [
                 {
                   "label": "Kaufpreis plus Kaufnebenkosten",
-                  "wert": "262.695 €"
+                  "wert": "270.165 €"
                 },
                 {
                   "label": "Davon 80 Prozent Gebäudeanteil",
-                  "wert": "210.156 €",
+                  "wert": "216.132 €",
                   "op": "×",
                   "hinweis": "Der Anteil für Grund und Boden bleibt außen vor, Boden nutzt sich nicht ab."
                 },
                 {
                   "label": "Davon 2 Prozent Abschreibung",
-                  "wert": "4.203 €",
+                  "wert": "4.323 €",
                   "op": "×",
                   "ergebnis": true
                 }
               ],
-              "fazit": "Zwei Fehler passieren hier immer wieder: die Kaufnebenkosten vergessen, das kostet 219 Euro im Jahr, oder die 2 Prozent auf den ganzen Kaufpreis rechnen, das ergibt 5.254 Euro und ist um ein Viertel zu hoch."
+              "fazit": "Zwei Fehler passieren hier immer wieder: die Kaufnebenkosten vergessen, das kostet 339 Euro im Jahr, oder die 2 Prozent auf Kaufpreis und Nebenkosten ohne Abzug des Bodens rechnen, das ergibt 5.403 Euro und ist um ein Viertel zu hoch."
             }
           },
           {
@@ -11659,16 +11659,16 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Risiko eins, Mietausfall. Kapitel 7 rechnet deshalb mit einem Sicherheitspuffer von 20 Prozent auf die Rate. Beim Beispielobjekt sind das 228 Euro im Monat, also 2.740 Euro im Jahr. Rechne dem Kunden vor, was das bedeutet: Bei einer Miete von 995 Euro sind das rund 2,7 Monatsmieten. Ehrlicher wird es, wenn du dazusagst, dass bei Leerstand auch die umlagefähigen Kosten am Eigentümer hängen bleiben, also rund 140 Euro im Monat zusätzlich. Dann reicht der Puffer für rund 2,4 Monate. Genau diese Größenordnung meint Kapitel 7 mit zwei bis drei Monaten.",
           "Risiko zwei, das Ende der Zinsbindung. Nach zehn Jahren beträgt die Restschuld 204.158 Euro. Steht der Anschlusszins dann bei 6 statt 4 Prozent und bleibt die Tilgung bei 1,5 Prozent, steigt die Rate von 1.141 auf 1.276 Euro, also um 135 Euro. Das ist die Zahl, die der Kunde hören muss, und sie ist beherrschbar: Die Miete wird in zehn Jahren nicht dieselbe sein, das gesetzliche Kündigungsrecht nach zehn Jahren mit sechs Monaten Frist steht dem Kunden ohnehin zu (§ 489 Absatz 1 Nummer 2 Bürgerliches Gesetzbuch), und eine Sondertilgung von 5 Prozent im Jahr kostet meist nichts extra, senkt die Restschuld aber spürbar.",
           "Risiko drei, Sonderumlage und Instandhaltung. Beschlüsse der Eigentümergemeinschaft binden auch den, der dagegen gestimmt hat oder gar nicht da war. Die Gegenmaßnahme ist keine Beruhigung, sondern eine Prüfung, und die hast du in Filterstufe 3 bereits gemacht: Beschlusssammlung gelesen, Protokolle gelesen, Rücklagenstand neben dem Baujahr der teuren Bauteile gelesen. Sag im Termin, was du gefunden hast, und sag auch, was du nicht ausschließen kannst.",
-          "Risiko vier, die Wertentwicklung. Hier gehört der Handgriff aus Abschnitt 12 der Beratungspräsentation hin, und zwar wörtlich: Zieh den Regler selbst auf null. Beim Beispielobjekt sieht das so aus: Nach zehn Jahren steht der Wert unverändert bei 249.000 Euro, die Restschuld bei 204.158 Euro, das Vermögen also bei 44.842 Euro. Eingezahlt hat der Kunde in diesen zehn Jahren rund 17.400 Euro. Selbst ohne einen einzigen Euro Wertsteigerung bleibt ein Plus von rund 27.400 Euro. Wer diese Zahl auf dem Tisch hat, braucht keine Prognose.",
+          "Risiko vier, die Wertentwicklung. Hier gehört der Handgriff aus Abschnitt 12 der Beratungspräsentation hin, und zwar wörtlich: Zieh den Regler selbst auf null. Beim Beispielobjekt sieht das so aus: Nach zehn Jahren steht der Wert unverändert bei 249.000 Euro, die Restschuld bei 204.158 Euro, das Vermögen also bei 44.842 Euro. Eingezahlt hat der Kunde in diesen zehn Jahren rund 16.900 Euro. Selbst ohne einen einzigen Euro Wertsteigerung bleibt ein Plus von rund 27.900 Euro. Wer diese Zahl auf dem Tisch hat, braucht keine Prognose.",
           "Risiko fünf, Liquidität und Verkauf. Eine Wohnung ist nicht in einer Woche verkauft, sondern in Monaten, und innerhalb der Spekulationsfrist von zehn Jahren ist der Gewinn steuerpflichtig (§ 23 Absatz 1 Satz 1 Nummer 1 Einkommensteuergesetz). Wer das Geld in fünf Jahren zwingend braucht, kauft keine Immobilie. Das ist kein Verkaufshindernis, sondern die Frage, mit der du dir einen Kunden ersparst, der in drei Jahren unter Druck verkaufen muss.",
           "Risiko sechs, Mieter und Mietrecht. Eigenbedarf ist bei einer Kapitalanlage kein Thema, das gehört klargestellt, bevor es jemand fragt. Mieterhöhungen sind an die ortsübliche Vergleichsmiete gebunden und zusätzlich an die Kappungsgrenze von 20 Prozent in drei Jahren, in angespannten Wohnungsmärkten 15 Prozent (§ 558 Absatz 3 Bürgerliches Gesetzbuch). Eine Rechnung, die mit jährlichen Mietsteigerungen arbeitet, ist deshalb an dieser Stelle zu prüfen und nicht am Wunschdenken.",
-          "Und die Chancen, in derselben Nüchternheit und in dieser Reihenfolge: Der Mieter tilgt mit, das ist die einzige Position ohne Annahme. Die Steuerwirkung, sie ist der Rabatt und nicht das Produkt. Der Inflationsschutz, weil Mieten und Sachwerte langfristig mitziehen, während die Schuld nominal gleich bleibt. Der Fremdkapitalhebel, der aus 13.695 Euro eingesetztem Eigenkapital eine Anlage von 249.000 Euro macht. Und die Wertsteigerung, als Möglichkeit und ausdrücklich nicht als Rechengröße."
+          "Und die Chancen, in derselben Nüchternheit und in dieser Reihenfolge: Der Mieter tilgt mit, das ist die einzige Position ohne Annahme. Die Steuerwirkung, sie ist der Rabatt und nicht das Produkt. Der Inflationsschutz, weil Mieten und Sachwerte langfristig mitziehen, während die Schuld nominal gleich bleibt. Der Fremdkapitalhebel, der aus 21.165 Euro eingesetztem Eigenkapital eine Anlage von 249.000 Euro macht. Und die Wertsteigerung, als Möglichkeit und ausdrücklich nicht als Rechengröße."
         ],
         "bullets": [
           "Mietausfall: Puffer 228 Euro im Monat deckt rund 2,4 Monate, weil bei Leerstand auch die umlagefähigen Kosten beim Eigentümer bleiben.",
           "Zinsänderung nach zehn Jahren: bei 6 statt 4 Prozent rund 135 Euro mehr im Monat auf eine Restschuld von 204.158 Euro.",
           "Sonderumlage: Beschlüsse binden alle. Prüfung statt Beruhigung, und zwar vor dem Termin.",
-          "Wertentwicklung: Regler auf null. Selbst dann bleiben nach zehn Jahren rund 27.400 Euro Plus.",
+          "Wertentwicklung: Regler auf null. Selbst dann bleiben nach zehn Jahren rund 27.900 Euro Plus.",
           "Liquidität: Verkauf dauert Monate, Gewinn innerhalb von zehn Jahren ist steuerpflichtig.",
           "Mietrecht: Erhöhung nur bis zur ortsüblichen Vergleichsmiete und im Rahmen der Kappungsgrenze.",
           "Chancen in dieser Reihenfolge: Tilgung durch den Mieter, Steuerwirkung, Inflationsschutz, Fremdkapitalhebel, Wertsteigerung."
@@ -11695,17 +11695,17 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                   "op": "="
                 },
                 {
-                  "label": "Eingezahlt in zehn Jahren: 145 Euro mal 120 Monate",
-                  "wert": "17.400 €",
+                  "label": "Eingezahlt in zehn Jahren: 141 Euro mal 120 Monate",
+                  "wert": "16.920 €",
                   "op": "−",
                   "hinweis": "Beitrag nach Steuer, konstant gerechnet. In Wirklichkeit steigt die Miete und sinkt zugleich die Steuerentlastung, weil mit der Restschuld die abziehbaren Zinsen sinken."
                 },
                 {
                   "label": "Plus, ohne jede Wertsteigerung",
-                  "wert": "27.442 €",
+                  "wert": "27.922 €",
                   "op": "=",
                   "ergebnis": true,
-                  "hinweis": "Das eingesetzte Eigenkapital von 13.695 Euro für die Kaufnebenkosten ist hier noch nicht abgezogen. Zieht man es ab, bleiben 13.747 Euro."
+                  "hinweis": "Das eingesetzte Eigenkapital von 21.165 Euro für die Kaufnebenkosten ist hier noch nicht abgezogen. Zieht man es ab, bleiben 6.757 Euro."
                 }
               ],
               "fazit": "Diese Rechnung braucht keine Prognose und keinen Optimismus. Sie ist der Grund, warum der Regler in Abschnitt 12 überhaupt bis null geht."
@@ -11719,12 +11719,12 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 "label": "Was dafür spricht",
                 "punkte": [
                   "Der Mieter tilgt mit: 374 Euro im Monatsschnitt, ohne jede Annahme",
-                  "Steuerwirkung: rund 101 Euro im Monat bei 42 Prozent Grenzsteuersatz",
+                  "Steuerwirkung: rund 105 Euro im Monat bei 42 Prozent Grenzsteuersatz",
                   "Inflationsschutz: Miete und Sachwert ziehen mit, die Schuld bleibt nominal gleich",
-                  "Fremdkapitalhebel: 13.695 Euro Eigenkapital bewegen 249.000 Euro Anlage",
+                  "Fremdkapitalhebel: 21.165 Euro Eigenkapital bewegen 249.000 Euro Anlage",
                   "Wertsteigerung als Möglichkeit, nicht als Rechengröße"
                 ],
-                "ergebnis": "145 Euro Beitrag, 374 Euro Vermögensaufbau"
+                "ergebnis": "141 Euro Beitrag, 374 Euro Vermögensaufbau"
               },
               "optionB": {
                 "label": "Was dagegen spricht",
@@ -12654,7 +12654,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "Eigenkapital ist bei Kapitalanlagen grundsätzlich nicht nötig"
           ],
           "korrekt": 0,
-          "aufloesung": "Faustregel Bank: mindestens die Kaufnebenkosten von 8 bis 12 Prozent sollen aus Eigenkapital kommen. Das ist der Standardfall mit den besten Konditionen.",
+          "aufloesung": "Faustregel Bank: mindestens die Kaufnebenkosten, bei uns rund 8 bis 8,5 Prozent, sollen aus Eigenkapital kommen. Das ist der Standardfall mit den besten Konditionen.",
           "sprungZuAbschnitt": "aufbau-finanzierung"
         },
         {
@@ -12717,7 +12717,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "optionen": [
             "Ob der Verkehrswert des Objekts über der Darlehenssumme liegt, also ob die Bank im Notfall aus dem Verkauf voll bedient wird",
             "Ob nach Lebenshaltungspauschale, laufenden Krediten und eigener Kaltmiete genug bleibt, um die neue Rate mal 1,2 zu tragen",
-            "Ob der Kunde die Kaufnebenkosten aus Eigenkapital aufbringen kann, also mindestens 8 bis 12 Prozent des Kaufpreises frei hat"
+            "Ob der Kunde die Kaufnebenkosten aus Eigenkapital aufbringen kann, also mindestens rund 8 bis 8,5 Prozent des Kaufpreises frei hat"
           ],
           "korrekt": 1,
           "aufloesung": "Haushaltsnetto minus Lebenshaltungspauschale von rund 800 bis 1.200 Euro je Person, minus bestehende Kredite, minus die selbst gezahlte Kaltmiete. Was bleibt, muss die neue Rate mal 1,2 tragen, denn geprüft wird gegen die Rate mit Sicherheitspuffer.",
@@ -12760,7 +12760,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         {
           "id": "b",
           "label": "110 Prozent Vollfinanzierung, Eigenkapital für Objekt zwei halten",
-          "beschreibung": "Der Zinsaufschlag von 0,2 bis 0,5 Prozent ist der Preis für Liquidität. Auf 330.000 Euro sind 0,35 Prozent rund 1.155 Euro Zins im Jahr, also rund 96 Euro im Monat. Wenn das zweite Objekt konkret geplant ist, arbeitet das Eigenkapital dort tatsächlich produktiver, und die Bonität trägt die Vollfinanzierung."
+          "beschreibung": "Der Zinsaufschlag von 0,2 bis 0,5 Prozent ist der Preis für Liquidität. Auf 325.500 Euro sind 0,35 Prozent rund 1.139 Euro Zins im Jahr, also rund 95 Euro im Monat. Wenn das zweite Objekt konkret geplant ist, arbeitet das Eigenkapital dort tatsächlich produktiver, und die Bonität trägt die Vollfinanzierung."
         },
         {
           "id": "c",
@@ -13737,7 +13737,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Ein Wort zur KfW, weil hier die meisten Fehler passieren. Die Programme unterscheiden sich weniger im Zins als in der Frage, wer sie überhaupt beantragen darf. Mehrere bekannte Wohneigentumsprogramme setzen Selbstnutzung voraus und scheiden bei einer Kapitalanlage von vornherein aus, etwa KfW 300 Wohneigentum für Familien und der Ergänzungskredit Plus KfW 358 mit seinem selbstgenutzten Eigenheim und der Einkommensgrenze von 90.000 Euro. Für einen vermietenden Käufer kommen dagegen KfW 261 Wohngebäude Kredit im Bestand und KfW 297 und 298 Klimafreundlicher Neubau in Betracht, dort sind Vermieter und Unternehmen ausdrücklich antragsberechtigt. Alle Angaben zu Programmen und Konditionen: Stand September 2026, letzte Konditionsanpassung der Gebäudeförderung zum 21. Juli 2026, Quelle kfw.de. Die Sätze ändert die KfW laufend, frage sie deshalb vor jeder Kalkulation beim Finanzierungspartner tagesaktuell ab."
         ],
         "bullets": [
-          "100 Prozent Kaufpreis, Kaufnebenkosten aus Eigenkapital, der Standardfall: Die Bank finanziert 100 Prozent des Kaufpreises, der Kunde bringt die 8 bis 12 Prozent Nebenkosten selbst mit. Beste Konditionen, weil die Bank Sicherheit hat.",
+          "100 Prozent Kaufpreis, Kaufnebenkosten aus Eigenkapital, der Standardfall: Die Bank finanziert 100 Prozent des Kaufpreises, der Kunde bringt die rund 8 bis 8,5 Prozent Nebenkosten selbst mit. Beste Konditionen, weil die Bank Sicherheit hat.",
           "110 Prozent Vollfinanzierung: Die Bank finanziert Kaufpreis und Kaufnebenkosten. Voraussetzung sind sehr gute Bonität, hohes Einkommen und saubere SCHUFA. Zinsaufschlag meist 0,2 bis 0,5 Prozent.",
           "KfW 261, Wohngebäude Kredit, für den Bestand: fördert die Sanierung zu einer Effizienzhaus-Stufe und ausdrücklich auch den Ersterwerb eines frisch sanierten Effizienzhauses. Gefördert werden die Stufen 85, 70, 55, 40 und Effizienzhaus Denkmal, jeweils als Klasse Erneuerbare Energien oder Nachhaltigkeit. Bis 150.000 Euro je Wohneinheit. Der Tilgungszuschuss beträgt nach dem Merkblatt Stand 07/2026, gültig ab 21.07.2026: Denkmal EE 5 Prozent, Effizienzhaus 85 EE 0 Prozent, 70 EE 0 Prozent, 55 EE 5 Prozent, 40 EE 10 Prozent. In Euro sind das 0 bis 15.000 Euro je Wohneinheit. Dazu kommen Zuschläge: NH-Klasse plus 5 Prozentpunkte, Worst Performing Building plus 10, serielle Sanierung plus 15, die beiden letzten kumulierbar. Antragsberechtigt sind alle Investoren einschließlich Vermieter. Beim Ersterwerb müssen die förderfähigen Sanierungskosten im Kauf- oder Bauträgervertrag oder in einer gesonderten Kostenaufstellung ausgewiesen sein.",
           "KfW 297 und 298, Klimafreundlicher Neubau Wohngebäude, für Neubau und Ersterwerb: drei Stufen, Effizienzhaus 55 ohne Öl- oder Gasheizung, Klimafreundliches Wohngebäude auf Effizienzhaus-40-Niveau mit niedrigen Lebenszyklus-Emissionen, und dieselbe Stufe zusätzlich mit QNG-Siegel. Bis 100.000 Euro je Wohneinheit, mit QNG-Siegel bis 150.000 Euro. Vermieter sind ausdrücklich antragsberechtigt. Achtung bei der Stufe Effizienzhaus 55: Sie ist befristet und längstens bis zum 31.12.2026 zugänglich, bei früherer Erschöpfung der Bundesmittel auch davor. Wer damit rechnet, klärt den Antragszeitpunkt zuerst.",
@@ -13770,7 +13770,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "kpis": [
               {
                 "label": "Standardfall, 100 %",
-                "wert": "8 bis 12 % KNK aus Eigenkapital",
+                "wert": "rund 8 bis 8,5 % KNK aus Eigenkapital",
                 "hinweis": "Beste Konditionen, weil die Bank Sicherheit hat",
                 "farbe": "primary"
               },
@@ -13803,7 +13803,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 "badge": "Standard",
                 "punkte": [
                   "Bank finanziert 300.000 € Kaufpreis",
-                  "Kunde bringt rund 30.000 € Nebenkosten selbst mit",
+                  "Kunde bringt rund 25.500 € Nebenkosten selbst mit (8,5 %, Brandenburg)",
                   "Beste Zins-Konditionen, weil die Bank Sicherheit hat"
                 ],
                 "ergebnis": "Sollzins zum Beispiel 4,00 %, Rate 1.500 €"
@@ -13812,13 +13812,13 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 "label": "110 % Vollfinanzierung inklusive Nebenkosten",
                 "badge": "Nur bei Top-Bonität",
                 "punkte": [
-                  "Bank finanziert 300.000 € plus rund 30.000 € Nebenkosten",
+                  "Bank finanziert 300.000 € plus rund 25.500 € Nebenkosten",
                   "Kunde bringt kein oder minimales Eigenkapital ein",
                   "Voraussetzung: hohes Einkommen, saubere SCHUFA"
                 ],
-                "ergebnis": "Sollzins rund 4,35 %, Rate rund 1.746 €"
+                "ergebnis": "Sollzins rund 4,35 %, Rate rund 1.722 €"
               },
-              "fazit": "Der Unterschied sind rund 246 Euro im Monat, und davon sind rund 96 Euro reiner Aufschlagszins auf die höhere Summe. Für rund 85 Prozent der Fälle ist der Standard-Weg besser. 110 Prozent nur, wenn das Eigenkapital anderswo produktiver arbeitet oder gar nicht vorhanden ist."
+              "fazit": "Der Unterschied sind rund 222 Euro im Monat, und davon sind rund 95 Euro reiner Aufschlagszins auf die höhere Summe. Für rund 85 Prozent der Fälle ist der Standard-Weg besser. 110 Prozent nur, wenn das Eigenkapital anderswo produktiver arbeitet oder gar nicht vorhanden ist."
             }
           }
         ]
@@ -14085,14 +14085,14 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                   "wert": "300.000 €"
                 },
                 {
-                  "label": "Kaufnebenkosten, rund 10 %",
-                  "wert": "+ 30.000 €",
+                  "label": "Kaufnebenkosten, rund 8,5 %",
+                  "wert": "+ 25.500 €",
                   "op": "+",
-                  "hinweis": "Grunderwerbsteuer 3,5 bis 6,5 % je Bundesland, Notar rund 1,5 %, Grundbuch rund 0,5 %, hier zusätzlich Maklercourtage 3,57 %. Ohne Makler wären es rund 5,5 bis 8,5 %."
+                  "hinweis": "Brandenburg: Grunderwerbsteuer 6,5 %, Notar rund 1,5 %, Grundbuch rund 0,5 %, kein Makler. In Berlin wären es rund 8 %, also 24.000 €."
                 },
                 {
                   "label": "Gesamtaufwand",
-                  "wert": "330.000 €",
+                  "wert": "325.500 €",
                   "op": "=",
                   "ergebnis": true
                 },
@@ -14103,7 +14103,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 },
                 {
                   "label": "Davon aus Eigenkapital",
-                  "wert": "30.000 €",
+                  "wert": "25.500 €",
                   "op": "→",
                   "hinweis": "Der Standardfall, den 8 von 10 Kunden nehmen"
                 },
@@ -14285,7 +14285,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           {
             "titel": "Finanzierung in 90 Sekunden erklärt",
             "kontext": "Im Beratungsgespräch, direkt nachdem Objekt und Zahlen gezeigt wurden.",
-            "text": "Ich zeig dir kurz, wie das mit der Finanzierung funktioniert, ganz in Ruhe und ohne Fachchinesisch.\n\nStell dir vor, du kaufst die Wohnung für 300.000 Euro. Dazu kommen rund 10 Prozent Kaufnebenkosten, also Grunderwerbsteuer, Notar, Grundbuch und die Courtage. Zusammen sind wir bei 330.000 Euro.\n\nDie Bank finanziert dir den Kaufpreis, also die 300.000 Euro. Die 30.000 Euro Nebenkosten bringst du aus Eigenkapital ein. Das ist der Standardfall, den 8 von 10 Kunden nehmen, und er bringt dir die besten Konditionen.\n\nAuf die 300.000 Euro zahlst du eine monatliche Rate aus Zins und Tilgung, bei den aktuellen Zinsen sind das rund 1.500 Euro. Davon sind im ersten Jahr rund 1.000 Euro Zinsen an die Bank und rund 500 Euro Tilgung, und die Tilgung ist reiner Vermögensaufbau.\n\nJetzt die Gegenrechnung. Von diesen 1.500 Euro kommen rund 900 Euro Miete rein. Dazu kommt eine Position, die viele weglassen und die ich dir bewusst zeige: rund 90 Euro im Monat, die du als Eigentümer selbst trägst und nicht auf den Mieter umlegen darfst, also Verwaltung und die Rücklage fürs Haus. Und rund 250 Euro sparst du an Steuern. Unter dem Strich zahlst du rund 440 Euro im Monat selbst, und dabei legst du 500 Euro zurück. Das heißt: Du sparst mehr, als du zahlst.\n\nUnd was passiert in zehn Jahren? Getilgt hast du dann rund 72.000 Euro, das kann ich dir vorrechnen, das steht fest. Was die Wohnung dann wert ist, weiß niemand. Bei zwei Prozent im Jahr wären es rund 65.000 Euro obendrauf. Ich sage dir beides getrennt, damit du siehst, was sicher ist und was Annahme.\n\nUnd das Beste: Wir rechnen von Anfang an mit einem Puffer von gut zwei Monatsraten im Jahr, damit dich ein Leerstand oder eine Sonderumlage nicht trifft.",
+            "text": "Ich zeig dir kurz, wie das mit der Finanzierung funktioniert, ganz in Ruhe und ohne Fachchinesisch.\n\nStell dir vor, du kaufst die Wohnung für 300.000 Euro. Dazu kommen in Brandenburg rund 8,5 Prozent Kaufnebenkosten, also Grunderwerbsteuer, Notar und Grundbuch, einen Makler zahlst du bei uns nicht. Zusammen sind wir bei 325.500 Euro.\n\nDie Bank finanziert dir den Kaufpreis, also die 300.000 Euro. Die 25.500 Euro Nebenkosten bringst du aus Eigenkapital ein. Das ist der Standardfall, den 8 von 10 Kunden nehmen, und er bringt dir die besten Konditionen.\n\nAuf die 300.000 Euro zahlst du eine monatliche Rate aus Zins und Tilgung, bei den aktuellen Zinsen sind das rund 1.500 Euro. Davon sind im ersten Jahr rund 1.000 Euro Zinsen an die Bank und rund 500 Euro Tilgung, und die Tilgung ist reiner Vermögensaufbau.\n\nJetzt die Gegenrechnung. Von diesen 1.500 Euro kommen rund 900 Euro Miete rein. Dazu kommt eine Position, die viele weglassen und die ich dir bewusst zeige: rund 90 Euro im Monat, die du als Eigentümer selbst trägst und nicht auf den Mieter umlegen darfst, also Verwaltung und die Rücklage fürs Haus. Und rund 250 Euro sparst du an Steuern. Unter dem Strich zahlst du rund 440 Euro im Monat selbst, und dabei legst du 500 Euro zurück. Das heißt: Du sparst mehr, als du zahlst.\n\nUnd was passiert in zehn Jahren? Getilgt hast du dann rund 72.000 Euro, das kann ich dir vorrechnen, das steht fest. Was die Wohnung dann wert ist, weiß niemand. Bei zwei Prozent im Jahr wären es rund 65.000 Euro obendrauf. Ich sage dir beides getrennt, damit du siehst, was sicher ist und was Annahme.\n\nUnd das Beste: Wir rechnen von Anfang an mit einem Puffer von gut zwei Monatsraten im Jahr, damit dich ein Leerstand oder eine Sonderumlage nicht trifft.",
             "warum": "Das Skript folgt einer Reihenfolge, die jede Zahl an die Hand nimmt: Kaufpreis, Nebenkosten, Bank, Rate, Miete, eigene Kosten, Steuer, Eigenanteil, Vermögen. Vier Entscheidungen darin sind bewusst getroffen. Erstens wird die Rate sofort in Zins und Tilgung zerlegt. Der Kunde hört bei 1.500 Euro Rate zunächst nur Belastung. Sobald 500 Euro davon Tilgung heißen, hört er Sparen, und das ist derselbe Betrag. Zweitens nennst du die nicht umlagefähigen Kosten von dir aus, obwohl sie die Rechnung um 90 Euro verschlechtern. Das ist der stärkste Satz des ganzen Skripts, denn es ist der einzige Punkt, an dem du dir freiwillig schadest. Genau daran erkennt der Kunde, dass die anderen Zahlen stimmen. Und die 90 Euro stehen ohnehin in der Wirtschaftlichkeitsberechnung, die er im nächsten Termin bekommt. Wer sie dort zum ersten Mal sieht, prüft rückwirkend alles nach. Drittens steht der Eigenanteil neben der Tilgung. 440 Euro Aufwand bei 500 Euro Tilgung ist keine Belastung, sondern ein Sparvorgang mit 60 Euro Aufschlag, und dieser Vergleich ersetzt drei Argumente. Viertens wird die Zehn-Jahres-Aussage geteilt: 72.000 Euro Tilgung sind nachrechenbar, die Wertsteigerung ist eine Annahme. Ein Kunde, der diesen Unterschied von dir hört, glaubt dir jede weitere Zahl. Ein Kunde, der ihn sich in Jahr drei selbst erschließt, glaubt dir keine mehr.",
             "warumTitel": "Warum die schlechte Zahl freiwillig ins Skript gehört"
           },
@@ -15081,7 +15081,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 { "label": "Notargebühren, rund 1,5 %", "wert": "4.500 €", "hinweis": "Beurkundung des Kaufvertrags, Grundschuldbestellung, Vollzug und Betreuung. Geschäftswert ist der Kaufpreis, Grundlage das Gerichts- und Notarkostengesetz." },
                 { "label": "Grundbuchkosten, rund 0,5 %", "wert": "+ 1.500 €", "op": "+", "hinweis": "Auflassungsvormerkung, Eintragung der Grundschuld, Eigentumsumschreibung" },
                 { "label": "Summe, trägt der Käufer nach § 448 Absatz 2 BGB", "wert": "6.000 €", "op": "=", "ergebnis": true, "hinweis": "Genau diese 2 Prozent stehen in Kapitel 7 in den Kaufnebenkosten neben der Grunderwerbsteuer." },
-                { "label": "Zum Vergleich: Grunderwerbsteuer bei 3,5 %", "wert": "10.500 €", "op": "→", "hinweis": "In Nordrhein-Westfalen mit 6,5 Prozent wären es 19.500 €. Die Grunderwerbsteuer ist damit fast immer der größere Posten." }
+                { "label": "Zum Vergleich: Grunderwerbsteuer in Brandenburg, 6,5 %", "wert": "19.500 €", "op": "→", "hinweis": "In Berlin mit 6 Prozent wären es 18.000 €. Die Grunderwerbsteuer ist damit der größere Posten." }
               ],
               "fazit": "Wenn der Kunde nach den Notarkosten fragt, meint er meistens die Kaufnebenkosten insgesamt. Nenne beide Zahlen: rund 2 Prozent für Notar und Grundbuch, dazu die Grunderwerbsteuer seines Bundeslands. Und sag dazu, dass die Notargebühren gesetzlich festgelegt sind. Das beendet die Suche nach einem günstigeren Notar, bevor sie anfängt."
             }
@@ -16477,12 +16477,12 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Steuerbescheid und Erstattung dokumentieren. Das ist der zweite Aftersales-Anlass, dort geht es um das zweite Objekt."
         ],
         "quereinsteigerHinweis": "Werbungskosten sind alle Ausgaben, die mit den Mieteinnahmen zusammenhängen. Sie werden von den Mieteinnahmen abgezogen. Bleibt am Ende ein Minus, senkt dieses Minus das übrige Einkommen des Kunden und damit seine Steuer, das ist die Erstattung, von der im Beratungsgespräch die Rede war. Drei Dinge musst du sicher können. Erstens: Von der monatlichen Rate ist nur der Zinsanteil eine Werbungskostenposition, die Tilgung nicht. Zweitens: Die Abschreibung ist die größte Position, obwohl dafür kein Geld abfließt. Drittens: Nicht alles, was der Kunde rund um den Kauf bezahlt hat, ist sofort abziehbar. Grunderwerbsteuer, Notar und Makler gehören zu den Anschaffungskosten und wirken sich nur über die jährliche Abschreibung aus, verteilt über fünfzig Jahre. Und noch eine Zuständigkeitsfrage: Die Steuererklärung macht der Steuerberater, nicht du. § 5 Steuerberatungsgesetz behält die geschäftsmäßige Hilfe in Steuersachen den dafür zugelassenen Berufen vor. Du erklärst, wie die Systematik funktioniert, und du sammelst die Unterlagen mit dem Kunden. Die Zahlen in seiner Erklärung setzt sein Berater.",
-        "profiTipp": "Der Posten, den fast niemand nennt, ist die Kaufnebenkostenwirkung. Kunden empfinden die Nebenkosten als verlorenes Geld. Steuerlich sind sie das nicht: Sie gehören zu den Anschaffungskosten und erhöhen anteilig, nämlich mit dem Gebäudeanteil, die Bemessungsgrundlage der Abschreibung. Bei 300.000 Euro Kaufpreis, 16.500 Euro Nebenkosten und 75 Prozent Gebäudeanteil sind das 12.375 Euro mehr Bemessungsgrundlage und bei 2 Prozent rund 248 Euro zusätzliche Abschreibung im Jahr, über die Laufzeit also die vollen 12.375 Euro. Das dreht die Nebenkosten nicht in einen Vorteil, aber es ist das ehrliche Gegengewicht. Ein zweiter Punkt für dieselbe Frage: Finanzierungskosten sind das Gegenteil der Anschaffungsnebenkosten. Bereitstellungszinsen, Schätzkosten der Bank und die Kosten der Grundschuldbestellung hängen nicht am Objekt, sondern am Darlehen, und sind deshalb sofort abziehbare Werbungskosten. Wer beide Gruppen auseinanderhalten kann, beantwortet die Nebenkostenfrage in zwei Sätzen statt in zehn.",
+        "profiTipp": "Der Posten, den fast niemand nennt, ist die Kaufnebenkostenwirkung. Kunden empfinden die Nebenkosten als verlorenes Geld. Steuerlich sind sie das nicht: Sie gehören zu den Anschaffungskosten und erhöhen anteilig, nämlich mit dem Gebäudeanteil, die Bemessungsgrundlage der Abschreibung. Bei 300.000 Euro Kaufpreis, 25.500 Euro Nebenkosten (Brandenburg) und 75 Prozent Gebäudeanteil sind das 19.125 Euro mehr Bemessungsgrundlage und bei 2 Prozent rund 383 Euro zusätzliche Abschreibung im Jahr, über die Laufzeit also die vollen 19.125 Euro. Das dreht die Nebenkosten nicht in einen Vorteil, aber es ist das ehrliche Gegengewicht. Ein zweiter Punkt für dieselbe Frage: Finanzierungskosten sind das Gegenteil der Anschaffungsnebenkosten. Bereitstellungszinsen, Schätzkosten der Bank und die Kosten der Grundschuldbestellung hängen nicht am Objekt, sondern am Darlehen, und sind deshalb sofort abziehbare Werbungskosten. Wer beide Gruppen auseinanderhalten kann, beantwortet die Nebenkostenfrage in zwei Sätzen statt in zehn.",
         "goldNugget": {
           "titel": "Die 15-Prozent-Grenze, die teuerste Unkenntnis des Bestandskäufers",
           "text": "Ein Kunde kauft eine Bestandswohnung und renoviert im Jahr darauf für 45.000 Euro: Bad, Elektrik, Böden, Fenster. Er rechnet damit, das im selben Jahr voll abzusetzen. Das geht nicht, wenn er eine Grenze reißt, die er nicht kennt. § 6 Absatz 1 Nummer 1a Einkommensteuergesetz macht Instandsetzungs- und Modernisierungsaufwendungen zu anschaffungsnahen Herstellungskosten, wenn sie in den ersten drei Jahren nach der Anschaffung 15 Prozent der Anschaffungskosten des Gebäudes ohne Umsatzsteuer übersteigen. Dann wandern sie in die Abschreibung und wirken über Jahrzehnte statt sofort. Die drei Jahre laufen ab dem Nutzen- und Lastenwechsel, und es zählt die Summe aller Maßnahmen in diesem Zeitraum, nicht die einzelne Rechnung.",
           "bullets": [
-            "Bezugsgröße ist nicht der Kaufpreis, sondern die Anschaffungskosten des Gebäudes, also Kaufpreis plus Nebenkosten mal Gebäudeanteil. Bei 300.000 Euro Kaufpreis, 16.500 Euro Nebenkosten und 75 Prozent Gebäudeanteil sind das 237.375 Euro, die Grenze liegt also bei rund 35.600 Euro netto.",
+            "Bezugsgröße ist nicht der Kaufpreis, sondern die Anschaffungskosten des Gebäudes, also Kaufpreis plus Nebenkosten mal Gebäudeanteil. Bei 300.000 Euro Kaufpreis, 25.500 Euro Nebenkosten (8,5 Prozent, Brandenburg) und 75 Prozent Gebäudeanteil sind das 244.125 Euro, die Grenze liegt also bei rund 36.600 Euro netto.",
             "Nicht mitgezählt werden Aufwendungen für Erweiterungen im Sinne von § 255 Absatz 2 Satz 1 Handelsgesetzbuch und jährlich üblicherweise anfallende Erhaltungsarbeiten.",
             "Gerechnet wird ohne Umsatzsteuer. Bei einer Handwerkerrechnung über 45.000 Euro brutto sind das rund 37.800 Euro netto, die Grenze wäre im Beispiel also knapp gerissen.",
             "Die praktische Folge für deine Beratung: Wenn ein Kunde ohnehin größer sanieren will, ist die Frage nicht ob, sondern wann. Eine Maßnahme im vierten Jahr nach der Anschaffung fällt nicht mehr unter die Vorschrift.",
@@ -18989,7 +18989,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "hinweis": "Zwei Fallen stecken im Text: worauf sich der Prozentsatz bezieht und wo die Obergrenze liegt.",
             "pfad": "profi",
             "punkte": 15,
-            "fall": "Mit einem Kunden hast du Modell B vereinbart: 1 Prozent, gedeckelt auf 3.000 Euro je Empfehlung. Seine Empfehlung kauft eine Wohnung. Beurkundeter Kaufpreis 340.000 Euro, dazu kommen 34.000 Euro Kaufnebenkosten.",
+            "fall": "Mit einem Kunden hast du Modell B vereinbart: 1 Prozent, gedeckelt auf 3.000 Euro je Empfehlung. Seine Empfehlung kauft eine Wohnung. Beurkundeter Kaufpreis 340.000 Euro, dazu kommen 28.900 Euro Kaufnebenkosten.",
             "gesucht": "Empfehlungsprovision für den Kunden in Euro",
             "zielwert": 3000,
             "toleranzProzent": 1,
@@ -19001,7 +19001,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 {
                   "label": "Beurkundeter Kaufpreis",
                   "wert": "340.000 €",
-                  "hinweis": "Die 34.000 Euro Nebenkosten zählen nicht mit. Bemessungsgrundlage ist der beurkundete Kaufpreis."
+                  "hinweis": "Die 28.900 Euro Nebenkosten zählen nicht mit. Bemessungsgrundlage ist der beurkundete Kaufpreis."
                 },
                 {
                   "label": "Prozentsatz aus Modell B",
@@ -28256,7 +28256,7 @@ export const EINWAND_TECHNIKEN: EinwandTechnik[] = [
       "Nach der Bereitschaft zum nächsten Schritt fragen",
       "Die Antwort auswerten, sie verrät Vorwand oder echten Einwand"
     ],
-    "beispiel": "Kunde: Mir fehlt das Eigenkapital. Antwort: Angenommen, wir finden eine Bank, die mit 9 Prozent Eigenkapital für die Nebenkosten finanziert, wärst du dann bereit, verbindlich zu reservieren?",
+    "beispiel": "Kunde: Mir fehlt das Eigenkapital. Antwort: Angenommen, wir finden eine Bank, die mit 8,5 Prozent Eigenkapital für die Nebenkosten finanziert, wärst du dann bereit, verbindlich zu reservieren?",
     "wann": "Greift bei jedem Einwand, der wie ein Hindernis klingt. Besonders stark, wenn du vermutest, dass er nicht der wahre Grund ist.",
     "achtung": "Nie zusagen, was du nicht halten kannst. Die hypothetische Frage bindet dich an das, was du angenommen hast."
   },
@@ -28544,7 +28544,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
     technik: "hypothetische-frage",
     skriptSchritte: ["sparformen", "investitionsbereitschaft"],
     meintEigentlich: "Ich glaube, ohne größeres Erspartes komme ich für eine Finanzierung gar nicht infrage.",
-    antwortKurz: "Angenommen, wir finden eine Bank, die mit 9 Prozent Eigenkapital für die Nebenkosten finanziert. Wärst du dann grundsätzlich bereit, in die nächste Phase zu gehen?",
+    antwortKurz: "Angenommen, wir finden eine Bank, die mit 8,5 Prozent Eigenkapital für die Nebenkosten finanziert. Wärst du dann grundsätzlich bereit, in die nächste Phase zu gehen?",
     falle: "Nicht sofort Finanzierungsmodelle erklären, ohne die tatsächliche Höhe zu kennen. Wer ins Blaue argumentiert, wirkt unglaubwürdig, sobald die echten Zahlen auf dem Tisch liegen.",
     profiMove: "Trenn Nachweis und Einsatz sauber voneinander. Viele Kunden haben Kapital und wollen es nur nicht einsetzen, damit löst sich der Einwand oft schon auf.",
     tags: ["eigenkapital", "finanzierung", "nebenkosten"],
@@ -28724,7 +28724,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
     technik: "kontextwechsel",
     skriptSchritte: ["sparformen"],
     meintEigentlich: "Ich sehe eine Summe, die sofort weg ist und für die ich nichts in die Hand bekomme.",
-    antwortKurz: "Stimmt, es sind etwa 9 Prozent Kaufnebenkosten. Aufgeteilt auf 30 Jahre Haltedauer sind das 0,3 Prozent pro Jahr, bei einer Wertsteigerung von 2 bis 3 Prozent pro Jahr ein lohnendes Investment.",
+    antwortKurz: "Stimmt, es sind rund 8 bis 8,5 Prozent Kaufnebenkosten. Aufgeteilt auf 30 Jahre Haltedauer sind das knapp 0,3 Prozent pro Jahr, bei einer Wertsteigerung von 2 bis 3 Prozent pro Jahr ein lohnendes Investment.",
     falle: "Die Nebenkosten nicht kleinreden. Sie sind real, und wer sie relativiert, wirkt unseriös.",
     profiMove: "Rechne die Einmalkosten auf die Haltedauer um. Aus einer großen Summe wird eine jährliche Größe, die der Kunde vergleichen kann.",
     tags: ["kaufnebenkosten", "notar", "haltedauer"],

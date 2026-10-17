@@ -18,6 +18,7 @@
  * Die gesetzlichen Saetze und die Restnutzungsdauer stehen weiterhin in
  * `afaSaetze.ts` und `restnutzungsdauer.ts`. Diese Datei fuegt sie zusammen.
  */
+import { BUNDESLAND_NK as ZENTRALE_NK } from "@/lib/kaufnebenkosten";
 import {
   MAX_MOD_PUNKTE,
   MOD_ELEMENTE,
@@ -38,32 +39,16 @@ import {
 /* ── Nebenkosten je Bundesland ──────────────────────────────────────────── */
 
 /**
- * Gesamtnebenkosten je Bundesland: Grunderwerbsteuer plus rund 2 Prozent für
- * Notar und Grundbuch. Die Maklercourtage steckt nicht darin, sie lässt sich
- * über den manuellen Satz ergänzen.
+ * Gesamtnebenkosten je Bundesland: Grunderwerbsteuer plus 1,5 Prozent Notar
+ * und 0,5 Prozent Grundbuch, also Berlin 8,0 und Brandenburg 8,5 Prozent. Die
+ * Maklercourtage steckt nicht darin, sie lässt sich über den manuellen Satz
+ * ergänzen.
  *
- * Stand der Grunderwerbsteuer: Juli 2026. Bremen liegt seit dem 1. Juli 2025
- * bei 5,5 Prozent, Thüringen seit dem 1. Januar 2024 bei 5,0 Prozent.
+ * Die Sätze kommen aus `kaufnebenkosten.ts`. Bis 10/2026 stand hier eine
+ * eigene Liste, damit gab es zwei Wahrheiten.
  */
-export const BUNDESLAND_NK: { value: string; label: string; grEst: number; pct: number }[] = [
-  { value: "bw", label: "Baden-Württemberg", grEst: 5.0, pct: 7.0 },
-  { value: "bayern", label: "Bayern", grEst: 3.5, pct: 5.5 },
-  { value: "berlin", label: "Berlin", grEst: 6.0, pct: 8.0 },
-  { value: "brandenburg", label: "Brandenburg", grEst: 6.5, pct: 8.5 },
-  { value: "bremen", label: "Bremen", grEst: 5.5, pct: 7.5 },
-  { value: "hamburg", label: "Hamburg", grEst: 5.5, pct: 7.5 },
-  { value: "hessen", label: "Hessen", grEst: 6.0, pct: 8.0 },
-  { value: "mv", label: "Mecklenburg-Vorpommern", grEst: 6.0, pct: 8.0 },
-  { value: "niedersachsen", label: "Niedersachsen", grEst: 5.0, pct: 7.0 },
-  { value: "nrw", label: "Nordrhein-Westfalen", grEst: 6.5, pct: 8.5 },
-  { value: "rlp", label: "Rheinland-Pfalz", grEst: 5.0, pct: 7.0 },
-  { value: "saarland", label: "Saarland", grEst: 6.5, pct: 8.5 },
-  { value: "sachsen", label: "Sachsen", grEst: 5.5, pct: 7.5 },
-  { value: "sa", label: "Sachsen-Anhalt", grEst: 5.0, pct: 7.0 },
-  { value: "sh", label: "Schleswig-Holstein", grEst: 6.5, pct: 8.5 },
-  { value: "thueringen", label: "Thüringen", grEst: 5.0, pct: 7.0 },
-  { value: "andere", label: "Anderes / unbekannt", grEst: 0, pct: 0 },
-];
+export const BUNDESLAND_NK: { value: string; label: string; grEst: number; pct: number }[] =
+  ZENTRALE_NK.map(({ value, label, grEstP, pct }) => ({ value, label, grEst: grEstP, pct }));
 
 /** Der hinterlegte Gesamtsatz eines Bundeslands, 0 wenn unbekannt. */
 export function nebenkostensatzFuerBundesland(bundesland: string): number {
@@ -93,7 +78,9 @@ export function bundeslandFromPlz(plz: string): string | null {
   if (n === 3) return "brandenburg";
   if (n === 6) return "sa";
   if (n === 7) return "thueringen";
-  if (n >= 10 && n <= 14) return "berlin";
+  // Berlin endet bei 14199, ab 144 (Potsdam) beginnt Brandenburg.
+  if (n >= 10 && n <= 13) return "berlin";
+  if (n === 14) return parseInt(p.slice(0, 3), 10) <= 141 ? "berlin" : "brandenburg";
   if (n === 15 || n === 16) return "brandenburg";
   if (n >= 17 && n <= 19) return "mv";
   if (n === 20 || n === 22) return "hamburg";

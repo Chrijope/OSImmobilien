@@ -7,8 +7,8 @@
  * laufen sie durch den echten Rechenkern, damit Handbuch, Landingpage und
  * Investmentrechner dieselben Zahlen zeigen.
  *
- * Die Modellwohnung: Bestand in Bayern, Baujahr 1965, Kaufpreis nach dem
- * Rahmen, gleiche Bruttomietrendite 4,75 %, Kaufnebenkosten 5,0 % aus
+ * Die Modellwohnung: Bestand in Brandenburg, Baujahr 1965, Kaufpreis nach dem
+ * Rahmen, gleiche Bruttomietrendite 4,75 %, Kaufnebenkosten 8,5 % aus
  * Eigenkapital, Kaufpreis voll finanziert zu 4,0 % Zins und 1,5 % Tilgung.
  * Ab Kapitel 7 rechnet das Handbuch mit einem Kaufpreis, der zum Rahmen
  * passt (80.000 bis 300.000 €), sonst bekäme jemand mit 80.000 € Rahmen eine
@@ -43,10 +43,11 @@ export const MODELL_KAUFPREIS_MAX = 300000;
 
 /** Die Sätze der Modellrechnung, einmal hier, damit Text und Rechnung übereinstimmen. */
 export const MODELL_SAETZE = {
-  grunderwerbsteuer: 3.5,
-  notar: 1.0,
+  // Brandenburg. Bis 10/2026 Bayern mit 3,5 und 1,0, zusammen 5,0 Prozent.
+  grunderwerbsteuer: 6.5,
+  notar: 1.5,
   grundbuch: 0.5,
-  kaufnebenkosten: 5.0,
+  kaufnebenkosten: 8.5,
   zins: 4.0,
   tilgung: 1.5,
   gebaeudeanteil: 80,
@@ -344,21 +345,21 @@ export function annahmenText(kaufpreis: number = BASIS_KAUFPREIS): string {
   const renditeText = rendite.toLocaleString(en ? "en-GB" : "de-DE", { maximumFractionDigits: 2 });
   if (en) {
     return (
-      `Model flat, existing building from 1965 in Bavaria, ${eur(w.flaeche)} m², purchase price ${euro(kaufpreis)}, ` +
+      `Model flat, existing building from 1965 in Brandenburg, ${eur(w.flaeche)} m², purchase price ${euro(kaufpreis)}, ` +
       `net cold rent ${euro(w.kaltmiete)} per month (gross rental yield ${renditeText}%), ` +
       `non-recoverable costs ${euro(w.nichtUmlagefaehig)} and maintenance reserve ${euro(w.ruecklage)} per month, ` +
-      "purchase price financed at 4.0% interest and 1.5% repayment, incidental purchase costs of 5.0% " +
-      "(3.5% real estate transfer tax, 1.0% notary, 0.5% land register) paid from equity, building share 80%, " +
+      "purchase price financed at 4.0% interest and 1.5% repayment, incidental purchase costs of 8.5% " +
+      "(6.5% real estate transfer tax, 1.5% notary, 0.5% land register) paid from equity, building share 80%, " +
       "straight-line depreciation (AfA) of 2%, rents and costs plus 2%, value plus 1.5% per year, income tax " +
       "according to the 2026 tariff including solidarity surcharge, without church tax."
     );
   }
   return (
-    `Modellwohnung, Bestand Baujahr 1965 in Bayern, ${w.flaeche} m², Kaufpreis ${euro(kaufpreis)}, ` +
+    `Modellwohnung, Bestand Baujahr 1965 in Brandenburg, ${w.flaeche} m², Kaufpreis ${euro(kaufpreis)}, ` +
     `Kaltmiete ${euro(w.kaltmiete)} im Monat (Bruttomietrendite ${renditeText} %), ` +
     `nicht umlagefähige Kosten ${euro(w.nichtUmlagefaehig)} und Rücklage ${euro(w.ruecklage)} im Monat, ` +
-    "Finanzierung des Kaufpreises zu 4,0 % Zins und 1,5 % Tilgung, Kaufnebenkosten 5,0 % " +
-    "(3,5 % Grunderwerbsteuer, 1,0 % Notar, 0,5 % Grundbuch) aus Eigenkapital, Gebäudeanteil 80 %, " +
+    "Finanzierung des Kaufpreises zu 4,0 % Zins und 1,5 % Tilgung, Kaufnebenkosten 8,5 % " +
+    "(6,5 % Grunderwerbsteuer, 1,5 % Notar, 0,5 % Grundbuch) aus Eigenkapital, Gebäudeanteil 80 %, " +
     "AfA 2 % linear, Mieten und Kosten plus 2 %, Wert plus 1,5 % im Jahr, Steuer nach Tarif 2026 " +
     "mit Solidaritätszuschlag, ohne Kirchensteuer."
   );

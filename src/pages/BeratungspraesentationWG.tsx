@@ -1025,13 +1025,13 @@ export default function BeratungspraesentationWG() {
         eyebrow="09 · Beispielrechnung"
         lead="Beispielrechnung —"
         accent="Kapitalanlage Co-Living."
-        subtitle="Modellrechnung auf Basis: Kaufpreis 365.000 €, Kaufnebenkosten 5,5 % aus Eigenkapital, Zins 4,5 % p. a., Laufzeit 38 Jahre."
+        subtitle="Modellrechnung auf Basis: Kaufpreis 365.000 €, Kaufnebenkosten 8,5 % (Brandenburg) aus Eigenkapital, Zins 4,5 % p. a., Laufzeit 38 Jahre."
       >
         {/* Eckdaten */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
             { k: "Kaufpreis", v: fmtEUR(365000) },
-            { k: "Kaufnebenkosten 5,5 %", v: fmtEUR(20075) },
+            { k: "Kaufnebenkosten 8,5 %", v: fmtEUR(31025) },
             { k: "Zinssatz p. a.", v: "4,5 %" },
             { k: "Laufzeit", v: "38 Jahre" },
           ].map((c, i) => (
@@ -1608,7 +1608,7 @@ export default function BeratungspraesentationWG() {
           {[
             { q: "Was passiert, wenn ein Zimmer leer steht?", a: "Bei 3–5 Mietern pro Wohnung fällt nie 100 % der Miete weg. Zusätzlich greift unsere Erstvermietungs­garantie und auf Wunsch eine Mietausfall­versicherung." },
             { q: "Wer kümmert sich um die Mieter?",          a: "Eine spezialisierte Sonderverwaltung übernimmt Mieterkontakt, Abrechnungen und Auszüge — du hast keinen operativen Aufwand." },
-            { q: "Wie hoch ist mein Eigenkapital­bedarf?",   a: "Üblicherweise reichen die Kaufnebenkosten (5,5–10 %) — abhängig von Bundesland und Bonität. In vielen Fällen ist sogar eine 100 %-Finanzierung möglich." },
+            { q: "Wie hoch ist mein Eigenkapital­bedarf?",   a: "Üblicherweise reichen die Kaufnebenkosten, rund 8 % in Berlin und rund 8,5 % in Brandenburg, abhängig von Bonität. In vielen Fällen ist sogar eine 100 %-Finanzierung möglich." },
             { q: "Was ist mit der Wiederverkaufbarkeit?",    a: "Nach 10 Jahren ist der Gewinn steuerfrei. Wir prüfen jedes Objekt vorab auf marktgängige Standorte und Grundrisse." },
             { q: "Wie viel Zeit muss ich investieren?",      a: "Im Schnitt 3–4 Termine bis zum Notar. Alles danach übernehmen OS Immobilien und unsere Verwaltungspartner." },
           ].map((f, i) => (

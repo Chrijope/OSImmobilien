@@ -32,7 +32,7 @@ export const KUNDENSTIMMEN_FULL: KundenstimmeFull[] = [
     nachher:
       "Heute besitze ich zwei vermietete Wohnungen in Memmingen mit zusammen 145 m². Die Mieten decken die Finanzierung komplett, ich baue jeden Monat steuerbegünstigt Vermögen auf.",
     hilfe:
-      "OS Immobilien hat mir gezeigt, dass die Kaufnebenkosten (rund 9 %) immer aus Eigenkapital kommen müssen – das war für mich neu. Mit den restlichen 65.000 € konnten wir die Investition optimal hebeln. Die Bonitätsprüfung war in zwei Wochen durch.",
+      "OS Immobilien hat mir gezeigt, dass die Kaufnebenkosten (rund 8 bis 8,5 %) immer aus Eigenkapital kommen müssen – das war für mich neu. Mit den restlichen 65.000 € konnten wir die Investition optimal hebeln. Die Bonitätsprüfung war in zwei Wochen durch.",
     rating: 5,
   },
   {

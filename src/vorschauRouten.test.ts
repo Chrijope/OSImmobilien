@@ -31,6 +31,13 @@ describe("Vorschau-Route der Investmentkalkulation", () => {
     expect(VorschauAnalysetoolErgebnis).toBeNull();
   });
 
+  it("die Vorschau 3D-Grundriss gibt es ebenso nur im Entwicklungsmodus", async () => {
+    vi.stubEnv("DEV", false);
+    vi.stubEnv("PROD", true);
+    expect((await import("./vorschauRouten")).VorschauGrundriss3d).toBeNull();
+    expect(readFileSync("src/App.tsx", "utf8")).toMatch(/\{VorschauGrundriss3d && </);
+  });
+
   it("App.tsx bindet die Seite nur über den abgesicherten Weg ein", () => {
     const app = readFileSync("src/App.tsx", "utf8");
     expect(app).not.toMatch(/pages\/VorschauInvestmentrechner/);
