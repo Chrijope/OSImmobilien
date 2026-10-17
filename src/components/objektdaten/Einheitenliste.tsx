@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Calculator, Lock, Pencil, Upload } from "lucide-react";
+import { Calculator, FileDown, FileSpreadsheet, Lock, Pencil, Upload } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -37,6 +37,8 @@ import { erhoehungsRegelAusMeta, naechsteErhoehung, type ErhoehungsRegel } from 
 import { bundeslandFromPlz } from "@/lib/kaufnebenkosten";
 import { KOSTEN_ZEILEN, kostenJahr } from "@/lib/kostenJahr";
 import { fristenSammeln, type Frist } from "@/lib/fristenObjekt";
+import { tabelleAlsPdf, tabelleAlsXlsx, type ExportTabelle } from "@/lib/tabelleExport";
+import { dateiHerunterladen } from "@/lib/kaufpreislisteExport";
 import { objektseiteFelder } from "@/lib/objektseiteDaten";
 import { cacheGet } from "@/lib/dataCache";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -481,6 +483,80 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
       speichern={darfSchreiben ? wohnungSpeichern(x.objekt, x.w, feld) : undefined} />
   );
 
+  const fristenBerechnen = (): FristZeile[] => objekte.flatMap((o) => {
+    const eigene = zeilen.filter((x) => x.objekt.id === o.id);
+    const ausweis = objektseiteFelder(o).energieausweis.gueltigBis;
+    return fristenSammeln(eigene.map((x) => {
+      const abw = x.inv ? getAbwicklungDaten(x.inv.id) : null;
+      const gek = x.l?.werte.garageGekuendigtZum;
+      return {
+        weNr: x.z.weNr, befristetBis: x.m?.mietvertragEnde, erhoehungAb: x.erhoehung?.ab, erhoehungPlus: x.erhoehung?.plus,
+        garageGekuendigtZum: typeof gek === "string" ? gek : undefined, notartermin: x.inv?.notarTermin,
+        faelligkeit: abw?.kaufpreisfaelligkeitDatum, uebergabe: abw?.uebergabeDatum,
+        subventionMonate: x.regel?.art !== "einmal" && x.garantie?.garantieMonat ? x.regel?.laufzeitMonate : undefined,
+        garagenSubventionMonate: x.garantie?.garagenSubventionMonat ? x.regel?.garagenSubventionMonate : undefined,
+      };
+    }), ausweis ? excelDatumIso(ausweis) || (/^\d{4}$/.test(ausweis) ? `${ausweis}-12-31` : "") : "").map((f) => ({ ...f, objekt: o.titel }));
+  });
+  const kostenBerechnen = () => kostenJahr(zeilen.filter((x) => x.w.status !== "verkauft" || x.inv).map((x) => ({
+    istMiete: x.ist, eigentuemerlast: x.last, hausgeldGesamt: x.hg.gesamt,
+    uebergabe: x.inv ? getAbwicklungDaten(x.inv.id).uebergabeDatum || "" : "",
+    subventionMonat: x.regel?.art !== "einmal" ? x.garantie?.garantieMonat ?? 0 : 0, subventionMonate: x.regel?.laufzeitMonate ?? 0,
+    garagenSubventionMonat: x.garantie?.garagenSubventionMonat ?? 0, garagenSubventionMonate: x.regel?.garagenSubventionMonate ?? 0,
+    einmalSubvention: x.einmal,
+  })), jahr);
+
+  /** Spalten je Ansicht für den Export, in der Reihenfolge der Tabelle; die Werte liefern die Sortierschlüssel. */
+  const EXPORT_SPALTEN: Record<Exclude<Ansicht, "kosten" | "fristen">, string[]> = {
+    handlung: ["WE", "Lage", "Status", "Mehrertrag mtl."],
+    preise: ["WE", "Lage", "Status", "Fläche m²", "MEA", "Kaufpreis", "VK €/m²", "Miete Vertrieb", "Brutto Ist", "Brutto", "Netto", "Mietsubvention", "Käufer"],
+    miete: ["WE", "Lage", "Ist-Kaltmiete", "Ist €/m²", "Sollmiete", "Soll €/m²", "Letzte Erhöhung", "Miete vorher", "Erhöhung ab", "neue Miete", "+ mtl.", "Grenze", "Nächste ab", "Miete danach", "in 3 Jahren"],
+    subvention: ["WE", "Lage", "Ist-Kaltmiete", "Zielmiete", "Garantie mtl.", "Garantie Laufzeit", "Garagen-Subv. mtl.", "Einmalanteil", "Mietsubvention", "laut Liste"],
+    hausgeld: ["WE", "Lage", "Hausgeld gesamt", "umlagefähig", "nicht umlagefähig", "Rücklage", "Eigentümerlast", "Überschuss mtl.", "laut Plan"],
+    garagen: ["WE", "Lage", "Garage/SP", "KP Garage", "Ist-Miete Garage", "Sollmiete Garage", "Garagen-Subv. mtl.", "gekündigt zum"],
+    verkauf: ["WE", "Lage", "Status", "Käufer", "Stufe", "Notartermin", "Fälligkeit", "Kaufpreis da", "Grundbuch am", "Grundbuch erfolgt", "Übergabe"],
+  };
+  const exportTabelle = (): ExportTabelle => {
+    const titel = `${ANSICHTEN.find((a) => a.wert === ansicht)?.titel ?? "Einheitenliste"}${einzeln ? ` ${einzeln.titel}` : ""}`;
+    const stand = `Stand ${new Date().toLocaleDateString("de-DE")}`;
+    if (ansicht === "kosten") {
+      const k = kostenBerechnen();
+      const MONATE = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
+      return { titel: `${titel} ${jahr}`, untertitel: stand, kopf: ["Position", ...MONATE, "Jahr"], zeilen: [
+        ...KOSTEN_ZEILEN.map((z) => [`${z.vorzeichen < 0 ? "− " : "+ "}${z.titel}`, ...k.monate[z.schluessel], k.summe[z.schluessel]]),
+        ["Saldo", ...k.saldoMonat, k.saldo],
+      ] };
+    }
+    if (ansicht === "fristen") {
+      const heute = new Date().toISOString().slice(0, 10);
+      const f = fristSort.sortiert(fristenBerechnen().filter((x) => !nurKommende || x.datum >= heute));
+      return { titel, untertitel: stand, kopf: ["Datum", "Frist", "Objekt", "Einheit", "Hinweis"], zeilen: f.map((x) => [datum(x.datum), x.art, x.objekt, x.einheit || "ganzes Objekt", x.detail ?? ""]) };
+    }
+    const spalten = [...(mehrere ? ["Objekt"] : []), ...EXPORT_SPALTEN[ansicht]];
+    const zeilenExport = sort.sortiert(zeilen).map((x) => spalten.map((sp) => {
+      const v = SORT[sp]?.(x);
+      if (ansicht === "handlung" && sp === "Mehrertrag mtl.") return x.potenzial || null;
+      if (["Brutto Ist", "Brutto", "Netto"].includes(sp) && typeof v === "number") return Math.round(v * 10000) / 100;
+      if (["Kaufpreis da", "Grundbuch erfolgt"].includes(sp)) return v === 1 ? "ja" : v === 0 ? "nein" : null;
+      return v ?? null;
+    }));
+    const kopfZeile = spalten.map((sp) => (["Brutto Ist", "Brutto", "Netto"].includes(sp) ? `${sp} %` : sp));
+    if (ansicht === "handlung") {
+      kopfZeile.push("Hinweise");
+      sort.sortiert(zeilen).forEach((x, i) => zeilenExport[i].push(x.hinweise.map((h) => h.text).join("; ")));
+    }
+    return { titel, untertitel: stand, kopf: kopfZeile, zeilen: zeilenExport };
+  };
+  const exportieren = async (art: "xlsx" | "pdf") => {
+    try {
+      const t = exportTabelle();
+      const datei = art === "xlsx" ? await tabelleAlsXlsx(t) : await tabelleAlsPdf(t);
+      dateiHerunterladen(datei, `${t.titel.replace(/[^\p{L}\p{N}]+/gu, "_")}_${new Date().toISOString().slice(0, 10)}.${art}`);
+    } catch (e) {
+      toast({ title: "Export fehlgeschlagen", description: e instanceof Error ? e.message : undefined, variant: "destructive" });
+    }
+  };
+
   const mitInvestagon = zeilen.some((x) => x.gesperrt);
   const kopf = (titel: string, rechts = true, hinweis?: string) => {
     const zeichen = BERECHNET.has(titel) ? "rechnet" : AUS_INVESTAGON.has(titel) && mitInvestagon ? "investagon" : null;
@@ -493,9 +569,13 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
   return (
     <>
       <PageHeader title="Einheitenliste" subtitle="Alle Zahlen je Einheit aus den Objektdaten, mit Rendite, Mietgarantie, Hausgeld und Garagen">
-        {einzeln && (darfSchreiben || user.role === "backoffice") && (
-          <Button variant="outline" onClick={() => setImportOffen(true)}><Upload className="mr-2 h-4 w-4" /> Excel-Liste übernehmen</Button>
-        )}
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={() => exportieren("xlsx")}><FileSpreadsheet className="mr-2 h-4 w-4" /> Excel</Button>
+          <Button variant="outline" onClick={() => exportieren("pdf")}><FileDown className="mr-2 h-4 w-4" /> PDF</Button>
+          {einzeln && (darfSchreiben || user.role === "backoffice") && (
+            <Button variant="outline" onClick={() => setImportOffen(true)}><Upload className="mr-2 h-4 w-4" /> Excel-Liste übernehmen</Button>
+          )}
+        </div>
       </PageHeader>
       {objektWahl}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-5">
@@ -529,21 +609,7 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
       </div>
       {ansicht === "fristen" && (() => {
         const heute = new Date().toISOString().slice(0, 10);
-        const alle: FristZeile[] = objekte.flatMap((o) => {
-          const eigene = zeilen.filter((x) => x.objekt.id === o.id);
-          const ausweis = objektseiteFelder(o).energieausweis.gueltigBis;
-          return fristenSammeln(eigene.map((x) => {
-            const abw = x.inv ? getAbwicklungDaten(x.inv.id) : null;
-            const gek = x.l?.werte.garageGekuendigtZum;
-            return {
-              weNr: x.z.weNr, befristetBis: x.m?.mietvertragEnde, erhoehungAb: x.erhoehung?.ab, erhoehungPlus: x.erhoehung?.plus,
-              garageGekuendigtZum: typeof gek === "string" ? gek : undefined, notartermin: x.inv?.notarTermin,
-              faelligkeit: abw?.kaufpreisfaelligkeitDatum, uebergabe: abw?.uebergabeDatum,
-              subventionMonate: x.regel?.art !== "einmal" && x.garantie?.garantieMonat ? x.regel?.laufzeitMonate : undefined,
-              garagenSubventionMonate: x.garantie?.garagenSubventionMonat ? x.regel?.garagenSubventionMonate : undefined,
-            };
-          }), ausweis ? excelDatumIso(ausweis) || (/^\d{4}$/.test(ausweis) ? `${ausweis}-12-31` : "") : "").map((f) => ({ ...f, objekt: o.titel }));
-        });
+        const alle = fristenBerechnen();
         const liste = fristSort.sortiert(alle.filter((f) => !nurKommende || f.datum >= heute));
         return (
           <Card>
@@ -583,13 +649,7 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
         );
       })()}
       {ansicht === "fristen" ? null : ansicht === "kosten" ? (() => {
-        const k = kostenJahr(zeilen.filter((x) => x.w.status !== "verkauft" || x.inv).map((x) => ({
-          istMiete: x.ist, eigentuemerlast: x.last, hausgeldGesamt: x.hg.gesamt,
-          uebergabe: x.inv ? getAbwicklungDaten(x.inv.id).uebergabeDatum || "" : "",
-          subventionMonat: x.regel?.art !== "einmal" ? x.garantie?.garantieMonat ?? 0 : 0, subventionMonate: x.regel?.laufzeitMonate ?? 0,
-          garagenSubventionMonat: x.garantie?.garagenSubventionMonat ?? 0, garagenSubventionMonate: x.regel?.garagenSubventionMonate ?? 0,
-          einmalSubvention: x.einmal,
-        })), jahr);
+        const k = kostenBerechnen();
         const MONATE = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
         return (
           <Card>

@@ -31,7 +31,7 @@ import { HANDBUCH_SEITE_ROUTE } from "@/lib/handbuch/zugang";
 import { isDraftRoute } from "@/lib/draftRoutes";
 import { OBJEKTDATEN_EINHEITEN_ROUTE, OBJEKTDATEN_MIETER_ROUTE, OBJEKTDATEN_ROUTE, OBJEKTDATEN_VOLLSTAENDIGKEIT_ROUTE, darfObjektdaten } from "@/lib/objektdatenZugang";
 import {
-  ANKAUFSTOOL_ROUTE, KAUFPREISLISTE_ROUTE, MIETSUBVENTION_ROUTE, greiftAdminRiegel, isUrlAllowedForRole, isKundeRole, isTippgeberRole, objekteTestFreigabe, type NutzerIdentitaet,
+  ANKAUFSTOOL_ROUTE, greiftAdminRiegel, isUrlAllowedForRole, isKundeRole, isTippgeberRole, objekteTestFreigabe, type NutzerIdentitaet,
 } from "@/lib/sidebarPermissions";
 
 /** Wonach Menschen die Einstellungen suchen. Steht hier, weil zwei Einträge sie brauchen. */
@@ -86,7 +86,7 @@ const immobilienItems = [
  */
 const objektdatenItems = [
   { title: "Objektcockpit", url: OBJEKTDATEN_ROUTE, icon: Building2, suchbegriffe: ["bautraeger", "objektdaten", "verkaufsstand", "eigene objekte", "uebersicht objekte"] },
-  { title: "Einheitenliste", url: OBJEKTDATEN_EINHEITEN_ROUTE, icon: Table2, suchbegriffe: ["einheiten", "wohnungen", "preise", "rendite", "kaufpreise", "vertriebsliste", "miete"] },
+  { title: "Einheitenliste", url: OBJEKTDATEN_EINHEITEN_ROUTE, icon: Table2, suchbegriffe: ["einheiten", "wohnungen", "preise", "rendite", "kaufpreise", "vertriebsliste", "miete", "kaufpreisliste", "preisliste", "mietsubvention", "subvention", "mieterhoehung", "kappungsgrenze", "wirtschaftsplan", "hausgeld", "mea", "fristen", "kosten"] },
   { title: "Mieter & Mietverträge", url: OBJEKTDATEN_MIETER_ROUTE, icon: Key, suchbegriffe: ["mieter", "mietvertrag", "mietvertraege", "mieterliste", "kaution", "befristet", "zuordnung we mieter"] },
   { title: "Vollständigkeit", url: OBJEKTDATEN_VOLLSTAENDIGKEIT_ROUTE, icon: ListChecks, suchbegriffe: ["fehlende unterlagen", "fehlt", "bilder fehlen", "mietvertrag fehlt", "dokumente", "luecken"] },
 ];
@@ -121,12 +121,14 @@ const toolsItems = [
   /* Bauträger-Kalkulator aus Ankaufstool.xlsx. Wer ihn sieht, steht in
      `ANKAUFSTOOL_ROLLEN` (sidebarPermissions.ts). */
   { title: "Ankaufstool", url: ANKAUFSTOOL_ROUTE, icon: Calculator, adminOnly: true, adminBadge: true, suchbegriffe: ["ankauf", "bautraeger", "kalkulator", "lohnt sich", "marge", "go no go", "aufteilung"] },
-  /* Ist- gegen Soll-Miete, Differenz als Subvention an die Hausverwaltung.
-     Nur Admin und Inhaber, wie das Ankaufstool (sidebarPermissions.ts). */
-  { title: "Mietsubvention", url: MIETSUBVENTION_ROUTE, icon: Calculator, adminOnly: true, adminBadge: true, suchbegriffe: ["subvention", "mietsubvention", "mieterhoehung", "kappungsgrenze", "hausverwaltung", "soll miete", "ist miete"] },
-  /* Verkaufsliste, Mieterliste und Wirtschaftsplan in einer Tabelle, Export als
-     Excel und PDF. Nur Admin und Inhaber, wie das Ankaufstool. */
-  { title: "Kaufpreisliste", url: KAUFPREISLISTE_ROUTE, icon: Calculator, adminOnly: true, adminBadge: true, suchbegriffe: ["kaufpreisliste", "preisliste", "verkaufsliste", "mieterliste", "wirtschaftsplan", "hausgeld", "mea", "excel"] },
+  /*
+   * Mietsubvention und Kaufpreisliste stehen seit dem 17.10.2026 nicht mehr
+   * hier (Christian): Beide sind in den Objektdaten aufgegangen, die
+   * Mietsubvention als Ansicht der Einheitenliste mit drei Arten, die
+   * Kaufpreisliste als Einheitenliste mit Wirtschaftsplan und Export. Die
+   * Seiten bleiben über ihre Adresse erreichbar, damit gespeicherte Stände
+   * nicht verloren gehen.
+   */
 ];
 
 /*
