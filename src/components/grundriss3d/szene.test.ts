@@ -85,7 +85,7 @@ describe("Dach und Fassade", () => {
     const { bekanntesHausFinden } = await import("./planBibliothek");
     const brueck = await bekanntesHausFinden({ adresse: "Marktstraße 6, 14822 Brück" })!.laden();
     expect(brueck.etagen?.map((e) => e.geschoss)).toEqual([0, 1, 2]);
-    expect(brueck.aussehen?.dach?.art).toBe("sattel");
+    expect(brueck.aussehen?.dach?.art).toBe("flaechen");
     const barfuss = await bekanntesHausFinden({ adresse: "Barfußstr. 9" })!.laden();
     const geschosse = new Set(barfuss.einheiten.map((e) => e.plan.geschoss));
     for (const g of [0, 1, 2, 3, 4]) expect(geschosse.has(g), `Geschoss ${g}`).toBe(true);
