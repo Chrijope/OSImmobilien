@@ -15,6 +15,7 @@ import {
 } from "@/lib/kaufpreisliste";
 import { listendatenFuerEinheit, listenZahl } from "@/lib/listendaten";
 import { objektMetaErgaenzen, updateWohnung, type ObjektData } from "@/lib/objekteStore";
+import { zahlAus } from "@/lib/objektdatenFormular";
 import { hausgeldAusPlan, wirtschaftsplanAusBlatt } from "@/lib/wirtschaftsplanObjekt";
 
 /*
@@ -25,12 +26,8 @@ import { hausgeldAusPlan, wirtschaftsplanAusBlatt } from "@/lib/wirtschaftsplanO
  */
 
 const eur = (n: number) => n.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
-const lesen = (s: string): number | null => {
-  const t = s.trim().replace(/\s|€/g, "");
-  if (!t) return null;
-  const n = Number(t.includes(",") ? t.replace(/\./g, "").replace(",", ".") : t);
-  return Number.isFinite(n) ? n : null;
-};
+// Deutsche Eingabe, auch „12.000“ ohne Komma.
+const lesen = zahlAus;
 const alsText = (n: number | null) => (n === null ? "" : String(n).replace(".", ","));
 const auswahl = "h-8 w-full rounded-md border border-input bg-background px-1 text-sm";
 

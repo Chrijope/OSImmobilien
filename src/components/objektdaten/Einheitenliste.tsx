@@ -27,6 +27,7 @@ import { hausgeldAusPlan, wirtschaftsplanFuerObjekt } from "@/lib/wirtschaftspla
 import { WirtschaftsplanKarte } from "@/components/objektdaten/WirtschaftsplanKarte";
 import { SortKopf } from "@/components/objektdaten/sortierung";
 import { SPALTEN, spaltenName } from "@/lib/objektdatenSpalten";
+import { zahlAus } from "@/lib/objektdatenFormular";
 import { abverkauf, aufteilungFuerObjekt, kalkulationenLaden, kaufpreisEingaenge, margeJeEinheit, type ObjektKalkulation } from "@/lib/projektObjekt";
 import { ProjektKarte } from "@/components/objektdaten/ProjektKarte";
 import { useSortierung, type SortWert } from "@/lib/sortierung";
@@ -68,12 +69,8 @@ const zahl = (n: number | null | undefined, stellen = 2) =>
   n === null || n === undefined ? "–" : n.toLocaleString("de-DE", { minimumFractionDigits: stellen, maximumFractionDigits: stellen });
 const prozent = (n: number | null) =>
   n === null ? "–" : (n * 100).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " %";
-const lesen = (s: string): number | null => {
-  const t = s.trim().replace(/\s|€/g, "");
-  if (!t) return null;
-  const n = Number(t.includes(",") ? t.replace(/\./g, "").replace(",", ".") : t);
-  return Number.isFinite(n) ? n : null;
-};
+// Deutsche Eingabe, auch „250.000“ ohne Komma.
+const lesen = zahlAus;
 
 function Kennzahl({ titel, wert }: { titel: string; wert: string }) {
   return (
