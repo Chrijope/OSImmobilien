@@ -23,6 +23,84 @@ function aftersalesDateiname(kundeName: string, sprache: Sprache): string {
 }
 
 /**
+ * Das im Browser erzeugte PDF des Beratungs- und Qualitätsprotokolls
+ * (17.10.2026). Nur ein echtes PDF bis 8 MB wird angenommen.
+ */
+function pdfAusBase64(b64: unknown): Uint8Array | null {
+  if (typeof b64 !== "string" || !b64 || b64.length > 11_000_000) return null;
+  try {
+    const bin = atob(b64);
+    if (!bin.startsWith("%PDF-")) return null;
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return bytes;
+  } catch {
+    return null;
+  }
+}
+
+const PROTOKOLL_VORLAGE = "qualitaetsprotokoll-2026-10";
+
+/** Eintrag im Kundenordner (Kategorie „Beratungsdokument“), für den Kunden freigegeben. */
+// deno-lint-ignore no-explicit-any
+function mitKundenordner(meta: Record<string, any>, investmentId: string, filename: string, pfad: string) {
+  // deno-lint-ignore no-explicit-any
+  const ko: any[] = Array.isArray(meta.kundenordner) ? [...meta.kundenordner] : [];
+  ko.push({
+    id: `ko-aftersales-${Date.now()}`, investmentId, kategorie: "Beratungsdokument", filename,
+    uploadedBy: "System (Aftersales-Beratung)", uploadedAt: new Date().toISOString(), fileUrl: pfad, freigegeben: true,
+  });
+  return ko;
+}
+
+/** Das unterschriebene Protokoll ablegen: Speicher, `pdfPath`, Kundenordner. */
+async function protokollAblegen(
+  // deno-lint-ignore no-explicit-any
+  supabase: any,
+  // deno-lint-ignore no-explicit-any
+  a: { meta: Record<string, any>; ab: Record<string, any>; kontaktId: string; investmentId: string; pdf: Uint8Array },
+): Promise<void> {
+  const name = String(a.ab.formData?.kaeuferName || a.ab.kundeSignerName || "Kunde");
+  const filename = protokollDateiname(name, a.ab.formData?.sprache === "en" ? "en" : "de");
+  const pfad = `aftersales/${a.kontaktId}/${a.investmentId}/${filename}`;
+  const { error } = await supabase.storage.from("unterlagen").upload(pfad, a.pdf, { contentType: "application/pdf", upsert: true });
+  if (error) { console.error("upload failed", error); return; }
+  // Frisch lesen: zwischen Unterschrift und Nachreichen kann meta sich geändert haben.
+  const { data: inv } = await supabase.from("investments").select("meta").eq("id", a.investmentId).maybeSingle();
+  // deno-lint-ignore no-explicit-any
+  const meta = (inv?.meta as Record<string, any>) || a.meta;
+  const ab = { ...(meta.aftersalesBeratung || a.ab), pdfPath: pfad };
+  await supabase.from("investments")
+    .update({ meta: { ...meta, aftersalesBeratung: ab, kundenordner: mitKundenordner(meta, a.investmentId, filename, pfad) } })
+    .eq("id", a.investmentId);
+}
+
+/**
+ * Stand der Käufer-Unterschriften für die Signaturseite. Sind alle da,
+ * bekommt sie die Unterschriften, um das vollständige PDF zu bauen.
+ */
+// deno-lint-ignore no-explicit-any
+async function kaeuferStand(supabase: any, investmentId: string, kontaktId: string, ab: Record<string, any>) {
+  const { data } = await supabase.from("signature_requests").select("status")
+    .eq("investment_id", investmentId).eq("kontakt_id", kontaktId)
+    .eq("person_type", "aftersales_kunde").in("status", ["pending", "signed"]);
+  const unterschriften = Object.values(ab.kundeUnterschriften || {});
+  const totalRequests = Math.max((data || []).length, unterschriften.length, 1);
+  const allSigned = !!ab.kundeSignedAt;
+  return {
+    allSigned, totalRequests, signedCount: allSigned ? totalRequests : unterschriften.length,
+    ...(allSigned ? { unterschriften, formData: ab.formData, vp: { name: ab.vpSignerName, signature: ab.vpSignature, signedAt: ab.vpSignedAt } } : {}),
+  };
+}
+
+/** Dateiname des Protokolls, Datum wie bei der alten Fassung. */
+function protokollDateiname(kundeName: string, sprache: "de" | "en" = "de"): string {
+  const datum = aftersalesDatum(new Date(), "de").replace(/[.\s]+/g, "-");
+  const safeName = (kundeName || "Kunde").replace(/[^\wäöüÄÖÜß\- ]+/g, "").trim().replace(/\s+/g, "_") || "Kunde";
+  return sprache === "en" ? `Consultation-record_${safeName}_${datum}.pdf` : `Beratungsprotokoll_${safeName}_${datum}.pdf`;
+}
+
+/**
  * Erzeugt das finale Aftersales-Beratungs-PDF (beide Unterschriften)
  * und lädt es in den Storage-Bucket `unterlagen` hoch.
  * Returns: storage path or null on failure.
@@ -188,7 +266,7 @@ Deno.serve(async (req) => {
 
   try {
     const body = await req.json();
-    const { investmentId, kontaktId, phase, signatureToken, formData, signature, signerName } = body || {};
+    const { investmentId, kontaktId, phase, signatureToken, formData, signature, signerName, pdfBase64 } = body || {};
 
     if (!investmentId || !kontaktId || !phase || !["vp", "kunde"].includes(phase)) {
       return new Response(JSON.stringify({ error: "investmentId, kontaktId, phase Pflicht" }),
@@ -258,14 +336,43 @@ Deno.serve(async (req) => {
       if (signature) nextAb.vpSignature = signature;
       if (signerName) nextAb.vpSignerName = signerName;
     } else {
-      if (ab.kundeSignedAt) {
-        return new Response(JSON.stringify({ ok: true, alreadyFinalized: true }),
+      /*
+       * Seit 17.10.2026 können zwei Käufer unterschreiben, je mit eigener
+       * Anfrage (`aftersales_kunde`, der zweite mit `aftersalesPerson:
+       * "kunde2"` in sa_data). Jede Unterschrift wird unter ihrem Token
+       * vermerkt; abgeschlossen ist erst, wenn keine Anfrage mehr offen ist.
+       */
+      const bisher = (ab.kundeUnterschriften || {}) as Record<string, any>;
+      if (ab.kundeSignedAt || (signatureToken && bisher[signatureToken])) {
+        // Schon vermerkt. Das PDF des Protokolls darf mit demselben Token
+        // nachgereicht werden, sobald alle unterschrieben haben.
+        const pdf = ab.kundeSignedAt && !ab.pdfPath ? pdfAusBase64(pdfBase64) : null;
+        if (pdf) await protokollAblegen(supabase, { meta, ab, kontaktId, investmentId, pdf });
+        return new Response(JSON.stringify({ ok: true, alreadyFinalized: true, ...(await kaeuferStand(supabase, investmentId, kontaktId, ab)) }),
           { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
-      nextAb.status = "abgeschlossen";
-      nextAb.kundeSignedAt = now;
-      if (signature) nextAb.kundeSignature = signature;
-      if (signerName) nextAb.kundeSignerName = signerName;
+      const { data: eigene } = signatureToken
+        ? await supabase.from("signature_requests").select("sa_data").eq("token", signatureToken).maybeSingle()
+        : { data: null };
+      const person = (eigene?.sa_data as Record<string, any> | null)?.aftersalesPerson === "kunde2" ? "kunde2" : "kunde";
+      const schluessel = signatureToken || "intern";
+      nextAb.kundeUnterschriften = { ...bisher, [schluessel]: { name: signerName, signature, signedAt: now, person } };
+      // Die erste Unterschrift des Hauptkäufers bleibt wie bisher sichtbar.
+      if (person === "kunde") {
+        if (signature) nextAb.kundeSignature = signature;
+        if (signerName) nextAb.kundeSignerName = signerName;
+      }
+      const { data: offen } = await supabase.from("signature_requests")
+        .select("token")
+        .eq("investment_id", investmentId)
+        .eq("kontakt_id", kontaktId)
+        .eq("person_type", "aftersales_kunde")
+        .eq("status", "pending");
+      const nochOffen = (offen || []).some((r: { token: string }) => r.token !== signatureToken && !nextAb.kundeUnterschriften[r.token]);
+      if (!nochOffen) {
+        nextAb.status = "abgeschlossen";
+        nextAb.kundeSignedAt = now;
+      }
     }
 
     await supabase.from("investments")
@@ -311,6 +418,41 @@ Deno.serve(async (req) => {
           await supabase.from("signature_requests")
             .update({ sa_data: mergedSaData })
             .eq("token", kundeSig.token);
+
+          /*
+           * Käufer 2 unterschreibt selbst (Christian, 17.10.2026). Seine
+           * Anfrage legt der Server an, im Browser darf niemand in
+           * signature_requests schreiben (Migration 20260929200000).
+           */
+          const zweiter = String(formData?.weitereKaeufer || "").trim();
+          const zweiterMail = String(formData?.kaeufer2Email || "").trim();
+          if (formData?.vorlage === PROTOKOLL_VORLAGE && zweiter && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(zweiterMail)) {
+            const token2 = crypto.randomUUID();
+            const { error: insErr } = await supabase.from("signature_requests").insert({
+              token: token2, kontakt_id: kontaktId, investment_id: investmentId, person_type: "aftersales_kunde",
+              name: zweiter, email: zweiterMail, status: "pending",
+              expires_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+              sa_data: { ...mergedSaData, aftersalesPerson: "kunde2" },
+            });
+            if (insErr) console.error("Anfrage Käufer 2 nicht angelegt", insErr);
+            else {
+              const berater = await zustaendigerAnsprechpartner(supabase, kontaktId);
+              await supabase.functions.invoke("send-transactional-email", {
+                body: {
+                  templateName: "aftersales-beratung-signatur",
+                  recipientEmail: zweiterMail,
+                  idempotencyKey: `aftersales-kunde2-${investmentId}-${token2}`,
+                  kontaktId,
+                  templateData: {
+                    name: zweiter,
+                    vpName: signerName || undefined,
+                    signUrl: `https://osimmobilien.netlify.app/signatur?token=${token2}&type=aftersales_kunde`,
+                    ...(berater ? { berater } : {}),
+                  },
+                },
+              });
+            }
+          }
         }
         if (kundeSig?.token && kontakt?.email) {
           const signatureUrl = `https://osimmobilien.netlify.app/signatur?token=${kundeSig.token}&type=aftersales_kunde`;
@@ -334,46 +476,43 @@ Deno.serve(async (req) => {
           });
         }
       } catch (e) { console.error("kunde email failed", e); }
-    } else {
-      // Phase Kunde signiert → finales PDF erzeugen + Storage-Upload
-      // Das endgültige PDF in der Sprache des Kunden aus seinem Profil, Rückfall Deutsch.
-      const sprache = await kundenSprache(supabase, { kontaktId });
-      const pdfPath = await buildAndUploadFinalPdf(supabase, kontaktId, investmentId, nextAb, kundeName, sprache);
-      if (pdfPath) {
-        nextAb.pdfPath = pdfPath;
-
-        // Spiegelung in den Kundenordner (Kategorie „Beratungsdokument") – Logik analog Reservierungsvereinbarung
-        const ko: any[] = Array.isArray((meta as any).kundenordner) ? [...(meta as any).kundenordner] : [];
-        const filename = aftersalesDateiname(kundeName, sprache);
-        ko.push({
-          id: `ko-aftersales-${Date.now()}`,
-          investmentId,
-          kategorie: "Beratungsdokument",
-          filename,
-          uploadedBy: "System (Aftersales-Beratung)",
-          uploadedAt: new Date().toISOString(),
-          fileUrl: pdfPath,
-          freigegeben: true,
-        });
-
-        await supabase.from("investments")
-          .update({ meta: { ...meta, aftersalesBeratung: nextAb, kundenordner: ko } })
-          .eq("id", investmentId);
+    } else if (nextAb.kundeSignedAt) {
+      const istProtokoll = nextAb.formData?.vorlage === PROTOKOLL_VORLAGE;
+      if (istProtokoll) {
+        // Das PDF entsteht im Browser des zuletzt Unterschreibenden mit allen
+        // Unterschriften und kommt mit einem zweiten Aufruf (wie bei der
+        // Reservierung). Liegt es schon bei, wird es gleich abgelegt.
+        const pdf = pdfAusBase64(pdfBase64);
+        if (pdf) await protokollAblegen(supabase, { meta, ab: nextAb, kontaktId, investmentId, pdf });
+      } else {
+        // Alte Fassung: das PDF baut der Server, in der Sprache des Kunden.
+        const sprache = await kundenSprache(supabase, { kontaktId });
+        const pdfPath = await buildAndUploadFinalPdf(supabase, kontaktId, investmentId, nextAb, kundeName, sprache);
+        if (pdfPath) {
+          nextAb.pdfPath = pdfPath;
+          await supabase.from("investments")
+            .update({ meta: { ...meta, aftersalesBeratung: nextAb, kundenordner: mitKundenordner(meta, investmentId, aftersalesDateiname(kundeName, sprache), pdfPath) } })
+            .eq("id", investmentId);
+        }
       }
 
-      // Phase Kunde signiert → Bell an VP
+      // Alle Käufer haben unterschrieben → Glocke beim Partner
       const vpId = kontakt?.zustaendig_id;
       if (vpId) {
         await supabase.from("benachrichtigungen").insert({
           benutzer_id: vpId,
-          titel: `Aftersales-Beratung abgeschlossen: ${kundeName}`,
-          nachricht: `${kundeName} hat das Beratungsdokument digital unterzeichnet.`,
+          titel: `Beratungsprotokoll unterschrieben: ${kundeName}`,
+          nachricht: `${kundeName} hat das Beratungsprotokoll digital unterzeichnet.`,
           link: `/kunden/${kontaktId}`,
           gelesen: false,
         });
       }
     }
 
+    if (phase === "kunde") {
+      return new Response(JSON.stringify({ ok: true, ...(await kaeuferStand(supabase, investmentId, kontaktId, nextAb)) }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
     return new Response(JSON.stringify({ ok: true, aftersalesBeratung: nextAb }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (err) {

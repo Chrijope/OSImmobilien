@@ -104,3 +104,25 @@ describe("Vorschau-Route Pipeline am Investment", () => {
     expect(app).toMatch(/\{VorschauPipeline && <Route path="\/vorschau\/pipeline"/);
   });
 });
+
+describe("Vorschau-Route Beratungsprotokoll", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+
+  it("existiert nur im Entwicklungsmodus", async () => {
+    vi.stubEnv("DEV", true);
+    expect((await import("./vorschauRouten")).VorschauBeratungsprotokoll).not.toBeNull();
+    vi.resetModules();
+    vi.stubEnv("DEV", false);
+    vi.stubEnv("PROD", true);
+    expect((await import("./vorschauRouten")).VorschauBeratungsprotokoll).toBeNull();
+  });
+
+  it("App.tsx bindet sie nur über den abgesicherten Weg ein", () => {
+    const app = readFileSync("src/App.tsx", "utf8");
+    expect(app).not.toMatch(/pages\/VorschauBeratungsprotokoll/);
+    expect(app).toMatch(/\{VorschauBeratungsprotokoll && <Route path="\/vorschau\/beratungsprotokoll"/);
+  });
+});
