@@ -148,6 +148,16 @@ async function ladeVonUrl(
  * Adresse, die sowohl in der Einheit als auch im eingebetteten Projektobjekt
  * steht, nur einmal genommen wird und zwar an der Einheit.
  */
+/**
+ * Kennung eines Fotos über alle Läufe hinweg. Signierte Supabase-Links (das
+ * Übergabe-Paket) tragen ein Token, das bei jedem Lauf neu ist; ohne diese
+ * Bereinigung galt jedes Foto als neu und wurde bei jedem Lauf noch einmal
+ * angelegt (Zossen und Cottbus am 17.10.2026 doppelt).
+ */
+export function stabileHerkunft(url: string): string {
+  return /\/storage\/v1\/object\/sign\//.test(url) ? url.split("?")[0] : url;
+}
+
 function fotoQuellen(
   photos: unknown,
 ): { url: string; version: string; anzeige: string }[] {
@@ -163,7 +173,7 @@ function fotoQuellen(
       version: JSON.stringify([
         new Date().toISOString().slice(0, 10),
         foto?.updated_at,
-        url,
+        stabileHerkunft(url),
       ]),
     }))
   );
@@ -180,10 +190,10 @@ function kandidatenAusAntwort(quelle: BildQuelle): Kandidat[] {
       if (vergeben.has(`${einheit.propertyId}:${url}`)) continue;
       vergeben.add(`${einheit.propertyId}:${url}`);
       kandidaten.push({
-        herkunft: url,
+        herkunft: stabileHerkunft(url),
         version: foto.version,
         anzeige: foto.anzeige,
-        dateiname: stabilerDateiname(url, url),
+        dateiname: stabilerDateiname(stabileHerkunft(url), url),
         ziel: { art: "wohnung", we: einheit.we },
         lade: () => ladeVonUrl(quelle.zugang, url),
       });
@@ -194,10 +204,10 @@ function kandidatenAusAntwort(quelle: BildQuelle): Kandidat[] {
     if (vergeben.has(url)) continue;
     vergeben.add(url);
     kandidaten.push({
-      herkunft: url,
+      herkunft: stabileHerkunft(url),
       version: foto.version,
       anzeige: foto.anzeige,
-      dateiname: stabilerDateiname(url, url),
+      dateiname: stabilerDateiname(stabileHerkunft(url), url),
       ziel: { art: "objekt" },
       lade: () => ladeVonUrl(quelle.zugang, url),
     });
@@ -610,6 +620,17 @@ export async function uebernimmBilder(opts: {
             if (schreibFehler) throw schreibFehler;
             bericht.uebernommen++;
             eintrag.uebernommen++;
+            continue;
+          }
+          // Gleiches Foto unter anderem Hash-Präfix schon da (Läufe vor der stabilen
+          // Herkunft): am eigentlichen Dateinamen erkennen, nicht noch einmal anlegen.
+          const basis = kandidat.dateiname.slice(kandidat.dateiname.indexOf("-") + 1);
+          const schonAmZiel = kandidat.ziel.art === "objekt"
+            ? objektUrls
+            : wohnungsUrls.get(wohnungNachWe.get(kandidat.ziel.we)!) || new Set<string>();
+          if (basis && [...schonAmZiel].some((u) => u.split("?")[0].endsWith(`-${basis}`))) {
+            eintrag.uebersprungen++;
+            bericht.uebersprungen++;
             continue;
           }
           if (gruppe.schluessel || !vorhandeneDateien.has(kandidat.dateiname)) {
