@@ -369,6 +369,10 @@ verify_jwt = true
 [functions.analyze-objekt-pdfs]
 verify_jwt = true
 
+# Liste aus einem PDF lesen (Objektdaten, 17.10.2026)
+[functions.liste-aus-pdf]
+verify_jwt = true
+
 [functions.apple-calendar]
 verify_jwt = true
 

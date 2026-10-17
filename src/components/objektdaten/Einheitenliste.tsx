@@ -573,7 +573,7 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
           <Button variant="outline" onClick={() => exportieren("xlsx")}><FileSpreadsheet className="mr-2 h-4 w-4" /> Excel</Button>
           <Button variant="outline" onClick={() => exportieren("pdf")}><FileDown className="mr-2 h-4 w-4" /> PDF</Button>
           {einzeln && (darfSchreiben || user.role === "backoffice") && (
-            <Button variant="outline" onClick={() => setImportOffen(true)}><Upload className="mr-2 h-4 w-4" /> Excel-Liste übernehmen</Button>
+            <Button variant="outline" onClick={() => setImportOffen(true)}><Upload className="mr-2 h-4 w-4" /> Liste übernehmen</Button>
           )}
         </div>
       </PageHeader>

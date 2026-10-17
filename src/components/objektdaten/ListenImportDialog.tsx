@@ -4,7 +4,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
-import { leseExcel, type Blatt } from "@/lib/excelLesen";
+import { type Blatt } from "@/lib/excelLesen";
+import { LISTEN_DATEITYPEN, leseListe } from "@/lib/listeLesen";
 import {
   FELD_NAME, importAusfuehren, importPlanen, planZaehlen, type ImportFeld, type ImportZeile, type PruefErgebnis,
 } from "@/lib/listenImport";
@@ -40,13 +41,13 @@ export function ListenImportDialog({ open, onOpenChange, objekt }: { open: boole
   const lesen = async (f: File | undefined) => {
     if (!f) return;
     try {
-      const b = await leseExcel(f);
+      const b = await leseListe(f);
       setDatei(f.name);
       setBlaetter(b);
       // Das erste Blatt mit erkennbarer WE-Spalte vorwählen.
       setBlattName((b.find((x) => importPlanen(x, [], [], () => null).kopf) ?? b[0])?.name ?? "");
     } catch (e) {
-      toast({ title: "Datei nicht lesbar", description: e instanceof Error ? e.message : "Bitte eine .xlsx wählen.", variant: "destructive" });
+      toast({ title: "Datei nicht lesbar", description: e instanceof Error ? e.message : "Bitte eine .xlsx oder ein PDF wählen.", variant: "destructive" });
     }
   };
 
@@ -77,12 +78,12 @@ export function ListenImportDialog({ open, onOpenChange, objekt }: { open: boole
   return (
     <Dialog open={open} onOpenChange={(o) => { if (!o) zuruecksetzen(); onOpenChange(o); }}>
       <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader><DialogTitle>Excel-Liste übernehmen: {objekt.titel}</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>Liste übernehmen (Excel oder PDF): {objekt.titel}</DialogTitle></DialogHeader>
         <p className="text-sm text-muted-foreground">
-          Erkannt werden Listen mit einer WE-Spalte, etwa Kaufpreis- und Flächenabgleich, Mietdifferenz-Abgleich, Mieterliste oder Vertriebsliste. Werte werden unverändert übernommen. Kaufpreis und Fläche werden bei Objekten aus Investagon nur geprüft, ändern musst du sie dort.
+          Erkannt werden Listen mit einer WE-Spalte, etwa Kaufpreis- und Flächenabgleich, Mietdifferenz-Abgleich, Mieterliste oder Vertriebsliste. Ein PDF liest die KI aus; bitte die Vorschau dann besonders genau prüfen. Werte werden unverändert übernommen. Kaufpreis und Fläche werden bei Objekten aus Investagon nur geprüft, ändern musst du sie dort.
         </p>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <input type="file" accept=".xlsx" onChange={(e) => lesen(e.target.files?.[0])} className="text-sm" />
+          <input type="file" accept={LISTEN_DATEITYPEN} onChange={(e) => lesen(e.target.files?.[0])} className="text-sm" />
           {blaetter.length > 1 && (
             <Select value={blattName} onValueChange={setBlattName}>
               <SelectTrigger className="w-full sm:w-72"><SelectValue placeholder="Blatt wählen" /></SelectTrigger>
