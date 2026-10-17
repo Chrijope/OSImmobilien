@@ -75,8 +75,10 @@ export function EinheitGrundriss3dKarte({ wohnung, darfBearbeiten, onGespeichert
   const bekannt = useBekanntesHaus(objekt);
   const eigenerPlan = useMemo(() => planAusMeta(wohnung.grundriss3d), [wohnung.grundriss3d]);
   const plan = eigenerPlan ?? bibliotheksPlan(bekannt, wohnung.weNr);
+  // Ein ganzes Haus als eine Einheit (Doppelhaushälfte): alle Geschosse zeigen.
+  const hausEtagen = !plan && bekannt?.etagen && bekannt.einheiten.length === 0 ? bekannt.etagen : null;
   const [editor, setEditor] = useState(false);
-  if (!plan && !darfBearbeiten) return null;
+  if (!plan && !hausEtagen && !darfBearbeiten) return null;
   return (
     <Card className="p-4" data-testid="einheit-grundriss-3d">
       <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -90,7 +92,12 @@ export function EinheitGrundriss3dKarte({ wohnung, darfBearbeiten, onGespeichert
           </Button>
         )}
       </div>
-      {plan ? (
+      {hausEtagen ? (
+        <>
+          <Grundriss3dBlock einheiten={hausEtagen.map((e) => ({ plan: e.plan, titel: e.titel }))} hoehe={480} />
+          <p className="mt-1 text-[11px] text-muted-foreground">{bekannt?.name}: nachgezeichnet aus den Unterlagen; das einzelne Haus kann abweichen.</p>
+        </>
+      ) : plan ? (
         <>
           <Grundriss3dBlock einheiten={[{ plan: { ...plan, versatz: undefined }, titel: `WE ${wohnung.weNr}` }]} hoehe={440} />
           {!eigenerPlan && bekannt && <p className="mt-1 text-[11px] text-muted-foreground">Nachgezeichnet aus dem Grundriss der Unterlagen ({bekannt.name}).</p>}

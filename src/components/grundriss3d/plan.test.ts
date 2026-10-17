@@ -168,3 +168,23 @@ describe("Hauffstraße 38 aus den Werkplänen", () => {
     }
   });
 });
+
+describe("Zossen-Wünsdorf: Mustergrundrisse der Haustypen", () => {
+  it("ordnet Agnesstraße 29 und 30 dem DHH 2 zu und Luisenstraße 72 dem DHH 1, mit plausiblen Flächen", async () => {
+    const { bekanntesHausFinden } = await import("./planBibliothek");
+    const flaecheVon = async (adresse: string) => {
+      const haus = await bekanntesHausFinden({ adresse })!.laden();
+      expect(haus.etagen).toHaveLength(2);
+      return { name: haus.name, m2: haus.etagen!.reduce((s, e) => s + gesamtFlaeche(e.plan), 0) };
+    };
+    for (const a of ["Agnesstraße 29", "Agnesstr. 30, 15806 Zossen"]) {
+      const h = await flaecheVon(a);
+      expect(h.name).toMatch(/DHH 2/);
+      expect(Math.abs(h.m2 - 121.5)).toBeLessThan(10);
+    }
+    const l = await flaecheVon("Luisenstraße 72");
+    expect(l.name).toMatch(/DHH 1/);
+    expect(Math.abs(l.m2 - 91)).toBeLessThan(8);
+    expect(bekanntesHausFinden({ adresse: "Agnesstraße 3" })).toBeUndefined();
+  });
+});

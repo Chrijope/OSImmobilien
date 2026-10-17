@@ -15,13 +15,14 @@ const Editor = lazy(() => import("@/components/grundriss3d/GrundrissEditor"));
  * Einzelgrundriss im Exposé (Seite 5). Speichern landet hier nur im Browser.
  */
 
-type Reiter = "einheit" | "haus" | "barfuss" | "hauff" | "expose" | "editor" | "neu";
+type Reiter = "einheit" | "haus" | "barfuss" | "hauff" | "zossen" | "expose" | "editor" | "neu";
 
 const REITER: Array<{ id: Reiter; name: string }> = [
   { id: "einheit", name: "Einheitenseite (WE 03)" },
   { id: "haus", name: "Objektseite (Beispielhaus)" },
   { id: "barfuss", name: "Barfusstraße 9 (ganzes Haus)" },
   { id: "hauff", name: "Hauffstraße 38 (aus CAD-Plänen)" },
+  { id: "zossen", name: "Zossen (DHH 1 und 2)" },
   { id: "expose", name: "Exposé" },
   { id: "editor", name: "Editor mit Plan" },
   { id: "neu", name: "Editor leer" },
@@ -109,6 +110,7 @@ export default function VorschauGrundriss3d() {
         )}
 
         {reiter === "hauff" && <HauffVorschau startwerte={startwerte} />}
+        {reiter === "zossen" && <><ZossenVorschau adresse="Agnesstraße 29" startwerte={startwerte} /><ZossenVorschau adresse="Luisenstraße 72" startwerte={startwerte} /></>}
 
         {reiter === "expose" && (
           <section className="rounded-xl border bg-white p-4" style={{ fontFamily: "Georgia, serif" }}>
@@ -150,6 +152,18 @@ function HauffVorschau({ startwerte }: { startwerte: Parameters<typeof Grundriss
       <Grundriss3dBlock einheiten={bekannt.etagen.map((e) => ({ plan: e.plan, titel: e.titel }))} hoehe={680} startwerte={startwerte} />
       <h3 className="mb-2 mt-6 font-bold">Einheitenseite WE 33</h3>
       {we33 && <Grundriss3dBlock einheiten={[{ plan: we33, titel: "WE 33" }]} hoehe={520} startwerte={{ ...startwerte, geschoss: undefined }} />}
+    </section>
+  );
+}
+
+/** Zossen-Wünsdorf: ganze Doppelhaushälfte mit Erd- und Dachgeschoss. */
+function ZossenVorschau({ adresse, startwerte }: { adresse: string; startwerte: Parameters<typeof Grundriss3dBlock>[0]["startwerte"] }) {
+  const bekannt = useBekanntesHaus({ adresse });
+  if (!bekannt?.etagen) return <p className="text-sm text-muted-foreground">Pläne werden geladen</p>;
+  return (
+    <section className="mb-4 rounded-xl border bg-white p-4">
+      <h2 className="mb-1 font-bold">{adresse}: {bekannt.name}</h2>
+      <Grundriss3dBlock einheiten={bekannt.etagen.map((e) => ({ plan: e.plan, titel: e.titel }))} hoehe={520} startwerte={startwerte} />
     </section>
   );
 }

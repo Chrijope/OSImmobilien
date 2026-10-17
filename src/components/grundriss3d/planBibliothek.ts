@@ -26,6 +26,15 @@ const EINTRAEGE: Array<{ muster: RegExp; laden: () => Promise<BekanntesHaus> }> 
     laden: () => import("./beispielBarfuss9").then((m) => ({ name: "Barfusstraße 9", haus: m.BARFUSS9_HAUS, einheiten: m.BARFUSS9_EINHEITEN })),
   },
   {
+    // Waldsiedlung Wünsdorf: Mustergrundrisse der Haustypen (beispielZossen.ts). Je Haus eine Einheit.
+    muster: /agnesstrasse(29|30)(?!\d)/,
+    laden: () => import("./beispielZossen").then((m) => ({ name: m.ZOSSEN_DHH2.name, etagen: m.ZOSSEN_DHH2.etagen, einheiten: [] })),
+  },
+  {
+    muster: /luisenstrasse72(?!\d)/,
+    laden: () => import("./beispielZossen").then((m) => ({ name: m.ZOSSEN_DHH1.name, etagen: m.ZOSSEN_DHH1.etagen, einheiten: [] })),
+  },
+  {
     // Werkpläne Studio LOES, automatisch aus den Vektordaten gelesen (daten/hauff38.json).
     muster: /hauffstrasse38(?!\d)/,
     laden: () => import("./daten/hauff38.json").then((m) => {
