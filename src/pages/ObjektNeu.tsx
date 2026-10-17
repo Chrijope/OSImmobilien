@@ -21,7 +21,14 @@ import { DateInput } from "@/components/ui/date-input";
 // Im CRM rollt der Inhaltskasten, nicht das Fenster. Siehe lib/rollen.ts.
 import { rolleSeiteNachOben } from "@/lib/rollen";
 import { EuroInput } from "@/components/ui/euro-input";
-import { saveObjekt, speichereObjektKonzept, getObjekte, getObjektById, getLastObjektSaveError, getLastObjektSaveHinweise, defaultDokumente, DEFAULT_WOHNUNG_DOCS, type ObjektData, type ObjektWohnung } from "@/lib/objekteStore";
+import { saveObjekt, speichereObjektKonzept, getObjekte, getObjektById, getLastObjektSaveError, getLastObjektSaveHinweise, defaultDokumente, DEFAULT_WOHNUNG_DOCS, objektMetaErgaenzen, wohnungMetaErgaenzen, type ObjektData, type ObjektWohnung } from "@/lib/objekteStore";
+import { EinheitObjektdatenFelder, ObjektObjektdatenFelder } from "@/components/objektdaten/ObjektdatenFelder";
+import { LEERE_EINHEIT, einheitFormAus, einheitFormInDaten, objektFormAus, objektFormInMeta, type EinheitFormDaten, type ObjektFormDaten } from "@/lib/objektdatenFormular";
+import { aktuellerMieter } from "@/lib/objektdaten";
+import { listendatenFuerEinheit } from "@/lib/listendaten";
+import { garageFuerEinheit, mietgarantieAusMeta } from "@/lib/mietgarantie";
+import { addMieter, getMieter, updateMieter } from "@/lib/mieterStore";
+import { nameTeilen } from "@/lib/listenImport";
 import { AfaRechnerEmbed, type AfaErgebnis, type AfaRechnerDraft } from "@/components/objekte/AfaRechnerEmbed";
 import { ObjektUploadAnalyse, type ExtractedObjektData } from "@/components/objekte/ObjektUploadAnalyse";
 import { EinheitVerkaufsstatus } from "@/components/objekte/EinheitVerkaufsstatus";
@@ -2265,6 +2272,35 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
       const konzeptFehler = await speichereObjektKonzept(objektId, konzept || null);
       if (konzeptFehler) toast({ title: "Konzept nicht gespeichert", description: konzeptFehler, variant: "destructive" });
     }
+    // Objektdaten aus dem Formular dorthin, wo die Objektdaten lesen (17.10.2026).
+    // `wohnungen` entsteht Index für Index aus `effectiveEinzelWohnungen`.
+    try {
+      if (objektdatenForm) {
+        const metaAlt = (getObjektById(objektId)?.meta || {}) as Record<string, any>;
+        await objektMetaErgaenzen(objektId, objektFormInMeta(objektdatenForm, metaAlt.aufteilung));
+      }
+      for (const [i, quelle] of effectiveEinzelWohnungen.entries()) {
+        const f = (quelle as { objektdaten?: EinheitFormDaten }).objektdaten;
+        const ziel = wohnungen[i];
+        if (!f || !ziel) continue;
+        const alt = listendatenFuerEinheit(ziel.id);
+        const { werte, garage, mieter } = einheitFormInDaten(f, alt?.werte);
+        await wohnungMetaErgaenzen(ziel.id, {
+          listendaten: { ...alt, werte, quelle: alt?.quelle ? `${alt.quelle}, Formular` : "Formular Objekt anlegen", stand: new Date().toISOString().slice(0, 10) },
+          garage,
+        });
+        if (!mieter) continue;
+        const vorhanden = aktuellerMieter(getMieter(), ziel.id);
+        const angaben = { ...nameTeilen(mieter.name), mietvertragBeginn: mieter.beginn, mietvertragEnde: mieter.befristetBis, kaution: mieter.kaution };
+        if (vorhanden) updateMieter(vorhanden.id, angaben);
+        else addMieter({
+          ...angaben, email: "", telefon: "", objektId, objektName: nf.titel, wohneinheitId: ziel.id, wohneinheitName: ziel.weNr,
+          kaltmiete: ziel.mieteGesamt || 0, nebenkosten: 0, kautionEingegangen: false, status: "aktiv", dokumente: [], zahlungen: [], notizen: "Aus dem Formular Objekt anlegen",
+        });
+      }
+    } catch (e) {
+      toast({ title: "Objektdaten nicht vollständig gespeichert", description: e instanceof Error ? e.message : undefined, variant: "destructive" });
+    }
     // Gespeichert, aber nicht alles übernommen: etwa eine reservierte Einheit,
     // die nicht entfernt wird.
     const speicherHinweise = getLastObjektSaveHinweise();
@@ -2360,6 +2396,21 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
    * keinen Möbelanteil, und Investmentrechner und Exposé blieben leer.
    * Ein leeres Feld heißt „nicht erfasst“.
    */
+  /**
+   * Objektdaten einer Einheit im Formular (17.10.2026): was der Nutzer schon
+   * eingegeben hat, sonst der gespeicherte Stand aus Liste, Garage und Mieter.
+   * Nur angefasste Einheiten (`objektdaten` gesetzt) werden beim Speichern
+   * geschrieben.
+   */
+  const einheitFormWert = (w: Partial<ObjektWohnung>, wohnungId?: string): EinheitFormDaten => {
+    const eigene = (w as { objektdaten?: EinheitFormDaten }).objektdaten;
+    if (eigene) return eigene;
+    if (!wohnungId) return LEERE_EINHEIT;
+    return einheitFormAus(listendatenFuerEinheit(wohnungId)?.werte, garageFuerEinheit(wohnungId), aktuellerMieter(getMieter(), wohnungId) ?? null);
+  };
+  const [objektdatenForm, setObjektdatenForm] = useState<ObjektFormDaten | null>(null);
+  const objektdatenWert = objektdatenForm ?? objektFormAus(existingObjekt?.meta, mietgarantieAusMeta(existingObjekt?.meta));
+
   const renderEinheitZusatzfelder = (w: Partial<ObjektWohnung>, onChange: (field: string, value: any) => void) => {
     const zahl = (feld: keyof ObjektWohnung, label: string, opts: { euro?: boolean; step?: string; hinweis?: string; platzhalter?: string } = {}) => (
       <div key={feld}>
@@ -2521,6 +2572,8 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
         )}
       </div>
       {renderEinheitZusatzfelder(w, onChange)}
+      {/* Nicht beim Anlegen mehrerer gleicher Einheiten: Garage und Mieter gehören zu genau einer. */}
+      {showWeNr && <EinheitObjektdatenFelder wert={einheitFormWert(w, wohnungId)} onChange={v => onChange("objektdaten", v)} />}
       {/* Inline Wohnungsunterlagen */}
       {wohnungId && (
         <div className="pt-3 border-t mt-3">
@@ -2992,6 +3045,14 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
                   }}
                   objekt={isEditMode ? existingObjekt : undefined}
                 />
+              </div>
+              {/* Objektdaten: Mietsubvention, Mieterhöhung, Reservierung */}
+              <div className="pt-4 border-t space-y-3" data-testid="objektdaten-felder">
+                <div>
+                  <h3 className="text-sm font-semibold">Objektdaten</h3>
+                  <p className="text-xs text-muted-foreground">Rechnen in den Objektdaten Mietsubvention, Mieterhöhungen und Fristen. Angaben je Einheit (MEA, Mieter, Garage) stehen bei jeder Wohnung.</p>
+                </div>
+                <ObjektObjektdatenFelder wert={objektdatenWert} onChange={v => { setObjektdatenForm(v); markDirty(); }} />
               </div>
               {/* Verkäuferdaten */}
               <div className="pt-4 border-t">
