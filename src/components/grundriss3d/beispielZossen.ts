@@ -1,4 +1,4 @@
-import type { Grundriss3dPlan, Oeffnung, Punkt, Raum, RaumTyp, Wand } from "./plan";
+import type { Aussehen, Grundriss3dPlan, Oeffnung, Punkt, Raum, RaumTyp, Wand } from "./plan";
 
 /*
  * Waldsiedlung Zossen-Wünsdorf (17.10.2026): Mustergrundrisse der Haustypen
@@ -141,11 +141,20 @@ const DHH1_DG = bauer(dg1, 78)
   .raum("Schlafen", "schlafen", 431, 446, 706, 446, 706, 758, 431, 758)
   .plan(1);
 
-export const ZOSSEN_DHH1 = { name: "Haustyp DHH 1 (Mustergrundriss)", etagen: [
+/*
+ * Außen nach Exposé-Fotos und Visualisierungen: Satteldach, First in y
+ * (freier Giebel mit zwei DG-Fenstern bei kleinem y, Haustrennwand bei
+ * großem y). Neigung aus Fotos geschätzt (±5°), Farben als Mittel über
+ * Putz- und Dachflächen.
+ */
+const DHH1_AUSSEHEN: Aussehen = { fassade: "#f1eee2", dach: { art: "sattel", first: "y", neigung: 55, kniestock: 0.5, farbe: "#4a4148", ueberstand: 0.4 } };
+const DHH2_AUSSEHEN: Aussehen = { fassade: "#e4e6d8", dach: { art: "sattel", first: "y", neigung: 50, kniestock: 0.2, farbe: "#a8685a", ueberstand: 0.4 } };
+
+export const ZOSSEN_DHH1 = { name: "Haustyp DHH 1 (Mustergrundriss)", aussehen: DHH1_AUSSEHEN, etagen: [
   { geschoss: 0, titel: "Erdgeschoss", plan: DHH1_EG },
   { geschoss: 1, titel: "Dachgeschoss", plan: DHH1_DG },
 ] };
-export const ZOSSEN_DHH2 = { name: "Haustyp DHH 2 (Mustergrundriss)", etagen: [
+export const ZOSSEN_DHH2 = { name: "Haustyp DHH 2 (Mustergrundriss)", aussehen: DHH2_AUSSEHEN, etagen: [
   { geschoss: 0, titel: "Erdgeschoss", plan: DHH2_EG },
   { geschoss: 1, titel: "Dachgeschoss", plan: DHH2_DG },
 ] };

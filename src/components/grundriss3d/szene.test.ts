@@ -56,3 +56,41 @@ describe("Gebäudehülle (Barfusstraße 9)", () => {
     expect(we3.minY + we6.maxY).toBeCloseTo(2 * 13.79 - 2 * 1.12, 1);
   });
 });
+
+describe("Möbel in schräg liegenden Räumen", () => {
+  it("erkennt die Hauptrichtung eines gedrehten Rechtecks, unabhängig von der Kante", async () => {
+    const { hauptrichtung } = await import("./szene");
+    const w = (20 * Math.PI) / 180, c = Math.cos(w), s = Math.sin(w);
+    const rechteck = [[0, 0], [4, 0], [4, 3], [0, 3]].map(([x, y]) => ({ x: x * c - y * s, y: x * s + y * c }));
+    expect(hauptrichtung(rechteck)).toBeCloseTo(w, 3);
+    expect(hauptrichtung([{ x: 0, y: 0 }, { x: 4, y: 0 }, { x: 4, y: 3 }, { x: 0, y: 3 }])).toBe(0);
+  });
+});
+
+describe("Dach und Fassade", () => {
+  it("Satteldach: Unter der Dachfläche bleibt das Dachgeschoss stehen, darüber wird gekappt", async () => {
+    const THREE = await import("three");
+    const { steildach } = await import("./aussen");
+    const r = { minX: 0, minY: 0, maxX: 10, maxY: 6 };
+    const d = steildach({ art: "sattel", first: "x", neigung: 45, kniestock: 1, farbe: "#b5614a" }, r, 1, 2.65, new THREE.MeshStandardMaterial());
+    const bleibt = (x: number, y: number, z: number) => d.ebenen.every((e) => e.distanceToPoint(new THREE.Vector3(x, y, z)) >= 0);
+    // First in der Mitte (z 3) auf 1 + 3 = 4 m, Traufe bei z 0 auf 1 m.
+    expect(bleibt(5, 3.9, 3)).toBe(true);
+    expect(bleibt(5, 4.1, 3)).toBe(false);
+    expect(bleibt(5, 0.9, 0.05)).toBe(true);
+    expect(bleibt(5, 1.5, 0.2)).toBe(false);
+  });
+
+  it("findet die Brück-Pläne über die Adresse und die Barfuß-Einheiten auf allen Obergeschossen", async () => {
+    const { bekanntesHausFinden } = await import("./planBibliothek");
+    const brueck = await bekanntesHausFinden({ adresse: "Marktstraße 6, 14822 Brück" })!.laden();
+    expect(brueck.etagen?.map((e) => e.geschoss)).toEqual([0, 1, 2]);
+    expect(brueck.aussehen?.dach?.art).toBe("sattel");
+    const barfuss = await bekanntesHausFinden({ adresse: "Barfußstr. 9" })!.laden();
+    const geschosse = new Set(barfuss.einheiten.map((e) => e.plan.geschoss));
+    for (const g of [0, 1, 2, 3, 4]) expect(geschosse.has(g), `Geschoss ${g}`).toBe(true);
+    // Straßenfassade: je Obergeschoss zwei Loggien und zwei Kragbalkone (WE 03 bis 06).
+    expect([3, 4, 5, 6].every((we) => barfuss.einheiten.some((e) => e.we === we))).toBe(true);
+    expect(new Set(barfuss.einheiten.map((e) => e.we)).size).toBe(barfuss.einheiten.length);
+  });
+});

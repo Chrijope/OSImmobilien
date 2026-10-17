@@ -1,7 +1,7 @@
 import { Suspense, lazy, useMemo, useState } from "react";
 import { Grundriss3dBlock } from "@/components/grundriss3d/Grundriss3dBlock";
 import { WE03_PLAN, WE03_PX_PRO_METER, beispielHaus } from "@/components/grundriss3d/beispielWe03";
-import { BARFUSS9_EINHEITEN, BARFUSS9_HAUS } from "@/components/grundriss3d/beispielBarfuss9";
+import { BARFUSS9_AUSSEHEN, BARFUSS9_EINHEITEN, BARFUSS9_HAUS } from "@/components/grundriss3d/beispielBarfuss9";
 import { useBekanntesHaus } from "@/components/grundriss3d/planBibliothek";
 import { gesamtFlaeche, qm, wohnflaeche, type Grundriss3dPlan } from "@/components/grundriss3d/plan";
 import planBild from "./vorschauGrundriss3d/barfuss9-we03.jpg";
@@ -15,7 +15,7 @@ const Editor = lazy(() => import("@/components/grundriss3d/GrundrissEditor"));
  * Einzelgrundriss im Exposé (Seite 5). Speichern landet hier nur im Browser.
  */
 
-type Reiter = "einheit" | "haus" | "barfuss" | "hauff" | "zossen" | "expose" | "editor" | "neu";
+type Reiter = "einheit" | "haus" | "barfuss" | "hauff" | "zossen" | "brueck" | "expose" | "editor" | "neu";
 
 const REITER: Array<{ id: Reiter; name: string }> = [
   { id: "einheit", name: "Einheitenseite (WE 03)" },
@@ -23,6 +23,7 @@ const REITER: Array<{ id: Reiter; name: string }> = [
   { id: "barfuss", name: "Barfusstraße 9 (ganzes Haus)" },
   { id: "hauff", name: "Hauffstraße 38 (aus CAD-Plänen)" },
   { id: "zossen", name: "Zossen (DHH 1 und 2)" },
+  { id: "brueck", name: "Brück, Marktstraße 6" },
   { id: "expose", name: "Exposé" },
   { id: "editor", name: "Editor mit Plan" },
   { id: "neu", name: "Editor leer" },
@@ -42,7 +43,8 @@ export default function VorschauGrundriss3d() {
   const [reiter, setReiter] = useState<Reiter>(() => (new URLSearchParams(location.search).get("reiter") as Reiter) || "einheit");
   const [plan, setPlan] = useState<Grundriss3dPlan>(gespeicherterPlan);
   const haus = useMemo(() => beispielHaus(), []);
-  const barfuss = useMemo(() => BARFUSS9_EINHEITEN.map((e) => ({ plan: e.plan, titel: `WE ${String(e.we).padStart(2, "0")}` })), []);
+  const barfussBekannt = useBekanntesHaus({ adresse: "Barfusstraße 9" });
+  const barfuss = useMemo(() => (barfussBekannt?.einheiten ?? BARFUSS9_EINHEITEN).map((e) => ({ plan: e.plan, titel: `WE ${String(e.we).padStart(2, "0")}` })), [barfussBekannt]);
   const einheit = useMemo(() => [{ plan, titel: "WE 03" }], [plan]);
   // Startwerte aus der Adresse, etwa ?stil=altbau&schnitt=1&modus=begehung&licht=nacht&stunde=8&drehen=0 (für Bildschirmfotos).
   const startwerte = useMemo(() => {
@@ -105,12 +107,13 @@ export default function VorschauGrundriss3d() {
             <p className="mb-3 text-xs text-muted-foreground">
               Hülle mit Hof, vier Treppenhäusern und drei Aufzügen aus der Flächenberechnung (Vorplanung DG, 23.10.2024). Im Vorderhaus vom 1. bis 3. OG die Einheiten aus den Exposé-Grundrissen: WE 03/07/11, WE 04/08/12, WE 06/10/14. Übrige Geschossflächen ohne Grundriss bleiben leer.
             </p>
-            <Grundriss3dBlock einheiten={barfuss} haus={BARFUSS9_HAUS} hoehe={640} fassade="#d8cbb4" startwerte={startwerte} />
+            <Grundriss3dBlock einheiten={barfuss} haus={BARFUSS9_HAUS} hoehe={640} aussehen={BARFUSS9_AUSSEHEN} startwerte={startwerte} />
           </section>
         )}
 
         {reiter === "hauff" && <HauffVorschau startwerte={startwerte} />}
         {reiter === "zossen" && <><ZossenVorschau adresse="Agnesstraße 29" startwerte={startwerte} /><ZossenVorschau adresse="Luisenstraße 72" startwerte={startwerte} /></>}
+        {reiter === "brueck" && <ZossenVorschau adresse="Marktstraße 6" startwerte={startwerte} />}
 
         {reiter === "expose" && (
           <section className="rounded-xl border bg-white p-4" style={{ fontFamily: "Georgia, serif" }}>
@@ -149,7 +152,7 @@ function HauffVorschau({ startwerte }: { startwerte: Parameters<typeof Grundriss
       <p className="mb-3 text-xs text-muted-foreground">
         Automatisch aus den Werkplänen von Studio LOES gelesen (Blätter 01 bis 05, 1:100): {bekannt.etagen.length} Etagenpläne, {bekannt.einheiten.length} Einheiten mit Räumen. Anordnung der Häuser wie im Planblatt.
       </p>
-      <Grundriss3dBlock einheiten={bekannt.etagen.map((e) => ({ plan: e.plan, titel: e.titel }))} hoehe={680} startwerte={startwerte} />
+      <Grundriss3dBlock einheiten={bekannt.etagen.map((e) => ({ plan: e.plan, titel: e.titel }))} hoehe={680} aussehen={bekannt.aussehen} startwerte={startwerte} />
       <h3 className="mb-2 mt-6 font-bold">Einheitenseite WE 33</h3>
       {we33 && <Grundriss3dBlock einheiten={[{ plan: we33, titel: "WE 33" }]} hoehe={520} startwerte={{ ...startwerte, geschoss: undefined }} />}
     </section>
@@ -163,7 +166,7 @@ function ZossenVorschau({ adresse, startwerte }: { adresse: string; startwerte: 
   return (
     <section className="mb-4 rounded-xl border bg-white p-4">
       <h2 className="mb-1 font-bold">{adresse}: {bekannt.name}</h2>
-      <Grundriss3dBlock einheiten={bekannt.etagen.map((e) => ({ plan: e.plan, titel: e.titel }))} hoehe={520} startwerte={startwerte} />
+      <Grundriss3dBlock einheiten={bekannt.etagen.map((e) => ({ plan: e.plan, titel: e.titel }))} hoehe={520} aussehen={bekannt.aussehen} startwerte={startwerte} />
     </section>
   );
 }

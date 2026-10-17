@@ -1,7 +1,7 @@
-import { Suspense, lazy, useEffect, useRef, useState } from "react";
+import { Suspense, lazy, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Box, Loader2, Map as MapIcon } from "lucide-react";
 import { PlanSvg } from "./PlanSvg";
-import { gesamtFlaeche, qm, type Grundriss3dPlan, type HausPlan } from "./plan";
+import { gesamtFlaeche, qm, type Aussehen, type Grundriss3dPlan, type HausPlan } from "./plan";
 import type { Grundriss3dAnsichtProps } from "./Grundriss3dAnsicht";
 
 /*
@@ -30,10 +30,31 @@ export function schwachesGeraet(nav: { hardwareConcurrency?: number; deviceMemor
 
 export const HAFTUNGSHINWEIS = "Darstellung schematisch, Möblierung beispielhaft. Maßgeblich sind Grundriss, Teilungserklärung und Aufteilungsplan.";
 
-export function Grundriss3dBlock({ einheiten, kompakt, hoehe = 480, fassade, titel, startwerte, haus }: {
+/** Rest des Fensters unterhalb des Elements, abzüglich Abstand nach unten; mindestens `min`. */
+function useRestHoehe(ref: React.RefObject<HTMLElement>, aktiv: boolean, unten: number, min: number): number {
+  const [h, setH] = useState(min);
+  useLayoutEffect(() => {
+    if (!aktiv) return;
+    const messen = () => {
+      const el = ref.current;
+      if (!el) return;
+      // Bezug ist die Seite, nicht die Scrollposition: Das Modell endet unten bündig mit dem Fenster, wenn man oben steht.
+      const oben = el.getBoundingClientRect().top + window.scrollY;
+      setH(Math.max(min, Math.round(window.innerHeight - oben - unten)));
+    };
+    messen();
+    window.addEventListener("resize", messen);
+    return () => window.removeEventListener("resize", messen);
+  }, [ref, aktiv, unten, min]);
+  return h;
+}
+
+export function Grundriss3dBlock({ einheiten, kompakt, hoehe: hoeheWunsch = 480, fassade, aussehen, titel, startwerte, haus }: {
   einheiten: Array<{ plan: Grundriss3dPlan; titel?: string }>;
   kompakt?: boolean;
-  hoehe?: number;
+  /** Pixel oder "voll": bis zum unteren Fensterrand (Reiter 3D-Modell). */
+  hoehe?: number | "voll";
+  aussehen?: Aussehen;
   fassade?: string;
   titel?: string;
   startwerte?: Grundriss3dAnsichtProps["startwerte"];
@@ -42,7 +63,11 @@ export function Grundriss3dBlock({ einheiten, kompakt, hoehe = 480, fassade, tit
   const [ansicht, setAnsicht] = useState<"3d" | "2d">(() => (webglMoeglich() && !schwachesGeraet() ? "3d" : "2d"));
   const [inSicht, setInSicht] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const flaeche = useRef<HTMLDivElement>(null);
   const ohneWebgl = !webglMoeglich();
+  // Unten bleibt Platz für den Hinweis und den Kartenrand.
+  const restHoehe = useRestHoehe(flaeche, hoeheWunsch === "voll", 64, 460);
+  const hoehe = hoeheWunsch === "voll" ? restHoehe : hoeheWunsch;
 
   useEffect(() => {
     const el = ref.current;
@@ -76,10 +101,11 @@ export function Grundriss3dBlock({ einheiten, kompakt, hoehe = 480, fassade, tit
           </button>
         </div>
       </div>
+      <div ref={flaeche}>
       {ansicht === "3d" ? (
         inSicht ? (
           <Suspense fallback={platzhalter}>
-            <Ansicht einheiten={einheiten} kompakt={kompakt} hoehe={hoehe} fassade={fassade} startwerte={startwerte} haus={haus} />
+            <Ansicht einheiten={einheiten} kompakt={kompakt} hoehe={hoehe} fassade={fassade} aussehen={aussehen} startwerte={startwerte} haus={haus} />
           </Suspense>
         ) : platzhalter
       ) : (
@@ -92,6 +118,7 @@ export function Grundriss3dBlock({ einheiten, kompakt, hoehe = 480, fassade, tit
           ))}
         </div>
       )}
+      </div>
       <p className="text-[11px] text-muted-foreground">{HAFTUNGSHINWEIS}</p>
     </div>
   );

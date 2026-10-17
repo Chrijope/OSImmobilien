@@ -6,7 +6,7 @@ import { Camera, Footprints, Maximize2, Minimize2, Orbit, ArrowUp, ArrowDown, Ar
 import { schwachesGeraet } from "./Grundriss3dBlock";
 import { aufWand } from "./plan";
 import { STILE, WANDHOEHEN, baueSzene, buehneAnpassen, entsorge, kameraRundum, lichtSetzen, richteBuehneEin, type Buehne, type Einheit3d, type Lichtart, type StilId, type Szene } from "./szene";
-import type { HausPlan } from "./plan";
+import type { Aussehen, HausPlan } from "./plan";
 import "./grundriss3d.css";
 
 /*
@@ -21,6 +21,8 @@ export interface Grundriss3dAnsichtProps {
   kompakt?: boolean;
   hoehe?: number;
   fassade?: string;
+  /** Fassade, Dach und Balkone nach Fotos (Bibliothek bekannter Häuser). */
+  aussehen?: Aussehen;
   /** Gebäudehülle des Objekts (Außenwände, Hof, Treppenhäuser, Aufzüge), optional. */
   haus?: HausPlan | null;
   /** Startwerte, etwa für einen Link auf eine bestimmte Ansicht. */
@@ -32,7 +34,22 @@ const AUGENHOEHE = 1.6;
 const SCHRITT = 1.5; // m/s
 const GESCHOSS_NAME = (g: number) => (g === 0 ? "EG" : g < 0 ? `${-g}. UG` : `${g}. OG`);
 
-export default function Grundriss3dAnsicht({ einheiten, kompakt, hoehe = 480, fassade, startwerte, haus }: Grundriss3dAnsichtProps) {
+/**
+ * Gleicher Inhalt, gleiches Objekt: Die Objektseite liefert nach jeder
+ * Live-Aktualisierung neue Arrays mit denselben Plänen. Ohne diesen Abgleich
+ * würde die Szene jedes Mal neu gebaut und das Modell kurz verschwinden.
+ */
+function useStabil<T>(wert: T): T {
+  const ref = useRef<{ schluessel: string; wert: T } | null>(null);
+  const schluessel = JSON.stringify(wert) ?? "";
+  if (!ref.current || ref.current.schluessel !== schluessel) ref.current = { schluessel, wert };
+  return ref.current.wert;
+}
+
+export default function Grundriss3dAnsicht({ einheiten: einheitenRoh, kompakt, hoehe = 480, fassade, aussehen: aussehenRoh, startwerte, haus: hausRoh }: Grundriss3dAnsichtProps) {
+  const einheiten = useStabil(einheitenRoh);
+  const haus = useStabil(hausRoh);
+  const aussehen = useStabil(aussehenRoh);
   const huelle = useRef<HTMLDivElement>(null);
   const flaeche = useRef<HTMLDivElement>(null);
   const kompass = useRef<HTMLDivElement>(null);
@@ -71,7 +88,10 @@ export default function Grundriss3dAnsicht({ einheiten, kompakt, hoehe = 480, fa
     if (!el) return;
     let renderer: THREE.WebGLRenderer;
     try {
-      renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: false });
+      // Logarithmischer Tiefenpuffer: Böden, Decken und Wände liegen Millimeter auseinander; ohne ihn flackern sie aus der Ferne.
+      renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: false, logarithmicDepthBuffer: true });
+      // Dachgeschosse werden an den Dachflächen abgeschnitten.
+      renderer.localClippingEnabled = true;
     } catch {
       setFehler("Dein Gerät kann die 3D-Ansicht nicht darstellen. Der Grundriss steht unten als Zeichnung.");
       return;
@@ -183,7 +203,7 @@ export default function Grundriss3dAnsicht({ einheiten, kompakt, hoehe = 480, fa
     const w = welt.current;
     if (!w) return;
     if (w.szene) { w.scene.remove(w.szene.gruppe); entsorge(w.szene.gruppe); }
-    const szene = baueSzene(einheiten, { wandhoehe, stil, beschriftung: beschriftung && modus === "rundum", explosion, nurGeschoss, fassade: mehrere ? fassade : undefined, schnitt: schnitt && modus === "rundum" }, haus);
+    const szene = baueSzene(einheiten, { wandhoehe, stil, beschriftung: beschriftung && modus === "rundum", explosion, nurGeschoss, fassade: mehrere ? fassade : undefined, aussehen: mehrere ? aussehen : undefined, schnitt: schnitt && modus === "rundum" }, haus);
     w.szene = szene;
     w.scene.add(szene.gruppe);
     buehneAnpassen(w.buehne, szene.rahmen);
@@ -191,13 +211,13 @@ export default function Grundriss3dAnsicht({ einheiten, kompakt, hoehe = 480, fa
     szene.nurRundum.forEach((d) => { d.visible = modus === "rundum"; });
     // Neu ausrichten beim ersten Mal und beim Wechsel zwischen Haus und einzelnem Geschoss.
     if ((w.neu || w.geschossWahl !== nurGeschoss) && modus === "rundum") {
-      w.steuerung.target.copy(kameraRundum(w.kamera, szene.rahmen));
+      w.steuerung.target.copy(kameraRundum(w.kamera, szene.rahmen, aussehen?.strasse));
       w.neu = false;
     }
     w.geschossWahl = nurGeschoss;
     lichtAnwenden();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [einheiten, wandhoehe, stil, beschriftung, explosion, nurGeschoss, modus, fassade, mehrere, schnitt, haus]);
+  }, [einheiten, wandhoehe, stil, beschriftung, explosion, nurGeschoss, modus, fassade, aussehen, mehrere, schnitt, haus]);
 
   /* ── Licht: Tag mit Uhrzeit oder Nacht, ohne die Szene neu zu bauen ── */
   const lichtAnwenden = () => {
@@ -260,7 +280,7 @@ export default function Grundriss3dAnsicht({ einheiten, kompakt, hoehe = 480, fa
       w.kamera.fov = 75;
     } else {
       w.kamera.fov = 50;
-      w.steuerung.target.copy(kameraRundum(w.kamera, w.szene.rahmen));
+      w.steuerung.target.copy(kameraRundum(w.kamera, w.szene.rahmen, aussehen?.strasse));
     }
     w.kamera.updateProjectionMatrix();
   }, [modus]);

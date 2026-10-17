@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Grundriss3dPlan, HausPlan } from "./plan";
+import type { Aussehen, Grundriss3dPlan, HausPlan } from "./plan";
 
 /*
  * Bibliothek nachgezeichneter Häuser (seit 17.10.2026).
@@ -18,28 +18,41 @@ export interface BekanntesHaus {
   /** … oder ganze Etagenpläne aus CAD-Zeichnungen (Hauffstraße). */
   etagen?: Array<{ geschoss: number; titel: string; plan: Grundriss3dPlan }>;
   einheiten: Array<{ we: number; plan: Grundriss3dPlan }>;
+  /** Fassade, Dach, Balkone nach Fotos und Ansichten. */
+  aussehen?: Aussehen;
 }
 
 const EINTRAEGE: Array<{ muster: RegExp; laden: () => Promise<BekanntesHaus> }> = [
   {
     muster: /barfusstrasse9(?!\d)/,
-    laden: () => import("./beispielBarfuss9").then((m) => ({ name: "Barfusstraße 9", haus: m.BARFUSS9_HAUS, einheiten: m.BARFUSS9_EINHEITEN })),
+    // Vorderhaus aus beispielBarfuss9, Seitenflügel und Quergebäude aus den übrigen Exposés; eigens gezeichnete gehen vor.
+    laden: () => Promise.all([import("./beispielBarfuss9"), import("./beispielBarfuss9Weitere")]).then(([m, w]) => ({
+      name: "Barfusstraße 9", haus: m.BARFUSS9_HAUS, aussehen: m.BARFUSS9_AUSSEHEN,
+      einheiten: [...w.BARFUSS9_WEITERE, ...m.BARFUSS9_EINHEITEN.filter((e) => !w.BARFUSS9_WEITERE.some((x) => x.we === e.we))],
+    })),
+  },
+  {
+    // Aufteilungspläne (Vektor) EG, 1. OG, DG; Wohnungen nach Teilungserklärung (beispielBrueck.ts).
+    muster: /marktstrasse6(?!\d)/,
+    laden: () => import("./beispielBrueck").then((m) => ({ name: m.BRUECK.name, etagen: m.BRUECK.etagen, einheiten: [], aussehen: m.BRUECK.aussehen })),
   },
   {
     // Waldsiedlung Wünsdorf: Mustergrundrisse der Haustypen (beispielZossen.ts). Je Haus eine Einheit.
     muster: /agnesstrasse(29|30)(?!\d)/,
-    laden: () => import("./beispielZossen").then((m) => ({ name: m.ZOSSEN_DHH2.name, etagen: m.ZOSSEN_DHH2.etagen, einheiten: [] })),
+    laden: () => import("./beispielZossen").then((m) => ({ name: m.ZOSSEN_DHH2.name, etagen: m.ZOSSEN_DHH2.etagen, einheiten: [], aussehen: m.ZOSSEN_DHH2.aussehen })),
   },
   {
     muster: /luisenstrasse72(?!\d)/,
-    laden: () => import("./beispielZossen").then((m) => ({ name: m.ZOSSEN_DHH1.name, etagen: m.ZOSSEN_DHH1.etagen, einheiten: [] })),
+    laden: () => import("./beispielZossen").then((m) => ({ name: m.ZOSSEN_DHH1.name, etagen: m.ZOSSEN_DHH1.etagen, einheiten: [], aussehen: m.ZOSSEN_DHH1.aussehen })),
   },
   {
     // Werkpläne Studio LOES, automatisch aus den Vektordaten gelesen (daten/hauff38.json).
     muster: /hauffstrasse38(?!\d)/,
     laden: () => import("./daten/hauff38.json").then((m) => {
       const d = m.default as unknown as { haus: { etagen: BekanntesHaus["etagen"] }; einheiten: BekanntesHaus["einheiten"] };
-      return { name: "Hauffstraße 38", etagen: d.haus.etagen, einheiten: d.einheiten };
+      // Heller Klinker (Exposé-Fotos, Luftbild). Dächer flach angedeutet: Die geknickten Satteldächer der Hausteile
+      // lassen sich mit Rechteckdächern nicht maßgetreu abbilden, ein falsches Dach wäre schlechter als ein flaches.
+      return { name: "Hauffstraße 38", etagen: d.haus.etagen, einheiten: d.einheiten, aussehen: { fassade: "#c9c1b8", dach: { art: "flach" as const, farbe: "#8e9097" } } };
     }),
   },
 ];
