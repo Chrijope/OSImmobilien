@@ -629,7 +629,9 @@ export function baueSzene(einheiten: Einheit3d[], o: SzenenOptionen, haus?: Haus
       el.className = "g3d-label g3d-label-einheit";
       el.textContent = e.titel;
       const label = new CSS2DObject(el);
-      label.position.set((r.minX + r.maxX) / 2, h + 0.3, r.minY);
+      // Im ganzen Haus seitlich auf Geschosshöhe, sonst stapeln sich die Schilder über der Mitte.
+      if (hausAnsicht) label.position.set(r.minX - 1.2, h / 2, (r.minY + r.maxY) / 2);
+      else label.position.set((r.minX + r.maxX) / 2, h + 0.3, r.minY);
       ebene.add(label);
       nurRundum.push(label);
     }
