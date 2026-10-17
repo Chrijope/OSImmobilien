@@ -9,7 +9,7 @@ import { sendeAnalyseLead } from '@/lib/analyseLead';
 import EinwilligungFelder, { einwilligungsTexte } from './EinwilligungFelder';
 import Confetti from './Confetti';
 import Reveal from './Reveal';
-import VorsorgeBlock from './VorsorgeBlock';
+import VorsorgeBlock, { DreiWohnungenBlock } from './VorsorgeBlock';
 import { vorsorgePlan, type VorsorgePlan } from '@/lib/analyseVorsorge';
 import osLogo from '@/assets/os-real-estate-logo-quer.png';
 import { useSeitenSprache, useSeitenTexte } from '@/components/SeitenSprache';
@@ -358,6 +358,8 @@ const ResultsPage = ({ result: basisErgebnis, data, berater, onRestart, hideAdva
   );
   const p = result.projection;
   const vorsorge = useMemo(() => vorsorgePlan(data, result.financingEstimate.maxVolume), [data, result.financingEstimate.maxVolume]);
+  const zweiWege = !!vorsorge && p.purchasePrice > 0 && !hideAdvancedSections;
+  const heroSichtbar = (result.ampel.overall === 'gruen' || result.ampel.overall === 'orange') && p.purchasePrice > 0 && !!vorsorge;
   // Kategorie und Beschreibung kommen deutsch aus dem Rechenkern (sie gehen
   // so ins CRM). Angezeigt wird die Fassung der Seitensprache.
   const kategorie = kategorieAnzeige(result, sprache, isUnemployed);
@@ -420,8 +422,11 @@ const ResultsPage = ({ result: basisErgebnis, data, berater, onRestart, hideAdva
           </p>
         </div>
 
-        {/* ═══ HINWEIS: Beispielergebnis ═══ */}
-        {!isUnemployed && (
+        {/* ═══ HINWEIS: Beispielergebnis ═══
+            Seit 17.10.2026 nur noch ohne den Block „Zwei Wege“: Dort steht der
+            Musterhinweis mit echten Objekten, und vor dem großen Betrag soll
+            keine lange Einschränkung stehen. Der kurze Vermerk bleibt im Betrag. */}
+        {!isUnemployed && !zweiWege && (
           <div className="mb-6 sm:mb-8 analyse-fade-in-up">
             <div className="glass-card rounded-2xl border-2 border-primary/30 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-4 sm:p-5">
               <div className="flex items-start gap-3 sm:gap-4">
@@ -457,12 +462,12 @@ const ResultsPage = ({ result: basisErgebnis, data, berater, onRestart, hideAdva
         ) : (
           <>
             {/* ═══ 1. HERO – WOW-Effekt mit CountUp + Confetti ═══ */}
-            {(result.ampel.overall === 'gruen' || result.ampel.overall === 'orange') && p.purchasePrice > 0 && vorsorge && (
+            {heroSichtbar && (
               <HeroBlock
                 // Seit 17.10.2026 das Kapital nach Verkauf der OS-Wohnungen zur Rente,
                 // dieselbe Zahl wie im Block „Zwei Wege“ (vorher Vermögen nach 10 Jahren aus dem Rahmen).
-                wealth={vorsorge.kapital}
-                plan={vorsorge}
+                wealth={vorsorge!.kapital}
+                plan={vorsorge!}
                 ampel={result.ampel.overall}
                 categoryLabel={kategorie.label}
                 categoryDescription={kategorie.beschreibung}
@@ -483,6 +488,9 @@ const ResultsPage = ({ result: basisErgebnis, data, berater, onRestart, hideAdva
               </div>
             )}
 
+
+            {/* ═══ Dein Plan: warum drei Wohnungen, direkt unter dem Betrag ═══ */}
+            {zweiWege && heroSichtbar && <DreiWohnungenBlock plan={vorsorge!} data={data} />}
 
             {/* ═══ NEU: Berater-Karte direkt unter Hero – 3 echte CTA-Buttons ═══ */}
             {berater && !hideAdvancedSections && (

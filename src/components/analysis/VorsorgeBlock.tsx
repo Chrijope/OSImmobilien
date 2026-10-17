@@ -8,7 +8,7 @@
  */
 import { ArrowRight, BadgeCheck, Info, Landmark, PiggyBank } from "lucide-react";
 import type { AnalysisData } from "@/lib/scoringEngine";
-import { EXPOSE_TILGUNG_PROZENT, EXPOSE_ZINS_PROZENT, OS_WOHNUNGEN, VORSORGE_ANNAHMEN, grenzsteuersatzAusKlasse, rechneWohnung, schwerpunkt, vorsorgePlan } from "@/lib/analyseVorsorge";
+import { type VorsorgePlan, EXPOSE_TILGUNG_PROZENT, EXPOSE_ZINS_PROZENT, OS_WOHNUNGEN, VORSORGE_ANNAHMEN, grenzsteuersatzAusKlasse, rechneWohnung, schwerpunkt, vorsorgePlan } from "@/lib/analyseVorsorge";
 import { STANDARD_ANNAHMEN } from "@/lib/exposeAnnahmen";
 import { kaufnebenkostenProzent } from "@/lib/grunderwerbsteuer";
 import { useSeitenSprache, useSeitenTexte } from "@/components/SeitenSprache";
@@ -118,21 +118,6 @@ export default function VorsorgeBlock({ data, rahmen, onErstgespraech }: Props) 
         {fokus === "steuer" ? [steuerKarte, alterKarte] : [alterKarte, steuerKarte]}
       </div>
 
-      {/* Warum drei Wohnungen: der Weg aus „Arbeitsleistung und Immobilienvermögen“ und „Mehr Netto vom Brutto“. */}
-      <div className="glass-card mt-4 rounded-2xl p-5 sm:p-6">
-        <h3 className="text-base font-semibold text-foreground">{t.warumTitel}</h3>
-        <ol className="mt-3 grid gap-3 sm:grid-cols-3">
-          {t.warumSchritte.map((schritt, i) => (
-            <li key={schritt.titel} className="rounded-xl bg-muted/50 p-3">
-              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary/15 text-xs font-semibold text-primary">{i + 1}</span>
-              <p className="mt-2 text-sm font-semibold text-foreground">{schritt.titel}</p>
-              <p className="mt-1 text-sm text-muted-foreground leading-relaxed">{schritt.text}</p>
-            </li>
-          ))}
-        </ol>
-        <p className="mt-3 text-sm text-foreground leading-relaxed">{t.warumModell}</p>
-      </div>
-
       <h3 className="mt-8 text-base font-semibold text-foreground">{t.objekteTitel}</h3>
       <p className="mb-3 text-sm text-muted-foreground">{t.objekteText}</p>
       <div className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-3 lg:grid-cols-5 sm:overflow-visible sm:px-0">
@@ -193,6 +178,43 @@ export default function VorsorgeBlock({ data, rahmen, onErstgespraech }: Props) 
           VORSORGE_ANNAHMEN.ruhestandJahre,
         )}
       </p>
+    </section>
+  );
+}
+
+/**
+ * „Du startest mit einer Wohnung“ direkt unter dem großen Betrag
+ * (17.10.2026). Beantwortet die Frage, die der Betrag auslöst („ich wollte
+ * doch nur eine kaufen“), bevor sie entsteht, mit den Zahlen des Kunden.
+ */
+export function DreiWohnungenBlock({ plan, data }: { plan: VorsorgePlan; data: AnalysisData }) {
+  const t = useSeitenTexte(ANALYSE_TEXTE).vorsorge;
+  const [erste, ...weitere] = plan.wohnungen;
+  if (!erste || weitere.length === 0) return null;
+  // Mehr Netto der ersten Wohnung beim Steuersatz des Kunden.
+  const netto = rechneWohnung(erste.wohnung, erste.kaufAlter, plan.verkaufsAlter, grenzsteuersatzAusKlasse(data.incomeClass)).steuerMonat;
+  const schritte = [
+    t.schritt1(erste.wohnung.titel, erste.wohnung.objekt.kaufpreis, netto),
+    t.schritt2(weitere[0].kaufAlter, weitere[1]?.kaufAlter ?? 0),
+    t.schritt3(plan.verkaufsAlter, plan.kapital, erste.erloes),
+  ];
+  return (
+    <section className="glass-card mb-8 rounded-2xl p-5 sm:p-7 analyse-fade-in-up">
+      <span className={kicker}>{t.warumKicker}</span>
+      <h2 className="mt-2 text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">{t.warumTitel}</h2>
+      <p className="mt-2 max-w-3xl text-sm sm:text-base text-muted-foreground leading-relaxed">{t.warumText}</p>
+      <ol className="mt-5 grid gap-3 sm:grid-cols-3">
+        {schritte.map((schritt, i) => (
+          <li key={schritt.titel} className="rounded-xl bg-muted/50 p-4">
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary/15 text-sm font-semibold text-primary">{i + 1}</span>
+            <p className="mt-2 text-sm font-semibold text-foreground">{schritt.titel}</p>
+            <p className="text-sm font-medium text-alert-green">{schritt.zahl}</p>
+            <p className="mt-1 text-sm text-muted-foreground leading-relaxed">{schritt.text}</p>
+          </li>
+        ))}
+      </ol>
+      <p className="mt-4 text-sm text-foreground leading-relaxed">{t.warumModell}</p>
+      <p className="mt-1 text-sm font-medium text-foreground leading-relaxed">{t.warumEntscheidung}</p>
     </section>
   );
 }

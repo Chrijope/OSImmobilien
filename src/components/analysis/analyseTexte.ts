@@ -329,14 +329,33 @@ const de = {
     titel: "Deine zwei Wege mit Immobilien",
     untertitel:
       "Beides gehört zusammen: Der Steuereffekt hilft Dir, die Wohnungen zu bezahlen. Im Alter verkaufst Du sie und lebst vom Erlös. Gerechnet mit Deinen Angaben und echten Wohnungen aus unserem Bestand.",
-    warumTitel: "Warum drei Wohnungen?",
-    warumSchritte: [
-      { titel: "Heute: Wohnung 1", text: "Mieter und Finanzamt zahlen mit. Einen Teil der Lohnsteuer, die sonst für immer weg ist, holst Du Dir zurück: mehr Netto vom Brutto." },
-      { titel: "In kurzer Zeit: Wohnung 2 und 3", text: "Das zusätzliche Netto und die Miete der ersten Wohnung helfen, die nächste zu tragen. Jede weitere Wohnung nutzt denselben Hebel noch einmal." },
-      { titel: "Zur Rente: verkaufen", text: "Eine Wohnung allein schließt selten die Rentenlücke. Mit drei wird aus Deiner Arbeitsleistung ein Kapital, von dem Du im Alter gut leben kannst." },
-    ] as ReadonlyArray<{ titel: string; text: string }>,
+    warumKicker: "Dein Plan",
+    warumTitel: "Du startest mit einer Wohnung.",
+    warumText:
+      "Der Betrag oben entsteht nicht auf einen Schlag, sondern Schritt für Schritt. Mieter und Finanzamt zahlen jede Wohnung mit, und jede macht die nächste leichter.",
+    schritt1: (titel: string, preis: number, netto: number) => ({
+      titel: "Heute: Wohnung 1",
+      zahl: `${titel}, ${eDe(preis)}`,
+      text:
+        netto > 10
+          ? `Mieter und Finanzamt zahlen mit. Rund ${eDe(netto)} im Monat holst Du Dir von Deiner Lohnsteuer zurück: mehr Netto vom Brutto.`
+          : "Mieter und Finanzamt zahlen mit, die Miete trägt den größten Teil der Rate.",
+    }),
+    /** `alter3` 0, wenn es nur eine weitere Wohnung gibt. */
+    schritt2: (alter2: number, alter3: number) => ({
+      titel: alter3 > 0 ? "In kurzer Zeit: Wohnung 2 und 3" : "In kurzer Zeit: Wohnung 2",
+      zahl: alter3 > 0 ? `mit ${alter2} und ${alter3} Jahren` : `mit ${alter2} Jahren`,
+      text: "Das zusätzliche Netto und die Miete der ersten Wohnung helfen, die nächste zu tragen. Jede weitere Wohnung nutzt denselben Hebel noch einmal.",
+    }),
+    schritt3: (alter: number, kapital: number, eine: number) => ({
+      titel: `Mit ${alter}: verkaufen`,
+      zahl: `${eDe(kapital)} statt ${eDe(eine)}`,
+      text: "So viel bleibt mit allen Wohnungen, gegenüber nur einer. Eine Wohnung allein schließt selten die Rentenlücke.",
+    }),
     warumModell:
-      "Genau darauf ist unser Modell ausgelegt: Als Bauträger haben wir Wohnungen in verschiedenen Größen und Preisklassen in Berlin und Brandenburg, damit auch die zweite und dritte zu Deinem Netto passt. Wir planen die Reihenfolge mit Dir und begleiten jede Finanzierung.",
+      "Genau darauf ist unser Modell ausgelegt: Als Bauträger haben wir Wohnungen in verschiedenen Größen und Preisklassen in Berlin und Brandenburg, damit auch die zweite und dritte zu Deinem Netto passt.",
+    warumEntscheidung:
+      "Ob und wann die zweite und dritte Wohnung kommen, entscheidest Du. Wir planen es mit Dir und prüfen jeden Schritt mit Deinen Zahlen.",
     musterTitel: "Musterberechnung",
     musterText:
       "Objekte, Kaufpreise und Mieten sind echt und stammen aus unseren Exposés. Die Rechnung ist ein Muster mit den Annahmen unten. Am Ende rechnen wir alles individuell mit Deinen Zahlen, suchen das für Dich bestmögliche Investment und begleiten Dich auf dem ganzen Weg.",
@@ -705,14 +724,32 @@ const en: AnalyseTexte = {
     titel: "Your two paths with real estate",
     untertitel:
       "Both belong together: the tax effect helps you pay for the apartments. In retirement you sell them and live on the proceeds. Calculated with your details and real apartments from our portfolio.",
-    warumTitel: "Why three apartments?",
-    warumSchritte: [
-      { titel: "Today: apartment 1", text: "Tenant and tax office pay their share. You get back part of the wage tax that would otherwise be gone for good: more net from your gross." },
-      { titel: "Soon after: apartments 2 and 3", text: "The extra net income and the rent of the first apartment help carry the next one. Every further apartment uses the same lever again." },
-      { titel: "At retirement: sell", text: "One apartment alone rarely closes the pension gap. With three, your work turns into capital you can live on well in retirement." },
-    ] as ReadonlyArray<{ titel: string; text: string }>,
+    warumKicker: "Your plan",
+    warumTitel: "You start with one apartment.",
+    warumText:
+      "The amount above does not come all at once but step by step. Tenant and tax office pay their share of every apartment, and each one makes the next easier.",
+    schritt1: (titel: string, preis: number, netto: number) => ({
+      titel: "Today: apartment 1",
+      zahl: `${titel}, ${eEn(preis)}`,
+      text:
+        netto > 10
+          ? `Tenant and tax office pay their share. You get back around ${eEn(netto)} per month of your wage tax: more net from your gross.`
+          : "Tenant and tax office pay their share, the rent carries most of the instalment.",
+    }),
+    schritt2: (alter2: number, alter3: number) => ({
+      titel: alter3 > 0 ? "Soon after: apartments 2 and 3" : "Soon after: apartment 2",
+      zahl: alter3 > 0 ? `at ages ${alter2} and ${alter3}` : `at age ${alter2}`,
+      text: "The extra net income and the rent of the first apartment help carry the next one. Every further apartment uses the same lever again.",
+    }),
+    schritt3: (alter: number, kapital: number, eine: number) => ({
+      titel: `At ${alter}: sell`,
+      zahl: `${eEn(kapital)} instead of ${eEn(eine)}`,
+      text: "That is what remains with all apartments, compared with just one. One apartment alone rarely closes the pension gap.",
+    }),
     warumModell:
-      "This is exactly what our model is built for: as a developer we have apartments of different sizes and price ranges in Berlin and Brandenburg, so the second and third also fit your net income. We plan the order with you and support every financing.",
+      "This is exactly what our model is built for: as a developer we have apartments of different sizes and price ranges in Berlin and Brandenburg, so the second and third also fit your net income.",
+    warumEntscheidung:
+      "Whether and when the second and third apartment follow is your decision. We plan it with you and check every step with your figures.",
     musterTitel: "Sample calculation",
     musterText:
       "Properties, purchase prices and rents are real and come from our exposés. The calculation is a sample with the assumptions below. In the end we calculate everything individually with your figures, look for the best possible investment for you and support you all the way.",
