@@ -128,7 +128,9 @@ describe("Umlaute, Schreibweise, Tippfehler", () => {
 
   it("findet Teilwoerter", () => {
     expect(suche("vertriebspartner", "abrech").map((z) => z.url)).toContain("/abrechnungen");
-    expect(suche("vertriebspartner", "lexik").map((z) => z.url)).toContain("/immobilien-lexikon");
+    expect(suche("vertriebspartner", "einwan").map((z) => z.url)).toContain("/vertriebsakademie/einwaende");
+    // Das Immobilien-Lexikon ist seit dem 17.10.2026 nicht mehr in der Seitenleiste.
+    expect(suche("vertriebspartner", "lexik").map((z) => z.url)).not.toContain("/immobilien-lexikon");
   });
 
   it("verzeiht einen kleinen Tippfehler", () => {
