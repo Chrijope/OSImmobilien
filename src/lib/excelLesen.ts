@@ -31,9 +31,16 @@ export function zellAdresse(ref: string): { spalte: number; zeile: number } {
   return { spalte: spalte - 1, zeile: Number(m[2]) - 1 };
 }
 
+/*
+ * Tags über den lokalen Namen suchen: Manche Programme schreiben jedes Tag mit
+ * Präfix (`<x:sheet>`, `<x:c>`), so die Brück-Vertriebsliste. Ohne das fand
+ * der Leser dort kein Blatt und meldete nichts.
+ */
+const tags = (knoten: Document | Element, name: string) => Array.from(knoten.getElementsByTagNameNS("*", name));
+
 /** Text aus `<t>`-Knoten, auch bei formatierten Abschnitten (`<r><t>`). */
 function textInhalt(knoten: Element): string {
-  return Array.from(knoten.getElementsByTagName("t")).map((t) => t.textContent ?? "").join("");
+  return tags(knoten, "t").map((t) => t.textContent ?? "").join("");
 }
 
 export async function leseExcel(datei: Blob | ArrayBuffer): Promise<Blatt[]> {
@@ -47,29 +54,29 @@ export async function leseExcel(datei: Blob | ArrayBuffer): Promise<Blatt[]> {
 
   const geteilt: string[] = [];
   const sst = await lies("xl/sharedStrings.xml");
-  if (sst) for (const si of Array.from(xml(sst).getElementsByTagName("si"))) geteilt.push(textInhalt(si));
+  if (sst) for (const si of tags(xml(sst), "si")) geteilt.push(textInhalt(si));
 
   const ziele = new Map<string, string>();
   const rels = await lies("xl/_rels/workbook.xml.rels");
   if (rels) {
-    for (const r of Array.from(xml(rels).getElementsByTagName("Relationship"))) {
+    for (const r of tags(xml(rels), "Relationship")) {
       const ziel = r.getAttribute("Target") || "";
       ziele.set(r.getAttribute("Id") || "", ziel.startsWith("/") ? ziel.slice(1) : `xl/${ziel}`);
     }
   }
 
   const blaetter: Blatt[] = [];
-  for (const s of Array.from(xml(mappe).getElementsByTagName("sheet"))) {
+  for (const s of tags(xml(mappe), "sheet")) {
     const rid = s.getAttributeNS(NS_REL, "id") || s.getAttribute("r:id") || "";
     const pfad = ziele.get(rid);
     const inhalt = pfad ? await lies(pfad) : null;
     if (!inhalt) continue;
     const zeilen: Zelle[][] = [];
-    for (const c of Array.from(xml(inhalt).getElementsByTagName("c"))) {
+    for (const c of tags(xml(inhalt), "c")) {
       const { spalte, zeile } = zellAdresse(c.getAttribute("r") || "");
       if (spalte < 0) continue;
       const typ = c.getAttribute("t");
-      const v = c.getElementsByTagName("v")[0]?.textContent ?? null;
+      const v = tags(c, "v")[0]?.textContent ?? null;
       let wert: Zelle = null;
       if (typ === "s") wert = v === null ? null : geteilt[Number(v)] ?? null;
       else if (typ === "inlineStr") wert = textInhalt(c);
