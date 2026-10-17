@@ -1,4 +1,5 @@
 import { useState, useCallback, useContext, createContext, useEffect, useRef, useMemo } from "react";
+import { SaPdfVorschau } from "./SaPdfVorschau";
 import { QRCodeSVG } from "qrcode.react";
 import { Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -305,6 +306,8 @@ const STEPS = [
   "Vermögenswerte",
   "Verbindlichkeiten",
   "Sonstige Angaben",
+  // Seit 17.10.2026: das fertige PDF zum Gegenlesen vor dem Abschluss.
+  "PDF-Vorschau",
   "Abschluss",
 ];
 
@@ -452,6 +455,31 @@ function mitNutzereinstellungen(kundenModus = false): boolean {
  */
 type SelbstauskunftKontaktPrefill = Partial<Pick<KundeData, "anrede" | "vorname" | "nachname" | "email" | "telefon" | "geburtstag" | "strasse" | "hausnummer" | "plz" | "ort" | "person2">>;
 
+/*
+ * Fuellt einen gespeicherten Stand mit den leeren Standardwerten auf, eine
+ * Ebene tief (z. B. `anstellung`, `einkommen`). Gespeicherte Staende sind oft
+ * unvollstaendig (alter Aufbau, Beispielkunde, Vorbelegung); die Schritte
+ * greifen aber ohne Pruefung auf `data.person2Data.anstellung.branche` usw.
+ * zu und stuerzten dann beim Weiterklicken ab.
+ */
+function mitStandardwerten<T extends object>(roh: unknown, vorlage: T): T {
+  const quelle = (roh && typeof roh === "object" ? roh : {}) as Record<string, unknown>;
+  const ergebnis: Record<string, unknown> = { ...vorlage, ...quelle };
+  for (const [k, v] of Object.entries(vorlage)) {
+    const wert = quelle[k];
+    if (wert === undefined || wert === null) ergebnis[k] = v;
+    else if (v && typeof v === "object" && !Array.isArray(v) && typeof wert === "object" && !Array.isArray(wert)) {
+      ergebnis[k] = { ...v, ...(wert as object) };
+    }
+  }
+  return ergebnis as T;
+}
+
+export function vollstaendigeSa(roh: unknown): SelbstauskunftData {
+  const sa = mitStandardwerten(roh, EMPTY_DATA);
+  return { ...sa, person2Data: mitStandardwerten(sa.person2Data, EMPTY_PERSON) };
+}
+
 function loadSA(kundeId: string, prefillKontakt?: SelbstauskunftKontaktPrefill | null, investmentId?: string, kundenModus = false): SelbstauskunftData {
   const kontakt = prefillKontakt || getKontaktById(kundeId);
   const fallbackSteuer = lookupSteuerIdFromInvestments(kundeId);
@@ -496,9 +524,8 @@ function loadSA(kundeId: string, prefillKontakt?: SelbstauskunftKontaktPrefill |
     return merged;
   };
 
-  const ensureDefaults = (parsed: SelbstauskunftData): SelbstauskunftData => {
-    if (!parsed.beschaeftigungsart) parsed.beschaeftigungsart = "";
-    if (!parsed.person2Data) parsed.person2Data = { ...EMPTY_PERSON };
+  const ensureDefaults = (roh: SelbstauskunftData): SelbstauskunftData => {
+    const parsed = vollstaendigeSa(roh);
     /*
      * Staende aus der Zeit vor der Feldmarkierung kennen nur die offenen
      * Abschnitte. Die Feldliste laesst sich daraus nachbilden: In einem noch
@@ -1276,7 +1303,7 @@ const STEP_HINTS: Record<number, { title: string; items: string[] }> = {
       "Hinweise: Hier können Sie alles eintragen, was für die Beratung relevant sein könnte.",
     ],
   },
-  7: {
+  8: {
     title: "✅ Abschluss",
     items: [
       "Bitte prüfen Sie alle Angaben nochmals sorgfältig.",
@@ -1377,7 +1404,7 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
       typeof prefillSaData === "object" &&
       Object.keys(prefillSaData as object).length > 0
     ) {
-      const merged = { ...EMPTY_DATA, ...prefillSaData } as SelbstauskunftData;
+      const merged = vollstaendigeSa(prefillSaData);
       // Stammdaten (Adresse / Geburtsdatum / Person 2) immer aus Kontakt überschreiben,
       // damit die SA – egal welche Variante oder welches Investment – konsistent ist.
       const kontakt = prefillKontakt || getKontaktById(kundeId);
@@ -4232,7 +4259,16 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
   };
 
   const schritte = STEPS.map((s) => t(s));
-  const stepRenderers = [renderStep0, renderStep1, renderStep2, renderStep3, renderStep4, renderStep5, renderStep6, renderStep7];
+  const renderVorschau = () => (
+    <SaPdfVorschau
+      data={data}
+      sprache={sprache}
+      titel={t("PDF-Vorschau")}
+      hinweis={t("So sieht deine Selbstauskunft als Dokument aus. Prüfe alles noch einmal; passt etwas nicht, gehst du mit „Zurück“ zum Abschnitt. Mit „Weiter“ geht es zum Abschluss und zur Unterschrift.")}
+      fehlerText={t("Die Vorschau konnte nicht erstellt werden. Deine Angaben sind gespeichert, du kannst trotzdem weiter zum Abschluss.")}
+    />
+  );
+  const stepRenderers = [renderStep0, renderStep1, renderStep2, renderStep3, renderStep4, renderStep5, renderStep6, renderVorschau, renderStep7];
 
   return (
     <SaSprache.Provider value={sprache}>
@@ -4317,7 +4353,7 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
       {/* Content */}
       <div ref={inhaltRef} className={hinweiseImFormular ? "flex flex-col lg:flex-row gap-0 lg:gap-6" : ""}>
         <div className={hinweiseImFormular ? "min-w-0 flex-1 p-6" : "p-6"}>
-          {step > 0 && step < STEPS.length - 1 && (
+          {step > 0 && step < STEPS.length - 2 && (
             <div className="mb-4 flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground bg-muted/40 border border-border/60 rounded-lg px-3 py-2">
               <span className="inline-flex items-center gap-1">
                 <span className="text-destructive font-bold">*</span>

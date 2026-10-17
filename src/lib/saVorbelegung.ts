@@ -47,7 +47,8 @@ export interface SaVorbelegung {
  * Welche Felder zu welchem Schritt des Formulars gehören.
  *
  * Die Reihenfolge entspricht STEPS in SelbstauskunftForm.tsx. Schritt 7
- * (Abschluss) trägt keine eigenen Angaben und fehlt deshalb.
+ * (PDF-Vorschau) und Schritt 8 (Abschluss) tragen keine eigenen Angaben und
+ * fehlen deshalb.
  *
  * In Schritt 1 fehlen Name, Anschrift, Geburtsdatum und Erreichbarkeit mit
  * Absicht: Die stehen in den Stammdaten des Kontakts und werden von dort

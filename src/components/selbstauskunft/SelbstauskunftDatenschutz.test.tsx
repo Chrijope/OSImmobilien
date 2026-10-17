@@ -159,7 +159,7 @@ describe("Selbstauskunft: Datenschutz und Pflichtfragen", { timeout: 30000 }, ()
       <SelbstauskunftForm kundeId="k1" investmentId="i1" prefillKontakt={kontakt} prefillSaData={beantwortet}
         customerMode saToken={"c".repeat(64)} onComplete={fertig} onHinweisSchritt={() => {}} />,
     );
-    bisSchritt(7);
+    bisSchritt(8);
     expect(titel()).toBe("Abschluss");
     const canvas = document.querySelector("canvas")!;
     fireEvent.mouseDown(canvas, { clientX: 5, clientY: 5 });
@@ -185,7 +185,7 @@ describe("Selbstauskunft: Datenschutz und Pflichtfragen", { timeout: 30000 }, ()
     invokeSpy.mockResolvedValue({ data: { results: [{ sent: true }] }, error: null });
     const fertig = vi.fn();
     render(<SelbstauskunftForm kundeId="k1" investmentId="i1" prefillKontakt={kontakt} onComplete={fertig} />);
-    bisSchritt(7);
+    bisSchritt(8);
     fireEvent.click(document.getElementById("confirm-sa")!);
     fireEvent.click(screen.getByText("Unterschrift anfordern").closest("button")!);
 
@@ -229,7 +229,7 @@ describe("Selbstauskunft: Datenschutz und Pflichtfragen", { timeout: 30000 }, ()
     expect(titel()).toBe("Sonstige Angaben");
     radio("sf-n");
     weiter();
-    expect(titel()).toBe("Abschluss");
+    expect(titel()).toBe("PDF-Vorschau");
   });
 
   it("Person 2 muss beide Fragen ebenfalls selbst beantworten", () => {
@@ -258,7 +258,7 @@ describe("Selbstauskunft: Datenschutz und Pflichtfragen", { timeout: 30000 }, ()
     radio("mv-j-p2");
     radio("sf-n-p2");
     weiter();
-    expect(titel()).toBe("Abschluss");
+    expect(titel()).toBe("PDF-Vorschau");
   });
 
   it("nurDauerhaft: löscht den localStorage, lässt den Sitzungsentwurf stehen", () => {

@@ -70,6 +70,11 @@ export const SA_UI_EN: Readonly<Record<string, string>> = {
   Verbindlichkeiten: "Liabilities",
   "Sonstige Angaben": "Other information",
   Abschluss: "Completion",
+  "PDF-Vorschau": "PDF preview",
+  "So sieht deine Selbstauskunft als Dokument aus. Prüfe alles noch einmal; passt etwas nicht, gehst du mit „Zurück“ zum Abschnitt. Mit „Weiter“ geht es zum Abschluss und zur Unterschrift.":
+    "This is how your self-disclosure looks as a document. Check everything once more; if something is wrong, use “Back” to return to the section. “Next” takes you to completion and signing.",
+  "Die Vorschau konnte nicht erstellt werden. Deine Angaben sind gespeichert, du kannst trotzdem weiter zum Abschluss.":
+    "The preview could not be created. Your details are saved and you can still continue to completion.",
   Weiter: "Next",
   Zurück: "Back",
   Zwischenspeichern: "Save progress",
