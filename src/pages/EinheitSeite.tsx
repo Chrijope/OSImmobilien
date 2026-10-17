@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import logoImg from "@/assets/os-real-estate-logo-quer.png";
+import { EinheitGrundriss3dKarte } from "@/components/grundriss3d/Grundriss3dKarte";
 import { useUser } from "@/contexts/UserContext";
 import { darfGepflegtWerden } from "@/lib/investagonHerkunft";
 import { darfObjektBearbeiten } from "@/lib/objektBearbeitenRecht";
@@ -45,7 +46,7 @@ import { ExposeErzeugenDialog } from "@/components/expose/ExposeErzeugenDialog";
 import { exposePfad } from "@/lib/objektExposeStore";
 import { einheitUnterlagenGruppen } from "@/lib/objektUnterlagenRegeln";
 import { EmptyState } from "@/components/ui/empty-state";
-import { darfEinheitInvestmentrechner, darfKundenaktionen, darfLotseNutzen, siehtAdminOnlyNavigation } from "@/lib/sidebarPermissions";
+import { darfEinheitInvestmentrechner, darfKundenaktionen, darfLotseNutzen, istInterneRolle, siehtAdminOnlyNavigation } from "@/lib/sidebarPermissions";
 import { ObjektLotse, KiMarke } from "@/components/objektseite/lotse/ObjektLotse";
 import { LotseSymbol } from "@/components/objektseite/lotse/LotseSymbol";
 import { kalkulationFuerLotse } from "@/lib/lotseStore";
@@ -703,6 +704,9 @@ function EinheitAnsicht({ objekt, wohnung: w }: { objekt: ObjektData; wohnung: O
                 <PassendeKundenKarte objekt={objekt} wohnung={w} />
               </div>
             </div>
+
+            {/* 3D-Grundriss der Einheit (17.10.2026), Editor für jede interne Rolle, siehe components/grundriss3d. */}
+            <EinheitGrundriss3dKarte wohnung={w} darfBearbeiten={istInterneRolle(user.role)} />
 
             {alleinigeEinheit ? objektangaben : (
             <div className={cn(KARTE, "min-w-0")}>

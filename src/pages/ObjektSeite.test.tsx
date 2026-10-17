@@ -209,3 +209,12 @@ describe("Reiterleiste der Objektseite", () => {
     expect(await screen.findByText("Noch keine Dateien hinterlegt")).toBeInTheDocument();
   });
 });
+
+describe("Haus in 3D auf der Objektseite (17.10.2026)", () => {
+  it("zeigt die Karte im Reiter Übersicht, ohne Pläne mit dem Hinweis auf die Einheitenseiten", () => {
+    objekte.liste = { o2: objekt("o2", [we("w1"), we("w2")]) };
+    renderMit(["/objekte/o2"]);
+    expect(screen.getByTestId("objekt-grundriss-3d")).toBeInTheDocument();
+    expect(screen.getByText(/Noch keine Einheit hat einen 3D-Grundriss/)).toBeInTheDocument();
+  });
+});

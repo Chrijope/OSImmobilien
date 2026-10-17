@@ -352,3 +352,17 @@ describe("Anordnung der Einheiten-Seite", () => {
     expect(davor(screen.getByText("Beschreibung und Standort"), angaben)).toBe(true);
   });
 });
+
+describe("3D-Grundriss auf der Einheitsseite (17.10.2026)", () => {
+  for (const rolle of ["admin", "vertriebspartner", "backoffice"]) {
+    it(`bietet ${rolle} im Reiter Übersicht den Editor an`, () => {
+      objekte.rolle = rolle;
+      // Ob die Rolle das Objekt sehen darf, prüft der Zugang; hier geht es nur um die Karte.
+      objekte.zugangUmgehen = true;
+      objekte.liste = { o2: objekt("o2", [we("w1"), we("w2")]) };
+      renderMit("/objekte/o2/einheiten/w1");
+      expect(screen.getByTestId("einheit-grundriss-3d")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /Grundriss nachzeichnen/ })).toBeInTheDocument();
+    });
+  }
+});

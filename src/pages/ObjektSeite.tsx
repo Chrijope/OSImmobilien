@@ -6,6 +6,7 @@ import {
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ObjektGrundriss3dKarte } from "@/components/grundriss3d/Grundriss3dKarte";
 import { useUser } from "@/contexts/UserContext";
 import { useLiveVersion } from "@/hooks/useLiveData";
 import { useCacheReady } from "@/hooks/useCacheReady";
@@ -14,7 +15,7 @@ import { getObjektById, hebeHausReservierungAuf, objektImAngebot, type ObjektDat
 import { confirmDialog, hinweisDialog } from "@/lib/confirm";
 import { darfGepflegtWerden, PFLEGE_GESPERRT_HINWEIS } from "@/lib/investagonHerkunft";
 import { darfObjektBearbeiten } from "@/lib/objektBearbeitenRecht";
-import { darfKundenaktionen, siehtAdminOnlyNavigation } from "@/lib/sidebarPermissions";
+import { darfKundenaktionen, istInterneRolle, siehtAdminOnlyNavigation } from "@/lib/sidebarPermissions";
 import { objektKennzahlen, verkaufsstand, eur0, dez, prozent } from "@/lib/objektKennzahlen";
 import { objektseiteFelder, objektartAbleiten, objektartInfo, investagonStand, willVerwaltungsansicht, springtInDieEinheit, zielRouteFuerObjekt } from "@/lib/objektseiteDaten";
 import { istGlobalobjekt, objektAnlageklasse, objektBauzustand } from "@/lib/objektKlassen";
@@ -749,6 +750,9 @@ function ObjektAnsicht({ objekt, onPflege, eigeneId }: {
           <InterneHighlightsKarte objekt={objekt} />
           </div>
         </div>
+
+        {/* Das Haus in 3D aus den Grundrissen der Einheiten (17.10.2026), siehe components/grundriss3d. */}
+        <ObjektGrundriss3dKarte objekt={objekt} darfBearbeiten={istInterneRolle(user.role)} />
       </div>
 
       {/* min-w-0 statt overflow-x: Die Tabelle scrollt in ihrer eigenen
