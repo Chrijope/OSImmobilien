@@ -29,7 +29,7 @@ import {
 import type { UserRole } from "@/types/user";
 import { HANDBUCH_SEITE_ROUTE } from "@/lib/handbuch/zugang";
 import { isDraftRoute } from "@/lib/draftRoutes";
-import { OBJEKTDATEN_EINHEITEN_ROUTE, OBJEKTDATEN_ROUTE, OBJEKTDATEN_VOLLSTAENDIGKEIT_ROUTE, darfObjektdaten } from "@/lib/objektdatenZugang";
+import { OBJEKTDATEN_EINHEITEN_ROUTE, OBJEKTDATEN_MIETER_ROUTE, OBJEKTDATEN_ROUTE, OBJEKTDATEN_VOLLSTAENDIGKEIT_ROUTE, darfObjektdaten } from "@/lib/objektdatenZugang";
 import {
   ANKAUFSTOOL_ROUTE, KAUFPREISLISTE_ROUTE, MIETSUBVENTION_ROUTE, greiftAdminRiegel, isUrlAllowedForRole, isKundeRole, isTippgeberRole, objekteTestFreigabe, type NutzerIdentitaet,
 } from "@/lib/sidebarPermissions";
@@ -87,6 +87,7 @@ const immobilienItems = [
 const objektdatenItems = [
   { title: "Objektcockpit", url: OBJEKTDATEN_ROUTE, icon: Building2, suchbegriffe: ["bautraeger", "objektdaten", "verkaufsstand", "eigene objekte", "uebersicht objekte"] },
   { title: "Einheitenliste", url: OBJEKTDATEN_EINHEITEN_ROUTE, icon: Table2, suchbegriffe: ["einheiten", "wohnungen", "preise", "rendite", "kaufpreise", "vertriebsliste", "miete"] },
+  { title: "Mieter & Mietverträge", url: OBJEKTDATEN_MIETER_ROUTE, icon: Key, suchbegriffe: ["mieter", "mietvertrag", "mietvertraege", "mieterliste", "kaution", "befristet", "zuordnung we mieter"] },
   { title: "Vollständigkeit", url: OBJEKTDATEN_VOLLSTAENDIGKEIT_ROUTE, icon: ListChecks, suchbegriffe: ["fehlende unterlagen", "fehlt", "bilder fehlen", "mietvertrag fehlt", "dokumente", "luecken"] },
 ];
 

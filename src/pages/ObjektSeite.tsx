@@ -32,6 +32,7 @@ import { getInvestmentById } from "@/lib/investmentsStore";
 import { hausBelegungsAnzeige, hausKnopfStand, hausTeilweiseHinweis, OBJEKT_RESERVIERUNG_MIGRATION_HINWEIS } from "@/lib/objektBelegung";
 import { ObjektTexteKarte } from "@/components/objektseite/ObjektTexteKarte";
 import { InterneHighlightsKarte } from "@/components/objektseite/InterneHighlightsKarte";
+import { ObjektGarantieDetails } from "@/components/objektseite/mieteGarantie";
 import { Galerie } from "@/components/objektseite/Galerie";
 import { DokumenteAnsicht } from "@/components/objektseite/DokumenteAnsicht";
 import { UmgebungsKarte } from "@/components/maps/UmgebungsKarte";
@@ -752,6 +753,7 @@ function ObjektAnsicht({ objekt, onPflege, eigeneId }: {
               <Detail icon={<KeyRound className="h-3.5 w-3.5" />} label="Verwaltung"
                 wert={details.verwaltung.wert}
                 unter={details.verwaltung.unter} />
+              <ObjektGarantieDetails objekt={objekt} />
             </div>
           </div>
           <InterneHighlightsKarte objekt={objekt} />

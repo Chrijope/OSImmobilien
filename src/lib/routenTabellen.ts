@@ -250,6 +250,7 @@ export const ROUTEN_TABELLEN: Record<string, readonly string[]> = {
   "/kaufpreisliste": [...OBJEKT_TABELLEN],
   "/objektdaten": [...OBJEKT_TABELLEN],
   "/objektdaten/einheiten": [...OBJEKT_TABELLEN],
+  "/objektdaten/mieter": [...OBJEKT_TABELLEN, "mieter"],
   "/objektdaten/vollstaendigkeit": [...OBJEKT_TABELLEN],
   "/musterkalkulation": [],
   "/kalkulation-1": [],

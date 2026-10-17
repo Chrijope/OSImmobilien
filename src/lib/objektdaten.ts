@@ -11,9 +11,10 @@ import {
   DEFAULT_WOHNUNG_DOCS, getAktuelleMiete,
   type ObjektData, type ObjektDokument, type ObjektWohnung, type WohnungDokument,
 } from "@/lib/objekteStore";
+import type { Mieter } from "@/lib/mieterStore";
 
 export {
-  OBJEKTDATEN_ROUTE, OBJEKTDATEN_EINHEITEN_ROUTE, OBJEKTDATEN_VOLLSTAENDIGKEIT_ROUTE, OBJEKTDATEN_ROLLEN,
+  OBJEKTDATEN_ROUTE, OBJEKTDATEN_EINHEITEN_ROUTE, OBJEKTDATEN_VOLLSTAENDIGKEIT_ROUTE, OBJEKTDATEN_MIETER_ROUTE, OBJEKTDATEN_ROLLEN,
   darfObjektdaten, istObjektdatenRoute,
 } from "@/lib/objektdatenZugang";
 
@@ -24,7 +25,7 @@ export {
 export function objekteFuerRolle(objekte: ObjektData[], rolle: string, benutzerId?: string | null): ObjektData[] {
   if (rolle !== "objektpartner") return objekte;
   if (!benutzerId) return [];
-  return objekte.filter((o) => (o.erstellt_von || (o as any).meta?.erstelltVon) === benutzerId);
+  return objekte.filter((o) => (o.erstellt_von || (o as { meta?: { erstelltVon?: string } }).meta?.erstelltVon) === benutzerId);
 }
 
 // ── Einheitenliste ──
@@ -186,4 +187,53 @@ export function objektVollstaendigkeit(o: ObjektData): ObjektVollstaendigkeit {
   const belegt = vorhanden + einheiten.reduce((s, e) => s + e.vorhanden, 0);
   const gesamt = OBJEKT_FAECHER.length + einheiten.length * EINHEIT_FAECHER.length;
   return { faecher, vorhanden, gesamt: OBJEKT_FAECHER.length, einheiten, fehlendJeFach, anteil: gesamt > 0 ? belegt / gesamt : 0 };
+}
+
+// ── Mieter und Mietverträge ──
+
+/*
+ * Mieter liegen in der Tabelle `mieter` (`mieterStore.ts`), je Zeile ein
+ * Mietverhältnis an einer Einheit (`wohneinheitId`). Die Kaltmiete am
+ * Mietverhältnis und die Miete an der Einheit (Vertriebssicht) sind zwei
+ * Felder; die Liste gleicht sie nicht still an, sondern zeigt eine Abweichung.
+ */
+
+/** Ausgezogene Mieter belegen die Einheit nicht mehr. */
+const BELEGT: readonly Mieter["status"][] = ["aktiv", "neu", "gekuendigt"];
+
+/** Der aktuelle Mieter einer Einheit: belegt, bei mehreren der mit dem spätesten Beginn. */
+export function aktuellerMieter(mieter: Mieter[], wohnungId: string): Mieter | undefined {
+  return mieter
+    .filter((m) => m.wohneinheitId === wohnungId && BELEGT.includes(m.status))
+    .sort((a, b) => (b.mietvertragBeginn || "").localeCompare(a.mietvertragBeginn || ""))[0];
+}
+
+export interface MieterZeile {
+  wohnungId: string;
+  weNr: string;
+  lage: string;
+  mieter?: Mieter;
+  /** Kaltmiete laut Einheit, für den Abgleich. */
+  mieteEinheit: number | null;
+  /** Mietvertrag am Mieter oder im Unterlagenfach der Einheit. */
+  vertragVorhanden: boolean;
+  mieteAbweichend: boolean;
+}
+
+export function mieterZeilen(objekt: ObjektData, mieter: Mieter[]): MieterZeile[] {
+  return (objekt.wohnungen || []).map((w) => {
+    const m = aktuellerMieter(mieter, w.id);
+    const mieteEinheit = positiv(getAktuelleMiete(w));
+    const vertragVorhanden = !!m?.dokumente?.some((d) => d.typ === "mietvertrag" && !!d.url) || fachBelegt("Mietvertrag", w.dokumente || []);
+    return {
+      wohnungId: w.id,
+      weNr: w.weNr || "",
+      lage: [w.etage, w.lage].filter(Boolean).join(" "),
+      mieter: m,
+      mieteEinheit,
+      vertragVorhanden,
+      // Ab 0,50 € Unterschied, damit Rundungen keine Warnung auslösen.
+      mieteAbweichend: !!m && m.kaltmiete > 0 && mieteEinheit !== null && Math.abs(m.kaltmiete - mieteEinheit) >= 0.5,
+    };
+  });
 }
