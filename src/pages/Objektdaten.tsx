@@ -1,6 +1,10 @@
 import { useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Check, X } from "lucide-react";
+import { AlertTriangle, Check, Plus, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { MieterDialog } from "@/components/mieter/MieterDialog";
+import { Einheitenliste } from "@/components/objektdaten/Einheitenliste";
+import { getMieter, type Mieter } from "@/lib/mieterStore";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,39 +17,23 @@ import { cn } from "@/lib/utils";
 import { getObjekte, type ObjektData } from "@/lib/objekteStore";
 import {
   EINHEIT_FAECHER, OBJEKT_FAECHER, OBJEKTDATEN_EINHEITEN_ROUTE, OBJEKTDATEN_VOLLSTAENDIGKEIT_ROUTE,
-  einheitZeile, einheitenSumme, objekteFuerRolle, objektVollstaendigkeit,
+  einheitZeile, einheitenSumme, mieterZeilen, objekteFuerRolle, objektVollstaendigkeit,
 } from "@/lib/objektdaten";
 
 /*
- * Die Gruppe „Objektdaten“ (17.10.2026): Objektcockpit, Einheitenliste und
- * Vollständigkeit. Alle drei lesen dieselben Objekte wie die Objektseite und
+ * Die Gruppe „Objektdaten“ (17.10.2026): Objektcockpit, Einheitenliste,
+ * Mieter und Vollständigkeit. Alle drei lesen dieselben Objekte wie die Objektseite und
  * speichern nichts. Gerechnet wird in `src/lib/objektdaten.ts`.
  */
 
-export type ObjektdatenAnsicht = "cockpit" | "einheiten" | "vollstaendigkeit";
+export type ObjektdatenAnsicht = "cockpit" | "einheiten" | "mieter" | "vollstaendigkeit";
 
 const ALLE = "__alle__";
 
 const eur = (n: number | null, stellen = 0) =>
   n === null ? "–" : n.toLocaleString("de-DE", { minimumFractionDigits: stellen, maximumFractionDigits: stellen }) + " €";
-const zahl = (n: number | null, stellen = 2) =>
-  n === null ? "–" : n.toLocaleString("de-DE", { minimumFractionDigits: stellen, maximumFractionDigits: stellen });
 const prozent = (n: number | null) =>
   n === null ? "–" : (n * 100).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " %";
-
-const STATUS_FARBE: Record<string, string> = {
-  vermietet: "bg-emerald-50 text-emerald-700",
-  gekündigt: "bg-amber-50 text-amber-700",
-  Leerstand: "bg-amber-50 text-amber-700",
-  "in Vermietung": "bg-amber-50 text-amber-700",
-  Eigennutzung: "bg-slate-100 text-slate-700",
-  reserviert: "bg-blue-50 text-blue-700",
-  verkauft: "bg-red-50 text-red-700",
-};
-
-function StatusChip({ status }: { status: string }) {
-  return <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-medium whitespace-nowrap", STATUS_FARBE[status] || "bg-slate-100 text-slate-700")}>{status}</span>;
-}
 
 function Kennzahl({ titel, wert }: { titel: string; wert: string }) {
   return (
@@ -102,7 +90,8 @@ export default function Objektdaten({ ansicht }: { ansicht: ObjektdatenAnsicht }
     <DashboardLayout>
       <div className="space-y-4">
         {ansicht === "cockpit" && <Cockpit objekte={objekte} suche={suche} setSuche={setSuche} />}
-        {ansicht === "einheiten" && <Einheiten objekte={gewaehlt} objektWahl={objektWahl} />}
+        {ansicht === "einheiten" && <Einheitenliste objekte={gewaehlt} objektWahl={objektWahl} />}
+        {ansicht === "mieter" && <MieterListe objekte={gewaehlt} objektWahl={objektWahl} />}
         {ansicht === "vollstaendigkeit" && <Vollstaendigkeit objekte={gewaehlt} objektWahl={objektWahl} einzeln={objektId !== ALLE} />}
       </div>
     </DashboardLayout>
@@ -164,76 +153,6 @@ function Cockpit({ objekte, suche, setSuche }: { objekte: ObjektData[]; suche: s
           </Table>
         </CardContent>
       </Card>
-    </>
-  );
-}
-
-function Einheiten({ objekte, objektWahl }: { objekte: ObjektData[]; objektWahl: React.ReactNode }) {
-  const zeilen = objekte.flatMap((o) => o.wohnungen.map((w) => ({ objekt: o, z: einheitZeile(w) })));
-  const s = einheitenSumme(zeilen.map((x) => x.z));
-  const mehrere = objekte.length > 1;
-  return (
-    <>
-      <PageHeader title="Einheitenliste" subtitle="Fläche, Miete, Kaufpreis und Rendite je Einheit, direkt aus den Objektdaten" />
-      {objektWahl}
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
-        <Kennzahl titel="Einheiten" wert={String(s.einheiten)} />
-        <Kennzahl titel="Fläche gesamt" wert={`${zahl(s.flaeche)} m²`} />
-        <Kennzahl titel="Miete im Monat" wert={eur(s.mieteMonat, 2)} />
-        <Kennzahl titel="Miete im Jahr" wert={eur(s.mieteMonat * 12, 2)} />
-        <Kennzahl titel="Kaufpreise gesamt" wert={eur(s.kaufpreis)} />
-        <Kennzahl titel="Mietrendite" wert={prozent(s.rendite)} />
-      </div>
-      <Card>
-        <CardContent className="p-0 overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                {mehrere && <TableHead>Objekt</TableHead>}
-                <TableHead>WE</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Lage</TableHead>
-                <TableHead className="text-right">Fläche m²</TableHead>
-                <TableHead className="text-right">Zimmer</TableHead>
-                <TableHead className="text-right">Miete mtl.</TableHead>
-                <TableHead className="text-right">Miete €/m²</TableHead>
-                <TableHead className="text-right">Kaufpreis</TableHead>
-                <TableHead className="text-right">VK €/m²</TableHead>
-                <TableHead className="text-right">Mietrendite</TableHead>
-                <TableHead className="text-right">Hausgeld mtl.</TableHead>
-                <TableHead>Käufer</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {zeilen.map(({ objekt, z }) => (
-                <TableRow key={z.id}>
-                  {mehrere && <TableCell className="whitespace-nowrap text-xs">{objekt.titel}</TableCell>}
-                  <TableCell className="whitespace-nowrap font-medium">
-                    <Link to={`/objekte/${objekt.id}/einheiten/${z.id}`} className="hover:underline">{z.weNr || "ohne Nr."}</Link>
-                  </TableCell>
-                  <TableCell><StatusChip status={z.status} /></TableCell>
-                  <TableCell className="whitespace-nowrap text-xs">{z.lage || "–"}</TableCell>
-                  <TableCell className="text-right tabular-nums">{zahl(z.flaeche)}</TableCell>
-                  <TableCell className="text-right tabular-nums">{zahl(z.zimmer, 1)}</TableCell>
-                  <TableCell className="text-right tabular-nums whitespace-nowrap">{eur(z.mieteMonat, 2)}</TableCell>
-                  <TableCell className="text-right tabular-nums">{zahl(z.mieteQm)}</TableCell>
-                  <TableCell className="text-right tabular-nums whitespace-nowrap">{eur(z.kaufpreis)}</TableCell>
-                  <TableCell className="text-right tabular-nums">{zahl(z.kaufpreisQm)}</TableCell>
-                  <TableCell className="text-right tabular-nums">{prozent(z.rendite)}</TableCell>
-                  <TableCell className="text-right tabular-nums whitespace-nowrap">{eur(z.hausgeldMonat, 2)}</TableCell>
-                  <TableCell className="whitespace-nowrap text-xs">{z.kaeufer || "–"}</TableCell>
-                </TableRow>
-              ))}
-              {zeilen.length === 0 && (
-                <TableRow><TableCell colSpan={13} className="py-8 text-center text-sm text-muted-foreground">Keine Einheiten erfasst.</TableCell></TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-      <p className="text-xs text-muted-foreground">
-        Miete ist die aktuelle Kaltmiete der Einheit, eine eingetragene Mieterhöhung gilt ab ihrem Datum. Mietrendite = Jahresmiete durch Kaufpreis; in der Summe zählen nur Einheiten mit Miete und Kaufpreis.
-      </p>
     </>
   );
 }
@@ -343,6 +262,117 @@ function VollstaendigkeitObjekt({ objekt, nurLuecken }: { objekt: ObjektData; nu
           </Table>
         </CardContent>
       </Card>
+    </>
+  );
+}
+
+const datum = (iso: string) => (/^\d{4}-\d{2}-\d{2}/.test(iso) ? `${iso.slice(8, 10)}.${iso.slice(5, 7)}.${iso.slice(0, 4)}` : iso || "–");
+
+const MIETER_STATUS: Record<Mieter["status"], string> = { aktiv: "aktiv", neu: "neu", gekuendigt: "gekündigt", ausgezogen: "ausgezogen" };
+
+function MieterListe({ objekte, objektWahl }: { objekte: ObjektData[]; objektWahl: React.ReactNode }) {
+  // Bei jedem Zeichnen frisch: nach dem Speichern steht der Mieter sofort im Cache.
+  useLiveVersion(["mieter"]);
+  const mieter = getMieter();
+  const [dialog, setDialog] = useState<{ mieter: Mieter | null; vorgabe?: { objektId: string; wohneinheitId: string } } | null>(null);
+  const [, neuZeichnen] = useState(0);
+  const { user } = useUser();
+  const mieterAkte = ["admin", "inhaber", "hausverwaltung"].includes(user.role);
+  const mehrere = objekte.length > 1;
+  const zeilen = objekte.flatMap((o) => mieterZeilen(o, mieter).map((z) => ({ objekt: o, z })));
+  const vermietet = zeilen.filter((x) => x.z.mieter).length;
+  return (
+    <>
+      <PageHeader title="Mieter & Mietverträge" subtitle="Wer wohnt in welcher Einheit, seit wann, zu welcher Miete" />
+      {objektWahl}
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <Kennzahl titel="Einheiten" wert={String(zeilen.length)} />
+        <Kennzahl titel="mit Mieter" wert={String(vermietet)} />
+        <Kennzahl titel="ohne Mietvertrag" wert={String(zeilen.filter((x) => x.z.mieter && !x.z.vertragVorhanden).length)} />
+        <Kennzahl titel="Miete abweichend" wert={String(zeilen.filter((x) => x.z.mieteAbweichend).length)} />
+      </div>
+      <Card>
+        <CardContent className="p-0 overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {mehrere && <TableHead>Objekt</TableHead>}
+                <TableHead>WE</TableHead>
+                <TableHead>Lage</TableHead>
+                <TableHead>Mieter</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Beginn</TableHead>
+                <TableHead>befristet bis</TableHead>
+                <TableHead className="text-right">Kaltmiete</TableHead>
+                <TableHead className="text-right">NK</TableHead>
+                <TableHead className="text-right">Kaution</TableHead>
+                <TableHead className="text-center">Vertrag</TableHead>
+                <TableHead></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {zeilen.map(({ objekt, z }) => {
+                const m = z.mieter;
+                return (
+                  <TableRow key={z.wohnungId}>
+                    {mehrere && <TableCell className="whitespace-nowrap text-xs">{objekt.titel}</TableCell>}
+                    <TableCell className="whitespace-nowrap font-medium">
+                      <Link to={`/objekte/${objekt.id}/einheiten/${z.wohnungId}`} className="hover:underline">{z.weNr || "ohne Nr."}</Link>
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap text-xs">{z.lage || "–"}</TableCell>
+                    {m ? (
+                      <>
+                        <TableCell className="whitespace-nowrap">
+                          {/* Die Mieterakte gehört zur Hausverwaltung; ohne deren Seiten nur der Name. */}
+                          {mieterAkte ? <Link to={`/mieter/${m.id}`} className="hover:underline">{m.nachname}, {m.vorname}</Link> : `${m.nachname}${m.vorname ? `, ${m.vorname}` : ""}`}
+                        </TableCell>
+                        <TableCell className="text-xs">{MIETER_STATUS[m.status]}</TableCell>
+                        <TableCell className="tabular-nums text-xs">{datum(m.mietvertragBeginn)}</TableCell>
+                        <TableCell className="tabular-nums text-xs">{m.mietvertragEnde ? datum(m.mietvertragEnde) : "unbefristet"}</TableCell>
+                        <TableCell className="text-right tabular-nums whitespace-nowrap">
+                          {z.mieteAbweichend && (
+                            <span title={`An der Einheit stehen ${eur(z.mieteEinheit, 2)}`}>
+                              <AlertTriangle className="mr-1 inline h-3.5 w-3.5 text-amber-500" aria-label="weicht von der Miete an der Einheit ab" />
+                            </span>
+                          )}
+                          {eur(m.kaltmiete || null, 2)}
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums whitespace-nowrap">{eur(m.nebenkosten || null, 2)}</TableCell>
+                        <TableCell className="text-right tabular-nums whitespace-nowrap">{eur(m.kaution || null, 2)}</TableCell>
+                        <TableCell><Haken ja={z.vertragVorhanden} /></TableCell>
+                        <TableCell><Button variant="ghost" size="sm" onClick={() => setDialog({ mieter: m })}>Bearbeiten</Button></TableCell>
+                      </>
+                    ) : (
+                      <>
+                        <TableCell colSpan={7} className="text-xs text-muted-foreground">kein Mieter erfasst</TableCell>
+                        <TableCell className="text-center text-xs text-muted-foreground">–</TableCell>
+                        <TableCell>
+                          <Button variant="ghost" size="sm" onClick={() => setDialog({ mieter: null, vorgabe: { objektId: objekt.id, wohneinheitId: z.wohnungId } })}>
+                            <Plus className="mr-1 h-3.5 w-3.5" /> Mieter
+                          </Button>
+                        </TableCell>
+                      </>
+                    )}
+                  </TableRow>
+                );
+              })}
+              {zeilen.length === 0 && (
+                <TableRow><TableCell colSpan={12} className="py-8 text-center text-sm text-muted-foreground">Keine Einheiten erfasst.</TableCell></TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+      <p className="text-xs text-muted-foreground">
+        Mieterdaten sehen nur Admin, Inhaber, Backoffice, Hausverwaltung und der Objektpartner an seinen Objekten. Das Warnzeichen heißt: Die Kaltmiete am Mieter weicht von der Miete an der Einheit ab, die der Vertrieb sieht.
+      </p>
+      <MieterDialog
+        open={!!dialog}
+        onOpenChange={(o) => { if (!o) setDialog(null); }}
+        mieter={dialog?.mieter}
+        vorgabe={dialog?.vorgabe}
+        onGespeichert={() => neuZeichnen((n) => n + 1)}
+      />
     </>
   );
 }

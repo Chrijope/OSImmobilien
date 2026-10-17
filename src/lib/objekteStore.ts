@@ -1790,6 +1790,26 @@ export async function objektMetaErgaenzen(id: string, patch: Record<string, unkn
 }
 
 /**
+ * Einzelne Schlüssel in `wohnungen.meta` setzen, wie `objektMetaErgaenzen`:
+ * auf dem frischen Stand aus der Datenbank, damit der Investagon-Abgleich und
+ * andere Schreiber ihre Schlüssel behalten. Für die Objektdaten (Garage).
+ */
+export async function wohnungMetaErgaenzen(wohnungId: string, patch: Record<string, unknown>): Promise<void> {
+  if (isTestAccount()) throw new Error("Im Testkonto nicht verfügbar");
+  const db = supabase as any;
+  const { data: current, error: readError } = await db.from("wohnungen").select("meta").eq("id", wohnungId).maybeSingle();
+  if (readError) throw readError;
+  if (!current) throw new Error("Einheit nicht gefunden");
+  const meta = { ...((current.meta as Record<string, unknown>) || {}), ...patch };
+  const { data, error } = await db.from("wohnungen").update({ meta }).eq("id", wohnungId).select("id");
+  if (error) throw error;
+  if (Array.isArray(data) && data.length === 0) {
+    throw new SchreibenAbgelehnt("Diese Einheit darfst du nicht ändern. Das können Admin, Inhaber und der Objektpartner am eigenen Objekt.");
+  }
+  await cacheReload("wohnungen");
+}
+
+/**
  * Ein Bild als Zeile anhängen, ohne den übrigen Bestand anzufassen (kein
  * Abgleich, kein Löschen). Für „Objektinhalte einspielen“; der Zwischenspeicher
  * wird danach vom Aufrufer einmal neu geladen.

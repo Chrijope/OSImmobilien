@@ -39,4 +39,16 @@ describe("Objektdaten in der Seitenleiste", () => {
     const tools = navigationsGruppen({ rolle: "admin" }).find((g) => g.label === "Tools")!;
     expect(tools.items.map((i) => i.title)).toEqual(expect.arrayContaining(["Ankaufstool", "Mietsubvention", "Kaufpreisliste"]));
   });
+
+  it("sperrt die Hausverwaltung und damit die Mieterdaten für Vertriebspartner", () => {
+    for (const r of ["vertriebspartner", "vertriebsleiter", "setterin", "individuell", "testaccount"]) {
+      expect(isUrlAllowedForRole("/mieter", r as never, ["/mieter"])).toBe(false);
+      expect(isUrlAllowedForRole("/mieter/123/mietvertrag", r as never)).toBe(false);
+      expect(isUrlAllowedForRole("/kautionen", r as never)).toBe(false);
+    }
+    expect(isUrlAllowedForRole("/mieterhoehung", "vertriebspartner")).toBe(false);
+    for (const r of ["admin", "inhaber"]) expect(isUrlAllowedForRole("/mieter/123", r as never)).toBe(true);
+    // Objektdaten verlinken auf die Mieterseite: Backoffice und Objektpartner kommen dorthin, wenn ihre Rolle die Seite hat.
+    expect(isUrlAllowedForRole("/mieter", "backoffice", ["/mieter"])).toBe(true);
+  });
 });
