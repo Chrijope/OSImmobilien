@@ -54,7 +54,6 @@ const heldenBild = "/images/mikroseite/barfuss-fassade.jpg";
 import { SeitenSpracheProvider, useSeitenSprache, useSeitenTexte } from "@/components/SeitenSprache";
 import { HandbuchHeft } from "@/components/handbuch/HandbuchHeft";
 import { HandbuchFuss, HandbuchKopf, useBeraterAusKuerzel, type HandbuchBerater } from "@/components/handbuch/Rahmen";
-import christianKurzFoto from "@/assets/handbuch/christian-kurz.webp";
 import { anteilig, Diagramm, Hochzaehlen, useEinblenden, useHandbuchThema, useSeitenTitel } from "@/components/handbuch/teile";
 import { useMetaPixelMitEinwilligung } from "@/hooks/useMetaPixelMitEinwilligung";
 import {
@@ -794,7 +793,8 @@ export function PartnerKarte({ berater }: { berater: Pick<HandbuchBerater, "name
 export function InhaberKarte() {
   const en = useSeitenSprache() === "en";
   const W = useSeitenTexte(HANDBUCH_SEITEN_TEXTE).landing.wer;
-  const bild = christianKurzFoto;
+  // Bisheriges Foto am 17.10.2026 entfernt, neues folgt. Bis dahin Initialen.
+  const bild: string | null = null;
   const [bildFehlt, setBildFehlt] = useState(false);
   const p = FIRMEN_ANSPRECHPARTNER;
   return (

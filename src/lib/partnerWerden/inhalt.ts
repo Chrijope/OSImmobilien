@@ -295,7 +295,7 @@ export const FAQ = {
     },
     {
       f: "Wie lange gibt es OS Immobilien schon?",
-      a: `Hinter OS Immobilien stehen über 10 Jahre Immobilienerfahrung und ein Team von rund 20 Spezialisten. Am Markt sind wir seit ${ZAHLEN.amMarktSeit}.`,
+      a: `Hinter OS Immobilien stehen über 28 Jahre Immobilienerfahrung und ein Team von rund 20 Spezialisten. Am Markt sind wir seit ${ZAHLEN.amMarktSeit}.`,
     },
   ],
 };
