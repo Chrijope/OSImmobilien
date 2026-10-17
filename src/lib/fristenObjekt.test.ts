@@ -21,4 +21,16 @@ describe("Fristen je Objekt", () => {
   it("übergeht leere oder ungültige Daten und Erhöhungen ohne Mehrbetrag", () => {
     expect(fristenSammeln([{ weNr: "WE 1", befristetBis: "", erhoehungAb: "2027-01-01", erhoehungPlus: 0, notartermin: "bald" }])).toEqual([]);
   });
+
+  it("rechnet Reservierung, Vorkaufsrecht, Kündigungssperre und Gewährleistung", () => {
+    const f = fristenSammeln([
+      { weNr: "WE 1", reserviertAm: "2026-11-01", reservierungTage: 14, vorkaufMitgeteilt: "2026-11-30", notartermin: "2026-12-15", vermietet: true, sperrfristJahre: 10 },
+      { weNr: "WE 2", reserviertAm: "2026-11-01", notartermin: "2026-12-15", vermietet: false, sperrfristJahre: 3 },
+    ], undefined, "2026-06-30");
+    const art = (a: string) => f.filter((x) => x.art === a).map((x) => `${x.einheit}:${x.datum}`);
+    expect(art("Reservierung läuft ab")).toEqual(["WE 1:2026-11-15"]);
+    expect(art("Vorkaufsrecht Mieter endet")).toEqual(["WE 1:2027-01-30"]);
+    expect(art("Kündigungssperre endet")).toEqual(["WE 1:2036-12-15"]);
+    expect(art("Gewährleistung endet")).toEqual([":2031-06-30"]);
+  });
 });

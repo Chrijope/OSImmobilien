@@ -6,7 +6,8 @@
 
 export type FristArt =
   | "Befristung endet" | "Mieterhöhung möglich" | "Garage gekündigt zum" | "Notartermin" | "Kaufpreisfälligkeit"
-  | "Übergabe" | "Mietsubvention endet" | "Garagen-Subvention endet" | "Energieausweis läuft ab";
+  | "Übergabe" | "Mietsubvention endet" | "Garagen-Subvention endet" | "Energieausweis läuft ab"
+  | "Reservierung läuft ab" | "Vorkaufsrecht Mieter endet" | "Kündigungssperre endet" | "Gewährleistung endet";
 
 export interface Frist {
   datum: string;
@@ -27,6 +28,14 @@ export interface FristQuelle {
   uebergabe?: string;
   subventionMonate?: number;
   garagenSubventionMonate?: number;
+  /** Reservierung seit, mit der Dauer aus den Projektangaben des Objekts. */
+  reserviertAm?: string;
+  reservierungTage?: number;
+  /** Tag, an dem dem Mieter der Kaufvertrag mitgeteilt wurde (§ 577 BGB: zwei Monate Frist). */
+  vorkaufMitgeteilt?: string;
+  /** Vermietet beim Verkauf: Sperrfrist für Eigenbedarf ab Notartermin (§ 577a BGB). */
+  vermietet?: boolean;
+  sperrfristJahre?: number;
 }
 
 const gueltig = (s?: string): s is string => !!s && /^\d{4}-\d{2}-\d{2}/.test(s);
@@ -38,7 +47,17 @@ const plusMonate = (s: string, m: number) => {
 };
 const eur = (n: number) => `${n.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
 
-export function fristenSammeln(einheiten: FristQuelle[], energieausweisBis?: string): Frist[] {
+const plusTage = (s: string, t: number) => {
+  const d = new Date(`${s.slice(0, 10)}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + t);
+  return d.toISOString().slice(0, 10);
+};
+
+// Rechtsfristen enden am Tag mit derselben Zahl (§ 188 Abs. 2 BGB), nicht am Vortag wie eine Laufzeit.
+const fristende = (s: string, m: number) => plusTage(plusMonate(s, m), 1);
+
+/** `abnahme`: Abnahme des Gemeinschaftseigentums; die Gewährleistung des Bauträgers läuft fünf Jahre (§ 634a BGB). */
+export function fristenSammeln(einheiten: FristQuelle[], energieausweisBis?: string, abnahme?: string): Frist[] {
   const f: Frist[] = [];
   const dazu = (datum: string | undefined, art: FristArt, einheit: string, detail?: string) => { if (gueltig(datum)) f.push({ datum: datum.slice(0, 10), art, einheit, detail }); };
   for (const e of einheiten) {
@@ -50,7 +69,11 @@ export function fristenSammeln(einheiten: FristQuelle[], energieausweisBis?: str
     dazu(e.uebergabe, "Übergabe", e.weNr);
     if (gueltig(e.uebergabe) && e.subventionMonate) dazu(plusMonate(e.uebergabe, e.subventionMonate), "Mietsubvention endet", e.weNr, `${e.subventionMonate} Monate ab Übergabe`);
     if (gueltig(e.uebergabe) && e.garagenSubventionMonate) dazu(plusMonate(e.uebergabe, e.garagenSubventionMonate), "Garagen-Subvention endet", e.weNr);
+    if (gueltig(e.reserviertAm) && e.reservierungTage) dazu(plusTage(e.reserviertAm, e.reservierungTage), "Reservierung läuft ab", e.weNr, `${e.reservierungTage} Tage ab Reservierung`);
+    if (gueltig(e.vorkaufMitgeteilt)) dazu(fristende(e.vorkaufMitgeteilt, 2), "Vorkaufsrecht Mieter endet", e.weNr, "zwei Monate ab Mitteilung, § 577 BGB");
+    if (e.vermietet && gueltig(e.notartermin) && e.sperrfristJahre) dazu(fristende(e.notartermin, 12 * e.sperrfristJahre), "Kündigungssperre endet", e.weNr, `Eigenbedarf frühestens danach, ${e.sperrfristJahre} Jahre, § 577a BGB`);
   }
   dazu(energieausweisBis, "Energieausweis läuft ab", "");
+  if (gueltig(abnahme)) dazu(fristende(abnahme, 60), "Gewährleistung endet", "", "fünf Jahre ab Abnahme, § 634a BGB");
   return f.sort((a, b) => a.datum.localeCompare(b.datum));
 }
