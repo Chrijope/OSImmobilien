@@ -11,7 +11,6 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FRAGEN, type HandbuchAntworten } from "../../supabase/functions/_shared/handbuch-funnel.ts";
 import type { HandbuchErgebnisZustand } from "@/pages/HandbuchLanding";
-import VorschauHandbuchErgebnisEntwurf from "./VorschauHandbuchErgebnisEntwurf";
 
 const BEISPIEL: HandbuchAntworten = {
   ziel: "steuer",
@@ -74,10 +73,6 @@ export default function VorschauHandbuchEntwurf() {
         <button type="button" onClick={oeffnen} className="rounded-full bg-primary text-primary-foreground px-6 h-11 font-semibold">
           Handbuch für Jonas Beispiel öffnen
         </button>
-      </div>
-      {/* Entwurf vom 17.10.2026 zur Freigabe: neue Ergebnisseite, rechnet mit den Antworten oben. */}
-      <div className="mt-10 -mx-6">
-        <VorschauHandbuchErgebnisEntwurf a={a} vorname="Jonas" />
       </div>
     </div>
   );

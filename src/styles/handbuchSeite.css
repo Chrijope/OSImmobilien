@@ -473,6 +473,13 @@
 .hb-buch { max-width: 900px; margin: 0 auto; }
 .hb-buch-seite { background: var(--hb-karte); border: 1px solid var(--hb-linie); border-radius: 22px; padding: 44px 48px; margin: 0 0 24px; box-shadow: var(--hb-schatten); scroll-margin-top: 100px; }
 .hb-buch-seite .kap { font-size: 12px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--hb-akzent-text); }
+/* Die zwei Wege oben auf der Ergebnisseite (WegeAnsicht), seit dem 17.10.2026. */
+.hb-wege-raster { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr)); gap: 24px; align-items: start; margin-top: 24px; }
+.hb-wege-karte { margin: 0; padding: 32px 32px; min-width: 0; }
+.hb-alter { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 14px; font-size: 15px; color: var(--hb-text2); }
+.hb-alter input[type="range"] { flex: 1 1 180px; accent-color: #CCAC05; }
+.hb-alter b { color: var(--hb-tinte); font-size: 18px; min-width: 5.5em; }
+@media (max-width: 700px) { .hb-wege-karte { padding: 24px 18px; } }
 .hb-buch-seite h2.titel { font-size: clamp(26px, 3vw, 34px); line-height: 1.15; margin: 8px 0 18px; }
 .hb-buch-seite h3.h2 { font-size: 20px; margin: 26px 0 10px; }
 .hb-buch-seite .lead { font-size: 18.5px; color: var(--hb-text2); line-height: 1.55; }

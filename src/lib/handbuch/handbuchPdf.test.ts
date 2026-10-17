@@ -23,7 +23,8 @@ describe("Handbuch-PDF", () => {
     const doc = await erzeugeHandbuchPdf(h);
     const seiten = doc.getNumberOfPages();
     expect(seiten).toBeGreaterThanOrEqual(19);
-    expect(seiten).toBeLessThanOrEqual(24);
+    // Seit dem 17.10.2026 mit den zwei Wegen in Kapitel 6 und 8, deshalb ein paar Seiten mehr.
+    expect(seiten).toBeLessThanOrEqual(28);
     const roh = doc.output();
     expect(roh).toContain("https://osimmobilien.netlify.app/handbuch/selbstauskunft/abc");
   }, 30000);

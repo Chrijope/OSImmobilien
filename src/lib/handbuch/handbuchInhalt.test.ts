@@ -42,21 +42,20 @@ function seite(h: Handbuch, id: string) {
 
 describe("Rechnung wie in der Strategie", () => {
   it.each([
-    ["A", A, 220930, 42, 144],
-    ["B", B, 294000, 42, 202],
-    ["C", C, 176000, 35, 185],
-  ])("Profil %s: Beispielwohnung Hauffstraße, Grenzsteuersatz, Eigenaufwand nach Steuer im ersten Jahr", (_n, p, kaufpreis, gs, eigenaufwand) => {
+    ["A", A, 185000, 42, 157],
+    ["B", B, 280170, 42, 248],
+    ["C", C, 79995, 35, 71],
+  ])("Profil %s: gemeinsame Beispielwohnung, Grenzsteuersatz, Eigenaufwand nach Steuer im ersten Jahr", (_n, p, kaufpreis, gs, eigenaufwand) => {
     const a = handbuchAuswertung(p);
     expect(a.kaufpreis).toBe(kaufpreis);
     expect(a.grenzsatz).toBe(gs);
     expect(Math.round(-a.jahr1.nachSteuer)).toBe(eigenaufwand);
   });
 
-  it("die Beispielwohnung ist eine echte Hauffstraße-Wohnung bis zur Obergrenze des Rahmens", () => {
-    expect(modellKaufpreis({ bis: 10000 })).toBe(176000);
-    expect(modellKaufpreis({ bis: 220929 })).toBe(176000);
-    expect(modellKaufpreis({ bis: 222000 })).toBe(220930);
-    expect(modellKaufpreis({ bis: 999999 })).toBe(294000);
+  it("die Beispielwohnung ist die Wohnung im Rahmen mit dem größten Steuervorteil, sonst die günstigste", () => {
+    expect(modellKaufpreis({ bis: 10000 })).toBe(79995);
+    expect(modellKaufpreis({ bis: 222000 })).toBe(185000);
+    expect(modellKaufpreis({ bis: 999999 })).toBe(374400);
   });
 });
 
@@ -115,15 +114,32 @@ describe("Zusammensetzung je Profil", () => {
 });
 
 describe("OS-Konzept (seit dem 17.10.2026)", () => {
+  it("Kapitel 6 zeigt Mehr Netto vom Brutto, Kapitel 8 die Altersvorsorge mit dem Alter vom Regler", () => {
+    const k6 = JSON.stringify(seite(baueHandbuch(angaben(A)), "kapitel-6").bloecke);
+    expect(k6).toContain("Mehr Netto vom Brutto");
+    expect(k6).toContain("Vom Brutto zum Netto");
+    const mit = (alter?: number) => JSON.stringify(seite(baueHandbuch({ ...angaben(A), alter }), "kapitel-8").bloecke);
+    expect(mit()).toContain("Gerechnet mit 35 Jahren");
+    expect(mit(50)).toContain("Gerechnet mit 50 Jahren");
+    expect(mit(50)).not.toEqual(mit(35));
+  });
+
+  it("die Beispielwohnung ist dieselbe wie unter Mehr Netto vom Brutto", () => {
+    for (const p of [A, B, C]) {
+      const h = baueHandbuch(angaben(p));
+      const k7 = JSON.stringify(seite(h, "kapitel-7").bloecke);
+      const titel = handbuchAuswertung(p).wohnung.titel;
+      expect(k7).toContain(titel);
+      expect(JSON.stringify(seite(h, "kapitel-6").bloecke)).toContain(`mit ${titel}`);
+    }
+  });
+
   it("Kapitel 5 zeigt die OS-Objekte, passende vorn", () => {
     const k5 = seite(baueHandbuch(angaben(A)), "kapitel-5").bloecke.find((b) => b.typ === "objekte");
     expect(k5 && k5.typ === "objekte" && k5.objekte.length).toBe(6);
     expect(k5 && k5.typ === "objekte" && k5.objekte[0].passt).toBe(true);
   });
 
-  it("Kapitel 7 rechnet mit der Hauffstraße 38", () => {
-    expect(JSON.stringify(seite(baueHandbuch(angaben(A)), "kapitel-7").bloecke)).toContain("Hauffstraße 38");
-  });
 });
 
 describe("Was im Handbuch nicht stehen darf", () => {

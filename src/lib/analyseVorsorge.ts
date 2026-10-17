@@ -12,7 +12,7 @@
  * ponytail: fest wie OBJEKTE in beratungOsDaten; aus „Objekte“ im CRM, sobald
  * die OS-Objekte dort mit Einheiten gepflegt sind.
  */
-import { berechneExpose, type ExposeObjektdaten } from "@/lib/exposeRechner";
+import { berechneExpose, type ExposeJahr, type ExposeObjektdaten } from "@/lib/exposeRechner";
 import { standardAnnahmen } from "@/lib/exposeAnnahmen";
 import { tilgungsplan } from "@/lib/finanzierung";
 import { RUHESTAND_JAHRE, OBJEKTE, type KonzeptOs } from "@/lib/beratungOsDaten";
@@ -126,6 +126,8 @@ export interface WohnungRechnung {
   eigenanteilMonat: number;
   /** Erstes Jahr, wie die Monatsrechnung im Exposé. */
   jahr1: { steuerMonat: number; eigenanteilMonat: number };
+  /** Die ganze Zeile des ersten Jahres, für die Monatsrechnung im Handbuch (Kapitel 7). */
+  erstesJahr: ExposeJahr;
   verkaufswert: number;
   restschuld: number;
   verkaufskosten: number;
@@ -162,6 +164,7 @@ export function rechneWohnung(w: OsWohnung, kaufAlter: number, verkaufsAlter: nu
     steuerMonat: schnitt((j) => j.steuerwirkungOhneSanierung / 12),
     eigenanteilMonat: schnitt((j) => j.eigenanteilMonat),
     jahr1: { steuerMonat: Math.round(zehn[0].steuerwirkungOhneSanierung / 12), eigenanteilMonat: Math.round(zehn[0].eigenanteilMonat) },
+    erstesJahr: zehn[0],
     verkaufswert,
     restschuld,
     verkaufskosten,

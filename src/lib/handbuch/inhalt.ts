@@ -10,8 +10,9 @@
  *     eigenen Vertrieb, renoviert oder modernisiert. Nur Bestand, keine Wohngemeinschaften,
  *     kein Co-Living, keine Maklerprovision.
  *   - Du-Anrede überall (Hausregel), keine Gedankenstriche, kein Druck.
- *   - Gerechnet wird mit einer echten Beispielwohnung der Hauffstraße 38 in
- *     Schwielowsee (`modell.ts`). Sätze kommen aus `MODELL_SAETZE`, die
+ *   - Gerechnet wird mit einer echten Beispielwohnung, je Objekt dieselbe wie im
+ *     Analysetool und im Exposé (`beispielOsWohnung` in modell.ts). AfA,
+ *     Gebäudeanteil und Kaufnebenkosten sind die der Wohnung (`W`), die
  *     erhöhte AfA steht immer mit dem Hinweis auf das Gutachten.
  *   - Die Objekte stehen in Kapitel 2 als Überblick und in Kapitel 5 als
  *     Block zum Rahmen (`osObjekte.ts`).
@@ -59,9 +60,13 @@ import {
   vermoegensVerlauf,
   wartenWerte,
   type HandbuchAuswertung,
+  modellwohnung,
+  type Modellwohnung,
 } from "./modell";
 import { KAUFNEBENKOSTEN, objekteBlock } from "./osObjekte";
 import { antwortTextIn } from "./fragenSprache";
+import { nettoWeg, vorsorgeWeg } from "./osWege";
+import { nettoBloecke, vorsorgeBloecke } from "./osWegeBloecke";
 import {
   AUSGANG_TEXT,
   ermittleAusgang,
@@ -90,6 +95,8 @@ export interface HandbuchAngaben {
    */
   saPerMail?: boolean;
   partner?: HandbuchPartner | null;
+  /** Alter vom Regler der Ergebnisseite, für die Altersvorsorge in Kapitel 8. Ohne Angabe 35. */
+  alter?: number;
   /** Sprache des Handbuchs. Ohne Angabe Deutsch. */
   sprache?: Sprache;
 }
@@ -224,27 +231,29 @@ export function diagrammHaushalt(breite = 660, hoehe = 270): Zeichnung {
   );
 }
 
-/** Kaufnebenkosten der Beispielwohnung (Brandenburg), Sätze aus `MODELL_SAETZE`. */
+/** Kaufnebenkosten der Beispielwohnung, Sätze ihres Bundeslands. */
 function diagrammNebenkosten(kaufpreis: number): Zeichnung {
+  const W = modellwohnung(kaufpreis);
   const teil = (p: number) => (kaufpreis * p) / 100;
   return ring({
     teile: [
-      { bezeichnung: `${tx(`Grunderwerbsteuer ${prozent(S.grunderwerbsteuer)}`, `Transfer tax ${prozent(S.grunderwerbsteuer)}`)}: ${betrag(teil(S.grunderwerbsteuer))}`, wert: teil(S.grunderwerbsteuer), farbe: "akzent" },
+      { bezeichnung: `${tx(`Grunderwerbsteuer ${prozent(W.grunderwerbsteuer)}`, `Transfer tax ${prozent(W.grunderwerbsteuer)}`)}: ${betrag(teil(W.grunderwerbsteuer))}`, wert: teil(W.grunderwerbsteuer), farbe: "akzent" },
       { bezeichnung: `${tx(`Notar ${prozent(S.notar)}`, `Notary ${prozent(S.notar)}`)}: ${betrag(teil(S.notar))}`, wert: teil(S.notar), farbe: "tinte" },
       { bezeichnung: `${tx(`Grundbuch ${prozent(S.grundbuch)}`, `Land register ${prozent(S.grundbuch)}`)}: ${betrag(teil(S.grundbuch))}`, wert: teil(S.grundbuch), farbe: "akzentHell" },
     ],
-    mitteOben: betrag(teil(S.kaufnebenkosten)),
-    mitteUnten: tx(`${prozent(S.kaufnebenkosten)} in Brandenburg`, `${prozent(S.kaufnebenkosten)} in Brandenburg`),
+    mitteOben: betrag(teil(W.kaufnebenkosten)),
+    mitteUnten: tx(`${prozent(W.kaufnebenkosten)} in ${W.land}`, `${prozent(W.kaufnebenkosten)} in ${W.land}`),
     breite: 440,
     hoehe: 190,
     beschreibung: tx(
-      `Kaufnebenkosten in Brandenburg für ${betrag(kaufpreis)}: zusammen ${betrag(teil(S.kaufnebenkosten))}.`,
-      `Incidental purchase costs in Brandenburg for ${betrag(kaufpreis)}: ${betrag(teil(S.kaufnebenkosten))} in total.`,
+      `Kaufnebenkosten in ${W.land} für ${betrag(kaufpreis)}: zusammen ${betrag(teil(W.kaufnebenkosten))}.`,
+      `Incidental purchase costs in ${W.land} for ${betrag(kaufpreis)}: ${betrag(teil(W.kaufnebenkosten))} in total.`,
     ),
   });
 }
 
 function diagrammAfa(kaufpreis: number): Zeichnung {
+  const W = modellwohnung(kaufpreis);
   const e = rechneModell(kaufpreis, { jahre: 1 });
   const gebaeude = e.depreciationBasis;
   const boden = e.kaufpreisGesamt + e.purchaseCosts - gebaeude;
@@ -253,7 +262,7 @@ function diagrammAfa(kaufpreis: number): Zeichnung {
       { bezeichnung: tx("Gebäude inkl. Nebenkosten", "Building incl. purchase costs"), wert: gebaeude, farbe: "akzent" },
       { bezeichnung: tx("Grund und Boden", "Land"), wert: boden, farbe: "grau" },
       {
-        bezeichnung: tx(`AfA im Jahr (${satz(S.afa)} des Gebäudes)`, `Depreciation per year (${satz(S.afa)} of building)`),
+        bezeichnung: tx(`AfA im Jahr (${satz(W.afa)} des Gebäudes)`, `Depreciation per year (${satz(W.afa)} of building)`),
         wert: e.years[0].buildingDepreciation,
         farbe: "tinte",
       },
@@ -261,22 +270,23 @@ function diagrammAfa(kaufpreis: number): Zeichnung {
     breite: 660,
     zeilenhoehe: 50,
     bezeichnungBreite: 240,
-    maxWert: kaufpreis * (1 + S.kaufnebenkosten / 100),
+    maxWert: kaufpreis * (1 + W.kaufnebenkosten / 100),
     beschreibung: tx(
-      `Aufteilung von Kaufpreis und Nebenkosten in Gebäude und Boden, dazu die jährliche Abschreibung mit erhöhter AfA von ${satz(S.afa)} (nur mit anerkanntem Restnutzungsdauer-Gutachten, sonst 2 %).`,
-      `Split of purchase price and purchase costs into building and land, plus the annual depreciation at the increased rate of ${satz(S.afa)} (only with an accepted remaining useful life report, otherwise 2%).`,
+      `Aufteilung von Kaufpreis und Nebenkosten in Gebäude und Boden, dazu die jährliche Abschreibung mit erhöhter AfA von ${satz(W.afa)} (nur mit anerkanntem Restnutzungsdauer-Gutachten, sonst 2 %).`,
+      `Split of purchase price and purchase costs into building and land, plus the annual depreciation at the increased rate of ${satz(W.afa)} (only with an accepted remaining useful life report, otherwise 2%).`,
     ),
   });
 }
 
 function diagrammVermietungsergebnis(a: HandbuchAuswertung): Zeichnung {
   const j = a.ergebnis.years[0];
+  const W = a.wohnung;
   return wasserfall(
     [
-      { bezeichnung: tx("Kaltmiete|mit Garage", "Net cold rent|incl. garage"), betrag: j.effectiveRent, art: "start" },
+      { bezeichnung: W.garage ? tx("Kaltmiete|mit Garage", "Net cold rent|incl. garage") : tx("Kaltmiete", "Net cold rent"), betrag: j.effectiveRent, art: "start" },
       { bezeichnung: tx("nicht umlage-|fähige Kosten", "Non-recover-|able costs"), betrag: -j.operatingCosts, art: "minus" },
       { bezeichnung: tx("Zinsen", "Interest"), betrag: -j.interest, art: "minus" },
-      { bezeichnung: tx(`AfA ${satz(S.afa)}`, `Depreciation ${satz(S.afa)}`), betrag: -j.buildingDepreciation, art: "minus" },
+      { bezeichnung: tx(`AfA ${satz(W.afa)}`, `Depreciation ${satz(W.afa)}`), betrag: -j.buildingDepreciation, art: "minus" },
       { bezeichnung: tx("Finanzierungs-|nebenkosten", "Financing|costs"), betrag: -j.financingCostDeduction, art: "minus" },
       { bezeichnung: tx("Ergebnis|Vermietung", "Letting|result"), betrag: 0, art: "summe" },
     ],
@@ -447,6 +457,7 @@ function unterlagenBeruf(beruf: HandbuchAntworten["beruf"]): [string, Array<{ te
 }
 
 function schwerpunkt(ang: HandbuchAngaben, a: HandbuchAuswertung): { titel: string; bloecke: Block[] } {
+  const W: Modellwohnung = a.wohnung;
   const ziel = ang.antworten.ziel;
   const zielText = antwort("ziel", ziel);
   if (ziel === "steuer") {
@@ -465,8 +476,8 @@ function schwerpunkt(ang: HandbuchAngaben, a: HandbuchAuswertung): { titel: stri
           typ: "grafik",
           titel: tx("Dein erstes Jahr, Position für Position", "Your first year, item by item"),
           untertitel: tx(
-            `Einkünfte aus Vermietung der Beispielwohnung, Jahreswerte, erhöhte AfA ${satz(S.afa)} nur mit anerkanntem Gutachten`,
-            `Rental income of the example flat, annual figures, increased depreciation of ${satz(S.afa)} only with an accepted report`,
+            `Einkünfte aus Vermietung der Beispielwohnung, Jahreswerte, erhöhte AfA ${satz(W.afa)} nur mit anerkanntem Gutachten`,
+            `Rental income of the example flat, annual figures, increased depreciation of ${satz(W.afa)} only with an accepted report`,
           ),
           zeichnung: diagrammVermietungsergebnis(a),
         },
@@ -492,8 +503,8 @@ function schwerpunkt(ang: HandbuchAngaben, a: HandbuchAuswertung): { titel: stri
             {
               titel: tx("Das Gutachten zählt", "The report matters"),
               text: tx(
-                `Die erhöhte AfA von ${satz(S.afa)} setzt ein Restnutzungsdauer-Gutachten voraus, das das Finanzamt anerkennt. Sonst gilt der normale Satz von 2 %, und die Steuerwirkung fällt kleiner aus.`,
-                `The increased depreciation of ${satz(S.afa)} requires a remaining useful life report that the tax office accepts. Otherwise the normal rate of 2% applies, and the tax effect is smaller.`,
+                `Die erhöhte AfA von ${satz(W.afa)} setzt ein Restnutzungsdauer-Gutachten voraus, das das Finanzamt anerkennt. Sonst gilt der normale Satz von 2 %, und die Steuerwirkung fällt kleiner aus.`,
+                `The increased depreciation of ${satz(W.afa)} requires a remaining useful life report that the tax office accepts. Otherwise the normal rate of 2% applies, and the tax effect is smaller.`,
               ),
             },
             {
@@ -666,8 +677,8 @@ function schwerpunkt(ang: HandbuchAngaben, a: HandbuchAuswertung): { titel: stri
     [
       tx("Abschreibung (AfA)", "Depreciation (AfA)"),
       tx(
-        `Der Wertverlust des Gebäudes, den du jedes Jahr als Kosten ansetzt, ohne dass Geld fließt. Bei Baujahren von 1925 bis 2022 meist 2 % im Jahr. Mit einem vom Finanzamt anerkannten Restnutzungsdauer-Gutachten kann der Satz höher sein, bei deiner Beispielwohnung ${satz(S.afa)}.`,
-        `The loss in value of the building, which you claim as a cost every year without any money changing hands. Usually 2% a year for buildings from 1925 to 2022. With a remaining useful life report accepted by the tax office, the rate can be higher, ${satz(S.afa)} for your example flat.`,
+        `Der Wertverlust des Gebäudes, den du jedes Jahr als Kosten ansetzt, ohne dass Geld fließt. Bei Baujahren von 1925 bis 2022 meist 2 % im Jahr. Mit einem vom Finanzamt anerkannten Restnutzungsdauer-Gutachten kann der Satz höher sein, bei deiner Beispielwohnung ${satz(W.afa)}${W.afa > 2 ? " mit Gutachten" : ""}.`,
+        `The loss in value of the building, which you claim as a cost every year without any money changing hands. Usually 2% a year for buildings from 1925 to 2022. With a remaining useful life report accepted by the tax office, the rate can be higher, ${satz(W.afa)} for your example flat.`,
       ),
     ],
     [
@@ -785,7 +796,7 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
   const seiten: HandbuchSeite[] = [];
   const bruttoText = antwort("brutto", A.brutto);
   const flaeche = w.flaeche.toLocaleString(sprache === "en" ? "en-GB" : "de-DE", { maximumFractionDigits: 2 });
-  const wohnungNr = w.nr ? tx(`Wohnung ${w.nr}`, `flat ${w.nr}`) : tx("eine Wohnung", "a flat");
+  const W: Modellwohnung = w;
 
   // Inhalt und Angaben
   seiten.push({
@@ -895,8 +906,8 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
         ton: "dich",
         titel: tx("So liest du dieses Handbuch", "How to read this handbook"),
         text: tx(
-          "Jedes Kapitel endet mit dem, was es für dich bedeutet. Gerechnet wird mit einer echten Wohnung aus unserem Bestand, deiner Beispielwohnung in der Hauffstraße 38 in Schwielowsee. Alle Zahlen sind Szenarien mit offengelegten Annahmen, gerechnet wie im OS-Investmentrechner, und keine Zusage. Die verbindliche Rechnung machen wir, wenn du eine konkrete Wohnung vor dir hast.",
-          "Every chapter ends with what it means for you. The calculations use a real flat from our portfolio, your example flat at Hauffstraße 38 in Schwielowsee. All figures are scenarios with disclosed assumptions, calculated as in the OS investment calculator. They are not a commitment. We do the binding calculation once you have a specific flat in front of you.",
+          "Jedes Kapitel endet mit dem, was es für dich bedeutet. Gerechnet wird mit einer echten Wohnung aus unserem Bestand, deiner Beispielwohnung, die auch im Analysetool und in ihrem Exposé steht. Alle Zahlen sind Szenarien mit offengelegten Annahmen, gerechnet wie im OS-Investmentrechner, und keine Zusage. Die verbindliche Rechnung machen wir, wenn du eine konkrete Wohnung vor dir hast.",
+          "Every chapter ends with what it means for you. The calculations use a real flat from our portfolio, your example flat, the same one used in the analysis tool and in its listing. All figures are scenarios with disclosed assumptions, calculated as in the OS investment calculator. They are not a commitment. We do the binding calculation once you have a specific flat in front of you.",
         ),
       },
     ],
@@ -973,8 +984,8 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
             symbol: "schluessel",
             titel: tx("Gepflegte Wohnanlage in Schwielowsee", "Well-kept complex in Schwielowsee"),
             text: tx(
-              "Hauffstraße 38 bei Potsdam: Baujahr 2000, 46 Wohnungen von 42 bis 80 m², mit Garten, Aufzug und Garage. Konzept Altersvorsorge. Von hier stammt deine Beispielwohnung.",
-              "Hauffstraße 38 near Potsdam: built in 2000, 46 flats from 42 to 80 m², with garden, lift and garage. Retirement provision concept. Your example flat comes from here.",
+              "Hauffstraße 38 bei Potsdam: Baujahr 2000, 46 Wohnungen von 42 bis 80 m², mit Garten, Aufzug und Garage. Konzept Altersvorsorge.",
+              "Hauffstraße 38 near Potsdam: built in 2000, 46 flats from 42 to 80 m², with garden, lift and garage. Retirement provision concept.",
             ),
           },
           {
@@ -1412,16 +1423,16 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
         typ: "grafik",
         titel: tx("Deine Beispielwohnung: Kaufpreis plus Nebenkosten, aufgeteilt", "Your example flat: purchase price plus costs, split up"),
         untertitel: tx(
-          `Gebäudeanteil ${satz(S.gebaeudeanteil)}, Nebenkosten anteilig, erhöhte AfA ${satz(S.afa)} im Jahr nur mit anerkanntem Gutachten, sonst 2 %`,
-          `Building share ${satz(S.gebaeudeanteil)}, costs pro rata, increased depreciation of ${satz(S.afa)} a year only with an accepted report, otherwise 2%`,
+          `Gebäudeanteil ${satz(W.gebaeudeanteil)}, Nebenkosten anteilig, erhöhte AfA ${satz(W.afa)} im Jahr nur mit anerkanntem Gutachten, sonst 2 %`,
+          `Building share ${satz(W.gebaeudeanteil)}, costs pro rata, increased depreciation of ${satz(W.afa)} a year only with an accepted report, otherwise 2%`,
         ),
         zeichnung: diagrammAfa(kp),
       },
       {
         typ: "absatz",
         text: tx(
-          `Nur das Gebäude wird abgeschrieben, nicht der Grund und Boden. Der normale Satz hängt vom Baujahr ab: 2,5 % vor 1925, 2 % von 1925 bis 2022 und 3 % ab 2023. Bei Bestand kann ein Restnutzungsdauer-Gutachten einen höheren Satz begründen, wenn das Finanzamt es anerkennt. Deine Beispielwohnung (Baujahr ${S.baujahr}) rechnen wir mit ${satz(S.afa)}. Ohne anerkanntes Gutachten gelten 2 %, und die Steuerwirkung fällt kleiner aus.`,
-          `Only the building is depreciated, not the land. The normal rate depends on the year of construction: 2.5% before 1925, 2% from 1925 to 2022 and 3% from 2023. For existing buildings, a remaining useful life report can justify a higher rate if the tax office accepts it. We calculate your example flat (built in ${S.baujahr}) with ${satz(S.afa)}. Without an accepted report, 2% applies and the tax effect is smaller.`,
+          `Nur das Gebäude wird abgeschrieben, nicht der Grund und Boden. Der normale Satz hängt vom Baujahr ab: 2,5 % vor 1925, 2 % von 1925 bis 2022 und 3 % ab 2023. Bei Bestand kann ein Restnutzungsdauer-Gutachten einen höheren Satz begründen, wenn das Finanzamt es anerkennt. Deine Beispielwohnung rechnen wir wie ihr Exposé mit ${satz(W.afa)}.${W.afa > 2 ? " Ohne anerkanntes Gutachten gelten 2 %, und die Steuerwirkung fällt kleiner aus." : ""}`,
+          `Only the building is depreciated, not the land. The normal rate depends on the year of construction: 2.5% before 1925, 2% from 1925 to 2022 and 3% from 2023. For existing buildings, a remaining useful life report can justify a higher rate if the tax office accepts it. As in its listing, we calculate your example flat with ${satz(W.afa)}.${W.afa > 2 ? " Without an accepted report, 2% applies and the tax effect is smaller." : ""}`,
         ),
       },
       {
@@ -1480,12 +1491,12 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
         typ: "fussnote",
         text: gem
           ? tx(
-              `Eigenaufwand je Monat im ersten Jahr: Miete minus Kosten, Rücklage, Zins und Tilgung, vor und nach Steuer, mit erhöhter AfA von ${satz(S.afa)} (nur mit anerkanntem Gutachten, sonst 2 %). Grenzsteuersatz der Einkommensteuer im Beispiel mit dem Splittingtarif, das Jahresbrutto gilt als gemeinsames Einkommen (kinderlos, ohne Kirchensteuer), vom Brutto zum zu versteuernden Einkommen wie in unserem Steuerrechner.`,
-              `Monthly contribution in the first year: rent minus costs, reserve, interest and repayment, before and after tax, with increased depreciation of ${satz(S.afa)} (only with an accepted report, otherwise 2%). Marginal income tax rate in the example with the splitting tariff; the gross annual income counts as your joint income (no children, no church tax), converted from gross to taxable income as in our tax calculator.`,
+              `Eigenaufwand je Monat im ersten Jahr: Miete minus Kosten, Rücklage, Zins und Tilgung, vor und nach Steuer, mit erhöhter AfA von ${satz(W.afa)} (nur mit anerkanntem Gutachten, sonst 2 %). Grenzsteuersatz der Einkommensteuer im Beispiel mit dem Splittingtarif, das Jahresbrutto gilt als gemeinsames Einkommen (kinderlos, ohne Kirchensteuer), vom Brutto zum zu versteuernden Einkommen wie in unserem Steuerrechner.`,
+              `Monthly contribution in the first year: rent minus costs, reserve, interest and repayment, before and after tax, with increased depreciation of ${satz(W.afa)} (only with an accepted report, otherwise 2%). Marginal income tax rate in the example with the splitting tariff; the gross annual income counts as your joint income (no children, no church tax), converted from gross to taxable income as in our tax calculator.`,
             )
           : tx(
-              `Eigenaufwand je Monat im ersten Jahr: Miete minus Kosten, Rücklage, Zins und Tilgung, vor und nach Steuer, mit erhöhter AfA von ${satz(S.afa)} (nur mit anerkanntem Gutachten, sonst 2 %). Grenzsteuersatz der Einkommensteuer im Beispiel (Grundtarif, kinderlos, ohne Kirchensteuer), das Einkommen vom Brutto zum zu versteuernden Einkommen wie in unserem Steuerrechner. Im Bereich um 80.000 € Brutto wirkt die Gleitzone des Solidaritätszuschlags, deshalb ist die Wirkung dort etwas höher als darüber.`,
-              `Monthly contribution in the first year: rent minus costs, reserve, interest and repayment, before and after tax, with increased depreciation of ${satz(S.afa)} (only with an accepted report, otherwise 2%). Marginal income tax rate in the example (basic tariff, no children, no church tax), converted from gross to taxable income as in our tax calculator. Around €80,000 gross, the phase-in zone of the solidarity surcharge applies, so the effect there is slightly higher than above it.`,
+              `Eigenaufwand je Monat im ersten Jahr: Miete minus Kosten, Rücklage, Zins und Tilgung, vor und nach Steuer, mit erhöhter AfA von ${satz(W.afa)} (nur mit anerkanntem Gutachten, sonst 2 %). Grenzsteuersatz der Einkommensteuer im Beispiel (Grundtarif, kinderlos, ohne Kirchensteuer), das Einkommen vom Brutto zum zu versteuernden Einkommen wie in unserem Steuerrechner. Im Bereich um 80.000 € Brutto wirkt die Gleitzone des Solidaritätszuschlags, deshalb ist die Wirkung dort etwas höher als darüber.`,
+              `Monthly contribution in the first year: rent minus costs, reserve, interest and repayment, before and after tax, with increased depreciation of ${satz(W.afa)} (only with an accepted report, otherwise 2%). Marginal income tax rate in the example (basic tariff, no children, no church tax), converted from gross to taxable income as in our tax calculator. Around €80,000 gross, the phase-in zone of the solidarity surcharge applies, so the effect there is slightly higher than above it.`,
             ),
       },
       { typ: "h2", text: tx("Was sich über die Jahre ändert", "What changes over the years") },
@@ -1519,8 +1530,8 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
       {
         typ: "lead",
         text: tx(
-          `Deine Beispielwohnung in der Hauffstraße 38 in Schwielowsee bei Potsdam: ${wohnungNr}, Bestand Baujahr ${S.baujahr}, ${flaeche} m², ${w.zimmer} Zimmer, Kaufpreis ${betrag(kp)} inklusive Garage, vermietet für ${betrag(w.kaltmiete - w.garage)} kalt plus ${betrag(w.garage)} Garagenmiete im Monat.`,
-          `Your example flat at Hauffstraße 38 in Schwielowsee near Potsdam: ${wohnungNr}, existing building from ${S.baujahr}, ${flaeche} m², ${w.zimmer} rooms, purchase price ${betrag(kp)} including garage, let for ${betrag(w.kaltmiete - w.garage)} net cold rent plus ${betrag(w.garage)} garage rent a month.`,
+          `Deine Beispielwohnung: ${w.titel} in ${w.ort}${w.beispiel ? `, ${w.beispiel}` : ""}, ${flaeche} m², Kaufpreis ${betrag(kp)}, vermietet für ${betrag(w.kaltmiete)} kalt im Monat${w.garage ? `, davon ${betrag(w.garage)} Garagenmiete` : ""}. Unter allen Objekten in deinem Rahmen bringt sie dir im ersten Jahr den größten Steuervorteil.`,
+          `Your example flat: ${w.titel} in ${w.ort}${w.beispiel ? `, ${w.beispiel}` : ""}, ${flaeche} m², purchase price ${betrag(kp)}, let for ${betrag(w.kaltmiete)} net cold rent a month${w.garage ? `, of which ${betrag(w.garage)} is garage rent` : ""}. Of all properties within your budget, it gives you the largest tax advantage in the first year.`,
         ),
       },
       {
@@ -1538,7 +1549,7 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
             titel: tx("Erstes Jahr, je Monat", "First year, per month"),
             rechtsAb: 1,
             zeilen: [
-              { zellen: [tx("Kaltmiete mit Garage", "Net cold rent incl. garage"), `+${betrag(j1.miete)}`], toene: [undefined, "plus"] },
+              { zellen: [W.garage ? tx("Kaltmiete mit Garage", "Net cold rent incl. garage") : tx("Kaltmiete", "Net cold rent"), `+${betrag(j1.miete)}`], toene: [undefined, "plus"] },
               { zellen: [tx("Nicht umlagefähige Kosten", "Non-recoverable costs"), betrag(-j1.kosten)], toene: [undefined, "minus"] },
               { zellen: [tx("Rücklage", "Maintenance reserve"), betrag(-j1.ruecklage)], toene: [undefined, "minus"] },
               { zellen: [tx(`Zins ${satz(S.zins)}`, `Interest ${satz(S.zins)}`), betrag(-j1.zins)], toene: [undefined, "minus"] },
@@ -1556,14 +1567,13 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
             rechtsAb: 1,
             zeilen: [
               { zellen: [tx("Kaufpreis, finanziert", "Purchase price, financed"), betrag(kp)] },
-              { zellen: [tx(`Grunderwerbsteuer ${prozent(S.grunderwerbsteuer)}`, `Transfer tax ${prozent(S.grunderwerbsteuer)}`), betrag((kp * S.grunderwerbsteuer) / 100)] },
+              { zellen: [tx(`Grunderwerbsteuer ${prozent(W.grunderwerbsteuer)}`, `Transfer tax ${prozent(W.grunderwerbsteuer)}`), betrag((kp * W.grunderwerbsteuer) / 100)] },
               {
                 zellen: [
                   tx(`Notar ${prozent(S.notar)} und Grundbuch ${prozent(S.grundbuch)}`, `Notary ${prozent(S.notar)} and land register ${prozent(S.grundbuch)}`),
                   betrag((kp * (S.notar + S.grundbuch)) / 100),
                 ],
               },
-              { zellen: [tx(`Finanzierungsnebenkosten ${prozent(S.finanzierungsnebenkosten)}`, `Financing costs ${prozent(S.finanzierungsnebenkosten)}`), betrag(e.finanzierungsnebenkosten)] },
               { zellen: [tx("aus Eigenkapital", "from equity"), betrag(e.purchaseCosts + e.finanzierungsnebenkosten)], summe: true },
             ],
           },
@@ -1573,7 +1583,7 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
             rechtsAb: 1,
             zeilen: [
               { zellen: [tx("Einkünfte aus Vermietung", "Income from letting"), betrag(j1.vermietungsergebnisJahr)], toene: [undefined, "minus"] },
-              { zellen: [tx(`davon Abschreibung (${satz(S.afa)})`, `of which depreciation (${satz(S.afa)})`), betrag(j1.afaJahr)] },
+              { zellen: [tx(`davon Abschreibung (${satz(W.afa)})`, `of which depreciation (${satz(W.afa)})`), betrag(j1.afaJahr)] },
             ],
           },
         ],
@@ -1590,8 +1600,8 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
       {
         typ: "fussnote",
         text: tx(
-          `${annahmenText(kp)} Leerstand 0 %. Die Finanzierungsnebenkosten zählen im ersten Jahr als Werbungskosten. Über 30 Jahre summiert sich dein Eigenaufwand nach Steuer im Beispiel auf rund ${betrag(summeEigenaufwand)}, gleichmäßig verteilt rund ${betrag(summeEigenaufwand / 360)} im Monat.`,
-          `${annahmenText(kp)} Vacancy 0%. The financing costs count as deductible expenses in the first year. Over 30 years, your contribution after tax adds up to about ${betrag(summeEigenaufwand)} in the example, about ${betrag(summeEigenaufwand / 360)} a month spread evenly.`,
+          `${annahmenText(kp)} Leerstand 0 %. Über 30 Jahre summiert sich dein Eigenaufwand nach Steuer im Beispiel auf rund ${betrag(summeEigenaufwand)}, gleichmäßig verteilt rund ${betrag(summeEigenaufwand / 360)} im Monat.`,
+          `${annahmenText(kp)} Vacancy 0%. Over 30 years, your contribution after tax adds up to about ${betrag(summeEigenaufwand)} in the example, about ${betrag(summeEigenaufwand / 360)} a month spread evenly.`,
         ),
       },
       {
@@ -1717,8 +1727,8 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
           {
             typ: "absatz",
             text: tx(
-              `In Brandenburg ${prozent(S.kaufnebenkosten)} des Kaufpreises, für deine Beispielwohnung in der Hauffstraße 38 also ${betrag((kp * S.kaufnebenkosten) / 100)}: ${prozent(S.grunderwerbsteuer)} Grunderwerbsteuer, ${prozent(S.notar)} Notar und ${prozent(S.grundbuch)} Grundbuch. In Berlin sind es ${prozent(BERLIN.gesamt)}, weil die Grunderwerbsteuer dort ${prozent(BERLIN.grunderwerbsteuer)} beträgt.`,
-              `In Brandenburg ${prozent(S.kaufnebenkosten)} of the purchase price, so ${betrag((kp * S.kaufnebenkosten) / 100)} for your example flat at Hauffstraße 38: ${prozent(S.grunderwerbsteuer)} real estate transfer tax, ${prozent(S.notar)} notary and ${prozent(S.grundbuch)} land register. In Berlin it is ${prozent(BERLIN.gesamt)}, because the transfer tax there is ${prozent(BERLIN.grunderwerbsteuer)}.`,
+              `In ${W.land} ${prozent(W.kaufnebenkosten)} des Kaufpreises, für deine Beispielwohnung ${w.titel} also ${betrag((kp * W.kaufnebenkosten) / 100)}: ${prozent(W.grunderwerbsteuer)} Grunderwerbsteuer, ${prozent(S.notar)} Notar und ${prozent(S.grundbuch)} Grundbuch. In Berlin sind es ${prozent(BERLIN.gesamt)}, weil die Grunderwerbsteuer dort ${prozent(BERLIN.grunderwerbsteuer)} beträgt.`,
+              `In ${W.land} ${prozent(W.kaufnebenkosten)} of the purchase price, so ${betrag((kp * W.kaufnebenkosten) / 100)} for your example flat ${w.titel}: ${prozent(W.grunderwerbsteuer)} real estate transfer tax, ${prozent(S.notar)} notary and ${prozent(S.grundbuch)} land register. In Berlin it is ${prozent(BERLIN.gesamt)}, because the transfer tax there is ${prozent(BERLIN.grunderwerbsteuer)}.`,
             ),
           },
           {
@@ -2036,8 +2046,8 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
             zellen: [
               tx("Leerstand", "Vacancy"),
               tx(
-                `Ein Monat ohne Mieter kostet bei deiner Beispielwohnung ${betrag(w.kaltmiete)} Miete mit Garage, das Hausgeld läuft weiter.`,
-                `A month without a tenant costs ${betrag(w.kaltmiete)} of rent including the garage for your example flat, and the service charge continues.`,
+                `Ein Monat ohne Mieter kostet bei deiner Beispielwohnung ${betrag(w.kaltmiete)} Miete, das Hausgeld läuft weiter.`,
+                `A month without a tenant costs ${betrag(w.kaltmiete)} of rent for your example flat, and the service charge continues.`,
               ),
               tx("Rücklage auf deinem Konto, Mieterauswahl über die Verwaltung.", "A reserve in your account, tenant selection through the management."),
             ],
@@ -2056,8 +2066,8 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
             zellen: [
               tx("Gutachten nicht anerkannt", "Report not accepted"),
               tx(
-                `Erkennt das Finanzamt das Restnutzungsdauer-Gutachten nicht an, gilt die normale AfA von 2 % statt ${satz(S.afa)}. Die Steuerwirkung fällt dann kleiner aus.`,
-                `If the tax office does not accept the remaining useful life report, the normal depreciation of 2% applies instead of ${satz(S.afa)}. The tax effect is then smaller.`,
+                `Erkennt das Finanzamt das Restnutzungsdauer-Gutachten nicht an, gilt die normale AfA von 2 % statt ${satz(W.afa)}. Die Steuerwirkung fällt dann kleiner aus.`,
+                `If the tax office does not accept the remaining useful life report, the normal depreciation of 2% applies instead of ${satz(W.afa)}. The tax effect is then smaller.`,
               ),
               tx("Auch mit 2 % rechnen lassen und nur kaufen, wenn es dann noch passt.", "Have the numbers run at 2% too, and only buy if it still fits."),
             ],
@@ -2103,8 +2113,8 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
                 "Increases are tied to the local comparable rent and a cap: at most 20%, or 15% in tight markets, within three years.",
               ),
               tx(
-                `Mit vorsichtigen Annahmen rechnen, wie hier mit ${satz(S.mietsteigerung)} im Jahr.`,
-                `Calculate with cautious assumptions, as here with ${satz(S.mietsteigerung)} a year.`,
+                `Mit vorsichtigen Annahmen rechnen, wie hier mit ${satz(Math.round(W.mietsteigerung * 10) / 10)} im Jahr wie im Exposé.`,
+                `Calculate with cautious assumptions, as here with ${satz(Math.round(W.mietsteigerung * 10) / 10)} a year as in the listing.`,
               ),
             ],
           },
@@ -2382,8 +2392,8 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
       {
         typ: "fussnote",
         text: tx(
-          `${annahmenText(kp)} Die Beispielwohnung ist eine echte Wohnung aus unserem Bestand, die Zahlen stammen aus ihrem Exposé. Gerechnet wie im OS-Investmentrechner: Kaufnebenkosten auf den gesamten Kaufpreis, Gebäudeanteil einschließlich anteiliger Nebenkosten als Grundlage der Abschreibung, Finanzierungsnebenkosten ${prozent(S.finanzierungsnebenkosten)} des Darlehens im ersten Jahr als Werbungskosten, Rücklage im Cashflow, aber nicht steuerlich abgezogen, Steuer nach der Differenzmethode, jedes Jahr als volles Jahr.`,
-          `${annahmenText(kp)} The example flat is a real flat from our portfolio, and the figures come from its listing. Calculated as in the OS investment calculator: purchase costs on the full purchase price, building share including pro rata purchase costs as the basis for depreciation, financing costs of ${prozent(S.finanzierungsnebenkosten)} of the loan as deductible expenses in the first year, reserve included in the cash flow but not deducted for tax, tax by the difference method, each year as a full year.`,
+          `${annahmenText(kp)} Die Beispielwohnung ist eine echte Wohnung aus unserem Bestand, die Zahlen stammen aus ihrem Exposé. Das erste Jahr (Kapitel 6 und 7) und die zwei Wege sind gerechnet wie im Exposé und im Analysetool: Steuerwirkung als Ergebnis der Vermietung mal Grenzsteuersatz, Rücklage im Cashflow, aber nicht steuerlich abgezogen. Der Verlauf über die Jahre (Kapitel 8) kommt aus dem OS-Investmentrechner mit denselben Eingaben.`,
+          `${annahmenText(kp)} The example flat is a real flat from our portfolio, and the figures come from its listing. The first year (chapters 6 and 7) and the two paths are calculated as in the listing and the analysis tool: tax effect as the letting result times the marginal tax rate, reserve included in the cash flow but not deducted for tax. The development over the years (chapter 8) comes from the OS investment calculator with the same inputs.`,
         ),
       },
       {
@@ -2415,6 +2425,15 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
       },
     ],
   });
+
+  // Die zwei Wege (osWege.ts): Kapitel 6 „Mehr Netto vom Brutto“, Kapitel 8 vor „Kein Grund zur Eile“.
+  const k6 = seiten.find((x) => x.id === "kapitel-6");
+  k6?.bloecke.push(...nettoBloecke(nettoWeg(A, r.bis, ang.alter)));
+  const k8 = seiten.find((x) => x.id === "kapitel-8");
+  if (k8) {
+    const eile = k8.bloecke.findIndex((b) => b.typ === "kasten");
+    k8.bloecke.splice(eile < 0 ? k8.bloecke.length : eile, 0, ...vorsorgeBloecke(vorsorgeWeg(A, r.bis, ang.alter)));
+  }
 
   return {
     sprache,

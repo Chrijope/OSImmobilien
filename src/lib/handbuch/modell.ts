@@ -7,16 +7,19 @@
  * laufen sie durch den echten Rechenkern, damit Handbuch, Landingpage und
  * Investmentrechner dieselben Zahlen zeigen.
  *
- * Die Beispielwohnung (seit dem 17.10.2026, Entscheidung Christian): eine
- * echte Wohnung der Hauffstraße 38 in Schwielowsee, Bestand Baujahr 2000,
- * gerechnet wie ihr Exposé vom 14.10.2026. Kaufpreis inklusive Garage voll
- * finanziert zu 4,8 % Zins und 1,2 % Tilgung, Kaufnebenkosten Brandenburg
- * 8,5 % aus Eigenkapital, erhöhte AfA 3,1 % (setzt ein anerkanntes
- * Restnutzungsdauer-Gutachten voraus, das sagt jeder Annahmentext). Ab
- * Kapitel 6 nimmt das Handbuch die teuerste der drei Wohnungen, die noch in
- * den Rahmen passt (Obergrenze der Spanne), sonst die günstigste.
- * Bewusst „ehrlich wie Exposé“: Christian wollte zuerst unter 300 € vor und
- * unter 100 € nach Steuer, hat sich dann für die Exposé-Annahmen entschieden.
+ * Die Beispielwohnung (seit dem 17.10.2026, Entscheidung Christian): je
+ * Objekt EINE Wohnung, dieselbe wie im Analysetool und in den Exposés
+ * (`OS_WOHNUNGEN` in analyseVorsorge.ts). Für das Handbuch gilt die Wohnung
+ * im Rahmen (Obergrenze der Spanne) mit dem größten Steuervorteil im ersten
+ * Jahr, sonst die günstigste; dieselbe zeigt die Ergebnisseite unter „Mehr
+ * Netto vom Brutto“. Gerechnet ehrlich wie im Exposé: Kaufpreis voll
+ * finanziert zu 4,8 % Zins und 1,2 % Tilgung, Kaufnebenkosten Berlin 8,0 %
+ * oder Brandenburg 8,5 % aus Eigenkapital, AfA und Gebäudeanteil der Wohnung
+ * (erhöhte AfA nur mit anerkanntem Restnutzungsdauer-Gutachten).
+ * ponytail: Das Handbuch rechnet die Beispielwohnung weiter mit dem
+ * Rechenkern des Investmentrechners; die zwei Wege (osWege.ts) mit dem
+ * Exposé-Rechner. Im ersten Jahr liegen beide nah beieinander, die Restschuld
+ * nach Jahrzehnten weicht ab (monatlich gegen jährlich).
  */
 import {
   berechneInvestment,
@@ -26,6 +29,8 @@ import {
   type InvestmentErgebnis,
 } from "@/lib/investmentrechner/rechenkern";
 import { zvEAusBrutto } from "@/lib/steuerRechner";
+import { OS_WOHNUNGEN, mietsteigerungProzent, rechneWohnung, type OsWohnung } from "@/lib/analyseVorsorge";
+import { KAUFNEBENKOSTEN, type Bundesland } from "./osObjekte";
 import { aufbauSprache, euro, tx } from "./diagramme";
 import {
   BRUTTO_STELLVERTRETER,
@@ -35,72 +40,102 @@ import {
   type HandbuchRahmen,
 } from "../../../supabase/functions/_shared/handbuch-funnel.ts";
 
-/**
- * Drei Wohnungen der Hauffstraße 38, Zahlen aus ihren Exposés (14.10.2026):
- * Kaltmiete subventioniert auf 13 €/m², dazu 100 € Garagenmiete, Hausgeld
- * nicht umlagefähig und Erhaltungsrücklage laut Einzelwirtschaftsplan 2026.
- */
-export const HAUFF_WOHNUNGEN = [
-  { nr: 1, kaufpreis: 176000, flaeche: 42.53, zimmer: 2, kaltmiete: 553, garage: 100, nichtUmlagefaehig: 127.32, ruecklage: 36.88 },
-  { nr: 6, kaufpreis: 220930, flaeche: 55.06, zimmer: 2, kaltmiete: 716, garage: 100, nichtUmlagefaehig: 155.6, ruecklage: 47.84 },
-  { nr: 11, kaufpreis: 294000, flaeche: 74.22, zimmer: 3, kaltmiete: 965, garage: 100, nichtUmlagefaehig: 198.36, ruecklage: 64.41 },
-] as const;
-
-/** Kaufpreis der Grundwohnung (Wohnung 6), auf die sich Landingpage und Steuertabelle beziehen. */
-export const BASIS_KAUFPREIS = 220930;
-
-/** Die Sätze der Modellrechnung, einmal hier, damit Text und Rechnung übereinstimmen. */
+/** Die Sätze, die für jede Beispielwohnung gleich sind. */
 export const MODELL_SAETZE = {
-  grunderwerbsteuer: 6.5,
   notar: 1.5,
   grundbuch: 0.5,
-  kaufnebenkosten: 8.5,
   zins: 4.8,
   tilgung: 1.2,
-  gebaeudeanteil: 80,
-  afa: 3.1,
-  mietsteigerung: 2,
   kostensteigerung: 2,
   wertsteigerung: 1.5,
-  finanzierungsnebenkosten: 0.2,
-  baujahr: 2000,
+  finanzierungsnebenkosten: 0,
 } as const;
 
 export interface Modellwohnung {
-  /** „Wohnung 6“; bei einem Kaufpreis ohne eigene Wohnung skaliert, dann null. */
-  nr: number | null;
+  id: string;
+  titel: string;
+  ort: string;
+  /** „WE 05, 70,9 m², 3 Zimmer, mit Garage“, wie im Analysetool. */
+  beispiel: string;
   kaufpreis: number;
-  /** Kaltmiete inklusive Garagenmiete, so rechnet das Exposé. */
+  /** Kaltmiete inklusive Stellplatz- oder Garagenmiete, so rechnet das Exposé. */
   kaltmiete: number;
   garage: number;
   nichtUmlagefaehig: number;
   ruecklage: number;
   flaeche: number;
-  zimmer: number;
+  land: Bundesland;
+  grunderwerbsteuer: number;
+  /** Kaufnebenkosten in Prozent; 0, wenn der Verkäufer sie trägt (Cottbus). */
+  kaufnebenkosten: number;
+  nebenkostenTraegtVerkaeufer: boolean;
+  gebaeudeanteil: number;
+  afa: number;
+  mietsteigerung: number;
 }
 
-/** Die Hauffstraße-Wohnung zum Kaufpreis; ohne passende Wohnung Wohnung 6 anteilig skaliert. */
-export function modellwohnung(kaufpreis: number = BASIS_KAUFPREIS): Modellwohnung {
-  const echt = HAUFF_WOHNUNGEN.find((w) => w.kaufpreis === kaufpreis);
-  if (echt) return { ...echt, kaltmiete: echt.kaltmiete + echt.garage };
-  const basis = HAUFF_WOHNUNGEN[1];
-  const f = kaufpreis / basis.kaufpreis;
+function ausOs(w: OsWohnung): Modellwohnung {
+  const o = w.objekt;
+  const land: Bundesland = o.bundeslandId === "be" ? "Berlin" : "Brandenburg";
+  const verkaeufer = !!w.nebenkostenTraegtVerkaeufer;
   return {
-    nr: null,
-    kaufpreis,
-    kaltmiete: Math.round((basis.kaltmiete + basis.garage) * f),
-    garage: basis.garage,
-    nichtUmlagefaehig: Math.round(basis.nichtUmlagefaehig * f),
-    ruecklage: Math.round(basis.ruecklage * f),
-    flaeche: Math.round(basis.flaeche * f),
-    zimmer: basis.zimmer,
+    id: w.id,
+    titel: w.titel,
+    ort: w.ort,
+    beispiel: w.beispiel,
+    kaufpreis: o.kaufpreis,
+    kaltmiete: o.kaltmieteMonat,
+    garage: o.stellplatzMieteMonat ?? 0,
+    nichtUmlagefaehig: o.hausgeldNichtUmlegbarMonat ?? 0,
+    ruecklage: o.ruecklageMonat ?? 0,
+    flaeche: o.wohnflaeche ?? 0,
+    land,
+    grunderwerbsteuer: KAUFNEBENKOSTEN[land].grunderwerbsteuer,
+    kaufnebenkosten: verkaeufer ? 0 : KAUFNEBENKOSTEN[land].gesamt,
+    nebenkostenTraegtVerkaeufer: verkaeufer,
+    gebaeudeanteil: o.gebaeudeanteilProzent ?? 80,
+    afa: w.afaProzent,
+    mietsteigerung: mietsteigerungProzent(w),
   };
 }
 
-/** Kaufpreis der persönlichen Beispielwohnung: die teuerste Hauffstraße-Wohnung bis zur Obergrenze des Rahmens, sonst die günstigste. */
-export function modellKaufpreis(rahmen: Pick<HandbuchRahmen, "bis">): number {
-  const passend = HAUFF_WOHNUNGEN.filter((w) => w.kaufpreis <= rahmen.bis);
-  return (passend.length ? passend[passend.length - 1] : HAUFF_WOHNUNGEN[0]).kaufpreis;
+const HAUFF = OS_WOHNUNGEN.find((w) => w.id === "hauff") ?? OS_WOHNUNGEN[0];
+
+/** Kaufpreis der Grundwohnung (Hauffstraße 38, WE 05), auf die sich Landingpage und Steuertabelle beziehen. */
+export const BASIS_KAUFPREIS = HAUFF.objekt.kaufpreis;
+
+/** Die Beispielwohnung zum Kaufpreis; ohne passende Wohnung die Hauffstraße anteilig skaliert. */
+export function modellwohnung(kaufpreis: number = BASIS_KAUFPREIS): Modellwohnung {
+  const echt = OS_WOHNUNGEN.find((w) => w.objekt.kaufpreis === kaufpreis);
+  if (echt) return ausOs(echt);
+  const basis = ausOs(HAUFF);
+  const f = kaufpreis / basis.kaufpreis;
+  return {
+    ...basis,
+    beispiel: "",
+    kaufpreis,
+    kaltmiete: Math.round(basis.kaltmiete * f),
+    nichtUmlagefaehig: Math.round(basis.nichtUmlagefaehig * f),
+    ruecklage: Math.round(basis.ruecklage * f),
+    flaeche: Math.round(basis.flaeche * f),
+  };
+}
+
+/**
+ * Die Beispielwohnung zum Rahmen: im Rahmen die mit dem größten Steuervorteil
+ * im ersten Jahr (Exposé-Rechner, Grenzsteuersatz der Antwort), sonst die
+ * günstigste. Dieselbe Regel nutzt „Mehr Netto vom Brutto“ (osWege.ts).
+ */
+export function beispielOsWohnung(rahmenBis: number, grenzsatz: number): OsWohnung {
+  const imRahmen = OS_WOHNUNGEN.filter((w) => w.objekt.kaufpreis <= rahmenBis);
+  if (imRahmen.length === 0) return [...OS_WOHNUNGEN].sort((x, y) => x.objekt.kaufpreis - y.objekt.kaufpreis)[0];
+  const steuer = (w: OsWohnung) => rechneWohnung(w, 40, 67, grenzsatz).jahr1.steuerMonat;
+  return [...imRahmen].sort((x, y) => steuer(y) - steuer(x))[0];
+}
+
+/** Kaufpreis der persönlichen Beispielwohnung, siehe `beispielOsWohnung`. */
+export function modellKaufpreis(rahmen: Pick<HandbuchRahmen, "bis">, grenzsatz = 42): number {
+  return beispielOsWohnung(rahmen.bis, grenzsatz).objekt.kaufpreis;
 }
 
 /**
@@ -158,20 +193,20 @@ export function modellEingabe(kaufpreis: number, optionen: ModellOptionen = {}):
     includeSolidaritySurcharge: true,
     investmentShare: 100,
     taxCalculationMode: "tariff",
-    propertyTitle: w.nr ? `Hauffstraße 38, Wohnung ${w.nr}` : "Hauffstraße 38",
+    propertyTitle: w.beispiel ? `${w.titel}, ${w.beispiel}` : w.titel,
     propertyType: "Bestand",
     area: w.flaeche,
-    constructionYear: s.baujahr,
+    constructionYear: 2000,
     purchasePrice: w.kaufpreis,
     furniturePrice: 0,
     maintenanceReserve: 0,
-    transferTaxRate: s.grunderwerbsteuer,
-    notaryRate: s.notar,
-    landRegisterRate: s.grundbuch,
+    transferTaxRate: w.nebenkostenTraegtVerkaeufer ? 0 : w.grunderwerbsteuer,
+    notaryRate: w.nebenkostenTraegtVerkaeufer ? 0 : s.notar,
+    landRegisterRate: w.nebenkostenTraegtVerkaeufer ? 0 : s.grundbuch,
     brokerRate: 0,
     otherPurchaseCostRate: 0,
     // Die Nebenkosten kommen aus Eigenkapital, der Kaufpreis wird finanziert.
-    equity: (w.kaufpreis * s.kaufnebenkosten) / 100,
+    equity: (w.kaufpreis * w.kaufnebenkosten) / 100,
     financingCostRate: s.finanzierungsnebenkosten,
     juniorLoanAmount: 0,
     seniorInterestRate: s.zins,
@@ -180,12 +215,12 @@ export function modellEingabe(kaufpreis: number, optionen: ModellOptionen = {}):
     monthlyOperatingCosts: w.nichtUmlagefaehig,
     monthlyReserveContribution: w.ruecklage,
     vacancyRate: 0,
-    annualRentGrowth: s.mietsteigerung,
+    annualRentGrowth: w.mietsteigerung,
     annualCostGrowth: s.kostensteigerung,
     annualValueGrowth: optionen.wertsteigerung ?? s.wertsteigerung,
-    buildingShare: s.gebaeudeanteil,
+    buildingShare: w.gebaeudeanteil,
     depreciationMethod: "linear",
-    buildingDepreciationRate: s.afa,
+    buildingDepreciationRate: w.afa,
     specialDepreciationRate: 0,
     rehabExpense: 0,
     forecastYears: optionen.jahre ?? 30,
@@ -226,6 +261,31 @@ export function erstesJahr(e: InvestmentErgebnis): ErstesJahr {
   };
 }
 
+/**
+ * Das erste Jahr der Beispielwohnung wie im Exposé (Exposé-Rechner über
+ * `rechneWohnung`, Steuerwirkung mit dem Grenzsteuersatz). So stehen in
+ * Kapitel 6 und 7 dieselben Zahlen wie auf der Ergebnisseite, im Analysetool
+ * und im Exposé. Ohne passende OS-Wohnung (skalierter Kaufpreis): null.
+ */
+export function erstesJahrWieExpose(kaufpreis: number, grenzsatz: number): ErstesJahr | null {
+  const w = OS_WOHNUNGEN.find((x) => x.objekt.kaufpreis === kaufpreis);
+  if (!w) return null;
+  const j = rechneWohnung(w, 40, 67, grenzsatz).erstesJahr;
+  const steuer = j.steuerwirkungOhneSanierung;
+  return {
+    miete: j.mieteNetto / 12,
+    kosten: (j.hausgeldNichtUmlegbar + j.mietverwaltung) / 12,
+    ruecklage: j.ruecklage / 12,
+    zins: j.zinsen / 12,
+    tilgung: j.tilgung / 12,
+    vorSteuer: (j.cashflow - j.steuerwirkungZahlungswirksam) / 12,
+    steuerwirkung: steuer / 12,
+    nachSteuer: (j.cashflow - j.steuerwirkungZahlungswirksam + steuer) / 12,
+    vermietungsergebnisJahr: j.ergebnisVermietung,
+    afaJahr: j.afa,
+  };
+}
+
 /** Eine Zeile der Steuertabelle je Einkommensspanne. */
 export interface SteuerZeile {
   brutto: BruttoId;
@@ -244,7 +304,7 @@ export const BRUTTO_REIHENFOLGE: BruttoId[] = ["unter_50", "50_80", "80_120", "u
 export function steuerTabelle(kaufpreis: number = BASIS_KAUFPREIS, gemeinsam = false): SteuerZeile[] {
   return BRUTTO_REIHENFOLGE.map((brutto) => {
     const zve = zveZuBrutto(brutto);
-    const j = erstesJahr(rechneModell(kaufpreis, { zve, jahre: 1, gemeinsam }));
+    const j = erstesJahrWieExpose(kaufpreis, grenzsatzProzent(zve, gemeinsam)) ?? erstesJahr(rechneModell(kaufpreis, { zve, jahre: 1, gemeinsam }));
     return {
       brutto,
       zve,
@@ -339,7 +399,7 @@ export function handbuchAuswertung(a: HandbuchAntworten): HandbuchAuswertung {
   const rahmen = handbuchRahmen(a);
   const gemeinsam = a.gemeinsamVeranlagt === true;
   const zve = zveZuBrutto(a.brutto);
-  const kaufpreis = modellKaufpreis(rahmen);
+  const kaufpreis = modellKaufpreis(rahmen, grenzsatzProzent(zve, gemeinsam));
   const ergebnis = rechneModell(kaufpreis, { zve, gemeinsam });
   return {
     rahmen,
@@ -349,7 +409,7 @@ export function handbuchAuswertung(a: HandbuchAntworten): HandbuchAuswertung {
     kaufpreis,
     wohnung: modellwohnung(kaufpreis),
     ergebnis,
-    jahr1: erstesJahr(ergebnis),
+    jahr1: erstesJahrWieExpose(kaufpreis, grenzsatzProzent(zve, gemeinsam)) ?? erstesJahr(ergebnis),
   };
 }
 
@@ -357,26 +417,37 @@ export function handbuchAuswertung(a: HandbuchAntworten): HandbuchAuswertung {
 export function annahmenText(kaufpreis: number = BASIS_KAUFPREIS): string {
   const w = modellwohnung(kaufpreis);
   const en = aufbauSprache() === "en";
-  const flaeche = w.flaeche.toLocaleString(en ? "en-GB" : "de-DE", { maximumFractionDigits: 2 });
-  const wohnung = w.nr ? (en ? `flat ${w.nr}` : `Wohnung ${w.nr}`) : en ? "a flat" : "eine Wohnung";
+  const zahl = (n: number) => n.toLocaleString(en ? "en-GB" : "de-DE", { maximumFractionDigits: 2 });
+  const proz = (n: number) => (en ? `${zahl(n)}%` : `${zahl(n)} %`);
+  const knk = w.nebenkostenTraegtVerkaeufer
+    ? en
+      ? "the seller bears the incidental purchase costs"
+      : "die Kaufnebenkosten trägt laut Angebot der Verkäufer"
+    : en
+      ? `incidental purchase costs of ${proz(w.kaufnebenkosten)} in ${w.land} (${proz(w.grunderwerbsteuer)} transfer tax, 1.5% notary, 0.5% land register) paid from equity`
+      : `Kaufnebenkosten ${proz(w.kaufnebenkosten)} in ${w.land} (${proz(w.grunderwerbsteuer)} Grunderwerbsteuer, 1,5 % Notar, 0,5 % Grundbuch) aus Eigenkapital`;
+  const afa =
+    w.afa > 2
+      ? en
+        ? `increased depreciation (AfA) of ${proz(w.afa)}, which requires a remaining useful life report accepted by the tax office (otherwise 2%)`
+        : `erhöhte AfA ${proz(w.afa)}, die ein vom Finanzamt anerkanntes Restnutzungsdauer-Gutachten voraussetzt (sonst 2 %)`
+      : en
+        ? `depreciation (AfA) of ${proz(w.afa)}`
+        : `AfA ${proz(w.afa)}`;
   if (en) {
     return (
-      `Example: Hauffstraße 38 in Schwielowsee near Potsdam (Brandenburg), ${wohnung}, existing building from 2000, ${flaeche} m², ` +
-      `purchase price ${euro(kaufpreis)} including garage, net cold rent ${euro(w.kaltmiete - w.garage)} plus ${euro(w.garage)} garage rent per month ` +
-      `(subsidised to €13 per m²), non-recoverable service charge ${euro(w.nichtUmlagefaehig)} and maintenance reserve ${euro(w.ruecklage)} per month, ` +
-      "purchase price fully financed at 4.8% interest and 1.2% repayment, incidental purchase costs of 8.5% " +
-      "(6.5% real estate transfer tax, 1.5% notary, 0.5% land register) paid from equity, building share 80%, " +
-      "increased depreciation (AfA) of 3.1%, which requires a remaining useful life report accepted by the tax office (otherwise 2%), " +
-      "rents and costs plus 2%, value plus 1.5% per year, income tax according to the 2026 tariff including solidarity surcharge, without church tax."
+      `Example: ${w.titel}, ${w.ort} (${w.land})${w.beispiel ? `, ${w.beispiel}` : ""}, ${zahl(w.flaeche)} m², purchase price ${euro(kaufpreis)}, ` +
+      `net cold rent ${euro(w.kaltmiete)} per month${w.garage ? ` including ${euro(w.garage)} garage rent` : ""}, ` +
+      `non-recoverable service charge ${euro(w.nichtUmlagefaehig)} and maintenance reserve ${euro(w.ruecklage)} per month, figures from the exposé, ` +
+      `purchase price fully financed at 4.8% interest and 1.2% repayment, ${knk}, building share ${proz(w.gebaeudeanteil)}, ${afa}, ` +
+      "rents as in the exposé scenario, costs plus 2%, value plus 1.5% per year, income tax according to the 2026 tariff including solidarity surcharge, without church tax."
     );
   }
   return (
-    `Beispiel Hauffstraße 38 in Schwielowsee bei Potsdam (Brandenburg), ${wohnung}, Bestand Baujahr 2000, ${flaeche} m², ` +
-    `Kaufpreis ${euro(kaufpreis)} inklusive Garage, Kaltmiete ${euro(w.kaltmiete - w.garage)} und Garagenmiete ${euro(w.garage)} im Monat ` +
-    `(subventioniert auf 13 €/m²), nicht umlagefähiges Hausgeld ${euro(w.nichtUmlagefaehig)} und Rücklage ${euro(w.ruecklage)} im Monat, ` +
-    "Kaufpreis voll finanziert zu 4,8 % Zins und 1,2 % Tilgung, Kaufnebenkosten 8,5 % " +
-    "(6,5 % Grunderwerbsteuer, 1,5 % Notar, 0,5 % Grundbuch) aus Eigenkapital, Gebäudeanteil 80 %, " +
-    "erhöhte AfA 3,1 %, die ein vom Finanzamt anerkanntes Restnutzungsdauer-Gutachten voraussetzt (sonst 2 %), " +
-    "Mieten und Kosten plus 2 %, Wert plus 1,5 % im Jahr, Steuer nach Tarif 2026 mit Solidaritätszuschlag, ohne Kirchensteuer."
+    `Beispiel ${w.titel}, ${w.ort} (${w.land})${w.beispiel ? `, ${w.beispiel}` : ""}, ${zahl(w.flaeche)} m², Kaufpreis ${euro(kaufpreis)}, ` +
+    `Kaltmiete ${euro(w.kaltmiete)} im Monat${w.garage ? ` einschließlich ${euro(w.garage)} Garagenmiete` : ""}, ` +
+    `nicht umlagefähiges Hausgeld ${euro(w.nichtUmlagefaehig)} und Rücklage ${euro(w.ruecklage)} im Monat, Zahlen aus dem Exposé, ` +
+    `Kaufpreis voll finanziert zu 4,8 % Zins und 1,2 % Tilgung, ${knk}, Gebäudeanteil ${proz(w.gebaeudeanteil)}, ${afa}, ` +
+    "Mieten wie im Exposé-Szenario, Kosten plus 2 %, Wert plus 1,5 % im Jahr, Steuer nach Tarif 2026 mit Solidaritätszuschlag, ohne Kirchensteuer."
   );
 }

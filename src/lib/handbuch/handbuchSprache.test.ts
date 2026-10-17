@@ -60,7 +60,7 @@ describe("gemeinsam veranlagt: Splittingtarif aus dem Rechenkern", () => {
     expect(h).toContain("gemeinsames Einkommen");
   });
 
-  it("Vergleichstabelle je Brutto-Spanne, Beispielwohnung Hauffstraße 38 Wohnung 6 (Stand 17.10.2026)", () => {
+  it("Vergleichstabelle je Brutto-Spanne, Beispielwohnung Hauffstraße 38 WE 05, gerechnet wie im Exposé (Stand 17.10.2026)", () => {
     const e = steuerTabelle(BASIS_KAUFPREIS, false);
     const g = steuerTabelle(BASIS_KAUFPREIS, true);
     const zeilen = BRUTTO_REIHENFOLGE.map((b, i) => ({
@@ -71,10 +71,10 @@ describe("gemeinsam veranlagt: Splittingtarif aus dem Rechenkern", () => {
       nachGemeinsam: Math.round(g[i].nach),
     }));
     expect(zeilen).toEqual([
-      { brutto: "unter_50", satzEinzeln: 29, satzGemeinsam: 20, nachEinzeln: 284, nachGemeinsam: 377 },
-      { brutto: "50_80", satzEinzeln: 35, satzGemeinsam: 26, nachEinzeln: 236, nachGemeinsam: 297 },
-      { brutto: "80_120", satzEinzeln: 42, satzGemeinsam: 32, nachEinzeln: 144, nachGemeinsam: 256 },
-      { brutto: "ueber_120", satzEinzeln: 42, satzGemeinsam: 38, nachEinzeln: 149, nachGemeinsam: 204 },
+      { brutto: "unter_50", satzEinzeln: 29, satzGemeinsam: 20, nachEinzeln: 367, nachGemeinsam: 449 },
+      { brutto: "50_80", satzEinzeln: 35, satzGemeinsam: 26, nachEinzeln: 312, nachGemeinsam: 394 },
+      { brutto: "80_120", satzEinzeln: 42, satzGemeinsam: 32, nachEinzeln: 248, nachGemeinsam: 340 },
+      { brutto: "ueber_120", satzEinzeln: 42, satzGemeinsam: 38, nachEinzeln: 248, nachGemeinsam: 285 },
     ]);
   });
 });

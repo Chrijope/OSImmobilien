@@ -11,8 +11,8 @@ import { QRCodeSVG } from "qrcode.react";
 import type { Block, Handbuch } from "@/lib/handbuch/bausteine";
 import { Diagramm, Symbol } from "./teile";
 
-const WEG_FARBEN = ["#0F1621", "#13704D", "#19885E"];
-const TRICHTER_FARBEN = ["#0F1621", "#0C3526", "#13704D", "#19885E", "#2A9E72"];
+const WEG_FARBEN = ["#0E2019", "#0F5A3E", "#15724F"];
+const TRICHTER_FARBEN = ["#0E2019", "#132F24", "#0F5A3E", "#15724F", "#2F8A63"];
 
 /** Die zwei festen Wörter der Ansicht, nach der Sprache des Handbuchs. */
 const FEST = {
@@ -20,7 +20,7 @@ const FEST = {
   en: { fuer: "For", inhalt: "Handbook contents" },
 };
 
-function BlockAnsicht({ b, onSaStart, en }: { b: Block; onSaStart?: () => void; en?: boolean }) {
+export function BlockAnsicht({ b, onSaStart, en }: { b: Block; onSaStart?: () => void; en?: boolean }) {
   const fest = en ? FEST.en : FEST.de;
   switch (b.typ) {
     case "lead":
