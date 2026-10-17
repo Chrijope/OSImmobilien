@@ -96,9 +96,11 @@ export const OS_WOHNUNGEN: OsWohnung[] = [
   {
     id: "cottbus", titel: "Studentisches Wohnen", ort: "Cottbus", preisrahmen: "ab 79.995 €",
     konzept: "zusatzrente", bild: "/images/analysetool/cottbus-luftbild.jpg", beispiel: "WE 01, 22 m², 1 Zimmer",
-    // Gebäudeanteil 20 % laut Investagon, vermutlich vertauscht; bleibt wie im Exposé bis zur Klärung.
+    // Gebäudeanteil 80 %, Grund und Boden 20 % (Christian, 17.10.2026). Investagon führt
+    // 20 % Gebäude, das war vertauscht; im Drive ist die Aufteilung nicht belegt, das
+    // Restnutzungsdauer-Gutachten steht noch aus.
     // Miete im Exposé ohne Steigerung.
-    objekt: { kaufpreis: 79_995, wohnflaeche: 22, kaltmieteMonat: 340, ruecklageMonat: 22, bundeslandId: "bb", kaufnebenkostenProzent: 8.5, gebaeudeanteilProzent: 20 },
+    objekt: { kaufpreis: 79_995, wohnflaeche: 22, kaltmieteMonat: 340, ruecklageMonat: 22, bundeslandId: "bb", kaufnebenkostenProzent: 8.5, gebaeudeanteilProzent: 80 },
     afaProzent: 4, mieteZiel2060: 340 / 22, nebenkostenTraegtVerkaeufer: true,
   },
 ];

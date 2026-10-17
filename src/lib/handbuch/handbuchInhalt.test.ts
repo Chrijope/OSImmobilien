@@ -44,7 +44,7 @@ describe("Rechnung wie in der Strategie", () => {
   it.each([
     ["A", A, 185000, 42, 157],
     ["B", B, 280170, 42, 248],
-    ["C", C, 79995, 35, 71],
+    ["C", C, 79995, 35, 15],
   ])("Profil %s: gemeinsame Beispielwohnung, Grenzsteuersatz, Eigenaufwand nach Steuer im ersten Jahr", (_n, p, kaufpreis, gs, eigenaufwand) => {
     const a = handbuchAuswertung(p);
     expect(a.kaufpreis).toBe(kaufpreis);

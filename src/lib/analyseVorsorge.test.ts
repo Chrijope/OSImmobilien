@@ -31,7 +31,8 @@ describe("Altersvorsorge mit OS-Wohnungen", () => {
     ["hauff", 386, -246],
     ["zossen", 735, 349],
     ["brueck", 143, -155],
-    ["cottbus", 14, -68],
+    // Cottbus seit 17.10.2026 mit 80 % Gebäudeanteil; das Exposé (noch 20 %) wird neu erzeugt.
+    ["cottbus", 80, -2],
   ])("%s rechnet im ersten Jahr wie das Exposé", (id, steuer, nachSteuer) => {
     const r = rechneWohnung(wohnung(id as string), 35, 67, 42);
     expect(Math.abs(r.jahr1.steuerMonat - (steuer as number))).toBeLessThanOrEqual(5);
