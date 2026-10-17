@@ -50,7 +50,7 @@ const de = {
   },
 
   wizard: {
-    schritte: ["Beruf und Einkommen", "Was monatlich bleibt", "Steuer und Ziele", "Zur Person"],
+    schritte: ["Beruf und Einkommen", "Was monatlich bleibt", "Du und Dein Ziel"],
     start: {
       titelZeile1: "Immobilien-",
       titelAkzent: "Investmentanalyse",
@@ -159,6 +159,24 @@ const de = {
         diversifikation: "Diversifikation",
       },
     },
+    ziel: {
+      titel: "Du und Dein Ziel",
+      untertitel: "Die letzten Angaben, dann steht Deine Auswertung",
+      hilfeTitel: "Warum diese Fragen?",
+      hilfe: [
+        "Dein **Alter** bestimmt, wie viel Zeit bis zur Rente bleibt, und damit, wie viele Wohnungen Du bis dahin aufbauen kannst.",
+        "Dein **Jahresbrutto** bestimmt den Steuersatz und damit, wie viel Mehr Netto vom Brutto möglich ist.",
+        "Dein **Schwerpunkt** entscheidet, welchen der beiden Wege wir Dir zuerst zeigen. Du siehst immer beide.",
+      ],
+      validierung: "Bitte Alter, Jahresbrutto und Deinen Schwerpunkt angeben.",
+      schwerpunktLabel: "Was ist Dir wichtiger? *",
+      schwerpunkt: {
+        altersvorsorge: { label: "Mehr Geld im Alter", beschreibung: "Wohnungen aufbauen und zur Rente ein Kapital oder eine Zusatzrente haben" },
+        steuer: { label: "Jetzt mehr Netto vom Brutto", beschreibung: "Einen Teil der Lohnsteuer zurückholen, jeden Monat" },
+        beides: { label: "Beides", beschreibung: "Steuer sparen und damit fürs Alter vorsorgen" },
+      },
+      wunschrente: "Wie viel möchtest Du im Alter zusätzlich im Monat? (freiwillig)",
+    },
     person: {
       titel: "Zur Person",
       untertitel: "Die letzten Angaben, dann steht Deine Auswertung",
@@ -201,8 +219,8 @@ const de = {
   freischalten: {
     auswertungSteht: "Deine Auswertung steht",
     kennzahlRahmen: "Dein Finanzierungsrahmen",
-    kennzahlTyp: "Passender Immobilientyp",
-    kennzahlZuzahlung: "Zuzahlung im Beispiel",
+    kennzahlKapital: "Dein Kapital zur Rente",
+    kennzahlMehrNetto: "Mehr Netto im Monat",
     nochEinSchritt: "Noch ein Schritt bis zur vollständigen Auswertung",
     titel: "Wohin dürfen wir das Ergebnis schicken?",
     text: "Trag Dich einmal ein, dann siehst Du sofort die vollständige Auswertung mit allen Zahlen.",
@@ -228,8 +246,10 @@ const de = {
     ohneEinkommenText:
       "Wir wünschen Dir alles Gute für Deine berufliche Zukunft. Sobald Du ein regelmäßiges Einkommen beziehst, stehen wir Dir gerne zur Verfügung.",
     neueAnalyseStarten: "Neue Analyse starten",
-    vermoegenNach10: "Dein Vermögen nach 10 Jahren",
-    steuerfreiHero: "Steuerfrei realisierbar nach §23 EStG",
+    kapitalZurRente: (alter: number) => `Dein Kapital zur Rente mit ${alter}`,
+    kapitalHero: (n: number, rente: number) =>
+      `nach Verkauf ${n === 1 ? "Deiner Wohnung" : `Deiner ${n} Wohnungen`}, rund ${eDe(rente)} im Monat zusätzlich zur Rente`,
+    steuerfreiHero: "Musterberechnung · Verkauf nach mehr als zehn Jahren steuerfrei nach § 23 EStG",
     machbarTitel: "Was ist für Dich machbar?",
     passtTitel: "Passt das zu Dir?",
     gesamt: {
@@ -354,6 +374,70 @@ const de = {
     terminKnopf: "Termin vereinbaren und mein Objekt finden",
   },
 
+  vorsorge: {
+    titel: "Deine zwei Wege mit Immobilien",
+    untertitel:
+      "Beides gehört zusammen: Der Steuereffekt hilft Dir, die Wohnungen zu bezahlen. Im Alter verkaufst Du sie und lebst vom Erlös. Gerechnet mit Deinen Angaben und echten Wohnungen aus unserem Bestand.",
+    warumTitel: "Warum drei Wohnungen?",
+    warumSchritte: [
+      { titel: "Heute: Wohnung 1", text: "Mieter und Finanzamt zahlen mit. Einen Teil der Lohnsteuer, die sonst für immer weg ist, holst Du Dir zurück: mehr Netto vom Brutto." },
+      { titel: "In kurzer Zeit: Wohnung 2 und 3", text: "Das zusätzliche Netto und die Miete der ersten Wohnung helfen, die nächste zu tragen. Jede weitere Wohnung nutzt denselben Hebel noch einmal." },
+      { titel: "Zur Rente: verkaufen", text: "Eine Wohnung allein schließt selten die Rentenlücke. Mit drei wird aus Deiner Arbeitsleistung ein Kapital, von dem Du im Alter gut leben kannst." },
+    ] as ReadonlyArray<{ titel: string; text: string }>,
+    warumModell:
+      "Genau darauf ist unser Modell ausgelegt: Als Bauträger haben wir Wohnungen in verschiedenen Größen und Preisklassen in Berlin und Brandenburg, damit auch die zweite und dritte zu Deinem Netto passt. Wir planen die Reihenfolge mit Dir und begleiten jede Finanzierung.",
+    musterTitel: "Musterberechnung",
+    musterText:
+      "Objekte, Kaufpreise und Mieten sind echt und stammen aus unseren Exposés. Die Rechnung ist ein Muster mit den Annahmen unten. Am Ende rechnen wir alles individuell mit Deinen Zahlen, suchen das für Dich bestmögliche Investment und begleiten Dich auf dem ganzen Weg.",
+    vorteileTitel: "Warum mit OS Real Estate",
+    vorteile: [
+      { titel: "Provisionsfrei", text: "Du kaufst direkt vom Bauträger, ohne Maklerprovision." },
+      { titel: "Rundum-sorglos", text: "Wir kümmern uns um das passende Objekt, die passende Finanzierung und die Abwicklung bis zum Notar." },
+      { titel: "Ein fester Partner", text: "Ein Ansprechpartner von der ersten Analyse bis nach der Übergabe." },
+      { titel: "Verwaltung inklusive", text: "Eine Verwaltung ist immer dabei, auf Wunsch aus unserer Unternehmensgruppe." },
+    ] as ReadonlyArray<{ titel: string; text: string }>,
+    passt: "Dein Schwerpunkt",
+    alterKicker: "Altersvorsorge",
+    alterTitel: (n: number, alter: number) => `${n === 1 ? "Eine Wohnung" : `${n} Wohnungen`}, behalten, abbezahlen, mit ${alter} verkaufen`,
+    mitAlter: (alter: number) => `Mit ${alter}`,
+    wertBeiVerkauf: (alter: number, wert: number, erloes: number) => `mit ${alter} rund ${eDe(wert)} wert, ${eDe(erloes)} bleiben`,
+    volumen: (alter: number) => `Verkaufswert aller Wohnungen mit ${alter}`,
+    kapital: "Nach Restschuld und Verkaufskosten bleiben Dir",
+    rente: (betrag: number, jahre: number) => `Das sind rund ${eDe(betrag)} im Monat zusätzlich zu Deiner Rente, ${jahre} Jahre lang.`,
+    wunsch: (wunsch: number, prozent: number) =>
+      prozent >= 100
+        ? `Dein Wunsch von ${eDe(wunsch)} im Monat ist damit gedeckt.`
+        : `Dein Wunsch: ${eDe(wunsch)} im Monat. Dieser Plan deckt rund ${prozent} % davon, den Rest planen wir gemeinsam.`,
+    anteil: (betrag: number) =>
+      betrag > 0
+        ? `Bis dahin zahlst Du im Schnitt rund ${eDe(betrag)} im Monat dazu (nach Steuer, erste zehn Jahre).`
+        : `In den ersten zehn Jahren bleibt nach Steuer im Schnitt sogar ein Überschuss von rund ${eDe(-betrag)} im Monat.`,
+    nebenkosten: (betrag: number) => `Mitbringen musst Du die Kaufnebenkosten, zusammen rund ${eDe(betrag)}.`,
+    ueberRahmen: (summe: number, rahmen: number) =>
+      `Die Kaufpreise liegen zusammen bei ${eDe(summe)}, Dein Rahmen heute bei ${eDe(rahmen)}. Die Bank prüft jeden weiteren Kauf neu, dann zählen die Mieten der ersten Wohnungen als Einkommen.`,
+    steuerKicker: "Steuereffekt",
+    steuerTitel: "Mehr Netto vom Brutto",
+    steuerObjekt: (titel: string) => `mehr Netto im Monat mit einer Wohnung in der ${titel}`,
+    steuerJahr: (betrag: number) => `${eDe(betrag)} im Jahr, Geld, das sonst an das Finanzamt geht`,
+    steuerPlan: (betrag: number, n: number) => `Mit Deinem Plan aus ${n} Wohnungen zusammen rund ${eDe(betrag)} im Monat.`,
+    steuerText:
+      "Miete minus Zinsen, Abschreibung und Kosten ergibt auf dem Papier einen Verlust. Der senkt Deine Lohnsteuer. Über einen Lohnsteuerermäßigungsantrag kommt das jeden Monat an, sonst einmal im Jahr mit der Steuererklärung.",
+    steuerSatz: (satz: number) => `Gerechnet mit ${z(satz, "de")} % Grenzsteuersatz aus Deinem Einkommen.`,
+    objekteTitel: "Unsere Objekte, gerechnet für Dich",
+    objekteText: "Je eine echte Wohnung mit Ist-Miete. Welche genau zu Dir passt, schauen wir uns gemeinsam an.",
+    konzept: { zusatzrente: "Altersvorsorge", steuer: "Steuerersparnis" },
+    kaufpreisMiete: (preis: number, miete: number) => `${eDe(preis)} · Miete ${eDe(miete)}`,
+    mehrNetto: "mehr Netto im Monat",
+    keinVorteil: "kaum Steuervorteil",
+    deinAnteil: (betrag: number) => (betrag > 0 ? `Dein Anteil ${eDe(betrag)} im Monat` : `Überschuss ${eDe(-betrag)} im Monat`),
+    kaufnebenkosten: (p: number) => `Kaufnebenkosten ${z(p, "de")} %`,
+    nebenkostenVerkaeufer: "Kaufnebenkosten trägt der Verkäufer",
+    knopf: "Beratungsgespräch vereinbaren",
+    knopfText: "Im Gespräch rechnen wir beide Wege mit Deinen echten Zahlen und der passenden Wohnung durch.",
+    annahmen: (rente: number, zins: number, tilgung: number, steigerung: number, verkauf: number, jahre: number) =>
+      `Musterberechnung, keine Zusage. Ist-Mieten, Kaufpreise und Kosten aus unseren Exposés (Stand 16.10.2026), gerechnet wie dort: Kaufpreis voll finanziert, Kaufnebenkosten aus Eigenkapital (Berlin 8 %, Brandenburg 8,5 %), Zins ${z(zins, "de")} %, Tilgung ${z(tilgung, "de")} %, Miete wie im Mietszenario des Exposés bis 2060, Kosten und Wert +${z(steigerung, "de")} % im Jahr, Abschreibung laut Exposé (höhere Sätze setzen ein anerkanntes Restnutzungsdauergutachten voraus), Steuer mit Deinem Grenzsteuersatz. Kauf im Abstand von drei Jahren, Verkauf mit ${rente} nach mindestens zehn Jahren Haltedauer steuerfrei, abzüglich Restschuld und ${z(verkauf, "de")} % Verkaufskosten. Monatsbetrag ohne Zinsen über ${jahre} Jahre verteilt. Ob weitere Finanzierungen möglich sind, entscheidet die Bank. Keine Steuer- oder Anlageberatung.`,
+  },
+
   szenario: {
     pessimistisch: "Pessimistisch",
     realistisch: "Realistisch",
@@ -391,7 +475,7 @@ const en: AnalyseTexte = {
   },
 
   wizard: {
-    schritte: ["Job and income", "What's left each month", "Tax and goals", "About you"],
+    schritte: ["Job and income", "What's left each month", "You and your goal"],
     start: {
       titelZeile1: "Property",
       titelAkzent: "investment analysis",
@@ -500,6 +584,24 @@ const en: AnalyseTexte = {
         diversifikation: "Diversification",
       },
     },
+    ziel: {
+      titel: "You and your goal",
+      untertitel: "The last details, then your result is ready",
+      hilfeTitel: "Why these questions?",
+      hilfe: [
+        "Your **age** determines how much time is left until retirement, and so how many apartments you can build up until then.",
+        "Your **annual gross income** determines the tax rate and so how much more net from your gross is possible.",
+        "Your **focus** decides which of the two paths we show you first. You always see both.",
+      ],
+      validierung: "Please enter your age, annual gross income and your focus.",
+      schwerpunktLabel: "What matters more to you? *",
+      schwerpunkt: {
+        altersvorsorge: { label: "More money in retirement", beschreibung: "Build up apartments and have capital or an extra pension when you retire" },
+        steuer: { label: "More net from your gross now", beschreibung: "Get back part of your wage tax, every month" },
+        beides: { label: "Both", beschreibung: "Save tax and use it to provide for retirement" },
+      },
+      wunschrente: "How much extra would you like per month in retirement? (optional)",
+    },
     person: {
       titel: "About you",
       untertitel: "The last few details, then your result is ready",
@@ -542,8 +644,8 @@ const en: AnalyseTexte = {
   freischalten: {
     auswertungSteht: "Your result is ready",
     kennzahlRahmen: "Your financing range",
-    kennzahlTyp: "Suitable property type",
-    kennzahlZuzahlung: "Top-up in the example",
+    kennzahlKapital: "Your capital for retirement",
+    kennzahlMehrNetto: "More net per month",
     nochEinSchritt: "One more step to the full result",
     titel: "Where should we send your result?",
     text: "Enter your details once and you'll see the full result with all the figures straight away.",
@@ -569,8 +671,10 @@ const en: AnalyseTexte = {
     ohneEinkommenText:
       "We wish you all the best for your professional future. As soon as you have a regular income, we'll be happy to help.",
     neueAnalyseStarten: "Start a new analysis",
-    vermoegenNach10: "Your wealth after 10 years",
-    steuerfreiHero: "Can be realised tax-free under Section 23 EStG",
+    kapitalZurRente: (alter: number) => `Your capital for retirement at ${alter}`,
+    kapitalHero: (n: number, rente: number) =>
+      `after selling ${n === 1 ? "your apartment" : `your ${n} apartments`}, around ${eEn(rente)} per month on top of your pension`,
+    steuerfreiHero: "Sample calculation · sale after more than ten years tax free under Section 23 EStG",
     machbarTitel: "What's feasible for you?",
     passtTitel: "Is this right for you?",
     gesamt: {
@@ -693,6 +797,70 @@ const en: AnalyseTexte = {
     hinweisOhneLand: (min: number, max: number) =>
       `We have chosen a sample property that suits your situation. It is not your property. Depending on the federal state, the real estate transfer tax (Grunderwerbsteuer) is between ${z(min, "en")} and ${z(max, "en")} percent, calculated here with the average. We'll look together at the appointment at which property from our portfolio suits you and how your figures work out exactly.`,
     terminKnopf: "Book an appointment and find my property",
+  },
+
+  vorsorge: {
+    titel: "Your two paths with real estate",
+    untertitel:
+      "Both belong together: the tax effect helps you pay for the apartments. In retirement you sell them and live on the proceeds. Calculated with your details and real apartments from our portfolio.",
+    warumTitel: "Why three apartments?",
+    warumSchritte: [
+      { titel: "Today: apartment 1", text: "Tenant and tax office pay their share. You get back part of the wage tax that would otherwise be gone for good: more net from your gross." },
+      { titel: "Soon after: apartments 2 and 3", text: "The extra net income and the rent of the first apartment help carry the next one. Every further apartment uses the same lever again." },
+      { titel: "At retirement: sell", text: "One apartment alone rarely closes the pension gap. With three, your work turns into capital you can live on well in retirement." },
+    ] as ReadonlyArray<{ titel: string; text: string }>,
+    warumModell:
+      "This is exactly what our model is built for: as a developer we have apartments of different sizes and price ranges in Berlin and Brandenburg, so the second and third also fit your net income. We plan the order with you and support every financing.",
+    musterTitel: "Sample calculation",
+    musterText:
+      "Properties, purchase prices and rents are real and come from our exposés. The calculation is a sample with the assumptions below. In the end we calculate everything individually with your figures, look for the best possible investment for you and support you all the way.",
+    vorteileTitel: "Why OS Real Estate",
+    vorteile: [
+      { titel: "No commission", text: "You buy directly from the developer, without an agent's commission." },
+      { titel: "All-round care", text: "We take care of the right property, the right financing and the processing up to the notary." },
+      { titel: "One fixed partner", text: "One contact person from the first analysis to after the handover." },
+      { titel: "Management included", text: "Property management is always included, on request from our group of companies." },
+    ] as ReadonlyArray<{ titel: string; text: string }>,
+    passt: "Your focus",
+    alterKicker: "Retirement provision",
+    alterTitel: (n: number, alter: number) => `${n === 1 ? "One apartment" : `${n} apartments`}, keep, pay off, sell at ${alter}`,
+    mitAlter: (alter: number) => `At ${alter}`,
+    wertBeiVerkauf: (alter: number, wert: number, erloes: number) => `worth around ${eEn(wert)} at ${alter}, ${eEn(erloes)} remain`,
+    volumen: (alter: number) => `Sale value of all apartments at ${alter}`,
+    kapital: "After remaining loans and selling costs you keep",
+    rente: (betrag: number, jahre: number) => `That is around ${eEn(betrag)} per month on top of your pension, for ${jahre} years.`,
+    wunsch: (wunsch: number, prozent: number) =>
+      prozent >= 100
+        ? `Your wish of ${eEn(wunsch)} per month is covered.`
+        : `Your wish: ${eEn(wunsch)} per month. This plan covers around ${prozent}% of it; we plan the rest together.`,
+    anteil: (betrag: number) =>
+      betrag > 0
+        ? `Until then you pay in around ${eEn(betrag)} per month on average (after tax, first ten years).`
+        : `In the first ten years there is even a surplus of around ${eEn(-betrag)} per month on average after tax.`,
+    nebenkosten: (betrag: number) => `You bring the purchase costs, together around ${eEn(betrag)}.`,
+    ueberRahmen: (summe: number, rahmen: number) =>
+      `The purchase prices add up to ${eEn(summe)}, your frame today is ${eEn(rahmen)}. The bank checks each further purchase anew; the rents of the first apartments then count as income.`,
+    steuerKicker: "Tax effect",
+    steuerTitel: "More net from your gross",
+    steuerObjekt: (titel: string) => `more net per month with an apartment in ${titel}`,
+    steuerJahr: (betrag: number) => `${eEn(betrag)} per year, money that otherwise goes to the tax office`,
+    steuerPlan: (betrag: number, n: number) => `With your plan of ${n} apartments around ${eEn(betrag)} per month in total.`,
+    steuerText:
+      "Rent minus interest, depreciation and costs results in a loss on paper. It lowers your wage tax. With an application for a wage tax reduction it arrives every month, otherwise once a year with your tax return.",
+    steuerSatz: (satz: number) => `Calculated with a ${z(satz, "en")}% marginal tax rate from your income.`,
+    objekteTitel: "Our properties, calculated for you",
+    objekteText: "One real apartment each with actual rent. Which one suits you exactly, we'll look at together.",
+    konzept: { zusatzrente: "Retirement provision", steuer: "Tax savings" },
+    kaufpreisMiete: (preis: number, miete: number) => `${eEn(preis)} · rent ${eEn(miete)}`,
+    mehrNetto: "more net per month",
+    keinVorteil: "hardly any tax benefit",
+    deinAnteil: (betrag: number) => (betrag > 0 ? `Your share ${eEn(betrag)} per month` : `Surplus ${eEn(-betrag)} per month`),
+    kaufnebenkosten: (p: number) => `Purchase costs ${z(p, "en")}%`,
+    nebenkostenVerkaeufer: "Purchase costs paid by the seller",
+    knopf: "Book a consultation",
+    knopfText: "In the meeting we calculate both paths with your real figures and the right apartment.",
+    annahmen: (rente: number, zins: number, tilgung: number, steigerung: number, verkauf: number, jahre: number) =>
+      `Sample calculation, no promise. Actual rents, purchase prices and costs from our exposés (as of 16.10.2026), calculated as there: purchase price fully financed, purchase costs from equity (Berlin 8%, Brandenburg 8.5%), interest ${z(zins, "en")}%, repayment ${z(tilgung, "en")}%, rent as in the exposé's rent scenario up to 2060, costs and value +${z(steigerung, "en")}% per year, depreciation as in the exposé (higher rates require a recognised remaining useful life report), tax at your marginal rate. Purchases three years apart, sale at ${rente} after at least ten years of ownership tax free, minus remaining loan and ${z(verkauf, "en")}% selling costs. Monthly amount spread over ${jahre} years without interest. Whether further financing is possible is decided by the bank. No tax or investment advice.`,
   },
 
   szenario: {

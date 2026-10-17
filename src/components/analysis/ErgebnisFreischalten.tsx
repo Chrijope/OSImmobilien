@@ -17,12 +17,12 @@ import type { AnalysisData, ScoreResult } from "@/lib/scoringEngine";
 import type { BeraterInfo } from "@/pages/AnalysePublic";
 import { sendeAnalyseLead } from "@/lib/analyseLead";
 import { protokolliereAnalyseEreignis } from "@/lib/analysetoolEreignisse";
-import { sortiereTypenNachPassung, waehleMusterobjekt } from "@/lib/objekttypen";
+import { OS_WOHNUNGEN, grenzsteuersatzAusKlasse, rechneWohnung, vorsorgePlan } from "@/lib/analyseVorsorge";
 import EinwilligungFelder, { einwilligungsTexte } from "@/components/analysis/EinwilligungFelder";
 import { useSeitenSprache, useSeitenTexte } from "@/components/SeitenSprache";
 import { euroText } from "@/lib/sprachFormat";
 import { ANALYSE_TEXTE } from "./analyseTexte";
-import { kategorieAnzeige, objekttypAnzeige } from "./analyseRechenkernTexte";
+import { kategorieAnzeige } from "./analyseRechenkernTexte";
 
 interface Props {
   result: ScoreResult;
@@ -61,19 +61,11 @@ export default function ErgebnisFreischalten({ result, data, berater, onFreigesc
 
   // Dieselbe Auswahl wie auf der Ergebnisseite, damit die verdeckte Vorschau
   // schon die Zahlen zeigt, die nach der Eintragung wirklich dastehen.
-  const grenzsteuersatz =
-    data.incomeClass === "ueber_120k" || data.incomeClass === "80k_120k"
-      ? 0.42
-      : data.incomeClass === "50k_80k"
-      ? 0.35
-      : 0.25;
   const rahmenBis = result.financingEstimate.maxVolume;
-  const besterTyp = sortiereTypenNachPassung(grenzsteuersatz, rahmenBis)[0];
-  const musterObjekt = waehleMusterobjekt(besterTyp, {
-    rahmenBis,
-    grenzsteuersatz,
-    bundeslandId: data.bundeslandId,
-  });
+  const plan = vorsorgePlan(data, rahmenBis);
+  const mehrNetto = plan
+    ? Math.max(...OS_WOHNUNGEN.map((w) => rechneWohnung(w, data.age, plan.verkaufsAlter, grenzsteuersatzAusKlasse(data.incomeClass)).steuerMonat))
+    : 0;
 
   useEffect(() => {
     protokolliereAnalyseEreignis("eintragung_gesehen", berater?.userId);
@@ -149,8 +141,8 @@ export default function ErgebnisFreischalten({ result, data, berater, onFreigesc
           <div className="grid grid-cols-3 gap-3 mt-6" aria-hidden="true">
             {[
               { label: t.kennzahlRahmen, wert: eur(rahmenBis) },
-              { label: t.kennzahlTyp, wert: objekttypAnzeige(besterTyp, sprache).name },
-              { label: t.kennzahlZuzahlung, wert: eur(Math.round(musterObjekt.zuzahlungMonat)) },
+              { label: t.kennzahlKapital, wert: eur(plan?.kapital ?? 0) },
+              { label: t.kennzahlMehrNetto, wert: `+${eur(mehrNetto)}` },
             ].map((k) => (
               <div key={k.label} className="rounded-xl bg-muted/60 p-3">
                 <p className="text-[10px] text-muted-foreground leading-tight">{k.label}</p>

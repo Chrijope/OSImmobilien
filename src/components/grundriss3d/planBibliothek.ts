@@ -13,7 +13,10 @@ import type { Grundriss3dPlan, HausPlan } from "./plan";
 
 export interface BekanntesHaus {
   name: string;
-  haus: HausPlan;
+  /** Hülle mit Einheiten darin (Barfusstraße) … */
+  haus?: HausPlan;
+  /** … oder ganze Etagenpläne aus CAD-Zeichnungen (Hauffstraße). */
+  etagen?: Array<{ geschoss: number; titel: string; plan: Grundriss3dPlan }>;
   einheiten: Array<{ we: number; plan: Grundriss3dPlan }>;
 }
 
@@ -21,6 +24,23 @@ const EINTRAEGE: Array<{ muster: RegExp; laden: () => Promise<BekanntesHaus> }> 
   {
     muster: /barfusstrasse9(?!\d)/,
     laden: () => import("./beispielBarfuss9").then((m) => ({ name: "Barfusstraße 9", haus: m.BARFUSS9_HAUS, einheiten: m.BARFUSS9_EINHEITEN })),
+  },
+  {
+    // Waldsiedlung Wünsdorf: Mustergrundrisse der Haustypen (beispielZossen.ts). Je Haus eine Einheit.
+    muster: /agnesstrasse(29|30)(?!\d)/,
+    laden: () => import("./beispielZossen").then((m) => ({ name: m.ZOSSEN_DHH2.name, etagen: m.ZOSSEN_DHH2.etagen, einheiten: [] })),
+  },
+  {
+    muster: /luisenstrasse72(?!\d)/,
+    laden: () => import("./beispielZossen").then((m) => ({ name: m.ZOSSEN_DHH1.name, etagen: m.ZOSSEN_DHH1.etagen, einheiten: [] })),
+  },
+  {
+    // Werkpläne Studio LOES, automatisch aus den Vektordaten gelesen (daten/hauff38.json).
+    muster: /hauffstrasse38(?!\d)/,
+    laden: () => import("./daten/hauff38.json").then((m) => {
+      const d = m.default as unknown as { haus: { etagen: BekanntesHaus["etagen"] }; einheiten: BekanntesHaus["einheiten"] };
+      return { name: "Hauffstraße 38", etagen: d.haus.etagen, einheiten: d.einheiten };
+    }),
   },
 ];
 

@@ -30,7 +30,7 @@ export function PlanSvg({ plan, viewBox, beschriftung = true, className, childre
   svgRef?: React.Ref<SVGSVGElement>;
   titel?: string;
 }) {
-  const r = plan.waende.length ? planRahmen(plan) : { minX: 0, minY: 0, maxX: 10, maxY: 8 };
+  const r = plan.waende.length || plan.flaechen ? planRahmen(plan) : { minX: 0, minY: 0, maxX: 10, maxY: 8 };
   const rand = 0.8;
   const vb = viewBox ?? `${r.minX - rand} ${r.minY - rand} ${r.maxX - r.minX + 2 * rand} ${r.maxY - r.minY + 2 * rand + 0.6}`;
   const beschreibung = plan.raeume.map((x) => `${x.name} ${qm(flaeche(x.punkte))}`).join(", ");
@@ -52,6 +52,14 @@ export function PlanSvg({ plan, viewBox, beschriftung = true, className, childre
       {plan.raeume.map((x) => (
         <polygon key={x.id} points={x.punkte.map((p) => `${p.x},${p.y}`).join(" ")} fill={RAUM_FARBE[x.typ] ?? "#f7f4ee"} fillOpacity={plan.hintergrund?.url ? 0.55 : 1} data-raum={x.id} />
       ))}
+      {plan.flaechen && (
+        <g pointerEvents="none">
+          {plan.flaechen.waende.map((w, i) => (
+            <path key={`fw${i}`} d={w.map((ring) => `M ${ring.map(([x, y]) => `${x} ${y}`).join(" L ")} Z`).join(" ")} fill="#3b3d40" fillRule="evenodd" />
+          ))}
+          {plan.flaechen.fenster.map((f, i) => <polygon key={`ff${i}`} points={f.map(([x, y]) => `${x},${y}`).join(" ")} fill="#bcdcec" />)}
+        </g>
+      )}
       {plan.waende.map((w) => (
         <line key={w.id} x1={w.a.x} y1={w.a.y} x2={w.b.x} y2={w.b.y} stroke="#3b3d40" strokeWidth={w.dicke} strokeLinecap="square" data-wand={w.id} />
       ))}

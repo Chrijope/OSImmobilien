@@ -20,7 +20,7 @@ describe("Vorschau-Route der Investmentkalkulation", () => {
   it("fehlt im Produktions-Build", async () => {
     vi.stubEnv("DEV", false);
     vi.stubEnv("PROD", true);
-    const { VorschauInvestmentrechner, VorschauProvision, VorschauMikroseite, VorschauRechnungsvorlage, VorschauKundeKomplett, VorschauKundenchat, VorschauObjektAnlegen, VorschauHandbuchEntwurf } = await import("./vorschauRouten");
+    const { VorschauInvestmentrechner, VorschauProvision, VorschauMikroseite, VorschauRechnungsvorlage, VorschauKundeKomplett, VorschauKundenchat, VorschauObjektAnlegen, VorschauHandbuchEntwurf, VorschauAnalysetoolErgebnis } = await import("./vorschauRouten");
     expect(VorschauInvestmentrechner).toBeNull();
     expect(VorschauProvision).toBeNull();
     expect(VorschauMikroseite).toBeNull();
@@ -29,6 +29,7 @@ describe("Vorschau-Route der Investmentkalkulation", () => {
     expect(VorschauKundenchat).toBeNull();
     expect(VorschauObjektAnlegen).toBeNull();
     expect(VorschauHandbuchEntwurf).toBeNull();
+    expect(VorschauAnalysetoolErgebnis).toBeNull();
   });
 
   it("die Vorschau 3D-Grundriss gibt es ebenso nur im Entwicklungsmodus", async () => {

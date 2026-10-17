@@ -9,7 +9,9 @@ import { sendeAnalyseLead } from '@/lib/analyseLead';
 import EinwilligungFelder, { einwilligungsTexte } from './EinwilligungFelder';
 import Confetti from './Confetti';
 import Reveal from './Reveal';
-import MusterrechnungBlock from './MusterrechnungBlock';
+import VorsorgeBlock from './VorsorgeBlock';
+import { vorsorgePlan, type VorsorgePlan } from '@/lib/analyseVorsorge';
+import osLogo from '@/assets/os-real-estate-logo-quer.png';
 import { useSeitenSprache, useSeitenTexte } from '@/components/SeitenSprache';
 import { euroText } from '@/lib/sprachFormat';
 import { ANALYSE_TEXTE } from './analyseTexte';
@@ -45,6 +47,8 @@ interface ResultsPageProps {
   hideAdvancedSections?: boolean;
   /** Der Interessent hat sich vor dem Ergebnis bereits eingetragen. */
   bereitsEingetragen?: boolean;
+  /** Logo oben zeigen. Aus, wo die Seite drumherum es schon zeigt (öffentlicher Link). */
+  mitLogo?: boolean;
 }
 
 function AmpelDot({ status, size = 'md' }: { status: string; size?: 'sm' | 'md' | 'lg' }) {
@@ -142,6 +146,7 @@ export function getAnalyseResultForKontakt(kontaktId: string): any | null {
 
 function HeroBlock({
   wealth,
+  plan,
   ampel,
   categoryLabel,
   categoryDescription,
@@ -149,6 +154,7 @@ function HeroBlock({
   colorClass,
 }: {
   wealth: number;
+  plan: VorsorgePlan;
   ampel: 'gruen' | 'orange' | 'rot';
   categoryLabel: string;
   categoryDescription: string;
@@ -174,10 +180,13 @@ function HeroBlock({
           <PartyPopper className="w-3.5 h-3.5" />
           <span>{categoryLabel}</span>
         </div>
-        <p className="text-[11px] sm:text-xs uppercase tracking-[0.3em] text-white/60 mb-4">{t.vermoegenNach10}</p>
+        <p className="text-[11px] sm:text-xs uppercase tracking-[0.3em] text-white/60 mb-4">{t.kapitalZurRente(plan.verkaufsAlter)}</p>
         <p className="apple-display mb-6">
           {/* Geschütztes Leerzeichen, damit „€“ auf Deutsch nicht allein umbricht. */}
           {euroText(animatedWealth, sprache).replace(' ', '\u00A0')}
+        </p>
+        <p className="text-sm sm:text-base text-white/90 max-w-2xl mx-auto leading-relaxed px-2 mb-2">
+          {t.kapitalHero(plan.wohnungen.length, plan.zusatzrenteMonat)}
         </p>
         <p className="text-sm sm:text-base text-white/70 max-w-2xl mx-auto leading-relaxed px-2">
           {categoryDescription}
@@ -325,7 +334,7 @@ function BeraterCard({
 // ═══════════════════════════════════════════════════════════════
 type AssetKey = 'sanierter-bestand' | 'wg-coliving' | 'neubau';
 
-const ResultsPage = ({ result: basisErgebnis, data, berater, onRestart, hideAdvancedSections, bereitsEingetragen }: ResultsPageProps) => {
+const ResultsPage = ({ result: basisErgebnis, data, berater, onRestart, hideAdvancedSections, bereitsEingetragen, mitLogo }: ResultsPageProps) => {
   const isUnemployed = data.profession === 'arbeitslos';
   const texte = useSeitenTexte(ANALYSE_TEXTE);
   const t = texte.ergebnis;
@@ -346,6 +355,7 @@ const ResultsPage = ({ result: basisErgebnis, data, berater, onRestart, hideAdva
     [afaMitGutachten, data, basisErgebnis],
   );
   const p = result.projection;
+  const vorsorge = useMemo(() => vorsorgePlan(data, result.financingEstimate.maxVolume), [data, result.financingEstimate.maxVolume]);
   // Kategorie und Beschreibung kommen deutsch aus dem Rechenkern (sie gehen
   // so ins CRM). Angezeigt wird die Fassung der Seitensprache.
   const kategorie = kategorieAnzeige(result, sprache, isUnemployed);
@@ -395,6 +405,7 @@ const ResultsPage = ({ result: basisErgebnis, data, berater, onRestart, hideAdva
     <div className="analyse-apple py-12 sm:py-20 px-4 sm:px-6">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-12 sm:mb-16 analyse-fade-in-up">
+          {mitLogo && <img src={osLogo} alt="OS Real Estate GmbH" className="mx-auto mb-8 h-10 md:h-12 w-auto object-contain" />}
           <span className="apple-eyebrow bg-primary/10 border-primary/20 text-primary">
             <Sparkles className="w-3.5 h-3.5" />
             {t.eyebrow}
@@ -444,9 +455,12 @@ const ResultsPage = ({ result: basisErgebnis, data, berater, onRestart, hideAdva
         ) : (
           <>
             {/* ═══ 1. HERO – WOW-Effekt mit CountUp + Confetti ═══ */}
-            {(result.ampel.overall === 'gruen' || result.ampel.overall === 'orange') && p.purchasePrice > 0 && (
+            {(result.ampel.overall === 'gruen' || result.ampel.overall === 'orange') && p.purchasePrice > 0 && vorsorge && (
               <HeroBlock
-                wealth={p.wealthAfter10Years}
+                // Seit 17.10.2026 das Kapital nach Verkauf der OS-Wohnungen zur Rente,
+                // dieselbe Zahl wie im Block „Zwei Wege“ (vorher Vermögen nach 10 Jahren aus dem Rahmen).
+                wealth={vorsorge.kapital}
+                plan={vorsorge}
                 ampel={result.ampel.overall}
                 categoryLabel={kategorie.label}
                 categoryDescription={kategorie.beschreibung}
@@ -473,31 +487,12 @@ const ResultsPage = ({ result: basisErgebnis, data, berater, onRestart, hideAdva
               <BeraterCard berater={berater} onErstgespraech={scrollToLeadForm} variant="hero" />
             )}
 
-            {/* ═══ Finanzierungsrahmen, Objekttyp und Musterrechnung ═══
-                Die konkrete Antwort auf die erste Frage jedes Interessenten:
-                Was ist für mich machbar und was kostet mich das im Monat? */}
+            {/* ═══ Zwei Wege: Altersvorsorge mit drei Wohnungen, Mehr Netto vom Brutto, unsere Objekte ═══
+                Ersetzt seit 17.10.2026 die Musterrechnung nach Objekttyp (Neubau, WG,
+                Bestand): OS verkauft nur eigene Objekte, gerechnet wird an ihnen. */}
             {p.purchasePrice > 0 && !hideAdvancedSections && (
-              <div className="mb-6 mt-10">
-                <h2 className="text-xl font-semibold tracking-tight text-foreground mb-4">
-                  {t.machbarTitel}
-                </h2>
-                <MusterrechnungBlock
-                  rahmenBis={result.financingEstimate.maxVolume}
-                  grenzsteuersatz={
-                    // Gleiche Staffel wie im Rechenkern, damit Musterrechnung
-                    // und Projektion nicht auseinanderlaufen.
-                    data.incomeClass === 'ueber_120k' || data.incomeClass === '80k_120k'
-                      ? 0.42
-                      : data.incomeClass === '50k_80k'
-                      ? 0.35
-                      : 0.25
-                  }
-                  bundeslandId={data.bundeslandId}
-                  onErstgespraech={scrollToLeadForm}
-                />
-              </div>
+              <VorsorgeBlock data={data} rahmen={result.financingEstimate.maxVolume} onErstgespraech={scrollToLeadForm} />
             )}
-
 
             {/* ═══ Ampel als Kurzfassung, damit die Einordnung oben steht ═══ */}
             {p.purchasePrice > 0 && !hideAdvancedSections && result.ampel.items.length > 0 && (
