@@ -35,6 +35,7 @@ import { abwicklungStufeNachziehen } from "@/lib/abwicklungStufe";
 import { PIPELINE_STUFEN } from "@/lib/pipelineStufen";
 import { erhoehungsRegelAusMeta, naechsteErhoehung, type ErhoehungsRegel } from "@/lib/mieterhoehung";
 import { bundeslandFromPlz } from "@/lib/kaufnebenkosten";
+import { KOSTEN_ZEILEN, kostenJahr } from "@/lib/kostenJahr";
 import { cacheGet } from "@/lib/dataCache";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
@@ -283,7 +284,7 @@ function ErhoehungsKarte({ objekt, regel, darfSchreiben }: { objekt: ObjektData;
   );
 }
 
-type Ansicht = "handlung" | "preise" | "miete" | "subvention" | "hausgeld" | "garagen" | "verkauf";
+type Ansicht = "handlung" | "preise" | "miete" | "subvention" | "hausgeld" | "garagen" | "verkauf" | "kosten";
 const ANSICHTEN: { wert: Ansicht; titel: string }[] = [
   { wert: "handlung", titel: "Handlungsbedarf" },
   { wert: "preise", titel: "Preise & Rendite" },
@@ -292,6 +293,7 @@ const ANSICHTEN: { wert: Ansicht; titel: string }[] = [
   { wert: "hausgeld", titel: "Hausgeld" },
   { wert: "garagen", titel: "Garagen" },
   { wert: "verkauf", titel: "Verkaufsstand" },
+  { wert: "kosten", titel: "Kosten je Jahr" },
 ];
 
 const HINWEIS_FARBE: Record<HinweisArt, string> = {
@@ -322,6 +324,7 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
   const [garageEinheit, setGarageEinheit] = useState<ObjektWohnung | null>(null);
   const [importOffen, setImportOffen] = useState(false);
   const [ansicht, setAnsicht] = useState<Ansicht>("handlung");
+  const [jahr, setJahr] = useState(new Date().getFullYear());
   const darfSchreiben = SCHREIBT_OBJEKTE.includes(user.role);
   const mieter = getMieter();
   useLiveVersion(["investments"]);
@@ -518,6 +521,57 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
           <Button key={a.wert} size="sm" variant={ansicht === a.wert ? "default" : "outline"} role="tab" aria-selected={ansicht === a.wert} onClick={() => setAnsicht(a.wert)}>{a.titel}</Button>
         ))}
       </div>
+      {ansicht === "kosten" ? (() => {
+        const k = kostenJahr(zeilen.filter((x) => x.w.status !== "verkauft" || x.inv).map((x) => ({
+          istMiete: x.ist, eigentuemerlast: x.last, hausgeldGesamt: x.hg.gesamt,
+          uebergabe: x.inv ? getAbwicklungDaten(x.inv.id).uebergabeDatum || "" : "",
+          subventionMonat: x.regel?.art !== "einmal" ? x.garantie?.garantieMonat ?? 0 : 0, subventionMonate: x.regel?.laufzeitMonate ?? 0,
+          garagenSubventionMonat: x.garantie?.garagenSubventionMonat ?? 0, garagenSubventionMonate: x.regel?.garagenSubventionMonate ?? 0,
+          einmalSubvention: x.einmal,
+        })), jahr);
+        const MONATE = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
+        return (
+          <Card>
+            <CardContent className="space-y-3 p-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm font-semibold">Kosten und Einnahmen {jahr}</span>
+                {[jahr - 1, jahr + 1].map((j) => <Button key={j} size="sm" variant="outline" onClick={() => setJahr(j)}>{j}</Button>)}
+                <span className={cn("ml-auto text-sm font-semibold", k.saldo < 0 ? "text-red-600" : "text-emerald-700")}>Saldo {eur(k.saldo, 2)}</span>
+              </div>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Position</TableHead>
+                      {MONATE.map((m) => <TableHead key={m} className="text-right">{m}</TableHead>)}
+                      <TableHead className="text-right">Jahr</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {KOSTEN_ZEILEN.map((zeile) => (
+                      <TableRow key={zeile.schluessel}>
+                        <TableCell className="whitespace-nowrap text-xs">{zeile.vorzeichen < 0 ? "− " : "+ "}{zeile.titel}</TableCell>
+                        {k.monate[zeile.schluessel].map((v, i) => <TableCell key={i} className={r}>{v ? eur(v) : "–"}</TableCell>)}
+                        <TableCell className={cn(r, "font-medium")}>{eur(k.summe[zeile.schluessel])}</TableCell>
+                      </TableRow>
+                    ))}
+                    <TableRow>
+                      <TableCell className="text-xs font-semibold">Saldo</TableCell>
+                      {k.saldoMonat.map((v, i) => <TableCell key={i} className={cn(r, "font-semibold", v < 0 && "text-red-600")}>{eur(v)}</TableCell>)}
+                      <TableCell className={cn(r, "font-semibold", k.saldo < 0 && "text-red-600")}>{eur(k.saldo)}</TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Bis zum Übergabetermin (Abwicklung im Kundenprofil oder Verkaufsstand) gehört die Wohnung uns: Miete herein, Eigentümerlast oder bei Leerstand das ganze Hausgeld hinaus. Ab der Übergabe zahlen wir die Mietsubvention über ihre Laufzeit, die Garagen-Subvention und den Einmalanteil.
+                {k.ohneUebergabe > 0 && ` ${k.ohneUebergabe} Wohnungen ohne Übergabetermin zählen das ganze Jahr als unsere.`}
+                {" "}Mieterhöhungen sind nicht eingerechnet.
+              </p>
+            </CardContent>
+          </Card>
+        );
+      })() : (
       <Card>
         <CardContent className="p-0 overflow-x-auto">
           <Table>
@@ -692,6 +746,7 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
           </Table>
         </CardContent>
       </Card>
+      )}
       <p className="text-xs text-muted-foreground">
         Schloss: Der Wert kommt aus Investagon und wird dort geändert, sonst überschreibt ihn der nächste Abgleich. Ein Klick auf einen anderen Wert ändert ihn; Rendite, Garantie, Eigentümerlast und Summen rechnen sofort neu, auch auf der Objekt- und Einheitenseite. Die Garantie über die Laufzeit ist ohne Mieterhöhungen gerechnet; „laut Liste“ ist der Wert aus der Excel mit Erhöhungen.
       </p>
