@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Aussehen, Grundriss3dPlan, HausPlan } from "./plan";
+import type { Aussehen, Dachflaeche, Grundriss3dPlan, HausPlan } from "./plan";
 
 /*
  * Bibliothek nachgezeichneter Häuser (seit 17.10.2026).
@@ -32,6 +32,11 @@ const EINTRAEGE: Array<{ muster: RegExp; laden: () => Promise<BekanntesHaus> }> 
     })),
   },
   {
+    // Studentenwohnheim, Häuser Nr. 9 und 10: Geschosse aus den Wohnungsplänen des Bauträgers zusammengesetzt (beispielCottbus.ts).
+    muster: /jamlitzerstrasse(9|10)(?!\d)/,
+    laden: () => import("./beispielCottbus").then((m) => ({ name: m.COTTBUS.name, etagen: m.COTTBUS.etagen, einheiten: m.COTTBUS.einheiten, aussehen: m.COTTBUS.aussehen })),
+  },
+  {
     // Aufteilungspläne (Vektor) EG, 1. OG, DG; Wohnungen nach Teilungserklärung (beispielBrueck.ts).
     muster: /marktstrasse6(?!\d)/,
     laden: () => import("./beispielBrueck").then((m) => ({ name: m.BRUECK.name, etagen: m.BRUECK.etagen, einheiten: [], aussehen: m.BRUECK.aussehen })),
@@ -48,11 +53,12 @@ const EINTRAEGE: Array<{ muster: RegExp; laden: () => Promise<BekanntesHaus> }> 
   {
     // Werkpläne Studio LOES, automatisch aus den Vektordaten gelesen (daten/hauff38.json).
     muster: /hauffstrasse38(?!\d)/,
-    laden: () => import("./daten/hauff38.json").then((m) => {
+    // Dach eins zu eins aus Dachaufsicht, Schnitten und Ansichten (Blätter 06 bis 10, scripts/grundriss3d/hauff_dach.py).
+    laden: () => Promise.all([import("./daten/hauff38.json"), import("./daten/hauff38-dach.json")]).then(([m, dach]) => {
       const d = m.default as unknown as { haus: { etagen: BekanntesHaus["etagen"] }; einheiten: BekanntesHaus["einheiten"] };
-      // Heller Klinker (Exposé-Fotos, Luftbild). Dächer flach angedeutet: Die geknickten Satteldächer der Hausteile
-      // lassen sich mit Rechteckdächern nicht maßgetreu abbilden, ein falsches Dach wäre schlechter als ein flaches.
-      return { name: "Hauffstraße 38", etagen: d.haus.etagen, einheiten: d.einheiten, aussehen: { fassade: "#c9c1b8", dach: { art: "flach" as const, farbe: "#8e9097" } } };
+      const flaechen = (dach.default as unknown as { flaechen: Dachflaeche[] }).flaechen;
+      // Heller Klinker nach Exposé-Fotos und Luftbild.
+      return { name: "Hauffstraße 38", etagen: d.haus.etagen, einheiten: d.einheiten, aussehen: { fassade: "#c9c1b8", dach: { art: "flaechen" as const, flaechen } } };
     }),
   },
 ];

@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { punktInPolygon, type Aussehen, type Dach, type Gaube, type Punkt } from "./plan";
+import { punktInPolygon, type Aussehen, type Dach, type Dachflaeche, type Gaube, type Punkt } from "./plan";
 
 /*
  * Das Haus von außen: Fassadenfarben, Dächer und Balkone nach Fotos und
@@ -129,17 +129,21 @@ function ziegel(farbe: string): THREE.Texture {
 
 /** Ebenes Vieleck im Raum als Fläche, mit UV in Metern (u entlang der ersten Kante). */
 function flaeche3d(ecken: THREE.Vector3[], m: THREE.Material): THREE.Mesh {
-  const u = new THREE.Vector3().subVectors(ecken[1], ecken[0]).normalize();
-  const n = new THREE.Vector3().subVectors(ecken[1], ecken[0]).cross(new THREE.Vector3().subVectors(ecken[ecken.length - 1], ecken[0])).normalize();
-  const v = new THREE.Vector3().crossVectors(n, u);
-  const pos: number[] = [], uv: number[] = [];
-  for (let i = 1; i < ecken.length - 1; i++) {
-    for (const e of [ecken[0], ecken[i], ecken[i + 1]]) {
-      pos.push(e.x, e.y, e.z);
-      const d = new THREE.Vector3().subVectors(e, ecken[0]);
-      uv.push(d.dot(u), d.dot(v));
-    }
+  // Normale nach Newell: auch bei nicht konvexen Vielecken richtig.
+  const n = new THREE.Vector3();
+  for (let i = 0; i < ecken.length; i++) {
+    const a = ecken[i], b = ecken[(i + 1) % ecken.length];
+    n.x += (a.y - b.y) * (a.z + b.z); n.y += (a.z - b.z) * (a.x + b.x); n.z += (a.x - b.x) * (a.y + b.y);
   }
+  n.normalize();
+  // u waagerecht in der Fläche, v die Falllinie hinauf: Ziegelreihen liegen parallel zur Traufe.
+  const u = Math.abs(n.y) > 0.999 ? new THREE.Vector3().subVectors(ecken[1], ecken[0]).normalize() : new THREE.Vector3(0, 1, 0).cross(n).normalize();
+  const v = new THREE.Vector3().crossVectors(n, u);
+  if (v.y < 0) v.negate();
+  const flach = ecken.map((e) => { const d = new THREE.Vector3().subVectors(e, ecken[0]); return new THREE.Vector2(d.dot(u), d.dot(v)); });
+  const dreiecke = THREE.ShapeUtils.triangulateShape(flach, []);
+  const pos: number[] = [], uv: number[] = [];
+  for (const d of dreiecke) for (const i of d) { pos.push(ecken[i].x, ecken[i].y, ecken[i].z); uv.push(flach[i].x, flach[i].y); }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
   geo.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
@@ -385,4 +389,118 @@ export function balkon(b: NonNullable<Aussehen["balkone"]>[number], y: number, u
     }
   }
   return g;
+}
+
+/* ── Dach aus einzelnen Flächen (Dachaufsicht eins zu eins) ───────── */
+
+/** Höhe der Dachunterseite je Rasterzelle in Weltkoordinaten; −1e4 = kein Dach. */
+export interface Hoehenkarte {
+  textur: THREE.DataTexture;
+  /** minX, minZ, Breite, Tiefe der Karte in Metern. */
+  rahmen: THREE.Vector4;
+}
+
+const RASTER = 0.1;
+
+/**
+ * Baut jede Dachfläche als ebenes Vieleck. `basis(g)` liefert die Weltlage
+ * des Fußbodens von Geschoss g (undefined: Geschoss nicht gezeigt). Dazu eine
+ * Höhenkarte der geneigten und flachen Flächen, an der das Geschoss darunter
+ * abgeschnitten wird, egal wie verwinkelt das Dach ist.
+ */
+export function flaechenDach(flaechen: Dachflaeche[], basis: (g: number) => number | undefined, fassade: THREE.Material, wandhoehe: number): { gruppe: THREE.Group; karte: Hoehenkarte | null } {
+  const g = new THREE.Group();
+  const mats = new Map<string, THREE.Material>();
+  const material = (f: Dachflaeche): THREE.Material => {
+    if (f.material === "fassade") {
+      // Giebel- und Gaubenwände erst ab Oberkante der Geschosswände: Darunter steht die echte Wand mit ihren Fenstern.
+      const schluessel = `fassade|${f.geschoss}`;
+      let m = mats.get(schluessel);
+      if (!m) {
+        m = fassade.clone();
+        m.clippingPlanes = [new THREE.Plane(new THREE.Vector3(0, 1, 0), -((basis(f.geschoss) ?? 0) + wandhoehe - 0.01))];
+        mats.set(schluessel, m);
+      }
+      return m;
+    }
+    const schluessel = `${f.material}|${f.farbe ?? ""}`;
+    let m = mats.get(schluessel);
+    if (!m) {
+      const farbe = f.farbe ?? { ziegel: "#b5614a", blech: "#6c7177", glas: "#bcd3dd", flach: "#9ea2a6", gruen: "#6f8f5a" }[f.material];
+      m = f.material === "ziegel" ? new THREE.MeshStandardMaterial({ map: ziegel(farbe), roughness: 0.85, side: THREE.DoubleSide })
+        : f.material === "glas" ? new THREE.MeshStandardMaterial({ color: farbe, roughness: 0.08, metalness: 0.2, transparent: true, opacity: 0.45, depthWrite: false, side: THREE.DoubleSide })
+        : new THREE.MeshStandardMaterial({ color: farbe, roughness: f.material === "blech" ? 0.45 : 0.95, metalness: f.material === "blech" ? 0.5 : 0, side: THREE.DoubleSide });
+      mats.set(schluessel, m);
+    }
+    return m;
+  };
+  const welt: Array<{ f: Dachflaeche; ecken: THREE.Vector3[] }> = [];
+  for (const f of flaechen) {
+    const y0 = basis(f.geschoss);
+    if (y0 === undefined || f.punkte.length < 3) continue;
+    const ecken = f.punkte.map(([x, y, h]) => new THREE.Vector3(x, y0 + h, y));
+    g.add(flaeche3d(ecken, material(f)));
+    welt.push({ f, ecken });
+  }
+
+  // Höhenkarte nur aus nicht senkrechten Flächen; wo sich zwei decken (Gaube auf Hauptdach), zählt die höhere.
+  const dach = welt.filter((w) => w.f.material !== "fassade" && w.f.material !== "glas");
+  if (!dach.length) return { gruppe: g, karte: null };
+  let minX = Infinity, minZ = Infinity, maxX = -Infinity, maxZ = -Infinity;
+  for (const w of dach) for (const e of w.ecken) { minX = Math.min(minX, e.x); maxX = Math.max(maxX, e.x); minZ = Math.min(minZ, e.z); maxZ = Math.max(maxZ, e.z); }
+  const b = Math.max(1, Math.ceil((maxX - minX) / RASTER)), t = Math.max(1, Math.ceil((maxZ - minZ) / RASTER));
+  const daten = new Float32Array(b * t).fill(-1e4);
+  for (const w of dach) {
+    const p = new THREE.Plane().setFromCoplanarPoints(w.ecken[0], w.ecken[1], w.ecken[2]);
+    // Normale über alle Ecken (Newell), drei Punkte können fast auf einer Linie liegen.
+    const n = new THREE.Vector3();
+    for (let i = 0; i < w.ecken.length; i++) { const a = w.ecken[i], c = w.ecken[(i + 1) % w.ecken.length]; n.x += (a.y - c.y) * (a.z + c.z); n.y += (a.z - c.z) * (a.x + c.x); n.z += (a.x - c.x) * (a.y + c.y); }
+    if (Math.abs(n.normalize().y) < 0.05) continue;
+    p.setFromNormalAndCoplanarPoint(n, w.ecken[0]);
+    const poly = w.ecken.map((e) => ({ x: e.x, y: e.z }));
+    const r = { x0: Math.min(...poly.map((q) => q.x)), x1: Math.max(...poly.map((q) => q.x)), z0: Math.min(...poly.map((q) => q.y)), z1: Math.max(...poly.map((q) => q.y)) };
+    for (let j = Math.max(0, Math.floor((r.z0 - minZ) / RASTER)); j < Math.min(t, Math.ceil((r.z1 - minZ) / RASTER)); j++) {
+      for (let i = Math.max(0, Math.floor((r.x0 - minX) / RASTER)); i < Math.min(b, Math.ceil((r.x1 - minX) / RASTER)); i++) {
+        const x = minX + (i + 0.5) * RASTER, z = minZ + (j + 0.5) * RASTER;
+        if (!punktInPolygon({ x, y: z }, poly)) continue;
+        // Höhe der Ebene an (x, z): n·p + d = 0 nach y aufgelöst.
+        const h = -(p.normal.x * x + p.normal.z * z + p.constant) / p.normal.y;
+        if (h > daten[j * b + i]) daten[j * b + i] = h;
+      }
+    }
+  }
+  const textur = new THREE.DataTexture(daten, b, t, THREE.RedFormat, THREE.FloatType);
+  textur.magFilter = textur.minFilter = THREE.NearestFilter;
+  textur.needsUpdate = true;
+  return { gruppe: g, karte: { textur, rahmen: new THREE.Vector4(minX, minZ, b * RASTER, t * RASTER) } };
+}
+
+/**
+ * Materialien eines Geschosses so kopieren, dass alles über der Dachfläche
+ * verworfen wird (Höhenkarte im Fragment-Shader). Glas bleibt geteilt, damit
+ * die Nachtbeleuchtung es weiter schalten kann.
+ */
+export function kappeUnterKarte(ebene: THREE.Object3D, karte: Hoehenkarte): void {
+  const kopien = new Map<THREE.Material, THREE.Material>();
+  ebene.traverse((o) => {
+    if (!(o instanceof THREE.Mesh) || Array.isArray(o.material) || o.material.transparent) return;
+    let k = kopien.get(o.material);
+    if (!k) {
+      k = o.material.clone();
+      k.onBeforeCompile = (shader) => {
+        shader.uniforms.dachKarte = { value: karte.textur };
+        shader.uniforms.dachRahmen = { value: karte.rahmen };
+        shader.vertexShader = "varying vec3 vDachWelt;\n" + shader.vertexShader.replace("#include <begin_vertex>", "#include <begin_vertex>\nvDachWelt = (modelMatrix * vec4(transformed, 1.0)).xyz;");
+        shader.fragmentShader = "varying vec3 vDachWelt;\nuniform sampler2D dachKarte;\nuniform vec4 dachRahmen;\n" + shader.fragmentShader.replace("void main() {", `void main() {
+  vec2 dachUv = (vDachWelt.xz - dachRahmen.xy) / dachRahmen.zw;
+  if (dachUv.x > 0.0 && dachUv.x < 1.0 && dachUv.y > 0.0 && dachUv.y < 1.0) {
+    float dachH = texture2D(dachKarte, dachUv).r;
+    if (dachH > -1000.0 && vDachWelt.y > dachH - 0.02) discard;
+  }`);
+      };
+      k.customProgramCacheKey = () => "dachkarte";
+      kopien.set(o.material, k);
+    }
+    o.material = k;
+  });
 }

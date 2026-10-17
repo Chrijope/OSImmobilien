@@ -5,7 +5,7 @@ import {
   FENSTER_BRUESTUNG, FENSTER_HOEHE, TUER_HOEHE, flaeche, laenge, planRahmen, punktInPolygon, qm, rahmen, schwerpunkt, wirksamerTyp,
   type Aussehen, type Flaechen, type Seite, type Grundriss3dPlan, type HausPlan, type Punkt, type XY, type Raum, type RaumTyp, type Wand,
 } from "./plan";
-import { balkon, faerbeFassade, kappeAnDach, mansarde, rechteckPunkte, steildach, type Kontur } from "./aussen";
+import { balkon, faerbeFassade, flaechenDach, kappeAnDach, kappeUnterKarte, mansarde, rechteckPunkte, steildach, type Kontur } from "./aussen";
 
 /*
  * Baut aus Plänen eine three.js-Szene. Nur dieses Modul und die Ansicht
@@ -629,7 +629,9 @@ export function baueSzene(einheiten: Einheit3d[], o: SzenenOptionen, haus?: Haus
       el.className = "g3d-label g3d-label-einheit";
       el.textContent = e.titel;
       const label = new CSS2DObject(el);
-      label.position.set((r.minX + r.maxX) / 2, h + 0.3, r.minY);
+      // Im ganzen Haus seitlich auf Geschosshöhe, sonst stapeln sich die Schilder über der Mitte.
+      if (hausAnsicht) label.position.set(r.minX - 1.2, h / 2, (r.minY + r.maxY) / 2);
+      else label.position.set((r.minX + r.maxX) / 2, h + 0.3, r.minY);
       ebene.add(label);
       nurRundum.push(label);
     }
@@ -670,6 +672,14 @@ export function baueSzene(einheiten: Einheit3d[], o: SzenenOptionen, haus?: Haus
       const ey = oben[0].ebene.position.y;
       const d = steildach(dach, aussenkante, ey + dach.kniestock, ey + h, fassadeMat, { liste: o.aussehen?.gauben ?? [], boden: ey });
       for (const x of oben) kappeAnDach(x.ebene, d.ebenen);
+      if (zeigeDach) gruppe.add(d.gruppe);
+    } else if (dach?.art === "flaechen") {
+      // Dach aus der Dachaufsicht: jede Fläche eben, die Geschosse darunter exakt an der Dachunterseite gekappt.
+      const d = flaechenDach(dach.flaechen, (g) => ebenen.find((x) => x.geschoss === g)?.ebene.position.y, fassadeMat, h);
+      if (d.karte) {
+        for (const x of ebenen) kappeUnterKarte(x.ebene, d.karte);
+        gruppe.userData.dachKarte = d.karte.textur;
+      }
       if (zeigeDach) gruppe.add(d.gruppe);
     } else if (zeigeDach && dach?.art !== "sattel" && dach?.art !== "walm") {
       // Flachdach über jedem Geschoss aus CAD-Plänen; wo ein Geschoss darüber steht, verdeckt dessen Decke es.
@@ -931,6 +941,8 @@ export function entsorge(obj: THREE.Object3D): void {
     }
     if (x instanceof CSS2DObject) x.element.remove();
   });
+  // Höhenkarte eines Flächendachs hängt nur an Shader-Uniforms, nicht an einem Material.
+  (obj.userData.dachKarte as THREE.Texture | undefined)?.dispose();
   mats.forEach((m) => {
     const map = (m as THREE.MeshStandardMaterial).map;
     if (map) map.dispose();

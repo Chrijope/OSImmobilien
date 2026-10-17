@@ -1,4 +1,4 @@
-import type { Aussehen, Grundriss3dPlan, Oeffnung, Punkt, Raum, RaumTyp, Wand } from "./plan";
+import type { Aussehen, Dachflaeche, Grundriss3dPlan, Oeffnung, Punkt, Raum, RaumTyp, Wand } from "./plan";
 
 /*
  * Mehrfamilienhaus Marktstraße 6, 14822 Brück OT Neuendorf (17.10.2026).
@@ -9,21 +9,38 @@ import type { Aussehen, Grundriss3dPlan, Oeffnung, Punkt, Raum, RaumTyp, Wand } 
  * der Umbaustand des Abgeschlossenheitsplans (Grundriss EG, 17.12.2025,
  * Scan): Aus der Büroeinheit werden WE 2 und WE 3. Diese Wände und Räume
  * sind von Hand nach dem Scan gesetzt, Genauigkeit etwa 10 cm.
- * Wohnungsnummern nach Teilungserklärung vom 05.06.2026 (WE 1 bis WE 11);
- * die Vertriebsliste zählt anders und ist hier nicht verwendet.
+ * Wohnungsnummern nach Teilungserklärung vom 05.06.2026 (WE 1 bis WE 11).
+ *
+ * Vertriebsliste mit 12 Einheiten (65 / 25 / 46 / 25 / 90 / 50 / 48 / 80 /
+ * 30 / 60 / 56,05 / 35 m², Summe 610,05): lässt sich den Plänen nicht
+ * eindeutig zuordnen, daher bleiben die Nummern der Teilungserklärung.
+ * - Pläne, Teilungserklärung, Abgeschlossenheitsbescheinigung, Wirtschafts-
+ *   plan 2027 und Exposé kennen nur 11 abgeschlossene Einheiten (EG 4, 1.OG 4,
+ *   DG 3) mit 57,18 / 71,54 / 45,38 / 28,03 / 39,01 / 23,92 / 98,40 / 42,67 /
+ *   91,79 / 31,94 / 88,67 m². Eine zwölfte Einheit gibt es in keinem Plan.
+ * - Die Listenwerte sind gerundet und weichen bis über 10 % ab. Klar passt nur
+ *   46 ≈ 45,38 (WE 3 EG) und 56,05 ≈ 57,18 (WE 1); 90 könnte WE 9 (91,79) oder
+ *   WE 7 (98,40) sein, 80 ≈ 88,67 (WE 11) nur grob. Die beiden 25er passen auf
+ *   WE 4 (28,03) und WE 6 (23,92), aber ohne Lageangabe nicht in welcher
+ *   Reihenfolge. Für 60 und 65 gibt es keinen passenden Plan (nächste: 57,18,
+ *   71,54). 48 + 50 = 98 träfe WE 7 als geteilte Einheit, dafür gibt es keinen
+ *   Plan. Die Liste hat weder Geschoss noch Lage.
+ * - Umbau in der Liste: Nr. 11 (56,05) und Nr. 12 (35). Umgebaut wird nach dem
+ *   Abgeschlossenheitsplan die EG-Büroeinheit zu WE 2 (71,54) und WE 3
+ *   (45,38); die Flächen passen nicht.
+ * Für eine Zuordnung braucht es Geschoss und Lage je Listennummer, etwa
+ * aus den Mietverträgen.
  *
  * Maßstab: Außenmaß 24,00 × 11,26 m laut Maßketten, auf allen Geschossen
  * gleich. Ursprung ist die Außenecke oben links (Nordwesten), die Geschosse
  * liegen deckungsgleich übereinander (Treppenhaus x 9,3 bis 12,0 m).
  * Wände: Mittellinien aus den Raumkanten, Dicke = Abstand der Raumkanten
  * (außen 0,38 m, DG-Giebel 0,25 m). Türen und Fenster aus den Türbögen der
- * Pläne; im DG Gauben- und Giebelfenster nach Ansichten, Dachflächenfenster
- * fehlen. Schornsteine und Schächte sind als dicke Wandstücke eingetragen.
+ * Pläne; im DG Gauben-, Zwerchgiebel-, Turm- und Ostgiebelfenster nach
+ * Ansichten, Dachflächenfenster und die kleinen Dreiecksfenster fehlen. Schornsteine und Schächte sind als dicke Wandstücke eingetragen.
  *
- * Dach: Satteldach, First längs (x), 35° und Kniestock rund 0,15 m nach
- * Schnitt A; Gauben, Zwerchgiebel und der achteckige Treppenhauserker sind
- * im Dachmodell nicht abgebildet. Farben gemittelt aus den Drohnenfotos
- * (Upload Investagon, 01, 02 Außen): Putz in der Abendsonne, daher leicht grau.
+ * Dach: siehe DACH unten. Farben gemittelt aus den Drohnenfotos
+ * (Upload Investagon, 01, 02 Außen); der Putz ist auf allen Fotos weiß, gemessen wirkte er in der Abendsonne grau, daher weiß gesetzt.
  */
 
 /** Wand von (x1,y1) nach (x2,y2) in Metern; Öffnungen als [Art, von, bis] auf der Hauptachse der Wand. */
@@ -163,11 +180,11 @@ const OG = bauer()
   .plan(1);
 
 const DG = bauer()
-  .wand(0.125, 0.19, 23.875, 0.19, 0.38, ["fenster", 4.5, 6.5], ["fenster", 11.2, 13.2], ["fenster", 18, 20])
+  .wand(0.125, 0.19, 23.875, 0.19, 0.38, ["fenster", 4.18, 7.13], ["fenster", 10.76, 13.71], ["fenster", 17.52, 20.47])
   .wand(0.125, 0.19, 0.125, 11.07, 0.25, ["fenster", 4.1, 6.3])
   .wand(23.875, 0.19, 23.875, 11.07, 0.25, ["fenster", 4.2, 5.3], ["fenster", 6, 7])
   .wand(0.125, 11.07, 9.365, 11.07, 0.38, ["fenster", 3.6, 6.1])
-  .wand(15.225, 11.07, 23.875, 11.07, 0.38, ["fenster", 15.9, 16.8], ["fenster", 17.9, 20.4])
+  .wand(15.225, 11.07, 23.875, 11.07, 0.38, ["fenster", 17.9, 20.4])
   .wand(9.365, 0.19, 9.365, 11.07, 0.25, ["tuer", 6.239, 7.246])
   .wand(0.125, 6.668, 5.72, 6.668, 0.15)
   .wand(5.72, 6.668, 6.51, 5.297, 0.15, ["tuer", 5.742, 6.4])
@@ -207,33 +224,93 @@ const DG = bauer()
   .raum("Treppenhaus", "treppenhaus", 9.49, 6.233, 13.24, 6.233, 13.24, 9.7, 12.4, 10.56, 10.97, 10.56, 10.05, 9.84, 9.49, 9.84)
   .plan(2);
 
+/*
+ * Dach eins zu eins als ebene Flächen (Höhe h über DG-Fußboden), nach den
+ * Fotos 01–06 (Upload Investagon) und den Maßen aus Schnitt A und den
+ * Ansichten Nord/West und Süd/Ost (1:100):
+ * - Hauptdach 35°, Dachfläche an der Außenwandflucht 0,15 m über DG-Boden,
+ *   First 4,09 m, Traufüberstand 0,3 m, Ortgang 0,2 m. Giebel an beiden
+ *   Enden: Ost (Seiteneingang, Foto 04) und West. Für West sprechen die
+ *   Ansicht Süd/West (Giebel mit Fenster), der DG-Plan (Giebelfenster, keine
+ *   Gratlinien) und die Fotos 02/03 (gerader Ortgang am Westende, keine
+ *   Walmfläche).
+ * - Oben (Nordwest) drei Gauben bündig auf der Fassade, Mitten x 5,65 / 12,23
+ *   / 18,99: unten steil (Fuß 5,1 m breit an der Traufe), Knick bei 2,35 m
+ *   (3,7 m breit), First 3,55 m, vorn kleiner Krüppelwalm ab 3,1 m (45°).
+ *   Ihre Kehlen enden bei y ≈ 4,8 wie die Linien im DG-Plan.
+ * - Unten (Südost) zwei Zwerchgiebel x 1,0–8,8 und 15,1–22,9, 35°, Traufe
+ *   0,85 / 0,89 m, First 3,58 / 3,62 m (gut 0,5 m unter dem Hauptfirst, Ansicht
+ *   Süd/Ost); Kehlen wie die Linien im DG-Plan.
+ * - Dazwischen der achteckige Treppenturm (3,4 m breit, Front y 10,82) mit
+ *   Zeltdach, Traufe 2,33 m, Spitze 3,6 m.
+ * - Vordächer zeigen weder Ansichten noch Fotos, daher keine.
+ * Verschnitten ist rechnerisch: Jede Fläche endet dort, wo ein anderer
+ * Dachkörper höher liegt, also genau an Kehle und Grat. Giebeldreiecke,
+ * Gauben- und Zwerchgiebelwände und die Turmwände sind „fassade“, die
+ * Giebelwände 2 cm vor der Wandflucht, damit sie nicht mit den DG-Wänden
+ * flimmern. Ausgerechnet mit dach.py im Scratchpad (Ordner brueck).
+ */
+const fl = (material: Dachflaeche["material"], ...k: number[]): Dachflaeche => {
+  const punkte: Array<[number, number, number]> = [];
+  for (let i = 0; i < k.length; i += 3) punkte.push([k[i], k[i + 1], k[i + 2]]);
+  return { geschoss: 2, material, punkte, ...(material === "ziegel" ? { farbe: "#d4524a" } : {}) };
+};
+
+const DACH: Dachflaeche[] = [
+  fl("ziegel", 5.65, 4.86, 3.55, 3.8, 3.14, 2.35, 3.1, -0.3, -0.06, -0.2, -0.3, -0.06, -0.2, 5.63, 4.09, 24.2, 5.63, 4.09, 24.2, -0.3, -0.06, 21.54, -0.3, -0.06, 20.84, 3.14, 2.35, 18.99, 4.86, 3.55, 17.14, 3.14, 2.35, 16.44, -0.3, -0.06, 14.78, -0.3, -0.06, 14.08, 3.14, 2.35, 12.23, 4.86, 3.55, 10.38, 3.14, 2.35, 9.68, -0.3, -0.06, 8.2, -0.3, -0.06, 7.5, 3.14, 2.35),
+  fl("ziegel", 0.8, 11.56, -0.06, 0.8, 10.46, 0.71, 4.9, 6.36, 3.58, 9, 10.46, 0.71, 9, 11.56, -0.06, 14.9, 11.56, -0.06, 14.9, 10.4, 0.75, 19, 6.3, 3.62, 23.1, 10.4, 0.75, 23.1, 11.56, -0.06, 24.2, 11.56, -0.06, 24.2, 5.63, 4.09, -0.2, 5.63, 4.09, -0.2, 11.56, -0.06),
+  fl("ziegel", 4.9, 6.36, 3.58, 0.8, 10.46, 0.71, 0.8, 11.56, 0.71, 4.9, 11.56, 3.58),
+  fl("ziegel", 9, 11.56, 0.71, 9, 10.46, 0.71, 4.9, 6.36, 3.58, 4.9, 11.56, 3.58),
+  fl("ziegel", 14.9, 10.4, 0.75, 14.9, 11.56, 0.75, 19, 11.56, 3.62, 19, 6.3, 3.62),
+  fl("ziegel", 23.1, 11.56, 0.75, 23.1, 10.4, 0.75, 19, 6.3, 3.62, 19, 11.56, 3.62),
+  fl("ziegel", 3.1, -0.3, -0.06, 3.8, 3.14, 2.35, 3.8, -0.3, 2.35),
+  fl("ziegel", 4.49, -0.3, 2.8, 3.8, -0.3, 2.35, 3.8, 3.14, 2.35, 5.65, 4.86, 3.55, 5.65, 0.45, 3.55),
+  fl("ziegel", 8.2, -0.3, -0.06, 7.5, -0.3, 2.35, 7.5, 3.14, 2.35),
+  fl("ziegel", 7.5, 3.14, 2.35, 7.5, -0.3, 2.35, 6.81, -0.3, 2.8, 5.65, 0.45, 3.55, 5.65, 4.86, 3.55),
+  fl("ziegel", 6.81, -0.3, 2.8, 4.49, -0.3, 2.8, 5.65, 0.45, 3.55),
+  fl("ziegel", 10.38, -0.3, 2.35, 9.68, -0.3, -0.06, 10.38, 3.14, 2.35),
+  fl("ziegel", 10.38, 3.14, 2.35, 12.23, 4.86, 3.55, 12.23, 0.45, 3.55, 11.07, -0.3, 2.8, 10.38, -0.3, 2.35),
+  fl("ziegel", 14.78, -0.3, -0.06, 14.08, -0.3, 2.35, 14.08, 3.14, 2.35),
+  fl("ziegel", 12.23, 0.45, 3.55, 12.23, 4.86, 3.55, 14.08, 3.14, 2.35, 14.08, -0.3, 2.35, 13.39, -0.3, 2.8),
+  fl("ziegel", 13.39, -0.3, 2.8, 11.07, -0.3, 2.8, 12.23, 0.45, 3.55),
+  fl("ziegel", 17.14, 3.14, 2.35, 17.14, -0.3, 2.35, 16.44, -0.3, -0.06),
+  fl("ziegel", 18.99, 0.45, 3.55, 17.83, -0.3, 2.8, 17.14, -0.3, 2.35, 17.14, 3.14, 2.35, 18.99, 4.86, 3.55),
+  fl("ziegel", 20.84, 3.14, 2.35, 21.54, -0.3, -0.06, 20.84, -0.3, 2.35),
+  fl("ziegel", 20.15, -0.3, 2.8, 18.99, 0.45, 3.55, 18.99, 4.86, 3.55, 20.84, 3.14, 2.35, 20.84, -0.3, 2.35),
+  fl("ziegel", 20.15, -0.3, 2.8, 17.83, -0.3, 2.8, 18.99, 0.45, 3.55),
+  fl("ziegel", 12.66, 11.2, 2.02, 13.83, 10.03, 2.02, 13.83, 9.98, 2.05, 11.75, 9.12, 3.6, 12.61, 11.2, 2.05),
+  fl("ziegel", 13.83, 9.98, 2.05, 13.83, 8.55, 2.05, 13.63, 8.34, 2.19, 11.75, 9.12, 3.6),
+  fl("ziegel", 12.31, 7.77, 2.59, 11.75, 9.12, 3.6, 13.63, 8.34, 2.19),
+  fl("ziegel", 11.19, 7.77, 2.59, 11.75, 9.12, 3.6, 12.31, 7.77, 2.59),
+  fl("ziegel", 11.19, 7.77, 2.59, 9.87, 8.34, 2.19, 11.75, 9.12, 3.6, 11.75, 9.12, 3.6),
+  fl("ziegel", 9.67, 8.55, 2.05, 9.67, 9.98, 2.05, 11.75, 9.12, 3.6, 9.87, 8.34, 2.19),
+  fl("ziegel", 9.67, 10.03, 2.02, 10.84, 11.2, 2.02, 10.89, 11.2, 2.05, 11.75, 9.12, 3.6, 9.67, 9.98, 2.05),
+  fl("ziegel", 10.89, 11.2, 2.05, 12.61, 11.2, 2.05, 11.75, 9.12, 3.6, 11.75, 9.12, 3.6),
+  fl("fassade", 24.02, 0, 0.15, 24.02, 2.81, 2.12, 24.02, 5.63, 4.09, 24.02, 11.26, 0.15),
+  fl("fassade", -0.02, 0, 0.15, -0.02, 2.81, 2.12, -0.02, 5.63, 4.09, -0.02, 11.26, 0.15),
+  fl("fassade", 1, 11.28, 0.85, 2.3, 11.28, 1.76, 4.9, 11.28, 3.58, 8.8, 11.28, 0.85, 8.8, 11.28, 0.15, 1, 11.28, 0.15),
+  fl("fassade", 1, 11.26, 0.85, 1, 10.26, 0.85, 1, 11.26, 0.15),
+  fl("fassade", 8.8, 11.26, 0.85, 8.8, 10.26, 0.85, 8.8, 11.26, 0.15),
+  fl("fassade", 15.1, 11.28, 0.89, 15.75, 11.28, 1.34, 19, 11.28, 3.62, 22.9, 11.28, 0.89, 22.9, 11.28, 0.15, 15.1, 11.28, 0.15),
+  fl("fassade", 15.1, 11.26, 0.89, 15.1, 10.2, 0.89, 15.1, 11.26, 0.15),
+  fl("fassade", 22.9, 11.26, 0.89, 22.9, 10.2, 0.89, 22.9, 11.26, 0.15),
+  fl("fassade", 3.16, -0.02, 0.15, 3.8, -0.02, 2.35, 4.95, -0.02, 3.1, 5, -0.02, 3.1, 6.3, -0.02, 3.1, 6.35, -0.02, 3.1, 7.5, -0.02, 2.35, 8.14, -0.02, 0.15),
+  fl("fassade", 9.74, -0.02, 0.15, 10.38, -0.02, 2.35, 11.53, -0.02, 3.1, 11.58, -0.02, 3.1, 12.88, -0.02, 3.1, 12.93, -0.02, 3.1, 14.08, -0.02, 2.35, 14.72, -0.02, 0.15),
+  fl("fassade", 16.5, -0.02, 0.15, 17.14, -0.02, 2.35, 18.29, -0.02, 3.1, 18.34, -0.02, 3.1, 19.64, -0.02, 3.1, 19.69, -0.02, 3.1, 20.84, -0.02, 2.35, 21.48, -0.02, 0.15),
+  fl("fassade", 12.5, 10.82, 2.33, 13.45, 9.87, 2.33, 13.45, 9.87, 1.12, 12.5, 10.82, 0.46),
+  fl("fassade", 13.45, 9.87, 2.33, 13.45, 8.37, 2.33, 13.45, 8.37, 2.17, 13.45, 9.87, 1.12),
+  fl("fassade", 13.45, 8.37, 2.33, 13.37, 8.29, 2.33, 13.23, 8.15, 2.33, 13.45, 8.37, 2.17),
+  fl("fassade", 10.27, 8.15, 2.33, 10.05, 8.37, 2.33, 10.05, 8.37, 2.17),
+  fl("fassade", 10.05, 8.37, 2.33, 10.05, 9.87, 2.33, 10.05, 9.87, 1.12, 10.05, 8.37, 2.17),
+  fl("fassade", 10.05, 9.87, 2.33, 11, 10.82, 2.33, 11, 10.82, 0.46, 10.05, 9.87, 1.12),
+  fl("fassade", 11, 10.82, 2.33, 12.5, 10.82, 2.33, 12.5, 10.82, 0.46, 11, 10.82, 0.46),
+];
+
 const AUSSEHEN: Aussehen = {
-  fassade: "#cad0d4",
-  dach: { art: "sattel", first: "x", neigung: 35, kniestock: 0.15, farbe: "#d4524a", ueberstand: 0.2 },
+  fassade: "#f2f0ea",
+  dach: { art: "flaechen", flaechen: DACH },
   // Terrasse von WE 1 vor dem Westgiebel (17,28 m² laut Abgeschlossenheitsplan).
   balkone: [{ geschosse: [0], x: -2.49, y: 0.41, b: 2.49, t: 6.86 }],
-  /*
-   * Dachaufbauten, gemessen in den Ansichten Nord/West und Süd/Ost (1:100,
-   * 24,00 m = 1040 px bei 110 dpi), Lage gegen die Linien im DG-Plan und die
-   * Drohnenfotos 01, 02, 04 geprüft. Höhen über DG-Fußboden, der liegt nach
-   * Schnitt A rund 0,15 m unter der Traufe. Genauigkeit etwa 0,1 m.
-   * - oben (Nordwest): drei gleiche Gauben mit abgeknicktem Walmdach, als
-   *   „sattel“ genähert. Die Breite ist der Mittelwert aus Fuß (5,1 m) und
-   *   Oberkante der Vorderwand (3,7 m). Die Gauben sitzen knapp hinter der
-   *   Traufe; den Abstand von 0,2 m habe ich geschätzt.
-   * - unten (Südost): zwei Zwerchgiebel, bündig mit der Fassade.
-   * - unten Mitte: achteckiger Treppenhauserker, als Zwerchgiebel genähert.
-   *   Er springt in Wirklichkeit etwa 0,4 m hinter die Fassade zurück, hat ein
-   *   Zeltdach und drei Fenster (zusammen 3,1 m).
-   */
-  gauben: [
-    { seite: "oben", von: 3.45, b: 4.4, abstand: 0.2, hoehe: 2.6, art: "sattel", fenster: 2.95 },
-    { seite: "oben", von: 10.0, b: 4.4, abstand: 0.2, hoehe: 2.6, art: "sattel", fenster: 2.95 },
-    { seite: "oben", von: 16.8, b: 4.4, abstand: 0.2, hoehe: 2.6, art: "sattel", fenster: 2.95 },
-    { seite: "unten", von: 1.0, b: 7.8, abstand: 0, hoehe: 1.1, art: "sattel", neigung: 35, fenster: 2.95 },
-    { seite: "unten", von: 15.1, b: 7.8, abstand: 0, hoehe: 1.1, art: "sattel", neigung: 35, fenster: 3.0 },
-    { seite: "unten", von: 9.45, b: 4.1, abstand: 0, hoehe: 2.55, art: "sattel", fenster: 3.1 },
-  ],
 };
 
 export const BRUECK: { name: string; etagen: Array<{ geschoss: number; titel: string; plan: Grundriss3dPlan }>; aussehen: Aussehen } = {

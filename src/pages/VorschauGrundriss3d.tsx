@@ -15,7 +15,7 @@ const Editor = lazy(() => import("@/components/grundriss3d/GrundrissEditor"));
  * Einzelgrundriss im Exposé (Seite 5). Speichern landet hier nur im Browser.
  */
 
-type Reiter = "einheit" | "haus" | "barfuss" | "hauff" | "zossen" | "brueck" | "expose" | "editor" | "neu";
+type Reiter = "einheit" | "haus" | "barfuss" | "hauff" | "zossen" | "brueck" | "cottbus" | "expose" | "editor" | "neu";
 
 const REITER: Array<{ id: Reiter; name: string }> = [
   { id: "einheit", name: "Einheitenseite (WE 03)" },
@@ -24,6 +24,7 @@ const REITER: Array<{ id: Reiter; name: string }> = [
   { id: "hauff", name: "Hauffstraße 38 (aus CAD-Plänen)" },
   { id: "zossen", name: "Zossen (DHH 1 und 2)" },
   { id: "brueck", name: "Brück, Marktstraße 6" },
+  { id: "cottbus", name: "Cottbus, Jamlitzer Straße 9" },
   { id: "expose", name: "Exposé" },
   { id: "editor", name: "Editor mit Plan" },
   { id: "neu", name: "Editor leer" },
@@ -114,6 +115,7 @@ export default function VorschauGrundriss3d() {
         {reiter === "hauff" && <HauffVorschau startwerte={startwerte} />}
         {reiter === "zossen" && <><ZossenVorschau adresse="Agnesstraße 29" startwerte={startwerte} /><ZossenVorschau adresse="Luisenstraße 72" startwerte={startwerte} /></>}
         {reiter === "brueck" && <ZossenVorschau adresse="Marktstraße 6" startwerte={startwerte} />}
+        {reiter === "cottbus" && <ZossenVorschau adresse="Jamlitzer Straße 9" startwerte={startwerte} />}
 
         {reiter === "expose" && (
           <section className="rounded-xl border bg-white p-4" style={{ fontFamily: "Georgia, serif" }}>
