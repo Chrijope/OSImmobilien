@@ -1,5 +1,5 @@
 import { strToU8, zipSync } from "https://esm.sh/fflate@0.8.2";
-import { leererBildBericht, uebernimmBilder } from "./bilder.ts";
+import { leererBildBericht, stabileHerkunft, uebernimmBilder } from "./bilder.ts";
 
 function assert(value: unknown, message: string) {
   if (!value) throw new Error(message);
@@ -571,4 +571,12 @@ Deno.test("Unterlagen: kommen auch an, wenn das Zeitbudget nicht für alle Fotos
     globalThis.fetch = fetchOriginal;
     Date.now = nowOriginal;
   }
+});
+
+Deno.test("Übergabe-Paket: ein signierter Link ergibt bei jedem Lauf dieselbe Herkunft", () => {
+  const a = "https://x.supabase.co/storage/v1/object/sign/investagon-dokumente/uebergabe/foto__ab.jpeg?token=eins";
+  const b = "https://x.supabase.co/storage/v1/object/sign/investagon-dokumente/uebergabe/foto__ab.jpeg?token=zwei";
+  assert(stabileHerkunft(a) === stabileHerkunft(b), "Token darf die Herkunft nicht ändern");
+  // Fremde Adressen bleiben unverändert, ihre Abfrage kann Teil der Kennung sein.
+  assert(stabileHerkunft("https://cdn.example/bild.jpg?id=7") === "https://cdn.example/bild.jpg?id=7", "fremde Adresse unverändert");
 });

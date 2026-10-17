@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { EinwandBibliothekMerged } from "@/components/einwaende/EinwandBibliothekMerged";
+import { EINWAND_BIBLIOTHEK } from "@/lib/vertriebsakademieContent";
 
 export default function VertriebsakademieEinwaende() {
   const neueAnsicht = useLocation().pathname.startsWith("/vertriebsakademie");
@@ -33,7 +34,7 @@ export default function VertriebsakademieEinwaende() {
 
         <PageHeader
           title="Einwand-Bibliothek & Einwandbehandlung"
-          subtitle="31 Einwände mit Motiv, Antwort, Falle und Profi-Move, jeder mit der Technik verknüpft, die bei ihm greift. Im Erstgesprächsskript erscheinen sie automatisch an der Stelle, an der sie typischerweise kommen."
+          subtitle={`${EINWAND_BIBLIOTHEK.length} Einwände nach dem OS-Handbuch Einwandbehandlung, mit Motiv, Antwort, Nachfrage, Zustimmungsfrage und den Sätzen, die wir nie sagen. Im Erstgesprächsskript erscheinen sie automatisch an der Stelle, an der sie typischerweise kommen.`}
         />
 
         <EinwandBibliothekMerged />

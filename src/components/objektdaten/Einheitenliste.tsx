@@ -26,6 +26,10 @@ import { bruttoRendite, nettoRendite, renditeEingabe } from "@/lib/renditeBrutto
 import { hausgeldAusPlan, wirtschaftsplanFuerObjekt } from "@/lib/wirtschaftsplanObjekt";
 import { WirtschaftsplanKarte } from "@/components/objektdaten/WirtschaftsplanKarte";
 import { SortKopf } from "@/components/objektdaten/sortierung";
+import { SPALTEN, spaltenName } from "@/lib/objektdatenSpalten";
+import { zahlAus } from "@/lib/objektdatenFormular";
+import { abverkauf, aufteilungFuerObjekt, kalkulationenLaden, kaufpreisEingaenge, margeJeEinheit, type ObjektKalkulation } from "@/lib/projektObjekt";
+import { ProjektKarte } from "@/components/objektdaten/ProjektKarte";
 import { useSortierung, type SortWert } from "@/lib/sortierung";
 import { handlungsbedarf, potenzialMonat, type HinweisArt } from "@/lib/handlungsbedarf";
 import { einheitVollstaendigkeit } from "@/lib/objektdaten";
@@ -57,6 +61,7 @@ import { garagenUnterlagenFuer, garagenUnterlagenHerunterladen, versendetAm } fr
 
 /** Wer Einheiten und Objekte schreiben darf, wie die Zeilensicherheit an `wohnungen` und `objekte`. */
 const SCHREIBT_OBJEKTE = ["admin", "inhaber", "objektpartner"];
+const FINANZIERUNG_TEXT: Record<string, string> = { offen: "offen", bestaetigt: "bestätigt", abgelehnt: "abgelehnt" };
 
 const eur = (n: number | null | undefined, stellen = 0) =>
   n === null || n === undefined ? "–" : n.toLocaleString("de-DE", { minimumFractionDigits: stellen, maximumFractionDigits: stellen }) + " €";
@@ -64,12 +69,8 @@ const zahl = (n: number | null | undefined, stellen = 2) =>
   n === null || n === undefined ? "–" : n.toLocaleString("de-DE", { minimumFractionDigits: stellen, maximumFractionDigits: stellen });
 const prozent = (n: number | null) =>
   n === null ? "–" : (n * 100).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " %";
-const lesen = (s: string): number | null => {
-  const t = s.trim().replace(/\s|€/g, "");
-  if (!t) return null;
-  const n = Number(t.includes(",") ? t.replace(/\./g, "").replace(",", ".") : t);
-  return Number.isFinite(n) ? n : null;
-};
+// Deutsche Eingabe, auch „250.000“ ohne Komma.
+const lesen = zahlAus;
 
 function Kennzahl({ titel, wert }: { titel: string; wert: string }) {
   return (
@@ -289,17 +290,19 @@ function ErhoehungsKarte({ objekt, regel, darfSchreiben }: { objekt: ObjektData;
   );
 }
 
-type Ansicht = "handlung" | "preise" | "miete" | "subvention" | "hausgeld" | "garagen" | "verkauf" | "kosten" | "fristen";
-const ANSICHTEN: { wert: Ansicht; titel: string }[] = [
-  { wert: "handlung", titel: "Handlungsbedarf" },
-  { wert: "preise", titel: "Preise & Rendite" },
-  { wert: "miete", titel: "Miete & Erhöhungen" },
-  { wert: "subvention", titel: "Mietsubvention" },
-  { wert: "hausgeld", titel: "Hausgeld" },
-  { wert: "garagen", titel: "Garagen" },
-  { wert: "verkauf", titel: "Verkaufsstand" },
-  { wert: "kosten", titel: "Kosten je Jahr" },
-  { wert: "fristen", titel: "Fristen" },
+type Ansicht = "handlung" | "preise" | "marge" | "miete" | "subvention" | "hausgeld" | "garagen" | "verkauf" | "kosten" | "fristen";
+// Gruppiert nach der Frage, mit der man kommt; `zweck` steht unter den Reitern.
+const ANSICHTEN: { wert: Ansicht; titel: string; gruppe: string; zweck: string }[] = [
+  { wert: "handlung", titel: "Handlungsbedarf", gruppe: "Überblick", zweck: "Was an welcher Einheit zu tun ist und wie viel Miete im Monat mehr möglich wäre." },
+  { wert: "preise", titel: "Preise & Rendite", gruppe: "Verkauf", zweck: "Kaufpreise, Exposé-Miete und Rendite je Einheit, so wie der Vertrieb sie anbietet." },
+  { wert: "marge", titel: "Marge & Abverkauf", gruppe: "Verkauf", zweck: "Was jede Einheit nach Ankauf, Aufteilung und Provision einbringt, wie weit der Abverkauf ist und wann Kaufpreise kommen." },
+  { wert: "verkauf", titel: "Verkaufsstand", gruppe: "Verkauf", zweck: "Wer welche Einheit gekauft hat und wie weit Notar, Kaufpreis, Grundbuch und Übergabe sind." },
+  { wert: "fristen", titel: "Fristen", gruppe: "Verkauf", zweck: "Alle Termine aus Verkauf, Vermietung und Subvention in einer Liste, nach Datum." },
+  { wert: "miete", titel: "Miete & Erhöhungen", gruppe: "Vermietung", zweck: "Ist- und Sollmiete, wann die nächste Mieterhöhung möglich ist und wie hoch." },
+  { wert: "subvention", titel: "Mietsubvention", gruppe: "Vermietung", zweck: "Was wir je Einheit an Mietsubvention zahlen, im Monat und über die Laufzeit." },
+  { wert: "garagen", titel: "Garagen", gruppe: "Vermietung", zweck: "Garagen und Stellplätze je Einheit: Kaufpreis, Miete, Subvention, Unterlagen an den Käufer." },
+  { wert: "hausgeld", titel: "Hausgeld", gruppe: "Bewirtschaftung", zweck: "Hausgeld je Einheit, was der Eigentümer davon trägt und was nach Kosten übrig bleibt." },
+  { wert: "kosten", titel: "Kosten je Jahr", gruppe: "Bewirtschaftung", zweck: "Einnahmen und Ausgaben je Monat, solange die Einheiten uns gehören, und unsere Subventionen danach." },
 ];
 
 const HINWEIS_FARBE: Record<HinweisArt, string> = {
@@ -341,6 +344,18 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
   const darfAbwicklung = ABWICKLUNG_ROLLEN.includes(user.role);
   const darfGeld = ABWICKLUNG_GELD_ROLLEN.includes(user.role);
   const einzeln = objekte.length === 1 ? objekte[0] : null;
+  // Kalkulation (Geld) liegt gesperrt in `objekt_kalkulation`; nur die Schreibrollen laden sie.
+  const [kalkulationen, setKalkulationen] = useState<Map<string, ObjektKalkulation>>(new Map());
+  const [kalkStand, setKalkStand] = useState(0);
+  const objektIds = objekte.map((o) => o.id).join(",");
+  useEffect(() => {
+    if (!darfSchreiben || !objektIds) return;
+    let aktiv = true;
+    kalkulationenLaden(objektIds.split(","))
+      .then((m) => { if (aktiv) setKalkulationen(m); })
+      .catch(() => { if (aktiv) setKalkulationen(new Map()); });
+    return () => { aktiv = false; };
+  }, [darfSchreiben, objektIds, kalkStand]);
 
   /*
    * Eine Zeile je Einheit mit allen abgeleiteten Werten. Alles wird bei jedem
@@ -351,6 +366,10 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
     const regel = mietgarantieFuerObjekt(o.id);
     const summeKaufpreise = o.wohnungen.reduce((s, w) => s + (w.vkGesamt || 0), 0);
     const erhRegel = erhoehungsRegelAusMeta(cacheGet("objekte").find((r: { id: string }) => r.id === o.id)?.meta, bundeslandFromPlz(o.plz));
+    const projekt = aufteilungFuerObjekt(o.id);
+    const margen = margeJeEinheit(kalkulationen.get(o.id) ?? {}, o.wohnungen.map((w) => ({
+      id: w.id, kaufpreis: w.vkGesamt || null, mea: listenZahl(listendatenFuerEinheit(w.id), "mea"), flaeche: einheitZeile(w).flaeche,
+    })));
     return o.wohnungen.map((w) => {
       const z = einheitZeile(w);
       const m = aktuellerMieter(mieter, w.id);
@@ -378,6 +397,7 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
       return {
         objekt: o, w, z, m, ist, garage, regel, garantie, l, hg, hgPlan, gesperrt: ausInvestagon(w),
         inv: investmentFuerEinheit(investments, w.id),
+        projekt, marge: margen.get(w.id) ?? null,
         einmal: regel ? einmalAnteil(regel, w.vkGesamt || 0, summeKaufpreise) : 0,
         erhoehung,
         bruttoIst: ist ? bruttoRendite(ist, z.kaufpreis ?? 0) : null,
@@ -431,6 +451,9 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
     "Grundbuch am": (x) => (x.inv ? getAbwicklungDaten(x.inv.id).grundbuchDatum : null),
     "Grundbuch erfolgt": (x) => (x.inv ? (getAbwicklungDaten(x.inv.id).grundbuchEingetragen ? 1 : 0) : null),
     Übergabe: (x) => (x.inv ? getAbwicklungDaten(x.inv.id).uebergabeDatum : null),
+    "Reserviert am": (x) => x.w.reserviertAm?.slice(0, 10), Finanzierung: (x) => (x.inv?.finanzierungsStatus ? FINANZIERUNG_TEXT[x.inv.finanzierungsStatus] : null),
+    "Vorkaufsrecht mitgeteilt": (x) => String(x.l?.werte.vorkaufMitgeteilt ?? ""),
+    Kostenanteil: (x) => x.marge?.kostenanteil, Provision: (x) => x.marge?.provision, Marge: (x) => x.marge?.marge, "Marge %": (x) => x.marge?.margeProzent,
   };
   const sort = useSortierung<Zeile>(SORT);
   const mitGarantie = zeilen.some((x) => x.regel);
@@ -497,8 +520,12 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
         faelligkeit: abw?.kaufpreisfaelligkeitDatum, uebergabe: abw?.uebergabeDatum,
         subventionMonate: x.regel?.art !== "einmal" && x.garantie?.garantieMonat ? x.regel?.laufzeitMonate : undefined,
         garagenSubventionMonate: x.garantie?.garagenSubventionMonat ? x.regel?.garagenSubventionMonate : undefined,
+        reserviertAm: x.w.status === "reserviert" ? x.w.reserviertAm : undefined, reservierungTage: x.projekt.reservierungTage,
+        vorkaufMitgeteilt: typeof x.l?.werte.vorkaufMitgeteilt === "string" ? x.l.werte.vorkaufMitgeteilt : undefined,
+        // Kündigungssperre nach § 577a BGB: drei Jahre, in Berlin per Verordnung zehn (andere Orte prüfen).
+        vermietet: !!x.ist, sperrfristJahre: bundeslandFromPlz(o.plz) === "berlin" ? 10 : 3,
       };
-    }), ausweis ? excelDatumIso(ausweis) || (/^\d{4}$/.test(ausweis) ? `${ausweis}-12-31` : "") : "").map((f) => ({ ...f, objekt: o.titel }));
+    }), ausweis ? excelDatumIso(ausweis) || (/^\d{4}$/.test(ausweis) ? `${ausweis}-12-31` : "") : "", aufteilungFuerObjekt(o.id).meilensteine?.abnahme).map((f) => ({ ...f, objekt: o.titel }));
   });
   const kostenBerechnen = () => kostenJahr(zeilen.filter((x) => x.w.status !== "verkauft" || x.inv).map((x) => ({
     istMiete: x.ist, eigentuemerlast: x.last, hausgeldGesamt: x.hg.gesamt,
@@ -516,7 +543,8 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
     subvention: ["WE", "Lage", "Ist-Kaltmiete", "Zielmiete", "Garantie mtl.", "Garantie Laufzeit", "Garagen-Subv. mtl.", "Einmalanteil", "Mietsubvention", "laut Liste"],
     hausgeld: ["WE", "Lage", "Hausgeld gesamt", "umlagefähig", "nicht umlagefähig", "Rücklage", "Eigentümerlast", "Überschuss mtl.", "laut Plan"],
     garagen: ["WE", "Lage", "Garage/SP", "KP Garage", "Ist-Miete Garage", "Sollmiete Garage", "Garagen-Subv. mtl.", "gekündigt zum", "Unterlagen versendet"],
-    verkauf: ["WE", "Lage", "Status", "Käufer", "Stufe", "Notartermin", "Fälligkeit", "Kaufpreis da", "Grundbuch am", "Grundbuch erfolgt", "Übergabe"],
+    verkauf: ["WE", "Lage", "Status", "Reserviert am", "Käufer", "Finanzierung", "Stufe", "Notartermin", "Fälligkeit", "Kaufpreis da", "Grundbuch am", "Grundbuch erfolgt", "Übergabe", "Vorkaufsrecht mitgeteilt"],
+    marge: ["WE", "Lage", "Status", "Kaufpreis", "Kostenanteil", "Provision", "Marge", "Marge %"],
   };
   const exportTabelle = (): ExportTabelle => {
     const titel = `${ANSICHTEN.find((a) => a.wert === ansicht)?.titel ?? "Einheitenliste"}${einzeln ? ` ${einzeln.titel}` : ""}`;
@@ -538,11 +566,11 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
     const zeilenExport = sort.sortiert(zeilen).map((x) => spalten.map((sp) => {
       const v = SORT[sp]?.(x);
       if (ansicht === "handlung" && sp === "Mehrertrag mtl.") return x.potenzial || null;
-      if (["Brutto Ist", "Brutto", "Netto"].includes(sp) && typeof v === "number") return Math.round(v * 10000) / 100;
+      if (["Brutto Ist", "Brutto", "Netto", "Marge %"].includes(sp) && typeof v === "number") return Math.round(v * 10000) / 100;
       if (["Kaufpreis da", "Grundbuch erfolgt"].includes(sp)) return v === 1 ? "ja" : v === 0 ? "nein" : null;
       return v ?? null;
     }));
-    const kopfZeile = spalten.map((sp) => (["Brutto Ist", "Brutto", "Netto"].includes(sp) ? `${sp} %` : sp));
+    const kopfZeile = spalten.map((sp) => (["Brutto Ist", "Brutto", "Netto"].includes(sp) ? `${spaltenName(sp)} %` : spaltenName(sp)));
     if (ansicht === "handlung") {
       kopfZeile.push("Hinweise");
       sort.sortiert(zeilen).forEach((x, i) => zeilenExport[i].push(x.hinweise.map((h) => h.text).join("; ")));
@@ -563,7 +591,8 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
   const kopf = (titel: string, rechts = true, hinweis?: string) => {
     const zeichen = BERECHNET.has(titel) ? "rechnet" : AUS_INVESTAGON.has(titel) && mitInvestagon ? "investagon" : null;
     const erklaerung = zeichen === "rechnet" ? "Wird automatisch berechnet." : zeichen === "investagon" ? "Bei Objekten aus Investagon dort ändern." : undefined;
-    return <SortKopf titel={`${titel}${zeichen === "rechnet" ? " ƒ" : zeichen === "investagon" ? " 🔒" : ""}`} schluessel={SORT[titel] ? titel : undefined}
+    hinweis = SPALTEN[titel]?.info ?? hinweis;
+    return <SortKopf titel={`${spaltenName(titel)}${zeichen === "rechnet" ? " ƒ" : zeichen === "investagon" ? " 🔒" : ""}`} schluessel={SORT[titel] ? titel : undefined}
       sort={sort} rechts={rechts} hinweis={[hinweis, erklaerung].filter(Boolean).join(" ") || undefined} />;
   };
   const r = "text-right tabular-nums whitespace-nowrap";
@@ -585,8 +614,8 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
         <Kennzahl titel="Fläche gesamt" wert={`${zahl(summe((x) => x.z.flaeche))} m²`} />
         <Kennzahl titel="Kaufpreise gesamt" wert={eur(kaufpreis)} />
         <Kennzahl titel="Ist-Kaltmiete im Monat" wert={eur(istMonat, 2)} />
-        <Kennzahl titel="Brutto Ist" wert={prozent(kaufpreis > 0 && istMonat > 0 ? (istMonat * 12) / kaufpreis : null)} />
-        <Kennzahl titel="Brutto Vertrieb" wert={prozent(kaufpreis > 0 && mieteVertrieb > 0 ? (mieteVertrieb * 12) / kaufpreis : null)} />
+        <Kennzahl titel="Rendite brutto Ist" wert={prozent(kaufpreis > 0 && istMonat > 0 ? (istMonat * 12) / kaufpreis : null)} />
+        <Kennzahl titel="Rendite brutto Exposé" wert={prozent(kaufpreis > 0 && mieteVertrieb > 0 ? (mieteVertrieb * 12) / kaufpreis : null)} />
         <Kennzahl titel="Mehrertrag möglich im Monat" wert={eur(summe((x) => x.potenzial), 2)} />
         {mitGarantie && <Kennzahl titel="Subvention im Monat" wert={eur(summe((x) => x.garantie?.garantieMonat), 2)} />}
         {mitGarantie && <Kennzahl titel="Subvention gesamt" wert={eur(summe((x) => (x.garantie?.summeLaufzeit ?? 0) + x.einmal))} />}
@@ -596,6 +625,34 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
           regel={erhoehungsRegelAusMeta(cacheGet("objekte").find((r: { id: string }) => r.id === einzeln.id)?.meta, bundeslandFromPlz(einzeln.plz))} />
       )}
       {einzeln && ansicht === "subvention" && <MietgarantieKarte objekt={einzeln} regel={mietgarantieFuerObjekt(einzeln.id)} darfSchreiben={darfSchreiben} />}
+      {ansicht === "marge" && darfSchreiben && (() => {
+        const a = abverkauf(zeilen.map((x) => ({ status: x.w.status || "", kaufpreis: x.z.kaufpreis, flaeche: x.z.flaeche })));
+        const eingaenge = kaufpreisEingaenge(zeilen.filter((x) => x.inv).map((x) => {
+          const abw = getAbwicklungDaten(x.inv!.id);
+          return { faellig: abw.kaufpreisfaelligkeitDatum, betrag: x.z.kaufpreis, eingegangen: abw.kaufpreisEingegangen };
+        }));
+        const margeSumme = zeilen.some((x) => x.marge) ? summe((x) => x.marge?.marge) : null;
+        return <>
+          {einzeln && <ProjektKarte objekt={einzeln} kalkulation={kalkulationen.get(einzeln.id) ?? {}} aufteilung={aufteilungFuerObjekt(einzeln.id)}
+            darfSchreiben={darfSchreiben} onGespeichert={() => setKalkStand((n) => n + 1)} />}
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-5">
+            <Kennzahl titel="Verkauft" wert={`${a.verkauft.anzahl} von ${a.anzahl} (${prozent(a.quote)})`} />
+            <Kennzahl titel="Reserviert" wert={String(a.reserviert.anzahl)} />
+            <Kennzahl titel="Umsatz verkauft" wert={eur(a.verkauft.umsatz)} />
+            <Kennzahl titel="Umsatz noch offen" wert={eur(a.offen.umsatz)} />
+            <Kennzahl titel="€/m² verkauft · offen" wert={`${eur(a.verkauft.qmPreis)} · ${eur(a.offen.qmPreis)}`} />
+            {margeSumme !== null && <Kennzahl titel="Marge gesamt (alle Einheiten)" wert={eur(margeSumme)} />}
+          </div>
+          <Card>
+            <CardContent className="p-4 text-sm">
+              <div className="mb-1 font-semibold">Erwartete Kaufpreiseingänge</div>
+              {eingaenge.length
+                ? <div className="flex flex-wrap gap-x-6 gap-y-1">{eingaenge.map((e) => <span key={e.monat} className="tabular-nums">{e.monat.slice(5)}/{e.monat.slice(0, 4)}: {eur(e.betrag)} ({e.anzahl})</span>)}</div>
+                : <span className="text-muted-foreground">Keine offenen Kaufpreise mit Fälligkeit.</span>}
+            </CardContent>
+          </Card>
+        </>;
+      })()}
       {einzeln && ansicht === "hausgeld" && <WirtschaftsplanKarte objekt={einzeln} wp={wirtschaftsplanFuerObjekt(einzeln.id)} darfSchreiben={darfSchreiben} />}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
         {darfSchreiben
@@ -604,11 +661,19 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
         <span>ƒ <Calculator className="inline h-3 w-3" /> wird automatisch berechnet</span>
         {mitInvestagon && <span>🔒 kommt aus Investagon und wird dort geändert, sonst überschreibt es der Abgleich alle 15 Minuten</span>}
       </div>
-      <div className="flex flex-wrap gap-2" role="tablist">
-        {ANSICHTEN.map((a) => (
-          <Button key={a.wert} size="sm" variant={ansicht === a.wert ? "default" : "outline"} role="tab" aria-selected={ansicht === a.wert} onClick={() => setAnsicht(a.wert)}>{a.titel}</Button>
+      <div className="flex flex-wrap items-end gap-x-5 gap-y-2" role="tablist">
+        {[...new Set(ANSICHTEN.map((a) => a.gruppe))].map((g) => (
+          <div key={g} className="space-y-1">
+            <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{g}</div>
+            <div className="flex flex-wrap gap-2">
+              {ANSICHTEN.filter((a) => a.gruppe === g && (a.wert !== "marge" || darfSchreiben)).map((a) => (
+                <Button key={a.wert} size="sm" variant={ansicht === a.wert ? "default" : "outline"} role="tab" aria-selected={ansicht === a.wert} onClick={() => setAnsicht(a.wert)}>{a.titel}</Button>
+              ))}
+            </div>
+          </div>
         ))}
       </div>
+      <p className="text-sm text-muted-foreground">{ANSICHTEN.find((a) => a.wert === ansicht)?.zweck}</p>
       {ansicht === "fristen" && (() => {
         const heute = new Date().toISOString().slice(0, 10);
         const alle = fristenBerechnen();
@@ -697,7 +762,8 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
       })() : (
       <Card>
         <CardContent className="p-0 overflow-x-auto">
-          <Table>
+          {/* Erste Spalte (WE oder Objekt) bleibt beim seitlichen Scrollen stehen. */}
+          <Table className="[&_tr>*:first-child]:sticky [&_tr>*:first-child]:left-0 [&_tr>*:first-child]:z-10 [&_tr>*:first-child]:bg-card">
             <TableHeader>
               <TableRow>
                 {mehrere && kopf("Objekt", false)}
@@ -735,10 +801,13 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
                   {kopf("Eigentümerlast", true, "nicht umlagefähig plus Rücklage")}{kopf("Überschuss mtl.", true, "Miete Vertrieb minus Eigentümerlast")}
                   {kopf("laut Plan", true, "Hausgeld gesamt aus dem Wirtschaftsplan über die MEA der Einheit")}
                 </>}
+                {ansicht === "marge" && <>
+                  {kopf("Status", false)}{kopf("Kaufpreis")}{kopf("Kostenanteil")}{kopf("Provision")}{kopf("Marge")}{kopf("Marge %")}
+                </>}
                 {ansicht === "verkauf" && <>
-                  {kopf("Status", false)}{kopf("Käufer", false)}{kopf("Stufe", false)}{kopf("Notartermin", false)}
+                  {kopf("Status", false)}{kopf("Reserviert am", false)}{kopf("Käufer", false)}{kopf("Finanzierung", false)}{kopf("Stufe", false)}{kopf("Notartermin", false)}
                   {kopf("Fälligkeit", false, "Kaufpreisfälligkeit")}{kopf("Kaufpreis da", false, "Kaufpreis eingegangen, setzt nur das Backoffice")}
-                  {kopf("Grundbuch am", false)}{kopf("Grundbuch erfolgt", false)}{kopf("Übergabe", false)}
+                  {kopf("Grundbuch am", false)}{kopf("Grundbuch erfolgt", false)}{kopf("Übergabe", false)}{kopf("Vorkaufsrecht mitgeteilt", false)}
                 </>}
                 {ansicht === "garagen" && <>
                   {kopf("Garage/SP", false)}{kopf("KP Garage")}{kopf("Ist-Miete Garage")}{kopf("Sollmiete Garage")}
@@ -829,7 +898,9 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
                       const abw = inv ? getAbwicklungDaten(inv.id) : null;
                       return <>
                         <TableCell className="whitespace-nowrap text-xs">{z.status}</TableCell>
+                        <TableCell className="whitespace-nowrap text-xs">{w.status === "reserviert" && w.reserviertAm ? datum(w.reserviertAm.slice(0, 10)) : "–"}</TableCell>
                         <TableCell className="whitespace-nowrap text-xs">{inv ? <Link to={`/kunden/${inv.kontaktId}`} className="hover:underline">{z.kaeufer || "zum Kunden"}</Link> : z.kaeufer || "–"}</TableCell>
+                        <TableCell className="whitespace-nowrap text-xs">{inv?.finanzierungsStatus ? FINANZIERUNG_TEXT[inv.finanzierungsStatus] : "–"}</TableCell>
                         <TableCell className="whitespace-nowrap text-xs">{inv ? STUFE_TEXT[inv.pipelineStufe] || inv.pipelineStufe : "–"}</TableCell>
                         <TableCell className="whitespace-nowrap text-xs">
                           {inv ? <ZahlZelle art="datum" wert={inv.notarTermin || null} anzeige={datum(inv.notarTermin)}
@@ -846,8 +917,17 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
                             onCheckedChange={(c) => abwicklungAendern(inv, { grundbuchEingetragen: !!c, grundbuchDatum: c ? (abw.grundbuchDatum || new Date().toISOString().slice(0, 10)) : abw.grundbuchDatum })} /> : "–"}
                         </TableCell>
                         <TableCell className="whitespace-nowrap text-xs">{abwicklungDatum(inv, "uebergabeDatum")}</TableCell>
+                        <TableCell className="whitespace-nowrap text-xs">{x.ist ? listenTextZelle(x, "vorkaufMitgeteilt", "datum") : "–"}</TableCell>
                       </>;
                     })()}
+                    {ansicht === "marge" && <>
+                      <TableCell className="whitespace-nowrap text-xs">{z.status}</TableCell>
+                      <TableCell className={r}>{eur(z.kaufpreis)}</TableCell>
+                      <TableCell className={r}>{x.marge ? eur(x.marge.kostenanteil) : "–"}</TableCell>
+                      <TableCell className={r}>{x.marge ? eur(x.marge.provision) : "–"}</TableCell>
+                      <TableCell className={cn(r, x.marge && x.marge.marge < 0 && "text-red-600")}>{x.marge ? eur(x.marge.marge) : "–"}</TableCell>
+                      <TableCell className={r}>{x.marge ? prozent(x.marge.margeProzent) : "–"}</TableCell>
+                    </>}
                     {ansicht === "garagen" && <>
                       <TableCell className="whitespace-nowrap text-xs">
                         {darfSchreiben
