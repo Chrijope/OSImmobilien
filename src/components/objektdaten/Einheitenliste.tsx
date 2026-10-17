@@ -23,6 +23,8 @@ import { objektMetaErgaenzen, updateWohnung, wohnungMetaErgaenzen, type ObjektDa
 import { aktuellerMieter, einheitZeile } from "@/lib/objektdaten";
 import { listendatenFuerEinheit, listenZahl } from "@/lib/listendaten";
 import { bruttoRendite, nettoRendite, renditeEingabe } from "@/lib/renditeBruttoNetto";
+import { hausgeldAusPlan, wirtschaftsplanFuerObjekt } from "@/lib/wirtschaftsplanObjekt";
+import { WirtschaftsplanKarte } from "@/components/objektdaten/WirtschaftsplanKarte";
 import { cn } from "@/lib/utils";
 
 /*
@@ -228,10 +230,12 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
         nichtUml: w.hausgeldNichtUmlagefaehigEuro ?? listenZahl(l, "hausgeldNichtUmlagefaehig"),
         ruecklage: w.ruecklageZufuehrungMonat ?? listenZahl(l, "ruecklage"),
       };
+      const wp = wirtschaftsplanFuerObjekt(o.id);
+      const hgPlan = wp ? hausgeldAusPlan(wp, listenZahl(l, "mea")) : null;
       const eingabe = renditeEingabe(o, w, z.mieteMonat ?? 0);
       if (hg.nichtUml !== null && w.hausgeldNichtUmlagefaehigEuro === undefined) { eingabe.nichtUmlagefaehigMonat = hg.nichtUml; eingabe.ruecklageMonat = hg.ruecklage ?? 0; }
       return {
-        objekt: o, w, z, m, ist, garage, regel, garantie, l, hg, gesperrt: ausInvestagon(w),
+        objekt: o, w, z, m, ist, garage, regel, garantie, l, hg, hgPlan, gesperrt: ausInvestagon(w),
         bruttoIst: ist ? bruttoRendite(ist, z.kaufpreis ?? 0) : null,
         brutto: z.rendite,
         netto: nettoRendite(eingabe),
@@ -290,7 +294,8 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
         {mitGarantie && <Kennzahl titel="Garantie im Monat" wert={eur(summe((x) => x.garantie?.garantieMonat), 2)} />}
         {mitGarantie && <Kennzahl titel="Garantie über Laufzeit" wert={eur(summe((x) => x.garantie?.summeLaufzeit))} />}
       </div>
-      {einzeln && <MietgarantieKarte objekt={einzeln} regel={mietgarantieFuerObjekt(einzeln.id)} darfSchreiben={darfSchreiben} />}
+      {einzeln && ansicht !== "hausgeld" && <MietgarantieKarte objekt={einzeln} regel={mietgarantieFuerObjekt(einzeln.id)} darfSchreiben={darfSchreiben} />}
+      {einzeln && ansicht === "hausgeld" && <WirtschaftsplanKarte objekt={einzeln} wp={wirtschaftsplanFuerObjekt(einzeln.id)} darfSchreiben={darfSchreiben} />}
       <div className="flex flex-wrap gap-2" role="tablist">
         {ANSICHTEN.map((a) => (
           <Button key={a.wert} size="sm" variant={ansicht === a.wert ? "default" : "outline"} role="tab" aria-selected={ansicht === a.wert} onClick={() => setAnsicht(a.wert)}>{a.titel}</Button>
@@ -322,6 +327,7 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
                 {ansicht === "hausgeld" && <>
                   {kopf("Hausgeld gesamt")}{kopf("umlagefähig")}{kopf("nicht umlagefähig")}{kopf("Rücklage")}
                   {kopf("Eigentümerlast", true, "nicht umlagefähig plus Rücklage")}{kopf("Überschuss mtl.", true, "Miete Vertrieb minus Eigentümerlast")}
+                  {kopf("laut Plan", true, "Hausgeld gesamt aus dem Wirtschaftsplan über die MEA der Einheit")}
                 </>}
                 {ansicht === "garagen" && <>
                   {kopf("Garage/SP", false)}{kopf("KP Garage")}{kopf("Ist-Miete Garage")}{kopf("Sollmiete Garage")}
@@ -378,6 +384,10 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
                       <TableCell className={r}>{hausgeldZelle(x, hg.ruecklage, "ruecklageZufuehrungMonat")}</TableCell>
                       <TableCell className={r}>{eur(last, 2)}</TableCell>
                       <TableCell className={r}>{last !== null && z.mieteMonat ? eur(z.mieteMonat - last, 2) : "–"}</TableCell>
+                      <TableCell className={cn(r, x.hgPlan && hg.gesamt !== null && Math.abs(x.hgPlan.gesamt - hg.gesamt) > 0.01 && "text-amber-600 font-medium")}
+                        title={x.hgPlan ? `umlagefähig ${eur(x.hgPlan.umlagefaehig, 2)}, nicht umlagefähig ${eur(x.hgPlan.nichtUmlagefaehig, 2)}, Rücklage ${eur(x.hgPlan.ruecklage, 2)}` : "Ohne Wirtschaftsplan oder MEA"}>
+                        {x.hgPlan ? eur(x.hgPlan.gesamt, 2) : "–"}
+                      </TableCell>
                     </>}
                     {ansicht === "garagen" && <>
                       <TableCell className="whitespace-nowrap text-xs">
