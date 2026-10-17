@@ -314,31 +314,39 @@ C-Lagen erfordern intensiveres Property Management, höhere Instandhaltungsrück
   },
   {
     slug: "kaufnebenkosten-richtig-kalkulieren",
-    titel: "Kaufnebenkosten 2026: rund 8 bis 8,5 % und warum Eigenkapital Pflicht ist",
+    titel: "Kaufnebenkosten 2026: 5,5 bis 8,5 % und warum Eigenkapital Pflicht ist",
     kategorie: "Kapitalanlage",
     zusammenfassung:
-      "Grunderwerbsteuer, Notar und Grundbuch: In Berlin sind es rund 8,0 %, in Brandenburg rund 8,5 % des Kaufpreises. Ein Makler fällt bei uns nicht an. Ein Überblick mit Spartipps.",
+      "Grunderwerbsteuer, Notar und Grundbuch: Je nach Bundesland sind es rund 5,5 bis 8,5 % des Kaufpreises. Ein Makler fällt bei uns nicht an. Ein Überblick mit Spartipps.",
     lesedauer: 5,
     veroeffentlicht: "2025-10-22",
     inhalt: `## Die einzelnen Posten
 
 | Kostenart | Höhe | Anmerkung |
 |---|---|---|
-| Kostenart | Berlin | Brandenburg | Anmerkung |
-|---|---|---|---|
-| Grunderwerbsteuer | 6,0 % | 6,5 % | Bundeslandabhängig |
-| Notar | ca. 1,5 % | ca. 1,5 % | Gebühren nach GNotKG, mit Grundschuld |
-| Grundbuch | ca. 0,5 % | ca. 0,5 % | Eigentumsumschreibung und Grundschuld |
-| Makler | entfällt | entfällt | Bei uns zahlst du keinen Makler |
-| **Summe** | **rund 8,0 %** | **rund 8,5 %** | |
+| Kostenart | Höhe | Anmerkung |
+|---|---|---|
+| Grunderwerbsteuer | 3,5 bis 6,5 % | Bundeslandabhängig |
+| Notar | ca. 1,5 % | Gebühren nach GNotKG, mit Grundschuld |
+| Grundbuch | ca. 0,5 % | Eigentumsumschreibung und Grundschuld |
+| Makler | entfällt | Bei uns zahlst du keinen Makler |
+| **Summe** | **rund 5,5 bis 8,5 %** | |
 
 ## Bundesland-Unterschiede
 
-Die Grunderwerbsteuer richtet sich nach der Lage der Wohnung, nicht nach deinem Wohnsitz. Bundesweit liegt sie zwischen 3,5 und 6,5 %. Berlin hat 6,0 %, Brandenburg 6,5 %.
+Die Grunderwerbsteuer richtet sich nach der Lage der Wohnung, nicht nach deinem Wohnsitz. In den Ländern, in denen wir Wohnungen anbieten, ergibt das zusammen mit Notar und Grundbuch:
+
+| Bundesland | Grunderwerbsteuer | Kaufnebenkosten gesamt |
+|---|---|---|
+| Bayern | 3,5 % | rund 5,5 % |
+| Baden-Württemberg, Rheinland-Pfalz, Sachsen-Anhalt | 5,0 % | rund 7,0 % |
+| Sachsen | 5,5 % | rund 7,5 % |
+| Berlin, Mecklenburg-Vorpommern | 6,0 % | rund 8,0 % |
+| Brandenburg, Nordrhein-Westfalen | 6,5 % | rund 8,5 % |
 
 ## Wichtig: Kaufnebenkosten **nicht** finanzierbar (Regel)
 
-Banken finanzieren in der Regel nur den **Kaufpreis** (max. 100 % Beleihung), nicht aber die Kaufnebenkosten. Das heißt: Du brauchst rund 8 bis 8,5 % des Kaufpreises als Eigenkapital für die Nebenkosten, meist aus liquiden Mitteln.
+Banken finanzieren in der Regel nur den **Kaufpreis** (max. 100 % Beleihung), nicht aber die Kaufnebenkosten. Das heißt: Du brauchst je nach Bundesland rund 5,5 bis 8,5 % des Kaufpreises als Eigenkapital für die Nebenkosten, meist aus liquiden Mitteln.
 
 ## Spartipps
 

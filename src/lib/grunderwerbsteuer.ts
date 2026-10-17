@@ -48,9 +48,9 @@ export function grunderwerbsteuerSpanne(): { min: number; max: number } {
 }
 
 /**
- * Bundesland, das gilt, wenn die Lage nicht bekannt ist. Wir verkaufen in
- * Berlin und Brandenburg; Brandenburg ist dort der höhere Satz, und ein zu
- * niedriger Ansatz wäre der schlechtere Fehler (siehe unten).
+ * Bundesland, das gilt, wenn die Lage nicht bekannt ist. Brandenburg trägt mit
+ * 6,5 Prozent den Höchstsatz, und ein zu niedriger Ansatz wäre der schlechtere
+ * Fehler (siehe unten). Mit Postleitzahl gilt immer das Land des Objekts.
  */
 export const RUECKFALL_BUNDESLAND_ID = "bb";
 

@@ -1,4 +1,5 @@
 import { SOLLZINS, TILGUNG_ANFANG } from "@/lib/finanzierung";
+import { kaufnebenkostenProzent } from "@/lib/grunderwerbsteuer";
 /**
  * Annahmen der Zehnjahresprojektion an einer Stelle.
  *
@@ -7,8 +8,6 @@ import { SOLLZINS, TILGUNG_ANFANG } from "@/lib/finanzierung";
  * Ergebnisseite auch ausgewiesen.
  */
 export const ANNAHMEN = {
-  /** Kaufnebenkosten in Prozent vom Kaufpreis: Grunderwerbsteuer, Notar, Grundbuch. */
-  kaufnebenkostenProzent: 8,
   /** Jährliche Wertsteigerung. */
   wertsteigerungProzent: 2,
   /** Bruttomietrendite bezogen auf den Kaufpreis. */
@@ -147,6 +146,8 @@ export interface TenYearProjection {
   wealthAfter10Years: number;
   /** Kaufnebenkosten in Euro. Gehören zur Investition und werden mitfinanziert. */
   kaufnebenkosten: number;
+  /** Satz der Kaufnebenkosten nach dem gewählten Bundesland, ohne Angabe Brandenburg. */
+  kaufnebenkostenProzent: number;
   /** Kaufpreis plus Kaufnebenkosten. */
   gesamtinvestition: number;
   /** Eigenkapital plus alle Zuzahlungen über zehn Jahre. */
@@ -372,7 +373,7 @@ function getFinancingEstimate(data: AnalysisData): FinancingEstimate {
 
 function getEigenkapitalHinweis(data: AnalysisData, financing: FinancingEstimate): EigenkapitalHinweis {
   const purchasePrice = financing.maxVolume;
-  const kaufnebenkosten = Math.round(purchasePrice * (ANNAHMEN.kaufnebenkostenProzent / 100));
+  const kaufnebenkosten = Math.round(purchasePrice * (kaufnebenkostenProzent(data.bundeslandId) / 100));
   const empfohlenMitEK = data.age > 40;
   const empfohlenerEKBetrag = empfohlenMitEK ? kaufnebenkosten : 0;
 
@@ -555,7 +556,7 @@ function getTenYearProjection(
   // Die Kaufnebenkosten fehlten hier komplett. Sie sind aber Teil dessen, was
   // finanziert oder aus Eigenkapital bezahlt werden muss, sonst sieht der
   // Kapitaleinsatz zu klein und die Rendite zu groß aus.
-  const kaufnebenkosten = Math.round(purchasePrice * (ANNAHMEN.kaufnebenkostenProzent / 100));
+  const kaufnebenkosten = Math.round(purchasePrice * (kaufnebenkostenProzent(data.bundeslandId) / 100));
   const gesamtinvestition = purchasePrice + kaufnebenkosten;
   const equityInvested = Math.min(data.equity, gesamtinvestition * 0.2);
   const loanAmount = Math.max(0, gesamtinvestition - equityInvested);
@@ -672,6 +673,7 @@ function getTenYearProjection(
     monthlySteuervorteil,
     wealthAfter10Years,
     kaufnebenkosten,
+    kaufnebenkostenProzent: kaufnebenkostenProzent(data.bundeslandId),
     gesamtinvestition,
     eingesetztesKapital: Math.round(eingesetztesKapitalGesamt),
     afaSatzProzent,
@@ -790,7 +792,7 @@ export function calculateScore(data: AnalysisData, optionen?: ProjektionsOptione
       taxSavingsTotal: 0, netProfit: 0, returnOnEquity: 0, yearlyData: [],
       monthlyZuzahlung: 0, monthlyZuzahlungOhneSteuer: 0, monthlySteuervorteil: 0,
       wealthAfter10Years: 0,
-      kaufnebenkosten: 0, gesamtinvestition: 0, eingesetztesKapital: 0,
+      kaufnebenkosten: 0, kaufnebenkostenProzent: kaufnebenkostenProzent(data.bundeslandId), gesamtinvestition: 0, eingesetztesKapital: 0,
       afaSatzProzent: ANNAHMEN.afaSatzProzent,
       wealthBreakdown: { propertyValue: 0, remainingLoan: 0, sellingCosts: 0, net: 0 },
       sparbuchVergleich: { monatlicheSparrate: 0, endkapitalSparbuch: 0, endkapitalImmobilie: 0, differenz: 0, faktor: 0 },

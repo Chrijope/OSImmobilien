@@ -78,7 +78,7 @@ export const ANKAUF_STANDARD: AnkaufEingaben = {
   laufzeitMonate: 18,
   abgabepreisProQm: 4900,
   kaufpreis: 1_400_000,
-  // Brandenburg 6,5 Prozent, Berlin 6,0. Die Excel-Vorlage hatte 5,0 Prozent.
+  // Höchstsatz 6,5 Prozent, solange das Bundesland nicht eingetragen ist. Die Excel-Vorlage hatte 5,0.
   grunderwerbsteuer: 0.065,
   notarAnkauf: 0.02,
   maklerEinkauf: 0.0357,

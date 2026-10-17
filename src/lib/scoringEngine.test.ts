@@ -32,8 +32,14 @@ const ergebnis = (over: Partial<AnalysisData> = {}, opt?: { afaSatzProzent?: num
 describe("Investition und Kaufnebenkosten", () => {
   it("rechnet die Kaufnebenkosten in die Investition ein", () => {
     const p = ergebnis().projection;
-    expect(p.kaufnebenkosten).toBeCloseTo(p.purchasePrice * (ANNAHMEN.kaufnebenkostenProzent / 100), 0);
+    expect(p.kaufnebenkosten).toBeCloseTo(p.purchasePrice * (p.kaufnebenkostenProzent / 100), 0);
     expect(p.gesamtinvestition).toBe(p.purchasePrice + p.kaufnebenkosten);
+  });
+
+  it("nimmt den Satz des gewählten Bundeslands, ohne Angabe Brandenburg", () => {
+    expect(ergebnis({ bundeslandId: "by" }).projection.kaufnebenkostenProzent).toBe(5.5);
+    expect(ergebnis({ bundeslandId: "be" }).projection.kaufnebenkostenProzent).toBe(8);
+    expect(ergebnis({ bundeslandId: undefined }).projection.kaufnebenkostenProzent).toBe(8.5);
   });
 
   it("finanziert die Gesamtinvestition abzüglich Eigenkapital", () => {
