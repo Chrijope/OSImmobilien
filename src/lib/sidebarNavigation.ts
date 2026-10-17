@@ -177,7 +177,6 @@ const leadGenItems = [
 const wissenItems = [
   { title: "Unterlagen", url: "/unterlagen", icon: FolderOpen, suchbegriffe: ["dokumente", "pdf", "downloads", "formulare", "vorlagen", "signatur", "rechnungsvorlage"] },
   { title: "Präsentation", url: "/praesentation", icon: Presentation, suchbegriffe: ["beratungspraesentation", "praesentation", "folien", "termin", "vorstellen"] },
-  { title: "Immobilien-Lexikon", url: "/immobilien-lexikon", icon: BookOpen, suchbegriffe: ["lexikon", "begriffe", "fachbegriff", "was bedeutet"] },
   { title: "Einwand-Bibliothek", url: "/vertriebsakademie/einwaende", icon: ShieldAlert, suchbegriffe: ["einwand", "einwaende", "widerspruch", "zu teuer", "keine zeit", "kein interesse", "technik", "gegenargument", "bedenken"], tooltip: "Die häufigsten Kundeneinwände mit Übersetzung, Antwortvarianten, Fallen & Profi-Meta-Moves — auch mitten im Kundengespräch." },
   { title: "Vertriebsakademie", url: "/vertriebsakademie", icon: GraduationCap, suchbegriffe: ["schulung", "training", "lernen", "kapitel", "ausbildung", "akademie"], tooltip: "Der komplette Fahrplan durch den Vertrieb von Kapitalanlage-Immobilien — Grundlagen, Skripte, Einwandbehandlung, Empfehlungssystem, KPI-Selbstcontrolling." },
   /*
