@@ -117,6 +117,7 @@ describe("Wo der Banner hingehört", () => {
       "/vorschau/kunde-komplett/:id",
       "/vorschau/objekt-anlegen",
       "/vorschau/kundenchat",
+      "/vorschau/analysetool-ergebnis",
     ]);
     const ohneEntscheidung = routen
       // Hinter `PraesentationGuard` liegt eine Anmeldung, `Navigate` leitet

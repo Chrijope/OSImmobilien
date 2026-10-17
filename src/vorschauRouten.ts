@@ -69,3 +69,8 @@ export const VorschauKundenchat = import.meta.env.DEV
 export const VorschauObjektAnlegen = import.meta.env.DEV
   ? lazy(() => import("./pages/VorschauObjektAnlegen"))
   : null;
+
+/** /vorschau/analysetool-ergebnis: Ergebnisseite mit Beispielkunde (17.10.2026). Gleiche Regeln wie oben. */
+export const VorschauAnalysetoolErgebnis = import.meta.env.DEV
+  ? lazy(() => import("./pages/VorschauAnalysetoolErgebnis"))
+  : null;

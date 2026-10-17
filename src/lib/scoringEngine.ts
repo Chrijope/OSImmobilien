@@ -66,8 +66,23 @@ export interface AnalysisData {
   incomeClass: 'unter_30k' | '30k_50k' | '50k_80k' | '80k_120k' | 'ueber_120k';
   taxOptimizationInterest: boolean;
   financingWillingness: 'ja' | 'teilweise' | 'nein';
-  /** Bundesland-Kürzel für die Kaufnebenkosten, siehe grunderwerbsteuer.ts. */
+  /** Bundesland-Kürzel für die Kaufnebenkosten, siehe grunderwerbsteuer.ts. Seit 17.10.2026 nicht mehr abgefragt. */
   bundeslandId?: string;
+  /**
+   * Seit 17.10.2026 die eine Zielfrage. `goals` und `taxOptimizationInterest`
+   * werden daraus abgeleitet (`zieleAusSchwerpunkt`), damit Bewertung und
+   * gespeicherte Analysen gleich bleiben.
+   */
+  schwerpunkt?: 'altersvorsorge' | 'steuer' | 'beides';
+  /** Freiwillig: gewünschtes Zusatzeinkommen im Alter je Monat. */
+  wunschZusatzrente?: number;
+}
+
+/** Ziele zur Schwerpunkt-Frage, immer drei, damit die Zielpunkte voll bleiben wie bei breiter Auswahl. */
+export function zieleAusSchwerpunkt(s: NonNullable<AnalysisData['schwerpunkt']>): Pick<AnalysisData, 'goals' | 'taxOptimizationInterest'> {
+  if (s === 'steuer') return { goals: ['steuerersparnis', 'vermoegensaufbau', 'inflationsschutz'], taxOptimizationInterest: true };
+  if (s === 'beides') return { goals: ['altersvorsorge', 'steuerersparnis', 'vermoegensaufbau'], taxOptimizationInterest: true };
+  return { goals: ['altersvorsorge', 'vermoegensaufbau', 'passives_einkommen'], taxOptimizationInterest: false };
 }
 
 export interface ScoreResult {
@@ -301,10 +316,13 @@ function scoreCashflow(data: AnalysisData): number {
 function scoreCreditworthiness(data: AnalysisData): number {
   let score = 0;
   const debtRatio = data.existingLoans / (data.netIncome || 1);
-  if (debtRatio < 0.1) score += 5;
-  else if (debtRatio < 0.25) score += 3;
-  if (data.liquidityReserve >= data.monthlyFixedCosts * 6) score += 5;
-  else if (data.liquidityReserve >= data.monthlyFixedCosts * 3) score += 3;
+  // Seit 17.10.2026 tragen Kreditbelastung und Reserve die 15 Punkte allein:
+  // Sparrate, Wohnsituation und Erfahrung werden nicht mehr abgefragt. Bei
+  // älteren Analysen zählen sie unten weiter, gedeckelt auf 15.
+  if (debtRatio < 0.1) score += 7;
+  else if (debtRatio < 0.25) score += 4;
+  if (data.liquidityReserve >= data.monthlyFixedCosts * 6) score += 8;
+  else if (data.liquidityReserve >= data.monthlyFixedCosts * 3) score += 5;
   if (data.savingsRate >= 500) score += 3;
   else if (data.savingsRate >= 200) score += 2;
   if (data.livingSituation === 'eigentum') score += 2;
