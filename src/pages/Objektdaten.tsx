@@ -4,6 +4,7 @@ import { AlertTriangle, Check, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MieterDialog } from "@/components/mieter/MieterDialog";
 import { Einheitenliste } from "@/components/objektdaten/Einheitenliste";
+import { ObjektAusListeDialog } from "@/components/objektdaten/ObjektAusListeDialog";
 import { getMieter, type Mieter } from "@/lib/mieterStore";
 import { listendatenFuerEinheit } from "@/lib/listendaten";
 import { DashboardLayout } from "@/components/DashboardLayout";
@@ -100,11 +101,19 @@ export default function Objektdaten({ ansicht }: { ansicht: ObjektdatenAnsicht }
 }
 
 function Cockpit({ objekte, suche, setSuche }: { objekte: ObjektData[]; suche: string; setSuche: (s: string) => void }) {
+  const { user } = useUser();
+  const [anlegenOffen, setAnlegenOffen] = useState(false);
   const q = suche.trim().toLocaleLowerCase("de-DE");
   const liste = objekte.filter((o) => !q || `${o.titel} ${o.adresse} ${o.plz} ${o.ort}`.toLocaleLowerCase("de-DE").includes(q));
   return (
     <>
-      <PageHeader title="Objektcockpit" subtitle="Alle Objekte mit Verkaufsstand und Vollständigkeit der Unterlagen" />
+      <PageHeader title="Objektcockpit" subtitle="Alle Objekte mit Verkaufsstand und Vollständigkeit der Unterlagen">
+        {/* Neue Objekte direkt im CRM, aus der Excel-Liste (Stufe 3). Anlegen dürfen Admin, Inhaber und Objektpartner. */}
+        {["admin", "inhaber", "objektpartner"].includes(user.role) && (
+          <Button onClick={() => setAnlegenOffen(true)}><Plus className="mr-2 h-4 w-4" /> Objekt aus Excel anlegen</Button>
+        )}
+      </PageHeader>
+      <ObjektAusListeDialog open={anlegenOffen} onOpenChange={setAnlegenOffen} />
       <Input placeholder="Objekt, Straße oder Ort suchen" value={suche} onChange={(e) => setSuche(e.target.value)} className="w-full sm:w-[320px]" />
       <Card>
         <CardContent className="p-0 overflow-x-auto">
