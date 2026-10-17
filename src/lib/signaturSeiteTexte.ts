@@ -302,6 +302,7 @@ const EN: SignaturSeitenTexte = {
   bereitsTitel: "Already signed",
   bereitsText: (dok) => dok === "reservierung"
     ? "You have already signed this reservation agreement. You may close this window."
+    : dok === "aftersales" ? "You have already signed this consultation and quality record. You may close this window."
     : "You have already signed this self-disclosure. You may close this window.",
   herunterladen: (titel) => `Download ${titel} as PDF`,
   audit: "Audit record:",
@@ -378,6 +379,31 @@ const EN: SignaturSeitenTexte = {
 };
 
 export const SIGNATUR_SEITE_TEXTE: Record<Sprache, SignaturSeitenTexte> = { de: DE, en: EN };
+
+/**
+ * Das Beratungs- und Qualitätsprotokoll duzt (Christian, 17.10.2026), die
+ * übrigen Kundendokumente auf dieser Seite siezen weiter. Deshalb eine
+ * eigene deutsche Fassung, die nur die Sätze dieses Wegs ersetzt.
+ */
+export const SIGNATUR_SEITE_TEXTE_DU: SignaturSeitenTexte = {
+  ...DE,
+  unbekannt: "Dieser Link ist uns nicht bekannt. Bitte prüfe, ob du die Adresse vollständig aus der E-Mail übernommen hast.",
+  speicherFehler: "Fehler beim Speichern. Bitte versuch es erneut.",
+  abgelaufenText: "Dieser Signatur-Link ist abgelaufen und lässt sich nicht mehr öffnen. Falls du bereits unterschrieben hast, ist für dich nichts weiter zu tun. Andernfalls wende dich bitte an deinen Ansprechpartner, er schickt dir einen neuen Link.",
+  ueberholtText: "Das Protokoll wurde inzwischen neu verschickt. Diese Anfrage gehört zu einer älteren Fassung und kann nicht mehr unterschrieben werden. Bitte nimm den Link aus der neueren E-Mail oder wende dich an deinen Ansprechpartner.",
+  bereitsText: () => "Du hast dieses Beratungs- und Qualitätsprotokoll bereits unterschrieben. Du kannst dieses Fenster schließen.",
+  dankeText: "Deine Unterschrift wurde erfolgreich erfasst und gespeichert.",
+  schliessen: "Du kannst dieses Fenster jetzt schließen.",
+  vorschauTitel: () => "Dein Beratungs- und Qualitätsprotokoll",
+  vorschauHinweis: () => "Dein Ansprechpartner hat das Protokoll bereits unterzeichnet. Bitte lies es vollständig und unterschreibe unten.",
+  vorschauNichtUnterstuetzt: "Die PDF-Vorschau wird auf deinem Gerät nicht unterstützt.",
+  vorschauFehlt: "Die vollständige PDF-Vorschau konnte nicht geladen werden. Oben siehst du eine Zusammenfassung.",
+  bitteUnterschreiben: "Bitte unterschreibe im Feld oben (Maus oder Finger)",
+  handyText: "Scanne diesen QR-Code mit der Kamera deines Handys. Du unterschreibst dann bequem mit dem Finger. Die Unterschrift erscheint hier automatisch.",
+  datenschutzFuss: "Deine Daten werden verschlüsselt übertragen und DSGVO-konform gespeichert. IP-Adresse und Zeitstempel werden als Nachweis protokolliert.",
+  mobilHinweis: "Unterschreibe unten mit dem Finger. Deine Unterschrift wird sofort an den Computer übertragen, an dem du den QR-Code gescannt hast.",
+  mobilGesendetText: "Deine Unterschrift wurde an deinen Computer übertragen. Bitte schließe dort den Vorgang ab. Du kannst dieses Fenster jetzt schließen.",
+};
 
 /** Datum und Uhrzeit für die Seite: Deutsch wie bisher, Englisch über `sprachFormat`. */
 export function seitenZeit(wert: string | number | Date, sprache: Sprache): string {

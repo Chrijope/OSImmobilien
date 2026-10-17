@@ -2,7 +2,7 @@ import jsPDF from "jspdf";
 import {
   addBrandedFooter, addBrandedHeader, brandedRow, brandedSectionTitle, BRAND, ensureUnicodeFont, loadLogo, PDF_FONT, sanitizePdfText,
 } from "./pdfBranding";
-import { datumDe, TEXTE, type BeratungsprotokollDaten } from "./beratungsprotokoll";
+import { datumDe, protokollTexte, type BeratungsprotokollDaten } from "./beratungsprotokoll";
 
 export interface ProtokollUnterschrift {
   name: string;
@@ -19,7 +19,8 @@ const BREITE = W - 2 * RAND;
 /** Unterhalb davon beginnt die Fußzeile. */
 const UNTEN = H - 28;
 
-const zeitpunkt = (iso: string) => new Date(iso).toLocaleString("de-DE", { timeZone: "Europe/Berlin", dateStyle: "medium", timeStyle: "short" });
+const zeitpunkt = (iso: string, sprache: "de" | "en") =>
+  new Date(iso).toLocaleString(sprache === "en" ? "en-GB" : "de-DE", { timeZone: "Europe/Berlin", dateStyle: "medium", timeStyle: "short" });
 
 /**
  * Das Beratungs- und Qualitätsprotokoll als PDF im Erscheinungsbild der
@@ -33,13 +34,16 @@ const zeitpunkt = (iso: string) => new Date(iso).toLocaleString("de-DE", { timeZ
  */
 export async function erzeugeBeratungsprotokollPdf(
   d: BeratungsprotokollDaten,
-  unterschriften?: { vp?: ProtokollUnterschrift; kunde?: ProtokollUnterschrift },
+  unterschriften?: { vp?: ProtokollUnterschrift; kunde?: ProtokollUnterschrift; kunde2?: ProtokollUnterschrift },
 ): Promise<jsPDF> {
+  const sprache = d.sprache === "en" ? "en" : "de";
+  const TEXTE = protokollTexte(sprache);
+  const datum = (iso: string) => datumDe(iso, sprache);
   const doc = new jsPDF("p", "mm", "a4");
   await ensureUnicodeFont(doc);
   const logo = await loadLogo();
   let y = addBrandedHeader(doc, logo, TEXTE.titel);
-  const ortDatum = [d.ort.trim(), datumDe(d.datum)].filter(Boolean).join(", ");
+  const ortDatum = [d.ort.trim(), datum(d.datum)].filter(Boolean).join(", ");
 
   const platz = (noetig: number) => {
     if (y + noetig <= UNTEN) return;
@@ -115,7 +119,7 @@ export async function erzeugeBeratungsprotokollPdf(
   };
 
   /** Bestätigungsfeld der Vorlage: Linie, darunter klein die Beschriftung. */
-  const bestaetigung = (abschnitte: string) => {
+  const bestaetigung = (von: number, bis?: number) => {
     platz(26);
     y += 2;
     const linieY = y + 15;
@@ -123,13 +127,14 @@ export async function erzeugeBeratungsprotokollPdf(
     doc.setFontSize(8.5);
     doc.setTextColor(...BRAND.primary);
     if (ortDatum) doc.text(sanitizePdfText(ortDatum), RAND, linieY - 1.5);
-    unterschriftBild(unterschriften?.kunde, RAND + 95, y, 45);
+    unterschriftBild(unterschriften?.kunde, RAND + 70, y, 45);
+    unterschriftBild(unterschriften?.kunde2, RAND + 120, y, 45);
     doc.setDrawColor(...BRAND.separator);
     doc.setLineWidth(0.3);
     doc.line(RAND, linieY, RAND + BREITE, linieY);
     doc.setFontSize(7);
     doc.setTextColor(...BRAND.muted);
-    doc.text(TEXTE.bestaetigung(abschnitte), RAND + BREITE / 2, linieY + 3.5, { align: "center" });
+    doc.text(TEXTE.bestaetigung(von, bis), RAND + BREITE / 2, linieY + 3.5, { align: "center" });
     y = linieY + 9;
   };
 
@@ -178,9 +183,9 @@ export async function erzeugeBeratungsprotokollPdf(
   abschnitt(TEXTE.a4);
   kreuz(d.nutzung === "eigennutzung", TEXTE.a4Eigennutzung);
   kreuz(d.nutzung === "vermietung", TEXTE.a4Vermietung);
-  absatz(TEXTE.a4Besichtigt(d.besichtigtGeschoss.trim(), d.besichtigtLage));
+  absatz(TEXTE.a4Besichtigt(d.besichtigtGeschoss.trim(), d.besichtigtLage ? TEXTE.lage[d.besichtigtLage] : ""));
   ortZeile(TEXTE.ortDatum, ortDatum);
-  bestaetigung("1 bis 4");
+  bestaetigung(1, 4);
 
   // ── 5 ──
   abschnitt(TEXTE.a5);
@@ -191,12 +196,13 @@ export async function erzeugeBeratungsprotokollPdf(
   kreuz(d.besichtigung === "beauftragt", TEXTE.a5Beauftragt(d.besichtigung === "beauftragt" ? beauftragter : ""));
   kreuz(d.besichtigung === "nicht_wahrgenommen", TEXTE.a5Nicht);
   absatz(TEXTE.a5Text);
-  ortZeile(TEXTE.datum, datumDe(d.datum));
+  ortZeile(TEXTE.datum, datum(d.datum));
   platz(16);
   ortZeile(TEXTE.unterschriftKaeufer, "");
   unterschriftBild(unterschriften?.kunde, RAND + 30, y - 11, 36);
+  unterschriftBild(unterschriften?.kunde2, RAND + 75, y - 11, 36);
   y += 4;
-  bestaetigung("5");
+  bestaetigung(5);
 
   // ── 6 bis 11 ──
   abschnitt(TEXTE.a6);
@@ -217,10 +223,10 @@ export async function erzeugeBeratungsprotokollPdf(
   absatz(TEXTE.a10Text);
   abschnitt(TEXTE.a11);
   absatz(TEXTE.a11Text);
-  ortZeile(TEXTE.a11Uebergeben, datumDe(d.unterlagenUebergebenAm));
+  ortZeile(TEXTE.a11Uebergeben, datum(d.unterlagenUebergebenAm));
   for (const text of TEXTE.a11Text2) absatz(text);
   ortZeile(TEXTE.ortDatum, ortDatum);
-  bestaetigung("6 bis 11");
+  bestaetigung(6, 11);
 
   // ── 12 bis 15 ──
   abschnitt(TEXTE.a12);
@@ -232,7 +238,7 @@ export async function erzeugeBeratungsprotokollPdf(
   absatz(TEXTE.a14Text);
   abschnitt(TEXTE.a15);
   for (const text of TEXTE.a15Text) absatz(text);
-  bestaetigung("12 bis 15");
+  bestaetigung(12, 15);
 
   // ── 16 und 17 ──
   abschnitt(TEXTE.a16);
@@ -240,8 +246,8 @@ export async function erzeugeBeratungsprotokollPdf(
     [TEXTE.a16Zeilen.erstkontaktDurch, d.erstkontaktDurch],
     [TEXTE.a16Zeilen.erstgespraechVon, d.erstgespraechVon],
     [TEXTE.a16Zeilen.erstgespraechOrt, d.erstgespraechOrt],
-    [TEXTE.a16Zeilen.erstgespraechDatum, datumDe(d.erstgespraechDatum)],
-    [TEXTE.a16Zeilen.unterlagenPapierAm, datumDe(d.unterlagenPapierAm)],
+    [TEXTE.a16Zeilen.erstgespraechDatum, datum(d.erstgespraechDatum)],
+    [TEXTE.a16Zeilen.unterlagenPapierAm, datum(d.unterlagenPapierAm)],
   ]);
   abschnitt(TEXTE.a17);
   for (const text of TEXTE.a17Text) absatz(text);
@@ -270,10 +276,15 @@ export async function erzeugeBeratungsprotokollPdf(
     doc.setFontSize(7);
     doc.setTextColor(...BRAND.muted);
     doc.text(titel, x, linieY + 7.5);
-    if (sig?.signedAt) doc.text(TEXTE.unterschriebenAm(zeitpunkt(sig.signedAt)), x, linieY + 11);
+    if (sig?.signedAt) doc.text(TEXTE.unterschriebenAm(zeitpunkt(sig.signedAt, sprache)), x, linieY + 11);
   };
   feld(RAND, TEXTE.unterschriftVp, d.vertriebDurch, unterschriften?.vp);
-  feld(RAND + spalte + 10, TEXTE.unterschriftKunde, [d.kaeuferName, d.weitereKaeufer].filter((s) => s.trim()).join(", "), unterschriften?.kunde);
+  feld(RAND + spalte + 10, TEXTE.unterschriftKunde, d.kaeuferName, unterschriften?.kunde);
+  if (d.weitereKaeufer.trim()) {
+    y += 34;
+    platz(36);
+    feld(RAND + spalte + 10, TEXTE.unterschriftKunde, d.weitereKaeufer, unterschriften?.kunde2);
+  }
 
   const seiten = doc.getNumberOfPages();
   for (let i = 1; i <= seiten; i++) {

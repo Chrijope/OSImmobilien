@@ -22,7 +22,7 @@ import { erzeugeBeratungsprotokollPdf, type ProtokollUnterschrift } from "@/lib/
 import { crmQuellen } from "@/lib/beratungsprotokollQuellen";
 import { getInvestmentById, getInvestmentMetaField, investmentGespeichert, setInvestmentMetaFields } from "@/lib/investmentsStore";
 import { getKontaktById } from "@/lib/kundenStore";
-import { stelleKundenspracheSicher } from "@/lib/kundenSprache";
+import { stelleKundenspracheSicher, useKundenSprache } from "@/lib/kundenSprache";
 
 /*
  * Beratungs- und Qualitätsprotokoll als eigene Seite (17.10.2026), ersetzt
@@ -69,6 +69,9 @@ export function BeratungsprotokollInhalt({ kontaktId, investmentId, vorschau = f
   const nurLesen = unterschrieben;
   const setze = <F extends Feld>(feld: F, wert: BeratungsprotokollDaten[F]) => setDaten((d) => feldSetzen(d, feld, wert));
   const offen = useMemo(() => offenePflichtfelder(daten), [daten]);
+  // Das PDF in der Sprache des Kunden (Profil), solange nichts versendet ist.
+  const { sprache: profilSprache } = useKundenSprache(kontaktId);
+  const pdfDaten = useMemo(() => (nurLesen ? daten : { ...daten, sprache: profilSprache }), [daten, nurLesen, profilSprache]);
 
   // Entwurf speichern, kurz nach der letzten Eingabe. Der Store schreibt
   // entprellt über merge_investment_meta, nichts geht beim Verlassen verloren.
@@ -88,8 +91,16 @@ export function BeratungsprotokollInhalt({ kontaktId, investmentId, vorschau = f
   const unterschriften = useMemo(() => {
     const sig = (name?: string, data?: string, am?: string): ProtokollUnterschrift | undefined =>
       data ? { name: name || "", signatureData: data, signedAt: am || new Date().toISOString() } : undefined;
-    return { vp: sig(ab.vpSignerName, ab.vpSignature, ab.vpSignedAt), kunde: sig(ab.kundeSignerName, ab.kundeSignature, ab.kundeSignedAt) };
-  }, [ab.vpSignerName, ab.vpSignature, ab.vpSignedAt, ab.kundeSignerName, ab.kundeSignature, ab.kundeSignedAt]);
+    // Seit 17.10.2026 unterschreiben bis zu zwei Käufer, je eine Anfrage.
+    const kaeufer = Object.values((ab.kundeUnterschriften || {}) as Record<string, { name?: string; signature?: string; signedAt?: string; person?: string }>);
+    const k1 = kaeufer.find((u) => u.person !== "kunde2");
+    const k2 = kaeufer.find((u) => u.person === "kunde2");
+    return {
+      vp: sig(ab.vpSignerName, ab.vpSignature, ab.vpSignedAt),
+      kunde: k1 ? sig(k1.name, k1.signature, k1.signedAt) : sig(ab.kundeSignerName, ab.kundeSignature, ab.kundeSignedAt),
+      kunde2: k2 ? sig(k2.name, k2.signature, k2.signedAt) : undefined,
+    };
+  }, [ab.vpSignerName, ab.vpSignature, ab.vpSignedAt, ab.kundeSignerName, ab.kundeSignature, ab.kundeSignedAt, ab.kundeUnterschriften]);
   // ── Unterschrift des Partners und Versand, wie bisher im Popup ──
   const [phase, setPhase] = useState<Phase>("form");
   const [token, setToken] = useState<string | null>(null);
@@ -115,10 +126,15 @@ export function BeratungsprotokollInhalt({ kontaktId, investmentId, vorschau = f
     if (offen.length) { toast.error(`Bitte noch ausfüllen: ${offen.join(", ")}`); return; }
     setLaeuft(true);
     try {
-      setInvestmentMetaFields(investmentId, { [ENTWURF_SCHLUESSEL]: daten });
+      // Rückfrage „Deutsch oder English?“, falls noch nie gewählt. Die Antwort
+      // ist die Sprache des Protokolls, wie bei der Reservierung.
+      const sprache = await stelleKundenspracheSicher(kontaktId);
+      const formular = { ...daten, sprache };
+      setDaten(formular);
+      setInvestmentMetaFields(investmentId, { [ENTWURF_SCHLUESSEL]: formular });
       await investmentGespeichert(investmentId);
       const vpToken = await aftersalesSignaturAnlegen({
-        investmentId, kontaktId, vpName: user.name, kundeName, kundeEmail: kunde?.email, formular: daten as unknown as Record<string, unknown>,
+        investmentId, kontaktId, vpName: user.name, kundeName, kundeEmail: kunde?.email, formular: formular as unknown as Record<string, unknown>,
       });
       setToken(vpToken);
       setPhase("vp-sign");
@@ -133,8 +149,6 @@ export function BeratungsprotokollInhalt({ kontaktId, investmentId, vorschau = f
   const unterschreibenUndSenden = async () => {
     if (!vpSignatur || !token) return;
     setLaeuft(true);
-    // Einmalige Rückfrage „Deutsch oder English?“, falls noch nie gewählt.
-    await stelleKundenspracheSicher(kontaktId);
     setPhase("sending");
     try {
       await aftersalesVpUnterschreiben(token, vpSignatur);
@@ -214,6 +228,9 @@ export function BeratungsprotokollInhalt({ kontaktId, investmentId, vorschau = f
               <Text feld="kaeuferName" label={TEXTE.a1Zeilen.kaeuferName} daten={daten} setze={setze} aus={aus} pflicht />
               <Text feld="kaeuferAnschrift" label={TEXTE.a1Zeilen.kaeuferAnschrift} daten={daten} setze={setze} aus={aus} pflicht />
               <Text feld="weitereKaeufer" label={TEXTE.a1Zeilen.weitereKaeufer} daten={daten} setze={setze} aus={aus} />
+              {daten.weitereKaeufer.trim() && (
+                <Text feld="kaeufer2Email" label="E-Mail des weiteren Käufers (bekommt einen eigenen Unterschriftslink)" daten={daten} setze={setze} aus={aus} pflicht />
+              )}
             </Block>
 
             <Block titel={TEXTE.a2}>
@@ -330,7 +347,7 @@ export function BeratungsprotokollInhalt({ kontaktId, investmentId, vorschau = f
                 <div className="text-center space-y-2">
                   <CheckCircle2 className="h-8 w-8 text-green-600 mx-auto" />
                   <p className="font-medium">Versendet</p>
-                  <p className="text-sm text-muted-foreground">{kundeName || "Der Kunde"} bekommt jetzt eine E-Mail mit dem Link zur Unterschrift. Nach der Unterschrift liegt das PDF im Investment.</p>
+                  <p className="text-sm text-muted-foreground">{daten.weitereKaeufer.trim() ? "Beide Käufer bekommen" : `${kundeName || "Der Kunde"} bekommt`} jetzt eine E-Mail mit dem Link zur Unterschrift. Sobald alle unterschrieben haben, liegt das PDF im Investment.</p>
                   <Button variant="outline" asChild><Link to={zurueck}>Zurück zum Kundenprofil</Link></Button>
                 </div>
               )}
@@ -339,7 +356,7 @@ export function BeratungsprotokollInhalt({ kontaktId, investmentId, vorschau = f
         </div>
 
         <div className={`min-w-0 lg:sticky lg:top-0 ${ansicht === "vorschau" ? "" : "hidden lg:block"}`}>
-          <LivePdfVorschau erzeuge={() => erzeugeBeratungsprotokollPdf(daten, unterschriften)} schluessel={JSON.stringify(daten) + (unterschriften.kunde ? "k" : "") + (unterschriften.vp ? "v" : "")} />
+          <LivePdfVorschau erzeuge={() => erzeugeBeratungsprotokollPdf(pdfDaten, unterschriften)} schluessel={JSON.stringify(pdfDaten) + (unterschriften.kunde ? "k" : "") + (unterschriften.kunde2 ? "2" : "") + (unterschriften.vp ? "v" : "")} />
         </div>
       </div>
     </div>

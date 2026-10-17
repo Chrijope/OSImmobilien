@@ -35,6 +35,8 @@ export interface BeratungsprotokollDaten {
   kaeuferName: string;
   kaeuferAnschrift: string;
   weitereKaeufer: string;
+  /** Käufer 2 unterschreibt selbst, dafür braucht es seine Adresse (17.10.2026). */
+  kaeufer2Email: string;
   // 2. Objektdaten
   objektAdresse: string;
   objektLage: string;
@@ -66,16 +68,18 @@ export interface BeratungsprotokollDaten {
   // Ort und Datum der Unterzeichnung (ISO), gilt für jede Bestätigung
   ort: string;
   datum: string;
+  /** Sprache des Kunden, gesetzt beim Versand. Ohne Angabe Deutsch. */
+  sprache?: "de" | "en";
   /** Felder, die aus dem CRM kamen und seither nicht geändert wurden. */
   vorausgefuellt?: string[];
 }
 
-export type Feld = Exclude<keyof BeratungsprotokollDaten, "vorlage" | "vorausgefuellt">;
+export type Feld = Exclude<keyof BeratungsprotokollDaten, "vorlage" | "vorausgefuellt" | "sprache">;
 
 export function leeresProtokoll(): BeratungsprotokollDaten {
   return {
     vorlage: BERATUNGSPROTOKOLL_VORLAGE,
-    kaeuferName: "", kaeuferAnschrift: "", weitereKaeufer: "",
+    kaeuferName: "", kaeuferAnschrift: "", weitereKaeufer: "", kaeufer2Email: "",
     objektAdresse: "", objektLage: "", einheitNr: "", groesse: "", verkaufspreis: "", stellplatz: "",
     nutzung: "", besichtigtGeschoss: "", besichtigtLage: "",
     besichtigung: "", beauftragter: "",
@@ -104,7 +108,7 @@ export interface CrmQuellen {
     erstgespraechDatum?: string;
   };
   /** Zweite Person aus der Selbstauskunft. */
-  person2?: { vorname?: string; nachname?: string } | null;
+  person2?: { vorname?: string; nachname?: string; email?: string } | null;
   objekt: {
     strasse?: string; plz?: string; ort?: string; weNr?: string;
     kaufpreis?: number; wohnflaeche?: number; etage?: string; lage?: string;
@@ -133,10 +137,11 @@ export function alsIso(wert?: string | null): string {
   return m ? `${m[3]}-${m[2].padStart(2, "0")}-${m[1].padStart(2, "0")}` : "";
 }
 
-/** ISO → TT.MM.JJJJ für das PDF. Anderes bleibt, wie es ist. */
-export function datumDe(iso?: string | null): string {
+/** ISO → TT.MM.JJJJ (englisch TT/MM/JJJJ) für das PDF. Anderes bleibt, wie es ist. */
+export function datumDe(iso?: string | null, sprache: "de" | "en" = "de"): string {
   const s = String(iso ?? "").trim();
-  return /^\d{4}-\d{2}-\d{2}/.test(s) ? `${s.slice(8, 10)}.${s.slice(5, 7)}.${s.slice(0, 4)}` : s;
+  const z = sprache === "en" ? "/" : ".";
+  return /^\d{4}-\d{2}-\d{2}/.test(s) ? `${s.slice(8, 10)}${z}${s.slice(5, 7)}${z}${s.slice(0, 4)}` : s;
 }
 
 export function vorbelegen(q: CrmQuellen): BeratungsprotokollDaten {
@@ -147,6 +152,7 @@ export function vorbelegen(q: CrmQuellen): BeratungsprotokollDaten {
     kaeuferName: t(k.vorname, k.nachname).join(" "),
     kaeuferAnschrift: t(t(k.strasse, k.hausnummer).join(" "), t(k.plz, k.ort).join(" ")).join(", "),
     weitereKaeufer: q.person2 ? t(q.person2.vorname, q.person2.nachname).join(" ") : "",
+    kaeufer2Email: q.person2 ? String(q.person2.email ?? "").trim() : "",
     objektAdresse: t(o.strasse, t(o.plz, o.ort).join(" ")).join(", "),
     objektLage: t(o.etage, o.lage).join(", "),
     einheitNr: String(o.weNr ?? "").trim(),
@@ -207,6 +213,7 @@ export function offenePflichtfelder(d: BeratungsprotokollDaten): string[] {
   const offen: string[] = [];
   if (leer(d.kaeuferName)) offen.push("Name, Vorname");
   if (leer(d.kaeuferAnschrift)) offen.push("Anschrift des Käufers");
+  if (!leer(d.weitereKaeufer) && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.kaeufer2Email.trim())) offen.push("E-Mail des weiteren Käufers");
   if (leer(d.objektAdresse)) offen.push("Objektadresse");
   if (leer(d.einheitNr)) offen.push("Einheit-Nr.");
   if (leer(d.verkaufspreis)) offen.push("Verkaufspreis");
@@ -345,9 +352,130 @@ export const TEXTE = {
   ortDatum: "Ort, Datum:",
   datum: "Datum:",
   unterschriftKaeufer: "Unterschrift Käufer:",
-  bestaetigung: (abschnitte: string) => `Bestätigung der/des Käufer(s) für die Abschnitte ${abschnitte}: Ort, Datum, Unterschrift`,
+  bestaetigung: (von: number, bis?: number) => `Bestätigung der/des Käufer(s) für ${bis ? `die Abschnitte ${von} bis ${bis}` : `Abschnitt ${von}`}: Ort, Datum, Unterschrift`,
+  lage: { rechts: "rechts", links: "links", mitte: "mitte" } as Record<string, string>,
   unterschriftVp: "Name / Unterschrift Vertriebspartner(in)",
   unterschriftKunde: "Name / Unterschrift Käufer(in)(nen)",
   unterschriebenAm: (zeitpunkt: string) => `Elektronisch unterschrieben am ${zeitpunkt} (EES)`,
   dateiname: (name: string, datum: string) => `Beratungsprotokoll_${name}_${datum}.pdf`,
-} as const;
+};
+
+export type ProtokollTexte = typeof TEXTE;
+
+/**
+ * Englische Fassung für Kunden mit Englisch im Profil (Christian, 17.10.2026:
+ * alles, was an den Kunden geht, in seiner Sprache). Übersetzt nach
+ * `kundenspracheGlossar.ts`, britisch, ohne Kurzformen und Gedankenstriche.
+ * Inhaltlich deckungsgleich mit der deutschen Fassung; vor dem ersten
+ * Einsatz anwaltlich prüfen lassen.
+ */
+export const TEXTE_EN: ProtokollTexte = {
+  titel: "Consultation and quality record",
+  kopfRechts: "Freehold flat, buyer consultation",
+  untertitel: "for the purchase of a freehold flat: documentation of the buyer consultation",
+  einleitung:
+    "Dear buyer, this record documents the course and content of the consultations held with you in connection with the property purchase set out below. It serves exclusively to preserve evidence of the information provided and does not constitute legal, tax or investment advice. Please read the record completely and carefully before signing.",
+  hinweisOben:
+    "Note: The signing sales partner acts in their own name and for their own account. They are neither a representative nor a vicarious agent of the seller and do not provide legal, tax or financial advice.",
+  a1: "1. Details of the buyer",
+  a1Zeilen: { kaeuferName: "Surname, first name", kaeuferAnschrift: "Resident at (address)", weitereKaeufer: "Further buyer(s) (if any)" },
+  a2: "2. Property details",
+  a2Zeilen: {
+    objektAdresse: "Property address", objektLage: "Position / floor", einheitNr: "Unit no.",
+    groesse: "Size (approx. m²)", verkaufspreis: "Sale price (EUR)", stellplatz: "Parking space / garage / underground no.",
+  },
+  a2Text:
+    "The information on the position, size and fittings of the flat was taken from the documents provided by the seller. The sales organisation assumes no warranty of its own for this and has not verified this information itself.",
+  a3: "3. Note on incidental purchase costs",
+  a3Text:
+    "Possible purchase costs (including support, marketing, financing and completion costs, brokerage and sales costs, notary costs and real estate transfer tax) may amount to up to 30 % of the total purchase price. The buyer confirms that they were expressly informed of this in good time before the contract was concluded.",
+  a4: "4. Type of use",
+  a4Eigennutzung:
+    "The property is being purchased for own use. The buyer confirms that they will move into the flat themselves at the latest after any current tenant has moved out. Any termination of the tenancy is solely the responsibility of the buyer; the buyer will obtain independent legal advice on this.",
+  a4Vermietung:
+    "The property is being purchased for letting. The buyer confirms that they were expressly informed of all risks of letting (including termination by the tenant, rent reduction, loss of rent, special levies of the owners’ association (WEG / Eigentümergemeinschaft)). No legal or tax advice on this was provided by the sales organisation; the buyer was referred to a lawyer, tax adviser or the property management.",
+  a4Besichtigt: (geschoss: string, lage: string) =>
+    `Flat viewed on floor ${geschoss || "____________"}, position ${lage || "right / left / centre"} (state as applicable)`,
+  a5: "5. Knowledge of condition and viewing of the property",
+  a5Hinweis: "Please tick the applicable option:",
+  a5Selbst: "The buyer has viewed the property.",
+  a5Zugeschaltet: (name: string) =>
+    `The buyer instructed ${name || "____________________________"} (authorised person) to view the property and was connected by video and audio during the viewing by the authorised person. The instruction is hereby repeated and expressly confirmed once again.`,
+  a5Beauftragt: (name: string) =>
+    `The buyer instructed Mr/Ms ${name || "____________________________"} (authorised person) to view the property. The authorised person has viewed the property. The instruction is hereby repeated and expressly confirmed once again.`,
+  a5Nicht:
+    "Despite the opportunity to view the property at a time of their choosing and despite the possibility at any time of instructing a person of trust or a third party to view the property (with the buyer connected by video and audio at the same time), the buyer did not take up a viewing.",
+  a5Text:
+    "The buyer confirms that, irrespective of the option chosen, they were given sufficient opportunity to become acquainted with the condition of the property and that they made use of this, or deliberately did not make use of it, by their own free decision.",
+  a6: "6. Purchase offer and position of the sales organisation",
+  a6Zeilen: { kaufangebot: "Purchase offer made (EUR)", vertriebDurch: "Sales carried out by" },
+  a6Text: [
+    "The seller’s involvement is limited to providing the property and the related documents. The buyer was expressly informed that the sales partner acts in their own name and for their own account and does not act as a representative, vicarious agent or agent of the seller. Any statements made by the sales organisation bind only the sales organisation itself, not the seller.",
+    "The buyer confirms that they made their purchase decision independently, on the basis of their own examination and without any assurance of particular results by the sales organisation.",
+  ],
+  a7: "7. Note on commissions",
+  a7Text:
+    "The buyer is aware that the seller makes a profit from the sale and that the sales organisation receives an internal, sales, marketing or support commission. These commissions are financed from the purchase price.",
+  a8: "8. Assignment / escrow settlement",
+  a8Text:
+    "Where the draft purchase contract provides for an assignment or an escrow settlement, the buyer has been comprehensively informed of this and has fully understood the matter. The assignee or escrow agent will separately evidence and explain the settlement and its allocation; the buyer will contact them independently for this purpose. The sales organisation accepts no responsibility for the correctness of the content of the escrow settlement.",
+  a9: "9. Tax, legal and financing notes",
+  a9Text:
+    "Binding information on tax or legal questions can only be given by a tax adviser, tax agent, auditor or lawyer taking into account the buyer’s personal circumstances. The sales organisation has not provided any such advice and accepts no liability for it. The buyer will clarify any open questions on financing independently with a financial institution or an independent financing broker.",
+  a10: "10. Existing tenancy",
+  a10Leer: "The flat is vacant.",
+  a10Vermietet: (miete: string) => `A tenancy exists. The current net cold rent (Kaltmiete) is EUR ${miete || "____________"}.`,
+  a10Text:
+    "Where the building is divided into residential and partial ownership, extraordinary protection against termination may apply; termination is then excluded for at least three years from the division.",
+  a11: "11. Handover of the contract documents",
+  a11Text:
+    "All required documents (including the draft purchase contract, the declaration of division with division plans, business plans and minutes of the last three years and all documents relating to the tenancy) were handed over to the buyer at least 14 days before the notarial certification.",
+  a11Uebergeben: "Documents handed over on:",
+  a11Text2: [
+    "The buyer confirms that they have read all documents, in particular the minutes, completely and accurately, that they are aware of the resulting consequences and of any future special levies, and releases the seller and the sales organisation from any liability in this respect to the extent permitted by law.",
+    "Documents received subsequently (additional correspondence and emails with the tenant and the management) that arrived by the day of certification were additionally handed to the buyer in writing by the sales partner before the certification. The buyer will obtain any further documents relevant after certification independently from the responsible bodies (property management, tenant, insurance and so on).",
+  ],
+  a12: "12. Completeness of the viewing and condition of the property",
+  a12Text:
+    "The buyer confirms that they have viewed the property in full and have requested and received all relevant information in full. The buyer is aware of all cosmetic defects in the acquired unit and in the common property; these are not listed separately in the purchase contract. The buyer confirms that they have been informed of this and accepts the condition of the property in this respect.",
+  a13: "13. Liability",
+  a13Text: [
+    "1. Any liability of the seller and of the sales organisation (including for consequential or indirect damage) is excluded to the extent permitted by law. Liability for intent, gross negligence and for injury to life, body and health pursuant to Sections 309 and 310 BGB remains unaffected.",
+    "2. The seller and the sales organisation accept no liability for measures, special levies or refurbishment measures that are mentioned in previous minutes or invitations but have not yet been resolved or whose costs have not yet been determined, and that are only resolved by the owners’ association after the contract has been concluded.",
+    "3. The seller and the sales organisation accept no liability for damage or problems that are only noticed or occur after the contract has been concluded and that existed unnoticed or undefined before the sale.",
+  ],
+  a13Hinweis:
+    "Note: The above limitations of liability apply only within the limits permitted by law (in particular Sections 307 to 310 BGB) and do not replace an individual review of the notarial purchase contract.",
+  a14: "14. Service charge and running costs",
+  a14Text:
+    "The buyer is aware that, in addition to any rental income, a service charge (Hausgeld) is payable to the owners’ association and that these amounts may vary. Information on net rent, advance payments for ancillary costs and property management costs has been made available to the buyer; the buyer will obtain further information independently from the owners’ association or property management.",
+  a15: "15. Development in value, profitability and risks",
+  a15Text: [
+    "The value of a property is subject to various influencing factors and fluctuations. No conclusion about a third-party valuation can be drawn from the level of the purchase price. The bank’s lending value does not represent the current market value; agreed renovations do not necessarily increase the value. It cannot be guaranteed that the agreed purchase price will be achieved again on a future sale.",
+    "All economic and entrepreneurial risks of the property purchase (in particular profitability, tax effects and development in value) are borne solely by the buyer. Let properties are generally to be regarded as a long-term capital investment over at least 20 years; only within this period can a profit be expected in relation to the current loan. An early sale is expressly advised against, as it can lead to considerable losses, tax disadvantages and (where financing is ongoing) early repayment charges.",
+  ],
+  a16: "16. Course of the consultation",
+  a16Zeilen: {
+    erstkontaktDurch: "First contact / referral by", erstgespraechVon: "Initial consultation held by",
+    erstgespraechOrt: "Place", erstgespraechDatum: "Date", unterlagenPapierAm: "Documents handed over on paper on",
+  },
+  a17: "17. Final confirmation by the buyer",
+  a17Text: [
+    "This consultation and quality record has been explained to the buyer in detail. The buyer confirms that they have fully understood the content and completed the record personally.",
+    "The buyer further confirms that they have fully understood the above text, have a command of the German language, have received a complete copy of this record, and that no side agreements or arrangements have been made that are not documented in this record.",
+  ],
+  unterschriften: "Signatures",
+  ortDatum: "Place, date:",
+  datum: "Date:",
+  unterschriftKaeufer: "Signature of buyer:",
+  bestaetigung: (von: number, bis?: number) => `Confirmation by the buyer(s) for ${bis ? `sections ${von} to ${bis}` : `section ${von}`}: place, date, signature`,
+  lage: { rechts: "right", links: "left", mitte: "centre" },
+  unterschriftVp: "Name / signature of sales partner",
+  unterschriftKunde: "Name / signature of buyer(s)",
+  unterschriebenAm: (zeitpunkt: string) => `Signed electronically on ${zeitpunkt} (simple electronic signature)`,
+  dateiname: (name: string, datum: string) => `Consultation-record_${name}_${datum}.pdf`,
+};
+
+export function protokollTexte(sprache?: string | null): ProtokollTexte {
+  return sprache === "en" ? TEXTE_EN : TEXTE;
+}

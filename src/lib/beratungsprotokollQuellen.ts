@@ -28,7 +28,7 @@ export function crmQuellen(kontaktId: string, investmentId: string, nutzerName: 
       quelle: k?.quelle, berater: k?.berater,
       erstgespraechDatum: k?.setterTerminDatum,
     },
-    person2: sa.person2 && sa.person2Data ? { vorname: sa.person2Data.vorname, nachname: sa.person2Data.nachname } : null,
+    person2: sa.person2 && sa.person2Data ? { vorname: sa.person2Data.vorname, nachname: sa.person2Data.nachname, email: sa.person2Data.email } : null,
     objekt: {
       strasse: o.strasse, plz: o.plz, ort: o.ort, weNr: o.weNr,
       kaufpreis: o.kaufpreis, wohnflaeche: o.wohnflaeche, etage: o.etage, lage: o.lage,

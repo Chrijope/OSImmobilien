@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import {
   BERATUNGSPROTOKOLL_VORLAGE, entwurfErgaenzen, feldSetzen, istBeratungsprotokoll, offenePflichtfelder,
-  protokollStatus, TEXTE, vorbelegen, type CrmQuellen,
+  protokollStatus, TEXTE, TEXTE_EN, vorbelegen, type CrmQuellen,
 } from "./beratungsprotokoll";
 import { erzeugeBeratungsprotokollPdf } from "./beratungsprotokollPdf";
 
@@ -11,7 +11,7 @@ vi.stubGlobal("fetch", () => Promise.reject(new Error("kein Netz im Test")));
 
 const quellen: CrmQuellen = {
   kunde: { vorname: "Max", nachname: "Mustermann", strasse: "Beispielweg", hausnummer: "1", plz: "10115", ort: "Berlin", quelle: "Empfehlung", berater: "Beispiel Partner", erstgespraechDatum: "05.08.2026" },
-  person2: { vorname: "Erika", nachname: "Mustermann" },
+  person2: { vorname: "Erika", nachname: "Mustermann", email: "erika@example.com" },
   objekt: { strasse: "Musterallee 12", plz: "04109", ort: "Leipzig", weNr: "5", kaufpreis: 249000, wohnflaeche: 62, etage: "2. OG" },
   stellplatz: { art: "garage", nr: "G22" },
   mieter: { kaltmiete: 760 },
@@ -26,6 +26,7 @@ describe("Vorausfüllung aus dem CRM", () => {
     expect(d.kaeuferName).toBe("Max Mustermann");
     expect(d.kaeuferAnschrift).toBe("Beispielweg 1, 10115 Berlin");
     expect(d.weitereKaeufer).toBe("Erika Mustermann");
+    expect(d.kaeufer2Email).toBe("erika@example.com");
     expect(d.objektAdresse).toBe("Musterallee 12, 04109 Leipzig");
     expect(d.objektLage).toBe("2. OG");
     expect(d.einheitNr).toBe("5");
@@ -94,6 +95,13 @@ describe("Pflichtangaben", () => {
     expect(offenePflichtfelder(fertig)).toEqual(["Name der/des Beauftragten"]);
     expect(offenePflichtfelder({ ...fertig, beauftragter: "Anna Muster" })).toEqual([]);
   });
+
+  it("verlangt für einen weiteren Käufer eine gültige E-Mail, weil er selbst unterschreibt", () => {
+    const d = { ...vorbelegen(quellen), nutzung: "vermietung" as const, besichtigung: "selbst" as const, ort: "Leipzig" };
+    expect(offenePflichtfelder({ ...d, kaeufer2Email: "" })).toEqual(["E-Mail des weiteren Käufers"]);
+    expect(offenePflichtfelder({ ...d, kaeufer2Email: "kein-at" })).toEqual(["E-Mail des weiteren Käufers"]);
+    expect(offenePflichtfelder({ ...d, weitereKaeufer: "", kaeufer2Email: "" })).toEqual([]);
+  });
 });
 
 describe("Stand am Investment", () => {
@@ -131,6 +139,35 @@ describe("PDF", () => {
     expect(doc.output()).toContain("Elektronisch unterschrieben am");
   });
 
+  it("schreibt für Kunden mit Englisch im Profil das ganze Protokoll englisch", async () => {
+    const d = { ...vorbelegen(quellen), sprache: "en" as const, besichtigtLage: "links" as const, ort: "Leipzig" };
+    const roh = (await erzeugeBeratungsprotokollPdf(d)).output();
+    for (const t of ["CONSULTATION AND QUALITY RECORD", "Details of the buyer", "Liability", "Final confirmation by the buyer", "position left", "Leipzig, 17/10/2026"]) {
+      expect(roh, t).toContain(t);
+    }
+    expect(roh).not.toContain("Haftungsregelung");
+    expect(roh).not.toContain("Lage links");
+  });
+
+  it("englische und deutsche Fassung haben dieselben Abschnitte", () => {
+    expect(Object.keys(TEXTE_EN).sort()).toEqual(Object.keys(TEXTE).sort());
+    for (const k of Object.keys(TEXTE) as Array<keyof typeof TEXTE>) {
+      const de = TEXTE[k];
+      if (Array.isArray(de)) expect((TEXTE_EN[k] as unknown[]).length, k).toBe(de.length);
+    }
+    expect(JSON.stringify(TEXTE_EN)).not.toMatch(/[–—]/);
+    expect(JSON.stringify(TEXTE_EN)).not.toMatch(/\b(you'll|don't|won't|it's)\b/i);
+  });
+
+  it("setzt die Unterschrift von Käufer 2 mit ein", async () => {
+    const png = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==";
+    const doc = await erzeugeBeratungsprotokollPdf(vorbelegen(quellen), {
+      kunde2: { name: "Erika Mustermann", signatureData: png, signedAt: "2026-10-17T12:00:00Z" },
+    });
+    expect(doc.output()).toContain("Erika Mustermann");
+    expect(doc.output()).toContain("/Subtype /Image");
+  });
+
   it("duzt in der Einleitung und hat keine Gedankenstriche", () => {
     expect(TEXTE.einleitung).toContain("mit dir geführten");
     expect(TEXTE.einleitung).toContain("Bitte lies");
@@ -141,14 +178,26 @@ describe("PDF", () => {
 });
 
 describe("Signaturablauf", () => {
-  it("Signaturseite schickt das fertige PDF mit der Kundenunterschrift", () => {
+  it("Signaturseite reicht das vollständige PDF erst nach, wenn alle Käufer unterschrieben haben", () => {
     const seite = readFileSync("src/pages/SignaturSeite.tsx", "utf8");
-    expect(seite).toMatch(/phase: "kunde", signature: signatureData, signerName: request\.name, \.\.\.\(protokollPdfBase64 \? \{ pdfBase64: protokollPdfBase64 \}/);
+    expect(seite).toContain("if (isAftersalesKunde && finalizeResult.allSigned && Array.isArray(finalizeResult.unterschriften))");
+    expect(seite).toMatch(/body: \{ investmentId: request\.investment_id, kontaktId: request\.kontakt_id, signatureToken: token, phase: "kunde", pdfBase64 \}/);
+  });
+
+  it("Function legt für Käufer 2 eine eigene Anfrage an und schließt erst ab, wenn keine mehr offen ist", () => {
+    const fn = readFileSync("supabase/functions/finalize-aftersales-beratung/index.ts", "utf8");
+    expect(fn).toContain('sa_data: { ...mergedSaData, aftersalesPerson: "kunde2" }');
+    expect(fn).toMatch(/if \(!nochOffen\) \{\s*nextAb\.status = "abgeschlossen";/);
+  });
+
+  it("Erinnerung schickt jeden Link an seinen eigenen Käufer", () => {
+    const fn = readFileSync("supabase/functions/signatur-link-erinnern/index.ts", "utf8");
+    expect(fn).toContain('const empfaenger = zweiter ? String(sig.email || "") : String(kontakt?.email || "");');
   });
 
   it("die Function erkennt das Protokoll an derselben Vorlagenkennung und legt das PDF ab", () => {
     const fn = readFileSync("supabase/functions/finalize-aftersales-beratung/index.ts", "utf8");
-    expect(fn).toContain(`vorlage === "${BERATUNGSPROTOKOLL_VORLAGE}"`);
+    expect(fn).toContain(`const PROTOKOLL_VORLAGE = "${BERATUNGSPROTOKOLL_VORLAGE}"`);
     expect(fn).toMatch(/pdfAusBase64\(pdfBase64\)/);
     expect(fn).toContain('startsWith("%PDF-")');
   });
