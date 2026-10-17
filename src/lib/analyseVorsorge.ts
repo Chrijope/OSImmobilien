@@ -59,8 +59,8 @@ const praes = (titel: string) => OBJEKTE.find((o) => o.titel === titel)!;
  * Kosten: `hausgeldNichtUmlegbarMonat` ist abziehbar, `ruecklageMonat` nicht,
  * genau wie im Exposé. Wo das Exposé nur die Summe nennt, ist die Aufteilung
  * aus seiner Steuerzeile zurückgerechnet (Barfuß, Brück).
- * Konzept wie in der Präsentation; Brück und Cottbus als kleine
- * Einstiegswohnungen unter Altersvorsorge (Vorschlag, vom Vertrieb zu bestätigen).
+ * Konzept: Barfuß und Zossen Steuerersparnis, Hauff, Brück und Cottbus
+ * Altersvorsorge (Christian, 17.10.2026; Zossen weicht von der Präsentation ab).
  */
 export const OS_WOHNUNGEN: OsWohnung[] = [
   {
@@ -78,7 +78,8 @@ export const OS_WOHNUNGEN: OsWohnung[] = [
   },
   {
     id: "zossen", titel: "Doppelhaushälfte", ort: "Zossen-Wünsdorf", preisrahmen: praes("Doppelhaushälften").preis,
-    konzept: "zusatzrente", bild: praes("Doppelhaushälften").bilder[0].src, beispiel: "Luisenstraße 72, 91 m², 4 Zimmer, Paket A",
+    // Seit 17.10.2026 Steuersparmodell (Christian): 8,3 % AfA tragen das Haus.
+    konzept: "steuer", bild: praes("Doppelhaushälften").bilder[0].src, beispiel: "Luisenstraße 72, 91 m², 4 Zimmer, Paket A",
     // Exposé: AfA 8,3 % (Modellannahme, Gutachten nötig) auf 70 % des Hauspreises
     // 349.000 € plus 8,5 % Nebenkosten = 265.100 €; das sind 64,47 % von
     // Kaufpreis 379.000 € plus Nebenkosten. Paket A (30.000 € Erhaltungsaufwand,
