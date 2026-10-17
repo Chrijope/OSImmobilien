@@ -25,7 +25,7 @@ import KundenDetail from "./KundenDetail";
 const GESPERRT = { data: null, error: { message: "Vorschau: Schreiben in die Datenbank ist gesperrt." } };
 
 /** Sperrt die Schreibwege des Clients und gibt eine Funktion zum Aufheben zurück. */
-function schreibenSperren(): () => void {
+export function schreibenSperren(): () => void {
   const client = supabase as any;
   const altFrom = client.from.bind(client);
   const altInvoke = client.functions.invoke.bind(client.functions);
@@ -55,7 +55,7 @@ function schreibenSperren(): () => void {
 }
 
 /** Die Zeilen in den Zwischenspeicher legen, vorhandene Zeilen bleiben stehen. */
-function beispielEinspielen(nutzerId: string) {
+export function beispielEinspielen(nutzerId: string) {
   for (const [tabelle, zeilen] of Object.entries(beispielkundeZeilen(nutzerId))) {
     const ids = new Set(zeilen.map((z: { id: string }) => z.id));
     cacheSet(tabelle, [...cacheGet(tabelle).filter((z: { id: string }) => !ids.has(z.id)), ...zeilen]);

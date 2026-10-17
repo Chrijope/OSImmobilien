@@ -244,6 +244,7 @@ export const ROUTEN_TABELLEN: Record<string, readonly string[]> = {
   "/vorschau/kundenchat": [],
   "/vorschau/analysetool-ergebnis": [],
   "/vorschau/grundriss-3d": [],
+  "/vorschau/beratungsprotokoll": [],
   // Ankaufstool rechnet nur mit Eingaben, laedt keine Daten.
   "/ankaufstool": [],
   // Mietsubvention liest Objekte und Einheiten fuer die Vorbelegung.
@@ -269,6 +270,8 @@ export const ROUTEN_TABELLEN: Record<string, readonly string[]> = {
     "aktivitaeten", "activity_log", "aufgaben", "kommunikation", "finanzierungen",
     "empfehlungen", "empfehlungsprogramme", "eigentuemer",
   ],
+  // Beratungs- und Qualitätsprotokoll: Kontakt, Investment, Objekt mit Garage, Mieter der Einheit.
+  "/kunden/:id/beratungsprotokoll/:investmentId": [...KONTAKT_TABELLEN, ...OBJEKT_TABELLEN, "mieter"],
   "/kunde/profil/:id": [
     ...KONTAKT_TABELLEN, ...OBJEKT_TABELLEN, "finanzierungen", "aufgaben", "empfehlungen", "empfehlungsprogramme",
   ],

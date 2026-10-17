@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Clock, Lock, FileSignature, Send, Download, FileText } from "lucide-react";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { AftersalesBeratungDialog } from "./AftersalesBeratungDialog";
 import { stelleKundenspracheSicher } from "@/lib/kundenSprache";
 import { signaturLinkErinnern } from "@/lib/aftersalesSignatur";
+import { heuteIso, istBeratungsprotokoll, protokollStatus } from "@/lib/beratungsprotokoll";
 import { toast } from "sonner";
 import { KundenspracheHinweis } from "@/components/kunden/KundenspracheHinweis";
 
@@ -24,16 +24,6 @@ interface Props {
   onChanged?: () => void;
 }
 
-function parseDate(s?: string): Date | null {
-  if (!s) return null;
-  if (/^\d{2}\.\d{2}\.\d{4}/.test(s)) {
-    const [d, m, y] = s.split(".").map(Number);
-    return new Date(y, m - 1, d);
-  }
-  const d = new Date(s);
-  return isNaN(d.getTime()) ? null : d;
-}
-
 /**
  * Aftersales-Beratung Karte für VP/Admin.
  * Sichtbarkeit: immer (Lock-State entscheidet)
@@ -41,21 +31,15 @@ function parseDate(s?: string): Date | null {
  * Status: gesperrt | offen | wartet_auf_kunde | abgeschlossen
  */
 export function AftersalesBeratungCard({
-  investmentId, kontaktId, kundeName, kundeEmail, vpName, notarDatum, kundeAnschrift, objektAdresse, meta, onChanged,
+  investmentId, kontaktId, kundeName, kundeEmail, vpName, notarDatum, meta,
 }: Props) {
-  const [open, setOpen] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0);
-
   const ab = (meta?.aftersalesBeratung as Record<string, any>) || {};
-  const status: "gesperrt" | "offen" | "wartet_auf_kunde" | "abgeschlossen" = (() => {
-    if (ab.kundeSignedAt || ab.status === "abgeschlossen") return "abgeschlossen";
-    if (ab.vpSignedAt || ab.status === "wartet_auf_kunde") return "wartet_auf_kunde";
-    const notar = parseDate(notarDatum);
-    if (!notar) return "gesperrt";
-    const today = new Date(); today.setHours(0, 0, 0, 0);
-    notar.setHours(0, 0, 0, 0);
-    return notar.getTime() <= today.getTime() ? "offen" : "gesperrt";
-  })();
+  const status = protokollStatus(ab, notarDatum, heuteIso());
+  // Seit 17.10.2026 das Beratungs- und Qualitätsprotokoll auf eigener Seite.
+  // Ältere, schon unterschriebene Dokumente behalten ihren Namen.
+  const altesDokument = !!ab.formData && !istBeratungsprotokoll(ab.formData);
+  const titel = altesDokument ? "Aftersales-Beratungsdokument" : "Beratungs- und Qualitätsprotokoll";
+  const seite = `/kunden/${kontaktId}/beratungsprotokoll/${investmentId}`;
 
   const handleResend = async () => {
     // Einmalige Rückfrage „Deutsch oder English?“, falls noch nie gewählt (Plan Kundensprache 2.4).
@@ -85,7 +69,7 @@ export function AftersalesBeratungCard({
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2">
           <FileSignature className="h-5 w-5 text-primary" />
-          <h3 className="font-semibold text-sm">Aftersales-Beratungsdokument</h3>
+          <h3 className="font-semibold text-sm">{titel}</h3>
         </div>
         {status === "gesperrt" && (
           <Badge variant="outline" className="text-[10px]">
@@ -111,17 +95,22 @@ export function AftersalesBeratungCard({
 
       {status === "gesperrt" && (
         <p className="text-xs text-muted-foreground">
-          Dieses Dokument füllt der Vertriebspartner am Tag des Notartermins gemeinsam mit dem Kunden aus.
+          Unterschrift und Versand sind ab dem Tag des Notartermins möglich. Vorbereiten kannst du das Protokoll schon jetzt.
         </p>
+      )}
+      {status === "gesperrt" && (
+        <Button size="sm" variant="outline" asChild>
+          <Link to={seite}><FileSignature className="h-4 w-4 mr-2" /> Beratungsprotokoll vorbereiten</Link>
+        </Button>
       )}
 
       {status === "offen" && (
         <>
           <p className="text-xs text-muted-foreground">
-            Bitte Beratungsdokument ausfüllen, unterzeichnen und an {kundeName} senden.
+            Bitte Beratungsprotokoll prüfen, unterzeichnen und an {kundeName} senden.
           </p>
-          <Button size="sm" onClick={() => setOpen(true)}>
-            <FileSignature className="h-4 w-4 mr-2" /> Beratungsdokument ausfüllen
+          <Button size="sm" asChild>
+            <Link to={seite}><FileSignature className="h-4 w-4 mr-2" /> Beratungsprotokoll ausfüllen</Link>
           </Button>
         </>
       )}
@@ -132,6 +121,11 @@ export function AftersalesBeratungCard({
             Du hast unterzeichnet am {ab.vpSignedAt ? new Date(ab.vpSignedAt).toLocaleString("de-DE") : "—"}.
             {kundeEmail ? ` Der Kunde wurde per E-Mail an ${kundeEmail} eingeladen.` : ""}
           </p>
+          {!altesDokument && (
+            <Button size="sm" variant="outline" asChild>
+              <Link to={seite}><FileText className="h-4 w-4 mr-2" /> Protokoll ansehen</Link>
+            </Button>
+          )}
           {kundeEmail && (
             <div className="flex flex-wrap items-center gap-2">
               <Button size="sm" variant="outline" onClick={handleResend}>
@@ -151,7 +145,7 @@ export function AftersalesBeratungCard({
           {ab.pdfPath && (
             <div className="flex items-center gap-2 bg-muted/40 rounded-lg p-2">
               <FileText className="h-4 w-4 text-primary shrink-0" />
-              <span className="text-xs truncate flex-1">Beratungsdokument (unterzeichnet)</span>
+              <span className="text-xs truncate flex-1">{titel} (unterzeichnet)</span>
               <Button size="sm" variant="outline" className="h-7 text-xs" onClick={handleDownloadPdf}>
                 <Download className="h-3 w-3 mr-1" /> PDF
               </Button>
@@ -163,21 +157,6 @@ export function AftersalesBeratungCard({
         </div>
       )}
 
-      <AftersalesBeratungDialog
-        key={refreshKey}
-        open={open}
-        onOpenChange={setOpen}
-        investmentId={investmentId}
-        kontaktId={kontaktId}
-        vpName={vpName}
-        kundeName={kundeName}
-        kundeEmail={kundeEmail}
-        kundeAnschrift={kundeAnschrift}
-        objektAdresse={objektAdresse}
-        kaufdatum={notarDatum}
-        initialFormData={ab.formData}
-        onCompleted={() => { setRefreshKey(k => k + 1); onChanged?.(); }}
-      />
     </Card>
   );
 }

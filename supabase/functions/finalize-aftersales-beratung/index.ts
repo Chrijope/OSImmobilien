@@ -23,6 +23,30 @@ function aftersalesDateiname(kundeName: string, sprache: Sprache): string {
 }
 
 /**
+ * Das im Browser erzeugte PDF des Beratungs- und Qualitätsprotokolls
+ * (17.10.2026). Nur ein echtes PDF bis 8 MB wird angenommen.
+ */
+function pdfAusBase64(b64: unknown): Uint8Array | null {
+  if (typeof b64 !== "string" || !b64 || b64.length > 11_000_000) return null;
+  try {
+    const bin = atob(b64);
+    if (!bin.startsWith("%PDF-")) return null;
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return bytes;
+  } catch {
+    return null;
+  }
+}
+
+/** Dateiname des Protokolls, Datum wie bei der alten Fassung. */
+function protokollDateiname(kundeName: string): string {
+  const datum = aftersalesDatum(new Date(), "de").replace(/[.\s]+/g, "-");
+  const safeName = (kundeName || "Kunde").replace(/[^\wäöüÄÖÜß\- ]+/g, "").trim().replace(/\s+/g, "_") || "Kunde";
+  return `Beratungsprotokoll_${safeName}_${datum}.pdf`;
+}
+
+/**
  * Erzeugt das finale Aftersales-Beratungs-PDF (beide Unterschriften)
  * und lädt es in den Storage-Bucket `unterlagen` hoch.
  * Returns: storage path or null on failure.
@@ -188,7 +212,7 @@ Deno.serve(async (req) => {
 
   try {
     const body = await req.json();
-    const { investmentId, kontaktId, phase, signatureToken, formData, signature, signerName } = body || {};
+    const { investmentId, kontaktId, phase, signatureToken, formData, signature, signerName, pdfBase64 } = body || {};
 
     if (!investmentId || !kontaktId || !phase || !["vp", "kunde"].includes(phase)) {
       return new Response(JSON.stringify({ error: "investmentId, kontaktId, phase Pflicht" }),
@@ -259,6 +283,20 @@ Deno.serve(async (req) => {
       if (signerName) nextAb.vpSignerName = signerName;
     } else {
       if (ab.kundeSignedAt) {
+        // Schon unterschrieben. Fehlt nur das PDF des Protokolls, darf ein
+        // zweiter Aufruf mit demselben Token es nachreichen.
+        const nachgereicht = !ab.pdfPath && pdfAusBase64(pdfBase64);
+        if (nachgereicht) {
+          const kn = typeof ab.kundeSignerName === "string" ? ab.kundeSignerName : "Kunde";
+          const pfad = `aftersales/${kontaktId}/${investmentId}/${protokollDateiname(kn)}`;
+          const { error: upErr } = await supabase.storage.from("unterlagen")
+            .upload(pfad, nachgereicht, { contentType: "application/pdf", upsert: true });
+          if (!upErr) {
+            await supabase.from("investments")
+              .update({ meta: { ...meta, aftersalesBeratung: { ...ab, pdfPath: pfad } } })
+              .eq("id", investmentId);
+          }
+        }
         return new Response(JSON.stringify({ ok: true, alreadyFinalized: true }),
           { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
@@ -338,13 +376,32 @@ Deno.serve(async (req) => {
       // Phase Kunde signiert → finales PDF erzeugen + Storage-Upload
       // Das endgültige PDF in der Sprache des Kunden aus seinem Profil, Rückfall Deutsch.
       const sprache = await kundenSprache(supabase, { kontaktId });
-      const pdfPath = await buildAndUploadFinalPdf(supabase, kontaktId, investmentId, nextAb, kundeName, sprache);
+      // Beratungs- und Qualitätsprotokoll (seit 17.10.2026): Das PDF kommt
+      // fertig aus dem Browser, nur Deutsch. Die alte Fassung baut weiter
+      // der Server.
+      const istProtokoll = nextAb.formData?.vorlage === "qualitaetsprotokoll-2026-10";
+      let pdfPath: string | null = null;
+      let filename = aftersalesDateiname(kundeName, sprache);
+      if (istProtokoll) {
+        const pdf = pdfAusBase64(pdfBase64);
+        filename = protokollDateiname(kundeName);
+        if (pdf) {
+          const pfad = `aftersales/${kontaktId}/${investmentId}/${filename}`;
+          const { error: upErr } = await supabase.storage.from("unterlagen")
+            .upload(pfad, pdf, { contentType: "application/pdf", upsert: true });
+          if (upErr) console.error("upload failed", upErr);
+          else pdfPath = pfad;
+        } else {
+          console.error("Beratungsprotokoll ohne gültiges PDF unterschrieben", investmentId);
+        }
+      } else {
+        pdfPath = await buildAndUploadFinalPdf(supabase, kontaktId, investmentId, nextAb, kundeName, sprache);
+      }
       if (pdfPath) {
         nextAb.pdfPath = pdfPath;
 
         // Spiegelung in den Kundenordner (Kategorie „Beratungsdokument") – Logik analog Reservierungsvereinbarung
         const ko: any[] = Array.isArray((meta as any).kundenordner) ? [...(meta as any).kundenordner] : [];
-        const filename = aftersalesDateiname(kundeName, sprache);
         ko.push({
           id: `ko-aftersales-${Date.now()}`,
           investmentId,
@@ -366,8 +423,8 @@ Deno.serve(async (req) => {
       if (vpId) {
         await supabase.from("benachrichtigungen").insert({
           benutzer_id: vpId,
-          titel: `Aftersales-Beratung abgeschlossen: ${kundeName}`,
-          nachricht: `${kundeName} hat das Beratungsdokument digital unterzeichnet.`,
+          titel: `Beratungsprotokoll unterschrieben: ${kundeName}`,
+          nachricht: `${kundeName} hat das Beratungsprotokoll digital unterzeichnet.`,
           link: `/kunden/${kontaktId}`,
           gelesen: false,
         });

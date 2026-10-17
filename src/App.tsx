@@ -23,7 +23,7 @@ import { KundenMfaGuard } from "@/components/kunde/KundenMfaGuard";
 
 // Oeffentliche Seiten (eager, klein und immer noetig)
 import Login from "./pages/Login";
-import { VorschauBeratungspraesentation, VorschauErstgespraech, VorschauInvestmentrechner, VorschauNaechsteAktionen, VorschauMikroseite, VorschauPipeline, VorschauProvision, VorschauRechnungsvorlage, VorschauKundeKomplett, VorschauKundenchat, VorschauObjektAnlegen, VorschauHandbuchEntwurf, VorschauGrundriss3d, VorschauAnalysetoolErgebnis } from "./vorschauRouten";
+import { VorschauBeratungspraesentation, VorschauErstgespraech, VorschauInvestmentrechner, VorschauNaechsteAktionen, VorschauMikroseite, VorschauPipeline, VorschauProvision, VorschauRechnungsvorlage, VorschauKundeKomplett, VorschauKundenchat, VorschauObjektAnlegen, VorschauHandbuchEntwurf, VorschauGrundriss3d, VorschauAnalysetoolErgebnis, VorschauBeratungsprotokoll } from "./vorschauRouten";
 
 /** /investmentrechner-plus → /investmentrechner mit Schalter „Bankgespräch & Bankunterlagen“, Parameter bleiben. */
 function InvestmentrechnerPlusWeiterleitung() {
@@ -121,6 +121,7 @@ const Unterlagen = lazyRoute(() => import("./pages/Unterlagen"));
 const BestandskundenImport = lazyRoute(() => import("./pages/BestandskundenImport"));
 const BestandskundenImportCsv = lazyRoute(() => import("./pages/BestandskundenImportCsv"));
 const UnterlagenRechnungsvorlage = lazyRoute(() => import("./pages/unterlagen/Rechnungsvorlage"));
+const BeratungsprotokollSeite = lazyRoute(() => import("./pages/Beratungsprotokoll"));
 const UnterlagenEmailSignatur = lazyRoute(() => import("./pages/unterlagen/EmailSignatur"));
 const UnterlagenWhatsappCommunity = lazyRoute(() => import("./pages/unterlagen/WhatsappCommunity"));
 const UnterlagenKundentypen = lazyRoute(() => import("./pages/unterlagen/Kundentypen"));
@@ -418,6 +419,7 @@ const App = () => (
                 {VorschauObjektAnlegen && <Route path="/vorschau/objekt-anlegen" element={<VorschauObjektAnlegen />} />}
                 {VorschauAnalysetoolErgebnis && <Route path="/vorschau/analysetool-ergebnis" element={<VorschauAnalysetoolErgebnis />} />}
                 {VorschauGrundriss3d && <Route path="/vorschau/grundriss-3d" element={<VorschauGrundriss3d />} />}
+                {VorschauBeratungsprotokoll && <Route path="/vorschau/beratungsprotokoll" element={<VorschauBeratungsprotokoll />} />}
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/portal-aktivieren" element={<PortalAktivieren />} />
                 <Route path="/aktivieren" element={<Aktivieren />} />
@@ -718,6 +720,8 @@ const App = () => (
                   <Route path="/kalkulator-bsp-1" element={<Navigate to="/investmentrechner" replace />} />
                   <Route path="/kalkulator-bsp-2" element={<Navigate to="/investmentrechner" replace />} />
                   <Route path="/kunden/:id" element={<KundenDetail />} />
+                  {/* Beratungs- und Qualitätsprotokoll (17.10.2026): unter /kunden/:id, damit es die Rechte des Kundenprofils erbt. */}
+                  <Route path="/kunden/:id/beratungsprotokoll/:investmentId" element={<BeratungsprotokollSeite />} />
                   <Route path="/kunde/profil/:id" element={<Kundenprofilseite />} />
                   <Route path="/kunde/profil" element={<Kundenprofilseite />} />
                   

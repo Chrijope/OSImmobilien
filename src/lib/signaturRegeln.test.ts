@@ -413,7 +413,7 @@ describe("signature_requests: kein Token an den Browser, Aftersales-Ablauf dicht
 
   it("die Signaturseite schliesst die Aftersales-Beratung mit phase kunde ab", () => {
     const seite = lies("src", "pages", "SignaturSeite.tsx");
-    expect(seite).toContain('...(isAftersalesKunde ? { phase: "kunde", signature: signatureData, signerName: request.name } : {}),');
+    expect(seite).toContain('...(isAftersalesKunde ? { phase: "kunde", signature: signatureData, signerName: request.name,');
   });
 
   it("finalize-aftersales-beratung nimmt keinen abgeloesten oder abgelaufenen Token", () => {
