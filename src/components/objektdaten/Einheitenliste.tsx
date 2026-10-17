@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Lock, Pencil, Upload } from "lucide-react";
+import { Calculator, Lock, Pencil, Upload } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -30,6 +30,7 @@ import { useSortierung, type SortWert } from "@/lib/sortierung";
 import { handlungsbedarf, potenzialMonat, type HinweisArt } from "@/lib/handlungsbedarf";
 import { einheitVollstaendigkeit } from "@/lib/objektdaten";
 import { cn } from "@/lib/utils";
+import { excelDatumIso } from "@/lib/excelLesen";
 
 /*
  * Einheitenliste der Objektdaten (17.10.2026). Jede Zahl kommt aus der Einheit
@@ -69,9 +70,16 @@ function Schloss() {
   return <span title={`${PFLEGE_GESPERRT_HINWEIS} Bitte in Investagon anpassen.`}><Lock className="ml-1 inline h-3 w-3 text-muted-foreground" aria-label="in Investagon ändern" /></span>;
 }
 
-/** Eine Zahl, die sich per Klick ändern lässt. Ohne `speichern` nur Anzeige. */
-function ZahlZelle({ wert, anzeige, speichern, gesperrt }: {
-  wert: number | null; anzeige: string; speichern?: (n: number | null) => Promise<void>; gesperrt?: boolean;
+type WertArt = "zahl" | "text" | "datum";
+
+/**
+ * Ein Wert, der sich per Klick ändern lässt: Zahl, Text oder Datum. Ohne
+ * `speichern` nur Anzeige, mit `gesperrt` ein Schloss (Investagon). Die
+ * gestrichelte Linie zeigt, was bearbeitbar ist (Christian: „Ich sehe keine
+ * Möglichkeit, wo ich die Listen bearbeiten kann“).
+ */
+function ZahlZelle({ wert, anzeige, speichern, gesperrt, art = "zahl" }: {
+  wert: number | string | null; anzeige: string; speichern?: (v: never) => Promise<void>; gesperrt?: boolean; art?: WertArt;
 }) {
   const [offen, setOffen] = useState(false);
   const [text, setText] = useState("");
@@ -79,25 +87,36 @@ function ZahlZelle({ wert, anzeige, speichern, gesperrt }: {
   if (!speichern) return <span className="whitespace-nowrap">{anzeige}</span>;
   if (!offen) {
     return (
-      <button type="button" className="group whitespace-nowrap rounded px-1 hover:bg-muted" title="Zum Ändern klicken"
-        onClick={() => { setText(wert === null ? "" : String(wert).replace(".", ",")); setOffen(true); }}>
-        {anzeige}<Pencil className="ml-1 inline h-3 w-3 opacity-0 group-hover:opacity-60" />
+      <button type="button" className="whitespace-nowrap rounded border-b border-dashed border-primary/50 px-1 hover:bg-muted" title="Zum Ändern klicken"
+        onClick={() => { setText(wert === null ? "" : art === "zahl" ? String(wert).replace(".", ",") : art === "datum" ? datum(wert) : String(wert)); setOffen(true); }}>
+        {anzeige}<Pencil className="ml-1 inline h-3 w-3 opacity-40" />
       </button>
     );
   }
   const fertig = async () => {
     setOffen(false);
-    const neu = lesen(text);
+    const neu = art === "zahl" ? lesen(text) : art === "datum" ? (excelDatumIso(text.trim()) || null) : (text.trim() || null);
+    if (art === "datum" && text.trim() && !neu) { toast({ title: "Datum bitte als TT.MM.JJJJ", variant: "destructive" }); return; }
     if (neu === wert) return;
-    try { await speichern(neu); toast({ title: "Gespeichert" }); }
+    try { await (speichern as (v: number | string | null) => Promise<void>)(neu); toast({ title: "Gespeichert" }); }
     catch (e) { toast({ title: "Nicht gespeichert", description: e instanceof Error ? e.message : undefined, variant: "destructive" }); }
   };
   return (
-    <Input autoFocus inputMode="decimal" value={text} className="h-7 w-24 px-1 text-right tabular-nums"
+    <Input autoFocus inputMode={art === "zahl" ? "decimal" : "text"} value={text} placeholder={art === "datum" ? "TT.MM.JJJJ" : undefined}
+      className={cn("h-7 px-1", art === "zahl" ? "w-24 text-right tabular-nums" : "w-32")}
       onChange={(e) => setText(e.target.value)} onBlur={fertig}
       onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); if (e.key === "Escape") setOffen(false); }} />
   );
 }
+
+/*
+ * Woher eine Spalte ihren Wert hat. „rechnet“: wird aus anderen Werten
+ * gerechnet, nicht bearbeitbar. „investagon“: kommt bei Objekten aus
+ * Investagon von dort und wird dort geändert. Alles andere ist hier pflegbar.
+ */
+const BERECHNET = new Set(["VK €/m²", "Brutto Ist", "Brutto", "Netto", "Ist €/m²", "Soll €/m²", "Zielmiete", "Garantie mtl.", "Garantie Laufzeit",
+  "Eigentümerlast", "Überschuss mtl.", "laut Plan", "Garagen-Subv. mtl.", "Mehrertrag mtl.", "Hinweise"]);
+const AUS_INVESTAGON = new Set(["Fläche m²", "Kaufpreis", "Miete Vertrieb", "KP Garage", "Hausgeld gesamt", "umlagefähig", "nicht umlagefähig", "Rücklage"]);
 
 function GarageDialog({ einheit, garage, onClose }: { einheit: ObjektWohnung | null; garage: EinheitGarage | null; onClose: () => void }) {
   const [form, setForm] = useState({ nr: "", art: "garage", status: "frei", istMiete: "" });
@@ -305,6 +324,18 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
     if (n === null) delete werte[schluessel]; else werte[schluessel] = n;
     await wohnungMetaErgaenzen(w.id, { listendaten: { ...alt, werte, quelle: alt?.quelle ? `${alt.quelle}, von Hand ergänzt` : "von Hand", stand: new Date().toISOString().slice(0, 10) } });
   };
+  const listeTextSpeichern = (w: ObjektWohnung, schluessel: string) => async (v: string | null) => {
+    const alt = listendatenFuerEinheit(w.id);
+    const werte = { ...(alt?.werte || {}) };
+    if (v === null) delete werte[schluessel]; else werte[schluessel] = v;
+    await wohnungMetaErgaenzen(w.id, { listendaten: { ...alt, werte, quelle: alt?.quelle ? `${alt.quelle}, von Hand ergänzt` : "von Hand", stand: new Date().toISOString().slice(0, 10) } });
+  };
+  /** Text oder Datum aus den Listendaten, bearbeitbar für Rollen mit Schreibrecht. */
+  const listenTextZelle = (x: Zeile, schluessel: string, art: "text" | "datum" = "text") => {
+    const v = x.l?.werte[schluessel];
+    const wert = typeof v === "string" ? v : null;
+    return <ZahlZelle art={art} wert={wert} anzeige={art === "datum" ? datum(wert) : wert || "–"} speichern={darfSchreiben ? listeTextSpeichern(x.w, schluessel) : undefined} />;
+  };
   /** Eine Zahl aus den Listendaten, bearbeitbar für Rollen mit Schreibrecht. */
   const listenZelle = (x: Zeile, schluessel: string, stellen = 2, einheit = "€") => {
     const v = listenZahl(x.l, schluessel);
@@ -317,7 +348,13 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
       speichern={darfSchreiben ? wohnungSpeichern(x.objekt, x.w, feld) : undefined} />
   );
 
-  const kopf = (titel: string, rechts = true, hinweis?: string) => <SortKopf titel={titel} schluessel={SORT[titel] ? titel : undefined} sort={sort} rechts={rechts} hinweis={hinweis} />;
+  const mitInvestagon = zeilen.some((x) => x.gesperrt);
+  const kopf = (titel: string, rechts = true, hinweis?: string) => {
+    const zeichen = BERECHNET.has(titel) ? "rechnet" : AUS_INVESTAGON.has(titel) && mitInvestagon ? "investagon" : null;
+    const erklaerung = zeichen === "rechnet" ? "Wird automatisch berechnet." : zeichen === "investagon" ? "Bei Objekten aus Investagon dort ändern." : undefined;
+    return <SortKopf titel={`${titel}${zeichen === "rechnet" ? " ƒ" : zeichen === "investagon" ? " 🔒" : ""}`} schluessel={SORT[titel] ? titel : undefined}
+      sort={sort} rechts={rechts} hinweis={[hinweis, erklaerung].filter(Boolean).join(" ") || undefined} />;
+  };
   const r = "text-right tabular-nums whitespace-nowrap";
 
   return (
@@ -341,6 +378,13 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
       </div>
       {einzeln && ansicht !== "hausgeld" && <MietgarantieKarte objekt={einzeln} regel={mietgarantieFuerObjekt(einzeln.id)} darfSchreiben={darfSchreiben} />}
       {einzeln && ansicht === "hausgeld" && <WirtschaftsplanKarte objekt={einzeln} wp={wirtschaftsplanFuerObjekt(einzeln.id)} darfSchreiben={darfSchreiben} />}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+        {darfSchreiben
+          ? <span><span className="border-b border-dashed border-primary/50 px-1">Wert<Pencil className="ml-1 inline h-3 w-3 opacity-40" /></span> anklicken und ändern</span>
+          : <span>Ändern dürfen Admin, Inhaber und Objektpartner, Ist-Miete auch das Backoffice.</span>}
+        <span>ƒ <Calculator className="inline h-3 w-3" /> wird automatisch berechnet</span>
+        {mitInvestagon && <span>🔒 kommt aus Investagon und wird dort geändert, sonst überschreibt es der Abgleich alle 15 Minuten</span>}
+      </div>
       <div className="flex flex-wrap gap-2" role="tablist">
         {ANSICHTEN.map((a) => (
           <Button key={a.wert} size="sm" variant={ansicht === a.wert ? "default" : "outline"} role="tab" aria-selected={ansicht === a.wert} onClick={() => setAnsicht(a.wert)}>{a.titel}</Button>
@@ -394,7 +438,11 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
                   <TableRow key={w.id}>
                     {mehrere && <TableCell className="whitespace-nowrap text-xs">{objekt.titel}</TableCell>}
                     <TableCell className="whitespace-nowrap font-medium"><Link to={`/objekte/${objekt.id}/einheiten/${w.id}`} className="hover:underline">{z.weNr || "ohne Nr."}</Link></TableCell>
-                    <TableCell className="whitespace-nowrap text-xs">{[l?.werte.haus, z.lage].filter(Boolean).join(" · ") || "–"}</TableCell>
+                    <TableCell className="whitespace-nowrap text-xs">
+                      {l?.werte.haus ? `${l.werte.haus} · ` : ""}
+                      <ZahlZelle art="text" wert={w.lage || null} anzeige={w.lage || "–"}
+                        speichern={darfSchreiben ? async (v: string | null) => { const f = await updateWohnung(objekt.id, w.id, { lage: v ?? "" }); if (f) throw new Error("Die Einheit darfst du nicht ändern."); } : undefined} />
+                    </TableCell>
                     {ansicht === "handlung" && <>
                       <TableCell className="whitespace-nowrap text-xs">{z.status}</TableCell>
                       <TableCell className={cn(r, x.potenzial > 0 && "font-medium text-emerald-700")}>{x.potenzial > 0 ? eur(x.potenzial, 2) : "–"}</TableCell>
@@ -430,12 +478,12 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
                         <TableCell className={r}>{garantie ? <span title={`${zahl(regel!.zielQm)} €/m²`}>{eur(garantie.zielMiete, 2)}</span> : "–"}</TableCell>
                         <TableCell className={cn(r, garantie?.garantieMonat && "font-medium")}>{garantie ? eur(garantie.garantieMonat, 2) : "–"}</TableCell>
                         <TableCell className={r}>{garantie ? eur(garantie.summeLaufzeit) : "–"}</TableCell>
-                        <TableCell className={r}>{eur(listenZahl(l, "garantieLaufzeitListe"))}</TableCell>
+                        <TableCell className={r}>{listenZelle(x, "garantieLaufzeitListe", 0)}</TableCell>
                       </>}
-                      <TableCell className="whitespace-nowrap text-xs">{datum(l?.werte.letzteErhoehung)}</TableCell>
-                      <TableCell className="whitespace-nowrap text-xs">{datum(l?.werte.naechsteErhoehungAb)}</TableCell>
-                      <TableCell className={r}>{eur(listenZahl(l, "naechsteErhoehungMiete"), 2)}</TableCell>
-                      <TableCell className={r}>{eur(listenZahl(l, "mieteIn3Jahren"), 2)}</TableCell>
+                      <TableCell className="whitespace-nowrap text-xs">{listenTextZelle(x, "letzteErhoehung")}</TableCell>
+                      <TableCell className="whitespace-nowrap text-xs">{listenTextZelle(x, "naechsteErhoehungAb", "datum")}</TableCell>
+                      <TableCell className={r}>{listenZelle(x, "naechsteErhoehungMiete")}</TableCell>
+                      <TableCell className={r}>{listenZelle(x, "mieteIn3Jahren")}</TableCell>
                     </>}
                     {ansicht === "hausgeld" && <>
                       <TableCell className={r}>{hausgeldZelle(x, hg.gesamt, "hausgeldMonat")}</TableCell>
@@ -459,7 +507,7 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
                       <TableCell className={r}>{garage?.istMiete != null ? eur(garage.istMiete, 2) : "–"}</TableCell>
                       <TableCell className={r}>{listenZelle(x, "garageSollMiete")}</TableCell>
                       {mitGarantie && <TableCell className={r}>{garantie?.garagenSubventionMonat ? eur(garantie.garagenSubventionMonat, 2) : "–"}</TableCell>}
-                      <TableCell className="whitespace-nowrap text-xs">{datum(l?.werte.garageGekuendigtZum)}</TableCell>
+                      <TableCell className="whitespace-nowrap text-xs">{listenTextZelle(x, "garageGekuendigtZum", "datum")}</TableCell>
                     </>}
                   </TableRow>
                 );
