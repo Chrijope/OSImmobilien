@@ -95,19 +95,24 @@ describe("saveAbwicklungDaten", () => {
   });
 });
 
-describe("Kundenprofil: Auszahlung bestätigt (M19)", () => {
+describe("Stufe nach der Abwicklung (M19, seit 17.10.2026 ohne Provisionshaken)", () => {
   it("setzt die Stufe erst nach gespeicherter Abwicklung und meldet dem Kunden danach", async () => {
     const { readFileSync } = await import("node:fs");
     const { resolve } = await import("node:path");
-    const profil = readFileSync(resolve(__dirname, "../pages/KundenDetail.tsx"), "utf-8");
-    const rumpf = profil.slice(profil.indexOf("const saveAbw = (updated: AbwicklungDaten) => {"), profil.indexOf("const saveAbw = (updated: AbwicklungDaten) => {") + 3000);
-    const gespeichert = rumpf.indexOf("if (!(await abwicklungGespeichert(inv.id))) { reloadKunde(); return; }");
-    const stufe = rumpf.indexOf("if (!(await updateInvestment(inv.id, { pipelineStufe: zielStufe }))) { reloadKunde(); return; }");
-    const kunde = rumpf.indexOf('if (zielStufe === "abgeschlossen") notifyKundePipelineStufe(id || "", "abgeschlossen");');
+    const regel = readFileSync(resolve(__dirname, "abwicklungStufe.ts"), "utf-8");
+    const gespeichert = regel.indexOf("if (!(await abwicklungGespeichert(inv.id))) return null;");
+    const stufe = regel.indexOf("if (!(await updateInvestment(inv.id, { pipelineStufe: ziel }))) return null;");
+    const kunde = regel.indexOf('if (ziel === "abgeschlossen") notifyKundePipelineStufe(inv.kontaktId, "abgeschlossen");');
     expect(gespeichert).toBeGreaterThan(-1);
     expect(stufe).toBeGreaterThan(gespeichert);
     expect(kunde).toBeGreaterThan(stufe);
+    // Kundenprofil und Objektdaten nutzen dieselbe Regel.
+    const profil = readFileSync(resolve(__dirname, "../pages/KundenDetail.tsx"), "utf-8");
+    expect(profil).toContain("abwicklungStufeNachziehen(");
+    expect(profil).not.toContain("Provisionsrechnung gestellt</Label>");
+    expect(profil).not.toContain("Auszahlung bestätigt</Label>");
   });
+
 });
 
 describe("Abwicklung: verglichen wird mit der Rückgabe der Datenbank (zweite Prüfung Codex)", () => {

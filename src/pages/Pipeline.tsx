@@ -652,8 +652,6 @@ function KundeCard({ kunde, stufe, investmentId, zusatzBereit, datenstand, onCli
             {kunde.objekt && <div className="text-xs text-muted-foreground flex items-start gap-1"><Building2 className="h-3 w-3 mt-0.5 shrink-0" /><span>{kunde.objekt}</span></div>}
             <Tick ok={!!abw.kaufpreisEingegangen} label="Kaufpreis eingegangen" />
             <Tick ok={!!abw.grundbuchEingetragen} label="Grundbuch eingetragen" />
-            <Tick ok={!!abw.provisionsRechnungGestellt} label="Provisions-Rechnung gestellt" />
-            <Tick ok={!!abw.auszahlungBestaetigt} label="Auszahlung bestätigt" />
             {meta.provisionTatsaechlich != null && meta.provisionTatsaechlich > 0 && (
               <div className="text-xs text-muted-foreground"><span className="font-medium">Provision:</span> <span className={unscharfKlasse()}>{formatEuro(meta.provisionTatsaechlich)}</span></div>
             )}

@@ -29,6 +29,11 @@ import { SortKopf } from "@/components/objektdaten/sortierung";
 import { useSortierung, type SortWert } from "@/lib/sortierung";
 import { handlungsbedarf, potenzialMonat, type HinweisArt } from "@/lib/handlungsbedarf";
 import { einheitVollstaendigkeit } from "@/lib/objektdaten";
+import { getInvestments, setInvestmentNotarFields, type Investment } from "@/lib/investmentsStore";
+import { ABWICKLUNG_GELD_ROLLEN, ABWICKLUNG_ROLLEN, getAbwicklungDaten, saveAbwicklungDaten, type AbwicklungDaten } from "@/lib/abwicklungStore";
+import { abwicklungStufeNachziehen } from "@/lib/abwicklungStufe";
+import { PIPELINE_STUFEN } from "@/lib/pipelineStufen";
+import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { excelDatumIso } from "@/lib/excelLesen";
 
@@ -211,19 +216,34 @@ function MietgarantieKarte({ objekt, regel, darfSchreiben }: { objekt: ObjektDat
   );
 }
 
-type Ansicht = "handlung" | "preise" | "miete" | "hausgeld" | "garagen";
+type Ansicht = "handlung" | "preise" | "miete" | "hausgeld" | "garagen" | "verkauf";
 const ANSICHTEN: { wert: Ansicht; titel: string }[] = [
   { wert: "handlung", titel: "Handlungsbedarf" },
   { wert: "preise", titel: "Preise & Rendite" },
   { wert: "miete", titel: "Miete & Garantie" },
   { wert: "hausgeld", titel: "Hausgeld" },
   { wert: "garagen", titel: "Garagen" },
+  { wert: "verkauf", titel: "Verkaufsstand" },
 ];
 
 const HINWEIS_FARBE: Record<HinweisArt, string> = {
   potenzial: "bg-emerald-50 text-emerald-800", termin: "bg-blue-50 text-blue-800", risiko: "bg-red-50 text-red-700",
   kosten: "bg-amber-50 text-amber-800", unterlagen: "bg-slate-100 text-slate-700",
 };
+
+const STUFE_TEXT = Object.fromEntries(PIPELINE_STUFEN.map((s) => [s.key, s.label])) as Record<string, string>;
+
+/**
+ * Das laufende Investment einer Einheit: der Kauf, an dem Notartermin und
+ * Abwicklung hängen. Verlorene Vorgänge zählen nicht, bei mehreren der jüngste.
+ * Notartermin und Abwicklung werden hier und im Kundenprofil am selben
+ * Investment gelesen und geschrieben, beide Seiten sind damit immer gleich.
+ */
+function investmentFuerEinheit(investments: Investment[], wohnungId: string): Investment | undefined {
+  return investments
+    .filter((i) => i.wohnungId === wohnungId && i.pipelineStufe !== "verloren")
+    .sort((a, b) => (b.erstellt_am || "").localeCompare(a.erstellt_am || ""))[0];
+}
 
 const datum = (iso: unknown) => (typeof iso === "string" && /^\d{4}-\d{2}-\d{2}/.test(iso) ? `${iso.slice(8, 10)}.${iso.slice(5, 7)}.${iso.slice(0, 4)}` : typeof iso === "string" && iso ? iso : "–");
 
@@ -236,6 +256,10 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
   const [ansicht, setAnsicht] = useState<Ansicht>("handlung");
   const darfSchreiben = SCHREIBT_OBJEKTE.includes(user.role);
   const mieter = getMieter();
+  useLiveVersion(["investments"]);
+  const investments = getInvestments();
+  const darfAbwicklung = ABWICKLUNG_ROLLEN.includes(user.role);
+  const darfGeld = ABWICKLUNG_GELD_ROLLEN.includes(user.role);
   const einzeln = objekte.length === 1 ? objekte[0] : null;
 
   /*
@@ -265,6 +289,7 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
       if (hg.nichtUml !== null && w.hausgeldNichtUmlagefaehigEuro === undefined) { eingabe.nichtUmlagefaehigMonat = hg.nichtUml; eingabe.ruecklageMonat = hg.ruecklage ?? 0; }
       return {
         objekt: o, w, z, m, ist, garage, regel, garantie, l, hg, hgPlan, gesperrt: ausInvestagon(w),
+        inv: investmentFuerEinheit(investments, w.id),
         bruttoIst: ist ? bruttoRendite(ist, z.kaufpreis ?? 0) : null,
         brutto: z.rendite,
         netto: nettoRendite(eingabe),
@@ -305,6 +330,12 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
     "Sollmiete Garage": (x) => listenZahl(x.l, "garageSollMiete"), "Garagen-Subv. mtl.": (x) => x.garantie?.garagenSubventionMonat,
     "gekündigt zum": (x) => String(x.l?.werte.garageGekuendigtZum ?? ""),
     "Mehrertrag mtl.": (x) => x.potenzial || null, Hinweise: (x) => x.hinweise.length || null,
+    Stufe: (x) => (x.inv ? STUFE_TEXT[x.inv.pipelineStufe] || x.inv.pipelineStufe : null), Notartermin: (x) => x.inv?.notarTermin,
+    Fälligkeit: (x) => (x.inv ? getAbwicklungDaten(x.inv.id).kaufpreisfaelligkeitDatum : null),
+    "Kaufpreis da": (x) => (x.inv ? (getAbwicklungDaten(x.inv.id).kaufpreisEingegangen ? 1 : 0) : null),
+    "Grundbuch am": (x) => (x.inv ? getAbwicklungDaten(x.inv.id).grundbuchDatum : null),
+    "Grundbuch erfolgt": (x) => (x.inv ? (getAbwicklungDaten(x.inv.id).grundbuchEingetragen ? 1 : 0) : null),
+    Übergabe: (x) => (x.inv ? getAbwicklungDaten(x.inv.id).uebergabeDatum : null),
   };
   const sort = useSortierung<Zeile>(SORT);
   const mitGarantie = zeilen.some((x) => x.regel);
@@ -329,6 +360,17 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
     const werte = { ...(alt?.werte || {}) };
     if (v === null) delete werte[schluessel]; else werte[schluessel] = v;
     await wohnungMetaErgaenzen(w.id, { listendaten: { ...alt, werte, quelle: alt?.quelle ? `${alt.quelle}, von Hand ergänzt` : "von Hand", stand: new Date().toISOString().slice(0, 10) } });
+  };
+  /** Ein Feld der Abwicklung am Investment ändern, danach dieselbe Stufenregel wie im Kundenprofil. */
+  const abwicklungAendern = (inv: Investment, teil: Partial<AbwicklungDaten>) => {
+    const neu = { ...getAbwicklungDaten(inv.id), ...teil };
+    saveAbwicklungDaten(inv.id, neu);
+    void abwicklungStufeNachziehen(inv, neu, darfGeld);
+  };
+  const abwicklungDatum = (inv: Investment | undefined, feld: "kaufpreisfaelligkeitDatum" | "grundbuchDatum" | "uebergabeDatum") => {
+    if (!inv) return "–";
+    const wert = getAbwicklungDaten(inv.id)[feld] || null;
+    return <ZahlZelle art="datum" wert={wert} anzeige={datum(wert)} speichern={darfAbwicklung ? async (v: string | null) => abwicklungAendern(inv, { [feld]: v ?? undefined }) : undefined} />;
   };
   /** Text oder Datum aus den Listendaten, bearbeitbar für Rollen mit Schreibrecht. */
   const listenTextZelle = (x: Zeile, schluessel: string, art: "text" | "datum" = "text") => {
@@ -423,6 +465,11 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
                   {kopf("Eigentümerlast", true, "nicht umlagefähig plus Rücklage")}{kopf("Überschuss mtl.", true, "Miete Vertrieb minus Eigentümerlast")}
                   {kopf("laut Plan", true, "Hausgeld gesamt aus dem Wirtschaftsplan über die MEA der Einheit")}
                 </>}
+                {ansicht === "verkauf" && <>
+                  {kopf("Status", false)}{kopf("Käufer", false)}{kopf("Stufe", false)}{kopf("Notartermin", false)}
+                  {kopf("Fälligkeit", false, "Kaufpreisfälligkeit")}{kopf("Kaufpreis da", false, "Kaufpreis eingegangen, setzt nur das Backoffice")}
+                  {kopf("Grundbuch am", false)}{kopf("Grundbuch erfolgt", false)}{kopf("Übergabe", false)}
+                </>}
                 {ansicht === "garagen" && <>
                   {kopf("Garage/SP", false)}{kopf("KP Garage")}{kopf("Ist-Miete Garage")}{kopf("Sollmiete Garage")}
                   {mitGarantie && kopf("Garagen-Subv. mtl.")}{kopf("gekündigt zum", false)}
@@ -497,6 +544,30 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
                         {x.hgPlan ? eur(x.hgPlan.gesamt, 2) : "–"}
                       </TableCell>
                     </>}
+                    {ansicht === "verkauf" && (() => {
+                      const inv = x.inv;
+                      const abw = inv ? getAbwicklungDaten(inv.id) : null;
+                      return <>
+                        <TableCell className="whitespace-nowrap text-xs">{z.status}</TableCell>
+                        <TableCell className="whitespace-nowrap text-xs">{inv ? <Link to={`/kunden/${inv.kontaktId}`} className="hover:underline">{z.kaeufer || "zum Kunden"}</Link> : z.kaeufer || "–"}</TableCell>
+                        <TableCell className="whitespace-nowrap text-xs">{inv ? STUFE_TEXT[inv.pipelineStufe] || inv.pipelineStufe : "–"}</TableCell>
+                        <TableCell className="whitespace-nowrap text-xs">
+                          {inv ? <ZahlZelle art="datum" wert={inv.notarTermin || null} anzeige={datum(inv.notarTermin)}
+                            speichern={darfAbwicklung ? async (v: string | null) => setInvestmentNotarFields(inv.id, { datum: v ?? "" }) : undefined} /> : "–"}
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap text-xs">{abwicklungDatum(inv, "kaufpreisfaelligkeitDatum")}</TableCell>
+                        <TableCell>
+                          {inv && abw ? <Checkbox checked={!!abw.kaufpreisEingegangen} disabled={!darfGeld} aria-label="Kaufpreis eingegangen"
+                            onCheckedChange={(c) => abwicklungAendern(inv, { kaufpreisEingegangen: !!c, kaufpreisEingegangenDatum: c ? (abw.kaufpreisEingegangenDatum || new Date().toISOString().slice(0, 10)) : undefined })} /> : "–"}
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap text-xs">{abwicklungDatum(inv, "grundbuchDatum")}</TableCell>
+                        <TableCell>
+                          {inv && abw ? <Checkbox checked={!!abw.grundbuchEingetragen} disabled={!darfAbwicklung} aria-label="Grundbucheintrag erfolgt"
+                            onCheckedChange={(c) => abwicklungAendern(inv, { grundbuchEingetragen: !!c, grundbuchDatum: c ? (abw.grundbuchDatum || new Date().toISOString().slice(0, 10)) : abw.grundbuchDatum })} /> : "–"}
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap text-xs">{abwicklungDatum(inv, "uebergabeDatum")}</TableCell>
+                      </>;
+                    })()}
                     {ansicht === "garagen" && <>
                       <TableCell className="whitespace-nowrap text-xs">
                         {darfSchreiben

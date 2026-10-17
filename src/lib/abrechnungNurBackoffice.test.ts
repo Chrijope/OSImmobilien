@@ -35,12 +35,14 @@ describe("darfAbschlussStufeWechseln: Abrechnung", () => {
 });
 
 describe("Abwicklungskarte setzt Abrechnung nur mit Geldrechten", () => {
-  it("Provisionsrechnung schaltet nur bei darfGeldfelder auf Abrechnung", () => {
+  it("Kaufpreiseingang schaltet nur mit Geldrechten auf Abrechnung", () => {
+    // Seit dem 17.10.2026 der Kaufpreiseingang statt der Provisionsrechnung (Bauträger, Christian);
+    // die Regel steht in `abwicklungStufe.ts`, das Kundenprofil reicht `darfGeldfelder` durch.
+    const regel = readFileSync("src/lib/abwicklungStufe.ts", "utf8");
+    expect(regel).toContain("if (!darfGeldfelder || !d.kaufpreisEingegangen) return null;");
+    expect(regel).toContain('if (["notar", "faelligkeit"].includes(stufe)) return "abrechnung";');
     const kundenDetail = readFileSync("src/pages/KundenDetail.tsx", "utf8");
-    // Seit M19 (04.10.2026) als Zielstufe, gesetzt erst nach gespeicherter Abwicklung.
-    expect(kundenDetail).toContain(
-      ': updated.provisionsRechnungGestellt && darfGeldfelder && ["notar", "faelligkeit"].includes(inv.pipelineStufe)',
-    );
+    expect(kundenDetail).toContain("updated, darfGeldfelder)");
   });
 });
 

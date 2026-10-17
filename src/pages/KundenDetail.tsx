@@ -112,6 +112,7 @@ import { FreieWohnungenCard } from "@/components/kunden/FreieWohnungenCard";
 import { InvestmentBerechnungen } from "@/components/kunden/InvestmentBerechnungen";
 import { GesendeteExposes } from "@/components/kunden/GesendeteExposes";
 import { getKontaktById, updateKontakt, deleteKontakt, mergeKontaktMeta, type KundeData, dbRowToKunde } from "@/lib/kundenStore";
+import { abwicklungStufeNachziehen } from "@/lib/abwicklungStufe";
 import { versendeSaFormularPdf, saDatenAusPdfFormular, uebernehmePerson2InKontakt } from "@/lib/saPdfFormular";
 import { saStartstandFuerInvestment } from "@/lib/saStartstand";
 import { isNewBadgeActive } from "@/lib/seenBadges";
@@ -8611,7 +8612,7 @@ export default function KundenDetail() {
     //    Setzen des Fälligkeitsdatums vorzeitig auf "faelligkeit" wechselte.
     if (inv.pipelineStufe === "faelligkeit" && inv.notarTermin && inv.notarUhrzeit) {
       const abwData = getAbwicklungDaten(inv.id);
-      const noAbwicklungProgress = !abwData?.provisionsRechnungGestellt && !abwData?.auszahlungBestaetigt;
+      const noAbwicklungProgress = !abwData?.kaufpreisEingegangen;
       const notarDateTime = new Date(`${inv.notarTermin}T${inv.notarUhrzeit}`);
       // Derselbe Puffer wie oben, sonst wuerden sich beide Regeln in der
       // Stunde nach dem Termin gegenseitig hin und her schieben.
@@ -12051,35 +12052,13 @@ export default function KundenDetail() {
               // datums auf "faelligkeit" springen. Der Wechsel notar → faelligkeit
               // erfolgt ausschließlich automatisch, sobald Notar-Datum + Uhrzeit
               // in der Vergangenheit liegen (siehe Auto-Advance oben & bulk_recompute_pipeline).
-              // Auch "Kaufpreis eingegangen" verändert die Stufe NICHT – sie bleibt
-              // "faelligkeit", bis die Provisionsrechnung gestellt wurde.
-              // Abrechnung setzt nur, wer die Provisionsrechnung stellen darf,
-              // siehe darfAbschlussStufeWechseln.
-              const zielStufe =
-                updated.auszahlungBestaetigt && darfGeldfelder && inv.pipelineStufe !== "abgeschlossen"
-                  ? "abgeschlossen"
-                  : updated.provisionsRechnungGestellt && darfGeldfelder && ["notar", "faelligkeit"].includes(inv.pipelineStufe)
-                    ? "abrechnung"
-                    : null;
+              // Weiter schaltet nur noch der Kaufpreiseingang, zusammen mit dem
+              // Grundbucheintrag (Christian, 17.10.2026); die Regel steht in
+              // `abwicklungStufe.ts`, dieselbe gilt in den Objektdaten.
               forceUpdate(n => n + 1);
               reloadKunde();
-              if (!zielStufe) return;
-              // Die Stufe erst, wenn die Abwicklung wirklich gespeichert ist,
-              // und die Kundenmeldung erst nach der Stufe (M19, 04.10.2026).
-              // Vorher lief beides sofort, auch wenn die Datenbank den Haken
-              // ablehnte, und der Kunde bekam „abgeschlossen“ trotzdem.
-              void (async () => {
-                if (!(await abwicklungGespeichert(inv.id))) { reloadKunde(); return; }
-                if (!(await updateInvestment(inv.id, { pipelineStufe: zielStufe }))) { reloadKunde(); return; }
-                try {
-                  await updateKontakt(id || "", zielStufe === "abgeschlossen" ? { pipelineStufe: zielStufe, status: "kunde" } : { pipelineStufe: zielStufe });
-                } catch {
-                  reloadKunde();
-                  return;
-                }
-                if (zielStufe === "abgeschlossen") notifyKundePipelineStufe(id || "", "abgeschlossen");
-                reloadKunde();
-              })();
+              void abwicklungStufeNachziehen({ id: inv.id, kontaktId: id || "", pipelineStufe: inv.pipelineStufe }, updated, darfGeldfelder)
+                .then((neu) => { if (neu) reloadKunde(); });
             };
 
             return (
@@ -12129,7 +12108,7 @@ export default function KundenDetail() {
 
                   <div className="space-y-3">
                     {!darfGeldfelder && (
-                      <p className="text-xs text-muted-foreground">Kaufpreiseingang, Provisionsrechnung und Auszahlung werden vom Backoffice gepflegt.</p>
+                      <p className="text-xs text-muted-foreground">Den Kaufpreiseingang pflegt das Backoffice.</p>
                     )}
                     <div className="flex items-center gap-2">
                       <Checkbox
@@ -12163,37 +12142,6 @@ export default function KundenDetail() {
                       )}
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <Checkbox
-                        checked={abw.provisionsRechnungGestellt || false}
-                        onCheckedChange={(c) => saveAbw({
-                          ...abw,
-                          provisionsRechnungGestellt: !!c,
-                          provisionsRechnungDatum: c ? (abw.provisionsRechnungDatum || new Date().toISOString().split("T")[0]) : undefined,
-                        })}
-                        disabled={!darfGeldfelder}
-                      />
-                      <Label className="text-sm">Provisionsrechnung gestellt</Label>
-                      {abw.provisionsRechnungGestellt && abw.provisionsRechnungDatum && (
-                        <span className="text-[10px] text-muted-foreground ml-2">({abw.provisionsRechnungDatum})</span>
-                      )}
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <Checkbox
-                        checked={abw.auszahlungBestaetigt || false}
-                        onCheckedChange={(c) => saveAbw({
-                          ...abw,
-                          auszahlungBestaetigt: !!c,
-                          auszahlungDatum: c ? (abw.auszahlungDatum || new Date().toISOString().split("T")[0]) : undefined,
-                        })}
-                        disabled={!darfGeldfelder}
-                      />
-                      <Label className="text-sm">Auszahlung bestätigt</Label>
-                      {abw.auszahlungBestaetigt && abw.auszahlungDatum && (
-                        <span className="text-[10px] text-muted-foreground ml-2">({abw.auszahlungDatum})</span>
-                      )}
-                    </div>
                   </div>
 
                   <div>
@@ -12222,8 +12170,8 @@ export default function KundenDetail() {
                   <div className="border rounded-lg p-3 bg-muted/30 text-xs text-muted-foreground space-y-1">
                     <p>📋 <strong>Statusübergänge:</strong></p>
                     <p>• Kaufpreisfälligkeit eingetragen → Status „Fälligkeit"</p>
-                    <p>• Provisionsrechnung gestellt → Status „Abrechnung"</p>
-                    <p>• Auszahlung bestätigt → Status „Abgeschlossen"</p>
+                    <p>• Kaufpreis eingegangen → Status „Abrechnung"</p>
+                    <p>• Kaufpreis eingegangen und Grundbucheintrag erfolgt → Status „Abgeschlossen"</p>
                   </div>
 
                   <div className="border rounded-lg p-3 bg-primary/5 border-primary/20 text-xs text-muted-foreground flex items-start gap-2 mt-2">

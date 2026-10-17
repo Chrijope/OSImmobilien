@@ -160,7 +160,7 @@ export const ABLAUF_STATIONEN: AblaufStation[] = [
     stufen: ["faelligkeit"],
     imCrm: [
       "Das Fälligkeitsdatum und der Kaufpreiseingang werden im Investment-Reiter in der Karte „Abwicklung\" gepflegt.",
-      "Beides verändert die Stufe bewusst nicht. Sie bleibt auf Kaufpreisfälligkeit, bis die Provisionsrechnung gestellt ist.",
+      "Das Fälligkeitsdatum verändert die Stufe nicht. Erst der Haken „Kaufpreis eingegangen\" rückt den Vorgang auf Abrechnung.",
     ],
   },
   {
@@ -170,8 +170,8 @@ export const ABLAUF_STATIONEN: AblaufStation[] = [
       "Nach der Kaufpreisfälligkeit wird die Provision abgerechnet und ausgezahlt. Der Vorgang steht auf Abgeschlossen, der Kunde wird Bestandskunde.",
     stufen: ["abrechnung", "abgeschlossen"],
     imCrm: [
-      "Mit dem Haken „Provisionsrechnung gestellt\" in der Karte „Abwicklung\" rückt der Vorgang auf Abrechnung.",
-      "Mit „Auszahlung bestätigt\" steht er auf Abgeschlossen und der Kunde zählt als Bestandskunde. Ab dort beginnt die Nachbetreuung, siehe Kapitel 9.",
+      "Mit dem Haken „Kaufpreis eingegangen\" in der Karte „Abwicklung\" rückt der Vorgang auf Abrechnung.",
+      "Sind zusätzlich „Grundbucheintrag erfolgt\" gesetzt, steht er auf Abgeschlossen und der Kunde zählt als Bestandskunde. Ab dort beginnt die Nachbetreuung, siehe Kapitel 9.",
     ],
   },
 ];

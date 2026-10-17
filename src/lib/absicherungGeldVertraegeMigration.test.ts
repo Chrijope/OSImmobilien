@@ -133,10 +133,11 @@ describe("Migration absicherung_geld_vertraege: investments", () => {
     expect(ABWICKLUNG).toContain("SELECT (_sauber - _geldfelder) || coalesce(jsonb_object_agg(e.key, e.value), '{}'::jsonb)");
     expect([...ABWICKLUNG_GELD_ROLLEN].sort()).toEqual(["admin", "backoffice", "inhaber"]);
     expect(ABWICKLUNG_ROLLEN).toContain("backoffice");
-    // Die Karte sperrt genau die drei Haken für alle anderen.
+    // Die Karte sperrt den Haken „Kaufpreis eingegangen“ für alle anderen. Provisionsrechnung
+    // und Auszahlung sind seit dem 17.10.2026 entfallen (Bauträger, Christian).
     const kd = readFileSync("src/pages/KundenDetail.tsx", "utf8");
-    expect(kd.match(/disabled=\{!darfGeldfelder\}/g)).toHaveLength(3);
-    expect(kd).toContain("werden vom Backoffice gepflegt.");
+    expect(kd.match(/disabled=\{!darfGeldfelder\}/g)).toHaveLength(1);
+    expect(kd).toContain("Den Kaufpreiseingang pflegt das Backoffice.");
   });
 
   it("Löschen: direkt nur Admin, Partner über die Funktion nur vor der Reservierung", () => {

@@ -28008,11 +28008,11 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 },
                 {
                   "label": "Abrechnung",
-                  "beschreibung": "Auslöser: der Haken „Provisionsrechnung gestellt“ in der Karte Abwicklung."
+                  "beschreibung": "Auslöser: der Haken „Kaufpreis eingegangen“ in der Karte Abwicklung."
                 },
                 {
                   "label": "Abgeschlossen",
-                  "beschreibung": "Auslöser: der Haken „Auszahlung bestätigt“. Ab hier zählt der Kunde als Bestandskunde.",
+                  "beschreibung": "Auslöser: „Kaufpreis eingegangen“ und „Grundbucheintrag erfolgt“ sind beide gesetzt. Ab hier zählt der Kunde als Bestandskunde.",
                   "status": "ziel"
                 }
               ]
@@ -28122,7 +28122,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Stattgefunden beim Termin Bankgutachter schaltet auf Besichtigung und bringt die Aufgabe Besichtigung vereinbaren, die auch entsteht, sobald der Notartermin feststeht. Stattgefunden bei der Besichtigung schaltet auf Notar.",
           "Auslöser Notar: Datum und Uhrzeit des Notartermins stehen im Investment-Reiter oder sind im Portal bestätigt, oder die Besichtigung hat stattgefunden.",
           "Auslöser Kaufpreisfälligkeit: Der Notartermin liegt in der Vergangenheit. Das System zieht selbst nach.",
-          "Auslöser Abrechnung: Haken „Provisionsrechnung gestellt“ in der Karte Abwicklung. Auslöser Abgeschlossen: Haken „Auszahlung bestätigt“.",
+          "Auslöser Abrechnung: Haken „Kaufpreis eingegangen“ in der Karte Abwicklung. Auslöser Abgeschlossen: zusätzlich „Grundbucheintrag erfolgt“.",
           "Ohne automatischen Auslöser, also nur von Hand: Erreicht, das frühe Follow-Up und das Follow-Up nach der Objektpräsentation. Termin Bankgutachter und Besichtigung schalten über eingetragene und stattgefundene Termine.",
           "Empfehlungsprovision: Der Anspruch entsteht mit Beurkundung UND Provisionseingang bei der Gesellschaft (§ 4 Absatz 3 Vertriebspartnervertrag), also regelmäßig ab Kaufpreisfälligkeit. Auszahlung 14 Tage nach Rechnungsstellung. Der Notartermin allein begründet noch keinen Anspruch."
         ],

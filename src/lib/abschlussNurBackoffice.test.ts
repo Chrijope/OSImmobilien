@@ -62,9 +62,11 @@ describe("Oberfläche sperrt den Abschluss", () => {
     expect(klick).toBeLessThan(kundenDetail.indexOf("updateInvestment(inv.id, { pipelineStufe: s.key });"));
   });
 
-  it("Abwicklungskarte: Abschluss nur, wer die Auszahlung bestätigen darf", () => {
-    // Seit M19 (04.10.2026) als Zielstufe, gesetzt erst nach gespeicherter Abwicklung.
-    expect(kundenDetail).toContain('updated.auszahlungBestaetigt && darfGeldfelder && inv.pipelineStufe !== "abgeschlossen"');
+  it("Abwicklungskarte: Abschluss nur mit Geldrechten, nach Kaufpreiseingang und Grundbucheintrag", () => {
+    // Seit dem 17.10.2026 statt „Auszahlung bestätigt“ (Bauträger, Christian), Regel in `abwicklungStufe.ts`.
+    const regel = readFileSync("src/lib/abwicklungStufe.ts", "utf8");
+    expect(regel).toContain('if (d.grundbuchEingetragen && stufe !== "abgeschlossen") return "abgeschlossen";');
+    expect(kundenDetail).toContain("abwicklungStufeNachziehen(");
   });
 });
 
