@@ -367,7 +367,7 @@ Deno.serve(async (req) => {
           signature_status: signatureStatus, error_message: "handbuch_einwilligung_fehlt", duration_ms: Date.now() - t0,
         });
         return new Response(
-          JSON.stringify({ error: "Einwilligung fehlt", message: "Bitte bestätigen Sie die Einwilligung." }),
+          JSON.stringify({ error: "Einwilligung fehlt", message: "Bitte bestätige die Einwilligung." }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
         );
       }
@@ -470,7 +470,7 @@ Deno.serve(async (req) => {
         signature_status: signatureStatus, error_message: "handbuch_telefon_ungueltig", duration_ms: Date.now() - t0,
       });
       return new Response(
-        JSON.stringify({ error: "Telefon ungültig", message: "Bitte geben Sie eine gültige Handynummer an." }),
+        JSON.stringify({ error: "Telefon ungültig", message: "Bitte gib eine gültige Handynummer an." }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
@@ -489,7 +489,7 @@ Deno.serve(async (req) => {
           signature_status: signatureStatus, error_message: "handbuch_name_unzulaessig", duration_ms: Date.now() - t0,
         });
         return new Response(
-          JSON.stringify({ error: "Name ungültig", message: "Bitte geben Sie Ihren Vor- und Nachnamen ohne Links an." }),
+          JSON.stringify({ error: "Name ungültig", message: "Bitte gib deinen Vor- und Nachnamen ohne Links an." }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
         );
       }
@@ -541,7 +541,7 @@ Deno.serve(async (req) => {
           signature_status: signatureStatus, error_message: "handbuch_rate_limited_email", duration_ms: Date.now() - t0,
         });
         return new Response(
-          JSON.stringify({ error: "rate_limited", message: "Für diese Adresse wurden gerade schon mehrere Handbücher angefordert. Bitte versuchen Sie es später noch einmal." }),
+          JSON.stringify({ error: "rate_limited", message: "Für diese Adresse wurden gerade schon mehrere Handbücher angefordert. Bitte versuch es später noch einmal." }),
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json", "Retry-After": String(bremseMail.retryAfterSeconds ?? 3600) } },
         );
       }

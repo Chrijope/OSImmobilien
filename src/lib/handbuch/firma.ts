@@ -1,6 +1,7 @@
 /**
- * Was die Handbuch-Seite über OS Immobilien selbst sagt (Abschnitt „Wer dahinter
- * steht“, Westmont-Analyse Punkt 4, Auftrag vom 26.09.2026).
+ * Was die Handbuch-Seite über OS Real Estate selbst sagt (Abschnitt „Wer dahinter
+ * steht“, Westmont-Analyse Punkt 4, Auftrag vom 26.09.2026). Seit dem
+ * 17.10.2026 im Du und mit OS Real Estate als Absender.
  *
  * Regeln:
  *   - Kennzahlen nur so, wie sie auf https://osimmobilien.netlify.app stehen (Abschnitt
@@ -24,7 +25,7 @@ export const FIRMEN_ANSPRECHPARTNER = {
   initialen: "CK",
   /** ENTWURF, von Oliver Skowrnowski freigeben lassen. */
   zitat:
-    "Bei uns kommt die Rechnung vor der Wohnung. Wenn die Zahlen nicht zu Ihnen passen, sagen wir Ihnen das offen, auch wenn es dann erst einmal kein Kauf wird.",
+    "Bei uns kommt die Rechnung vor der Wohnung. Wenn die Zahlen nicht zu dir passen, sagen wir dir das offen, auch wenn es dann erst einmal kein Kauf wird.",
 };
 
 export const FIRMEN_ANSPRECHPARTNER_EN = {
@@ -34,20 +35,20 @@ export const FIRMEN_ANSPRECHPARTNER_EN = {
     "With us, the numbers come before the flat. If the figures do not suit you, we tell you openly, even if that means no purchase for now.",
 };
 
-/** Warum es OS Immobilien gibt, zwei Sätze. */
+/** Warum es OS Real Estate gibt, zwei Sätze. */
 export const OS_IMMOBILIEN_WARUM = [
-  "OS Immobilien gibt es, weil viele Menschen eine Wohnung kaufen, bevor sie wissen, was sie sich leisten können und was die Wohnung für sie leisten soll.",
-  "Wir drehen die Reihenfolge um: erst Ihre Zahlen, dann die Bank, dann das Objekt, persönlich, transparent und langfristig gedacht.",
+  "OS Real Estate gehört zur OS Immobilien Holding. Wir entwickeln Bestandsobjekte in Berlin und Brandenburg, renovieren und modernisieren sie und verkaufen die Wohnungen und Häuser über unseren eigenen Vertrieb, ohne Maklerprovision.",
+  "Viele kaufen eine Wohnung, bevor sie wissen, was sie sich leisten können. Wir drehen die Reihenfolge um: erst deine Zahlen, dann die Bank, dann das Objekt, persönlich, transparent und langfristig gedacht.",
 ];
 
 export const OS_IMMOBILIEN_WARUM_EN = [
-  "OS Immobilien exists because many people buy a flat before they know what they can afford and what the flat should do for them.",
-  "We reverse the order: your figures first, then the bank, then the property. Personal, transparent and with the long term in mind.",
+  "OS Real Estate is part of OS Immobilien Holding. We develop existing buildings in Berlin and Brandenburg, renovate and modernise them and sell the flats and houses through our own sales team, without an estate agent's commission.",
+  "Many people buy a flat before they know what they can afford. We reverse the order: your figures first, then the bank, then the property. Personal, transparent and with the long term in mind.",
 ];
 
 /** Unsere Werte, ein bis zwei Sätze. */
 export const OS_IMMOBILIEN_WERTE =
-  "Wir legen jede Rechnung offen und sagen Ihnen auch, wenn eine Wohnung nicht zu Ihnen passt. Nach dem Notar bleiben wir an Ihrer Seite, bei Übergabe, Vermietung und dem ersten Steuerjahr.";
+  "Wir legen jede Rechnung offen und sagen dir auch, wenn eine Wohnung nicht zu dir passt. Nach dem Notar bleiben wir an deiner Seite, bei Übergabe, Vermietung und dem ersten Steuerjahr.";
 
 export const OS_IMMOBILIEN_WERTE_EN =
   "We disclose every calculation and tell you when a flat does not suit you. After the notary we stay by your side, through handover, letting and your first tax year.";

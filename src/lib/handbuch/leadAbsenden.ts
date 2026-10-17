@@ -157,7 +157,7 @@ async function sende(
       return {
         ok: false,
         status: res.status,
-        fehler: eigene || leadFehlermeldung(res.status, retryAfterSekunden(res.headers), sprache, "sie"),
+        fehler: eigene || leadFehlermeldung(res.status, retryAfterSekunden(res.headers), sprache, "du"),
       };
     }
     if (metaEventId) meldeMetaLead(metaEventId);
@@ -168,6 +168,6 @@ async function sende(
       zustellung: json.zustellung === "fehler" ? "fehler" : "ok",
     };
   } catch {
-    return { ok: false, fehler: leadNetzfehlerMeldung(sprache, "sie") };
+    return { ok: false, fehler: leadNetzfehlerMeldung(sprache, "du") };
   }
 }

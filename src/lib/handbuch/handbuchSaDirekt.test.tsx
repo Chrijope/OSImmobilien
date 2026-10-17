@@ -92,9 +92,9 @@ describe("Handbuch-Kapitel ohne Knopf", () => {
   it("per Mail: eigener Ersatztext statt „liegt schon vor“", () => {
     const text = (saPerMail: boolean) =>
       JSON.stringify(baueHandbuch({ antworten: A, vorname: "Erika", nachname: "Muster", datum: "28.09.2026", saLink: null, saPerMail }));
-    expect(text(true)).toContain("Ihren persönlichen Link zur Selbstauskunft senden wir Ihnen per E-Mail.");
+    expect(text(true)).toContain("Deinen persönlichen Link zur Selbstauskunft senden wir dir per E-Mail.");
     expect(text(true)).not.toContain("liegt uns schon vor");
-    expect(text(false)).toContain("Ihre Selbstauskunft liegt uns schon vor.");
+    expect(text(false)).toContain("Deine Selbstauskunft liegt uns schon vor.");
   });
 });
 
@@ -176,7 +176,7 @@ describe("Startseite /handbuch/ergebnis/:token/selbstauskunft", () => {
   it("fertige Selbstauskunft: kein neuer Link, nur der Hinweis", async () => {
     rpc.mockResolvedValue({ data: { status: "liegt_vor" }, error: null });
     starteSeite();
-    expect(await screen.findByText("Ihre Selbstauskunft liegt uns schon vor.")).toBeInTheDocument();
+    expect(await screen.findByText("Deine Selbstauskunft liegt uns schon vor.")).toBeInTheDocument();
     expect(screen.queryByTestId("adresse")).toBeNull();
   });
 
@@ -231,7 +231,7 @@ describe("Ergebnisseite", () => {
 
   it("bekannte Adresse (kein Token): kein Knopf zum Kontaktformular, Hinweis auf die Mail", async () => {
     zeige(zustand({ handbuchToken: null, saToken: null }));
-    expect((await screen.findAllByText(/senden wir Ihnen per E-Mail/)).length).toBeGreaterThan(0);
+    expect((await screen.findAllByText(/senden wir dir per E-Mail/)).length).toBeGreaterThan(0);
     expect(screen.queryByRole("link", { name: /Selbstauskunft ausfüllen/ })).toBeNull();
     expect(document.querySelector(`a[href*="${OFFEN}"]`)).toBeNull();
   });
@@ -250,8 +250,8 @@ describe("Ergebnisseite", () => {
 
   it("Selbstauskunft liegt vor: eigene Überschrift, Dank, kein Knopf zum Ausfüllen (29.09.2026)", async () => {
     zeigeAusMail("ausgefuellt");
-    expect(await screen.findByRole("heading", { name: "Ihre Selbstauskunft liegt vor" })).toBeTruthy();
-    expect(screen.getByText("Vielen Dank. Ihr Berater meldet sich mit den nächsten Schritten bei Ihnen.")).toBeTruthy();
+    expect(await screen.findByRole("heading", { name: "Deine Selbstauskunft liegt vor" })).toBeTruthy();
+    expect(screen.getByText("Vielen Dank. Dein Berater meldet sich mit den nächsten Schritten bei dir.")).toBeTruthy();
     expect(screen.queryByRole("heading", { name: "Selbstauskunft ausfüllen" })).toBeNull();
     expect(screen.queryByRole("link", { name: /Selbstauskunft ausfüllen/ })).toBeNull();
   });
@@ -264,7 +264,7 @@ describe("Ergebnisseite", () => {
 
   it("abgelaufener Link: eigener Hinweis, der Knopf holt einen neuen Link", async () => {
     zeigeAusMail("abgelaufen");
-    expect(await screen.findByText("Ihr bisheriger Link zur Selbstauskunft ist abgelaufen. Über den Knopf erhalten Sie einen neuen.")).toBeTruthy();
+    expect(await screen.findByText("Dein bisheriger Link zur Selbstauskunft ist abgelaufen. Über den Knopf bekommst du einen neuen.")).toBeTruthy();
     const knopf = screen.getAllByRole("link", { name: /Selbstauskunft ausfüllen/ })[0];
     expect(knopf.getAttribute("href")).toContain(saStartPfad(HB));
   });

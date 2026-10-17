@@ -55,6 +55,29 @@ function BlockAnsicht({ b, onSaStart, en }: { b: Block; onSaStart?: () => void; 
           ))}
         </div>
       );
+    case "objekte":
+      return (
+        <div className="hb-bk-objekte">
+          {b.objekte.map((o) => (
+            <div className="hb-bk-objekt" key={o.titel}>
+              <div className="bild">
+                <img src={o.bild} alt={o.titel} loading="lazy" />
+                <span className={`etikett${o.passt ? " passt" : ""}`}>{o.passung}</span>
+              </div>
+              <div className="inhalt">
+                <span className="ort">{o.ort}</span>
+                <b>{o.titel}</b>
+                <span>{o.text}</span>
+                <span className="daten">{o.daten}</span>
+                <span className="fuss">
+                  <b>{o.preis}</b>
+                  <span className="konzept">{o.konzepte}</span>
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      );
     case "kasten":
       return (
         <div className={`hb-kasten ${b.ton}`}>

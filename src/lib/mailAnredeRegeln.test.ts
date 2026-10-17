@@ -35,17 +35,16 @@ describe("Reservierungserinnerung siezt (Gruppe F)", () => {
 });
 
 /**
- * Ausnahme vom 27.09.2026 (Entscheidung Christian): Die Handbuch-Strecke
- * siezt, also auch ihre Zustellmail an den Interessenten. Deutsch grüßt wie
- * Gruppe F mit „Guten Tag Vorname Nachname,“, Englisch bleibt bei „Hello
- * Erika,“. Die Seitentexte bewacht `src/lib/handbuch/handbuchSieAnrede.test.ts`.
+ * Die Handbuch-Strecke duzt seit dem 17.10.2026 wieder (OS-Umbau, Freigabe
+ * Christian), also auch ihre Zustellmail: „Hallo Erika,“ wie englisch
+ * „Hello Erika,“. Die Seitentexte bewacht `src/lib/handbuch/handbuchDuAnrede.test.ts`.
  */
-describe("Handbuch-Zustellmail siezt (Ausnahme Handbuch-Strecke)", () => {
+describe("Handbuch-Zustellmail duzt", () => {
   const text = quelle("handbuch-zustellung.tsx");
-  it("grüßt auf Deutsch förmlich, auf Englisch weiter mit dem Vornamen, ohne Du", () => {
-    expect(text).toContain("foermlich(name, sprache, kundeAnrede)");
-    expect(text).toContain("hallo(name, sprache)");
-    expect(text.match(DU) ?? []).toEqual([]);
+  it("grüßt mit Hallo und Vornamen, ohne Sie", () => {
+    expect(text).toContain("anrede={hallo(name, sprache)}");
+    expect(text).not.toContain("foermlich(");
+    expect(text.match(SIE) ?? []).toEqual([]);
   });
   it("bekommt Vor- und Nachnamen", () => {
     const anlage = readFileSync(join(VORLAGEN, "..", "handbuch-anlage.ts"), "utf8");

@@ -10,7 +10,7 @@
  */
 import { describe, expect, it } from "vitest";
 import { baueHandbuch } from "./inhalt";
-import { handbuchAuswertung, modellKaufpreis } from "./modell";
+import { HAUFF_WOHNUNGEN, handbuchAuswertung, modellKaufpreis } from "./modell";
 import type { Block } from "./bausteine";
 import {
   ermittleAusgang,
@@ -142,12 +142,13 @@ describe("Modellrechnung für jede Zahlenkombination", () => {
       }
   });
 
-  it("der Kaufpreis der Musterwohnung folgt dem Rahmen, begrenzt auf 80.000 bis 300.000 €", () => {
+  it("die Beispielwohnung ist die teuerste Hauffstraße-Wohnung bis zur Obergrenze des Rahmens, sonst die günstigste", () => {
+    const preise = HAUFF_WOHNUNGEN.map((w) => w.kaufpreis);
     for (const ue of UE)
       for (const ek of EK) {
         const r = handbuchRahmen({ ueberschuss: ue, eigenkapital: ek });
-        const kp = modellKaufpreis(r);
-        expect(kp).toBe(Math.max(80000, Math.min(300000, Math.floor(r.empf / 10000) * 10000)));
+        const passend = preise.filter((p) => p <= r.bis);
+        expect(modellKaufpreis(r)).toBe(passend.length ? passend[passend.length - 1] : preise[0]);
       }
   });
 

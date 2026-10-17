@@ -516,10 +516,10 @@ export const SVG_FARBEN: Record<Farbe, string> = {
 
 /** Die festen Farben des Hauses, für das PDF und für Tests. */
 export const FESTE_FARBEN: Record<Farbe, string> = {
-  tinte: "#0F1621",
-  akzent: "#187F58",
-  akzentTief: "#136647",
-  akzentHell: "#30E19E",
+  tinte: "#0E2019",
+  akzent: "#15724F",
+  akzentTief: "#0F5A3E",
+  akzentHell: "#CCAC05",
   flaeche: "#F4F7FA",
   linie: "#E3E8EE",
   text: "#2B323C",

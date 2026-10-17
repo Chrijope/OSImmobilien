@@ -67,6 +67,22 @@ export type Block =
       link: string | null;
       ersatz: string;
     }
+  | {
+      /** Die OS-Objekte mit Bild und Passung zum Rahmen, siehe osObjekte.ts. */
+      typ: "objekte";
+      objekte: Array<{
+        titel: string;
+        ort: string;
+        text: string;
+        daten: string;
+        preis: string;
+        konzepte: string;
+        passung: string;
+        /** Passt ganz oder teilweise in den Rahmen: grünes Etikett. */
+        passt: boolean;
+        bild: string;
+      }>;
+    }
   | { typ: "zweispaltig"; links: Block[]; rechts: Block[] };
 
 export interface HandbuchSeite {

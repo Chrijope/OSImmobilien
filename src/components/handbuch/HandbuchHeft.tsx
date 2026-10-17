@@ -7,7 +7,8 @@
  * Kantenlicht; dahinter die Seiten zu Kapitel 4, 5 und 8, nach rechts hinten
  * gefächert. Links schweben drei Kacheln, darunter eine handschriftliche
  * Notiz mit Pfeil. Die Seitenbilder sind Renderings des Beispiel-Handbuchs
- * (fiktiv „Max Beispiel“), deshalb die Plakette „Beispielwerte“.
+ * (fiktiv „Max Beispiel“), deshalb die Plakette „Beispielwerte“. Neu gerendert
+ * am 17.10.2026 aus dem OS-Handbuch (Seiten 1, 8, 9 und 14 des PDF).
  *
  * Gestaltung in `handbuchSeite.css` unter `.hb-heft`. Nicht `.hb-buch`: Die
  * Klasse gehört dem Handbuch auf der Ergebnisseite. Keine eigene Bewegung,

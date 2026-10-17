@@ -112,6 +112,7 @@ describe("Wo der Banner hingehört", () => {
       "/vorschau/naechste-aktionen",
       "/vorschau/pipeline",
       "/vorschau/mikroseite",
+      "/vorschau/handbuch-entwurf",
       "/vorschau/rechnungsvorlage",
       "/vorschau/kunde-komplett",
       "/vorschau/kunde-komplett/:id",

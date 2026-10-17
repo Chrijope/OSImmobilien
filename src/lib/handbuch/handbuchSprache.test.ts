@@ -4,7 +4,7 @@
  */
 import { describe, expect, it } from "vitest";
 import { baueHandbuch, KAPITEL_LISTE, kapitelListe } from "./inhalt";
-import { BRUTTO_REIHENFOLGE, grenzsatzProzent, handbuchAuswertung, steuerTabelle, zveZuBrutto } from "./modell";
+import { BASIS_KAUFPREIS, BRUTTO_REIHENFOLGE, grenzsatzProzent, handbuchAuswertung, steuerTabelle, zveZuBrutto } from "./modell";
 import { euro, eur, inSprache, zeichnungAlsSvg } from "./diagramme";
 import { FRAGEN_EN, frageIn, rahmenTextIn } from "./fragenSprache";
 import { HANDBUCH_SEITEN_TEXTE } from "./seitenTexte";
@@ -37,8 +37,8 @@ const bau = (antworten: HandbuchAntworten, sprache: "de" | "en") =>
 
 describe("gemeinsam veranlagt: Splittingtarif aus dem Rechenkern", () => {
   it("senkt den Grenzsteuersatz und damit die Entlastung, vor Steuer bleibt alles gleich", () => {
-    const einzeln = steuerTabelle(240000, false);
-    const gemeinsam = steuerTabelle(240000, true);
+    const einzeln = steuerTabelle(BASIS_KAUFPREIS, false);
+    const gemeinsam = steuerTabelle(BASIS_KAUFPREIS, true);
     einzeln.forEach((z, i) => {
       const g = gemeinsam[i];
       expect(g.zve).toBe(z.zve);
@@ -60,9 +60,9 @@ describe("gemeinsam veranlagt: Splittingtarif aus dem Rechenkern", () => {
     expect(h).toContain("gemeinsames Einkommen");
   });
 
-  it("Vergleichstabelle je Brutto-Spanne, Modellwohnung 240.000 € (steht so im Bericht vom 26.09.2026)", () => {
-    const e = steuerTabelle(240000, false);
-    const g = steuerTabelle(240000, true);
+  it("Vergleichstabelle je Brutto-Spanne, Beispielwohnung Hauffstraße 38 Wohnung 6 (Stand 17.10.2026)", () => {
+    const e = steuerTabelle(BASIS_KAUFPREIS, false);
+    const g = steuerTabelle(BASIS_KAUFPREIS, true);
     const zeilen = BRUTTO_REIHENFOLGE.map((b, i) => ({
       brutto: b,
       satzEinzeln: e[i].grenzsatz,
@@ -71,10 +71,10 @@ describe("gemeinsam veranlagt: Splittingtarif aus dem Rechenkern", () => {
       nachGemeinsam: Math.round(g[i].nach),
     }));
     expect(zeilen).toEqual([
-      { brutto: "unter_50", satzEinzeln: 29, satzGemeinsam: 20, nachEinzeln: 176, nachGemeinsam: 202 },
-      { brutto: "50_80", satzEinzeln: 35, satzGemeinsam: 26, nachEinzeln: 157, nachGemeinsam: 182 },
-      { brutto: "80_120", satzEinzeln: 42, satzGemeinsam: 32, nachEinzeln: 121, nachGemeinsam: 166 },
-      { brutto: "ueber_120", satzEinzeln: 42, satzGemeinsam: 38, nachEinzeln: 129, nachGemeinsam: 146 },
+      { brutto: "unter_50", satzEinzeln: 29, satzGemeinsam: 20, nachEinzeln: 284, nachGemeinsam: 377 },
+      { brutto: "50_80", satzEinzeln: 35, satzGemeinsam: 26, nachEinzeln: 236, nachGemeinsam: 297 },
+      { brutto: "80_120", satzEinzeln: 42, satzGemeinsam: 32, nachEinzeln: 144, nachGemeinsam: 256 },
+      { brutto: "ueber_120", satzEinzeln: 42, satzGemeinsam: 38, nachEinzeln: 149, nachGemeinsam: 204 },
     ]);
   });
 });
@@ -117,8 +117,8 @@ describe("englische Fassung", () => {
     const text = texte(bau(PROFIL, "de")).join(" ");
     expect(text).toContain("Kapitel 5");
     expect(text).not.toContain("Chapter");
-    expect(KAPITEL_LISTE[4].titel).toBe("Ihr Rahmen");
-    expect(kapitelListe("en")[4].titel).toBe("Your budget");
+    expect(KAPITEL_LISTE[4].titel).toBe("Dein Rahmen und unsere Objekte");
+    expect(kapitelListe("en")[4].titel).toBe("Your budget and our properties");
   });
 
   it("Beträge und Rahmen in der Sprache", () => {

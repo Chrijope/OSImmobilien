@@ -46,9 +46,9 @@ describe("Handbuch-PDF", () => {
   }, 30000);
 
   it("baut einen sauberen Dateinamen", () => {
-    expect(handbuchDateiname("Jörg Müller-Lüdenscheidt")).toBe("OS-Immobilien_Immobilienhandbuch_Jorg_Muller_Ludenscheidt.pdf");
-    expect(handbuchDateiname("")).toBe("OS-Immobilien_Immobilienhandbuch.pdf");
-    expect(handbuchDateiname("Erika Muster", "en")).toBe("OS-Immobilien_Property_Handbook_Erika_Muster.pdf");
+    expect(handbuchDateiname("Jörg Müller-Lüdenscheidt")).toBe("OS-Real-Estate_Immobilienhandbuch_Jorg_Muller_Ludenscheidt.pdf");
+    expect(handbuchDateiname("")).toBe("OS-Real-Estate_Immobilienhandbuch.pdf");
+    expect(handbuchDateiname("Erika Muster", "en")).toBe("OS-Real-Estate_Property_Handbook_Erika_Muster.pdf");
   });
 });
 

@@ -18,9 +18,9 @@
  * ändern. Die englischen Fassungen sind eine inhaltlich treue Übertragung,
  * anwaltlich geprüft ist keine der beiden Sprachen.
  *
- * SIE-FASSUNG, seit dem 27.09.2026: Die Handbuch-Strecke siezt (Entscheidung
- * Christian). Sie übergibt `anrede: "sie"`. Ohne Angabe bleibt alles im Du und
- * zeichengleich wie bisher, denn die übrigen Formulare duzen weiter.
+ * SIE-FASSUNG, vom 27.09.2026 für die Handbuch-Strecke. Seit dem 17.10.2026
+ * duzt auch sie (OS-Umbau, Freigabe Christian); `anrede: "sie"` ruft heute
+ * niemand mehr auf. Ohne Angabe bleibt alles im Du.
  */
 
 /** Sprache der Meldung. Ohne Angabe deutsch, wie bisher überall. */
