@@ -2004,7 +2004,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "frage": "Welche drei Sätze musst du vor dem ersten Kundengespräch sicher können?",
           "optionen": [
             "Die Höhe der Grunderwerbsteuer in allen sechzehn Bundesländern, dazu die Notarkosten, die Grundbuchgebühren und die übliche Maklercourtage, damit du im Gespräch nichts nachschlagen musst",
-            "Nur der Zins ist absetzbar und nicht die Tilgung, abgeschrieben wird nur der Gebäudeanteil und nie der Grund und Boden, Kaufnebenkosten von rund 8 Prozent in Berlin und rund 8,5 Prozent in Brandenburg kommen zum Kaufpreis obendrauf",
+            "Nur der Zins ist absetzbar und nicht die Tilgung, abgeschrieben wird nur der Gebäudeanteil und nie der Grund und Boden, Kaufnebenkosten von je nach Bundesland des Objekts rund 5,5 Prozent (Bayern) bis 8,5 Prozent (Brandenburg) kommen zum Kaufpreis obendrauf",
             "Die fünf Renditekennzahlen mit ihren Formeln, dazu die Abschreibungssätze nach Baujahr und die steuerlichen Fristen, damit du jede Zahl im Kopf hast"
           ],
           "korrekt": 1,
@@ -2081,7 +2081,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "intro": "Das hier ist das längste Kapitel der Akademie, und du sollst es nicht am Stück lesen. Dieser Abschnitt sagt dir, was drinsteht, in welcher Reihenfolge es sich lohnt und was du wirklich schon vor dem ersten Kundengespräch können musst.",
         "absaetze": [
           "Kapitel 0 ist das Fundament. Danach kannst du die Sprache, die in jedem Beratungsgespräch gesprochen wird: Immobilientypen, Renditearten, Cashflow, Hebelwirkung, Steuer, Kaufnebenkosten, Wohnungseigentumsrecht, Finanzierung und Mietrecht. Zwölf weitere Abschnitte, jeder für sich lesbar. Wenn du in einem hängen bleibst, geh zum nächsten und komm später zurück, es baut nicht streng aufeinander auf.",
-          "Drei Dinge musst du sicher können, bevor du zum ersten Mal mit einem Interessenten sprichst, und nur drei. Erstens: Von der Monatsrate ist nur der Zinsanteil steuerlich absetzbar, die Tilgung nicht, denn sie ist kein Aufwand, sondern Vermögensaufbau. Zweitens: Abgeschrieben wird nur der Gebäudeanteil, nie der Grund und Boden, also nie der volle Kaufpreis. Drittens: Kaufnebenkosten von rund 8 Prozent in Berlin und rund 8,5 Prozent in Brandenburg kommen zum Kaufpreis dazu und werden meist nicht mitfinanziert. Wer diese drei Sätze sicher hat, redet in keinem Erstgespräch Unsinn. Alles andere kannst du nachschlagen.",
+          "Drei Dinge musst du sicher können, bevor du zum ersten Mal mit einem Interessenten sprichst, und nur drei. Erstens: Von der Monatsrate ist nur der Zinsanteil steuerlich absetzbar, die Tilgung nicht, denn sie ist kein Aufwand, sondern Vermögensaufbau. Zweitens: Abgeschrieben wird nur der Gebäudeanteil, nie der Grund und Boden, also nie der volle Kaufpreis. Drittens: Kaufnebenkosten von je nach Bundesland des Objekts rund 5,5 Prozent (Bayern) bis 8,5 Prozent (Brandenburg) kommen zum Kaufpreis dazu und werden meist nicht mitfinanziert. Wer diese drei Sätze sicher hat, redet in keinem Erstgespräch Unsinn. Alles andere kannst du nachschlagen.",
           "Eine Regel für alle Zahlen in diesem Kapitel: Zu jeder Zahl gehört, worauf sie sich bezieht und von wann sie ist. Ein Abschreibungssatz gilt auf den Gebäudeanteil und nicht auf den Kaufpreis. Ein Grunderwerbsteuersatz gilt für ein bestimmtes Bundesland und für einen bestimmten Stichtag, denn die Länder ändern ihre Sätze. Ein Steuervorteil gilt für einen bestimmten Grenzsteuersatz und für ein bestimmtes Jahr, denn er sinkt mit dem Zinsanteil. Wo eine Zahl in diesem Kapitel eine Annahme des Hauses ist und keine Vorschrift, steht das ausdrücklich dabei.",
           "Zur Rechtslage gehört ein Punkt, der nicht warten sollte, weil er eine Erlaubnis betrifft. Wer als selbstständiger Vertriebspartner mehr tut, als Kontakte herzustellen, also selbst Objekte vorstellt, Zahlen erklärt und zum Kauf hinführt, braucht eine eigene Erlaubnis nach § 34c Gewerbeordnung. Die Erlaubnis der Gesellschaft deckt dich dabei nicht ab. Wo genau die Grenze zur reinen Tippgebung verläuft und wie der Antrag abläuft, steht ausführlich in Kapitel 1. Dieses Kapitel wiederholt es bewusst nicht, weil eine zweite Darstellung derselben Regel früher oder später von der ersten abweicht. Eine gute Nachricht dazu: Die Weiterbildungspflicht für Immobilienmakler ist zum 24. Juli 2026 entfallen, durch das Gesetz zum Bürokratierückbau in der Gewerbeordnung und im Energieverbrauchskennzeichnungsgesetz (BGBl. 2026 I Nr. 215). Bestehen bleibt sie nur für Wohnimmobilienverwalter.",
           "Und wo die Objekte stehen, auf die sich alle Rechenbeispiele dieses Kapitels beziehen: Unsere Objektplattform heißt Investagon. Dort liegt der Bestand mit allen Projekten und Einheiten, dort siehst du Preis, Fläche, Miete und ob eine Einheit frei, reserviert oder verkauft ist, und dort suchst du später das Objekt für deinen Kunden heraus. Im CRM erreichst du sie über den Eintrag Objekte in der Seitenleiste unter Immobilien, sie öffnet in einem eigenen Tab und hat eine eigene Anmeldung. Der Zugang gehört zu deiner Freischaltung, genauso wie der CRM-Zugang und deine OS Immobilien-Mailadresse.",
@@ -2090,7 +2090,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         ],
         "bullets": [
           "Zwölf Sachabschnitte, jeder einzeln lesbar. Nicht am Stück lesen.",
-          "Die drei Sätze für das erste Kundengespräch: Nur der Zins ist absetzbar, nicht die Tilgung. Abgeschrieben wird nur der Gebäudeanteil. Kaufnebenkosten von rund 8 Prozent in Berlin und rund 8,5 Prozent in Brandenburg kommen obendrauf.",
+          "Die drei Sätze für das erste Kundengespräch: Nur der Zins ist absetzbar, nicht die Tilgung. Abgeschrieben wird nur der Gebäudeanteil. Kaufnebenkosten von je nach Bundesland des Objekts rund 5,5 Prozent (Bayern) bis 8,5 Prozent (Brandenburg) kommen obendrauf.",
           "Zu jeder Zahl gehört die Bezugsgröße und der Stand. Annahmen des Hauses sind als solche gekennzeichnet.",
           "Die eigene Erlaubnis nach § 34c Gewerbeordnung braucht jeder selbstständige Vertriebspartner, der mehr tut als Kontakte herstellen. Einzelheiten in Kapitel 1.",
           "Die Weiterbildungspflicht für Makler ist zum 24. Juli 2026 entfallen (BGBl. 2026 I Nr. 215) und gilt nur noch für Wohnimmobilienverwalter.",
@@ -2208,7 +2208,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               {
                 "aussage": "Die Kaufnebenkosten stecken schon im Kaufpreis drin.",
                 "stimmt": false,
-                "aufloesung": "Sie kommen obendrauf, bei uns rund 8 Prozent in Berlin und rund 8,5 Prozent in Brandenburg, und werden meist nicht mitfinanziert."
+                "aufloesung": "Sie kommen obendrauf, je nach Bundesland rund 5,5 bis 8,5 Prozent, und werden meist nicht mitfinanziert."
               },
               {
                 "aussage": "Nur der Zinsanteil der Rate mindert die Steuer.",
@@ -2221,7 +2221,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 "aufloesung": "Er gilt auf den Gebäudeanteil. Wer den vollen Kaufpreis nimmt, rechnet je nach Lage bis zu 40 Prozent zu hoch."
               },
               {
-                "aussage": "Kaufnebenkosten von rund 8 Prozent in Berlin und rund 8,5 Prozent in Brandenburg kommen zum Kaufpreis dazu.",
+                "aussage": "Kaufnebenkosten von je nach Bundesland des Objekts rund 5,5 Prozent (Bayern) bis 8,5 Prozent (Brandenburg) kommen zum Kaufpreis dazu.",
                 "stimmt": true,
                 "aufloesung": "Richtig, und meist braucht der Kunde sie als bares Eigenkapital."
               }
@@ -2672,7 +2672,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "bullets": [
             "Frag bei jeder fremden Nettomietrendite zwei Dinge: Was steht im Zähler ab, und stecken die Kaufnebenkosten im Nenner? Ohne diese beiden Antworten ist die Zahl wertlos.",
             "Unsere Definition steht im Kapitel: Jahreskaltmiete abzüglich der nicht umlagefähigen Kosten, geteilt durch Kaufpreis plus Kaufnebenkosten. Nenne sie im Gespräch mit, dann ist deine Zahl überprüfbar.",
-            "Wer die Kaufnebenkosten im Nenner weglässt, hebt die Rendite bei unseren Objekten um rund 8 bis 8,5 Prozent ihres eigenen Wertes an. Aus 4,0 Prozent werden so rund 4,3 Prozent, ohne dass sich am Objekt irgendetwas geändert hat.",
+            "Wer die Kaufnebenkosten im Nenner weglässt, hebt die Rendite je nach Bundesland um rund 5,5 bis 8,5 Prozent ihres eigenen Wertes an. Aus 4,0 Prozent werden so rund 4,2 bis 4,3 Prozent, ohne dass sich am Objekt irgendetwas geändert hat.",
             "Für den schnellen Vergleich mehrerer Objekte nimm die Bruttomietrendite, sie ist eindeutig. Für die Entscheidung nimm die Nettomietrendite mit genannter Definition."
           ]
         }
@@ -3553,17 +3553,17 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Die Grunderwerbsteuer setzt jedes Bundesland selbst fest. § 11 Absatz 1 Grunderwerbsteuergesetz nennt einen Steuersatz von 3,5 Prozent, seit der Föderalismusreform von 2006 dürfen die Länder nach Artikel 105 Absatz 2a Satz 2 Grundgesetz davon abweichen, und fast alle haben das getan. Stand 2026 reicht die Spanne von 3,5 Prozent in Bayern bis 6,5 Prozent in Brandenburg, Nordrhein-Westfalen, im Saarland und in Schleswig-Holstein. Weil die Länder ihre Sätze regelmäßig ändern, gehört zu dieser Zahl immer der Stand: Thüringen hat zum 1. Januar 2024 von 6,5 auf 5,0 Prozent gesenkt, Bremen zum 1. Juli 2025 von 5,0 auf 5,5 Prozent erhöht. Prüfe den Satz am Objekt, nicht aus dem Gedächtnis.",
           "Notar- und Grundbuchkosten sind bundesweit gleich, sie folgen dem Gerichts- und Notarkostengesetz und richten sich nach dem Geschäftswert, also im Regelfall dem Kaufpreis. Sie sind nicht verhandelbar, ein Preisvergleich zwischen Notaren ist deshalb sinnlos. Als Faustgröße gelten rund 1,5 Prozent für den Notar und rund 0,5 Prozent für das Grundbuch, zusammen also etwa 2 Prozent. Mit genau diesem Wert rechnet auch die zentrale Bundesländertabelle im CRM, damit Akademie, Analysetool und AfA-Rechner dieselbe Zahl nennen.",
           "Die Maklercourtage von 3,57 Prozent ist keine feste Größe, sondern die häufigste Vereinbarung: 3,0 Prozent Nettocourtage zuzüglich 19 Prozent Umsatzsteuer ergeben 3,57 Prozent. Bei einer Wohnung, die ein Verbraucher kauft, gilt seit dem 23. Dezember 2020 zusätzlich die Teilung der Maklerkosten nach den §§ 656a bis 656d Bürgerliches Gesetzbuch: Beauftragt der Verkäufer den Makler, darf höchstens die Hälfte an den Käufer weitergegeben werden, und der Käufer muss erst zahlen, wenn der Verkäufer nachweislich seinen Anteil gezahlt hat. Bei unseren Objekten fällt für den Käufer in der Regel gar keine gesonderte Courtage an, weil wir nicht als Makler für ihn tätig werden.",
-          "Alle drei Positionen zusammen ergeben die Faustformel von 8 bis 12 Prozent. Sie schwankt vor allem, weil die Grunderwerbsteuer schwankt und weil ein Makler beteiligt sein kann oder nicht. Für unsere Objekte heißt das: In Berlin ohne Makler sind es rund 8 Prozent, in Brandenburg rund 8,5 Prozent. Bei 300.000 Euro Kaufpreis sind das 24.000 beziehungsweise 25.500 Euro, und dieser Betrag entscheidet oft darüber, ob ein Kunde überhaupt genug Eigenkapital hat."
+          "Alle drei Positionen zusammen ergeben die Faustformel von 8 bis 12 Prozent. Sie schwankt vor allem, weil die Grunderwerbsteuer schwankt und weil ein Makler beteiligt sein kann oder nicht. Für unsere Objekte heißt das ohne Makler: in Bayern rund 5,5 Prozent, in Sachsen-Anhalt rund 7 Prozent, in Sachsen rund 7,5 Prozent, in Berlin rund 8 Prozent und in Brandenburg rund 8,5 Prozent. Bei 300.000 Euro Kaufpreis sind das 16.500 bis 25.500 Euro, und dieser Betrag entscheidet oft darüber, ob ein Kunde überhaupt genug Eigenkapital hat."
         ],
         "bullets": [
           "Grunderwerbsteuer: 3,5 bis 6,5 Prozent je Bundesland, Stand 2026. Berlin 6 Prozent, Brandenburg 6,5 Prozent. Rechtsgrundlage § 11 Grunderwerbsteuergesetz mit Abweichungsrecht der Länder nach Artikel 105 Absatz 2a Satz 2 Grundgesetz.",
           "Notar und Grundbuch: rund 2 Prozent zusammen, davon etwa 1,5 Prozent Notar und etwa 0,5 Prozent Grundbuch. Die Gebühren richten sich nach dem Gerichts- und Notarkostengesetz und sind nicht verhandelbar. Mit denselben 2 Prozent rechnet auch die zentrale Bundesländertabelle im CRM, aus der Analysetool und AfA-Rechner ihre Kaufnebenkosten ziehen.",
           "Maklercourtage, falls beauftragt: üblicherweise 3,0 Prozent netto plus 19 Prozent Umsatzsteuer, also 3,57 Prozent. Beim Wohnungskauf durch einen Verbraucher gilt die Kostenteilung nach den §§ 656a bis 656d Bürgerliches Gesetzbuch.",
-          "Kaufnebenkosten bei unseren Objekten ohne Makler: rund 8 Prozent in Berlin, rund 8,5 Prozent in Brandenburg, meist als Eigenkapital erforderlich. Die bundesweite Faustformel von 8 bis 12 Prozent gilt nur mit Makler.",
+          "Kaufnebenkosten bei unseren Objekten ohne Makler: je nach Bundesland rund 5,5 Prozent (Bayern) bis 8,5 Prozent (Brandenburg), meist als Eigenkapital erforderlich. Die bundesweite Faustformel von 8 bis 12 Prozent gilt nur mit Makler.",
           "Steuerlich wichtig: Kaufnebenkosten sind keine sofort abziehbaren Werbungskosten. Sie erhöhen die Anschaffungskosten und damit die Bemessungsgrundlage der Abschreibung, wirken also über die gesamte Nutzungsdauer verteilt."
         ],
-        "quereinsteigerHinweis": "Kaufnebenkosten sind extra, sie kommen zusätzlich zum Kaufpreis obendrauf und werden meist nicht von der Bank mitfinanziert. Deshalb braucht der Kunde diese rund 8 bis 8,5 Prozent oft als bares Eigenkapital. Ausnahme ist die 110-Prozent-Finanzierung bei sehr guter Bonität, dazu mehr in Kapitel 7. Der Grund, warum die Bank hier zurückhaltend ist, lässt sich in einem Satz erklären: Die Nebenkosten sind weg, sobald sie gezahlt sind. Sie stecken nicht im Objekt und bringen der Bank im Ernstfall keine Sicherheit. Deshalb finanziert sie den Kaufpreis lieber als die Steuer darauf.",
-        "profiTipp": "Zwei Punkte, mit denen du im Erstgespräch Zeit sparst. Erstens: Frag nach dem verfügbaren Eigenkapital, bevor du über Objekte sprichst, und rechne die Nebenkosten des Ziel-Bundeslandes sofort dagegen. Ein Kunde mit 12.000 Euro Eigenkapital deckt damit in Brandenburg die Nebenkosten bis rund 141.000 Euro Kaufpreis, in Berlin bis 150.000 Euro. Diese eine Rechnung erspart dir eine ganze Beratung am falschen Objekt. Zweitens, und das übersehen viele: Die Kaufnebenkosten sind steuerlich kein verlorener Betrag. Sie gehören zu den Anschaffungskosten und erhöhen die Bemessungsgrundlage der Abschreibung, allerdings nur anteilig für den Gebäudeanteil. Bei 25.500 Euro Nebenkosten und 75 Prozent Gebäudeanteil sind das 19.125 Euro mehr Bemessungsgrundlage und damit bei 2 Prozent rund 383 Euro zusätzliche Abschreibung im Jahr. Das ist kein großes Argument, aber es ist das ehrliche Gegengewicht, wenn ein Kunde die Nebenkosten als reine Verschwendung empfindet.",
+        "quereinsteigerHinweis": "Kaufnebenkosten sind extra, sie kommen zusätzlich zum Kaufpreis obendrauf und werden meist nicht von der Bank mitfinanziert. Deshalb braucht der Kunde diese rund 5,5 bis 8,5 Prozent oft als bares Eigenkapital. Ausnahme ist die 110-Prozent-Finanzierung bei sehr guter Bonität, dazu mehr in Kapitel 7. Der Grund, warum die Bank hier zurückhaltend ist, lässt sich in einem Satz erklären: Die Nebenkosten sind weg, sobald sie gezahlt sind. Sie stecken nicht im Objekt und bringen der Bank im Ernstfall keine Sicherheit. Deshalb finanziert sie den Kaufpreis lieber als die Steuer darauf.",
+        "profiTipp": "Zwei Punkte, mit denen du im Erstgespräch Zeit sparst. Erstens: Frag nach dem verfügbaren Eigenkapital, bevor du über Objekte sprichst, und rechne die Nebenkosten des Ziel-Bundeslandes sofort dagegen. Ein Kunde mit 12.000 Euro Eigenkapital deckt damit in Brandenburg die Nebenkosten bis rund 141.000 Euro Kaufpreis, in Berlin bis 150.000 Euro, in Bayern bis rund 218.000 Euro. Diese eine Rechnung erspart dir eine ganze Beratung am falschen Objekt. Zweitens, und das übersehen viele: Die Kaufnebenkosten sind steuerlich kein verlorener Betrag. Sie gehören zu den Anschaffungskosten und erhöhen die Bemessungsgrundlage der Abschreibung, allerdings nur anteilig für den Gebäudeanteil. Bei 25.500 Euro Nebenkosten und 75 Prozent Gebäudeanteil sind das 19.125 Euro mehr Bemessungsgrundlage und damit bei 2 Prozent rund 383 Euro zusätzliche Abschreibung im Jahr. Das ist kein großes Argument, aber es ist das ehrliche Gegengewicht, wenn ein Kunde die Nebenkosten als reine Verschwendung empfindet.",
         "visuals": [
           {
             "kpis": [
@@ -3590,7 +3590,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "kpis": [
               {
                 "label": "Bei uns, ohne Makler",
-                "wert": "8 bis 8,5 %",
+                "wert": "5,5 bis 8,5 %",
                 "farbe": "primary"
               }
             ]
@@ -4446,7 +4446,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Investagon: unsere Objektplattform, also das eigenständige System, in dem die Objekte und Einheiten mit Preis, Fläche, Miete und Verfügbarkeit stehen. Erreichbar im CRM über Immobilien und Objekte in der Seitenleiste, mit eigener Anmeldung.",
           "IRR, interner Zinsfuß: die Gesamtrendite über die Haltedauer, wenn man alle Ein- und Auszahlungen samt Wertsteigerung und Steuerwirkung zusammenrechnet. Wird von der Kalkulation ermittelt, nicht von Hand.",
           "Kapitaldienstfähigkeit: Haushaltsnetto plus vereinnahmte Kaltmiete, abzüglich Lebenshaltungspauschale, bestehender Kredite und einer eventuellen selbst gezahlten Miete, muss die neue Rate mit Sicherheitsaufschlag tragen.",
-          "Kaufnebenkosten, oft als KNK abgekürzt: Grunderwerbsteuer, Notar, Grundbuch und gegebenenfalls Maklercourtage. Bei uns ohne Makler rund 8 Prozent in Berlin und rund 8,5 Prozent in Brandenburg.",
+          "Kaufnebenkosten, oft als KNK abgekürzt: Grunderwerbsteuer, Notar, Grundbuch und gegebenenfalls Maklercourtage. Bei uns ohne Makler je nach Bundesland rund 5,5 bis 8,5 Prozent.",
           "Lebenshaltungspauschale: der Betrag, den die Bank pauschal für den Lebensunterhalt ansetzt, statt echte Ausgaben zu prüfen. Übliche Größenordnung 800 bis 1.200 Euro im Monat für den ersten Erwachsenen, je nach Institut.",
           "Leverage: der Fremdkapitalhebel auf das eingesetzte Eigenkapital. Er wirkt in beide Richtungen.",
           "MaBV: Makler- und Bauträgerverordnung. Regelt unter anderem die Ratenpläne beim Bauträgerkauf.",
@@ -10574,7 +10574,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "ueberschrift": "Von der Selbstauskunft zum Suchprofil",
         "intro": "Der Kunde steht in der Pipeline auf Objektpräsentation. Geschaltet hat diese Stufe die unterschriebene Selbstauskunft, die ihr am Ende der Beratung gemeinsam ausgefüllt habt. Damit liegen drei Dinge auf dem Tisch, und aus genau diesen dreien wird ein Suchprofil: der Finanzierungsrahmen, der Monatsbeitrag mit der Stressgrenze und das Konzept, das der Kunde gewählt hat.",
         "absaetze": [
-          "Der häufigste Fehler passiert in der ersten Minute: Der Finanzierungsrahmen ist nicht der Kaufpreis. Der Rahmen aus Abschnitt 13 der Beratungspräsentation ist Darlehen plus liquides Eigenkapital, also alles, was der Kunde insgesamt bewegen kann. Vom Kaufpreis gehen die Kaufnebenkosten noch ab, und die liegen bei unseren Objekten bei rund 8 Prozent in Berlin und rund 8,5 Prozent in Brandenburg. Wer den Rahmen als Kaufpreis liest, sucht dauerhaft zu teuer und muss dem Kunden später eine Zahl nach unten korrigieren. Genau davor warnt schon die Präsentation: Eine Zahl, die im Bankgespräch nach unten korrigiert wird, kostet dich das Vertrauen des ganzen Gesprächs.",
+          "Der häufigste Fehler passiert in der ersten Minute: Der Finanzierungsrahmen ist nicht der Kaufpreis. Der Rahmen aus Abschnitt 13 der Beratungspräsentation ist Darlehen plus liquides Eigenkapital, also alles, was der Kunde insgesamt bewegen kann. Vom Kaufpreis gehen die Kaufnebenkosten noch ab, und die liegen je nach Bundesland des Objekts zwischen rund 5,5 und 8,5 Prozent. Wer den Rahmen als Kaufpreis liest, sucht dauerhaft zu teuer und muss dem Kunden später eine Zahl nach unten korrigieren. Genau davor warnt schon die Präsentation: Eine Zahl, die im Bankgespräch nach unten korrigiert wird, kostet dich das Vertrauen des ganzen Gesprächs.",
           "Sauber wird es mit zwei Obergrenzen, und die niedrigere von beiden gewinnt. Die erste ist die Ratengrenze: Sie kommt aus dem tragbaren Überschuss und begrenzt die Darlehenssumme. Die zweite ist die Eigenkapitalgrenze: Das liquide verfügbare Eigenkapital muss die Kaufnebenkosten decken, sonst greift der Standardweg aus Kapitel 7 nicht mehr, nach dem mindestens die Kaufnebenkosten aus Eigenkapital kommen sollen. Im Beispiel der Präsentation liegt die Ratengrenze bei 256.000 Euro Kaufpreis und die Eigenkapitalgrenze bei rund 294.000 Euro. Bindend ist also die Rate, und beim Eigenkapital bleiben rund 3.200 Euro Puffer.",
           "Die zweite Schraube ist der Monatsbeitrag, und die wird fast nie benutzt. Er begrenzt nicht den Kaufpreis, sondern die Lücke zwischen Miete und Rate. Der Kunde hat im Erstgespräch und in Abschnitt 13 eine Zahl vor Steuern genannt, mit der er gut leben kann, sagen wir 250 Euro. Daraus lässt sich die Miete zurückrechnen, die das Objekt bringen muss, und aus der Miete im Verhältnis zum Kaufpreis wird die Mindest-Bruttomietrendite. Bei 256.000 Euro Kaufpreis, 5,5 Prozent Annuität und rund 110 Euro nicht umlagefähigen Kosten sind das 4,84 Prozent.",
           "Und jetzt entscheidet diese Zahl die Region, nicht der Geschmack. Das Glossarkapitel nennt für 2026 marktübliche Bruttorenditen von 3 bis 4,5 Prozent in A-Städten, 4,5 bis 6 Prozent in B- und C-Städten und 6 Prozent und mehr in Randlagen mit erhöhtem Risiko. Eine Mindestrendite von 4,84 Prozent schließt A-Städte rechnerisch aus, ohne dass jemand über einzelne Städte diskutieren muss. Das ist die vielleicht wichtigste Wirkung des Suchprofils: Es nimmt die Regionsfrage aus der Meinung heraus und stellt sie in die Rechnung.",
@@ -12654,7 +12654,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "Eigenkapital ist bei Kapitalanlagen grundsätzlich nicht nötig"
           ],
           "korrekt": 0,
-          "aufloesung": "Faustregel Bank: mindestens die Kaufnebenkosten, bei uns rund 8 bis 8,5 Prozent, sollen aus Eigenkapital kommen. Das ist der Standardfall mit den besten Konditionen.",
+          "aufloesung": "Faustregel Bank: mindestens die Kaufnebenkosten, je nach Bundesland rund 5,5 bis 8,5 Prozent, sollen aus Eigenkapital kommen. Das ist der Standardfall mit den besten Konditionen.",
           "sprungZuAbschnitt": "aufbau-finanzierung"
         },
         {
@@ -12717,7 +12717,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "optionen": [
             "Ob der Verkehrswert des Objekts über der Darlehenssumme liegt, also ob die Bank im Notfall aus dem Verkauf voll bedient wird",
             "Ob nach Lebenshaltungspauschale, laufenden Krediten und eigener Kaltmiete genug bleibt, um die neue Rate mal 1,2 zu tragen",
-            "Ob der Kunde die Kaufnebenkosten aus Eigenkapital aufbringen kann, also mindestens rund 8 bis 8,5 Prozent des Kaufpreises frei hat"
+            "Ob der Kunde die Kaufnebenkosten aus Eigenkapital aufbringen kann, also je nach Bundesland mindestens rund 5,5 bis 8,5 Prozent des Kaufpreises frei hat"
           ],
           "korrekt": 1,
           "aufloesung": "Haushaltsnetto minus Lebenshaltungspauschale von rund 800 bis 1.200 Euro je Person, minus bestehende Kredite, minus die selbst gezahlte Kaltmiete. Was bleibt, muss die neue Rate mal 1,2 tragen, denn geprüft wird gegen die Rate mit Sicherheitspuffer.",
@@ -13737,7 +13737,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Ein Wort zur KfW, weil hier die meisten Fehler passieren. Die Programme unterscheiden sich weniger im Zins als in der Frage, wer sie überhaupt beantragen darf. Mehrere bekannte Wohneigentumsprogramme setzen Selbstnutzung voraus und scheiden bei einer Kapitalanlage von vornherein aus, etwa KfW 300 Wohneigentum für Familien und der Ergänzungskredit Plus KfW 358 mit seinem selbstgenutzten Eigenheim und der Einkommensgrenze von 90.000 Euro. Für einen vermietenden Käufer kommen dagegen KfW 261 Wohngebäude Kredit im Bestand und KfW 297 und 298 Klimafreundlicher Neubau in Betracht, dort sind Vermieter und Unternehmen ausdrücklich antragsberechtigt. Alle Angaben zu Programmen und Konditionen: Stand September 2026, letzte Konditionsanpassung der Gebäudeförderung zum 21. Juli 2026, Quelle kfw.de. Die Sätze ändert die KfW laufend, frage sie deshalb vor jeder Kalkulation beim Finanzierungspartner tagesaktuell ab."
         ],
         "bullets": [
-          "100 Prozent Kaufpreis, Kaufnebenkosten aus Eigenkapital, der Standardfall: Die Bank finanziert 100 Prozent des Kaufpreises, der Kunde bringt die rund 8 bis 8,5 Prozent Nebenkosten selbst mit. Beste Konditionen, weil die Bank Sicherheit hat.",
+          "100 Prozent Kaufpreis, Kaufnebenkosten aus Eigenkapital, der Standardfall: Die Bank finanziert 100 Prozent des Kaufpreises, der Kunde bringt die je nach Bundesland rund 5,5 bis 8,5 Prozent Nebenkosten selbst mit. Beste Konditionen, weil die Bank Sicherheit hat.",
           "110 Prozent Vollfinanzierung: Die Bank finanziert Kaufpreis und Kaufnebenkosten. Voraussetzung sind sehr gute Bonität, hohes Einkommen und saubere SCHUFA. Zinsaufschlag meist 0,2 bis 0,5 Prozent.",
           "KfW 261, Wohngebäude Kredit, für den Bestand: fördert die Sanierung zu einer Effizienzhaus-Stufe und ausdrücklich auch den Ersterwerb eines frisch sanierten Effizienzhauses. Gefördert werden die Stufen 85, 70, 55, 40 und Effizienzhaus Denkmal, jeweils als Klasse Erneuerbare Energien oder Nachhaltigkeit. Bis 150.000 Euro je Wohneinheit. Der Tilgungszuschuss beträgt nach dem Merkblatt Stand 07/2026, gültig ab 21.07.2026: Denkmal EE 5 Prozent, Effizienzhaus 85 EE 0 Prozent, 70 EE 0 Prozent, 55 EE 5 Prozent, 40 EE 10 Prozent. In Euro sind das 0 bis 15.000 Euro je Wohneinheit. Dazu kommen Zuschläge: NH-Klasse plus 5 Prozentpunkte, Worst Performing Building plus 10, serielle Sanierung plus 15, die beiden letzten kumulierbar. Antragsberechtigt sind alle Investoren einschließlich Vermieter. Beim Ersterwerb müssen die förderfähigen Sanierungskosten im Kauf- oder Bauträgervertrag oder in einer gesonderten Kostenaufstellung ausgewiesen sein.",
           "KfW 297 und 298, Klimafreundlicher Neubau Wohngebäude, für Neubau und Ersterwerb: drei Stufen, Effizienzhaus 55 ohne Öl- oder Gasheizung, Klimafreundliches Wohngebäude auf Effizienzhaus-40-Niveau mit niedrigen Lebenszyklus-Emissionen, und dieselbe Stufe zusätzlich mit QNG-Siegel. Bis 100.000 Euro je Wohneinheit, mit QNG-Siegel bis 150.000 Euro. Vermieter sind ausdrücklich antragsberechtigt. Achtung bei der Stufe Effizienzhaus 55: Sie ist befristet und längstens bis zum 31.12.2026 zugänglich, bei früherer Erschöpfung der Bundesmittel auch davor. Wer damit rechnet, klärt den Antragszeitpunkt zuerst.",
@@ -13770,7 +13770,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
             "kpis": [
               {
                 "label": "Standardfall, 100 %",
-                "wert": "rund 8 bis 8,5 % KNK aus Eigenkapital",
+                "wert": "5,5 bis 8,5 % KNK aus Eigenkapital",
                 "hinweis": "Beste Konditionen, weil die Bank Sicherheit hat",
                 "farbe": "primary"
               },
@@ -28724,7 +28724,7 @@ export const EINWAND_BIBLIOTHEK: EinwandEintrag[] = [
     technik: "kontextwechsel",
     skriptSchritte: ["sparformen"],
     meintEigentlich: "Ich sehe eine Summe, die sofort weg ist und für die ich nichts in die Hand bekomme.",
-    antwortKurz: "Stimmt, es sind rund 8 bis 8,5 Prozent Kaufnebenkosten. Aufgeteilt auf 30 Jahre Haltedauer sind das knapp 0,3 Prozent pro Jahr, bei einer Wertsteigerung von 2 bis 3 Prozent pro Jahr ein lohnendes Investment.",
+    antwortKurz: "Stimmt, je nach Bundesland sind es rund 5,5 bis 8,5 Prozent Kaufnebenkosten. Aufgeteilt auf 30 Jahre Haltedauer sind das höchstens rund 0,3 Prozent pro Jahr, bei einer Wertsteigerung von 2 bis 3 Prozent pro Jahr ein lohnendes Investment.",
     falle: "Die Nebenkosten nicht kleinreden. Sie sind real, und wer sie relativiert, wirkt unseriös.",
     profiMove: "Rechne die Einmalkosten auf die Haltedauer um. Aus einer großen Summe wird eine jährliche Größe, die der Kunde vergleichen kann.",
     tags: ["kaufnebenkosten", "notar", "haltedauer"],

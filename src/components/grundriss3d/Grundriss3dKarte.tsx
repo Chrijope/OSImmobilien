@@ -75,8 +75,10 @@ export function EinheitGrundriss3dKarte({ wohnung, darfBearbeiten, onGespeichert
   const bekannt = useBekanntesHaus(objekt);
   const eigenerPlan = useMemo(() => planAusMeta(wohnung.grundriss3d), [wohnung.grundriss3d]);
   const plan = eigenerPlan ?? bibliotheksPlan(bekannt, wohnung.weNr);
+  // Ein ganzes Haus als eine Einheit (Doppelhaushälfte): alle Geschosse zeigen.
+  const hausEtagen = !plan && bekannt?.etagen && bekannt.einheiten.length === 0 ? bekannt.etagen : null;
   const [editor, setEditor] = useState(false);
-  if (!plan && !darfBearbeiten) return null;
+  if (!plan && !hausEtagen && !darfBearbeiten) return null;
   return (
     <Card className="p-4" data-testid="einheit-grundriss-3d">
       <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -90,7 +92,12 @@ export function EinheitGrundriss3dKarte({ wohnung, darfBearbeiten, onGespeichert
           </Button>
         )}
       </div>
-      {plan ? (
+      {hausEtagen ? (
+        <>
+          <Grundriss3dBlock einheiten={hausEtagen.map((e) => ({ plan: e.plan, titel: e.titel }))} hoehe={480} />
+          <p className="mt-1 text-[11px] text-muted-foreground">{bekannt?.name}: nachgezeichnet aus den Unterlagen; das einzelne Haus kann abweichen.</p>
+        </>
+      ) : plan ? (
         <>
           <Grundriss3dBlock einheiten={[{ plan: { ...plan, versatz: undefined }, titel: `WE ${wohnung.weNr}` }]} hoehe={440} />
           {!eigenerPlan && bekannt && <p className="mt-1 text-[11px] text-muted-foreground">Nachgezeichnet aus dem Grundriss der Unterlagen ({bekannt.name}).</p>}
@@ -143,7 +150,10 @@ export function dominanteFarbe(url: string): Promise<string | undefined> {
 /** Objektseite: alle Einheiten mit Plan, nach Geschoss gestapelt. */
 export function ObjektGrundriss3dKarte({ objekt, darfBearbeiten }: { objekt: ObjektData; darfBearbeiten: boolean }) {
   const bekannt = useBekanntesHaus(objekt);
-  const einheiten = useMemo(() => mitBibliothek(objekt, bekannt), [objekt, bekannt]);
+  // Etagenpläne aus der Bibliothek zeigen das ganze Haus samt aller Einheiten; sonst die Einheiten einzeln.
+  const einheiten = useMemo(() => (bekannt?.etagen && !plaeneDesObjekts(objekt).length
+    ? bekannt.etagen.map((e) => ({ plan: e.plan, titel: e.titel }))
+    : mitBibliothek(objekt, bekannt)), [objekt, bekannt]);
   const haus = useMemo(() => hausAusMeta((objekt.meta as Record<string, unknown> | undefined)?.grundriss3dHaus) ?? bekannt?.haus ?? null, [objekt, bekannt]);
   const titelbild = objekt.bilder?.[0]?.url;
   const [fassade, setFassade] = useState<string | undefined>();

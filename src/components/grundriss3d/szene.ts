@@ -2,8 +2,8 @@ import * as THREE from "three";
 import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import {
-  FENSTER_BRUESTUNG, FENSTER_HOEHE, TUER_HOEHE, flaeche, laenge, punktInPolygon, qm, rahmen, schwerpunkt, wirksamerTyp,
-  type Grundriss3dPlan, type HausPlan, type Punkt, type Raum, type RaumTyp, type Wand,
+  FENSTER_BRUESTUNG, FENSTER_HOEHE, TUER_HOEHE, flaeche, laenge, planRahmen, punktInPolygon, qm, rahmen, schwerpunkt, wirksamerTyp,
+  type Flaechen, type Grundriss3dPlan, type HausPlan, type Punkt, type XY, type Raum, type RaumTyp, type Wand,
 } from "./plan";
 
 /*
@@ -478,7 +478,25 @@ export function baueSzene(einheiten: Einheit3d[], o: SzenenOptionen, haus?: Haus
     const waende = baueWaende(e.plan, h, wandMat, kappeMat, glas, rahmenMat, tuerMat, nurRundum);
     if (o.fassade) waende.traverse((x) => { if (x instanceof THREE.Mesh && x.material === wandMat && (x.geometry as THREE.BoxGeometry).parameters.depth >= 0.36) x.material = fassadeMat; });
     ebene.add(waende);
+    if (e.plan.flaechen) ebene.add(baueFlaechenWaende(e.plan.flaechen, h, wandMat, kappeMat, glas, nurRundum));
 
+    // Ein ganzer Geschossplan hat viele Räume: dann ein Schild je Wohnung statt je Raum.
+    const grossePlan = e.plan.raeume.length > 12;
+    if (grossePlan && o.beschriftung && !hausAnsicht) {
+      const jeWe = new Map<string, Raum[]>();
+      for (const r of e.plan.raeume) { const m = /\(WE (\d+)\)/.exec(r.name); if (m) jeWe.set(m[1], [...(jeWe.get(m[1]) ?? []), r]); }
+      for (const [we, rs] of jeWe) {
+        const groesster = rs.reduce((a, b) => (flaeche(b.punkte) > flaeche(a.punkte) ? b : a));
+        const s = schwerpunkt(groesster.punkte);
+        const el = document.createElement("div");
+        el.className = "g3d-label";
+        el.innerHTML = `<b>WE ${we}</b><span>${qm(rs.reduce((x, r) => x + flaeche(r.punkte) * (r.typ === "balkon" ? 0.5 : 1), 0))}</span>`;
+        const label = new CSS2DObject(el);
+        label.position.set(s.x, 0.1, s.y);
+        ebene.add(label);
+        nurRundum.push(label);
+      }
+    }
     for (const raum of e.plan.raeume) {
       const typ = wirksamerTyp(e.plan, raum);
       const bodenMat = typ === "bad" || typ === "kueche" || typ === "treppenhaus" ? fliesenBoden : typ === "balkon" ? balkonBoden : holzBoden;
@@ -493,7 +511,7 @@ export function baueSzene(einheiten: Einheit3d[], o: SzenenOptionen, haus?: Haus
         decken.push(decke);
       }
       if (o.stil !== "leer") ebene.add(moebliere(raum, typ, M));
-      if (o.beschriftung && !hausAnsicht) {
+      if (o.beschriftung && !hausAnsicht && !grossePlan) {
         const s = schwerpunkt(raum.punkte);
         const el = document.createElement("div");
         el.className = "g3d-label";
@@ -521,14 +539,19 @@ export function baueSzene(einheiten: Einheit3d[], o: SzenenOptionen, haus?: Haus
       }
     }
     // Rohdecke unter dem Geschoss: schließt die Etagen zum Haus. Mit Hülle liefert die die Decke.
-    if (geschosse.length > 1 && !haus) {
-      const r = rahmen(e.plan.waende.flatMap((w) => [w.a, w.b]));
+    if (e.plan.flaechen?.decke?.length && geschosse.length > 1) {
+      for (const ring of e.plan.flaechen.decke) {
+        const platte = prisma([ring], -DECKE - 0.002, -0.002, mat("#d8d5cf", 0.95));
+        ebene.add(platte);
+      }
+    } else if (geschosse.length > 1 && !haus) {
+      const r = planRahmen(e.plan);
       const platte = quader(r.maxX - r.minX + 0.4, DECKE, r.maxY - r.minY + 0.4, mat("#d8d5cf", 0.95));
       platte.position.set((r.minX + r.maxX) / 2, -DECKE / 2 - 0.001, (r.minY + r.maxY) / 2);
       ebene.add(platte);
     }
     if (e.titel && einheiten.length > 1 && o.beschriftung) {
-      const r = rahmen(e.plan.waende.flatMap((w) => [w.a, w.b]));
+      const r = planRahmen(e.plan);
       const el = document.createElement("div");
       el.className = "g3d-label g3d-label-einheit";
       el.textContent = e.titel;
@@ -546,7 +569,7 @@ export function baueSzene(einheiten: Einheit3d[], o: SzenenOptionen, haus?: Haus
     }
     ebene.userData.geschoss = geschoss;
     if (hausAnsicht && !stationen.some((x) => x.name === GESCHOSS_TEXT(geschoss))) {
-      const r = rahmen(e.plan.waende.flatMap((w) => [w.a, w.b]));
+      const r = planRahmen(e.plan);
       stationen.push({ ziel: new THREE.Vector3(v.x + (r.minX + r.maxX) / 2, ebene.position.y + 1, v.y + (r.minY + r.maxY) / 2), name: GESCHOSS_TEXT(geschoss) });
     }
     gruppe.add(ebene);
@@ -561,6 +584,46 @@ export function baueSzene(einheiten: Einheit3d[], o: SzenenOptionen, haus?: Haus
   // Im Haus von oben nach unten durch die Geschosse.
   if (hausAnsicht) stationen.sort((a, b) => b.ziel.y - a.ziel.y);
   return { gruppe, decken, nurRundum, hindernisse, start: start ?? box.getCenter(new THREE.Vector3()).setY(0), startBlick, rahmen: box, glas, lichtpunkte, stationen };
+}
+
+/* ── Wände als Flächen (aus CAD-Plänen) ───────────────────────────── */
+
+/** Ein Polygon (mit Löchern) als senkrechtes Prisma von y0 bis y1. */
+function prisma(ringe: XY[][], y0: number, y1: number, m: THREE.Material): THREE.Mesh {
+  const form = new THREE.Shape(ringe[0].map(([x, y]) => new THREE.Vector2(x, -y)));
+  for (const loch of ringe.slice(1)) form.holes.push(new THREE.Path(loch.map(([x, y]) => new THREE.Vector2(x, -y))));
+  const geo = new THREE.ExtrudeGeometry(form, { depth: Math.max(0.005, y1 - y0), bevelEnabled: false, curveSegments: 1 });
+  geo.rotateX(-Math.PI / 2);
+  const mesh = new THREE.Mesh(geo, m);
+  mesh.position.y = y0;
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  return mesh;
+}
+
+/** Wände in voller Höhe, über Türen ein Sturz, in Fenstern Brüstung, Glas und Sturz. */
+function baueFlaechenWaende(f: Flaechen, h: number, wandMat: THREE.Material, kappeMat: THREE.Material, glas: THREE.Material, kappen: THREE.Object3D[]): THREE.Group {
+  const g = new THREE.Group();
+  for (const w of f.waende) {
+    g.add(prisma(w, 0, h, wandMat));
+    const kappe = prisma(w, h, h + 0.015, kappeMat);
+    kappe.castShadow = false;
+    g.add(kappe);
+    kappen.push(kappe);
+  }
+  const sturz = Math.min(TUER_HOEHE, h);
+  for (const t of f.tueren) if (h > sturz + 0.01) g.add(prisma([t], sturz, h, wandMat));
+  const oben = Math.min(h, FENSTER_BRUESTUNG + FENSTER_HOEHE);
+  for (const fe of f.fenster) {
+    g.add(prisma([fe], 0, Math.min(FENSTER_BRUESTUNG, h), wandMat));
+    if (h > oben + 0.01) g.add(prisma([fe], oben, h, wandMat));
+    if (oben > FENSTER_BRUESTUNG) {
+      const scheibe = prisma([fe], FENSTER_BRUESTUNG, oben, glas);
+      scheibe.castShadow = false;
+      g.add(scheibe);
+    }
+  }
+  return g;
 }
 
 /* ── Gebäudehülle ──────────────────────────────────────────────────── */
@@ -660,7 +723,7 @@ function baueHuelle(x: {
     obersteY = Math.max(obersteY, y);
     // Wo eine Einheit dieses Geschosses liegt, tritt die Hülle zurück.
     const frei = x.einheiten.filter((e) => (e.plan.geschoss ?? 0) === g).map((e) => {
-      const r = rahmen(e.plan.waende.flatMap((w) => [w.a, w.b]));
+      const r = planRahmen(e.plan);
       const v = e.plan.versatz ?? { x: 0, y: 0 };
       return { minX: r.minX + v.x - 0.05, minY: r.minY + v.y - 0.05, maxX: r.maxX + v.x + 0.05, maxY: r.maxY + v.y + 0.05 };
     });

@@ -16,6 +16,7 @@ import {
   KULTUR_FEINDBILDER,
   KULTUR_GLAUBENSSAETZE,
   KULTUR_VISION,
+  KULTUR_HERKUNFT,
   glaubenssatzDesTages,
 } from "@/lib/kulturContent";
 
@@ -54,6 +55,20 @@ export default function Kultur() {
           fest, wie wir mit diesem Vertrauen umgehen. Nichts davon hängt an einer Wand, alles davon
           zeigt sich im Gespräch.
         </p>
+
+        {/* Wer wir sind */}
+        <section>
+          <h2 className="text-xl md:text-2xl font-semibold tracking-tight">Wer wir sind</h2>
+          <p className="mt-2 text-base max-w-3xl leading-relaxed">{KULTUR_HERKUNFT.einleitung}</p>
+          <div className="mt-6 grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
+            {KULTUR_HERKUNFT.punkte.map((p, i) => (
+              <Card key={p.titel} className={i === KULTUR_HERKUNFT.punkte.length - 1 ? "p-6 border-primary/25 bg-primary/5" : "p-6"}>
+                <p className="font-semibold text-lg">{p.titel}</p>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{p.text}</p>
+              </Card>
+            ))}
+          </div>
+        </section>
 
         {/* Glaubenssatz des Tages */}
         <div className="rounded-3xl bg-[#080A0F] text-white p-8 md:p-12 relative overflow-hidden">
@@ -133,7 +148,7 @@ export default function Kultur() {
             Unsere Glaubenssätze
           </h2>
           <p className="mt-2 text-sm text-muted-foreground max-w-2xl">
-            Sieben Sätze in Ich-Form für die Tage, an denen es nicht von allein läuft. Der Satz,
+            {KULTUR_GLAUBENSSAETZE.length} Sätze in Ich-Form für die Tage, an denen es nicht von allein läuft. Der Satz,
             der dir heute schwerfällt, ist meist der, den du heute brauchst.
           </p>
           <div className="mt-6 grid md:grid-cols-2 gap-3">
@@ -152,8 +167,8 @@ export default function Kultur() {
             Wogegen wir antreten
           </h2>
           <p className="mt-2 text-sm text-muted-foreground max-w-2xl">
-            Nie gegen Menschen, immer gegen Verhalten. Vier Gewohnheiten wollen wir uns selbst
-            abgewöhnen, gegen zwei Dinge treten wir für unsere Kunden an.
+            Nie gegen Menschen, immer gegen Verhalten. {intern.length} Gewohnheiten wollen wir uns selbst
+            abgewöhnen, gegen {extern.length} Dinge treten wir für unsere Kunden an.
           </p>
           <div className="mt-6 grid md:grid-cols-2 gap-4">
             <div className="space-y-3">

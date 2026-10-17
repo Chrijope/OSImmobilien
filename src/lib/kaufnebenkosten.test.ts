@@ -6,11 +6,12 @@ import { BUNDESLAND_NK, GRUNDBUCH_PROZENT, kaufnebenkostenPct, nebenkostenBasis,
 import { standardEingabe } from "./investmentrechner/rechenkern";
 
 /*
- * Die verbindlichen Sätze vom 16.10.2026, finanzierter Kauf ohne Makler:
- * Berlin 6,0 + 1,5 + 0,5 = 8,0 Prozent, Brandenburg 6,5 + 1,5 + 0,5 = 8,5 Prozent.
- * Alle Quellen im CRM müssen dasselbe liefern.
+ * Seit 16.10.2026, finanzierter Kauf ohne Makler: Grunderwerbsteuer des Landes,
+ * in dem das Objekt liegt, plus 1,5 Prozent Notar und 0,5 Prozent Grundbuch.
+ * Berlin 8,0, Brandenburg 8,5, Bayern 5,5 Prozent. Ohne Standort gilt der
+ * Höchstsatz (Brandenburg). Alle Quellen im CRM müssen dasselbe liefern.
  */
-describe("Kaufnebenkosten Berlin und Brandenburg", () => {
+describe("Kaufnebenkosten nach Standort des Objekts", () => {
   it("Notar 1,5 und Grundbuch 0,5 Prozent, in beiden zentralen Dateien gleich", () => {
     expect(NOTAR_PROZENT).toBe(1.5);
     expect(GRUNDBUCH_PROZENT).toBe(0.5);
@@ -27,6 +28,10 @@ describe("Kaufnebenkosten Berlin und Brandenburg", () => {
     expect(kaufnebenkostenProzent("bb")).toBe(8.5);
     expect(kaufnebenkostenPct({ plz: "10115" })).toBe(8);
     expect(kaufnebenkostenPct({ plz: "14199" })).toBe(8);
+    // Der Bestand liegt auch in Bayern, Sachsen und Sachsen-Anhalt.
+    expect(kaufnebenkostenPct({ plz: "95030" })).toBe(5.5); // Hof
+    expect(kaufnebenkostenPct({ plz: "04315" })).toBe(7.5); // Leipzig
+    expect(kaufnebenkostenPct({ plz: "39104" })).toBe(7); // Magdeburg
     // Potsdam und Schwielowsee liegen im Postleitzahlbereich 14, aber in Brandenburg.
     expect(kaufnebenkostenPct({ plz: "14467" })).toBe(8.5);
     expect(kaufnebenkostenPct({ plz: "14548" })).toBe(8.5);

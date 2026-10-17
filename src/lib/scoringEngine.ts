@@ -1,4 +1,5 @@
 import { SOLLZINS, TILGUNG_ANFANG } from "@/lib/finanzierung";
+import { kaufnebenkostenProzent } from "@/lib/grunderwerbsteuer";
 /**
  * Annahmen der Zehnjahresprojektion an einer Stelle.
  *
@@ -7,8 +8,6 @@ import { SOLLZINS, TILGUNG_ANFANG } from "@/lib/finanzierung";
  * Ergebnisseite auch ausgewiesen.
  */
 export const ANNAHMEN = {
-  /** Kaufnebenkosten in Prozent vom Kaufpreis: Grunderwerbsteuer, Notar, Grundbuch. */
-  kaufnebenkostenProzent: 8,
   /** Jährliche Wertsteigerung. */
   wertsteigerungProzent: 2,
   /** Bruttomietrendite bezogen auf den Kaufpreis. */
@@ -66,8 +65,23 @@ export interface AnalysisData {
   incomeClass: 'unter_30k' | '30k_50k' | '50k_80k' | '80k_120k' | 'ueber_120k';
   taxOptimizationInterest: boolean;
   financingWillingness: 'ja' | 'teilweise' | 'nein';
-  /** Bundesland-Kürzel für die Kaufnebenkosten, siehe grunderwerbsteuer.ts. */
+  /** Bundesland-Kürzel für die Kaufnebenkosten, siehe grunderwerbsteuer.ts. Seit 17.10.2026 nicht mehr abgefragt. */
   bundeslandId?: string;
+  /**
+   * Seit 17.10.2026 die eine Zielfrage. `goals` und `taxOptimizationInterest`
+   * werden daraus abgeleitet (`zieleAusSchwerpunkt`), damit Bewertung und
+   * gespeicherte Analysen gleich bleiben.
+   */
+  schwerpunkt?: 'altersvorsorge' | 'steuer' | 'beides';
+  /** Freiwillig: gewünschtes Zusatzeinkommen im Alter je Monat. */
+  wunschZusatzrente?: number;
+}
+
+/** Ziele zur Schwerpunkt-Frage, immer drei, damit die Zielpunkte voll bleiben wie bei breiter Auswahl. */
+export function zieleAusSchwerpunkt(s: NonNullable<AnalysisData['schwerpunkt']>): Pick<AnalysisData, 'goals' | 'taxOptimizationInterest'> {
+  if (s === 'steuer') return { goals: ['steuerersparnis', 'vermoegensaufbau', 'inflationsschutz'], taxOptimizationInterest: true };
+  if (s === 'beides') return { goals: ['altersvorsorge', 'steuerersparnis', 'vermoegensaufbau'], taxOptimizationInterest: true };
+  return { goals: ['altersvorsorge', 'vermoegensaufbau', 'passives_einkommen'], taxOptimizationInterest: false };
 }
 
 export interface ScoreResult {
@@ -147,6 +161,8 @@ export interface TenYearProjection {
   wealthAfter10Years: number;
   /** Kaufnebenkosten in Euro. Gehören zur Investition und werden mitfinanziert. */
   kaufnebenkosten: number;
+  /** Satz der Kaufnebenkosten nach dem gewählten Bundesland, ohne Angabe Brandenburg. */
+  kaufnebenkostenProzent: number;
   /** Kaufpreis plus Kaufnebenkosten. */
   gesamtinvestition: number;
   /** Eigenkapital plus alle Zuzahlungen über zehn Jahre. */
@@ -301,10 +317,13 @@ function scoreCashflow(data: AnalysisData): number {
 function scoreCreditworthiness(data: AnalysisData): number {
   let score = 0;
   const debtRatio = data.existingLoans / (data.netIncome || 1);
-  if (debtRatio < 0.1) score += 5;
-  else if (debtRatio < 0.25) score += 3;
-  if (data.liquidityReserve >= data.monthlyFixedCosts * 6) score += 5;
-  else if (data.liquidityReserve >= data.monthlyFixedCosts * 3) score += 3;
+  // Seit 17.10.2026 tragen Kreditbelastung und Reserve die 15 Punkte allein:
+  // Sparrate, Wohnsituation und Erfahrung werden nicht mehr abgefragt. Bei
+  // älteren Analysen zählen sie unten weiter, gedeckelt auf 15.
+  if (debtRatio < 0.1) score += 7;
+  else if (debtRatio < 0.25) score += 4;
+  if (data.liquidityReserve >= data.monthlyFixedCosts * 6) score += 8;
+  else if (data.liquidityReserve >= data.monthlyFixedCosts * 3) score += 5;
   if (data.savingsRate >= 500) score += 3;
   else if (data.savingsRate >= 200) score += 2;
   if (data.livingSituation === 'eigentum') score += 2;
@@ -372,7 +391,7 @@ function getFinancingEstimate(data: AnalysisData): FinancingEstimate {
 
 function getEigenkapitalHinweis(data: AnalysisData, financing: FinancingEstimate): EigenkapitalHinweis {
   const purchasePrice = financing.maxVolume;
-  const kaufnebenkosten = Math.round(purchasePrice * (ANNAHMEN.kaufnebenkostenProzent / 100));
+  const kaufnebenkosten = Math.round(purchasePrice * (kaufnebenkostenProzent(data.bundeslandId) / 100));
   const empfohlenMitEK = data.age > 40;
   const empfohlenerEKBetrag = empfohlenMitEK ? kaufnebenkosten : 0;
 
@@ -555,7 +574,7 @@ function getTenYearProjection(
   // Die Kaufnebenkosten fehlten hier komplett. Sie sind aber Teil dessen, was
   // finanziert oder aus Eigenkapital bezahlt werden muss, sonst sieht der
   // Kapitaleinsatz zu klein und die Rendite zu groß aus.
-  const kaufnebenkosten = Math.round(purchasePrice * (ANNAHMEN.kaufnebenkostenProzent / 100));
+  const kaufnebenkosten = Math.round(purchasePrice * (kaufnebenkostenProzent(data.bundeslandId) / 100));
   const gesamtinvestition = purchasePrice + kaufnebenkosten;
   const equityInvested = Math.min(data.equity, gesamtinvestition * 0.2);
   const loanAmount = Math.max(0, gesamtinvestition - equityInvested);
@@ -672,6 +691,7 @@ function getTenYearProjection(
     monthlySteuervorteil,
     wealthAfter10Years,
     kaufnebenkosten,
+    kaufnebenkostenProzent: kaufnebenkostenProzent(data.bundeslandId),
     gesamtinvestition,
     eingesetztesKapital: Math.round(eingesetztesKapitalGesamt),
     afaSatzProzent,
@@ -790,7 +810,7 @@ export function calculateScore(data: AnalysisData, optionen?: ProjektionsOptione
       taxSavingsTotal: 0, netProfit: 0, returnOnEquity: 0, yearlyData: [],
       monthlyZuzahlung: 0, monthlyZuzahlungOhneSteuer: 0, monthlySteuervorteil: 0,
       wealthAfter10Years: 0,
-      kaufnebenkosten: 0, gesamtinvestition: 0, eingesetztesKapital: 0,
+      kaufnebenkosten: 0, kaufnebenkostenProzent: kaufnebenkostenProzent(data.bundeslandId), gesamtinvestition: 0, eingesetztesKapital: 0,
       afaSatzProzent: ANNAHMEN.afaSatzProzent,
       wealthBreakdown: { propertyValue: 0, remainingLoan: 0, sellingCosts: 0, net: 0 },
       sparbuchVergleich: { monatlicheSparrate: 0, endkapitalSparbuch: 0, endkapitalImmobilie: 0, differenz: 0, faktor: 0 },

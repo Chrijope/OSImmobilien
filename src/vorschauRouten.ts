@@ -70,6 +70,11 @@ export const VorschauObjektAnlegen = import.meta.env.DEV
   ? lazy(() => import("./pages/VorschauObjektAnlegen"))
   : null;
 
+/** /vorschau/analysetool-ergebnis: Ergebnisseite mit Beispielkunde (17.10.2026). Gleiche Regeln wie oben. */
+export const VorschauAnalysetoolErgebnis = import.meta.env.DEV
+  ? lazy(() => import("./pages/VorschauAnalysetoolErgebnis"))
+  : null;
+
 /** /vorschau/grundriss-3d: Editor und 3D-Ansicht mit der Beispielwohnung Barfusstraße 9, WE 3 (16.10.2026). Gleiche Regeln wie oben. */
 export const VorschauGrundriss3d = import.meta.env.DEV
   ? lazy(() => import("./pages/VorschauGrundriss3d"))
