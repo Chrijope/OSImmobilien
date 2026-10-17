@@ -1,5 +1,5 @@
 import { WE03_PLAN, WE03_PX_PRO_METER } from "./beispielWe03";
-import type { Grundriss3dPlan, HausPlan, Oeffnung, Punkt, Raum, Wand } from "./plan";
+import type { Aussehen, Grundriss3dPlan, HausPlan, Oeffnung, Punkt, Raum, Wand } from "./plan";
 
 /*
  * Barfusstraße 9, 13349 Berlin (17.10.2026).
@@ -54,10 +54,11 @@ const treppenhaeuser: Array<{ id: string; name: string; r: [number, number, numb
     waende: [[{ x: 32.58, y: 12.32 }, { x: 38.3, y: 12.32 }], [{ x: 38.3, y: 12.32 }, { x: 38.3, y: 15.26 }], [{ x: 32.58, y: 15.26 }, { x: 38.3, y: 15.26 }]] },
   { id: "th-quer", name: "Treppenhaus Quergebäude", r: [0.64, 11.94, 4.37, 15.55],
     waende: [[{ x: X0, y: 11.94 }, { x: 6.2, y: 11.94 }], [{ x: X0, y: 15.55 }, { x: 6.2, y: 15.55 }]] },
-  { id: "th-seite-rechts", name: "Treppenhaus rechter Seitenflügel", r: [15.11, 2.24, 19.3, 5.89],
-    waende: [[{ x: 15.11, y: Y0 }, { x: 15.11, y: 6.17 }], [{ x: 19.3, y: Y0 }, { x: 19.3, y: 6.17 }]] },
-  { id: "th-seite-links", name: "Treppenhaus linker Seitenflügel", r: [15.24, 21.84, 19.43, 25.4],
-    waende: [[{ x: 15.24, y: 21.41 }, { x: 15.24, y: Y1 }], [{ x: 19.43, y: 21.41 }, { x: 19.43, y: Y1 }]] },
+  // Linke Treppenwand nach den Exposé-Grundrissen der Seitenflügel (WE 28/30/32, 23/25) bei x 15,97, nicht 15,1.
+  { id: "th-seite-rechts", name: "Treppenhaus rechter Seitenflügel", r: [15.97, 2.24, 19.3, 5.89],
+    waende: [[{ x: 15.97, y: Y0 }, { x: 15.97, y: 6.17 }], [{ x: 19.3, y: Y0 }, { x: 19.3, y: 6.17 }]] },
+  { id: "th-seite-links", name: "Treppenhaus linker Seitenflügel", r: [15.97, 21.84, 19.43, 25.4],
+    waende: [[{ x: 15.97, y: 21.41 }, { x: 15.97, y: Y1 }], [{ x: 19.43, y: 21.41 }, { x: 19.43, y: Y1 }]] },
 ];
 
 const treppenWaende: Wand[] = treppenhaeuser.flatMap((t) => t.waende.map(([a, b], i) => ({ id: `${t.id}-w${i}`, a, b, dicke: 0.24 })));
@@ -152,6 +153,27 @@ const imHaus = (plan: Grundriss3dPlan, geschoss: number): Grundriss3dPlan => ({ 
 
 const WE03 = { ...WE03_PLAN, hintergrund: undefined };
 const WE06 = gespiegelt(mitAbstellraum(WE03));
+/** WE 05 liegt spiegelbildlich zu WE 04 (zweiter Kragbalkon der Straßenfassade, Foto 02). */
+const WE05 = gespiegelt(WE04);
+
+/**
+ * Außen nach den Fotos vom Frühjahr 2026 (Straßenfassade, Balkone, Drohne
+ * Hof und Quartier): himbeerroter Rauputz, Ladenzone im EG grau, Hof
+ * cremefarben, Berliner Dach mit roten Ziegeln an Straße und Hof, oben flach
+ * mit grauer Bahn. Farben als Mittel über die Putz- und Dachflächen der
+ * Fotos; das Licht der Aufnahmen färbt sie etwas.
+ * Straßenfassade je Obergeschoss: zwei Loggien außen (WE 03/06 …) und zwei
+ * Kragbalkone innen (WE 04/05 …), zusammen acht im 1. und 2. OG wie im Foto.
+ */
+export const BARFUSS9_AUSSEHEN: Aussehen = {
+  fassade: "#ad5262",
+  sockel: "#8f9495",
+  hof: "#c9b491",
+  // Brandwände und Grundstücksgrenze stoßen an die Nachbarhäuser (Drohnenfoto): grau, ohne Putzfarbe.
+  brandwand: { seiten: ["oben", "unten", "links"], farbe: "#b3ada4" },
+  strasse: "rechts",
+  dach: { art: "mansarde", tiefe: 1.8, hoehe: 2.6, traufe: ["rechts"], farbe: "#b5614a", flach: "#aaafae" },
+};
 
 /** Einheitennummer und Plan, so wie sie in `wohnungen.meta.grundriss3d` landen. */
 export const BARFUSS9_EINHEITEN: Array<{ we: number; plan: Grundriss3dPlan }> = [
@@ -161,7 +183,15 @@ export const BARFUSS9_EINHEITEN: Array<{ we: number; plan: Grundriss3dPlan }> = 
   { we: 4, plan: imHaus(WE04, 1) },
   { we: 8, plan: imHaus(WE04, 2) },
   { we: 12, plan: imHaus(WE04, 3) },
+  { we: 5, plan: imHaus(WE05, 1) },
+  { we: 9, plan: imHaus(WE05, 2) },
+  { we: 13, plan: imHaus(WE05, 3) },
   { we: 6, plan: imHaus(WE06, 1) },
   { we: 10, plan: imHaus(WE06, 2) },
   { we: 14, plan: imHaus(WE06, 3) },
+  // 4. OG: gleicher Zuschnitt wie im 3. OG (Annahme, Altbau mit durchgehenden Achsen).
+  { we: 15, plan: imHaus(mitAbstellraum(WE03), 4) },
+  { we: 16, plan: imHaus(WE04, 4) },
+  { we: 17, plan: imHaus(WE05, 4) },
+  { we: 18, plan: imHaus(WE06, 4) },
 ];

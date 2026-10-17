@@ -7,11 +7,11 @@ import { WE03_PLAN } from "./beispielWe03";
 const ORDNER = "src/components/grundriss3d";
 
 describe("3D nur bei Bedarf laden", () => {
-  it("three.js steckt nur in Ansicht, Szene und Standbild, die lazy geladen werden", () => {
+  it("three.js steckt nur in Ansicht, Szene, Außenhülle und Standbild, die lazy geladen werden", () => {
     const mitThree = readdirSync(ORDNER)
       .filter((d) => /\.(ts|tsx)$/.test(d) && !/\.test\./.test(d))
       .filter((d) => /from "three(\/|")/.test(readFileSync(`${ORDNER}/${d}`, "utf8")));
-    expect(mitThree.sort()).toEqual(["Grundriss3dAnsicht.tsx", "standbild.ts", "szene.ts"]);
+    expect(mitThree.sort()).toEqual(["Grundriss3dAnsicht.tsx", "aussen.ts", "standbild.ts", "szene.ts"]);
   });
 
   it("Seiten und Exposé binden nur den leichten Block ein, die Ansicht nur dynamisch", () => {

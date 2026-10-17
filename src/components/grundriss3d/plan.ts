@@ -173,6 +173,59 @@ export interface HausPlan {
   quelle?: string;
 }
 
+/** Seite eines rechteckigen Umrisses: oben = kleines y, links = kleines x. */
+export type Seite = "oben" | "unten" | "links" | "rechts";
+
+/**
+ * Dachform aus Ansichten, Schnitt oder Fotos.
+ * - flach: Dachplatte über jedem obersten Geschoss.
+ * - sattel: über dem Umriss des obersten Geschosses; `first` ist die Richtung
+ *   des Firsts (x = waagerecht im Plan). Das oberste Geschoss ist dann das
+ *   Dachgeschoss: Seine Wände werden an den Dachflächen abgeschnitten.
+ * - mansarde: Hausring mit Hof (Berliner Altbau): steile Flächen an den
+ *   genannten Außenseiten und am Hof, oben flach.
+ */
+export type Dach =
+  | { art: "flach"; farbe?: string }
+  | { art: "sattel"; first: "x" | "y"; neigung: number; kniestock: number; farbe: string; ueberstand?: number }
+  | { art: "walm"; neigung: number; kniestock: number; farbe: string; ueberstand?: number }
+  | { art: "mansarde"; tiefe: number; hoehe: number; traufe: Seite[]; farbe: string; flach: string };
+
+/**
+ * Gaube oder Zwerchgiebel auf einem Sattel- oder Walmdach. `von` und `b`
+ * entlang der Traufe in Hausmetern, `abstand` der Vorderwand zur
+ * Außenwandflucht (0 = bündig), `hoehe` Oberkante Vorderwand über
+ * Dachgeschossboden.
+ */
+export interface Gaube {
+  seite: Seite;
+  von: number;
+  b: number;
+  abstand: number;
+  hoehe: number;
+  art: "sattel" | "flach";
+  /** Fensterbreite; ohne Angabe Gaubenbreite minus 0,5 m. */
+  fenster?: number;
+}
+
+/** Wie das Haus von außen aussieht, nach Fotos und Ansichten. */
+export interface Aussehen {
+  /** Putz- oder Klinkerfarbe der Außenwände. */
+  fassade?: string;
+  /** Erdgeschoss, wenn anders (Ladenzone, Sockel). */
+  sockel?: string;
+  /** Hoffassade, wenn anders als zur Straße. */
+  hof?: string;
+  /** Brandwände zum Nachbarhaus: unverputzt grau statt Fassadenfarbe. */
+  brandwand?: { seiten: Seite[]; farbe: string };
+  /** Straßenseite: Von dort schaut die Kamera zum Start aufs Haus. */
+  strasse?: Seite;
+  dach?: Dach;
+  gauben?: Gaube[];
+  /** Balkonplatten mit Geländer je Geschoss: Rechteck (x, y, Breite b in x, Tiefe t in y) in Hausmetern. */
+  balkone?: Array<{ geschosse: number[]; x: number; y: number; b: number; t: number }>;
+}
+
 export function hausAusMeta(roh: unknown): HausPlan | null {
   if (!roh || typeof roh !== "object" || Array.isArray(roh)) return null;
   const r = roh as Record<string, unknown>;

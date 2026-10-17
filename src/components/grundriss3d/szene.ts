@@ -3,8 +3,9 @@ import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import {
   FENSTER_BRUESTUNG, FENSTER_HOEHE, TUER_HOEHE, flaeche, laenge, planRahmen, punktInPolygon, qm, rahmen, schwerpunkt, wirksamerTyp,
-  type Flaechen, type Grundriss3dPlan, type HausPlan, type Punkt, type XY, type Raum, type RaumTyp, type Wand,
+  type Aussehen, type Flaechen, type Seite, type Grundriss3dPlan, type HausPlan, type Punkt, type XY, type Raum, type RaumTyp, type Wand,
 } from "./plan";
+import { balkon, faerbeFassade, kappeAnDach, mansarde, rechteckPunkte, steildach, type Kontur } from "./aussen";
 
 /*
  * Baut aus Plänen eine three.js-Szene. Nur dieses Modul und die Ansicht
@@ -51,6 +52,8 @@ export interface SzenenOptionen {
   fassade?: string;
   /** Schnittansicht: Wände bei 1,20 m gekappt, wie ein Puppenhaus von oben. */
   schnitt?: boolean;
+  /** Fassade, Dach und Balkone nach Fotos; nur in der Hausansicht. */
+  aussehen?: Aussehen;
 }
 
 export const SCHNITT_HOEHE = 1.2;
@@ -157,12 +160,33 @@ function wandStueck(w: Wand, t0: number, t1: number, y0: number, y1: number, m: 
   return mesh;
 }
 
+const BRUESTUNG = 1.0;
+
+/** Wand zwischen Balkon (oder Loggia) und draußen: nur Brüstungshöhe, sonst stünde ein Kasten vor der Fassade. */
+function istBruestung(plan: Grundriss3dPlan, w: Wand): boolean {
+  const l = laenge(w.a, w.b);
+  if (l < 0.05) return false;
+  const nx = -(w.b.y - w.a.y) / l, ny = (w.b.x - w.a.x) / l;
+  const m = { x: (w.a.x + w.b.x) / 2, y: (w.a.y + w.b.y) / 2 };
+  const seite = (d: number) => plan.raeume.find((r) => punktInPolygon({ x: m.x + nx * d, y: m.y + ny * d }, r.punkte))?.typ;
+  const a = seite(w.dicke / 2 + 0.15), b = seite(-(w.dicke / 2 + 0.15));
+  return (a === "balkon" && b === undefined) || (b === "balkon" && a === undefined);
+}
+
 function baueWaende(plan: Grundriss3dPlan, h: number, wandMat: THREE.Material, kappeMat: THREE.Material, glas: THREE.Material, rahmenMat: THREE.Material, tuerMat: THREE.Material, kappen: THREE.Object3D[]): THREE.Group {
   const g = new THREE.Group();
   for (const w of plan.waende) {
     const l = laenge(w.a, w.b);
     // Um die halbe Stärke verlängert, damit Ecken geschlossen sind.
     const ueber = w.dicke / 2;
+    if (istBruestung(plan, w)) {
+      const b = Math.min(h, BRUESTUNG);
+      const teil = wandStueck(w, -ueber, l + ueber, 0, b, wandMat);
+      const kappe = wandStueck({ ...w, dicke: w.dicke + 0.03 }, -ueber, l + ueber, b, b + 0.04, rahmenMat);
+      if (teil) g.add(teil);
+      if (kappe) g.add(kappe);
+      continue;
+    }
     const oeff = plan.oeffnungen.filter((o) => o.wandId === w.id)
       .map((o) => ({ ...o, von: Math.max(0, o.position - o.breite / 2), bis: Math.min(l, o.position + o.breite / 2) }))
       .sort((a, b) => a.von - b.von);
@@ -365,14 +389,39 @@ function regal(M: Mats, b = 0.9): THREE.Group {
  * ponytail: einfache Faustregeln je Raumtyp, keine Rücksicht auf
  * Türaufschläge und Fenster; ein Planer mit Kollisionsprüfung wäre Stufe 2.
  */
-function moebliere(raum: Raum, typ: RaumTyp, M: Mats): THREE.Group {
+/** Hauptrichtung eines Raums: längengewichtetes Mittel der Kantenwinkel (modulo 90°). */
+export function hauptrichtung(punkte: Punkt[]): number {
+  let c = 0, s = 0;
+  for (let i = 0; i < punkte.length; i++) {
+    const a = punkte[i], b = punkte[(i + 1) % punkte.length];
+    const l = laenge(a, b), w = Math.atan2(b.y - a.y, b.x - a.x) * 4;
+    c += l * Math.cos(w); s += l * Math.sin(w);
+  }
+  const winkel = Math.atan2(s, c) / 4;
+  return Math.abs(winkel) < 0.01 ? 0 : winkel;
+}
+
+function moebliere(raumImPlan: Raum, typ: RaumTyp, M: Mats): THREE.Group {
   const g = new THREE.Group();
+  // Schräg liegende Räume ins Achsenkreuz drehen, möblieren, die Gruppe zurückdrehen.
+  const winkel = hauptrichtung(raumImPlan.punkte);
+  const cw = Math.cos(-winkel), sw = Math.sin(-winkel);
+  const raum = winkel ? { ...raumImPlan, punkte: raumImPlan.punkte.map((p) => ({ x: p.x * cw - p.y * sw, y: p.x * sw + p.y * cw })) } : raumImPlan;
+  g.rotation.y = -winkel;
   const r = rahmen(raum.punkte);
   const W = r.maxX - r.minX, D = r.maxY - r.minY;
   const innen = 0.06;
 
   /** Möbel an eine Wand stellen: Seite oben/unten/links/rechts, entlang 0..1. */
-  const stelle = (m: THREE.Group | THREE.Mesh, b: number, t: number, seite: "o" | "u" | "l" | "r", entlang = 0.5, abstand = 0): boolean => {
+  const stelle = (m: THREE.Group | THREE.Mesh, b: number, t: number, seite: "o" | "u" | "l" | "r", wunsch = 0.5, abstand = 0): boolean => {
+    // Erst die gewünschte Stelle, dann Ausweichstellen entlang derselben Wand (Nischen, Türen, Vorsprünge).
+    // Große Stücke (Sofa, Bett, Schrank, Küche) notfalls an jede andere Wand; ein leerer Raum sieht falscher aus.
+    const seiten = b * t > 0.5 ? [seite, ...(["o", "u", "l", "r"] as const).filter((x) => x !== seite)] : [seite];
+    for (const s of seiten) for (const entlang of [wunsch, 0.5, 0.15, 0.85, 0, 1]) if (stelleAn(m, b, t, s, entlang, abstand)) return true;
+    return false;
+  };
+  const belegt: Array<{ minX: number; maxX: number; minY: number; maxY: number }> = [];
+  const stelleAn = (m: THREE.Group | THREE.Mesh, b: number, t: number, seite: "o" | "u" | "l" | "r", entlang: number, abstand: number): boolean => {
     let x: number, z: number, rot: number;
     if (seite === "o") { x = r.minX + innen + b / 2 + (W - 2 * innen - b) * entlang; z = r.minY + innen + abstand; rot = 0; }
     else if (seite === "u") { x = r.minX + innen + b / 2 + (W - 2 * innen - b) * entlang; z = r.maxY - innen - abstand; rot = Math.PI; }
@@ -381,7 +430,15 @@ function moebliere(raum: Raum, typ: RaumTyp, M: Mats): THREE.Group {
     // Ecken der Grundfläche prüfen.
     const cos = Math.cos(rot), sin = Math.sin(rot);
     const ecken = [[-b / 2, 0], [b / 2, 0], [-b / 2, t], [b / 2, t]].map(([lx, lz]) => ({ x: x + lx * cos + lz * sin, y: z - lx * sin + lz * cos }));
-    if (!ecken.every((e) => punktInPolygon(e, raum.punkte))) return false;
+    // Ecken 5 cm nach innen geprüft: Nachgezeichnete Räume haben leicht schräge Kanten.
+    const mitte = { x: ecken.reduce((s, e) => s + e.x, 0) / 4, y: ecken.reduce((s, e) => s + e.y, 0) / 4 };
+    const pruef = ecken.map((e) => { const d = Math.hypot(e.x - mitte.x, e.y - mitte.y) || 1; return { x: e.x - ((e.x - mitte.x) / d) * 0.05, y: e.y - ((e.y - mitte.y) / d) * 0.05 }; });
+    if (!pruef.every((e) => punktInPolygon(e, raum.punkte))) return false;
+    // Nicht in schon gestellte Möbel; Teppiche (einzelne Fläche) dürfen darunter liegen.
+    const box = { minX: Math.min(...pruef.map((e) => e.x)), maxX: Math.max(...pruef.map((e) => e.x)), minY: Math.min(...pruef.map((e) => e.y)), maxY: Math.max(...pruef.map((e) => e.y)) };
+    const istTeppich = m instanceof THREE.Mesh;
+    if (!istTeppich && belegt.some((q) => box.minX < q.maxX && box.maxX > q.minX && box.minY < q.maxY && box.maxY > q.minY)) return false;
+    if (!istTeppich) belegt.push(box);
     m.position.set(x, 0, z);
     m.rotation.y = rot;
     g.add(m);
@@ -440,7 +497,13 @@ export function baueSzene(einheiten: Einheit3d[], o: SzenenOptionen, haus?: Haus
   const hindernisse: Szene["hindernisse"] = [];
 
   const wandMat = mat(stil.wand, 0.92);
-  const fassadeMat = o.fassade ? mat(o.fassade, 0.9) : wandMat;
+  const fassadeFarbe = o.aussehen?.fassade ?? o.fassade;
+  const fassadeMat = mat(fassadeFarbe ?? stil.wand, 0.9);
+  fassadeMat.side = THREE.DoubleSide;
+  const rohMat = mat("#d8d5cf", 0.95);
+  const betonMat = mat("#d6cfc2", 0.9);
+  const konturen: Kontur[] = [];
+  const ebenen: Array<{ geschoss: number; ebene: THREE.Group; plan: Grundriss3dPlan; v: Punkt }> = [];
   const kappeMat = mat("#3b3d40", 0.9);
   // Durchsichtig über Deckkraft statt Transmission: die kostet einen zweiten Renderdurchgang.
   const glas = new THREE.MeshStandardMaterial({ color: "#cfe6f2", roughness: 0.05, metalness: 0.1, transparent: true, opacity: 0.3, depthWrite: false });
@@ -474,14 +537,20 @@ export function baueSzene(einheiten: Einheit3d[], o: SzenenOptionen, haus?: Haus
     // Ein einzelnes Geschoss steht auf dem Boden, sonst gestapelt.
     ebene.position.set(v.x, o.nurGeschoss !== undefined ? 0 : (geschoss - basis) * geschossHoehe(o), v.y);
 
-    // In der Hausansicht bekommen dicke Wände (Außen- und Brandwände) die Fassadenfarbe.
-    const waende = baueWaende(e.plan, h, wandMat, kappeMat, glas, rahmenMat, tuerMat, nurRundum);
-    if (o.fassade) waende.traverse((x) => { if (x instanceof THREE.Mesh && x.material === wandMat && (x.geometry as THREE.BoxGeometry).parameters.depth >= 0.36) x.material = fassadeMat; });
-    ebene.add(waende);
+    ebene.add(baueWaende(e.plan, h, wandMat, kappeMat, glas, rahmenMat, tuerMat, nurRundum));
     if (e.plan.flaechen) ebene.add(baueFlaechenWaende(e.plan.flaechen, h, wandMat, kappeMat, glas, nurRundum));
+    ebenen.push({ geschoss, ebene, plan: e.plan, v });
+    // Außenumriss für die Fassadenfarbe: aus CAD-Plänen der Deckenumriss, sonst das Rechteck um die Wände.
+    const y0 = ebene.position.y, y1 = y0 + h;
+    if (e.plan.flaechen?.decke?.length) {
+      for (const ring of e.plan.flaechen.decke) konturen.push({ y0, y1, erdgeschoss: geschoss === 0, art: "fassade", punkte: ring.map(([x, y]) => ({ x: x + v.x, y: y + v.y })) });
+    } else if (!haus) {
+      const r = planRahmen(e.plan);
+      konturen.push({ y0, y1, erdgeschoss: geschoss === 0, art: "fassade", punkte: rechteckPunkte({ minX: r.minX + v.x, minY: r.minY + v.y, maxX: r.maxX + v.x, maxY: r.maxY + v.y }, 0.2) });
+    }
 
     // Ein ganzer Geschossplan hat viele Räume: dann ein Schild je Wohnung statt je Raum.
-    const grossePlan = e.plan.raeume.length > 12;
+    const grossePlan = e.plan.raeume.length > 12 || new Set(e.plan.raeume.map((r) => /\(WE (\d+)\)/.exec(r.name)?.[1]).filter(Boolean)).size > 1;
     if (grossePlan && o.beschriftung && !hausAnsicht) {
       const jeWe = new Map<string, Raum[]>();
       for (const r of e.plan.raeume) { const m = /\(WE (\d+)\)/.exec(r.name); if (m) jeWe.set(m[1], [...(jeWe.get(m[1]) ?? []), r]); }
@@ -498,11 +567,15 @@ export function baueSzene(einheiten: Einheit3d[], o: SzenenOptionen, haus?: Haus
       }
     }
     for (const raum of e.plan.raeume) {
-      const typ = wirksamerTyp(e.plan, raum);
+      const rohTyp = wirksamerTyp(e.plan, raum);
+      // Eine Diele über 16 m² ist ein Wohnraum (offener Grundriss, CAD-Beschriftung im Durchgang).
+      const typ = rohTyp === "flur" && flaeche(raum.punkte) > 16 && !/gemeinschaft|treppe/i.test(raum.name) ? "wohnen" : rohTyp;
       const bodenMat = typ === "bad" || typ === "kueche" || typ === "treppenhaus" ? fliesenBoden : typ === "balkon" ? balkonBoden : holzBoden;
       const boden = new THREE.Mesh(flaechenGeometrie(raum.punkte), bodenMat);
       boden.receiveShadow = true;
       ebene.add(boden);
+      // Balkone kragen aus: eigene Platte darunter, sonst schwebt der Belag.
+      if (typ === "balkon" && geschosse.length > 1) ebene.add(prisma([raum.punkte.map((q): XY => [q.x, q.y])], -0.2, -0.012, betonMat));
       if (typ !== "balkon") {
         const decke = new THREE.Mesh(flaechenGeometrie(raum.punkte), deckenMat);
         decke.position.y = o.wandhoehe;
@@ -541,13 +614,13 @@ export function baueSzene(einheiten: Einheit3d[], o: SzenenOptionen, haus?: Haus
     // Rohdecke unter dem Geschoss: schließt die Etagen zum Haus. Mit Hülle liefert die die Decke.
     if (e.plan.flaechen?.decke?.length && geschosse.length > 1) {
       for (const ring of e.plan.flaechen.decke) {
-        const platte = prisma([ring], -DECKE - 0.002, -0.002, mat("#d8d5cf", 0.95));
+        const platte = prisma([ring], -DECKE - 0.01, -0.01, rohMat);
         ebene.add(platte);
       }
     } else if (geschosse.length > 1 && !haus) {
       const r = planRahmen(e.plan);
-      const platte = quader(r.maxX - r.minX + 0.4, DECKE, r.maxY - r.minY + 0.4, mat("#d8d5cf", 0.95));
-      platte.position.set((r.minX + r.maxX) / 2, -DECKE / 2 - 0.001, (r.minY + r.maxY) / 2);
+      const platte = quader(r.maxX - r.minX + 0.4, DECKE, r.maxY - r.minY + 0.4, rohMat);
+      platte.position.set((r.minX + r.maxX) / 2, -DECKE / 2 - 0.01, (r.minY + r.maxY) / 2);
       ebene.add(platte);
     }
     if (e.titel && einheiten.length > 1 && o.beschriftung) {
@@ -576,8 +649,47 @@ export function baueSzene(einheiten: Einheit3d[], o: SzenenOptionen, haus?: Haus
   }
 
   if (haus) {
-    baueHuelle({ haus, einheiten, o, h, basis, gruppe, nurRundum, hindernisse, stationen, hausAnsicht,
+    baueHuelle({ haus, einheiten, o, h, basis, gruppe, nurRundum, hindernisse, stationen, hausAnsicht, konturen,
       mats: { wandMat, fassadeMat, kappeMat, glas, rahmenMat, tuerMat, stein: fliesenBoden } });
+  }
+
+  // ── Außen: Fassadenfarbe, Dach, Balkone (nur wo das Haus als Ganzes zu sehen ist) ──
+  const zeigeDach = o.nurGeschoss === undefined && !o.schnitt;
+  if (fassadeFarbe && hausAnsicht) {
+    faerbeFassade(gruppe, new Set([wandMat]), konturen, { wand: stil.wand, fassade: fassadeFarbe, sockel: o.aussehen?.sockel, hof: o.aussehen?.hof, brandwand: o.aussehen?.brandwand });
+  }
+  const dach = o.aussehen?.dach;
+  if (!haus && ebenen.length) {
+    const oberstes = Math.max(...einheiten.map((e) => e.plan.geschoss ?? 0));
+    const oben = ebenen.filter((x) => x.geschoss === oberstes);
+    if ((dach?.art === "sattel" || dach?.art === "walm") && oben.length) {
+      // Traufe auf den Außenwänden des ganzen Hauses (das Dachgeschoss ist oft eingerückt), Außenkante der Wände.
+      const r = rahmen(ebenen.flatMap((x) => { const q = planRahmen(x.plan); return [{ x: q.minX + x.v.x, y: q.minY + x.v.y }, { x: q.maxX + x.v.x, y: q.maxY + x.v.y }]; }));
+      const dicke = Math.max(0, ...ebenen.flatMap((x) => x.plan.waende.map((w) => w.dicke))) / 2;
+      const aussenkante = { minX: r.minX - dicke, minY: r.minY - dicke, maxX: r.maxX + dicke, maxY: r.maxY + dicke };
+      const ey = oben[0].ebene.position.y;
+      const d = steildach(dach, aussenkante, ey + dach.kniestock, ey + h, fassadeMat, { liste: o.aussehen?.gauben ?? [], boden: ey });
+      for (const x of oben) kappeAnDach(x.ebene, d.ebenen);
+      if (zeigeDach) gruppe.add(d.gruppe);
+    } else if (zeigeDach && dach?.art !== "sattel" && dach?.art !== "walm") {
+      // Flachdach über jedem Geschoss aus CAD-Plänen; wo ein Geschoss darüber steht, verdeckt dessen Decke es.
+      const dachMat = mat(dach?.art === "flach" && dach.farbe ? dach.farbe : "#b9b5ad", 0.95);
+      for (const x of ebenen) {
+        for (const ring of x.plan.flaechen?.decke ?? []) {
+          // Deckel in Dachfarbe, Seiten wie die Rohdecke: wo beide zusammenfallen, sieht man keinen Wechsel.
+          const p = prisma([ring], h, h + DECKE - 0.03, dachMat);
+          p.material = [dachMat, rohMat];
+          x.ebene.add(p);
+        }
+      }
+    }
+  }
+  for (const b of o.aussehen?.balkone ?? []) {
+    const umriss = haus ? rechteckPunkte(rahmen(haus.huelle.waende.flatMap((w) => [w.a, w.b]))) : konturen[0]?.punkte ?? null;
+    for (const g of b.geschosse) {
+      if (o.nurGeschoss !== undefined && g !== o.nurGeschoss) continue;
+      gruppe.add(balkon(b, o.nurGeschoss !== undefined ? 0 : (g - basis) * geschossHoehe(o), umriss));
+    }
   }
 
   const box = new THREE.Box3().setFromObject(gruppe);
@@ -709,7 +821,7 @@ function platte(umriss: Rechteck, hof: Punkt[] | undefined, dicke: number, m: TH
 
 function baueHuelle(x: {
   haus: HausPlan; einheiten: Einheit3d[]; o: SzenenOptionen; h: number; basis: number; gruppe: THREE.Group;
-  nurRundum: THREE.Object3D[]; hindernisse: Szene["hindernisse"]; stationen: Szene["stationen"]; hausAnsicht: boolean;
+  nurRundum: THREE.Object3D[]; hindernisse: Szene["hindernisse"]; stationen: Szene["stationen"]; hausAnsicht: boolean; konturen: Kontur[];
   mats: { wandMat: THREE.Material; fassadeMat: THREE.Material; kappeMat: THREE.Material; glas: THREE.Material; rahmenMat: THREE.Material; tuerMat: THREE.Material; stein: THREE.Material };
 }) {
   const { haus, o, h, M } = { ...x, M: x.mats };
@@ -730,11 +842,11 @@ function baueHuelle(x: {
     const plan = huelleAusschneiden(haus.huelle, frei);
     const ebene = new THREE.Group();
     ebene.position.y = y;
-    const waende = baueWaende(plan, h, M.wandMat, M.kappeMat, M.glas, M.rahmenMat, M.tuerMat, x.nurRundum);
-    if (o.fassade) waende.traverse((m) => { if (m instanceof THREE.Mesh && m.material === M.wandMat && (m.geometry as THREE.BoxGeometry).parameters.depth >= 0.36) m.material = M.fassadeMat; });
-    ebene.add(waende);
+    x.konturen.push({ y0: y, y1: y + h, erdgeschoss: g === 0, art: "fassade", punkte: rechteckPunkte(umriss, 0.3) });
+    if (haus.hof) x.konturen.push({ y0: y, y1: y + h, erdgeschoss: g === 0, art: "hof", punkte: haus.hof });
+    ebene.add(baueWaende(plan, h, M.wandMat, M.kappeMat, M.glas, M.rahmenMat, M.tuerMat, x.nurRundum));
     const decke = platte(umriss, haus.hof, DECKE, deckeMat);
-    decke.position.y = -DECKE - 0.002;
+    decke.position.y = -DECKE - 0.01;
     ebene.add(decke);
     for (const r of plan.raeume) {
       const boden = new THREE.Mesh(flaechenGeometrie(r.punkte), M.stein);
@@ -762,11 +874,20 @@ function baueHuelle(x: {
     x.gruppe.add(ebene);
   }
   const ganzesHaus = o.nurGeschoss === undefined;
-  // Dach als flache Platte; im Schnitt und bei einem einzelnen Geschoss offen.
+  // Dach: Mansarde nach Fotos oder flache Platte; im Schnitt und bei einem einzelnen Geschoss offen.
   if (ganzesHaus && !o.schnitt) {
-    const dach = platte(umriss, haus.hof, 0.35, mat("#6f6a64", 0.9));
-    dach.position.y = obersteY + o.wandhoehe;
-    x.gruppe.add(dach);
+    const form = o.aussehen?.dach;
+    if (form?.art === "mansarde") {
+      const unterkante = platte(umriss, haus.hof, DECKE, mat("#d9d6d0", 0.95));
+      unterkante.position.y = obersteY + o.wandhoehe;
+      // Die Giebelstücke über den Brandwänden in deren Farbe.
+      const brand = o.aussehen?.brandwand ? new THREE.MeshStandardMaterial({ color: o.aussehen.brandwand.farbe, roughness: 0.95, side: THREE.DoubleSide }) : M.fassadeMat;
+      x.gruppe.add(unterkante, mansarde(form, umriss, haus.hof, obersteY + o.wandhoehe + DECKE, brand));
+    } else {
+      const dach = platte(umriss, haus.hof, 0.35, mat(form?.art === "flach" && form.farbe ? form.farbe : "#6f6a64", 0.9));
+      dach.position.y = obersteY + o.wandhoehe;
+      x.gruppe.add(dach);
+    }
   }
   // Hof: gepflastert, auf Höhe des Erdgeschossbodens.
   if (haus.hof && (ganzesHaus || o.nurGeschoss === x.basis)) {
@@ -868,15 +989,16 @@ export function buehneAnpassen(b: Buehne, box: THREE.Box3): void {
 }
 
 /** Kamera schräg von oben auf die ganze Szene. */
-export function kameraRundum(kamera: THREE.PerspectiveCamera, box: THREE.Box3): THREE.Vector3 {
+export function kameraRundum(kamera: THREE.PerspectiveCamera, box: THREE.Box3, strasse: Seite = "rechts"): THREE.Vector3 {
   const c = box.getCenter(new THREE.Vector3());
   const groesse = box.getSize(new THREE.Vector3());
   // Im Hochformat (Handy) weiter weg, sonst ragt das Modell seitlich hinaus.
   const s = Math.max(3, groesse.length()) * (kamera.aspect < 1 ? Math.min(2, 1 / kamera.aspect) : 1);
   if (groesse.y > 4) {
-    // Ein Haus mit mehreren Geschossen: flacher von schräg vorn, damit man die Etagen sieht.
-    // Von der Seite mit größerem x (bei Hausplänen die Straße) und etwas von unten im Plan.
-    kamera.position.set(c.x + s * 0.62, c.y + s * 0.4, c.z + s * 0.42);
+    // Ein Haus mit mehreren Geschossen: flach von schräg vorn auf die Straßenfassade, wie ein Passant mit etwas Abstand.
+    const vorn = { rechts: [1, 0], links: [-1, 0], oben: [0, -1], unten: [0, 1] }[strasse];
+    const quer = [-vorn[1], vorn[0]];
+    kamera.position.set(c.x + s * (0.66 * vorn[0] + 0.38 * quer[0]), c.y + s * 0.26, c.z + s * (0.66 * vorn[1] + 0.38 * quer[1]));
   } else {
     // Eine Wohnung steil von oben: Wände verdecken so wenig vom Boden dahinter.
     kamera.position.set(c.x + s * 0.05, c.y + s * 0.72, c.z + s * 0.32);

@@ -94,12 +94,12 @@ export function EinheitGrundriss3dKarte({ wohnung, darfBearbeiten, onGespeichert
       </div>
       {hausEtagen ? (
         <>
-          <Grundriss3dBlock einheiten={hausEtagen.map((e) => ({ plan: e.plan, titel: e.titel }))} hoehe={480} />
+          <Grundriss3dBlock einheiten={hausEtagen.map((e) => ({ plan: e.plan, titel: e.titel }))} hoehe="voll" aussehen={bekannt?.aussehen} />
           <p className="mt-1 text-[11px] text-muted-foreground">{bekannt?.name}: nachgezeichnet aus den Unterlagen; das einzelne Haus kann abweichen.</p>
         </>
       ) : plan ? (
         <>
-          <Grundriss3dBlock einheiten={[{ plan: { ...plan, versatz: undefined }, titel: `WE ${wohnung.weNr}` }]} hoehe={440} />
+          <Grundriss3dBlock einheiten={[{ plan: { ...plan, versatz: undefined }, titel: `WE ${wohnung.weNr}` }]} hoehe="voll" />
           {!eigenerPlan && bekannt && <p className="mt-1 text-[11px] text-muted-foreground">Nachgezeichnet aus dem Grundriss der Unterlagen ({bekannt.name}).</p>}
         </>
       ) : (
@@ -173,11 +173,10 @@ export function ObjektGrundriss3dKarte({ objekt, darfBearbeiten }: { objekt: Obj
         <>
           <p className="mb-3 text-xs text-muted-foreground">
             {einheiten.length} {einheiten.length === 1 ? "Einheit" : "Einheiten"} mit Grundriss{geschosse > 1 ? ` auf ${geschosse} Geschossen. Mit dem Regler ziehst du die Etagen auseinander.` : "."}
-            {haus
-              ? ` Hülle mit Hof, Treppenhäusern und Aufzügen aus der Flächenberechnung; Geschosse ohne Einheitenplan bleiben leer. Kein Fotomodell des Hauses.`
-              : " Gebäudekörper aus den Grundrissen, Fassadenfarbe aus dem Titelbild. Kein Fotomodell des Hauses."}
+            {haus ? " Hülle mit Hof, Treppenhäusern und Aufzügen aus der Flächenberechnung." : " Gebäudekörper aus den Grundrissen."}
+            {bekannt?.aussehen ? " Fassade, Dach und Balkone nach Fotos und Ansichten." : " Fassadenfarbe aus dem Titelbild."}
           </p>
-          <Grundriss3dBlock einheiten={einheiten} hoehe={560} fassade={fassade} haus={haus} />
+          <Grundriss3dBlock einheiten={einheiten} hoehe="voll" fassade={fassade} aussehen={bekannt?.aussehen} haus={haus} />
         </>
       ) : (
         <p className="text-sm text-muted-foreground">
