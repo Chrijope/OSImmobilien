@@ -149,19 +149,29 @@ export interface EinheitVollstaendigkeit {
   weNr: string;
   /** Fachname → vorhanden. */
   faecher: Record<string, boolean>;
+  /** Fächer ohne Datei im CRM, für die die Excel-Liste „vorhanden“ meldet: die Datei liegt woanders (etwa im Drive). */
+  lautListe: Record<string, boolean>;
   vorhanden: number;
   gesamt: number;
 }
 
-export function einheitVollstaendigkeit(w: ObjektWohnung): EinheitVollstaendigkeit {
+/** Welches Häkchen der Excel-Listen zu welchem Unterlagenfach gehört (`listendaten.ts`). */
+const LISTEN_HAEKCHEN: Record<string, string> = {
+  Wohnungsbilder: "unterlageFotos", Grundriss: "unterlageGrundriss", "GBA Wohnung": "unterlageGrundbuch",
+  Mietvertrag: "unterlageMietvertrag", Wirtschaftsplan: "unterlageWirtschaftsplan",
+};
+
+export function einheitVollstaendigkeit(w: ObjektWohnung, listenwerte: Record<string, unknown> = {}): EinheitVollstaendigkeit {
   const doks = w.dokumente || [];
   const faecher: Record<string, boolean> = {};
+  const lautListe: Record<string, boolean> = {};
   for (const fach of EINHEIT_FAECHER) {
     // Wohnungsbilder zählen auch, wenn sie in der Bildergalerie der Einheit liegen.
     faecher[fach] = fachBelegt(fach, doks) || (fach === "Wohnungsbilder" && (w.bilder?.length ?? 0) > 0);
+    if (!faecher[fach] && listenwerte[LISTEN_HAEKCHEN[fach]] === true) lautListe[fach] = true;
   }
   const vorhanden = Object.values(faecher).filter(Boolean).length;
-  return { id: w.id, weNr: w.weNr || "", faecher, vorhanden, gesamt: EINHEIT_FAECHER.length };
+  return { id: w.id, weNr: w.weNr || "", faecher, lautListe, vorhanden, gesamt: EINHEIT_FAECHER.length };
 }
 
 export interface ObjektVollstaendigkeit {
@@ -175,13 +185,13 @@ export interface ObjektVollstaendigkeit {
   anteil: number;
 }
 
-export function objektVollstaendigkeit(o: ObjektData): ObjektVollstaendigkeit {
+export function objektVollstaendigkeit(o: ObjektData, listenwerteVon: (wohnungId: string) => Record<string, unknown> = () => ({})): ObjektVollstaendigkeit {
   const faecher: Record<string, boolean> = {};
   for (const fach of OBJEKT_FAECHER) {
     faecher[fach] = fachBelegt(fach, o.dokumente || []) || (fach === "Objektbilder" && (o.bilder?.length ?? 0) > 0);
   }
   const vorhanden = Object.values(faecher).filter(Boolean).length;
-  const einheiten = (o.wohnungen || []).map(einheitVollstaendigkeit);
+  const einheiten = (o.wohnungen || []).map((w) => einheitVollstaendigkeit(w, listenwerteVon(w.id)));
   const fehlendJeFach: Record<string, number> = {};
   for (const fach of EINHEIT_FAECHER) fehlendJeFach[fach] = einheiten.filter((e) => !e.faecher[fach]).length;
   const belegt = vorhanden + einheiten.reduce((s, e) => s + e.vorhanden, 0);

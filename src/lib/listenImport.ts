@@ -15,6 +15,10 @@
  *   sie übernommen.
  * - Mieter und Ist-Kaltmiete landen in der Mietertabelle (`mieter`), die
  *   Garage in `wohnungen.meta.garage`.
+ * - Alle übrigen erkannten Spalten (MEA, Sollmiete, Hausgeld-Teile,
+ *   Mieterhöhungen, Unterlagen-Häkchen …) landen als Listendaten an der
+ *   Einheit, siehe `listendaten.ts`. Bei selbst angelegten Einheiten gehen
+ *   die Hausgeld-Teile zusätzlich in die Felder, mit denen das CRM rechnet.
  */
 import type { Blatt, Zelle } from "./excelLesen";
 import { excelDatumIso } from "./excelLesen";
@@ -23,6 +27,7 @@ import type { Mieter } from "./mieterStore";
 import type { ObjektWohnung } from "./objekteStore";
 import { ausInvestagon } from "./investagonHerkunft";
 import { aktuellerMieter } from "./objektdaten";
+import { LISTEN_FELDER, listenWertLesen, type Listendaten, type ListenWert } from "./listendaten";
 
 export type ImportFeld =
   | "we" | "lage" | "flaeche" | "kaufpreis" | "garageKaufpreis" | "istKaltmiete" | "mieter" | "mietbeginn"
@@ -39,7 +44,7 @@ const beginnt = (...w: string[]) => (h: string) => w.some((x) => h.startsWith(x)
  */
 export const FELD_ERKENNUNG: Record<ImportFeld, Array<(h: string) => boolean>> = {
   we: [gleich("we", "we nr", "we nr.", "we-nr.", "einheit")],
-  lage: [gleich("lage", "lage im haus", "lage / nutzung")],
+  lage: [gleich("lage", "lage im haus", "lage / nutzung", "lage der we"), beginnt("lage im haus")],
   flaeche: [beginnt("m² lt. investagon"), gleich("größe", "fläche m²", "fläche", "wohnfläche")],
   kaufpreis: [gleich("kp wohnung"), gleich("verkaufspreis", "kaufpreis")],
   garageKaufpreis: [gleich("kp garage")],
@@ -62,13 +67,18 @@ export const FELD_NAME: Record<ImportFeld, string> = {
 export interface Kopf {
   zeile: number;
   spalten: Partial<Record<ImportFeld, number>>;
+  /** Listendaten: Schlüssel aus `LISTEN_FELDER` → Spalte. */
+  listen: Record<string, number>;
 }
 
 /** Sucht in den ersten zehn Zeilen die Kopfzeile mit einer WE-Spalte und ordnet die übrigen Felder zu. */
 export function kopfErkennen(blatt: Blatt): Kopf | null {
-  for (let z = 0; z < Math.min(10, blatt.zeilen.length); z++) {
-    const koepfe = (blatt.zeilen[z] || []).map(norm);
-    if (!koepfe.some((h) => FELD_ERKENNUNG.we[0](h))) continue;
+  const ersteZeilen = blatt.zeilen.slice(0, 10).map((zeile) => (zeile || []).map(norm));
+  const mitWe = ersteZeilen.findIndex((k) => k.some((h) => FELD_ERKENNUNG.we[0](h) && h !== "einheit"));
+  // Eine Zeile mit „WE“ geht vor: Darüber steht oft eine Gruppenzeile mit „Einheit“.
+  const kopfzeile = mitWe >= 0 ? mitWe : ersteZeilen.findIndex((k) => k.includes("einheit"));
+  for (const z of kopfzeile >= 0 ? [kopfzeile] : []) {
+    const koepfe = ersteZeilen[z];
     const spalten: Kopf["spalten"] = {};
     for (const [feld, regeln] of Object.entries(FELD_ERKENNUNG) as [ImportFeld, Array<(h: string) => boolean>][]) {
       for (const regel of regeln) {
@@ -76,7 +86,14 @@ export function kopfErkennen(blatt: Blatt): Kopf | null {
         if (i >= 0) { spalten[feld] = i; break; }
       }
     }
-    return { zeile: z, spalten };
+    // Spalten, die schon ein Hauptfeld belegt, nicht doppelt als Listendaten lesen.
+    const belegt = new Set(Object.values(spalten));
+    const listen: Record<string, number> = {};
+    for (const feld of LISTEN_FELDER) {
+      const i = koepfe.findIndex((h, j) => !belegt.has(j) && feld.erkennung(h));
+      if (i >= 0) { listen[feld.schluessel] = i; belegt.add(i); }
+    }
+    return { zeile: z, spalten, listen };
   }
   return null;
 }
@@ -148,8 +165,10 @@ export interface ImportZeile {
   investagon: boolean;
   flaeche: { liste: number | null; crm: number | null; ergebnis: PruefErgebnis };
   kaufpreis: { wohnung: number | null; garage: number | null; crm: number | null; ergebnis: PruefErgebnis };
-  mieter?: { name: string; aktion: "neu" | "aktualisieren" | "unverändert" | "anderer Mieter"; vorhanden?: Mieter; kaltmiete: number | null; beginn: string; befristetBis: string };
+  mieter?: { name: string; aktion: "neu" | "aktualisieren" | "unverändert" | "anderer Mieter"; vorhanden?: Mieter; kaltmiete: number | null; beginn: string; befristetBis: string; nebenkosten?: number | null };
   garage?: { neu: EinheitGarage | null; aktion: "setzen" | "entfernen" | "unverändert" };
+  /** Erkannte Listendaten der Zeile und ob sie vom Stand im CRM abweichen. */
+  listendaten?: { werte: Record<string, ListenWert>; geaendert: boolean };
   hinweise: string[];
 }
 
@@ -160,6 +179,7 @@ export function importPlanen(
   wohnungen: ObjektWohnung[],
   mieter: Mieter[],
   garageVon: (wohnungId: string) => EinheitGarage | null,
+  listendatenVon: (wohnungId: string) => Listendaten | null = () => null,
 ): { kopf: Kopf | null; zeilen: ImportZeile[] } {
   const kopf = kopfErkennen(blatt);
   if (!kopf) return { kopf, zeilen: [] };
@@ -211,6 +231,10 @@ export function importPlanen(
       const befristetBis = s.befristetBis !== undefined ? excelDatumIso(z[s.befristetBis]) : "";
       if (istMietername(name)) {
         const vorhanden = aktuellerMieter(mieter, wohnung.id);
+        // Nebenkosten-Vorauszahlung des Mieters: BK plus HK, wenn die Liste sie führt.
+        const bk = kopf.listen.bkVorauszahlung !== undefined ? zahl(z[kopf.listen.bkVorauszahlung]) : null;
+        const hk = kopf.listen.hkVorauszahlung !== undefined ? zahl(z[kopf.listen.hkVorauszahlung]) : null;
+        const nebenkosten = bk === null && hk === null ? null : (bk ?? 0) + (hk ?? 0);
         let aktion: NonNullable<ImportZeile["mieter"]>["aktion"] = "neu";
         if (vorhanden) {
           const gleicherName = norm(vorhanden.nachname) === norm(nameTeilen(name).nachname);
@@ -219,12 +243,13 @@ export function importPlanen(
             hinweise.push(`Im CRM steht ein anderer Mieter (${vorhanden.nachname}). Nicht geändert, bitte prüfen.`);
           } else {
             const geaendert = (kaltmiete !== null && !nah(kaltmiete, vorhanden.kaltmiete, 0.005))
+              || (nebenkosten !== null && !nah(nebenkosten, vorhanden.nebenkosten, 0.005))
               || (!!beginn && beginn !== vorhanden.mietvertragBeginn)
               || (!!befristetBis && befristetBis !== vorhanden.mietvertragEnde);
             aktion = geaendert ? "aktualisieren" : "unverändert";
           }
         }
-        zeile.mieter = { name, aktion, vorhanden, kaltmiete, beginn, befristetBis };
+        zeile.mieter = { name, aktion, vorhanden, kaltmiete, beginn, befristetBis, nebenkosten };
       } else if (kaltmiete) {
         hinweise.push(`Ist-Miete ${kaltmiete} € ohne Mieter („${name || "leer"}“) wird nicht übernommen.`);
       }
@@ -236,6 +261,17 @@ export function importPlanen(
         const alt = garageVon(wohnung.id);
         const aktion = JSON.stringify(neu) === JSON.stringify(alt) ? "unverändert" : neu ? "setzen" : alt ? "entfernen" : "unverändert";
         zeile.garage = { neu, aktion };
+      }
+      const werte: Record<string, ListenWert> = {};
+      for (const feld of LISTEN_FELDER) {
+        const i = kopf.listen[feld.schluessel];
+        if (i === undefined) continue;
+        const v = listenWertLesen(feld, z[i]);
+        if (v !== null) werte[feld.schluessel] = v;
+      }
+      if (Object.keys(werte).length) {
+        const alt = listendatenVon(wohnung.id)?.werte || {};
+        zeile.listendaten = { werte, geaendert: Object.entries(werte).some(([k, v]) => alt[k] !== v) };
       }
     }
     zeilen.push(zeile);
@@ -249,6 +285,7 @@ export function planZaehlen(zeilen: ImportZeile[]) {
     mieterNeu: zeilen.filter((z) => z.mieter?.aktion === "neu").length,
     mieterAktualisiert: zeilen.filter((z) => z.mieter?.aktion === "aktualisieren").length,
     garagen: zeilen.filter((z) => z.garage && z.garage.aktion !== "unverändert").length,
+    listendaten: zeilen.filter((z) => z.listendaten?.geaendert).length,
     stammdaten: zeilen.filter((z) => z.wohnung && !z.investagon && (z.flaeche.ergebnis === "abweichend" || z.kaufpreis.ergebnis === "abweichend")).length,
     abweichendInvestagon: zeilen.filter((z) => z.investagon && (z.flaeche.ergebnis === "abweichend" || z.kaufpreis.ergebnis === "abweichend")).length,
     ohneEinheit: zeilen.filter((z) => !z.wohnung).length,
@@ -260,6 +297,8 @@ export interface ImportSchreiber {
   mieterAendern: (id: string, felder: Partial<Mieter>) => void;
   garageSetzen: (wohnungId: string, garage: EinheitGarage | null) => Promise<void>;
   wohnungAendern: (wohnungId: string, felder: Partial<ObjektWohnung>) => Promise<unknown | null>;
+  /** Neue Werte in die vorhandenen Listendaten mischen, mit Quelle. */
+  listendatenSetzen: (wohnungId: string, werte: Record<string, ListenWert>, quelle: string) => Promise<void>;
 }
 
 /** Schreibt den Plan. Gibt die Fehler als Sätze zurück; was gelang, bleibt geschrieben. */
@@ -279,7 +318,7 @@ export async function importAusfuehren(
         w.mieterAnlegen({
           ...nameTeilen(m.name), email: "", telefon: "",
           objektId: objekt.id, objektName: objekt.titel, wohneinheitId: wohnung.id, wohneinheitName: wohnung.weNr,
-          mietvertragBeginn: m.beginn, mietvertragEnde: m.befristetBis, kaltmiete: m.kaltmiete ?? 0, nebenkosten: 0, kaution: 0,
+          mietvertragBeginn: m.beginn, mietvertragEnde: m.befristetBis, kaltmiete: m.kaltmiete ?? 0, nebenkosten: m.nebenkosten ?? 0, kaution: 0,
           kautionEingegangen: false, status: "aktiv", dokumente: [], zahlungen: [], notizen: `Übernommen aus ${quelle}`,
         });
       } else if (m?.aktion === "aktualisieren" && m.vorhanden) {
@@ -287,16 +326,25 @@ export async function importAusfuehren(
           ...(m.kaltmiete !== null ? { kaltmiete: m.kaltmiete } : {}),
           ...(m.beginn ? { mietvertragBeginn: m.beginn } : {}),
           ...(m.befristetBis ? { mietvertragEnde: m.befristetBis } : {}),
+          ...(m.nebenkosten != null ? { nebenkosten: m.nebenkosten } : {}),
         });
       }
       if (z.garage && z.garage.aktion !== "unverändert") await w.garageSetzen(wohnung.id, z.garage.neu);
+      if (z.listendaten?.geaendert) await w.listendatenSetzen(wohnung.id, z.listendaten.werte, quelle);
       if (!z.investagon) {
         const felder: Partial<ObjektWohnung> = {};
+        // Hausgeld-Teile laut Liste in die Felder, mit denen das CRM rechnet (Investagon liefert sie sonst selbst).
+        const l = z.listendaten?.werte || {};
+        const n = (k: string) => (typeof l[k] === "number" ? (l[k] as number) : undefined);
+        if (n("hausgeldGesamt") !== undefined) felder.hausgeldMonat = n("hausgeldGesamt");
+        if (n("hausgeldUmlagefaehig") !== undefined) felder.hausgeldUmlagefaehigEuro = n("hausgeldUmlagefaehig");
+        if (n("hausgeldNichtUmlagefaehig") !== undefined) felder.hausgeldNichtUmlagefaehigEuro = n("hausgeldNichtUmlagefaehig");
+        if (n("ruecklage") !== undefined) felder.ruecklageZufuehrungMonat = n("ruecklage");
         if (z.flaeche.ergebnis === "abweichend" && z.flaeche.liste !== null) felder.groesse = z.flaeche.liste;
         if (z.kaufpreis.ergebnis === "abweichend" && z.kaufpreis.wohnung !== null) felder.vkGesamt = z.kaufpreis.wohnung;
         if (Object.keys(felder).length) {
           const f = await w.wohnungAendern(wohnung.id, felder);
-          if (f) fehler.push(`${z.we}: Kaufpreis oder Fläche nicht gespeichert.`);
+          if (f) fehler.push(`${z.we}: Kaufpreis, Fläche oder Hausgeld nicht gespeichert.`);
         }
       }
     } catch (e) {

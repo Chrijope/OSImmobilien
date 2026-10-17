@@ -21,6 +21,8 @@ import {
 import { getMieter, updateMieter } from "@/lib/mieterStore";
 import { objektMetaErgaenzen, updateWohnung, wohnungMetaErgaenzen, type ObjektData, type ObjektWohnung } from "@/lib/objekteStore";
 import { aktuellerMieter, einheitZeile } from "@/lib/objektdaten";
+import { listendatenFuerEinheit, listenZahl } from "@/lib/listendaten";
+import { bruttoRendite, nettoRendite, renditeEingabe } from "@/lib/renditeBruttoNetto";
 import { cn } from "@/lib/utils";
 
 /*
@@ -184,16 +186,32 @@ function MietgarantieKarte({ objekt, regel, darfSchreiben }: { objekt: ObjektDat
   );
 }
 
+type Ansicht = "preise" | "miete" | "hausgeld" | "garagen";
+const ANSICHTEN: { wert: Ansicht; titel: string }[] = [
+  { wert: "preise", titel: "Preise & Rendite" },
+  { wert: "miete", titel: "Miete & Garantie" },
+  { wert: "hausgeld", titel: "Hausgeld" },
+  { wert: "garagen", titel: "Garagen" },
+];
+
+const datum = (iso: unknown) => (typeof iso === "string" && /^\d{4}-\d{2}-\d{2}/.test(iso) ? `${iso.slice(8, 10)}.${iso.slice(5, 7)}.${iso.slice(0, 4)}` : typeof iso === "string" && iso ? iso : "–");
+
 export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[]; objektWahl: React.ReactNode }) {
   const { user } = useUser();
   // Mieter, Objekt- und Einheitenzusätze ändern sich nach dem Speichern; neu zeichnen.
   useLiveVersion(["mieter", "objekte", "wohnungen"]);
   const [garageEinheit, setGarageEinheit] = useState<ObjektWohnung | null>(null);
   const [importOffen, setImportOffen] = useState(false);
+  const [ansicht, setAnsicht] = useState<Ansicht>("preise");
   const darfSchreiben = SCHREIBT_OBJEKTE.includes(user.role);
   const mieter = getMieter();
   const einzeln = objekte.length === 1 ? objekte[0] : null;
 
+  /*
+   * Eine Zeile je Einheit mit allen abgeleiteten Werten. Alles wird bei jedem
+   * Zeichnen aus Einheit, Mieter, Listendaten und Objektregel neu gerechnet:
+   * Wer einen Wert ändert, sieht sofort Rendite, Garantie und Summen neu.
+   */
   const zeilen = objekte.flatMap((o) => {
     const regel = mietgarantieFuerObjekt(o.id);
     return o.wohnungen.map((w) => {
@@ -201,109 +219,190 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
       const m = aktuellerMieter(mieter, w.id);
       const ist = m ? m.kaltmiete || 0 : null;
       const garage = garageFuerEinheit(w.id);
+      const l = listendatenFuerEinheit(w.id);
       const garantie = regel && z.flaeche ? berechneGarantie(regel, z.flaeche, ist ?? 0, garage) : null;
-      return { objekt: o, w, z, m, ist, garage, regel, garantie, gesperrt: ausInvestagon(w) };
+      // Hausgeld: die Felder des CRM zuerst (bei Investagon von dort), sonst die Liste.
+      const hg = {
+        gesamt: w.hausgeldMonat ?? listenZahl(l, "hausgeldGesamt"),
+        uml: w.hausgeldUmlagefaehigEuro ?? listenZahl(l, "hausgeldUmlagefaehig"),
+        nichtUml: w.hausgeldNichtUmlagefaehigEuro ?? listenZahl(l, "hausgeldNichtUmlagefaehig"),
+        ruecklage: w.ruecklageZufuehrungMonat ?? listenZahl(l, "ruecklage"),
+      };
+      const eingabe = renditeEingabe(o, w, z.mieteMonat ?? 0);
+      if (hg.nichtUml !== null && w.hausgeldNichtUmlagefaehigEuro === undefined) { eingabe.nichtUmlagefaehigMonat = hg.nichtUml; eingabe.ruecklageMonat = hg.ruecklage ?? 0; }
+      return {
+        objekt: o, w, z, m, ist, garage, regel, garantie, l, hg, gesperrt: ausInvestagon(w),
+        bruttoIst: ist ? bruttoRendite(ist, z.kaufpreis ?? 0) : null,
+        brutto: z.rendite,
+        netto: nettoRendite(eingabe),
+        knk: eingabe.kaufnebenkostenProzent,
+      };
     });
   });
+  type Zeile = (typeof zeilen)[number];
   const mitGarantie = zeilen.some((x) => x.regel);
-  const summe = (f: (x: (typeof zeilen)[number]) => number | null | undefined) => zeilen.reduce((s, x) => s + (f(x) ?? 0), 0);
+  const summe = (f: (x: Zeile) => number | null | undefined) => zeilen.reduce((s, x) => s + (f(x) ?? 0), 0);
   const kaufpreis = summe((x) => x.z.kaufpreis);
   const istMonat = summe((x) => x.ist);
+  const mieteVertrieb = summe((x) => x.z.mieteMonat);
   const mehrere = objekte.length > 1;
 
-  const wohnungSpeichern = (o: ObjektData, w: ObjektWohnung, feld: "groesse" | "vkGesamt" | "mieteGesamt") => async (n: number | null) => {
-    const fehler = await updateWohnung(o.id, w.id, { [feld]: n ?? 0 });
+  const wohnungSpeichern = (o: ObjektData, w: ObjektWohnung, feld: keyof ObjektWohnung) => async (n: number | null) => {
+    const fehler = await updateWohnung(o.id, w.id, { [feld]: n ?? undefined } as Partial<ObjektWohnung>);
     if (fehler) throw new Error("Die Einheit darfst du nicht ändern.");
   };
+  const listeSpeichern = (w: ObjektWohnung, schluessel: string) => async (n: number | null) => {
+    const alt = listendatenFuerEinheit(w.id);
+    const werte = { ...(alt?.werte || {}) };
+    if (n === null) delete werte[schluessel]; else werte[schluessel] = n;
+    await wohnungMetaErgaenzen(w.id, { listendaten: { ...alt, werte, quelle: alt?.quelle ? `${alt.quelle}, von Hand ergänzt` : "von Hand", stand: new Date().toISOString().slice(0, 10) } });
+  };
+  /** Eine Zahl aus den Listendaten, bearbeitbar für Rollen mit Schreibrecht. */
+  const listenZelle = (x: Zeile, schluessel: string, stellen = 2, einheit = "€") => {
+    const v = listenZahl(x.l, schluessel);
+    const anzeige = v === null ? "–" : einheit === "€" ? eur(v, stellen) : zahl(v, stellen);
+    return <ZahlZelle wert={v} anzeige={anzeige} speichern={darfSchreiben ? listeSpeichern(x.w, schluessel) : undefined} />;
+  };
+  /** Hausgeld-Teil: bei Investagon gesperrt, sonst im Rechenfeld der Einheit gepflegt. */
+  const hausgeldZelle = (x: Zeile, wert: number | null, feld: keyof ObjektWohnung) => (
+    <ZahlZelle wert={wert} anzeige={eur(wert, 2)} gesperrt={x.gesperrt && wert !== null}
+      speichern={darfSchreiben ? wohnungSpeichern(x.objekt, x.w, feld) : undefined} />
+  );
+
+  const kopf = (titel: string, rechts = true, hinweis?: string) => <TableHead className={cn(rechts && "text-right", "whitespace-nowrap")} title={hinweis}>{titel}</TableHead>;
+  const r = "text-right tabular-nums whitespace-nowrap";
 
   return (
     <>
-      <PageHeader title="Einheitenliste" subtitle="Fläche, Kaufpreis, Miete, Mietgarantie und Garagen je Einheit, direkt aus den Objektdaten">
+      <PageHeader title="Einheitenliste" subtitle="Alle Zahlen je Einheit aus den Objektdaten, mit Rendite, Mietgarantie, Hausgeld und Garagen">
         {einzeln && (darfSchreiben || user.role === "backoffice") && (
           <Button variant="outline" onClick={() => setImportOffen(true)}><Upload className="mr-2 h-4 w-4" /> Excel-Liste übernehmen</Button>
         )}
       </PageHeader>
       {objektWahl}
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-8">
         <Kennzahl titel="Einheiten" wert={String(zeilen.length)} />
         <Kennzahl titel="Fläche gesamt" wert={`${zahl(summe((x) => x.z.flaeche))} m²`} />
         <Kennzahl titel="Kaufpreise gesamt" wert={eur(kaufpreis)} />
         <Kennzahl titel="Ist-Kaltmiete im Monat" wert={eur(istMonat, 2)} />
+        <Kennzahl titel="Brutto Ist" wert={prozent(kaufpreis > 0 && istMonat > 0 ? (istMonat * 12) / kaufpreis : null)} />
+        <Kennzahl titel="Brutto Vertrieb" wert={prozent(kaufpreis > 0 && mieteVertrieb > 0 ? (mieteVertrieb * 12) / kaufpreis : null)} />
         {mitGarantie && <Kennzahl titel="Garantie im Monat" wert={eur(summe((x) => x.garantie?.garantieMonat), 2)} />}
         {mitGarantie && <Kennzahl titel="Garantie über Laufzeit" wert={eur(summe((x) => x.garantie?.summeLaufzeit))} />}
       </div>
       {einzeln && <MietgarantieKarte objekt={einzeln} regel={mietgarantieFuerObjekt(einzeln.id)} darfSchreiben={darfSchreiben} />}
+      <div className="flex flex-wrap gap-2" role="tablist">
+        {ANSICHTEN.map((a) => (
+          <Button key={a.wert} size="sm" variant={ansicht === a.wert ? "default" : "outline"} role="tab" aria-selected={ansicht === a.wert} onClick={() => setAnsicht(a.wert)}>{a.titel}</Button>
+        ))}
+      </div>
       <Card>
         <CardContent className="p-0 overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                {mehrere && <TableHead>Objekt</TableHead>}
-                <TableHead>WE</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Lage</TableHead>
-                <TableHead className="text-right">Fläche m²</TableHead>
-                <TableHead className="text-right">Kaufpreis</TableHead>
-                <TableHead className="text-right">KP Garage</TableHead>
-                <TableHead className="text-right">VK €/m²</TableHead>
-                <TableHead className="text-right" title="Miete, mit der der Vertrieb rechnet (bei Garantie die Zielmiete)">Miete Vertrieb</TableHead>
-                <TableHead className="text-right">Rendite</TableHead>
-                <TableHead className="text-right" title="Kaltmiete laut aktuellem Mieter">Ist-Kaltmiete</TableHead>
-                <TableHead className="text-right">Ist €/m²</TableHead>
-                {mitGarantie && <TableHead className="text-right">Zielmiete</TableHead>}
-                {mitGarantie && <TableHead className="text-right">Garantie mtl.</TableHead>}
-                <TableHead>Garage/SP</TableHead>
-                {mitGarantie && <TableHead className="text-right">Garagen-Subv. mtl.</TableHead>}
-                <TableHead className="text-right">Hausgeld mtl.</TableHead>
-                <TableHead>Käufer</TableHead>
+                {mehrere && kopf("Objekt", false)}
+                {kopf("WE", false)}
+                {kopf("Lage", false)}
+                {ansicht === "preise" && <>
+                  {kopf("Status", false)}
+                  {kopf("Fläche m²")}{kopf("MEA")}{kopf("Kaufpreis")}{kopf("VK €/m²")}
+                  {kopf("Miete Vertrieb", true, "Miete, mit der der Vertrieb rechnet (bei Garantie die Zielmiete)")}
+                  {kopf("Brutto Ist", true, "Ist-Kaltmiete × 12 durch Kaufpreis")}
+                  {kopf("Brutto", true, "Miete Vertrieb × 12 durch Kaufpreis")}
+                  {kopf("Netto", true, "(Miete Vertrieb − nicht umlagefähiges Hausgeld − Rücklage) × 12 durch (Kaufpreis plus Kaufnebenkosten)")}
+                  {kopf("Mietsubvention", true, "Einmalbetrag laut Liste")}
+                  {kopf("Käufer", false)}
+                </>}
+                {ansicht === "miete" && <>
+                  {kopf("Ist-Kaltmiete")}{kopf("Ist €/m²")}{kopf("Sollmiete")}{kopf("Soll €/m²")}
+                  {mitGarantie && <>{kopf("Zielmiete")}{kopf("Garantie mtl.")}{kopf("Garantie Laufzeit")}{kopf("laut Liste", true, "Garantie über die Laufzeit laut Excel, mit Mieterhöhungen")}</>}
+                  {kopf("Letzte Erhöhung", false)}{kopf("Nächste ab", false)}{kopf("Miete danach")}{kopf("in 3 Jahren", true, "Erreichbare Miete in 3 Jahren laut Liste (Kappungsgrenze)")}
+                </>}
+                {ansicht === "hausgeld" && <>
+                  {kopf("Hausgeld gesamt")}{kopf("umlagefähig")}{kopf("nicht umlagefähig")}{kopf("Rücklage")}
+                  {kopf("Eigentümerlast", true, "nicht umlagefähig plus Rücklage")}{kopf("Überschuss mtl.", true, "Miete Vertrieb minus Eigentümerlast")}
+                </>}
+                {ansicht === "garagen" && <>
+                  {kopf("Garage/SP", false)}{kopf("KP Garage")}{kopf("Ist-Miete Garage")}{kopf("Sollmiete Garage")}
+                  {mitGarantie && kopf("Garagen-Subv. mtl.")}{kopf("gekündigt zum", false)}
+                </>}
               </TableRow>
             </TableHeader>
             <TableBody>
-              {zeilen.map(({ objekt, w, z, m, ist, garage, regel, garantie, gesperrt }) => (
-                <TableRow key={w.id}>
-                  {mehrere && <TableCell className="whitespace-nowrap text-xs">{objekt.titel}</TableCell>}
-                  <TableCell className="whitespace-nowrap font-medium"><Link to={`/objekte/${objekt.id}/einheiten/${w.id}`} className="hover:underline">{z.weNr || "ohne Nr."}</Link></TableCell>
-                  <TableCell className="whitespace-nowrap text-xs">{z.status}</TableCell>
-                  <TableCell className="whitespace-nowrap text-xs">{z.lage || "–"}</TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    <ZahlZelle wert={z.flaeche} anzeige={zahl(z.flaeche)} gesperrt={gesperrt} speichern={darfSchreiben ? wohnungSpeichern(objekt, w, "groesse") : undefined} />
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    <ZahlZelle wert={z.kaufpreis} anzeige={eur(z.kaufpreis)} gesperrt={gesperrt} speichern={darfSchreiben ? wohnungSpeichern(objekt, w, "vkGesamt") : undefined} />
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums whitespace-nowrap">{w.stellplatzPreis ? <>{eur(w.stellplatzPreis)}{gesperrt && <Schloss />}</> : "–"}</TableCell>
-                  <TableCell className="text-right tabular-nums">{zahl(z.kaufpreisQm)}</TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    <ZahlZelle wert={z.mieteMonat} anzeige={eur(z.mieteMonat, 2)} gesperrt={gesperrt} speichern={darfSchreiben ? wohnungSpeichern(objekt, w, "mieteGesamt") : undefined} />
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">{prozent(z.rendite)}</TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    {m
-                      ? <ZahlZelle wert={ist} anzeige={eur(ist, 2)} speichern={async (n) => updateMieter(m.id, { kaltmiete: n ?? 0 })} />
-                      : <span className="text-xs text-muted-foreground" title="Ohne Mieter keine Ist-Miete. Mieter unter „Mieter & Mietverträge“ erfassen.">kein Mieter</span>}
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">{ist && z.flaeche ? zahl(ist / z.flaeche) : "–"}</TableCell>
-                  {mitGarantie && <TableCell className="text-right tabular-nums whitespace-nowrap">{garantie ? <span title={`${zahl(regel!.zielQm)} €/m²`}>{eur(garantie.zielMiete, 2)}</span> : "–"}</TableCell>}
-                  {mitGarantie && <TableCell className={cn("text-right tabular-nums whitespace-nowrap", garantie?.garantieMonat && "font-medium")}>{garantie ? eur(garantie.garantieMonat, 2) : "–"}</TableCell>}
-                  <TableCell className="whitespace-nowrap text-xs">
-                    {darfSchreiben
-                      ? <button type="button" className="rounded px-1 hover:bg-muted" onClick={() => setGarageEinheit(w)}>{garage ? `${garage.nr} · ${GARAGEN_STATUS_TEXT[garage.status]}${garage.istMiete ? ` · ${eur(garage.istMiete)}` : ""}` : <span className="text-muted-foreground">+ Garage</span>}</button>
-                      : garage ? `${garage.nr} · ${GARAGEN_STATUS_TEXT[garage.status]}${garage.istMiete ? ` · ${eur(garage.istMiete)}` : ""}` : "–"}
-                  </TableCell>
-                  {mitGarantie && <TableCell className="text-right tabular-nums whitespace-nowrap">{garantie?.garagenSubventionMonat ? eur(garantie.garagenSubventionMonat, 2) : "–"}</TableCell>}
-                  <TableCell className="text-right tabular-nums whitespace-nowrap">{eur(z.hausgeldMonat, 2)}</TableCell>
-                  <TableCell className="whitespace-nowrap text-xs">{z.kaeufer || "–"}</TableCell>
-                </TableRow>
-              ))}
+              {zeilen.map((x) => {
+                const { objekt, w, z, m, ist, garage, regel, garantie, l, hg, gesperrt } = x;
+                const soll = listenZahl(l, "sollMiete");
+                const last = hg.nichtUml !== null || hg.ruecklage !== null ? (hg.nichtUml ?? 0) + (hg.ruecklage ?? 0) : null;
+                return (
+                  <TableRow key={w.id}>
+                    {mehrere && <TableCell className="whitespace-nowrap text-xs">{objekt.titel}</TableCell>}
+                    <TableCell className="whitespace-nowrap font-medium"><Link to={`/objekte/${objekt.id}/einheiten/${w.id}`} className="hover:underline">{z.weNr || "ohne Nr."}</Link></TableCell>
+                    <TableCell className="whitespace-nowrap text-xs">{[l?.werte.haus, z.lage].filter(Boolean).join(" · ") || "–"}</TableCell>
+                    {ansicht === "preise" && <>
+                      <TableCell className="whitespace-nowrap text-xs">{z.status}</TableCell>
+                      <TableCell className={r}><ZahlZelle wert={z.flaeche} anzeige={zahl(z.flaeche)} gesperrt={gesperrt} speichern={darfSchreiben ? wohnungSpeichern(objekt, w, "groesse") : undefined} /></TableCell>
+                      <TableCell className={r}>{listenZelle(x, "mea", 2, "")}</TableCell>
+                      <TableCell className={r}><ZahlZelle wert={z.kaufpreis} anzeige={eur(z.kaufpreis)} gesperrt={gesperrt} speichern={darfSchreiben ? wohnungSpeichern(objekt, w, "vkGesamt") : undefined} /></TableCell>
+                      <TableCell className={r}>{zahl(z.kaufpreisQm)}</TableCell>
+                      <TableCell className={r}><ZahlZelle wert={z.mieteMonat} anzeige={eur(z.mieteMonat, 2)} gesperrt={gesperrt} speichern={darfSchreiben ? wohnungSpeichern(objekt, w, "mieteGesamt") : undefined} /></TableCell>
+                      <TableCell className={r}>{prozent(x.bruttoIst)}</TableCell>
+                      <TableCell className={r}>{prozent(x.brutto)}</TableCell>
+                      <TableCell className={r} title={`Kaufnebenkosten ${zahl(x.knk, 1)} %`}>{prozent(x.netto)}</TableCell>
+                      <TableCell className={r}>{listenZelle(x, "mietsubvention")}</TableCell>
+                      <TableCell className="whitespace-nowrap text-xs">{z.kaeufer || "–"}</TableCell>
+                    </>}
+                    {ansicht === "miete" && <>
+                      <TableCell className={r}>
+                        {m ? <ZahlZelle wert={ist} anzeige={eur(ist, 2)} speichern={async (n) => updateMieter(m.id, { kaltmiete: n ?? 0 })} />
+                          : <span className="text-xs text-muted-foreground" title="Ohne Mieter keine Ist-Miete. Mieter unter „Mieter & Mietverträge“ erfassen.">kein Mieter</span>}
+                      </TableCell>
+                      <TableCell className={r}>{ist && z.flaeche ? zahl(ist / z.flaeche) : "–"}</TableCell>
+                      <TableCell className={r}>{listenZelle(x, "sollMiete")}</TableCell>
+                      <TableCell className={r}>{soll && z.flaeche ? zahl(soll / z.flaeche) : "–"}</TableCell>
+                      {mitGarantie && <>
+                        <TableCell className={r}>{garantie ? <span title={`${zahl(regel!.zielQm)} €/m²`}>{eur(garantie.zielMiete, 2)}</span> : "–"}</TableCell>
+                        <TableCell className={cn(r, garantie?.garantieMonat && "font-medium")}>{garantie ? eur(garantie.garantieMonat, 2) : "–"}</TableCell>
+                        <TableCell className={r}>{garantie ? eur(garantie.summeLaufzeit) : "–"}</TableCell>
+                        <TableCell className={r}>{eur(listenZahl(l, "garantieLaufzeitListe"))}</TableCell>
+                      </>}
+                      <TableCell className="whitespace-nowrap text-xs">{datum(l?.werte.letzteErhoehung)}</TableCell>
+                      <TableCell className="whitespace-nowrap text-xs">{datum(l?.werte.naechsteErhoehungAb)}</TableCell>
+                      <TableCell className={r}>{eur(listenZahl(l, "naechsteErhoehungMiete"), 2)}</TableCell>
+                      <TableCell className={r}>{eur(listenZahl(l, "mieteIn3Jahren"), 2)}</TableCell>
+                    </>}
+                    {ansicht === "hausgeld" && <>
+                      <TableCell className={r}>{hausgeldZelle(x, hg.gesamt, "hausgeldMonat")}</TableCell>
+                      <TableCell className={r}>{hausgeldZelle(x, hg.uml, "hausgeldUmlagefaehigEuro")}</TableCell>
+                      <TableCell className={r}>{hausgeldZelle(x, hg.nichtUml, "hausgeldNichtUmlagefaehigEuro")}</TableCell>
+                      <TableCell className={r}>{hausgeldZelle(x, hg.ruecklage, "ruecklageZufuehrungMonat")}</TableCell>
+                      <TableCell className={r}>{eur(last, 2)}</TableCell>
+                      <TableCell className={r}>{last !== null && z.mieteMonat ? eur(z.mieteMonat - last, 2) : "–"}</TableCell>
+                    </>}
+                    {ansicht === "garagen" && <>
+                      <TableCell className="whitespace-nowrap text-xs">
+                        {darfSchreiben
+                          ? <button type="button" className="rounded px-1 hover:bg-muted" onClick={() => setGarageEinheit(w)}>{garage ? `${garage.nr} · ${GARAGEN_STATUS_TEXT[garage.status]}` : <span className="text-muted-foreground">+ Garage</span>}</button>
+                          : garage ? `${garage.nr} · ${GARAGEN_STATUS_TEXT[garage.status]}` : "–"}
+                      </TableCell>
+                      <TableCell className={r}>{w.stellplatzPreis ? <>{eur(w.stellplatzPreis)}{gesperrt && <Schloss />}</> : "–"}</TableCell>
+                      <TableCell className={r}>{garage?.istMiete != null ? eur(garage.istMiete, 2) : "–"}</TableCell>
+                      <TableCell className={r}>{listenZelle(x, "garageSollMiete")}</TableCell>
+                      {mitGarantie && <TableCell className={r}>{garantie?.garagenSubventionMonat ? eur(garantie.garagenSubventionMonat, 2) : "–"}</TableCell>}
+                      <TableCell className="whitespace-nowrap text-xs">{datum(l?.werte.garageGekuendigtZum)}</TableCell>
+                    </>}
+                  </TableRow>
+                );
+              })}
               {zeilen.length === 0 && (
-                <TableRow><TableCell colSpan={18} className="py-8 text-center text-sm text-muted-foreground">Keine Einheiten erfasst.</TableCell></TableRow>
+                <TableRow><TableCell colSpan={16} className="py-8 text-center text-sm text-muted-foreground">Keine Einheiten erfasst.</TableCell></TableRow>
               )}
             </TableBody>
           </Table>
         </CardContent>
       </Card>
       <p className="text-xs text-muted-foreground">
-        Schloss: Der Wert kommt aus Investagon und wird dort geändert, sonst überschreibt ihn der nächste Abgleich. Bearbeitete Werte gelten sofort überall im CRM, auch auf der Objekt- und Einheitenseite. Die Garantie über die Laufzeit ist ohne Mieterhöhungen gerechnet und damit die Obergrenze; Mieterhöhungen senken sie.
+        Schloss: Der Wert kommt aus Investagon und wird dort geändert, sonst überschreibt ihn der nächste Abgleich. Ein Klick auf einen anderen Wert ändert ihn; Rendite, Garantie, Eigentümerlast und Summen rechnen sofort neu, auch auf der Objekt- und Einheitenseite. Die Garantie über die Laufzeit ist ohne Mieterhöhungen gerechnet; „laut Liste“ ist der Wert aus der Excel mit Erhöhungen.
       </p>
       <GarageDialog einheit={garageEinheit} garage={garageEinheit ? garageFuerEinheit(garageEinheit.id) : null} onClose={() => setGarageEinheit(null)} />
       {einzeln && <ListenImportDialog open={importOffen} onOpenChange={setImportOffen} objekt={einzeln} />}

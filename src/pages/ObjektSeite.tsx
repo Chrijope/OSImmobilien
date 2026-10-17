@@ -33,6 +33,7 @@ import { hausBelegungsAnzeige, hausKnopfStand, hausTeilweiseHinweis, OBJEKT_RESE
 import { ObjektTexteKarte } from "@/components/objektseite/ObjektTexteKarte";
 import { InterneHighlightsKarte } from "@/components/objektseite/InterneHighlightsKarte";
 import { ObjektGarantieDetails } from "@/components/objektseite/mieteGarantie";
+import { nettoRenditeSpanne } from "@/lib/renditeBruttoNetto";
 import { Galerie } from "@/components/objektseite/Galerie";
 import { DokumenteAnsicht } from "@/components/objektseite/DokumenteAnsicht";
 import { UmgebungsKarte } from "@/components/maps/UmgebungsKarte";
@@ -192,6 +193,8 @@ function ObjektAnsicht({ objekt, onPflege, eigeneId }: {
   */
   const imAngebot = objektImAngebot(objekt);
   const k = objektKennzahlen(objekt.wohnungen);
+  // Nettorendite seit dem 17.10.2026 neben der Bruttorendite (Christian).
+  const nettoSpanne = nettoRenditeSpanne(objekt);
   const v = verkaufsstand(objekt.wohnungen);
   const artGepflegt = objektartInfo(felder.objektart);
   const artVorschlag = artGepflegt ? undefined : objektartInfo(objektartAbleiten(objekt));
@@ -692,7 +695,9 @@ function ObjektAnsicht({ objekt, onPflege, eigeneId }: {
             <Kachel label="Einheiten" wert={`${k.einheiten.gesamt} gesamt`} unter={<><b className="whitespace-nowrap text-[hsl(var(--success))]">{k.einheiten.frei} frei</b> · <b className="whitespace-nowrap text-[hsl(var(--warning))]">{k.einheiten.reserviert} reserviert</b> · <span className="whitespace-nowrap">{k.einheiten.verkauft} verkauft</span></>} />
             <Kachel label="Baujahr" wert={baujahr ? String(baujahr) : "Keine Angabe"} unter={sanierungSpanne ? `Sanierung ${sanierungSpanne}` : undefined} />
             <Kachel label="Kaltmiete je Monat" wert={spanneText(k.kaltmiete, eur0)} unter={k.kaltmieteJeQm ? `${dez(k.kaltmieteJeQm.von, 2)} bis ${dez(k.kaltmieteJeQm.bis, 2)} € je m²` : undefined} />
-            <Kachel label="Rendite" wert={spanneText(k.rendite, (n) => prozent(n, 2))} unter="Jahreskaltmiete durch Kaufpreis" info="Die eine Rendite im CRM: zwölf Kaltmieten geteilt durch den Kaufpreis, ohne Nebenkosten, Hausgeld und Rücklage." />
+            <Kachel label="Rendite brutto" wert={spanneText(k.rendite, (n) => prozent(n, 2))}
+              unter={nettoSpanne ? `netto ${spanneText(nettoSpanne, (n) => prozent(n, 2))}` : "Jahreskaltmiete durch Kaufpreis"}
+              info="Brutto: zwölf Kaltmieten geteilt durch den Kaufpreis. Netto: zwölf Kaltmieten abzüglich nicht umlagefähigem Hausgeld und Rücklage, geteilt durch Kaufpreis plus Kaufnebenkosten." />
             <Kachel label="Preis je m²" wert={spanneText(k.preisJeQm, eur0)} unter="Kaufpreis durch Wohnfläche" />
           </div>
           {verkaufsstandKarte}

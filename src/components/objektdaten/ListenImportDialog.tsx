@@ -9,6 +9,7 @@ import {
   FELD_NAME, importAusfuehren, importPlanen, planZaehlen, type ImportFeld, type ImportZeile, type PruefErgebnis,
 } from "@/lib/listenImport";
 import { GARAGEN_STATUS_TEXT, garageFuerEinheit } from "@/lib/mietgarantie";
+import { LISTEN_FELDER, listendatenFuerEinheit } from "@/lib/listendaten";
 import { addMieter, getMieter, updateMieter } from "@/lib/mieterStore";
 import { getObjektById, updateWohnung, wohnungMetaErgaenzen, type ObjektData } from "@/lib/objekteStore";
 import { cn } from "@/lib/utils";
@@ -31,7 +32,7 @@ export function ListenImportDialog({ open, onOpenChange, objekt }: { open: boole
 
   const blatt = blaetter.find((b) => b.name === blattName);
   const aktuell = getObjektById(objekt.id) ?? objekt;
-  const plan = blatt ? importPlanen(blatt, aktuell.wohnungen, getMieter(), garageFuerEinheit) : null;
+  const plan = blatt ? importPlanen(blatt, aktuell.wohnungen, getMieter(), garageFuerEinheit, listendatenFuerEinheit) : null;
   const n = plan ? planZaehlen(plan.zeilen) : null;
 
   const zuruecksetzen = () => { setDatei(""); setBlaetter([]); setBlattName(""); };
@@ -57,6 +58,9 @@ export function ListenImportDialog({ open, onOpenChange, objekt }: { open: boole
       mieterAendern: updateMieter,
       garageSetzen: (id, g) => wohnungMetaErgaenzen(id, { garage: g }),
       wohnungAendern: (id, felder) => updateWohnung(objekt.id, id, felder),
+      listendatenSetzen: (id, werte, q) => wohnungMetaErgaenzen(id, {
+        listendaten: { werte: { ...(listendatenFuerEinheit(id)?.werte || {}), ...werte }, quelle: q, stand: new Date().toISOString().slice(0, 10) },
+      }),
     });
     setLaeuft(false);
     if (fehler.length) toast({ title: `${fehler.length} Zeilen nicht übernommen`, description: fehler.slice(0, 4).join(" "), variant: "destructive" });
@@ -65,7 +69,10 @@ export function ListenImportDialog({ open, onOpenChange, objekt }: { open: boole
     onOpenChange(false);
   };
 
-  const erkannt = plan?.kopf ? (Object.keys(plan.kopf.spalten) as ImportFeld[]).map((f) => FELD_NAME[f]).join(", ") : "";
+  const erkannt = plan?.kopf ? [
+    ...(Object.keys(plan.kopf.spalten) as ImportFeld[]).map((f) => FELD_NAME[f]),
+    ...LISTEN_FELDER.filter((f) => plan.kopf!.listen[f.schluessel] !== undefined).map((f) => f.label),
+  ].join(", ") : "";
 
   return (
     <Dialog open={open} onOpenChange={(o) => { if (!o) zuruecksetzen(); onOpenChange(o); }}>
@@ -91,6 +98,7 @@ export function ListenImportDialog({ open, onOpenChange, objekt }: { open: boole
               <span className="rounded-full bg-muted px-2.5 py-1">{n.mieterNeu} Mieter neu</span>
               <span className="rounded-full bg-muted px-2.5 py-1">{n.mieterAktualisiert} Mieter aktualisiert</span>
               <span className="rounded-full bg-muted px-2.5 py-1">{n.garagen} Garagen</span>
+              <span className="rounded-full bg-muted px-2.5 py-1">{n.listendaten} Einheiten mit neuen Listendaten</span>
               {n.stammdaten > 0 && <span className="rounded-full bg-muted px-2.5 py-1">{n.stammdaten} Einheiten mit neuem Kaufpreis oder Fläche</span>}
               {n.abweichendInvestagon > 0 && <span className="rounded-full bg-red-50 px-2.5 py-1 text-red-700">{n.abweichendInvestagon} Abweichungen zu Investagon</span>}
               {n.ohneEinheit > 0 && <span className="rounded-full bg-amber-50 px-2.5 py-1 text-amber-700">{n.ohneEinheit} Zeilen ohne Einheit</span>}
@@ -128,7 +136,7 @@ export function ListenImportDialog({ open, onOpenChange, objekt }: { open: boole
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="ghost" onClick={() => onOpenChange(false)}>Abbrechen</Button>
-              <Button disabled={laeuft || (n.mieterNeu + n.mieterAktualisiert + n.garagen + n.stammdaten === 0)} onClick={uebernehmen}>
+              <Button disabled={laeuft || (n.mieterNeu + n.mieterAktualisiert + n.garagen + n.stammdaten + n.listendaten === 0)} onClick={uebernehmen}>
                 {laeuft ? "Wird übernommen …" : "Übernehmen"}
               </Button>
             </div>

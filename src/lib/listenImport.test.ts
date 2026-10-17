@@ -90,7 +90,7 @@ describe("Listenimport", () => {
     const blatt: Blatt = { name: "Vertriebsliste", zeilen: [["WE", "Fläche m²", "Verkaufspreis"], ["WE 1", 65, 153500], ["WE 2", 25, 64500]] };
     const wohnungen = [we("a", "WE 1", { groesse: 60, vkGesamt: 150000 }), we("b", "WE 2", { groesse: 20, vkGesamt: 60000, investagonId: "i" })];
     const { zeilen } = importPlanen(blatt, wohnungen, [], () => null);
-    const schreiber = { mieterAnlegen: vi.fn(), mieterAendern: vi.fn(), garageSetzen: vi.fn(), wohnungAendern: vi.fn(async () => null) };
+    const schreiber = { mieterAnlegen: vi.fn(), mieterAendern: vi.fn(), garageSetzen: vi.fn(), wohnungAendern: vi.fn(async () => null), listendatenSetzen: vi.fn() };
     expect(await importAusfuehren({ id: "o", titel: "Brück" }, zeilen, "Vertriebsliste", schreiber)).toEqual([]);
     expect(schreiber.wohnungAendern).toHaveBeenCalledTimes(1);
     expect(schreiber.wohnungAendern).toHaveBeenCalledWith("a", { groesse: 65, vkGesamt: 153500 });
@@ -105,5 +105,39 @@ describe("Listenimport", () => {
     const [blatt] = await leseExcel(await zip.generateAsync({ type: "arraybuffer" }));
     expect(blatt.name).toBe("Liste");
     expect(blatt.zeilen).toEqual([["WE", null, "Fläche m²"], [1, null, 42.53]]);
+  });
+
+  it("übernimmt alle übrigen Spalten als Listendaten, Hausgeld bei eigenen Einheiten auch in die Rechenfelder", async () => {
+    // Spaltenköpfe wie „Kaufpreisliste intern.xlsx“ (Brück), gekürzt; Mietername erfunden.
+    const blatt: Blatt = { name: "Intern", zeilen: [
+      ["WE", "Status", "Fläche m²", "Mieter", "Ist-Miete mtl.", "Sollmiete mtl.", "Verkaufspreis", "Mietsubvention", "MEA /1.000 (TE)",
+        "Hausgeld gesamt mtl. (WP 2027)", "davon umlagefähig inkl. Heizung", "davon nicht umlagefähig", "davon Erhaltungsrücklage",
+        "BK-Vorausz.", "HK-Vorausz.", "Fotos vorhanden", "Mietvertrag vorhanden", "Hinweise"],
+      ["WE 1", "vermietet", 65, "Muster, Anna", 325, 650, 153500, 7901.51, 92, 407.54, 329.74, 49.35, 28.45, 50, 70,
+        "nein (nur Außenfotos)", "ja: Scan 2021", "Mieter ruft nur abends an"],
+    ] };
+    const wohnungen = [we("a", "WE 1", { groesse: 65, vkGesamt: 153500 })];
+    const { kopf, zeilen } = importPlanen(blatt, wohnungen, [], () => null, () => null);
+    expect(kopf!.listen).toMatchObject({ sollMiete: 5, mietsubvention: 7, mea: 8, hausgeldGesamt: 9, ruecklage: 12, unterlageFotos: 15 });
+    const z = zeilen[0];
+    expect(z.listendaten?.werte).toEqual({
+      status: "vermietet", sollMiete: 650, mietsubvention: 7901.51, mea: 92, hausgeldGesamt: 407.54, hausgeldUmlagefaehig: 329.74,
+      hausgeldNichtUmlagefaehig: 49.35, ruecklage: 28.45, bkVorauszahlung: 50, hkVorauszahlung: 70,
+      unterlageFotos: false, unterlageMietvertrag: true,
+    });
+    // Freitext mit möglichen Namen wird nicht übernommen.
+    expect(JSON.stringify(z.listendaten)).not.toContain("abends");
+    expect(z.mieter?.nebenkosten).toBe(120);
+    const schreiber = { mieterAnlegen: vi.fn(), mieterAendern: vi.fn(), garageSetzen: vi.fn(), wohnungAendern: vi.fn(async () => null), listendatenSetzen: vi.fn(async () => undefined) };
+    await importAusfuehren({ id: "o", titel: "Brück" }, zeilen, "Liste", schreiber);
+    expect(schreiber.listendatenSetzen).toHaveBeenCalledWith("a", z.listendaten!.werte, "Liste");
+    expect(schreiber.wohnungAendern).toHaveBeenCalledWith("a", { hausgeldMonat: 407.54, hausgeldUmlagefaehigEuro: 329.74, hausgeldNichtUmlagefaehigEuro: 49.35, ruecklageZufuehrungMonat: 28.45 });
+    expect(schreiber.mieterAnlegen.mock.calls[0][0]).toMatchObject({ nachname: "Muster", kaltmiete: 325, nebenkosten: 120 });
+  });
+
+  it("meldet unveränderte Listendaten nicht erneut", () => {
+    const blatt: Blatt = { name: "x", zeilen: [["WE", "MEA"], [1, 92]] };
+    const { zeilen } = importPlanen(blatt, [we("a", "WE 1")], [], () => null, () => ({ werte: { mea: 92 } }));
+    expect(zeilen[0].listendaten?.geaendert).toBe(false);
   });
 });
