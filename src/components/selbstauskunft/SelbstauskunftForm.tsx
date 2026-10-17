@@ -1,4 +1,7 @@
 import { useState, useCallback, useContext, createContext, useEffect, useRef, useMemo } from "react";
+import { LivePdfVorschau } from "@/components/pdf/LivePdfVorschau";
+import { NUR_POPUP_OVERLAY } from "@/lib/popupOverlay";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { QRCodeSVG } from "qrcode.react";
 import { Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -55,7 +58,7 @@ import {
 } from "@/lib/kreditPflichtfelder";
 import { PFLICHT_OFFEN_RAHMEN } from "@/lib/pflichtRahmen";
 import {
-  TrendingUp, DollarSign, Users, ShieldCheck, Home, Wallet, Building2, Landmark, CheckCircle2, X, Plus, Send, Loader2, Info, Save, AlertTriangle,
+  TrendingUp, DollarSign, Users, ShieldCheck, Home, Wallet, Building2, Landmark, CheckCircle2, X, Plus, Send, Loader2, Info, Save, AlertTriangle, FileText,
 } from "lucide-react";
 import { parse, isValid } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -305,8 +308,11 @@ const STEPS = [
   "Vermögenswerte",
   "Verbindlichkeiten",
   "Sonstige Angaben",
+  // Seit 17.10.2026: das ganze PDF zur Kontrolle, bevor unterschrieben wird.
+  "Vorschau",
   "Abschluss",
 ];
+const VORSCHAU_SCHRITT = STEPS.indexOf("Vorschau");
 
 /**
  * Grober Ausfuellfortschritt der Selbstauskunft in Prozent (0 bis 100), damit
@@ -1276,7 +1282,7 @@ const STEP_HINTS: Record<number, { title: string; items: string[] }> = {
       "Hinweise: Hier können Sie alles eintragen, was für die Beratung relevant sein könnte.",
     ],
   },
-  7: {
+  8: {
     title: "✅ Abschluss",
     items: [
       "Bitte prüfen Sie alle Angaben nochmals sorgfältig.",
@@ -2142,6 +2148,13 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
       return false;
     }
     return true;
+  };
+
+  // PDF-Vorschau aus dem aktuellen Stand, dieselbe Funktion wie beim Ablegen.
+  const [pdfOffen, setPdfOffen] = useState(false);
+  const saPdfErzeugen = async () => {
+    const { generateSelbstauskunftPDF } = await import("@/lib/selbstauskunftPdf");
+    return generateSelbstauskunftPDF(data, { vorname: data.vorname || "", nachname: data.nachname || "", osImmoId: "" }, undefined, { sprache });
   };
 
   const tryNext = async () => {
@@ -4232,7 +4245,16 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
   };
 
   const schritte = STEPS.map((s) => t(s));
-  const stepRenderers = [renderStep0, renderStep1, renderStep2, renderStep3, renderStep4, renderStep5, renderStep6, renderStep7];
+  const renderVorschau = () => (
+    <div className="space-y-4">
+      <h2 className="text-xl font-bold">{t("Vorschau")}</h2>
+      <p className="text-sm text-muted-foreground">
+        {t("So sieht Ihre Selbstauskunft als PDF aus. Bitte prüfen Sie alles sorgfältig. Im nächsten Schritt geht es zur Unterschrift.")}
+      </p>
+      <LivePdfVorschau titel={t("PDF-Vorschau")} schluessel={JSON.stringify(data)} erzeuge={saPdfErzeugen} />
+    </div>
+  );
+  const stepRenderers = [renderStep0, renderStep1, renderStep2, renderStep3, renderStep4, renderStep5, renderStep6, renderVorschau, renderStep7];
 
   return (
     <SaSprache.Provider value={sprache}>
@@ -4317,7 +4339,7 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
       {/* Content */}
       <div ref={inhaltRef} className={hinweiseImFormular ? "flex flex-col lg:flex-row gap-0 lg:gap-6" : ""}>
         <div className={hinweiseImFormular ? "min-w-0 flex-1 p-6" : "p-6"}>
-          {step > 0 && step < STEPS.length - 1 && (
+          {step > 0 && step < VORSCHAU_SCHRITT && (
             <div className="mb-4 flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground bg-muted/40 border border-border/60 rounded-lg px-3 py-2">
               <span className="inline-flex items-center gap-1">
                 <span className="text-destructive font-bold">*</span>
@@ -4477,12 +4499,28 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
               <span className="sm:hidden">{t("Senden")}</span>
             </Button>
           )}
+          {/* Auf jeder Seite: das PDF mit dem aktuellen Stand ansehen (17.10.2026). */}
+          {step !== VORSCHAU_SCHRITT && (
+            <Button variant="outline" onClick={() => setPdfOffen(true)} className="gap-1.5">
+              <FileText className="h-4 w-4" />
+              <span className="hidden sm:inline">{t("PDF-Vorschau")}</span>
+              <span className="sm:hidden">{t("PDF")}</span>
+            </Button>
+          )}
           {step < STEPS.length - 1 && (
             <Button variant="brand" onClick={tryNext}>{t("Weiter")}</Button>
           )}
         </div>
       </div>
     </div>
+    <Dialog open={pdfOffen} onOpenChange={setPdfOffen}>
+      <DialogContent overlayClassName={NUR_POPUP_OVERLAY} className="max-w-3xl">
+        <DialogHeader>
+          <DialogTitle>{t("PDF-Vorschau")}</DialogTitle>
+        </DialogHeader>
+        {pdfOffen && <LivePdfVorschau titel={t("Ihre Selbstauskunft als PDF")} schluessel={JSON.stringify(data)} erzeuge={saPdfErzeugen} hoehe="70vh" />}
+      </DialogContent>
+    </Dialog>
     {/* Bestätigung: Person 2 dauerhaft entfernen */}
     <AlertDialog open={showRemoveP2Dialog} onOpenChange={setShowRemoveP2Dialog}>
       <AlertDialogContent>

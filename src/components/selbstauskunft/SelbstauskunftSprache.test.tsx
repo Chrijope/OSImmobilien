@@ -195,7 +195,7 @@ describe("Selbstauskunft in der Kundensprache", { timeout: 20000 }, () => {
       <SelbstauskunftForm kundeId="k1" investmentId="i1" prefillKontakt={kontakt} prefillSaData={vollerStand}
         sprache="en" customerMode saToken="abc" onHinweisSchritt={() => {}} />,
     );
-    for (let i = 0; i < 7; i++) weiter("Next");
+    for (let i = 0; i < 8; i++) weiter("Next");
     expect(titel()).toBe("Completion");
 
     const kasten = screen.getByTestId("sa-erklaerung-en");
@@ -222,7 +222,7 @@ describe("Selbstauskunft in der Kundensprache", { timeout: 20000 }, () => {
       <SelbstauskunftForm kundeId="k1" investmentId="i1" prefillKontakt={kontakt} prefillSaData={vollerStand}
         customerMode saToken="abc" onHinweisSchritt={() => {}} />,
     );
-    for (let i = 0; i < 7; i++) weiter("Weiter");
+    for (let i = 0; i < 8; i++) weiter("Weiter");
     expect(titel()).toBe("Abschluss");
     expect(screen.queryByTestId("sa-erklaerung-en")).toBeNull();
     expect(screen.queryByText(DEUTSCHES_ORIGINAL_ZEIGEN)).toBeNull();
@@ -243,7 +243,7 @@ describe("Selbstauskunft in der Kundensprache", { timeout: 20000 }, () => {
       <SelbstauskunftForm kundeId="k1" investmentId="i1" prefillKontakt={kontakt} prefillSaData={vollerStand}
         sprache="en" korrekturMode onKorrekturSave={() => {}} />,
     );
-    for (let i = 0; i < 7; i++) weiter("Next");
+    for (let i = 0; i < 8; i++) weiter("Next");
     expect(screen.getByTestId("sa-erklaerung-en")).toBeTruthy();
     expect(screen.getByRole("button", { name: /Apply corrections/ })).toBeTruthy();
   });

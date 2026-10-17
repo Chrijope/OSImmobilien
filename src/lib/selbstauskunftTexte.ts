@@ -408,6 +408,11 @@ export const SA_UI_EN: Readonly<Record<string, string>> = {
 
   /* ── Schritt 7: Abschluss und Unterschrift ────────────────── */
   "Abschluss & Unterschrift": "Completion and signature",
+  "Vorschau": "Preview",
+  "PDF-Vorschau": "PDF preview",
+  "PDF": "PDF",
+  "Ihre Selbstauskunft als PDF": "Your self-disclosure as a PDF",
+  "So sieht Ihre Selbstauskunft als PDF aus. Bitte prüfen Sie alles sorgfältig. Im nächsten Schritt geht es zur Unterschrift.": "This is how your self-disclosure looks as a PDF. Please check everything carefully. The next step is the signature.",
   "Abschluss & Unterschrift anfordern": "Completion and signature request",
   "Selbstauskunft vollständig ausgefüllt": "Self-disclosure fully completed",
   "Alle Angaben wurden erfasst. Bitte unterschreiben Sie unten und bestätigen Sie Ihre Angaben.":

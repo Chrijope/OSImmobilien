@@ -2,7 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { Link, useParams } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
 import { toast } from "sonner";
-import { ArrowLeft, CheckCircle2, ExternalLink, FileText, Loader2, Lock, Send, Smartphone } from "lucide-react";
+import { ArrowLeft, CheckCircle2, FileText, Loader2, Lock, Send, Smartphone } from "lucide-react";
+import { LivePdfVorschau } from "@/components/pdf/LivePdfVorschau";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -84,35 +85,11 @@ export function BeratungsprotokollInhalt({ kontaktId, investmentId, vorschau = f
     return () => clearTimeout(timer);
   }, [daten, investmentId, nurLesen, vorschau]);
 
-  // Live-Vorschau wie bei der Rechnungsvorlage.
   const unterschriften = useMemo(() => {
     const sig = (name?: string, data?: string, am?: string): ProtokollUnterschrift | undefined =>
       data ? { name: name || "", signatureData: data, signedAt: am || new Date().toISOString() } : undefined;
     return { vp: sig(ab.vpSignerName, ab.vpSignature, ab.vpSignedAt), kunde: sig(ab.kundeSignerName, ab.kundeSignature, ab.kundeSignedAt) };
   }, [ab.vpSignerName, ab.vpSignature, ab.vpSignedAt, ab.kundeSignerName, ab.kundeSignature, ab.kundeSignedAt]);
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const [pdfFehler, setPdfFehler] = useState(false);
-  const pdfUrlRef = useRef<string | null>(null);
-  useEffect(() => {
-    let abgebrochen = false;
-    const timer = setTimeout(async () => {
-      try {
-        const doc = await erzeugeBeratungsprotokollPdf(daten, unterschriften);
-        if (abgebrochen) return;
-        const url = URL.createObjectURL(doc.output("blob"));
-        if (pdfUrlRef.current) URL.revokeObjectURL(pdfUrlRef.current);
-        pdfUrlRef.current = url;
-        setPdfUrl(url);
-        setPdfFehler(false);
-      } catch (e) {
-        console.error(e);
-        if (!abgebrochen) setPdfFehler(true);
-      }
-    }, 400);
-    return () => { abgebrochen = true; clearTimeout(timer); };
-  }, [daten, unterschriften]);
-  useEffect(() => () => { if (pdfUrlRef.current) URL.revokeObjectURL(pdfUrlRef.current); }, []);
-
   // ── Unterschrift des Partners und Versand, wie bisher im Popup ──
   const [phase, setPhase] = useState<Phase>("form");
   const [token, setToken] = useState<string | null>(null);
@@ -361,26 +338,9 @@ export function BeratungsprotokollInhalt({ kontaktId, investmentId, vorschau = f
           )}
         </div>
 
-        <section className={`min-w-0 space-y-2 lg:sticky lg:top-0 ${ansicht === "vorschau" ? "" : "hidden lg:block"}`}>
-          <div className="flex items-center justify-between gap-2">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">PDF-Vorschau</h3>
-            {pdfUrl && (
-              <a href={pdfUrl} target="_blank" rel="noreferrer" className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1">
-                <ExternalLink className="h-3.5 w-3.5" /> In neuem Tab öffnen
-              </a>
-            )}
-          </div>
-          <div className="rounded-lg border bg-muted/30 overflow-hidden">
-            {pdfUrl ? (
-              // key: neues iframe je Vorschau, sonst zeigt Chrome nach dem Adresswechsel eine graue Fläche.
-              <iframe key={pdfUrl} src={`${pdfUrl}#toolbar=0&navpanes=0&view=FitH`} title="Vorschau des Beratungsprotokolls" className="w-full block bg-white" style={{ height: "min(calc(100vh - 8rem), 141vw)" }} />
-            ) : (
-              <div className="flex items-center justify-center text-sm text-muted-foreground p-6" style={{ height: "min(calc(100vh - 8rem), 141vw)" }}>
-                {pdfFehler ? "Vorschau konnte nicht erstellt werden." : "Vorschau wird erstellt …"}
-              </div>
-            )}
-          </div>
-        </section>
+        <div className={`min-w-0 lg:sticky lg:top-0 ${ansicht === "vorschau" ? "" : "hidden lg:block"}`}>
+          <LivePdfVorschau erzeuge={() => erzeugeBeratungsprotokollPdf(daten, unterschriften)} schluessel={JSON.stringify(daten) + (unterschriften.kunde ? "k" : "") + (unterschriften.vp ? "v" : "")} />
+        </div>
       </div>
     </div>
   );
