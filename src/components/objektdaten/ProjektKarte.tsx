@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { objektMetaErgaenzen, type ObjektData } from "@/lib/objekteStore";
+import { zahlAus } from "@/lib/objektdatenFormular";
 import { MEILENSTEINE, kalkulationSpeichern, projektKosten, type Meilenstein, type ObjektAufteilung, type ObjektKalkulation } from "@/lib/projektObjekt";
 
 /*
@@ -25,10 +26,8 @@ const KOSTEN: { schluessel: keyof ObjektKalkulation; titel: string; einheit: str
 ];
 
 const lesen = (s: string): number | undefined => {
-  const t = s.trim().replace(/\s|€|%/g, "");
-  if (!t) return undefined;
-  const n = Number(t.includes(",") ? t.replace(/\./g, "").replace(",", ".") : t);
-  return Number.isFinite(n) && n >= 0 ? n : undefined;
+  const n = zahlAus(s);
+  return n !== null && n >= 0 ? n : undefined;
 };
 const alsText = (n: unknown) => (typeof n === "number" ? String(n).replace(".", ",") : "");
 const eur = (n: number) => n.toLocaleString("de-DE", { maximumFractionDigits: 0 }) + " €";
