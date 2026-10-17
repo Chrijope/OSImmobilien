@@ -143,7 +143,28 @@ describe("Bibliothek nachgezeichneter Häuser", () => {
     }
     expect(bekanntesHausFinden({ adresse: "Gartenweg 1", titel: "Barfusstraße 9 – Wedding" })).toBeTruthy();
     expect(bekanntesHausFinden({ adresse: "Barfusstraße 91" })).toBeUndefined();
-    expect(bekanntesHausFinden({ adresse: "Hauffstraße 38" })).toBeUndefined();
+    expect(bekanntesHausFinden({ adresse: "Gartenweg 38" })).toBeUndefined();
     expect([weNummer("WE 03"), weNummer("3"), weNummer("WE11 (Vorderhaus)"), weNummer("")]).toEqual([3, 3, 11, null]);
+  });
+});
+
+describe("Hauffstraße 38 aus den Werkplänen", () => {
+  it("wird erkannt und liefert acht Etagenpläne und alle 46 Einheiten mit gültigen Wandflächen", async () => {
+    const { bekanntesHausFinden } = await import("./planBibliothek");
+    const eintrag = bekanntesHausFinden({ adresse: "Hauffstraße 38", titel: "Hauffstr. 38, 14548 Schwielowsee" });
+    expect(eintrag).toBeTruthy();
+    const haus = await eintrag!.laden();
+    expect(haus.etagen).toHaveLength(8);
+    expect(haus.einheiten.map((e) => e.we)).toEqual(Array.from({ length: 46 }, (_, i) => i + 1));
+    for (const e of haus.etagen!) {
+      const plan = planAusMeta(JSON.parse(JSON.stringify(e.plan)));
+      expect(plan?.flaechen?.waende.length, e.titel).toBeGreaterThan(5);
+    }
+    // Jede Einheit hat Räume und Wände, die Fläche liegt in einer plausiblen Größe.
+    for (const { we, plan } of haus.einheiten) {
+      const p = planAusMeta(plan);
+      expect(p, `WE ${we}`).not.toBeNull();
+      expect(gesamtFlaeche(p!), `WE ${we}`).toBeGreaterThan(15);
+    }
   });
 });

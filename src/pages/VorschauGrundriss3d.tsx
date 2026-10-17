@@ -2,6 +2,7 @@ import { Suspense, lazy, useMemo, useState } from "react";
 import { Grundriss3dBlock } from "@/components/grundriss3d/Grundriss3dBlock";
 import { WE03_PLAN, WE03_PX_PRO_METER, beispielHaus } from "@/components/grundriss3d/beispielWe03";
 import { BARFUSS9_EINHEITEN, BARFUSS9_HAUS } from "@/components/grundriss3d/beispielBarfuss9";
+import { useBekanntesHaus } from "@/components/grundriss3d/planBibliothek";
 import { gesamtFlaeche, qm, wohnflaeche, type Grundriss3dPlan } from "@/components/grundriss3d/plan";
 import planBild from "./vorschauGrundriss3d/barfuss9-we03.jpg";
 
@@ -14,12 +15,13 @@ const Editor = lazy(() => import("@/components/grundriss3d/GrundrissEditor"));
  * Einzelgrundriss im Exposé (Seite 5). Speichern landet hier nur im Browser.
  */
 
-type Reiter = "einheit" | "haus" | "barfuss" | "expose" | "editor" | "neu";
+type Reiter = "einheit" | "haus" | "barfuss" | "hauff" | "expose" | "editor" | "neu";
 
 const REITER: Array<{ id: Reiter; name: string }> = [
   { id: "einheit", name: "Einheitenseite (WE 03)" },
   { id: "haus", name: "Objektseite (Beispielhaus)" },
   { id: "barfuss", name: "Barfusstraße 9 (ganzes Haus)" },
+  { id: "hauff", name: "Hauffstraße 38 (aus CAD-Plänen)" },
   { id: "expose", name: "Exposé" },
   { id: "editor", name: "Editor mit Plan" },
   { id: "neu", name: "Editor leer" },
@@ -53,6 +55,7 @@ export default function VorschauGrundriss3d() {
       ...(q.get("licht") ? { licht: q.get("licht") as "nacht" } : {}),
       ...(q.get("stunde") ? { stunde: Number(q.get("stunde")) } : {}),
       ...(q.get("drehen") ? { drehen: q.get("drehen") === "1" } : {}),
+      ...(q.get("geschoss") ? { geschoss: Number(q.get("geschoss")) } : {}),
     };
   }, []);
 
@@ -105,6 +108,8 @@ export default function VorschauGrundriss3d() {
           </section>
         )}
 
+        {reiter === "hauff" && <HauffVorschau startwerte={startwerte} />}
+
         {reiter === "expose" && (
           <section className="rounded-xl border bg-white p-4" style={{ fontFamily: "Georgia, serif" }}>
             <p className="text-xs uppercase tracking-[0.2em] text-emerald-700">04 Grundriss</p>
@@ -128,5 +133,23 @@ export default function VorschauGrundriss3d() {
         )}
       </div>
     </div>
+  );
+}
+
+/** Hauffstraße 38: Etagenpläne aus den Werkplänen, über die Bibliothek geladen wie im CRM. */
+function HauffVorschau({ startwerte }: { startwerte: Parameters<typeof Grundriss3dBlock>[0]["startwerte"] }) {
+  const bekannt = useBekanntesHaus({ adresse: "Hauffstraße 38" });
+  if (!bekannt?.etagen) return <p className="text-sm text-muted-foreground">Pläne werden geladen</p>;
+  const we33 = bekannt.einheiten.find((e) => e.we === 33)?.plan;
+  return (
+    <section className="rounded-xl border bg-white p-4">
+      <h2 className="mb-1 font-bold">Hauffstraße 38, Geltow</h2>
+      <p className="mb-3 text-xs text-muted-foreground">
+        Automatisch aus den Werkplänen von Studio LOES gelesen (Blätter 01 bis 05, 1:100): {bekannt.etagen.length} Etagenpläne, {bekannt.einheiten.length} Einheiten mit Räumen. Anordnung der Häuser wie im Planblatt.
+      </p>
+      <Grundriss3dBlock einheiten={bekannt.etagen.map((e) => ({ plan: e.plan, titel: e.titel }))} hoehe={680} startwerte={startwerte} />
+      <h3 className="mb-2 mt-6 font-bold">Einheitenseite WE 33</h3>
+      {we33 && <Grundriss3dBlock einheiten={[{ plan: we33, titel: "WE 33" }]} hoehe={520} startwerte={{ ...startwerte, geschoss: undefined }} />}
+    </section>
   );
 }

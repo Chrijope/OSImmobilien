@@ -143,7 +143,10 @@ export function dominanteFarbe(url: string): Promise<string | undefined> {
 /** Objektseite: alle Einheiten mit Plan, nach Geschoss gestapelt. */
 export function ObjektGrundriss3dKarte({ objekt, darfBearbeiten }: { objekt: ObjektData; darfBearbeiten: boolean }) {
   const bekannt = useBekanntesHaus(objekt);
-  const einheiten = useMemo(() => mitBibliothek(objekt, bekannt), [objekt, bekannt]);
+  // Etagenpläne aus der Bibliothek zeigen das ganze Haus samt aller Einheiten; sonst die Einheiten einzeln.
+  const einheiten = useMemo(() => (bekannt?.etagen && !plaeneDesObjekts(objekt).length
+    ? bekannt.etagen.map((e) => ({ plan: e.plan, titel: e.titel }))
+    : mitBibliothek(objekt, bekannt)), [objekt, bekannt]);
   const haus = useMemo(() => hausAusMeta((objekt.meta as Record<string, unknown> | undefined)?.grundriss3dHaus) ?? bekannt?.haus ?? null, [objekt, bekannt]);
   const titelbild = objekt.bilder?.[0]?.url;
   const [fassade, setFassade] = useState<string | undefined>();
