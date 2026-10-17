@@ -1,6 +1,7 @@
 import { Suspense, lazy, useMemo, useState } from "react";
 import { Grundriss3dBlock } from "@/components/grundriss3d/Grundriss3dBlock";
 import { WE03_PLAN, WE03_PX_PRO_METER, beispielHaus } from "@/components/grundriss3d/beispielWe03";
+import { BARFUSS9_EINHEITEN, BARFUSS9_HAUS } from "@/components/grundriss3d/beispielBarfuss9";
 import { gesamtFlaeche, qm, wohnflaeche, type Grundriss3dPlan } from "@/components/grundriss3d/plan";
 import planBild from "./vorschauGrundriss3d/barfuss9-we03.jpg";
 
@@ -13,11 +14,12 @@ const Editor = lazy(() => import("@/components/grundriss3d/GrundrissEditor"));
  * Einzelgrundriss im Exposé (Seite 5). Speichern landet hier nur im Browser.
  */
 
-type Reiter = "einheit" | "haus" | "expose" | "editor" | "neu";
+type Reiter = "einheit" | "haus" | "barfuss" | "expose" | "editor" | "neu";
 
 const REITER: Array<{ id: Reiter; name: string }> = [
   { id: "einheit", name: "Einheitenseite (WE 03)" },
   { id: "haus", name: "Objektseite (Beispielhaus)" },
+  { id: "barfuss", name: "Barfusstraße 9 (ganzes Haus)" },
   { id: "expose", name: "Exposé" },
   { id: "editor", name: "Editor mit Plan" },
   { id: "neu", name: "Editor leer" },
@@ -37,6 +39,7 @@ export default function VorschauGrundriss3d() {
   const [reiter, setReiter] = useState<Reiter>(() => (new URLSearchParams(location.search).get("reiter") as Reiter) || "einheit");
   const [plan, setPlan] = useState<Grundriss3dPlan>(gespeicherterPlan);
   const haus = useMemo(() => beispielHaus(), []);
+  const barfuss = useMemo(() => BARFUSS9_EINHEITEN.map((e) => ({ plan: e.plan, titel: `WE ${String(e.we).padStart(2, "0")}` })), []);
   const einheit = useMemo(() => [{ plan, titel: "WE 03" }], [plan]);
   // Startwerte aus der Adresse, etwa ?stil=altbau&schnitt=1&modus=begehung&licht=nacht&stunde=8&drehen=0 (für Bildschirmfotos).
   const startwerte = useMemo(() => {
@@ -89,6 +92,16 @@ export default function VorschauGrundriss3d() {
               Beispiel: drei Geschosse mit je zwei Einheiten, alle aus dem WE-03-Plan (rechts gespiegelt). Das echte Haus ist anders geschnitten. Fassadenfarbe hier fest, im CRM aus dem Titelbild.
             </p>
             <Grundriss3dBlock einheiten={haus} hoehe={600} fassade="#d9c9a8" startwerte={startwerte} />
+          </section>
+        )}
+
+        {reiter === "barfuss" && (
+          <section className="rounded-xl border bg-white p-4">
+            <h2 className="mb-1 font-bold">Barfusstraße 9 in 3D</h2>
+            <p className="mb-3 text-xs text-muted-foreground">
+              Hülle mit Hof, vier Treppenhäusern und drei Aufzügen aus der Flächenberechnung (Vorplanung DG, 23.10.2024). Im Vorderhaus vom 1. bis 3. OG die Einheiten aus den Exposé-Grundrissen: WE 03/07/11, WE 04/08/12, WE 06/10/14. Übrige Geschossflächen ohne Grundriss bleiben leer.
+            </p>
+            <Grundriss3dBlock einheiten={barfuss} haus={BARFUSS9_HAUS} hoehe={640} fassade="#d8cbb4" startwerte={startwerte} />
           </section>
         )}
 

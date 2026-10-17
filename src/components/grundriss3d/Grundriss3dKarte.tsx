@@ -6,7 +6,7 @@ import { Loader2, PencilRuler } from "lucide-react";
 import type { ObjektData, ObjektWohnung } from "@/lib/objekteStore";
 import { resolveImageUrl } from "@/lib/objekteImages";
 import { Grundriss3dBlock } from "./Grundriss3dBlock";
-import { planAusMeta, plaeneAusEinheiten } from "./plan";
+import { hausAusMeta, planAusMeta, plaeneAusEinheiten } from "./plan";
 import { speichereEinheitPlan } from "./speichern";
 
 const Editor = lazy(() => import("./GrundrissEditor"));
@@ -113,6 +113,7 @@ export function dominanteFarbe(url: string): Promise<string | undefined> {
 /** Objektseite: alle Einheiten mit Plan, nach Geschoss gestapelt. */
 export function ObjektGrundriss3dKarte({ objekt, darfBearbeiten }: { objekt: ObjektData; darfBearbeiten: boolean }) {
   const einheiten = useMemo(() => plaeneDesObjekts(objekt), [objekt]);
+  const haus = useMemo(() => hausAusMeta((objekt.meta as Record<string, unknown> | undefined)?.grundriss3dHaus), [objekt]);
   const titelbild = objekt.bilder?.[0]?.url;
   const [fassade, setFassade] = useState<string | undefined>();
   useEffect(() => {
@@ -121,19 +122,21 @@ export function ObjektGrundriss3dKarte({ objekt, darfBearbeiten }: { objekt: Obj
     return () => { aktiv = false; };
   }, [titelbild]);
 
-  if (!einheiten.length && !darfBearbeiten) return null;
-  const geschosse = new Set(einheiten.map((e) => e.plan.geschoss ?? 0)).size;
+  if (!einheiten.length && !haus && !darfBearbeiten) return null;
+  const geschosse = haus ? haus.geschosse : new Set(einheiten.map((e) => e.plan.geschoss ?? 0)).size;
   return (
     <Card className="p-6" data-testid="objekt-grundriss-3d">
       <div className="mb-3 h-1 w-8 bg-primary" />
       <h3 className="mb-1 font-bold">Haus in 3D</h3>
-      {einheiten.length ? (
+      {einheiten.length || haus ? (
         <>
           <p className="mb-3 text-xs text-muted-foreground">
             {einheiten.length} {einheiten.length === 1 ? "Einheit" : "Einheiten"} mit Grundriss{geschosse > 1 ? ` auf ${geschosse} Geschossen. Mit dem Regler ziehst du die Etagen auseinander.` : "."}
-            {" "}Gebäudekörper aus den Grundrissen, Fassadenfarbe aus dem Titelbild. Kein Fotomodell des Hauses.
+            {haus
+              ? ` Hülle mit Hof, Treppenhäusern und Aufzügen aus der Flächenberechnung; Geschosse ohne Einheitenplan bleiben leer. Kein Fotomodell des Hauses.`
+              : " Gebäudekörper aus den Grundrissen, Fassadenfarbe aus dem Titelbild. Kein Fotomodell des Hauses."}
           </p>
-          <Grundriss3dBlock einheiten={einheiten} hoehe={520} fassade={fassade} />
+          <Grundriss3dBlock einheiten={einheiten} hoehe={560} fassade={fassade} haus={haus} />
         </>
       ) : (
         <p className="text-sm text-muted-foreground">

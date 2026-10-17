@@ -6,6 +6,7 @@ import { Camera, Footprints, Maximize2, Minimize2, Orbit, ArrowUp, ArrowDown, Ar
 import { schwachesGeraet } from "./Grundriss3dBlock";
 import { aufWand } from "./plan";
 import { STILE, WANDHOEHEN, baueSzene, buehneAnpassen, entsorge, kameraRundum, lichtSetzen, richteBuehneEin, type Buehne, type Einheit3d, type Lichtart, type StilId, type Szene } from "./szene";
+import type { HausPlan } from "./plan";
 import "./grundriss3d.css";
 
 /*
@@ -20,6 +21,8 @@ export interface Grundriss3dAnsichtProps {
   kompakt?: boolean;
   hoehe?: number;
   fassade?: string;
+  /** Gebäudehülle des Objekts (Außenwände, Hof, Treppenhäuser, Aufzüge), optional. */
+  haus?: HausPlan | null;
   /** Startwerte, etwa für einen Link auf eine bestimmte Ansicht. */
   startwerte?: Partial<{ stil: StilId; schnitt: boolean; modus: Modus; explosion: number; wandhoehe: number; licht: Lichtart; stunde: number; drehen: boolean }>;
 }
@@ -29,7 +32,7 @@ const AUGENHOEHE = 1.6;
 const SCHRITT = 1.5; // m/s
 const GESCHOSS_NAME = (g: number) => (g === 0 ? "EG" : g < 0 ? `${-g}. UG` : `${g}. OG`);
 
-export default function Grundriss3dAnsicht({ einheiten, kompakt, hoehe = 480, fassade, startwerte }: Grundriss3dAnsichtProps) {
+export default function Grundriss3dAnsicht({ einheiten, kompakt, hoehe = 480, fassade, startwerte, haus }: Grundriss3dAnsichtProps) {
   const huelle = useRef<HTMLDivElement>(null);
   const flaeche = useRef<HTMLDivElement>(null);
   const kompass = useRef<HTMLDivElement>(null);
@@ -39,10 +42,11 @@ export default function Grundriss3dAnsicht({ einheiten, kompakt, hoehe = 480, fa
     schwach: boolean; nachtLichter?: THREE.Group; rundgang?: Rundgang;
   } | null>(null);
 
-  const geschosse = useMemo(() => [...new Set(einheiten.map((e) => e.plan.geschoss ?? 0))].sort((a, b) => a - b), [einheiten]);
+  const geschosse = useMemo(() => [...new Set([...einheiten.map((e) => e.plan.geschoss ?? 0), ...(haus ? Array.from({ length: haus.geschosse }, (_, i) => i) : [])])].sort((a, b) => a - b), [einheiten, haus]);
   const mehrere = geschosse.length > 1;
   const [stil, setStil] = useState<StilId>(startwerte?.stil ?? "modern");
-  const [wandhoehe, setWandhoehe] = useState(startwerte?.wandhoehe ?? 2.65);
+  // Ein Haus aus dem Bestand meist Altbau: dann 3,00 m als Start.
+  const [wandhoehe, setWandhoehe] = useState(startwerte?.wandhoehe ?? (haus ? 3.0 : 2.65));
   const [modus, setModus] = useState<Modus>("rundum");
   const [beschriftung, setBeschriftung] = useState(true);
   const [schnitt, setSchnitt] = useState(!!startwerte?.schnitt);
@@ -179,7 +183,7 @@ export default function Grundriss3dAnsicht({ einheiten, kompakt, hoehe = 480, fa
     const w = welt.current;
     if (!w) return;
     if (w.szene) { w.scene.remove(w.szene.gruppe); entsorge(w.szene.gruppe); }
-    const szene = baueSzene(einheiten, { wandhoehe, stil, beschriftung: beschriftung && modus === "rundum", explosion, nurGeschoss, fassade: mehrere ? fassade : undefined, schnitt: schnitt && modus === "rundum" });
+    const szene = baueSzene(einheiten, { wandhoehe, stil, beschriftung: beschriftung && modus === "rundum", explosion, nurGeschoss, fassade: mehrere ? fassade : undefined, schnitt: schnitt && modus === "rundum" }, haus);
     w.szene = szene;
     w.scene.add(szene.gruppe);
     buehneAnpassen(w.buehne, szene.rahmen);
@@ -193,7 +197,7 @@ export default function Grundriss3dAnsicht({ einheiten, kompakt, hoehe = 480, fa
     w.geschossWahl = nurGeschoss;
     lichtAnwenden();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [einheiten, wandhoehe, stil, beschriftung, explosion, nurGeschoss, modus, fassade, mehrere, schnitt]);
+  }, [einheiten, wandhoehe, stil, beschriftung, explosion, nurGeschoss, modus, fassade, mehrere, schnitt, haus]);
 
   /* ── Licht: Tag mit Uhrzeit oder Nacht, ohne die Szene neu zu bauen ── */
   const lichtAnwenden = () => {

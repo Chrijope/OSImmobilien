@@ -31,7 +31,7 @@ export interface Oeffnung {
   breite: number;
 }
 
-export type RaumTyp = "zimmer" | "wohnen" | "schlafen" | "kueche" | "bad" | "flur" | "balkon" | "abstell";
+export type RaumTyp = "zimmer" | "wohnen" | "schlafen" | "kueche" | "bad" | "flur" | "balkon" | "abstell" | "treppenhaus";
 
 export interface Raum {
   id: string;
@@ -66,6 +66,7 @@ export const RAUM_TYPEN: Array<{ id: RaumTyp; name: string }> = [
   { id: "flur", name: "Flur" },
   { id: "balkon", name: "Balkon / Loggia" },
   { id: "abstell", name: "Abstellraum" },
+  { id: "treppenhaus", name: "Treppenhaus" },
 ];
 
 export const TUER_HOEHE = 2.01;
@@ -120,6 +121,41 @@ export function planAusMeta(roh: unknown): Grundriss3dPlan | null {
 export function planOhneHintergrund(plan: Grundriss3dPlan): Grundriss3dPlan {
   const { hintergrund: _h, ...rest } = plan;
   return rest;
+}
+
+/* ── Haus: Gebäudehülle je Objekt ──────────────────────────────────── */
+
+/**
+ * Die Hülle eines Hauses (seit 17.10.2026), gespeichert in
+ * `objekte.meta.grundriss3dHaus`. Ein Regelgeschoss in Hauskoordinaten
+ * (Meter): Außen- und Hofwände mit Fenstern, Treppenhäuser als Räume, dazu
+ * Aufzüge, die über alle Geschosse gehen. Die Einheiten legen sich mit
+ * `geschoss` und `versatz` hinein; wo eine Einheit liegt, tritt die Hülle
+ * zurück. Geschosse ohne Einheitenplan bleiben als leere Hülle sichtbar.
+ */
+export interface HausPlan {
+  version: number;
+  /** Vollgeschosse von 0 (EG) bis `geschosse - 1`. */
+  geschosse: number;
+  huelle: Grundriss3dPlan;
+  /** Umriss des Innenhofs, für Hofboden und Decke mit Loch. */
+  hof?: Punkt[];
+  aufzuege: Array<{ id: string; x: number; y: number; b: number; t: number }>;
+  quelle?: string;
+}
+
+export function hausAusMeta(roh: unknown): HausPlan | null {
+  if (!roh || typeof roh !== "object" || Array.isArray(roh)) return null;
+  const r = roh as Record<string, unknown>;
+  const huelle = planAusMeta(r.huelle);
+  if (!huelle || !zahl(r.geschosse) || r.geschosse < 1 || r.geschosse > 40) return null;
+  const aufzuege = (Array.isArray(r.aufzuege) ? r.aufzuege : []).filter((a): a is HausPlan["aufzuege"][number] =>
+    !!a && typeof a.id === "string" && zahl(a.x) && zahl(a.y) && zahl(a.b) && zahl(a.t) && a.b > 0 && a.t > 0);
+  const hof = Array.isArray(r.hof) && r.hof.length >= 3 && r.hof.every(punktOk) ? (r.hof as Punkt[]) : undefined;
+  return {
+    version: zahl(r.version) ? r.version : PLAN_VERSION, geschosse: Math.round(r.geschosse), huelle, aufzuege,
+    ...(hof ? { hof } : {}), ...(typeof r.quelle === "string" ? { quelle: r.quelle } : {}),
+  };
 }
 
 /** Die Pläne mehrerer Einheiten, etwa eines ganzen Hauses, mit „WE …“ als Titel. */

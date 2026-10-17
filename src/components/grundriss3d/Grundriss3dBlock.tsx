@@ -1,7 +1,7 @@
 import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { Box, Loader2, Map as MapIcon } from "lucide-react";
 import { PlanSvg } from "./PlanSvg";
-import { gesamtFlaeche, qm, type Grundriss3dPlan } from "./plan";
+import { gesamtFlaeche, qm, type Grundriss3dPlan, type HausPlan } from "./plan";
 import type { Grundriss3dAnsichtProps } from "./Grundriss3dAnsicht";
 
 /*
@@ -30,13 +30,14 @@ export function schwachesGeraet(nav: { hardwareConcurrency?: number; deviceMemor
 
 export const HAFTUNGSHINWEIS = "Darstellung schematisch, Möblierung beispielhaft. Maßgeblich sind Grundriss, Teilungserklärung und Aufteilungsplan.";
 
-export function Grundriss3dBlock({ einheiten, kompakt, hoehe = 480, fassade, titel, startwerte }: {
+export function Grundriss3dBlock({ einheiten, kompakt, hoehe = 480, fassade, titel, startwerte, haus }: {
   einheiten: Array<{ plan: Grundriss3dPlan; titel?: string }>;
   kompakt?: boolean;
   hoehe?: number;
   fassade?: string;
   titel?: string;
   startwerte?: Grundriss3dAnsichtProps["startwerte"];
+  haus?: HausPlan | null;
 }) {
   const [ansicht, setAnsicht] = useState<"3d" | "2d">(() => (webglMoeglich() && !schwachesGeraet() ? "3d" : "2d"));
   const [inSicht, setInSicht] = useState(false);
@@ -52,7 +53,7 @@ export function Grundriss3dBlock({ einheiten, kompakt, hoehe = 480, fassade, tit
     return () => io.disconnect();
   }, [inSicht]);
 
-  if (!einheiten.length) return null;
+  if (!einheiten.length && !haus) return null;
   const summe = einheiten.reduce((s, e) => s + gesamtFlaeche(e.plan), 0);
   const platzhalter = (
     <div className="flex items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground" style={{ height: hoehe }}>
@@ -78,7 +79,7 @@ export function Grundriss3dBlock({ einheiten, kompakt, hoehe = 480, fassade, tit
       {ansicht === "3d" ? (
         inSicht ? (
           <Suspense fallback={platzhalter}>
-            <Ansicht einheiten={einheiten} kompakt={kompakt} hoehe={hoehe} fassade={fassade} startwerte={startwerte} />
+            <Ansicht einheiten={einheiten} kompakt={kompakt} hoehe={hoehe} fassade={fassade} startwerte={startwerte} haus={haus} />
           </Suspense>
         ) : platzhalter
       ) : (
