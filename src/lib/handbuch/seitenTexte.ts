@@ -23,13 +23,13 @@ const DE = {
     zurSeite: "Zur Handbuch-Seite",
     mit: (name: string) => `mit ${name}`,
     abschnitte: "Abschnitte",
-    nav: ["Handbuch", "So arbeiten wir", "Musterrechnung", "Ablauf", "Fragen"],
+    nav: ["Handbuch", "So arbeiten wir", "Beispielrechnung", "Ablauf", "Fragen"],
     aktion: "Handbuch sichern",
   },
   fuss: {
     handbuch: "Handbuch",
     konfigurator: "Konfigurator",
-    musterrechnung: "Musterrechnung",
+    musterrechnung: "Beispielrechnung",
     ablauf: "Ablauf",
     rechtliches: "Rechtliches",
     impressum: "Impressum",
@@ -39,14 +39,14 @@ const DE = {
   landing: {
     titel: (name: string) => (name ? `Dein persönliches Immobilienhandbuch mit ${name} | OS Real Estate` : "Dein persönliches Immobilienhandbuch | OS Real Estate"),
     beschreibung:
-      "Sechs kurze Fragen, dann siehst du deinen Rahmen als Modellrechnung und bekommst ein Handbuch mit deinen Zahlen: wie die Bank rechnet, was die Steuer beiträgt und welche unserer Objekte in Berlin und Brandenburg dazu passen.",
+      "Sechs kurze Fragen, dann siehst du deinen Rahmen als Beispielrechnung und bekommst ein Handbuch mit deinen Zahlen: wie die Bank rechnet, was die Steuer beiträgt und welche unserer Objekte in Berlin und Brandenburg dazu passen.",
     augenbraue: "Kostenloses Immobilienhandbuch",
     h1a: "Erst deine Zahlen.",
     h1b: "Dann die passende Wohnung.",
     lead:
       "Beantworte sechs kurze Fragen und sieh sofort deinen eigenen Rahmen: welche Preisspanne eine Bank dir voraussichtlich zutraut und was eine Wohnung dich im Monat nach Steuer kostet. Dazu dein Handbuch mit allen Zahlen.",
     nutzen: [
-      "Dein Finanzierungsrahmen als Modellrechnung",
+      "Dein Finanzierungsrahmen als Beispielrechnung",
       "Dein monatlicher Eigenaufwand nach Steuer, mit deinem Steuersatz",
       "Rund 20 Seiten Handbuch, zugeschnitten auf deine Antworten",
     ],
@@ -55,7 +55,7 @@ const DE = {
     heldAlt: "Gründerzeit-Altbau Barfusstraße 9 in Berlin-Wedding",
     beispielKopf: "So sieht dein Ergebnis aus",
     beispiel: "Beispiel",
-    rahmenModell: "Dein Rahmen als Modellrechnung",
+    rahmenModell: "Dein Rahmen als Beispielrechnung",
     eigenaufwandJahr1: "Eigenaufwand im Monat nach Steuer, erstes Jahr",
     beispielFuss: (kaufpreis: string) =>
       `Beispiel mit 1.000 € Überschuss im Monat, 30.000 € Eigenkapital und 100.000 € Jahresbrutto, Beispielwohnung der Hauffstraße 38 für ${kaufpreis}. Szenario, keine Zusage.`,
@@ -116,7 +116,7 @@ const DE = {
       diagrammTitel: "Eigenaufwand im ersten Jahr, je Monat",
       diagrammUnter: (kaufpreis: string) => `Beispielwohnung Hauffstraße 38 für ${kaufpreis}, nach Jahresbrutto`,
       fussnote:
-        "Modellrechnung, keine Zusage. Annahmen siehe Musterrechnung. Steuer nach Tarif 2026 mit Solidaritätszuschlag, ohne Kirchensteuer.",
+        "Beispielrechnung, keine Zusage. Annahmen siehe Beispielrechnung. Steuer nach Tarif 2026 mit Solidaritätszuschlag, ohne Kirchensteuer.",
     },
     bank: {
       augenbraue: "Bankenlogik",
@@ -151,7 +151,7 @@ const DE = {
       ],
     },
     muster: {
-      augenbraue: "Musterrechnung",
+      augenbraue: "Beispielrechnung",
       h2: "Eine Wohnung, jede Zahl offen.",
       erstesJahr: "Beispielwohnung Hauffstraße 38, erstes Jahr, je Monat",
       kaltmiete: "Kaltmiete mit Garage",
@@ -186,7 +186,7 @@ const DE = {
       text: "Das ist kein Grund, übereilt zu kaufen. Es ist ein Grund, die Frage nicht jahrelang offen zu lassen. Ein Nein zur falschen Wohnung ist uns lieber als ein Ja, das du später bereust.",
       diagrammTitel: "Vermögen in der Wohnung am Ziel, je nach Startjahr",
       diagrammUnter: "Beispielwohnung Hauffstraße 38, Ziel in 25 Jahren",
-      fussnote: "Vereinfachung: gleiche Wohnung zu heutigem Preis und heutigen Konditionen, Annahmen wie in der Musterrechnung. Modell, keine Prognose.",
+      fussnote: "Vereinfachung: gleiche Wohnung zu heutigem Preis und heutigen Konditionen, Annahmen wie in der Beispielrechnung. Modell, keine Prognose.",
       zwischenTitel: "Wo stehst du heute?",
       zwischenUnter: "Rund zwei Minuten, kostenlos und ohne Schufa-Abfrage.",
     },
@@ -195,7 +195,7 @@ const DE = {
       h2: "Vom Handbuch bis zum Notar.",
       lead: "Klare Schritte, klare Reihenfolge. Du zahlst den Kaufpreis erst, wenn der Notar die Fälligkeit mitteilt.",
       schritte: [
-        { d: "Heute", t: "Dein Handbuch", x: "Sechs Fragen, dein Rahmen als Modellrechnung." },
+        { d: "Heute", t: "Dein Handbuch", x: "Sechs Fragen, dein Rahmen als Beispielrechnung." },
         { d: "Danach", t: "Erstes Gespräch", x: "Qualifizierungsgespräch und Beratungspräsentation: dein Ziel, das passende Konzept, deine Zahlen." },
         { d: "Online", t: "Selbstauskunft", x: "Ohne Verpflichtung. Aus der Schätzung wird eine Rechnung." },
         { d: "Im Gespräch", t: "Objektvorstellung", x: "Dein Berater zeigt dir nur Objekte, die zu deinem Ziel und deinem Rahmen passen." },
@@ -225,7 +225,7 @@ const DE = {
           "Was, wenn die Wohnung einmal leer steht?",
           "Das Risiko gibt es, und wir rechnen es nicht weg. Ein Monat ohne Mieter kostet dich die Kaltmiete, das Hausgeld läuft weiter. Deshalb planst du eine Rücklage auf deinem Konto ein, und die Verwaltung wählt die Mieter sorgfältig aus. Wie das mit deinen Zahlen aussieht, steht in Kapitel 13 deines Handbuchs: Chancen und Risiken, ehrlich gerechnet.",
         ],
-        ["Ist mein Rahmen eine Finanzierungszusage?", "Nein. Er ist eine Modellrechnung. Eine Zusage gibt nur eine Bank, nachdem sie dich und die Wohnung geprüft hat."],
+        ["Ist mein Rahmen eine Finanzierungszusage?", "Nein. Er ist eine Beispielrechnung. Eine Zusage gibt nur eine Bank, nachdem sie dich und die Wohnung geprüft hat."],
         ["Fragt ihr bei der Schufa an?", "Nein, weder im Konfigurator noch in der Selbstauskunft. Eine Schufa-Auskunft holt erst die finanzierende Bank ein, und nur mit deiner Zustimmung."],
         ["Wer sieht meine Angaben?", "OS Real Estate und der Berater, der dich betreut. An eine Bank gehen deine Daten erst, wenn du dich für eine Finanzierung entscheidest."],
         ["Kann ich über meine Hausbank finanzieren?", "Ja. Du kannst über deinen eigenen Berater, deine Hausbank oder unsere Finanzierungspartner finanzieren, auch parallel anfragen."],
@@ -234,12 +234,12 @@ const DE = {
       ] as Array<[string, string]>,
       hinweiseLabel: "Hinweise.",
       hinweise:
-        "Alle Zahlen auf dieser Seite sind Modellrechnungen mit offengelegten Annahmen. Sie sind keine Zusage und kein garantiertes Ergebnis. Die steuerliche Wirkung hängt von deiner persönlichen Situation ab; diese Seite ersetzt keine Steuer-, Rechts- oder Anlageberatung. Sie ist kein Angebot und keine Aufforderung zum Erwerb einer Immobilie oder eines Finanzprodukts.",
+        "Alle Zahlen auf dieser Seite sind Beispielrechnungen mit offengelegten Annahmen. Sie sind keine Zusage und kein garantiertes Ergebnis. Die steuerliche Wirkung hängt von deiner persönlichen Situation ab; diese Seite ersetzt keine Steuer-, Rechts- oder Anlageberatung. Sie ist kein Angebot und keine Aufforderung zum Erwerb einer Immobilie oder eines Finanzprodukts.",
     },
   },
   wizard: {
     titel: (name: string) => (name ? `Dein Handbuch in sechs Fragen, mit ${name} | OS Real Estate` : "Dein Handbuch in sechs Fragen | OS Real Estate"),
-    beschreibung: "Sechs kurze Fragen, dann bekommst du dein persönliches Immobilienhandbuch mit deinem Rahmen als Modellrechnung.",
+    beschreibung: "Sechs kurze Fragen, dann bekommst du dein persönliches Immobilienhandbuch mit deinem Rahmen als Beispielrechnung.",
     augenbraue: "Dein persönliches Immobilienhandbuch",
     h1: "Sechs Fragen bis zu deinem Rahmen.",
     lead: "Ein Klick pro Frage. Kontaktdaten erst am Ende.",
@@ -326,7 +326,7 @@ const DE = {
     leadOhne: "Lies es gleich hier und speichere es dir am besten als PDF.",
     pdfLaeuft: "PDF wird erstellt",
     pdfSpeichern: "Als PDF speichern",
-    rahmenModell: "Dein Rahmen als Modellrechnung",
+    rahmenModell: "Dein Rahmen als Beispielrechnung",
     empfohlen: (betrag: string) => `Empfohlen rund ${betrag}. Keine Finanzierungszusage. Wie er entsteht, steht in Kapitel 5.`,
     keinRahmen: "Noch kein Rahmen",
     keinRahmenText: "Mit Überschuss und Eigenkapital unter den Mindestwerten ergibt die Formel heute noch keinen Rahmen. Kapitel 5 zeigt dir, woran es liegt.",

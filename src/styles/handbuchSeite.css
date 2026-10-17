@@ -489,10 +489,8 @@
 .hb-bk-karte b { display: block; color: var(--hb-tinte); margin-bottom: 4px; font-size: 16px; }
 .hb-bk-karte span { font-size: 14.5px; color: var(--hb-text2); line-height: 1.5; display: block; }
 /* OS-Objekte im Handbuch (Baustein „objekte“): Bild mit Etikett, darunter Eckdaten. */
-.hb-bk-objekte { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 16px 0; }
-@media (max-width: 980px) { .hb-bk-objekte { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 700px) { .hb-bk-objekte { grid-template-columns: 1fr; } }
-.hb-bk-objekt { background: var(--hb-karte); border: 1px solid var(--hb-linie); border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; }
+.hb-bk-objekte { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap: 16px; margin: 16px 0; }
+.hb-bk-objekt { min-width: 0; background: var(--hb-karte); border: 1px solid var(--hb-linie); border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; }
 .hb-bk-objekt .bild { position: relative; aspect-ratio: 4 / 3; background: var(--hb-grund-2); }
 .hb-bk-objekt .bild img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .hb-bk-objekt .etikett { position: absolute; top: 10px; left: 10px; border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 700; background: rgba(14, 32, 25, .78); color: #fff; }
@@ -750,7 +748,7 @@
 .hb-sa-karte .hb-knopf { margin-top: 4px; }
 
 @media (max-width: 1100px) {
-  .hb-ergebnis-layout { grid-template-columns: 1fr; }
+  .hb-ergebnis-layout { grid-template-columns: minmax(0, 1fr); }
   .hb-agenda { display: none; }
   .hb-agenda-handy { display: block; margin-bottom: 18px; }
   .hb-agenda-handy > summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 18px; border-radius: 16px; background: var(--hb-karte); border: 1px solid var(--hb-linie); font-weight: 700; color: var(--hb-tinte); }
