@@ -11,6 +11,9 @@ import { clearUploadAnalyseTask, resumeUploadAnalyseTask, startUploadAnalyseTask
 import { confirmDialog } from "@/lib/confirm";
 import { edgeFehlerMitGrund } from "@/lib/edgeFehler";
 import { createEmptyUploadAnalyseRuntimeState, type ExtractedObjektData, type UploadAnalyseRuntimeState } from "@/lib/objektAnalyseShared";
+import { leseExcel } from "@/lib/excelLesen";
+import { kopfErkennen } from "@/lib/listenImport";
+import { einheitenAusBlatt } from "@/lib/objektAusListe";
 
 export type { ExtractedObjektData };
 
@@ -72,6 +75,37 @@ const namenListe = (dateien: File[], hoechstens = 8) => {
 
 export function ObjektUploadAnalyse({ draftKey, onAnalyseComplete, onAnalyzingChange, onCloudUrlChange, draft, onDraftChange, isAdmin: _isAdmin }: ObjektUploadAnalyseProps) {
   const { toast } = useToast();
+  const excelInputRef = useRef<HTMLInputElement>(null);
+
+  /*
+   * Eine Excel-Liste der Einheiten (Kaufpreis-, Vertriebs- oder Mieterliste)
+   * statt PDFs, seit dem 17.10.2026. Ohne KI: Die Spalten erkennt derselbe
+   * Leser wie in den Objektdaten, das Ergebnis geht über denselben Weg ins
+   * Formular wie das einer PDF-Analyse. Mieter, Garagen und übrige Listenwerte
+   * übernimmt danach „Excel-Liste übernehmen“ in den Objektdaten.
+   */
+  const excelUebernehmen = useCallback(async (datei: File | undefined) => {
+    if (!datei) return;
+    try {
+      const blatt = (await leseExcel(datei)).find((b) => kopfErkennen(b));
+      const einheiten = blatt ? einheitenAusBlatt(blatt, "ist") : [];
+      if (!einheiten.length) {
+        toast({ title: "Keine Einheiten gefunden", description: "Erwartet wird eine Liste mit einer Spalte „WE“.", variant: "destructive" });
+        return;
+      }
+      onAnalyseComplete({
+        anzahlWohneinheiten: einheiten.length,
+        gesamtWohnflaeche: Math.round(einheiten.reduce((s, w) => s + w.groesse, 0) * 100) / 100,
+        wohnungen: einheiten.map((w) => ({
+          weNr: w.weNr, etage: w.lage, zimmer: w.zimmer || undefined, groesse: w.groesse,
+          kaufpreis: w.vkGesamt || undefined, kaltmiete: w.mieteGesamt || undefined, vermietet: w.vermietet,
+        })),
+      }, []);
+      toast({ title: `${einheiten.length} Einheiten aus ${datei.name} übernommen`, description: "Mieter, Garagen und weitere Listenwerte danach in den Objektdaten über „Excel-Liste übernehmen“." });
+    } catch {
+      toast({ title: "Datei nicht lesbar", description: "Bitte eine .xlsx wählen.", variant: "destructive" });
+    }
+  }, [onAnalyseComplete, toast]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const folderInputRef = useRef<HTMLInputElement>(null);
   const categoryInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
@@ -530,6 +564,9 @@ export function ObjektUploadAnalyse({ draftKey, onAnalyseComplete, onAnalyzingCh
               <Button size="sm" variant="outline" className="gap-1.5 text-[10px] h-7" disabled={isAnalyzing} onClick={(e) => { e.stopPropagation(); folderInputRef.current?.click(); }}>
                 <FolderOpen className="h-3 w-3" /> Ordner
               </Button>
+              <Button size="sm" variant="outline" className="gap-1.5 text-[10px] h-7" disabled={isAnalyzing} onClick={(e) => { e.stopPropagation(); excelInputRef.current?.click(); }}>
+                <FileText className="h-3 w-3" /> Excel-Liste
+              </Button>
             </div>
           </div>
         </div>
@@ -545,6 +582,14 @@ export function ObjektUploadAnalyse({ draftKey, onAnalyseComplete, onAnalyzingCh
             if (e.target.files) handleFiles(e.target.files);
             e.target.value = "";
           }}
+        />
+        <input
+          ref={excelInputRef}
+          type="file"
+          accept=".xlsx"
+          className="hidden"
+          disabled={isAnalyzing}
+          onChange={(e) => { void excelUebernehmen(e.target.files?.[0]); e.target.value = ""; }}
         />
         <input
           ref={folderInputRef}

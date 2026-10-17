@@ -353,6 +353,9 @@ Deno.serve(async (req) => {
     // ein Bounce darf diese ausdruecklich ausgeloeste Zustellung nicht stumm
     // blockieren. Nur die Spam-Beschwerde sperrt weiterhin (siehe oben).
     'anlage-v-aufstellung',
+    // Garagenunterlagen nach dem Notartermin: vom Team ausdruecklich
+    // ausgeloest, der Kaeufer braucht sie fuer die Mietanpassung.
+    'garagen-unterlagen',
     // Zugangsdaten der neuen persoenlichen @os-immobilien.com-Adresse an die private
     // Bewerber-Adresse. Der Partner braucht diese Mail zwingend fuer den
     // Start; eine alte Abmeldung oder ein Bounce darf sie nicht stumm

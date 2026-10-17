@@ -35,9 +35,14 @@ describe("Objektdaten in der Seitenleiste", () => {
     expect(isUrlAllowedForRole("/objektdaten", "objektpartner")).toBe(true);
   });
 
-  it("lässt die drei Rechner in Tools", () => {
+  it("lässt das Ankaufstool in Tools; Kaufpreisliste und Mietsubvention sind in den Objektdaten aufgegangen", () => {
     const tools = navigationsGruppen({ rolle: "admin" }).find((g) => g.label === "Tools")!;
-    expect(tools.items.map((i) => i.title)).toEqual(expect.arrayContaining(["Ankaufstool", "Mietsubvention", "Kaufpreisliste"]));
+    const titel = tools.items.map((i) => i.title);
+    expect(titel).toContain("Ankaufstool");
+    expect(titel).not.toContain("Mietsubvention");
+    expect(titel).not.toContain("Kaufpreisliste");
+    // Die Seiten bleiben erreichbar.
+    expect(isUrlAllowedForRole("/kaufpreisliste", "admin")).toBe(true);
   });
 
   it("sperrt die Hausverwaltung und damit die Mieterdaten für Vertriebspartner", () => {

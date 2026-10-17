@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useUser } from "@/contexts/UserContext";
 import { toast } from "@/hooks/use-toast";
-import { leseExcel, type Blatt } from "@/lib/excelLesen";
+import { type Blatt } from "@/lib/excelLesen";
+import { LISTEN_DATEITYPEN, leseListe } from "@/lib/listeLesen";
 import { importAusfuehren, importPlanen, kopfErkennen } from "@/lib/listenImport";
 import { listendatenFuerEinheit } from "@/lib/listendaten";
 import { garageFuerEinheit } from "@/lib/mietgarantie";
@@ -39,12 +40,12 @@ export function ObjektAusListeDialog({ open, onOpenChange }: { open: boolean; on
   const lesen = async (f: File | undefined) => {
     if (!f) return;
     try {
-      const b = await leseExcel(f);
+      const b = await leseListe(f);
       setDatei(f.name);
       setBlaetter(b);
       setBlattName((b.find((x) => kopfErkennen(x)) ?? b[0])?.name ?? "");
-    } catch {
-      toast({ title: "Datei nicht lesbar", description: "Bitte eine .xlsx wählen.", variant: "destructive" });
+    } catch (e) {
+      toast({ title: "Datei nicht lesbar", description: e instanceof Error ? e.message : "Bitte eine .xlsx oder ein PDF wählen.", variant: "destructive" });
     }
   };
 
@@ -81,11 +82,11 @@ export function ObjektAusListeDialog({ open, onOpenChange }: { open: boolean; on
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-xl">
-        <DialogHeader><DialogTitle>Objekt aus Excel-Liste anlegen</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>Objekt aus Liste anlegen (Excel oder PDF)</DialogTitle></DialogHeader>
         <p className="text-sm text-muted-foreground">
           Aus der Liste entstehen alle Einheiten mit Fläche, Kaufpreis, Miete, Lage und Zimmern, dazu Mieter, Garagen, MEA, Hausgeld und die übrigen Listenwerte. Das Objekt bleibt ein Entwurf und unsichtbar, bis du es im Formular freigibst.
         </p>
-        <input type="file" accept=".xlsx" className="text-sm" onChange={(e) => lesen(e.target.files?.[0])} />
+        <input type="file" accept={LISTEN_DATEITYPEN} className="text-sm" onChange={(e) => lesen(e.target.files?.[0])} />
         {blaetter.length > 1 && (
           <Select value={blattName} onValueChange={setBlattName}>
             <SelectTrigger><SelectValue placeholder="Blatt wählen" /></SelectTrigger>

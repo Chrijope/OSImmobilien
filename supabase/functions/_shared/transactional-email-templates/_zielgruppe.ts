@@ -83,6 +83,7 @@ export const VORLAGEN_ZIELGRUPPE: Readonly<Record<string, Zielgruppe>> = {
   'activation-invite': 'kunde',
   'steuer-auswertung': 'kunde',
   'anlage-v-aufstellung': 'kunde',
+  'garagen-unterlagen': 'kunde',
   'sa-reminder-1': 'kunde',
   'sa-reminder-2': 'kunde',
   'sa-reminder-3': 'kunde',
@@ -170,6 +171,7 @@ export const KUNDENVORLAGEN_OHNE_EN: Readonly<Record<string, string>> = {
   'sa-reminder-2': 'Abgeschaltet seit 15.09.2026, Englisch erst wenn sie wieder anläuft',
   'sa-reminder-3': 'Abgeschaltet seit 15.09.2026, Englisch erst wenn sie wieder anläuft',
   'sa-abbrecher-reminder': 'Abgeschaltet seit 15.09.2026, Englisch erst wenn sie wieder anläuft',
+  'garagen-unterlagen': 'Die Schreiben im Anhang gehen an deutsche Garagennutzer und bleiben deutsch, die Mail dazu auch',
   'selbstauskunft-pdf': 'Ohne Aufrufer (send-selbstauskunft wird nirgends aufgerufen)',
 }
 
