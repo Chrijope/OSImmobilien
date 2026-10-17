@@ -229,7 +229,8 @@ describe("Selbstauskunft: Datenschutz und Pflichtfragen", { timeout: 30000 }, ()
     expect(titel()).toBe("Sonstige Angaben");
     radio("sf-n");
     weiter();
-    expect(titel()).toBe("PDF-Vorschau");
+    // Seit 17.10.2026 liegt die PDF-Vorschau zwischen Sonstige Angaben und Abschluss.
+    expect(titel()).toBe("Vorschau");
   });
 
   it("Person 2 muss beide Fragen ebenfalls selbst beantworten", () => {
@@ -258,7 +259,7 @@ describe("Selbstauskunft: Datenschutz und Pflichtfragen", { timeout: 30000 }, ()
     radio("mv-j-p2");
     radio("sf-n-p2");
     weiter();
-    expect(titel()).toBe("PDF-Vorschau");
+    expect(titel()).toBe("Vorschau");
   });
 
   it("nurDauerhaft: löscht den localStorage, lässt den Sitzungsentwurf stehen", () => {

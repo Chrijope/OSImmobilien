@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { LivePdfVorschau } from "@/components/pdf/LivePdfVorschau";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -1714,8 +1715,22 @@ export function ReservierungsForm({ kundeId, objektTitel, wohnungData, verkaeufe
 
   const renderers = [renderStep0, renderStep1, renderStep2];
 
+  /*
+   * Live-Vorschau des PDFs neben dem Wizard (Christian, 17.10.2026). Dieselbe
+   * Aufbereitung wie beim Absenden, nur ohne Sprache und Abschluss: Die
+   * Vertragssprache steht erst beim Versand fest, die Vorschau zeigt Deutsch.
+   */
+  const rvVorschau: ReservierungData = gesamtobjekt
+    ? {
+      ...data, gesamtobjekt: true, wohneinheit: "", stellplatz: "", garage: "",
+      ...(istGesellschaft ? { hatPerson2: false, widerrufWahl: "" as WiderrufWahlWert } : {}),
+      textFassung: aufbau.textFassung,
+    }
+    : { ...data, textFassung: aufbau.textFassung };
+
   return (
-    <div className="apple-form">
+    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+    <div className="apple-form min-w-0">
     {/*
       Der Zurückweg, oben und vor dem Formular.
 
@@ -1823,6 +1838,14 @@ export function ReservierungsForm({ kundeId, objektTitel, wohnungData, verkaeufe
         <a href="/datenschutz" target="_blank" rel="noopener noreferrer" className="hover:underline cursor-pointer">Datenschutz</a>
       </div>
     </Card>
+    </div>
+    <div className="min-w-0 xl:sticky xl:top-0 xl:pt-11">
+      <LivePdfVorschau
+        titel="Vorschau Reservierungsvereinbarung"
+        schluessel={JSON.stringify(rvVorschau)}
+        erzeuge={async () => (await import("@/lib/reservierungPdf")).generateReservierungPDF(rvVorschau)}
+      />
+    </div>
     </div>
   );
 }

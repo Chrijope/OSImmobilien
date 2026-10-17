@@ -1,7 +1,7 @@
 import * as React from 'npm:react@18.3.1'
 import type { TemplateEntry } from './registry.ts'
 import { EmailLayout, Absatz, Handlung, type Ansprechpartner } from './_layout.tsx'
-import { foermlich } from './_anrede.ts'
+import { foermlich, hallo } from './_anrede.ts'
 import { DE_EN, type MailSprache, texteFuer, type Zweisprachig } from './_sprache.ts'
 
 interface Props {
@@ -23,17 +23,20 @@ interface Props {
   kundeAnrede?: string
 }
 
-/** Gruppe F: Deutsch in der Sie-Form, Englisch foermlich (Plan 4.4). */
+/**
+ * Deutsch seit 17.10.2026 in der Du-Form (Christian: das Beratungsprotokoll
+ * duzt), Englisch weiter foermlich.
+ */
 const DE = {
   betreff: 'Beratungsprotokoll: bitte unterschreiben',
-  augenbraue: 'Ihre Unterschrift',
-  titel: 'Das Beratungsprotokoll zu Ihrem Notartermin',
+  augenbraue: 'Deine Unterschrift',
+  titel: 'Das Beratungsprotokoll zu deinem Notartermin',
   vorschau: 'Das Beratungsprotokoll liegt zur Unterschrift bereit.',
   fuss: 'Die Unterschrift erfolgt digital und ist rechtsverbindlich.',
   text: (vp: string) =>
-    `${vp ? `${vp} hat ` : 'Ihr Berater hat '}das Beratungsprotokoll zu Ihrem Notartermin ausgefüllt und bereits unterzeichnet. Bitte prüfen Sie, ob alles Ihrem Gespräch entspricht, und bestätigen Sie es mit Ihrer Unterschrift.`,
+    `${vp ? `${vp} hat ` : 'Dein Ansprechpartner hat '}das Beratungsprotokoll zu deinem Notartermin ausgefüllt und bereits unterzeichnet. Bitte lies es vollständig durch und bestätige es mit deiner Unterschrift.`,
   knopf: 'Protokoll prüfen und unterschreiben',
-  hinweis: 'Etwa 3 Minuten',
+  hinweis: 'Etwa 10 Minuten',
 }
 
 const TEXTE: Zweisprachig<typeof DE> = {
@@ -45,9 +48,9 @@ const TEXTE: Zweisprachig<typeof DE> = {
     vorschau: 'The consultation record is ready for your signature.',
     fuss: 'The signature is given digitally and is legally binding.',
     text: (vp: string) =>
-      `${vp || 'Your contact person at OS Immobilien'} has completed and already signed the consultation record for your notary appointment (Notartermin). Please check that everything reflects your conversation and confirm it with your signature.`,
+      `${vp || 'Your contact person at OS Immobilien'} has completed and already signed the consultation record for your notary appointment (Notartermin). Please read it in full and confirm it with your signature.`,
     knopf: 'Review and sign the record',
-    hinweis: 'About 3 minutes',
+    hinweis: 'About 10 minutes',
   },
 }
 
@@ -59,7 +62,7 @@ const Mail = ({ name, vpName, signUrl, signatureUrl, berater, sprache, kundeAnre
       augenbraue={t.augenbraue}
       titel={t.titel}
       vorschau={t.vorschau}
-      anrede={foermlich(name, sprache, kundeAnrede)}
+      anrede={sprache === 'en' ? foermlich(name, sprache, kundeAnrede) : hallo(name, sprache)}
       person={berater}
       fussHinweis={t.fuss}
     >
@@ -76,7 +79,7 @@ export const template = {
   displayName: 'Aftersales-Beratung Signatur-Anfrage',
   sprachen: DE_EN,
   previewData: {
-    name: 'Herr Mustermann',
+    name: 'Max Mustermann',
     vpName: 'Christian Peetz',
     signUrl: 'https://osimmobilien.netlify.app/sign/example',
     berater: {

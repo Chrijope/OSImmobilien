@@ -290,10 +290,8 @@ describe("signature_requests: Schreiben nur serverseitig", () => {
     lauf(join(process.cwd(), "src"));
     expect(treffer).toEqual([join("src", "lib", "aftersalesSignatur.ts")]);
 
-    const dialog = readFileSync(
-      join(process.cwd(), "src", "components", "kunde", "investments", "AftersalesBeratungDialog.tsx"),
-      "utf8",
-    );
+    // Seit 17.10.2026 die Seite Beratungsprotokoll statt des Popups.
+    const dialog = readFileSync(join(process.cwd(), "src", "pages", "Beratungsprotokoll.tsx"), "utf8");
     expect(dialog).not.toContain(`from("${TABELLE}")`);
     expect(dialog).toContain("aftersalesSignaturAnlegen(");
     expect(dialog).toContain("aftersalesVpUnterschreiben(");

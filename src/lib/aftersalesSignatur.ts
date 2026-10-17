@@ -74,7 +74,7 @@ export async function aftersalesVpUnterschreiben(token: string, signatur: string
   const { error } = await supabase.rpc("sign_signature_request", {
     _token: token,
     _signature_data: signatur,
-    _consent_text: "Aftersales-Beratungsdokument durch den Vertriebspartner unterzeichnet",
+    _consent_text: "Beratungs- und Qualitätsprotokoll durch den Vertriebspartner unterzeichnet",
     _user_agent: typeof navigator !== "undefined" ? navigator.userAgent || null : null,
   } as never);
   if (error) console.error("[aftersales] Partner-Unterschrift nicht gespeichert:", error.message);

@@ -84,3 +84,8 @@ export const VorschauAnalysetoolErgebnis = import.meta.env.DEV
 export const VorschauGrundriss3d = import.meta.env.DEV
   ? lazy(() => import("./pages/VorschauGrundriss3d"))
   : null;
+
+/** /vorschau/beratungsprotokoll: Beratungs- und Qualitätsprotokoll mit dem Beispielkunden (17.10.2026). Gleiche Regeln wie oben. */
+export const VorschauBeratungsprotokoll = import.meta.env.DEV
+  ? lazy(() => import("./pages/VorschauBeratungsprotokoll"))
+  : null;

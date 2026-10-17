@@ -18,7 +18,8 @@ import { zustaendigerAnsprechpartner } from "../_shared/zustaendiger-ansprechpar
  *                           Darf, wer das Investment sehen darf (dieselbe
  *                           Regel wie auf `investments`: eigene Kunden oder
  *                           Rollen mit Blick auf alle Kunden). Empfaenger ist
- *                           immer die Adresse aus dem Kontakt.
+ *                           die Adresse aus dem Kontakt, fuer Kaeufer 2 die
+ *                           vom Server an seiner Anfrage vermerkte Adresse.
  *   art "vertrag_kurz"      Bewerberakte, Erinnerung an die Gegenzeichnung.
  *                           Darf nur der Bewerberbereich. Empfaenger ist fest
  *                           das Postfach der Geschaeftsfuehrung.
@@ -82,40 +83,52 @@ Deno.serve(async (req) => {
         : { data: null };
       if (!inv?.kunde_id) return antwort(403, { error: "Für dieses Investment darfst du keinen Link verschicken." });
 
-      const { data: sig } = await admin
+      // Seit 17.10.2026 kann je Investment eine zweite Käufer-Anfrage offen
+      // sein (Beratungsprotokoll). Jede geht an ihren eigenen Empfänger: der
+      // Hauptkäufer an die Adresse aus dem Kontakt, Käufer 2 an die Adresse,
+      // die der Server beim Anlegen an seiner Anfrage vermerkt hat.
+      const { data: offen } = await admin
         .from("signature_requests")
-        .select("token")
+        .select("token, name, email, sa_data")
         .eq("investment_id", investmentId)
         .eq("kontakt_id", inv.kunde_id)
         .eq("person_type", "aftersales_kunde")
         .eq("status", "pending")
         .gt("expires_at", new Date().toISOString())
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      if (!sig?.token) return antwort(404, { error: "Keine offene Aftersales-Anfrage gefunden." });
+        .order("created_at", { ascending: false });
+      if (!offen?.length) return antwort(404, { error: "Keine offene Aftersales-Anfrage gefunden." });
 
       const { data: kontakt } = await admin
         .from("kontakte").select("vorname, nachname, email").eq("id", inv.kunde_id).maybeSingle();
-      if (!kontakt?.email) return antwort(400, { error: "Am Kontakt ist keine E-Mail-Adresse hinterlegt." });
 
       const berater = await zustaendigerAnsprechpartner(admin, inv.kunde_id);
-      const versand = await sendeVorlage(admin, {
-        templateName: "aftersales-beratung-signatur",
-        recipientEmail: kontakt.email,
-        idempotencyKey: `aftersales-kunde-resend-${investmentId}-${Date.now()}`,
-        // Die Sprache ermittelt send-transactional-email aus dem Kontakt.
-        kontaktId: inv.kunde_id,
-        templateData: {
-          name: `${kontakt.vorname || ""} ${kontakt.nachname || ""}`.trim() || "Kunde",
-          vpName: kurz(body?.vpName) || undefined,
-          // Die Vorlage heisst dieses Feld signUrl.
-          signUrl: `${PORTAL_URL}/signatur?token=${sig.token}&type=aftersales_kunde`,
-          ...(berater ? { berater } : {}),
-        },
-        metadata: { kontakt_id: inv.kunde_id, person_type: "aftersales_kunde", ausgeloest_von: uid },
-      });
-      return versand.ok ? antwort(200, { ok: true }) : antwort(502, { error: versand.grund });
+      let fehler = "";
+      let hauptkaeuferGesendet = false;
+      for (const sig of offen) {
+        const zweiter = (sig.sa_data as { aftersalesPerson?: string } | null)?.aftersalesPerson === "kunde2";
+        // Vom Hauptkäufer zählt nur die neueste offene Anfrage.
+        if (!zweiter && hauptkaeuferGesendet) continue;
+        const empfaenger = zweiter ? String(sig.email || "") : String(kontakt?.email || "");
+        if (!empfaenger) { fehler = "Am Kontakt ist keine E-Mail-Adresse hinterlegt."; continue; }
+        if (!zweiter) hauptkaeuferGesendet = true;
+        const versand = await sendeVorlage(admin, {
+          templateName: "aftersales-beratung-signatur",
+          recipientEmail: empfaenger,
+          idempotencyKey: `aftersales-kunde-resend-${investmentId}-${sig.token}-${Date.now()}`,
+          // Die Sprache ermittelt send-transactional-email aus dem Kontakt.
+          kontaktId: inv.kunde_id,
+          templateData: {
+            name: zweiter ? String(sig.name || "") : `${kontakt?.vorname || ""} ${kontakt?.nachname || ""}`.trim() || "Kunde",
+            vpName: kurz(body?.vpName) || undefined,
+            // Die Vorlage heisst dieses Feld signUrl.
+            signUrl: `${PORTAL_URL}/signatur?token=${sig.token}&type=aftersales_kunde`,
+            ...(berater ? { berater } : {}),
+          },
+          metadata: { kontakt_id: inv.kunde_id, person_type: "aftersales_kunde", ausgeloest_von: uid },
+        });
+        if (!versand.ok) fehler = versand.grund || "Versand fehlgeschlagen";
+      }
+      return fehler ? antwort(fehler.includes("E-Mail-Adresse") ? 400 : 502, { error: fehler }) : antwort(200, { ok: true });
     }
 
     if (art === "vertrag_kurz") {
