@@ -99,7 +99,40 @@ export async function saveObjektDraft<T>(key: string, draft: T) {
   await writeLoop;
 }
 
+/*
+ * Sofortkopie in localStorage (18.10.2026). IndexedDB schreibt asynchron,
+ * und beim Neuladen oder Schließen des Tabs bricht der Browser ein laufendes
+ * Schreiben ab. Dann fehlte die letzte Eingabe. Beim Verlassen der Seite
+ * schreibt der Assistent deshalb zusätzlich synchron hierher; beim Laden
+ * gewinnt der neuere Stand. Dateien gehen nicht hier hinein, nur Felder.
+ * Passt der Entwurf nicht in localStorage (Bildvorschauen), bleibt es bei
+ * IndexedDB.
+ */
+const sofortKey = (key: string) => `${key}::sofort`;
+
+export function saveObjektDraftSofort<T>(key: string, draft: T) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(sofortKey(key), JSON.stringify({ updatedAt: new Date().toISOString(), draft }));
+  } catch {
+    try { window.localStorage.removeItem(sofortKey(key)); } catch { /* Speicher gesperrt */ }
+  }
+}
+
+function loadObjektDraftSofort<T>(key: string): DraftRecord<T> | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const roh = window.localStorage.getItem(sofortKey(key));
+    if (!roh) return null;
+    const eintrag = JSON.parse(roh) as { updatedAt?: string; draft?: T };
+    return eintrag?.draft && eintrag.updatedAt ? { key, updatedAt: eintrag.updatedAt, draft: eintrag.draft } : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function loadObjektDraft<T>(key: string): Promise<T | null> {
+  const sofort = loadObjektDraftSofort<T>(key);
   if (canUseIndexedDb()) {
     try {
       const db = await openDraftDb();
@@ -111,12 +144,15 @@ export async function loadObjektDraft<T>(key: string): Promise<T | null> {
         request.onerror = () => reject(request.error ?? new Error("Failed to load draft"));
       });
 
-      if (entry?.draft) return entry.draft;
+      if (entry?.draft) {
+        return sofort && sofort.updatedAt > entry.updatedAt ? sofort.draft : entry.draft;
+      }
     } catch {
       // Fall through to legacy localStorage recovery.
     }
   }
 
+  if (sofort) return sofort.draft;
   if (typeof window === "undefined") return null;
 
   try {
@@ -128,6 +164,10 @@ export async function loadObjektDraft<T>(key: string): Promise<T | null> {
 }
 
 export async function deleteObjektDraft(key: string) {
+  // Ein noch laufendes Schreiben zuerst abwarten, sonst legt es den gerade
+  // gelöschten Entwurf hinterher wieder an.
+  pendingDrafts.delete(key);
+  await activeWriteLoops.get(key)?.catch(() => undefined);
   if (canUseIndexedDb()) {
     try {
       const db = await openDraftDb();
@@ -143,6 +183,7 @@ export async function deleteObjektDraft(key: string) {
   if (typeof window !== "undefined") {
     try {
       window.localStorage.removeItem(key);
+      window.localStorage.removeItem(sofortKey(key));
     } catch {
       // Ignore cleanup errors.
     }

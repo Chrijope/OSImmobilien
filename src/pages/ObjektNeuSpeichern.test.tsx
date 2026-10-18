@@ -57,6 +57,7 @@ vi.mock("@/lib/objektDraftStore", () => ({
   loadObjektDraftBlobs: async () => t.entwurfDateien,
   saveObjektDraft: async () => undefined,
   saveObjektDraftBlobs: async () => undefined,
+  saveObjektDraftSofort: () => undefined,
   deleteObjektDraft: async () => undefined,
 }));
 vi.mock("@/components/objekte/ObjektUploadAnalyse", () => ({ ObjektUploadAnalyse: () => <div>Upload</div> }));
