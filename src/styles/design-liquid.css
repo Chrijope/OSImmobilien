@@ -72,15 +72,23 @@
   --lg-primaer-hoch: 157 69% 26%;     /* Markengrün tief #15724F */
   --lg-primaer-tief: 158 60% 21%;
 
-  /* Der Grund ist Nebel #F3F6F4 (Markenrichtlinie OS Markenfamilie). */
-  --lg-grund: 140 14% 96%;
+  /*
+    Der Grund: Nebel, einen Hauch gruener (#ECF2EF). Das Gruen liegt im
+    Hintergrund, die weisseren Karten heben sich davon ab (18.10.2026).
+  */
+  --lg-grund: 150 16% 94%;
   --lg-glas: 0 0% 100%;
 
-  /* Deckkraft der Glasflaechen. Der Waechtertest rechnet mit genau diesen Zahlen. */
-  --lg-deckkraft: .48;                /* Karten */
-  --lg-deckkraft-leiste: .46;         /* Seitenleiste, Kopfleiste */
-  --lg-deckkraft-schwebend: .78;      /* Dialoge, Menues, Hinweise, Bannerstapel */
-  --lg-deckkraft-einlage: .46;        /* Karte in der Karte, ohne eigene Weichzeichnung */
+  /*
+    Deckkraft der Glasflaechen. Der Waechtertest rechnet mit genau diesen Zahlen.
+    Seit 18.10.2026 deutlich weisser (Christian): Karten und Seitenleiste heben
+    sich klar vom Grund ab, das Gruen liegt im Hintergrund und schimmert nur
+    noch leicht durch.
+  */
+  --lg-deckkraft: .76;                /* Karten */
+  --lg-deckkraft-leiste: .74;         /* Seitenleiste, Kopfleiste */
+  --lg-deckkraft-schwebend: .86;      /* Dialoge, Menues, Hinweise, Bannerstapel */
+  --lg-deckkraft-einlage: .7;         /* Karte in der Karte, ohne eigene Weichzeichnung */
 
   /*
     Die Weichzeichnung als Token. So schalten die Ruecksichten weiter unten

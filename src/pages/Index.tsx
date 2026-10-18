@@ -268,13 +268,13 @@ const Index = () => {
   const tagesGlaubenssatz = glaubenssatzDesTages(now);
 
   const GreetingHero = ({ subtitle }: { subtitle?: string }) => (
-    <header className="relative mb-6 overflow-hidden rounded-3xl border border-primary/10 bg-gradient-to-br from-accent via-card to-secondary/50 p-5 shadow-sm md:p-7">
+    <header className="relative mb-6 overflow-hidden rounded-3xl border border-primary/10 bg-gradient-to-br from-card via-card to-accent/40 p-5 shadow-sm md:p-7">
       <div className="pointer-events-none absolute -right-12 -top-20 h-60 w-60 rounded-full bg-primary/5 blur-3xl" aria-hidden="true" />
       <div className="relative flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="mb-2 text-xs font-medium text-primary">Dein Platz bei OS Immobilien</p>
-          {/* Begrüßung in normaler Stärke wie die Zeile darunter, ohne Zierschrift (Christian, 18.10.2026). */}
-          <h1 className="text-[28px] md:text-[36px] font-normal tracking-tight leading-tight">
+          {/* Begrüßung fett und eng gesetzt wie im früheren MOREImmo-CRM (Christian, 18.10.2026). */}
+          <h1 className="text-[28px] md:text-[36px] font-bold tracking-tight leading-tight">
             {greeting}, {firstName}.
           </h1>
           {subtitle && <p className="mt-2 max-w-2xl text-sm md:text-base leading-relaxed text-muted-foreground">{subtitle}</p>}
