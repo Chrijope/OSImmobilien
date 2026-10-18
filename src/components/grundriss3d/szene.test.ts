@@ -148,3 +148,59 @@ describe("Möbel in verwinkelten Räumen", () => {
     expect(mitten[1].x).toBeCloseTo(5.5);
   });
 });
+
+describe("Türen in CAD-Grundrissen", () => {
+  it("liest Achse und Wanddicke aus der Öffnungsfläche, auch bei schräger Wand", async () => {
+    const { portalAusFlaeche } = await import("./szene");
+    // Öffnung 0,9 m breit, 0,24 m dick, um 30° gedreht.
+    const w = Math.PI / 6, c = Math.cos(w), s = Math.sin(w);
+    const ring = [[0, 0], [0.9, 0], [0.9, 0.24], [0, 0.24]].map(([x, y]) => [x * c - y * s, x * s + y * c] as [number, number]);
+    const p = portalAusFlaeche(ring)!;
+    expect(Math.hypot(p.b.x - p.a.x, p.b.y - p.a.y)).toBeCloseTo(0.9, 2);
+    expect(p.dicke).toBeCloseTo(0.24, 2);
+  });
+
+  it("öffnet die Tür ins Zimmer, nicht in den Flur", async () => {
+    const { cadTuerblatt } = await import("./szene");
+    const THREE = await import("three");
+    // Wand bei y = 0, Flur darüber (y < 0), Zimmer darunter (y > 0).
+    const p = { a: { x: 1, y: 0 }, b: { x: 1.9, y: 0 }, dicke: 0.24 };
+    const raeume = [
+      { id: "f", name: "Flur", typ: "flur" as const, punkte: [{ x: 0, y: -3 }, { x: 4, y: -3 }, { x: 4, y: -0.12 }, { x: 0, y: -0.12 }] },
+      { id: "z", name: "Zimmer", typ: "schlafen" as const, punkte: [{ x: 0, y: 0.12 }, { x: 4, y: 0.12 }, { x: 4, y: 4 }, { x: 0, y: 4 }] },
+    ];
+    const blatt = cadTuerblatt(p, raeume, 2.65, new THREE.MeshStandardMaterial())!;
+    expect(blatt).not.toBeNull();
+    expect(blatt.position.z).toBeGreaterThan(0.2);
+  });
+});
+
+describe("Jeder Raum eingerichtet (alle bekannten Häuser)", () => {
+  it("stellt in jedes Wohn- und Schlafzimmer, jede Küche und jedes Bad das Hauptmöbel", async () => {
+    const THREE = await import("three");
+    const { moebliere, tuerMitten } = await import("./szene");
+    const { wirksamerTyp, flaeche } = await import("./plan");
+    const { bekanntesHausFinden } = await import("./planBibliothek");
+    const m = new THREE.MeshStandardMaterial();
+    const M = new Proxy({}, { get: () => m }) as Parameters<typeof moebliere>[2];
+    const fehlt: string[] = [];
+    for (const adresse of ["Hauffstraße 38", "Barfußstraße 9", "Marktstraße 6", "Agnesstraße 29", "Luisenstraße 72", "Jamlitzer Straße 9"]) {
+      const haus = await bekanntesHausFinden({ adresse })!.laden();
+      const plaene = [...haus.einheiten.map((e) => e.plan), ...(haus.einheiten.length ? [] : (haus.etagen ?? []).map((e) => e.plan))];
+      for (const plan of plaene) {
+        const tueren = tuerMitten(plan);
+        for (const r of plan.raeume) {
+          let typ = wirksamerTyp(plan, r);
+          if (typ === "flur" && flaeche(r.punkte) > 16 && !/gemeinschaft|treppe/i.test(r.name)) typ = "wohnen";
+          if (!["wohnen", "schlafen", "kueche", "bad"].includes(typ)) continue;
+          const g = moebliere(r, typ, M, tueren);
+          const groesstes = Math.max(0, ...g.children.map((c) => { const v = new THREE.Box3().setFromObject(c).getSize(new THREE.Vector3()); return v.y > 0.05 ? v.x * v.z : 0; }));
+          // Bad unter 2,5 m² ist ein Gäste-WC: WC oder Waschtisch genügt.
+          const mindest = typ === "bad" ? (flaeche(r.punkte) < 2.5 ? 0.2 : 0.5) : typ === "kueche" ? 0.6 : 1.0;
+          if (groesstes < mindest) fehlt.push(`${adresse} ${r.name} (${flaeche(r.punkte).toFixed(1)} m²)`);
+        }
+      }
+    }
+    expect(fehlt).toEqual([]);
+  }, 60000);
+});

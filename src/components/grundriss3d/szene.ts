@@ -278,15 +278,20 @@ function sideboard(M: Mats, b = 1.8): THREE.Group {
 }
 function pflanze(M: Mats): THREE.Group {
   const g = new THREE.Group();
+  // Grundfläche 0,6 × 0,6 m: Topf und Krone bleiben darin (geprüfte Fläche = gebaute Fläche).
   const topf = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.14, 0.35, 16), M.topf);
-  topf.position.set(0, 0.175, 0.2); topf.castShadow = true;
-  const krone = new THREE.Mesh(new THREE.IcosahedronGeometry(0.38, 1), M.pflanze);
-  krone.position.set(0, 0.8, 0.2); krone.castShadow = true;
+  topf.position.set(0, 0.175, 0.3); topf.castShadow = true;
+  const krone = new THREE.Mesh(new THREE.IcosahedronGeometry(0.28, 1), M.pflanze);
+  krone.position.set(0, 0.75, 0.3); krone.castShadow = true;
   g.add(topf, krone);
   return g;
 }
+/** Tisch mit Stühlen; Grundfläche b × (t + 1,0) ab z = 0, weil die Stühle 0,5 m vor und hinter dem Tisch stehen. */
 function tischMitStuehlen(M: Mats, b = 1.6, t = 0.9, stuehle = 4): THREE.Group {
+  const huelle = new THREE.Group();
   const g = new THREE.Group();
+  g.position.z = 0.5;
+  huelle.add(g);
   g.add(teil(b, 0.04, t, M.holz, 0, 0.74, t / 2));
   for (const sx of [-1, 1]) for (const sz of [-1, 1]) g.add(teil(0.05, 0.72, 0.05, M.holz, sx * (b / 2 - 0.08), 0.36, t / 2 + sz * (t / 2 - 0.08)));
   const proSeite = Math.max(1, Math.floor(stuehle / 2));
@@ -300,9 +305,9 @@ function tischMitStuehlen(M: Mats, b = 1.6, t = 0.9, stuehle = 4): THREE.Group {
       g.add(teil(0.04, 0.44, 0.04, M.metall, x + 0.18, 0.22, z + 0.18));
     }
   }
-  return g;
+  return huelle;
 }
-function bett(M: Mats, b = 1.8): THREE.Group {
+function bett(M: Mats, b = 1.8, nachttische = true): THREE.Group {
   const g = new THREE.Group();
   g.add(teil(b + 0.1, 0.3, 2.1, M.holz, 0, 0.15, 1.05));
   g.add(teil(b, 0.22, 2.0, M.weiss, 0, 0.41, 1.05));
@@ -310,7 +315,7 @@ function bett(M: Mats, b = 1.8): THREE.Group {
   g.add(teil(b, 0.06, 1.1, M.akzent, 0, 0.54, 1.45));
   g.add(teil(0.6, 0.12, 0.35, M.weiss, -b / 4, 0.58, 0.3));
   g.add(teil(0.6, 0.12, 0.35, M.weiss, b / 4, 0.58, 0.3));
-  for (const s of [-1, 1]) g.add(teil(0.45, 0.45, 0.4, M.korpus, s * (b / 2 + 0.35), 0.225, 0.2));
+  if (nachttische) for (const s of [-1, 1]) g.add(teil(0.45, 0.45, 0.4, M.korpus, s * (b / 2 + 0.35), 0.225, 0.2));
   return g;
 }
 function schrank(M: Mats, b = 2.0): THREE.Group {
@@ -320,14 +325,17 @@ function schrank(M: Mats, b = 2.0): THREE.Group {
   for (let i = 1; i < tueren; i++) g.add(teil(0.01, 2.1, 0.01, M.metall, -b / 2 + (b / tueren) * i, 1.1, 0.605));
   return g;
 }
+/** Küchenzeile über die volle Breite b; ab 2,2 m steht links ein Hochschrank mit Kühlschrank innerhalb von b. */
 function kuechenzeile(M: Mats, b: number): THREE.Group {
   const g = new THREE.Group();
-  g.add(teil(b, 0.86, 0.6, M.korpus, 0, 0.43, 0.3));
-  g.add(teil(b, 0.04, 0.62, M.stein, 0, 0.88, 0.31));
-  g.add(teil(b, 0.7, 0.35, M.korpus, 0, 1.85, 0.175));
-  g.add(teil(0.6, 0.02, 0.5, M.metall, -b / 2 + 0.9, 0.905, 0.3));
-  g.add(teil(0.5, 0.12, 0.4, M.metall, b / 2 - 0.8, 0.85, 0.3));
-  if (b > 2.2) g.add(teil(0.62, 2.05, 0.62, M.korpus, -b / 2 - 0.31, 1.025, 0.31));
+  const hoch = b > 2.2 ? 0.62 : 0;
+  const zb = b - hoch, zx = hoch / 2;
+  g.add(teil(zb, 0.86, 0.6, M.korpus, zx, 0.43, 0.3));
+  g.add(teil(zb, 0.04, 0.62, M.stein, zx, 0.88, 0.31));
+  g.add(teil(zb, 0.7, 0.35, M.korpus, zx, 1.85, 0.175));
+  g.add(teil(0.6, 0.02, 0.5, M.metall, zx - zb / 2 + 0.9, 0.905, 0.3));
+  g.add(teil(0.5, 0.12, 0.4, M.metall, zx + zb / 2 - 0.8, 0.85, 0.3));
+  if (hoch) g.add(teil(0.6, 2.05, 0.6, M.korpus, -b / 2 + 0.31, 1.025, 0.3));
   return g;
 }
 function badewanne(M: Mats): THREE.Group {
@@ -338,10 +346,10 @@ function badewanne(M: Mats): THREE.Group {
   g.add(innen);
   return g;
 }
-function dusche(M: Mats): THREE.Group {
+function dusche(M: Mats, k = 0.9): THREE.Group {
   const g = new THREE.Group();
-  g.add(teil(0.9, 0.05, 0.9, M.weiss, 0, 0.025, 0.45));
-  const wand = teil(0.9, 2.0, 0.01, M.glas, 0, 1.0, 0.9);
+  g.add(teil(k, 0.05, k, M.weiss, 0, 0.025, k / 2));
+  const wand = teil(k, 2.0, 0.01, M.glas, 0, 1.0, k);
   wand.castShadow = false;
   g.add(wand);
   return g;
@@ -454,13 +462,28 @@ export function tuerMitten(plan: Grundriss3dPlan): Punkt[] {
 /** Bewegungsfläche vor Türen, in der keine Möbel stehen (Teppiche schon). */
 const TUER_FREI = 0.9;
 
-function moebliere(raumImPlan: Raum, typ: RaumTyp, M: Mats, tueren: Punkt[] = []): THREE.Group {
+export function moebliere(raumImPlan: Raum, typ: RaumTyp, M: Mats, tueren: Punkt[] = []): THREE.Group {
   const g = new THREE.Group();
   // Schräg liegende Räume ins Achsenkreuz drehen, möblieren, die Gruppe zurückdrehen.
   const winkel = hauptrichtung(raumImPlan.punkte);
   const cw = Math.cos(-winkel), sw = Math.sin(-winkel);
   const raum = winkel ? { ...raumImPlan, punkte: raumImPlan.punkte.map((p) => ({ x: p.x * cw - p.y * sw, y: p.x * sw + p.y * cw })) } : raumImPlan;
-  const tuerenLokal = tueren.map((p) => ({ x: p.x * cw - p.y * sw, y: p.x * sw + p.y * cw }));
+  // Nur Türen in der eigenen Raumwand (Mitte höchstens 35 cm vom Raumrand): Türen der Nachbarn hinter der Wand
+  // dürfen hier keinen Platz sperren.
+  const randAbstand = (p: Punkt) => {
+    let d = Infinity;
+    const q = raumImPlan.punkte;
+    for (let i = 0; i < q.length; i++) {
+      const a = q[i], b = q[(i + 1) % q.length];
+      const l2 = (b.x - a.x) ** 2 + (b.y - a.y) ** 2 || 1;
+      const t = Math.max(0, Math.min(1, ((p.x - a.x) * (b.x - a.x) + (p.y - a.y) * (b.y - a.y)) / l2));
+      d = Math.min(d, Math.hypot(p.x - (a.x + t * (b.x - a.x)), p.y - (a.y + t * (b.y - a.y))));
+    }
+    return punktInPolygon(p, q) ? 0 : d;
+  };
+  // In Bad und Küche reicht der Schwenkbereich der kleineren Tür; dort ist jeder Zentimeter verplant.
+  const tuerFrei = typ === "bad" || typ === "kueche" ? 0.65 : TUER_FREI;
+  const tuerenLokal = tueren.filter((p) => randAbstand(p) <= 0.35).map((p) => ({ x: p.x * cw - p.y * sw, y: p.x * sw + p.y * cw }));
   g.rotation.y = -winkel;
   // Bezug ist das größte Rechteck im Raum, nicht der Umriss: so finden Möbel auch in L-förmigen und schiefen Räumen Platz.
   const r = groesstesRechteck(raum.punkte) ?? rahmen(raum.punkte);
@@ -471,11 +494,40 @@ function moebliere(raumImPlan: Raum, typ: RaumTyp, M: Mats, tueren: Punkt[] = []
   const stelle = (m: THREE.Group | THREE.Mesh, b: number, t: number, seite: "o" | "u" | "l" | "r", wunsch = 0.5, abstand = 0): boolean => {
     // Erst die gewünschte Stelle, dann Ausweichstellen entlang derselben Wand (Nischen, Türen, Vorsprünge).
     // Große Stücke (Sofa, Bett, Schrank, Küche) notfalls an jede andere Wand; ein leerer Raum sieht falscher aus.
-    const seiten = b * t > 0.5 ? [seite, ...(["o", "u", "l", "r"] as const).filter((x) => x !== seite)] : [seite];
-    for (const s of seiten) for (const entlang of [wunsch, 0.5, 0.15, 0.85, 0, 1]) if (stelleAn(m, b, t, s, entlang, abstand)) return true;
+    // Große Stücke: die Wunschseite und danach die übrigen, jeweils Seiten mit echter Wand dahinter zuerst.
+    const alle = b * t > 0.5 ? [seite, ...(["o", "u", "l", "r"] as const).filter((x) => x !== seite)] : [seite];
+    const seiten = [...alle].sort((x, y) => wandAnteil(y) - wandAnteil(x) || alle.indexOf(x) - alle.indexOf(y));
+    // Je Stelle zuerst bis 60 cm hinter die Kante des Innenrechtecks: Dort steht in verwinkelten Räumen die echte Wand.
+    for (const s of seiten) for (const entlang of [wunsch, 0.5, 0.15, 0.85, 0, 1]) {
+      for (const zurueck of [0.6, 0.45, 0.3, 0.15, 0.05, 0]) if (stelleAn(m, b, t, s, entlang, abstand - zurueck)) return true;
+    }
     return false;
   };
   const belegt: Array<{ minX: number; maxX: number; minY: number; maxY: number }> = [];
+  /**
+   * Anteil einer Seite des Innenrechtecks, hinter dem bis 70 cm eine Wand
+   * kommt (der Raum endet). Nur dort stehen Sofa, Bett und Küche mit dem
+   * Rücken richtig; eine Rechteckkante mitten im Raum ist keine Wand.
+   */
+  const wandAnteil = (seite: "o" | "u" | "l" | "r"): number => {
+    let treffer = 0;
+    const n = 12;
+    for (let i = 0; i < n; i++) {
+      const f = (i + 0.5) / n;
+      const pkt = seite === "o" ? { x: r.minX + W * f, y: r.minY - 0.7 } : seite === "u" ? { x: r.minX + W * f, y: r.maxY + 0.7 }
+        : seite === "l" ? { x: r.minX - 0.7, y: r.minY + D * f } : { x: r.maxX + 0.7, y: r.minY + D * f };
+      const innen = seite === "o" ? { x: pkt.x, y: r.minY + 0.02 } : seite === "u" ? { x: pkt.x, y: r.maxY - 0.02 }
+        : seite === "l" ? { x: r.minX + 0.02, y: pkt.y } : { x: r.maxX - 0.02, y: pkt.y };
+      // Wand dahinter: Zwischen Rechteckkante und 70 cm dahinter verlässt man den Raum.
+      let raus = false;
+      for (let k = 1; k <= 7 && !raus; k++) {
+        const q = { x: innen.x + ((pkt.x - innen.x) * k) / 7, y: innen.y + ((pkt.y - innen.y) * k) / 7 };
+        if (!punktInPolygon(q, raum.punkte)) raus = true;
+      }
+      if (raus) treffer++;
+    }
+    return treffer / n;
+  };
   const stelleAn = (m: THREE.Group | THREE.Mesh, b: number, t: number, seite: "o" | "u" | "l" | "r", entlang: number, abstand: number): boolean => {
     let x: number, z: number, rot: number;
     if (seite === "o") { x = r.minX + innen + b / 2 + (W - 2 * innen - b) * entlang; z = r.minY + innen + abstand; rot = 0; }
@@ -503,7 +555,7 @@ function moebliere(raumImPlan: Raum, typ: RaumTyp, M: Mats, tueren: Punkt[] = []
     const box = { minX: Math.min(...pruef.map((e) => e.x)), maxX: Math.max(...pruef.map((e) => e.x)), minY: Math.min(...pruef.map((e) => e.y)), maxY: Math.max(...pruef.map((e) => e.y)) };
     const istTeppich = m instanceof THREE.Mesh;
     // Türen freihalten: Abstand jeder Türmitte zum Möbelrechteck mindestens TUER_FREI.
-    if (!istTeppich && tuerenLokal.some((p) => Math.hypot(Math.max(box.minX - p.x, 0, p.x - box.maxX), Math.max(box.minY - p.y, 0, p.y - box.maxY)) < TUER_FREI)) return false;
+    if (!istTeppich && tuerenLokal.some((p) => Math.hypot(Math.max(box.minX - p.x, 0, p.x - box.maxX), Math.max(box.minY - p.y, 0, p.y - box.maxY)) < tuerFrei)) return false;
     if (!istTeppich && belegt.some((q) => box.minX < q.maxX && box.maxX > q.minX && box.minY < q.maxY && box.maxY > q.minY)) return false;
     if (!istTeppich) belegt.push(box);
     m.position.set(x, 0, z);
@@ -522,27 +574,32 @@ function moebliere(raumImPlan: Raum, typ: RaumTyp, M: Mats, tueren: Punkt[] = []
     stelle(teppich(M, Math.min(2.6, laengs * 0.55), Math.min(1.8, tiefe * 0.45)), Math.min(2.6, laengs * 0.55), Math.min(1.8, tiefe * 0.45), lang, 0.3, 0.6);
     stelle(couchtisch(M), 1.1, 0.6, lang, 0.3, 1.2);
     stelle(sideboard(M), 1.8, 0.45, gegen, 0.3);
-    if (flaeche(raum.punkte) > 18 && laengs > 4.2) stelle(tischMitStuehlen(M), 1.6, 0.9, lang, 0.95, 0.75);
-    stelle(pflanze(M), 0.4, 0.4, quer, 0.05);
+    if (flaeche(raum.punkte) > 18 && laengs > 4.2) stelle(tischMitStuehlen(M), 1.6, 1.9, lang, 0.95, 0.75);
+    stelle(pflanze(M), 0.6, 0.6, quer, 0.05);
   } else if (typ === "schlafen") {
     const bb = tiefe > 3.2 ? 1.8 : 1.4;
-    if (!stelle(bett(M, bb), bb + 0.9, 2.1, quer, 0.5)) stelle(bett(M, 1.4), 2.3, 2.1, lang, 0.5);
+    // Bett samt Nachttischen ist b + 1,15 m breit; notfalls ein schmaleres Bett.
+    if (!stelle(bett(M, bb), bb + 1.15, 2.1, quer, 0.5) && !stelle(bett(M, 1.4), 2.55, 2.1, lang, 0.5)
+      && !stelle(bett(M, 1.4, false), 1.5, 2.1, lang, 0.5)) stelle(bett(M, 0.9, false), 1.0, 2.1, lang, 0.5);
     stelle(schrank(M, Math.min(2.4, laengs * 0.45)), Math.min(2.4, laengs * 0.45), 0.6, lang, 0.9);
     stelle(teppich(M, 2.0, 1.4), 2.0, 1.4, gegen, 0.5, 0.3);
-    stelle(pflanze(M), 0.4, 0.4, gegen, 0.02);
+    stelle(pflanze(M), 0.6, 0.6, gegen, 0.02);
   } else if (typ === "kueche") {
+    // Küchenzeile so lang wie möglich, sonst kürzer bis zur Kompaktküche (1,2 m).
     const kb = Math.min(3.4, laengs - 0.2);
-    stelle(kuechenzeile(M, kb > 2.2 ? kb - 0.62 : kb), kb, 0.62, lang, kb > 2.2 ? 0.6 : 0.5);
-    if (flaeche(raum.punkte) > 8) stelle(tischMitStuehlen(M, 1.1, 0.75, 2), 1.1, 1.8, gegen, 0.5, 0.1);
+    for (const breite of [kb, 2.4, 1.8, 1.2].filter((x, i, a) => x <= kb && a.indexOf(x) === i)) {
+      if (stelle(kuechenzeile(M, breite), breite, 0.62, lang, breite > 2.2 ? 0.6 : 0.5)) break;
+    }
+    if (flaeche(raum.punkte) > 8) stelle(tischMitStuehlen(M, 1.1, 0.75, 2), 1.1, 1.75, gegen, 0.5, 0.1);
   } else if (typ === "bad") {
     const wanne = laengs >= 2.2 && stelle(badewanne(M), 1.7, 0.75, quer, 0.5);
-    if (!wanne) stelle(dusche(M), 0.9, 0.9, lang, 0);
+    if (!wanne && !stelle(dusche(M), 0.9, 0.9, lang, 0)) stelle(dusche(M, 0.8), 0.8, 0.8, lang, 0);
     stelle(wc(M), 0.4, 0.65, gegen, 0.75);
     stelle(waschtisch(M), 0.8, 0.5, gegen, 0.3);
   } else if (typ === "flur") {
     if (!stelle(garderobe(M), 1.0, 0.35, quer === "l" ? "r" : "u", 0.6)) stelle(garderobe(M), 1.0, 0.35, "l", 0.6);
   } else if (typ === "balkon") {
-    if (!stelle(balkonmoebel(M), 1.5, 0.8, lang, 0.5, 0.05)) stelle(pflanze(M), 0.4, 0.4, lang, 0.5);
+    if (!stelle(balkonmoebel(M), 1.5, 0.8, lang, 0.5, 0.05)) stelle(pflanze(M), 0.6, 0.6, lang, 0.5);
   } else if (typ === "abstell") {
     stelle(regal(M), 0.9, 0.4, lang, 0.5);
   }
@@ -605,7 +662,7 @@ export function baueSzene(einheiten: Einheit3d[], o: SzenenOptionen, haus?: Haus
     ebene.position.set(v.x, o.nurGeschoss !== undefined ? 0 : (geschoss - basis) * geschossHoehe(o), v.y);
 
     ebene.add(baueWaende(e.plan, h, wandMat, kappeMat, glas, rahmenMat, tuerMat, nurRundum));
-    if (e.plan.flaechen) ebene.add(baueFlaechenWaende(e.plan.flaechen, h, wandMat, kappeMat, glas, nurRundum));
+    if (e.plan.flaechen) ebene.add(baueFlaechenWaende(e.plan.flaechen, h, wandMat, kappeMat, glas, nurRundum, { raeume: e.plan.raeume, rahmenMat, tuerMat, bodenMat: holzBoden }));
     ebenen.push({ geschoss, ebene, plan: e.plan, v });
     // Außenumriss für die Fassadenfarbe: aus CAD-Plänen der Deckenumriss, sonst das Rechteck um die Wände.
     const y0 = ebene.position.y, y1 = y0 + h;
@@ -708,6 +765,11 @@ export function baueSzene(einheiten: Einheit3d[], o: SzenenOptionen, haus?: Haus
       ebene.add(label);
       nurRundum.push(label);
     }
+    // CAD-Wände sind Flächen: jede Kante als dünne Wand, damit man in der Begehung nicht hindurchläuft.
+    for (const ringe of e.plan.flaechen?.waende ?? []) for (const ring of ringe) for (let i = 0; i < ring.length; i++) {
+      const a = ring[i], b = ring[(i + 1) % ring.length];
+      hindernisse.push({ wand: { id: `cad-${i}`, a: { x: a[0], y: a[1] }, b: { x: b[0], y: b[1] }, dicke: 0.02 }, versatz: { x: v.x, y: v.y }, tueren: [] });
+    }
     for (const w of e.plan.waende) {
       const l = laenge(w.a, w.b);
       hindernisse.push({
@@ -796,8 +858,112 @@ function prisma(ringe: XY[][], y0: number, y1: number, m: THREE.Material): THREE
   return mesh;
 }
 
+/** Öffnung in einer CAD-Wand: Achse a→b entlang der Wand (lichte Breite), Wanddicke quer dazu. */
+export interface Portal { a: Punkt; b: Punkt; dicke: number }
+
+/**
+ * Achse einer Öffnungsfläche über das kleinste umschließende Rechteck (je
+ * Kante gedreht). Die längere Seite liegt in der Wand, die kürzere ist die
+ * Wanddicke. Nach dem Vorschlag aus der Codex-Prüfung vom 18.10.2026.
+ */
+export function portalAusFlaeche(ring: XY[]): Portal | null {
+  if (ring.length < 3) return null;
+  let best: { ux: number; uy: number; minU: number; maxU: number; minV: number; maxV: number; a: number } | undefined;
+  for (let i = 0; i < ring.length; i++) {
+    const p = ring[i], q = ring[(i + 1) % ring.length];
+    const l = Math.hypot(q[0] - p[0], q[1] - p[1]);
+    if (l < 1e-6) continue;
+    const ux = (q[0] - p[0]) / l, uy = (q[1] - p[1]) / l;
+    const us = ring.map(([x, y]) => x * ux + y * uy), vs = ring.map(([x, y]) => -x * uy + y * ux);
+    const minU = Math.min(...us), maxU = Math.max(...us), minV = Math.min(...vs), maxV = Math.max(...vs);
+    const a = (maxU - minU) * (maxV - minV);
+    if (!best || a < best.a) best = { ux, uy, minU, maxU, minV, maxV, a };
+  }
+  if (!best) return null;
+  let { ux, uy } = best;
+  let breite = best.maxU - best.minU, dicke = best.maxV - best.minV;
+  const cu = (best.minU + best.maxU) / 2, cv = (best.minV + best.maxV) / 2;
+  const m = { x: ux * cu - uy * cv, y: uy * cu + ux * cv };
+  if (dicke > breite) { [ux, uy] = [-uy, ux]; [breite, dicke] = [dicke, breite]; }
+  if (breite < 0.4 || dicke < 0.01) return null;
+  return { dicke, a: { x: m.x - (ux * breite) / 2, y: m.y - (uy * breite) / 2 }, b: { x: m.x + (ux * breite) / 2, y: m.y + (uy * breite) / 2 } };
+}
+
+/** Rang eines Raums als Ziel einer Türöffnung: private Räume vor Flur, Wohnung vor Treppenhaus. */
+function zielRang(r: Raum | undefined): number {
+  if (!r) return -1;
+  if (r.typ === "treppenhaus" || /gemeinschaft|treppe/i.test(r.name)) return 0;
+  if (r.typ === "flur") return 1;
+  if (r.typ === "balkon") return 0.5;
+  return 2;
+}
+
+/**
+ * Türblatt in einer CAD-Öffnung: öffnet in den Raum mit dem höheren Rang
+ * (Zimmer, Bad, Küche vor Flur, Wohnung vor Treppenhaus), angeschlagen an dem
+ * Ende, bei dem das geöffnete Blatt ganz im Zielraum liegt.
+ */
+export function cadTuerblatt(p: Portal, raeume: Raum[], h: number, material: THREE.Material): THREE.Object3D | null {
+  if (h < TUER_HOEHE) return null;
+  const l = laenge(p.a, p.b);
+  const ux = (p.b.x - p.a.x) / l, uy = (p.b.y - p.a.y) / l, nx = -uy, ny = ux;
+  const m = { x: (p.a.x + p.b.x) / 2, y: (p.a.y + p.b.y) / 2 };
+  const raumBei = (q: Punkt) => raeume.find((r) => punktInPolygon(q, r.punkte));
+  const abstand = p.dicke / 2 + 0.3;
+  const links = raumBei({ x: m.x + nx * abstand, y: m.y + ny * abstand });
+  const rechts = raumBei({ x: m.x - nx * abstand, y: m.y - ny * abstand });
+  if (!links && !rechts) return null;
+  const seite = zielRang(links) >= zielRang(rechts) ? 1 : -1;
+  const ziel = seite === 1 ? links : rechts;
+  const breite = Math.min(1.1, l - 0.06);
+  const winkel = Math.PI * 0.42;
+  // Beide Anschläge prüfen: Das offene Blatt muss mit Spitze und Mitte im Zielraum liegen.
+  for (const anschlag of ["a", "b"] as const) {
+    const richtung = anschlag === "a" ? 1 : -1;
+    const ende = anschlag === "a" ? p.a : p.b;
+    const angel = { x: ende.x + ux * richtung * 0.03 + nx * seite * (p.dicke / 2), y: ende.y + uy * richtung * 0.03 + ny * seite * (p.dicke / 2) };
+    const dx = ux * richtung * Math.cos(winkel) + nx * seite * Math.sin(winkel);
+    const dy = uy * richtung * Math.cos(winkel) + ny * seite * Math.sin(winkel);
+    const spitze = { x: angel.x + dx * breite, y: angel.y + dy * breite };
+    const mitte = { x: angel.x + (dx * breite) / 2, y: angel.y + (dy * breite) / 2 };
+    if (ziel && !(punktInPolygon(spitze, ziel.punkte) && punktInPolygon(mitte, ziel.punkte)) && anschlag === "a") continue;
+    const blatt = quader(breite, TUER_HOEHE - 0.02, 0.04, material);
+    blatt.position.set(mitte.x, (TUER_HOEHE - 0.02) / 2, mitte.y);
+    blatt.rotation.y = -Math.atan2(dy, dx);
+    return blatt;
+  }
+  return null;
+}
+
+/** Fenster in einer CAD-Öffnung: Rahmen, dünne Scheibe in Wandmitte, Fensterbank innen. */
+function cadFenster(p: Portal, unten: number, oben: number, rahmenMat: THREE.Material, glas: THREE.Material): THREE.Group {
+  const g = new THREE.Group();
+  const b = laenge(p.a, p.b), hoehe = oben - unten;
+  if (b < 0.2 || hoehe < 0.2) return g;
+  g.position.set((p.a.x + p.b.x) / 2, unten, (p.a.y + p.b.y) / 2);
+  g.rotation.y = -Math.atan2(p.b.y - p.a.y, p.b.x - p.a.x);
+  const profil = 0.055, tiefe = Math.min(0.075, p.dicke);
+  for (const s of [-1, 1]) {
+    g.add(teilOhneSchatten(profil, hoehe, tiefe, rahmenMat, (s * (b - profil)) / 2, hoehe / 2, 0));
+    g.add(teilOhneSchatten(b - 2 * profil, profil, tiefe, rahmenMat, 0, s === -1 ? profil / 2 : hoehe - profil / 2, 0));
+  }
+  const scheibe = teilOhneSchatten(b - 2 * profil - 0.004, hoehe - 2 * profil - 0.004, 0.012, glas, 0, hoehe / 2, 0);
+  g.add(scheibe);
+  // Fensterbank knapp unter der Brüstungsoberkante, etwas breiter als die Öffnung.
+  g.add(teilOhneSchatten(b + 0.06, 0.025, p.dicke + 0.08, rahmenMat, 0, -0.0145, 0));
+  return g;
+}
+
+function teilOhneSchatten(b: number, h: number, t: number, m: THREE.Material, x: number, y: number, z: number): THREE.Mesh {
+  const q = new THREE.Mesh(new THREE.BoxGeometry(b, h, t), m);
+  q.position.set(x, y, z);
+  q.castShadow = false;
+  q.receiveShadow = true;
+  return q;
+}
+
 /** Wände in voller Höhe, über Türen ein Sturz, in Fenstern Brüstung, Glas und Sturz. */
-function baueFlaechenWaende(f: Flaechen, h: number, wandMat: THREE.Material, kappeMat: THREE.Material, glas: THREE.Material, kappen: THREE.Object3D[]): THREE.Group {
+function baueFlaechenWaende(f: Flaechen, h: number, wandMat: THREE.Material, kappeMat: THREE.Material, glas: THREE.Material, kappen: THREE.Object3D[], extra?: { raeume: Raum[]; rahmenMat: THREE.Material; tuerMat: THREE.Material; bodenMat: THREE.Material }): THREE.Group {
   const g = new THREE.Group();
   for (const w of f.waende) {
     g.add(prisma(w, 0, h, wandMat));
@@ -807,12 +973,26 @@ function baueFlaechenWaende(f: Flaechen, h: number, wandMat: THREE.Material, kap
     kappen.push(kappe);
   }
   const sturz = Math.min(TUER_HOEHE, h);
-  for (const t of f.tueren) if (h > sturz + 0.01) g.add(prisma([t], sturz, h, wandMat));
+  for (const t of f.tueren) {
+    if (h > sturz + 0.01) g.add(prisma([t], sturz, h, wandMat));
+    if (!extra) continue;
+    // Boden in der Türöffnung, sonst bleibt zwischen zwei Räumen ein Streifen ohne Belag.
+    const schwelle = new THREE.Mesh(flaechenGeometrie(t.map(([x, y]) => ({ x, y }))), extra.bodenMat);
+    schwelle.receiveShadow = true;
+    g.add(schwelle);
+    const p = portalAusFlaeche(t);
+    const blatt = p && cadTuerblatt(p, extra.raeume, h, extra.tuerMat);
+    if (blatt) g.add(blatt);
+  }
+  const brustung = Math.min(FENSTER_BRUESTUNG, h);
   const oben = Math.min(h, FENSTER_BRUESTUNG + FENSTER_HOEHE);
   for (const fe of f.fenster) {
-    g.add(prisma([fe], 0, Math.min(FENSTER_BRUESTUNG, h), wandMat));
+    g.add(prisma([fe], 0, brustung, wandMat));
     if (h > oben + 0.01) g.add(prisma([fe], oben, h, wandMat));
-    if (oben > FENSTER_BRUESTUNG) {
+    if (oben <= FENSTER_BRUESTUNG) continue;
+    const p = extra ? portalAusFlaeche(fe) : null;
+    if (p && extra) g.add(cadFenster(p, FENSTER_BRUESTUNG, oben, extra.rahmenMat, glas));
+    else {
       const scheibe = prisma([fe], FENSTER_BRUESTUNG, oben, glas);
       scheibe.castShadow = false;
       g.add(scheibe);
@@ -936,7 +1116,8 @@ function baueHuelle(x: {
       boden.position.y = 0.001;
       boden.receiveShadow = true;
       ebene.add(boden);
-      if (r.typ === "treppenhaus") ebene.add(treppe(rahmen(r.punkte), h, treppeMat));
+      // Die Treppe steigt bis zum nächsten Fußboden (Wand plus Decke), im Schnitt nur bis zur Schnitthöhe.
+      if (r.typ === "treppenhaus") ebene.add(treppe(rahmen(r.punkte), h < o.wandhoehe ? h : o.wandhoehe + DECKE, treppeMat));
     }
     for (const w of plan.waende) {
       const l = laenge(w.a, w.b);
