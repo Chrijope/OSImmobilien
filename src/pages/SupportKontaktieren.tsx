@@ -149,7 +149,7 @@ export default function SupportKontaktieren() {
         prioritaet,
         nachricht: beschreibung.trim(),
         erstellerName: user.name,
-        erstellerEmail: `${user.name.toLowerCase().replace(/\s/g, ".")}@mail.de`,
+        erstellerEmail: authUser?.email || "",
         erstellerRolle: user.role,
       });
       setErstelltesTicket(ticket);
@@ -240,6 +240,11 @@ export default function SupportKontaktieren() {
             ))}
           </CardContent>
 
+          {(selectedTicket.status === "geschlossen" || selectedTicket.status === "geloest") && (
+            <div className="border-t px-4 py-3 text-xs text-muted-foreground">
+              Dieses Ticket ist {selectedTicket.status === "geloest" ? "gelöst" : "geschlossen"}. Für ein neues Anliegen erstelle bitte ein neues Ticket.
+            </div>
+          )}
           {selectedTicket.status !== "geschlossen" && selectedTicket.status !== "geloest" && (
             <div className="border-t p-4">
               <div className="flex gap-2">
@@ -247,7 +252,7 @@ export default function SupportKontaktieren() {
                   value={replyInput}
                   onChange={e => setReplyInput(e.target.value)}
                   onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendReply(); } }}
-                  placeholder="Nachricht an Support schreiben..."
+                  placeholder="Nachricht an das Backoffice schreiben..."
                   className="flex-1"
                 />
                 <Button onClick={sendReply} disabled={!replyInput.trim()} size="icon" aria-label="Senden" className="h-10 w-10">
@@ -418,7 +423,7 @@ export default function SupportKontaktieren() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-muted-foreground">Kategorie</span>
-                    <span className="text-sm capitalize">{erstelltesTicket.kategorie}</span>
+                    <span className="text-sm">{KATEGORIEN.find(k => k.value === erstelltesTicket.kategorie)?.label ?? erstelltesTicket.kategorie}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-muted-foreground">Status</span>
@@ -445,7 +450,7 @@ export default function SupportKontaktieren() {
   return (
     <DashboardLayout>
       <div className="flex items-center justify-between mb-4">
-        <PageHeader title="Support kontaktieren" subtitle="Erstelle ein Ticket – unser Team kümmert sich darum." />
+        <PageHeader title="Backoffice kontaktieren" subtitle="Erstelle ein Ticket – das Backoffice kümmert sich darum." />
         <Button
           variant="outline"
           size="sm"

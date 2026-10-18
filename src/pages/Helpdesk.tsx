@@ -324,7 +324,10 @@ export default function Helpdesk() {
         </div>
         <h2 className="text-xl font-bold mb-1">{selectedTicket.betreff}</h2>
         <p className="text-sm text-muted-foreground mb-6">
-          {selectedTicket.erstellerName} · {selectedTicket.erstellerEmail}
+          {selectedTicket.erstellerName}
+          {/* Aeltere Tickets tragen eine erfundene Adresse "vorname.nachname@mail.de"
+              aus dem frueheren Formular; die wird nicht angezeigt. */}
+          {selectedTicket.erstellerEmail && !selectedTicket.erstellerEmail.endsWith("@mail.de") && ` · ${selectedTicket.erstellerEmail}`}
         </p>
 
         <Card className="max-w-3xl">
@@ -334,7 +337,7 @@ export default function Helpdesk() {
                 <div key={msg.id}>
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xs font-medium">{msg.absenderName}</span>
-                    <span className="text-xs text-muted-foreground">· {format(new Date(msg.timestamp), "HH:mm", { locale: de })}</span>
+                    <span className="text-xs text-muted-foreground">· {format(new Date(msg.timestamp), "dd.MM.yyyy HH:mm", { locale: de })}</span>
                   </div>
                   <div className={`rounded-xl px-4 py-3 ${msg.absender === "backoffice" ? "bg-primary/10 border border-primary/20" : "bg-muted"}`}>
                     <MessageBody text={msg.inhalt} />

@@ -58,14 +58,16 @@ const initialAbteilungen: Abteilung[] = [
     id: "1",
     name: "Geschäftsführung",
     kontakte: [
-      { id: "k1", name: "Oliver Skowrnowski", position: "CEO & Founder", beschreibung: "Geschäftsführung, Strategie, Unternehmensentwicklung", email: "os@os-immobilien.com", telefon: "", avatarColor: "bg-blue-500", chatErlaubt: true },
+      { id: "k1", name: "Oliver Skowrnowski", position: "CEO & Founder", beschreibung: "Geschäftsführung, Strategie, Unternehmensentwicklung, Bauträger", email: "os@os-immobilien.com", telefon: "", avatarColor: "bg-blue-500", chatErlaubt: true },
     ],
   },
   {
     id: "2",
     name: "Vertrieb & Partnermanagement",
     kontakte: [
-      { id: "k2", name: "Christian Peetz", position: "COO", beschreibung: "Skalierung & Strukturierung, CRM Management, Partnerbetreuung, Vertriebssteuerung, HR", email: "os@os-immobilien.com", telefon: "", avatarColor: "bg-emerald-500", chatErlaubt: true },
+      { id: "k2", name: "Christian Peetz", position: "COO", beschreibung: "Skalierung & Strukturierung, CRM Management, Vertriebssteuerung, HR", email: "os@os-immobilien.com", telefon: "", avatarColor: "bg-emerald-500", chatErlaubt: true },
+      // Christian, 18.10.2026: Philipp Richter-Schütze im Vertrieb, Foto folgt manuell.
+      { id: "k3", name: "Philipp Richter-Schütze", position: "Partnermanagement", beschreibung: "Partnerbetreuung, Vertriebssteuerung, Einarbeitung neuer Partner", email: "vertrieb@immobox24.de", telefon: "", avatarColor: "bg-teal-500", chatErlaubt: true },
     ],
   },
   { id: "3", name: "Finanzierungspartner", kontakte: [] },

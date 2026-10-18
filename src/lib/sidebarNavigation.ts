@@ -35,6 +35,8 @@ import {
 } from "@/lib/sidebarPermissions";
 
 /** Wonach Menschen die Einstellungen suchen. Steht hier, weil zwei Einträge sie brauchen. */
+export const HAUSVERWALTUNG_IN_SEITENLEISTE = false;
+
 export const EINSTELLUNGEN_SUCHBEGRIFFE = ["passwort", "sicherheit", "profil", "konto", "profilbild", "einstellung"];
 
 /*
@@ -212,7 +214,7 @@ const marketingItems = [
 
 // Der Chat stand hier bis zum 25.09.2026, er steht jetzt unter der Inbox.
 const helpdeskItems = [
-  { title: "Support kontaktieren", url: "/support-kontaktieren", icon: Bot, suchbegriffe: ["support", "hilfe", "problem", "fehler melden", "ticket", "frage"] },
+  { title: "Backoffice kontaktieren", url: "/support-kontaktieren", icon: Bot, suchbegriffe: ["backoffice", "support", "hilfe", "problem", "fehler melden", "ticket", "frage"] },
   { title: "Helpdesk", url: "/helpdesk", icon: Headset, suchbegriffe: ["tickets", "anfragen", "support"] },
 ];
 
@@ -403,7 +405,9 @@ export function navigationsGruppen(ctx: NavKontext): NavGruppe[] {
       iconTint: "text-apple-teal",
     },
   );
-  if (["inhaber", "admin", "hausverwaltung"].includes(rolle) || hausverwaltungItems.some((item) => eigene.includes(item.url))) {
+  // Christian, 18.10.2026: Gruppe „Hausverwaltung“ vorerst ausgeblendet. Seiten,
+  // Routen und Rechte bleiben unverändert; zum Einblenden auf true setzen.
+  if (HAUSVERWALTUNG_IN_SEITENLEISTE && (["inhaber", "admin", "hausverwaltung"].includes(rolle) || hausverwaltungItems.some((item) => eigene.includes(item.url)))) {
     gruppen.push({ label: "Hausverwaltung", items: hausverwaltungItems, iconTint: "text-apple-brown", defaultOpen: false });
   }
   gruppen.push({
