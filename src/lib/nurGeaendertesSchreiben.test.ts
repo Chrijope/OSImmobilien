@@ -33,12 +33,13 @@ describe("Nur Geändertes schreiben", () => {
     expect(rumpf).not.toMatch(/cacheUpdate\("investments", id, u\)/);
   });
 
-  it("Bearbeiten-Dialog im Kundenprofil schreibt Empfehlungsgeber, Ersteller und Sprache als Patch", () => {
+  it("Stammdaten im Kundenprofil schreiben Empfehlungsgeber und Ersteller als Patch", () => {
+    // Seit dem 18.10.2026 speichert jeder Stift links über `speichereStammdaten`.
     const profil = lies("src/pages/KundenDetail.tsx");
-    const rumpf = profil.slice(profil.indexOf("const handleSaveEdit = async () => {"), profil.indexOf("const wechselBrauchtGrund"));
+    const rumpf = profil.slice(profil.indexOf("const speichereStammdaten = async ("), profil.indexOf("const wechselBrauchtGrund"));
     expect(rumpf).toContain('cacheMetaZusammenfuehren("kontakte", id, zusatzPatch)');
     expect(rumpf).not.toContain('cacheUpdate("kontakte", id, { meta: nextMeta })');
-    // „aktualisiert“ erst nach der Antwort.
-    expect(rumpf.indexOf("await Promise.all([")).toBeLessThan(rumpf.indexOf('toast({ title: "Daten aktualisiert ✓" });'));
+    // Erfolg erst nach der Antwort.
+    expect(rumpf.indexOf("await Promise.all([")).toBeLessThan(rumpf.indexOf("return true;"));
   });
 });

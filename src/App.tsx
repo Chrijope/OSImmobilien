@@ -23,7 +23,7 @@ import { KundenMfaGuard } from "@/components/kunde/KundenMfaGuard";
 
 // Oeffentliche Seiten (eager, klein und immer noetig)
 import Login from "./pages/Login";
-import { VorschauBeratungspraesentation, VorschauErstgespraech, VorschauInvestmentrechner, VorschauNaechsteAktionen, VorschauMikroseite, VorschauPipeline, VorschauProvision, VorschauRechnungsvorlage, VorschauKundeKomplett, VorschauKundenchat, VorschauObjektAnlegen, VorschauHandbuchEntwurf, VorschauGrundriss3d, VorschauAnalysetoolErgebnis, VorschauBeratungsprotokoll } from "./vorschauRouten";
+import { VorschauBeratungspraesentation, VorschauErstgespraech, VorschauInvestmentrechner, VorschauNaechsteAktionen, VorschauMikroseite, VorschauPipeline, VorschauProvision, VorschauRechnungsvorlage, VorschauKundeKomplett, VorschauKundenchat, VorschauObjektAnlegen, VorschauHandbuchEntwurf, VorschauGrundriss3d, VorschauAnalysetoolErgebnis, VorschauBeratungsprotokoll, VorschauKundenprofilLinks } from "./vorschauRouten";
 
 /** /investmentrechner-plus → /investmentrechner mit Schalter „Bankgespräch & Bankunterlagen“, Parameter bleiben. */
 function InvestmentrechnerPlusWeiterleitung() {
@@ -420,6 +420,7 @@ const App = () => (
                 {VorschauAnalysetoolErgebnis && <Route path="/vorschau/analysetool-ergebnis" element={<VorschauAnalysetoolErgebnis />} />}
                 {VorschauGrundriss3d && <Route path="/vorschau/grundriss-3d" element={<VorschauGrundriss3d />} />}
                 {VorschauBeratungsprotokoll && <Route path="/vorschau/beratungsprotokoll" element={<VorschauBeratungsprotokoll />} />}
+                {VorschauKundenprofilLinks && <Route path="/vorschau/kundenprofil-links" element={<VorschauKundenprofilLinks />} />}
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/portal-aktivieren" element={<PortalAktivieren />} />
                 <Route path="/aktivieren" element={<Aktivieren />} />

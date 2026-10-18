@@ -126,3 +126,25 @@ describe("Vorschau-Route Beratungsprotokoll", () => {
     expect(app).toMatch(/\{VorschauBeratungsprotokoll && <Route path="\/vorschau\/beratungsprotokoll"/);
   });
 });
+
+describe("Vorschau-Route Kundenprofil, linke Spalte", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+
+  it("existiert nur im Entwicklungsmodus", async () => {
+    vi.stubEnv("DEV", true);
+    expect((await import("./vorschauRouten")).VorschauKundenprofilLinks).not.toBeNull();
+    vi.resetModules();
+    vi.stubEnv("DEV", false);
+    vi.stubEnv("PROD", true);
+    expect((await import("./vorschauRouten")).VorschauKundenprofilLinks).toBeNull();
+  });
+
+  it("App.tsx bindet sie nur über den abgesicherten Weg ein", () => {
+    const app = readFileSync("src/App.tsx", "utf8");
+    expect(app).not.toMatch(/pages\/VorschauKundenprofilLinks/);
+    expect(app).toMatch(/\{VorschauKundenprofilLinks && <Route path="\/vorschau\/kundenprofil-links"/);
+  });
+});

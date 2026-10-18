@@ -66,8 +66,7 @@ const personenblock = (onAktion = vi.fn()) =>
       anrede="Herr"
       ampel={<InactivityAmpel kunde={kunde()} size="md" showLabel />}
       aktionen={<KundenprofilAktionsleiste onAktion={onAktion} />}
-      felder={[{ label: "E-Mail", wert: "kambiz@example.org" }]}
-      onWeitereFelder={() => {}}
+      kontakt={<dl className="kundenprofil-felder"><div><dt>E-Mail</dt><dd>kambiz@example.org</dd></div></dl>}
     />,
   );
 
@@ -95,8 +94,6 @@ describe("Die Anrede steht vor dem Namen", () => {
         name="Max Mustermann"
         anrede={anrede}
         namenZusatz={namenZusatz}
-        felder={[]}
-        onWeitereFelder={() => {}}
       />,
     );
 

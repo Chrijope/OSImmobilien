@@ -12,7 +12,19 @@ import { useAktivitaetenLeiste } from "@/components/kunden/profil/useAktivitaete
 import { KundenprofilAbschnitt } from "@/components/kunden/profil/KundenprofilAbschnitt";
 import { KundenprofilLayout } from "@/components/kunden/profil/KundenprofilLayout";
 import { KundenprofilInvestmentLayout } from "@/components/kunden/profil/KundenprofilInvestmentLayout";
-import { KundenprofilStammdaten, KundenprofilUeberschrift } from "@/components/kunden/profil/KundenprofilStammdaten";
+import { KundenprofilStammdaten, type KundenprofilAbschnittDef } from "@/components/kunden/profil/KundenprofilStammdaten";
+import { KundenprofilLeadScore } from "@/components/kunden/profil/KundenprofilLeadScore";
+import { KundenprofilRechnerZeilen, baueRechnerQuellen } from "@/components/kunden/profil/KundenprofilRechnerZeilen";
+import { portalAmpel, empfehlungAmpel } from "@/components/kunden/profil/KundenprofilAmpel";
+import { useProfilAbschnitte } from "@/components/kunden/profil/useProfilAbschnitte";
+import {
+  KontaktFelder,
+  LeadFelder,
+  Person2Felder,
+  QualifizierungFelder,
+  qualifizierungHinweis,
+  type StammdatenEntwurf,
+} from "@/components/kunden/profil/KundenprofilKundendaten";
 import { KundenprofilAktionsleiste, QUICK_ACTIONS } from "@/components/kunden/profil/KundenprofilAktionsleiste";
 import { useVideocallFreigabe } from "@/hooks/useVideocallFreigabe";
 import { Fragment, useState, useEffect, useMemo, useRef } from "react";
@@ -91,7 +103,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -107,7 +119,6 @@ import { STUFEN_ERKLAERUNG } from "@/lib/stufenErklaerung";
 import { darfVorruecken, FORTSCHRITT_STUFEN, fortschrittsRang, fortschrittsStufe, istNoShowStufe, stufeErreicht, stufenFilterLabel } from "@/lib/pipelineStufen";
 import { InactivityAmpel } from "@/components/kunden/InactivityAmpel";
 import { BuchungErgebnisKarten } from "@/components/kunden/BuchungErgebnisKarten";
-import RechnerAngaben from "@/components/kunden/RechnerAngaben";
 import { getObjekte, getObjektById } from "@/lib/objekteStore";
 import { FreieWohnungenCard } from "@/components/kunden/FreieWohnungenCard";
 import { InvestmentBerechnungen } from "@/components/kunden/InvestmentBerechnungen";
@@ -184,7 +195,6 @@ const generateSelbstauskunftPDF = async (...args: Parameters<typeof import("@/li
   const m = await import("@/lib/selbstauskunftPdf");
   return m.generateSelbstauskunftPDF(...args);
 };
-import { LeadScoreBadge, LeadScoreHint } from "@/components/kunde/LeadScoreCard";
 const generateReservierungPDF = async (...args: Parameters<typeof import("@/lib/reservierungPdf").generateReservierungPDF>) => {
   const m = await import("@/lib/reservierungPdf");
   return m.generateReservierungPDF(...args);
@@ -205,7 +215,7 @@ import { LockedPhaseCard } from "@/components/kunde/investments/LockedPhaseGrid"
 import { Switch } from "@/components/ui/switch";
 import { AlsTippgeberAnlegenButton } from "@/components/kunde/AlsTippgeberAnlegenButton";
 import { einverstaendnisBestaetigtAm } from "@/lib/tippgeberEmpfehlung";
-import { EmpfehlungsprogrammKnoepfe } from "@/components/kunde/EmpfehlungsprogrammKnoepfe";
+import { EmpfehlungsprogrammKnoepfe, darfEmpfehlungsprogrammPflegen } from "@/components/kunde/EmpfehlungsprogrammKnoepfe";
 import { KundenportalZugang, type KundenportalZugangAngaben } from "@/components/kunde/KundenportalZugang";
 import { KundenspracheFeld } from "@/components/kunden/profil/KundenspracheFeld";
 import { KundenspracheHinweis, KundenspracheKuerzel } from "@/components/kunden/KundenspracheHinweis";
@@ -218,6 +228,7 @@ import { kundenportalFreischalten, person2Einladen, portalMetaAendern, portalMet
 import { supabase } from "@/integrations/supabase/client";
 import { getUnreadChatCountForKunde } from "@/lib/chatStore";
 import { KommunikationReiter, type VerlaufSchluessel } from "@/components/kunde/KommunikationReiter";
+import { baueReiter, istErlaubterReiter, leseReiterAusAdresse, standardReiter } from "@/lib/kundenprofilReiter";
 import KundeDokumenteCard from "@/components/kunde/KundeDokumenteCard";
 import { useUser } from "@/contexts/UserContext";
 import { ansprechpartnerAdresse } from "@/lib/ansprechpartnerAdresse";
@@ -409,123 +420,9 @@ import { mindestunterlagenText } from "@/lib/mindestunterlagen";
 import { verkaeuferArt, verkaeuferNotarFelder, verkaeuferVollerName } from "@/lib/verkaeuferName";
 import { FOLLOW_UP_GEPLANT, ERSTGESPRAECH_VEREINBART } from "../../supabase/functions/_shared/follow-up-eskalation.ts";
 
-// Format number string with thousand separators (dots)
-function formatQualNumber(val: string): string {
-  const stripped = val.replace(/\./g, "");
-  const pureDigits = stripped.replace(/[^\d]/g, "");
-  if (pureDigits.length > 0 && stripped === pureDigits) {
-    return parseInt(pureDigits, 10).toLocaleString("de-DE");
-  }
-  return val;
-}
-
-function parseQualNumber(val: string): string {
-  return val.replace(/\./g, "");
-}
-
-/**
- * Lokales State-Wrapper für Qualifizierungs-Inputs.
- * Fix für Bug: Bei jedem Tastendruck wurde updateKontakt() aufgerufen, was die
- * komplette Kontakt-Row in den DataCache schreibt und einen Re-Render mit
- * möglicherweise stale Wert auslöst. Folge: Cursor springt, einzelne
- * Buchstaben gehen verloren (z. B. "Steuer" → "Steepir"). Lösung: lokal
- * tippen, erst onBlur persistieren.
- */
-function QualTextInput({
-  value,
-  onCommit,
-  placeholder,
-}: {
-  value: string;
-  onCommit: (val: string) => void;
-  placeholder?: string;
-}) {
-  const [local, setLocal] = useState(value);
-  const focusedRef = useRef(false);
-  const debounceRef = useRef<number | null>(null);
-  const latestRef = useRef(value);
-  useEffect(() => {
-    if (!focusedRef.current) setLocal(value);
-  }, [value]);
-  useEffect(() => () => {
-    if (debounceRef.current) window.clearTimeout(debounceRef.current);
-  }, []);
-  return (
-    <Input
-      value={local}
-      placeholder={placeholder}
-      onFocus={() => { focusedRef.current = true; }}
-      onChange={(e) => {
-        const v = e.target.value;
-        setLocal(v);
-        latestRef.current = v;
-        if (debounceRef.current) window.clearTimeout(debounceRef.current);
-        debounceRef.current = window.setTimeout(() => {
-          if (latestRef.current !== value) onCommit(latestRef.current);
-        }, 400);
-      }}
-      onBlur={() => {
-        focusedRef.current = false;
-        if (debounceRef.current) { window.clearTimeout(debounceRef.current); debounceRef.current = null; }
-        if (local !== value) onCommit(local);
-      }}
-    />
-  );
-}
-
-function QualNumberInput({
-  value,
-  onCommit,
-  placeholder,
-}: {
-  value: string;
-  onCommit: (val: string) => void;
-  placeholder?: string;
-}) {
-  const [local, setLocal] = useState(formatQualNumber(value));
-  const focusedRef = useRef(false);
-  const debounceRef = useRef<number | null>(null);
-  const latestRawRef = useRef(value);
-  useEffect(() => {
-    if (!focusedRef.current) setLocal(formatQualNumber(value));
-  }, [value]);
-  useEffect(() => () => {
-    if (debounceRef.current) window.clearTimeout(debounceRef.current);
-  }, []);
-  return (
-    <Input
-      value={local}
-      placeholder={placeholder}
-      inputMode="numeric"
-      onFocus={() => { focusedRef.current = true; }}
-      onChange={(e) => {
-        const formatted = formatQualNumber(e.target.value);
-        setLocal(formatted);
-        const next = parseQualNumber(formatted);
-        latestRawRef.current = next;
-        if (debounceRef.current) window.clearTimeout(debounceRef.current);
-        debounceRef.current = window.setTimeout(() => {
-          if (latestRawRef.current !== value) onCommit(latestRawRef.current);
-        }, 400);
-      }}
-      onBlur={() => {
-        focusedRef.current = false;
-        if (debounceRef.current) { window.clearTimeout(debounceRef.current); debounceRef.current = null; }
-        const next = parseQualNumber(local);
-        if (next !== value) onCommit(next);
-      }}
-    />
-  );
-}
-
-
 const fmt = (v: number) =>
   new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(v);
 
-const formatKundenId = (osImmoId?: number | null) => {
-  if (!osImmoId || osImmoId <= 0) return "–";
-  return `OSI-${String(osImmoId).padStart(5, "0")}`;
-};
 
 import { kreditArt, kreditAuswahlLabel, RAHMEN_PUFFER, RAHMEN_ANNUITAET, calculateFinanzierbarkeitFromSaData, investmentFinanzZahlen, BANK_LEBENSHALTUNG_MINDEST } from "@/lib/finanzierbarkeitUtils";
 import { eigeneSaDataFuerInvestmentRow } from "@/lib/saQuelle";
@@ -697,96 +594,6 @@ function rolleZurReiterleiste() {
   requestAnimationFrame(() => requestAnimationFrame(rollen));
 }
 
-/**
- * Die Reiter des Kundenprofils an genau einer Stelle.
- *
- * Sie stehen hier als Funktion und nicht mehr direkt in der Komponente, weil
- * zwei Stellen dieselbe Antwort brauchen: die Reiterleiste und die Pruefung
- * von `?tab=` aus der Adresse. Ohne eine gemeinsame Quelle koennte eine
- * Setterin ueber die Adresse einen Reiter oeffnen, den ihre Rolle gar nicht
- * hat, etwa die Dokumente.
- *
- * Reihenfolge: Uebersicht, Stammdaten, Investments, Dokumente, Kommunikation,
- * Aktivitaeten. Die Rollenabweichungen bleiben, wie sie waren: Die Setterin
- * sieht nur Stammdaten und die Investments, der Versicherungsexperte weder
- * den Kundenchat noch die Investment-Reiter. Der Kundenchat ist seit Welle 3
- * kein eigener Reiter mehr, deshalb faellt er fuer ihn innerhalb des Reiters
- * "Kommunikation" weg und nicht mehr an der Reiterleiste.
- *
- * Seit Welle 3 steht hier ein einziger Reiter "Kommunikation" statt der beiden
- * Chat-Eintraege. Die waren keine Reiter, sondern Weiterleitungen: Ein Klick
- * sprang auf `/chat` und das Profil war weg.
- *
- * Seit Welle 2 steht hier ein einziger Reiter "Investments" mit der Anzahl als
- * Zaehler. Vorher bekam jedes Investment einen eigenen Reiter, bei drei
- * Investments standen also drei Reiter nebeneinander und die Leiste wuchs mit
- * jedem neuen Vorgang weiter. Welches Investment offen ist, entscheidet jetzt
- * die Auswahl im Reiter selbst.
- */
-function baueReiter(
-  rolle: string,
-  investments: { id: string; nummer: number }[],
-  ungeleseneNachrichten = 0,
-): { key: string; label: string; draft?: boolean; anzahl?: number; neu?: number }[] {
-  const investmentReiter = [
-    { key: "investments", label: "Investments", anzahl: investments.length },
-  ];
-  if (rolle === "setterin") {
-    return [{ key: "stammdaten", label: "Stammdaten" }, ...investmentReiter, { key: "empfehlungen", label: "Empfehlungen" }];
-  }
-  const istVersicherungsexperte = rolle === "versicherungsexperte";
-  return [
-    { key: "uebersicht", label: "Übersicht" },
-    { key: "stammdaten", label: "Stammdaten" },
-    // `neu` ist die Zahl ungelesener Nachrichten beider Verlaeufe zusammen,
-    // dieselbe Art Zaehler, die die Seitenleiste an ihren Eintraegen zeigt.
-    { key: "kommunikation", label: "💬 Kommunikation", neu: ungeleseneNachrichten },
-    { key: "dokumente", label: "📁 Dokumente" },
-    ...(istVersicherungsexperte ? [] : investmentReiter),
-    { key: "empfehlungen", label: "Empfehlungen" },
-    { key: "aktivitaeten", label: "Aktivitäten" },
-  ];
-}
-
-/**
- * Darf diese Rolle den Reiter ueberhaupt oeffnen?
- *
- * Gebraucht fuer `?tab=` aus der Adresse. Ob es das Investment wirklich gibt,
- * klaert spaeter der Sprung ins Investment beziehungsweise `renderContent`.
- */
-function istErlaubterReiter(schluessel: string, rolle: string): boolean {
-  return baueReiter(rolle, []).some((t) => t.key === schluessel);
-}
-
-/**
- * Alte Adressen weiter verstehen.
- *
- * Bis Welle 2 hiess der Reiter eines Investments `inv-<id>`, und genau das
- * stand in `?tab=`. Bis Welle 3 gab es ausserdem `chat-intern` und
- * `chat-kunde`, dazu das ins Leere zeigende `chat` aus dem Kundenportal. Wer
- * sich so eine Adresse gemerkt oder verschickt hat, soll nicht auf einer
- * leeren Uebersicht landen. Rueckgabe: der heutige Reiter, das gemeinte
- * Investment und der gemeinte Verlauf.
- */
-function leseReiterAusAdresse(gewuenscht: string | null): {
-  tab: string | null;
-  investment: string | null;
-  verlauf: VerlaufSchluessel | null;
-} {
-  if (!gewuenscht) return { tab: null, investment: null, verlauf: null };
-  if (gewuenscht.startsWith("inv-")) {
-    return { tab: "investments", investment: gewuenscht.slice(4), verlauf: null };
-  }
-  if (gewuenscht === "chat-intern") return { tab: "kommunikation", investment: null, verlauf: "intern" };
-  if (gewuenscht === "chat-kunde") return { tab: "kommunikation", investment: null, verlauf: "kunde" };
-  if (gewuenscht === "chat") return { tab: "kommunikation", investment: null, verlauf: null };
-  return { tab: gewuenscht, investment: null, verlauf: null };
-}
-
-/** Der Reiter, mit dem das Profil aufgeht, wenn die Adresse nichts vorgibt. */
-function standardReiter(rolle: string): string {
-  return "stammdaten";
-}
 
 /**
  * Seitengroessen der Aktivitaetenliste auf der Stammdatenseite.
@@ -1191,6 +998,8 @@ export default function KundenDetail() {
    * Reiter in ihren eigenen Effekten und ueberschreiben diesen Startwert.
    */
   const aktivitaetenLeiste = useAktivitaetenLeiste();
+  // Welche Abschnitte links offen stehen, je Nutzer gemerkt.
+  const profilAbschnitte = useProfilAbschnitte();
   const naechsteAktionKachel = useNaechsteAktionKachel();
   const offeneAufgabenVersion = useLiveVersion(OFFENE_AUFGABEN_TABELLEN);
   const profilKennzahlenBereit = useCacheReady(PROFIL_KENNZAHL_TABELLEN);
@@ -1606,16 +1415,10 @@ export default function KundenDetail() {
   // Verhindert Doppelklicks waehrend der Versand noch laeuft. Frueher uebernahm
   // das `resendSuccess`, das aber jetzt erst nach dem Erfolg gesetzt wird.
   const resendLaeuftRef = useRef(false);
-  const [editDialog, setEditDialog] = useState(false);
   const [beraterDialog, setBeraterDialog] = useState(false);
   // Warnung vor dem Wechsel, wenn der aktuelle Vertriebspartner mit dem
   // Kunden noch etwas in der Zukunft geplant hat (Termin, Aufgabe, Follow-Up).
   const [beraterWechselWarnung, setBeraterWechselWarnung] = useState<string | null>(null);
-  const [setterDialog, setSetterDialog] = useState(false);
-  const [editData, setEditData] = useState<Partial<KundeData>>({});
-  // Die Sprache im Bearbeiten-Modus. `null` heißt: nicht angefasst, beim
-  // Speichern bleibt die gespeicherte Wahl unverändert (Plan Kundensprache).
-  const [editSprache, setEditSprache] = useState<Sprache | null>(null);
   const kundenSpracheStand = useKundenSprache(id);
   // Was das Feld zeigt: die Wahl, oder `null` für „noch nicht gewählt“. Ein
   // Englisch ohne Zeitpunkt (von Hand gesetzt) wird trotzdem als Englisch gezeigt.
@@ -1627,8 +1430,6 @@ export default function KundenDetail() {
   // Warum der Lead den Partner wechselt. Pflicht, sobald der Kontakt schon
   // jemandem gehoert. Siehe uebergabeGrund.ts.
   const [uebergabeGrund, setUebergabeGrund] = useState<UebergabeGrund>({});
-  const [newSetter, setNewSetter] = useState("");
-  const [newSetterId, setNewSetterId] = useState<string | undefined>();
   const [deleteDialog, setDeleteDialog] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [exitDialog, setExitDialog] = useState(false);
@@ -3881,19 +3682,45 @@ export default function KundenDetail() {
   };
 
 
-  const handleSaveEdit = async () => {
-    if (!id) return;
+  /**
+   * Der Stand, mit dem die Bearbeitung der Stammdaten startet. Bis zum
+   * 18.10.2026 der Startwert des Bearbeitungsmodus im Reiter Stammdaten,
+   * seither der Ausgangspunkt jedes Stifts in der linken Spalte.
+   */
+  const stammdatenStartstand = (): StammdatenEntwurf => {
+    const rowMeta = (cacheGet("kontakte").find((r: any) => r.id === kunde?.id)?.meta) || {};
+    return {
+      vorname: kunde?.vorname, nachname: kunde?.nachname, email: kunde?.email,
+      telefon: kunde?.telefon, geburtstag: kunde?.geburtstag, strasse: kunde?.strasse,
+      hausnummer: kunde?.hausnummer, plz: kunde?.plz, ort: kunde?.ort, quelle: kunde?.quelle,
+      empfehlungsgeberName: rowMeta.empfehlungsgeberName || "",
+      empfehlungsgeberBeziehung: rowMeta.empfehlungsgeberBeziehung || "",
+      erstelltVonId: rowMeta.erstelltVonId || "",
+      erstelltVonName: rowMeta.erstelltVonName || "",
+      person2: kunde?.person2 ? { ...kunde.person2 } : undefined,
+    };
+  };
+
+  /**
+   * Speichert die Stammdaten, derselbe Weg wie vorher „Speichern“ im
+   * Bearbeitungsmodus: der ganze Startstand plus die Änderung des einen
+   * Felds. `false`, wenn nichts gespeichert wurde; den Grund meldet diese
+   * Funktion selbst, die Bestätigung das Feld.
+   */
+  const speichereStammdaten = async (aenderung: Partial<StammdatenEntwurf>): Promise<boolean> => {
+    if (!id) return false;
+    const editData = { ...stammdatenStartstand(), ...aenderung };
     // Person-2 E-Mail-Format prüfen (wenn Person 2 existiert)
     const p2 = (editData as any).person2;
     if (p2) {
       const p2Email = (p2.email || "").trim();
       if (!p2Email) {
-        toast({ title: "E-Mail für Person 2 fehlt", description: "Bitte E-Mail-Adresse von Person 2 eintragen – sie wird für die Selbstauskunft-Unterschrift benötigt.", variant: "destructive" });
-        return;
+        toast({ title: "E-Mail für Person 2 fehlt", description: "Bitte E-Mail-Adresse von Person 2 eintragen, sie wird für die Selbstauskunft-Unterschrift benötigt.", variant: "destructive" });
+        return false;
       }
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(p2Email)) {
         toast({ title: "Ungültige E-Mail (Person 2)", description: "Bitte eine gültige E-Mail-Adresse für Person 2 eintragen.", variant: "destructive" });
-        return;
+        return false;
       }
     }
     const {
@@ -3926,9 +3753,8 @@ export default function KundenDetail() {
       zusatz.erstelltVonId = cleanErstId || null;
       zusatz.erstelltVonName = cleanErstId ? cleanErstName : null;
     }
-    // Kundensprache: nur wenn im Formular eine Pille angeklickt wurde. Sie
-    // geht im selben Patch mit, damit sich zwei Schreibwege nicht überholen.
-    if (editSprache) Object.assign(zusatz, kundenSpracheMetaPatch(editSprache, authUser?.id));
+    // Die Kundensprache speichert ihr eigenes Feld sofort (`waehleKundenSprache`),
+    // seit es den Bearbeitungsmodus nicht mehr gibt, geht sie hier nicht mehr mit.
     // Nur, was sich wirklich ändert; sonst meldet ein Wächter Unverändertes als abgelehnt.
     const altMeta = (cacheGet("kontakte").find((r: any) => r.id === id)?.meta || {}) as Record<string, unknown>;
     const zusatzPatch = metaUnterschied(
@@ -3942,13 +3768,12 @@ export default function KundenDetail() {
       ]);
     } catch {
       // Was nicht ankam, meldet der Zwischenspeicher selbst und zeigt wieder
-      // den gespeicherten Stand. Der Dialog bleibt offen.
+      // den gespeicherten Stand. Das Feld bleibt offen.
       reloadKunde();
-      return;
+      return false;
     }
     reloadKunde();
-    setEditDialog(false);
-    toast({ title: "Daten aktualisiert ✓" });
+    return true;
   };
 
   /**
@@ -4014,15 +3839,6 @@ export default function KundenDetail() {
       } catch { /* Ohne Quellen keine Warnung, der Wechsel bleibt moeglich. */ }
     }
     fuehreBeraterWechselAus();
-  };
-
-  const handleSaveSetter = () => {
-    if (!id) return;
-    updateKontakt(id, { setter: newSetter.trim(), setterId: newSetter.trim() ? newSetterId || "" : "" });
-    reloadKunde();
-    setSetterDialog(false);
-    toast({ title: "Setterin geändert ✓", description: newSetter.trim() || "Entfernt" });
-    addAktivitaet({ kundeId: id, art: "notiz", beschreibung: newSetter.trim() ? `Setterin geändert zu ${newSetter.trim()}` : "Setterin entfernt", von: user.name });
   };
 
   const handleArchive = () => {
@@ -5272,42 +5088,13 @@ export default function KundenDetail() {
     );
   };
 
-  // Beide Einstiege öffnen dasselbe vorhandene Formular mit demselben Startstand.
-  const oeffneStammdatenBearbeitung = () => {
-                  const rowMeta = (cacheGet("kontakte").find((r: any) => r.id === kunde.id)?.meta) || {};
-                  setEditData({
-                    vorname: kunde.vorname, nachname: kunde.nachname, email: kunde.email,
-                    telefon: kunde.telefon, geburtstag: kunde.geburtstag, strasse: kunde.strasse,
-                    hausnummer: kunde.hausnummer, plz: kunde.plz, ort: kunde.ort, quelle: kunde.quelle,
-                    empfehlungsgeberName: rowMeta.empfehlungsgeberName || "",
-                    empfehlungsgeberBeziehung: rowMeta.empfehlungsgeberBeziehung || "",
-                    erstelltVonId: rowMeta.erstelltVonId || "",
-                    erstelltVonName: rowMeta.erstelltVonName || "",
-                    person2: kunde.person2 ? { ...kunde.person2 } : undefined,
-                  } as any);
-                  setEditSprache(null);
-                  setEditDialog(true);
-    wechsleReiter("stammdaten");
-  };
-
+  /*
+   * Die Verwaltungsknöpfe, seit dem 18.10.2026 im eigenen Abschnitt
+   * „Kunde verwalten“ ganz unten links. Die Rollenprüfungen sind unverändert,
+   * auch „Löschung beantragen“ ohne Rollenabfrage wie bisher.
+   */
   const renderProfilVerwaltung = () => (
     <div className={`kundenprofil-verwaltung ${isFinanzierer ? "finanzierer-readonly" : ""}`}>
-              {/* Bestehendes Empfehlungsprogramm unter dem Kundenportal. */}
-              {!isFinanzierer && (
-                <div className="flex items-center gap-2 flex-wrap mt-2">
-                  <EmpfehlungsprogrammKnoepfe
-                    ueberschrift={<KundenprofilUeberschrift>Empfehlungsprogramm</KundenprofilUeberschrift>}
-                    kunde={kunde}
-                    investments={investments}
-                    currentUser={{ id: (user as any)?.id, name: user?.name, role: user?.role }}
-                    onChanged={() => {
-                      try { cacheRefreshTable("kontakte"); } catch {}
-                      forceUpdate(n => n + 1);
-                    }}
-                  />
-                </div>
-              )}
-
       {/* Bottom actions */}
       <div className="flex justify-center gap-4 pt-4 flex-wrap">
         {(["admin", "inhaber", "vertriebspartner", "setterin"].includes(user.role)) && !kunde?.archiviert && (
@@ -5414,9 +5201,15 @@ export default function KundenDetail() {
     </div>;
   };
 
-  // Dieselbe Regel wie beim Knopf „Bearbeiten“ der Stammdaten: Finanzierer
-  // lesen nur, der Kunde kommt hier gar nicht hin.
-  const darfKundenspracheAendern = !isFinanzierer && user.role !== "kunde";
+  /*
+   * Wer die Stammdaten links ändern darf: dieselbe Regel wie vorher der Knopf
+   * „Bearbeiten“, also weder Finanzierer noch die nur lesende Buchhaltung.
+   * Ohne Recht bekommt kein Feld einen Speicherweg und damit keinen Stift.
+   * Hart sperren die Datenbankregeln (siehe lib/nurLesend.ts).
+   */
+  const darfStammdatenAendern = !isFinanzierer && !nurLesend;
+  // Kundensprache: Finanzierer und Buchhaltung lesen nur, der Kunde kommt hier gar nicht hin.
+  const darfKundenspracheAendern = darfStammdatenAendern && user.role !== "kunde";
   const waehleKundenSprache = async (sprache: Sprache) => {
     if (!id) return;
     const ergebnis = await setzeKundenSprache(id, sprache);
@@ -5430,56 +5223,167 @@ export default function KundenDetail() {
     }
   };
 
+  /** Qualifizierungsfragen: derselbe Weg wie vorher (`updateKontakt`). */
+  const speichereKontaktTeil = async (patch: Record<string, string>) => (id ? updateKontakt(id, patch) : false);
+  /** Tippgeber-Fragen im meta, wie vorher über `mergeKontaktMeta`; jetzt mit Rückmeldung bei Fehlschlag. */
+  const speichereKontaktMeta = async (patch: Record<string, string>) => {
+    if (!id) return false;
+    const ok = await mergeKontaktMeta(id, patch);
+    if (!ok) toast({ title: "Nicht gespeichert", description: "Bitte versuche es erneut.", variant: "destructive" });
+    forceUpdate((n) => n + 1);
+    return ok;
+  };
+
+  /** Öffnet den vorhandenen Ablauf „Vertriebspartner ändern“, jetzt über den Stift. */
+  const oeffneVertriebspartnerWechsel = () => {
+    setNewBerater(kunde.berater);
+    setNewBeraterId(kunde.zustaendig_id || undefined);
+    setBeraterWechselWarnung(null);
+    setBeraterDialog(true);
+  };
+
+  /**
+   * Die linke Spalte mit allen Stammdaten (Umbau vom 18.10.2026).
+   *
+   * Von oben: Name, Ampel, Lead-Score, Schnellaktionen, Kontaktdaten, dann
+   * eingeklappt Person 2, Lead- und Verwaltungsdaten, Kundenportal,
+   * Empfehlungsprogramm, Angaben aus Rechnern und Gesprächen,
+   * Qualifizierungsfragen und ganz unten „Kunde verwalten“.
+   */
   const renderProfilStammdaten = () => {
     const name = tarnName(`${kunde.vorname ?? ""} ${kunde.nachname ?? ""}`.trim());
-    const felder = [
-      { label: "E-Mail", wert: kunde.email ? <a href={tarnVerweis(`mailto:${kunde.email}`)} className="text-primary hover:underline">{tarnEmail(kunde.email)}</a> : null },
-      { label: "Telefon", wert: kunde.telefon ? <a href={tarnVerweis(`tel:${kunde.telefon}`)} className="text-primary hover:underline" onClick={(e) => { e.preventDefault(); rufeAnUndProtokolliere(kunde.telefon); }}>{tarnTelefon(normalizeTelefon(kunde.telefon))}</a> : null },
-      { label: "Adresse", wert: <>{[kunde.strasse, kunde.hausnummer].filter(Boolean).join(" ")}<br />{[kunde.plz, kunde.ort].filter(Boolean).join(" ")}</> },
-      /*
-       * Kundensprache (Plan Kundensprache vom 25.09.2026, Etappe 0). Ein Klick
-       * speichert sofort. Wer die übrigen Stammdaten nicht bearbeiten darf,
-       * sieht nur den Text; serverseitig entscheidet `merge_kontakt_meta`.
-       */
+    const rawRow = cacheGet("kontakte").find((r: any) => r.id === kunde.id);
+    const rawMeta = ((rawRow?.meta && typeof rawRow.meta === "object") ? rawRow.meta : {}) as Record<string, any>;
+    const speichere = darfStammdatenAendern ? speichereStammdaten : undefined;
+    const kiZusammenfassungen = investments.map((inv: any) => {
+      const sk = getInvestmentMetaField<any>(inv.id, "setterSkript", null);
+      const gn = getInvestmentMetaField<string>(inv.id, "gespraechsnotizenAI", "");
+      return { investmentId: inv.id, nummer: inv.nummer ?? 0, text: String(sk?.kiZusammenfassung || gn || ""), stand: sk?.aktualisiertAm as string | undefined };
+    });
+    const rechnerQuellen = baueRechnerQuellen({ meta: rawMeta, quelle: kunde.quelle, erstelltAm: kunde.erstellt_am, ki: kiZusammenfassungen });
+    // Dieselbe Sicht wie `EmpfehlungsprogrammKnoepfe`: nur wer das Programm pflegt, und erst mit Investment.
+    const zeigeEmpfehlung = !isFinanzierer && investments.length > 0 && darfEmpfehlungsprogrammPflegen(user.role);
+    const portal = <KundenportalZugang {...kundenportalAngaben} darstellung="profil" />;
+    const abschnitte: KundenprofilAbschnittDef[] = [
+      ...(kunde.person2 ? [{
+        schluessel: "person2",
+        titel: "Person 2",
+        hinweis: [kunde.person2.vorname, kunde.person2.nachname].filter(Boolean).join(" "),
+        inhalt: <Person2Felder person2={kunde.person2} speichere={speichere} onAnrufen={(t) => rufeAnUndProtokolliere(t)} />,
+      }] : []),
       {
-        label: "Sprache",
-        wert: <KundenspracheFeld
-          wert={kundenSpracheAnzeige}
-          onWahl={darfKundenspracheAendern ? waehleKundenSprache : undefined}
-        />,
+        schluessel: "lead",
+        titel: "Lead- und Verwaltungsdaten",
+        hinweis: vertriebspartnerName || undefined,
+        inhalt: (
+          <LeadFelder
+            kunde={kunde}
+            meta={rawMeta}
+            rolle={user.role}
+            speichere={speichere}
+            // „Erstellt von“ sehen und ändern nur Admin und Inhaber.
+            ersteller={isAdminOrInhaber ? { nutzer: loadAllUsers().map((u) => ({ id: u.id, name: u.name || "" })) } : undefined}
+            vertriebspartnerName={vertriebspartnerName}
+            // Den Stift sehen dieselben Rollen wie vorher den Knopf „Vertriebspartner ändern“.
+            onVertriebspartnerAendern={canChangeBerater ? oeffneVertriebspartnerWechsel : undefined}
+            onKontaktOeffnen={(kontaktId) => navigate(`/kunden/${kontaktId}`)}
+            zusatz={darfStammdatenAendern ? (
+              <div className="mt-3">
+                <AlsTippgeberAnlegenButton
+                  kunde={kunde}
+                  investments={investments}
+                  currentUser={{ id: authUser?.id, name: user?.name, role: user?.role }}
+                  onChanged={() => {
+                    try { cacheRefreshTable("kontakte"); } catch {}
+                  }}
+                />
+              </div>
+            ) : undefined}
+          />
+        ),
       },
+      /*
+       * Seit dem 23.09.2026 derselbe Portalblock wie im Investment, mit
+       * denselben Handlern und Rechten (`kundenportalAngaben`). Freigeschaltet
+       * wird weiterhin im Investment, daher hier kein `onFreischalten`.
+       */
+      { schluessel: "portal", titel: "Kundenportal", ampel: portalAmpel(portalStatus), inhalt: portal },
+      ...(zeigeEmpfehlung ? [{
+        schluessel: "empfehlung",
+        titel: "Empfehlungsprogramm",
+        ampel: empfehlungAmpel(!!rawMeta.empfehlungsprogramm_aktiv),
+        inhalt: (
+          <div className="flex flex-col items-stretch gap-2 kundenprofil-kartenaktionen">
+            <EmpfehlungsprogrammKnoepfe
+              kunde={kunde}
+              investments={investments}
+              currentUser={{ id: (user as any)?.id, name: user?.name, role: user?.role }}
+              onChanged={() => {
+                try { cacheRefreshTable("kontakte"); } catch {}
+                forceUpdate(n => n + 1);
+              }}
+            />
+          </div>
+        ),
+      }] : []),
+      ...(rechnerQuellen.length > 0 ? [{
+        schluessel: "rechner",
+        titel: "Angaben aus Rechnern und Gesprächen",
+        hinweis: rechnerQuellen.length === 1 ? "1 Quelle" : `${rechnerQuellen.length} Quellen`,
+        inhalt: (
+          <KundenprofilRechnerZeilen
+            meta={rawMeta}
+            quelle={kunde.quelle}
+            erstelltAm={kunde.erstellt_am}
+            kontaktId={kunde.id}
+            kontakt={{ vorname: rawRow?.vorname ?? kunde.vorname, nachname: rawRow?.nachname ?? kunde.nachname, zustaendigId: rawRow?.zustaendig_id ?? null }}
+            ki={kiZusammenfassungen}
+          />
+        ),
+      }] : []),
+      ...(showQualifizierungsfragen ? [{
+        schluessel: "qualifizierung",
+        titel: "Qualifizierungsfragen",
+        hinweis: qualifizierungHinweis(kunde),
+        inhalt: <QualifizierungFelder kunde={kunde} meta={rawMeta} speichereKontakt={darfStammdatenAendern ? speichereKontaktTeil : undefined} speichereMeta={darfStammdatenAendern ? speichereKontaktMeta : undefined} />,
+      }] : []),
+      ...(nurLesend ? [] : [{ schluessel: "verwaltung", titel: "Kunde verwalten", inhalt: renderProfilVerwaltung() }]),
     ];
     return <KundenprofilStammdaten
       name={name}
       namenZusatz={kundenSpracheStand.sprache === "en" ? <KundenspracheKuerzel sprache="en" /> : undefined}
       anrede={kunde.anrede}
+      namenBearbeitung={speichere && {
+        start: () => ({ vorname: kunde.vorname || "", nachname: kunde.nachname || "" }),
+        speichern: (w) => speichere({ vorname: w.vorname.trim(), nachname: w.nachname.trim() }),
+      }}
       /*
-       * Seit dem 16.09.2026 steht die Ampel hier unter dem Namen statt als
-       * kleiner Punkt oben in der Titelzeile. Dieselbe Rechnung wie in der
-       * Kachel "Nächste Aktion", das Bauteil holt sie sich selbst aus
-       * `berechneInaktivitaetsAmpel`.
+       * Seit dem 16.09.2026 steht die Ampel hier unter dem Namen. Dieselbe
+       * Rechnung wie in der Kachel "Nächste Aktion" (`berechneInaktivitaetsAmpel`).
        */
       ampel={<InactivityAmpel kunde={kunde} size="md" showLabel />}
+      leadScore={<KundenprofilLeadScore saData={saData} />}
       /*
-       * Die Schnellaktionen sind vom Seitenkopf hierher gezogen. Sie rufen
-       * weiterhin `fuehreSchnellaktionAus`, also dieselben Dialoge und
-       * Nebenwirkungen wie vorher. Wer sie sehen darf, bleibt ebenfalls
-       * unverändert: Die alte Leiste im Seitenkopf hatte keine Rollenabfrage,
-       * also hat die neue auch keine.
+       * Die Schnellaktionen rufen weiterhin `fuehreSchnellaktionAus`, also
+       * dieselben Dialoge und Nebenwirkungen wie vorher.
        */
       aktionen={nurLesend ? undefined : <KundenprofilAktionsleiste onAktion={fuehreSchnellaktionAus} />}
-      felder={felder}
-      verwaltung={nurLesend ? undefined : renderProfilVerwaltung()}
-      onWeitereFelder={() => wechsleReiter("stammdaten")}
-      onBearbeiten={!isFinanzierer && !nurLesend ? oeffneStammdatenBearbeitung : undefined}
-      /*
-       * Seit dem 23.09.2026 derselbe Portalblock wie im Investment, mit
-       * denselben Handlern und Rechten (`kundenportalAngaben`). Status und
-       * Datum sieht jeder, der das Profil sieht, wie vorher das Kästchen.
-       * Die Knöpfe nur, wer sie auch im Investment sieht. Freigeschaltet wird
-       * weiterhin im Investment, daher hier kein `onFreischalten`.
-       */
-      portal={<KundenportalZugang {...kundenportalAngaben} darstellung="profil" />}
+      kontakt={
+        <KontaktFelder
+          kunde={kunde}
+          speichere={speichere}
+          onAnrufen={(t) => rufeAnUndProtokolliere(t)}
+          /*
+           * Kundensprache (Plan Kundensprache vom 25.09.2026). Ein Klick
+           * speichert sofort; serverseitig entscheidet `merge_kontakt_meta`.
+           */
+          sprache={<KundenspracheFeld wert={kundenSpracheAnzeige} onWahl={darfKundenspracheAendern ? waehleKundenSprache : undefined} />}
+          zusatz={renderSetterKontaktPruefung()}
+        />
+      }
+      abschnitte={abschnitte}
+      istOffen={profilAbschnitte.istOffen}
+      onUmschalten={profilAbschnitte.umschalten}
     />;
   };
 
@@ -6036,61 +5940,52 @@ export default function KundenDetail() {
     />;
   };
 
-  const renderStammdaten = () => {
-    const analyseResult = kunde ? getAnalyseResultForKontakt(kunde.id) : null;
-    const rawRow = kunde ? cacheGet("kontakte").find((r: any) => r.id === kunde.id) : null;
-    const rawMeta = rawRow?.meta || {};
-    const analyseNachricht = (
-      analyseResult?.leadMessage ||
-      rawMeta?.analyseNachricht ||
-      (typeof kunde?.position === "string" && kunde.position.startsWith("Notiz: ") ? kunde.position.replace(/^Notiz:\s*/, "") : "") ||
-      rawRow?.notizen ||
-      ""
-    ).trim();
-    const empfehlungsgeberName = rawMeta.empfehlungsgeberName as string | undefined;
-    const empfehlungsgeberKontaktId = rawMeta.empfehlungsgeberKontaktId as string | undefined;
-    const empfehlungsgeberBeziehung = rawMeta.empfehlungsgeberBeziehung as string | undefined;
-    const empfehlungsgeberRow = (
-      <>
-        <span className="font-semibold">Empfehlungsgeber:</span>
-        <span>
-          {empfehlungsgeberName ? (
-            <>
-              {empfehlungsgeberKontaktId ? (
-                <button className="text-primary hover:underline text-sm" onClick={() => navigate(`/kunden/${empfehlungsgeberKontaktId}`)}>
-                  {empfehlungsgeberName}
-                </button>
-              ) : empfehlungsgeberName}
-              {empfehlungsgeberBeziehung && <span className="text-muted-foreground text-xs ml-1">({empfehlungsgeberBeziehung})</span>}
-            </>
-          ) : (
-            <span className="text-muted-foreground">–</span>
-          )}
-        </span>
-      </>
-    );
-    const empfehlungsgeberEditRow = (
-      <>
-        <span className="font-semibold">Empfehlungsgeber:</span>
-        <div className="grid grid-cols-2 gap-2">
-          <Input
-            className="h-8"
-            placeholder="Name (optional)"
-            value={(editData as any).empfehlungsgeberName ?? ""}
-            onChange={e => setEditData(p => ({ ...(p as any), empfehlungsgeberName: e.target.value }))}
-          />
-          <Input
-            className="h-8"
-            placeholder="Beziehung (optional)"
-            value={(editData as any).empfehlungsgeberBeziehung ?? ""}
-            onChange={e => setEditData(p => ({ ...(p as any), empfehlungsgeberBeziehung: e.target.value }))}
-          />
-        </div>
-      </>
-    );
-    return (
-    <div className={`space-y-6 ${isFinanzierer ? "finanzierer-readonly" : ""}`}>
+  /** Setterin: Kontaktdaten geprüft und bestätigt, unter den Kontaktdaten links. */
+  const renderSetterKontaktPruefung = () => (
+    <>
+                  {isSetterinRole && (
+                    <div className={cn(
+                      "mt-3 p-3 rounded-lg border flex items-center gap-3 cursor-pointer transition-colors",
+                      setterKontaktGeprueft
+                        ? "bg-[hsl(var(--success))]/10 border-[hsl(var(--success))]/30"
+                        : "bg-[hsl(var(--warning))]/10 border-[hsl(var(--warning))]/30"
+                    )} onClick={() => {
+                      const next = !setterKontaktGeprueft;
+                      setSetterKontaktGeprueft(next);
+                      setSetterDirty(true);
+                      if (isTestAccount()) {
+                        localStorage.setItem(`osimmo_setter_kontakt_geprueft_${kunde?.id}`, JSON.stringify(next));
+                      } else {
+                        const all = getUserSetting<Record<string, boolean>>("setter_kontakt_geprueft", {});
+                        all[kunde?.id || ""] = next;
+                        setUserSetting("setter_kontakt_geprueft", all);
+                      }
+                    }}>
+                      <Checkbox checked={setterKontaktGeprueft} onCheckedChange={() => {}} />
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">Kontaktdaten geprüft & bestätigt</p>
+                        <p className="text-xs text-muted-foreground">Ich bestätige, dass Name, Telefonnummer und E-Mail auf Aktualität und Richtigkeit überprüft wurden.</p>
+                      </div>
+                      {setterKontaktGeprueft && <CheckCircle2 className="h-4 w-4 text-[hsl(var(--success))] shrink-0" />}
+                      {!setterKontaktGeprueft && <AlertTriangle className="h-4 w-4 text-[hsl(var(--warning))] shrink-0" />}
+                    </div>
+                  )}
+    </>
+  );
 
+  /**
+   * Die Hinweise, die bis zum 18.10.2026 im Reiter Stammdaten standen, jetzt
+   * oben in der Mitte über Kacheln und Reitern: Nur-Lese-Hinweise, No-Show,
+   * Lead-Pipeline ohne Investment, Löschanfrage und DSGVO-Countdown.
+   * Sichtbarkeit und Knöpfe sind unverändert.
+   */
+  const renderProfilHinweise = () => (
+    <>
+      {nurLesend && (
+        <p role="status" data-testid="nur-lesend-hinweis" className="rounded-os-sm border border-[hsl(var(--warning))]/40 bg-[hsl(var(--warning))]/10 px-3 py-2 text-sm text-foreground">
+          {NUR_LESEND_HINWEIS}
+        </p>
+      )}
       {isFinanzierer && (
         <Card className="p-3 border-2 border-primary/40 bg-primary/5 flex items-start gap-3">
           <Lock className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
@@ -6099,17 +5994,6 @@ export default function KundenDetail() {
           </div>
         </Card>
       )}
-
-      {/* Guidance: Nächste Schritte pro Investment — nimmt VP/Vertriebsleiter/Admin durch den Funnel */}
-      {/* (verschoben: jetzt direkt über dem Investments-Block) */}
-
-      {/*
-        No-Show-Banner: zeigt die erfassten No-Shows an. Seit 30.09.2026
-        (Entscheidung Christian) verschwindet es, sobald ein neues Erst- oder
-        Beratungsgespraech eingetragen ist, gleich ueber welchen Weg, und
-        kommt erst nach einem erneuten No-Show mit dem aktuellen Zaehler
-        wieder. Vorher zaehlte nur das Setter-Feld mit Buchungshaken.
-      */}
       {(() => {
         const hist = noShowListe(kunde);
         if (hist.length === 0) return null;
@@ -6157,852 +6041,6 @@ export default function KundenDetail() {
           </Card>
         );
       })()}
-
-
-
-      {/* Kundendaten */}
-      <div className="space-y-6">
-        <Card className="p-6">
-          <div className="w-8 h-1 bg-primary mb-3" />
-          <div className="flex items-start justify-between gap-3 mb-4">
-            <h3 className="font-bold">Kundendaten</h3>
-            <div className="shrink-0">
-              <LeadScoreBadge saData={saData} />
-              <LeadScoreHint saData={saData} />
-            </div>
-          </div>
-          <hr className="mb-4" />
-
-          {editDialog ? (
-            <div className="space-y-3">
-              {/*
-                Dieselbe Anordnung wie in der Ansicht: zwei Spalten, links die
-                persoenlichen Daten, rechts Person 2 oder, wenn es keine gibt,
-                die Lead- und Verwaltungsdaten. Vorher stapelte der
-                Bearbeitungsmodus alles untereinander, dadurch rutschten die
-                Lead-Daten unter die persoenlichen Daten in die linke Spalte und
-                die Seite sah beim Umschalten voellig anders aus.
-              */}
-              <div className="grid gap-8 grid-cols-1 lg:grid-cols-2">
-                <div>
-                  {(editData as any).person2 && (
-                    <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wide mb-2">Person 1</p>
-                  )}
-                  <h4 className="font-semibold mb-3 text-muted-foreground uppercase tracking-wide text-xs">Persönliche Daten</h4>
-                  <hr className="mb-3" />
-              <div className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-3 text-sm items-center">
-                <span className="font-semibold">ID:</span><span>{formatKundenId(kunde.osImmoId)}</span>
-                <span className="font-semibold">Vorname:</span>
-                <Input className="h-8" value={editData.vorname || ""} onChange={e => setEditData(p => ({ ...p, vorname: e.target.value }))} />
-                <span className="font-semibold">Nachname:</span>
-                <Input className="h-8" value={editData.nachname || ""} onChange={e => setEditData(p => ({ ...p, nachname: e.target.value }))} />
-                <span className="font-semibold">Geburtstag:</span>
-                <DateInput
-                  className="h-8"
-                  value={(() => {
-                    const g = editData.geburtstag || "";
-                    if (/^\d{4}-\d{2}-\d{2}$/.test(g)) return g;
-                    if (/^\d{2}\.\d{2}\.\d{4}$/.test(g)) {
-                      const [d, m, y] = g.split(".");
-                      return `${y}-${m}-${d}`;
-                    }
-                    return "";
-                  })()}
-                  onChange={val => {
-                    // val is ISO YYYY-MM-DD; convert back to DD.MM.YYYY for storage
-                    let stored = val;
-                    if (/^\d{4}-\d{2}-\d{2}$/.test(val)) {
-                      const [y, m, d] = val.split("-");
-                      stored = `${d}.${m}.${y}`;
-                    }
-                    setEditData(p => ({ ...p, geburtstag: stored }));
-                  }}
-                  placeholder="TT.MM.JJJJ"
-                />
-                <span className="font-semibold">Straße, Hausnr.:</span>
-                <div className="flex gap-2">
-                  <AddressAutocomplete
-                    className="h-8"
-                    value={editData.strasse || ""}
-                    onChange={(val) => setEditData(p => ({ ...p, strasse: val }))}
-                    onSelect={(addr) => setEditData(p => ({ ...p, strasse: addr.strasse, hausnummer: addr.hausnummer, plz: addr.plz, ort: addr.ort }))}
-                    placeholder="Straße"
-                  />
-                  <Input className="h-8 w-20" value={editData.hausnummer || ""} onChange={e => setEditData(p => ({ ...p, hausnummer: e.target.value }))} placeholder="Nr." />
-                </div>
-                <span className="font-semibold">Postleitzahl:</span>
-                <Input className="h-8" value={editData.plz || ""} onChange={e => setEditData(p => ({ ...p, plz: e.target.value }))} />
-                <span className="font-semibold">Ort:</span>
-                <Input className="h-8" value={editData.ort || ""} onChange={e => setEditData(p => ({ ...p, ort: e.target.value }))} />
-                <span className="font-semibold">E-Mailadresse:</span>
-                <Input className="h-8" value={editData.email || ""} onChange={e => setEditData(p => ({ ...p, email: e.target.value }))} />
-                <span className="font-semibold">Telefonnummer:</span>
-                <PhoneInput className="h-8" value={editData.telefon || ""} onChange={v => setEditData(p => ({ ...p, telefon: v }))} />
-                <span className="font-semibold">Sprache:</span>
-                <KundenspracheFeld
-                  wert={editSprache ?? kundenSpracheAnzeige}
-                  onWahl={setEditSprache}
-                />
-              </div>
-                </div>
-
-                {(editData as any).person2 ? (
-                  <div className="border-l-2 border-primary/20 pl-6">
-                    <p className="text-[10px] text-primary font-semibold uppercase tracking-wide mb-2">Person 2</p>
-                    <h4 className="font-semibold mb-3 text-muted-foreground uppercase tracking-wide text-xs">Persönliche Daten</h4>
-                    <hr className="mb-3" />
-
-                  <div className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-3 text-sm items-center">
-                    <span className="font-semibold">Vorname:</span>
-                    <Input className="h-8" value={(editData as any).person2?.vorname || ""} onChange={e => setEditData(p => ({ ...(p as any), person2: { ...((p as any).person2 || {}), vorname: e.target.value } }))} />
-                    <span className="font-semibold">Nachname:</span>
-                    <Input className="h-8" value={(editData as any).person2?.nachname || ""} onChange={e => setEditData(p => ({ ...(p as any), person2: { ...((p as any).person2 || {}), nachname: e.target.value } }))} />
-                    <span className="font-semibold">Geburtsdatum:</span>
-                    <DateInput
-                      className="h-8"
-                      value={(() => {
-                        const g = (editData as any).person2?.geburtsdatum || "";
-                        if (/^\d{4}-\d{2}-\d{2}$/.test(g)) return g;
-                        if (/^\d{2}\.\d{2}\.\d{4}$/.test(g)) { const [d, m, y] = g.split("."); return `${y}-${m}-${d}`; }
-                        return "";
-                      })()}
-                      onChange={val => {
-                        let stored = val;
-                        if (/^\d{4}-\d{2}-\d{2}$/.test(val)) { const [y, m, d] = val.split("-"); stored = `${d}.${m}.${y}`; }
-                        setEditData(p => ({ ...(p as any), person2: { ...((p as any).person2 || {}), geburtsdatum: stored } }));
-                      }}
-                      placeholder="TT.MM.JJJJ"
-                    />
-                    <span className="font-semibold">E-Mailadresse: <span className="text-destructive">*</span></span>
-                    <Input
-                      className="h-8"
-                      type="email"
-                      placeholder="email@beispiel.de"
-                      value={(editData as any).person2?.email || ""}
-                      onChange={e => setEditData(p => ({ ...(p as any), person2: { ...((p as any).person2 || {}), email: e.target.value } }))}
-                    />
-                    <span className="font-semibold">Telefonnummer:</span>
-                    <PhoneInput className="h-8" value={(editData as any).person2?.telefon || ""} onChange={v => setEditData(p => ({ ...(p as any), person2: { ...((p as any).person2 || {}), telefon: v } }))} />
-                  </div>
-                  <p className="text-[11px] text-muted-foreground mt-1.5">
-                    💡 Die E-Mail von Person 2 wird benötigt, damit die Selbstauskunft auch von Person 2 digital unterschrieben werden kann.
-                  </p>
-                  </div>
-                ) : (
-                  <div>
-              <h4 className="font-semibold text-sm mt-4 mb-2 text-muted-foreground uppercase tracking-wide text-xs">Lead- & Verwaltungsdaten</h4>
-              <hr className="mb-2" />
-              <div className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-3 text-sm items-center">
-                <span className="font-semibold">Angelegt am:</span><span>{formatDatum(kunde.erstellt_am)}</span>
-                {isAdminOrInhaber ? (
-                  <>
-                    <span className="font-semibold">Erstellt von:</span>
-                    <Select
-                      value={(editData as any).erstelltVonId || "__none__"}
-                      onValueChange={(val) => {
-                        if (val === "__none__") {
-                          setEditData(p => ({ ...p, erstelltVonId: "", erstelltVonName: "" } as any));
-                        } else {
-                          const u = loadAllUsers().find(u => u.id === val);
-                          setEditData(p => ({ ...p, erstelltVonId: val, erstelltVonName: u?.name || "" } as any));
-                        }
-                      }}
-                    >
-                      <SelectTrigger className="h-8"><SelectValue placeholder="– kein Ersteller –" /></SelectTrigger>
-                      <SelectContent className="max-h-72 overflow-y-auto bg-popover z-50">
-                        <SelectItem value="__none__">– kein Ersteller –</SelectItem>
-                        {loadAllUsers()
-                          .slice()
-                          .sort((a, b) => (a.name || "").localeCompare(b.name || ""))
-                          .map(u => (
-                            <SelectItem key={u.id} value={u.id}>{u.name}</SelectItem>
-                          ))}
-                      </SelectContent>
-                    </Select>
-                  </>
-                ) : null}
-                <span className="font-semibold">Quelle/Lead:</span>
-                <span className="text-sm">{kontaktQuelleAnzeige({ quelle: editData.quelle, leadTyp: kunde.leadTyp }) || "–"}</span>
-                <KampagnenZeile kontaktId={kunde.id} rolle={user.role} />
-                {empfehlungsgeberEditRow}
-                <span className="font-semibold">Setter:</span>
-                <BeraterSearchSelect
-                  value={editData.setter || ""}
-                  onChange={(val, uid) => setEditData(p => ({ ...p, setter: val, setterId: uid || "" }))}
-                  filterByRole="setterin"
-                />
-                <span className="font-semibold">Vertriebspartner:</span><span>{vertriebspartnerName || "–"}</span>
-              </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Bei zwei Personen brauchen die Lead-Daten die volle Breite, genau wie in der Ansicht. */}
-              {(editData as any).person2 && (
-                <div>
-              <h4 className="font-semibold text-sm mt-4 mb-2 text-muted-foreground uppercase tracking-wide text-xs">Lead- & Verwaltungsdaten</h4>
-              <hr className="mb-2" />
-              <div className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-3 text-sm items-center">
-                <span className="font-semibold">Angelegt am:</span><span>{formatDatum(kunde.erstellt_am)}</span>
-                {isAdminOrInhaber ? (
-                  <>
-                    <span className="font-semibold">Erstellt von:</span>
-                    <Select
-                      value={(editData as any).erstelltVonId || "__none__"}
-                      onValueChange={(val) => {
-                        if (val === "__none__") {
-                          setEditData(p => ({ ...p, erstelltVonId: "", erstelltVonName: "" } as any));
-                        } else {
-                          const u = loadAllUsers().find(u => u.id === val);
-                          setEditData(p => ({ ...p, erstelltVonId: val, erstelltVonName: u?.name || "" } as any));
-                        }
-                      }}
-                    >
-                      <SelectTrigger className="h-8"><SelectValue placeholder="– kein Ersteller –" /></SelectTrigger>
-                      <SelectContent className="max-h-72 overflow-y-auto bg-popover z-50">
-                        <SelectItem value="__none__">– kein Ersteller –</SelectItem>
-                        {loadAllUsers()
-                          .slice()
-                          .sort((a, b) => (a.name || "").localeCompare(b.name || ""))
-                          .map(u => (
-                            <SelectItem key={u.id} value={u.id}>{u.name}</SelectItem>
-                          ))}
-                      </SelectContent>
-                    </Select>
-                  </>
-                ) : null}
-                <span className="font-semibold">Quelle/Lead:</span>
-                <span className="text-sm">{kontaktQuelleAnzeige({ quelle: editData.quelle, leadTyp: kunde.leadTyp }) || "–"}</span>
-                <KampagnenZeile kontaktId={kunde.id} rolle={user.role} />
-                {empfehlungsgeberEditRow}
-                <span className="font-semibold">Setter:</span>
-                <BeraterSearchSelect
-                  value={editData.setter || ""}
-                  onChange={(val, uid) => setEditData(p => ({ ...p, setter: val, setterId: uid || "" }))}
-                  filterByRole="setterin"
-                />
-                <span className="font-semibold">Vertriebspartner:</span><span>{vertriebspartnerName || "–"}</span>
-              </div>
-                </div>
-              )}
-
-              <div className="flex gap-2 mt-4">
-                <Button size="sm" onClick={handleSaveEdit}>
-                  <CheckCircle2 className="h-3 w-3 mr-1" /> Speichern
-                </Button>
-                <Button size="sm" variant="outline" onClick={() => setEditDialog(false)}>
-                  Abbrechen
-                </Button>
-              </div>
-            </div>
-          ) : beraterDialog || setterDialog ? (
-            <div className="space-y-3">
-              {/*
-                Dieselbe zweispaltige Aufteilung wie die Leseansicht und der
-                Bearbeitungsmodus: links die persoenlichen Daten, rechts die
-                Lead- und Verwaltungsdaten. Bearbeitbar ist nur das eine Feld,
-                um das es geht, alles andere bleibt reine Anzeige.
-              */}
-              <div className="grid gap-8 grid-cols-1 lg:grid-cols-2">
-                <div>
-                  <h4 className="font-semibold mb-3 text-muted-foreground uppercase tracking-wide text-xs">Persönliche Daten</h4>
-                  <hr className="mb-3" />
-                  <div className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
-                    <span className="font-semibold">ID:</span><span>{formatKundenId(kunde.osImmoId)}</span>
-                    <span className="font-semibold">Vorname:</span><span>{kunde.vorname}</span>
-                    <span className="font-semibold">Nachname:</span><span>{kunde.nachname}</span>
-                    <span className="font-semibold">Geburtstag:</span><span>{kunde.geburtstag || "–"}</span>
-                    <span className="font-semibold">Straße, Hausnummer:</span><span>{kunde.strasse || "–"} {kunde.hausnummer}</span>
-                    <span className="font-semibold">Postleitzahl:</span><span>{kunde.plz || "–"}</span>
-                    <span className="font-semibold">Ort:</span><span>{kunde.ort || "–"}</span>
-                    <span className="font-semibold">E-Mailadresse:</span>
-                    <span>{kunde.email ? <a href={tarnVerweis(`mailto:${kunde.email}`)} className="text-primary hover:underline">{tarnEmail(kunde.email)}</a> : "–"}</span>
-                    <span className="font-semibold">Telefonnummer:</span>
-                    <span>{kunde.telefon ? <a href={tarnVerweis(`tel:${kunde.telefon}`)} className="text-primary hover:underline" onClick={(e) => { e.preventDefault(); rufeAnUndProtokolliere(kunde.telefon); }}>{tarnTelefon(normalizeTelefon(kunde.telefon))}</a> : "–"}</span>
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="font-semibold mb-3 text-muted-foreground uppercase tracking-wide text-xs">Lead- & Verwaltungsdaten</h4>
-                  <hr className="mb-3" />
-                  <div className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-3 text-sm items-center">
-                    <span className="font-semibold">Angelegt am:</span><span>{formatDatum(kunde.erstellt_am)}</span>
-                    <span className="font-semibold">Quelle/Lead:</span><span>{kontaktQuelleAnzeige(kunde) || "–"}</span>
-                    <KampagnenZeile kontaktId={kunde.id} rolle={user.role} />
-                    {empfehlungsgeberRow}
-                    <span className="font-semibold">Setter:</span>
-                    {setterDialog
-                      ? <BeraterSearchSelect value={newSetter} onChange={(v, uid) => { setNewSetter(v); setNewSetterId(uid); }} filterByRole="setterin" />
-                      : <span>{kunde.setter || "–"}</span>}
-                    <span className="font-semibold">Vertriebspartner:</span>
-                    {beraterDialog
-                      ? <BeraterSearchSelect value={newBerater} onChange={(v, uid) => { setNewBerater(v); setNewBeraterId(uid); setBeraterWechselWarnung(null); }} filterByRole="vertriebspartner" />
-                      : <span>{vertriebspartnerName || "–"}</span>}
-                  </div>
-                </div>
-              </div>
-
-              {/*
-                Der Grund der Übergabe. Er landet beim neuen Partner und
-                bleibt am Kontakt stehen, deshalb steht er hier direkt unter
-                der Auswahl und nicht in einem zweiten Schritt.
-              */}
-              {beraterDialog && wechselBrauchtGrund && (
-                <div className="mt-4 space-y-2">
-                  <span className="text-sm font-semibold">Grund der Übergabe</span>
-                  <p className="text-xs text-muted-foreground">
-                    Kurz und sachlich. {vertriebspartnerName || "Der bisherige Vertriebspartner"} gibt ab, der neue soll wissen, wo er ansetzt.
-                  </p>
-                  <UebergabeGrundFeld grund={uebergabeGrund} onChange={setUebergabeGrund} />
-                </div>
-              )}
-
-              {beraterDialog && beraterWechselWarnung && (
-                <div className="mt-3 rounded-lg border border-[hsl(var(--warning))]/50 bg-[hsl(var(--warning))]/10 p-3">
-                  <p className="text-sm font-medium flex items-start gap-2">
-                    <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0 text-[hsl(var(--warning))]" />
-                    {beraterWechselWarnung}
-                  </p>
-                </div>
-              )}
-
-              <div className="flex gap-2 mt-4">
-                {beraterDialog ? (
-                  beraterWechselWarnung ? (
-                    <Button size="sm" variant="destructive" onClick={fuehreBeraterWechselAus} disabled={!grundBereit}>
-                      <CheckCircle2 className="h-3 w-3 mr-1" /> Ja, wirklich neu zuweisen
-                    </Button>
-                  ) : (
-                    <Button size="sm" onClick={handleSaveBerater} disabled={!grundBereit}>
-                      <CheckCircle2 className="h-3 w-3 mr-1" /> Vertriebspartner speichern
-                    </Button>
-                  )
-                ) : (
-                  <Button size="sm" onClick={handleSaveSetter}>
-                    <CheckCircle2 className="h-3 w-3 mr-1" /> Setterin speichern
-                  </Button>
-                )}
-                <Button size="sm" variant="outline" onClick={() => { setBeraterDialog(false); setSetterDialog(false); setBeraterWechselWarnung(null); }}>
-                  Abbrechen
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <>
-              {/* Kundendaten links, Lead- & Verwaltungsdaten rechts (wenn kein Person 2) */}
-              <div className={`grid gap-8 ${kunde.person2 ? "grid-cols-1 lg:grid-cols-2" : "grid-cols-1 lg:grid-cols-2"}`}>
-                {/* Person 1 */}
-                <div>
-                  {kunde.person2 && <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wide mb-2">Person 1</p>}
-                  <h4 className="font-semibold mb-3 text-muted-foreground uppercase tracking-wide text-xs">Persönliche Daten</h4>
-                  <hr className="mb-3" />
-                  <div className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
-                    <span className="font-semibold">ID:</span><span>{formatKundenId(kunde.osImmoId)}</span>
-                    <span className="font-semibold">Vorname:</span><span>{kunde.vorname}</span>
-                    <span className="font-semibold">Nachname:</span><span>{kunde.nachname}</span>
-                    <span className="font-semibold">Geburtstag:</span><span>{kunde.geburtstag || "–"}</span>
-                    <span className="font-semibold">Straße, Hausnummer:</span><span>{kunde.strasse || "–"} {kunde.hausnummer}</span>
-                    <span className="font-semibold">Postleitzahl:</span><span>{kunde.plz || "–"}</span>
-                    <span className="font-semibold">Ort:</span><span>{kunde.ort || "–"}</span>
-                    <span className="font-semibold">E-Mailadresse:</span>
-                    <span>{kunde.email ? <a href={tarnVerweis(`mailto:${kunde.email}`)} className="text-primary hover:underline">{tarnEmail(kunde.email)}</a> : "–"}</span>
-                    <span className="font-semibold">Telefonnummer:</span>
-                    <span className="flex items-center gap-2">
-                      {kunde.telefon ? <a href={tarnVerweis(`tel:${kunde.telefon}`)} className="text-primary hover:underline" onClick={(e) => { e.preventDefault(); rufeAnUndProtokolliere(kunde.telefon); }}>{tarnTelefon(normalizeTelefon(kunde.telefon))}</a> : "–"}
-                      {kunde.telefon && (
-                        <a
-                          href={whatsAppLink(kunde.telefon)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[#25D366] text-white hover:bg-[#128C7E] transition-colors"
-                          title="WhatsApp öffnen"
-                        >
-                          <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5">
-                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.028-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                          </svg>
-                        </a>
-                      )}
-                    </span>
-                    <span className="font-semibold">Sprache:</span>
-                    <KundenspracheFeld wert={kundenSpracheAnzeige} />
-                  </div>
-                  {/* Setter: Kontaktdaten-Bestätigung */}
-                  {isSetterinRole && (
-                    <div className={cn(
-                      "mt-3 p-3 rounded-lg border flex items-center gap-3 cursor-pointer transition-colors",
-                      setterKontaktGeprueft
-                        ? "bg-[hsl(var(--success))]/10 border-[hsl(var(--success))]/30"
-                        : "bg-[hsl(var(--warning))]/10 border-[hsl(var(--warning))]/30"
-                    )} onClick={() => {
-                      const next = !setterKontaktGeprueft;
-                      setSetterKontaktGeprueft(next);
-                      setSetterDirty(true);
-                      if (isTestAccount()) {
-                        localStorage.setItem(`osimmo_setter_kontakt_geprueft_${kunde?.id}`, JSON.stringify(next));
-                      } else {
-                        const all = getUserSetting<Record<string, boolean>>("setter_kontakt_geprueft", {});
-                        all[kunde?.id || ""] = next;
-                        setUserSetting("setter_kontakt_geprueft", all);
-                      }
-                    }}>
-                      <Checkbox checked={setterKontaktGeprueft} onCheckedChange={() => {}} />
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">Kontaktdaten geprüft & bestätigt</p>
-                        <p className="text-xs text-muted-foreground">Ich bestätige, dass Name, Telefonnummer und E-Mail auf Aktualität und Richtigkeit überprüft wurden.</p>
-                      </div>
-                      {setterKontaktGeprueft && <CheckCircle2 className="h-4 w-4 text-[hsl(var(--success))] shrink-0" />}
-                      {!setterKontaktGeprueft && <AlertTriangle className="h-4 w-4 text-[hsl(var(--warning))] shrink-0" />}
-                    </div>
-                  )}
-                </div>
-
-                {/* Person 2 */}
-                {kunde.person2 && (
-                  <div className="border-l-2 border-primary/20 pl-6">
-                    <p className="text-[10px] text-primary font-semibold uppercase tracking-wide mb-2">Person 2</p>
-                    <h4 className="font-semibold mb-3 text-muted-foreground uppercase tracking-wide text-xs">Persönliche Daten</h4>
-                    <hr className="mb-3" />
-                    <div className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
-                      <span className="font-semibold">Anrede:</span><span>{kunde.person2.anrede || "–"}</span>
-                      <span className="font-semibold">Vorname:</span><span>{kunde.person2.vorname}</span>
-                      <span className="font-semibold">Nachname:</span><span>{kunde.person2.nachname}</span>
-                      <span className="font-semibold">Geburtstag:</span><span>{kunde.person2.geburtsdatum || "–"}</span>
-                      <span className="font-semibold">Straße, Hausnummer:</span><span>{kunde.person2.strasse || "–"} {kunde.person2.hausnummer}</span>
-                      <span className="font-semibold">Postleitzahl:</span><span>{kunde.person2.plz || "–"}</span>
-                      <span className="font-semibold">Ort:</span><span>{kunde.person2.ort || "–"}</span>
-                      <span className="font-semibold">E-Mailadresse:</span>
-                      <span>{kunde.person2.email ? <a href={`mailto:${kunde.person2.email}`} className="text-primary hover:underline">{kunde.person2.email}</a> : "–"}</span>
-                      <span className="font-semibold">Telefonnummer:</span>
-                      <span className="flex items-center gap-2">
-                        {kunde.person2.telefon ? <a href={`tel:${kunde.person2.telefon}`} className="text-primary hover:underline" onClick={(e) => { e.preventDefault(); rufeAnUndProtokolliere(kunde.person2?.telefon); }}>{normalizeTelefon(kunde.person2.telefon)}</a> : "–"}
-                        {kunde.person2.telefon && (
-                          <a
-                            href={whatsAppLink(kunde.person2.telefon)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[#25D366] text-white hover:bg-[#128C7E] transition-colors"
-                            title="WhatsApp öffnen"
-                          >
-                            <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5">
-                              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.028-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                            </svg>
-                          </a>
-                        )}
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Lead- & Verwaltungsdaten – rechte Spalte (nur wenn keine Person 2) */}
-                {!kunde.person2 && (
-                  <div>
-                    <h4 className="font-semibold text-sm mb-3 text-muted-foreground uppercase tracking-wide text-xs">Lead- & Verwaltungsdaten</h4>
-                    <hr className="mb-3" />
-                    {(() => {
-                      const _row = cacheGet("kontakte").find((r: any) => r.id === kunde.id);
-                      const _meta = (_row?.meta && typeof _row.meta === "object") ? _row.meta : {};
-                      const _erstellerName = _meta.erstelltVonName || "–";
-                      return (
-                        <div className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
-                          <span className="font-semibold">Angelegt am:</span><span>{formatDatum(kunde.erstellt_am)}</span>
-                          <span className="font-semibold">Erstellt von:</span><span>{_erstellerName}</span>
-                          <span className="font-semibold">Quelle/Lead:</span><span>{kontaktQuelleAnzeige(kunde) || "–"}</span>
-                          <KampagnenZeile kontaktId={kunde.id} rolle={user.role} />
-                          {empfehlungsgeberRow}
-                          <span className="font-semibold">Setter:</span><span>{kunde.setter || "–"}</span>
-                          <span className="font-semibold">Vertriebspartner:</span><span>{vertriebspartnerName || "–"}</span>
-                          <BeraterVerlauf kunde={kunde} />
-                        </div>
-                      );
-                    })()}
-                  </div>
-                )}
-              </div>
-
-              {/* Lead- & Verwaltungsdaten – volle Breite (Fallback bei Person 2) */}
-              {kunde.person2 && (
-                <>
-                  <h4 className="font-semibold text-sm mt-6 mb-3 text-muted-foreground uppercase tracking-wide text-xs">Lead- & Verwaltungsdaten</h4>
-                  <hr className="mb-3" />
-                  {(() => {
-                const _row = cacheGet("kontakte").find((r: any) => r.id === kunde.id);
-                const _meta = (_row?.meta && typeof _row.meta === "object") ? _row.meta : {};
-                const _erstellerName = _meta.erstelltVonName || "–";
-                return (
-                  <div className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
-                    <span className="font-semibold">Angelegt am:</span><span>{formatDatum(kunde.erstellt_am)}</span>
-                    <span className="font-semibold">Erstellt von:</span><span>{_erstellerName}</span>
-                    <span className="font-semibold">Quelle/Lead:</span><span>{kontaktQuelleAnzeige(kunde) || "–"}</span>
-                    <KampagnenZeile kontaktId={kunde.id} rolle={user.role} />
-                    {empfehlungsgeberRow}
-                    <span className="font-semibold">Setter:</span><span>{kunde.setter || "–"}</span>
-                    <span className="font-semibold">Vertriebspartner:</span><span>{vertriebspartnerName || "–"}</span>
-                    <BeraterVerlauf kunde={kunde} />
-                  </div>
-                );
-                  })()}
-                </>
-              )}
-
-              {/* Qualifikationsdaten moved to separate editable card below */}
-
-              <div className="flex flex-wrap gap-2 mt-4">
-                {!isFinanzierer && (
-                <Button size="sm" variant="secondary" onClick={() => {
-                  oeffneStammdatenBearbeitung();
-                }}>
-                  <Pencil className="h-3 w-3 mr-1" /> Daten ändern
-                </Button>
-                )}
-                {canChangeBerater && (
-                  <Button size="sm" variant="secondary" onClick={() => {
-                    setNewBerater(kunde.berater);
-                    setNewBeraterId(kunde.zustaendig_id || undefined);
-                    setBeraterWechselWarnung(null);
-                    setBeraterDialog(true);
-                  }}>
-                    <UserCog className="h-3 w-3 mr-1" /> Vertriebspartner ändern
-                  </Button>
-                )}
-                {canChangeBerater && (
-                  <Button size="sm" variant="secondary" onClick={() => {
-                    setNewSetter(kunde.setter || "");
-                    setNewSetterId(kunde.setterId || undefined);
-                    setSetterDialog(true);
-                  }}>
-                    <UserCog className="h-3 w-3 mr-1" /> Setter ändern
-                  </Button>
-                )}
-                {!isFinanzierer && (
-                  <AlsTippgeberAnlegenButton
-                    kunde={kunde}
-                    investments={investments}
-                    currentUser={{ id: authUser?.id, name: user?.name, role: user?.role }}
-                    onChanged={() => {
-                      try { cacheRefreshTable("kontakte"); } catch {}
-                    }}
-                  />
-                )}
-              </div>
-
-
-              {/*
-                Der Block "Kundenportal & Zugang" stand hier ein zweites Mal.
-                Freigeschaltet wird das Portal im Investment, unterhalb der
-                Bonitätscheck-Unterlagen, sobald die Selbstauskunft ausgefüllt
-                und unterschrieben ist. Beim ersten Investment muss dort
-                freigegeben werden, bei allen weiteren ist es bereits
-                freigegeben. In den Stammdaten hatte der Block deshalb keinen
-                eigenen Zweck.
-              */}
-            </>
-          )}
-        </Card>
-
-        {/*
-          Was der Interessent selbst in Steuerrechner und Analysetool
-          ausgefuellt hat.
-
-          Steht bewusst DIREKT unter den Kundendaten und noch vor den
-          Qualifizierungsfragen: Der Partner liest von oben nach unten, greift
-          nach der Telefonnummer und ruft an. Was der Interessent kurz vorher
-          eingegeben und auf dem Bildschirm gesehen hat, muss er bis dahin
-          gelesen haben, sonst nennt er im Gespraech andere Zahlen als die
-          Seite. Weiter unten waere es hinter Finanzkarten und Aktivitaeten
-          begraben, und die Karte gaebe es dann zwar, gefunden wuerde sie aber
-          nicht.
-
-          Sie steht ausserdem VOR den Qualifizierungsfragen, weil sie deren
-          Antworten teilweise schon enthaelt: Einkommen und berufliche
-          Situation hat der Interessent selbst angegeben. Wer sie danach
-          faende, haette sie schon einmal erfragt.
-
-          Ohne Angaben zeigt die Karte gar nichts, sie erzeugt also keinen
-          leeren Kasten bei Kontakten aus anderen Quellen.
-        */}
-        <RechnerAngaben
-          meta={rawMeta}
-          erstelltAm={kunde.erstellt_am}
-          kontaktId={kunde.id}
-          quelle={kunde.quelle}
-          vorname={rawRow?.vorname ?? kunde.vorname}
-          nachname={rawRow?.nachname ?? kunde.nachname}
-          zustaendigId={rawRow?.zustaendig_id ?? null}
-        />
-
-        {/* Qualifizierungsfragen – volle Breite, alle in einer Reihe */}
-        {showQualifizierungsfragen && (
-          <>
-            <Card className="p-6">
-              <div className="w-8 h-1 bg-primary mb-3" />
-          <h3 className="font-bold mb-4">Qualifizierungsfragen</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold">Was ist {kunde.vorname || "der Kunde"} sein Ziel?</Label>
-              <QualTextInput
-                value={kunde.qualZiel || ""}
-                onCommit={(v) => updateKontakt(id || "", { qualZiel: v })}
-                placeholder="z.B. Eigenheim für die Familie"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold">Wie viel Geld verdient {kunde.vorname || "der Kunde"} monatlich?</Label>
-              <QualNumberInput
-                value={kunde.qualEinkommen || ""}
-                onCommit={(v) => updateKontakt(id || "", { qualEinkommen: v })}
-                placeholder="z.B. 3.000"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold">Wie viel Eigenkapital steht {kunde.vorname || "dem Kunden"} zur Verfügung?</Label>
-              <QualNumberInput
-                value={kunde.qualEigenkapital || ""}
-                onCommit={(v) => updateKontakt(id || "", { qualEigenkapital: v })}
-                placeholder="z.B. 20.000"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold">Was ist die derzeitige berufliche Situation von {kunde.vorname || "dem Kunden"}?</Label>
-              <Select
-                value={(() => {
-                  // Funnel-Werte kommen lowercase ("angestellt", "selbststaendig", "unternehmer",
-                  // "freiberufler", "beamter", "arbeitslos") → auf die Select-Items mappen,
-                  // damit der bereits gesetzte Wert auch angezeigt wird.
-                  const raw = (kunde.qualBeruflicheSituation || "").trim();
-                  const map: Record<string, string> = {
-                    "angestellt": "Angestellt",
-                    "selbststaendig": "Selbstständig",
-                    "selbstständig": "Selbstständig",
-                    "unternehmer": "Selbstständig",
-                    "freiberufler": "Selbstständig",
-                    "beamter": "Beamter",
-                    "beamtin": "Beamter",
-                    "rentner": "Rentner",
-                    "student": "Student",
-                    "arbeitslos": "Arbeitssuchend",
-                    "arbeitssuchend": "Arbeitssuchend",
-                  };
-                  return map[raw.toLowerCase()] || raw;
-                })()}
-                onValueChange={v => {
-                  // Defer update so Radix Select can finish closing before the heavy parent re-render
-                  setTimeout(() => updateKontakt(id || "", { qualBeruflicheSituation: v }), 0);
-                }}
-              >
-                <SelectTrigger><SelectValue placeholder="Bitte wählen…" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Angestellt">Angestellt</SelectItem>
-                  <SelectItem value="Selbstständig">Selbstständig</SelectItem>
-                  <SelectItem value="Beamter">Beamter</SelectItem>
-                  <SelectItem value="Rentner">Rentner</SelectItem>
-                  <SelectItem value="Student">Student</SelectItem>
-                  <SelectItem value="Arbeitssuchend">Arbeitssuchend</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          {/* Zusatz-Qualifizierung vom Tippgeber erfasst */}
-          {(() => {
-            const _row = cacheGet("kontakte").find((r: any) => r.id === kunde.id);
-            const _meta = (_row?.meta && typeof _row.meta === "object") ? _row.meta : {};
-            if (!_meta.tippgeberId && !_meta.tippgeberSchufaSauber && !_meta.tippgeberInvestitionsZeitpunkt) return null;
-            const schufa = (_meta.tippgeberSchufaSauber || "") as string;
-            const zeitpunkt = (_meta.tippgeberInvestitionsZeitpunkt || "") as string;
-            const writeMeta = async (patch: Record<string, any>) => {
-              try {
-                await mergeKontaktMeta(kunde.id, patch);
-              } catch (e) { console.warn("merge_kontakt_meta failed", e); }
-            };
-            return (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">Saubere SCHUFA?</Label>
-                  <Select value={schufa} onValueChange={(v) => writeMeta({ tippgeberSchufaSauber: v })}>
-                    <SelectTrigger><SelectValue placeholder="Bitte wählen…" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Ja">Ja</SelectItem>
-                      <SelectItem value="Nein">Nein</SelectItem>
-                      <SelectItem value="Unbekannt">Weiß nicht</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">Investitions-Zeitpunkt</Label>
-                  <Select value={zeitpunkt} onValueChange={(v) => writeMeta({ tippgeberInvestitionsZeitpunkt: v })}>
-                    <SelectTrigger><SelectValue placeholder="Bitte wählen…" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Sofort">Sofort</SelectItem>
-                      <SelectItem value="1-3 Monate">In 1–3 Monaten</SelectItem>
-                      <SelectItem value="3-6 Monate">In 3–6 Monaten</SelectItem>
-                      <SelectItem value="6+ Monate">In 6+ Monaten</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                {einverstaendnisBestaetigtAm(_meta) && (
-                  <p
-                    className="text-xs text-muted-foreground sm:col-span-2 lg:col-span-4"
-                    title={typeof _meta.tippgeberEinverstaendnis?.wortlaut === "string" ? _meta.tippgeberEinverstaendnis.wortlaut : undefined}
-                  >
-                    Einverständnis bestätigt am {einverstaendnisBestaetigtAm(_meta)} Uhr
-                  </p>
-                )}
-                {_meta.tippgeberAnliegen && (
-                  <div className="space-y-1.5 sm:col-span-2">
-                    <Label className="text-xs font-semibold">Anliegen (vom Tippgeber)</Label>
-                    <div className="text-sm text-muted-foreground border rounded-md px-3 py-2 bg-muted/30">
-                      {_meta.tippgeberAnliegen}
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })()}
-          {/* Zusätzliche Angaben aus dem Microseiten-Funnel.
-              Werden nur eingeblendet, sobald mindestens ein Funnel-Feld befüllt ist. */}
-          {(kunde.funnelImmobilienbesitz || kunde.funnelInvestitionsvolumen || kunde.funnelZeitrahmen || kunde.funnelKontaktzeit) && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-              <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">Immobilienbesitz</Label>
-                <QualTextInput
-                  value={kunde.funnelImmobilienbesitz || ""}
-                  onCommit={(v) => updateKontakt(id || "", { funnelImmobilienbesitz: v })}
-                  placeholder="z.B. Keine / 1 / 2–3 / 4+"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">Investitionsvolumen</Label>
-                <QualTextInput
-                  value={kunde.funnelInvestitionsvolumen || ""}
-                  onCommit={(v) => updateKontakt(id || "", { funnelInvestitionsvolumen: v })}
-                  placeholder="z.B. 100.000 – 200.000 €"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">Zeitrahmen</Label>
-                <QualTextInput
-                  value={kunde.funnelZeitrahmen || ""}
-                  onCommit={(v) => updateKontakt(id || "", { funnelZeitrahmen: v })}
-                  placeholder="z.B. So schnell wie möglich"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">Bevorzugte Kontaktzeit</Label>
-                <QualTextInput
-                  value={kunde.funnelKontaktzeit || ""}
-                  onCommit={(v) => updateKontakt(id || "", { funnelKontaktzeit: v })}
-                  placeholder="z.B. Vormittags (9–12 Uhr)"
-                />
-              </div>
-            </div>
-          )}
-        </Card>
-      </>
-        )}
-
-        {/* Kontaktversuche – für Setterin (vor VP-Zuweisung) UND für den zugewiesenen
-            Vertriebspartner / Admin in den frühen Pipeline-Stufen sichtbar. Der
-            „Gesprächsausgang"-Block wurde entfernt: Diese Aktionen sind jetzt
-            vollständig im Dialog „Anruf protokollieren" verfügbar. */}
-        {/* Der „Kontaktversuche & Gesprächsausgang"-Block wurde aus den Stammdaten
-            entfernt. Der Zähler (x/15 nicht erreicht) wird jetzt kompakt im Dialog
-            „Anruf protokollieren" oben angezeigt. */}
-
-        {/* Setter-Notizen readonly für VP/Berater – direkt unter Qualifizierungsfragen */}
-        {/* (Setter-Skript steht weiter unten im Setter-Block, mit eingebettetem Termin + Abschluss-Checkliste.) */}
-
-
-
-      </div>
-
-      {/* KI-Zusammenfassung aus dem Erstgesprächs-Skript – pro Investment getrennt (Reiter Invest. 1 / 2 …).
-          Wird BEVOR die Finanzielle Situation angezeigt (die erst nach SA verfügbar ist). */}
-      {(() => {
-        const invMitKI = investments
-          .map((inv: any) => {
-            const sk = getInvestmentMetaField<any>(inv.id, "setterSkript", null);
-            const gn = getInvestmentMetaField<string>(inv.id, "gespraechsnotizenAI", "");
-            const summary: string = (sk?.kiZusammenfassung || gn || "").trim();
-            return { inv, summary, updatedAt: sk?.aktualisiertAm as string | undefined };
-          })
-          .filter(x => x.summary.length > 0)
-          .sort((a, b) => (a.inv.nummer ?? 0) - (b.inv.nummer ?? 0));
-        if (invMitKI.length === 0) return null;
-
-        const renderKICard = (entry: { summary: string; updatedAt?: string }) => {
-          const updated = entry.updatedAt ? new Date(entry.updatedAt).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }) : null;
-          return (
-            <div className="rounded-lg border border-primary/30 bg-primary/5 p-4">
-              <div className="flex items-center gap-2 mb-2 text-xs font-semibold text-primary">
-                <Sparkles className="h-3.5 w-3.5" /> KI-Zusammenfassung Erstgespräch
-                <CheckCircle2 className="h-3.5 w-3.5 text-[hsl(var(--success))]" />
-                {updated && <span className="ml-auto text-[10px] font-normal text-muted-foreground">Stand: {updated}</span>}
-              </div>
-              <p className="text-sm whitespace-pre-line">{entry.summary}</p>
-            </div>
-          );
-        };
-
-        return (
-          <Card className="p-6 space-y-4">
-            <details className="group">
-              <summary className="flex items-center gap-3 cursor-pointer list-none select-none">
-                <div>
-                  <div className="w-8 h-1 bg-primary mb-3" />
-                  <h3 className="font-bold text-lg flex items-center gap-2">
-                    KI-Zusammenfassung Erstgespräch
-                    <span className="text-[10px] font-normal text-muted-foreground">(klicken zum Aufklappen)</span>
-                  </h3>
-                  <p className="text-xs text-muted-foreground mt-1">Automatisch aus dem Erstgesprächs-Skript erzeugt – pro Investment getrennt</p>
-                </div>
-                <ChevronDown className="h-4 w-4 ml-auto text-muted-foreground transition-transform group-open:rotate-180" />
-              </summary>
-              <div className="mt-4 space-y-4">
-                {invMitKI.length === 1 ? (
-                  renderKICard(invMitKI[0])
-                ) : (
-                  <Tabs defaultValue={invMitKI[0].inv.id} className="space-y-4">
-                    <TabsList className="w-full justify-start flex-wrap h-auto gap-1 bg-muted/50 p-1">
-                      {invMitKI.map((entry, idx: number) => {
-                        const nr = entry.inv.nummer ?? (idx + 1);
-                        return (
-                          <TabsTrigger key={entry.inv.id} value={entry.inv.id} className="text-xs data-[state=active]:bg-background data-[state=active]:shadow-sm gap-1.5 px-3">
-                            <Building2 className="h-3 w-3" />
-                            <span>Invest. {nr}</span>
-                          </TabsTrigger>
-                        );
-                      })}
-                    </TabsList>
-                    {invMitKI.map((entry) => (
-                      <TabsContent key={entry.inv.id} value={entry.inv.id}>
-                        {renderKICard(entry)}
-                      </TabsContent>
-                    ))}
-                  </Tabs>
-                )}
-              </div>
-            </details>
-          </Card>
-        );
-      })()}
-      {/*
-        Die Finanzzahlen sind seit Welle 2 im Investment zuhause. Der Verweis,
-        der hier stand, ist weggefallen: Wer die Zahlen sucht, findet sie
-        ohnehin beim Investment, und eine Karte, die nur darauf zeigt, kostet
-        Platz ohne etwas zu beantworten.
-
-        Ebenfalls weggefallen ist die Investmentliste (NaechsteSchritteKarte
-        mit titel="Investments"). Dieselbe Liste steht im Reiter Investments,
-        dort auch der Knopf "Neues Investment".
-      */}
-      {/* Gesprächsausgang wurde in die Karte „Kontaktversuche & Gesprächsausgang" (oben) integriert. */}
-       {/* Erstgesprächs-Skript + „Beratungsgespräch vereinbart" leben jetzt
-           ausschließlich im jeweiligen Investment-Tab (siehe renderSetterSkriptSection
-           dort). In den Stammdaten erscheinen nur noch die per Investment zugeordneten
-           Gesprächsnotizen-Karten weiter oben. */}
-      {/* Lead-Pipeline-Bar: nur sichtbar, solange noch kein Investment existiert.
-          Zeigt die Vor-Investment-Stufen (Neuer Lead → … → Erstgespräch).
-          Ab Beratungsgespräch wird automatisch ein Investment eröffnet — dann
-          übernimmt die Investment-Pipeline-Bar die vollständige Darstellung. */}
       {investments.length === 0 && !["verloren", "archiviert", "vermoegensaufbau"].includes(kunde.pipelineStufe || "") && (() => {
         const currentKey = kunde.pipelineStufe || "neuer_lead";
         // NoShow und Legacy-Aliase zählen wie die zugehörige echte Stufe.
@@ -7087,17 +6125,6 @@ export default function KundenDetail() {
           </Card>
         );
       })()}
-
-      {/*
-        Die Zeitleiste hat einen eigenen Reiter bekommen und ist deshalb aus
-        den Stammdaten verschwunden. Die Setterin sieht diesen Reiter nicht,
-        ihre Rolle kennt nur Stammdaten und Investments. Damit ihr die Notizen
-        nicht ersatzlos wegfallen, bleibt die Zeitleiste fuer sie hier stehen.
-        Es ist dieselbe Funktion, keine zweite Fassung.
-      */}
-      {isSetterinRole && renderAktivitaeten()}
-
-      {/* Delete request banner for admin */}
       {(() => {
         const kontaktRow = cacheGet("kontakte").find((r: any) => r.id === id);
         const deleteReq = kontaktRow?.meta?.deleteRequested;
@@ -7205,8 +6232,6 @@ export default function KundenDetail() {
         }
         return null;
       })()}
-
-      {/* DSGVO 7-Tage-Countdown Banner */}
       {(() => {
         const kontaktRow = cacheGet("kontakte").find((r: any) => r.id === id);
         const dr = kontaktRow?.meta?.deletionRequest;
@@ -7277,11 +6302,67 @@ export default function KundenDetail() {
           </Card>
         );
       })()}
-
-
-    </div>
+    </>
   );
-  };
+
+  /**
+   * „Vertriebspartner ändern“: derselbe Ablauf wie vorher am Knopf, jetzt
+   * über den Stift links. Auswahl, Grund der Übergabe, Warnung bei geplanten
+   * Terminen und Speichern laufen unverändert über `handleSaveBerater` und
+   * `fuehreBeraterWechselAus`, also mit derselben Glocke und demselben Verlauf.
+   */
+  const renderVertriebspartnerDialog = () => (
+    <Dialog
+      open={beraterDialog}
+      onOpenChange={(offen) => {
+        if (offen) return;
+        setBeraterDialog(false);
+        setBeraterWechselWarnung(null);
+      }}
+    >
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Vertriebspartner ändern</DialogTitle>
+          <DialogDescription>Bisher zuständig: {vertriebspartnerName || "niemand"}</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-2">
+          <span className="text-sm font-semibold">Neuer Vertriebspartner</span>
+          <BeraterSearchSelect value={newBerater} onChange={(v, uid) => { setNewBerater(v); setNewBeraterId(uid); setBeraterWechselWarnung(null); }} filterByRole="vertriebspartner" />
+        </div>
+              {beraterDialog && wechselBrauchtGrund && (
+                <div className="mt-4 space-y-2">
+                  <span className="text-sm font-semibold">Grund der Übergabe</span>
+                  <p className="text-xs text-muted-foreground">
+                    Kurz und sachlich. {vertriebspartnerName || "Der bisherige Vertriebspartner"} gibt ab, der neue soll wissen, wo er ansetzt.
+                  </p>
+                  <UebergabeGrundFeld grund={uebergabeGrund} onChange={setUebergabeGrund} />
+                </div>
+              )}
+              {beraterDialog && beraterWechselWarnung && (
+                <div className="mt-3 rounded-lg border border-[hsl(var(--warning))]/50 bg-[hsl(var(--warning))]/10 p-3">
+                  <p className="text-sm font-medium flex items-start gap-2">
+                    <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0 text-[hsl(var(--warning))]" />
+                    {beraterWechselWarnung}
+                  </p>
+                </div>
+              )}
+        <div className="flex flex-wrap gap-2 mt-4">
+          {beraterWechselWarnung ? (
+            <Button size="sm" variant="destructive" onClick={fuehreBeraterWechselAus} disabled={!grundBereit}>
+              <CheckCircle2 className="h-3 w-3 mr-1" /> Ja, wirklich neu zuweisen
+            </Button>
+          ) : (
+            <Button size="sm" onClick={handleSaveBerater} disabled={!grundBereit}>
+              <CheckCircle2 className="h-3 w-3 mr-1" /> Vertriebspartner speichern
+            </Button>
+          )}
+          <Button size="sm" variant="outline" onClick={() => { setBeraterDialog(false); setBeraterWechselWarnung(null); }}>
+            Abbrechen
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
 
   /**
    * Die Zeitleiste, seit dem Umbau ein eigener Reiter.
@@ -13448,7 +12529,6 @@ export default function KundenDetail() {
   const renderContent = () => {
     if (activeTab === "uebersicht") return renderUebersicht();
     if (activeTab === "aktivitaeten") return renderAktivitaeten();
-    if (activeTab === "stammdaten") return renderStammdaten();
     if (activeTab === "empfehlungen") return renderEmpfehlungen();
     if (activeTab === "vermoegensaufbau") return renderVermoegenaufbau();
     if (activeTab === "kommunikation") {
@@ -13484,8 +12564,16 @@ export default function KundenDetail() {
         />
       );
     }
-    if (activeTab === "investments") return renderInvestments();
-    return renderStammdaten();
+    if (activeTab === "investments") {
+      /*
+       * Die Setterin hat keinen Reiter Aktivitäten und keine Leiste rechts.
+       * Ihre Zeitleiste stand bis zum 18.10.2026 im Reiter Stammdaten und
+       * steht seither unter den Investments, dieselbe Funktion.
+       */
+      if (isSetterinRole) return <div className="space-y-6">{renderInvestments()}{renderAktivitaeten()}</div>;
+      return renderInvestments();
+    }
+    return renderInvestments();
   };
 
   return (
@@ -13501,11 +12589,6 @@ export default function KundenDetail() {
         stehen.
       */}
       <div className={showKaufvertragForm ? "kundenprofil space-y-6 hidden" : "kundenprofil space-y-6"}>
-        {nurLesend && (
-          <p role="status" data-testid="nur-lesend-hinweis" className="rounded-lg border border-amber-300/60 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:bg-amber-950/30 dark:text-amber-200">
-            {NUR_LESEND_HINWEIS}
-          </p>
-        )}
         {id && <CallSessionBar currentKundeId={id} />}
         {/*
           Kopfzeile.
@@ -13547,6 +12630,7 @@ export default function KundenDetail() {
 
         <KundenprofilLayout
           stammdaten={renderProfilStammdaten()}
+          hinweise={renderProfilHinweise()}
           kennzahlen={renderProfilKennzahlen()}
           navigation={<KundenprofilNavigation tabs={tabs} activeTab={activeTab} rolle={user.role} portalFreigeschalten={portalFreigeschalten} onWechsel={wechsleReiter} />}
           aktivitaetenOffen={activeTab === "aktivitaeten" || aktivitaetenLeiste.offen}
@@ -13615,6 +12699,7 @@ export default function KundenDetail() {
         </KundenprofilLayout>
 
         {/* ── Dialogs ── */}
+        {renderVertriebspartnerDialog()}
         <QuickActionDialog
           art={actionDialog}
           kundeId={id || ""}

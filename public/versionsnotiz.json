@@ -2719,5 +2719,33 @@
     ],
     "soFindestDuEs": "Kundenprofil, Kachel Nächste Aktionen; Inbox, Aufgaben.",
     "kritisch": false
+  },
+  {
+    "nr": 132,
+    "datum": "2026-10-18",
+    "art": "geaendert",
+    "titel": "Kundenprofil: alle Stammdaten in der linken Spalte",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "setterin",
+      "backoffice",
+      "finanzierungspartner",
+      "buchhaltung",
+      "versicherungsexperte"
+    ],
+    "kurztext": "Name, Kontaktdaten und alle weiteren Kundendaten stehen jetzt links im Kundenprofil. Der Reiter Stammdaten ist weggefallen, in der Mitte startest du direkt bei den Investments.",
+    "wasHeisstDasFuerDich": [
+      "Jedes Feld hat einen eigenen Stift. Klick darauf, ändere den Wert und speichere mit Enter oder dem Häkchen. Esc verwirft.",
+      "Den Vertriebspartner änderst du über den Stift in seiner Zeile unter Lead- und Verwaltungsdaten, der Ablauf ist derselbe wie bisher.",
+      "Der Lead-Score steht als Ring unter dem Namen. Fahr darüber, dann siehst du die Punkte je Kriterium und einen Tipp.",
+      "Person 2, Lead-Daten, Kundenportal, Empfehlungsprogramm, Rechner, Qualifizierungsfragen und Kunde verwalten sind eingeklappt. Was du aufklappst, merkt sich das CRM für dich.",
+      "Kundenportal und Empfehlungsprogramm zeigen schon eingeklappt eine Ampel. Hinweise wie No-Show oder Löschanfrage stehen jetzt oben in der Mitte.",
+      "Wer Kundendaten nur lesen darf, sieht keine Stifte."
+    ],
+    "soFindestDuEs": "Kundenprofil, linke Spalte.",
+    "kritisch": false
   }
 ]

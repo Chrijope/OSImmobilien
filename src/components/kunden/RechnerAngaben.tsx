@@ -209,14 +209,14 @@ function Block({
 }
 
 /** Die zwei Angaben, an denen sich entscheidet, ob man aufklappt. */
-function kurzfassungSteuer(s: SteuerSnapshot): string {
+export function kurzfassungSteuer(s: SteuerSnapshot): string {
   const teile: string[] = [];
   if (typeof s.jahresbrutto === "number") teile.push(`${eur(s.jahresbrutto)} brutto`);
   if (s.steuerklasse) teile.push(`Klasse ${s.steuerklasse}`);
   return teile.join(" · ");
 }
 
-function kurzfassungAnalyse(meta?: RechnerMeta | null): string {
+export function kurzfassungAnalyse(meta?: RechnerMeta | null): string {
   const teile: string[] = [];
   if (typeof meta?.analyseScore === "number") teile.push(`${meta.analyseScore} Punkte`);
   if (meta?.leadQuality) teile.push(String(meta.leadQuality));
@@ -235,91 +235,81 @@ export function hatRechnerAngaben(meta?: RechnerMeta | null, quelle?: string): b
   return steuerDa || analyseDa;
 }
 
-export default function RechnerAngaben({ meta, erstelltAm, kontaktId, quelle, vorname, nachname, zustaendigId }: Props) {
-  if (!hatRechnerAngaben(meta, quelle)) return null;
-  const s = meta?.steuerSnapshot;
+type Liste = Array<{ label: string; wert: string }>;
+
+/** Eingaben und Ergebnisse des Steuerrechners, so wie der Interessent sie gesehen hat. */
+export function steuerListen(s: SteuerSnapshot, meta?: RechnerMeta | null): { angaben: Liste; ergebnisse: Liste } {
+  const angaben: Liste = [];
+  if (typeof s.jahresbrutto === "number")
+    angaben.push({ label: "Jahresbrutto", wert: eur(s.jahresbrutto) });
+  if (s.beschaeftigungTitel || s.beschaeftigung)
+    angaben.push({
+      label: "Beschäftigung",
+      wert: s.beschaeftigungTitel || s.beschaeftigung || "",
+    });
+  if (s.steuerklasse) angaben.push({ label: "Steuerklasse", wert: s.steuerklasse });
+  if (typeof s.partnerBrutto === "number" && s.partnerBrutto > 0)
+    angaben.push({ label: "Partner, Jahresbrutto", wert: eur(s.partnerBrutto) });
+  if (typeof s.kinder === "number")
+    angaben.push({
+      label: "Kinder",
+      wert: s.kinder === 0 ? "Keine" : String(s.kinder),
+    });
+  if (s.bundesland)
+    angaben.push({ label: "Bundesland", wert: BUNDESLAND[s.bundesland] || s.bundesland });
+  if (typeof s.kirchensteuer === "boolean")
+    angaben.push({ label: "Kirchensteuer", wert: s.kirchensteuer ? "Ja" : "Nein" });
+  if (typeof s.bestehendeImmobilien === "number")
+    angaben.push({
+      label: "Bestehende Anlageimmobilien",
+      wert: s.bestehendeImmobilien === 0 ? "Keine, Erstinvestor" : String(s.bestehendeImmobilien),
+    });
+  const start = s.startzeitpunkt || meta?.steuerStartzeitpunkt || "";
+  if (start)
+    angaben.push({ label: "Gewünschter Start", wert: STARTZEITPUNKT[start] || start });
+
+  const ergebnisse: Liste = [];
+  if (typeof s.steuerlastHeute === "number")
+    ergebnisse.push({ label: "Steuerlast heute, pro Jahr", wert: eur(s.steuerlastHeute) });
+  if (typeof s.zvE === "number")
+    ergebnisse.push({ label: "Zu versteuerndes Einkommen", wert: eur(s.zvE) });
+  if (typeof s.grenzsteuersatz === "number")
+    ergebnisse.push({
+      label: "Grenzsteuersatz",
+      wert: `${s.grenzsteuersatz.toLocaleString("de-DE", { maximumFractionDigits: 1 })} Prozent`,
+    });
+  if (typeof s.ersparnisJahrVon === "number" && typeof s.ersparnisJahrBis === "number") {
+    ergebnisse.push({
+      label: "Gezeigte Ersparnis, pro Jahr",
+      wert: `${eur(s.ersparnisJahrVon)} bis ${eur(s.ersparnisJahrBis)}`,
+    });
+  } else if (typeof s.ersparnisJahr === "number") {
+    ergebnisse.push({ label: "Gezeigte Ersparnis, pro Jahr", wert: eur(s.ersparnisJahr) });
+  }
+  if (typeof s.ersparnis10JVon === "number" && typeof s.ersparnis10JBis === "number") {
+    ergebnisse.push({
+      label: "Gezeigte Ersparnis, zehn Jahre",
+      wert: `${eur(s.ersparnis10JVon)} bis ${eur(s.ersparnis10JBis)}`,
+    });
+  } else if (typeof s.ersparnis10J === "number") {
+    ergebnisse.push({ label: "Gezeigte Ersparnis, zehn Jahre", wert: eur(s.ersparnis10J) });
+  }
+  if (typeof s.erhaltungEinmalig === "number")
+    ergebnisse.push({
+      label: "Erhaltungsaufwand, einmalig",
+      wert: `bis zu ${eur(s.erhaltungEinmalig)}`,
+    });
+  if (typeof s.objektpreis === "number")
+    ergebnisse.push({ label: "Typisiertes Objekt", wert: eur(s.objektpreis) });
+  if (typeof s.vermoegenszuwachs === "number")
+    ergebnisse.push({ label: "Vermögenszuwachs, zehn Jahre", wert: eur(s.vermoegenszuwachs) });
+  return { angaben, ergebnisse };
+}
+
+/** Punktzahl und Ergebnis des Analysetools. */
+export function analyseListe(meta?: RechnerMeta | null): Liste {
   const a = meta?.analyseSnapshot;
-  const analyseDa = !!a || typeof meta?.analyseScore === "number";
-
-  /* Der Zeitpunkt. Steht er nicht im Schnappschuss, wird das Anlagedatum
-     genommen und ausdruecklich als solches benannt. */
-  const zeitpunkt = (eigen?: string) => {
-    const genau = datum(eigen);
-    if (genau) return `Ausgefüllt am ${genau}`;
-    const ersatz = datum(erstelltAm);
-    return ersatz ? `Kontakt angelegt am ${ersatz}` : "Zeitpunkt nicht vermerkt";
-  };
-
-  const angaben: Array<{ label: string; wert: string }> = [];
-  if (s) {
-    if (typeof s.jahresbrutto === "number")
-      angaben.push({ label: "Jahresbrutto", wert: eur(s.jahresbrutto) });
-    if (s.beschaeftigungTitel || s.beschaeftigung)
-      angaben.push({
-        label: "Beschäftigung",
-        wert: s.beschaeftigungTitel || s.beschaeftigung || "",
-      });
-    if (s.steuerklasse) angaben.push({ label: "Steuerklasse", wert: s.steuerklasse });
-    if (typeof s.partnerBrutto === "number" && s.partnerBrutto > 0)
-      angaben.push({ label: "Partner, Jahresbrutto", wert: eur(s.partnerBrutto) });
-    if (typeof s.kinder === "number")
-      angaben.push({
-        label: "Kinder",
-        wert: s.kinder === 0 ? "Keine" : String(s.kinder),
-      });
-    if (s.bundesland)
-      angaben.push({ label: "Bundesland", wert: BUNDESLAND[s.bundesland] || s.bundesland });
-    if (typeof s.kirchensteuer === "boolean")
-      angaben.push({ label: "Kirchensteuer", wert: s.kirchensteuer ? "Ja" : "Nein" });
-    if (typeof s.bestehendeImmobilien === "number")
-      angaben.push({
-        label: "Bestehende Anlageimmobilien",
-        wert: s.bestehendeImmobilien === 0 ? "Keine, Erstinvestor" : String(s.bestehendeImmobilien),
-      });
-    const start = s.startzeitpunkt || meta?.steuerStartzeitpunkt || "";
-    if (start)
-      angaben.push({ label: "Gewünschter Start", wert: STARTZEITPUNKT[start] || start });
-  }
-
-  const ergebnisse: Array<{ label: string; wert: string }> = [];
-  if (s) {
-    if (typeof s.steuerlastHeute === "number")
-      ergebnisse.push({ label: "Steuerlast heute, pro Jahr", wert: eur(s.steuerlastHeute) });
-    if (typeof s.zvE === "number")
-      ergebnisse.push({ label: "Zu versteuerndes Einkommen", wert: eur(s.zvE) });
-    if (typeof s.grenzsteuersatz === "number")
-      ergebnisse.push({
-        label: "Grenzsteuersatz",
-        wert: `${s.grenzsteuersatz.toLocaleString("de-DE", { maximumFractionDigits: 1 })} Prozent`,
-      });
-    if (typeof s.ersparnisJahrVon === "number" && typeof s.ersparnisJahrBis === "number") {
-      ergebnisse.push({
-        label: "Gezeigte Ersparnis, pro Jahr",
-        wert: `${eur(s.ersparnisJahrVon)} bis ${eur(s.ersparnisJahrBis)}`,
-      });
-    } else if (typeof s.ersparnisJahr === "number") {
-      ergebnisse.push({ label: "Gezeigte Ersparnis, pro Jahr", wert: eur(s.ersparnisJahr) });
-    }
-    if (typeof s.ersparnis10JVon === "number" && typeof s.ersparnis10JBis === "number") {
-      ergebnisse.push({
-        label: "Gezeigte Ersparnis, zehn Jahre",
-        wert: `${eur(s.ersparnis10JVon)} bis ${eur(s.ersparnis10JBis)}`,
-      });
-    } else if (typeof s.ersparnis10J === "number") {
-      ergebnisse.push({ label: "Gezeigte Ersparnis, zehn Jahre", wert: eur(s.ersparnis10J) });
-    }
-    if (typeof s.erhaltungEinmalig === "number")
-      ergebnisse.push({
-        label: "Erhaltungsaufwand, einmalig",
-        wert: `bis zu ${eur(s.erhaltungEinmalig)}`,
-      });
-    if (typeof s.objektpreis === "number")
-      ergebnisse.push({ label: "Typisiertes Objekt", wert: eur(s.objektpreis) });
-    if (typeof s.vermoegenszuwachs === "number")
-      ergebnisse.push({ label: "Vermögenszuwachs, zehn Jahre", wert: eur(s.vermoegenszuwachs) });
-  }
-
-  const analyse: Array<{ label: string; wert: string }> = [];
+  const analyse: Liste = [];
   if (typeof meta?.analyseScore === "number")
     analyse.push({ label: "Punktzahl", wert: String(meta.analyseScore) });
   if (typeof a?.monthlyZuzahlung === "number")
@@ -328,6 +318,80 @@ export default function RechnerAngaben({ meta, erstelltAm, kontaktId, quelle, vo
     analyse.push({ label: "Vermögen nach zehn Jahren", wert: eur(a.wealthAfter10Years) });
   if (meta?.leadQuality)
     analyse.push({ label: "Eingestufte Dringlichkeit", wert: meta.leadQuality });
+  return analyse;
+}
+
+/** Steht der Zeitpunkt nicht im Schnappschuss, gilt das Anlagedatum, ausdrücklich als solches benannt. */
+export function rechnerZeitpunkt(eigen: string | undefined, erstelltAm?: string): string {
+  const genau = datum(eigen);
+  if (genau) return `Ausgefüllt am ${genau}`;
+  const ersatz = datum(erstelltAm);
+  return ersatz ? `Kontakt angelegt am ${ersatz}` : "Zeitpunkt nicht vermerkt";
+}
+
+const RASTER_BREIT = "grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4";
+/** In Hover-Karte und Seitenpanel ist der Platz schmal, dort immer zwei Spalten. */
+export const RASTER_SCHMAL = "grid grid-cols-2 gap-3";
+
+export function SteuerInhalt({ s, meta, raster = RASTER_BREIT }: { s: SteuerSnapshot; meta?: RechnerMeta | null; raster?: string }) {
+  const { angaben, ergebnisse } = steuerListen(s, meta);
+  return (
+    <>
+      {angaben.length > 0 && (
+        <div className={raster}>
+          {angaben.map((z) => (
+            <Zeile key={z.label} label={z.label} wert={z.wert} />
+          ))}
+        </div>
+      )}
+
+      {ergebnisse.length > 0 && (
+        <div className="mt-4 border-t border-border pt-4">
+          <div className={raster}>
+            {ergebnisse.map((z) => (
+              <Zeile key={z.label} label={z.label} wert={z.wert} />
+            ))}
+          </div>
+          <p className="mt-3 text-xs text-muted-foreground">
+            Die Ersparnis steht als Spanne, weil zwei Abschreibungswege offenstehen. Das untere
+            Ende gilt ohne Nachweis, das obere setzt ein Gutachten zur Restnutzungsdauer voraus.
+            Modellrechnung an einem typisierten Objekt, keine Steuerberatung.
+          </p>
+        </div>
+      )}
+    </>
+  );
+}
+
+export function AnalyseInhalt({ meta, raster = RASTER_BREIT }: { meta?: RechnerMeta | null; raster?: string }) {
+  const analyse = analyseListe(meta);
+  return (
+    <>
+      {analyse.length > 0 && (
+        <div className={raster}>
+          {analyse.map((z) => (
+            <Zeile key={z.label} label={z.label} wert={z.wert} />
+          ))}
+        </div>
+      )}
+      {meta?.analyseNachricht && (
+        <div className="mt-4 border-t border-border pt-4">
+          <div className="text-xs font-semibold text-muted-foreground">Seine Nachricht</div>
+          <p className="mt-1 whitespace-pre-line text-sm text-foreground">
+            {meta.analyseNachricht}
+          </p>
+        </div>
+      )}
+    </>
+  );
+}
+
+export default function RechnerAngaben({ meta, erstelltAm, kontaktId, quelle, vorname, nachname, zustaendigId }: Props) {
+  if (!hatRechnerAngaben(meta, quelle)) return null;
+  const s = meta?.steuerSnapshot;
+  const a = meta?.analyseSnapshot;
+  const analyseDa = !!a || typeof meta?.analyseScore === "number";
+  const zeitpunkt = (eigen?: string) => rechnerZeitpunkt(eigen, erstelltAm);
 
   return (
     <Card className="p-6">
@@ -353,28 +417,7 @@ export default function RechnerAngaben({ meta, erstelltAm, kontaktId, quelle, vo
           kurz={kurzfassungSteuer(s)}
           zeitpunkt={zeitpunkt(s.erfasstAm)}
         >
-          {angaben.length > 0 && (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {angaben.map((z) => (
-                <Zeile key={z.label} label={z.label} wert={z.wert} />
-              ))}
-            </div>
-          )}
-
-          {ergebnisse.length > 0 && (
-            <div className="mt-4 border-t border-border pt-4">
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-                {ergebnisse.map((z) => (
-                  <Zeile key={z.label} label={z.label} wert={z.wert} />
-                ))}
-              </div>
-              <p className="mt-3 text-xs text-muted-foreground">
-                Die Ersparnis steht als Spanne, weil zwei Abschreibungswege offenstehen. Das untere
-                Ende gilt ohne Nachweis, das obere setzt ein Gutachten zur Restnutzungsdauer voraus.
-                Modellrechnung an einem typisierten Objekt, keine Steuerberatung.
-              </p>
-            </div>
-          )}
+          <SteuerInhalt s={s} meta={meta} />
         </Block>
       )}
 
@@ -386,50 +429,18 @@ export default function RechnerAngaben({ meta, erstelltAm, kontaktId, quelle, vo
           zeitpunkt={zeitpunkt(a?.erfasstAm)}
           abstand={!!s}
         >
-          {analyse.length > 0 && (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {analyse.map((z) => (
-                <Zeile key={z.label} label={z.label} wert={z.wert} />
-              ))}
-            </div>
-          )}
-          {meta?.analyseNachricht && (
-            <div className="mt-4 border-t border-border pt-4">
-              <div className="text-xs font-semibold text-muted-foreground">Seine Nachricht</div>
-              <p className="mt-1 whitespace-pre-line text-sm text-foreground">
-                {meta.analyseNachricht}
-              </p>
-            </div>
-          )}
+          <AnalyseInhalt meta={meta} />
         </Block>
       )}
     </Card>
   );
 }
 
-/**
- * Was der Lead im Konfigurator der Handbuch-Seite angegeben hat (seit dem
- * 26.09.2026): Rahmen, Ausgang, die sechs Antworten und wie weit er im
- * Trichter ist. Damit der Partner nach der Zuweisung weiß, wo er ansetzt.
- * Aufgeklappt, weil genau das vor dem ersten Anruf gelesen werden soll.
- */
-function KonfiguratorBlock({
-  meta,
-  quelle,
-  kontaktId,
-  zeitpunkt,
-  kontakt,
-}: {
-  meta?: RechnerMeta | null;
-  quelle?: string;
-  kontaktId?: string;
-  zeitpunkt: (iso?: string) => string;
-  kontakt: { vorname?: string; nachname?: string; zustaendigId?: string | null };
-}) {
-  const angaben = konfiguratorAngaben({ quelle, meta });
+/** Den Trichterstand des Leads laden, nur bei Kontakten aus dem Konfigurator. */
+export function useLeadStandZeile(ausHandbuch: boolean, kontaktId?: string): LeadStandZeile | null {
   const [zeile, setZeile] = useState<LeadStandZeile | null>(null);
   useEffect(() => {
-    if (!angaben.ausHandbuch || !kontaktId) return;
+    if (!ausHandbuch || !kontaktId) return;
     let ab = false;
     ladeLeadStaende([kontaktId]).then((r) => {
       if (!ab && r.status === "ok") setZeile(r.zeilen.get(kontaktId) ?? null);
@@ -437,9 +448,26 @@ function KonfiguratorBlock({
     return () => {
       ab = true;
     };
-  }, [angaben.ausHandbuch, kontaktId]);
+  }, [ausHandbuch, kontaktId]);
+  return zeile;
+}
+
+/** Rahmen, Ausgang, die sechs Antworten und der Knopf fürs Handbuch-PDF. */
+export function KonfiguratorInhalt({
+  meta,
+  quelle,
+  zeile,
+  kontakt,
+  raster = "grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6",
+}: {
+  meta?: RechnerMeta | null;
+  quelle?: string;
+  zeile: LeadStandZeile | null;
+  kontakt: { vorname?: string; nachname?: string; zustaendigId?: string | null };
+  raster?: string;
+}) {
+  const angaben = konfiguratorAngaben({ quelle, meta });
   const [pdfLaeuft, setPdfLaeuft] = useState(false);
-  if (!angaben.ausHandbuch) return null;
   const pdfLaden = async () => {
     setPdfLaeuft(true);
     try {
@@ -459,21 +487,8 @@ function KonfiguratorBlock({
   };
   const stufe = leadStufe(angaben, zeile);
   const a = angaben.antworten;
-  const kurz = [angaben.rahmen ? `Rahmen ${rahmenKurz(angaben.rahmen)}` : "", LEAD_STUFE_TEXT[stufe]].filter(Boolean).join(" · ");
   return (
-    <div className="mb-4">
-      <Collapsible defaultOpen>
-        <div className="rounded-lg border border-border">
-          <CollapsibleTrigger className="flex w-full flex-wrap items-center justify-between gap-2 p-4 text-left hover:bg-muted/40 rounded-lg">
-            <div className="flex min-w-0 items-center gap-2">
-              <BookMarked className="h-4 w-4 text-primary" aria-hidden="true" />
-              <span className="text-sm font-semibold">Aus dem Konfigurator</span>
-              <span className="truncate text-xs text-muted-foreground">· {kurz}</span>
-            </div>
-            <span className="text-xs text-muted-foreground">{zeitpunkt(angaben.zeitpunkt ?? undefined)}</span>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <div className="space-y-4 border-t border-border p-4">
+    <div className="space-y-4">
               <div className="flex flex-wrap items-center gap-2">
                 {angaben.rahmen ? (
                   <>
@@ -496,7 +511,7 @@ function KonfiguratorBlock({
                 )}
               </div>
               {a && (
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+                <div className={raster}>
                   {(["ziel", "beruf", "brutto", "ueberschuss", "eigenkapital", "start"] as const).map((f) => (
                     <Zeile key={f} label={FELD_TEXT[f]} wert={antwortText(f, a[f])} />
                   ))}
@@ -507,6 +522,48 @@ function KonfiguratorBlock({
                   Modellrechnung mit der Untergrenze der Antworten{a?.ueberschuss === "unbekannt" ? `, Überschuss unbekannt, gerechnet mit ${UEBERSCHUSS_WENN_UNBEKANNT} €` : ""}: 80 % des Überschusses als Rate, 6 % Annuität, plus Eigenkapital. Keine Finanzierungszusage. Nach der Selbstauskunft gilt die genaue Rechnung.
                 </p>
               )}
+    </div>
+  );
+}
+
+/**
+ * Was der Lead im Konfigurator der Handbuch-Seite angegeben hat (seit dem
+ * 26.09.2026). Aufgeklappt, weil genau das vor dem ersten Anruf gelesen
+ * werden soll.
+ */
+function KonfiguratorBlock({
+  meta,
+  quelle,
+  kontaktId,
+  zeitpunkt,
+  kontakt,
+}: {
+  meta?: RechnerMeta | null;
+  quelle?: string;
+  kontaktId?: string;
+  zeitpunkt: (iso?: string) => string;
+  kontakt: { vorname?: string; nachname?: string; zustaendigId?: string | null };
+}) {
+  const angaben = konfiguratorAngaben({ quelle, meta });
+  const zeile = useLeadStandZeile(angaben.ausHandbuch, kontaktId);
+  if (!angaben.ausHandbuch) return null;
+  const stufe = leadStufe(angaben, zeile);
+  const kurz = [angaben.rahmen ? `Rahmen ${rahmenKurz(angaben.rahmen)}` : "", LEAD_STUFE_TEXT[stufe]].filter(Boolean).join(" · ");
+  return (
+    <div className="mb-4">
+      <Collapsible defaultOpen>
+        <div className="rounded-lg border border-border">
+          <CollapsibleTrigger className="flex w-full flex-wrap items-center justify-between gap-2 p-4 text-left hover:bg-muted/40 rounded-lg">
+            <div className="flex min-w-0 items-center gap-2">
+              <BookMarked className="h-4 w-4 text-primary" aria-hidden="true" />
+              <span className="text-sm font-semibold">Aus dem Konfigurator</span>
+              <span className="truncate text-xs text-muted-foreground">· {kurz}</span>
+            </div>
+            <span className="text-xs text-muted-foreground">{zeitpunkt(angaben.zeitpunkt ?? undefined)}</span>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="border-t border-border p-4">
+              <KonfiguratorInhalt meta={meta} quelle={quelle} zeile={zeile} kontakt={kontakt} />
             </div>
           </CollapsibleContent>
         </div>

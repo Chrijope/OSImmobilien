@@ -227,9 +227,15 @@ describe('Verdrahtung im Kundenprofil', () => {
   });
 
   it('führt jede Telefonnummer im Profil über dieselbe Stelle, auch die von Person 2', () => {
-    const telZeilen = seite.split('\n').filter((z) => z.includes('`tel:'));
-    expect(telZeilen.length).toBe(4);
-    for (const zeile of telZeilen) expect(zeile).toContain('rufeAnUndProtokolliere(');
+    // Seit dem 18.10.2026 stehen die Nummern in der linken Spalte
+    // (KundenprofilKundendaten.tsx); der Link ruft dort `onAnrufen`, und die
+    // Seite reicht für Person 1 und Person 2 dieselbe Stelle hinein.
+    const links = readFileSync(resolve(process.cwd(), 'src/components/kunden/profil/KundenprofilKundendaten.tsx'), 'utf8');
+    const telZeilen = links.split('\n').filter((z) => z.includes('`tel:'));
+    expect(telZeilen.length).toBe(1);
+    expect(links).toContain('onClick={(e) => { e.preventDefault(); onAnrufen(nummer); }}');
+    expect(seite).not.toContain('`tel:');
+    expect(seite.split('onAnrufen={(t) => rufeAnUndProtokolliere(t)}').length - 1).toBe(2);
   });
 
   it('legt bei „Nicht erreicht“ keine zweite Aufgabe an, wenn der Nutzer selbst eine anlegt', () => {

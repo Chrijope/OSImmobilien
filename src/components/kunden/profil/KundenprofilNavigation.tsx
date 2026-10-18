@@ -22,7 +22,8 @@ export function KundenprofilNavigation({ tabs, activeTab, rolle, portalFreigesch
    */
   return (
 <div id="kundenprofil-reiterleiste" className="kundenprofil-navigation" aria-label="Arbeitsbereiche">
-          {["stammdaten", "investments", "dokumente", "kommunikation", "empfehlungen"].flatMap(key => tabs.filter(t => t.key === key)).map(t => {
+          {/* Seit dem 18.10.2026 ohne „Stammdaten“: Die stehen links, Investments ist der erste Reiter. */}
+          {["investments", "dokumente", "kommunikation", "empfehlungen"].flatMap(key => tabs.filter(t => t.key === key)).map(t => {
             const isDraft = t.draft;
             const isInvestmentTab = t.key === "investments";
             const canAccessDraft = ["admin", "inhaber"].includes(rolle);

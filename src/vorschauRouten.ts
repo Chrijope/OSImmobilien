@@ -89,3 +89,8 @@ export const VorschauGrundriss3d = import.meta.env.DEV
 export const VorschauBeratungsprotokoll = import.meta.env.DEV
   ? lazy(() => import("./pages/VorschauBeratungsprotokoll"))
   : null;
+
+/** /vorschau/kundenprofil-links: die linke Spalte des Kundenprofils mit Max Mustermann (18.10.2026). Gleiche Regeln wie oben. */
+export const VorschauKundenprofilLinks = import.meta.env.DEV
+  ? lazy(() => import("./pages/VorschauKundenprofilLinks"))
+  : null;

@@ -40,6 +40,11 @@ interface Props {
   onChanged?: () => void;
 }
 
+/** Wer das Programm pflegen darf; danach richtet sich auch der Abschnitt im Kundenprofil. */
+export function darfEmpfehlungsprogrammPflegen(rolle: string | null | undefined): boolean {
+  return ["admin", "inhaber", "vertriebspartner"].includes(rolle || "");
+}
+
 export function EmpfehlungsprogrammKnoepfe({ ueberschrift, kunde, investments, currentUser, onChanged }: Props) {
   const [dialogArt, setDialogArt] = useState<EmpfehlungsprogrammDialogArt | null>(null);
   // Nur ein Render-Ausloeser: nach Cache-Aenderungen (Selbstheilung,
@@ -52,7 +57,7 @@ export function EmpfehlungsprogrammKnoepfe({ ueberschrift, kunde, investments, c
 
   const leitProgramm = (investments.map((inv) => getProgrammByInvestment(inv.id)).find(Boolean) as EmpfehlungsProgramm | undefined) ?? null;
 
-  const canManage = ["admin", "inhaber", "vertriebspartner"].includes(currentUser?.role || "");
+  const canManage = darfEmpfehlungsprogrammPflegen(currentUser?.role);
 
   // Selbstheilung: Kommt nach der Freischaltung ein weiteres Investment dazu,
   // bekommt es das Programm mit denselben Konditionen automatisch.

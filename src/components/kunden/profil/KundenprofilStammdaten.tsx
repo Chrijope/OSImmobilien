@@ -1,7 +1,22 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { ChevronDown } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Pencil, List } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { KundenprofilFeld, feldBearbeitung, type FeldBearbeitung } from "./KundenprofilFeld";
+import { KundenprofilAmpel, type AmpelStand } from "./KundenprofilAmpel";
+
+export interface KundenprofilAbschnittDef {
+  /** Unter diesem Schlüssel merkt sich das CRM je Nutzer, ob er offen ist. */
+  schluessel: string;
+  titel: string;
+  /** Kurzer Hinweis, der auch eingeklappt dasteht, etwa „4 von 6 beantwortet“. */
+  hinweis?: string;
+  /** Die Ampel in der Kopfzeile, auch eingeklappt sichtbar. */
+  ampel?: AmpelStand;
+  inhalt: ReactNode;
+}
+
+export interface Namen { vorname: string; nachname: string }
 
 interface Props {
   name: string;
@@ -9,15 +24,20 @@ interface Props {
   namenZusatz?: ReactNode;
   /** Die gepflegte Anrede des Kontakts, roh aus `kunde.anrede`. */
   anrede?: string | null;
-  felder: { label: string; wert: ReactNode }[];
+  /** Der Stift am Namen; ohne ihn ist der Name reine Anzeige. */
+  namenBearbeitung?: Pick<FeldBearbeitung<Namen>, "start" | "speichern">;
   /** Die Inaktivitätsampel, direkt unter dem Namen. */
   ampel?: ReactNode;
-  /** Die runden Schnellaktionen, zwischen Ampel und Kontaktdaten. */
+  /** Der Lead-Score als Ring, unter der Ampel. */
+  leadScore?: ReactNode;
+  /** Die runden Schnellaktionen. */
   aktionen?: ReactNode;
-  portal?: ReactNode;
-  verwaltung?: ReactNode;
-  onWeitereFelder: () => void;
-  onBearbeiten?: () => void;
+  /** Kontaktdaten und persönliche Daten, immer offen. */
+  kontakt?: ReactNode;
+  /** Person 2 und die Abschnitte 6 bis 11, in dieser Reihenfolge, eingeklappt. */
+  abschnitte?: KundenprofilAbschnittDef[];
+  istOffen?: (schluessel: string) => boolean;
+  onUmschalten?: (schluessel: string) => void;
 }
 
 /**
@@ -41,55 +61,86 @@ function anredeVorDemNamen(anrede: string | null | undefined): string | null {
 }
 
 /**
- * Die kleine Abschnittsüberschrift der linken Spalte: Kontaktdaten,
- * Kundenportal, Empfehlungsprogramm. Christian wollte am 23.09.2026, dass
- * alle drei gleich aussehen. Deshalb gibt es sie nur hier, als Baustein.
+ * Die kleine Abschnittsüberschrift der linken Spalte. Christian wollte am
+ * 23.09.2026, dass alle gleich aussehen. Deshalb gibt es sie nur hier.
  */
 export function KundenprofilUeberschrift({ children }: { children: ReactNode }) {
   return <h3 className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">{children}</h3>;
 }
 
+/** Ein klappbarer Abschnitt; die Kopfzeile trägt auch eingeklappt Hinweis und Ampel. */
+function KlappAbschnitt({ def, offen, onUmschalten }: { def: KundenprofilAbschnittDef; offen: boolean; onUmschalten: () => void }) {
+  const inhaltId = `kundenprofil-abschnitt-${def.schluessel}`;
+  return (
+    <section className="kundenprofil-abschnitt" data-abschnitt={def.schluessel} data-offen={offen ? "true" : "false"}>
+      <h3 className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
+        <button type="button" className="kundenprofil-abschnitt-kopf" aria-expanded={offen} aria-controls={inhaltId} onClick={onUmschalten}>
+          <ChevronDown aria-hidden="true" className="kundenprofil-abschnitt-pfeil h-3.5 w-3.5 shrink-0" />
+          <span className="min-w-0 flex-1 truncate">{def.titel}</span>
+          {def.hinweis && <span className="shrink-0 normal-case tracking-normal font-normal text-[11px]">{def.hinweis}</span>}
+          {def.ampel && <KundenprofilAmpel stand={def.ampel} className="shrink-0 normal-case tracking-normal" />}
+        </button>
+      </h3>
+      {offen && <div id={inhaltId} className="mt-3">{def.inhalt}</div>}
+    </section>
+  );
+}
+
 /**
- * Der Personenblock in der linken Spalte des Kundenprofils.
+ * Die linke Spalte des Kundenprofils mit allen Stammdaten (Umbau vom
+ * 18.10.2026, der Reiter „Stammdaten“ ist dafür entfallen).
  *
- * Christian hat am 16.09.2026 entschieden, den Kopfbereich zu entlasten: Der
- * Name stand zweimal, oben groß im Seitenkopf und zwanzig Pixel darunter
- * noch einmal hier. Der hier bleibt, weil er am Datenblock klebt, wo man ihn
- * sucht. Das blaue Kästchen mit den Initialen ist weggefallen, es trug keine
- * Auskunft, die nicht schon im Namen daneben stand.
- *
- * Dafür sind Ampel und Schnellaktionen hierher gezogen: Status und Handlung
- * stehen jetzt bei der Person, nicht mehr quer über dem Seitenkopf.
+ * Offen stehen nur Name, Ampel, Lead-Score, Schnellaktionen und die
+ * Kontaktdaten. Person 2 und die Abschnitte 6 bis 11 starten eingeklappt,
+ * am Schreibtisch wie auf dem Handy; wer einen aufklappt, dem merkt das CRM
+ * das je Nutzer (`useProfilAbschnitte`). Ohne Merker bleibt der Zustand in
+ * dieser Ansicht, etwa in der Vorschau.
  */
-export function KundenprofilStammdaten({ name, namenZusatz, anrede, felder, ampel, aktionen, portal, verwaltung, onWeitereFelder, onBearbeiten }: Props) {
+export function KundenprofilStammdaten({ name, namenZusatz, anrede, namenBearbeitung, ampel, leadScore, aktionen, kontakt, abschnitte = [], istOffen, onUmschalten }: Props) {
   const anredeText = anredeVorDemNamen(anrede);
+  const [eigeneOffen, setEigeneOffen] = useState<Record<string, boolean>>({});
+  const offen = (s: string) => (istOffen ? istOffen(s) : !!eigeneOffen[s]);
+  const umschalten = (s: string) => (onUmschalten ? onUmschalten(s) : setEigeneOffen((a) => ({ ...a, [s]: !a[s] })));
+
+  /*
+    Der Name ist der einzige im Profil und deshalb groß. `break-words` bleibt:
+    Ein langer Doppelname muss in der schmalen Spalte umbrechen dürfen. Die
+    Anrede steht seit dem 25.09.2026 in der Zeile des Namens, das geschützte
+    Leerzeichen hält sie auf dem Handy am Vornamen fest.
+  */
+  const namenszeile = (
+    <h2 className="text-2xl font-semibold leading-tight break-words">
+      {anredeText && <span className="font-normal">{anredeText}{" "}</span>}
+      <span>{name}</span>
+      {namenZusatz && <span className="ml-2 inline-block align-middle">{namenZusatz}</span>}
+    </h2>
+  );
+
   return (
     <Card className="kundenprofil-person">
-      {/*
-        Der Name ist am 16.09.2026 groesser geworden, auf Christians Wunsch.
-        Seit der grosse Name im Seitenkopf weg ist, ist dieser hier der einzige
-        und soll auch so aussehen. `break-words` bleibt: Ein langer Doppelname
-        muss in der schmalen Spalte umbrechen duerfen, statt sie zu sprengen.
-      */}
-      {/*
-        Die Anrede steht seit dem 25.09.2026 in der Zeile des Namens, eine
-        Stufe leichter als der Name. Das geschützte Leerzeichen hält sie auf
-        dem Handy am Vornamen fest, umbrechen darf erst der Name selbst.
-        Abzeichen wie „EN“ bleiben hinter dem Namen.
-      */}
-      <div className="min-w-0 mb-3"><h2 className="text-2xl font-semibold leading-tight break-words">{anredeText && <span className="font-normal">{anredeText}{"\u00A0"}</span>}<span>{name}</span>{namenZusatz && <span className="ml-2 inline-block align-middle">{namenZusatz}</span>}</h2></div>
-      {ampel && <div className="mb-4">{ampel}</div>}
+      <dl className="kundenprofil-namenzeile mb-3">
+        <KundenprofilFeld
+          label="Name"
+          wert={namenszeile}
+          bearbeitung={namenBearbeitung && feldBearbeitung<Namen>({
+            ...namenBearbeitung,
+            editor: (w, setze) => (
+              <div className="space-y-2">
+                <Input className="h-8" aria-label="Vorname" placeholder="Vorname" value={w.vorname} onChange={(e) => setze({ ...w, vorname: e.target.value })} />
+                <Input className="h-8" aria-label="Nachname" placeholder="Nachname" value={w.nachname} onChange={(e) => setze({ ...w, nachname: e.target.value })} />
+              </div>
+            ),
+          })}
+        />
+      </dl>
+      {ampel && <div className="mb-3">{ampel}</div>}
+      {leadScore && <div className="mb-4">{leadScore}</div>}
       {aktionen && <div className="mb-5">{aktionen}</div>}
       <KundenprofilUeberschrift>Kontaktdaten</KundenprofilUeberschrift>
-      <dl className="kundenprofil-felder">
-        {felder.map(({ label, wert }) => <div key={label}><dt>{label}</dt><dd>{wert || <span className="text-muted-foreground">Nicht hinterlegt</span>}</dd></div>)}
-      </dl>
-      <div className="flex flex-wrap gap-2 mt-4">
-        {onBearbeiten && <Button variant="outline" size="sm" className="flex-1" onClick={onBearbeiten}><Pencil className="h-3.5 w-3.5" />Bearbeiten</Button>}
-        <Button variant="outline" size="sm" className="flex-1" onClick={onWeitereFelder}><List className="h-3.5 w-3.5" />Alle Stammdaten</Button>
-      </div>
-      {portal && <section className="border-t mt-4 pt-4"><KundenprofilUeberschrift>Kundenportal</KundenprofilUeberschrift><div className="mt-2">{portal}</div></section>}
-      {verwaltung}
+      {kontakt}
+      {abschnitte.map((def) => (
+        <KlappAbschnitt key={def.schluessel} def={def} offen={offen(def.schluessel)} onUmschalten={() => umschalten(def.schluessel)} />
+      ))}
     </Card>
   );
 }

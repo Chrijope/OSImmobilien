@@ -19,26 +19,25 @@ it("behält den Inhalt der Leiste beim Einklappen bei", () => {
 });
 it("zeigt nur die übergebenen erlaubten Arbeitsbereiche und reicht den Klick unverändert weiter", () => {
   const wechsel = vi.fn();
-  render(<TooltipProvider><KundenprofilNavigation rolle="setterin" activeTab="investments" portalFreigeschalten={false} tabs={[{ key: "stammdaten", label: "Stammdaten" }, { key: "investments", label: "Investments", anzahl: 3 }]} onWechsel={wechsel} /></TooltipProvider>);
+  render(<TooltipProvider><KundenprofilNavigation rolle="setterin" activeTab="investments" portalFreigeschalten={false} tabs={[{ key: "investments", label: "Investments", anzahl: 3 }, { key: "empfehlungen", label: "Empfehlungen" }]} onWechsel={wechsel} /></TooltipProvider>);
   expect(screen.queryByRole("button", { name: /Kommunikation/ })).not.toBeInTheDocument();
   expect(screen.queryByRole("button", { name: /Dokumente/ })).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: /Investments/ }));
   expect(wechsel).toHaveBeenCalledWith("investments");
 });
 
-it("zeigt Stammdaten vor Kommunikation und öffnet den bestehenden Reiter", () => {
+it("zeigt Investments als ersten Reiter und keinen Reiter Stammdaten mehr", () => {
   const wechsel = vi.fn();
-  render(<TooltipProvider><KundenprofilNavigation rolle="vertriebspartner" activeTab="stammdaten" portalFreigeschalten={false} tabs={[{ key: "stammdaten", label: "Stammdaten" }, { key: "kommunikation", label: "Kommunikation" }]} onWechsel={wechsel} /></TooltipProvider>);
-  expect(screen.getAllByRole("button").map(b => b.textContent)).toEqual(["Stammdaten", "Kommunikation"]);
-  fireEvent.click(screen.getByRole("button", { name: "Stammdaten" }));
-  expect(wechsel).toHaveBeenCalledWith("stammdaten");
+  render(<TooltipProvider><KundenprofilNavigation rolle="vertriebspartner" activeTab="investments" portalFreigeschalten={false} tabs={[{ key: "kommunikation", label: "Kommunikation" }, { key: "investments", label: "Investments" }]} onWechsel={wechsel} /></TooltipProvider>);
+  expect(screen.getAllByRole("button").map(b => b.textContent)).toEqual(["Investments", "Kommunikation"]);
+  fireEvent.click(screen.getByRole("button", { name: "Kommunikation" }));
+  expect(wechsel).toHaveBeenCalledWith("kommunikation");
 });
 
-
-it("ordnet alle erlaubten Reiter unabhängig von der Eingabereihenfolge", () => {
+it("ordnet alle erlaubten Reiter unabhängig von der Eingabereihenfolge, ein alter Schlüssel stammdaten fällt weg", () => {
   const keys = ["kommunikation", "empfehlungen", "stammdaten", "dokumente", "investments"];
-  render(<TooltipProvider><KundenprofilNavigation rolle="vertriebspartner" activeTab="stammdaten" portalFreigeschalten={false} tabs={keys.map(key => ({ key, label: key }))} onWechsel={() => {}} /></TooltipProvider>);
-  expect(screen.getAllByRole("button").map(b => b.textContent)).toEqual(["stammdaten", "investments", "dokumente", "kommunikation", "empfehlungen"]);
+  render(<TooltipProvider><KundenprofilNavigation rolle="vertriebspartner" activeTab="investments" portalFreigeschalten={false} tabs={keys.map(key => ({ key, label: key }))} onWechsel={() => {}} /></TooltipProvider>);
+  expect(screen.getAllByRole("button").map(b => b.textContent)).toEqual(["investments", "dokumente", "kommunikation", "empfehlungen"]);
 });
 
 /*

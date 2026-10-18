@@ -113,18 +113,16 @@ describe("Rechte", () => {
 });
 
 describe("Überschriften der linken Spalte", () => {
-  it("Kundenportal sieht aus wie Kontaktdaten", () => {
+  it("Kundenportal sieht aus wie Kontaktdaten und steht darunter", () => {
     render(
       <KundenprofilStammdaten
         name="Kambiz Zangeneh"
         anrede="Herr"
-        felder={[{ label: "E-Mail", wert: "kambiz@example.org" }]}
-        onWeitereFelder={() => {}}
-        portal={<KundenportalZugang {...angaben()} darstellung="profil" />}
+        abschnitte={[{ schluessel: "portal", titel: "Kundenportal", inhalt: <KundenportalZugang {...angaben()} darstellung="profil" /> }]}
       />,
     );
     const kontaktdaten = screen.getByRole("heading", { level: 3, name: "Kontaktdaten" });
-    const portal = screen.getByRole("heading", { level: 3, name: "Kundenportal" });
+    const portal = screen.getAllByRole("heading", { level: 3 }).find((h) => h.textContent?.startsWith("Kundenportal"))!;
     expect(portal.className).toBe(kontaktdaten.className);
     // Das Portal steht unter den Kontaktdaten, nicht darüber.
     expect(kontaktdaten.compareDocumentPosition(portal) & 4).toBeTruthy();
@@ -136,7 +134,7 @@ describe("Verdrahtung im Kundenprofil", () => {
 
   it("Investment und Profil bekommen dasselbe Bündel", () => {
     expect(profil.match(/<KundenportalZugang\s+\{\.\.\.kundenportalAngaben\}/g)).toHaveLength(2);
-    expect(profil).toContain('portal={<KundenportalZugang {...kundenportalAngaben} darstellung="profil" />}');
+    expect(profil).toContain('const portal = <KundenportalZugang {...kundenportalAngaben} darstellung="profil" />;');
   });
 
   it("das Bündel trägt die Handler und Rechte aus dem Investment", () => {

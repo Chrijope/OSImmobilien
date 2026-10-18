@@ -3,6 +3,8 @@ import "./kundenprofil.css";
 
 interface Props {
   stammdaten: ReactNode;
+  /** No-Show, Löschanfrage, DSGVO, Lead-Pipeline, Nur-Lese: oben in der Mitte, über Kacheln und Reitern. */
+  hinweise?: ReactNode;
   kennzahlen?: ReactNode;
   navigation: ReactNode;
   children: ReactNode;
@@ -11,11 +13,12 @@ interface Props {
 }
 
 /** Die Bereiche erhalten ihre Inhalte vom Profil, damit alle Aktionen dort bleiben. */
-export function KundenprofilLayout({ stammdaten, kennzahlen, navigation, children, aktivitaeten, aktivitaetenOffen = true }: Props) {
+export function KundenprofilLayout({ stammdaten, hinweise, kennzahlen, navigation, children, aktivitaeten, aktivitaetenOffen = true }: Props) {
   return (
     <div className="kundenprofil-layout" data-aktivitaeten={aktivitaeten ? (aktivitaetenOffen ? "offen" : "zu") : "ohne"}>
       <aside className="kundenprofil-stammdaten" aria-label="Kontaktdaten">{stammdaten}</aside>
       <section className="kundenprofil-mitte" aria-label="Arbeitsbereich">
+        {hinweise && <div className="kundenprofil-hinweise">{hinweise}</div>}
         {kennzahlen}
         <div className="kundenprofil-arbeitskarte bg-card" data-ui="card">
           {navigation}

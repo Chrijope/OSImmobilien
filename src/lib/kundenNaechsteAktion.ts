@@ -49,7 +49,11 @@ export type AktionArt = "termin" | "videotermin" | "follow_up" | "aufgabe" | "un
  * wechselt die Seite nur den Reiter.
  */
 export interface AktionSprungziel {
-  reiter: "aktivitaeten" | "stammdaten";
+  /**
+   * Seit dem 18.10.2026 gibt es den Reiter Stammdaten nicht mehr. Der feste
+   * Termin hängt im Kopf über allen Reitern, der Sprung landet auf Investments.
+   */
+  reiter: "aktivitaeten" | "investments";
   ankerId: string;
 }
 
@@ -437,7 +441,7 @@ export function baueGeplanteAktionen(
       titel: t.bezeichnung,
       zeitpunkt,
       hatUhrzeit: !!alsUhrzeit(t.uhrzeit),
-      sprungziel: { reiter: "stammdaten", ankerId: ANKER_FESTER_TERMIN },
+      sprungziel: { reiter: "investments", ankerId: ANKER_FESTER_TERMIN },
       terminSchluessel: festerTerminSchluessel(t.datum, t.uhrzeit),
     });
   }

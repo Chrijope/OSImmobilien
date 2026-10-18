@@ -7,9 +7,10 @@
 .kundenprofil-mitte { min-width: 0; }
 .kundenprofil-person { padding: 20px; }
 .kundenprofil-felder { margin-top: 8px; }
-.kundenprofil-felder > div { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 8px; padding: 10px 0; border-bottom: 1px solid hsl(var(--border) / .6); font-size: 12px; }
+/* Seit dem 18.10.2026 überall untereinander und linksbündig: Bezeichnung, darunter der Wert (Vorgabe Christian). */
+.kundenprofil-felder > div { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px; padding: 8px 0; border-bottom: 1px solid hsl(var(--border) / .6); font-size: 12px; }
 .kundenprofil-felder > div:last-child { border-bottom: 0; }
-.kundenprofil-felder dt { color: hsl(var(--muted-foreground)); }
+.kundenprofil-felder dt { color: hsl(var(--muted-foreground)); min-width: 0; hyphens: auto; overflow-wrap: break-word; }
 .kundenprofil-felder dd { overflow-wrap: anywhere; font-weight: 500; }
 .kundenprofil-arbeitskarte { border: 1px solid hsl(var(--border)); border-radius: var(--radius); background: hsl(var(--card)); min-width: 0; padding: 0 18px 18px; }
 /* `scroll-margin-top` gibt dem Sprung zur Reiterleiste nach einem
@@ -38,12 +39,17 @@
 /* Die aufgeklappte Aktionsliste steht unter allen Kacheln, nicht neben ihnen. */
 .kundenprofil-aufgabenliste { grid-column: 1 / -1; min-width: 0; }
 .kundenprofil-aufgabenliste li { overflow-wrap: anywhere; }
+/*
+ * Seit dem 18.10.2026 stehen alle Stammdaten links. Die Spalte ist in dieser
+ * Stufe (rund 1440 Pixel Bildschirm) 260 Pixel breit, die Aktivitätenleiste
+ * dafür 250 statt 280, damit die Mitte über 600 Pixel bleibt. Darunter kippt
+ * die Investmentliste in die Telefondarstellung.
+ */
 @container (max-width: 1399px) {
-  .kundenprofil-layout { grid-template-columns: 210px minmax(0, 1fr) 280px; gap: 12px; }
-  .kundenprofil-layout[data-aktivitaeten="zu"] { grid-template-columns: 210px minmax(0, 1fr) 44px; }
-  .kundenprofil-layout[data-aktivitaeten="ohne"] { grid-template-columns: 210px minmax(0, 1fr); }
+  .kundenprofil-layout { grid-template-columns: 260px minmax(0, 1fr) 250px; gap: 12px; }
+  .kundenprofil-layout[data-aktivitaeten="zu"] { grid-template-columns: 260px minmax(0, 1fr) 44px; }
+  .kundenprofil-layout[data-aktivitaeten="ohne"] { grid-template-columns: 260px minmax(0, 1fr); }
   .kundenprofil-person { padding: 14px; }
-  .kundenprofil-felder > div { grid-template-columns: minmax(0, 1fr); gap: 4px; }
 }
 @container (max-width: 999px) {
   .kundenprofil-layout, .kundenprofil-layout[data-aktivitaeten="zu"] { grid-template-columns: 210px minmax(0, 1fr) 44px; }
@@ -304,7 +310,7 @@ main:has(> .kundenprofil) { overflow-x: clip; }
   /* Der Personenblock hat wieder die volle Breite, also passen Beschriftung
      und Wert nebeneinander. Das halbiert die Höhe der Kontaktdaten. */
   .kundenprofil-person { padding: 16px; }
-  .kundenprofil-felder > div { grid-template-columns: 92px minmax(0, 1fr); gap: 8px; padding: 9px 0; }
+  .kundenprofil-felder > div { padding: 9px 0; }
 
   .kundenprofil-arbeitskarte { padding: 0 10px 12px; }
 }
@@ -401,3 +407,63 @@ main:has(> .kundenprofil) { overflow-x: clip; }
   padding: 4px 8px 32px;
   margin: -4px -8px -32px;
 }
+
+/* ─────────────────────────────────────────────────────────────
+ * Linke Spalte mit allen Stammdaten (Umbau vom 18.10.2026)
+ * ───────────────────────────────────────────────────────────── */
+/* Ein Feld im Bearbeiten braucht die ganze Breite, die Beschriftung steht darüber. */
+.kundenprofil-felder > .kundenprofil-feld[data-bearbeiten="true"] { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+.kundenprofil-feld-wert { display: flex; align-items: flex-start; gap: 4px; min-width: 0; }
+.kundenprofil-feld-wert > .min-w-0 { padding-top: 2px; }
+/* Der Stift erscheint dezent beim Darüberfahren oder bei Fokus, auf dem Handy immer. */
+.kundenprofil-feld-stift { opacity: 0; margin-top: -4px; transition: opacity .15s ease; }
+.kundenprofil-feld:hover .kundenprofil-feld-stift,
+.kundenprofil-feld:focus-within .kundenprofil-feld-stift { opacity: 1; }
+@media (hover: none) { .kundenprofil-feld-stift { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .kundenprofil-feld-stift { transition: none; } }
+/* Die Namenszeile ist ein Feld wie die übrigen, nur ohne sichtbare Beschriftung. */
+.kundenprofil-namenzeile > .kundenprofil-feld { display: block; }
+.kundenprofil-namenzeile dt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.kundenprofil-namenzeile .kundenprofil-feld-stift { margin-top: 2px; }
+
+.kundenprofil-abschnitt { border-top: 1px solid hsl(var(--border)); margin-top: 14px; padding-top: 6px; }
+.kundenprofil-abschnitt-kopf {
+  display: flex; align-items: center; gap: 6px; width: 100%; min-height: 36px;
+  padding: 4px 6px; margin: 0 -6px; width: calc(100% + 12px);
+  border-radius: 10px; text-align: left; text-transform: inherit; letter-spacing: inherit;
+}
+.kundenprofil-abschnitt-kopf:hover { background: hsl(var(--muted) / .6); }
+.kundenprofil-abschnitt-kopf:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 1px; }
+.kundenprofil-abschnitt-pfeil { transform: rotate(-90deg); transition: transform .15s ease; }
+.kundenprofil-abschnitt[data-offen="true"] .kundenprofil-abschnitt-pfeil { transform: none; }
+@media (prefers-reduced-motion: reduce) { .kundenprofil-abschnitt-pfeil { transition: none; } }
+@media (max-width: 767px) { .kundenprofil-abschnitt-kopf { min-height: 44px; } }
+
+/* Kampagne und Beraterverlauf liefern Paare aus Beschriftung und Wert. */
+.kundenprofil-paare { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px; font-size: 12px; margin-top: 4px; }
+.kundenprofil-paare > :nth-child(odd) { color: hsl(var(--muted-foreground)); font-weight: 400; margin-top: 6px; }
+.kundenprofil-paare > :nth-child(even) { overflow-wrap: anywhere; font-weight: 500; }
+
+/* Lead-Score als Ring */
+.kundenprofil-leadscore { display: inline-flex; align-items: center; gap: 12px; text-align: left; border-radius: 16px; padding: 2px 8px 2px 0; }
+button.kundenprofil-leadscore:hover { background: hsl(var(--muted) / .5); }
+button.kundenprofil-leadscore:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
+.kundenprofil-leadscore-text { display: flex; flex-direction: column; gap: 1px; line-height: 1.2; }
+.kundenprofil-leadscore-bogen { transition: stroke-dashoffset 600ms cubic-bezier(.2, .7, .2, 1); }
+/* Nur die beste Stufe leuchtet, dezent und ohne Blinken. */
+.kundenprofil-leadscore[data-stufe="A"] .kundenprofil-leadscore-bogen { filter: drop-shadow(0 0 3px currentColor); }
+@media (prefers-reduced-motion: reduce) { .kundenprofil-leadscore-bogen { transition: none; } }
+
+/* Angaben aus Rechnern und Gesprächen: eine Zeile je Quelle */
+.kundenprofil-rechnerzeilen { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px; }
+.kundenprofil-rechnerzeile {
+  display: flex; align-items: center; gap: 8px; width: 100%; min-height: 34px;
+  padding: 6px 8px; border-radius: 10px; font-size: 12px; text-align: left;
+}
+.kundenprofil-rechnerzeile:hover, .kundenprofil-rechnerzeile[data-state="open"] { background: hsl(var(--muted) / .6); }
+.kundenprofil-rechnerzeile:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 1px; }
+@media (max-width: 767px) { .kundenprofil-rechnerzeile { min-height: 44px; } }
+
+/* Hinweise oben in der Mitte, über Kacheln und Reitern */
+.kundenprofil-hinweise { display: grid; gap: 10px; margin-bottom: 14px; min-width: 0; }
+.kundenprofil-hinweise:empty { display: none; }
