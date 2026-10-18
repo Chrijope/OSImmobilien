@@ -37,7 +37,7 @@ const InvestagonDokument = lazy(() => import("./pages/InvestagonDokument"));
 
 type LazyModule<T extends ComponentType<any>> = { default: T };
 
-const LAZY_IMPORT_ERROR_RE = /Failed to fetch dynamically imported module|dynamically imported module|error loading dynamically imported module|Importing a module script failed|Loading module|Loading chunk/i;
+const LAZY_IMPORT_ERROR_RE = /Failed to fetch dynamically imported module|dynamically imported module|error loading dynamically imported module|Importing a module script failed|Loading module|Loading chunk|Unable to preload CSS/i;
 const LAZY_LOAD_TIMEOUT_MS = 12000;
 
 function triggerCacheBustReload() {

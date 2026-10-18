@@ -15,6 +15,7 @@ const CHUNK_ERROR_HINTS = [
   "Importing a module script failed",
   "Loading module",
   "Loading chunk",
+  "Unable to preload CSS",
 ];
 
 /**
