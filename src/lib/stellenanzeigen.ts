@@ -120,6 +120,20 @@ const MERKMALE: StellenMerkmal[] = [
   { art: "start", label: "Start", wert: "Ab sofort" },
 ];
 
+/**
+ * Der Anfang von „Wer wir sind", gleich bei allen drei Stellen. Wortlaut nach
+ * Christian (18.10.2026): Die Holding ist Bauträger und Eigentümer, die drei
+ * Marken sind Vertrieb, Hausverwaltung und Finanzierung (wie der Baum der
+ * Markenfamilie, `OS_TEXTE.gruppe` in `beratungOsDaten.ts`). Keine WG- oder
+ * Co-Living-Konzepte mehr: Es geht meist um Bestand, der renoviert und
+ * modernisiert wird.
+ */
+const WER_WIR_SIND_GRUPPE =
+  "Die OS Immobilien Holding GmbH ist Bauträger und Eigentümer verschiedener Objekte in Berlin, Potsdam und " +
+  "Brandenburg. Mit OS Real Estate hat sie ihren eigenen Kapitalanlagevertrieb, mit OS Verwaltung ihre eigene " +
+  "Hausverwaltung und mit OS Finanzierung ihre eigene Finanzierungsabteilung. Meist sind es Bestandsobjekte, " +
+  "die wir renovieren und modernisieren.";
+
 export const STELLENANZEIGEN: Stellenanzeige[] = [
   {
     slug: "immobilienberater",
@@ -132,10 +146,9 @@ export const STELLENANZEIGEN: Stellenanzeige[] = [
       "Du berätst Kapitalanleger zu geprüften Immobilien, mit eigenem Gewerbe und in deinem eigenen Rhythmus. " +
       "Objekte, CRM, Finanzierung und Abwicklung kommen von uns.",
     merkmale: MERKMALE,
-    // Objektarten: vertragKlauseln.ts § 1 Absatz 1.
     werWirSind:
-      "OS Immobilien vermittelt Kapitalanlageimmobilien: sanierte Bestandswohnungen, WG- und Co-Living-Konzepte " +
-      "und energieeffiziente Neubauprojekte. Unsere Kunden wollen mit Immobilien langfristig Vermögen aufbauen. " +
+      WER_WIR_SIND_GRUPPE +
+      " Unsere Kunden wollen mit Immobilien langfristig Vermögen aufbauen. " +
       "Wir rechnen ihnen ehrlich vor, was eine Wohnung kostet und was sie leisten kann, erklären so lange, bis sie " +
       "ihre Entscheidung selbst begründen können, und bleiben auch nach dem Notartermin ansprechbar.",
     // Status: vertragKlauseln.ts § 1 Absatz 2, Vergütung § 2 Absatz 2.
@@ -201,8 +214,8 @@ export const STELLENANZEIGEN: Stellenanzeige[] = [
       "Du stellst den Kontakt her, alles Weitere übernehmen wir.",
     merkmale: MERKMALE,
     werWirSind:
-      "OS Immobilien vermittelt Kapitalanlageimmobilien an Menschen, die mit Immobilien langfristig Vermögen aufbauen " +
-      "wollen. Beratung, Objektauswahl, Finanzierung und Abwicklung liegen bei uns in einer Hand. Wir rechnen ehrlich, " +
+      WER_WIR_SIND_GRUPPE +
+      " Beratung, Objektauswahl, Finanzierung und Abwicklung liegen bei uns in einer Hand. Wir rechnen ehrlich, " +
       "erklären verständlich und bleiben nach dem Notartermin ansprechbar. Wer uns einen Kontakt anvertraut, kann sich " +
       "darauf verlassen, dass wir sorgfältig mit ihm umgehen.",
     /*
@@ -268,8 +281,8 @@ export const STELLENANZEIGEN: Stellenanzeige[] = [
     merkmale: MERKMALE,
     // „Der Baustein, der im Depot fehlt": bewerberKennenlernen.ts, Weg 2.
     werWirSind:
-      "OS Immobilien vermittelt Kapitalanlageimmobilien: sanierte Bestandswohnungen, WG- und Co-Living-Konzepte " +
-      "und energieeffiziente Neubauprojekte. Für viele Kunden aus der Finanzberatung ist die vermietete Immobilie " +
+      WER_WIR_SIND_GRUPPE +
+      " Für viele Kunden aus der Finanzberatung ist die vermietete Immobilie " +
       "genau der Baustein, der im Depot noch fehlt. Wir rechnen ehrlich, erklären verständlich und bleiben auch " +
       "nach dem Notartermin ansprechbar.",
     // Status: vertragKlauseln.ts § 1 Absatz 2, Vergütung § 2 Absatz 2.
@@ -353,21 +366,54 @@ export const STELLENANZEIGE_WERTE: { titel: string; text: string }[] = [
   { titel: "Begleiten statt abschließen", text: "Mit dem Notartermin endet unsere Arbeit nicht. Dort fängt die Betreuung an." },
 ];
 
+/**
+ * Die Vorteile der Zusammenarbeit mit OS Real Estate, unter dem Kopf der
+ * Seite (Christian, 18.10.2026). Belegt durch die Präsentation:
+ * `OS_TEXTE.gruppe.vorteile` („Provisionsfrei", „Rundum-sorglos") und
+ * `OS_TEXTE.gruppe.fuss` („Ein Haus, kurze Wege"). Dort für Kunden
+ * geschrieben, hier für Partner.
+ */
+export const STELLENANZEIGE_VORTEILE: { titel: string; text: string }[] = [
+  {
+    titel: "Keine Maklerprovision",
+    text:
+      "Die Objekte kommen direkt vom Bauträger, der OS Immobilien Holding. Deine Kunden kaufen ohne " +
+      "Zwischenhändler und zahlen keine Maklerprovision.",
+  },
+  {
+    titel: "Rundum-sorglos",
+    text:
+      "Um die Finanzierung kümmert sich OS Finanzierung, um die Verwaltung OS Verwaltung. Deine Kunden werden " +
+      "von der Auswahl bis nach der Vermietung aus einer Hand begleitet.",
+  },
+  {
+    titel: "Kurze Wege",
+    text:
+      "Bauträger, Vertrieb, Verwaltung und Finanzierung gehören zu einer Gruppe. Fragen zu Objekt, Bank oder " +
+      "Mieter klärst du direkt im Haus.",
+  },
+];
+
 /** Die Texte im Kopf der Seite. Eigene Stelle, damit der Wortwächter sie mitprüft. */
 export const STELLENANZEIGE_KOPF = {
-  marke: "Partner werden bei OS Immobilien",
+  marke: "Partner werden bei OS Real Estate",
   titelZeile1: "Dein eigenes Geschäft.",
   titelZeile2: "Mit echten Objekten und uns im Rücken.",
   einleitung:
-    "OS Immobilien vermittelt Kapitalanlageimmobilien an Menschen, die mit Immobilien Vermögen aufbauen wollen. " +
+    "OS Real Estate ist der Kapitalanlagevertrieb der OS Immobilien Holding GmbH. Wir vermitteln " +
+    "Kapitalanlageimmobilien an Menschen, die mit Immobilien Vermögen aufbauen wollen. " +
     "Dafür suchen wir selbstständige Partner, die so beraten und empfehlen, wie wir arbeiten: ehrlich, verständlich " +
     "und auf lange Sicht.",
   // Belegt: vertragKlauseln.ts § 1 Absatz 2 und 4, § 2 Absatz 2.
   fakten: ["Selbstständig mit eigenem Gewerbe", "Remote und bundesweit", "Kein Einstiegsbetrag"],
   werteTitel: "Wofür wir stehen",
+  vorteileTitel: "Deine Vorteile mit OS Real Estate",
+  vorteileEinleitung: "Was deine Kunden bei uns bekommen, und warum du es mit gutem Gewissen empfehlen kannst.",
+  gruppeMarke: "Über uns",
+  gruppeEinleitung: "OS Real Estate gehört zur OS Immobilien Holding GmbH. Unter ihrem Dach arbeiten drei Marken zusammen.",
   stellenMarke: "Offene Partnerschaften",
-  stellenTitel: "Wo du bei uns einsteigen kannst",
-  stellenEinleitung: "Drei Einstiege, alle selbstständig. Öffne eine Karte, um alles zu lesen.",
+  stellenTitel: "Dein Einstieg bei OS Real Estate",
+  stellenEinleitung: "Drei Wege in den Vertrieb, alle selbstständig. Öffne eine Karte, um alles zu lesen.",
   stellenHinweis:
     "Alle drei Einstiege sind eine selbstständige Tätigkeit und werden ausschließlich erfolgsabhängig vergütet.",
 } as const;

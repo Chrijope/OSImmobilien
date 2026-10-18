@@ -121,6 +121,30 @@ async function fuelleFormularAus({ mitLebenslauf = true } = {}) {
   fireEvent.click(dialog.querySelector<HTMLElement>('[role="checkbox"]')!);
 }
 
+describe("Aufbau der Seite (Christian, 18.10.2026)", () => {
+  it("zeigt Vorteile, dann die Markenfamilie und direkt darunter die Stellen", () => {
+    zeige();
+    const vorteile = screen.getByRole("heading", { name: "Deine Vorteile mit OS Real Estate" });
+    const baum = screen.getByTestId("markenfamilie");
+    const stellen = document.getElementById("stellen")!;
+    for (const marke of ["Real Estate", "Verwaltung", "Finanzierung"]) expect(within(baum).getByText(marke)).toBeTruthy();
+    expect(within(baum).getByText("OS Immobilien Holding GmbH")).toBeTruthy();
+    expect(vorteile.compareDocumentPosition(baum) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(baum.compareDocumentPosition(stellen) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.getByText("Keine Maklerprovision")).toBeTruthy();
+    expect(screen.getByText("Rundum-sorglos")).toBeTruthy();
+  });
+
+  it("zeigt nirgends WG- oder Co-Living-Konzepte, auch nicht in einer aufgeklappten Stelle", () => {
+    zeige();
+    for (const s of STELLENANZEIGEN) {
+      fireEvent.click(kachel(s.titel));
+      expect(document.body.textContent).not.toMatch(/\bWG\b|WG-|co-?living/i);
+      fireEvent.click(kachel(s.titel));
+    }
+  });
+});
+
 describe("Die Seite", () => {
   it("zeigt beide Stellen als Kacheln, geschlossen", () => {
     zeige();

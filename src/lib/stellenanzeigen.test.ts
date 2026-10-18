@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 import {
   STELLENANZEIGEN,
   STELLENANZEIGE_KOPF,
+  STELLENANZEIGE_VORTEILE,
   STELLENANZEIGE_WERTE,
   sichtbareTexte,
   stelleZuSlug,
@@ -33,6 +34,7 @@ import { waehleKennenlernNachfassEmpfaenger } from "../../supabase/functions/_sh
 const ALLE_TEXTE: string[] = [
   ...STELLENANZEIGEN.flatMap(sichtbareTexte),
   ...STELLENANZEIGE_WERTE.flatMap((w) => [w.titel, w.text]),
+  ...STELLENANZEIGE_VORTEILE.flatMap((v) => [v.titel, v.text]),
   ...Object.values(STELLENANZEIGE_KOPF).flatMap((v) => (Array.isArray(v) ? v : [v])),
   TIPPGEBER_BESTAETIGUNG,
 ];
@@ -178,6 +180,32 @@ describe("Die beiden Stellen", () => {
     expect(stelleZuSlug("immobilienberater")?.weg).toBe("vertriebspartner");
     expect(stelleZuSlug("#gibtsnicht")).toBeUndefined();
     expect(stelleZuSlug("")).toBeUndefined();
+  });
+});
+
+describe("Wer wir sind und die Vorteile (Christian, 18.10.2026)", () => {
+  it("nennt keine WG- oder Co-Living-Konzepte mehr", () => {
+    expect(ALLE_TEXTE.filter((t) => /\bWG\b|WG-|co-?living/i.test(t))).toEqual([]);
+  });
+
+  it("stellt bei jeder Stelle die Holding mit ihren drei Marken vor", () => {
+    for (const s of STELLENANZEIGEN) {
+      expect(s.werWirSind).toContain("OS Immobilien Holding GmbH ist Bauträger und Eigentümer");
+      for (const marke of ["OS Real Estate", "OS Verwaltung", "OS Finanzierung"]) expect(s.werWirSind).toContain(marke);
+      expect(s.werWirSind).toContain("renovieren und modernisieren");
+    }
+  });
+
+  it("nennt die Seite OS Real Estate, nicht OS Immobilien allein", () => {
+    const treffer = ALLE_TEXTE.filter((t) => /OS Immobilien(?! Holding)/.test(t));
+    expect(treffer).toEqual([]);
+  });
+
+  it("zeigt keine Maklerprovision und das Rundum-sorglos-Paket", () => {
+    const titel = STELLENANZEIGE_VORTEILE.map((v) => v.titel);
+    expect(titel).toContain("Keine Maklerprovision");
+    expect(titel).toContain("Rundum-sorglos");
+    expect(STELLENANZEIGE_VORTEILE.find((v) => v.titel === "Keine Maklerprovision")!.text).toContain("direkt vom Bauträger");
   });
 });
 
