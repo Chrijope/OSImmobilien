@@ -39,7 +39,7 @@ describe("objektbereichGesperrt", () => {
   });
 
   it("andere Rollen sehen den Bereich weiter nicht", () => {
-    for (const rolle of ["hausverwaltung", "setterin", "tippgeber"]) expect(objektbereichGesperrt("/objekte", { rolle })).toBe(true);
+    for (const rolle of ["setterin", "tippgeber", "marketing"]) expect(objektbereichGesperrt("/objekte", { rolle })).toBe(true);
   });
 
   it("lässt Admin und Inhaber durch", () => {
@@ -79,12 +79,12 @@ describe("objektbereichGesperrt", () => {
     const frisch = await import("./sidebarNavigation");
     expect(frisch.siehtObjekteMenue({ rolle: "vertriebsleiter" })).toBe(true);
     expect(frisch.objektbereichGesperrt("/objekte/o1", { rolle: "vertriebsleiter" })).toBe(false);
-    expect(frisch.objektbereichGesperrt("/objekte", { rolle: "hausverwaltung" })).toBe(true);
+    expect(frisch.objektbereichGesperrt("/objekte", { rolle: "setterin" })).toBe(true);
     vi.doUnmock("@/lib/sidebarPermissions");
   });
 
   it("stimmt mit der Seitenleiste überein", () => {
-    for (const rolle of ["admin", "inhaber", "vertriebspartner", "backoffice", "hausverwaltung"]) {
+    for (const rolle of ["admin", "inhaber", "vertriebspartner", "backoffice", "hausverwaltung", "setterin"]) {
       expect(objektbereichGesperrt("/objekte", { rolle })).toBe(!siehtObjekteMenue({ rolle }));
     }
   });
@@ -98,7 +98,7 @@ describe("Glocken in den Objektbereich", () => {
   it("„Wohnung exklusiv zugewiesen“ verlinkt für Vertriebspartner wieder auf das Objekt, nicht in die Pflege", () => {
     expect(ziel("/objekte/o1", "vertriebspartner")).toEqual({ art: "intern", pfad: "/objekte/o1" });
     expect(ziel("/einheitenspiegel", "vertriebspartner")).toEqual({ art: "keins" });
-    expect(ziel("/objekte/o1", "hausverwaltung")).toEqual({ art: "keins" });
+    expect(ziel("/objekte/o1", "setterin")).toEqual({ art: "keins" });
   });
 
   it("der Admin kommt weiter zum Objekt", () => {

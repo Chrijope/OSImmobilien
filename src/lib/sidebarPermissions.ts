@@ -59,12 +59,16 @@ const ROLE_ALLOWED_URLS_FALLBACK: Partial<Record<UserRole, string[]>> = {
     // Kundenprofil und Pipeline, um Abrechnung und Abschluss zu setzen
     // (04.10.2026, Migration 20261004171000).
     "/kunden", "/pipeline",
+    // 18.10.2026 (Christian): /kalender, /alle-kontakte, /auswertungen, /wettbewerb, /kultur
+    "/kalender", "/alle-kontakte", "/auswertungen", "/wettbewerb", "/kultur",
   ],
   setterin: [
     "/", "/inbox", "/news",
     "/lead-verwaltung", "/meine-leads", "/pipeline", "/kunden", "/papierkorb",
     "/ansprechpartner", "/academy", "/einstellungen",
     "/chat", "/vertriebsakademie", "/vertriebshandbuch",
+    // 18.10.2026 (Christian): /kalender
+    "/kalender",
   ],
   objektpartner: [
     "/", "/news",
@@ -74,6 +78,8 @@ const ROLE_ALLOWED_URLS_FALLBACK: Partial<Record<UserRole, string[]>> = {
     "/chat", "/support-kontaktieren",
     "/ansprechpartner", "/einstellungen",
     "/marktanalyse",
+    // 18.10.2026 (Christian): /kalender
+    "/kalender",
   ],
   kunde: ["/kunde/stammdaten", "/kunde/chat", "/kunde/investments", "/kunde/steuer-cockpit", "/kunde/kundenordner", "/kunde/empfehlungen", "/kunde/einstellungen", "/kunde/vp-bewertung"],
   tippgeber: [
@@ -96,6 +102,8 @@ const ROLE_ALLOWED_URLS_FALLBACK: Partial<Record<UserRole, string[]>> = {
     // Sub-Routen, die aus Unterlagen/Präsentation heraus aufgerufen werden
     "/aftersales", "/leitfaeden", "/wissenswert", "/marketing", "/bonitaet",
     "/marktanalyse",
+    // 18.10.2026 (Christian): /kalender, /kultur
+    "/kalender", "/kultur",
   ],
   finanzierungspartner: [
     "/", "/inbox", "/news",
@@ -104,6 +112,8 @@ const ROLE_ALLOWED_URLS_FALLBACK: Partial<Record<UserRole, string[]>> = {
     "/afa-rechner",
     "/chat", "/support-kontaktieren",
     "/ansprechpartner", "/einstellungen",
+    // 18.10.2026 (Christian): /kalender
+    "/kalender",
   ],
   hausverwaltung: [
     "/", "/inbox", "/news",
@@ -116,12 +126,16 @@ const ROLE_ALLOWED_URLS_FALLBACK: Partial<Record<UserRole, string[]>> = {
     "/afa-rechner", "/bonitaetsrechner", "/immobilien-lexikon",
     "/chat", "/support-kontaktieren",
     "/ansprechpartner", "/einstellungen",
+    // 18.10.2026 (Christian): /kalender
+    "/kalender",
   ],
   versicherungsexperte: [
     "/", "/inbox", "/news",
     "/verloren", "/kunden", "/pipeline",
     "/chat", "/support-kontaktieren",
     "/ansprechpartner", "/einstellungen",
+    // 18.10.2026 (Christian): /kalender
+    "/kalender",
   ],
   vertriebsleiter: [
     "/", "/inbox", "/news",
@@ -152,6 +166,8 @@ const ROLE_ALLOWED_URLS_FALLBACK: Partial<Record<UserRole, string[]>> = {
     "/aftersales", "/leitfaeden", "/wissenswert", "/bonitaet",
     "/vp-bewertungen",
     "/marktanalyse",
+    // 18.10.2026 (Christian): /kalender, /kultur
+    "/kalender", "/kultur",
   ],
   hr: [
     "/", "/inbox", "/news",
@@ -226,6 +242,8 @@ const ROLE_ALLOWED_URLS_FALLBACK: Partial<Record<UserRole, string[]>> = {
     "/berater-microseite", "/einstellungen", "/vertriebsakademie",
     "/aftersales", "/leitfaeden", "/wissenswert", "/bonitaet",
     "/vp-bewertungen",
+    // 18.10.2026 (Christian): /kalender, /investmentrechner, /kultur
+    "/kalender", "/investmentrechner", "/kultur",
   ],
 };
 

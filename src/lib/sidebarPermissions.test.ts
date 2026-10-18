@@ -212,15 +212,17 @@ describe("Keine andere Rolle sieht nach der hr-Aenderung mehr oder weniger", () 
    * Festgehaltener Stand vom 11.09.2026, unmittelbar **vor** der Aenderung
    * an der Rolle hr erhoben. Nur die Zeile `hr` durfte sich bewegen. Schlaegt
    * dieser Test an einer anderen Rolle an, hat eine Freigabe die falsche
-   * Liste getroffen.
+   * Liste getroffen. Seit 18.10.2026 sehen zusätzlich Vertriebsleitung und
+   * Vertriebspartner die Kultur, die Buchhaltung Wettbewerb und Kultur, das
+   * Backoffice die Kultur (Christian).
    */
   const VORHER: Record<string, string[]> = {
     inhaber: ["/teampartner", "/chat", "/kultur", "/unterlagen", "/praesentation", "/immobilien-lexikon", "/marketing", "/shop", "/wettbewerb"],
     admin: ["/teampartner", "/chat", "/kultur", "/unterlagen", "/praesentation", "/immobilien-lexikon", "/marketing", "/shop", "/wettbewerb"],
-    vertriebsleiter: ["/teampartner", "/chat", "/unterlagen", "/praesentation", "/immobilien-lexikon", "/marketing", "/wettbewerb"],
-    vertriebspartner: ["/teampartner", "/chat", "/unterlagen", "/praesentation", "/immobilien-lexikon", "/marketing", "/wettbewerb"],
-    buchhaltung: ["/chat"],
-    backoffice: ["/teampartner", "/chat", "/unterlagen", "/praesentation", "/immobilien-lexikon"],
+    vertriebsleiter: ["/teampartner", "/chat", "/kultur", "/unterlagen", "/praesentation", "/immobilien-lexikon", "/marketing", "/wettbewerb"],
+    vertriebspartner: ["/teampartner", "/chat", "/kultur", "/unterlagen", "/praesentation", "/immobilien-lexikon", "/marketing", "/wettbewerb"],
+    buchhaltung: ["/chat", "/kultur", "/wettbewerb"],
+    backoffice: ["/teampartner", "/chat", "/kultur", "/unterlagen", "/praesentation", "/immobilien-lexikon"],
     individuell: ["/teampartner", "/chat", "/kultur", "/unterlagen", "/praesentation", "/immobilien-lexikon", "/marketing", "/shop", "/wettbewerb"],
     objektpartner: ["/chat"],
     finanzierungspartner: ["/chat"],

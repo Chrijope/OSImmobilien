@@ -54,7 +54,8 @@ const mainItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard, suchbegriffe: ["start", "startseite", "uebersicht", "home"] },
   { title: "Inbox", url: "/inbox", icon: Inbox, suchbegriffe: ["aufgaben", "todo", "posteingang", "heute", "faellig"] },
   { title: "Chat", url: "/chat", icon: MessageCircle, suchbegriffe: ["nachricht", "schreiben", "kollegen", "intern"] },
-  { title: "Kalender", url: "/kalender", icon: Calendar, draft: true, suchbegriffe: ["termine", "woche", "monat", "agenda"] },
+  // Seit 18.10.2026 für alle internen Rollen frei, kein Entwurf mehr (Christian).
+  { title: "Kalender", url: "/kalender", icon: Calendar, suchbegriffe: ["termine", "woche", "monat", "agenda"] },
   { title: "News & Updates", url: "/news", icon: Newspaper, suchbegriffe: ["neuigkeiten", "mitteilungen", "ankuendigung", "neu im crm"] },
 ];
 
@@ -75,7 +76,7 @@ const immobilienItems = [
      (nur der Investagon-Link) steht nicht mehr in der Seitenleiste, die
      Adresse bleibt für alte Links erreichbar. Ansehen ja, Pflege nicht:
      siehe `OBJEKT_PFLEGE_ROLLEN` in `objektbereichGesperrt`. */
-  { title: "Objekte", url: "/objekte", icon: Building2, adminOnly: true, auchFuer: ["vertriebsleiter", "vertriebspartner", "backoffice", "finanzierungspartner", "objektpartner"], suchbegriffe: ["immobilien", "haus", "gebaeude", "wohnungen", "einheiten", "expose", "objektverwaltung", "bestand", "investagon import"] },
+  { title: "Objekte", url: "/objekte", icon: Building2, adminOnly: true, auchFuer: ["vertriebsleiter", "vertriebspartner", "backoffice", "finanzierungspartner", "objektpartner", "hausverwaltung"], suchbegriffe: ["immobilien", "haus", "gebaeude", "wohnungen", "einheiten", "expose", "objektverwaltung", "bestand", "investagon import"] },
   { title: "Objekt Akquise", url: "/objekt-akquise", icon: Search, adminOnly: true, suchbegriffe: ["ankauf", "einkauf", "neue objekte"] },
   { title: "Objekt Einreichungen", url: "/objekt-einreichungen", icon: ClipboardList, adminOnly: true, suchbegriffe: ["eingereicht", "vorschlaege"] },
 ];
@@ -240,8 +241,8 @@ const hausverwaltungItems = [
 const teamAdminItems = [
   // Seit 16.10.2026 auch fuer Vertriebspartner und Vertriebsleitung: sie sehen
   // dort ihre Struktur bzw. alle Partner (StrukturVerwaltung.tsx).
-  { title: "Teampartner", url: "/teampartner", icon: UsersRound, adminOnly: true, auchFuer: ["hr", "vertriebspartner", "vertriebsleiter"], suchbegriffe: ["team", "kollegen", "struktur", "partner"] },
-  { title: "Nutzerverwaltung", url: "/nutzerverwaltung", icon: UserCog, adminOnly: true, auchFuer: ["vertriebspartner", "vertriebsleiter"], suchbegriffe: ["benutzer", "rollen", "rechte", "zugang", "user", "struktur", "einladen"] },
+  { title: "Teampartner", url: "/teampartner", icon: UsersRound, adminOnly: true, auchFuer: ["hr", "vertriebspartner", "vertriebsleiter", "backoffice"], suchbegriffe: ["team", "kollegen", "struktur", "partner"] },
+  { title: "Nutzerverwaltung", url: "/nutzerverwaltung", icon: UserCog, adminOnly: true, auchFuer: ["vertriebspartner", "vertriebsleiter", "backoffice"], suchbegriffe: ["benutzer", "rollen", "rechte", "zugang", "user", "struktur", "einladen"] },
   { title: "Ansprechpartner", url: "/ansprechpartner", icon: Contact, suchbegriffe: ["kontaktperson", "zustaendig"] },
   // Die oeffentliche Stellenanzeige, nur fuer Admin und Inhaber (`adminOnly`).
   // Die Adresse liegt unter `/karriere` und ist damit ohne eigene Freigabe in
