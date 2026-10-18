@@ -196,8 +196,7 @@ describe("Rollenfilter deckt sich mit Seitenleiste und Routenschutz", () => {
       expect(urls, rolle).not.toContain("/audit-log");
       // Seit 16.10.2026 sieht der Vertriebspartner dort seine Struktur
       // (StrukturVerwaltung), nicht die Verwaltung.
-      // Seit 18.10.2026 auch das Backoffice (Christian).
-      if (rolle === "vertriebspartner" || rolle === "backoffice") expect(urls, rolle).toContain("/nutzerverwaltung");
+      if (rolle === "vertriebspartner") expect(urls, rolle).toContain("/nutzerverwaltung");
       else expect(urls, rolle).not.toContain("/nutzerverwaltung");
       // „Objekte“ seit 18.10.2026 für Vertriebspartner und Backoffice frei,
       // für die Setterin weiter nicht.

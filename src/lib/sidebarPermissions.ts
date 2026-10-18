@@ -325,6 +325,8 @@ const ROLLEN_SPERREN: Partial<Record<UserRole, string[]>> = {
    * 25.09.2026). `AppShell` leitet Kunden von dort ins Portal um.
    */
   kunde: ["/einstellungen"],
+  /* Das Backoffice sieht die Nutzerverwaltung nicht (Christian, 18.10.2026). */
+  backoffice: ["/nutzerverwaltung"],
 };
 
 /**

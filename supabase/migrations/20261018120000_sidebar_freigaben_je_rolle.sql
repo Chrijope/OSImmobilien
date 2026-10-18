@@ -11,11 +11,11 @@
 --     Auswertungen,
 --     Wettbewerb, Kultur für die Buchhaltung
 --     Investmentkalkulation, Kultur,
---     Teampartner, Nutzerverwaltung  für das Backoffice
+--     Teampartner        für das Backoffice (Nutzerverwaltung bewusst nicht)
 --     Kultur             für Vertriebspartner und Vertriebsleitung
 --     Objekte            für die Hausverwaltung (nur ansehen)
 --
---   Teampartner, Nutzerverwaltung und Objekte tragen zusätzlich den
+--   Teampartner und Objekte tragen zusätzlich den
 --   Admin-Riegel mit `auchFuer` in src/lib/sidebarNavigation.ts; dort sind
 --   die Rollen ebenfalls ergänzt. Die Pflege der Objekte bleibt bei Admin,
 --   Inhaber und Objektpartner (`objektbereichGesperrt`).
@@ -52,7 +52,6 @@ INSERT INTO public.role_permissions (role, url) VALUES
   ('backoffice',           '/investmentrechner'),
   ('backoffice',           '/kultur'),
   ('backoffice',           '/teampartner'),
-  ('backoffice',           '/nutzerverwaltung'),
 
   ('vertriebspartner',     '/kultur'),
   ('vertriebsleiter',      '/kultur'),
