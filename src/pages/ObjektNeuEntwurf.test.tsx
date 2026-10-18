@@ -141,14 +141,14 @@ describe("Entwurf je Variante", () => {
   it("stellt Konzept, Verwaltungsart und Anlageklasse aus dem Entwurf wieder her", async () => {
     t.entwuerfe.set(SCHLUESSEL, {
       nf: { titel: "WG Mitte" }, isGlobalObjekt: false, isEinzelwohnung: true, gewaehlteObjektart: "wg_coliving", step: "0",
-      zusatz: { anlageklasse: "WG-Wohnung", konzept: "steuer", verwaltungsart: "Mietpool", objektUnterlagenLink: "https://drive.test/ordner" },
+      zusatz: { anlageklasse: "WG-Wohnung", konzept: "steuer", verwaltungsart: "Mietpool", objektUnterlagenLink: "https://drive.test/ordner", exklusivKennungen: { "Zoe Vertrieb": "u-zoe" } },
     });
     neu();
     await waitFor(() => expect(titelFeld().value).toBe("WG Mitte"));
     expect(document.getElementById("objekt-konzept")?.textContent).toBe("Steuer");
     expect(document.getElementById("objekt-anlageklasse")?.textContent).toBe("WG-Wohnung");
     expect(screen.getByText("Mietpool")).toBeInTheDocument();
-    await waitFor(() => expect(entwurf()?.zusatz).toMatchObject({ konzept: "steuer", verwaltungsart: "Mietpool", objektUnterlagenLink: "https://drive.test/ordner" }));
+    await waitFor(() => expect(entwurf()?.zusatz).toMatchObject({ konzept: "steuer", verwaltungsart: "Mietpool", objektUnterlagenLink: "https://drive.test/ordner", exklusivKennungen: { "Zoe Vertrieb": "u-zoe" } }));
   }, 30000);
 
   it("übernimmt einen Entwurf unter dem alten Schlüssel ohne Nutzer", async () => {

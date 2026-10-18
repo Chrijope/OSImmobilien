@@ -39,7 +39,7 @@ import { objektartLabel, objektseiteFelderInMeta, objektseiteHandwerte, type Obj
 import { HAND_HIGHLIGHTS_SCHLUESSEL, MAX_HAND_HIGHLIGHTS, handHighlights } from "@/lib/interneHighlights";
 import { BeschreibungFeld, StandortargumenteFeld } from "@/components/objekte/ObjektKiTexte";
 import { ExklusivZuweisung } from "@/components/objekte/ExklusivZuweisung";
-import { exklusivKennungenInMeta, ladeExklusivKandidaten } from "@/lib/exklusivZuweisung";
+import { exklusivKennungenInMeta, exklusivMeldungen, exklusivStand, ladeExklusivKandidaten } from "@/lib/exklusivZuweisung";
 import { exklusivKennungenLesen } from "../../supabase/functions/_shared/objekt-zugang.ts";
 import { darfObjektTexteErstellen, MAX_KURZBESCHREIBUNG, type WizardTexteEingabe } from "@/lib/objektWizardTexte";
 import { konzeptLabel } from "@/lib/objektKonzept";
@@ -152,6 +152,8 @@ type ObjektNeuZusatz = {
   objektUnterlagenLink: string;
   einzelProfilBildId: string;
   objektdatenForm: ObjektFormDaten | null;
+  /** Name zu Nutzer-ID der Exklusivpartner, `meta.exklusivPartnerKennung`. */
+  exklusivKennungen?: Record<string, string>;
 };
 
 const initialNfState = {
@@ -1008,7 +1010,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
       anlageklasse, konzept, verwaltungsart, verwaltungskostenWeg, verwaltungskostenSev, verwaltungskostenSonstige,
       kalkHausgeldNuP, kalkHausgeldNuEuro, kalkHausgeldMonat, ruecklageWeg, garantierteErstvermietungKalt, kalkSevMonat,
       kalkMietausfallP, kalkInstandhaltungQm, kalkInstandhaltungMode, kalkInstandhaltungPct,
-      objektUnterlagenLink, einzelProfilBildId, objektdatenForm,
+      objektUnterlagenLink, einzelProfilBildId, objektdatenForm, exklusivKennungen,
     },
     hasPendingLocalFiles: hasPersistedFiles({
       hauptbildFile,
@@ -1031,7 +1033,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
       anlageklasse, konzept, verwaltungsart, verwaltungskostenWeg, verwaltungskostenSev, verwaltungskostenSonstige,
       kalkHausgeldNuP, kalkHausgeldNuEuro, kalkHausgeldMonat, ruecklageWeg, garantierteErstvermietungKalt, kalkSevMonat,
       kalkMietausfallP, kalkInstandhaltungQm, kalkInstandhaltungMode, kalkInstandhaltungPct,
-      objektUnterlagenLink, einzelProfilBildId, objektdatenForm]);
+      objektUnterlagenLink, einzelProfilBildId, objektdatenForm, exklusivKennungen]);
 
   const currentDraftBlobs = useMemo<Record<string, File>>(() => {
     const blobs: Record<string, File> = {};
@@ -1379,6 +1381,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
           setObjektUnterlagenLink(z.objektUnterlagenLink ?? "");
           setEinzelProfilBildId(z.einzelProfilBildId ?? "");
           setObjektdatenForm(z.objektdatenForm ?? null);
+          setExklusivKennungen(z.exklusivKennungen ?? {});
         }
         if (draft.bulkW) setBulkW(draft.bulkW);
         if (draft.bulkAnzahl !== undefined) setBulkAnzahl(draft.bulkAnzahl);
@@ -2405,6 +2408,18 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
       toast({ title: "Fehler beim Speichern", description: detail || "Das Objekt konnte nicht gespeichert werden. Bitte versuche es erneut.", variant: "destructive" });
       setIsSaving(false);
       return;
+    }
+    // Glocke für neu exklusiv Zugewiesene, wie in der Verwaltungsansicht. Ein Fehler hält das Speichern nicht auf.
+    const meldungen = exklusivMeldungen(
+      { id: objektId, titel: newObj.titel },
+      exklusivStand(isEditMode ? existingObjekt : undefined),
+      exklusivStand(newObj),
+      id => exklusivKandidaten.find(k => k.id === id)?.rolle,
+    );
+    if (meldungen.length > 0) {
+      try {
+        await (supabase as any).from("benachrichtigungen").insert(meldungen);
+      } catch { /* Glocke ist Zusatz */ }
     }
     // Das Konzept getrennt, damit das Speichern auch ohne die neue Spalte gelingt.
     if ((konzept || undefined) !== (isEditMode ? existingObjekt?.konzept : undefined)) {

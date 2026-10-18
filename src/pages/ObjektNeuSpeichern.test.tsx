@@ -15,6 +15,7 @@ import type { ObjektData, ObjektWohnung } from "@/lib/objekteStore";
 const t = vi.hoisted(() => ({
   objekt: undefined as unknown,
   gespeichert: [] as Array<Record<string, unknown>>,
+  glocke: [] as Array<Record<string, unknown>>,
   hochgeladen: [] as string[],
   entwurf: null as unknown,
   entwurfDateien: {} as Record<string, File>,
@@ -22,7 +23,10 @@ const t = vi.hoisted(() => ({
 
 vi.mock("@/integrations/supabase/client", () => ({
   supabase: {
-    from: () => ({ select: async () => ({ data: null, error: new Error("offline") }) }),
+    from: (tabelle: string) => ({
+      select: async () => ({ data: null, error: new Error("offline") }),
+      insert: async (zeilen: Array<Record<string, unknown>>) => { if (tabelle === "benachrichtigungen") t.glocke.push(...zeilen); return { error: null }; },
+    }),
     channel: () => ({ on: () => ({ subscribe: () => undefined }) }),
     removeChannel: () => undefined,
     storage: {
@@ -142,6 +146,7 @@ beforeAll(() => {
 
 beforeEach(() => {
   t.gespeichert = [];
+  t.glocke = [];
   t.hochgeladen = [];
   t.entwurf = null;
   t.entwurfDateien = {};
@@ -198,6 +203,8 @@ describe("Bearbeiten und Speichern: nichts geht verloren", () => {
     expect(t.gespeichert[0].exklusivPartner).toEqual(["Zoe Vertrieb"]);
     expect(meta().exklusivPartnerKennung).toEqual({ "Zoe Vertrieb": "u-zoe" });
     expect(w.exklusivNutzer).toEqual(["u-ali"]);
+    // Nichts neu zugewiesen, also keine Glocke.
+    expect(t.glocke).toEqual([]);
     // Unverändert geöffnet und gespeichert: die Spalte bleibt, auch wenn das Formular die Kurzbeschreibung zeigte.
     expect(t.gespeichert[0].beschreibung).toBe("");
     expect(meta().interneHighlightsHand).toEqual(["RND-Gutachten liegt vor"]);
@@ -237,7 +244,8 @@ describe("Neu anlegen: Globalobjekt mit Einheit, Bild und Unterlage", () => {
     const pdf = new File(["%PDF"], "grundriss.pdf", { type: "application/pdf" });
     const ausweis = new File(["%PDF"], "ausweis.pdf", { type: "application/pdf" });
     t.entwurf = {
-      nf: { titel: "Haus am See", adresse: "Seeweg 1", plz: "14548", ort: "Schwielowsee", beschreibung: "Ein helles Haus am Wasser.", badge: "", videoUrl: "", videoSichtbar: false, bildUrl: "", highlights: [], newHighlight: "", exklusivPartner: [], newExklusivPartner: "", cloudOrdnerUrl: "" },
+      nf: { titel: "Haus am See", adresse: "Seeweg 1", plz: "14548", ort: "Schwielowsee", beschreibung: "Ein helles Haus am Wasser.", badge: "", videoUrl: "", videoSichtbar: false, bildUrl: "", highlights: [], newHighlight: "", exklusivPartner: ["Zoe Vertrieb"], newExklusivPartner: "", cloudOrdnerUrl: "" },
+      zusatz: { exklusivKennungen: { "Zoe Vertrieb": "u-zoe" } },
       isGlobalObjekt: true,
       isEinzelwohnung: false,
       verkaeuferDaten: { art: "firma", name: "Bau GmbH", vorname: "", strasse: "Weg 1", plz: "14548", ort: "Schwielowsee", email: "b@beispiel.test", telefon: "", firma: "" },
@@ -274,6 +282,9 @@ describe("Neu anlegen: Globalobjekt mit Einheit, Bild und Unterlage", () => {
     expect(o.beschreibung).toBe("Ein helles Haus am Wasser.");
     expect(meta().kurzbeschreibung).toBe("Ein helles Haus am Wasser.");
     expect(meta().standortargumente).toEqual(["Seenähe. Der Schwielowsee liegt vor der Tür."]);
+    // Exklusiv zugewiesen: Kennung gespeichert und die Glocke für den neuen Nutzer.
+    expect(meta().exklusivPartnerKennung).toEqual({ "Zoe Vertrieb": "u-zoe" });
+    expect(t.glocke).toEqual([expect.objectContaining({ benutzer_id: "u-zoe", titel: "Objekt exklusiv zugewiesen", link: `/objekte/${o.id}` })]);
   }, 30000);
 });
 

@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { EXKLUSIV_ZUWEISBARE_ROLLEN } from "@/lib/exklusivZuweisung";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { confirmDialog, hinweisDialog } from "@/lib/confirm";
 import { einheitLoeschenMitRueckfrage } from "@/lib/einheitLoeschen";
@@ -2365,7 +2366,7 @@ export default function ObjektDetail() {
               {(() => {
                 const allUsers = loadAllUsers();
                 const userRoles = cacheGet("user_roles") || [];
-                const vpRoleNames = ["vertriebspartner", "vertriebsleiter"];
+                const vpRoleNames: readonly string[] = EXKLUSIV_ZUWEISBARE_ROLLEN;
                 const q = zuweisungSearch.toLowerCase();
                 const vpUsers = allUsers.filter(u => {
                   // Check rolle field (test mode)
