@@ -31,7 +31,7 @@ import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
  * dort optisch unter (Christian, 18.10.2026); `!`, weil der Glas-Stil Karten
  * sonst durchscheinend färbt.
  */
-const KASTEN = "!bg-white !border-border !shadow-md dark:!bg-card";
+const KASTEN = "!rounded-os-lg !bg-white/95 !border-border/60 !shadow-[inset_0_1px_0_hsl(0_0%_100%/.8),var(--shadow-md)] dark:!bg-card";
 
 /** Welcher der beiden Verläufe gerade offen ist. */
 export type VerlaufSchluessel = "intern" | "kunde";
