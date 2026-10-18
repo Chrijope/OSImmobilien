@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import logoImg from "@/assets/os-real-estate-logo-quer.png";
 import { EinheitGrundriss3dKarte } from "@/components/grundriss3d/Grundriss3dKarte";
+import { EinheitKiModellKarte } from "@/components/grundriss3d/KiModellKarte";
 import { useUser } from "@/contexts/UserContext";
 import { darfGepflegtWerden } from "@/lib/investagonHerkunft";
 import { darfObjektBearbeiten } from "@/lib/objektBearbeitenRecht";
@@ -391,7 +392,9 @@ function EinheitAnsicht({ objekt, wohnung: w }: { objekt: ObjektData; wohnung: O
     () => (darfLotse && lotseGeoeffnet ? kalkulationFuerLotse(objekt, w, passenderRechnerStand, kundenkontext) : null),
     [darfLotse, lotseGeoeffnet, objekt, w, passenderRechnerStand, kundenkontext],
   );
-  const reiterZahl = 5 + (darfRechner ? 1 : 0) + (darfLotse ? 1 : 0);
+  // „KI-Modell“ nur intern: Die Erkennung (Edge Function) lässt nur interne Rollen zu.
+  const darfKiModell = istInterneRolle(user.role);
+  const reiterZahl = 5 + (darfRechner ? 1 : 0) + (darfLotse ? 1 : 0) + (darfKiModell ? 1 : 0);
   // Umbrechen statt überstehen: lieber zwei Zeilen als über den Nachbarn.
   // „Investmentkalkulation“ bricht an der Wortfuge, weil beide Teile eigene
   // Flex-Elemente sind. Den Namen ohne Leerzeichen hält dort ein aria-label.
@@ -618,7 +621,8 @@ function EinheitAnsicht({ objekt, wohnung: w }: { objekt: ObjektData; wohnung: O
           so breit wie ihre Reiter, die Spalten beginnen links statt mittig.
         */}
         <TabsList className={cn("mb-4 grid h-auto w-full justify-start gap-1 rounded-xl p-1 lg:w-fit lg:max-w-full",
-          reiterZahl === 7 ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-[repeat(7,auto)]"
+          reiterZahl === 8 ? "grid-cols-2 sm:grid-cols-4 lg:grid-cols-[repeat(8,auto)]"
+            : reiterZahl === 7 ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-[repeat(7,auto)]"
             : reiterZahl === 6 ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-[repeat(6,auto)]"
             : reiterZahl === 5 ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-[repeat(5,auto)]"
               : "grid-cols-2 lg:grid-cols-[repeat(4,auto)]")}>
@@ -631,6 +635,8 @@ function EinheitAnsicht({ objekt, wohnung: w }: { objekt: ObjektData; wohnung: O
           <TabsTrigger value="uebersicht" className={reiterKlasse}>Übersicht</TabsTrigger>
           {/* Eigener Reiter zwischen Übersicht und Dokumente (Christian, 17.10.2026). */}
           <TabsTrigger value="dreid" className={reiterKlasse}>3D-Modell</TabsTrigger>
+          {/* Direkt dahinter, zum Vergleich mit dem 3D-Modell (Christian, 18.10.2026). */}
+          {darfKiModell && <TabsTrigger value="kimodell" className={reiterKlasse}>KI-Modell</TabsTrigger>}
           <TabsTrigger value="dokumente" className={reiterKlasse}>Dokumente</TabsTrigger>
           {/* Das Info-Symbol sagt vor dem Klick, welcher Reiter wofür da ist (Christian, 23.09.2026). */}
           <TabsTrigger value="finanzen" className={reiterKlasse}><ReiterBeschriftung info={FINANZEN_ERKLAERUNG}>Finanzen</ReiterBeschriftung></TabsTrigger>
@@ -728,6 +734,12 @@ function EinheitAnsicht({ objekt, wohnung: w }: { objekt: ObjektData; wohnung: O
         <TabsContent value="dreid">
           <EinheitGrundriss3dKarte wohnung={w} objekt={objekt} darfBearbeiten={istInterneRolle(user.role)} />
         </TabsContent>
+
+        {darfKiModell && (
+          <TabsContent value="kimodell">
+            <EinheitKiModellKarte objekt={objekt} wohnung={w} />
+          </TabsContent>
+        )}
 
         <TabsContent value="finanzen">
           <EinheitFinanzen objekt={objekt} wohnung={w} />

@@ -189,7 +189,7 @@ describe("Reiterleiste der Objektseite", () => {
     objekte.liste = { o7: objekt("o7", [we("w1"), we("w2")]) };
     renderMit(["/objekte/o7"]);
     const namen = screen.getAllByRole("tab").map((t) => t.textContent?.trim());
-    expect(namen).toEqual(["Übersicht", "3D-Modell", "Dokumente", "Karte"]);
+    expect(namen).toEqual(["Übersicht", "3D-Modell", "KI-Modell", "Dokumente", "Karte"]);
     expect(davor(screen.getByRole("tablist"), screen.getByText("Galerie"))).toBe(true);
   });
 

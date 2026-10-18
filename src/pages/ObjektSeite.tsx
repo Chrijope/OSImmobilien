@@ -7,6 +7,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ObjektGrundriss3dKarte } from "@/components/grundriss3d/Grundriss3dKarte";
+import { ObjektKiModellKarte } from "@/components/grundriss3d/KiModellKarte";
 import { useUser } from "@/contexts/UserContext";
 import { useLiveVersion } from "@/hooks/useLiveData";
 import { useCacheReady } from "@/hooks/useCacheReady";
@@ -636,10 +637,12 @@ function ObjektAnsicht({ objekt, onPflege, eigeneId }: {
       */}
       <Tabs value={reiter} onValueChange={setReiter}>
         {/* Immer links, wie auf der Einheitsseite (Christian, 05.10.2026). */}
-        <TabsList className="mb-4 grid h-auto w-full max-w-xl grid-cols-2 justify-start gap-1 rounded-xl p-1 sm:grid-cols-4">
+        <TabsList className={`mb-4 grid h-auto w-full grid-cols-2 justify-start gap-1 rounded-xl p-1 ${istInterneRolle(user.role) ? "max-w-2xl sm:grid-cols-5" : "max-w-xl sm:grid-cols-4"}`}>
           <TabsTrigger value="uebersicht" className={REITER_KLASSE}>Übersicht</TabsTrigger>
           {/* Eigener Reiter zwischen Übersicht und Dokumente (Christian, 17.10.2026). */}
           <TabsTrigger value="dreid" className={REITER_KLASSE}>3D-Modell</TabsTrigger>
+          {/* Direkt dahinter, zum Vergleich mit dem 3D-Modell (Christian, 18.10.2026); die Erkennung lässt nur interne Rollen zu. */}
+          {istInterneRolle(user.role) && <TabsTrigger value="kimodell" className={REITER_KLASSE}>KI-Modell</TabsTrigger>}
           <TabsTrigger value="dokumente" className={REITER_KLASSE}>Dokumente{dokumenteMitDatei.length > 0 ? ` (${dokumenteMitDatei.length})` : ""}</TabsTrigger>
           <TabsTrigger value="karte" className={REITER_KLASSE}>Karte</TabsTrigger>
         </TabsList>
@@ -648,6 +651,12 @@ function ObjektAnsicht({ objekt, onPflege, eigeneId }: {
         <TabsContent value="dreid">
           <ObjektGrundriss3dKarte objekt={objekt} darfBearbeiten={istInterneRolle(user.role)} />
         </TabsContent>
+
+        {istInterneRolle(user.role) && (
+          <TabsContent value="kimodell">
+            <ObjektKiModellKarte objekt={objekt} />
+          </TabsContent>
+        )}
 
         <TabsContent value="dokumente">
           {dokumenteMitDatei.length === 0 && !unterlagenLink ? (

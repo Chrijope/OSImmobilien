@@ -126,14 +126,14 @@ describe("Einheitsseite auf dem Handy (Handyprüfung vom 23.09.2026)", () => {
     expect(zurueck.querySelector(".truncate")).not.toBeNull();
   });
 
-  it("zeigt die sieben Reiter auf dem Handy zu zweit, ab sm zu dritt, ab lg nebeneinander", () => {
+  it("zeigt die acht Reiter auf dem Handy zu zweit, ab sm zu viert, ab lg nebeneinander", () => {
     // Bei 768 px steht die Seitenleiste daneben, dort passte „Investmentkalkulation“ nicht in ein Viertel.
-    // Seit dem 28.09.2026 kommt für Admin und Inhaber der Reiter „OS Lotse“ dazu, seit dem 01.10.2026 die Karte, seit dem 17.10.2026 das 3D-Modell.
+    // Seit dem 28.09.2026 kommt für Admin und Inhaber der Reiter „OS Lotse“ dazu, seit dem 01.10.2026 die Karte, seit dem 17.10.2026 das 3D-Modell, seit dem 18.10.2026 das KI-Modell.
     zeigeSeite();
     const leiste = screen.getByRole("tablist");
     expect(leiste.className).toContain("grid-cols-2");
-    expect(leiste.className).toContain("sm:grid-cols-3");
-    expect(leiste.className).toContain("lg:grid-cols-[repeat(7,auto)]");
+    expect(leiste.className).toContain("sm:grid-cols-4");
+    expect(leiste.className).toContain("lg:grid-cols-[repeat(8,auto)]");
     expect(leiste.className).toContain("h-auto");
   });
 
@@ -173,7 +173,7 @@ describe("Reiter OS Lotse (seit dem 28.09.2026)", () => {
     zeigeSeite();
     const namen = screen.getAllByRole("tab").map((t) => t.textContent?.trim());
     // Die Karte sitzt seit dem 01.10.2026 oben zwischen Investmentkalkulation und Lotse, ein Reiter „Fotos“ fehlt bewusst.
-    expect(namen).toEqual(["Übersicht", "3D-Modell", "Dokumente", "Finanzen", "Investmentkalkulation", "Karte", "OS Lotse KI"]);
+    expect(namen).toEqual(["Übersicht", "3D-Modell", "KI-Modell", "Dokumente", "Finanzen", "Investmentkalkulation", "Karte", "OS Lotse KI"]);
   });
 
   it("richtet sich nach der aktiven Rolle", () => {

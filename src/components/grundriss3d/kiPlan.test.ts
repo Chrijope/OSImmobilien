@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { gesamtFlaeche } from "./plan";
-import { geschossAusSchluessel, planAusKi, raumTypAus } from "./kiPlan";
+import { geschossAusSchluessel, nebeneinander, planAusKi, raumTypAus } from "./kiPlan";
 
 // Bild 1000 × 500 Bildpunkte: ein Rechteck 10 m × 5 m bei 0,01 m je Bildpunkt.
 const BILD = { breite: 1000, hoehe: 500 };
@@ -84,5 +84,15 @@ describe("raumTypAus und geschossAusSchluessel", () => {
     expect(geschossAusSchluessel("ug")).toBe(-1);
     expect(geschossAusSchluessel("dg")).toBeUndefined();
     expect(geschossAusSchluessel(undefined)).toBeUndefined();
+  });
+});
+
+describe("nebeneinander", () => {
+  it("legt Pläne je Geschoss nebeneinander und beginnt jedes Geschoss links", () => {
+    const e = planAusKi({ waende: huelle, raeume }, BILD)!.plan; // 10 m × 5 m
+    const [a, b, c] = nebeneinander([{ plan: e }, { plan: e }, { plan: { ...e, geschoss: 1 } }]);
+    expect(a.plan.versatz).toEqual({ x: 0, y: 0 });
+    expect(b.plan.versatz).toEqual({ x: 11, y: 0 });
+    expect(c.plan.versatz).toEqual({ x: 0, y: 0 });
   });
 });

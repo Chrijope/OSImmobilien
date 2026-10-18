@@ -1,4 +1,4 @@
-import { aufWand, flaeche, laenge, leererPlan, neueId, RAUM_TYPEN, type Grundriss3dPlan, type Oeffnung, type Punkt, type Raum, type RaumTyp, type Wand } from "./plan";
+import { aufWand, flaeche, laenge, leererPlan, neueId, planRahmen, RAUM_TYPEN, type Grundriss3dPlan, type Oeffnung, type Punkt, type Raum, type RaumTyp, type Wand } from "./plan";
 
 /*
  * Aus der Antwort von `grundriss-erkennen` (Koordinaten 0 bis 1000 je
@@ -156,4 +156,21 @@ export function geschossAusSchluessel(s: string | undefined): number | undefined
   if (s === "ug") return -1;
   const og = s && /^og(\d+)$/.exec(s);
   return og ? Number(og[1]) : undefined;
+}
+
+/**
+ * Für den Reiter „KI-Modell“ der Objektseite: Wo eine Einheit im Geschoss
+ * liegt, steht in keinem einzelnen Plan. Je Geschoss liegen die Pläne darum
+ * nebeneinander, mit einem Meter Abstand, auf der Höhe ihres Geschosses.
+ * ponytail: keine echte Lage im Haus; dafür bräuchte es einen Geschossplan, der die Einheiten zeigt.
+ */
+export function nebeneinander<T extends { plan: Grundriss3dPlan }>(einheiten: T[]): T[] {
+  const naechstesX = new Map<number, number>();
+  return einheiten.map((e) => {
+    const g = e.plan.geschoss ?? 0;
+    const r = planRahmen(e.plan);
+    const x = naechstesX.get(g) ?? 0;
+    naechstesX.set(g, x + (r.maxX - r.minX) + 1);
+    return { ...e, plan: { ...e.plan, versatz: { x: x - r.minX, y: 0 - r.minY } } };
+  });
 }

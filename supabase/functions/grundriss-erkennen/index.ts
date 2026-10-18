@@ -63,8 +63,8 @@ Deno.serve(async (req) => {
       return json({ error: "Erkennung nicht verfügbar" }, 500);
     }
 
-    // Eine Erkennung kostet je Plan einen teuren KI-Aufruf; pro Einheit braucht es ihn einmal.
-    const rl = await checkRateLimit(req, aufrufer.nutzerId, { scope: "grundriss-erkennen", perHour: 20, perDay: 100 });
+    // Je Plan ein KI-Aufruf; der Reiter „KI-Modell“ eines Hauses schickt bis zu 30 Pläne auf einmal.
+    const rl = await checkRateLimit(req, aufrufer.nutzerId, { scope: "grundriss-erkennen", perHour: 60, perDay: 300 });
     if (!rl.ok) return rateLimitErrorBody("grundriss-erkennen", rl, corsHeaders);
 
     const body = await req.json().catch(() => null) as { bild?: unknown } | null;
