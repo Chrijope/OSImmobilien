@@ -54,6 +54,8 @@ export interface SzenenOptionen {
   schnitt?: boolean;
   /** Fassade, Dach und Balkone nach Fotos; nur in der Hausansicht. */
   aussehen?: Aussehen;
+  /** Einheitenseite: Dachflächen nur zum Abschneiden unter Schrägen, ohne Dachhaut. */
+  dachNurKappen?: boolean;
 }
 
 export const SCHNITT_HOEHE = 1.2;
@@ -653,6 +655,11 @@ export function baueSzene(einheiten: Einheit3d[], o: SzenenOptionen, haus?: Haus
   // Im ganzen Haus nur die Einheiten beschriften, Räume erst im einzelnen Geschoss.
   const hausAnsicht = (new Set(geschosse).size > 1 || !!haus) && o.nurGeschoss === undefined;
   const basis = Math.min(...geschosse);
+  const geschossSchilder = new Set<number>();
+  const gesamtRahmen = rahmen(einheiten.flatMap((e) => {
+    const r = planRahmen(e.plan), v = e.plan.versatz ?? { x: 0, y: 0 };
+    return [{ x: r.minX + v.x, y: r.minY + v.y }, { x: r.maxX + v.x, y: r.maxY + v.y }];
+  }).concat(einheiten.length ? [] : [{ x: 0, y: 0 }]));
   for (const e of einheiten) {
     const geschoss = e.plan.geschoss ?? 0;
     if (o.nurGeschoss !== undefined && geschoss !== o.nurGeschoss) continue;
@@ -753,15 +760,26 @@ export function baueSzene(einheiten: Einheit3d[], o: SzenenOptionen, haus?: Haus
       platte.position.set((r.minX + r.maxX) / 2, -DECKE / 2 - 0.01, (r.minY + r.maxY) / 2);
       ebene.add(platte);
     }
-    if (e.titel && einheiten.length > 1 && o.beschriftung) {
+    // Teilpläne eines Geschosses (Etagen aus CAD) bekommen im Haus ein gemeinsames Schild links neben dem Haus.
+    const etagenTitel = !!e.titel && !/^WE\b/i.test(e.titel);
+    if (e.titel && einheiten.length > 1 && o.beschriftung && hausAnsicht && etagenTitel) {
+      if (!geschossSchilder.has(geschoss)) {
+        geschossSchilder.add(geschoss);
+        const el = document.createElement("div");
+        el.className = "g3d-label g3d-label-einheit";
+        el.textContent = GESCHOSS_TEXT(geschoss);
+        const label = new CSS2DObject(el);
+        label.position.set(gesamtRahmen.minX - 1.5 - v.x, h / 2, (gesamtRahmen.minY + gesamtRahmen.maxY) / 2 - v.y);
+        ebene.add(label);
+        nurRundum.push(label);
+      }
+    } else if (e.titel && einheiten.length > 1 && o.beschriftung) {
       const r = planRahmen(e.plan);
       const el = document.createElement("div");
       el.className = "g3d-label g3d-label-einheit";
       el.textContent = e.titel;
       const label = new CSS2DObject(el);
-      // Im ganzen Haus seitlich auf Geschosshöhe, sonst stapeln sich die Schilder über der Mitte.
-      if (hausAnsicht) label.position.set(r.minX - 1.2, h / 2, (r.minY + r.maxY) / 2);
-      else label.position.set((r.minX + r.maxX) / 2, h + 0.3, r.minY);
+      label.position.set((r.minX + r.maxX) / 2, h + 0.3, r.minY);
       ebene.add(label);
       nurRundum.push(label);
     }
@@ -815,8 +833,9 @@ export function baueSzene(einheiten: Einheit3d[], o: SzenenOptionen, haus?: Haus
         for (const x of ebenen) kappeUnterKarte(x.ebene, d.karte);
         gruppe.userData.dachKarte = d.karte.textur;
       }
-      if (zeigeDach) gruppe.add(d.gruppe);
-    } else if (zeigeDach && dach?.art !== "sattel" && dach?.art !== "walm") {
+      if (zeigeDach && !o.dachNurKappen) gruppe.add(d.gruppe);
+      else entsorge(d.gruppe);
+    } else if (zeigeDach && !o.dachNurKappen && dach?.art !== "sattel" && dach?.art !== "walm") {
       // Flachdach über jedem Geschoss aus CAD-Plänen; wo ein Geschoss darüber steht, verdeckt dessen Decke es.
       const dachMat = mat(dach?.art === "flach" && dach.farbe ? dach.farbe : "#b9b5ad", 0.95);
       for (const x of ebenen) {
@@ -829,7 +848,7 @@ export function baueSzene(einheiten: Einheit3d[], o: SzenenOptionen, haus?: Haus
       }
     }
   }
-  for (const b of o.aussehen?.balkone ?? []) {
+  for (const b of o.dachNurKappen ? [] : o.aussehen?.balkone ?? []) {
     const umriss = haus ? rechteckPunkte(rahmen(haus.huelle.waende.flatMap((w) => [w.a, w.b]))) : konturen[0]?.punkte ?? null;
     for (const g of b.geschosse) {
       if (o.nurGeschoss !== undefined && g !== o.nurGeschoss) continue;
@@ -1192,6 +1211,7 @@ export function entsorge(obj: THREE.Object3D): void {
     if (x instanceof THREE.Mesh) {
       x.geometry.dispose();
       (Array.isArray(x.material) ? x.material : [x.material]).forEach((m) => mats.add(m));
+      if (x.customDepthMaterial) mats.add(x.customDepthMaterial);
     }
     if (x instanceof CSS2DObject) x.element.remove();
   });

@@ -99,7 +99,7 @@ export function EinheitGrundriss3dKarte({ wohnung, darfBearbeiten, onGespeichert
         </>
       ) : plan ? (
         <>
-          <Grundriss3dBlock einheiten={[{ plan: { ...plan, versatz: undefined }, titel: `WE ${wohnung.weNr}` }]} hoehe="voll" />
+          <Grundriss3dBlock einheiten={[{ plan: { ...plan, versatz: undefined }, titel: `WE ${wohnung.weNr}` }]} hoehe="voll" aussehen={eigenerPlan ? undefined : bekannt?.aussehen} />
           {!eigenerPlan && bekannt && <p className="mt-1 text-[11px] text-muted-foreground">Nachgezeichnet aus dem Grundriss der Unterlagen ({bekannt.name}).</p>}
         </>
       ) : (

@@ -198,12 +198,24 @@ export default function Grundriss3dAnsicht({ einheiten: einheitenRoh, kompakt, h
     };
   }, [nordWinkel]);
 
+  // Beim Ziehen an Reglern nicht bei jedem Schritt neu bauen (die Hauffstraße hat rund 300 Räume): erst nach 150 ms Ruhe.
+  const [explosionBau, setExplosionBau] = useState(explosion);
+  const [wandhoeheBau, setWandhoeheBau] = useState(wandhoehe);
+  useEffect(() => {
+    const t = setTimeout(() => { setExplosionBau(explosion); setWandhoeheBau(wandhoehe); }, 150);
+    return () => clearTimeout(t);
+  }, [explosion, wandhoehe]);
+
   /* ── Szene bei jeder Option neu bauen ── */
   useEffect(() => {
     const w = welt.current;
     if (!w) return;
     if (w.szene) { w.scene.remove(w.szene.gruppe); entsorge(w.szene.gruppe); }
-    const szene = baueSzene(einheiten, { wandhoehe, stil, beschriftung: beschriftung && modus === "rundum", explosion, nurGeschoss, fassade: mehrere ? fassade : undefined, aussehen: mehrere ? aussehen : undefined, schnitt: schnitt && modus === "rundum" }, haus);
+    const szene = baueSzene(einheiten, { wandhoehe: wandhoeheBau, stil, beschriftung: beschriftung && modus === "rundum", explosion: explosionBau, nurGeschoss, fassade: mehrere ? fassade : undefined,
+      // Einzelne Wohnung: nur das Flächendach zum Abschneiden unter Schrägen, ohne Dachhaut und Fassade.
+      aussehen: mehrere ? aussehen : aussehen?.dach?.art === "flaechen" ? { dach: aussehen.dach } : undefined,
+      dachNurKappen: !mehrere,
+      schnitt: schnitt && modus === "rundum" }, haus);
     w.szene = szene;
     w.scene.add(szene.gruppe);
     buehneAnpassen(w.buehne, szene.rahmen);
@@ -217,7 +229,7 @@ export default function Grundriss3dAnsicht({ einheiten: einheitenRoh, kompakt, h
     w.geschossWahl = nurGeschoss;
     lichtAnwenden();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [einheiten, wandhoehe, stil, beschriftung, explosion, nurGeschoss, modus, fassade, aussehen, mehrere, schnitt, haus]);
+  }, [einheiten, wandhoeheBau, stil, beschriftung, explosionBau, nurGeschoss, modus, fassade, aussehen, mehrere, schnitt, haus]);
 
   /* ── Licht: Tag mit Uhrzeit oder Nacht, ohne die Szene neu zu bauen ── */
   const lichtAnwenden = () => {

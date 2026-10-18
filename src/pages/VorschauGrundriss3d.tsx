@@ -158,7 +158,7 @@ function HauffVorschau({ startwerte }: { startwerte: Parameters<typeof Grundriss
       </p>
       <Grundriss3dBlock einheiten={bekannt.etagen.map((e) => ({ plan: e.plan, titel: e.titel }))} hoehe={680} aussehen={bekannt.aussehen} startwerte={startwerte} />
       <h3 className="mb-2 mt-6 font-bold">Einheitenseite WE {weNr}</h3>
-      {we33 && <Grundriss3dBlock einheiten={[{ plan: { ...we33, versatz: undefined }, titel: `WE ${weNr}` }]} hoehe={520} startwerte={{ ...startwerte, geschoss: undefined }} />}
+      {we33 && <Grundriss3dBlock einheiten={[{ plan: { ...we33, versatz: undefined }, titel: `WE ${weNr}` }]} hoehe={520} aussehen={bekannt.aussehen} startwerte={{ ...startwerte, geschoss: undefined }} />}
     </section>
   );
 }
