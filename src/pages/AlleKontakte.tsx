@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from "react";
+import { nurLesendKundendaten } from "@/lib/nurLesend";
 import { useLiveVersion } from "@/hooks/useLiveData";
 import { useCacheReady } from "@/hooks/useCacheReady";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
@@ -152,6 +153,7 @@ export default function AlleKontakte() {
   const { toast } = useToast();
   const { settings, saveSettings, loaded: settingsLoaded } = useUserSettings();
   const isAdmin = isTeamWideKontaktRole(user.role);
+  const nurLesend = nurLesendKundendaten(user.role);
   // Wer die Uebergabe angeboten bekommt, steht in leadZuweisungRechte.ts.
   // Die Leitung darf jeden Lead jedem geben, der Vertriebspartner nur die,
   // fuer die er selbst zustaendig ist. Welcher Lead das ist, entscheidet
@@ -809,10 +811,13 @@ export default function AlleKontakte() {
             der Filterzeile hatten sie ohnehin nichts verloren, dort geht es um
             die eingestellte Sicht.
           */}
-          <div className="flex items-center gap-2">
-            <ImportExportButton kontakte={filtered} onImportDone={() => cacheRefreshTable("kontakte")} exportFilename="alle-kontakte" />
-            <NeuerKontaktDialog />
-          </div>
+          {/* Die Buchhaltung liest nur (18.10.2026): kein Anlegen, kein Import und Export. */}
+          {!nurLesend && (
+            <div className="flex items-center gap-2">
+              <ImportExportButton kontakte={filtered} onImportDone={() => cacheRefreshTable("kontakte")} exportFilename="alle-kontakte" />
+              <NeuerKontaktDialog />
+            </div>
+          )}
         </div>
 
         <KontakteFilterLeiste
@@ -895,7 +900,7 @@ export default function AlleKontakte() {
                     checked={allPagedSelected}
                     onCheckedChange={v => togglePagedSelection(!!v)}
                     aria-label="Alle auswählen"
-                    disabled={paged.length === 0}
+                    disabled={paged.length === 0 || nurLesend}
                   />
                 </TableHead>
                 {[
@@ -939,6 +944,7 @@ export default function AlleKontakte() {
                           checked={checked}
                           onCheckedChange={v => toggleOne(k.id, !!v)}
                           aria-label={`${k.vorname} ${k.nachname} auswählen`}
+                          disabled={nurLesend}
                         />
                       </TableCell>
                       <TableCell>

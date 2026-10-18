@@ -1,4 +1,5 @@
 import { markiereProfilAbschnitt } from "@/components/kunden/profil/markiereProfilAbschnitt";
+import { nurLesendKundendaten, NUR_LESEND_HINWEIS } from "@/lib/nurLesend";
 import { investmentFuerNaechstenSchritt } from "@/components/kunden/profil/hoechstesInvestment";
 import { KundenprofilNavigation } from "@/components/kunden/profil/KundenprofilNavigation";
 import { KundenprofilKennzahlen } from "@/components/kunden/profil/KundenprofilKennzahlen";
@@ -2779,6 +2780,8 @@ export default function KundenDetail() {
   const canSwitchObjektDirect = ["admin", "inhaber", "objektpartner"].includes(user.role);
   const canSwitchObjekt = canSwitchObjektDirect || user.role === "vertriebspartner";
   const isSetterinRole = user.role === "setterin";
+  // Buchhaltung: Kundendaten nur lesen (18.10.2026), siehe lib/nurLesend.ts.
+  const nurLesend = nurLesendKundendaten(user.role);
   const isVersicherungsexperte = user.role === "versicherungsexperte";
   const isFinanzierer = user.role === "finanzierungspartner";
   // VP/VL/Admin/Inhaber qualifizieren Leads selbst (egal ob manuell angelegt
@@ -5464,11 +5467,11 @@ export default function KundenDetail() {
        * unverändert: Die alte Leiste im Seitenkopf hatte keine Rollenabfrage,
        * also hat die neue auch keine.
        */
-      aktionen={<KundenprofilAktionsleiste onAktion={fuehreSchnellaktionAus} />}
+      aktionen={nurLesend ? undefined : <KundenprofilAktionsleiste onAktion={fuehreSchnellaktionAus} />}
       felder={felder}
-      verwaltung={renderProfilVerwaltung()}
+      verwaltung={nurLesend ? undefined : renderProfilVerwaltung()}
       onWeitereFelder={() => wechsleReiter("stammdaten")}
-      onBearbeiten={!isFinanzierer ? oeffneStammdatenBearbeitung : undefined}
+      onBearbeiten={!isFinanzierer && !nurLesend ? oeffneStammdatenBearbeitung : undefined}
       /*
        * Seit dem 23.09.2026 derselbe Portalblock wie im Investment, mit
        * denselben Handlern und Rechten (`kundenportalAngaben`). Status und
@@ -6019,7 +6022,7 @@ export default function KundenDetail() {
       onAktionenUmschalten={naechsteAktionKachel.umschalten}
       onAktionSpringen={springeZuAktion}
       // "Aktion erstellen" öffnet dieselben Dialoge wie die Schnellaktionsleiste.
-      onAktionErstellen={isFinanzierer ? undefined : fuehreSchnellaktionAus}
+      onAktionErstellen={isFinanzierer || nurLesend ? undefined : fuehreSchnellaktionAus}
       aktionArten={QUICK_ACTIONS.filter((a) => a.art === "aufgabe" || a.art === "meeting") as Array<{ art: "aufgabe" | "meeting"; label: string; icon: React.ReactNode }>}
       onAktionenVerlauf={() => { setAktivitaetenAnsicht("manuell"); setAktivitaetenFilter("alle"); wechsleReiter("aktivitaeten"); }}
       // Der Haken je Eintrag und der Sammelweg. Der Finanzierungspartner liest
@@ -7902,7 +7905,7 @@ export default function KundenDetail() {
     const unterlagenFreigeschaltetAt = getInvestmentUnterlagenFreigeschaltetAt(inv.id);
     const isBackofficeOrAdmin = ["admin", "inhaber", "vertriebspartner"].includes(user.role);
     const isFinanziererView = user.role === "finanzierungspartner";
-    const isReadOnlyDocView = isFinanziererView || isSetterinRole;
+    const isReadOnlyDocView = isFinanziererView || isSetterinRole || nurLesend;
     const canDownloadAllUnterlagen = ["admin", "inhaber", "finanzierungspartner", "vertriebsleiter", "vertriebspartner", "versicherungspartner", "setter"].includes(user.role);
 
     // Get file URLs for "Datei anzeigen" buttons (inkl. Alt-Schlüssel-Rückfall)
@@ -12841,7 +12844,7 @@ export default function KundenDetail() {
               {sortiert.length === 1 ? "Ein Vorgang" : `${sortiert.length} Vorgänge`} zu diesem Kunden. Eine Zeile anklicken, um den Vorgang zu öffnen.
             </p>
           </div>
-          {!isSetterinRole && (
+          {!isSetterinRole && !nurLesend && (
             <Button size="sm" variant="outline" className="gap-1.5" onClick={handleCreateInvestment}>
               <Plus className="h-3.5 w-3.5" /> Neues Investment
             </Button>
@@ -13498,6 +13501,11 @@ export default function KundenDetail() {
         stehen.
       */}
       <div className={showKaufvertragForm ? "kundenprofil space-y-6 hidden" : "kundenprofil space-y-6"}>
+        {nurLesend && (
+          <p role="status" data-testid="nur-lesend-hinweis" className="rounded-lg border border-amber-300/60 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:bg-amber-950/30 dark:text-amber-200">
+            {NUR_LESEND_HINWEIS}
+          </p>
+        )}
         {id && <CallSessionBar currentKundeId={id} />}
         {/*
           Kopfzeile.
