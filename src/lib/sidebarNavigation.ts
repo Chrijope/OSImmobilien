@@ -18,7 +18,7 @@ import type { ComponentType, ReactNode } from "react";
 import {
   LayoutDashboard, Inbox, Calendar, Newspaper, Users, UserPlus,
   GitBranch, Zap, Building2, BarChart3, PieChart,
-  Search, Receipt, Trophy, Calculator, Megaphone, Target, CreditCard,
+  Search, Receipt, Trophy, Calculator, Megaphone, Clapperboard, Target, CreditCard,
   GraduationCap, BookOpen, BookMarked, Presentation, FolderOpen,
   MessageCircle, Bot, UsersRound, UserCog, Contact, Globe, User, Headset,
   Gift, Key, Wrench, ClipboardList,
@@ -210,6 +210,8 @@ const videocallItems = [
 
 const marketingItems = [
   { title: "Marketing", url: "/marketing", icon: Megaphone, suchbegriffe: ["werbung", "anzeigen", "social media", "kampagne"] },
+  // Kostet je Clip beim Anbieter, deshalb vorerst nur Admin und Inhaber (siehe Migration video_studio).
+  { title: "Video-Studio", url: "/video-studio", icon: Clapperboard, adminOnly: true, suchbegriffe: ["video", "avatar", "heygen", "sprecher", "reel", "stimme"], tooltip: "Sprechende Avatar-Videos aus einem Skript, mit eigenem Gesicht und eigener Stimme." },
   { title: "Shop", url: "/shop", icon: ShoppingBag, draft: true, suchbegriffe: ["bestellen", "kaufen", "merch"] },
 ];
 
