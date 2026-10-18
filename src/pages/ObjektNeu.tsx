@@ -51,7 +51,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { objektDateiAblegen } from "@/lib/storage";
 import { darfObjektBearbeiten } from "@/lib/objektBearbeitenRecht";
 import { compressImageImmediate, compressForUpload, compressToFile } from "@/lib/imageCompression";
-import { deleteObjektDraft, loadObjektDraft, loadObjektDraftBlobs, saveObjektDraft, saveObjektDraftBlobs } from "@/lib/objektDraftStore";
+import { deleteObjektDraft, loadObjektDraft, loadObjektDraftBlobs, saveObjektDraft, saveObjektDraftBlobs, saveObjektDraftSofort } from "@/lib/objektDraftStore";
 import { createEmptyUploadAnalyseRuntimeState, type UploadAnalyseRuntimeState } from "@/lib/objektAnalyseShared";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { verkaeuferNameLabel, verkaeuferVollerName, type VerkaeuferArt } from "@/lib/verkaeuferName";
@@ -127,6 +127,31 @@ type ObjektNeuDraft = {
   editingIdx: number | null;
   isDirty: boolean;
   hasPendingLocalFiles: boolean;
+  /** Seit 18.10.2026. Fehlte vorher und war nach dem Neuladen weg. */
+  zusatz?: ObjektNeuZusatz;
+};
+
+/** Angaben, die bis zum 18.10.2026 nicht im Entwurf standen. */
+type ObjektNeuZusatz = {
+  anlageklasse: string;
+  konzept: ObjektKonzept | "";
+  verwaltungsart: string;
+  verwaltungskostenWeg: number;
+  verwaltungskostenSev: number;
+  verwaltungskostenSonstige: number;
+  kalkHausgeldNuP: number;
+  kalkHausgeldNuEuro: number;
+  kalkHausgeldMonat: number;
+  ruecklageWeg: number;
+  garantierteErstvermietungKalt: number;
+  kalkSevMonat: number;
+  kalkMietausfallP: number;
+  kalkInstandhaltungQm: number;
+  kalkInstandhaltungMode: "qm" | "pct";
+  kalkInstandhaltungPct: number;
+  objektUnterlagenLink: string;
+  einzelProfilBildId: string;
+  objektdatenForm: ObjektFormDaten | null;
 };
 
 const initialNfState = {
@@ -309,9 +334,8 @@ const DRAFT_BLOB_KEYS = {
 export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React.ComponentType<{ children: React.ReactNode }> } = {}) {
   const navigate = useNavigate();
   const { id: editId } = useParams<{ id?: string }>();
-  const { user, authUser } = useUser();
+  const { user, authUser, loading: nutzerLaedt } = useUser();
   const { toast } = useToast();
-  const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const [showAnalysisAbortConfirm, setShowAnalysisAbortConfirm] = useState(false);
   const [step, setStep] = useState(editId ? "0" : "typ");
   const [isAnalysisRunning, setIsAnalysisRunning] = useState(false);
@@ -392,6 +416,8 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
    */
   const [objektangaben, setObjektangaben] = useState<ObjektseiteFelder>(leereObjektangaben);
   const [interneHighlightsText, setInterneHighlightsText] = useState("");
+  // Objektdaten aus „Basisdaten“ (Vergleichsmiete, Kappungsgrenze, Reservierungsdauer und mehr).
+  const [objektdatenForm, setObjektdatenForm] = useState<ObjektFormDaten | null>(null);
 
   // Sync AfA-Rechner-Ergebnis in das persistente `afaDaten`, damit die
   // Kalkulationen die korrekten Werte (Grundstücksanteil, AfA-Satz, RND)
@@ -918,7 +944,14 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
   };
 
   // ── LocalStorage persistence: save form state so it survives tab switches, browser minimize, etc. ──
-  const LS_KEY = isEditMode ? `osimmo_objekt_edit_${editId}` : "osimmo_objekt_neu_draft";
+  // Je Nutzer (18.10.2026): Vorher teilten sich alle Nutzer eines Browsers
+  // einen Entwurf. Der alte Schlüssel wird beim Wiederherstellen einmal
+  // übernommen und dann gelöscht.
+  const LS_KEY_ALT = isEditMode ? `osimmo_objekt_edit_${editId}` : "osimmo_objekt_neu_draft";
+  const LS_KEY = `${LS_KEY_ALT}::${authUser?.id ?? "lokal"}`;
+  // Nach „Entwurf verwerfen“ darf nichts mehr zurückgeschrieben werden,
+  // weder verzögert noch beim Verlassen der Seite.
+  const entwurfVerworfenRef = useRef(false);
   const skipRestore = useRef(false);
   const hasUserInteractedRef = useRef(false);
   const [draftRestored, setDraftRestored] = useState(false);
@@ -927,6 +960,10 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
   const latestPersistedDraftRef = useRef<ObjektNeuDraft | null>(null);
   const latestDraftBlobsRef = useRef<Record<string, File>>({});
   const latestVerkaeuferDatenRef = useRef(verkaeuferDaten);
+  const saveSuccessRef = useRef(saveSuccess);
+  saveSuccessRef.current = saveSuccess;
+  const draftRestoredRef = useRef(draftRestored);
+  draftRestoredRef.current = draftRestored;
 
   const currentDraft = useMemo<ObjektNeuDraft>(() => ({
     nf,
@@ -967,6 +1004,12 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
     step,
     editingIdx,
     isDirty,
+    zusatz: {
+      anlageklasse, konzept, verwaltungsart, verwaltungskostenWeg, verwaltungskostenSev, verwaltungskostenSonstige,
+      kalkHausgeldNuP, kalkHausgeldNuEuro, kalkHausgeldMonat, ruecklageWeg, garantierteErstvermietungKalt, kalkSevMonat,
+      kalkMietausfallP, kalkInstandhaltungQm, kalkInstandhaltungMode, kalkInstandhaltungPct,
+      objektUnterlagenLink, einzelProfilBildId, objektdatenForm,
+    },
     hasPendingLocalFiles: hasPersistedFiles({
       hauptbildFile,
       uploadedPdfFiles: [...uploadedPdfFiles, ...uploadAnalyseDraft.files, ...Object.values(uploadAnalyseDraft.slotFiles).flat()],
@@ -984,7 +1027,11 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
       expandedWohnungDocs, customWohnungDocs, newCustomWohnungDocName, wohnungBilder,
       wohnungBilderFiles, uploadedPdfFiles, newW, bulkW, bulkAnzahl, bulkStartWeNr,
       uploadAnalyseDraft,
-      newExtraDocName, newInterneDocName, step, editingIdx, isDirty]);
+      newExtraDocName, newInterneDocName, step, editingIdx, isDirty,
+      anlageklasse, konzept, verwaltungsart, verwaltungskostenWeg, verwaltungskostenSev, verwaltungskostenSonstige,
+      kalkHausgeldNuP, kalkHausgeldNuEuro, kalkHausgeldMonat, ruecklageWeg, garantierteErstvermietungKalt, kalkSevMonat,
+      kalkMietausfallP, kalkInstandhaltungQm, kalkInstandhaltungMode, kalkInstandhaltungPct,
+      objektUnterlagenLink, einzelProfilBildId, objektdatenForm]);
 
   const currentDraftBlobs = useMemo<Record<string, File>>(() => {
     const blobs: Record<string, File> = {};
@@ -1091,17 +1138,21 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
   // Bearbeitungen verlieren. Erst nach erfolgreichem Speichern wird der Draft
   // verworfen.
   useEffect(() => {
-    if (saveSuccess || !draftRestored) return;
+    if (saveSuccess || !draftRestored || entwurfVerworfenRef.current) return;
 
     const timeoutId = window.setTimeout(() => {
-      void Promise.all([
-        saveObjektDraft(LS_KEY, persistedDraft),
-        saveObjektDraftBlobs(LS_KEY, currentDraftBlobs),
-      ]);
+      void saveObjektDraft(LS_KEY, persistedDraft).catch(() => undefined);
     }, 120);
 
     return () => window.clearTimeout(timeoutId);
-  }, [LS_KEY, currentDraftBlobs, draftRestored, persistedDraft, saveSuccess]);
+  }, [LS_KEY, draftRestored, persistedDraft, saveSuccess]);
+
+  // Dateien eigener Effekt: Vorher schrieb jeder Tastendruck alle Bilder und
+  // PDFs erneut in den Browser-Speicher.
+  useEffect(() => {
+    if (saveSuccess || !draftRestored || entwurfVerworfenRef.current) return;
+    void saveObjektDraftBlobs(LS_KEY, currentDraftBlobs).catch(() => undefined);
+  }, [LS_KEY, currentDraftBlobs, draftRestored, saveSuccess]);
 
   // Flush draft immediately on tab switch / blur / pagehide using refs (never stale)
   useEffect(() => {
@@ -1109,6 +1160,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
 
     const flushDraft = () => {
       flushSync(() => undefined);
+      if (saveSuccessRef.current || entwurfVerworfenRef.current || !draftRestoredRef.current) return;
 
       if (latestPersistedDraftRef.current) {
         const draftSnapshot: ObjektNeuDraft = {
@@ -1119,10 +1171,12 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
           verkaeuferDaten: latestVerkaeuferDatenRef.current,
         };
 
+        // Synchron zuerst: Beim Neuladen schafft IndexedDB es oft nicht mehr.
+        saveObjektDraftSofort(LS_KEY, draftSnapshot);
         void Promise.all([
           saveObjektDraft(LS_KEY, draftSnapshot),
           saveObjektDraftBlobs(LS_KEY, latestDraftBlobsRef.current),
-        ]);
+        ]).catch(() => undefined);
       }
     };
 
@@ -1162,11 +1216,9 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
   lsKeyRef.current = LS_KEY;
   const isEditModeRef = useRef(isEditMode);
   isEditModeRef.current = isEditMode;
-  const saveSuccessRef = useRef(saveSuccess);
-  saveSuccessRef.current = saveSuccess;
   useEffect(() => {
     return () => {
-      if (saveSuccessRef.current) return;
+      if (saveSuccessRef.current || entwurfVerworfenRef.current || !draftRestoredRef.current) return;
       if (latestPersistedDraftRef.current) {
         const draftSnapshot: ObjektNeuDraft = {
           ...latestPersistedDraftRef.current,
@@ -1178,7 +1230,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
         void Promise.all([
           saveObjektDraft(lsKeyRef.current, draftSnapshot),
           saveObjektDraftBlobs(lsKeyRef.current, latestDraftBlobsRef.current),
-        ]);
+        ]).catch(() => undefined);
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1188,15 +1240,24 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
   // CRITICAL: In edit mode, NEVER restore a local draft – always use fresh DB data.
   // This prevents stale drafts from overwriting existing images, documents, or field values.
   useEffect(() => {
-    if (draftRestored || (isEditMode && !editLoaded)) return;
+    // Erst wenn feststeht, wer angemeldet ist, sonst liefe die Suche unter dem falschen Schlüssel.
+    if (draftRestored || nutzerLaedt || (isEditMode && !editLoaded)) return;
     let cancelled = false;
 
     const restoreDraft = async () => {
       try {
-        const [draft, draftBlobs] = await Promise.all([
+        let [draft, draftBlobs] = await Promise.all([
           loadObjektDraft<ObjektNeuDraft>(LS_KEY),
           loadObjektDraftBlobs(LS_KEY),
         ]);
+        if (!draft) {
+          // Entwurf aus der Zeit vor dem Schlüssel je Nutzer übernehmen.
+          [draft, draftBlobs] = await Promise.all([
+            loadObjektDraft<ObjektNeuDraft>(LS_KEY_ALT),
+            loadObjektDraftBlobs(LS_KEY_ALT),
+          ]);
+          if (draft) void deleteObjektDraft(LS_KEY_ALT);
+        }
         if (cancelled || skipRestore.current || hasUserInteractedRef.current || !draft) {
           if (!cancelled) setDraftRestored(true);
           return;
@@ -1257,15 +1318,17 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
           ]),
         );
 
-        if (draft.nf) setNf(draft.nf);
+        // Über die Vorbelegung gelegt: Ein Entwurf aus einer älteren Fassung
+        // kennt neuere Felder nicht, und undefined brachte das Formular zum Absturz.
+        if (draft.nf) setNf({ ...initialNfState, ...draft.nf });
         if (draft.isGlobalObjekt !== undefined) setIsGlobalObjekt(draft.isGlobalObjekt);
         if (draft.isEinzelwohnung !== undefined) setIsEinzelwohnung(draft.isEinzelwohnung);
         if (draft.gewaehlteObjektart !== undefined) setGewaehlteObjektart(draft.gewaehlteObjektart);
-        if (draft.verkaeuferDaten) setVerkaeuferDaten(draft.verkaeuferDaten);
+        if (draft.verkaeuferDaten) setVerkaeuferDaten({ ...initialVerkaeuferDaten, ...draft.verkaeuferDaten });
         if (draft.sanierungskosten !== undefined) setSanierungskosten(draft.sanierungskosten);
-        if (draft.afaDaten) setAfaDaten(draft.afaDaten);
+        if (draft.afaDaten) setAfaDaten({ ...initialAfaDaten, ...draft.afaDaten });
         if (draft.afaDraft) setAfaDraft(draft.afaDraft);
-        if (draft.globalDaten) setGlobalDaten(draft.globalDaten);
+        if (draft.globalDaten) setGlobalDaten({ ...initialGlobalDaten, ...draft.globalDaten });
         if (draft.objektangaben) setObjektangaben(draft.objektangaben);
         if (draft.interneHighlightsText !== undefined) setInterneHighlightsText(draft.interneHighlightsText);
         if (draft.einzelWohnungen) setEinzelWohnungen(draft.einzelWohnungen);
@@ -1295,6 +1358,28 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
           .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
           .map(([, file]) => file));
         if (draft.newW) setNewW(draft.newW);
+        if (draft.zusatz) {
+          const z = draft.zusatz;
+          setAnlageklasse(z.anlageklasse ?? "");
+          setKonzept(z.konzept ?? "");
+          setVerwaltungsart(z.verwaltungsart ?? "");
+          setVerwaltungskostenWeg(z.verwaltungskostenWeg ?? 0);
+          setVerwaltungskostenSev(z.verwaltungskostenSev ?? 0);
+          setVerwaltungskostenSonstige(z.verwaltungskostenSonstige ?? 0);
+          setKalkHausgeldNuP(z.kalkHausgeldNuP ?? 30);
+          setKalkHausgeldNuEuro(z.kalkHausgeldNuEuro ?? 0);
+          setKalkHausgeldMonat(z.kalkHausgeldMonat ?? 0);
+          setRuecklageWeg(z.ruecklageWeg ?? 0);
+          setGarantierteErstvermietungKalt(z.garantierteErstvermietungKalt ?? 0);
+          setKalkSevMonat(z.kalkSevMonat ?? 0);
+          setKalkMietausfallP(z.kalkMietausfallP ?? 2);
+          setKalkInstandhaltungQm(z.kalkInstandhaltungQm ?? 0);
+          setKalkInstandhaltungMode(z.kalkInstandhaltungMode === "pct" ? "pct" : "qm");
+          setKalkInstandhaltungPct(z.kalkInstandhaltungPct ?? 1.0);
+          setObjektUnterlagenLink(z.objektUnterlagenLink ?? "");
+          setEinzelProfilBildId(z.einzelProfilBildId ?? "");
+          setObjektdatenForm(z.objektdatenForm ?? null);
+        }
         if (draft.bulkW) setBulkW(draft.bulkW);
         if (draft.bulkAnzahl !== undefined) setBulkAnzahl(draft.bulkAnzahl);
         if (draft.bulkStartWeNr !== undefined) setBulkStartWeNr(draft.bulkStartWeNr);
@@ -1308,11 +1393,10 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
             runtime: draft.uploadAnalyseDraft.runtime ?? createEmptyUploadAnalyseRuntimeState({ result: draft.uploadAnalyseDraft.result ?? null }),
           });
         }
-        // Im Neu-Modus IMMER mit der Typ-Auswahl starten, auch wenn ein Draft
-        // existiert. Felder werden trotzdem aus dem Draft wiederhergestellt –
-        // nach erneuter Typ-Auswahl ist alles wieder da. Nur im Bearbeiten-Modus
-        // wird der zuletzt aktive Schritt wiederhergestellt.
-        if (draft.step && isEditMode) setStep(draft.step);
+        // Zurück an den zuletzt offenen Schritt, auch beim Neuanlegen
+        // (18.10.2026). Vorher begann es immer bei der Typwahl, und eine
+        // andere Karte als vorher änderte still die Objektart.
+        if (draft.step && (isEditMode || draft.step !== "typ")) setStep(draft.step);
         if (draft.isDirty) setIsDirty(true);
 
         const restoredFiles = Object.keys(draftBlobs).length > 0;
@@ -1341,7 +1425,62 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
     return () => {
       cancelled = true;
     };
-  }, [LS_KEY, draftRestored, editLoaded, isEditMode, toast]);
+  }, [LS_KEY, LS_KEY_ALT, draftRestored, editLoaded, isEditMode, nutzerLaedt, toast]);
+
+  /*
+   * Hinweis beim Verlassen (18.10.2026), gebaut wie im Schnellaktionen-Dialog
+   * (QuickActionDialog): BrowserRouter kennt kein useBlocker, deshalb werden
+   * Klicks auf interne Links (Sidebar, Kopfzeile) in der Capture-Phase
+   * angehalten und nach „Ja“ selbst ausgelöst. Schließen oder Neuladen des
+   * Tabs fragt der Browser über beforeunload. Die Eingaben bleiben in jedem
+   * Fall als Entwurf liegen.
+   */
+  const verlassenHinweisAktiv = isDirty && !saveSuccess;
+  const verlassenBestaetigen = () => confirmDialog({
+    title: isEditMode ? "Möchtest du das Bearbeiten des Objekts wirklich verlassen?" : "Möchtest du das Anlegen des Objekts wirklich verlassen?",
+    description: "Deine Eingaben bleiben als Entwurf gespeichert.",
+    confirmText: "Ja",
+    cancelText: "Nein",
+  });
+  const verlassenBestaetigenRef = useRef(verlassenBestaetigen);
+  verlassenBestaetigenRef.current = verlassenBestaetigen;
+  useEffect(() => {
+    if (!verlassenHinweisAktiv) return;
+    // Einmaliger Freifahrtschein für den Klick, den wir nach „Ja“ selbst auslösen.
+    let wechselFreigegeben = false;
+    // Nach „Ja“ nicht noch einmal über den Browser fragen (Links ohne Router).
+    let verlassenBestaetigt = false;
+    const beimSchliessen = (e: BeforeUnloadEvent) => {
+      if (entwurfVerworfenRef.current || verlassenBestaetigt) return;
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    const beimKlick = (ev: MouseEvent) => {
+      if (wechselFreigegeben) { wechselFreigegeben = false; return; }
+      // Neuer Tab (Strg/Cmd, Mittelklick) verlässt das Formular nicht.
+      if (ev.defaultPrevented || ev.button !== 0 || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) return;
+      const anchor = (ev.target as HTMLElement | null)?.closest?.("a[href]") as HTMLAnchorElement | null;
+      if (!anchor) return;
+      const href = anchor.getAttribute("href") || "";
+      if (!href || href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("tel:")) return;
+      if ((anchor.target && anchor.target !== "_self") || anchor.hasAttribute("download")) return;
+      if (anchor.origin === window.location.origin && anchor.pathname === window.location.pathname) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      void verlassenBestaetigenRef.current().then((ok) => {
+        if (!ok) return;
+        wechselFreigegeben = true;
+        verlassenBestaetigt = true;
+        anchor.click();
+      });
+    };
+    window.addEventListener("beforeunload", beimSchliessen);
+    document.addEventListener("click", beimKlick, true);
+    return () => {
+      window.removeEventListener("beforeunload", beimSchliessen);
+      document.removeEventListener("click", beimKlick, true);
+    };
+  }, [verlassenHinweisAktiv]);
 
   // Clear draft after successful save
   useEffect(() => {
@@ -1619,12 +1758,13 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
     markDirty();
   };
 
-  const handleBack = () => {
+  const handleBack = async () => {
     if (isAnalysisRunning) {
       setShowAnalysisAbortConfirm(true);
-    } else {
-      setShowLeaveConfirm(true);
+      return;
     }
+    if (verlassenHinweisAktiv && !(await verlassenBestaetigen())) return;
+    navigate(isEditMode ? `/objekte/${editId}` : "/objekte");
   };
 
   const handleCreate = async () => {
@@ -1647,11 +1787,20 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
     const newWHasBilder = !!(newWTempId && ((wohnungBilder[newWTempId]?.length || 0) > 0 || Object.keys(wohnungBilderFiles[newWTempId] || {}).length > 0));
     const newWHasDocs = !!(newWTempId && ((Object.keys(wohnungDocs[newWTempId] || {}).length > 0) || (Object.keys(wohnungDocFiles[newWTempId] || {}).length > 0) || ((customWohnungDocs[newWTempId]?.length || 0) > 0)));
     const newWHasData = !!(newW.weNr || (newW.groesse || 0) > 0 || (newW.vkGesamt || 0) > 0 || (newW.mieteGesamt || 0) > 0 || (newW.zimmer || 0) > 0 || (newW as any).unterlagenLink || newWHasBilder || newWHasDocs);
-    const shouldAutoCommit = newWHasData && (isEinzelwohnung ? einzelWohnungen.length === 0 : false);
+    /*
+     * Bei mehreren Einheiten fiel eine begonnene, nicht hinzugefügte Einheit
+     * bis zum 18.10.2026 still weg, ihre Bilder wurden trotzdem hochgeladen.
+     * Jetzt wird sie übernommen, sobald eigene Angaben drinstehen. Die
+     * Vorbelegung (2 Zimmer, EG) zählt dafür nicht.
+     */
+    const newWHasEigeneAngaben = !!(newW.weNr || (newW.groesse || 0) > 0 || (newW.vkGesamt || 0) > 0 || (newW.mieteGesamt || 0) > 0 || (newW as any).unterlagenLink || newWHasBilder || newWHasDocs);
+    const shouldAutoCommit = isEinzelwohnung ? newWHasData && einzelWohnungen.length === 0 : newWHasEigeneAngaben;
     if (shouldAutoCommit) {
       const autoWeNr = newW.weNr || (isEinzelwohnung ? "1" : String(einzelWohnungen.length + 1));
       const oldWId = newW.id || "";
-      const wId = oldWId && isUuid(oldWId) ? oldWId : crypto.randomUUID();
+      // Mehrere Einheiten behalten ihre Formular-ID wie beim Klick auf
+      // „Wohnung hinzufügen“, damit Bilder und Unterlagen an ihr hängen bleiben.
+      const wId = !isEinzelwohnung && oldWId ? oldWId : oldWId && isUuid(oldWId) ? oldWId : crypto.randomUUID();
       if (oldWId && oldWId !== wId) {
         setWohnungDocs(prev => ({ ...prev, [wId]: prev[oldWId] || {} }));
         setWohnungDocFiles(prev => ({ ...prev, [wId]: prev[oldWId] || {} }));
@@ -2417,7 +2566,6 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
     if (!wohnungId) return LEERE_EINHEIT;
     return einheitFormAus(listendatenFuerEinheit(wohnungId)?.werte, garageFuerEinheit(wohnungId), aktuellerMieter(getMieter(), wohnungId) ?? null);
   };
-  const [objektdatenForm, setObjektdatenForm] = useState<ObjektFormDaten | null>(null);
   const objektdatenWert = objektdatenForm ?? objektFormAus(existingObjekt?.meta, mietgarantieAusMeta(existingObjekt?.meta));
 
   const renderEinheitZusatzfelder = (w: Partial<ObjektWohnung>, onChange: (field: string, value: any) => void) => {
@@ -2686,22 +2834,22 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
               className="ml-auto text-destructive border-destructive/40 hover:bg-destructive/10"
               onClick={async () => {
                 const ok = await confirmDialog({
-                  title: "Formular wirklich komplett leeren?",
+                  title: "Entwurf wirklich verwerfen?",
                   description:
-                    "Alle bisher eingegebenen Daten, hochgeladenen Bilder, Wohnungen und Dokumente in diesem Entwurf werden verworfen. Das lässt sich nicht rückgängig machen.",
-                  confirmText: "Formular leeren",
+                    "Alle bisher eingegebenen Daten, hochgeladenen Bilder, Wohnungen und Dokumente in diesem Entwurf werden gelöscht. Das lässt sich nicht rückgängig machen.",
+                  confirmText: "Entwurf verwerfen",
                   cancelText: "Eingaben behalten",
                   variant: "destructive",
                 });
                 if (!ok) return;
-                try {
-                  localStorage.removeItem(LS_KEY);
-                  skipRestore.current = true;
-                } catch {}
+                // Bis 18.10.2026 wurde nur localStorage geleert, der Entwurf
+                // liegt aber in IndexedDB und kam nach dem Neuladen zurück.
+                entwurfVerworfenRef.current = true;
+                await deleteObjektDraft(LS_KEY);
                 window.location.reload();
               }}
             >
-              Formular leeren
+              Entwurf verwerfen
             </Button>
           )}
         </div>
@@ -4193,18 +4341,6 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
         </Tabs>
         )}
       </div>
-
-      {/* Leave confirmation dialog */}
-      <Dialog open={showLeaveConfirm} onOpenChange={setShowLeaveConfirm}>
-        <DialogContent className="max-w-md">
-          <DialogHeader><DialogTitle>Objekt verwerfen?</DialogTitle></DialogHeader>
-          <p className="text-sm text-muted-foreground">Du hast Änderungen vorgenommen, die noch nicht gespeichert wurden. Möchtest du die Seite wirklich verlassen?</p>
-          <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => setShowLeaveConfirm(false)}>Weiter bearbeiten</Button>
-            <Button variant="destructive" onClick={() => navigate(isEditMode ? `/objekte/${editId}` : "/objekte")}>Verwerfen & Zurück</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {/* Analysis abort confirmation dialog */}
       <Dialog open={showAnalysisAbortConfirm} onOpenChange={setShowAnalysisAbortConfirm}>
