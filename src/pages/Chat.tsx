@@ -13,7 +13,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, MoreVertical, Users, VolumeX, Volume2, Archive, ArchiveRestore, Trash2, Pin, PinOff, Eye, EyeOff, Star, UserPlus, LogOut, Paperclip, ExternalLink, ArrowLeft } from "lucide-react";
+import { Search, MoreVertical, Users, VolumeX, Volume2, Archive, ArchiveRestore, Trash2, Pin, PinOff, Eye, EyeOff, Star, UserPlus, LogOut, Paperclip, ExternalLink, ArrowLeft, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getChats, saveChats, updateChat, addMessage, getInitials, markChatAsRead, markChatAsUnread, getUnreadChatCountForChat, verlasseChat, type ChatData, type ChatParticipant } from "@/lib/chatStore";
 import { cacheGet, cacheInsert } from "@/lib/dataCache";
@@ -26,6 +26,51 @@ import { toast } from "sonner";
 import { ChatVerlauf, type ChatVerlaufHandle, type ChatVerlaufKennzahlen } from "@/components/chat/ChatVerlauf";
 import { useChatSichthoehe } from "@/components/kunden/profil/useChatSichthoehe";
 import { colorForName } from "@/components/chat/chatFarbe";
+import { isUrlAllowedForRole } from "@/lib/sidebarPermissions";
+import type { UserRole } from "@/types/user";
+
+/**
+ * Leerzustand, solange es noch gar keinen Chat gibt.
+ *
+ * Auf der Chatseite selbst laesst sich kein Chat anlegen. Statt "Wähle einen
+ * Chat aus" (es gibt ja keinen) steht hier, wo Chats entstehen: Kundenchats im
+ * Reiter "Kommunikation" des Kundenprofils (`KommunikationReiter.tsx`),
+ * interne Chats ueber "Chat eröffnen" auf der Seite Ansprechpartner. Genannt
+ * wird nur, was die aktive Rolle auch oeffnen darf.
+ */
+export function KeineChatsHinweis({ role, customPermissions }: { role: UserRole; customPermissions?: string[] }) {
+  const navigate = useNavigate();
+  const darf = (url: string) => isUrlAllowedForRole(url, role, customPermissions, null);
+  const kundenprofil = darf("/kunden");
+  const kontaktliste = darf("/alle-kontakte");
+  const ansprechpartner = darf("/ansprechpartner");
+  return (
+    <div className="flex flex-col items-center text-center gap-3 px-6 py-8 max-w-sm mx-auto">
+      <div className="h-12 w-12 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+        <MessageCircle className="h-6 w-6" />
+      </div>
+      <p className="text-sm font-medium text-foreground">Noch keine Chats</p>
+      {kundenprofil && (
+        <p className="text-xs text-muted-foreground">
+          Chats mit oder zu einem Kunden eröffnest du im Kundenprofil unter „Kommunikation".
+        </p>
+      )}
+      {ansprechpartner && (
+        <p className="text-xs text-muted-foreground">
+          Interne Chats mit Kolleginnen und Kollegen startest du unter „Ansprechpartner" mit „Chat eröffnen".
+        </p>
+      )}
+      {!kundenprofil && !ansprechpartner && (
+        <p className="text-xs text-muted-foreground">Sobald dir jemand schreibt, erscheint der Chat hier.</p>
+      )}
+      {kontaktliste && (
+        <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => navigate("/alle-kontakte")}>
+          Zu den Kontakten
+        </Button>
+      )}
+    </div>
+  );
+}
 
 type ChatFilter = "alle" | "ungelesen" | "gelesen" | "angepinnt" | "archiviert" | "kundenkommunikation" | "intern";
 export default function Chat() {
@@ -116,7 +161,7 @@ export default function Chat() {
   // Realtime: refresh chats whenever cache updates for chat tables
   const liveVersion = useLiveVersion(["chat_nachrichten", "chat_gruppen", "chat_teilnehmer", "user_settings", "user_roles", "profiles"]);
   // Chats und Teilnehmer kommen in der zweiten Ladewelle. Bis dahin soll die
-  // Liste "wird geladen" sagen und nicht "Noch keine Chats vorhanden".
+  // Liste "wird geladen" sagen und nicht "Noch keine Chats".
   const chatsGeladen = useCacheReady(["chat_gruppen", "chat_teilnehmer"]);
 
   const userRolesData = cacheGet("user_roles");
@@ -235,6 +280,9 @@ export default function Chat() {
     chats.filter(c => !c.archiviert && hatInhalt(c)).length - filteredChats.filter(c => hatInhalt(c)).length;
   /** Angelegt, aber noch ohne Nachricht. Rein informativ. */
   const ohneNachricht = chats.filter(c => !c.archiviert && !hatInhalt(c)).length;
+
+  /** Gar kein Chat mit Inhalt, auch nicht im Archiv: dann den Hinweis zeigen, wo Chats entstehen. */
+  const keineChats = chatsGeladen && !chats.some(hatInhalt);
 
   const unreadTotal = chats.filter(c => !c.archiviert && (ungelesenJeChat.get(c.id) || 0) > 0).length;
 
@@ -520,8 +568,14 @@ export default function Chat() {
             drei Punkte. Zu lange Namen werden gekürzt, nicht die Spalte.
           */}
           <ScrollArea className="flex-1 [&>[data-radix-scroll-area-viewport]>div]:!w-full [&>[data-radix-scroll-area-viewport]]:overflow-x-hidden">
+            {/* Auf dem Telefon ist die rechte Spalte ohne offenen Chat ausgeblendet, deshalb steht der Hinweis dort in der Liste. */}
+            {keineChats && filteredChats.length === 0 && chatFilter === "alle" && !suchtext && (
+              <div className="md:hidden">
+                <KeineChatsHinweis role={user.role} customPermissions={(user as any).customPermissions} />
+              </div>
+            )}
             {filteredChats.length === 0 && (
-              <div className="text-center py-8 px-4">
+              <div className={cn("text-center py-8 px-4", keineChats && chatFilter === "alle" && !suchtext && "hidden md:block")}>
                 <p className="text-xs text-muted-foreground">
                   {chatFilter === "archiviert"
                     ? "Keine archivierten Chats"
@@ -530,7 +584,7 @@ export default function Chat() {
                     : chatFilter !== "alle"
                     ? "Kein Chat in diesem Filter"
                     : chatsGeladen
-                    ? "Noch keine Chats vorhanden"
+                    ? "Noch keine Chats"
                     : "Chats werden geladen …"}
                 </p>
                 {(suchtext || chatFilter !== "alle") && (
@@ -852,7 +906,11 @@ export default function Chat() {
               />
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center text-muted-foreground">Wähle einen Chat aus</div>
+            <div className="flex-1 flex items-center justify-center text-muted-foreground">
+              {keineChats
+                ? <KeineChatsHinweis role={user.role} customPermissions={(user as any).customPermissions} />
+                : "Wähle einen Chat aus"}
+            </div>
           )}
         </div>
       </div>
