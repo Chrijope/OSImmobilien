@@ -315,7 +315,13 @@ export function AppShell() {
               <VaBackBanner />
             </div>
           </Kopfbereich>
-          <main className="flex-1 min-h-0 overflow-auto p-3 sm:p-6 bg-background">
+          {/*
+            Seitlich nur `px-3` (12px), oben und unten weiter `sm:py-6`: Mit
+            Liquid Glass schwebt die Kopfleiste 12px vom Rand der Spalte, der
+            Inhalt steht so links und rechts buendig darunter (Christian,
+            18.10.2026). Seiten begrenzen ihre Breite deshalb nicht selbst.
+          */}
+          <main className="flex-1 min-h-0 overflow-auto px-3 py-3 sm:py-6 bg-background">
             <KundenportalLockGuard>
                 {/*
                   Pflichtunterlagen: Banner waehrend der Frist, Sperre danach.

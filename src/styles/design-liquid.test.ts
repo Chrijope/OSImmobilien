@@ -131,6 +131,21 @@ describe("Christians Entscheidungen vom 23.09.2026", () => {
     expect(ebene).toBeLessThan(50);
   });
 
+  it("haelt den Inhalt links und rechts buendig mit der Kopfleiste (Christian, 18.10.2026)", () => {
+    // Kopfleiste 12px vom Spaltenrand, am Schreibtisch wie am Handy; der
+    // Inhalt hat seitlich `px-3`, also ebenfalls 12px.
+    const kopfbloecke = alle.filter((r) => r.selektor === '[data-glas="liquid"] [data-lg="kopfbereich"]');
+    expect(kopfbloecke.length).toBeGreaterThan(0);
+    for (const k of kopfbloecke) {
+      expect(k.inhalt).toMatch(/left:\s*12px/);
+      expect(k.inhalt).toMatch(/right:\s*12px/);
+    }
+    const layout = readFileSync(resolve(__dirname, "../components/DashboardLayout.tsx"), "utf8");
+    const main = layout.match(/<main className="flex-1 min-h-0[^"]*"/)?.[0] ?? "";
+    expect(main).toMatch(/\bpx-3\b/);
+    expect(main).not.toMatch(/\b(sm:)?p[xlr]?-6\b|max-w-|container/);
+  });
+
   it("dunkelt hinter Dialogen nichts ab und zeichnet hinter Popups nichts weich (Projektregel)", () => {
     // Die Abdunklung hat nur an der Schublade einen Haken (ui/sheet.tsx),
     // die Dialoge bleiben ohne. Keine Regel greift ueber Klassen nach ihnen.

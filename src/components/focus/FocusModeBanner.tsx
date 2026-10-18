@@ -188,7 +188,7 @@ export function FocusModeBanner() {
     return (
       <div className="relative border-b bg-gradient-to-r from-emerald-500/10 via-primary/5 to-amber-500/10">
         <Confetti trigger count={80} />
-        <div className="max-w-screen-2xl mx-auto flex items-center gap-3 px-4 py-3">
+        <div className="flex items-center gap-3 px-4 py-3">
           <div className="h-10 w-10 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 text-white flex items-center justify-center shadow-md">
             <Trophy className="h-5 w-5" />
           </div>

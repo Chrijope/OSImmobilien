@@ -182,7 +182,7 @@ export default function ObjektEinreichungDetail() {
   const einreicherEmail = d.einreicher_email || "";
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
+    <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" aria-label="Zurück" onClick={() => navigate("/objekt-einreichungen")}>
           <ArrowLeft className="h-5 w-5" />

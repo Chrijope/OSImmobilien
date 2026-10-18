@@ -988,7 +988,7 @@ const Einstellungen = () => {
 
   return (
     <DashboardLayout>
-      <div className="max-w-4xl">
+      <div>
         <PageHeader title={isKunde ? "Passwort ändern" : "Einstellungen"} subtitle={isKunde ? "Hier kannst du dein Passwort ändern." : "Diese Einstellungen gelten nur für dich."} />
 
         {!isKunde && !isTippgeber && !onboardingComplete && !isSidebarBlurExempt(authUser?.email) && (

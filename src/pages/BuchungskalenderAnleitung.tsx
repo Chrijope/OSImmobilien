@@ -13,7 +13,7 @@ export default function BuchungskalenderAnleitung() {
     <DashboardLayout>
       <PageHeader title="Buchungskalender einrichten" subtitle="Schritt-für-Schritt-Anleitung für Calendly, Fantastical & Co." />
 
-      <div className="max-w-4xl space-y-6">
+      <div className="space-y-6">
         <Button variant="outline" size="sm" onClick={() => navigate(-1)} className="gap-2">
           <ArrowLeft className="h-4 w-4" /> Zurück zu den Einstellungen
         </Button>

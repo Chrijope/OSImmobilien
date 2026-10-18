@@ -1,5 +1,4 @@
 /* Scoped to the goal planning page; preserves existing brand and theme tokens. */
-.zielplanung { max-width: 1200px; margin-inline: auto; }
 .zielplanung summary { border-radius: .25rem; }
 .zielplanung summary:focus-visible { outline: 2px solid hsl(var(--primary)); outline-offset: 5px; }
 .zielplanung input[type="number"] { font-variant-numeric: tabular-nums; }

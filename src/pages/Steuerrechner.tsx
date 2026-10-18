@@ -124,7 +124,7 @@ export default function Steuerrechner() {
         )}
       </PageHeader>
 
-      <div className="mx-auto max-w-[1240px]">
+      <div>
         {mitLink && (
           <div className="mb-6 flex items-center gap-3 rounded-xl border border-border bg-muted/40 px-4 py-3">
             <Copy className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />

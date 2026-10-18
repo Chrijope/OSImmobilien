@@ -64,7 +64,7 @@ export default function WeeklyCall() {
         </p>
 
         {runden.map((runde, i) => (
-          <Card key={runde} className="max-w-3xl p-4">
+          <Card key={runde} className="p-4">
             <WeeklyCallPunkte runde={runde} mitProtokoll={i === 0} />
           </Card>
         ))}

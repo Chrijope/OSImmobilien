@@ -383,7 +383,7 @@ const BeraterMicroseiteInhalt = () => {
         </div>
       )}
 
-      <div className="lp-theme -mx-4 md:-mx-6 -mb-6">
+      <div className="lp-theme -mx-3 -mb-6">
         <BeraterMicrositeContent berater={berater} onOpenFunnel={openFunnel} />
         <LeadFunnelDialog
           open={funnelOpen}

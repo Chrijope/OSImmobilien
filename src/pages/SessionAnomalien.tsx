@@ -169,7 +169,7 @@ export default function SessionAnomalien() {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="space-y-6">
       <div className="flex items-center gap-3">
         <ShieldAlert className="h-7 w-7 text-primary" />
         <div>

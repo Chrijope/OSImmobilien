@@ -41,7 +41,7 @@ export function CallSessionBar({ currentKundeId }: Props) {
   };
 
   return (
-    <div className="sticky top-0 z-30 -mx-4 md:-mx-6 mb-4 border-b border-primary/30 bg-primary/10 backdrop-blur px-4 md:px-6 py-2 flex items-center gap-3">
+    <div className="sticky top-0 z-30 -mx-3 mb-4 border-b border-primary/30 bg-primary/10 backdrop-blur px-4 md:px-6 py-2 flex items-center gap-3">
       <Target className="h-4 w-4 text-primary shrink-0" />
       <div className="text-sm font-medium">
         Anruf-Session · Lead <span className="tabular-nums">{position}</span> / <span className="tabular-nums">{total}</span>

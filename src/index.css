@@ -3123,8 +3123,8 @@
 
 /* ── Kunden-Pipeline: unten buendig mit der Seitenleiste ─────────────────────
    Christian, 25.09.2026: Die Summenleiste unter den Spalten soll auf derselben
-   Hoehe enden wie die Seitenleiste links. Der Inhaltsbereich hat ringsum
-   1,5rem Innenabstand (`sm:p-6` in `DashboardLayout.tsx`), die Seitenleiste
+   Hoehe enden wie die Seitenleiste links. Der Inhaltsbereich hat oben und
+   unten 1,5rem Innenabstand (`sm:py-6` in `DashboardLayout.tsx`), die Seitenleiste
    endet dagegen am Fensterrand, mit Liquid Glass 10px darueber. Auf dieser
    einen Seite nimmt der Inhaltsbereich unten deshalb genau den Abstand der
    Seitenleiste an, `--seitenleiste-abstand-unten` aus `design-liquid.css`.

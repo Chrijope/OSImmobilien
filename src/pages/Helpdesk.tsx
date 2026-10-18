@@ -330,7 +330,7 @@ export default function Helpdesk() {
           {selectedTicket.erstellerEmail && !selectedTicket.erstellerEmail.endsWith("@mail.de") && ` · ${selectedTicket.erstellerEmail}`}
         </p>
 
-        <Card className="max-w-3xl">
+        <Card>
           <CardContent className="pt-6">
             <div className="space-y-4 mb-6 max-h-[450px] overflow-y-auto pr-2">
               {selectedTicket.nachrichten.map(msg => (

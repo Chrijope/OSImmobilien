@@ -738,7 +738,9 @@
   [data-glas="liquid"] .lg-grund-wolken { animation: none; }
 }
 @media screen and (max-width: 767px) {
-  [data-glas="liquid"] [data-lg="kopfbereich"] { top: 8px; left: 8px; right: 8px; gap: 6px; }
+  /* Links und rechts 12px wie am Schreibtisch: Der Inhalt darunter hat
+     ebenfalls 12px (`px-3` in `DashboardLayout.tsx`) und steht so buendig. */
+  [data-glas="liquid"] [data-lg="kopfbereich"] { top: 8px; left: 12px; right: 12px; gap: 6px; }
   [data-glas="liquid"] [data-lg="kopfbereich"] > header { height: 60px; border-radius: 22px; }
   /*
     Das Handymenue beginnt heute bei 5rem, direkt unter der 80 Pixel hohen

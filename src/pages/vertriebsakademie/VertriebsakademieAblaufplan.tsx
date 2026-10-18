@@ -40,7 +40,7 @@ export default function VertriebsakademieAblaufplan() {
 
   return (
     <DashboardLayout>
-      <div className="w-full max-w-3xl space-y-6 pb-12">
+      <div className="w-full space-y-6 pb-12">
         <Button variant="ghost" size="sm" asChild className="gap-1 -ml-2">
           <Link to="/vertriebsakademie">
             <ArrowLeft className="h-4 w-4" /> Zurück zur Vertriebsakademie
