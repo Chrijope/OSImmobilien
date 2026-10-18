@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { edgeFehlerMitGrund } from "@/lib/edgeFehler";
-import { grundrisseFuerExpose, istAblageZeiger } from "@/lib/exposeInhalt";
+import { liegtAufFremdemServer } from "@/lib/dokumentGruppen";
+import { grundrisseFuerExpose } from "@/lib/exposeInhalt";
 import type { ObjektData, ObjektWohnung } from "@/lib/objekteStore";
 import { resolveUnterlagenUrl } from "@/lib/storage";
 import { geschossSchluessel } from "../../../supabase/functions/_shared/grundriss-erkennung.ts";
@@ -36,30 +37,45 @@ function bildLaden(url: string): Promise<HTMLImageElement> {
   });
 }
 
-/** Bild oder erste PDF-Seite als JPEG mit höchstens `KANTE` Bildpunkten. */
+/**
+ * Bild oder erste PDF-Seite als JPEG mit höchstens `KANTE` Bildpunkten.
+ *
+ * Die Adresse geht immer durch `resolveUnterlagenUrl`, wie beim Download im
+ * Reiter „Dokumente“: Gespeichert sind Zeiger, Speicherpfade oder Adressen,
+ * die erst eine befristete Freigabe brauchen. Bis zum 18.10.2026 lösten wir
+ * nur die Zeiger auf, alles andere scheiterte beim Laden.
+ */
 async function alsJpeg(quelle: GrundrissQuelle): Promise<{ dataUrl: string; breite: number; hoehe: number }> {
-  const url = istAblageZeiger(quelle.url) ? await resolveUnterlagenUrl(quelle.url) : quelle.url;
-  if (!url) throw new Error("Die Grundriss-Datei ist nicht erreichbar.");
+  const url = await resolveUnterlagenUrl(quelle.url);
+  if (!url) throw new Error(`„${quelle.name}“: keine Adresse für die Datei gefunden.`);
   let flaeche: HTMLCanvasElement;
-  if (quelle.istBild) {
-    const img = await bildLaden(url);
-    const f = Math.min(1, KANTE / Math.max(img.naturalWidth, img.naturalHeight));
-    flaeche = document.createElement("canvas");
-    flaeche.width = Math.max(1, Math.round(img.naturalWidth * f));
-    flaeche.height = Math.max(1, Math.round(img.naturalHeight * f));
-    const stift = flaeche.getContext("2d");
-    if (!stift) throw new Error("Zeichenfläche nicht verfügbar");
-    stift.fillStyle = "#ffffff"; // durchsichtige PNGs würden im JPEG schwarz
-    stift.fillRect(0, 0, flaeche.width, flaeche.height);
-    stift.drawImage(img, 0, 0, flaeche.width, flaeche.height);
-  } else {
-    const { pdfOeffnen } = await import("@/lib/grundrissAusPdf");
-    const pdf = await pdfOeffnen(url);
-    try {
-      flaeche = await pdf.zeichnen(1, KANTE);
-    } finally {
-      pdf.schliessen();
+  try {
+    if (quelle.istBild) {
+      const img = await bildLaden(url);
+      const f = Math.min(1, KANTE / Math.max(img.naturalWidth, img.naturalHeight));
+      flaeche = document.createElement("canvas");
+      flaeche.width = Math.max(1, Math.round(img.naturalWidth * f));
+      flaeche.height = Math.max(1, Math.round(img.naturalHeight * f));
+      const stift = flaeche.getContext("2d");
+      if (!stift) throw new Error("Zeichenfläche nicht verfügbar");
+      stift.fillStyle = "#ffffff"; // durchsichtige PNGs würden im JPEG schwarz
+      stift.fillRect(0, 0, flaeche.width, flaeche.height);
+      stift.drawImage(img, 0, 0, flaeche.width, flaeche.height);
+    } else {
+      const { pdfOeffnen } = await import("@/lib/grundrissAusPdf");
+      const pdf = await pdfOeffnen(url);
+      try {
+        flaeche = await pdf.zeichnen(1, KANTE);
+      } finally {
+        pdf.schliessen();
+      }
     }
+  } catch (f) {
+    // Eine fremde Adresse (noch bei Investagon) darf der Browser meist nicht auslesen.
+    const grund = liegtAufFremdemServer(quelle.url)
+      ? "Die Datei liegt noch auf einem fremden Server, der das Auslesen im Browser sperrt."
+      : f instanceof Error ? f.message : String(f);
+    throw new Error(`„${quelle.name}“ ließ sich nicht laden. ${grund}`);
   }
   return { dataUrl: flaeche.toDataURL("image/jpeg", 0.88), breite: flaeche.width, hoehe: flaeche.height };
 }
@@ -73,7 +89,7 @@ export async function erkenneGrundriss(quelle: GrundrissQuelle, wohnung: Pick<Ob
   const { data, error } = await supabase.functions.invoke("grundriss-erkennen", { body: { bild: bild.dataUrl } });
   if (error) {
     const mitGrund = await edgeFehlerMitGrund(error, { functionName: "grundriss-erkennen" });
-    throw mitGrund instanceof Error ? mitGrund : new Error("Die Erkennung ist fehlgeschlagen.");
+    throw new Error(`KI-Erkennung: ${mitGrund instanceof Error ? mitGrund.message : "fehlgeschlagen."}`);
   }
   const ergebnis = planAusKi((data as { roh?: unknown } | null)?.roh, bild, wohnung.groesse || undefined);
   if (!ergebnis) throw new Error("Im Grundriss ließen sich keine Wände mit Maßstab erkennen. Bitte im Editor nachzeichnen.");
