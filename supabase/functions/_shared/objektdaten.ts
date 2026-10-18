@@ -140,7 +140,7 @@ export const OBJEKT_LISTE_SPALTEN = [
  * Lesen helfen.
  */
 export const OBJEKT_DETAIL_SPALTEN = [
-  "id", "titel", "adresse", "plz", "ort", "beschreibung", "badge", "status", "sichtbar", "highlights",
+  "id", "titel", "adresse", "plz", "ort", "beschreibung", "badge", "status", "sichtbar",
   "preis_von", "preis_bis", "groesse_von", "groesse_bis", "rendite_von", "rendite_bis",
   "afa_modell", "afa_satz", "restnutzungsdauer", "sanierungskosten",
   "erhaltungsaufwand", "erhaltungsaufwand_jahre", "bodenrichtwert", "grundstueck_anteil",

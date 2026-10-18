@@ -879,24 +879,10 @@ export default function WohnungDetail() {
             </div>
             )}
 
-            {/* Objekt-Infos (Beschreibung & Highlights) nur bei Einzelwohnung anzeigen –
+            {/* Objekt-Infos (Beschreibung) nur bei Einzelwohnung anzeigen –
                 bei Mehrfamilien-Objekten sind diese bereits auf der Objektseite sichtbar. */}
             {(objekt.meta as any)?.einzelwohnung && (
             <div className="space-y-6 mt-6">
-              {(objekt.highlights?.length ?? 0) > 0 && (
-                <Card className="p-6">
-                  <div className="w-8 h-1 bg-primary mb-3" />
-                  <h3 className="font-bold mb-4">Highlights</h3>
-                  <ul className="space-y-1.5 text-sm">
-                    {(objekt.highlights || []).map((h, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <span className="text-primary mt-0.5">✓</span>
-                        <span>{h}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </Card>
-              )}
 
 
               {/*

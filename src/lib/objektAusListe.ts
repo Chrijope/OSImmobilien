@@ -82,7 +82,7 @@ export function objektAusListe(angaben: ObjektAngaben, einheiten: ObjektWohnung[
   return {
     id: crypto.randomUUID(),
     titel: angaben.titel.trim(), adresse: angaben.adresse.trim(), plz: angaben.plz.trim(), ort: angaben.ort.trim(),
-    beschreibung: "", highlights: [], bildUrl: "", bilder: [], dokumente: defaultDokumente(), wohnungen: einheiten,
+    beschreibung: "", bildUrl: "", bilder: [], dokumente: defaultDokumente(), wohnungen: einheiten,
     videoUrl: "", videoSichtbar: false, badge: "",
     groesseVon, groesseBis, preisVon, preisBis, renditeVon, renditeBis,
     sichtbar: false, status: "entwurf",

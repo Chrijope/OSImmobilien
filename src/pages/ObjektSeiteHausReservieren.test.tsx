@@ -65,7 +65,7 @@ function we(id: string): ObjektWohnung {
 
 function haus(weiteres: Partial<ObjektData> = {}): ObjektData {
   return {
-    id: "haus", titel: "Haus Musterstraße", adresse: "Musterstraße 1", plz: "95028", ort: "Hof", beschreibung: "", highlights: [],
+    id: "haus", titel: "Haus Musterstraße", adresse: "Musterstraße 1", plz: "95028", ort: "Hof", beschreibung: "",
     bildUrl: "", bilder: [], dokumente: [], wohnungen: [we("w1"), we("w2")], videoUrl: "", videoSichtbar: false, badge: "",
     groesseVon: 0, groesseBis: 0, preisVon: 0, preisBis: 0, renditeVon: 0, renditeBis: 0, sichtbar: true,
     erstellt_am: "2026-01-01", meta: {}, globalObjekt: true, belegung: "frei",

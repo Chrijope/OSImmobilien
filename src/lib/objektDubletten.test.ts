@@ -40,7 +40,6 @@ function objekt(teile: Partial<WacheObjekt> = {}): WacheObjekt {
     dokumente: 2,
     beschreibung: "Text",
     exklusivPartner: [],
-    highlights: [],
     videoUrl: null,
     ...teile,
   };

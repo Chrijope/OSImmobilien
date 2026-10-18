@@ -366,7 +366,6 @@ export interface ObjektData {
   plz: string;
   ort: string;
   beschreibung: string;
-  highlights: string[];
   bildUrl: string;
   bilder: ObjektBild[];
   dokumente: ObjektDokument[];
@@ -520,7 +519,6 @@ export function dbRowToObjekt(row: any, bilder: any[], dokumente: any[], wohnung
     plz: row.plz || "",
     ort: row.ort || "",
     beschreibung: row.beschreibung || "",
-    highlights: row.highlights || [],
     bildUrl: row.bild_url || "",
     videoUrl: row.video_url || "",
     videoSichtbar: row.video_sichtbar ?? false,
@@ -727,7 +725,6 @@ export function objektToDbRow(o: ObjektData): Record<string, any> {
     plz: o.plz,
     ort: o.ort,
     beschreibung: o.beschreibung,
-    highlights: o.highlights,
     bild_url: o.bildUrl,
     video_url: o.videoUrl,
     video_sichtbar: o.videoSichtbar,

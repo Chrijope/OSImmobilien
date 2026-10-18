@@ -246,7 +246,6 @@ export default function ObjektDetail() {
   const [pendingDocFile, setPendingDocFile] = useState<File | null>(null);
   const [nw, setNw] = useState<Partial<ObjektWohnung>>({ weNr: "", etage: "EG", lage: "rechts", groesse: 0, zimmer: 2, mieteGesamt: 0, vkGesamt: 0, qmPreis: 0, rendite: 0, vermietet: true, status: "frei" });
   const [ew, setEw] = useState<Partial<ObjektWohnung>>({});
-  const [newHighlight, setNewHighlight] = useState("");
   const [wohnungMode, setWohnungMode] = useState<"gleich" | "einzeln">("einzeln");
   const [bulkCount, setBulkCount] = useState(10);
   const [bulkData, setBulkData] = useState({ etage: "EG", lage: "rechts", groesse: 40, zimmer: 2, miete: 600, vk: 200000, rendite: 3.3 });
@@ -618,20 +617,6 @@ export default function ObjektDetail() {
     setObjekt(prev => prev ? { ...prev, status: "freigegeben", sichtbar: true } : prev);
     if (!(await objektFeldSpeichern({ status: "freigegeben", sichtbar: true }, vorher))) return;
     toast({ title: "Objekt freigegeben ✓", description: `„${objekt.titel}" ist jetzt sichtbar und für den Vertrieb verfügbar.` });
-  };
-
-  const handleAddHighlight = () => {
-    if (!newHighlight.trim() || !id) return;
-    updateObjektField(id, { highlights: [...objekt.highlights, newHighlight.trim()] });
-    setNewHighlight("");
-    reload();
-  };
-
-  const handleRemoveHighlight = (idx: number) => {
-    if (!id) return;
-    const h = [...objekt.highlights]; h.splice(idx, 1);
-    updateObjektField(id, { highlights: h });
-    reload();
   };
 
   const handleAddWohnung = () => {
@@ -1463,28 +1448,6 @@ export default function ObjektDetail() {
               <div className="bg-muted rounded-lg h-[28rem] flex items-center justify-center">
                 <Building2 className="h-16 w-16 text-muted-foreground/30" />
               </div>
-            )}
-
-            {/* Highlights */}
-            {((objekt.highlights?.length ?? 0) > 0 || isEditor) && (
-              <Card className="p-6">
-                <div className="w-8 h-1 bg-primary mb-3" />
-                <h3 className="font-bold mb-4">Highlights</h3>
-                <ul className="space-y-1.5 text-sm">
-                  {(objekt.highlights || []).map((h, i) => (
-                    <li key={i} className="flex items-start gap-2">
-                      <span className="text-primary mt-0.5">✓</span><span className="flex-1">{h}</span>
-                      {isEditor && <button className="text-destructive/50 hover:text-destructive text-xs" onClick={() => handleRemoveHighlight(i)}>✕</button>}
-                    </li>
-                  ))}
-                </ul>
-                {isEditor && (
-                  <div className="flex gap-2 mt-3">
-                    <Input value={newHighlight} onChange={e => setNewHighlight(e.target.value)} placeholder="Neues Highlight..." className="h-[40px] text-xs sm:h-7" onKeyDown={e => e.key === "Enter" && handleAddHighlight()} />
-                    <Button size="sm" className="h-[40px] min-w-[40px] text-xs sm:h-7 sm:min-w-0" onClick={handleAddHighlight}>+</Button>
-                  </div>
-                )}
-              </Card>
             )}
 
             {/* Description */}

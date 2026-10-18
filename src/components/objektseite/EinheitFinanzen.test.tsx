@@ -32,7 +32,7 @@ const WOHNUNG: ObjektWohnung = {
 
 const OBJEKT = {
   // Zahlen der Vorlage (Söflinger Straße 203, Ulm). PLZ 70173 Stuttgart, weil detectBundesland 89xxx pauschal Bayern zuordnet.
-  id: "o1", titel: "Söflinger Straße 203", adresse: "Söflinger Straße 203", plz: "70173", ort: "Stuttgart", beschreibung: "", highlights: [],
+  id: "o1", titel: "Söflinger Straße 203", adresse: "Söflinger Straße 203", plz: "70173", ort: "Stuttgart", beschreibung: "",
   bildUrl: "", bilder: [], dokumente: [], wohnungen: [WOHNUNG], videoUrl: "", videoSichtbar: false, badge: "",
   groesseVon: 0, groesseBis: 0, preisVon: 0, preisBis: 0, renditeVon: 0, renditeBis: 0, sichtbar: true, erstellt_am: "2026-01-01",
   globalDaten: { baujahr: 1954, hausgeldMonat: 250 },

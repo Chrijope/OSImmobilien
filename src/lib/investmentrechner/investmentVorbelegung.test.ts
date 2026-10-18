@@ -15,7 +15,7 @@ const objekt = vi.hoisted(
   () =>
     ({
       id: "o1", titel: "Musterhaus 30", adresse: "Musterstraße 30", plz: "39104", ort: "Magdeburg",
-      beschreibung: "", highlights: [], bildUrl: "", bilder: [], dokumente: [], meta: {},
+      beschreibung: "", bildUrl: "", bilder: [], dokumente: [], meta: {},
       afaDaten: { afaModell: "linear", afaSatz: 6.67, restnutzungsdauer: 50, grundstueckAnteil: 10 },
       wohnungen: [
         { id: "w5", weNr: "WE 05", groesse: 78.08, zimmer: 3, mieteGesamt: 596.16, vkGesamt: 178900, status: "frei" },

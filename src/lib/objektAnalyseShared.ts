@@ -19,7 +19,6 @@ export interface ExtractedObjektData {
   energietraeger?: string;
   energieausweisGueltigBis?: string;
   energieausweisRegistriernummer?: string;
-  highlights?: string[];
   sanierungen?: Array<{ bereich: string; status: string }>;
   grundbuchInfo?: string;
   flurstueck?: string;

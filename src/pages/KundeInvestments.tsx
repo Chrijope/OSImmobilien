@@ -1503,17 +1503,6 @@ function ObjektauswahlDetails({ inv, invMeta, objekteCache, setObjekteCache }: {
         {objData?.global_baujahr && <div {...einlage("p-3")}><span className="block text-muted-foreground text-xs">{t("portal.investments.objekt.year_built")}</span><p className="font-medium text-xs">{objData.global_baujahr}</p></div>}
       </div>
 
-      {objData?.highlights?.length > 0 && (
-        <div className="space-y-1">
-          <p className="text-xs font-semibold text-muted-foreground">{t("portal.investments.objekt.highlights")}</p>
-          <div className="flex flex-wrap gap-1.5">
-            {objData.highlights.slice(0, 6).map((h: string, i: number) => (
-              <Badge key={i} variant="outline">{h}</Badge>
-            ))}
-          </div>
-        </div>
-      )}
-
       {wohnung && <WohnungsExposeButton antwort={cached} wohnungId={wohnung.id} />}
     </div>
   );

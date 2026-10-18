@@ -24,7 +24,7 @@ beforeAll(() => {
 });
 
 const objekt = {
-  id: "o1", titel: "Wohnen an der Blau", adresse: "Söflinger Str. 203", plz: "89077", ort: "Ulm", beschreibung: "", highlights: [],
+  id: "o1", titel: "Wohnen an der Blau", adresse: "Söflinger Str. 203", plz: "89077", ort: "Ulm", beschreibung: "",
   bildUrl: "", bilder: [], dokumente: [], videoUrl: "", videoSichtbar: false, badge: "", groesseVon: 0, groesseBis: 0, preisVon: 0, preisBis: 0,
   renditeVon: 0, renditeBis: 0, sichtbar: true, status: "freigegeben", erstellt_am: "2026-01-01",
   afaDaten: { afaModell: "gutachten", afaSatz: 5.5, restnutzungsdauer: 18, grundstueckAnteil: 20 },
@@ -343,19 +343,17 @@ describe("Ohne Abschnitt Wirtschaftlichkeit (seit dem 16.10.2026)", () => {
 describe("Besonderheiten und Ausstattung aus dem CRM", () => {
   const mitCrm = (investagon: Partial<{ beschreibungen: string[]; merkmale: Array<{ bezeichnung: string; wert: string; nummer?: number }> }>, aenderung: Partial<ObjektData> = {}, wohnung: Record<string, unknown> = {}) => {
     // Mit gepflegter Kurzbeschreibung oben; die Beschreibung am Objekt ist dann ein eigener Text.
-    const o = { ...objekt, meta: { ...objekt.meta, kurzbeschreibung: "Helle Wohnung im Erdgeschoss." }, beschreibung: "Ruhige Lage am Park, Dachboden ausgebaut.", highlights: ["Einbauküche", "Aufzug", " "], sanierungskosten: 240000, erhaltungsaufwandJahre: 3, ...aenderung } as unknown as ObjektData;
+    const o = { ...objekt, meta: { ...objekt.meta, kurzbeschreibung: "Helle Wohnung im Erdgeschoss." }, beschreibung: "Ruhige Lage am Park, Dachboden ausgebaut.", sanierungskosten: 240000, erhaltungsaufwandJahre: 3, ...aenderung } as unknown as ObjektData;
     const einheit = { ...w, sanierungAnteilProzent: 5, ...wohnung } as typeof w;
     const inhalt: ExposeInhalt = baueExposeInhalt({ objekt: { ...o, wohnungen: [einheit] }, wohnung: einheit, ersteller: partner, heute });
     return render(<MemoryRouter><ExposeAnsicht inhalt={inhalt} investagon={{ ...LEERE_ERGAENZUNG, beschreibungen: [], merkmale: [], ...investagon }} /></MemoryRouter>);
   };
 
-  it("nimmt ohne Investagon Beschreibung und Highlights am Objekt, die Angaben der Einheit und nennt den Erhaltungsaufwand", () => {
+  it("nimmt ohne Investagon die Beschreibung am Objekt, die Angaben der Einheit und nennt den Erhaltungsaufwand", () => {
     mitCrm({});
     const bes = screen.getByTestId("investagon-beschreibung");
     expect(text(screen.getByTestId("besonderheit-erhaltungsaufwand"))).toBe("Erhaltungsaufwand: 12.000 € Anteil dieser Wohnung (240.000 € für das ganze Haus), verteilt auf 3 Jahre.");
     expect(bes).toHaveTextContent("Ruhige Lage am Park");
-    expect(bes).toHaveTextContent("Einbauküche");
-    expect(bes).toHaveTextContent("Aufzug");
     const liste = within(screen.getByTestId("investagon-merkmale")).getAllByRole("listitem").map(text);
     expect(liste[0]).toMatch(/^Zimmer 3/);
     expect(liste.slice(1)).toEqual(["Lage im Gebäude 0", "Stellplatz 12.000 €", "Balkon"]);
@@ -378,7 +376,7 @@ describe("Besonderheiten und Ausstattung aus dem CRM", () => {
 
   it("blendet leere Blöcke aus und zeigt die Beschreibung nicht doppelt", () => {
     // Ohne Kurzbeschreibung steht die Beschreibung am Objekt schon oben.
-    mitCrm({}, { meta: objekt.meta, highlights: [], sanierungskosten: 0 }, { sanierungAnteilProzent: 0, zimmer: 0, etage: "", stellplatzPreis: 0, investagonRaw: {} });
+    mitCrm({}, { meta: objekt.meta, sanierungskosten: 0 }, { sanierungAnteilProzent: 0, zimmer: 0, etage: "", stellplatzPreis: 0, investagonRaw: {} });
     expect(screen.getByTestId("beschreibung")).toHaveTextContent("Ruhige Lage am Park");
     expect(screen.queryByTestId("investagon-beschreibung")).not.toBeInTheDocument();
     expect(screen.queryByTestId("investagon-merkmale")).not.toBeInTheDocument();

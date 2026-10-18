@@ -58,7 +58,7 @@ function we(extra: Partial<ObjektWohnung> = {}): ObjektWohnung {
 
 function objekt(w: ObjektWohnung, extra: Partial<ObjektData> = {}): ObjektData {
   return {
-    id: "o1", titel: "Haus", adresse: "Teststraße 1", plz: "80331", ort: "München", beschreibung: "", highlights: [],
+    id: "o1", titel: "Haus", adresse: "Teststraße 1", plz: "80331", ort: "München", beschreibung: "",
     bildUrl: "", bilder: [], dokumente: [], wohnungen: [w, { ...w, id: "w2", weNr: "WE 7" }], videoUrl: "", videoSichtbar: false, badge: "",
     groesseVon: 0, groesseBis: 0, preisVon: 0, preisBis: 0, renditeVon: 0, renditeBis: 0, sichtbar: true,
     erstellt_am: "2026-01-01", meta: {}, ...extra,

@@ -599,7 +599,7 @@ describe("Ein neues Objekt", () => {
   const NEU = u(2);
   function neuesObjekt(): ObjektData {
     return {
-      id: NEU, titel: "Neubau", adresse: "Neuweg 2", plz: "80331", ort: "München", beschreibung: "", highlights: [],
+      id: NEU, titel: "Neubau", adresse: "Neuweg 2", plz: "80331", ort: "München", beschreibung: "",
       bildUrl: "https://x.test/n.jpg", videoUrl: "", videoSichtbar: false, badge: "", groesseVon: 0, groesseBis: 0,
       preisVon: 0, preisBis: 0, renditeVon: 0, renditeBis: 0, sichtbar: true, status: "freigegeben", erstellt_am: "2026-09-23",
       bilder: [{ id: u(60), url: "https://x.test/n.jpg", alt: "", reihenfolge: 0 }],

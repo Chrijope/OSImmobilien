@@ -65,7 +65,7 @@ const einheit: ObjektWohnung = {
   qmPreis: 0, rendite: 0, vermietet: true, status: "reserviert", kundeId: "k-1",
 } as ObjektWohnung;
 const haus = {
-  id: "A", titel: "Haus A", adresse: "Teststraße 1", plz: "80331", ort: "München", beschreibung: "", highlights: [],
+  id: "A", titel: "Haus A", adresse: "Teststraße 1", plz: "80331", ort: "München", beschreibung: "",
   bildUrl: "", bilder: [], dokumente: [], wohnungen: [einheit], videoUrl: "", videoSichtbar: false, badge: "",
   groesseVon: 0, groesseBis: 0, preisVon: 0, preisBis: 0, renditeVon: 0, renditeBis: 0, sichtbar: true,
   erstellt_am: "2026-01-01", meta: { standortanalyse: { schema: 2, objekt_koordinaten: { lat: 48.14, lng: 11.58 } } },

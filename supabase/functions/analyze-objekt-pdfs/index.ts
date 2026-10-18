@@ -40,7 +40,6 @@ const toolDefinition = {
         energietraeger: { type: "string" },
         energieausweisGueltigBis: { type: "string" },
         energieausweisRegistriernummer: { type: "string" },
-        highlights: { type: "array", items: { type: "string" }, description: "Genau 10 prägnante, verkaufsfördernde Highlights/Verkaufsargumente für den Vertriebler im Kundengespräch. Beispiele: 'KFW 40 QNG Förderung möglich', 'Vollvermietung ab Fertigstellung', 'Leerstandsquote unter 1%', 'Bahnanbindung in 5 Min.', 'Sonder-AfA 5% p.a.', 'Hausverwaltung inklusive', 'Mietrendite über 4%', 'Wachstumsregion mit Zuzug'. Fokus auf steuerliche Vorteile, Standortqualität, Sicherheit der Anlage und Rendite. MAXIMAL 10 Stück." },
         sanierungen: {
           type: "array",
           items: {

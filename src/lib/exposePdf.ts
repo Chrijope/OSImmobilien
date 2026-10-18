@@ -35,7 +35,6 @@ interface ExposeObjekt {
   ort?: string;
   badge?: string;
   beschreibung?: string;
-  highlights?: string[];
   bild_url?: string;
   groesse_von?: number;
   groesse_bis?: number;
@@ -292,7 +291,7 @@ export async function generateExposePdf(data: ExposeData): Promise<Blob> {
 
   addPageFooter(doc, pageNum.val);
 
-  // ── Page 2: Willkommen / Highlights auf einen Blick ──
+  // ── Page 2: Willkommen ──
   doc.addPage();
   pageNum.val++;
   y = MARGIN + 5;
@@ -327,29 +326,6 @@ export async function generateExposePdf(data: ExposeData): Promise<Blob> {
   const introLines = doc.splitTextToSize(introText, CONTENT_W);
   introLines.forEach((line: string) => { doc.text(line, MARGIN, y); y += 5.5; });
   y += 8;
-
-  // Highlights auf einen Blick
-  if (obj.highlights && obj.highlights.length > 0) {
-    doc.setFontSize(14);
-    doc.setFont(PDF_FONT, "bold");
-    doc.setTextColor(...DARK);
-    doc.text("Die Highlights auf einen Blick", MARGIN, y);
-    y += 8;
-
-    obj.highlights.slice(0, 12).forEach(h => {
-      y = checkPage(doc, y, 7, pageNum);
-      doc.setFontSize(10);
-      doc.setFont(PDF_FONT, "bold");
-      doc.setTextColor(...GREEN);
-      doc.text("✓", MARGIN, y);
-      doc.setFont(PDF_FONT, "normal");
-      doc.setTextColor(...DARK);
-      const hLines = doc.splitTextToSize(h, CONTENT_W - 8);
-      doc.text(hLines[0] || h, MARGIN + 6, y);
-      y += 7;
-    });
-    y += 4;
-  }
 
   addPageFooter(doc, pageNum.val);
 
@@ -455,37 +431,6 @@ export async function generateExposePdf(data: ExposeData): Promise<Blob> {
       }
     });
     y += 4;
-  }
-
-  // Highlights
-  if (obj.highlights && obj.highlights.length > 0) {
-    y = checkPage(doc, y, 30, pageNum);
-    doc.setFillColor(...ACCENT);
-    doc.rect(MARGIN, y, 40, 3, "F");
-    y += 8;
-    doc.setFontSize(16);
-    doc.setFont(PDF_FONT, "bold");
-    doc.setTextColor(...DARK);
-    doc.text("Highlights", MARGIN, y);
-    y += 8;
-
-    const halfW = CONTENT_W / 2;
-    obj.highlights.forEach((h, i) => {
-      const col = i % 2;
-      if (col === 0) y = checkPage(doc, y, 8, pageNum);
-      const x = MARGIN + col * halfW;
-      doc.setFontSize(10);
-      doc.setFont(PDF_FONT, "bold");
-      doc.setTextColor(...GREEN);
-      doc.text("✓", x, y);
-      doc.setFont(PDF_FONT, "normal");
-      doc.setTextColor(...DARK);
-      const hLines = doc.splitTextToSize(h, halfW - 10);
-      doc.text(hLines[0] || h, x + 6, y);
-      if (col === 1) y += 7;
-    });
-    if (obj.highlights.length % 2 !== 0) y += 7;
-    y += 5;
   }
 
   // ── Standortanalyse (on same page flow, no forced page breaks) ──

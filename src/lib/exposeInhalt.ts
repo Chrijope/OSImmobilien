@@ -458,9 +458,9 @@ export function exposeObjektdatenAus(objekt: ObjektData, w: ObjektWohnung, heute
 
 export interface CrmBesonderheiten {
   /**
-   * Freitexte: die Beschreibung am Objekt, sofern sie nicht schon oben steht,
-   * und die öffentlichen Highlights (`objekte.highlights`). Die internen
-   * Highlights (`meta.interneHighlightsHand`, KI-Punkte) nie.
+   * Freitexte: die Beschreibung am Objekt, sofern sie nicht schon oben steht.
+   * Die internen Highlights (`meta.interneHighlightsHand`, KI-Punkte) nie.
+   * Die Spalte `objekte.highlights` gibt es seit dem 18.10.2026 nicht mehr.
    */
   texte: string[];
   /** Ausstattung aus den Feldern der Einheit (Zimmer, Lage, Stellplatz, Balkon, Heizung). */
@@ -521,7 +521,7 @@ export function erhaltungsaufwandSatz(
 
 /** Die Besonderheiten aus dem CRM für ein Exposé. `einheit` wie bei `erhaltungsaufwandSatz`. */
 export function crmBesonderheiten(
-  objekt: Pick<ObjektData, "beschreibung" | "highlights" | "sanierungskosten" | "erhaltungsaufwandJahre" | "meta" | "globalDaten" | "wohnungen">,
+  objekt: Pick<ObjektData, "beschreibung" | "sanierungskosten" | "erhaltungsaufwandJahre" | "meta" | "globalDaten" | "wohnungen">,
   einheit: Parameters<typeof erhaltungsaufwandSatz>[1],
   obenSchonBeschreibung: string,
   ausstattung: CrmBesonderheiten["ausstattung"],
@@ -534,7 +534,6 @@ export function crmBesonderheiten(
     texte: [
       // Steht die Beschreibung schon oben als Text des Exposés, nicht ein zweites Mal.
       ...(beschreibung && beschreibung !== obenSchonBeschreibung.trim() ? [beschreibung] : []),
-      ...(objekt.highlights || []).map((h) => (typeof h === "string" ? h.trim() : "")).filter(Boolean),
     ],
     ausstattung,
     ...(satz ? { erhaltungsaufwand: satz } : {}),

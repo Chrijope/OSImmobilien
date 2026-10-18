@@ -4018,7 +4018,6 @@ export type Database = {
           groesse_bis: number | null
           groesse_von: number | null
           grundstueck_anteil: number | null
-          highlights: string[] | null
           id: string
           meta: Json | null
           ort: string | null
@@ -4077,7 +4076,6 @@ export type Database = {
           groesse_bis?: number | null
           groesse_von?: number | null
           grundstueck_anteil?: number | null
-          highlights?: string[] | null
           id?: string
           meta?: Json | null
           ort?: string | null
@@ -4136,7 +4134,6 @@ export type Database = {
           groesse_bis?: number | null
           groesse_von?: number | null
           grundstueck_anteil?: number | null
-          highlights?: string[] | null
           id?: string
           meta?: Json | null
           ort?: string | null

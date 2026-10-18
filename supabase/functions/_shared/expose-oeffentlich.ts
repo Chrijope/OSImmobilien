@@ -35,7 +35,7 @@ import { mitHausgeldMonat } from "./einheit-hausgeld.ts";
 /** Spalten des Objekts, die ins öffentliche Exposé dürfen. */
 const OBJEKT_SPALTEN = [
   "id", "titel", "adresse", "plz", "ort", "beschreibung", "bild_url", "badge",
-  "status", "sichtbar", "highlights", "video_url", "video_sichtbar",
+  "status", "sichtbar", "video_url", "video_sichtbar",
   "preis_von", "preis_bis", "groesse_von", "groesse_bis", "rendite_von", "rendite_bis",
   "afa_modell", "afa_satz", "restnutzungsdauer", "sanierungskosten",
   "erhaltungsaufwand", "erhaltungsaufwand_jahre", "bodenrichtwert", "grundstueck_anteil",

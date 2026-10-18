@@ -57,7 +57,7 @@ const wohnung: ObjektWohnung = {
 
 stand.liste = {
   o1: {
-    id: "o1", titel: "Haus o1", adresse: "Teststraße 1", plz: "80331", ort: "München", beschreibung: "", highlights: [],
+    id: "o1", titel: "Haus o1", adresse: "Teststraße 1", plz: "80331", ort: "München", beschreibung: "",
     bildUrl: "", bilder: [], dokumente: [], wohnungen: [wohnung], videoUrl: "", videoSichtbar: false, badge: "",
     groesseVon: 0, groesseBis: 0, preisVon: 0, preisBis: 0, renditeVon: 0, renditeBis: 0, sichtbar: true,
     erstellt_am: "2026-01-01", meta: {},

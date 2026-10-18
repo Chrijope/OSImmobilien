@@ -16,7 +16,7 @@ import { KATEGORIEN } from "@/lib/umgebung";
  */
 
 const objekt: ObjektData = {
-  id: "o1", titel: "Musterstraße 12", adresse: "Musterstraße 12", plz: "86150", ort: "Augsburg", beschreibung: "", highlights: [],
+  id: "o1", titel: "Musterstraße 12", adresse: "Musterstraße 12", plz: "86150", ort: "Augsburg", beschreibung: "",
   bildUrl: "", bilder: [{ id: "b1", url: "https://example.org/a.jpg", alt: "", reihenfolge: 1 }], dokumente: [{ id: "d1", name: "Grundriss WE 7.png", url: "https://example.org/g.png", typ: "custom", kategorie: "objektunterlagen", sichtbar: true }],
   videoUrl: "", videoSichtbar: false, badge: "", groesseVon: 0, groesseBis: 0, preisVon: 0, preisBis: 0, renditeVon: 0, renditeBis: 0,
   sichtbar: true, status: "freigegeben", erstellt_am: "2026-01-01", sanierungskosten: 100000, erhaltungsaufwandJahre: 2,

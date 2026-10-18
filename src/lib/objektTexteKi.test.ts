@@ -66,7 +66,6 @@ const objektZeile = {
   global_verkaufspreis: 3200000,
   global_rendite: 3.8,
   global_jahresnettomiete: 121000,
-  highlights: ["Aufzug nachgerüstet", ""],
   meta: {
     objektart: "sanierter_bestand",
     sanierungen: [{ jahr: "2023", massnahme: "Dach", betrag: 80000 }],
@@ -97,7 +96,6 @@ describe("Tatsachen, aus denen die Texte entstehen", () => {
     expect(alles).toContain("Musterweg 1, 86150 Augsburg");
     expect(alles).toContain("Baujahr: 1962");
     expect(alles).toContain("Sanierung: 2023, Dach");
-    expect(alles).toContain("Gepflegtes Merkmal: Aufzug nachgerüstet");
     expect(alles).toContain("Wohnungsgrößen in m²: 48 bis 96");
     // Die Zahl der angelegten Einheiten ist nicht die des Hauses (24.09.2026).
     expect(alles).not.toContain("Einheiten im Objekt");

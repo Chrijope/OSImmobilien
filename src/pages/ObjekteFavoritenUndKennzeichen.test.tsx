@@ -123,7 +123,6 @@ function objekt(
     plz: "80331",
     ort: "München",
     beschreibung: "",
-    highlights: [],
     bildUrl: "",
     bilder: [],
     dokumente: [],

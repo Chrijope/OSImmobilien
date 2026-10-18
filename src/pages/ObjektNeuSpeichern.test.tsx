@@ -101,7 +101,7 @@ function vollEinheit(felder: Partial<ObjektWohnung> = {}): ObjektWohnung {
 function objekt(felder: Partial<ObjektData> & { meta?: Record<string, unknown> }): ObjektData {
   return {
     id: "o-1", titel: "Teststraße 5", adresse: "Teststraße 5", plz: "80331", ort: "München", beschreibung: "",
-    highlights: [], bildUrl: "", bilder: [], dokumente: [], wohnungen: [], videoUrl: "", videoSichtbar: false,
+    bildUrl: "", bilder: [], dokumente: [], wohnungen: [], videoUrl: "", videoSichtbar: false,
     badge: "", groesseVon: 0, groesseBis: 0, preisVon: 0, preisBis: 0, renditeVon: 0, renditeBis: 0,
     sichtbar: true, erstellt_am: "2026-01-01", sanierungskosten: 180000, erhaltungsaufwandJahre: 3,
     afaDaten: { afaModell: "gutachten", afaSatz: 3.33, restnutzungsdauer: 30, grundstueckAnteil: 18 },

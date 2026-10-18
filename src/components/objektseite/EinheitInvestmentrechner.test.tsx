@@ -18,7 +18,7 @@ vi.mock("@/lib/investmentrechner/rechnerBilder", async (importOriginal) => ({
 
 const objekt: ObjektData = {
   id: "o1", titel: "Musterwohnanlage", adresse: "Musterstraße 12", plz: "86150", ort: "Augsburg",
-  beschreibung: "", highlights: [], bildUrl: "", bilder: [], dokumente: [],
+  beschreibung: "", bildUrl: "", bilder: [], dokumente: [],
   videoUrl: "", videoSichtbar: false, badge: "", groesseVon: 0, groesseBis: 0, preisVon: 0, preisBis: 0,
   renditeVon: 0, renditeBis: 0, sichtbar: true, status: "freigegeben", erstellt_am: "2026-01-01",
   afaDaten: { afaModell: "linear", afaSatz: 2.5, restnutzungsdauer: 40, grundstueckAnteil: 20 },

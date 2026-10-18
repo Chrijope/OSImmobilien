@@ -354,7 +354,7 @@ async function dublettenwache(
 ): Promise<void> {
   const { data: rohObjekte, error: leseFehler } = await db.from("objekte")
     .select(
-      "id, titel, adresse, plz, erstellt_am, beschreibung, video_url, highlights, exklusiv_partner, meta",
+      "id, titel, adresse, plz, erstellt_am, beschreibung, video_url, exklusiv_partner, meta",
     );
   if (leseFehler) {
     bericht.fehler.push("Dublettenwache: Bestand nicht lesbar");
@@ -369,7 +369,6 @@ async function dublettenwache(
     erstellt_am?: string | null;
     beschreibung?: string | null;
     video_url?: string | null;
-    highlights?: string[] | null;
     exklusiv_partner?: string[] | null;
     meta?: Record<string, unknown> | null;
   }) => ({
@@ -380,7 +379,6 @@ async function dublettenwache(
     erstellt_am: o.erstellt_am,
     beschreibung: o.beschreibung,
     videoUrl: o.video_url,
-    highlights: o.highlights,
     exklusivPartner: o.exklusiv_partner,
     meta: o.meta,
     einheiten: 0,

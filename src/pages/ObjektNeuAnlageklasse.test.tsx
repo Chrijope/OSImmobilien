@@ -67,7 +67,7 @@ const { default: ObjektNeu } = await import("./ObjektNeu");
 function objekt(felder: Partial<ObjektData> & { meta?: Record<string, unknown> }): ObjektData {
   return {
     id: "o-1", titel: "Teststraße 5", adresse: "Teststraße 5", plz: "80331", ort: "München", beschreibung: "",
-    highlights: [], bildUrl: "", bilder: [], dokumente: [], wohnungen: [], videoUrl: "", videoSichtbar: false,
+    bildUrl: "", bilder: [], dokumente: [], wohnungen: [], videoUrl: "", videoSichtbar: false,
     badge: "", groesseVon: 0, groesseBis: 0, preisVon: 0, preisBis: 0, renditeVon: 0, renditeBis: 0,
     sichtbar: true, erstellt_am: "2026-01-01",
     verkaeuferDaten: { name: "Verkäufer GmbH", strasse: "Weg 1", plz: "80331", ort: "München", email: "v@beispiel.test", telefon: "" },

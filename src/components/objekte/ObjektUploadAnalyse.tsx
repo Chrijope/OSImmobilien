@@ -830,17 +830,6 @@ export function ObjektUploadAnalyse({ draftKey, onAnalyseComplete, onAnalyzingCh
               </div>
             )}
 
-            {result.highlights && result.highlights.length > 0 && (
-              <div className="mt-4 pt-4 border-t">
-                <p className="text-xs font-semibold mb-2">Erkannte Highlights</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {result.highlights.map((highlight, index) => (
-                    <Badge key={index} variant="secondary" className="text-[10px]">{highlight}</Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-
             {result.sanierungen && result.sanierungen.length > 0 && (
               <div className="mt-4 pt-4 border-t">
                 <p className="text-xs font-semibold mb-2">Sanierungen</p>

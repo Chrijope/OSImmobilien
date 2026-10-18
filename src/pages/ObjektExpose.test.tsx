@@ -52,7 +52,7 @@ const IMPORTIERTE_UNTERLAGEN = [
 ] as ObjektData["dokumente"];
 
 const objekt: ObjektData = {
-  id: "o1", titel: "Musterstraße 12", adresse: "Musterstraße 12", plz: "86150", ort: "Augsburg", beschreibung: "", highlights: [],
+  id: "o1", titel: "Musterstraße 12", adresse: "Musterstraße 12", plz: "86150", ort: "Augsburg", beschreibung: "",
   bildUrl: "", bilder: [], dokumente: IMPORTIERTE_UNTERLAGEN, videoUrl: "", videoSichtbar: false, badge: "", groesseVon: 0, groesseBis: 0, preisVon: 0, preisBis: 0,
   renditeVon: 0, renditeBis: 0, sichtbar: true, status: "freigegeben", erstellt_am: "2026-01-01",
   globalDaten: { gesamtQm: 0, etagen: 4, baujahr: 1962, grundstueckQm: 0, verkaufspreis: 0, qmPreis: 0, rendite: 0, jahresnettomiete: 0, hausgeldMonat: 0, kaufnebenkosten: 0, grundstueckAnteil: 0 } as ObjektData["globalDaten"],
@@ -104,7 +104,7 @@ const objektOhnePlaene = { ...objekt, id: "o2", dokumente: [], meta: { ...objekt
  * mindestens hat. Das Exposé muss trotzdem sauber aussehen.
  */
 const knappBasis = {
-  titel: "Knappstraße 1", adresse: "Knappstraße 1", plz: "86150", ort: "Augsburg", beschreibung: "", highlights: [],
+  titel: "Knappstraße 1", adresse: "Knappstraße 1", plz: "86150", ort: "Augsburg", beschreibung: "",
   bildUrl: "", bilder: [], dokumente: [], videoUrl: "", videoSichtbar: false, badge: "", groesseVon: 0, groesseBis: 0, preisVon: 0, preisBis: 0,
   renditeVon: 0, renditeBis: 0, sichtbar: true, status: "freigegeben", erstellt_am: "2026-01-01", erstellt_von: "op1",
   globalDaten: { gesamtQm: 0, etagen: 0, baujahr: 0, grundstueckQm: 0, verkaufspreis: 0, qmPreis: 0, rendite: 0, jahresnettomiete: 0, hausgeldMonat: 0, kaufnebenkosten: 0, grundstueckAnteil: 20, zustand: "", energieeffizienzklasse: "", stellplaetze: 0, vermietungsstand: 0 },

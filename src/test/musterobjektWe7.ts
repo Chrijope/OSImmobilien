@@ -61,7 +61,6 @@ export const MUSTER_OBJEKT: ObjektData = {
   plz: "86199",
   ort: "Augsburg",
   beschreibung: "Musterobjekt zur Ansicht der neuen Objektseite, der Einheiten-Seite und des Exposés. Alle Angaben sind frei erfunden.",
-  highlights: ["Musterobjekt", "Sanierung 2023 und 2024", "Aufzug", "Stellplatz je Wohnung", "SEV im ersten Jahr inklusive"],
   bildUrl: "/muster/objekt/aussenansicht.jpg",
   bilder: [
     { id: "muster-ob-01", url: "/muster/objekt/aussenansicht.jpg", alt: "Außenansicht, Musterbild", reihenfolge: 0 },

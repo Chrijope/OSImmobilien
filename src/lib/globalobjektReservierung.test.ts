@@ -369,7 +369,7 @@ function we(id: string, teile: Partial<ObjektWohnung> = {}): ObjektWohnung {
 
 function globalHaus(teile: Partial<ObjektData> = {}): ObjektData {
   return {
-    id: "g", titel: "Haus g", adresse: "Teststraße 1", plz: "80331", ort: "München", beschreibung: "", highlights: [],
+    id: "g", titel: "Haus g", adresse: "Teststraße 1", plz: "80331", ort: "München", beschreibung: "",
     bildUrl: "", bilder: [], dokumente: [], wohnungen: [we("w1"), we("w2")], videoUrl: "", videoSichtbar: false, badge: "",
     groesseVon: 0, groesseBis: 0, preisVon: 0, preisBis: 0, renditeVon: 0, renditeBis: 0, sichtbar: true,
     erstellt_am: "2026-01-01", meta: {}, globalObjekt: true, belegung: "frei",

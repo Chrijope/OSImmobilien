@@ -249,7 +249,6 @@ describe("Keine Provision im Kontext, in keiner Schachtelung (LOTSE-R7-002, Vorg
     objekt: {
       id: "o1", titel: "Musterhaus",
       beschreibung: "Schönes Haus.\n\nDer Vertrieb erhält 3 % Provision vom Bauträger.",
-      highlights: ["Ruhige Lage", "Courtage 7777 Euro"],
       meta: verschmutzt,
     },
     einheit: { id: "w1", objekt_id: "o1", we_nr: "2", status: "frei", meta: verschmutzt },
@@ -268,7 +267,7 @@ describe("Keine Provision im Kontext, in keiner Schachtelung (LOTSE-R7-002, Vorg
   });
 
   it("behält die erlaubten Angaben daneben", () => {
-    for (const erlaubt of ["Dach", "Schönes Haus.", "Ruhige Lage", "640", "210", "Baujahr 1995.", "Aufzug vorhanden."]) {
+    for (const erlaubt of ["Dach", "Schönes Haus.", "640", "210", "Baujahr 1995.", "Aufzug vorhanden."]) {
       expect(prompt).toContain(erlaubt);
     }
   });

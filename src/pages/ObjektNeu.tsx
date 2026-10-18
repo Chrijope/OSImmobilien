@@ -159,7 +159,6 @@ type ObjektNeuZusatz = {
 const initialNfState = {
   titel: "", adresse: "", plz: "", ort: "", beschreibung: "", badge: "",
   videoUrl: "", videoSichtbar: false, bildUrl: "",
-  highlights: [] as string[], newHighlight: "",
   exklusivPartner: [] as string[], newExklusivPartner: "",
   cloudOrdnerUrl: "",
 };
@@ -472,8 +471,6 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
         videoUrl: existingObjekt.videoUrl || "",
         videoSichtbar: existingObjekt.videoSichtbar || false,
         bildUrl: existingObjekt.bildUrl || "",
-        highlights: existingObjekt.highlights || [],
-        newHighlight: "",
         exklusivPartner: existingObjekt.exklusivPartner || [],
         newExklusivPartner: "",
         cloudOrdnerUrl: existingObjekt.cloudOrdnerUrl || "",
@@ -1703,12 +1700,6 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
     toast({ title: "Wohnung aktualisiert ✓" });
   };
 
-  const addHighlight = () => {
-    if (!nf.newHighlight.trim() || nf.highlights.length >= 10) return;
-    setNf(p => ({ ...p, highlights: [...p.highlights, p.newHighlight.trim()], newHighlight: "" }));
-    markDirty();
-  };
-
   /**
    * Eine Objektunterlage in eine feste Kategorie legen.
    *
@@ -2327,7 +2318,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
     const newObj: ObjektData = {
       id: objektId,
       titel: nf.titel, adresse: nf.adresse, plz: nf.plz, ort: nf.ort,
-      beschreibung: beschreibungGeaendert ? nf.beschreibung : (existingObjekt?.beschreibung ?? nf.beschreibung), highlights: nf.highlights,
+      beschreibung: beschreibungGeaendert ? nf.beschreibung : (existingObjekt?.beschreibung ?? nf.beschreibung),
       bildUrl: hauptbildUrl,
       bilder: allBilder,
       dokumente,

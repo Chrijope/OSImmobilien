@@ -76,7 +76,6 @@ export interface WacheObjekt {
   dokumente: number;
   beschreibung?: string | null;
   exklusivPartner?: string[] | null;
-  highlights?: string[] | null;
   videoUrl?: string | null;
 }
 
@@ -127,10 +126,6 @@ function verlust(aelter: WacheObjekt, neuer: WacheObjekt): string[] {
     (p) => !(neuer.exklusivPartner || []).includes(p),
   );
   if (partner.length) verloren.push(`Exklusivpartner ${partner.join(", ")}`);
-  const punkte = (aelter.highlights || []).filter(
-    (h) => !(neuer.highlights || []).includes(h),
-  );
-  if (punkte.length) verloren.push(`${punkte.length} eigene Highlights`);
   if ((aelter.beschreibung || "").trim() && !(neuer.beschreibung || "").trim()) {
     verloren.push("Beschreibungstext");
   }

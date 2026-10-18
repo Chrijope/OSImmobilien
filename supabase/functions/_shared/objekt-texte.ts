@@ -617,11 +617,6 @@ export function objektQuellen(
   nimm("Gemeinschaftseigentum", text(meta.gemeinschaftseigentum));
   nimm("Verwaltung", text(meta.verwaltung));
 
-  const highlights = Array.isArray(r.highlights) ? r.highlights : [];
-  for (const h of highlights) {
-    const wert = text(h);
-    if (wert) zeilen.push(`Gepflegtes Merkmal: ${wert}`);
-  }
   for (const merkmal of neutraleMerkmale(investagonRaw)) {
     zeilen.push(`Merkmal laut Investagon: ${merkmal}`);
   }

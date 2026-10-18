@@ -575,7 +575,6 @@
         "per_month": "/month",
         "yield": "Yield",
         "year_built": "Year built",
-        "highlights": "Highlights",
         "expose_creating": "Generating exposé…",
         "expose_download": "Download unit exposé",
         "expose_success": "Unit exposé has been created.",

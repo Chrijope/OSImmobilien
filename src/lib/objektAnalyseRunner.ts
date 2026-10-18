@@ -72,13 +72,6 @@ const mergeExtractedData = (base: ExtractedObjektData, incoming: ExtractedObjekt
     merged.beschreibung = incomingBeschreibung || merged.beschreibung;
   }
 
-  const mergedHighlights = [...(base.highlights ?? []), ...(incoming.highlights ?? [])]
-    .map((item) => item.trim())
-    .filter(Boolean);
-  if (mergedHighlights.length > 0) {
-    merged.highlights = Array.from(new Set(mergedHighlights)).slice(0, 10);
-  }
-
   const sanierungMap = new Map<string, { bereich: string; status: string }>();
   [...(base.sanierungen ?? []), ...(incoming.sanierungen ?? [])].forEach((item) => {
     const bereich = item.bereich?.trim();
