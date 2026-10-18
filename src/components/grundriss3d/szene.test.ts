@@ -122,3 +122,29 @@ describe("Dach aus einzelnen Flächen", () => {
     expect(hoehe(1.55, 1.55)).toBeCloseTo(5.8, 2);
   });
 });
+
+describe("Möbel in verwinkelten Räumen", () => {
+  it("nimmt im L-förmigen Raum das größte Rechteck, das ganz drin liegt", async () => {
+    const { groesstesRechteck } = await import("./szene");
+    // L: unten 6 × 2 m, links hoch 2 × 5 m. Größtes Rechteck ist der untere Balken (12 m²).
+    const l = [{ x: 0, y: 0 }, { x: 2, y: 0 }, { x: 2, y: 3 }, { x: 6, y: 3 }, { x: 6, y: 5 }, { x: 0, y: 5 }];
+    const r = groesstesRechteck(l)!;
+    const flaeche = (r.maxX - r.minX) * (r.maxY - r.minY);
+    expect(flaeche).toBeGreaterThan(11);
+    expect(flaeche).toBeLessThanOrEqual(12.01);
+    expect(r.minY).toBeGreaterThan(2.8);
+  });
+
+  it("kennt die Türmitten aus Wandöffnungen und aus CAD-Türflächen", async () => {
+    const { tuerMitten } = await import("./szene");
+    const mitten = tuerMitten({
+      version: 1, nordWinkel: 0, raeume: [],
+      waende: [{ id: "w", a: { x: 0, y: 0 }, b: { x: 4, y: 0 }, dicke: 0.2 }],
+      oeffnungen: [{ id: "t", wandId: "w", art: "tuer", position: 1, breite: 0.9 }, { id: "f", wandId: "w", art: "fenster", position: 3, breite: 1 }],
+      flaechen: { waende: [], fenster: [], tueren: [[[5, 5], [6, 5], [6, 5.2], [5, 5.2]]] },
+    });
+    expect(mitten).toHaveLength(2);
+    expect(mitten[0]).toEqual({ x: 1, y: 0 });
+    expect(mitten[1].x).toBeCloseTo(5.5);
+  });
+});
