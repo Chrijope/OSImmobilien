@@ -26,6 +26,13 @@ import { ChatVerlauf, type ChatVerlaufHandle, type ChatVerlaufKennzahlen } from 
 import { ChatTeilnehmerLeiste } from "@/components/chat/ChatTeilnehmerLeiste";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
+/**
+ * Rahmen für die beiden Spalten. Sie liegen auf der Profilkarte und gingen
+ * dort optisch unter (Christian, 18.10.2026); `!`, weil der Glas-Stil Karten
+ * sonst durchscheinend färbt.
+ */
+const KASTEN = "!bg-white !border-border !shadow-md dark:!bg-card";
+
 /** Welcher der beiden Verläufe gerade offen ist. */
 export type VerlaufSchluessel = "intern" | "kunde";
 
@@ -244,7 +251,7 @@ export function KommunikationReiter({
        den Verlaeufen, sie sind Beiwerk und brauchen keine eigene Spalte. */
     <div className="grid grid-cols-1 lg:grid-cols-[16rem_minmax(0,1fr)] gap-4 items-start">
       {/* Links: die Verläufe */}
-      <Card className={cn("p-2 overflow-hidden", LINKE_SPALTE_HOEHE)}>
+      <Card className={cn("p-2 overflow-hidden", KASTEN, LINKE_SPALTE_HOEHE)}>
         <p className="px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
           Verläufe
         </p>
@@ -351,7 +358,7 @@ export function KommunikationReiter({
       </Card>
 
       {/* Mitte: der gewählte Verlauf */}
-      <Card data-kundenprofil-chat className={cn("flex flex-col overflow-hidden", CHATFENSTER_HOEHE)}>
+      <Card data-kundenprofil-chat className={cn("flex flex-col overflow-hidden", KASTEN, CHATFENSTER_HOEHE)}>
         <div className="flex items-center justify-between gap-2 p-3 border-b shrink-0">
           <div className="min-w-0 flex items-center gap-2">
             <h3 className="font-semibold text-sm truncate">

@@ -30,7 +30,7 @@ describe("Kommunikation: Chatfenster mit fester Hoehe", () => {
   });
 
   it("die Chatkarte traegt die Hoehe und ist eine Spalte mit festem Kopf", () => {
-    expect(chatKarte).toMatch(/^<Card data-kundenprofil-chat className=\{cn\("flex flex-col overflow-hidden", CHATFENSTER_HOEHE\)\}>/);
+    expect(chatKarte).toMatch(/^<Card data-kundenprofil-chat className=\{cn\("flex flex-col overflow-hidden", KASTEN, CHATFENSTER_HOEHE\)\}>/);
   });
 
   it("beide Chats nutzen dieselbe Karte, also dieselbe Hoehe", () => {
@@ -42,7 +42,7 @@ describe("Kommunikation: Chatfenster mit fester Hoehe", () => {
 
   it("die linke Spalte wird nie hoeher als der Chat, sondern scrollt", () => {
     expect(reiter).toContain('const LINKE_SPALTE_HOEHE = "lg:max-h-[min(70vh,720px)] lg:overflow-y-auto"');
-    expect(reiter).toContain('<Card className={cn("p-2 overflow-hidden", LINKE_SPALTE_HOEHE)}>');
+    expect(reiter).toContain('<Card className={cn("p-2 overflow-hidden", KASTEN, LINKE_SPALTE_HOEHE)}>');
   });
 });
 
