@@ -52,28 +52,28 @@
     ist nie reines Weiss, deshalb reicht das Grau aus `design-neu.css`
     (#677281) hier nicht fuer 4,5:1.
   */
-  --foreground: 215 30% 15%;          /* #1A2330 */
-  --card-foreground: 215 30% 15%;
-  --popover-foreground: 215 30% 15%;
-  --muted-foreground: 215 16% 35%;    /* #4A5667 */
-  --success: 148 69% 25%;             /* #146B3D statt #187745 */
-  --destructive: 4 75% 40%;           /* #B3241A statt #C0261B */
-  --warning: 36 100% 26%;             /* #855000 statt #9A5B00 */
-  --border: 213 30% 84%;
+  --foreground: 160 50% 14%;          /* Tannengrün #12362A */
+  --card-foreground: 160 50% 14%;
+  --popover-foreground: 160 50% 14%;
+  --muted-foreground: 152 9% 31%;     /* Grautext eine Stufe dunkler #48564F */
+  --success: 157 71% 22%;             /* Markengrün tief, eine Stufe dunkler */
+  --destructive: 5 55% 38%;           /* Fehler #A23B32, eine Stufe dunkler */
+  --warning: 25 90% 29%;              /* Warnschrift #9A4508, eine Stufe dunkler */
+  --border: 148 17% 82%;
 
   /* Blau 600 traegt als Schrift auf Glas nur 3,5:1. Schrift nimmt Blau 700. */
-  --lg-schrift-blau: 157 71% 25%;     /* Blau 700 #13704D */
+  --lg-schrift-blau: 157 71% 23%;     /* Markengrün tief, eine Stufe dunkler */
   /*
     Die Verlaufsstopps gefuellter blauer Knoepfe. Oben nicht `--primary`
     selbst: Dessen HSL-Wert (157 69% 32%) rundet heller als #15724F und
     traegt mit weisser Schrift nur 4,45:1. Ein Prozentpunkt dunkler sind
     es 4,64:1.
   */
-  --lg-primaer-hoch: 157 69% 31%;
-  --lg-primaer-tief: 157 71% 26%;
+  --lg-primaer-hoch: 157 69% 26%;     /* Markengrün tief #15724F */
+  --lg-primaer-tief: 158 60% 21%;
 
-  /* Der Grund ist die Flaeche aus der Markenrichtlinie, #F4F7FA. */
-  --lg-grund: 210 37% 97%;
+  /* Der Grund ist Nebel #F3F6F4 (Markenrichtlinie OS Markenfamilie). */
+  --lg-grund: 140 14% 96%;
   --lg-glas: 0 0% 100%;
 
   /* Deckkraft der Glasflaechen. Der Waechtertest rechnet mit genau diesen Zahlen. */
@@ -98,7 +98,7 @@
   --lg-kante-unten: hsl(0 0% 100% / .28);
   --lg-rand: hsl(0 0% 100% / .55);    /* Lichtbrechung am Rand, innen */
   --lg-tiefe: hsl(157 45% 33% / .12); /* die Unterkante bricht das Licht farbig */
-  --lg-haarlinie: hsl(214 35% 25% / .10);
+  --lg-haarlinie: hsl(160 50% 14% / .10);
   --lg-licht: hsl(0 0% 100% / .9);
   --lg-glanz: hsl(0 0% 100% / .30);    /* weicher Glanz unter dem Zeiger, auf der Flaeche */
   --lg-glanz-oben: hsl(0 0% 100% / .12);  /* die helle Oberkante jeder Scheibe */
@@ -112,13 +112,13 @@
     inset 0 0 22px -8px var(--lg-rand);
   --lg-schatten:
     0 0 0 .5px var(--lg-haarlinie),
-    0 1px 2px hsl(215 40% 20% / .05),
-    0 10px 28px -12px hsl(215 40% 20% / .16),
+    0 1px 2px hsl(160 50% 14% / .05),
+    0 10px 28px -12px hsl(160 50% 14% / .18),
     0 30px 60px -32px hsl(157 69% 32% / .22);
   --lg-schatten-hoch:
     0 0 0 .5px var(--lg-haarlinie),
-    0 2px 4px hsl(215 40% 20% / .06),
-    0 20px 44px -16px hsl(215 40% 20% / .22),
+    0 2px 4px hsl(160 50% 14% / .06),
+    0 20px 44px -16px hsl(160 50% 14% / .22),
     0 44px 80px -36px hsl(157 69% 32% / .30);
   --lg-schatten-schwebend:
     0 0 0 .5px var(--lg-haarlinie),
@@ -130,21 +130,21 @@
 }
 
 [data-glas="liquid"].dark {
-  --foreground: 212 39% 93%;          /* #E8EEF5 */
-  --card-foreground: 212 39% 93%;
-  --popover-foreground: 212 39% 93%;
-  --muted-foreground: 213 18% 71%;    /* #A7B3C2 */
-  --success: 146 50% 57%;
-  --destructive: 4 83% 75%;           /* #F4938C */
-  --warning: 36 80% 64%;
-  --border: 214 25% 26%;
+  --foreground: 142 17% 91%;          /* #E4ECE7 */
+  --card-foreground: 142 17% 91%;
+  --popover-foreground: 142 17% 91%;
+  --muted-foreground: 144 8% 74%;     /* #B8C2BC */
+  --success: 158 38% 75%;             /* Mint */
+  --destructive: 4 83% 77%;           /* #F4938C, eine Stufe heller fuer getoentes Glas */
+  --warning: 25 81% 68%;              /* #F0A56B */
+  --border: 158 40% 22%;
 
-  --lg-schrift-blau: 157 75% 55%;    /* Blau 300, wie heute im Dunkeln */
-  --lg-primaer-hoch: 157 75% 55%;    /* = --primary im Dunkeln, dunkle Schrift darauf */
-  --lg-primaer-tief: 157 75% 47%;
+  --lg-schrift-blau: 158 38% 75%;    /* Mint #A7D7C5 */
+  --lg-primaer-hoch: 158 38% 75%;    /* = --primary im Dunkeln, Tannengrün darauf */
+  --lg-primaer-tief: 158 38% 66%;
 
-  --lg-grund: 214 39% 7%;             /* #0B1119 */
-  --lg-glas: 214 30% 14%;             /* #18212D */
+  --lg-grund: 158 44% 8%;             /* #0C1F18 */
+  --lg-glas: 160 50% 14%;             /* Tannengrün #12362A */
   --lg-deckkraft: .52;
   --lg-deckkraft-leiste: .46;
   --lg-deckkraft-schwebend: .84;
@@ -153,11 +153,11 @@
   --lg-kante: hsl(0 0% 100% / .10);
   --lg-kante-oben: hsl(0 0% 100% / .22);
   --lg-kante-unten: hsl(0 0% 100% / .04);
-  --lg-rand: hsl(157 75% 62% / .12);
+  --lg-rand: hsl(158 38% 75% / .12);
   --lg-tiefe: hsl(0 0% 0% / .35);
   --lg-haarlinie: hsl(0 0% 0% / .5);
-  --lg-licht: hsl(157 75% 79% / .7);
-  --lg-glanz: hsl(157 75% 62% / .08);
+  --lg-licht: hsl(158 38% 80% / .7);
+  --lg-glanz: hsl(158 38% 75% / .08);
   --lg-glanz-oben: hsl(0 0% 100% / .035);
   --lg-toenung: .08;
 
@@ -169,7 +169,7 @@
     0 0 0 .5px var(--lg-haarlinie),
     0 2px 6px hsl(0 0% 0% / .4),
     0 26px 52px -18px hsl(0 0% 0% / .7),
-    0 0 40px -12px hsl(157 69% 39% / .25);
+    0 0 40px -12px hsl(157 69% 32% / .25);
   --lg-schatten-schwebend:
     0 0 0 .5px var(--lg-haarlinie),
     0 40px 100px -24px hsl(0 0% 0% / .75);
@@ -180,8 +180,8 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /*
-  Vier weiche Farbwolken in Markenfarben: Blau 500, Blau 300, das helle
-  Systemblau und ein Hauch Website-Orange als Abendlicht. Sie sind deutlich
+  Vier weiche Farbwolken in Markenfarben (Markenrichtlinie 18.10.2026):
+  Markengruen, zweimal Mint und Champagner als Abendlicht. Sie sind deutlich
   zarter als im Muster, und das ist gerechnet: Seitentitel, Grautexte und
   Verweise stehen oft direkt auf dem Grund, ohne Glas dazwischen. Liegen zwei
   Wolken uebereinander, muss auch dort noch 4,5:1 herauskommen. Mit den
@@ -209,19 +209,19 @@
   position: absolute;
   inset: -18%;
   background:
-    radial-gradient(36% 40% at 14% 20%, hsl(157 71% 39% / .06), transparent 70%),
-    radial-gradient(34% 40% at 86% 14%, hsl(157 75% 55% / .22), transparent 70%),
-    radial-gradient(40% 44% at 76% 84%, hsl(157 70% 49% / .14), transparent 70%),
-    radial-gradient(30% 34% at 24% 88%, hsl(22 95% 72% / .20), transparent 70%);
+    radial-gradient(36% 40% at 14% 20%, hsl(157 69% 32% / .06), transparent 70%),
+    radial-gradient(34% 40% at 86% 14%, hsl(158 38% 75% / .30), transparent 70%),
+    radial-gradient(40% 44% at 76% 84%, hsl(158 38% 75% / .22), transparent 70%),
+    radial-gradient(30% 34% at 24% 88%, hsl(42 41% 74% / .30), transparent 70%);
   animation: lg-wolken 48s ease-in-out infinite alternate;
   will-change: transform;
 }
 [data-glas="liquid"].dark .lg-grund-wolken {
   background:
-    radial-gradient(38% 42% at 14% 18%, hsl(157 69% 32% / .30), transparent 70%),
-    radial-gradient(34% 40% at 86% 14%, hsl(157 71% 39% / .16), transparent 70%),
-    radial-gradient(40% 44% at 76% 86%, hsl(157 70% 49% / .12), transparent 70%),
-    radial-gradient(30% 34% at 22% 90%, hsl(22 95% 58% / .14), transparent 70%);
+    radial-gradient(38% 42% at 14% 18%, hsl(157 69% 32% / .22), transparent 70%),
+    radial-gradient(34% 40% at 86% 14%, hsl(157 69% 32% / .12), transparent 70%),
+    radial-gradient(40% 44% at 76% 86%, hsl(158 38% 75% / .06), transparent 70%),
+    radial-gradient(30% 34% at 22% 90%, hsl(50 95% 41% / .08), transparent 70%);
 }
 
 /*
@@ -329,7 +329,7 @@
 [data-glas="liquid"] [data-lg="kopfbereich"] > header {
   height: 64px;
   border: 1px solid var(--lg-kante);
-  border-radius: 20px;
+  border-radius: 22px;
   background: linear-gradient(180deg,
     hsl(var(--lg-glas) / calc(var(--lg-deckkraft-leiste) + .08)),
     hsl(var(--lg-glas) / var(--lg-deckkraft-leiste)));
@@ -340,10 +340,10 @@
 
 /* Suchfeld: eine eingelassene Mulde im Glas. */
 [data-glas="liquid"] [data-lg="kopfbereich"] > header [data-ui="field"] {
-  border-radius: 12px;
+  border-radius: 999px;
   border-color: var(--lg-kante);
   background-color: hsl(var(--lg-glas) / .5);
-  box-shadow: inset 0 1px 2px hsl(215 40% 20% / .10), inset 0 -1px 0 var(--lg-kante-oben);
+  box-shadow: inset 0 1px 2px hsl(160 50% 14% / .10), inset 0 -1px 0 var(--lg-kante-oben);
 }
 [data-glas="liquid"].dark [data-lg="kopfbereich"] > header [data-ui="field"] {
   background-color: hsl(0 0% 0% / .22);
@@ -410,7 +410,7 @@
   -webkit-backdrop-filter: var(--lg-filter-leiste);
   backdrop-filter: var(--lg-filter-leiste);
   border: 1px solid var(--lg-kante);
-  border-radius: 24px;
+  border-radius: 22px;
   box-shadow: var(--lg-innen), var(--lg-schatten);
   overflow: hidden;
 }
@@ -419,7 +419,7 @@
 [data-glas="liquid"].dark [data-sidebar="sidebar"] > .border-b { border-bottom-color: hsl(0 0% 100% / .06); }
 
 [data-glas="liquid"] [data-sidebar="menu-button"] {
-  border-radius: 11px;
+  border-radius: 10px;
   transition: background-color .2s ease, box-shadow .2s ease, color .2s ease;
 }
 [data-glas="liquid"] [data-sidebar="menu-button"]:hover {
@@ -455,7 +455,7 @@
   Projektregel fuer Popups verlangt (abgestimmt am 23.09.2026).
 */
 [data-glas="liquid"] [data-ui="abdunklung"] {
-  background-color: hsl(215 40% 15% / .18);
+  background-color: hsl(160 50% 14% / .18);
 }
 [data-glas="liquid"].dark [data-ui="abdunklung"] { background-color: hsl(0 0% 0% / .45); }
 
@@ -545,7 +545,7 @@
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
   border-radius: var(--lg-radius-einlage);
-  box-shadow: inset 0 1px 0 var(--lg-kante-oben), 0 0 0 .5px var(--lg-haarlinie), 0 6px 16px -10px hsl(215 40% 20% / .18);
+  box-shadow: inset 0 1px 0 var(--lg-kante-oben), 0 0 0 .5px var(--lg-haarlinie), 0 6px 16px -10px hsl(160 50% 14% / .18);
 }
 [data-glas="liquid"] :is([data-ui="card"], [data-ui="dialog"], [data-ui="sheet"], [data-sidebar="sidebar"], [data-radix-popper-content-wrapper]) [data-ui="card"]:is(.bg-card, .bg-background, .bg-white, [class*="bg-card/"], [class*="bg-muted"], [class*="bg-secondary"], [class*="bg-accent"], [class*="bg-primary/"], .bg-blue-50, [class*="bg-blue-50/"], [class*="bg-blue-500/"], [class*="bg-blue-950/"], .bg-sky-50, [class*="bg-destructive/"], .bg-red-50, [class*="bg-red-50/"], [class*="bg-red-500/"], [class*="bg-red-950/"], .bg-rose-50, [class*="bg-warning/"], [class*="--warning))]/"], .bg-amber-50, [class*="bg-amber-50/"], [class*="bg-amber-500/"], [class*="bg-amber-950/"], .bg-orange-50, [class*="bg-orange-500/"], [class*="bg-orange-950/"], .bg-yellow-50, [class*="bg-yellow-500/"], [class*="bg-success/"], [class*="--success))]/"], .bg-green-50, [class*="bg-green-50/"], [class*="bg-green-500/"], [class*="bg-green-950/"], .bg-emerald-50, [class*="bg-emerald-500/"]) {
   background-color: hsl(var(--lg-glas) / var(--lg-deckkraft-einlage));
@@ -615,7 +615,7 @@
    6. Knoepfe und Schrift in Blau
    ═══════════════════════════════════════════════════════════════════════════ */
 
-[data-glas="liquid"] [data-ui="button"] { border-radius: 12px; }
+[data-glas="liquid"] [data-ui="button"] { border-radius: 999px; }
 
 /* Gefuellt: eine gewoelbte blaue Taste. Ueberfahren dunkelt sie ab, so steigt der Kontrast statt zu fallen. */
 [data-glas="liquid"] [data-ui="button"].bg-primary {
@@ -631,7 +631,7 @@
 [data-glas="liquid"] [data-ui="button"].bg-card {
   background-color: hsl(var(--lg-glas) / .55);
   border-color: var(--lg-kante);
-  box-shadow: inset 0 1px 0 var(--lg-kante-oben), 0 0 0 .5px var(--lg-haarlinie), 0 2px 6px -3px hsl(215 40% 20% / .14);
+  box-shadow: inset 0 1px 0 var(--lg-kante-oben), 0 0 0 .5px var(--lg-haarlinie), 0 2px 6px -3px hsl(160 50% 14% / .14);
 }
 [data-glas="liquid"] [data-ui="button"].bg-card:hover { background-color: hsl(var(--lg-glas) / .85); color: hsl(var(--foreground)); }
 [data-glas="liquid"].dark [data-ui="button"].bg-card { background-color: hsl(0 0% 100% / .06); }
@@ -641,7 +641,7 @@
 
 /* Die Hauptaktion in Marken-Orange behaelt ihren Verlauf und bekommt die Lichtkante. */
 [data-glas="liquid"] .btn-brand {
-  border-radius: 12px;
+  border-radius: 999px;
   box-shadow:
     inset 0 1px 0 hsl(0 0% 100% / .32),
     inset 0 -1px 0 hsl(0 0% 0% / .16),
@@ -673,8 +673,8 @@
   border-color: var(--lg-kante);
   box-shadow: var(--lg-innen), var(--lg-schatten-schwebend);
 }
-[data-glas="liquid"] [data-ui="dialog"]:is(.bg-card, .bg-background, .bg-popover) { border-radius: 24px; }
-[data-glas="liquid"] [data-radix-popper-content-wrapper] > :is(.bg-popover, .bg-background, .bg-card) { border-radius: 14px; }
+[data-glas="liquid"] [data-ui="dialog"]:is(.bg-card, .bg-background, .bg-popover) { border-radius: 22px; }
+[data-glas="liquid"] [data-radix-popper-content-wrapper] > :is(.bg-popover, .bg-background, .bg-card) { border-radius: 16px; }
 [data-glas="liquid"] :is(.toaster [data-sonner-toast], [data-ui="toast"]:not(.destructive)) { border-radius: 16px; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -689,17 +689,17 @@
 [data-glas="liquid"] [role="tablist"] {
   background-color: hsl(var(--lg-glas) / .34);
   border-color: var(--lg-kante);
-  border-radius: 13px;
-  box-shadow: inset 0 1px 2px hsl(215 40% 20% / .08);
+  border-radius: 999px;
+  box-shadow: inset 0 1px 2px hsl(160 50% 14% / .08);
 }
 [data-glas="liquid"].dark [role="tablist"] { background-color: hsl(0 0% 0% / .2); box-shadow: inset 0 1px 2px hsl(0 0% 0% / .4); }
-[data-glas="liquid"] [role="tab"] { border-radius: 10px; }
+[data-glas="liquid"] [role="tab"] { border-radius: 999px; }
 [data-glas="liquid"] [role="tab"][data-state="active"] {
   background-color: hsl(var(--lg-glas) / .95);
-  box-shadow: inset 0 1px 0 hsl(0 0% 100% / .9), 0 0 0 .5px var(--lg-haarlinie), 0 3px 8px -3px hsl(215 40% 20% / .25);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / .9), 0 0 0 .5px var(--lg-haarlinie), 0 3px 8px -3px hsl(160 50% 14% / .25);
 }
 [data-glas="liquid"].dark [role="tab"][data-state="active"] {
-  background-color: hsl(214 25% 30% / .9);
+  background-color: hsl(158 45% 19% / .95);
   box-shadow: inset 0 1px 0 hsl(0 0% 100% / .14), 0 3px 10px -3px hsl(0 0% 0% / .6);
 }
 
@@ -739,7 +739,7 @@
 }
 @media screen and (max-width: 767px) {
   [data-glas="liquid"] [data-lg="kopfbereich"] { top: 8px; left: 8px; right: 8px; gap: 6px; }
-  [data-glas="liquid"] [data-lg="kopfbereich"] > header { height: 60px; border-radius: 18px; }
+  [data-glas="liquid"] [data-lg="kopfbereich"] > header { height: 60px; border-radius: 22px; }
   /*
     Das Handymenue beginnt heute bei 5rem, direkt unter der 80 Pixel hohen
     Kopfleiste. Die schwebende Kopfleiste endet bei 68 Pixeln; mit 76

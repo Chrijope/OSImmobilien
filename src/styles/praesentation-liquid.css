@@ -203,7 +203,7 @@
   background-color: hsl(var(--lg-glas) / var(--lg-deckkraft-einlage)) !important;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
-  box-shadow: inset 0 1px 0 var(--lg-kante-oben), 0 0 0 .5px var(--lg-haarlinie), 0 6px 16px -10px hsl(215 40% 20% / .18) !important;
+  box-shadow: inset 0 1px 0 var(--lg-kante-oben), 0 0 0 .5px var(--lg-haarlinie), 0 6px 16px -10px hsl(160 50% 14% / .18) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -260,10 +260,10 @@
   ihr helles Blau zurueck.
 */
 [data-glas="liquid"].dark [data-praesentation="beratung"] .beratung-apple {
-  --lg-schrift-blau: 157 71% 25%;
+  --lg-schrift-blau: 157 71% 23%;
 }
 [data-glas="liquid"].dark [data-praesentation="beratung"] .beratung-apple :is(.beratung-dark, #kontakt) {
-  --lg-schrift-blau: 157 75% 55%;
+  --lg-schrift-blau: 158 38% 75%;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -318,7 +318,7 @@
   background-color: hsl(var(--lg-glas) / var(--lg-deckkraft-einlage));
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
-  box-shadow: inset 0 1px 0 var(--lg-kante-oben), 0 0 0 .5px var(--lg-haarlinie), 0 6px 16px -10px hsl(215 40% 20% / .18);
+  box-shadow: inset 0 1px 0 var(--lg-kante-oben), 0 0 0 .5px var(--lg-haarlinie), 0 6px 16px -10px hsl(160 50% 14% / .18);
 }
 [data-glas="liquid"].dark [data-praesentation="moderation"] :is([data-ui="card"], [class*="border"][class*="rounded-"]:not([class*="rounded-full"])) :is(div, section, details, li)[class*="border"][class*="rounded-"]:not(
   [class*="rounded-full"], [data-ui], .border-dashed, [class*="bg-[#"], [style*="background"],

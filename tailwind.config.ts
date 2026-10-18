@@ -13,11 +13,30 @@ export default {
       },
     },
     extend: {
+      // Markenrichtlinie OS Markenfamilie (18.10.2026): Outfit fuer Text,
+      // Playfair Display fuer Ueberschriften und Kennzahlen (font-serif).
       fontFamily: {
-        sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', '"SF Pro Display"', '"Helvetica Neue"', 'Helvetica', 'Arial', 'system-ui', 'sans-serif'],
-        serif: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"Helvetica Neue"', 'Helvetica', 'Arial', 'serif'],
+        sans: ['"Outfit"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'system-ui', 'sans-serif'],
+        serif: ['"Playfair Display"', 'Georgia', '"Times New Roman"', 'serif'],
       },
       colors: {
+        // Feste Markenfarben (tailwind-brand.ts der Guideline): bg-os-tanne,
+        // text-os-gruen-tief … Fuer Rollen weiter primary, success usw. nutzen.
+        os: {
+          tanne: { DEFAULT: "#12362A", 2: "#1A4535", 3: "#0C1F18" },
+          gruen: { DEFAULT: "#198A5F", tief: "#15724F" },
+          mint: { DEFAULT: "#A7D7C5", hell: "#E3F1EB" },
+          nebel: "#F3F6F4",
+          linie: "#D3E0D9",
+          grau: "#56635D",
+          gold: { DEFAULT: "#CCAC05", text: "#7A6603", hell: "#FBF5D6" },
+          champagner: { DEFAULT: "#D8C7A0", tief: "#A8915C", hell: "#F4EEDD" },
+          warnung: { DEFAULT: "#BD550A", text: "#9A4508", hell: "#FDF1E8" },
+          fehler: { DEFAULT: "#A23B32", hell: "#F8E9E7" },
+          info: { DEFAULT: "#2F6F86", hell: "#EAF2F5" },
+          heute: { DEFAULT: "#8E9692", hell: "#EEF0EF" },
+          chart: { 1: "#198A5F", 2: "#12362A", 3: "#CCAC05", 4: "#A7D7C5", 5: "#8E9692", 6: "#A23B32" },
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -98,6 +117,11 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        // Nichts ist eckig (Markenrichtlinie): Feld 10, Karte 16, Glas 22, Knopf rund.
+        "os-sm": "10px",
+        "os-md": "16px",
+        "os-lg": "22px",
+        "os-pill": "999px",
       },
       keyframes: {
         "accordion-down": {

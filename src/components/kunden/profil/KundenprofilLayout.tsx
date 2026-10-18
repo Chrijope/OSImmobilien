@@ -17,7 +17,7 @@ export function KundenprofilLayout({ stammdaten, kennzahlen, navigation, childre
       <aside className="kundenprofil-stammdaten" aria-label="Kontaktdaten">{stammdaten}</aside>
       <section className="kundenprofil-mitte" aria-label="Arbeitsbereich">
         {kennzahlen}
-        <div className="kundenprofil-arbeitskarte">
+        <div className="kundenprofil-arbeitskarte bg-card" data-ui="card">
           {navigation}
           <div className="kundenprofil-inhalt">{children}</div>
         </div>

@@ -71,7 +71,7 @@ export default function Kultur() {
         </section>
 
         {/* Glaubenssatz des Tages */}
-        <div className="rounded-3xl bg-[#080A0F] text-white p-8 md:p-12 relative overflow-hidden">
+        <div className="rounded-3xl bg-os-tanne text-white p-8 md:p-12 relative overflow-hidden">
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
@@ -80,7 +80,7 @@ export default function Kultur() {
             }}
           />
           <div className="relative">
-            <p className="text-[11px] uppercase tracking-[0.24em] font-semibold" style={{ color: "#1ED28D" }}>
+            <p className="text-[11px] uppercase tracking-[0.24em] font-semibold" style={{ color: "#A7D7C5" }}>
               Glaubenssatz des Tages
             </p>
             <p className="mt-4 text-2xl md:text-4xl font-light leading-snug tracking-tight max-w-3xl">
