@@ -373,7 +373,7 @@ export default function MietvertragErstellen() {
               <CardTitle className="text-sm flex items-center gap-2"><FileText className="h-4 w-4" /> Vertragsvorschau</CardTitle>
             </CardHeader>
             <CardContent>
-              <div ref={previewRef} className="bg-white text-black p-8 rounded border text-sm leading-relaxed font-serif space-y-5" style={{ minHeight: 600 }}>
+              <div ref={previewRef} className="bg-white text-black p-8 rounded border text-sm leading-relaxed space-y-5" style={{ minHeight: 600 }}>
                 <h1 className="text-xl font-bold text-center mb-6 tracking-wide">MIETVERTRAG</h1>
                 <p className="text-center text-xs text-gray-500 mb-8">für Wohnraum nach §§ 535 ff. BGB</p>
 

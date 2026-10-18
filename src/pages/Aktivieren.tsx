@@ -221,7 +221,7 @@ const Aktivieren = () => {
             <div className="flex items-center justify-center text-destructive">
               <AlertTriangle className="h-10 w-10" />
             </div>
-            <h1 className="text-xl font-bold text-foreground font-serif">
+            <h1 className="text-xl font-bold text-foreground">
               {t("auth.aktivieren.ungueltig_titel")}
             </h1>
             <p className="text-sm text-muted-foreground">{infoError}</p>
@@ -232,7 +232,7 @@ const Aktivieren = () => {
         ) : info?.used ? (
           <div className="space-y-4">
             <CheckCircle2 className="h-10 w-10 mx-auto text-primary" />
-            <h1 className="text-xl font-bold text-foreground font-serif">
+            <h1 className="text-xl font-bold text-foreground">
               {t("auth.aktivieren.bereits_titel")}
             </h1>
             <p className="text-sm text-muted-foreground">
@@ -254,7 +254,7 @@ const Aktivieren = () => {
         ) : info?.expired ? (
           <div className="space-y-4">
             <AlertTriangle className="h-10 w-10 mx-auto text-destructive" />
-            <h1 className="text-xl font-bold text-foreground font-serif">
+            <h1 className="text-xl font-bold text-foreground">
               {t("auth.aktivieren.abgelaufen_titel")}
             </h1>
             <p className="text-sm text-muted-foreground">
@@ -264,7 +264,7 @@ const Aktivieren = () => {
         ) : info ? (
           <form onSubmit={handleSubmit} className="space-y-5 text-left">
             <div className="text-center space-y-1">
-              <h1 className="text-2xl font-bold text-foreground font-serif">
+              <h1 className="text-2xl font-bold text-foreground">
                 {info.kundeName
                   ? t("auth.aktivieren.hallo_name", { name: info.kundeName.split(" ")[0] })
                   : t("auth.aktivieren.hallo")}

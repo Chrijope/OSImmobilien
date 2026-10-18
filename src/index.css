@@ -1,14 +1,5 @@
 
 
-/*
-  Schriften der Markenrichtlinie OS Markenfamilie (18.10.2026): Outfit für
-  Text und Bedienung, Playfair Display für Überschriften und Kennzahlen.
-  Selbst gehostet unter /fonts (DSGVO, kein Google-Fonts-CDN).
-*/
-@font-face { font-family: "Outfit"; src: url("/fonts/outfit-latin.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
-@font-face { font-family: "Playfair Display"; src: url("/fonts/playfair-display-latin.woff2") format("woff2"); font-weight: 400 700; font-style: normal; font-display: swap; }
-@font-face { font-family: "Playfair Display"; src: url("/fonts/playfair-display-italic-latin.woff2") format("woff2"); font-weight: 400 700; font-style: italic; font-display: swap; }
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -228,30 +219,21 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    /* Eine Schrift für alles, keine Zierschrift (Christian, 18.10.2026). */
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', Helvetica, Arial, system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    font-feature-settings: "kern";
-    letter-spacing: 0;
+    font-feature-settings: "ss01", "cv11", "kern";
+    letter-spacing: -0.005em;
   }
-  /* Überschriften in Playfair Display, wie in Exposé und Vertriebsunterlagen. */
   h1, h2, h3 {
-    font-family: "Playfair Display", Georgia, "Times New Roman", serif;
-    letter-spacing: 0;
-    font-feature-settings: "kern";
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, system-ui, sans-serif;
+    letter-spacing: -0.022em;
+    font-feature-settings: "ss01", "cv11", "kern";
   }
-  /*
-    Kleine Versalzeilen sind Etiketten (Stufe H4), keine Titel: Outfit Medium,
-    gesperrt, auch wenn sie als h2 oder h3 ausgezeichnet sind.
-  */
-  :is(h1, h2, h3):is(.uppercase, .text-xs, .text-\[9px\], .text-\[10px\], .text-\[11px\]),
-  .kundenprofil-kennzahl h3 {
-    font-family: "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-  }
-  :is(h1, h2, h3).uppercase { letter-spacing: .2em; }
   h4, h5, h6 {
-    letter-spacing: 0;
+    letter-spacing: -0.014em;
   }
   /* Tabular figures for numbers in tables/KPIs by default */
   td, th {

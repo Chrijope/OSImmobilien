@@ -13,11 +13,11 @@ export default {
       },
     },
     extend: {
-      // Markenrichtlinie OS Markenfamilie (18.10.2026): Outfit fuer Text,
-      // Playfair Display fuer Ueberschriften und Kennzahlen (font-serif).
+      // Eine Schrift fuer alles (Christian, 18.10.2026): Systemschrift, keine
+      // Zierschrift. font-serif zeigt bewusst dieselbe Schrift.
       fontFamily: {
-        sans: ['"Outfit"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'system-ui', 'sans-serif'],
-        serif: ['"Playfair Display"', 'Georgia', '"Times New Roman"', 'serif'],
+        sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', '"SF Pro Display"', '"Helvetica Neue"', 'Helvetica', 'Arial', 'system-ui', 'sans-serif'],
+        serif: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"Helvetica Neue"', 'Helvetica', 'Arial', 'serif'],
       },
       colors: {
         // Feste Markenfarben (tailwind-brand.ts der Guideline): bg-os-tanne,

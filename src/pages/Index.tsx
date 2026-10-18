@@ -273,10 +273,9 @@ const Index = () => {
       <div className="relative flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="mb-2 text-xs font-medium text-primary">Dein Platz bei OS Immobilien</p>
-          <h1 className="text-[28px] md:text-[36px] font-semibold tracking-tight leading-tight">
-            {/* Begrüßung in der Textschrift, nur der Name in Playfair (Christian, 18.10.2026). */}
-            <span className="font-sans font-semibold">{greeting},</span>{" "}
-            <span className="font-serif font-medium tracking-normal">{firstName}.</span>
+          {/* Begrüßung in normaler Stärke wie die Zeile darunter, ohne Zierschrift (Christian, 18.10.2026). */}
+          <h1 className="text-[28px] md:text-[36px] font-normal tracking-tight leading-tight">
+            {greeting}, {firstName}.
           </h1>
           {subtitle && <p className="mt-2 max-w-2xl text-sm md:text-base leading-relaxed text-muted-foreground">{subtitle}</p>}
         </div>

@@ -220,7 +220,7 @@
   box-shadow: none;
 }
 
-/* Abzeichen sind Chips, laut Markenrichtlinie ganz rund. Outfit Medium, kein Fett. */
+/* Abzeichen sind Chips, laut Markenrichtlinie ganz rund. Medium, kein Fett. */
 [data-design="neu"] [data-ui="badge"] {
   border-radius: 999px;
   font-weight: 500;
@@ -297,16 +297,9 @@
   Laufweite, je groesser der Grad, desto enger der Satz. Im Bestand steht sie
   nur an einzelnen Stellen.
 */
-/*
-  Seit 18.10.2026 stehen Ueberschriften in Playfair Display (Markenrichtlinie).
-  Playfair traegt Regular und Medium, kein Fett: Die Gewichte aus den Klassen
-  (font-bold, font-semibold) werden hier auf 500 zurueckgenommen.
-*/
-[data-design="neu"] h1,
-[data-design="neu"] h2,
-[data-design="neu"] h3 {
-  font-weight: 500;
-}
+[data-design="neu"] h1 { letter-spacing: -.030em; }
+[data-design="neu"] h2 { letter-spacing: -.025em; }
+[data-design="neu"] h3 { letter-spacing: -.020em; }
 
 /*
   Dialoge und Ueberlagerungen sind die dritte Schattenstufe, "schwebend".

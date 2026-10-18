@@ -327,7 +327,7 @@ export function ObjektLotse({ objektId, wohnungId = null, bezeichnung, kalkulati
         <Button
           variant="outline"
           size="icon"
-          className="h-8 w-8 shrink-0 rounded-full font-serif italic"
+          className="h-8 w-8 shrink-0 rounded-full"
           aria-label="Umgang mit KI anzeigen"
           title="Umgang mit KI"
           disabled={stand !== "bereit"}

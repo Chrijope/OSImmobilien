@@ -492,7 +492,7 @@ const ResetPassword = () => {
         </div>
 
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-foreground font-serif">{t("auth.reset.titel")}</h2>
+          <h2 className="text-2xl font-bold text-foreground">{t("auth.reset.titel")}</h2>
           <p className="text-muted-foreground mt-1">
             {new URLSearchParams(window.location.search).get("portal") === "kunde"
               ? t("auth.reset.text_kunde")
