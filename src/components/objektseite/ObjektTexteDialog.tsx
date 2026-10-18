@@ -17,6 +17,7 @@ import {
   speichereGepflegteTexte,
 } from "@/lib/objektTexteKi";
 import { cn } from "@/lib/utils";
+import { MAX_WIZARD_STANDORTARGUMENTE } from "@/lib/objektWizardTexte";
 
 /**
  * Beschreibung und Standortargumente von Hand ändern. Nur für den Admin.
@@ -62,7 +63,9 @@ export function ObjektTexteDialog({ objekt, onOpenChange, onGespeichert }: {
 }) {
   const [start] = useState(() => anzuzeigendeObjektTexte(objekt));
   const [kurzText, setKurzText] = useState(start.kurzbeschreibung);
-  const [argumente, setArgumente] = useState(() => argumentFelder(start.standortargumente));
+  // Fünf Felder wie vom automatischen Lauf; aus dem Wizard kommen bis zu acht (18.10.2026), die bleiben.
+  const argumentAnzahl = Math.min(MAX_WIZARD_STANDORTARGUMENTE, Math.max(ANZAHL_STANDORTARGUMENTE, start.standortargumente.length));
+  const [argumente, setArgumente] = useState(() => argumentFelder(start.standortargumente, argumentAnzahl));
   const [markt, setMarkt] = useState(() => argumentFelder(start.marktargumente, ANZAHL_MARKTARGUMENTE));
   const [speichert, setSpeichert] = useState(false);
 
@@ -113,7 +116,7 @@ export function ObjektTexteDialog({ objekt, onOpenChange, onGespeichert }: {
   const automatikZurueck = () => {
     if (!automatisch) return;
     setKurzText(automatisch.kurzbeschreibung);
-    setArgumente(argumentFelder(automatisch.standortargumente));
+    setArgumente(argumentFelder(automatisch.standortargumente, argumentAnzahl));
     setMarkt(argumentFelder(automatisch.marktargumente, ANZAHL_MARKTARGUMENTE));
   };
 
@@ -186,9 +189,9 @@ export function ObjektTexteDialog({ objekt, onOpenChange, onGespeichert }: {
               </div>
             );
           })}
-          {start.standortargumente.length > ANZAHL_STANDORTARGUMENTE && (
+          {start.standortargumente.length > argumentAnzahl && (
             <Hinweis className="mt-0">
-              Bisher standen hier {start.standortargumente.length} Argumente. Gespeichert werden die {ANZAHL_STANDORTARGUMENTE} Felder oben.
+              Bisher standen hier {start.standortargumente.length} Argumente. Gespeichert werden die {argumentAnzahl} Felder oben.
             </Hinweis>
           )}
         </div>

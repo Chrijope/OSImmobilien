@@ -442,6 +442,10 @@ verify_jwt = false
 [functions.grundriss-erkennen]
 verify_jwt = true
 
+# Beschreibung und Standortargumente im Wizard „Neues Objekt“ per KI.
+[functions.objekt-wizard-texte]
+verify_jwt = true
+
 [functions.handle-email-suppression]
 verify_jwt = false
 

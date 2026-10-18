@@ -344,7 +344,7 @@ export function ObjektTexteKarte({ objekt, darfBearbeiten = false, onGeaendert, 
           <div>
             <div className="flex items-center justify-between gap-2">
               <Label className="text-xs">
-                Standortargumente{anzahl !== ANZAHL_STANDORTARGUMENTE ? ` (${anzahl} statt ${ANZAHL_STANDORTARGUMENTE})` : ""}
+                Standortargumente{anzahl < ANZAHL_STANDORTARGUMENTE ? ` (${anzahl} statt ${ANZAHL_STANDORTARGUMENTE})` : ""}
               </Label>
               {anzeige.standortargumenteHerkunft !== anzeige.kurzbeschreibungHerkunft && (
                 <HerkunftChip herkunft={anzeige.standortargumenteHerkunft} />

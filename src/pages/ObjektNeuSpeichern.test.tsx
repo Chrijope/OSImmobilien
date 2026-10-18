@@ -166,6 +166,7 @@ describe("Bearbeiten und Speichern: nichts geht verloren", () => {
         sanierungen: [{ jahr: "2024", massnahme: "Dach", betrag: 90000 }],
         einheitenImHaus: 28,
         kurzbeschreibung: "Bleibt wortgleich",
+        standortargumente: ["Lage. Bleibt auch."],
         interneHighlightsHand: ["RND-Gutachten liegt vor"],
       },
     });
@@ -189,6 +190,9 @@ describe("Bearbeiten und Speichern: nichts geht verloren", () => {
     expect(meta().sanierungen).toEqual([{ jahr: "2024", massnahme: "Dach", betrag: 90000 }]);
     expect(meta().einheitenImHaus).toBe(28);
     expect(meta().kurzbeschreibung).toBe("Bleibt wortgleich");
+    expect(meta().standortargumente).toEqual(["Lage. Bleibt auch."]);
+    // Unverändert geöffnet und gespeichert: die Spalte bleibt, auch wenn das Formular die Kurzbeschreibung zeigte.
+    expect(t.gespeichert[0].beschreibung).toBe("");
     expect(meta().interneHighlightsHand).toEqual(["RND-Gutachten liegt vor"]);
     // Eine Energieklasse: die aus dem Ausweis auch in der Objektspalte.
     expect((t.gespeichert[0].globalDaten as { energieeffizienzklasse: string }).energieeffizienzklasse).toBe("B");
@@ -226,11 +230,11 @@ describe("Neu anlegen: Globalobjekt mit Einheit, Bild und Unterlage", () => {
     const pdf = new File(["%PDF"], "grundriss.pdf", { type: "application/pdf" });
     const ausweis = new File(["%PDF"], "ausweis.pdf", { type: "application/pdf" });
     t.entwurf = {
-      nf: { titel: "Haus am See", adresse: "Seeweg 1", plz: "14548", ort: "Schwielowsee", beschreibung: "", badge: "", videoUrl: "", videoSichtbar: false, bildUrl: "", highlights: [], newHighlight: "", exklusivPartner: [], newExklusivPartner: "", cloudOrdnerUrl: "" },
+      nf: { titel: "Haus am See", adresse: "Seeweg 1", plz: "14548", ort: "Schwielowsee", beschreibung: "Ein helles Haus am Wasser.", badge: "", videoUrl: "", videoSichtbar: false, bildUrl: "", highlights: [], newHighlight: "", exklusivPartner: [], newExklusivPartner: "", cloudOrdnerUrl: "" },
       isGlobalObjekt: true,
       isEinzelwohnung: false,
       verkaeuferDaten: { art: "firma", name: "Bau GmbH", vorname: "", strasse: "Weg 1", plz: "14548", ort: "Schwielowsee", email: "b@beispiel.test", telefon: "", firma: "" },
-      objektangaben: { standortargumente: [], energieausweis: { klasse: "C" }, sanierungen: [] },
+      objektangaben: { standortargumente: ["Seenähe. Der Schwielowsee liegt vor der Tür.", "  "], energieausweis: { klasse: "C" }, sanierungen: [] },
       interneHighlightsText: "Garagen mit eigenem Mietertrag\n\n",
       einzelWohnungen: [{ ...vollEinheit({ bilder: undefined, vkGesamt: 0 }), status: "frei" }],
       wohnungBilder: { [EINHEIT_ID]: [{ id: "neu-1", url: "data:image/png;base64,AA", alt: "fassade.jpg", reihenfolge: 0 }] },
@@ -259,6 +263,10 @@ describe("Neu anlegen: Globalobjekt mit Einheit, Bild und Unterlage", () => {
     expect(w).toMatchObject({ stadtteil: "Göggingen", mietgarantieKalt: 790 });
     expect(meta().interneHighlightsHand).toEqual(["Garagen mit eigenem Mietertrag"]);
     expect(meta().energieausweis).toEqual({ klasse: "C" });
+    // Beschreibung und Standortargumente aus dem Wizard sind gepflegte Texte für Objektseite und Exposé (18.10.2026).
+    expect(o.beschreibung).toBe("Ein helles Haus am Wasser.");
+    expect(meta().kurzbeschreibung).toBe("Ein helles Haus am Wasser.");
+    expect(meta().standortargumente).toEqual(["Seenähe. Der Schwielowsee liegt vor der Tür."]);
   }, 30000);
 });
 

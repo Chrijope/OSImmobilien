@@ -480,7 +480,7 @@ export function istBelegteVergangenheit(satz: string, jahr = new Date().getFullY
  * Vergangenheitsangaben nur den Satz trifft, der die Quelle trägt. Harte
  * Zusagen wie Rendite, Steuervorteil oder „garantiert“ fallen nie darunter.
  */
-function versprechenIn(text: string, wo: string): string[] {
+export function versprechenIn(text: string, wo: string): string[] {
   const treffer = new Set<string>();
   const saetze = text.split(/(?<=[.!?])\s+/).filter((s) => s.trim());
   for (const satz of saetze.length > 0 ? saetze : [text]) {

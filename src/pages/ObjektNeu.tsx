@@ -35,8 +35,12 @@ import { EinheitVerkaufsstatus } from "@/components/objekte/EinheitVerkaufsstatu
 import { BildSteuerung, verschiebeBild } from "@/components/objekte/BildReihenfolge";
 import { hausgeldTeile } from "../../supabase/functions/_shared/einheit-hausgeld";
 import { ObjektseiteFelderFormular } from "@/components/objektseite/ObjektseiteFelderDialog";
-import { objektseiteFelderInMeta, objektseiteHandwerte, type ObjektseiteFelder } from "@/lib/objektseiteDaten";
+import { objektartLabel, objektseiteFelderInMeta, objektseiteHandwerte, type ObjektseiteFelder } from "@/lib/objektseiteDaten";
 import { HAND_HIGHLIGHTS_SCHLUESSEL, MAX_HAND_HIGHLIGHTS, handHighlights } from "@/lib/interneHighlights";
+import { BeschreibungFeld, StandortargumenteFeld } from "@/components/objekte/ObjektKiTexte";
+import { darfObjektTexteErstellen, MAX_KURZBESCHREIBUNG, type WizardTexteEingabe } from "@/lib/objektWizardTexte";
+import { konzeptLabel } from "@/lib/objektKonzept";
+import { objektTexteEnOhneGepflegte } from "../../supabase/functions/_shared/objekt-texte-en.ts";
 import { useUser } from "@/contexts/UserContext";
 import { useToast } from "@/hooks/use-toast";
 import { confirmDialog, hinweisDialog } from "@/lib/confirm";
@@ -433,6 +437,9 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
 
   // Load existing object data in edit mode
   const [editLoaded, setEditLoaded] = useState(false);
+  // Die Beschreibung beim Öffnen. Nur eine geänderte wird zur gepflegten Kurzbeschreibung,
+  // sonst würde ein Investagon- oder Automatiktext beim Speichern „von Hand“.
+  const beschreibungStart = useRef<string | null>(null);
   useEffect(() => {
     if (isEditMode && existingObjekt && !editLoaded) {
       setNf({
@@ -440,7 +447,8 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
         adresse: existingObjekt.adresse || "",
         plz: existingObjekt.plz || "",
         ort: existingObjekt.ort || "",
-        beschreibung: existingObjekt.beschreibung || "",
+        // Was Objektseite und Exposé zeigen: die gepflegte Kurzbeschreibung, sonst die Spalte.
+        beschreibung: (beschreibungStart.current = objektseiteHandwerte(existingObjekt).kurzbeschreibung || existingObjekt.beschreibung || ""),
         badge: existingObjekt.badge || "",
         videoUrl: existingObjekt.videoUrl || "",
         videoSichtbar: existingObjekt.videoSichtbar || false,
@@ -1376,7 +1384,6 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
       plz: data.plz || prev.plz,
       ort: data.ort || prev.ort,
       beschreibung: data.beschreibung || prev.beschreibung,
-      highlights: data.highlights && data.highlights.length > 0 ? data.highlights.slice(0, 10) : prev.highlights,
     }));
 
     // Fill Global data
@@ -2154,6 +2161,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
     const renditen = wohnungen.map(w => w.rendite).filter(r => r > 0);
 
     const isObjektpartner = user.role === "objektpartner";
+    const beschreibungGeaendert = !isEditMode || nf.beschreibung !== beschreibungStart.current;
     // Build bilder array – all images in upload order, first = hauptbild (reihenfolge 0)
     const allBilder: { id: string; url: string; alt: string; reihenfolge: number }[] = isEinzelwohnung ? [] : slideshowPreviews
       .map((s, i) => ({
@@ -2188,7 +2196,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
     const newObj: ObjektData = {
       id: objektId,
       titel: nf.titel, adresse: nf.adresse, plz: nf.plz, ort: nf.ort,
-      beschreibung: nf.beschreibung, highlights: nf.highlights,
+      beschreibung: beschreibungGeaendert ? nf.beschreibung : (existingObjekt?.beschreibung ?? nf.beschreibung), highlights: nf.highlights,
       bildUrl: hauptbildUrl,
       bilder: allBilder,
       dokumente,
@@ -2242,15 +2250,18 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
         },
       },
     };
-    // Objektangaben und Hand-Highlights wie im Pflegedialog der Objektseite:
-    // Kurzbeschreibung und Standortargumente bleiben wortgleich stehen, die
-    // pflegt deren eigene Karte.
+    // Objektangaben und Hand-Highlights wie im Pflegedialog der Objektseite.
+    // Die Standortargumente pflegt seit dem 18.10.2026 der Wizard selbst. Die
+    // Beschreibung wird nur dann zur gepflegten Kurzbeschreibung, wenn sie neu
+    // ist oder geändert wurde; sonst bleibt `meta.kurzbeschreibung`, wie es war.
     const metaVorher = (newObj.meta || {}) as Record<string, unknown>;
-    const metaNeu = objektseiteFelderInMeta(metaVorher, { ...objektangaben, objektart: metaVorher.objektart as ObjektseiteFelder["objektart"], kurzbeschreibung: undefined, standortargumente: [] });
-    for (const schluessel of ["kurzbeschreibung", "standortargumente"]) {
-      if (schluessel in metaVorher) metaNeu[schluessel] = metaVorher[schluessel];
-      else delete metaNeu[schluessel];
-    }
+    let metaNeu = objektseiteFelderInMeta(metaVorher, { ...objektangaben, objektart: metaVorher.objektart as ObjektseiteFelder["objektart"], kurzbeschreibung: undefined });
+    if (beschreibungGeaendert && nf.beschreibung.trim()) metaNeu.kurzbeschreibung = nf.beschreibung.trim();
+    else if (beschreibungGeaendert) delete metaNeu.kurzbeschreibung;
+    else if ("kurzbeschreibung" in metaVorher) metaNeu.kurzbeschreibung = metaVorher.kurzbeschreibung;
+    else delete metaNeu.kurzbeschreibung;
+    // Ein von Hand geänderter Block bleibt deutsch, wie in `speichereGepflegteTexte`.
+    metaNeu = objektTexteEnOhneGepflegte(metaNeu);
     const handPunkte = zeilenListe(interneHighlightsText);
     if (handPunkte.length > 0) metaNeu[HAND_HIGHLIGHTS_SCHLUESSEL] = handPunkte;
     else delete metaNeu[HAND_HIGHLIGHTS_SCHLUESSEL];
@@ -2350,6 +2361,25 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
   };
 
   const isAdmin = ["admin", "inhaber", "objektpartner"].includes(user.role);
+  // KI-Texte im Wizard: nur die Rollen, die Objekte pflegen; die Function prüft es noch einmal.
+  const darfKiTexte = darfObjektTexteErstellen([user.role]);
+  const kiAngaben = (): WizardTexteEingabe => ({
+    titel: nf.titel, adresse: nf.adresse, plz: nf.plz, ort: nf.ort, badge: nf.badge,
+    objektart: gewaehlteObjektart ? objektartLabel(gewaehlteObjektart) : undefined,
+    anlageklasse: angezeigteAnlageklasse || undefined,
+    baujahr: globalDaten.baujahr || undefined,
+    zustand: globalDaten.zustand || undefined,
+    konzept: konzept ? konzeptLabel(konzept) : undefined,
+    sanierungen: objektangaben.sanierungen,
+    energieausweis: objektangaben.energieausweis,
+    einheiten: einzelWohnungen.map(w => ({ groesse: w.groesse, zimmer: w.zimmer, kaufpreis: w.vkGesamt, kaltmiete: w.mieteGesamt, rendite: w.rendite })),
+    standortargumente: objektangaben.standortargumente,
+  });
+  // Erst die Objektbilder, dann die der Einheiten; die Function nimmt höchstens sechs.
+  const kiBildUrls = () => [
+    ...slideshowPreviews.map(b => b.url),
+    ...Object.values(wohnungBilder).flat().map(b => b.url),
+  ].filter(Boolean);
 
   /**
    * Die gespeicherte Fassung einer Einheit, oder nichts bei einer neuen.
@@ -2861,7 +2891,16 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
               </div>
               <div><Label className="text-xs">Adresse *</Label><Input value={nf.adresse} onChange={e => updateField("adresse", e.target.value)} /></div>
               <div><Label className="text-xs">Badge (z.B. KFW 40 QNG) *</Label><Input value={nf.badge} onChange={e => updateField("badge", e.target.value)} /></div>
-              <div><Label className="text-xs">Beschreibung *</Label><Textarea value={nf.beschreibung} onChange={e => updateField("beschreibung", e.target.value)} rows={4} /></div>
+              <BeschreibungFeld
+                wert={nf.beschreibung}
+                onChange={v => updateField("beschreibung", v)}
+                hinweis={<>Die KI schreibt die Beschreibung am Ende im Schritt <button type="button" className="underline" onClick={() => setStep("3")}>„Medien“</button>, wenn Einheiten und Bilder da sind.</>}
+              />
+              <StandortargumenteFeld
+                werte={objektangaben.standortargumente}
+                onChange={liste => { setObjektangaben(p => ({ ...p, standortargumente: liste })); markDirty(); }}
+                angaben={darfKiTexte ? kiAngaben : undefined}
+              />
               {/* Baujahr */}
               <div className="grid grid-cols-2 gap-3">
                 <div><Label className="text-xs">Baujahr *</Label><Input type="number" value={globalDaten.baujahr || ""} onChange={e => updateGlobal("baujahr", parseInt(e.target.value) || 0)} placeholder="z.B. 1969" /></div>
@@ -3005,22 +3044,6 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
                     <EuroInput value={verwaltungskostenSonstige} onChange={v => { setVerwaltungskostenSonstige(v); markDirty(); }} className="h-8" />
                   </div>
                 )}
-              </div>
-              {/* Highlights */}
-              <div>
-                <Label className="text-xs font-semibold">Highlights * <span className="text-muted-foreground font-normal">({nf.highlights.length}/10)</span></Label>
-                <div className="flex flex-wrap gap-1 mb-2">
-                  {nf.highlights.map((h, i) => (
-                    <Badge key={i} variant="outline" className="text-xs gap-1">{h}<button className="ml-1 text-destructive" onClick={() => { setNf(p => ({ ...p, highlights: p.highlights.filter((_, j) => j !== i) })); markDirty(); }}>✕</button></Badge>
-                  ))}
-                </div>
-                {nf.highlights.length < 10 && (
-                  <div className="flex gap-2">
-                    <Input value={nf.newHighlight} onChange={e => setNf(p => ({ ...p, newHighlight: e.target.value }))} placeholder="Neues Highlight..." className="h-[40px] text-xs sm:h-8" onKeyDown={e => e.key === "Enter" && (e.preventDefault(), addHighlight())} />
-                    <Button size="sm" className="h-[40px] min-w-[40px] sm:h-8 sm:min-w-0" onClick={addHighlight}>+</Button>
-                  </div>
-                )}
-                {nf.highlights.length >= 10 && <p className="text-xs text-muted-foreground">Maximum von 10 Highlights erreicht.</p>}
               </div>
               {/* Interne Highlights, von Hand */}
               <div>
@@ -4005,6 +4028,19 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
               {/* Video */}
               {/* Bilder je Einheit: bei jeder Objektart im Schritt der Einheiten, ein Weg für alle (16.10.2026). */}
               <div><Label className="text-xs font-semibold">Video-URL</Label><Input value={nf.videoUrl} onChange={e => updateField("videoUrl", e.target.value)} placeholder="https://youtube.com/..." /></div>
+            </Card>
+
+            {/* Beschreibung zum Schluss: Jetzt sind Einheiten, Kennzahlen und Bilder da (Inhaber, 18.10.2026). */}
+            <Card className="p-5 space-y-2" data-testid="beschreibung-ki-karte">
+              <div>
+                <h3 className="text-sm font-semibold">Objektbeschreibung</h3>
+                <p className="text-xs text-muted-foreground">Steht im Exposé und auf der Objektseite. Die KI wertet dafür die Bilder und alle Angaben aus, höchstens {MAX_KURZBESCHREIBUNG} Zeichen. Danach frei änderbar.</p>
+              </div>
+              <BeschreibungFeld
+                wert={nf.beschreibung}
+                onChange={v => updateField("beschreibung", v)}
+                ki={darfKiTexte ? { angaben: kiAngaben, bildUrls: kiBildUrls } : undefined}
+              />
 
 
 
@@ -4022,9 +4058,9 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
                     { label: "Titel", ok: !!nf.titel.trim() },
                     { label: "Adresse", ok: !!nf.adresse.trim() },
                     { label: "PLZ / Ort", ok: !!nf.plz.trim() && !!nf.ort.trim() },
-                    { label: "Beschreibung", ok: !!nf.beschreibung.trim() },
+                    { label: "Beschreibung", ok: !!nf.beschreibung.trim() && nf.beschreibung.length <= MAX_KURZBESCHREIBUNG },
                     { label: "Badge", ok: !!nf.badge.trim() },
-                    { label: "Highlights", ok: (nf.highlights?.length || 0) > 0 },
+                    { label: "Standortargumente", ok: objektangaben.standortargumente.some(a => a.trim()) },
                   ],
                 },
                 {
