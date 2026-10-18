@@ -21,3 +21,16 @@ Einrichtung (einmalig, nur lokal):
 Grenzen: Dünn gezeichnete Innenwände fehlen teilweise, dann laufen Räume
 zusammen. Eingescannte Pläne (Bild statt Vektor) eignen sich nicht; die
 werden im Editor nachgezeichnet. Dachformen werden nicht gelesen.
+
+## Räume aus den CAD-Raumflächen (seit 18.10.2026)
+
+Die frühere Raumteilung per Wasserscheide über Türlücken hat Räume ohne Tür
+zusammengelegt (offene Küchen, Diele und Bad bei WE 6). `plan2d.py` nimmt
+jetzt zuerst die Raumflächen des Architekten aus dem CAD (weiß gefüllte
+Umrisse sowie Fliesen- und Schraffurmuster, die genau am Raumrand enden):
+Liegt eine Beschriftung in einer solchen Fläche, ist das der Raum. Nur wo
+keine Fläche existiert (Haus F, Keller), teilt eine Wasserscheide mit den
+Beschriftungen als Saatpunkten; die Grenzen fallen an Engstellen wie Türen.
+Danach `hauff_keller_entfernen.py` laufen lassen (Kellerverschläge WE 35
+bis 46 gibt es nicht). Die Blätter 01 bis 05 enthalten keine m²-Angaben;
+Flächenvergleich deshalb gegen die Aufmaß-Flächenberechnungen im Drive.

@@ -1,5 +1,7 @@
 # Hauffstraße 38: aus den fünf LOES-Blättern Etagenpläne und Einheitenpläne bauen.
-import sys, json, re   # Aufruf: hauff_bauen.py <ordner mit plan2d.py> <ordner mit PDFs> <ausgabe.json>
+# Aufruf: hauff_bauen.py <ordner mit plan2d.py> <ordner mit PDFs> <hauff38.json> [prüfliste.json]
+# Danach hauff_keller_entfernen.py <hauff38.json> laufen lassen.
+import sys, json, re
 sys.path.insert(0, sys.argv[1])
 import numpy as np, cv2, plan2d
 from shapely.geometry import Polygon, box
@@ -35,20 +37,24 @@ def ringe(maske, eps=2.5, min_m2=0.05):
         out.append(poly)
     return out
 
-TYPEN = [(r'^BAD|^WC', 'bad'), (r'^K[ÜU]CHE', 'kueche'), (r'^DIELE|^FLUR|^G$', 'flur'), (r'^LOGGIA|^BALKON|^TERR?ASSE', 'balkon'),
-         (r'^AR$|^ABST|^KELLER|^HWR', 'abstell'), (r'^TH$|TREPPE', 'treppenhaus'), (r'^AUFZUG', 'abstell'), (r'^ZIMMER|^WOHN|^SCHLAF', 'zimmer')]
-NAMEN = {'bad': 'Bad', 'kueche': 'Küche', 'flur': 'Flur', 'balkon': 'Balkon', 'abstell': 'Abstellraum', 'treppenhaus': 'Treppenhaus', 'zimmer': 'Zimmer'}
+# Raumname im Plan -> (Typ, Name im Modell). Reihenfolge zählt.
+TYPEN = [(r'^MK\s*(\d+)', 'abstell', 'Keller MK {0}'), (r'^BAD|^WC', 'bad', 'Bad'),
+         (r'^K[ÜU]CHE\s*/\s*(?:ZIMMER|WOHNEN)', 'wohnen', 'Wohnküche'), (r'^K[ÜU]CHE', 'kueche', 'Küche'),
+         (r'^DIELE', 'flur', 'Diele'), (r'^FLUR', 'flur', 'Flur'), (r'^TERR?ASSE', 'balkon', 'Terrasse'),
+         (r'^LOGGIA', 'balkon', 'Loggia'), (r'^BALKON', 'balkon', 'Balkon'), (r'^AR$|^ABST', 'abstell', 'Abstellraum'),
+         (r'^TH$', 'treppenhaus', 'Treppenhaus'), (r'^AUFZUG', 'abstell', 'Aufzug'), (r'^HA-RAUM', 'abstell', 'Hausanschlussraum'),
+         (r'^HEIZ', 'abstell', 'Heizzentrale'), (r'^GALERIE', 'flur', 'Galerie'), (r'^ZIMMER|^WOHN|^SCHLAF', 'zimmer', 'Zimmer')]
 
-def raumtyp(texte):
-    for t in texte:
-        for muster, typ in TYPEN:
-            if re.search(muster, t.upper()):
-                name = {'^TERR?ASSE': 'Terrasse', '^LOGGIA': 'Loggia', '^BALKON': 'Balkon', '^G$': 'Gemeinschaftsflur', '^AUFZUG': 'Aufzug', '^WC': 'WC', '^DIELE': 'Diele'}
-                for m2, n2 in name.items():
-                    if re.search(m2, t.upper()): return typ, n2
-                return typ, NAMEN[typ]
+def raumtyp(raum):
+    text = raum['name'].upper().replace(' / ', '/')
+    for muster, typ, name in TYPEN:
+        m = re.search(muster, text)
+        if m:
+            if typ == 'flur' and name == 'Flur' and raum['g']: name = 'Gemeinschaftsflur'
+            return typ, name.format(*m.groups())
     return 'flur', 'Raum'
 
+GESCHOSS = {-1: 'UG', 0: 'EG'}
 etagen, einheiten = [], {}
 for nr, (datei, basis) in BLAETTER.items():
     r = plan2d.auswerten(f'{ORDNER}/{datei}')
@@ -65,17 +71,22 @@ for nr, (datei, basis) in BLAETTER.items():
         for x in r['raeume']:
             p = Polygon(x['punkte'])
             if not p.is_valid: p = p.buffer(0)
-            if p.is_empty or p.area < 0.8: continue
+            if p.geom_type != 'Polygon': p = max(p.geoms, key=lambda g: g.area)
+            if p.is_empty or p.area < 0.5: continue
             if F_BEREICH.contains(p.representative_point()) != haus_f: continue
-            typ, name = raumtyp(x['texte'])
-            we = [int(t) for t in x['texte'] if re.fullmatch(r'\d{1,2}', t)]
-            raeume.append({'typ': typ, 'name': name, 'we': max(set(we), key=we.count) if we else None,
-                           'punkte': [[round(a, 3), round(b, 3)] for a, b in (p.exterior.coords[:-1] if p.geom_type == 'Polygon' else max(p.geoms, key=lambda g: g.area).exterior.coords[:-1])]})
-        # Größtes Zimmer je Einheit ist Wohnen, die übrigen Schlafen.
+            typ, name = raumtyp(x)
+            we = x['we'] if not x['g'] and x['we'] and 1 <= x['we'] <= 46 else None
+            raeume.append({'typ': typ, 'name': name, 'we': we, 'flaeche': round(p.area, 2), 'aus_cad': x['aus_cad'],
+                           'punkte': [[round(a, 3), round(b, 3)] for a, b in p.exterior.coords[:-1]]})
+        # Größtes Zimmer je Einheit ist Wohnen (außer es gibt eine Wohnküche), die übrigen Schlafen.
         for we in {x['we'] for x in raeume if x['we']}:
             zi = [x for x in raeume if x['we'] == we and x['typ'] == 'zimmer']
-            for i, x in enumerate(sorted(zi, key=lambda x: -Polygon(x['punkte']).area)):
-                x['typ'] = 'wohnen' if i == 0 else 'schlafen'
+            hat_wohnen = any(x['we'] == we and x['typ'] == 'wohnen' for x in raeume)     # Wohnküche
+            for i, x in enumerate(sorted(zi, key=lambda x: -x['flaeche'])):
+                x['typ'] = 'wohnen' if i == 0 and not hat_wohnen else 'schlafen'
+        # CAD-Raumflächen sind sicher frei: dort zugelaufene Wandmasse (z. B. Loggien zwischen Brüstung und Fassade) weg
+        cad = [Polygon(x['punkte']).buffer(-0.02) for x in raeume if x['aus_cad']]
+        if cad: w[plan2d._maske(unary_union(cad), w.shape) > 0] = 0
         f = cv2.bitwise_and(fenster, bereich); t = cv2.bitwise_and(tueren, bereich)
         fuss = cv2.morphologyEx(cv2.bitwise_or(w, cv2.bitwise_and(innen, bereich)), cv2.MORPH_CLOSE, plan2d.kreis(0.5))
         etage = {'blatt': nr, 'geschoss': geschoss, 'haus': 'F' if haus_f else 'A-E',
@@ -96,5 +107,30 @@ for nr, (datei, basis) in BLAETTER.items():
             einheiten.setdefault(we, []).append({'geschoss': geschoss, 'waende': wp, 'fenster': nahe(etage['fenster']), 'tueren': nahe(etage['tueren']), 'raeume': eigen})
     print(nr, 'fertig', file=sys.stderr)
 
-json.dump({'etagen': etagen, 'einheiten': einheiten}, open(sys.argv[3], 'w'), ensure_ascii=False, separators=(',', ':'))
-print(len(etagen), 'Etagen', len(einheiten), 'Einheiten', {k: len(v) for k, v in sorted(einheiten.items())})
+# Ausgabe im Planformat des CRM (src/components/grundriss3d/plan.ts)
+def titel(e):
+    g = GESCHOSS.get(e['geschoss'], f"{e['geschoss']}. OG")
+    return f"Haus 38 F, {g}" if e['haus'] == 'F' else f"Häuser 38 A bis E, {g}"
+
+def raum_json(x, rid, mit_we):
+    return {'id': rid, 'name': f"{x['name']} (WE {x['we']})" if mit_we and x['we'] else x['name'], 'typ': x['typ'],
+            'punkte': [{'x': a, 'y': b} for a, b in x['punkte']]}
+
+leer = lambda g: {'version': 1, 'nordWinkel': 0, 'geschoss': g, 'waende': [], 'oeffnungen': []}
+haus = {'version': 1, 'geschosse': 5, 'etagen': [
+    {'geschoss': e['geschoss'], 'titel': titel(e), 'plan': {**leer(e['geschoss']),
+        'raeume': [raum_json(x, f'r{i}', True) for i, x in enumerate(e['raeume'])],
+        'flaechen': {'waende': e['waende'], 'fenster': e['fenster'], 'tueren': e['tueren'], 'decke': e['decke']}}}
+    for e in etagen],
+    'quelle': 'Werkpläne Studio LOES (Blätter 01 bis 05, 1:100), automatisch aus den Vektordaten gelesen'}
+liste = []
+for we in sorted(einheiten):
+    # Eine Einheit liegt im Modell auf einem Geschoss: dem mit der größten Fläche.
+    t = max(einheiten[we], key=lambda t: sum(x['flaeche'] for x in t['raeume']))
+    liste.append({'we': we, 'plan': {**leer(t['geschoss']), 'raeume': [raum_json(x, f'r{i}', False) for i, x in enumerate(t['raeume'])],
+                                     'flaechen': {'waende': t['waende'], 'fenster': t['fenster'], 'tueren': t['tueren']}}})
+json.dump({'haus': haus, 'einheiten': liste}, open(sys.argv[3], 'w'), ensure_ascii=False, separators=(',', ':'))
+print(len(etagen), 'Etagen', len(liste), 'Einheiten')
+# Optional: Prüfliste aller Räume mit Fläche und Herkunft (CAD-Raumfläche oder Teilung)
+if len(sys.argv) > 4: json.dump([{'geschoss': e['geschoss'], 'haus': e['haus'], **{k: x[k] for k in ('we', 'name', 'typ', 'flaeche', 'aus_cad')}}
+           for e in etagen for x in e['raeume']], open(sys.argv[4], 'w'), ensure_ascii=False, indent=0)
