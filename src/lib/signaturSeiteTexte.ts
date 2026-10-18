@@ -23,7 +23,7 @@ export type SignaturDokument = "reservierung" | "selbstauskunft" | "aftersales";
 const DOKUMENT: Record<SignaturDokument, Record<Sprache, string>> = {
   reservierung: { de: "Reservierungsvereinbarung", en: "reservation agreement" },
   selbstauskunft: { de: "Selbstauskunft", en: "self-disclosure (Selbstauskunft)" },
-  aftersales: { de: "Aftersales-Beratungsdokument", en: "after-sales advisory document" },
+  aftersales: { de: "Beratungs- und Qualitätsprotokoll", en: "consultation and quality record" },
 };
 
 /** Der Dokumentname im Satz. */
@@ -53,7 +53,7 @@ export function einwilligungText(dok: SignaturDokument, sprache: Sprache, bestae
       return `I confirm that the information I have provided in the reservation agreement is correct and complete. ${bestaetigung} I agree that my signature is captured electronically, stored and used to document the reservation. I am aware that this electronic signature constitutes a simple electronic signature within the meaning of the eIDAS Regulation.`;
     }
     if (dok === "aftersales") {
-      return "I confirm that the after-sales services recorded in the advisory document correspond to my wishes and agreements. I agree that my signature is captured electronically, stored and used to document the advice. I am aware that this electronic signature constitutes a simple electronic signature within the meaning of the eIDAS Regulation.";
+      return "I confirm that I have read the consultation and quality record in full and that it reflects the consultation. I agree that my signature is captured electronically, stored and used to document the advice. I am aware that this electronic signature constitutes a simple electronic signature within the meaning of the eIDAS Regulation.";
     }
     return "I confirm that the information I have provided in the self-disclosure (Selbstauskunft) is correct and complete. I agree that my signature is captured electronically, stored and used to document the self-disclosure. I am aware that this electronic signature constitutes a simple electronic signature within the meaning of the eIDAS Regulation.";
   }
@@ -61,7 +61,7 @@ export function einwilligungText(dok: SignaturDokument, sprache: Sprache, bestae
     return `Ich bestätige die Richtigkeit und Vollständigkeit meiner Angaben in der Reservierungsvereinbarung. ${bestaetigung} Ich bin damit einverstanden, dass meine Unterschrift elektronisch erfasst, gespeichert und zur Dokumentation der Reservierung verwendet wird. Mir ist bewusst, dass diese elektronische Unterschrift eine einfache elektronische Signatur (EES) gemäß eIDAS-Verordnung darstellt.`;
   }
   if (dok === "aftersales") {
-    return "Ich bestätige, dass die im Beratungsdokument festgehaltenen Aftersales-Leistungen meinen Wünschen und Vereinbarungen entsprechen. Ich bin damit einverstanden, dass meine Unterschrift elektronisch erfasst, gespeichert und zur Dokumentation der Beratung verwendet wird. Mir ist bewusst, dass diese elektronische Unterschrift eine einfache elektronische Signatur (EES) gemäß eIDAS-Verordnung darstellt.";
+    return "Ich bestätige, dass ich das Beratungs- und Qualitätsprotokoll vollständig gelesen habe und es den Verlauf der Beratung wiedergibt. Ich bin damit einverstanden, dass meine Unterschrift elektronisch erfasst, gespeichert und zur Dokumentation der Beratung verwendet wird. Mir ist bewusst, dass diese elektronische Unterschrift eine einfache elektronische Signatur (EES) gemäß eIDAS-Verordnung darstellt.";
   }
   return "Ich bestätige die Richtigkeit und Vollständigkeit meiner Angaben in der Selbstauskunft. Ich bin damit einverstanden, dass meine Unterschrift elektronisch erfasst, gespeichert und zur Dokumentation der Selbstauskunft verwendet wird. Mir ist bewusst, dass diese elektronische Unterschrift eine einfache elektronische Signatur (EES) gemäß eIDAS-Verordnung darstellt.";
 }
@@ -228,9 +228,9 @@ const DE: SignaturSeitenTexte = {
   schliessen: "Sie können dieses Fenster jetzt schließen.",
   vorschauTitel: (dok) => dok === "reservierung"
     ? "Ihre Reservierungsvereinbarung zur Kontrolle"
-    : dok === "aftersales" ? "Ihr Aftersales-Beratungsdokument" : "Ihre Selbstauskunft zur Kontrolle",
+    : dok === "aftersales" ? "Ihr Beratungs- und Qualitätsprotokoll" : "Ihre Selbstauskunft zur Kontrolle",
   vorschauHinweis: (dok) => dok === "aftersales"
-    ? "Ihr Vertriebspartner hat das Beratungsdokument bereits unterzeichnet. Bitte überprüfen Sie die vereinbarten Leistungen und unterschreiben Sie unten."
+    ? "Ihr Vertriebspartner hat das Protokoll bereits unterzeichnet. Bitte lesen Sie es vollständig und unterschreiben Sie unten."
     : "Bitte überprüfen Sie Ihre Angaben sorgfältig, bevor Sie unten unterschreiben.",
   vorschauTitelIframe: (dok) => dok === "reservierung" ? "Reservierungsvereinbarung Vorschau" : "Selbstauskunft Vorschau",
   vorschauNichtUnterstuetzt: "PDF-Vorschau wird auf Ihrem Gerät nicht unterstützt.",
@@ -255,7 +255,7 @@ const DE: SignaturSeitenTexte = {
   saBearbeiten: "Selbstauskunft bearbeiten",
   unterschreibenTitel: (dok) => dok === "reservierung"
     ? "Reservierungsvereinbarung unterschreiben"
-    : dok === "aftersales" ? "Aftersales-Beratungsdokument unterschreiben" : "Selbstauskunft unterschreiben",
+    : dok === "aftersales" ? "Beratungs- und Qualitätsprotokoll unterschreiben" : "Selbstauskunft unterschreiben",
   rolleKaeufer: "Käufer",
   rolleKunde: "Kunde",
   rollePerson: (nr) => `Person ${nr}`,
@@ -302,6 +302,7 @@ const EN: SignaturSeitenTexte = {
   bereitsTitel: "Already signed",
   bereitsText: (dok) => dok === "reservierung"
     ? "You have already signed this reservation agreement. You may close this window."
+    : dok === "aftersales" ? "You have already signed this consultation and quality record. You may close this window."
     : "You have already signed this self-disclosure. You may close this window.",
   herunterladen: (titel) => `Download ${titel} as PDF`,
   audit: "Audit record:",
@@ -317,9 +318,9 @@ const EN: SignaturSeitenTexte = {
   schliessen: "You may now close this window.",
   vorschauTitel: (dok) => dok === "reservierung"
     ? "Your reservation agreement for review"
-    : dok === "aftersales" ? "Your after-sales advisory document" : "Your self-disclosure for review",
+    : dok === "aftersales" ? "Your consultation and quality record" : "Your self-disclosure for review",
   vorschauHinweis: (dok) => dok === "aftersales"
-    ? "Your sales partner has already signed the advisory document. Please check the agreed services and sign below."
+    ? "Your sales partner has already signed the record. Please read it in full and sign below."
     : dok === "reservierung"
     ? "Please read the agreement carefully before you sign below. It is written in German and English; the German version prevails."
     : "Please check your details carefully before you sign below.",
@@ -346,7 +347,7 @@ const EN: SignaturSeitenTexte = {
   saBearbeiten: "Edit self-disclosure",
   unterschreibenTitel: (dok) => dok === "reservierung"
     ? "Sign the reservation agreement"
-    : dok === "aftersales" ? "Sign the after-sales advisory document" : "Sign the self-disclosure",
+    : dok === "aftersales" ? "Sign the consultation and quality record" : "Sign the self-disclosure",
   rolleKaeufer: "Buyer",
   rolleKunde: "Customer",
   rollePerson: (nr) => `Person ${nr}`,
@@ -378,6 +379,31 @@ const EN: SignaturSeitenTexte = {
 };
 
 export const SIGNATUR_SEITE_TEXTE: Record<Sprache, SignaturSeitenTexte> = { de: DE, en: EN };
+
+/**
+ * Das Beratungs- und Qualitätsprotokoll duzt (Christian, 17.10.2026), die
+ * übrigen Kundendokumente auf dieser Seite siezen weiter. Deshalb eine
+ * eigene deutsche Fassung, die nur die Sätze dieses Wegs ersetzt.
+ */
+export const SIGNATUR_SEITE_TEXTE_DU: SignaturSeitenTexte = {
+  ...DE,
+  unbekannt: "Dieser Link ist uns nicht bekannt. Bitte prüfe, ob du die Adresse vollständig aus der E-Mail übernommen hast.",
+  speicherFehler: "Fehler beim Speichern. Bitte versuch es erneut.",
+  abgelaufenText: "Dieser Signatur-Link ist abgelaufen und lässt sich nicht mehr öffnen. Falls du bereits unterschrieben hast, ist für dich nichts weiter zu tun. Andernfalls wende dich bitte an deinen Ansprechpartner, er schickt dir einen neuen Link.",
+  ueberholtText: "Das Protokoll wurde inzwischen neu verschickt. Diese Anfrage gehört zu einer älteren Fassung und kann nicht mehr unterschrieben werden. Bitte nimm den Link aus der neueren E-Mail oder wende dich an deinen Ansprechpartner.",
+  bereitsText: () => "Du hast dieses Beratungs- und Qualitätsprotokoll bereits unterschrieben. Du kannst dieses Fenster schließen.",
+  dankeText: "Deine Unterschrift wurde erfolgreich erfasst und gespeichert.",
+  schliessen: "Du kannst dieses Fenster jetzt schließen.",
+  vorschauTitel: () => "Dein Beratungs- und Qualitätsprotokoll",
+  vorschauHinweis: () => "Dein Ansprechpartner hat das Protokoll bereits unterzeichnet. Bitte lies es vollständig und unterschreibe unten.",
+  vorschauNichtUnterstuetzt: "Die PDF-Vorschau wird auf deinem Gerät nicht unterstützt.",
+  vorschauFehlt: "Die vollständige PDF-Vorschau konnte nicht geladen werden. Oben siehst du eine Zusammenfassung.",
+  bitteUnterschreiben: "Bitte unterschreibe im Feld oben (Maus oder Finger)",
+  handyText: "Scanne diesen QR-Code mit der Kamera deines Handys. Du unterschreibst dann bequem mit dem Finger. Die Unterschrift erscheint hier automatisch.",
+  datenschutzFuss: "Deine Daten werden verschlüsselt übertragen und DSGVO-konform gespeichert. IP-Adresse und Zeitstempel werden als Nachweis protokolliert.",
+  mobilHinweis: "Unterschreibe unten mit dem Finger. Deine Unterschrift wird sofort an den Computer übertragen, an dem du den QR-Code gescannt hast.",
+  mobilGesendetText: "Deine Unterschrift wurde an deinen Computer übertragen. Bitte schließe dort den Vorgang ab. Du kannst dieses Fenster jetzt schließen.",
+};
 
 /** Datum und Uhrzeit für die Seite: Deutsch wie bisher, Englisch über `sprachFormat`. */
 export function seitenZeit(wert: string | number | Date, sprache: Sprache): string {

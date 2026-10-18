@@ -40,7 +40,9 @@ export class RouteErrorBoundary extends React.Component<Props, State> {
       error.message?.includes("error loading dynamically imported module") ||
       error.message?.includes("Importing a module script failed") ||
       error.message?.includes("Loading module") ||
-      error.message?.includes("Loading chunk")
+      error.message?.includes("Loading chunk") ||
+      // Vite meldet fehlende CSS-Chunks nach einem Deploy so (17.10.2026).
+      error.message?.includes("Unable to preload CSS")
     ) {
       const reloadKey = "reb_reload_" + window.location.pathname;
       const lastReload = sessionStorage.getItem(reloadKey);

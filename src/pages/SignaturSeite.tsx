@@ -21,7 +21,7 @@ import {
 } from "@/lib/reservierungErklaerung";
 import { normalisiereSprache, type Sprache } from "../../supabase/functions/_shared/kunden-sprache.ts";
 import {
-  SIGNATUR_SEITE_TEXTE,
+  SIGNATUR_SEITE_TEXTE, SIGNATUR_SEITE_TEXTE_DU,
   dokumentTitel,
   einwilligungText,
   einwilligungsProtokoll,
@@ -44,6 +44,7 @@ import { Download } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { SelbstauskunftForm, loescheLokalenSaEntwurf } from "@/components/selbstauskunft/SelbstauskunftForm";
 import { Smartphone, Check } from "lucide-react";
+import { istBeratungsprotokoll } from "@/lib/beratungsprotokoll";
 import { CookieEinstellungenLink } from "@/components/cookie/CookieEinstellungenLink";
 
 type Status = "loading" | "ready" | "expired" | "ueberholt" | "rv_aufgehoben" | "signed" | "already_signed" | "error" | "submitting" | "finalizing";
@@ -123,7 +124,8 @@ export default function SignaturSeite() {
     : isReservierung && request?.sa_data
     ? vertragsSpracheAus(request.sa_data)
     : rpcSprache ?? langParam ?? "de";
-  const t: SignaturSeitenTexte = SIGNATUR_SEITE_TEXTE[sprache];
+  // Das Beratungsprotokoll duzt auf Deutsch (17.10.2026), die übrigen Dokumente siezen.
+  const t: SignaturSeitenTexte = isAftersalesKunde && sprache === "de" ? SIGNATUR_SEITE_TEXTE_DU : SIGNATUR_SEITE_TEXTE[sprache];
   const englisch = sprache === "en";
   const dok: SignaturDokument = isReservierung ? "reservierung" : isAftersalesKunde ? "aftersales" : "selbstauskunft";
   const anzeigeTitel = istKundenseite ? dokumentTitel(dok, sprache) : docLabel;
@@ -338,14 +340,7 @@ export default function SignaturSeite() {
               : saData,
           );
         } else if (isAftersalesKunde) {
-          const { generateAftersalesBeratungPDF } = await import("@/lib/aftersalesBeratungPdf");
-          doc = await generateAftersalesBeratungPDF(saData, {
-            vp: saData.vpSignature ? {
-              name: saData.vpName || "Vertriebspartner",
-              signatureData: saData.vpSignature,
-              signedAt: saData.vpSignedAt || new Date().toISOString(),
-            } : undefined,
-          });
+          doc = await aftersalesPdf(saData);
         } else {
           const { generateSelbstauskunftPDF } = await import("@/lib/selbstauskunftPdf");
           doc = await generateSelbstauskunftPDF(
@@ -507,6 +502,13 @@ export default function SignaturSeite() {
      * entsteht unten das vollständige PDF, das am Investment abgelegt wird.
      */
     let saAbschluss: { saData: Record<string, unknown>; signatures: Record<string, { signatureData?: string; signedAt?: string }> } | null = null;
+    /*
+     * Beratungs- und Qualitätsprotokoll (17.10.2026): Mit der letzten
+     * Käufer-Unterschrift liefert `finalize-aftersales-beratung` alle
+     * Unterschriften. Daraus entsteht unten das vollständige PDF, das ihr
+     * zur Ablage nachgereicht wird. Wie bei der Reservierung.
+     */
+    let protokollAbschluss: { unterschriften: Array<{ name?: string; signature?: string; signedAt?: string; person?: string }>; vp?: { name?: string; signature?: string; signedAt?: string } } | null = null;
     try {
       const fnName = isReservierung
         ? "finalize-reservierung"
@@ -549,6 +551,9 @@ export default function SignaturSeite() {
           totalRequests: finalizeResult.totalRequests,
           signedCount: finalizeResult.signedCount,
         });
+        if (isAftersalesKunde && finalizeResult.allSigned && Array.isArray(finalizeResult.unterschriften)) {
+          protokollAbschluss = { unterschriften: finalizeResult.unterschriften, vp: finalizeResult.vp };
+        }
         if (isReservierung && finalizeResult.allSigned && finalizeResult.signatures) {
           rvAbschluss = { rvData: finalizeResult.rvData || request.sa_data, signatures: finalizeResult.signatures };
         }
@@ -615,19 +620,25 @@ export default function SignaturSeite() {
           }
         }
       } else if (isAftersalesKunde) {
-        const { generateAftersalesBeratungPDF } = await import("@/lib/aftersalesBeratungPdf");
-        doc = await generateAftersalesBeratungPDF(saData, {
-          vp: saData.vpSignature ? {
-            name: saData.vpName || "Vertriebspartner",
-            signatureData: saData.vpSignature,
-            signedAt: saData.vpSignedAt || signedAtIso,
-          } : undefined,
-          kunde: {
-            name: request.name,
-            signatureData,
-            signedAt: signedAtIso,
-          },
-        });
+        const eigene = { name: request.name, signatureData, signedAt: signedAtIso };
+        const zweiter = saData.aftersalesPerson === "kunde2";
+        const alle = protokollAbschluss
+          ? kaeuferAusAbschluss(protokollAbschluss.unterschriften)
+          : zweiter ? { kunde2: eigene } : { kunde: eigene };
+        doc = await aftersalesPdf(saData, alle);
+        // Vollständiges Protokoll zur Ablage im Investment nachreichen.
+        if (protokollAbschluss && doc && istBeratungsprotokoll(saData.aftersalesBeratung)) {
+          try {
+            const pdfBase64 = doc.output("datauristring").split(",")[1] || "";
+            if (pdfBase64) {
+              await supabase.functions.invoke("finalize-aftersales-beratung", {
+                body: { investmentId: request.investment_id, kontaktId: request.kontakt_id, signatureToken: token, phase: "kunde", pdfBase64 },
+              });
+            }
+          } catch (err) {
+            console.error("Beratungsprotokoll konnte nicht abgelegt werden:", err);
+          }
+        }
       } else if (!isVertrag && !isVertragKurz && !isAftersalesVp) {
         const { generateSelbstauskunftPDF } = await import("@/lib/selbstauskunftPdf");
         const personKey = request.person_type === "person2" ? "person2" : "person1";
@@ -812,9 +823,9 @@ export default function SignaturSeite() {
                     : isVertrag
                     ? "Handelsvertretervertrag"
                     : isAftersalesKunde
-                    ? "Aftersales-Beratungsdokument"
+                    ? "Beratungs- und Qualitätsprotokoll"
                     : isAftersalesVp
-                    ? "Aftersales-Beratungsdokument (VP)"
+                    ? "Beratungs- und Qualitätsprotokoll (VP)"
                     : "Selbstauskunft"
                 }
               />
@@ -2137,4 +2148,32 @@ function VertragKurzSignatur({
       </p>
     </Card>
   );
+}
+
+type KaeuferSig = { name: string; signatureData: string; signedAt: string };
+
+/** Die Käufer-Unterschriften aus der Antwort von finalize-aftersales-beratung. */
+function kaeuferAusAbschluss(liste: Array<{ name?: string; signature?: string; signedAt?: string; person?: string }>) {
+  const alsSig = (u?: { name?: string; signature?: string; signedAt?: string }) =>
+    u?.signature ? { name: u.name || "", signatureData: u.signature, signedAt: u.signedAt || new Date().toISOString() } : undefined;
+  return { kunde: alsSig(liste.find((u) => u.person !== "kunde2")), kunde2: alsSig(liste.find((u) => u.person === "kunde2")) };
+}
+
+/**
+ * Das Dokument der Aftersales-Unterschrift: seit 17.10.2026 das Beratungs-
+ * und Qualitätsprotokoll, ältere Anfragen behalten das alte Beratungsdokument.
+ */
+async function aftersalesPdf(
+  saData: Record<string, any>,
+  kaeufer: { kunde?: KaeuferSig; kunde2?: KaeuferSig } = {},
+) {
+  const vp = saData.vpSignature
+    ? { name: saData.vpName || "Vertriebspartner", signatureData: saData.vpSignature, signedAt: saData.vpSignedAt || new Date().toISOString() }
+    : undefined;
+  if (istBeratungsprotokoll(saData.aftersalesBeratung)) {
+    const { erzeugeBeratungsprotokollPdf } = await import("@/lib/beratungsprotokollPdf");
+    return erzeugeBeratungsprotokollPdf(saData.aftersalesBeratung, { vp, ...kaeufer });
+  }
+  const { generateAftersalesBeratungPDF } = await import("@/lib/aftersalesBeratungPdf");
+  return generateAftersalesBeratungPDF(saData as never, { vp, kunde: kaeufer.kunde });
 }

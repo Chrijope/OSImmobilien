@@ -28,6 +28,7 @@ import type { ObjektWohnung } from "./objekteStore";
 import { ausInvestagon } from "./investagonHerkunft";
 import { aktuellerMieter } from "./objektdaten";
 import { LISTEN_FELDER, listenWertLesen, type Listendaten, type ListenWert } from "./listendaten";
+import { zahlAus } from "./objektdatenFormular";
 
 export type ImportFeld =
   | "we" | "lage" | "flaeche" | "kaufpreis" | "garageKaufpreis" | "istKaltmiete" | "mieter" | "mietbeginn"
@@ -111,8 +112,7 @@ const zahl = (z: Zelle | undefined): number | null => {
   if (typeof z !== "string") return null;
   const t = z.replace(/[€\s]/g, "");
   if (!/\d/.test(t)) return null;
-  const n = Number(t.includes(",") ? t.replace(/\./g, "").replace(",", ".") : t);
-  return Number.isFinite(n) ? n : null;
+  return zahlAus(t);
 };
 const text = (z: Zelle | undefined) => (z === null || z === undefined ? "" : String(z).trim());
 

@@ -25,6 +25,7 @@ import { useZielgruppe, showGoldNugget } from "@/lib/vertriebsakademieZielgruppe
 import { ZielgruppenFilter } from "@/components/vertriebsakademie/ZielgruppenFilter";
 import { EinwandAntwort } from "@/components/einwaende/EinwandSchnellhilfe";
 import { mischeMitSaat } from "@/components/vertriebsakademie/aufgaben/AufgabenHelfer";
+import { OS_FUENF_SCHRITTE, OS_GRENZEN, OS_VORWAND_TEST } from "@/lib/osEinwaende";
 
 // ─── PDF je Technik, weiterhin auf Abruf geladen ───
 const PDF_FUNKTION: Record<string, string> = {
@@ -97,7 +98,7 @@ export function EinwandBibliothekMerged() {
       if (technik !== "alle" && e.technik !== technik) return false;
       if (nurMerkliste && !merkliste.includes(e.id)) return false;
       if (!q) return true;
-      return [e.einwand, e.meintEigentlich, e.antwortKurz, ...(e.tags ?? [])]
+      return [e.einwand, e.meintEigentlich, e.antwortKurz, e.nachfrage ?? "", ...(e.tags ?? [])]
         .join(" ")
         .toLowerCase()
         .includes(q);
@@ -118,6 +119,35 @@ export function EinwandBibliothekMerged() {
           ? "Profi-Ansicht: mit Profi-Move, Geschichte zum freien Erzählen, dem Prinzip hinter jeder Technik und der Stelle, an der sie nach hinten losgeht."
           : "Quereinsteiger-Ansicht: die Antwort groß zum Vorlesen, dazu die drei Schritte der passenden Technik. Profi-Moves und Feinheiten bleiben ausgeblendet."}
       </p>
+
+      {/*
+        Die Methode aus dem OS-Handbuch „Einwandbehandlung“. Sie gilt für jeden
+        Einwand, die Techniken darunter sind Werkzeuge für Schritt 3 und 4.
+      */}
+      <Card className="p-5 space-y-3">
+        <div>
+          <h3 className="text-base font-semibold leading-tight">So führst du jeden Einwand</h3>
+          <p className="text-xs text-muted-foreground">
+            Ein Einwand ist ein Informationswunsch. Erst verstehen, dann antworten. Aus dem OS-Handbuch Einwandbehandlung.
+          </p>
+        </div>
+        <ol className="grid gap-2 sm:grid-cols-5">
+          {OS_FUENF_SCHRITTE.map((s, i) => (
+            <li key={s.schritt} className="rounded-md border p-2.5 text-xs">
+              <div className="font-semibold">{i + 1}. {s.schritt}</div>
+              <div className="text-muted-foreground">{s.ziel}</div>
+            </li>
+          ))}
+        </ol>
+        <p className="text-xs">
+          <span className="font-semibold">Einwand oder Vorwand? </span>
+          Kommt nach jeder Antwort sofort der nächste Grund, hilft keine weitere Antwort, sondern eine offene Frage: „{OS_VORWAND_TEST}“
+        </p>
+        <p className="text-xs text-muted-foreground">
+          <span className="font-semibold text-foreground">Grenzen: </span>
+          {OS_GRENZEN.map((g) => `${g.thema}: ${g.verweis}`).join(" · ")}. Keine Zusagen zu Rendite, Wert oder Steuer, Belastung vor Steuern zuerst, kein Druck.
+        </p>
+      </Card>
 
       {/* ── Die zehn Techniken, kompakt statt zehn gleich aussehender Karten ── */}
       <Card className="p-5 space-y-3">
