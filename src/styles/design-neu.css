@@ -22,24 +22,24 @@
 
 [data-design="neu"] {
   /* Neutraltoene, Markenrichtlinie 3.3 */
-  --background: 210 37% 97%;        /* Flaeche  #F4F7FA */
-  --foreground: 215 17% 20%;        /* Text     #2B323C, nie reines Schwarz */
+  --background: 140 14% 96%;        /* Nebel #F3F6F4 (Markenrichtlinie 18.10.2026) */
+  --foreground: 160 50% 14%;        /* Tannengrün #12362A, nie reines Schwarz */
   --card: 0 0% 100%;                /* Weiss */
-  --card-foreground: 215 17% 20%;
+  --card-foreground: 160 50% 14%;
   --popover: 0 0% 100%;
-  --popover-foreground: 215 17% 20%;
+  --popover-foreground: 160 50% 14%;
 
-  --secondary: 210 37% 97%;
-  --secondary-foreground: 215 17% 20%;
-  --muted: 210 37% 97%;
-  --muted-foreground: 215 11% 46%;  /* Grau     #677281 */
+  --secondary: 148 17% 92%;
+  --secondary-foreground: 160 50% 14%;
+  --muted: 148 17% 92%;
+  --muted-foreground: 152 7% 36%;   /* Grautext #56635D, 6,3:1 */
 
-  --border: 213 24% 91%;            /* Linie    #E3E8EE, die Haarlinie */
-  --input: 213 24% 91%;
+  --border: 148 17% 85%;            /* Linie #D3E0D9 */
+  --input: 148 17% 80%;
 
-  --accent: 157 75% 95%;           /* Blau 50  #F0F9FF */
-  --accent-foreground: 157 71% 26%; /* Blau 700 #13704D */
-  --ring: 157 71% 39%;              /* Blau 500 #1CA873, der Fokusring */
+  --accent: 154 33% 92%;            /* Mint hell #E3F1EB */
+  --accent-foreground: 157 69% 26%; /* Markengrün tief #15724F */
+  --ring: 157 69% 32%;              /* Markengrün #198A5F, der Fokusring */
 
   /*
     Die Bedeutungsfarben. Sie sind in Etappe 1 durchgerutscht, deshalb stehen
@@ -51,11 +51,11 @@
 
     Orange ist im CRM ausschliesslich Achtung. Gehandelt wird in Blau 600.
   */
-  --success: 147 66% 28%;           /* Erfolg   #187745 */
+  --success: 157 69% 26%;           /* Erfolg als Schrift: Markengrün tief #15724F */
   --success-foreground: 0 0% 100%;
-  --warning: 36 100% 30%;           /* Achtung  #9A5B00 */
+  --warning: 25 90% 32%;            /* Warnung als Schrift #9A4508 */
   --warning-foreground: 0 0% 100%;
-  --destructive: 4 76% 43%;         /* Fehler   #C0261B */
+  --destructive: 5 53% 42%;         /* Fehler #A23B32 */
   --destructive-foreground: 0 0% 100%;
 
   /*
@@ -63,19 +63,19 @@
     "Ein harter, dunkler Schatten wirkt billig." Drei Stufen, mehr nicht:
     ruhend, angehoben, schwebend.
   */
-  --shadow-xs: 0 1px 1px rgba(15, 22, 33, .03);
-  --shadow-sm: 0 1px 2px rgba(15, 22, 33, .04), 0 1px 1px rgba(15, 22, 33, .03);
-  --shadow-md: 0 6px 16px -4px rgba(15, 22, 33, .07), 0 2px 5px -2px rgba(15, 22, 33, .04);
-  --shadow-lg: 0 16px 40px -10px rgba(15, 22, 33, .11), 0 5px 14px -5px rgba(15, 22, 33, .06);
-  --shadow-xl: 0 28px 68px -18px rgba(15, 22, 33, .16), 0 10px 24px -10px rgba(15, 22, 33, .08);
-  --hairline: rgba(15, 22, 33, .07);
+  --shadow-xs: 0 1px 1px rgba(18, 54, 42, .03);
+  --shadow-sm: 0 1px 2px rgba(18, 54, 42, .04), 0 1px 1px rgba(18, 54, 42, .03);
+  --shadow-md: 0 6px 16px -4px rgba(18, 54, 42, .07), 0 2px 5px -2px rgba(18, 54, 42, .04);
+  --shadow-lg: 0 16px 40px -10px rgba(18, 54, 42, .11), 0 5px 14px -5px rgba(18, 54, 42, .06);
+  --shadow-xl: 0 28px 68px -18px rgba(18, 54, 42, .16), 0 10px 24px -10px rgba(18, 54, 42, .08);
+  --hairline: rgba(18, 54, 42, .07);
 
   /* Die Seitenleiste traegt Weiss, nicht Grau: Der Grund liegt daneben. */
   --sidebar-background: 0 0% 100%;
-  --sidebar-foreground: 215 17% 20%;
-  --sidebar-border: 213 24% 91%;
-  --sidebar-accent: 157 75% 95%;
-  --sidebar-accent-foreground: 157 71% 26%;
+  --sidebar-foreground: 160 50% 14%;
+  --sidebar-border: 148 17% 85%;
+  --sidebar-accent: 154 33% 92%;
+  --sidebar-accent-foreground: 157 69% 26%;
 }
 
 /*
@@ -84,46 +84,46 @@
   Karten sich vom Grund abheben, ohne zu leuchten.
 */
 [data-design="neu"].dark {
-  --background: 217 38% 9%;         /* Tinte    #0F1621 */
-  --foreground: 210 25% 92%;
-  --card: 215 25% 13%;
-  --card-foreground: 210 25% 92%;
-  --popover: 215 25% 13%;
-  --popover-foreground: 210 25% 92%;
+  --background: 158 44% 8%;         /* #0C1F18 */
+  --foreground: 142 17% 91%;         /* #E4ECE7 */
+  --card: 160 50% 14%;               /* Tannengrün */
+  --card-foreground: 142 17% 91%;
+  --popover: 160 50% 14%;
+  --popover-foreground: 142 17% 91%;
 
-  --secondary: 215 22% 17%;
-  --secondary-foreground: 210 25% 92%;
-  --muted: 215 22% 17%;
-  --muted-foreground: 215 14% 60%;  /* Grau hell #8B97A7, die dunkle Fassung */
+  --secondary: 158 45% 19%;         /* Tannengrün 2 */
+  --secondary-foreground: 142 17% 91%;
+  --muted: 158 45% 19%;
+  --muted-foreground: 144 8% 74%;   /* #B8C2BC */
 
-  --border: 215 18% 22%;            /* Weiss mit 15 Prozent, als Ton gerechnet */
-  --input: 215 18% 24%;
+  --border: 158 45% 19%;
+  --input: 158 35% 26%;
 
-  --accent: 157 45% 15%;
-  --accent-foreground: 157 75% 55%;
-  --ring: 157 71% 39%;
+  --accent: 158 45% 19%;
+  --accent-foreground: 158 38% 75%;  /* Mint */
+  --ring: 158 38% 75%;
 
   /*
     Dunkel: dieselben Farben, aber aufgehellt. Ein Gruen mit 28 Prozent
     Helligkeit ist auf dunklem Grund nicht mehr lesbar.
   */
-  --success: 147 52% 52%;
-  --success-foreground: 217 38% 9%;
-  --warning: 36 85% 58%;
-  --warning-foreground: 217 38% 9%;
-  --destructive: 4 72% 62%;
-  --destructive-foreground: 217 38% 9%;
+  --success: 158 38% 75%;           /* Mint */
+  --success-foreground: 160 50% 14%;
+  --warning: 25 81% 68%;            /* #F0A56B */
+  --warning-foreground: 160 50% 14%;
+  --destructive: 4 83% 75%;         /* #F4938C */
+  --destructive-foreground: 160 50% 14%;
 
-  --sidebar-background: 217 38% 9%;
-  --sidebar-foreground: 210 25% 92%;
-  --sidebar-border: 215 18% 22%;
+  --sidebar-background: 158 44% 8%;
+  --sidebar-foreground: 142 17% 91%;
+  --sidebar-border: 158 45% 19%;
   /*
     Ohne diese beiden erbte der Dunkelmodus die hellen Werte von oben: Blau 50
     als Flaeche unter Blau 700 als Schrift, etwa 2,7:1. Dieselben Toene wie
     `--accent` im Dunkeln, gerechnet in `design-liquid.test.ts`.
   */
-  --sidebar-accent: 157 45% 15%;
-  --sidebar-accent-foreground: 157 75% 55%;
+  --sidebar-accent: 158 45% 19%;
+  --sidebar-accent-foreground: 158 38% 75%;
 }
 
 /*
@@ -166,14 +166,11 @@
 
   Neu: ruhende Karten tragen die Haarlinie, keinen Schatten.
 
-  Zum Radius eine Warnung fuer spaeter: Er aendert sich hier NICHT. Das
-  Projekt setzt `html { font-size: 90% }`, damit ist 1rem gleich 14,4 px und
-  Tailwinds `rounded-2xl` trifft den Wert der Formtabelle bereits von selbst.
-  Die Zeile steht trotzdem hier, damit der Wert nicht still kippt, wenn
-  jemand den Basisgrad anfasst.
+  Radius in px, weil das Projekt `html { font-size: 90% }` setzt und rem
+  sonst kleiner ausfiele als die Markenrichtlinie (Karte 16 px) verlangt.
 */
 [data-design="neu"] [data-ui="card"] {
-  border-radius: 14.4px;
+  border-radius: 16px;              /* Markenrichtlinie: Karte 16 px */
   border-color: hsl(var(--border));
   box-shadow: none;
 }
@@ -190,15 +187,12 @@
 }
 
 /*
-  Knoepfe. Radius 10,8 px nach der Formtabelle, aus demselben Grund wie bei
-  der Karte nur festgeschrieben und nicht geaendert: `rounded-xl` ergibt bei
-  90 Prozent Basisgrad bereits 10,8 px. Der weisse Lichtrand innen oben
-  bleibt, er ist laut Richtlinie ein Erkennungsmerkmal des Hauses.
-
-  Was sich hier wirklich aendert, steht eine Regel weiter unten.
+  Knoepfe. Der weisse Lichtrand innen oben bleibt, er ist ein
+  Erkennungsmerkmal des Hauses.
 */
+/* Markenrichtlinie 18.10.2026: Knoepfe sind ganz rund. */
 [data-design="neu"] [data-ui="button"] {
-  border-radius: 10.8px;
+  border-radius: 999px;
 }
 /*
   Das Zusammenschrumpfen beim Klick nimmt die Richtlinie nicht auf, und es
@@ -207,7 +201,7 @@
 */
 [data-design="neu"] [data-ui="button"]:active {
   transform: none;
-  box-shadow: inset 0 1px 3px rgba(15, 22, 33, .14);
+  box-shadow: inset 0 1px 3px rgba(18, 54, 42, .14);
 }
 
 /*
@@ -217,7 +211,7 @@
   daraus Unruhe. Die Tiefe entsteht neu allein aus dem Ton der Flaeche.
 */
 [data-design="neu"] [data-ui="field"] {
-  border-radius: 10.8px;
+  border-radius: 10px;              /* Markenrichtlinie: Feld 10 px */
   border-color: hsl(var(--border));
   box-shadow: none;
 }
@@ -226,10 +220,10 @@
   box-shadow: none;
 }
 
-/* Abzeichen sind Chips: 4 px Radius nach der Formtabelle, nie Pillenform. */
+/* Abzeichen sind Chips, laut Markenrichtlinie ganz rund. Outfit Medium, kein Fett. */
 [data-design="neu"] [data-ui="badge"] {
-  border-radius: 4px;
-  font-weight: 600;
+  border-radius: 999px;
+  font-weight: 500;
   letter-spacing: 0;
 }
 
@@ -251,8 +245,8 @@
 */
 [data-design="neu"] table thead th {
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .18em;
+  font-weight: 500;
+  letter-spacing: .2em;
   color: hsl(var(--muted-foreground));
 }
 [data-design="neu"] table tbody tr {
@@ -287,13 +281,13 @@
   border-right: 1px solid hsl(var(--border));
 }
 [data-design="neu"] [data-sidebar="menu-button"] {
-  border-radius: 8px;
+  border-radius: 10px;
   font-weight: 400;
 }
 [data-design="neu"] [data-sidebar="group-label"] {
   font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: .18em;
+  font-weight: 500;
+  letter-spacing: .22em;
   text-transform: uppercase;
   color: hsl(var(--muted-foreground));
 }
@@ -303,16 +297,23 @@
   Laufweite, je groesser der Grad, desto enger der Satz. Im Bestand steht sie
   nur an einzelnen Stellen.
 */
-[data-design="neu"] h1 { letter-spacing: -.030em; }
-[data-design="neu"] h2 { letter-spacing: -.025em; }
-[data-design="neu"] h3 { letter-spacing: -.020em; }
+/*
+  Seit 18.10.2026 stehen Ueberschriften in Playfair Display (Markenrichtlinie).
+  Playfair traegt Regular und Medium, kein Fett: Die Gewichte aus den Klassen
+  (font-bold, font-semibold) werden hier auf 500 zurueckgenommen.
+*/
+[data-design="neu"] h1,
+[data-design="neu"] h2,
+[data-design="neu"] h3 {
+  font-weight: 500;
+}
 
 /*
   Dialoge und Ueberlagerungen sind die dritte Schattenstufe, "schwebend".
   Nur hier ist ein deutlicher Schatten richtig.
 */
 [data-design="neu"] [role="dialog"] {
-  border-radius: 14.4px;
+  border-radius: 22px;              /* Markenrichtlinie: Dialog 22 px */
   box-shadow: var(--shadow-xl);
 }
 
@@ -323,17 +324,17 @@
   Bausteindatei bleibt unangetastet.
 */
 [data-design="neu"] [role="tablist"] {
-  border-radius: 10.8px;
+  border-radius: 999px;
   background: hsl(var(--muted));
   border: 1px solid hsl(var(--border));
 }
 [data-design="neu"] [role="tab"] {
-  border-radius: 8px;
+  border-radius: 999px;
   font-weight: 500;
 }
 [data-design="neu"] [role="tab"][data-state="active"] {
   box-shadow: var(--shadow-xs);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -356,16 +357,18 @@
 */
 [data-design="neu"] [data-ui="kennzahl-label"] {
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .18em;
+  font-weight: 500;
+  letter-spacing: .22em;
   text-transform: uppercase;
   line-height: 1.3;
 }
+/* Grosse Kennzahlen immer in Playfair Regular (Markenrichtlinie). */
 [data-design="neu"] [data-ui="kennzahl-wert"] {
   margin-top: 10px;
+  font-family: "Playfair Display", Georgia, serif;
   font-size: 32px;
-  font-weight: 700;
-  letter-spacing: -.03em;
+  font-weight: 400;
+  letter-spacing: 0;
   line-height: 1.12;
   color: hsl(var(--foreground));
 }
@@ -409,8 +412,8 @@
 [data-design="neu"] [data-anordnung="kompakt"] [data-ui="kennzahl-wert"] {
   margin-top: 0;
   font-size: 26px;
-  font-weight: 700;
-  letter-spacing: -.025em;
+  font-weight: 400;
+  letter-spacing: 0;
   line-height: 1.15;
   color: hsl(var(--foreground));
 }

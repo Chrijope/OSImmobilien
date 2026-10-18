@@ -371,3 +371,33 @@ main:has(> .kundenprofil) { overflow-x: clip; }
   .kundenprofil-zeitlinie td:nth-child(5) button,
   .kundenprofil-zeitlinie td:nth-child(5) > span { min-width: 40px; }
 }
+
+/*
+ * Liquid Glass im Kundenprofil (Markenrichtlinie, 18.10.2026).
+ *
+ * Die Arbeitskarte traegt `data-ui="card"` und wird damit selbst eine
+ * Glaskarte (design-liquid.css). Die erste Ebene schlichter Karten darin
+ * (etwa „Kundendaten") ist dann keine zweite Karte mehr, sondern liegt flach
+ * im Glas: Karte in Karte sah wie ein Kasten mit nur angedeuteten Ecken aus
+ * (Christian, 18.10.2026). Getoente Hinweiskarten und die Abschnitte im
+ * geoeffneten Investment bleiben Einlagen.
+ */
+[data-glas="liquid"] .kundenprofil-inhalt [data-ui="card"]:is(.bg-card, .bg-background, .bg-white):not(.kundenprofil-investment-layout [data-ui="card"], .kundenprofil-inhalt [data-ui="card"] [data-ui="card"]) {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+[data-glas="liquid"] .kundenprofil-inhalt [data-ui="card"]:is(.bg-card, .bg-background, .bg-white):not(.kundenprofil-investment-layout [data-ui="card"], .kundenprofil-inhalt [data-ui="card"] [data-ui="card"])::after { content: none; }
+/*
+ * Die Spalten links und rechts rollen selbst (overflow-y) und schnitten
+ * dadurch den weichen Schatten der Glaskarten ab, die Ecken wirkten kantig.
+ * Etwas Innenabstand, durch negativen Aussenabstand ausgeglichen, gibt dem
+ * Schatten Platz, ohne dass sich die Spaltenbreite aendert.
+ */
+[data-glas="liquid"] :is(.kundenprofil-stammdaten, .kundenprofil-aktivitaeten) {
+  padding: 4px 8px 32px;
+  margin: -4px -8px -32px;
+}

@@ -94,14 +94,14 @@ const SCHNELL_DARSTELLUNG: Partial<Record<SchnellaktionArt, { wort: string; satz
   notiz: {
     wort: "Notiz",
     satz: "Notiz zu diesem Kunden erstellen",
-    farbe: "bg-primary/15 text-primary",
+    farbe: "bg-accent text-accent-foreground",
   },
   anruf: {
     wort: "Anruf",
     // Seit dem 26.09.2026 waehlt der Klick sofort und oeffnet dazu das
     // Anruf-Protokoll, siehe `rufeAnUndProtokolliere` in KundenDetail.
     satz: "Diesen Kunden anrufen und den Anruf gleich notieren",
-    farbe: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400",
+    farbe: "bg-accent text-accent-foreground",
   },
   /*
    * E-Mail kam am 16.09.2026 dazu, auf Christians Zuruf. Sie wird so oft
@@ -116,7 +116,7 @@ const SCHNELL_DARSTELLUNG: Partial<Record<SchnellaktionArt, { wort: string; satz
   email: {
     wort: "E-Mail",
     satz: "E-Mail an diesen Kunden schreiben",
-    farbe: "bg-violet-500/15 text-violet-700 dark:text-violet-400",
+    farbe: "bg-accent text-accent-foreground",
   },
   /*
    * Die uebrigen vier kamen am 16.09.2026 dazu: Christian wollte alle
@@ -131,17 +131,17 @@ const SCHNELL_DARSTELLUNG: Partial<Record<SchnellaktionArt, { wort: string; satz
   aufgabe: {
     wort: "Aufgabe",
     satz: "Aufgabe zu diesem Kunden erstellen",
-    farbe: "bg-sky-500/15 text-sky-700 dark:text-sky-400",
+    farbe: "bg-accent text-accent-foreground",
   },
   meeting: {
     wort: "Meeting",
     satz: "Meeting mit diesem Kunden erstellen",
-    farbe: "bg-indigo-500/15 text-indigo-700 dark:text-indigo-400",
+    farbe: "bg-accent text-accent-foreground",
   },
   anruf_protokoll: {
     wort: "Anruf notieren",
     satz: "Einen gefuehrten Anruf nachtraeglich protokollieren",
-    farbe: "bg-slate-500/15 text-slate-700 dark:text-slate-300",
+    farbe: "bg-accent text-accent-foreground",
   },
 };
 

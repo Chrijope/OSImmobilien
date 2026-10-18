@@ -13,8 +13,9 @@ export type Ton = "hell" | "gruen" | "tief";
  * Akzent, wie im Logo; auf hellem Grund das dunklere Gold (--bos-akzent).
  */
 export const FARBE = {
-  gruen: "hsl(157 42% 13%)",
-  tief: "hsl(158 38% 9%)",
+  /** Tannengrün und der dunkle Bildschirmgrund der Markenrichtlinie (18.10.2026). */
+  gruen: "#12362A",
+  tief: "#0C1F18",
   gold: "#CCAC05",
   goldDunkel: "var(--bos-akzent)",
   /** Grün als Schrift, auf Glas die dunklere Stufe der Glasschicht. */
