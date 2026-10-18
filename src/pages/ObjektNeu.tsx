@@ -38,6 +38,9 @@ import { ObjektseiteFelderFormular } from "@/components/objektseite/ObjektseiteF
 import { objektartLabel, objektseiteFelderInMeta, objektseiteHandwerte, type ObjektseiteFelder } from "@/lib/objektseiteDaten";
 import { HAND_HIGHLIGHTS_SCHLUESSEL, MAX_HAND_HIGHLIGHTS, handHighlights } from "@/lib/interneHighlights";
 import { BeschreibungFeld, StandortargumenteFeld } from "@/components/objekte/ObjektKiTexte";
+import { ExklusivZuweisung } from "@/components/objekte/ExklusivZuweisung";
+import { exklusivKennungenInMeta, ladeExklusivKandidaten } from "@/lib/exklusivZuweisung";
+import { exklusivKennungenLesen } from "../../supabase/functions/_shared/objekt-zugang.ts";
 import { darfObjektTexteErstellen, MAX_KURZBESCHREIBUNG, type WizardTexteEingabe } from "@/lib/objektWizardTexte";
 import { konzeptLabel } from "@/lib/objektKonzept";
 import { objektTexteEnOhneGepflegte } from "../../supabase/functions/_shared/objekt-texte-en.ts";
@@ -74,18 +77,6 @@ import { kaufnebenkostenPct } from "@/lib/kaufnebenkosten";
 
 const fmt = (v: number) => new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(v);
 
-// Partner list for autocomplete (shared with Teampartner page)
-const KNOWN_PARTNERS = [
-  { id: "1", name: "Christian Peetz", rolle: "Super Admin", imonduId: "IM-100000001" },
-  { id: "3", name: "Lisa Weber", rolle: "Vertriebspartner", imonduId: "IM-100000003" },
-  { id: "4", name: "Anna Klein", rolle: "Vertriebspartner", imonduId: "IM-100000004" },
-  { id: "5", name: "Oliver Gjorgijev", rolle: "Admin", imonduId: "IM-100000005" },
-  { id: "6", name: "Julia Fischer", rolle: "Admin", imonduId: "IM-100000006" },
-  { id: "7", name: "Karin Martini", rolle: "Buchhaltung", imonduId: "IM-100000007" },
-  { id: "8", name: "Sandra Hoffmann", rolle: "Objektpartner", imonduId: "IM-100000008" },
-  { id: "9", name: "Peter Neumann", rolle: "Finanzierungspartner", imonduId: "IM-100000009" },
-  { id: "10", name: "Karin Wolf", rolle: "Vertriebspartner", imonduId: "IM-100000010" },
-];
 
 type ObjektDateiDraft = { id: string; name: string; filename: string; file?: File; existingUrl?: string };
 type UploadedWohnungImage = { sourceId: string; finalId: string; image: { id: string; url: string; alt: string; reihenfolge: number } };
@@ -524,6 +515,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
         setSlideshowPreviews([{ id: crypto.randomUUID(), url: existingObjekt.bildUrl, alt: "Hauptbild" }]);
       }
       setObjektangaben(objektseiteHandwerte(existingObjekt));
+      setExklusivKennungen(exklusivKennungenLesen(existingObjekt.meta));
       setInterneHighlightsText(handHighlights(existingObjekt).join("\n"));
       setEinzelWohnungen(existingObjekt.wohnungen || []);
       // Restore externen Unterlagen-Link
@@ -638,23 +630,10 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
     markDirty();
   };
 
-  // Partner search
-  const [partnerSearchFocused, setPartnerSearchFocused] = useState(false);
-  const filteredPartners = useMemo(() => {
-    const q = nf.newExklusivPartner.toLowerCase().trim();
-    if (!q) return KNOWN_PARTNERS;
-    return KNOWN_PARTNERS.filter(p =>
-      p.name.toLowerCase().includes(q) || p.imonduId.toLowerCase().includes(q) || p.rolle.toLowerCase().includes(q)
-    );
-  }, [nf.newExklusivPartner]);
-
-  const addPartner = (name: string) => {
-    if (name.trim() && !nf.exklusivPartner.includes(name.trim())) {
-      setNf(p => ({ ...p, exklusivPartner: [...p.exklusivPartner, name.trim()], newExklusivPartner: "" }));
-      markDirty();
-    }
-    setPartnerSearchFocused(false);
-  };
+  // Exklusive Freischaltung: Kennung je Name (`meta.exklusivPartnerKennung`), Auswahl nur aus echten Nutzern.
+  const [exklusivKennungen, setExklusivKennungen] = useState<Record<string, string>>({});
+  const profilVersion = useLiveVersion(["profiles", "user_roles"]);
+  const exklusivKandidaten = useMemo(() => ladeExklusivKandidaten(), [profilVersion]);
 
   // Images – store compressed thumbnails for preview + original Files for upload
   const [hauptbildPreview, setHauptbildPreview] = useState<string>("");
@@ -2265,7 +2244,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
     const handPunkte = zeilenListe(interneHighlightsText);
     if (handPunkte.length > 0) metaNeu[HAND_HIGHLIGHTS_SCHLUESSEL] = handPunkte;
     else delete metaNeu[HAND_HIGHLIGHTS_SCHLUESSEL];
-    newObj.meta = metaNeu;
+    newObj.meta = exklusivKennungenInMeta(metaNeu, nf.exklusivPartner, exklusivKennungen);
     // Eine Energieklasse statt zwei: die aus dem Energieausweis gilt auch für die Objektspalte.
     if (objektangaben.energieausweis.klasse && newObj.globalDaten) {
       newObj.globalDaten = { ...newObj.globalDaten, energieeffizienzklasse: objektangaben.energieausweis.klasse };
@@ -3312,57 +3291,14 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
                 </div>
               )}
 
-              {/* Exklusiv Partner with Search */}
-              <div className="mt-4">
-                <Label className="text-xs font-semibold">Exklusive Freischaltung (optional)</Label>
-                <p className="text-xs text-muted-foreground mb-2">Nur für bestimmte Vertriebspartner sichtbar.</p>
-                <div className="flex flex-wrap gap-1 mb-2">
-                  {nf.exklusivPartner.map((name, i) => (
-                    <Badge key={i} variant="secondary" className="text-xs gap-1">{name}<button className="ml-1 text-destructive" onClick={() => { setNf(p => ({ ...p, exklusivPartner: p.exklusivPartner.filter((_, j) => j !== i) })); markDirty(); }}>✕</button></Badge>
-                  ))}
-                </div>
-                <div className="relative">
-                  <div className="flex gap-2">
-                    <div className="relative flex-1">
-                      <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                      <Input
-                        value={nf.newExklusivPartner}
-                        onChange={e => setNf(p => ({ ...p, newExklusivPartner: e.target.value }))}
-                        onFocus={() => setPartnerSearchFocused(true)}
-                        onBlur={() => setTimeout(() => setPartnerSearchFocused(false), 200)}
-                        placeholder="Partner suchen (Name, ID, Rolle)..."
-                        className="h-[40px] text-xs pl-7 sm:h-8"
-                        onKeyDown={e => {
-                          if (e.key === "Enter" && nf.newExklusivPartner.trim()) {
-                            e.preventDefault();
-                            addPartner(nf.newExklusivPartner.trim());
-                          }
-                        }}
-                      />
-                    </div>
-                    <Button size="sm" className="h-[40px] min-w-[40px] sm:h-8 sm:min-w-0" onClick={() => addPartner(nf.newExklusivPartner.trim())}>+</Button>
-                  </div>
-                  {partnerSearchFocused && filteredPartners.length > 0 && (
-                    <div className="absolute z-50 top-full left-0 right-12 mt-1 bg-popover border rounded-lg shadow-lg max-h-56 overflow-y-auto">
-                      {filteredPartners
-                        .filter(p => !nf.exklusivPartner.includes(p.name))
-                        .map(p => (
-                        <button
-                          key={p.id}
-                          className="w-full text-left px-3 py-2 hover:bg-muted/50 flex items-center justify-between text-xs transition-colors"
-                          onMouseDown={(e) => { e.preventDefault(); addPartner(p.name); }}
-                        >
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium">{p.name}</span>
-                            <Badge variant="outline" className="text-[10px]">{p.rolle}</Badge>
-                          </div>
-                          <span className="text-muted-foreground text-[10px]">{p.imonduId}</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
+              <ExklusivZuweisung
+                kandidaten={exklusivKandidaten}
+                objektNamen={nf.exklusivPartner}
+                objektKennungen={exklusivKennungen}
+                onObjekt={(namen, kennungen) => { setNf(p => ({ ...p, exklusivPartner: namen })); setExklusivKennungen(kennungen); markDirty(); }}
+                einheiten={einzelWohnungen.filter(w => w.id).map((w, i) => ({ id: w.id!, bezeichnung: `WE ${w.weNr || i + 1}`, exklusivNutzer: w.exklusivNutzer || [] }))}
+                onEinheit={(id, nutzer) => { setEinzelWohnungen(prev => prev.map(w => (w.id === id ? { ...w, exklusivNutzer: nutzer.length ? nutzer : undefined } : w))); markDirty(); }}
+              />
             </Card>
             <div className="flex gap-2 justify-end">
               <Button onClick={() => setStep(isGlobalObjekt ? "global" : "1")}>Weiter: {isGlobalObjekt ? "Globaldaten" : isEinzelwohnung ? "Wohnung" : "Wohnungen"} →</Button>

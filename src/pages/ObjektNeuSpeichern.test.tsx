@@ -159,8 +159,10 @@ afterEach(() => cleanup());
 describe("Bearbeiten und Speichern: nichts geht verloren", () => {
   it("Objekt mit Einheiten: alle Einheitenfelder, Erhaltungsaufwand-Verteilung, AfA-Modell und Objektangaben bleiben", async () => {
     t.objekt = objekt({
-      wohnungen: [vollEinheit()],
+      wohnungen: [vollEinheit({ exklusivNutzer: ["u-ali"] })],
+      exklusivPartner: ["Zoe Vertrieb"],
       meta: {
+        exklusivPartnerKennung: { "Zoe Vertrieb": "u-zoe" },
         anlageklasse: "Mehrfamilienhaus",
         energieausweis: { art: "Bedarfsausweis", klasse: "B", kennwert: 74 },
         sanierungen: [{ jahr: "2024", massnahme: "Dach", betrag: 90000 }],
@@ -191,6 +193,10 @@ describe("Bearbeiten und Speichern: nichts geht verloren", () => {
     expect(meta().einheitenImHaus).toBe(28);
     expect(meta().kurzbeschreibung).toBe("Bleibt wortgleich");
     expect(meta().standortargumente).toEqual(["Lage. Bleibt auch."]);
+    // Exklusive Freischaltung: Objekt über die Kennung, Einheit über exklusivNutzer.
+    expect(t.gespeichert[0].exklusivPartner).toEqual(["Zoe Vertrieb"]);
+    expect(meta().exklusivPartnerKennung).toEqual({ "Zoe Vertrieb": "u-zoe" });
+    expect(w.exklusivNutzer).toEqual(["u-ali"]);
     // Unverändert geöffnet und gespeichert: die Spalte bleibt, auch wenn das Formular die Kurzbeschreibung zeigte.
     expect(t.gespeichert[0].beschreibung).toBe("");
     expect(meta().interneHighlightsHand).toEqual(["RND-Gutachten liegt vor"]);
