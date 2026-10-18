@@ -147,7 +147,9 @@ export default function VorschauGrundriss3d() {
 function HauffVorschau({ startwerte }: { startwerte: Parameters<typeof Grundriss3dBlock>[0]["startwerte"] }) {
   const bekannt = useBekanntesHaus({ adresse: "Hauffstraße 38" });
   if (!bekannt?.etagen) return <p className="text-sm text-muted-foreground">Pläne werden geladen</p>;
-  const we33 = bekannt.einheiten.find((e) => e.we === 33)?.plan;
+  // Einheit per ?we=… wählbar, ohne Angabe WE 33.
+  const weNr = Number(new URLSearchParams(window.location.search).get("we")) || 33;
+  const we33 = bekannt.einheiten.find((e) => e.we === weNr)?.plan;
   return (
     <section className="rounded-xl border bg-white p-4">
       <h2 className="mb-1 font-bold">Hauffstraße 38, Geltow</h2>
@@ -155,8 +157,8 @@ function HauffVorschau({ startwerte }: { startwerte: Parameters<typeof Grundriss
         Automatisch aus den Werkplänen von Studio LOES gelesen (Blätter 01 bis 05, 1:100): {bekannt.etagen.length} Etagenpläne, {bekannt.einheiten.length} Einheiten mit Räumen. Anordnung der Häuser wie im Planblatt.
       </p>
       <Grundriss3dBlock einheiten={bekannt.etagen.map((e) => ({ plan: e.plan, titel: e.titel }))} hoehe={680} aussehen={bekannt.aussehen} startwerte={startwerte} />
-      <h3 className="mb-2 mt-6 font-bold">Einheitenseite WE 33</h3>
-      {we33 && <Grundriss3dBlock einheiten={[{ plan: we33, titel: "WE 33" }]} hoehe={520} startwerte={{ ...startwerte, geschoss: undefined }} />}
+      <h3 className="mb-2 mt-6 font-bold">Einheitenseite WE {weNr}</h3>
+      {we33 && <Grundriss3dBlock einheiten={[{ plan: { ...we33, versatz: undefined }, titel: `WE ${weNr}` }]} hoehe={520} startwerte={{ ...startwerte, geschoss: undefined }} />}
     </section>
   );
 }

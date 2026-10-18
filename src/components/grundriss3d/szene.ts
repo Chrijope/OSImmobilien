@@ -401,14 +401,69 @@ export function hauptrichtung(punkte: Punkt[]): number {
   return Math.abs(winkel) < 0.01 ? 0 : winkel;
 }
 
-function moebliere(raumImPlan: Raum, typ: RaumTyp, M: Mats): THREE.Group {
+/**
+ * Größtes achsenparalleles Rechteck, das ganz im Raum liegt (Raster, je
+ * Zeile die Säulenhöhen, dann größtes Rechteck im Histogramm). Daran
+ * richten sich die Möbel aus: Bei verwinkelten oder schiefen Räumen läge das
+ * umschließende Rechteck halb außerhalb, und kein Möbel fände Platz.
+ */
+export function groesstesRechteck(punkte: Punkt[]): { minX: number; minY: number; maxX: number; maxY: number } | null {
+  const r = rahmen(punkte);
+  const schritt = Math.max(0.08, Math.sqrt(flaeche(punkte)) / 60);
+  const nx = Math.max(1, Math.ceil((r.maxX - r.minX) / schritt)), ny = Math.max(1, Math.ceil((r.maxY - r.minY) / schritt));
+  const hoehe = new Array<number>(nx).fill(0);
+  let best = { a: 0, x0: 0, x1: 0, y0: 0, y1: 0 };
+  for (let j = 0; j < ny; j++) {
+    for (let i = 0; i < nx; i++) {
+      const drin = punktInPolygon({ x: r.minX + (i + 0.5) * schritt, y: r.minY + (j + 0.5) * schritt }, punkte);
+      hoehe[i] = drin ? hoehe[i] + 1 : 0;
+    }
+    // Größtes Rechteck im Histogramm dieser Zeile (Stapelverfahren).
+    const stapel: number[] = [];
+    for (let i = 0; i <= nx; i++) {
+      const h = i < nx ? hoehe[i] : 0;
+      while (stapel.length && hoehe[stapel[stapel.length - 1]] >= h) {
+        const oben = hoehe[stapel.pop()!];
+        const links = stapel.length ? stapel[stapel.length - 1] + 1 : 0;
+        const a = oben * (i - links);
+        if (a > best.a) best = { a, x0: links, x1: i, y0: j - oben + 1, y1: j + 1 };
+      }
+      stapel.push(i);
+    }
+  }
+  if (!best.a) return null;
+  return { minX: r.minX + best.x0 * schritt, maxX: r.minX + best.x1 * schritt, minY: r.minY + best.y0 * schritt, maxY: r.minY + best.y1 * schritt };
+}
+
+/** Mitten aller Türen eines Plans: aus Wandöffnungen und aus CAD-Türflächen. */
+export function tuerMitten(plan: Grundriss3dPlan): Punkt[] {
+  const mitten: Punkt[] = [];
+  for (const o of plan.oeffnungen) {
+    if (o.art !== "tuer") continue;
+    const w = plan.waende.find((x) => x.id === o.wandId);
+    if (!w) continue;
+    const l = laenge(w.a, w.b) || 1;
+    mitten.push({ x: w.a.x + ((w.b.x - w.a.x) * o.position) / l, y: w.a.y + ((w.b.y - w.a.y) * o.position) / l });
+  }
+  for (const t of plan.flaechen?.tueren ?? []) {
+    mitten.push({ x: t.reduce((s, [x]) => s + x, 0) / t.length, y: t.reduce((s, [, y]) => s + y, 0) / t.length });
+  }
+  return mitten;
+}
+
+/** Bewegungsfläche vor Türen, in der keine Möbel stehen (Teppiche schon). */
+const TUER_FREI = 0.9;
+
+function moebliere(raumImPlan: Raum, typ: RaumTyp, M: Mats, tueren: Punkt[] = []): THREE.Group {
   const g = new THREE.Group();
   // Schräg liegende Räume ins Achsenkreuz drehen, möblieren, die Gruppe zurückdrehen.
   const winkel = hauptrichtung(raumImPlan.punkte);
   const cw = Math.cos(-winkel), sw = Math.sin(-winkel);
   const raum = winkel ? { ...raumImPlan, punkte: raumImPlan.punkte.map((p) => ({ x: p.x * cw - p.y * sw, y: p.x * sw + p.y * cw })) } : raumImPlan;
+  const tuerenLokal = tueren.map((p) => ({ x: p.x * cw - p.y * sw, y: p.x * sw + p.y * cw }));
   g.rotation.y = -winkel;
-  const r = rahmen(raum.punkte);
+  // Bezug ist das größte Rechteck im Raum, nicht der Umriss: so finden Möbel auch in L-förmigen und schiefen Räumen Platz.
+  const r = groesstesRechteck(raum.punkte) ?? rahmen(raum.punkte);
   const W = r.maxX - r.minX, D = r.maxY - r.minY;
   const innen = 0.06;
 
@@ -434,9 +489,21 @@ function moebliere(raumImPlan: Raum, typ: RaumTyp, M: Mats): THREE.Group {
     const mitte = { x: ecken.reduce((s, e) => s + e.x, 0) / 4, y: ecken.reduce((s, e) => s + e.y, 0) / 4 };
     const pruef = ecken.map((e) => { const d = Math.hypot(e.x - mitte.x, e.y - mitte.y) || 1; return { x: e.x - ((e.x - mitte.x) / d) * 0.05, y: e.y - ((e.y - mitte.y) / d) * 0.05 }; });
     if (!pruef.every((e) => punktInPolygon(e, raum.punkte))) return false;
+    // Auch die Fläche dazwischen: In verwinkelten Räumen kann eine Wandecke zwischen den Ecken liegen.
+    const proben = 5;
+    for (let i = 0; i <= proben; i++) for (let j = 0; j <= proben; j++) {
+      const u = i / proben, v = j / proben;
+      const pkt = {
+        x: pruef[0].x + (pruef[1].x - pruef[0].x) * u + (pruef[2].x - pruef[0].x) * v,
+        y: pruef[0].y + (pruef[1].y - pruef[0].y) * u + (pruef[2].y - pruef[0].y) * v,
+      };
+      if (!punktInPolygon(pkt, raum.punkte)) return false;
+    }
     // Nicht in schon gestellte Möbel; Teppiche (einzelne Fläche) dürfen darunter liegen.
     const box = { minX: Math.min(...pruef.map((e) => e.x)), maxX: Math.max(...pruef.map((e) => e.x)), minY: Math.min(...pruef.map((e) => e.y)), maxY: Math.max(...pruef.map((e) => e.y)) };
     const istTeppich = m instanceof THREE.Mesh;
+    // Türen freihalten: Abstand jeder Türmitte zum Möbelrechteck mindestens TUER_FREI.
+    if (!istTeppich && tuerenLokal.some((p) => Math.hypot(Math.max(box.minX - p.x, 0, p.x - box.maxX), Math.max(box.minY - p.y, 0, p.y - box.maxY)) < TUER_FREI)) return false;
     if (!istTeppich && belegt.some((q) => box.minX < q.maxX && box.maxX > q.minX && box.minY < q.maxY && box.maxY > q.minY)) return false;
     if (!istTeppich) belegt.push(box);
     m.position.set(x, 0, z);
@@ -566,10 +633,17 @@ export function baueSzene(einheiten: Einheit3d[], o: SzenenOptionen, haus?: Haus
         nurRundum.push(label);
       }
     }
+    // Türen der Einheit nur einmal je Plan ermitteln, nicht je Raum.
+    const tueren = o.stil !== "leer" ? tuerMitten(e.plan) : [];
     for (const raum of e.plan.raeume) {
       const rohTyp = wirksamerTyp(e.plan, raum);
       // Eine Diele über 16 m² ist ein Wohnraum (offener Grundriss, CAD-Beschriftung im Durchgang).
-      const typ = rohTyp === "flur" && flaeche(raum.punkte) > 16 && !/gemeinschaft|treppe/i.test(raum.name) ? "wohnen" : rohTyp;
+      // Ein unbeschrifteter „Raum“ ab 7 m² ist ein Zimmer: Im CAD-Plan fehlte nur der Text.
+      const a = flaeche(raum.punkte);
+      const allgemein = /gemeinschaft|treppe/i.test(raum.name);
+      const typ = rohTyp === "flur" && !allgemein && a > 16 ? "wohnen"
+        : rohTyp === "flur" && !allgemein && /^Raum\b/.test(raum.name) && a >= 7 ? "schlafen"
+        : rohTyp;
       const bodenMat = typ === "bad" || typ === "kueche" || typ === "treppenhaus" ? fliesenBoden : typ === "balkon" ? balkonBoden : holzBoden;
       const boden = new THREE.Mesh(flaechenGeometrie(raum.punkte), bodenMat);
       boden.receiveShadow = true;
@@ -583,7 +657,7 @@ export function baueSzene(einheiten: Einheit3d[], o: SzenenOptionen, haus?: Haus
         ebene.add(decke);
         decken.push(decke);
       }
-      if (o.stil !== "leer") ebene.add(moebliere(raum, typ, M));
+      if (o.stil !== "leer") ebene.add(moebliere(raum, typ, M, tueren));
       if (o.beschriftung && !hausAnsicht && !grossePlan) {
         const s = schwerpunkt(raum.punkte);
         const el = document.createElement("div");
@@ -599,7 +673,6 @@ export function baueSzene(einheiten: Einheit3d[], o: SzenenOptionen, haus?: Haus
         lichtpunkte.push(new THREE.Vector3(ebene.position.x + s.x, ebene.position.y + o.wandhoehe - 0.25, ebene.position.z + s.y));
         if (!hausAnsicht) stationen.push({ ziel: new THREE.Vector3(ebene.position.x + s.x, ebene.position.y + 0.8, ebene.position.z + s.y), name: `${einheiten.length > 1 && e.titel ? `${e.titel}, ` : ""}${raum.name}, ${qm(flaeche(raum.punkte))}` });
       }
-      const a = flaeche(raum.punkte);
       if (geschoss === unterstes && typ !== "balkon" && a > groessterRaum) {
         groessterRaum = a;
         const r = rahmen(raum.punkte);
