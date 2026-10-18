@@ -86,7 +86,6 @@ describe("Seiten finden", () => {
       ["provision", "/abrechnungen"],
       ["kalender", "/kalender"],
       ["termine", "/kalender"],
-      ["lotse", "/objekte-neu"],
       ["investmentrechner", "/investmentrechner"],
       ["kalkulator", "/investmentrechner"],
       ["selbstauskunft", "/alle-kontakte"],
@@ -199,8 +198,10 @@ describe("Rollenfilter deckt sich mit Seitenleiste und Routenschutz", () => {
       // (StrukturVerwaltung), nicht die Verwaltung.
       if (rolle === "vertriebspartner") expect(urls, rolle).toContain("/nutzerverwaltung");
       else expect(urls, rolle).not.toContain("/nutzerverwaltung");
-      // Die eigene Objektverwaltung traegt den Admin-Riegel.
-      expect(urls, rolle).not.toContain("/objekte");
+      // „Objekte“ seit 18.10.2026 für Vertriebspartner und Backoffice frei,
+      // für die Setterin weiter nicht.
+      if (rolle === "setterin") expect(urls, rolle).not.toContain("/objekte");
+      else expect(urls, rolle).toContain("/objekte");
     }
     expect(seitenFuerSuche(kontext("admin")).map((z) => z.url)).toEqual(
       expect.arrayContaining(["/audit-log", "/nutzerverwaltung", "/objekte", "/handbuch-seite"]),

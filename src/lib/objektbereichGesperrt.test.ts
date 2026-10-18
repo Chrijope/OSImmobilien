@@ -1,7 +1,10 @@
 /**
  * Der Objektbereich folgt dem Eintrag „Objekte" der Seitenleiste
  * (Christian, 29.09.2026). Maßstab ist `siehtObjekteMenue`, keine eigene
- * Rollenliste.
+ * Rollenliste. Seit 18.10.2026 sehen Vertriebsleitung, Vertriebspartner,
+ * Backoffice und Finanzierungspartner den Eintrag; pflegen (Anlegen,
+ * Bearbeiten, Verwaltungsansichten, Einheitenspiegel) bleibt bei Admin,
+ * Inhaber und Objektpartner.
  */
 import { describe, expect, it, vi } from "vitest";
 
@@ -18,17 +21,25 @@ const { isUrlAllowedForRole } = await import("./sidebarPermissions");
 const { benachrichtigungZiel } = await import("./benachrichtigungZiel");
 
 const PFADE = ["/objekte", "/objekte/o1", "/objekte/o1/verwaltung", "/objekte/o1/wohnung/w1", "/objekte/o1/einheiten/w1", "/objekte/o1/investment?x=1"];
+const ANSEHEN = ["/objekte", "/objekte/o1", "/objekte/o1/einheiten/w1", "/objekte/o1/investment?x=1"];
+const PFLEGE = ["/objekte/neu", "/objekte/o1/bearbeiten", "/objekte/o1/verwaltung", "/objekte/o1/wohnung/w1", "/einheitenspiegel"];
+const SEHEN_JETZT = ["vertriebsleiter", "vertriebspartner", "backoffice", "finanzierungspartner"];
 
 describe("objektbereichGesperrt", () => {
-  it("sperrt den Objektbereich für Vertriebspartner, obwohl /objekte in den Rollenrechten steht", () => {
+  it("öffnet Liste, Objekt- und Einheitenseite für die freigeschalteten Rollen", () => {
     expect(isUrlAllowedForRole("/objekte", "vertriebspartner")).toBe(true);
-    for (const p of PFADE) expect(objektbereichGesperrt(p, { rolle: "vertriebspartner" })).toBe(true);
+    for (const rolle of SEHEN_JETZT) {
+      expect(siehtObjekteMenue({ rolle })).toBe(true);
+      for (const p of ANSEHEN) expect(objektbereichGesperrt(p, { rolle })).toBe(false);
+    }
   });
 
-  it("sperrt auch Vertriebsleitung, Backoffice und Finanzierungspartner", () => {
-    for (const rolle of ["vertriebsleiter", "backoffice", "finanzierungspartner"]) {
-      expect(objektbereichGesperrt("/objekte/o1/verwaltung", { rolle })).toBe(true);
-    }
+  it("lässt die Pflege für diese Rollen zu", () => {
+    for (const rolle of SEHEN_JETZT) for (const p of PFLEGE) expect(objektbereichGesperrt(p, { rolle })).toBe(true);
+  });
+
+  it("andere Rollen sehen den Bereich weiter nicht", () => {
+    for (const rolle of ["hausverwaltung", "setterin", "tippgeber"]) expect(objektbereichGesperrt("/objekte", { rolle })).toBe(true);
   });
 
   it("lässt Admin und Inhaber durch", () => {
@@ -43,7 +54,7 @@ describe("objektbereichGesperrt", () => {
   });
 
   it("sperrt den Anlage-Assistenten und den Einheitenspiegel ebenso", () => {
-    for (const rolle of ["vertriebspartner", "vertriebsleiter", "backoffice", "hausverwaltung"]) {
+    for (const rolle of [...SEHEN_JETZT, "hausverwaltung"]) {
       expect(objektbereichGesperrt("/objekte/neu", { rolle })).toBe(true);
       expect(objektbereichGesperrt("/einheitenspiegel", { rolle })).toBe(true);
     }
@@ -67,13 +78,13 @@ describe("objektbereichGesperrt", () => {
     });
     const frisch = await import("./sidebarNavigation");
     expect(frisch.siehtObjekteMenue({ rolle: "vertriebsleiter" })).toBe(true);
-    expect(frisch.objektbereichGesperrt("/objekte/o1/verwaltung", { rolle: "vertriebsleiter" })).toBe(false);
-    expect(frisch.objektbereichGesperrt("/objekte", { rolle: "vertriebspartner" })).toBe(true);
+    expect(frisch.objektbereichGesperrt("/objekte/o1", { rolle: "vertriebsleiter" })).toBe(false);
+    expect(frisch.objektbereichGesperrt("/objekte", { rolle: "hausverwaltung" })).toBe(true);
     vi.doUnmock("@/lib/sidebarPermissions");
   });
 
   it("stimmt mit der Seitenleiste überein", () => {
-    for (const rolle of ["admin", "inhaber", "vertriebspartner", "backoffice"]) {
+    for (const rolle of ["admin", "inhaber", "vertriebspartner", "backoffice", "hausverwaltung"]) {
       expect(objektbereichGesperrt("/objekte", { rolle })).toBe(!siehtObjekteMenue({ rolle }));
     }
   });
@@ -84,10 +95,10 @@ describe("Glocken in den Objektbereich", () => {
   const ziel = (link: string, rolle: string) =>
     benachrichtigungZiel(link, "osimmobilien.netlify.app", (pfad) => objektbereichGesperrt(pfad, { rolle }));
 
-  it("„Wohnung exklusiv zugewiesen“ verlinkt für Vertriebspartner nicht mehr auf das Objekt", () => {
-    expect(ziel("/objekte/o1", "vertriebspartner")).toEqual({ art: "keins" });
-    expect(ziel("https://osimmobilien.netlify.app/objekte/o1", "vertriebspartner")).toEqual({ art: "keins" });
+  it("„Wohnung exklusiv zugewiesen“ verlinkt für Vertriebspartner wieder auf das Objekt, nicht in die Pflege", () => {
+    expect(ziel("/objekte/o1", "vertriebspartner")).toEqual({ art: "intern", pfad: "/objekte/o1" });
     expect(ziel("/einheitenspiegel", "vertriebspartner")).toEqual({ art: "keins" });
+    expect(ziel("/objekte/o1", "hausverwaltung")).toEqual({ art: "keins" });
   });
 
   it("der Admin kommt weiter zum Objekt", () => {

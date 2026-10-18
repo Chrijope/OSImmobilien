@@ -236,8 +236,8 @@ describe("Globale Suche", () => {
       expect(optionen().some((t) => t.includes("Wohnpark Test"))).toBe(true);
     });
 
-    it("zeigt einem Vertriebspartner keine Objekte, solange „Objekte“ für ihn zu ist", () => {
-      rolle = "vertriebspartner";
+    it("zeigt der Hausverwaltung keine Objekte, solange „Objekte“ für sie zu ist", () => {
+      rolle = "hausverwaltung";
       tippe("Teststrasse");
       expect(screen.queryByText("Wohnpark Test")).toBeNull();
       expect(screen.queryByText("Objekte")).toBeNull();
@@ -255,7 +255,7 @@ describe("Globale Suche", () => {
         "osimmo_suche_zuletzt:u-test",
         JSON.stringify([{ id: "objekt-o1", titel: "Wohnpark Test", url: "/objekte/o1" }]),
       );
-      rolle = "vertriebspartner";
+      rolle = "hausverwaltung";
       const feld = zeige("/nirgends");
       fireEvent.focus(feld);
       expect(screen.queryByText("Wohnpark Test")).toBeNull();

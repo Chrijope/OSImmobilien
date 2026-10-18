@@ -100,11 +100,19 @@ function zeige(pfad: string) {
 }
 
 describe("Direktlinks in den Objektbereich", () => {
+  // Seit 18.10.2026: ansehen ja, pflegen nein (Christian).
   it.each([
     ["/objekte", "Objektliste"],
+    ["/objekte/o1/einheiten/w1", "Einheit"],
+  ])("ein Vertriebspartner kommt auf %s", (pfad, seite) => {
+    nutzer.role = "vertriebspartner";
+    zeige(pfad);
+    expect(screen.getByText(seite)).toBeInTheDocument();
+  });
+
+  it.each([
     ["/objekte/o1/verwaltung", "Verwaltung"],
     ["/objekte/o1/wohnung/w1?kundeId=k1", "Wohnung"],
-    ["/objekte/o1/einheiten/w1", "Einheit"],
     ["/objekte/neu", "Objekt anlegen"],
     ["/einheitenspiegel", "Einheitenspiegel"],
   ])("ein Vertriebspartner kommt nicht auf %s", (pfad, seite) => {
@@ -157,12 +165,12 @@ describe("Direktlinks in den Objektbereich", () => {
     it("öffnet Liste, Objekt- und Einheitenseite, aber nicht Anlegen und Einheitenspiegel", () => {
       nutzer.role = "vertriebspartner";
       config.liste = [eigeneId];
-      for (const [pfad, seite] of [["/objekte", "Objektliste"], ["/objekte/o1/verwaltung", "Verwaltung"], ["/objekte/o1/einheiten/w1", "Einheit"]]) {
+      for (const [pfad, seite] of [["/objekte", "Objektliste"], ["/objekte/o1/einheiten/w1", "Einheit"]]) {
         zeige(pfad);
         expect(screen.getByText(seite)).toBeInTheDocument();
         cleanup();
       }
-      for (const pfad of ["/objekte/neu", "/einheitenspiegel"]) {
+      for (const pfad of ["/objekte/neu", "/einheitenspiegel", "/objekte/o1/verwaltung"]) {
         zeige(pfad);
         expect(screen.getByText("Dashboard")).toBeInTheDocument();
         cleanup();
@@ -170,10 +178,10 @@ describe("Direktlinks in den Objektbereich", () => {
       config.liste = [];
     });
 
-    it("greift nicht für eine andere Kennung und nicht in einer anderen aktiven Rolle", () => {
+    it("öffnet keine Pflege, auch nicht in einer anderen aktiven Rolle", () => {
       config.liste = ["00000000-0000-4000-8000-000000000099"];
       nutzer.role = "vertriebspartner";
-      zeige("/objekte");
+      zeige("/objekte/neu");
       expect(screen.getByText("Dashboard")).toBeInTheDocument();
       cleanup();
       config.liste = [eigeneId];

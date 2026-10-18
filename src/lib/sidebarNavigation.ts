@@ -70,12 +70,12 @@ const vertriebItems = [
 ];
 
 const immobilienItems = [
-  /* Der Weg zu Investagon. Er steht oben, weil im Vertrieb hier gearbeitet
-     wird. Der Eintrag darunter ist die eigene Objektverwaltung, sie traegt
-     das Admin-Abzeichen und ist nur fuer die Pflege da. */
-  { title: "Objekte", url: "/objekte-neu", icon: Building2, suchbegriffe: ["immobilien", "haus", "gebaeude", "wohnungen", "einheiten", "investagon", "expose", "lotse", "os lotse"] },
-  { title: "Objekte", url: "/objekte", icon: Building2, adminOnly: true, adminBadge: true, suchbegriffe: ["objektverwaltung", "bestand", "investagon import"],
-    tooltip: "Die eigene Objektverwaltung mit dem Investagon-Import. Fuer die Pflege, im Vertrieb wird der Eintrag darueber genutzt." },
+  /* Seit 18.10.2026 (Christian) nur noch ein Eintrag „Objekte“, ohne
+     Admin-Abzeichen, sichtbar für die Rollen in `auchFuer`. /objekte-neu
+     (nur der Investagon-Link) steht nicht mehr in der Seitenleiste, die
+     Adresse bleibt für alte Links erreichbar. Ansehen ja, Pflege nicht:
+     siehe `OBJEKT_PFLEGE_ROLLEN` in `objektbereichGesperrt`. */
+  { title: "Objekte", url: "/objekte", icon: Building2, adminOnly: true, auchFuer: ["vertriebsleiter", "vertriebspartner", "backoffice", "finanzierungspartner", "objektpartner"], suchbegriffe: ["immobilien", "haus", "gebaeude", "wohnungen", "einheiten", "expose", "objektverwaltung", "bestand", "investagon import"] },
   { title: "Objekt Akquise", url: "/objekt-akquise", icon: Search, adminOnly: true, suchbegriffe: ["ankauf", "einkauf", "neue objekte"] },
   { title: "Objekt Einreichungen", url: "/objekt-einreichungen", icon: ClipboardList, adminOnly: true, suchbegriffe: ["eingereicht", "vorschlaege"] },
 ];
@@ -462,12 +462,22 @@ export function siehtObjekteMenue(ctx: NavKontext): boolean {
  * Das ist nur die Oberfläche. Die Zeilensicherheit auf `objekte` und
  * `wohnungen` bleibt unverändert, interne Rollen laden die Daten weiter.
  */
+/** Wer Objekte anlegen, bearbeiten und verwalten darf (Christian, 18.10.2026). */
+const OBJEKT_PFLEGE_ROLLEN = ["admin", "inhaber", "individuell", "testaccount", "objektpartner"];
+
+/** Anlage-Assistent, Bearbeiten, Verwaltungsansichten (Objekt, Wohnung) und Einheitenspiegel. */
+function istObjektPflege(p: string): boolean {
+  return p === "/objekte/neu" || p === "/einheitenspiegel" || p.endsWith("/bearbeiten") || /^\/objekte\/[^/]+\/(verwaltung|wohnung)(\/|$)/.test(p);
+}
+
 export function objektbereichGesperrt(pfad: string, ctx: NavKontext): boolean {
   const p = pfad.split(/[?#]/)[0];
   if (p !== "/objekte" && !p.startsWith("/objekte/") && p !== "/einheitenspiegel") return false;
   // Das Objektpartner-Dashboard führt ausschließlich in diesen Bereich
   // (Liste, eigene Objekte, Objekt anlegen). Christian: so lassen.
   if (ctx.rolle === "objektpartner") return false;
+  // Ansehen dürfen alle, die den Eintrag sehen; pflegen nur diese Rollen.
+  if (istObjektPflege(p) && !OBJEKT_PFLEGE_ROLLEN.includes(String(ctx.rolle))) return true;
   // Die Testfreischaltung öffnet nur das Ansehen. Anlegen und Bearbeiten
   // bleiben zu, auch wenn `/objekte` als Präfix sie in den Rollenrechten mitnimmt.
   if (objekteTestFreigabe(ctx.rolle, ctx.identitaet?.userId) && (p === "/objekte/neu" || p.endsWith("/bearbeiten"))) return true;
