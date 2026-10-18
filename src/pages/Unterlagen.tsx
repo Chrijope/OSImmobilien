@@ -274,7 +274,8 @@ export default function Unterlagen() {
           if (dok.download) {
             const a = document.createElement("a");
             a.href = dok.url;
-            const fileName = dok.url.split("/").pop() || "download";
+            // Ohne Abfrageteil wie "?v=2" (Cache-Versionierung der Bilder).
+            const fileName = dok.url.split("/").pop()?.split("?")[0] || "download";
             a.download = fileName;
             document.body.appendChild(a);
             a.click();
