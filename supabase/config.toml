@@ -439,6 +439,9 @@ verify_jwt = false
 [functions.google-calendar]
 verify_jwt = false
 
+[functions.grundriss-erkennen]
+verify_jwt = true
+
 [functions.handle-email-suppression]
 verify_jwt = false
 

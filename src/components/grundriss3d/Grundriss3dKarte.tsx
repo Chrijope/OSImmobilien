@@ -2,12 +2,15 @@ import { Suspense, lazy, useEffect, useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Loader2, PencilRuler } from "lucide-react";
+import { Loader2, PencilRuler, Sparkles } from "lucide-react";
+import { toast } from "sonner";
 import type { ObjektData, ObjektWohnung } from "@/lib/objekteStore";
 import { resolveImageUrl } from "@/lib/objekteImages";
 import { Grundriss3dBlock } from "./Grundriss3dBlock";
-import { hausAusMeta, planAusMeta, plaeneAusEinheiten } from "./plan";
-import { speichereEinheitPlan } from "./speichern";
+import { erkenneGrundriss, grundrissDerEinheit } from "./kiErkennung";
+import type { MassstabQuelle } from "./kiPlan";
+import { hausAusMeta, planAusMeta, plaeneAusEinheiten, type Grundriss3dPlan } from "./plan";
+import { entwurfLaden, entwurfLoeschen, entwurfSichern, speichereEinheitPlan } from "./speichern";
 import { useBekanntesHaus, weNummer, type BekanntesHaus } from "./planBibliothek";
 
 const Editor = lazy(() => import("./GrundrissEditor"));
@@ -40,8 +43,10 @@ function mitBibliothek(objekt: Pick<ObjektData, "wohnungen" | "wohnungenNichtImA
 }
 
 /** Editor im großen Fenster. Seit 17.10.2026 für jede interne Rolle (Datenbankfunktion grundriss3d_speichern). */
-export function Grundriss3dEditorDialog({ offen, onOpenChange, wohnung, titel, onGespeichert }: {
+export function Grundriss3dEditorDialog({ offen, onOpenChange, wohnung, titel, onGespeichert, start }: {
   offen: boolean;
+  /** Statt des gespeicherten Plans, etwa der automatisch erkannte Entwurf. */
+  start?: Grundriss3dPlan;
   onOpenChange: (o: boolean) => void;
   wohnung: Pick<ObjektWohnung, "id" | "grundriss3d">;
   titel: string;
@@ -54,7 +59,7 @@ export function Grundriss3dEditorDialog({ offen, onOpenChange, wohnung, titel, o
         <div className="min-h-0 flex-1">
           {offen && (
             <Suspense fallback={<Loader2 className="h-5 w-5 animate-spin" />}>
-              <Editor start={planAusMeta(wohnung.grundriss3d)} entwurfId={wohnung.id} titel={titel}
+              <Editor start={start ?? planAusMeta(wohnung.grundriss3d)} entwurfId={wohnung.id} titel={titel}
                 onSpeichern={async (plan) => { await speichereEinheitPlan(wohnung.id, plan); onGespeichert?.(); }} />
             </Suspense>
           )}
@@ -64,13 +69,62 @@ export function Grundriss3dEditorDialog({ offen, onOpenChange, wohnung, titel, o
   );
 }
 
+type KiZustand =
+  | { art: "ruht" }
+  | { art: "laeuft"; quelle: string }
+  | { art: "entwurf"; plan: Grundriss3dPlan; hinweis: string }
+  | { art: "fehler"; text: string };
+
+const MASSSTAB_TEXT: Record<MassstabQuelle, string> = {
+  massketten: "Maßstab aus den Maßketten im Plan",
+  raumflaechen: "Maßstab aus den Raumflächen im Plan",
+  wohnflaeche: "Maßstab aus der Wohnfläche der Einheit, bitte besonders prüfen",
+};
+
+/**
+ * Automatische Erkennung (18.10.2026): Hat die Einheit keinen 3D-Plan, aber
+ * einen eigenen Grundriss, liest die KI ihn beim Öffnen einmal aus. Das
+ * Ergebnis ist nur ein Entwurf im Browser (wie im Editor); ins Exposé und
+ * auf die Objektseite kommt es erst mit „Übernehmen“. Ein falscher Plan im
+ * Exposé wäre eine falsche Angabe gegenüber dem Käufer.
+ */
+function useKiEntwurf(aktiv: boolean, objekt: ObjektData | undefined, wohnung: ObjektWohnung) {
+  const quelle = useMemo(() => (aktiv && objekt ? grundrissDerEinheit(objekt, wohnung) : null), [aktiv, objekt, wohnung]);
+  const [zustand, setZustand] = useState<KiZustand>({ art: "ruht" });
+  const [verworfen, setVerworfen] = useState(false);
+  useEffect(() => {
+    if (!aktiv || verworfen) return;
+    // Schon ein Entwurf da (frühere Erkennung oder angefangenes Nachzeichnen): keine neue KI-Anfrage.
+    const vorhanden = entwurfLaden(wohnung.id);
+    if (vorhanden && planAusMeta(vorhanden.plan)) {
+      setZustand({ art: "entwurf", plan: vorhanden.plan, hinweis: "Entwurf, noch nicht gespeichert." });
+      return;
+    }
+    if (!quelle) return;
+    let laeuft = true;
+    setZustand({ art: "laeuft", quelle: quelle.name });
+    erkenneGrundriss(quelle, wohnung)
+      .then((e) => {
+        if (!laeuft) return;
+        entwurfSichern(wohnung.id, e.plan);
+        setZustand({ art: "entwurf", plan: e.plan, hinweis: `Automatisch erkannt aus „${quelle.name}“. ${MASSSTAB_TEXT[e.quelle]}.` });
+      })
+      .catch((f) => { if (laeuft) setZustand({ art: "fehler", text: f instanceof Error ? f.message : String(f) }); });
+    return () => { laeuft = false; };
+    // Nur je Einheit und Datei einmal, nicht bei jeder Live-Aktualisierung der Einheit.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [aktiv, verworfen, wohnung.id, quelle?.url]);
+  const verwerfen = () => { entwurfLoeschen(wohnung.id); setVerworfen(true); setZustand({ art: "ruht" }); };
+  return { zustand, verwerfen };
+}
+
 /** Einheitenseite, Reiter Übersicht: nur der Grundriss dieser Einheit. */
 export function EinheitGrundriss3dKarte({ wohnung, darfBearbeiten, onGespeichert, objekt }: {
   wohnung: ObjektWohnung;
   darfBearbeiten: boolean;
   onGespeichert?: () => void;
-  /** Für die Bibliothek nachgezeichneter Häuser (Erkennung an der Adresse). */
-  objekt?: Pick<ObjektData, "adresse" | "titel">;
+  /** Für die Bibliothek nachgezeichneter Häuser (Erkennung an der Adresse) und die Grundriss-Dateien. */
+  objekt?: ObjektData;
 }) {
   const bekannt = useBekanntesHaus(objekt);
   const eigenerPlan = useMemo(() => planAusMeta(wohnung.grundriss3d), [wohnung.grundriss3d]);
@@ -78,7 +132,20 @@ export function EinheitGrundriss3dKarte({ wohnung, darfBearbeiten, onGespeichert
   // Ein ganzes Haus als eine Einheit (Doppelhaushälfte): alle Geschosse zeigen.
   const hausEtagen = !plan && bekannt?.etagen && bekannt.einheiten.length === 0 ? bekannt.etagen : null;
   const [editor, setEditor] = useState(false);
+  const ki = useKiEntwurf(darfBearbeiten && !plan && !hausEtagen, objekt, wohnung);
+  const [speichert, setSpeichert] = useState(false);
   if (!plan && !hausEtagen && !darfBearbeiten) return null;
+  const uebernehmen = async (entwurf: Grundriss3dPlan) => {
+    setSpeichert(true);
+    try {
+      await speichereEinheitPlan(wohnung.id, entwurf);
+      onGespeichert?.();
+    } catch (f) {
+      toast.error(f instanceof Error ? f.message : "Nicht gespeichert.");
+    } finally {
+      setSpeichert(false);
+    }
+  };
   return (
     <Card className="p-4" data-testid="einheit-grundriss-3d">
       <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -102,12 +169,34 @@ export function EinheitGrundriss3dKarte({ wohnung, darfBearbeiten, onGespeichert
           <Grundriss3dBlock einheiten={[{ plan: { ...plan, versatz: undefined }, titel: `WE ${wohnung.weNr}` }]} hoehe="voll" aussehen={eigenerPlan ? undefined : bekannt?.aussehen} />
           {!eigenerPlan && bekannt && <p className="mt-1 text-[11px] text-muted-foreground">Nachgezeichnet aus dem Grundriss der Unterlagen ({bekannt.name}).</p>}
         </>
+      ) : ki.zustand.art === "entwurf" ? (
+        <>
+          <div className="mb-3 flex flex-wrap items-center gap-2 rounded-md border border-amber-300 bg-amber-50 p-2 text-xs text-amber-900">
+            <Sparkles className="h-3.5 w-3.5 shrink-0" />
+            <span className="min-w-0 flex-1">{ki.zustand.hinweis} Bitte prüfen; erst nach „Übernehmen“ erscheint er auf der Objektseite und im Exposé.</span>
+            <Button size="sm" className="h-7 text-xs" disabled={speichert} onClick={() => ki.zustand.art === "entwurf" && void uebernehmen(ki.zustand.plan)}>
+              {speichert ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Übernehmen"}
+            </Button>
+            <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setEditor(true)}>Im Editor korrigieren</Button>
+            <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={ki.verwerfen}>Verwerfen</Button>
+          </div>
+          <Grundriss3dBlock einheiten={[{ plan: { ...ki.zustand.plan, versatz: undefined }, titel: `WE ${wohnung.weNr}` }]} hoehe="voll" />
+        </>
+      ) : ki.zustand.art === "laeuft" ? (
+        <p className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" /> Grundriss „{ki.zustand.quelle}“ wird automatisch erkannt. Das dauert etwa eine halbe Minute.
+        </p>
       ) : (
         <p className="text-sm text-muted-foreground">
+          {ki.zustand.art === "fehler" && <span className="mb-1 block text-destructive">Automatische Erkennung: {ki.zustand.text}</span>}
           Noch kein 3D-Grundriss. Lege den Grundriss als Bild oder PDF in den Editor, setze den Maßstab und zeichne Wände, Türen, Fenster und Räume nach. Danach erscheint er hier, auf der Objektseite und im Exposé.
         </p>
       )}
-      {darfBearbeiten && <Grundriss3dEditorDialog offen={editor} onOpenChange={setEditor} wohnung={wohnung} titel={`WE ${wohnung.weNr}`} onGespeichert={onGespeichert} />}
+      {darfBearbeiten && (
+        <Grundriss3dEditorDialog offen={editor} onOpenChange={setEditor} wohnung={wohnung} titel={`WE ${wohnung.weNr}`} onGespeichert={onGespeichert}
+          // Mit dem Zeitpunkt des Entwurfs, sonst böte der Editor denselben Entwurf noch einmal zum Laden an.
+          start={!plan && ki.zustand.art === "entwurf" ? { ...ki.zustand.plan, geaendertAm: entwurfLaden(wohnung.id)?.gesichertAm } : undefined} />
+      )}
     </Card>
   );
 }
