@@ -11,6 +11,7 @@ import { kennenlernUeberleitung, type PartnerBewerbungAntwort } from "@/lib/part
 import {
   STELLENANZEIGEN,
   STELLENANZEIGE_KOPF,
+  STELLENANZEIGE_VORTEILE,
   STELLENANZEIGE_WERTE,
   TIPPGEBER_BESTAETIGUNG,
   stelleZuSlug,
@@ -26,12 +27,17 @@ import {
   ListChecks, Mail, MapPin, ShieldCheck, Briefcase,
 } from "lucide-react";
 import { CookieEinstellungenLink } from "@/components/cookie/CookieEinstellungenLink";
+import { Markenfamilie } from "@/components/beratung/Markenfamilie";
+import { FARBE, mitAkzent } from "@/components/beratung/folienBausteine";
+import { OS_TEXTE } from "@/lib/beratungOsDaten";
 
 /**
  * Die öffentliche Stellenanzeige, `/karriere/stellenanzeige`.
  *
- * Aufbau nach Christians Vorgabe vom 24.09.2026: oben kurz, wer OS Immobilien ist
- * und wofür das Haus steht, darunter die offenen Partnerschaften als Kacheln.
+ * Aufbau nach Christians Vorgaben vom 24.09. und 18.10.2026: oben kurz, wer
+ * OS Real Estate ist und wofür das Haus steht, dann die Vorteile der
+ * Zusammenarbeit, der Baum der Markenfamilie wie in der Beratungspräsentation
+ * („Über uns") und direkt darunter die offenen Partnerschaften als Kacheln.
  * Eine Kachel klappt auf, ihr Inhalt steht am Schreibtisch über die ganze
  * Breite unter den Kacheln, am Handy direkt unter der eigenen Kachel. Es ist
  * immer höchstens eine offen, so bleibt die Seite ruhig.
@@ -59,6 +65,7 @@ const MERKMAL_SYMBOL: Record<StellenMerkmal["art"], typeof MapPin> = {
 };
 
 const WERT_SYMBOLE = [Calculator, Lightbulb, ShieldCheck, HeartHandshake];
+const VORTEIL_SYMBOLE = [Building2, ShieldCheck, Handshake];
 
 const STELLEN_SYMBOL: Record<Stellenanzeige["weg"], typeof MapPin> = {
   vertriebspartner: KeyRound,
@@ -386,6 +393,30 @@ const StellenanzeigePage = () => {
           </div>
         </section>
 
+        {/* Vorteile der Zusammenarbeit */}
+        <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6" aria-labelledby="vorteile-titel">
+          <div className="mb-8 text-center">
+            <h2 id="vorteile-titel" className="text-2xl font-bold tracking-tight md:text-3xl">
+              {kopf.vorteileTitel}
+            </h2>
+            <p className="mt-3 text-muted-foreground">{kopf.vorteileEinleitung}</p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            {STELLENANZEIGE_VORTEILE.map((v, i) => {
+              const Symbol = VORTEIL_SYMBOLE[i % VORTEIL_SYMBOLE.length];
+              return (
+                <Card key={v.titel} className="p-6">
+                  <span className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Symbol className="h-5 w-5" aria-hidden />
+                  </span>
+                  <h3 className="font-semibold tracking-tight">{v.titel}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{v.text}</p>
+                </Card>
+              );
+            })}
+          </div>
+        </section>
+
         {/* Werte */}
         <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6" aria-labelledby="werte-titel">
           <h2 id="werte-titel" className="mb-8 text-center text-2xl font-bold tracking-tight md:text-3xl">
@@ -407,7 +438,32 @@ const StellenanzeigePage = () => {
           </div>
         </section>
 
-        {/* Offene Partnerschaften */}
+        {/*
+          Über uns: der Baum der Markenfamilie aus der Beratungspräsentation.
+          Eigener dunkelgrüner Grund statt Glaskarte, weil die Schrift des
+          Baums hell ist und auf hellem Glas nicht lesbar wäre.
+        */}
+        <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6" aria-labelledby="gruppe-titel">
+          <div className="rounded-3xl px-5 py-12 sm:px-10 md:py-16" style={{ background: FARBE.tief, color: FARBE.hellText }}>
+            <div className="text-center">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.28em]" style={{ color: FARBE.gold }}>
+                {kopf.gruppeMarke}
+              </p>
+              <h2 id="gruppe-titel" className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
+                {mitAkzent(OS_TEXTE.gruppe.titel, FARBE.gold)}
+              </h2>
+              <p className="mx-auto mt-3 max-w-2xl" style={{ color: FARBE.hellGedaempft }}>
+                {kopf.gruppeEinleitung}
+              </p>
+            </div>
+            <Markenfamilie gruppe={OS_TEXTE.gruppe} />
+            <p className="mt-10 text-center text-sm" style={{ color: FARBE.hellGedaempft }}>
+              {OS_TEXTE.gruppe.fuss}
+            </p>
+          </div>
+        </section>
+
+        {/* Offene Partnerschaften, direkt unter dem Baum */}
         <section
           ref={stellenRef}
           id="stellen"

@@ -699,7 +699,7 @@ export const generateMailSetupPDF = () => generateSimpleDocPdf({
     { type: "p", text: "Bestätige die Eingaben und schließe die Einrichtung ab." },
     { type: "callout", variant: "success", text: "Outlook synchronisiert nun deinen OS Immobilien-Posteingang automatisch." },
 
-    { type: "callout", variant: "info", text: "Bei Problemen: Support-Ticket im CRM unter „Support kontaktieren“ öffnen oder direkt an os@os-immobilien.com schreiben." },
+    { type: "callout", variant: "info", text: "Bei Problemen: Ticket im CRM unter „Backoffice kontaktieren“ öffnen oder direkt an os@os-immobilien.com schreiben." },
   ],
 });
 

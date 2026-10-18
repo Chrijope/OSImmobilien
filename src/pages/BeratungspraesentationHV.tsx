@@ -56,11 +56,11 @@ import { DOKUMENTE_B, KAUFKRAFT_B, OS_TEXTE_B } from "@/lib/beratungOsDatenB";
 import { WAS_WENN } from "@/lib/beratungKonzeptDaten";
 import { FARBE, Folie, Fussnote, Karte, Kopf, Titel, Wert } from "@/components/beratung/folienBausteine";
 import { AltersvorsorgeFolien, SteuerFolien } from "@/components/beratung/KonzeptFolien";
+import { Markenfamilie } from "@/components/beratung/Markenfamilie";
 import logoHell from "@/assets/os-real-estate-logo.png";
 import logoDunkel from "@/assets/os-real-estate-logo-dark.png";
 import logoQuer from "@/assets/os-real-estate-logo-quer.png";
 import logoQuerDunkel from "@/assets/os-real-estate-logo-quer-dunkel.png";
-import osZeichen from "@/assets/beratung/os-zeichen-gold.png";
 import fotoZossen from "@/assets/beratung/zossen-wuensdorf.jpg";
 import "@/styles/praesentation-liquid.css";
 import "@/styles/beratung-os.css";
@@ -200,25 +200,6 @@ function KonzeptSchalter({
           </button>
         );
       })}
-    </div>
-  );
-}
-
-/** Logo der Markenfamilie: OS-Zeichen in Gold, darunter der Name (Konzept C). */
-function MarkenLogo({ name, zusatz, farbe, gross }: { name: string; zusatz: string; farbe: string; gross?: boolean }) {
-  return (
-    <div className="flex flex-col items-center text-center">
-      <img src={osZeichen} alt="" aria-hidden className={gross ? "h-14 md:h-16 w-auto" : "h-10 md:h-11 w-auto"} />
-      <p
-        className={`uppercase mt-2 ${gross ? "text-lg md:text-xl tracking-[0.42em]" : "text-sm md:text-[0.95rem] tracking-[0.32em]"}`}
-        style={{ color: farbe }}
-      >
-        {name}
-      </p>
-      <p className="uppercase text-[0.55rem] tracking-[0.28em] mt-1" style={{ color: "rgba(243,247,245,0.65)" }}>
-        {zusatz}
-      </p>
-      <div className={`mt-2 h-[2px] ${gross ? "w-36" : "w-24"}`} style={{ background: farbe }} />
     </div>
   );
 }
@@ -737,27 +718,7 @@ export default function BeratungspraesentationHV({
         </p>
         <Titel text={T.gruppe.titel} ton="tief" className="mt-2" />
       </div>
-      <div className="mt-10 flex flex-col items-center">
-        <MarkenLogo name="Immobilien" zusatz="Berlin · Brandenburg" farbe={FARBE.hellText} gross />
-        <p className="mt-5 text-sm text-center" style={{ color: FARBE.hellGedaempft }}>
-          <strong className="font-semibold" style={{ color: FARBE.hellText }}>
-            {T.gruppe.dach}
-          </strong>{" "}
-          · {T.gruppe.dachText}
-        </p>
-      </div>
-      {/* Verbindungslinien nur ab Tablet; auf dem Handy stehen die Marken untereinander. */}
-      <div aria-hidden className="hidden md:block mx-auto mt-6 w-2/3 h-6 border-x border-t" style={{ borderColor: "rgba(204,172,5,0.6)" }} />
-      <div className="mt-6 md:mt-4 grid md:grid-cols-3 gap-10 md:gap-6">
-        {T.gruppe.marken.map((m) => (
-          <div key={m.name} className="text-center">
-            <MarkenLogo name={m.name} zusatz={m.zusatz} farbe={m.farbe} />
-            <p className="mt-4 text-sm leading-relaxed max-w-xs mx-auto" style={{ color: FARBE.hellGedaempft }}>
-              {a(m.text)}
-            </p>
-          </div>
-        ))}
-      </div>
+      <Markenfamilie gruppe={T.gruppe} />
       <ul data-testid="gruppe-vorteile" className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {T.gruppe.vorteile.map((v) => {
           const farbe = T.gruppe.marken.find((m) => m.name === v.marke)?.farbe ?? FARBE.gold;

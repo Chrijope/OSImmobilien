@@ -497,7 +497,7 @@ export function AppSidebar() {
 
 
   const dbCounts = useSidebarCounts(authUser?.id);
-  // Eigene Tickets mit ungelesener Antwort vom Support, fuer "Support kontaktieren".
+  // Eigene Tickets mit ungelesener Antwort vom Support, fuer "Backoffice kontaktieren".
   const ungeleseneSupportTickets = useUngeleseneSupportTickets();
 
   useEffect(() => {
