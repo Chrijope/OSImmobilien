@@ -1040,8 +1040,12 @@ export function istAblageZeiger(url: string): boolean {
  * die des Objekts und die Wohnungsbilder mit „Grundriss“ im Bildtext. Was die
  * Ampel nicht hinauslässt, ist kein Kandidat: Das Exposé geht an Kunden.
  * Die Adresse bleibt, wie sie ist, auch ein Zeiger auf den geschützten Eimer.
+ *
+ * `nurFreigegebene = false` (18.10.2026, Reiter „KI-Modell“): dieselbe
+ * Erkennung ohne Ampel, für interne Ansichten, die nie zum Kunden gehen. Ein
+ * Grundriss aus Investagon ist meist nicht freigegeben und fiel sonst weg.
  */
-export function grundrisseFuerExpose(objekt: ObjektData, wohnung: ObjektWohnung | null): ExposeGrundriss[] {
+export function grundrisseFuerExpose(objekt: ObjektData, wohnung: ObjektWohnung | null, nurFreigegebene = true): ExposeGrundriss[] {
   const meta = (objekt.meta || {}) as Record<string, unknown>;
   const objektKategorie = investagonKategorieAusRohdaten(meta.investagonRaw);
   const kandidaten: GrundrissKandidat[] = [];
@@ -1063,7 +1067,7 @@ export function grundrisseFuerExpose(objekt: ObjektData, wohnung: ObjektWohnung 
         kundenFreigabe: d.ausTabelle ? d.kundenFreigabe ?? null : null,
         geschwaerzt: d.ausTabelle === true && d.geschwaerzt === true,
       });
-      if (darf) dazu({ id: d.id, name: d.name, url: d.url, dateiname: dateinameAusAblage(d.url), investagonKategorie: kategorie, bereich: "wohnung" });
+      if (darf || !nurFreigegebene) dazu({ id: d.id, name: d.name, url: d.url, dateiname: dateinameAusAblage(d.url), investagonKategorie: kategorie, bereich: "wohnung" });
     }
     // Wohnungsbilder sind Fotos, keine Unterlagen: Für sie gilt die Ampel nicht.
     for (const b of wohnung.bilder ?? []) {
@@ -1078,7 +1082,7 @@ export function grundrisseFuerExpose(objekt: ObjektData, wohnung: ObjektWohnung 
       kundenFreigabe: d.kundenFreigabe ?? null,
       geschwaerzt: d.geschwaerzt === true,
     });
-    if (darf) dazu({ id: d.id, name: d.name, url: d.url, dateiname: dateinameAusAblage(d.url), investagonKategorie: kategorie, bereich: "objekt" });
+    if (darf || !nurFreigegebene) dazu({ id: d.id, name: d.name, url: d.url, dateiname: dateinameAusAblage(d.url), investagonKategorie: kategorie, bereich: "objekt" });
   }
 
   const ziel = { weNr: wohnung ? wohnung.weNr : null, einzelwohnung: meta.einzelwohnung === true, etage: wohnung?.etage ?? null };

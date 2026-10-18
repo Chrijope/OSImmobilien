@@ -122,6 +122,12 @@ describe("Die Erkennung findet den übernommenen Plan bei der richtigen Einheit"
     expect(grundrisseFuerExpose(objekt, null).map((p) => p.id)).toEqual(["haus"]);
   });
 
+  it("nimmt für interne Ansichten (KI-Modell) auch einen nicht freigegebenen Grundriss, das Exposé nicht", () => {
+    const gesperrt = { ...objekt, wohnungen: [einheit("w6", "WE 6", [{ id: "plan6", name: "Grundriss WE 6", url: `${MEDIEN}/objekte/o1/wohnungen/w6/plan6.pdf`, kategorie: "wohnungsunterlagen", ausTabelle: true, kundenFreigabe: "gesperrt" }])] } as unknown as ObjektData;
+    expect(grundrisseFuerExpose(gesperrt, gesperrt.wohnungen[0]).map((p) => p.id)).toEqual(["haus"]);
+    expect(grundrisseFuerExpose(gesperrt, gesperrt.wohnungen[0], false).map((p) => p.id)).toEqual(["plan6"]);
+  });
+
   it("gibt denselben Plan im Kundenlink heraus, nur mit Ablage, nie mit Adresse", () => {
     const zeile = { id: "plan7", wohnung_id: "w7", name: "Grundriss WE 7", url: planUrl, kategorie: "wohnungsunterlagen" };
     const liste = kundenGrundrisse({ objektRoh: {}, objektZeilen: [], wohnung: { id: "w7", weNr: "WE 7", roh: {}, zeilen: [zeile] } });

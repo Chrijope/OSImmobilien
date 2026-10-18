@@ -11,7 +11,8 @@ import { planAusMeta, planOhneHintergrund, type Grundriss3dPlan } from "./plan";
  * Grundriss der Einheit automatisch in einen 3D-Plan (18.10.2026).
  *
  * Welcher Plan es ist, entscheidet dieselbe Erkennung wie im Exposé
- * (`grundrisseFuerExpose`). Nur ein Plan der Einheit selbst zählt, kein
+ * (`grundrisseFuerExpose`), aber ohne Kunden-Ampel: Die Erkennung ist intern
+ * und geht nie zum Kunden. Nur ein Plan der Einheit selbst zählt, kein
  * Ersatz (Geschoss- oder Hausplan): Darin stünden auch fremde Wohnungen.
  */
 
@@ -21,7 +22,7 @@ const KANTE = 1600;
 export interface GrundrissQuelle { name: string; url: string; istBild: boolean }
 
 export function grundrissDerEinheit(objekt: ObjektData, wohnung: ObjektWohnung): GrundrissQuelle | null {
-  const plan = grundrisseFuerExpose(objekt, wohnung).find((p) => !p.ersatz);
+  const plan = grundrisseFuerExpose(objekt, wohnung, false).find((p) => !p.ersatz);
   return plan ? { name: plan.name, url: plan.url, istBild: plan.istBild } : null;
 }
 
@@ -117,7 +118,7 @@ export function kiAuftraegeObjekt(objekt: ObjektData): KiAuftrag[] {
     .sort((a, b) => a.weNr.localeCompare(b.weNr, "de", { numeric: true }))
     .map((w) => kiAuftragEinheit(objekt, w))
     .filter((a): a is KiAuftrag => !!a && !gesehen.has(a.schluessel) && !!gesehen.add(a.schluessel));
-  const liste = einheiten.length ? einheiten : grundrisseFuerExpose(objekt, null).map((p) => ({
+  const liste = einheiten.length ? einheiten : grundrisseFuerExpose(objekt, null, false).map((p) => ({
     schluessel: p.url, titel: p.name, quelle: { name: p.name, url: p.url, istBild: p.istBild }, wohnung: { groesse: 0, etage: p.name },
   }));
   return liste.slice(0, HOECHSTENS_AUFTRAEGE);
