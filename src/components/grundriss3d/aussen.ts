@@ -482,25 +482,31 @@ export function flaechenDach(flaechen: Dachflaeche[], basis: (g: number) => numb
  */
 export function kappeUnterKarte(ebene: THREE.Object3D, karte: Hoehenkarte): void {
   const kopien = new Map<THREE.Material, THREE.Material>();
-  ebene.traverse((o) => {
-    if (!(o instanceof THREE.Mesh) || Array.isArray(o.material) || o.material.transparent) return;
-    let k = kopien.get(o.material);
-    if (!k) {
-      k = o.material.clone();
-      k.onBeforeCompile = (shader) => {
-        shader.uniforms.dachKarte = { value: karte.textur };
-        shader.uniforms.dachRahmen = { value: karte.rahmen };
-        shader.vertexShader = "varying vec3 vDachWelt;\n" + shader.vertexShader.replace("#include <begin_vertex>", "#include <begin_vertex>\nvDachWelt = (modelMatrix * vec4(transformed, 1.0)).xyz;");
-        shader.fragmentShader = "varying vec3 vDachWelt;\nuniform sampler2D dachKarte;\nuniform vec4 dachRahmen;\n" + shader.fragmentShader.replace("void main() {", `void main() {
+  const schnitt = (shader: THREE.WebGLProgramParametersWithUniforms) => {
+    shader.uniforms.dachKarte = { value: karte.textur };
+    shader.uniforms.dachRahmen = { value: karte.rahmen };
+    shader.vertexShader = "varying vec3 vDachWelt;\n" + shader.vertexShader.replace("#include <begin_vertex>", "#include <begin_vertex>\nvDachWelt = (modelMatrix * vec4(transformed, 1.0)).xyz;");
+    shader.fragmentShader = "varying vec3 vDachWelt;\nuniform sampler2D dachKarte;\nuniform vec4 dachRahmen;\n" + shader.fragmentShader.replace("void main() {", `void main() {
   vec2 dachUv = (vDachWelt.xz - dachRahmen.xy) / dachRahmen.zw;
   if (dachUv.x > 0.0 && dachUv.x < 1.0 && dachUv.y > 0.0 && dachUv.y < 1.0) {
     float dachH = texture2D(dachKarte, dachUv).r;
     if (dachH > -1000.0 && vDachWelt.y > dachH - 0.02) discard;
   }`);
-      };
+  };
+  // Auch der Schatten: Ohne eigenes Tiefenmaterial werfen die abgeschnittenen Wandteile weiter ihren vollen Schatten.
+  const tiefe = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking });
+  tiefe.onBeforeCompile = schnitt;
+  tiefe.customProgramCacheKey = () => "dachkarte-tiefe";
+  ebene.traverse((o) => {
+    if (!(o instanceof THREE.Mesh) || Array.isArray(o.material) || o.material.transparent) return;
+    let k = kopien.get(o.material);
+    if (!k) {
+      k = o.material.clone();
+      k.onBeforeCompile = schnitt;
       k.customProgramCacheKey = () => "dachkarte";
       kopien.set(o.material, k);
     }
     o.material = k;
+    o.customDepthMaterial = tiefe;
   });
 }
