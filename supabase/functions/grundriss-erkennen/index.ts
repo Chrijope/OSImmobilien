@@ -1,7 +1,7 @@
 // Edge Function: grundriss-erkennen (18.10.2026)
 //
 // Liest aus dem Bild eines Grundrisses Wände, Türen, Fenster, Räume und
-// Maßketten per Lovable AI Gateway. Koordinaten kommen auf 0 bis 1000 je
+// Maßketten per Claude (Anthropic-API, seit 18.10.2026 statt Lovable). Koordinaten kommen auf 0 bis 1000 je
 // Bildachse normiert zurück, roh und ohne Maßstab: Umrechnen in Meter,
 // Einrasten und Prüfen macht der Browser (`src/components/grundriss3d/kiErkennung.ts`),
 // dort ist es testbar. Nichts wird gespeichert, das Ergebnis ist ein Entwurf.
@@ -9,11 +9,12 @@
 // Nur für Angemeldete mit interner Rolle. Das Bild schickt der Browser mit,
 // die Function lädt keine Adressen nach (kein Abrufdienst für Fremde).
 
+import Anthropic from "npm:@anthropic-ai/sdk@0.135.0";
 import { corsHeaders } from "https://esm.sh/@supabase/supabase-js@2.95.0/cors";
 import { internerAufrufer } from "../_shared/interner-aufrufer.ts";
 import { checkRateLimit, rateLimitErrorBody } from "../_shared/rate-limit.ts";
 
-const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
 
 /** Der Browser verkleinert auf 1600 Bildpunkte, das sind als JPEG wenige hundert KB. */
 const MAX_ZEICHEN = 8 * 1024 * 1024;
@@ -58,9 +59,9 @@ Deno.serve(async (req) => {
   if (aufrufer instanceof Response) return aufrufer;
 
   try {
-    if (!LOVABLE_API_KEY) {
-      console.error("grundriss-erkennen: LOVABLE_API_KEY fehlt");
-      return json({ error: "Erkennung nicht verfügbar" }, 500);
+    if (!ANTHROPIC_API_KEY) {
+      console.error("grundriss-erkennen: ANTHROPIC_API_KEY fehlt");
+      return json({ error: "Erkennung nicht verfügbar: Der KI-Schlüssel ANTHROPIC_API_KEY ist in Supabase nicht hinterlegt." }, 500);
     }
 
     // Je Plan ein KI-Aufruf; der Reiter „KI-Modell“ eines Hauses schickt bis zu 30 Pläne auf einmal.
@@ -73,34 +74,40 @@ Deno.serve(async (req) => {
       return json({ error: "Kein gültiges Bild (JPEG, PNG oder WebP als data-URL)." }, 400);
     }
 
-    const antwort = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        // Pro statt Flash: Lage und Länge der Linien sind hier das Ergebnis, nicht nur der Text.
-        model: "google/gemini-2.5-pro",
-        messages: [
-          { role: "system", content: ANWEISUNG },
-          {
-            role: "user",
-            content: [
-              { type: "image_url", image_url: { url: bild } },
-              { type: "text", text: "Lies diesen Grundriss aus." },
-            ],
-          },
-        ],
-      }),
-    });
-
-    if (!antwort.ok) {
-      if (antwort.status === 429) return json({ error: "Die KI ist gerade ausgelastet, bitte kurz warten." }, 429);
-      if (antwort.status === 402) return json({ error: "Das KI-Guthaben ist aufgebraucht." }, 402);
-      console.error("grundriss-erkennen: Gateway", antwort.status, await antwort.text());
-      return json({ error: "Die Erkennung ist fehlgeschlagen." }, 502);
+    const [, medientyp, daten] = /^data:(image\/(?:jpeg|png|webp));base64,(.+)$/.exec(bild)!;
+    const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY });
+    let antwort: Anthropic.Beta.BetaMessage;
+    try {
+      antwort = await client.beta.messages.create({
+        model: "claude-opus-5-5",
+        max_tokens: 16000,
+        // Lage und Länge der Linien sind hier das Ergebnis; Standard wäre „medium“.
+        output_config: { effort: "high" },
+        // Lehnt das Modell aus Sicherheitsgründen ab, rechnet ein passendes anderes weiter.
+        betas: ["server-side-fallback-2026-07-01"],
+        fallbacks: "default",
+        system: ANWEISUNG,
+        messages: [{
+          role: "user",
+          content: [
+            { type: "image", source: { type: "base64", media_type: medientyp as "image/jpeg" | "image/png" | "image/webp", data: daten } },
+            { type: "text", text: "Lies diesen Grundriss aus." },
+          ],
+        }],
+      });
+    } catch (e) {
+      if (e instanceof Anthropic.RateLimitError) return json({ error: "Die KI ist gerade ausgelastet, bitte kurz warten." }, 429);
+      if (e instanceof Anthropic.AuthenticationError) return json({ error: "Der KI-Schlüssel ANTHROPIC_API_KEY ist ungültig." }, 500);
+      if (e instanceof Anthropic.APIError) {
+        console.error("grundriss-erkennen: Anthropic", e.status, e.message);
+        return json({ error: `Die KI hat die Anfrage abgelehnt (Status ${e.status}). Guthaben und Schlüssel in der Anthropic Console prüfen.` }, 502);
+      }
+      throw e;
     }
+    if (antwort.stop_reason === "refusal") return json({ error: "Die KI hat diesen Plan abgelehnt." }, 422);
+    if (antwort.stop_reason === "max_tokens") return json({ error: "Die KI-Antwort war zu lang (Plan zu groß)." }, 422);
 
-    const ergebnis = await antwort.json();
-    let text = String(ergebnis.choices?.[0]?.message?.content ?? "").trim();
+    let text = antwort.content.flatMap((b) => (b.type === "text" ? [b.text] : [])).join("").trim();
     if (text.startsWith("```")) text = text.replace(/^```(?:json)?\s*/, "").replace(/```\s*$/, "").trim();
 
     let roh: unknown;
