@@ -135,7 +135,9 @@
   --text-2: hsl(200 10% 78%);
   --text-3: hsl(200 9% 70%);
   --muted: hsl(200 8% 64%);
-  --text-schwach: hsl(200 8% 56%);
+  /* Seit 19.10.2026 grünlich und heller: Auf der tannengrünen Karte der
+     Markenrichtlinie hielt 200 8% 56% nur 4,16:1, jetzt 4,65:1. */
+  --text-schwach: hsl(160 8% 58%);
 
   --flaeche: hsl(var(--card));
   --flaeche-leise: hsl(210 12% 17%);
