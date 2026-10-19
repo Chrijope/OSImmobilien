@@ -58,6 +58,32 @@ async function baueSaPdfBase64(
   return doc.output("datauristring").split(",")[1] || "";
 }
 
+/**
+ * Legt eine bereits abgelegte, unterschriebene Selbstauskunft im aktuellen
+ * Design neu ab (Christian, 19.10.2026). Nur Admin und Inhaber, das prüft der
+ * Server. Die bisherige Datei bleibt archiviert (`saPdfFruehereFassungen`).
+ */
+export async function legeSaPdfNeuAb(args: {
+  investmentId: string;
+  kontaktId: string;
+  saData: unknown;
+  kunde: { vorname: string; nachname: string; osImmoId: string };
+  unterschriften: UnterschriftenRoh | null | undefined;
+  sprache: Sprache;
+}): Promise<SaPdfAblageErgebnis> {
+  try {
+    const pdfBase64 = await baueSaPdfBase64(args.saData, args.kunde, args.unterschriften, args.sprache);
+    const { data, error } = await supabase.functions.invoke("finalize-selbstauskunft", {
+      body: { investmentId: args.investmentId, kontaktId: args.kontaktId, pdfBase64, neueFassung: true },
+    });
+    if (error) return { abgelegt: false, grund: error.message };
+    const antwort = (data || {}) as { pdfAbgelegt?: boolean; pfad?: string; grund?: string; error?: string };
+    return antwort.pdfAbgelegt ? { abgelegt: true, pfad: antwort.pfad } : { abgelegt: false, grund: antwort.grund || antwort.error };
+  } catch (e) {
+    return { abgelegt: false, grund: e instanceof Error ? e.message : String(e) };
+  }
+}
+
 /** Schickt das fertige PDF zur Ablage. */
 export async function sendeSaPdfZurAblage(args: {
   investmentId: string;

@@ -96,13 +96,43 @@ async function mitarbeiterSiehtInvestment(
   }
 }
 
+/**
+ * Ist der angemeldete Nutzer Admin oder Inhaber? Nur sie duerfen eine neue
+ * Fassung der unterschriebenen Selbstauskunft ablegen (Christian, 19.10.2026).
+ * Wirft nicht.
+ */
+async function istAdminOderInhaber(
+  req: Request,
+  supabaseUrl: string,
+  // deno-lint-ignore no-explicit-any
+  admin: any,
+): Promise<boolean> {
+  try {
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
+    const jwt = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "").trim();
+    if (!jwt || (anonKey && jwt === anonKey)) return false;
+    const userClient = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: `Bearer ${jwt}` } },
+      auth: { persistSession: false },
+    });
+    const { data: userData } = await userClient.auth.getUser();
+    const uid = userData?.user?.id;
+    if (!uid) return false;
+    const { data } = await admin.from("user_roles").select("role").eq("user_id", uid).in("role", ["admin", "inhaber"]);
+    return Array.isArray(data) && data.length > 0;
+  } catch (e) {
+    console.error("Admin-Pruefung fehlgeschlagen:", e instanceof Error ? e.message : String(e));
+    return false;
+  }
+}
+
 /** Die nachgereichte PDF pruefen, ablegen und am Investment vermerken. */
 async function pdfAblegen(
   // deno-lint-ignore no-explicit-any
   supabase: any,
-  args: { investmentId?: string; kontaktId: string; pdfBase64: string },
+  args: { investmentId?: string; kontaktId: string; pdfBase64: string; neueFassung?: boolean },
 ): Promise<{ status: number; body: Record<string, unknown> }> {
-  const { investmentId, kontaktId, pdfBase64 } = args;
+  const { investmentId, kontaktId, pdfBase64, neueFassung } = args;
   if (!investmentId) return { status: 400, body: { pdfAbgelegt: false, error: "investmentId fehlt" } };
 
   const { data: inv, error: invFehler } = await supabase
@@ -122,7 +152,9 @@ async function pdfAblegen(
     return { status: 409, body: { pdfAbgelegt: false, grund: "Selbstauskunft noch nicht vollständig unterschrieben" } };
   }
   const vorhanden = aktuellerSaPdfPfad(meta);
-  if (vorhanden) return { status: 200, body: { pdfAbgelegt: true, bereitsVorhanden: true, pfad: vorhanden } };
+  // Eine neue Fassung (nur Admin und Inhaber, geprueft im Aufrufer) ersetzt die
+  // angezeigte Datei; die alte bleibt im Speicher und wird unten vermerkt.
+  if (vorhanden && !neueFassung) return { status: 200, body: { pdfAbgelegt: true, bereitsVorhanden: true, pfad: vorhanden } };
 
   const bytes = base64ZuBytes(pdfBase64);
   const pruefung = pruefeSaPdf(bytes);
@@ -153,7 +185,14 @@ async function pdfAblegen(
    * und Schreiben kann der Berater am selben Investment etwas speichern.
    * Die Service-Role gilt in `merge_investment_meta` als intern.
    */
-  const patch = saPdfMetaPatch(meta, { pfad, dateiname, jetzt: new Date().toISOString() });
+  const patch: Record<string, unknown> = saPdfMetaPatch(meta, { pfad, dateiname, jetzt: new Date().toISOString() });
+  if (neueFassung && vorhanden) {
+    const frueher = Array.isArray(meta.saPdfFruehereFassungen) ? meta.saPdfFruehereFassungen : [];
+    patch.saPdfFruehereFassungen = [
+      ...frueher,
+      { saPdfPath: vorhanden, saPdf: meta.saPdf ?? null, saPdfAbgelegtAm: meta.saPdfAbgelegtAm ?? null, ersetztAm: new Date().toISOString() },
+    ];
+  }
   const { error: mergeFehler } = await supabase.rpc("merge_investment_meta", {
     _investment_id: investmentId,
     _updates: patch,
@@ -176,7 +215,9 @@ async function pdfAblegen(
     await supabase.from("aktivitaeten").insert({
       kunde_id: kontaktId,
       art: "notiz",
-      beschreibung: "Unterschriebene Selbstauskunft als PDF im Investment abgelegt",
+      beschreibung: neueFassung && vorhanden
+        ? "Unterschriebene Selbstauskunft im neuen Design neu als PDF abgelegt, die bisherige Datei bleibt archiviert"
+        : "Unterschriebene Selbstauskunft als PDF im Investment abgelegt",
       von: "System (Selbstauskunft)",
       datum: new Date().toISOString(),
     });
@@ -193,7 +234,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { investmentId, kontaktId, signatureToken, saFillToken, pdfBase64 } = await req.json();
+    const { investmentId, kontaktId, signatureToken, saFillToken, pdfBase64, neueFassung } = await req.json();
     // Zweiter Aufruf nach der letzten Unterschrift: nur die PDF ablegen, siehe unten.
     const pdfNachgereicht = typeof pdfBase64 === "string" && pdfBase64.length > 0;
 
@@ -310,7 +351,14 @@ Deno.serve(async (req) => {
           );
         }
       }
-      const ergebnis = await pdfAblegen(supabase, { investmentId, kontaktId, pdfBase64 });
+      // Neue Fassung einer schon abgelegten PDF nur fuer Admin und Inhaber.
+      if (neueFassung === true && !(await istAdminOderInhaber(req, supabaseUrl, supabase))) {
+        return new Response(
+          JSON.stringify({ error: "Nur Admin und Inhaber duerfen eine neue Fassung ablegen" }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      const ergebnis = await pdfAblegen(supabase, { investmentId, kontaktId, pdfBase64, neueFassung: neueFassung === true });
       return new Response(
         JSON.stringify(ergebnis.body),
         { status: ergebnis.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }

@@ -46,7 +46,7 @@ import { formatDatum } from "@/lib/utils";
 import { jetztAlsIsoDatum } from "@/lib/datumsformate";
 import JSZip from "jszip";
 import { resolveUnterlagenUrl, openUnterlage, extractStoragePath, unterlageHerunterladen } from "@/lib/storage";
-import { aktuellerSaPdfPfad } from "@/lib/selbstauskunftPdfAblage";
+import { aktuellerSaPdfPfad, legeSaPdfNeuAb } from "@/lib/selbstauskunftPdfAblage";
 import { saGeltendeUnterschriftenAusMeta } from "../../supabase/functions/_shared/selbstauskunft-geltende-unterschrift.ts";
 import { confirmDialog, abfrageDialog, auswahlDialog, hinweisDialog } from "@/lib/confirm";
 import { signaturErneutSenden } from "@/lib/signaturErneutSenden";
@@ -8757,6 +8757,42 @@ export default function KundenDetail() {
                                           }}
                                         >
                                           {label}
+                                        </button>
+                                      );
+                                    })()}
+                                    {(() => {
+                                      /*
+                                        Neue Fassung im aktuellen Design, nur Admin und Inhaber
+                                        (Christian, 19.10.2026). Die bisher abgelegte, unterschriebene
+                                        Datei bleibt archiviert, siehe finalize-selbstauskunft.
+                                      */
+                                      if (!isAdminOrInhaber || !id) return null;
+                                      const m = (cacheGet("investments").find((r: any) => r.id === inv.id)?.meta as any) || {};
+                                      const daten = m.saData || m.saSnapshot;
+                                      if (!daten || !aktuellerSaPdfPfad(m)) return null;
+                                      return (
+                                        <button
+                                          className="text-xs text-primary hover:underline uppercase tracking-wide ml-3 inline-flex items-center gap-1"
+                                          title="Die unterschriebene Selbstauskunft im neuen Design neu ablegen. Die bisherige Datei bleibt archiviert."
+                                          onClick={async () => {
+                                            if (!window.confirm("Die unterschriebene Selbstauskunft im neuen Design neu ablegen? Die bisherige Datei bleibt archiviert.")) return;
+                                            const ergebnis = await legeSaPdfNeuAb({
+                                              investmentId: inv.id,
+                                              kontaktId: id,
+                                              saData: daten,
+                                              kunde: { vorname: kunde.vorname, nachname: kunde.nachname, osImmoId: String(kunde.osImmoId || "") },
+                                              unterschriften: saGeltendeUnterschriftenAusMeta(m) as any,
+                                              sprache: kundenSprache(kunde.id),
+                                            });
+                                            if (ergebnis.abgelegt) {
+                                              toast({ title: "Neu abgelegt", description: "Die Selbstauskunft liegt jetzt im neuen Design im Investment." });
+                                              void cacheRefreshTable("investments").finally(() => forceUpdate(n => n + 1));
+                                            } else {
+                                              toast({ title: "Nicht abgelegt", description: ergebnis.grund || "Unbekannter Fehler", variant: "destructive" });
+                                            }
+                                          }}
+                                        >
+                                          ⟳ Im neuen Design neu ablegen
                                         </button>
                                       );
                                     })()}
