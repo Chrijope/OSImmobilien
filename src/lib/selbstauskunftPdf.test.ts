@@ -79,19 +79,25 @@ describe("generateSelbstauskunftPDF, Jahresbrutto im Einkommensblock", () => {
   it("druckt das Jahresbrutto mit der Beschriftung aus dem Formular", async () => {
     await generateSelbstauskunftPDF(saDaten({ bruttoJahr: "90.000,00" }), kunde);
     const alles = alleTexte();
-    expect(alles).toContain("Jahresbrutto (gesamt), p. a.");
-    expect(alles).toContain("90.000,00 €");
+    // Seit dem neuen Aufbau (19.10.2026) im Summenkasten neben der Monatssumme.
+    const texte = mitschnitt.texte.map((t) => t.text);
+    const kachel = texte.indexOf("JAHRESBRUTTO GESAMT");
+    expect(kachel).toBeGreaterThan(-1);
+    expect(texte[kachel + 1]).toBe("90.000,00 €");
+    expect(alles).toContain("Bruttoeinkommen / Jahr");
   });
 
   it("laesst die Monatssumme unberuehrt, das Jahresbrutto zaehlt nicht hinein", async () => {
     await generateSelbstauskunftPDF(saDaten({ bruttoJahr: "90.000,00" }), kunde);
     const texte = mitschnitt.texte.map((t) => t.text);
-    const summe = texte.indexOf("Gesamt Einkommen");
+    const summe = texte.indexOf("Gesamteinkommen");
     expect(summe).toBeGreaterThan(-1);
     // Die Monatssumme bleibt das Nettogehalt, nicht Netto plus Jahresbrutto.
     expect(texte.slice(summe, summe + 3)).toContain("3.500,00 €");
-    // Und das Jahresbrutto steht erst danach.
-    expect(texte.findIndex((t) => t === "Jahresbrutto (gesamt), p. a.")).toBeGreaterThan(summe);
+    const monat = texte.indexOf("GESAMTEINKOMMEN / MONAT");
+    expect(texte[monat + 1]).toBe("3.500,00 €");
+    // Und das Jahresbrutto steht erst danach, als eigene Kachel.
+    expect(texte.findIndex((t) => t === "JAHRESBRUTTO GESAMT")).toBeGreaterThan(monat);
   });
 
   it("zeigt beide Personen und ihre Summe", async () => {
@@ -110,8 +116,8 @@ describe("generateSelbstauskunftPDF, Jahresbrutto im Einkommensblock", () => {
     const alles = alleTexte();
     expect(alles).toContain("60.000,00 €");
     expect(alles).toContain("30.000,00 €");
-    expect(alles).toContain("Jahresbrutto Person 1 + Person 2, p. a.");
-    expect(alles).toContain("90.000,00 €");
+    const texte = mitschnitt.texte.map((t) => t.text);
+    expect(texte[texte.indexOf("JAHRESBRUTTO GESAMT") + 1]).toBe("90.000,00 €");
   });
 
   it("laesst die Zeile weg, wenn kein Jahresbrutto angegeben ist (Altbestand)", async () => {
@@ -144,7 +150,9 @@ describe("generateSelbstauskunftPDF, Kreditdetails und Person 2 (28.09.2026)", (
     await generateSelbstauskunftPDF(data, kunde);
     const alles = alleTexte();
     expect(alles).toContain("Musterweg 2");
-    expect(alles).toContain("Darlehen zu Immobilie 1");
+    // Das Darlehen steht in der Darlehenstabelle unter der Immobilie.
+    expect(alles).toContain("Immobilie 1 · ETW, Musterweg 2");
+    expect(alles.indexOf("DARLEHEN", alles.indexOf("Immobilie 1 · ETW, Musterweg 2"))).toBeGreaterThan(-1);
     expect(alles).toContain("Restschuld per");
     expect(alles).toContain("01.09.2026");
     expect(alles).toContain("Beide gemeinsam");
@@ -186,13 +194,13 @@ describe("generateSelbstauskunftPDF, Kreditdetails und Person 2 (28.09.2026)", (
     await generateSelbstauskunftPDF(data, kunde);
     const alles = alleTexte();
     // Beim Darlehen unter der Immobilie: beide Daten mit eigener Beschriftung.
-    expect(alles).toContain("Zinsbindung bis");
+    expect(alles).toContain("ZINSBINDUNG");
     expect(alles).toContain("28.02.2031");
     expect(alles).toContain("Laufzeitende");
     expect(alles).toContain("31.12.2050");
     expect(alles).toContain("3,45 %");
     // Der freie Kredit von Person 2 steht in der Tabelle mit seinem Laufzeitende.
-    expect(alles).toContain("Laufzeit bis");
+    expect(alles).toContain("LAUFZEIT BIS");
     expect(alles).toContain("31.03.2028");
     expect(alles).toContain("Sondertilgungsrecht: Nein");
   });

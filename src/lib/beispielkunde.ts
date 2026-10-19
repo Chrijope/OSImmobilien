@@ -62,6 +62,13 @@ export const BEISPIEL_SA = {
   },
 } satisfies Partial<Omit<SelbstauskunftData, "person2Data">> & { person2Data: Partial<SelbstauskunftData["person2Data"]> };
 
+/**
+ * Erfundene Unterschriften (gezeichneter Linienzug, kein echter Namenszug),
+ * damit die Selbstauskunft des Beispielkunden als unterschrieben erscheint.
+ */
+const BEISPIEL_UNTERSCHRIFT_MAX = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPAAAABICAYAAADIzHiKAAACEUlEQVR42u3dOXLDMBBFQR1CsU/i+18Lzp2oWMIyf9BBx5QIPJLiptf75/cFZLISQMCAgAEBg4ABAQMCBgQMAgYEDAgYBAwIGBAwIGAQMCBgQMCAgEHAgIABAf8zPjD4CDgwXCEj4CbxpoZs45QxrwQ8aSV3Oay+YeOUugM4NgadV/w3sXebWALdF+vWsbgt3rSQn04GIa+NddbyBDxp5VSd7N9OgNsjrrKXXL6Mm+OtOtlnfp6bIq7882LZ8m+Pt9pkX/EZOkecdC5gyefqMmjVNw6nl90x4tSTd1M/q3hrTPYdy+wScYez7lcGvHOgxuGNxQj/Xm6Pff59BBw22UfjvX36hu7E92odcLffpacnY0oMrms3DTj5zHCVyZh8E4u7yYICrjzZR/iErBqIeJsEnDDZR/hhYId1LGCHzlMvYaQ9ZNDlKEfAJlXUvbZd1rd4LwjYrXw9IxbuhoArXL5xnbJXTPa6TQM2oP0jFu/BgIdD56ufpxWvgO19L4xYuIUCHuIVsdshs85CC1jITyL0sr3iAQ/xivjtLZlR14F3vTHC4PQM2forcCPHjrOSBqdXyNZX4YCHeCHrVspVrzw1KBAQsEMtOPwww+y/njAgsPlppFkPtxsMOPQ44bd/vGUgoGDALi9A0AP94oXwN3KIF4ID9nsXGgQMCBgQMAgYEDAgYEDAIGBAwICAQcBAgD8khSLMrs9KogAAAABJRU5ErkJggg==";
+const BEISPIEL_UNTERSCHRIFT_ERIKA = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPAAAABICAYAAADIzHiKAAABkElEQVR42u3bu3XDMBREQRXh2JW4/7boDhzIgLCLN8GEPqIBXH4g6vX1/fMCOhkEEDAgYEDAIGBAwICAAQGDgAEBAwIGAQMCBgQMCBgEDAgYEDAgYBAwIGBAwCBgQMCAgAEBg4CZ4XmDcRMwZdFODzlmnCzg/0+YeO8P+UkdK3GGn2EP/n87/356uMvGSqzzrkYrj/fGiHfM8ba1kjRITRPWGPHO45xyV/Js/JzYgFOvYhVn2LJn+MaIT81ddMCpD/2f+Jy0RXx6YbbekVTcObQ+9K++Oq6esJSFcfLzE8O4bic9dWASTwRNizhlcaafyOo33RomqS3a00G1XfncJh8KOH3zqWkj6Rnw7PnJ4xvzwsnUrwxu2xFumo/nwBhcuz6d0boXceucrIpt/Lvarrp9X2XctFibNyivCFiEeYvYGPg54Z8DLLpZb6y1jIPfAzPuvVwEDAgYEDAIGBAwIGBAwCBgQMCAgEHABgEEDAgYEDAIGBAwIGBAwCBgQMCAgEHAgIABAQMCBgEDAgZW+wWwXW5yWdQEcwAAAABJRU5ErkJggg==";
+
 /*
  * Kennungen bewusst NICHT im UUID-Format: Jede Datenbankabfrage oder
  * -änderung mit diesen Kennungen scheitert sofort (Postgres 22P02), kann also
@@ -98,7 +105,17 @@ export function beispielkundeZeilen(eigeneNutzerId: string) {
       beispiel: true, nummer: 1, label: "Investment 1", pipelineStufe: "faelligkeit",
       // Selbstauskunft ausgefüllt und unterschrieben
       saData: BEISPIEL_SA, saSigned: true, saSignedAt: "2026-08-05T10:00:00Z",
-      saPdf: "Selbstauskunft_Mustermann_Beispiel.pdf", saPdfPath: "beispiel/selbstauskunft.pdf",
+      /*
+       * Bewusst ohne saPdfPath: Eine abgelegte Datei gibt es fuer den
+       * Beispielkunden nicht. Jeder Weg, der die unterschriebene
+       * Selbstauskunft oeffnet, erzeugt sie deshalb aus BEISPIEL_SA mit dem
+       * aktuellen Generator, samt der erfundenen Unterschriften unten.
+       */
+      saPdf: "Selbstauskunft_Mustermann_Beispiel.pdf",
+      saSignatures: {
+        person1: { signatureData: BEISPIEL_UNTERSCHRIFT_MAX, signedAt: "2026-08-05T09:50:00Z", name: "Max Mustermann" },
+        person2: { signatureData: BEISPIEL_UNTERSCHRIFT_ERIKA, signedAt: "2026-08-05T10:00:00Z", name: "Erika Mustermann" },
+      },
       docStatuses: { "Personalausweis": "approved", "Letzter Gehaltsnachweis": "approved" },
       // Objekt gewählt
       objektTitel: OBJEKT.titel, weNr: OBJEKT.weNr, kaufpreis: OBJEKT.kaufpreis,
