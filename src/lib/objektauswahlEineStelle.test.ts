@@ -90,8 +90,9 @@ describe("Die Karte heißt Objektauswahl", () => {
     expect(karte).not.toContain('["reservierung", "finanzierung", "notar", "abrechnung", "abgeschlossen"]');
   });
 
-  it("bietet das Eintragen und das Ändern an derselben Stelle an", () => {
-    expect(karte).toContain("Objekt eintragen");
+  it("bietet kein Eintragen von Hand mehr an, das Ändern bestehender Angaben bleibt", () => {
+    // Seit 19.10.2026: Objekte kommen nur noch aus dem CRM.
+    expect(karte).not.toContain("<Home className");
     expect(karte).toContain("Objektdaten ändern");
     expect(karte).toContain("ObjektDatenDialog");
   });

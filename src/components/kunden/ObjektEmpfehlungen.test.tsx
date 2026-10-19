@@ -179,10 +179,11 @@ describe("Wer die Empfehlungen sieht", () => {
     expect(screen.queryByTestId("objekt-empfehlungen")).not.toBeInTheDocument();
   });
 
-  it("das Eintragen von Hand bleibt unverändert", () => {
+  // Seit 19.10.2026 kein Eintragen von Hand mehr: Objekte kommen nur aus dem CRM (Christian).
+  it("bietet kein Eintragen von Hand mehr an", () => {
     zeige();
-    expect(screen.getByText("Adresse, Einheit und Kaufpreis des Objekts hier eintragen.")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Objekt eintragen/ })).toBeInTheDocument();
+    expect(screen.queryByText("Adresse, Einheit und Kaufpreis des Objekts hier eintragen.")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Objekt eintragen/ })).not.toBeInTheDocument();
   });
 });
 
@@ -194,26 +195,23 @@ describe("Wer die Empfehlungen sieht", () => {
 describe("Am Schalter „Objekte“ der Seitenleiste", () => {
   beforeEach(() => { stand.objekteFrei = null; });
 
-  it.each(["vertriebspartner", "vertriebsleiter"])("%s ohne den Eintrag sieht nur „Objekt eintragen“", (rolle) => {
-    zeige({ rolle });
-    expect(screen.getByRole("button", { name: /Objekt eintragen/ })).toBeInTheDocument();
+  // Seit 18.10.2026 sehen diese Rollen „Objekte“ in der Seitenleiste und damit
+  // Empfehlungen und Gesamtliste. „Objekt eintragen“ gibt es seit 19.10.2026 nicht mehr.
+  it.each(["vertriebspartner", "vertriebsleiter", "backoffice", "finanzierungspartner", "admin", "inhaber"])(
+    "%s sieht den Eintrag und damit Empfehlungen und Gesamtliste",
+    (rolle) => {
+      zeige({ rolle });
+      expect(screen.getByTestId("empfehlungen-liste")).toBeInTheDocument();
+      expect(screen.getByTestId("gesamtliste")).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /Objekt eintragen/ })).not.toBeInTheDocument();
+    },
+  );
+
+  it("ohne den Eintrag „Objekte“ gibt es weder Empfehlungen noch Gesamtliste", () => {
+    stand.objekteFrei = false;
+    zeige({ rolle: "vertriebspartner" });
     expect(screen.queryByTestId("objekt-empfehlungen")).not.toBeInTheDocument();
     expect(screen.queryByTestId("gesamtliste")).not.toBeInTheDocument();
-    expect(screen.queryByText(/freie(n)? Einheiten/)).not.toBeInTheDocument();
-  });
-
-  // Die beiden pflegen kein Objekt (`darfObjektPflegen`), sie sehen hier also gar nichts zur Auswahl.
-  it.each(["backoffice", "finanzierungspartner"])("%s ohne den Eintrag sieht keine Empfehlungen", (rolle) => {
-    zeige({ rolle });
-    expect(screen.queryByTestId("objekt-empfehlungen")).not.toBeInTheDocument();
-    expect(screen.queryByTestId("gesamtliste")).not.toBeInTheDocument();
-  });
-
-  it.each(["admin", "inhaber"])("%s sieht den Eintrag und damit Empfehlungen und Gesamtliste", (rolle) => {
-    zeige({ rolle });
-    expect(screen.getByTestId("empfehlungen-liste")).toBeInTheDocument();
-    expect(screen.getByTestId("gesamtliste")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Objekt eintragen/ })).toBeInTheDocument();
   });
 
   // Ohne Kennung kann die Testfreischaltung (`objekteTestFreigabe`) nicht greifen.

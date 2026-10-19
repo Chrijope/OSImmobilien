@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatDatum } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Building2, Eye, ExternalLink, RefreshCw, Maximize2, Minimize2, MapPin, XCircle, FileSignature, Pencil, Home, ChevronLeft, ChevronRight } from "lucide-react";
+import { Building2, Eye, ExternalLink, RefreshCw, Maximize2, Minimize2, MapPin, XCircle, FileSignature, Pencil, ChevronLeft, ChevronRight } from "lucide-react";
 import { getObjekte } from "@/lib/objekteStore";
 import { einheitImAngebot } from "@/lib/objektKennzahlen";
 import { resolveImageUrl } from "@/lib/objekteImages";
@@ -795,12 +795,8 @@ export function FreieWohnungenCard({
         />
       ) : zeigtObjekt ? (
         <div className="py-2 space-y-2">
+          {/* „Objekt eintragen“ entfällt seit 19.10.2026: Objekte werden im CRM ausgewählt und reserviert (Christian). */}
           <p className="text-sm text-muted-foreground">Kein Objekt zugewiesen.</p>
-          {darfObjektPflegen && (
-            <Button size="sm" variant="outline" className="text-xs h-7" onClick={() => setObjektDialogOffen(true)}>
-              <Home className="h-3 w-3 mr-1" /> Objekt eintragen
-            </Button>
-          )}
         </div>
       ) : null}
 
@@ -822,16 +818,7 @@ export function FreieWohnungenCard({
             eine Adresse einträgt, hebt den Vorgang zugleich auf die Stufe
             "Objektauswahl", sofern er noch davor steht.
           */}
-          {darfObjektPflegen && (
-            <div className="rounded-md border border-border bg-muted/40 px-3 py-2.5 flex items-center justify-between gap-3">
-              <p className="text-xs text-muted-foreground">
-                Adresse, Einheit und Kaufpreis des Objekts hier eintragen.
-              </p>
-              <Button size="sm" variant="outline" className="text-xs h-7 shrink-0" onClick={() => setObjektDialogOffen(true)}>
-                <Home className="h-3 w-3 mr-1" /> Objekt eintragen
-              </Button>
-            </div>
-          )}
+          {/* Hier stand bis 19.10.2026 „Objekt eintragen“ von Hand. Objekte kommen jetzt nur noch aus dem CRM. */}
           {invMeta.einheitGewechseltAm && (
             <div className="rounded-md border border-[hsl(var(--warning))]/40 bg-[hsl(var(--warning))]/10 px-3 py-2 text-xs text-[hsl(var(--warning))] flex items-start gap-2">
               <RefreshCw className="h-3.5 w-3.5 mt-0.5 shrink-0" />
