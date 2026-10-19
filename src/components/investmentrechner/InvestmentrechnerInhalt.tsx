@@ -2,6 +2,7 @@ import { useLiveVersion } from "@/hooks/useLiveData";
 import { automatischeObjektwerte, automatischeUnterlagenwerte, ergaenzeUnterlagen, leseObjektUnterlagen, type ObjektUnterlagenQuelle } from "@/lib/investmentrechner/objektUnterlagen";
 import { vorbelegungAusInvestment } from "@/lib/investmentrechner/investmentVorbelegung";
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
+import { useMaskeBisUnten } from "./useMaskeBisUnten";
 import { createPortal } from "react-dom";
 import {
   Banknote,
@@ -363,6 +364,9 @@ export function InvestmentrechnerInhalt({
   bankgespraechStart = false,
   vorschau,
 }: InvestmentrechnerInhaltProps = {}) {
+  // Die fixierte Eingabemaske reicht bis zum Fensterrand, siehe useMaskeBisUnten.
+  const maskeRef = useRef<HTMLElement>(null);
+  useMaskeBisUnten(maskeRef);
   const [objekte, setObjekte] = useState<Objektzustand[]>(() => {
     const mitSchalter = (liste: Objektzustand[]) =>
       bankgespraechStart && !start?.berechnung
@@ -1429,7 +1433,7 @@ export function InvestmentrechnerInhalt({
         )}
         <div className="investmentrechner">
           <div className="workspace">
-            <aside className="input-panel">
+            <aside className="input-panel" ref={maskeRef}>
               <div className="panel-heading">
                 <div>
                   <span className="eyebrow">Kalkulationsbasis</span>
