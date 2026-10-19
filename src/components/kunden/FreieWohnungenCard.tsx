@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatDatum } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Building2, Eye, ExternalLink, RefreshCw, Maximize2, Minimize2, MapPin, XCircle, FileSignature, Pencil, ChevronLeft, ChevronRight } from "lucide-react";
+import { Building2, Eye, ExternalLink, RefreshCw, Maximize2, Minimize2, MapPin, XCircle, FileSignature, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { getObjekte } from "@/lib/objekteStore";
 import { einheitImAngebot } from "@/lib/objektKennzahlen";
 import { resolveImageUrl } from "@/lib/objekteImages";
@@ -14,7 +14,7 @@ import { TerminseiteKnopf } from "@/components/kunden/TerminseiteKnopf";
 import {
   vorhandeneObjektDaten, objektDatenFehlen, hatBestandsWohnung,
   objektDatenStandAus, BESTANDSWOHNUNG_AKTIV,
-  objektVerlauf, objektBezeichnung, objektEingetragenAm, weNrAnzeige, bilderListe,
+  objektVerlauf, objektBezeichnung, objektEingetragenAm, weNrAnzeige, bilderListe, objektInVerlaufVerschieben,
   type ObjektVerlaufEintrag,
 } from "@/lib/objektDatenPflicht";
 import { objektKarteDaten, type ObjektKarteDaten } from "@/lib/objektKarte";
@@ -711,6 +711,22 @@ export function FreieWohnungenCard({
       {darfObjektAendern && (
         <Button size="sm" variant="outline" className="text-xs h-8" onClick={() => setObjektDialogOffen(true)}>
           <Pencil className="h-3 w-3 mr-1" /> Objektdaten ändern
+        </Button>
+      )}
+      {/* Von Hand eingetragenes Objekt wieder herausnehmen, nur vor der Reservierung (19.10.2026). */}
+      {darfObjektAendern && !abReservierung && (
+        <Button
+          size="sm"
+          variant="outline"
+          className="text-xs h-8 text-destructive border-destructive/30 hover:bg-destructive/10"
+          onClick={() => {
+            if (!window.confirm("Das eingetragene Objekt aus diesem Investment entfernen? Adresse, Einheit, Kaufpreis und die weiteren Objektangaben werden geleert.")) return;
+            // Vorhandener Weg wie bei „Einheit wechseln“: räumt ab und merkt das Objekt im Verlauf.
+            objektInVerlaufVerschieben(inv.id, { gewechseltVon: userName });
+            onObjektGespeichert?.();
+          }}
+        >
+          <Trash2 className="h-3 w-3 mr-1" /> Objekt entfernen
         </Button>
       )}
     </div>
