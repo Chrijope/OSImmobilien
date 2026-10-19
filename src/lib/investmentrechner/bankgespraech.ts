@@ -241,7 +241,7 @@ export function bankuebersicht(input: InvestmentEingabe, result: InvestmentErgeb
   const erstes = result.years[0];
   const kaufpreis = result.kaufpreisGesamt;
   const kaufpreisGanz = ausgewiesenerKaufpreis(t, result);
-  const jahresmieteGanz = t.monthlyColdRent * 12;
+  const jahresmieteGanz = (t.monthlyColdRent + Math.max(0, t.monthlyGarageRent || 0)) * 12;
   const mietueberschussMonat = erstes
     ? (erstes.effectiveRent - erstes.operatingCosts - erstes.reserveContribution) / 12
     : 0;

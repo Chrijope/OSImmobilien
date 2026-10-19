@@ -694,7 +694,13 @@ function objektangaben(input: InvestmentEingabe, sprache: FormatSprache): { labe
       wert: input.area > 0 ? `${formatZahl(input.area, sprache, 3)} m²` : t.unterlagenSeite.keineAngabe,
     },
     { label: t.deckblatt.baujahr, wert: input.constructionYear > 0 ? String(input.constructionYear) : t.unterlagenSeite.keineAngabe },
-    { label: kennzahlTexteFuer(sprache).kacheln.kaltmiete, wert: formatEuro(input.monthlyColdRent, sprache) },
+    {
+      label: kennzahlTexteFuer(sprache).kacheln.kaltmiete,
+      // Mit Garage steht die Summe da, die auch gerechnet wird, und die Garage dahinter.
+      wert: (input.monthlyGarageRent || 0) > 0
+        ? `${formatEuro(input.monthlyColdRent + input.monthlyGarageRent, sprache)} (${sprache === "en" ? "incl. garage" : "inkl. Garage"} ${formatEuro(input.monthlyGarageRent, sprache)})`
+        : formatEuro(input.monthlyColdRent, sprache),
+    },
   ];
 }
 

@@ -127,6 +127,12 @@ export interface InvestmentEingabe {
    */
   kfwGrantYear: number;
   monthlyColdRent: number;
+  /**
+   * Garagen- bzw. Stellplatzmiete je Monat, seit dem 19.10.2026 (Christian).
+   * Sie zählt in allen Berechnungen zur Kaltmiete dazu, nur die Miete pro m²
+   * bleibt bei der Wohnung. Gespeicherte Stände ohne das Feld haben 0.
+   */
+  monthlyGarageRent: number;
   monthlyOperatingCosts: number;
   /**
    * Zuführung zur Instandhaltungsrücklage je Monat, seit dem 25.09.2026 ein
@@ -499,6 +505,7 @@ export const standardEingabe: InvestmentEingabe = {
   kfwGrantValue: 0,
   kfwGrantYear: 0,
   monthlyColdRent: 0,
+  monthlyGarageRent: 0,
   monthlyOperatingCosts: 0,
   monthlyReserveContribution: 0,
   vacancyRate: 0,
@@ -961,7 +968,8 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
     bleibt deshalb in deren Basis. Gedeckelt auf den Kaufpreis ohne Möbel.
   */
   const ruecklage = Math.min(wohnungspreis, Math.max(0, t.maintenanceReserve) * anteil);
-  const monthlyColdRent = t.monthlyColdRent * anteil;
+  // Wohnung plus Garage: ab hier rechnet alles mit der Gesamtmiete.
+  const monthlyColdRent = (t.monthlyColdRent + Math.max(0, t.monthlyGarageRent || 0)) * anteil;
   const monthlyOperatingCosts = t.monthlyOperatingCosts * anteil;
   const monthlyReserveContribution = Math.max(0, t.monthlyReserveContribution) * anteil;
   const rehabEingabe = Math.max(0, t.rehabExpense) * anteil;

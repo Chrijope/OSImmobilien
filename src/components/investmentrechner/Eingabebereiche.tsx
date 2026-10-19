@@ -1281,6 +1281,14 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
           hint={quelle("monthlyColdRent")} markierung={feldmarkierung(herkunft, "monthlyColdRent")}
         />
         <Zahlenfeld
+          label="Garagenmiete p. M."
+          value={input.monthlyGarageRent}
+          suffix="€"
+          onChange={(wert) => setzeZahl("monthlyGarageRent", wert)}
+          tooltip="Miete für Garage oder Stellplatz, falls mitverkauft. Sie wird in allen Berechnungen zur Kaltmiete der Wohnung dazugerechnet: Mieteinnahmen, Rendite, Cashflow und Steuer. 0 heißt keine Garage."
+          hint={quelle("monthlyGarageRent")} markierung={feldmarkierung(herkunft, "monthlyGarageRent")}
+        />
+        <Zahlenfeld
           label="Nicht umlagefähige Kosten p. M."
           value={input.monthlyOperatingCosts}
           suffix="€"
