@@ -4,7 +4,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import BeratungspraesentationHV from "./BeratungspraesentationHV";
 import { isUrlAllowedForRole } from "@/lib/sidebarPermissions";
-import { mitNachgetragenen, seedUnterlagen } from "@/lib/unterlagenSeed";
+import { ENTFERNTE_DOKUMENT_IDS, mitNachgetragenen, seedUnterlagen } from "@/lib/unterlagenSeed";
 
 /*
  * Beratungspräsentation B (Vergleichsfassung, 16.10.2026): dieselbe Seite mit
@@ -129,12 +129,14 @@ describe("Fassung A bleibt unberührt", () => {
 describe("Einbindung von B", () => {
   const lies = (pfad: string) => readFileSync(resolve(process.cwd(), pfad), "utf8");
 
-  it("hat Route, Präsentationsseite, Unterlagen und Kundenprofil", () => {
-    expect(lies("src/App.tsx")).toContain(
-      '<Route path="/beratungspraesentation-osimmobilien-b" element={<PraesentationGuard><BeratungspraesentationHV variante="b" /></PraesentationGuard>} />',
+  it("ist seit dem 20.10.2026 die einzige Fassung, die alte B-Adresse leitet um", () => {
+    const app = lies("src/App.tsx");
+    expect(app).toContain(
+      '<Route path="/beratungspraesentation-osimmobilien" element={<PraesentationGuard><BeratungspraesentationHV variante="b" /></PraesentationGuard>} />',
     );
-    expect(lies("src/pages/Praesentation.tsx")).toContain('internalRoute: "/beratungspraesentation-osimmobilien-b"');
-    expect(lies("src/pages/KundenDetail.tsx")).toContain("window.open(`/beratungspraesentation-osimmobilien-b?${params.toString()}`");
+    expect(app).toMatch(/path="\/beratungspraesentation-osimmobilien-b" element=\{<Navigate to=\{`\/beratungspraesentation-osimmobilien\$\{window\.location\.search\}`\}/);
+    expect(lies("src/pages/KundenDetail.tsx")).not.toContain("/beratungspraesentation-osimmobilien-b");
+    expect(lies("src/pages/Praesentation.tsx")).not.toContain('internalRoute: "/beratungspraesentation-osimmobilien-b"');
   });
 
   it("folgt den Rechten der Präsentationsseite", () => {
@@ -144,16 +146,10 @@ describe("Einbindung von B", () => {
     expect(isUrlAllowedForRole(B, "hausverwaltung")).toBe(false);
   });
 
-  it("steht in den Unterlagen direkt unter der aktuellen Präsentation, auch in einer gespeicherten Liste", () => {
-    const seed = seedUnterlagen();
-    const ids = seed.find((a) => a.id === "praesentation")!.dokumente.map((d) => d.id);
-    expect(ids.indexOf("p-beratung-b")).toBe(ids.indexOf("p-beratung-hv") + 1);
-
-    const gespeichert = seed.map((a) => ({ ...a, dokumente: a.dokumente.filter((d) => d.id !== "p-beratung-b") }));
-    const { daten, geaendert } = mitNachgetragenen(gespeichert);
-    expect(geaendert).toBe(true);
-    expect(daten.find((a) => a.id === "praesentation")!.dokumente.map((d) => d.id)).toEqual(ids);
-    // Schon vorhanden: nichts zu tun.
-    expect(mitNachgetragenen(seed).geaendert).toBe(false);
+  it("Fassung B steht nicht mehr gesondert in den Unterlagen und wird aus gespeicherten Listen entfernt", () => {
+    const ids = seedUnterlagen().find((a) => a.id === "praesentation")!.dokumente.map((d) => d.id);
+    expect(ids).not.toContain("p-beratung-b");
+    expect(ENTFERNTE_DOKUMENT_IDS).toContain("p-beratung-b");
+    expect(mitNachgetragenen(seedUnterlagen()).geaendert).toBe(false);
   });
 });

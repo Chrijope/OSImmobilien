@@ -171,10 +171,13 @@ export const OS_TEXTE = {
     fuss: "Ein Haus, kurze Wege: Objekt, Verwaltung und Finanzierung sind aufeinander abgestimmt.",
     /** Ohne Profil (eigenständige Fassung): Platzhalter statt Name und Kontaktdaten. */
     platzhalter: {
-      titel: "Dein Ansprechpartner stellt sich vor",
-      satz: "Ich begleite dich persönlich, von heute bis zum Notartermin und darüber hinaus.",
-      hinweisKopf: "Für dich als Berater:",
-      hinweis: "Stell dich hier kurz selbst vor: Name, deine Rolle und warum du mit OS Real Estate arbeitest. Zwei bis drei Sätze reichen.",
+      titel: "Persönlich an deiner Seite",
+      satz: "Bei OS Real Estate hast du einen festen Ansprechpartner. Du sprichst immer mit derselben Person, von heute bis zum Notartermin und darüber hinaus.",
+      punkte: [
+        "Ein fester Ansprechpartner statt wechselnder Hotline",
+        "Erreichbar per Telefon, E-Mail und WhatsApp",
+        "Begleitung auch nach dem Kauf",
+      ],
     },
     // Vorteile unter den Logos. `marke` ordnet eine Kachel farblich einer Marke oben zu.
     vorteile: [

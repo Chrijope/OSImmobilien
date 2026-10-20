@@ -205,7 +205,9 @@ describe("Zweite Stufe vom 20.10.2026", () => {
         <BeratungspraesentationHV vorschau={{ ...ohneKunde, ansprechpartner: { name: "Alex Beispiel", rolle: "", telefon: "+49 30 1", email: "a@example.com" } }} ohneProfil />
       </MemoryRouter>,
     );
-    expect(screen.getByTestId("ansprechpartner-platzhalter")).toHaveTextContent("Dein Ansprechpartner stellt sich vor");
+    expect(screen.getByTestId("ansprechpartner-platzhalter")).toHaveTextContent("Persönlich an deiner Seite");
+    // Der Kunde sieht die Seite: kein Hinweis an den Berater.
+    expect(screen.getByTestId("ansprechpartner-platzhalter")).not.toHaveTextContent(/Berater/);
     expect(screen.queryByTestId("ansprechpartner")).toBeNull();
     expect(document.querySelector('a[href^="tel:"], a[href^="mailto:"]')).toBeNull();
   });

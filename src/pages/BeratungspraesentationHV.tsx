@@ -272,8 +272,8 @@ function AnsprechpartnerKarte({ person, dunkel, etikett, satz }: { person: Perso
 
 /**
  * Ohne Profil (eigenständige Fassung, src/artefakt): statt Name, Foto und
- * Kontaktdaten ein allgemeiner Platzhalter. Der Berater stellt sich hier
- * selbst vor; Kontaktdaten stehen bewusst keine da.
+ * Kontaktdaten ein allgemeiner Abschnitt für den Kunden (ohne Hinweis an den
+ * Berater, der Kunde sieht die Seite). Kontaktdaten stehen bewusst keine da.
  */
 function AnsprechpartnerPlatzhalter({ dunkel, etikett }: { dunkel?: boolean; etikett: string }) {
   const ring = { boxShadow: `0 0 0 2px ${dunkel ? FARBE.gold : FARBE.goldDunkel}` };
@@ -291,12 +291,14 @@ function AnsprechpartnerPlatzhalter({ dunkel, etikett }: { dunkel?: boolean; eti
           <p className="mt-4 text-base leading-relaxed max-w-2xl" style={{ color: dunkel ? FARBE.hellGedaempft : FARBE.grau }}>
             {OS_TEXTE.gruppe.platzhalter.satz}
           </p>
-          <p
-            className="mt-5 rounded-xl border border-dashed px-4 py-3 text-sm leading-relaxed max-w-2xl"
-            style={{ borderColor: dunkel ? "rgba(204,172,5,0.6)" : FARBE.goldDunkel }}
-          >
-            <span className="font-semibold">{OS_TEXTE.gruppe.platzhalter.hinweisKopf}</span> {OS_TEXTE.gruppe.platzhalter.hinweis}
-          </p>
+          <ul className="mt-5 grid gap-2.5 max-w-2xl">
+            {OS_TEXTE.gruppe.platzhalter.punkte.map((punkt) => (
+              <li key={punkt} className="flex items-start gap-2.5 text-sm leading-relaxed">
+                <Check aria-hidden className="h-4 w-4 mt-0.5 shrink-0" style={{ color: dunkel ? FARBE.gold : FARBE.goldDunkel }} />
+                {punkt}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </Karte>
