@@ -83,6 +83,24 @@ describe.each(["a", "b"] as const)("Beratungspräsentation %s, Abschnitte 12 und
     expect(screen.getByRole("link", { name: /Objektvorstellung buchen/ })).toHaveAttribute("href", "https://termin.example/eigen");
   });
 
+  it("zeigt in der eigenständigen Fassung „Weiter zur Selbstauskunft“ statt Objektvorstellung", () => {
+    zustand.profile = [{ id: "nutzer-1", name: "Maria Muster", objektlink: "https://termin.example/eigen" }];
+    const weiter = vi.fn();
+    render(
+      <MemoryRouter initialEntries={["/x"]}>
+        <BeratungspraesentationHV
+          variante={variante}
+          vorschau={{ schluessel: "", kundenName: "", kontakt: {}, skript: null }}
+          weiterZurSelbstauskunft={weiter}
+        />
+      </MemoryRouter>,
+    );
+    expect(screen.queryByText(/Objektvorstellung buchen/)).toBeNull();
+    expect(screen.queryByText(/Kein Buchungslink/)).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: /Weiter zur Selbstauskunft/ }));
+    expect(weiter).toHaveBeenCalledWith("/selbstauskunft");
+  });
+
   it("öffnet mit Kunde den Objektvorstellungs-Link des zuständigen Partners im neuen Tab", () => {
     zustand.profile = [
       { id: "nutzer-1", name: "Maria Muster", objektlink: "https://termin.example/eigen" },

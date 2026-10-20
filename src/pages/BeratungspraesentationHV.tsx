@@ -435,7 +435,17 @@ export type BeratungVariante = keyof typeof BERATUNG_ROUTE;
 export default function BeratungspraesentationHV({
   vorschau,
   variante = "a",
-}: { vorschau?: BeratungVorschau; variante?: BeratungVariante } = {}) {
+  weiterZurSelbstauskunft,
+}: {
+  vorschau?: BeratungVorschau;
+  variante?: BeratungVariante;
+  /**
+   * Nur für die eigenständige Fassung ohne CRM (src/artefakt): Am Ende steht
+   * statt „Objektvorstellung buchen“ der Knopf „Weiter zur Selbstauskunft“,
+   * auch ohne Kunde. Bekommt die Adresse samt gewähltem Ziel.
+   */
+  weiterZurSelbstauskunft?: (adresse: string) => void;
+} = {}) {
   const T = variante === "b" ? OS_TEXTE_B : OS_TEXTE;
   const istB = variante === "b";
   const [suchParameter] = useSearchParams();
@@ -646,7 +656,8 @@ export default function BeratungspraesentationHV({
   const [vorschauSprung, setVorschauSprung] = useState<string | null>(null);
   const oeffneSelbstauskunft = () => {
     // In der Vorschau gibt es keinen Kunden und keine Anmeldung: zeigen, wohin es ginge.
-    if (vorschau) setVorschauSprung(selbstauskunftAdresse());
+    if (weiterZurSelbstauskunft) weiterZurSelbstauskunft(selbstauskunftAdresse());
+    else if (vorschau) setVorschauSprung(selbstauskunftAdresse());
     else navigate(selbstauskunftAdresse());
   };
 
@@ -1456,9 +1467,21 @@ export default function BeratungspraesentationHV({
 
             {/* ─── 15 Der nächste Schritt ─── */}
             <Folie id="schritt" ton="gruen" kicker={T.schritt.kicker} titel={a(T.schritt.titel)}>
-              <p className="mt-6 text-base md:text-lg max-w-3xl leading-relaxed">{a(hatKundenKontext ? T.schritt.text : T.schritt.textOhneKunde)}</p>
+              <p className="mt-6 text-base md:text-lg max-w-3xl leading-relaxed">{a(hatKundenKontext || weiterZurSelbstauskunft ? T.schritt.text : T.schritt.textOhneKunde)}</p>
               <div className="mt-8 flex flex-col sm:flex-row flex-wrap gap-3">
-                {hatKundenKontext && (
+                {weiterZurSelbstauskunft && (
+                  <button
+                    type="button"
+                    data-no-shrink
+                    data-testid="weiter-zur-selbstauskunft"
+                    onClick={oeffneSelbstauskunft}
+                    className="btn-brand inline-flex items-center justify-center gap-2 rounded-full px-6 h-12 font-semibold"
+                  >
+                    <ClipboardList className="h-5 w-5" />
+                    Weiter zur Selbstauskunft
+                  </button>
+                )}
+                {hatKundenKontext && !weiterZurSelbstauskunft && (
                 <button
                   type="button"
             data-no-shrink
@@ -1470,7 +1493,7 @@ export default function BeratungspraesentationHV({
                   {T.schritt.knopf}
                 </button>
                 )}
-                {objektLink ? (
+                {weiterZurSelbstauskunft ? null : objektLink ? (
                   <a
                     href={objektLink}
                     target="_blank"
@@ -1505,7 +1528,7 @@ export default function BeratungspraesentationHV({
                   Vorschau: Im CRM öffnet sich jetzt die Selbstauskunft unter <code className="break-all">{vorschauSprung}</code>
                 </p>
               )}
-              {!objektLink && (
+              {!objektLink && !weiterZurSelbstauskunft && (
                 <p id="objektlink-fehlt" className="mt-3 text-xs" style={{ color: FARBE.hellGedaempft }}>
                   {T.schritt.ohneObjektLink}
                 </p>
