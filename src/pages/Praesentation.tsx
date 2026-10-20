@@ -67,15 +67,6 @@ function seedAbschnitte(): Abschnitt[] {
           action: "internal-link",
           internalRoute: "/beratungspraesentation-osimmobilien",
         },
-        // Vergleichsfassung B für die Geschäftsleitung (beratungOsDatenB.ts).
-        {
-          id: "1b",
-          name: "Beratungspräsentation B (zum Vergleich)",
-          url: "/beratungspraesentation-osimmobilien-b",
-          typ: "link",
-          action: "internal-link",
-          internalRoute: "/beratungspraesentation-osimmobilien-b",
-        },
         // Die PDF-Fassung zum Herunterladen und Praesentieren. Im Termin ist die
         // Webfassung darueber der bevorzugte Weg, das sagt auch der Name.
         {
@@ -148,6 +139,8 @@ const ENTFALLENE_DOKUMENT_IDS = [
   // Haushaltsrechner / Bonitätsrechner: die Seite gibt es nicht mehr.
   "2f",
   // Abgeloeste Beratungspraesentationen. Es bleibt nur die OS Immobilien-Fassung.
+  // "1b": Fassung B ist seit 20.10.2026 die einzige und liegt unter der Haupt-Adresse.
+  "1b",
   "1n",
   "1a",
   "1b",
