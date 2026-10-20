@@ -3,9 +3,10 @@
  * Beratungspräsentation und Selbstauskunft aus dem CRM, dieselben
  * Komponenten, ohne Anmeldung und ohne Server.
  *
- *   #/praesentation     Fassung A (Start)
- *   #/praesentation-b   Vergleichsfassung B
+ *   #/praesentation     Beratungspräsentation, Fassung B (Start)
  *   #/selbstauskunft    Formular, am Ende „Als PDF speichern“
+ *
+ * Nur Fassung B (Entscheidung Christian, 20.10.2026): A entfällt.
  */
 
 import "./netzwerk";
@@ -22,8 +23,9 @@ import { UserContext } from "@/contexts/UserContext";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import BeratungspraesentationHV, { BERATUNG_ROUTE, type BeratungVariante, type BeratungVorschau } from "@/pages/BeratungspraesentationHV";
+import BeratungspraesentationHV, { BERATUNG_ROUTE, type BeratungVorschau } from "@/pages/BeratungspraesentationHV";
 import SelbstauskunftArtefakt from "./SelbstauskunftArtefakt";
+import { speichereDatei } from "./speichern";
 
 // Die Merkmale stehen auch in index.html; hier noch einmal, falls der Host die Seite neu einrahmt.
 document.documentElement.lang = "de";
@@ -44,13 +46,14 @@ function dunkelAnfang(): boolean {
 /** Kein Kunde, kein Partner, kein Erstgespräch: die Präsentation im Modus ohne Kunde. */
 const OHNE_KUNDE: BeratungVorschau = { schluessel: "", kundenName: "", kontakt: {}, skript: null };
 
-function Praesentation({ variante }: { variante: BeratungVariante }) {
+function Praesentation() {
   const navigate = useNavigate();
   return (
     <BeratungspraesentationHV
-      key={variante}
-      variante={variante}
+      variante="b"
       vorschau={OHNE_KUNDE}
+      ohneProfil
+      speichereDatei={speichereDatei}
       weiterZurSelbstauskunft={(adresse) => {
         navigate(adresse);
         window.scrollTo(0, 0);
@@ -59,10 +62,9 @@ function Praesentation({ variante }: { variante: BeratungVariante }) {
   );
 }
 
-/** Umschalter A/B und Hell/Dunkel, unten links, nur auf der Präsentation. */
+/** Umschalter Hell/Dunkel, unten links, nur auf der Präsentation. */
 function Bedienleiste({ dunkel, setDunkel }: { dunkel: boolean; setDunkel: (v: boolean) => void }) {
   const { pathname } = useLocation();
-  const navigate = useNavigate();
   const aufPraesentation = pathname.startsWith("/praesentation");
   /*
    * Die Selbstauskunft bleibt immer hell: Ihre Karte (.apple-form in
@@ -74,31 +76,16 @@ function Bedienleiste({ dunkel, setDunkel }: { dunkel: boolean; setDunkel: (v: b
   }, [dunkel, aufPraesentation]);
   // Auf der Selbstauskunft läge die Leiste über „Zurück“ in der Knopfleiste des Formulars.
   if (!aufPraesentation) return null;
-  const knopf = "h-9 rounded-full px-3 text-xs font-semibold transition-colors";
   return (
     <div
       data-pdf-exclude
-      className="fixed bottom-5 left-4 z-[70] flex items-center gap-1 rounded-full border bg-background/90 p-1 shadow-lg backdrop-blur"
+      className="fixed bottom-5 left-4 z-[70] flex items-center rounded-full border bg-background/90 p-1 shadow-lg backdrop-blur"
     >
-      {(["a", "b"] as const).map((v) => {
-          const aktiv = (pathname === "/praesentation-b") === (v === "b");
-          return (
-            <button
-              key={v}
-              type="button"
-              aria-pressed={aktiv}
-              onClick={() => navigate(v === "b" ? "/praesentation-b" : "/praesentation")}
-              className={`${knopf} ${aktiv ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-            >
-              Fassung {v.toUpperCase()}
-            </button>
-          );
-        })}
       <button
         type="button"
         aria-label={dunkel ? "Helle Ansicht" : "Dunkle Ansicht"}
         onClick={() => setDunkel(!dunkel)}
-        className={`${knopf} text-muted-foreground hover:text-foreground`}
+        className="h-9 w-9 rounded-full inline-flex items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
       >
         {dunkel ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
       </button>
@@ -134,11 +121,9 @@ function App() {
         <Sonner />
         <HashRouter>
           <Routes>
-            <Route path="/praesentation" element={<Praesentation variante="a" />} />
-            <Route path="/praesentation-b" element={<Praesentation variante="b" />} />
-            {/* Das Logo der Präsentation verlinkt auf die CRM-Adressen. */}
-            <Route path={BERATUNG_ROUTE.a} element={<Navigate to="/praesentation" replace />} />
-            <Route path={BERATUNG_ROUTE.b} element={<Navigate to="/praesentation-b" replace />} />
+            <Route path="/praesentation" element={<Praesentation />} />
+            {/* Das Logo der Präsentation verlinkt auf die CRM-Adresse. */}
+            <Route path={BERATUNG_ROUTE.b} element={<Navigate to="/praesentation" replace />} />
             <Route path="/selbstauskunft" element={<SelbstauskunftArtefakt />} />
             <Route path="*" element={<Navigate to="/praesentation" replace />} />
           </Routes>

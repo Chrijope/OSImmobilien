@@ -282,31 +282,32 @@ export const KONZEPT_ALTER = {
   },
   rente: {
     kicker: "07 · Nach der Abzahlung",
-    titel: "Deine vorzeitige Rente [[mit 58 Jahren.]]",
-    lead: "Ab 58 ist der Kredit abgezahlt. Die Rate von 3 × 1.200 € entfällt, die Mieten der drei Wohnungen bleiben bei dir. Mit 60 hast du zwei Wege.",
+    titel: "Drei Wohnungen: deine vorzeitige Rente [[mit 58 Jahren.]]",
+    lead: "Gerechnet mit drei Wohnungen wie im Beispiel. Mit 58 sind alle drei Kredite abgezahlt. Die Rate von 3 × 1.200 € entfällt, die Mieten der drei Wohnungen bleiben bei dir. Mit 60 hast du zwei Wege.",
+    /*
+     * Im Modell (Rechenprotokoll, rechnung3.py) sind alle drei Wohnungen mit
+     * 25 gekauft. Ein gestaffelter Kauf ergäbe andere Zahlen, darum zeigt
+     * der Zeitstrahl die drei Wohnungen nacheinander, aber alle mit 25.
+     */
     zeitstrahl: [
-      { alter: "25 J.", text: "Kauf" },
-      { alter: "58 J.", text: "Kredit abgezahlt" },
-      { alter: "60 J.", text: "Renteneintritt" },
+      { alter: "25 J.", titel: "Heute", text: "Wohnung 1, 2 und 3", wohnungen: 3 },
+      { alter: "58 J.", titel: "2059", text: "alle drei abbezahlt" },
+      { alter: "60 J.", titel: "Renteneintritt", text: "zwei Wege" },
     ],
+    wohnung: "Wohnung",
     zahlstZu: "du zahlst zu",
     wegeKopf: "Dein Renteneintritt mit 60: zwei Wege",
     wege: [
-      { buchstabe: "A", titel: "Du verkaufst mit 60 alle drei Wohnungen.", wert: "≈ 1,44 Mio. €", text: "einmalige Auszahlung, schuldenfrei. Oder als Rente: rund 4.800 € im Monat über 25 Jahre, bis 85." },
-      { buchstabe: "B", titel: "Du behältst die Wohnungen.", wert: "≈ 2.910 € im Monat", text: "Zusatzrente nach Steuer (3.880 € vor Steuer), und die drei Wohnungen bleiben dein Vermögen." },
+      { buchstabe: "A", titel: "Du verkaufst mit 60 alle drei Wohnungen.", wert: "≈ 1,44 Mio. €", text: "einmalige Auszahlung, schuldenfrei (3 × 480.000 €). Oder als Rente: rund 4.800 € im Monat über 25 Jahre, bis 85." },
+      { buchstabe: "B", titel: "Du behältst die drei Wohnungen.", wert: "≈ 2.910 € im Monat", text: "Zusatzrente nach Steuer (3.880 € vor Steuer), und die drei Wohnungen bleiben dein Vermögen." },
     ],
     fuss: "Miete von 13 €/m² auf 19 €/m² im Jahr 2060, Kosten steigen mit. Rente vereinfacht mit 25 % Steuer auf Miete minus Kosten. Wert +2 % im Jahr (Annahme): 480.000 € je Wohnung mit 60, 529.900 € mit 65. Verkauf nach mehr als 10 Jahren steuerfrei. Rente aus dem Verkauf ohne Zinsen gerechnet. Instandhaltung nur pauschal mit den Kosten enthalten.",
-  },
-  weiter: {
-    kicker: "08 · Wie geht es weiter",
-    titel: "Die nächsten Schritte mit uns: [[Wie geht es jetzt weiter?]]",
-    schritte: [
-      { titel: "Haushaltsrechnung", text: "Welche Zuzahlung passt dauerhaft zu deinem Netto?" },
-      { titel: "Deine Zahlen", text: "Gehaltsabrechnung, Steuerbescheid, Rentenbescheid." },
-      { titel: "Konkrete Wohnung", text: "Im Objektgespräch prüfen wir Miete, Preis und Lage." },
-    ],
-    schluss: "Wir rechnen das gemeinsam mit [[deinen eigenen Zahlen]] durch.",
-    fuss: "Grundlagen: Musterrechnung mit gerundeten Werten. 80.000 € brutto im Jahr (6.667 € im Monat), Steuerklasse I, gesetzlich versichert (Zusatzbeitrag 2,9 %), kinderlos, ohne Kirchensteuer, kein Solidaritätszuschlag (Freigrenze nicht erreicht). Einkommensteuer-Grundtarif 2026 (§ 32a EStG), Beitragssätze und Beitragsbemessungsgrenzen 2026, Vorsorgepauschale 2026. Wohnung 240.000 €, 75 m², Gebäudeanteil 192.000 €, Miete 13 €/m² bis 19 €/m² im Jahr 2060, Kosten 100 € im Monat. Darlehen 240.000 €, 4,8 % Zins, 1,2 % Tilgung, Rate 1.200 €, monatlich gerechnet, Zins über die ganze Laufzeit gleich. AfA 4 % für 25 Jahre mit anerkanntem Restnutzungsdauer-Gutachten, sonst 2 %. Steuerwirkung bis 64 mit dem Tarif, ab 65 vereinfacht 25 %. Wert +2 % im Jahr. Stand 16.10.2026.",
+    /*
+     * Die frühere Folie 08 „Die nächsten Schritte mit uns“ entfällt seit dem
+     * 20.10.2026: Das kommt in Abschnitt 11 „So geht es weiter“. Ihre
+     * Grundlagen stehen jetzt unter Folie 07.
+     */
+    grundlagen: "Grundlagen: Musterrechnung mit gerundeten Werten. 80.000 € brutto im Jahr (6.667 € im Monat), Steuerklasse I, gesetzlich versichert (Zusatzbeitrag 2,9 %), kinderlos, ohne Kirchensteuer, kein Solidaritätszuschlag (Freigrenze nicht erreicht). Einkommensteuer-Grundtarif 2026 (§ 32a EStG), Beitragssätze und Beitragsbemessungsgrenzen 2026, Vorsorgepauschale 2026. Wohnung 240.000 €, 75 m², Gebäudeanteil 192.000 €, Miete 13 €/m² bis 19 €/m² im Jahr 2060, Kosten 100 € im Monat. Darlehen 240.000 €, 4,8 % Zins, 1,2 % Tilgung, Rate 1.200 €, monatlich gerechnet, Zins über die ganze Laufzeit gleich. AfA 4 % für 25 Jahre mit anerkanntem Restnutzungsdauer-Gutachten, sonst 2 %. Steuerwirkung bis 64 mit dem Tarif, ab 65 vereinfacht 25 %. Wert +2 % im Jahr. Stand 16.10.2026.",
   },
 };
 

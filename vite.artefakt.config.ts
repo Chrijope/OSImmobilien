@@ -31,6 +31,8 @@ const LAUFZEIT_DATEIEN = [
   "images/os-real-estate-logo-quer.png",
   "images/os-real-estate-logo-quer-dunkel.png",
   ...fs.readdirSync(path.join(wurzel, "public/images/mikroseite")).map((d) => `images/mikroseite/${d}`),
+  // Fassung B verlinkt am Ende der Konzeptfolien das Vertriebsdokument (DOKUMENTE_B).
+  ...fs.readdirSync(path.join(wurzel, "public/vertriebsunterlagen")).map((d) => `vertriebsunterlagen/${d}`),
 ];
 
 function laufzeitDateien(): Plugin {
@@ -44,13 +46,13 @@ function laufzeitDateien(): Plugin {
   };
 }
 
-/** "/images/…" in Zeichenketten wird "./images/…", damit Bilder auch im Unterpfad laden. */
+/** "/images/…" und "/vertriebsunterlagen/…" in Zeichenketten werden relativ, damit sie auch im Unterpfad laden. */
 function relativeBildpfade(): Plugin {
   return {
     name: "artefakt-relative-bildpfade",
     transform(code, id) {
-      if (!/\/src\/.*\.(ts|tsx)$/.test(id) || !/["'`]\/images\//.test(code)) return null;
-      return code.replace(/(["'`])\/images\//g, "$1./images/");
+      if (!/\/src\/.*\.(ts|tsx)$/.test(id) || !/["'`]\/(images|vertriebsunterlagen)\//.test(code)) return null;
+      return code.replace(/(["'`])\/(images|vertriebsunterlagen)\//g, "$1./$2/");
     },
   };
 }

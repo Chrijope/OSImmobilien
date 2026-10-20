@@ -7,6 +7,7 @@
  */
 const LEER = { data: null, error: null, count: 0 };
 
+/* eslint-disable @typescript-eslint/no-explicit-any -- Die Attrappe steht für jeden Aufrufweg des echten Clients, ein genauer Typ ist hier nicht möglich. */
 function attrappe(): any {
   const ziel = function () {} as any;
   return new Proxy(ziel, {

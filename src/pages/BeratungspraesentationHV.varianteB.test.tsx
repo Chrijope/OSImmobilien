@@ -78,9 +78,10 @@ describe("Inhalte in B", () => {
     expect(ist.indexOf("Geld auf dem Konto wird jedes Jahr weniger wert.")).toBeLessThan(ist.indexOf("Alles aus einer Hand, unter einem Dach."));
   });
 
-  it("zeigt die Kaufkraft als Grafik und den Verlust in Rot", () => {
+  it("zeigt die Kaufkraft Jahr für Jahr als Grafik und den Verlust in Rot", () => {
     zeige(B);
-    expect(screen.getByTestId("kaufkraft-grafik").textContent).toContain("47.615 €");
+    expect(screen.getByTestId("kaufkraft-jahre").querySelector("svg")?.getAttribute("aria-label")).toContain("47.615 €");
+    expect(screen.getByTestId("kaufkraft-jahre").textContent).toContain("2036");
     expect(screen.getByTestId("kaufkraft-verlust").style.background).toBeTruthy();
   });
 
@@ -113,7 +114,10 @@ describe("Inhalte in B", () => {
 describe("Fassung A bleibt unberührt", () => {
   it("hat keine B-Bausteine und die alte Reihenfolge", () => {
     zeige("/beratungspraesentation-osimmobilien", "a");
-    for (const id of ["ziele-erstgespraech", "kaufkraft-grafik", "kaufkraft-verlust", "dokumente-b"]) {
+    // Seit 20.10.2026 haben A und B die rote Verlustkarte und dieselbe Jahresgrafik.
+    expect(screen.getByTestId("kaufkraft-verlust")).toBeInTheDocument();
+    expect(screen.getByTestId("kaufkraft-jahre")).toBeInTheDocument();
+    for (const id of ["ziele-erstgespraech", "dokumente-b"]) {
       expect(screen.queryByTestId(id)).toBeNull();
     }
     const ist = ueberschriften();

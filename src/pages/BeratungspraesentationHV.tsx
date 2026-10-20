@@ -25,7 +25,9 @@
  */
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowRight, CalendarCheck, CalendarClock, Check, ChevronDown, ChevronLeft, ChevronRight, ClipboardList, FileText, KeyRound, Mail, Menu, Phone, X } from "lucide-react";
+import { ArrowRight, CalendarCheck, CalendarClock, Check, ChevronDown, ChevronLeft, ChevronRight, ClipboardList, Download, FileText, KeyRound, Loader2, Mail, Menu, Phone, UserRound, X } from "lucide-react";
+import { Sichtbar, ZahlText, verzoegert } from "@/components/beratung/Bewegung";
+import type { AntwortAbschnitt } from "@/lib/beratungAntwortenPdf";
 import { useUser } from "@/contexts/UserContext";
 import { usePersistedState } from "@/hooks/usePersistedState";
 import { SPRECHSKRIPT_NACH_ID, sprechskriptFuerAnrede } from "@/lib/beratungSprechskripte";
@@ -268,30 +270,104 @@ function AnsprechpartnerKarte({ person, dunkel, etikett, satz }: { person: Perso
   );
 }
 
-/** Fassung B, Abschnitt 04: Kaufkraft als Balken, der Verlust in Rot. */
-function KaufkraftGrafik() {
-  const max = Math.max(...KAUFKRAFT_B.balken.map((b) => b.wert));
-  const farbe = { neutral: FARBE.salbei, papier: "#D8C7A0", verlust: ROT };
+/**
+ * Ohne Profil (eigenständige Fassung, src/artefakt): statt Name, Foto und
+ * Kontaktdaten ein allgemeiner Platzhalter. Der Berater stellt sich hier
+ * selbst vor; Kontaktdaten stehen bewusst keine da.
+ */
+function AnsprechpartnerPlatzhalter({ dunkel, etikett }: { dunkel?: boolean; etikett: string }) {
+  const ring = { boxShadow: `0 0 0 2px ${dunkel ? FARBE.gold : FARBE.goldDunkel}` };
   return (
-    <figure data-ui="card" className="mt-8 rounded-2xl border bg-card p-5 md:p-6" data-testid="kaufkraft-grafik">
-      <figcaption className="font-semibold">{KAUFKRAFT_B.grafikTitel}</figcaption>
-      <div className="mt-4 space-y-3">
-        {KAUFKRAFT_B.balken.map((b) => (
-          <div key={b.label} className="grid grid-cols-[minmax(0,9rem)_1fr] sm:grid-cols-[12rem_1fr] items-center gap-3 text-sm">
-            <span style={{ color: b.ton === "verlust" ? ROT : undefined }} className={b.ton === "verlust" ? "font-semibold" : ""}>
-              {b.label}
-            </span>
-            <div className="h-8 rounded-md bg-muted overflow-hidden">
-              <div
-                className="h-full rounded-md flex items-center justify-end px-2 text-xs font-semibold tabular-nums whitespace-nowrap"
-                style={{ width: `${(b.wert / max) * 100}%`, background: farbe[b.ton], color: b.ton === "verlust" ? "#FFFFFF" : "#1A1D1A" }}
-              >
-                {b.wert.toLocaleString("de-DE")} €
-              </div>
-            </div>
-          </div>
-        ))}
+    <Karte dunkel={dunkel} className="mt-12 md:p-8">
+      <div data-testid="ansprechpartner-platzhalter" className="flex flex-col sm:flex-row items-center sm:items-start gap-5 sm:gap-7 text-center sm:text-left">
+        <div aria-hidden className="h-24 w-24 md:h-28 md:w-28 shrink-0 rounded-full flex items-center justify-center bg-primary text-primary-foreground" style={ring}>
+          <UserRound className="h-11 w-11" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="bos-kicker" style={{ color: dunkel ? FARBE.gold : FARBE.gruenText }}>
+            {etikett}
+          </p>
+          <p className="mt-2 text-[1.6rem] md:text-[2rem] leading-tight font-semibold tracking-tight">{OS_TEXTE.gruppe.platzhalter.titel}</p>
+          <p className="mt-4 text-base leading-relaxed max-w-2xl" style={{ color: dunkel ? FARBE.hellGedaempft : FARBE.grau }}>
+            {OS_TEXTE.gruppe.platzhalter.satz}
+          </p>
+          <p
+            className="mt-5 rounded-xl border border-dashed px-4 py-3 text-sm leading-relaxed max-w-2xl"
+            style={{ borderColor: dunkel ? "rgba(204,172,5,0.6)" : FARBE.goldDunkel }}
+          >
+            <span className="font-semibold">{OS_TEXTE.gruppe.platzhalter.hinweisKopf}</span> {OS_TEXTE.gruppe.platzhalter.hinweis}
+          </p>
+        </div>
       </div>
+    </Karte>
+  );
+}
+
+/** Werte der Kaufkraft je Jahr, dieselbe Rechnung wie die Karten in Abschnitt 04. */
+export function kaufkraftVerlauf(g: { start: number; zins: number; inflation: number; jahre: number }) {
+  return Array.from({ length: g.jahre + 1 }, (_, n) => {
+    // Wie die Karten: erst den Kontostand auf volle Euro, dann die Kaufkraft daraus.
+    const konto = Math.round(g.start * Math.pow(1 + g.zins, n));
+    return { jahr: n, konto, kaufkraft: Math.round(konto / Math.pow(1 + g.inflation, n)) };
+  });
+}
+
+/**
+ * Abschnitt 04: Kontostand und Kaufkraft Jahr für Jahr. Die Säulen wachsen
+ * nacheinander, die Lücke zwischen Kontostand und Kaufkraft wird rot.
+ */
+function KaufkraftJahre({ karten }: { karten: ReadonlyArray<{ wert: string }> }) {
+  const g = OS_TEXTE.nichtstun.grafik;
+  const reihe = kaufkraftVerlauf(g);
+  const W = 540, H = 190, links = 40, rechts = 532, oben = 10, unten = 168;
+  const max = 65_000;
+  const y = (v: number) => unten - (v / max) * (unten - oben);
+  const spalte = (rechts - links) / reihe.length;
+  return (
+    <figure data-ui="card" className="mt-8 rounded-2xl border bg-card p-4 md:p-6" data-testid="kaufkraft-jahre">
+      <figcaption className="font-semibold">{g.titel}</figcaption>
+      <ul className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-xs sm:text-sm">
+        <li className="flex items-center gap-2"><span aria-hidden className="h-3 w-3 rounded-sm" style={{ background: "#D8C7A0" }} />{g.konto}</li>
+        <li className="flex items-center gap-2"><span aria-hidden className="h-3 w-3 rounded-sm" style={{ background: ROT }} />{g.kaufkraft}</li>
+        <li className="flex items-center gap-2"><span aria-hidden className="w-5 border-t-2 border-dashed" style={{ borderColor: "currentColor" }} />{g.startText}</li>
+      </ul>
+      <Sichtbar className="mt-3 overflow-x-auto" schwelle={0.4}>
+        <svg
+          viewBox={`0 0 ${W} ${H}`}
+          className="w-full min-w-[480px] max-w-3xl h-auto"
+          role="img"
+          aria-label={`${g.titel}: ${g.konto} nach ${g.jahre} Jahren ${karten[1].wert}, ${g.kaufkraft} ${karten[2].wert}`}
+          fill="currentColor"
+        >
+          {[0, 20_000, 40_000, 60_000].map((v) => (
+            <g key={v}>
+              <line x1={links} x2={rechts} y1={y(v)} y2={y(v)} stroke="currentColor" opacity={v === 0 ? 0.4 : 0.1} />
+              <text x={links - 6} y={y(v) + 3} fontSize="9" textAnchor="end" opacity="0.6">{(v / 1000).toLocaleString("de-DE")}T</text>
+            </g>
+          ))}
+          {reihe.map((r, i) => {
+            const x0 = links + i * spalte;
+            return (
+              <g key={r.jahr}>
+                <rect className="bos-wachsen-y" style={verzoegert(i * 140)} x={x0 + spalte * 0.14} width={spalte * 0.72} y={y(r.konto)} height={unten - y(r.konto)} fill="#D8C7A0" rx={2} />
+                <rect
+                  className="bos-wachsen-y"
+                  style={verzoegert(i * 140 + 90)}
+                  x={x0 + spalte * 0.26}
+                  width={spalte * 0.48}
+                  y={y(r.kaufkraft)}
+                  height={unten - y(r.kaufkraft)}
+                  fill={i === 0 ? FARBE.salbei : ROT}
+                  rx={2}
+                />
+                <text x={x0 + spalte / 2} y={unten + 13} fontSize="9" textAnchor="middle" opacity="0.8">{g.startjahr + r.jahr}</text>
+              </g>
+            );
+          })}
+          {/* Die Linie der 50.000 € von heute, über den Säulen: Die rote Säule sinkt Jahr für Jahr darunter. */}
+          <line className="bos-blende" style={verzoegert(reihe.length * 140)} x1={links} x2={rechts} y1={y(g.start)} y2={y(g.start)} stroke="currentColor" strokeWidth="1.3" strokeDasharray="5 4" strokeOpacity="0.7" />
+        </svg>
+      </Sichtbar>
     </figure>
   );
 }
@@ -436,6 +512,8 @@ export default function BeratungspraesentationHV({
   vorschau,
   variante = "a",
   weiterZurSelbstauskunft,
+  ohneProfil,
+  speichereDatei,
 }: {
   vorschau?: BeratungVorschau;
   variante?: BeratungVariante;
@@ -445,6 +523,10 @@ export default function BeratungspraesentationHV({
    * auch ohne Kunde. Bekommt die Adresse samt gewähltem Ziel.
    */
   weiterZurSelbstauskunft?: (adresse: string) => void;
+  /** Ohne Nutzerprofil (src/artefakt): Ansprechpartner als allgemeiner Platzhalter, ohne Kontaktdaten. */
+  ohneProfil?: boolean;
+  /** Datei an den Nutzer geben; ohne Angabe der normale Download von jsPDF. */
+  speichereDatei?: (dateiname: string, blob: Blob) => Promise<unknown>;
 } = {}) {
   const T = variante === "b" ? OS_TEXTE_B : OS_TEXTE;
   const istB = variante === "b";
@@ -643,6 +725,71 @@ export default function BeratungspraesentationHV({
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  /*
+   * „Antworten als PDF“ (20.10.2026): je Abschnitt die Frage und was im
+   * Gespräch gewählt oder eingetippt wurde. Beschriftungen wie auf den Folien.
+   */
+  const mitEinheit = (schluessel: string) => {
+    const v = w(schluessel).trim();
+    return v && mitEuro(v) ? `${v} €` : v;
+  };
+  const antwortAbschnitte = (): AntwortAbschnitt[] => [
+    { titel: T.heute.kicker, zeilen: [{ frage: a(tx.arbeitsweise.erwartungFrage), antwort: w("erwartung") }] },
+    {
+      titel: a(T.ziele.kicker),
+      zeilen: [
+        { frage: "Dein wichtigster Satz", antwort: w("motiv") },
+        { frage: a(T.ziele.zielKopf), antwort: gewaehlteZiele.map((z) => z.label).join(", ") },
+        { frage: a(tx.arbeitsweise.erfahrungFrage), antwort: w("erfahrung") },
+        ...rahmenZeilen.map((z) => ({ frage: z.label, antwort: mitEinheit(z.schluessel) })),
+      ],
+    },
+    {
+      titel: a(T.luecke.kicker),
+      zeilen: [
+        { frage: `${T.luecke.gewuenscht}, ${T.luecke.gewuenschtText}`, antwort: mitEinheit("wunschNetto") },
+        { frage: `${T.luecke.rente}, ${T.luecke.renteText}`, antwort: mitEinheit("renteErwartet") },
+        { frage: T.luecke.ruhestandAb, antwort: w("ruhestandAb") },
+        { frage: `${T.luecke.luecke} ${T.luecke.lueckeText}`, antwort: luecke ? fmt.euro(luecke.monat) : "" },
+      ],
+    },
+    {
+      titel: a(T.konzept.kicker),
+      zeilen: [{ frage: T.kriterien.konzept, antwort: beide ? "Beide Konzepte" : T.konzept.schalter[konzept] }],
+    },
+    {
+      titel: a(T.kriterien.kicker),
+      zeilen: [
+        { frage: T.kriterien.hoechstens, antwort: mitEinheit("beitrag") },
+        { frage: T.kriterien.grenze, antwort: mitEinheit("grenzeStress") },
+        { frage: T.kriterien.eigenkapital, antwort: mitEinheit("eigenkapital") },
+        { frage: T.kriterien.reserve, antwort: mitEinheit("reserve") },
+        { frage: T.kriterien.wichtig, antwort: w("ueberzeugungen") },
+        { frage: a(T.kriterien.worteFrage), antwort: w("warumJetzt") },
+        { frage: tx.arbeitsweise.feldEinnahmen as string, antwort: mitEinheit("einnahmen") },
+        { frage: tx.arbeitsweise.feldAusgaben as string, antwort: mitEinheit("ausgaben") },
+        { frage: tx.arbeitsweise.feldEigenkapitalGesamt as string, antwort: mitEinheit("eigenkapitalGesamt") },
+        { frage: tx.arbeitsweise.rahmen as string, antwort: rahmen ? fmt.euro(rahmen.empfRahmen) : "" },
+      ],
+    },
+  ];
+  const [pdfLaeuft, setPdfLaeuft] = useState(false);
+  const antwortenAlsPdf = async () => {
+    setPdfLaeuft(true);
+    try {
+      const { erzeugeAntwortenPdf } = await import("@/lib/beratungAntwortenPdf");
+      const doc = await erzeugeAntwortenPdf(antwortAbschnitte());
+      const name = `Beratung_Antworten_${new Date().toISOString().slice(0, 10)}.pdf`;
+      if (speichereDatei) await speichereDatei(name, doc.output("blob"));
+      else doc.save(name);
+    } catch (e) {
+      console.error("[Beratung] Antworten-PDF fehlgeschlagen", e);
+      toast({ title: "PDF konnte nicht erstellt werden", description: "Bitte versuche es noch einmal.", variant: "destructive" });
+    } finally {
+      setPdfLaeuft(false);
+    }
+  };
+
   /** Ziel der Selbstauskunft, mit Kunde, Investment und dem führenden Ziel. */
   const selbstauskunftAdresse = () => {
     const q = new URLSearchParams();
@@ -751,7 +898,9 @@ export default function BeratungspraesentationHV({
       <Fussnote dunkel>
         <span className="block text-center">{T.gruppe.fuss}</span>
       </Fussnote>
-      {ansprechpartner && (
+      {ohneProfil ? (
+        <AnsprechpartnerPlatzhalter dunkel etikett={a(tx.ueberUns.ansprechpartner)} />
+      ) : ansprechpartner && (
         <AnsprechpartnerKarte
           person={ansprechpartner}
           dunkel
@@ -1087,7 +1236,7 @@ export default function BeratungspraesentationHV({
                   style={{ color: FARBE.hellText }}
                 />
               </div>
-              <p className="mt-8 text-lg md:text-xl">{a(T.luecke.frage)}</p>
+              <p className="mt-8 border-l-4 pl-4 text-lg md:text-2xl font-semibold" style={{ borderColor: FARBE.gold }}>{a(T.luecke.frage)}</p>
               <Fussnote dunkel>{T.luecke.fuss}</Fussnote>
             </Folie>
 
@@ -1096,24 +1245,25 @@ export default function BeratungspraesentationHV({
               {istB && <p className="mt-6 text-base md:text-lg">{KAUFKRAFT_B.vorspann}</p>}
               <div className="mt-8 grid md:grid-cols-3 gap-4">
                 {T.nichtstun.karten.map((k) =>
-                  istB && k.warnung ? (
-                    // In B ist die Verlustkarte ganz rot, damit der Verlust auf einen Blick steht.
+                  k.warnung ? (
+                    // Die Verlustkarte ist ganz rot, damit der Verlust auf einen Blick steht (seit 20.10.2026 auch in A).
                     <div key={k.kopf} data-testid="kaufkraft-verlust" className="rounded-2xl border-2 p-5 md:p-6 min-w-0" style={{ background: ROT, borderColor: ROT, color: "#FFFFFF" }}>
                       <p className="text-xs font-medium uppercase tracking-[0.06em]">{k.kopf}</p>
-                      <Wert>{k.wert}</Wert>
+                      <Wert><ZahlText text={k.wert} /></Wert>
                       <p className="mt-2 text-sm font-medium">{k.text}</p>
                     </div>
                   ) : (
-                    <Karte key={k.kopf} rand={k.warnung ? ROT : undefined}>
+                    <Karte key={k.kopf}>
                       <Kopf>{k.kopf}</Kopf>
-                      <Wert farbe={k.warnung ? ROT : FARBE.gruenText}>{k.wert}</Wert>
+                      <Wert farbe={FARBE.gruenText}><ZahlText text={k.wert} /></Wert>
                       <p className="mt-2 text-sm">{k.text}</p>
                     </Karte>
                   ),
                 )}
               </div>
-              {istB && <KaufkraftGrafik />}
-              <p className="mt-7 text-base md:text-lg">{a(T.nichtstun.satz)}</p>
+              <KaufkraftJahre karten={T.nichtstun.karten} />
+              {/* Die Kernbotschaft des Abschnitts, hervorgehoben. */}
+              <p className="mt-7 border-l-4 pl-4 text-lg md:text-xl font-medium" style={{ borderColor: ROT }}>{a(T.nichtstun.satz)}</p>
               <Fussnote>{a(T.nichtstun.fuss)}</Fussnote>
               <Trainer id="nichtstun" />
             </Folie>
@@ -1546,6 +1696,25 @@ export default function BeratungspraesentationHV({
                   </Karte>
                 ))}
               </div>
+              <Karte className="mt-4" data-testid="antworten-pdf">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="min-w-0">
+                    <p className="font-semibold">{T.termin.antwortenKopf}</p>
+                    <p className="mt-1 text-sm" style={{ color: FARBE.grau }}>{T.termin.antwortenText}</p>
+                  </div>
+                  <button
+                    type="button"
+                    data-no-shrink
+                    data-ui="button"
+                    onClick={antwortenAlsPdf}
+                    disabled={pdfLaeuft}
+                    className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full px-6 h-12 font-semibold bg-primary text-primary-foreground disabled:opacity-60"
+                  >
+                    {pdfLaeuft ? <Loader2 className="h-5 w-5 animate-spin" /> : <Download className="h-5 w-5" />}
+                    {T.termin.antwortenKnopf}
+                  </button>
+                </div>
+              </Karte>
               {hatKundenKontext && (
               <Karte className="mt-4" rand={FARBE.gold}>
                 <p className="text-sm leading-relaxed">{T.termin.portalSatz}</p>
