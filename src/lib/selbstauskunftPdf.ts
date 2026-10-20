@@ -268,6 +268,11 @@ export interface SelbstauskunftPdfOptionen {
    * Ohne Angabe bleibt es das bisherige deutsche Dokument.
    */
   sprache?: Sprache;
+  /**
+   * Zum Unterschreiben auf Papier: leere Unterschriftszeilen ohne den Vermerk
+   * „Unterschrift ausstehend“. Nur die eigenständige Fassung ohne CRM.
+   */
+  papierUnterschrift?: boolean;
 }
 
 /**
@@ -1422,7 +1427,7 @@ export async function generateSelbstauskunftPDF(
       // Bestaetigung drucken, sonst behauptet das Dokument etwas Unbelegtes.
       doc.setTextColor(180, 0, 0);
       doc.text("Unterschrift konnte nicht dargestellt werden", x, statusY);
-    } else {
+    } else if (!optionen.papierUnterschrift) {
       doc.setTextColor(150, 150, 150);
       doc.text(zwei ? "Unterschrift ausstehend / Signature pending" : "Unterschrift ausstehend", x, statusY);
     }

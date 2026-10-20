@@ -276,3 +276,17 @@ describe("generateSelbstauskunftPDF, zvE von 0", () => {
     expect(texte.slice(zeile, zeile + 3)).toContain("0,00 €");
   });
 });
+
+describe("generateSelbstauskunftPDF, Unterschrift auf Papier (eigenständige Fassung)", () => {
+  it("druckt ohne Unterschrift den Vermerk „Unterschrift ausstehend“", async () => {
+    await generateSelbstauskunftPDF(saDaten(), kunde);
+    expect(alleTexte()).toContain("Unterschrift ausstehend");
+  });
+
+  it("lässt die Zeile mit papierUnterschrift leer, die Beschriftung bleibt", async () => {
+    await generateSelbstauskunftPDF(saDaten(), kunde, undefined, { papierUnterschrift: true });
+    const alles = alleTexte();
+    expect(alles).not.toContain("Unterschrift ausstehend");
+    expect(alles).toContain("Unterschrift Antragsteller 1");
+  });
+});

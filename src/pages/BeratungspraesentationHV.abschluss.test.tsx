@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import BeratungspraesentationHV from "./BeratungspraesentationHV";
+import BeratungspraesentationHV, { kaufkraftVerlauf } from "./BeratungspraesentationHV";
+import { OS_TEXTE } from "@/lib/beratungOsDaten";
 
 /*
  * Abschnitte 12 und 13 (16.10.2026), in A und B: Knopf „Objektvorstellung
@@ -81,6 +82,24 @@ describe.each(["a", "b"] as const)("Beratungspräsentation %s, Abschnitte 12 und
     expect(screen.queryByText(/Gerechnet mit deiner Selbstauskunft/)).toBeNull();
     expect(screen.getByText(/Dann vereinbaren wir deine Objektvorstellung/)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Objektvorstellung buchen/ })).toHaveAttribute("href", "https://termin.example/eigen");
+  });
+
+  it("zeigt in der eigenständigen Fassung „Weiter zur Selbstauskunft“ statt Objektvorstellung", () => {
+    zustand.profile = [{ id: "nutzer-1", name: "Maria Muster", objektlink: "https://termin.example/eigen" }];
+    const weiter = vi.fn();
+    render(
+      <MemoryRouter initialEntries={["/x"]}>
+        <BeratungspraesentationHV
+          variante={variante}
+          vorschau={{ schluessel: "", kundenName: "", kontakt: {}, skript: null }}
+          weiterZurSelbstauskunft={weiter}
+        />
+      </MemoryRouter>,
+    );
+    expect(screen.queryByText(/Objektvorstellung buchen/)).toBeNull();
+    expect(screen.queryByText(/Kein Buchungslink/)).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: /Weiter zur Selbstauskunft/ }));
+    expect(weiter).toHaveBeenCalledWith("/selbstauskunft");
   });
 
   it("öffnet mit Kunde den Objektvorstellungs-Link des zuständigen Partners im neuen Tab", () => {
@@ -165,5 +184,65 @@ describe.each(["a", "b"] as const)("Beratungspräsentation %s, Abschnitte 12 und
     zeige(MIT_KUNDE, variante);
     expect(screen.queryByRole("button", { name: /Kundenportal freigeben/ })).toBeNull();
     expect(screen.getByText("Kundenportal ist freigegeben")).toBeInTheDocument();
+  });
+});
+
+describe("Zweite Stufe vom 20.10.2026", () => {
+  const ohneKunde = { schluessel: "", kundenName: "", kontakt: {}, skript: null };
+
+  it("rechnet die Kaufkraft-Grafik mit denselben Zahlen wie die Karten in Abschnitt 04", () => {
+    const g = OS_TEXTE.nichtstun.grafik;
+    const ende = kaufkraftVerlauf(g).at(-1)!;
+    expect(`${ende.konto.toLocaleString("de-DE")} €`).toBe(OS_TEXTE.nichtstun.karten[1].wert);
+    // Die Karte nennt 47.615 €, gerechnet sind es 47.614 €: höchstens 1 € Rundung.
+    const karte = Number(OS_TEXTE.nichtstun.karten[2].wert.replace(/\D/g, ""));
+    expect(Math.abs(ende.kaufkraft - karte)).toBeLessThanOrEqual(1);
+  });
+
+  it("zeigt ohne Profil einen Platzhalter statt Ansprechpartner, ohne Kontaktdaten", () => {
+    render(
+      <MemoryRouter>
+        <BeratungspraesentationHV vorschau={{ ...ohneKunde, ansprechpartner: { name: "Alex Beispiel", rolle: "", telefon: "+49 30 1", email: "a@example.com" } }} ohneProfil />
+      </MemoryRouter>,
+    );
+    expect(screen.getByTestId("ansprechpartner-platzhalter")).toHaveTextContent("Dein Ansprechpartner stellt sich vor");
+    expect(screen.queryByTestId("ansprechpartner")).toBeNull();
+    expect(document.querySelector('a[href^="tel:"], a[href^="mailto:"]')).toBeNull();
+  });
+
+  it("zeigt bei Altersvorsorge drei Wohnungen im Zeitstrahl und keine Folie „Die nächsten Schritte mit uns“", () => {
+    render(
+      <MemoryRouter>
+        <BeratungspraesentationHV vorschau={ohneKunde} />
+      </MemoryRouter>,
+    );
+    expect(screen.getByTestId("konzept-inhalt-alter")).toBeInTheDocument();
+    expect(document.getElementById("alter-8")).toBeNull();
+    expect(screen.queryByText(/Die nächsten Schritte mit uns/)).toBeNull();
+    expect(screen.getByTestId("rente-zeitstrahl")).toHaveTextContent(/Wohnung 1.*Wohnung 2.*Wohnung 3/);
+    // Zahlen stehen auch ohne meldenden Beobachter auf dem Endwert.
+    expect(document.getElementById("alter-7")).toHaveTextContent("≈ 1,44 Mio. €");
+    expect(document.getElementById("alter-4")).toHaveTextContent("529.900 €");
+  });
+
+  it("erzeugt die Antworten als PDF mit Frage und Antwort", async () => {
+    const gespeichert = vi.fn(async () => undefined);
+    ablage.set("beratung-antworten-ohne-kunde", JSON.stringify({ erwartung: "Klarheit über die Rente" }));
+    render(
+      <MemoryRouter>
+        <BeratungspraesentationHV vorschau={ohneKunde} speichereDatei={gespeichert} />
+      </MemoryRouter>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /Antworten als PDF/ }));
+    await waitFor(() => expect(gespeichert).toHaveBeenCalledTimes(1));
+    const [name, blob] = gespeichert.mock.calls[0] as unknown as [string, Blob];
+    expect(name).toMatch(/^Beratung_Antworten_\d{4}-\d{2}-\d{2}\.pdf$/);
+    const text = await new Promise<string>((fertig) => {
+      const leser = new FileReader();
+      leser.onload = () => fertig(String(leser.result));
+      leser.readAsText(blob);
+    });
+    // Der Inhalt ist komprimiert; geprüft wird, dass ein PDF entsteht (Inhalt per pdftotext im Browser-Test geprüft).
+    expect(text.startsWith("%PDF-")).toBe(true);
   });
 });

@@ -53,8 +53,9 @@ export function rentenluecke(wunschNetto: number, erwarteteRente: number): { mon
 export const OS_TEXTE = {
   hero: {
     kicker: "OS Real Estate · Vermögensaufbau mit Immobilien",
-    titel: "Strategischer Vermögensaufbau",
-    titelAkzent: "mit vermieteten Immobilien",
+    // Seit 20.10.2026: alle drei Konzepte im ersten Satz (Vermögen, Altersvorsorge, Steuer).
+    titel: "Vermögensaufbau und Altersvorsorge",
+    titelAkzent: "mit mehr Netto vom Brutto",
     willkommen: "Herzlich willkommen",
     unterzeile: "Steuern sparen. Zusatzrente aufbauen. Persönlich begleitet.",
     start: "Beratung starten",
@@ -113,6 +114,18 @@ export const OS_TEXTE = {
       { kopf: "Nach 10 Jahren auf dem Konto", wert: "60.950 €", text: "sieht nach mehr aus" },
       { kopf: "Kaufkraft bei 2,5 % Inflation", wert: "47.615 €", text: "tatsächlich weniger wert", warnung: true },
     ],
+    /** Die Grafik dazu, Jahr für Jahr. Dieselben Annahmen wie die Karten (geprüft im Test). */
+    grafik: {
+      titel: "So verliert Geld auf dem Konto Jahr für Jahr an Kaufkraft",
+      konto: "Kontostand mit 2 % Zinsen",
+      kaufkraft: "Kaufkraft bei 2,5 % Inflation",
+      startText: "50.000 € heute",
+      start: 50_000,
+      zins: 0.02,
+      inflation: 0.025,
+      jahre: 10,
+      startjahr: 2026,
+    },
     satz: "Und wer ein Jahr wartet, verschenkt ein Jahr Tilgung, die sonst Mieter und Steuerwirkung mittragen.",
     fuss: "Wenn deine Reserve oder Lebensplanung noch nicht passt, ist Warten die bessere Wahl. Das sagen wir dir dann offen.",
   },
@@ -156,6 +169,13 @@ export const OS_TEXTE = {
       },
     ] as ReadonlyArray<{ name: string; zusatz: string; farbe: string; text: string }>,
     fuss: "Ein Haus, kurze Wege: Objekt, Verwaltung und Finanzierung sind aufeinander abgestimmt.",
+    /** Ohne Profil (eigenständige Fassung): Platzhalter statt Name und Kontaktdaten. */
+    platzhalter: {
+      titel: "Dein Ansprechpartner stellt sich vor",
+      satz: "Ich begleite dich persönlich, von heute bis zum Notartermin und darüber hinaus.",
+      hinweisKopf: "Für dich als Berater:",
+      hinweis: "Stell dich hier kurz selbst vor: Name, deine Rolle und warum du mit OS Real Estate arbeitest. Zwei bis drei Sätze reichen.",
+    },
     // Vorteile unter den Logos. `marke` ordnet eine Kachel farblich einer Marke oben zu.
     vorteile: [
       { titel: "Rundum-sorglos", text: "Wir begleiten dich von der Auswahl bis nach der Vermietung." },
@@ -279,6 +299,9 @@ export const OS_TEXTE = {
     /** Ersetzt die Kalkulations-Karte ohne verbundenen Kunden. */
     kalkulationOhneKunde: "Gerechnet mit deinen Zahlen: vor und nach Steuern, mit Stresstest.",
     portalSatz: "Nach der gemeinsam ausgefüllten und von dir unterschriebenen Selbstauskunft lädst du Personalausweis und letzte Gehaltsabrechnung im Kundenportal hoch.",
+    antwortenKopf: "Deine Antworten als Kopie",
+    antwortenText: "Alle Fragen von heute und deine Antworten, Abschnitt für Abschnitt, als PDF für deine Unterlagen.",
+    antwortenKnopf: "Antworten als PDF",
     portalKnopf: "Kundenportal freigeben",
     portalVorUnterschrift: "Erst nach der unterschriebenen Selbstauskunft",
     portalFreigegeben: "Kundenportal ist freigegeben",

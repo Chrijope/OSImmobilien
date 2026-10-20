@@ -51,3 +51,6 @@ OSImmobilien_Rentabilitaetsrechnung*
 
 .env
 .env.local
+
+# Eigenständige Fassung (vite.artefakt.config.ts), wird gebaut, nicht eingecheckt.
+dist-artefakt

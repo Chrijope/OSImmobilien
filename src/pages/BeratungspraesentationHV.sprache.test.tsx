@@ -88,7 +88,7 @@ describe("Aufbau nach dem Entwurf", () => {
       "Welches Ziel steht für dich an erster Stelle?",
       // 08: Inhalt des PDFs „Arbeitsleistung und Immobilienvermögen“ (Konzept Altersvorsorge)
       "Wir zeigen dir, wie du Sozialabgaben in Vermögen umwandelst.",
-      "Deine vorzeitige Rente mit 58 Jahren.",
+      "Drei Wohnungen: deine vorzeitige Rente mit 58 Jahren.",
       // 09 Kriterien vor 10 Objekte
       "Du entscheidest, was passen muss.",
       "Drei Standorte, geprüft und vermietet.",
@@ -209,7 +209,7 @@ describe("Hero als Glaskarte", () => {
     expect(bilder).toHaveLength(1);
     expect(bilder[0]).toHaveAttribute("alt", "OS Real Estate GmbH");
     expect(hero.textContent).toContain("OS Real Estate · Vermögensaufbau mit Immobilien");
-    expect(hero.querySelector("h1")?.textContent).toBe("Strategischer Vermögensaufbaumit vermieteten Immobilien");
+    expect(hero.querySelector("h1")?.textContent).toBe("Vermögensaufbau und Altersvorsorgemit mehr Netto vom Brutto");
     expect(hero.textContent).toContain("Herzlich willkommen, Anna.");
     expect(hero.textContent).toContain("Steuern sparen. Zusatzrente aufbauen. Persönlich begleitet.");
     expect([...hero.querySelectorAll("button")].map((b) => b.textContent)).toEqual(["Beratung starten", "Konzepte ansehen"]);
@@ -246,7 +246,7 @@ describe("Konzeptschalter und Abschnitt 08", () => {
     zeige(UNTERLAGEN);
     fireEvent.click(screen.getByTestId("konzept-beide"));
     const ids = Array.from(document.querySelectorAll("section[id]")).map((el) => el.id);
-    const reihe = ["konzept", "steuer-titel", "steuer-4", "alter-titel", "alter-8", "kriterien", "objekte", "weg", "schritt", "termin"].map((id) =>
+    const reihe = ["konzept", "steuer-titel", "steuer-4", "alter-titel", "alter-7", "kriterien", "objekte", "weg", "schritt", "termin"].map((id) =>
       ids.indexOf(id),
     );
     expect(reihe, ids.join(" | ")).not.toContain(-1);

@@ -79,15 +79,9 @@ export const OS_TEXTE_B: typeof OS_TEXTE = {
   },
 };
 
-/** Abschnitt 04 in B: die Balkengrafik zur Kaufkraft. Werte wie in den Karten. */
+/** Abschnitt 04 in B: der Satz über den Karten. Die Grafik ist dieselbe wie in A (KaufkraftJahre). */
 export const KAUFKRAFT_B = {
   vorspann: "Ein einfaches Beispiel: 50.000 € auf dem Tagesgeld, 2 % Zinsen, 2,5 % Inflation.",
-  grafikTitel: "Kaufkraft heute und in 10 Jahren",
-  balken: [
-    { label: "Heute", wert: 50_000, ton: "neutral" },
-    { label: "Kontostand in 10 Jahren", wert: 60_950, ton: "papier" },
-    { label: "Kaufkraft in 10 Jahren", wert: 47_615, ton: "verlust" },
-  ] as ReadonlyArray<{ label: string; wert: number; ton: "neutral" | "papier" | "verlust" }>,
 };
 
 /** Vertriebsdokumente in B, je Konzept. Liegen unter public/vertriebsunterlagen/. */
