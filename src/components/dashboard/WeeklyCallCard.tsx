@@ -65,6 +65,16 @@ export function aktuellerWeeklyCall(
   return offen ?? calls[calls.length - 1];
 }
 
+/**
+ * Läuft der Call gerade? Von Beginn (einschließlich) bis Beginn plus
+ * CALL_DAUER_MINUTEN (ausschließlich). Ein Ende steht nirgends gespeichert,
+ * die Dauer ist dieselbe wie in der Kalenderdatei.
+ */
+export function istLive(jetzt: Date, start: Date): boolean {
+  const ms = jetzt.getTime() - start.getTime();
+  return ms >= 0 && ms < CALL_DAUER_MINUTEN * 60_000;
+}
+
 function formatCountdown(ms: number): string {
   if (ms <= 0) return "läuft";
   const totalMinutes = Math.floor(ms / 60000);
@@ -182,9 +192,10 @@ export function WeeklyCallCard() {
   const start = call.start;
   const msUntil = start.getTime() - now.getTime();
   const canJoin = msUntil <= 10 * 60 * 1000 && msUntil >= -90 * 60 * 1000;
+  const live = istLive(now, start);
 
   return (
-    <Card className="border-primary/20">
+    <Card className={live ? "border-emerald-500/60 ring-1 ring-emerald-500/30" : "border-primary/20"}>
       <CardHeader className="pb-2 flex flex-row items-start justify-between gap-2">
         <div>
           <CardTitle className="text-[13px] font-medium text-muted-foreground tracking-wide uppercase">
@@ -192,9 +203,24 @@ export function WeeklyCallCard() {
           </CardTitle>
           <p className="text-[15px] font-semibold mt-1">{formatDateLong(start)}{"\u00a0"}<br />{/* Jeder Call in einer eigenen Zeile (05.10.2026). */}{runden.map((runde, index) => <span key={runde}>{index > 0 && <br />}{callZeitenText(runden.length > 1 ? [runde] : runden)}{runden.length > 1 && ` ${CALL_RUNDEN[runde].gruppe}`}</span>)}</p>
         </div>
-        <Badge variant={canJoin ? "default" : "secondary"} className="shrink-0">
-          {canJoin && msUntil <= 0 ? "läuft jetzt" : formatCountdown(msUntil)}
-        </Badge>
+        {live ? (
+          <span
+            role="status"
+            className="shrink-0 inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300"
+          >
+            {/* Fester Punkt mit pulsierendem Ring; ohne Bewegung (reduced motion) bleibt nur der Punkt. */}
+            <span className="relative flex h-2 w-2" aria-hidden="true">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75 animate-ping motion-reduce:animate-none motion-reduce:hidden" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+            </span>
+            <span aria-hidden="true">Live</span>
+            <span className="sr-only">Weekly Sales Call läuft gerade</span>
+          </span>
+        ) : (
+          <Badge variant={canJoin ? "default" : "secondary"} className="shrink-0">
+            {canJoin && msUntil <= 0 ? "läuft jetzt" : formatCountdown(msUntil)}
+          </Badge>
+        )}
       </CardHeader>
       <CardContent className="space-y-3">
         <p className="text-xs text-muted-foreground leading-relaxed">
