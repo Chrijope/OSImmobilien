@@ -37,6 +37,9 @@ vi.mock("@/components/DashboardLayout", () => ({
   DashboardLayout: ({ children }: { children: ReactNode }) => <div>{children}</div>,
 }));
 vi.mock("@/hooks/useLiveData", () => ({ useLiveVersion: () => 0 }));
+// Wie in ObjektSeitePassendeKunden.test.tsx: Die Abwesenheiten fragen die Datenbank
+// mit .lte/.gte, die die Attrappe oben nicht kennt.
+vi.mock("@/hooks/useVertretungen", () => ({ useVertretungen: () => new Set<string>() }));
 vi.mock("@/hooks/useCacheReady", () => ({ useCacheReady: () => true }));
 vi.mock("@/components/objektseite/Galerie", () => ({ Galerie: () => <div>Galerie</div> }));
 vi.mock("@/lib/objektTexteKi", async (importOriginal) => ({
