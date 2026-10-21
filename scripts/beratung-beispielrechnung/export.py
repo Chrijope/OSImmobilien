@@ -65,7 +65,7 @@ ziel = os.path.join(H, "..", "..", "src", "lib", "beratungBeispielrechnung.ts")
 with open(ziel, "w", encoding="utf-8") as f:
     f.write("/*\n * Gemeinsame Beispielrechnung der Beratungspräsentation (PDF, CRM, Artefakt).\n"
             " * ERZEUGT aus scripts/beratung-beispielrechnung/gemeinsam.py mit export.py, nicht von Hand ändern.\n"
-            " * Beispielperson 65.000 € brutto (Grundtarif 2026), Beispielwohnung Hauffstraße 38 a, Wohnung 1,\n"
+            " * Beispielperson 65.000 € brutto (Grundtarif 2026), Beispielwohnung Hauffstraße 38 c, Wohnung 13,\n"
             " * AfA 4 % als Annahme (Ersteinschätzung, Gutachten erforderlich). Beträge in Euro, gerundet wie in der PDF.\n */\n")
     f.write("export const BEISPIEL = " + json.dumps(D, ensure_ascii=False, indent=2) + " as const;\n")
 print("geschrieben:", os.path.normpath(ziel))

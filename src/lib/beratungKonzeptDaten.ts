@@ -30,7 +30,7 @@ export const mio = (n: number) => `${(n / 1e6).toLocaleString("de-DE", { minimum
 
 /** Die AfA-Annahme, wörtlich wie in der PDF. */
 export const AFA_ANNAHME =
-  "AfA 4 % ist eine Annahme (Ersteinschätzung, Restnutzungsdauer 25 Jahre) und setzt ein Restnutzungsdauer-Gutachten voraus, das das Finanzamt anerkennen muss; das Exposé nennt für Wohnung 1 eine Ersteinschätzung von 32 Jahren (rund 3,1 %); ohne Gutachten gilt 2 %.";
+  "AfA 4 % ist eine Annahme (Ersteinschätzung, Restnutzungsdauer 25 Jahre) und setzt ein Restnutzungsdauer-Gutachten voraus, das das Finanzamt anerkennen muss; das Exposé nennt für die Beispielwohnung eine Ersteinschätzung von 32 Jahren (rund 3,1 %); ohne Gutachten gilt 2 %.";
 
 const ANNAHMEN = `Annahmen: ${eur(P.bruttoJahr)} brutto im Jahr (${eur(P.bruttoMonat)} im Monat), Steuerklasse I, kinderlos, ohne Kirchensteuer, Werte 2026. Beispielwohnung ${W.name} (Exposé 19.10.2026): Kaufpreis ${eur(W.kaufpreis)} inkl. Garage, ${W.qm.toLocaleString("de-DE")} m², Kaltmiete ${eur(Math.round(W.mieteWohnung))} (13 €/m², Mietdifferenz zahlt der Bauträger laut Garantievereinbarung) plus Garage ${eur(W.garage)}, nicht umlagefähiges Hausgeld ${eur(W.hausgeld)} (davon Rücklage ${eur(W.ruecklage)}), AfA-Grundlage ${eur(W.afaGrundlage)}, Darlehen ${eur(W.kaufpreis)} mit 4,8 % Zins und 1,2 % Tilgung (Rate ${eur(W.rate)}). Werte im ersten vollen Jahr, gerundet.`;
 

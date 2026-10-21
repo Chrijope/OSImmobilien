@@ -505,7 +505,10 @@ export function SteuerFolien({ oben, ende }: { oben?: ReactNode; ende?: ReactNod
 function VermoegenKurve({ dunkel }: { dunkel: boolean }) {
   const W = 540, H = 250, links = 44, unten = 222, oben = 8, rechts = 530;
   const x = (alter: number) => links + ((alter - 25) / 40) * (rechts - links);
-  const y = (wert: number) => unten - (wert / 400_000) * (unten - oben);
+  // Achse nach dem höchsten Wert, auf volle 100.000 € gerundet (wie im PDF); eine feste Grenze schnitt größere Wohnungen ab.
+  const achseMax = Math.ceil(Math.max(...VERLAUF_WOHNUNG.map((p) => p.wert)) / 100_000) * 100_000;
+  const achse = Array.from({ length: achseMax / 100_000 + 1 }, (_, i) => i * 100);
+  const y = (wert: number) => unten - (wert / achseMax) * (unten - oben);
   const linie = (wert: (p: (typeof VERLAUF_WOHNUNG)[number]) => number) => VERLAUF_WOHNUNG.map((p) => `${x(p.alter).toFixed(1)},${y(wert(p)).toFixed(1)}`).join(" ");
   const flaeche = (pkt: string) => `M${x(25)},${unten} L${pkt.replace(/ /g, " L")} L${x(65)},${unten} Z`;
   const wert = linie((p) => p.wert);
@@ -528,7 +531,7 @@ function VermoegenKurve({ dunkel }: { dunkel: boolean }) {
   return (
     <Sichtbar schwelle={0.35}>
       <svg viewBox={`0 0 ${W} ${H + 18}`} className="w-full h-auto" role="img" aria-label={`${t.kopf}: ${t.marke.titel}, ${t.ende.kopf} ${t.ende.wert}`} fill="currentColor">
-        {[0, 100, 200, 300, 400].map((v) => (
+        {achse.map((v) => (
           <g key={v}>
             <line x1={links} x2={rechts} y1={y(v * 1000)} y2={y(v * 1000)} stroke={raster} />
             <text x={links - 6} y={y(v * 1000) + 3} fontSize="9" textAnchor="end" opacity="0.6">{v}T</text>

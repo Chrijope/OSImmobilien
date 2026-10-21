@@ -227,8 +227,8 @@ describe("Zweite Stufe vom 20.10.2026", () => {
     expect(screen.queryByText(/Die nächsten Schritte mit uns/)).toBeNull();
     expect(screen.getByTestId("rente-zeitstrahl")).toHaveTextContent(/Wohnung 1.*Wohnung 2.*Wohnung 3/);
     // Zahlen stehen auch ohne meldenden Beobachter auf dem Endwert.
-    expect(document.getElementById("alter-7")).toHaveTextContent("≈ 1.056.000 €");
-    expect(document.getElementById("alter-4")).toHaveTextContent("388.600 €");
+    expect(document.getElementById("alter-7")).toHaveTextContent("≈ 1.710.000 €");
+    expect(document.getElementById("alter-4")).toHaveTextContent("629.300 €");
   });
 
   it("erzeugt die Antworten als PDF mit Frage und Antwort", async () => {
