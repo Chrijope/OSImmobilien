@@ -241,8 +241,7 @@ describe("Präsentation, Skript, Mikroseite und Vertriebsmails duzen", () => {
   }
 
   const dateien = [
-    "src/pages/BeratungspraesentationHV.tsx",
-    "src/lib/beratungOsDaten.ts",
+    // Die Beratungspräsentation siezt seit dem 21.10.2026 (beratungSieAnrede.test.ts).
     "src/lib/beratungspraesentationTexte.ts",
     "src/lib/beratungSprechskripte.ts",
     "src/components/setter/SetterErstgespraechsSkript.tsx",
@@ -283,59 +282,11 @@ describe("Präsentation, Skript, Mikroseite und Vertriebsmails duzen", () => {
 });
 
 /**
- * Die Beratungspräsentationen A und B (`BeratungspraesentationHV.tsx`).
- *
- * Bis zum 16.10.2026 gab es dort Du und Sie, gewählt im Erstgespräch. Seit
- * der Hausregel „immer und überall duzen“ gibt es nur noch die Du-Fassung,
- * auch wenn im Erstgespräch früher „Sie“ gespeichert wurde. Geprüft werden
- * die Texte als Werte (A, B, Plan, Grafik, Dokumente), die gemeinsamen
- * Texte, die die Seite liest, die Sprechskripte des Trainer-Modus und der
- * sichtbare Text der Seite selbst.
+ * Die Sprechskripte des Trainer-Modus bleiben in Du-Form: Sie sind ein
+ * internes Übungswerkzeug, auch für das Trainings-Cockpit. Die Präsentation
+ * selbst siezt seit dem 21.10.2026 (`beratungSieAnrede.test.ts`).
  */
-describe("Die Beratungspräsentationen A und B duzen durchgehend", () => {
-  /** Alle Texte eines Objekts, mit Pfad. Ein Paar { sie, du } ist schon ein Fehler. */
-  function texte(wert: unknown, pfad: string, aus: Array<[string, string]> = []): Array<[string, string]> {
-    if (typeof wert === "string") aus.push([pfad, wert]);
-    else if (typeof wert === "function") aus.push([pfad, String((wert as (p: string) => unknown)("2 %"))]);
-    else if (Array.isArray(wert)) wert.forEach((w, i) => texte(w, `${pfad}[${i}]`, aus));
-    else if (wert && typeof wert === "object") {
-      expect(Object.keys(wert), `${pfad} ist noch ein Paar aus Sie und Du`).not.toEqual(["sie", "du"]);
-      for (const [k, w] of Object.entries(wert)) texte(w, `${pfad}.${k}`, aus);
-    }
-    return aus;
-  }
-
-  it("enthält in den Texten von A und B keine Sie-Anrede und kein Sie-Paar mehr", async () => {
-    const a = await import("@/lib/beratungOsDaten");
-    const b = await import("@/lib/beratungOsDatenB");
-    const k = await import("@/lib/beratungKonzeptDaten");
-    const alle = [
-      ...texte(a.OS_TEXTE, "OS_TEXTE"),
-      ...texte(a.OBJEKTE, "OBJEKTE"),
-      ...texte(k.KONZEPT_STEUER, "KONZEPT_STEUER"),
-      ...texte(k.KONZEPT_ALTER, "KONZEPT_ALTER"),
-      ...texte(b.OS_TEXTE_B, "OS_TEXTE_B"),
-      ...texte(b.KAUFKRAFT_B, "KAUFKRAFT_B"),
-      ...texte(b.DOKUMENTE_B, "DOKUMENTE_B"),
-    ];
-    expect(alle.length).toBeGreaterThan(100);
-    for (const [pfad, text] of alle) expect(sieTreffer(text), `${pfad}: „${text}“`).toEqual([]);
-  });
-
-  it("liest auch die gemeinsamen Texte nur in der Du-Fassung", async () => {
-    const { BERATUNG_TEXTE, inAnrede } = await import("@/lib/beratungspraesentationTexte");
-    const quelle = readFileSync(join(__dirname, "..", "pages", "BeratungspraesentationHV.tsx"), "utf8");
-    const genutzt = [...new Set([...quelle.matchAll(/\btx\.(arbeitsweise|rueckblick|schritt)\.(\w+)/g)].map((m) => `${m[1]}.${m[2]}`))];
-    expect(genutzt.length).toBeGreaterThan(10);
-    for (const schluessel of genutzt) {
-      const [gruppe, feld] = schluessel.split(".");
-      const roh = (BERATUNG_TEXTE.de as unknown as Record<string, Record<string, unknown>>)[gruppe][feld];
-      const wert = typeof roh === "function" ? (roh as (n: number) => unknown)(100_000) : roh;
-      const text = inAnrede(wert as Parameters<typeof inAnrede>[0], "du");
-      expect(sieTreffer(text), `tx.${schluessel}: „${text}“`).toEqual([]);
-    }
-  });
-
+describe("Die Sprechskripte des Trainer-Modus duzen", () => {
   it("spricht im Trainer-Modus per Du", async () => {
     const { SPRECHSKRIPT_NACH_ID, sprechskriptFuerAnrede } = await import("@/lib/beratungSprechskripte");
     const quelle = readFileSync(join(__dirname, "..", "pages", "BeratungspraesentationHV.tsx"), "utf8");
@@ -347,13 +298,4 @@ describe("Die Beratungspräsentationen A und B duzen durchgehend", () => {
     }
   });
 
-  it.each(["pages/BeratungspraesentationHV.tsx", "components/beratung/KonzeptFolien.tsx", "components/beratung/folienBausteine.tsx"])(
-    "hat im sichtbaren Text von %s keine Sie-Anrede",
-    (datei) => {
-      const quelle = readFileSync(join(__dirname, "..", datei), "utf8")
-        .replace(/\/\*[\s\S]*?\*\//g, " ")
-        .replace(/(^|[^:])\/\/.*$/gm, "$1");
-      expect(sieTreffer(quelle)).toEqual([]);
-    },
-  );
 });

@@ -19,10 +19,10 @@ export const OS_TEXTE_B: typeof OS_TEXTE = {
   // Agenda, Rentenlücke und Nichtstun seit dem 21.10.2026 wie in A (Texte der PDF-Präsentation).
   werWirSind: {
     ...A.werWirSind,
-    text: "Wir finden geprüfte, vermietete Wohnungen in Berlin und Brandenburg, die zu deinen Zielen passen. Und wir begleiten dich vom ersten Gespräch bis zur Kaufpreiszahlung.",
+    text: "Wir finden geprüfte, vermietete Wohnungen in Berlin und Brandenburg, die zu Ihren Zielen passen. Und wir begleiten Sie vom ersten Gespräch bis zur Kaufpreiszahlung.",
     karten: [
-      { titel: "Geprüfte Objekte", text: "Du siehst nur, was wir vorher geprüft haben: Lage, Miete, Zustand, Unterlagen." },
-      { titel: "Deine Zahlen", text: "Jede Rechnung mit deinem Einkommen. Vor und nach Steuern, mit Stresstest." },
+      { titel: "Geprüfte Objekte", text: "Sie sehen nur, was wir vorher geprüft haben: Lage, Miete, Zustand, Unterlagen." },
+      { titel: "Ihre Zahlen", text: "Jede Rechnung mit Ihrem Einkommen. Vor und nach Steuern, mit Stresstest." },
       { titel: "Ein Ansprechpartner", text: "Einer für alles: Konzept, Bank, Notar, Übergabe." },
       // „Offen gesagt …“ entfällt seit dem 21.10.2026 (Wunsch Christian), auch in A.
     ],
@@ -33,18 +33,18 @@ export const OS_TEXTE_B: typeof OS_TEXTE = {
     karten: {
       zusatzrente: {
         ...A.konzept.karten.zusatzrente,
-        text: "Stell dir vor: Du gehst in Rente, die Wohnung gehört dir, und die Miete kommt jeden Monat als zweite Rente dazu. Bis dahin tragen Mieter und Steuer den größten Teil.",
+        text: "Stellen Sie sich vor: Sie gehen in Rente, die Wohnung gehört Ihnen, und die Miete kommt jeden Monat als zweite Rente dazu. Bis dahin tragen Mieter und Steuer den größten Teil.",
       },
       steuer: {
         ...A.konzept.karten.steuer,
-        text: "Heute geht ein Teil deines Gehalts ans Finanzamt und ist weg. Mit diesem Konzept fließt ein Teil davon in dein eigenes Vermögen. Für Einkommen mit hohem Steuersatz.",
+        text: "Heute geht ein Teil Ihres Gehalts ans Finanzamt und ist weg. Mit diesem Konzept fließt ein Teil davon in Ihr eigenes Vermögen. Für Einkommen mit hohem Steuersatz.",
       },
     },
   },
 
   schritt: {
     ...A.schritt,
-    text: "Dafür brauchen wir deine Selbstauskunft. Wir füllen sie jetzt zusammen aus, in etwa 15 Minuten. Bis zur Objektvorstellung in einer Woche fehlen dann nur noch Ausweis und letzte Gehaltsabrechnung.",
+    text: "Dafür brauchen wir Ihre Selbstauskunft. Wir füllen sie jetzt zusammen aus, in etwa 15 Minuten. Bis zur Objektvorstellung in einer Woche fehlen dann nur noch Ausweis und letzte Gehaltsabrechnung.",
   },
 };
 

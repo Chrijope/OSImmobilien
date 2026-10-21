@@ -166,7 +166,7 @@ export function Fussnote({ children, dunkel }: { children: React.ReactNode; dunk
 }
 
 /**
- * „Frage an dich“: der helle Fragekasten der PDF-Präsentation mit goldener
+ * „Frage an Sie“: der helle Fragekasten der PDF-Präsentation mit goldener
  * Kante. Auf dunklem Grund als goldene Scheibe.
  */
 export function FrageAnDich({ children, dunkel, className = "" }: { children: React.ReactNode; dunkel?: boolean; className?: string }) {
@@ -177,7 +177,7 @@ export function FrageAnDich({ children, dunkel, className = "" }: { children: Re
       style={dunkel ? { background: "rgba(204,172,5,0.14)", borderColor: FARBE.gold, color: FARBE.hellText } : { background: "#FBF5D6", borderColor: FARBE.gold, color: "#14231B" }}
     >
       <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em]" style={{ color: dunkel ? FARBE.gold : "#8A7404" }}>
-        Frage an dich
+        Frage an Sie
       </p>
       <p className="mt-2 text-base md:text-lg font-medium leading-snug">{children}</p>
     </div>

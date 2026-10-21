@@ -1670,7 +1670,7 @@ export const formatierer = (sprache: PraesentationsSprache) => ({
 /** Ein Text oder ein Anrede-Paar aus älteren Fassungen. Seit 16.10.2026 gilt immer Du. */
 export type AnredeWert = string | { readonly sie: string; readonly du: string };
 
-/** Liefert immer die Du-Form; ein reiner Text kommt unverändert zurück. */
-export function inAnrede(wert: AnredeWert, _anrede: "du" | "sie"): string {
-  return typeof wert === "string" ? wert : wert.du;
+/** Liefert die gewünschte Anredeform; ein reiner Text kommt unverändert zurück. */
+export function inAnrede(wert: AnredeWert, anrede: "du" | "sie"): string {
+  return typeof wert === "string" ? wert : anrede === "sie" ? wert.sie : wert.du;
 }

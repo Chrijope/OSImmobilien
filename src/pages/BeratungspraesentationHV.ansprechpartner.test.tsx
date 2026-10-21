@@ -3,7 +3,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import BeratungspraesentationHV from "./BeratungspraesentationHV";
 
 /*
- * Karte „Dein persönlicher Ansprechpartner“ unter der Unternehmensgruppe, in
+ * Karte „Ihr persönlicher Ansprechpartner“ unter der Unternehmensgruppe, in
  * A und B. Mit Kunde zeigt sie den zuständigen Partner, sonst den Angemeldeten.
  * Alle Personen sind erfunden.
  */
@@ -56,7 +56,7 @@ describe.each(["a", "b"] as const)("Ansprechpartner in Fassung %s", (variante) =
   it("steht im Abschnitt Unternehmensgruppe, mit Initialen, Telefon und Mail", () => {
     const k = karte("/", variante);
     expect(document.getElementById("gruppe")!.contains(screen.getByTestId("ansprechpartner"))).toBe(true);
-    expect(k.getByText("Dein persönlicher Ansprechpartner")).toBeInTheDocument();
+    expect(k.getByText("Ihr persönlicher Ansprechpartner")).toBeInTheDocument();
     expect(k.getByText("Alex Beispiel")).toBeInTheDocument();
     expect(k.getByText("Immobilienberater")).toBeInTheDocument();
     expect(k.getByTestId("ansprechpartner-initialen").textContent).toBe("AB");
@@ -74,8 +74,8 @@ describe.each(["a", "b"] as const)("Vorteile der Gruppe in Fassung %s", (variant
     for (const titel of ["Rundum-sorglos", "Provisionsfrei", "Verwaltung", "Finanzierung"]) {
       expect(v.getByText(titel)).toBeInTheDocument();
     }
-    expect(v.getByText("Du kaufst direkt vom Bauträger, ohne Maklerprovision.")).toBeInTheDocument();
-    expect(v.getByText("Finanzierung auch ohne Eigenkapital möglich.")).toBeInTheDocument();
+    expect(v.getByText("Sie kaufen direkt vom Bauträger, ohne Maklerprovision.")).toBeInTheDocument();
+    expect(v.getByText("Finanzierung auch ohne Eigenkapital möglich. Gute Gesamtkonditionen durch rund 150 finanzierte Kunden im Jahr.")).toBeInTheDocument();
     expect(leiste.compareDocumentPosition(screen.getByTestId("ansprechpartner")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 });

@@ -626,7 +626,7 @@ export function AltersvorsorgeFolien({ oben, ende }: { oben?: ReactNode; ende?: 
         <Etikett dunkel={false}>{t.arbeitsleben.reinKopf}</Etikett>
         <div className="grid lg:grid-cols-[1.5fr_1fr] gap-6 items-center">
           <Balken
-            max={1_300_000}
+            max={2_000_000}
             zeilen={t.arbeitsleben.rein.map((r) => ({
               ...r,
               wert: r.text ? `${r.wert} ${r.text}` : r.wert,

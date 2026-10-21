@@ -11,8 +11,8 @@
  * (Erwartung, Erfahrung, Ziele, Monatsbeitrag, Haushaltsrechnung,
  * Finanzierungsrahmen, „besonders wichtig“), die Rückspiegelung „Ihre
  * Angaben“, der Regler, Trainer-Modus mit Sprechskripten und der Sprung in
- * die Selbstauskunft. Angesprochen wird immer per Du (Hausregel seit dem
- * 15.09.2026), eine Sie-Fassung gibt es nicht mehr.
+ * die Selbstauskunft. Angesprochen wird seit dem 21.10.2026 per Sie
+ * (Christian, für CRM, Artefakt und PDF); vorher galt die Du-Hausregel.
  *
  * Design seit dem 16.10.2026 im CI des CRM: Schrift des CRM, Farben aus den
  * Tokens in index.css, Karten und Knöpfe aus der Glasschicht
@@ -43,7 +43,8 @@ import { initialen, vertriebspartnerFuerExpose, type ProfilZeile, type RollenZei
 import type { Person } from "@/lib/exposeInhalt";
 import { ANLAGE_ZIELE, zielNachLabel } from "@/lib/anlageZiele";
 import { zuZahl } from "@/lib/beratungspraesentationSprache";
-import { BERATUNG_TEXTE, formatierer, inAnrede, type AnredeWert } from "@/lib/beratungspraesentationTexte";
+import { formatierer, inAnrede, type AnredeWert } from "@/lib/beratungspraesentationTexte";
+import { BERATUNG_TEXTE_SIE } from "@/lib/beratungSieTexte";
 import {
   OS_TEXTE,
   begruessungsName,
@@ -136,7 +137,7 @@ function Trainer({ id, hinweis, dunkel }: { id?: string; hinweis?: string; dunke
   const an = useContext(TrainerContext);
   if (!an) return null;
   const roh = id ? SPRECHSKRIPT_NACH_ID[id] : undefined;
-  const s = roh ? sprechskriptFuerAnrede(roh, "du") : undefined;
+  const s = roh ? sprechskriptFuerAnrede(roh, "sie") : undefined;
   if (!s && !hinweis) return null;
   return (
     <div
@@ -234,7 +235,7 @@ function AnsprechpartnerKarte({ person, dunkel, etikett, satz }: { person: Perso
           </p>
           <p className="mt-2 text-[1.6rem] md:text-[2rem] leading-tight font-semibold tracking-tight break-words">{person.name}</p>
           {/* Der Rückfall „Dein Ansprechpartner“ stünde doppelt unter dem Etikett. */}
-          {person.rolle && person.rolle !== "Dein Ansprechpartner" && (
+          {person.rolle && person.rolle !== "Ihr Ansprechpartner" && person.rolle !== "Dein Ansprechpartner" && (
             <p className="mt-1 text-sm" style={{ color: dunkel ? FARBE.hellGedaempft : FARBE.grau }}>
               {person.rolle}
             </p>
@@ -304,6 +305,36 @@ function AnsprechpartnerPlatzhalter({ dunkel, etikett }: { dunkel?: boolean; eti
 }
 
 /**
+ * Kapitel-Trennseite mit Foto, nur in der Druckansicht (PDF), wie in der
+ * bisherigen PDF-Präsentation: Nummer, Kapitel, ein Satz, Foto rechts.
+ * Im CRM entfällt sie, dort würde sie beim Scrollen nur aufhalten.
+ */
+const KAPITEL_DRUCK = {
+  1: { titel: "Ihre Ziele", satz: "Was möchten Sie im Leben erreichen? Und wie stellen Sie sich Ihren Rentenalltag vor?", bild: "zossen-zimmer", bildText: "Zossen-Wünsdorf, Zimmer nach Sanierung" },
+  2: { titel: "Das Prinzip", satz: "Wie eine vermietete Immobilie Vermögen aufbaut, und warum Sie es nicht allein bezahlen.", bild: "hauff-luftbild", bildText: "Hauffstraße 38, Luftaufnahme" },
+  5: { titel: "Sicherheit", satz: "Was schiefgehen kann, und wie Sie sich darauf vorbereiten.", bild: "barfuss-zimmer", bildText: "Barfusstraße 9, Beispielwohnung im Objekt" },
+  6: { titel: "Ihr nächster Schritt", satz: "So geht es nach dem heutigen Termin weiter.", bild: "zossen-rasen", bildText: "Zossen-Wünsdorf, Garten" },
+} as const;
+
+function KapitelFolie({ nummer }: { nummer: keyof typeof KAPITEL_DRUCK }) {
+  const k = KAPITEL_DRUCK[nummer];
+  return (
+    <section id={`kapitel-${nummer}`} data-ton="tief" className="relative overflow-hidden bos-dunkel min-h-[810px] grid grid-cols-[1fr_1fr]" style={{ background: FARBE.tief, color: FARBE.hellText }}>
+      <div className="flex flex-col justify-center px-16 py-20">
+        <p className="text-[9rem] leading-none font-light" style={{ color: "transparent", WebkitTextStroke: `1.5px ${FARBE.gold}` }}>{String(nummer).padStart(2, "0")}</p>
+        <div className="mt-10 h-[3px] w-14 rounded-full" style={{ background: FARBE.gold }} />
+        <h2 className="mt-6 text-[3.4rem] font-semibold leading-tight">{k.titel}</h2>
+        <p className="mt-5 max-w-md text-lg" style={{ color: FARBE.hellGedaempft }}>{k.satz}</p>
+      </div>
+      <div className="relative">
+        <img src={`/images/mikroseite/${k.bild}.jpg`} alt={k.bildText} className="absolute inset-0 h-full w-full object-cover" />
+        <p className="absolute bottom-4 right-5 text-xs" style={{ color: "#fff", textShadow: "0 1px 3px rgba(0,0,0,0.6)" }}>{k.bildText}</p>
+      </div>
+    </section>
+  );
+}
+
+/**
  * „Wer zahlt Ihre Finanzierung?“ als Ring (PDF-Präsentation Folie 10). Seit dem
  * 21.10.2026 (Christian): Mieter grün, Finanzamt gelb, Sie rot; die Beträge
  * stehen an den Segmenten. Die Segmente bleiben maßstabsgetreu, der kleinste
@@ -313,7 +344,7 @@ function AnsprechpartnerPlatzhalter({ dunkel, etikett }: { dunkel?: boolean; eti
 function FinanzierungsRing() {
   const f = OS_TEXTE.prinzip.finanzierung;
   const summe = f.teile.reduce((s, x) => s + x.betrag, 0);
-  const M = 130, R = 92, r = 58, raus = 12;
+  const M = 140, R = 122, r = 66, raus = 10;
   const punkt = (winkel: number, radius: number, versatz = 0, mitte = 0) => {
     const w = ((winkel - 90) * Math.PI) / 180;
     const v = ((mitte - 90) * Math.PI) / 180;
@@ -337,17 +368,18 @@ function FinanzierungsRing() {
     return { x, d, lx, ly, istSie, mitte, v };
   });
   return (
-    <svg viewBox="0 0 260 260" className="bos-auftauchen mx-auto w-full max-w-[22rem] h-auto overflow-visible" role="img" data-testid="finanzierung-ring" aria-label={`${f.summe} ${f.summeText}: ${f.teile.map((x) => `${x.label} ${x.betrag} €`).join(", ")}`}>
+    <svg viewBox="0 0 280 280" className="bos-auftauchen mx-auto w-full max-w-[24rem] h-auto overflow-visible" role="img" data-testid="finanzierung-ring" aria-label={`${f.summe} ${f.summeText}: ${f.teile.map((x) => `${x.label} ${x.betrag} €`).join(", ")}`}>
       {segmente.map((s) => (
         <g key={s.x.label}>
           <path d={s.d} fill={s.x.farbe} stroke={s.istSie ? "#FFFFFF" : "none"} strokeWidth={s.istSie ? 2.5 : 0} />
-          <text x={s.lx} y={s.ly + 4} textAnchor="middle" fontSize={s.istSie ? 12 : 14} fontWeight="700" fill={s.x.schrift}>
+          <text x={s.lx} y={s.ly + 4} textAnchor="middle" fontSize={s.istSie ? 15 : 17} fontWeight="700" fill={s.x.schrift}>
             {s.x.betrag.toLocaleString("de-DE")} €
           </text>
         </g>
       ))}
-      <text x={M} y={M - 2} textAnchor="middle" fontSize="22" fontWeight="700" fill="currentColor">{f.summe}</text>
-      <text x={M} y={M + 15} textAnchor="middle" fontSize="8" letterSpacing="1.2" fill="currentColor" opacity="0.6">{f.summeText.toUpperCase()}</text>
+      <text x={M} y={M - 2} textAnchor="middle" fontSize="24" fontWeight="700" fill="currentColor">{f.summe}</text>
+      <text x={M} y={M + 16} textAnchor="middle" fontSize="8" letterSpacing="1" fill="currentColor" opacity="0.6">IM MONAT</text>
+      <text x={M} y={M + 27} textAnchor="middle" fontSize="8" letterSpacing="1" fill="currentColor" opacity="0.6">RATE UND HAUSGELD</text>
     </svg>
   );
 }
@@ -543,9 +575,9 @@ export default function BeratungspraesentationHV({
     return { kontakt, skript: ausInvestment ?? (kontakt?.setterSkript as Record<string, any> | undefined) ?? null };
   };
 
-  // Immer Du, auch wenn im Erstgespräch früher „Sie“ gespeichert wurde (Hausregel).
-  const a = (w: AnredeWert) => inAnrede(w, "du");
-  const tx = BERATUNG_TEXTE.de;
+  // Seit 21.10.2026 immer Sie (Christian), unabhängig von der Anrede aus dem Erstgespräch.
+  const a = (w: AnredeWert) => inAnrede(w, "sie");
+  const tx = BERATUNG_TEXTE_SIE;
   const fmt = formatierer("de");
 
   // Vorname für „Herzlich willkommen, …“: aus dem Kontakt, sonst aus den Parametern.
@@ -726,7 +758,7 @@ export default function BeratungspraesentationHV({
     {
       titel: a(T.ziele.kicker),
       zeilen: [
-        { frage: "Dein wichtigster Satz", antwort: w("motiv") },
+        { frage: "Ihr wichtigster Satz", antwort: w("motiv") },
         { frage: a(T.ziele.zielKopf), antwort: gewaehlteZiele.map((z) => z.label).join(", ") },
         { frage: a(tx.arbeitsweise.erfahrungFrage), antwort: w("erfahrung") },
         ...rahmenZeilen.map((z) => ({ frage: z.label, antwort: mitEinheit(z.schluessel) })),
@@ -1102,6 +1134,7 @@ export default function BeratungspraesentationHV({
             </Folie>
 
             {/* ─── 02 Ihre Ziele ─── */}
+            {druck && <KapitelFolie nummer={1} />}
             <Folie id="ziele" ton="hell" kicker={a(T.ziele.kicker)} titel={a(T.ziele.titel)}>
               {/* B zeigt seit dem 16.10.2026 dieselbe Ziele-Seite wie die normale Präsentation (Wunsch Christian). */}
               <>
@@ -1212,7 +1245,7 @@ export default function BeratungspraesentationHV({
                 </Karte>
               </div>
               </>
-              <Trainer id="arbeitsweise" hinweis="Erst die Wünsche der meisten Kunden zeigen, dann fragen: „Und du?“ Die Antworten wörtlich mitschreiben." />
+              <Trainer id="arbeitsweise" hinweis="Erst die Wünsche der meisten Kunden zeigen, dann fragen: „Und Sie?“ Die Antworten wörtlich mitschreiben." />
             </Folie>
 
             {/* ─── 03 Rentenlücke ─── */}
@@ -1274,6 +1307,7 @@ export default function BeratungspraesentationHV({
             </Folie>
 
             {/* ─── 04 Preis des Nichtstuns ─── */}
+            {druck && <KapitelFolie nummer={2} />}
             <Folie id="nichtstun" ton="hell" kicker={T.nichtstun.kicker} titel={T.nichtstun.titel}>
               {istB && <p className="mt-6 text-base md:text-lg">{KAUFKRAFT_B.vorspann}</p>}
               <div className="mt-8 grid md:grid-cols-3 gap-4">
@@ -1345,9 +1379,9 @@ export default function BeratungspraesentationHV({
               <Fussnote dunkel>{a(T.prinzip.fuss)}</Fussnote>
             </Folie>
 
-            {/* ─── 06 Wer zahlt deine Finanzierung? (PDF-Präsentation Folie 10) ─── */}
+            {/* ─── 06 Wer zahlt Ihre Finanzierung? (PDF-Präsentation Folie 10) ─── */}
             <Folie id="finanzierung" ton="hell" kicker={T.prinzip.kicker} titel={T.prinzip.finanzierung.titel}>
-              <div className="mt-8 grid md:grid-cols-[22rem_1fr] gap-8 items-center">
+              <div className="mt-8 grid md:grid-cols-[24rem_1fr] gap-8 items-center">
                 <Sichtbar>
                   <FinanzierungsRing />
                 </Sichtbar>
@@ -1439,7 +1473,7 @@ export default function BeratungspraesentationHV({
               </Fussnote>
             </Folie>
 
-            {/* ─── 08 Dein Konzept im Detail: die Vertriebs-PDFs als Folien ─── */}
+            {/* ─── 08 Ihr Konzept im Detail: die Vertriebs-PDFs als Folien ─── */}
             {gezeigteKonzepte.map((k) => {
               const schalter = beide ? undefined : <KonzeptSchalter konzept={konzept} setKonzept={setKonzept} dunkel />;
               const dokument = istB ? <DokumenteB konzepte={[k]} /> : undefined;
@@ -1450,7 +1484,7 @@ export default function BeratungspraesentationHV({
               );
             })}
 
-            {/* ─── 09 Deine Kriterien, vor den Objekten ─── */}
+            {/* ─── 09 Ihre Kriterien, vor den Objekten ─── */}
             <Folie id="kriterien" ton="hell" kicker={a(T.kriterien.kicker)} titel={a(T.kriterien.titel)}>
               <div className="mt-8 grid lg:grid-cols-[1.1fr_1fr] gap-6 items-start">
                 <div data-ui="card" className="divide-y divide-border rounded-2xl border bg-card px-2 min-w-0">
@@ -1551,6 +1585,7 @@ export default function BeratungspraesentationHV({
             </Folie>
 
             {/* ─── 10 Sicherheit: Chancen und Risiken (PDF-Präsentation Folie 26) ─── */}
+            {druck && <KapitelFolie nummer={5} />}
             <Folie id="risiken" ton="hell" kicker={T.risiken.kicker} titel={T.risiken.titel}>
               <div className="mt-8 grid lg:grid-cols-[1.6fr_1fr] gap-4 items-start">
                 {/* Feste dunkle Karte wie in der PDF; die dunkle Glaskarte wirkt nur in dunklen Abschnitten. */}
@@ -1577,10 +1612,25 @@ export default function BeratungspraesentationHV({
                   <p className="text-lg leading-snug font-medium">{mitAkzent(T.risiken.satz, FARBE.gruenText)}</p>
                 </div>
               </div>
+              {/* Anschlussfinanzierung nach 10 Jahren als Chance (Christian, 21.10.2026). */}
+              <div data-testid="nachfinanzierung" className="mt-6 rounded-2xl border-2 p-5 md:p-7" style={{ borderColor: FARBE.primaer }}>
+                <Kopf>{T.risiken.nachfinanzierung.kopf}</Kopf>
+                <Titel text={T.risiken.nachfinanzierung.titel} ton="hell" className="mt-2 !text-2xl md:!text-3xl" />
+                <ul className="mt-5 grid md:grid-cols-3 gap-4">
+                  {T.risiken.nachfinanzierung.gruende.map((g) => (
+                    <li key={g.titel} className="min-w-0">
+                      <p className="flex items-center gap-2 font-semibold"><Check aria-hidden className="h-5 w-5 shrink-0" style={{ color: FARBE.primaer }} />{g.titel}</p>
+                      <p className="mt-1.5 text-sm leading-relaxed">{g.text}</p>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-4 text-sm font-medium" style={{ color: FARBE.grau }}>{T.risiken.nachfinanzierung.satz}</p>
+              </div>
               <Fussnote>{T.risiken.fuss}</Fussnote>
             </Folie>
 
-            {/* ─── 11 Dein Weg (PDF-Präsentation Folie 28) ─── */}
+            {/* ─── 11 Ihr Weg (PDF-Präsentation Folie 28) ─── */}
+            {druck && <KapitelFolie nummer={6} />}
             <Folie id="weg" ton="gruen" kicker={a(T.weg.kicker)} titel={T.weg.titel}>
               <p className="mt-6 text-base md:text-lg max-w-3xl leading-relaxed">{T.weg.lead}</p>
               <ol className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-x-3 gap-y-5 relative">
@@ -1756,7 +1806,7 @@ export default function BeratungspraesentationHV({
                 {T.termin.karten.map((k, i) => (
                   <Karte key={i}>
                     <p className="font-semibold">{a(k.titel)}</p>
-                    <p className="mt-1.5 text-sm leading-relaxed">{a(k.titel === "Deine Kalkulation" && !hatKundenKontext ? T.termin.kalkulationOhneKunde : k.text)}</p>
+                    <p className="mt-1.5 text-sm leading-relaxed">{a(k.titel === "Ihre Kalkulation" && !hatKundenKontext ? T.termin.kalkulationOhneKunde : k.text)}</p>
                   </Karte>
                 ))}
               </div>

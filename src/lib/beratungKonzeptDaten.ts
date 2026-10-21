@@ -10,10 +10,10 @@
  *
  * Alle Zahlen kommen aus `beratungBeispielrechnung.ts` (erzeugt aus
  * scripts/beratung-beispielrechnung/gemeinsam.py, derselben Rechnung wie die
- * PDF-Präsentation): 80.000 € brutto, Hauffstraße 38 a, Wohnung 1, 176.000 €,
+ * PDF-Präsentation): 65.000 € brutto (seit 21.10.2026), Hauffstraße 38 a, Wohnung 1, 176.000 €,
  * 4,8 % Zins, 1,2 % Tilgung, Rate 880 €, AfA 4 % als Annahme.
  *
- * Alle Texte in Du-Form, bewacht in `duAnrede.test.ts`.
+ * Alle Texte in Sie-Form (seit 21.10.2026), bewacht in `beratungSieAnrede.test.ts`.
  */
 import { BEISPIEL } from "@/lib/beratungBeispielrechnung";
 
@@ -138,7 +138,7 @@ export const KONZEPT_STEUER = {
 /** Jahreswerte einer Wohnung aus der gemeinsamen Rechnung: Alter, Restschuld und Wert (+2 % im Jahr). */
 export const VERLAUF_WOHNUNG: ReadonlyArray<{ alter: number; rest: number; wert: number }> = BEISPIEL.verlauf.map(([alter, rest, wert]) => ({ alter, rest, wert }));
 
-/** Monatswerte einer Wohnung je Alter aus der gemeinsamen Rechnung: vor und nach Steuer, negativ = du zahlst zu. */
+/** Monatswerte einer Wohnung je Alter aus der gemeinsamen Rechnung: vor und nach Steuer, negativ = Zuzahlung. */
 export const MONATSVERLAUF: ReadonlyArray<{ alter: number; vor: number; nach: number }> = BEISPIEL.monate.map(([alter, vor, nach]) => ({ alter, vor, nach }));
 
 const MIETSZENARIO = "Miete von 13 €/m² auf 20 €/m² im Jahr 2060 (Szenario laut Exposé), Garage 80 € auf 150 €, Kosten +2 % im Jahr.";

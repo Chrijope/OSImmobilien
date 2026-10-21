@@ -88,11 +88,11 @@ describe("Inhalte in B", () => {
   it("zeigt die Kaufkraft über 25 Jahre als Kurven wie in der PDF und den Verlust in Rot", () => {
     zeige(B);
     const label = screen.getByTestId("kaufkraft-jahre").querySelector("svg")?.getAttribute("aria-label");
-    expect(label).toContain("164.061 €");
+    expect(label).not.toContain("164.061 €");
     expect(label).toContain("88.493 €");
     expect(label).toContain("53.939 €");
     expect(screen.getByTestId("kaufkraft-jahre").textContent).toContain("25 J.");
-    expect(screen.getByTestId("kaufkraft-verlust").style.background).toBeTruthy();
+    expect(screen.getAllByTestId("kaufkraft-verlust")[0].style.background).toBeTruthy();
   });
 
   it("zeigt das Dokument zum Konzept am Ende seiner Folien und bei „beides“ beide", () => {
@@ -125,7 +125,7 @@ describe("Fassung A bleibt unberührt", () => {
   it("hat keine B-Bausteine und die alte Reihenfolge", () => {
     zeige("/beratungspraesentation-osimmobilien", "a");
     // Seit 20.10.2026 haben A und B die rote Verlustkarte und dieselbe Jahresgrafik.
-    expect(screen.getByTestId("kaufkraft-verlust")).toBeInTheDocument();
+    expect(screen.getAllByTestId("kaufkraft-verlust")).toHaveLength(2);
     expect(screen.getByTestId("kaufkraft-jahre")).toBeInTheDocument();
     for (const id of ["ziele-erstgespraech", "dokumente-b"]) {
       expect(screen.queryByTestId(id)).toBeNull();

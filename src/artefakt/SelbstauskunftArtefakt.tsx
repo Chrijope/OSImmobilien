@@ -92,7 +92,7 @@ export default function SelbstauskunftArtefakt() {
   const neuBeginnen = async () => {
     const ja = await confirmDialog({
       title: "Neue Selbstauskunft beginnen?",
-      description: "Alle Angaben in diesem Browser werden gelöscht. Speichere vorher das PDF, wenn du es noch brauchst.",
+      description: "Alle Angaben in diesem Browser werden gelöscht. Speichern Sie vorher das PDF, wenn Sie es noch brauchen.",
       confirmText: "Angaben löschen und neu beginnen",
       cancelText: "Zurück zum Formular",
       variant: "destructive",

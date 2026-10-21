@@ -47,7 +47,7 @@ describe("Rechnungen der Beratungspräsentation", () => {
 
   it("nennt unter der Rentenlücke die Anteile aus den Eingaben, ohne Lücke keinen Satz", () => {
     expect(lueckenSatz(3000, 800)).toBe(
-      "Die gesetzliche Rente deckt rund 27 % deines Wunschnettos. 73 % musst du selbst aufbauen. Je früher du beginnst, desto leichter.",
+      "Die gesetzliche Rente deckt rund 27 % Ihres Wunschnettos. 73 % müssen Sie selbst aufbauen. Je früher Sie beginnen, desto leichter.",
     );
     expect(lueckenSatz(2000, 2500)).toBeNull();
     expect(lueckenSatz(0, 800)).toBeNull();

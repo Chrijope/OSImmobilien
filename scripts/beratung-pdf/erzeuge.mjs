@@ -96,6 +96,11 @@ function cdp(wsUrl) {
 function seitenAufbauen({ breite, hoehe }) {
   const KAPITEL = [
     ["hero", ""],
+    // Kapitel-Trennseiten, nur in der Druckansicht (KapitelFolie in BeratungspraesentationHV.tsx)
+    ["kapitel-1", "Ihre Ziele"],
+    ["kapitel-2", "Das Prinzip"],
+    ["kapitel-5", "Sicherheit"],
+    ["kapitel-6", "Ihr nächster Schritt"],
     ["heute", "Einführung"],
     ["ziele", "Ihre Ziele"],
     ["rentenluecke", "Ihre Ziele"],

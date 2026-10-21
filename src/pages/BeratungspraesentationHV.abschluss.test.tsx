@@ -80,7 +80,7 @@ describe.each(["a", "b"] as const)("Beratungspräsentation %s, Abschnitte 12 und
     expect(screen.queryByRole("button", { name: /Selbstauskunft jetzt gemeinsam ausfüllen/ })).toBeNull();
     expect(screen.queryByRole("button", { name: /Kundenportal freigeben/ })).toBeNull();
     expect(screen.queryByText(/Gerechnet mit deiner Selbstauskunft/)).toBeNull();
-    expect(screen.getByText(/Dann vereinbaren wir deine Objektvorstellung/)).toBeInTheDocument();
+    expect(screen.getByText(/Dann vereinbaren wir Ihre Objektvorstellung/)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Objektvorstellung buchen/ })).toHaveAttribute("href", "https://termin.example/eigen");
   });
 
@@ -140,7 +140,7 @@ describe.each(["a", "b"] as const)("Beratungspräsentation %s, Abschnitte 12 und
 
   it("graut das Kundenportal vor der Unterschrift aus", () => {
     zeige(MIT_KUNDE, variante);
-    expect(screen.getByText(/Nach der gemeinsam ausgefüllten und von dir unterschriebenen Selbstauskunft/)).toBeInTheDocument();
+    expect(screen.getByText(/Nach der gemeinsam ausgefüllten und von Ihnen unterschriebenen Selbstauskunft/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Kundenportal freigeben/ })).toBeDisabled();
     expect(screen.getByText("Erst nach der unterschriebenen Selbstauskunft")).toBeInTheDocument();
   });
@@ -193,10 +193,12 @@ describe("Zweite Stufe vom 20.10.2026", () => {
   it("rechnet die Kaufkraft-Grafik mit denselben Zahlen wie die Karten in Abschnitt 04", () => {
     const g = OS_TEXTE.nichtstun.grafik;
     const ende = kaufkraftVerlauf(g).at(-1)!;
-    expect(`${ende.konto.toLocaleString("de-DE")} €`).toBe(OS_TEXTE.nichtstun.karten[1].wert);
-    // Karte und Grafik rechnen gleich (88.493 € nach 25 Jahren): höchstens 1 € Rundung.
-    const karte = Number(OS_TEXTE.nichtstun.karten[2].wert.replace(/\D/g, ""));
+    // Seit 21.10.2026 ohne Kontostand: Karte 2 ist die Kaufkraft mit Zinsen, Karte 3 ohne Zinsen.
+    const karte = Number(OS_TEXTE.nichtstun.karten[1].wert.replace(/\D/g, ""));
     expect(Math.abs(ende.kaufkraft - karte)).toBeLessThanOrEqual(1);
+    const ohne = Number(OS_TEXTE.nichtstun.karten[2].wert.replace(/\D/g, ""));
+    expect(Math.round(g.start / Math.pow(1 + g.inflation, g.jahre))).toBe(ohne);
+    expect(OS_TEXTE.nichtstun.karten.map((k) => k.wert)).not.toContain("164.061 €");
   });
 
   it("zeigt ohne Profil einen Platzhalter statt Ansprechpartner, ohne Kontaktdaten", () => {
@@ -205,7 +207,7 @@ describe("Zweite Stufe vom 20.10.2026", () => {
         <BeratungspraesentationHV vorschau={{ ...ohneKunde, ansprechpartner: { name: "Alex Beispiel", rolle: "", telefon: "+49 30 1", email: "a@example.com" } }} ohneProfil />
       </MemoryRouter>,
     );
-    expect(screen.getByTestId("ansprechpartner-platzhalter")).toHaveTextContent("Persönlich an deiner Seite");
+    expect(screen.getByTestId("ansprechpartner-platzhalter")).toHaveTextContent("Persönlich an Ihrer Seite");
     // Der Kunde sieht die Seite: kein Hinweis an den Berater.
     expect(screen.getByTestId("ansprechpartner-platzhalter")).not.toHaveTextContent(/Berater/);
     expect(screen.queryByTestId("ansprechpartner")).toBeNull();
@@ -225,7 +227,7 @@ describe("Zweite Stufe vom 20.10.2026", () => {
     expect(screen.queryByText(/Die nächsten Schritte mit uns/)).toBeNull();
     expect(screen.getByTestId("rente-zeitstrahl")).toHaveTextContent(/Wohnung 1.*Wohnung 2.*Wohnung 3/);
     // Zahlen stehen auch ohne meldenden Beobachter auf dem Endwert.
-    expect(document.getElementById("alter-7")).toHaveTextContent("≈ 1,06 Mio. €");
+    expect(document.getElementById("alter-7")).toHaveTextContent("≈ 1.056.000 €");
     expect(document.getElementById("alter-4")).toHaveTextContent("388.600 €");
   });
 

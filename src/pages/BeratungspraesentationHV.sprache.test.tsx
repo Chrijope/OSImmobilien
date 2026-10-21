@@ -80,23 +80,23 @@ describe("Aufbau nach dem Entwurf", () => {
     const reihenfolge = [
       "Was machen wir heute?",
       "Das wünschen sich die meisten unserer Kunden.",
-      "Deine Rentenlücke: größer, als viele denken.",
+      "Ihre Rentenlücke: größer, als viele denken.",
       "Geld auf dem Konto verliert real an Wert.",
       "OS Real Estate in einem Satz.",
       "Alles aus einer Hand, unter einem Dach.",
-      "Wie du mit uns dein Vermögen aufbaust.",
-      "Wer zahlt deine Finanzierung?",
-      "Welches Ziel steht für dich an erster Stelle?",
+      "Wie Sie mit uns Ihr Vermögen aufbauen.",
+      "Wer zahlt Ihre Finanzierung?",
+      "Welches Ziel steht für Sie an erster Stelle?",
       // 08: Inhalt des PDFs „Arbeitsleistung und Immobilienvermögen“ (Konzept Altersvorsorge)
-      "Wir zeigen dir, wie du Sozialabgaben in Vermögen umwandelst.",
-      "Deine vorzeitige Rente mit 58 Jahren.",
+      "Wir zeigen Ihnen, wie Sie Sozialabgaben in Vermögen umwandeln.",
+      "Ihre vorzeitige Rente mit 58 Jahren.",
       "Mit einer Wohnung beginnen, mit uns drei aufbauen.",
       // 09 Kriterien vor 10 Objekte, dann Sicherheit (PDF-Präsentation)
-      "Du entscheidest, was passen muss.",
+      "Sie entscheiden, was passen muss.",
       "Chancen und Risiken, offen auf dem Tisch.",
       "Drei Schritte sind geschafft. Heute folgt Schritt vier.",
-      "Wenn wir ein Objekt finden, das deine Kriterien erfüllt: Möchtest du den nächsten Schritt gehen?",
-      "Das bekommst du in der Objektvorstellung.",
+      "Wenn wir ein Objekt finden, das Ihre Kriterien erfüllt: Möchten Sie den nächsten Schritt gehen?",
+      "Das bekommen Sie in der Objektvorstellung.",
     ];
     const ist = ueberschriften();
     const positionen = reihenfolge.map((t) => ist.indexOf(t));
@@ -216,7 +216,7 @@ describe("Hero als Glaskarte", () => {
     expect(bilder[0]).toHaveAttribute("alt", "OS Real Estate GmbH");
     // Überschrift der PDF-Präsentation (Folie 1), in Du-Form.
     expect(hero.textContent).toContain("OS Real Estate · Beratungsgespräch Kapitalanlage-Immobilien");
-    expect(hero.querySelector("h1")?.textContent).toBe("Dein Weg zu einem Immobilienvermögen,das für dich arbeitet.");
+    expect(hero.querySelector("h1")?.textContent).toBe("Ihr Weg zu einem Immobilienvermögen,das für Sie arbeitet.");
     expect(hero.textContent).toContain("Herzlich willkommen, Anna.");
     expect(hero.textContent).toContain("Steuern sparen. Zusatzrente aufbauen. Persönlich begleitet.");
     expect([...hero.querySelectorAll("button")].map((b) => b.textContent)).toEqual(["Beratung starten", "Konzepte ansehen"]);
@@ -245,7 +245,7 @@ describe("Konzeptschalter und Abschnitt 08", () => {
     expect(screen.getByTestId("konzept-inhalt-alter")).toBeInTheDocument();
     expect(screen.queryByTestId("konzept-inhalt-steuer")).toBeNull();
     fireEvent.click(screen.getAllByRole("radio", { name: "Konzept 2 · Steuerersparnis" })[0]);
-    expect(screen.getByTestId("konzept-inhalt-steuer").textContent).toContain("+267 €");
+    expect(screen.getByTestId("konzept-inhalt-steuer").textContent).toContain("+236 €");
     expect(screen.queryByTestId("konzept-inhalt-alter")).toBeNull();
   });
 

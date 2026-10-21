@@ -47,11 +47,11 @@ export async function erzeugeAntwortenPdf(abschnitte: ReadonlyArray<AntwortAbsch
   doc.setFont(PDF_FONT, "bold");
   doc.setFontSize(20);
   doc.setTextColor(...BRAND.primary);
-  doc.text("Deine Antworten aus der Beratung", RAND, y + 6);
+  doc.text("Ihre Antworten aus der Beratung", RAND, y + 6);
   doc.setFont(PDF_FONT, "normal");
   doc.setFontSize(9);
   doc.setTextColor(...BRAND.muted);
-  doc.text(`Stand ${datum} · Kopie für deine Unterlagen`, RAND, y + 13);
+  doc.text(`Stand ${datum} · Kopie für Ihre Unterlagen`, RAND, y + 13);
   doc.setDrawColor(...BRAND.accent);
   doc.setLineWidth(0.8);
   doc.line(RAND, y + 17, RAND + 18, y + 17);
