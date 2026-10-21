@@ -75,7 +75,7 @@ describe.each(["a", "b"] as const)("Vorteile der Gruppe in Fassung %s", (variant
       expect(v.getByText(titel)).toBeInTheDocument();
     }
     expect(v.getByText("Sie kaufen direkt vom Bauträger, ohne Maklerprovision.")).toBeInTheDocument();
-    expect(v.getByText("Finanzierung auch ohne Eigenkapital möglich. Gute Gesamtkonditionen durch rund 150 finanzierte Kunden im Jahr.")).toBeInTheDocument();
+    expect(v.getByText("Finanzierung auch ohne Eigenkapital möglich. Gute Gesamtkonditionen durch rund 150 Kunden im Jahr.")).toBeInTheDocument();
     expect(leiste.compareDocumentPosition(screen.getByTestId("ansprechpartner")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 });

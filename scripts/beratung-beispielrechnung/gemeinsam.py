@@ -11,7 +11,7 @@
 # Beispielperson: 65.000 € brutto (seit 21.10.2026, vorher 80.000 €), Steuerklasse I, kinderlos, ohne Kirchensteuer, Grundtarif 2026 (rechnung2.est).
 # Abweichung vom Exposé: Das Exposé rechnet pauschal mit 42 % Grenzsteuersatz; hier wird für die Beispielperson der
 # tatsächliche Tarif gerechnet (niedriger), damit Folie 8/9 und die Steuer- und Arbeitsleistungsseiten übereinstimmen.
-import json
+import json, math
 from rechnung2 import est, BBG_KV
 
 # ---------- Beispielperson ----------
@@ -21,7 +21,11 @@ rv, av = 0.093 * B, 0.013 * B
 KVB = min(B, BBG_KV)
 kv, pv = 0.0875 * KVB, 0.024 * KVB
 SOZ = rv + av + kv + pv
-VORSORGE = rv + 0.0845 * KVB + pv + av
+# Vorsorgepauschale 2026: RV, KV (ermäßigt 7,0 % + halber Zusatzbeitrag) und PV voll; die
+# Arbeitslosenversicherung nur, soweit KV, PV und AV zusammen 1.900 € nicht übersteigen
+# (BMF, Anhang 30a LStH 2026). Auf volle Euro aufgerundet. Codex-Prüfung vom 21.10.2026.
+_KV_PV = 0.0845 * KVB + pv
+VORSORGE = math.ceil(rv + _KV_PV + max(0.0, min(av, 1900 - _KV_PV)))
 ZVE = B - 1230 - 36 - VORSORGE
 LST = est(ZVE)
 assert LST < 20350, "Soli-Freigrenze überschritten"

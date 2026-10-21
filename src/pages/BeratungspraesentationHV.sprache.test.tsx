@@ -245,7 +245,7 @@ describe("Konzeptschalter und Abschnitt 08", () => {
     expect(screen.getByTestId("konzept-inhalt-alter")).toBeInTheDocument();
     expect(screen.queryByTestId("konzept-inhalt-steuer")).toBeNull();
     fireEvent.click(screen.getAllByRole("radio", { name: "Konzept 2 · Steuerersparnis" })[0]);
-    expect(screen.getByTestId("konzept-inhalt-steuer").textContent).toContain("+236 €");
+    expect(screen.getByTestId("konzept-inhalt-steuer").textContent).toContain("+238 €");
     expect(screen.queryByTestId("konzept-inhalt-alter")).toBeNull();
   });
 

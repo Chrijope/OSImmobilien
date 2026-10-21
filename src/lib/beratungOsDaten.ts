@@ -123,7 +123,7 @@ export const OS_TEXTE = {
         { titel: "Steuern sparen", text: "weniger Lohnsteuer, jeden Monat mehr Netto" },
         { titel: "Später frei wählen", text: "Mieteinnahmen, Verkauf oder beides" },
       ],
-      satz: "Eine vermietete Wohnung baut Vermögen auf und spart gleichzeitig Steuern. [[Die Steuerersparnis trägt rund zwei Drittel der Zuzahlung.]]",
+      satz: "Eine vermietete Wohnung baut Vermögen auf und spart gleichzeitig Steuern. [[Die Steuerersparnis trägt mehr als die Hälfte der Zuzahlung.]]",
       fuss: `Gemeinsame Beispielrechnung: ${W.name}, ${eur(W.kaufpreis)}; Beispielperson ${eur(BEISPIEL.person.bruttoJahr)} brutto. Zuzahlung vor Steuern ${eur(W.vorSteuer)} im Monat, Steuerersparnis ${eur(W.ersparnis)} (${Math.round((W.ersparnis / W.vorSteuer) * 100)} %), es bleiben ${eur(W.anteil)} (erstes volles Jahr). ${AFA_ANNAHME} Mit sinkenden Zinsen sinkt die Steuerersparnis. Musterrechnung, keine Zusage; steuerliche Wirkung mit Steuerberatung prüfen.`,
     },
   },
@@ -230,7 +230,7 @@ export const OS_TEXTE = {
       { titel: "Provisionsfrei", text: "Sie kaufen direkt vom Bauträger, ohne Maklerprovision." },
       { titel: "Verwaltung", text: "Hausverwaltung und Mietsonderverwaltung auf Wunsch aus einer Hand.", marke: "Verwaltung" },
       // „150 Kunden im Jahr“: Angabe von Christian (21.10.2026), wörtlich freigegeben.
-      { titel: "Finanzierung", text: "Finanzierung auch ohne Eigenkapital möglich. Gute Gesamtkonditionen durch rund 150 finanzierte Kunden im Jahr.", marke: "Finanzierung" },
+      { titel: "Finanzierung", text: "Finanzierung auch ohne Eigenkapital möglich. Gute Gesamtkonditionen durch rund 150 Kunden im Jahr.", marke: "Finanzierung" },
     ] as ReadonlyArray<{ titel: string; text: string; marke?: string }>,
   },
 
@@ -268,7 +268,7 @@ export const OS_TEXTE = {
       aufbauText: "Tilgung im Monat",
       aufbauSatz: `Gleichzeitig tilgen Sie ${eur(W.tilgung)} im Monat, mehr als Ihr eigener Anteil. Ihr ganzer Anteil wird so zu Vermögen: Mit jeder Rate gehört Ihnen mehr von Ihrer Wohnung.`,
       frage: "Wenn Mieter und Finanzamt den größten Teil tragen: Wäre das für Sie ein guter Weg zum eigenen Vermögen?",
-      fuss: `Gleiche Beispielrechnung: ${W.name}, ${eur(W.kaufpreis)} inkl. Garage, voll finanziert, Sollzins 4,8 %, Tilgung 1,2 %, Rate ${eur(W.rate)} plus nicht umlagefähiges Hausgeld ${eur(W.hausgeld)} = ${eur(W.rate + W.hausgeld)} im Monat; erstes Jahr: Zinsen ${eur(W.zinsMonat)}, Tilgung ${eur(W.tilgung)}. Steuerersparnis für die Beispielperson (${eur(BEISPIEL.person.bruttoJahr)} brutto, Grundtarif 2026) mit ${AFA_ANNAHME.replace(/^AfA 4 % ist eine Annahme/, "AfA 4 % als Annahme")} Ohne Gutachten ${eur(W.ersparnisOhneGutachten)} statt ${eur(W.ersparnis)}. Ihr Anteil nach Steuern; vor Steuern ${eur(W.vorSteuer)}. Musterrechnung, keine Steuer- oder Finanzierungsberatung, keine Zusage. Bitte mit Steuerberatung und Bank prüfen.`,
+      fuss: `Gleiche Beispielrechnung: ${W.name}, ${eur(W.kaufpreis)} inkl. Garage, voll finanziert, Sollzins 4,8 %, Tilgung 1,2 %, Rate ${eur(W.rate)} plus nicht umlagefähiges Hausgeld ${eur(W.hausgeld)} = ${eur(W.rate + W.hausgeld)} im Monat; erstes Jahr: Zinsen ${eur(W.zinsMonat)}, Tilgung ${eur(W.tilgung)}. Steuerersparnis für die Beispielperson (${eur(BEISPIEL.person.bruttoJahr)} brutto, Grundtarif 2026) mit 4 % AfA. ${AFA_ANNAHME} Ohne Gutachten ${eur(W.ersparnisOhneGutachten)} statt ${eur(W.ersparnis)}. Ihr Anteil nach Steuern; vor Steuern ${eur(W.vorSteuer)}. Musterrechnung, keine Steuer- oder Finanzierungsberatung, keine Zusage. Bitte mit Steuerberatung und Bank prüfen.`,
     },
   },
 
@@ -315,7 +315,7 @@ export const OS_TEXTE = {
     ],
     risikenKopf: "Mögliche Risiken",
     risiken: [
-      "Mietausfall und Leerstand, abgefedert durch die Mietkaution von bis zu drei Monatsmieten",
+      "Mietausfall und Leerstand; ein Mietausfall wird durch die Mietkaution von bis zu drei Nettokaltmieten abgefedert",
       "Reparaturen und Sonderumlagen",
       "Kapital nicht kurzfristig verfügbar",
     ],
@@ -325,13 +325,13 @@ export const OS_TEXTE = {
      */
     nachfinanzierung: {
       kopf: "Anschlussfinanzierung nach 10 Jahren",
-      titel: "Nach 10 Jahren stehen Sie [[besser da als heute.]]",
+      titel: "Nach 10 Jahren kann Ihre Ausgangslage [[besser sein als heute.]]",
       gruende: [
         { titel: "Kleinere Restschuld", text: `Von ${eur(W.kaufpreis)} sind nach 10 Jahren noch rund ${eur(Math.round(NACH_10.rest / 1000) * 1000)} offen. Neu finanziert wird nur dieser Rest.` },
         { titel: "Mehr Sicherheit für die Bank", text: `Die Wohnung ist bei 2 % im Jahr rund ${eur(Math.round(NACH_10.wert / 100) * 100)} wert. Die Bank finanziert dann nur noch rund ${Math.round((NACH_10.rest / NACH_10.wert) * 100)} % des Werts statt 100 %.` },
         { titel: "Zuverlässiger Kunde", text: "Zehn Jahre pünktliche Raten zeigen der Bank, dass Sie ein verlässlicher Kunde sind. Das verbessert Ihre Ausgangslage." },
       ],
-      satz: "Sinken die Zinsen bis dahin, sinkt auch Ihre Rate und damit Ihre Zuzahlung. Eine Zusage über Zinsen und Markt in 10 Jahren kann niemand geben.",
+      satz: "Bei passenden Anschlusskonditionen kann Ihre Rate und damit Ihre Zuzahlung sinken. Eine Zusage über Zinsen und Markt in 10 Jahren kann niemand geben.",
     },
     satz: "Eine Immobilie ist kein Sparbuch, [[sondern eine langfristige Investition mit Verantwortung.]]",
     fuss: "Vergleich mit ETF- oder Sparplan nur nach der Höhe der monatlichen Zahlung; keine Aussage über Rendite oder Risiko dieser Anlagen und keine Anlageberatung. Steuerersparnis, Wertentwicklung und Mieteinnahmen sind nicht zugesagt; Finanzierung abhängig von Bonität und Bank.",

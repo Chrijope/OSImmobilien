@@ -44,7 +44,7 @@ export const AFA_RECHT =
   "Die AfA ist Werbungskosten bei den Einkünften aus Vermietung und Verpachtung (§ 9 Abs. 1 Satz 3 Nr. 7 EStG in Verbindung mit § 7 Abs. 4 EStG; Einkünfte nach § 21 EStG). Monatlich wirkt sie über einen Freibetrag im Lohnsteuerabzug (§ 39a Abs. 1 Satz 1 Nr. 5 EStG), in der Regel ab dem Kalenderjahr nach dem Kauf; im Kaufjahr über die Einkommensteuererklärung.";
 
 export const KONZEPT_STEUER = {
-  dokument: "Steuerersparnis mit Immobilien – kompakt",
+  dokument: "Steuerersparnis mit Immobilien, kompakt",
   titel: {
     kicker: "Musterrechnung",
     titel: "Mehr [[Netto]] vom Brutto.",
@@ -216,7 +216,7 @@ export const KONZEPT_ALTER = {
       { text: "Zuzahlung vor Steuer, Jahr 1", werte: MEHR.map((m) => eur(m.vor)) },
       { text: "Ihr Anteil nach Steuer, Jahr 1", werte: MEHR.map((m) => eur(m.anfang)) },
       { text: `Ihr Anteil nach Steuer, höchster Wert bis ${W.freiAlter - 1}`, werte: MEHR.map((m) => `bis ${eur(m.spaet)}`) },
-      { text: `Überschuss ab ${W.freiAlter}, vor Steuer`, werte: MEHR.map((m) => plus(m.ab58)) },
+      { text: `Überschuss nach der letzten Rate (mit ${W.freiAlter}), vor Steuer`, werte: MEHR.map((m) => plus(m.ab58)) },
       { text: "Vermögen mit 65", werte: [1, 2, 3].map((n) => ganz(n * W.wert65)), summe: true },
     ] as ReadonlyArray<{ text: string; werte: string[]; summe?: true }>,
     schluss: "Ihr Vermögen mit [[3 Wohnungen]]",
@@ -245,7 +245,7 @@ export const KONZEPT_ALTER = {
       { buchstabe: "B", titel: "Sie behalten alle drei Wohnungen.", wert: `≈ ${eur(D.rente60)} im Monat`, text: `Zusatzrente nach Steuer aus allen drei Wohnungen zusammen (je Wohnung rund ${eur(Math.round(D.rente60 / 3 / 10) * 10)}; ${eur(D.rente60Vor)} vor Steuer), und die drei Wohnungen bleiben Ihr Vermögen.` },
     ],
     fuss: `Je Wohnung wie die Beispielwohnung (${eur(W.kaufpreis)}). ${MIETSZENARIO} Rente vereinfacht mit 25 % Steuer auf Miete minus Kosten. Wert +2 % im Jahr (Annahme): ${eur(W.wert60)} je Wohnung mit 60, ${eur(W.wert65)} mit 65. Verkauf nach mehr als 10 Jahren steuerfrei. Rente aus dem Verkauf ohne Zinsen gerechnet. Instandhaltung nur pauschal mit den Kosten enthalten.`,
-    grundlagen: `Grundlagen: Musterrechnung mit gerundeten Werten. ${eur(P.bruttoJahr)} brutto im Jahr (${eur(P.bruttoMonat)} im Monat), Steuerklasse I, gesetzlich versichert (Zusatzbeitrag 2,9 %), kinderlos, ohne Kirchensteuer, kein Solidaritätszuschlag (Freigrenze nicht erreicht). Einkommensteuer-Grundtarif 2026 (§ 32a EStG), Beitragssätze und Beitragsbemessungsgrenzen 2026, Vorsorgepauschale 2026. Beispielwohnung ${W.name}, ${eur(W.kaufpreis)} inkl. Garage, ${W.qm.toLocaleString("de-DE")} m², Miete 13 €/m² bis 20 €/m² im Jahr 2060, Hausgeld ${eur(W.hausgeld)} im Monat. Darlehen ${eur(W.kaufpreis)}, 4,8 % Zins, 1,2 % Tilgung, Rate ${eur(W.rate)}, monatlich gerechnet, Zins über die ganze Laufzeit gleich. ${AFA_ANNAHME} Steuerwirkung bis 64 mit dem Tarif, ab 65 vereinfacht 25 %. Wert +2 % im Jahr. Stand 21.10.2026.`,
+    grundlagen: `Grundlagen: Musterrechnung mit gerundeten Werten. ${eur(P.bruttoJahr)} brutto im Jahr (${eur(P.bruttoMonat)} im Monat), Steuerklasse I, gesetzlich versichert (Zusatzbeitrag 2,9 %), kinderlos, ohne Kirchensteuer, kein Solidaritätszuschlag (Freigrenze nicht erreicht). Einkommensteuer-Grundtarif 2026 (§ 32a EStG), Beitragssätze und Beitragsbemessungsgrenzen 2026, Vorsorgepauschale 2026. Beispielwohnung ${W.name}, ${eur(W.kaufpreis)} inkl. Garage, ${W.qm.toLocaleString("de-DE")} m², Miete 13 €/m² bis 20 €/m² im Jahr 2060, Hausgeld ${eur(W.hausgeld)} im Monat. Darlehen ${eur(W.kaufpreis)}, 4,8 % Zins, 1,2 % Tilgung, Rate ${eur(W.rate)}, monatlich gerechnet, Zins über die ganze Laufzeit gleich. ${AFA_ANNAHME} Steuerwirkung während der Erwerbsphase mit dem Tarif; die Zusatzrente aus den Wohnungen (ab 60) ist vereinfacht mit 25 % Steuer gerechnet. Die letzte Rate fällt nach ${W.freiMonate} Monaten, also mit 58 Jahren und 8 Monaten. Wert +2 % im Jahr. Stand 21.10.2026.`,
   },
   /** Neue Folie nach „Nach der Abzahlung“ (PDF-Präsentation Folie 24). */
   aufbau: {

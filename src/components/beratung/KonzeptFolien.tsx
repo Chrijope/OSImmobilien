@@ -125,7 +125,10 @@ function Torte({
   });
   return (
     <Sichtbar>
-      <svg viewBox="-60 0 540 420" className="mx-auto w-full max-w-[44rem] h-auto overflow-visible" role="img" aria-label={`${mitte} ${wert} ${unter}: ${teile.map((t) => `${t.label} ${t.wert}`).join(", ")}`}>
+      {/* Volle Torte ohne Loch, „Pizza“ (Christian, 21.10.2026); „Ihr Gehalt“ steht darüber. */}
+      <p className="text-center text-xs uppercase tracking-[0.2em]" style={{ color: P.champagner }}>{mitte}</p>
+      <p className="text-center text-3xl md:text-4xl font-bold" style={{ color: "#FFFFFF" }}>{wert} <span className="text-base font-normal" style={{ color: FARBE.hellGedaempft }}>{unter}</span></p>
+      <svg viewBox="-60 0 540 420" className="mt-2 mx-auto w-full max-w-[48rem] h-auto overflow-visible" role="img" aria-label={`${mitte} ${wert} ${unter}: ${teile.map((t) => `${t.label} ${t.wert}`).join(", ")}`}>
         {stuecke.map((s, i) => (
           <g key={s.t.label} className="bos-auftauchen" style={verzoegert(i * 250)}>
             <path d={s.d} fill={s.t.farbe} stroke={FARBE.tief} strokeWidth="2" />
@@ -134,10 +137,6 @@ function Torte({
             <text x={s.lx} y={s.ly + 16} textAnchor={s.rechts ? "start" : "end"} fontSize="22" fontWeight="700" fill={s.t.farbe === P.rot ? P.rose : FARBE.hellText}>{s.t.wert}</text>
           </g>
         ))}
-        <circle cx={M} cy={M} r="62" fill={FARBE.tief} />
-        <text x={M} y={M - 14} textAnchor="middle" fontSize="11" letterSpacing="2" fill={P.champagner}>{mitte.toUpperCase()}</text>
-        <text x={M} y={M + 12} textAnchor="middle" fontSize="24" fontWeight="700" fill="#FFFFFF">{wert}</text>
-        <text x={M} y={M + 30} textAnchor="middle" fontSize="10" fill={FARBE.hellGedaempft}>{unter}</text>
       </svg>
     </Sichtbar>
   );

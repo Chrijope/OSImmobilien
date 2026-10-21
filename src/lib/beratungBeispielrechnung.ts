@@ -8,20 +8,20 @@ export const BEISPIEL = {
   "person": {
     "bruttoJahr": 65000,
     "bruttoMonat": 5417,
-    "lohnsteuerJahr": 10475,
-    "lohnsteuerMonat": 873,
+    "lohnsteuerJahr": 10772,
+    "lohnsteuerMonat": 898,
     "sozialMonat": 1178,
-    "nettoMonat": 3366,
-    "abzuegeMonat": 2051,
+    "nettoMonat": 3341,
+    "abzuegeMonat": 2076,
     "rv": 504,
     "kv": 474,
     "pv": 130,
     "av": 70,
-    "zuVersteuern": 49792,
+    "zuVersteuern": 50636,
     "lebenBrutto": 2600000,
-    "lebenAbgaben": 984500,
-    "lebenNetto": 1615500,
-    "lebenLohnsteuer": 419000,
+    "lebenAbgaben": 996380,
+    "lebenNetto": 1603620,
+    "lebenLohnsteuer": 430880,
     "lebenSozial": 565500
   },
   "wohnung": {
@@ -39,19 +39,19 @@ export const BEISPIEL = {
     "zinsMonat": 700,
     "tilgung": 180,
     "vorSteuer": 411,
-    "ersparnis": 236,
-    "anteil": 175,
+    "ersparnis": 238,
+    "anteil": 173,
     "laufend": 231,
-    "ersparnisOhneGutachten": 153,
-    "ersparnisJahr": 2837,
+    "ersparnisOhneGutachten": 155,
+    "ersparnisJahr": 2861,
     "afa2": 3055,
     "afa4": 6111,
     "ergebnisJahr": -8445,
-    "neuZuVersteuern": 41347,
-    "lohnsteuerMonatNeu": 637,
-    "nettoMonatNeu": 3602,
-    "lohnsteuerMonat2": 720,
-    "nettoMonat2": 3519,
+    "neuZuVersteuern": 42191,
+    "lohnsteuerMonatNeu": 660,
+    "nettoMonatNeu": 3579,
+    "lohnsteuerMonat2": 743,
+    "nettoMonat2": 3496,
     "mieteJahr": 7595,
     "zinsJahr": 8401,
     "kostenAbziehbarJahr": 1528,
@@ -63,38 +63,38 @@ export const BEISPIEL = {
     "wert60": 352000,
     "wert65": 388600,
     "wert30": 318800,
-    "schnitt30": 214,
+    "schnitt30": 213,
     "bis49": 210,
-    "max57": 460,
+    "max57": 470,
     "ueberschuss58": 670,
     "restRaten": 8
   },
   "mehr": [
     {
       "vor": 411,
-      "anfang": 175,
-      "spaet": 460,
+      "anfang": 173,
+      "spaet": 470,
       "ab58": 670,
-      "zu": 93200
+      "zu": 93000
     },
     {
       "vor": 822,
-      "anfang": 370,
+      "anfang": 366,
       "spaet": 950,
       "ab58": 1350,
-      "zu": 190600
+      "zu": 190100
     },
     {
       "vor": 1233,
-      "anfang": 587,
+      "anfang": 580,
       "spaet": 1450,
       "ab58": 2020,
-      "zu": 292000
+      "zu": 291200
     }
   ],
   "drei": {
     "rente65": 1440,
-    "gerettet": 129100,
+    "gerettet": 130300,
     "wert65": 1165800,
     "miete": 1209207,
     "afa": 458304,
@@ -103,7 +103,7 @@ export const BEISPIEL = {
     "rente60Vor": 2020,
     "verkauf60": 1055942,
     "renteAusVerkauf": 3500,
-    "ersparnisJahr1": 646
+    "ersparnisJahr1": 653
   },
   "verlauf": [
     [
@@ -316,107 +316,107 @@ export const BEISPIEL = {
     [
       25,
       -411,
-      -175
+      -173
     ],
     [
       26,
       -404,
-      -173
+      -171
     ],
     [
       27,
       -396,
-      -171
+      -169
     ],
     [
       28,
       -389,
-      -169
+      -168
     ],
     [
       29,
       -382,
-      -168
+      -166
     ],
     [
       30,
       -374,
-      -167
+      -165
     ],
     [
       31,
       -367,
-      -166
+      -164
     ],
     [
       32,
       -360,
-      -165
+      -164
     ],
     [
       33,
       -353,
-      -165
+      -163
     ],
     [
       34,
       -346,
-      -165
+      -163
     ],
     [
       35,
       -339,
-      -165
+      -163
     ],
     [
       36,
       -332,
-      -165
+      -164
     ],
     [
       37,
       -326,
-      -166
+      -165
     ],
     [
       38,
       -319,
-      -167
+      -166
     ],
     [
       39,
       -312,
-      -168
+      -167
     ],
     [
       40,
       -306,
-      -170
+      -169
     ],
     [
       41,
       -299,
-      -172
+      -171
     ],
     [
       42,
       -293,
-      -175
+      -174
     ],
     [
       43,
       -287,
-      -178
+      -177
     ],
     [
       44,
       -281,
-      -181
+      -180
     ],
     [
       45,
       -275,
-      -185
+      -184
     ],
     [
       46,
@@ -441,77 +441,77 @@ export const BEISPIEL = {
     [
       50,
       -246,
-      -393
+      -395
     ],
     [
       51,
       -241,
-      -401
+      -403
     ],
     [
       52,
       -235,
-      -410
+      -411
     ],
     [
       53,
       -230,
-      -419
+      -420
     ],
     [
       54,
       -225,
-      -429
+      -430
     ],
     [
       55,
       -220,
-      -439
+      -441
     ],
     [
       56,
       -215,
-      -451
+      -453
     ],
     [
       57,
       -210,
-      -463
+      -465
     ],
     [
       58,
       149,
-      -121
+      -123
     ],
     [
       59,
       679,
-      404
+      402
     ],
     [
       60,
       672,
-      399
+      397
     ],
     [
       61,
       666,
-      395
+      392
     ],
     [
       62,
       659,
-      390
+      388
     ],
     [
       63,
       652,
-      385
+      383
     ],
     [
       64,
       645,
-      380
+      378
     ]
   ]
 } as const;
