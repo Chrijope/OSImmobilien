@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { aktuellerWeeklyCall, naechsterWeeklyCall, weeklyCallIcs } from "@/components/dashboard/WeeklyCallCard";
+import { aktuellerWeeklyCall, istLive, naechsterWeeklyCall, weeklyCallIcs } from "@/components/dashboard/WeeklyCallCard";
 import { CALL_WOCHENTAG } from "@/lib/weeklyCallZeit";
 
 /** Hilfsformat für lesbare Fehlermeldungen. */
@@ -113,4 +113,17 @@ describe("Kalenderdatei", () => {
     expect(ics.match(/BEGIN:VEVENT/g)).toHaveLength(1);
     expect(ics).toContain("SUMMARY:Weekly Sales Call Vertriebspartner");
   });
+});
+
+describe("istLive", () => {
+  // Montag, 27. Juli 2026, 19:00, Dauer 60 Minuten
+  const start = new Date(2026, 6, 27, 19, 0);
+  const um = (tag: number, h: number, m: number) => new Date(2026, 6, tag, h, m);
+
+  it("ist kurz vor Beginn nicht live", () => expect(istLive(um(27, 18, 59), start)).toBe(false));
+  it("ist genau zum Beginn live", () => expect(istLive(um(27, 19, 0), start)).toBe(true));
+  it("ist waehrend des Calls live", () => expect(istLive(um(27, 19, 30), start)).toBe(true));
+  it("ist genau zum Ende nicht mehr live", () => expect(istLive(um(27, 20, 0), start)).toBe(false));
+  it("ist danach nicht live", () => expect(istLive(um(27, 20, 15), start)).toBe(false));
+  it("ist an einem anderen Tag zur selben Uhrzeit nicht live", () => expect(istLive(um(28, 19, 30), start)).toBe(false));
 });
