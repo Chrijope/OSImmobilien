@@ -112,6 +112,9 @@ export default {
         "apple-gray": "hsl(var(--apple-gray))",
         "apple-mint": "hsl(var(--apple-mint))",
         "apple-brown": "hsl(var(--apple-brown))",
+        "apple-rose": "hsl(var(--apple-rose))",
+        "apple-sky": "hsl(var(--apple-sky))",
+        "apple-cyan": "hsl(var(--apple-cyan))",
       },
       borderRadius: {
         lg: "var(--radius)",

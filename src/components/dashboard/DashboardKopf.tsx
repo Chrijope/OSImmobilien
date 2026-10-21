@@ -15,7 +15,7 @@ import { Kennzahl } from "@/components/ui/kennzahl";
 import {
   Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
-import { ArrowDownRight, ArrowRight, ArrowUpRight, CalendarDays, Users, Inbox } from "lucide-react";
+import { ArrowDownRight, ArrowRight, ArrowUpRight, CalendarDays, Users, Inbox, BellRing, ListChecks, PhoneCall, Euro, Bookmark, Stamp, Hourglass, TrendingUp, type LucideIcon } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 import { getKontakte } from "@/lib/kundenStore";
 import { formatDatumFlexibel } from "@/lib/datumsformate";
@@ -57,6 +57,18 @@ const euro = (v: number) =>
   v >= 1_000_000
     ? `${(v / 1_000_000).toLocaleString("de-DE", { maximumFractionDigits: 1 })} Mio €`
     : `${Math.round(v / 1000).toLocaleString("de-DE")} T€`;
+
+/** Farbakzent je Kennzahl: Icon-Kästchen im Titel und Linie oben an der Kachel. */
+const KACHEL_AKZENT: Record<string, { icon: LucideIcon; chip: string; linie: string }> = {
+  "Offene Follow-Ups": { icon: BellRing, chip: "bg-blue-100 text-blue-700 dark:bg-blue-400/15 dark:text-blue-300", linie: "border-t-blue-500" },
+  "Offene Aufgaben": { icon: ListChecks, chip: "bg-orange-100 text-orange-700 dark:bg-orange-400/15 dark:text-orange-300", linie: "border-t-orange-500" },
+  "Anrufe und Termine": { icon: PhoneCall, chip: "bg-emerald-100 text-emerald-700 dark:bg-emerald-400/15 dark:text-emerald-300", linie: "border-t-emerald-500" },
+  "Umsatz beurkundet": { icon: Euro, chip: "bg-emerald-100 text-emerald-700 dark:bg-emerald-400/15 dark:text-emerald-300", linie: "border-t-emerald-500" },
+  "Offene Reservierungen": { icon: Bookmark, chip: "bg-blue-100 text-blue-700 dark:bg-blue-400/15 dark:text-blue-300", linie: "border-t-blue-500" },
+  "Notartermine": { icon: Stamp, chip: "bg-violet-100 text-violet-700 dark:bg-violet-400/15 dark:text-violet-300", linie: "border-t-violet-500" },
+  "In Bearbeitung": { icon: Hourglass, chip: "bg-amber-100 text-amber-700 dark:bg-amber-400/15 dark:text-amber-300", linie: "border-t-amber-500" },
+  "Conversion": { icon: TrendingUp, chip: "bg-pink-100 text-pink-700 dark:bg-pink-400/15 dark:text-pink-300", linie: "border-t-pink-500" },
+};
 
 export function DashboardKopf() {
   const navigate = useNavigate();
@@ -408,13 +420,21 @@ export function DashboardKopf() {
   ];
 
   const renderKachel = (k: typeof kacheln[number]) => {
+    const akzent = KACHEL_AKZENT[k.label];
     const anklickbar = !!k.eintraege?.length;
     // Der Vorfuehrmodus zeichnet Betraege weich. Die Klasse kommt deshalb von
     // hier und nicht aus dem Baustein: Nur das Dashboard weiss, dass seine
     // Zahlen getarnt werden muessen.
     const inhalt = (
       <Kennzahl
-        label={k.label}
+        label={akzent ? (
+          <span className="flex items-center gap-2">
+            <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md ${akzent.chip}`}>
+              <akzent.icon className="h-3.5 w-3.5" aria-hidden="true" />
+            </span>
+            {k.label}
+          </span>
+        ) : k.label}
         wert={k.wert}
         zusatz={k.zusatz}
         ton={k.ton === "warn" ? "warn" : k.ton === "gut" ? "gut" : "neutral"}
@@ -435,7 +455,7 @@ export function DashboardKopf() {
      * und erst nach gut einer Sekunde.
      */
     const kachelKarte = (
-      <Card key={k.label} className={`min-w-0 overflow-hidden ${k.bereich === "heute" ? "border-primary/15 shadow-none" : "shadow-none"}`}>
+      <Card key={k.label} className={`min-w-0 overflow-hidden border-t-[3px] ${akzent?.linie ?? ""} ${k.bereich === "heute" ? "border-primary/15 shadow-none" : "shadow-none"}`}>
         {anklickbar ? (
           <button type="button" onClick={() => setDetail({ titel: k.label, zusatz: k.detailZusatz, eintraege: k.eintraege!, erklaerung: k.erklaerung })}
             className="block h-full w-full p-5 text-left transition-colors hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring">
@@ -493,11 +513,11 @@ export function DashboardKopf() {
         )}
       </div>
 
-      <section aria-labelledby="dashboard-heute-title" className="rounded-2xl border border-primary/20 border-l-4 border-l-primary bg-accent/30 p-4 md:p-6">
+      <section aria-labelledby="dashboard-heute-title" className="rounded-2xl border-l-[5px] border-l-[#CCAC05] bg-gradient-to-br from-[#12362A] to-[#1B5A45] p-4 text-white md:p-6">
         <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
           <div>
             <h2 id="dashboard-heute-title" className="text-xl font-semibold tracking-tight">Heute im Fokus</h2>
-            <p className="mt-1 text-sm text-muted-foreground">Heute fällig und überfällig · {SICHT_LABEL[sicht]}</p>
+            <p className="mt-1 text-sm text-white/75">Heute fällig und überfällig · {SICHT_LABEL[sicht]}</p>
           </div>
           {/* Hauptaktion des Dashboards, deshalb Marken-Orange. */}
           <Link to={`/inbox?umfang=${sicht}`} className="btn-brand inline-flex min-h-10 items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2">

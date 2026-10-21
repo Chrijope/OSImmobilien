@@ -121,23 +121,25 @@
     */
     --expats-marine: 160 50% 14%;       /* Tannengrün #12362A */
 
-    /* Icon-Töne der Seitenleiste, seit 18.10.2026 aus der Markenpalette
-       (Tannengrün, Markengrün, Petrol, Salbei, Gold, Champagner tief). Die
-       Namen bleiben, damit keine Klasse angefasst werden muss. Seit dem
-       21.10.2026 etwas kräftiger (Christian: „einen kleinen Ticken
-       strahlender“), Dunkelmodus siehe `.dark`. */
-    --apple-blue: 157 75% 30%;
-    --apple-green: 157 72% 38%;
-    --apple-indigo: 196 62% 40%;
-    --apple-orange: 25 92% 45%;
-    --apple-pink: 5 65% 48%;
-    --apple-purple: 160 55% 24%;
-    --apple-red: 5 65% 48%;
-    --apple-teal: 196 62% 40%;
-    --apple-yellow: 48 95% 44%;
-    --apple-gray: 150 6% 50%;
-    --apple-mint: 141 30% 44%;
-    --apple-brown: 42 48% 46%;
+    /* Icon-Töne der Seitenleiste. Seit 21.10.2026 (Christian, Variante A):
+       jede Gruppe eine eigene, leuchtende Farbe, damit die Gruppen sich auf
+       einen Blick unterscheiden; vorher waren fast alle Töne Grün. Die Namen
+       bleiben, damit keine Klasse angefasst werden muss. Dunkelmodus: `.dark`. */
+    --apple-blue: 221 83% 53%;     /* Start          #2563EB */
+    --apple-green: 161 94% 30%;    /* Vertrieb       #059669 */
+    --apple-indigo: 243 75% 59%;   /* Auswertung     #4F46E5 */
+    --apple-orange: 21 90% 48%;    /* Immobilien     #EA580C */
+    --apple-pink: 330 81% 50%;     /* Marketing      #DB2777 */
+    --apple-rose: 347 77% 50%;     /* Lead Gen       #E11D48 */
+    --apple-purple: 262 83% 58%;   /* Tools          #7C3AED */
+    --apple-sky: 200 98% 39%;      /* Wissen         #0284C7 */
+    --apple-red: 0 72% 51%;
+    --apple-teal: 175 84% 32%;     /* Videocall      #0D9488 */
+    --apple-cyan: 192 91% 36%;     /* Support        #0891B2 */
+    --apple-yellow: 45 93% 47%;
+    --apple-gray: 215 19% 35%;     /* Team & Admin   #475569 */
+    --apple-mint: 160 60% 40%;
+    --apple-brown: 32 95% 44%;     /* Objektdaten, Hausverwaltung #D97706 */
 
     /* Glass effect tokens */
     --glass-bg: 0 0% 100% / 0.7;
@@ -151,18 +153,21 @@
 
   .dark {
     /* Icon-Töne der Seitenleiste, auf dunklem Grund heller (21.10.2026). */
-    --apple-blue: 157 60% 52%;
-    --apple-green: 157 62% 50%;
-    --apple-indigo: 196 65% 60%;
-    --apple-orange: 25 92% 60%;
-    --apple-pink: 5 75% 66%;
-    --apple-purple: 160 45% 58%;
-    --apple-red: 5 75% 66%;
-    --apple-teal: 196 65% 60%;
-    --apple-yellow: 48 95% 58%;
-    --apple-gray: 150 6% 66%;
-    --apple-mint: 141 35% 62%;
-    --apple-brown: 42 55% 62%;
+    --apple-blue: 213 94% 68%;
+    --apple-green: 158 64% 52%;
+    --apple-indigo: 234 89% 74%;
+    --apple-orange: 27 96% 61%;
+    --apple-pink: 329 86% 70%;
+    --apple-rose: 351 95% 71%;
+    --apple-purple: 255 92% 76%;
+    --apple-sky: 198 93% 60%;
+    --apple-red: 0 91% 71%;
+    --apple-teal: 172 66% 50%;
+    --apple-cyan: 188 86% 53%;
+    --apple-yellow: 48 96% 53%;
+    --apple-gray: 215 20% 65%;
+    --apple-mint: 156 64% 62%;
+    --apple-brown: 43 96% 56%;
     --background: 158 44% 8%;    /* #0C1F18 */
     --foreground: 142 17% 91%;   /* #E4ECE7 */
 

@@ -391,9 +391,9 @@ export function navigationsGruppen(ctx: NavKontext): NavGruppe[] {
       items: leadGenItems.map((item) =>
         item.url === HANDBUCH_SEITE_ROUTE && ctx.handbuchFrei ? { ...item, adminOnly: false, adminBadge: false } : item,
       ),
-      iconTint: "text-apple-pink",
+      iconTint: "text-apple-rose",
     },
-    { label: "Wissen", items: wissenItems, iconTint: "text-apple-purple" },
+    { label: "Wissen", items: wissenItems, iconTint: "text-apple-sky" },
   ];
   if (ctx.videocallFreigabe) gruppen.push({ label: "Videocall", items: videocallItems, iconTint: "text-apple-teal" });
   gruppen.push(
@@ -403,7 +403,7 @@ export function navigationsGruppen(ctx: NavKontext): NavGruppe[] {
       items: helpdeskItems.filter(
         (item) => ["inhaber", "admin", "backoffice"].includes(rolle) || item.url !== "/helpdesk" || eigene.includes(item.url),
       ),
-      iconTint: "text-apple-teal",
+      iconTint: "text-apple-cyan",
     },
   );
   // Christian, 18.10.2026: Gruppe „Hausverwaltung“ vorerst ausgeblendet. Seiten,
