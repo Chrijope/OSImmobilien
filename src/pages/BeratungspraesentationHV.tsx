@@ -25,7 +25,7 @@
  */
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowRight, CalendarCheck, CalendarClock, Check, ChevronDown, ClipboardList, Download, FileText, KeyRound, Loader2, Mail, Menu, Phone, UserRound, X } from "lucide-react";
+import { ArrowRight, CalendarCheck, CalendarClock, Check, ChevronDown, ClipboardList, Download, FileText, KeyRound, Loader2, Mail, Menu, Moon, Phone, Sun, UserRound, X } from "lucide-react";
 import { Sichtbar, ZahlText, verzoegert } from "@/components/beratung/Bewegung";
 import type { AntwortAbschnitt } from "@/lib/beratungAntwortenPdf";
 import { useUser } from "@/contexts/UserContext";
@@ -470,7 +470,7 @@ export default function BeratungspraesentationHV({
   const istB = variante === "b";
   const [suchParameter] = useSearchParams();
   const navigate = useNavigate();
-  const { user, authUser } = useUser();
+  const { user, authUser, darkMode, toggleDarkMode } = useUser();
   const [navOffen, setNavOffen] = useState(false);
   const [fortschritt, setFortschritt] = useState(0);
 
@@ -856,17 +856,34 @@ export default function BeratungspraesentationHV({
       <TrainerContext.Provider value={trainerVerfuegbar && trainerAn}>
         <div className="min-h-screen bg-background text-foreground font-sans" data-lg="seite" data-praesentation="beratung" lang="de">
           <div className="bos bos-crm min-h-screen">
-            {trainerVerfuegbar && (
-              <button
-                type="button"
-            data-no-shrink
-                data-pdf-exclude
-                onClick={() => setTrainerAn((v) => !v)}
-                className="fixed bottom-5 left-4 z-[70] inline-flex items-center gap-2 rounded-full border-2 border-dashed border-amber-500/70 bg-amber-50 px-4 h-11 text-sm font-semibold text-amber-800 shadow-lg"
-              >
-                {trainerAn ? "Trainer-Modus aus" : "Trainer-Modus an"}
-              </button>
-            )}
+            {/*
+              Hell/Dunkel unten links, im CRM wie im Artefakt (src/artefakt/main.tsx).
+              Schaltet das Theme aus useUser(): im CRM das CRM-Theme, im Artefakt dessen eigenes.
+              Der Trainer-Knopf steht daneben, sonst lägen beide übereinander.
+            */}
+            <div data-pdf-exclude className="fixed bottom-5 left-4 z-[70] flex items-center gap-2">
+              <div className="flex items-center rounded-full border bg-background/90 p-1 shadow-lg backdrop-blur">
+                <button
+                  type="button"
+                  data-no-shrink
+                  aria-label={darkMode ? "Helle Ansicht" : "Dunkle Ansicht"}
+                  onClick={toggleDarkMode}
+                  className="h-9 w-9 rounded-full inline-flex items-center justify-center text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                </button>
+              </div>
+              {trainerVerfuegbar && (
+                <button
+                  type="button"
+                  data-no-shrink
+                  onClick={() => setTrainerAn((v) => !v)}
+                  className="inline-flex items-center gap-2 rounded-full border-2 border-dashed border-amber-500/70 bg-amber-50 px-4 h-11 text-sm font-semibold text-amber-800 shadow-lg"
+                >
+                  {trainerAn ? "Trainer-Modus aus" : "Trainer-Modus an"}
+                </button>
+              )}
+            </div>
             <div className="fixed top-0 left-0 right-0 h-[3px] z-[60]">
               <div className="h-full transition-[width] duration-150" style={{ width: `${fortschritt}%`, background: FARBE.gold }} />
             </div>

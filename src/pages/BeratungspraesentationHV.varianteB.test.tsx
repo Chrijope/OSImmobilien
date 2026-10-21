@@ -11,10 +11,15 @@ import { ENTFERNTE_DOKUMENT_IDS, mitNachgetragenen, seedUnterlagen } from "@/lib
  * variante="b". Geprüft wird, was B anders macht, und dass A davon nichts merkt.
  */
 
-const zustand = vi.hoisted(() => ({ skript: null as Record<string, unknown> | null }));
+const zustand = vi.hoisted(() => ({ skript: null as Record<string, unknown> | null, umschalten: vi.fn() }));
 
 vi.mock("@/contexts/UserContext", () => ({
-  useUser: () => ({ user: { name: "Maria Muster", role: "vertriebspartner" }, authUser: { id: "nutzer-1" } }),
+  useUser: () => ({
+    user: { name: "Maria Muster", role: "vertriebspartner" },
+    authUser: { id: "nutzer-1" },
+    darkMode: false,
+    toggleDarkMode: zustand.umschalten,
+  }),
 }));
 vi.mock("@/hooks/useCacheReady", () => ({ useCacheReady: () => true }));
 vi.mock("@/lib/dataCache", () => ({ onCacheChange: () => () => {}, cacheGet: () => [] }));
@@ -156,5 +161,15 @@ describe("Einbindung von B", () => {
     expect(ids).not.toContain("p-beratung-b");
     expect(ENTFERNTE_DOKUMENT_IDS).toContain("p-beratung-b");
     expect(mitNachgetragenen(seedUnterlagen()).geaendert).toBe(false);
+  });
+});
+
+describe("Hell und Dunkel wie im Artefakt (21.10.2026)", () => {
+  it("zeigt den Schalter unten links, schaltet das Theme und bleibt aus dem PDF", () => {
+    zeige(B);
+    const knopf = screen.getByRole("button", { name: "Dunkle Ansicht" });
+    expect(knopf.closest("[data-pdf-exclude]")).not.toBeNull();
+    fireEvent.click(knopf);
+    expect(zustand.umschalten).toHaveBeenCalledTimes(1);
   });
 });
