@@ -54,3 +54,6 @@ OSImmobilien_Rentabilitaetsrechnung*
 
 # Eigenständige Fassung (vite.artefakt.config.ts), wird gebaut, nicht eingecheckt.
 dist-artefakt
+
+# Folien-PDF der Beratungspräsentation (scripts/beratung-pdf), wird erzeugt, nicht eingecheckt.
+dist-pdf

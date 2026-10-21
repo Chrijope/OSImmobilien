@@ -501,6 +501,7 @@ export default function BeratungspraesentationHV({
   weiterZurSelbstauskunft,
   ohneProfil,
   speichereDatei,
+  druck,
 }: {
   vorschau?: BeratungVorschau;
   variante?: BeratungVariante;
@@ -514,6 +515,8 @@ export default function BeratungspraesentationHV({
   ohneProfil?: boolean;
   /** Datei an den Nutzer geben; ohne Angabe der normale Download von jsPDF. */
   speichereDatei?: (dateiname: string, blob: Blob) => Promise<unknown>;
+  /** Druckansicht für die Folien-PDF (scripts/beratung-pdf): beide Konzepte nacheinander, ohne Schalter. */
+  druck?: boolean;
 } = {}) {
   const T = variante === "b" ? OS_TEXTE_B : OS_TEXTE;
   const istB = variante === "b";
@@ -650,7 +653,7 @@ export default function BeratungspraesentationHV({
    * nacheinander nur auf Wunsch (Knopf in 07) oder bei Schwerpunkt „beides“;
    * dann Steuer zuerst, weil die Altersvorsorge auf der Steuerersparnis aufbaut.
    */
-  const beide = w("konzeptBeide") ? w("konzeptBeide") === "ja" : w("schwerpunkt") === "beides";
+  const beide = druck || (w("konzeptBeide") ? w("konzeptBeide") === "ja" : w("schwerpunkt") === "beides");
   const gezeigteKonzepte: KonzeptOs[] = beide ? ["steuer", "zusatzrente"] : [konzept];
 
   // Ziele, höchstens drei. Gespeichert als Beschriftungen, Semikolon-getrennt (wie bisher).

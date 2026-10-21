@@ -94,3 +94,8 @@ export const VorschauBeratungsprotokoll = import.meta.env.DEV
 export const VorschauKundenprofilLinks = import.meta.env.DEV
   ? lazy(() => import("./pages/VorschauKundenprofilLinks"))
   : null;
+
+/** /vorschau/beratung-druck: Druckansicht der Beratungspräsentation für die Folien-PDF (21.10.2026). Gleiche Regeln wie oben. */
+export const VorschauBeratungDruck = import.meta.env.DEV
+  ? lazy(() => import("./pages/VorschauBeratungDruck"))
+  : null;
