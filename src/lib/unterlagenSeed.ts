@@ -57,7 +57,10 @@ export const UNTERLAGEN_VERSION = "34";
  * ersetzen und selbst angelegte Dokumente verwerfen; deshalb werden diese Ids
  * beim Laden gezielt hinter ihrem Vorgänger im Seed eingefügt, falls sie fehlen.
  */
-export const NACHGETRAGENE_DOKUMENT_IDS: string[] = [];
+export const NACHGETRAGENE_DOKUMENT_IDS: string[] = [
+  // Neuer Zoom-Hintergrund vom 21.10.2026, hinter „Zoom-Hintergrund 8“.
+  "m-zoom-desktop-11",
+];
 
 export const ENTFERNTE_DOKUMENT_IDS: string[] = [
   // Haushaltsrechner / Bonitätsrechner: die Seite gibt es nicht mehr.
@@ -420,6 +423,16 @@ export function seedUnterlagen(): UnterlagenAbschnitt[] {
           aktion: "external-link",
           url: "/images/zoom/os-real-estate-buero-8.jpg?v=2",
           vorschauUrl: "/images/zoom/os-real-estate-buero-8.jpg?v=2",
+          download: true,
+        },
+        {
+          // Christian, 21.10.2026. Id 11, weil 9 und 10 als entfernte Dubletten gesperrt sind.
+          id: "m-zoom-desktop-11",
+          name: "Zoom-Hintergrund 9: Betonwand, Lichtleiste",
+          beschreibung: "Wirkt wie unser Büro: 1920 × 1080, mit OS Real Estate Logo",
+          aktion: "external-link",
+          url: "/images/zoom/os-real-estate-buero-11.jpg?v=1",
+          vorschauUrl: "/images/zoom/os-real-estate-buero-11.jpg?v=1",
           download: true,
         },
       ],
