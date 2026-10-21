@@ -29,12 +29,18 @@ describe("Investmentrechner, Rollenfreigabe", () => {
 
   it("bleibt fuer alle anderen Rollen ohne Einzelfreigabe zu", () => {
     for (const rolle of [
-      "backoffice", "hr", "buchhaltung", "hausverwaltung", "setterin",
+      "hr", "buchhaltung", "hausverwaltung", "setterin",
       "versicherungsexperte", "marketing", "kunde", "tippgeber", "bewerber",
     ]) {
       expect(canAccessInvestmentrechner(rolle), rolle).toBe(false);
       expect(isUrlAllowedForRole("/investmentrechner", rolle as never), rolle).toBe(false);
     }
+  });
+
+  it("ist seit dem 18.10.2026 fuer das Backoffice ueber die Sidebar-Freigabe offen", () => {
+    // Christian, 18.10.2026: Investmentkalkulation fuer das Backoffice
+    // (sidebarPermissions.ts und Migration 20261018120000).
+    expect(isUrlAllowedForRole("/investmentrechner", "backoffice")).toBe(true);
   });
 
   it("haengt beim Vertriebspartner nicht an der Karrierestufe", () => {
@@ -54,7 +60,7 @@ describe("Investmentrechner, aktive Rolle statt Person", () => {
   });
 
   it("bleibt fuer dieselbe Person in einer Rolle ohne Freigabe zu", () => {
-    expect(isUrlAllowedForRole("/investmentrechner", "backoffice", undefined, null, PERSON)).toBe(false);
+    expect(isUrlAllowedForRole("/investmentrechner", "hr", undefined, null, PERSON)).toBe(false);
     expect(isUrlAllowedForRole("/investmentrechner", "kunde", undefined, null, PERSON)).toBe(false);
   });
 });

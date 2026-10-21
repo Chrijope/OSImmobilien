@@ -1,4 +1,5 @@
 import "@testing-library/jest-dom";
+import { afterAll } from "vitest";
 
 Object.defineProperty(window, "matchMedia", {
   writable: true,
@@ -29,3 +30,21 @@ const matchesOriginal = Element.prototype.matches;
 Element.prototype.matches = function (this: Element, selektor: string) {
   return OBERSTE_EBENE.has(selektor) ? false : matchesOriginal.call(this, selektor);
 } as typeof Element.prototype.matches;
+
+/*
+ * jsdom kennt keinen ResizeObserver. input-otp (CodeEingabe, Zwei-Faktor)
+ * ruft ihn beim Einhängen auf, ohne ihn stürzt der ganze Baum ab. Nur eine
+ * leere Attrappe, falls ein Test keine eigene setzt (21.10.2026).
+ */
+globalThis.ResizeObserver ??= class {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+} as unknown as typeof ResizeObserver;
+
+/*
+ * input-otp setzt nach dem Aushängen noch Zeitgeber (bis 50 ms). Feuern sie
+ * erst nach dem Abbau von jsdom, meldet Vitest „window is not defined“ als
+ * Fehler. Einmal je Testdatei kurz warten reicht.
+ */
+afterAll(() => new Promise<void>((fertig) => setTimeout(fertig, 60)));

@@ -2,6 +2,11 @@
  * Testfreischaltung „Objekte" für einzelne Vertriebspartner-Konten
  * (Wunsch des Inhabers, 05.10.2026). Greift nur mit Kennung in
  * `app_config.objekte_test_vertriebspartner` UND aktiver Rolle vertriebspartner.
+ *
+ * Seit dem 18.10.2026 sehen alle Vertriebspartner, die Vertriebsleitung und
+ * das Backoffice „Objekte“ ohnehin (Ansehen ja, Pflege nur für
+ * `OBJEKT_PFLEGE_ROLLEN`). Für das Menü ist die Testfreischaltung damit
+ * ohne Wirkung; sie entscheidet nur noch die Linkführung im Kundenprofil.
  */
 import { describe, expect, it, vi } from "vitest";
 
@@ -30,9 +35,11 @@ describe("objekteTestFreigabe", () => {
     expect(objekteTestFreigabe("vertriebspartner", "u-test")).toBe(true);
     expect(siehtObjekteMenue(vp("u-test"))).toBe(true);
     expect(objekteEintrag(vp("u-test"))?.adminBadge).toBe(false);
-    for (const p of ["/objekte", "/objekte/o1", "/objekte/o1/einheiten/w1", "/objekte/o1/verwaltung"]) {
+    for (const p of ["/objekte", "/objekte/o1", "/objekte/o1/einheiten/w1"]) {
       expect(objektbereichGesperrt(p, vp("u-test"))).toBe(false);
     }
+    // Verwaltungsansichten sind seit dem 18.10.2026 Pflege.
+    expect(objektbereichGesperrt("/objekte/o1/verwaltung", vp("u-test"))).toBe(true);
   });
 
   it("öffnet Anlegen und Bearbeiten nicht", () => {
@@ -40,18 +47,23 @@ describe("objekteTestFreigabe", () => {
     expect(objektbereichGesperrt("/objekte/o1/bearbeiten", vp("u-test"))).toBe(true);
   });
 
-  it("ändert nichts für andere Vertriebspartner", () => {
+  it("andere Vertriebspartner sind nicht freigeschaltet, sehen Objekte seit dem 18.10.2026 aber ebenfalls", () => {
     expect(objekteTestFreigabe("vertriebspartner", "u-anders")).toBe(false);
     expect(objekteTestFreigabe("vertriebspartner", undefined)).toBe(false);
-    expect(siehtObjekteMenue(vp("u-anders"))).toBe(false);
-    expect(objektbereichGesperrt("/objekte/o1", vp("u-anders"))).toBe(true);
+    expect(siehtObjekteMenue(vp("u-anders"))).toBe(true);
+    expect(objektbereichGesperrt("/objekte/o1", vp("u-anders"))).toBe(false);
+    expect(objektbereichGesperrt("/objekte/o1/verwaltung", vp("u-anders"))).toBe(true);
   });
 
   it("greift nicht bei anderer aktiver Rolle derselben Person", () => {
     for (const rolle of ["vertriebsleiter", "backoffice", "kunde", "tippgeber"]) {
       expect(objekteTestFreigabe(rolle, "u-test")).toBe(false);
-      expect(siehtObjekteMenue(vp("u-test", rolle))).toBe(false);
     }
+    // Das Menü folgt seit dem 18.10.2026 der Rolle, nicht der Freischaltung.
+    expect(siehtObjekteMenue(vp("u-test", "vertriebsleiter"))).toBe(true);
+    expect(siehtObjekteMenue(vp("u-test", "backoffice"))).toBe(true);
+    expect(siehtObjekteMenue(vp("u-test", "kunde"))).toBe(false);
+    expect(siehtObjekteMenue(vp("u-test", "tippgeber"))).toBe(false);
   });
 
   // Befund vom 05.10.2026: Die Objektauswahl im Kundenprofil schickte auch
@@ -71,7 +83,6 @@ describe("objekteTestFreigabe", () => {
   it("niemand ist freigeschaltet, wenn der Schlüssel fehlt oder kein Feld ist", () => {
     delete config.objekte_test_vertriebspartner;
     expect(objekteTestFreigabe("vertriebspartner", "u-test")).toBe(false);
-    expect(siehtObjekteMenue(vp("u-test"))).toBe(false);
     expect(objekteTestFreigabe("vertriebspartner", "u-test", "u-test")).toBe(false);
     expect(objekteTestFreigabe("vertriebspartner", "u-test", { "u-test": true })).toBe(false);
   });

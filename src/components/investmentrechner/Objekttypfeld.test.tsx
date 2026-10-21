@@ -126,7 +126,8 @@ describe("Erklärungen zum Antippen", () => {
     expect(document.body.textContent).not.toContain("Um welche Art von Objekt");
     const infos = screen.getAllByRole("button", { name: "Erklärung" });
     fireEvent.click(infos[1]);
-    const erklaerung = screen.getByText(/Um welche Art von Objekt/).textContent ?? "";
+    // Der Radix-Tooltip setzt den Text zusätzlich unsichtbar für Vorleseprogramme ein.
+    const erklaerung = screen.getAllByText(/Um welche Art von Objekt/)[0].textContent ?? "";
     for (const vorschlag of OBJEKTTYP_VORSCHLAEGE) expect(erklaerung).toContain(vorschlag);
   });
 });
