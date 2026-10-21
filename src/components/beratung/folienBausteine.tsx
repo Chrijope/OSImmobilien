@@ -30,6 +30,11 @@ export const FARBE = {
   // 0,8 statt 0,68: kleine Schrift auf Dunkelgrün braucht 4,5:1 (gerechnet etwa 9:1).
   hellGedaempft: "rgba(243,247,245,0.8)",
   salbei: "#6F9A7E",
+  /**
+   * Akzent auf dunklem Grund (seit 21.10.2026, wie in der PDF): Mint statt
+   * Gold, 8,3:1 auf Tannengrün. Gold bleibt für Zahlen, Kicker und Knöpfe.
+   */
+  mint: "#A7D7C5",
   /** Schrift auf Gold. */
   aufGold: "#14231B",
 };
@@ -47,11 +52,11 @@ export function mitAkzent(text: string, farbe: string) {
   );
 }
 
-/** Überschrift mit [[Akzent]]: auf hellem Grund dunkles Gold, auf Grün helles. */
+/** Überschrift mit [[Akzent]]: auf hellem Grund dunkles Gold, auf Grün Mint. */
 export function Titel({ text, ton, className = "" }: { text: string; ton: Ton; className?: string }) {
   return (
     <h2 className={`font-semibold leading-[1.12] tracking-[-0.022em] text-[2rem] sm:text-[2.6rem] md:text-[3.1rem] ${className}`}>
-      {mitAkzent(text, ton === "hell" ? FARBE.goldDunkel : FARBE.gold)}
+      {mitAkzent(text, ton === "hell" ? FARBE.goldDunkel : FARBE.mint)}
     </h2>
   );
 }
@@ -157,5 +162,24 @@ export function Fussnote({ children, dunkel }: { children: React.ReactNode; dunk
     <p className="mt-4 text-xs leading-relaxed" style={{ color: dunkel ? "rgba(243,247,245,0.72)" : FARBE.grau }}>
       {children}
     </p>
+  );
+}
+
+/**
+ * „Frage an dich“: der helle Fragekasten der PDF-Präsentation mit goldener
+ * Kante. Auf dunklem Grund als goldene Scheibe.
+ */
+export function FrageAnDich({ children, dunkel, className = "" }: { children: React.ReactNode; dunkel?: boolean; className?: string }) {
+  return (
+    <div
+      data-testid="frage-an-dich"
+      className={`rounded-2xl border-l-4 p-5 min-w-0 ${className}`}
+      style={dunkel ? { background: "rgba(204,172,5,0.14)", borderColor: FARBE.gold, color: FARBE.hellText } : { background: "#FBF5D6", borderColor: FARBE.gold, color: "#14231B" }}
+    >
+      <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em]" style={{ color: dunkel ? FARBE.gold : "#8A7404" }}>
+        Frage an dich
+      </p>
+      <p className="mt-2 text-base md:text-lg font-medium leading-snug">{children}</p>
+    </div>
   );
 }

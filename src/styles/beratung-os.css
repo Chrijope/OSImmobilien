@@ -126,10 +126,29 @@
   background: transparent;
   -webkit-font-smoothing: antialiased;
   --bos-akzent: var(--bos-gold-dunkel);
+  /*
+   * Grafikfarben, die auf hellen Abschnitten liegen (seit 21.10.2026). Im
+   * dunklen CRM sind diese Abschnitte dunkel, darum dort helle Stufen;
+   * Tannengrün und dunkles Gold verschwänden sonst auf dem Grund.
+   */
+  --bos-grafik-tinte: #12362a;
+  --bos-grafik-goldtext: #8a7404;
+  --bos-grafik-gruen: #198a5f;
+  --bos-grafik-blau: #3f51b5;
+  /* „Wer zahlt deine Finanzierung?“: Mieter, Finanzamt, du. */
+  --bos-segment-mieter: #198a5f;
+  --bos-segment-amt: #ccac05;
+  --bos-segment-du: #9c8a55;
 }
 /* Im dunklen CRM liegen die hellen Abschnitte auf dunklem Grund: dort das helle Gold. */
 .dark .bos.bos-crm {
   --bos-akzent: var(--bos-gold);
+  --bos-grafik-tinte: #d8c79f;
+  --bos-grafik-goldtext: #e3c84a;
+  --bos-grafik-gruen: #5fd39c;
+  --bos-grafik-blau: #9fa8f0;
+  --bos-segment-mieter: #5fd39c;
+  --bos-segment-du: #f3ebd8;
 }
 .bos.bos-crm .bos-kicker {
   font-family: inherit;

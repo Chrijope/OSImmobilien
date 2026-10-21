@@ -7,8 +7,8 @@
  * Texte und Zahlen: `src/lib/beratungKonzeptDaten.ts`.
  */
 import type { ReactNode } from "react";
-import { ArrowRight, HandCoins, Home, Landmark } from "lucide-react";
-import { FARBE, Folie, Fussnote, Karte, Kopf, Titel, mitAkzent } from "@/components/beratung/folienBausteine";
+import { ArrowDown, ArrowRight, HandCoins, Home, Landmark } from "lucide-react";
+import { FARBE, Folie, FrageAnDich, Fussnote, Karte, Kopf, Titel, mitAkzent } from "@/components/beratung/folienBausteine";
 import { Sichtbar, ZahlText, verzoegert } from "@/components/beratung/Bewegung";
 import {
   KONZEPT_ALTER,
@@ -19,6 +19,7 @@ import {
   type StapelTeil,
   type WasserfallZeile,
 } from "@/lib/beratungKonzeptDaten";
+import { BEISPIEL } from "@/lib/beratungBeispielrechnung";
 
 /** Farben der PDFs. Auf dunklem Grund die hellen Stufen (mint, rosé, champagner). */
 const P = {
@@ -29,14 +30,17 @@ const P = {
   grau: "#9AA29E",
   grauDunkel: "#7E8A84",
   gold: "#CCAC05",
-  goldText: "#8A7404",
+  /** Dunkles Gold als Schrift auf hellem Abschnitt; im dunklen CRM hell (beratung-os.css). */
+  goldText: "var(--bos-grafik-goldtext)",
+  /** Tannengrün als Schrift oder Balken auf hellem Abschnitt; im dunklen CRM Champagner. */
+  tinte: "var(--bos-grafik-tinte)",
   champagner: "#D8C79F",
   navy: "#12362A",
   orange: "#F26B3A",
   blau: "#3F51B5",
 };
 
-const gruenAuf = (dunkel: boolean) => (dunkel ? P.mint : P.gruen);
+const gruenAuf = (dunkel: boolean) => (dunkel ? P.mint : "var(--bos-grafik-gruen)");
 
 /** Titelbild des Altersvorsorge-Dokuments: Altbauwohnung, wie im PDF. */
 const FOTO_ALTBAU = "/images/mikroseite/barfuss-altbau-innen.jpg";
@@ -58,13 +62,16 @@ function HeuteMitOs({
   heute,
   mitOs,
   dunkel,
+  untereinander,
 }: {
   heute: { etikett?: string; wert: string; text: string };
   mitOs: { etikett?: string; wert: string; text: string };
   dunkel: boolean;
+  /** Wie in der PDF (Steuer 03): Heute über Mit OS, neben der Grafik. */
+  untereinander?: boolean;
 }) {
   return (
-    <div className="mt-8 grid md:grid-cols-2 gap-4">
+    <div className={untereinander ? "grid gap-4" : "mt-8 grid md:grid-cols-2 gap-4"}>
       <Karte dunkel={dunkel}>
         <Kopf dunkel={dunkel}>{heute.etikett ?? "Heute"}</Kopf>
         <Gross farbe={dunkel ? P.rose : P.rot} className="mt-3 text-[2.4rem] md:text-[3rem]">
@@ -153,7 +160,7 @@ function Balken({
 function Wasserfall({ zeilen, dunkel }: { zeilen: ReadonlyArray<WasserfallZeile>; dunkel: boolean }) {
   const brutto = zeilen[0].betrag;
   let stand = brutto;
-  const farbe = { brutto: dunkel ? P.champagner : P.navy, steuer: P.rot, sozial: P.grauDunkel, netto: dunkel ? P.mint : P.gold };
+  const farbe = { brutto: dunkel ? P.champagner : P.tinte, steuer: P.rot, sozial: P.grauDunkel, netto: dunkel ? P.mint : P.gold };
   return (
     <div className="space-y-2" role="img" aria-label={zeilen.map((z) => `${z.label} ${z.wert}`).join(", ")}>
       {zeilen.map((z) => {
@@ -251,16 +258,16 @@ function Saeulen({
 }
 
 /** Drei Kennzahlen als Karten mit farbiger Oberkante (wie die Kästen im PDF). */
-function KennKarten({ karten, dunkel }: { karten: ReadonlyArray<KennKarte>; dunkel: boolean }) {
+function KennKarten({ karten, dunkel, spalte }: { karten: ReadonlyArray<KennKarte>; dunkel: boolean; spalte?: boolean }) {
   const farbe: Record<KennKarte["ton"], string> = {
     grau: P.grau,
     rot: dunkel ? P.rose : P.rot,
     gold: P.gold,
     gruen: gruenAuf(dunkel),
-    navy: dunkel ? P.champagner : P.navy,
+    navy: dunkel ? P.champagner : P.tinte,
   };
   return (
-    <div className="mt-6 grid sm:grid-cols-3 gap-4">
+    <div className={spalte ? "grid gap-4" : "mt-6 grid sm:grid-cols-3 gap-4"}>
       {karten.map((k) => (
         <Karte key={k.kopf} dunkel={dunkel} randOben={farbe[k.ton]}>
           <Kopf dunkel={dunkel}>{k.kopf}</Kopf>
@@ -330,7 +337,9 @@ export function SteuerFolien({ oben, ende }: { oben?: ReactNode; ende?: ReactNod
 
       {/* 01 Die Sicht des Finanzamts */}
       <Folie id="steuer-1" ton="hell" kicker={kicker(block, t.finanzamt.kicker)} titel={t.finanzamt.titel}>
-        <div className="mt-8 grid md:grid-cols-[1fr_auto_1fr] gap-4 items-stretch">
+        {/* Wie in der PDF: 1 → 2 nebeneinander, rechts die Rechnung untereinander, darunter 3 über die volle Breite. */}
+        <div className="mt-8 grid lg:grid-cols-[1fr_17rem] gap-4 items-stretch">
+          <div className="grid md:grid-cols-[1fr_auto_1fr] gap-4 items-stretch min-w-0">
           <Karte>
             <Kopf>1 · {t.finanzamt.heute.etikett}</Kopf>
             <p className="mt-2 font-semibold text-lg">{t.finanzamt.heute.kopf}</p>
@@ -347,13 +356,31 @@ export function SteuerFolien({ oben, ende }: { oben?: ReactNode; ende?: ReactNod
           <Karte rand={P.gruen}>
             <Kopf>2 · {t.finanzamt.mitOs.etikett}</Kopf>
             <p className="mt-2 font-semibold text-lg">{t.finanzamt.mitOs.kopf}</p>
-            <HandCoins aria-hidden className="my-5 h-14 w-14" style={{ color: P.gruen }} />
+            <HandCoins aria-hidden className="my-5 h-14 w-14" style={{ color: gruenAuf(false) }} />
             <Kopf>{t.finanzamt.mitOs.label}</Kopf>
-            <Gross farbe={P.gruen} className="mt-2 text-[2.4rem] md:text-[3rem]">{t.finanzamt.mitOs.wert}</Gross>
+            <Gross farbe={gruenAuf(false)} className="mt-2 text-[2.4rem] md:text-[3rem]">{t.finanzamt.mitOs.wert}</Gross>
             <p className="mt-3 text-sm">{t.finanzamt.mitOs.text}</p>
           </Karte>
+          </div>
+          <div className="min-w-0">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.16em]" style={{ color: FARBE.goldDunkel }}>{t.finanzamt.rechnungKopf}</p>
+            <div className="grid gap-3">
+              {t.finanzamt.rechnung.map((r) => (
+                <Karte key={r.kopf} rand={r.ergebnis ? P.gruen : undefined} className="md:!p-4">
+                  <Kopf>{r.kopf}</Kopf>
+                  <Gross farbe={r.minus ? P.rot : undefined} className="mt-2 text-[1.6rem]">{r.wert}</Gross>
+                  <p className="mt-1.5 text-xs opacity-80">{r.text}</p>
+                </Karte>
+              ))}
+            </div>
+          </div>
         </div>
-        <div className="mt-6 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-4" style={{ background: P.navy, color: "#fff", boxShadow: `inset 0 0 0 3px ${P.mint}` }}>
+        <div aria-hidden className="mt-4 flex justify-center">
+          <span className="flex h-11 w-11 items-center justify-center rounded-full text-white" style={{ background: P.gruen }}>
+            <ArrowDown className="h-5 w-5" />
+          </span>
+        </div>
+        <div className="mt-4 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-4" style={{ background: P.navy, color: "#fff", boxShadow: `inset 0 0 0 3px ${P.mint}` }}>
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.16em]" style={{ color: P.mint }}>
               3 · {t.finanzamt.ergebnis.etikett}
@@ -373,16 +400,6 @@ export function SteuerFolien({ oben, ende }: { oben?: ReactNode; ende?: ReactNod
             </p>
           </div>
         </div>
-        <Etikett dunkel={false}>{t.finanzamt.rechnungKopf}</Etikett>
-        <div className="grid sm:grid-cols-3 gap-4">
-          {t.finanzamt.rechnung.map((r) => (
-            <Karte key={r.kopf} rand={r.ergebnis ? P.gruen : undefined}>
-              <Kopf>{r.kopf}</Kopf>
-              <Gross farbe={r.minus ? P.rot : undefined} className="mt-2 text-[1.7rem] md:text-[2rem]">{r.wert}</Gross>
-              <p className="mt-2 text-sm opacity-80">{r.text}</p>
-            </Karte>
-          ))}
-        </div>
         <Fussnote>{t.finanzamt.fuss}</Fussnote>
       </Folie>
 
@@ -391,7 +408,8 @@ export function SteuerFolien({ oben, ende }: { oben?: ReactNode; ende?: ReactNod
         <p className="mt-4 text-base md:text-lg" style={{ color: FARBE.hellGedaempft }}>
           {t.hebel.unterzeile}
         </p>
-        <div className="mt-8 grid sm:grid-cols-2 gap-4">
+        <div className="mt-8 grid lg:grid-cols-2 gap-8 items-center">
+        <div className="grid sm:grid-cols-2 gap-4">
           {[
             { k: t.hebel.normal, farbe: P.grau },
             { k: t.hebel.os, farbe: P.mint },
@@ -403,41 +421,47 @@ export function SteuerFolien({ oben, ende }: { oben?: ReactNode; ende?: ReactNod
             </Karte>
           ))}
         </div>
-        <Etikett dunkel>{t.hebel.balkenKopf}</Etikett>
+        <div className="min-w-0">
+        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.16em]" style={{ color: P.champagner }}>{t.hebel.balkenKopf}</p>
         <Balken
-          max={15360}
+          max={Math.max(...t.hebel.balken.map((b) => b.betrag))}
           zeilen={t.hebel.balken.map((b) => ({
             ...b,
-            farbe: b.ton === "gruen" || b.ton === "gestrichelt" ? P.mint : b.ton === "grau" ? P.grau : "rgba(243,247,245,0.3)",
-            gestrichelt: b.ton === "gestrichelt",
+            farbe: b.ton === "gruen" ? P.mint : b.ton === "grau" ? P.grau : "rgba(243,247,245,0.3)",
             fett: b.ton === "gruen",
           }))}
         />
+        </div>
+        </div>
         <div className="mt-8 rounded-xl p-4 md:p-5 text-sm md:text-base" style={{ borderLeft: `4px solid ${P.mint}`, background: "rgba(255,255,255,0.06)" }}>
-          {mitAkzent(t.hebel.band, FARBE.gold)}
+          {mitAkzent(t.hebel.band, P.mint)}
         </div>
         <Fussnote dunkel>{t.hebel.fuss}</Fussnote>
       </Folie>
 
       {/* 03 Drei Wege im Vergleich */}
       <Folie id="steuer-3" ton="hell" kicker={kicker(block, t.dreiWege.kicker)} titel={t.dreiWege.titel}>
+        <div className="grid lg:grid-cols-[1.4fr_1fr] gap-6 lg:gap-10 items-end">
+        <div className="min-w-0">
         <Etikett dunkel={false}>{t.dreiWege.kopf}</Etikett>
         <Saeulen
-          max={274}
+          max={Math.max(...t.dreiWege.saeulen.map((s) => s.betrag))}
           saeulen={t.dreiWege.saeulen.map((s) => ({
             ...s,
             farbe: s.ton === "gruen" ? P.gruen : s.ton === "grau" ? P.grau : "transparent",
             gross: s.ton === "gruen",
           }))}
         />
-        <HeuteMitOs heute={t.dreiWege.heute} mitOs={t.dreiWege.mitOs} dunkel={false} />
+        </div>
+        <HeuteMitOs heute={t.dreiWege.heute} mitOs={t.dreiWege.mitOs} dunkel={false} untereinander />
+        </div>
         <Fussnote>{t.dreiWege.fuss}</Fussnote>
       </Folie>
 
       {/* 04 Unterm Strich */}
       <Folie id="steuer-4" ton="gruen" kicker={kicker(block, t.unterm.kicker)} titel={t.unterm.titel}>
         <div className="mt-8 max-w-xl mx-auto">
-          <Saeulen max={274} hoehe={11} saeulen={t.unterm.saeulen.map((s) => ({ ...s, farbe: s.ton === "gruen" ? P.mint : P.champagner, zeilen: [s.text], gross: true }))} />
+          <Saeulen max={Math.max(...t.unterm.saeulen.map((s) => s.betrag))} hoehe={11} saeulen={t.unterm.saeulen.map((s) => ({ ...s, farbe: s.ton === "gruen" ? P.mint : P.champagner, zeilen: [s.text], gross: true }))} />
         </div>
         <Karte dunkel rand={P.mint} className="mt-8">
           <div className="grid md:grid-cols-[1fr_auto] gap-4 items-center">
@@ -478,7 +502,7 @@ export function SteuerFolien({ oben, ende }: { oben?: ReactNode; ende?: ReactNod
 function VermoegenKurve({ dunkel }: { dunkel: boolean }) {
   const W = 540, H = 250, links = 44, unten = 222, oben = 8, rechts = 530;
   const x = (alter: number) => links + ((alter - 25) / 40) * (rechts - links);
-  const y = (wert: number) => unten - (wert / 600_000) * (unten - oben);
+  const y = (wert: number) => unten - (wert / 400_000) * (unten - oben);
   const linie = (wert: (p: (typeof VERLAUF_WOHNUNG)[number]) => number) => VERLAUF_WOHNUNG.map((p) => `${x(p.alter).toFixed(1)},${y(wert(p)).toFixed(1)}`).join(" ");
   const flaeche = (pkt: string) => `M${x(25)},${unten} L${pkt.replace(/ /g, " L")} L${x(65)},${unten} Z`;
   const wert = linie((p) => p.wert);
@@ -488,8 +512,9 @@ function VermoegenKurve({ dunkel }: { dunkel: boolean }) {
   const raster = dunkel ? "rgba(243,247,245,0.15)" : "rgba(18,54,42,0.12)";
   const blau = dunkel ? "#9FA8F0" : P.blau;
   // Abgezahlt nach 404 Monaten: 25 Jahre plus 33,67 Jahre, im Jahr 2059 (wie im PDF).
-  const abgezahlt = 25 + 404 / 12;
-  const wertAbgezahlt = 467_500;
+  const abgezahlt = 25 + BEISPIEL.wohnung.freiMonate / 12;
+  const wertAbgezahlt = BEISPIEL.wohnung.wertFrei;
+  const wert65 = VERLAUF_WOHNUNG[VERLAUF_WOHNUNG.length - 1].wert;
   // Die Spalte rechts zwischen Abzahlung und 65, darin das Gesamtvermögen wie im PDF.
   const spalteMitte = (x(abgezahlt) + rechts) / 2;
   const punkte = [
@@ -500,7 +525,7 @@ function VermoegenKurve({ dunkel }: { dunkel: boolean }) {
   return (
     <Sichtbar schwelle={0.35}>
       <svg viewBox={`0 0 ${W} ${H + 18}`} className="w-full h-auto" role="img" aria-label={`${t.kopf}: ${t.marke.titel}, ${t.ende.kopf} ${t.ende.wert}`} fill="currentColor">
-        {[0, 100, 200, 300, 400, 500, 600].map((v) => (
+        {[0, 100, 200, 300, 400].map((v) => (
           <g key={v}>
             <line x1={links} x2={rechts} y1={y(v * 1000)} y2={y(v * 1000)} stroke={raster} />
             <text x={links - 6} y={y(v * 1000) + 3} fontSize="9" textAnchor="end" opacity="0.6">{v}T</text>
@@ -521,15 +546,15 @@ function VermoegenKurve({ dunkel }: { dunkel: boolean }) {
         <polyline className="bos-linie" style={verzoegert(500)} pathLength={1} points={vermoegen} fill="none" stroke={blau} strokeWidth="2.5" />
         <g className="bos-blende" style={verzoegert(1900)}>
           <line x1={x(abgezahlt)} x2={x(abgezahlt)} y1={oben} y2={unten} stroke="currentColor" strokeDasharray="4 4" opacity="0.5" />
-          <text x={spalteMitte} y={y(330_000)} fontSize="9" fontWeight="600" textAnchor="middle" opacity="0.85">Gesamt-</text>
-          <text x={spalteMitte} y={y(330_000) + 11} fontSize="9" fontWeight="600" textAnchor="middle" opacity="0.85">vermögen</text>
-          <text x={spalteMitte} y={y(330_000) + 22} fontSize="8.5" textAnchor="middle" opacity="0.7">mit 65 Jahren</text>
-          <text x={spalteMitte} y={y(330_000) + 38} fontSize="13" fontWeight="700" textAnchor="middle" fill={blau}>{t.ende.wert}</text>
+          <text x={spalteMitte} y={y(200_000)} fontSize="9" fontWeight="600" textAnchor="middle" opacity="0.85">Gesamt-</text>
+          <text x={spalteMitte} y={y(200_000) + 11} fontSize="9" fontWeight="600" textAnchor="middle" opacity="0.85">vermögen</text>
+          <text x={spalteMitte} y={y(200_000) + 22} fontSize="8.5" textAnchor="middle" opacity="0.7">mit 65 Jahren</text>
+          <text x={spalteMitte} y={y(200_000) + 38} fontSize="13" fontWeight="700" textAnchor="middle" fill={blau}>{t.ende.wert}</text>
           <text x={x(abgezahlt) + 3} y={unten - 6} fontSize="8.5" fontWeight="600">Kredit abgezahlt</text>
         </g>
         <circle className="bos-auftauchen" style={verzoegert(2000)} cx={x(abgezahlt)} cy={unten} r="3.5" fill={P.orange} />
         <circle className="bos-auftauchen" style={verzoegert(2100)} cx={x(abgezahlt)} cy={y(wertAbgezahlt)} r="4" fill={blau} />
-        <circle className="bos-auftauchen" style={verzoegert(2200)} cx={x(65)} cy={y(529_930)} r="4" fill={blau} />
+        <circle className="bos-auftauchen" style={verzoegert(2200)} cx={x(65)} cy={y(wert65)} r="4" fill={blau} />
         {/* Kasten oben links, wo keine Linie verläuft, wie im PDF. */}
         <g className="bos-auftauchen" style={verzoegert(2300)}>
           <rect x={x(25.6)} y={12} width={150} height={56} rx={6} fill={dunkel ? FARBE.gruen : "#fff"} stroke="currentColor" strokeOpacity="0.25" />
@@ -546,10 +571,20 @@ function VermoegenKurve({ dunkel }: { dunkel: boolean }) {
   );
 }
 
+/**
+ * Spanne der Monatsbeträge nach Steuer in einer Phase, auf 10 € gerundet, z. B. „du zahlst 140 bis 200 €“.
+ * Ab der Abzahlung ohne das erste Jahr, in dem noch Raten laufen (wie in der PDF).
+ */
+function spanne(p: { von: number; bis: number; vorsatz: string }) {
+  const von = p.vorsatz === "+" ? p.von + 1 : p.von;
+  const werte = MONATSVERLAUF.filter((m) => m.alter >= von && m.alter <= p.bis).map((m) => Math.round(Math.abs(m.nach) / 10) * 10);
+  return `${p.vorsatz}${Math.min(...werte).toLocaleString("de-DE")} bis ${Math.max(...werte).toLocaleString("de-DE")} €${p.vorsatz === "+" ? " →" : ""}`;
+}
+
 /** Zuzahlung und Überschuss je Alter, eine Wohnung, aus MONATSVERLAUF. */
 function MonatsBalken({ dunkel }: { dunkel: boolean }) {
   const W = 540, H = 240, links = 46, rechts = 534, oben = 8, unten = 210;
-  const min = -600, max = 1600;
+  const min = -600, max = 800;
   const y = (v: number) => oben + ((max - v) / (max - min)) * (unten - oben);
   const breite = (rechts - links) / MONATSVERLAUF.length;
   const x = (alter: number) => links + (alter - 25) * breite;
@@ -560,8 +595,8 @@ function MonatsBalken({ dunkel }: { dunkel: boolean }) {
   const vorTreppe = MONATSVERLAUF.map((m) => `${x(m.alter).toFixed(1)},${y(m.vor).toFixed(1)} ${(x(m.alter) + breite).toFixed(1)},${y(m.vor).toFixed(1)}`).join(" ");
   return (
     <Sichtbar schwelle={0.35}>
-    <svg viewBox={`0 0 ${W} ${H + 12}`} className="w-full h-auto" role="img" aria-label={t.phasen.map((p) => `${p.titel}: ${p.text}`).join(", ")} fill="currentColor">
-      {[-600, -400, -200, 0, 200, 400, 600, 800, 1000, 1200, 1400, 1600].map((v) => (
+    <svg viewBox={`0 0 ${W} ${H + 12}`} className="w-full h-auto" role="img" aria-label={t.phasen.map((p) => `${p.titel}: ${spanne(p)}`).join(", ")} fill="currentColor">
+      {[-600, -400, -200, 0, 200, 400, 600, 800].map((v) => (
         <g key={v}>
           <line x1={links} x2={rechts} y1={y(v)} y2={y(v)} stroke="currentColor" opacity={v === 0 ? 0.5 : 0.1} />
           <text x={links - 5} y={y(v) + 3} fontSize="8.5" textAnchor="end" opacity="0.6">{v.toLocaleString("de-DE")} €</text>
@@ -590,11 +625,11 @@ function MonatsBalken({ dunkel }: { dunkel: boolean }) {
       {t.phasen.map((p, i) => {
         const mitte = (x(p.von) + x(p.bis) + breite) / 2;
         const farbe = i === 2 ? bekommst : dunkel ? P.gold : P.goldText;
-        const ty = i === 2 ? y(1000) : y(400);
+        const ty = i === 2 ? y(560) : y(240);
         return (
           <g key={p.titel} className="bos-blende" style={verzoegert(1200 + i * 450)}>
             <text x={i === 2 ? x(p.von) - 4 : mitte} y={ty} fontSize="10" fontWeight="700" textAnchor={i === 2 ? "end" : "middle"} fill={farbe}>{p.titel}</text>
-            <text x={i === 2 ? x(p.von) - 4 : mitte} y={ty + 13} fontSize="9.5" textAnchor={i === 2 ? "end" : "middle"} fill={farbe}>{p.text}</text>
+            <text x={i === 2 ? x(p.von) - 4 : mitte} y={ty + 13} fontSize="9.5" textAnchor={i === 2 ? "end" : "middle"} fill={farbe}>{spanne(p)}</text>
           </g>
         );
       })}
@@ -675,7 +710,7 @@ export function AltersvorsorgeFolien({ oben, ende }: { oben?: ReactNode; ende?: 
         <Etikett dunkel={false}>{t.arbeitsleben.reinKopf}</Etikett>
         <Balken
           max={1_760_000}
-          zeilen={t.arbeitsleben.rein.map((r) => ({ ...r, farbe: r.ton === "gruen" ? P.gruen : r.ton === "gold" ? P.gold : P.navy, fett: true }))}
+          zeilen={t.arbeitsleben.rein.map((r) => ({ ...r, farbe: r.ton === "gruen" ? P.gruen : r.ton === "gold" ? P.gold : P.tinte, fett: true }))}
         />
         <KennKarten karten={t.arbeitsleben.ergebnis} dunkel={false} />
         <Schluss text={t.arbeitsleben.schluss} />
@@ -698,22 +733,30 @@ export function AltersvorsorgeFolien({ oben, ende }: { oben?: ReactNode; ende?: 
             </li>
           ))}
         </ul>
-        <Karte dunkel className="!p-3 md:!p-5">
-          {/* Auf dem Handy waagerecht scrollen statt die Schrift zu schrumpfen. */}
-          <div className="overflow-x-auto">
-            <div className="min-w-[520px]"><VermoegenKurve dunkel /></div>
+        {/* Wie in der PDF: Grafik links, die drei Kästchen rechts untereinander. */}
+        <div className="grid lg:grid-cols-[1fr_15rem] gap-4 items-start">
+          <div className="min-w-0">
+            <Karte dunkel className="!p-3 md:!p-5">
+              {/* Auf dem Handy waagerecht scrollen statt die Schrift zu schrumpfen. */}
+              <div className="overflow-x-auto">
+                <div className="min-w-[520px]"><VermoegenKurve dunkel /></div>
+              </div>
+            </Karte>
+            <p className="mt-2 text-xs" style={{ color: FARBE.hellGedaempft }}>{t.eineWohnung.unter}</p>
           </div>
-        </Karte>
-        <p className="mt-2 text-xs" style={{ color: FARBE.hellGedaempft }}>{t.eineWohnung.unter}</p>
-        <KennKarten karten={t.eineWohnung.karten} dunkel />
+          <KennKarten karten={t.eineWohnung.karten} dunkel spalte />
+        </div>
         <Fussnote dunkel>{t.eineWohnung.fuss}</Fussnote>
       </Folie>
 
       {/* 05 Deine monatliche Zuzahlung */}
       <Folie id="alter-5" ton="hell" kicker={kicker(block, t.zuzahlung.kicker)} titel={t.zuzahlung.titel}>
         <p className="mt-6 max-w-3xl text-base md:text-lg">{t.zuzahlung.lead}</p>
-        <KennKarten karten={t.zuzahlung.karten} dunkel={false} />
-        <Etikett dunkel={false}>{t.zuzahlung.kopf}</Etikett>
+        {/* Wie in der PDF: Kästchen links untereinander, Grafik rechts. */}
+        <div className="mt-6 grid lg:grid-cols-[14rem_1fr] gap-4 items-start">
+        <KennKarten karten={t.zuzahlung.karten} dunkel={false} spalte />
+        <div className="min-w-0">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.16em]" style={{ color: FARBE.goldDunkel }}>{t.zuzahlung.kopf}</p>
         <ul className="mb-3 flex flex-col sm:flex-row sm:flex-wrap gap-x-5 gap-y-1 text-xs sm:text-sm">
           <li className="flex items-center gap-2"><span aria-hidden className="h-3 w-3 rounded-sm" style={{ background: P.gold }} />{t.zuzahlung.legende.zahlst}</li>
           <li className="flex items-center gap-2"><span aria-hidden className="h-3 w-3 rounded-sm" style={{ background: P.gruen }} />{t.zuzahlung.legende.bekommst}</li>
@@ -725,6 +768,8 @@ export function AltersvorsorgeFolien({ oben, ende }: { oben?: ReactNode; ende?: 
             <div className="min-w-[520px]"><MonatsBalken dunkel={false} /></div>
           </div>
         </Karte>
+        </div>
+        </div>
         <Etikett dunkel={false}>{t.zuzahlung.tabelleKopf}</Etikett>
         <div data-ui="card" className="overflow-x-auto rounded-2xl border bg-card p-2 md:p-4">
           <table className="w-full min-w-[560px] text-sm tabular-nums">
@@ -741,7 +786,7 @@ export function AltersvorsorgeFolien({ oben, ende }: { oben?: ReactNode; ende?: 
               </tr>
               <tr className="border-t border-border font-semibold">
                 <td className="py-2 px-2">nach Steuer</td>
-                {tabelle.map((m) => <td key={m.alter} className="py-2 px-2 text-right" style={{ color: m.nach < 0 ? P.goldText : P.gruen }}>{euro(m.nach)}</td>)}
+                {tabelle.map((m) => <td key={m.alter} className="py-2 px-2 text-right" style={{ color: m.nach < 0 ? P.goldText : gruenAuf(false) }}>{euro(m.nach)}</td>)}
               </tr>
             </tbody>
           </table>
@@ -819,7 +864,7 @@ export function AltersvorsorgeFolien({ oben, ende }: { oben?: ReactNode; ende?: 
               </li>
             ))}
           </ol>
-          <p className="mt-3 text-xs font-medium bos-blende" style={{ ...verzoegert(900), color: FARBE.goldDunkel }}>25 bis 58: {t.rente.zahlstZu}</p>
+          <p className="mt-3 text-xs font-medium bos-blende" style={{ ...verzoegert(900), color: FARBE.goldDunkel }}>25 bis {t.rente.zeitstrahl[1].alter.replace(" J.", "")}: {t.rente.zahlstZu}</p>
         </Sichtbar>
         <Etikett dunkel={false}>{t.rente.wegeKopf}</Etikett>
         <Sichtbar className="grid md:grid-cols-2 gap-4" schwelle={0.3}>
@@ -830,7 +875,7 @@ export function AltersvorsorgeFolien({ oben, ende }: { oben?: ReactNode; ende?: 
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white font-bold" style={{ background: i === 1 ? P.gruen : P.blau }}>{w.buchstabe}</span>
                   {w.titel}
                 </p>
-                <Gross farbe={i === 1 ? P.gruen : P.blau} className="mt-4 text-[1.9rem] md:text-[2.4rem]">
+                <Gross farbe={i === 1 ? gruenAuf(false) : "var(--bos-grafik-blau)"} className="mt-4 text-[1.9rem] md:text-[2.4rem]">
                   <ZahlText text={w.wert} />
                 </Gross>
                 <p className="mt-3 text-sm opacity-80">{w.text}</p>
@@ -838,11 +883,47 @@ export function AltersvorsorgeFolien({ oben, ende }: { oben?: ReactNode; ende?: 
             </div>
           ))}
         </Sichtbar>
-        {ende}
         <Fussnote>{t.rente.fuss}</Fussnote>
         <Fussnote>{t.rente.grundlagen}</Fussnote>
       </Folie>
-      {/* Die frühere Folie 08 „Die nächsten Schritte mit uns“ entfällt: Das folgt in Abschnitt 11 „So geht es weiter“. */}
+
+      {/* 08 Mit einer Wohnung beginnen, mit uns drei aufbauen (PDF-Präsentation Folie 24) */}
+      <Folie id="alter-8" ton="gruen" kicker={kicker(block, t.aufbau.kicker)} titel={t.aufbau.titel}>
+        <Sichtbar className="mt-10 relative" schwelle={0.3}>
+          <div aria-hidden className="hidden lg:block absolute left-[10%] right-[10%] top-4 h-px" style={{ background: "rgba(243,247,245,0.3)" }} />
+          <ol className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-x-3 gap-y-5" data-testid="aufbau-schritte">
+            {t.aufbau.schritte.map((s, i) => (
+              <li key={s.titel} className="bos-auftauchen flex lg:flex-col items-start lg:items-center gap-3 lg:gap-0 lg:text-center min-w-0" style={verzoegert(i * 250)}>
+                <span
+                  className="shrink-0 flex h-8 w-8 items-center justify-center rounded-full border text-sm font-semibold"
+                  style={i === 0 ? { background: P.mint, borderColor: P.mint, color: P.navy } : { background: FARBE.gruen, borderColor: P.champagner }}
+                >
+                  {i + 1}
+                </span>
+                <div className="min-w-0">
+                  <p className="lg:mt-2 text-[0.6rem] uppercase tracking-[0.18em]" style={{ color: P.champagner }}>{s.marke}</p>
+                  <p className="font-semibold">{s.titel}</p>
+                  <p className="text-xs leading-snug mt-0.5" style={{ color: FARBE.hellGedaempft }}>{s.text}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </Sichtbar>
+        <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
+          {t.aufbau.karten.map((k) => (
+            <Karte key={k.kopf} dunkel rand={k.ton === "gruen" ? P.mint : undefined}>
+              <Kopf dunkel>{k.kopf}</Kopf>
+              <Gross farbe={k.ton === "gruen" ? P.mint : "#fff"} className="mt-2 text-[1.7rem] md:text-[2rem]">
+                <ZahlText text={k.wert} />
+              </Gross>
+              <p className="mt-2 text-sm opacity-80">{k.text}</p>
+            </Karte>
+          ))}
+          <FrageAnDich dunkel>{t.aufbau.frage}</FrageAnDich>
+        </div>
+        {ende}
+        <Fussnote dunkel>{t.aufbau.fuss}</Fussnote>
+      </Folie>
     </div>
   );
 }

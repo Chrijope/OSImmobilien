@@ -2,24 +2,49 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { OBJEKTE, begruessungsName, konzeptAusSchwerpunkt, rentenluecke, uebernahmeAusSkript } from "./beratungOsDaten";
-import { MONATSVERLAUF, VERLAUF_WOHNUNG } from "./beratungKonzeptDaten";
+import { KONZEPT_ALTER, KONZEPT_STEUER, MONATSVERLAUF, VERLAUF_WOHNUNG } from "./beratungKonzeptDaten";
+import { BEISPIEL } from "./beratungBeispielrechnung";
+import { lueckenSatz } from "./beratungOsDaten";
 
 describe("Rechnungen der Beratungspräsentation", () => {
-  it("übernimmt die Reihen der Diagramme unverändert aus dem Rechenprotokoll", () => {
-    // Tabelle „Verlauf (eine Wohnung, Monatswerte)“ im Rechenprotokoll Überarbeitung 16.10.2026
-    const protokoll: Record<number, [number, number]> = {
-      25: [-325, -52], 30: [-275, -44], 40: [-166, -48], 49: [-56, -87],
-      50: [-43, -359], 57: [51, -440], 60: [1293, 757], 64: [1352, 792],
+  it("übernimmt die Reihen der Diagramme unverändert aus der gemeinsamen Beispielrechnung", () => {
+    // Tabelle „Die Zahlen dazu“ der PDF-Präsentation vom 21.10.2026 (Folie 21)
+    const pdf: Record<number, [number, number]> = {
+      25: [-411, -144], 30: [-374, -139], 40: [-306, -153], 49: [-252, -199],
+      50: [-246, -412], 57: [-210, -494], 60: [672, 366], 64: [645, 348],
     };
-    for (const [alter, [vor, nach]] of Object.entries(protokoll)) {
+    for (const [alter, [vor, nach]] of Object.entries(pdf)) {
       expect(MONATSVERLAUF.find((m) => m.alter === Number(alter)), `Alter ${alter}`).toMatchObject({ vor, nach });
     }
-    // „Summe Zuzahlung nach Steuer bis 57: rund 53.900 €“
+    // „Nach Steuer zahlst du bis 57 insgesamt rund 89.600 € zu“
     const zuzahlung = MONATSVERLAUF.filter((m) => m.alter <= 57).reduce((s, m) => s - m.nach * 12, 0);
-    expect(Math.abs(zuzahlung - 53_900)).toBeLessThan(300);
-    // Kredit nach 404 Monaten abgezahlt, mit 58; Wert mit 65: 529.930 €
+    expect(Math.abs(zuzahlung - 89_600)).toBeLessThan(300);
+    // Kredit nach 404 Monaten abgezahlt, mit 58; Wert mit 65: rund 388.600 €
     expect(VERLAUF_WOHNUNG.find((p) => p.rest === 0)?.alter).toBe(59);
-    expect(VERLAUF_WOHNUNG.at(-1)).toEqual({ alter: 65, rest: 0, wert: 529_930 });
+    expect(VERLAUF_WOHNUNG.at(-1)).toMatchObject({ alter: 65, rest: 0 });
+    expect(Math.round(VERLAUF_WOHNUNG.at(-1)!.wert / 100) * 100).toBe(388_600);
+  });
+
+  it("rechnet die Beispielwohnung wie die PDF: Rate und Hausgeld gehen in Miete, Steuer und Anteil auf", () => {
+    const w = BEISPIEL.wohnung;
+    expect([w.miete, w.ersparnis, w.anteil, w.tilgung, w.vorSteuer]).toEqual([633, 267, 144, 180, 411]);
+    expect(w.miete + w.ersparnis + w.anteil).toBe(w.rate + w.hausgeld);
+    expect(w.vorSteuer - w.ersparnis).toBe(w.anteil);
+    expect(BEISPIEL.drei.ersparnisJahr1).toBe(741);
+    // Die Folien nennen dieselben Zahlen wie die PDF.
+    expect(KONZEPT_STEUER.titel.mitOs.wert).toBe("+267 €");
+    expect(KONZEPT_STEUER.hebel.balken.map((b) => b.label)).not.toContain("bis 8 % möglich");
+    expect(KONZEPT_ALTER.rente.wege.map((x) => x.wert)).toEqual(["≈ 1,06 Mio. €", "≈ 1.510 € im Monat"]);
+    expect(KONZEPT_ALTER.mehrWohnungen.zeilen[1].werte).toEqual(["144 €", "308 €", "492 €"]);
+    expect(KONZEPT_ALTER.arbeitsleben.ergebnis.map((k) => k.wert)).toEqual(["≈ 1.440 €", "147.200 €", "≈ 1,17 Mio. €"]);
+  });
+
+  it("nennt unter der Rentenlücke die Anteile aus den Eingaben, ohne Lücke keinen Satz", () => {
+    expect(lueckenSatz(3000, 800)).toBe(
+      "Die gesetzliche Rente deckt rund 27 % deines Wunschnettos. 73 % musst du selbst aufbauen. Je früher du beginnst, desto leichter.",
+    );
+    expect(lueckenSatz(2000, 2500)).toBeNull();
+    expect(lueckenSatz(0, 800)).toBeNull();
   });
 
   it("zeigt jedes Objekt mit sieben Bildern und Konzept", () => {

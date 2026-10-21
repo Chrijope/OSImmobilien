@@ -314,7 +314,6 @@ describe("Die Beratungspräsentationen A und B duzen durchgehend", () => {
       ...texte(a.OBJEKTE, "OBJEKTE"),
       ...texte(k.KONZEPT_STEUER, "KONZEPT_STEUER"),
       ...texte(k.KONZEPT_ALTER, "KONZEPT_ALTER"),
-      ...texte(k.WAS_WENN, "WAS_WENN"),
       ...texte(b.OS_TEXTE_B, "OS_TEXTE_B"),
       ...texte(b.KAUFKRAFT_B, "KAUFKRAFT_B"),
       ...texte(b.DOKUMENTE_B, "DOKUMENTE_B"),

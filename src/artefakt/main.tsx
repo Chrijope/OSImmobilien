@@ -13,7 +13,6 @@ import "./netzwerk";
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { HashRouter, Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import { Moon, Sun } from "lucide-react";
 import "@/index.css";
 import "@/styles/design-neu.css";
 import "@/styles/design-glas.css";
@@ -62,35 +61,19 @@ function Praesentation() {
   );
 }
 
-/** Umschalter Hell/Dunkel, unten links, nur auf der Präsentation. */
-function Bedienleiste({ dunkel, setDunkel }: { dunkel: boolean; setDunkel: (v: boolean) => void }) {
+/*
+ * Dunkel gilt nur auf der Präsentation. Den Schalter zeichnet die Präsentation
+ * selbst (BeratungspraesentationHV), im CRM wie hier; er ruft toggleDarkMode.
+ * Die Selbstauskunft bleibt immer hell: Ihre Karte (.apple-form in index.css)
+ * hat eine feste weiße Fläche, im Dunkelmodus stünde dort helle Schrift auf Weiß.
+ */
+function DunkelNurAufPraesentation({ dunkel }: { dunkel: boolean }) {
   const { pathname } = useLocation();
   const aufPraesentation = pathname.startsWith("/praesentation");
-  /*
-   * Die Selbstauskunft bleibt immer hell: Ihre Karte (.apple-form in
-   * index.css) hat eine feste weiße Fläche, im Dunkelmodus stünde dort helle
-   * Schrift auf Weiß.
-   */
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dunkel && aufPraesentation);
   }, [dunkel, aufPraesentation]);
-  // Auf der Selbstauskunft läge die Leiste über „Zurück“ in der Knopfleiste des Formulars.
-  if (!aufPraesentation) return null;
-  return (
-    <div
-      data-pdf-exclude
-      className="fixed bottom-5 left-4 z-[70] flex items-center rounded-full border bg-background/90 p-1 shadow-lg backdrop-blur"
-    >
-      <button
-        type="button"
-        aria-label={dunkel ? "Helle Ansicht" : "Dunkle Ansicht"}
-        onClick={() => setDunkel(!dunkel)}
-        className="h-9 w-9 rounded-full inline-flex items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
-      >
-        {dunkel ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-      </button>
-    </div>
-  );
+  return null;
 }
 
 function App() {
@@ -127,7 +110,7 @@ function App() {
             <Route path="/selbstauskunft" element={<SelbstauskunftArtefakt />} />
             <Route path="*" element={<Navigate to="/praesentation" replace />} />
           </Routes>
-          <Bedienleiste dunkel={dunkel} setDunkel={setDunkel} />
+          <DunkelNurAufPraesentation dunkel={dunkel} />
         </HashRouter>
       </TooltipProvider>
     </UserContext.Provider>

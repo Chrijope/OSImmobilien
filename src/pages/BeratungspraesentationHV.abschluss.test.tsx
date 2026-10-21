@@ -194,7 +194,7 @@ describe("Zweite Stufe vom 20.10.2026", () => {
     const g = OS_TEXTE.nichtstun.grafik;
     const ende = kaufkraftVerlauf(g).at(-1)!;
     expect(`${ende.konto.toLocaleString("de-DE")} €`).toBe(OS_TEXTE.nichtstun.karten[1].wert);
-    // Die Karte nennt 47.615 €, gerechnet sind es 47.614 €: höchstens 1 € Rundung.
+    // Karte und Grafik rechnen gleich (88.493 € nach 25 Jahren): höchstens 1 € Rundung.
     const karte = Number(OS_TEXTE.nichtstun.karten[2].wert.replace(/\D/g, ""));
     expect(Math.abs(ende.kaufkraft - karte)).toBeLessThanOrEqual(1);
   });
@@ -212,19 +212,21 @@ describe("Zweite Stufe vom 20.10.2026", () => {
     expect(document.querySelector('a[href^="tel:"], a[href^="mailto:"]')).toBeNull();
   });
 
-  it("zeigt bei Altersvorsorge drei Wohnungen im Zeitstrahl und keine Folie „Die nächsten Schritte mit uns“", () => {
+  it("zeigt bei Altersvorsorge drei Wohnungen im Zeitstrahl, die neue Folie „Mit einer Wohnung beginnen“ und keine Folie „Die nächsten Schritte mit uns“", () => {
     render(
       <MemoryRouter>
         <BeratungspraesentationHV vorschau={ohneKunde} />
       </MemoryRouter>,
     );
     expect(screen.getByTestId("konzept-inhalt-alter")).toBeInTheDocument();
-    expect(document.getElementById("alter-8")).toBeNull();
+    // Folie 08 ist seit dem 21.10.2026 „Mit einer Wohnung beginnen, mit uns drei aufbauen“ (PDF-Präsentation Folie 24).
+    expect(document.getElementById("alter-8")).toHaveTextContent("Mit einer Wohnung beginnen, mit uns drei aufbauen.");
+    expect(screen.getByTestId("aufbau-schritte").querySelectorAll("li")).toHaveLength(5);
     expect(screen.queryByText(/Die nächsten Schritte mit uns/)).toBeNull();
     expect(screen.getByTestId("rente-zeitstrahl")).toHaveTextContent(/Wohnung 1.*Wohnung 2.*Wohnung 3/);
     // Zahlen stehen auch ohne meldenden Beobachter auf dem Endwert.
-    expect(document.getElementById("alter-7")).toHaveTextContent("≈ 1,44 Mio. €");
-    expect(document.getElementById("alter-4")).toHaveTextContent("529.900 €");
+    expect(document.getElementById("alter-7")).toHaveTextContent("≈ 1,06 Mio. €");
+    expect(document.getElementById("alter-4")).toHaveTextContent("388.600 €");
   });
 
   it("erzeugt die Antworten als PDF mit Frage und Antwort", async () => {

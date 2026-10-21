@@ -11,10 +11,15 @@ import { ENTFERNTE_DOKUMENT_IDS, mitNachgetragenen, seedUnterlagen } from "@/lib
  * variante="b". Geprüft wird, was B anders macht, und dass A davon nichts merkt.
  */
 
-const zustand = vi.hoisted(() => ({ skript: null as Record<string, unknown> | null }));
+const zustand = vi.hoisted(() => ({ skript: null as Record<string, unknown> | null, umschalten: vi.fn() }));
 
 vi.mock("@/contexts/UserContext", () => ({
-  useUser: () => ({ user: { name: "Maria Muster", role: "vertriebspartner" }, authUser: { id: "nutzer-1" } }),
+  useUser: () => ({
+    user: { name: "Maria Muster", role: "vertriebspartner" },
+    authUser: { id: "nutzer-1" },
+    darkMode: false,
+    toggleDarkMode: zustand.umschalten,
+  }),
 }));
 vi.mock("@/hooks/useCacheReady", () => ({ useCacheReady: () => true }));
 vi.mock("@/lib/dataCache", () => ({ onCacheChange: () => () => {}, cacheGet: () => [] }));
@@ -63,7 +68,8 @@ const ziele = () => document.getElementById("ziele")!;
 describe("Abschnitt 02 in B", () => {
   it("zeigt dieselbe Ziele-Seite wie die normale Präsentation", () => {
     zeige(B);
-    expect(ziele().querySelector("h2")?.textContent).toBe("Das hast du uns gesagt.");
+    expect(ziele().querySelector("h2")?.textContent).toBe("Das wünschen sich die meisten unserer Kunden.");
+    expect(ziele().querySelector('[data-testid="wuensche"]')?.textContent).toContain("Steuern sparen");
     expect(screen.getByLabelText("Motiv in den Worten des Kunden")).toBeInTheDocument();
     expect(screen.getByLabelText("Erfahrung mit Immobilien")).toBeInTheDocument();
     expect(ziele().querySelectorAll("button").length).toBeGreaterThan(0);
@@ -75,13 +81,17 @@ describe("Inhalte in B", () => {
     zeige(B);
     const ist = ueberschriften();
     expect(ist.indexOf("Alles aus einer Hand, unter einem Dach.")).toBeLessThan(ist.indexOf("OS Real Estate in einem Satz."));
-    expect(ist.indexOf("Geld auf dem Konto wird jedes Jahr weniger wert.")).toBeLessThan(ist.indexOf("Alles aus einer Hand, unter einem Dach."));
+    expect(ist.indexOf("Geld auf dem Konto verliert real an Wert.")).toBeGreaterThan(-1);
+    expect(ist.indexOf("Geld auf dem Konto verliert real an Wert.")).toBeLessThan(ist.indexOf("Alles aus einer Hand, unter einem Dach."));
   });
 
-  it("zeigt die Kaufkraft Jahr für Jahr als Grafik und den Verlust in Rot", () => {
+  it("zeigt die Kaufkraft über 25 Jahre als Kurven wie in der PDF und den Verlust in Rot", () => {
     zeige(B);
-    expect(screen.getByTestId("kaufkraft-jahre").querySelector("svg")?.getAttribute("aria-label")).toContain("47.615 €");
-    expect(screen.getByTestId("kaufkraft-jahre").textContent).toContain("2036");
+    const label = screen.getByTestId("kaufkraft-jahre").querySelector("svg")?.getAttribute("aria-label");
+    expect(label).toContain("164.061 €");
+    expect(label).toContain("88.493 €");
+    expect(label).toContain("53.939 €");
+    expect(screen.getByTestId("kaufkraft-jahre").textContent).toContain("25 J.");
     expect(screen.getByTestId("kaufkraft-verlust").style.background).toBeTruthy();
   });
 
@@ -151,5 +161,15 @@ describe("Einbindung von B", () => {
     expect(ids).not.toContain("p-beratung-b");
     expect(ENTFERNTE_DOKUMENT_IDS).toContain("p-beratung-b");
     expect(mitNachgetragenen(seedUnterlagen()).geaendert).toBe(false);
+  });
+});
+
+describe("Hell und Dunkel wie im Artefakt (21.10.2026)", () => {
+  it("zeigt den Schalter unten links, schaltet das Theme und bleibt aus dem PDF", () => {
+    zeige(B);
+    const knopf = screen.getByRole("button", { name: "Dunkle Ansicht" });
+    expect(knopf.closest("[data-pdf-exclude]")).not.toBeNull();
+    fireEvent.click(knopf);
+    expect(zustand.umschalten).toHaveBeenCalledTimes(1);
   });
 });
