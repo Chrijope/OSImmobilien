@@ -120,7 +120,8 @@ function Torte({
     const d = `M${M + vx},${M + vy} L${M + vx + ax},${M + vy + ay} A${R},${R} 0 ${start - von > 180 ? 1 : 0} 1 ${M + vx + bx},${M + vy + by} Z`;
     const [ix, iy] = pol(mittel, R * 0.62);
     const [lx, ly] = pol(mittel, R + 34);
-    const prozent = Math.round((t.betrag / summe) * 100);
+    // Eine Nachkommastelle wie in der PDF, damit die Anteile zusammen 100 % ergeben.
+    const prozent = ((t.betrag / summe) * 100).toLocaleString("de-DE", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
     return { t, d, ix: M + vx + ix, iy: M + vy + iy, lx: M + lx, ly: M + ly, rechts: lx >= 0, prozent };
   });
   return (

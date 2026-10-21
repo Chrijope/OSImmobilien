@@ -107,7 +107,7 @@ export const KONZEPT_STEUER = {
     ] as ReadonlyArray<{ label: string; wert: string; betrag: number; lohnsteuer: string; netto: string; ton: "leer" | "grau" | "gruen" }>,
     nettoKopf: "Ihr Netto im Monat",
     heute: { wert: eur(-P.lohnsteuerMonat), text: "Lohnsteuer, jeden Monat, ohne Gegenwert." },
-    mitOs: { wert: plus(W.ersparnis), text: `jeden Monat. ${eur(W.ersparnis - W.ersparnisOhneGutachten)} mehr als mit normaler AfA.` },
+    mitOs: { wert: plus(W.ersparnis), text: `mehr Netto, jeden Monat. ${eur(W.ersparnis - W.ersparnisOhneGutachten)} mehr als mit normaler AfA.` },
     fuss: `Musterrechnung, keine Zusage. ${AFA_ANNAHME} Die graue Säule ist zur Lesbarkeit halb so hoch wie die grüne gezeichnet, die Beträge stehen darüber. Über einen Freibetrag im Lohnsteuerabzug kommt der Effekt jeden Monat an (in der Regel ab dem Jahr nach dem Kauf), sonst einmal im Jahr über die Steuererklärung. Die Zinsen sinken jährlich, damit auch der Effekt. ${ANNAHMEN}`,
   },
   unterm: {
@@ -196,7 +196,7 @@ export const KONZEPT_ALTER = {
     karten: [
       { kopf: "Kreditrate", wert: eur(W.rate), text: "im Monat, Zins und Tilgung", ton: "grau" },
       { kopf: "Kredit zu 100 % abgezahlt", wert: `mit ${W.freiAlter} Jahren`, text: `nach ${W.freiMonate} Monaten, im Jahr ${W.freiJahr}, Wert dann ${eur(W.wertFrei)}`, ton: "gruen" },
-      { kopf: "Ihr Vermögen: Ihre Wohnung mit 65", wert: eur(W.wert65), text: `schuldenfrei, gehört komplett Ihnen; mehr als mit ${W.freiAlter}, weil der Wert weiter wächst`, ton: "navy" },
+      { kopf: "Ihr Vermögen: Ihre Wohnung mit 65", wert: eur(W.wert65), text: `schuldenfrei, gehört komplett Ihnen. Mit ${W.freiAlter} (Kredit abgezahlt) ist sie ${eur(W.wertFrei)} wert; bis 65 wächst der Wert bei 2 % im Jahr weiter.`, ton: "navy" },
     ] as ReadonlyArray<KennKarte>,
     fuss: `Annahmen: Kaufpreis und Darlehen ${eur(W.kaufpreis)} (${W.name}), 4,8 % Sollzins und 1,2 % Anfangstilgung, Rate ${eur(W.rate)} im Monat, Zins bis zum Ende unverändert. Kaufnebenkosten aus Eigenkapital, im Diagramm nicht enthalten. Immobilienwert +2 % im Jahr (Annahme): ${eur(W.wertFrei)} mit ${W.freiAlter}, ${eur(W.wert65)} mit 65.`,
   },
@@ -242,7 +242,8 @@ export const KONZEPT_ALTER = {
     wegeKopf: "Ihr Renteneintritt mit 60: zwei Wege, mit allen drei Wohnungen",
     wege: [
       { buchstabe: "A", titel: "Sie verkaufen mit 60 alle drei Wohnungen.", wert: `≈ ${ganz(Math.round(D.verkauf60 / 1000) * 1000)}`, text: `einmalige Auszahlung aus drei Wohnungen (je rund ${eur(W.wert60)}), schuldenfrei. Oder als Rente: rund ${eur(D.renteAusVerkauf)} im Monat über 25 Jahre, bis 85.` },
-      { buchstabe: "B", titel: "Sie behalten alle drei Wohnungen.", wert: `≈ ${eur(D.rente60)} im Monat`, text: `Zusatzrente nach Steuer aus allen drei Wohnungen zusammen (je Wohnung rund ${eur(Math.round(D.rente60 / 3 / 10) * 10)}; ${eur(D.rente60Vor)} vor Steuer), und die drei Wohnungen bleiben Ihr Vermögen.` },
+      // Seit 21.10.2026 wie die PDF: die Mieteinnahmen groß, die Zusatzrente nach Kosten und Steuer darunter.
+      { buchstabe: "B", titel: "Sie behalten alle drei Wohnungen.", wert: `${eur(D.miete60)} Mieteinnahmen im Monat`, text: `aus allen drei Wohnungen. Davon bleiben nach Kosten und Steuer ≈ ${eur(D.rente60)} Zusatzrente im Monat (je Wohnung rund ${eur(Math.round(D.rente60 / 3 / 10) * 10)}; ${eur(D.rente60Vor)} vor Steuer), und die drei Wohnungen bleiben Ihr Vermögen.` },
     ],
     fuss: `Je Wohnung wie die Beispielwohnung (${eur(W.kaufpreis)}). ${MIETSZENARIO} Rente vereinfacht mit 25 % Steuer auf Miete minus Kosten. Wert +2 % im Jahr (Annahme): ${eur(W.wert60)} je Wohnung mit 60, ${eur(W.wert65)} mit 65. Verkauf nach mehr als 10 Jahren steuerfrei. Rente aus dem Verkauf ohne Zinsen gerechnet. Instandhaltung nur pauschal mit den Kosten enthalten.`,
     grundlagen: `Grundlagen: Musterrechnung mit gerundeten Werten. ${eur(P.bruttoJahr)} brutto im Jahr (${eur(P.bruttoMonat)} im Monat), Steuerklasse I, gesetzlich versichert (Zusatzbeitrag 2,9 %), kinderlos, ohne Kirchensteuer, kein Solidaritätszuschlag (Freigrenze nicht erreicht). Einkommensteuer-Grundtarif 2026 (§ 32a EStG), Beitragssätze und Beitragsbemessungsgrenzen 2026, Vorsorgepauschale 2026. Beispielwohnung ${W.name}, ${eur(W.kaufpreis)} inkl. Garage, ${W.qm.toLocaleString("de-DE")} m², Miete 13 €/m² bis 20 €/m² im Jahr 2060, Hausgeld ${eur(W.hausgeld)} im Monat. Darlehen ${eur(W.kaufpreis)}, 4,8 % Zins, 1,2 % Tilgung, Rate ${eur(W.rate)}, monatlich gerechnet, Zins über die ganze Laufzeit gleich. ${AFA_ANNAHME} Steuerwirkung während der Erwerbsphase mit dem Tarif; die Zusatzrente aus den Wohnungen (ab 60) ist vereinfacht mit 25 % Steuer gerechnet. Die letzte Rate fällt nach ${W.freiMonate} Monaten, also mit 58 Jahren und 8 Monaten. Wert +2 % im Jahr. Stand 21.10.2026.`,
@@ -261,7 +262,7 @@ export const KONZEPT_ALTER = {
     karten: [
       { kopf: "Ihr Anteil, Jahr 1", wert: eur(MEHR[2].anfang), text: "im Monat für drei Wohnungen zusammen, nach Steuern", ton: "grau" },
       { kopf: "Vermögen mit 65", wert: ganz(D.wert65), text: "drei schuldenfreie Wohnungen", ton: "grau" },
-      { kopf: "Zusatzrente ab 60", wert: `≈ ${eur(D.rente60)}`, text: "im Monat nach Steuern aus allen drei Wohnungen zusammen, Wohnungen behalten", ton: "gruen" },
+      { kopf: "Ab 60, Wohnungen behalten", wert: eur(D.miete60), text: `Mieteinnahmen im Monat aus drei Wohnungen; davon ≈ ${eur(D.rente60)} Zusatzrente nach Kosten und Steuer`, ton: "gruen" },
     ] as ReadonlyArray<KennKarte>,
     frage: "Wäre für Sie eine Wohnung genug, oder interessiert Sie der Aufbau eines Bestands?",
     fuss: `Vereinfacht wie „Eine, zwei, drei Wohnungen“: drei gleiche Wohnungen wie die Beispielwohnung (${W.name}, ${eur(W.kaufpreis)}), alle mit 25 gekauft; jede weitere Finanzierung entscheidet die Bank nach Bonität. Anteil im ersten Jahr: vor Steuern ${eur(MEHR[2].vor)}, Steuerersparnis ${eur(D.ersparnisJahr1)} (mit mehr Wohnungen sinkt die Ersparnis je Wohnung, weil der Steuersatz fällt). ${AFA_ANNAHME} Wert +2 % pro Jahr, Miete im Szenario bis 20 €/m² im Jahr 2060, Rente vereinfacht mit 25 % Steuer auf Miete minus Kosten. Szenario, keine Zusage.`,

@@ -46,6 +46,7 @@ D = dict(
     mehr=[spalte(1, P1), spalte(2, P2), spalte(3, P3)],
     drei=dict(rente65=r10(U65_3["nach"]),
               gerettet=r100(sum(r["steuer"] for r in P3 if r["steuer"] > 0)), wert65=3 * r100(W65),
+              miete60=round(3 * R.miete_jahr(60 - R.ALTER0 + 1) / 12),  # Mieteinnahmen aller drei Wohnungen mit 60
               miete=sum(r["miete_j"] for r in P3), afa=round(3 * R.GEB * R.AFA_OS * R.AFA_OS_JAHRE),
               wertzuwachs=3 * (W65 - R.KP), rente60=r10(U60_3["nach"]), rente60Vor=r10(U60_3["vor"]),
               verkauf60=3 * W60, renteAusVerkauf=round(3 * W60 / 300, -2)),

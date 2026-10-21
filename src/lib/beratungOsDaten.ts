@@ -315,7 +315,7 @@ export const OS_TEXTE = {
     ],
     risikenKopf: "Mögliche Risiken",
     risiken: [
-      "Mietausfall und Leerstand; ein Mietausfall wird durch die Mietkaution von bis zu drei Nettokaltmieten abgefedert",
+      "Mietausfall und Leerstand; eine vereinbarte und geleistete Mietkaution von bis zu drei Nettokaltmieten kann Mietrückstände teilweise abfedern",
       "Reparaturen und Sonderumlagen",
       "Kapital nicht kurzfristig verfügbar",
     ],

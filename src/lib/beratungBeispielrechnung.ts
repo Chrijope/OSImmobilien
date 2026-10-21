@@ -96,6 +96,7 @@ export const BEISPIEL = {
     "rente65": 1440,
     "gerettet": 130300,
     "wert65": 1165800,
+    "miete60": 3002,
     "miete": 1209207,
     "afa": 458304,
     "wertzuwachs": 637845,

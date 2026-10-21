@@ -40,7 +40,9 @@ describe("Rechnungen der Beratungspräsentation", () => {
     expect(KONZEPT_STEUER.dreiWege.mitOs.wert).toBe("+238 €");
     expect(KONZEPT_STEUER.finanzamt.wert).toBe("898 €");
     expect(KONZEPT_STEUER.hebel.balken.map((b) => b.label)).not.toContain("bis 8 % möglich");
-    expect(KONZEPT_ALTER.rente.wege.map((x) => x.wert)).toEqual(["≈ 1.056.000 €", "≈ 1.510 € im Monat"]);
+    expect(KONZEPT_ALTER.rente.wege.map((x) => x.wert)).toEqual(["≈ 1.056.000 €", "3.002 € Mieteinnahmen im Monat"]);
+    // Die Zusatzrente nach Kosten und Steuer steht darunter (Christian, 21.10.2026).
+    expect(KONZEPT_ALTER.rente.wege[1].text).toContain("≈ 1.510 € Zusatzrente im Monat");
     expect(KONZEPT_ALTER.mehrWohnungen.zeilen[1].werte).toEqual(["173 €", "366 €", "580 €"]);
     // Ganze Zahlen statt „0,39 Mio.“ (Christian, 21.10.2026).
     expect(KONZEPT_ALTER.mehrWohnungen.saeulen.map((x) => x.wert)).toEqual(["388.600 €", "777.200 €", "1.165.800 €"]);
