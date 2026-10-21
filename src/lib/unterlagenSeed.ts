@@ -57,7 +57,7 @@ export const UNTERLAGEN_VERSION = "34";
  * ersetzen und selbst angelegte Dokumente verwerfen; deshalb werden diese Ids
  * beim Laden gezielt hinter ihrem Vorgänger im Seed eingefügt, falls sie fehlen.
  */
-export const NACHGETRAGENE_DOKUMENT_IDS: string[] = ["p-beratung-b"];
+export const NACHGETRAGENE_DOKUMENT_IDS: string[] = [];
 
 export const ENTFERNTE_DOKUMENT_IDS: string[] = [
   // Haushaltsrechner / Bonitätsrechner: die Seite gibt es nicht mehr.
@@ -65,6 +65,8 @@ export const ENTFERNTE_DOKUMENT_IDS: string[] = [
   // Unsere Kultur ist in den eigenen Abschnitt "kultur" umgezogen (neue Id k-kultur).
   "p-kultur",
   // Abgeloeste Beratungspraesentationen. Es bleibt nur die OS Immobilien-Fassung.
+  // Seit 20.10.2026 ist Fassung B die einzige und liegt unter der Haupt-Adresse.
+  "p-beratung-b",
   "p-beratung-neu",
   "p-beratung",
   "p-beratung-wg",
@@ -124,13 +126,6 @@ export function seedUnterlagen(): UnterlagenAbschnitt[] {
           beschreibung: "Der aktuelle Gesprächsablauf mit Fragenblock, drei durchgerechneten Objekten und der Selbstauskunft am Ende",
           aktion: "internal-link",
           interneRoute: "/beratungspraesentation-osimmobilien",
-        },
-        {
-          id: "p-beratung-b",
-          name: "Beratungspräsentation B (zum Vergleich)",
-          beschreibung: "Vergleichsfassung mit verkaufspsychologisch überarbeiteten Texten und den Vertriebsdokumenten zu Steuerersparnis und Altersvorsorge",
-          aktion: "internal-link",
-          interneRoute: "/beratungspraesentation-osimmobilien-b",
         },
         {
           id: "p-beratung-pdf",

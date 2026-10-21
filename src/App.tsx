@@ -564,9 +564,10 @@ const App = () => (
                     Rollen. Der Guard laesst nicht eingeloggte Nutzer und
                     kundenseitige Rollen (kunde/tippgeber) nicht durch. */}
                 <Route path="/beratungspraesentation" element={<PraesentationGuard><Beratungspraesentation /></PraesentationGuard>} />
-                <Route path="/beratungspraesentation-osimmobilien" element={<PraesentationGuard><BeratungspraesentationHV /></PraesentationGuard>} />
-                {/* Vergleichsfassung B, dieselbe Seite mit eigenen Texten (beratungOsDatenB.ts). */}
-                <Route path="/beratungspraesentation-osimmobilien-b" element={<PraesentationGuard><BeratungspraesentationHV variante="b" /></PraesentationGuard>} />
+                {/* Seit 20.10.2026 gibt es nur noch Fassung B (Christian). Die alte Adresse von B
+                    leitet mit Kundenkontext (Query) auf die eine Präsentation um. */}
+                <Route path="/beratungspraesentation-osimmobilien" element={<PraesentationGuard><BeratungspraesentationHV variante="b" /></PraesentationGuard>} />
+                <Route path="/beratungspraesentation-osimmobilien-b" element={<Navigate to={`/beratungspraesentation-osimmobilien${window.location.search}`} replace />} />
                 {/* Alte URLs bleiben gültig und leiten inklusive Kundenkontext (Query) weiter.
                     "-neu" war eine ältere Fassung der OS Immobilien-Präsentation, die Seite ist entfernt. */}
                 <Route path="/beratungspraesentation-hv" element={<Navigate to={`/beratungspraesentation-osimmobilien${window.location.search}`} replace />} />

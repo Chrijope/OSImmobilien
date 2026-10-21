@@ -79,21 +79,23 @@ describe("Aufbau nach dem Entwurf", () => {
     zeige(UNTERLAGEN);
     const reihenfolge = [
       "Was machen wir heute?",
-      "Das hast du uns gesagt.",
-      "Deine Rentenlücke in Zahlen.",
-      "Geld auf dem Konto wird jedes Jahr weniger wert.",
+      "Das wünschen sich die meisten unserer Kunden.",
+      "Deine Rentenlücke: größer, als viele denken.",
+      "Geld auf dem Konto verliert real an Wert.",
       "OS Real Estate in einem Satz.",
       "Alles aus einer Hand, unter einem Dach.",
-      "Vier Bausteine, die zusammenarbeiten.",
+      "Wie du mit uns dein Vermögen aufbaust.",
+      "Wer zahlt deine Finanzierung?",
       "Welches Ziel steht für dich an erster Stelle?",
       // 08: Inhalt des PDFs „Arbeitsleistung und Immobilienvermögen“ (Konzept Altersvorsorge)
       "Wir zeigen dir, wie du Sozialabgaben in Vermögen umwandelst.",
       "Deine vorzeitige Rente mit 58 Jahren.",
-      // 09 Kriterien vor 10 Objekte
+      "Mit einer Wohnung beginnen, mit uns drei aufbauen.",
+      // 09 Kriterien vor 10 Objekte, dann Sicherheit (PDF-Präsentation)
       "Du entscheidest, was passen muss.",
-      "Drei Standorte, geprüft und vermietet.",
-      "So geht es weiter.",
-      "Wenn wir eine Immobilie finden, die deine Kriterien erfüllt: Möchtest du den nächsten Schritt gehen?",
+      "Chancen und Risiken, offen auf dem Tisch.",
+      "Drei Schritte sind geschafft. Heute folgt Schritt vier.",
+      "Wenn wir ein Objekt finden, das deine Kriterien erfüllt: Möchtest du den nächsten Schritt gehen?",
       "Das bekommst du in der Objektvorstellung.",
     ];
     const ist = ueberschriften();
@@ -113,7 +115,7 @@ describe("Aufbau nach dem Entwurf", () => {
 });
 
 describe("Übernahme aus dem Erstgespräch", () => {
-  it("duzt auch bei gespeichertem Sie, begrüßt mit Vornamen und füllt Ziele, Rahmen und Rentenlücke", () => {
+  it("duzt auch bei gespeichertem Sie, begrüßt mit Vornamen und füllt Rahmen und Rentenlücke, Abschnitt 02 nicht", () => {
     // Hausregel „immer duzen“: Ein altes „sie“ aus dem Erstgespräch zählt nicht mehr.
     zustand.skript = {
       anrede: "sie",
@@ -132,17 +134,21 @@ describe("Übernahme aus dem Erstgespräch", () => {
     zeige(KUNDENPROFIL);
 
     expect(document.getElementById("hero")?.textContent).toContain("Herzlich willkommen, Anna.");
-    expect(ueberschriften()).toContain("Das hast du uns gesagt.");
+    expect(ueberschriften()).toContain("Das wünschen sich die meisten unserer Kunden.");
     expect(document.body.textContent).not.toContain("Frau Muster");
-    expect(screen.getByDisplayValue("Ich möchte jetzt anfangen.")).toBeInTheDocument();
-    // Das Euro-Zeichen aus dem Erstgespräch fällt weg, das Feld führt sein eigenes.
+    // Abschnitt 02 ist seit dem 21.10.2026 nicht mehr mit dem Erstgespräch verbunden:
+    // Motiv, Ziele, Mitentscheider und erste Frage bleiben leer, kein Hinweis „aus dem Erstgespräch“.
+    expect(screen.queryByDisplayValue("Ich möchte jetzt anfangen.")).toBeNull();
+    expect(screen.queryByDisplayValue("Partner")).toBeNull();
+    expect(document.body.textContent).not.toContain("Was passiert bei Leerstand?");
+    expect(document.getElementById("ziele")!.textContent).not.toContain("aus dem Erstgespräch");
+    expect(screen.getByRole("button", { name: "Sorgenfrei im Alter durch eine Immobilienrente" })).toHaveAttribute("aria-pressed", "false");
+    // Beitrag und Reserve gehören auch zu den Kriterien (09) und kommen weiter. Das Euro-Zeichen fällt weg.
     expect(screen.getAllByDisplayValue("400").length).toBeGreaterThan(0);
     expect(screen.getAllByDisplayValue("15.000").length).toBeGreaterThan(0);
-    expect(screen.getByDisplayValue("Partner")).toBeInTheDocument();
     // Lücke 1.200 € im Monat, über 25 Jahre 360.000 €
     expect(document.getElementById("rentenluecke")?.textContent).toContain("1.200 €");
     expect(document.getElementById("rentenluecke")?.textContent).toContain("360.000 €");
-    expect(document.body.textContent).toContain("Was passiert bei Leerstand?");
     // Der Schwerpunkt belegt den Konzeptschalter vor.
     expect(screen.getByTestId("konzept-karte-steuer")).toHaveAttribute("aria-pressed", "true");
     expect(ueberschriften()).toContain("Mehr Netto vom Brutto.");
@@ -208,8 +214,9 @@ describe("Hero als Glaskarte", () => {
     const bilder = hero.querySelectorAll("img");
     expect(bilder).toHaveLength(1);
     expect(bilder[0]).toHaveAttribute("alt", "OS Real Estate GmbH");
-    expect(hero.textContent).toContain("OS Real Estate · Vermögensaufbau mit Immobilien");
-    expect(hero.querySelector("h1")?.textContent).toBe("Strategischer Vermögensaufbaumit vermieteten Immobilien");
+    // Überschrift der PDF-Präsentation (Folie 1), in Du-Form.
+    expect(hero.textContent).toContain("OS Real Estate · Beratungsgespräch Kapitalanlage-Immobilien");
+    expect(hero.querySelector("h1")?.textContent).toBe("Dein Weg zu einem Immobilienvermögen,das für dich arbeitet.");
     expect(hero.textContent).toContain("Herzlich willkommen, Anna.");
     expect(hero.textContent).toContain("Steuern sparen. Zusatzrente aufbauen. Persönlich begleitet.");
     expect([...hero.querySelectorAll("button")].map((b) => b.textContent)).toEqual(["Beratung starten", "Konzepte ansehen"]);
@@ -238,15 +245,15 @@ describe("Konzeptschalter und Abschnitt 08", () => {
     expect(screen.getByTestId("konzept-inhalt-alter")).toBeInTheDocument();
     expect(screen.queryByTestId("konzept-inhalt-steuer")).toBeNull();
     fireEvent.click(screen.getAllByRole("radio", { name: "Konzept 2 · Steuerersparnis" })[0]);
-    expect(screen.getByTestId("konzept-inhalt-steuer").textContent).toContain("+274 €");
+    expect(screen.getByTestId("konzept-inhalt-steuer").textContent).toContain("+267 €");
     expect(screen.queryByTestId("konzept-inhalt-alter")).toBeNull();
   });
 
-  it("zeigt auf Wunsch beide Konzepte, Steuer zuerst, danach Kriterien und Objekte", () => {
+  it("zeigt auf Wunsch beide Konzepte, Steuer zuerst, danach Kriterien", () => {
     zeige(UNTERLAGEN);
     fireEvent.click(screen.getByTestId("konzept-beide"));
     const ids = Array.from(document.querySelectorAll("section[id]")).map((el) => el.id);
-    const reihe = ["konzept", "steuer-titel", "steuer-4", "alter-titel", "alter-8", "kriterien", "objekte", "weg", "schritt", "termin"].map((id) =>
+    const reihe = ["konzept", "steuer-titel", "steuer-4", "alter-titel", "alter-7", "alter-8", "kriterien", "risiken", "weg", "schritt", "termin"].map((id) =>
       ids.indexOf(id),
     );
     expect(reihe, ids.join(" | ")).not.toContain(-1);
@@ -269,38 +276,17 @@ describe("Konzeptschalter und Abschnitt 08", () => {
   });
 });
 
-describe("Kriterien und Objekte", () => {
-  it("rechnet ehrlich mit „Was, wenn …?“ und zeigt die Sorge aus dem Erstgespräch", () => {
+describe("Kriterien ohne „Was, wenn …?“ und ohne Objekte", () => {
+  it("beginnt mit „Mein Konzept“; die Abschnitte „Was, wenn …?“ und „Unsere Objekte“ sind entfallen (21.10.2026)", () => {
     zustand.skript = { anrede: "du", antworten: { sorgen: "Was, wenn der Mieter nicht zahlt?" } };
     zeige(KUNDENPROFIL);
-    const box = screen.getByTestId("was-wenn");
-    expect(box.textContent).toContain("+155 € statt +274 €");
-    expect(box.textContent).toContain("bis 440 € im Monat");
-    expect(box.textContent).toContain("Was, wenn der Mieter nicht zahlt?");
-  });
-
-  it("zeigt alle drei Objekte mit Bildern und markiert, was zum Konzept passt", () => {
-    zeige(UNTERLAGEN);
-    const objekte = screen.getAllByTestId("objekt");
-    expect(objekte.map((o) => o.querySelector("h3")?.textContent)).toEqual(["Barfusstraße 9", "Hauffstraße 38", "Doppelhaushälften"]);
-    for (const o of objekte) expect(o.querySelectorAll("img")).toHaveLength(7);
-    expect(objekte[0].textContent).toContain("Konzept Steuerersparnis");
-    expect(objekte[1].textContent).toContain("passt zu deinem Konzept");
-    expect(objekte[0].textContent).not.toContain("passt zu deinem Konzept");
-    expect(objekte[2].textContent).toContain("Konzept Steuerersparnis");
-    expect(objekte[2].textContent).not.toContain("passt zu deinem Konzept");
-  });
-
-  it("blättert in der Diashow", () => {
-    zeige(UNTERLAGEN);
-    const show = screen.getAllByTestId("diashow")[0];
-    const sichtbar = () => Array.from(show.querySelectorAll("img")).findIndex((b) => b.getAttribute("aria-hidden") === "false");
-    expect(sichtbar()).toBe(0);
-    fireEvent.click(show.querySelector('button[aria-label="Nächstes Bild"]')!);
-    expect(sichtbar()).toBe(1);
-    fireEvent.click(show.querySelector('button[aria-label="Vorheriges Bild"]')!);
-    fireEvent.click(show.querySelector('button[aria-label="Vorheriges Bild"]')!);
-    expect(sichtbar()).toBe(6);
+    expect(screen.queryByTestId("was-wenn")).toBeNull();
+    expect(document.body.textContent).not.toContain("Ehrlich gerechnet");
+    expect(document.getElementById("kriterien")!.textContent).toContain("Mein Konzept");
+    expect(document.getElementById("objekte")).toBeNull();
+    expect(screen.queryAllByTestId("objekt")).toHaveLength(0);
+    expect(screen.queryByTestId("diashow")).toBeNull();
+    expect(screen.queryByRole("button", { name: "Objekte" })).toBeNull();
   });
 });
 
@@ -308,6 +294,8 @@ describe("Sprung in die Selbstauskunft", () => {
   it("nimmt Kunde, Investment und das führende Ziel mit", () => {
     zustand.skript = { anrede: "sie", ziele: ["Altersvorsorge"], antworten: {} };
     zeige(KUNDENPROFIL);
+    // Ohne Vorbelegung aus dem Erstgespräch wählt der Kunde das Ziel im Termin.
+    fireEvent.click(screen.getByRole("button", { name: "Sorgenfrei im Alter durch eine Immobilienrente" }));
     fireEvent.click(screen.getByRole("button", { name: /Selbstauskunft jetzt gemeinsam ausfüllen/ }));
     expect(screen.getByTestId("ziel")).toHaveTextContent("/selbstauskunft?kundeId=k-1&investmentId=i-1&ziel=rente");
   });
@@ -320,7 +308,7 @@ describe("Einbindung", () => {
     expect(lies("src/lib/unterlagenSeed.ts")).toContain('interneRoute: "/beratungspraesentation-osimmobilien"');
     expect(lies("src/pages/KundenDetail.tsx")).toContain("window.open(`/beratungspraesentation-osimmobilien?${params.toString()}`");
     expect(lies("src/App.tsx")).toMatch(
-      /path="\/beratungspraesentation-osimmobilien" element=\{<PraesentationGuard><BeratungspraesentationHV \/><\/PraesentationGuard>\}/,
+      /path="\/beratungspraesentation-osimmobilien" element=\{<PraesentationGuard><BeratungspraesentationHV variante="b" \/><\/PraesentationGuard>\}/,
     );
   });
 });

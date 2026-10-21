@@ -126,10 +126,29 @@
   background: transparent;
   -webkit-font-smoothing: antialiased;
   --bos-akzent: var(--bos-gold-dunkel);
+  /*
+   * Grafikfarben, die auf hellen Abschnitten liegen (seit 21.10.2026). Im
+   * dunklen CRM sind diese Abschnitte dunkel, darum dort helle Stufen;
+   * Tannengrün und dunkles Gold verschwänden sonst auf dem Grund.
+   */
+  --bos-grafik-tinte: #12362a;
+  --bos-grafik-goldtext: #8a7404;
+  --bos-grafik-gruen: #198a5f;
+  --bos-grafik-blau: #3f51b5;
+  /* „Wer zahlt deine Finanzierung?“: Mieter, Finanzamt, du. */
+  --bos-segment-mieter: #198a5f;
+  --bos-segment-amt: #ccac05;
+  --bos-segment-du: #9c8a55;
 }
 /* Im dunklen CRM liegen die hellen Abschnitte auf dunklem Grund: dort das helle Gold. */
 .dark .bos.bos-crm {
   --bos-akzent: var(--bos-gold);
+  --bos-grafik-tinte: #d8c79f;
+  --bos-grafik-goldtext: #e3c84a;
+  --bos-grafik-gruen: #5fd39c;
+  --bos-grafik-blau: #9fa8f0;
+  --bos-segment-mieter: #5fd39c;
+  --bos-segment-du: #f3ebd8;
 }
 .bos.bos-crm .bos-kicker {
   font-family: inherit;
@@ -159,4 +178,85 @@
 }
 .bos.bos-crm .bos-dunkel .bos-feld::placeholder {
   color: rgba(243, 247, 245, 0.45);
+}
+
+/*
+ * Bewegung (20.10.2026), siehe src/components/beratung/Bewegung.tsx. Nur ohne
+ * „Bewegung reduzieren“; beim Drucken steht alles sofort da. Verzögerung je
+ * Element über --v (z. B. style={{ "--v": "120ms" }}).
+ */
+@media (prefers-reduced-motion: no-preference) {
+  [data-bewegung="an"] .bos .bos-ein {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  [data-bewegung="an"] .bos .bos-ein[data-ein="ja"] {
+    opacity: 1;
+    transform: none;
+  }
+  [data-bewegung="an"] .bos .bos-wachsen-x,
+  [data-bewegung="an"] .bos .bos-wachsen-y {
+    transition: transform 1.1s cubic-bezier(0.2, 0.7, 0.2, 1) var(--v, 0ms);
+  }
+  [data-bewegung="an"] .bos .bos-wachsen-x {
+    transform-origin: left center;
+    transform: scaleX(0);
+  }
+  [data-bewegung="an"] .bos .bos-wachsen-y {
+    transform-box: fill-box;
+    transform-origin: center bottom;
+    transform: scaleY(0);
+  }
+  /* Balken unter der Nulllinie wachsen nach unten. */
+  [data-bewegung="an"] .bos .bos-wachsen-y.bos-nach-unten {
+    transform-origin: center top;
+  }
+  [data-bewegung="an"] .bos [data-sichtbar="ja"] .bos-wachsen-x,
+  [data-bewegung="an"] .bos [data-sichtbar="ja"] .bos-wachsen-y {
+    transform: none;
+  }
+  /* Linien mit pathLength="1" zeichnen sich von links nach rechts. */
+  [data-bewegung="an"] .bos .bos-linie {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 1.8s ease-in-out var(--v, 0ms);
+  }
+  [data-bewegung="an"] .bos [data-sichtbar="ja"] .bos-linie {
+    stroke-dashoffset: 0;
+  }
+  [data-bewegung="an"] .bos .bos-blende {
+    opacity: 0;
+    transition: opacity 0.8s ease var(--v, 0ms);
+  }
+  [data-bewegung="an"] .bos [data-sichtbar="ja"] .bos-blende {
+    opacity: 1;
+  }
+  /* Ein Punkt oder Kasten, der beim Erscheinen kurz aufspringt. */
+  [data-bewegung="an"] .bos .bos-auftauchen {
+    opacity: 0;
+    transform: scale(0.6);
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: opacity 0.5s ease var(--v, 0ms), transform 0.5s cubic-bezier(0.3, 1.4, 0.5, 1) var(--v, 0ms);
+  }
+  [data-bewegung="an"] .bos [data-sichtbar="ja"] .bos-auftauchen {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media print {
+  [data-bewegung="an"] .bos .bos-ein,
+  [data-bewegung="an"] .bos .bos-blende,
+  [data-bewegung="an"] .bos .bos-auftauchen {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  [data-bewegung="an"] .bos .bos-wachsen-x,
+  [data-bewegung="an"] .bos .bos-wachsen-y {
+    transform: none !important;
+  }
+  [data-bewegung="an"] .bos .bos-linie {
+    stroke-dashoffset: 0 !important;
+  }
 }

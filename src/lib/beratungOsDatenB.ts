@@ -16,37 +16,7 @@ const A = OS_TEXTE;
 export const OS_TEXTE_B: typeof OS_TEXTE = {
   ...A,
 
-  heute: {
-    ...A.heute,
-    text: "Heute unterschreibst du nichts. Wir prüfen gemeinsam, ob eine vermietete Immobilie dich deinen Zielen näher bringt. Mit deinen Zahlen, vor und nach Steuern.",
-    punkte: [
-      { titel: "Deine Ziele", text: "Was dir wichtig ist." },
-      { titel: "Das Konzept", text: "Wie Mieter und Steuer für dich mitzahlen." },
-      { titel: "Echte Objekte", text: "Geprüft, mit den Zahlen aus unseren Exposés." },
-      { titel: "Deine Entscheidung", text: "Passt es? Dann gehen wir den nächsten Schritt." },
-    ],
-  },
-
-  ziele: {
-    ...A.ziele,
-    nachfrage: "Stimmt das so? Möchtest du etwas ergänzen?",
-  },
-
-  luecke: {
-    ...A.luecke,
-    frage: "Stell dir vor, diese Lücke ist geschlossen. Wäre das ein gutes Gefühl?",
-  },
-
-  nichtstun: {
-    ...A.nichtstun,
-    karten: [
-      { kopf: "Heute auf dem Konto", wert: "50.000 €", text: "Tagesgeld zu 2 % Zinsen" },
-      { kopf: "Kontostand in 10 Jahren", wert: "60.950 €", text: "Sieht nach mehr aus." },
-      { kopf: "Was das Geld dann noch kauft", wert: "47.615 €", text: "Rund 2.400 € weniger als heute. Das ist der Verlust.", warnung: true },
-    ],
-    satz: "Heute verliert dein Erspartes leise an Wert. Mit einer vermieteten Immobilie tragen Mieter und Steuerwirkung einen großen Teil der Rate, und mit jeder Tilgung wächst dein Vermögen.",
-  },
-
+  // Agenda, Rentenlücke und Nichtstun seit dem 21.10.2026 wie in A (Texte der PDF-Präsentation).
   werWirSind: {
     ...A.werWirSind,
     text: "Wir finden geprüfte, vermietete Wohnungen in Berlin und Brandenburg, die zu deinen Zielen passen. Und wir begleiten dich vom ersten Gespräch bis zur Kaufpreiszahlung.",
@@ -54,8 +24,7 @@ export const OS_TEXTE_B: typeof OS_TEXTE = {
       { titel: "Geprüfte Objekte", text: "Du siehst nur, was wir vorher geprüft haben: Lage, Miete, Zustand, Unterlagen." },
       { titel: "Deine Zahlen", text: "Jede Rechnung mit deinem Einkommen. Vor und nach Steuern, mit Stresstest." },
       { titel: "Ein Ansprechpartner", text: "Einer für alles: Konzept, Bank, Notar, Übergabe." },
-      // Pflichthinweis, wörtlich wie in A.
-      A.werWirSind.karten[3],
+      // „Offen gesagt …“ entfällt seit dem 21.10.2026 (Wunsch Christian), auch in A.
     ],
   },
 
@@ -79,15 +48,9 @@ export const OS_TEXTE_B: typeof OS_TEXTE = {
   },
 };
 
-/** Abschnitt 04 in B: die Balkengrafik zur Kaufkraft. Werte wie in den Karten. */
+/** Abschnitt 04 in B: der Satz über den Karten. Die Grafik ist dieselbe wie in A (KaufkraftJahre). */
 export const KAUFKRAFT_B = {
-  vorspann: "Ein einfaches Beispiel: 50.000 € auf dem Tagesgeld, 2 % Zinsen, 2,5 % Inflation.",
-  grafikTitel: "Kaufkraft heute und in 10 Jahren",
-  balken: [
-    { label: "Heute", wert: 50_000, ton: "neutral" },
-    { label: "Kontostand in 10 Jahren", wert: 60_950, ton: "papier" },
-    { label: "Kaufkraft in 10 Jahren", wert: 47_615, ton: "verlust" },
-  ] as ReadonlyArray<{ label: string; wert: number; ton: "neutral" | "papier" | "verlust" }>,
+  vorspann: "Ein einfaches Beispiel: 100.000 € auf dem Tagesgeld, 2 % Zinsen, 2,5 % Inflation, 25 Jahre lang.",
 };
 
 /** Vertriebsdokumente in B, je Konzept. Liegen unter public/vertriebsunterlagen/. */

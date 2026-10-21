@@ -114,9 +114,10 @@ describe("Die Musterrechnungen der Präsentationen tragen dieselben Zahlen", () 
 
 describe("Die Folien rechnen, statt Zahlen zu tippen", () => {
   it("die Präsentationen speisen ihre Anteile aus dem Modul", () => {
-    // Seit der neuen Fassung (Entwurf 15.10.2026) rechnet die Folie mit der Hauffstraße.
-    expect(osimmobilien).toContain("rateAnteile(RATE_EINGANG.hauffstrasse)");
-    expect(osimmobilien).toContain('from "@/lib/rateAnteile"');
+    // Seit dem 21.10.2026 zeigt die neue Fassung „Wer zahlt deine Finanzierung?“ in Euro aus der
+    // gemeinsamen Beispielrechnung (beratungBeispielrechnung.ts, geprüft in beratungOsDaten.test.ts).
+    expect(osimmobilien).toContain("T.prinzip.finanzierung.teile");
+    expect(osimmobilien).not.toMatch(/\b(62|23|15) %/);
     expect(ersteFassung).toContain("ANTEILE_MEMMINGEN");
     expect(ersteFassung).toContain('from "@/lib/rateAnteile"');
   });

@@ -51,7 +51,7 @@ export const BERATUNG_SPRECHSKRIPTE: BeratungSprechskript[] = [
     ueberleitung:
       "Bevor wir über Immobilien reden, eine Frage: Was passiert eigentlich, wenn du gar nichts tust?",
     skript:
-      "Kein Weltuntergang, nur Mathematik. Nehmen wir 50.000 Euro auf einem gut verzinsten Tagesgeldkonto, zwei Prozent Zinsen, zweieinhalb Prozent Geldentwertung. Auf dem Papier werden daraus in zehn Jahren 60.950 Euro. Im Einkaufskorb sind es noch 47.615 Euro, rund 2.400 Euro weniger als heute. Die Zinsen holen die Geldentwertung nicht ein. Was macht dein Erspartes gerade?",
+      "Kein Weltuntergang, nur Mathematik. Nehmen wir 100.000 Euro auf einem gut verzinsten Tagesgeldkonto, zwei Prozent Zinsen, zweieinhalb Prozent Geldentwertung. Auf dem Papier werden daraus in 25 Jahren 164.061 Euro. Im Einkaufskorb sind es noch 88.493 Euro, rund 11.500 Euro weniger als heute. Die Zinsen holen die Geldentwertung nicht ein. Was macht dein Erspartes gerade?",
     warum:
       "Geistige Brandstiftung in Reinform, aber entdramatisiert: Das Feuer legt die Rechnung, nicht du. Der Abschnitt endet mit einer Frage, damit der Kunde die Schlussfolgerung selbst zieht. Danach Pause machen und aushalten.",
   },

@@ -1351,7 +1351,7 @@ export function SelbstauskunftHinweise({ schritt, className, sprache = "de" }: {
 export const SA_FORMULAR_TEXTE = { schritte: STEPS, schrittHinweise: STEP_HINTS, feldHilfen: FELD_HILFEN, bankHinweise: BANK_HINWEISE } as const;
 
 // ─── Main Component ──────────────────────────────────────────
-export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: propInvestmentId, onComplete, prefillKontakt, prefillSaData, isEditMode, customerMode, saToken, registerApi, vorgewaehltesZiel, korrekturMode, onKorrekturSave, onAnKundenSenden, onHinweisSchritt, ohneSteuerIdUndIban }: { kundeId: string; /** Kundensprache. Ohne Angabe Deutsch, also der bisherige Stand im CRM. Gespeichert wird immer deutsch. */ sprache?: Sprache; investmentId?: string; onComplete?: () => void; prefillKontakt?: SelbstauskunftKontaktPrefill | null; prefillSaData?: Partial<SelbstauskunftData> | null; isEditMode?: boolean; customerMode?: boolean; saToken?: string; registerApi?: (api: { saveDraft: () => Promise<void>; hatUngespeichertes: () => boolean }) => void; /** Kunde korrigiert die vom Berater ausgefuellte SA vor der Unterschrift. */ korrekturMode?: boolean; onKorrekturSave?: (data: SelbstauskunftData) => Promise<void> | void; /** Nur der Berater: den angefangenen Stand dem Kunden zum Fertigmachen schicken. */ onAnKundenSenden?: () => Promise<void> | void; /** Ziel aus der Beratungspraesentation, wird als eines der drei vorbelegt. */ vorgewaehltesZiel?: string; /**
+export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: propInvestmentId, onComplete, prefillKontakt, prefillSaData, isEditMode, customerMode, saToken, registerApi, vorgewaehltesZiel, korrekturMode, onKorrekturSave, onAnKundenSenden, onHinweisSchritt, ohneSteuerIdUndIban, ohneBackend }: { kundeId: string; /** Kundensprache. Ohne Angabe Deutsch, also der bisherige Stand im CRM. Gespeichert wird immer deutsch. */ sprache?: Sprache; investmentId?: string; onComplete?: () => void; prefillKontakt?: SelbstauskunftKontaktPrefill | null; prefillSaData?: Partial<SelbstauskunftData> | null; isEditMode?: boolean; customerMode?: boolean; saToken?: string; registerApi?: (api: { saveDraft: () => Promise<void>; hatUngespeichertes: () => boolean }) => void; /** Kunde korrigiert die vom Berater ausgefuellte SA vor der Unterschrift. */ korrekturMode?: boolean; onKorrekturSave?: (data: SelbstauskunftData) => Promise<void> | void; /** Nur der Berater: den angefangenen Stand dem Kunden zum Fertigmachen schicken. */ onAnKundenSenden?: () => Promise<void> | void; /** Ziel aus der Beratungspraesentation, wird als eines der drei vorbelegt. */ vorgewaehltesZiel?: string; /**
  * Wird die Funktion uebergeben, zeichnet das Formular die Hinweisspalte nicht
  * selbst, sondern meldet nur den gerade offenen Abschnitt nach aussen. Die
  * Kundenseite setzt die Hinweise damit als eigene dritte Spalte neben das
@@ -1362,7 +1362,11 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
  * Rahmenrechnung nicht nötig und werden erst später im geschützten
  * Kundenportal erhoben (Strategie 5.2). Beide Felder sind ohnehin freiwillig,
  * es fällt also keine Pflichtprüfung weg.
- */ ohneSteuerIdUndIban?: boolean }) {
+ */ ohneSteuerIdUndIban?: boolean; /**
+ * Eigenständige Fassung ohne CRM und ohne Server (src/artefakt): Der letzte
+ * Schritt zeigt `abschluss` statt Versand und digitaler Unterschrift, und
+ * Person 2 abwählen ändert nur das Formular, nicht die Stammdaten.
+ */ ohneBackend?: { abschluss: (data: SelbstauskunftData) => React.ReactNode } }) {
   const [step, setStep] = useState(0);
   /*
    * Texte und Beträge in der Kundensprache. `t` übersetzt einen deutschen
@@ -1585,7 +1589,7 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
 
   const handleP2CheckboxChange = (checked: boolean) => {
     // Unchecking im Editor-Modus mit vorhandener P2 → Bestätigung + Server-Cleanup
-    if (!checked && data.person2 && !customerMode) {
+    if (!checked && data.person2 && !customerMode && !ohneBackend) {
       setShowRemoveP2Dialog(true);
       return;
     }
@@ -4045,6 +4049,7 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
   );
 
   const renderStep7 = () => {
+    if (ohneBackend) return ohneBackend.abschluss(data);
     if (korrekturMode) {
       return (
         <div>

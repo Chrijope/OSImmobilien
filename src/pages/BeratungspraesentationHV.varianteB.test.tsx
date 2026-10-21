@@ -4,7 +4,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import BeratungspraesentationHV from "./BeratungspraesentationHV";
 import { isUrlAllowedForRole } from "@/lib/sidebarPermissions";
-import { mitNachgetragenen, seedUnterlagen } from "@/lib/unterlagenSeed";
+import { ENTFERNTE_DOKUMENT_IDS, mitNachgetragenen, seedUnterlagen } from "@/lib/unterlagenSeed";
 
 /*
  * Beratungspräsentation B (Vergleichsfassung, 16.10.2026): dieselbe Seite mit
@@ -63,7 +63,8 @@ const ziele = () => document.getElementById("ziele")!;
 describe("Abschnitt 02 in B", () => {
   it("zeigt dieselbe Ziele-Seite wie die normale Präsentation", () => {
     zeige(B);
-    expect(ziele().querySelector("h2")?.textContent).toBe("Das hast du uns gesagt.");
+    expect(ziele().querySelector("h2")?.textContent).toBe("Das wünschen sich die meisten unserer Kunden.");
+    expect(ziele().querySelector('[data-testid="wuensche"]')?.textContent).toContain("Steuern sparen");
     expect(screen.getByLabelText("Motiv in den Worten des Kunden")).toBeInTheDocument();
     expect(screen.getByLabelText("Erfahrung mit Immobilien")).toBeInTheDocument();
     expect(ziele().querySelectorAll("button").length).toBeGreaterThan(0);
@@ -75,12 +76,17 @@ describe("Inhalte in B", () => {
     zeige(B);
     const ist = ueberschriften();
     expect(ist.indexOf("Alles aus einer Hand, unter einem Dach.")).toBeLessThan(ist.indexOf("OS Real Estate in einem Satz."));
-    expect(ist.indexOf("Geld auf dem Konto wird jedes Jahr weniger wert.")).toBeLessThan(ist.indexOf("Alles aus einer Hand, unter einem Dach."));
+    expect(ist.indexOf("Geld auf dem Konto verliert real an Wert.")).toBeGreaterThan(-1);
+    expect(ist.indexOf("Geld auf dem Konto verliert real an Wert.")).toBeLessThan(ist.indexOf("Alles aus einer Hand, unter einem Dach."));
   });
 
-  it("zeigt die Kaufkraft als Grafik und den Verlust in Rot", () => {
+  it("zeigt die Kaufkraft über 25 Jahre als Kurven wie in der PDF und den Verlust in Rot", () => {
     zeige(B);
-    expect(screen.getByTestId("kaufkraft-grafik").textContent).toContain("47.615 €");
+    const label = screen.getByTestId("kaufkraft-jahre").querySelector("svg")?.getAttribute("aria-label");
+    expect(label).toContain("164.061 €");
+    expect(label).toContain("88.493 €");
+    expect(label).toContain("53.939 €");
+    expect(screen.getByTestId("kaufkraft-jahre").textContent).toContain("25 J.");
     expect(screen.getByTestId("kaufkraft-verlust").style.background).toBeTruthy();
   });
 
@@ -113,7 +119,10 @@ describe("Inhalte in B", () => {
 describe("Fassung A bleibt unberührt", () => {
   it("hat keine B-Bausteine und die alte Reihenfolge", () => {
     zeige("/beratungspraesentation-osimmobilien", "a");
-    for (const id of ["ziele-erstgespraech", "kaufkraft-grafik", "kaufkraft-verlust", "dokumente-b"]) {
+    // Seit 20.10.2026 haben A und B die rote Verlustkarte und dieselbe Jahresgrafik.
+    expect(screen.getByTestId("kaufkraft-verlust")).toBeInTheDocument();
+    expect(screen.getByTestId("kaufkraft-jahre")).toBeInTheDocument();
+    for (const id of ["ziele-erstgespraech", "dokumente-b"]) {
       expect(screen.queryByTestId(id)).toBeNull();
     }
     const ist = ueberschriften();
@@ -125,12 +134,14 @@ describe("Fassung A bleibt unberührt", () => {
 describe("Einbindung von B", () => {
   const lies = (pfad: string) => readFileSync(resolve(process.cwd(), pfad), "utf8");
 
-  it("hat Route, Präsentationsseite, Unterlagen und Kundenprofil", () => {
-    expect(lies("src/App.tsx")).toContain(
-      '<Route path="/beratungspraesentation-osimmobilien-b" element={<PraesentationGuard><BeratungspraesentationHV variante="b" /></PraesentationGuard>} />',
+  it("ist seit dem 20.10.2026 die einzige Fassung, die alte B-Adresse leitet um", () => {
+    const app = lies("src/App.tsx");
+    expect(app).toContain(
+      '<Route path="/beratungspraesentation-osimmobilien" element={<PraesentationGuard><BeratungspraesentationHV variante="b" /></PraesentationGuard>} />',
     );
-    expect(lies("src/pages/Praesentation.tsx")).toContain('internalRoute: "/beratungspraesentation-osimmobilien-b"');
-    expect(lies("src/pages/KundenDetail.tsx")).toContain("window.open(`/beratungspraesentation-osimmobilien-b?${params.toString()}`");
+    expect(app).toMatch(/path="\/beratungspraesentation-osimmobilien-b" element=\{<Navigate to=\{`\/beratungspraesentation-osimmobilien\$\{window\.location\.search\}`\}/);
+    expect(lies("src/pages/KundenDetail.tsx")).not.toContain("/beratungspraesentation-osimmobilien-b");
+    expect(lies("src/pages/Praesentation.tsx")).not.toContain('internalRoute: "/beratungspraesentation-osimmobilien-b"');
   });
 
   it("folgt den Rechten der Präsentationsseite", () => {
@@ -140,16 +151,10 @@ describe("Einbindung von B", () => {
     expect(isUrlAllowedForRole(B, "hausverwaltung")).toBe(false);
   });
 
-  it("steht in den Unterlagen direkt unter der aktuellen Präsentation, auch in einer gespeicherten Liste", () => {
-    const seed = seedUnterlagen();
-    const ids = seed.find((a) => a.id === "praesentation")!.dokumente.map((d) => d.id);
-    expect(ids.indexOf("p-beratung-b")).toBe(ids.indexOf("p-beratung-hv") + 1);
-
-    const gespeichert = seed.map((a) => ({ ...a, dokumente: a.dokumente.filter((d) => d.id !== "p-beratung-b") }));
-    const { daten, geaendert } = mitNachgetragenen(gespeichert);
-    expect(geaendert).toBe(true);
-    expect(daten.find((a) => a.id === "praesentation")!.dokumente.map((d) => d.id)).toEqual(ids);
-    // Schon vorhanden: nichts zu tun.
-    expect(mitNachgetragenen(seed).geaendert).toBe(false);
+  it("Fassung B steht nicht mehr gesondert in den Unterlagen und wird aus gespeicherten Listen entfernt", () => {
+    const ids = seedUnterlagen().find((a) => a.id === "praesentation")!.dokumente.map((d) => d.id);
+    expect(ids).not.toContain("p-beratung-b");
+    expect(ENTFERNTE_DOKUMENT_IDS).toContain("p-beratung-b");
+    expect(mitNachgetragenen(seedUnterlagen()).geaendert).toBe(false);
   });
 });
