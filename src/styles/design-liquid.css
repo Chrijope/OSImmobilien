@@ -52,10 +52,10 @@
     ist nie reines Weiss, deshalb reicht das Grau aus `design-neu.css`
     (#677281) hier nicht fuer 4,5:1.
   */
-  --foreground: 160 50% 14%;          /* Tannengrün #12362A */
-  --card-foreground: 160 50% 14%;
-  --popover-foreground: 160 50% 14%;
-  --muted-foreground: 152 9% 31%;     /* Grautext eine Stufe dunkler #48564F */
+  --foreground: 0 0% 9%;   /* fast Schwarz #171717, mehr Kontrast als Tannengrün (Christian, 21.10.2026) */
+  --card-foreground: 0 0% 9%;
+  --popover-foreground: 0 0% 9%;
+  --muted-foreground: 0 0% 30%;  /* neutrales Grau eine Stufe dunkler #4D4D4D */
   --success: 157 71% 22%;             /* Markengrün tief, eine Stufe dunkler */
   --destructive: 5 55% 38%;           /* Fehler #A23B32, eine Stufe dunkler */
   --warning: 25 90% 29%;              /* Warnschrift #9A4508, eine Stufe dunkler */

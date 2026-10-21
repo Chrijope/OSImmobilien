@@ -23,16 +23,16 @@
 [data-design="neu"] {
   /* Neutraltoene, Markenrichtlinie 3.3 */
   --background: 140 14% 96%;        /* Nebel #F3F6F4 (Markenrichtlinie 18.10.2026) */
-  --foreground: 160 50% 14%;        /* Tannengrün #12362A, nie reines Schwarz */
+  --foreground: 0 0% 9%;   /* fast Schwarz #171717, mehr Kontrast als Tannengrün (Christian, 21.10.2026) */
   --card: 0 0% 100%;                /* Weiss */
-  --card-foreground: 160 50% 14%;
+  --card-foreground: 0 0% 9%;
   --popover: 0 0% 100%;
-  --popover-foreground: 160 50% 14%;
+  --popover-foreground: 0 0% 9%;
 
   --secondary: 148 17% 92%;
-  --secondary-foreground: 160 50% 14%;
+  --secondary-foreground: 0 0% 9%;
   --muted: 148 17% 92%;
-  --muted-foreground: 152 7% 36%;   /* Grautext #56635D, 6,3:1 */
+  --muted-foreground: 0 0% 34%;  /* neutrales Grau #575757 */
 
   --border: 148 17% 85%;            /* Linie #D3E0D9 */
   --input: 148 17% 80%;
@@ -72,7 +72,7 @@
 
   /* Die Seitenleiste traegt Weiss, nicht Grau: Der Grund liegt daneben. */
   --sidebar-background: 0 0% 100%;
-  --sidebar-foreground: 160 50% 14%;
+  --sidebar-foreground: 0 0% 9%;
   --sidebar-border: 148 17% 85%;
   --sidebar-accent: 154 33% 92%;
   --sidebar-accent-foreground: 157 69% 26%;
