@@ -7,17 +7,14 @@
  * Texte und Zahlen: `src/lib/beratungKonzeptDaten.ts`.
  */
 import type { ReactNode } from "react";
-import { ArrowDown, ArrowRight, HandCoins, Home, Landmark } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowRight, Home } from "lucide-react";
 import { FARBE, Folie, FrageAnDich, Fussnote, Karte, Kopf, Titel, mitAkzent } from "@/components/beratung/folienBausteine";
 import { Sichtbar, ZahlText, verzoegert } from "@/components/beratung/Bewegung";
 import {
   KONZEPT_ALTER,
   KONZEPT_STEUER,
-  MONATSVERLAUF,
   VERLAUF_WOHNUNG,
   type KennKarte,
-  type StapelTeil,
-  type WasserfallZeile,
 } from "@/lib/beratungKonzeptDaten";
 import { BEISPIEL } from "@/lib/beratungBeispielrechnung";
 
@@ -90,36 +87,110 @@ function HeuteMitOs({
   );
 }
 
-/** Ring aus drei Teilen (Netto, Lohnsteuer, Sozialabgaben), per CSS conic-gradient. */
-function Ring({ teile, mitte, unter }: { teile: ReadonlyArray<{ betrag: number; farbe: string }>; mitte: string; unter: string }) {
+/**
+ * Das Gehalt als Torte mit herausgezogenen Stücken (Seite 11, seit 21.10.2026):
+ * Netto, Lohnsteuer und Sozialabgaben maßstabsgetreu, Beschriftung außen mit
+ * Betrag und Anteil, in der Mitte „Ihr Gehalt“.
+ */
+function Torte({
+  teile,
+  mitte,
+  wert,
+  unter,
+}: {
+  teile: ReadonlyArray<{ label: string; text: string; wert: string; betrag: number; farbe: string; schrift: string }>;
+  mitte: string;
+  wert: string;
+  unter: string;
+}) {
   const summe = teile.reduce((s, t) => s + t.betrag, 0);
+  const M = 210, R = 150, raus = 10;
+  const pol = (grad: number, r: number) => {
+    const w = ((grad - 90) * Math.PI) / 180;
+    return [Math.cos(w) * r, Math.sin(w) * r];
+  };
   let start = 0;
-  const stopps = teile
-    .map((t) => {
-      const von = start;
-      start += (t.betrag / summe) * 360;
-      return `${t.farbe} ${von}deg ${start}deg`;
-    })
-    .join(", ");
+  const stuecke = teile.map((t) => {
+    const von = start;
+    start += (t.betrag / summe) * 360;
+    const mittel = (von + start) / 2;
+    const [vx, vy] = pol(mittel, raus);
+    const [ax, ay] = pol(von, R);
+    const [bx, by] = pol(start, R);
+    const d = `M${M + vx},${M + vy} L${M + vx + ax},${M + vy + ay} A${R},${R} 0 ${start - von > 180 ? 1 : 0} 1 ${M + vx + bx},${M + vy + by} Z`;
+    const [ix, iy] = pol(mittel, R * 0.62);
+    const [lx, ly] = pol(mittel, R + 34);
+    const prozent = Math.round((t.betrag / summe) * 100);
+    return { t, d, ix: M + vx + ix, iy: M + vy + iy, lx: M + lx, ly: M + ly, rechts: lx >= 0, prozent };
+  });
   return (
-    <div
-      role="img"
-      aria-label={`${mitte} ${unter}`}
-      className="relative mx-auto aspect-square w-full max-w-[16rem] rounded-full"
-      style={{ background: `conic-gradient(${stopps})` }}
-    >
-      <div className="absolute inset-[22%] rounded-full flex flex-col items-center justify-center text-center" style={{ background: FARBE.tief }}>
-        <p className="text-[0.6rem] tracking-[0.2em] uppercase" style={{ color: P.champagner }}>
-          Dein Brutto
-        </p>
-        <p className="mt-1 text-xl sm:text-2xl font-bold" style={{ color: "#fff" }}>
-          {mitte}
-        </p>
-        <p className="text-xs" style={{ color: FARBE.hellGedaempft }}>
-          {unter}
-        </p>
-      </div>
-    </div>
+    <Sichtbar>
+      <svg viewBox="-60 0 540 420" className="mx-auto w-full max-w-[44rem] h-auto overflow-visible" role="img" aria-label={`${mitte} ${wert} ${unter}: ${teile.map((t) => `${t.label} ${t.wert}`).join(", ")}`}>
+        {stuecke.map((s, i) => (
+          <g key={s.t.label} className="bos-auftauchen" style={verzoegert(i * 250)}>
+            <path d={s.d} fill={s.t.farbe} stroke={FARBE.tief} strokeWidth="2" />
+            <text x={s.ix} y={s.iy} textAnchor="middle" fontSize="22" fontWeight="700" fill={s.t.schrift}>{s.prozent} %</text>
+            <text x={s.lx} y={s.ly - 6} textAnchor={s.rechts ? "start" : "end"} fontSize="15" fontWeight="600" fill={FARBE.hellText}>{s.t.label}</text>
+            <text x={s.lx} y={s.ly + 16} textAnchor={s.rechts ? "start" : "end"} fontSize="22" fontWeight="700" fill={s.t.farbe === P.rot ? P.rose : FARBE.hellText}>{s.t.wert}</text>
+          </g>
+        ))}
+        <circle cx={M} cy={M} r="62" fill={FARBE.tief} />
+        <text x={M} y={M - 14} textAnchor="middle" fontSize="11" letterSpacing="2" fill={P.champagner}>{mitte.toUpperCase()}</text>
+        <text x={M} y={M + 12} textAnchor="middle" fontSize="24" fontWeight="700" fill="#FFFFFF">{wert}</text>
+        <text x={M} y={M + 30} textAnchor="middle" fontSize="10" fill={FARBE.hellGedaempft}>{unter}</text>
+      </svg>
+    </Sichtbar>
+  );
+}
+
+/**
+ * Seite 12: Die Lohnsteuer fließt als Münzen in den Trichter des Finanzamts
+ * (seit 21.10.2026, Christian: „ins Klo geschmissen“). Rein gezeichnet, ohne Bilddatei.
+ */
+function FinanzamtTrichter({ wert }: { wert: string }) {
+  const muenzen = [0, 1, 2, 3];
+  return (
+    <svg viewBox="0 0 260 300" className="w-full max-w-[17rem] h-auto mx-auto" role="img" aria-label={`${wert} Lohnsteuer fließen jeden Monat in den Trichter des Finanzamts`}>
+      {muenzen.map((n) => (
+        <g key={n} className="bos-muenze" style={{ animationDelay: `${n * 0.55}s` }}>
+          <circle cx={112 + (n % 2) * 36} cy={18} r="13" fill={P.gold} stroke="#9C8204" strokeWidth="2" />
+          <text x={112 + (n % 2) * 36} y={23} textAnchor="middle" fontSize="14" fontWeight="700" fill={P.navy}>€</text>
+        </g>
+      ))}
+      {/* Trichter */}
+      <path d="M48,52 L212,52 L146,128 L146,160 L114,160 L114,128 Z" fill={P.rot} fillOpacity="0.9" />
+      <path d="M48,52 L212,52" stroke="#8E3A31" strokeWidth="6" strokeLinecap="round" />
+      {/* Finanzamt */}
+      <path d="M50,196 L130,166 L210,196 Z" fill={P.grauDunkel} />
+      <rect x="58" y="196" width="144" height="10" fill={P.grauDunkel} />
+      {[70, 98, 126, 154, 182].map((x) => (
+        <rect key={x} x={x} y="210" width="10" height="56" rx="2" fill={P.grau} />
+      ))}
+      <rect x="50" y="266" width="160" height="14" rx="2" fill={P.grauDunkel} />
+      <text x="130" y="296" textAnchor="middle" fontSize="13" fontWeight="700" letterSpacing="3" fill={P.grauDunkel}>FINANZAMT</text>
+    </svg>
+  );
+}
+
+/** Seite 15: ein Haus, in das die Münzen der Steuerersparnis fließen. */
+function HausMitMuenzen({ text }: { text: string }) {
+  return (
+    <svg viewBox="0 0 240 230" className="w-full max-w-[15rem] h-auto mx-auto" role="img" aria-label={text}>
+      {[0, 1, 2].map((n) => (
+        <g key={n} className="bos-muenze" style={{ animationDelay: `${n * 0.6}s` }}>
+          <circle cx={98 + n * 22} cy={16} r="12" fill={P.gold} stroke="#9C8204" strokeWidth="2" />
+          <text x={98 + n * 22} y={21} textAnchor="middle" fontSize="13" fontWeight="700" fill={P.navy}>€</text>
+        </g>
+      ))}
+      <path d="M30,108 L120,40 L210,108 Z" fill={P.mint} />
+      <rect x="48" y="104" width="144" height="104" rx="4" fill="#FFFFFF" stroke={P.mint} strokeWidth="4" />
+      <rect x="104" y="146" width="32" height="62" rx="3" fill={P.gruen} />
+      <rect x="62" y="122" width="30" height="26" rx="3" fill="#A7D7C5" />
+      <rect x="148" y="122" width="30" height="26" rx="3" fill="#A7D7C5" />
+      {/* Fortschrittsbalken „abbezahlt“ */}
+      <rect x="40" y="216" width="160" height="10" rx="5" fill="rgba(255,255,255,0.25)" />
+      <rect className="bos-wachsen-x" x="40" y="216" width="104" height="10" rx="5" fill={P.mint} />
+    </svg>
   );
 }
 
@@ -152,70 +223,6 @@ function Balken({
           </div>
         </div>
       ))}
-    </Sichtbar>
-  );
-}
-
-/** Vom Brutto zum Netto: jede Abzugszeile setzt dort an, wo die vorige aufhörte. */
-function Wasserfall({ zeilen, dunkel }: { zeilen: ReadonlyArray<WasserfallZeile>; dunkel: boolean }) {
-  const brutto = zeilen[0].betrag;
-  let stand = brutto;
-  const farbe = { brutto: dunkel ? P.champagner : P.tinte, steuer: P.rot, sozial: P.grauDunkel, netto: dunkel ? P.mint : P.gold };
-  return (
-    <div className="space-y-2" role="img" aria-label={zeilen.map((z) => `${z.label} ${z.wert}`).join(", ")}>
-      {zeilen.map((z) => {
-        let links = 0;
-        if (z.ton === "steuer" || z.ton === "sozial") {
-          stand -= z.betrag;
-          links = stand;
-        }
-        return (
-          <div key={z.label} className="grid grid-cols-[minmax(0,7.5rem)_1fr_auto] sm:grid-cols-[11rem_1fr_auto] items-center gap-2 sm:gap-3 text-xs sm:text-sm">
-            <span className={z.ton === "brutto" || z.ton === "netto" ? "font-semibold" : ""}>{z.label}</span>
-            <div className="relative h-6">
-              <div className="absolute inset-y-0 rounded-sm" style={{ left: `${(links / brutto) * 100}%`, width: `${(z.betrag / brutto) * 100}%`, background: farbe[z.ton] }} />
-            </div>
-            <span className="tabular-nums font-semibold whitespace-nowrap text-right">
-              {z.wert}
-              {z.zusatz && <span className="block sm:inline sm:ml-2 font-normal opacity-70">{z.zusatz}</span>}
-              {z.plus && <span className="block sm:inline sm:ml-2 font-bold" style={{ color: gruenAuf(dunkel) }}>{z.plus}</span>}
-            </span>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-/** Ein gestapelter Balken mit Legende, z. B. die Rate aus Miete, Steuer und deinem Anteil. */
-function Stapel({ teile }: { teile: ReadonlyArray<StapelTeil> }) {
-  const summe = teile.reduce((s, t) => s + t.betrag, 0);
-  return (
-    <Sichtbar>
-      <div className="flex h-10 rounded-md overflow-hidden bos-wachsen-x" role="img" aria-label={teile.map((t) => `${t.label} ${t.wert}`).join(", ")}>
-        {teile.map((t) => {
-          const anteil = (t.betrag / summe) * 100;
-          return (
-            <div
-              key={t.label}
-              className="flex items-center px-2 text-xs sm:text-sm font-semibold whitespace-nowrap overflow-hidden"
-              style={{ width: `${anteil}%`, background: t.farbe, color: ["#A7D7C5", "#D8C79F", "#CCAC05"].includes(t.farbe) ? P.navy : "#fff" }}
-            >
-              {anteil > 12 ? t.wert : ""}
-            </div>
-          );
-        })}
-      </div>
-      <ul className="mt-3 flex flex-col sm:flex-row sm:flex-wrap gap-x-5 gap-y-1.5 text-xs sm:text-sm">
-        {teile.map((t) => (
-          <li key={t.label} className="flex items-center gap-2">
-            <span aria-hidden className="h-3 w-3 shrink-0 rounded-sm" style={{ background: t.farbe }} />
-            <span>
-              {t.label}: <strong className="tabular-nums">{t.wert}</strong>
-            </span>
-          </li>
-        ))}
-      </ul>
     </Sichtbar>
   );
 }
@@ -306,104 +313,51 @@ function Schluss({ text, wert }: { text: string; wert?: string }) {
 export function SteuerFolien({ oben, ende }: { oben?: ReactNode; ende?: ReactNode }) {
   const t = KONZEPT_STEUER;
   const block = "Steuerersparnis";
-  const ringFarbe = { netto: P.champagner, steuer: P.rot, sozial: P.grauDunkel };
+  const torteFarbe = { netto: { farbe: P.champagner, schrift: P.navy }, steuer: { farbe: P.rot, schrift: "#FFFFFF" }, sozial: { farbe: P.grauDunkel, schrift: "#FFFFFF" } };
+  // Seite 14: Netto unter den Säulen je Weg in eigener Farbe (Christian, 21.10.2026).
+  const nettoFarbe = { leer: P.goldText, grau: "var(--bos-grafik-blau)", gruen: gruenAuf(false) };
   return (
     <div id="konzept-steuer" data-testid="konzept-inhalt-steuer">
-      {/* Titelseite */}
+      {/* Seite 11: Titelseite, das Gehalt als große Torte */}
       <Folie id="steuer-titel" ton="tief" oben={oben} kicker={kicker(`Konzept ${block}`)} titel={t.titel.titel}>
         <p className="mt-3 text-sm" style={{ color: FARBE.hellGedaempft }}>
           {t.dokument} · {t.titel.kicker}
         </p>
-        <div className="mt-10 grid md:grid-cols-[18rem_1fr] gap-8 md:gap-12 items-center">
-          <Ring teile={t.titel.teile.map((x) => ({ betrag: x.betrag, farbe: ringFarbe[x.ton] }))} mitte={t.titel.brutto} unter={t.titel.bruttoText} />
-          <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] mb-2" style={{ color: P.champagner }}>
-              {t.titel.kopf}
-            </p>
-            {t.titel.teile.map((x) => (
-              <div key={x.label} className="grid grid-cols-[1rem_1fr_auto] gap-3 items-center py-3 border-b" style={{ borderColor: "rgba(216,199,159,0.3)" }}>
-                <span aria-hidden className="h-4 w-4 rounded" style={{ background: ringFarbe[x.ton] }} />
-                <span className={x.ton === "steuer" ? "font-semibold text-base md:text-lg" : "font-semibold"}>{x.label}</span>
-                <span className={`font-semibold tabular-nums ${x.ton === "steuer" ? "text-2xl md:text-3xl" : "text-lg md:text-xl"}`} style={{ color: x.ton === "steuer" ? P.rose : "#fff" }}>
-                  {x.wert}
-                </span>
-              </div>
-            ))}
-          </div>
+        <p className="mt-5 text-lg md:text-xl" style={{ color: FARBE.hellText }}>{t.titel.lead}</p>
+        <div className="mt-6" data-testid="gehalt-torte">
+          <Torte teile={t.titel.teile.map((x) => ({ ...x, ...torteFarbe[x.ton] }))} mitte={t.titel.mitte} wert={t.titel.brutto} unter={t.titel.bruttoText} />
         </div>
-        <HeuteMitOs heute={t.titel.heute} mitOs={t.titel.mitOs} dunkel />
+        <ul className="mt-6 grid sm:grid-cols-3 gap-4">
+          {t.titel.teile.map((x) => (
+            <li key={x.label} className="flex items-start gap-3 text-sm" style={{ color: FARBE.hellGedaempft }}>
+              <span aria-hidden className="mt-1 h-3.5 w-3.5 shrink-0 rounded-sm" style={{ background: torteFarbe[x.ton].farbe }} />
+              <span><strong style={{ color: FARBE.hellText }}>{x.label}:</strong> {x.text}</span>
+            </li>
+          ))}
+        </ul>
         <Fussnote dunkel>{t.titel.fuss}</Fussnote>
       </Folie>
 
-      {/* 01 Die Sicht des Finanzamts */}
+      {/* Seite 12: Die Lohnsteuer fließt in den Trichter des Finanzamts */}
       <Folie id="steuer-1" ton="hell" kicker={kicker(block, t.finanzamt.kicker)} titel={t.finanzamt.titel}>
-        {/* Wie in der PDF: 1 → 2 nebeneinander, rechts die Rechnung untereinander, darunter 3 über die volle Breite. */}
-        <div className="mt-8 grid lg:grid-cols-[1fr_17rem] gap-4 items-stretch">
-          <div className="grid md:grid-cols-[1fr_auto_1fr] gap-4 items-stretch min-w-0">
-          <Karte>
-            <Kopf>1 · {t.finanzamt.heute.etikett}</Kopf>
-            <p className="mt-2 font-semibold text-lg">{t.finanzamt.heute.kopf}</p>
-            <Landmark aria-hidden className="my-5 h-14 w-14" style={{ color: P.grauDunkel }} />
-            <Kopf>{t.finanzamt.heute.label}</Kopf>
-            <Gross farbe={P.rot} className="mt-2 text-[2.4rem] md:text-[3rem]">{t.finanzamt.heute.wert}</Gross>
-            <p className="mt-3 text-sm">{t.finanzamt.heute.text}</p>
-          </Karte>
-          <div aria-hidden className="flex items-center justify-center">
-            <span className="flex h-11 w-11 items-center justify-center rounded-full text-white" style={{ background: P.gruen }}>
-              <ArrowRight className="h-5 w-5 rotate-90 md:rotate-0" />
-            </span>
-          </div>
-          <Karte rand={P.gruen}>
-            <Kopf>2 · {t.finanzamt.mitOs.etikett}</Kopf>
-            <p className="mt-2 font-semibold text-lg">{t.finanzamt.mitOs.kopf}</p>
-            <HandCoins aria-hidden className="my-5 h-14 w-14" style={{ color: gruenAuf(false) }} />
-            <Kopf>{t.finanzamt.mitOs.label}</Kopf>
-            <Gross farbe={gruenAuf(false)} className="mt-2 text-[2.4rem] md:text-[3rem]">{t.finanzamt.mitOs.wert}</Gross>
-            <p className="mt-3 text-sm">{t.finanzamt.mitOs.text}</p>
-          </Karte>
-          </div>
+        <div className="mt-8 grid md:grid-cols-[1fr_1.2fr] gap-8 items-center">
+          <FinanzamtTrichter wert={t.finanzamt.wert} />
           <div className="min-w-0">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.16em]" style={{ color: FARBE.goldDunkel }}>{t.finanzamt.rechnungKopf}</p>
-            <div className="grid gap-3">
-              {t.finanzamt.rechnung.map((r) => (
-                <Karte key={r.kopf} rand={r.ergebnis ? P.gruen : undefined} className="md:!p-4">
-                  <Kopf>{r.kopf}</Kopf>
-                  <Gross farbe={r.minus ? P.rot : undefined} className="mt-2 text-[1.6rem]">{r.wert}</Gross>
-                  <p className="mt-1.5 text-xs opacity-80">{r.text}</p>
-                </Karte>
-              ))}
-            </div>
+            <Kopf>{t.finanzamt.label}</Kopf>
+            <Gross farbe={P.rot} className="mt-3 text-[4rem] md:text-[6rem]" >
+              <ZahlText text={t.finanzamt.wert} />
+            </Gross>
+            <p className="mt-4 text-lg md:text-xl">{t.finanzamt.text}</p>
+            <p className="mt-2 text-sm opacity-70">{t.finanzamt.jahr}</p>
           </div>
         </div>
-        <div aria-hidden className="mt-4 flex justify-center">
-          <span className="flex h-11 w-11 items-center justify-center rounded-full text-white" style={{ background: P.gruen }}>
-            <ArrowDown className="h-5 w-5" />
-          </span>
-        </div>
-        <div className="mt-4 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-4" style={{ background: P.navy, color: "#fff", boxShadow: `inset 0 0 0 3px ${P.mint}` }}>
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em]" style={{ color: P.mint }}>
-              3 · {t.finanzamt.ergebnis.etikett}
-            </p>
-            <p className="mt-2 text-lg md:text-2xl font-semibold leading-snug">
-              Das Geld wäre <span style={{ color: P.mint }}>ohnehin weg</span>.
-              <br />
-              {t.finanzamt.ergebnis.satz2}
-            </p>
-          </div>
-          <div className="md:text-right">
-            <p className="text-5xl md:text-7xl font-bold tracking-[-0.04em]" style={{ color: P.mint }}>
-              <ZahlText text={t.finanzamt.ergebnis.wert} />
-            </p>
-            <p className="mt-1 text-xs uppercase tracking-[0.16em]" style={{ color: FARBE.hellGedaempft }}>
-              {t.finanzamt.ergebnis.text}
-            </p>
-          </div>
-        </div>
+        <p data-testid="finanzamt-satz" className="mt-10 rounded-2xl p-6 md:p-8 text-xl md:text-3xl font-semibold leading-snug" style={{ background: P.navy, color: "#fff", boxShadow: `inset 0 0 0 3px ${P.mint}` }}>
+          {mitAkzent(t.finanzamt.satz, P.mint)}
+        </p>
         <Fussnote>{t.finanzamt.fuss}</Fussnote>
       </Folie>
 
-      {/* 02 Der Hebel */}
+      {/* Seite 13: Der Hebel AfA */}
       <Folie id="steuer-2" ton="gruen" kicker={kicker(block, t.hebel.kicker)} titel={t.hebel.titel}>
         <p className="mt-4 text-base md:text-lg" style={{ color: FARBE.hellGedaempft }}>
           {t.hebel.unterzeile}
@@ -436,32 +390,96 @@ export function SteuerFolien({ oben, ende }: { oben?: ReactNode; ende?: ReactNod
         <div className="mt-8 rounded-xl p-4 md:p-5 text-sm md:text-base" style={{ borderLeft: `4px solid ${P.mint}`, background: "rgba(255,255,255,0.06)" }}>
           {mitAkzent(t.hebel.band, P.mint)}
         </div>
+        {/* Zwei Wege zur AfA und die Rechtsgrundlage, hervorgehoben (Christian, 21.10.2026). */}
+        <div data-testid="afa-wege" className="mt-6 rounded-2xl p-5 md:p-7" style={{ background: P.gold, color: P.navy }}>
+          <p className="text-xs font-bold uppercase tracking-[0.16em]">{t.hebel.wege.kopf}</p>
+          <div className="mt-3 grid sm:grid-cols-2 gap-3">
+            {t.hebel.wege.liste.map((w, i) => (
+              <div key={w.titel} className="rounded-xl p-4" style={{ background: "rgba(255,255,255,0.55)" }}>
+                <p className="text-lg md:text-xl font-bold">{i + 1}. {w.titel}</p>
+                <p className="text-sm">{w.text}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-4 text-lg md:text-xl font-semibold leading-snug">{mitAkzent(t.hebel.wege.recht, P.navy)}</p>
+        </div>
         <Fussnote dunkel>{t.hebel.fuss}</Fussnote>
       </Folie>
 
-      {/* 03 Drei Wege im Vergleich */}
+      {/* Seite 14: Drei Wege im Vergleich */}
       <Folie id="steuer-3" ton="hell" kicker={kicker(block, t.dreiWege.kicker)} titel={t.dreiWege.titel}>
         <div className="grid lg:grid-cols-[1.4fr_1fr] gap-6 lg:gap-10 items-end">
         <div className="min-w-0">
         <Etikett dunkel={false}>{t.dreiWege.kopf}</Etikett>
+        {/*
+          Christian, 21.10.2026: die graue Säule halb so hoch wie die grüne, nicht nach Betrag
+          (in der Fußnote so vermerkt). Die Beträge stehen über den Säulen.
+        */}
         <Saeulen
-          max={Math.max(...t.dreiWege.saeulen.map((s) => s.betrag))}
+          max={1}
           saeulen={t.dreiWege.saeulen.map((s) => ({
-            ...s,
+            label: s.label,
+            wert: s.wert,
+            betrag: s.ton === "gruen" ? 1 : s.ton === "grau" ? 0.5 : 0,
             farbe: s.ton === "gruen" ? P.gruen : s.ton === "grau" ? P.grau : "transparent",
             gross: s.ton === "gruen",
+            zeilen: [s.lohnsteuer],
           }))}
         />
+        <div className="mt-4 grid grid-cols-3 gap-3 sm:gap-6" data-testid="netto-zeile">
+          {t.dreiWege.saeulen.map((s) => (
+            <div key={s.label} className="text-center rounded-xl py-3" style={{ background: s.ton === "gruen" ? "rgba(25,138,95,0.12)" : s.ton === "grau" ? "rgba(63,81,181,0.08)" : "rgba(204,172,5,0.14)" }}>
+              <p className="text-[0.65rem] uppercase tracking-[0.14em] opacity-70">{t.dreiWege.nettoKopf}</p>
+              <p className={`font-bold tabular-nums ${s.ton === "gruen" ? "text-2xl sm:text-3xl" : "text-lg sm:text-xl"}`} style={{ color: nettoFarbe[s.ton] }}>{s.netto}</p>
+            </div>
+          ))}
         </div>
-        <HeuteMitOs heute={t.dreiWege.heute} mitOs={t.dreiWege.mitOs} dunkel={false} untereinander />
+        </div>
+        <div className="grid gap-4">
+          <Karte>
+            <Kopf>Heute</Kopf>
+            <Gross farbe={P.rot} className="mt-3 text-[2.4rem] md:text-[3rem]">{t.dreiWege.heute.wert}</Gross>
+            <p className="mt-3 text-sm md:text-base">{t.dreiWege.heute.text}</p>
+          </Karte>
+          {/* Dunkel mit heller Schrift, damit „Mit OS Real Estate“ gut lesbar ist (Christian, 21.10.2026). */}
+          <div className="rounded-2xl p-5 md:p-6" style={{ background: P.navy, color: "#fff", boxShadow: `inset 0 0 0 3px ${P.mint}` }}>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em]" style={{ color: P.mint }}>Mit OS Real Estate</p>
+            <Gross farbe={P.mint} className="mt-3 text-[2.8rem] md:text-[3.6rem]"><ZahlText text={t.dreiWege.mitOs.wert} /></Gross>
+            <p className="mt-3 text-base md:text-lg">{t.dreiWege.mitOs.text}</p>
+          </div>
+        </div>
         </div>
         <Fussnote>{t.dreiWege.fuss}</Fussnote>
       </Folie>
 
-      {/* 04 Unterm Strich */}
+      {/* Seite 15: Unterm Strich, das Mehr-Netto zahlt die Wohnung ab */}
       <Folie id="steuer-4" ton="gruen" kicker={kicker(block, t.unterm.kicker)} titel={t.unterm.titel}>
-        <div className="mt-8 max-w-xl mx-auto">
-          <Saeulen max={Math.max(...t.unterm.saeulen.map((s) => s.betrag))} hoehe={11} saeulen={t.unterm.saeulen.map((s) => ({ ...s, farbe: s.ton === "gruen" ? P.mint : P.champagner, zeilen: [s.text], gross: true }))} />
+        <div className="mt-8 grid lg:grid-cols-[1.3fr_1fr] gap-8 items-center">
+          <div className="min-w-0">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.16em]" style={{ color: P.champagner }}>{t.unterm.balken.kopf}</p>
+            <Sichtbar>
+              <div data-testid="gehaltsbalken" className="flex h-24 rounded-xl overflow-hidden bos-wachsen-x" role="img" aria-label={`${t.unterm.balken.netto.label} ${t.unterm.balken.netto.wert} plus ${t.unterm.balken.plus.label} ${t.unterm.balken.plus.wert} = ${t.unterm.balken.summe}`}>
+                <div className="flex flex-col justify-center px-4" style={{ width: `${(t.unterm.balken.netto.betrag / (t.unterm.balken.netto.betrag + t.unterm.balken.plus.betrag)) * 100}%`, background: P.champagner, color: P.navy }}>
+                  <span className="text-xs font-semibold uppercase tracking-[0.12em]">{t.unterm.balken.netto.label}</span>
+                  <span className="text-2xl font-bold tabular-nums">{t.unterm.balken.netto.wert}</span>
+                </div>
+                <div className="flex flex-col justify-center items-center px-1 text-center" style={{ flex: 1, minWidth: "7.5rem", background: P.mint, color: P.navy, boxShadow: `inset 0 0 0 3px ${P.gold}` }}>
+                  <span className="text-[0.62rem] font-bold uppercase tracking-[0.1em]">{t.unterm.balken.plus.label}</span>
+                  <span className="text-2xl font-bold tabular-nums">{t.unterm.balken.plus.wert}</span>
+                </div>
+              </div>
+            </Sichtbar>
+            <p className="mt-2 text-right text-sm" style={{ color: FARBE.hellGedaempft }}>= {t.unterm.balken.summe} netto im Monat</p>
+            <div className="mt-6 flex items-center gap-3" aria-hidden>
+              <ArrowRight className="h-8 w-8 shrink-0 rotate-90 lg:rotate-0" style={{ color: P.gold }} />
+              <p className="text-xl md:text-2xl font-semibold" style={{ color: P.gold }}>{t.unterm.haus.titel}</p>
+            </div>
+            <p className="mt-2 text-base md:text-lg">{t.unterm.haus.text}</p>
+          </div>
+          <div className="text-center">
+            <HausMitMuenzen text={t.unterm.haus.bild} />
+            <p className="mt-3 text-lg font-semibold" style={{ color: P.mint }}>{t.unterm.haus.bild}</p>
+          </div>
         </div>
         <Karte dunkel rand={P.mint} className="mt-8">
           <div className="grid md:grid-cols-[1fr_auto] gap-4 items-center">
@@ -474,21 +492,6 @@ export function SteuerFolien({ oben, ende }: { oben?: ReactNode; ende?: ReactNod
             </p>
           </div>
         </Karte>
-        <div className="mt-6 rounded-2xl p-6 md:p-8 grid md:grid-cols-[14rem_1fr] gap-6 items-center" style={{ background: "rgba(204,172,5,0.12)", border: `1px solid ${P.gold}` }}>
-          <div className="text-center">
-            <Kopf dunkel>{t.unterm.ersparnis.kopf}</Kopf>
-            <p className="mt-2 text-5xl font-bold" style={{ color: P.gold }}>{t.unterm.ersparnis.wert}</p>
-            <p className="mt-2 text-xs uppercase tracking-[0.16em]" style={{ color: P.gold }}>{t.unterm.ersparnis.text}</p>
-          </div>
-          <div>
-            <p className="text-lg md:text-xl font-semibold leading-snug">{t.unterm.zitat}</p>
-            <ul className="mt-4 space-y-2 text-sm md:text-base list-disc pl-5">
-              {t.unterm.fragen.map((f) => (
-                <li key={f}>{f}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
         {ende}
         <Fussnote dunkel>{t.unterm.fuss}</Fussnote>
       </Folie>
@@ -571,78 +574,9 @@ function VermoegenKurve({ dunkel }: { dunkel: boolean }) {
   );
 }
 
-/**
- * Spanne der Monatsbeträge nach Steuer in einer Phase, auf 10 € gerundet, z. B. „du zahlst 140 bis 200 €“.
- * Ab der Abzahlung ohne das erste Jahr, in dem noch Raten laufen (wie in der PDF).
- */
-function spanne(p: { von: number; bis: number; vorsatz: string }) {
-  const von = p.vorsatz === "+" ? p.von + 1 : p.von;
-  const werte = MONATSVERLAUF.filter((m) => m.alter >= von && m.alter <= p.bis).map((m) => Math.round(Math.abs(m.nach) / 10) * 10);
-  return `${p.vorsatz}${Math.min(...werte).toLocaleString("de-DE")} bis ${Math.max(...werte).toLocaleString("de-DE")} €${p.vorsatz === "+" ? " →" : ""}`;
-}
-
-/** Zuzahlung und Überschuss je Alter, eine Wohnung, aus MONATSVERLAUF. */
-function MonatsBalken({ dunkel }: { dunkel: boolean }) {
-  const W = 540, H = 240, links = 46, rechts = 534, oben = 8, unten = 210;
-  const min = -600, max = 800;
-  const y = (v: number) => oben + ((max - v) / (max - min)) * (unten - oben);
-  const breite = (rechts - links) / MONATSVERLAUF.length;
-  const x = (alter: number) => links + (alter - 25) * breite;
-  const t = KONZEPT_ALTER.zuzahlung;
-  const zahlst = P.gold;
-  const bekommst = gruenAuf(dunkel);
-  // „Vor Steuer“ als gestrichelte Treppe wie im PDF, Stufe je Jahr.
-  const vorTreppe = MONATSVERLAUF.map((m) => `${x(m.alter).toFixed(1)},${y(m.vor).toFixed(1)} ${(x(m.alter) + breite).toFixed(1)},${y(m.vor).toFixed(1)}`).join(" ");
-  return (
-    <Sichtbar schwelle={0.35}>
-    <svg viewBox={`0 0 ${W} ${H + 12}`} className="w-full h-auto" role="img" aria-label={t.phasen.map((p) => `${p.titel}: ${spanne(p)}`).join(", ")} fill="currentColor">
-      {[-600, -400, -200, 0, 200, 400, 600, 800].map((v) => (
-        <g key={v}>
-          <line x1={links} x2={rechts} y1={y(v)} y2={y(v)} stroke="currentColor" opacity={v === 0 ? 0.5 : 0.1} />
-          <text x={links - 5} y={y(v) + 3} fontSize="8.5" textAnchor="end" opacity="0.6">{v.toLocaleString("de-DE")} €</text>
-        </g>
-      ))}
-      {/* Die Säulen wachsen Jahr für Jahr von der Nulllinie aus. */}
-      {MONATSVERLAUF.map((m, i) => (
-        <rect
-          key={m.alter}
-          className={`bos-wachsen-y ${m.nach < 0 ? "bos-nach-unten" : ""}`}
-          style={verzoegert(i * 45)}
-          x={x(m.alter) + 1.5}
-          width={breite - 3}
-          y={y(Math.max(0, m.nach))}
-          height={Math.abs(y(m.nach) - y(0))}
-          fill={m.nach < 0 ? zahlst : bekommst}
-        />
-      ))}
-      <g className="bos-blende" style={verzoegert(1600)}>
-        <polyline points={vorTreppe} fill="none" stroke="currentColor" strokeWidth="1.3" strokeDasharray="3 3" strokeOpacity="0.6" />
-      </g>
-      {[25, 30, 35, 40, 45, 50, 55, 60].map((a) => (
-        <text key={a} x={x(a) + breite / 2} y={unten + 14} fontSize="8.5" textAnchor="middle" opacity="0.8">{a}</text>
-      ))}
-      <text x={rechts} y={unten + 26} fontSize="8.5" textAnchor="end" opacity="0.6">Alter</text>
-      {t.phasen.map((p, i) => {
-        const mitte = (x(p.von) + x(p.bis) + breite) / 2;
-        const farbe = i === 2 ? bekommst : dunkel ? P.gold : P.goldText;
-        const ty = i === 2 ? y(560) : y(240);
-        return (
-          <g key={p.titel} className="bos-blende" style={verzoegert(1200 + i * 450)}>
-            <text x={i === 2 ? x(p.von) - 4 : mitte} y={ty} fontSize="10" fontWeight="700" textAnchor={i === 2 ? "end" : "middle"} fill={farbe}>{p.titel}</text>
-            <text x={i === 2 ? x(p.von) - 4 : mitte} y={ty + 13} fontSize="9.5" textAnchor={i === 2 ? "end" : "middle"} fill={farbe}>{spanne(p)}</text>
-          </g>
-        );
-      })}
-    </svg>
-    </Sichtbar>
-  );
-}
-
 export function AltersvorsorgeFolien({ oben, ende }: { oben?: ReactNode; ende?: ReactNode }) {
   const t = KONZEPT_ALTER;
   const block = "Altersvorsorge";
-  const tabelle = t.zuzahlung.tabelle.alter.map((a) => MONATSVERLAUF.find((m) => m.alter === a)!);
-  const euro = (v: number) => `${v < 0 ? "−" : ""}${Math.abs(v).toLocaleString("de-DE")} €`;
   return (
     <div id="konzept-alter" data-testid="konzept-inhalt-alter">
       {/* Titelseite mit Foto */}
@@ -675,49 +609,43 @@ export function AltersvorsorgeFolien({ oben, ende }: { oben?: ReactNode; ende?: 
         </div>
       </section>
 
-      {/* 01 Ein Monat · heute */}
-      <Folie id="alter-1" ton="hell" kicker={kicker(block, t.heute.kicker)} titel={t.heute.titel}>
-        <p className="mt-6 max-w-3xl text-base md:text-lg">{t.heute.lead}</p>
-        <Etikett dunkel={false}>{t.heute.kopf}</Etikett>
-        <Wasserfall zeilen={t.heute.zeilen} dunkel={false} />
-        <KennKarten karten={t.heute.karten} dunkel={false} />
-        <Etikett dunkel={false}>{t.heute.abzuegeKopf}</Etikett>
-        <Stapel teile={t.heute.abzuege} />
-        <p className="mt-8 border-l-4 pl-4 text-lg md:text-xl font-medium" style={{ borderColor: P.gold }}>{t.heute.sprech}</p>
-        <Fussnote>{t.heute.fuss}</Fussnote>
-      </Folie>
-
-      {/* 02 Ein Monat · mit Immobilie */}
-      <Folie id="alter-2" ton="gruen" kicker={kicker(block, t.mitImmobilie.kicker)} titel={t.mitImmobilie.titel}>
-        <p className="mt-6 max-w-3xl text-base md:text-lg">{t.mitImmobilie.lead}</p>
-        <Etikett dunkel>{t.mitImmobilie.kopf}</Etikett>
-        <Wasserfall zeilen={t.mitImmobilie.zeilen} dunkel />
-        <KennKarten karten={t.mitImmobilie.karten} dunkel />
-        <Etikett dunkel>{t.mitImmobilie.rateKopf}</Etikett>
-        <Stapel teile={t.mitImmobilie.rate} />
-        <div className="mt-8 rounded-xl p-4 md:p-5 text-sm md:text-base leading-relaxed" style={{ borderLeft: `4px solid ${P.mint}`, background: "rgba(255,255,255,0.06)" }}>
-          {t.mitImmobilie.band}
-        </div>
-        <p className="mt-3 text-sm" style={{ color: FARBE.hellGedaempft }}>{t.mitImmobilie.rechnung}</p>
-        <Fussnote dunkel>{t.mitImmobilie.fuss}</Fussnote>
-      </Folie>
-
-      {/* 03 Ein Arbeitsleben */}
+      {/* Seite 19: Ein Arbeitsleben. Drei große Kästen über die ganze Breite, darunter die Einkünfte aus drei Immobilien. */}
       <Folie id="alter-3" ton="hell" kicker={kicker(block, t.arbeitsleben.kicker)} titel={t.arbeitsleben.titel}>
-        <KennKarten karten={t.arbeitsleben.karten} dunkel={false} />
-        <Etikett dunkel={false}>{t.arbeitsleben.rausKopf}</Etikett>
-        <Stapel teile={t.arbeitsleben.raus} />
+        <div className="mt-8 grid gap-4 sm:grid-cols-3" data-testid="arbeitsleben-karten">
+          {t.arbeitsleben.karten.map((k) => {
+            const farbe = k.ton === "gruen" ? P.gruen : k.ton === "rot" ? P.rot : P.gold;
+            return (
+              <div key={k.kopf} className="rounded-2xl p-6 md:p-8 min-w-0" style={{ background: farbe, color: k.ton === "gold" ? P.navy : "#FFFFFF" }} data-ton={k.ton}>
+                <p className="text-xs md:text-sm font-semibold uppercase tracking-[0.16em]">{k.kopf}</p>
+                <p className="mt-3 text-[2.6rem] md:text-[3.4rem] font-bold tabular-nums leading-none"><ZahlText text={k.wert} /></p>
+                <p className="mt-3 text-sm md:text-base opacity-90">{k.text}</p>
+              </div>
+            );
+          })}
+        </div>
         <Etikett dunkel={false}>{t.arbeitsleben.reinKopf}</Etikett>
-        <Balken
-          max={1_760_000}
-          zeilen={t.arbeitsleben.rein.map((r) => ({ ...r, farbe: r.ton === "gruen" ? P.gruen : r.ton === "gold" ? P.gold : P.tinte, fett: true }))}
-        />
+        <div className="grid lg:grid-cols-[1.5fr_1fr] gap-6 items-center">
+          <Balken
+            max={1_300_000}
+            zeilen={t.arbeitsleben.rein.map((r) => ({
+              ...r,
+              wert: r.text ? `${r.wert} ${r.text}` : r.wert,
+              farbe: r.ton === "gruen" ? P.gruen : r.ton === "gold" ? P.gold : P.tinte,
+              fett: true,
+            }))}
+          />
+          {/* Bezug: Abgaben (rot) gehören zum umgewandelten Vermögen (grün). */}
+          <div data-testid="arbeitsleben-bezug" className="rounded-2xl p-5 md:p-6 flex gap-4 items-start" style={{ border: `2px solid ${P.gruen}`, background: "rgba(25,138,95,0.06)" }}>
+            <ArrowLeft aria-hidden className="h-8 w-8 shrink-0 hidden lg:block" style={{ color: P.gruen }} />
+            <p className="text-base md:text-lg font-medium leading-snug">{t.arbeitsleben.bezug}</p>
+          </div>
+        </div>
         <KennKarten karten={t.arbeitsleben.ergebnis} dunkel={false} />
         <Schluss text={t.arbeitsleben.schluss} />
         <Fussnote>{t.arbeitsleben.fuss}</Fussnote>
       </Folie>
 
-      {/* 04 Eine Wohnung */}
+      {/* Seite 20: Eine Wohnung */}
       <Folie id="alter-4" ton="gruen" kicker={kicker(block, t.eineWohnung.kicker)} titel={t.eineWohnung.titel}>
         <p className="mt-6 max-w-3xl text-base md:text-lg">{t.eineWohnung.lead}</p>
         <Etikett dunkel>{t.eineWohnung.kopf}</Etikett>
@@ -749,90 +677,44 @@ export function AltersvorsorgeFolien({ oben, ende }: { oben?: ReactNode; ende?: 
         <Fussnote dunkel>{t.eineWohnung.fuss}</Fussnote>
       </Folie>
 
-      {/* 05 Deine monatliche Zuzahlung */}
-      <Folie id="alter-5" ton="hell" kicker={kicker(block, t.zuzahlung.kicker)} titel={t.zuzahlung.titel}>
-        <p className="mt-6 max-w-3xl text-base md:text-lg">{t.zuzahlung.lead}</p>
-        {/* Wie in der PDF: Kästchen links untereinander, Grafik rechts. */}
-        <div className="mt-6 grid lg:grid-cols-[14rem_1fr] gap-4 items-start">
-        <KennKarten karten={t.zuzahlung.karten} dunkel={false} spalte />
-        <div className="min-w-0">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.16em]" style={{ color: FARBE.goldDunkel }}>{t.zuzahlung.kopf}</p>
-        <ul className="mb-3 flex flex-col sm:flex-row sm:flex-wrap gap-x-5 gap-y-1 text-xs sm:text-sm">
-          <li className="flex items-center gap-2"><span aria-hidden className="h-3 w-3 rounded-sm" style={{ background: P.gold }} />{t.zuzahlung.legende.zahlst}</li>
-          <li className="flex items-center gap-2"><span aria-hidden className="h-3 w-3 rounded-sm" style={{ background: P.gruen }} />{t.zuzahlung.legende.bekommst}</li>
-          <li className="flex items-center gap-2"><span aria-hidden className="h-3 w-3 rounded-sm border border-dashed" style={{ borderColor: P.grauDunkel }} />{t.zuzahlung.legende.vor}</li>
-        </ul>
-        <Karte className="!p-3 md:!p-5">
-          {/* Auf dem Handy waagerecht scrollen statt die Schrift zu schrumpfen. */}
-          <div className="overflow-x-auto">
-            <div className="min-w-[520px]"><MonatsBalken dunkel={false} /></div>
-          </div>
-        </Karte>
-        </div>
-        </div>
-        <Etikett dunkel={false}>{t.zuzahlung.tabelleKopf}</Etikett>
-        <div data-ui="card" className="overflow-x-auto rounded-2xl border bg-card p-2 md:p-4">
-          <table className="w-full min-w-[560px] text-sm tabular-nums">
-            <thead>
-              <tr className="text-xs uppercase tracking-[0.06em] text-muted-foreground">
-                <th className="text-left font-medium py-2 px-2">Im Monat</th>
-                {tabelle.map((m) => <th key={m.alter} className="text-right font-medium py-2 px-2">{m.alter} J.</th>)}
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-t border-border">
-                <td className="py-2 px-2">vor Steuer</td>
-                {tabelle.map((m) => <td key={m.alter} className="py-2 px-2 text-right">{euro(m.vor)}</td>)}
-              </tr>
-              <tr className="border-t border-border font-semibold">
-                <td className="py-2 px-2">nach Steuer</td>
-                {tabelle.map((m) => <td key={m.alter} className="py-2 px-2 text-right" style={{ color: m.nach < 0 ? P.goldText : gruenAuf(false) }}>{euro(m.nach)}</td>)}
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <Fussnote>{t.zuzahlung.fuss}</Fussnote>
-      </Folie>
-
-      {/* 06 Eine, zwei, drei Wohnungen */}
+      {/* Seite 22: Eine, zwei, drei Wohnungen. Säulen groß, Tabelle zurückhaltend, ganze Zahlen statt „0,39 Mio.“. */}
       <Folie id="alter-6" ton="gruen" kicker={kicker(block, t.mehrWohnungen.kicker)} titel={t.mehrWohnungen.titel}>
         <p className="mt-6 max-w-3xl text-base md:text-lg">{t.mehrWohnungen.lead}</p>
         <Etikett dunkel>{t.mehrWohnungen.kopf}</Etikett>
-        <Saeulen max={3} hoehe={12} saeulen={t.mehrWohnungen.saeulen.map((s, i) => ({ ...s, zeilen: [s.text], farbe: i === 2 ? P.mint : P.champagner, gross: i === 2 }))} />
-        <div className="mt-8 overflow-x-auto">
-          <table className="w-full min-w-[520px] text-sm md:text-base tabular-nums">
+        <Saeulen max={3} hoehe={17} saeulen={t.mehrWohnungen.saeulen.map((s, i) => ({ ...s, zeilen: [s.text], farbe: i === 2 ? P.mint : P.champagner, gross: true }))} />
+        <Schluss text={t.mehrWohnungen.schluss} wert={t.mehrWohnungen.schlussWert} />
+        <div className="mt-6 overflow-x-auto opacity-80">
+          <table className="w-full min-w-[480px] text-xs md:text-sm tabular-nums">
             <thead>
               {/* Die Glasschicht hinterlegt Tabellenköpfe hell; auf Dunkelgrün bleibt der Kopf durchsichtig. */}
-              <tr className="text-xs uppercase tracking-[0.06em]" style={{ color: FARBE.hellGedaempft, background: "transparent" }}>
+              <tr className="text-[0.65rem] uppercase tracking-[0.06em]" style={{ color: FARBE.hellGedaempft, background: "transparent" }}>
                 <th />
-                {t.mehrWohnungen.spalten.map((s, i) => (
-                  <th key={s} className="text-right font-medium py-2 px-2" style={i === 2 ? { color: P.mint } : undefined}>{s}</th>
+                {t.mehrWohnungen.spalten.map((s) => (
+                  <th key={s} className="text-right font-medium py-1.5 px-2">{s}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {t.mehrWohnungen.zeilen.map((z) => (
-                <tr key={z.text} className={`border-t ${z.summe ? "font-semibold" : ""}`} style={{ borderColor: "rgba(243,247,245,0.2)" }}>
-                  <td className="py-2.5 px-2">{z.text}</td>
-                  {z.werte.map((v, i) => <td key={i} className="py-2.5 px-2 text-right whitespace-nowrap" style={i === 2 ? { color: P.mint } : undefined}>{v}</td>)}
+                <tr key={z.text} className="border-t" style={{ borderColor: "rgba(243,247,245,0.15)" }}>
+                  <td className="py-1.5 px-2">{z.text}</td>
+                  {z.werte.map((v, i) => <td key={i} className="py-1.5 px-2 text-right whitespace-nowrap">{v}</td>)}
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <Schluss text={t.mehrWohnungen.schluss} wert={t.mehrWohnungen.schlussWert} />
         <Fussnote dunkel>{t.mehrWohnungen.fuss}</Fussnote>
       </Folie>
 
-      {/* 07 Nach der Abzahlung */}
+      {/* Seite 23: Nach der Abzahlung. Zeitstrahl über die ganze Breite, darunter A und B mit Pfeilen. */}
       <Folie id="alter-7" ton="hell" kicker={kicker(block, t.rente.kicker)} titel={t.rente.titel}>
         <p className="mt-6 max-w-3xl text-base md:text-lg">{t.rente.lead}</p>
-        {/* Zeitstrahl: drei Wohnungen, dann abbezahlt, dann zwei Wege. Läuft einmal ab, wenn er ins Bild kommt. */}
-        <Sichtbar className="mt-10 relative" schwelle={0.4}>
-          <div aria-hidden className="absolute left-4 right-4 top-[1.1rem] h-1 rounded bg-muted" />
+        <Sichtbar className="mt-10 relative rounded-2xl border bg-card p-6 md:p-8" schwelle={0.4}>
+          <div aria-hidden className="absolute left-10 right-10 top-[3.1rem] md:top-[3.6rem] h-2 rounded bg-muted" />
           <div
             aria-hidden
-            className="absolute left-4 right-4 top-[1.1rem] h-1 rounded bos-wachsen-x"
+            className="absolute left-10 right-10 top-[3.1rem] md:top-[3.6rem] h-2 rounded bos-wachsen-x"
             style={{ transitionDuration: "2.4s", background: `linear-gradient(90deg, ${P.gold} 0%, ${P.gold} 55%, ${P.gruen} 55%)` }}
           />
           <ol className="relative grid grid-cols-3 gap-2" data-testid="rente-zeitstrahl">
@@ -841,11 +723,11 @@ export function AltersvorsorgeFolien({ oben, ende }: { oben?: ReactNode; ende?: 
                 key={z.alter}
                 className={`flex flex-col min-w-0 ${i === 0 ? "items-start text-left" : i === 1 ? "items-center text-center" : "items-end text-right"}`}
               >
-                <span className="bos-auftauchen h-10 w-10 rounded-full border-4 bg-card" style={{ ...verzoegert(i * 1100), borderColor: i === 0 ? P.gold : P.gruen }} />
+                <span className="bos-auftauchen h-14 w-14 rounded-full border-[6px] bg-card" style={{ ...verzoegert(i * 1100), borderColor: i === 0 ? P.gold : P.gruen }} />
                 <div className="bos-blende" style={verzoegert(i * 1100 + 150)}>
-                  <p className="mt-2 font-semibold">{z.alter}</p>
-                  <p className="text-xs font-medium" style={{ color: i === 0 ? FARBE.goldDunkel : FARBE.gruenText }}>{z.titel}</p>
-                  <p className="text-xs text-muted-foreground max-w-[8rem]">{z.text}</p>
+                  <p className="mt-3 text-2xl md:text-3xl font-bold">{z.alter}</p>
+                  <p className="text-sm md:text-base font-semibold" style={{ color: i === 0 ? FARBE.goldDunkel : FARBE.gruenText }}>{z.titel}</p>
+                  <p className="text-sm text-muted-foreground max-w-[12rem]">{z.text}</p>
                 </div>
                 {"wohnungen" in z && z.wohnungen && (
                   <ul className="mt-3 flex flex-col sm:flex-row gap-1.5" aria-label={z.text}>
@@ -864,8 +746,16 @@ export function AltersvorsorgeFolien({ oben, ende }: { oben?: ReactNode; ende?: 
               </li>
             ))}
           </ol>
-          <p className="mt-3 text-xs font-medium bos-blende" style={{ ...verzoegert(900), color: FARBE.goldDunkel }}>25 bis {t.rente.zeitstrahl[1].alter.replace(" J.", "")}: {t.rente.zahlstZu}</p>
+          <p className="mt-4 text-sm font-medium bos-blende" style={{ ...verzoegert(900), color: FARBE.goldDunkel }}>25 bis {t.rente.zeitstrahl[1].alter.replace(" J.", "")}: {t.rente.zahlstZu}</p>
         </Sichtbar>
+        {/* Vom Renteneintritt zeigen zwei Pfeile auf Weg A und Weg B. */}
+        <div aria-hidden className="mt-2 grid grid-cols-2 gap-4">
+          {[P.blau, P.gruen].map((farbe, i) => (
+            <div key={farbe} className="flex justify-center">
+              <ArrowDown className="h-10 w-10" style={{ color: farbe, transform: i === 0 ? "rotate(20deg)" : "rotate(-20deg)" }} />
+            </div>
+          ))}
+        </div>
         <Etikett dunkel={false}>{t.rente.wegeKopf}</Etikett>
         <Sichtbar className="grid md:grid-cols-2 gap-4" schwelle={0.3}>
           {t.rente.wege.map((w, i) => (
@@ -887,7 +777,7 @@ export function AltersvorsorgeFolien({ oben, ende }: { oben?: ReactNode; ende?: 
         <Fussnote>{t.rente.grundlagen}</Fussnote>
       </Folie>
 
-      {/* 08 Mit einer Wohnung beginnen, mit uns drei aufbauen (PDF-Präsentation Folie 24) */}
+      {/* Seite 24: Mit einer Wohnung beginnen, mit uns drei aufbauen */}
       <Folie id="alter-8" ton="gruen" kicker={kicker(block, t.aufbau.kicker)} titel={t.aufbau.titel}>
         <Sichtbar className="mt-10 relative" schwelle={0.3}>
           <div aria-hidden className="hidden lg:block absolute left-[10%] right-[10%] top-4 h-px" style={{ background: "rgba(243,247,245,0.3)" }} />

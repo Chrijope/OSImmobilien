@@ -8,18 +8,20 @@
 # 127,32 € (inkl. Verwaltung) + Erhaltungsrücklage 36,88 €, AfA ≈ 3,1 % auf 152.768 € (80 % Gebäudeanteil inkl.
 # Nebenkosten; Restnutzungsdauer laut Ersteinschätzung 32 Jahre, Gutachten nötig), Kaufnebenkosten 14.960 € aus Eigenkapital.
 # Szenario wie Exposé: Miete linear bis 20 €/m² im Jahr 2060, Garage bis 150 €, Kosten +2 % im Jahr, Wert +2 % im Jahr.
-# Beispielperson: 80.000 € brutto, Steuerklasse I, kinderlos, ohne Kirchensteuer, Grundtarif 2026 (rechnung2.est).
+# Beispielperson: 65.000 € brutto (seit 21.10.2026, vorher 80.000 €), Steuerklasse I, kinderlos, ohne Kirchensteuer, Grundtarif 2026 (rechnung2.est).
 # Abweichung vom Exposé: Das Exposé rechnet pauschal mit 42 % Grenzsteuersatz; hier wird für die Beispielperson der
 # tatsächliche Tarif gerechnet (niedriger), damit Folie 8/9 und die Steuer- und Arbeitsleistungsseiten übereinstimmen.
 import json
 from rechnung2 import est, BBG_KV
 
 # ---------- Beispielperson ----------
-B = 80000
+B = 65000
 rv, av = 0.093 * B, 0.013 * B
-kv, pv = 0.0875 * BBG_KV, 0.024 * BBG_KV
+# Kranken- und Pflegeversicherung vom Gehalt, höchstens bis zur Beitragsbemessungsgrenze.
+KVB = min(B, BBG_KV)
+kv, pv = 0.0875 * KVB, 0.024 * KVB
 SOZ = rv + av + kv + pv
-VORSORGE = rv + 0.0845 * BBG_KV + pv + av
+VORSORGE = rv + 0.0845 * KVB + pv + av
 ZVE = B - 1230 - 36 - VORSORGE
 LST = est(ZVE)
 assert LST < 20350, "Soli-Freigrenze überschritten"
@@ -66,7 +68,9 @@ _, Z1, T1, _ = jahr(DARL)
 def variante(satz, n=1):
     afa = GEB * satz; erg = MIETE - Z1 - afa - kost_jahr(1, True)
     ersp = LST - est(ZVE + n * erg)
-    lst_m = round((LST - ersp) / 12); m = round(LST / 12) - lst_m      # so passen Lohnsteuer, Ersparnis und Netto zusammen
+    # Die Ersparnis selbst runden (nicht die Differenz zweier gerundeter Lohnsteuerwerte), sonst wichen
+    # Anteil auf den Folien und Monatsverlauf um 1 € voneinander ab. Lohnsteuer und Netto folgen daraus.
+    m = round(ersp / 12); lst_m = round(LST / 12) - m
     return dict(afa=afa, erg=erg, ersp=ersp, m=m, lst_m=lst_m, netto_m=round(NETTO / 12) + m)
 V2, V4 = variante(AFA_N), variante(AFA_OS)
 V8 = variante(0.08)                                 # nur für Kompatibilität, wird nicht mehr gezeigt
@@ -126,4 +130,4 @@ if __name__ == "__main__":
     for r in P1: print(r["alter"], round(r["miete_m"]), round(r["rest"]), round(r["erg"]), round(r["steuer"]), round(r["cf_vor"] / 12), round(r["cf_nach"] / 12))
     # Selbstprüfung gegen das Exposé WE 1
     assert round(RATE) == 880 and abs(MIETE - 7594.68) < 0.01 and round(GEB * AFA_OS) == 6111
-    assert EIGEN <= 200, "Eigenanteil über 200 €"
+    assert EIGEN <= 200, "Eigenanteil über 200 €"  # 65.000 €: rund 175 €

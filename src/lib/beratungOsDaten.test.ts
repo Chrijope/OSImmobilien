@@ -8,35 +8,41 @@ import { lueckenSatz } from "./beratungOsDaten";
 
 describe("Rechnungen der Beratungspräsentation", () => {
   it("übernimmt die Reihen der Diagramme unverändert aus der gemeinsamen Beispielrechnung", () => {
-    // Tabelle „Die Zahlen dazu“ der PDF-Präsentation vom 21.10.2026 (Folie 21)
+    // Monatswerte je Alter bei 65.000 € brutto (seit 21.10.2026), vor und nach Steuer.
     const pdf: Record<number, [number, number]> = {
-      25: [-411, -144], 30: [-374, -139], 40: [-306, -153], 49: [-252, -199],
-      50: [-246, -412], 57: [-210, -494], 60: [672, 366], 64: [645, 348],
+      25: [-411, -175], 30: [-374, -167], 40: [-306, -170], 49: [-252, -205],
+      50: [-246, -393], 57: [-210, -463], 60: [672, 399], 64: [645, 380],
     };
     for (const [alter, [vor, nach]] of Object.entries(pdf)) {
       expect(MONATSVERLAUF.find((m) => m.alter === Number(alter)), `Alter ${alter}`).toMatchObject({ vor, nach });
     }
-    // „Nach Steuer zahlst du bis 57 insgesamt rund 89.600 € zu“
+    // „Nach Steuer zahlen Sie bis 57 insgesamt rund 93.200 € zu“
     const zuzahlung = MONATSVERLAUF.filter((m) => m.alter <= 57).reduce((s, m) => s - m.nach * 12, 0);
-    expect(Math.abs(zuzahlung - 89_600)).toBeLessThan(300);
+    expect(Math.abs(zuzahlung - 93_200)).toBeLessThan(300);
     // Kredit nach 404 Monaten abgezahlt, mit 58; Wert mit 65: rund 388.600 €
     expect(VERLAUF_WOHNUNG.find((p) => p.rest === 0)?.alter).toBe(59);
     expect(VERLAUF_WOHNUNG.at(-1)).toMatchObject({ alter: 65, rest: 0 });
     expect(Math.round(VERLAUF_WOHNUNG.at(-1)!.wert / 100) * 100).toBe(388_600);
   });
 
-  it("rechnet die Beispielwohnung wie die PDF: Rate und Hausgeld gehen in Miete, Steuer und Anteil auf", () => {
+  it("rechnet die Beispielwohnung mit 65.000 € brutto: Rate und Hausgeld gehen in Miete, Steuer und Anteil auf", () => {
     const w = BEISPIEL.wohnung;
-    expect([w.miete, w.ersparnis, w.anteil, w.tilgung, w.vorSteuer]).toEqual([633, 267, 144, 180, 411]);
+    expect(BEISPIEL.person.bruttoJahr).toBe(65_000);
+    expect([w.miete, w.ersparnis, w.anteil, w.tilgung, w.vorSteuer]).toEqual([633, 236, 175, 180, 411]);
+    // Anteil auf den Folien und im Monatsverlauf gleich (Rundung der Ersparnis, 21.10.2026).
+    expect(MONATSVERLAUF[0].nach).toBe(-w.anteil);
+    expect(BEISPIEL.mehr[0].anfang).toBe(w.anteil);
     expect(w.miete + w.ersparnis + w.anteil).toBe(w.rate + w.hausgeld);
     expect(w.vorSteuer - w.ersparnis).toBe(w.anteil);
-    expect(BEISPIEL.drei.ersparnisJahr1).toBe(741);
-    // Die Folien nennen dieselben Zahlen wie die PDF.
-    expect(KONZEPT_STEUER.titel.mitOs.wert).toBe("+267 €");
+    expect(BEISPIEL.drei.ersparnisJahr1).toBe(646);
+    expect(KONZEPT_STEUER.dreiWege.mitOs.wert).toBe("+236 €");
+    expect(KONZEPT_STEUER.finanzamt.wert).toBe("873 €");
     expect(KONZEPT_STEUER.hebel.balken.map((b) => b.label)).not.toContain("bis 8 % möglich");
-    expect(KONZEPT_ALTER.rente.wege.map((x) => x.wert)).toEqual(["≈ 1,06 Mio. €", "≈ 1.510 € im Monat"]);
-    expect(KONZEPT_ALTER.mehrWohnungen.zeilen[1].werte).toEqual(["144 €", "308 €", "492 €"]);
-    expect(KONZEPT_ALTER.arbeitsleben.ergebnis.map((k) => k.wert)).toEqual(["≈ 1.440 €", "147.200 €", "≈ 1,17 Mio. €"]);
+    expect(KONZEPT_ALTER.rente.wege.map((x) => x.wert)).toEqual(["≈ 1.056.000 €", "≈ 1.510 € im Monat"]);
+    expect(KONZEPT_ALTER.mehrWohnungen.zeilen[1].werte).toEqual(["175 €", "370 €", "587 €"]);
+    // Ganze Zahlen statt „0,39 Mio.“ (Christian, 21.10.2026).
+    expect(KONZEPT_ALTER.mehrWohnungen.saeulen.map((x) => x.wert)).toEqual(["388.600 €", "777.200 €", "1.165.800 €"]);
+    expect(KONZEPT_ALTER.arbeitsleben.ergebnis.map((k) => k.wert)).toEqual(["≈ 1.440 €", "129.100 €", "≈ 1.165.800 €"]);
   });
 
   it("nennt unter der Rentenlücke die Anteile aus den Eingaben, ohne Lücke keinen Satz", () => {

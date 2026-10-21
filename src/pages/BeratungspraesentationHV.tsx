@@ -303,6 +303,55 @@ function AnsprechpartnerPlatzhalter({ dunkel, etikett }: { dunkel?: boolean; eti
   );
 }
 
+/**
+ * „Wer zahlt Ihre Finanzierung?“ als Ring (PDF-Präsentation Folie 10). Seit dem
+ * 21.10.2026 (Christian): Mieter grün, Finanzamt gelb, Sie rot; die Beträge
+ * stehen an den Segmenten. Die Segmente bleiben maßstabsgetreu, der kleinste
+ * Teil (Ihr Anteil) ist herausgezogen und eigens beschriftet. Der Ring sitzt
+ * ganz in der Zeichenfläche, damit nichts abgeschnitten wird.
+ */
+function FinanzierungsRing() {
+  const f = OS_TEXTE.prinzip.finanzierung;
+  const summe = f.teile.reduce((s, x) => s + x.betrag, 0);
+  const M = 130, R = 92, r = 58, raus = 12;
+  const punkt = (winkel: number, radius: number, versatz = 0, mitte = 0) => {
+    const w = ((winkel - 90) * Math.PI) / 180;
+    const v = ((mitte - 90) * Math.PI) / 180;
+    return [M + Math.cos(w) * radius + Math.cos(v) * versatz, M + Math.sin(w) * radius + Math.sin(v) * versatz];
+  };
+  let start = 0;
+  const segmente = f.teile.map((x, i) => {
+    const von = start;
+    start += (x.betrag / summe) * 360;
+    const bis = start;
+    const mitte = (von + bis) / 2;
+    const istSie = i === f.teile.length - 1;
+    const v = istSie ? raus : 0;
+    const gross = bis - von > 180 ? 1 : 0;
+    const [ax, ay] = punkt(von + 0.8, R, v, mitte);
+    const [bx, by] = punkt(bis - 0.8, R, v, mitte);
+    const [cx, cy] = punkt(bis - 0.8, r, v, mitte);
+    const [dx, dy] = punkt(von + 0.8, r, v, mitte);
+    const d = `M${ax},${ay} A${R},${R} 0 ${gross} 1 ${bx},${by} L${cx},${cy} A${r},${r} 0 ${gross} 0 ${dx},${dy} Z`;
+    const [lx, ly] = punkt(mitte, (R + r) / 2, v, mitte);
+    return { x, d, lx, ly, istSie, mitte, v };
+  });
+  return (
+    <svg viewBox="0 0 260 260" className="bos-auftauchen mx-auto w-full max-w-[22rem] h-auto overflow-visible" role="img" data-testid="finanzierung-ring" aria-label={`${f.summe} ${f.summeText}: ${f.teile.map((x) => `${x.label} ${x.betrag} €`).join(", ")}`}>
+      {segmente.map((s) => (
+        <g key={s.x.label}>
+          <path d={s.d} fill={s.x.farbe} stroke={s.istSie ? "#FFFFFF" : "none"} strokeWidth={s.istSie ? 2.5 : 0} />
+          <text x={s.lx} y={s.ly + 4} textAnchor="middle" fontSize={s.istSie ? 12 : 14} fontWeight="700" fill={s.x.schrift}>
+            {s.x.betrag.toLocaleString("de-DE")} €
+          </text>
+        </g>
+      ))}
+      <text x={M} y={M - 2} textAnchor="middle" fontSize="22" fontWeight="700" fill="currentColor">{f.summe}</text>
+      <text x={M} y={M + 15} textAnchor="middle" fontSize="8" letterSpacing="1.2" fill="currentColor" opacity="0.6">{f.summeText.toUpperCase()}</text>
+    </svg>
+  );
+}
+
 /** Werte der Kaufkraft je Jahr, dieselbe Rechnung wie die Karten in Abschnitt 04. */
 export function kaufkraftVerlauf(g: { start: number; zins: number; inflation: number; jahre: number }) {
   return Array.from({ length: g.jahre + 1 }, (_, n) => {
@@ -313,25 +362,27 @@ export function kaufkraftVerlauf(g: { start: number; zins: number; inflation: nu
 }
 
 /**
- * Abschnitt 04: Kontostand, Kaufkraft und Geld ohne Zinsen über 25 Jahre,
- * als Kurven wie in der PDF-Präsentation (Folie 8). Die Fläche zwischen
- * Kontostand und Kaufkraft ist das, was die Inflation frisst.
+ * Abschnitt 04: Kaufkraft von 100.000 € über 25 Jahre, mit 2 % Zinsen und
+ * ohne Zinsen, als Kurven (PDF-Präsentation Folie 8). Den Kontostand zeigt
+ * die Folie seit dem 21.10.2026 nicht mehr. Rot hinterlegt ist, was gegenüber
+ * heute an Kaufkraft verloren geht.
  */
 function KaufkraftJahre({ karten }: { karten: ReadonlyArray<{ wert: string }> }) {
   const g = OS_TEXTE.nichtstun.grafik;
   const reihe = kaufkraftVerlauf(g);
   const W = 560, H = 240, links = 48, rechts = 470, oben = 12, unten = 210;
-  const min = 40_000, max = 180_000;
+  // Seit 21.10.2026 ohne den Kontostand (164.061 €): Die Achse endet knapp über den 100.000 € von heute.
+  const min = 40_000, max = 110_000;
   const x = (jahr: number) => links + (jahr / g.jahre) * (rechts - links);
   const y = (v: number) => unten - ((v - min) / (max - min)) * (unten - oben);
   const ohneZinsen = (n: number) => Math.round(g.start / Math.pow(1 + g.inflation, n));
   const punkte = (wert: (r: (typeof reihe)[number]) => number) => reihe.map((r) => `${x(r.jahr).toFixed(1)},${y(wert(r)).toFixed(1)}`).join(" ");
-  const konto = punkte((r) => r.konto);
   const kaufkraft = punkte((r) => r.kaufkraft);
   const ohne = punkte((r) => ohneZinsen(r.jahr));
   const ende = reihe[reihe.length - 1];
   const euro = (v: number) => `${v.toLocaleString("de-DE")} €`;
-  const flaeche = `M${konto.split(" ").join(" L")} L${kaufkraft.split(" ").reverse().join(" L")} Z`;
+  // Rot hinterlegt ist, was gegenüber den 100.000 € von heute verloren geht.
+  const flaeche = `M${x(0)},${y(g.start)} L${x(g.jahre)},${y(g.start)} L${ohne.split(" ").reverse().join(" L")} Z`;
   const gruen = "hsl(var(--lg-schrift-blau, var(--primary)))";
   // Schrift in Rot: im dunklen CRM das helle Rosé, sonst reicht der Kontrast nicht.
   const rotText = "fill-[#A8402F] dark:fill-[#E8A49B]";
@@ -339,7 +390,7 @@ function KaufkraftJahre({ karten }: { karten: ReadonlyArray<{ wert: string }> })
     <figure data-ui="card" className="mt-8 rounded-2xl border bg-card p-4 md:p-6" data-testid="kaufkraft-jahre">
       <figcaption className="font-semibold">{g.titel}</figcaption>
       <ul className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-xs sm:text-sm">
-        <li className="flex items-center gap-2"><span aria-hidden className="w-5 h-[3px] rounded" style={{ background: gruen }} />{g.konto}</li>
+        <li className="flex items-center gap-2"><span aria-hidden className="w-5 border-t-2 border-dotted" style={{ borderColor: gruen }} />{g.startText}</li>
         <li className="flex items-center gap-2"><span aria-hidden className="w-5 h-[3px] rounded" style={{ background: ROT }} />{g.kaufkraft}</li>
         <li className="flex items-center gap-2"><span aria-hidden className="w-5 border-t-2 border-dashed" style={{ borderColor: ROT }} />{g.ohneZinsen}</li>
       </ul>
@@ -348,10 +399,10 @@ function KaufkraftJahre({ karten }: { karten: ReadonlyArray<{ wert: string }> })
           viewBox={`0 0 ${W} ${H}`}
           className="w-full min-w-[520px] max-w-4xl h-auto"
           role="img"
-          aria-label={`${g.titel}: ${g.konto} nach ${g.jahre} Jahren ${karten[1].wert}, ${g.kaufkraft} ${karten[2].wert}, ${g.ohneZinsen} ${euro(ohneZinsen(g.jahre))}`}
+          aria-label={`${g.titel}: ${g.startText}, ${g.kaufkraft} nach ${g.jahre} Jahren ${karten[1].wert}, ${g.ohneZinsen} ${karten[2].wert}`}
           fill="currentColor"
         >
-          {[40_000, 60_000, 80_000, 100_000, 120_000, 140_000, 160_000, 180_000].map((v) => (
+          {[40_000, 50_000, 60_000, 70_000, 80_000, 90_000, 100_000, 110_000].map((v) => (
             <g key={v}>
               <line x1={links} x2={rechts} y1={y(v)} y2={y(v)} stroke="currentColor" opacity={0.1} />
               <text x={links - 6} y={y(v) + 3} fontSize="9" textAnchor="end" opacity="0.6">{(v / 1000).toLocaleString("de-DE")}T €</text>
@@ -360,23 +411,21 @@ function KaufkraftJahre({ karten }: { karten: ReadonlyArray<{ wert: string }> })
           {[0, 5, 10, 15, 20, 25].map((j) => (
             <text key={j} x={x(j)} y={unten + 14} fontSize="9" textAnchor="middle" opacity="0.8">{j === 0 ? "heute" : `${j} J.`}</text>
           ))}
-          <path className="bos-blende" style={verzoegert(900)} d={flaeche} fill={ROT} fillOpacity="0.12" />
-          <line x1={links} x2={rechts} y1={y(g.start)} y2={y(g.start)} stroke="currentColor" strokeDasharray="3 4" strokeOpacity="0.35" />
-          <polyline className="bos-linie" pathLength={1} points={konto} fill="none" stroke={gruen} strokeWidth="2.6" />
-          <polyline className="bos-linie" style={verzoegert(250)} pathLength={1} points={kaufkraft} fill="none" stroke={ROT} strokeWidth="2.4" />
-          <polyline className="bos-linie" style={verzoegert(500)} pathLength={1} points={ohne} fill="none" stroke={ROT} strokeWidth="1.6" strokeDasharray="5 4" />
+          <path className="bos-blende" style={verzoegert(900)} d={flaeche} fill={ROT} fillOpacity="0.1" />
+          <line x1={links} x2={rechts} y1={y(g.start)} y2={y(g.start)} stroke={gruen} strokeWidth="1.6" strokeDasharray="2 4" />
+          <polyline className="bos-linie" pathLength={1} points={kaufkraft} fill="none" stroke={ROT} strokeWidth="2.6" />
+          <polyline className="bos-linie" style={verzoegert(300)} pathLength={1} points={ohne} fill="none" stroke={ROT} strokeWidth="1.8" strokeDasharray="5 4" />
           <g className="bos-blende" style={verzoegert(1300)}>
-            <text x={x(13)} y={y(118_000)} fontSize="10" fontWeight="600" textAnchor="middle" className={rotText}>{g.luecke}</text>
+            <text x={x(13)} y={y(82_000)} fontSize="10" fontWeight="600" textAnchor="middle" className={rotText}>{g.luecke}</text>
             <circle cx={x(0)} cy={y(g.start)} r="3.5" fill={gruen} />
-            <text x={x(0) + 6} y={y(g.start) + 14} fontSize="9.5" fontWeight="600">{g.startText}</text>
+            <text x={x(0) + 6} y={y(g.start) - 7} fontSize="9.5" fontWeight="600">{g.startText}</text>
             {[
-              { wert: ende.konto, text: "auf dem Konto", farbe: gruen },
-              { wert: ende.kaufkraft, text: "Kaufkraft heute", farbe: ROT },
-              { wert: ohneZinsen(g.jahre), text: "ohne Zinsen", farbe: ROT },
+              { wert: ende.kaufkraft, text: "mit 2 % Zinsen" },
+              { wert: ohneZinsen(g.jahre), text: "ohne Zinsen" },
             ].map((p) => (
               <g key={p.text}>
-                <circle cx={rechts} cy={y(p.wert)} r="3.5" fill={p.farbe} />
-                <text x={rechts + 7} y={y(p.wert) + 1} fontSize="11" fontWeight="700" fill={p.farbe === ROT ? undefined : p.farbe} className={p.farbe === ROT ? rotText : undefined}>{euro(p.wert)}</text>
+                <circle cx={rechts} cy={y(p.wert)} r="3.5" fill={ROT} />
+                <text x={rechts + 7} y={y(p.wert) + 1} fontSize="11" fontWeight="700" className={rotText}>{euro(p.wert)}</text>
                 <text x={rechts + 7} y={y(p.wert) + 12} fontSize="8.5" opacity="0.7">{p.text}</text>
               </g>
             ))}
@@ -1267,61 +1316,37 @@ export default function BeratungspraesentationHV({
 
             {/* ─── 06 Das Prinzip: fünf Bausteine und der Hebel (PDF-Präsentation Folie 9) ─── */}
             <Folie id="prinzip" ton="gruen" kicker={T.prinzip.kicker} titel={T.prinzip.titel}>
-              <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+              {/*
+                Seit 21.10.2026: Titel und Texte in allen fünf Kästen auf gleicher Höhe (Titel mit fester
+                Mindesthöhe), im Fremdkapitalhebel der monatliche Anteil groß, darunter nur noch der Satz.
+              */}
+              <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 items-stretch">
                 {T.prinzip.bausteine.map((b) => (
-                  <Karte key={b.titel} dunkel rand={b.hervor ? FARBE.gold : undefined}>
-                    <p className="text-xl md:text-[1.4rem] font-semibold leading-tight" style={{ color: FARBE.gold }}>
+                  <Karte key={b.titel} dunkel rand={b.hervor ? FARBE.gold : undefined} className="h-full flex flex-col">
+                    <p className="min-h-[2.6rem] flex items-end text-xl md:text-[1.4rem] font-semibold leading-tight" style={{ color: FARBE.gold }}>
                       {b.titel}
                     </p>
+                    {b.wert && (
+                      <p className="mt-2 font-semibold tabular-nums leading-none" data-testid="hebel-wert">
+                        <span className="text-[2.6rem] md:text-[3.2rem]" style={{ color: FARBE.mint }}><ZahlText text={b.wert} /></span>
+                        <span className="ml-1.5 text-sm" style={{ color: FARBE.hellGedaempft }}>{b.wertText}</span>
+                      </p>
+                    )}
                     <p className="mt-2 text-sm leading-relaxed">{a(b.text)}</p>
                   </Karte>
                 ))}
               </div>
-              <div data-testid="hebel" className="mt-6 rounded-2xl border-l-4 p-5 md:p-7 grid lg:grid-cols-[1.2fr_1fr] gap-6 items-center" style={{ borderColor: FARBE.gold, background: "rgba(255,255,255,0.06)" }}>
-                <p className="text-lg md:text-2xl font-semibold leading-snug">{mitAkzent(T.prinzip.hebel.satz, FARBE.mint)}</p>
-                <div className="grid grid-cols-2 gap-x-5 gap-y-4">
-                  {T.prinzip.hebel.karten.map((k) => (
-                    <div key={k.kopf} className="min-w-0">
-                      <p className="text-[0.62rem] font-semibold uppercase tracking-[0.16em]" style={{ color: FARBE.gold }}>{k.kopf}</p>
-                      <p className="mt-1 text-xl md:text-2xl font-semibold tabular-nums">{k.wert}</p>
-                      <p className="text-xs" style={{ color: FARBE.hellGedaempft }}>{k.text}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <p data-testid="hebel" className="mt-6 rounded-2xl border-l-4 p-5 md:p-7 text-lg md:text-2xl font-semibold leading-snug" style={{ borderColor: FARBE.gold, background: "rgba(255,255,255,0.06)", color: "#FFFFFF" }}>
+                {T.prinzip.hebel.satz}
+              </p>
               <Fussnote dunkel>{a(T.prinzip.fuss)}</Fussnote>
             </Folie>
 
             {/* ─── 06 Wer zahlt deine Finanzierung? (PDF-Präsentation Folie 10) ─── */}
             <Folie id="finanzierung" ton="hell" kicker={T.prinzip.kicker} titel={T.prinzip.finanzierung.titel}>
-              <div className="mt-8 grid md:grid-cols-[16rem_1fr] gap-8 items-center">
+              <div className="mt-8 grid md:grid-cols-[22rem_1fr] gap-8 items-center">
                 <Sichtbar>
-                  {(() => {
-                    const f = T.prinzip.finanzierung;
-                    const summe = f.teile.reduce((s, x) => s + x.betrag, 0);
-                    let start = 0;
-                    // Zwischen den Segmenten eine feine Fuge (durchsichtig), damit sie sich auch bei ähnlicher Helligkeit trennen.
-                    const fuge = 1.2;
-                    const stopps = f.teile.map((x) => {
-                      const von = start;
-                      start += (x.betrag / summe) * 360;
-                      return `transparent ${von}deg ${von + fuge}deg, ${x.farbe} ${von + fuge}deg ${start - fuge}deg, transparent ${start - fuge}deg ${start}deg`;
-                    });
-                    return (
-                      <div
-                        role="img"
-                        aria-label={`${f.summe} ${f.summeText}: ${f.teile.map((x) => `${x.label} ${x.betrag} €`).join(", ")}`}
-                        data-testid="finanzierung-ring"
-                        className="bos-auftauchen relative mx-auto aspect-square w-full max-w-[15rem] rounded-full"
-                        style={{ background: `conic-gradient(${stopps.join(", ")})` }}
-                      >
-                        <div className="absolute inset-[20%] rounded-full flex flex-col items-center justify-center text-center bg-card">
-                          <p className="text-2xl md:text-3xl font-semibold tabular-nums">{f.summe}</p>
-                          <p className="text-[0.62rem] uppercase tracking-[0.16em]" style={{ color: FARBE.grau }}>{f.summeText}</p>
-                        </div>
-                      </div>
-                    );
-                  })()}
+                  <FinanzierungsRing />
                 </Sichtbar>
                 <div className="min-w-0">
                   <ul className="divide-y" style={{ borderColor: FARBE.linie }}>
@@ -1334,7 +1359,7 @@ export default function BeratungspraesentationHV({
                             <span className="block text-sm" style={{ color: FARBE.grau }}>{x.text}</span>
                           </span>
                         </span>
-                        <span className="text-xl md:text-2xl font-semibold tabular-nums whitespace-nowrap">{x.betrag.toLocaleString("de-DE")} €</span>
+                        <span className="text-xl md:text-2xl font-semibold tabular-nums whitespace-nowrap" style={x.label === "Sie" ? { color: ROT } : undefined}>{x.betrag.toLocaleString("de-DE")} €</span>
                       </li>
                     ))}
                   </ul>

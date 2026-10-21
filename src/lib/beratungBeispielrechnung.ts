@@ -1,28 +1,28 @@
 /*
  * Gemeinsame Beispielrechnung der Beratungspräsentation (PDF, CRM, Artefakt).
  * ERZEUGT aus scripts/beratung-beispielrechnung/gemeinsam.py mit export.py, nicht von Hand ändern.
- * Beispielperson 80.000 € brutto (Grundtarif 2026), Beispielwohnung Hauffstraße 38 a, Wohnung 1,
+ * Beispielperson 65.000 € brutto (Grundtarif 2026), Beispielwohnung Hauffstraße 38 a, Wohnung 1,
  * AfA 4 % als Annahme (Ersteinschätzung, Gutachten erforderlich). Beträge in Euro, gerundet wie in der PDF.
  */
 export const BEISPIEL = {
   "person": {
-    "bruttoJahr": 80000,
-    "bruttoMonat": 6667,
-    "lohnsteuerJahr": 15281,
-    "lohnsteuerMonat": 1273,
-    "sozialMonat": 1355,
-    "nettoMonat": 4038,
-    "abzuegeMonat": 2628,
-    "rv": 620,
-    "kv": 509,
-    "pv": 140,
-    "av": 87,
-    "zuVersteuern": 62686,
-    "lebenBrutto": 3200000,
-    "lebenAbgaben": 1261525,
-    "lebenNetto": 1938475,
-    "lebenLohnsteuer": 611240,
-    "lebenSozial": 650285
+    "bruttoJahr": 65000,
+    "bruttoMonat": 5417,
+    "lohnsteuerJahr": 10475,
+    "lohnsteuerMonat": 873,
+    "sozialMonat": 1178,
+    "nettoMonat": 3366,
+    "abzuegeMonat": 2051,
+    "rv": 504,
+    "kv": 474,
+    "pv": 130,
+    "av": 70,
+    "zuVersteuern": 49792,
+    "lebenBrutto": 2600000,
+    "lebenAbgaben": 984500,
+    "lebenNetto": 1615500,
+    "lebenLohnsteuer": 419000,
+    "lebenSozial": 565500
   },
   "wohnung": {
     "name": "Hauffstraße 38 a, Wohnung 1",
@@ -39,19 +39,19 @@ export const BEISPIEL = {
     "zinsMonat": 700,
     "tilgung": 180,
     "vorSteuer": 411,
-    "ersparnis": 267,
-    "anteil": 144,
+    "ersparnis": 236,
+    "anteil": 175,
     "laufend": 231,
-    "ersparnisOhneGutachten": 173,
-    "ersparnisJahr": 3213,
+    "ersparnisOhneGutachten": 153,
+    "ersparnisJahr": 2837,
     "afa2": 3055,
     "afa4": 6111,
     "ergebnisJahr": -8445,
-    "neuZuVersteuern": 54241,
-    "lohnsteuerMonatNeu": 1006,
-    "nettoMonatNeu": 4305,
-    "lohnsteuerMonat2": 1100,
-    "nettoMonat2": 4211,
+    "neuZuVersteuern": 41347,
+    "lohnsteuerMonatNeu": 637,
+    "nettoMonatNeu": 3602,
+    "lohnsteuerMonat2": 720,
+    "nettoMonat2": 3519,
     "mieteJahr": 7595,
     "zinsJahr": 8401,
     "kostenAbziehbarJahr": 1528,
@@ -63,38 +63,38 @@ export const BEISPIEL = {
     "wert60": 352000,
     "wert65": 388600,
     "wert30": 318800,
-    "schnitt30": 201,
-    "bis49": 200,
-    "max57": 490,
+    "schnitt30": 214,
+    "bis49": 210,
+    "max57": 460,
     "ueberschuss58": 670,
     "restRaten": 8
   },
   "mehr": [
     {
       "vor": 411,
-      "anfang": 144,
-      "spaet": 490,
+      "anfang": 175,
+      "spaet": 460,
       "ab58": 670,
-      "zu": 89600
+      "zu": 93200
     },
     {
       "vor": 822,
-      "anfang": 308,
-      "spaet": 1000,
+      "anfang": 370,
+      "spaet": 950,
       "ab58": 1350,
-      "zu": 182700
+      "zu": 190600
     },
     {
       "vor": 1233,
-      "anfang": 492,
-      "spaet": 1500,
+      "anfang": 587,
+      "spaet": 1450,
       "ab58": 2020,
-      "zu": 278700
+      "zu": 292000
     }
   ],
   "drei": {
     "rente65": 1440,
-    "gerettet": 147200,
+    "gerettet": 129100,
     "wert65": 1165800,
     "miete": 1209207,
     "afa": 458304,
@@ -103,7 +103,7 @@ export const BEISPIEL = {
     "rente60Vor": 2020,
     "verkauf60": 1055942,
     "renteAusVerkauf": 3500,
-    "ersparnisJahr1": 741
+    "ersparnisJahr1": 646
   },
   "verlauf": [
     [
@@ -316,202 +316,202 @@ export const BEISPIEL = {
     [
       25,
       -411,
-      -144
+      -175
     ],
     [
       26,
       -404,
-      -142
+      -173
     ],
     [
       27,
       -396,
-      -141
+      -171
     ],
     [
       28,
       -389,
-      -140
+      -169
     ],
     [
       29,
       -382,
-      -140
+      -168
     ],
     [
       30,
       -374,
-      -139
+      -167
     ],
     [
       31,
       -367,
-      -139
+      -166
     ],
     [
       32,
       -360,
-      -140
+      -165
     ],
     [
       33,
       -353,
-      -140
+      -165
     ],
     [
       34,
       -346,
-      -141
+      -165
     ],
     [
       35,
       -339,
-      -142
+      -165
     ],
     [
       36,
       -332,
-      -143
+      -165
     ],
     [
       37,
       -326,
-      -145
+      -166
     ],
     [
       38,
       -319,
-      -147
+      -167
     ],
     [
       39,
       -312,
-      -150
+      -168
     ],
     [
       40,
       -306,
-      -153
+      -170
     ],
     [
       41,
       -299,
-      -156
+      -172
     ],
     [
       42,
       -293,
-      -160
+      -175
     ],
     [
       43,
       -287,
-      -164
+      -178
     ],
     [
       44,
       -281,
-      -168
+      -181
     ],
     [
       45,
       -275,
-      -173
+      -185
     ],
     [
       46,
       -269,
-      -179
+      -189
     ],
     [
       47,
       -263,
-      -185
+      -194
     ],
     [
       48,
       -257,
-      -192
+      -199
     ],
     [
       49,
       -252,
-      -199
+      -205
     ],
     [
       50,
       -246,
-      -412
+      -393
     ],
     [
       51,
       -241,
-      -421
+      -401
     ],
     [
       52,
       -235,
-      -431
+      -410
     ],
     [
       53,
       -230,
-      -442
+      -419
     ],
     [
       54,
       -225,
-      -454
+      -429
     ],
     [
       55,
       -220,
-      -466
+      -439
     ],
     [
       56,
       -215,
-      -480
+      -451
     ],
     [
       57,
       -210,
-      -494
+      -463
     ],
     [
       58,
       149,
-      -153
+      -121
     ],
     [
       59,
       679,
-      371
+      404
     ],
     [
       60,
       672,
-      366
+      399
     ],
     [
       61,
       666,
-      362
+      395
     ],
     [
       62,
       659,
-      357
+      390
     ],
     [
       63,
       652,
-      353
+      385
     ],
     [
       64,
       645,
-      348
+      380
     ]
   ]
 } as const;

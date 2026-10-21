@@ -18,6 +18,11 @@ import { AFA_ANNAHME, eur } from "@/lib/beratungKonzeptDaten";
 export type KonzeptOs = "zusatzrente" | "steuer";
 
 const W = BEISPIEL.wohnung;
+/** Restschuld und Wert nach 10 Jahren (mit 35), für die Anschlussfinanzierung. */
+const NACH_10 = (() => {
+  const [, rest, wert] = BEISPIEL.verlauf.find(([alter]) => alter === 35)!;
+  return { rest, wert };
+})();
 
 
 /**
@@ -145,18 +150,19 @@ export const OS_TEXTE = {
     // PDF-Präsentation Folie 8: 100.000 €, 25 Jahre, Kurvengrafik.
     kicker: "04 · Der Preis des Nichtstuns",
     titel: "Geld auf dem Konto [[verliert real an Wert.]]",
+    // Seit 21.10.2026 ohne den Kontostand nach 25 Jahren (164.061 €), Wunsch Christian:
+    // 100.000 € heute, was sie in 25 Jahren noch kaufen, mit und ohne Zinsen.
     karten: [
-      { kopf: "Heute auf dem Konto", wert: "100.000 €", text: "Tagesgeld zu 2 % Zinsen" },
-      { kopf: "Auf dem Konto nach 25 Jahren", wert: "164.061 €", text: "sieht nach mehr aus" },
-      { kopf: "Was es noch kauft", wert: "88.493 €", text: "rund 11.500 € weniger als heute", warnung: true },
+      { kopf: "Heute auf dem Konto", wert: "100.000 €", text: "Ihr Erspartes, Kaufkraft von heute" },
+      { kopf: "In 25 Jahren mit 2 % Zinsen", wert: "88.493 €", text: "so viel kauft es dann noch, rund 11.500 € weniger", warnung: true },
+      { kopf: "In 25 Jahren ohne Zinsen", wert: "53.939 €", text: "fast die Hälfte der Kaufkraft verloren", warnung: true },
     ],
     /** Die Grafik dazu, Jahr für Jahr. Dieselben Annahmen wie die Karten (geprüft im Test). */
     grafik: {
       titel: "Geld auf dem Konto, 25 Jahre lang",
-      konto: "Kontostand mit 2 % Zinsen",
-      kaufkraft: "was dieses Geld noch kauft, in heutigen Euro",
+      kaufkraft: "Kaufkraft mit 2 % Zinsen, in heutigen Euro",
       ohneZinsen: "100.000 € ohne Zinsen",
-      luecke: "Inflation frisst die Zinsen auf",
+      luecke: "Die Inflation frisst Ihre Kaufkraft",
       startText: "100.000 € heute",
       start: 100_000,
       zins: 0.02,
@@ -166,7 +172,7 @@ export const OS_TEXTE = {
     },
     satz: "Liegen lassen ist keine Lösung: [[Die Zinsen holen die Inflation nicht ein.]]",
     frage: "Soll dein Erspartes für dich arbeiten, statt still an Wert zu verlieren?",
-    fuss: "Rechenbeispiel, keine Prognose: 100.000 € Tagesgeld, 2 % Zinsen, 2,5 % Inflation pro Jahr, beides über 25 Jahre gleichbleibend angenommen. Kontostand 100.000 € × 1,02²⁵ = 164.061 €; Kaufkraft 164.061 € ÷ 1,025²⁵ = 88.493 € in heutigem Geld; ohne Zinsen 100.000 € ÷ 1,025²⁵ = 53.939 €. Steuern auf Zinsen nicht berücksichtigt (sie vergrößern die Lücke). Wenn deine Reserve oder Lebensplanung noch nicht passt, ist Warten die bessere Wahl. Das sagen wir dir dann offen.",
+    fuss: "Rechenbeispiel, keine Prognose: 100.000 € Tagesgeld, 2 % Zinsen, 2,5 % Inflation pro Jahr, beides über 25 Jahre gleichbleibend angenommen. Kaufkraft mit Zinsen 100.000 € × 1,02²⁵ ÷ 1,025²⁵ = 88.493 € in heutigem Geld; ohne Zinsen 100.000 € ÷ 1,025²⁵ = 53.939 €. Steuern auf Zinsen nicht berücksichtigt (sie vergrößern die Lücke). Wenn Ihre Reserve oder Lebensplanung noch nicht passt, ist Warten die bessere Wahl. Das sagen wir Ihnen dann offen.",
   },
 
   werWirSind: {
@@ -222,7 +228,8 @@ export const OS_TEXTE = {
       { titel: "Rundum-sorglos", text: "Wir begleiten dich von der Auswahl bis nach der Vermietung." },
       { titel: "Provisionsfrei", text: "Du kaufst direkt vom Bauträger, ohne Maklerprovision." },
       { titel: "Verwaltung", text: "Hausverwaltung und Mietsonderverwaltung auf Wunsch aus einer Hand.", marke: "Verwaltung" },
-      { titel: "Finanzierung", text: "Finanzierung auch ohne Eigenkapital möglich.", marke: "Finanzierung" },
+      // „150 Kunden im Jahr“: Angabe von Christian (21.10.2026), wörtlich freigegeben.
+      { titel: "Finanzierung", text: "Finanzierung auch ohne Eigenkapital möglich. Gute Gesamtkonditionen durch rund 150 finanzierte Kunden im Jahr.", marke: "Finanzierung" },
     ] as ReadonlyArray<{ titel: string; text: string; marke?: string }>,
   },
 
@@ -235,16 +242,11 @@ export const OS_TEXTE = {
       { titel: "Tilgung", text: "Mit jeder Rate sinkt die Restschuld." },
       { titel: "Steuerersparnis", text: "AfA: Durch Abschreibung und Werbungskosten kann deine Lohnsteuer sinken." },
       { titel: "Wertentwicklung", text: "Im langjährigen Durchschnitt sind Immobilien in Deutschland um rund 2 % pro Jahr im Wert gestiegen.¹" },
-      { titel: "Fremdkapitalhebel", text: "Wenig bis kein Eigenkapital nötig.²", hervor: true },
-    ] as ReadonlyArray<{ titel: string; text: string; hervor?: boolean }>,
+      { titel: "Fremdkapitalhebel", text: "Wenig bis kein Eigenkapital nötig.²", hervor: true, wert: eur(W.anteil), wertText: "im Monat" },
+    ] as ReadonlyArray<{ titel: string; text: string; hervor?: boolean; wert?: string; wertText?: string }>,
+    // Seit 21.10.2026 nur noch der Satz, ohne die vier Zahlenkästen (Wunsch Christian).
     hebel: {
-      satz: `Der Fremdkapitalhebel und seine große Wirkung: [[mit rund ${eur(W.anteil)} im Monat zu einer Immobilie im Wert von heute ${eur(W.kaufpreis)}, schuldenfrei nach rund ${Math.round(W.freiMonate / 12)} Jahren.*]]`,
-      karten: [
-        { kopf: "Bank finanziert", wert: eur(W.kaufpreis), text: "Kaufpreis inkl. Garage" },
-        { kopf: "Eigenkapital", wert: eur(W.nebenkosten), text: "nur Kaufnebenkosten" },
-        { kopf: "Dein Anteil, Jahr 1", wert: `≈ ${eur(W.anteil)}`, text: "im Monat nach Steuern" },
-        { kopf: "Schuldenfrei", wert: String(W.freiJahr), text: `nach ${W.freiMonate} Monaten` },
-      ],
+      satz: `Mit rund ${eur(W.anteil)} im Monat leiht Ihnen die Bank ${eur(W.kaufpreis)}, und daraus wird Schritt für Schritt Ihr eigenes Vermögen.*`,
     },
     // 115 €: Anteil nach der Exposé-Rechnung mit pauschal 42 % (Exposé WE 1, 19.10.2026), nicht aus der gemeinsamen Rechnung.
     fuss: `* Beispielrechnung, keine Zusage. Beispielperson: ${eur(BEISPIEL.person.bruttoJahr)} brutto, Steuerklasse I, kinderlos, ohne Kirchensteuer, Einkommensteuer-Grundtarif 2026 (das Exposé rechnet pauschal mit 42 %, daraus ergäben sich 115 €). Beispielwohnung ${W.name} (Exposé Stand 19.10.2026): Kaufpreis ${eur(W.kaufpreis)} inkl. Garage, voll finanziert; Sollzins 4,8 % fest, Tilgung 1,2 %, Rate ${eur(W.rate)} im Monat, schuldenfrei nach ${W.freiMonate} Monaten (${W.freiJahr}), Zins über die ganze Laufzeit gleich angenommen. Miete im ersten Jahr ${eur(W.miete)} (Wohnung ${eur(Math.round(W.mieteWohnung))} = 13 €/m², Mietdifferenz zahlt der Bauträger bis zur nächsten Mieterhöhung, längstens 36 Monate, laut Garantievereinbarung; Garage ${eur(W.garage)}), nicht umlagefähiges Hausgeld ${eur(W.hausgeld)}, ${AFA_ANNAHME} Grundlage ${eur(W.afaGrundlage)}. Erstes Jahr: vor Steuern ${eur(W.vorSteuer)}, Steuerersparnis ${eur(W.ersparnis)}, dein Anteil ${eur(W.anteil)} bei ${eur(W.tilgung)} Tilgung. Mit sinkenden Zinsen sinkt die Steuerersparnis: Dein Anteil bleibt bis zum 25. Jahr unter rund ${eur(W.bis49)}, danach (erhöhte AfA verbraucht) bis zu rund ${eur(W.max57)}; im Schnitt der ersten 30 Jahre rund ${eur(W.schnitt30)} (Miete im Szenario linear bis 20 €/m² im Jahr 2060, Kosten +2 % pro Jahr). Bei angenommen 2 % Wertentwicklung pro Jahr nach 30 Jahren rund ${eur(W.wert30)}. ¹ Eigentumswohnungen 1975–2002 rund +2,6 % pro Jahr, Reihenhäuser +2,1 % (ifo, Daten Bundesbank/BulwienGesa); 1975–2018 rund +2,3 % pro Jahr, nominal, also vor Inflation. Vergangene Entwicklung ist keine Zusage. ² Abhängig von Bonität und Bank; Kaufnebenkosten meist aus Eigenkapital.`,
@@ -254,10 +256,11 @@ export const OS_TEXTE = {
       summe: eur(W.rate + W.hausgeld),
       summeText: "im Monat, Rate und Hausgeld",
       // Farben aus beratung-os.css: im hellen wie im dunklen CRM klar vom Grund und voneinander getrennt.
+      // Seit 21.10.2026 (Christian): Mieter grün, Finanzamt gelb, Sie rot, in beiden Themen gleich.
       teile: [
-        { label: "Der Mieter", text: `Kaltmiete ${eur(Math.round(W.mieteWohnung))} und Garage ${eur(W.garage)}`, betrag: W.miete, farbe: "var(--bos-segment-mieter)" },
-        { label: "Das Finanzamt", text: "laufende Steuerersparnis", betrag: W.ersparnis, farbe: "var(--bos-segment-amt)" },
-        { label: "Du", text: "dein eigener Anteil im Monat", betrag: W.anteil, farbe: "var(--bos-segment-du)" },
+        { label: "Der Mieter", text: `Kaltmiete ${eur(Math.round(W.mieteWohnung))} und Garage ${eur(W.garage)}`, betrag: W.miete, farbe: "#198A5F", schrift: "#FFFFFF" },
+        { label: "Das Finanzamt", text: "laufende Steuerersparnis", betrag: W.ersparnis, farbe: "#CCAC05", schrift: "#12362A" },
+        { label: "Sie", text: "Ihr eigener Anteil im Monat, der kleinste Teil", betrag: W.anteil, farbe: "#C0564A", schrift: "#FFFFFF" },
       ],
       aufbauKopf: "Dein Vermögensaufbau",
       aufbauWert: eur(W.tilgung),
@@ -305,10 +308,30 @@ export const OS_TEXTE = {
       "Mögliche Steuerersparnis",
       "Langfristige Wertentwicklung",
       "Mit Rentenbeginn: Einmalsumme durch Verkauf oder monatliche Zusatzrente durch Mieteinnahmen",
-      "Fremdkapitalhebel: Die Bank leiht dir mit geringem Eigenanteil Geld. Geringe Zuzahlung, monatlich vergleichbar mit einem ETF- oder Sparplan.",
+      "Fremdkapitalhebel: Die Bank leiht Ihnen mit geringem Eigenanteil Geld. Geringe Zuzahlung, monatlich vergleichbar mit einem ETF- oder Sparplan.",
+      "Anschlussfinanzierung nach 10 Jahren als Chance: kleinere Restschuld, mehr Sicherheit für die Bank, Sie sind bekannt als zuverlässiger Kunde",
+      "Bonitätsprüfung der Mieter: Niemand bekommt eine Wohnung ohne Bonitätsprüfung",
     ],
     risikenKopf: "Mögliche Risiken",
-    risiken: ["Mietausfall und Leerstand", "Reparaturen und Sonderumlagen", "Kapital nicht kurzfristig verfügbar"],
+    risiken: [
+      "Mietausfall und Leerstand, abgefedert durch die Mietkaution von bis zu drei Monatsmieten",
+      "Reparaturen und Sonderumlagen",
+      "Kapital nicht kurzfristig verfügbar",
+    ],
+    /**
+     * Anschlussfinanzierung nach 10 Jahren (Christian, 21.10.2026). Als Chance
+     * formuliert, nicht als Zusage: Zinsen und Markt in 10 Jahren sind offen.
+     */
+    nachfinanzierung: {
+      kopf: "Anschlussfinanzierung nach 10 Jahren",
+      titel: "Nach 10 Jahren stehen Sie [[besser da als heute.]]",
+      gruende: [
+        { titel: "Kleinere Restschuld", text: `Von ${eur(W.kaufpreis)} sind nach 10 Jahren noch rund ${eur(Math.round(NACH_10.rest / 1000) * 1000)} offen. Neu finanziert wird nur dieser Rest.` },
+        { titel: "Mehr Sicherheit für die Bank", text: `Die Wohnung ist bei 2 % im Jahr rund ${eur(Math.round(NACH_10.wert / 100) * 100)} wert. Die Bank finanziert dann nur noch rund ${Math.round((NACH_10.rest / NACH_10.wert) * 100)} % des Werts statt 100 %.` },
+        { titel: "Zuverlässiger Kunde", text: "Zehn Jahre pünktliche Raten zeigen der Bank, dass Sie ein verlässlicher Kunde sind. Das verbessert Ihre Ausgangslage." },
+      ],
+      satz: "Sinken die Zinsen bis dahin, sinkt auch Ihre Rate und damit Ihre Zuzahlung. Eine Zusage über Zinsen und Markt in 10 Jahren kann niemand geben.",
+    },
     satz: "Eine Immobilie ist kein Sparbuch, [[sondern eine langfristige Investition mit Verantwortung.]]",
     fuss: "Vergleich mit ETF- oder Sparplan nur nach der Höhe der monatlichen Zahlung; keine Aussage über Rendite oder Risiko dieser Anlagen und keine Anlageberatung. Steuerersparnis, Wertentwicklung und Mieteinnahmen sind nicht zugesagt; Finanzierung abhängig von Bonität und Bank.",
   },
