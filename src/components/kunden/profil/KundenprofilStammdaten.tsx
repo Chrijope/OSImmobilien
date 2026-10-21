@@ -13,6 +13,8 @@ export interface KundenprofilAbschnittDef {
   hinweis?: string;
   /** Die Ampel in der Kopfzeile, auch eingeklappt sichtbar. */
   ampel?: AmpelStand;
+  /** Immer offen und nicht klappbar, etwa „Kunde verwalten“ (Christian, 21.10.2026). */
+  immerOffen?: boolean;
   inhalt: ReactNode;
 }
 
@@ -71,6 +73,14 @@ export function KundenprofilUeberschrift({ children }: { children: ReactNode }) 
 /** Ein klappbarer Abschnitt; die Kopfzeile trägt auch eingeklappt Hinweis und Ampel. */
 function KlappAbschnitt({ def, offen, onUmschalten }: { def: KundenprofilAbschnittDef; offen: boolean; onUmschalten: () => void }) {
   const inhaltId = `kundenprofil-abschnitt-${def.schluessel}`;
+  if (def.immerOffen) {
+    return (
+      <section className="kundenprofil-abschnitt" data-abschnitt={def.schluessel} data-offen="true">
+        <KundenprofilUeberschrift>{def.titel}</KundenprofilUeberschrift>
+        <div className="mt-3">{def.inhalt}</div>
+      </section>
+    );
+  }
   return (
     <section className="kundenprofil-abschnitt" data-abschnitt={def.schluessel} data-offen={offen ? "true" : "false"}>
       <h3 className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">

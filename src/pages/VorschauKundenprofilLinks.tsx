@@ -151,7 +151,7 @@ export default function VorschauKundenprofilLinks() {
     },
     { schluessel: "qualifizierung", titel: "Qualifizierungsfragen", hinweis: qualifizierungHinweis(kunde), inhalt: <QualifizierungFelder kunde={kunde} meta={meta} speichereKontakt={speichereTeil} speichereMeta={speichereMeta} /> },
     {
-      schluessel: "verwaltung", titel: "Kunde verwalten",
+      schluessel: "verwaltung", titel: "Kunde verwalten", immerOffen: true,
       inhalt: (
         <div className={`kundenprofil-verwaltung ${finanzierer ? "finanzierer-readonly" : ""}`}>
           <div className="flex justify-center gap-4 pt-4 flex-wrap">

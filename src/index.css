@@ -123,19 +123,21 @@
 
     /* Icon-Töne der Seitenleiste, seit 18.10.2026 aus der Markenpalette
        (Tannengrün, Markengrün, Petrol, Salbei, Gold, Champagner tief). Die
-       Namen bleiben, damit keine Klasse angefasst werden muss. */
-    --apple-blue: 157 69% 26%;
-    --apple-green: 157 69% 32%;
-    --apple-indigo: 196 48% 35%;
-    --apple-orange: 25 90% 39%;
-    --apple-pink: 5 53% 42%;
-    --apple-purple: 160 50% 14%;
-    --apple-red: 5 53% 42%;
-    --apple-teal: 196 48% 35%;
-    --apple-yellow: 50 95% 41%;
-    --apple-gray: 150 4% 57%;
-    --apple-mint: 141 16% 52%;
-    --apple-brown: 42 30% 51%;
+       Namen bleiben, damit keine Klasse angefasst werden muss. Seit dem
+       21.10.2026 etwas kräftiger (Christian: „einen kleinen Ticken
+       strahlender“), Dunkelmodus siehe `.dark`. */
+    --apple-blue: 157 75% 30%;
+    --apple-green: 157 72% 38%;
+    --apple-indigo: 196 62% 40%;
+    --apple-orange: 25 92% 45%;
+    --apple-pink: 5 65% 48%;
+    --apple-purple: 160 55% 24%;
+    --apple-red: 5 65% 48%;
+    --apple-teal: 196 62% 40%;
+    --apple-yellow: 48 95% 44%;
+    --apple-gray: 150 6% 50%;
+    --apple-mint: 141 30% 44%;
+    --apple-brown: 42 48% 46%;
 
     /* Glass effect tokens */
     --glass-bg: 0 0% 100% / 0.7;
@@ -148,6 +150,19 @@
   }
 
   .dark {
+    /* Icon-Töne der Seitenleiste, auf dunklem Grund heller (21.10.2026). */
+    --apple-blue: 157 60% 52%;
+    --apple-green: 157 62% 50%;
+    --apple-indigo: 196 65% 60%;
+    --apple-orange: 25 92% 60%;
+    --apple-pink: 5 75% 66%;
+    --apple-purple: 160 45% 58%;
+    --apple-red: 5 75% 66%;
+    --apple-teal: 196 65% 60%;
+    --apple-yellow: 48 95% 58%;
+    --apple-gray: 150 6% 66%;
+    --apple-mint: 141 35% 62%;
+    --apple-brown: 42 55% 62%;
     --background: 158 44% 8%;    /* #0C1F18 */
     --foreground: 142 17% 91%;   /* #E4ECE7 */
 

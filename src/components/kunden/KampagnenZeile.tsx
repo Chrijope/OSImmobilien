@@ -24,37 +24,48 @@ import {
  */
 export function KampagnenZeile({ kontaktId, rolle }: { kontaktId: string; rolle: string | null | undefined }) {
   if (!darfKampagneSehen(rolle)) return null;
+  return (
+    <>
+      <span className="font-semibold align-top">Kampagne:</span>
+      <KampagnenWert kontaktId={kontaktId} />
+    </>
+  );
+}
+
+/**
+ * Nur der Wert, ohne Beschriftung und ohne Rollenprüfung. Das Kundenprofil
+ * setzt ihn seit dem 21.10.2026 als eigenes Feld direkt unter die Quelle und
+ * prüft `darfKampagneSehen` selbst.
+ */
+export function KampagnenWert({ kontaktId }: { kontaktId: string }) {
   const zeile = cacheGet("kontakte").find((r: { id?: string }) => r.id === kontaktId);
   const kennung = kampagneAusKontakt(zeile);
   const zuletzt = kennung?.zuletzt && typeof kennung.zuletzt === "object" ? kennung.zuletzt : undefined;
 
   return (
-    <>
-      <span className="font-semibold align-top">Kampagne:</span>
-      <span className="text-sm" data-testid="kampagnenkennung">
-        {kennung ? (
-          <>
-            <span>{kampagnenName(kennung)}</span>
-            {kampagnenDetails(kennung).map((z) => (
-              <span key={z} className="block text-xs text-muted-foreground">
-                {z}
-              </span>
-            ))}
-            {kennung.erfasstAm && (
-              <span className="block text-xs text-muted-foreground">Erster Aufruf: {formatDatum(kennung.erfasstAm)}</span>
-            )}
-            {zuletzt && (
-              <span className="block text-xs text-muted-foreground">
-                Zuletzt über: {kampagnenName(zuletzt)}
-              </span>
-            )}
-          </>
-        ) : (
-          <span className="text-muted-foreground" title={OHNE_KAMPAGNE}>
-            –
-          </span>
-        )}
-      </span>
-    </>
+    <span className="text-sm" data-testid="kampagnenkennung">
+      {kennung ? (
+        <>
+          <span>{kampagnenName(kennung)}</span>
+          {kampagnenDetails(kennung).map((z) => (
+            <span key={z} className="block text-xs text-muted-foreground">
+              {z}
+            </span>
+          ))}
+          {kennung.erfasstAm && (
+            <span className="block text-xs text-muted-foreground">Erster Aufruf: {formatDatum(kennung.erfasstAm)}</span>
+          )}
+          {zuletzt && (
+            <span className="block text-xs text-muted-foreground">
+              Zuletzt über: {kampagnenName(zuletzt)}
+            </span>
+          )}
+        </>
+      ) : (
+        <span className="text-muted-foreground" title={OHNE_KAMPAGNE}>
+          –
+        </span>
+      )}
+    </span>
   );
 }

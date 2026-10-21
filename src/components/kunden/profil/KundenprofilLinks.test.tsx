@@ -20,7 +20,7 @@ vi.mock("@/lib/userSettingsCache", () => ({
 vi.mock("@/hooks/useCacheReady", () => ({ useCacheReady: () => true }));
 vi.mock("@/hooks/useLiveData", () => ({ useLiveVersion: () => 0 }));
 // Die Kampagne liest den Zwischenspeicher, für diese Tests ohne Belang.
-vi.mock("@/components/kunden/KampagnenZeile", () => ({ KampagnenZeile: () => null }));
+vi.mock("@/components/kunden/KampagnenZeile", () => ({ KampagnenZeile: () => null, KampagnenWert: () => null }));
 
 import { KundenprofilFeld } from "./KundenprofilFeld";
 import { KontaktFelder, LeadFelder, Person2Felder, qualifizierungHinweis, geburtstagAlsIso, geburtstagAusIso } from "./KundenprofilKundendaten";
@@ -164,6 +164,15 @@ describe("Rechte je Rolle", () => {
     expect(screen.queryByText("Erstellt von")).not.toBeInTheDocument();
   });
 
+  it("die Kampagne steht direkt unter der Quelle, nur für Rollen mit Freigabe", () => {
+    const { unmount } = render(<LeadFelder kunde={kunde()} meta={{}} rolle="admin" vertriebspartnerName="Erika" onKontaktOeffnen={() => {}} />);
+    const bezeichnungen = Array.from(document.querySelectorAll("dt")).map((d) => d.textContent?.trim());
+    expect(bezeichnungen[bezeichnungen.indexOf("Quelle") + 1]).toBe("Kampagne");
+    unmount();
+    render(<LeadFelder kunde={kunde()} meta={{}} rolle="vertriebspartner" vertriebspartnerName="Erika" onKontaktOeffnen={() => {}} />);
+    expect(screen.queryByText("Kampagne")).not.toBeInTheDocument();
+  });
+
   it("Admin und Inhaber sehen „Erstellt von“", () => {
     render(<LeadFelder kunde={kunde()} meta={{ erstelltVonName: "Anna" }} rolle="admin" ersteller={{ nutzer: [] }} vertriebspartnerName="Erika" onKontaktOeffnen={() => {}} />);
     expect(screen.getByText("Erstellt von")).toBeInTheDocument();
@@ -222,6 +231,13 @@ describe("Eingeklappt merken", () => {
     fireEvent.click(kopf);
     expect(kopf).toHaveAttribute("aria-expanded", "true");
     expect(screen.getByText("Fragen")).toBeInTheDocument();
+  });
+
+  it("„Kunde verwalten“ steht immer offen und lässt sich nicht einklappen", () => {
+    render(<KundenprofilStammdaten name="Max" abschnitte={[{ schluessel: "verwaltung", titel: "Kunde verwalten", immerOffen: true, inhalt: <p>Verwalten</p> }]} />);
+    expect(screen.getByText("Kunde verwalten")).toBeInTheDocument();
+    expect(screen.getByText("Verwalten")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Kunde verwalten/ })).not.toBeInTheDocument();
   });
 
   it("liest nur echte Wahrheitswerte", () => {

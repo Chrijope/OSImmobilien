@@ -14,14 +14,11 @@
  * 16.09.2026 vorgegeben: oben Notiz, Anruf, E-Mail, unten Aufgabe, Anruf
  * notieren, Meeting.
  *
- * Farbwahl, alle aus dem Farbvorrat des Projekts:
- * - Notiz traegt das Projektblau (`--primary`), im gedaempften Muster des
- *   Knopfes `tinted` aus `components/ui/button.tsx`.
- * - Anruf traegt Gruen. Bewusst `emerald` statt des Tokens `--success`: Der
- *   Token erreicht auf hellem Grund nur 2,33 zu 1 und faellt damit unter die
- *   geforderten 3 zu 1 fuer ein bedeutungstragendes Symbol. Dasselbe Paar
- *   tragen der Erfolgsknopf und der Mailvermerk, siehe
- *   `components/bewerbung/KennenlernMailVermerk.tsx`.
+ * Farbwahl (Christian, 21.10.2026): jede Aktion ein eigener Ton, damit das
+ * Profil lebendiger wirkt und nicht nur im Grün der CI steht. Notiz Bernstein,
+ * Anruf Grün, E-Mail Himmelblau, Aufgabe Violett, Anruf notieren Petrol,
+ * Meeting Rosé. Heller Grund mit dunklem Symbol, im Dunkelmodus umgekehrt,
+ * damit das Symbol in beiden Fällen genug Kontrast hat.
  */
 import * as React from "react";
 import { CalendarDays, CheckSquare, Mail, Phone, PhoneCall, Plus, StickyNote } from "lucide-react";
@@ -94,54 +91,43 @@ const SCHNELL_DARSTELLUNG: Partial<Record<SchnellaktionArt, { wort: string; satz
   notiz: {
     wort: "Notiz",
     satz: "Notiz zu diesem Kunden erstellen",
-    farbe: "bg-accent text-accent-foreground",
+    farbe: "bg-amber-100 text-amber-700 dark:bg-amber-400/15 dark:text-amber-300",
   },
   anruf: {
     wort: "Anruf",
     // Seit dem 26.09.2026 waehlt der Klick sofort und oeffnet dazu das
     // Anruf-Protokoll, siehe `rufeAnUndProtokolliere` in KundenDetail.
     satz: "Diesen Kunden anrufen und den Anruf gleich notieren",
-    farbe: "bg-accent text-accent-foreground",
+    farbe: "bg-emerald-100 text-emerald-700 dark:bg-emerald-400/15 dark:text-emerald-300",
   },
   /*
    * E-Mail kam am 16.09.2026 dazu, auf Christians Zuruf. Sie wird so oft
    * gebraucht wie Notiz und Anruf, stand aber nur im Menue.
-   *
-   * Violett, weil Blau, Gruen und das Marken-Orange schon vergeben sind und
-   * die vier Symbole nebeneinander auf einen Blick auseinandergehen sollen.
-   * Wie beim Gruen der dunklere Ton fuer hellen Grund und der hellere fuer
-   * den Dunkelmodus, sonst reicht der Kontrast nicht fuer ein Symbol, das
-   * eine Bedeutung traegt.
+  
    */
   email: {
     wort: "E-Mail",
     satz: "E-Mail an diesen Kunden schreiben",
-    farbe: "bg-accent text-accent-foreground",
+    farbe: "bg-sky-100 text-sky-700 dark:bg-sky-400/15 dark:text-sky-300",
   },
   /*
    * Die uebrigen vier kamen am 16.09.2026 dazu: Christian wollte alle
    * Vorgaenge unmittelbar sehen statt hinter einem Menue.
-   *
-   * Die Farben sind so gewaehlt, dass Zusammengehoeriges zusammen aussieht.
-   * Planen ist blau bis violett (Notiz, E-Mail, Aufgabe, Meeting), Anrufen
-   * gruen, und die beiden Protokolle tragen denselben gedaempften Ton: Sie
-   * halten fest, was schon geschehen ist, und sollen nicht so laut rufen wie
-   * das, was noch zu tun ist.
    */
   aufgabe: {
     wort: "Aufgabe",
     satz: "Aufgabe zu diesem Kunden erstellen",
-    farbe: "bg-accent text-accent-foreground",
+    farbe: "bg-violet-100 text-violet-700 dark:bg-violet-400/15 dark:text-violet-300",
   },
   meeting: {
     wort: "Meeting",
     satz: "Meeting mit diesem Kunden erstellen",
-    farbe: "bg-accent text-accent-foreground",
+    farbe: "bg-rose-100 text-rose-700 dark:bg-rose-400/15 dark:text-rose-300",
   },
   anruf_protokoll: {
     wort: "Anruf notieren",
     satz: "Einen gefuehrten Anruf nachtraeglich protokollieren",
-    farbe: "bg-accent text-accent-foreground",
+    farbe: "bg-teal-100 text-teal-700 dark:bg-teal-400/15 dark:text-teal-300",
   },
 };
 

@@ -5347,7 +5347,7 @@ export default function KundenDetail() {
         hinweis: qualifizierungHinweis(kunde),
         inhalt: <QualifizierungFelder kunde={kunde} meta={rawMeta} speichereKontakt={darfStammdatenAendern ? speichereKontaktTeil : undefined} speichereMeta={darfStammdatenAendern ? speichereKontaktMeta : undefined} />,
       }] : []),
-      ...(nurLesend ? [] : [{ schluessel: "verwaltung", titel: "Kunde verwalten", inhalt: renderProfilVerwaltung() }]),
+      ...(nurLesend ? [] : [{ schluessel: "verwaltung", titel: "Kunde verwalten", immerOffen: true, inhalt: renderProfilVerwaltung() }]),
     ];
     return <KundenprofilStammdaten
       name={name}
