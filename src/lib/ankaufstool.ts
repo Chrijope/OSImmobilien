@@ -272,6 +272,8 @@ export interface AnkaufVersion {
   gespeichertAm: string;
   eingaben: Partial<AnkaufEingaben>;
   objekt?: Partial<AnkaufObjekt>; // fehlt bei Versionen vor dem Exposé-Abschnitt
+  /** Welche Felder aus Unterlagen ausgelesen wurden (src/lib/ankaufstoolUnterlagen.ts). */
+  herkunft?: Partial<Record<string, { quelle: string; sicherheit: "hoch" | "mittel" | "niedrig" }>>;
 }
 
 export const ANKAUF_VERSIONEN_SCHLUESSEL = "ankaufstool_versionen";

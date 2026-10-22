@@ -19,6 +19,8 @@ import {
 import { getUserSetting, setUserSettingSicher } from "@/lib/userSettingsCache";
 import { useLiveVersion } from "@/hooks/useLiveData";
 import { ANKAUF_HINWEIS, buildAnkaufstoolPdf, eur, prozent, zahl } from "@/lib/ankaufstoolPdf";
+import { UnterlagenAuslesen } from "@/components/ankaufstool/UnterlagenAuslesen";
+import { TEXT_FELDER, herkunftText, type AnkaufHerkunft, type AuslesFeld, type Vorschlag } from "@/lib/ankaufstoolUnterlagen";
 
 /*
  * Seite /ankaufstool: der Bauträger-Kalkulator aus Ankaufstool.xlsx.
@@ -174,13 +176,42 @@ const URTEIL_STIL: Record<AnkaufErgebnis["urteil"], string> = {
   "LOHNT SICH NICHT": "bg-red-600 text-white",
 };
 
+/** Beschriftung je auslesbarem Feld, wie im Tool. */
+const FELD_LABELS = Object.fromEntries([
+  ...EXPOSE_TEXTE.map((f) => [f.key, f.label]),
+  ["lage", "Lage / Umfeld"],
+  ...EXPOSE_GRUPPEN.flatMap((g) => g.felder.map((f) => [f.key, g.titel.startsWith("Ist-Mieten") ? `Ist-Miete ${f.label}` : f.label])),
+]) as Record<AuslesFeld, string>;
+const FELD_EINHEIT = Object.fromEntries(EXPOSE_GRUPPEN.flatMap((g) => g.felder.map((f) => [f.key, f.einheit]))) as Record<string, Feld["einheit"]>;
+
+/** Wert so, wie er im Tool steht: Prozent als 3,57 %, Beträge mit €. */
+function wertAnzeigen(feld: AuslesFeld, wert: number | string): string {
+  if (typeof wert === "string") return wert;
+  const einheit = FELD_EINHEIT[feld];
+  if (einheit === "%") return prozent(wert);
+  if (einheit === "€" || einheit === "€/Jahr") return eur(wert);
+  if (einheit === "m²") return `${zahl(wert, 2)} m²`;
+  return zahl(wert, 0);
+}
+
 const URTEIL_PUNKT: Record<AnkaufErgebnis["urteil"], string> = {
   "LOHNT SICH": "bg-green-600",
   GRENZWERTIG: "bg-amber-500",
   "LOHNT SICH NICHT": "bg-red-600",
 };
 
-function Eingabe({ feld, eingaben, setze }: { feld: Feld; eingaben: AnkaufEingaben; setze: (k: keyof AnkaufEingaben, v: number) => void }) {
+/** Etikett unter einem Feld, dessen Wert aus den Unterlagen stammt. Unsichere Werte in Gelb. */
+function HerkunftEtikett({ herkunft }: { herkunft?: AnkaufHerkunft[AuslesFeld] }) {
+  if (!herkunft) return null;
+  const unsicher = herkunft.sicherheit !== "hoch";
+  return (
+    <p className={cn("text-xs", unsicher ? "text-amber-700 dark:text-amber-400" : "text-primary")} data-testid="herkunft-etikett">
+      {herkunftText(herkunft.quelle)}{unsicher ? ` · Sicherheit ${herkunft.sicherheit}, bitte prüfen` : ""}
+    </p>
+  );
+}
+
+function Eingabe({ feld, eingaben, setze, herkunft }: { feld: Feld; eingaben: AnkaufEingaben; setze: (k: keyof AnkaufEingaben, v: number) => void; herkunft?: AnkaufHerkunft }) {
   // Prozentfelder rechnen intern als Anteil (0,05), angezeigt wird 5.
   const istProzent = feld.einheit === "%";
   const wert = istProzent ? Math.round(eingaben[feld.key] * 1e8) / 1e6 : eingaben[feld.key];
@@ -194,6 +225,7 @@ function Eingabe({ feld, eingaben, setze }: { feld: Feld; eingaben: AnkaufEingab
         sofort
         onChange={(v) => setze(feld.key, istProzent ? v / 100 : v)}
       />
+      <HerkunftEtikett herkunft={herkunft?.[feld.key as AuslesFeld]} />
       {feld.hinweis && <p className="text-xs text-muted-foreground">{feld.hinweis}</p>}
     </div>
   );
@@ -234,7 +266,38 @@ const Ankaufstool = () => {
   const [objekt, setObjekt] = useState<AnkaufObjekt>(OBJEKT_LEER);
   const [pdfLaeuft, setPdfLaeuft] = useState(false);
   const r = useMemo(() => berechneAnkauf(eingaben), [eingaben]);
-  const setze = (k: keyof AnkaufEingaben, v: number) => setEingaben((alt) => ({ ...alt, [k]: v }));
+  // Woher ein Wert stammt: aus den Unterlagen ausgelesen oder (ohne Eintrag) eigene Eingabe.
+  const [herkunft, setHerkunft] = useState<AnkaufHerkunft>({});
+  // In dieser Sitzung von Hand geänderte Felder: neue Vorschläge dafür sind nicht vorausgewählt.
+  const [vonHand, setVonHand] = useState<Set<AuslesFeld>>(new Set());
+  /** Eine Eingabe von Hand: Der Wert gilt als eigener, das Etikett der Unterlagen entfällt. */
+  const vonHandGeaendert = (k: string) => {
+    setHerkunft((alt) => {
+      if (!(k in alt)) return alt;
+      const neu = { ...alt };
+      delete neu[k as AuslesFeld];
+      return neu;
+    });
+    setVonHand((alt) => (alt.has(k as AuslesFeld) ? alt : new Set(alt).add(k as AuslesFeld)));
+  };
+  const setze = (k: keyof AnkaufEingaben, v: number) => {
+    setEingaben((alt) => ({ ...alt, [k]: v }));
+    vonHandGeaendert(k);
+  };
+  const uebernehmen = (vorschlaege: Vorschlag[]) => {
+    const zahlen: Partial<AnkaufEingaben> = {};
+    const texte: Partial<AnkaufObjekt> = {};
+    const neueHerkunft: AnkaufHerkunft = {};
+    for (const v of vorschlaege) {
+      if ((TEXT_FELDER as readonly string[]).includes(v.feld)) texte[v.feld as keyof AnkaufObjekt] = String(v.wert);
+      else zahlen[v.feld as keyof AnkaufEingaben] = Number(v.wert);
+      neueHerkunft[v.feld] = { quelle: v.quelle, sicherheit: v.sicherheit };
+    }
+    setEingaben((alt) => ({ ...alt, ...zahlen }));
+    setObjekt((alt) => ({ ...alt, ...texte }));
+    setHerkunft((alt) => ({ ...alt, ...neueHerkunft }));
+    toast.success(`${vorschlaege.length} Werte aus den Unterlagen übernommen.`);
+  };
 
   // Gespeicherte Versionen. Die Einstellungen kommen mit dem Cache nach,
   // deshalb hängt die Liste an dessen Version.
@@ -255,7 +318,7 @@ const Ankaufstool = () => {
   const versionSichern = async () => {
     const jetzt = new Date();
     const name = objektName.trim() || `Rechnung vom ${jetzt.toLocaleDateString("de-DE")} ${jetzt.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}`;
-    const neu: AnkaufVersion = { id: crypto.randomUUID(), name, gespeichertAm: jetzt.toISOString(), eingaben, objekt };
+    const neu: AnkaufVersion = { id: crypto.randomUUID(), name, gespeichertAm: jetzt.toISOString(), eingaben, objekt, herkunft };
     setSpeichertGerade(true);
     try {
       await versionenSchreiben(versionSpeichern(versionen, neu));
@@ -272,6 +335,8 @@ const Ankaufstool = () => {
   const versionLaden = (v: AnkaufVersion) => {
     setEingaben(eingabenAusVersion(v));
     setObjekt(objektAusVersion(v));
+    setHerkunft((v.herkunft ?? {}) as AnkaufHerkunft);
+    setVonHand(new Set());
     setObjektName(v.name.startsWith("Rechnung vom ") ? "" : v.name);
     setAktiveVersion(v.id);
   };
@@ -322,7 +387,7 @@ const Ankaufstool = () => {
     <DashboardLayout>
       <div className="space-y-6 w-full">
         <PageHeader title="Ankaufstool" subtitle="Bauträger-Kalkulator: Lohnt sich das Objekt? Grobe Go/No-Go-Rechnung vor Steuern.">
-          <Button variant="outline" size="sm" onClick={() => { setEingaben(ANKAUF_STANDARD); setObjektName(""); setObjekt(OBJEKT_LEER); setAktiveVersion(null); }}>
+          <Button variant="outline" size="sm" onClick={() => { setEingaben(ANKAUF_STANDARD); setObjektName(""); setObjekt(OBJEKT_LEER); setHerkunft({}); setVonHand(new Set()); setAktiveVersion(null); }}>
             <RotateCcw className="h-4 w-4 mr-1" /> Zurücksetzen
           </Button>
           <Button size="sm" onClick={pdfSpeichern} disabled={pdfLaeuft}>
@@ -379,6 +444,14 @@ const Ankaufstool = () => {
               </SectionCardContent>
             </SectionCard>
 
+            <UnterlagenAuslesen
+              labels={FELD_LABELS}
+              aktuell={(feld) => ((TEXT_FELDER as readonly string[]).includes(feld) ? objekt[feld as keyof AnkaufObjekt] : eingaben[feld as keyof AnkaufEingaben])}
+              anzeige={wertAnzeigen}
+              vonHand={vonHand}
+              onUebernehmen={uebernehmen}
+            />
+
             <SectionCard>
               <SectionCardHeader>
                 <SectionCardTitle>Objektdaten aus Exposé</SectionCardTitle>
@@ -397,8 +470,9 @@ const Ankaufstool = () => {
                           id={`ankauf-${f.key}`}
                           value={objekt[f.key]}
                           placeholder={f.platzhalter}
-                          onChange={(ev) => setObjekt((alt) => ({ ...alt, [f.key]: ev.target.value }))}
+                          onChange={(ev) => { setObjekt((alt) => ({ ...alt, [f.key]: ev.target.value })); vonHandGeaendert(f.key); }}
                         />
+                        <HerkunftEtikett herkunft={herkunft[f.key]} />
                       </div>
                     ))}
                   </div>
@@ -409,15 +483,16 @@ const Ankaufstool = () => {
                       rows={2}
                       value={objekt.lage}
                       placeholder="z. B. Gewerbegebiet, Bahnhof 5 Min., Autobahn 5 Min."
-                      onChange={(ev) => setObjekt((alt) => ({ ...alt, lage: ev.target.value }))}
+                      onChange={(ev) => { setObjekt((alt) => ({ ...alt, lage: ev.target.value })); vonHandGeaendert("lage"); }}
                     />
+                    <HerkunftEtikett herkunft={herkunft.lage} />
                   </div>
                 </div>
                 {EXPOSE_GRUPPEN.map((g) => (
                   <div key={g.titel} className="space-y-3">
                     <h3 className="text-sm font-semibold">{g.titel}</h3>
                     <div className="grid gap-4 sm:grid-cols-2">
-                      {g.felder.map((f) => <Eingabe key={f.key} feld={f} eingaben={eingaben} setze={setze} />)}
+                      {g.felder.map((f) => <Eingabe key={f.key} feld={f} eingaben={eingaben} setze={setze} herkunft={herkunft} />)}
                     </div>
                   </div>
                 ))}
