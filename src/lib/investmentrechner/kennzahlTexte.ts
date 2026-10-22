@@ -396,7 +396,7 @@ export const KENNZAHL_TEXTE_DE: KennzahlTexte = {
         bedeutung:
           "Das steuerliche Ergebnis der Wohnung. Ist es negativ, senkt es dein zu versteuerndes Einkommen. Die Tilgung ist nicht absetzbar.",
         formel:
-          "Ergebnis V+V = Miete − Kosten − Zinsen − Gebäude-AfA − Sonder-AfA − Möbel-AfA − abgezogener Erhaltungsaufwand",
+          "Ergebnis V+V = Miete − Kosten − Zinsen − Finanzierungsnebenkosten (Jahr 1) − Umschuldungskosten − Gebäude-AfA − Sonder-AfA − Möbel-AfA − abgezogener Erhaltungsaufwand",
       },
       grenzsteuersatz: {
         titel: "Grenzsteuersatz",
@@ -464,7 +464,7 @@ export const KENNZAHL_TEXTE_DE: KennzahlTexte = {
         bedeutung:
           "Der Zins, den dein eingesetztes Geld rechnerisch bringt. Er hängt stark an Finanzierung und Wertsteigerung: Wer weniger einbringt, bekommt die höhere Zahl.",
         formel:
-          "Der Zinssatz, bei dem −Eigenkapital + abgezinste Cashflows nach Steuer + (Immobilie minus Restschuld minus Verkaufskosten) im letzten Jahr zusammen 0 ergeben",
+          "Der Zinssatz, bei dem −(Eigenkapital + Finanzierungsnebenkosten) zum Kauf + die Cashflows nach Steuer am Ende jedes Jahres (das erste Jahr zeitanteilig ab dem Übergang) + (Immobilie minus Restschuld minus Verkaufskosten) zum Verkauf, jeweils auf ihren Zeitpunkt abgezinst, zusammen 0 ergeben",
       },
     },
     kaufpreisAllInclusive: {
@@ -705,7 +705,7 @@ export const KENNZAHL_TEXTE_EN: KennzahlTexte = {
         bedeutung:
           "The taxable result of the flat. If it is negative, it reduces your taxable income. The repayment is not deductible.",
         formel:
-          "Result from letting = rent − costs − interest − building depreciation − special depreciation − furniture depreciation − deducted maintenance expenses",
+          "Result from letting = rent − costs − interest − financing costs (year 1) − refinancing costs − building depreciation − special depreciation − furniture depreciation − deducted maintenance expenses",
       },
       grenzsteuersatz: {
         titel: "Marginal tax rate",
@@ -773,7 +773,7 @@ export const KENNZAHL_TEXTE_EN: KennzahlTexte = {
         bedeutung:
           "The interest rate your invested money yields in arithmetical terms. It depends heavily on financing and increase in value: whoever contributes less gets the higher figure.",
         formel:
-          "The interest rate at which −equity + discounted cash flows after tax + (property minus remaining debt minus selling costs) in the final year add up to 0",
+          "The interest rate at which −(equity + financing costs) at purchase + the after-tax cash flows at the end of each year (the first year pro rata from the transfer) + (property minus remaining debt minus selling costs) at sale, each discounted to its point in time, add up to 0",
       },
     },
     kaufpreisAllInclusive: {

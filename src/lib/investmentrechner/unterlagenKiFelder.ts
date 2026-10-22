@@ -317,10 +317,15 @@ export function altAntwortGetrennt(roh: Record<string, unknown>, aktuell: Pick<I
   const alt = roh.monthlyOperatingCosts;
   if (!alt || typeof alt !== "object" || "housingFeeNonRecoverable" in roh) return roh;
   const eintrag = alt as Partial<KiFeldwert>;
-  const summe = typeof eintrag.wert === "number" ? eintrag.wert : Number(eintrag.wert);
-  if (!Number.isFinite(summe)) return roh;
-  const weitere = Math.max(0, aktuell.monthlyOperatingCosts || 0);
   const { monthlyOperatingCosts: _alt, ...rest } = roh;
+  // Nur eine echte, nicht negative Zahl taugt. `Number(null)` und `Number("")`
+  // ergeben 0 und wuerden sonst als Hausgeld von 0 € vorgeschlagen
+  // (Codex-Kontrolle 22.10.2026); dann faellt der alte Wert ganz weg.
+  const summe = typeof eintrag.wert === "number"
+    ? eintrag.wert
+    : typeof eintrag.wert === "string" && eintrag.wert.trim() !== "" ? Number(eintrag.wert) : Number.NaN;
+  if (!Number.isFinite(summe) || summe < 0) return rest;
+  const weitere = Math.max(0, aktuell.monthlyOperatingCosts || 0);
   return {
     ...rest,
     housingFeeNonRecoverable: {

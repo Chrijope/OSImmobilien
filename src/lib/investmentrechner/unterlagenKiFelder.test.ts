@@ -305,3 +305,15 @@ describe("Nicht umlagefähige Kosten aus den Unterlagen", () => {
     expect(summeJahr(neu)).toBe(840);
   });
 });
+
+describe("Alte KI-Antwort mit unbrauchbarer Summe (Codex-Kontrolle 22.10.2026)", () => {
+  it("verwirft null, leere Zeichenkette und negative Werte statt 0 € Hausgeld vorzuschlagen", async () => {
+    const { altAntwortGetrennt } = await import("./unterlagenKiFelder");
+    for (const wert of [null, "", "  ", -5, "abc"]) {
+      const ergebnis = altAntwortGetrennt({ monthlyOperatingCosts: { wert, quelle: "Exposé, Seite 1" } } as Record<string, unknown>, { monthlyOperatingCosts: 20 });
+      expect(ergebnis).toEqual({});
+    }
+    const gut = altAntwortGetrennt({ monthlyOperatingCosts: { wert: 70, quelle: "Exposé, Seite 1" } } as Record<string, unknown>, { monthlyOperatingCosts: 20 });
+    expect((gut.housingFeeNonRecoverable as { wert: number }).wert).toBe(50);
+  });
+});
