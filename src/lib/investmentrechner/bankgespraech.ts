@@ -153,17 +153,20 @@ export interface FuenfzehnProzentGrenze {
  * (`immediateDeductionRatio`), hier als Betrag. `null` ohne Gebäudewert.
  */
 export function fuenfzehnProzentGrenze(
-  result: Pick<InvestmentErgebnis, "gebaeudeanteilKaufpreis" | "nebenkostenGebaeude" | "erhaltungsaufwand">,
+  result: Pick<InvestmentErgebnis, "gebaeudeanteilKaufpreis" | "nebenkostenGebaeude" | "erhaltungsaufwand"> &
+    Partial<Pick<InvestmentErgebnis, "erhaltungsaufwandNetto">>,
 ): FuenfzehnProzentGrenze | null {
   const gebaeude = result.gebaeudeanteilKaufpreis + result.nebenkostenGebaeude - result.erhaltungsaufwand;
   if (!(gebaeude > 0)) return null;
   const grenzeNetto = gebaeude * 0.15;
+  // Seit dem 22.10.2026 netto wie im Rechenkern; der eingetragene Aufwand ist brutto.
+  const aufwandNetto = result.erhaltungsaufwandNetto ?? result.erhaltungsaufwand;
   return {
     gebaeude,
     grenzeNetto,
     grenzeBrutto: grenzeNetto * 1.19,
-    aufwand: result.erhaltungsaufwand,
-    spielraumNetto: grenzeNetto - result.erhaltungsaufwand,
+    aufwand: aufwandNetto,
+    spielraumNetto: grenzeNetto - aufwandNetto,
   };
 }
 

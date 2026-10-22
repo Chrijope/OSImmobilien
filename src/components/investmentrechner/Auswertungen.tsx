@@ -405,7 +405,7 @@ export function Bankgespraech({
             zeilen: [
               [t("Anschaffungskosten Gebäude", "Acquisition costs of the building"), fEuro(grenze.gebaeude)],
               [t("Grenze netto (brutto mit 19 % USt.)", "Limit net (gross with 19% VAT)"), `${fEuro(grenze.grenzeNetto)} (${fEuro(grenze.grenzeBrutto)})`],
-              [t("Eingetragener Erhaltungsaufwand", "Maintenance expenses entered"), fEuro(grenze.aufwand)],
+              [t("Erhaltungsaufwand netto", "Maintenance expenses net"), fEuro(grenze.aufwand)],
               [grenze.spielraumNetto >= 0 ? t("Spielraum netto", "Headroom net") : t("Grenze überschritten um", "Limit exceeded by"), fEuro(Math.abs(grenze.spielraumNetto))],
             ] as [string, string][],
             hinweis:
@@ -761,13 +761,6 @@ export function hausgeldHinweis(input: InvestmentEingabe, sprache: FormatSprache
       en
         ? `The parts add up to ${formatEuroCent(h.summeTeile, sprache)}, the total is ${formatEuroCent(h.gesamt, sprache)} (difference ${formatEuroCent(h.abweichung, sprache)}).`
         : `Die Teile ergeben ${formatEuroCent(h.summeTeile, sprache)}, das Hausgeld gesamt ist ${formatEuroCent(h.gesamt, sprache)} (Abweichung ${formatEuroCent(h.abweichung, sprache)}).`,
-    );
-  }
-  if (h.rechnungNiedriger) {
-    teile.push(
-      en
-        ? "The calculation uses lower non-recoverable costs than listed here."
-        : "Die Rechnung setzt weniger nicht umlagefähige Kosten an als hier aufgeführt.",
     );
   }
   return teile.length ? teile.join(" ") : null;

@@ -180,9 +180,10 @@ export interface InvestmentEingabe {
    */
   monthlyReserveContribution: number;
   /*
-    Hausgeld in ganzer Höhe, seit dem 22.10.2026 (Christian), nur zur Anzeige
-    und Prüfung: gesamt, davon umlagefähig (zahlt der Mieter) und nicht
-    umlagefähig. Gerechnet wird weiter mit `monthlyOperatingCosts` und
+    Hausgeld in ganzer Höhe, seit dem 22.10.2026 (Christian): gesamt, davon
+    umlagefähig (zahlt der Mieter, nur Anzeige) und nicht umlagefähig. Der
+    nicht umlagefähige Teil rechnet mit: Er kommt zu `monthlyOperatingCosts`
+    (weitere Kosten des Eigentümers) dazu. Die Rücklage steht in
     `monthlyReserveContribution`; siehe `hausgeldAufstellung`. 0 heißt leer.
   */
   housingFeeTotal: number;
@@ -211,6 +212,12 @@ export interface InvestmentEingabe {
    * Käufer (Standard) oder vom Verkäufer vor dem Verkauf. Siehe `Sanierungsfall`.
    */
   rehabScenario: Sanierungsfall;
+  /**
+   * Umsatzsteuersatz im Sanierungsanteil in Prozent, seit dem 22.10.2026.
+   * `rehabExpense` ist brutto; die 15-Prozent-Prüfung rechnet netto. 0, wenn
+   * der Anteil keine Umsatzsteuer enthält (etwa umsatzsteuerfreier Kaufpreis).
+   */
+  rehabVatRate: number;
   rehabDistributionYears: number;
   startYear: number;
   /**
@@ -474,6 +481,8 @@ export interface InvestmentErgebnis {
   };
   /** Sanierungsfall, siehe `Sanierungsfall`. */
   sanierungsfall: Sanierungsfall;
+  /** Erhaltungsaufwand ohne Umsatzsteuer, die Grundlage der 15-Prozent-Prüfung. */
+  erhaltungsaufwandNetto: number;
   /** 15 Prozent der Gebäude-Anschaffungskosten ohne den Aufwand, die Grenze nach § 6 Abs. 1 Nr. 1a EStG in Euro. */
   fuenfzehnProzentGrenze: number;
   /** Die Grenze ist im Fall „nach dem Kauf“ überschritten: Der Aufwand wird als anschaffungsnaher Herstellungsaufwand aktiviert. */
@@ -665,6 +674,7 @@ export const standardEingabe: InvestmentEingabe = {
   rehabExpense: 0,
   rehabMode: "expense",
   rehabScenario: "nachKauf",
+  rehabVatRate: 19,
   rehabDistributionYears: 1,
   startYear: 2026,
   acquisitionMonth: 1,
@@ -1138,25 +1148,29 @@ export function kfwTilgungsplan(
   };
 }
 
-/** Kapitalwert einer Zahlungsreihe bei gegebenem Zinssatz. */
-export function kapitalwert(zinssatz: number, zahlungen: number[]): number {
-  return zahlungen.reduce((summe, zahlung, periode) => summe + zahlung / (1 + zinssatz) ** periode, 0);
+/**
+ * Kapitalwert einer Zahlungsreihe bei gegebenem Zinssatz. `zeitpunkte` nennt
+ * je Zahlung den Zeitpunkt in Jahren (seit dem 22.10.2026, für ein kurzes
+ * erstes Jahr); ohne sie gilt die Stelle in der Reihe als Jahr.
+ */
+export function kapitalwert(zinssatz: number, zahlungen: number[], zeitpunkte?: readonly number[]): number {
+  return zahlungen.reduce((summe, zahlung, periode) => summe + zahlung / (1 + zinssatz) ** (zeitpunkte?.[periode] ?? periode), 0);
 }
 
 /**
  * Interner Zinsfuß per Bisektion zwischen -99,9 % und 1000 %. Ohne
  * Vorzeichenwechsel in der Zahlungsreihe gibt es keine Lösung, dann null.
  */
-export function internerZinsfuss(zahlungen: number[]): number | null {
+export function internerZinsfuss(zahlungen: number[], zeitpunkte?: readonly number[]): number | null {
   if (!zahlungen.some((z) => z < 0) || !zahlungen.some((z) => z > 0)) return null;
   let untere = -0.999;
   let obere = 10;
-  let wertUnten = kapitalwert(untere, zahlungen);
-  let wertOben = kapitalwert(obere, zahlungen);
+  let wertUnten = kapitalwert(untere, zahlungen, zeitpunkte);
+  let wertOben = kapitalwert(obere, zahlungen, zeitpunkte);
   if (wertUnten * wertOben > 0) return null;
   for (let schritt = 0; schritt < 180; schritt += 1) {
     const mitte = (untere + obere) / 2;
-    const wertMitte = kapitalwert(mitte, zahlungen);
+    const wertMitte = kapitalwert(mitte, zahlungen, zeitpunkte);
     if (Math.abs(wertMitte) < 1e-4) return mitte;
     if (wertUnten * wertMitte <= 0) {
       obere = mitte;
@@ -1271,7 +1285,14 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
   const monthlyColdRent = mieteWohnungMonat + Math.max(0, t.monthlyGarageRent || 0) * anteil;
   // Stellplatz oder Garage im Kaufpreis, gedeckelt wie die Möbel.
   const garagenpreis = Math.min(purchasePrice, Math.max(0, t.garagePrice || 0) * anteil);
-  const monthlyOperatingCosts = t.monthlyOperatingCosts * anteil;
+  /*
+    Nicht umlagefähige Kosten, seit dem 22.10.2026 aus zwei Feldern: dem nicht
+    umlagefähigen Hausgeld und den weiteren Kosten des Eigentümers (etwa
+    Sondereigentumsverwaltung). Jede der beiden Eingaben ändert den Cashflow.
+    Gespeicherte Stände von vorher tragen alles im zweiten Feld und rechnen
+    unverändert.
+  */
+  const monthlyOperatingCosts = (t.monthlyOperatingCosts + Math.max(0, t.housingFeeNonRecoverable || 0)) * anteil;
   const monthlyReserveContribution = Math.max(0, t.monthlyReserveContribution) * anteil;
   const rehabEingabe = Math.max(0, t.rehabExpense) * anteil;
   /*
@@ -1561,7 +1582,15 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
     die Prüfung entfällt dort.
   */
   const gebaeudeOhneAufwand = gebaeudeanteilKaufpreis + nebenkostenGebaeude - rehabExpense;
-  const immediateDeductionRatio = gebaeudeOhneAufwand > 0 ? rehabExpense / gebaeudeOhneAufwand : 0;
+  /*
+    Die Grenze gilt für den Aufwand ohne Umsatzsteuer (§ 6 Abs. 1 Nr. 1a EStG),
+    seit dem 22.10.2026 getrennt geführt: `rehabExpense` ist der gezahlte
+    Betrag brutto, er steckt so im Kaufpreis, in der Finanzierung und im
+    Abzug. Für die Prüfung zählt er netto, geteilt durch 1 plus USt-Satz.
+  */
+  const rehabUstSatz = Math.min(1, Math.max(0, endlicheZahl(t.rehabVatRate ?? 19) / 100));
+  const erhaltungsaufwandNetto = rehabExpense / (1 + rehabUstSatz);
+  const immediateDeductionRatio = gebaeudeOhneAufwand > 0 ? erhaltungsaufwandNetto / gebaeudeOhneAufwand : 0;
   const fuenfzehnProzentGrenze = Math.max(0, gebaeudeOhneAufwand) * ANSCHAFFUNGSNAH_GRENZE;
   const anschaffungsnah = !durchVerkaeufer && rehabExpense > 0 && immediateDeductionRatio > ANSCHAFFUNGSNAH_GRENZE;
   const sanierungAktiviert = rehabExpense > 0 && (durchVerkaeufer || anschaffungsnah || t.rehabMode === "capitalize");
@@ -1699,7 +1728,8 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
     const cashflowBeforeTax = effectiveRent - operatingCosts - reserveContribution - debtService - umschuldungskosten;
     const imBeguenstigungszeitraum = sonderZulaessig && i < sonderJahre;
     // § 7a Abs. 9 EStG: Nach der Sonder-AfA verteilt die lineare AfA den Restwert über die Restnutzungsdauer.
-    if (linearJahresbetrag === null && !degressiv && sonderZulaessig && i === sonderJahre && nutzungsdauer > 0) {
+    // Der Begünstigungszeitraum ist gesetzlich vier Jahre, auch wenn weniger Jahre Sonder-AfA eingetragen sind (22.10.2026).
+    if (linearJahresbetrag === null && !degressiv && sonderZulaessig && i === SONDER_7B_JAHRE && nutzungsdauer > 0) {
       linearJahresbetrag = buchwert / restnutzungsdauer;
     }
     let afaRoh: number;
@@ -1899,9 +1929,16 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
   */
   const rechenbar = (reihe: number[]) =>
     reihe.some((z) => z < 0) && reihe.some((z) => z > 0);
-  const irr = rechenbar(reiheMitWertzuwachs) ? internerZinsfuss(reiheMitWertzuwachs) : null;
+  /*
+    Zahlungszeitpunkte in Jahren seit dem Übergang, seit dem 22.10.2026: Der
+    Einsatz bei 0, das Ergebnis jedes Jahres an seinem Ende, das erste also
+    nach dem Zeitanteil. Vorher galten alle Jahre als gleich lang, und ein Kauf
+    im Dezember wies eine viel zu niedrige Jahresrendite aus.
+  */
+  const zeitpunkte = [0, ...years.map((_, index) => ersterJahresanteil + index)];
+  const irr = rechenbar(reiheMitWertzuwachs) ? internerZinsfuss(reiheMitWertzuwachs, zeitpunkte) : null;
   const irrWithoutAppreciation = rechenbar(reiheOhneWertzuwachs)
-    ? internerZinsfuss(reiheOhneWertzuwachs)
+    ? internerZinsfuss(reiheOhneWertzuwachs, zeitpunkte)
     : null;
 
   /*
@@ -1981,6 +2018,7 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
     kaufpreisfaktorWohnung,
     sonderAfa,
     sanierungsfall,
+    erhaltungsaufwandNetto,
     fuenfzehnProzentGrenze,
     anschaffungsnah,
     sanierungAktiviert,
@@ -2138,8 +2176,6 @@ export interface Hausgeldaufstellung {
   summeTeile: number;
   /** Gesamt minus Summe der Teile; `null`, wenn kein Gesamtbetrag eingetragen ist. */
   abweichung: number | null;
-  /** In der Rechnung steht weniger nicht umlagefähiger Aufwand als hier aufgeführt. */
-  rechnungNiedriger: boolean;
 }
 
 /**
@@ -2147,12 +2183,12 @@ export interface Hausgeldaufstellung {
  * umlagefähig + nicht umlagefähig + Erhaltungsrücklage. Umlagefähig zahlt der
  * Mieter und belastet den Cashflow nicht; nicht umlagefähig belastet ihn und
  * ist steuerlich abziehbar; die Rücklage belastet ihn, steuerlich zählt sie
- * erst bei Verwendung. Die Rechnung selbst nimmt weiter die nicht
- * umlagefähigen Kosten und die Rücklage aus ihren Feldern; hier wird nur
- * aufgeführt und geprüft, ob die Summe stimmt. Ganzes Objekt, ohne Anteil.
+ * erst bei Verwendung. Die Rechnung nimmt den nicht umlagefähigen Teil und
+ * die Rücklage aus genau diesen Feldern; hier wird aufgeführt und geprüft,
+ * ob die Summe stimmt. Ganzes Objekt, ohne Anteil.
  */
 export function hausgeldAufstellung(
-  t: Pick<InvestmentEingabe, "housingFeeTotal" | "housingFeeRecoverable" | "housingFeeNonRecoverable" | "monthlyReserveContribution" | "monthlyOperatingCosts">,
+  t: Pick<InvestmentEingabe, "housingFeeTotal" | "housingFeeRecoverable" | "housingFeeNonRecoverable" | "monthlyReserveContribution">,
 ): Hausgeldaufstellung {
   const zahl = (wert: number | undefined) => Math.max(0, endlicheZahl(wert ?? 0));
   const gesamt = zahl(t.housingFeeTotal);
@@ -2168,7 +2204,6 @@ export function hausgeldAufstellung(
     ruecklage,
     summeTeile,
     abweichung: gesamt > 0 ? gesamt - summeTeile : null,
-    rechnungNiedriger: nichtUmlagefaehig > zahl(t.monthlyOperatingCosts) + 0.005,
   };
 }
 

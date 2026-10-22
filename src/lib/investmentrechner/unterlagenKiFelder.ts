@@ -47,6 +47,13 @@ export interface Feldbeschreibung {
   /** Zulässiger Bereich, außerhalb wird der Wert verworfen. */
   min?: number;
   max?: number;
+  /**
+   * Schlüssel in der Antwort der Auslesung, wenn er vom Rechnerfeld abweicht.
+   * Seit dem 22.10.2026: Die Function liefert das nicht umlagefähige Hausgeld
+   * weiter als `monthlyOperatingCosts`, im Rechner steht es jetzt in
+   * `housingFeeNonRecoverable` (sonst zählte es neben der Vorbelegung doppelt).
+   */
+  antwortSchluessel?: string;
 }
 
 /** Die Rechnerfelder, die aus Unterlagen kommen können. Kundenfelder bewusst nicht. */
@@ -66,7 +73,7 @@ export type AuslesbaresFeld =
   | "seniorInterestRate"
   | "seniorRepaymentRate"
   | "monthlyColdRent"
-  | "monthlyOperatingCosts"
+  | "housingFeeNonRecoverable"
   | "buildingShare"
   | "buildingDepreciationRate"
   | "specialDepreciationRate"
@@ -94,7 +101,7 @@ export const AUSLESBARE_FELDER: readonly Feldbeschreibung[] = [
   { feld: "seniorInterestRate", label: "Sollzins p. a.", einheit: "prozent", min: 0, max: 15 },
   { feld: "seniorRepaymentRate", label: "Anfängliche Tilgung", einheit: "prozent", min: 0, max: 20 },
   { feld: "monthlyColdRent", label: "Kaltmiete p. M.", einheit: "euro", min: 1, max: 100_000 },
-  { feld: "monthlyOperatingCosts", label: "Nicht umlagefähige Kosten p. M.", einheit: "euro", min: 0, max: 50_000 },
+  { feld: "housingFeeNonRecoverable", antwortSchluessel: "monthlyOperatingCosts", label: "davon nicht umlagefähig p. M.", einheit: "euro", min: 0, max: 50_000 },
   { feld: "buildingShare", label: "Gebäudeanteil", einheit: "prozent", min: 1, max: 100 },
   { feld: "buildingDepreciationRate", label: "AfA p. a.", einheit: "prozent", min: 0.5, max: 10 },
   { feld: "specialDepreciationRate", label: "Sonder-AfA p. a.", einheit: "prozent", min: 0, max: 10 },
@@ -306,7 +313,7 @@ export function kiAntwortInVorschlaege(antwort: unknown, aktuell: InvestmentEing
   const roh = felder as Record<string, unknown>;
   const vorschlaege: Uebernahmevorschlag[] = [];
   for (const beschreibung of AUSLESBARE_FELDER) {
-    const eintrag = roh[beschreibung.feld];
+    const eintrag = roh[beschreibung.antwortSchluessel ?? beschreibung.feld];
     if (!eintrag || typeof eintrag !== "object") continue;
     const { wert: rohwert, quelle, sicherheit } = eintrag as Partial<KiFeldwert>;
     const wert = beschreibung.einheit === "text" ? textPruefen(rohwert) : zahlPruefen(beschreibung, rohwert);

@@ -127,6 +127,14 @@ import {
  *    grossYieldWohnung, netYieldWohnung, fuenfzehnProzentGrenze,
  *    anschaffungsnah, sanierungAktiviert, verkaufskosten und je Jahr
  *    umschuldungskosten.
+ *
+ * 13. Codex-Nachprüfung vom 22.10.2026: Die 15-Prozent-Quote rechnet mit dem
+ *    Aufwand ohne Umsatzsteuer (Standard 19 %). Geändert hat sich in allen
+ *    Fällen mit Aufwand nur `immediateDeductionRatio` (standard 3,35 → 2,82 %,
+ *    splitting 16,78 → 14,10 %, manuell 36,50 → 30,67 %) und in „splitting“
+ *    `anschaffungsnah` (dort ohnehin „Aktivieren“, die Zahlen bleiben). Neu
+ *    ist `erhaltungsaufwandNetto`. Der IRR mit Zahlungszeitpunkten ändert bei
+ *    ganzen Jahren nichts.
  */
 
 type Fallname = "standard" | "splitting" | "manuell" | "leer";
@@ -410,11 +418,13 @@ describe("Referenzbeispiel: Erhaltungsaufwand 20.000 Euro", () => {
 
   it("prüft die 15 Prozent auf das Gebäude ohne den Aufwand", () => {
     const r = berechneInvestment({ ...mitAufwand, rehabMode: "expense" });
-    expect(r.immediateDeductionRatio).toBeCloseTo(20000 / 182480, 10);
+    // Seit dem 22.10.2026 netto: Der Aufwand ist brutto mit 19 % USt eingetragen.
+    expect(r.erhaltungsaufwandNetto).toBeCloseTo(20000 / 1.19, 8);
+    expect(r.immediateDeductionRatio).toBeCloseTo(20000 / 1.19 / 182480, 10);
     expect(r.simpleThresholdExceeded).toBe(false);
     const viel = berechneInvestment({ ...mitAufwand, rehabExpense: 40000, rehabMode: "expense" });
     // Nebenkosten 5 % auf 202.000, davon 8.080 auf das Gebäude.
-    expect(viel.immediateDeductionRatio).toBeCloseTo(40000 / 161680, 10);
+    expect(viel.immediateDeductionRatio).toBeCloseTo(40000 / 1.19 / 161680, 10);
     expect(viel.simpleThresholdExceeded).toBe(true);
   });
 

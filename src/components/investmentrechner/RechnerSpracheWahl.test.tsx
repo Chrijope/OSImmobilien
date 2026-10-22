@@ -21,7 +21,8 @@ const eingabe: InvestmentEingabe = {
   purchasePrice: 250000,
   monthlyColdRent: 900,
   taxableIncomeCustomer: 70000,
-  monthlyOperatingCosts: 60,
+  // Weitere nicht umlagefähige Kosten neben dem Hausgeld, etwa Sondereigentumsverwaltung.
+  monthlyOperatingCosts: 20,
   monthlyReserveContribution: 40,
   housingFeeTotal: 300,
   housingFeeRecoverable: 200,
@@ -60,10 +61,9 @@ describe("Sprache der rechten Seite", () => {
 
 describe("Hausgeld in ganzer Höhe", () => {
   it("prüft gesamt = umlagefähig + nicht umlagefähig + Rücklage", () => {
-    expect(hausgeldAufstellung(eingabe)).toMatchObject({ gesamt: 300, summeTeile: 300, abweichung: 0, rechnungNiedriger: false });
+    expect(hausgeldAufstellung(eingabe)).toMatchObject({ gesamt: 300, summeTeile: 300, abweichung: 0 });
     const falsch = hausgeldAufstellung({ ...eingabe, housingFeeTotal: 320 });
     expect(falsch.abweichung).toBe(20);
-    expect(hausgeldAufstellung({ ...eingabe, monthlyOperatingCosts: 30 }).rechnungNiedriger).toBe(true);
     expect(hausgeldAufstellung(standardEingabe).vorhanden).toBe(false);
   });
 
@@ -81,11 +81,18 @@ describe("Hausgeld in ganzer Höhe", () => {
     expect(en.queryByTestId("hausgeld-abweichung")).toBeNull();
   });
 
-  it("belastet den Cashflow nur mit dem nicht umlagefähigen Teil und der Rücklage", () => {
+  it("belastet den Cashflow nur mit dem nicht umlagefähigen Teil, den weiteren Kosten und der Rücklage", () => {
     const r = berechneInvestment(eingabe);
-    const ohneAnzeige = berechneInvestment({ ...eingabe, housingFeeTotal: 0, housingFeeRecoverable: 0, housingFeeNonRecoverable: 0 });
-    // Die Aufstellung ändert die Rechnung nicht: Der umlagefähige Teil zahlt der Mieter.
-    expect(r.years).toEqual(ohneAnzeige.years);
-    expect(r.years[0].operatingCosts + r.years[0].reserveContribution).toBeCloseTo((60 + 40) * 12, 6);
+    // Gesamt und umlagefähig ändern die Rechnung nicht: Den umlagefähigen Teil zahlt der Mieter.
+    const andereAnzeige = berechneInvestment({ ...eingabe, housingFeeTotal: 999, housingFeeRecoverable: 500 });
+    expect(r.years).toEqual(andereAnzeige.years);
+    // Nicht umlagefähig (60) plus weitere Kosten (20) plus Rücklage (40).
+    expect(r.years[0].operatingCosts + r.years[0].reserveContribution).toBeCloseTo((60 + 20 + 40) * 12, 6);
+    // Jede Änderung am nicht umlagefähigen Hausgeld wirkt auf den Cashflow (Codex-Befund vom 22.10.2026).
+    const mehr = berechneInvestment({ ...eingabe, housingFeeNonRecoverable: 70 });
+    expect(r.years[0].cashflowBeforeTax - mehr.years[0].cashflowBeforeTax).toBeCloseTo(120, 6);
+    // Ein alter Stand ohne die Aufteilung rechnet wie vorher mit dem einen Feld.
+    const alt = berechneInvestment({ ...eingabe, housingFeeNonRecoverable: 0, monthlyOperatingCosts: 80 });
+    expect(alt.years[0].operatingCosts).toBeCloseTo(r.years[0].operatingCosts, 6);
   });
 });
