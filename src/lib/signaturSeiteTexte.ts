@@ -182,6 +182,13 @@ export interface SignaturSeitenTexte {
   wirdGespeichert: string;
   bestaetigen: string;
   datenschutzFuss: string;
+  /**
+   * Unter dem Datenschutzsatz, etwas dunkler (22.10.2026). Bewusst
+   * „rechtsverbindlich“ und nicht „immer rechtsgueltig“: Wo das Gesetz die
+   * Papierform verlangt (etwa Buergschaft, befristeter Arbeitsvertrag),
+   * reicht die einfache elektronische Signatur nicht.
+   */
+  rechtsverbindlichFuss: string;
   // Handy-Ansicht
   mobilKopf: string;
   mobilUnterschreiben: (titel: string) => string;
@@ -273,6 +280,7 @@ const DE: SignaturSeitenTexte = {
   wirdGespeichert: "Wird gespeichert…",
   bestaetigen: "✍️ Unterschrift bestätigen",
   datenschutzFuss: "Ihre Daten werden verschlüsselt übertragen und DSGVO-konform gespeichert. IP-Adresse und Zeitstempel werden als Nachweis protokolliert.",
+  rechtsverbindlichFuss: "Ihre elektronische Unterschrift ist rechtsverbindlich (einfache elektronische Signatur nach der eIDAS-Verordnung).",
   mobilKopf: "OS Immobilien · Mobile Unterschrift",
   mobilUnterschreiben: (titel) => `${titel} unterschreiben`,
   mobilFuer: "Für",
@@ -365,6 +373,7 @@ const EN: SignaturSeitenTexte = {
   wirdGespeichert: "Saving…",
   bestaetigen: "✍️ Confirm signature",
   datenschutzFuss: "Your data is transmitted in encrypted form and stored in compliance with the GDPR. IP address and time stamp are recorded as evidence.",
+  rechtsverbindlichFuss: "Your electronic signature is legally binding (simple electronic signature under the eIDAS Regulation).",
   mobilKopf: "OS Immobilien · Mobile signature",
   mobilUnterschreiben: (titel) => `Sign the ${titel.charAt(0).toLowerCase()}${titel.slice(1)}`,
   mobilFuer: "For",
@@ -401,6 +410,7 @@ export const SIGNATUR_SEITE_TEXTE_DU: SignaturSeitenTexte = {
   bitteUnterschreiben: "Bitte unterschreibe im Feld oben (Maus oder Finger)",
   handyText: "Scanne diesen QR-Code mit der Kamera deines Handys. Du unterschreibst dann bequem mit dem Finger. Die Unterschrift erscheint hier automatisch.",
   datenschutzFuss: "Deine Daten werden verschlüsselt übertragen und DSGVO-konform gespeichert. IP-Adresse und Zeitstempel werden als Nachweis protokolliert.",
+  rechtsverbindlichFuss: "Deine elektronische Unterschrift ist rechtsverbindlich (einfache elektronische Signatur nach der eIDAS-Verordnung).",
   mobilHinweis: "Unterschreibe unten mit dem Finger. Deine Unterschrift wird sofort an den Computer übertragen, an dem du den QR-Code gescannt hast.",
   mobilGesendetText: "Deine Unterschrift wurde an deinen Computer übertragen. Bitte schließe dort den Vorgang ab. Du kannst dieses Fenster jetzt schließen.",
 };

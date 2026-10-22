@@ -1196,6 +1196,7 @@ export default function SignaturSeite() {
               </Button>
 
               <p className="text-[10px] text-muted-foreground text-center">{t.datenschutzFuss}</p>
+              <p className="text-[10px] font-medium text-foreground/75 text-center">{t.rechtsverbindlichFuss}</p>
             </Card>
             )}
             </>
@@ -1669,6 +1670,10 @@ function VertragSignaturen({
       <p className="text-[10px] text-muted-foreground text-center">
         Ihre Unterschrift wird verschlüsselt übertragen und DSGVO-konform gespeichert.
         IP-Adresse und Zeitstempel werden als Nachweis protokolliert.
+      </p>
+      {/* Partner- und Bewerbervertraege duzen (Christian, 22.10.2026). */}
+      <p className="text-[10px] font-medium text-foreground/75 text-center">
+        Deine elektronische Unterschrift ist rechtsverbindlich (einfache elektronische Signatur nach der eIDAS-Verordnung).
       </p>
     </Card>
   );
@@ -2145,6 +2150,9 @@ function VertragKurzSignatur({
 
       <p className="text-[10px] text-muted-foreground text-center">
         Die Unterschrift wird verschlüsselt übertragen und DSGVO-konform gespeichert.
+      </p>
+      <p className="text-[10px] font-medium text-foreground/75 text-center">
+        Deine elektronische Unterschrift ist rechtsverbindlich (einfache elektronische Signatur nach der eIDAS-Verordnung).
       </p>
     </Card>
   );
