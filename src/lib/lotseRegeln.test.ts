@@ -104,11 +104,11 @@ describe("pruefeKalkulation", () => {
     expect(k.kaltmiete_monat).toBe(350);
     expect(k.nicht_umlagefaehig_monat).toBe(20);
     expect(k.ruecklage_monat).toBe(10);
-    // Bei Zusammenveranlagung gehört die ganze Wohnung dazu, wie im Rechenkern.
+    // Seit dem 22.10.2026 gilt der Anteil auch bei Zusammenveranlagung, wie im Rechenkern.
     const gemeinsam = { ...eingabe, jointAssessment: true };
     const kg = kalkulationAusRechner(gemeinsam, berechneInvestment(gemeinsam), "nutzer")!;
-    expect(kg.eigentumsanteil_prozent).toBe(100);
-    expect(kg.kaufpreis).toBe(200000);
+    expect(kg.eigentumsanteil_prozent).toBe(50);
+    expect(kg.kaufpreis).toBe(100000);
     // Der Prompt sagt, worauf sich die Beträge beziehen.
     const prompt = baueLotsePrompt({ heute: "2026-09-28T10:00:00Z", objekt: { id: "o1" }, kalkulation: k, unterlagen: [], nichtGelesen: {} });
     expect(prompt).toContain("Eigentumsanteil von 50 Prozent");

@@ -157,13 +157,13 @@ describe("Die Zeilen am Referenzbeispiel", () => {
   });
 
   it("Steuereffekt im ersten Jahr: Steuer ohne minus Steuer mit Immobilie", () => {
-    expect(text("steuereffektErstesJahr")).toMatch(/^Steuer ohne Immobilie [\d.]+ € − Steuer mit Immobilie [\d.]+ € = \+[\d.]+ €$/);
+    expect(text("steuereffektErstesJahr")).toMatch(/^Steuer ohne Immobilie [\d.]+ € − Steuer mit Immobilie [\d.]+ € [=≈] \+[\d.]+ €$/);
   });
 
   it("die übrigen Zeilen nennen ihre Bausteine", () => {
     expect(text("immobilienwert")).toMatch(/^Immobilienanteil 242\.000 € \+ Wertzuwachs [\d.]+ € \+ Möbel-Restbuchwert 0 € = [\d.]+ €$/);
     expect(text("restschuld")).toMatch(/^Darlehen 250\.000 € − Tilgung 10 Jahre [\d.]+ € = [\d.]+ €$/);
-    expect(text("immobilieMinusRestschuld")).toMatch(/^Immobilienwert [\d.]+ € − Restschuld [\d.]+ € = [\d.]+ €$/);
+    expect(text("immobilieMinusRestschuld")).toMatch(/^Immobilienwert [\d.]+ € − Restschuld [\d.]+ € [=≈] [\d.]+ €$/);
     expect(text("selbstEingezahlt")).toMatch(/^Ø [\d.,]+ € im Monat × 120 Monate mit Zuzahlung [=≈] [\d.]+ €$/);
     // Stand zu Beginn seit dem 30.09.2026 genau 0 (Möbel ohne Nebenkosten), das Glied entfällt dann.
     expect(text("vermoegensaufbau")).toMatch(/^Immobilie minus Restschuld 2035 [\d.]+ € ÷ 120 Monate [=≈] [\d.,]+ €$/);

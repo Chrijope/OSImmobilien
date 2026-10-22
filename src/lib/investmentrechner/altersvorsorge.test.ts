@@ -28,16 +28,20 @@ function ok(eingabe: InvestmentEingabe): Altersvorsorge {
   return ergebnis;
 }
 
-/** Jahre bis zur vollen Tilgung einer Annuität mit fester Jahresrate, unabhängig vom Rechenkern. */
+/**
+ * Jahre bis zur vollen Tilgung einer Annuität, unabhängig vom Rechenkern.
+ * Seit dem 22.10.2026 monatlich wie der Rechenkern: Monatsrate aus Zins plus
+ * Tilgung durch 12, Monatszins Sollzins durch 12.
+ */
 function tilgungsjahre(darlehen: number, zins: number, tilgung: number): number {
-  const rate = darlehen * (zins + tilgung);
+  const rate = (darlehen * (zins + tilgung)) / 12;
   let rest = darlehen;
-  let jahre = 0;
-  while (rest >= 0.5) {
-    rest = rest * (1 + zins) - rate;
-    jahre += 1;
+  let monate = 0;
+  while (rest >= 0.005) {
+    rest = rest * (1 + zins / 12) - rate;
+    monate += 1;
   }
-  return jahre;
+  return Math.ceil(monate / 12);
 }
 
 describe("Altersvorsorge", () => {

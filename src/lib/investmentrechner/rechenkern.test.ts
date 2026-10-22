@@ -105,6 +105,28 @@ import {
  *    Ergebnisse wurden neu erzeugt. „splitting“ und „leer“ ohne Möbel blieben
  *    in allen Werten gleich; beim Neuerzeugen kamen dort nur die inzwischen
  *    vorhandenen Felder vermoegenStart und reserveContribution dazu.
+ *
+ * 12. Seit dem 22.10.2026 (Codex-Prüfung, freigegeben von Christian) wurden
+ *    alle vier Fälle neu erzeugt:
+ *    - Alle Darlehen rechnen monatlich (Monatszins = Sollzins ÷ 12). Im Fall
+ *      „standard“ sinken die Zinsen im ersten Jahr von 12.746,11 auf
+ *      12.657,50 Euro, die Restschuld nach zehn Jahren von 261.266,02 auf
+ *      260.000,77 Euro; der IRR steigt von 8,017 auf 8,078 Prozent.
+ *    - Der Miteigentumsanteil gilt auch bei Zusammenveranlagung. „splitting“
+ *      rechnet deshalb wieder mit 50 Prozent (Kaufpreis 125.000 statt
+ *      250.000 Euro, Darlehen 105.500 statt 236.000 Euro). Außerdem gibt es
+ *      dort keine Sonder-AfA mehr: Ohne Wohnfläche ist § 7b nicht prüfbar
+ *      (Sonder-AfA Jahr 1 vorher 10.440 Euro, jetzt 0). Die degressive AfA
+ *      wechselt am Ende zur linearen aus dem Restwert.
+ *    - „manuell“: 40.000 Euro Aufwand liegen über 15 Prozent der
+ *      Gebäude-Anschaffungskosten. Er wird jetzt anschaffungsnah aktiviert
+ *      (AfA-Basis 149.600 statt 109.600 Euro, kein Sofortabzug von 40.000
+ *      Euro im ersten Jahr), Steuerwirkung Jahr 1 1.810,41 statt 15.549,10.
+ *    - „leer“ blieb unverändert.
+ *    Neu sind die Felder ersterJahresanteil, kaufpreisWohnung,
+ *    grossYieldWohnung, netYieldWohnung, fuenfzehnProzentGrenze,
+ *    anschaffungsnah, sanierungAktiviert, verkaufskosten und je Jahr
+ *    umschuldungskosten.
  */
 
 type Fallname = "standard" | "splitting" | "manuell" | "leer";
@@ -348,7 +370,8 @@ describe("Referenzbeispiel: Abschreibung", () => {
     const degressiv = berechneInvestment({ ...referenzbeispiel, depreciationMethod: "declining", buildingDepreciationRate: 5 });
     expect(degressiv.years[0].buildingDepreciation).toBeCloseTo(203280 * 0.05, 6);
     expect(degressiv.years[1].buildingDepreciation).toBeCloseTo(203280 * 0.95 * 0.05, 6);
-    const sonder = berechneInvestment({ ...referenzbeispiel, specialDepreciationRate: 5, specialDepreciationYears: 4 });
+    // Seit dem 22.10.2026 braucht § 7b die Wohnfläche: 203.280 € auf 70 m² liegen unter beiden Grenzen.
+    const sonder = berechneInvestment({ ...referenzbeispiel, area: 70, specialDepreciationRate: 5, specialDepreciationYears: 4 });
     expect(sonder.years[0].specialDepreciation).toBeCloseTo(203280 * 0.05, 6);
   });
 });
@@ -401,7 +424,9 @@ describe("Referenzbeispiel: Erhaltungsaufwand 20.000 Euro", () => {
     // Basis 250.000 − 193.600 − 8.000 = 48.400, Nebenkosten 2.420, davon 1.936 aufs Gebäude.
     expect(r.nebenkostenBasis).toBeCloseTo(48400, 6);
     expect(r.purchaseCosts).toBeCloseTo(2420, 6);
-    expect(r.depreciationBasis).toBeCloseTo(1936, 6);
+    // Seit dem 22.10.2026 über der 15-Prozent-Grenze: aktiviert, also 193.600 + 1.936.
+    expect(r.anschaffungsnah).toBe(true);
+    expect(r.depreciationBasis).toBeCloseTo(195536, 6);
   });
 });
 
@@ -438,11 +463,22 @@ describe("Christians Beispiel: Kaufnebenkosten ohne Erhaltungsaufwand", () => {
     expect(r.totalInvestment).toBeCloseTo(313600, 6);
   });
 
-  it("schreibt das Gebäude ohne den Aufwand ab", () => {
-    // 240.000 Gebäude − 40.000 Aufwand + 80 % von 13.000 Nebenkosten.
-    expect(r.depreciationBasis).toBeCloseTo(210400, 6);
-    expect(r.years[0].buildingDepreciation).toBeCloseTo(4208, 6);
-    expect(r.years[0].rehabDeduction).toBeCloseTo(40000, 6);
+  it("aktiviert den Aufwand über der 15-Prozent-Grenze", () => {
+    // Seit dem 22.10.2026: 40.000 Euro sind 19 % von 210.400 Euro (240.000 − 40.000 + 80 % von 13.000), also
+    // anschaffungsnah. Die AfA läuft auf 250.400 Euro, kein Sofortabzug.
+    expect(r.fuenfzehnProzentGrenze).toBeCloseTo(31560, 6);
+    expect(r.anschaffungsnah).toBe(true);
+    expect(r.depreciationBasis).toBeCloseTo(250400, 6);
+    expect(r.years[0].buildingDepreciation).toBeCloseTo(5008, 6);
+    expect(r.years[0].rehabDeduction).toBe(0);
+  });
+
+  it("schreibt das Gebäude ohne den Aufwand ab, solange er unter der Grenze liegt", () => {
+    const unter = berechneInvestment({ ...beispiel, rehabExpense: 30000 });
+    // 240.000 − 30.000 + 80 % von 13.500 Nebenkosten (5 % auf 270.000) = 220.800, Grenze 33.120.
+    expect(unter.anschaffungsnah).toBe(false);
+    expect(unter.depreciationBasis).toBeCloseTo(220800, 6);
+    expect(unter.years[0].rehabDeduction).toBeCloseTo(30000, 6);
   });
 
   it("zieht mit 15.000 Euro Möbeln auch diese ab: 13.250 Euro auf 265.000", () => {
@@ -563,20 +599,20 @@ describe("Manueller Steuersatz", () => {
     rehabMode: "expense",
   };
 
-  it("spart auch ohne Einkommen genau Verlust mal Satz", () => {
+  // Seit dem 22.10.2026: ohne Steuerlast keine Erstattung (vorher Verlust mal Satz auch ohne Einkommen).
+  it("erstattet ohne Einkommen nichts und sagt es", () => {
     const r = berechneInvestment({ ...manuell, taxableIncomeCustomer: 0 });
     expect(r.years[0].taxableResult).toBeLessThan(0);
+    expect(r.years[0].taxEffect).toBe(0);
+    expect(r.erstattungBegrenzt).toBe(true);
+  });
+
+  it("spart mit Einkommen genau Verlust mal Satz", () => {
+    const r = berechneInvestment({ ...manuell, taxableIncomeCustomer: 60000 });
     r.years.forEach((jahr) => {
       expect(jahr.taxEffect, `Jahr ${jahr.year}`).toBeCloseTo(-jahr.taxableResult * 0.42, 6);
     });
-  });
-
-  it("rechnet mit Einkommen dieselbe Wirkung wie ohne", () => {
-    const ohne = berechneInvestment({ ...manuell, taxableIncomeCustomer: 0 });
-    const mit = berechneInvestment({ ...manuell, taxableIncomeCustomer: 60000 });
-    mit.years.forEach((jahr, index) => {
-      expect(jahr.taxEffect, `Jahr ${jahr.year}`).toBeCloseTo(ohne.years[index].taxEffect, 6);
-    });
+    expect(r.erstattungBegrenzt).toBe(false);
   });
 
   it("belastet einen Überschuss mit dem Satz", () => {

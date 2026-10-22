@@ -363,8 +363,8 @@ export function kalkulationAusRechner(
    * er nicht vorliegt.
    */
   const steuerOffen = eingabe.taxCalculationMode === "tariff" && ergebnis.combinedTaxableIncome <= 0;
-  // Dieselbe Regel wie im Rechenkern: Bei Zusammenveranlagung zählt die ganze Wohnung.
-  const anteilProzent = eingabe.jointAssessment ? 100 : Math.min(100, Math.max(0, eingabe.investmentShare));
+  // Der Anteil aus dem Rechenkern statt einer zweiten Regel; seit dem 22.10.2026 auch bei Zusammenveranlagung die Eingabe.
+  const anteilProzent = (ergebnis.anteil ?? 1) * 100;
   return pruefeKalkulation({
     annahmen,
     eigentumsanteil_prozent: r2(anteilProzent),

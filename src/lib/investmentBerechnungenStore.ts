@@ -139,6 +139,17 @@ export function eingabeAusJson(roh: unknown): InvestmentEingabe {
     wieder gespeichert, steht der Satz ausdrücklich darin.
   */
   ergebnis.financingCostRate = 0;
+  /*
+    Frühere Feldnamen der eigenständigen Artefaktfassung des Rechners
+    (bis 22.10.2026): `garageMiete` und `garagePreis`. Ein dort gespeicherter
+    Stand liest sich damit genauso; gilt nur, wenn das neue Feld fehlt.
+  */
+  const umbenannt: Record<string, keyof InvestmentEingabe> = { garageMiete: "monthlyGarageRent", garagePreis: "garagePrice" };
+  for (const [alt, neu] of Object.entries(umbenannt)) {
+    if (daten[neu] === undefined && typeof daten[alt] === "number" && Number.isFinite(daten[alt])) {
+      (ergebnis as unknown as Record<string, unknown>)[neu] = daten[alt];
+    }
+  }
   for (const schluessel of EINGABE_FELDER as (keyof InvestmentEingabe)[]) {
     const wert = daten[schluessel];
     if (wert === undefined || wert === null) continue;
@@ -155,6 +166,20 @@ export function eingabeAusJson(roh: unknown): InvestmentEingabe {
         .map((e) => ({ jahr: zahl((e as Record<string, unknown>)?.jahr), betrag: zahl((e as Record<string, unknown>)?.betrag) }))
         .filter((e) => e.jahr > 0 && e.betrag > 0)
     : [];
+  // Weitere Anschlussfinanzierungen, seit dem 22.10.2026.
+  ergebnis.seniorFurtherFollowUps = Array.isArray(daten.seniorFurtherFollowUps)
+    ? daten.seniorFurtherFollowUps
+        .map((e) => {
+          const z = (e ?? {}) as Record<string, unknown>;
+          return { nachJahren: zahl(z.nachJahren), zinsProzent: zahl(z.zinsProzent), tilgungProzent: zahl(z.tilgungProzent), kosten: zahl(z.kosten) };
+        })
+        .filter((e) => e.nachJahren >= 1)
+    : [];
+  // Auswahlfelder nur mit bekannten Werten, sonst der Standard.
+  const tilgungsarten = ["annuitaet", "volltilgung", "endfaellig"];
+  if (!tilgungsarten.includes(ergebnis.seniorRepaymentType)) ergebnis.seniorRepaymentType = standardEingabe.seniorRepaymentType;
+  if (!tilgungsarten.includes(ergebnis.secondRepaymentType)) ergebnis.secondRepaymentType = standardEingabe.secondRepaymentType;
+  if (ergebnis.rehabScenario !== "durchVerkaeufer") ergebnis.rehabScenario = "nachKauf";
   const haushalt = (daten.haushalt ?? {}) as Record<string, unknown>;
   const vermoegen = (daten.vermoegen ?? {}) as Record<string, unknown>;
   ergebnis.haushalt = { einkuenfte: postenAusJson(haushalt.einkuenfte), ausgaben: postenAusJson(haushalt.ausgaben) };
@@ -193,7 +218,14 @@ function postenAusJson(roh: unknown): Bankunterlagenposten[] {
 export function aufGesamtkaufpreis(eingabe: InvestmentEingabe, gespeicherteVersion: unknown): InvestmentEingabe {
   const version =
     typeof gespeicherteVersion === "number" && Number.isFinite(gespeicherteVersion) ? gespeicherteVersion : 1;
-  if (version >= EINGABE_VERSION) return { ...eingabe, eingabeVersion: EINGABE_VERSION };
+  /*
+    Ab Version 2 ist der Kaufpreis der Gesamtkaufpreis. Version 3 (22.10.2026)
+    trennt Wohnungs- und Stellplatzmiete und bringt neue Felder mit
+    Standardwerten, die nichts verändern; die Stellplatzmiete eines alten
+    Stands lässt sich nur mit den Daten der Einheit trennen, siehe
+    `stellplatzmieteTrennen`. Hier wird deshalb nur die Marke gesetzt.
+  */
+  if (version >= 2) return { ...eingabe, eingabeVersion: EINGABE_VERSION };
   return {
     ...eingabe,
     purchasePrice: eingabe.purchasePrice + Math.max(0, eingabe.furniturePrice),
