@@ -123,7 +123,12 @@ export default function SelbstauskunftArtefakt() {
     // unter 1280 Pixeln die Hinweisspalte unter dem Formular, die Seite scrollte
     // als Ganzes und die Leiste rutschte unter den Rand.
     <div data-lg="seite" className="flex h-[100dvh] flex-col overflow-hidden bg-background">
-      <div className="flex min-h-0 flex-1 flex-col gap-4 p-4 sm:p-6 xl:flex-row xl:gap-6">
+      {/*
+        Unten ohne Innenabstand: Die Knopfleiste schliesst buendig mit dem
+        Fensterrand ab, oben abgerundet wie die Karte darueber (Christian,
+        22.10.2026). Die Gestaltung der Leiste steht im Formular selbst.
+      */}
+      <div className="flex min-h-0 flex-1 flex-col gap-4 px-4 pt-4 sm:px-6 sm:pt-6 xl:flex-row xl:gap-6">
         <main className="flex min-h-0 w-full flex-1 flex-col gap-4 xl:min-w-0">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" aria-label="Zurück zur Beratungspräsentation" asChild>
@@ -148,7 +153,7 @@ export default function SelbstauskunftArtefakt() {
           </div>
         </main>
         {breit && (
-          <aside className="w-[300px] shrink-0 overflow-y-auto 2xl:w-[320px]">
+          <aside className="w-[300px] shrink-0 overflow-y-auto pb-6 2xl:w-[320px]">
             {/* Der CRM-Hinweis zum Abschluss spricht von digitaler Unterschrift per E-Mail, das gibt es hier nicht. */}
             {hinweisSchritt !== ABSCHLUSS_SCHRITT && <SelbstauskunftHinweise schritt={hinweisSchritt} />}
           </aside>

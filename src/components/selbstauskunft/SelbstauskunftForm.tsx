@@ -4480,7 +4480,8 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
         aeusserer Bereich (CRM-Rahmen mit Kopfleiste, Kundenseite), bleibt die
         Leiste trotzdem am unteren Rand dieses Bereichs stehen.
       */}
-      <div className="sa-knopfleiste sticky bottom-0 z-30 mt-4 flex shrink-0 flex-wrap items-center justify-between gap-2 border-t bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:px-6">
+      {/* Gestaltung seit dem 22.10.2026: buendig am unteren Rand, oben abgerundet wie die Karte, leichter Schatten nach oben. */}
+      <div className="sa-knopfleiste sticky bottom-0 z-30 mt-3 flex shrink-0 flex-wrap items-center justify-between gap-2 rounded-t-2xl border border-b-0 border-border/70 bg-card px-4 py-3.5 shadow-[0_-6px_20px_-8px_rgba(18,54,42,0.12)] sm:px-5">
         <div className="flex items-center gap-2">
           {step > 0 ? (
             <Button variant="outline" onClick={prev}>{t("Zurück")}</Button>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/DashboardLayout";
+import { useHoeheBisFensterrand } from "@/hooks/useHoeheBisFensterrand";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, AlertTriangle, Save, Send, Mail, CheckCircle2, Loader2 } from "lucide-react";
 import { SelbstauskunftForm } from "@/components/selbstauskunft/SelbstauskunftForm";
@@ -25,6 +26,8 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export default function SelbstauskunftPage() {
+  const seitenRahmen = useRef<HTMLDivElement>(null);
+  const seitenMasse = useHoeheBisFensterrand(seitenRahmen);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const kundeId = searchParams.get("kundeId") || "";
@@ -301,7 +304,9 @@ export default function SelbstauskunftPage() {
         Karteninhalt im Formular. Das Innenmass gibt ringsum denselben
         Abstand zum Bildschirmrand.
       */}
-      <div className="flex h-[100dvh] w-full flex-col gap-4 overflow-hidden p-4 sm:p-6">
+      {/* Seit dem 22.10.2026 gemessen bis zum Fensterrand, unten ohne Innenabstand:
+          Die Knopfleiste schliesst buendig mit dem Browser ab (useHoeheBisFensterrand). */}
+      <div ref={seitenRahmen} style={seitenMasse} className="flex h-[100dvh] w-full flex-col gap-4 overflow-hidden px-4 pt-4 sm:px-6 sm:pt-6">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" aria-label="Zurück" onClick={handleBackClick}>
             <ArrowLeft className="h-5 w-5" />
