@@ -4205,6 +4205,9 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
                 <p className="text-[10px] text-muted-foreground text-center mt-2">
                   {t("Ihre Daten werden verschlüsselt übertragen und DSGVO-konform gespeichert.")}
                 </p>
+                <p className="text-[10px] font-medium text-foreground/75 text-center mt-1">
+                  {t("Ihre elektronische Unterschrift ist rechtsverbindlich (einfache elektronische Signatur nach der eIDAS-Verordnung).")}
+                </p>
               </div>
             </div>
           </div>

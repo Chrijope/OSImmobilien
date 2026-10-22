@@ -435,6 +435,8 @@ export const SA_UI_EN: Readonly<Record<string, string>> = {
   "Ihre Daten werden verschlüsselt übertragen und DSGVO-konform gespeichert.":
     "Your data is transmitted in encrypted form and stored in compliance with the GDPR.",
   "Korrekturen übernehmen": "Apply corrections",
+  "Ihre elektronische Unterschrift ist rechtsverbindlich (einfache elektronische Signatur nach der eIDAS-Verordnung).":
+    "Your electronic signature is legally binding (simple electronic signature under the eIDAS Regulation).",
   "Bitte prüfen Sie Ihre Änderungen. Mit dem Klick auf „Korrekturen übernehmen“ wird die Selbstauskunft aktualisiert. Anschließend sehen Sie die neue Fassung als PDF und können sie unterschreiben.":
     "Please check your changes. Clicking “Apply corrections” updates the self-disclosure. You will then see the new version as a PDF and can sign it.",
   "Hinweis: Hat die zweite Person bereits unterschrieben, wird diese Unterschrift zurückgesetzt und die Person automatisch erneut zur Unterschrift eingeladen.":
