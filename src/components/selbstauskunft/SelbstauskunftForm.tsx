@@ -4475,8 +4475,12 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
         Fensterrand kleben bleiben. Zusammen mit der Hoehenkette oben
         (min-h-full am Rahmen, flex-1 an der Karte) haftet sie am unteren
         Bildschirmrand, unabhaengig davon, wie lang der Abschnitt ist.
+
+        `sticky bottom-0` seit dem 22.10.2026 als Rueckfall: Scrollt doch ein
+        aeusserer Bereich (CRM-Rahmen mit Kopfleiste, Kundenseite), bleibt die
+        Leiste trotzdem am unteren Rand dieses Bereichs stehen.
       */}
-      <div className="sa-knopfleiste z-30 mt-4 flex shrink-0 flex-wrap items-center justify-between gap-2 border-t bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:px-6">
+      <div className="sa-knopfleiste sticky bottom-0 z-30 mt-4 flex shrink-0 flex-wrap items-center justify-between gap-2 border-t bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:px-6">
         <div className="flex items-center gap-2">
           {step > 0 ? (
             <Button variant="outline" onClick={prev}>{t("Zurück")}</Button>

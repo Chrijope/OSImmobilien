@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { ArrowLeft, CheckCircle2, Download, Loader2, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -82,12 +82,27 @@ function Abschluss({ data, onNeu }: { data: SelbstauskunftData; onNeu: () => voi
   );
 }
 
+/** Ab 1280 Pixeln steht die Hinweisspalte neben dem Formular, darunter im Formular selbst. */
+function useBreit(): boolean {
+  const abfrage = "(min-width: 1280px)";
+  const [breit, setBreit] = useState(() => typeof window !== "undefined" && window.matchMedia?.(abfrage).matches);
+  useEffect(() => {
+    const m = window.matchMedia?.(abfrage);
+    if (!m) return;
+    const neu = () => setBreit(m.matches);
+    m.addEventListener("change", neu);
+    return () => m.removeEventListener("change", neu);
+  }, []);
+  return !!breit;
+}
+
 export default function SelbstauskunftArtefakt() {
   const [suche] = useSearchParams();
   const ziel = suche.get("ziel") || "";
   // Neuer Schlüssel = neues Formular, nach „Neue Selbstauskunft beginnen“.
   const [runde, setRunde] = useState(0);
   const [hinweisSchritt, setHinweisSchritt] = useState(0);
+  const breit = useBreit();
 
   const neuBeginnen = async () => {
     const ja = await confirmDialog({
@@ -103,9 +118,13 @@ export default function SelbstauskunftArtefakt() {
   };
 
   return (
-    <div data-lg="seite" className="flex min-h-[100dvh] flex-col bg-background xl:h-[100dvh] xl:overflow-hidden">
-      <div className="flex flex-1 flex-col gap-4 p-4 sm:p-6 xl:min-h-0 xl:flex-row xl:gap-6">
-        <main className="flex h-[100dvh] w-full flex-col gap-4 xl:h-auto xl:min-h-0 xl:min-w-0 xl:flex-1">
+    // Genau eine Fensterhoehe bei jeder Breite (22.10.2026): Die Knopfleiste steht
+    // immer am unteren Rand, gescrollt wird nur der Inhalt der Karte. Vorher hing
+    // unter 1280 Pixeln die Hinweisspalte unter dem Formular, die Seite scrollte
+    // als Ganzes und die Leiste rutschte unter den Rand.
+    <div data-lg="seite" className="flex h-[100dvh] flex-col overflow-hidden bg-background">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 p-4 sm:p-6 xl:flex-row xl:gap-6">
+        <main className="flex min-h-0 w-full flex-1 flex-col gap-4 xl:min-w-0">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" aria-label="Zurück zur Beratungspräsentation" asChild>
               <Link to="/praesentation">
@@ -122,15 +141,18 @@ export default function SelbstauskunftArtefakt() {
               key={runde}
               kundeId={KUNDE_ID}
               vorgewaehltesZiel={ziel}
-              onHinweisSchritt={setHinweisSchritt}
+              // Schmal: Hinweise im Formular (scrollen mit). Breit: eigene Spalte rechts.
+              onHinweisSchritt={breit ? setHinweisSchritt : undefined}
               ohneBackend={{ abschluss: (data) => <Abschluss data={data} onNeu={neuBeginnen} /> }}
             />
           </div>
         </main>
-        <aside className="w-full shrink-0 xl:w-[300px] xl:overflow-y-auto 2xl:w-[320px]">
-          {/* Der CRM-Hinweis zum Abschluss spricht von digitaler Unterschrift per E-Mail, das gibt es hier nicht. */}
-          {hinweisSchritt !== ABSCHLUSS_SCHRITT && <SelbstauskunftHinweise schritt={hinweisSchritt} />}
-        </aside>
+        {breit && (
+          <aside className="w-[300px] shrink-0 overflow-y-auto 2xl:w-[320px]">
+            {/* Der CRM-Hinweis zum Abschluss spricht von digitaler Unterschrift per E-Mail, das gibt es hier nicht. */}
+            {hinweisSchritt !== ABSCHLUSS_SCHRITT && <SelbstauskunftHinweise schritt={hinweisSchritt} />}
+          </aside>
+        )}
       </div>
     </div>
   );
