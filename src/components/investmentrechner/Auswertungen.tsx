@@ -1007,6 +1007,13 @@ export function Kennzahlen({ result, input }: { result: InvestmentErgebnis; inpu
  * und nach Steuer, Regel-AfA neben erhöhter AfA, Stresstest und
  * Wertentwicklung 0/1/2 %. Nur Anzeige, siehe rechenstandards.ts.
  */
+/** Warum ein Stressfall entfällt (rechenstandards.ts), auf Englisch. */
+const ENTFAELLT_EN: Record<string, string> = {
+  "Es ist keine erhöhte AfA eingestellt.": "no increased depreciation is set.",
+  "Ohne Darlehen gibt es keinen Anschlusszins.": "without a loan there is no follow-up rate.",
+  "Es ist keine Miete eingetragen.": "no rent is entered.",
+};
+
 /** Die Begründungen der Regel-AfA aus afaSaetze.ts auf Englisch. */
 const GRUND_EN: Record<string, string> = {
   "Betriebsgebäude im Betriebsvermögen": "commercial building in business assets",
@@ -1086,7 +1093,7 @@ export function Rechenstandards({ input, result }: { input: InvestmentEingabe; r
       zeilen: faelle.map((fall): [string, string] => [
         `${fallTitel(fall.titel)} (${fall.jahr}): ${fallText(fall.beschreibung)}`,
         fall.entfaellt
-          ? `${t("entfällt", "not applicable")}, ${fall.entfaellt}`
+          ? `${t("entfällt", "not applicable")}, ${en ? ENTFAELLT_EN[fall.entfaellt] ?? fall.entfaellt : fall.entfaellt}`
           : fall.einheit === "einmalig"
             ? t(
                 `einmalig ${fEuro(fall.stress.vorSteuer)} vor, ${fEuro(fall.stress.nachSteuer)} nach Steuer`,

@@ -1,4 +1,5 @@
 import { useId, type ReactNode } from "react";
+import { useRechnerSprache } from "./RechnerSprache";
 import logoImg from "@/assets/os-real-estate-logo-quer.png";
 import type { InvestmentEingabe, InvestmentErgebnis } from "@/lib/investmentrechner/rechenkern";
 import type { UnterlagenDaten } from "@/lib/investmentrechner/unterlagenAuslesen";
@@ -689,15 +690,17 @@ export function DeckblattWahl({
   hinweis: string;
 }) {
   const titelId = useId();
+  // Seit dem 22.10.2026 in der Sprache der rechten Seite.
+  const en = useRechnerSprache() === "en";
   return (
     <div className="deckblatt-wahl">
-      <span id={titelId}>Deckblatt</span>
+      <span id={titelId}>{en ? "Cover page" : "Deckblatt"}</span>
       <div className="view-toggle" role="radiogroup" aria-labelledby={titelId}>
         {(
           [
-            ["blick", "Ergebnis auf einen Blick"],
-            ["jahre", "Jahr für Jahr"],
-            ["rente", "Vermögensaufbau & Altersvorsorge"],
+            ["blick", en ? "Result at a glance" : "Ergebnis auf einen Blick"],
+            ["jahre", en ? "Year by year" : "Jahr für Jahr"],
+            ["rente", en ? "Wealth building & retirement" : "Vermögensaufbau & Altersvorsorge"],
           ] as const
         ).map(([variante, beschriftung]) => (
           <button
