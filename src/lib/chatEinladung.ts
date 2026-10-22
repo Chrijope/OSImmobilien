@@ -23,7 +23,7 @@ import { supabase } from "@/integrations/supabase/client";
  */
 const EINLADBARE_ROLLEN = [
   "admin", "inhaber", "vertriebsleiter", "vertriebspartner", "finanzierungspartner", "objektpartner",
-  "backoffice", "buchhaltung", "hausverwaltung", "marketing", "hr", "setterin", "versicherungsexperte",
+  "backoffice", "buchhaltung", "hausverwaltung", "marketing", "hr", "setterin", "versicherungsexperte", "individuell",
 ];
 
 /**

@@ -378,7 +378,15 @@ export async function createChat(
     const kontakt = kontaktRows.find((k: any) => k.id === kundeId);
     // Bewusst ueber die Rollen-Kennung (kleingeschrieben) statt ueber den
     // Anzeigenamen: der kann "Lead-Berater" lauten und ist keine eigene Rolle.
-    const isNonVpCreator = adminUserIds.has(realCreatorId) || !allUsers.some(u => u.id === realCreatorId && (u.rolle || "").toLowerCase() === "vertriebspartner");
+    // Ueber ALLE Rollen der Person, wie die Datenbank (ist_nur_vertriebspartner):
+    // Vertriebspartner ohne Vertriebsleitung, Admin oder Inhaber. Bis zum
+    // 22.10.2026 zaehlte hier nur die erste Rolle; wer zuerst Backoffice und
+    // zusaetzlich Vertriebspartner war, bekam Admins eingetragen, die die
+    // Datenbank dann ablehnte.
+    const creatorRollen = new Set(userRoles.filter((r: any) => r.user_id === realCreatorId).map((r: any) => r.role));
+    const istVertriebspartner = creatorRollen.has("vertriebspartner")
+      && !["vertriebsleiter", "admin", "inhaber"].some((r) => creatorRollen.has(r));
+    const isNonVpCreator = !istVertriebspartner;
     if (isNonVpCreator && kontakt?.berater) {
       // Kennung zuerst; der Name nur ohne Kennung und nur bei genau einem Treffer.
       const vpKennung = kontakt.zustaendig_id || kennungZuName(kontakt.berater);
@@ -396,7 +404,6 @@ export async function createChat(
     // 22.10.2026: Bei Vertriebspartnern traegt die Datenbank Teamleiter und
     // Vertriebsleitung ein (20261022120000); weitere Rollen holt nur die
     // Vertriebsleitung dazu.
-    const istVertriebspartner = !isNonVpCreator && !userRoles.some((r: any) => r.user_id === realCreatorId && ["vertriebsleiter", "admin", "inhaber"].includes(r.role));
     if (!adminUserIds.has(realCreatorId) && typ === "intern" && !istVertriebspartner) {
       const adminIds = userRoles
         .filter((r: any) => r.role === "admin" || r.role === "inhaber")

@@ -16,6 +16,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { useUser } from "@/contexts/UserContext";
 import { getAppConfig, setAppConfig } from "@/lib/appConfigStore";
 import { createChat, getChats, type ChatParticipant } from "@/lib/chatStore";
+import { einladbareTeilnehmer } from "@/lib/chatEinladung";
 import { loadAllUsers } from "@/lib/loadAllUsers";
 import { kennungZuName } from "@/lib/beraterNamensabgleich";
 import { useToast } from "@/hooks/use-toast";
@@ -127,7 +128,14 @@ export default function Ansprechpartner() {
       role: kontakt.position || "Ansprechpartner",
     };
 
-    const teilnehmer = [creatorParticipant, targetParticipant];
+    // Seit dem 22.10.2026: Ein Vertriebspartner holt selbst nur Partner seiner
+    // Struktur dazu. Sein Teamleiter und die Vertriebsleitung sind in seinen
+    // internen Chats automatisch dabei (Datenbank); weitere Rollen holt die
+    // Vertriebsleitung dazu. Der Ansprechpartner kommt deshalb nur dann sofort
+    // in den Chat, wenn der Partner ihn selbst einladen darf.
+    const istPartner = user.role === "vertriebspartner";
+    const darfZielEinladen = !istPartner || (!!targetUser && einladbareTeilnehmer(currentUserId, user.role).some((u) => u.id === targetUser.id));
+    const teilnehmer = darfZielEinladen ? [creatorParticipant, targetParticipant] : [creatorParticipant];
 
     // Admins kommen dazu, wenn nicht ein Admin den Chat eroeffnet. Ausnahme seit
     // dem 22.10.2026: Bei Vertriebspartnern traegt die Datenbank Teamleiter und
@@ -159,7 +167,9 @@ export default function Ansprechpartner() {
       "ansprechpartner",
     );
 
-    toast({ title: "Chat eröffnet", description: `Direktchat mit ${kontakt.name}` });
+    toast(darfZielEinladen
+      ? { title: "Chat eröffnet", description: `Direktchat mit ${kontakt.name}` }
+      : { title: "Chat eröffnet", description: `Dein Teamleiter und die Vertriebsleitung sind dabei. Die Vertriebsleitung holt ${kontakt.name} dazu.` });
     navigate(`/chat?id=${newChat.id}`);
   };
 

@@ -31,9 +31,9 @@ describe("Unterlagen im Ankaufstool auslesen", () => {
     invoke.mockResolvedValueOnce({
       data: {
         felder: {
-          wohnflaeche: { wert: 548.2, quelle: "Grundriss.png, Seite 1", sicherheit: "mittel" },
-          baujahr: { wert: "1988", quelle: "Grundriss.png, Seite 1", sicherheit: "hoch" },
-          vermietung: { wert: "Mieter: Max Mustermann", quelle: "Grundriss.png", sicherheit: "hoch" },
+          wohnflaeche: { wert: 548.2, quelle: "Grundriss (Unterlage 1), Seite 1", sicherheit: "mittel" },
+          baujahr: { wert: 1988, quelle: "Grundriss (Unterlage 1), Seite 1", sicherheit: "hoch" },
+          makler: { wert: "Max Mustermann", quelle: "Grundriss (Unterlage 1), Seite 1", sicherheit: "hoch" },
         },
       },
       error: null,
@@ -43,15 +43,17 @@ describe("Unterlagen im Ankaufstool auslesen", () => {
     fireEvent.click(screen.getByRole("button", { name: /Werte auslesen/ }));
 
     await waitFor(() => expect(screen.getByTestId("ankauf-vorschlaege")).toBeInTheDocument());
-    // Das Bild geht als Daten-URL mit, Personendaten kommen nicht in die Liste.
+    // Das Bild geht als Daten-URL mit, ohne Dateinamen; Personendaten kommen nicht in die Liste.
     expect(invoke.mock.calls[0][1].body.dokumente[0].bild).toMatch(/^data:image\/png;base64,/);
+    expect(JSON.stringify(invoke.mock.calls[0][1].body)).not.toContain("Grundriss.png");
     expect(screen.queryByText(/Mustermann/)).toBeNull();
-    expect(screen.getAllByText(/aus Grundriss\.png, S\. 1/, { selector: "span" })).toHaveLength(2);
+    // Der Dateiname steht nur im Browser neben der Quelle.
+    expect(screen.getAllByText(/aus Grundriss \(Unterlage 1\), S\. 1 · Grundriss\.png/, { selector: "span" })).toHaveLength(2);
     expect(screen.getByText(/Sicherheit mittel/)).toBeInTheDocument();
     expect(screen.getByText(/bisher 560 \(von Hand\)/)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: /1 Werte übernehmen/ }));
-    expect(onUebernehmen).toHaveBeenCalledWith([{ feld: "baujahr", wert: "1988", quelle: "Grundriss.png, Seite 1", sicherheit: "hoch" }]);
+    expect(onUebernehmen).toHaveBeenCalledWith([{ feld: "baujahr", wert: "1988", quelle: "Grundriss (Unterlage 1), Seite 1", sicherheit: "hoch" }]);
   });
 
   it("meldet verständlich, wenn die KI noch nicht verbunden ist", async () => {

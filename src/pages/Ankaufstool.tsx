@@ -472,7 +472,7 @@ const Ankaufstool = () => {
                           placeholder={f.platzhalter}
                           onChange={(ev) => { setObjekt((alt) => ({ ...alt, [f.key]: ev.target.value })); vonHandGeaendert(f.key); }}
                         />
-                        <HerkunftEtikett herkunft={herkunft[f.key]} />
+                        <HerkunftEtikett herkunft={herkunft[f.key as AuslesFeld]} />
                       </div>
                     ))}
                   </div>
@@ -485,7 +485,6 @@ const Ankaufstool = () => {
                       placeholder="z. B. Gewerbegebiet, Bahnhof 5 Min., Autobahn 5 Min."
                       onChange={(ev) => { setObjekt((alt) => ({ ...alt, lage: ev.target.value })); vonHandGeaendert("lage"); }}
                     />
-                    <HerkunftEtikett herkunft={herkunft.lage} />
                   </div>
                 </div>
                 {EXPOSE_GRUPPEN.map((g) => (

@@ -33,18 +33,33 @@ export type {
 let mehrfacheNamen: Set<string> | null = null;
 let mehrfacheNamenLaden: Promise<void> | null = null;
 
-export function mehrfacheNamenVorladen(): Promise<void> {
-  if (mehrfacheNamenLaden) return mehrfacheNamenLaden;
+/**
+ * Laedt die mehrfach vorkommenden Namen. Nach einer Anmeldung neu (`neu`),
+ * nach einem Fehlschlag beim naechsten Aufruf erneut.
+ *
+ * ponytail: Bis die Antwort da ist, gilt der sichtbare Bestand. Geladen wird
+ * gleich nach der Anmeldung (UserContext), parallel zu den Profilen; ein
+ * Vergleich in diesem kurzen Fenster kann einen Namen noch fuer eindeutig
+ * halten. Wird das je ein Problem, die App-Daten erst nach dieser Antwort
+ * freigeben.
+ */
+export function mehrfacheNamenVorladen(neu = false): Promise<void> {
+  if (mehrfacheNamenLaden && !neu) return mehrfacheNamenLaden;
   mehrfacheNamenLaden = (async () => {
     try {
       const { supabase } = await import("@/integrations/supabase/client");
       const { data, error } = await (supabase as unknown as {
         rpc: (n: string) => Promise<{ data: string[] | null; error: unknown }>;
       }).rpc("mehrfache_beraternamen");
-      if (!error && Array.isArray(data)) mehrfacheNamen = new Set(data.map((n) => normalisiereBeraterName(n)));
+      if (!error && Array.isArray(data)) {
+        mehrfacheNamen = new Set(data.map((n) => normalisiereBeraterName(n)));
+        return;
+      }
     } catch {
       // Ohne die Funktion (Migration fehlt, Test) bleibt es beim sichtbaren Bestand.
     }
+    // Fehlgeschlagen: beim naechsten Aufruf erneut versuchen.
+    mehrfacheNamenLaden = null;
   })();
   return mehrfacheNamenLaden;
 }
@@ -65,7 +80,8 @@ export function mitVerdecktenNamensvettern(liste: BeraterProfil[], mehrfach: Rea
 
 /** Die Nutzerliste, falls der Aufrufer keine mitgibt. Leer, wenn sie nicht lesbar ist. */
 function nutzerListe(nutzer?: BeraterProfil[]): BeraterProfil[] {
-  if (nutzer) return nutzer;
+  // Auch mitgegebene Listen bekommen die verdeckten Namensvettern.
+  if (nutzer) return mitVerdecktenNamensvettern(nutzer);
   if (typeof window !== "undefined") void mehrfacheNamenVorladen();
   try {
     return mitVerdecktenNamensvettern(loadAllUsers().map((u) => ({ id: u.id, name: u.name })));

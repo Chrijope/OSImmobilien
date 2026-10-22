@@ -11,7 +11,8 @@
 -- WAS DIESE MIGRATION TUT
 --
 --   1. ist_reiner_vertriebspartner(nutzer): Vertriebspartner ohne Leitungs-
---      oder Stabsrolle. Nur fuer diese Personen greift die neue Grenze.
+--      rolle (Vertriebsleitung, Admin, Inhaber). Fuer sie greift die neue
+--      Grenze, auch wenn sie zusaetzlich eine Stabsrolle tragen.
 --   2. sichtbare_nutzer_ids(): wen ein reiner Vertriebspartner sehen darf:
 --        - sich selbst,
 --        - seine Struktur nach unten (alle Ebenen) und seine Kette nach oben
@@ -28,11 +29,11 @@
 --      solchen, die ausserhalb der Migrationen angelegt wurden, und aendert
 --      fuer alle anderen Rollen nichts. Beide Funktionen laufen einmal je
 --      Abfrage (Unterabfrage), nicht je Zeile.
---   4. mehrfache_beraternamen(): welche Namen unter ALLEN Profilen mehrfach
---      vorkommen, ohne zu sagen, wer sie traegt. Der Namensabgleich im CRM
---      (src/lib/beraterNamensabgleich.ts) braucht das, damit ein unsichtbarer
---      Namensvetter einen alten Datensatz ohne Kennung nicht faelschlich
---      eindeutig macht.
+--   4. mehrfache_beraternamen(): welche der fuer den Aufrufer SICHTBAREN
+--      Namen unter allen Profilen mehrfach vorkommen. Kein fremder Name wird
+--      verraten. Der Namensabgleich im CRM (src/lib/beraterNamensabgleich.ts)
+--      braucht das, damit ein unsichtbarer Namensvetter einen alten
+--      Datensatz ohne Kennung nicht faelschlich eindeutig macht.
 --
 -- Aendert keine Daten. Mehrfach ausfuehrbar. Voraussetzungen:
 -- 20261016100000, 20260918220000.
@@ -50,8 +51,8 @@ BEGIN
 END;
 $$;
 
--- Leitungs- und Stabsrollen: Wer eine davon traegt, ist kein "reiner"
--- Vertriebspartner, und wer eine davon traegt, bleibt fuer alle sichtbar.
+-- Leitungs- und Stabsrollen: Wer eine davon traegt, bleibt fuer
+-- Vertriebspartner sichtbar (Ansprechpartner, Chats, Aufgaben).
 CREATE OR REPLACE FUNCTION public.stabsrollen()
 RETURNS text[]
 LANGUAGE sql
@@ -69,12 +70,15 @@ STABLE
 SECURITY DEFINER
 SET search_path = public
 AS $$
+  -- Ausgenommen sind nur die Leitungsrollen, die laut Christian alle
+  -- Strukturen sehen. Eine weitere Stabsrolle hebt die Grenze nicht auf.
   SELECT EXISTS (SELECT 1 FROM public.user_roles r WHERE r.user_id = _nutzer AND r.role::text = 'vertriebspartner')
-     AND NOT EXISTS (SELECT 1 FROM public.user_roles r WHERE r.user_id = _nutzer AND r.role::text = ANY(public.stabsrollen()));
+     AND NOT EXISTS (SELECT 1 FROM public.user_roles r WHERE r.user_id = _nutzer
+                      AND r.role::text IN ('vertriebsleiter', 'admin', 'inhaber'));
 $$;
 
 COMMENT ON FUNCTION public.ist_reiner_vertriebspartner(uuid) IS
-  'Vertriebspartner ohne Leitungs- oder Stabsrolle. Fuer sie gilt die Sicht '
+  'Vertriebspartner ohne Leitungsrolle (Vertriebsleitung, Admin, Inhaber). Fuer sie gilt die Sicht '
   'nur auf die eigene Struktur (20261022122000).';
 
 CREATE OR REPLACE FUNCTION public.sichtbare_nutzer_ids()
@@ -141,16 +145,22 @@ STABLE
 SECURITY DEFINER
 SET search_path = public
 AS $$
+  WITH sichtbar AS (
+    SELECT DISTINCT public.berater_name_normal(p.name) AS n
+      FROM public.profiles p
+     WHERE NOT public.ist_reiner_vertriebspartner(auth.uid())
+        OR p.id IN (SELECT public.sichtbare_nutzer_ids())
+  )
   SELECT public.berater_name_normal(p.name)
     FROM public.profiles p
-   WHERE public.berater_name_normal(p.name) <> ''
+   WHERE public.berater_name_normal(p.name) IN (SELECT n FROM sichtbar WHERE n <> '')
    GROUP BY 1
   HAVING count(*) > 1;
 $$;
 
 COMMENT ON FUNCTION public.mehrfache_beraternamen() IS
-  'Namen (Vergleichsform), die unter allen Profilen mehrfach vorkommen. '
-  'Ohne Kennungen; fuer den Namensabgleich im CRM.';
+  'Sichtbare Namen (Vergleichsform), die unter allen Profilen mehrfach '
+  'vorkommen. Ohne Kennungen, ohne fremde Namen; fuer den Namensabgleich.';
 
 REVOKE ALL ON FUNCTION public.stabsrollen() FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.stabsrollen() TO authenticated, service_role;

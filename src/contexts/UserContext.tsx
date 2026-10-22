@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { mehrfacheNamenVorladen } from "@/lib/beraterNamensabgleich";
 import { UserRole, UserProfile } from "@/types/user";
 import { supabase } from "@/integrations/supabase/client";
 import { cacheNutzerSetzen, cacheRolleSetzen, initDataCache, resetCache } from "@/lib/dataCache";
@@ -249,6 +250,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     cacheRolleSetzen(user.role);
   }, [user.role]);
+
+  // Mehrfach vorkommende Namen gleich nach der Anmeldung laden, bevor Seiten
+  // Namen zuordnen (Namensvetter-Schutz, src/lib/beraterNamensabgleich.ts).
+  useEffect(() => {
+    if (authUser?.id) void mehrfacheNamenVorladen(true);
+  }, [authUser?.id]);
 
   useEffect(() => {
     let mounted = true;

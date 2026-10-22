@@ -35,6 +35,8 @@ export function UnterlagenAuslesen({ labels, anzeige, aktuell, vonHand, onUebern
   const [vorschlaege, setVorschlaege] = useState<Vorschlag[]>([]);
   const [hinweise, setHinweise] = useState<string[]>([]);
   const [auswahl, setAuswahl] = useState<Set<AuslesFeld>>(new Set());
+  /** Dateiname je Unterlagennummer. Bleibt im Browser, die KI sieht nur „Unterlage n“. */
+  const [namen, setNamen] = useState<string[]>([]);
 
   const hinzufuegen = (neu: File[]) => {
     const erlaubt = neu.filter(dateiErlaubt);
@@ -56,7 +58,8 @@ export function UnterlagenAuslesen({ labels, anzeige, aktuell, vonHand, onUebern
     setVorschlaege([]);
     setHinweise([]);
     try {
-      const { dokumente, uebersprungen } = await anfrageZusammenstellen(dateien);
+      const { dokumente, namen: dateinamen, uebersprungen } = await anfrageZusammenstellen(dateien);
+      setNamen(dateinamen);
       const ergebnis = await unterlagenAuslesen(dokumente);
       setVorschlaege(ergebnis.vorschlaege);
       setHinweise([...uebersprungen, ...ergebnis.hinweise]);
@@ -89,8 +92,9 @@ export function UnterlagenAuslesen({ labels, anzeige, aktuell, vonHand, onUebern
         <SectionCardTitle>Unterlagen auslesen</SectionCardTitle>
         <SectionCardDescription>
           Exposé, Energieausweis, Flächenberechnung, Grundrisse, Mieterliste oder Mietverträge hineinziehen. Die KI überträgt
-          gefundene Werte in die Objektdaten; Namen und andere Personendaten werden überlesen. Die Unterlagen werden nicht
-          gespeichert.
+          Flächen, Einheiten, Mieten, Kaufpreis, Objektart, Baujahr, Energie und Leerstand in die Objektdaten. Namen und andere
+          Personendaten werden überlesen, Dateinamen verlassen den Browser nicht, gespeichert wird nichts. Zustand, Lage und
+          Makler bitte von Hand eintragen.
         </SectionCardDescription>
       </SectionCardHeader>
       <SectionCardContent className="space-y-4">
@@ -177,6 +181,7 @@ export function UnterlagenAuslesen({ labels, anzeige, aktuell, vonHand, onUebern
                       </span>
                       <span className="block text-xs text-muted-foreground">
                         {herkunftText(v.quelle)}
+                        {(() => { const n = /Unterlage (\d+)\)/.exec(v.quelle)?.[1]; const datei = n ? namen[Number(n) - 1] : undefined; return datei ? ` · ${datei}` : ""; })()}
                         {v.sicherheit !== "hoch" && <span className="text-amber-700 dark:text-amber-400"> · Sicherheit {v.sicherheit}</span>}
                         {bisher && bisher !== neu && <> · bisher {bisher}{vonHand.has(v.feld) ? " (von Hand)" : ""}</>}
                       </span>

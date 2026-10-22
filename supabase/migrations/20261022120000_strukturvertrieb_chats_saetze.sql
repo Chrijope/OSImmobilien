@@ -28,6 +28,8 @@
 --   3. struktur_satz_grenzen(partner) und die Pruefung in
 --      struktur_satz_setzen und im Schutz-Trigger: hoechstens der Satz des
 --      direkten Teamleiters, mindestens der hoechste Satz direkt darunter.
+--      Gilt fuer jeden Schreibweg, auch Admin, Inhaber, Server und Einladung,
+--      und auch wenn sich der Teamleiter aendert.
 --
 -- WAS SICH NICHT AENDERT
 --
@@ -173,9 +175,9 @@ EXECUTE FUNCTION public.chat_gruppe_struktur_ergaenzen();
 --   Kundenchat           sonst niemand: er bleibt 1:1 (Partner und Kunde);
 --   ohne Konto           ja (Ansprechpartner ohne Zugang);
 --   Vertriebsleitung     jede interne Rolle;
---   Vertriebspartner     Partner aus seiner Struktur nach unten; im eigenen
---                        Ansprechpartner-Chat (meta.kind = 'ansprechpartner')
---                        zusaetzlich interne Nicht-Vertriebspartner;
+--   Vertriebspartner     nur Partner aus seiner Struktur nach unten, auch im
+--                        Ansprechpartner-Chat (weitere Rollen holt dort die
+--                        Vertriebsleitung dazu, die schon im Chat ist);
 --   andere Rollen        interne Rollen wie bisher, ausser in Chats eines
 --                        Vertriebspartners: dort laedt nur die Leitung ein.
 CREATE OR REPLACE FUNCTION public.chat_teilnehmer_eintragen(p_chat_id uuid, p_teilnehmer jsonb)
@@ -192,7 +194,6 @@ DECLARE
   v_leitung boolean;
   v_partner boolean;
   v_partnerchat boolean;
-  v_ansprechpartner boolean;
   v_kundenchat boolean;
   v_kontakt uuid;
   v_eintrag jsonb;
@@ -220,8 +221,6 @@ BEGIN
   IF coalesce(v_gruppe.meta ->> 'kundeId', '') ~* uuid_muster THEN
     v_kontakt := (v_gruppe.meta ->> 'kundeId')::uuid;
   END IF;
-  v_ansprechpartner := coalesce(v_gruppe.meta ->> 'kind', '') = 'ansprechpartner'
-                       AND v_gruppe.erstellt_von = v_uid;
   -- Interner Chat, den ein Vertriebspartner angelegt hat.
   v_partnerchat := public.ist_nur_vertriebspartner(v_gruppe.erstellt_von);
 
@@ -274,8 +273,6 @@ BEGIN
         NULL;
       ELSIF v_partner THEN
         IF EXISTS (SELECT 1 FROM public.struktur_unter(v_uid) u WHERE u.mitglied_id = v_ziel) THEN
-          NULL;
-        ELSIF v_ansprechpartner AND NOT public.has_role(v_ziel, 'vertriebspartner') THEN
           NULL;
         ELSE
           RAISE EXCEPTION 'Du kannst nur Partner aus deiner eigenen Struktur einladen. Weitere Personen laedt die Vertriebsleitung ein.' USING ERRCODE = '42501';
@@ -347,15 +344,15 @@ BEGIN
     IF _satz > _grenze THEN
       RAISE EXCEPTION 'Hoechstens dein Eigen-Satz: % Prozent.', _grenze;
     END IF;
-    -- Seit 20261022120000: nie ueber dem direkten Teamleiter des Partners,
-    -- nie unter einem Partner direkt darunter.
-    SELECT * INTO _g FROM public.struktur_satz_grenzen(_partner);
-    IF _g.obergrenze IS NOT NULL AND _satz > _g.obergrenze THEN
-      RAISE EXCEPTION 'Hoechstens der Satz des direkten Teamleiters: % Prozent.', _g.obergrenze;
-    END IF;
-    IF _g.untergrenze IS NOT NULL AND _satz < _g.untergrenze THEN
-      RAISE EXCEPTION 'Mindestens % Prozent: So viel hat bereits ein Partner direkt darunter.', _g.untergrenze;
-    END IF;
+  END IF;
+  -- Seit 20261022120000 fuer alle, auch Admin und Inhaber: nie ueber dem
+  -- direkten Teamleiter des Partners, nie unter einem Partner direkt darunter.
+  SELECT * INTO _g FROM public.struktur_satz_grenzen(_partner);
+  IF _g.obergrenze IS NOT NULL AND _satz > _g.obergrenze THEN
+    RAISE EXCEPTION 'Hoechstens der Satz des direkten Teamleiters: % Prozent.', _g.obergrenze;
+  END IF;
+  IF _g.untergrenze IS NOT NULL AND _satz < _g.untergrenze THEN
+    RAISE EXCEPTION 'Mindestens % Prozent: So viel hat bereits ein Partner direkt darunter.', _g.untergrenze;
   END IF;
 
   INSERT INTO public.user_settings (user_id, einstellungen)
@@ -416,6 +413,28 @@ BEGIN
   IF _leiter_neu IS NOT NULL AND _leiter_neu IS DISTINCT FROM _leiter_alt
      AND EXISTS (SELECT 1 FROM public.struktur_unter(NEW.user_id) u WHERE u.mitglied_id = _leiter_neu) THEN
     RAISE EXCEPTION 'Diese Zuordnung ergaebe einen Kreis in der Struktur: Der Teamleiter steht schon unter diesem Partner.';
+  END IF;
+
+  -- Seit 20261022120000 fuer JEDEN Schreibweg (auch Admin, Inhaber, Server,
+  -- Einladung): Aendern sich Satz oder Teamleiter, darf der Satz nicht ueber
+  -- dem des Teamleiters liegen und nicht unter dem hoechsten Satz direkt
+  -- darunter. Sonst entstuende eine negative Differenz in der Struktur.
+  IF TG_OP = 'INSERT'
+     OR _leiter_neu IS DISTINCT FROM _leiter_alt
+     OR public.einstellung_zahl(_neu, 'custom_provision_rate_eigen') IS DISTINCT FROM public.einstellung_zahl(OLD.einstellungen, 'custom_provision_rate_eigen')
+     OR public.einstellung_zahl(_neu, 'custom_provision_rate') IS DISTINCT FROM public.einstellung_zahl(OLD.einstellungen, 'custom_provision_rate') THEN
+    _wert := coalesce(public.einstellung_zahl(_neu, 'custom_provision_rate_eigen'), public.einstellung_zahl(_neu, 'custom_provision_rate'));
+    IF _wert IS NOT NULL THEN
+      _grenze := public.provisions_obergrenze(_leiter_neu);
+      IF _leiter_neu IS NOT NULL AND _grenze IS NOT NULL AND _wert > _grenze THEN
+        RAISE EXCEPTION 'Der Satz (% Prozent) liegt ueber dem Satz des Teamleiters (% Prozent).', _wert, _grenze;
+      END IF;
+      SELECT max(public.provisions_obergrenze(u.mitglied_id)) INTO _grenze
+        FROM public.struktur_unter(NEW.user_id) u WHERE u.ebene = 1;
+      IF _grenze IS NOT NULL AND _wert < _grenze THEN
+        RAISE EXCEPTION 'Der Satz (% Prozent) liegt unter dem eines Partners direkt darunter (% Prozent).', _wert, _grenze;
+      END IF;
+    END IF;
   END IF;
 
   IF auth.uid() IS NULL OR public.is_admin_role(auth.uid()) THEN
