@@ -58,6 +58,10 @@ describe("einladbareTeilnehmer, aktive Rolle", () => {
     expect(ids("inhaber")).toEqual([DOWNLINE, FREMD].sort());
   });
 
+  it("gibt der Vertriebsleitung alle einladbaren Nutzer, auch fremde Strukturen (seit 22.10.2026)", () => {
+    expect(ids("vertriebsleiter")).toEqual([DOWNLINE, FREMD].sort());
+  });
+
   it("gibt dem Vertriebspartner nur die eigene Downline", () => {
     expect(ids("vertriebspartner")).toEqual([DOWNLINE]);
   });
@@ -75,10 +79,10 @@ describe("ladeTeilnehmerEin, aktive Rolle", () => {
 
   it("laesst sie als Vertriebspartner nur die Downline einladen", async () => {
     await expect(ladeTeilnehmerEin(chat(), [DOWNLINE], ICH, "vertriebspartner")).resolves.toBe(1);
-    await expect(ladeTeilnehmerEin(chat(), [FREMD], ICH, "vertriebspartner")).rejects.toThrow(/Downline/);
+    await expect(ladeTeilnehmerEin(chat(), [FREMD], ICH, "vertriebspartner")).rejects.toThrow(/eigenen Struktur/);
   });
 
   it("verweigert ihr als Backoffice auch die eigene Downline", async () => {
-    await expect(ladeTeilnehmerEin(chat(), [DOWNLINE], ICH, "backoffice")).rejects.toThrow(/Downline/);
+    await expect(ladeTeilnehmerEin(chat(), [DOWNLINE], ICH, "backoffice")).rejects.toThrow(/eigenen Struktur/);
   });
 });

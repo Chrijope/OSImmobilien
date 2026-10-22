@@ -353,6 +353,8 @@ export async function createChat(
   typ: ChatTyp = "intern",
   teilnehmerOverride?: ChatParticipant[],
   creatorUserId?: string,
+  /** Art des Chats in meta.kind, etwa "ansprechpartner" (Direktchat von der Seite Ansprechpartner). */
+  art?: string,
 ): Promise<ChatData> {
   const realCreatorId = creatorUserId || "current";
   const creatorParticipant: ChatParticipant = { id: realCreatorId, name: erstelltVon, initials: getInitials(erstelltVon), role: "Vertriebspartner" };
@@ -390,8 +392,12 @@ export async function createChat(
         });
       }
     }
-    // For any non-admin creator (VP, Finanzierungspartner, etc.), auto-add all admins to internal chats
-    if (!adminUserIds.has(realCreatorId) && typ === "intern") {
+    // Nicht-Admins bekommen die Admins in interne Chats dazu. Ausnahme seit dem
+    // 22.10.2026: Bei Vertriebspartnern traegt die Datenbank Teamleiter und
+    // Vertriebsleitung ein (20261022120000); weitere Rollen holt nur die
+    // Vertriebsleitung dazu.
+    const istVertriebspartner = !isNonVpCreator && !userRoles.some((r: any) => r.user_id === realCreatorId && ["vertriebsleiter", "admin", "inhaber"].includes(r.role));
+    if (!adminUserIds.has(realCreatorId) && typ === "intern" && !istVertriebspartner) {
       const adminIds = userRoles
         .filter((r: any) => r.role === "admin" || r.role === "inhaber")
         .map((r: any) => r.user_id);
@@ -440,7 +446,7 @@ export async function createChat(
       typ,
       erstellt_von: realCreatorId,
       erstellt_am: newChat.erstelltAm,
-      meta: { kundeId, kundeStatus, erstelltVon, typ, angepinnt: false, ungelesen: false, stummgeschaltet: false, archiviert: false },
+      meta: { kundeId, kundeStatus, erstelltVon, typ, angepinnt: false, ungelesen: false, stummgeschaltet: false, archiviert: false, ...(art ? { kind: art } : {}) },
     });
     await chatTeilnehmerEintragen(newChat.id, newChat.teilnehmer);
   }

@@ -21,11 +21,54 @@ export type {
   BeraterTreffer,
 } from "../../supabase/functions/_shared/berater-namensabgleich";
 
+/*
+ * Seit dem 22.10.2026 sehen Vertriebspartner nur die Profile ihrer Struktur
+ * (Migration 20261022122000). Ein unsichtbarer Namensvetter darf einen Namen
+ * trotzdem nicht eindeutig machen: Sonst zaehlte ein alter Datensatz ohne
+ * Kennung, der dem Namensvetter gehoert, als eigener. Die Datenbank nennt
+ * deshalb die Namen, die unter allen Profilen mehrfach vorkommen, ohne die
+ * Personen dahinter. Sie werden einmal geladen und als verdeckte Eintraege
+ * an die Liste gehaengt.
+ */
+let mehrfacheNamen: Set<string> | null = null;
+let mehrfacheNamenLaden: Promise<void> | null = null;
+
+export function mehrfacheNamenVorladen(): Promise<void> {
+  if (mehrfacheNamenLaden) return mehrfacheNamenLaden;
+  mehrfacheNamenLaden = (async () => {
+    try {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { data, error } = await (supabase as unknown as {
+        rpc: (n: string) => Promise<{ data: string[] | null; error: unknown }>;
+      }).rpc("mehrfache_beraternamen");
+      if (!error && Array.isArray(data)) mehrfacheNamen = new Set(data.map((n) => normalisiereBeraterName(n)));
+    } catch {
+      // Ohne die Funktion (Migration fehlt, Test) bleibt es beim sichtbaren Bestand.
+    }
+  })();
+  return mehrfacheNamenLaden;
+}
+
+/** Haengt fuer mehrfach vorkommende Namen einen verdeckten Eintrag an, falls der Namensvetter unsichtbar ist. */
+export function mitVerdecktenNamensvettern(liste: BeraterProfil[], mehrfach: ReadonlySet<string> | null = mehrfacheNamen): BeraterProfil[] {
+  if (!mehrfach || mehrfach.size === 0) return liste;
+  const anzahl = new Map<string, number>();
+  for (const u of liste) {
+    const n = normalisiereBeraterName(u.name);
+    anzahl.set(n, (anzahl.get(n) || 0) + 1);
+  }
+  const verdeckt = [...mehrfach]
+    .filter((n) => (anzahl.get(n) || 0) === 1)
+    .map((n) => ({ id: `verdeckt:${n}`, name: n }));
+  return verdeckt.length ? [...liste, ...verdeckt] : liste;
+}
+
 /** Die Nutzerliste, falls der Aufrufer keine mitgibt. Leer, wenn sie nicht lesbar ist. */
 function nutzerListe(nutzer?: BeraterProfil[]): BeraterProfil[] {
   if (nutzer) return nutzer;
+  if (typeof window !== "undefined") void mehrfacheNamenVorladen();
   try {
-    return loadAllUsers().map((u) => ({ id: u.id, name: u.name }));
+    return mitVerdecktenNamensvettern(loadAllUsers().map((u) => ({ id: u.id, name: u.name })));
   } catch {
     return [];
   }

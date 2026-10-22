@@ -24,6 +24,7 @@ import { edgeFehlerMitGrund } from "@/lib/edgeFehler";
 import { confirmDialog } from "@/lib/confirm";
 import { toast } from "sonner";
 import { PhoneInput } from "@/components/ui/phone-input";
+import { KennzahlenZeile, StrukturKennzahlenKontext, useStrukturKennzahlen, ZEITRAUM_LABEL, type Zeitraum } from "@/components/teampartner/StrukturKennzahlen";
 import {
   buildTree,
   istCLevel,
@@ -283,6 +284,8 @@ function StrukturKarte({
           )}
         </div>
       </div>
+      {/* Zahlen des Partners (seit 22.10.2026); erscheinen nur, wenn die Datenbank sie fuer diese Person liefert. */}
+      {!knoten.istTippgeber && <KennzahlenZeile partnerId={knoten.id} />}
       <div className="mt-2.5 flex items-center justify-between gap-2 border-t border-border/60 pt-2">
         <span className="flex min-w-0 items-center gap-1.5 text-[11px] text-muted-foreground">
           {/*
@@ -1378,6 +1381,9 @@ export default function Teampartner() {
     [nutzerList, tippgeberList, treeRootId, userSettings],
   );
   const baumOhneKinder = nutzerList.length > 0 && !(strukturBaum.children && strukturBaum.children.length > 0);
+  // Kennzahlen je Partner im Baum, fuer den gewaehlten Zeitraum.
+  const [kennzahlenZeitraum, setKennzahlenZeitraum] = useState<Zeitraum>("30");
+  const strukturKennzahlen = useStrukturKennzahlen(kennzahlenZeitraum);
 
   /*
    * Die festen, beschrifteten Ebenen gibt es nur im vollen Baum. Ist unter
@@ -1903,7 +1909,20 @@ export default function Teampartner() {
             hoeher als das Fenster, bliebe seine Unterkante mit Legende beim
             Scrollen unerreichbar.
           */
+          <StrukturKennzahlenKontext.Provider value={strukturKennzahlen}>
           <div className="flex h-[calc(100vh-17rem)] min-h-[24rem] flex-col overflow-hidden rounded-lg border bg-card md:sticky md:top-0 md:z-10">
+            <div className="flex shrink-0 flex-wrap items-center gap-4 border-b p-4">
+              <span className="text-sm text-muted-foreground">Zahlen für:</span>
+              <Select value={kennzahlenZeitraum} onValueChange={(v) => setKennzahlenZeitraum(v as Zeitraum)}>
+                <SelectTrigger className="w-44" aria-label="Zeitraum der Kennzahlen"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {(Object.keys(ZEITRAUM_LABEL) as Zeitraum[]).map((z) => (
+                    <SelectItem key={z} value={z}>{ZEITRAUM_LABEL[z]}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <span className="text-xs text-muted-foreground">Kunden je Stufe heute; Termine, Reservierungen und Notar im Zeitraum.</span>
+            </div>
             {canEdit && (
               <div className="flex shrink-0 items-center gap-4 border-b p-4">
                 <span className="text-sm text-muted-foreground">Struktur von:</span>
@@ -1953,6 +1972,7 @@ export default function Teampartner() {
               )}
             </div>
           </div>
+          </StrukturKennzahlenKontext.Provider>
         )}
       </div>
     </DashboardLayout>

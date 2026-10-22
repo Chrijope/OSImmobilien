@@ -129,8 +129,10 @@ export default function Ansprechpartner() {
 
     const teilnehmer = [creatorParticipant, targetParticipant];
 
-    // Auto-add admins if creator is not admin
-    if (!["admin", "inhaber"].includes(user.role)) {
+    // Admins kommen dazu, wenn nicht ein Admin den Chat eroeffnet. Ausnahme seit
+    // dem 22.10.2026: Bei Vertriebspartnern traegt die Datenbank Teamleiter und
+    // Vertriebsleitung ein; Admins holt dort nur die Vertriebsleitung dazu.
+    if (!["admin", "inhaber", "vertriebspartner"].includes(user.role)) {
       const admins = allUsers.filter(u =>
         u.rolle && ["admin", "inhaber"].includes(u.rolle.toLowerCase())
       );
@@ -154,6 +156,7 @@ export default function Ansprechpartner() {
       "intern",
       teilnehmer,
       currentUserId,
+      "ansprechpartner",
     );
 
     toast({ title: "Chat eröffnet", description: `Direktchat mit ${kontakt.name}` });

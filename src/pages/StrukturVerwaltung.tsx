@@ -42,6 +42,26 @@ export function eigeneObergrenze(userId: string | null | undefined): number | nu
   return getCustomProvisionRateEigen(userId) ?? getCustomProvisionRate(userId);
 }
 
+/**
+ * Erlaubter Bereich für den Satz eines Partners (seit 22.10.2026, wie
+ * struktur_satz_grenzen in der Datenbank): höchstens der Satz seines direkten
+ * Teamleiters, mindestens der höchste Satz direkt darunter. Sonst bekäme ein
+ * Teamleiter eine negative Differenz oder würde übergangen.
+ */
+export function satzGrenzen(
+  partnerId: string,
+  settings: { user_id: string; einstellungen?: unknown }[],
+  satzVon: (id: string) => number | null = eigeneObergrenze,
+): { obergrenze: number | null; untergrenze: number | null } {
+  const eintrag = settings.find((s) => s.user_id === partnerId);
+  const leiter = teamleiterVon(eintrag?.einstellungen, partnerId);
+  const darunter = settings
+    .filter((s) => s.user_id !== partnerId && teamleiterVon(s.einstellungen, s.user_id) === partnerId)
+    .map((s) => satzVon(s.user_id))
+    .filter((x): x is number => x !== null);
+  return { obergrenze: leiter ? satzVon(leiter) : null, untergrenze: darunter.length ? Math.max(...darunter) : null };
+}
+
 export default function StrukturVerwaltung() {
   const { user, authUser } = useUser();
   const istVertriebsleitung = user.role === "vertriebsleiter";
@@ -134,9 +154,13 @@ export default function StrukturVerwaltung() {
   const [aendernFuer, setAendernFuer] = useState<string | null>(null);
   const [neuerSatzText, setNeuerSatzText] = useState("");
   const neuerSatz = parseProvisionssatz(neuerSatzText);
-  const neuUeberGrenze = neuerSatz !== null && obergrenze !== null && neuerSatz > obergrenze;
+  const grenzen = aendernFuer ? satzGrenzen(aendernFuer, cacheGet<any>("user_settings")) : { obergrenze: null, untergrenze: null };
+  const hoechstens = [obergrenze, grenzen.obergrenze].filter((x): x is number => x !== null);
+  const neuOben = hoechstens.length ? Math.min(...hoechstens) : null;
+  const neuUeberGrenze = neuerSatz !== null && neuOben !== null && neuerSatz > neuOben;
+  const neuUnterGrenze = neuerSatz !== null && grenzen.untergrenze !== null && neuerSatz < grenzen.untergrenze;
   const speichern = async () => {
-    if (!aendernFuer || neuerSatz === null || neuUeberGrenze) return;
+    if (!aendernFuer || neuerSatz === null || neuUeberGrenze || neuUnterGrenze) return;
     const { error } = await supabase.rpc("struktur_satz_setzen" as any, { _partner: aendernFuer, _satz: neuerSatz });
     if (error) {
       toast.error("Satz nicht gespeichert", { description: error.message });
@@ -254,14 +278,20 @@ export default function StrukturVerwaltung() {
           <DialogHeader><DialogTitle>Satz ändern: {name(aendernFuer)}</DialogTitle></DialogHeader>
           <div>
             <Label htmlFor="struktur-neuer-satz">Neuer Provisionssatz (%)</Label>
-            <Input id="struktur-neuer-satz" inputMode="decimal" placeholder={obergrenze !== null ? `höchstens ${formatSatzProzent(obergrenze)}` : ""} value={neuerSatzText} onChange={(e) => setNeuerSatzText(e.target.value)} />
-            <p className="text-[11px] text-muted-foreground mt-1">Gilt für neue Vorgänge. Bereits reservierte Vorgänge behalten ihren Satz.</p>
+            <Input id="struktur-neuer-satz" inputMode="decimal" placeholder={neuOben !== null ? `höchstens ${formatSatzProzent(neuOben)}` : ""} value={neuerSatzText} onChange={(e) => setNeuerSatzText(e.target.value)} />
+            <p className="text-[11px] text-muted-foreground mt-1">
+              Gilt für neue Vorgänge. Bereits reservierte Vorgänge behalten ihren Satz.
+              {(neuOben !== null || grenzen.untergrenze !== null) && (
+                <> Erlaubt: {grenzen.untergrenze !== null ? `ab ${formatSatzProzent(grenzen.untergrenze)} ` : ""}{neuOben !== null ? `bis ${formatSatzProzent(neuOben)}` : ""}. Gleicher Satz wie der Teamleiter heißt: keine Differenz für ihn.</>
+              )}
+            </p>
             {neuerSatzText !== "" && neuerSatz === null && <p className="text-[11px] text-destructive mt-1">{SATZ_UNGUELTIG_TEXT}</p>}
-            {neuUeberGrenze && <p className="text-[11px] text-destructive mt-1">Höchstens dein Eigen-Satz ({formatSatzProzent(obergrenze!)}).</p>}
+            {neuUeberGrenze && <p className="text-[11px] text-destructive mt-1">Höchstens {formatSatzProzent(neuOben!)}: nie mehr als der direkte Teamleiter.</p>}
+            {neuUnterGrenze && <p className="text-[11px] text-destructive mt-1">Mindestens {formatSatzProzent(grenzen.untergrenze!)}: So viel hat bereits ein Partner direkt darunter.</p>}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setAendernFuer(null)}>Abbrechen</Button>
-            <Button onClick={speichern} disabled={neuerSatz === null || neuUeberGrenze}>Speichern</Button>
+            <Button onClick={speichern} disabled={neuerSatz === null || neuUeberGrenze || neuUnterGrenze}>Speichern</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

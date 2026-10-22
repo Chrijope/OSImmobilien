@@ -16,8 +16,15 @@ import { supabase } from "@/integrations/supabase/client";
  * Deshalb steht sie hier einmal, und beide Oberflaechen fragen sie.
  */
 
-/** Nur diese Rollen kommen ueberhaupt als Chatteilnehmer infrage. */
-const EINLADBARE_ROLLEN = ["admin", "inhaber", "vertriebspartner", "finanzierungspartner", "objektpartner"];
+/**
+ * Diese Rollen kommen als Chatteilnehmer infrage: alle internen. Seit dem
+ * 22.10.2026 auch Vertriebsleitung, Backoffice, Buchhaltung und die übrigen
+ * Stabsrollen, damit die Vertriebsleitung sie in Chats holen kann.
+ */
+const EINLADBARE_ROLLEN = [
+  "admin", "inhaber", "vertriebsleiter", "vertriebspartner", "finanzierungspartner", "objektpartner",
+  "backoffice", "buchhaltung", "hausverwaltung", "marketing", "hr", "setterin", "versicherungsexperte",
+];
 
 /**
  * Die Downline einer Person, rekursiv.
@@ -52,17 +59,24 @@ function initialen(name: string): string {
   return name.split(" ").map((n) => n[0] || "").join("").toUpperCase().slice(0, 2) || "?";
 }
 
-/** Darf diese aktive Rolle alle einladbaren Nutzer einladen? */
+/**
+ * Darf diese aktive Rolle alle einladbaren Nutzer einladen? Admin, Inhaber und
+ * seit dem 22.10.2026 die Vertriebsleitung (Christian: Nur sie holt weitere
+ * Rollen in die Chats der Vertriebspartner).
+ */
 function laedtAlleEin(rolle: string | null | undefined): boolean {
-  return rolle === "admin" || rolle === "inhaber";
+  return rolle === "admin" || rolle === "inhaber" || rolle === "vertriebsleiter";
 }
 
 /**
  * Wen diese Person in ihrer aktiven Rolle (`user.role`) einladen darf.
  *
- * Admin und Inhaber: alle mit einer einladbaren Rolle.
- * Vertriebspartner: ausschliesslich Vertriebspartner aus der eigenen Downline.
+ * Admin, Inhaber, Vertriebsleitung: alle mit einer einladbaren Rolle.
+ * Vertriebspartner: ausschliesslich Vertriebspartner aus der eigenen Struktur
+ *   nach unten. Teamleiter und Vertriebsleitung sitzen in seinen internen
+ *   Chats ohnehin schon (Datenbank, 20261022120000).
  * Alle anderen Rollen: niemand, auch wenn die Person eine Downline hat.
+ * Den Kundenchat (1:1 Partner und Kunde) betrifft das nicht.
  */
 export function einladbareTeilnehmer(myId: string, rolle: string | null | undefined): ChatParticipant[] {
   const rollen = (cacheGet("user_roles") || []) as any[];
@@ -106,7 +120,7 @@ export async function ladeTeilnehmerEin(
 
   const unerlaubt = ausgewaehlteIds.filter((id) => !erlaubteIds.has(id));
   if (unerlaubt.length > 0) {
-    throw new Error("Du darfst nur Vertriebspartner aus deiner eigenen Downline einladen.");
+    throw new Error("Du kannst nur Partner aus deiner eigenen Struktur einladen. Weitere Personen lädt die Vertriebsleitung ein.");
   }
 
   const vorhanden = new Set(chat.teilnehmer.map((t) => t.id));

@@ -920,9 +920,9 @@ export default function Chat() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Teilnehmer einladen</DialogTitle>
-            {!isAdmin && (
+            {user.role === "vertriebspartner" && (
               <p className="text-xs text-muted-foreground pt-1">
-                Als Vertriebspartner kannst du nur Teampartner aus deiner eigenen Downline einladen. Weitere Rollen (Admin, FP, OP) fügt der Admin hinzu.
+                Du kannst Partner aus deiner eigenen Struktur einladen. Dein Teamleiter und die Vertriebsleitung sind schon dabei; weitere Personen lädt die Vertriebsleitung ein.
               </p>
             )}
           </DialogHeader>
@@ -948,7 +948,7 @@ export default function Chat() {
               ))}
             {invitableForMe.filter(m => !activeChat?.teilnehmer.some(t => t.id === m.id)).length === 0 && (
               <p className="text-sm text-muted-foreground text-center py-4">
-                {isAdmin ? "Alle Nutzer sind bereits im Chat" : "Keine Teampartner aus deiner Downline verfügbar"}
+                {user.role === "vertriebspartner" ? "Keine weiteren Partner aus deiner Struktur verfügbar" : "Alle Nutzer sind bereits im Chat"}
               </p>
             )}
           </div>
