@@ -86,6 +86,8 @@ export default defineConfig({
   resolve: {
     alias: [
       { find: "@/integrations/supabase/client", replacement: path.join(wurzel, "src/artefakt/supabaseAttrappe.ts") },
+      // PDF-Vorschau als Canvas statt blob:-iframe, das im Sandbox-iframe blockiert wird.
+      { find: "@/components/pdf/LivePdfVorschau", replacement: path.join(wurzel, "src/artefakt/LivePdfVorschauBilder.tsx") },
       { find: "@", replacement: path.join(wurzel, "src") },
       // CSS-Schriften wie url("/fonts/…") als Datei ins Bündel, mit relativem Pfad.
       { find: /^\/fonts\//, replacement: path.join(wurzel, "public/fonts") + "/" },
