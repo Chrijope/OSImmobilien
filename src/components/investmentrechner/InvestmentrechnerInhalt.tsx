@@ -2,6 +2,8 @@ import { useLiveVersion } from "@/hooks/useLiveData";
 import { automatischeObjektwerte, automatischeUnterlagenwerte, ergaenzeUnterlagen, leseObjektUnterlagen, type ObjektUnterlagenQuelle } from "@/lib/investmentrechner/objektUnterlagen";
 import { vorbelegungAusInvestment } from "@/lib/investmentrechner/investmentVorbelegung";
 import { stellplatzmieteTrennen } from "@/lib/investmentrechner/objektVorbelegung";
+import type { FormatSprache } from "@/lib/sprachFormat";
+import { AusfuehrlicheBerechnung } from "./AusfuehrlicheBerechnung";
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { useMaskeBisUnten } from "./useMaskeBisUnten";
 import { createPortal } from "react-dom";
@@ -14,6 +16,7 @@ import {
   CopyPlus,
   FileDown,
   FileSearch,
+  FileText,
   ImagePlus,
   Landmark,
   ReceiptText,
@@ -129,7 +132,8 @@ type Eingabebereich = "kunde" | "objekt" | "unterlagen" | "finanzierung" | "ertr
 
 /** Der Hinweis, wenn etwas in der lokalen Vorschau ohne Datenbank nicht geht. */
 export const VORSCHAU_NICHT_VERFUEGBAR = "In der Vorschau nicht verfügbar";
-type Ansicht = "analyse" | "vergleich" | "expose";
+/** `ausfuehrlich`: die zwölfseitige Berechnung für den Kunden, seit dem 22.10.2026 auch im CRM. */
+type Ansicht = "analyse" | "vergleich" | "expose" | "ausfuehrlich";
 
 /** Klasse am body, solange die Seite offen ist. Nur dann greifen die Druckregeln. */
 const DRUCK_KLASSE = "investmentrechner-druck";
@@ -354,6 +358,14 @@ export interface InvestmentrechnerInhaltProps {
    * Ablauf „Neu aus Selbstauskunft laden“).
    */
   vorschau?: { selbstauskunft?: unknown; stand?: string };
+  /**
+   * Sprache der Dokumente, wenn kein Kunde sie vorgibt, seit dem 22.10.2026.
+   * Die eigenständige Artefaktfassung hat keinen Kunden und lässt sie wählen;
+   * ohne Angabe gilt wie bisher die Sprache des gewählten Kunden.
+   */
+  dokumentSprache?: FormatSprache;
+  /** Name auf dem Titelblatt der ausführlichen Berechnung („Erstellt von …“). */
+  erstelltVon?: string;
 }
 
 export function InvestmentrechnerInhalt({
@@ -364,6 +376,8 @@ export function InvestmentrechnerInhalt({
   sichtbar = true,
   bankgespraechStart = false,
   vorschau,
+  dokumentSprache,
+  erstelltVon = "",
 }: InvestmentrechnerInhaltProps = {}) {
   // Die fixierte Eingabemaske reicht bis zum Fensterrand, siehe useMaskeBisUnten.
   const maskeRef = useRef<HTMLElement>(null);
@@ -1302,7 +1316,8 @@ export function InvestmentrechnerInhalt({
   const alleVermerk = vergleichAktiv ? "alle Objekte" : undefined;
 
   // Der Druck geht an den Kunden und folgt deshalb seiner Sprache aus dem Profil (Plan Kundensprache, D15).
-  const { sprache: kundenSprache } = useKundenSprache(kundeId);
+  const { sprache: spracheDesKunden } = useKundenSprache(kundeId);
+  const kundenSprache = dokumentSprache ?? spracheDesKunden;
   const exposeObjekte: ExposeObjekt[] = objekte.map((objekt, index) => ({
     input: objekt.eingabe,
     result: ergebnisse[index],
@@ -1616,6 +1631,9 @@ export function InvestmentrechnerInhalt({
                   <button className={ansicht === "expose" ? "active" : ""} onClick={() => setAnsicht("expose")}>
                     <ReceiptText size={16} /> Berechnung
                   </button>
+                  <button className={ansicht === "ausfuehrlich" ? "active" : ""} onClick={() => setAnsicht("ausfuehrlich")} id="ansicht-ausfuehrlich">
+                    <FileText size={16} /> Ausführlich
+                  </button>
                 </div>
               </div>
               {ansicht === "analyse" && (
@@ -1629,6 +1647,9 @@ export function InvestmentrechnerInhalt({
                   onDeckblatt={waehleDeckblatt}
                   mitBankgespraech={bankModus}
                 />
+              )}
+              {ansicht === "ausfuehrlich" && (
+                <AusfuehrlicheBerechnung input={input} result={result} photos={photos} erstelltVon={erstelltVon} />
               )}
               {ansicht === "vergleich" && vergleichAktiv && (
                 <Vergleichsansicht

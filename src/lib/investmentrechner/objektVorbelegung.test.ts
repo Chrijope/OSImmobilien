@@ -343,6 +343,48 @@ describe("Rückfall auf die Investagon-Rohdaten", () => {
   });
 });
 
+/*
+ * Hausgeld, Prüfung vom 22.10.2026: umlagefähig zahlt der Mieter und belastet
+ * den Cashflow nicht, nicht umlagefähig schon, die Rücklage im Cashflow ja,
+ * steuerlich nicht. Ist nur das Hausgeld gesamt bekannt, wird geschätzt und
+ * das genannt.
+ */
+describe("Hausgeld in der Vorbelegung", () => {
+  const mit = (einheit: Partial<ObjektWohnung>) => {
+    const wohnung = { ...w, hausgeldNichtUmlagefaehigEuro: undefined, ...einheit } as ObjektWohnung;
+    return vorbelegungAusEinheit({ ...objekt, wohnungen: [wohnung] }, wohnung, heute);
+  };
+
+  it("nimmt die drei Teile getrennt: nur nicht umlagefähig in die Kosten, die Rücklage ins eigene Feld", () => {
+    const v = mit({ hausgeldUmlagefaehigEuro: 150, hausgeldNichtUmlagefaehigEuro: 45, ruecklageZufuehrungMonat: 90 });
+    expect(v.eingabe.monthlyOperatingCosts).toBe(45);
+    expect(v.eingabe.monthlyReserveContribution).toBe(90);
+    expect(feldnamen(v.luecken)).not.toContain("Nicht umlagefähiges Hausgeld (nur geschätzt)");
+    // Die Rücklage mindert den Cashflow, aber nicht das steuerliche Ergebnis.
+    const r = berechneInvestment(v.eingabe);
+    const ohneRuecklage = berechneInvestment({ ...v.eingabe, monthlyReserveContribution: 0 });
+    expect(ohneRuecklage.years[1].cashflowBeforeTax - r.years[1].cashflowBeforeTax).toBeCloseTo(90 * 12 * 1.02, 6);
+    expect(r.years[1].taxableResult).toBeCloseTo(ohneRuecklage.years[1].taxableResult, 6);
+  });
+
+  it("liest den nicht umlagefähigen Anteil auch aus den Investagon-Rohdaten statt zu schätzen", () => {
+    const v = mit({ hausgeldMonat: 300, investagonRaw: { operation_cost_landlord_apartment: 52, operation_cost_reserve_apartment: 70 } } as Partial<ObjektWohnung>);
+    expect(v.eingabe.monthlyOperatingCosts).toBe(52);
+    expect(v.eingabe.monthlyReserveContribution).toBe(70);
+  });
+
+  it("nur Hausgeld gesamt: geschätzt, ohne die Rücklage doppelt zu zählen, und als Lücke gemeldet", () => {
+    const nurGesamt = mit({ hausgeldMonat: 300 } as Partial<ObjektWohnung>);
+    expect(nurGesamt.eingabe.monthlyOperatingCosts).toBe(90);
+    expect(feldnamen(nurGesamt.luecken)).toContain("Nicht umlagefähiges Hausgeld (nur geschätzt)");
+    expect(nurGesamt.uebernommen.find((u) => u.feld === "Nicht umlagefähige Kosten p. M.")?.woher).toMatch(/geschätzt/);
+    const mitRuecklage = mit({ hausgeldMonat: 300, ruecklageZufuehrungMonat: 100 } as Partial<ObjektWohnung>);
+    // 30 % von 300 − 100, die Rücklage steht im eigenen Feld.
+    expect(mitRuecklage.eingabe.monthlyOperatingCosts).toBe(60);
+    expect(mitRuecklage.eingabe.monthlyReserveContribution).toBe(100);
+  });
+});
+
 describe("Mietverwaltung", () => {
   it("kommt zu den nicht umlagefähigen Kosten dazu", () => {
     const mitSev = {

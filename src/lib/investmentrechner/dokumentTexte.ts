@@ -455,7 +455,7 @@ export const DOKUMENT_TEXTE_DE: DokumentTexte = {
     eingesetztesEigenkapital: "Eingesetztes Eigenkapital",
     zveVorErwerb: "zvE vor Erwerb",
     grenzsteuersatzTarif: "Tariflicher Grenzsteuersatz inkl. Zuschläge",
-    grenzsteuersatzManuell: "Manueller Grenzsteuersatz",
+    grenzsteuersatzManuell: "Persönlicher Grenzsteuersatz (fest, inkl. Zuschläge)",
   },
   unterlagenSeite: {
     augenbraue: "Objektunterlagen",
@@ -488,8 +488,8 @@ export const DOKUMENT_TEXTE_DE: DokumentTexte = {
     grundtabelle: "Grundtabelle",
     investitionsanteil: "Investitionsanteil",
     berechnung: "Berechnung",
-    tarif: "ESt-Tarif 2026",
-    manuell: "Manueller Steuersatz",
+    tarif: "ESt-Tarif 2026 (§ 32a EStG)",
+    manuell: "Persönlicher Steuersatz",
     ohneImmobilie: (jahr) => `Ohne Immobilie · ${jahr}`,
     mitImmobilie: (jahr) => `Mit Immobilie · ${jahr}`,
     zve: "zvE",
@@ -672,7 +672,7 @@ export const DOKUMENT_TEXTE_DE: DokumentTexte = {
   },
   cashflowleiste: {
     tarif: (splitting) => `Tarif 2026 · ${splitting ? "Splittingtabelle" : "Grundtabelle"}`,
-    manuell: (satz) => `Manuell · ${satz} %`,
+    manuell: (satz) => `Persönlicher Steuersatz · ${satz} %`,
     ohneEinkommen:
       "Ohne zu versteuerndes Einkommen keine Steuerwirkung, deshalb sind Cashflow vor und nach Steuer gleich. Bitte das zvE unter „Kunde & Einkommen“ eintragen.",
     ohneSatz:
@@ -884,7 +884,7 @@ export const DOKUMENT_TEXTE_EN: DokumentTexte = {
     eingesetztesEigenkapital: "Equity invested",
     zveVorErwerb: "Taxable income before purchase",
     grenzsteuersatzTarif: "Marginal tax rate under the tax scale incl. surcharges",
-    grenzsteuersatzManuell: "Manual marginal tax rate",
+    grenzsteuersatzManuell: "Personal marginal tax rate (fixed, incl. surcharges)",
   },
   unterlagenSeite: {
     augenbraue: "Property documents",

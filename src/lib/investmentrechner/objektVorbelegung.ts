@@ -41,6 +41,12 @@ import { ausweisartText, energieeffizienzklasse, rohdaten } from "@/lib/investag
 import { objektartInfo, objektseiteFelder } from "@/lib/objektseiteDaten";
 import { objektAnlageklasse } from "@/lib/objektKlassen";
 import { bundeslandFromPlz, GRUNDBUCH_PROZENT, NOTAR_PROZENT } from "@/lib/kaufnebenkosten";
+import {
+  getHausgeldMonatForWohnung,
+  getHausgeldNichtUmlegbarP,
+  hausgeldNichtUmlegbarQuelle,
+} from "@/lib/objekteStore";
+import { hausgeldTeile } from "../../../supabase/functions/_shared/einheit-hausgeld";
 import { linearerAfaSatz } from "@/lib/afaSaetze";
 import { dez, eur0, prozent } from "@/lib/objektKennzahlen";
 import { berechneInvestment, standardEingabe, type InvestmentEingabe } from "./rechenkern";
@@ -399,7 +405,22 @@ export function vorbelegungAusEinheit(
    * beides ist abziehbar, genau so behandelt es der Exposé-Rechner. Der
    * umlagefähige Teil des Hausgelds gehört nicht hierher, den zahlt der Mieter.
    */
-  const hausgeldNu = positiv(daten.hausgeldNichtUmlegbarMonat);
+  /*
+   * Seit dem 22.10.2026 mit Herkunft: Der nicht umlagefähige Anteil ist an der
+   * Einheit gepflegt (auch aus den Investagon-Rohdaten), als Eurobetrag am
+   * Objekt, oder nur geschätzt als Prozentsatz vom Hausgeld gesamt. Eine
+   * Schätzung wird genannt und als Lücke gemeldet, statt still mitzurechnen.
+   * Ist die Rücklage bekannt, läuft die Schätzung auf das Hausgeld ohne sie:
+   * Die Rücklage steht im eigenen Feld und zählte sonst zweimal.
+   */
+  const zufuehrung = positiv(wohnung.ruecklageZufuehrungMonat ?? hausgeldTeile(wohnung).ruecklage ?? hausgeldTeile((wohnung as { meta?: unknown }).meta).ruecklage);
+  const nuQuelle = hausgeldNichtUmlegbarQuelle(objekt, wohnung);
+  const hausgeldGesamt = getHausgeldMonatForWohnung(objekt, wohnung);
+  const nuSatz = getHausgeldNichtUmlegbarP(objekt, wohnung);
+  const hausgeldNu =
+    nuQuelle === "geschaetzt" && zufuehrung > 0
+      ? Math.round((Math.max(0, hausgeldGesamt - zufuehrung) * nuSatz) / 100)
+      : positiv(daten.hausgeldNichtUmlegbarMonat);
   const mietverwaltung = positiv(daten.mietverwaltungMonat);
   eingabe.monthlyOperatingCosts = hausgeldNu + mietverwaltung;
   /*
@@ -410,19 +431,28 @@ export function vorbelegungAusEinheit(
    * `RUECKLAGENZUFUEHRUNG_ABZIEHBAR`). Nur aus dem Import: Ein von Hand
    * gepflegter nicht umlegbarer Anteil kann die Rücklage schon enthalten.
    */
-  const zufuehrung = positiv(wohnung.ruecklageZufuehrungMonat);
   if (zufuehrung > 0) {
     eingabe.monthlyReserveContribution = zufuehrung;
     nimm("Zuführung Instandhaltungsrücklage p. M.", eur0(zufuehrung), "Einheit, aus Investagon");
   }
   if (eingabe.monthlyOperatingCosts > 0) {
+    const nuText =
+      nuQuelle === "geschaetzt"
+        ? `geschätzt: ${prozent(nuSatz, 0)} des Hausgelds gesamt ${eur0(hausgeldGesamt)}${zufuehrung > 0 ? " ohne Rücklage" : ""}`
+        : "nicht umlegbarer Anteil des Hausgelds";
     nimm(
       "Nicht umlagefähige Kosten p. M.",
       eur0(eingabe.monthlyOperatingCosts),
-      mietverwaltung > 0
-        ? `Hausgeld nicht umlegbar ${eur0(hausgeldNu)} plus Mietverwaltung ${eur0(mietverwaltung)}`
-        : "nicht umlegbarer Anteil des Hausgelds",
+      mietverwaltung > 0 ? `Hausgeld nicht umlegbar ${eur0(hausgeldNu)} (${nuText}) plus Mietverwaltung ${eur0(mietverwaltung)}` : nuText,
     );
+    if (nuQuelle === "geschaetzt") {
+      fehlt(
+        "Nicht umlagefähiges Hausgeld (nur geschätzt)",
+        `bekannt ist nur das Hausgeld gesamt; der Rechner nimmt ${prozent(nuSatz, 0)} davon als nicht umlagefähig an. Der umlagefähige Teil zahlt der Mieter und belastet den Cashflow nicht`,
+        'Einheit über „Wohnung bearbeiten", Hausgeld umlagefähig, nicht umlagefähig und Zuführung Rücklage',
+        "einheit",
+      );
+    }
   } else {
     fehlt(
       "Nicht umlagefähige Kosten p. M.",

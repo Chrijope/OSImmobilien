@@ -198,10 +198,10 @@ export function EingabeKunde({ input, result, setzeZahl, setzeText, aendere, her
                 : {}),
             })
           }
-          tooltip="ESt-Tarif 2026 rechnet die Steuer vor und nach dem Kauf nach dem gesetzlichen Tarif und ist der Normalfall. Manueller Grenzsteuersatz nimmt stattdessen einen festen Prozentsatz auf das Ergebnis der Immobilie, gröber, aber gut für schnelle Vergleichsrechnungen."
+          tooltip="Aus dem zvE nach § 32a EStG (Tarif 2026): rechnet die Steuer vor und nach dem Kauf nach dem gesetzlichen Tarif, mit Solidaritätszuschlag und Kirchensteuer; der Normalfall. Persönlicher Steuersatz: Du trägst den Grenzsteuersatz selbst ein, etwa 35, 37 oder 42 Prozent, und die Steuerwirkung ist Einkünfte aus Vermietung mal diesem Satz."
         >
-          <option value="tariff">ESt-Tarif 2026</option>
-          <option value="manual">Manueller Grenzsteuersatz</option>
+          <option value="tariff">Aus dem zvE (Tarif 2026, § 32a EStG)</option>
+          <option value="manual">Persönlicher Steuersatz (manuell)</option>
         </Auswahlfeld>
       </div>
       <Schalterfeld
@@ -212,15 +212,19 @@ export function EingabeKunde({ input, result, setzeZahl, setzeText, aendere, her
       />
       {input.taxCalculationMode === "manual" && (
         <Zahlenfeld
-          label="Manueller Grenzsteuersatz"
+          label="Persönlicher Grenzsteuersatz, gesamt"
           value={input.marginalTaxRate}
           suffix="%"
-          onChange={(wert) => setzeZahl("marginalTaxRate", wert)}
+          onChange={(wert) => setzeZahl("marginalTaxRate", Math.min(60, wert))}
           tooltip="Prozentsatz, mit dem das anteilige Ergebnis der Immobilie besteuert wird. Beim Umschalten steht hier der Grenzsteuersatz aus dem zvE, etwa 35 Prozent bei 60.000 Euro brutto ledig; 42 Prozent gelten erst ab rund 70.000 Euro zvE. Die Steuerwirkung ist Ergebnis mal Satz, höchstens aber die Steuer, die ohne die Immobilie anfiele: Ohne Steuerlast gibt es keine Erstattung."
           hint={
             result.erstattungBegrenzt
               ? "Ohne Steuerlast vor dem Kauf keine Erstattung: Der Verlust wird hier nicht vollständig mit dem Satz verrechnet. Bitte das zu versteuernde Einkommen eintragen."
-              : "Vereinfachte Rechnung mit festem Satz, wie in Investagon. Genauer ist die Rechnung mit dem zu versteuernden Einkommen."
+              : `Der Satz gilt als Gesamtsatz, Solidaritätszuschlag und Kirchensteuer also schon eingerechnet; die Schalter dazu wirken hier nicht. ${
+                  result.combinedTaxableIncome > 0
+                    ? `Aus dem zvE nach § 32a EStG ergäben sich ${formatProzent(result.marginalIncomeTaxRate)} Einkommensteuer, mit Soli und Kirchensteuer ${formatProzent(result.marginalTotalTaxRate)}.`
+                    : "Ohne zvE wird der Grenzsteuersatz sonst nicht berechnet."
+                }`
           }
         />
       )}
@@ -1450,7 +1454,8 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
           suffix="€"
           onChange={(wert) => setzeZahl("monthlyOperatingCosts", wert)}
           tooltip="Kosten, die der Eigentümer selbst trägt und nicht auf den Mieter umlegen kann, vor allem der nicht umlagefähige Teil des Hausgelds und die Sondereigentumsverwaltung. Die Zuführung zur Instandhaltungsrücklage steht im eigenen Feld daneben. Sie stehen im Wirtschaftsplan der Verwaltung und mindern Cashflow und steuerliches Ergebnis."
-          hint={quelle("monthlyOperatingCosts")} markierung={feldmarkierung(herkunft, "monthlyOperatingCosts")}
+          hint={quelle("monthlyOperatingCosts") ?? "Nur der nicht umlagefähige Teil des Hausgelds, ohne Rücklage. Den umlagefähigen Teil zahlt der Mieter."}
+          markierung={feldmarkierung(herkunft, "monthlyOperatingCosts")}
         />
         <Zahlenfeld
           label="Zuführung Instandhaltungsrücklage p. M."

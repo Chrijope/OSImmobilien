@@ -1,0 +1,165 @@
+/* „Berechnung (ausführlich)“ (AusfuehrlicheBerechnung.tsx), in CRM und Artefakt
+   gleich. Werte aus der Exposé-Vorlage: Kästen 2,5 mm, Tabellen 1,5 mm, Badges
+   rund, Kreditrate orange. Schriften selbst gehostet unter public/fonts, wie in
+   beratung-os.css, weil die Sicherheitsrichtlinie fremde Schriftserver ausschließt. */
+@font-face {
+  font-family: "BA Playfair";
+  src: url("/fonts/playfair-display-latin.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "BA Playfair";
+  src: url("/fonts/playfair-display-italic-latin.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "BA Outfit";
+  src: url("/fonts/outfit-latin.woff2") format("woff2");
+  font-weight: 300 600;
+  font-display: swap;
+}
+.ba-dokument, .ba-druck {
+  --navy: #12362A; --navy-2: #1A4535; --champ: #A7D7C5; --champ-d: #198A5F;
+  --paper: #F3F6F4; --ink: #12362A; --muted: #56635D; --line: #D3E0D9;
+  --rot: #A23B32; --gruen: #198A5F; --rate: #D9731A;
+  --serif: "BA Playfair", "Playfair Display", Georgia, serif; --sans: "BA Outfit", "Outfit", system-ui, sans-serif;
+}
+.ba-wrap { display: grid; gap: 14px; min-width: 0; }
+.ba-leiste { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.ba-leiste p { margin: 0; font-size: 13px; color: hsl(var(--muted-foreground)); max-width: 60ch; }
+.expose-scale > .ba-dokument { zoom: var(--expose-zoom, 1); }
+.ba-dokument { display: grid; gap: 16px; }
+.ba-druck { position: fixed; left: -10000px; top: 0; width: 210mm; pointer-events: none; }
+.ba-druck .ba-dokument { gap: 0; }
+
+.ba-seite { width: 210mm; height: 297mm; position: relative; overflow: hidden; background: #fff; color: var(--ink);
+  font-family: var(--sans); font-weight: 300; font-size: 9.6pt; line-height: 1.5; box-shadow: 0 6px 24px rgb(18 54 42 / .08); }
+.ba-druck .ba-seite { box-shadow: none; }
+.ba-seite * { box-sizing: border-box; }
+.ba-in { position: absolute; left: 18mm; right: 18mm; top: 18mm; }
+.ba-kick { font-size: 7.4pt; font-weight: 500; letter-spacing: .26em; text-transform: uppercase; color: var(--champ-d); display: flex; align-items: center; gap: 3mm; }
+.ba-kick b { font-family: var(--serif); font-weight: 500; font-size: 10pt; letter-spacing: 0; }
+.ba-kick::after { content: ""; flex: 0 0 14mm; height: .3mm; background: var(--champ); }
+.ba-seite h2 { font-family: var(--serif); font-weight: 400; font-size: 24pt !important; line-height: 1.12; margin: 4mm 0 0; color: var(--navy); letter-spacing: -.005em; }
+.ba-seite h2 em { font-style: italic; color: var(--champ-d); }
+.ba-seite h3 { font-family: var(--serif); font-weight: 500; font-size: 12pt !important; margin: 0 0 1.2mm; color: var(--navy); }
+.ba-lead { font-size: 10.6pt; color: var(--muted); margin: 3.5mm 0 0; max-width: 155mm; }
+.ba-label { font-size: 6.8pt; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; color: var(--champ-d); }
+.ba-klein { display: block; font-size: 6.8pt; color: var(--muted); line-height: 1.4; }
+.ba-abstand { margin-top: 4mm; margin-bottom: 1.5mm; }
+.ba-abstand-gross { margin-top: 9mm; }
+.ba-zwei { display: grid; grid-template-columns: 1fr 1fr; gap: 9mm; margin-top: 8mm; align-items: start; }
+.ba-pos { color: var(--gruen); }
+.ba-neg { color: var(--rot); }
+.ba-rate, td.ba-rate, .ba-kv tr.ba-rate td { color: var(--rate); font-weight: 500; }
+
+.ba-kv { width: 100%; border-collapse: collapse; font-size: 8.9pt; }
+.ba-kv td { padding: 2.4mm 0; border-bottom: .2mm solid var(--line); vertical-align: baseline; }
+.ba-kv td:last-child { text-align: right; font-weight: 500; white-space: nowrap; padding-left: 4mm; }
+.ba-kv tr:first-child td { border-top: .2mm solid var(--line); }
+.ba-kv tr.ba-pos td:last-child { color: var(--gruen); }
+.ba-kv tr.ba-neg td:last-child { color: var(--rot); }
+.ba-kv tr.ba-sum td { font-weight: 500; color: var(--navy); border-bottom: .4mm solid var(--navy); }
+.ba-kv .ba-klein { font-weight: 300; margin-top: .3mm; }
+
+.ba-tab { width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 0; font-size: 7.4pt; border: .2mm solid var(--line); border-radius: 1.5mm; overflow: hidden; }
+.ba-tab th { background: var(--navy); color: #E4ECE7; font-weight: 500; text-align: right; padding: 1.8mm 1.6mm; font-size: 6.6pt; letter-spacing: .04em; line-height: 1.25; }
+.ba-tab td { padding: 1.35mm 1.6mm; text-align: right; border-top: .2mm solid var(--line); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.ba-tab th:first-child, .ba-tab td:first-child { text-align: left; }
+.ba-tab tbody tr:nth-child(even) td { background: #FAFCFB; }
+.ba-tab tfoot td { background: var(--paper); font-weight: 500; color: var(--navy); border-top: .4mm solid var(--navy); }
+.ba-jahre { font-size: 6.6pt; }
+.ba-jahre td { padding: 1.05mm 1.1mm; overflow: hidden; text-overflow: clip; }
+.ba-jahre th { padding: 1.8mm 1.1mm; }
+.ba-jahre th:first-child, .ba-jahre td:first-child { width: 11mm; }
+.ba-jahre.ba-wenig { font-size: 7.6pt; }
+.ba-jahre.ba-wenig td { padding: 2.6mm 1.3mm; }
+.ba-jahre.ba-wenig th { font-size: 7pt; padding: 2.4mm 1.3mm; }
+.ba-stich { font-size: 8.8pt; margin-top: 2.5mm; }
+.ba-stich td { padding: 2.4mm 2.2mm; }
+.ba-stich th { font-size: 7.4pt; padding: 2.2mm; }
+
+.ba-kacheln3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4mm; margin-top: 10mm; }
+.ba-kacheln1 { display: grid; gap: 3mm; }
+.ba-kachel { background: var(--paper); padding: 5.5mm 5.5mm 5mm; border-top: .6mm solid var(--champ-d); border-radius: 2.5mm; }
+.ba-kachel .n { font-family: var(--serif); font-size: 21pt; line-height: 1.05; color: var(--navy); margin-top: 1.8mm; }
+.ba-kachel .s { font-size: 7.2pt; color: var(--muted); margin-top: 1.4mm; line-height: 1.4; }
+.ba-kachel.dk { background: var(--navy); color: #E4ECE7; border-top-color: var(--champ); }
+.ba-kachel.dk .ba-label { color: var(--champ); }
+.ba-kachel.dk .n { color: #fff; }
+.ba-kachel.dk .s { color: #B8C2BC; }
+
+.ba-box { background: var(--paper); border-radius: 2.5mm; padding: 4mm 4.5mm 3mm; }
+.ba-box .ba-kv { margin-top: 2mm; }
+.ba-box .ba-kv tr:first-child td { border-top: 0; }
+.ba-ergebnisse { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; margin-top: 4mm; }
+.ba-ergebnisse > div { display: flex; justify-content: space-between; align-items: baseline; gap: 3mm; padding: 3.5mm 4.5mm; border-radius: 2.5mm; background: var(--paper); border-top: .6mm solid var(--champ-d); font-weight: 500; font-size: 8.6pt; }
+.ba-ergebnisse > div b { font-family: var(--serif); font-weight: 400; font-size: 16pt; white-space: nowrap; }
+.ba-ergebnisse > div.dk { background: var(--navy); color: #E4ECE7; border-top-color: var(--champ); }
+.ba-ergebnisse > div.dk b.ba-pos { color: #7FE0B5; }
+.ba-ergebnisse > div.dk b.ba-neg { color: #FF9B93; }
+
+.ba-annahmen { display: flex; flex-wrap: wrap; gap: 2mm; margin-top: 5mm; }
+.ba-annahmen span { border: .25mm solid var(--line); border-radius: 999px; padding: 1.1mm 3mm; font-size: 7.4pt; color: var(--muted); }
+.ba-annahmen b { color: var(--navy); font-weight: 500; }
+
+.ba-note { margin-top: 9mm; padding: 4mm 5mm; background: var(--paper); border-left: .7mm solid var(--champ-d); border-radius: 2.5mm; font-size: 8.2pt; line-height: 1.5; color: var(--muted); }
+.ba-note b { color: var(--navy); font-weight: 500; }
+.ba-hinweis { background: var(--paper); border-radius: 2.5mm; padding: 4mm; font-size: 8pt; color: var(--muted); }
+.ba-texte { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin-top: 9mm; }
+.ba-texte > div { background: var(--paper); border-radius: 2.5mm; padding: 6mm 6mm 6.5mm; border-top: .5mm solid var(--champ); }
+.ba-texte p { margin: 0; font-size: 9pt; color: var(--muted); line-height: 1.5; }
+.ba-einspaltig { grid-template-columns: 1fr; }
+.ba-oder { text-align: center; font-family: var(--serif); font-style: italic; font-size: 14pt; color: var(--champ-d); margin: 4mm 0 2mm; }
+
+.ba-fotos { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; }
+.ba-foto { height: 50mm; border-radius: 2.5mm; overflow: hidden; position: relative; }
+.ba-foto:first-child:last-child { grid-column: 1 / -1; height: 70mm; }
+.ba-foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ba-foto::after { content: ""; position: absolute; inset: 1.6mm; border: .25mm solid rgba(167,215,197,.9); border-radius: 1.5mm; }
+
+.ba-chart { display: block; margin-top: 2mm; }
+.ba-chart text { font-family: var(--sans); font-size: 8px; fill: #56635D; }
+.ba-legende { display: flex; flex-wrap: wrap; gap: 4mm; font-size: 7pt; color: var(--muted); margin-top: 1mm; }
+.ba-legende i { display: inline-block; width: 2.6mm; height: 2.6mm; border-radius: 999px; margin-right: 1.2mm; vertical-align: -.3mm; }
+
+.ba-fuss { position: absolute; left: 18mm; right: 18mm; bottom: 9mm; padding-top: 2.4mm; border-top: .2mm solid var(--line); display: flex; justify-content: space-between; font-size: 6.6pt; letter-spacing: .08em; color: var(--muted); }
+.ba-dunkel .ba-fuss { border-top-color: rgba(167,215,197,.35); color: #8B9690; }
+
+/* Titel */
+.ba-dunkel { background: var(--navy); color: #E4ECE7; }
+.ba-titelbild { position: absolute; left: 0; top: 0; width: 210mm; height: 150mm; }
+.ba-titelbild img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ba-ohnebild { width: 100%; height: 100%; background: radial-gradient(60% 70% at 30% 30%, #1F5A44, #12362A 70%); }
+.ba-titelverlauf { position: absolute; left: 0; top: 0; width: 210mm; height: 150mm;
+  background: linear-gradient(180deg, rgba(18,54,42,.4) 0%, rgba(18,54,42,0) 18%, rgba(18,54,42,0) 50%, rgba(18,54,42,.75) 80%, #12362A 100%); }
+.ba-titelkopf { position: absolute; left: 18mm; right: 18mm; top: 15mm; display: flex; justify-content: space-between; align-items: center; gap: 4mm; }
+.ba-tag { font-size: 6.8pt; letter-spacing: .26em; text-transform: uppercase; color: var(--champ); border: .25mm solid rgba(167,215,197,.7); padding: 1.2mm 3mm; border-radius: 999px; background: rgba(18,54,42,.35); }
+.ba-partner { font-size: 7.6pt; color: #fff; background: rgba(18,54,42,.55); border-radius: 999px; padding: 1.2mm 3mm; }
+.ba-titeltext { position: absolute; left: 18mm; right: 18mm; top: 118mm; }
+.ba-titeltext .ba-kick { color: var(--champ); }
+.ba-seite.ba-titel h1 { font-family: var(--serif); font-weight: 400; font-size: 38pt !important; line-height: 1.02; color: #fff; margin: 4mm 0 0; letter-spacing: -.01em; }
+.ba-unit { font-family: var(--serif); font-style: italic; font-size: 16pt; color: var(--champ); margin-top: 2mm; }
+.ba-regel { height: .25mm; background: linear-gradient(90deg, var(--champ), rgba(167,215,197,.15)); margin: 8mm 0 6mm; }
+.ba-titeldaten { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5mm; }
+.ba-titeldaten > div { background: var(--navy-2); border-radius: 2.5mm; padding: 4mm 4.5mm; border-top: .5mm solid var(--champ); }
+.ba-titeldaten .ba-label { color: var(--champ); }
+.ba-titeldaten .v { font-family: var(--serif); font-size: 18pt; color: #fff; margin-top: 1.6mm; line-height: 1.1; white-space: nowrap; }
+.ba-titeldaten .v.ba-pos { color: #7FE0B5; }
+.ba-titeldaten .v.ba-neg { color: #FF9B93; }
+.ba-titeldaten small { display: block; font-size: 7.2pt; color: #B8C2BC; margin-top: 1.2mm; }
+/* Das CRM-CSS setzt Tabellenköpfe auf nowrap; hier dürfen sie umbrechen, damit die Tabelle ins Blatt passt. */
+.ba-seite .ba-tab th { white-space: normal !important; overflow-wrap: anywhere; vertical-align: bottom; }
+.ba-seite .ba-tab td { overflow: hidden; }
+/* Verlauf etwas länger als das Bild, sonst bleibt an der Unterkante eine helle Kante. */
+.ba-titelverlauf { height: 152mm; background: linear-gradient(180deg, rgba(18,54,42,.4) 0%, rgba(18,54,42,0) 18%, rgba(18,54,42,0) 48%, rgba(18,54,42,.78) 78%, #12362A 97%, #12362A 100%); }
+/* Spalten gleich breit aufteilen; die Jahresspalte bleibt fest. Fußzeilen dürfen umbrechen. */
+.ba-seite .ba-tab tfoot td { white-space: normal; }
+.ba-seite .ba-jahre td:not(:first-child), .ba-seite .ba-jahre th:not(:first-child) { max-width: 0; }
+.ba-seite .ba-jahre th:first-child, .ba-seite .ba-jahre td:first-child { width: 12mm; }
+/* Lange Prognosen (über 15 Jahre): engere Zeilen, damit 30 Jahre auf eine Seite passen. */
+.ba-seite .ba-jahre:not(.ba-wenig) td { padding-top: .72mm; padding-bottom: .72mm; }
