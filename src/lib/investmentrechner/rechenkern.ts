@@ -293,7 +293,7 @@ export interface Vermoegensaufstellung {
 }
 
 /** Die aktuelle Version der Eingabe, siehe `eingabeVersion`. */
-export const EINGABE_VERSION = 3;
+export const EINGABE_VERSION = 4;
 
 /** Schlüssel aller Zahlenfelder der Eingabe, für typsichere Setter in der Oberfläche. */
 export type ZahlenFeld = {

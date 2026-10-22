@@ -24,15 +24,46 @@ import { monateErstesJahr } from "./rechenkern";
 
 const leer = (bezeichnung: string): Bankunterlagenposten => ({ bezeichnung, betrag: 0 });
 
+/**
+ * Die Standardposten der Vorlage, mit sprachneutraler Kennung und Text je
+ * Sprache (seit dem 22.10.2026). Gespeichert wird weiter der deutsche Text;
+ * `postenBezeichnung` erkennt ihn und zeigt ihn in der Sprache des
+ * Dokuments. Eigene Texte des Kunden bleiben, wie sie sind.
+ */
+export const STANDARDPOSTEN = {
+  nettoPerson1: { de: "Nettoeinkommen Person 1", en: "Net income person 1" },
+  nettoPerson2: { de: "Nettoeinkommen Person 2", en: "Net income person 2" },
+  kindergeld: { de: "Kindergeld", en: "Child benefit" },
+  sonstigeEinkuenfte: { de: "Sonstige Einkünfte", en: "Other income" },
+  mieteEigeneWohnung: { de: "Miete und Nebenkosten (eigene Wohnung)", en: "Rent and service charges (own home)" },
+  lebenshaltung: { de: "Lebenshaltung", en: "Living expenses" },
+  versicherungen: { de: "Versicherungen", en: "Insurance" },
+  kreditraten: { de: "Bestehende Kreditraten", en: "Existing loan instalments" },
+  guthaben: { de: "Bank- und Sparguthaben", en: "Bank and savings balances" },
+  depot: { de: "Wertpapiere / Depot", en: "Securities / portfolio" },
+  immobilien: { de: "Bestehende Immobilien (Verkehrswert)", en: "Existing property (market value)" },
+  immobiliendarlehen: { de: "Bestehende Immobiliendarlehen", en: "Existing property loans" },
+  ratenkredite: { de: "Ratenkredite", en: "Consumer loans" },
+} as const;
+type Standardposten = keyof typeof STANDARDPOSTEN;
+const deutsch = (kennungen: Standardposten[]) => kennungen.map((k) => STANDARDPOSTEN[k].de);
+
+/** Eine Bezeichnung in der Sprache des Dokuments: Standardposten übersetzt, eigene Texte unverändert. */
+export function postenBezeichnung(bezeichnung: string, sprache: "de" | "en"): string {
+  if (sprache === "de") return bezeichnung;
+  const treffer = Object.values(STANDARDPOSTEN).find((p) => p.de === bezeichnung.trim());
+  return treffer ? treffer.en : bezeichnung;
+}
+
 /** Die Zeilen eines leeren Formulars. */
 export const HAUSHALT_VORLAGE: Haushaltsrechnung = {
-  einkuenfte: ["Nettoeinkommen Person 1", "Nettoeinkommen Person 2", "Kindergeld", "Sonstige Einkünfte"].map(leer),
-  ausgaben: ["Miete und Nebenkosten (eigene Wohnung)", "Lebenshaltung", "Versicherungen", "Bestehende Kreditraten"].map(leer),
+  einkuenfte: deutsch(["nettoPerson1", "nettoPerson2", "kindergeld", "sonstigeEinkuenfte"]).map(leer),
+  ausgaben: deutsch(["mieteEigeneWohnung", "lebenshaltung", "versicherungen", "kreditraten"]).map(leer),
 };
 
 export const VERMOEGEN_VORLAGE: Vermoegensaufstellung = {
-  werte: ["Bank- und Sparguthaben", "Wertpapiere / Depot", "Bestehende Immobilien (Verkehrswert)"].map(leer),
-  verbindlichkeiten: ["Bestehende Immobiliendarlehen", "Ratenkredite"].map(leer),
+  werte: deutsch(["guthaben", "depot", "immobilien"]).map(leer),
+  verbindlichkeiten: deutsch(["immobiliendarlehen", "ratenkredite"]).map(leer),
 };
 
 /** Ein leeres Formular zeigt die Vorlage, damit man gleich eintragen kann. */

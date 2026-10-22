@@ -239,6 +239,35 @@ describe("alte Speicherstände: ein Kaufpreis seit dem 25.09.2026", () => {
   });
 });
 
+describe("alte Speicherstände: Hausgeld getrennt seit Version 4 (22.10.2026)", () => {
+  // Unter Version 3 gespeichert: 70 € Summe im alten Feld, 50 € Hausgeld nur als Anzeige.
+  const version3 = {
+    purchasePrice: 250_000, monthlyColdRent: 900, monthlyOperatingCosts: 70, housingFeeNonRecoverable: 50,
+    financingCostRate: 0.2, eingabeVersion: 3,
+  };
+  it("löst das Hausgeld aus der alten Summe und rechnet wie beim Speichern", () => {
+    const eingabe = eingabeAusJson(version3);
+    expect(eingabe.eingabeVersion).toBe(EINGABE_VERSION);
+    expect(eingabe.housingFeeNonRecoverable).toBe(50);
+    expect(eingabe.monthlyOperatingCosts).toBe(20);
+    // 840 € im Jahr wie vorher, nicht 1.440 €.
+    expect(berechneInvestment(eingabe).years[0].operatingCosts).toBeCloseTo(840, 6);
+  });
+  it("rechnet einmal um und dann nie wieder", () => {
+    const einmal = eingabeAusJson(version3);
+    expect(eingabeAusJson(JSON.parse(JSON.stringify(einmal)))).toEqual(einmal);
+  });
+  it("hält die Summe auch, wenn die Anzeige größer war als die alte Summe", () => {
+    const eingabe = eingabeAusJson({ ...version3, monthlyOperatingCosts: 30 });
+    expect(eingabe.housingFeeNonRecoverable + eingabe.monthlyOperatingCosts).toBe(30);
+  });
+  it("lässt ältere Stände ohne das Feld unverändert", () => {
+    const eingabe = eingabeAusJson({ purchasePrice: 250_000, monthlyOperatingCosts: 70, eingabeVersion: 2 });
+    expect(eingabe.monthlyOperatingCosts).toBe(70);
+    expect(eingabe.housingFeeNonRecoverable).toBe(0);
+  });
+});
+
 describe("alte Speicherstände: Finanzierungsnebenkosten seit dem 25.09.2026", () => {
   it("rechnet einen Stand ohne den Satz weiter ohne Finanzierungsnebenkosten", () => {
     expect(eingabeAusJson({ purchasePrice: 300_000, eingabeVersion: 2 }).financingCostRate).toBe(0);

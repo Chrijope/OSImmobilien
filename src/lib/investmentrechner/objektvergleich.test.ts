@@ -22,6 +22,19 @@ function objekt(aenderung: Partial<InvestmentEingabe>): Vergleichsobjekt {
 }
 
 /** Kaufbereites Beispielobjekt, damit die Prognose echte Zahlen liefert. */
+/* Codex-Kontrolle vom 22.10.2026: Der Monatsbetrag im Vergleichssatz zählt im ersten Jahr nur die Monate ab dem Übergang. */
+describe("Einordnung bei kurzem ersten Jahr", () => {
+  it("teilt das erste Jahresergebnis durch die Monate ab dem Übergang, deutsch und englisch", () => {
+    const a = objekt({ ...basis, acquisitionMonth: 7 });
+    const b = objekt({ ...basis, acquisitionMonth: 7, monthlyColdRent: 1100 });
+    const unterschied = Math.round(
+      Math.abs(b.ergebnis.years[0].cashflowAfterTax / 6 - a.ergebnis.years[0].cashflowAfterTax / 6),
+    );
+    expect(einordnung(a, b)).toContain(`${unterschied.toLocaleString("de-DE")} Euro`);
+    expect(einordnung(a, b, "en")).toContain(unterschied.toLocaleString("en-GB"));
+  });
+});
+
 const basis: Partial<InvestmentEingabe> = {
   taxableIncomeCustomer: 62000,
   purchasePrice: 300000,

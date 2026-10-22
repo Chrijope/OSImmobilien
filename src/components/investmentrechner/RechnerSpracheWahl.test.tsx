@@ -125,6 +125,21 @@ describe("Bankgespräch und Bankunterlagen auf Englisch", () => {
     expect(container.textContent).toContain("Household budget");
     expect(container.textContent).toContain("Total income");
     expect(container.textContent).not.toMatch(/Summe|Überschuss|Differenz/);
+    // Standardposten der leeren Vermögensvorlage übersetzt, eigene Texte bleiben.
+    expect(container.textContent).toContain("Bank and savings balances");
+    expect(container.textContent).not.toContain("Bank- und Sparguthaben");
+    expect(container.textContent).toContain("Salary");
+  });
+
+  it("Standardposten der Haushaltsvorlage englisch, eigener Text unverändert", () => {
+    const eigene = { ...mitHaushalt, haushalt: { einkuenfte: [{ bezeichnung: "Kindergeld", betrag: 250 }, { bezeichnung: "Mieteinnahme Garage Oma", betrag: 50 }], ausgaben: [] } };
+    const { container } = render(
+      <RechnerSpracheContext.Provider value="en">
+        <BankunterlagenTabellen input={eigene} result={berechneInvestment(eigene)} nur="haushalt" />
+      </RechnerSpracheContext.Provider>,
+    );
+    expect(container.textContent).toContain("Child benefit");
+    expect(container.textContent).toContain("Mieteinnahme Garage Oma");
   });
 });
 

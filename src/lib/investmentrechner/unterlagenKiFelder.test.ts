@@ -268,3 +268,40 @@ describe("Automatisch übernommen: Speichern, Laden, Vergleichsobjekt (LOTSE-R5-
     expect(ohneAutomatik(herkunft)).toEqual({ area: { quelle: "unterlagen", text: "Aus Beleg.pdf" } });
   });
 });
+
+/*
+ * Nicht umlagefähige Kosten, seit dem 22.10.2026 getrennt: Hausgeld nicht
+ * umlagefähig und weitere Kosten (Verwaltung). Alte Antworten mit der Summe
+ * dürfen nie doppelt zählen (Codex-Kontrolle).
+ */
+describe("Nicht umlagefähige Kosten aus den Unterlagen", () => {
+  const aktuell = { ...standardEingabe, housingFeeNonRecoverable: 50, monthlyOperatingCosts: 20 };
+  const summeJahr = (eingabe: { housingFeeNonRecoverable: number; monthlyOperatingCosts: number }) =>
+    (eingabe.housingFeeNonRecoverable + eingabe.monthlyOperatingCosts) * 12;
+
+  it("neue Antwort: beide Bestandteile getrennt", () => {
+    const vorschlaege = kiAntwortInVorschlaege(
+      {
+        felder: {
+          housingFeeNonRecoverable: { wert: 55, quelle: "Wirtschaftsplan.pdf", sicherheit: "hoch" },
+          additionalNonRecoverableCosts: { wert: 25, quelle: "Verwaltervertrag.pdf", sicherheit: "hoch" },
+        },
+      },
+      aktuell,
+    );
+    const neu = { ...aktuell, ...uebernahmeAnwenden(vorschlaege, new Set(["housingFeeNonRecoverable", "monthlyOperatingCosts"])) };
+    expect(neu.housingFeeNonRecoverable).toBe(55);
+    expect(neu.monthlyOperatingCosts).toBe(25);
+  });
+
+  it("alte Antwort mit der Summe 70: Hausgeld 50, Verwaltung bleibt 20, zusammen 840 € im Jahr", () => {
+    const vorschlaege = kiAntwortInVorschlaege(
+      { felder: { monthlyOperatingCosts: { wert: 70, quelle: "Hausgeldabrechnung.pdf", sicherheit: "hoch" } } },
+      aktuell,
+    );
+    expect(vorschlaege.map((v) => v.feld)).toEqual(["housingFeeNonRecoverable"]);
+    const neu = { ...aktuell, ...uebernahmeAnwenden(vorschlaege, new Set(["housingFeeNonRecoverable"])) };
+    expect(neu.housingFeeNonRecoverable).toBe(50);
+    expect(summeJahr(neu)).toBe(840);
+  });
+});
