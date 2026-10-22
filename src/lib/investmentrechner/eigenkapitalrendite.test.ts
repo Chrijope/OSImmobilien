@@ -9,7 +9,8 @@ import {
 import { rechenwege } from "./kennzahlErklaerungen";
 
 /*
- * Eigenkapitalrendite, Christians Formel vom 30.09.2026:
+ * Eigenkapitalrendite, Christians Formel vom 30.09.2026 (seit dem 22.10.2026 mit
+ * monatlich gerechneten Darlehen, die Zahlen sind deshalb neu):
  *
  *   (Vermögensaufbau im Zeitraum ÷ Jahre) ÷ (Eigenkapital + Zuzahlung vor Steuer je Monat × 12)
  *
@@ -55,9 +56,9 @@ describe("Eigenkapitalrendite nach Christians Formel", () => {
     expect(ekr.zuzahlungMonat).toBeCloseTo(-ergebnis.years[0].cashflowBeforeTax / 12, 10);
     expect(ekr.vermoegensaufbau).toBeCloseTo(ergebnis.vermoegensaufbauMonat * 120, 6);
     expect(ekr.rendite).toBeCloseTo(ekr.vermoegensaufbau / 10 / (13_250 + 525 * 12), 10);
-    expect(ekr.rendite).toBeCloseTo(0.4337, 4);
+    expect(ekr.rendite).toBeCloseTo(0.4398, 4);
     expect(glatt(rechenwege(A, ergebnis).eigenkapitalrendite?.text)).toBe(
-      "(Vermögensaufbau 84.782 € ÷ 10 Jahre) ÷ (Eigenkapital 13.250 € + Zuzahlung vor Steuer 525,00 € × 12) = 43,4 %",
+      "(Vermögensaufbau 85.973 € ÷ 10 Jahre) ÷ (Eigenkapital 13.250 € + Zuzahlung vor Steuer 525,00 € × 12) = 44,0 %",
     );
   });
 
@@ -66,15 +67,15 @@ describe("Eigenkapitalrendite nach Christians Formel", () => {
     const ekr = eigenkapitalrendite(B, ergebnis);
     expect(ekr.eigenkapital).toBe(0);
     expect(ekr.nenner).toBeCloseTo(585.73 * 12, 1);
-    expect(ekr.rendite).toBeCloseTo(1.0516, 4);
-    expect(glatt(rechenwege(B, ergebnis).eigenkapitalrendite?.text)).toMatch(/= 105,2 %$/);
+    expect(ekr.rendite).toBeCloseTo(1.0693, 4);
+    expect(glatt(rechenwege(B, ergebnis).eigenkapitalrendite?.text)).toMatch(/= 106,9 %$/);
   });
 
   it("C: mehr Eigenkapital, kleinere Rendite", () => {
     const ergebnis = berechneInvestment(C);
     const ekr = eigenkapitalrendite(C, ergebnis);
-    expect(ekr.rendite).toBeCloseTo(0.1657, 4);
-    expect(glatt(rechenwege(C, ergebnis).eigenkapitalrendite?.text)).toMatch(/= 16,6 %$/);
+    expect(ekr.rendite).toBeCloseTo(0.1680, 4);
+    expect(glatt(rechenwege(C, ergebnis).eigenkapitalrendite?.text)).toMatch(/= 16,8 %$/);
   });
 
   it("zählt einen Überschuss vor Steuer als 0 und ist ohne Eigenkapital dann nicht bestimmbar", () => {
@@ -138,7 +139,7 @@ describe("Gegenfall zu den Kaufnebenkosten, mit derselben Regel", () => {
     const n = eigenkapitalrenditeNebenkosten(C, berechneInvestment(C));
     expect(n?.selbstGezahlt).toBe(true);
     expect(n?.vergleich.eigenkapital).toBeCloseTo(30_000, 6);
-    expect(n?.vergleich.rendite).toBeCloseTo(0.2311, 4);
+    expect(n?.vergleich.rendite).toBeCloseTo(0.2343, 4);
   });
 
   it("schweigt ohne Kaufnebenkosten", () => {

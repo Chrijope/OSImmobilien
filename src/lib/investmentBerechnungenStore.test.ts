@@ -26,7 +26,7 @@ const {
   ladeBerechnungen, ladeBerechnung, speichereBerechnung, aktualisiereBerechnung, loescheBerechnung,
   eingabeAusJson, kennzahlenAus, berechnungsnameVorschlag, BERECHNUNGEN_MIGRATION_HINWEIS,
 } = await import("@/lib/investmentBerechnungenStore");
-const { standardEingabe, berechneInvestment } = await import("@/lib/investmentrechner/rechenkern");
+const { standardEingabe, berechneInvestment, EINGABE_VERSION } = await import("@/lib/investmentrechner/rechenkern");
 const { standardKaufnebenkostenauswahl } = await import("@/lib/investmentrechner/kaufnebenkostenAuswahl");
 
 const kennzahlen = { kaufpreis: 250_000, eigenkapital: 25_000, cashflowMonatNachSteuern: -120, bruttorendite: 0.0412, irr: 0.081 };
@@ -206,7 +206,7 @@ describe("alte Speicherstände: ein Kaufpreis seit dem 25.09.2026", () => {
     const eingabe = eingabeAusJson(alterStand);
     expect(eingabe.purchasePrice).toBe(250_000);
     expect(eingabe.furniturePrice).toBe(8_000);
-    expect(eingabe.eingabeVersion).toBe(2);
+    expect(eingabe.eingabeVersion).toBe(EINGABE_VERSION);
   });
 
   it("rechnet danach das Referenzbeispiel", () => {
@@ -235,7 +235,7 @@ describe("alte Speicherstände: ein Kaufpreis seit dem 25.09.2026", () => {
   it("ändert an einem alten Stand ohne Möbel nichts außer der Marke", () => {
     const ohneMoebel = eingabeAusJson({ purchasePrice: 300_000 });
     expect(ohneMoebel.purchasePrice).toBe(300_000);
-    expect(ohneMoebel.eingabeVersion).toBe(2);
+    expect(ohneMoebel.eingabeVersion).toBe(EINGABE_VERSION);
   });
 });
 

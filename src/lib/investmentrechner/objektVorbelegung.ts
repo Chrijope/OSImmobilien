@@ -41,6 +41,12 @@ import { ausweisartText, energieeffizienzklasse, rohdaten } from "@/lib/investag
 import { objektartInfo, objektseiteFelder } from "@/lib/objektseiteDaten";
 import { objektAnlageklasse } from "@/lib/objektKlassen";
 import { bundeslandFromPlz, GRUNDBUCH_PROZENT, NOTAR_PROZENT } from "@/lib/kaufnebenkosten";
+import {
+  getHausgeldMonatForWohnung,
+  getHausgeldNichtUmlegbarP,
+  hausgeldNichtUmlegbarQuelle,
+} from "@/lib/objekteStore";
+import { hausgeldTeile } from "../../../supabase/functions/_shared/einheit-hausgeld";
 import { linearerAfaSatz } from "@/lib/afaSaetze";
 import { dez, eur0, prozent } from "@/lib/objektKennzahlen";
 import { berechneInvestment, standardEingabe, type InvestmentEingabe } from "./rechenkern";
@@ -173,7 +179,9 @@ export function vorbelegungAusEinheit(
   const herkunft: Herkunft = {};
   const zuordnung: Record<string, (keyof InvestmentEingabe)[]> = {
     "Objektbezeichnung": ["propertyTitle"], "Adresse": ["address"], "Objekttyp": ["propertyType"],
-    "Kaufpreis": ["purchasePrice"], "davon Möbel/Inventar": ["furniturePrice"],
+    "Kaufpreis": ["purchasePrice"], "davon Möbel/Inventar": ["furniturePrice"], "davon Stellplatz/Garage": ["garagePrice"],
+    "Stellplatz-/Garagenmiete p. M.": ["monthlyGarageRent"],
+    "Hausgeld gesamt p. M.": ["housingFeeTotal", "housingFeeRecoverable", "housingFeeNonRecoverable"],
     "Wohnfläche": ["area"], "Zimmer": ["rooms"], "Baujahr": ["constructionYear"],
     "Kaufnebenkosten": ["transferTaxRate", "notaryRate", "landRegisterRate"], "Kaltmiete p. M.": ["monthlyColdRent"],
     "Eigenkapital": ["equity"], "Finanzierungsnebenkosten": ["financingCostRate"],
@@ -226,6 +234,16 @@ export function vorbelegungAusEinheit(
     );
   } else {
     fehlt("Kaufpreis", "ohne ihn rechnet nichts", 'Einheit über „Wohnung bearbeiten"', "einheit");
+  }
+  /*
+   * Seit dem 22.10.2026 steht der Stellplatz zusätzlich als „davon“ im
+   * Kaufpreis, damit Rendite und Kaufpreisfaktor der Wohnung allein neben
+   * denen des Pakets stehen können. Gerechnet wird damit wie vorher.
+   */
+  const stellplatzpreis = positiv(daten.stellplatzpreis);
+  if (stellplatzpreis > 0 && stellplatzpreis <= eingabe.purchasePrice) {
+    eingabe.garagePrice = stellplatzpreis;
+    nimm("davon Stellplatz/Garage", eur0(stellplatzpreis), "Einheit, Stellplatzpreis, im Kaufpreis enthalten");
   }
 
   // Mehr Möbel als Kaufpreis wäre ein Datenfehler, dann lieber keine Angabe.
@@ -360,19 +378,24 @@ export function vorbelegungAusEinheit(
   // ── Miete & Entwicklung ───────────────────────────────────────────────────
 
   /*
-   * Kaltmiete inklusive Stellplatzmiete, passend dazu, dass der Stellplatz im
-   * Kaufpreis steckt. Eine noch ausstehende Mieterhöhung ist hier bewusst
-   * nicht eingerechnet: Der Rechner kennt nur eine Startmiete, und eine
-   * vorweggenommene Erhöhung wäre eine stille Annahme.
+   * Kaltmiete der Wohnung und Stellplatzmiete getrennt, seit dem 22.10.2026.
+   * `kaltmieteMonat` aus exposeObjektdatenAus enthält die Stellplatzmiete,
+   * weil der Exposé-Rechner nur eine Miete kennt; hier wird sie wieder
+   * herausgenommen und steht im eigenen Feld. Vorher stand alles in der
+   * Kaltmiete, gerechnet wird gleich, nur der Ausweis der Rendite ändert sich.
+   * Eine noch ausstehende Mieterhöhung ist bewusst nicht eingerechnet: Der
+   * Rechner kennt nur eine Startmiete, und eine vorweggenommene Erhöhung wäre
+   * eine stille Annahme.
    */
-  const miete = positiv(daten.kaltmieteMonat);
+  const stellplatzMiete = Math.min(positiv(daten.stellplatzMieteMonat), positiv(daten.kaltmieteMonat));
+  const miete = positiv(daten.kaltmieteMonat) - stellplatzMiete;
+  if (stellplatzMiete > 0) {
+    eingabe.monthlyGarageRent = stellplatzMiete;
+    nimm("Stellplatz-/Garagenmiete p. M.", eur0(stellplatzMiete), "Einheit, Stellplatzmiete");
+  }
   if (miete > 0) {
     eingabe.monthlyColdRent = miete;
-    nimm(
-      "Kaltmiete p. M.",
-      eur0(miete),
-      positiv(wohnung.stellplatzMiete) > 0 ? "Einheit, inklusive Stellplatzmiete" : "Einheit",
-    );
+    nimm("Kaltmiete p. M.", eur0(miete), stellplatzMiete > 0 ? "Einheit, ohne Stellplatzmiete" : "Einheit");
   } else {
     fehlt("Kaltmiete p. M.", "Rendite, Cashflow und Steuerwirkung", 'Einheit über „Wohnung bearbeiten"', "einheit");
   }
@@ -383,9 +406,40 @@ export function vorbelegungAusEinheit(
    * beides ist abziehbar, genau so behandelt es der Exposé-Rechner. Der
    * umlagefähige Teil des Hausgelds gehört nicht hierher, den zahlt der Mieter.
    */
-  const hausgeldNu = positiv(daten.hausgeldNichtUmlegbarMonat);
+  /*
+   * Seit dem 22.10.2026 mit Herkunft: Der nicht umlagefähige Anteil ist an der
+   * Einheit gepflegt (auch aus den Investagon-Rohdaten), als Eurobetrag am
+   * Objekt, oder nur geschätzt als Prozentsatz vom Hausgeld gesamt. Eine
+   * Schätzung wird genannt und als Lücke gemeldet, statt still mitzurechnen.
+   * Ist die Rücklage bekannt, läuft die Schätzung auf das Hausgeld ohne sie:
+   * Die Rücklage steht im eigenen Feld und zählte sonst zweimal.
+   */
+  const zufuehrung = positiv(wohnung.ruecklageZufuehrungMonat ?? hausgeldTeile(wohnung).ruecklage ?? hausgeldTeile((wohnung as { meta?: unknown }).meta).ruecklage);
+  const nuQuelle = hausgeldNichtUmlegbarQuelle(objekt, wohnung);
+  const hausgeldGesamt = getHausgeldMonatForWohnung(objekt, wohnung);
+  const nuSatz = getHausgeldNichtUmlegbarP(objekt, wohnung);
+  const hausgeldNu =
+    nuQuelle === "geschaetzt" && zufuehrung > 0
+      ? Math.round((Math.max(0, hausgeldGesamt - zufuehrung) * nuSatz) / 100)
+      : positiv(daten.hausgeldNichtUmlegbarMonat);
   const mietverwaltung = positiv(daten.mietverwaltungMonat);
   eingabe.monthlyOperatingCosts = hausgeldNu + mietverwaltung;
+  /*
+   * Das Hausgeld in ganzer Höhe zur Anzeige, seit dem 22.10.2026 (Christian):
+   * gesamt, umlagefähig und nicht umlagefähig wie im Exposé und Wirtschaftsplan.
+   * Gerechnet wird damit nichts, die Aufstellung prüft nur die Summe.
+   */
+  const umlagefaehig = positiv(hausgeldTeile(wohnung).umlagefaehig ?? hausgeldTeile((wohnung as { meta?: unknown }).meta).umlagefaehig);
+  if (hausgeldGesamt > 0 || umlagefaehig > 0 || hausgeldNu > 0) {
+    eingabe.housingFeeTotal = hausgeldGesamt;
+    eingabe.housingFeeRecoverable = umlagefaehig;
+    eingabe.housingFeeNonRecoverable = hausgeldNu;
+    nimm(
+      "Hausgeld gesamt p. M.",
+      eur0(hausgeldGesamt),
+      `Einheit, davon umlagefähig ${eur0(umlagefaehig)}, nicht umlagefähig ${eur0(hausgeldNu)}${nuQuelle === "geschaetzt" ? " (geschätzt)" : ""}`,
+    );
+  }
   /*
    * Zuführung zur Instandhaltungsrücklage, seit dem 25.09.2026 als eigenes
    * Feld. Investagon liefert sie getrennt vom nicht umlagefähigen Hausgeld
@@ -394,19 +448,28 @@ export function vorbelegungAusEinheit(
    * `RUECKLAGENZUFUEHRUNG_ABZIEHBAR`). Nur aus dem Import: Ein von Hand
    * gepflegter nicht umlegbarer Anteil kann die Rücklage schon enthalten.
    */
-  const zufuehrung = positiv(wohnung.ruecklageZufuehrungMonat);
   if (zufuehrung > 0) {
     eingabe.monthlyReserveContribution = zufuehrung;
     nimm("Zuführung Instandhaltungsrücklage p. M.", eur0(zufuehrung), "Einheit, aus Investagon");
   }
   if (eingabe.monthlyOperatingCosts > 0) {
+    const nuText =
+      nuQuelle === "geschaetzt"
+        ? `geschätzt: ${prozent(nuSatz, 0)} des Hausgelds gesamt ${eur0(hausgeldGesamt)}${zufuehrung > 0 ? " ohne Rücklage" : ""}`
+        : "nicht umlegbarer Anteil des Hausgelds";
     nimm(
       "Nicht umlagefähige Kosten p. M.",
       eur0(eingabe.monthlyOperatingCosts),
-      mietverwaltung > 0
-        ? `Hausgeld nicht umlegbar ${eur0(hausgeldNu)} plus Mietverwaltung ${eur0(mietverwaltung)}`
-        : "nicht umlegbarer Anteil des Hausgelds",
+      mietverwaltung > 0 ? `Hausgeld nicht umlegbar ${eur0(hausgeldNu)} (${nuText}) plus Mietverwaltung ${eur0(mietverwaltung)}` : nuText,
     );
+    if (nuQuelle === "geschaetzt") {
+      fehlt(
+        "Nicht umlagefähiges Hausgeld (nur geschätzt)",
+        `bekannt ist nur das Hausgeld gesamt; der Rechner nimmt ${prozent(nuSatz, 0)} davon als nicht umlagefähig an. Der umlagefähige Teil zahlt der Mieter und belastet den Cashflow nicht`,
+        'Einheit über „Wohnung bearbeiten", Hausgeld umlagefähig, nicht umlagefähig und Zuführung Rücklage',
+        "einheit",
+      );
+    }
   } else {
     fehlt(
       "Nicht umlagefähige Kosten p. M.",
@@ -615,4 +678,56 @@ export function vorbelegungAusEinheit(
   ];
 
   return { eingabe, knk, unterlagen, bilder, uebernommen, luecken, annahmen, quellen: objektUnterlagenQuelle(objekt, wohnung), herkunft };
+}
+
+/** Der Herkunftssatz, mit dem die Vorbelegung bis zum 22.10.2026 die Kaltmiete samt Stellplatzmiete markierte. */
+const KALTMIETE_MIT_STELLPLATZ = "inklusive Stellplatzmiete";
+
+/**
+ * Eine gespeicherte Berechnung von vor dem 22.10.2026 auf getrennte
+ * Wohnungs- und Stellplatzmiete umstellen.
+ *
+ * Bis dahin schrieb die Vorbelegung Wohnung und Stellplatz zusammen in die
+ * Kaltmiete. Getrennt wird nur, was sich belegen lässt:
+ *   - die Kaltmiete trägt noch den alten Herkunftssatz „inklusive
+ *     Stellplatzmiete“, stammt also nachweislich aus der Vorbelegung und
+ *     wurde nicht von Hand geändert;
+ *   - die Garagenmiete ist leer, sonst stünde die Garage danach doppelt da;
+ *   - die Einheit nennt heute eine Stellplatzmiete, und sie ist nicht höher
+ *     als die gespeicherte Kaltmiete.
+ * Die Summe bleibt gleich, also auch jede Zahl der Berechnung; nur Rendite
+ * und Kaufpreisfaktor der Wohnung allein werden damit richtig. Den
+ * Stellplatzpreis gibt es dazu, wenn er noch fehlt und in den Kaufpreis passt.
+ * In jedem anderen Fall bleibt die Berechnung, wie sie ist.
+ */
+export function stellplatzmieteTrennen(
+  eingabe: InvestmentEingabe,
+  herkunft: Herkunft,
+  vorbelegung: { eingabe: InvestmentEingabe } | null | undefined,
+): { eingabe: InvestmentEingabe; herkunft: Herkunft; getrennt: boolean } {
+  const unveraendert = { eingabe, herkunft, getrennt: false };
+  const stellplatzMiete = positiv(vorbelegung?.eingabe.monthlyGarageRent);
+  if (!vorbelegung || !(stellplatzMiete > 0)) return unveraendert;
+  if (positiv(eingabe.monthlyGarageRent) > 0) return unveraendert;
+  const mieteHerkunft = herkunft.monthlyColdRent;
+  if (mieteHerkunft?.quelle !== "objekt" || !mieteHerkunft.text.includes(KALTMIETE_MIT_STELLPLATZ)) return unveraendert;
+  if (!(eingabe.monthlyColdRent >= stellplatzMiete)) return unveraendert;
+  const stellplatzpreis = positiv(vorbelegung.eingabe.garagePrice);
+  const mitPreis = !(positiv(eingabe.garagePrice) > 0) && stellplatzpreis > 0 && stellplatzpreis <= eingabe.purchasePrice;
+  const hinweis = "aus der gespeicherten Kaltmiete getrennt";
+  return {
+    eingabe: {
+      ...eingabe,
+      monthlyColdRent: eingabe.monthlyColdRent - stellplatzMiete,
+      monthlyGarageRent: stellplatzMiete,
+      ...(mitPreis ? { garagePrice: stellplatzpreis } : {}),
+    },
+    herkunft: {
+      ...herkunft,
+      monthlyColdRent: { quelle: "objekt", text: `Aus der Objektanlage, Einheit, ohne Stellplatzmiete (${hinweis})` },
+      monthlyGarageRent: { quelle: "objekt", text: `Aus der Objektanlage, Einheit, Stellplatzmiete (${hinweis})` },
+      ...(mitPreis ? { garagePrice: { quelle: "objekt" as const, text: "Aus der Objektanlage, Einheit, Stellplatzpreis, im Kaufpreis enthalten" } } : {}),
+    },
+    getrennt: true,
+  };
 }

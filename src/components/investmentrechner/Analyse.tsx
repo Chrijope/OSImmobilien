@@ -1,11 +1,12 @@
 import { useRef, type MouseEvent } from "react";
 import { BookOpen, FileSearch } from "lucide-react";
-import { KENNZAHL_TEXTE } from "@/lib/investmentrechner/kennzahlTexte";
+import { useRechnerTexte } from "./RechnerSprache";
 import type { InvestmentEingabe, InvestmentErgebnis } from "@/lib/investmentrechner/rechenkern";
 import type { UnterlagenDaten, UnterlagenDokument } from "@/lib/investmentrechner/unterlagenAuslesen";
 import { DECKBLATT_STANDARD, type DeckblattVariante } from "@/lib/investmentrechner/deckblattWerte";
 import { hinweisOhneSteuerwirkung } from "@/lib/investmentrechner/dokumentTexte";
-import { AmpelLeiste, Bankgespraech, Kaufpreisdetails, Kennzahlen, Rechenstandards, Steuerprofil, UnterlagenEinblicke } from "./Auswertungen";
+import { AmpelLeiste, Bankgespraech, Hausgeldaufstellung, Kaufpreisdetails, Kennzahlen, Rechenstandards, Steuerprofil, UnterlagenEinblicke } from "./Auswertungen";
+import { hausgeldAufstellung } from "@/lib/investmentrechner/rechenkern";
 import { Neu } from "./Felder";
 import { DeckblattWahl, ErgebnisAltersvorsorge, ErgebnisAufEinenBlick, ErgebnisJahrFuerJahr } from "./Deckblatt";
 import { Minidiagramm, Vermoegensdiagramm, Zusammensetzung } from "./Diagramme";
@@ -45,7 +46,11 @@ export function Analyse({
   onDeckblatt,
   mitBankgespraech = false,
 }: AnalyseProps) {
-  const ohneSteuerwirkung = hinweisOhneSteuerwirkung(input, result, "de");
+  // Seit dem 22.10.2026 in der Sprache der rechten Seite (Kundensprache oder Wahl), vorher immer Deutsch.
+  const { sprache, kennzahl } = useRechnerTexte();
+  const en = sprache === "en";
+  const t = (de: string, englisch: string) => (en ? englisch : de);
+  const ohneSteuerwirkung = hinweisOhneSteuerwirkung(input, result, sprache);
   const glossarRef = useRef<HTMLDetailsElement>(null);
   const glossarOeffnen = (ereignis: MouseEvent<HTMLAnchorElement>) => {
     ereignis.preventDefault();
@@ -57,16 +62,19 @@ export function Analyse({
   return (
     <div className="analysis-content">
       {onDeckblatt && (
-        <DeckblattWahl wert={deckblatt} onWahl={onDeckblatt} hinweis="Dieselbe Wahl wie unter „Berechnung“, sie bestimmt auch das Deckblatt im PDF." />
+        <DeckblattWahl
+          wert={deckblatt}
+          onWahl={onDeckblatt}
+          hinweis={t("Dieselbe Wahl wie unter „Berechnung“, sie bestimmt auch das Deckblatt im PDF.", "The same choice as under “Calculation”; it also sets the cover page of the PDF.")}
+        />
       )}
-      {/* Die Analyse ist ein Werkzeug für Berater und bleibt Deutsch. */}
       <section className={`analyse-deckblatt analyse-deckblatt-${deckblatt}`}>
         {deckblatt === "jahre" ? (
-          <ErgebnisJahrFuerJahr input={input} result={result} sprache="de" />
+          <ErgebnisJahrFuerJahr input={input} result={result} sprache={sprache} />
         ) : deckblatt === "rente" ? (
-          <ErgebnisAltersvorsorge input={input} result={result} sprache="de" />
+          <ErgebnisAltersvorsorge input={input} result={result} sprache={sprache} />
         ) : (
-          <ErgebnisAufEinenBlick input={input} result={result} sprache="de" mitAmpel />
+          <ErgebnisAufEinenBlick input={input} result={result} sprache={sprache} mitAmpel />
         )}
         {/* Stand bis zum 07.10.2026 in der Cashflow-Leiste: ohne Einkommen oder Satz keine Steuerwirkung. */}
         {ohneSteuerwirkung && (
@@ -79,9 +87,9 @@ export function Analyse({
       <article className="content-card ampel-card">
         <div className="card-heading">
           <div>
-            <span className="eyebrow">Einordnung</span>
+            <span className="eyebrow">{t("Einordnung", "Assessment")}</span>
             <h3>
-              Ampel <Neu />
+              {t("Ampel", "Traffic light")} <Neu />
             </h3>
           </div>
         </div>
@@ -90,10 +98,10 @@ export function Analyse({
         </div>
       </article>
       {/* Die Berechnung trägt den vollen Hinweis, die Analyse bis zum 30.09.2026 gar keinen. */}
-      <p className="kachel-hinweis">{KENNZAHL_TEXTE.zusaetze.beispielrechnung}</p>
+      <p className="kachel-hinweis">{kennzahl.zusaetze.beispielrechnung}</p>
       {/* Der Weg zum Glossar ganz unten, direkt unter den Zahlen, nach denen man fragt. */}
       <a className="glossar-link" href="#rechner-glossar" onClick={glossarOeffnen}>
-        <BookOpen size={14} /> {KENNZAHL_TEXTE.glossar.ueberschriftAnalyse}
+        <BookOpen size={14} /> {kennzahl.glossar.ueberschriftAnalyse}
       </a>
       {/*
         Kaufpreis und Möbel fehlten hier bis zum 25.09.2026 ganz, nur die
@@ -103,20 +111,31 @@ export function Analyse({
       <article className="content-card purchase-basis-card">
         <div className="card-heading">
           <div>
-            <span className="eyebrow">Kalkulationsbasis</span>
-            <h3>Kaufpreisdetails</h3>
+            <span className="eyebrow">{t("Kalkulationsbasis", "Calculation basis")}</span>
+            <h3>{t("Kaufpreisdetails", "Purchase price details")}</h3>
           </div>
         </div>
         <Kaufpreisdetails input={input} result={result} />
       </article>
+      {hausgeldAufstellung(input).vorhanden && (
+        <article className="content-card purchase-basis-card" data-testid="karte-hausgeld">
+          <div className="card-heading">
+            <div>
+              <span className="eyebrow">{t("Bewirtschaftung", "Running costs")}</span>
+              <h3>{t("Hausgeld", "Service charge")}</h3>
+            </div>
+          </div>
+          <Hausgeldaufstellung input={input} />
+        </article>
+      )}
       <article className="content-card tax-profile-card">
         <div className="card-heading">
           <div>
-            <span className="eyebrow">Kunde vor Erwerb</span>
-            <h3>Einkommens- und Steuerprofil</h3>
+            <span className="eyebrow">{t("Kunde vor Erwerb", "Client before purchase")}</span>
+            <h3>{t("Einkommens- und Steuerprofil", "Income and tax profile")}</h3>
           </div>
           <span className="period-pill">
-            StKl {input.taxClass} · {input.jointAssessment ? "Splitting" : "Grundtarif"}
+            {t("StKl", "Tax class")} {input.taxClass} · {input.jointAssessment ? t("Splitting", "Joint assessment") : t("Grundtarif", "Basic tariff")}
           </span>
         </div>
         <Steuerprofil input={input} result={result} />
@@ -125,8 +144,8 @@ export function Analyse({
       <article className="content-card bank-card" data-testid="karte-bankgespraech">
         <div className="card-heading">
           <div>
-            <span className="eyebrow">Finanzierung & Risiko</span>
-            <h3>Bankgespräch</h3>
+            <span className="eyebrow">{t("Finanzierung & Risiko", "Financing & risk")}</span>
+            <h3>{t("Bankgespräch", "Bank meeting")}</h3>
           </div>
         </div>
         <Bankgespraech input={input} result={result} />
@@ -135,9 +154,9 @@ export function Analyse({
       <article className="content-card bank-card" data-testid="karte-stresstest">
         <div className="card-heading">
           <div>
-            <span className="eyebrow">Rechenstandards</span>
+            <span className="eyebrow">{t("Rechenstandards", "Calculation standards")}</span>
             <h3>
-              Belastung, AfA und Stresstest <Neu />
+              {t("Belastung, AfA und Stresstest", "Burden, depreciation and stress test")} <Neu />
             </h3>
           </div>
         </div>
@@ -146,14 +165,16 @@ export function Analyse({
       <article className="content-card document-analysis-card">
         <div className="card-heading">
           <div>
-            <span className="eyebrow">Objektprüfung</span>
-            <h3>Energie, Rücklagen & Sanierungen</h3>
+            <span className="eyebrow">{t("Objektprüfung", "Property review")}</span>
+            <h3>{t("Energie, Rücklagen & Sanierungen", "Energy, reserves & renovations")}</h3>
           </div>
           <button className="text-button" onClick={onOpenDocuments}>
             <FileSearch size={15} />{" "}
             {documents.length > 0
-              ? `${documents.length} Unterlage${documents.length === 1 ? "" : "n"}`
-              : "Unterlagen hochladen"}
+              ? en
+                ? `${documents.length} document${documents.length === 1 ? "" : "s"}`
+                : `${documents.length} Unterlage${documents.length === 1 ? "" : "n"}`
+              : t("Unterlagen hochladen", "Upload documents")}
           </button>
         </div>
         <UnterlagenEinblicke data={documentData} />
@@ -161,40 +182,40 @@ export function Analyse({
       <article className="content-card chart-card">
         <div className="card-heading">
           <div>
-            <span className="eyebrow">Prognose</span>
-            <h3>Vermögensentwicklung</h3>
+            <span className="eyebrow">{t("Prognose", "Forecast")}</span>
+            <h3>{t("Vermögensentwicklung", "Wealth development")}</h3>
           </div>
-          <span className="period-pill">{input.forecastYears} Jahre</span>
+          <span className="period-pill">{input.forecastYears} {t("Jahre", "years")}</span>
         </div>
         <Vermoegensdiagramm years={result.years} />
       </article>
       <article className="content-card reverse-visuals-card">
         <div className="card-heading">
           <div>
-            <span className="eyebrow">Aufteilung & Vergleich</span>
-            <h3>Grafische Investmentanalyse</h3>
+            <span className="eyebrow">{t("Aufteilung & Vergleich", "Breakdown & comparison")}</span>
+            <h3>{t("Grafische Investmentanalyse", "Graphical investment analysis")}</h3>
           </div>
         </div>
         <Zusammensetzung input={input} result={result} />
         <div className="visual-grid">
           <div>
-            <h4>Immobilienwert und Restschuld</h4>
+            <h4>{t("Immobilienwert und Restschuld", "Property value and remaining debt")}</h4>
             <Minidiagramm
               years={result.years}
               seriesA={(jahr) => jahr.propertyValue}
               seriesB={(jahr) => jahr.remainingDebt}
-              labelA="Immobilienwert"
-              labelB="Restschuld"
+              labelA={t("Immobilienwert", "Property value")}
+              labelB={t("Restschuld", "Remaining debt")}
             />
           </div>
           <div>
-            <h4>Steuerbelastung vor und nach Erwerb</h4>
+            <h4>{t("Steuerbelastung vor und nach Erwerb", "Tax burden before and after purchase")}</h4>
             <Minidiagramm
               years={result.years}
               seriesA={(jahr) => jahr.taxBefore.totalTax}
               seriesB={(jahr) => jahr.taxAfter.totalTax}
-              labelA="Vor Erwerb"
-              labelB="Nach Erwerb"
+              labelA={t("Vor Erwerb", "Before purchase")}
+              labelB={t("Nach Erwerb", "After purchase")}
             />
           </div>
         </div>
@@ -202,8 +223,8 @@ export function Analyse({
       <article className="content-card">
         <div className="card-heading">
           <div>
-            <span className="eyebrow">Jahreswerte</span>
-            <h3>Cashflow, Steuer und Tilgung</h3>
+            <span className="eyebrow">{t("Jahreswerte", "Annual values")}</span>
+            <h3>{t("Cashflow, Steuer und Tilgung", "Cash flow, tax and repayment")}</h3>
           </div>
         </div>
         <Cashflowtabelle years={result.years} />
@@ -213,16 +234,16 @@ export function Analyse({
         <article className="content-card">
           <div className="card-heading">
             <div>
-              <span className="eyebrow">Finanzierung</span>
-              <h3>Darlehen je Jahr: Rate, Zinsen, Tilgung und Restschuld</h3>
+              <span className="eyebrow">{t("Finanzierung", "Financing")}</span>
+              <h3>{t("Darlehen je Jahr: Rate, Zinsen, Tilgung und Restschuld", "Loans per year: instalment, interest, repayment and remaining debt")}</h3>
             </div>
-            <span className="period-pill">Mischzins {formatProzent(result.mischzins)}</span>
+            <span className="period-pill">{t("Mischzins", "Blended rate")} {formatProzent(result.mischzins, sprache)}</span>
           </div>
           {result.rateSprung && (
             <p className="kachel-hinweis">
-              Ab Jahr {result.rateSprung.jahr} ({result.rateSprung.kalenderjahr}) steigt die Rate von{" "}
-              {formatEuroCent(result.rateSprung.rateVorher)} auf {formatEuroCent(result.rateSprung.rateNachher)} im Monat,
-              weil die tilgungsfreie Zeit des KfW-Darlehens endet.
+              {en
+                ? `From year ${result.rateSprung.jahr} (${result.rateSprung.kalenderjahr}) the instalment rises from ${formatEuroCent(result.rateSprung.rateVorher, sprache)} to ${formatEuroCent(result.rateSprung.rateNachher, sprache)} per month because the repayment-free period of the KfW loan ends.`
+                : `Ab Jahr ${result.rateSprung.jahr} (${result.rateSprung.kalenderjahr}) steigt die Rate von ${formatEuroCent(result.rateSprung.rateVorher)} auf ${formatEuroCent(result.rateSprung.rateNachher)} im Monat, weil die tilgungsfreie Zeit des KfW-Darlehens endet.`}
             </p>
           )}
           <Darlehenstabelle years={result.years} />
@@ -231,10 +252,10 @@ export function Analyse({
       <article className="content-card">
         <div className="card-heading">
           <div>
-            <span className="eyebrow">Steuerwirkung</span>
-            <h3>Zu versteuerndes Einkommen vor und nach Immobilienerwerb</h3>
+            <span className="eyebrow">{t("Steuerwirkung", "Tax effect")}</span>
+            <h3>{t("Zu versteuerndes Einkommen vor und nach Immobilienerwerb", "Taxable income before and after the property purchase")}</h3>
           </div>
-          <span className="period-pill">Anteil {input.investmentShare.toLocaleString("de-DE")} %</span>
+          <span className="period-pill">{t("Anteil", "Share")} {formatProzent(result.anteil, sprache)}</span>
         </div>
         <Steuertabelle years={result.years} />
       </article>
@@ -244,7 +265,7 @@ export function Analyse({
         Seite der Berechnung und aus derselben Quelle wie die Rechenwege.
       */}
       <details className="method-card glossar-karte" id="rechner-glossar" ref={glossarRef}>
-        <summary>{KENNZAHL_TEXTE.glossar.ueberschriftAnalyse}</summary>
+        <summary>{kennzahl.glossar.ueberschriftAnalyse}</summary>
         <Glossar allInclusive={result.allInclusive} />
       </details>
     </div>

@@ -1,0 +1,13 @@
+/* Rahmen der eigenständigen Fassung. Der Rechner selbst trägt die Gestaltung des
+   CRM, bewusst ohne eigene Schriften oder Farben, damit beide gleich aussehen.
+   Ohne Dunkelmodus, damit Bildschirm und PDF gleich aussehen. */
+:root { color-scheme: light; }
+body { background: hsl(var(--background)); color: hsl(var(--foreground)); }
+.rechner-artefakt { padding-block: 16px 32px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); max-width: 1500px; margin: 0 auto; }
+.artefakt-leiste { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin-bottom: 16px; font-size: 13px; color: hsl(var(--muted-foreground)); }
+.artefakt-leiste p { margin: 0; }
+.artefakt-leiste button { border: 1px solid hsl(var(--border)); background: hsl(var(--card)); color: hsl(var(--foreground)); border-radius: 8px; padding: 6px 12px; font: inherit; cursor: pointer; }
+.artefakt-leiste button:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
+.artefakt-knoepfe { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.artefakt-knoepfe select { border: 1px solid hsl(var(--border)); background: hsl(var(--card)); color: hsl(var(--foreground)); border-radius: 8px; padding: 6px 8px; font: inherit; }
+.artefakt-knoepfe input { border: 1px solid hsl(var(--border)); background: hsl(var(--card)); color: hsl(var(--foreground)); border-radius: 10px; padding: 6px 10px; font: inherit; min-width: 0; width: 15rem; max-width: 100%; }

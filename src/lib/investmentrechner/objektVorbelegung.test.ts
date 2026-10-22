@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { ObjektData, ObjektWohnung } from "@/lib/objekteStore";
 import { berechneInvestment, standardEingabe } from "@/lib/investmentrechner/rechenkern";
-import { vorbelegungAusEinheit } from "@/lib/investmentrechner/objektVorbelegung";
+import { stellplatzmieteTrennen, vorbelegungAusEinheit } from "@/lib/investmentrechner/objektVorbelegung";
 import { eigenkapitalNachRegel } from "@/lib/investmentrechner/herkunft";
 
 /**
@@ -53,12 +53,42 @@ const feldnamen = (liste: Array<{ feld: string }>) => liste.map((e) => e.feld);
 describe("Vorbelegung aus Objekt und Einheit", () => {
   const v = vorbelegungAusEinheit(objekt, w, heute);
 
-  it("übernimmt Kaufpreis samt Stellplatz und Miete samt Stellplatzmiete", () => {
-    // Der Rechner kennt nur ein Preisfeld, auf das die Kaufnebenkosten laufen.
-    // Der Stellplatz gehört deshalb dorthin und nicht ins Möbelfeld.
+  it("übernimmt Kaufpreis samt Stellplatz, Wohnungs- und Stellplatzmiete getrennt", () => {
+    // Der Kaufpreis bleibt Wohnung plus Stellplatz, der Stellplatz steht seit
+    // dem 22.10.2026 zusätzlich als „davon“. Die Miete ist getrennt: 790 € die
+    // Wohnung, 40 € der Stellplatz, zusammen wie vorher 830 €.
     expect(v.eingabe.purchasePrice).toBe(241500);
     expect(v.eingabe.furniturePrice).toBe(0);
-    expect(v.eingabe.monthlyColdRent).toBe(830);
+    expect(v.eingabe.garagePrice).toBe(9500);
+    expect(v.eingabe.monthlyColdRent).toBe(790);
+    expect(v.eingabe.monthlyGarageRent).toBe(40);
+    expect(v.herkunft.monthlyGarageRent?.quelle).toBe("objekt");
+  });
+
+  it("trennt eine gespeicherte Kaltmiete samt Stellplatz genau einmal", () => {
+    const alt = {
+      ...v.eingabe, monthlyColdRent: 830, monthlyGarageRent: 0, garagePrice: 0,
+    };
+    const herkunftAlt = { monthlyColdRent: { quelle: "objekt" as const, text: "Aus der Objektanlage, Einheit, inklusive Stellplatzmiete" } };
+    const einmal = stellplatzmieteTrennen(alt, herkunftAlt, v);
+    expect(einmal.getrennt).toBe(true);
+    expect(einmal.eingabe.monthlyColdRent).toBe(790);
+    expect(einmal.eingabe.monthlyGarageRent).toBe(40);
+    expect(einmal.eingabe.garagePrice).toBe(9500);
+    // Gerechnet wird gleich, nur der Ausweis der Wohnungsrendite ändert sich.
+    expect(berechneInvestment(einmal.eingabe).years).toEqual(berechneInvestment(alt).years);
+    // Ein zweiter Lauf ändert nichts mehr: keine doppelte Garage.
+    const zweimal = stellplatzmieteTrennen(einmal.eingabe, einmal.herkunft, v);
+    expect(zweimal.getrennt).toBe(false);
+    expect(zweimal.eingabe).toEqual(einmal.eingabe);
+  });
+
+  it("lässt eine von Hand geänderte oder schon getrennte Miete stehen", () => {
+    const alt = { ...v.eingabe, monthlyColdRent: 830, monthlyGarageRent: 0 };
+    expect(stellplatzmieteTrennen(alt, { monthlyColdRent: { quelle: "eigen", text: "" } }, v).getrennt).toBe(false);
+    const herkunftAlt = { monthlyColdRent: { quelle: "objekt" as const, text: "Aus der Objektanlage, Einheit, inklusive Stellplatzmiete" } };
+    expect(stellplatzmieteTrennen({ ...alt, monthlyGarageRent: 40 }, herkunftAlt, v).getrennt).toBe(false);
+    expect(stellplatzmieteTrennen(alt, herkunftAlt, null).getrennt).toBe(false);
   });
 
   it("übernimmt den Investagon-Möbelpreis als Anteil, ohne ihn dazuzuzählen", () => {
@@ -134,8 +164,8 @@ describe("Vorbelegung aus Objekt und Einheit", () => {
 
   it("zählt auf, was übernommen wurde", () => {
     expect(feldnamen(v.uebernommen)).toEqual([
-      "Objektbezeichnung", "Adresse", "Objekttyp", "Kaufpreis", "Wohnfläche", "Zimmer",
-      "Baujahr", "Kaufnebenkosten", "Eigenkapital", "Kaltmiete p. M.", "Nicht umlagefähige Kosten p. M.",
+      "Objektbezeichnung", "Adresse", "Objekttyp", "Kaufpreis", "davon Stellplatz/Garage", "Wohnfläche", "Zimmer",
+      "Baujahr", "Kaufnebenkosten", "Eigenkapital", "Stellplatz-/Garagenmiete p. M.", "Kaltmiete p. M.", "Hausgeld gesamt p. M.", "Nicht umlagefähige Kosten p. M.",
       "Gebäudeanteil", "Lineare AfA p. a.", "davon Erhaltungsaufwand",
       "Verteilung des Aufwands", "Energieausweis", "Anteil der Einheit an der Rücklage",
       "Letzte Sanierungen",
@@ -310,6 +340,48 @@ describe("Rückfall auf die Investagon-Rohdaten", () => {
     const v = vorbelegungAusEinheit(leer, einheit, heute);
     expect(v.unterlagen.energyClass).toBe("");
     expect(feldnamen(v.luecken)).toContain("Energieeffizienzklasse");
+  });
+});
+
+/*
+ * Hausgeld, Prüfung vom 22.10.2026: umlagefähig zahlt der Mieter und belastet
+ * den Cashflow nicht, nicht umlagefähig schon, die Rücklage im Cashflow ja,
+ * steuerlich nicht. Ist nur das Hausgeld gesamt bekannt, wird geschätzt und
+ * das genannt.
+ */
+describe("Hausgeld in der Vorbelegung", () => {
+  const mit = (einheit: Partial<ObjektWohnung>) => {
+    const wohnung = { ...w, hausgeldNichtUmlagefaehigEuro: undefined, ...einheit } as ObjektWohnung;
+    return vorbelegungAusEinheit({ ...objekt, wohnungen: [wohnung] }, wohnung, heute);
+  };
+
+  it("nimmt die drei Teile getrennt: nur nicht umlagefähig in die Kosten, die Rücklage ins eigene Feld", () => {
+    const v = mit({ hausgeldUmlagefaehigEuro: 150, hausgeldNichtUmlagefaehigEuro: 45, ruecklageZufuehrungMonat: 90 });
+    expect(v.eingabe.monthlyOperatingCosts).toBe(45);
+    expect(v.eingabe.monthlyReserveContribution).toBe(90);
+    expect(feldnamen(v.luecken)).not.toContain("Nicht umlagefähiges Hausgeld (nur geschätzt)");
+    // Die Rücklage mindert den Cashflow, aber nicht das steuerliche Ergebnis.
+    const r = berechneInvestment(v.eingabe);
+    const ohneRuecklage = berechneInvestment({ ...v.eingabe, monthlyReserveContribution: 0 });
+    expect(ohneRuecklage.years[1].cashflowBeforeTax - r.years[1].cashflowBeforeTax).toBeCloseTo(90 * 12 * 1.02, 6);
+    expect(r.years[1].taxableResult).toBeCloseTo(ohneRuecklage.years[1].taxableResult, 6);
+  });
+
+  it("liest den nicht umlagefähigen Anteil auch aus den Investagon-Rohdaten statt zu schätzen", () => {
+    const v = mit({ hausgeldMonat: 300, investagonRaw: { operation_cost_landlord_apartment: 52, operation_cost_reserve_apartment: 70 } } as Partial<ObjektWohnung>);
+    expect(v.eingabe.monthlyOperatingCosts).toBe(52);
+    expect(v.eingabe.monthlyReserveContribution).toBe(70);
+  });
+
+  it("nur Hausgeld gesamt: geschätzt, ohne die Rücklage doppelt zu zählen, und als Lücke gemeldet", () => {
+    const nurGesamt = mit({ hausgeldMonat: 300 } as Partial<ObjektWohnung>);
+    expect(nurGesamt.eingabe.monthlyOperatingCosts).toBe(90);
+    expect(feldnamen(nurGesamt.luecken)).toContain("Nicht umlagefähiges Hausgeld (nur geschätzt)");
+    expect(nurGesamt.uebernommen.find((u) => u.feld === "Nicht umlagefähige Kosten p. M.")?.woher).toMatch(/geschätzt/);
+    const mitRuecklage = mit({ hausgeldMonat: 300, ruecklageZufuehrungMonat: 100 } as Partial<ObjektWohnung>);
+    // 30 % von 300 − 100, die Rücklage steht im eigenen Feld.
+    expect(mitRuecklage.eingabe.monthlyOperatingCosts).toBe(60);
+    expect(mitRuecklage.eingabe.monthlyReserveContribution).toBe(100);
   });
 });
 

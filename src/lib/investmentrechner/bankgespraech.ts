@@ -12,8 +12,9 @@
  */
 
 import {
-  annuitaetsjahr,
   ausgewiesenerKaufpreis,
+  bankplan,
+  bankplanParameter,
   banktilgungsplan,
   sondertilgungenJeJahr,
   eigenkapitalrendite,
@@ -48,7 +49,8 @@ export function cashflowNachSteuerBeiZins(input: InvestmentEingabe, jahr: Jahres
           t.churchTaxRate,
           t.includeSolidaritySurcharge,
         ).totalTax
-      : jahr.taxBefore.totalTax + ergebnis * prozentAnteil(t.marginalTaxRate);
+      : // Wie im Rechenkern seit dem 22.10.2026: ohne Steuerlast keine Erstattung.
+        Math.max(0, jahr.taxBefore.totalTax + ergebnis * prozentAnteil(t.marginalTaxRate));
   return vorSteuer + jahr.taxBefore.totalTax - steuerNachher;
 }
 
@@ -150,7 +152,9 @@ export interface FuenfzehnProzentGrenze {
  * nicht sofort absetzen. Dieselbe Basis wie die Warnung im Rechenkern
  * (`immediateDeductionRatio`), hier als Betrag. `null` ohne Gebäudewert.
  */
-export function fuenfzehnProzentGrenze(result: InvestmentErgebnis): FuenfzehnProzentGrenze | null {
+export function fuenfzehnProzentGrenze(
+  result: Pick<InvestmentErgebnis, "gebaeudeanteilKaufpreis" | "nebenkostenGebaeude" | "erhaltungsaufwand">,
+): FuenfzehnProzentGrenze | null {
   const gebaeude = result.gebaeudeanteilKaufpreis + result.nebenkostenGebaeude - result.erhaltungsaufwand;
   if (!(gebaeude > 0)) return null;
   const grenzeNetto = gebaeude * 0.15;
@@ -164,24 +168,22 @@ export function fuenfzehnProzentGrenze(result: InvestmentErgebnis): FuenfzehnPro
 }
 
 /**
- * Kalenderjahr, in dem ein Annuitätendarlehen mit fester Jahresrate getilgt
- * ist. `null` ohne Betrag, ohne Tilgung oder nach mehr als 100 Jahren.
+ * Kalenderjahr, in dem ein Annuitätendarlehen getilgt ist, seit dem
+ * 22.10.2026 monatlich wie der Rechenkern. `null` ohne Betrag, ohne Tilgung
+ * oder nach mehr als 100 Jahren.
  */
 export function volltilgungsjahr(
   betrag: number,
   zinsProzent: number,
   tilgungProzent: number,
   startjahr: number,
+  startMonat = 1,
 ): number | null {
   if (!(betrag > 0) || !(tilgungProzent > 0)) return null;
-  const zins = prozentAnteil(zinsProzent);
-  const rate = betrag * (zins + prozentAnteil(tilgungProzent));
-  let rest = betrag;
-  for (let jahr = 0; jahr < 100; jahr += 1) {
-    rest = annuitaetsjahr(rest, zins, rate).closingBalance;
-    if (rest < 0.005) return Math.round(startjahr) + jahr;
-  }
-  return null;
+  const plan = banktilgungsplan({
+    betrag, zinsProzent, tilgungProzent, zinsbindungJahre: 0, anschlusszinsProzent: 0, neueTilgungProzent: 0, jahre: 100, startMonat,
+  });
+  return volltilgungAusPlan(plan, startjahr);
 }
 
 export interface Bankuebersicht {
@@ -198,8 +200,10 @@ export interface Bankuebersicht {
   /** Kaufpreis und Kaltmiete je m² Wohnfläche, `null` ohne Fläche. */
   kaufpreisJeQm: number | null;
   kaltmieteJeQm: number | null;
-  /** Kaufpreis durch Jahreskaltmiete, `null` ohne Miete. */
+  /** Kaufpreis durch Jahreskaltmiete, Wohnung und Stellplatz zusammen, `null` ohne Miete. */
   kaufpreisfaktor: number | null;
+  /** Kaufpreisfaktor nur der Wohnung, seit dem 22.10.2026. */
+  kaufpreisfaktorWohnung: number | null;
   mischzins: number;
   /** Anfängliche Tilgung, gewichtet mit dem Darlehensbetrag, als Faktor. */
   tilgungGewichtet: number;
@@ -241,11 +245,12 @@ export function bankuebersicht(input: InvestmentEingabe, result: InvestmentErgeb
   const erstes = result.years[0];
   const kaufpreis = result.kaufpreisGesamt;
   const kaufpreisGanz = ausgewiesenerKaufpreis(t, result);
-  const jahresmieteGanz = (t.monthlyColdRent + Math.max(0, t.monthlyGarageRent || 0)) * 12;
+  // Monate des ersten Jahres: seit dem 22.10.2026 ab dem Übergang von Nutzen und Lasten.
+  const monateErstesJahr = 12 * (result.ersterJahresanteil ?? 1);
   const mietueberschussMonat = erstes
-    ? (erstes.effectiveRent - erstes.operatingCosts - erstes.reserveContribution) / 12
+    ? (erstes.effectiveRent - erstes.operatingCosts - erstes.reserveContribution) / monateErstesJahr
     : 0;
-  const kapitaldienstMonat = erstes ? erstes.debtService / 12 : result.monthlyDebtService;
+  const kapitaldienstMonat = erstes ? erstes.debtService / monateErstesJahr : result.monthlyDebtService;
   const kfwTilgung = result.kfwLoanAmount > 0 ? (result.years[0]?.darlehen.kfw.principal ?? 0) : 0;
   const zweites = result.secondLoanAmount ?? 0;
   const juniorLoan = result.totalDebt - result.seniorLoanAmount - result.kfwLoanAmount - zweites;
@@ -257,17 +262,18 @@ export function bankuebersicht(input: InvestmentEingabe, result: InvestmentErgeb
           kfwTilgung) /
         result.totalDebt
       : 0;
-  const bankplan = banktilgungsplan({
-    betrag: result.seniorLoanAmount,
-    zinsProzent: t.seniorInterestRate,
-    tilgungProzent: t.seniorRepaymentRate,
-    zinsbindungJahre: t.seniorFixedRateYears,
-    anschlusszinsProzent: t.seniorFollowUpRate,
-    neueTilgungProzent: t.seniorFollowUpRepaymentRate,
+  // Dieselben Pläne wie im Rechenkern, nur bis zur Tilgung verlängert.
+  const startMonat = t.acquisitionMonth;
+  const bankMonate = bankplan({
+    ...bankplanParameter(t, "bank", result.seniorLoanAmount, result.anteil),
     sondertilgungen: sondertilgungenJeJahr(t.specialRepayments, t.startYear, result.years.length),
     jahre: 100,
+    startMonat,
   });
+  const bankJahre = bankMonate.jahre;
   const bindung = Math.round(t.seniorFixedRateYears);
+  const tilgtBank = result.seniorLoanAmount > 0 && (t.seniorRepaymentRate > 0 || t.seniorRepaymentType !== "annuitaet");
+  const tilgtZweites = zweites > 0 && (t.secondRepaymentRate > 0 || t.secondRepaymentType !== "annuitaet");
   return {
     kaufpreis,
     kaufnebenkosten: result.purchaseCosts,
@@ -278,32 +284,25 @@ export function bankuebersicht(input: InvestmentEingabe, result: InvestmentErgeb
     beleihungGesamtkosten: result.totalInvestment > 0 ? result.totalDebt / result.totalInvestment : 0,
     kaufpreisJeQm: t.area > 0 ? kaufpreisGanz / t.area : null,
     kaltmieteJeQm: t.area > 0 ? t.monthlyColdRent / t.area : null,
-    kaufpreisfaktor: jahresmieteGanz > 0 ? kaufpreisGanz / jahresmieteGanz : null,
+    kaufpreisfaktor: result.kaufpreisfaktor ?? null,
+    kaufpreisfaktorWohnung: result.kaufpreisfaktorWohnung ?? null,
     mischzins: result.mischzins,
     tilgungGewichtet,
     kapitaldienstMonat,
     mietueberschussMonat,
     kapitaldienstdeckung: kapitaldienstMonat > 0 ? mietueberschussMonat / kapitaldienstMonat : null,
-    volltilgungBank: result.seniorLoanAmount > 0 && t.seniorRepaymentRate > 0 ? volltilgungAusPlan(bankplan, t.startYear) : null,
-    volltilgungNachrang: volltilgungsjahr(juniorLoan, t.juniorInterestRate, t.juniorRepaymentRate, t.startYear),
-    volltilgungZweites:
-      zweites > 0 && t.secondRepaymentRate > 0
-        ? volltilgungAusPlan(
-            banktilgungsplan({
-              betrag: zweites,
-              zinsProzent: t.secondInterestRate,
-              tilgungProzent: t.secondRepaymentRate,
-              zinsbindungJahre: t.secondFixedRateYears,
-              anschlusszinsProzent: t.secondFollowUpRate,
-              neueTilgungProzent: 0,
-              jahre: 100,
-            }),
-            t.startYear,
-          )
-        : null,
+    volltilgungBank: tilgtBank ? volltilgungAusPlan(bankJahre, t.startYear) : null,
+    volltilgungNachrang: volltilgungsjahr(juniorLoan, t.juniorInterestRate, t.juniorRepaymentRate, t.startYear, startMonat),
+    volltilgungZweites: tilgtZweites
+      ? volltilgungAusPlan(banktilgungsplan({ ...bankplanParameter(t, "bank2", zweites, result.anteil), jahre: 100, startMonat }), t.startYear)
+      : null,
     restschuldZinsbindung:
       result.seniorLoanAmount > 0 && bindung >= 1
-        ? { jahr: Math.round(t.startYear) + bindung - 1, betrag: bankplan[bindung - 1].closingBalance }
+        ? {
+            // Das Kalenderjahr, in dem die Zinsbindung endet: bei Übergang im Januar das letzte volle Jahr.
+            jahr: Math.round(t.startYear) + Math.floor((bindung * 12 - 1 + Math.max(1, Math.round(startMonat || 1)) - 1) / 12),
+            betrag: bankMonate.restschuldZinsbindung,
+          }
         : null,
     anschlusszins: t.seniorFollowUpRate > 0 ? prozentAnteil(t.seniorFollowUpRate) : null,
   };

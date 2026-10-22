@@ -68,7 +68,8 @@ const SIGMUNDSTRASSE_6B: InvestmentEingabe = {
   financingCostRate: 0.2,
   taxCalculationMode: "manual",
   marginalTaxRate: 42,
-  taxableIncomeCustomer: 0,
+  // Seit dem 22.10.2026 mit Einkommen: Ohne Steuerlast erstattet der feste Satz nichts mehr. Investagon setzt die Steuerlast voraus.
+  taxableIncomeCustomer: 100000,
 };
 
 const r = berechneInvestment(SIGMUNDSTRASSE_6B);
@@ -114,7 +115,7 @@ describe("Abgleich mit Investagon: Sigmundstraße 2, Einheit 6b", () => {
     expect(Math.round(r.years[0].buildingDepreciation)).toBe(9540);
   });
 
-  it("rechnet mit festem Satz jährlich −Ergebnis × 42 %, auch ohne Einkommen", () => {
+  it("rechnet mit festem Satz jährlich −Ergebnis × 42 %", () => {
     for (const j of r.years) {
       expect(j.taxEffect, `Jahr ${j.year}`).toBeCloseTo(-j.taxableResult * 0.42, 6);
     }

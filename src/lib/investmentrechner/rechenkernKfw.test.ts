@@ -47,10 +47,11 @@ const annuitaet = (k: number, n: number) => (k * i) / (1 - (1 + i) ** -n);
 const KFW_ANNUITAET = annuitaet(150000, 27 * 12);
 /** Restschuld einer Monatsannuität nach m Monaten: K·q^m − A·(q^m − 1)/i. */
 const restMonatlich = (k: number, a: number, m: number) => k * (1 + i) ** m - (a * ((1 + i) ** m - 1)) / i;
-/** Bank: Jahresrate R, Zins auf den Jahresanfang, wie der Rechenkern seit jeher. */
+/** Bank: seit dem 22.10.2026 monatlich, Monatsrate 1.232,50 €, Monatszins 3,8 % ÷ 12. */
 const restBankNachJahren = (n: number) => {
-  const q = 1.038;
-  return 255000 * q ** n - 14790 * ((q ** n - 1) / (q - 1));
+  const q = 1 + 0.038 / 12;
+  const m = n * 12;
+  return 255000 * q ** m - BANK_RATE_MONAT * ((q ** m - 1) / (q - 1));
 };
 
 describe("KfW-Darlehen: Beispiel aus dem Auftrag", () => {
@@ -98,7 +99,7 @@ describe("KfW-Darlehen: Beispiel aus dem Auftrag", () => {
     expect(jahr10.remainingDebt).toBeCloseTo(bank + kfw, 4);
     expect(r.kfwRestschuldZinsbindung).toBeCloseTo(kfw, 4);
     // Die Zahlen für den Bericht, gerundet.
-    expect(Math.round(bank)).toBe(194334);
+    expect(Math.round(bank)).toBe(193074);
     expect(Math.round(kfw)).toBe(118861);
   });
 

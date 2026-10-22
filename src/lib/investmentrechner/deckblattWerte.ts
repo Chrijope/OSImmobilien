@@ -18,6 +18,7 @@ import {
   type InvestmentEingabe,
   type InvestmentErgebnis,
   type Jahreswert,
+  monateErstesJahr,
 } from "./rechenkern";
 
 /** „rente“ ist das dritte Deckblatt, seit dem 09.10.2026, siehe altersvorsorge.ts. */
@@ -79,7 +80,7 @@ export function deckblattWerte(
   const letztes = jahre[jahre.length - 1];
 
   const nachSteuerAbJahr2 = jahre.length > 1 ? schnitt(jahre.slice(1).map((j) => j.cashflowAfterTax)) / 12 : null;
-  const kern = nachSteuerAbJahr2 ?? erstes.cashflowAfterTax / 12;
+  const kern = nachSteuerAbJahr2 ?? erstes.cashflowAfterTax / monateErstesJahr(result);
   // Unter einem halben Euro stünde „Ø 0 € im Monat“ da, das ist kein Zuzahlen.
   const zuzahlungMonat = kern <= -0.5 ? -kern : null;
 
@@ -90,13 +91,13 @@ export function deckblattWerte(
     jahre,
     letztes,
     monat: {
-      miete: erstes.effectiveRent / 12,
-      rate: -erstes.debtService / 12,
-      tilgung: erstes.principal / 12,
+      miete: erstes.effectiveRent / monateErstesJahr(result),
+      rate: -erstes.debtService / monateErstesJahr(result),
+      tilgung: erstes.principal / monateErstesJahr(result),
       kosten: -(erstes.operatingCosts + erstes.reserveContribution) / 12,
-      vorSteuer: erstes.cashflowBeforeTax / 12,
-      steuer: erstes.taxEffect / 12,
-      nachSteuer: erstes.cashflowAfterTax / 12,
+      vorSteuer: erstes.cashflowBeforeTax / monateErstesJahr(result),
+      steuer: erstes.taxEffect / monateErstesJahr(result),
+      nachSteuer: erstes.cashflowAfterTax / monateErstesJahr(result),
     },
     nachSteuerAbJahr2,
     zuzahlungMonat,

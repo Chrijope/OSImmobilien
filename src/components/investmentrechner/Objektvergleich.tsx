@@ -8,9 +8,12 @@ import {
   jahreAkkusativ,
   objektMarke,
   vergleicheObjekte,
+  vergleichBezeichnung,
   type Vergleichsobjekt,
 } from "@/lib/investmentrechner/objektvergleich";
-import { ausgewiesenerKaufpreis } from "@/lib/investmentrechner/rechenkern";
+import { useRechnerSprache } from "./RechnerSprache";
+import type { FormatSprache } from "@/lib/sprachFormat";
+import { ausgewiesenerKaufpreis, mitStellplatz, monateErstesJahr } from "@/lib/investmentrechner/rechenkern";
 import { Objektkarte } from "./Felder";
 import { Zweireihendiagramm } from "./Diagramme";
 
@@ -72,15 +75,19 @@ export function ObjektHinzufuegen({ onClick }: { onClick: () => void }) {
 }
 
 /** Die drei Kennzahlen, die in der Vergleichsansicht auf der Objektkarte stehen. */
-function kartenwerte(objekt: Vergleichsobjekt): { label: string; wert: string }[] {
+function kartenwerte(objekt: Vergleichsobjekt, sprache: FormatSprache = "de"): { label: string; wert: string }[] {
+  const en = sprache === "en";
   const erstesJahr = objekt.ergebnis.years[0];
   const letztesJahr = objekt.ergebnis.years[objekt.ergebnis.years.length - 1];
   return [
-    { label: "Bruttorendite", wert: formatProzent(objekt.ergebnis.grossYield) },
-    { label: "CF n. St. p. M.", wert: erstesJahr ? formatEuroCent(erstesJahr.cashflowAfterTax / 12) : "-" },
     {
-      label: `Vermögen ${letztesJahr ? letztesJahr.year : ""}`.trim(),
-      wert: letztesJahr ? formatEuro(letztesJahr.totalWealth) : "-",
+      label: mitStellplatz(objekt.ergebnis) ? (en ? "Gross yield total" : "Bruttorendite gesamt") : en ? "Gross yield" : "Bruttorendite",
+      wert: formatProzent(objekt.ergebnis.grossYield, sprache),
+    },
+    { label: en ? "CF after tax p.m." : "CF n. St. p. M.", wert: erstesJahr ? formatEuroCent(erstesJahr.cashflowAfterTax / monateErstesJahr(objekt.ergebnis), sprache) : "-" },
+    {
+      label: `${en ? "Wealth" : "Vermögen"} ${letztesJahr ? letztesJahr.year : ""}`.trim(),
+      wert: letztesJahr ? formatEuro(letztesJahr.totalWealth, sprache) : "-",
     },
   ];
 }
@@ -92,8 +99,12 @@ interface VergleichsansichtProps {
 
 /** Dritte Ansicht des rechten Panels: beide Objekte direkt nebeneinander. */
 export function Vergleichsansicht({ a, b }: VergleichsansichtProps) {
+  // Seit dem 22.10.2026 in der Sprache der rechten Seite.
+  const sprache = useRechnerSprache();
+  const en = sprache === "en";
+  const t = (de: string, englisch: string) => (en ? englisch : de);
   const zeilen = vergleicheObjekte(a, b);
-  const satz = einordnung(a, b);
+  const satz = einordnung(a, b, sprache);
   const laufzeit = Math.min(a.ergebnis.years.length, b.ergebnis.years.length);
   const jahre = a.ergebnis.years.slice(0, laufzeit).map((jahr) => jahr.year);
   const titelA = a.eingabe.propertyTitle || objektMarke(0);
@@ -107,41 +118,41 @@ export function Vergleichsansicht({ a, b }: VergleichsansichtProps) {
         <Objektkarte
           marke={objektMarke(0)}
           titel={titelA}
-          adresse={a.eingabe.address || "Adresse ergänzen"}
-          preis={formatEuro(ausgewiesenerKaufpreis(a.eingabe, a.ergebnis))}
+          adresse={a.eingabe.address || t("Adresse ergänzen", "Address missing")}
+          preis={formatEuro(ausgewiesenerKaufpreis(a.eingabe, a.ergebnis), sprache)}
           seite="a"
-          werte={kartenwerte(a)}
+          werte={kartenwerte(a, sprache)}
         />
         <Objektkarte
           marke={objektMarke(1)}
           titel={titelB}
-          adresse={b.eingabe.address || "Adresse ergänzen"}
-          preis={formatEuro(ausgewiesenerKaufpreis(b.eingabe, b.ergebnis))}
+          adresse={b.eingabe.address || t("Adresse ergänzen", "Address missing")}
+          preis={formatEuro(ausgewiesenerKaufpreis(b.eingabe, b.ergebnis), sprache)}
           seite="b"
-          werte={kartenwerte(b)}
+          werte={kartenwerte(b, sprache)}
         />
       </div>
 
       <article className="content-card">
         <div className="card-heading">
           <div>
-            <span className="eyebrow">Gegenüberstellung</span>
-            <h3>Kennzahlen im direkten Vergleich</h3>
+            <span className="eyebrow">{t("Gegenüberstellung", "Side by side")}</span>
+            <h3>{t("Kennzahlen im direkten Vergleich", "Key figures compared directly")}</h3>
           </div>
-          <span className="period-pill">{jahreAkkusativ(laufzeit)}</span>
+          <span className="period-pill">{en ? `${laufzeit} years` : jahreAkkusativ(laufzeit)}</span>
         </div>
         <div className="compare-verdict">
-          <small>Einordnung</small>
+          <small>{t("Einordnung", "Assessment")}</small>
           <p>{satz}</p>
         </div>
         <div className="table-scroll compare-table">
           <table>
             <thead>
               <tr>
-                <th>Kennzahl</th>
+                <th>{t("Kennzahl", "Key figure")}</th>
                 <th className="side-a">A · {titelA}</th>
                 <th className="side-b">B · {titelB}</th>
-                <th>Unterschied</th>
+                <th>{t("Unterschied", "Difference")}</th>
               </tr>
             </thead>
             <tbody>
@@ -149,28 +160,28 @@ export function Vergleichsansicht({ a, b }: VergleichsansichtProps) {
                 <Fragment key={zeile.bezeichnung}>
                   {gruppen[index] && (
                     <tr className="compare-group">
-                      <td colSpan={4}>{zeile.gruppe}</td>
+                      <td colSpan={4}>{vergleichBezeichnung(zeile.gruppe, sprache)}</td>
                     </tr>
                   )}
                   <tr>
                     <td className="compare-label">
-                      {zeile.bezeichnung}
-                      {zeile.hinweis && <small>{zeile.hinweis}</small>}
+                      {vergleichBezeichnung(zeile.bezeichnung, sprache)}
+                      {zeile.hinweis && <small>{vergleichBezeichnung(zeile.hinweis, sprache)}</small>}
                     </td>
                     <td>
-                      {formatVergleichswert(zeile.wertA, zeile.einheit)}
-                      {zeile.besser === "a" && <span className="compare-better">besser</span>}
+                      {formatVergleichswert(zeile.wertA, zeile.einheit, sprache)}
+                      {zeile.besser === "a" && <span className="compare-better">{t("besser", "better")}</span>}
                     </td>
                     <td>
-                      {formatVergleichswert(zeile.wertB, zeile.einheit)}
-                      {zeile.besser === "b" && <span className="compare-better">besser</span>}
+                      {formatVergleichswert(zeile.wertB, zeile.einheit, sprache)}
+                      {zeile.besser === "b" && <span className="compare-better">{t("besser", "better")}</span>}
                     </td>
                     <td
                       className={
                         zeile.besser === "b" ? "positive" : zeile.besser === "a" ? "negative" : undefined
                       }
                     >
-                      {formatUnterschied(zeile.unterschied, zeile.einheit)}
+                      {formatUnterschied(zeile.unterschied, zeile.einheit, sprache)}
                     </td>
                   </tr>
                 </Fragment>
@@ -179,16 +190,18 @@ export function Vergleichsansicht({ a, b }: VergleichsansichtProps) {
           </table>
         </div>
         <p className="compare-fineprint">
-          Beide Objekte sind mit derselben Steuerbasis und derselben Laufzeit gerechnet. Die Spalte Unterschied zeigt
-          Objekt B im Verhältnis zu Objekt A.
+          {t(
+            "Beide Objekte sind mit derselben Steuerbasis und derselben Laufzeit gerechnet. Die Spalte Unterschied zeigt Objekt B im Verhältnis zu Objekt A.",
+            "Both properties are calculated with the same tax basis and the same period. The Difference column shows property B relative to property A.",
+          )}
         </p>
       </article>
 
       <article className="content-card chart-card">
         <div className="card-heading">
           <div>
-            <span className="eyebrow">Prognose</span>
-            <h3>Vermögensentwicklung beider Objekte</h3>
+            <span className="eyebrow">{t("Prognose", "Forecast")}</span>
+            <h3>{t("Vermögensentwicklung beider Objekte", "Wealth development of both properties")}</h3>
           </div>
         </div>
         <Zweireihendiagramm

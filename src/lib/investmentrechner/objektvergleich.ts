@@ -1,4 +1,5 @@
 import type { InvestmentEingabe, InvestmentErgebnis } from "./rechenkern";
+import { mitStellplatz, monateErstesJahr } from "./rechenkern";
 import { formatEuro, formatEuroCent, formatProzent } from "./formatierer";
 import { SPRACH_LOCALE, type FormatSprache } from "../sprachFormat";
 
@@ -128,6 +129,12 @@ export const VERGLEICH_BEZEICHNUNG_EN: Record<string, string> = {
   "Eingesetztes Eigenkapital": "Equity invested",
   "Monatliche Rate": "Monthly instalment",
   Bruttorendite: "Gross rental yield",
+  "Bruttorendite Wohnung": "Gross rental yield apartment",
+  "gesamt, Wohnung und Stellplatz": "total, apartment and parking",
+  "Kauf und Finanzierung": "Purchase and financing",
+  "Laufender Ertrag": "Ongoing return",
+  "inklusive Kaufnebenkosten": "including incidental purchase costs",
+  "auf Eigenkapital und alle Zuzahlungen": "on equity and all top-up payments",
   Nettorendite: "Net rental yield",
   "Cashflow nach Steuern p. M.": "Cash flow after tax per month",
   "Steuereffekt Jahr 1": "Tax effect year 1",
@@ -139,7 +146,14 @@ export const VERGLEICH_BEZEICHNUNG_EN: Record<string, string> = {
 
 /** Die Bezeichnung einer Vergleichszeile in der Sprache des Drucks. */
 export function vergleichBezeichnung(bezeichnung: string, sprache: FormatSprache = "de"): string {
-  return sprache === "en" ? VERGLEICH_BEZEICHNUNG_EN[bezeichnung] ?? bezeichnung : bezeichnung;
+  if (sprache !== "en") return bezeichnung;
+  // Die Endgruppe heißt „Nach zehn Jahren“ und ähnlich, seit dem 22.10.2026 auch englisch.
+  const nach = /^Nach (.+) Jahre?n?$/.exec(bezeichnung);
+  if (VERGLEICH_BEZEICHNUNG_EN[bezeichnung]) return VERGLEICH_BEZEICHNUNG_EN[bezeichnung];
+  if (!nach) return bezeichnung;
+  const wort = nach[1] === "einem" ? 1 : ZAHLWOERTER.indexOf(nach[1]);
+  const jahre = wort > 0 ? wort : Number(nach[1]);
+  return Number.isFinite(jahre) && jahre > 0 ? `After ${jahreEnglisch(jahre)}` : bezeichnung;
 }
 
 /** „ten years“, „one year“ für den englischen Druck. Bis zwanzig als Wort, danach als Zahl. */
@@ -217,6 +231,7 @@ export function vergleicheObjekte(a: Vergleichsobjekt, b: Vergleichsobjekt): Ver
   const letztesA = a.ergebnis.years[a.ergebnis.years.length - 1];
   const letztesB = b.ergebnis.years[b.ergebnis.years.length - 1];
   const erstesA = a.ergebnis.years[0];
+  const stellplatz = mitStellplatz(a.ergebnis) || mitStellplatz(b.ergebnis);
   const erstesB = b.ergebnis.years[0];
   const laufzeit = Math.min(a.ergebnis.years.length, b.ergebnis.years.length);
   const endgruppe = `Nach ${jahreDativ(laufzeit)}`;
@@ -247,9 +262,27 @@ export function vergleicheObjekte(a: Vergleichsobjekt, b: Vergleichsobjekt): Ver
       wertA: a.ergebnis.monthlyDebtService,
       wertB: b.ergebnis.monthlyDebtService,
     },
+    /*
+      Mit Stellplatz seit dem 22.10.2026 zwei Zeilen: die Wohnung allein und
+      das Paket. Die Zeile „Bruttorendite“ bleibt der Schlüssel des Pakets,
+      Vergleichsseite und PDF lesen sie unter diesem Namen.
+    */
+    ...(stellplatz
+      ? [
+          {
+            gruppe: "Laufender Ertrag",
+            bezeichnung: "Bruttorendite Wohnung",
+            einheit: "prozent" as const,
+            richtung: "mehrIstBesser" as const,
+            wertA: a.ergebnis.grossYieldWohnung ?? a.ergebnis.grossYield,
+            wertB: b.ergebnis.grossYieldWohnung ?? b.ergebnis.grossYield,
+          },
+        ]
+      : []),
     {
       gruppe: "Laufender Ertrag",
       bezeichnung: "Bruttorendite",
+      ...(stellplatz ? { hinweis: "gesamt, Wohnung und Stellplatz" } : {}),
       einheit: "prozent",
       richtung: "mehrIstBesser",
       wertA: a.ergebnis.grossYield,
@@ -268,8 +301,8 @@ export function vergleicheObjekte(a: Vergleichsobjekt, b: Vergleichsobjekt): Ver
       bezeichnung: "Cashflow nach Steuern p. M.",
       einheit: "euroCent",
       richtung: "mehrIstBesser",
-      wertA: erstesA ? erstesA.cashflowAfterTax / 12 : null,
-      wertB: erstesB ? erstesB.cashflowAfterTax / 12 : null,
+      wertA: erstesA ? erstesA.cashflowAfterTax / monateErstesJahr(a.ergebnis) : null,
+      wertB: erstesB ? erstesB.cashflowAfterTax / monateErstesJahr(b.ergebnis) : null,
     },
     {
       gruppe: "Laufender Ertrag",

@@ -36,8 +36,10 @@ describe("Anschlusszins des Bankdarlehens", () => {
     expect(r.bankRestschuldZinsbindung).toBeCloseTo(rest5, 6);
     expect(r.years[5].darlehen.bank.zinssatz).toBeCloseTo(0.06, 9);
     expect(r.years[4].darlehen.bank.zinssatz).toBeCloseTo(0.04, 9);
-    expect(r.years[5].darlehen.bank.interest).toBeCloseTo(rest5 * 0.06, 6);
-    // Neue Rate: Restschuld mal (6 % + anfängliche 1,5 %).
+    // Seit dem 22.10.2026 monatlich: Der Jahreszins liegt etwas unter 6 % der Restschuld zu Jahresbeginn.
+    expect(r.years[5].darlehen.bank.interest).toBeLessThan(rest5 * 0.06);
+    expect(r.years[5].darlehen.bank.interest).toBeGreaterThan(rest5 * 0.059);
+    // Neue Rate: Restschuld mal (6 % + anfängliche 1,5 %), je Monat durch 12.
     expect(r.years[5].darlehen.bank.payment).toBeCloseTo(rest5 * 0.075, 6);
     // Mehr Zins senkt den Cashflow, die Steuer gibt einen Teil zurück.
     expect(r.years[5].cashflowBeforeTax).toBeLessThan(basis.years[5].cashflowBeforeTax);
@@ -54,7 +56,8 @@ describe("Anschlusszins des Bankdarlehens", () => {
     const eingabe = { ...standard, seniorFixedRateYears: 5, seniorFollowUpRate: 6 };
     const r = berechneInvestment(eingabe);
     const risiko = zinsrisiko(eingabe, r, r.years.length - 1);
-    expect(risiko?.zinsHeute).toBeCloseTo(0.06, 3);
+    // Monatlich getilgt liegt der Jahreszins knapp unter 6 % der Restschuld zu Jahresbeginn.
+    expect(risiko?.zinsHeute).toBeCloseTo(0.0594, 3);
   });
 });
 
@@ -101,7 +104,9 @@ describe("Zweites Bankdarlehen", () => {
     expect(r.secondLoanAmount).toBe(50000);
     expect(r.seniorLoanAmount).toBeCloseTo(basis.seniorLoanAmount - 50000, 6);
     expect(r.totalDebt).toBeCloseTo(basis.totalDebt, 6);
-    expect(r.years[0].darlehen.bank2.interest).toBeCloseTo(1500, 6);
+    // Monatlich: 50.000 × 5 % ÷ 12 Rate, Zins etwas unter 1.500 €.
+    expect(r.years[0].darlehen.bank2.interest).toBeLessThan(1500);
+    expect(r.years[0].darlehen.bank2.interest).toBeGreaterThan(1480);
     expect(r.years[0].darlehen.bank2.payment).toBeCloseTo(2500, 6);
     expect(r.monthlyDebtService).toBeLessThan(basis.monthlyDebtService);
   });
@@ -130,11 +135,15 @@ describe("Anschlusszins KfW", () => {
 });
 
 describe("banktilgungsplan", () => {
-  it("rechnet ohne Neues wie die feste Jahresrate", () => {
+  it("rechnet monatlich mit fester Monatsrate (seit dem 22.10.2026)", () => {
     const plan = banktilgungsplan({ betrag: 100000, zinsProzent: 4, tilgungProzent: 2, zinsbindungJahre: 10, anschlusszinsProzent: 0, neueTilgungProzent: 0, jahre: 2 });
-    expect(plan[0].interest).toBeCloseTo(4000, 6);
-    expect(plan[0].principal).toBeCloseTo(2000, 6);
-    expect(plan[1].interest).toBeCloseTo(98000 * 0.04, 6);
+    // Monatsrate 500 €, Tilgung im ersten Monat 166,67 €, danach wachsend um den Faktor 1 + 0,04 ÷ 12.
+    const q = 1 + 0.04 / 12;
+    const tilgung1 = ((100000 * 0.02) / 12) * ((q ** 12 - 1) / (q - 1));
+    expect(plan[0].payment).toBeCloseTo(6000, 6);
+    expect(plan[0].principal).toBeCloseTo(tilgung1, 6);
+    expect(plan[0].interest).toBeCloseTo(6000 - tilgung1, 6);
+    expect(plan[1].closingBalance).toBeCloseTo(100000 - tilgung1 * (1 + q ** 12), 6);
   });
 });
 

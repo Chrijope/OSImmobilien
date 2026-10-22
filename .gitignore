@@ -55,5 +55,8 @@ OSImmobilien_Rentabilitaetsrechnung*
 # Eigenständige Fassung (vite.artefakt.config.ts), wird gebaut, nicht eingecheckt.
 dist-artefakt
 
+# Eigenständige Fassung des Investmentrechners (vite.investmentrechner.config.ts), wird gebaut, nicht eingecheckt.
+dist-artefakt-investmentrechner
+
 # Folien-PDF der Beratungspräsentation (scripts/beratung-pdf), wird erzeugt, nicht eingecheckt.
 dist-pdf

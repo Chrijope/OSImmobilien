@@ -10,6 +10,13 @@
  */
 
 import { nebenkostenBasis } from "../kaufnebenkosten";
+import {
+  ANSCHAFFUNGSNAH_GRENZE,
+  linearerAfaSatz,
+  SONDER_7B_JAHRE,
+  SONDER_7B_SATZ,
+  sonderabschreibung7b,
+} from "../afaSaetze";
 
 export type Steuerklasse = "I" | "II" | "III" | "IV" | "V" | "VI";
 export type Steuerberechnungsmodus = "tariff" | "manual";
@@ -17,6 +24,16 @@ export type AfaMethode = "linear" | "declining";
 export type Erhaltungsaufwandmodus = "expense" | "capitalize";
 /** Tilgungszuschuss des KfW-Darlehens: in Prozent des Darlehens oder als Betrag. */
 export type KfwZuschussArt = "percent" | "euro";
+/**
+ * Sanierungsfall, seit dem 22.10.2026 (Christian):
+ * - `nachKauf`: Die Sanierung wird nach dem Erwerb für den Käufer umgesetzt.
+ *   Erhaltungsaufwand beim Käufer, mit der 15-Prozent-Prüfung nach § 6 Abs. 1
+ *   Nr. 1a EStG. Nicht in der Basis der Kaufnebenkosten; das gilt nur bei
+ *   einem eigenständigen, nicht mit dem Kauf verknüpften Sanierungsvertrag.
+ * - `durchVerkaeufer`: Der Verkäufer saniert vor dem Verkauf. Der Anteil ist
+ *   Anschaffungskosten (Gebäude, AfA) und trägt Kaufnebenkosten.
+ */
+export type Sanierungsfall = "nachKauf" | "durchVerkaeufer";
 
 export interface InvestmentEingabe {
   clientName: string;
@@ -52,6 +69,13 @@ export interface InvestmentEingabe {
    * grunderwerbsteuerpflichtig.
    */
   maintenanceReserve: number;
+  /**
+   * Davon Kaufpreis für Stellplatz oder Garage, seit dem 22.10.2026. Er steckt
+   * im Kaufpreis wie die Möbel und wird wie die Wohnung gerechnet (Grund und
+   * Boden, Gebäude, Kaufnebenkosten). Er trennt nur den Ausweis: Rendite und
+   * Kaufpreisfaktor gibt es für die Wohnung allein und für das Paket.
+   */
+  garagePrice: number;
   transferTaxRate: number;
   notaryRate: number;
   landRegisterRate: number;
@@ -87,6 +111,16 @@ export interface InvestmentEingabe {
   seniorFollowUpRate: number;
   /** Neue Tilgung ab der Anschlussfinanzierung. 0: die anfängliche Tilgung. */
   seniorFollowUpRepaymentRate: number;
+  /** Umschuldungskosten der ersten Anschlussfinanzierung in Euro, seit dem 22.10.2026. */
+  seniorFollowUpCosts: number;
+  /** Weitere Anschlussfinanzierungen nach der ersten, je mit Zeitpunkt, Zins, Tilgung und Kosten. */
+  seniorFurtherFollowUps: Anschlussfinanzierung[];
+  /** Tilgungsart des Bankdarlehens, seit dem 22.10.2026. Standard: Annuität aus dem Tilgungssatz. */
+  seniorRepaymentType: Tilgungsart;
+  /** Laufzeit in Jahren bei Volltilgung oder endfälligem Darlehen. */
+  seniorTermYears: number;
+  /** Tilgungsfreie Anlaufjahre des Bankdarlehens. */
+  seniorGracePeriodYears: number;
   /** Sondertilgungen auf das Bankdarlehen, je Kalenderjahr am Jahresende. */
   specialRepayments: Sondertilgung[];
   /*
@@ -99,6 +133,11 @@ export interface InvestmentEingabe {
   secondRepaymentRate: number;
   secondFixedRateYears: number;
   secondFollowUpRate: number;
+  /** Neue Tilgung des zweiten Darlehens ab dem Anschluss, seit dem 22.10.2026. 0: die anfängliche. */
+  secondFollowUpRepaymentRate: number;
+  secondRepaymentType: Tilgungsart;
+  secondTermYears: number;
+  secondGracePeriodYears: number;
   /*
     KfW-Darlehen, seit dem 07.10.2026, als drittes Darlehen neben Bank und
     Nachrang (siehe `kfwTilgungsplan`). Ohne Schalter rechnet nichts davon,
@@ -140,10 +179,25 @@ export interface InvestmentEingabe {
    * siehe `RUECKLAGENZUFUEHRUNG_ABZIEHBAR`.
    */
   monthlyReserveContribution: number;
+  /*
+    Hausgeld in ganzer Höhe, seit dem 22.10.2026 (Christian), nur zur Anzeige
+    und Prüfung: gesamt, davon umlagefähig (zahlt der Mieter) und nicht
+    umlagefähig. Gerechnet wird weiter mit `monthlyOperatingCosts` und
+    `monthlyReserveContribution`; siehe `hausgeldAufstellung`. 0 heißt leer.
+  */
+  housingFeeTotal: number;
+  housingFeeRecoverable: number;
+  housingFeeNonRecoverable: number;
   vacancyRate: number;
   annualRentGrowth: number;
   annualCostGrowth: number;
   annualValueGrowth: number;
+  /**
+   * Verkaufskosten in Prozent des Verkaufspreises (Makler, Notar), seit dem
+   * 22.10.2026. Sie mindern den Erlös im Modellverkauf am Ende und damit den
+   * internen Zinsfuß. 0 heißt: ohne Verkaufskosten.
+   */
+  saleCostRate: number;
   buildingShare: number;
   depreciationMethod: AfaMethode;
   buildingDepreciationRate: number;
@@ -152,8 +206,19 @@ export interface InvestmentEingabe {
   furnitureDepreciationYears: number;
   rehabExpense: number;
   rehabMode: Erhaltungsaufwandmodus;
+  /**
+   * Wann saniert wird, seit dem 22.10.2026 (Christian): nach dem Kauf für den
+   * Käufer (Standard) oder vom Verkäufer vor dem Verkauf. Siehe `Sanierungsfall`.
+   */
+  rehabScenario: Sanierungsfall;
   rehabDistributionYears: number;
   startYear: number;
+  /**
+   * Monat des Übergangs von Nutzen und Lasten im Startjahr, 1 bis 12, seit dem
+   * 22.10.2026. Das erste Jahr zählt nur ab diesem Monat: Miete, Kosten,
+   * Zinsen, Gebäude- und Möbel-AfA zeitanteilig. 1 heißt ganzes Jahr.
+   */
+  acquisitionMonth: number;
   forecastYears: number;
   /*
     Altersvorsorge, seit dem 09.10.2026, nur für das Deckblatt
@@ -221,7 +286,7 @@ export interface Vermoegensaufstellung {
 }
 
 /** Die aktuelle Version der Eingabe, siehe `eingabeVersion`. */
-export const EINGABE_VERSION = 2;
+export const EINGABE_VERSION = 3;
 
 /** Schlüssel aller Zahlenfelder der Eingabe, für typsichere Setter in der Oberfläche. */
 export type ZahlenFeld = {
@@ -256,6 +321,8 @@ export interface Darlehensjahr extends Annuitaetsjahr {
   zinssatz?: number;
   /** Sondertilgung am Jahresende, steckt schon in `principal` und `payment`. */
   sondertilgung?: number;
+  /** Umschuldungskosten einer Anschlussfinanzierung in diesem Jahr, NICHT in `payment` (seit dem 22.10.2026). */
+  umschuldungskosten?: number;
 }
 
 /** `bank2`: das zweite Bankdarlehen, seit dem 11.10.2026. */
@@ -286,6 +353,12 @@ export interface Jahreswert {
   rehabDeduction: number;
   /** Finanzierungsnebenkosten als Werbungskosten, nur im ersten Jahr. */
   financingCostDeduction: number;
+  /**
+   * Umschuldungskosten der Anschlussfinanzierungen in diesem Jahr, seit dem
+   * 22.10.2026. Sie mindern den Cashflow und sind im selben Jahr
+   * Werbungskosten (Geldbeschaffungskosten).
+   */
+  umschuldungskosten: number;
   taxableResult: number;
   allocatedTaxableResult: number;
   taxableIncomeBefore: number;
@@ -357,8 +430,65 @@ export interface InvestmentErgebnis {
    * zählt ab 1, Raten je Monat. `null` ohne tilgungsfreie Jahre.
    */
   rateSprung: { jahr: number; kalenderjahr: number; rateVorher: number; rateNachher: number } | null;
-  /** Der gerechnete Miteigentumsanteil als Faktor, bei Zusammenveranlagung 1. Für Grenzen je m² der ganzen Wohnung. */
+  /**
+   * Der gerechnete Miteigentumsanteil als Faktor. Seit dem 22.10.2026 auch
+   * bei Zusammenveranlagung die Eingabe. Für Grenzen je m² der ganzen Wohnung.
+   */
   anteil: number;
+  /**
+   * Anteil des ersten Jahres ab dem Übergang von Nutzen und Lasten, 1 bei
+   * Januar, 1/12 bei Dezember. Monatswerte des ersten Jahres teilen durch
+   * `12 × ersterJahresanteil` Monate statt durch 12.
+   */
+  ersterJahresanteil: number;
+  /** Davon Stellplatz oder Garage im Kaufpreis, anteilig. 0 ohne. */
+  garagenpreis: number;
+  /** Ausgewiesener Kaufpreis ohne Stellplatz: die Wohnung allein, beim All-inclusive-Modell samt ihrem Teil des Aufschlags. */
+  kaufpreisWohnung: number;
+  /** Bruttorendite nur der Wohnung: Jahreskaltmiete der Wohnung durch ihren Kaufpreis. */
+  grossYieldWohnung: number;
+  /** Nettorendite nur der Wohnung, auf ihren Teil der Gesamtkosten. */
+  netYieldWohnung: number;
+  /** Kaufpreisfaktor gesamt (Wohnung und Stellplatz): Kaufpreis durch Jahreskaltmiete. `null` ohne Miete. */
+  kaufpreisfaktor: number | null;
+  /** Kaufpreisfaktor nur der Wohnung. `null` ohne Wohnungsmiete. */
+  kaufpreisfaktorWohnung: number | null;
+  /**
+   * Sonder-AfA nach § 7b EStG, seit dem 22.10.2026 mit eigener Prüfung:
+   * Baukostenobergrenze 5.200 Euro je m², Bemessungsgrundlage höchstens
+   * 4.000 Euro je m² Wohnfläche, 5 Prozent in vier Jahren.
+   */
+  sonderAfa: {
+    /** Eine Sonder-AfA ist eingetragen. */
+    beantragt: boolean;
+    /** Sie wird gerechnet. */
+    zulaessig: boolean;
+    hinweis: string;
+    /** Bemessungsgrundlage, anteilig. */
+    bemessungsgrundlage: number;
+    /** Anschaffungskosten des Gebäudes je m² Wohnfläche. 0 ohne Fläche. */
+    baukostenJeQm: number;
+    /** Gerechneter Satz in Prozent und Dauer in Jahren, nach der Deckelung. */
+    satz: number;
+    jahre: number;
+  };
+  /** Sanierungsfall, siehe `Sanierungsfall`. */
+  sanierungsfall: Sanierungsfall;
+  /** 15 Prozent der Gebäude-Anschaffungskosten ohne den Aufwand, die Grenze nach § 6 Abs. 1 Nr. 1a EStG in Euro. */
+  fuenfzehnProzentGrenze: number;
+  /** Die Grenze ist im Fall „nach dem Kauf“ überschritten: Der Aufwand wird als anschaffungsnaher Herstellungsaufwand aktiviert. */
+  anschaffungsnah: boolean;
+  /** Der Aufwand geht in die Gebäude-AfA statt in den Sofortabzug, aus welchem Grund auch immer. */
+  sanierungAktiviert: boolean;
+  /** Verkaufskosten im Modellverkauf am Ende, anteilig. */
+  verkaufskosten: number;
+  /** Summe der Umschuldungskosten im Prognosezeitraum. */
+  umschuldungskostenGesamt: number;
+  /**
+   * Manueller Steuersatz ohne Steuerlast: Ein Verlust bringt keine Erstattung,
+   * weil vor dem Kauf keine Steuer gezahlt wird (seit dem 22.10.2026).
+   */
+  erstattungBegrenzt: boolean;
   totalDebt: number;
   financingGap: number;
   monthlyDebtService: number;
@@ -471,6 +601,7 @@ export const standardEingabe: InvestmentEingabe = {
   purchasePrice: 0,
   furniturePrice: 0,
   maintenanceReserve: 0,
+  garagePrice: 0,
   transferTaxRate: 6.5,
   notaryRate: 1.5,
   landRegisterRate: 0.5,
@@ -487,12 +618,21 @@ export const standardEingabe: InvestmentEingabe = {
   seniorFixedRateYears: 10,
   seniorFollowUpRate: 0,
   seniorFollowUpRepaymentRate: 0,
+  seniorFollowUpCosts: 0,
+  seniorFurtherFollowUps: [],
+  seniorRepaymentType: "annuitaet",
+  seniorTermYears: 0,
+  seniorGracePeriodYears: 0,
   specialRepayments: [],
   secondLoanAmount: 0,
   secondInterestRate: 4,
   secondRepaymentRate: 2,
   secondFixedRateYears: 10,
   secondFollowUpRate: 0,
+  secondFollowUpRepaymentRate: 0,
+  secondRepaymentType: "annuitaet",
+  secondTermYears: 0,
+  secondGracePeriodYears: 0,
   kfwEnabled: false,
   kfwProgram: "",
   kfwLoanAmount: 0,
@@ -508,10 +648,14 @@ export const standardEingabe: InvestmentEingabe = {
   monthlyGarageRent: 0,
   monthlyOperatingCosts: 0,
   monthlyReserveContribution: 0,
+  housingFeeTotal: 0,
+  housingFeeRecoverable: 0,
+  housingFeeNonRecoverable: 0,
   vacancyRate: 0,
   annualRentGrowth: 2,
   annualCostGrowth: 2,
   annualValueGrowth: 1.5,
+  saleCostRate: 0,
   buildingShare: 80,
   depreciationMethod: "linear",
   buildingDepreciationRate: 2,
@@ -520,8 +664,10 @@ export const standardEingabe: InvestmentEingabe = {
   furnitureDepreciationYears: 10,
   rehabExpense: 0,
   rehabMode: "expense",
+  rehabScenario: "nachKauf",
   rehabDistributionYears: 1,
   startYear: 2026,
+  acquisitionMonth: 1,
   forecastYears: 10,
   clientAge: 0,
   retirementAge: 67,
@@ -647,6 +793,30 @@ export function annuitaetsjahr(restsaldo: number, zinssatz: number, jahresrate: 
   };
 }
 
+/**
+ * Eine Anschlussfinanzierung (Umschuldung) nach einer Zinsbindung, seit dem
+ * 22.10.2026 auch mehrere hintereinander. `nachJahren` zählt ab Auszahlung
+ * des Darlehens: Ab dem Monat danach gelten neuer Zins und neue Tilgung.
+ * 0 bei Zins oder Tilgung heißt: wie bisher beziehungsweise die anfängliche
+ * Tilgung. `kosten` sind Umschuldungskosten in Euro (Bearbeitung,
+ * Grundschuldabtretung, Vorfälligkeit), gezahlt im Monat des Wechsels und als
+ * Geldbeschaffungskosten im selben Jahr Werbungskosten.
+ */
+export interface Anschlussfinanzierung {
+  nachJahren: number;
+  zinsProzent: number;
+  tilgungProzent: number;
+  kosten: number;
+}
+
+/**
+ * Wie ein Bankdarlehen getilgt wird, seit dem 22.10.2026.
+ * - `annuitaet`: Rate aus Zins plus anfänglicher Tilgung, wie bisher.
+ * - `volltilgung`: Die Laufzeit ist vorgegeben, die Rate tilgt genau in ihr.
+ * - `endfaellig`: Nur Zinsen, am Ende der Laufzeit die Schlusszahlung.
+ */
+export type Tilgungsart = "annuitaet" | "volltilgung" | "endfaellig";
+
 export interface Bankplanparameter {
   betrag: number;
   zinsProzent: number;
@@ -656,53 +826,194 @@ export interface Bankplanparameter {
   anschlusszinsProzent: number;
   /** 0 heißt leer: die anfängliche Tilgung. */
   neueTilgungProzent: number;
-  /** Sondertilgung je Jahr ab 0, siehe `sondertilgungenJeJahr`. */
+  /** Umschuldungskosten der ersten Anschlussfinanzierung in Euro. */
+  anschlusskosten?: number;
+  /** Weitere Anschlussfinanzierungen nach der ersten, je mit eigenem Zeitpunkt. */
+  weitereAnschluesse?: readonly Anschlussfinanzierung[];
+  tilgungsart?: Tilgungsart;
+  /** Laufzeit in Jahren für Volltilgung und endfälliges Darlehen. 0: keine. */
+  laufzeitJahre?: number;
+  /** Tilgungsfreie Anlaufjahre: nur Zinsen. */
+  tilgungsfreiJahre?: number;
+  /** Sondertilgung je Kalenderjahr ab 0, siehe `sondertilgungenJeJahr`. */
   sondertilgungen?: readonly number[];
+  /** Kalenderjahre des Plans, das erste beginnt mit `startMonat`. */
   jahre: number;
+  /** Erster Zahlungsmonat im ersten Kalenderjahr (1 bis 12), der Monat des Übergangs von Nutzen und Lasten. */
+  startMonat?: number;
+}
+
+export interface Bankplan {
+  jahre: Darlehensjahr[];
+  /** Gezahlte Rate je Monat ab Auszahlung, Zins plus Tilgung, ohne Sondertilgung und Kosten. */
+  monatsraten: number[];
+  /** Rate im ersten Monat. */
+  ersteRate: number;
+  /** Restschuld am Ende der ersten Zinsbindung, 0 ohne Zinsbindung. */
+  restschuldZinsbindung: number;
+  /** Summe der Umschuldungskosten im Plan. */
+  umschuldungskosten: number;
+}
+
+/** Monatsrate eines Annuitätendarlehens, das `rest` in `monate` Monaten voll tilgt. */
+function annuitaetMonat(rest: number, zinsMonat: number, monate: number): number {
+  if (!(rest > 0) || !(monate > 0)) return 0;
+  return zinsMonat > 0 ? (rest * zinsMonat) / (1 - (1 + zinsMonat) ** -monate) : rest / monate;
 }
 
 /**
- * Ein Bankdarlehen Jahr für Jahr, seit dem 11.10.2026 mit Anschlussfinanzierung
- * und Sondertilgungen.
+ * Ein Bankdarlehen Monat für Monat, zu Kalenderjahren zusammengefasst.
  *
- * Bis zur Zinsbindung eine feste Jahresrate aus Zins und anfänglicher
- * Tilgung, wie immer. Ist ein Anschlusszins oder eine neue Tilgung
- * eingetragen, beginnt mit dem Jahr nach der Zinsbindung eine neue Rate:
- * Restschuld mal (Anschlusszins plus neue Tilgung), so rechnen Banken ein
- * Anschlussangebot. Ohne beides bleiben Zins und Rate, und das Ergebnis ist
- * auf den Cent das alte (rechenkern.golden.json).
+ * Seit dem 22.10.2026 monatlich wie bei der Bank: Monatszins ist Restschuld
+ * mal Sollzins durch 12, die Rate wird am Monatsende gezahlt. Vorher galt der
+ * Jahreszins auf die Restschuld zu Jahresbeginn; das übersah, dass die
+ * Tilgung jeden Monat die Restschuld senkt, und wies zu viel Zins und zu
+ * wenig Tilgung aus (285.000 Euro, 4,8 % und 1,2 %: Jahr 1 jetzt rund
+ * 13.603,75 statt 13.680 Euro Zins).
  *
- * Eine Sondertilgung wird am Jahresende gezahlt, höchstens die Restschuld. Die
- * Rate bleibt, die Laufzeit wird kürzer. Sie steckt in Tilgung und Zahlung.
+ * Nach der Zinsbindung und nach jeder weiteren Anschlussfinanzierung wird die
+ * Rate neu bestimmt: Restschuld mal (Anschlusszins plus neue Tilgung) durch
+ * 12, so rechnen Banken ein Anschlussangebot; bei Volltilgung die Annuität
+ * über die Restlaufzeit, beim endfälligen Darlehen nur der Zins. Ohne
+ * Anschlusszins, neue Tilgung und Kosten bleiben Zins und Rate.
+ *
+ * Eine Sondertilgung wird am Ende des Kalenderjahres gezahlt, höchstens die
+ * Restschuld. Die Rate bleibt, die Laufzeit wird kürzer.
  */
-export function banktilgungsplan(p: Bankplanparameter): Darlehensjahr[] {
-  let rest = Math.max(0, p.betrag);
-  let zins = prozentAnteil(p.zinsProzent);
-  let rate = rest * (zins + prozentAnteil(p.tilgungProzent));
-  const bindung = Math.max(0, Math.round(p.zinsbindungJahre));
-  const anschluss = bindung >= 1 && (p.anschlusszinsProzent > 0 || p.neueTilgungProzent > 0);
-  const jahre: Darlehensjahr[] = [];
-  for (let i = 0; i < p.jahre; i += 1) {
-    if (anschluss && i === bindung) {
-      if (p.anschlusszinsProzent > 0) zins = prozentAnteil(p.anschlusszinsProzent);
-      const tilgung = p.neueTilgungProzent > 0 ? p.neueTilgungProzent : p.tilgungProzent;
-      rate = rest * (zins + prozentAnteil(tilgung));
-    }
-    const aktiv = rest > 0;
-    const jahr = annuitaetsjahr(rest, zins, rate);
-    const sondertilgung = Math.min(jahr.closingBalance, Math.max(0, p.sondertilgungen?.[i] ?? 0));
-    rest = jahr.closingBalance - sondertilgung;
-    jahre.push({
-      interest: jahr.interest,
-      principal: jahr.principal + sondertilgung,
-      payment: jahr.payment + sondertilgung,
-      closingBalance: rest,
-      tilgungszuschuss: 0,
-      zinssatz: aktiv ? zins : 0,
-      sondertilgung,
+export function bankplan(p: Bankplanparameter): Bankplan {
+  const startMonat = Math.min(12, Math.max(1, Math.round(endlicheZahl(p.startMonat ?? 1))));
+  const laufzeitMonate = Math.max(0, Math.round(endlicheZahl(p.laufzeitJahre ?? 0))) * 12;
+  // Volltilgung braucht eine Laufzeit; ohne sie bleibt es bei der Annuität aus dem Tilgungssatz.
+  const tilgungsart: Tilgungsart =
+    p.tilgungsart === "endfaellig" ? "endfaellig" : p.tilgungsart === "volltilgung" && laufzeitMonate > 0 ? "volltilgung" : "annuitaet";
+  const tilgungsfrei = Math.max(0, Math.round(endlicheZahl(p.tilgungsfreiJahre ?? 0))) * 12;
+  const bindung = Math.max(0, Math.round(endlicheZahl(p.zinsbindungJahre)));
+  const anfangsTilgung = prozentAnteil(p.tilgungProzent);
+
+  // Die Anschlussfinanzierungen der Reihe nach, jede zu ihrem eigenen Zeitpunkt.
+  const anschluesse: Anschlussfinanzierung[] = [];
+  if (bindung >= 1 && (p.anschlusszinsProzent > 0 || p.neueTilgungProzent > 0 || (p.anschlusskosten ?? 0) > 0)) {
+    anschluesse.push({
+      nachJahren: bindung,
+      zinsProzent: p.anschlusszinsProzent,
+      tilgungProzent: p.neueTilgungProzent,
+      kosten: Math.max(0, endlicheZahl(p.anschlusskosten ?? 0)),
     });
   }
-  return jahre;
+  for (const a of p.weitereAnschluesse ?? []) {
+    const nach = Math.round(endlicheZahl(a?.nachJahren));
+    if (nach >= 1 && !anschluesse.some((b) => b.nachJahren === nach)) {
+      anschluesse.push({
+        nachJahren: nach,
+        zinsProzent: Math.max(0, endlicheZahl(a.zinsProzent)),
+        tilgungProzent: Math.max(0, endlicheZahl(a.tilgungProzent)),
+        kosten: Math.max(0, endlicheZahl(a.kosten)),
+      });
+    }
+  }
+  anschluesse.sort((a, b) => a.nachJahren - b.nachJahren);
+
+  let rest = Math.max(0, endlicheZahl(p.betrag));
+  let zinsJahr = prozentAnteil(p.zinsProzent);
+  let tilgungJahr = anfangsTilgung;
+  const rateBestimmen = (monat: number) => {
+    if (tilgungsart === "endfaellig") return 0;
+    if (tilgungsart === "volltilgung") return annuitaetMonat(rest, zinsJahr / 12, laufzeitMonate - Math.max(monat - 1, tilgungsfrei));
+    return (rest * (zinsJahr + tilgungJahr)) / 12;
+  };
+  // Auch nach einer tilgungsfreien Zeit gilt die Rate auf den vollen Betrag.
+  let rate = rateBestimmen(1);
+
+  const leer = (): Darlehensjahr => ({
+    interest: 0, principal: 0, payment: 0, closingBalance: 0, tilgungszuschuss: 0, zinssatz: 0, sondertilgung: 0, umschuldungskosten: 0,
+  });
+  const jahre = Array.from({ length: Math.max(0, Math.round(p.jahre)) }, leer);
+  const monatsraten: number[] = [];
+  let restschuldZinsbindung = 0;
+  let umschuldungskosten = 0;
+  const monateGesamt = Math.max(0, jahre.length * 12 - (startMonat - 1));
+  for (let monat = 1; monat <= monateGesamt; monat += 1) {
+    const kalendermonat = monat - 1 + startMonat - 1;
+    const index = Math.floor(kalendermonat / 12);
+    const jahr = jahre[index];
+    const anschluss = anschluesse.find((a) => a.nachJahren * 12 + 1 === monat);
+    if (anschluss && rest > 0) {
+      if (anschluss.zinsProzent > 0) zinsJahr = prozentAnteil(anschluss.zinsProzent);
+      tilgungJahr = anschluss.tilgungProzent > 0 ? prozentAnteil(anschluss.tilgungProzent) : anfangsTilgung;
+      rate = rateBestimmen(monat);
+      jahr.umschuldungskosten = (jahr.umschuldungskosten ?? 0) + anschluss.kosten;
+      umschuldungskosten += anschluss.kosten;
+    }
+    const aktiv = rest > 0;
+    const zinsen = (rest * zinsJahr) / 12;
+    let tilgung = 0;
+    if (aktiv && monat > tilgungsfrei) {
+      const schlusszahlung = tilgungsart !== "annuitaet" && monat === laufzeitMonate;
+      tilgung = schlusszahlung ? rest : Math.min(rest, Math.max(0, rate - zinsen));
+    }
+    rest -= tilgung;
+    if (rest < 0.005) rest = 0;
+    monatsraten.push(zinsen + tilgung);
+    if (monat === bindung * 12) restschuldZinsbindung = rest;
+    let sonder = 0;
+    if (kalendermonat % 12 === 11) {
+      sonder = Math.min(rest, Math.max(0, p.sondertilgungen?.[index] ?? 0));
+      rest -= sonder;
+      if (rest < 0.005) rest = 0;
+    }
+    jahr.interest += zinsen;
+    jahr.principal += tilgung + sonder;
+    jahr.payment += zinsen + tilgung + sonder;
+    jahr.sondertilgung = (jahr.sondertilgung ?? 0) + sonder;
+    jahr.closingBalance = rest;
+    if (aktiv) jahr.zinssatz = zinsJahr;
+  }
+  return { jahre, monatsraten, ersteRate: monatsraten[0] ?? 0, restschuldZinsbindung, umschuldungskosten };
+}
+
+/** Nur die Jahre des Plans, für Aufrufer, die keine Monate brauchen. */
+export function banktilgungsplan(p: Bankplanparameter): Darlehensjahr[] {
+  return bankplan(p).jahre;
+}
+
+/**
+ * Die Planparameter von Bankdarlehen und zweitem Bankdarlehen aus der
+ * Eingabe, an einer Stelle für Rechenkern und Bankgespräch. Euro-Beträge der
+ * Umschuldungskosten gelten anteilig wie jeder Euro des Objekts. `jahre`,
+ * Sondertilgungen und Startmonat ergänzt der Aufrufer.
+ */
+export function bankplanParameter(
+  t: InvestmentEingabe,
+  art: "bank" | "bank2",
+  betrag: number,
+  anteil: number,
+): Omit<Bankplanparameter, "jahre"> {
+  if (art === "bank2") {
+    return {
+      betrag,
+      zinsProzent: t.secondInterestRate,
+      tilgungProzent: t.secondRepaymentRate,
+      zinsbindungJahre: t.secondFixedRateYears,
+      anschlusszinsProzent: t.secondFollowUpRate,
+      neueTilgungProzent: t.secondFollowUpRepaymentRate ?? 0,
+      tilgungsart: t.secondRepaymentType,
+      laufzeitJahre: t.secondTermYears,
+      tilgungsfreiJahre: t.secondGracePeriodYears,
+    };
+  }
+  return {
+    betrag,
+    zinsProzent: t.seniorInterestRate,
+    tilgungProzent: t.seniorRepaymentRate,
+    zinsbindungJahre: t.seniorFixedRateYears,
+    anschlusszinsProzent: t.seniorFollowUpRate,
+    neueTilgungProzent: t.seniorFollowUpRepaymentRate,
+    anschlusskosten: Math.max(0, t.seniorFollowUpCosts ?? 0) * anteil,
+    weitereAnschluesse: (t.seniorFurtherFollowUps ?? []).map((a) => ({ ...a, kosten: Math.max(0, endlicheZahl(a?.kosten)) * anteil })),
+    tilgungsart: t.seniorRepaymentType,
+    laufzeitJahre: t.seniorTermYears,
+    tilgungsfreiJahre: t.seniorGracePeriodYears,
+  };
 }
 
 /** Sondertilgungen je Jahr ab 0, aus der Liste mit Kalenderjahren. Mehrere im selben Jahr zählen zusammen. */
@@ -760,7 +1071,10 @@ export function kfwTilgungsplan(
   zuschussNachJahren: number,
   prognoseJahre: number,
   anschlusszinsProzent = 0,
+  /** Erster Zahlungsmonat im ersten Kalenderjahr (seit dem 22.10.2026), die Jahre der Tabelle sind Kalenderjahre. */
+  startMonat = 1,
 ): KfwTilgungsplan {
+  const versatz = Math.min(12, Math.max(1, Math.round(startMonat))) - 1;
   let i = prozentAnteil(zinsProzent) / 12;
   const laufzeit = Math.max(1, Math.round(laufzeitJahre)) * 12;
   const anlauf = Math.min(laufzeit - 12, Math.max(0, Math.round(anlaufJahre)) * 12);
@@ -802,7 +1116,7 @@ export function kfwTilgungsplan(
       i = prozentAnteil(anschlusszinsProzent) / 12;
       rate = annuitaet(rest, laufzeit - Math.max(monat, anlauf));
     }
-    const jahr = jahre[Math.floor((monat - 1) / 12)];
+    const jahr = jahre[Math.floor((monat - 1 + versatz) / 12)];
     if (!jahr) continue;
     if (!jahr.zinssatz) jahr.zinssatz = prozentAnteil(zinsProzent);
     if (monat > bindung && bindung > 0 && anschlusszinsProzent > 0) jahr.zinssatz = prozentAnteil(anschlusszinsProzent);
@@ -820,20 +1134,8 @@ export function kfwTilgungsplan(
     rateNachAnlaufende,
     restschuldZinsbindung,
     zuschussAngerechnet,
-    zuschussJahr: zuschussAngerechnet > 0 ? zuschussMonat / 12 - 1 : -1,
+    zuschussJahr: zuschussAngerechnet > 0 ? Math.floor((zuschussMonat - 1 + versatz) / 12) : -1,
   };
-}
-
-/** Die Jahresraten eines Darlehens mit fester Jahresrate, unabhängig von der Prognoselänge. */
-function jahresraten(betrag: number, zinssatz: number, jahresrate: number, jahre: number): number[] {
-  const raten: number[] = [];
-  let rest = betrag;
-  for (let jahr = 0; jahr < jahre; jahr += 1) {
-    const ergebnis = annuitaetsjahr(rest, zinssatz, jahresrate);
-    raten.push(ergebnis.payment);
-    rest = ergebnis.closingBalance;
-  }
-  return raten;
 }
 
 /** Kapitalwert einer Zahlungsreihe bei gegebenem Zinssatz. */
@@ -921,19 +1223,15 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
 
     ## Zusammenveranlagung
 
-    Bei gemeinsamer Veranlagung ist der Anteil steuerlich folgenlos, weil beide
-    Haelften in derselben Erklaerung landen. Der Rechenkern setzt ihn deshalb
-    selbst auf 100 Prozent, und die Oberflaeche sperrt das Feld dazu passend
-    (siehe Eingabebereiche.tsx).
-
-    Die Sperre allein wuerde nicht genuegen: Ein Kunde kann 50 eingetragen und
-    die Zusammenveranlagung erst danach angehakt haben. Dann stuende in der
-    Eingabe weiter 50, und der Rechner haette ohne diese Zeile das ganze
-    Investment halbiert, obwohl dem Ehepaar die ganze Wohnung gehoert.
+    Seit dem 22.10.2026 gilt der eingetragene Anteil auch bei
+    Zusammenveranlagung. Vorher setzte der Rechenkern ihn dann auf 100
+    Prozent. Das war falsch, sobald nur ein Teil des Objekts den beiden
+    Ehepartnern gehört, etwa 50 Prozent neben einem Dritten: Die Steuer
+    rechnete dann mit dem ganzen Objekt. Wem gehört wie viel, ist eine Frage
+    des Eigentums, nicht der Veranlagung. Ehepaare, denen das Objekt
+    gemeinsam ganz gehört, tragen 100 ein; die Oberfläche sagt das dazu.
   */
-  const anteil = t.jointAssessment
-    ? 1
-    : Math.min(1, Math.max(0, prozentAnteil(t.investmentShare)));
+  const anteil = Math.min(1, Math.max(0, prozentAnteil(t.investmentShare)));
 
   /** Alle Sätze außer der Grunderwerbsteuer: Notar, Grundbuch, Makler, Sonstige. */
   const satzOhneGrunderwerbsteuer =
@@ -968,8 +1266,11 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
     bleibt deshalb in deren Basis. Gedeckelt auf den Kaufpreis ohne Möbel.
   */
   const ruecklage = Math.min(wohnungspreis, Math.max(0, t.maintenanceReserve) * anteil);
-  // Wohnung plus Garage: ab hier rechnet alles mit der Gesamtmiete.
-  const monthlyColdRent = (t.monthlyColdRent + Math.max(0, t.monthlyGarageRent || 0)) * anteil;
+  // Wohnung plus Garage: ab hier rechnet alles mit der Gesamtmiete. Getrennt bleiben sie nur im Ausweis der Rendite.
+  const mieteWohnungMonat = t.monthlyColdRent * anteil;
+  const monthlyColdRent = mieteWohnungMonat + Math.max(0, t.monthlyGarageRent || 0) * anteil;
+  // Stellplatz oder Garage im Kaufpreis, gedeckelt wie die Möbel.
+  const garagenpreis = Math.min(purchasePrice, Math.max(0, t.garagePrice || 0) * anteil);
   const monthlyOperatingCosts = t.monthlyOperatingCosts * anteil;
   const monthlyReserveContribution = Math.max(0, t.monthlyReserveContribution) * anteil;
   const rehabEingabe = Math.max(0, t.rehabExpense) * anteil;
@@ -1028,7 +1329,17 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
     `purchaseCostRate` ist damit immer die Summe der Sätze, bezogen auf die
     Basis. Er bleibt als eigenes Feld, weil Anzeige und PDF ihn lesen.
   */
-  const basisNebenkosten = nebenkostenBasis(purchasePrice, rehabExpense, furniturePrice);
+  /*
+    Sanierungsfall, seit dem 22.10.2026 (Christian). Nach dem Kauf (Standard)
+    bleibt der Aufwand wie bisher außerhalb der Basis der Kaufnebenkosten,
+    das trägt nur bei einem eigenständigen, nicht mit dem Kauf verknüpften
+    Sanierungsvertrag. Saniert der Verkäufer vor dem Verkauf, kauft der
+    Käufer eine sanierte Wohnung: Der Anteil ist Kaufpreis wie jeder andere
+    und trägt Grunderwerbsteuer und Kaufnebenkosten.
+  */
+  const sanierungsfall: Sanierungsfall = t.rehabScenario === "durchVerkaeufer" ? "durchVerkaeufer" : "nachKauf";
+  const durchVerkaeufer = sanierungsfall === "durchVerkaeufer";
+  const basisNebenkosten = nebenkostenBasis(purchasePrice, durchVerkaeufer ? 0 : rehabExpense, furniturePrice);
   const grunderwerbsteuer = basisNebenkosten * prozentAnteil(t.transferTaxRate);
   const notarkosten = basisNebenkosten * prozentAnteil(t.notaryRate);
   const grundbuchkosten = basisNebenkosten * prozentAnteil(t.landRegisterRate);
@@ -1092,47 +1403,48 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
   const finanzierungsnebenkosten = totalDebt * prozentAnteil(t.financingCostRate);
   const totalInvestment = kaufkosten + finanzierungsnebenkosten;
   const financingGap = totalInvestment - totalDebt - Math.max(0, t.equity);
-  const seniorJahresrate = seniorLoanAmount * (prozentAnteil(t.seniorInterestRate) + prozentAnteil(t.seniorRepaymentRate));
-  const juniorJahresrate = juniorLoan * (prozentAnteil(t.juniorInterestRate) + prozentAnteil(t.juniorRepaymentRate));
-  const zweitesJahresrate =
-    secondLoanAmount * (prozentAnteil(t.secondInterestRate) + prozentAnteil(t.secondRepaymentRate));
   const laufzeit = Math.min(hoechstJahre, Math.max(1, Math.round(t.forecastYears)));
+  // Übergang von Nutzen und Lasten: Das erste Jahr zählt ab diesem Monat.
+  const startMonat = Math.min(12, Math.max(1, Math.round(t.acquisitionMonth || 1)));
+  const ersterJahresanteil = (13 - startMonat) / 12;
+  const kfwLaufzeitJahre = Math.max(1, Math.round(t.kfwTermYears));
+  const kfwAnlaufJahre = Math.min(5, kfwLaufzeitJahre - 1, Math.max(0, Math.round(t.kfwGracePeriodYears)));
   /*
-    Bank und zweites Darlehen als Plan, seit dem 11.10.2026 mit Anschlusszins
-    und Sondertilgungen (siehe `banktilgungsplan`). Er läuft bis zum Ende der
-    Zinsbindung, wenn die hinter der Prognose liegt, damit die Restschuld dort
-    bekannt ist.
+    Alle Darlehen monatlich, seit dem 22.10.2026 (siehe `bankplan`). Die Pläne
+    laufen mindestens bis zum Ende der Zinsbindung und über die tilgungsfreie
+    Zeit der KfW hinaus, damit Restschuld und Ratensprung dort bekannt sind;
+    die Jahrestabelle nimmt davon nur die Prognosejahre.
   */
-  const bankplanJahre = Math.max(laufzeit, Math.round(t.seniorFixedRateYears));
-  const bankplan = banktilgungsplan({
-    betrag: seniorLoanAmount,
-    zinsProzent: t.seniorInterestRate,
-    tilgungProzent: t.seniorRepaymentRate,
-    zinsbindungJahre: t.seniorFixedRateYears,
-    anschlusszinsProzent: t.seniorFollowUpRate,
-    neueTilgungProzent: t.seniorFollowUpRepaymentRate,
-    sondertilgungen: sondertilgungenJeJahr(t.specialRepayments, t.startYear, laufzeit),
-    jahre: bankplanJahre,
-  });
   const bindungBank = Math.round(t.seniorFixedRateYears);
-  const bankRestschuldZinsbindung = bindungBank >= 1 ? bankplan[bindungBank - 1].closingBalance : 0;
-  const zweitesplan = banktilgungsplan({
-    betrag: secondLoanAmount,
-    zinsProzent: t.secondInterestRate,
-    tilgungProzent: t.secondRepaymentRate,
-    zinsbindungJahre: t.secondFixedRateYears,
-    anschlusszinsProzent: t.secondFollowUpRate,
-    neueTilgungProzent: 0,
-    jahre: laufzeit,
+  const planJahre = Math.max(laufzeit, bindungBank + 1, kfwAnlaufJahre + 2);
+  const bankMonate = bankplan({
+    ...bankplanParameter(t, "bank", seniorLoanAmount, anteil),
+    sondertilgungen: sondertilgungenJeJahr(t.specialRepayments, t.startYear, laufzeit),
+    jahre: planJahre,
+    startMonat,
   });
+  const bankRestschuldZinsbindung = bindungBank >= 1 ? bankMonate.restschuldZinsbindung : 0;
+  const zweitesMonate = bankplan({ ...bankplanParameter(t, "bank2", secondLoanAmount, anteil), jahre: planJahre, startMonat });
+  // Das Nachrangdarlehen: Annuität aus Zins und Tilgung, ohne Zinsbindung, jetzt ebenfalls monatlich.
+  const nachrangMonate = bankplan({
+    betrag: juniorLoan,
+    zinsProzent: t.juniorInterestRate,
+    tilgungProzent: t.juniorRepaymentRate,
+    zinsbindungJahre: 0,
+    anschlusszinsProzent: 0,
+    neueTilgungProzent: 0,
+    jahre: planJahre,
+    startMonat,
+  });
+  const bankplanJahre = bankMonate.jahre;
+  const zweitesplan = zweitesMonate.jahre;
+  const nachrangplan = nachrangMonate.jahre;
   /*
     Tilgungszuschuss: Prozent vom KfW-Darlehen oder ein Betrag, der anteilig
     gilt wie jeder Euro des Objekts. Gutgeschrieben nur zum Jahr aus der
     Zusage (`kfwGrantYear`), ohne Jahr gar nicht, siehe `kfwTilgungsplan`.
   */
-  // Höchstens fünf Anlaufjahre und immer mindestens ein Jahr Tilgung.
-  const kfwLaufzeitJahre = Math.max(1, Math.round(t.kfwTermYears));
-  const kfwAnlaufJahre = Math.min(5, kfwLaufzeitJahre - 1, Math.max(0, Math.round(t.kfwGracePeriodYears)));
+  // Höchstens fünf Anlaufjahre und immer mindestens ein Jahr Tilgung (oben bestimmt).
   const kfwTilgungszuschussNominal =
     kfwLoanAmount > 0
       ? t.kfwGrantMode === "euro" ? Math.max(0, t.kfwGrantValue) * anteil : kfwLoanAmount * prozentAnteil(t.kfwGrantValue)
@@ -1147,8 +1459,9 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
     t.kfwGrantYear,
     laufzeit,
     t.kfwFollowUpRate,
+    startMonat,
   );
-  const monthlyDebtService = (seniorJahresrate + juniorJahresrate + zweitesJahresrate) / 12 + kfw.ersteRate;
+  const monthlyDebtService = bankMonate.ersteRate + nachrangMonate.ersteRate + zweitesMonate.ersteRate + kfw.ersteRate;
   // Mischzins auf die Anfangsbeträge, nur Darlehen mit Betrag zählen.
   const mischzins =
     totalDebt > 0
@@ -1168,14 +1481,15 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
   */
   let rateSprung: InvestmentErgebnis["rateSprung"] = null;
   if (kfwLoanAmount > 0 && kfwAnlaufJahre > 0) {
-    const bank = jahresraten(seniorLoanAmount, prozentAnteil(t.seniorInterestRate), seniorJahresrate, kfwAnlaufJahre + 1);
-    const nachrang = jahresraten(juniorLoan, prozentAnteil(t.juniorInterestRate), juniorJahresrate, kfwAnlaufJahre + 1);
-    const zweites = jahresraten(secondLoanAmount, prozentAnteil(t.secondInterestRate), zweitesJahresrate, kfwAnlaufJahre + 1);
-    const ohneKfw = (jahr: number) => (bank[jahr] + nachrang[jahr] + zweites[jahr]) / 12;
-    const rateVorher = ohneKfw(kfwAnlaufJahre - 1) + kfw.rateVorAnlaufende;
-    const rateNachher = ohneKfw(kfwAnlaufJahre) + kfw.rateNachAnlaufende;
+    const monat = kfwAnlaufJahre * 12;
+    const ohneKfw = (index: number) =>
+      (bankMonate.monatsraten[index] ?? 0) + (nachrangMonate.monatsraten[index] ?? 0) + (zweitesMonate.monatsraten[index] ?? 0);
+    const rateVorher = ohneKfw(monat - 1) + kfw.rateVorAnlaufende;
+    const rateNachher = ohneKfw(monat) + kfw.rateNachAnlaufende;
     if (rateNachher > rateVorher + 0.005) {
-      rateSprung = { jahr: kfwAnlaufJahre + 1, kalenderjahr: Math.round(t.startYear) + kfwAnlaufJahre, rateVorher, rateNachher };
+      // Der erste Monat nach der Anlaufzeit, als Kalenderjahr der Tabelle.
+      const index = Math.floor((monat + startMonat - 1) / 12);
+      rateSprung = { jahr: index + 1, kalenderjahr: Math.round(t.startYear) + index, rateVorher, rateNachher };
     }
   }
   const effectiveAnnualRent = monthlyColdRent * 12 * (1 - Math.min(1, prozentAnteil(t.vacancyRate)));
@@ -1191,6 +1505,24 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
   const kaufpreisAusgewiesen = purchasePrice + allInclusiveAufschlag;
   const grossYield = kaufpreisAusgewiesen > 0 ? (monthlyColdRent * 12) / kaufpreisAusgewiesen : 0;
   const netYield = totalInvestment > 0 ? (effectiveAnnualRent - jahresBetriebskosten) / totalInvestment : 0;
+  /*
+    Rendite der Wohnung allein, seit dem 22.10.2026, neben der des Pakets aus
+    Wohnung und Stellplatz. Der Stellplatz trägt seinen Kaufpreis und seine
+    Miete, die Kosten bleiben bei der Wohnung. Beim All-inclusive-Modell und
+    bei den Gesamtkosten zählt der Teil, der dem Preis der Wohnung entspricht.
+    Ohne Stellplatz sind beide Werte gleich.
+  */
+  const wohnungsquote = purchasePrice > 0 ? (purchasePrice - garagenpreis) / purchasePrice : 1;
+  const kaufpreisWohnung = kaufpreisAusgewiesen * wohnungsquote;
+  const jahresmieteWohnung = mieteWohnungMonat * 12;
+  const grossYieldWohnung = kaufpreisWohnung > 0 ? jahresmieteWohnung / kaufpreisWohnung : 0;
+  const gesamtkostenWohnung = totalInvestment * wohnungsquote;
+  const netYieldWohnung =
+    gesamtkostenWohnung > 0
+      ? (jahresmieteWohnung * (1 - Math.min(1, prozentAnteil(t.vacancyRate))) - jahresBetriebskosten) / gesamtkostenWohnung
+      : 0;
+  const kaufpreisfaktor = monthlyColdRent > 0 && kaufpreisAusgewiesen > 0 ? kaufpreisAusgewiesen / (monthlyColdRent * 12) : null;
+  const kaufpreisfaktorWohnung = jahresmieteWohnung > 0 && kaufpreisWohnung > 0 ? kaufpreisWohnung / jahresmieteWohnung : null;
   /*
     Die Nebenkosten gehen nach dem Gebäudeanteil an Gebäude und Boden, wie bei
     Investagon. Auf Erhaltungsaufwand und Möbel entfallen seit dem 30.09.2026
@@ -1215,22 +1547,81 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
     Degressive AfA, Sonder-AfA und der Deckel auf das Restvolumen rechnen
     unverändert, nur auf dieser Basis.
   */
-  const depreciationBasis =
-    gebaeudeanteilKaufpreis + nebenkostenGebaeude -
-    (t.rehabMode === "expense" ? rehabExpense : 0);
-  const moebelAfaBasis = furniturePrice;
-  const moebelAfaJahr =
-    t.furnitureDepreciationYears > 0 ? moebelAfaBasis / t.furnitureDepreciationYears : 0;
   /*
-    Vereinfachter Hinweis auf anschaffungsnahe Herstellungskosten (§ 6 Abs. 1
-    Nr. 1a EStG): Aufwand über 15 Prozent der Anschaffungskosten des Gebäudes.
-    Bezug ist das Gebäude ohne den Aufwand selbst, samt seiner Nebenkosten,
-    also die AfA-Basis bei „Abziehen“. Sie gilt für beide Behandlungen, damit
-    die Quote nicht davon abhängt, was gerade eingestellt ist.
+    15-Prozent-Prüfung nach § 6 Abs. 1 Nr. 1a EStG, seit dem 22.10.2026 mit
+    Folge statt nur als Hinweis: Übersteigen Instandsetzung und Modernisierung
+    in den drei Jahren nach der Anschaffung 15 Prozent der
+    Anschaffungskosten des Gebäudes (netto), sind sie anschaffungsnaher
+    Herstellungsaufwand. Dann gibt es keinen Sofortabzug, der Aufwand geht in
+    die Gebäude-AfA. Der Rechner nimmt an, dass der Aufwand aus dem Kaufpreis
+    in diesen drei Jahren anfällt. Bezug ist das Gebäude ohne den Aufwand,
+    samt seiner Nebenkosten.
+
+    Im Fall „durch den Verkäufer“ ist der Aufwand ohnehin Anschaffungskosten,
+    die Prüfung entfällt dort.
   */
   const gebaeudeOhneAufwand = gebaeudeanteilKaufpreis + nebenkostenGebaeude - rehabExpense;
   const immediateDeductionRatio = gebaeudeOhneAufwand > 0 ? rehabExpense / gebaeudeOhneAufwand : 0;
-  const simpleThresholdExceeded = t.rehabMode === "expense" && immediateDeductionRatio > 0.15;
+  const fuenfzehnProzentGrenze = Math.max(0, gebaeudeOhneAufwand) * ANSCHAFFUNGSNAH_GRENZE;
+  const anschaffungsnah = !durchVerkaeufer && rehabExpense > 0 && immediateDeductionRatio > ANSCHAFFUNGSNAH_GRENZE;
+  const sanierungAktiviert = rehabExpense > 0 && (durchVerkaeufer || anschaffungsnah || t.rehabMode === "capitalize");
+  // Bleibt als Name, weil Oberfläche und PDF ihn lesen: Abziehen war gewählt, die Grenze macht daraus Aktivieren.
+  const simpleThresholdExceeded = anschaffungsnah && t.rehabMode === "expense";
+  const depreciationBasis = gebaeudeanteilKaufpreis + nebenkostenGebaeude - (sanierungAktiviert ? 0 : rehabExpense);
+  const moebelAfaBasis = furniturePrice;
+  /*
+    Möbel-AfA, seit dem 22.10.2026 je Jahr auf den Restbuchwert begrenzt. Eine
+    Nutzungsdauer mit Nachkommastelle (7,5 Jahre) schrieb vorher acht volle
+    Jahresbeträge ab, also mehr als die Basis.
+  */
+  const moebelNutzungsdauer = t.furnitureDepreciationYears > 0 ? t.furnitureDepreciationYears : 0;
+  const moebelAfaJahr = moebelNutzungsdauer > 0 ? moebelAfaBasis / moebelNutzungsdauer : 0;
+
+  /*
+    Sonder-AfA nach § 7b EStG, seit dem 22.10.2026 mit eigener Prüfung (siehe
+    `sonderabschreibung7b`): Liegen die Anschaffungskosten des Gebäudes über
+    5.200 Euro je m² Wohnfläche, entfällt sie ganz; sonst ist ihre
+    Bemessungsgrundlage auf 4.000 Euro je m² gedeckelt. Satz höchstens 5
+    Prozent, höchstens vier Jahre (Anschaffungsjahr und drei folgende), nicht
+    zeitanteilig. Ohne Wohnfläche lässt sich das nicht prüfen, dann rechnet
+    der Rechner keine. Die übrigen Voraussetzungen (Bauantrag, Effizienzhaus
+    40 mit QNG, entgeltliche Vermietung zu Wohnzwecken für zehn Jahre) kennt
+    er nicht; die Oberfläche nennt sie.
+  */
+  const sonderSatzEingabe = Math.max(0, t.specialDepreciationRate);
+  const sonderJahreEingabe = Math.max(0, Math.round(t.specialDepreciationYears));
+  const sonderBeantragt = sonderSatzEingabe > 0 && sonderJahreEingabe > 0;
+  const sonderSatz = Math.min(SONDER_7B_SATZ, sonderSatzEingabe);
+  const sonderJahre = Math.min(SONDER_7B_JAHRE, sonderJahreEingabe);
+  const sonderPruefung = sonderabschreibung7b(anteil > 0 ? depreciationBasis / anteil : 0, t.area);
+  const sonderZulaessig = sonderBeantragt && sonderPruefung.moeglich;
+  const sonderBemessung = sonderZulaessig ? sonderPruefung.bemessungsgrundlage * anteil : 0;
+  const sonderGedeckelt = sonderSatz < sonderSatzEingabe || sonderJahre < sonderJahreEingabe;
+  const sonderAfa: InvestmentErgebnis["sonderAfa"] = {
+    beantragt: sonderBeantragt,
+    zulaessig: sonderZulaessig,
+    hinweis: !sonderBeantragt
+      ? ""
+      : !sonderPruefung.moeglich
+        ? `Keine Sonder-AfA: ${sonderPruefung.hinweis}.`
+        : `${sonderPruefung.hinweis}.${sonderGedeckelt ? ` Gerechnet mit ${SONDER_7B_SATZ} % in höchstens ${SONDER_7B_JAHRE} Jahren, wie § 7b EStG es zulässt.` : ""}`,
+    bemessungsgrundlage: sonderBemessung,
+    baukostenJeQm: sonderPruefung.baukostenJeQm,
+    satz: sonderZulaessig ? sonderSatz : 0,
+    jahre: sonderZulaessig ? sonderJahre : 0,
+  };
+  /*
+    Gesamtnutzungsdauer für die AfA aus dem Restwert: linear aus dem
+    eingestellten Satz, degressiv aus dem gesetzlichen linearen Satz nach
+    Baujahr (degressive AfA gibt es nur für Neubauten, ohne Baujahr deshalb
+    3 Prozent).
+  */
+  const afaSatz = prozentAnteil(t.buildingDepreciationRate);
+  const degressiv = t.depreciationMethod === "declining";
+  const linearSatzRestwert = degressiv
+    ? prozentAnteil(t.constructionYear > 0 ? linearerAfaSatz(t.constructionYear).satz : 3)
+    : afaSatz;
+  const nutzungsdauer = linearSatzRestwert > 0 ? 1 / linearSatzRestwert : 0;
   const combinedTaxableIncome = Math.max(
     0,
     t.taxableIncomeCustomer + (t.jointAssessment ? t.taxableIncomeSpouse : 0),
@@ -1250,29 +1641,47 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
     true,
   );
 
-  let juniorRest = juniorLoan;
-  let degressiverBuchwert = depreciationBasis;
-  let restvolumenAfa = depreciationBasis;
+  /*
+    Ein steuerlicher Restbuchwert des Gebäudes, seit dem 22.10.2026. Reguläre
+    AfA und Sonder-AfA mindern ihn beide. Linear läuft die AfA im
+    Begünstigungszeitraum vom Ausgangswert; danach wird der Restwert über die
+    Restnutzungsdauer verteilt (§ 7a Abs. 9 EStG). Degressiv rechnet der Satz
+    auf den Restbuchwert, also auch nach der Sonder-AfA, und wechselt zur
+    linearen AfA aus dem Restwert, sobald die höher ist (§ 7 Abs. 5a Satz 4).
+  */
+  let buchwert = depreciationBasis;
+  let linearJahresbetrag: number | null = null;
   let kumulierterCashflow = 0;
   let kumulierterEigenanteil = 0;
   let moebelRestbuchwert = moebelAfaBasis;
+  let erstattungBegrenzt = false;
   const years: Jahreswert[] = [];
   // Mindert der Tilgungszuschuss ab seinem Jahr die AfA-Basis (siehe unten), rechnet die AfA mit dieser.
   let afaBasis = depreciationBasis;
+  // Wachstum darf negativ sein (Miet- oder Wertrückgang), seit dem 22.10.2026; nur unter −99 Prozent ist Schluss.
+  const wachstum = (prozent: number) => Math.max(-0.99, endlicheZahl(prozent) / 100);
+  const mietWachstum = wachstum(t.annualRentGrowth);
+  const kostenWachstum = wachstum(t.annualCostGrowth);
+  const wertWachstum = wachstum(t.annualValueGrowth);
 
   for (let i = 0; i < laufzeit; i += 1) {
-    const grossRent = monthlyColdRent * 12 * (1 + prozentAnteil(t.annualRentGrowth)) ** i;
+    // Zeitanteil des Jahres: im ersten Jahr ab dem Übergang, danach ganz.
+    const zeitanteil = i === 0 ? ersterJahresanteil : 1;
+    // Jahre seit dem Übergang zu Beginn dieses Jahres.
+    const vergangen = i === 0 ? 0 : ersterJahresanteil + i - 1;
+    const grossRent = monthlyColdRent * 12 * (1 + mietWachstum) ** i * zeitanteil;
     const effectiveRent = grossRent * (1 - Math.min(1, prozentAnteil(t.vacancyRate)));
-    const kostenfaktor = (1 + prozentAnteil(t.annualCostGrowth)) ** i;
+    const kostenfaktor = (1 + kostenWachstum) ** i * zeitanteil;
     const operatingCosts = monthlyOperatingCosts * 12 * kostenfaktor;
     const reserveContribution = monthlyReserveContribution * 12 * kostenfaktor;
-    const senior = bankplan[i];
+    const senior = bankplanJahre[i];
     const zweitesJahr = zweitesplan[i];
-    const junior = annuitaetsjahr(juniorRest, prozentAnteil(t.juniorInterestRate), juniorJahresrate);
+    const junior = nachrangplan[i];
     const kfwJahr = kfw.jahre[i];
     const interest = senior.interest + junior.interest + kfwJahr.interest + zweitesJahr.interest;
     const principal = senior.principal + junior.principal + kfwJahr.principal + zweitesJahr.principal;
     const debtService = senior.payment + junior.payment + kfwJahr.payment + zweitesJahr.payment;
+    const umschuldungskosten = (senior.umschuldungskosten ?? 0) + (zweitesJahr.umschuldungskosten ?? 0);
     /*
       Steuer: Die KfW-Zinsen sind Werbungskosten wie die Bankzinsen, sie
       stecken in `interest`. Der Tilgungszuschuss ist ein öffentlicher
@@ -1280,36 +1689,46 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
       Gutschrift die AfA-Basis des Gebäudes (R 21.5 Abs. 1 und R 7.3 Abs. 4
       EStR). Er ist keine Einnahme und keine Tilgung, die der Kunde zahlt.
     */
+    const restnutzungsdauer = Math.max(1, nutzungsdauer - vergangen);
     if (i === kfw.zuschussJahr && kfwJahr.tilgungszuschuss > 0) {
       const minderung = Math.min(afaBasis, kfwJahr.tilgungszuschuss);
       afaBasis -= minderung;
-      restvolumenAfa = Math.max(0, restvolumenAfa - minderung);
-      degressiverBuchwert = Math.max(0, degressiverBuchwert - minderung);
+      buchwert = Math.max(0, buchwert - minderung);
+      if (linearJahresbetrag !== null) linearJahresbetrag = buchwert / restnutzungsdauer;
     }
-    const cashflowBeforeTax = effectiveRent - operatingCosts - reserveContribution - debtService;
-    const afaRoh =
-      t.depreciationMethod === "declining"
-        ? degressiverBuchwert * prozentAnteil(t.buildingDepreciationRate)
-        : afaBasis * prozentAnteil(t.buildingDepreciationRate);
-    const buildingDepreciation = Math.min(restvolumenAfa, Math.max(0, afaRoh));
-    degressiverBuchwert = Math.max(0, degressiverBuchwert - buildingDepreciation);
-    restvolumenAfa = Math.max(0, restvolumenAfa - buildingDepreciation);
-    const specialDepreciation =
-      i < Math.max(0, Math.round(t.specialDepreciationYears))
-        ? Math.min(restvolumenAfa, afaBasis * prozentAnteil(t.specialDepreciationRate))
-        : 0;
-    restvolumenAfa = Math.max(0, restvolumenAfa - specialDepreciation);
-    const furnitureDepreciation = i < Math.ceil(t.furnitureDepreciationYears) ? moebelAfaJahr : 0;
+    const cashflowBeforeTax = effectiveRent - operatingCosts - reserveContribution - debtService - umschuldungskosten;
+    const imBeguenstigungszeitraum = sonderZulaessig && i < sonderJahre;
+    // § 7a Abs. 9 EStG: Nach der Sonder-AfA verteilt die lineare AfA den Restwert über die Restnutzungsdauer.
+    if (linearJahresbetrag === null && !degressiv && sonderZulaessig && i === sonderJahre && nutzungsdauer > 0) {
+      linearJahresbetrag = buchwert / restnutzungsdauer;
+    }
+    let afaRoh: number;
+    if (linearJahresbetrag !== null) afaRoh = linearJahresbetrag * zeitanteil;
+    else if (degressiv) {
+      const degressivBetrag = buchwert * afaSatz * zeitanteil;
+      const linearBetrag = nutzungsdauer > 0 ? (buchwert / restnutzungsdauer) * zeitanteil : 0;
+      if (linearBetrag > degressivBetrag) {
+        linearJahresbetrag = buchwert / restnutzungsdauer;
+        afaRoh = linearBetrag;
+      } else afaRoh = degressivBetrag;
+    } else afaRoh = afaBasis * afaSatz * zeitanteil;
+    const buildingDepreciation = Math.min(buchwert, Math.max(0, afaRoh));
+    buchwert = Math.max(0, buchwert - buildingDepreciation);
+    const specialDepreciation = imBeguenstigungszeitraum
+      ? Math.min(buchwert, sonderBemessung * prozentAnteil(sonderSatz))
+      : 0;
+    buchwert = Math.max(0, buchwert - specialDepreciation);
+    const furnitureDepreciation = Math.min(moebelRestbuchwert, moebelAfaJahr * zeitanteil);
     moebelRestbuchwert = Math.max(0, moebelRestbuchwert - furnitureDepreciation);
     const rehabDeduction =
-      t.rehabMode === "expense" && i < Math.max(1, t.rehabDistributionYears)
+      !sanierungAktiviert && i < Math.max(1, t.rehabDistributionYears)
         ? rehabExpense / Math.max(1, t.rehabDistributionYears)
         : 0;
-    // Geldbeschaffungskosten sind sofort abziehbare Werbungskosten, im Jahr der Zahlung.
+    // Geldbeschaffungskosten sind sofort abziehbare Werbungskosten, im Jahr der Zahlung, ebenso Umschuldungskosten.
     const financingCostDeduction = i === 0 ? finanzierungsnebenkosten : 0;
     const taxableResult =
       effectiveRent - operatingCosts - interest - buildingDepreciation - specialDepreciation - furnitureDepreciation - rehabDeduction -
-      financingCostDeduction - (RUECKLAGENZUFUEHRUNG_ABZIEHBAR ? reserveContribution : 0);
+      financingCostDeduction - umschuldungskosten - (RUECKLAGENZUFUEHRUNG_ABZIEHBAR ? reserveContribution : 0);
     /*
       Der Anteil steckt seit dem 21.09.2026 schon in den Eingaben oben. Eine
       zweite Multiplikation hier wuerde ihn quadrieren: Bei 50 Prozent kaeme ein
@@ -1331,30 +1750,34 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
       t.includeSolidaritySurcharge,
     );
     /*
-      Fester Satz, seit dem 25.09.2026 ohne Untergrenze.
-
-      Die Steuerwirkung ist genau −Ergebnis × Satz, so rechnet auch Investagon.
-      Vorher stand hier max(0, Steuer vorher + Ergebnis × Satz). Ohne
-      eingetragenes Einkommen ist die Steuer vorher 0, und ein Verlust fiel
-      damit stillschweigend auf eine Ersparnis von 0. Die Steuer nachher darf
-      deshalb negativ werden: Sie ist hier eine Rechengröße, keine
-      festgesetzte Steuer. Der Tarifmodus bleibt unverändert.
+      Fester Satz: Steuer nachher = Steuer vorher + Ergebnis × Satz, seit dem
+      22.10.2026 wieder mit Untergrenze 0. Vom 25.09. bis 22.10.2026 durfte sie
+      negativ werden; dann erstattete das Finanzamt rechnerisch Steuer, die
+      nie gezahlt wurde. Ohne Steuerlast gibt es keine Erstattung, und die
+      Oberfläche sagt es (`erstattungBegrenzt`). Die Bestandteile werden im
+      Verhältnis zur Steuer vorher mitgeführt, damit Einkommensteuer, Soli und
+      Kirchensteuer zusammen wieder die Gesamtsteuer ergeben.
     */
-    const steuerManuell = taxBefore.totalTax + allocatedTaxableResult * prozentAnteil(t.marginalTaxRate);
+    const steuerManuellRoh = taxBefore.totalTax + allocatedTaxableResult * prozentAnteil(t.marginalTaxRate);
+    const steuerManuell = Math.max(0, steuerManuellRoh);
+    if (t.taxCalculationMode !== "tariff" && steuerManuellRoh < -0.005) erstattungBegrenzt = true;
+    const verhaeltnis = taxBefore.totalTax > 0 ? steuerManuell / taxBefore.totalTax : 0;
     const taxAfter: Steuerprofil =
       t.taxCalculationMode === "tariff"
         ? taxAfterTarif
         : {
-            ...taxAfterTarif,
+            taxableIncome: taxableIncomeAfter,
+            incomeTax: taxBefore.totalTax > 0 ? taxBefore.incomeTax * verhaeltnis : steuerManuell,
+            solidarity: taxBefore.totalTax > 0 ? taxBefore.solidarity * verhaeltnis : 0,
+            churchTax: taxBefore.totalTax > 0 ? taxBefore.churchTax * verhaeltnis : 0,
             totalTax: steuerManuell,
-            effectiveRate: taxableIncomeAfter > 0 ? Math.max(0, steuerManuell) / taxableIncomeAfter : 0,
+            effectiveRate: taxableIncomeAfter > 0 ? steuerManuell / taxableIncomeAfter : 0,
           };
     const taxEffect = taxBefore.totalTax - taxAfter.totalTax;
     const cashflowAfterTax = cashflowBeforeTax + taxEffect;
     kumulierterCashflow += cashflowAfterTax;
     kumulierterEigenanteil += Math.max(0, -cashflowAfterTax);
-    juniorRest = junior.closingBalance;
-    const remainingDebt = senior.closingBalance + juniorRest + kfwJahr.closingBalance + zweitesJahr.closingBalance;
+    const remainingDebt = senior.closingBalance + junior.closingBalance + kfwJahr.closingBalance + zweitesJahr.closingBalance;
     /*
       Der Wert am Jahresende, seit dem 25.09.2026 aus drei Teilen.
 
@@ -1369,7 +1792,8 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
       rechnen; das ging mit einem Anteil unter 100 Prozent schief, weil der
       Wert anteilig war, der Kaufpreis aber nicht.
     */
-    const wertzuwachs = immobilienanteil * ((1 + prozentAnteil(t.annualValueGrowth)) ** (i + 1) - 1);
+    // Seit dem 22.10.2026 ab dem Übergang gezählt, im ersten Jahr also zeitanteilig, und auch negativ.
+    const wertzuwachs = immobilienanteil * ((1 + wertWachstum) ** (vergangen + zeitanteil) - 1);
     const propertyValue = immobilienanteil + wertzuwachs + moebelRestbuchwert + ruecklage;
     const propertyEquity = propertyValue - remainingDebt;
     const totalWealth = propertyEquity + kumulierterCashflow;
@@ -1384,7 +1808,7 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
       darlehen: {
         bank: senior,
         bank2: zweitesJahr,
-        nachrang: { ...junior, tilgungszuschuss: 0, zinssatz: juniorRest + junior.principal > 0 ? prozentAnteil(t.juniorInterestRate) : 0 },
+        nachrang: junior,
         kfw: kfwJahr,
       },
       sondertilgung: senior.sondertilgung ?? 0,
@@ -1396,6 +1820,7 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
       furnitureDepreciation,
       rehabDeduction,
       financingCostDeduction,
+      umschuldungskosten,
       taxableResult,
       allocatedTaxableResult,
       taxableIncomeBefore,
@@ -1431,11 +1856,18 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
     stecken (siehe `finanzierungsnebenkosten` oben).
   */
   const eigenkapital = Math.max(0, t.equity) + finanzierungsnebenkosten;
-  // Zahlungsreihe mit Modellverkauf zum prognostizierten Wert im letzten Jahr.
+  /*
+    Zahlungsreihe mit Modellverkauf zum prognostizierten Wert im letzten Jahr,
+    seit dem 22.10.2026 abzüglich der Verkaufskosten. Eine Steuer auf den
+    Veräußerungsgewinn (Verkauf innerhalb von zehn Jahren, § 23 EStG) rechnet
+    das Modell nicht; die Oberfläche nennt diese Grenze.
+  */
+  const verkaufskostenSatz = prozentAnteil(t.saleCostRate);
+  const verkaufskosten = years.length > 0 ? years[years.length - 1].propertyValue * verkaufskostenSatz : 0;
   const reiheMitWertzuwachs = [
     -eigenkapital,
     ...years.map((jahr, index) =>
-      index === years.length - 1 ? jahr.cashflowAfterTax + jahr.propertyEquity : jahr.cashflowAfterTax,
+      index === years.length - 1 ? jahr.cashflowAfterTax + jahr.propertyEquity - verkaufskosten : jahr.cashflowAfterTax,
     ),
   ];
   // Zahlungsreihe mit Verkauf ohne Wertsteigerung: derselbe Wert, nur ohne den Zuwachs.
@@ -1443,7 +1875,7 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
     -eigenkapital,
     ...years.map((jahr, index) =>
       index === years.length - 1
-        ? jahr.cashflowAfterTax + jahr.propertyValue - jahr.wertzuwachs - jahr.remainingDebt
+        ? jahr.cashflowAfterTax + (jahr.propertyValue - jahr.wertzuwachs) * (1 - verkaufskostenSatz) - jahr.remainingDebt
         : jahr.cashflowAfterTax,
     ),
   ];
@@ -1479,8 +1911,9 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
     in der Reihenfolge, in der Christian das Gespraech fuehrt: Was zahle ich
     selbst, was wird daraus, was ist das in Prozent.
   */
-  const monate = years.length * 12;
-  const ersterMonat = years.length > 0 ? -years[0].cashflowAfterTax / 12 : 0;
+  // Monate ab dem Übergang: Das erste Jahr hat seit dem 22.10.2026 nur seine Monate.
+  const monate = years.length > 0 ? years.length * 12 - (startMonat - 1) : 0;
+  const ersterMonat = years.length > 0 ? -years[0].cashflowAfterTax / (12 * ersterJahresanteil) : 0;
   const letztesJahr = years.length > 0 ? years[years.length - 1] : null;
 
   /*
@@ -1539,6 +1972,21 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
     mischzins,
     rateSprung,
     anteil,
+    ersterJahresanteil,
+    garagenpreis,
+    kaufpreisWohnung,
+    grossYieldWohnung,
+    netYieldWohnung,
+    kaufpreisfaktor,
+    kaufpreisfaktorWohnung,
+    sonderAfa,
+    sanierungsfall,
+    fuenfzehnProzentGrenze,
+    anschaffungsnah,
+    sanierungAktiviert,
+    verkaufskosten,
+    umschuldungskostenGesamt: years.reduce((summe, jahr) => summe + jahr.umschuldungskosten, 0),
+    erstattungBegrenzt,
     totalDebt,
     financingGap,
     monthlyDebtService,
@@ -1610,16 +2058,20 @@ export interface Eigenkapitalrendite {
 
 export function eigenkapitalrendite(
   input: Pick<InvestmentEingabe, "equity">,
-  result: Pick<InvestmentErgebnis, "years" | "vermoegensaufbauMonat">,
+  result: Pick<InvestmentErgebnis, "years" | "vermoegensaufbauMonat"> & Partial<Pick<InvestmentErgebnis, "ersterJahresanteil">>,
 ): Eigenkapitalrendite {
   const jahre = result.years.length;
-  const vermoegensaufbau = result.vermoegensaufbauMonat * jahre * 12;
+  // Seit dem 22.10.2026 mit zeitanteiligem erstem Jahr: gezählt wird ab dem Übergang.
+  const ersterAnteil = result.ersterJahresanteil ?? 1;
+  const jahreAbUebergang = jahre > 0 ? jahre - 1 + ersterAnteil : 0;
+  const vermoegensaufbau = result.vermoegensaufbauMonat * jahreAbUebergang * 12;
   const eigenkapital = Math.max(0, input.equity);
-  const zuzahlungMonat = Math.max(0, -(result.years[0]?.cashflowBeforeTax ?? 0) / 12);
+  const zuzahlungMonat = Math.max(0, -(result.years[0]?.cashflowBeforeTax ?? 0) / (12 * ersterAnteil));
   const nenner = eigenkapital + zuzahlungMonat * 12;
   // Unter einem Cent ist der Nenner rechnerisch null, die Division gäbe nur Rauschen.
-  const rendite = jahre > 0 && nenner >= 0.01 ? vermoegensaufbau / jahre / nenner : null;
-  return { vermoegensaufbau, jahre, eigenkapital, zuzahlungMonat, nenner, rendite };
+  const rendite = jahre > 0 && nenner >= 0.01 ? vermoegensaufbau / jahreAbUebergang / nenner : null;
+  // `jahre` ist die Zeit ab dem Übergang, damit der Rechenweg „÷ Jahre“ genau diese Zahl nennt.
+  return { vermoegensaufbau, jahre: jahreAbUebergang, eigenkapital, zuzahlungMonat, nenner, rendite };
 }
 
 /**
@@ -1673,4 +2125,71 @@ export function ausgewiesenerKaufpreis(
 ): number {
   const aufschlag = result.anteil > 0 ? (result.allInclusiveAufschlag ?? 0) / result.anteil : 0;
   return input.purchasePrice + aufschlag;
+}
+
+export interface Hausgeldaufstellung {
+  /** Etwas eingetragen? Sonst zeigt die Oberfläche nichts. */
+  vorhanden: boolean;
+  gesamt: number;
+  umlagefaehig: number;
+  nichtUmlagefaehig: number;
+  ruecklage: number;
+  /** Summe der Teile. */
+  summeTeile: number;
+  /** Gesamt minus Summe der Teile; `null`, wenn kein Gesamtbetrag eingetragen ist. */
+  abweichung: number | null;
+  /** In der Rechnung steht weniger nicht umlagefähiger Aufwand als hier aufgeführt. */
+  rechnungNiedriger: boolean;
+}
+
+/**
+ * Das Hausgeld in ganzer Höhe, seit dem 22.10.2026 (Christian): gesamt =
+ * umlagefähig + nicht umlagefähig + Erhaltungsrücklage. Umlagefähig zahlt der
+ * Mieter und belastet den Cashflow nicht; nicht umlagefähig belastet ihn und
+ * ist steuerlich abziehbar; die Rücklage belastet ihn, steuerlich zählt sie
+ * erst bei Verwendung. Die Rechnung selbst nimmt weiter die nicht
+ * umlagefähigen Kosten und die Rücklage aus ihren Feldern; hier wird nur
+ * aufgeführt und geprüft, ob die Summe stimmt. Ganzes Objekt, ohne Anteil.
+ */
+export function hausgeldAufstellung(
+  t: Pick<InvestmentEingabe, "housingFeeTotal" | "housingFeeRecoverable" | "housingFeeNonRecoverable" | "monthlyReserveContribution" | "monthlyOperatingCosts">,
+): Hausgeldaufstellung {
+  const zahl = (wert: number | undefined) => Math.max(0, endlicheZahl(wert ?? 0));
+  const gesamt = zahl(t.housingFeeTotal);
+  const umlagefaehig = zahl(t.housingFeeRecoverable);
+  const nichtUmlagefaehig = zahl(t.housingFeeNonRecoverable);
+  const ruecklage = zahl(t.monthlyReserveContribution);
+  const summeTeile = umlagefaehig + nichtUmlagefaehig + ruecklage;
+  return {
+    vorhanden: gesamt > 0 || umlagefaehig > 0 || nichtUmlagefaehig > 0,
+    gesamt,
+    umlagefaehig,
+    nichtUmlagefaehig,
+    ruecklage,
+    summeTeile,
+    abweichung: gesamt > 0 ? gesamt - summeTeile : null,
+    rechnungNiedriger: nichtUmlagefaehig > zahl(t.monthlyOperatingCosts) + 0.005,
+  };
+}
+
+/**
+ * Monate des ersten Jahres, seit dem 22.10.2026 ab dem Übergang von Nutzen
+ * und Lasten. Monatswerte des ersten Jahres teilen durch diese Zahl statt
+ * durch 12, sonst stünde bei einem Kauf im Juli die halbe Miete je Monat da.
+ */
+export function monateErstesJahr(result: object): number {
+  // Bewusst `object`: Aufrufer reichen oft nur einen Ausschnitt des Ergebnisses weiter, ältere Stände ohne das Feld zählen ganz.
+  return 12 * ((result as Partial<InvestmentErgebnis>).ersterJahresanteil ?? 1);
+}
+
+/**
+ * Gibt es einen Stellplatz mit eigenem Preis oder eigener Miete? Dann stehen
+ * Rendite und Kaufpreisfaktor überall zweimal da: für die Wohnung allein und
+ * für Wohnung und Stellplatz zusammen (seit dem 22.10.2026). Sonst einmal,
+ * ohne Zusatz.
+ */
+export function mitStellplatz(
+  result: Partial<Pick<InvestmentErgebnis, "garagenpreis" | "grossYield" | "grossYieldWohnung">>,
+): boolean {
+  return (result.garagenpreis ?? 0) > 0 || Math.abs((result.grossYieldWohnung ?? result.grossYield ?? 0) - (result.grossYield ?? 0)) > 1e-12;
 }

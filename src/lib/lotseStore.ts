@@ -15,7 +15,7 @@
  */
 import { supabase } from "@/integrations/supabase/client";
 import { istTabelleUnbekannt } from "@/lib/abwesenheitStore";
-import { berechneInvestment, standardEingabe, type InvestmentEingabe, type InvestmentErgebnis } from "@/lib/investmentrechner/rechenkern";
+import { berechneInvestment, monateErstesJahr, standardEingabe, type InvestmentEingabe, type InvestmentErgebnis } from "@/lib/investmentrechner/rechenkern";
 import { vorbelegungAusEinheit } from "@/lib/investmentrechner/objektVorbelegung";
 import type { ObjektData, ObjektWohnung } from "@/lib/objekteStore";
 import {
@@ -363,8 +363,8 @@ export function kalkulationAusRechner(
    * er nicht vorliegt.
    */
   const steuerOffen = eingabe.taxCalculationMode === "tariff" && ergebnis.combinedTaxableIncome <= 0;
-  // Dieselbe Regel wie im Rechenkern: Bei Zusammenveranlagung zählt die ganze Wohnung.
-  const anteilProzent = eingabe.jointAssessment ? 100 : Math.min(100, Math.max(0, eingabe.investmentShare));
+  // Der Anteil aus dem Rechenkern statt einer zweiten Regel; seit dem 22.10.2026 auch bei Zusammenveranlagung die Eingabe.
+  const anteilProzent = (ergebnis.anteil ?? 1) * 100;
   return pruefeKalkulation({
     annahmen,
     eigentumsanteil_prozent: r2(anteilProzent),
@@ -376,16 +376,16 @@ export function kalkulationAusRechner(
     zins_prozent: r2(eingabe.seniorInterestRate),
     tilgung_prozent: r2(eingabe.seniorRepaymentRate),
     // Die im ersten Jahr tatsächlich gezahlte Rate: Bei einem kleinen Darlehen ist sie gedeckelt (Runde 6).
-    rate_monat: r2(erstes ? erstes.debtService / 12 : ergebnis.monthlyDebtService),
-    kaltmiete_monat: r2(erstes ? erstes.grossRent / 12 : undefined),
+    rate_monat: r2(erstes ? erstes.debtService / monateErstesJahr(ergebnis) : ergebnis.monthlyDebtService),
+    kaltmiete_monat: r2(erstes ? erstes.grossRent / monateErstesJahr(ergebnis) : undefined),
     // Nur mit Leerstand, sonst ginge die Rechnung der Chip-Erklärung nicht auf.
     mietausfall_monat: r2(erstes && erstes.grossRent > erstes.effectiveRent ? (erstes.grossRent - erstes.effectiveRent) / 12 : undefined),
-    nicht_umlagefaehig_monat: r2(erstes ? erstes.operatingCosts / 12 : undefined),
-    ruecklage_monat: r2(erstes ? erstes.reserveContribution / 12 : undefined),
+    nicht_umlagefaehig_monat: r2(erstes ? erstes.operatingCosts / monateErstesJahr(ergebnis) : undefined),
+    ruecklage_monat: r2(erstes ? erstes.reserveContribution / monateErstesJahr(ergebnis) : undefined),
     nettorendite_prozent: r2(ergebnis.netYield * 100),
-    cashflow_vor_steuer_monat: r2(erstes ? erstes.cashflowBeforeTax / 12 : undefined),
-    steuereffekt_monat: r2(erstes && !steuerOffen ? erstes.taxEffect / 12 : undefined),
-    cashflow_nach_steuer_monat: r2(erstes && !steuerOffen ? erstes.cashflowAfterTax / 12 : undefined),
+    cashflow_vor_steuer_monat: r2(erstes ? erstes.cashflowBeforeTax / monateErstesJahr(ergebnis) : undefined),
+    steuereffekt_monat: r2(erstes && !steuerOffen ? erstes.taxEffect / monateErstesJahr(ergebnis) : undefined),
+    cashflow_nach_steuer_monat: r2(erstes && !steuerOffen ? erstes.cashflowAfterTax / monateErstesJahr(ergebnis) : undefined),
     // Der Eigenanteil ist ein Wert nach Steuer, ohne Einkommen gibt es ihn nicht (LOTSE-005).
     eigenanteil_monat: r2(steuerOffen ? undefined : ergebnis.eigenanteilMonat),
     afa_satz_prozent: r2(eingabe.buildingDepreciationRate),

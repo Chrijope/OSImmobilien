@@ -228,21 +228,19 @@ describe("Der Anteil wirkt auf alle Eurobeträge", () => {
   });
 });
 
-describe("Bei Zusammenveranlagung bleibt der Anteil wirkungslos", () => {
-  it("rechnet trotz eingetragener 50 Prozent das ganze Objekt", () => {
+describe("Der Anteil gilt auch bei Zusammenveranlagung", () => {
+  it("rechnet mit 50 Prozent die halbe Rate, unabhängig von der Veranlagung", () => {
     /*
-      Beide Hälften landen in derselben Steuererklärung, der Anteil ist dort
-      steuerlich folgenlos. Wer ihn trotzdem setzt, würde sein Investment
-      halbieren, ohne dass sich an der Steuer etwas ändert.
-
-      Die Sperre in der Oberfläche allein genügt nicht: Ein Kunde kann 50
-      eingetragen und die Zusammenveranlagung erst danach angehakt haben.
+      Seit dem 22.10.2026 (Codex-Prüfung): Wem wie viel gehört, ist eine
+      Frage des Eigentums. Gehört den Ehepartnern zusammen nur die Hälfte,
+      rechnet auch die Zusammenveranlagung nur mit der Hälfte. Vorher setzte
+      der Rechenkern den Anteil dann auf 100 Prozent.
     */
     const mitAnteil = berechneInvestment({ ...FALL, jointAssessment: true, investmentShare: 50 });
     const ohneAnteil = berechneInvestment({ ...FALL, jointAssessment: true, investmentShare: 100 });
 
-    expect(mitAnteil.monthlyDebtService).toBeCloseTo(ohneAnteil.monthlyDebtService, 6);
-    expect(mitAnteil.eigenanteilMonat).toBeCloseTo(ohneAnteil.eigenanteilMonat, 6);
+    expect(mitAnteil.anteil).toBe(0.5);
+    expect(mitAnteil.monthlyDebtService).toBeLessThan(ohneAnteil.monthlyDebtService);
   });
 });
 

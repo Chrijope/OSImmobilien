@@ -68,7 +68,7 @@ describe("Die Kacheln zeigen Christians Zahlen", () => {
     expect(screen.getByText("Cashflow nach Steuer pro Monat")).toBeInTheDocument();
     expect(screen.getByText("Vermögensaufbau")).toBeInTheDocument();
     expect(screen.getByText("Gesamtvermögen nach 10 Jahren")).toBeInTheDocument();
-    expect(screen.getByText("Eigenkapitalrendite p. a.")).toBeInTheDocument();
+    expect(screen.getByText("Vermögensrendite p. a. (Modellkennzahl)")).toBeInTheDocument();
     expect(screen.getByText("Steuereffekt im ersten Jahr")).toBeInTheDocument();
     expect(screen.getByText("Steuereffekt 10 Jahre gesamt")).toBeInTheDocument();
   });

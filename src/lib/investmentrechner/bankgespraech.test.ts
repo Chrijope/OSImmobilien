@@ -49,7 +49,10 @@ describe("zinsrisiko", () => {
     const ergebnis = berechneInvestment(eingabe);
     const risiko = zinsrisiko(eingabe, ergebnis, 0)!;
     expect(risiko.restschuldBeginn).toBeCloseTo(ergebnis.totalDebt, 6);
-    expect(risiko.zinsHeute).toBeCloseTo(0.04, 9);
+    // Monatlich getilgt: Der Jahreszins liegt etwas unter 4 % der Restschuld zu Jahresbeginn.
+    expect(risiko.zinsHeute).toBeCloseTo(ergebnis.years[0].interest / ergebnis.totalDebt, 9);
+    expect(risiko.zinsHeute).toBeLessThan(0.04);
+    expect(risiko.zinsHeute).toBeGreaterThan(0.0395);
     expect(risiko.zinsBeiNull).not.toBeNull();
     expect(risiko.zinsBeiNull!).toBeGreaterThan(risiko.zinsHeute);
     const jahr = ergebnis.years[0];
@@ -112,8 +115,8 @@ describe("fuenfzehnProzentGrenze", () => {
 
 describe("volltilgungsjahr", () => {
   it("rechnet die Laufzeit einer Annuität", () => {
-    // 4 % Zins, 2 % Tilgung: ln 3 / ln 1,04 = 28,01 Jahre, also im 29. Jahr getilgt.
-    expect(volltilgungsjahr(100_000, 4, 2, 2026)).toBe(2026 + 28);
+    // Seit dem 22.10.2026 monatlich: ln 3 / ln(1 + 0,04 ÷ 12) = 330,1 Monate, also im 28. Jahr getilgt.
+    expect(volltilgungsjahr(100_000, 4, 2, 2026)).toBe(2026 + 27);
     expect(volltilgungsjahr(100_000, 0, 10, 2026)).toBe(2035);
     expect(volltilgungsjahr(0, 4, 2, 2026)).toBeNull();
     expect(volltilgungsjahr(100_000, 4, 0, 2026)).toBeNull();

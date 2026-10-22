@@ -329,11 +329,13 @@ export function getHausgeldNichtUmlegbarMonat(objekt: any): number {
  * EUR-Override schlägt %-Berechnung. Einzelwohnungen werden zu 100 % übernommen.
  */
 export function getHausgeldNichtUmlegbarForWohnung(objekt: any, wohnung?: any): number {
-  const direkt = Number(
-    wohnung?.hausgeldNichtUmlagefaehigEuro
-      ?? wohnung?.meta?.hausgeldNichtUmlagefaehigEuro
-      ?? 0,
-  );
+  /*
+    Seit dem 22.10.2026 über `hausgeldTeile`, also auch aus den
+    Investagon-Rohdaten (`operation_cost_landlord_apartment`). Vorher las
+    diese Stelle nur das gepflegte Feld; fehlte es, schätzte sie 30 Prozent
+    des Hausgelds gesamt, obwohl der genaue Wert in den Rohdaten stand.
+  */
+  const direkt = wohnung ? (hausgeldTeile(wohnung).nichtUmlagefaehig ?? hausgeldTeile(wohnung.meta).nichtUmlagefaehig ?? 0) : 0;
   if (direkt > 0) return direkt;
 
   const kalk = getObjektKalkMeta(objekt);
@@ -343,6 +345,19 @@ export function getHausgeldNichtUmlegbarForWohnung(objekt: any, wohnung?: any): 
   const hausgeld = getHausgeldMonatForWohnung(objekt, wohnung);
   const p = Number(wohnung?.hausgeldNichtUmlagefaehigP ?? wohnung?.meta?.hausgeldNichtUmlagefaehigP ?? kalk.hausgeldNichtUmlagefaehigP ?? 30);
   return Math.round((hausgeld * p) / 100);
+}
+
+/**
+ * Woher der nicht umlagefähige Anteil einer Wohnung kommt, seit dem 22.10.2026:
+ * gepflegt an der Einheit, als Eurobetrag am Objekt, oder nur geschätzt als
+ * Prozentsatz vom Hausgeld gesamt. Die Vorbelegung des Investmentrechners
+ * kennzeichnet eine Schätzung, statt still mit ihr zu rechnen.
+ */
+export function hausgeldNichtUmlegbarQuelle(objekt: any, wohnung?: any): "einheit" | "objekt" | "geschaetzt" | "keine" {
+  const einheit = wohnung ? (hausgeldTeile(wohnung).nichtUmlagefaehig ?? hausgeldTeile(wohnung.meta).nichtUmlagefaehig) : undefined;
+  if (einheit) return "einheit";
+  if (Number(getObjektKalkMeta(objekt).hausgeldNichtUmlagefaehigEuro || 0) > 0) return "objekt";
+  return getHausgeldMonatForWohnung(objekt, wohnung) > 0 ? "geschaetzt" : "keine";
 }
 
 export function getHausgeldNichtUmlegbarP(objekt: any, wohnung?: any): number {

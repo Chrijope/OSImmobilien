@@ -1,6 +1,10 @@
 import { useLiveVersion } from "@/hooks/useLiveData";
 import { automatischeObjektwerte, automatischeUnterlagenwerte, ergaenzeUnterlagen, leseObjektUnterlagen, type ObjektUnterlagenQuelle } from "@/lib/investmentrechner/objektUnterlagen";
 import { vorbelegungAusInvestment } from "@/lib/investmentrechner/investmentVorbelegung";
+import { stellplatzmieteTrennen } from "@/lib/investmentrechner/objektVorbelegung";
+import type { FormatSprache } from "@/lib/sprachFormat";
+import { AusfuehrlicheBerechnung } from "./AusfuehrlicheBerechnung";
+import { RechnerSpracheContext } from "./RechnerSprache";
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { useMaskeBisUnten } from "./useMaskeBisUnten";
 import { createPortal } from "react-dom";
@@ -13,6 +17,7 @@ import {
   CopyPlus,
   FileDown,
   FileSearch,
+  FileText,
   ImagePlus,
   Landmark,
   ReceiptText,
@@ -128,7 +133,8 @@ type Eingabebereich = "kunde" | "objekt" | "unterlagen" | "finanzierung" | "ertr
 
 /** Der Hinweis, wenn etwas in der lokalen Vorschau ohne Datenbank nicht geht. */
 export const VORSCHAU_NICHT_VERFUEGBAR = "In der Vorschau nicht verfügbar";
-type Ansicht = "analyse" | "vergleich" | "expose";
+/** `ausfuehrlich`: die zwölfseitige Berechnung für den Kunden, seit dem 22.10.2026 auch im CRM. */
+type Ansicht = "analyse" | "vergleich" | "expose" | "ausfuehrlich";
 
 /** Klasse am body, solange die Seite offen ist. Nur dann greifen die Druckregeln. */
 const DRUCK_KLASSE = "investmentrechner-druck";
@@ -353,6 +359,14 @@ export interface InvestmentrechnerInhaltProps {
    * Ablauf „Neu aus Selbstauskunft laden“).
    */
   vorschau?: { selbstauskunft?: unknown; stand?: string };
+  /**
+   * Feste Sprache der rechten Seite und der PDFs, seit dem 22.10.2026; ohne Angabe die Kundensprache oder die sichtbare Wahl.
+   * Die eigenständige Artefaktfassung hat keinen Kunden und lässt sie wählen;
+   * ohne Angabe gilt wie bisher die Sprache des gewählten Kunden.
+   */
+  dokumentSprache?: FormatSprache;
+  /** Name auf dem Titelblatt der ausführlichen Berechnung („Erstellt von …“). */
+  erstelltVon?: string;
 }
 
 export function InvestmentrechnerInhalt({
@@ -363,6 +377,8 @@ export function InvestmentrechnerInhalt({
   sichtbar = true,
   bankgespraechStart = false,
   vorschau,
+  dokumentSprache,
+  erstelltVon = "",
 }: InvestmentrechnerInhaltProps = {}) {
   // Die fixierte Eingabemaske reicht bis zum Fensterrand, siehe useMaskeBisUnten.
   const maskeRef = useRef<HTMLElement>(null);
@@ -376,12 +392,18 @@ export function InvestmentrechnerInhalt({
   });
   function startObjekte(): Objektzustand[] {
     if (start?.berechnung) {
+      // Ein Stand von vor dem 22.10.2026 hat die Stellplatzmiete noch in der Kaltmiete; getrennt wird nur, was die Einheit belegt.
+      const getrennt = stellplatzmieteTrennen(
+        start.berechnung.eingabe,
+        start.berechnung.herkunft ?? {},
+        vorbelegung ?? vorbelegungAusInvestment(start.berechnung.investment_id),
+      );
       return [
         startZustand({
-          eingabe: start.berechnung.eingabe,
+          eingabe: getrennt.eingabe,
           knk: start.berechnung.knk,
           unterlagen: start.berechnung.unterlagen ?? undefined,
-          herkunft: start.berechnung.herkunft,
+          herkunft: getrennt.herkunft,
         }),
       ];
     }
@@ -1295,7 +1317,16 @@ export function InvestmentrechnerInhalt({
   const alleVermerk = vergleichAktiv ? "alle Objekte" : undefined;
 
   // Der Druck geht an den Kunden und folgt deshalb seiner Sprache aus dem Profil (Plan Kundensprache, D15).
-  const { sprache: kundenSprache } = useKundenSprache(kundeId);
+  const { sprache: spracheDesKunden } = useKundenSprache(kundeId);
+  /*
+    Sprache der rechten Seite und der PDFs, seit dem 22.10.2026: mit Kunde die
+    Kundensprache aus seinem Profil, ohne Kunde (etwa über die Seitenleiste
+    geöffnet) eine sichtbare Wahl Deutsch oder Englisch. Die Eingabemaske
+    links bleibt immer Deutsch.
+  */
+  const [spracheOhneKunde, setSpracheOhneKunde] = useState<FormatSprache>("de");
+  const kundenSprache: FormatSprache = dokumentSprache ?? (kundeId ? spracheDesKunden : spracheOhneKunde);
+  const en = kundenSprache === "en";
   const exposeObjekte: ExposeObjekt[] = objekte.map((objekt, index) => ({
     input: objekt.eingabe,
     result: ergebnisse[index],
@@ -1574,31 +1605,50 @@ export function InvestmentrechnerInhalt({
               </div>
             </aside>
 
-            <section className="result-panel">
+            <section className="result-panel" lang={kundenSprache}>
+            <RechnerSpracheContext.Provider value={kundenSprache}>
               <div className="result-header">
                 {ansicht === "vergleich" ? (
                   <div>
-                    <span className="eyebrow">{input.clientName || "Kundenberechnung"}</span>
-                    <h2>Zwei Objekte im Vergleich</h2>
-                    <p>Gleiche Steuerbasis, gleiche Laufzeit von {input.forecastYears} Jahren</p>
+                    <span className="eyebrow">{input.clientName || (en ? "Client calculation" : "Kundenberechnung")}</span>
+                    <h2>{en ? "Two properties compared" : "Zwei Objekte im Vergleich"}</h2>
+                    <p>
+                      {en
+                        ? `Same tax basis, same period of ${input.forecastYears} years`
+                        : `Gleiche Steuerbasis, gleiche Laufzeit von ${input.forecastYears} Jahren`}
+                    </p>
                   </div>
                 ) : (
                   <div>
                     <span className="eyebrow">
-                      {input.clientName || "Kundenberechnung"}
+                      {input.clientName || (en ? "Client calculation" : "Kundenberechnung")}
                       {vergleichAktiv ? ` · ${objektMarke(sicherIndex)}` : ""}
                     </span>
-                    <h2>{input.propertyTitle || "Neue Investmentkalkulation"}</h2>
-                    <p>{input.address || "Adresse ergänzen"}</p>
+                    <h2>{input.propertyTitle || (en ? "New investment calculation" : "Neue Investmentkalkulation")}</h2>
+                    <p>{input.address || (en ? "Address missing" : "Adresse ergänzen")}</p>
                   </div>
                 )}
-                <div className="view-toggle" role="tablist" aria-label="Ansicht wählen">
+                {/* Ohne Kunde eine sichtbare Wahl; mit Kunde gilt seine Sprache aus dem Profil. */}
+                {!kundeId && dokumentSprache === undefined ? (
+                  <label className="sprache-wahl" data-testid="sprache-wahl">
+                    <span>{en ? "Language of preview and PDF" : "Sprache der Vorschau und PDFs"}</span>
+                    <select value={kundenSprache} onChange={(e) => setSpracheOhneKunde(e.target.value === "en" ? "en" : "de")}>
+                      <option value="de">Deutsch</option>
+                      <option value="en">English</option>
+                    </select>
+                  </label>
+                ) : kundeId ? (
+                  <span className="sprache-wahl" data-testid="sprache-kunde">
+                    {en ? "Language from the client profile: English" : "Sprache aus dem Kundenprofil: Deutsch"}
+                  </span>
+                ) : null}
+                <div className="view-toggle" role="tablist" aria-label={en ? "Choose view" : "Ansicht wählen"}>
                   <button className={ansicht === "analyse" ? "active" : ""} onClick={() => setAnsicht("analyse")}>
-                    <Calculator size={16} /> Analyse
+                    <Calculator size={16} /> {en ? "Analysis" : "Analyse"}
                   </button>
                   {vergleichAktiv && (
                     <button className={ansicht === "vergleich" ? "active" : ""} onClick={() => setAnsicht("vergleich")}>
-                      <Scale size={16} /> Vergleich
+                      <Scale size={16} /> {en ? "Comparison" : "Vergleich"}
                     </button>
                   )}
                   {/*
@@ -1607,7 +1657,10 @@ export function InvestmentrechnerInhalt({
                     bleibt "expose", er steht nirgends auf dem Bildschirm.
                   */}
                   <button className={ansicht === "expose" ? "active" : ""} onClick={() => setAnsicht("expose")}>
-                    <ReceiptText size={16} /> Berechnung
+                    <ReceiptText size={16} /> {en ? "Calculation" : "Berechnung"}
+                  </button>
+                  <button className={ansicht === "ausfuehrlich" ? "active" : ""} onClick={() => setAnsicht("ausfuehrlich")} id="ansicht-ausfuehrlich">
+                    <FileText size={16} /> {en ? "Detailed" : "Ausführlich"}
                   </button>
                 </div>
               </div>
@@ -1622,6 +1675,9 @@ export function InvestmentrechnerInhalt({
                   onDeckblatt={waehleDeckblatt}
                   mitBankgespraech={bankModus}
                 />
+              )}
+              {ansicht === "ausfuehrlich" && (
+                <AusfuehrlicheBerechnung input={input} result={result} photos={photos} erstelltVon={erstelltVon} />
               )}
               {ansicht === "vergleich" && vergleichAktiv && (
                 <Vergleichsansicht
@@ -1645,11 +1701,16 @@ export function InvestmentrechnerInhalt({
                   <DeckblattWahl
                     wert={deckblatt}
                     onWahl={waehleDeckblatt}
-                    hinweis="Gilt für die Vorschau, für „Berechnung herunterladen“ und für die Analyse. Die Seiten danach sind bei allen gleich."
+                    hinweis={
+                      en
+                        ? "Applies to the preview, to “Download calculation” and to the analysis. The pages after it are the same for all."
+                        : "Gilt für die Vorschau, für „Berechnung herunterladen“ und für die Analyse. Die Seiten danach sind bei allen gleich."
+                    }
                   />
                   <ExposeVorschau>{exposeInhalt(false)}</ExposeVorschau>
                 </div>
               )}
+            </RechnerSpracheContext.Provider>
             </section>
           </div>
         </div>

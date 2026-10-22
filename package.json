@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "build:artefakt": "vite build --config vite.artefakt.config.ts",
+    "build:investmentrechner": "vite build --config vite.investmentrechner.config.ts",
     "pdf:beratung": "node scripts/beratung-pdf/erzeuge.mjs",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
