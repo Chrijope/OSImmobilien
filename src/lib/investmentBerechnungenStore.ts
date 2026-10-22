@@ -220,17 +220,39 @@ export function aufGesamtkaufpreis(eingabe: InvestmentEingabe, gespeicherteVersi
   const version =
     typeof gespeicherteVersion === "number" && Number.isFinite(gespeicherteVersion) ? gespeicherteVersion : 1;
   /*
-    Ab Version 2 ist der Kaufpreis der Gesamtkaufpreis. Version 3 (22.10.2026)
-    trennt Wohnungs- und Stellplatzmiete und bringt neue Felder mit
-    Standardwerten, die nichts verändern; die Stellplatzmiete eines alten
+    Bis Version 1 war der Kaufpreis der Preis ohne Möbel. Version 3
+    (22.10.2026) trennt Wohnungs- und Stellplatzmiete und bringt neue Felder
+    mit Standardwerten, die nichts verändern; die Stellplatzmiete eines alten
     Stands lässt sich nur mit den Daten der Einheit trennen, siehe
-    `stellplatzmieteTrennen`. Hier wird deshalb nur die Marke gesetzt.
+    `stellplatzmieteTrennen`.
   */
-  if (version >= 2) return { ...eingabe, eingabeVersion: EINGABE_VERSION };
+  let ergebnis = version >= 2
+    ? eingabe
+    : { ...eingabe, purchasePrice: eingabe.purchasePrice + Math.max(0, eingabe.furniturePrice) };
+  ergebnis = mitGetrenntemHausgeld(ergebnis, version);
+  return { ...ergebnis, eingabeVersion: EINGABE_VERSION };
+}
+
+/**
+ * Version 4 (22.10.2026, Codex-Kontrolle): Bis Version 3 war
+ * `monthlyOperatingCosts` die Summe aller nicht umlagefähigen Kosten, und
+ * `housingFeeNonRecoverable` (nur in Version 3 vorhanden) eine reine Anzeige.
+ * Seit Version 4 zählt der Rechenkern beide Felder zusammen. Damit ein alter
+ * Stand genau so rechnet wie beim Speichern, wird das Hausgeld aus dem alten
+ * Feld herausgelöst: weitere Kosten = alte Summe minus Hausgeld. War die
+ * Anzeige größer als die alte Summe, gilt das Hausgeld als die alte Summe und
+ * die weiteren Kosten als 0; die Summe bleibt in jedem Fall die alte.
+ * Stände vor Version 3 haben das Feld nicht und bleiben unverändert.
+ */
+export function mitGetrenntemHausgeld(eingabe: InvestmentEingabe, version: number): InvestmentEingabe {
+  if (version >= 4) return eingabe;
+  const hausgeld = Math.max(0, eingabe.housingFeeNonRecoverable || 0);
+  if (!(hausgeld > 0)) return { ...eingabe, housingFeeNonRecoverable: 0 };
+  const summe = Math.max(0, eingabe.monthlyOperatingCosts || 0);
   return {
     ...eingabe,
-    purchasePrice: eingabe.purchasePrice + Math.max(0, eingabe.furniturePrice),
-    eingabeVersion: EINGABE_VERSION,
+    housingFeeNonRecoverable: Math.min(hausgeld, summe),
+    monthlyOperatingCosts: Math.max(0, summe - hausgeld),
   };
 }
 

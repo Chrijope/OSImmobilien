@@ -373,8 +373,9 @@ export function einordnung(a: Vergleichsobjekt, b: Vergleichsobjekt, sprache: Fo
   if (sprache === "en") return einordnungEnglisch(a, b);
 
   const laufzeit = Math.min(a.ergebnis.years.length, b.ergebnis.years.length);
-  const monatA = erstesA.cashflowAfterTax / 12;
-  const monatB = erstesB.cashflowAfterTax / 12;
+  // Je Monat ab dem Übergang, das erste Jahr kann kürzer sein (22.10.2026).
+  const monatA = erstesA.cashflowAfterTax / monateErstesJahr(a.ergebnis);
+  const monatB = erstesB.cashflowAfterTax / monateErstesJahr(b.ergebnis);
   const vermoegenA = letztesA.totalWealth;
   const vermoegenB = letztesB.totalWealth;
 
@@ -417,8 +418,9 @@ function einordnungEnglisch(a: Vergleichsobjekt, b: Vergleichsobjekt): string {
   const letztesA = a.ergebnis.years[a.ergebnis.years.length - 1];
   const letztesB = b.ergebnis.years[b.ergebnis.years.length - 1];
   const laufzeit = Math.min(a.ergebnis.years.length, b.ergebnis.years.length);
-  const monatA = erstesA.cashflowAfterTax / 12;
-  const monatB = erstesB.cashflowAfterTax / 12;
+  // Je Monat ab dem Übergang, das erste Jahr kann kürzer sein (22.10.2026).
+  const monatA = erstesA.cashflowAfterTax / monateErstesJahr(a.ergebnis);
+  const monatB = erstesB.cashflowAfterTax / monateErstesJahr(b.ergebnis);
   const vermoegenA = letztesA.totalWealth;
   const vermoegenB = letztesB.totalWealth;
   const monatSieger = ermittleSieger("mehrIstBesser", monatA, monatB, "euroCent");

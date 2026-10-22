@@ -49,9 +49,8 @@ export interface Feldbeschreibung {
   max?: number;
   /**
    * Schlüssel in der Antwort der Auslesung, wenn er vom Rechnerfeld abweicht.
-   * Seit dem 22.10.2026: Die Function liefert das nicht umlagefähige Hausgeld
-   * weiter als `monthlyOperatingCosts`, im Rechner steht es jetzt in
-   * `housingFeeNonRecoverable` (sonst zählte es neben der Vorbelegung doppelt).
+   * Seit dem 22.10.2026 liefert die Function die weiteren nicht umlagefähigen
+   * Kosten als `additionalNonRecoverableCosts`, im Rechner `monthlyOperatingCosts`.
    */
   antwortSchluessel?: string;
 }
@@ -74,6 +73,7 @@ export type AuslesbaresFeld =
   | "seniorRepaymentRate"
   | "monthlyColdRent"
   | "housingFeeNonRecoverable"
+  | "monthlyOperatingCosts"
   | "buildingShare"
   | "buildingDepreciationRate"
   | "specialDepreciationRate"
@@ -101,7 +101,8 @@ export const AUSLESBARE_FELDER: readonly Feldbeschreibung[] = [
   { feld: "seniorInterestRate", label: "Sollzins p. a.", einheit: "prozent", min: 0, max: 15 },
   { feld: "seniorRepaymentRate", label: "Anfängliche Tilgung", einheit: "prozent", min: 0, max: 20 },
   { feld: "monthlyColdRent", label: "Kaltmiete p. M.", einheit: "euro", min: 1, max: 100_000 },
-  { feld: "housingFeeNonRecoverable", antwortSchluessel: "monthlyOperatingCosts", label: "davon nicht umlagefähig p. M.", einheit: "euro", min: 0, max: 50_000 },
+  { feld: "housingFeeNonRecoverable", label: "davon nicht umlagefähig p. M.", einheit: "euro", min: 0, max: 50_000 },
+  { feld: "monthlyOperatingCosts", antwortSchluessel: "additionalNonRecoverableCosts", label: "Weitere nicht umlagefähige Kosten p. M.", einheit: "euro", min: 0, max: 50_000 },
   { feld: "buildingShare", label: "Gebäudeanteil", einheit: "prozent", min: 1, max: 100 },
   { feld: "buildingDepreciationRate", label: "AfA p. a.", einheit: "prozent", min: 0.5, max: 10 },
   { feld: "specialDepreciationRate", label: "Sonder-AfA p. a.", einheit: "prozent", min: 0, max: 10 },
@@ -304,13 +305,39 @@ export function vorschlagswertFormatiert(einheit: Feldeinheit, wert: number | st
  * Unbekannte Felder, fehlende oder unplausible Werte fallen weg. Die
  * Reihenfolge folgt AUSLESBARE_FELDER, nicht der Antwort.
  */
+/**
+ * Alte Antworten der Auslesung (bis 22.10.2026) nannten unter
+ * `monthlyOperatingCosts` die Summe aus nicht umlagefähigem Hausgeld und
+ * Verwaltung. Daraus wird nur das Hausgeld: Summe minus die schon
+ * eingetragenen weiteren Kosten, nie weniger als 0. Die weiteren Kosten
+ * selbst übernimmt eine alte Antwort nie, sonst zählten sie doppelt. Neue
+ * Antworten mit getrennten Feldern bleiben, wie sie sind.
+ */
+export function altAntwortGetrennt(roh: Record<string, unknown>, aktuell: Pick<InvestmentEingabe, "monthlyOperatingCosts">): Record<string, unknown> {
+  const alt = roh.monthlyOperatingCosts;
+  if (!alt || typeof alt !== "object" || "housingFeeNonRecoverable" in roh) return roh;
+  const eintrag = alt as Partial<KiFeldwert>;
+  const summe = typeof eintrag.wert === "number" ? eintrag.wert : Number(eintrag.wert);
+  if (!Number.isFinite(summe)) return roh;
+  const weitere = Math.max(0, aktuell.monthlyOperatingCosts || 0);
+  const { monthlyOperatingCosts: _alt, ...rest } = roh;
+  return {
+    ...rest,
+    housingFeeNonRecoverable: {
+      ...eintrag,
+      wert: Math.max(0, summe - weitere),
+      quelle: `${eintrag.quelle ?? ""}${weitere > 0 ? ` (Summe ${summe} € abzüglich weiterer Kosten ${weitere} €)` : ""}`.trim(),
+    },
+  };
+}
+
 export function kiAntwortInVorschlaege(antwort: unknown, aktuell: InvestmentEingabe, herkunft?: Herkunft): Uebernahmevorschlag[] {
   const felder =
     antwort && typeof antwort === "object" && "felder" in antwort
       ? (antwort as { felder: unknown }).felder
       : null;
   if (!felder || typeof felder !== "object") return [];
-  const roh = felder as Record<string, unknown>;
+  const roh = altAntwortGetrennt(felder as Record<string, unknown>, aktuell);
   const vorschlaege: Uebernahmevorschlag[] = [];
   for (const beschreibung of AUSLESBARE_FELDER) {
     const eintrag = roh[beschreibung.antwortSchluessel ?? beschreibung.feld];

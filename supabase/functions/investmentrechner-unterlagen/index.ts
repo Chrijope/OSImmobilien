@@ -114,8 +114,11 @@ const ZAHLENFELDER: Record<string, string> = {
   seniorRepaymentRate: "Anfängliche Tilgung des Bankdarlehens in Prozent pro Jahr (Finanzierungsvorschlag).",
   monthlyColdRent:
     "Monatliche Nettokaltmiete der Einheit in Euro (Mietvertrag, Exposé, Mietaufstellung). Ist nur die Jahresmiete genannt, durch 12 teilen und in der Quelle vermerken, Sicherheit dann höchstens mittel.",
-  monthlyOperatingCosts:
-    "Monatliche nicht umlagefähige Kosten des Eigentümers in Euro: Verwaltergebühr und nicht umlagefähiger Anteil des Hausgelds ohne Rücklagenzuführung. Ist die Rücklage nicht abgrenzbar, das Feld nicht melden (Wirtschaftsplan, Hausgeldabrechnung). Nicht das gesamte Hausgeld.",
+  // Seit dem 22.10.2026 getrennt; vorher ein Feld `monthlyOperatingCosts` mit der Summe beider (der Rechner liest alte Antworten weiter).
+  housingFeeNonRecoverable:
+    "Monatlicher nicht umlagefähiger Anteil des Hausgelds der Einheit in Euro, etwa WEG-Verwaltung und nicht umlegbare Betriebskosten, ohne Rücklagenzuführung und ohne Sondereigentumsverwaltung. Ist die Rücklage nicht abgrenzbar, das Feld nicht melden (Wirtschaftsplan, Hausgeldabrechnung). Nicht das gesamte Hausgeld.",
+  additionalNonRecoverableCosts:
+    "Weitere monatliche Kosten des Eigentümers in Euro außerhalb des Hausgelds, die nicht auf den Mieter umgelegt werden, vor allem die Sondereigentumsverwaltung (Mietverwaltung). Nur wenn ausdrücklich genannt.",
   buildingShare: "Gebäudeanteil am Kaufpreis in Prozent, also Kaufpreis ohne Grund und Boden (Kaufpreisaufteilung, Exposé).",
   buildingDepreciationRate: "Regulärer AfA-Satz für das Gebäude in Prozent pro Jahr, etwa 2 oder 3 (Exposé, Musterberechnung).",
   specialDepreciationRate: "Sonder-AfA in Prozent pro Jahr, etwa nach § 7b EStG, nur wenn ausdrücklich genannt.",

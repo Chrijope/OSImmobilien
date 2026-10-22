@@ -4,6 +4,7 @@ import { toast } from "@/hooks/use-toast";
 import { eigenkapitalrendite, hausgeldAufstellung, mitStellplatz, monateErstesJahr, type InvestmentEingabe, type InvestmentErgebnis } from "@/lib/investmentrechner/rechenkern";
 import {
   haushaltMitVorlage,
+  postenBezeichnung,
   haushaltsrechnung,
   vermoegenMitVorlage,
   vermoegensaufstellung,
@@ -580,9 +581,9 @@ export function BankunterlagenTabellen({
             </tr>
           </thead>
           <tbody>
-            {haushalt.einkuenfte.map((p, i) => zeile(p.bezeichnung || t(`Einkunft ${i + 1}`, `Income ${i + 1}`), p.betrag))}
+            {haushalt.einkuenfte.map((p, i) => zeile(postenBezeichnung(p.bezeichnung, sprache) || t(`Einkunft ${i + 1}`, `Income ${i + 1}`), p.betrag))}
             {zeile(t("Summe Einkünfte", "Total income"), h.einkuenfteMonat, true)}
-            {haushalt.ausgaben.map((p, i) => zeile(p.bezeichnung || t(`Ausgabe ${i + 1}`, `Expense ${i + 1}`), -p.betrag))}
+            {haushalt.ausgaben.map((p, i) => zeile(postenBezeichnung(p.bezeichnung, sprache) || t(`Ausgabe ${i + 1}`, `Expense ${i + 1}`), -p.betrag))}
             {zeile(t("Summe Ausgaben", "Total expenses"), -h.ausgabenMonat, true)}
             {zeile(t("Überschuss vor dem Investment", "Surplus before the investment"), h.ueberschussVorMonat, true)}
             {zeile(t("+ Kaltmiete der Wohnung", "+ Net cold rent of the apartment"), h.mieteMonat)}
@@ -609,7 +610,7 @@ export function BankunterlagenTabellen({
           <tbody>
             {vermoegen.werte.map((p, i) => (
               <tr key={`w${i}`}>
-                <td>{p.bezeichnung || t(`Vermögenswert ${i + 1}`, `Asset ${i + 1}`)}</td>
+                <td>{postenBezeichnung(p.bezeichnung, sprache) || t(`Vermögenswert ${i + 1}`, `Asset ${i + 1}`)}</td>
                 <td>{p.verpfaendet ? t("ja", "yes") : t("nein", "no")}</td>
                 <td>{formatEuro(p.betrag, sprache)}</td>
               </tr>
@@ -621,7 +622,7 @@ export function BankunterlagenTabellen({
             </tr>
             {vermoegen.verbindlichkeiten.map((p, i) => (
               <tr key={`v${i}`}>
-                <td>{p.bezeichnung || t(`Verbindlichkeit ${i + 1}`, `Liability ${i + 1}`)}</td>
+                <td>{postenBezeichnung(p.bezeichnung, sprache) || t(`Verbindlichkeit ${i + 1}`, `Liability ${i + 1}`)}</td>
                 <td />
                 <td>{formatEuro(-p.betrag, sprache)}</td>
               </tr>
