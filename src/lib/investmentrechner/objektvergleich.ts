@@ -1,4 +1,5 @@
 import type { InvestmentEingabe, InvestmentErgebnis } from "./rechenkern";
+import { mitStellplatz, monateErstesJahr } from "./rechenkern";
 import { formatEuro, formatEuroCent, formatProzent } from "./formatierer";
 import { SPRACH_LOCALE, type FormatSprache } from "../sprachFormat";
 
@@ -128,6 +129,8 @@ export const VERGLEICH_BEZEICHNUNG_EN: Record<string, string> = {
   "Eingesetztes Eigenkapital": "Equity invested",
   "Monatliche Rate": "Monthly instalment",
   Bruttorendite: "Gross rental yield",
+  "Bruttorendite Wohnung": "Gross rental yield apartment",
+  "gesamt, Wohnung und Stellplatz": "total, apartment and parking",
   Nettorendite: "Net rental yield",
   "Cashflow nach Steuern p. M.": "Cash flow after tax per month",
   "Steuereffekt Jahr 1": "Tax effect year 1",
@@ -217,6 +220,7 @@ export function vergleicheObjekte(a: Vergleichsobjekt, b: Vergleichsobjekt): Ver
   const letztesA = a.ergebnis.years[a.ergebnis.years.length - 1];
   const letztesB = b.ergebnis.years[b.ergebnis.years.length - 1];
   const erstesA = a.ergebnis.years[0];
+  const stellplatz = mitStellplatz(a.ergebnis) || mitStellplatz(b.ergebnis);
   const erstesB = b.ergebnis.years[0];
   const laufzeit = Math.min(a.ergebnis.years.length, b.ergebnis.years.length);
   const endgruppe = `Nach ${jahreDativ(laufzeit)}`;
@@ -247,9 +251,27 @@ export function vergleicheObjekte(a: Vergleichsobjekt, b: Vergleichsobjekt): Ver
       wertA: a.ergebnis.monthlyDebtService,
       wertB: b.ergebnis.monthlyDebtService,
     },
+    /*
+      Mit Stellplatz seit dem 22.10.2026 zwei Zeilen: die Wohnung allein und
+      das Paket. Die Zeile „Bruttorendite“ bleibt der Schlüssel des Pakets,
+      Vergleichsseite und PDF lesen sie unter diesem Namen.
+    */
+    ...(stellplatz
+      ? [
+          {
+            gruppe: "Laufender Ertrag",
+            bezeichnung: "Bruttorendite Wohnung",
+            einheit: "prozent" as const,
+            richtung: "mehrIstBesser" as const,
+            wertA: a.ergebnis.grossYieldWohnung ?? a.ergebnis.grossYield,
+            wertB: b.ergebnis.grossYieldWohnung ?? b.ergebnis.grossYield,
+          },
+        ]
+      : []),
     {
       gruppe: "Laufender Ertrag",
       bezeichnung: "Bruttorendite",
+      ...(stellplatz ? { hinweis: "gesamt, Wohnung und Stellplatz" } : {}),
       einheit: "prozent",
       richtung: "mehrIstBesser",
       wertA: a.ergebnis.grossYield,
@@ -268,8 +290,8 @@ export function vergleicheObjekte(a: Vergleichsobjekt, b: Vergleichsobjekt): Ver
       bezeichnung: "Cashflow nach Steuern p. M.",
       einheit: "euroCent",
       richtung: "mehrIstBesser",
-      wertA: erstesA ? erstesA.cashflowAfterTax / 12 : null,
-      wertB: erstesB ? erstesB.cashflowAfterTax / 12 : null,
+      wertA: erstesA ? erstesA.cashflowAfterTax / monateErstesJahr(a.ergebnis) : null,
+      wertB: erstesB ? erstesB.cashflowAfterTax / monateErstesJahr(b.ergebnis) : null,
     },
     {
       gruppe: "Laufender Ertrag",

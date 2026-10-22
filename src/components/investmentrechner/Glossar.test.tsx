@@ -129,11 +129,11 @@ describe("Interner Zinsfuß", () => {
     expect(kacheln).not.toMatch(/Zinsfu|Rendite auf dein eingesetztes Geld/);
   });
 
-  it("bleibt im Glossar, weil der Objektvergleich ihn weiter zeigt", () => {
+  it("bleibt im Glossar und im Objektvergleich, mit Verkaufskosten in der Formel", () => {
     const objekt = { eingabe: EINGABE, ergebnis: berechneInvestment(EINGABE) };
     const zeile = vergleicheObjekte(objekt, objekt).find((z) => z.bezeichnung === "Interner Zinsfuß (IRR) p. a.");
     expect(zeile?.wertA).toBe(objekt.ergebnis.irr);
-    expect(KENNZAHL_TEXTE_DE.glossar.eintraege.irr.bedeutung).toContain("Objektvergleich");
+    expect(KENNZAHL_TEXTE_DE.glossar.eintraege.irr.formel).toContain("Verkaufskosten");
   });
 });
 
@@ -144,7 +144,7 @@ describe("Eigenkapitalrendite", () => {
     const eintrag = KENNZAHL_TEXTE_DE.glossar.eintraege.eigenkapitalrendite;
     expect(eintrag.formel).toContain("(Vermögensaufbau im Betrachtungszeitraum ÷ Jahre) ÷ (Eigenkapital + Zuzahlung vor Steuer je Monat × 12)");
     expect(eintrag.formel).toContain("negativer Cashflow vor Steuer pro Monat");
-    expect(KENNZAHL_TEXTE_EN.glossar.eintraege.eigenkapitalrendite.titel).toBe("Return on equity p.a.");
+    expect(KENNZAHL_TEXTE_EN.glossar.eintraege.eigenkapitalrendite.titel).toBe("Wealth return p.a. (model figure)");
   });
 
   it("zeigt die Analyse mit dem kurzen Pflichthinweis unter den Kacheln", () => {

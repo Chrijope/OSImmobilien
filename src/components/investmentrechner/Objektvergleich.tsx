@@ -10,7 +10,7 @@ import {
   vergleicheObjekte,
   type Vergleichsobjekt,
 } from "@/lib/investmentrechner/objektvergleich";
-import { ausgewiesenerKaufpreis } from "@/lib/investmentrechner/rechenkern";
+import { ausgewiesenerKaufpreis, mitStellplatz, monateErstesJahr } from "@/lib/investmentrechner/rechenkern";
 import { Objektkarte } from "./Felder";
 import { Zweireihendiagramm } from "./Diagramme";
 
@@ -76,8 +76,8 @@ function kartenwerte(objekt: Vergleichsobjekt): { label: string; wert: string }[
   const erstesJahr = objekt.ergebnis.years[0];
   const letztesJahr = objekt.ergebnis.years[objekt.ergebnis.years.length - 1];
   return [
-    { label: "Bruttorendite", wert: formatProzent(objekt.ergebnis.grossYield) },
-    { label: "CF n. St. p. M.", wert: erstesJahr ? formatEuroCent(erstesJahr.cashflowAfterTax / 12) : "-" },
+    { label: mitStellplatz(objekt.ergebnis) ? "Bruttorendite gesamt" : "Bruttorendite", wert: formatProzent(objekt.ergebnis.grossYield) },
+    { label: "CF n. St. p. M.", wert: erstesJahr ? formatEuroCent(erstesJahr.cashflowAfterTax / monateErstesJahr(objekt.ergebnis)) : "-" },
     {
       label: `Vermögen ${letztesJahr ? letztesJahr.year : ""}`.trim(),
       wert: letztesJahr ? formatEuro(letztesJahr.totalWealth) : "-",

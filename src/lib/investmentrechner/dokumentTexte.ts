@@ -215,6 +215,10 @@ export interface DokumentTexte {
     gesamtInklBeides: string;
     kaufpreisImmobilie: string;
     erhaltungGesondert: string;
+    /** Seit dem 22.10.2026: Sanierung durch den Verkäufer, Wohnung und Stellplatz getrennt. */
+    sanierungVerkaeufer: string;
+    davonWohnung: string;
+    davonStellplatz: string;
     gebaeudeOhneErhaltung: string;
     grunderwerbsteuer: (satz: string, basis: string) => string;
     notar: (satz: string, basis: string) => string;
@@ -624,6 +628,9 @@ export const DOKUMENT_TEXTE_DE: DokumentTexte = {
     gesamtInklBeides: "Gesamtkaufpreis (inkl. Erhaltungsaufwand und Möbel/Inventar)",
     kaufpreisImmobilie: "davon Kaufpreis Immobilie",
     erhaltungGesondert: "davon Erhaltungsaufwand (gesonderte Leistung, im Notarvertrag ausgewiesen)",
+    sanierungVerkaeufer: "davon Sanierung durch den Verkäufer (Anschaffungskosten)",
+    davonWohnung: "davon Wohnung",
+    davonStellplatz: "davon Stellplatz/Garage",
     gebaeudeOhneErhaltung: "Gebäudeanteil ohne Erhaltungsaufwand",
     grunderwerbsteuer: (satz, basis) => `Grunderwerbsteuer ${satz} auf ${basis}`,
     notar: (satz, basis) => `Notar ${satz} auf ${basis}`,
@@ -1048,6 +1055,9 @@ export const DOKUMENT_TEXTE_EN: DokumentTexte = {
     gesamtInklBeides: "Total purchase price (incl. maintenance expenses and furniture and fittings)",
     kaufpreisImmobilie: "of which purchase price of the property",
     erhaltungGesondert: "of which maintenance expenses (separate service, stated in the notarial contract)",
+    sanierungVerkaeufer: "of which renovation by the seller (acquisition costs)",
+    davonWohnung: "of which apartment",
+    davonStellplatz: "of which parking space/garage",
     gebaeudeOhneErhaltung: "Building share excl. maintenance expenses",
     grunderwerbsteuer: (satz, basis) => `Real estate transfer tax ${satz} on ${basis}`,
     notar: (satz, basis) => `Notary ${satz} on ${basis}`,

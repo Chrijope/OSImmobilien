@@ -34,7 +34,7 @@ import {
   sanitizePdfText,
 } from "@/lib/pdfBranding";
 import type { FormatSprache } from "@/lib/sprachFormat";
-import { ausgewiesenerKaufpreis, type InvestmentEingabe, type InvestmentErgebnis, type Jahreswert } from "./rechenkern";
+import { ausgewiesenerKaufpreis, mitStellplatz, monateErstesJahr, type InvestmentEingabe, type InvestmentErgebnis, type Jahreswert } from "./rechenkern";
 import { sanierungenBereinigt, type UnterlagenDaten, type UnterlagenDokument } from "./unterlagenAuslesen";
 import { formatEuro, formatEuroCent, formatProzent, formatZahl } from "./formatierer";
 import { dokumentTexteFuer, hinweisOhneSteuerwirkung, type DokumentTexte } from "./dokumentTexte";
@@ -541,14 +541,22 @@ function objektteil(l: Lauf, objekt: BerechnungPdfObjekt, bilder: Bild[], marke?
     [
       { label: kach.kaltmiete, wert: euro(result.effectiveAnnualRent / 12), notiz: wege.kaltmiete?.text },
       { label: kach.kreditrate, wert: euroCent(result.monthlyDebtService), notiz: wege.kreditrate?.text },
-      { label: kach.bruttorendite, wert: prozent(result.grossYield), notiz: wege.bruttorendite?.text },
-      { label: kach.nettorendite, wert: prozent(result.netYield), notiz: wege.nettorendite?.text },
+      ...(mitStellplatz(result)
+        ? [{ label: kach.bruttorenditeWohnung, wert: prozent(result.grossYieldWohnung), notiz: wege.bruttorenditeWohnung?.text }]
+        : []),
+      {
+        label: mitStellplatz(result) ? kach.bruttorenditeGesamt : kach.bruttorendite,
+        wert: prozent(result.grossYield),
+        notiz: wege.bruttorendite?.text,
+      },
+      ...(mitStellplatz(result) ? [{ label: kach.nettorenditeWohnung, wert: prozent(result.netYieldWohnung), notiz: null }] : []),
+      { label: mitStellplatz(result) ? kach.nettorenditeGesamt : kach.nettorendite, wert: prozent(result.netYield), notiz: wege.nettorendite?.text },
     ],
-    4,
+    mitStellplatz(result) ? 3 : 4,
   );
 
-  const vorSteuerMonat = erstes.cashflowBeforeTax / 12;
-  const nachSteuerMonat = erstes.cashflowAfterTax / 12;
+  const vorSteuerMonat = erstes.cashflowBeforeTax / monateErstesJahr(result);
+  const nachSteuerMonat = erstes.cashflowAfterTax / monateErstesJahr(result);
   const zahltDrauf = nachSteuerMonat < 0;
   const steuerhinweis =
     input.taxCalculationMode === "tariff"
@@ -591,7 +599,7 @@ function objektteil(l: Lauf, objekt: BerechnungPdfObjekt, bilder: Bild[], marke?
       {
         label: kach.steuereffektErstesJahr,
         wert: mitVorzeichen(erstes.taxEffect, euro),
-        notiz: [wege.steuereffektErstesJahr?.text, `${k.zusaetze.steuereffektMonat(mitVorzeichen(erstes.taxEffect / 12, euroCent))} · ${steuerhinweis}`]
+        notiz: [wege.steuereffektErstesJahr?.text, `${k.zusaetze.steuereffektMonat(mitVorzeichen(erstes.taxEffect / monateErstesJahr(result), euroCent))} · ${steuerhinweis}`]
           .filter(Boolean)
           .join(" · "),
         ton: erstes.taxEffect < 0 ? "negativ" : undefined,
@@ -628,8 +636,9 @@ function objektteil(l: Lauf, objekt: BerechnungPdfObjekt, bilder: Bild[], marke?
     4,
   );
 
+  // Seit dem 22.10.2026 nach dem Ergebnis: über der 15-Prozent-Grenze oder bei Sanierung durch den Verkäufer aktiviert.
   const erhaltungsjahre =
-    input.rehabMode === "expense"
+    !result.sanierungAktiviert
       ? String(input.rehabDistributionYears)
       : input.buildingDepreciationRate > 0
         ? String(Math.round(100 / input.buildingDepreciationRate))
@@ -1077,7 +1086,12 @@ export async function erzeugeBankgespraechPdf(input: InvestmentEingabe, result: 
   zeile(l, "Kapitaldienst je Monat (Jahr 1)", euroCent(bank.kapitaldienstMonat));
   zeile(l, "Miete abzüglich Hausgeld und Rücklage je Monat", euroCent(bank.mietueberschussMonat));
   if (bank.kapitaldienstdeckung !== null) zeile(l, "Kapitaldienstdeckung (DSCR)", `${formatZahl(bank.kapitaldienstdeckung, "de", 2)}-fach`);
-  if (bank.kaufpreisfaktor !== null) zeile(l, "Kaufpreisfaktor", `${formatZahl(bank.kaufpreisfaktor, "de", 1)}-fach`);
+  if (mitStellplatz(result) && bank.kaufpreisfaktorWohnung !== null) {
+    zeile(l, "Kaufpreisfaktor Wohnung", `${formatZahl(bank.kaufpreisfaktorWohnung, "de", 1)}-fach`);
+  }
+  if (bank.kaufpreisfaktor !== null) {
+    zeile(l, mitStellplatz(result) ? "Kaufpreisfaktor gesamt (Wohnung und Stellplatz)" : "Kaufpreisfaktor", `${formatZahl(bank.kaufpreisfaktor, "de", 1)}-fach`);
+  }
   zeile(l, "Bruttomietrendite / Nettomietrendite", `${prozent(result.grossYield)} / ${prozent(result.netYield)}`);
   if (bank.restschuldZinsbindung) zeile(l, `Restschuld Bankdarlehen Ende ${bank.restschuldZinsbindung.jahr}`, euro(bank.restschuldZinsbindung.betrag));
   zeile(l, "Anschlusszins angenommen", bank.anschlusszins === null ? "keiner, Zins von heute" : prozent(bank.anschlusszins));

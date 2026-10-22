@@ -1,5 +1,5 @@
 import { ImagePlus } from "lucide-react";
-import { ausgewiesenerKaufpreis, eigenkapitalrendite, type InvestmentEingabe, type InvestmentErgebnis } from "@/lib/investmentrechner/rechenkern";
+import { ausgewiesenerKaufpreis, eigenkapitalrendite, mitStellplatz, type InvestmentEingabe, type InvestmentErgebnis } from "@/lib/investmentrechner/rechenkern";
 import {
   sanierungenBereinigt,
   type UnterlagenDaten,
@@ -195,8 +195,9 @@ export function ExposeDokument({
     Schutz stand bei einem Satz von null woertlich "Infinity Jahr(e)"
     im Expose, weil durch null geteilt wurde.
   */
+  // Seit dem 22.10.2026 nach dem Ergebnis: Aktiviert ist er auch über der 15-Prozent-Grenze und bei Sanierung durch den Verkäufer.
   const erhaltungsjahre = String(
-    input.rehabMode === "expense"
+    !result.sanierungAktiviert
       ? input.rehabDistributionYears
       : input.buildingDepreciationRate > 0
         ? Math.round(100 / input.buildingDepreciationRate)
@@ -239,8 +240,22 @@ export function ExposeDokument({
             value={formatEuroCent(result.monthlyDebtService, sprache)}
             rechenweg={wege.kreditrate}
           />
-          <Kennzahlkarte label={kacheltexte.bruttorendite} value={prozent(result.grossYield)} rechenweg={wege.bruttorendite} />
-          <Kennzahlkarte label={kacheltexte.nettorendite} value={prozent(result.netYield)} rechenweg={wege.nettorendite} />
+          {mitStellplatz(result) && (
+            <Kennzahlkarte label={kacheltexte.bruttorenditeWohnung} value={prozent(result.grossYieldWohnung)} rechenweg={wege.bruttorenditeWohnung} />
+          )}
+          <Kennzahlkarte
+            label={mitStellplatz(result) ? kacheltexte.bruttorenditeGesamt : kacheltexte.bruttorendite}
+            value={prozent(result.grossYield)}
+            rechenweg={wege.bruttorendite}
+          />
+          {mitStellplatz(result) && (
+            <Kennzahlkarte label={kacheltexte.nettorenditeWohnung} value={prozent(result.netYieldWohnung)} />
+          )}
+          <Kennzahlkarte
+            label={mitStellplatz(result) ? kacheltexte.nettorenditeGesamt : kacheltexte.nettorendite}
+            value={prozent(result.netYield)}
+            rechenweg={wege.nettorendite}
+          />
         </div>
         <div className="expose-tax-callout">
           <div>
@@ -318,6 +333,16 @@ export function ExposeDokument({
             )}
             {ekr.rendite !== null && (
               <Zeile label={kacheltexte.eigenkapitalrendite} value={formatProzentEineStelle(ekr.rendite, sprache)} />
+            )}
+            {result.irr !== null && <Zeile label={kacheltexte.irr} value={formatProzentEineStelle(result.irr, sprache)} />}
+            {result.kaufpreisfaktor !== null && (
+              <Zeile
+                label={mitStellplatz(result) ? kacheltexte.kaufpreisfaktorGesamt : kacheltexte.kaufpreisfaktor}
+                value={zahl(Math.round(result.kaufpreisfaktor * 100) / 100)}
+              />
+            )}
+            {mitStellplatz(result) && result.kaufpreisfaktorWohnung !== null && (
+              <Zeile label={kacheltexte.kaufpreisfaktorWohnung} value={zahl(Math.round(result.kaufpreisfaktorWohnung * 100) / 100)} />
             )}
             <Zeile label={kacheltexte.immobilienwert(letztesJahr.year)} value={euro(letztesJahr.propertyValue)} />
             <Zeile label={kacheltexte.restschuld(letztesJahr.year)} value={euro(letztesJahr.remainingDebt)} />

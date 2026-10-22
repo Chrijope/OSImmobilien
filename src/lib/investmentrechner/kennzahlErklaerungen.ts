@@ -30,7 +30,7 @@
  */
 import { formatEuro, formatEuroCent, formatProzent, formatProzentEineStelle, formatZahl } from "./formatierer";
 import type { FormatSprache } from "../sprachFormat";
-import { eigenkapitalrendite as eigenkapitalrenditeRechnen, prozentAnteil, type InvestmentEingabe, type InvestmentErgebnis } from "./rechenkern";
+import { eigenkapitalrendite as eigenkapitalrenditeRechnen, prozentAnteil, monateErstesJahr, bankplan, bankplanParameter, type InvestmentEingabe, type InvestmentErgebnis } from "./rechenkern";
 import {
   KENNZAHL_TEXTE,
   type GlossarEintragText,
@@ -237,6 +237,7 @@ export type RechenwegSchluessel =
   | "kaltmiete"
   | "kreditrate"
   | "bruttorendite"
+  | "bruttorenditeWohnung"
   | "nettorendite"
   | "immobilienwert"
   | "restschuld"
@@ -273,14 +274,18 @@ export function rechenwege(
   const erstes = jahre[0];
   const letztes = jahre[jahre.length - 1];
   const anzahlJahre = jahre.length;
-  const monate = anzahlJahre * 12;
+  // Monate ab dem Übergang, wie im Rechenkern: Das erste Jahr hat seit dem 22.10.2026 nur seine Monate.
+  const ersteMonate = monateErstesJahr(result);
+  const monate = Math.round((anzahlJahre - 1) * 12 + ersteMonate);
+  // Werte des ersten Jahres auf ein volles Jahr hochgerechnet, für Renditen auf die Jahresmiete.
+  const aufsJahr = (wert: number) => (wert * 12) / ersteMonate;
   const leerstand = Math.min(1, prozentAnteil(input.vacancyRate));
   const zweitesDarlehen = result.secondLoanAmount ?? 0;
   const juniorDarlehen = result.totalDebt - result.seniorLoanAmount - result.kfwLoanAmount - zweitesDarlehen;
 
   const kaltmiete = weg(
     [
-      { label: g.kaltmiete, wert: erstes.grossRent / 12, einheit: "euro" },
+      { label: g.kaltmiete, wert: erstes.grossRent / monateErstesJahr(result), einheit: "euro" },
       {
         zeichen: "×",
         wert: 1 - leerstand,
@@ -309,9 +314,26 @@ export function rechenwege(
       ],
     },
   ];
-  const bank = darlehensglieder(g.bankdarlehen, result.seniorLoanAmount, input.seniorInterestRate, input.seniorRepaymentRate);
+  /*
+    Seit dem 22.10.2026 gibt es Volltilgung, endfällige Darlehen und
+    tilgungsfreie Anlaufjahre. Dann ist die erste Rate nicht mehr Betrag mal
+    (Zins + Tilgung); das Glied nennt die erste Monatsrate aus dem Plan mal 12.
+    Euro-Beträge im Plan sind wie im Rechenkern anteilig.
+  */
+  const ersteRateAusPlan = (art: "bank" | "bank2", betragDarlehen: number) =>
+    bankplan({ ...bankplanParameter(input, art, betragDarlehen, result.anteil ?? 1), jahre: 1 }).ersteRate;
+  const sonderform = (art: string | undefined, anlauf: number | undefined) => (art ?? "annuitaet") !== "annuitaet" || (anlauf ?? 0) > 0;
+  const rateAlsGlied = (label: string, rateMonat: number): Rechenglied[] => [
+    { label, wert: rateMonat, einheit: "cent" },
+    { zeichen: "×", wert: 12, einheit: "anzahl" },
+  ];
+  const bank = sonderform(input.seniorRepaymentType, input.seniorGracePeriodYears)
+    ? rateAlsGlied(g.bankdarlehen, ersteRateAusPlan("bank", result.seniorLoanAmount))
+    : darlehensglieder(g.bankdarlehen, result.seniorLoanAmount, input.seniorInterestRate, input.seniorRepaymentRate);
   const nachrang = darlehensglieder(g.nachrang, juniorDarlehen, input.juniorInterestRate, input.juniorRepaymentRate);
-  const zweites = darlehensglieder(g.zweitesBankdarlehen, zweitesDarlehen, input.secondInterestRate, input.secondRepaymentRate);
+  const zweites = sonderform(input.secondRepaymentType, input.secondGracePeriodYears)
+    ? rateAlsGlied(g.zweitesBankdarlehen, ersteRateAusPlan("bank2", zweitesDarlehen))
+    : darlehensglieder(g.zweitesBankdarlehen, zweitesDarlehen, input.secondInterestRate, input.secondRepaymentRate);
   /*
     KfW, seit dem 07.10.2026: in den tilgungsfreien Jahren Betrag mal Zins,
     sonst die Monatsrate der Annuität mal zwölf. Beides ist die Jahresrate im
@@ -345,10 +367,23 @@ export function rechenwege(
     result.kaufpreisGesamt > 0
       ? weg(
           [
-            { label: g.jahresmiete, wert: erstes.grossRent, einheit: "euro" },
+            { label: g.jahresmiete, wert: aufsJahr(erstes.grossRent), einheit: "euro" },
             { zeichen: "÷", label: result.allInclusive ? g.kaufpreisAllInclusive : g.kaufpreis, wert: result.kaufpreisGesamt, einheit: "euro" },
           ],
           result.grossYield,
+          "prozent",
+          "bruttorendite",
+        )
+      : null;
+  // Nur die Wohnung, ohne Stellplatz, seit dem 22.10.2026.
+  const bruttorenditeWohnung =
+    (result.kaufpreisWohnung ?? 0) > 0
+      ? weg(
+          [
+            { label: g.jahresmieteWohnung, wert: (result.grossYieldWohnung ?? 0) * result.kaufpreisWohnung, einheit: "euro" },
+            { zeichen: "÷", label: g.kaufpreisWohnung, wert: result.kaufpreisWohnung, einheit: "euro" },
+          ],
+          result.grossYieldWohnung,
           "prozent",
           "bruttorendite",
         )
@@ -363,10 +398,10 @@ export function rechenwege(
               wert: result.effectiveAnnualRent,
               einheit: "euro",
             },
-            { zeichen: MINUS, label: g.nichtUmlagefaehig, wert: erstes.operatingCosts, einheit: "euro" },
+            { zeichen: MINUS, label: g.nichtUmlagefaehig, wert: aufsJahr(erstes.operatingCosts), einheit: "euro" },
             // Die Zuführung zur Rücklage steht nur da, wenn es eine gibt, sonst wäre die Zeile länger ohne Nutzen.
             ...(erstes.reserveContribution > 0
-              ? ([{ zeichen: MINUS, label: g.ruecklageZufuehrung, wert: erstes.reserveContribution, einheit: "euro" }] as Rechenglied[])
+              ? ([{ zeichen: MINUS, label: g.ruecklageZufuehrung, wert: aufsJahr(erstes.reserveContribution), einheit: "euro" }] as Rechenglied[])
               : []),
             { zeichen: "÷", label: g.gesamtkosten, wert: result.totalInvestment, einheit: "euro" },
           ],
@@ -442,14 +477,14 @@ export function rechenwege(
 
   const cashflowVorSteuer = weg(
     [
-      { label: g.miete, wert: erstes.effectiveRent / 12, einheit: "cent" },
-      { zeichen: MINUS, label: g.rate, wert: erstes.debtService / 12, einheit: "cent" },
-      { zeichen: MINUS, label: g.nichtUmlagefaehig, wert: erstes.operatingCosts / 12, einheit: "cent" },
+      { label: g.miete, wert: erstes.effectiveRent / monateErstesJahr(result), einheit: "cent" },
+      { zeichen: MINUS, label: g.rate, wert: erstes.debtService / monateErstesJahr(result), einheit: "cent" },
+      { zeichen: MINUS, label: g.nichtUmlagefaehig, wert: erstes.operatingCosts / monateErstesJahr(result), einheit: "cent" },
       ...(erstes.reserveContribution > 0
-        ? ([{ zeichen: MINUS, label: g.ruecklageZufuehrung, wert: erstes.reserveContribution / 12, einheit: "cent" }] as Rechenglied[])
+        ? ([{ zeichen: MINUS, label: g.ruecklageZufuehrung, wert: erstes.reserveContribution / monateErstesJahr(result), einheit: "cent" }] as Rechenglied[])
         : []),
     ],
-    erstes.cashflowBeforeTax / 12,
+    erstes.cashflowBeforeTax / monateErstesJahr(result),
     "cent",
     "cashflowVorSteuer",
     true,
@@ -457,16 +492,16 @@ export function rechenwege(
 
   const cashflowNachSteuer = weg(
     [
-      { wert: erstes.cashflowBeforeTax / 12, einheit: "cent", vorzeichen: true },
+      { wert: erstes.cashflowBeforeTax / monateErstesJahr(result), einheit: "cent", vorzeichen: true },
       {
         zeichen: "+",
         label: g.steuereffekt,
         labelNegativ: g.steuermehrbelastung,
-        wert: erstes.taxEffect / 12,
+        wert: erstes.taxEffect / monateErstesJahr(result),
         einheit: "cent",
       },
     ],
-    erstes.cashflowAfterTax / 12,
+    erstes.cashflowAfterTax / monateErstesJahr(result),
     "cent",
     "cashflowNachSteuer",
     true,
@@ -573,6 +608,7 @@ export function rechenwege(
     kaltmiete,
     kreditrate,
     bruttorendite,
+    bruttorenditeWohnung,
     nettorendite,
     immobilienwert,
     restschuld,

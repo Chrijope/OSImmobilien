@@ -2058,7 +2058,8 @@ export function eigenkapitalrendite(
   const nenner = eigenkapital + zuzahlungMonat * 12;
   // Unter einem Cent ist der Nenner rechnerisch null, die Division gäbe nur Rauschen.
   const rendite = jahre > 0 && nenner >= 0.01 ? vermoegensaufbau / jahreAbUebergang / nenner : null;
-  return { vermoegensaufbau, jahre, eigenkapital, zuzahlungMonat, nenner, rendite };
+  // `jahre` ist die Zeit ab dem Übergang, damit der Rechenweg „÷ Jahre“ genau diese Zahl nennt.
+  return { vermoegensaufbau, jahre: jahreAbUebergang, eigenkapital, zuzahlungMonat, nenner, rendite };
 }
 
 /**
@@ -2112,4 +2113,26 @@ export function ausgewiesenerKaufpreis(
 ): number {
   const aufschlag = result.anteil > 0 ? (result.allInclusiveAufschlag ?? 0) / result.anteil : 0;
   return input.purchasePrice + aufschlag;
+}
+
+/**
+ * Monate des ersten Jahres, seit dem 22.10.2026 ab dem Übergang von Nutzen
+ * und Lasten. Monatswerte des ersten Jahres teilen durch diese Zahl statt
+ * durch 12, sonst stünde bei einem Kauf im Juli die halbe Miete je Monat da.
+ */
+export function monateErstesJahr(result: object): number {
+  // Bewusst `object`: Aufrufer reichen oft nur einen Ausschnitt des Ergebnisses weiter, ältere Stände ohne das Feld zählen ganz.
+  return 12 * ((result as Partial<InvestmentErgebnis>).ersterJahresanteil ?? 1);
+}
+
+/**
+ * Gibt es einen Stellplatz mit eigenem Preis oder eigener Miete? Dann stehen
+ * Rendite und Kaufpreisfaktor überall zweimal da: für die Wohnung allein und
+ * für Wohnung und Stellplatz zusammen (seit dem 22.10.2026). Sonst einmal,
+ * ohne Zusatz.
+ */
+export function mitStellplatz(
+  result: Partial<Pick<InvestmentErgebnis, "garagenpreis" | "grossYield" | "grossYieldWohnung">>,
+): boolean {
+  return (result.garagenpreis ?? 0) > 0 || Math.abs((result.grossYieldWohnung ?? result.grossYield ?? 0) - (result.grossYield ?? 0)) > 1e-12;
 }

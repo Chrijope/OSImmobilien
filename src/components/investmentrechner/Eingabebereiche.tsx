@@ -2,14 +2,17 @@ import { useState, type ChangeEvent, type DragEvent, type ReactNode } from "reac
 import { FileText, ImagePlus, LoaderCircle, Sparkles, Trash2, TriangleAlert, Upload, X } from "lucide-react";
 import type {
   AfaMethode,
+  Anschlussfinanzierung,
   Bankunterlagenposten,
   Erhaltungsaufwandmodus,
   InvestmentEingabe,
   InvestmentErgebnis,
   Sondertilgung,
   Steuerberechnungsmodus,
+  Sanierungsfall,
   Steuerklasse,
   TextFeld,
+  Tilgungsart,
   ZahlenFeld,
 } from "@/lib/investmentrechner/rechenkern";
 import type { UnterlagenDaten, UnterlagenDokument } from "@/lib/investmentrechner/unterlagenAuslesen";
@@ -22,6 +25,8 @@ import { ENERGIEKLASSEN, formatEuro, formatEuroCent, formatProzent } from "@/lib
 import { unterlagenAuslesbar, type AuslesbaresFeld } from "@/lib/investmentrechner/unterlagenKiFelder";
 import { eigenkapitalNachRegel, feldmarkierung, herkunftText, type Herkunft } from "@/lib/investmentrechner/herkunft";
 import { OBJEKTTYP_VORSCHLAEGE } from "@/lib/investmentrechner/objekttypVorschlaege";
+import { linearerAfaSatz } from "@/lib/afaSaetze";
+import { mitStellplatz } from "@/lib/investmentrechner/rechenkern";
 import { Auswahlfeld, AuswahlOderText, FeldInfo, Feldetikett, Neu, Schalterfeld, Textbereich, Textfeld, Zahlenfeld } from "./Felder";
 import { haushaltMitVorlage, haushaltsrechnung, vermoegenMitVorlage, vermoegensaufstellung } from "@/lib/investmentrechner/bankunterlagen";
 import { Energieskala, kaufpreisHinweis, Steuerprofil } from "./Auswertungen";
@@ -148,29 +153,22 @@ export function EingabeKunde({ input, result, setzeZahl, setzeText, aendere, her
           tooltip="Modellannahme, um wie viel Prozent das zu versteuernde Einkommen jedes Jahr wächst. Ein höherer Wert schiebt den Kunden im Steuertarif nach oben und verändert damit die jährliche Steuerwirkung der Immobilie."
         />
         {/*
-          Bei Zusammenveranlagung gesperrt.
-
-          Landen beide Haelften in derselben Steuererklaerung, ist der Anteil
-          steuerlich folgenlos. Wer dort 50 eintraegt, halbiert sein ganzes
-          Investment, ohne dass sich an der Steuer etwas aendert: Er sieht die
-          halbe Miete, die halbe Rate und den halben Steuervorteil, obwohl ihm
-          als Ehepaar das ganze Objekt gehoert.
-
-          Gesperrt statt ausgeblendet: Ein verschwundenes Feld sieht aus wie ein
-          Fehler, ein graues erklaert sich mit seinem Hinweis.
+          Seit dem 22.10.2026 auch bei Zusammenveranlagung frei. Vorher war das
+          Feld dann gesperrt und der Rechenkern rechnete mit 100 Prozent, auch
+          wenn den Ehepartnern zusammen nur ein Teil gehört. Wem wie viel
+          gehört, ist eine Frage des Eigentums, nicht der Veranlagung.
         */}
         <Zahlenfeld
           label="Anteil am Investment"
-          value={input.jointAssessment ? 100 : input.investmentShare}
+          value={input.investmentShare}
           suffix="%"
-          gesperrt={input.jointAssessment}
           onChange={(wert) => setzeZahl("investmentShare", Math.min(100, wert))}
           hint={
-            input.jointAssessment
-              ? "Bei Zusammenveranlagung ohne Wirkung: Beide Hälften stehen in derselben Steuererklärung."
+            input.jointAssessment && input.investmentShare < 100
+              ? "Zusammenveranlagung: Hier steht der gemeinsame Anteil beider Ehepartner. Gehört ihnen die Wohnung zusammen ganz, sind es 100 %."
               : undefined
           }
-          tooltip="Anteil des Kunden am Objekt, zum Beispiel 50 Prozent beim Kauf zu zweit. Alle Beträge werden dann anteilig gerechnet, also Miete, Kosten, Rate, Vermögen und Steuer. Prozentsätze wie die Bruttorendite bleiben gleich, denn der Anteil kürzt sich heraus. Das eingesetzte Eigenkapital wird NICHT geteilt, dort steht der Betrag dieses Kunden."
+          tooltip="Anteil des Kunden am Objekt, zum Beispiel 50 Prozent beim Kauf zu zweit. Alle Beträge werden dann anteilig gerechnet, also Miete, Kosten, Rate, Vermögen und Steuer. Prozentsätze wie die Bruttorendite bleiben gleich, denn der Anteil kürzt sich heraus. Bei Zusammenveranlagung gilt der gemeinsame Anteil beider Ehepartner, meist 100 Prozent. Das eingesetzte Eigenkapital wird NICHT geteilt, dort steht der Betrag dieses Kunden."
         />
       </div>
       <div className="field-grid">
@@ -218,8 +216,12 @@ export function EingabeKunde({ input, result, setzeZahl, setzeText, aendere, her
           value={input.marginalTaxRate}
           suffix="%"
           onChange={(wert) => setzeZahl("marginalTaxRate", wert)}
-          tooltip="Prozentsatz, mit dem das anteilige Ergebnis der Immobilie besteuert wird. Beim Umschalten steht hier der Grenzsteuersatz aus dem zvE, etwa 35 Prozent bei 60.000 Euro brutto ledig; 42 Prozent gelten erst ab rund 70.000 Euro zvE. Die Steuerwirkung ist genau Ergebnis mal Satz, auch ohne eingetragenes Einkommen. Ein Verlust bringt also immer eine Ersparnis in dieser Höhe."
-          hint="Vereinfachte Rechnung mit festem Satz, wie in Investagon. Genauer ist die Rechnung mit dem zu versteuernden Einkommen."
+          tooltip="Prozentsatz, mit dem das anteilige Ergebnis der Immobilie besteuert wird. Beim Umschalten steht hier der Grenzsteuersatz aus dem zvE, etwa 35 Prozent bei 60.000 Euro brutto ledig; 42 Prozent gelten erst ab rund 70.000 Euro zvE. Die Steuerwirkung ist Ergebnis mal Satz, höchstens aber die Steuer, die ohne die Immobilie anfiele: Ohne Steuerlast gibt es keine Erstattung."
+          hint={
+            result.erstattungBegrenzt
+              ? "Ohne Steuerlast vor dem Kauf keine Erstattung: Der Verlust wird hier nicht vollständig mit dem Satz verrechnet. Bitte das zu versteuernde Einkommen eintragen."
+              : "Vereinfachte Rechnung mit festem Satz, wie in Investagon. Genauer ist die Rechnung mit dem zu versteuernden Einkommen."
+          }
         />
       )}
       <Steuerprofil input={input} result={result} compact />
@@ -307,8 +309,20 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
           label="Baujahr"
           value={input.constructionYear}
           step="1"
-          onChange={(wert) => setzeZahl("constructionYear", wert)}
-          tooltip="Fertigstellungsjahr des Gebäudes. Es erscheint im Exposé und wird nicht automatisch verrechnet. Der passende AfA-Satz für Altbau oder Neubau wird von Hand in Bereich 06 eingetragen."
+          onChange={(wert) => {
+            /*
+              Seit dem 22.10.2026 folgt der lineare AfA-Satz dem Baujahr (2,5 %
+              vor 1925, 2 % bis 2022, 3 % ab 2023), solange er noch dem
+              Regelsatz des bisherigen Baujahrs entspricht. Ein bewusst anderer
+              Satz, etwa aus einem Restnutzungsdauer-Gutachten, bleibt stehen.
+            */
+            const regelBisher = linearerAfaSatz(input.constructionYear > 0 ? input.constructionYear : null).satz;
+            const regelNeu = linearerAfaSatz(wert > 0 ? wert : null).satz;
+            const folgt = input.depreciationMethod === "linear" && Math.abs(input.buildingDepreciationRate - regelBisher) < 1e-9;
+            if (folgt && regelNeu !== regelBisher) aendere({ constructionYear: wert, buildingDepreciationRate: regelNeu });
+            else setzeZahl("constructionYear", wert);
+          }}
+          tooltip="Fertigstellungsjahr des Gebäudes. Es erscheint im Exposé und bestimmt den gesetzlichen linearen AfA-Satz: 2,5 Prozent vor 1925, 2 Prozent bis 2022, 3 Prozent ab 2023. Steht in Bereich 06 noch der Regelsatz, passt er sich beim Ändern des Baujahrs an; ein bewusst anderer Satz bleibt stehen."
           hint={quelle("constructionYear")} markierung={feldmarkierung(herkunft, "constructionYear")}
         />
       </div>
@@ -336,11 +350,25 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
           hint={quelle("furniturePrice")} markierung={feldmarkierung(herkunft, "furniturePrice")}
         />
         <Zahlenfeld
+          label="davon Stellplatz/Garage"
+          value={input.garagePrice}
+          suffix="€"
+          neu
+          onChange={(wert) => setzeZahl("garagePrice", wert)}
+          tooltip="Der Teil des Kaufpreises, der auf einen mitgekauften Stellplatz oder eine Garage entfällt. Er ist im Kaufpreis oben schon enthalten und wird wie die Wohnung gerechnet, auch bei Kaufnebenkosten und Abschreibung. Er trennt nur den Ausweis: Rendite und Kaufpreisfaktor stehen dann für die Wohnung allein und für Wohnung und Stellplatz zusammen."
+          hint={
+            input.garagePrice > 0
+              ? `Wohnung ${formatEuro(Math.max(0, input.purchasePrice - input.garagePrice))}, Stellplatz/Garage ${formatEuro(input.garagePrice)}`
+              : quelle("garagePrice")
+          }
+          markierung={feldmarkierung(herkunft, "garagePrice")}
+        />
+        <Zahlenfeld
           label="davon Erhaltungsaufwand"
           value={input.rehabExpense}
           suffix="€"
           onChange={(wert) => setzeZahl("rehabExpense", wert)}
-          tooltip="Der Teil des Kaufpreises, der auf Renovierung oder Instandsetzung entfällt und steuerlich als Erhaltungsaufwand geltend gemacht wird, etwa der Sanierungsanteil. Er ist im Kaufpreis oben schon enthalten und erhöht die Gesamtkosten nicht. Weil er im Notarvertrag als gesonderte Leistung ausgewiesen ist, fallen auf ihn keine Kaufnebenkosten an: Grunderwerbsteuer, Notar und Grundbuch laufen nur auf den Kaufpreis der Immobilie ohne ihn und ohne Möbel. Wie er steuerlich wirkt, stellst du in Bereich 06 ein."
+          tooltip="Der Teil des Kaufpreises, der auf Renovierung oder Instandsetzung entfällt, etwa der Sanierungsanteil. Er ist im Kaufpreis oben schon enthalten und erhöht die Gesamtkosten nicht. Ob er Kaufnebenkosten trägt und wie er steuerlich wirkt, hängt vom Sanierungsfall in Bereich 06 ab: Wird nach dem Kauf für dich saniert, laufen Grunderwerbsteuer, Notar und Grundbuch ohne ihn, und er ist Erhaltungsaufwand mit der 15-Prozent-Prüfung. Hat der Verkäufer vor dem Verkauf saniert, ist er Kaufpreis wie jeder andere, trägt Kaufnebenkosten und wird über die Gebäude-AfA abgeschrieben."
           hint={quelle("rehabExpense")} markierung={feldmarkierung(herkunft, "rehabExpense")}
         />
         <Zahlenfeld
@@ -783,7 +811,7 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
           value={input.seniorRepaymentRate}
           suffix="%"
           onChange={(wert) => setzeZahl("seniorRepaymentRate", wert)}
-          tooltip="Anteil der Darlehenssumme, der im ersten Jahr getilgt wird. Zins und Tilgung zusammen ergeben die gleichbleibende Jahresrate. Weil der Zinsanteil mit sinkender Restschuld fällt, steigt der Tilgungsanteil von Jahr zu Jahr."
+          tooltip="Tilgung in Prozent der Darlehenssumme im ersten Jahr. Zins und Tilgung zusammen, geteilt durch 12, ergeben die gleichbleibende Monatsrate. Gerechnet wird wie bei der Bank Monat für Monat: Weil der Zinsanteil mit sinkender Restschuld fällt, steigt der Tilgungsanteil mit jeder Rate."
           hint={quelle("seniorRepaymentRate")} markierung={feldmarkierung(herkunft, "seniorRepaymentRate")}
         />
         <Zahlenfeld
@@ -817,7 +845,56 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
           tooltip="Tilgung in Prozent der Restschuld ab der Anschlussfinanzierung. Leer heißt: dieselbe Tilgung wie heute. Ohne Anschlusszins und neue Tilgung bleibt die Rate unverändert."
           hint={input.seniorFollowUpRepaymentRate > 0 ? undefined : "Leer: anfängliche Tilgung"}
         />
+        <Zahlenfeld
+          label="Umschuldungskosten"
+          value={input.seniorFollowUpCosts}
+          suffix="€"
+          neu
+          onChange={(wert) => setzeZahl("seniorFollowUpCosts", wert)}
+          tooltip="Kosten beim Wechsel in die Anschlussfinanzierung, etwa Bearbeitung, Abtretung der Grundschuld oder eine Vorfälligkeitsentschädigung. Sie werden im Monat des Wechsels gezahlt, mindern den Cashflow und sind im selben Jahr als Werbungskosten abziehbar."
+        />
+        <Auswahlfeld
+          label="Tilgungsart"
+          value={input.seniorRepaymentType}
+          onChange={(wert) => aendere({ seniorRepaymentType: wert as Tilgungsart })}
+          tooltip="Annuität: Die Rate ergibt sich aus Zins plus anfänglicher Tilgung, wie bei den meisten Bankangeboten. Volltilgung: Du gibst die Laufzeit vor, die Rate tilgt das Darlehen genau in dieser Zeit. Endfällig: Während der Laufzeit nur Zinsen, am Ende die Schlusszahlung in voller Höhe."
+        >
+          <option value="annuitaet">Annuität aus Tilgungssatz</option>
+          <option value="volltilgung">Volltilgung in fester Laufzeit</option>
+          <option value="endfaellig">Endfällig (nur Zinsen)</option>
+        </Auswahlfeld>
+        {input.seniorRepaymentType !== "annuitaet" && (
+          <Zahlenfeld
+            label="Laufzeit"
+            value={input.seniorTermYears}
+            suffix="Jahre"
+            step="1"
+            neu
+            onChange={(wert) => setzeZahl("seniorTermYears", Math.max(0, Math.round(wert)))}
+            tooltip="Gesamtlaufzeit ab Auszahlung. Bei Volltilgung ist das Darlehen danach getilgt, beim endfälligen Darlehen wird dann die Schlusszahlung fällig."
+            hint={
+              input.seniorTermYears > 0
+                ? undefined
+                : input.seniorRepaymentType === "volltilgung"
+                  ? "Ohne Laufzeit rechnet der Rechner mit der Annuität aus dem Tilgungssatz."
+                  : "Ohne Laufzeit läuft das Darlehen ohne Schlusszahlung weiter."
+            }
+          />
+        )}
+        <Zahlenfeld
+          label="Tilgungsfreie Anlaufjahre"
+          value={input.seniorGracePeriodYears}
+          suffix="Jahre"
+          step="1"
+          neu
+          onChange={(wert) => setzeZahl("seniorGracePeriodYears", Math.max(0, Math.round(wert)))}
+          tooltip="In diesen ersten Jahren zahlst du nur Zinsen. Danach beginnt die Tilgung mit der vollen Rate."
+        />
       </div>
+      <div className="subheading">
+        Weitere Anschlussfinanzierungen <Neu />
+      </div>
+      <Anschlussliste liste={input.seniorFurtherFollowUps ?? []} onChange={(liste) => aendere({ seniorFurtherFollowUps: liste })} />
       <div className="subheading">
         Sondertilgungen <Neu />
       </div>
@@ -856,7 +933,7 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
               suffix="%"
               neu
               onChange={(wert) => setzeZahl("secondRepaymentRate", wert)}
-              tooltip="Tilgung im ersten Jahr. Zins und Tilgung ergeben die gleichbleibende Jahresrate."
+              tooltip="Tilgung in Prozent des Darlehens im ersten Jahr. Zins und Tilgung, geteilt durch 12, ergeben die gleichbleibende Monatsrate."
             />
             <Zahlenfeld
               label="Zinsbindung"
@@ -872,8 +949,47 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
               suffix="%"
               neu
               onChange={(wert) => setzeZahl("secondFollowUpRate", wert)}
-              tooltip="Zins nach der Zinsbindung. Leer heißt: derselbe Zins. Die Rate wird auf die Restschuld mit der anfänglichen Tilgung neu bestimmt."
+              tooltip="Zins nach der Zinsbindung. Leer heißt: derselbe Zins. Die Rate wird auf die Restschuld mit der neuen Tilgung neu bestimmt."
               hint={input.secondFollowUpRate > 0 ? undefined : "Leer: Zins von heute"}
+            />
+            <Zahlenfeld
+              label="Neue Tilgung ab Anschluss"
+              value={input.secondFollowUpRepaymentRate}
+              suffix="%"
+              neu
+              onChange={(wert) => setzeZahl("secondFollowUpRepaymentRate", wert)}
+              tooltip="Tilgung des zweiten Darlehens in Prozent der Restschuld ab dem Anschluss. Leer heißt: dieselbe Tilgung wie heute."
+              hint={input.secondFollowUpRepaymentRate > 0 ? undefined : "Leer: anfängliche Tilgung"}
+            />
+            <Auswahlfeld
+              label="Tilgungsart"
+              value={input.secondRepaymentType}
+              onChange={(wert) => aendere({ secondRepaymentType: wert as Tilgungsart })}
+              tooltip="Wie beim Bankdarlehen: Annuität aus dem Tilgungssatz, Volltilgung in fester Laufzeit oder endfällig mit Schlusszahlung."
+            >
+              <option value="annuitaet">Annuität aus Tilgungssatz</option>
+              <option value="volltilgung">Volltilgung in fester Laufzeit</option>
+              <option value="endfaellig">Endfällig (nur Zinsen)</option>
+            </Auswahlfeld>
+            {input.secondRepaymentType !== "annuitaet" && (
+              <Zahlenfeld
+                label="Laufzeit"
+                value={input.secondTermYears}
+                suffix="Jahre"
+                step="1"
+                neu
+                onChange={(wert) => setzeZahl("secondTermYears", Math.max(0, Math.round(wert)))}
+                tooltip="Gesamtlaufzeit des zweiten Darlehens ab Auszahlung."
+              />
+            )}
+            <Zahlenfeld
+              label="Tilgungsfreie Anlaufjahre"
+              value={input.secondGracePeriodYears}
+              suffix="Jahre"
+              step="1"
+              neu
+              onChange={(wert) => setzeZahl("secondGracePeriodYears", Math.max(0, Math.round(wert)))}
+              tooltip="In diesen ersten Jahren nur Zinsen, danach die volle Rate."
             />
           </>
         )}
@@ -887,14 +1003,14 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
               value={input.juniorInterestRate}
               suffix="%"
               onChange={(wert) => setzeZahl("juniorInterestRate", wert)}
-              tooltip="Zinssatz des Nachrangdarlehens. Wegen des schlechteren Rangs im Grundbuch liegt er in der Regel über dem Zins der Bank. Auch er bleibt im Modell über den gesamten Zeitraum gleich."
+              tooltip="Zinssatz des Nachrangdarlehens. Wegen des schlechteren Rangs im Grundbuch liegt er in der Regel über dem Zins der Bank. Er bleibt im Modell über den gesamten Zeitraum gleich."
             />
             <Zahlenfeld
               label="Anfängliche Tilgung"
               value={input.juniorRepaymentRate}
               suffix="%"
               onChange={(wert) => setzeZahl("juniorRepaymentRate", wert)}
-              tooltip="Anteil des Nachrangdarlehens, der im ersten Jahr getilgt wird. Auch hier rechnet das Modell mit einer gleichbleibenden Jahresrate aus Zins und Tilgung."
+              tooltip="Anteil des Nachrangdarlehens, der im ersten Jahr getilgt wird. Auch hier rechnet das Modell mit einer gleichbleibenden Monatsrate aus Zins und Tilgung."
             />
           </div>
         </>
@@ -1108,6 +1224,46 @@ function Sondertilgungen({
   );
 }
 
+/**
+ * Weitere Anschlussfinanzierungen des Bankdarlehens, seit dem 22.10.2026. Jede
+ * Zeile: nach wie vielen Jahren ab Auszahlung, neuer Zins, neue Tilgung,
+ * Umschuldungskosten. Die erste Anschlussfinanzierung steht in den Feldern
+ * darüber (Zinsbindung, Anschlusszins, neue Tilgung).
+ */
+function Anschlussliste({ liste, onChange }: { liste: Anschlussfinanzierung[]; onChange: (liste: Anschlussfinanzierung[]) => void }) {
+  const setze = (index: number, aenderung: Partial<Anschlussfinanzierung>) =>
+    onChange(liste.map((eintrag, i) => (i === index ? { ...eintrag, ...aenderung } : eintrag)));
+  return (
+    <div className="zeilenliste" data-testid="anschlussfinanzierungen">
+      {liste.map((eintrag, index) => (
+        <div className="zeilenliste-zeile" key={index}>
+          <input type="number" aria-label="Nach Jahren ab Auszahlung" placeholder="nach Jahren" value={eintrag.nachJahren || ""}
+            onChange={(e) => setze(index, { nachJahren: Number(e.target.value) })} />
+          <input type="number" aria-label="Neuer Sollzins in Prozent" placeholder="Zins %" value={eintrag.zinsProzent || ""}
+            onChange={(e) => setze(index, { zinsProzent: Number(e.target.value) })} />
+          <input type="number" aria-label="Neue Tilgung in Prozent" placeholder="Tilgung %" value={eintrag.tilgungProzent || ""}
+            onChange={(e) => setze(index, { tilgungProzent: Number(e.target.value) })} />
+          <input type="number" aria-label="Umschuldungskosten in Euro" placeholder="Kosten €" value={eintrag.kosten || ""}
+            onChange={(e) => setze(index, { kosten: Number(e.target.value) })} />
+          <button type="button" className="text-button" aria-label="Anschlussfinanzierung entfernen" onClick={() => onChange(liste.filter((_, i) => i !== index))}>
+            <Trash2 size={14} />
+          </button>
+        </div>
+      ))}
+      <button
+        type="button"
+        className="text-button"
+        onClick={() => onChange([...liste, { nachJahren: 0, zinsProzent: 0, tilgungProzent: 0, kosten: 0 }])}
+      >
+        + Anschlussfinanzierung (nach Jahren, Zins, Tilgung, Kosten)
+      </button>
+      <span className="field-hint">
+        Nach der ersten Anschlussfinanzierung oben. Ab dem Monat danach gelten der neue Zins und die neue Tilgung, die Rate wird auf die Restschuld neu bestimmt. Leerer Zins oder leere Tilgung: wie bisher.
+      </span>
+    </div>
+  );
+}
+
 /** Eine Liste von Posten mit Bezeichnung und Betrag, für Haushalt und Vermögen. */
 function Postenliste({
   liste,
@@ -1273,19 +1429,19 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
       <Bereichstitel nummer="05" titel="Miete & Entwicklung" untertitel="Ertrag, Kosten und Szenarioannahmen" />
       <div className="field-grid">
         <Zahlenfeld
-          label="Kaltmiete p. M."
+          label="Kaltmiete Wohnung p. M."
           value={input.monthlyColdRent}
           suffix="€"
           onChange={(wert) => setzeZahl("monthlyColdRent", wert)}
-          tooltip="Monatliche Nettokaltmiete ohne Nebenkosten, aus dem Mietvertrag oder bei Leerstand aus einer nüchternen Markteinschätzung. Sie ist die Ertragsgrundlage der gesamten Rechnung und bestimmt Cashflow und Rendite unmittelbar."
+          tooltip="Monatliche Nettokaltmiete der Wohnung ohne Nebenkosten und ohne Stellplatz, aus dem Mietvertrag oder bei Leerstand aus einer nüchternen Markteinschätzung. Sie ist die Ertragsgrundlage der gesamten Rechnung und bestimmt Cashflow und Rendite unmittelbar."
           hint={quelle("monthlyColdRent")} markierung={feldmarkierung(herkunft, "monthlyColdRent")}
         />
         <Zahlenfeld
-          label="Garagenmiete p. M."
+          label="Stellplatz-/Garagenmiete p. M."
           value={input.monthlyGarageRent}
           suffix="€"
           onChange={(wert) => setzeZahl("monthlyGarageRent", wert)}
-          tooltip="Miete für Garage oder Stellplatz, falls mitverkauft. Sie wird in allen Berechnungen zur Kaltmiete der Wohnung dazugerechnet: Mieteinnahmen, Rendite, Cashflow und Steuer. 0 heißt keine Garage."
+          tooltip="Miete für einen mitgekauften Stellplatz oder eine Garage. Sie zählt in Mieteinnahmen, Cashflow und Steuer zur Miete der Wohnung dazu. Für die Rendite steht sie getrennt: Bruttorendite und Kaufpreisfaktor gibt es für die Wohnung allein und für Wohnung und Stellplatz zusammen. 0 heißt kein Stellplatz."
           hint={quelle("monthlyGarageRent")} markierung={feldmarkierung(herkunft, "monthlyGarageRent")}
         />
         <Zahlenfeld
@@ -1315,13 +1471,15 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
           label="Mietsteigerung p. a."
           value={input.annualRentGrowth}
           suffix="%"
+          min={-20}
           onChange={(wert) => setzeZahl("annualRentGrowth", wert)}
-          tooltip="Modellannahme, um wie viel Prozent die Miete jedes Jahr steigt. Sie wirkt ab dem zweiten Jahr und wächst mit Zinseszinseffekt. Was tatsächlich durchsetzbar ist, hängt von Mietspiegel, Kappungsgrenze und Vertrag ab."
+          tooltip="Modellannahme, um wie viel Prozent die Miete jedes Jahr steigt. Sie wirkt ab dem zweiten Jahr und wächst mit Zinseszinseffekt. Ein negativer Wert rechnet einen Mietrückgang. Was tatsächlich durchsetzbar ist, hängt von Mietspiegel, Kappungsgrenze und Vertrag ab."
         />
         <Zahlenfeld
           label="Kostensteigerung p. a."
           value={input.annualCostGrowth}
           suffix="%"
+          min={-20}
           onChange={(wert) => setzeZahl("annualCostGrowth", wert)}
           tooltip="Modellannahme für die jährliche Steigerung der nicht umlagefähigen Kosten. Liegt sie über der Mietsteigerung, verschlechtert sich der Cashflow im Zeitverlauf, liegt sie darunter, verbessert er sich."
         />
@@ -1329,8 +1487,18 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
           label="Wertsteigerung p. a."
           value={input.annualValueGrowth}
           suffix="%"
+          min={-20}
           onChange={(wert) => setzeZahl("annualValueGrowth", wert)}
-          tooltip="Modellannahme für die jährliche Wertentwicklung der Wohnung, also von Grund und Boden und Gebäude. Möbel und Rücklagenanteil sind davon ausgenommen: Die Möbel gehen mit ihrem Restbuchwert in den Objektwert ein, die Rücklage mit ihrem Betrag. Die Steigerung wirkt nicht auf Miete oder Cashflow, sondern nur auf den rechnerischen Objektwert und damit auf Vermögensaufbau und Rendite am Ende des Zeitraums."
+          tooltip="Modellannahme für die jährliche Wertentwicklung der Wohnung, also von Grund und Boden und Gebäude. Ein negativer Wert rechnet einen Wertrückgang. Möbel und Rücklagenanteil sind davon ausgenommen: Die Möbel gehen mit ihrem Restbuchwert in den Objektwert ein, die Rücklage mit ihrem Betrag. Die Entwicklung wirkt nicht auf Miete oder Cashflow, sondern nur auf den rechnerischen Objektwert und damit auf Vermögensaufbau und Rendite am Ende des Zeitraums."
+        />
+        <Zahlenfeld
+          label="Verkaufskosten am Ende"
+          value={input.saleCostRate}
+          suffix="%"
+          neu
+          onChange={(wert) => setzeZahl("saleCostRate", Math.min(20, wert))}
+          tooltip="Kosten eines Verkaufs am Ende des Betrachtungszeitraums in Prozent des Verkaufspreises, etwa Makler und Notar. Sie mindern den Erlös im Modellverkauf und damit den internen Zinsfuß. Leer heißt: ohne Verkaufskosten."
+          hint={result.verkaufskosten > 0 ? `${formatEuro(result.verkaufskosten)} im letzten Jahr` : undefined}
         />
       </div>
       <div className="field-grid">
@@ -1339,8 +1507,18 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
           value={input.startYear}
           step="1"
           onChange={(wert) => setzeZahl("startYear", wert)}
-          tooltip="Erstes Jahr der Prognose, üblicherweise das Jahr des Kaufs. Es beschriftet nur die Jahre in Tabelle und Diagrammen, gerechnet wird unabhängig davon immer ab dem ersten Prognosejahr."
+          tooltip="Erstes Jahr der Prognose, das Jahr, in dem Nutzen und Lasten übergehen. Es beschriftet die Jahre in Tabelle und Diagrammen."
         />
+        <Auswahlfeld
+          label="Übergang Nutzen und Lasten"
+          value={input.acquisitionMonth}
+          onChange={(wert) => setzeZahl("acquisitionMonth", Number(wert))}
+          tooltip="Monat im Startjahr, ab dem die Wohnung dir gehört und vermietet ist. Das erste Jahr zählt nur ab diesem Monat: Miete, Kosten, Zinsen sowie Gebäude- und Möbel-AfA zeitanteilig. Die Sonder-AfA nach § 7b gibt es im ersten Jahr trotzdem voll."
+        >
+          {["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"].map((name, index) => (
+            <option key={name} value={index + 1}>{name}</option>
+          ))}
+        </Auswahlfeld>
         <Zahlenfeld
           label="Betrachtungszeitraum"
           value={input.forecastYears}
@@ -1384,12 +1562,18 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
           <small>Effektive Jahresmiete</small>
           <strong>{formatEuro(result.effectiveAnnualRent)}</strong>
         </span>
+        {mitStellplatz(result) && (
+          <span>
+            <small>Bruttorendite Wohnung</small>
+            <strong>{formatProzent(result.grossYieldWohnung)}</strong>
+          </span>
+        )}
         <span>
-          <small>Bruttorendite</small>
+          <small>{mitStellplatz(result) ? "Bruttorendite gesamt" : "Bruttorendite"}</small>
           <strong>{formatProzent(result.grossYield)}</strong>
         </span>
         <span>
-          <small>Nettorendite</small>
+          <small>{mitStellplatz(result) ? "Nettorendite gesamt" : "Nettorendite"}</small>
           <strong>{formatProzent(result.netYield)}</strong>
         </span>
       </div>
@@ -1434,15 +1618,27 @@ export function EingabeSteuer({ input, result, setzeZahl, aendere, herkunft }: E
           suffix="Jahre"
           step="1"
           onChange={(wert) => setzeZahl("furnitureDepreciationYears", wert)}
-          tooltip="Über wie viele Jahre der Möbelanteil aus Bereich 02 samt seinem Anteil an den Kaufnebenkosten abgeschrieben wird, bei Einbauküchen sind zehn Jahre üblich, bei loser Ausstattung weniger. Der Betrag wird gleichmäßig verteilt und mindert in diesen Jahren das steuerliche Ergebnis."
+          min={0}
+          tooltip="Über wie viele Jahre der Möbelanteil aus Bereich 02 abgeschrieben wird. Er trägt keine Kaufnebenkosten. Bei Einbauküchen sind zehn Jahre üblich, bei loser Ausstattung weniger. Der Betrag wird gleichmäßig verteilt, im ersten Jahr ab dem Übergang zeitanteilig, und nie mehr als der Restbuchwert."
+          hint={
+            input.furniturePrice > 0 && !(input.furnitureDepreciationYears > 0)
+              ? "Ohne Nutzungsdauer werden die Möbel nicht abgeschrieben."
+              : undefined
+          }
         />
         <Zahlenfeld
-          label="Sonder-AfA p. a."
+          label="Sonder-AfA § 7b p. a."
           value={input.specialDepreciationRate}
           suffix="%"
           onChange={(wert) => setzeZahl("specialDepreciationRate", wert)}
-          tooltip="Zusätzliche Abschreibung in den ersten Jahren neben der regulären AfA, etwa nach § 7b EStG für neuen Mietwohnraum. Das Modell rechnet den Satz auf dieselbe Bemessungsgrundlage wie die Gebäude-AfA und begrenzt beide zusammen auf das noch nicht abgeschriebene Volumen."
-          hint={quelle("specialDepreciationRate") ?? "Nur eintragen, wenn die persönlichen und objektbezogenen Voraussetzungen geprüft sind."} markierung={feldmarkierung(herkunft, "specialDepreciationRate")}
+          tooltip="Sonderabschreibung für neuen Mietwohnraum nach § 7b EStG: höchstens 5 Prozent im Jahr der Anschaffung und in den drei folgenden Jahren, zusätzlich zur regulären AfA und nicht zeitanteilig. Liegen die Anschaffungskosten des Gebäudes über 5.200 Euro je m² Wohnfläche, entfällt sie ganz; ihre Bemessungsgrundlage ist höchstens 4.000 Euro je m². Danach wird der Restwert linear über die Restnutzungsdauer abgeschrieben."
+          hint={
+            quelle("specialDepreciationRate") ??
+            (result.sonderAfa.beantragt
+              ? result.sonderAfa.hinweis
+              : "Nur eintragen, wenn die Voraussetzungen geprüft sind.")
+          }
+          markierung={feldmarkierung(herkunft, "specialDepreciationRate")}
         />
         {input.specialDepreciationRate > 0 && (
           <Zahlenfeld
@@ -1451,25 +1647,90 @@ export function EingabeSteuer({ input, result, setzeZahl, aendere, herkunft }: E
             suffix="Jahre"
             step="1"
             onChange={(wert) => setzeZahl("specialDepreciationYears", wert)}
-            tooltip="Anzahl der ersten Jahre, in denen die Sonderabschreibung angesetzt wird. Danach läuft nur noch die reguläre Gebäude-AfA weiter, und die Steuerwirkung fällt entsprechend ab."
+            tooltip="Anzahl der ersten Jahre mit Sonderabschreibung, nach § 7b höchstens vier. Danach verteilt die reguläre AfA den Restwert über die Restnutzungsdauer, die Steuerwirkung fällt entsprechend ab."
           />
         )}
       </div>
+      {result.sonderAfa.beantragt && (
+        <div className={result.sonderAfa.zulaessig ? "info-card" : "warning-card"} data-testid="hinweis-7b">
+          {!result.sonderAfa.zulaessig && <TriangleAlert size={19} />}
+          <div>
+            <strong>{result.sonderAfa.zulaessig ? "Sonder-AfA nach § 7b EStG" : "Keine Sonder-AfA nach § 7b EStG"}</strong>
+            <p>
+              {result.sonderAfa.baukostenJeQm > 0 ? `Baukosten ${formatEuro(result.sonderAfa.baukostenJeQm)} je m². ` : ""}
+              {result.sonderAfa.zulaessig
+                ? `Bemessungsgrundlage ${formatEuro(result.sonderAfa.bemessungsgrundlage)}, ${formatProzent(result.sonderAfa.satz / 100)} in ${result.sonderAfa.jahre} Jahren. ${result.sonderAfa.hinweis}`
+                : result.sonderAfa.hinweis}
+            </p>
+            <p>
+              Weitere Voraussetzungen, die der Rechner nicht prüft: Bauantrag oder Bauanzeige im begünstigten Zeitraum,
+              Effizienzhaus 40 mit QNG-Siegel, Anschaffung bis zum Ende des Jahres der Fertigstellung, entgeltliche
+              Vermietung zu Wohnzwecken im Jahr der Anschaffung und in den neun folgenden Jahren. Bitte mit der
+              Steuerberatung abstimmen.
+            </p>
+          </div>
+        </div>
+      )}
       {/* Der Betrag selbst steht seit dem 25.09.2026 unter dem Kaufpreis in Bereich 02. */}
       <div className="calculated-line">
-        <span>Erhaltungsaufwand aus Bereich 02</span>
+        <span>Sanierungsanteil aus Bereich 02</span>
         <strong>{formatEuro(input.rehabExpense)}</strong>
       </div>
+      {/* Beide Sanierungsfälle seit dem 22.10.2026, Christians Entscheidung. Standard: nach dem Kauf. */}
       <Auswahlfeld
-        label="Steuerliche Behandlung"
-        value={input.rehabMode}
-        onChange={(wert) => aendere({ rehabMode: wert as Erhaltungsaufwandmodus })}
-        tooltip="Der Erhaltungsaufwand steckt im Kaufpreis und damit im Gebäudeanteil. Abziehen nimmt ihn aus der Bemessungsgrundlage der Gebäude-AfA heraus und setzt ihn als Werbungskosten an, sofort oder verteilt über die eingestellten Jahre, die Steuerwirkung kommt also früh und stark. Aktivieren lässt ihn in der Bemessungsgrundlage, dann wirkt er nur über den AfA-Satz und damit über Jahrzehnte. Übersteigt er 15 Prozent der Anschaffungskosten des Gebäudes, erscheint unten ein Hinweis."
+        label="Sanierungsfall"
+        value={input.rehabScenario}
+        onChange={(wert) => aendere({ rehabScenario: wert as Sanierungsfall })}
+        tooltip="Nach dem Kauf: Die Sanierung wird erst nach dem Erwerb für dich umgesetzt. Dann ist sie Erhaltungsaufwand, mit der 15-Prozent-Prüfung. Durch den Verkäufer: Er hat vor dem Verkauf saniert, du kaufst eine sanierte Wohnung. Dann ist der Anteil Anschaffungskosten, wird über die Gebäude-AfA abgeschrieben und trägt Grunderwerbsteuer und Kaufnebenkosten."
       >
-        <option value="expense">Als Erhaltungsaufwand abziehen</option>
-        <option value="capitalize">Aktivieren und über Gebäude-AfA abschreiben</option>
+        <option value="nachKauf">Sanierung nach dem Kauf (für den Käufer)</option>
+        <option value="durchVerkaeufer">Sanierung durch den Verkäufer vor dem Verkauf</option>
       </Auswahlfeld>
-      {input.rehabMode === "expense" && (
+      {input.rehabScenario !== "durchVerkaeufer" && (
+        <Auswahlfeld
+          label="Steuerliche Behandlung"
+          value={input.rehabMode}
+          onChange={(wert) => aendere({ rehabMode: wert as Erhaltungsaufwandmodus })}
+          tooltip="Der Aufwand steckt im Kaufpreis und damit im Gebäudeanteil. Abziehen nimmt ihn aus der Bemessungsgrundlage der Gebäude-AfA heraus und setzt ihn als Werbungskosten an, sofort oder verteilt über die eingestellten Jahre; die Steuerwirkung kommt also früh und stark. Aktivieren lässt ihn in der Bemessungsgrundlage, dann wirkt er nur über den AfA-Satz und damit über Jahrzehnte. Liegt er über 15 Prozent der Anschaffungskosten des Gebäudes, aktiviert der Rechner ihn von selbst."
+        >
+          <option value="expense">Als Erhaltungsaufwand abziehen</option>
+          <option value="capitalize">Aktivieren und über Gebäude-AfA abschreiben</option>
+        </Auswahlfeld>
+      )}
+      {input.rehabExpense > 0 && (
+        <div className={result.anschaffungsnah ? "warning-card" : "info-card"} data-testid="sanierung-pruefung">
+          {result.anschaffungsnah && <TriangleAlert size={19} />}
+          <div>
+            {input.rehabScenario === "durchVerkaeufer" ? (
+              <>
+                <strong>Sanierung durch den Verkäufer: Anschaffungskosten</strong>
+                <p>
+                  Hat der Verkäufer vor dem Verkauf saniert, sind die Kosten beim Käufer in der Regel Anschaffungskosten.
+                  Sie werden über die Gebäude-AfA abgeschrieben, ein Sofortabzug ist nicht möglich. Grunderwerbsteuer und
+                  Kaufnebenkosten laufen auf den ganzen Kaufpreis.
+                </p>
+              </>
+            ) : (
+              <>
+                <strong>15-Prozent-Prüfung nach § 6 Abs. 1 Nr. 1a EStG</strong>
+                <p>
+                  Grenze {formatEuro(result.fuenfzehnProzentGrenze)} (15 % der Gebäude-Anschaffungskosten ohne den Aufwand,
+                  netto). Der Aufwand entspricht {formatProzent(result.immediateDeductionRatio)}.{" "}
+                  {result.anschaffungsnah
+                    ? "Damit ist er anschaffungsnaher Herstellungsaufwand: Der Rechner schreibt ihn über die Gebäude-AfA ab, statt ihn sofort abzuziehen."
+                    : "Er liegt darunter und bleibt Erhaltungsaufwand, solange Instandsetzung und Modernisierung in den drei Jahren nach dem Kauf zusammen die Grenze nicht überschreiten."}
+                </p>
+                <p>
+                  Grunderwerbsteuer und Kaufnebenkosten laufen hier ohne den Sanierungsanteil. Das gilt nur bei einem
+                  eigenständigen, nicht mit dem Kaufvertrag verknüpften Sanierungsvertrag.
+                </p>
+              </>
+            )}
+            <p>Die steuerliche Behandlung bitte mit der Steuerberatung abstimmen.</p>
+          </div>
+        </div>
+      )}
+      {input.rehabScenario !== "durchVerkaeufer" && !result.sanierungAktiviert && (
         <Zahlenfeld
           label="Verteilung des Aufwands"
           value={input.rehabDistributionYears}
@@ -1490,18 +1751,15 @@ export function EingabeSteuer({ input, result, setzeZahl, aendere, herkunft }: E
           <strong>{formatEuro(result.moebelAfaBasis)}</strong>
         </div>
       )}
-      {result.simpleThresholdExceeded && (
-        <div className="warning-card">
-          <TriangleAlert size={19} />
-          <div>
-            <strong>15%-Prüfung erforderlich</strong>
-            <p>
-              Der eingetragene Aufwand entspricht im vereinfachten Check {formatProzent(result.immediateDeductionRatio)}{" "}
-              der Anschaffungskosten des Gebäudes. Ein Sofortabzug kann wegen anschaffungsnaher Herstellungskosten ausgeschlossen sein.
-            </p>
-          </div>
-        </div>
-      )}
+      <div className="info-card" data-testid="steuermodell-grenzen">
+        <strong>Grenzen des Steuermodells</strong>
+        <p>
+          Gerechnet wird mit dem Einkommensteuertarif 2026 für jedes Jahr der Prognose, mit Solidaritätszuschlag und
+          Kirchensteuer. Nicht abgebildet sind Verlustvorträge und Verlustrückträge, der Progressionsvorbehalt, eine
+          Steuer auf den Veräußerungsgewinn bei Verkauf innerhalb von zehn Jahren (§ 23 EStG), Änderungen des Tarifs und
+          individuelle Abzüge. Die Rechnung ersetzt keine Steuerberatung.
+        </p>
+      </div>
     </div>
   );
 }

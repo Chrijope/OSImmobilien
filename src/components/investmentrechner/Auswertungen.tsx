@@ -1,7 +1,7 @@
 import { createContext, useContext, useState } from "react";
 import { FileDown } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { eigenkapitalrendite, type InvestmentEingabe, type InvestmentErgebnis } from "@/lib/investmentrechner/rechenkern";
+import { eigenkapitalrendite, mitStellplatz, monateErstesJahr, type InvestmentEingabe, type InvestmentErgebnis } from "@/lib/investmentrechner/rechenkern";
 import {
   haushaltMitVorlage,
   haushaltsrechnung,
@@ -148,8 +148,15 @@ export function kaufpreiszeilen(result: InvestmentErgebnis, sprache: FormatSprac
         ? t.gesamtInklMoebel
         : t.gesamt;
   const zeilen: Kaufpreiszeile[] = [{ label: gesamtLabel, wert: euro(result.kaufpreisGesamt) }];
-  if (mitAufwand || mitMoebeln) zeilen.push({ label: t.kaufpreisImmobilie, wert: euro(result.nebenkostenBasis) });
-  if (mitAufwand) zeilen.push({ label: t.erhaltungGesondert, wert: euro(result.erhaltungsaufwand) });
+  // Wohnung und Stellplatz getrennt, seit dem 22.10.2026.
+  if ((result.garagenpreis ?? 0) > 0) {
+    zeilen.push({ label: t.davonWohnung, wert: euro(result.kaufpreisWohnung) });
+    zeilen.push({ label: t.davonStellplatz, wert: euro(result.kaufpreisGesamt - result.kaufpreisWohnung) });
+  }
+  // Saniert der Verkäufer, ist der Anteil Kaufpreis der Immobilie und trägt Nebenkosten; er steht dann nur zur Erklärung da.
+  const durchVerkaeufer = result.sanierungsfall === "durchVerkaeufer";
+  if (mitMoebeln || (mitAufwand && !durchVerkaeufer)) zeilen.push({ label: t.kaufpreisImmobilie, wert: euro(result.nebenkostenBasis) });
+  if (mitAufwand) zeilen.push({ label: durchVerkaeufer ? t.sanierungVerkaeufer : t.erhaltungGesondert, wert: euro(result.erhaltungsaufwand) });
   if (mitMoebeln) zeilen.push({ label: t.moebel, wert: euro(result.moebelAnteil) });
   if (result.ruecklage > 0) zeilen.push({ label: t.ruecklage, wert: euro(result.ruecklage) });
   zeilen.push({ label: t.grundstueck, wert: euro(result.grundstuecksanteil) });
@@ -289,6 +296,21 @@ export function Bankgespraech({
           ? [[`Restschuld Bankdarlehen Ende ${bank.restschuldZinsbindung.jahr}`, formatEuro(bank.restschuldZinsbindung.betrag)] as [string, string]]
           : []),
         ["Anschlusszins angenommen", bank.anschlusszins === null ? "keiner, Zins von heute" : formatProzent(bank.anschlusszins)],
+        ...((input.seniorFurtherFollowUps ?? []).filter((a) => a.nachJahren >= 1).map((a) => [
+          `Weitere Anschlussfinanzierung nach ${a.nachJahren} Jahren`,
+          `${a.zinsProzent > 0 ? formatProzent(a.zinsProzent / 100) : "Zins wie bisher"}${a.tilgungProzent > 0 ? `, Tilgung ${formatProzent(a.tilgungProzent / 100)}` : ""}`,
+        ]) as [string, string][]),
+        ...(result.umschuldungskostenGesamt > 0
+          ? [["Umschuldungskosten im Prognosezeitraum", formatEuro(result.umschuldungskostenGesamt)] as [string, string]]
+          : []),
+        ...(input.seniorRepaymentType === "volltilgung" && input.seniorTermYears > 0
+          ? [["Tilgungsart Bankdarlehen", `Volltilgung in ${input.seniorTermYears} Jahren`] as [string, string]]
+          : input.seniorRepaymentType === "endfaellig"
+            ? [["Tilgungsart Bankdarlehen", input.seniorTermYears > 0 ? `endfällig nach ${input.seniorTermYears} Jahren` : "endfällig, nur Zinsen"] as [string, string]]
+            : []),
+        ...(input.seniorGracePeriodYears > 0
+          ? [["Tilgungsfreie Anlaufjahre Bankdarlehen", String(input.seniorGracePeriodYears)] as [string, string]]
+          : []),
         ...(result.sondertilgungenGesamt > 0
           ? [["Sondertilgungen im Prognosezeitraum", formatEuro(result.sondertilgungenGesamt)] as [string, string]]
           : []),
@@ -303,7 +325,12 @@ export function Bankgespraech({
       zeilen: [
         ["Kaufpreis je m²", optional(bank.kaufpreisJeQm, formatEuro)],
         ["Kaltmiete je m²", optional(bank.kaltmieteJeQm, formatEuroCent)],
-        ["Kaufpreisfaktor", optional(bank.kaufpreisfaktor, (w) => `${formatZahl(w, "de", 1)}-fach`)],
+        ...(mitStellplatz(result)
+          ? ([
+              ["Kaufpreisfaktor Wohnung", optional(bank.kaufpreisfaktorWohnung, (w) => `${formatZahl(w, "de", 1)}-fach`)],
+              ["Kaufpreisfaktor gesamt (Wohnung und Stellplatz)", optional(bank.kaufpreisfaktor, (w) => `${formatZahl(w, "de", 1)}-fach`)],
+            ] as [string, string][])
+          : ([["Kaufpreisfaktor", optional(bank.kaufpreisfaktor, (w) => `${formatZahl(w, "de", 1)}-fach`)]] as [string, string][])),
         ["Miete abzüglich Hausgeld und Rücklage je Monat", formatEuroCent(bank.mietueberschussMonat)],
         ["Kapitaldienstdeckung (DSCR)", optional(bank.kapitaldienstdeckung, (w) => `${formatZahl(w, "de", 2)}-fach`)],
       ],
@@ -323,12 +350,15 @@ export function Bankgespraech({
       hinweis: "Tilgung, Miete und Kosten bleiben gleich, nur der Zins ändert sich. Die Steuer rechnet mit derselben Progression wie oben.",
     },
     {
-      titel: `Eigenkapitalrendite über ${result.years.length} Jahre`,
+      titel: `Vermögensrendite (Modellkennzahl) und interner Zinsfuß über ${result.years.length} Jahre`,
       zeilen: [
-        ["mit Wertsteigerung", prozent1(ekrMit)],
-        ["ohne Wertsteigerung", prozent1(ekrOhne)],
+        ["Vermögensrendite mit Wertsteigerung", prozent1(ekrMit)],
+        ["Vermögensrendite ohne Wertsteigerung", prozent1(ekrOhne)],
+        ["Interner Zinsfuß (IRR) mit Wertsteigerung", prozent1(result.irr)],
+        ["Interner Zinsfuß (IRR) ohne Wertsteigerung", prozent1(result.irrWithoutAppreciation)],
       ],
-      hinweis: "Ohne Wertsteigerung zählt nur, was Tilgung und Rücklage aufbauen.",
+      hinweis:
+        "Die Vermögensrendite ist eine Modellkennzahl, kein Zins. Der interne Zinsfuß ist die Verzinsung des eingesetzten Geldes nach Steuer, mit Modellverkauf am Ende abzüglich der Verkaufskosten. Ohne Wertsteigerung zählt nur, was Tilgung und Rücklage aufbauen.",
     },
     ...(haushalt
       ? [
@@ -801,11 +831,29 @@ export function Kennzahlen({ result, input }: { result: InvestmentErgebnis; inpu
   const letztesJahr = result.years[result.years.length - 1];
   const zahltZu = letztesJahr.cumulativeEigenanteil > 0;
   return (
+    <>
     <div className="metrics-grid">
       <Kennzahlkarte label={texte.kaltmiete} value={formatEuro(result.effectiveAnnualRent / 12)} rechenweg={wege.kaltmiete} />
       <Kennzahlkarte label={texte.kreditrate} value={formatEuroCent(result.monthlyDebtService)} rechenweg={wege.kreditrate} />
-      <Kennzahlkarte label={texte.bruttorendite} value={formatProzent(result.grossYield)} rechenweg={wege.bruttorendite} ampel={farben.bruttorendite} />
-      <Kennzahlkarte label={texte.nettorendite} value={formatProzent(result.netYield)} rechenweg={wege.nettorendite} ampel={farben.nettorendite} />
+      {/* Mit Stellplatz seit dem 22.10.2026 zweimal: die Wohnung allein und das Paket. */}
+      {mitStellplatz(result) && (
+        <Kennzahlkarte label={texte.bruttorenditeWohnung} value={formatProzent(result.grossYieldWohnung)} rechenweg={wege.bruttorenditeWohnung} />
+      )}
+      <Kennzahlkarte
+        label={mitStellplatz(result) ? texte.bruttorenditeGesamt : texte.bruttorendite}
+        value={formatProzent(result.grossYield)}
+        rechenweg={wege.bruttorendite}
+        ampel={farben.bruttorendite}
+      />
+      {mitStellplatz(result) && (
+        <Kennzahlkarte label={texte.nettorenditeWohnung} value={formatProzent(result.netYieldWohnung)} />
+      )}
+      <Kennzahlkarte
+        label={mitStellplatz(result) ? texte.nettorenditeGesamt : texte.nettorendite}
+        value={formatProzent(result.netYield)}
+        rechenweg={wege.nettorendite}
+        ampel={farben.nettorendite}
+      />
       <Kennzahlkarte
         label={texte.immobilienwert(letztesJahr.year)}
         value={formatEuro(letztesJahr.propertyValue)}
@@ -839,6 +887,30 @@ export function Kennzahlen({ result, input }: { result: InvestmentErgebnis; inpu
         rechenweg={wege.selbstEingezahlt}
       />
     </div>
+    {/*
+      Interner Zinsfuß und Kaufpreisfaktor, seit dem 22.10.2026 als eigene
+      Leiste unter den Kacheln. Der IRR steht damit getrennt von der
+      Modellkennzahl „Vermögensrendite“ und wird nicht mit ihr verwechselt.
+    */}
+    <div className="summary-strip" data-testid="kennzahlen-zusatz">
+      <span>
+        <small>{texte.irr}</small>
+        <strong>{result.irr !== null ? formatProzentEineStelle(result.irr) : "–"}</strong>
+      </span>
+      {mitStellplatz(result) && result.kaufpreisfaktorWohnung !== null && (
+        <span>
+          <small>{texte.kaufpreisfaktorWohnung}</small>
+          <strong>{`${formatZahl(result.kaufpreisfaktorWohnung, "de", 2)}-fach`}</strong>
+        </span>
+      )}
+      {result.kaufpreisfaktor !== null && (
+        <span>
+          <small>{mitStellplatz(result) ? texte.kaufpreisfaktorGesamt : texte.kaufpreisfaktor}</small>
+          <strong>{`${formatZahl(result.kaufpreisfaktor, "de", 2)}-fach`}</strong>
+        </span>
+      )}
+    </div>
+    </>
   );
 }
 
@@ -860,8 +932,8 @@ export function Rechenstandards({ input, result }: { input: InvestmentEingabe; r
     {
       titel: `Belastung ${erstes.year}`,
       zeilen: [
-        ["Zuzahlung vor Steuer", belastung(-erstes.cashflowBeforeTax / 12)],
-        ["Zuzahlung nach Steuer", belastung(-erstes.cashflowAfterTax / 12)],
+        ["Zuzahlung vor Steuer", belastung(-erstes.cashflowBeforeTax / monateErstesJahr(result))],
+        ["Zuzahlung nach Steuer", belastung(-erstes.cashflowAfterTax / monateErstesJahr(result))],
       ],
       hinweis: "Negativ heißt: Überschuss statt Zuzahlung.",
     },

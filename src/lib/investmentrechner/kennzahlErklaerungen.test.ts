@@ -111,7 +111,8 @@ describe("Jede Rechenweg-Zeile geht rechnerisch auf", () => {
   it("liefert für jede Kachel der ersten Seite einen Rechenweg", () => {
     const wege = rechenwege(referenz, berechneInvestment(referenz));
     for (const [schluessel, weg] of Object.entries(wege)) expect(weg, schluessel).not.toBeNull();
-    expect(Object.keys(wege)).toHaveLength(15);
+    // Seit dem 22.10.2026 dazu die Bruttorendite der Wohnung allein.
+    expect(Object.keys(wege)).toHaveLength(16);
   });
 });
 

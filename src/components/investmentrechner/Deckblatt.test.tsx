@@ -172,7 +172,7 @@ describe("Deckblatt „Ergebnis auf einen Blick“", () => {
     expect(kacheln[0]).toContain("Cashflow nach Steuer, Jahr 1");
     expect(kacheln[0]).toContain("ab Jahr 2 Ø −");
     expect(kacheln[1]).toContain("Vermögensaufbau pro Monat");
-    expect(kacheln[2]).toContain("Eigenkapitalrendite p. a.");
+    expect(kacheln[2]).toContain("Vermögensrendite p. a. (Modellkennzahl)");
     // Vor Steuer steht klein in der Liste, nicht als große Zahl.
     expect(blatt.querySelector(".db-zeile-leise")?.textContent).toContain("Cashflow vor Steuer");
     expect(glatt(blatt.querySelector(".db-bleibt strong")?.textContent)).toBe(glatt(formatEuro(w.fuerDichBleibt)));

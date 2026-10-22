@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { ObjektData, ObjektWohnung } from "@/lib/objekteStore";
 import { berechneInvestment, standardEingabe } from "@/lib/investmentrechner/rechenkern";
-import { vorbelegungAusEinheit } from "@/lib/investmentrechner/objektVorbelegung";
+import { stellplatzmieteTrennen, vorbelegungAusEinheit } from "@/lib/investmentrechner/objektVorbelegung";
 import { eigenkapitalNachRegel } from "@/lib/investmentrechner/herkunft";
 
 /**
@@ -53,12 +53,42 @@ const feldnamen = (liste: Array<{ feld: string }>) => liste.map((e) => e.feld);
 describe("Vorbelegung aus Objekt und Einheit", () => {
   const v = vorbelegungAusEinheit(objekt, w, heute);
 
-  it("übernimmt Kaufpreis samt Stellplatz und Miete samt Stellplatzmiete", () => {
-    // Der Rechner kennt nur ein Preisfeld, auf das die Kaufnebenkosten laufen.
-    // Der Stellplatz gehört deshalb dorthin und nicht ins Möbelfeld.
+  it("übernimmt Kaufpreis samt Stellplatz, Wohnungs- und Stellplatzmiete getrennt", () => {
+    // Der Kaufpreis bleibt Wohnung plus Stellplatz, der Stellplatz steht seit
+    // dem 22.10.2026 zusätzlich als „davon“. Die Miete ist getrennt: 790 € die
+    // Wohnung, 40 € der Stellplatz, zusammen wie vorher 830 €.
     expect(v.eingabe.purchasePrice).toBe(241500);
     expect(v.eingabe.furniturePrice).toBe(0);
-    expect(v.eingabe.monthlyColdRent).toBe(830);
+    expect(v.eingabe.garagePrice).toBe(9500);
+    expect(v.eingabe.monthlyColdRent).toBe(790);
+    expect(v.eingabe.monthlyGarageRent).toBe(40);
+    expect(v.herkunft.monthlyGarageRent?.quelle).toBe("objekt");
+  });
+
+  it("trennt eine gespeicherte Kaltmiete samt Stellplatz genau einmal", () => {
+    const alt = {
+      ...v.eingabe, monthlyColdRent: 830, monthlyGarageRent: 0, garagePrice: 0,
+    };
+    const herkunftAlt = { monthlyColdRent: { quelle: "objekt" as const, text: "Aus der Objektanlage, Einheit, inklusive Stellplatzmiete" } };
+    const einmal = stellplatzmieteTrennen(alt, herkunftAlt, v);
+    expect(einmal.getrennt).toBe(true);
+    expect(einmal.eingabe.monthlyColdRent).toBe(790);
+    expect(einmal.eingabe.monthlyGarageRent).toBe(40);
+    expect(einmal.eingabe.garagePrice).toBe(9500);
+    // Gerechnet wird gleich, nur der Ausweis der Wohnungsrendite ändert sich.
+    expect(berechneInvestment(einmal.eingabe).years).toEqual(berechneInvestment(alt).years);
+    // Ein zweiter Lauf ändert nichts mehr: keine doppelte Garage.
+    const zweimal = stellplatzmieteTrennen(einmal.eingabe, einmal.herkunft, v);
+    expect(zweimal.getrennt).toBe(false);
+    expect(zweimal.eingabe).toEqual(einmal.eingabe);
+  });
+
+  it("lässt eine von Hand geänderte oder schon getrennte Miete stehen", () => {
+    const alt = { ...v.eingabe, monthlyColdRent: 830, monthlyGarageRent: 0 };
+    expect(stellplatzmieteTrennen(alt, { monthlyColdRent: { quelle: "eigen", text: "" } }, v).getrennt).toBe(false);
+    const herkunftAlt = { monthlyColdRent: { quelle: "objekt" as const, text: "Aus der Objektanlage, Einheit, inklusive Stellplatzmiete" } };
+    expect(stellplatzmieteTrennen({ ...alt, monthlyGarageRent: 40 }, herkunftAlt, v).getrennt).toBe(false);
+    expect(stellplatzmieteTrennen(alt, herkunftAlt, null).getrennt).toBe(false);
   });
 
   it("übernimmt den Investagon-Möbelpreis als Anteil, ohne ihn dazuzuzählen", () => {
@@ -134,8 +164,8 @@ describe("Vorbelegung aus Objekt und Einheit", () => {
 
   it("zählt auf, was übernommen wurde", () => {
     expect(feldnamen(v.uebernommen)).toEqual([
-      "Objektbezeichnung", "Adresse", "Objekttyp", "Kaufpreis", "Wohnfläche", "Zimmer",
-      "Baujahr", "Kaufnebenkosten", "Eigenkapital", "Kaltmiete p. M.", "Nicht umlagefähige Kosten p. M.",
+      "Objektbezeichnung", "Adresse", "Objekttyp", "Kaufpreis", "davon Stellplatz/Garage", "Wohnfläche", "Zimmer",
+      "Baujahr", "Kaufnebenkosten", "Eigenkapital", "Stellplatz-/Garagenmiete p. M.", "Kaltmiete p. M.", "Nicht umlagefähige Kosten p. M.",
       "Gebäudeanteil", "Lineare AfA p. a.", "davon Erhaltungsaufwand",
       "Verteilung des Aufwands", "Energieausweis", "Anteil der Einheit an der Rücklage",
       "Letzte Sanierungen",

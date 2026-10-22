@@ -10,7 +10,7 @@
  * Rein und nur lesend, gerechnet wird mit dem Ergebnis des Rechenkerns.
  */
 
-import { eigenkapitalrendite, type InvestmentEingabe, type InvestmentErgebnis } from "./rechenkern";
+import { eigenkapitalrendite, monateErstesJahr, type InvestmentEingabe, type InvestmentErgebnis } from "./rechenkern";
 
 export type Ampelfarbe = "gruen" | "gelb" | "rot";
 
@@ -95,8 +95,8 @@ export function ampel(
     bruttorendite: result.grossYield,
     nettorendite: result.netYield,
     eigenkapitalrendite: eigenkapitalrendite(input, result).rendite,
-    cashflowOperativ: erstes ? erstes.cashflowBeforeTax / 12 : null,
-    cashflowNachSteuern: erstes ? erstes.cashflowAfterTax / 12 : null,
+    cashflowOperativ: erstes ? erstes.cashflowBeforeTax / monateErstesJahr(result) : null,
+    cashflowNachSteuern: erstes ? erstes.cashflowAfterTax / monateErstesJahr(result) : null,
   };
   return (Object.keys(schwellen) as Ampelkennzahl[]).map((kennzahl) => ({
     kennzahl,

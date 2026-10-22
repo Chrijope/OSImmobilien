@@ -1,6 +1,7 @@
 import { useLiveVersion } from "@/hooks/useLiveData";
 import { automatischeObjektwerte, automatischeUnterlagenwerte, ergaenzeUnterlagen, leseObjektUnterlagen, type ObjektUnterlagenQuelle } from "@/lib/investmentrechner/objektUnterlagen";
 import { vorbelegungAusInvestment } from "@/lib/investmentrechner/investmentVorbelegung";
+import { stellplatzmieteTrennen } from "@/lib/investmentrechner/objektVorbelegung";
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { useMaskeBisUnten } from "./useMaskeBisUnten";
 import { createPortal } from "react-dom";
@@ -376,12 +377,18 @@ export function InvestmentrechnerInhalt({
   });
   function startObjekte(): Objektzustand[] {
     if (start?.berechnung) {
+      // Ein Stand von vor dem 22.10.2026 hat die Stellplatzmiete noch in der Kaltmiete; getrennt wird nur, was die Einheit belegt.
+      const getrennt = stellplatzmieteTrennen(
+        start.berechnung.eingabe,
+        start.berechnung.herkunft ?? {},
+        vorbelegung ?? vorbelegungAusInvestment(start.berechnung.investment_id),
+      );
       return [
         startZustand({
-          eingabe: start.berechnung.eingabe,
+          eingabe: getrennt.eingabe,
           knk: start.berechnung.knk,
           unterlagen: start.berechnung.unterlagen ?? undefined,
-          herkunft: start.berechnung.herkunft,
+          herkunft: getrennt.herkunft,
         }),
       ];
     }

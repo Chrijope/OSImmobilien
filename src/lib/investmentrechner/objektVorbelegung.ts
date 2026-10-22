@@ -173,7 +173,8 @@ export function vorbelegungAusEinheit(
   const herkunft: Herkunft = {};
   const zuordnung: Record<string, (keyof InvestmentEingabe)[]> = {
     "Objektbezeichnung": ["propertyTitle"], "Adresse": ["address"], "Objekttyp": ["propertyType"],
-    "Kaufpreis": ["purchasePrice"], "davon Möbel/Inventar": ["furniturePrice"],
+    "Kaufpreis": ["purchasePrice"], "davon Möbel/Inventar": ["furniturePrice"], "davon Stellplatz/Garage": ["garagePrice"],
+    "Stellplatz-/Garagenmiete p. M.": ["monthlyGarageRent"],
     "Wohnfläche": ["area"], "Zimmer": ["rooms"], "Baujahr": ["constructionYear"],
     "Kaufnebenkosten": ["transferTaxRate", "notaryRate", "landRegisterRate"], "Kaltmiete p. M.": ["monthlyColdRent"],
     "Eigenkapital": ["equity"], "Finanzierungsnebenkosten": ["financingCostRate"],
@@ -226,6 +227,16 @@ export function vorbelegungAusEinheit(
     );
   } else {
     fehlt("Kaufpreis", "ohne ihn rechnet nichts", 'Einheit über „Wohnung bearbeiten"', "einheit");
+  }
+  /*
+   * Seit dem 22.10.2026 steht der Stellplatz zusätzlich als „davon“ im
+   * Kaufpreis, damit Rendite und Kaufpreisfaktor der Wohnung allein neben
+   * denen des Pakets stehen können. Gerechnet wird damit wie vorher.
+   */
+  const stellplatzpreis = positiv(daten.stellplatzpreis);
+  if (stellplatzpreis > 0 && stellplatzpreis <= eingabe.purchasePrice) {
+    eingabe.garagePrice = stellplatzpreis;
+    nimm("davon Stellplatz/Garage", eur0(stellplatzpreis), "Einheit, Stellplatzpreis, im Kaufpreis enthalten");
   }
 
   // Mehr Möbel als Kaufpreis wäre ein Datenfehler, dann lieber keine Angabe.
@@ -360,19 +371,24 @@ export function vorbelegungAusEinheit(
   // ── Miete & Entwicklung ───────────────────────────────────────────────────
 
   /*
-   * Kaltmiete inklusive Stellplatzmiete, passend dazu, dass der Stellplatz im
-   * Kaufpreis steckt. Eine noch ausstehende Mieterhöhung ist hier bewusst
-   * nicht eingerechnet: Der Rechner kennt nur eine Startmiete, und eine
-   * vorweggenommene Erhöhung wäre eine stille Annahme.
+   * Kaltmiete der Wohnung und Stellplatzmiete getrennt, seit dem 22.10.2026.
+   * `kaltmieteMonat` aus exposeObjektdatenAus enthält die Stellplatzmiete,
+   * weil der Exposé-Rechner nur eine Miete kennt; hier wird sie wieder
+   * herausgenommen und steht im eigenen Feld. Vorher stand alles in der
+   * Kaltmiete, gerechnet wird gleich, nur der Ausweis der Rendite ändert sich.
+   * Eine noch ausstehende Mieterhöhung ist bewusst nicht eingerechnet: Der
+   * Rechner kennt nur eine Startmiete, und eine vorweggenommene Erhöhung wäre
+   * eine stille Annahme.
    */
-  const miete = positiv(daten.kaltmieteMonat);
+  const stellplatzMiete = Math.min(positiv(daten.stellplatzMieteMonat), positiv(daten.kaltmieteMonat));
+  const miete = positiv(daten.kaltmieteMonat) - stellplatzMiete;
+  if (stellplatzMiete > 0) {
+    eingabe.monthlyGarageRent = stellplatzMiete;
+    nimm("Stellplatz-/Garagenmiete p. M.", eur0(stellplatzMiete), "Einheit, Stellplatzmiete");
+  }
   if (miete > 0) {
     eingabe.monthlyColdRent = miete;
-    nimm(
-      "Kaltmiete p. M.",
-      eur0(miete),
-      positiv(wohnung.stellplatzMiete) > 0 ? "Einheit, inklusive Stellplatzmiete" : "Einheit",
-    );
+    nimm("Kaltmiete p. M.", eur0(miete), stellplatzMiete > 0 ? "Einheit, ohne Stellplatzmiete" : "Einheit");
   } else {
     fehlt("Kaltmiete p. M.", "Rendite, Cashflow und Steuerwirkung", 'Einheit über „Wohnung bearbeiten"', "einheit");
   }
@@ -615,4 +631,56 @@ export function vorbelegungAusEinheit(
   ];
 
   return { eingabe, knk, unterlagen, bilder, uebernommen, luecken, annahmen, quellen: objektUnterlagenQuelle(objekt, wohnung), herkunft };
+}
+
+/** Der Herkunftssatz, mit dem die Vorbelegung bis zum 22.10.2026 die Kaltmiete samt Stellplatzmiete markierte. */
+const KALTMIETE_MIT_STELLPLATZ = "inklusive Stellplatzmiete";
+
+/**
+ * Eine gespeicherte Berechnung von vor dem 22.10.2026 auf getrennte
+ * Wohnungs- und Stellplatzmiete umstellen.
+ *
+ * Bis dahin schrieb die Vorbelegung Wohnung und Stellplatz zusammen in die
+ * Kaltmiete. Getrennt wird nur, was sich belegen lässt:
+ *   - die Kaltmiete trägt noch den alten Herkunftssatz „inklusive
+ *     Stellplatzmiete“, stammt also nachweislich aus der Vorbelegung und
+ *     wurde nicht von Hand geändert;
+ *   - die Garagenmiete ist leer, sonst stünde die Garage danach doppelt da;
+ *   - die Einheit nennt heute eine Stellplatzmiete, und sie ist nicht höher
+ *     als die gespeicherte Kaltmiete.
+ * Die Summe bleibt gleich, also auch jede Zahl der Berechnung; nur Rendite
+ * und Kaufpreisfaktor der Wohnung allein werden damit richtig. Den
+ * Stellplatzpreis gibt es dazu, wenn er noch fehlt und in den Kaufpreis passt.
+ * In jedem anderen Fall bleibt die Berechnung, wie sie ist.
+ */
+export function stellplatzmieteTrennen(
+  eingabe: InvestmentEingabe,
+  herkunft: Herkunft,
+  vorbelegung: { eingabe: InvestmentEingabe } | null | undefined,
+): { eingabe: InvestmentEingabe; herkunft: Herkunft; getrennt: boolean } {
+  const unveraendert = { eingabe, herkunft, getrennt: false };
+  const stellplatzMiete = positiv(vorbelegung?.eingabe.monthlyGarageRent);
+  if (!vorbelegung || !(stellplatzMiete > 0)) return unveraendert;
+  if (positiv(eingabe.monthlyGarageRent) > 0) return unveraendert;
+  const mieteHerkunft = herkunft.monthlyColdRent;
+  if (mieteHerkunft?.quelle !== "objekt" || !mieteHerkunft.text.includes(KALTMIETE_MIT_STELLPLATZ)) return unveraendert;
+  if (!(eingabe.monthlyColdRent >= stellplatzMiete)) return unveraendert;
+  const stellplatzpreis = positiv(vorbelegung.eingabe.garagePrice);
+  const mitPreis = !(positiv(eingabe.garagePrice) > 0) && stellplatzpreis > 0 && stellplatzpreis <= eingabe.purchasePrice;
+  const hinweis = "aus der gespeicherten Kaltmiete getrennt";
+  return {
+    eingabe: {
+      ...eingabe,
+      monthlyColdRent: eingabe.monthlyColdRent - stellplatzMiete,
+      monthlyGarageRent: stellplatzMiete,
+      ...(mitPreis ? { garagePrice: stellplatzpreis } : {}),
+    },
+    herkunft: {
+      ...herkunft,
+      monthlyColdRent: { quelle: "objekt", text: `Aus der Objektanlage, Einheit, ohne Stellplatzmiete (${hinweis})` },
+      monthlyGarageRent: { quelle: "objekt", text: `Aus der Objektanlage, Einheit, Stellplatzmiete (${hinweis})` },
+      ...(mitPreis ? { garagePrice: { quelle: "objekt" as const, text: "Aus der Objektanlage, Einheit, Stellplatzpreis, im Kaufpreis enthalten" } } : {}),
+    },
+    getrennt: true,
+  };
 }

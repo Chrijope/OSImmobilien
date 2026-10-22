@@ -75,6 +75,15 @@ export interface KennzahlTexte {
     steuereffektErstesJahr: string;
     steuereffektGesamt: (jahre: number) => string;
     eigenkapitalrendite: string;
+    /** Seit dem 22.10.2026: Rendite und Faktor der Wohnung allein und des Pakets mit Stellplatz, dazu der IRR. */
+    bruttorenditeWohnung: string;
+    bruttorenditeGesamt: string;
+    nettorenditeWohnung: string;
+    nettorenditeGesamt: string;
+    kaufpreisfaktorWohnung: string;
+    kaufpreisfaktorGesamt: string;
+    kaufpreisfaktor: string;
+    irr: string;
   };
   /** Bausteine der Rechenweg-Zeilen. Beschriftungen stehen vor dem Wert. */
   glieder: {
@@ -85,6 +94,8 @@ export interface KennzahlTexte {
     steuereffekt: string;
     steuermehrbelastung: string;
     jahresmiete: string;
+    jahresmieteWohnung: string;
+    kaufpreisWohnung: string;
     jahresmieteNachLeerstand: string;
     kaufpreis: string;
     /** Beim All-inclusive-Modell, seit dem 09.10.2026. */
@@ -137,6 +148,10 @@ export interface KennzahlTexte {
     steuereffektZeitraum: (von: number, bis: number) => string;
     /** Die Einordnung unter der Eigenkapitalrendite. */
     eigenkapitalrenditeHinweis: string;
+    /** Unter dem IRR: was er ist und was nicht. */
+    irrHinweis: string;
+    /** Statt des IRR, wenn er sich nicht bestimmen lässt. */
+    irrNichtBestimmbar: string;
     /** Statt der Zahl, wenn weder Eigenkapital noch eine monatliche Zuzahlung vor Steuer da ist. */
     eigenkapitalrenditeNichtBestimmbar: string;
     /**
@@ -184,7 +199,15 @@ export const KENNZAHL_TEXTE_DE: KennzahlTexte = {
     gesamtvermoegen: (jahre) => `Gesamtvermögen nach ${jahre} Jahren`,
     steuereffektErstesJahr: "Steuereffekt im ersten Jahr",
     steuereffektGesamt: (jahre) => `Steuereffekt ${jahre} Jahre gesamt`,
-    eigenkapitalrendite: "Eigenkapitalrendite p. a.",
+    eigenkapitalrendite: "Vermögensrendite p. a. (Modellkennzahl)",
+    bruttorenditeWohnung: "Bruttorendite Wohnung",
+    bruttorenditeGesamt: "Bruttorendite gesamt (Wohnung und Stellplatz)",
+    nettorenditeWohnung: "Nettorendite Wohnung",
+    nettorenditeGesamt: "Nettorendite gesamt (Wohnung und Stellplatz)",
+    kaufpreisfaktorWohnung: "Kaufpreisfaktor Wohnung",
+    kaufpreisfaktorGesamt: "Kaufpreisfaktor gesamt (Wohnung und Stellplatz)",
+    kaufpreisfaktor: "Kaufpreisfaktor",
+    irr: "Interner Zinsfuß (IRR) p. a.",
   },
   glieder: {
     miete: "Miete",
@@ -194,6 +217,8 @@ export const KENNZAHL_TEXTE_DE: KennzahlTexte = {
     steuereffekt: "Steuereffekt",
     steuermehrbelastung: "Steuermehrbelastung",
     jahresmiete: "Jahresmiete",
+    jahresmieteWohnung: "Jahresmiete Wohnung",
+    kaufpreisWohnung: "Kaufpreis Wohnung",
     jahresmieteNachLeerstand: "Jahresmiete nach Leerstand",
     kaufpreis: "Kaufpreis",
     kaufpreisAllInclusive: "Kaufpreis all-inclusive",
@@ -243,7 +268,11 @@ export const KENNZAHL_TEXTE_DE: KennzahlTexte = {
     steuereffektMonat: (betrag) => `${betrag} im Monat, im Cashflow nach Steuer enthalten`,
     steuereffektZeitraum: (von, bis) => `${von} bis ${bis}, Summe aus der Jahrestabelle`,
     eigenkapitalrenditeHinweis:
-      "Weniger Eigenkapital heißt höhere Rendite, aber auch höhere Rate.",
+      "Eine Modellkennzahl, kein Zins: Vermögensaufbau je Jahr im Verhältnis zu Eigenkapital und zwölf Monaten Zuzahlung. Weniger Eigenkapital heißt höhere Zahl, aber auch höhere Rate. Den Zins auf das eingesetzte Geld zeigt der IRR unter den Kennzahlen.",
+    irrHinweis:
+      "Verzinsung des eingesetzten Geldes über den ganzen Zeitraum, mit allen Zahlungen nach Steuer und einem Modellverkauf am Ende abzüglich der Verkaufskosten.",
+    irrNichtBestimmbar:
+      "Nicht bestimmbar: Die Zahlungsreihe hat keine Ein- und Auszahlung, etwa ohne Eigenkapital und ohne Zuzahlung.",
     eigenkapitalrenditeNichtBestimmbar:
       "Nicht sinnvoll bestimmbar: Du setzt kein Eigenkapital ein und zahlst monatlich nichts zu.",
     eigenkapitalrenditeNebenkosten: ({ selbstGezahlt, kaufnebenkosten, rendite, rate }) =>
@@ -423,18 +452,18 @@ export const KENNZAHL_TEXTE_DE: KennzahlTexte = {
         formel: "Gesamtvermögen = Immobilie minus Restschuld + Summe der Cashflows nach Steuer",
       },
       eigenkapitalrendite: {
-        titel: "Eigenkapitalrendite p. a.",
+        titel: "Vermögensrendite p. a. (Modellkennzahl)",
         bedeutung:
-          "Wie viel Vermögen im Schnitt pro Jahr entsteht, im Verhältnis zu deinem Eigenkapital und zwölf Monaten Zuzahlung vor Steuer. Weniger Eigenkapital ergibt eine höhere Zahl, aber auch eine höhere Rate.",
+          "Eine eigene Modellkennzahl, keine Verzinsung im finanzmathematischen Sinn: wie viel Vermögen im Schnitt pro Jahr entsteht, im Verhältnis zu deinem Eigenkapital und zwölf Monaten Zuzahlung vor Steuer. Weniger Eigenkapital ergibt eine höhere Zahl, aber auch eine höhere Rate. Die Verzinsung des eingesetzten Geldes zeigt der interne Zinsfuß.",
         formel:
-          "Eigenkapitalrendite p. a. = (Vermögensaufbau im Betrachtungszeitraum ÷ Jahre) ÷ (Eigenkapital + Zuzahlung vor Steuer je Monat × 12); Vermögensaufbau im Betrachtungszeitraum = Vermögensaufbau p. M. × Monate; Zuzahlung vor Steuer = negativer Cashflow vor Steuer pro Monat im ersten Jahr, ein Überschuss zählt als 0",
+          "Vermögensrendite p. a. = (Vermögensaufbau im Betrachtungszeitraum ÷ Jahre) ÷ (Eigenkapital + Zuzahlung vor Steuer je Monat × 12); Vermögensaufbau im Betrachtungszeitraum = Vermögensaufbau p. M. × Monate; Zuzahlung vor Steuer = negativer Cashflow vor Steuer pro Monat im ersten Jahr, ein Überschuss zählt als 0",
       },
       irr: {
         titel: "Interner Zinsfuß (IRR)",
         bedeutung:
-          "Der Zins, den dein eingesetztes Geld rechnerisch bringt. Er steht im Objektvergleich als „Interner Zinsfuß (IRR) p. a.“ und hängt stark an Finanzierung und Wertsteigerung: Wer weniger einbringt, bekommt die höhere Zahl.",
+          "Der Zins, den dein eingesetztes Geld rechnerisch bringt. Er hängt stark an Finanzierung und Wertsteigerung: Wer weniger einbringt, bekommt die höhere Zahl.",
         formel:
-          "Der Zinssatz, bei dem −Eigenkapital + abgezinste Cashflows nach Steuer + Immobilie minus Restschuld im letzten Jahr zusammen 0 ergeben",
+          "Der Zinssatz, bei dem −Eigenkapital + abgezinste Cashflows nach Steuer + (Immobilie minus Restschuld minus Verkaufskosten) im letzten Jahr zusammen 0 ergeben",
       },
     },
     kaufpreisAllInclusive: {
@@ -478,7 +507,15 @@ export const KENNZAHL_TEXTE_EN: KennzahlTexte = {
     gesamtvermoegen: (jahre) => `Total wealth after ${jahre} years`,
     steuereffektErstesJahr: "Tax effect in the first year",
     steuereffektGesamt: (jahre) => `Tax effect over ${jahre} years in total`,
-    eigenkapitalrendite: "Return on equity p.a.",
+    eigenkapitalrendite: "Wealth return p.a. (model figure)",
+    bruttorenditeWohnung: "Gross rental yield apartment",
+    bruttorenditeGesamt: "Gross rental yield total (apartment and parking)",
+    nettorenditeWohnung: "Net rental yield apartment",
+    nettorenditeGesamt: "Net rental yield total (apartment and parking)",
+    kaufpreisfaktorWohnung: "Price-to-rent ratio apartment",
+    kaufpreisfaktorGesamt: "Price-to-rent ratio total (apartment and parking)",
+    kaufpreisfaktor: "Price-to-rent ratio",
+    irr: "Internal rate of return (IRR) p.a.",
   },
   glieder: {
     miete: "Rent",
@@ -488,6 +525,8 @@ export const KENNZAHL_TEXTE_EN: KennzahlTexte = {
     steuereffekt: "Tax effect",
     steuermehrbelastung: "Additional tax",
     jahresmiete: "Annual rent",
+    jahresmieteWohnung: "Annual rent apartment",
+    kaufpreisWohnung: "Purchase price apartment",
     jahresmieteNachLeerstand: "Annual rent after vacancy",
     kaufpreis: "Purchase price",
     kaufpreisAllInclusive: "Purchase price all-inclusive",
@@ -537,7 +576,11 @@ export const KENNZAHL_TEXTE_EN: KennzahlTexte = {
     steuereffektMonat: (betrag) => `${betrag} per month, included in the cash flow after tax`,
     steuereffektZeitraum: (von, bis) => `${von} to ${bis}, total from the annual table`,
     eigenkapitalrenditeHinweis:
-      "Less equity means a higher return, but also a higher instalment.",
+      "A model figure, not an interest rate: wealth building per year relative to equity and twelve months of top-up payments. Less equity means a higher figure, but also a higher instalment. The interest on the money invested is shown by the IRR below the key figures.",
+    irrHinweis:
+      "Return on the money invested over the whole period, with all payments after tax and a model sale at the end less selling costs.",
+    irrNichtBestimmbar:
+      "Cannot be determined: the payment series has no inflow and outflow, for example without equity and without top-up payments.",
     eigenkapitalrenditeNichtBestimmbar:
       "Cannot be meaningfully determined: you contribute no equity and make no monthly top-up payments.",
     eigenkapitalrenditeNebenkosten: ({ selbstGezahlt, kaufnebenkosten, rendite, rate }) =>
@@ -717,18 +760,18 @@ export const KENNZAHL_TEXTE_EN: KennzahlTexte = {
         formel: "Total wealth = property minus remaining debt + sum of cash flows after tax",
       },
       eigenkapitalrendite: {
-        titel: "Return on equity p.a.",
+        titel: "Wealth return p.a. (model figure)",
         bedeutung:
-          "How much wealth is built up on average each year, relative to your equity and twelve months of top-up payments before tax. Less equity means a higher figure, but also a higher instalment.",
+          "A model figure of its own, not an interest rate in the financial sense: how much wealth is built up on average each year, relative to your equity and twelve months of top-up payments before tax. Less equity means a higher figure, but also a higher instalment. The interest on the money invested is shown by the IRR below the key figures.",
         formel:
-          "Return on equity p.a. = (wealth building over the period ÷ years) ÷ (equity + monthly top-up payment before tax × 12); wealth building over the period = wealth building per month × months; top-up payment before tax = negative cash flow before tax per month in the first year, a surplus counts as 0",
+          "Wealth return p.a. = (wealth building over the period ÷ years) ÷ (equity + monthly top-up payment before tax × 12); wealth building over the period = wealth building per month × months; top-up payment before tax = negative cash flow before tax per month in the first year, a surplus counts as 0",
       },
       irr: {
         titel: "Internal rate of return (IRR)",
         bedeutung:
-          "The interest rate your invested money yields in arithmetical terms. It appears in the property comparison as “internal rate of return (IRR) p.a.” and depends heavily on financing and increase in value: whoever contributes less gets the higher figure.",
+          "The interest rate your invested money yields in arithmetical terms. It depends heavily on financing and increase in value: whoever contributes less gets the higher figure.",
         formel:
-          "The interest rate at which −equity + discounted cash flows after tax + property minus remaining debt in the final year add up to 0",
+          "The interest rate at which −equity + discounted cash flows after tax + (property minus remaining debt minus selling costs) in the final year add up to 0",
       },
     },
     kaufpreisAllInclusive: {
