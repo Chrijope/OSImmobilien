@@ -100,10 +100,11 @@ describe("fuenfzehnProzentGrenze", () => {
   it("passt zur Quote des Rechenkerns", () => {
     const ergebnis = berechneInvestment(BEISPIEL);
     const grenze = fuenfzehnProzentGrenze(ergebnis)!;
-    expect(grenze.aufwand).toBe(20_000);
+    // Seit dem 22.10.2026 netto: 20.000 € brutto mit 19 % USt.
+    expect(grenze.aufwand).toBeCloseTo(20_000 / 1.19, 9);
     expect(grenze.aufwand / grenze.gebaeude).toBeCloseTo(ergebnis.immediateDeductionRatio, 12);
     expect(grenze.grenzeBrutto).toBeCloseTo(grenze.grenzeNetto * 1.19, 9);
-    expect(grenze.spielraumNetto).toBeCloseTo(grenze.grenzeNetto - 20_000, 9);
+    expect(grenze.spielraumNetto).toBeCloseTo(grenze.grenzeNetto - 20_000 / 1.19, 9);
     // Überschritten genau dann, wenn der Rechenkern warnt (Modus „Abziehen“).
     expect(grenze.spielraumNetto < 0).toBe(ergebnis.simpleThresholdExceeded);
   });

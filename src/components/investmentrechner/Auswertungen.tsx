@@ -259,7 +259,11 @@ export function Bankgespraech({
       await ladeBankgespraechPdfHerunter(input, result);
     } catch (fehler) {
       console.error("[Bankgespräch] PDF fehlgeschlagen", fehler);
-      toast({ title: "PDF konnte nicht erstellt werden", description: "Bitte versuch es noch einmal.", variant: "destructive" });
+      toast({
+        title: t("PDF konnte nicht erstellt werden", "The PDF could not be created"),
+        description: t("Bitte versuch es noch einmal.", "Please try again."),
+        variant: "destructive",
+      });
     } finally {
       setPdfEntsteht(false);
     }
@@ -405,7 +409,7 @@ export function Bankgespraech({
             zeilen: [
               [t("Anschaffungskosten Gebäude", "Acquisition costs of the building"), fEuro(grenze.gebaeude)],
               [t("Grenze netto (brutto mit 19 % USt.)", "Limit net (gross with 19% VAT)"), `${fEuro(grenze.grenzeNetto)} (${fEuro(grenze.grenzeBrutto)})`],
-              [t("Eingetragener Erhaltungsaufwand", "Maintenance expenses entered"), fEuro(grenze.aufwand)],
+              [t("Erhaltungsaufwand netto", "Maintenance expenses net"), fEuro(grenze.aufwand)],
               [grenze.spielraumNetto >= 0 ? t("Spielraum netto", "Headroom net") : t("Grenze überschritten um", "Limit exceeded by"), fEuro(Math.abs(grenze.spielraumNetto))],
             ] as [string, string][],
             hinweis:
@@ -420,11 +424,16 @@ export function Bankgespraech({
       {!imDokument && (
       <div className="bankgespraech-pdf">
         <button type="button" className="button button-primary" disabled={pdfEntsteht} onClick={() => void pdfLaden()}>
-          <FileDown size={14} /> {pdfEntsteht ? "PDF wird erstellt …" : t("Bankgespräch-PDF", "Bank meeting PDF")}
+          <FileDown size={14} /> {pdfEntsteht ? t("PDF wird erstellt …", "Creating PDF …") : t("Bankgespräch-PDF", "Bank meeting PDF")}
         </button>
-        <Neu titel="Investitionsübersicht, Haushaltsrechnung und Vermögensaufstellung als eine Unterlage" />
+        <Neu titel={t("Investitionsübersicht, Haushaltsrechnung und Vermögensaufstellung als eine Unterlage", "Investment overview, household budget and statement of assets in one document")} />
         {!haushalt && !vermoegen && (
-          <span className="kachel-hinweis">Haushaltsrechnung und Vermögensaufstellung im Bereich „Bankunterlagen“ links ausfüllen, dann stehen sie mit im PDF.</span>
+          <span className="kachel-hinweis">
+            {t(
+              "Haushaltsrechnung und Vermögensaufstellung im Bereich „Bankunterlagen“ links ausfüllen, dann stehen sie mit im PDF.",
+              "Fill in the household budget and statement of assets in the “Bank documents” section on the left to include them in the PDF.",
+            )}
+          </span>
         )}
       </div>
       )}
@@ -546,83 +555,86 @@ export function BankunterlagenTabellen({
   const haushalt = haushaltMitVorlage(input.haushalt);
   const vermoegen = vermoegenMitVorlage(input.vermoegen);
   const h = haushaltsrechnung(haushalt, result);
+  // Seit dem 22.10.2026 in der Sprache der rechten Seite und des Dokuments.
+  const { sprache } = useRechnerTexte();
+  const t = (de: string, en: string) => (sprache === "en" ? en : de);
   const v = vermoegensaufstellung(vermoegen, result);
   const zeile = (label: string, monat: number, summe = false) => (
     <tr key={label} className={summe ? "bank-summe" : undefined}>
       <td>{label}</td>
-      <td>{formatEuroCent(monat)}</td>
-      <td>{formatEuro(monat * 12)}</td>
+      <td>{formatEuroCent(monat, sprache)}</td>
+      <td>{formatEuro(monat * 12, sprache)}</td>
     </tr>
   );
   return (
     <div className="bankunterlagen-tabellen">
       {nur !== "vermoegen" && (<>
-      {!nur && <h3>Haushaltsrechnung</h3>}
+      {!nur && <h3>{t("Haushaltsrechnung", "Household budget")}</h3>}
       <div className="table-scroll compact-table">
         <table>
           <thead>
             <tr>
-              <th>Posten</th>
-              <th>je Monat</th>
-              <th>je Jahr</th>
+              <th>{t("Posten", "Item")}</th>
+              <th>{t("je Monat", "per month")}</th>
+              <th>{t("je Jahr", "per year")}</th>
             </tr>
           </thead>
           <tbody>
-            {haushalt.einkuenfte.map((p, i) => zeile(p.bezeichnung || `Einkunft ${i + 1}`, p.betrag))}
-            {zeile("Summe Einkünfte", h.einkuenfteMonat, true)}
-            {haushalt.ausgaben.map((p, i) => zeile(p.bezeichnung || `Ausgabe ${i + 1}`, -p.betrag))}
-            {zeile("Summe Ausgaben", -h.ausgabenMonat, true)}
-            {zeile("Überschuss vor dem Investment", h.ueberschussVorMonat, true)}
-            {zeile("+ Kaltmiete der Wohnung", h.mieteMonat)}
-            {zeile("− Kreditrate", -h.rateMonat)}
-            {zeile("− Bewirtschaftung und Rücklage", -h.bewirtschaftungMonat)}
-            {zeile("Überschuss nach dem Investment (ohne Steuer)", h.ueberschussNachMonat, true)}
-            {zeile("Steuerwirkung im ersten Jahr", h.steuerwirkungMonat)}
-            {zeile("Überschuss mit Steuerwirkung", h.ueberschussNachMitSteuerMonat, true)}
+            {haushalt.einkuenfte.map((p, i) => zeile(p.bezeichnung || t(`Einkunft ${i + 1}`, `Income ${i + 1}`), p.betrag))}
+            {zeile(t("Summe Einkünfte", "Total income"), h.einkuenfteMonat, true)}
+            {haushalt.ausgaben.map((p, i) => zeile(p.bezeichnung || t(`Ausgabe ${i + 1}`, `Expense ${i + 1}`), -p.betrag))}
+            {zeile(t("Summe Ausgaben", "Total expenses"), -h.ausgabenMonat, true)}
+            {zeile(t("Überschuss vor dem Investment", "Surplus before the investment"), h.ueberschussVorMonat, true)}
+            {zeile(t("+ Kaltmiete der Wohnung", "+ Net cold rent of the apartment"), h.mieteMonat)}
+            {zeile(t("− Kreditrate", "− Loan instalment"), -h.rateMonat)}
+            {zeile(t("− Bewirtschaftung und Rücklage", "− Running costs and reserve"), -h.bewirtschaftungMonat)}
+            {zeile(t("Überschuss nach dem Investment (ohne Steuer)", "Surplus after the investment (without tax)"), h.ueberschussNachMonat, true)}
+            {zeile(t("Steuerwirkung im ersten Jahr", "Tax effect in the first year"), h.steuerwirkungMonat)}
+            {zeile(t("Überschuss mit Steuerwirkung", "Surplus with tax effect"), h.ueberschussNachMitSteuerMonat, true)}
           </tbody>
         </table>
       </div>
       </>)}
       {nur !== "haushalt" && (<>
-      {!nur && <h3>Vermögensaufstellung</h3>}
+      {!nur && <h3>{t("Vermögensaufstellung", "Statement of assets")}</h3>}
       <div className="table-scroll compact-table">
         <table>
           <thead>
             <tr>
-              <th>Posten</th>
-              <th>verpfändet</th>
-              <th>Betrag</th>
+              <th>{t("Posten", "Item")}</th>
+              <th>{t("verpfändet", "pledged")}</th>
+              <th>{t("Betrag", "Amount")}</th>
             </tr>
           </thead>
           <tbody>
             {vermoegen.werte.map((p, i) => (
               <tr key={`w${i}`}>
-                <td>{p.bezeichnung || `Vermögenswert ${i + 1}`}</td>
-                <td>{p.verpfaendet ? "ja" : "nein"}</td>
-                <td>{formatEuro(p.betrag)}</td>
+                <td>{p.bezeichnung || t(`Vermögenswert ${i + 1}`, `Asset ${i + 1}`)}</td>
+                <td>{p.verpfaendet ? t("ja", "yes") : t("nein", "no")}</td>
+                <td>{formatEuro(p.betrag, sprache)}</td>
               </tr>
             ))}
             <tr className="bank-summe">
-              <td>Summe Vermögenswerte (davon verpfändet)</td>
-              <td>{formatEuro(v.davonVerpfaendet)}</td>
-              <td>{formatEuro(v.werte)}</td>
+              <td>{t("Summe Vermögenswerte (davon verpfändet)", "Total assets (of which pledged)")}</td>
+              <td>{formatEuro(v.davonVerpfaendet, sprache)}</td>
+              <td>{formatEuro(v.werte, sprache)}</td>
             </tr>
             {vermoegen.verbindlichkeiten.map((p, i) => (
               <tr key={`v${i}`}>
-                <td>{p.bezeichnung || `Verbindlichkeit ${i + 1}`}</td>
+                <td>{p.bezeichnung || t(`Verbindlichkeit ${i + 1}`, `Liability ${i + 1}`)}</td>
                 <td />
-                <td>{formatEuro(-p.betrag)}</td>
+                <td>{formatEuro(-p.betrag, sprache)}</td>
               </tr>
             ))}
             <tr className="bank-summe">
-              <td>Differenz</td>
+              <td>{t("Differenz", "Difference")}</td>
               <td />
-              <td>{formatEuro(v.differenz)}</td>
+              <td>{formatEuro(v.differenz, sprache)}</td>
             </tr>
             <tr className="bank-summe">
-              <td>Differenz mit Wohnung und neuen Darlehen</td>
+              <td>{t("Differenz mit Wohnung und neuen Darlehen", "Difference with apartment and new loans")}</td>
               <td />
-              <td>{formatEuro(v.differenzNachKauf)}</td>
+              <td>{formatEuro(v.differenzNachKauf, sprache)}</td>
             </tr>
           </tbody>
         </table>
@@ -761,13 +773,6 @@ export function hausgeldHinweis(input: InvestmentEingabe, sprache: FormatSprache
       en
         ? `The parts add up to ${formatEuroCent(h.summeTeile, sprache)}, the total is ${formatEuroCent(h.gesamt, sprache)} (difference ${formatEuroCent(h.abweichung, sprache)}).`
         : `Die Teile ergeben ${formatEuroCent(h.summeTeile, sprache)}, das Hausgeld gesamt ist ${formatEuroCent(h.gesamt, sprache)} (Abweichung ${formatEuroCent(h.abweichung, sprache)}).`,
-    );
-  }
-  if (h.rechnungNiedriger) {
-    teile.push(
-      en
-        ? "The calculation uses lower non-recoverable costs than listed here."
-        : "Die Rechnung setzt weniger nicht umlagefähige Kosten an als hier aufgeführt.",
     );
   }
   return teile.length ? teile.join(" ") : null;
@@ -1077,7 +1082,7 @@ export function Rechenstandards({ input, result }: { input: InvestmentEingabe; r
         [t("Regel-AfA", "Standard depreciation"), `${fProzentZahl(afa.regel.satz, 1)} ${t("linear", "straight-line")} (${en ? (GRUND_EN[afa.regel.grund] ?? afa.regel.grund) : afa.regel.grund}, ${afa.regel.paragraf})`],
         ...(afa.mitRegelAfa && regelErstes
           ? ([
-              [t(`Zuzahlung nach Steuer ${regelErstes.year} mit Regel-AfA`, `Top-up after tax ${regelErstes.year} with standard depreciation`), belastung(-regelErstes.cashflowAfterTax / 12)],
+              [t(`Zuzahlung nach Steuer ${regelErstes.year} mit Regel-AfA`, `Top-up after tax ${regelErstes.year} with standard depreciation`), belastung(-regelErstes.cashflowAfterTax / monateErstesJahr(afa.mitRegelAfa))],
               [t("Steuerwirkung gesamt mit Regel-AfA", "Total tax effect with standard depreciation"), fEuro(afa.mitRegelAfa.cumulativeTaxEffect)],
             ] as [string, string][])
           : []),

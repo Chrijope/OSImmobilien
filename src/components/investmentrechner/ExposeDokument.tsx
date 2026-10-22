@@ -619,15 +619,19 @@ export function ExposeDokument({
 
       {/*
         Seit dem 11.10.2026, mit dem Schalter „Bankgespräch & Bankunterlagen“:
-        die Karte „Bankgespräch“ der Analyse auf zwei Seiten. Deutsch, wie dort.
+        die Karte „Bankgespräch“ der Analyse auf zwei Seiten. Seit dem
+        22.10.2026 in der Sprache des Dokuments, wie die Analyse.
       */}
       {zusatz.bankgespraech > 0 &&
         ([1, 2] as const).map((teil) => (
-          <section key={teil} className="expose-page einordnung-page" lang="de">
+          <section key={teil} className="expose-page einordnung-page" lang={sprache}>
             <Seitenkopf clientName={input.clientName} marke={marke} sprache={sprache} />
-            <span className="eyebrow">Bankgespräch</span>
+            <span className="eyebrow">{sprache === "en" ? "Bank meeting" : "Bankgespräch"}</span>
             <h2>
-              {teil === 1 ? "Kapitalbedarf, Finanzierung und Zinsbindung" : "Kapitaldienstfähigkeit, Zinsänderungsrisiko und Rendite"} <Neu />
+              {teil === 1
+                ? sprache === "en" ? "Capital requirement, financing and fixed-rate period" : "Kapitalbedarf, Finanzierung und Zinsbindung"
+                : sprache === "en" ? "Debt service capacity, interest rate risk and return" : "Kapitaldienstfähigkeit, Zinsänderungsrisiko und Rendite"}{" "}
+              <Neu />
             </h2>
             <Bankgespraech input={input} result={result} imDokument teil={teil} />
             <Fusszeile seite={seiteEinordnung + teil - 1} sprache={sprache} />
@@ -636,17 +640,24 @@ export function ExposeDokument({
 
       {zusatz.bankunterlagen > 0 &&
         (["haushalt", "vermoegen"] as const).map((teil, index) => (
-          <section key={teil} className="expose-page bankunterlagen-page" lang="de">
+          <section key={teil} className="expose-page bankunterlagen-page" lang={sprache}>
             <Seitenkopf clientName={input.clientName} marke={marke} sprache={sprache} />
-            <span className="eyebrow">Unterlagen für das Bankgespräch</span>
+            <span className="eyebrow">{sprache === "en" ? "Documents for the bank meeting" : "Unterlagen für das Bankgespräch"}</span>
             <h2>
-              {teil === "haushalt" ? "Haushaltsrechnung" : "Vermögensaufstellung"} <Neu />
+              {teil === "haushalt"
+                ? sprache === "en" ? "Household budget" : "Haushaltsrechnung"
+                : sprache === "en" ? "Statement of assets" : "Vermögensaufstellung"}{" "}
+              <Neu />
             </h2>
             <BankunterlagenTabellen input={input} result={result} nur={teil} />
             <p className="expose-fineprint">
               {teil === "haushalt"
-                ? "Angaben des Kunden ohne Gewähr. Miete, Rate und Bewirtschaftung stammen aus dieser Berechnung, erstes Jahr."
-                : "Angaben des Kunden ohne Gewähr. Die Wohnung zählt mit dem Kaufpreis, die neuen Darlehen mit ihrem Betrag."}
+                ? sprache === "en"
+                  ? "Client information without guarantee. Rent, instalment and running costs come from this calculation, first year."
+                  : "Angaben des Kunden ohne Gewähr. Miete, Rate und Bewirtschaftung stammen aus dieser Berechnung, erstes Jahr."
+                : sprache === "en"
+                  ? "Client information without guarantee. The apartment counts at its purchase price, the new loans at their amount."
+                  : "Angaben des Kunden ohne Gewähr. Die Wohnung zählt mit dem Kaufpreis, die neuen Darlehen mit ihrem Betrag."}
             </p>
             <Fusszeile seite={seiteBankunterlagen + index} sprache={sprache} />
           </section>

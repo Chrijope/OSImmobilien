@@ -43,3 +43,40 @@ describe("Ausführliche Berechnung", () => {
     expect(werte.darlehen.reduce((s, d) => s + d.rateMonat, 0)).toBeCloseTo(ergebnis.monthlyDebtService, 6);
   });
 });
+
+/* Codex-Nachprüfung vom 22.10.2026. */
+describe("Erlös bei Verkauf und Zehnjahresfrist", () => {
+  const beispiel: InvestmentEingabe = {
+    ...standardEingabe,
+    purchasePrice: 300000,
+    equity: 60000,
+    transferTaxRate: 0,
+    notaryRate: 0,
+    landRegisterRate: 0,
+    financingCostRate: 0,
+    annualValueGrowth: 0,
+    forecastYears: 10,
+  };
+  it("ist Immobilienwert minus Restschuld minus Verkaufskosten, wie im IRR", () => {
+    const r = berechneInvestment(beispiel);
+    const werte = ausfuehrlicheWerte(beispiel, r);
+    const letztes = r.years[9];
+    expect(werte.erloesEnde).toBeCloseTo(letztes.propertyValue - letztes.remainingDebt, 6);
+    // Das eingesetzte Eigenkapital steckt darin: mehr als 60.000 Euro, nicht nur die Tilgung.
+    expect(werte.erloesEnde).toBeGreaterThan(100000);
+    expect(werte.stichjahre[1].erloes).toBeCloseTo(werte.erloesEnde, 6);
+    const mitKosten = { ...beispiel, saleCostRate: 5 };
+    const w2 = ausfuehrlicheWerte(mitKosten, berechneInvestment(mitKosten));
+    expect(w2.erloesEnde).toBeCloseTo(letztes.propertyValue * 0.95 - letztes.remainingDebt, 6);
+  });
+
+  it("nennt die Steuerfreiheit nur nach zehn vollen Jahren ab dem Übergang und unter Vorbehalt", () => {
+    const zehn = render(<AusfuehrlicheBerechnung input={beispiel} result={berechneInvestment(beispiel)} photos={[]} />);
+    expect(zehn.container.querySelector(".ba-titel")!.textContent).toContain("sofern die Zehnjahresfrist ab Kaufvertrag abgelaufen ist");
+    zehn.unmount();
+    // Übergang im Juli: Nach zehn Tabellenjahren sind erst neuneinhalb Jahre vergangen.
+    const juli = { ...beispiel, acquisitionMonth: 7 };
+    const kurz = render(<AusfuehrlicheBerechnung input={juli} result={berechneInvestment(juli)} photos={[]} />);
+    expect(kurz.container.querySelector(".ba-titel")!.textContent).toContain("vor Ablauf von zehn Jahren steuerpflichtig");
+  });
+});

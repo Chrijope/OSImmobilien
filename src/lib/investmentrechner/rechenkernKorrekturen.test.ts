@@ -285,3 +285,52 @@ describe("8. Kleinere Punkte", () => {
     expect(ekr.zuzahlungMonat).toBeCloseTo(Math.max(0, -r.years[0].cashflowBeforeTax / 6), 6);
   });
 });
+
+/* Codex-Nachprüfung vom 22.10.2026. */
+describe("Nachprüfung: IRR mit Zahlungszeitpunkten", () => {
+  it("Dezembererwerb, 100 % Eigenkapital, 12 % Wertsteigerung, Verkauf Ende Jahr 1: 12 % p. a.", () => {
+    const r = berechneInvestment({
+      ...standardEingabe,
+      purchasePrice: 100000,
+      equity: 100000,
+      transferTaxRate: 0,
+      notaryRate: 0,
+      landRegisterRate: 0,
+      financingCostRate: 0,
+      annualValueGrowth: 12,
+      forecastYears: 1,
+      acquisitionMonth: 12,
+    });
+    expect(r.totalDebt).toBe(0);
+    expect(r.irr!).toBeCloseTo(0.12, 6);
+  });
+});
+
+describe("Nachprüfung: 15-Prozent-Grenze netto", () => {
+  // Gebäude ohne Aufwand 228.000 − 36.000 = 192.000, Grenze 28.800 netto.
+  const auf = (rehabVatRate: number) => mit({ rehabExpense: 36000, rehabVatRate });
+  it("brutto 36.000 mit 19 % USt sind netto 30.252 und damit über der Grenze", () => {
+    expect(auf(19).erhaltungsaufwandNetto).toBeCloseTo(36000 / 1.19, 6);
+    expect(auf(19).anschaffungsnah).toBe(true);
+  });
+  it("mit höherem Steueranteil netto darunter: Sofortabzug des Bruttobetrags", () => {
+    const r = mit({ rehabExpense: 34000, rehabVatRate: 19 });
+    // 34.000 brutto sind 28.571 netto, unter 15 % von 194.000 = 29.100.
+    expect(r.anschaffungsnah).toBe(false);
+    expect(r.years[0].rehabDeduction).toBeCloseTo(34000, 6);
+    // Ohne USt-Anteil wären es 34.000 netto, also über der Grenze.
+    expect(mit({ rehabExpense: 34000, rehabVatRate: 0 }).anschaffungsnah).toBe(true);
+  });
+});
+
+describe("Nachprüfung: Folge-AfA erst nach dem gesetzlichen Begünstigungszeitraum", () => {
+  it("zwei Jahre Sonder-AfA: Jahre 3 und 4 lineare AfA vom Ausgangswert, ab Jahr 5 Restwert über Restnutzungsdauer", () => {
+    const r = mit({ buildingDepreciationRate: 3, specialDepreciationRate: 5, specialDepreciationYears: 2 });
+    const basisAfa = 228000;
+    expect(r.years[2].specialDepreciation).toBe(0);
+    expect(r.years[2].buildingDepreciation).toBeCloseTo(basisAfa * 0.03, 6);
+    expect(r.years[3].buildingDepreciation).toBeCloseTo(basisAfa * 0.03, 6);
+    const restwert = basisAfa - 4 * basisAfa * 0.03 - 2 * basisAfa * 0.05;
+    expect(r.years[4].buildingDepreciation).toBeCloseTo(restwert / (100 / 3 - 4), 6);
+  });
+});

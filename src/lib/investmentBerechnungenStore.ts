@@ -27,6 +27,7 @@ import { herkunftAusJson, type Herkunft } from "@/lib/investmentrechner/herkunft
 import {
   ausgewiesenerKaufpreis,
   EINGABE_VERSION,
+  monateErstesJahr,
   standardEingabe,
   type Bankunterlagenposten,
   type InvestmentEingabe,
@@ -317,7 +318,8 @@ export function kennzahlenAus(eingabe: InvestmentEingabe, ergebnis: InvestmentEr
     // Beim All-inclusive-Modell samt Aufschlag, passend zur Bruttorendite daneben.
     kaufpreis: ausgewiesenerKaufpreis(eingabe, ergebnis),
     eigenkapital: eingabe.equity,
-    cashflowMonatNachSteuern: erstesJahr ? erstesJahr.cashflowAfterTax / 12 : 0,
+    // Seit dem 22.10.2026 je Monat ab dem Übergang, nicht je zwölftel Jahr.
+    cashflowMonatNachSteuern: erstesJahr ? erstesJahr.cashflowAfterTax / monateErstesJahr(ergebnis) : 0,
     bruttorendite: ergebnis.grossYield,
     irr: ergebnis.irr,
   };

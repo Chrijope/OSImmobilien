@@ -5,7 +5,8 @@ import { berechneInvestment, hausgeldAufstellung, standardEingabe, type Investme
 import { InvestmentrechnerInhalt } from "./InvestmentrechnerInhalt";
 import { AusfuehrlicheBerechnung } from "./AusfuehrlicheBerechnung";
 import { RechnerSpracheContext } from "./RechnerSprache";
-import { Hausgeldaufstellung } from "./Auswertungen";
+import { Bankgespraech, BankunterlagenTabellen, Hausgeldaufstellung } from "./Auswertungen";
+import { KENNZAHL_TEXTE_DE, KENNZAHL_TEXTE_EN } from "@/lib/investmentrechner/kennzahlTexte";
 
 vi.mock("@/lib/investmentrechner/berechnungAnsichtPdf", () => ({ ladeBerechnungsansichtHerunter: vi.fn() }));
 
@@ -21,7 +22,8 @@ const eingabe: InvestmentEingabe = {
   purchasePrice: 250000,
   monthlyColdRent: 900,
   taxableIncomeCustomer: 70000,
-  monthlyOperatingCosts: 60,
+  // Weitere nicht umlagefähige Kosten neben dem Hausgeld, etwa Sondereigentumsverwaltung.
+  monthlyOperatingCosts: 20,
   monthlyReserveContribution: 40,
   housingFeeTotal: 300,
   housingFeeRecoverable: 200,
@@ -60,10 +62,9 @@ describe("Sprache der rechten Seite", () => {
 
 describe("Hausgeld in ganzer Höhe", () => {
   it("prüft gesamt = umlagefähig + nicht umlagefähig + Rücklage", () => {
-    expect(hausgeldAufstellung(eingabe)).toMatchObject({ gesamt: 300, summeTeile: 300, abweichung: 0, rechnungNiedriger: false });
+    expect(hausgeldAufstellung(eingabe)).toMatchObject({ gesamt: 300, summeTeile: 300, abweichung: 0 });
     const falsch = hausgeldAufstellung({ ...eingabe, housingFeeTotal: 320 });
     expect(falsch.abweichung).toBe(20);
-    expect(hausgeldAufstellung({ ...eingabe, monthlyOperatingCosts: 30 }).rechnungNiedriger).toBe(true);
     expect(hausgeldAufstellung(standardEingabe).vorhanden).toBe(false);
   });
 
@@ -81,11 +82,59 @@ describe("Hausgeld in ganzer Höhe", () => {
     expect(en.queryByTestId("hausgeld-abweichung")).toBeNull();
   });
 
-  it("belastet den Cashflow nur mit dem nicht umlagefähigen Teil und der Rücklage", () => {
+  it("belastet den Cashflow nur mit dem nicht umlagefähigen Teil, den weiteren Kosten und der Rücklage", () => {
     const r = berechneInvestment(eingabe);
-    const ohneAnzeige = berechneInvestment({ ...eingabe, housingFeeTotal: 0, housingFeeRecoverable: 0, housingFeeNonRecoverable: 0 });
-    // Die Aufstellung ändert die Rechnung nicht: Der umlagefähige Teil zahlt der Mieter.
-    expect(r.years).toEqual(ohneAnzeige.years);
-    expect(r.years[0].operatingCosts + r.years[0].reserveContribution).toBeCloseTo((60 + 40) * 12, 6);
+    // Gesamt und umlagefähig ändern die Rechnung nicht: Den umlagefähigen Teil zahlt der Mieter.
+    const andereAnzeige = berechneInvestment({ ...eingabe, housingFeeTotal: 999, housingFeeRecoverable: 500 });
+    expect(r.years).toEqual(andereAnzeige.years);
+    // Nicht umlagefähig (60) plus weitere Kosten (20) plus Rücklage (40).
+    expect(r.years[0].operatingCosts + r.years[0].reserveContribution).toBeCloseTo((60 + 20 + 40) * 12, 6);
+    // Jede Änderung am nicht umlagefähigen Hausgeld wirkt auf den Cashflow (Codex-Befund vom 22.10.2026).
+    const mehr = berechneInvestment({ ...eingabe, housingFeeNonRecoverable: 70 });
+    expect(r.years[0].cashflowBeforeTax - mehr.years[0].cashflowBeforeTax).toBeCloseTo(120, 6);
+    // Ein alter Stand ohne die Aufteilung rechnet wie vorher mit dem einen Feld.
+    const alt = berechneInvestment({ ...eingabe, housingFeeNonRecoverable: 0, monthlyOperatingCosts: 80 });
+    expect(alt.years[0].operatingCosts).toBeCloseTo(r.years[0].operatingCosts, 6);
+  });
+});
+
+/* Codex-Nachprüfung vom 22.10.2026: keine deutschen Reste in der englischen Ansicht. */
+describe("Bankgespräch und Bankunterlagen auf Englisch", () => {
+  const mitHaushalt = {
+    ...eingabe,
+    haushalt: { einkuenfte: [{ bezeichnung: "Salary", betrag: 4000 }], ausgaben: [] },
+    vermoegen: { werte: [], verbindlichkeiten: [] },
+  };
+  it("Knopf, Hinweis und Blöcke englisch", () => {
+    const { container } = zeige(
+      <RechnerSpracheContext.Provider value="en">
+        <Bankgespraech input={eingabe} result={berechneInvestment(eingabe)} />
+      </RechnerSpracheContext.Provider>,
+    );
+    const text = container.textContent ?? "";
+    expect(text).toContain("Bank meeting PDF");
+    expect(text).toContain("Capital requirement and financing");
+    expect(text).not.toMatch(/Kaufpreis|Haushaltsrechnung|ausfüllen/);
+  });
+  it("Haushaltsrechnung als Tabelle englisch", () => {
+    const { container } = render(
+      <RechnerSpracheContext.Provider value="en">
+        <BankunterlagenTabellen input={mitHaushalt} result={berechneInvestment(mitHaushalt)} />
+      </RechnerSpracheContext.Provider>,
+    );
+    expect(container.textContent).toContain("Household budget");
+    expect(container.textContent).toContain("Total income");
+    expect(container.textContent).not.toMatch(/Summe|Überschuss|Differenz/);
+  });
+});
+
+describe("Glossar passt zum Rechenkern", () => {
+  it("Möbel ohne Nebenkosten, Kreditrate und AfA-Basis mit den neuen Fällen", () => {
+    for (const texte of [KENNZAHL_TEXTE_DE, KENNZAHL_TEXTE_EN]) {
+      expect(texte.glossar.eintraege.moebelAfa.formel).not.toMatch(/Nebenkosten Möbel|incidental costs furniture/);
+      expect(texte.glossar.eintraege.kaufnebenkosten.formel).not.toMatch(/Nebenkosten Möbel|incidental costs furniture/);
+    }
+    expect(KENNZAHL_TEXTE_DE.glossar.eintraege.kreditrate.formel).toMatch(/Volltilgung.*endfällig.*tilgungsfreien/);
+    expect(KENNZAHL_TEXTE_DE.glossar.eintraege.afaBasis.formel).toMatch(/netto.*15 %.*Verkäufer|Verkäufer.*netto.*15 %/);
   });
 });

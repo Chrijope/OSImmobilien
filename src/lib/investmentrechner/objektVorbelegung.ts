@@ -181,11 +181,11 @@ export function vorbelegungAusEinheit(
     "Objektbezeichnung": ["propertyTitle"], "Adresse": ["address"], "Objekttyp": ["propertyType"],
     "Kaufpreis": ["purchasePrice"], "davon Möbel/Inventar": ["furniturePrice"], "davon Stellplatz/Garage": ["garagePrice"],
     "Stellplatz-/Garagenmiete p. M.": ["monthlyGarageRent"],
-    "Hausgeld gesamt p. M.": ["housingFeeTotal", "housingFeeRecoverable", "housingFeeNonRecoverable"],
+    "Hausgeld gesamt p. M.": ["housingFeeTotal", "housingFeeRecoverable"],
     "Wohnfläche": ["area"], "Zimmer": ["rooms"], "Baujahr": ["constructionYear"],
     "Kaufnebenkosten": ["transferTaxRate", "notaryRate", "landRegisterRate"], "Kaltmiete p. M.": ["monthlyColdRent"],
     "Eigenkapital": ["equity"], "Finanzierungsnebenkosten": ["financingCostRate"],
-    "Nicht umlagefähige Kosten p. M.": ["monthlyOperatingCosts"], "Gebäudeanteil": ["buildingShare"],
+    "Nicht umlagefähige Kosten p. M.": ["housingFeeNonRecoverable", "monthlyOperatingCosts"], "Gebäudeanteil": ["buildingShare"],
     "Zuführung Instandhaltungsrücklage p. M.": ["monthlyReserveContribution"],
     "Nutzungsdauer Möbel": ["furnitureDepreciationYears"],
     "Degressive AfA p. a.": ["buildingDepreciationRate", "depreciationMethod"], "Lineare AfA p. a.": ["buildingDepreciationRate", "depreciationMethod"],
@@ -423,17 +423,23 @@ export function vorbelegungAusEinheit(
       ? Math.round((Math.max(0, hausgeldGesamt - zufuehrung) * nuSatz) / 100)
       : positiv(daten.hausgeldNichtUmlegbarMonat);
   const mietverwaltung = positiv(daten.mietverwaltungMonat);
-  eingabe.monthlyOperatingCosts = hausgeldNu + mietverwaltung;
   /*
-   * Das Hausgeld in ganzer Höhe zur Anzeige, seit dem 22.10.2026 (Christian):
-   * gesamt, umlagefähig und nicht umlagefähig wie im Exposé und Wirtschaftsplan.
-   * Gerechnet wird damit nichts, die Aufstellung prüft nur die Summe.
+   * Seit dem 22.10.2026 getrennt: das nicht umlagefähige Hausgeld in seinem
+   * Feld, die Mietverwaltung (Sondereigentumsverwaltung) als weitere Kosten.
+   * Der Rechenkern zählt beide zusammen; so wirkt jede Änderung in der Maske.
+   */
+  eingabe.housingFeeNonRecoverable = hausgeldNu;
+  eingabe.monthlyOperatingCosts = mietverwaltung;
+  const nichtUmlagefaehigGesamt = hausgeldNu + mietverwaltung;
+  /*
+   * Das Hausgeld in ganzer Höhe, seit dem 22.10.2026 (Christian): gesamt,
+   * umlagefähig und nicht umlagefähig wie im Exposé und Wirtschaftsplan. Der
+   * umlagefähige Teil steht nur zur Anzeige da, er zahlt der Mieter.
    */
   const umlagefaehig = positiv(hausgeldTeile(wohnung).umlagefaehig ?? hausgeldTeile((wohnung as { meta?: unknown }).meta).umlagefaehig);
   if (hausgeldGesamt > 0 || umlagefaehig > 0 || hausgeldNu > 0) {
     eingabe.housingFeeTotal = hausgeldGesamt;
     eingabe.housingFeeRecoverable = umlagefaehig;
-    eingabe.housingFeeNonRecoverable = hausgeldNu;
     nimm(
       "Hausgeld gesamt p. M.",
       eur0(hausgeldGesamt),
@@ -452,14 +458,14 @@ export function vorbelegungAusEinheit(
     eingabe.monthlyReserveContribution = zufuehrung;
     nimm("Zuführung Instandhaltungsrücklage p. M.", eur0(zufuehrung), "Einheit, aus Investagon");
   }
-  if (eingabe.monthlyOperatingCosts > 0) {
+  if (nichtUmlagefaehigGesamt > 0) {
     const nuText =
       nuQuelle === "geschaetzt"
         ? `geschätzt: ${prozent(nuSatz, 0)} des Hausgelds gesamt ${eur0(hausgeldGesamt)}${zufuehrung > 0 ? " ohne Rücklage" : ""}`
         : "nicht umlegbarer Anteil des Hausgelds";
     nimm(
       "Nicht umlagefähige Kosten p. M.",
-      eur0(eingabe.monthlyOperatingCosts),
+      eur0(nichtUmlagefaehigGesamt),
       mietverwaltung > 0 ? `Hausgeld nicht umlegbar ${eur0(hausgeldNu)} (${nuText}) plus Mietverwaltung ${eur0(mietverwaltung)}` : nuText,
     );
     if (nuQuelle === "geschaetzt") {

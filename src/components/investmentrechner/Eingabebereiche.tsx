@@ -760,7 +760,7 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
           value={input.equity}
           suffix="€"
           onChange={(wert) => setzeZahl("equity", wert)}
-          tooltip="Der Betrag, den der Kunde aus eigenem Vermögen einbringt. Er senkt das Bankdarlehen und damit Zins und Rate. Zugleich ist er die Bezugsgröße der Rendite: ohne Eigenkapital lässt sich kein interner Zinsfuß ausweisen."
+          tooltip="Der Betrag, den der Kunde aus eigenem Vermögen einbringt. Er senkt das Bankdarlehen und damit Zins und Rate. Er ist der Einsatz zu Beginn der Zahlungsreihe für den internen Zinsfuß. Auch ohne Eigenkapital lässt sich der Zinsfuß bestimmen, sobald monatliche Zuzahlungen und ein Erlös am Ende einander gegenüberstehen."
           hint={quelle("equity")} markierung={feldmarkierung(herkunft, "equity")}
         />
         <Zahlenfeld
@@ -1449,12 +1449,15 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
           hint={quelle("monthlyGarageRent")} markierung={feldmarkierung(herkunft, "monthlyGarageRent")}
         />
         <Zahlenfeld
-          label="Nicht umlagefähige Kosten p. M."
+          label="Weitere nicht umlagefähige Kosten p. M."
           value={input.monthlyOperatingCosts}
           suffix="€"
           onChange={(wert) => setzeZahl("monthlyOperatingCosts", wert)}
-          tooltip="Kosten, die der Eigentümer selbst trägt und nicht auf den Mieter umlegen kann, vor allem der nicht umlagefähige Teil des Hausgelds und die Sondereigentumsverwaltung. Die Zuführung zur Instandhaltungsrücklage steht im eigenen Feld daneben. Sie stehen im Wirtschaftsplan der Verwaltung und mindern Cashflow und steuerliches Ergebnis."
-          hint={quelle("monthlyOperatingCosts") ?? "Nur der nicht umlagefähige Teil des Hausgelds, ohne Rücklage. Den umlagefähigen Teil zahlt der Mieter."}
+          tooltip="Kosten des Eigentümers außerhalb des Hausgelds, die er nicht auf den Mieter umlegen kann, etwa die Sondereigentumsverwaltung. Der nicht umlagefähige Teil des Hausgelds steht unten im Abschnitt Hausgeld, die Rücklage im eigenen Feld. Beide Kostenfelder zusammen mindern Cashflow und steuerliches Ergebnis."
+          hint={
+            quelle("monthlyOperatingCosts") ??
+            `Zusammen mit dem nicht umlagefähigen Hausgeld: ${formatEuroCent(input.monthlyOperatingCosts + (input.housingFeeNonRecoverable || 0))} im Monat in der Rechnung`
+          }
           markierung={feldmarkierung(herkunft, "monthlyOperatingCosts")}
         />
         <Zahlenfeld
@@ -1467,9 +1470,9 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
         />
       </div>
       {/*
-        Hausgeld in ganzer Höhe, seit dem 22.10.2026 (Christian). Nur zur
-        Aufstellung und Prüfung der Summe; gerechnet wird mit den nicht
-        umlagefähigen Kosten und der Zuführung zur Rücklage darüber.
+        Hausgeld in ganzer Höhe, seit dem 22.10.2026 (Christian). Gesamt und
+        umlagefähig dienen der Aufstellung und Prüfung der Summe; der nicht
+        umlagefähige Teil rechnet mit, zusammen mit den weiteren Kosten oben.
       */}
       <div className="subheading">Hausgeld</div>
       <div className="field-grid three">
@@ -1496,7 +1499,9 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
           suffix="€"
           neu
           onChange={(wert) => setzeZahl("housingFeeNonRecoverable", wert)}
-          tooltip="Der Teil des Hausgelds, den der Eigentümer trägt, etwa Verwaltung der WEG. Er belastet den Cashflow und ist steuerlich abziehbar. In der Rechnung steht er im Feld „Nicht umlagefähige Kosten“, dort zusammen mit einer Sondereigentumsverwaltung."
+          tooltip="Der Teil des Hausgelds, den der Eigentümer trägt, etwa die Verwaltung der WEG. Er belastet den Cashflow und ist steuerlich abziehbar. Die Rechnung nimmt ihn zusammen mit den weiteren nicht umlagefähigen Kosten oben."
+          hint={quelle("housingFeeNonRecoverable")}
+          markierung={feldmarkierung(herkunft, "housingFeeNonRecoverable")}
         />
       </div>
       {hausgeldAufstellung(input).vorhanden && (
@@ -1744,6 +1749,17 @@ export function EingabeSteuer({ input, result, setzeZahl, aendere, herkunft }: E
         <option value="nachKauf">Sanierung nach dem Kauf (für den Käufer)</option>
         <option value="durchVerkaeufer">Sanierung durch den Verkäufer vor dem Verkauf</option>
       </Auswahlfeld>
+      {input.rehabScenario !== "durchVerkaeufer" && input.rehabExpense > 0 && (
+        <Zahlenfeld
+          label="Umsatzsteuer im Sanierungsanteil"
+          value={input.rehabVatRate}
+          suffix="%"
+          neu
+          onChange={(wert) => setzeZahl("rehabVatRate", Math.min(100, Math.max(0, wert)))}
+          tooltip="Der Sanierungsanteil in Bereich 02 ist der gezahlte Betrag mit Umsatzsteuer, so steckt er im Kaufpreis und in der Finanzierung. Die 15-Prozent-Prüfung nach § 6 Abs. 1 Nr. 1a EStG rechnet aber ohne Umsatzsteuer. Üblich sind 19 Prozent; 0, wenn der Betrag keine Umsatzsteuer enthält."
+          hint={`Netto ${formatEuro(result.erhaltungsaufwandNetto)} für die 15-Prozent-Prüfung`}
+        />
+      )}
       {input.rehabScenario !== "durchVerkaeufer" && (
         <Auswahlfeld
           label="Steuerliche Behandlung"
@@ -1773,7 +1789,9 @@ export function EingabeSteuer({ input, result, setzeZahl, aendere, herkunft }: E
                 <strong>15-Prozent-Prüfung nach § 6 Abs. 1 Nr. 1a EStG</strong>
                 <p>
                   Grenze {formatEuro(result.fuenfzehnProzentGrenze)} (15 % der Gebäude-Anschaffungskosten ohne den Aufwand,
-                  netto). Der Aufwand entspricht {formatProzent(result.immediateDeductionRatio)}.{" "}
+                  netto). Der Aufwand netto {formatEuro(result.erhaltungsaufwandNetto)}
+                  {input.rehabVatRate > 0 ? ` (brutto ${formatEuro(input.rehabExpense)} mit ${formatProzent(input.rehabVatRate / 100)} USt)` : ""} entspricht{" "}
+                  {formatProzent(result.immediateDeductionRatio)}.{" "}
                   {result.anschaffungsnah
                     ? "Damit ist er anschaffungsnaher Herstellungsaufwand: Der Rechner schreibt ihn über die Gebäude-AfA ab, statt ihn sofort abzuziehen."
                     : "Er liegt darunter und bleibt Erhaltungsaufwand, solange Instandsetzung und Modernisierung in den drei Jahren nach dem Kauf zusammen die Grenze nicht überschreiten."}

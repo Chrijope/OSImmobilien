@@ -62,7 +62,7 @@
       "netYield": 0.03446797799513741,
       "effectiveAnnualRent": 13524,
       "depreciationBasis": 268322.16000000003,
-      "immediateDeductionRatio": 0.03354176934174948,
+      "immediateDeductionRatio": 0.02818636079138612,
       "simpleThresholdExceeded": false,
       "combinedTaxableIncome": 62000,
       "taxProfile": {
@@ -588,7 +588,8 @@
       "fuenfzehnProzentGrenze": 40248.324,
       "anschaffungsnah": false,
       "sanierungAktiviert": false,
-      "verkaufskosten": 0
+      "verkaufskosten": 0,
+      "erhaltungsaufwandNetto": 7563.025210084034
     }
   },
   "splitting": {
@@ -654,7 +655,7 @@
       "netYield": 0.03764029041167155,
       "effectiveAnnualRent": 5400,
       "depreciationBasis": 104400,
-      "immediateDeductionRatio": 0.16778523489932887,
+      "immediateDeductionRatio": 0.14099599571372173,
       "simpleThresholdExceeded": false,
       "combinedTaxableIncome": 100000,
       "taxProfile": {
@@ -1418,9 +1419,10 @@
       "grossYieldWohnung": 0.0432,
       "netYieldWohnung": 0.03764029041167155,
       "fuenfzehnProzentGrenze": 13410,
-      "anschaffungsnah": true,
+      "anschaffungsnah": false,
       "sanierungAktiviert": true,
-      "verkaufskosten": 0
+      "verkaufskosten": 0,
+      "erhaltungsaufwandNetto": 12605.042016806723
     }
   },
   "manuell": {
@@ -1486,7 +1488,7 @@
       "netYield": 0.03680139720558882,
       "effectiveAnnualRent": 7800,
       "depreciationBasis": 149600,
-      "immediateDeductionRatio": 0.36496350364963503,
+      "immediateDeductionRatio": 0.3066920198736429,
       "simpleThresholdExceeded": true,
       "combinedTaxableIncome": 45000,
       "taxProfile": {
@@ -1772,7 +1774,8 @@
       "fuenfzehnProzentGrenze": 16440,
       "anschaffungsnah": true,
       "sanierungAktiviert": true,
-      "verkaufskosten": 0
+      "verkaufskosten": 0,
+      "erhaltungsaufwandNetto": 33613.445378151264
     }
   },
   "leer": {
@@ -2364,7 +2367,8 @@
       "fuenfzehnProzentGrenze": 0,
       "anschaffungsnah": false,
       "sanierungAktiviert": false,
-      "verkaufskosten": 0
+      "verkaufskosten": 0,
+      "erhaltungsaufwandNetto": 0
     }
   },
   "tarif": [

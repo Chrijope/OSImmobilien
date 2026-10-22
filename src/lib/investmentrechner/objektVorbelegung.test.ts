@@ -126,7 +126,7 @@ describe("Vorbelegung aus Objekt und Einheit", () => {
   });
 
   it("nimmt als laufende Kosten nur den nicht umlagefähigen Anteil", () => {
-    expect(v.eingabe.monthlyOperatingCosts).toBe(45);
+    expect(v.eingabe.monthlyOperatingCosts + v.eingabe.housingFeeNonRecoverable).toBe(45);
   });
 
   it("übernimmt Gebäudeanteil, AfA und den Sanierungsanteil der Einheit", () => {
@@ -196,7 +196,7 @@ describe("Vorbelegung ohne gepflegte Daten", () => {
   it("rät nichts und meldet jede fehlende Angabe", () => {
     expect(v.eingabe.purchasePrice).toBe(0);
     expect(v.eingabe.monthlyColdRent).toBe(0);
-    expect(v.eingabe.monthlyOperatingCosts).toBe(0);
+    expect(v.eingabe.monthlyOperatingCosts + v.eingabe.housingFeeNonRecoverable).toBe(0);
     expect(v.eingabe.rehabExpense).toBe(0);
     expect(feldnamen(v.luecken)).toEqual([
       "Kaufpreis", "Wohnfläche", "Zimmer", "Baujahr", "Bundesland des Objekts",
@@ -357,7 +357,7 @@ describe("Hausgeld in der Vorbelegung", () => {
 
   it("nimmt die drei Teile getrennt: nur nicht umlagefähig in die Kosten, die Rücklage ins eigene Feld", () => {
     const v = mit({ hausgeldUmlagefaehigEuro: 150, hausgeldNichtUmlagefaehigEuro: 45, ruecklageZufuehrungMonat: 90 });
-    expect(v.eingabe.monthlyOperatingCosts).toBe(45);
+    expect(v.eingabe.monthlyOperatingCosts + v.eingabe.housingFeeNonRecoverable).toBe(45);
     expect(v.eingabe.monthlyReserveContribution).toBe(90);
     expect(feldnamen(v.luecken)).not.toContain("Nicht umlagefähiges Hausgeld (nur geschätzt)");
     // Die Rücklage mindert den Cashflow, aber nicht das steuerliche Ergebnis.
@@ -369,18 +369,18 @@ describe("Hausgeld in der Vorbelegung", () => {
 
   it("liest den nicht umlagefähigen Anteil auch aus den Investagon-Rohdaten statt zu schätzen", () => {
     const v = mit({ hausgeldMonat: 300, investagonRaw: { operation_cost_landlord_apartment: 52, operation_cost_reserve_apartment: 70 } } as Partial<ObjektWohnung>);
-    expect(v.eingabe.monthlyOperatingCosts).toBe(52);
+    expect(v.eingabe.monthlyOperatingCosts + v.eingabe.housingFeeNonRecoverable).toBe(52);
     expect(v.eingabe.monthlyReserveContribution).toBe(70);
   });
 
   it("nur Hausgeld gesamt: geschätzt, ohne die Rücklage doppelt zu zählen, und als Lücke gemeldet", () => {
     const nurGesamt = mit({ hausgeldMonat: 300 } as Partial<ObjektWohnung>);
-    expect(nurGesamt.eingabe.monthlyOperatingCosts).toBe(90);
+    expect(nurGesamt.eingabe.monthlyOperatingCosts + nurGesamt.eingabe.housingFeeNonRecoverable).toBe(90);
     expect(feldnamen(nurGesamt.luecken)).toContain("Nicht umlagefähiges Hausgeld (nur geschätzt)");
     expect(nurGesamt.uebernommen.find((u) => u.feld === "Nicht umlagefähige Kosten p. M.")?.woher).toMatch(/geschätzt/);
     const mitRuecklage = mit({ hausgeldMonat: 300, ruecklageZufuehrungMonat: 100 } as Partial<ObjektWohnung>);
     // 30 % von 300 − 100, die Rücklage steht im eigenen Feld.
-    expect(mitRuecklage.eingabe.monthlyOperatingCosts).toBe(60);
+    expect(mitRuecklage.eingabe.monthlyOperatingCosts + mitRuecklage.eingabe.housingFeeNonRecoverable).toBe(60);
     expect(mitRuecklage.eingabe.monthlyReserveContribution).toBe(100);
   });
 });
@@ -392,7 +392,10 @@ describe("Mietverwaltung", () => {
       wohnungen: [{ ...w, verwaltungSevMonat: 25 } as ObjektWohnung],
     } as ObjektData;
     const v = vorbelegungAusEinheit(mitSev, mitSev.wohnungen[0], heute);
-    expect(v.eingabe.monthlyOperatingCosts).toBe(70);
+    expect(v.eingabe.monthlyOperatingCosts + v.eingabe.housingFeeNonRecoverable).toBe(70);
+    // Seit dem 22.10.2026 getrennt: Hausgeld nicht umlagefähig und die Mietverwaltung als weitere Kosten.
+    expect(v.eingabe.housingFeeNonRecoverable).toBe(45);
+    expect(v.eingabe.monthlyOperatingCosts).toBe(25);
   });
 });
 
@@ -432,7 +435,7 @@ describe("Rechenwerte aus Investagon: Sigmundstraße 2, Einheit 6b", () => {
     expect(v.eingabe.buildingDepreciationRate).toBe(2);
     expect(v.eingabe.buildingShare).toBe(80);
     expect(v.eingabe.rehabExpense).toBe(0);
-    expect(v.eingabe.monthlyOperatingCosts).toBe(225);
+    expect(v.eingabe.monthlyOperatingCosts + v.eingabe.housingFeeNonRecoverable).toBe(225);
     expect(v.eingabe.monthlyReserveContribution).toBe(0);
   });
 
@@ -445,7 +448,7 @@ describe("Rechenwerte aus Investagon: Sigmundstraße 2, Einheit 6b", () => {
     expect(v.eingabe.rehabMode).toBe("expense");
     expect(v.eingabe.rehabDistributionYears).toBe(1);
     // Nicht umlagefähig 45 plus SEV 180, die Rücklage 90 im eigenen Feld.
-    expect(v.eingabe.monthlyOperatingCosts).toBe(225);
+    expect(v.eingabe.monthlyOperatingCosts + v.eingabe.housingFeeNonRecoverable).toBe(225);
     expect(v.eingabe.monthlyReserveContribution).toBe(90);
     expect(v.eingabe.furnitureDepreciationYears).toBe(10);
     expect(v.herkunft.monthlyReserveContribution?.quelle).toBe("objekt");
