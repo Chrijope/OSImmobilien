@@ -131,6 +131,10 @@ export const VERGLEICH_BEZEICHNUNG_EN: Record<string, string> = {
   Bruttorendite: "Gross rental yield",
   "Bruttorendite Wohnung": "Gross rental yield apartment",
   "gesamt, Wohnung und Stellplatz": "total, apartment and parking",
+  "Kauf und Finanzierung": "Purchase and financing",
+  "Laufender Ertrag": "Ongoing return",
+  "inklusive Kaufnebenkosten": "including incidental purchase costs",
+  "auf Eigenkapital und alle Zuzahlungen": "on equity and all top-up payments",
   Nettorendite: "Net rental yield",
   "Cashflow nach Steuern p. M.": "Cash flow after tax per month",
   "Steuereffekt Jahr 1": "Tax effect year 1",
@@ -142,7 +146,14 @@ export const VERGLEICH_BEZEICHNUNG_EN: Record<string, string> = {
 
 /** Die Bezeichnung einer Vergleichszeile in der Sprache des Drucks. */
 export function vergleichBezeichnung(bezeichnung: string, sprache: FormatSprache = "de"): string {
-  return sprache === "en" ? VERGLEICH_BEZEICHNUNG_EN[bezeichnung] ?? bezeichnung : bezeichnung;
+  if (sprache !== "en") return bezeichnung;
+  // Die Endgruppe heißt „Nach zehn Jahren“ und ähnlich, seit dem 22.10.2026 auch englisch.
+  const nach = /^Nach (.+) Jahre?n?$/.exec(bezeichnung);
+  if (VERGLEICH_BEZEICHNUNG_EN[bezeichnung]) return VERGLEICH_BEZEICHNUNG_EN[bezeichnung];
+  if (!nach) return bezeichnung;
+  const wort = nach[1] === "einem" ? 1 : ZAHLWOERTER.indexOf(nach[1]);
+  const jahre = wort > 0 ? wort : Number(nach[1]);
+  return Number.isFinite(jahre) && jahre > 0 ? `After ${jahreEnglisch(jahre)}` : bezeichnung;
 }
 
 /** „ten years“, „one year“ für den englischen Druck. Bis zwanzig als Wort, danach als Zahl. */

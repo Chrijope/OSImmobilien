@@ -179,6 +179,15 @@ export interface InvestmentEingabe {
    * siehe `RUECKLAGENZUFUEHRUNG_ABZIEHBAR`.
    */
   monthlyReserveContribution: number;
+  /*
+    Hausgeld in ganzer Höhe, seit dem 22.10.2026 (Christian), nur zur Anzeige
+    und Prüfung: gesamt, davon umlagefähig (zahlt der Mieter) und nicht
+    umlagefähig. Gerechnet wird weiter mit `monthlyOperatingCosts` und
+    `monthlyReserveContribution`; siehe `hausgeldAufstellung`. 0 heißt leer.
+  */
+  housingFeeTotal: number;
+  housingFeeRecoverable: number;
+  housingFeeNonRecoverable: number;
   vacancyRate: number;
   annualRentGrowth: number;
   annualCostGrowth: number;
@@ -639,6 +648,9 @@ export const standardEingabe: InvestmentEingabe = {
   monthlyGarageRent: 0,
   monthlyOperatingCosts: 0,
   monthlyReserveContribution: 0,
+  housingFeeTotal: 0,
+  housingFeeRecoverable: 0,
+  housingFeeNonRecoverable: 0,
   vacancyRate: 0,
   annualRentGrowth: 2,
   annualCostGrowth: 2,
@@ -2113,6 +2125,51 @@ export function ausgewiesenerKaufpreis(
 ): number {
   const aufschlag = result.anteil > 0 ? (result.allInclusiveAufschlag ?? 0) / result.anteil : 0;
   return input.purchasePrice + aufschlag;
+}
+
+export interface Hausgeldaufstellung {
+  /** Etwas eingetragen? Sonst zeigt die Oberfläche nichts. */
+  vorhanden: boolean;
+  gesamt: number;
+  umlagefaehig: number;
+  nichtUmlagefaehig: number;
+  ruecklage: number;
+  /** Summe der Teile. */
+  summeTeile: number;
+  /** Gesamt minus Summe der Teile; `null`, wenn kein Gesamtbetrag eingetragen ist. */
+  abweichung: number | null;
+  /** In der Rechnung steht weniger nicht umlagefähiger Aufwand als hier aufgeführt. */
+  rechnungNiedriger: boolean;
+}
+
+/**
+ * Das Hausgeld in ganzer Höhe, seit dem 22.10.2026 (Christian): gesamt =
+ * umlagefähig + nicht umlagefähig + Erhaltungsrücklage. Umlagefähig zahlt der
+ * Mieter und belastet den Cashflow nicht; nicht umlagefähig belastet ihn und
+ * ist steuerlich abziehbar; die Rücklage belastet ihn, steuerlich zählt sie
+ * erst bei Verwendung. Die Rechnung selbst nimmt weiter die nicht
+ * umlagefähigen Kosten und die Rücklage aus ihren Feldern; hier wird nur
+ * aufgeführt und geprüft, ob die Summe stimmt. Ganzes Objekt, ohne Anteil.
+ */
+export function hausgeldAufstellung(
+  t: Pick<InvestmentEingabe, "housingFeeTotal" | "housingFeeRecoverable" | "housingFeeNonRecoverable" | "monthlyReserveContribution" | "monthlyOperatingCosts">,
+): Hausgeldaufstellung {
+  const zahl = (wert: number | undefined) => Math.max(0, endlicheZahl(wert ?? 0));
+  const gesamt = zahl(t.housingFeeTotal);
+  const umlagefaehig = zahl(t.housingFeeRecoverable);
+  const nichtUmlagefaehig = zahl(t.housingFeeNonRecoverable);
+  const ruecklage = zahl(t.monthlyReserveContribution);
+  const summeTeile = umlagefaehig + nichtUmlagefaehig + ruecklage;
+  return {
+    vorhanden: gesamt > 0 || umlagefaehig > 0 || nichtUmlagefaehig > 0,
+    gesamt,
+    umlagefaehig,
+    nichtUmlagefaehig,
+    ruecklage,
+    summeTeile,
+    abweichung: gesamt > 0 ? gesamt - summeTeile : null,
+    rechnungNiedriger: nichtUmlagefaehig > zahl(t.monthlyOperatingCosts) + 0.005,
+  };
 }
 
 /**

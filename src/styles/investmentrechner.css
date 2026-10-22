@@ -1115,6 +1115,10 @@
   margin-top: 5px;
   font-size: clamp(1.35rem, 2.2vw, 2rem);
 }
+/* Sprache der Vorschau und PDFs, seit dem 22.10.2026 neben der Ansichtswahl. */
+.investmentrechner .result-header { flex-wrap: wrap; }
+.investmentrechner .sprache-wahl { display: grid; gap: 4px; font-size: 12px; color: var(--text-3, var(--muted)); }
+.investmentrechner .sprache-wahl select { border: 1px solid var(--line); background: var(--flaeche); color: inherit; border-radius: 9px; padding: 6px 10px; font: inherit; font-size: 13px; }
 .investmentrechner .view-toggle {
   border: 1px solid var(--line);
   background: var(--flaeche);

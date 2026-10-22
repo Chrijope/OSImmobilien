@@ -26,7 +26,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { InvestmentrechnerInhalt } from "@/components/investmentrechner/InvestmentrechnerInhalt";
 import { berechneInvestment, type InvestmentEingabe } from "@/lib/investmentrechner/rechenkern";
 import { standardKaufnebenkostenauswahl } from "@/lib/investmentrechner/kaufnebenkostenAuswahl";
-import type { FormatSprache } from "@/lib/sprachFormat";
 import { speichereDatei } from "../speichern";
 import { eingabeLaden, eingabeLoeschen, eingabeSpeichern, BEISPIEL_EINGABE, namenLaden, namenSpeichern } from "./ablage";
 import "./laufzeitDateien";
@@ -66,7 +65,6 @@ function App() {
   // Neustart nach „Alles zurücksetzen“: neuer Schlüssel, neue Vorbelegung.
   const [lauf, setLauf] = useState(0);
   const [gespeichert] = useState<InvestmentEingabe | null>(() => eingabeLaden());
-  const [sprache, setSprache] = useState<FormatSprache>("de");
   const [name, setName] = useState(() => namenLaden());
   const start = lauf === 0 && gespeichert ? gespeichert : BEISPIEL_EINGABE;
   return (
@@ -85,11 +83,6 @@ function App() {
               namenSpeichern(e.target.value);
             }}
           />
-          <label htmlFor="artefakt-sprache">PDF-Sprache</label>
-          <select id="artefakt-sprache" value={sprache} onChange={(e) => setSprache(e.target.value as FormatSprache)}>
-            <option value="de">Deutsch</option>
-            <option value="en">Englisch</option>
-          </select>
           <button
             type="button"
             id="artefakt-zuruecksetzen"
@@ -106,7 +99,6 @@ function App() {
         key={lauf}
         vorbelegung={{ eingabe: start, knk: standardKaufnebenkostenauswahl }}
         vorschau={{}}
-        dokumentSprache={sprache}
         erstelltVon={name}
         onErgebnis={({ eingabe }) => eingabeSpeichern(eingabe)}
       />

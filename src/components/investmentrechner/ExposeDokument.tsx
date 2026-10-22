@@ -35,6 +35,8 @@ import {
   Bankgespraech,
   BankunterlagenTabellen,
   kaufpreisHinweis,
+  hausgeldHinweis,
+  hausgeldZeilen,
   kaufpreiszeilen,
   Steuerprofil,
   UnterlagenEinblicke,
@@ -272,6 +274,16 @@ export function ExposeDokument({
             {kaufpreiszeilen(result, sprache).map((zeile) => (
               <Zeile key={zeile.label} label={zeile.label} value={zeile.wert} strong={zeile.summe} />
             ))}
+            {/* Hausgeld in ganzer Höhe, seit dem 22.10.2026. */}
+            {hausgeldZeilen(input, sprache).length > 0 && (
+              <>
+                <h3 className="kennzahlen-ergebnis">{sprache === "en" ? "Service charge" : "Hausgeld"}</h3>
+                {hausgeldZeilen(input, sprache).map((zeile) => (
+                  <Zeile key={zeile.label} label={zeile.label} value={zeile.wert} strong={zeile.summe} />
+                ))}
+                {hausgeldHinweis(input, sprache) && <p className="knk-hinweis">{hausgeldHinweis(input, sprache)}</p>}
+              </>
+            )}
           </div>
           <div>
             <h3>{t.deckblatt.finanzierungSteuer}</h3>

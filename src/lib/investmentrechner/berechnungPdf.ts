@@ -51,7 +51,7 @@ import {
   vergleicheObjekte,
   type Vergleichszeile,
 } from "./objektvergleich";
-import { kaufpreisHinweis, kaufpreiszeilen } from "@/components/investmentrechner/Auswertungen";
+import { hausgeldHinweis, hausgeldZeilen, kaufpreisHinweis, kaufpreiszeilen } from "@/components/investmentrechner/Auswertungen";
 import { bankuebersicht } from "./bankgespraech";
 import { haushaltMitVorlage, haushaltsrechnung, vermoegenMitVorlage, vermoegensaufstellung } from "./bankunterlagen";
 import { VERGLEICHSSEITE_KENNZAHLEN } from "@/components/investmentrechner/ExposeDokument";
@@ -651,6 +651,16 @@ function objektteil(l: Lauf, objekt: BerechnungPdfObjekt, bilder: Bild[], marke?
   const hinweisKaufpreis = kaufpreisHinweis(result, sprache);
   if (hinweisKaufpreis) absatz(l, hinweisKaufpreis, 7, BRAND.muted);
   l.y += 3;
+
+  // Hausgeld in ganzer Höhe, seit dem 22.10.2026, dieselben Zeilen wie in Analyse und Berechnung.
+  const hausgeld = hausgeldZeilen(input, sprache);
+  if (hausgeld.length) {
+    ueberschrift(l, sprache === "en" ? "Service charge" : "Hausgeld");
+    for (const z of hausgeld) zeile(l, z.label, z.wert, z.summe);
+    const hinweisHausgeld = hausgeldHinweis(input, sprache);
+    if (hinweisHausgeld) absatz(l, hinweisHausgeld, 7, BRAND.muted);
+    l.y += 3;
+  }
 
   ueberschrift(l, t.deckblatt.finanzierungSteuer);
   zeile(l, t.deckblatt.bankdarlehen, euro(result.seniorLoanAmount));

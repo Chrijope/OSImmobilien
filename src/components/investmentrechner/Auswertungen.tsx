@@ -1,7 +1,7 @@
 import { createContext, useContext, useState } from "react";
 import { FileDown } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { eigenkapitalrendite, mitStellplatz, monateErstesJahr, type InvestmentEingabe, type InvestmentErgebnis } from "@/lib/investmentrechner/rechenkern";
+import { eigenkapitalrendite, hausgeldAufstellung, mitStellplatz, monateErstesJahr, type InvestmentEingabe, type InvestmentErgebnis } from "@/lib/investmentrechner/rechenkern";
 import {
   haushaltMitVorlage,
   haushaltsrechnung,
@@ -240,6 +240,13 @@ export function Bankgespraech({
   imDokument?: boolean;
 }) {
   const bank = bankuebersicht(input, result);
+  // Seit dem 22.10.2026 in der Sprache der rechten Seite.
+  const { sprache } = useRechnerTexte();
+  const t = (de: string, en: string) => (sprache === "en" ? en : de);
+  const fEuro = (wert: number) => formatEuro(wert, sprache);
+  const fEuroCent = (wert: number) => formatEuroCent(wert, sprache);
+  const fProzent = (wert: number) => formatProzent(wert, sprache);
+  const fProzent1 = (wert: number) => formatProzentEineStelle(wert, sprache);
   const [pdfEntsteht, setPdfEntsteht] = useState(false);
   const haushaltAusgefuellt = (input.haushalt?.einkuenfte.length ?? 0) + (input.haushalt?.ausgaben.length ?? 0) > 0;
   const vermoegenAusgefuellt = (input.vermoegen?.werte.length ?? 0) + (input.vermoegen?.verbindlichkeiten.length ?? 0) > 0;
@@ -262,131 +269,131 @@ export function Bankgespraech({
   const ekrMit = eigenkapitalrendite(input, result).rendite;
   const ekrOhne = eigenkapitalrenditeOhneWertsteigerung(input, result).rendite;
   const grenze = fuenfzehnProzentGrenze(result);
-  const prozent1 = (wert: number | null) => (wert === null ? "nicht bestimmbar" : formatProzentEineStelle(wert));
+  const prozent1 = (wert: number | null) => (wert === null ? t("nicht bestimmbar", "cannot be determined") : fProzent1(wert));
   const optional = (wert: number | null, format: (w: number) => string) => (wert === null ? "–" : format(wert));
 
   const bloecke: { titel: string; zeilen: [string, string][]; hinweis?: string; neu?: boolean }[] = [
     {
-      titel: "Kapitalbedarf und Finanzierung",
+      titel: t("Kapitalbedarf und Finanzierung", "Capital requirement and financing"),
       zeilen: [
-        ["Kaufpreis", formatEuro(bank.kaufpreis)],
-        ...(bank.kaufnebenkosten > 0 ? [["Kaufnebenkosten", formatEuro(bank.kaufnebenkosten)] as [string, string]] : []),
-        ["Gesamtkosten", formatEuro(bank.gesamtkosten)],
-        ["Eigenkapital", formatEuro(bank.eigenkapital)],
-        ["Darlehen gesamt", formatEuro(bank.darlehen)],
-        ["Darlehen in % des Kaufpreises", formatProzent(bank.beleihungKaufpreis)],
-        ["Darlehen in % der Gesamtkosten", formatProzent(bank.beleihungGesamtkosten)],
-        ["Zinssatz gewichtet", formatProzent(bank.mischzins)],
-        ["Anfängliche Tilgung gewichtet", formatProzent(bank.tilgungGewichtet)],
-        ["Kapitaldienst je Monat (Jahr 1)", formatEuroCent(bank.kapitaldienstMonat)],
-        ["Bankdarlehen voll getilgt", optional(bank.volltilgungBank, String)],
+        [t("Kaufpreis", "Purchase price"), fEuro(bank.kaufpreis)],
+        ...(bank.kaufnebenkosten > 0 ? [[t("Kaufnebenkosten", "Incidental purchase costs"), fEuro(bank.kaufnebenkosten)] as [string, string]] : []),
+        [t("Gesamtkosten", "Total costs"), fEuro(bank.gesamtkosten)],
+        [t("Eigenkapital", "Equity"), fEuro(bank.eigenkapital)],
+        [t("Darlehen gesamt", "Total loans"), fEuro(bank.darlehen)],
+        [t("Darlehen in % des Kaufpreises", "Loans as % of purchase price"), fProzent(bank.beleihungKaufpreis)],
+        [t("Darlehen in % der Gesamtkosten", "Loans as % of total costs"), fProzent(bank.beleihungGesamtkosten)],
+        [t("Zinssatz gewichtet", "Weighted interest rate"), fProzent(bank.mischzins)],
+        [t("Anfängliche Tilgung gewichtet", "Weighted initial repayment"), fProzent(bank.tilgungGewichtet)],
+        [t("Kapitaldienst je Monat (Jahr 1)", "Debt service per month (year 1)"), fEuroCent(bank.kapitaldienstMonat)],
+        [t("Bankdarlehen voll getilgt", "Bank loan fully repaid"), optional(bank.volltilgungBank, String)],
         ...(bank.volltilgungZweites !== null
-          ? [["2. Bankdarlehen voll getilgt", String(bank.volltilgungZweites)] as [string, string]]
+          ? [[t("2. Bankdarlehen voll getilgt", "2nd bank loan fully repaid"), String(bank.volltilgungZweites)] as [string, string]]
           : []),
         ...(bank.volltilgungNachrang !== null
-          ? [["Nachrangdarlehen voll getilgt", String(bank.volltilgungNachrang)] as [string, string]]
+          ? [[t("Nachrangdarlehen voll getilgt", "Subordinated loan fully repaid"), String(bank.volltilgungNachrang)] as [string, string]]
           : []),
       ],
     },
     {
-      titel: "Zinsbindung und Anschluss",
+      titel: t("Zinsbindung und Anschluss", "Fixed-rate period and follow-up"),
       neu: true,
       zeilen: [
         ...(bank.restschuldZinsbindung
-          ? [[`Restschuld Bankdarlehen Ende ${bank.restschuldZinsbindung.jahr}`, formatEuro(bank.restschuldZinsbindung.betrag)] as [string, string]]
+          ? [[t(`Restschuld Bankdarlehen Ende ${bank.restschuldZinsbindung.jahr}`, `Remaining debt bank loan end of ${bank.restschuldZinsbindung.jahr}`), fEuro(bank.restschuldZinsbindung.betrag)] as [string, string]]
           : []),
-        ["Anschlusszins angenommen", bank.anschlusszins === null ? "keiner, Zins von heute" : formatProzent(bank.anschlusszins)],
+        [t("Anschlusszins angenommen", "Assumed follow-up rate"), bank.anschlusszins === null ? t("keiner, Zins von heute", "none, today's rate") : fProzent(bank.anschlusszins)],
         ...((input.seniorFurtherFollowUps ?? []).filter((a) => a.nachJahren >= 1).map((a) => [
-          `Weitere Anschlussfinanzierung nach ${a.nachJahren} Jahren`,
-          `${a.zinsProzent > 0 ? formatProzent(a.zinsProzent / 100) : "Zins wie bisher"}${a.tilgungProzent > 0 ? `, Tilgung ${formatProzent(a.tilgungProzent / 100)}` : ""}`,
+          t(`Weitere Anschlussfinanzierung nach ${a.nachJahren} Jahren`, `Further follow-up financing after ${a.nachJahren} years`),
+          `${a.zinsProzent > 0 ? fProzent(a.zinsProzent / 100) : t("Zins wie bisher", "rate as before")}${a.tilgungProzent > 0 ? `, Tilgung ${fProzent(a.tilgungProzent / 100)}` : ""}`,
         ]) as [string, string][]),
         ...(result.umschuldungskostenGesamt > 0
-          ? [["Umschuldungskosten im Prognosezeitraum", formatEuro(result.umschuldungskostenGesamt)] as [string, string]]
+          ? [[t("Umschuldungskosten im Prognosezeitraum", "Refinancing costs in the forecast period"), fEuro(result.umschuldungskostenGesamt)] as [string, string]]
           : []),
         ...(input.seniorRepaymentType === "volltilgung" && input.seniorTermYears > 0
-          ? [["Tilgungsart Bankdarlehen", `Volltilgung in ${input.seniorTermYears} Jahren`] as [string, string]]
+          ? [[t("Tilgungsart Bankdarlehen", "Repayment type bank loan"), t(`Volltilgung in ${input.seniorTermYears} Jahren`, `Full repayment in ${input.seniorTermYears} years`)] as [string, string]]
           : input.seniorRepaymentType === "endfaellig"
-            ? [["Tilgungsart Bankdarlehen", input.seniorTermYears > 0 ? `endfällig nach ${input.seniorTermYears} Jahren` : "endfällig, nur Zinsen"] as [string, string]]
+            ? [[t("Tilgungsart Bankdarlehen", "Repayment type bank loan"), input.seniorTermYears > 0 ? t(`endfällig nach ${input.seniorTermYears} Jahren`, `bullet after ${input.seniorTermYears} years`) : t("endfällig, nur Zinsen", "bullet, interest only")] as [string, string]]
             : []),
         ...(input.seniorGracePeriodYears > 0
-          ? [["Tilgungsfreie Anlaufjahre Bankdarlehen", String(input.seniorGracePeriodYears)] as [string, string]]
+          ? [[t("Tilgungsfreie Anlaufjahre Bankdarlehen", "Repayment-free years bank loan"), String(input.seniorGracePeriodYears)] as [string, string]]
           : []),
         ...(result.sondertilgungenGesamt > 0
-          ? [["Sondertilgungen im Prognosezeitraum", formatEuro(result.sondertilgungenGesamt)] as [string, string]]
+          ? [[t("Sondertilgungen im Prognosezeitraum", "Special repayments in the forecast period"), fEuro(result.sondertilgungenGesamt)] as [string, string]]
           : []),
         ...((result.secondLoanAmount ?? 0) > 0
-          ? [["Zweites Bankdarlehen", formatEuro(result.secondLoanAmount)] as [string, string]]
+          ? [[t("Zweites Bankdarlehen", "Second bank loan"), fEuro(result.secondLoanAmount)] as [string, string]]
           : []),
       ],
-      hinweis: "Mit Anschlusszins rechnen Cashflow, Steuer, Restschuld und das Zinsänderungsrisiko unten ab dem Jahr nach der Zinsbindung mit ihm.",
+      hinweis: t("Mit Anschlusszins rechnen Cashflow, Steuer, Restschuld und das Zinsänderungsrisiko unten ab dem Jahr nach der Zinsbindung mit ihm.", "With a follow-up rate, cash flow, tax, remaining debt and the interest rate risk below use it from the year after the fixed-rate period."),
     },
     {
-      titel: "Objekt und Kapitaldienstfähigkeit",
+      titel: t("Objekt und Kapitaldienstfähigkeit", "Property and debt service capacity"),
       zeilen: [
-        ["Kaufpreis je m²", optional(bank.kaufpreisJeQm, formatEuro)],
-        ["Kaltmiete je m²", optional(bank.kaltmieteJeQm, formatEuroCent)],
+        [t("Kaufpreis je m²", "Purchase price per m²"), optional(bank.kaufpreisJeQm, fEuro)],
+        [t("Kaltmiete je m²", "Net cold rent per m²"), optional(bank.kaltmieteJeQm, fEuroCent)],
         ...(mitStellplatz(result)
           ? ([
-              ["Kaufpreisfaktor Wohnung", optional(bank.kaufpreisfaktorWohnung, (w) => `${formatZahl(w, "de", 1)}-fach`)],
-              ["Kaufpreisfaktor gesamt (Wohnung und Stellplatz)", optional(bank.kaufpreisfaktor, (w) => `${formatZahl(w, "de", 1)}-fach`)],
+              [t("Kaufpreisfaktor Wohnung", "Price-to-rent ratio apartment"), optional(bank.kaufpreisfaktorWohnung, (w) => `${formatZahl(w, sprache, 1)}${t("-fach", "×")}`)],
+              [t("Kaufpreisfaktor gesamt (Wohnung und Stellplatz)", "Price-to-rent ratio total (apartment and parking)"), optional(bank.kaufpreisfaktor, (w) => `${formatZahl(w, sprache, 1)}${t("-fach", "×")}`)],
             ] as [string, string][])
-          : ([["Kaufpreisfaktor", optional(bank.kaufpreisfaktor, (w) => `${formatZahl(w, "de", 1)}-fach`)]] as [string, string][])),
-        ["Miete abzüglich Hausgeld und Rücklage je Monat", formatEuroCent(bank.mietueberschussMonat)],
-        ["Kapitaldienstdeckung (DSCR)", optional(bank.kapitaldienstdeckung, (w) => `${formatZahl(w, "de", 2)}-fach`)],
+          : ([[t("Kaufpreisfaktor", "Price-to-rent ratio"), optional(bank.kaufpreisfaktor, (w) => `${formatZahl(w, sprache, 1)}${t("-fach", "×")}`)]] as [string, string][])),
+        [t("Miete abzüglich Hausgeld und Rücklage je Monat", "Rent less service charge and reserve per month"), fEuroCent(bank.mietueberschussMonat)],
+        [t("Kapitaldienstdeckung (DSCR)", "Debt service coverage (DSCR)"), optional(bank.kapitaldienstdeckung, (w) => `${formatZahl(w, sprache, 2)}${t("-fach", "×")}`)],
       ],
-      hinweis: "Ab 1,0-fach trägt die Miete nach Kosten die Rate allein. Banken rechnen meist mit eigenen Abschlägen.",
+      hinweis: t("Ab 1,0-fach trägt die Miete nach Kosten die Rate allein. Banken rechnen meist mit eigenen Abschlägen.", "From 1.0× the rent after costs covers the instalment on its own. Banks usually apply their own haircuts."),
     },
     {
-      titel: "Zinsänderungsrisiko",
+      titel: t("Zinsänderungsrisiko", "Interest rate risk"),
       zeilen: risiken.flatMap((risiko): [string, string][] =>
         risiko
           ? [
-              [`${risiko.jahr}: Zins heute auf ${formatEuro(risiko.restschuldBeginn)} Restschuld`, formatProzent(risiko.zinsHeute)],
-              [`${risiko.jahr}: Cashflow nach Steuer wird 0 bei`, risiko.zinsBeiNull === null ? "auch ohne Zins nicht" : formatProzent(risiko.zinsBeiNull)],
-              [`${risiko.jahr}: 1 Prozentpunkt mehr Zins kostet nach Steuer`, `${formatEuroCent(risiko.mehrkostenJeProzentpunktMonat)} im Monat`],
+              [t(`${risiko.jahr}: Zins heute auf ${fEuro(risiko.restschuldBeginn)} Restschuld`, `${risiko.jahr}: today's rate on ${fEuro(risiko.restschuldBeginn)} remaining debt`), fProzent(risiko.zinsHeute)],
+              [t(`${risiko.jahr}: Cashflow nach Steuer wird 0 bei`, `${risiko.jahr}: cash flow after tax becomes 0 at`), risiko.zinsBeiNull === null ? t("auch ohne Zins nicht", "not even without interest") : fProzent(risiko.zinsBeiNull)],
+              [t(`${risiko.jahr}: 1 Prozentpunkt mehr Zins kostet nach Steuer`, `${risiko.jahr}: 1 percentage point more interest costs after tax`), t(`${fEuroCent(risiko.mehrkostenJeProzentpunktMonat)} im Monat`, `${fEuroCent(risiko.mehrkostenJeProzentpunktMonat)} per month`)],
             ]
           : [],
       ),
-      hinweis: "Tilgung, Miete und Kosten bleiben gleich, nur der Zins ändert sich. Die Steuer rechnet mit derselben Progression wie oben.",
+      hinweis: t("Tilgung, Miete und Kosten bleiben gleich, nur der Zins ändert sich. Die Steuer rechnet mit derselben Progression wie oben.", "Repayment, rent and costs stay the same, only the interest changes. Tax uses the same progression as above."),
     },
     {
-      titel: `Vermögensrendite (Modellkennzahl) und interner Zinsfuß über ${result.years.length} Jahre`,
+      titel: t(`Vermögensrendite (Modellkennzahl) und interner Zinsfuß über ${result.years.length} Jahre`, `Wealth return (model figure) and internal rate of return over ${result.years.length} years`),
       zeilen: [
-        ["Vermögensrendite mit Wertsteigerung", prozent1(ekrMit)],
-        ["Vermögensrendite ohne Wertsteigerung", prozent1(ekrOhne)],
-        ["Interner Zinsfuß (IRR) mit Wertsteigerung", prozent1(result.irr)],
-        ["Interner Zinsfuß (IRR) ohne Wertsteigerung", prozent1(result.irrWithoutAppreciation)],
+        [t("Vermögensrendite mit Wertsteigerung", "Wealth return with value increase"), prozent1(ekrMit)],
+        [t("Vermögensrendite ohne Wertsteigerung", "Wealth return without value increase"), prozent1(ekrOhne)],
+        [t("Interner Zinsfuß (IRR) mit Wertsteigerung", "Internal rate of return (IRR) with value increase"), prozent1(result.irr)],
+        [t("Interner Zinsfuß (IRR) ohne Wertsteigerung", "Internal rate of return (IRR) without value increase"), prozent1(result.irrWithoutAppreciation)],
       ],
       hinweis:
-        "Die Vermögensrendite ist eine Modellkennzahl, kein Zins. Der interne Zinsfuß ist die Verzinsung des eingesetzten Geldes nach Steuer, mit Modellverkauf am Ende abzüglich der Verkaufskosten. Ohne Wertsteigerung zählt nur, was Tilgung und Rücklage aufbauen.",
+        t("Die Vermögensrendite ist eine Modellkennzahl, kein Zins. Der interne Zinsfuß ist die Verzinsung des eingesetzten Geldes nach Steuer, mit Modellverkauf am Ende abzüglich der Verkaufskosten. Ohne Wertsteigerung zählt nur, was Tilgung und Rücklage aufbauen.", "The wealth return is a model figure, not an interest rate. The internal rate of return is the return on the money invested after tax, with a model sale at the end less selling costs. Without value increase, only what repayment and reserve build up counts."),
     },
     ...(haushalt
       ? [
           {
-            titel: "Haushaltsrechnung je Monat",
+            titel: t("Haushaltsrechnung je Monat", "Household budget per month"),
             neu: true,
             zeilen: [
-              ["Einkünfte", formatEuroCent(haushalt.einkuenfteMonat)],
-              ["Ausgaben", formatEuroCent(haushalt.ausgabenMonat)],
-              ["Überschuss vor dem Investment", formatEuroCent(haushalt.ueberschussVorMonat)],
-              ["Überschuss nach dem Investment (ohne Steuer)", formatEuroCent(haushalt.ueberschussNachMonat)],
-              ["… mit Steuerwirkung im ersten Jahr", formatEuroCent(haushalt.ueberschussNachMitSteuerMonat)],
+              [t("Einkünfte", "Income"), fEuroCent(haushalt.einkuenfteMonat)],
+              [t("Ausgaben", "Expenses"), fEuroCent(haushalt.ausgabenMonat)],
+              [t("Überschuss vor dem Investment", "Surplus before the investment"), fEuroCent(haushalt.ueberschussVorMonat)],
+              [t("Überschuss nach dem Investment (ohne Steuer)", "Surplus after the investment (without tax)"), fEuroCent(haushalt.ueberschussNachMonat)],
+              [t("… mit Steuerwirkung im ersten Jahr", "… with tax effect in the first year"), fEuroCent(haushalt.ueberschussNachMitSteuerMonat)],
             ] as [string, string][],
-            hinweis: "Miete, Rate und Bewirtschaftung der Wohnung kommen aus der Berechnung. Je Jahr mal 12, im Bankgespräch-PDF ausgewiesen.",
+            hinweis: t("Miete, Rate und Bewirtschaftung der Wohnung kommen aus der Berechnung. Je Jahr mal 12, im Bankgespräch-PDF ausgewiesen.", "Rent, instalment and running costs of the apartment come from the calculation. Per year times 12, shown in the bank meeting PDF."),
           },
         ]
       : []),
     ...(vermoegen
       ? [
           {
-            titel: "Vermögensaufstellung",
+            titel: t("Vermögensaufstellung", "Statement of assets"),
             neu: true,
             zeilen: [
-              ["Vermögenswerte", formatEuro(vermoegen.werte)],
-              ["davon verpfändet", formatEuro(vermoegen.davonVerpfaendet)],
-              ["Verbindlichkeiten", formatEuro(vermoegen.verbindlichkeiten)],
-              ["Differenz", formatEuro(vermoegen.differenz)],
-              ["Differenz mit Wohnung und neuen Darlehen", formatEuro(vermoegen.differenzNachKauf)],
+              [t("Vermögenswerte", "Assets"), fEuro(vermoegen.werte)],
+              [t("davon verpfändet", "of which pledged"), fEuro(vermoegen.davonVerpfaendet)],
+              [t("Verbindlichkeiten", "Liabilities"), fEuro(vermoegen.verbindlichkeiten)],
+              [t("Differenz", "Difference"), fEuro(vermoegen.differenz)],
+              [t("Differenz mit Wohnung und neuen Darlehen", "Difference with apartment and new loans"), fEuro(vermoegen.differenzNachKauf)],
             ] as [string, string][],
           },
         ]
@@ -394,15 +401,15 @@ export function Bankgespraech({
     ...(grenze
       ? [
           {
-            titel: "15-%-Grenze anschaffungsnahe Herstellungskosten",
+            titel: t("15-%-Grenze anschaffungsnahe Herstellungskosten", "15% limit for acquisition-related production costs"),
             zeilen: [
-              ["Anschaffungskosten Gebäude", formatEuro(grenze.gebaeude)],
-              ["Grenze netto (brutto mit 19 % USt.)", `${formatEuro(grenze.grenzeNetto)} (${formatEuro(grenze.grenzeBrutto)})`],
-              ["Eingetragener Erhaltungsaufwand", formatEuro(grenze.aufwand)],
-              [grenze.spielraumNetto >= 0 ? "Spielraum netto" : "Grenze überschritten um", formatEuro(Math.abs(grenze.spielraumNetto))],
+              [t("Anschaffungskosten Gebäude", "Acquisition costs of the building"), fEuro(grenze.gebaeude)],
+              [t("Grenze netto (brutto mit 19 % USt.)", "Limit net (gross with 19% VAT)"), `${fEuro(grenze.grenzeNetto)} (${fEuro(grenze.grenzeBrutto)})`],
+              [t("Eingetragener Erhaltungsaufwand", "Maintenance expenses entered"), fEuro(grenze.aufwand)],
+              [grenze.spielraumNetto >= 0 ? t("Spielraum netto", "Headroom net") : t("Grenze überschritten um", "Limit exceeded by"), fEuro(Math.abs(grenze.spielraumNetto))],
             ] as [string, string][],
             hinweis:
-              "Instandsetzungen in den ersten drei Jahren nach dem Kauf sind nur bis zu dieser Grenze sofort absetzbar, darüber werden sie über die AfA verteilt. Vereinfachter Check, ersetzt keine Steuerberatung.",
+              t("Instandsetzungen in den ersten drei Jahren nach dem Kauf sind nur bis zu dieser Grenze sofort absetzbar, darüber werden sie über die AfA verteilt. Vereinfachter Check, ersetzt keine Steuerberatung.", "Repairs in the first three years after the purchase are immediately deductible only up to this limit; above it they are spread through depreciation. Simplified check, no substitute for tax advice."),
           },
         ]
       : []),
@@ -413,7 +420,7 @@ export function Bankgespraech({
       {!imDokument && (
       <div className="bankgespraech-pdf">
         <button type="button" className="button button-primary" disabled={pdfEntsteht} onClick={() => void pdfLaden()}>
-          <FileDown size={14} /> {pdfEntsteht ? "PDF wird erstellt …" : "Bankgespräch-PDF"}
+          <FileDown size={14} /> {pdfEntsteht ? "PDF wird erstellt …" : t("Bankgespräch-PDF", "Bank meeting PDF")}
         </button>
         <Neu titel="Investitionsübersicht, Haushaltsrechnung und Vermögensaufstellung als eine Unterlage" />
         {!haushalt && !vermoegen && (
@@ -442,10 +449,21 @@ export function Bankgespraech({
   );
 }
 
-function ampelwert(wert: number | null, schwelle: Pick<Ampelschwelle, "einheit">): string {
-  if (wert === null) return "nicht bestimmbar";
-  return schwelle.einheit === "prozent" ? formatProzent(wert) : `${formatEuro(wert)} / Monat`;
+function ampelwert(wert: number | null, schwelle: Pick<Ampelschwelle, "einheit">, sprache: FormatSprache = "de"): string {
+  const en = sprache === "en";
+  if (wert === null) return en ? "cannot be determined" : "nicht bestimmbar";
+  return schwelle.einheit === "prozent" ? formatProzent(wert, sprache) : `${formatEuro(wert, sprache)} / ${en ? "month" : "Monat"}`;
 }
+
+/** Englische Beschriftungen der Ampel, seit dem 22.10.2026; die Schwellen selbst liegen auf Deutsch in app_config. */
+const AMPEL_LABEL_EN: Record<string, string> = {
+  bruttorendite: "Gross rental yield",
+  nettorendite: "Net rental yield",
+  eigenkapitalrendite: "Wealth return (model figure)",
+  cashflowOperativ: "Cash flow before tax",
+  cashflowNachSteuern: "Cash flow after tax",
+};
+const AMPEL_WORT_EN: Record<string, string> = { gruen: "green", gelb: "amber", rot: "red" };
 
 /**
  * Die Ampel der fünf Kennzahlen, seit dem 11.10.2026. `mitSchwellen` zeigt
@@ -454,18 +472,20 @@ function ampelwert(wert: number | null, schwelle: Pick<Ampelschwelle, "einheit">
 export function AmpelLeiste({ input, result, mitSchwellen = false }: { input: InvestmentEingabe; result: InvestmentErgebnis; mitSchwellen?: boolean }) {
   const einstellung = useContext(AmpelKontext);
   const [bearbeitet, setBearbeitet] = useState(false);
+  const { sprache } = useRechnerTexte();
+  const en = sprache === "en";
   const zeilen = ampel(input, result, einstellung.schwellen);
   return (
     <div data-testid="ampel">
       <div className="ampel-leiste">
         {zeilen.map((z) => (
           <div key={z.kennzahl}>
-            <small>{z.schwelle.label}</small>
+            <small>{en ? AMPEL_LABEL_EN[z.kennzahl] ?? z.schwelle.label : z.schwelle.label}</small>
             <strong>
               <Ampelpunkt farbe={z.farbe} />
-              {ampelwert(z.wert, z.schwelle)}
+              {ampelwert(z.wert, z.schwelle, sprache)}
             </strong>
-            {z.farbe && <span className="ampel-wort">{AMPEL_WORT[z.farbe]}</span>}
+            {z.farbe && <span className="ampel-wort">{en ? AMPEL_WORT_EN[z.farbe] : AMPEL_WORT[z.farbe]}</span>}
           </div>
         ))}
       </div>
@@ -474,26 +494,27 @@ export function AmpelLeiste({ input, result, mitSchwellen = false }: { input: In
           <table className="ampel-schwellen">
             <thead>
               <tr>
-                <th>Kennzahl</th>
-                <th>Grün ab</th>
-                <th>Gelb ab</th>
-                <th>Rot</th>
+                <th>{en ? "Key figure" : "Kennzahl"}</th>
+                <th>{en ? "Green from" : "Grün ab"}</th>
+                <th>{en ? "Amber from" : "Gelb ab"}</th>
+                <th>{en ? "Red" : "Rot"}</th>
               </tr>
             </thead>
             <tbody>
-              {Object.values(einstellung.schwellen).map((s) => (
+              {Object.entries(einstellung.schwellen).map(([schluessel, s]) => (
                 <tr key={s.label} title={s.erklaerung}>
-                  <td>{s.label}</td>
-                  <td>{ampelwert(s.gruenAb, s)}</td>
-                  <td>{ampelwert(s.gelbAb, s)}</td>
-                  <td>darunter</td>
+                  <td>{en ? AMPEL_LABEL_EN[schluessel] ?? s.label : s.label}</td>
+                  <td>{ampelwert(s.gruenAb, s, sprache)}</td>
+                  <td>{ampelwert(s.gelbAb, s, sprache)}</td>
+                  <td>{en ? "below" : "darunter"}</td>
                 </tr>
               ))}
             </tbody>
           </table>
           <p className="kachel-hinweis">
-            Cashflows im ersten Jahr je Monat. Die Schwellen gelten unternehmensweit; ändern dürfen sie nur Admin und
-            Inhaber. Die Ampel ist ein internes Werkzeug und steht nicht in der Berechnung für den Kunden.
+            {en
+              ? "Cash flows per month in the first year. The thresholds apply company-wide; only admin and owner may change them. The traffic light is an internal tool and is not part of the calculation for the client."
+              : "Cashflows im ersten Jahr je Monat. Die Schwellen gelten unternehmensweit; ändern dürfen sie nur Admin und Inhaber. Die Ampel ist ein internes Werkzeug und steht nicht in der Berechnung für den Kunden."}
           </p>
           {einstellung.darfBearbeiten && !bearbeitet && (
             <button type="button" className="text-button" data-testid="schwellen-bearbeiten" onClick={() => setBearbeitet(true)}>
@@ -697,11 +718,13 @@ function SchwellenEditor({ einstellung, onFertig }: { einstellung: AmpelEinstell
 
 /** Kaufpreisdetails der Analyse, im Raster des Steuerprofils. */
 export function Kaufpreisdetails({ result }: { input: InvestmentEingabe; result: InvestmentErgebnis }) {
-  const hinweis = kaufpreisHinweis(result);
+  // Seit dem 22.10.2026 in der Sprache der rechten Seite.
+  const { sprache } = useRechnerTexte();
+  const hinweis = kaufpreisHinweis(result, sprache);
   return (
     <>
       <div className="tax-profile-grid">
-        {kaufpreiszeilen(result).map((zeile) => (
+        {kaufpreiszeilen(result, sprache).map((zeile) => (
           <div key={zeile.label} className={zeile.summe ? "tax-profile-total" : ""}>
             <span>{zeile.label}</span>
             <strong>{zeile.wert}</strong>
@@ -709,6 +732,64 @@ export function Kaufpreisdetails({ result }: { input: InvestmentEingabe; result:
         ))}
       </div>
       {hinweis && <p className="knk-hinweis kaufpreis-hinweis">{hinweis}</p>}
+    </>
+  );
+}
+
+/** Zeilen der Hausgeldaufstellung in der gewünschten Sprache, für Analyse, Berechnung und PDF. */
+export function hausgeldZeilen(input: InvestmentEingabe, sprache: FormatSprache = "de"): { label: string; wert: string; summe?: boolean }[] {
+  const h = hausgeldAufstellung(input);
+  if (!h.vorhanden) return [];
+  const en = sprache === "en";
+  const euro = (wert: number) => formatEuroCent(wert, sprache);
+  return [
+    { label: en ? "Service charge total per month" : "Hausgeld gesamt je Monat", wert: h.gesamt > 0 ? euro(h.gesamt) : en ? "not stated" : "nicht angegeben", summe: true },
+    { label: en ? "of which recoverable (paid by the tenant, no cash-flow burden)" : "davon umlagefähig (zahlt der Mieter, belastet den Cashflow nicht)", wert: euro(h.umlagefaehig) },
+    { label: en ? "of which non-recoverable (cash-flow burden, tax-deductible)" : "davon nicht umlagefähig (belastet den Cashflow, steuerlich abziehbar)", wert: euro(h.nichtUmlagefaehig) },
+    { label: en ? "of which maintenance reserve (cash-flow burden, deductible only when spent)" : "davon Erhaltungsrücklage (belastet den Cashflow, steuerlich erst bei Verwendung)", wert: euro(h.ruecklage) },
+  ];
+}
+
+/** Hinweis, wenn die Teile nicht zum Gesamtbetrag passen oder die Rechnung weniger ansetzt. */
+export function hausgeldHinweis(input: InvestmentEingabe, sprache: FormatSprache = "de"): string | null {
+  const h = hausgeldAufstellung(input);
+  if (!h.vorhanden) return null;
+  const en = sprache === "en";
+  const teile: string[] = [];
+  if (h.abweichung !== null && Math.abs(h.abweichung) >= 0.5) {
+    teile.push(
+      en
+        ? `The parts add up to ${formatEuroCent(h.summeTeile, sprache)}, the total is ${formatEuroCent(h.gesamt, sprache)} (difference ${formatEuroCent(h.abweichung, sprache)}).`
+        : `Die Teile ergeben ${formatEuroCent(h.summeTeile, sprache)}, das Hausgeld gesamt ist ${formatEuroCent(h.gesamt, sprache)} (Abweichung ${formatEuroCent(h.abweichung, sprache)}).`,
+    );
+  }
+  if (h.rechnungNiedriger) {
+    teile.push(
+      en
+        ? "The calculation uses lower non-recoverable costs than listed here."
+        : "Die Rechnung setzt weniger nicht umlagefähige Kosten an als hier aufgeführt.",
+    );
+  }
+  return teile.length ? teile.join(" ") : null;
+}
+
+/** Das Hausgeld in ganzer Höhe, aufgeschlüsselt, seit dem 22.10.2026. */
+export function Hausgeldaufstellung({ input }: { input: InvestmentEingabe }) {
+  const { sprache } = useRechnerTexte();
+  const zeilen = hausgeldZeilen(input, sprache);
+  if (!zeilen.length) return null;
+  const hinweis = hausgeldHinweis(input, sprache);
+  return (
+    <>
+      <div className="tax-profile-grid" data-testid="hausgeld-aufstellung">
+        {zeilen.map((zeile) => (
+          <div key={zeile.label} className={zeile.summe ? "tax-profile-total" : ""}>
+            <span>{zeile.label}</span>
+            <strong>{zeile.wert}</strong>
+          </div>
+        ))}
+      </div>
+      {hinweis && <p className="knk-hinweis kaufpreis-hinweis" data-testid="hausgeld-abweichung">{hinweis}</p>}
     </>
   );
 }
@@ -824,8 +905,15 @@ export function UnterlagenEinblicke({ data, compact = false }: UnterlagenEinblic
  * sie doppelt, deshalb sind sie hier entfallen.
  */
 export function Kennzahlen({ result, input }: { result: InvestmentErgebnis; input: InvestmentEingabe }) {
-  const texte = KENNZAHL_TEXTE.kacheln;
-  const wege = rechenwege(input, result);
+  // Seit dem 22.10.2026 in der Sprache der rechten Seite.
+  const { sprache, kennzahl } = useRechnerTexte();
+  const texte = kennzahl.kacheln;
+  const wege = rechenwege(input, result, kennzahl, sprache);
+  const fEuro = (wert: number) => formatEuro(wert, sprache);
+  const fEuroCent = (wert: number) => formatEuroCent(wert, sprache);
+  const fProzent = (wert: number) => formatProzent(wert, sprache);
+  const fProzent1 = (wert: number) => formatProzentEineStelle(wert, sprache);
+  const fFaktor = (wert: number) => (sprache === "en" ? `${formatZahl(wert, sprache, 2)}×` : `${formatZahl(wert, sprache, 2)}-fach`);
   const { schwellen } = useContext(AmpelKontext);
   const farben = Object.fromEntries(ampel(input, result, schwellen).map((z) => [z.kennzahl, z.farbe]));
   const letztesJahr = result.years[result.years.length - 1];
@@ -833,35 +921,35 @@ export function Kennzahlen({ result, input }: { result: InvestmentErgebnis; inpu
   return (
     <>
     <div className="metrics-grid">
-      <Kennzahlkarte label={texte.kaltmiete} value={formatEuro(result.effectiveAnnualRent / 12)} rechenweg={wege.kaltmiete} />
-      <Kennzahlkarte label={texte.kreditrate} value={formatEuroCent(result.monthlyDebtService)} rechenweg={wege.kreditrate} />
+      <Kennzahlkarte label={texte.kaltmiete} value={fEuro(result.effectiveAnnualRent / 12)} rechenweg={wege.kaltmiete} />
+      <Kennzahlkarte label={texte.kreditrate} value={fEuroCent(result.monthlyDebtService)} rechenweg={wege.kreditrate} />
       {/* Mit Stellplatz seit dem 22.10.2026 zweimal: die Wohnung allein und das Paket. */}
       {mitStellplatz(result) && (
-        <Kennzahlkarte label={texte.bruttorenditeWohnung} value={formatProzent(result.grossYieldWohnung)} rechenweg={wege.bruttorenditeWohnung} />
+        <Kennzahlkarte label={texte.bruttorenditeWohnung} value={fProzent(result.grossYieldWohnung)} rechenweg={wege.bruttorenditeWohnung} />
       )}
       <Kennzahlkarte
         label={mitStellplatz(result) ? texte.bruttorenditeGesamt : texte.bruttorendite}
-        value={formatProzent(result.grossYield)}
+        value={fProzent(result.grossYield)}
         rechenweg={wege.bruttorendite}
         ampel={farben.bruttorendite}
       />
       {mitStellplatz(result) && (
-        <Kennzahlkarte label={texte.nettorenditeWohnung} value={formatProzent(result.netYieldWohnung)} />
+        <Kennzahlkarte label={texte.nettorenditeWohnung} value={fProzent(result.netYieldWohnung)} />
       )}
       <Kennzahlkarte
         label={mitStellplatz(result) ? texte.nettorenditeGesamt : texte.nettorendite}
-        value={formatProzent(result.netYield)}
+        value={fProzent(result.netYield)}
         rechenweg={wege.nettorendite}
         ampel={farben.nettorendite}
       />
       <Kennzahlkarte
         label={texte.immobilienwert(letztesJahr.year)}
-        value={formatEuro(letztesJahr.propertyValue)}
+        value={fEuro(letztesJahr.propertyValue)}
         rechenweg={wege.immobilienwert}
       />
       <Kennzahlkarte
         label={texte.restschuld(letztesJahr.year)}
-        value={formatEuro(letztesJahr.remainingDebt)}
+        value={fEuro(letztesJahr.remainingDebt)}
         rechenweg={wege.restschuld}
       />
       {/*
@@ -871,7 +959,7 @@ export function Kennzahlen({ result, input }: { result: InvestmentErgebnis; inpu
       */}
       <Kennzahlkarte
         label={texte.immobilieMinusRestschuld(letztesJahr.year)}
-        value={formatEuro(letztesJahr.propertyEquity)}
+        value={fEuro(letztesJahr.propertyEquity)}
         rechenweg={wege.immobilieMinusRestschuld}
       />
       {/*
@@ -881,7 +969,7 @@ export function Kennzahlen({ result, input }: { result: InvestmentErgebnis; inpu
       */}
       <Kennzahlkarte
         label={zahltZu ? texte.selbstEingezahlt(result.years.length) : texte.ueberschuss(result.years.length)}
-        value={formatEuro(
+        value={fEuro(
           zahltZu ? letztesJahr.cumulativeEigenanteil : Math.abs(letztesJahr.cumulativeCashflowAfterTax),
         )}
         rechenweg={wege.selbstEingezahlt}
@@ -895,18 +983,18 @@ export function Kennzahlen({ result, input }: { result: InvestmentErgebnis; inpu
     <div className="summary-strip" data-testid="kennzahlen-zusatz">
       <span>
         <small>{texte.irr}</small>
-        <strong>{result.irr !== null ? formatProzentEineStelle(result.irr) : "–"}</strong>
+        <strong>{result.irr !== null ? fProzent1(result.irr) : "–"}</strong>
       </span>
       {mitStellplatz(result) && result.kaufpreisfaktorWohnung !== null && (
         <span>
           <small>{texte.kaufpreisfaktorWohnung}</small>
-          <strong>{`${formatZahl(result.kaufpreisfaktorWohnung, "de", 2)}-fach`}</strong>
+          <strong>{fFaktor(result.kaufpreisfaktorWohnung)}</strong>
         </span>
       )}
       {result.kaufpreisfaktor !== null && (
         <span>
           <small>{mitStellplatz(result) ? texte.kaufpreisfaktorGesamt : texte.kaufpreisfaktor}</small>
-          <strong>{`${formatZahl(result.kaufpreisfaktor, "de", 2)}-fach`}</strong>
+          <strong>{fFaktor(result.kaufpreisfaktor)}</strong>
         </span>
       )}
     </div>
@@ -919,66 +1007,113 @@ export function Kennzahlen({ result, input }: { result: InvestmentErgebnis; inpu
  * und nach Steuer, Regel-AfA neben erhöhter AfA, Stresstest und
  * Wertentwicklung 0/1/2 %. Nur Anzeige, siehe rechenstandards.ts.
  */
+/** Die Begründungen der Regel-AfA aus afaSaetze.ts auf Englisch. */
+const GRUND_EN: Record<string, string> = {
+  "Betriebsgebäude im Betriebsvermögen": "commercial building in business assets",
+  "Baujahr unbekannt, Regelsatz": "year of construction unknown, standard rate",
+  "Fertigstellung vor 1925": "completed before 1925",
+  "Fertigstellung ab 2023": "completed from 2023",
+  "Fertigstellung 1925 bis 2022": "completed 1925 to 2022",
+};
+
 export function Rechenstandards({ input, result }: { input: InvestmentEingabe; result: InvestmentErgebnis }) {
+  // Seit dem 22.10.2026 in der Sprache der rechten Seite.
+  const { sprache } = useRechnerTexte();
+  const en = sprache === "en";
+  const t = (de: string, englisch: string) => (en ? englisch : de);
+  const fEuro = (wert: number) => formatEuro(wert, sprache);
+  const fEuroCent = (wert: number) => formatEuroCent(wert, sprache);
+  const fProzentZahl = (wert: number, stellen: number) => (en ? `${formatZahl(wert, sprache, stellen)}%` : `${formatZahl(wert, sprache, stellen)} %`);
   const erstes = result.years[0];
   if (!erstes) return null;
   const afa = regelAfa(input);
   const faelle = stresstest(input, result);
   const wert = wertszenarien(input);
-  const belastung = (betrag: number) => `${formatEuroCent(betrag)} im Monat`;
+  const belastung = (betrag: number) => `${fEuroCent(betrag)} ${t("im Monat", "per month")}`;
   const regelErstes = afa.mitRegelAfa?.years[0];
+  // Die Fälle kommen auf Deutsch aus rechenstandards.ts; die englischen Titel stehen hier.
+  const fallTitel = (titel: string) =>
+    !en
+      ? titel
+      : titel === "Gutachten abgelehnt"
+        ? "Valuation report rejected"
+        : titel.startsWith("Zins +1 Punkt")
+          ? titel.replace("Zins +1 Punkt ab Jahr", "Interest +1 point from year")
+          : titel.replace("Monate Leerstand", "months vacancy");
+  const fallText = (text: string) =>
+    !en
+      ? text
+      : text.startsWith("Regel-AfA")
+        ? text.replace("Regel-AfA", "Standard depreciation").replace("statt", "instead of")
+        : text === "Anschlusszins einen Prozentpunkt höher, Tilgung wie eingestellt"
+          ? "Follow-up rate one percentage point higher, repayment as set"
+          : text === "Einmalig im ersten Jahr, ohne Miete, Kosten laufen weiter"
+            ? "Once in the first year, without rent, costs continue"
+            : text;
 
   const bloecke: { titel: string; zeilen: [string, string][]; hinweis?: string }[] = [
     {
-      titel: `Belastung ${erstes.year}`,
+      titel: t(`Belastung ${erstes.year}`, `Burden ${erstes.year}`),
       zeilen: [
-        ["Zuzahlung vor Steuer", belastung(-erstes.cashflowBeforeTax / monateErstesJahr(result))],
-        ["Zuzahlung nach Steuer", belastung(-erstes.cashflowAfterTax / monateErstesJahr(result))],
+        [t("Zuzahlung vor Steuer", "Top-up before tax"), belastung(-erstes.cashflowBeforeTax / monateErstesJahr(result))],
+        [t("Zuzahlung nach Steuer", "Top-up after tax"), belastung(-erstes.cashflowAfterTax / monateErstesJahr(result))],
       ],
-      hinweis: "Negativ heißt: Überschuss statt Zuzahlung.",
+      hinweis: t("Negativ heißt: Überschuss statt Zuzahlung.", "Negative means: surplus instead of top-up."),
     },
     {
-      titel: "AfA",
+      titel: t("AfA", "Depreciation"),
       zeilen: [
         [
-          "Eingestellt",
-          `${formatZahl(input.buildingDepreciationRate, "de", 2)} % ${input.depreciationMethod === "declining" ? "degressiv" : "linear"}`,
+          t("Eingestellt", "Set"),
+          `${fProzentZahl(input.buildingDepreciationRate, 2)} ${input.depreciationMethod === "declining" ? t("degressiv", "declining balance") : t("linear", "straight-line")}`,
         ],
-        ["Regel-AfA", `${formatZahl(afa.regel.satz, "de", 1)} % linear (${afa.regel.grund}, ${afa.regel.paragraf})`],
+        [t("Regel-AfA", "Standard depreciation"), `${fProzentZahl(afa.regel.satz, 1)} ${t("linear", "straight-line")} (${en ? (GRUND_EN[afa.regel.grund] ?? afa.regel.grund) : afa.regel.grund}, ${afa.regel.paragraf})`],
         ...(afa.mitRegelAfa && regelErstes
           ? ([
-              [`Zuzahlung nach Steuer ${regelErstes.year} mit Regel-AfA`, belastung(-regelErstes.cashflowAfterTax / 12)],
-              ["Steuerwirkung gesamt mit Regel-AfA", formatEuro(afa.mitRegelAfa.cumulativeTaxEffect)],
+              [t(`Zuzahlung nach Steuer ${regelErstes.year} mit Regel-AfA`, `Top-up after tax ${regelErstes.year} with standard depreciation`), belastung(-regelErstes.cashflowAfterTax / 12)],
+              [t("Steuerwirkung gesamt mit Regel-AfA", "Total tax effect with standard depreciation"), fEuro(afa.mitRegelAfa.cumulativeTaxEffect)],
             ] as [string, string][])
           : []),
       ],
       hinweis: afa.erhoeht
-        ? "Erhöhte AfA nur mit anerkanntem Gutachten (Restnutzungsdauer)."
+        ? t("Erhöhte AfA nur mit anerkanntem Gutachten (Restnutzungsdauer).", "Higher depreciation only with a recognised report (remaining useful life).")
         : afa.degressiv
-          ? "Degressive AfA 5 % nur bei Baubeginn 10/2023 bis 9/2029."
+          ? t("Degressive AfA 5 % nur bei Baubeginn 10/2023 bis 9/2029.", "Declining-balance depreciation of 5% only for construction start 10/2023 to 9/2029.")
           : undefined,
     },
     {
-      titel: "Stresstest",
+      titel: t("Stresstest", "Stress test"),
       zeilen: faelle.map((fall): [string, string] => [
-        `${fall.titel} (${fall.jahr}): ${fall.beschreibung}`,
+        `${fallTitel(fall.titel)} (${fall.jahr}): ${fallText(fall.beschreibung)}`,
         fall.entfaellt
-          ? `entfällt, ${fall.entfaellt}`
+          ? `${t("entfällt", "not applicable")}, ${fall.entfaellt}`
           : fall.einheit === "einmalig"
-            ? `einmalig ${formatEuro(fall.stress.vorSteuer)} vor, ${formatEuro(fall.stress.nachSteuer)} nach Steuer`
-            : `${formatEuroCent(fall.stress.vorSteuer)} vor, ${formatEuroCent(fall.stress.nachSteuer)} nach Steuer im Monat (bisher ${formatEuroCent(fall.basis.nachSteuer)} nach Steuer)`,
+            ? t(
+                `einmalig ${fEuro(fall.stress.vorSteuer)} vor, ${fEuro(fall.stress.nachSteuer)} nach Steuer`,
+                `once ${fEuro(fall.stress.vorSteuer)} before, ${fEuro(fall.stress.nachSteuer)} after tax`,
+              )
+            : t(
+                `${fEuroCent(fall.stress.vorSteuer)} vor, ${fEuroCent(fall.stress.nachSteuer)} nach Steuer im Monat (bisher ${fEuroCent(fall.basis.nachSteuer)} nach Steuer)`,
+                `${fEuroCent(fall.stress.vorSteuer)} before, ${fEuroCent(fall.stress.nachSteuer)} after tax per month (previously ${fEuroCent(fall.basis.nachSteuer)} after tax)`,
+              ),
       ]),
-      hinweis: "Zuzahlung je Monat, Leerstand als einmalige Mehrbelastung. Jeder Fall für sich, die Steuer mit derselben Rechnung wie oben.",
+      hinweis: t(
+        "Zuzahlung je Monat, Leerstand als einmalige Mehrbelastung. Jeder Fall für sich, die Steuer mit derselben Rechnung wie oben.",
+        "Top-up per month, vacancy as a one-off extra burden. Each case on its own, tax with the same calculation as above.",
+      ),
     },
     ...(wert
       ? [
           {
-            titel: `Wertentwicklung bis ${wert.jahr}`,
+            titel: t(`Wertentwicklung bis ${wert.jahr}`, `Value development until ${wert.jahr}`),
             zeilen: wert.szenarien.flatMap((s): [string, string][] => [
-              [`${s.prozent} % im Jahr: Wert / Wert minus Restschuld`, `${formatEuro(s.wert)} / ${formatEuro(s.vermoegen)}`],
-              [`… ${s.prozent} % in heutiger Kaufkraft`, `${formatEuro(s.wertKaufkraft)} / ${formatEuro(s.vermoegenKaufkraft)}`],
+              [t(`${s.prozent} % im Jahr: Wert / Wert minus Restschuld`, `${s.prozent}% a year: value / value minus remaining debt`), `${fEuro(s.wert)} / ${fEuro(s.vermoegen)}`],
+              [t(`… ${s.prozent} % in heutiger Kaufkraft`, `… ${s.prozent}% in today's purchasing power`), `${fEuro(s.wertKaufkraft)} / ${fEuro(s.vermoegenKaufkraft)}`],
             ]),
-            hinweis: `Kaufkraft abgezinst mit ${formatZahl(wert.inflation, "de", 1)} % Inflation im Jahr. Szenarien, keine Prognose.`,
+            hinweis: t(
+              `Kaufkraft abgezinst mit ${fProzentZahl(wert.inflation, 1)} Inflation im Jahr. Szenarien, keine Prognose.`,
+              `Purchasing power discounted with ${fProzentZahl(wert.inflation, 1)} inflation a year. Scenarios, not a forecast.`,
+            ),
           },
         ]
       : []),

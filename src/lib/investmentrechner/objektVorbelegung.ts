@@ -181,6 +181,7 @@ export function vorbelegungAusEinheit(
     "Objektbezeichnung": ["propertyTitle"], "Adresse": ["address"], "Objekttyp": ["propertyType"],
     "Kaufpreis": ["purchasePrice"], "davon Möbel/Inventar": ["furniturePrice"], "davon Stellplatz/Garage": ["garagePrice"],
     "Stellplatz-/Garagenmiete p. M.": ["monthlyGarageRent"],
+    "Hausgeld gesamt p. M.": ["housingFeeTotal", "housingFeeRecoverable", "housingFeeNonRecoverable"],
     "Wohnfläche": ["area"], "Zimmer": ["rooms"], "Baujahr": ["constructionYear"],
     "Kaufnebenkosten": ["transferTaxRate", "notaryRate", "landRegisterRate"], "Kaltmiete p. M.": ["monthlyColdRent"],
     "Eigenkapital": ["equity"], "Finanzierungsnebenkosten": ["financingCostRate"],
@@ -423,6 +424,22 @@ export function vorbelegungAusEinheit(
       : positiv(daten.hausgeldNichtUmlegbarMonat);
   const mietverwaltung = positiv(daten.mietverwaltungMonat);
   eingabe.monthlyOperatingCosts = hausgeldNu + mietverwaltung;
+  /*
+   * Das Hausgeld in ganzer Höhe zur Anzeige, seit dem 22.10.2026 (Christian):
+   * gesamt, umlagefähig und nicht umlagefähig wie im Exposé und Wirtschaftsplan.
+   * Gerechnet wird damit nichts, die Aufstellung prüft nur die Summe.
+   */
+  const umlagefaehig = positiv(hausgeldTeile(wohnung).umlagefaehig ?? hausgeldTeile((wohnung as { meta?: unknown }).meta).umlagefaehig);
+  if (hausgeldGesamt > 0 || umlagefaehig > 0 || hausgeldNu > 0) {
+    eingabe.housingFeeTotal = hausgeldGesamt;
+    eingabe.housingFeeRecoverable = umlagefaehig;
+    eingabe.housingFeeNonRecoverable = hausgeldNu;
+    nimm(
+      "Hausgeld gesamt p. M.",
+      eur0(hausgeldGesamt),
+      `Einheit, davon umlagefähig ${eur0(umlagefaehig)}, nicht umlagefähig ${eur0(hausgeldNu)}${nuQuelle === "geschaetzt" ? " (geschätzt)" : ""}`,
+    );
+  }
   /*
    * Zuführung zur Instandhaltungsrücklage, seit dem 25.09.2026 als eigenes
    * Feld. Investagon liefert sie getrennt vom nicht umlagefähigen Hausgeld

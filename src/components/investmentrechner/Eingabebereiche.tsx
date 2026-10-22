@@ -26,10 +26,10 @@ import { unterlagenAuslesbar, type AuslesbaresFeld } from "@/lib/investmentrechn
 import { eigenkapitalNachRegel, feldmarkierung, herkunftText, type Herkunft } from "@/lib/investmentrechner/herkunft";
 import { OBJEKTTYP_VORSCHLAEGE } from "@/lib/investmentrechner/objekttypVorschlaege";
 import { linearerAfaSatz } from "@/lib/afaSaetze";
-import { mitStellplatz } from "@/lib/investmentrechner/rechenkern";
+import { hausgeldAufstellung, mitStellplatz } from "@/lib/investmentrechner/rechenkern";
 import { Auswahlfeld, AuswahlOderText, FeldInfo, Feldetikett, Neu, Schalterfeld, Textbereich, Textfeld, Zahlenfeld } from "./Felder";
 import { haushaltMitVorlage, haushaltsrechnung, vermoegenMitVorlage, vermoegensaufstellung } from "@/lib/investmentrechner/bankunterlagen";
-import { Energieskala, kaufpreisHinweis, Steuerprofil } from "./Auswertungen";
+import { Energieskala, hausgeldHinweis, kaufpreisHinweis, Steuerprofil } from "./Auswertungen";
 import { UnterlagenUebernahme, type KiAuslesung } from "./UnterlagenUebernahme";
 
 /*
@@ -1465,6 +1465,59 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
           tooltip="Der Teil des Hausgelds, der in die Instandhaltungsrücklage der Gemeinschaft fließt. Er mindert den Cashflow jeden Monat. Steuerlich wird er hier nicht abgezogen: Nach dem Bundesfinanzhof ist er erst abziehbar, wenn die Gemeinschaft das Geld für Erhaltung ausgibt, nicht schon bei der Einzahlung."
           hint={quelle("monthlyReserveContribution")} markierung={feldmarkierung(herkunft, "monthlyReserveContribution")}
         />
+      </div>
+      {/*
+        Hausgeld in ganzer Höhe, seit dem 22.10.2026 (Christian). Nur zur
+        Aufstellung und Prüfung der Summe; gerechnet wird mit den nicht
+        umlagefähigen Kosten und der Zuführung zur Rücklage darüber.
+      */}
+      <div className="subheading">Hausgeld</div>
+      <div className="field-grid three">
+        <Zahlenfeld
+          label="Hausgeld gesamt p. M."
+          value={input.housingFeeTotal}
+          suffix="€"
+          neu
+          onChange={(wert) => setzeZahl("housingFeeTotal", wert)}
+          tooltip="Das ganze Hausgeld laut Wirtschaftsplan: umlagefähiger Teil, nicht umlagefähiger Teil und Zuführung zur Erhaltungsrücklage. Es dient der Aufstellung und der Prüfung, ob die Teile zur Summe passen. Gerechnet wird mit den Feldern darüber."
+          hint={quelle("housingFeeTotal")} markierung={feldmarkierung(herkunft, "housingFeeTotal")}
+        />
+        <Zahlenfeld
+          label="davon umlagefähig p. M."
+          value={input.housingFeeRecoverable}
+          suffix="€"
+          neu
+          onChange={(wert) => setzeZahl("housingFeeRecoverable", wert)}
+          tooltip="Der Teil, den der Mieter mit den Nebenkosten zahlt. Er belastet den Cashflow nicht und steht deshalb in keiner Rechnung."
+        />
+        <Zahlenfeld
+          label="davon nicht umlagefähig p. M."
+          value={input.housingFeeNonRecoverable}
+          suffix="€"
+          neu
+          onChange={(wert) => setzeZahl("housingFeeNonRecoverable", wert)}
+          tooltip="Der Teil des Hausgelds, den der Eigentümer trägt, etwa Verwaltung der WEG. Er belastet den Cashflow und ist steuerlich abziehbar. In der Rechnung steht er im Feld „Nicht umlagefähige Kosten“, dort zusammen mit einer Sondereigentumsverwaltung."
+        />
+      </div>
+      {hausgeldAufstellung(input).vorhanden && (
+        <div className={hausgeldHinweis(input) ? "warning-card" : "calculated-line"} data-testid="hausgeld-pruefung">
+          {hausgeldHinweis(input) ? (
+            <>
+              <TriangleAlert size={19} />
+              <div>
+                <strong>Hausgeld prüfen</strong>
+                <p>{hausgeldHinweis(input)}</p>
+              </div>
+            </>
+          ) : (
+            <>
+              <span>Umlagefähig + nicht umlagefähig + Rücklage</span>
+              <strong>{formatEuroCent(hausgeldAufstellung(input).summeTeile)}</strong>
+            </>
+          )}
+        </div>
+      )}
+      <div className="field-grid">
         <Zahlenfeld
           label="Leerstand / Mietausfall"
           value={input.vacancyRate}

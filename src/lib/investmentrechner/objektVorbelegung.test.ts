@@ -165,7 +165,7 @@ describe("Vorbelegung aus Objekt und Einheit", () => {
   it("zählt auf, was übernommen wurde", () => {
     expect(feldnamen(v.uebernommen)).toEqual([
       "Objektbezeichnung", "Adresse", "Objekttyp", "Kaufpreis", "davon Stellplatz/Garage", "Wohnfläche", "Zimmer",
-      "Baujahr", "Kaufnebenkosten", "Eigenkapital", "Stellplatz-/Garagenmiete p. M.", "Kaltmiete p. M.", "Nicht umlagefähige Kosten p. M.",
+      "Baujahr", "Kaufnebenkosten", "Eigenkapital", "Stellplatz-/Garagenmiete p. M.", "Kaltmiete p. M.", "Hausgeld gesamt p. M.", "Nicht umlagefähige Kosten p. M.",
       "Gebäudeanteil", "Lineare AfA p. a.", "davon Erhaltungsaufwand",
       "Verteilung des Aufwands", "Energieausweis", "Anteil der Einheit an der Rücklage",
       "Letzte Sanierungen",
