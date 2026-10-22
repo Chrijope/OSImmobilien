@@ -4,6 +4,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { formatEuro, formatEuroCent, formatProzentEineStelle, formatZahl } from "@/lib/investmentrechner/formatierer";
 import {
   eigenkapitalrendite,
+  monateErstesJahr,
   eigenkapitalrenditeNebenkosten,
   type InvestmentEingabe,
   type Jahreswert,
@@ -544,8 +545,10 @@ export function Cashflowleiste({
 
   const jahre = result.years.length;
   const letztesJahr = result.years[jahre - 1];
-  const vorSteuerMonat = jahr.cashflowBeforeTax / 12;
-  const nachSteuerMonat = jahr.cashflowAfterTax / 12;
+  // Im ersten Jahr nur die Monate ab dem Übergang (seit dem 22.10.2026).
+  const monateJahr = jahr.index === 0 ? monateErstesJahr(result) : 12;
+  const vorSteuerMonat = jahr.cashflowBeforeTax / monateJahr;
+  const nachSteuerMonat = jahr.cashflowAfterTax / monateJahr;
   // Null zählt als „bekommst du raus“: Es wird nichts zugezahlt.
   const zahltDrauf = nachSteuerMonat < 0;
   // Ohne Einkommen oder Satz sind beide Cashflows gleich; ein Satz sagt warum (30.09.2026).
@@ -647,7 +650,7 @@ export function Cashflowleiste({
           <strong>{mitVorzeichen(jahr.taxEffect, euro)}</strong>
           <RechenwegZeile weg={wege.steuereffektErstesJahr} />
           <small>
-            {texte.zusaetze.steuereffektMonat(mitVorzeichen(jahr.taxEffect / 12, euroCent))} · {steuerhinweis}
+            {texte.zusaetze.steuereffektMonat(mitVorzeichen(jahr.taxEffect / monateJahr, euroCent))} · {steuerhinweis}
           </small>
         </div>
         <div className={`steuer ${result.cumulativeTaxEffect >= 0 ? "" : "negativ"}`}>

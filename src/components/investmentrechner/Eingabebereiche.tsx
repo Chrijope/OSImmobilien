@@ -760,7 +760,7 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
           value={input.equity}
           suffix="€"
           onChange={(wert) => setzeZahl("equity", wert)}
-          tooltip="Der Betrag, den der Kunde aus eigenem Vermögen einbringt. Er senkt das Bankdarlehen und damit Zins und Rate. Zugleich ist er die Bezugsgröße der Rendite: ohne Eigenkapital lässt sich kein interner Zinsfuß ausweisen."
+          tooltip="Der Betrag, den der Kunde aus eigenem Vermögen einbringt. Er senkt das Bankdarlehen und damit Zins und Rate. Er ist der Einsatz zu Beginn der Zahlungsreihe für den internen Zinsfuß. Auch ohne Eigenkapital lässt sich der Zinsfuß bestimmen, sobald monatliche Zuzahlungen und ein Erlös am Ende einander gegenüberstehen."
           hint={quelle("equity")} markierung={feldmarkierung(herkunft, "equity")}
         />
         <Zahlenfeld

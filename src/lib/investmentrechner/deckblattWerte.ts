@@ -94,7 +94,7 @@ export function deckblattWerte(
       miete: erstes.effectiveRent / monateErstesJahr(result),
       rate: -erstes.debtService / monateErstesJahr(result),
       tilgung: erstes.principal / monateErstesJahr(result),
-      kosten: -(erstes.operatingCosts + erstes.reserveContribution) / 12,
+      kosten: -(erstes.operatingCosts + erstes.reserveContribution) / monateErstesJahr(result),
       vorSteuer: erstes.cashflowBeforeTax / monateErstesJahr(result),
       steuer: erstes.taxEffect / monateErstesJahr(result),
       nachSteuer: erstes.cashflowAfterTax / monateErstesJahr(result),
@@ -112,7 +112,8 @@ export function deckblattWerte(
     jeEingezahltemEuro: selbstEingezahlt >= 1 ? letztes.propertyEquity / selbstEingezahlt : null,
     steuerErstesJahr: erstes.taxEffect,
     steuerSumme: jahre.reduce((summe, j) => summe + j.taxEffect, 0),
-    nachSteuerSchnitt: schnitt(jahre.map((j) => j.cashflowAfterTax)) / 12,
+    // Je Monat ab dem Übergang: Summe durch die Monate, das erste Jahr kann kürzer sein.
+    nachSteuerSchnitt: jahre.reduce((s, j) => s + j.cashflowAfterTax, 0) / ((jahre.length - 1) * 12 + monateErstesJahr(result)),
   };
 }
 

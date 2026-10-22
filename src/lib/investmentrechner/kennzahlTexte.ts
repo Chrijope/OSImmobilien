@@ -328,9 +328,9 @@ export const KENNZAHL_TEXTE_DE: KennzahlTexte = {
       kaufnebenkosten: {
         titel: "Kaufnebenkosten, anteilig verteilt",
         bedeutung:
-          "Grunderwerbsteuer, Notar, Grundbuch, Makler und Sonstiges auf den Gesamtkaufpreis ohne Erhaltungsaufwand, denn der ist im Notarvertrag als gesonderte Leistung ausgewiesen. Sind die Möbel im Notarvertrag gesondert ausgewiesen, fällt auf sie keine Grunderwerbsteuer an.",
+          "Grunderwerbsteuer, Notar, Grundbuch, Makler und Sonstiges auf den Kaufpreis der Immobilie: Gesamtkaufpreis ohne Möbel und ohne einen Sanierungsanteil, der nach dem Kauf für den Käufer umgesetzt wird (eigenständiger Sanierungsvertrag). Saniert der Verkäufer vor dem Verkauf, gehört der Anteil mit in die Basis. Möbel tragen keine Nebenkosten.",
         formel:
-          "Nebenkosten = Sätze × (Kaufpreis gesamt − Erhaltungsaufwand); Nebenkosten Möbel = Nebenkosten × Möbel ÷ (Kaufpreis gesamt − Erhaltungsaufwand) (bei gesondertem Ausweis ohne Grunderwerbsteuer); Nebenkosten Gebäude = (Nebenkosten − Nebenkosten Möbel) × Gebäudeanteil %; der Rest gehört zum Grundstück",
+          "Nebenkosten = Sätze × (Kaufpreis gesamt − Möbel − Sanierungsanteil nach dem Kauf); Nebenkosten Gebäude = Nebenkosten × Gebäudeanteil %; der Rest gehört zum Grundstück",
       },
       gesamtkosten: {
         titel: "Gesamtkosten",
@@ -346,12 +346,12 @@ export const KENNZAHL_TEXTE_DE: KennzahlTexte = {
         titel: "AfA-Basis und Gebäude-AfA",
         bedeutung: "Die Abschreibung des Gebäudes mindert jedes Jahr das zu versteuernde Einkommen.",
         formel:
-          "AfA-Basis = Gebäudeanteil + Nebenkosten Gebäude − Erhaltungsaufwand (nur bei „Abziehen“); Gebäude-AfA je Jahr = AfA-Basis × AfA-Satz, degressiv Restbuchwert × Satz, dazu gegebenenfalls Sonder-AfA",
+          "AfA-Basis = Gebäudeanteil + Nebenkosten Gebäude − Erhaltungsaufwand, wenn er sofort abgezogen wird; er bleibt in der Basis bei „Aktivieren“, bei Sanierung durch den Verkäufer und wenn er netto (ohne USt) 15 % der Gebäude-Anschaffungskosten übersteigt (anschaffungsnaher Herstellungsaufwand); Gebäude-AfA je Jahr = AfA-Basis × AfA-Satz, im ersten Jahr zeitanteilig ab dem Übergang, degressiv Restbuchwert × Satz mit Wechsel zu linear, wenn günstiger; dazu Sonder-AfA nach § 7b auf höchstens 4.000 € je m², danach Restwert ÷ Restnutzungsdauer",
       },
       moebelAfa: {
         titel: "Möbel-AfA",
-        bedeutung: "Möbel werden über ihre Nutzungsdauer abgeschrieben, samt ihrem Anteil an den Nebenkosten.",
-        formel: "Möbel-AfA je Jahr = (Möbel + Nebenkosten Möbel) ÷ Nutzungsdauer",
+        bedeutung: "Möbel werden über ihre Nutzungsdauer abgeschrieben, ohne Nebenkosten und nie mehr als ihr Restbuchwert.",
+        formel: "Möbel-AfA je Jahr = Möbel ÷ Nutzungsdauer, im ersten Jahr zeitanteilig, höchstens der Restbuchwert",
       },
       kaltmiete: {
         titel: "Kaltmiete p. M.",
@@ -360,8 +360,9 @@ export const KENNZAHL_TEXTE_DE: KennzahlTexte = {
       },
       kreditrate: {
         titel: "Kreditrate gesamt p. M.",
-        bedeutung: "Zins und Tilgung, die monatlich an die Bank gehen.",
-        formel: "Kreditrate = Darlehen × (Sollzins + anfängliche Tilgung) ÷ 12, für jedes Darlehen",
+        bedeutung: "Zins und Tilgung, die monatlich an die Bank gehen, im ersten Monat.",
+        formel:
+          "Kreditrate = Darlehen × (Sollzins + anfängliche Tilgung) ÷ 12, für jedes Darlehen; bei Volltilgung die Annuität, die das Darlehen in der Laufzeit tilgt; endfällig und in tilgungsfreien Anlaufjahren nur Darlehen × Sollzins ÷ 12; nach jeder Zinsbindung Restschuld × (Anschlusszins + neue Tilgung) ÷ 12",
       },
       tilgung: {
         titel: "Tilgung",
@@ -636,9 +637,9 @@ export const KENNZAHL_TEXTE_EN: KennzahlTexte = {
       kaufnebenkosten: {
         titel: "Incidental purchase costs, allocated pro rata",
         bedeutung:
-          "Real estate transfer tax, notary, land register, agent and other costs on the total purchase price excluding maintenance expenses, which are stated in the notarial contract as a separate service. If the furniture is shown separately in the notarial contract, no real estate transfer tax is due on it.",
+          "Real estate transfer tax, notary, land register, agent and other costs on the purchase price of the property: total price excluding furniture and excluding a renovation share carried out for the buyer after the purchase (separate renovation contract). If the seller renovates before the sale, the share is part of the basis. Furniture bears no incidental costs.",
         formel:
-          "Incidental costs = rates × (total purchase price − maintenance expenses); incidental costs furniture = incidental costs × furniture ÷ (total purchase price − maintenance expenses) (without real estate transfer tax if shown separately); incidental costs building = (incidental costs − incidental costs furniture) × building share %; the rest belongs to the land",
+          "Incidental costs = rates × (total purchase price − furniture − renovation share after purchase); incidental costs building = incidental costs × building share %; the rest belongs to the land",
       },
       gesamtkosten: {
         titel: "Total costs",
@@ -654,12 +655,12 @@ export const KENNZAHL_TEXTE_EN: KennzahlTexte = {
         titel: "Depreciation basis and building depreciation (AfA)",
         bedeutung: "The depreciation of the building reduces your taxable income every year.",
         formel:
-          "Depreciation basis = building share + incidental costs building − maintenance expenses (only with “deduct”); building depreciation per year = depreciation basis × depreciation rate, declining-balance: residual book value × rate, plus special depreciation where applicable",
+          "Depreciation basis = building share + incidental costs building − maintenance expenses if deducted immediately; they remain in the basis with “capitalise”, with renovation by the seller and if, net of VAT, they exceed 15% of the building's acquisition costs (acquisition-related production costs); building depreciation per year = basis × rate, pro rata from the transfer in the first year, declining-balance: residual book value × rate with a switch to straight-line when more favourable; plus special depreciation under Sec. 7b on at most €4,000 per m², afterwards residual value ÷ remaining useful life",
       },
       moebelAfa: {
         titel: "Furniture depreciation",
-        bedeutung: "Furniture is depreciated over its useful life, including its share of the incidental costs.",
-        formel: "Furniture depreciation per year = (furniture + incidental costs furniture) ÷ useful life",
+        bedeutung: "Furniture is depreciated over its useful life, without incidental costs and never more than its residual book value.",
+        formel: "Furniture depreciation per year = furniture ÷ useful life, pro rata in the first year, at most the residual book value",
       },
       kaltmiete: {
         titel: "Net cold rent (Kaltmiete) per month",
@@ -668,8 +669,9 @@ export const KENNZAHL_TEXTE_EN: KennzahlTexte = {
       },
       kreditrate: {
         titel: "Total loan instalment per month",
-        bedeutung: "Interest and repayment paid to the bank each month.",
-        formel: "Loan instalment = loan × (borrowing rate + initial repayment) ÷ 12, for each loan",
+        bedeutung: "Interest and repayment paid to the bank each month, in the first month.",
+        formel:
+          "Loan instalment = loan × (borrowing rate + initial repayment) ÷ 12, for each loan; with full repayment the annuity that repays the loan within its term; bullet loans and repayment-free years: loan × borrowing rate ÷ 12; after each fixed-rate period remaining debt × (follow-up rate + new repayment) ÷ 12",
       },
       tilgung: {
         titel: "Repayment",

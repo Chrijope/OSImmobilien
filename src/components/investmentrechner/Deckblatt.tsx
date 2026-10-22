@@ -1,7 +1,7 @@
 import { useId, type ReactNode } from "react";
 import { useRechnerSprache } from "./RechnerSprache";
 import logoImg from "@/assets/os-real-estate-logo-quer.png";
-import type { InvestmentEingabe, InvestmentErgebnis } from "@/lib/investmentrechner/rechenkern";
+import { monateErstesJahr, type InvestmentEingabe, type InvestmentErgebnis } from "@/lib/investmentrechner/rechenkern";
 import type { UnterlagenDaten } from "@/lib/investmentrechner/unterlagenAuslesen";
 import { formatEuro, formatEuroCent, formatProzent, formatProzentEineStelle, formatZahl } from "@/lib/investmentrechner/formatierer";
 import { dokumentTexteFuer, type Kernsatzteil } from "@/lib/investmentrechner/dokumentTexte";
@@ -482,13 +482,13 @@ export function ErgebnisJahrFuerJahr({ input, result, sprache }: ErgebnisProps) 
           {w.jahre.map((j, index) => (
             <tr key={j.year} className={index === 0 ? "db-jahr-eins" : undefined}>
               <td>{j.year}</td>
-              <td>{euro(j.effectiveRent / 12)}</td>
-              <td>{mitVorzeichen(-j.debtService / 12, euro)}</td>
-              <td>{mitVorzeichen(-(j.operatingCosts + j.reserveContribution) / 12, euro)}</td>
-              <td>{mitVorzeichen(j.cashflowBeforeTax / 12, euroCent)}</td>
-              <td className={j.taxEffect > 0 ? "db-ton-gruen" : undefined}>{mitVorzeichen(j.taxEffect / 12, euroCent)}</td>
-              <td className={`db-fett ${j.cashflowAfterTax >= 0 ? "db-ton-gruen" : ""}`}>{mitVorzeichen(j.cashflowAfterTax / 12, euroCent)}</td>
-              <td>{euro(j.principal / 12)}</td>
+              <td>{euro(j.effectiveRent / (index === 0 ? monateErstesJahr(result) : 12))}</td>
+              <td>{mitVorzeichen(-j.debtService / (index === 0 ? monateErstesJahr(result) : 12), euro)}</td>
+              <td>{mitVorzeichen(-(j.operatingCosts + j.reserveContribution) / (index === 0 ? monateErstesJahr(result) : 12), euro)}</td>
+              <td>{mitVorzeichen(j.cashflowBeforeTax / (index === 0 ? monateErstesJahr(result) : 12), euroCent)}</td>
+              <td className={j.taxEffect > 0 ? "db-ton-gruen" : undefined}>{mitVorzeichen(j.taxEffect / (index === 0 ? monateErstesJahr(result) : 12), euroCent)}</td>
+              <td className={`db-fett ${j.cashflowAfterTax >= 0 ? "db-ton-gruen" : ""}`}>{mitVorzeichen(j.cashflowAfterTax / (index === 0 ? monateErstesJahr(result) : 12), euroCent)}</td>
+              <td>{euro(j.principal / (index === 0 ? monateErstesJahr(result) : 12))}</td>
               <td>{euro(j.remainingDebt)}</td>
               <td>{euro(j.propertyValue)}</td>
               <td className="db-fett db-ton-blau">{euro(j.propertyEquity)}</td>

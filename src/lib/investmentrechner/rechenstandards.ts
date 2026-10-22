@@ -10,7 +10,7 @@
 
 import { linearerAfaSatz, type LinearerSatz } from "@/lib/afaSaetze";
 import { cashflowNachSteuerBeiZins } from "./bankgespraech";
-import { berechneInvestment, type InvestmentEingabe, type InvestmentErgebnis } from "./rechenkern";
+import { berechneInvestment, monateErstesJahr, type InvestmentEingabe, type InvestmentErgebnis } from "./rechenkern";
 
 export interface RegelAfa {
   /** Gesetzlicher linearer Satz nach Baujahr: 2,5 vor 1925, 2 ab 1925, 3 ab 2023. */
@@ -62,9 +62,10 @@ export interface Stressfall {
   entfaellt?: string;
 }
 
-const belastungMonat = (jahr: { cashflowBeforeTax: number; cashflowAfterTax: number }): Belastung => ({
-  vorSteuer: -jahr.cashflowBeforeTax / 12,
-  nachSteuer: -jahr.cashflowAfterTax / 12,
+/** Seit dem 22.10.2026 mit den Monaten des Jahres: Im ersten Jahr zählen nur die ab dem Übergang. */
+const belastungMonat = (jahr: { cashflowBeforeTax: number; cashflowAfterTax: number }, monate = 12): Belastung => ({
+  vorSteuer: -jahr.cashflowBeforeTax / monate,
+  nachSteuer: -jahr.cashflowAfterTax / monate,
 });
 
 const ANSCHLUSS_AB_JAHR = 11;
@@ -83,8 +84,8 @@ export function stresstest(input: InvestmentEingabe, result: InvestmentErgebnis)
     titel: "Gutachten abgelehnt",
     beschreibung: `Regel-AfA ${afa.regel.satz.toLocaleString("de-DE")} % statt ${input.buildingDepreciationRate.toLocaleString("de-DE")} %`,
     jahr: erstes.year,
-    basis: belastungMonat(erstes),
-    stress: belastungMonat(regelErstes ?? erstes),
+    basis: belastungMonat(erstes, monateErstesJahr(result)),
+    stress: regelErstes ? belastungMonat(regelErstes, monateErstesJahr(afa.mitRegelAfa!)) : belastungMonat(erstes, monateErstesJahr(result)),
     einheit: "monat",
     entfaellt: afa.erhoeht ? undefined : "Es ist keine erhöhte AfA eingestellt.",
   });
@@ -133,7 +134,7 @@ export function stresstest(input: InvestmentEingabe, result: InvestmentErgebnis)
     Cashflow und steuerliches Ergebnis genau wie mehr Zins, deshalb rechnet
     `cashflowNachSteuerBeiZins` die Steuer samt Progression mit.
   */
-  const ausfall = (erstes.effectiveRent / 12) * LEERSTAND_MONATE;
+  const ausfall = (erstes.effectiveRent / monateErstesJahr(result)) * LEERSTAND_MONATE;
   const nachSteuerLeer = cashflowNachSteuerBeiZins(input, erstes, erstes.interest + ausfall);
   faelle.push({
     titel: `${LEERSTAND_MONATE} Monate Leerstand`,

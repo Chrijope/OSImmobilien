@@ -19,6 +19,8 @@ import {
   type Jahreswert,
 } from "@/lib/investmentrechner/rechenkern";
 import { ExposeVorschau } from "./ExposeVorschau";
+import { geladeneStildateien, stileInKopieEinbetten } from "@/lib/investmentrechner/berechnungAnsichtPdf";
+import { ohneLiquidGlasInKopie } from "@/lib/designSchalter";
 import { useRechnerSprache } from "./RechnerSprache";
 import { hausgeldHinweis, hausgeldZeilen } from "./Auswertungen";
 import "./ausfuehrlicheBerechnung.css";
@@ -182,35 +184,51 @@ export function ausfuehrlicheWerte(input: InvestmentEingabe, result: InvestmentE
 
   /*
     Stichjahre 10, 20 und 30: eine eigene Rechnung über 30 Jahre mit denselben
-    Annahmen. Erlös bei Verkauf ist Wertzuwachs plus getilgter Betrag, seit
-    dem 22.10.2026 abzüglich der Verkaufskosten.
+    Annahmen. Erlös bei Verkauf ist, seit der Codex-Nachprüfung vom 22.10.2026,
+    Immobilienwert minus Restschuld minus Verkaufskosten, genau wie im
+    internen Zinsfuß. Vorher stand dort Wertzuwachs plus Tilgung; das ließ das
+    eingesetzte Eigenkapital weg (300.000 Kaufpreis, 60.000 Eigenkapital,
+    keine Wertsteigerung: 44.174,94 statt 104.174,94 Euro).
+
+    `monateSeitKauf` zählt ab dem Übergang. Ob die Zehnjahresfrist nach § 23
+    EStG abgelaufen ist, hängt am Datum des Kaufvertrags; die Rechnung nennt
+    sie deshalb nur unter diesem Vorbehalt.
   */
   const verkaufskostenSatz = Math.max(0, input.saleCostRate || 0) / 100;
   const lang = berechneInvestment({ ...input, forecastYears: 30 });
-  const erloes = (j: Jahreswert, gesamtDarlehen: number) =>
-    j.wertzuwachs + Math.max(0, gesamtDarlehen - j.remainingDebt) - j.propertyValue * verkaufskostenSatz;
+  const verkaufskosten = (wert: number) => wert * verkaufskostenSatz;
+  const erloes = (j: Jahreswert) => j.propertyValue - j.remainingDebt - verkaufskosten(j.propertyValue);
   const heute = lang.years[0] ? lang.years[0].propertyValue - lang.years[0].wertzuwachs : ausgewiesenerKaufpreis(input, result);
+  const monateBis = (index: number) => index * 12 + ersteMonate;
   const stichjahre = [
-    { jahre: 0, immobilienwert: heute, gewinn: 0, getilgt: 0, verkaufskosten: 0, erloes: 0, mieteMonat: monat?.miete ?? 0, nachSteuerMonat: monat?.nachSteuer ?? 0 },
+    {
+      jahre: 0,
+      monateSeitKauf: 0,
+      immobilienwert: heute,
+      restschuld: lang.totalDebt,
+      verkaufskosten: verkaufskosten(heute),
+      erloes: heute - lang.totalDebt - verkaufskosten(heute),
+      mieteMonat: monat?.miete ?? 0,
+      nachSteuerMonat: monat?.nachSteuer ?? 0,
+    },
     ...[10, 20, 30]
       .filter((n) => lang.years[n - 1])
       .map((n) => {
         const j = lang.years[n - 1];
-        const getilgt = Math.max(0, lang.totalDebt - j.remainingDebt);
         return {
           jahre: n,
+          monateSeitKauf: monateBis(n - 1),
           immobilienwert: j.propertyValue,
-          gewinn: j.wertzuwachs,
-          getilgt,
-          verkaufskosten: j.propertyValue * verkaufskostenSatz,
-          erloes: erloes(j, lang.totalDebt),
+          restschuld: j.remainingDebt,
+          verkaufskosten: verkaufskosten(j.propertyValue),
+          erloes: erloes(j),
           mieteMonat: j.effectiveRent / 12,
           nachSteuerMonat: j.cashflowAfterTax / 12,
         };
       }),
   ];
   const summe = (wert: (j: Jahreswert) => number) => jahre.reduce((s, j) => s + wert(j), 0);
-  const monateGesamt = jahre.length > 0 ? (jahre.length - 1) * 12 + ersteMonate : 0;
+  const monateGesamt = jahre.length > 0 ? monateBis(jahre.length - 1) : 0;
   return {
     jahre,
     erstes,
@@ -223,10 +241,12 @@ export function ausfuehrlicheWerte(input: InvestmentEingabe, result: InvestmentE
     monat,
     ersteMonate,
     stichjahre,
-    erloesJahr: (j: Jahreswert) => erloes(j, result.totalDebt),
+    erloesJahr: erloes,
     steuerSumme: summe((j) => j.taxEffect),
     nachSteuerMittelMonat: monateGesamt > 0 ? summe((j) => j.cashflowAfterTax) / monateGesamt : 0,
-    erloesEnde: letztes ? erloes(letztes, result.totalDebt) : 0,
+    erloesEnde: letztes ? erloes(letztes) : 0,
+    /** Monate vom Übergang bis zum Ende des Betrachtungszeitraums. */
+    monateGesamt,
   };
 }
 
@@ -260,8 +280,20 @@ export function AusfuehrlicheBerechnung({ input, result, photos, erstelltVon = "
       if (!seiten.length) throw new Error("Keine Seiten");
       await document.fonts.ready;
       const pdf = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait", compress: true });
+      // Wie in berechnungAnsichtPdf.ts (AGENTS.md): Die Kopie bekommt die schon geladenen Stile, sonst kommt sie ungestaltet heraus.
+      const stile = geladeneStildateien();
       for (const [index, seite] of seiten.entries()) {
-        const bild = await html2canvas(seite, { scale: 2, backgroundColor: "#ffffff", useCORS: true, logging: false, windowWidth: 1280 });
+        const bild = await html2canvas(seite, {
+          scale: 2,
+          backgroundColor: "#ffffff",
+          useCORS: true,
+          logging: false,
+          windowWidth: 1280,
+          onclone: (kopie) => {
+            stileInKopieEinbetten(kopie, stile);
+            ohneLiquidGlasInKopie(kopie);
+          },
+        });
         if (index > 0) pdf.addPage();
         pdf.addImage(bild.toDataURL("image/jpeg", 0.92), "JPEG", 0, 0, 210, 297);
         // Speicher sofort freigeben, zwölf Seiten in doppelter Auflösung sind sonst viel.
@@ -554,7 +586,9 @@ function Dokument({ input, result, photos, werte, erstelltVon }: { input: Invest
               <div className="v">{euro(letztes.wertzuwachs)}</div>
               <small>
                 {t(`nach ${anzahl} Jahren`, `after ${anzahl} years`)}
-                {anzahl >= 10 ? t(", bei Verkauf steuerfrei", ", tax-free on sale") : ""}
+                {werte.monateGesamt >= 120
+                  ? t(", bei Verkauf steuerfrei, sofern die Zehnjahresfrist ab Kaufvertrag abgelaufen ist", ", tax-free on sale if the ten-year period from the purchase contract has expired")
+                  : t(", bei Verkauf vor Ablauf von zehn Jahren steuerpflichtig", ", taxable on sale within ten years")}
               </small>
             </div>
             <div>
@@ -686,7 +720,12 @@ function Dokument({ input, result, photos, werte, erstelltVon }: { input: Invest
           </div>
           <div>
             <h3>{t("Haltedauer", "Holding period")}</h3>
-            <p>{t("Nach zehn Jahren ist der Gewinn aus dem Verkauf einer privat vermieteten Wohnung steuerfrei. Die Rechnung zeigt deshalb mindestens diesen Zeitraum.", "After ten years, the gain from selling a privately let apartment is tax-free. The calculation therefore covers at least this period.")}</p>
+            <p>
+              {t(
+                "Liegen zwischen Kaufvertrag und Verkaufsvertrag mehr als zehn Jahre, ist der Gewinn aus dem Verkauf einer privat vermieteten Wohnung steuerfrei (§ 23 EStG). Maßgeblich sind die Daten der Verträge.",
+                "If more than ten years lie between the purchase contract and the sale contract, the gain from selling a privately let apartment is tax-free (Sec. 23 EStG). The contract dates are decisive.",
+              )}
+            </p>
           </div>
         </div>
         <div className="ba-note">
@@ -934,7 +973,12 @@ function Dokument({ input, result, photos, werte, erstelltVon }: { input: Invest
             `Two paths: sell and take the proceeds, or keep the apartment and live on the rent. Calculated with ${prozent(input.annualValueGrowth, 1)} value development and ${prozent(input.annualRentGrowth, 1)} rent development a year.`,
           )}
         </p>
-        <div className="ba-label ba-abstand-gross">{t("Erlös bei Verkauf (nach 10 Jahren steuerfrei)", "Proceeds on sale (tax-free after 10 years)")}</div>
+        <div className="ba-label ba-abstand-gross">
+          {t(
+            "Erlös bei Verkauf: Immobilienwert minus Restschuld minus Verkaufskosten",
+            "Proceeds on sale: property value minus remaining debt minus selling costs",
+          )}
+        </div>
         <table className="ba-tab ba-stich">
           <thead>
             <tr>
@@ -948,12 +992,8 @@ function Dokument({ input, result, photos, werte, erstelltVon }: { input: Invest
               {werte.stichjahre.map((s) => <td key={s.jahre}>{euro(s.immobilienwert)}</td>)}
             </tr>
             <tr>
-              <td>{t("Wertzuwachs", "Value increase")}</td>
-              {werte.stichjahre.map((s) => <td key={s.jahre}>{euro(s.gewinn)}</td>)}
-            </tr>
-            <tr>
-              <td>{t("Getilgter Betrag", "Amount repaid")}</td>
-              {werte.stichjahre.map((s) => <td key={s.jahre}>{euro(s.getilgt)}</td>)}
+              <td>{t("Restschuld", "Remaining debt")}</td>
+              {werte.stichjahre.map((s) => <td key={s.jahre}>{mitZeichen(-s.restschuld)}</td>)}
             </tr>
             {input.saleCostRate > 0 && (
               <tr>
@@ -969,20 +1009,18 @@ function Dokument({ input, result, photos, werte, erstelltVon }: { input: Invest
             </tr>
           </tfoot>
         </table>
+        <p className="ba-klein">
+          {t(
+            "Ein Gewinn aus dem Verkauf ist nach § 23 EStG nur steuerfrei, wenn zwischen Kaufvertrag und Verkaufsvertrag mehr als zehn Jahre liegen. Die Spalten zählen ab dem Übergang von Nutzen und Lasten; maßgeblich sind die Daten der Verträge. Eine Steuer bei früherem Verkauf zieht die Rechnung nicht ab.",
+            "Under Sec. 23 EStG a gain on sale is only tax-free if more than ten years lie between the purchase contract and the sale contract. The columns count from the transfer of benefits and burdens; the contract dates are decisive. The calculation does not deduct tax on an earlier sale.",
+          )}
+        </p>
         <Saeulen
           x={werte.stichjahre.slice(1).map((s) => w.jahre(s.jahre))}
           hoehe={170}
-          reihen={[
-            { name: "getilgt", werte: werte.stichjahre.slice(1).map((s) => s.getilgt), farbe: "#12362A" },
-            { name: "wert", werte: werte.stichjahre.slice(1).map((s) => s.gewinn - s.verkaufskosten), farbe: "#198A5F" },
-          ]}
+          reihen={[{ name: "erloes", werte: werte.stichjahre.slice(1).map((s) => s.erloes), farbe: "#198A5F" }]}
         />
-        <Legende
-          eintraege={[
-            [t("Getilgter Betrag", "Amount repaid"), "#12362A"],
-            [input.saleCostRate > 0 ? t("Wertzuwachs abzüglich Verkaufskosten", "Value increase less selling costs") : t("Wertzuwachs", "Value increase"), "#198A5F"],
-          ]}
-        />
+        <Legende eintraege={[[t("Erlös bei Verkauf", "Proceeds on sale"), "#198A5F"], [t("negativ", "negative"), "#A23B32"]]} />
         <div className="ba-oder">{t("oder", "or")}</div>
         <div className="ba-label">{t("Behalten: Einnahmen im Monat", "Hold: income per month")}</div>
         <table className="ba-tab ba-stich">
@@ -1025,7 +1063,7 @@ function Dokument({ input, result, photos, werte, erstelltVon }: { input: Invest
         <Legende
           eintraege={[
             [t("Restschuld der Darlehen", "Remaining loan debt"), "#A7D7C5"],
-            [t("Erlös bei Verkauf (Wertzuwachs plus Tilgung, abzüglich Verkaufskosten)", "Proceeds on sale (value increase plus repayment, less selling costs)"), "#198A5F"],
+            [t("Erlös bei Verkauf (Immobilienwert minus Restschuld minus Verkaufskosten)", "Proceeds on sale (property value minus remaining debt minus selling costs)"), "#198A5F"],
           ]}
         />
         <div className="ba-label ba-abstand-gross">{t("Kumulierter Cashflow nach Steuer", "Cumulative cash flow after tax")}</div>

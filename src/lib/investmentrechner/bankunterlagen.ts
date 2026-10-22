@@ -78,7 +78,7 @@ export function haushaltsrechnung(
   const ueberschussVorMonat = einkuenfteMonat - ausgabenMonat;
   const erstes = result.years[0];
   const mieteMonat = erstes ? erstes.effectiveRent / monateErstesJahr(result) : 0;
-  const bewirtschaftungMonat = erstes ? (erstes.operatingCosts + erstes.reserveContribution) / 12 : 0;
+  const bewirtschaftungMonat = erstes ? (erstes.operatingCosts + erstes.reserveContribution) / monateErstesJahr(result) : 0;
   const steuerwirkungMonat = erstes ? erstes.taxEffect / monateErstesJahr(result) : 0;
   const rateMonat = result.monthlyDebtService;
   const ueberschussNachMonat = ueberschussVorMonat + mieteMonat - rateMonat - bewirtschaftungMonat;

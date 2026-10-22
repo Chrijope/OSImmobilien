@@ -5,7 +5,8 @@ import { berechneInvestment, hausgeldAufstellung, standardEingabe, type Investme
 import { InvestmentrechnerInhalt } from "./InvestmentrechnerInhalt";
 import { AusfuehrlicheBerechnung } from "./AusfuehrlicheBerechnung";
 import { RechnerSpracheContext } from "./RechnerSprache";
-import { Hausgeldaufstellung } from "./Auswertungen";
+import { Bankgespraech, BankunterlagenTabellen, Hausgeldaufstellung } from "./Auswertungen";
+import { KENNZAHL_TEXTE_DE, KENNZAHL_TEXTE_EN } from "@/lib/investmentrechner/kennzahlTexte";
 
 vi.mock("@/lib/investmentrechner/berechnungAnsichtPdf", () => ({ ladeBerechnungsansichtHerunter: vi.fn() }));
 
@@ -94,5 +95,46 @@ describe("Hausgeld in ganzer Höhe", () => {
     // Ein alter Stand ohne die Aufteilung rechnet wie vorher mit dem einen Feld.
     const alt = berechneInvestment({ ...eingabe, housingFeeNonRecoverable: 0, monthlyOperatingCosts: 80 });
     expect(alt.years[0].operatingCosts).toBeCloseTo(r.years[0].operatingCosts, 6);
+  });
+});
+
+/* Codex-Nachprüfung vom 22.10.2026: keine deutschen Reste in der englischen Ansicht. */
+describe("Bankgespräch und Bankunterlagen auf Englisch", () => {
+  const mitHaushalt = {
+    ...eingabe,
+    haushalt: { einkuenfte: [{ bezeichnung: "Salary", betrag: 4000 }], ausgaben: [] },
+    vermoegen: { werte: [], verbindlichkeiten: [] },
+  };
+  it("Knopf, Hinweis und Blöcke englisch", () => {
+    const { container } = zeige(
+      <RechnerSpracheContext.Provider value="en">
+        <Bankgespraech input={eingabe} result={berechneInvestment(eingabe)} />
+      </RechnerSpracheContext.Provider>,
+    );
+    const text = container.textContent ?? "";
+    expect(text).toContain("Bank meeting PDF");
+    expect(text).toContain("Capital requirement and financing");
+    expect(text).not.toMatch(/Kaufpreis|Haushaltsrechnung|ausfüllen/);
+  });
+  it("Haushaltsrechnung als Tabelle englisch", () => {
+    const { container } = render(
+      <RechnerSpracheContext.Provider value="en">
+        <BankunterlagenTabellen input={mitHaushalt} result={berechneInvestment(mitHaushalt)} />
+      </RechnerSpracheContext.Provider>,
+    );
+    expect(container.textContent).toContain("Household budget");
+    expect(container.textContent).toContain("Total income");
+    expect(container.textContent).not.toMatch(/Summe|Überschuss|Differenz/);
+  });
+});
+
+describe("Glossar passt zum Rechenkern", () => {
+  it("Möbel ohne Nebenkosten, Kreditrate und AfA-Basis mit den neuen Fällen", () => {
+    for (const texte of [KENNZAHL_TEXTE_DE, KENNZAHL_TEXTE_EN]) {
+      expect(texte.glossar.eintraege.moebelAfa.formel).not.toMatch(/Nebenkosten Möbel|incidental costs furniture/);
+      expect(texte.glossar.eintraege.kaufnebenkosten.formel).not.toMatch(/Nebenkosten Möbel|incidental costs furniture/);
+    }
+    expect(KENNZAHL_TEXTE_DE.glossar.eintraege.kreditrate.formel).toMatch(/Volltilgung.*endfällig.*tilgungsfreien/);
+    expect(KENNZAHL_TEXTE_DE.glossar.eintraege.afaBasis.formel).toMatch(/netto.*15 %.*Verkäufer|Verkäufer.*netto.*15 %/);
   });
 });

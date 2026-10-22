@@ -29,11 +29,9 @@ import {
  *    ein Kunde mit 50 Prozent bekam dadurch einen HÖHEREN monatlichen
  *    Eigenanteil angezeigt als beim Kauf der ganzen Wohnung.
  *
- *    Bei Zusammenveranlagung wird der Anteil jetzt auf 100 Prozent gesetzt,
- *    weil beide Hälften in derselben Steuererklärung landen. Genau diese
- *    Kombination steht im Fall „splitting", er hat sich deshalb am stärksten
- *    verändert: Aus 50 Prozent wurden 100, und damit stehen dort jetzt die
- *    Zahlen des ganzen Objekts.
+ *    Vom 21.09. bis 22.10.2026 wurde der Anteil bei Zusammenveranlagung auf
+ *    100 Prozent gesetzt. Das ist seit Notiz 12 aufgehoben: Der Anteil gilt
+ *    immer, „splitting“ rechnet deshalb wieder mit 50 Prozent.
  *
  *    Alle vier Fälle wurden mit dem geänderten Rechenkern neu erzeugt. Neu
  *    hinzugekommen ist das Feld cumulativeEigenanteil, die ungesaldierte Summe

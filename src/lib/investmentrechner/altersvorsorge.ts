@@ -17,7 +17,7 @@
  * - Zins und Tilgung gelten wie heute über die ganze Laufzeit; eine
  *   Anschlussfinanzierung zu anderem Zins rechnet der Rechenkern nicht.
  */
-import { berechneInvestment, type InvestmentEingabe, type Jahreswert } from "./rechenkern";
+import { berechneInvestment, monateErstesJahr, type InvestmentEingabe, type Jahreswert } from "./rechenkern";
 
 /** So viele Jahre nach dem Rentenbeginn wird noch nach der Entschuldung gesucht. */
 const JAHRE_NACH_RENTENBEGINN = 40;
@@ -134,7 +134,7 @@ export function altersvorsorge(eingabe: InvestmentEingabe): Altersvorsorge | Alt
     rentenJahr: startJahr + jahreBisRente,
     startJahr,
     inflation,
-    eigenaufwandHeute: -jahre[0].cashflowAfterTax / 12,
+    eigenaufwandHeute: -jahre[0].cashflowAfterTax / monateErstesJahr(ergebnis),
     eigenaufwandSchnitt: -vorRente.cumulativeCashflowAfterTax / (jahreBisRente * 12),
     darlehenStart,
     schuldenfrei,
