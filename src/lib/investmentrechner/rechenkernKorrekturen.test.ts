@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { bankplan, berechneInvestment, eigenkapitalrendite, standardEingabe, type InvestmentEingabe } from "./rechenkern";
+import { bankplan, berechneInvestment, eigenkapitalrendite, mitEigenkapital, standardEingabe, type InvestmentEingabe } from "./rechenkern";
 
 /*
  * Korrekturen und Ausbau vom 22.10.2026 (Codex-Prüfung, freigegeben von
@@ -13,7 +13,6 @@ const basis: InvestmentEingabe = {
   transferTaxRate: 0,
   notaryRate: 0,
   landRegisterRate: 0,
-  financingCostRate: 0,
   seniorInterestRate: 4.8,
   seniorRepaymentRate: 1.2,
   monthlyColdRent: 940.68,
@@ -25,7 +24,7 @@ const mit = (aenderung: Partial<InvestmentEingabe>) => berechneInvestment({ ...b
 
 describe("1. Bankdarlehen monatlich", () => {
   it("285.000 Euro, 4,8 % und 1,2 %: Zinsen Jahr 1 und Restschuld nach 10 Jahren", () => {
-    const plan = bankplan({ betrag: 285000, zinsProzent: 4.8, tilgungProzent: 1.2, zinsbindungJahre: 10, anschlusszinsProzent: 0, neueTilgungProzent: 0, jahre: 10 });
+    const plan = bankplan({ betrag: 285000, zinsProzent: 4.8, tilgungProzent: 1.2, zinsbindungJahre: 10, jahre: 10 });
     expect(plan.ersteRate).toBeCloseTo(1425, 6);
     expect(plan.jahre[0].interest).toBeCloseTo(13603.75, 0);
     expect(plan.jahre[9].closingBalance).toBeCloseTo(241214.89, 0);
@@ -40,14 +39,14 @@ describe("1. Bankdarlehen monatlich", () => {
     expect(r.monthlyDebtService).toBeCloseTo(1425, 6);
   });
 
-  it("Anschluss: Restschuld × (Anschlusszins + neue Tilgung) ÷ 12", () => {
-    const plan = bankplan({ betrag: 285000, zinsProzent: 4.8, tilgungProzent: 1.2, zinsbindungJahre: 10, anschlusszinsProzent: 6, neueTilgungProzent: 2, jahre: 11 });
-    expect(plan.monatsraten[120]).toBeCloseTo((plan.restschuldZinsbindung * 0.08) / 12, 6);
-    expect(plan.jahre[10].zinssatz).toBeCloseTo(0.06, 9);
+  it("nach der Zinsbindung: derselbe Zins und dieselbe Rate (seit dem 23.10.2026)", () => {
+    const plan = bankplan({ betrag: 285000, zinsProzent: 4.8, tilgungProzent: 1.2, zinsbindungJahre: 10, jahre: 11 });
+    expect(plan.monatsraten[120]).toBeCloseTo(1425, 6);
+    expect(plan.jahre[10].zinssatz).toBeCloseTo(0.048, 9);
   });
 
   it("auch das Nachrangdarlehen rechnet monatlich", () => {
-    const r = mit({ equity: 0, juniorLoanAmount: 20000, juniorInterestRate: 6, juniorRepaymentRate: 2 });
+    const r = mit({ juniorLoanMode: "euro", juniorLoanValue: 20000, juniorInterestRate: 6, juniorRepaymentRate: 2 });
     const rate = (20000 * 0.08) / 12;
     expect(r.years[0].darlehen.nachrang.interest).toBeLessThan(1200);
     expect(r.years[0].darlehen.nachrang.payment).toBeCloseTo(rate * 12, 6);
@@ -55,7 +54,7 @@ describe("1. Bankdarlehen monatlich", () => {
 });
 
 describe("10. Finanzierungsvarianten", () => {
-  const p = { betrag: 100000, zinsProzent: 4, tilgungProzent: 2, zinsbindungJahre: 0, anschlusszinsProzent: 0, neueTilgungProzent: 0 };
+  const p = { betrag: 100000, zinsProzent: 4, tilgungProzent: 2, zinsbindungJahre: 0 };
 
   it("Volltilgung: die Rate tilgt genau in der Laufzeit", () => {
     const plan = bankplan({ ...p, tilgungsart: "volltilgung", laufzeitJahre: 20, jahre: 21 });
@@ -81,37 +80,12 @@ describe("10. Finanzierungsvarianten", () => {
     expect(plan.monatsraten[24]).toBeCloseTo(100000 * 0.06 / 12, 6);
   });
 
-  it("mehrere Anschlussfinanzierungen mit Umschuldungskosten", () => {
-    const plan = bankplan({
-      ...p,
-      zinsbindungJahre: 5,
-      anschlusszinsProzent: 5,
-      neueTilgungProzent: 3,
-      anschlusskosten: 500,
-      weitereAnschluesse: [{ nachJahren: 10, zinsProzent: 6, tilgungProzent: 4, kosten: 300 }],
-      jahre: 12,
-    });
-    expect(plan.jahre[5].zinssatz).toBeCloseTo(0.05, 9);
-    expect(plan.jahre[10].zinssatz).toBeCloseTo(0.06, 9);
-    expect(plan.jahre[5].umschuldungskosten).toBe(500);
-    expect(plan.jahre[10].umschuldungskosten).toBe(300);
-    const restNach10 = plan.jahre[9].closingBalance;
-    expect(plan.monatsraten[120]).toBeCloseTo((restNach10 * 0.1) / 12, 6);
-  });
-
-  it("Umschuldungskosten mindern Cashflow und steuerliches Ergebnis", () => {
-    const ohne = mit({ seniorFixedRateYears: 2, seniorFollowUpRate: 5 });
-    const mitKosten = mit({ seniorFixedRateYears: 2, seniorFollowUpRate: 5, seniorFollowUpCosts: 1000 });
-    expect(mitKosten.years[2].umschuldungskosten).toBe(1000);
-    expect(ohne.years[2].cashflowBeforeTax - mitKosten.years[2].cashflowBeforeTax).toBeCloseTo(1000, 6);
-    expect(ohne.years[2].taxableResult - mitKosten.years[2].taxableResult).toBeCloseTo(1000, 6);
-  });
-
-  it("zweites Bankdarlehen: Anschluss mit eigener neuer Tilgung", () => {
-    const r = mit({ secondLoanAmount: 50000, secondInterestRate: 4, secondRepaymentRate: 2, secondFixedRateYears: 3, secondFollowUpRate: 5, secondFollowUpRepaymentRate: 4 });
-    const plan = bankplan({ betrag: 50000, zinsProzent: 4, tilgungProzent: 2, zinsbindungJahre: 3, anschlusszinsProzent: 5, neueTilgungProzent: 4, jahre: 10 });
+  it("zweites Bankdarlehen: eigener Plan, nach seiner Zinsbindung derselbe Zins und dieselbe Rate", () => {
+    const r = mit({ secondLoanAmount: 50000, secondInterestRate: 4, secondRepaymentRate: 2, secondFixedRateYears: 3 });
+    const plan = bankplan({ betrag: 50000, zinsProzent: 4, tilgungProzent: 2, zinsbindungJahre: 3, jahre: 10 });
     expect(r.years[3].darlehen.bank2.payment).toBeCloseTo(plan.jahre[3].payment, 6);
-    expect(plan.monatsraten[36]).toBeCloseTo((plan.restschuldZinsbindung * 0.09) / 12, 6);
+    expect(plan.monatsraten[36]).toBeCloseTo((50000 * 0.06) / 12, 6);
+    expect(r.zinsbindungen.find((z) => z.art === "bank2")?.restschuld).toBeCloseTo(plan.restschuldZinsbindung, 6);
   });
 });
 
@@ -143,7 +117,7 @@ describe("5. Erwerbsmonat", () => {
   });
   it("Zinsen nur ab dem Übergang, die Monatsrate bleibt", () => {
     // Sechs Monate: Juli bis Dezember sind die ersten sechs Monate des Darlehens.
-    const sechs = bankplan({ betrag: 285000, zinsProzent: 4.8, tilgungProzent: 1.2, zinsbindungJahre: 10, anschlusszinsProzent: 0, neueTilgungProzent: 0, jahre: 1, startMonat: 7 });
+    const sechs = bankplan({ betrag: 285000, zinsProzent: 4.8, tilgungProzent: 1.2, zinsbindungJahre: 10, jahre: 1, startMonat: 7 });
     expect(sechs.monatsraten).toHaveLength(6);
     expect(juli.years[0].darlehen.bank.interest).toBeCloseTo(sechs.jahre[0].interest, 6);
     expect(juli.years[0].darlehen.bank.interest).toBeGreaterThan(januar.years[0].darlehen.bank.interest / 2);
@@ -273,15 +247,17 @@ describe("8. Kleinere Punkte", () => {
     expect(r.years[1].grossRent).toBeCloseTo(r.years[0].grossRent * 0.98, 6);
     expect(r.years[0].wertzuwachs).toBeCloseTo(-285000 * 0.01, 6);
   });
-  it("Verkaufskosten mindern den internen Zinsfuß", () => {
-    const ohne = mit({ equity: 30000 });
-    const mitKosten = mit({ equity: 30000, saleCostRate: 5 });
-    expect(mitKosten.verkaufskosten).toBeCloseTo(ohne.years[9].propertyValue * 0.05, 6);
-    expect(mitKosten.irr!).toBeLessThan(ohne.irr!);
+  it("der interne Zinsfuß rechnet ohne Verkaufskosten: Erlös ist Immobilie minus Restschuld (seit dem 23.10.2026)", () => {
+    const r = berechneInvestment(mitEigenkapital(basis, 30000));
+    const letztes = r.years[9];
+    const reihe = [-30000, ...r.years.map((j, i) => (i === 9 ? j.cashflowAfterTax + letztes.propertyEquity : j.cashflowAfterTax))];
+    const barwert = reihe.reduce((s, z, t) => s + z / (1 + r.irr!) ** t, 0);
+    expect(barwert).toBeCloseTo(0, 2);
   });
   it("Modellrendite mit zeitanteiligem ersten Jahr", () => {
-    const r = mit({ equity: 30000, acquisitionMonth: 7 });
-    const ekr = eigenkapitalrendite({ equity: 30000 }, r);
+    const r = berechneInvestment(mitEigenkapital({ ...basis, acquisitionMonth: 7 }, 30000));
+    const ekr = eigenkapitalrendite(r);
+    expect(ekr.eigenkapital).toBeCloseTo(30000, 6);
     expect(ekr.zuzahlungMonat).toBeCloseTo(Math.max(0, -r.years[0].cashflowBeforeTax / 6), 6);
   });
 });
@@ -292,11 +268,11 @@ describe("Nachprüfung: IRR mit Zahlungszeitpunkten", () => {
     const r = berechneInvestment({
       ...standardEingabe,
       purchasePrice: 100000,
-      equity: 100000,
+      seniorLoanMode: "euro",
+      seniorLoanValue: 0,
       transferTaxRate: 0,
       notaryRate: 0,
       landRegisterRate: 0,
-      financingCostRate: 0,
       annualValueGrowth: 12,
       forecastYears: 1,
       acquisitionMonth: 12,

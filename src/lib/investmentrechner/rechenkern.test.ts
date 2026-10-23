@@ -4,6 +4,7 @@ import {
   berechneInvestment,
   einkommensteuerTarif2026,
   grenzsteuersatz,
+  mitEigenkapital,
   RUECKLAGENZUFUEHRUNG_ABZIEHBAR,
   solidaritaetszuschlag,
   type InvestmentEingabe,
@@ -133,6 +134,21 @@ import {
  *    `anschaffungsnah` (dort ohnehin „Aktivieren“, die Zahlen bleiben). Neu
  *    ist `erhaltungsaufwandNetto`. Der IRR mit Zahlungszeitpunkten ändert bei
  *    ganzen Jahren nichts.
+ *
+ * 14. Seit dem 23.10.2026 (Christian) wird die Finanzierung eingegeben, das
+ *    Eigenkapital ist der Rest. Die Eingaben der vier Fälle tragen deshalb
+ *    statt `equity` das Bankdarlehen in Euro, und zwar genau das bisherige
+ *    (Umrechnung `mitNeuerFinanzierung`); Darlehen, Raten und Restschulden
+ *    blieben gleich. Finanzierungsnebenkosten, Verkaufskosten und die
+ *    zvE-Entwicklung gibt es nicht mehr. Geändert haben sich deshalb nur die
+ *    Werte, in denen die Finanzierungsnebenkosten steckten (vorher Standard
+ *    0,2 % der Darlehen): Gesamtkosten (standard 359.290,01 → 358.652,70),
+ *    Nettorendite, Steuereffekt und Cashflow nach Steuer im ersten Jahr
+ *    (kein Abzug mehr), Einsatz, Faktor je Euro und IRR (standard 8,078 →
+ *    8,176 %, manuell 31,98 → 35,42 %). Neu sind eigenkapital,
+ *    ueberfinanzierung, juniorLoanAmount und zinsbindungen; entfallen sind
+ *    financingGap, finanzierungsnebenkosten, verkaufskosten und je Jahr
+ *    financingCostDeduction, umschuldungskosten und sondertilgung.
  */
 
 type Fallname = "standard" | "splitting" | "manuell" | "leer";
@@ -177,6 +193,9 @@ describe("Investmentrechner Rechenkern gegen Referenzwerte", () => {
           expect(istWert, feld).toBe(sollWert);
         } else if (typeof sollWert === "number") {
           expect(istWert, feld).toBeCloseTo(sollWert, 6);
+        } else if (typeof sollWert === "object" || typeof sollWert === "string") {
+          // Seit Version 5 auch Listen und Objekte, etwa `zinsbindungen` und `sonderAfa`.
+          expect(JSON.parse(JSON.stringify(istWert)), feld).toEqual(sollWert);
         } else {
           throw new Error(`Unerwarteter Feldtyp in ${feld}`);
         }
@@ -200,6 +219,9 @@ describe("Investmentrechner Rechenkern gegen Referenzwerte", () => {
               sollWert as Steuerprofil,
               `years[${index}].${feld}`,
             );
+          } else if (typeof sollWert === "object" && sollWert !== null) {
+            // Seit Version 5 auch die Darlehen je Jahr.
+            expect(JSON.parse(JSON.stringify(istJahr[feld as keyof typeof istJahr])), `years[${index}].${feld}`).toEqual(sollWert);
           } else if (feld === "index" || feld === "year") {
             expect(istJahr[feld], `years[${index}].${feld}`).toBe(sollWert);
           } else {
@@ -241,14 +263,12 @@ describe("Investmentrechner Rechenkern gegen Referenzwerte", () => {
 
 describe("Möbel und Wertentwicklung", () => {
   // Die Möbel stecken im Gesamtkaufpreis, deshalb steigt er mit ihnen.
-  // Ohne Finanzierungsnebenkosten, damit Gesamtkosten und Darlehen nur vom Kaufpreis abhängen.
-  const ohneMoebel: InvestmentEingabe = {
-    ...referenz.standard.input,
-    purchasePrice: 320000,
-    furniturePrice: 0,
-    financingCostRate: 0,
-  };
-  const mitMoebeln: InvestmentEingabe = { ...ohneMoebel, purchasePrice: 332000, furniturePrice: 12000 };
+  // Mit festem Eigenkapital wie im Fall „standard“, damit das Bankdarlehen den Rest trägt.
+  const ohneMoebel: InvestmentEingabe = mitEigenkapital(
+    { ...referenz.standard.input, purchasePrice: 320000, furniturePrice: 0 },
+    40000,
+  );
+  const mitMoebeln: InvestmentEingabe = mitEigenkapital({ ...ohneMoebel, purchasePrice: 332000, furniturePrice: 12000 }, 40000);
 
   it("Möbel bekommen keine Wertsteigerung, sie zählen mit ihrem Restbuchwert", () => {
     const ohne = berechneInvestment(ohneMoebel).years;
@@ -297,7 +317,7 @@ describe("Möbel und Wertentwicklung", () => {
  * Gebäudeanteil 80 %, Nebenkosten 5 % (3,5 + 1,0 + 0,5), AfA 2 %, Möbel über
  * zehn Jahre, kein Erhaltungsaufwand, keine Rücklage, Anteil 100 %.
  */
-const referenzbeispiel: InvestmentEingabe = {
+const referenzbeispiel: InvestmentEingabe = mitEigenkapital({
   ...referenz.standard.input,
   purchasePrice: 250000,
   furniturePrice: 8000,
@@ -314,9 +334,8 @@ const referenzbeispiel: InvestmentEingabe = {
   rehabExpense: 0,
   investmentShare: 100,
   jointAssessment: false,
-  // Die Referenzbeispiele prüfen Kaufpreis und Nebenkosten, die Finanzierungsnebenkosten haben eigene Tests.
-  financingCostRate: 0,
-};
+  // Eigenkapital 40.000 Euro wie im Fall „standard“, das Bankdarlehen trägt den Rest.
+}, 40000);
 
 describe("Referenzbeispiel: Aufteilung des Kaufpreises", () => {
   it("teilt nur den Immobilienanteil in Boden und Gebäude, genau einmal", () => {
@@ -441,19 +460,21 @@ describe("Referenzbeispiel: Erhaltungsaufwand 20.000 Euro", () => {
 /*
  * Christians Beispiel vom 30.09.2026: Gesamtkaufpreis 300.000 Euro inklusive
  * 40.000 Euro Erhaltungsaufwand, Bayern 3,5 / 1,0 / 0,5 %, Gebäudeanteil 80 %,
- * AfA 2 %, Finanzierungsnebenkosten 600 Euro (0,2 % auf 300.000 Darlehen).
+ * AfA 2 %. Die Finanzierungsnebenkosten (damals 600 Euro) gibt es seit dem
+ * 23.10.2026 nicht mehr.
  */
 describe("Christians Beispiel: Kaufnebenkosten ohne Erhaltungsaufwand", () => {
-  const beispiel: InvestmentEingabe = {
-    ...referenzbeispiel,
-    purchasePrice: 300000,
-    furniturePrice: 0,
-    rehabExpense: 40000,
-    rehabMode: "expense",
-    rehabDistributionYears: 1,
-    financingCostRate: 0.2,
-    equity: 13000,
-  };
+  const beispiel: InvestmentEingabe = mitEigenkapital(
+    {
+      ...referenzbeispiel,
+      purchasePrice: 300000,
+      furniturePrice: 0,
+      rehabExpense: 40000,
+      rehabMode: "expense",
+      rehabDistributionYears: 1,
+    },
+    13000,
+  );
   const r = berechneInvestment(beispiel);
 
   it("rechnet Grunderwerbsteuer, Notar und Grundbuch auf 260.000 Euro", () => {
@@ -466,9 +487,10 @@ describe("Christians Beispiel: Kaufnebenkosten ohne Erhaltungsaufwand", () => {
     expect(r.purchaseCostRate).toBeCloseTo(0.05, 10);
   });
 
-  it("kommt auf 313.600 Euro Gesamtkosten", () => {
-    expect(r.finanzierungsnebenkosten).toBeCloseTo(600, 6);
-    expect(r.totalInvestment).toBeCloseTo(313600, 6);
+  it("kommt auf 313.000 Euro Gesamtkosten, ohne Finanzierungsnebenkosten", () => {
+    expect(r.totalInvestment).toBeCloseTo(313000, 6);
+    expect(r.totalDebt).toBeCloseTo(300000, 6);
+    expect(r.eigenkapital).toBeCloseTo(13000, 6);
   });
 
   it("aktiviert den Aufwand über der 15-Prozent-Grenze", () => {
@@ -637,56 +659,89 @@ describe("Manueller Steuersatz", () => {
 });
 
 /*
- * Finanzierungsnebenkosten, seit dem 25.09.2026. Referenzbeispiel: 250.000
- * Kaufpreis, 12.500 Nebenkosten, 12.500 Eigenkapital, also 250.000 Darlehen.
+ * Finanzierung als Eingabe, seit dem 23.10.2026 (Christian). Referenzbeispiel:
+ * 250.000 Kaufpreis, 12.100 Nebenkosten (5 % auf 242.000), Gesamtbedarf 262.100.
  */
-describe("Finanzierungsnebenkosten", () => {
-  // Eigenkapital in Höhe der Kaufnebenkosten (5 % auf 242.000), damit das Darlehen genau 250.000 ist.
-  const basis: InvestmentEingabe = { ...referenzbeispiel, equity: 12100, financingCostRate: 0.2 };
-  const ohne = berechneInvestment({ ...basis, financingCostRate: 0 });
-  const mit = berechneInvestment(basis);
+describe("Finanzierung: Darlehen eingetragen, Eigenkapital als Rest", () => {
+  const prozent = (wert: number): InvestmentEingabe => ({ ...referenzbeispiel, seniorLoanMode: "percent", seniorLoanValue: wert });
 
-  it("sind Satz mal Darlehenssumme und stehen in den Gesamtkosten", () => {
-    expect(mit.totalDebt).toBeCloseTo(250000, 6);
-    expect(mit.finanzierungsnebenkosten).toBeCloseTo(500, 6);
-    expect(mit.totalInvestment).toBeCloseTo(262600, 6);
+  it("rechnet das Bankdarlehen in Prozent des Kaufpreises, das Eigenkapital ist der Rest", () => {
+    const r = berechneInvestment(prozent(90));
+    expect(r.seniorLoanAmount).toBeCloseTo(225000, 6);
+    expect(r.totalInvestment).toBeCloseTo(262100, 6);
+    expect(r.eigenkapital).toBeCloseTo(37100, 6);
+    expect(r.ueberfinanzierung).toBe(0);
   });
 
-  it("lassen bei gleichem Eigenkapital Darlehen, Rate und Cashflow vor Steuern gleich", () => {
-    expect(mit.seniorLoanAmount).toBeCloseTo(ohne.seniorLoanAmount, 6);
-    expect(mit.monthlyDebtService).toBeCloseTo(ohne.monthlyDebtService, 6);
-    mit.years.forEach((jahr, index) => {
-      expect(jahr.cashflowBeforeTax, `Jahr ${jahr.year}`).toBeCloseTo(ohne.years[index].cashflowBeforeTax, 6);
+  it("nimmt einen Euro-Betrag unverändert, auch wenn sich der Kaufpreis ändert", () => {
+    const euro: InvestmentEingabe = { ...referenzbeispiel, seniorLoanMode: "euro", seniorLoanValue: 200000 };
+    expect(berechneInvestment(euro).seniorLoanAmount).toBeCloseTo(200000, 6);
+    expect(berechneInvestment({ ...euro, purchasePrice: 300000 }).seniorLoanAmount).toBeCloseTo(200000, 6);
+    // In Prozent folgt der Betrag dem Kaufpreis.
+    expect(berechneInvestment({ ...prozent(90), purchasePrice: 300000 }).seniorLoanAmount).toBeCloseTo(270000, 6);
+  });
+
+  it("zählt Nachrang, zweites Bankdarlehen und KfW zu den Darlehen, das Eigenkapital sinkt entsprechend", () => {
+    const r = berechneInvestment({
+      ...prozent(80),
+      juniorLoanMode: "euro",
+      juniorLoanValue: 20000,
+      secondLoanAmount: 10000,
+      kfwEnabled: true,
+      kfwLoanAmount: 5000,
     });
+    expect(r.seniorLoanAmount).toBeCloseTo(200000, 6);
+    expect(r.juniorLoanAmount).toBeCloseTo(20000, 6);
+    expect(r.totalDebt).toBeCloseTo(235000, 6);
+    expect(r.eigenkapital).toBeCloseTo(27100, 6);
   });
 
-  it("zählen zum Eigenkapitalbedarf", () => {
-    expect(mit.financingGap).toBeCloseTo(500, 6);
-    // Einsatz = Eigenkapital + Finanzierungsnebenkosten + Zuzahlungen. Die
-    // Steuerersparnis im ersten Jahr senkt die Zuzahlung dabei wieder etwas.
-    const zuzahlungen = mit.years.reduce((s, j) => s + Math.max(0, -j.cashflowAfterTax), 0);
-    expect(mit.eigenkapitalBasis).toBeCloseTo(12100 + 500 + zuzahlungen, 6);
+  it("weist eine Überfinanzierung aus und rechnet den Überschuss als Zufluss zu Beginn", () => {
+    const r = berechneInvestment(prozent(110));
+    expect(r.totalDebt).toBeCloseTo(275000, 6);
+    expect(r.eigenkapital).toBe(0);
+    expect(r.ueberfinanzierung).toBeCloseTo(12900, 6);
+    const zuzahlungen = r.years.reduce((s, j) => s + Math.max(0, -j.cashflowAfterTax), 0);
+    expect(r.eigenkapitalBasis).toBeCloseTo(zuzahlungen, 6);
   });
 
-  it("mindern das steuerliche Ergebnis nur im ersten Jahr", () => {
-    expect(mit.years[0].financingCostDeduction).toBeCloseTo(500, 6);
-    expect(mit.years[0].taxableResult).toBeCloseTo(ohne.years[0].taxableResult - 500, 6);
-    expect(mit.years[1].financingCostDeduction).toBe(0);
-    expect(mit.years[1].taxableResult).toBeCloseTo(ohne.years[1].taxableResult, 6);
+  it("gilt anteilig: Prozent vom anteiligen Kaufpreis, Euro mal Anteil", () => {
+    const halbProzent = berechneInvestment({ ...prozent(90), investmentShare: 50 });
+    expect(halbProzent.seniorLoanAmount).toBeCloseTo(112500, 6);
+    expect(halbProzent.eigenkapital).toBeCloseTo(18550, 6);
+    const halbEuro = berechneInvestment({ ...referenzbeispiel, seniorLoanMode: "euro", seniorLoanValue: 200000, investmentShare: 50 });
+    expect(halbEuro.seniorLoanAmount).toBeCloseTo(100000, 6);
   });
 
-  it("laufen auch auf das Nachrangdarlehen und gelten anteilig", () => {
-    const nachrang = berechneInvestment({ ...basis, juniorLoanAmount: 20000 });
-    expect(nachrang.totalDebt).toBeCloseTo(250000, 6);
-    expect(nachrang.finanzierungsnebenkosten).toBeCloseTo(500, 6);
-    const halb = berechneInvestment({ ...basis, investmentShare: 50, equity: 6050 });
-    expect(halb.finanzierungsnebenkosten).toBeCloseTo(250, 6);
+  it("finanziert beim All-inclusive-Modell mit 100 Prozent auch die Kaufnebenkosten", () => {
+    const r = berechneInvestment({ ...prozent(100), allInclusive: true });
+    expect(r.seniorLoanAmount).toBeCloseTo(262100, 6);
+    expect(r.eigenkapital).toBeCloseTo(0, 6);
   });
 
-  it("fallen ohne Darlehen weg", () => {
-    const bar = berechneInvestment({ ...basis, equity: 300000 });
-    expect(bar.totalDebt).toBe(0);
-    expect(bar.finanzierungsnebenkosten).toBe(0);
+  it("rechnet den Mischzins nach Betrag gewichtet, je Darlehen weiter getrennt", () => {
+    const r = berechneInvestment({ ...prozent(80), seniorInterestRate: 4, juniorLoanMode: "euro", juniorLoanValue: 50000, juniorInterestRate: 6 });
+    expect(r.mischzins).toBeCloseTo((200000 * 0.04 + 50000 * 0.06) / 250000, 10);
+    expect(r.years[0].interest).toBeCloseTo(r.years[0].darlehen.bank.interest + r.years[0].darlehen.nachrang.interest, 6);
+  });
+
+  it("läuft nach der Zinsbindung mit demselben Zins und derselben Rate weiter und nennt ihr Ende", () => {
+    const r = berechneInvestment({ ...prozent(90), seniorFixedRateYears: 5, forecastYears: 10 });
+    const bank = r.years.map((j) => j.darlehen.bank);
+    expect(bank[7].zinssatz).toBeCloseTo(bank[2].zinssatz ?? 0, 12);
+    expect(bank[7].payment).toBeCloseTo(bank[2].payment, 6);
+    expect(r.zinsbindungen).toEqual([{ art: "bank", jahre: 5, jahrIndex: 4, kalenderjahr: 2030, restschuld: bank[4].closingBalance }]);
+    // Übergang im Juli: Die fünf Jahre enden im Juni des sechsten Kalenderjahrs.
+    const juli = berechneInvestment({ ...prozent(90), seniorFixedRateYears: 5, acquisitionMonth: 7 });
+    expect(juli.zinsbindungen[0].jahrIndex).toBe(5);
+    expect(juli.zinsbindungen[0].kalenderjahr).toBe(2031);
+  });
+
+  it("mitEigenkapital setzt das Bankdarlehen so, dass genau dieses Eigenkapital bleibt", () => {
+    const r = berechneInvestment(mitEigenkapital(referenzbeispiel, 12100));
+    expect(r.seniorLoanAmount).toBeCloseTo(250000, 6);
+    expect(r.eigenkapital).toBeCloseTo(12100, 6);
+    expect(berechneInvestment(mitEigenkapital(referenzbeispiel, 300000)).totalDebt).toBe(0);
   });
 });
 

@@ -4,6 +4,7 @@ import {
   ausgewiesenerKaufpreis,
   berechneInvestment,
   eigenkapitalrenditeNebenkosten,
+  mitEigenkapital,
   type InvestmentEingabe,
 } from "./rechenkern";
 import { kaufpreisHinweis, kaufpreiszeilen } from "@/components/investmentrechner/Auswertungen";
@@ -25,19 +26,23 @@ const faelle: Record<string, InvestmentEingabe> = {
   standard,
   // Erhaltungsaufwand, Rücklage, halber Anteil und KfW. (Der Startmonat Juli
   // aus dem MORE-Original entfällt: OS Immobilien hat keinen Startmonat.)
-  gemischt: {
-    ...standard,
-    investmentShare: 50,
-    rehabExpense: 25_000,
-    rehabMode: "expense",
-    rehabDistributionYears: 2,
-    maintenanceReserve: 3_000,
-    kfwEnabled: true,
-    kfwLoanAmount: 50_000,
-    kfwGracePeriodYears: 2,
-  },
+  // Seit dem 23.10.2026 mit dem Bankdarlehen als Rest nach 40.000 € Eigenkapital, wie früher.
+  gemischt: mitEigenkapital(
+    {
+      ...standard,
+      investmentShare: 50,
+      rehabExpense: 25_000,
+      rehabMode: "expense",
+      rehabDistributionYears: 2,
+      maintenanceReserve: 3_000,
+      kfwEnabled: true,
+      kfwLoanAmount: 50_000,
+      kfwGracePeriodYears: 2,
+    },
+    40_000,
+  ),
   // Vollfinanzierung ohne Eigenkapital.
-  ohneEigenkapital: { ...standard, equity: 0 },
+  ohneEigenkapital: mitEigenkapital(standard, 0),
 };
 
 describe("All-inclusive gegen normales Modell bei gleichen Sätzen", () => {
@@ -51,7 +56,6 @@ describe("All-inclusive gegen normales Modell bei gleichen Sätzen", () => {
       expect(allIn.seniorLoanAmount).toBeCloseTo(normal.seniorLoanAmount, 6);
       expect(allIn.finanzierungsbedarf).toBeCloseTo(normal.finanzierungsbedarf, 6);
       expect(allIn.totalInvestment).toBeCloseTo(normal.totalInvestment, 6);
-      expect(allIn.financingGap).toBeCloseTo(normal.financingGap, 6);
       expect(allIn.monthlyDebtService).toBeCloseTo(normal.monthlyDebtService, 6);
       expect(allIn.depreciationBasis).toBeCloseTo(normal.depreciationBasis, 6);
       expect(allIn.netYield).toBeCloseTo(normal.netYield, 6);

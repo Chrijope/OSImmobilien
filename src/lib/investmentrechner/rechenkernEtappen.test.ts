@@ -3,123 +3,79 @@ import golden from "./rechenkern.golden.json";
 import {
   banktilgungsplan,
   berechneInvestment,
-  sondertilgungenJeJahr,
   type InvestmentEingabe,
 } from "./rechenkern";
-import { bankuebersicht, zinsrisiko } from "./bankgespraech";
+import { zinsrisiko } from "./bankgespraech";
 import { AMPEL_SCHWELLEN, ampel, ampelfarbe } from "./ampel";
 import { bankunterlagenAusSa, haushaltsrechnung, vermoegensaufstellung } from "./bankunterlagen";
 import { eingabeAusJson } from "@/lib/investmentBerechnungenStore";
 
 /*
- * Die drei Etappen vom 11.10.2026: Anschlussfinanzierung, Sondertilgungen,
- * zweites Bankdarlehen, Ampel und Unterlagen fürs Bankgespräch. Ohne neue
+ * Die drei Etappen vom 11.10.2026: Zinsbindung, zweites Bankdarlehen, Ampel
+ * und Unterlagen fürs Bankgespräch. Anschlussfinanzierung und
+ * Sondertilgungen sind seit dem 23.10.2026 entfallen (Christian). Ohne neue
  * Eingaben bleibt jede Zahl wie in rechenkern.golden.json (rechenkern.test.ts).
  */
 
 const standard = (golden as unknown as { standard: { input: InvestmentEingabe } }).standard.input;
 const mit = (aenderung: Partial<InvestmentEingabe>) => berechneInvestment({ ...standard, ...aenderung });
 
-describe("Anschlusszins des Bankdarlehens", () => {
-  it("ohne Anschlusszins ändert eine Zinsbindung nichts", () => {
+describe("Zinsbindung des Bankdarlehens", () => {
+  it("eine Zinsbindung ändert nichts am Verlauf: derselbe Zins und dieselbe Rate danach", () => {
     const ohne = berechneInvestment(standard);
     const kurz = mit({ seniorFixedRateYears: 3 });
     expect(kurz.years.map((j) => j.remainingDebt)).toEqual(ohne.years.map((j) => j.remainingDebt));
+    expect(kurz.years[5].darlehen.bank.zinssatz).toBeCloseTo(0.04, 9);
   });
 
-  it("gilt ab dem Jahr nach der Zinsbindung, mit neuer Rate auf die Restschuld", () => {
-    const basis = berechneInvestment(standard);
-    const r = mit({ seniorFixedRateYears: 5, seniorFollowUpRate: 6 });
-    // Bis zur Zinsbindung gleich.
-    for (let i = 0; i < 5; i += 1) expect(r.years[i].interest).toBeCloseTo(basis.years[i].interest, 6);
-    const rest5 = r.years[4].darlehen.bank.closingBalance;
-    expect(r.bankRestschuldZinsbindung).toBeCloseTo(rest5, 6);
-    expect(r.years[5].darlehen.bank.zinssatz).toBeCloseTo(0.06, 9);
-    expect(r.years[4].darlehen.bank.zinssatz).toBeCloseTo(0.04, 9);
-    // Seit dem 22.10.2026 monatlich: Der Jahreszins liegt etwas unter 6 % der Restschuld zu Jahresbeginn.
-    expect(r.years[5].darlehen.bank.interest).toBeLessThan(rest5 * 0.06);
-    expect(r.years[5].darlehen.bank.interest).toBeGreaterThan(rest5 * 0.059);
-    // Neue Rate: Restschuld mal (6 % + anfängliche 1,5 %), je Monat durch 12.
-    expect(r.years[5].darlehen.bank.payment).toBeCloseTo(rest5 * 0.075, 6);
-    // Mehr Zins senkt den Cashflow, die Steuer gibt einen Teil zurück.
-    expect(r.years[5].cashflowBeforeTax).toBeLessThan(basis.years[5].cashflowBeforeTax);
-    expect(r.years[5].taxEffect).toBeGreaterThan(basis.years[5].taxEffect);
+  it("nennt die Restschuld am Ende der Zinsbindung und das Jahr", () => {
+    const r = mit({ seniorFixedRateYears: 5 });
+    expect(r.bankRestschuldZinsbindung).toBeCloseTo(r.years[4].darlehen.bank.closingBalance, 6);
+    expect(r.zinsbindungen.find((z) => z.art === "bank")).toMatchObject({ jahre: 5, jahrIndex: 4, kalenderjahr: 2030 });
   });
 
-  it("neue Tilgung ohne Anschlusszins: heutiger Zins, Rate mit der neuen Tilgung", () => {
-    const r = mit({ seniorFixedRateYears: 5, seniorFollowUpRepaymentRate: 3 });
-    const rest5 = r.years[4].darlehen.bank.closingBalance;
-    expect(r.years[5].darlehen.bank.payment).toBeCloseTo(rest5 * 0.07, 6);
-  });
-
-  it("Zinsänderungsrisiko im letzten Jahr rechnet mit dem Anschlusszins", () => {
-    const eingabe = { ...standard, seniorFixedRateYears: 5, seniorFollowUpRate: 6 };
+  it("Zinsänderungsrisiko im letzten Jahr rechnet mit dem Zins von heute", () => {
+    const eingabe = { ...standard, seniorFixedRateYears: 5 };
     const r = berechneInvestment(eingabe);
     const risiko = zinsrisiko(eingabe, r, r.years.length - 1);
-    // Monatlich getilgt liegt der Jahreszins knapp unter 6 % der Restschuld zu Jahresbeginn.
-    expect(risiko?.zinsHeute).toBeCloseTo(0.0594, 3);
-  });
-});
-
-describe("Sondertilgungen", () => {
-  it("mindern die Restschuld am Jahresende und stecken in Tilgung und Cashflow", () => {
-    const basis = berechneInvestment(standard);
-    const r = mit({ specialRepayments: [{ jahr: 2028, betrag: 10000 }] });
-    const i = 2;
-    expect(r.years[i].sondertilgung).toBe(10000);
-    expect(r.years[i].darlehen.bank.closingBalance).toBeCloseTo(basis.years[i].darlehen.bank.closingBalance - 10000, 6);
-    expect(r.years[i].principal).toBeCloseTo(basis.years[i].principal + 10000, 6);
-    expect(r.years[i].cashflowBeforeTax).toBeCloseTo(basis.years[i].cashflowBeforeTax - 10000, 6);
-    // Steuerlich keine Werbungskosten.
-    expect(r.years[i].taxableResult).toBeCloseTo(basis.years[i].taxableResult, 6);
-    // Danach weniger Zinsen bei gleicher Rate.
-    expect(r.years[i + 1].interest).toBeLessThan(basis.years[i + 1].interest);
-    expect(r.sondertilgungenGesamt).toBe(10000);
-  });
-
-  it("mehrere im selben Jahr zählen zusammen, außerhalb der Prognose gar nicht", () => {
-    expect(sondertilgungenJeJahr([{ jahr: 2027, betrag: 1000 }, { jahr: 2027, betrag: 500 }, { jahr: 2050, betrag: 9 }], 2026, 3)).toEqual([0, 1500, 0]);
-  });
-
-  it("die Restschuld wird nie negativ", () => {
-    const r = mit({ specialRepayments: [{ jahr: 2027, betrag: 10_000_000 }] });
-    expect(r.years[1].darlehen.bank.closingBalance).toBe(0);
-    // Gezahlt wird nur, was nach der Rate noch offen war.
-    expect(r.years[1].sondertilgung).toBeLessThan(r.years[0].darlehen.bank.closingBalance);
-    r.years.slice(2).forEach((j) => expect(j.darlehen.bank.closingBalance).toBe(0));
-  });
-
-  it("verkürzen die Volltilgung im Bankgespräch", () => {
-    const eingabe = { ...standard, specialRepayments: [{ jahr: 2027, betrag: 50000 }] };
-    const ohne = bankuebersicht(standard, berechneInvestment(standard));
-    const mitSt = bankuebersicht(eingabe, berechneInvestment(eingabe));
-    expect(mitSt.volltilgungBank!).toBeLessThan(ohne.volltilgungBank!);
+    // Monatlich getilgt liegt der Jahreszins knapp unter 4 % der Restschuld zu Jahresbeginn.
+    expect(risiko?.zinsHeute).toBeLessThan(0.04);
+    expect(risiko?.zinsHeute).toBeGreaterThan(0.039);
   });
 });
 
 describe("Zweites Bankdarlehen", () => {
-  it("ersetzt einen Teil des Bankdarlehens, die Summe bleibt", () => {
+  it("kommt seit dem 23.10.2026 zu den übrigen Darlehen hinzu und senkt das Eigenkapital", () => {
+    const basis = berechneInvestment(standard);
+    const r = mit({ secondLoanAmount: 30000, secondInterestRate: 3, secondRepaymentRate: 2 });
+    expect(r.secondLoanAmount).toBe(30000);
+    expect(r.seniorLoanAmount).toBeCloseTo(basis.seniorLoanAmount, 6);
+    expect(r.totalDebt).toBeCloseTo(basis.totalDebt + 30000, 6);
+    expect(r.eigenkapital).toBeCloseTo(basis.eigenkapital - 30000, 6);
+  });
+
+  it("rechnet seinen eigenen Plan", () => {
     const basis = berechneInvestment(standard);
     const r = mit({ secondLoanAmount: 50000, secondInterestRate: 3, secondRepaymentRate: 2 });
-    expect(r.secondLoanAmount).toBe(50000);
-    expect(r.seniorLoanAmount).toBeCloseTo(basis.seniorLoanAmount - 50000, 6);
-    expect(r.totalDebt).toBeCloseTo(basis.totalDebt, 6);
     // Monatlich: 50.000 × 5 % ÷ 12 Rate, Zins etwas unter 1.500 €.
     expect(r.years[0].darlehen.bank2.interest).toBeLessThan(1500);
     expect(r.years[0].darlehen.bank2.interest).toBeGreaterThan(1480);
     expect(r.years[0].darlehen.bank2.payment).toBeCloseTo(2500, 6);
-    expect(r.monthlyDebtService).toBeLessThan(basis.monthlyDebtService);
+    expect(r.monthlyDebtService).toBeCloseTo(basis.monthlyDebtService + 2500 / 12, 6);
   });
 
-  it("wird auf den offenen Finanzierungsbedarf gedeckelt", () => {
-    const r = mit({ secondLoanAmount: 10_000_000 });
-    expect(r.secondLoanAmount).toBeCloseTo(r.finanzierungsbedarf, 6);
-    expect(r.seniorLoanAmount).toBe(0);
+  it("wird nicht gedeckelt, eine Überfinanzierung steht im Ergebnis", () => {
+    const basis = berechneInvestment(standard);
+    const r = mit({ secondLoanAmount: 100000 });
+    expect(r.secondLoanAmount).toBe(100000);
+    expect(r.eigenkapital).toBe(0);
+    expect(r.ueberfinanzierung).toBeCloseTo(100000 - basis.eigenkapital, 6);
   });
 
-  it("bekommt seinen Anschlusszins nach der eigenen Zinsbindung", () => {
-    const r = mit({ secondLoanAmount: 50000, secondFixedRateYears: 2, secondFollowUpRate: 7 });
-    expect(r.years[2].darlehen.bank2.zinssatz).toBeCloseTo(0.07, 9);
+  it("behält nach der eigenen Zinsbindung seinen Zins", () => {
+    const r = mit({ secondLoanAmount: 50000, secondFixedRateYears: 2 });
+    expect(r.years[2].darlehen.bank2.zinssatz).toBeCloseTo(0.04, 9);
+    expect(r.zinsbindungen.find((z) => z.art === "bank2")?.kalenderjahr).toBe(2027);
   });
 });
 
@@ -136,7 +92,7 @@ describe("Anschlusszins KfW", () => {
 
 describe("banktilgungsplan", () => {
   it("rechnet monatlich mit fester Monatsrate (seit dem 22.10.2026)", () => {
-    const plan = banktilgungsplan({ betrag: 100000, zinsProzent: 4, tilgungProzent: 2, zinsbindungJahre: 10, anschlusszinsProzent: 0, neueTilgungProzent: 0, jahre: 2 });
+    const plan = banktilgungsplan({ betrag: 100000, zinsProzent: 4, tilgungProzent: 2, zinsbindungJahre: 10, jahre: 2 });
     // Monatsrate 500 €, Tilgung im ersten Monat 166,67 €, danach wachsend um den Faktor 1 + 0,04 ÷ 12.
     const q = 1 + 0.04 / 12;
     const tilgung1 = ((100000 * 0.02) / 12) * ((q ** 12 - 1) / (q - 1));
@@ -234,19 +190,19 @@ describe("Haushaltsrechnung und Vermögensaufstellung", () => {
 });
 
 describe("Gespeicherte Berechnung", () => {
-  it("Listen kommen sauber aus dem JSON, Unsinn fällt weg", () => {
+  it("Listen kommen sauber aus dem JSON, Unsinn fällt weg, entfallene Felder rechnen nicht weiter", () => {
     const e = eingabeAusJson({
       specialRepayments: [{ jahr: 2030, betrag: 5000 }, { jahr: "x", betrag: 1 }, null],
       haushalt: { einkuenfte: [{ bezeichnung: "Netto", betrag: 3000, herkunft: "Aus der Selbstauskunft" }], ausgaben: "kaputt" },
       vermoegen: { werte: [{ bezeichnung: "Depot", betrag: 1, verpfaendet: true }] },
       seniorFollowUpRate: 5.5,
+      eingabeVersion: 4,
     });
-    expect(e.specialRepayments).toEqual([{ jahr: 2030, betrag: 5000 }]);
     expect(e.haushalt).toEqual({ einkuenfte: [{ bezeichnung: "Netto", betrag: 3000, herkunft: "Aus der Selbstauskunft" }], ausgaben: [] });
     expect(e.vermoegen).toEqual({ werte: [{ bezeichnung: "Depot", betrag: 1, verpfaendet: true }], verbindlichkeiten: [] });
-    expect(e.seniorFollowUpRate).toBe(5.5);
-    // Ein alter Stand ohne die Felder bekommt die Standardwerte, also nichts Neues.
-    expect(eingabeAusJson({}).specialRepayments).toEqual([]);
+    // Sondertilgungen und Anschlusszins gibt es seit Version 5 nicht mehr.
+    expect("specialRepayments" in e).toBe(false);
+    expect("seniorFollowUpRate" in e).toBe(false);
   });
 });
 

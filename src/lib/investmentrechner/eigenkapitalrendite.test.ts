@@ -3,6 +3,7 @@ import {
   berechneInvestment,
   eigenkapitalrendite,
   eigenkapitalrenditeNebenkosten,
+  mitEigenkapital,
   standardEingabe,
   type InvestmentEingabe,
 } from "./rechenkern";
@@ -39,18 +40,18 @@ const BEISPIEL: InvestmentEingabe = {
   forecastYears: 10,
 };
 
-const A = { ...BEISPIEL, equity: 13_250 };
-const B = { ...BEISPIEL, equity: 0 };
-const C = { ...BEISPIEL, equity: 43_250 };
+const A = mitEigenkapital(BEISPIEL, 13_250);
+const B = mitEigenkapital(BEISPIEL, 0);
+const C = mitEigenkapital(BEISPIEL, 43_250);
 
 const glatt = (text: string | undefined) => (text ?? "").replace(/ | /g, " ");
 
 describe("Eigenkapitalrendite nach Christians Formel", () => {
   it("A: Nebenkosten aus Eigenkapital", () => {
     const ergebnis = berechneInvestment(A);
-    const ekr = eigenkapitalrendite(A, ergebnis);
+    const ekr = eigenkapitalrendite(ergebnis);
     expect(ergebnis.purchaseCosts).toBeCloseTo(13_250, 6);
-    expect(ekr.eigenkapital).toBe(13_250);
+    expect(ekr.eigenkapital).toBeCloseTo(13_250, 6);
     // Miete 950 − Rate 1.375 − Kosten 60 − Rücklage 40 = −525 € vor Steuer.
     expect(ekr.zuzahlungMonat).toBeCloseTo(525, 6);
     expect(ekr.zuzahlungMonat).toBeCloseTo(-ergebnis.years[0].cashflowBeforeTax / 12, 10);
@@ -64,8 +65,8 @@ describe("Eigenkapitalrendite nach Christians Formel", () => {
 
   it("B: alles finanziert, nur die Zuzahlung im Nenner", () => {
     const ergebnis = berechneInvestment(B);
-    const ekr = eigenkapitalrendite(B, ergebnis);
-    expect(ekr.eigenkapital).toBe(0);
+    const ekr = eigenkapitalrendite(ergebnis);
+    expect(ekr.eigenkapital).toBeCloseTo(0, 6);
     expect(ekr.nenner).toBeCloseTo(585.73 * 12, 1);
     expect(ekr.rendite).toBeCloseTo(1.0693, 4);
     expect(glatt(rechenwege(B, ergebnis).eigenkapitalrendite?.text)).toMatch(/= 106,9 %$/);
@@ -73,7 +74,7 @@ describe("Eigenkapitalrendite nach Christians Formel", () => {
 
   it("C: mehr Eigenkapital, kleinere Rendite", () => {
     const ergebnis = berechneInvestment(C);
-    const ekr = eigenkapitalrendite(C, ergebnis);
+    const ekr = eigenkapitalrendite(ergebnis);
     expect(ekr.rendite).toBeCloseTo(0.1680, 4);
     expect(glatt(rechenwege(C, ergebnis).eigenkapitalrendite?.text)).toMatch(/= 16,8 %$/);
   });
@@ -81,7 +82,7 @@ describe("Eigenkapitalrendite nach Christians Formel", () => {
   it("zählt einen Überschuss vor Steuer als 0 und ist ohne Eigenkapital dann nicht bestimmbar", () => {
     const eingabe = { ...B, monthlyColdRent: 2_000 };
     const ergebnis = berechneInvestment(eingabe);
-    const ekr = eigenkapitalrendite(eingabe, ergebnis);
+    const ekr = eigenkapitalrendite(ergebnis);
     expect(ergebnis.years[0].cashflowBeforeTax).toBeGreaterThan(0);
     expect(ekr.zuzahlungMonat).toBe(0);
     expect(ekr.nenner).toBe(0);
@@ -93,13 +94,13 @@ describe("Eigenkapitalrendite nach Christians Formel", () => {
     // Nach Steuer ist das erste Jahr hier ein Überschuss, vor Steuer nicht.
     const ergebnis = berechneInvestment(A);
     expect(ergebnis.years[0].cashflowAfterTax).toBeGreaterThan(0);
-    expect(eigenkapitalrendite(A, ergebnis).zuzahlungMonat).toBeGreaterThan(0);
+    expect(eigenkapitalrendite(ergebnis).zuzahlungMonat).toBeGreaterThan(0);
   });
 
   it("teilt durch den eingestellten Zeitraum, nicht fest durch zehn", () => {
     const eingabe = { ...A, forecastYears: 15 };
     const ergebnis = berechneInvestment(eingabe);
-    const ekr = eigenkapitalrendite(eingabe, ergebnis);
+    const ekr = eigenkapitalrendite(ergebnis);
     expect(ekr.jahre).toBe(15);
     expect(ekr.rendite).toBeCloseTo(ekr.vermoegensaufbau / 15 / ekr.nenner, 10);
     expect(glatt(rechenwege(eingabe, ergebnis).eigenkapitalrendite?.text)).toMatch(/÷ 15 Jahre\)/);
@@ -110,7 +111,7 @@ describe("Eigenkapitalrendite nach Christians Formel", () => {
     // Vermögensaufbau, wenn die Möbel mehr an Wert verlieren, als getilgt wird.
     const eingabe = { ...C, annualValueGrowth: 0, seniorRepaymentRate: 0.1 };
     const ergebnis = berechneInvestment(eingabe);
-    const ekr = eigenkapitalrendite(eingabe, ergebnis);
+    const ekr = eigenkapitalrendite(ergebnis);
     expect(ekr.vermoegensaufbau).toBeLessThan(0);
     expect(ekr.rendite).toBeLessThan(0);
     expect(glatt(rechenwege(eingabe, ergebnis).eigenkapitalrendite?.text)).toMatch(/= −\d/);
@@ -120,16 +121,16 @@ describe("Eigenkapitalrendite nach Christians Formel", () => {
 describe("Gegenfall zu den Kaufnebenkosten, mit derselben Regel", () => {
   it("A: selbst gezahlt, mitfinanziert wäre es Fall B und die Rate stiege", () => {
     const n = eigenkapitalrenditeNebenkosten(A, berechneInvestment(A));
-    const b = eigenkapitalrendite(B, berechneInvestment(B));
+    const b = eigenkapitalrendite(berechneInvestment(B));
     expect(n?.selbstGezahlt).toBe(true);
-    expect(n?.vergleich.eigenkapital).toBe(0);
+    expect(n?.vergleich.eigenkapital).toBeCloseTo(0, 6);
     expect(n?.vergleich.rendite).toBeCloseTo(b.rendite ?? Number.NaN, 10);
     expect(n?.rateDifferenzMonat).toBeCloseTo(60.73, 2);
   });
 
   it("B: mitfinanziert, selbst gezahlt wäre es Fall A und die Rate sänke", () => {
     const n = eigenkapitalrenditeNebenkosten(B, berechneInvestment(B));
-    const a = eigenkapitalrendite(A, berechneInvestment(A));
+    const a = eigenkapitalrendite(berechneInvestment(A));
     expect(n?.selbstGezahlt).toBe(false);
     expect(n?.vergleich.rendite).toBeCloseTo(a.rendite ?? Number.NaN, 10);
     expect(n?.rateDifferenzMonat).toBeCloseTo(-60.73, 2);

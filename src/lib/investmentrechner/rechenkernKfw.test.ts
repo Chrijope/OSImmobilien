@@ -11,7 +11,7 @@ const basisEingabe: InvestmentEingabe = { ...standardEingabe, transferTaxRate: 3
  * KfW-Darlehen im Rechenkern, seit dem 07.10.2026.
  *
  * Beispiel: Kaufpreis 405.000 Euro, Kaufnebenkosten 5 Prozent (20.250 Euro)
- * als Eigenkapital. Bank 255.000 Euro zu 3,8 Prozent mit 2 Prozent Tilgung,
+ * als Eigenkapital (seit dem 23.10.2026 der Rest, die Darlehen sind eingetragen). Bank 255.000 Euro zu 3,8 Prozent mit 2 Prozent Tilgung,
  * KfW 150.000 Euro zu 2,1 Prozent, 3 Jahre tilgungsfrei, 30 Jahre Laufzeit,
  * 10 Jahre Zinsbindung. Die Erwartungen rechnet der Test selbst mit den
  * Formeln nach, nicht mit dem Rechenkern.
@@ -20,7 +20,9 @@ const OHNE_KFW: InvestmentEingabe = {
   ...basisEingabe,
   taxableIncomeCustomer: 80000,
   purchasePrice: 405000,
-  equity: 20250,
+  // Bank 100 % des Kaufpreises, die Kaufnebenkosten trägt das Eigenkapital.
+  seniorLoanMode: "percent",
+  seniorLoanValue: 100,
   seniorInterestRate: 3.8,
   seniorRepaymentRate: 2,
   monthlyColdRent: 1350,
@@ -30,6 +32,8 @@ const OHNE_KFW: InvestmentEingabe = {
 
 const BEISPIEL: InvestmentEingabe = {
   ...OHNE_KFW,
+  seniorLoanMode: "euro",
+  seniorLoanValue: 255000,
   kfwEnabled: true,
   kfwProgram: "KfW 297/298 Klimafreundlicher Neubau",
   kfwLoanAmount: 150000,
@@ -57,12 +61,12 @@ const restBankNachJahren = (n: number) => {
 describe("KfW-Darlehen: Beispiel aus dem Auftrag", () => {
   const r = berechneInvestment(BEISPIEL);
 
-  it("teilt die Finanzierung: Bank ist der Rest nach Eigenkapital und KfW", () => {
+  it("teilt die Finanzierung: Bank und KfW eingetragen, das Eigenkapital ist der Rest", () => {
     expect(r.purchaseCosts).toBeCloseTo(20250, 6);
     expect(r.kfwLoanAmount).toBe(150000);
     expect(r.seniorLoanAmount).toBeCloseTo(255000, 6);
     expect(r.totalDebt).toBeCloseTo(405000, 6);
-    expect(r.kfwGekuerzt).toBe(false);
+    expect(r.eigenkapital).toBeCloseTo(20250, 6);
   });
 
   it("Rate in Jahr 1: Bankannuität plus KfW nur Zinsen", () => {
@@ -138,7 +142,7 @@ describe("KfW-Darlehen: Beispiel aus dem Auftrag", () => {
 describe("KfW-Darlehen: Ränder", () => {
   it("ohne Schalter rechnet ein eingetragener Betrag nichts, alles wie ohne KfW", () => {
     const aus = berechneInvestment({ ...BEISPIEL, kfwEnabled: false });
-    const ohne = berechneInvestment(OHNE_KFW);
+    const ohne = berechneInvestment({ ...OHNE_KFW, seniorLoanMode: "euro", seniorLoanValue: 255000 });
     // Nur das Echo der eingetragenen Anlaufjahre unterscheidet sich, gerechnet wird damit nichts.
     expect(aus.kfwAnlaufJahre).toBe(3);
     expect({ ...aus, kfwAnlaufJahre: 0 }).toEqual(ohne);
@@ -147,13 +151,13 @@ describe("KfW-Darlehen: Ränder", () => {
     expect(ohne.mischzins).toBeCloseTo(0.038, 10);
   });
 
-  it("kürzt einen KfW-Betrag über dem Finanzierungsbedarf, die Bank fällt auf null", () => {
+  it("deckelt einen KfW-Betrag über dem Bedarf nicht mehr, sondern zeigt die Überfinanzierung (seit dem 23.10.2026)", () => {
     const r = berechneInvestment({ ...BEISPIEL, kfwLoanAmount: 500000 });
-    expect(r.kfwGekuerzt).toBe(true);
-    expect(r.kfwLoanAmount).toBeCloseTo(405000, 6);
-    expect(r.finanzierungsbedarf).toBeCloseTo(405000, 6);
-    expect(r.seniorLoanAmount).toBe(0);
-    expect(r.totalDebt).toBeCloseTo(405000, 6);
+    expect(r.kfwLoanAmount).toBeCloseTo(500000, 6);
+    expect(r.finanzierungsbedarf).toBeCloseTo(425250, 6);
+    expect(r.seniorLoanAmount).toBeCloseTo(255000, 6);
+    expect(r.eigenkapital).toBe(0);
+    expect(r.ueberfinanzierung).toBeCloseTo(755000 - 425250, 6);
   });
 
   it("hält die tilgungsfreie Zeit kürzer als die Laufzeit und höchstens fünf Jahre", () => {
@@ -171,7 +175,7 @@ describe("KfW-Darlehen: Ränder", () => {
   });
 
   it("rechnet mit dem Miteigentumsanteil wie das Nachrangdarlehen", () => {
-    const r = berechneInvestment({ ...BEISPIEL, investmentShare: 50, equity: 10125 });
+    const r = berechneInvestment({ ...BEISPIEL, investmentShare: 50 });
     expect(r.kfwLoanAmount).toBeCloseTo(75000, 6);
     expect(r.seniorLoanAmount).toBeCloseTo(127500, 6);
   });
@@ -179,7 +183,7 @@ describe("KfW-Darlehen: Ränder", () => {
 
 describe("KfW in den Rechenwegen unter den Kacheln", () => {
   it("rechnet die Kreditrate aus Bank und KfW nach", () => {
-    for (const eingabe of [BEISPIEL, { ...BEISPIEL, kfwGracePeriodYears: 0 }, { ...BEISPIEL, juniorLoanAmount: 20000 }]) {
+    for (const eingabe of [BEISPIEL, { ...BEISPIEL, kfwGracePeriodYears: 0 }, { ...BEISPIEL, juniorLoanMode: "euro" as const, juniorLoanValue: 20000 }]) {
       const r = berechneInvestment(eingabe);
       const weg = rechenwege(eingabe, r).kreditrate!;
       expect(werteAus(weg.glieder)).toBeCloseTo(r.monthlyDebtService, 6);

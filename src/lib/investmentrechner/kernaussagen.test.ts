@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { berechneInvestment, standardEingabe } from "./rechenkern";
+import { berechneInvestment, mitEigenkapital, standardEingabe } from "./rechenkern";
 
 /**
  * Die fünf Zahlen, die seit dem 21.09.2026 groß auf der ersten Seite stehen.
@@ -22,10 +22,9 @@ import { berechneInvestment, standardEingabe } from "./rechenkern";
  * Nebenkosten, Kaufpreis voll finanziert, 3,8 Prozent Zins, 2 Prozent
  * Anfangstilgung, 1,5 Prozent Wertsteigerung, zehn Jahre.
  */
-const FALL = {
+const FALL = mitEigenkapital({
   ...standardEingabe,
   purchasePrice: 320_000,
-  equity: 0,
   // Achtung: Saetze stehen in PROZENT, nicht als Dezimalzahl. Mein erster
   // Entwurf setzte 0.038 statt 3.8 und rechnete damit mit 0,038 Prozent Zins.
   // Der Test hat es aufgedeckt, die Tilgung lag bei 5,60 Euro im Monat.
@@ -41,7 +40,7 @@ const FALL = {
   landRegisterRate: 0.5,
   brokerRate: 2.5,
   otherPurchaseCostRate: 0,
-};
+}, 0);
 
 describe("Die Bezugsgröße der Eigenkapitalrendite", () => {
   it("rechnet auch ohne eingetragenes Eigenkapital eine Rendite", () => {
@@ -56,21 +55,19 @@ describe("Die Bezugsgröße der Eigenkapitalrendite", () => {
     expect(r.eigenkapitalBasis).toBeGreaterThan(0);
   });
 
-  it("zählt Eigenkapital, Finanzierungsnebenkosten und alle Zuzahlungen als Einsatz", () => {
-    const r = berechneInvestment({ ...FALL, equity: 50_000 });
+  it("zählt Eigenkapital und alle Zuzahlungen als Einsatz", () => {
+    const r = berechneInvestment(mitEigenkapital(FALL, 50_000));
     const zuzahlungen = r.years.reduce((s, j) => s + Math.max(0, -j.cashflowAfterTax), 0);
 
-    // Seit dem 25.09.2026 zahlt der Kunde die Finanzierungsnebenkosten zu Beginn selbst.
-    expect(r.finanzierungsnebenkosten).toBeGreaterThan(0);
-    expect(r.eigenkapitalBasis).toBeCloseTo(50_000 + r.finanzierungsnebenkosten + zuzahlungen, 0);
+    expect(r.eigenkapitalBasis).toBeCloseTo(50_000 + zuzahlungen, 0);
   });
 
   it("liefert eine niedrigere Rendite, je mehr Eigenkapital eingesetzt wird", () => {
     // Die Gegenprobe zur Excel: Mehr eingesetztes Kapital muss die Rendite
     // senken. Die Excel-Formel reagiert darauf kaum, weil ihr Nenner nur ein
     // Jahr Einzahlungen kennt.
-    const wenig = berechneInvestment({ ...FALL, equity: 30_000 });
-    const viel = berechneInvestment({ ...FALL, equity: 120_000 });
+    const wenig = berechneInvestment(mitEigenkapital(FALL, 30_000));
+    const viel = berechneInvestment(mitEigenkapital(FALL, 120_000));
 
     expect(wenig.irr!).toBeGreaterThan(viel.irr!);
   });
@@ -100,7 +97,7 @@ describe("Vermögensaufbau je Monat", () => {
     // Wer 100.000 mitbringt, hat sie nicht aufgebaut. Ohne den Abzug des
     // Anfangsstands stünde genau das in der Kachel.
     const ohne = berechneInvestment(FALL);
-    const mit = berechneInvestment({ ...FALL, equity: 100_000 });
+    const mit = berechneInvestment(mitEigenkapital(FALL, 100_000));
 
     const zuwachsOhne = ohne.vermoegensaufbauMonat * FALL.forecastYears * 12;
     const zuwachsMit = mit.vermoegensaufbauMonat * FALL.forecastYears * 12;
@@ -127,11 +124,8 @@ describe("Vermögensaufbau je Monat", () => {
   });
 
   it("entspricht der Tilgung, wenn der Kunde die Nebenkosten selbst trägt", () => {
-    const r = berechneInvestment({
-      ...FALL,
-      annualValueGrowth: 0,
-      equity: 25_600, // genau die Nebenkosten
-    });
+    // Eigenkapital genau in Höhe der Nebenkosten.
+    const r = berechneInvestment(mitEigenkapital({ ...FALL, annualValueGrowth: 0 }, 25_600));
 
     expect(r.vermoegensaufbauMonat).toBeCloseTo(r.tilgungMonat, 0);
   });

@@ -24,9 +24,9 @@ vi.mock("@/integrations/supabase/client", () => {
 
 const {
   ladeBerechnungen, ladeBerechnung, speichereBerechnung, aktualisiereBerechnung, loescheBerechnung,
-  eingabeAusJson, kennzahlenAus, berechnungsnameVorschlag, BERECHNUNGEN_MIGRATION_HINWEIS,
+  eingabeAusJson, kennzahlenAus, berechnungsnameVorschlag, BERECHNUNGEN_MIGRATION_HINWEIS, unterlagenAusJson,
 } = await import("@/lib/investmentBerechnungenStore");
-const { standardEingabe, berechneInvestment, EINGABE_VERSION } = await import("@/lib/investmentrechner/rechenkern");
+const { standardEingabe, berechneInvestment, EINGABE_VERSION, mitEigenkapital } = await import("@/lib/investmentrechner/rechenkern");
 const { standardKaufnebenkostenauswahl } = await import("@/lib/investmentrechner/kaufnebenkostenAuswahl");
 
 const kennzahlen = { kaufpreis: 250_000, eigenkapital: 25_000, cashflowMonatNachSteuern: -120, bruttorendite: 0.0412, irr: 0.081 };
@@ -243,7 +243,7 @@ describe("alte Speicherstände: Hausgeld getrennt seit Version 4 (22.10.2026)", 
   // Unter Version 3 gespeichert: 70 € Summe im alten Feld, 50 € Hausgeld nur als Anzeige.
   const version3 = {
     purchasePrice: 250_000, monthlyColdRent: 900, monthlyOperatingCosts: 70, housingFeeNonRecoverable: 50,
-    financingCostRate: 0.2, eingabeVersion: 3,
+    eingabeVersion: 3,
   };
   it("löst das Hausgeld aus der alten Summe und rechnet wie beim Speichern", () => {
     const eingabe = eingabeAusJson(version3);
@@ -268,18 +268,107 @@ describe("alte Speicherstände: Hausgeld getrennt seit Version 4 (22.10.2026)", 
   });
 });
 
-describe("alte Speicherstände: Finanzierungsnebenkosten seit dem 25.09.2026", () => {
-  it("rechnet einen Stand ohne den Satz weiter ohne Finanzierungsnebenkosten", () => {
-    expect(eingabeAusJson({ purchasePrice: 300_000, eingabeVersion: 2 }).financingCostRate).toBe(0);
+/*
+ * Version 5 (23.10.2026, Christian): Die Finanzierung wird eingegeben, das
+ * Eigenkapital ist der Rest. Ein alter Stand rechnet mit denselben Darlehen
+ * weiter; entfallene Felder rechnen nicht mehr mit.
+ */
+describe("alte Speicherstände: neue Finanzierung seit Version 5 (23.10.2026)", () => {
+  // Standardsätze 6,5 + 1,5 + 0,5 = 8,5 %: 25.500 € Nebenkosten, 325.500 € Gesamtbedarf.
+  const version4 = { purchasePrice: 300_000, monthlyColdRent: 1000, equity: 15_000, financingCostRate: 0.2, eingabeVersion: 4 };
+
+  it("übernimmt das bisherige Bankdarlehen als Euro-Betrag, das Eigenkapital bleibt", () => {
+    const eingabe = eingabeAusJson(version4);
+    expect(eingabe.eingabeVersion).toBe(EINGABE_VERSION);
+    expect(eingabe.seniorLoanMode).toBe("euro");
+    expect(eingabe.seniorLoanValue).toBeCloseTo(310_500, 6);
+    const r = berechneInvestment(eingabe);
+    expect(r.seniorLoanAmount).toBeCloseTo(310_500, 6);
+    expect(r.eigenkapital).toBeCloseTo(15_000, 6);
+    // Ohne Finanzierungsnebenkosten: Gesamtbedarf nur Kaufpreis und Nebenkosten.
+    expect(r.totalInvestment).toBeCloseTo(325_500, 6);
   });
 
-  it("übernimmt einen gespeicherten Satz", () => {
-    expect(eingabeAusJson({ purchasePrice: 300_000, financingCostRate: 0.3 }).financingCostRate).toBe(0.3);
+  it("macht das Nachrangdarlehen zum Euro-Betrag, die Bank bleibt der damalige Rest", () => {
+    const eingabe = eingabeAusJson({ ...version4, juniorLoanAmount: 20_000 });
+    expect(eingabe.juniorLoanMode).toBe("euro");
+    expect(eingabe.juniorLoanValue).toBe(20_000);
+    const r = berechneInvestment(eingabe);
+    expect(r.seniorLoanAmount).toBeCloseTo(290_500, 6);
+    expect(r.juniorLoanAmount).toBeCloseTo(20_000, 6);
+    expect(r.eigenkapital).toBeCloseTo(15_000, 6);
   });
 
-  it("startet eine neue Berechnung mit dem Standard", () => {
-    expect(eingabeAusJson(null).financingCostRate).toBe(standardEingabe.financingCostRate);
-    expect(standardEingabe.financingCostRate).toBe(0.2);
+  it("behält gedeckelte KfW- und Zweitdarlehen mit dem damals gerechneten Betrag", () => {
+    const r = berechneInvestment(eingabeAusJson({ ...version4, kfwEnabled: true, kfwLoanAmount: 500_000, secondLoanAmount: 50_000 }));
+    expect(r.kfwLoanAmount).toBeCloseTo(310_500, 6);
+    expect(r.secondLoanAmount).toBeCloseTo(0, 6);
+    expect(r.seniorLoanAmount).toBeCloseTo(0, 6);
+    expect(r.eigenkapital).toBeCloseTo(15_000, 6);
+  });
+
+  it("liest das frühere Eigenkapital als Betrag dieses Kunden, auch bei halbem Anteil", () => {
+    const r = berechneInvestment(eingabeAusJson({ ...version4, investmentShare: 50 }));
+    expect(r.seniorLoanAmount).toBeCloseTo(162_750 - 15_000, 6);
+    expect(r.eigenkapital).toBeCloseTo(15_000, 6);
+  });
+
+  it("lässt entfallene Felder nicht weiterrechnen", () => {
+    const eingabe = eingabeAusJson({
+      ...version4,
+      financingCostRate: 0.3,
+      saleCostRate: 5,
+      annualTaxableIncomeGrowth: 3,
+      seniorFixedRateYears: 2,
+      seniorFollowUpRate: 6,
+      seniorFollowUpRepaymentRate: 3,
+      seniorFollowUpCosts: 1000,
+      seniorFurtherFollowUps: [{ nachJahren: 5, zinsProzent: 7, tilgungProzent: 2, kosten: 300 }],
+      specialRepayments: [{ jahr: 2028, betrag: 10_000 }],
+      secondFollowUpRate: 7,
+      secondFollowUpRepaymentRate: 4,
+    });
+    for (const feld of [
+      "equity", "financingCostRate", "saleCostRate", "annualTaxableIncomeGrowth", "seniorFollowUpRate", "seniorFollowUpRepaymentRate",
+      "seniorFollowUpCosts", "seniorFurtherFollowUps", "specialRepayments", "secondFollowUpRate", "secondFollowUpRepaymentRate", "juniorLoanAmount",
+    ]) {
+      expect(eingabe, feld).not.toHaveProperty(feld);
+    }
+    const r = berechneInvestment(eingabe);
+    // Zins und Rate bleiben nach der Zinsbindung, das Einkommen ist konstant.
+    expect(r.years[5].darlehen.bank.zinssatz).toBeCloseTo(0.04, 9);
+    expect(r.years[5].darlehen.bank.payment).toBeCloseTo(r.years[1].darlehen.bank.payment, 6);
+    expect(r.years[9].taxableIncomeBefore).toBe(r.years[0].taxableIncomeBefore);
+    expect(r.totalInvestment).toBeCloseTo(325_500, 6);
+  });
+
+  it("übernimmt die frühere Zuführung zur Rücklage als Rücklage im Hausgeld, ohne sie zu ändern", () => {
+    const mit = eingabeAusJson({ ...version4, area: 60, monthlyReserveContribution: 45 });
+    expect(mit.monthlyReserveContribution).toBe(45);
+    expect(mit.monthlyReserveContributionAuto).toBe(false);
+    expect(berechneInvestment(mit).years[0].reserveContribution).toBeCloseTo(540, 6);
+    // Auch eine frühere 0 bleibt: Ein gespeicherter Stand rechnet nicht plötzlich mit der Vorgabe.
+    expect(eingabeAusJson({ ...version4, area: 60 }).monthlyReserveContributionAuto).toBe(false);
+  });
+
+  it("rechnet einmal um und dann nie wieder", () => {
+    const einmal = eingabeAusJson({ ...version4, juniorLoanAmount: 20_000 });
+    expect(eingabeAusJson(JSON.parse(JSON.stringify(einmal)))).toEqual(einmal);
+  });
+
+  it("startet eine neue Berechnung mit der Bank bei 100 Prozent des Kaufpreises", () => {
+    const neu = eingabeAusJson(null);
+    expect(neu.seniorLoanMode).toBe("percent");
+    expect(neu.seniorLoanValue).toBe(100);
+    expect(neu.monthlyReserveContributionAuto).toBe(true);
+    expect(eingabeAusJson({ seniorLoanMode: "unsinn", juniorLoanMode: 3, eingabeVersion: 5 }).seniorLoanMode).toBe("percent");
+  });
+
+  it("lässt die Energiefelder gespeicherter Unterlagen fallen", () => {
+    const unterlagen = unterlagenAusJson({ energyClass: "B", energyValue: 80, reserveAmount: 12_000 });
+    expect(unterlagen).not.toHaveProperty("energyClass");
+    expect(unterlagen).not.toHaveProperty("energyValue");
+    expect(unterlagen?.reserveAmount).toBe(12_000);
   });
 });
 
@@ -303,13 +392,13 @@ describe("All-inclusive-Modell in gespeicherten Berechnungen, seit dem 09.10.202
 
 describe("Kennzahlen und Name", () => {
   it("nimmt die Kennzahlen aus dem Ergebnis, ohne selbst zu rechnen", () => {
-    const eingabe = { ...standardEingabe, purchasePrice: 250_000, furniturePrice: 10_000, equity: 30_000, monthlyColdRent: 850 };
+    const eingabe = mitEigenkapital({ ...standardEingabe, purchasePrice: 250_000, furniturePrice: 10_000, monthlyColdRent: 850 }, 30_000);
     const ergebnis = berechneInvestment(eingabe);
     const k = kennzahlenAus(eingabe, ergebnis);
     // Der Gesamtkaufpreis. Die Möbel stecken seit dem 25.09.2026 darin und
     // werden nicht mehr dazugezählt.
     expect(k.kaufpreis).toBe(250_000);
-    expect(k.eigenkapital).toBe(30_000);
+    expect(k.eigenkapital).toBeCloseTo(30_000, 6);
     expect(k.bruttorendite).toBe(ergebnis.grossYield);
     expect(k.irr).toBe(ergebnis.irr);
     expect(k.cashflowMonatNachSteuern).toBeCloseTo(ergebnis.years[0].cashflowAfterTax / 12, 6);
@@ -337,18 +426,18 @@ describe("KfW-Darlehen in gespeicherten Berechnungen, seit dem 07.10.2026", () =
   };
 
   it("lädt einen alten Stand ohne KfW-Felder mit ausgeschaltetem KfW und unverändertem Ergebnis", () => {
-    const alt: Record<string, unknown> = { ...standardEingabe, purchasePrice: 300_000, equity: 15_000, monthlyColdRent: 1000 };
+    const alt: Record<string, unknown> = { ...standardEingabe, purchasePrice: 300_000, monthlyColdRent: 1000 };
     for (const feld of Object.keys(kfw)) delete alt[feld];
     const geladen = eingabeAusJson(JSON.parse(JSON.stringify(alt)));
     expect(geladen.kfwEnabled).toBe(false);
     expect(geladen.kfwLoanAmount).toBe(0);
     expect(berechneInvestment(geladen)).toEqual(
-      berechneInvestment({ ...standardEingabe, purchasePrice: 300_000, equity: 15_000, monthlyColdRent: 1000 }),
+      berechneInvestment({ ...standardEingabe, purchasePrice: 300_000, monthlyColdRent: 1000 }),
     );
   });
 
   it("speichert und lädt alle KfW-Felder unverändert", () => {
-    const eingabe = { ...standardEingabe, purchasePrice: 405_000, equity: 20_250, ...kfw };
+    const eingabe = { ...standardEingabe, purchasePrice: 405_000, seniorLoanMode: "euro" as const, seniorLoanValue: 255_000, ...kfw };
     const geladen = eingabeAusJson(JSON.parse(JSON.stringify(eingabe)));
     expect(geladen).toEqual(eingabe);
     expect(berechneInvestment(geladen).kfwTilgungszuschuss).toBe(15_000);
