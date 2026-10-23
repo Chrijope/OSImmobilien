@@ -76,7 +76,8 @@ const gross: Partial<InvestmentEingabe> = {
   purchasePrice: 98765432,
   monthlyColdRent: 412345,
   taxableIncomeCustomer: 12345678,
-  juniorLoanAmount: 5000000,
+  juniorLoanMode: "euro",
+  juniorLoanValue: 5000000,
 };
 
 beforeEach(() => {
