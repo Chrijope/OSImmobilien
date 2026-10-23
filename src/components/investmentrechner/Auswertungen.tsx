@@ -18,7 +18,6 @@ import {
 import { regelAfa, stresstest, wertszenarien } from "@/lib/investmentrechner/rechenstandards";
 import { sanierungenBereinigt, type UnterlagenDaten } from "@/lib/investmentrechner/unterlagenAuslesen";
 import {
-  ENERGIEKLASSEN,
   formatEuro,
   formatEuroCent,
   formatProzent,
@@ -59,7 +58,7 @@ import { dokumentTexteFuer } from "@/lib/investmentrechner/dokumentTexte";
 import type { FormatSprache } from "@/lib/sprachFormat";
 
 /*
- * Auswertungsbausteine des Investmentrechners: Steuerprofil, Energieskala,
+ * Auswertungsbausteine des Investmentrechners: Steuerprofil,
  * Unterlagen-Einblicke und Kennzahlenraster (Original xe, Ce, we, Te).
  */
 
@@ -194,10 +193,6 @@ export function kaufpreiszeilen(result: InvestmentErgebnis, sprache: FormatSprac
     if (weitere > 0.005) zeilen.push({ label: t.weitereNebenkosten, wert: euro(weitere) });
     zeilen.push({ label: t.nebenkostenAuf(prozent(result.purchaseCostRate), basis), wert: euro(result.purchaseCosts) });
   }
-  // Seit dem 25.09.2026: Sie stecken in den Gesamtkosten, nicht im Darlehen.
-  if (result.finanzierungsnebenkosten > 0) {
-    zeilen.push({ label: t.finanzierungsnebenkosten, wert: euro(result.finanzierungsnebenkosten) });
-  }
   zeilen.push({ label: t.gesamtkosten, wert: euro(result.totalInvestment), summe: true });
   return zeilen;
 }
@@ -271,8 +266,8 @@ export function Bankgespraech({
   };
   const letzter = result.years.length - 1;
   const risiken = [zinsrisiko(input, result, 0), letzter > 0 ? zinsrisiko(input, result, letzter) : null];
-  const ekrMit = eigenkapitalrendite(input, result).rendite;
-  const ekrOhne = eigenkapitalrenditeOhneWertsteigerung(input, result).rendite;
+  const ekrMit = eigenkapitalrendite(result).rendite;
+  const ekrOhne = eigenkapitalrenditeOhneWertsteigerung(result).rendite;
   const grenze = fuenfzehnProzentGrenze(result);
   const prozent1 = (wert: number | null) => (wert === null ? t("nicht bestimmbar", "cannot be determined") : fProzent1(wert));
   const optional = (wert: number | null, format: (w: number) => string) => (wert === null ? "–" : format(wert));
@@ -301,20 +296,16 @@ export function Bankgespraech({
       ],
     },
     {
-      titel: t("Zinsbindung und Anschluss", "Fixed-rate period and follow-up"),
+      titel: t("Zinsbindung", "Fixed-rate period"),
       neu: true,
       zeilen: [
-        ...(bank.restschuldZinsbindung
-          ? [[t(`Restschuld Bankdarlehen Ende ${bank.restschuldZinsbindung.jahr}`, `Remaining debt bank loan end of ${bank.restschuldZinsbindung.jahr}`), fEuro(bank.restschuldZinsbindung.betrag)] as [string, string]]
-          : []),
-        [t("Anschlusszins angenommen", "Assumed follow-up rate"), bank.anschlusszins === null ? t("keiner, Zins von heute", "none, today's rate") : fProzent(bank.anschlusszins)],
-        ...((input.seniorFurtherFollowUps ?? []).filter((a) => a.nachJahren >= 1).map((a) => [
-          t(`Weitere Anschlussfinanzierung nach ${a.nachJahren} Jahren`, `Further follow-up financing after ${a.nachJahren} years`),
-          `${a.zinsProzent > 0 ? fProzent(a.zinsProzent / 100) : t("Zins wie bisher", "rate as before")}${a.tilgungProzent > 0 ? `, Tilgung ${fProzent(a.tilgungProzent / 100)}` : ""}`,
-        ]) as [string, string][]),
-        ...(result.umschuldungskostenGesamt > 0
-          ? [[t("Umschuldungskosten im Prognosezeitraum", "Refinancing costs in the forecast period"), fEuro(result.umschuldungskostenGesamt)] as [string, string]]
-          : []),
+        ...(result.zinsbindungen ?? []).map((z) => [
+          t(
+            `Restschuld ${{ bank: "Bankdarlehen", bank2: "2. Bankdarlehen", kfw: "KfW-Darlehen", nachrang: "Nachrangdarlehen" }[z.art]} Ende ${z.kalenderjahr}`,
+            `Remaining debt ${{ bank: "bank loan", bank2: "2nd bank loan", kfw: "KfW loan", nachrang: "subordinated loan" }[z.art]} end of ${z.kalenderjahr}`,
+          ),
+          fEuro(z.restschuld),
+        ]) as [string, string][],
         ...(input.seniorRepaymentType === "volltilgung" && input.seniorTermYears > 0
           ? [[t("Tilgungsart Bankdarlehen", "Repayment type bank loan"), t(`Volltilgung in ${input.seniorTermYears} Jahren`, `Full repayment in ${input.seniorTermYears} years`)] as [string, string]]
           : input.seniorRepaymentType === "endfaellig"
@@ -323,14 +314,14 @@ export function Bankgespraech({
         ...(input.seniorGracePeriodYears > 0
           ? [[t("Tilgungsfreie Anlaufjahre Bankdarlehen", "Repayment-free years bank loan"), String(input.seniorGracePeriodYears)] as [string, string]]
           : []),
-        ...(result.sondertilgungenGesamt > 0
-          ? [[t("Sondertilgungen im Prognosezeitraum", "Special repayments in the forecast period"), fEuro(result.sondertilgungenGesamt)] as [string, string]]
-          : []),
         ...((result.secondLoanAmount ?? 0) > 0
           ? [[t("Zweites Bankdarlehen", "Second bank loan"), fEuro(result.secondLoanAmount)] as [string, string]]
           : []),
       ],
-      hinweis: t("Mit Anschlusszins rechnen Cashflow, Steuer, Restschuld und das Zinsänderungsrisiko unten ab dem Jahr nach der Zinsbindung mit ihm.", "With a follow-up rate, cash flow, tax, remaining debt and the interest rate risk below use it from the year after the fixed-rate period."),
+      hinweis: t(
+        "Nach der Zinsbindung rechnet das Modell mit demselben Zins und derselben Rate weiter. Wie ein höherer Zins wirkt, zeigt das Zinsänderungsrisiko unten.",
+        "After the fixed-rate period the model continues with the same rate and the same instalment. The interest rate risk below shows the effect of a higher rate.",
+      ),
     },
     {
       titel: t("Objekt und Kapitaldienstfähigkeit", "Property and debt service capacity"),
@@ -800,48 +791,12 @@ export function Hausgeldaufstellung({ input }: { input: InvestmentEingabe }) {
   );
 }
 
-interface EnergieskalaProps {
-  energyClass: string;
-  energyValue: number;
-  compact?: boolean;
-}
-
-/** Energieeffizienzskala A+ bis H mit hervorgehobener Klasse. */
-export function Energieskala({ energyClass, energyValue, compact = false }: EnergieskalaProps) {
-  const { sprache, texte } = useRechnerTexte();
-  const t = texte.energie;
-  return (
-    <div className={`energy-scale-wrap ${compact ? "compact" : ""}`}>
-      <div className="energy-scale" aria-label={t.effizienzklasse(energyClass || t.nichtAngegeben)}>
-        {ENERGIEKLASSEN.map((klasse) => (
-          <span
-            key={klasse}
-            className={`energy-${klasse.replace("+", "plus")} ${energyClass === klasse ? "active" : ""}`}
-          >
-            <b>{klasse}</b>
-          </span>
-        ))}
-      </div>
-      <div className="energy-scale-value">
-        <span>{t.effizienz}</span>
-        {/* Ohne Klasse steht hier „k. A." statt des Gedankenstrichs des Originals. */}
-        <strong>{energyClass || t.keineKlasse}</strong>
-        <small>
-          {energyValue > 0
-            ? `${formatZahl(energyValue, sprache, 1)} kWh/(m²·a)`
-            : t.kennwertFehlt}
-        </small>
-      </div>
-    </div>
-  );
-}
-
 interface UnterlagenEinblickeProps {
   data: UnterlagenDaten;
   compact?: boolean;
 }
 
-/** Energieausweis, Erhaltungsrücklage und Sanierungen aus den Unterlagen. */
+/** Erhaltungsrücklage und Sanierungen aus den Unterlagen. Den Energieausweis zeigt der Rechner seit dem 23.10.2026 nicht mehr. */
 export function UnterlagenEinblicke({ data, compact = false }: UnterlagenEinblickeProps) {
   // Das Eingabefeld speichert die Zeilen roh, damit man dort frei tippen kann.
   // Leere Zeilen und Leerzeichen fallen erst hier weg.
@@ -849,25 +804,7 @@ export function UnterlagenEinblicke({ data, compact = false }: UnterlagenEinblic
   const { sprache, texte } = useRechnerTexte();
   const t = texte.unterlagen;
   return (
-    <div className={`document-insights ${compact ? "compact" : ""}`}>
-      <section className="energy-insight">
-        <span className="insight-label">{t.energieausweis}</span>
-        <Energieskala energyClass={data.energyClass} energyValue={data.energyValue} compact={compact} />
-        <div className="insight-meta">
-          <span>
-            <small>{t.art}</small>
-            <strong>{data.certificateType || t.keineAngabe}</strong>
-          </span>
-          <span>
-            <small>{t.energietraeger}</small>
-            <strong>{data.energyCarrier || t.keineAngabe}</strong>
-          </span>
-          <span>
-            <small>{t.gueltigBis}</small>
-            <strong>{data.certificateValidUntil || t.keineAngabe}</strong>
-          </span>
-        </div>
-      </section>
+    <div className={`document-insights ohne-energie ${compact ? "compact" : ""}`}>
       <section className="reserve-insight">
         <span className="insight-label">{t.ruecklage}</span>
         <div className="reserve-number">

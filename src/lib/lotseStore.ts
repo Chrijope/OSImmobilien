@@ -371,7 +371,7 @@ export function kalkulationAusRechner(
     kaufpreis: r2(ergebnis.kaufpreisGesamt),
     kaufnebenkosten: r2(ergebnis.purchaseCosts),
     gesamtinvestition: r2(ergebnis.totalInvestment),
-    eigenkapital: r2(eingabe.equity),
+    eigenkapital: r2(ergebnis.eigenkapital),
     darlehen: r2(ergebnis.totalDebt),
     zins_prozent: r2(eingabe.seniorInterestRate),
     tilgung_prozent: r2(eingabe.seniorRepaymentRate),
@@ -407,7 +407,7 @@ export function kalkulationAusRechner(
  */
 const KUNDEN_FELDER = [
   "clientName", "annualGrossIncome", "taxClass", "jointAssessment", "taxableIncomeCustomer", "taxableIncomeSpouse",
-  "annualTaxableIncomeGrowth", "churchTaxRate", "includeSolidaritySurcharge", "taxCalculationMode", "marginalTaxRate",
+  "churchTaxRate", "includeSolidaritySurcharge", "taxCalculationMode", "marginalTaxRate",
 ] as const satisfies readonly (keyof InvestmentEingabe)[];
 
 export function ohneKundendaten(eingabe: InvestmentEingabe): InvestmentEingabe {

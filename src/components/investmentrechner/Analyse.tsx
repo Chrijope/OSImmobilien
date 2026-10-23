@@ -166,7 +166,7 @@ export function Analyse({
         <div className="card-heading">
           <div>
             <span className="eyebrow">{t("Objektprüfung", "Property review")}</span>
-            <h3>{t("Energie, Rücklagen & Sanierungen", "Energy, reserves & renovations")}</h3>
+            <h3>{t("Rücklagen & Sanierungen", "Reserves & renovations")}</h3>
           </div>
           <button className="text-button" onClick={onOpenDocuments}>
             <FileSearch size={15} />{" "}
@@ -227,7 +227,7 @@ export function Analyse({
             <h3>{t("Cashflow, Steuer und Tilgung", "Cash flow, tax and repayment")}</h3>
           </div>
         </div>
-        <Cashflowtabelle years={result.years} />
+        <Cashflowtabelle years={result.years} zinsbindungen={result.zinsbindungen} />
       </article>
       {/* Seit dem 07.10.2026: Mit KfW-Darlehen jedes Darlehen einzeln, ohne bleibt es bei der Tabelle darüber. */}
       {zeigeDarlehenstabelle(result) && (
@@ -246,7 +246,7 @@ export function Analyse({
                 : `Ab Jahr ${result.rateSprung.jahr} (${result.rateSprung.kalenderjahr}) steigt die Rate von ${formatEuroCent(result.rateSprung.rateVorher)} auf ${formatEuroCent(result.rateSprung.rateNachher)} im Monat, weil die tilgungsfreie Zeit des KfW-Darlehens endet.`}
             </p>
           )}
-          <Darlehenstabelle years={result.years} />
+          <Darlehenstabelle years={result.years} zinsbindungen={result.zinsbindungen} />
         </article>
       )}
       <article className="content-card">

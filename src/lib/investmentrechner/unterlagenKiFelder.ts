@@ -68,7 +68,6 @@ export type AuslesbaresFeld =
   | "notaryRate"
   | "landRegisterRate"
   | "otherPurchaseCostRate"
-  | "equity"
   | "seniorInterestRate"
   | "seniorRepaymentRate"
   | "monthlyColdRent"
@@ -97,7 +96,6 @@ export const AUSLESBARE_FELDER: readonly Feldbeschreibung[] = [
   { feld: "notaryRate", label: "Notar", einheit: "prozent", min: 0, max: 5 },
   { feld: "landRegisterRate", label: "Grundbuch", einheit: "prozent", min: 0, max: 5 },
   { feld: "otherPurchaseCostRate", label: "Sonstige KNK", einheit: "prozent", min: 0, max: 20 },
-  { feld: "equity", label: "Eigenkapital", einheit: "euro", min: 0, max: 50_000_000 },
   { feld: "seniorInterestRate", label: "Sollzins p. a.", einheit: "prozent", min: 0, max: 15 },
   { feld: "seniorRepaymentRate", label: "Anfängliche Tilgung", einheit: "prozent", min: 0, max: 20 },
   { feld: "monthlyColdRent", label: "Kaltmiete p. M.", einheit: "euro", min: 1, max: 100_000 },
@@ -410,7 +408,7 @@ export function automatikZeilen(aktuell: InvestmentEingabe, herkunft: Herkunft =
 }
 
 /** Nur leere Felder, nur sichere Werte mit Quelle, nie Kundenangaben: Das darf der automatische Weg selbst setzen. */
-export const PERSOENLICHE_FELDER = new Set<AuslesbaresFeld>(["equity", "seniorInterestRate", "seniorRepaymentRate"]);
+export const PERSOENLICHE_FELDER = new Set<AuslesbaresFeld>(["seniorInterestRate", "seniorRepaymentRate"]);
 export function automatischUebernehmbar(v: Uebernahmevorschlag): boolean {
   return !PERSOENLICHE_FELDER.has(v.feld) && v.abgleich === "leer" && !v.unveraendert && v.sicherheit === "hoch" && !!v.quelle;
 }

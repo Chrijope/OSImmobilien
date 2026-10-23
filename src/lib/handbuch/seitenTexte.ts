@@ -111,7 +111,7 @@ const DE = {
       punkte: [
         { t: "Abschreibung (AfA)", x: "Das Gebäude wird über die Jahre abgeschrieben, im Beispiel mit 3,1 % im Jahr. Das setzt ein vom Finanzamt anerkanntes Restnutzungsdauer-Gutachten voraus, sonst sind es 2 %." },
         { t: "Zinsen", x: "Die Zinsen für das Darlehen mindern deine Einkünfte aus Vermietung." },
-        { t: "Werbungskosten", x: "Nicht umlagefähige Kosten und Finanzierungsnebenkosten zählen mit." },
+        { t: "Werbungskosten", x: "Nicht umlagefähige Kosten zählen mit." },
       ],
       diagrammTitel: "Eigenaufwand im ersten Jahr, je Monat",
       diagrammUnter: (kaufpreis: string) => `Beispielwohnung Hauffstraße 38 für ${kaufpreis}, nach Jahresbrutto`,
@@ -182,7 +182,7 @@ const DE = {
       diagrammTitel: "Wert, Restschuld und dein Vermögen über 30 Jahre",
       diagrammUnter: "Gleiche Wohnung, gleiche Annahmen",
       diagrammFuss: (vermoegen: string, eingesetzt: string) =>
-        `Nach 30 Jahren im Modell: Vermögen in der Wohnung ${vermoegen}. Eingesetzt hast du bis dahin rund ${eingesetzt} (Eigenkapital, Finanzierungsnebenkosten und der laufende Eigenaufwand nach Steuer). Szenario, keine Zusage, Wertsteigerung nicht garantiert.`,
+        `Nach 30 Jahren im Modell: Vermögen in der Wohnung ${vermoegen}. Eingesetzt hast du bis dahin rund ${eingesetzt} (Eigenkapital und der laufende Eigenaufwand nach Steuer). Szenario, keine Zusage, Wertsteigerung nicht garantiert.`,
       annahmen: "Annahmen:",
       annahmenZusatz:
         "Jahresbrutto 100.000 €, Grundtarif. Rechenweg wie in unserem Investmentrechner. Die Rücklage zahlst du laufend, steuerlich zählt sie erst, wenn sie ausgegeben wird.",

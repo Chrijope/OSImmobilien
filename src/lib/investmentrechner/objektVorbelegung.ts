@@ -1,4 +1,4 @@
-import { EIGENKAPITAL_REGEL, type Herkunft } from "./herkunft";
+import type { Herkunft } from "./herkunft";
 import { objektUnterlagenQuelle, type ObjektUnterlagenQuelle } from "./objektUnterlagen";
 /**
  * Vorbelegung des Investmentrechners aus einem Objekt und einer Einheit.
@@ -37,7 +37,7 @@ import { objektUnterlagenQuelle, type ObjektUnterlagenQuelle } from "./objektUnt
 
 import type { ObjektData, ObjektWohnung } from "@/lib/objekteStore";
 import { exposeObjektdatenAus } from "@/lib/exposeInhalt";
-import { ausweisartText, energieeffizienzklasse, rohdaten } from "@/lib/investagonFelder";
+import { rohdaten } from "@/lib/investagonFelder";
 import { objektartInfo, objektseiteFelder } from "@/lib/objektseiteDaten";
 import { objektAnlageklasse } from "@/lib/objektKlassen";
 import { bundeslandFromPlz, GRUNDBUCH_PROZENT, NOTAR_PROZENT } from "@/lib/kaufnebenkosten";
@@ -49,8 +49,7 @@ import {
 import { hausgeldTeile } from "../../../supabase/functions/_shared/einheit-hausgeld";
 import { linearerAfaSatz } from "@/lib/afaSaetze";
 import { dez, eur0, prozent } from "@/lib/objektKennzahlen";
-import { berechneInvestment, standardEingabe, type InvestmentEingabe } from "./rechenkern";
-import { ENERGIEKLASSEN } from "./formatierer";
+import { standardEingabe, type InvestmentEingabe } from "./rechenkern";
 import { leereUnterlagenDaten, type UnterlagenDaten } from "./unterlagenAuslesen";
 import { MAX_RECHNER_BILDER, rechnerBildAdressen } from "./rechnerBilder";
 import {
@@ -184,9 +183,8 @@ export function vorbelegungAusEinheit(
     "Hausgeld gesamt p. M.": ["housingFeeTotal", "housingFeeRecoverable"],
     "Wohnfläche": ["area"], "Zimmer": ["rooms"], "Baujahr": ["constructionYear"],
     "Kaufnebenkosten": ["transferTaxRate", "notaryRate", "landRegisterRate"], "Kaltmiete p. M.": ["monthlyColdRent"],
-    "Eigenkapital": ["equity"], "Finanzierungsnebenkosten": ["financingCostRate"],
     "Nicht umlagefähige Kosten p. M.": ["housingFeeNonRecoverable", "monthlyOperatingCosts"], "Gebäudeanteil": ["buildingShare"],
-    "Zuführung Instandhaltungsrücklage p. M.": ["monthlyReserveContribution"],
+    "davon Instandhaltungsrücklage p. M.": ["monthlyReserveContribution"],
     "Nutzungsdauer Möbel": ["furnitureDepreciationYears"],
     "Degressive AfA p. a.": ["buildingDepreciationRate", "depreciationMethod"], "Lineare AfA p. a.": ["buildingDepreciationRate", "depreciationMethod"],
     "davon Erhaltungsaufwand": ["rehabExpense", "rehabMode"], "Verteilung des Aufwands": ["rehabDistributionYears"],
@@ -349,31 +347,13 @@ export function vorbelegungAusEinheit(
    * stecken im Kaufpreis und werden mit ihm finanziert, der Rechenkern weist
    * keine gesonderten aus.
    */
-  const nkSatz = eingabe.transferTaxRate + eingabe.notaryRate + eingabe.landRegisterRate
-    + eingabe.brokerRate + eingabe.otherPurchaseCostRate;
-  const eigenkapitalAusNebenkosten = eingabe.purchasePrice > 0 && nkSatz > 0;
-  const eigenkapitalEintrag = eigenkapitalAusNebenkosten ? uebernommen.length : -1;
-  if (eigenkapitalAusNebenkosten) {
-    nimm(
-      "Eigenkapital",
-      "",
-      eingabe.allInclusive
-        ? `All-inclusive, die Kaufnebenkosten (${prozent(nkSatz, 2)}) sind im Kaufpreis enthalten`
-        : `${EIGENKAPITAL_REGEL} (${prozent(nkSatz, 2)})`,
-    );
-  }
-
   /*
-   * Finanzierungsnebenkosten, seit dem 25.09.2026. Liefert Investagon einen
-   * Satz für die Einheit, gilt er; sonst bleibt der Standard des Rechners
-   * (0,2 Prozent) als benannte Annahme unten.
+   * Seit dem 23.10.2026 ist das Eigenkapital kein Eingabefeld mehr, sondern
+   * der Rest der Finanzierung. Der Standard des Rechners (Bank 100 Prozent des
+   * Kaufpreises) ergibt dieselbe Regel wie vorher: Eigenkapital in Höhe der
+   * Kaufnebenkosten, beim All-inclusive-Modell 0. Sie steht unten bei den
+   * Annahmen. Finanzierungsnebenkosten gibt es nicht mehr.
    */
-  const finanzierungSatz = positiv(wohnung.finanzierungsnebenkostenSatz);
-  const finanzierungAusEinheit = finanzierungSatz > 0 && finanzierungSatz <= 2;
-  if (finanzierungAusEinheit) {
-    eingabe.financingCostRate = finanzierungSatz;
-    nimm("Finanzierungsnebenkosten", prozent(finanzierungSatz, 2), "Einheit, aus Investagon");
-  }
 
   // ── Miete & Entwicklung ───────────────────────────────────────────────────
 
@@ -456,7 +436,7 @@ export function vorbelegungAusEinheit(
    */
   if (zufuehrung > 0) {
     eingabe.monthlyReserveContribution = zufuehrung;
-    nimm("Zuführung Instandhaltungsrücklage p. M.", eur0(zufuehrung), "Einheit, aus Investagon");
+    nimm("davon Instandhaltungsrücklage p. M.", eur0(zufuehrung), "Einheit, aus Investagon");
   }
   if (nichtUmlagefaehigGesamt > 0) {
     const nuText =
@@ -549,72 +529,21 @@ export function vorbelegungAusEinheit(
     );
   }
 
-  // Das Eigenkapital von oben, jetzt mit Erhaltungsaufwand und Gebäudeanteil.
-  if (eigenkapitalEintrag >= 0) {
-    const ergebnis = berechneInvestment(eingabe);
-    eingabe.equity = Math.round(ergebnis.purchaseCosts);
-    uebernommen[eigenkapitalEintrag].wert = eur0(eingabe.equity);
-    if (!eingabe.allInclusive && (ergebnis.erhaltungsaufwand > 0 || ergebnis.moebelAnteil > 0)) {
-      const ohne = [ergebnis.erhaltungsaufwand > 0 && "Erhaltungsaufwand", ergebnis.moebelAnteil > 0 && "Möbel"]
-        .filter(Boolean)
-        .join(" und ");
-      const woher = `${EIGENKAPITAL_REGEL} (${prozent(nkSatz, 2)} auf ${eur0(ergebnis.nebenkostenBasis)}, ohne ${ohne})`;
-      uebernommen[eigenkapitalEintrag].woher = woher;
-      herkunft.equity = { quelle: "objekt", text: `Aus der Objektanlage, ${woher}` };
-    }
-  }
-
   // ── Objektunterlagen ──────────────────────────────────────────────────────
 
   /*
-   * Energieausweis, Rücklagenanteil und Sanierungshistorie. Die Feldnamen
-   * decken sich eins zu eins, es wird nichts umgerechnet. Die Klasse wird nur
-   * übernommen, wenn sie auf der Skala des Rechners steht, sonst stünde im
-   * Auswahlfeld ein Wert, den es dort nicht gibt.
+   * Rücklagenanteil und Sanierungshistorie. Die Feldnamen decken sich eins zu
+   * eins, es wird nichts umgerechnet. Den Energieausweis übernimmt der Rechner
+   * seit dem 23.10.2026 nicht mehr, er steht im Exposé.
    */
-  const ea = felder.energieausweis;
-  /*
-   * Investagon führt die Effizienzklasse und die Ausweisart mal am Projekt,
-   * mal nur an der Einheit. `objektseiteFelder` fragt nur das Objekt, hier
-   * kommt die Einheit als Rückfall dazu. Gelesen wird nur, was
-   * `energieeffizienzklasse` als echte Klasse anerkennt.
-   */
-  const klasseDerEinheit = ea.klasse ? undefined : energieeffizienzklasse(einheitRohdaten(wohnung));
-  const klasse = (ea.klasse || klasseDerEinheit || "").trim().toUpperCase();
   const sanierungshistorie = felder.sanierungen
     .map((s) => [s.jahr, s.massnahme].filter(Boolean).join(" · "))
     .filter(Boolean);
   const unterlagen: UnterlagenDaten = {
     ...leereUnterlagenDaten,
-    energyClass: (ENERGIEKLASSEN as readonly string[]).includes(klasse) ? klasse : "",
-    energyValue: positiv(ea.kennwert),
-    certificateType: ea.art || ausweisartText(einheitRohdaten(wohnung)) || "",
-    energyCarrier: ea.energietraeger || "",
-    certificateValidUntil: ea.gueltigBis || "",
     reserveUnitShare: positiv(wohnung.ruecklageWohnung),
     renovations: sanierungshistorie,
   };
-  if (unterlagen.energyClass || unterlagen.energyValue > 0) {
-    nimm(
-      "Energieausweis",
-      [unterlagen.energyClass, unterlagen.energyValue > 0 ? `${dez(unterlagen.energyValue, 0)} kWh/(m²·a)` : ""]
-        .filter(Boolean)
-        .join(", "),
-      !(klasseDerEinheit && unterlagen.energyClass)
-        ? "Objekt, Energieausweis"
-        : unterlagen.energyValue > 0
-          ? "Objekt, Energieausweis, Klasse aus den Investagon-Daten der Einheit"
-          : "Investagon-Daten der Einheit",
-    );
-  } else {
-    fehlt(
-      "Energieeffizienzklasse",
-      "Angabe im Exposé, sie ist bei Vermietung und Verkauf pflichtig, in die Rechnung geht sie nicht ein",
-      // Den Knopf „Objektangaben pflegen" gibt es seit dem 23.09.2026 nicht mehr.
-      "Objekt, Energieausweis, der Admin trägt ihn über den Bearbeiten-Stift ein",
-      "objekt",
-    );
-  }
   if (unterlagen.reserveUnitShare > 0) {
     nimm("Anteil der Einheit an der Rücklage", eur0(unterlagen.reserveUnitShare), "Einheit");
   }
@@ -648,20 +577,11 @@ export function vorbelegungAusEinheit(
 
   fehlt("Kundenname", "Beschriftung der Auswertung und des Exposés", "Kunde & Einkommen im Rechner", "kunde");
   fehlt(
-    "zvE Kunde",
+    "Zu versteuerndes Einkommen",
     "ohne zu versteuerndes Einkommen gibt es keine Steuerwirkung und keinen Cashflow nach Steuern",
     "Kunde & Einkommen im Rechner, Zahl aus der Selbstauskunft",
     "kunde",
   );
-  // Beim All-inclusive-Modell ist 0 die Regel, keine Lücke.
-  if (!(eingabe.equity > 0) && !eingabe.allInclusive) {
-    fehlt(
-      "Eigenkapital",
-      "Darlehenshöhe, Rate und Rendite auf das eingesetzte Kapital",
-      "Finanzierung im Rechner; Regel: in Höhe der Kaufnebenkosten",
-      "kunde",
-    );
-  }
 
   eingabe.kfwProgram = investagonKfwProgramm(objekt, wohnung);
   if (eingabe.kfwProgram) {
@@ -671,6 +591,10 @@ export function vorbelegungAusEinheit(
   // ── Vorgaben, die nicht am Objekt hängen ──────────────────────────────────
 
   const annahmen: VorbelegungAnnahme[] = [
+    {
+      feld: "Bankdarlehen",
+      wert: `${prozent(eingabe.seniorLoanValue, 0)} des Kaufpreises, Eigenkapital ${eingabe.allInclusive ? "0 € (All-inclusive)" : "in Höhe der Kaufnebenkosten"}`,
+    },
     { feld: "Sollzins p. a.", wert: prozent(eingabe.seniorInterestRate, 2) },
     { feld: "Anfängliche Tilgung", wert: prozent(eingabe.seniorRepaymentRate, 2) },
     { feld: "Leerstand / Mietausfall", wert: prozent(eingabe.vacancyRate, 2) },
@@ -678,9 +602,6 @@ export function vorbelegungAusEinheit(
     { feld: "Kostensteigerung p. a.", wert: prozent(eingabe.annualCostGrowth, 2) },
     { feld: "Wertsteigerung p. a.", wert: prozent(eingabe.annualValueGrowth, 2) },
     { feld: "Betrachtungszeitraum", wert: `${eingabe.forecastYears} Jahre` },
-    ...(finanzierungAusEinheit
-      ? []
-      : [{ feld: "Finanzierungsnebenkosten", wert: `${prozent(eingabe.financingCostRate, 2)} der Darlehenssumme` }]),
   ];
 
   return { eingabe, knk, unterlagen, bilder, uebernommen, luecken, annahmen, quellen: objektUnterlagenQuelle(objekt, wohnung), herkunft };

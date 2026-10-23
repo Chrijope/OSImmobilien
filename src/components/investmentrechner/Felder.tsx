@@ -553,7 +553,7 @@ export function Cashflowleiste({
   const zahltDrauf = nachSteuerMonat < 0;
   // Ohne Einkommen oder Satz sind beide Cashflows gleich; ein Satz sagt warum (30.09.2026).
   const ohneSteuerwirkung = hinweisOhneSteuerwirkung(input, result, sprache);
-  const ekr = eigenkapitalrendite(input, result);
+  const ekr = eigenkapitalrendite(result);
   const nebenkosten = eigenkapitalrenditeNebenkosten(input, result);
   const prozentEins = (wert: number) => formatProzentEineStelle(wert, sprache);
 

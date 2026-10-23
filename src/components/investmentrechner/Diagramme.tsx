@@ -162,7 +162,7 @@ export function Zusammensetzung({ input, result }: ZusammensetzungProps) {
   const { sprache, texte } = useRechnerTexte();
   const letztesJahr = result.years[result.years.length - 1];
   const anteile = [
-    { label: texte.diagramm.eigenkapital, value: Math.max(0, input.equity), className: "composition-equity" },
+    { label: texte.diagramm.eigenkapital, value: result.eigenkapital, className: "composition-equity" },
     { label: texte.diagramm.tilgung, value: Math.max(0, result.getilgtGesamt), className: "composition-principal" },
     // Der KfW-Zuschuss senkt die Restschuld ohne Zahlung des Kunden, deshalb ein eigener Teil, nur wenn es ihn gibt.
     ...(result.tilgungszuschussPrognose > 0

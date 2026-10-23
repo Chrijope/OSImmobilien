@@ -149,14 +149,14 @@ export function kundenUebernahmeAus(
     aenderung.taxableIncomeCustomer = Math.round(sa.zvE);
     felder.push("taxableIncomeCustomer");
     posten.push({
-      feld: "zvE Kunde",
+      feld: "Zu versteuerndes Einkommen",
       wert: formatEuro(sa.zvE),
       hinweis: !sa.zvEAngegeben
         ? "Geschätzt aus dem Jahresbrutto, bitte gegen den Steuerbescheid prüfen"
         : sa.verheiratet
-          ? "Gemeinsames zvE laut Selbstauskunft, gerechnet mit Splittingtarif"
+          ? "Gemeinsames zu versteuerndes Einkommen laut Selbstauskunft, gerechnet mit Splittingtarif"
           : sa.anzahlPersonen === 2
-            ? "zvE von Person 1 laut Selbstauskunft, ohne Zusammenveranlagung wird getrennt besteuert"
+            ? "Zu versteuerndes Einkommen von Person 1 laut Selbstauskunft, ohne Zusammenveranlagung wird getrennt besteuert"
             : "Laut Selbstauskunft",
     });
     /*
@@ -166,7 +166,7 @@ export function kundenUebernahmeAus(
     if (sa.zvEAngegeben && sa.verheiratet) {
       aenderung.taxableIncomeSpouse = 0;
       felder.push("taxableIncomeSpouse");
-      posten.push({ feld: "zvE Ehe-/Lebenspartner", wert: formatEuro(0), hinweis: "Im gemeinsamen zvE enthalten" });
+      posten.push({ feld: "Zu versteuerndes Einkommen Ehe-/Lebenspartner", wert: formatEuro(0), hinweis: "Im gemeinsamen zu versteuernden Einkommen enthalten" });
     }
   }
 

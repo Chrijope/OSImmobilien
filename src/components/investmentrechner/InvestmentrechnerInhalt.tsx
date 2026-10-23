@@ -5,7 +5,7 @@ import { stellplatzmieteTrennen } from "@/lib/investmentrechner/objektVorbelegun
 import type { FormatSprache } from "@/lib/sprachFormat";
 import { AusfuehrlicheBerechnung } from "./AusfuehrlicheBerechnung";
 import { RechnerSpracheContext } from "./RechnerSprache";
-import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type SetStateAction } from "react";
 import { useMaskeBisUnten } from "./useMaskeBisUnten";
 import { createPortal } from "react-dom";
 import {
@@ -18,6 +18,7 @@ import {
   FileDown,
   FileSearch,
   FileText,
+  Languages,
   ImagePlus,
   Landmark,
   ReceiptText,
@@ -30,7 +31,8 @@ import { PageHeader } from "@/components/PageHeader";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import { abfrageDialog, auswahlDialog } from "@/lib/confirm";
+import { abfrageDialog, auswahlDialog, confirmDialog } from "@/lib/confirm";
+import { entwurfLaden, entwurfLoeschen, entwurfSpeichern } from "@/lib/investmentrechner/entwurfAblage";
 // Im CRM rollt der Inhaltskasten, nicht das Fenster. Siehe lib/rollen.ts.
 import { rolleSeiteNachOben } from "@/lib/rollen";
 import { getCurrentUserId } from "@/lib/currentUser";
@@ -48,6 +50,7 @@ import { aufEigenSetzen, ohneAutomatik, setzeHerkunft, type Herkunft, type Herku
 import { kundenschritt, kundenUebernahmeFuer, selbstauskunftAus, type Kundenschritt } from "@/lib/investmentrechner/kundenUebernahme";
 import {
   berechneInvestment,
+  mitRuecklagenVorgabe,
   standardEingabe,
   type InvestmentEingabe,
   type InvestmentErgebnis,
@@ -103,6 +106,7 @@ import {
   EingabeObjekt,
   EingabeSteuer,
   EingabeUnterlagen,
+  UnterlagenUpload,
 } from "@/components/investmentrechner/Eingabebereiche";
 import { Analyse } from "@/components/investmentrechner/Analyse";
 import { ExposeDokument, ExposeVergleichsdokument, type ExposeObjekt } from "@/components/investmentrechner/ExposeDokument";
@@ -210,6 +214,22 @@ export function startZustand(vorbelegung?: Rechnervorbelegung): Objektzustand {
     documentData: vorbelegung.unterlagen ?? leereUnterlagenDaten,
     herkunft: vorbelegung.herkunft ?? {},
   };
+}
+
+/**
+ * Vorgaben, die aus anderen Feldern folgen, nach jeder Änderung: die
+ * Rücklage im Hausgeld aus der Wohnfläche, solange sie keine Herkunft hat
+ * (siehe `mitRuecklagenVorgabe`). Unveränderte Objekte bleiben dieselben.
+ */
+export function mitVorgaben<T extends { eingabe: InvestmentEingabe; herkunft: Herkunft }>(objekte: T[]): T[] {
+  let geaendert = false;
+  const neu = objekte.map((objekt) => {
+    const eingabe = mitRuecklagenVorgabe(objekt.eingabe, !!objekt.herkunft.monthlyReserveContribution);
+    if (eingabe === objekt.eingabe) return objekt;
+    geaendert = true;
+    return { ...objekt, eingabe };
+  });
+  return geaendert ? neu : objekte;
 }
 
 /**
@@ -369,6 +389,19 @@ export interface InvestmentrechnerInhaltProps {
   erstelltVon?: string;
 }
 
+/**
+ * Unter welchem Schlüssel der Entwurf im Browser liegt (siehe
+ * entwurfAblage.ts): je geladener Berechnung, je Einheit, je Investment oder
+ * Kunde aus dem Aufruf, sonst einer für den freien Rechner.
+ */
+export function entwurfKontext(vorbelegung: Rechnervorbelegung | undefined, start: Rechnerstart | undefined): string {
+  if (start?.berechnung) return `berechnung:${start.berechnung.id}`;
+  if (vorbelegung?.quellen) return `einheit:${vorbelegung.quellen.wohnungId ?? vorbelegung.quellen.objektId}`;
+  if (start?.investmentId) return `investment:${start.investmentId}`;
+  if (start?.kundeId) return `kunde:${start.kundeId}`;
+  return "frei";
+}
+
 export function InvestmentrechnerInhalt({
   vorbelegung,
   mitUeberschrift = true,
@@ -383,13 +416,27 @@ export function InvestmentrechnerInhalt({
   // Die fixierte Eingabemaske reicht bis zum Fensterrand, siehe useMaskeBisUnten.
   const maskeRef = useRef<HTMLElement>(null);
   useMaskeBisUnten(maskeRef);
-  const [objekte, setObjekte] = useState<Objektzustand[]>(() => {
+  /*
+    Autospeichern, seit dem 23.10.2026: Ein Entwurf aus diesem Browser hat
+    Vorrang vor der Vorbelegung, denn er ist der zuletzt gesehene Stand.
+    „Zurücksetzen“ löscht ihn.
+  */
+  const kontext = entwurfKontext(vorbelegung, start);
+  const [entwurf] = useState(() => entwurfLaden(kontext));
+  const [objekte, setObjekteRoh] = useState<Objektzustand[]>(() => {
+    if (entwurf) return mitVorgaben(entwurf.objekte.map((o) => ({ ...leeresObjekt, ...o })));
     const mitSchalter = (liste: Objektzustand[]) =>
       bankgespraechStart && !start?.berechnung
         ? liste.map((o) => ({ ...o, eingabe: { ...o.eingabe, bankgespraechAktiv: true } }))
         : liste;
-    return mitSchalter(startObjekte());
+    return mitVorgaben(mitSchalter(startObjekte()));
   });
+  // Jede Änderung läuft durch die Vorgaben, auch die aus Unterlagen, Objektdaten und Selbstauskunft.
+  const setObjekte = useCallback(
+    (neu: SetStateAction<Objektzustand[]>) =>
+      setObjekteRoh((bisher) => mitVorgaben(typeof neu === "function" ? neu(bisher) : neu)),
+    [],
+  );
   function startObjekte(): Objektzustand[] {
     if (start?.berechnung) {
       // Ein Stand von vor dem 22.10.2026 hat die Stellplatzmiete noch in der Kaltmiete; getrennt wird nur, was die Einheit belegt.
@@ -414,14 +461,16 @@ export function InvestmentrechnerInhalt({
     if (!start?.kundeName) return [zustand];
     return [{ ...zustand, eingabe: { ...zustand.eingabe, clientName: start.kundeName } }];
   }
-  const [aktivIndex, setAktivIndex] = useState(0);
+  const [aktivIndex, setAktivIndex] = useState(entwurf?.aktivIndex ?? 0);
   /* ── Kunde, Investment und die gespeicherte Berechnung ── */
-  const [kundeId, setKundeId] = useState<string | null>(start?.berechnung?.kontakt_id ?? start?.kundeId ?? null);
-  const [investmentId, setInvestmentId] = useState<string | null>(
-    start?.berechnung?.investment_id ?? start?.investmentId ?? null,
+  const [kundeId, setKundeId] = useState<string | null>(
+    entwurf ? entwurf.kundeId : start?.berechnung?.kontakt_id ?? start?.kundeId ?? null,
   );
-  const [berechnungId, setBerechnungId] = useState<string | null>(start?.berechnung?.id ?? null);
-  const [berechnungName, setBerechnungName] = useState(start?.berechnung?.name ?? "");
+  const [investmentId, setInvestmentId] = useState<string | null>(
+    entwurf ? entwurf.investmentId : start?.berechnung?.investment_id ?? start?.investmentId ?? null,
+  );
+  const [berechnungId, setBerechnungId] = useState<string | null>(entwurf ? entwurf.berechnungId : start?.berechnung?.id ?? null);
+  const [berechnungName, setBerechnungName] = useState(entwurf ? entwurf.berechnungName : start?.berechnung?.name ?? "");
   /**
    * Was im Kundenbereich gerade zu sagen ist: erst das Investment wählen,
    * dann entweder die Rückfrage zur Selbstauskunft oder der Hinweis, dass
@@ -634,6 +683,28 @@ export function InvestmentrechnerInhalt({
     setSchritt(kundenschritt(investmentId, getInvestmentsByKontakt(kundeId).length, kundenUebernahmeFuer(kundeId, investmentId)));
   }, [kundeId, investmentId, start?.berechnung]);
 
+  // Nach jeder Änderung in den Browser schreiben. Bilder nur, wenn sie sich geändert haben.
+  const letzteBilder = useRef<string[][]>([]);
+  useEffect(() => {
+    const fotos = objekte.map((o) => o.photos);
+    const mitBildern = fotos.length !== letzteBilder.current.length || fotos.some((f, i) => f !== letzteBilder.current[i]);
+    letzteBilder.current = fotos;
+    entwurfSpeichern(
+      kontext,
+      {
+        objekte: objekte.map(({ eingabe, knk, herkunft, documentData, photos: bilder, vergleich }) => ({
+          eingabe, knk, herkunft, documentData, photos: bilder, ...(vergleich ? { vergleich } : {}),
+        })),
+        kundeId,
+        investmentId,
+        berechnungId,
+        berechnungName,
+        aktivIndex: sicherIndex,
+      },
+      mitBildern,
+    );
+  }, [objekte, kundeId, investmentId, berechnungId, berechnungName, sicherIndex, kontext]);
+
   const setzeZahl = (feld: ZahlenFeld, wert: number) => {
     setObjekte((bisher) => setzeFeld(bisher, sicherIndex, feld, wert));
   };
@@ -673,8 +744,9 @@ export function InvestmentrechnerInhalt({
   };
 
   const neuStarten = () => {
-    // Zurück auf den Anfang, also bei einer Vorbelegung zurück auf die Zahlen
-    // der Einheit und nicht auf ein leeres Formular.
+    // Zurück auf den Anfang, also auf einer Einheitenseite zurück auf die
+    // Zahlen der Einheit, sonst auf ein leeres Formular für eine neue Berechnung.
+    entwurfLoeschen(kontext);
     unterlagenManuell.current = false;
     setAutomatischeAntwort(null);
     setQuellenVersuch(v => v + 1);
@@ -683,12 +755,32 @@ export function InvestmentrechnerInhalt({
     fotosVorbelegt.current = false;
     setFotoStand("still");
     setBilderVersuch(v => v + 1);
-    setObjekte([startZustand(vorbelegung)]);
-    // Ganz zurück auf die Vorbelegung: nur ein noch gewählter Kunde hält den Kundenbezug.
-    kundeBeruehrt.current = !!kundeId;
+    setObjekte([startZustand(vorbelegung?.quellen ? vorbelegung : undefined)]);
+    setKundeId(start?.kundeId ?? null);
+    setInvestmentId(start?.investmentId ?? null);
+    setBerechnungId(null);
+    setBerechnungName("");
+    setSchritt({ art: "still" });
+    setSpeicherhinweis("");
+    // Ganz zurück: nur ein vom Aufruf mitgegebener Kunde hält den Kundenbezug.
+    kundeBeruehrt.current = !!start?.kundeId;
     setAktivIndex(0);
     setBereich("kunde");
     setAnsicht("analyse");
+  };
+
+  /** Knopf „Zurücksetzen“ oben rechts, mit kurzer Rückfrage im Stil des Projekts. */
+  const zuruecksetzen = async () => {
+    const ja = await confirmDialog({
+      title: "Berechnung zurücksetzen?",
+      description: vorbelegung?.quellen
+        ? "Alle Eingaben gehen zurück auf die Daten dieser Einheit. Am Investment gespeicherte Berechnungen bleiben erhalten."
+        : "Alle Eingaben werden geleert, für eine neue Berechnung. Am Investment gespeicherte Berechnungen bleiben erhalten.",
+      confirmText: "Zurücksetzen",
+      cancelText: "Abbrechen",
+      variant: "destructive",
+    });
+    if (ja) neuStarten();
   };
 
   const objektHinzufuegen = () => {
@@ -1395,9 +1487,6 @@ export function InvestmentrechnerInhalt({
         Bankgespräch &amp; Bankunterlagen
         <Neu />
       </label>
-      <Button variant="outline" className="gap-2" onClick={neuStarten}>
-        <RotateCcw size={16} /> {vorbelegung ? "Auf Objektdaten zurücksetzen" : "Neu starten"}
-      </Button>
       {/*
         Speichern gibt es nur mit gewähltem Investment, denn dort landet die
         Berechnung. Der Knopf ist deshalb nicht versteckt, sondern gesperrt und
@@ -1553,22 +1642,32 @@ export function InvestmentrechnerInhalt({
                   </p>
                 )}
                 {bereich === "kunde" && <EingabeKunde {...eingabeProps} kundenbereich={kundenbereich} />}
-                {bereich === "objekt" && <EingabeObjekt {...eingabeProps} knk={aktiv.knk} setzeKnk={setzeKnk} />}
+                {bereich === "objekt" && (
+                  <EingabeObjekt
+                    {...eingabeProps}
+                    knk={aktiv.knk}
+                    setzeKnk={setzeKnk}
+                    unterlagen={
+                      <UnterlagenUpload
+                        documents={documents}
+                        isReading={isReading}
+                        onUpload={unterlagenHochladen}
+                        onRemove={unterlageEntfernen}
+                        kiAuslesung={kiAnzeige?.objektIndex === sicherIndex ? kiAnzeige : sicherIndex === eigenerIndex ? autoAuslesung : null}
+                        onFelderAuslesen={felderAuslesen}
+                        onFelderUebernehmen={felderUebernehmen}
+                        onKiSchliessen={() => { setKiAuslesung(null); setAutoListeZu(true); }}
+                        onZuruecknehmen={zuruecknehmen}
+                      />
+                    }
+                  />
+                )}
                 {bereich === "unterlagen" && (
                   <EingabeUnterlagen
-                    documents={documents}
-                    isReading={isReading}
                     documentData={documentData}
                     setDocumentData={(aktualisierer) =>
                       { unterlagenManuell.current = true; setzeAktivesObjekt((objekt) => ({ ...objekt, documentData: aktualisierer(objekt.documentData) })); }
                     }
-                    onUpload={unterlagenHochladen}
-                    onRemove={unterlageEntfernen}
-                    kiAuslesung={kiAnzeige?.objektIndex === sicherIndex ? kiAnzeige : sicherIndex === eigenerIndex ? autoAuslesung : null}
-                    onFelderAuslesen={felderAuslesen}
-                    onFelderUebernehmen={felderUebernehmen}
-                    onKiSchliessen={() => { setKiAuslesung(null); setAutoListeZu(true); }}
-                    onZuruecknehmen={zuruecknehmen}
                   />
                 )}
                 {bereich === "finanzierung" && <EingabeFinanzierung {...eingabeProps} />}
@@ -1607,7 +1706,13 @@ export function InvestmentrechnerInhalt({
 
             <section className="result-panel" lang={kundenSprache}>
             <RechnerSpracheContext.Provider value={kundenSprache}>
+              {/*
+                Kopfbereich, seit dem 23.10.2026 in drei Ebenen (Christian):
+                oben Kunde und Objekt mit „Zurücksetzen“, darunter die
+                Hauptnavigation der Ansichten, darunter Deckblatt und Sprache.
+              */}
               <div className="result-header">
+                <div className="result-kopf">
                 {ansicht === "vergleich" ? (
                   <div>
                     <span className="eyebrow">{input.clientName || (en ? "Client calculation" : "Kundenberechnung")}</span>
@@ -1628,21 +1733,11 @@ export function InvestmentrechnerInhalt({
                     <p>{input.address || (en ? "Address missing" : "Adresse ergänzen")}</p>
                   </div>
                 )}
-                {/* Ohne Kunde eine sichtbare Wahl; mit Kunde gilt seine Sprache aus dem Profil. */}
-                {!kundeId && dokumentSprache === undefined ? (
-                  <label className="sprache-wahl" data-testid="sprache-wahl">
-                    <span>{en ? "Language of preview and PDF" : "Sprache der Vorschau und PDFs"}</span>
-                    <select value={kundenSprache} onChange={(e) => setSpracheOhneKunde(e.target.value === "en" ? "en" : "de")}>
-                      <option value="de">Deutsch</option>
-                      <option value="en">English</option>
-                    </select>
-                  </label>
-                ) : kundeId ? (
-                  <span className="sprache-wahl" data-testid="sprache-kunde">
-                    {en ? "Language from the client profile: English" : "Sprache aus dem Kundenprofil: Deutsch"}
-                  </span>
-                ) : null}
-                <div className="view-toggle" role="tablist" aria-label={en ? "Choose view" : "Ansicht wählen"}>
+                  <Button variant="outline" size="sm" className="gap-2 rechner-zuruecksetzen" onClick={() => void zuruecksetzen()} data-testid="rechner-zuruecksetzen">
+                    <RotateCcw size={15} /> {en ? "Reset" : "Zurücksetzen"}
+                  </Button>
+                </div>
+                <div className="view-toggle hauptansichten" role="tablist" aria-label={en ? "Choose view" : "Ansicht wählen"}>
                   <button className={ansicht === "analyse" ? "active" : ""} onClick={() => setAnsicht("analyse")}>
                     <Calculator size={16} /> {en ? "Analysis" : "Analyse"}
                   </button>
@@ -1663,6 +1758,43 @@ export function InvestmentrechnerInhalt({
                     <FileText size={16} /> {en ? "Detailed" : "Ausführlich"}
                   </button>
                 </div>
+                <div className="result-optionen">
+                  {(ansicht === "analyse" || ansicht === "expose") && (
+                    <DeckblattWahl
+                      wert={deckblatt}
+                      onWahl={waehleDeckblatt}
+                      hinweis={
+                        en
+                          ? "First page of the analysis, the calculation and its PDF. The pages after it are the same for all."
+                          : "Erste Seite der Analyse, der Berechnung und ihres PDFs. Die Seiten danach sind bei allen gleich."
+                      }
+                    />
+                  )}
+                  {/* Ohne Kunde eine sichtbare Wahl; mit Kunde gilt seine Sprache aus dem Profil. */}
+                  {dokumentSprache === undefined && (
+                    <div className="sprache-wahl" data-testid={kundeId ? "sprache-kunde" : "sprache-wahl"}>
+                      <span>
+                        <Languages size={14} /> {en ? "Language for client and PDF" : "Sprache für Kunde und PDF"}
+                      </span>
+                      <div className="sprache-schalter" role="radiogroup" aria-label={en ? "Language for client and PDF" : "Sprache für Kunde und PDF"}>
+                        {(["de", "en"] as const).map((sprache) => (
+                          <button
+                            key={sprache}
+                            type="button"
+                            role="radio"
+                            aria-checked={kundenSprache === sprache}
+                            className={kundenSprache === sprache ? "active" : ""}
+                            disabled={!!kundeId}
+                            onClick={() => setSpracheOhneKunde(sprache)}
+                          >
+                            {sprache.toUpperCase()}
+                          </button>
+                        ))}
+                      </div>
+                      {kundeId && <small>{en ? "From the client profile" : "Aus dem Kundenprofil"}</small>}
+                    </div>
+                  )}
+                </div>
               </div>
               {ansicht === "analyse" && (
                 <Analyse
@@ -1670,9 +1802,8 @@ export function InvestmentrechnerInhalt({
                   result={result}
                   documents={documents}
                   documentData={documentData}
-                  onOpenDocuments={() => setBereich("unterlagen")}
+                  onOpenDocuments={() => setBereich("objekt")}
                   deckblatt={deckblatt}
-                  onDeckblatt={waehleDeckblatt}
                   mitBankgespraech={bankModus}
                 />
               )}
@@ -1695,18 +1826,9 @@ export function InvestmentrechnerInhalt({
                     auf einem Bildschirm lassen den Nutzer ueberlegen, ob sie
                     wirklich dasselbe tun.
 
-                    Seit dem 07.10.2026 steht hier nur die Wahl des Deckblatts.
-                    Sie gilt für die Vorschau und für den Knopf oben.
+                    Die Wahl des Deckblatts steht seit dem 23.10.2026 im
+                    Kopfbereich, für Analyse und Berechnung gemeinsam.
                   */}
-                  <DeckblattWahl
-                    wert={deckblatt}
-                    onWahl={waehleDeckblatt}
-                    hinweis={
-                      en
-                        ? "Applies to the preview, to “Download calculation” and to the analysis. The pages after it are the same for all."
-                        : "Gilt für die Vorschau, für „Berechnung herunterladen“ und für die Analyse. Die Seiten danach sind bei allen gleich."
-                    }
-                  />
                   <ExposeVorschau>{exposeInhalt(false)}</ExposeVorschau>
                 </div>
               )}

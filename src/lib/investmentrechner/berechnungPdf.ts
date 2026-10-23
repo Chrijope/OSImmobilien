@@ -380,7 +380,7 @@ function zusammensetzung(l: Lauf, input: InvestmentEingabe, result: InvestmentEr
   const d = l.t.diagramm;
   const letztes = result.years[result.years.length - 1];
   const anteile: { label: string; wert: number; farbe: Farbe }[] = [
-    { label: d.eigenkapital, wert: Math.max(0, input.equity), farbe: BRAND.primary },
+    { label: d.eigenkapital, wert: result.eigenkapital, farbe: BRAND.primary },
     { label: d.tilgung, wert: Math.max(0, result.getilgtGesamt), farbe: BRAND.accent },
     { label: d.wertzuwachs, wert: Math.max(0, letztes.wertzuwachs), farbe: BRAND.accentLight },
     { label: d.steuereffekt, wert: Math.max(0, result.cumulativeTaxEffect), farbe: BRAND.muted },
@@ -533,7 +533,6 @@ function objektteil(l: Lauf, objekt: BerechnungPdfObjekt, bilder: Bild[], marke?
   if (input.area > 0) fakten.push({ label: t.deckblatt.wohnflaeche, wert: `${zahl(input.area)} m²` });
   if (input.rooms > 0) fakten.push({ label: t.deckblatt.zimmer, wert: zahl(input.rooms) });
   if (input.constructionYear > 0) fakten.push({ label: t.deckblatt.baujahr, wert: String(input.constructionYear) });
-  if (documentData.energyClass) fakten.push({ label: t.deckblatt.energieklasse, wert: documentData.energyClass });
   kacheln(l, fakten, Math.min(4, fakten.length));
 
   kacheln(
@@ -664,9 +663,10 @@ function objektteil(l: Lauf, objekt: BerechnungPdfObjekt, bilder: Bild[], marke?
 
   ueberschrift(l, t.deckblatt.finanzierungSteuer);
   zeile(l, t.deckblatt.bankdarlehen, euro(result.seniorLoanAmount));
-  if (input.juniorLoanAmount > 0) zeile(l, t.deckblatt.nachrangdarlehen, euro(input.juniorLoanAmount));
+  if (result.juniorLoanAmount > 0) zeile(l, t.deckblatt.nachrangdarlehen, euro(result.juniorLoanAmount));
   zeile(l, t.deckblatt.zinsTilgung, `${prozentZahl(input.seniorInterestRate)} / ${prozentZahl(input.seniorRepaymentRate)}`);
-  zeile(l, t.deckblatt.eingesetztesEigenkapital, euro(input.equity), true);
+  if (result.totalDebt > 0) zeile(l, t.deckblatt.mischzins, formatProzent(result.mischzins, sprache));
+  zeile(l, t.deckblatt.eingesetztesEigenkapital, euro(result.eigenkapital), true);
   zeile(l, t.deckblatt.zveVorErwerb, euro(result.combinedTaxableIncome));
   const grenzsteuersatz = input.taxCalculationMode === "tariff" ? result.marginalTotalTaxRate : input.marginalTaxRate / 100;
   zeile(
@@ -838,24 +838,14 @@ function objektteil(l: Lauf, objekt: BerechnungPdfObjekt, bilder: Bild[], marke?
     l,
     [
       {
-        label: us.energieklasse,
-        wert: documentData.energyClass || us.keineAngabe,
-        notiz: documentData.energyValue > 0 ? `${zahl(documentData.energyValue, 1)} kWh/(m²·a)` : us.kennwertFehlt,
-      },
-      {
         label: us.ruecklagenbestand,
         wert: documentData.reserveAmount > 0 ? euro(documentData.reserveAmount) : us.keineAngabe,
         notiz: documentData.reserveAsOf ? us.stand(documentData.reserveAsOf) : us.stichtagFehlt,
       },
       { label: us.sanierungshistorie, wert: String(sanierungen.length), notiz: us.massnahmen(sanierungen.length) },
     ],
-    3,
+    2,
   );
-  ueberschrift(l, ut.energieausweis);
-  zeile(l, ut.art, documentData.certificateType || ut.keineAngabe);
-  zeile(l, ut.energietraeger, documentData.energyCarrier || ut.keineAngabe);
-  zeile(l, ut.gueltigBis, documentData.certificateValidUntil || ut.keineAngabe);
-  l.y += 3;
   ueberschrift(l, ut.ruecklage);
   zeile(l, `${ut.gesamtbestand}${documentData.reserveAsOf ? ut.stand(documentData.reserveAsOf) : ""}`, euro(documentData.reserveAmount));
   zeile(l, ut.anteilEinheit, documentData.reserveUnitShare > 0 ? euro(documentData.reserveUnitShare) : ut.nichtAusgewiesen);
@@ -1089,7 +1079,7 @@ export async function erzeugeBankgespraechPdf(input: InvestmentEingabe, result: 
   zeile(l, "Bankdarlehen", euro(result.seniorLoanAmount));
   if (result.secondLoanAmount > 0) zeile(l, "Zweites Bankdarlehen", euro(result.secondLoanAmount));
   if (result.kfwLoanAmount > 0) zeile(l, `KfW-Darlehen${input.kfwProgram ? ` (${input.kfwProgram})` : ""}`, euro(result.kfwLoanAmount));
-  if (input.juniorLoanAmount > 0) zeile(l, "Nachrangdarlehen", euro(result.totalDebt - result.seniorLoanAmount - result.kfwLoanAmount - result.secondLoanAmount));
+  if (result.juniorLoanAmount > 0) zeile(l, "Nachrangdarlehen", euro(result.juniorLoanAmount));
   zeile(l, "Darlehen gesamt", euro(bank.darlehen), true);
   zeile(l, "Darlehen in % des Kaufpreises", prozent(bank.beleihungKaufpreis));
   zeile(l, "Zinssatz gewichtet / anfängliche Tilgung gewichtet", `${prozent(bank.mischzins)} / ${prozent(bank.tilgungGewichtet)}`);
@@ -1103,12 +1093,12 @@ export async function erzeugeBankgespraechPdf(input: InvestmentEingabe, result: 
     zeile(l, mitStellplatz(result) ? "Kaufpreisfaktor gesamt (Wohnung und Stellplatz)" : "Kaufpreisfaktor", `${formatZahl(bank.kaufpreisfaktor, "de", 1)}-fach`);
   }
   zeile(l, "Bruttomietrendite / Nettomietrendite", `${prozent(result.grossYield)} / ${prozent(result.netYield)}`);
-  if (bank.restschuldZinsbindung) zeile(l, `Restschuld Bankdarlehen Ende ${bank.restschuldZinsbindung.jahr}`, euro(bank.restschuldZinsbindung.betrag));
-  zeile(l, "Anschlusszins angenommen", bank.anschlusszins === null ? "keiner, Zins von heute" : prozent(bank.anschlusszins));
+  const darlehensname = { bank: "Bankdarlehen", bank2: "Zweites Bankdarlehen", kfw: "KfW-Darlehen", nachrang: "Nachrangdarlehen" };
+  for (const z of result.zinsbindungen ?? []) zeile(l, `Restschuld ${darlehensname[z.art]} Ende ${z.kalenderjahr} (Zinsbindung endet)`, euro(z.restschuld));
+  zeile(l, "Nach der Zinsbindung", "derselbe Zins, dieselbe Rate");
   if (bank.volltilgungBank !== null) zeile(l, "Bankdarlehen voll getilgt", String(bank.volltilgungBank));
 
   ueberschrift(l, "Darlehensverlauf");
-  const mitSonder = result.sondertilgungenGesamt > 0;
   tabelle(
     l,
     [
@@ -1117,16 +1107,15 @@ export async function erzeugeBankgespraechPdf(input: InvestmentEingabe, result: 
       { titel: "Rate im Jahr", anteil: 1.4 },
       { titel: "Zinsen", anteil: 1.3 },
       { titel: "Tilgung", anteil: 1.3 },
-      ...(mitSonder ? [{ titel: "davon Sondertilgung", anteil: 1.4 }] : []),
       { titel: "Restschuld", anteil: 1.5 },
     ],
-    result.years.map((jahr) => [
-      String(jahr.year),
+    result.years.map((jahr, index) => [
+      // Ende einer Zinsbindung im Jahr markiert, seit dem 23.10.2026.
+      `${jahr.year}${(result.zinsbindungen ?? []).some((z) => z.jahrIndex === index) ? " *" : ""}`,
       jahr.darlehen.bank.zinssatz ? prozent(jahr.darlehen.bank.zinssatz) : "",
       euro(jahr.debtService),
       euro(jahr.interest),
       euro(jahr.principal),
-      ...(mitSonder ? [euro(jahr.sondertilgung)] : []),
       euro(jahr.remainingDebt),
     ]),
   );

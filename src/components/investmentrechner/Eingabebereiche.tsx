@@ -2,12 +2,11 @@ import { useState, type ChangeEvent, type DragEvent, type ReactNode } from "reac
 import { FileText, ImagePlus, LoaderCircle, Sparkles, Trash2, TriangleAlert, Upload, X } from "lucide-react";
 import type {
   AfaMethode,
-  Anschlussfinanzierung,
   Bankunterlagenposten,
+  Darlehensbetragsart,
   Erhaltungsaufwandmodus,
   InvestmentEingabe,
   InvestmentErgebnis,
-  Sondertilgung,
   Steuerberechnungsmodus,
   Sanierungsfall,
   Steuerklasse,
@@ -21,15 +20,15 @@ import {
   kaufnebenkostenposten,
   type Kaufnebenkostenauswahl,
 } from "@/lib/investmentrechner/kaufnebenkostenAuswahl";
-import { ENERGIEKLASSEN, formatEuro, formatEuroCent, formatProzent } from "@/lib/investmentrechner/formatierer";
+import { formatEuro, formatEuroCent, formatProzent } from "@/lib/investmentrechner/formatierer";
 import { unterlagenAuslesbar, type AuslesbaresFeld } from "@/lib/investmentrechner/unterlagenKiFelder";
-import { eigenkapitalNachRegel, feldmarkierung, herkunftText, type Herkunft } from "@/lib/investmentrechner/herkunft";
+import { feldmarkierung, herkunftText, type Herkunft } from "@/lib/investmentrechner/herkunft";
 import { OBJEKTTYP_VORSCHLAEGE } from "@/lib/investmentrechner/objekttypVorschlaege";
 import { linearerAfaSatz } from "@/lib/afaSaetze";
-import { hausgeldAufstellung, mitStellplatz } from "@/lib/investmentrechner/rechenkern";
+import { ausgewiesenerKaufpreis, darlehensbetrag, hausgeldAufstellung, mitStellplatz, RUECKLAGE_JE_QM_MONAT } from "@/lib/investmentrechner/rechenkern";
 import { Auswahlfeld, AuswahlOderText, FeldInfo, Feldetikett, Neu, Schalterfeld, Textbereich, Textfeld, Zahlenfeld } from "./Felder";
 import { haushaltMitVorlage, haushaltsrechnung, vermoegenMitVorlage, vermoegensaufstellung } from "@/lib/investmentrechner/bankunterlagen";
-import { Energieskala, hausgeldHinweis, kaufpreisHinweis, Steuerprofil } from "./Auswertungen";
+import { hausgeldHinweis, kaufpreisHinweis, Steuerprofil } from "./Auswertungen";
 import { UnterlagenUebernahme, type KiAuslesung } from "./UnterlagenUebernahme";
 
 /*
@@ -128,7 +127,7 @@ export function EingabeKunde({ input, result, setzeZahl, setzeText, aendere, her
       </Auswahlfeld>
       <div className="field-grid">
         <Zahlenfeld
-          label="zvE Kunde"
+          label="Zu versteuerndes Einkommen"
           value={input.taxableIncomeCustomer}
           suffix="€"
           onChange={(wert) => setzeZahl("taxableIncomeCustomer", wert)}
@@ -137,21 +136,14 @@ export function EingabeKunde({ input, result, setzeZahl, setzeText, aendere, her
         />
         {input.jointAssessment && (
           <Zahlenfeld
-            label="zvE Ehe-/Lebenspartner"
+            label="Zu versteuerndes Einkommen Ehe-/Lebenspartner"
             value={input.taxableIncomeSpouse}
             suffix="€"
             onChange={(wert) => setzeZahl("taxableIncomeSpouse", wert)}
-            tooltip="Das zu versteuernde Einkommen des Partners aus dem gemeinsamen Steuerbescheid. Bei Zusammenveranlagung wird es zum zvE des Kunden addiert."
+            tooltip="Das zu versteuernde Einkommen des Partners aus dem gemeinsamen Steuerbescheid. Bei Zusammenveranlagung wird es zum zu versteuernden Einkommen des Kunden addiert."
             hint={quelle("taxableIncomeSpouse")} markierung={feldmarkierung(herkunft, "taxableIncomeSpouse")}
           />
         )}
-        <Zahlenfeld
-          label="zvE-Entwicklung p. a."
-          value={input.annualTaxableIncomeGrowth}
-          suffix="%"
-          onChange={(wert) => setzeZahl("annualTaxableIncomeGrowth", wert)}
-          tooltip="Modellannahme, um wie viel Prozent das zu versteuernde Einkommen jedes Jahr wächst. Ein höherer Wert schiebt den Kunden im Steuertarif nach oben und verändert damit die jährliche Steuerwirkung der Immobilie."
-        />
         {/*
           Seit dem 22.10.2026 auch bei Zusammenveranlagung frei. Vorher war das
           Feld dann gesperrt und der Rechenkern rechnete mit 100 Prozent, auch
@@ -190,17 +182,17 @@ export function EingabeKunde({ input, result, setzeZahl, setzeText, aendere, her
               taxCalculationMode: wert as Steuerberechnungsmodus,
               /*
                 Vertriebspaket, 16.10.2026: Der feste Satz startet beim
-                Grenzsteuersatz aus dem zvE statt pauschal bei 42 Prozent. Ohne
-                zvE bleibt der eingetragene Satz.
+                Grenzsteuersatz aus dem zu versteuernden Einkommen statt pauschal
+                bei 42 Prozent. Ohne Einkommen bleibt der eingetragene Satz.
               */
               ...(wert === "manual" && result.combinedTaxableIncome > 0
                 ? { marginalTaxRate: Math.round(result.marginalTotalTaxRate * 1000) / 10 }
                 : {}),
             })
           }
-          tooltip="Aus dem zvE nach § 32a EStG (Tarif 2026): rechnet die Steuer vor und nach dem Kauf nach dem gesetzlichen Tarif, mit Solidaritätszuschlag und Kirchensteuer; der Normalfall. Persönlicher Steuersatz: Du trägst den Grenzsteuersatz selbst ein, etwa 35, 37 oder 42 Prozent, und die Steuerwirkung ist Einkünfte aus Vermietung mal diesem Satz."
+          tooltip="Aus dem zu versteuernden Einkommen nach § 32a EStG (Tarif 2026): rechnet die Steuer vor und nach dem Kauf nach dem gesetzlichen Tarif, mit Solidaritätszuschlag und Kirchensteuer; der Normalfall. Persönlicher Steuersatz: Du trägst den Grenzsteuersatz selbst ein, etwa 35, 37 oder 42 Prozent, und die Steuerwirkung ist Einkünfte aus Vermietung mal diesem Satz."
         >
-          <option value="tariff">Aus dem zvE (Tarif 2026, § 32a EStG)</option>
+          <option value="tariff">Aus dem zu versteuernden Einkommen (Tarif 2026)</option>
           <option value="manual">Persönlicher Steuersatz (manuell)</option>
         </Auswahlfeld>
       </div>
@@ -216,21 +208,21 @@ export function EingabeKunde({ input, result, setzeZahl, setzeText, aendere, her
           value={input.marginalTaxRate}
           suffix="%"
           onChange={(wert) => setzeZahl("marginalTaxRate", Math.min(60, wert))}
-          tooltip="Prozentsatz, mit dem das anteilige Ergebnis der Immobilie besteuert wird. Beim Umschalten steht hier der Grenzsteuersatz aus dem zvE, etwa 35 Prozent bei 60.000 Euro brutto ledig; 42 Prozent gelten erst ab rund 70.000 Euro zvE. Die Steuerwirkung ist Ergebnis mal Satz, höchstens aber die Steuer, die ohne die Immobilie anfiele: Ohne Steuerlast gibt es keine Erstattung."
+          tooltip="Prozentsatz, mit dem das anteilige Ergebnis der Immobilie besteuert wird. Beim Umschalten steht hier der Grenzsteuersatz aus dem zu versteuernden Einkommen, etwa 35 Prozent bei 60.000 Euro brutto ledig; 42 Prozent gelten erst ab rund 70.000 Euro zu versteuerndem Einkommen. Die Steuerwirkung ist Ergebnis mal Satz, höchstens aber die Steuer, die ohne die Immobilie anfiele: Ohne Steuerlast gibt es keine Erstattung."
           hint={
             result.erstattungBegrenzt
               ? "Ohne Steuerlast vor dem Kauf keine Erstattung: Der Verlust wird hier nicht vollständig mit dem Satz verrechnet. Bitte das zu versteuernde Einkommen eintragen."
               : `Der Satz gilt als Gesamtsatz, Solidaritätszuschlag und Kirchensteuer also schon eingerechnet; die Schalter dazu wirken hier nicht. ${
                   result.combinedTaxableIncome > 0
-                    ? `Aus dem zvE nach § 32a EStG ergäben sich ${formatProzent(result.marginalIncomeTaxRate)} Einkommensteuer, mit Soli und Kirchensteuer ${formatProzent(result.marginalTotalTaxRate)}.`
-                    : "Ohne zvE wird der Grenzsteuersatz sonst nicht berechnet."
+                    ? `Aus dem zu versteuernden Einkommen nach § 32a EStG ergäben sich ${formatProzent(result.marginalIncomeTaxRate)} Einkommensteuer, mit Soli und Kirchensteuer ${formatProzent(result.marginalTotalTaxRate)}.`
+                    : "Ohne zu versteuerndes Einkommen wird der Grenzsteuersatz sonst nicht berechnet."
                 }`
           }
         />
       )}
       <Steuerprofil input={input} result={result} compact />
       <div className="info-card">
-        <strong>Brutto, Steuerklasse und zvE sind nicht dasselbe.</strong>
+        <strong>Brutto, Steuerklasse und zu versteuerndes Einkommen sind nicht dasselbe.</strong>
         <p>
           Der Jahres-Einkommensteuertarif knüpft an das zu versteuernde Einkommen an. Die Steuerklasse steuert
           primär den laufenden Lohnsteuerabzug.
@@ -244,6 +236,12 @@ export interface EingabeObjektProps extends EingabeProps {
   /** Welcher Weg zu den Kaufnebenkosten gilt und welches Bundesland gewählt ist. */
   knk: Kaufnebenkostenauswahl;
   setzeKnk: (auswahl: Kaufnebenkostenauswahl) => void;
+  /**
+   * Der Upload der Objektunterlagen samt KI-Auslesung, seit dem 23.10.2026
+   * ganz oben in diesem Bereich (siehe `UnterlagenUpload`). Die Seite baut
+   * ihn, weil sie Dateien und Auslesung führt.
+   */
+  unterlagen?: ReactNode;
 }
 
 /** Erklärungen zu den drei Sätzen, in beiden Wegen dieselben. */
@@ -256,7 +254,7 @@ const KNK_ERKLAERUNG: Record<string, string> = {
     "Gebühren des Grundbuchamts für Eigentumsumschreibung und Eintragung der Grundschuld. Der Rechner setzt als Richtwert 0,5 Prozent des Gesamtkaufpreises ohne Erhaltungsaufwand und Möbel an.",
 };
 
-export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, knk, setzeKnk, herkunft }: EingabeObjektProps) {
+export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, knk, setzeKnk, herkunft, unterlagen }: EingabeObjektProps) {
   const quelle = quelleFuer(herkunft);
   const posten = kaufnebenkostenposten(
     {
@@ -272,6 +270,7 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
   return (
     <div className="input-section">
       <Bereichstitel nummer="02" titel="Objekt & Kaufpreis" untertitel="Grunddaten und Erwerbsnebenkosten" />
+      {unterlagen}
       <Textfeld label="Objektbezeichnung" value={input.propertyTitle} onChange={(wert) => setzeText("propertyTitle", wert)}
         placeholder="z. B. 3-Zimmerwohnung"
         tooltip="Wie die Wohnung im Exposé heißen soll, zum Beispiel „3-Zimmerwohnung“ oder „2-Zimmerwohnung mit Balkon“. Kommt der Rechner von einer Einheit, steht hier schon der Objektname mit der Wohnungsnummer. Die Bezeichnung geht nicht in die Rechnung ein, sie erscheint nur im Exposé."
@@ -299,7 +298,7 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
           value={input.area}
           suffix="m²"
           onChange={(wert) => setzeZahl("area", wert)}
-          tooltip="Wohnfläche laut Kaufvertrag, Teilungserklärung oder Exposé des Verkäufers. Sie geht nicht in die Rechnung ein, erscheint aber im Exposé und dient dem Kunden als Vergleichsmaßstab."
+          tooltip="Wohnfläche laut Kaufvertrag, Teilungserklärung oder Exposé des Verkäufers. Sie erscheint im Exposé, dient dem Kunden als Vergleichsmaßstab und bestimmt die Vorgabe für die Instandhaltungsrücklage im Hausgeld (1 € je m² und Monat), solange dort kein eigener Wert steht."
           hint={quelle("area")} markierung={feldmarkierung(herkunft, "area")}
         />
         <Zahlenfeld
@@ -394,24 +393,15 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
       <div className="subheading">Kaufnebenkosten</div>
       {/*
         All-inclusive-Modell, seit dem 09.10.2026. Die Sätze darunter bleiben
-        sichtbar und änderbar, aus ihnen entsteht der Aufschlag. Stammt das
-        Eigenkapital noch aus der Vorbelegung nach der Regel „in Höhe der
-        Kaufnebenkosten“, geht es beim Einschalten mit auf 0, denn die
-        Nebenkosten werden jetzt mitfinanziert. Erkannt wird das an der
-        Herkunft, nicht am Betrag: Ein von Hand eingetragener oder vom Kunden
-        übernommener Wert bleibt immer stehen, auch wenn er zufällig gleich
-        hoch ist. Beim Ausschalten wird nichts zurückgeschrieben.
+        sichtbar und änderbar, aus ihnen entsteht der Aufschlag. Seit dem
+        23.10.2026 ist das Eigenkapital der Rest der Finanzierung; ein
+        Bankdarlehen in Prozent des Kaufpreises gilt vom Kaufpreis samt
+        Aufschlag und finanziert die Nebenkosten damit von selbst mit.
       */}
       <Schalterfeld
         label="All-inclusive (Kaufnebenkosten im Kaufpreis enthalten)"
         checked={input.allInclusive}
-        onChange={(an) =>
-          aendere(
-            an && eigenkapitalNachRegel(herkunft)
-              ? { allInclusive: true, equity: 0 }
-              : { allInclusive: an },
-          )
-        }
+        onChange={(an) => aendere({ allInclusive: an })}
         hint={
           input.allInclusive
             ? "Kaufpreis um die Kaufnebenkosten erhöht, keine gesonderten Kaufnebenkosten"
@@ -539,11 +529,9 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
   );
 }
 
-export interface EingabeUnterlagenProps {
+export interface UnterlagenUploadProps {
   documents: UnterlagenDokument[];
   isReading: boolean;
-  documentData: UnterlagenDaten;
-  setDocumentData: (aktualisierer: (bisher: UnterlagenDaten) => UnterlagenDaten) => void;
   onUpload: (event: ChangeEvent<HTMLInputElement>) => void;
   onRemove: (id: string) => void;
   /** KI-Auslesung der Rechnerfelder, null solange nichts angestoßen wurde. */
@@ -555,11 +543,14 @@ export interface EingabeUnterlagenProps {
   onZuruecknehmen?: (feld: AuslesbaresFeld) => void;
 }
 
-export function EingabeUnterlagen({
+/**
+ * Upload der Objektunterlagen mit KI-Auslesung der Rechnerfelder. Seit dem
+ * 23.10.2026 ganz oben in „Objekt & Kaufpreis“ statt in „Objektunterlagen“:
+ * Die Unterlagen füllen vor allem Kaufpreis, Fläche und Miete.
+ */
+export function UnterlagenUpload({
   documents,
   isReading,
-  documentData,
-  setDocumentData,
   onUpload,
   onRemove,
   kiAuslesung,
@@ -567,12 +558,11 @@ export function EingabeUnterlagen({
   onFelderUebernehmen,
   onKiSchliessen,
   onZuruecknehmen,
-}: EingabeUnterlagenProps) {
+}: UnterlagenUploadProps) {
   const auslesbar = unterlagenAuslesbar(documents);
   const liestAus = kiAuslesung?.status === "laedt";
   return (
-    <div className="input-section documents-section">
-      <Bereichstitel nummer="03" titel="Objektunterlagen" untertitel="Energie, Rücklagen und Sanierungshistorie auslesen" />
+    <div className="documents-section unterlagen-upload" data-testid="unterlagen-upload">
       <label className={`document-upload ${isReading ? "is-reading" : ""}`}>
         <input
           type="file"
@@ -584,7 +574,7 @@ export function EingabeUnterlagen({
         {isReading ? <LoaderCircle className="spin" size={26} /> : <Upload size={26} />}
         <strong>
           {isReading ? "Unterlagen werden ausgewertet …" : "Objektunterlagen auswählen"}
-          <FeldInfo text="Geeignet sind Exposé, Preisliste, Teilungserklärung, Mietvertrag, Energieausweis und Wirtschaftsplan. Hinterlegte Objekt- und Einheitsdokumente werden automatisch geladen und zur Auslesung verarbeitet. Texte und bei Scans die PDF werden an die Auslesefunktion übermittelt. Gepflegte Angaben haben Vorrang. Zusätzlich ausgewählte Dateien werden zunächst lokal gelesen; über ‚Felder aus den Unterlagen auslesen‘ können weitere Angaben übernommen werden." />
+          <FeldInfo text="Geeignet sind Exposé, Preisliste, Teilungserklärung, Mietvertrag und Wirtschaftsplan. Hinterlegte Objekt- und Einheitsdokumente werden automatisch geladen und zur Auslesung verarbeitet. Texte und bei Scans die PDF werden an die Auslesefunktion übermittelt. Gepflegte Angaben haben Vorrang. Zusätzlich ausgewählte Dateien werden zunächst lokal gelesen; über ‚Felder aus den Unterlagen auslesen‘ können weitere Angaben übernommen werden." />
         </strong>
         <span>PDF oder TXT · bis zu 12 Dateien · Text wird lokal im Browser gelesen</span>
       </label>
@@ -635,51 +625,27 @@ export function EingabeUnterlagen({
           onZuruecknehmen={onZuruecknehmen}
         />
       )}
-      <div className="subheading">Energieausweis · automatisch erkannt oder manuell korrigiert</div>
-      <Energieskala energyClass={documentData.energyClass} energyValue={documentData.energyValue} compact />
-      <div className="field-grid">
-        <Auswahlfeld
-          label="Energieeffizienzklasse"
-          value={documentData.energyClass}
-          onChange={(wert) => setDocumentData((bisher) => ({ ...bisher, energyClass: wert }))}
-          tooltip="Steht auf Seite 1 des Energieausweises, A+ ist am sparsamsten, H am schlechtesten. Sie erscheint im Exposé und ist bei Vermietung und Verkauf angabepflichtig, in die Rechnung geht sie nicht ein."
-        >
-          <option value="">Keine Angabe</option>
-          {ENERGIEKLASSEN.map((klasse) => (
-            <option key={klasse} value={klasse}>
-              {klasse}
-            </option>
-          ))}
-        </Auswahlfeld>
-        <Zahlenfeld
-          label="Endenergiekennwert"
-          value={documentData.energyValue}
-          suffix="kWh/(m²·a)"
-          onChange={(wert) => setDocumentData((bisher) => ({ ...bisher, energyValue: wert }))}
-          tooltip="Endenergiebedarf oder Endenergieverbrauch je Quadratmeter und Jahr aus dem Energieausweis. Je kleiner der Wert, desto sparsamer das Gebäude. Er bestimmt die Einordnung auf der Farbskala darüber."
-        />
-        <Textfeld
-          label="Art des Energieausweises"
-          value={documentData.certificateType}
-          onChange={(wert) => setDocumentData((bisher) => ({ ...bisher, certificateType: wert }))}
-          placeholder="Bedarfs- oder Verbrauchsausweis"
-          tooltip="Der Bedarfsausweis rechnet den Bedarf aus der Bausubstanz, der Verbrauchsausweis nimmt den tatsächlichen Verbrauch der Vorjahre. Verbrauchswerte hängen stark vom Nutzerverhalten ab und sind deshalb weniger belastbar."
-        />
-        <Textfeld
-          label="Wesentlicher Energieträger"
-          value={documentData.energyCarrier}
-          onChange={(wert) => setDocumentData((bisher) => ({ ...bisher, energyCarrier: wert }))}
-          placeholder="z. B. Gas, Fernwärme"
-          tooltip="Womit geheizt wird, etwa Erdgas, Fernwärme oder Wärmepumpe. Die Angabe gehört ins Exposé und ist ein Hinweis darauf, ob in den nächsten Jahren ein Heizungstausch ansteht."
-        />
-        <Textfeld
-          label="Energieausweis gültig bis"
-          value={documentData.certificateValidUntil}
-          onChange={(wert) => setDocumentData((bisher) => ({ ...bisher, certificateValidUntil: wert }))}
-          placeholder="TT.MM.JJJJ"
-          tooltip="Ein Energieausweis gilt zehn Jahre ab Ausstellung. Ist er abgelaufen, muss vor der nächsten Vermietung oder dem Verkauf ein neuer erstellt werden."
-        />
-      </div>
+      <p className="field-hint">
+        Textbasierte PDFs werden direkt im Browser gelesen. Bei eingescannten Unterlagen ohne Textschicht hilft die
+        KI-Auslesung, sonst die Werte von Hand ergänzen.
+      </p>
+    </div>
+  );
+}
+
+export interface EingabeUnterlagenProps {
+  documentData: UnterlagenDaten;
+  setDocumentData: (aktualisierer: (bisher: UnterlagenDaten) => UnterlagenDaten) => void;
+}
+
+/**
+ * Bereich 03, seit dem 23.10.2026 ohne Energieausweis (er steht im Exposé und
+ * rechnet nicht mit) und ohne den Upload, der in Bereich 02 steht.
+ */
+export function EingabeUnterlagen({ documentData, setDocumentData }: EingabeUnterlagenProps) {
+  return (
+    <div className="input-section documents-section">
+      <Bereichstitel nummer="03" titel="Objektunterlagen" untertitel="Rücklagen und Sanierungshistorie" />
       <div className="subheading">Erhaltungsrücklage</div>
       <div className="field-grid">
         <Zahlenfeld
@@ -728,13 +694,6 @@ export function EingabeUnterlagen({
         placeholder={"2024 · Heizungsanlage erneuert\n2021 · Dach und Fassade saniert\n2018 · Fenster erneuert"}
         hint="Eine Maßnahme pro Zeile. Mit der Eingabetaste eine neue Zeile beginnen. Automatisch erkannte Angaben bitte vor dem Exposé prüfen."
       />
-      <div className="info-card">
-        <strong>Automatische Auslesung mit Kontrollschritt</strong>
-        <p>
-          Textbasierte PDFs werden direkt im Browser analysiert. Bei eingescannten Unterlagen ohne Textschicht
-          müssen die Werte manuell ergänzt werden.
-        </p>
-      </div>
     </div>
   );
 }
@@ -746,72 +705,145 @@ const KFW_PROGRAMME = [
   "KfW 261 Sanierung",
 ];
 
+/**
+ * Ein Darlehensbetrag in zwei Feldern, Prozent des Kaufpreises und Euro,
+ * seit dem 23.10.2026. Beide zeigen dieselbe Zahl; gespeichert wird, worin
+ * zuletzt getippt wurde (`Darlehensbetragsart`), das andere Feld rechnet mit.
+ */
+function Darlehensbetrag({
+  art,
+  wert,
+  kaufpreis,
+  onChange,
+  tooltip,
+  hint,
+}: {
+  art: Darlehensbetragsart;
+  wert: number;
+  /** Ausgewiesener Kaufpreis des ganzen Objekts, Basis der Prozentangabe. */
+  kaufpreis: number;
+  onChange: (art: Darlehensbetragsart, wert: number) => void;
+  tooltip: string;
+  hint?: string;
+}) {
+  const euro = darlehensbetrag(art, wert, kaufpreis);
+  const prozent = art === "percent" ? wert : kaufpreis > 0 ? (euro / kaufpreis) * 100 : 0;
+  return (
+    <>
+      <Zahlenfeld
+        label="Betrag in % des Kaufpreises"
+        value={art === "percent" ? wert : Math.round(prozent * 100) / 100}
+        suffix="%"
+        onChange={(neu) => onChange("percent", neu)}
+        tooltip={tooltip}
+        hint={kaufpreis > 0 ? undefined : "Erst den Kaufpreis eintragen, dann rechnet der Prozentwert in Euro."}
+      />
+      <Zahlenfeld
+        label="Betrag in €"
+        value={art === "euro" ? wert : Math.round(euro * 100) / 100}
+        suffix="€"
+        onChange={(neu) => onChange("euro", neu)}
+        tooltip={tooltip}
+        hint={hint}
+      />
+    </>
+  );
+}
+
+/** Tilgungsart samt Laufzeit und tilgungsfreien Jahren, für Bank und zweites Bankdarlehen gleich. */
+function Tilgungsfelder({
+  art,
+  laufzeit,
+  tilgungsfrei,
+  onArt,
+  onLaufzeit,
+  onTilgungsfrei,
+}: {
+  art: Tilgungsart;
+  laufzeit: number;
+  tilgungsfrei: number;
+  onArt: (art: Tilgungsart) => void;
+  onLaufzeit: (jahre: number) => void;
+  onTilgungsfrei: (jahre: number) => void;
+}) {
+  return (
+    <>
+      <Auswahlfeld
+        label="Tilgungsart"
+        value={art}
+        onChange={(wert) => onArt(wert as Tilgungsart)}
+        tooltip="Annuität: Die Rate ergibt sich aus Zins plus anfänglicher Tilgung, wie bei den meisten Bankangeboten. Volltilgung: Du gibst die Laufzeit vor, die Rate tilgt das Darlehen genau in dieser Zeit. Endfällig: Während der Laufzeit nur Zinsen, am Ende die Schlusszahlung in voller Höhe."
+      >
+        <option value="annuitaet">Annuität aus Tilgungssatz</option>
+        <option value="volltilgung">Volltilgung in fester Laufzeit</option>
+        <option value="endfaellig">Endfällig (nur Zinsen)</option>
+      </Auswahlfeld>
+      {art !== "annuitaet" && (
+        <Zahlenfeld
+          label="Laufzeit"
+          value={laufzeit}
+          suffix="Jahre"
+          step="1"
+          onChange={(wert) => onLaufzeit(Math.max(0, Math.round(wert)))}
+          tooltip="Gesamtlaufzeit ab Auszahlung. Bei Volltilgung ist das Darlehen danach getilgt, beim endfälligen Darlehen wird dann die Schlusszahlung fällig."
+          hint={
+            laufzeit > 0
+              ? undefined
+              : art === "volltilgung"
+                ? "Ohne Laufzeit rechnet der Rechner mit der Annuität aus dem Tilgungssatz."
+                : "Ohne Laufzeit läuft das Darlehen ohne Schlusszahlung weiter."
+          }
+        />
+      )}
+      <Zahlenfeld
+        label="Tilgungsfreie Anlaufjahre"
+        value={tilgungsfrei}
+        suffix="Jahre"
+        step="1"
+        onChange={(wert) => onTilgungsfrei(Math.max(0, Math.round(wert)))}
+        tooltip="In diesen ersten Jahren zahlst du nur Zinsen. Danach beginnt die Tilgung mit der vollen Rate."
+      />
+    </>
+  );
+}
+
+const ZINSBINDUNG_ERKLAERUNG =
+  "Wie lange der Sollzins fest vereinbart ist. Danach rechnet das Modell mit demselben Zins und derselben Rate weiter; in der Jahresübersicht ist das Ende markiert, die Restschuld steht darunter.";
+
 export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aendere, herkunft }: EingabeProps) {
   const quelle = quelleFuer(herkunft);
   const kfw = input.kfwEnabled;
   const kfwAnlauf = result.kfwAnlaufJahre;
   const anlaufBegrenzt = kfw && kfwAnlauf !== input.kfwGracePeriodYears;
+  // Prozent gelten vom ausgewiesenen Kaufpreis des ganzen Objekts, beim All-inclusive-Modell samt Aufschlag.
+  const kaufpreis = ausgewiesenerKaufpreis(input, result);
+  const zinsbindungEnde = (art: string) => result.zinsbindungen.find((z) => z.art === art);
+  const restschuldHinweis = (art: string) => {
+    const ende = zinsbindungEnde(art);
+    return ende ? `Endet ${ende.kalenderjahr}, Restschuld danach ${formatEuro(ende.restschuld)}` : undefined;
+  };
   return (
     <div className="input-section">
-      <Bereichstitel nummer="04" titel="Finanzierung" untertitel="Bank, Eigenkapital und optionaler Nachrang" />
-      <div className="field-grid">
-        <Zahlenfeld
-          label="Eigenkapital"
-          value={input.equity}
-          suffix="€"
-          onChange={(wert) => setzeZahl("equity", wert)}
-          tooltip="Der Betrag, den der Kunde aus eigenem Vermögen einbringt. Er senkt das Bankdarlehen und damit Zins und Rate. Er ist der Einsatz zu Beginn der Zahlungsreihe für den internen Zinsfuß. Auch ohne Eigenkapital lässt sich der Zinsfuß bestimmen, sobald monatliche Zuzahlungen und ein Erlös am Ende einander gegenüberstehen."
-          hint={quelle("equity")} markierung={feldmarkierung(herkunft, "equity")}
-        />
-        <Zahlenfeld
-          label="Nachrangdarlehen"
-          value={input.juniorLoanAmount}
-          suffix="€"
-          onChange={(wert) => setzeZahl("juniorLoanAmount", wert)}
-          tooltip="Zusätzliches Darlehen, das im Rang hinter der Bank steht, etwa von Familie oder aus einem Förderprogramm. Es ersetzt Eigenkapital, ist aber meist teurer. Sobald hier ein Betrag steht, erscheinen eigene Felder für Zins und Tilgung."
-        />
-        <Zahlenfeld
-          label="Finanzierungsnebenkosten"
-          value={input.financingCostRate}
-          suffix="%"
-          onChange={(wert) => setzeZahl("financingCostRate", wert)}
-          tooltip="Kosten der Finanzierung in Prozent der Darlehenssumme, vor allem die Eintragung der Grundschuld. Üblich sind etwa 0,2 Prozent. Sie werden nicht mitfinanziert, sondern kommen zum Eigenkapitalbedarf dazu, und sie sind im ersten Jahr als Werbungskosten abziehbar."
-          hint={
-            result.finanzierungsnebenkosten > 0
-              ? `${formatEuro(result.finanzierungsnebenkosten)} auf ${formatEuro(result.totalDebt)} Darlehen`
-              : quelle("financingCostRate")
-          }
-          markierung={feldmarkierung(herkunft, "financingCostRate")}
-        />
-      </div>
-      <div className="derived-loan">
-        <span>
-          Bankdarlehen automatisch
-          <FeldInfo text="Das Bankdarlehen wird nicht eingetragen, sondern ergibt sich als Rest: Kaufpreis und Kaufnebenkosten minus Eigenkapital minus Nachrangdarlehen. Wer mehr Eigenkapital einträgt, senkt diesen Betrag Euro für Euro. Die Finanzierungsnebenkosten werden nicht mitfinanziert." />
-        </span>
-        <strong>{formatEuro(result.seniorLoanAmount)}</strong>
-        <small>
-          {kfw && input.secondLoanAmount > 0
-            ? "Kaufpreis und Nebenkosten minus Eigenkapital, Nachrang, KfW-Darlehen und zweites Bankdarlehen"
-            : kfw
-              ? "Kaufpreis und Nebenkosten minus Eigenkapital, Nachrang und KfW-Darlehen"
-              : input.secondLoanAmount > 0
-                ? "Kaufpreis und Nebenkosten minus Eigenkapital, Nachrang und zweites Bankdarlehen"
-                : "Kaufpreis und Nebenkosten minus Eigenkapital und Nachrang"}
-        </small>
-      </div>
+      <Bereichstitel nummer="04" titel="Finanzierung" untertitel="Wie finanziert wird: Darlehen eintragen, das Eigenkapital ist der Rest" />
       <div className="subheading">Bankdarlehen</div>
       <div className="field-grid">
+        <Darlehensbetrag
+          art={input.seniorLoanMode}
+          wert={input.seniorLoanValue}
+          kaufpreis={kaufpreis}
+          onChange={(art, wert) => aendere({ seniorLoanMode: art, seniorLoanValue: wert })}
+          tooltip="Wie viel die Bank finanziert, zum Beispiel 90 Prozent des Kaufpreises. Eintragen lässt es sich in Prozent oder in Euro, das andere Feld rechnet mit. Prozent gelten vom Kaufpreis, beim All-inclusive-Modell vom Kaufpreis samt Kaufnebenkosten."
+        />
         <Zahlenfeld
           label="Sollzins p. a."
           value={input.seniorInterestRate}
           suffix="%"
           onChange={(wert) => setzeZahl("seniorInterestRate", wert)}
-          tooltip="Der mit der Bank vereinbarte Zinssatz für das erstrangige Darlehen, aus dem Finanzierungsangebot. Er gilt bis zum Ende der Zinsbindung. Ohne Anschlusszins rechnet das Modell ihn danach unverändert weiter."
+          tooltip="Der mit der Bank vereinbarte Zinssatz aus dem Finanzierungsangebot. Er gilt über die ganze Laufzeit, auch nach der Zinsbindung."
           hint={quelle("seniorInterestRate")} markierung={feldmarkierung(herkunft, "seniorInterestRate")}
         />
         <Zahlenfeld
-          label="Anfängliche Tilgung"
+          label="Anfängliche Tilgung p. a."
           value={input.seniorRepaymentRate}
           suffix="%"
           onChange={(wert) => setzeZahl("seniorRepaymentRate", wert)}
@@ -822,104 +854,65 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
           label="Zinsbindung"
           value={input.seniorFixedRateYears}
           suffix="Jahre"
-          neu
-          onChange={(wert) => setzeZahl("seniorFixedRateYears", wert)}
-          tooltip="Wie lange der Sollzins fest vereinbart ist. Danach gilt der Anschlusszins, ohne ihn rechnet das Modell mit Zins und Rate von heute weiter."
-          hint={
-            result.seniorLoanAmount > 0 && input.seniorFixedRateYears >= 1
-              ? `Restschuld danach ${formatEuro(result.bankRestschuldZinsbindung)}`
-              : undefined
-          }
-        />
-        <Zahlenfeld
-          label="Anschlusszins p. a."
-          value={input.seniorFollowUpRate}
-          suffix="%"
-          neu
-          onChange={(wert) => setzeZahl("seniorFollowUpRate", wert)}
-          tooltip="Angenommener Zins für die Anschlussfinanzierung nach der Zinsbindung. Leer heißt: derselbe Zins wie heute. Die neue Rate ist Restschuld mal (Anschlusszins plus Tilgung), so rechnen Banken ein Anschlussangebot."
-          hint={input.seniorFollowUpRate > 0 ? undefined : "Leer: Zins von heute"}
-        />
-        <Zahlenfeld
-          label="Neue Tilgung ab Anschluss"
-          value={input.seniorFollowUpRepaymentRate}
-          suffix="%"
-          neu
-          onChange={(wert) => setzeZahl("seniorFollowUpRepaymentRate", wert)}
-          tooltip="Tilgung in Prozent der Restschuld ab der Anschlussfinanzierung. Leer heißt: dieselbe Tilgung wie heute. Ohne Anschlusszins und neue Tilgung bleibt die Rate unverändert."
-          hint={input.seniorFollowUpRepaymentRate > 0 ? undefined : "Leer: anfängliche Tilgung"}
-        />
-        <Zahlenfeld
-          label="Umschuldungskosten"
-          value={input.seniorFollowUpCosts}
-          suffix="€"
-          neu
-          onChange={(wert) => setzeZahl("seniorFollowUpCosts", wert)}
-          tooltip="Kosten beim Wechsel in die Anschlussfinanzierung, etwa Bearbeitung, Abtretung der Grundschuld oder eine Vorfälligkeitsentschädigung. Sie werden im Monat des Wechsels gezahlt, mindern den Cashflow und sind im selben Jahr als Werbungskosten abziehbar."
-        />
-        <Auswahlfeld
-          label="Tilgungsart"
-          value={input.seniorRepaymentType}
-          onChange={(wert) => aendere({ seniorRepaymentType: wert as Tilgungsart })}
-          tooltip="Annuität: Die Rate ergibt sich aus Zins plus anfänglicher Tilgung, wie bei den meisten Bankangeboten. Volltilgung: Du gibst die Laufzeit vor, die Rate tilgt das Darlehen genau in dieser Zeit. Endfällig: Während der Laufzeit nur Zinsen, am Ende die Schlusszahlung in voller Höhe."
-        >
-          <option value="annuitaet">Annuität aus Tilgungssatz</option>
-          <option value="volltilgung">Volltilgung in fester Laufzeit</option>
-          <option value="endfaellig">Endfällig (nur Zinsen)</option>
-        </Auswahlfeld>
-        {input.seniorRepaymentType !== "annuitaet" && (
-          <Zahlenfeld
-            label="Laufzeit"
-            value={input.seniorTermYears}
-            suffix="Jahre"
-            step="1"
-            neu
-            onChange={(wert) => setzeZahl("seniorTermYears", Math.max(0, Math.round(wert)))}
-            tooltip="Gesamtlaufzeit ab Auszahlung. Bei Volltilgung ist das Darlehen danach getilgt, beim endfälligen Darlehen wird dann die Schlusszahlung fällig."
-            hint={
-              input.seniorTermYears > 0
-                ? undefined
-                : input.seniorRepaymentType === "volltilgung"
-                  ? "Ohne Laufzeit rechnet der Rechner mit der Annuität aus dem Tilgungssatz."
-                  : "Ohne Laufzeit läuft das Darlehen ohne Schlusszahlung weiter."
-            }
-          />
-        )}
-        <Zahlenfeld
-          label="Tilgungsfreie Anlaufjahre"
-          value={input.seniorGracePeriodYears}
-          suffix="Jahre"
           step="1"
-          neu
-          onChange={(wert) => setzeZahl("seniorGracePeriodYears", Math.max(0, Math.round(wert)))}
-          tooltip="In diesen ersten Jahren zahlst du nur Zinsen. Danach beginnt die Tilgung mit der vollen Rate."
+          onChange={(wert) => setzeZahl("seniorFixedRateYears", wert)}
+          tooltip={ZINSBINDUNG_ERKLAERUNG}
+          hint={restschuldHinweis("bank")}
+        />
+        <Tilgungsfelder
+          art={input.seniorRepaymentType}
+          laufzeit={input.seniorTermYears}
+          tilgungsfrei={input.seniorGracePeriodYears}
+          onArt={(art) => aendere({ seniorRepaymentType: art })}
+          onLaufzeit={(jahre) => setzeZahl("seniorTermYears", jahre)}
+          onTilgungsfrei={(jahre) => setzeZahl("seniorGracePeriodYears", jahre)}
         />
       </div>
-      <div className="subheading">
-        Weitere Anschlussfinanzierungen <Neu />
+      <div className="subheading">Nachrangdarlehen</div>
+      <div className="field-grid">
+        <Darlehensbetrag
+          art={input.juniorLoanMode}
+          wert={input.juniorLoanValue}
+          kaufpreis={kaufpreis}
+          onChange={(art, wert) => aendere({ juniorLoanMode: art, juniorLoanValue: wert })}
+          tooltip="Zusätzliches Darlehen, das im Rang hinter der Bank steht, etwa von Familie oder aus einem Förderprogramm. Es ersetzt Eigenkapital, ist aber meist teurer. Leer heißt: kein Nachrangdarlehen."
+        />
+        {result.juniorLoanAmount > 0 && (
+          <>
+            <Zahlenfeld
+              label="Sollzins p. a."
+              value={input.juniorInterestRate}
+              suffix="%"
+              onChange={(wert) => setzeZahl("juniorInterestRate", wert)}
+              tooltip="Zinssatz des Nachrangdarlehens. Wegen des schlechteren Rangs im Grundbuch liegt er in der Regel über dem Zins der Bank. Er bleibt über den gesamten Zeitraum gleich."
+            />
+            <Zahlenfeld
+              label="Anfängliche Tilgung p. a."
+              value={input.juniorRepaymentRate}
+              suffix="%"
+              onChange={(wert) => setzeZahl("juniorRepaymentRate", wert)}
+              tooltip="Anteil des Nachrangdarlehens, der im ersten Jahr getilgt wird. Auch hier rechnet das Modell mit einer gleichbleibenden Monatsrate aus Zins und Tilgung."
+            />
+            <Zahlenfeld
+              label="Zinsbindung"
+              value={input.juniorFixedRateYears}
+              suffix="Jahre"
+              step="1"
+              onChange={(wert) => setzeZahl("juniorFixedRateYears", wert)}
+              tooltip={ZINSBINDUNG_ERKLAERUNG}
+              hint={restschuldHinweis("nachrang")}
+            />
+          </>
+        )}
       </div>
-      <Anschlussliste liste={input.seniorFurtherFollowUps ?? []} onChange={(liste) => aendere({ seniorFurtherFollowUps: liste })} />
-      <div className="subheading">
-        Sondertilgungen <Neu />
-      </div>
-      <Sondertilgungen
-        liste={input.specialRepayments ?? []}
-        startjahr={input.startYear}
-        jahre={input.forecastYears}
-        onChange={(liste) => aendere({ specialRepayments: liste })}
-      />
-      <div className="subheading">
-        Zweites Bankdarlehen <Neu />
-      </div>
+      <div className="subheading">Zweites Bankdarlehen</div>
       <div className="field-grid">
         <Zahlenfeld
           label="Betrag"
           value={input.secondLoanAmount}
           suffix="€"
-          neu
           onChange={(wert) => setzeZahl("secondLoanAmount", wert)}
-          tooltip="Ein zweites Darlehen derselben oder einer anderen Bank, etwa mit anderer Zinsbindung. Es ersetzt einen Teil des Bankdarlehens, so wie das KfW-Darlehen. Sobald hier ein Betrag steht, erscheinen eigene Felder."
-          hint={input.secondLoanAmount > 0 && result.secondLoanAmount < input.secondLoanAmount * result.anteil - 0.5 ? `Gedeckelt auf ${formatEuro(result.secondLoanAmount)}` : undefined}
+          tooltip="Ein zweites Darlehen derselben oder einer anderen Bank, etwa mit anderer Zinsbindung. Es kommt zu den übrigen Darlehen hinzu und senkt das Eigenkapital. Sobald hier ein Betrag steht, erscheinen eigene Felder."
         />
         {input.secondLoanAmount > 0 && (
           <>
@@ -927,15 +920,13 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
               label="Sollzins p. a."
               value={input.secondInterestRate}
               suffix="%"
-              neu
               onChange={(wert) => setzeZahl("secondInterestRate", wert)}
-              tooltip="Zins des zweiten Bankdarlehens bis zum Ende seiner Zinsbindung."
+              tooltip="Zins des zweiten Bankdarlehens, über die ganze Laufzeit."
             />
             <Zahlenfeld
-              label="Anfängliche Tilgung"
+              label="Anfängliche Tilgung p. a."
               value={input.secondRepaymentRate}
               suffix="%"
-              neu
               onChange={(wert) => setzeZahl("secondRepaymentRate", wert)}
               tooltip="Tilgung in Prozent des Darlehens im ersten Jahr. Zins und Tilgung, geteilt durch 12, ergeben die gleichbleibende Monatsrate."
             />
@@ -943,89 +934,29 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
               label="Zinsbindung"
               value={input.secondFixedRateYears}
               suffix="Jahre"
-              neu
-              onChange={(wert) => setzeZahl("secondFixedRateYears", wert)}
-              tooltip="Wie lange der Zins des zweiten Darlehens fest ist."
-            />
-            <Zahlenfeld
-              label="Anschlusszins p. a."
-              value={input.secondFollowUpRate}
-              suffix="%"
-              neu
-              onChange={(wert) => setzeZahl("secondFollowUpRate", wert)}
-              tooltip="Zins nach der Zinsbindung. Leer heißt: derselbe Zins. Die Rate wird auf die Restschuld mit der neuen Tilgung neu bestimmt."
-              hint={input.secondFollowUpRate > 0 ? undefined : "Leer: Zins von heute"}
-            />
-            <Zahlenfeld
-              label="Neue Tilgung ab Anschluss"
-              value={input.secondFollowUpRepaymentRate}
-              suffix="%"
-              neu
-              onChange={(wert) => setzeZahl("secondFollowUpRepaymentRate", wert)}
-              tooltip="Tilgung des zweiten Darlehens in Prozent der Restschuld ab dem Anschluss. Leer heißt: dieselbe Tilgung wie heute."
-              hint={input.secondFollowUpRepaymentRate > 0 ? undefined : "Leer: anfängliche Tilgung"}
-            />
-            <Auswahlfeld
-              label="Tilgungsart"
-              value={input.secondRepaymentType}
-              onChange={(wert) => aendere({ secondRepaymentType: wert as Tilgungsart })}
-              tooltip="Wie beim Bankdarlehen: Annuität aus dem Tilgungssatz, Volltilgung in fester Laufzeit oder endfällig mit Schlusszahlung."
-            >
-              <option value="annuitaet">Annuität aus Tilgungssatz</option>
-              <option value="volltilgung">Volltilgung in fester Laufzeit</option>
-              <option value="endfaellig">Endfällig (nur Zinsen)</option>
-            </Auswahlfeld>
-            {input.secondRepaymentType !== "annuitaet" && (
-              <Zahlenfeld
-                label="Laufzeit"
-                value={input.secondTermYears}
-                suffix="Jahre"
-                step="1"
-                neu
-                onChange={(wert) => setzeZahl("secondTermYears", Math.max(0, Math.round(wert)))}
-                tooltip="Gesamtlaufzeit des zweiten Darlehens ab Auszahlung."
-              />
-            )}
-            <Zahlenfeld
-              label="Tilgungsfreie Anlaufjahre"
-              value={input.secondGracePeriodYears}
-              suffix="Jahre"
               step="1"
-              neu
-              onChange={(wert) => setzeZahl("secondGracePeriodYears", Math.max(0, Math.round(wert)))}
-              tooltip="In diesen ersten Jahren nur Zinsen, danach die volle Rate."
+              onChange={(wert) => setzeZahl("secondFixedRateYears", wert)}
+              tooltip={ZINSBINDUNG_ERKLAERUNG}
+              hint={restschuldHinweis("bank2")}
+            />
+            <Tilgungsfelder
+              art={input.secondRepaymentType}
+              laufzeit={input.secondTermYears}
+              tilgungsfrei={input.secondGracePeriodYears}
+              onArt={(art) => aendere({ secondRepaymentType: art })}
+              onLaufzeit={(jahre) => setzeZahl("secondTermYears", jahre)}
+              onTilgungsfrei={(jahre) => setzeZahl("secondGracePeriodYears", jahre)}
             />
           </>
         )}
       </div>
-      {input.juniorLoanAmount > 0 && (
-        <>
-          <div className="subheading">Nachrangdarlehen</div>
-          <div className="field-grid">
-            <Zahlenfeld
-              label="Sollzins p. a."
-              value={input.juniorInterestRate}
-              suffix="%"
-              onChange={(wert) => setzeZahl("juniorInterestRate", wert)}
-              tooltip="Zinssatz des Nachrangdarlehens. Wegen des schlechteren Rangs im Grundbuch liegt er in der Regel über dem Zins der Bank. Er bleibt im Modell über den gesamten Zeitraum gleich."
-            />
-            <Zahlenfeld
-              label="Anfängliche Tilgung"
-              value={input.juniorRepaymentRate}
-              suffix="%"
-              onChange={(wert) => setzeZahl("juniorRepaymentRate", wert)}
-              tooltip="Anteil des Nachrangdarlehens, der im ersten Jahr getilgt wird. Auch hier rechnet das Modell mit einer gleichbleibenden Monatsrate aus Zins und Tilgung."
-            />
-          </div>
-        </>
-      )}
       <div className="subheading">KfW-Darlehen</div>
       <Schalterfeld
         label="KfW-Darlehen"
         checked={kfw}
         onChange={(wert) => aendere({ kfwEnabled: wert })}
-        hint={kfw ? "Ersetzt einen Teil des Bankdarlehens" : "Förderdarlehen neben dem Bankdarlehen, etwa bei Neubau"}
-        tooltip="Ein Förderdarlehen der KfW, das über die Hausbank neben dem Bankdarlehen läuft. Es ersetzt einen Teil des Bankdarlehens, so wie das Nachrangdarlehen. In den tilgungsfreien Jahren fallen nur Zinsen an, danach eine gleichbleibende Rate bis zum Ende der Laufzeit. Die Zinsen sind wie die Bankzinsen Werbungskosten."
+        hint={kfw ? "Kommt zu den übrigen Darlehen hinzu" : "Förderdarlehen neben dem Bankdarlehen, etwa bei Neubau"}
+        tooltip="Ein Förderdarlehen der KfW, das über die Hausbank neben dem Bankdarlehen läuft. Es kommt zu den übrigen Darlehen hinzu und senkt das Eigenkapital. In den tilgungsfreien Jahren fallen nur Zinsen an, danach eine gleichbleibende Rate bis zum Ende der Laufzeit. Die Zinsen sind wie die Bankzinsen Werbungskosten."
       />
       {kfw && (
         <>
@@ -1045,8 +976,7 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
               value={input.kfwLoanAmount}
               suffix="€"
               onChange={(wert) => setzeZahl("kfwLoanAmount", wert)}
-              tooltip="Der zugesagte Kreditbetrag der KfW. Um ihn sinkt das Bankdarlehen. Mehr als der Finanzierungsbedarf aus Kaufpreis und Nebenkosten minus Eigenkapital und Nachrang wird nicht gerechnet."
-              hint={`Finanzierungsbedarf ${formatEuro(result.finanzierungsbedarf)}`}
+              tooltip="Der zugesagte Kreditbetrag der KfW. Er kommt zu den übrigen Darlehen hinzu und senkt das Eigenkapital."
             />
             <Zahlenfeld
               label="Sollzins p. a."
@@ -1061,17 +991,12 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
               suffix="Jahre"
               onChange={(wert) => setzeZahl("kfwFixedRateYears", wert)}
               tooltip="Wie lange der Zins fest ist. Danach gilt der Anschlusszins, ohne ihn derselbe Zins; die Restschuld zu diesem Zeitpunkt steht in der Berechnung."
-              hint={
-                result.kfwLoanAmount > 0 && input.kfwFixedRateYears > 0
-                  ? `Restschuld danach ${formatEuro(result.kfwRestschuldZinsbindung)}`
-                  : undefined
-              }
+              hint={restschuldHinweis("kfw")}
             />
             <Zahlenfeld
               label="Anschlusszins p. a."
               value={input.kfwFollowUpRate}
               suffix="%"
-              neu
               onChange={(wert) => setzeZahl("kfwFollowUpRate", wert)}
               tooltip="Zins nach der KfW-Zinsbindung. Leer heißt: derselbe Zins. Die Rate wird auf die Restschuld über die Restlaufzeit neu bestimmt."
               hint={input.kfwFollowUpRate > 0 ? undefined : "Leer: Zins von heute"}
@@ -1135,12 +1060,6 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
               Mehr ist am Ende von Jahr {Math.round(input.kfwGrantYear)} vom KfW-Darlehen nicht mehr offen.
             </p>
           )}
-          {result.kfwGekuerzt && (
-            <p className="knk-hinweis knk-hinweis-warnung">
-              Der Betrag ist höher als der Finanzierungsbedarf von {formatEuro(result.finanzierungsbedarf)}. Gerechnet wird
-              mit {formatEuro(result.kfwLoanAmount)}, das Bankdarlehen fällt auf null.
-            </p>
-          )}
           {anlaufBegrenzt && (
             <p className="knk-hinweis knk-hinweis-warnung">
               Die tilgungsfreien Jahre müssen kürzer sein als die Laufzeit und dürfen höchstens 5 betragen. Gerechnet wird
@@ -1149,121 +1068,55 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
           )}
         </>
       )}
-      <div className="summary-strip">
+      {/*
+        Ergebnis der Finanzierung, seit dem 23.10.2026: Das Eigenkapital ist
+        der Rest aus Gesamtbedarf minus Darlehen. Der Mischzins ist der Zins
+        aller Darlehen, gewichtet mit ihrem Betrag; gerechnet wird weiter je
+        Darlehen.
+      */}
+      <div className="derived-loan" data-testid="eigenkapital-rest">
         <span>
-          <small>Gesamtkosten</small>
-          <strong>{formatEuro(result.totalInvestment)}</strong>
+          Eigenkapital
+          <FeldInfo text="Kein Eingabefeld: Das Eigenkapital ergibt sich aus Kaufpreis und Kaufnebenkosten minus alle Darlehen. Wer ein Darlehen erhöht, senkt es Euro für Euro." />
         </span>
+        <strong>{formatEuro(result.eigenkapital)}</strong>
+        <small>
+          Gesamtbedarf {formatEuro(result.totalInvestment)} minus Darlehen {formatEuro(result.totalDebt)}
+        </small>
+      </div>
+      {result.ueberfinanzierung > 0.5 && (
+        <div className="warning-card" data-testid="hinweis-ueberfinanzierung">
+          <TriangleAlert size={19} />
+          <div>
+            <strong>Überfinanzierung</strong>
+            <p>
+              Die Darlehen liegen {formatEuro(result.ueberfinanzierung)} über Kaufpreis und Kaufnebenkosten. Gerechnet
+              wird mit den eingetragenen Beträgen, der Überschuss fließt dem Kunden zu Beginn zu. Bitte prüfen, ob die
+              Bank so finanziert.
+            </p>
+          </div>
+        </div>
+      )}
+      <div className="summary-strip">
         <span>
           <small>Gesamtdarlehen</small>
           <strong>{formatEuro(result.totalDebt)}</strong>
+        </span>
+        <span>
+          <small>Mischzins</small>
+          <strong data-testid="mischzins">{formatProzent(result.mischzins)}</strong>
         </span>
         <span>
           <small>Rate p. M.</small>
           <strong>{formatEuroCent(result.monthlyDebtService)}</strong>
         </span>
       </div>
-      {result.kfwLoanAmount > 0 && (
+      {result.rateSprung && (
         <p className="knk-hinweis">
-          Mischzins {formatProzent(result.mischzins)}.
-          {result.rateSprung &&
-            ` Ab Jahr ${result.rateSprung.jahr} (${result.rateSprung.kalenderjahr}) steigt die Rate auf ${formatEuroCent(result.rateSprung.rateNachher)} im Monat.`}
+          Ab Jahr {result.rateSprung.jahr} ({result.rateSprung.kalenderjahr}) steigt die Rate auf{" "}
+          {formatEuroCent(result.rateSprung.rateNachher)} im Monat.
         </p>
       )}
-    </div>
-  );
-}
-
-/**
- * Sondertilgungen als Liste: Kalenderjahr und Betrag, seit dem 11.10.2026.
- * Gezahlt am Jahresende auf das Bankdarlehen, höchstens die Restschuld.
- */
-function Sondertilgungen({
-  liste,
-  startjahr,
-  jahre,
-  onChange,
-}: {
-  liste: Sondertilgung[];
-  startjahr: number;
-  jahre: number;
-  onChange: (liste: Sondertilgung[]) => void;
-}) {
-  const setze = (index: number, aenderung: Partial<Sondertilgung>) =>
-    onChange(liste.map((eintrag, i) => (i === index ? { ...eintrag, ...aenderung } : eintrag)));
-  const ende = Math.round(startjahr) + Math.max(1, Math.round(jahre)) - 1;
-  return (
-    <div className="zeilenliste" data-testid="sondertilgungen">
-      {liste.map((eintrag, index) => (
-        <div className="zeilenliste-zeile" key={index}>
-          <input
-            type="number"
-            aria-label="Jahr der Sondertilgung"
-            value={eintrag.jahr || ""}
-            onChange={(e) => setze(index, { jahr: Number(e.target.value) })}
-          />
-          <input
-            type="number"
-            aria-label="Betrag der Sondertilgung in Euro"
-            value={eintrag.betrag || ""}
-            onChange={(e) => setze(index, { betrag: Number(e.target.value) })}
-          />
-          <button type="button" className="text-button" aria-label="Sondertilgung entfernen" onClick={() => onChange(liste.filter((_, i) => i !== index))}>
-            <Trash2 size={14} />
-          </button>
-          {(eintrag.jahr < startjahr || eintrag.jahr > ende) && eintrag.jahr > 0 && (
-            <span className="zeilen-herkunft">Liegt außerhalb der Prognose ({Math.round(startjahr)} bis {ende}) und zählt nicht.</span>
-          )}
-        </div>
-      ))}
-      <button
-        type="button"
-        className="text-button"
-        onClick={() => onChange([...liste, { jahr: Math.min(ende, Math.round(startjahr) + 1), betrag: 0 }])}
-      >
-        + Sondertilgung (Jahr, Betrag)
-      </button>
-      <span className="field-hint">Am Jahresende auf das Bankdarlehen. Die Rate bleibt, die Laufzeit wird kürzer.</span>
-    </div>
-  );
-}
-
-/**
- * Weitere Anschlussfinanzierungen des Bankdarlehens, seit dem 22.10.2026. Jede
- * Zeile: nach wie vielen Jahren ab Auszahlung, neuer Zins, neue Tilgung,
- * Umschuldungskosten. Die erste Anschlussfinanzierung steht in den Feldern
- * darüber (Zinsbindung, Anschlusszins, neue Tilgung).
- */
-function Anschlussliste({ liste, onChange }: { liste: Anschlussfinanzierung[]; onChange: (liste: Anschlussfinanzierung[]) => void }) {
-  const setze = (index: number, aenderung: Partial<Anschlussfinanzierung>) =>
-    onChange(liste.map((eintrag, i) => (i === index ? { ...eintrag, ...aenderung } : eintrag)));
-  return (
-    <div className="zeilenliste" data-testid="anschlussfinanzierungen">
-      {liste.map((eintrag, index) => (
-        <div className="zeilenliste-zeile" key={index}>
-          <input type="number" aria-label="Nach Jahren ab Auszahlung" placeholder="nach Jahren" value={eintrag.nachJahren || ""}
-            onChange={(e) => setze(index, { nachJahren: Number(e.target.value) })} />
-          <input type="number" aria-label="Neuer Sollzins in Prozent" placeholder="Zins %" value={eintrag.zinsProzent || ""}
-            onChange={(e) => setze(index, { zinsProzent: Number(e.target.value) })} />
-          <input type="number" aria-label="Neue Tilgung in Prozent" placeholder="Tilgung %" value={eintrag.tilgungProzent || ""}
-            onChange={(e) => setze(index, { tilgungProzent: Number(e.target.value) })} />
-          <input type="number" aria-label="Umschuldungskosten in Euro" placeholder="Kosten €" value={eintrag.kosten || ""}
-            onChange={(e) => setze(index, { kosten: Number(e.target.value) })} />
-          <button type="button" className="text-button" aria-label="Anschlussfinanzierung entfernen" onClick={() => onChange(liste.filter((_, i) => i !== index))}>
-            <Trash2 size={14} />
-          </button>
-        </div>
-      ))}
-      <button
-        type="button"
-        className="text-button"
-        onClick={() => onChange([...liste, { nachJahren: 0, zinsProzent: 0, tilgungProzent: 0, kosten: 0 }])}
-      >
-        + Anschlussfinanzierung (nach Jahren, Zins, Tilgung, Kosten)
-      </button>
-      <span className="field-hint">
-        Nach der ersten Anschlussfinanzierung oben. Ab dem Monat danach gelten der neue Zins und die neue Tilgung, die Rate wird auf die Restschuld neu bestimmt. Leerer Zins oder leere Tilgung: wie bisher.
-      </span>
     </div>
   );
 }
@@ -1453,36 +1306,30 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
           value={input.monthlyOperatingCosts}
           suffix="€"
           onChange={(wert) => setzeZahl("monthlyOperatingCosts", wert)}
-          tooltip="Kosten des Eigentümers außerhalb des Hausgelds, die er nicht auf den Mieter umlegen kann, etwa die Sondereigentumsverwaltung. Der nicht umlagefähige Teil des Hausgelds steht unten im Abschnitt Hausgeld, die Rücklage im eigenen Feld. Beide Kostenfelder zusammen mindern Cashflow und steuerliches Ergebnis."
+          tooltip="Kosten des Eigentümers außerhalb des Hausgelds, die er nicht auf den Mieter umlegen kann, etwa die Sondereigentumsverwaltung. Der nicht umlagefähige Teil des Hausgelds und die Rücklage stehen unten im Abschnitt Hausgeld. Dieses Feld und der nicht umlagefähige Teil zusammen mindern Cashflow und steuerliches Ergebnis."
           hint={
             quelle("monthlyOperatingCosts") ??
             `Zusammen mit dem nicht umlagefähigen Hausgeld: ${formatEuroCent(input.monthlyOperatingCosts + (input.housingFeeNonRecoverable || 0))} im Monat in der Rechnung`
           }
           markierung={feldmarkierung(herkunft, "monthlyOperatingCosts")}
         />
-        <Zahlenfeld
-          label="Zuführung Instandhaltungsrücklage p. M."
-          value={input.monthlyReserveContribution}
-          suffix="€"
-          onChange={(wert) => setzeZahl("monthlyReserveContribution", wert)}
-          tooltip="Der Teil des Hausgelds, der in die Instandhaltungsrücklage der Gemeinschaft fließt. Er mindert den Cashflow jeden Monat. Steuerlich wird er hier nicht abgezogen: Nach dem Bundesfinanzhof ist er erst abziehbar, wenn die Gemeinschaft das Geld für Erhaltung ausgibt, nicht schon bei der Einzahlung."
-          hint={quelle("monthlyReserveContribution")} markierung={feldmarkierung(herkunft, "monthlyReserveContribution")}
-        />
       </div>
       {/*
         Hausgeld in ganzer Höhe, seit dem 22.10.2026 (Christian). Gesamt und
         umlagefähig dienen der Aufstellung und Prüfung der Summe; der nicht
         umlagefähige Teil rechnet mit, zusammen mit den weiteren Kosten oben.
+        Die Rücklage steht seit dem 23.10.2026 hier statt als eigene
+        „Zuführung“ darüber; es ist dasselbe Feld, sie zählt also genau einmal.
       */}
       <div className="subheading">Hausgeld</div>
-      <div className="field-grid three">
+      <div className="field-grid">
         <Zahlenfeld
           label="Hausgeld gesamt p. M."
           value={input.housingFeeTotal}
           suffix="€"
           neu
           onChange={(wert) => setzeZahl("housingFeeTotal", wert)}
-          tooltip="Das ganze Hausgeld laut Wirtschaftsplan: umlagefähiger Teil, nicht umlagefähiger Teil und Zuführung zur Erhaltungsrücklage. Es dient der Aufstellung und der Prüfung, ob die Teile zur Summe passen. Gerechnet wird mit den Feldern darüber."
+          tooltip="Das ganze Hausgeld laut Wirtschaftsplan: umlagefähiger Teil, nicht umlagefähiger Teil und Zuführung zur Instandhaltungsrücklage. Es dient der Aufstellung und der Prüfung, ob die Teile zur Summe passen. Gerechnet wird mit den Teilen."
           hint={quelle("housingFeeTotal")} markierung={feldmarkierung(herkunft, "housingFeeTotal")}
         />
         <Zahlenfeld
@@ -1502,6 +1349,22 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
           tooltip="Der Teil des Hausgelds, den der Eigentümer trägt, etwa die Verwaltung der WEG. Er belastet den Cashflow und ist steuerlich abziehbar. Die Rechnung nimmt ihn zusammen mit den weiteren nicht umlagefähigen Kosten oben."
           hint={quelle("housingFeeNonRecoverable")}
           markierung={feldmarkierung(herkunft, "housingFeeNonRecoverable")}
+        />
+        <Zahlenfeld
+          label="davon Instandhaltungsrücklage p. M."
+          value={input.monthlyReserveContribution}
+          suffix="€"
+          onChange={(wert) => setzeZahl("monthlyReserveContribution", wert)}
+          tooltip={`Der Teil des Hausgelds, der in die Instandhaltungsrücklage der Gemeinschaft fließt. Vorbelegt mit ${formatEuro(RUECKLAGE_JE_QM_MONAT)} je m² Wohnfläche und Monat, solange weder Unterlagen noch Objektanlage einen Wert liefern; ein eigener Wert bleibt stehen. Er mindert den Cashflow jeden Monat. Steuerlich wird er hier nicht abgezogen: Nach dem Bundesfinanzhof ist er erst abziehbar, wenn die Gemeinschaft das Geld für Erhaltung ausgibt, nicht schon bei der Einzahlung.`}
+          hint={
+            quelle("monthlyReserveContribution") ??
+            (input.monthlyReserveContributionAuto !== false
+              ? input.area > 0
+                ? `Vorgabe: ${formatEuro(RUECKLAGE_JE_QM_MONAT)} je m² × ${input.area.toLocaleString("de-DE")} m²`
+                : "Vorgabe 1 € je m², sobald die Wohnfläche eingetragen ist"
+              : undefined)
+          }
+          markierung={feldmarkierung(herkunft, "monthlyReserveContribution")}
         />
       </div>
       {hausgeldAufstellung(input).vorhanden && (
@@ -1553,15 +1416,6 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
           min={-20}
           onChange={(wert) => setzeZahl("annualValueGrowth", wert)}
           tooltip="Modellannahme für die jährliche Wertentwicklung der Wohnung, also von Grund und Boden und Gebäude. Ein negativer Wert rechnet einen Wertrückgang. Möbel und Rücklagenanteil sind davon ausgenommen: Die Möbel gehen mit ihrem Restbuchwert in den Objektwert ein, die Rücklage mit ihrem Betrag. Die Entwicklung wirkt nicht auf Miete oder Cashflow, sondern nur auf den rechnerischen Objektwert und damit auf Vermögensaufbau und Rendite am Ende des Zeitraums."
-        />
-        <Zahlenfeld
-          label="Verkaufskosten am Ende"
-          value={input.saleCostRate}
-          suffix="%"
-          neu
-          onChange={(wert) => setzeZahl("saleCostRate", Math.min(20, wert))}
-          tooltip="Kosten eines Verkaufs am Ende des Betrachtungszeitraums in Prozent des Verkaufspreises, etwa Makler und Notar. Sie mindern den Erlös im Modellverkauf und damit den internen Zinsfuß. Leer heißt: ohne Verkaufskosten."
-          hint={result.verkaufskosten > 0 ? `${formatEuro(result.verkaufskosten)} im letzten Jahr` : undefined}
         />
       </div>
       <div className="field-grid">

@@ -7,7 +7,9 @@
  * Berechnung. Vorher war die veröffentlichte Fassung ein eigener, nicht im
  * Repository liegender Stand mit abweichenden Feldnamen (garageMiete,
  * garagePreis), der anders rechnete. Ohne Anmeldung und ohne Server: Die
- * Eingabe bleibt nur im Browser (localStorage), Bilder bis zum Neuladen.
+ * Eingabe bleibt nur im Browser (localStorage). Seit dem 23.10.2026 speichert
+ * der Rechner selbst, samt Bildern, und hat oben rechts „Zurücksetzen“
+ * (entwurfAblage.ts), genau wie im CRM.
  */
 
 import "../netzwerk";
@@ -24,10 +26,10 @@ import { UserContext } from "@/contexts/UserContext";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
 import { InvestmentrechnerInhalt } from "@/components/investmentrechner/InvestmentrechnerInhalt";
-import { berechneInvestment, type InvestmentEingabe } from "@/lib/investmentrechner/rechenkern";
+import { berechneInvestment } from "@/lib/investmentrechner/rechenkern";
 import { standardKaufnebenkostenauswahl } from "@/lib/investmentrechner/kaufnebenkostenAuswahl";
 import { speichereDatei } from "../speichern";
-import { eingabeLaden, eingabeLoeschen, eingabeSpeichern, BEISPIEL_EINGABE, namenLaden, namenSpeichern } from "./ablage";
+import { eingabeLaden, eingabeLoeschen, BEISPIEL_EINGABE, namenLaden, namenSpeichern } from "./ablage";
 import "./laufzeitDateien";
 
 document.documentElement.lang = "de";
@@ -62,15 +64,21 @@ const NUTZER = {
 };
 
 function App() {
-  // Neustart nach „Alles zurücksetzen“: neuer Schlüssel, neue Vorbelegung.
-  const [lauf, setLauf] = useState(0);
-  const [gespeichert] = useState<InvestmentEingabe | null>(() => eingabeLaden());
+  /*
+    Beim ersten Öffnen die Beispielzahlen, oder ein Stand der früheren Ablage
+    (bis 23.10.2026). Er wird einmal übernommen und dann gelöscht; danach
+    speichert der Rechner seinen Entwurf selbst.
+  */
+  const [start] = useState(() => {
+    const frueher = eingabeLaden();
+    if (frueher) eingabeLoeschen();
+    return frueher ?? BEISPIEL_EINGABE;
+  });
   const [name, setName] = useState(() => namenLaden());
-  const start = lauf === 0 && gespeichert ? gespeichert : BEISPIEL_EINGABE;
   return (
     <div className="min-h-screen bg-background rechner-artefakt">
       <div className="artefakt-leiste">
-        <p>Beispielzahlen sind vorbelegt. Deine Eingaben bleiben nur in diesem Browser gespeichert, Bilder nur bis zum Neuladen.</p>
+        <p>Beim ersten Öffnen sind Beispielzahlen vorbelegt. Deine Eingaben und Bilder bleiben in diesem Browser gespeichert.</p>
         <div className="artefakt-knoepfe">
           <label htmlFor="artefakt-partner">Name auf der Berechnung</label>
           <input
@@ -83,24 +91,12 @@ function App() {
               namenSpeichern(e.target.value);
             }}
           />
-          <button
-            type="button"
-            id="artefakt-zuruecksetzen"
-            onClick={() => {
-              eingabeLoeschen();
-              setLauf((n) => n + 1);
-            }}
-          >
-            Alles zurücksetzen
-          </button>
         </div>
       </div>
       <InvestmentrechnerInhalt
-        key={lauf}
         vorbelegung={{ eingabe: start, knk: standardKaufnebenkostenauswahl }}
         vorschau={{}}
         erstelltVon={name}
-        onErgebnis={({ eingabe }) => eingabeSpeichern(eingabe)}
       />
       <Toaster />
     </div>

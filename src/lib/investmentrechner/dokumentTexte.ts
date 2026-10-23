@@ -142,9 +142,12 @@ export interface DokumentTexte {
     steuereffekt: string;
     cfNachSteuer: string;
     eigenkapital: string;
-    /** Seit dem 11.10.2026, nur mit Anschlusszins oder Sondertilgung. */
+    /** Seit dem 11.10.2026, nur wenn sich der Zins der Bank im Verlauf ändert. */
     zinsBank: string;
-    sondertilgung: string;
+    /** Markierung im Jahr, in dem eine Zinsbindung endet, seit dem 23.10.2026. */
+    zinsbindungEndet: (darlehen: string) => string;
+    /** Satz unter der Tabelle mit allen Zinsbindungen. */
+    zinsbindungHinweis: (liste: string) => string;
   };
   /** Die Darlehen einzeln je Jahr, seit dem 07.10.2026, nur mit KfW-Darlehen. */
   darlehenTabelle: {
@@ -203,7 +206,6 @@ export interface DokumentTexte {
     grundstueck: string;
     gebaeude: string;
     nebenkosten: (satz: string) => string;
-    finanzierungsnebenkosten: string;
     gesamtkosten: string;
     /*
       Nur bei Erhaltungsaufwand oder Möbeln, seit dem 30.09.2026: Beide sind
@@ -453,13 +455,13 @@ export const DOKUMENT_TEXTE_DE: DokumentTexte = {
     mischzins: "Mischzins aller Darlehen",
     rateAbJahr: (jahr, kalenderjahr) => `Gesamtrate im Monat ab Jahr ${jahr} (${kalenderjahr})`,
     eingesetztesEigenkapital: "Eingesetztes Eigenkapital",
-    zveVorErwerb: "zvE vor Erwerb",
+    zveVorErwerb: "Zu versteuerndes Einkommen vor Erwerb",
     grenzsteuersatzTarif: "Tariflicher Grenzsteuersatz inkl. Zuschläge",
     grenzsteuersatzManuell: "Persönlicher Grenzsteuersatz (fest, inkl. Zuschläge)",
   },
   unterlagenSeite: {
     augenbraue: "Objektunterlagen",
-    titel: "Energie, Rücklagen & Sanierungen",
+    titel: "Rücklagen & Sanierungen",
     einleitung:
       "Zusammenfassung der aus den bereitgestellten Objektunterlagen ermittelten und anschließend bestätigten Angaben.",
     energieklasse: "Energieklasse",
@@ -475,7 +477,7 @@ export const DOKUMENT_TEXTE_DE: DokumentTexte = {
     keineUnterlagen: "Keine Objektunterlagen hochgeladen. Die Angaben können im Rechner manuell ergänzt werden.",
     pruefhinweisTitel: "Prüfhinweis",
     pruefhinweis:
-      "Die automatische Auslesung dient der strukturierten Vorprüfung. Für Kaufentscheidung, Finanzierung und Exposé sind die Angaben mit Energieausweis, Jahresabrechnung, Wirtschaftsplan, Beschlusssammlung und Protokollen abzugleichen.",
+      "Die automatische Auslesung dient der strukturierten Vorprüfung. Für Kaufentscheidung, Finanzierung und Exposé sind die Angaben mit Jahresabrechnung, Wirtschaftsplan, Beschlusssammlung und Protokollen abzugleichen.",
   },
   steuerSeite: {
     augenbraue: "Persönliche Ausgangslage",
@@ -492,7 +494,7 @@ export const DOKUMENT_TEXTE_DE: DokumentTexte = {
     manuell: "Persönlicher Steuersatz",
     ohneImmobilie: (jahr) => `Ohne Immobilie · ${jahr}`,
     mitImmobilie: (jahr) => `Mit Immobilie · ${jahr}`,
-    zve: "zvE",
+    zve: "Zu versteuerndes Einkommen",
     est: "ESt",
     soli: "Soli",
     kist: "KiSt",
@@ -500,7 +502,7 @@ export const DOKUMENT_TEXTE_DE: DokumentTexte = {
     // Das Original schreibt „2026 - 2035"; hier „bis", weil keine Gedankenstriche in Nutzertexten stehen.
     steuerwirkung: (von, bis) => `Steuerwirkung ${von} bis ${bis}`,
     kleingedruckt:
-      "Die Steuerklasse ist für die Einordnung des laufenden Lohnsteuerabzugs angegeben; die modellierte Jahressteuer basiert auf dem zvE. Das Ergebnis ersetzt keine persönliche Steuerberatung.",
+      "Die Steuerklasse ist für die Einordnung des laufenden Lohnsteuerabzugs angegeben; die modellierte Jahressteuer basiert auf dem zu versteuernden Einkommen. Das Ergebnis ersetzt keine persönliche Steuerberatung.",
   },
   prognoseSeite: {
     augenbraue: (von, bis) => `Prognosezeitraum ${von} bis ${bis}`,
@@ -562,7 +564,9 @@ export const DOKUMENT_TEXTE_DE: DokumentTexte = {
     cfNachSteuer: "CF n. St.",
     eigenkapital: "Eigenkapital",
     zinsBank: "Zins Bank",
-    sondertilgung: "Sondertilgung",
+    zinsbindungEndet: (darlehen) => `Zinsbindung ${darlehen} endet`,
+    zinsbindungHinweis: (liste) =>
+      `Zinsbindung endet: ${liste}. Danach rechnet das Modell mit demselben Zins und derselben Rate weiter.`,
   },
   darlehenTabelle: {
     augenbraue: "Finanzierung",
@@ -583,9 +587,9 @@ export const DOKUMENT_TEXTE_DE: DokumentTexte = {
   },
   steuerTabelle: {
     jahr: "Jahr",
-    zveVorher: "zvE vorher",
+    zveVorher: "Zu versteuerndes Einkommen vorher",
     ergebnisVuV: "Ergebnis V+V",
-    zveNachher: "zvE nachher",
+    zveNachher: "Zu versteuerndes Einkommen nachher",
     steuerVorher: "Steuer vorher",
     steuerNachher: "Steuer nachher",
     steuereffekt: "Steuereffekt",
@@ -621,7 +625,6 @@ export const DOKUMENT_TEXTE_DE: DokumentTexte = {
     grundstueck: "Grundstücksanteil",
     gebaeude: "Gebäudeanteil (Wohnung)",
     nebenkosten: (satz) => `Kaufnebenkosten (${satz})`,
-    finanzierungsnebenkosten: "Finanzierungsnebenkosten",
     gesamtkosten: "Gesamtkosten",
     gesamtInklErhaltung: "Gesamtkaufpreis (inkl. Erhaltungsaufwand)",
     gesamtInklMoebel: "Gesamtkaufpreis (inkl. Möbel/Inventar)",
@@ -674,7 +677,7 @@ export const DOKUMENT_TEXTE_DE: DokumentTexte = {
     tarif: (splitting) => `Tarif 2026 · ${splitting ? "Splittingtabelle" : "Grundtabelle"}`,
     manuell: (satz) => `Persönlicher Steuersatz · ${satz} %`,
     ohneEinkommen:
-      "Ohne zu versteuerndes Einkommen keine Steuerwirkung, deshalb sind Cashflow vor und nach Steuer gleich. Bitte das zvE unter „Kunde & Einkommen“ eintragen.",
+      "Ohne zu versteuerndes Einkommen keine Steuerwirkung, deshalb sind Cashflow vor und nach Steuer gleich. Bitte das zu versteuernde Einkommen unter „Kunde & Einkommen“ eintragen.",
     ohneSatz:
       "Ohne Steuersatz keine Steuerwirkung, deshalb sind Cashflow vor und nach Steuer gleich. Bitte den Grenzsteuersatz unter „Kunde & Einkommen“ eintragen.",
   },
@@ -888,7 +891,7 @@ export const DOKUMENT_TEXTE_EN: DokumentTexte = {
   },
   unterlagenSeite: {
     augenbraue: "Property documents",
-    titel: "Energy, reserves & renovations",
+    titel: "Reserves & renovations",
     einleitung: "Summary of the details taken from the property documents provided and then confirmed.",
     energieklasse: "Energy class",
     keineAngabe: "Not stated",
@@ -903,7 +906,7 @@ export const DOKUMENT_TEXTE_EN: DokumentTexte = {
     keineUnterlagen: "No property documents uploaded. The details can be added manually in the calculator.",
     pruefhinweisTitel: "Note on verification",
     pruefhinweis:
-      "The automatic extraction serves as a structured preliminary check. For the purchase decision, financing and exposé, the details must be checked against the energy certificate, annual statement, business plan, collection of resolutions and minutes.",
+      "The automatic extraction serves as a structured preliminary check. For the purchase decision, financing and exposé, the details must be checked against the annual statement, business plan, collection of resolutions and minutes.",
   },
   steuerSeite: {
     augenbraue: "Personal starting position",
@@ -989,7 +992,9 @@ export const DOKUMENT_TEXTE_EN: DokumentTexte = {
     cfNachSteuer: "CF after tax",
     eigenkapital: "Equity",
     zinsBank: "Bank rate",
-    sondertilgung: "Special repayment",
+    zinsbindungEndet: (darlehen) => `Fixed rate ends: ${darlehen}`,
+    zinsbindungHinweis: (liste) =>
+      `Fixed-rate period ends: ${liste}. After that the model continues with the same rate and the same instalment.`,
   },
   darlehenTabelle: {
     augenbraue: "Financing",
@@ -1048,7 +1053,6 @@ export const DOKUMENT_TEXTE_EN: DokumentTexte = {
     grundstueck: "Land share",
     gebaeude: "Building share (flat)",
     nebenkosten: (satz) => `Incidental purchase costs (${satz})`,
-    finanzierungsnebenkosten: "Financing costs",
     gesamtkosten: "Total costs",
     gesamtInklErhaltung: "Total purchase price (incl. maintenance expenses)",
     gesamtInklMoebel: "Total purchase price (incl. furniture and fittings)",

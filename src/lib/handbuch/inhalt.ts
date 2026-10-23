@@ -287,7 +287,6 @@ function diagrammVermietungsergebnis(a: HandbuchAuswertung): Zeichnung {
       { bezeichnung: tx("nicht umlage-|fähige Kosten", "Non-recover-|able costs"), betrag: -j.operatingCosts, art: "minus" },
       { bezeichnung: tx("Zinsen", "Interest"), betrag: -j.interest, art: "minus" },
       { bezeichnung: tx(`AfA ${satz(W.afa)}`, `Depreciation ${satz(W.afa)}`), betrag: -j.buildingDepreciation, art: "minus" },
-      { bezeichnung: tx("Finanzierungs-|nebenkosten", "Financing|costs"), betrag: -j.financingCostDeduction, art: "minus" },
       { bezeichnung: tx("Ergebnis|Vermietung", "Letting|result"), betrag: 0, art: "summe" },
     ],
     660,
@@ -1405,7 +1404,7 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
             symbol: "dokument",
             titel: tx("Laufende Kosten", "Running costs"),
             text: tx(
-              "Nicht umlagefähiges Hausgeld, Verwaltung und im ersten Jahr die Finanzierungsnebenkosten.",
+              "Nicht umlagefähiges Hausgeld und Verwaltung.",
               "Non-recoverable service charge, management and, in the first year, the financing costs.",
             ),
           },
@@ -1567,7 +1566,7 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
                   betrag((kp * (S.notar + S.grundbuch)) / 100),
                 ],
               },
-              { zellen: [tx("aus Eigenkapital", "from equity"), betrag(e.purchaseCosts + e.finanzierungsnebenkosten)], summe: true },
+              { zellen: [tx("aus Eigenkapital", "from equity"), betrag(e.purchaseCosts)], summe: true },
             ],
           },
           {

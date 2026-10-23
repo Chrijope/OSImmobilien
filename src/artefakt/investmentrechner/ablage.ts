@@ -13,7 +13,7 @@ const SCHLUESSEL = "investmentrechner-eingabe-v1";
 
 /**
  * Die Beispielzahlen beim ersten Öffnen: der Golden-Fall „standard“ mit
- * Objektangaben, Anschlussfinanzierung, Sondertilgung, zweitem Darlehen und
+ * Objektangaben, Zinsbindung, zweitem Darlehen und
  * einer Garage, wie in der früheren Fassung. Die Garage steht jetzt in den
  * Feldern des CRM: Miete getrennt, Preis als „davon“ im Kaufpreis.
  */
@@ -28,8 +28,6 @@ export const BEISPIEL_EINGABE: InvestmentEingabe = {
   rooms: 2,
   constructionYear: 1998,
   seniorFixedRateYears: 5,
-  seniorFollowUpRate: 5.5,
-  specialRepayments: [{ jahr: 2029, betrag: 10000 }],
   secondLoanAmount: 0,
   bankgespraechAktiv: false,
   garagePrice: 15000,

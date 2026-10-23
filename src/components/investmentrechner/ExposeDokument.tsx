@@ -179,10 +179,10 @@ export function ExposeDokument({
     marke,
     fusszeile: <Fusszeile seite={seitenOffset + 1} sprache={sprache} />,
   };
-  const ekr = eigenkapitalrendite(input, result);
+  const ekr = eigenkapitalrendite(result);
   const ks = t.kennzahlenSeite;
   const kfw = result.kfwLoanAmount > 0;
-  // Seit dem 11.10.2026 auch mit zweitem Darlehen, Sondertilgung oder Anschlusszins.
+  // Seit dem 11.10.2026 auch mit zweitem Darlehen.
   const zusatz = zusatzseitenVon(input, result);
   const darlehensseite = zusatz.darlehen > 0;
   // Seitenzahlen der Zusatzseiten, gezählt ab der Tabellenseite (6).
@@ -290,7 +290,7 @@ export function ExposeDokument({
             <Zeile label={t.deckblatt.bankdarlehen} value={euro(result.seniorLoanAmount)} />
             {kfw && <Zeile label={t.deckblatt.kfwDarlehen(input.kfwProgram.trim())} value={euro(result.kfwLoanAmount)} />}
             {result.secondLoanAmount > 0 && <Zeile label={t.darlehenTabelle.bank2} value={euro(result.secondLoanAmount)} />}
-            {input.juniorLoanAmount > 0 && <Zeile label={t.deckblatt.nachrangdarlehen} value={euro(input.juniorLoanAmount)} />}
+            {result.juniorLoanAmount > 0 && <Zeile label={t.deckblatt.nachrangdarlehen} value={euro(result.juniorLoanAmount)} />}
             <Zeile
               label={t.deckblatt.zinsTilgung}
               value={
@@ -310,7 +310,6 @@ export function ExposeDokument({
                     Math.max(1, Math.round(input.kfwTermYears)),
                   )}
                 />
-                <Zeile label={t.deckblatt.mischzins} value={prozent(result.mischzins)} />
                 {result.rateSprung && (
                   <Zeile
                     label={t.deckblatt.rateAbJahr(result.rateSprung.jahr, result.rateSprung.kalenderjahr)}
@@ -319,7 +318,9 @@ export function ExposeDokument({
                 )}
               </>
             )}
-            <Zeile label={t.deckblatt.eingesetztesEigenkapital} value={euro(input.equity)} strong />
+            {/* Mischzins aller Darlehen, seit dem 23.10.2026 immer, sobald es ein Darlehen gibt. */}
+            {result.totalDebt > 0 && <Zeile label={t.deckblatt.mischzins} value={prozent(result.mischzins)} />}
+            <Zeile label={t.deckblatt.eingesetztesEigenkapital} value={euro(result.eigenkapital)} strong />
             <Zeile label={t.deckblatt.zveVorErwerb} value={euro(result.combinedTaxableIncome)} />
             <Zeile
               label={
@@ -429,15 +430,6 @@ export function ExposeDokument({
         <p className="page-intro">{t.unterlagenSeite.einleitung}</p>
         <UnterlagenEinblicke data={documentData} compact />
         <div className="document-expose-summary">
-          <div>
-            <span>{t.unterlagenSeite.energieklasse}</span>
-            <strong>{documentData.energyClass || t.unterlagenSeite.keineAngabe}</strong>
-            <small>
-              {documentData.energyValue > 0
-                ? `${zahl(documentData.energyValue, 1)} kWh/(m²·a)`
-                : t.unterlagenSeite.kennwertFehlt}
-            </small>
-          </div>
           <div>
             <span>{t.unterlagenSeite.ruecklagenbestand}</span>
             <strong>{documentData.reserveAmount > 0 ? euro(documentData.reserveAmount) : t.unterlagenSeite.keineAngabe}</strong>
@@ -558,7 +550,7 @@ export function ExposeDokument({
         <Seitenkopf clientName={input.clientName} marke={marke} sprache={sprache} />
         <span className="eyebrow">{t.tabellenSeite.augenbraue}</span>
         <h2>{t.tabellenSeite.titel}</h2>
-        <Cashflowtabelle years={tabellenjahre} compact />
+        <Cashflowtabelle years={tabellenjahre} compact zinsbindungen={result.zinsbindungen} />
         <h2 className="tax-heading">{t.tabellenSeite.afaTitel}</h2>
         <div className="table-scroll compact-table tax-table">
           <table>
@@ -609,7 +601,7 @@ export function ExposeDokument({
           <span className="eyebrow">{t.darlehenTabelle.augenbraue}</span>
           <h2>{t.darlehenTabelle.titel}</h2>
           <p className="page-intro">{t.darlehenTabelle.einleitung}</p>
-          <Darlehenstabelle years={tabellenjahre} compact />
+          <Darlehenstabelle years={tabellenjahre} compact zinsbindungen={result.zinsbindungen} />
           {result.years.length > tabellenjahre.length && (
             <p className="expose-fineprint">{t.tabellenSeite.ersteJahre(tabellenjahre.length)}</p>
           )}

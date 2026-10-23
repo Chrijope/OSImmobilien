@@ -1,18 +1,18 @@
 /**
  * Auslesung von Objektunterlagen für den Investmentrechner.
  *
- * Energieausweis, Erhaltungsrücklage, Sanierungshistorie und Dokumentart
- * werden per regulären Ausdrücken aus dem Text der Unterlagen gezogen. Die
- * Muster sind eins zu eins aus der Web-App „OS Immobilien Investmentrechner"
- * übernommen. Alles läuft lokal im Browser, es wird nichts hochgeladen.
+ * Erhaltungsrücklage, Sanierungshistorie und Dokumentart werden per
+ * regulären Ausdrücken aus dem Text der Unterlagen gezogen. Die Muster sind
+ * eins zu eins aus der Web-App „OS Immobilien Investmentrechner" übernommen.
+ * Alles läuft lokal im Browser, es wird nichts hochgeladen.
+ *
+ * Den Energieausweis liest der Rechner seit dem 23.10.2026 nicht mehr
+ * (Christian): Er geht in keine Rechnung ein und steht im Exposé.
+ * Gespeicherte Stände mit Energiefeldern lesen sich weiter, die Felder
+ * fallen beim Lesen weg (`unterlagenAusJson`).
  */
 
 export interface UnterlagenDaten {
-  energyClass: string;
-  energyValue: number;
-  certificateType: string;
-  energyCarrier: string;
-  certificateValidUntil: string;
   reserveAmount: number;
   reserveUnitShare: number;
   reserveAsOf: string;
@@ -54,11 +54,6 @@ export interface Ruecklagentreffer {
 
 /** Leerer Ausgangszustand der Unterlagen (Original „re"). */
 export const leereUnterlagenDaten: UnterlagenDaten = {
-  energyClass: "",
-  energyValue: 0,
-  certificateType: "",
-  energyCarrier: "",
-  certificateValidUntil: "",
   reserveAmount: 0,
   reserveUnitShare: 0,
   reserveAsOf: "",
@@ -168,24 +163,6 @@ export function sanierungenBereinigt(zeilen: string[]): string[] {
 /** Alle Kennwerte aus dem zusammengefügten Text der Unterlagen auslesen. */
 export function unterlagenAuslesen(rohtext: string): UnterlagenAuslesung {
   const text = normalisiereText(rohtext);
-  const energieklasse = ersterTreffer(text, [
-    /Energieeffizienzklasse\s*(?:laut Energieausweis)?\s*[:-]?\s*(A\+|A|B|C|D|E|F|G|H)\b/i,
-    /Effizienzklasse\s*[:-]?\s*(A\+|A|B|C|D|E|F|G|H)\b/i,
-  ]);
-  const kennwert = ersterTreffer(text, [
-    /(?:Endenergiebedarf|Endenergieverbrauch|Energieverbrauchskennwert)\s*[:-]?\s*([0-9]{1,3}(?:[.,][0-9]{1,2})?)\s*kWh/i,
-    /([0-9]{1,3}(?:[.,][0-9]{1,2})?)\s*kWh\s*\/(?:\s*\(?m[²2].{0,5}a\)?)/i,
-  ]);
-  const ausweisart = ersterTreffer(text, [
-    /(Bedarfsausweis|Verbrauchsausweis)/i,
-    /Art des Energieausweises\s*[:-]?\s*([^.;]{3,50})/i,
-  ]);
-  const energietraeger = ersterTreffer(text, [
-    /(?:Wesentlicher Energieträger|Hauptenergieträger|Energieträger für die Heizung)\s*[:-]?\s*([^.;]{2,70})/i,
-  ]);
-  const gueltigBis = ersterTreffer(text, [
-    /(?:gültig bis|Gültigkeitsdatum)\s*[:-]?\s*(\d{1,2}[.]\d{1,2}[.]\d{4})/i,
-  ]);
   const ruecklagen = findeRuecklagen(text);
   const anteilEinheit = ersterTreffer(text, [
     /(?:Anteil|davon|entfallen auf|anteilig).{0,80}?(?:Wohnung|Einheit|Sondereigentum).{0,80}?([0-9]{1,3}(?:[.\s][0-9]{3})*(?:,[0-9]{1,2})?)\s*(?:€|EUR)/i,
@@ -197,11 +174,6 @@ export function unterlagenAuslesen(rohtext: string): UnterlagenAuslesung {
   ]);
   const sanierungen = findeSanierungen(text);
   const ergebnis: UnterlagenAuslesung = {
-    energyClass: energieklasse,
-    energyValue: parseDeutscheZahl(kennwert),
-    certificateType: ausweisart,
-    energyCarrier: energietraeger,
-    certificateValidUntil: gueltigBis,
     reserveAmount: ruecklagen[0]?.amount ?? 0,
     reserveUnitShare: parseDeutscheZahl(anteilEinheit),
     reserveAsOf: stand,
@@ -210,11 +182,6 @@ export function unterlagenAuslesen(rohtext: string): UnterlagenAuslesung {
     matchedFields: 0,
   };
   ergebnis.matchedFields = [
-    ergebnis.energyClass,
-    ergebnis.energyValue,
-    ergebnis.certificateType,
-    ergebnis.energyCarrier,
-    ergebnis.certificateValidUntil,
     ergebnis.reserveAmount,
     ergebnis.reserveUnitShare,
     ergebnis.reserveAsOf,
@@ -226,11 +193,6 @@ export function unterlagenAuslesen(rohtext: string): UnterlagenAuslesung {
 /** Nur die Datenfelder ohne matchedFields, für den Zustand der Oberfläche. */
 export function unterlagenDatenAus(auslesung: UnterlagenAuslesung): UnterlagenDaten {
   return {
-    energyClass: auslesung.energyClass,
-    energyValue: auslesung.energyValue,
-    certificateType: auslesung.certificateType,
-    energyCarrier: auslesung.energyCarrier,
-    certificateValidUntil: auslesung.certificateValidUntil,
     reserveAmount: auslesung.reserveAmount,
     reserveUnitShare: auslesung.reserveUnitShare,
     reserveAsOf: auslesung.reserveAsOf,

@@ -270,7 +270,7 @@ export const KENNZAHL_TEXTE_DE: KennzahlTexte = {
     eigenkapitalrenditeHinweis:
       "Eine Modellkennzahl, kein Zins: Vermögensaufbau je Jahr im Verhältnis zu Eigenkapital und zwölf Monaten Zuzahlung. Weniger Eigenkapital heißt höhere Zahl, aber auch höhere Rate. Den Zins auf das eingesetzte Geld zeigt der IRR unter den Kennzahlen.",
     irrHinweis:
-      "Verzinsung des eingesetzten Geldes über den ganzen Zeitraum, mit allen Zahlungen nach Steuer und einem Modellverkauf am Ende abzüglich der Verkaufskosten.",
+      "Verzinsung des eingesetzten Geldes über den ganzen Zeitraum, mit allen Zahlungen nach Steuer und einem Modellverkauf am Ende.",
     irrNichtBestimmbar:
       "Nicht bestimmbar: Die Zahlungsreihe hat keine Ein- und Auszahlung, etwa ohne Eigenkapital und ohne Zuzahlung.",
     eigenkapitalrenditeNichtBestimmbar:
@@ -335,12 +335,14 @@ export const KENNZAHL_TEXTE_DE: KennzahlTexte = {
       gesamtkosten: {
         titel: "Gesamtkosten",
         bedeutung: "Was der Kauf insgesamt kostet.",
-        formel: "Gesamtkosten = Kaufpreis gesamt + Kaufnebenkosten + Finanzierungsnebenkosten",
+        formel: "Gesamtkosten = Kaufpreis gesamt + Kaufnebenkosten",
       },
       darlehen: {
-        titel: "Bankdarlehen",
-        bedeutung: "Der Teil der Gesamtkosten, den die Bank finanziert.",
-        formel: "Bankdarlehen = Kaufpreis gesamt + Kaufnebenkosten − Eigenkapital − Nachrangdarlehen, mindestens 0. Die Finanzierungsnebenkosten trägt das Eigenkapital",
+        titel: "Darlehen, Eigenkapital und Zinsbindung",
+        bedeutung:
+          "Eingetragen wird, wie finanziert wird: das Bankdarlehen in Prozent des Kaufpreises oder in Euro, dazu bei Bedarf Nachrangdarlehen, zweites Bankdarlehen und KfW-Darlehen. Das Eigenkapital ist der Rest. Jedes Darlehen rechnet mit seinem eigenen Zins; der Mischzins fasst sie zusammen. Nach dem Ende der Zinsbindung rechnet das Modell mit demselben Zins und derselben Rate weiter, die Jahresübersicht zeigt, wann welche Zinsbindung endet.",
+        formel:
+          "Bankdarlehen = Prozentsatz × Kaufpreis (beim All-inclusive-Modell samt Kaufnebenkosten) oder der Euro-Betrag; Eigenkapital = Gesamtkosten − alle Darlehen, mindestens 0; Mischzins = Summe (Darlehen × Sollzins) ÷ Summe der Darlehen",
       },
       afaBasis: {
         titel: "AfA-Basis und Gebäude-AfA",
@@ -362,7 +364,7 @@ export const KENNZAHL_TEXTE_DE: KennzahlTexte = {
         titel: "Kreditrate gesamt p. M.",
         bedeutung: "Zins und Tilgung, die monatlich an die Bank gehen, im ersten Monat.",
         formel:
-          "Kreditrate = Darlehen × (Sollzins + anfängliche Tilgung) ÷ 12, für jedes Darlehen; bei Volltilgung die Annuität, die das Darlehen in der Laufzeit tilgt; endfällig und in tilgungsfreien Anlaufjahren nur Darlehen × Sollzins ÷ 12; nach jeder Zinsbindung Restschuld × (Anschlusszins + neue Tilgung) ÷ 12",
+          "Kreditrate = Darlehen × (Sollzins + anfängliche Tilgung) ÷ 12, für jedes Darlehen; bei Volltilgung die Annuität, die das Darlehen in der Laufzeit tilgt; endfällig und in tilgungsfreien Anlaufjahren nur Darlehen × Sollzins ÷ 12; nach der Zinsbindung bleiben Zins und Rate gleich",
       },
       tilgung: {
         titel: "Tilgung",
@@ -373,7 +375,7 @@ export const KENNZAHL_TEXTE_DE: KennzahlTexte = {
       cashflowVorSteuer: {
         titel: "Cashflow vor Steuer",
         bedeutung: "Was von der Miete nach Rate und Kosten übrig bleibt, bevor die Steuer wirkt.",
-        formel: "Cashflow vor Steuer = Miete − Rate − nicht umlagefähige Kosten − Zuführung zur Instandhaltungsrücklage",
+        formel: "Cashflow vor Steuer = Miete − Rate − nicht umlagefähige Kosten − Instandhaltungsrücklage im Hausgeld",
       },
       cashflowNachSteuer: {
         titel: "Cashflow nach Steuer",
@@ -389,28 +391,28 @@ export const KENNZAHL_TEXTE_DE: KennzahlTexte = {
       nettorendite: {
         titel: "Nettorendite",
         bedeutung: "Wie die Bruttorendite, aber nach Leerstand und Kosten und einschließlich der Nebenkosten.",
-        formel: "Nettorendite = (Jahresmiete nach Leerstand − nicht umlagefähige Kosten − Zuführung zur Instandhaltungsrücklage) ÷ Gesamtkosten",
+        formel: "Nettorendite = (Jahresmiete nach Leerstand − nicht umlagefähige Kosten − Instandhaltungsrücklage im Hausgeld) ÷ Gesamtkosten",
       },
       steuerlichesErgebnis: {
         titel: "Ergebnis aus Vermietung (V+V)",
         bedeutung:
           "Das steuerliche Ergebnis der Wohnung. Ist es negativ, senkt es dein zu versteuerndes Einkommen. Die Tilgung ist nicht absetzbar.",
         formel:
-          "Ergebnis V+V = Miete − Kosten − Zinsen − Finanzierungsnebenkosten (Jahr 1) − Umschuldungskosten − Gebäude-AfA − Sonder-AfA − Möbel-AfA − abgezogener Erhaltungsaufwand",
+          "Ergebnis V+V = Miete − Kosten − Zinsen − Gebäude-AfA − Sonder-AfA − Möbel-AfA − abgezogener Erhaltungsaufwand",
       },
       grenzsteuersatz: {
         titel: "Grenzsteuersatz",
         bedeutung:
           "Der Steuersatz auf den nächsten Euro Einkommen, mit Solidaritätszuschlag und Kirchensteuer. Er zeigt ungefähr, wie viel Steuer ein Euro Verlust spart.",
         formel:
-          "Grenzsteuersatz = (Steuer auf zvE + 100 € − Steuer auf zvE) ÷ 100 €; im manuellen Modus der eingetragene Satz",
+          "Grenzsteuersatz = (Steuer auf das zu versteuernde Einkommen + 100 € − Steuer auf das zu versteuernde Einkommen) ÷ 100 €; im manuellen Modus der eingetragene Satz",
       },
       steuereffekt: {
         titel: "Steuereffekt im ersten Jahr",
         bedeutung:
           "Um so viel ändert sich deine Steuer durch die Immobilie. Positiv heißt Ersparnis, negativ heißt Mehrbelastung.",
         formel:
-          "Steuereffekt = Steuer ohne Immobilie − Steuer mit Immobilie; mit Immobilie heißt zvE + Ergebnis V+V nach Tarif 2026 (manuell: Ergebnis V+V × Grenzsteuersatz)",
+          "Steuereffekt = Steuer ohne Immobilie − Steuer mit Immobilie; mit Immobilie heißt zu versteuerndes Einkommen + Ergebnis V+V nach Tarif 2026 (manuell: Ergebnis V+V × Grenzsteuersatz)",
       },
       steuereffektGesamt: {
         titel: "Steuereffekt gesamt",
@@ -464,7 +466,7 @@ export const KENNZAHL_TEXTE_DE: KennzahlTexte = {
         bedeutung:
           "Der Zins, den dein eingesetztes Geld rechnerisch bringt. Er hängt stark an Finanzierung und Wertsteigerung: Wer weniger einbringt, bekommt die höhere Zahl.",
         formel:
-          "Der Zinssatz, bei dem −(Eigenkapital + Finanzierungsnebenkosten) zum Kauf + die Cashflows nach Steuer am Ende jedes Jahres (das erste Jahr zeitanteilig ab dem Übergang) + (Immobilie minus Restschuld minus Verkaufskosten) zum Verkauf, jeweils auf ihren Zeitpunkt abgezinst, zusammen 0 ergeben",
+          "Der Zinssatz, bei dem −Eigenkapital zum Kauf + die Cashflows nach Steuer am Ende jedes Jahres (das erste Jahr zeitanteilig ab dem Übergang) + (Immobilie minus Restschuld) zum Verkauf, jeweils auf ihren Zeitpunkt abgezinst, zusammen 0 ergeben; das zu versteuernde Einkommen bleibt dabei in allen Jahren gleich",
       },
     },
     kaufpreisAllInclusive: {
@@ -579,7 +581,7 @@ export const KENNZAHL_TEXTE_EN: KennzahlTexte = {
     eigenkapitalrenditeHinweis:
       "A model figure, not an interest rate: wealth building per year relative to equity and twelve months of top-up payments. Less equity means a higher figure, but also a higher instalment. The interest on the money invested is shown by the IRR below the key figures.",
     irrHinweis:
-      "Return on the money invested over the whole period, with all payments after tax and a model sale at the end less selling costs.",
+      "Return on the money invested over the whole period, with all payments after tax and a model sale at the end.",
     irrNichtBestimmbar:
       "Cannot be determined: the payment series has no inflow and outflow, for example without equity and without top-up payments.",
     eigenkapitalrenditeNichtBestimmbar:
@@ -644,12 +646,14 @@ export const KENNZAHL_TEXTE_EN: KennzahlTexte = {
       gesamtkosten: {
         titel: "Total costs",
         bedeutung: "What the purchase costs in total.",
-        formel: "Total costs = total purchase price + incidental purchase costs + financing costs",
+        formel: "Total costs = total purchase price + incidental purchase costs",
       },
       darlehen: {
-        titel: "Bank loan",
-        bedeutung: "The part of the total costs financed by the bank.",
-        formel: "Bank loan = total purchase price + incidental purchase costs − equity − subordinated loan, at least 0. The financing costs are covered by equity",
+        titel: "Loans, equity and fixed-rate period",
+        bedeutung:
+          "You enter how the purchase is financed: the bank loan as a percentage of the purchase price or in euros, plus a subordinated loan, a second bank loan and a KfW loan if needed. Equity is the rest. Each loan uses its own rate; the blended rate sums them up. After the fixed-rate period ends, the model continues with the same rate and the same instalment; the annual overview shows when each fixed-rate period ends.",
+        formel:
+          "Bank loan = percentage × purchase price (all-inclusive: including incidental purchase costs) or the euro amount; equity = total costs − all loans, at least 0; blended rate = sum (loan × borrowing rate) ÷ sum of loans",
       },
       afaBasis: {
         titel: "Depreciation basis and building depreciation (AfA)",
@@ -671,7 +675,7 @@ export const KENNZAHL_TEXTE_EN: KennzahlTexte = {
         titel: "Total loan instalment per month",
         bedeutung: "Interest and repayment paid to the bank each month, in the first month.",
         formel:
-          "Loan instalment = loan × (borrowing rate + initial repayment) ÷ 12, for each loan; with full repayment the annuity that repays the loan within its term; bullet loans and repayment-free years: loan × borrowing rate ÷ 12; after each fixed-rate period remaining debt × (follow-up rate + new repayment) ÷ 12",
+          "Loan instalment = loan × (borrowing rate + initial repayment) ÷ 12, for each loan; with full repayment the annuity that repays the loan within its term; bullet loans and repayment-free years: loan × borrowing rate ÷ 12; after the fixed-rate period the rate and the instalment stay the same",
       },
       tilgung: {
         titel: "Repayment",
@@ -682,7 +686,7 @@ export const KENNZAHL_TEXTE_EN: KennzahlTexte = {
       cashflowVorSteuer: {
         titel: "Cash flow before tax",
         bedeutung: "What is left of the rent after the instalment and costs, before tax takes effect.",
-        formel: "Cash flow before tax = rent − instalment − non-recoverable costs − contribution to the maintenance reserve",
+        formel: "Cash flow before tax = rent − instalment − non-recoverable costs − maintenance reserve in the service charge",
       },
       cashflowNachSteuer: {
         titel: "Cash flow after tax",
@@ -698,14 +702,14 @@ export const KENNZAHL_TEXTE_EN: KennzahlTexte = {
       nettorendite: {
         titel: "Net rental yield",
         bedeutung: "Like the gross rental yield, but after vacancy and costs and including the incidental costs.",
-        formel: "Net rental yield = (annual rent after vacancy − non-recoverable costs − contribution to the maintenance reserve) ÷ total costs",
+        formel: "Net rental yield = (annual rent after vacancy − non-recoverable costs − maintenance reserve in the service charge) ÷ total costs",
       },
       steuerlichesErgebnis: {
         titel: "Income from letting and leasing (Vermietung und Verpachtung)",
         bedeutung:
           "The taxable result of the flat. If it is negative, it reduces your taxable income. The repayment is not deductible.",
         formel:
-          "Result from letting = rent − costs − interest − financing costs (year 1) − refinancing costs − building depreciation − special depreciation − furniture depreciation − deducted maintenance expenses",
+          "Result from letting = rent − costs − interest − building depreciation − special depreciation − furniture depreciation − deducted maintenance expenses",
       },
       grenzsteuersatz: {
         titel: "Marginal tax rate",
@@ -773,7 +777,7 @@ export const KENNZAHL_TEXTE_EN: KennzahlTexte = {
         bedeutung:
           "The interest rate your invested money yields in arithmetical terms. It depends heavily on financing and increase in value: whoever contributes less gets the higher figure.",
         formel:
-          "The interest rate at which −(equity + financing costs) at purchase + the after-tax cash flows at the end of each year (the first year pro rata from the transfer) + (property minus remaining debt minus selling costs) at sale, each discounted to its point in time, add up to 0",
+          "The interest rate at which −equity at purchase + the after-tax cash flows at the end of each year (the first year pro rata from the transfer) + (property minus remaining debt) at sale, each discounted to its point in time, add up to 0; taxable income stays the same in every year",
       },
     },
     kaufpreisAllInclusive: {

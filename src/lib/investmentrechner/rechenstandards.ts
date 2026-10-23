@@ -91,42 +91,27 @@ export function stresstest(input: InvestmentEingabe, result: InvestmentErgebnis)
   });
 
   /*
-    2. Zins plus ein Prozentpunkt ab Jahr 11. Gerechnet über den vorhandenen
-    Anschlusszins: Zinsbindung zehn Jahre, Anschluss ein Punkt über dem
-    eingetragenen Anschlusszins oder, ohne ihn, über dem Zins von heute. Die
-    Basis läuft mit demselben Anschluss ohne den Punkt, denn die neue Rate
-    (Restschuld mal Zins plus Tilgung) ist eine andere als die von heute; nur
-    so zeigt der Unterschied allein den Punkt. Beide Läufe gehen mindestens bis
-    Jahr 11, auch wenn die Prognose kürzer ist. Das Nachrangdarlehen hat keinen
-    Anschluss und bleibt.
+    2. Zins plus ein Prozentpunkt ab Jahr 11. Seit dem 23.10.2026 gibt es
+    keinen Anschlusszins mehr, jedes Darlehen läuft nach der Zinsbindung mit
+    demselben Zins weiter. Der Fall rechnet deshalb einen Punkt mehr auf die
+    Restschuld zu Beginn von Jahr 11, Tilgung, Miete und Kosten bleiben; die
+    Steuer samt Progression rechnet `cashflowNachSteuerBeiZins`. Der Lauf geht
+    mindestens bis Jahr 11, auch wenn die Prognose kürzer ist.
   */
-  const jahre = Math.max(input.forecastYears, ANSCHLUSS_AB_JAHR);
-  const bindung = ANSCHLUSS_AB_JAHR - 1;
-  const anschluss = (plus: number) => {
-    const zins = (folge: number, heute: number) => (folge > 0 ? folge : heute) + plus;
-    return berechneInvestment({
-      ...input,
-      forecastYears: jahre,
-      seniorFixedRateYears: bindung,
-      seniorFollowUpRate: zins(input.seniorFollowUpRate, input.seniorInterestRate),
-      secondFixedRateYears: bindung,
-      secondFollowUpRate: zins(input.secondFollowUpRate, input.secondInterestRate),
-      kfwFixedRateYears: bindung,
-      kfwFollowUpRate: zins(input.kfwFollowUpRate, input.kfwInterestRate),
-    });
-  };
-  const basisLang = anschluss(0);
-  const zinsLang = anschluss(1);
+  const basisLang = berechneInvestment({ ...input, forecastYears: Math.max(input.forecastYears, ANSCHLUSS_AB_JAHR) });
   const basisJahr11 = basisLang.years[ANSCHLUSS_AB_JAHR - 1];
-  const zinsJahr11 = zinsLang.years[ANSCHLUSS_AB_JAHR - 1];
+  const mehrzins = (basisLang.years[ANSCHLUSS_AB_JAHR - 2]?.remainingDebt ?? 0) * 0.01;
   faelle.push({
     titel: `Zins +1 Punkt ab Jahr ${ANSCHLUSS_AB_JAHR}`,
-    beschreibung: "Anschlusszins einen Prozentpunkt höher, Tilgung wie eingestellt",
+    beschreibung: "Ein Prozentpunkt mehr Zins auf die Restschuld, Tilgung wie eingestellt",
     jahr: basisJahr11.year,
     basis: belastungMonat(basisJahr11),
-    stress: belastungMonat(zinsJahr11),
+    stress: {
+      vorSteuer: -(basisJahr11.cashflowBeforeTax - mehrzins) / 12,
+      nachSteuer: -cashflowNachSteuerBeiZins(input, basisJahr11, basisJahr11.interest + mehrzins) / 12,
+    },
     einheit: "monat",
-    entfaellt: result.totalDebt > 0 ? undefined : "Ohne Darlehen gibt es keinen Anschlusszins.",
+    entfaellt: result.totalDebt > 0 ? undefined : "Ohne Darlehen gibt es keinen Zins.",
   });
 
   /*

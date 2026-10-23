@@ -48,7 +48,6 @@ export const MODELL_SAETZE = {
   tilgung: 1.2,
   kostensteigerung: 2,
   wertsteigerung: 1.5,
-  finanzierungsnebenkosten: 0,
 } as const;
 
 export interface Modellwohnung {
@@ -206,9 +205,8 @@ export function modellEingabe(kaufpreis: number, optionen: ModellOptionen = {}):
     brokerRate: 0,
     otherPurchaseCostRate: 0,
     // Die Nebenkosten kommen aus Eigenkapital, der Kaufpreis wird finanziert.
-    equity: (w.kaufpreis * w.kaufnebenkosten) / 100,
-    financingCostRate: s.finanzierungsnebenkosten,
-    juniorLoanAmount: 0,
+    seniorLoanMode: "percent",
+    seniorLoanValue: 100,
     seniorInterestRate: s.zins,
     seniorRepaymentRate: s.tilgung,
     monthlyColdRent: w.kaltmiete,

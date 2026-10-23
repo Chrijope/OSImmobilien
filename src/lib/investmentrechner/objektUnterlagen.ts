@@ -144,8 +144,8 @@ export function automatischeObjektwerte(antwort: KiAntwort, eingabe: InvestmentE
   return { aenderung, herkunft: quellen, hinweise };
 }
 
-const UNTERLAGEN_FELDER = ["energyClass", "energyValue", "certificateType", "energyCarrier", "certificateValidUntil", "reserveAmount", "reserveUnitShare", "reserveAsOf", "renovations"] as const;
-/** Energie-/WEG-Felder aus derselben kontextgebundenen Auslesung, auch für Scans. */
+const UNTERLAGEN_FELDER = ["reserveAmount", "reserveUnitShare", "reserveAsOf", "renovations"] as const;
+/** WEG-Felder aus derselben kontextgebundenen Auslesung, auch für Scans. Energiefelder der Antwort bleiben seit dem 23.10.2026 unbeachtet. */
 export function automatischeUnterlagenwerte(antwort: KiAntwort, bisher: UnterlagenDaten) {
   const daten = { ...bisher };
   const hinweise: string[] = [];
@@ -155,12 +155,11 @@ export function automatischeUnterlagenwerte(antwort: KiAntwort, bisher: Unterlag
     if (!v) continue;
     if (v.sicherheit !== "hoch" || !v.quelle) { hinweise.push(`${feld}: Dokumentangabe bitte manuell prüfen.`); continue; }
     let wert: string | number | string[] = v.wert;
-    if (["energyValue", "reserveAmount", "reserveUnitShare"].includes(feld)) {
+    if (["reserveAmount", "reserveUnitShare"].includes(feld)) {
       if (typeof wert !== "number" || !Number.isFinite(wert) || wert < 0) continue;
     } else {
       if (typeof wert !== "string" || !wert.trim()) continue;
       wert = wert.trim();
-      if (feld === "energyClass" && !/^(A\+|[A-H])$/.test(wert)) continue;
       if (feld === "renovations") wert = wert.split("\n").filter(Boolean).slice(0, 10);
     }
     const alt = bisher[feld];

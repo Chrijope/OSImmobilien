@@ -1,4 +1,4 @@
-import type { Jahreswert } from "@/lib/investmentrechner/rechenkern";
+import type { Jahreswert, Zinsbindungsende } from "@/lib/investmentrechner/rechenkern";
 import { formatEuro, formatProzent } from "@/lib/investmentrechner/formatierer";
 import { useRechnerTexte } from "./RechnerSprache";
 import { Neu } from "./Felder";
@@ -11,37 +11,65 @@ import { Neu } from "./Felder";
 interface TabellenProps {
   years: Jahreswert[];
   compact?: boolean;
+  /** Ende der Zinsbindungen, seit dem 23.10.2026 im Jahr markiert (`InvestmentErgebnis.zinsbindungen`). */
+  zinsbindungen?: Zinsbindungsende[];
 }
 
 /**
- * Wechselt der Zins des Bankdarlehens im Verlauf, oder gibt es Sondertilgungen?
- * Dann zeigt die Tabelle je eine Spalte dafür (seit dem 11.10.2026), sonst
- * bleibt sie, wie sie war.
+ * Wechselt der Zins des Bankdarlehens im Verlauf? Dann zeigt die Tabelle eine
+ * Spalte dafür (seit dem 11.10.2026), sonst bleibt sie, wie sie war. Seit dem
+ * 23.10.2026 bleibt der Bankzins über die Laufzeit gleich, Sondertilgungen
+ * gibt es nicht mehr.
  */
-export function verlaufsspalten(years: Jahreswert[]): { zins: boolean; sondertilgung: boolean } {
+export function verlaufsspalten(years: Jahreswert[]): { zins: boolean } {
   const saetze = years.map((jahr) => jahr.darlehen?.bank?.zinssatz ?? 0).filter((satz) => satz > 0);
-  return {
-    zins: saetze.some((satz) => Math.abs(satz - saetze[0]) > 1e-9),
-    sondertilgung: years.some((jahr) => (jahr.sondertilgung ?? 0) > 0),
-  };
+  return { zins: saetze.some((satz) => Math.abs(satz - saetze[0]) > 1e-9) };
 }
 
 /**
  * Die Tabelle „Darlehen je Jahr“ gibt es seit dem 07.10.2026 mit KfW-Darlehen,
- * seit dem 11.10.2026 auch mit zweitem Bankdarlehen, Sondertilgung oder
- * wechselndem Zins. Sonst genügt die Cashflowtabelle.
+ * seit dem 11.10.2026 auch mit zweitem Bankdarlehen oder wechselndem Zins.
+ * Sonst genügt die Cashflowtabelle.
  */
 export function zeigeDarlehenstabelle(result: { kfwLoanAmount: number; secondLoanAmount?: number; years: Jahreswert[] }): boolean {
-  const extra = verlaufsspalten(result.years);
-  return result.kfwLoanAmount > 0 || (result.secondLoanAmount ?? 0) > 0 || extra.zins || extra.sondertilgung;
+  return result.kfwLoanAmount > 0 || (result.secondLoanAmount ?? 0) > 0 || verlaufsspalten(result.years).zins;
+}
+
+/**
+ * Markierung und Satz zu den Zinsbindungen, seit dem 23.10.2026: Im Jahr, in
+ * dem eine Zinsbindung endet, steht der Name des Darlehens unter der
+ * Jahreszahl; darunter ein Satz mit allen Enden samt Restschuld.
+ */
+function useZinsbindungen(zinsbindungen: Zinsbindungsende[] | undefined) {
+  const { sprache, texte } = useRechnerTexte();
+  const namen = texte.darlehenTabelle;
+  const name = (art: Zinsbindungsende["art"]) => ({ bank: namen.bank, bank2: namen.bank2, kfw: namen.kfw, nachrang: namen.nachrang })[art];
+  const liste = zinsbindungen ?? [];
+  const imJahr = (index: number) => liste.filter((z) => z.jahrIndex === index);
+  const hinweis =
+    liste.length > 0
+      ? texte.cashflowTabelle.zinsbindungHinweis(
+          liste
+            .map((z) => `${name(z.art)} ${z.kalenderjahr} (${texte.darlehenTabelle.restschuld} ${formatEuro(z.restschuld, sprache)})`)
+            .join(", "),
+        )
+      : "";
+  const marke = (index: number) => {
+    const enden = imJahr(index);
+    return enden.length > 0 ? (
+      <span className="zinsbindung-ende">{texte.cashflowTabelle.zinsbindungEndet(enden.map((z) => name(z.art)).join(", "))}</span>
+    ) : null;
+  };
+  return { hinweis, marke, endetIn: (index: number) => imJahr(index).length > 0 };
 }
 
 /** Cashflow, Steuer und Tilgung je Jahr. */
-export function Cashflowtabelle({ years, compact = false }: TabellenProps) {
+export function Cashflowtabelle({ years, compact = false, zinsbindungen }: TabellenProps) {
   const { sprache, texte } = useRechnerTexte();
   const t = texte.cashflowTabelle;
   const euro = (wert: number) => formatEuro(wert, sprache);
   const extra = verlaufsspalten(years);
+  const bindung = useZinsbindungen(zinsbindungen);
   return (
     <div className={`table-scroll ${compact ? "compact-table" : ""}`}>
       <table>
@@ -57,12 +85,6 @@ export function Cashflowtabelle({ years, compact = false }: TabellenProps) {
             )}
             <th>{t.zinsen}</th>
             <th>{t.tilgung}</th>
-            {extra.sondertilgung && (
-              <th>
-                {t.sondertilgung}
-                <Neu />
-              </th>
-            )}
             <th>{t.kosten}</th>
             <th>{t.cfVorSteuer}</th>
             <th>{t.steuereffekt}</th>
@@ -71,15 +93,16 @@ export function Cashflowtabelle({ years, compact = false }: TabellenProps) {
           </tr>
         </thead>
         <tbody>
-          {years.map((jahr) => (
-            <tr key={jahr.year}>
-              <td>{jahr.year}</td>
+          {years.map((jahr, index) => (
+            <tr key={jahr.year} className={bindung.endetIn(index) ? "zinsbindung-zeile" : undefined}>
+              <td>
+                {jahr.year}
+                {bindung.marke(index)}
+              </td>
               <td>{euro(jahr.effectiveRent)}</td>
               {extra.zins && <td>{jahr.darlehen.bank.zinssatz ? formatProzent(jahr.darlehen.bank.zinssatz, sprache) : "–"}</td>}
               <td>{euro(jahr.interest)}</td>
-              {/* Mit Sondertilgung, damit die Zeile aufgeht; sie steht daneben noch einmal einzeln. */}
               <td>{euro(jahr.principal)}</td>
-              {extra.sondertilgung && <td>{euro(jahr.sondertilgung)}</td>}
               {/* Mit der Rücklagenzuführung, damit Miete minus Zinsen, Tilgung und Kosten den Cashflow ergibt. */}
               <td>{euro(jahr.operatingCosts + (jahr.reserveContribution ?? 0))}</td>
               <td className={jahr.cashflowBeforeTax < 0 ? "negative" : "positive"}>
@@ -94,6 +117,7 @@ export function Cashflowtabelle({ years, compact = false }: TabellenProps) {
           ))}
         </tbody>
       </table>
+      {bindung.hinweis && <p className="expose-fineprint zinsbindung-hinweis">{bindung.hinweis}</p>}
     </div>
   );
 }
@@ -145,9 +169,10 @@ export function Steuertabelle({ years, compact = false }: TabellenProps) {
  * jedes Darlehen mit Betrag und zusammen. Seit dem 07.10.2026, gezeigt nur
  * mit KfW-Darlehen; ohne bleibt die Cashflowtabelle allein.
  */
-export function Darlehenstabelle({ years, compact = false }: TabellenProps) {
+export function Darlehenstabelle({ years, compact = false, zinsbindungen }: TabellenProps) {
   const { sprache, texte } = useRechnerTexte();
   const t = texte.darlehenTabelle;
+  const bindung = useZinsbindungen(zinsbindungen);
   const euro = (wert: number) => formatEuro(wert, sprache);
   const arten = (["bank", "bank2", "kfw", "nachrang"] as const).filter((art) =>
     years.some((jahr) => (jahr.darlehen[art]?.payment ?? 0) > 0 || (jahr.darlehen[art]?.closingBalance ?? 0) > 0),
@@ -180,9 +205,12 @@ export function Darlehenstabelle({ years, compact = false }: TabellenProps) {
             </tr>
           </thead>
           <tbody>
-            {years.map((jahr) => (
-              <tr key={jahr.year}>
-                <td>{jahr.year}</td>
+            {years.map((jahr, index) => (
+              <tr key={jahr.year} className={bindung.endetIn(index) ? "zinsbindung-zeile" : undefined}>
+                <td>
+                  {jahr.year}
+                  {bindung.marke(index)}
+                </td>
                 {arten.flatMap((art) => {
                   const d = jahr.darlehen[art];
                   return zellen(art, d.payment, d.interest, d.principal, d.closingBalance);
@@ -196,6 +224,7 @@ export function Darlehenstabelle({ years, compact = false }: TabellenProps) {
       {zuschuss && (
         <p className="expose-fineprint">{t.zuschussHinweis(euro(zuschuss.darlehen.kfw.tilgungszuschuss), zuschuss.year)}</p>
       )}
+      {bindung.hinweis && <p className="expose-fineprint zinsbindung-hinweis">{bindung.hinweis}</p>}
     </>
   );
 }

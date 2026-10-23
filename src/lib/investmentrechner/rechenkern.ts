@@ -34,6 +34,13 @@ export type KfwZuschussArt = "percent" | "euro";
  *   Anschaffungskosten (Gebäude, AfA) und trägt Kaufnebenkosten.
  */
 export type Sanierungsfall = "nachKauf" | "durchVerkaeufer";
+/**
+ * Wie ein Darlehensbetrag eingegeben ist, seit dem 23.10.2026 (Christian):
+ * in Prozent des Kaufpreises oder in Euro. Die Oberfläche zeigt beides und
+ * merkt sich, worin zuletzt getippt wurde; das bleibt beim Ändern des
+ * Kaufpreises fest.
+ */
+export type Darlehensbetragsart = "percent" | "euro";
 
 export interface InvestmentEingabe {
   clientName: string;
@@ -42,7 +49,7 @@ export interface InvestmentEingabe {
   jointAssessment: boolean;
   taxableIncomeCustomer: number;
   taxableIncomeSpouse: number;
-  annualTaxableIncomeGrowth: number;
+  /* Die frühere „zvE-Entwicklung“ ist seit dem 23.10.2026 weg: Das Einkommen bleibt konstant. */
   churchTaxRate: number;
   includeSolidaritySurcharge: boolean;
   investmentShare: number;
@@ -88,53 +95,51 @@ export interface InvestmentEingabe {
    * Stände ohne das Feld bekommen den Standard, also aus.
    */
   allInclusive: boolean;
-  equity: number;
-  /**
-   * Finanzierungsnebenkosten in Prozent der Darlehenssumme (Bank plus
-   * Nachrang), vor allem die Grundschuldeintragung. Seit dem 25.09.2026,
-   * Standard 0,2 Prozent wie bei Investagon (`register_fee_rate`).
-   */
-  financingCostRate: number;
-  juniorLoanAmount: number;
+  /*
+    Finanzierung, seit dem 23.10.2026 (Christian): Eingegeben wird, wie
+    finanziert wird. Bankdarlehen und Nachrangdarlehen haben je einen Betrag
+    (in Prozent des Kaufpreises oder in Euro, siehe `Darlehensbetragsart`),
+    Zins, anfängliche Tilgung und Zinsbindung. Das Eigenkapital ist kein
+    Eingabefeld mehr, es ergibt sich als Rest: Kaufpreis und
+    Kaufnebenkosten minus alle Darlehen (`InvestmentErgebnis.eigenkapital`).
+    Vorher war es umgekehrt, das Eigenkapital wurde eingetragen und das
+    Bankdarlehen war der Rest.
+
+    Nach der Zinsbindung läuft jedes Darlehen mit demselben Zins und derselben
+    Rate weiter. Anschlusszins, neue Tilgung, Umschuldungskosten, weitere
+    Anschlussfinanzierungen, Sondertilgungen und Finanzierungsnebenkosten
+    sind entfallen; gespeicherte Stände rechnen ohne sie, siehe
+    `mitNeuerFinanzierung` in investmentBerechnungenStore.ts.
+  */
+  seniorLoanMode: Darlehensbetragsart;
+  /** Betrag des Bankdarlehens, je nach `seniorLoanMode` in Prozent des Kaufpreises oder in Euro. */
+  seniorLoanValue: number;
+  juniorLoanMode: Darlehensbetragsart;
+  /** Betrag des Nachrangdarlehens, wie beim Bankdarlehen. 0 heißt keines. */
+  juniorLoanValue: number;
   seniorInterestRate: number;
   seniorRepaymentRate: number;
   juniorInterestRate: number;
   juniorRepaymentRate: number;
-  /*
-    Anschlussfinanzierung des Bankdarlehens, seit dem 11.10.2026 (Abgleich
-    mit dem Excel-Tool von immocation). Nach der Zinsbindung gilt der
-    Anschlusszins, die neue Rate ist Restschuld mal (Anschlusszins plus neue
-    Tilgung). 0 heißt leer: ohne Anschlusszins und neue Tilgung läuft das
-    Darlehen mit Zins und Rate von heute weiter, genau wie vorher.
-  */
+  /** Zinsbindung des Nachrangdarlehens in Jahren, seit dem 23.10.2026. Danach derselbe Zins und dieselbe Rate. */
+  juniorFixedRateYears: number;
+  /** Zinsbindung des Bankdarlehens in Jahren. Danach derselbe Zins und dieselbe Rate. */
   seniorFixedRateYears: number;
-  seniorFollowUpRate: number;
-  /** Neue Tilgung ab der Anschlussfinanzierung. 0: die anfängliche Tilgung. */
-  seniorFollowUpRepaymentRate: number;
-  /** Umschuldungskosten der ersten Anschlussfinanzierung in Euro, seit dem 22.10.2026. */
-  seniorFollowUpCosts: number;
-  /** Weitere Anschlussfinanzierungen nach der ersten, je mit Zeitpunkt, Zins, Tilgung und Kosten. */
-  seniorFurtherFollowUps: Anschlussfinanzierung[];
   /** Tilgungsart des Bankdarlehens, seit dem 22.10.2026. Standard: Annuität aus dem Tilgungssatz. */
   seniorRepaymentType: Tilgungsart;
   /** Laufzeit in Jahren bei Volltilgung oder endfälligem Darlehen. */
   seniorTermYears: number;
   /** Tilgungsfreie Anlaufjahre des Bankdarlehens. */
   seniorGracePeriodYears: number;
-  /** Sondertilgungen auf das Bankdarlehen, je Kalenderjahr am Jahresende. */
-  specialRepayments: Sondertilgung[];
   /*
-    Zweites Bankdarlehen, seit dem 11.10.2026. Es ersetzt wie das KfW-Darlehen
-    einen Teil des Bankdarlehens, 0 heißt keines. Nach der Zinsbindung gilt
-    sein Anschlusszins mit der anfänglichen Tilgung auf die Restschuld.
+    Zweites Bankdarlehen, seit dem 11.10.2026, in Euro, 0 heißt keines. Es
+    kommt seit dem 23.10.2026 zu Bank- und Nachrangdarlehen hinzu und mindert
+    das Eigenkapital.
   */
   secondLoanAmount: number;
   secondInterestRate: number;
   secondRepaymentRate: number;
   secondFixedRateYears: number;
-  secondFollowUpRate: number;
-  /** Neue Tilgung des zweiten Darlehens ab dem Anschluss, seit dem 22.10.2026. 0: die anfängliche. */
-  secondFollowUpRepaymentRate: number;
   secondRepaymentType: Tilgungsart;
   secondTermYears: number;
   secondGracePeriodYears: number;
@@ -179,6 +184,12 @@ export interface InvestmentEingabe {
    * siehe `RUECKLAGENZUFUEHRUNG_ABZIEHBAR`.
    */
   monthlyReserveContribution: number;
+  /**
+   * Die Rücklage folgt der Wohnfläche (1 Euro je m² und Monat), seit dem
+   * 23.10.2026 (Christian). Aus, sobald ein Wert von Hand, aus den Unterlagen
+   * oder aus der Objektanlage kommt; siehe `mitRuecklagenVorgabe`.
+   */
+  monthlyReserveContributionAuto: boolean;
   /*
     Hausgeld in ganzer Höhe, seit dem 22.10.2026 (Christian): gesamt, davon
     umlagefähig (zahlt der Mieter, nur Anzeige) und nicht umlagefähig. Der
@@ -193,12 +204,7 @@ export interface InvestmentEingabe {
   annualRentGrowth: number;
   annualCostGrowth: number;
   annualValueGrowth: number;
-  /**
-   * Verkaufskosten in Prozent des Verkaufspreises (Makler, Notar), seit dem
-   * 22.10.2026. Sie mindern den Erlös im Modellverkauf am Ende und damit den
-   * internen Zinsfuß. 0 heißt: ohne Verkaufskosten.
-   */
-  saleCostRate: number;
+  /* Die Verkaufskosten am Ende (`saleCostRate`) sind seit dem 23.10.2026 weg. */
   buildingShare: number;
   depreciationMethod: AfaMethode;
   buildingDepreciationRate: number;
@@ -265,12 +271,6 @@ export interface InvestmentEingabe {
   eingabeVersion: number;
 }
 
-/** Eine Sondertilgung: Kalenderjahr und Betrag, gezahlt am Jahresende. */
-export interface Sondertilgung {
-  jahr: number;
-  betrag: number;
-}
-
 /** Eine Zeile der Haushaltsrechnung oder Vermögensaufstellung. */
 export interface Bankunterlagenposten {
   bezeichnung: string;
@@ -293,7 +293,7 @@ export interface Vermoegensaufstellung {
 }
 
 /** Die aktuelle Version der Eingabe, siehe `eingabeVersion`. */
-export const EINGABE_VERSION = 4;
+export const EINGABE_VERSION = 5;
 
 /** Schlüssel aller Zahlenfelder der Eingabe, für typsichere Setter in der Oberfläche. */
 export type ZahlenFeld = {
@@ -326,10 +326,6 @@ export interface Darlehensjahr extends Annuitaetsjahr {
   tilgungszuschuss: number;
   /** Sollzins, der in diesem Jahr galt, als Faktor. 0 ohne Darlehen (seit dem 11.10.2026). */
   zinssatz?: number;
-  /** Sondertilgung am Jahresende, steckt schon in `principal` und `payment`. */
-  sondertilgung?: number;
-  /** Umschuldungskosten einer Anschlussfinanzierung in diesem Jahr, NICHT in `payment` (seit dem 22.10.2026). */
-  umschuldungskosten?: number;
 }
 
 /** `bank2`: das zweite Bankdarlehen, seit dem 11.10.2026. */
@@ -347,8 +343,6 @@ export interface Jahreswert {
   debtService: number;
   /** Jedes Darlehen einzeln, seit dem 07.10.2026. Ohne KfW und Nachrang stehen dort Nullen. */
   darlehen: Record<Darlehensart, Darlehensjahr>;
-  /** Sondertilgung dieses Jahres, steckt in `principal` und `debtService` (seit dem 11.10.2026). */
-  sondertilgung: number;
   /** Nicht umlagefähige Kosten, abziehbar. */
   operatingCosts: number;
   /** Zuführung zur Instandhaltungsrücklage, im Cashflow, steuerlich siehe `RUECKLAGENZUFUEHRUNG_ABZIEHBAR`. */
@@ -358,14 +352,6 @@ export interface Jahreswert {
   specialDepreciation: number;
   furnitureDepreciation: number;
   rehabDeduction: number;
-  /** Finanzierungsnebenkosten als Werbungskosten, nur im ersten Jahr. */
-  financingCostDeduction: number;
-  /**
-   * Umschuldungskosten der Anschlussfinanzierungen in diesem Jahr, seit dem
-   * 22.10.2026. Sie mindern den Cashflow und sind im selben Jahr
-   * Werbungskosten (Geldbeschaffungskosten).
-   */
-  umschuldungskosten: number;
   taxableResult: number;
   allocatedTaxableResult: number;
   taxableIncomeBefore: number;
@@ -398,19 +384,31 @@ export interface InvestmentErgebnis {
    * genau wie im normalen Modell gerechnet. 0 ohne das Modell.
    */
   allInclusiveAufschlag: number;
+  /** Gesamtbedarf: Kaufpreis plus Kaufnebenkosten (seit dem 23.10.2026 ohne Finanzierungsnebenkosten). */
   totalInvestment: number;
   seniorLoanAmount: number;
+  /** Nachrangdarlehen, anteilig. 0 ohne. */
+  juniorLoanAmount: number;
+  /**
+   * Eigenkapital als Rest: Gesamtbedarf minus alle Darlehen, mindestens 0,
+   * seit dem 23.10.2026. Wie jeder Euro des Objekts anteilig.
+   */
+  eigenkapital: number;
+  /** Darlehen über dem Gesamtbedarf, sonst 0. Die Oberfläche weist darauf hin. */
+  ueberfinanzierung: number;
+  /**
+   * Wann welche Zinsbindung endet, für die Jahresübersicht. Nur Darlehen mit
+   * Betrag und Zinsbindung. `jahrIndex` ist die Zeile der Jahrestabelle (ab
+   * 0), `restschuld` die Restschuld am Ende der Zinsbindung.
+   */
+  zinsbindungen: Zinsbindungsende[];
   /** KfW-Darlehen, anteilig und auf den Finanzierungsbedarf gedeckelt. 0 ohne Schalter. */
   kfwLoanAmount: number;
   /** Zweites Bankdarlehen, anteilig und auf den Rest des Finanzierungsbedarfs gedeckelt. */
   secondLoanAmount: number;
   /** Restschuld des Bankdarlehens am Ende seiner Zinsbindung, auch jenseits der Prognose. 0 ohne Zinsbindung. */
   bankRestschuldZinsbindung: number;
-  /** Summe der gerechneten Sondertilgungen im Prognosezeitraum. */
-  sondertilgungenGesamt: number;
-  /** Der KfW-Betrag war höher als der Finanzierungsbedarf und wurde gekürzt. */
-  kfwGekuerzt: boolean;
-  /** Kaufpreis und Kaufnebenkosten minus Eigenkapital und Nachrang: was Bank und KfW zusammen finanzieren. */
+  /** Was zu finanzieren ist: Kaufpreis und Kaufnebenkosten, gleich `totalInvestment`. */
   finanzierungsbedarf: number;
   /** Tilgungszuschuss laut Eingabe in Euro (Prozent schon umgerechnet), vor jeder Kürzung. */
   kfwTilgungszuschussNominal: number;
@@ -489,17 +487,12 @@ export interface InvestmentErgebnis {
   anschaffungsnah: boolean;
   /** Der Aufwand geht in die Gebäude-AfA statt in den Sofortabzug, aus welchem Grund auch immer. */
   sanierungAktiviert: boolean;
-  /** Verkaufskosten im Modellverkauf am Ende, anteilig. */
-  verkaufskosten: number;
-  /** Summe der Umschuldungskosten im Prognosezeitraum. */
-  umschuldungskostenGesamt: number;
   /**
    * Manueller Steuersatz ohne Steuerlast: Ein Verlust bringt keine Erstattung,
    * weil vor dem Kauf keine Steuer gezahlt wird (seit dem 22.10.2026).
    */
   erstattungBegrenzt: boolean;
   totalDebt: number;
-  financingGap: number;
   monthlyDebtService: number;
   grossYield: number;
   netYield: number;
@@ -515,9 +508,8 @@ export interface InvestmentErgebnis {
   irr: number | null;
   irrWithoutAppreciation: number | null;
   /**
-   * Was der Kunde ueber die ganze Laufzeit einsetzt: eingetragenes
-   * Eigenkapital plus Finanzierungsnebenkosten plus die Summe aller
-   * monatlichen Zuzahlungen.
+   * Was der Kunde ueber die ganze Laufzeit einsetzt: Eigenkapital plus die
+   * Summe aller monatlichen Zuzahlungen.
    */
   eigenkapitalBasis: number;
   /** Was der Kunde im ersten Jahr monatlich selbst zuzahlt, positiv. */
@@ -579,11 +571,6 @@ export interface InvestmentErgebnis {
   nebenkostenGebaeude: number;
   /** Der Möbelanteil, verteilt über die Möbel-Nutzungsdauer. Ohne Nebenkosten. */
   moebelAfaBasis: number;
-  /**
-   * Finanzierungsnebenkosten: Satz mal Darlehenssumme. Sie stecken in
-   * `totalInvestment` und im Einsatz zu Beginn, nicht im Darlehen.
-   */
-  finanzierungsnebenkosten: number;
   years: Jahreswert[];
 }
 
@@ -595,7 +582,6 @@ export const standardEingabe: InvestmentEingabe = {
   jointAssessment: false,
   taxableIncomeCustomer: 0,
   taxableIncomeSpouse: 0,
-  annualTaxableIncomeGrowth: 0,
   churchTaxRate: 0,
   includeSolidaritySurcharge: true,
   investmentShare: 100,
@@ -617,28 +603,24 @@ export const standardEingabe: InvestmentEingabe = {
   brokerRate: 0,
   otherPurchaseCostRate: 0,
   allInclusive: false,
-  equity: 0,
-  financingCostRate: 0.2,
-  juniorLoanAmount: 0,
+  // Bank 100 Prozent des Kaufpreises: Die Kaufnebenkosten trägt das Eigenkapital, wie bisher die Vorbelegung.
+  seniorLoanMode: "percent",
+  seniorLoanValue: 100,
+  juniorLoanMode: "euro",
+  juniorLoanValue: 0,
   seniorInterestRate: 4,
   seniorRepaymentRate: 1.5,
   juniorInterestRate: 6,
   juniorRepaymentRate: 1,
+  juniorFixedRateYears: 10,
   seniorFixedRateYears: 10,
-  seniorFollowUpRate: 0,
-  seniorFollowUpRepaymentRate: 0,
-  seniorFollowUpCosts: 0,
-  seniorFurtherFollowUps: [],
   seniorRepaymentType: "annuitaet",
   seniorTermYears: 0,
   seniorGracePeriodYears: 0,
-  specialRepayments: [],
   secondLoanAmount: 0,
   secondInterestRate: 4,
   secondRepaymentRate: 2,
   secondFixedRateYears: 10,
-  secondFollowUpRate: 0,
-  secondFollowUpRepaymentRate: 0,
   secondRepaymentType: "annuitaet",
   secondTermYears: 0,
   secondGracePeriodYears: 0,
@@ -657,6 +639,7 @@ export const standardEingabe: InvestmentEingabe = {
   monthlyGarageRent: 0,
   monthlyOperatingCosts: 0,
   monthlyReserveContribution: 0,
+  monthlyReserveContributionAuto: true,
   housingFeeTotal: 0,
   housingFeeRecoverable: 0,
   housingFeeNonRecoverable: 0,
@@ -664,7 +647,6 @@ export const standardEingabe: InvestmentEingabe = {
   annualRentGrowth: 2,
   annualCostGrowth: 2,
   annualValueGrowth: 1.5,
-  saleCostRate: 0,
   buildingShare: 80,
   depreciationMethod: "linear",
   buildingDepreciationRate: 2,
@@ -804,22 +786,6 @@ export function annuitaetsjahr(restsaldo: number, zinssatz: number, jahresrate: 
 }
 
 /**
- * Eine Anschlussfinanzierung (Umschuldung) nach einer Zinsbindung, seit dem
- * 22.10.2026 auch mehrere hintereinander. `nachJahren` zählt ab Auszahlung
- * des Darlehens: Ab dem Monat danach gelten neuer Zins und neue Tilgung.
- * 0 bei Zins oder Tilgung heißt: wie bisher beziehungsweise die anfängliche
- * Tilgung. `kosten` sind Umschuldungskosten in Euro (Bearbeitung,
- * Grundschuldabtretung, Vorfälligkeit), gezahlt im Monat des Wechsels und als
- * Geldbeschaffungskosten im selben Jahr Werbungskosten.
- */
-export interface Anschlussfinanzierung {
-  nachJahren: number;
-  zinsProzent: number;
-  tilgungProzent: number;
-  kosten: number;
-}
-
-/**
  * Wie ein Bankdarlehen getilgt wird, seit dem 22.10.2026.
  * - `annuitaet`: Rate aus Zins plus anfänglicher Tilgung, wie bisher.
  * - `volltilgung`: Die Laufzeit ist vorgegeben, die Rate tilgt genau in ihr.
@@ -831,22 +797,13 @@ export interface Bankplanparameter {
   betrag: number;
   zinsProzent: number;
   tilgungProzent: number;
+  /** Nur für die Restschuld am Ende der Zinsbindung: Zins und Rate bleiben danach. */
   zinsbindungJahre: number;
-  /** 0 heißt leer: derselbe Zins. */
-  anschlusszinsProzent: number;
-  /** 0 heißt leer: die anfängliche Tilgung. */
-  neueTilgungProzent: number;
-  /** Umschuldungskosten der ersten Anschlussfinanzierung in Euro. */
-  anschlusskosten?: number;
-  /** Weitere Anschlussfinanzierungen nach der ersten, je mit eigenem Zeitpunkt. */
-  weitereAnschluesse?: readonly Anschlussfinanzierung[];
   tilgungsart?: Tilgungsart;
   /** Laufzeit in Jahren für Volltilgung und endfälliges Darlehen. 0: keine. */
   laufzeitJahre?: number;
   /** Tilgungsfreie Anlaufjahre: nur Zinsen. */
   tilgungsfreiJahre?: number;
-  /** Sondertilgung je Kalenderjahr ab 0, siehe `sondertilgungenJeJahr`. */
-  sondertilgungen?: readonly number[];
   /** Kalenderjahre des Plans, das erste beginnt mit `startMonat`. */
   jahre: number;
   /** Erster Zahlungsmonat im ersten Kalenderjahr (1 bis 12), der Monat des Übergangs von Nutzen und Lasten. */
@@ -855,14 +812,12 @@ export interface Bankplanparameter {
 
 export interface Bankplan {
   jahre: Darlehensjahr[];
-  /** Gezahlte Rate je Monat ab Auszahlung, Zins plus Tilgung, ohne Sondertilgung und Kosten. */
+  /** Gezahlte Rate je Monat ab Auszahlung, Zins plus Tilgung. */
   monatsraten: number[];
   /** Rate im ersten Monat. */
   ersteRate: number;
-  /** Restschuld am Ende der ersten Zinsbindung, 0 ohne Zinsbindung. */
+  /** Restschuld am Ende der Zinsbindung, 0 ohne Zinsbindung. */
   restschuldZinsbindung: number;
-  /** Summe der Umschuldungskosten im Plan. */
-  umschuldungskosten: number;
 }
 
 /** Monatsrate eines Annuitätendarlehens, das `rest` in `monate` Monaten voll tilgt. */
@@ -881,14 +836,10 @@ function annuitaetMonat(rest: number, zinsMonat: number, monate: number): number
  * wenig Tilgung aus (285.000 Euro, 4,8 % und 1,2 %: Jahr 1 jetzt rund
  * 13.603,75 statt 13.680 Euro Zins).
  *
- * Nach der Zinsbindung und nach jeder weiteren Anschlussfinanzierung wird die
- * Rate neu bestimmt: Restschuld mal (Anschlusszins plus neue Tilgung) durch
- * 12, so rechnen Banken ein Anschlussangebot; bei Volltilgung die Annuität
- * über die Restlaufzeit, beim endfälligen Darlehen nur der Zins. Ohne
- * Anschlusszins, neue Tilgung und Kosten bleiben Zins und Rate.
- *
- * Eine Sondertilgung wird am Ende des Kalenderjahres gezahlt, höchstens die
- * Restschuld. Die Rate bleibt, die Laufzeit wird kürzer.
+ * Nach der Zinsbindung läuft das Darlehen mit demselben Zins und derselben
+ * Rate weiter, seit dem 23.10.2026 ohne Anschlussfinanzierung,
+ * Umschuldungskosten und Sondertilgungen (Christian). Die Zinsbindung nennt
+ * nur den Zeitpunkt, an dem die Restschuld anzuschließen ist.
  */
 export function bankplan(p: Bankplanparameter): Bankplan {
   const startMonat = Math.min(12, Math.max(1, Math.round(endlicheZahl(p.startMonat ?? 1))));
@@ -898,62 +849,26 @@ export function bankplan(p: Bankplanparameter): Bankplan {
     p.tilgungsart === "endfaellig" ? "endfaellig" : p.tilgungsart === "volltilgung" && laufzeitMonate > 0 ? "volltilgung" : "annuitaet";
   const tilgungsfrei = Math.max(0, Math.round(endlicheZahl(p.tilgungsfreiJahre ?? 0))) * 12;
   const bindung = Math.max(0, Math.round(endlicheZahl(p.zinsbindungJahre)));
-  const anfangsTilgung = prozentAnteil(p.tilgungProzent);
-
-  // Die Anschlussfinanzierungen der Reihe nach, jede zu ihrem eigenen Zeitpunkt.
-  const anschluesse: Anschlussfinanzierung[] = [];
-  if (bindung >= 1 && (p.anschlusszinsProzent > 0 || p.neueTilgungProzent > 0 || (p.anschlusskosten ?? 0) > 0)) {
-    anschluesse.push({
-      nachJahren: bindung,
-      zinsProzent: p.anschlusszinsProzent,
-      tilgungProzent: p.neueTilgungProzent,
-      kosten: Math.max(0, endlicheZahl(p.anschlusskosten ?? 0)),
-    });
-  }
-  for (const a of p.weitereAnschluesse ?? []) {
-    const nach = Math.round(endlicheZahl(a?.nachJahren));
-    if (nach >= 1 && !anschluesse.some((b) => b.nachJahren === nach)) {
-      anschluesse.push({
-        nachJahren: nach,
-        zinsProzent: Math.max(0, endlicheZahl(a.zinsProzent)),
-        tilgungProzent: Math.max(0, endlicheZahl(a.tilgungProzent)),
-        kosten: Math.max(0, endlicheZahl(a.kosten)),
-      });
-    }
-  }
-  anschluesse.sort((a, b) => a.nachJahren - b.nachJahren);
 
   let rest = Math.max(0, endlicheZahl(p.betrag));
-  let zinsJahr = prozentAnteil(p.zinsProzent);
-  let tilgungJahr = anfangsTilgung;
-  const rateBestimmen = (monat: number) => {
-    if (tilgungsart === "endfaellig") return 0;
-    if (tilgungsart === "volltilgung") return annuitaetMonat(rest, zinsJahr / 12, laufzeitMonate - Math.max(monat - 1, tilgungsfrei));
-    return (rest * (zinsJahr + tilgungJahr)) / 12;
-  };
+  const zinsJahr = prozentAnteil(p.zinsProzent);
   // Auch nach einer tilgungsfreien Zeit gilt die Rate auf den vollen Betrag.
-  let rate = rateBestimmen(1);
+  const rate =
+    tilgungsart === "endfaellig"
+      ? 0
+      : tilgungsart === "volltilgung"
+        ? annuitaetMonat(rest, zinsJahr / 12, laufzeitMonate - tilgungsfrei)
+        : (rest * (zinsJahr + prozentAnteil(p.tilgungProzent))) / 12;
 
-  const leer = (): Darlehensjahr => ({
-    interest: 0, principal: 0, payment: 0, closingBalance: 0, tilgungszuschuss: 0, zinssatz: 0, sondertilgung: 0, umschuldungskosten: 0,
-  });
+  const leer = (): Darlehensjahr => ({ interest: 0, principal: 0, payment: 0, closingBalance: 0, tilgungszuschuss: 0, zinssatz: 0 });
   const jahre = Array.from({ length: Math.max(0, Math.round(p.jahre)) }, leer);
   const monatsraten: number[] = [];
   let restschuldZinsbindung = 0;
-  let umschuldungskosten = 0;
   const monateGesamt = Math.max(0, jahre.length * 12 - (startMonat - 1));
   for (let monat = 1; monat <= monateGesamt; monat += 1) {
     const kalendermonat = monat - 1 + startMonat - 1;
     const index = Math.floor(kalendermonat / 12);
     const jahr = jahre[index];
-    const anschluss = anschluesse.find((a) => a.nachJahren * 12 + 1 === monat);
-    if (anschluss && rest > 0) {
-      if (anschluss.zinsProzent > 0) zinsJahr = prozentAnteil(anschluss.zinsProzent);
-      tilgungJahr = anschluss.tilgungProzent > 0 ? prozentAnteil(anschluss.tilgungProzent) : anfangsTilgung;
-      rate = rateBestimmen(monat);
-      jahr.umschuldungskosten = (jahr.umschuldungskosten ?? 0) + anschluss.kosten;
-      umschuldungskosten += anschluss.kosten;
-    }
     const aktiv = rest > 0;
     const zinsen = (rest * zinsJahr) / 12;
     let tilgung = 0;
@@ -965,20 +880,13 @@ export function bankplan(p: Bankplanparameter): Bankplan {
     if (rest < 0.005) rest = 0;
     monatsraten.push(zinsen + tilgung);
     if (monat === bindung * 12) restschuldZinsbindung = rest;
-    let sonder = 0;
-    if (kalendermonat % 12 === 11) {
-      sonder = Math.min(rest, Math.max(0, p.sondertilgungen?.[index] ?? 0));
-      rest -= sonder;
-      if (rest < 0.005) rest = 0;
-    }
     jahr.interest += zinsen;
-    jahr.principal += tilgung + sonder;
-    jahr.payment += zinsen + tilgung + sonder;
-    jahr.sondertilgung = (jahr.sondertilgung ?? 0) + sonder;
+    jahr.principal += tilgung;
+    jahr.payment += zinsen + tilgung;
     jahr.closingBalance = rest;
     if (aktiv) jahr.zinssatz = zinsJahr;
   }
-  return { jahre, monatsraten, ersteRate: monatsraten[0] ?? 0, restschuldZinsbindung, umschuldungskosten };
+  return { jahre, monatsraten, ersteRate: monatsraten[0] ?? 0, restschuldZinsbindung };
 }
 
 /** Nur die Jahre des Plans, für Aufrufer, die keine Monate brauchen. */
@@ -987,25 +895,25 @@ export function banktilgungsplan(p: Bankplanparameter): Darlehensjahr[] {
 }
 
 /**
- * Die Planparameter von Bankdarlehen und zweitem Bankdarlehen aus der
- * Eingabe, an einer Stelle für Rechenkern und Bankgespräch. Euro-Beträge der
- * Umschuldungskosten gelten anteilig wie jeder Euro des Objekts. `jahre`,
- * Sondertilgungen und Startmonat ergänzt der Aufrufer.
+ * Die Planparameter von Bankdarlehen, zweitem Bankdarlehen und
+ * Nachrangdarlehen aus der Eingabe, an einer Stelle für Rechenkern,
+ * Bankgespräch und ausführliche Berechnung. `jahre` und Startmonat ergänzt
+ * der Aufrufer.
  */
 export function bankplanParameter(
   t: InvestmentEingabe,
-  art: "bank" | "bank2",
+  art: "bank" | "bank2" | "nachrang",
   betrag: number,
-  anteil: number,
 ): Omit<Bankplanparameter, "jahre"> {
+  if (art === "nachrang") {
+    return { betrag, zinsProzent: t.juniorInterestRate, tilgungProzent: t.juniorRepaymentRate, zinsbindungJahre: t.juniorFixedRateYears };
+  }
   if (art === "bank2") {
     return {
       betrag,
       zinsProzent: t.secondInterestRate,
       tilgungProzent: t.secondRepaymentRate,
       zinsbindungJahre: t.secondFixedRateYears,
-      anschlusszinsProzent: t.secondFollowUpRate,
-      neueTilgungProzent: t.secondFollowUpRepaymentRate ?? 0,
       tilgungsart: t.secondRepaymentType,
       laufzeitJahre: t.secondTermYears,
       tilgungsfreiJahre: t.secondGracePeriodYears,
@@ -1016,24 +924,30 @@ export function bankplanParameter(
     zinsProzent: t.seniorInterestRate,
     tilgungProzent: t.seniorRepaymentRate,
     zinsbindungJahre: t.seniorFixedRateYears,
-    anschlusszinsProzent: t.seniorFollowUpRate,
-    neueTilgungProzent: t.seniorFollowUpRepaymentRate,
-    anschlusskosten: Math.max(0, t.seniorFollowUpCosts ?? 0) * anteil,
-    weitereAnschluesse: (t.seniorFurtherFollowUps ?? []).map((a) => ({ ...a, kosten: Math.max(0, endlicheZahl(a?.kosten)) * anteil })),
     tilgungsart: t.seniorRepaymentType,
     laufzeitJahre: t.seniorTermYears,
     tilgungsfreiJahre: t.seniorGracePeriodYears,
   };
 }
 
-/** Sondertilgungen je Jahr ab 0, aus der Liste mit Kalenderjahren. Mehrere im selben Jahr zählen zusammen. */
-export function sondertilgungenJeJahr(liste: readonly Sondertilgung[] | undefined, startjahr: number, jahre: number): number[] {
-  const je = Array.from({ length: Math.max(0, jahre) }, () => 0);
-  for (const eintrag of liste ?? []) {
-    const index = Math.round(endlicheZahl(eintrag?.jahr)) - Math.round(startjahr);
-    if (index >= 0 && index < je.length) je[index] += Math.max(0, endlicheZahl(eintrag?.betrag));
-  }
-  return je;
+/** Ende einer Zinsbindung, siehe `InvestmentErgebnis.zinsbindungen`. */
+export interface Zinsbindungsende {
+  art: Darlehensart;
+  jahre: number;
+  /** Zeile der Jahrestabelle ab 0, in der die Zinsbindung endet. */
+  jahrIndex: number;
+  kalenderjahr: number;
+  restschuld: number;
+}
+
+/**
+ * Ein Darlehensbetrag aus Eingabeart und Wert, für das ganze Objekt: Prozent
+ * gelten vom ausgewiesenen Kaufpreis (beim All-inclusive-Modell samt
+ * Aufschlag), Euro wie eingetragen. Nie negativ.
+ */
+export function darlehensbetrag(art: Darlehensbetragsart | undefined, wert: number, kaufpreis: number): number {
+  const w = Math.max(0, endlicheZahl(wert));
+  return art === "percent" ? (Math.max(0, endlicheZahl(kaufpreis)) * w) / 100 : w;
 }
 
 /** Das KfW-Darlehen Monat für Monat, zu Jahren zusammengefasst. */
@@ -1385,45 +1299,36 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
   const allInclusiveAufschlag = allInclusive ? purchaseCosts : 0;
   /** Kaufpreis plus Kaufnebenkosten: daraus ergibt sich das Darlehen. */
   const kaufkosten = purchasePrice + purchaseCosts;
-  const juniorLoan = Math.max(0, t.juniorLoanAmount) * anteil;
   /*
-    Das Eigenkapital wird NICHT anteilig gerechnet, es ist der Betrag dieses
-    Kunden. Bringt er mehr mit, als sein Anteil kostet, kappt Math.max das
-    Darlehen auf null und der Ueberschuss steht in `financingGap`.
+    Finanzierung, seit dem 23.10.2026 (Christian): Alle Darlehen werden
+    eingegeben, das Eigenkapital ist der Rest. Prozentangaben gelten vom
+    ausgewiesenen Kaufpreis, also beim All-inclusive-Modell samt Aufschlag;
+    `purchasePrice` ist hier schon der Anteil dieses Kunden, Euro-Beträge
+    werden wie jeder Euro des Objekts anteilig gerechnet.
+
+    Bis zum 23.10.2026 war das Eigenkapital ungeteilt der Betrag dieses
+    Kunden und das Bankdarlehen der Rest. Seitdem ist auch das Eigenkapital
+    anteilig, denn es folgt aus Darlehen, die zum Objekt gehören.
+
+    Sind die Darlehen höher als Kaufpreis und Nebenkosten, wird trotzdem mit
+    ihnen gerechnet, denn so wären sie vereinbart; die Oberfläche sagt es
+    (`ueberfinanzierung`). Der Überschuss fließt dem Kunden zu Beginn zu und
+    steht so in der Zahlungsreihe.
   */
-  const finanzierungsbedarf = Math.max(0, kaufkosten - Math.max(0, t.equity) - juniorLoan);
-  /*
-    KfW-Darlehen, seit dem 07.10.2026. Es ersetzt einen Teil des
-    Bankdarlehens, genau wie das Nachrangdarlehen: Die Bank finanziert den
-    Rest. Mehr KfW als Finanzierungsbedarf wäre Geld, das niemand braucht,
-    deshalb wird gedeckelt und die Oberfläche sagt es.
-  */
-  const kfwGewuenscht = t.kfwEnabled ? Math.max(0, t.kfwLoanAmount) * anteil : 0;
-  const kfwLoanAmount = Math.min(kfwGewuenscht, finanzierungsbedarf);
-  // Das zweite Bankdarlehen nimmt, was nach der KfW noch offen ist, die Bank den Rest.
-  const zweitesGewuenscht = Math.max(0, t.secondLoanAmount) * anteil;
-  const secondLoanAmount = Math.min(zweitesGewuenscht, finanzierungsbedarf - kfwLoanAmount);
-  const seniorLoanAmount = Math.max(0, finanzierungsbedarf - kfwLoanAmount - secondLoanAmount);
+  const kaufpreisFuerDarlehen = purchasePrice + allInclusiveAufschlag;
+  // Prozent vom (schon anteiligen) Kaufpreis, Euro mal Anteil.
+  const darlehenAnteilig = (art: Darlehensbetragsart, wert: number) =>
+    art === "percent" ? darlehensbetrag(art, wert, kaufpreisFuerDarlehen) : darlehensbetrag(art, wert, 0) * anteil;
+  const seniorLoanAmount = darlehenAnteilig(t.seniorLoanMode, t.seniorLoanValue);
+  const juniorLoan = darlehenAnteilig(t.juniorLoanMode, t.juniorLoanValue);
+  // KfW-Darlehen (seit dem 07.10.2026) und zweites Bankdarlehen in Euro, ohne Deckelung.
+  const kfwLoanAmount = t.kfwEnabled ? Math.max(0, t.kfwLoanAmount) * anteil : 0;
+  const secondLoanAmount = Math.max(0, t.secondLoanAmount) * anteil;
   const totalDebt = seniorLoanAmount + juniorLoan + kfwLoanAmount + secondLoanAmount;
-  /*
-    Finanzierungsnebenkosten, seit dem 25.09.2026.
-
-    Satz mal Darlehenssumme, vor allem die Grundschuldeintragung. Sie zählen
-    zu den Gesamtkosten, genau wie bei Investagon (Sigmundstraße 2: 646,02
-    Euro in 375.741 Euro Gesamtkosten, das Darlehen bleibt bei 90 Prozent
-    des Kaufpreises).
-
-    Das Darlehen wird deshalb OHNE sie bestimmt, aus Kaufpreis und
-    Kaufnebenkosten. Würden sie mitfinanziert, hinge das Darlehen von sich
-    selbst ab, und bei gleichem Eigenkapital änderte sich die Darlehenssumme
-    mit dem Satz. So bleibt sie gleich, und die Kosten kommen als eigener
-    Betrag zum Eigenkapitalbedarf: Sie stehen in `totalInvestment`, in
-    `financingGap` und im Einsatz zu Beginn der Zahlungsreihe (Rendite,
-    Faktor je Euro). Steuerlich sind sie Werbungskosten im ersten Jahr.
-  */
-  const finanzierungsnebenkosten = totalDebt * prozentAnteil(t.financingCostRate);
-  const totalInvestment = kaufkosten + finanzierungsnebenkosten;
-  const financingGap = totalInvestment - totalDebt - Math.max(0, t.equity);
+  const totalInvestment = kaufkosten;
+  const finanzierungsbedarf = kaufkosten;
+  const eigenkapitalBetrag = Math.max(0, kaufkosten - totalDebt);
+  const ueberfinanzierung = Math.max(0, totalDebt - kaufkosten);
   const laufzeit = Math.min(hoechstJahre, Math.max(1, Math.round(t.forecastYears)));
   // Übergang von Nutzen und Lasten: Das erste Jahr zählt ab diesem Monat.
   const startMonat = Math.min(12, Math.max(1, Math.round(t.acquisitionMonth || 1)));
@@ -1436,27 +1341,20 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
     Zeit der KfW hinaus, damit Restschuld und Ratensprung dort bekannt sind;
     die Jahrestabelle nimmt davon nur die Prognosejahre.
   */
-  const bindungBank = Math.round(t.seniorFixedRateYears);
-  const planJahre = Math.max(laufzeit, bindungBank + 1, kfwAnlaufJahre + 2);
-  const bankMonate = bankplan({
-    ...bankplanParameter(t, "bank", seniorLoanAmount, anteil),
-    sondertilgungen: sondertilgungenJeJahr(t.specialRepayments, t.startYear, laufzeit),
-    jahre: planJahre,
-    startMonat,
-  });
+  const bindungJahre = (wert: number) => Math.max(0, Math.round(endlicheZahl(wert)));
+  const bindungBank = bindungJahre(t.seniorFixedRateYears);
+  const planJahre = Math.max(
+    laufzeit,
+    bindungBank + 1,
+    bindungJahre(t.secondFixedRateYears) + 1,
+    bindungJahre(t.juniorFixedRateYears) + 1,
+    kfwAnlaufJahre + 2,
+  );
+  const bankMonate = bankplan({ ...bankplanParameter(t, "bank", seniorLoanAmount), jahre: planJahre, startMonat });
   const bankRestschuldZinsbindung = bindungBank >= 1 ? bankMonate.restschuldZinsbindung : 0;
-  const zweitesMonate = bankplan({ ...bankplanParameter(t, "bank2", secondLoanAmount, anteil), jahre: planJahre, startMonat });
-  // Das Nachrangdarlehen: Annuität aus Zins und Tilgung, ohne Zinsbindung, jetzt ebenfalls monatlich.
-  const nachrangMonate = bankplan({
-    betrag: juniorLoan,
-    zinsProzent: t.juniorInterestRate,
-    tilgungProzent: t.juniorRepaymentRate,
-    zinsbindungJahre: 0,
-    anschlusszinsProzent: 0,
-    neueTilgungProzent: 0,
-    jahre: planJahre,
-    startMonat,
-  });
+  const zweitesMonate = bankplan({ ...bankplanParameter(t, "bank2", secondLoanAmount), jahre: planJahre, startMonat });
+  // Das Nachrangdarlehen: Annuität aus Zins und Tilgung, monatlich, seit dem 23.10.2026 mit Zinsbindung.
+  const nachrangMonate = bankplan({ ...bankplanParameter(t, "nachrang", juniorLoan), jahre: planJahre, startMonat });
   const bankplanJahre = bankMonate.jahre;
   const zweitesplan = zweitesMonate.jahre;
   const nachrangplan = nachrangMonate.jahre;
@@ -1483,6 +1381,24 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
     startMonat,
   );
   const monthlyDebtService = bankMonate.ersteRate + nachrangMonate.ersteRate + zweitesMonate.ersteRate + kfw.ersteRate;
+  /*
+    Ende jeder Zinsbindung als Zeile der Jahrestabelle, seit dem 23.10.2026.
+    Der Plan beginnt im Monat des Übergangs; die Zinsbindung endet nach
+    `jahre × 12` Monaten, also im Kalenderjahr dieses letzten Monats.
+  */
+  const zinsbindungen: Zinsbindungsende[] = (
+    [
+      ["bank", seniorLoanAmount, t.seniorFixedRateYears, bankMonate.restschuldZinsbindung],
+      ["bank2", secondLoanAmount, t.secondFixedRateYears, zweitesMonate.restschuldZinsbindung],
+      ["nachrang", juniorLoan, t.juniorFixedRateYears, nachrangMonate.restschuldZinsbindung],
+      ["kfw", kfwLoanAmount, t.kfwFixedRateYears, kfw.restschuldZinsbindung],
+    ] as [Darlehensart, number, number, number][]
+  )
+    .filter(([, betrag, jahre]) => betrag > 0 && bindungJahre(jahre) >= 1)
+    .map(([art, , jahre, restschuld]) => {
+      const jahrIndex = Math.floor((startMonat - 1 + bindungJahre(jahre) * 12 - 1) / 12);
+      return { art, jahre: bindungJahre(jahre), jahrIndex, kalenderjahr: Math.round(t.startYear) + jahrIndex, restschuld };
+    });
   // Mischzins auf die Anfangsbeträge, nur Darlehen mit Betrag zählen.
   const mischzins =
     totalDebt > 0
@@ -1710,7 +1626,6 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
     const interest = senior.interest + junior.interest + kfwJahr.interest + zweitesJahr.interest;
     const principal = senior.principal + junior.principal + kfwJahr.principal + zweitesJahr.principal;
     const debtService = senior.payment + junior.payment + kfwJahr.payment + zweitesJahr.payment;
-    const umschuldungskosten = (senior.umschuldungskosten ?? 0) + (zweitesJahr.umschuldungskosten ?? 0);
     /*
       Steuer: Die KfW-Zinsen sind Werbungskosten wie die Bankzinsen, sie
       stecken in `interest`. Der Tilgungszuschuss ist ein öffentlicher
@@ -1725,7 +1640,7 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
       buchwert = Math.max(0, buchwert - minderung);
       if (linearJahresbetrag !== null) linearJahresbetrag = buchwert / restnutzungsdauer;
     }
-    const cashflowBeforeTax = effectiveRent - operatingCosts - reserveContribution - debtService - umschuldungskosten;
+    const cashflowBeforeTax = effectiveRent - operatingCosts - reserveContribution - debtService;
     const imBeguenstigungszeitraum = sonderZulaessig && i < sonderJahre;
     // § 7a Abs. 9 EStG: Nach der Sonder-AfA verteilt die lineare AfA den Restwert über die Restnutzungsdauer.
     // Der Begünstigungszeitraum ist gesetzlich vier Jahre, auch wenn weniger Jahre Sonder-AfA eingetragen sind (22.10.2026).
@@ -1754,18 +1669,17 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
       !sanierungAktiviert && i < Math.max(1, t.rehabDistributionYears)
         ? rehabExpense / Math.max(1, t.rehabDistributionYears)
         : 0;
-    // Geldbeschaffungskosten sind sofort abziehbare Werbungskosten, im Jahr der Zahlung, ebenso Umschuldungskosten.
-    const financingCostDeduction = i === 0 ? finanzierungsnebenkosten : 0;
     const taxableResult =
       effectiveRent - operatingCosts - interest - buildingDepreciation - specialDepreciation - furnitureDepreciation - rehabDeduction -
-      financingCostDeduction - umschuldungskosten - (RUECKLAGENZUFUEHRUNG_ABZIEHBAR ? reserveContribution : 0);
+      (RUECKLAGENZUFUEHRUNG_ABZIEHBAR ? reserveContribution : 0);
     /*
       Der Anteil steckt seit dem 21.09.2026 schon in den Eingaben oben. Eine
       zweite Multiplikation hier wuerde ihn quadrieren: Bei 50 Prozent kaeme ein
       Viertel heraus. Der Name bleibt, weil die Tabellen ihn lesen.
     */
     const allocatedTaxableResult = taxableResult;
-    const taxableIncomeBefore = combinedTaxableIncome * (1 + prozentAnteil(t.annualTaxableIncomeGrowth)) ** i;
+    // Das Einkommen bleibt über die ganze Laufzeit gleich, seit dem 23.10.2026 ohne Entwicklung.
+    const taxableIncomeBefore = combinedTaxableIncome;
     const taxableIncomeAfter = Math.max(0, taxableIncomeBefore + allocatedTaxableResult);
     const taxBefore = steuerprofil(
       taxableIncomeBefore,
@@ -1841,7 +1755,6 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
         nachrang: junior,
         kfw: kfwJahr,
       },
-      sondertilgung: senior.sondertilgung ?? 0,
       operatingCosts,
       reserveContribution,
       cashflowBeforeTax,
@@ -1849,8 +1762,6 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
       specialDepreciation,
       furnitureDepreciation,
       rehabDeduction,
-      financingCostDeduction,
-      umschuldungskosten,
       taxableResult,
       allocatedTaxableResult,
       taxableIncomeBefore,
@@ -1881,32 +1792,28 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
   }
 
   /*
-    Was der Kunde zu Beginn aus eigener Tasche zahlt: das eingetragene
-    Eigenkapital plus die Finanzierungsnebenkosten, die nicht im Darlehen
-    stecken (siehe `finanzierungsnebenkosten` oben).
+    Was der Kunde zu Beginn aus eigener Tasche zahlt: das Eigenkapital. Bei
+    einer Überfinanzierung fließt ihm der Überschuss zu, die erste Zahlung
+    ist dann positiv. Finanzierungsnebenkosten gibt es seit dem 23.10.2026
+    nicht mehr.
   */
-  const eigenkapital = Math.max(0, t.equity) + finanzierungsnebenkosten;
+  const eigenkapital = eigenkapitalBetrag;
+  const startzahlung = -eigenkapitalBetrag + ueberfinanzierung;
   /*
     Zahlungsreihe mit Modellverkauf zum prognostizierten Wert im letzten Jahr,
-    seit dem 22.10.2026 abzüglich der Verkaufskosten. Eine Steuer auf den
+    seit dem 23.10.2026 ohne Verkaufskosten. Eine Steuer auf den
     Veräußerungsgewinn (Verkauf innerhalb von zehn Jahren, § 23 EStG) rechnet
     das Modell nicht; die Oberfläche nennt diese Grenze.
   */
-  const verkaufskostenSatz = prozentAnteil(t.saleCostRate);
-  const verkaufskosten = years.length > 0 ? years[years.length - 1].propertyValue * verkaufskostenSatz : 0;
   const reiheMitWertzuwachs = [
-    -eigenkapital,
-    ...years.map((jahr, index) =>
-      index === years.length - 1 ? jahr.cashflowAfterTax + jahr.propertyEquity - verkaufskosten : jahr.cashflowAfterTax,
-    ),
+    startzahlung,
+    ...years.map((jahr, index) => (index === years.length - 1 ? jahr.cashflowAfterTax + jahr.propertyEquity : jahr.cashflowAfterTax)),
   ];
   // Zahlungsreihe mit Verkauf ohne Wertsteigerung: derselbe Wert, nur ohne den Zuwachs.
   const reiheOhneWertzuwachs = [
-    -eigenkapital,
+    startzahlung,
     ...years.map((jahr, index) =>
-      index === years.length - 1
-        ? jahr.cashflowAfterTax + (jahr.propertyValue - jahr.wertzuwachs) * (1 - verkaufskostenSatz) - jahr.remainingDebt
-        : jahr.cashflowAfterTax,
+      index === years.length - 1 ? jahr.cashflowAfterTax + jahr.propertyValue - jahr.wertzuwachs - jahr.remainingDebt : jahr.cashflowAfterTax,
     ),
   ];
   /*
@@ -1994,11 +1901,13 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
     allInclusiveAufschlag,
     totalInvestment,
     seniorLoanAmount,
+    juniorLoanAmount: juniorLoan,
+    eigenkapital: eigenkapitalBetrag,
+    ueberfinanzierung,
+    zinsbindungen,
     kfwLoanAmount,
     secondLoanAmount,
     bankRestschuldZinsbindung,
-    sondertilgungenGesamt: years.reduce((summe, jahr) => summe + jahr.sondertilgung, 0),
-    kfwGekuerzt: kfwGewuenscht > kfwLoanAmount + 0.005,
     finanzierungsbedarf,
     kfwTilgungszuschussNominal,
     kfwTilgungszuschuss: kfw.zuschussAngerechnet,
@@ -2022,11 +1931,8 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
     fuenfzehnProzentGrenze,
     anschaffungsnah,
     sanierungAktiviert,
-    verkaufskosten,
-    umschuldungskostenGesamt: years.reduce((summe, jahr) => summe + jahr.umschuldungskosten, 0),
     erstattungBegrenzt,
     totalDebt,
-    financingGap,
     monthlyDebtService,
     grossYield,
     netYield,
@@ -2063,7 +1969,6 @@ export function berechneInvestment(eingabe: InvestmentEingabe, hoechstJahre = 30
     nebenkostenGrundstueck,
     nebenkostenGebaeude,
     moebelAfaBasis,
-    finanzierungsnebenkosten,
     years,
   };
 }
@@ -2095,15 +2000,14 @@ export interface Eigenkapitalrendite {
 }
 
 export function eigenkapitalrendite(
-  input: Pick<InvestmentEingabe, "equity">,
-  result: Pick<InvestmentErgebnis, "years" | "vermoegensaufbauMonat"> & Partial<Pick<InvestmentErgebnis, "ersterJahresanteil">>,
+  result: Pick<InvestmentErgebnis, "years" | "vermoegensaufbauMonat" | "eigenkapital"> & Partial<Pick<InvestmentErgebnis, "ersterJahresanteil">>,
 ): Eigenkapitalrendite {
   const jahre = result.years.length;
   // Seit dem 22.10.2026 mit zeitanteiligem erstem Jahr: gezählt wird ab dem Übergang.
   const ersterAnteil = result.ersterJahresanteil ?? 1;
   const jahreAbUebergang = jahre > 0 ? jahre - 1 + ersterAnteil : 0;
   const vermoegensaufbau = result.vermoegensaufbauMonat * jahreAbUebergang * 12;
-  const eigenkapital = Math.max(0, input.equity);
+  const eigenkapital = Math.max(0, result.eigenkapital);
   const zuzahlungMonat = Math.max(0, -(result.years[0]?.cashflowBeforeTax ?? 0) / (12 * ersterAnteil));
   const nenner = eigenkapital + zuzahlungMonat * 12;
   // Unter einem Cent ist der Nenner rechnerisch null, die Division gäbe nur Rauschen.
@@ -2117,8 +2021,10 @@ export function eigenkapitalrendite(
  *
  * Deckt das Eigenkapital die Kaufnebenkosten, rechnet der Kern noch einmal mit
  * Eigenkapital minus Kaufnebenkosten (sie wären mitfinanziert). Sonst mit
- * Eigenkapital gleich Kaufnebenkosten (sie wären selbst gezahlt). Geändert
- * wird nur das Eigenkapital. `null` ohne Kaufnebenkosten.
+ * Eigenkapital gleich Kaufnebenkosten (sie wären selbst gezahlt). Seit dem
+ * 23.10.2026 ist das Eigenkapital der Rest der Finanzierung; geändert wird
+ * deshalb nur das Bankdarlehen, um genau diesen Betrag. `null` ohne
+ * Kaufnebenkosten.
  */
 export interface EigenkapitalrenditeNebenkosten {
   /** Das Eigenkapital deckt die Kaufnebenkosten heute. */
@@ -2135,18 +2041,21 @@ export function eigenkapitalrenditeNebenkosten(
 ): EigenkapitalrenditeNebenkosten | null {
   const kaufnebenkosten = result.purchaseCosts;
   if (!(kaufnebenkosten > 0)) return null;
-  const eigenkapital = Math.max(0, input.equity);
+  const eigenkapital = Math.max(0, result.eigenkapital);
   // Ein halber Cent Spielraum: 13.250 € Eigenkapital gegen 13.249,999… € Nebenkosten aus der Prozentrechnung.
   const selbstGezahlt = eigenkapital >= kaufnebenkosten - 0.005;
+  // Mehr Bank um die Nebenkosten, oder weniger Bank, bis das Eigenkapital die Nebenkosten trägt. Euro für das ganze Objekt.
+  const bankNeu = result.seniorLoanAmount + (selbstGezahlt ? kaufnebenkosten : -(kaufnebenkosten - eigenkapital));
   const vergleichEingabe: InvestmentEingabe = {
     ...input,
-    equity: selbstGezahlt ? Math.max(0, eigenkapital - kaufnebenkosten) : kaufnebenkosten,
+    seniorLoanMode: "euro",
+    seniorLoanValue: result.anteil > 0 ? Math.max(0, bankNeu) / result.anteil : 0,
   };
   const vergleichErgebnis = berechneInvestment(vergleichEingabe);
   return {
     selbstGezahlt,
     kaufnebenkosten,
-    vergleich: eigenkapitalrendite(vergleichEingabe, vergleichErgebnis),
+    vergleich: eigenkapitalrendite(vergleichErgebnis),
     rateDifferenzMonat: vergleichErgebnis.monthlyDebtService - result.monthlyDebtService,
   };
 }
@@ -2227,4 +2136,38 @@ export function mitStellplatz(
   result: Partial<Pick<InvestmentErgebnis, "garagenpreis" | "grossYield" | "grossYieldWohnung">>,
 ): boolean {
   return (result.garagenpreis ?? 0) > 0 || Math.abs((result.grossYieldWohnung ?? result.grossYield ?? 0) - (result.grossYield ?? 0)) > 1e-12;
+}
+
+/** Vorgabe der Instandhaltungsrücklage im Hausgeld: Euro je m² Wohnfläche und Monat (Christian, 23.10.2026). */
+export const RUECKLAGE_JE_QM_MONAT = 1;
+
+/**
+ * Die Rücklage im Hausgeld folgt der Wohnfläche, solange niemand einen Wert
+ * gesetzt hat: Fläche mal `RUECKLAGE_JE_QM_MONAT`. `gesetzt` heißt, der Wert
+ * kam von Hand, aus den Unterlagen oder aus der Objektanlage (es gibt dafür
+ * eine Herkunft); dann bleibt er stehen, und die Vorgabe ist für dieses
+ * Objekt aus, bis zum Zurücksetzen.
+ */
+export function mitRuecklagenVorgabe(eingabe: InvestmentEingabe, gesetzt: boolean): InvestmentEingabe {
+  if (eingabe.monthlyReserveContributionAuto === false) return eingabe;
+  if (gesetzt) return { ...eingabe, monthlyReserveContributionAuto: false };
+  const vorgabe = Math.round(Math.max(0, endlicheZahl(eingabe.area)) * RUECKLAGE_JE_QM_MONAT * 100) / 100;
+  return eingabe.monthlyReserveContribution === vorgabe && eingabe.monthlyReserveContributionAuto === true
+    ? eingabe
+    : { ...eingabe, monthlyReserveContribution: vorgabe, monthlyReserveContributionAuto: true };
+}
+
+/**
+ * Das Bankdarlehen so setzen, dass ein bestimmtes Eigenkapital übrig bleibt,
+ * seit dem 23.10.2026: Bankdarlehen = Gesamtbedarf − Eigenkapital − übrige
+ * Darlehen, mindestens 0, in Euro für das ganze Objekt. So rechnen alte
+ * Stände mit eingetragenem Eigenkapital weiter (`mitNeuerFinanzierung`).
+ * Das Eigenkapital gilt wie früher als Betrag dieses Kunden.
+ */
+export function mitEigenkapital(eingabe: InvestmentEingabe, eigenkapital: number): InvestmentEingabe {
+  const ohneBank: InvestmentEingabe = { ...eingabe, seniorLoanMode: "euro", seniorLoanValue: 0 };
+  const r = berechneInvestment(ohneBank);
+  if (!(r.anteil > 0)) return ohneBank;
+  const bank = Math.max(0, r.totalInvestment - Math.max(0, endlicheZahl(eigenkapital)) - r.totalDebt);
+  return { ...ohneBank, seniorLoanValue: bank / r.anteil };
 }

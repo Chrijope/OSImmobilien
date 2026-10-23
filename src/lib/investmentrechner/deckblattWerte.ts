@@ -71,8 +71,8 @@ export interface DeckblattWerte {
 const schnitt = (werte: number[]) => (werte.length ? werte.reduce((a, b) => a + b, 0) / werte.length : 0);
 
 export function deckblattWerte(
-  input: Pick<InvestmentEingabe, "equity">,
-  result: Pick<InvestmentErgebnis, "years" | "vermoegenStart">,
+  input: Partial<InvestmentEingabe>,
+  result: Pick<InvestmentErgebnis, "years" | "vermoegenStart" | "eigenkapital">,
 ): DeckblattWerte {
   if (!result.years.length) throw new Error("Die Jahrestabelle ist leer");
   const jahre = result.years.slice(0, DECKBLATT_JAHRE);
@@ -103,7 +103,7 @@ export function deckblattWerte(
     zuzahlungMonat,
     vermoegensaufbauMonat,
     // Christians Formel aus dem Rechenkern, auf genau die gezeigten Jahre angewandt.
-    eigenkapitalrendite: eigenkapitalrendite(input, { years: jahre, vermoegensaufbauMonat }),
+    eigenkapitalrendite: eigenkapitalrendite({ years: jahre, vermoegensaufbauMonat, eigenkapital: result.eigenkapital }),
     selbstEingezahlt,
     // Zuzahlungen minus saldierte Summe: genau die Überschüsse, nie negativ.
     ueberschuesse: Math.max(0, selbstEingezahlt + letztes.cumulativeCashflowAfterTax),

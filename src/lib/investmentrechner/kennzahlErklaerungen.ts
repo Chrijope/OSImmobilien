@@ -281,7 +281,7 @@ export function rechenwege(
   const aufsJahr = (wert: number) => (wert * 12) / ersteMonate;
   const leerstand = Math.min(1, prozentAnteil(input.vacancyRate));
   const zweitesDarlehen = result.secondLoanAmount ?? 0;
-  const juniorDarlehen = result.totalDebt - result.seniorLoanAmount - result.kfwLoanAmount - zweitesDarlehen;
+  const juniorDarlehen = result.juniorLoanAmount;
 
   const kaltmiete = weg(
     [
@@ -321,7 +321,7 @@ export function rechenwege(
     Euro-Beträge im Plan sind wie im Rechenkern anteilig.
   */
   const ersteRateAusPlan = (art: "bank" | "bank2", betragDarlehen: number) =>
-    bankplan({ ...bankplanParameter(input, art, betragDarlehen, result.anteil ?? 1), jahre: 1 }).ersteRate;
+    bankplan({ ...bankplanParameter(input, art, betragDarlehen), jahre: 1 }).ersteRate;
   const sonderform = (art: string | undefined, anlauf: number | undefined) => (art ?? "annuitaet") !== "annuitaet" || (anlauf ?? 0) > 0;
   const rateAlsGlied = (label: string, rateMonat: number): Rechenglied[] => [
     { label, wert: rateMonat, einheit: "cent" },
@@ -566,7 +566,7 @@ export function rechenwege(
     beim Auswerten dasselbe ergibt. `null`, wenn der Nenner null ist; die
     Kachel sagt dann in einem Satz, warum.
   */
-  const ekr = eigenkapitalrenditeRechnen(input, result);
+  const ekr = eigenkapitalrenditeRechnen(result);
   const eigenkapitalrendite =
     ekr.rendite !== null
       ? weg(

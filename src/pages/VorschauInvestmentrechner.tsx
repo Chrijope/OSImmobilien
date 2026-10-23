@@ -51,10 +51,8 @@ export const VORSCHAU_EINGABE: InvestmentEingabe = {
   area: 68,
   rooms: 2,
   constructionYear: 1998,
-  // Neu: Anschlusszins nach fünf Jahren, eine Sondertilgung, ein zweites Darlehen.
+  // Zinsbindung fünf Jahre und ein zweites Darlehen, das zu Bank und Eigenkapital hinzukommt.
   seniorFixedRateYears: 5,
-  seniorFollowUpRate: 5.5,
-  specialRepayments: [{ jahr: 2029, betrag: 10000 }],
   secondLoanAmount: 40000,
   secondInterestRate: 3.2,
   secondRepaymentRate: 3,

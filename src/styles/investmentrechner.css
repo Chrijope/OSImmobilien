@@ -1115,10 +1115,80 @@
   margin-top: 5px;
   font-size: clamp(1.35rem, 2.2vw, 2rem);
 }
-/* Sprache der Vorschau und PDFs, seit dem 22.10.2026 neben der Ansichtswahl. */
-.investmentrechner .result-header { flex-wrap: wrap; }
-.investmentrechner .sprache-wahl { display: grid; gap: 4px; font-size: 12px; color: var(--text-3, var(--muted)); }
-.investmentrechner .sprache-wahl select { border: 1px solid var(--line); background: var(--flaeche); color: inherit; border-radius: 9px; padding: 6px 10px; font: inherit; font-size: 13px; }
+/*
+  Kopfbereich in drei Ebenen, seit dem 23.10.2026 (Christian): Kunde und
+  Objekt mit „Zurücksetzen“, darunter die Hauptnavigation der Ansichten,
+  darunter Deckblatt und Sprache. Vorher standen alle drei Wahlen in einer
+  Zeile nebeneinander.
+*/
+.investmentrechner .result-header {
+  display: grid;
+  gap: 16px;
+  align-items: stretch;
+}
+.investmentrechner .result-kopf {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+.investmentrechner .result-kopf > div { min-width: 0; }
+.investmentrechner .result-kopf .rechner-zuruecksetzen { flex: none; }
+.investmentrechner .view-toggle.hauptansichten {
+  width: fit-content;
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+.investmentrechner .view-toggle.hauptansichten button {
+  padding: 9px 16px;
+  font-size: 0.86rem;
+}
+.investmentrechner .result-optionen {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px 28px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.investmentrechner .result-optionen .deckblatt-wahl { margin-bottom: 0; flex: 1 1 360px; }
+.investmentrechner .sprache-wahl { display: grid; gap: 6px; justify-items: start; }
+.investmentrechner .sprache-wahl > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  font-weight: 780;
+}
+.investmentrechner .sprache-wahl > small { color: var(--muted); font-size: 0.72rem; }
+.investmentrechner .sprache-schalter {
+  display: inline-flex;
+  gap: 3px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--flaeche);
+}
+.investmentrechner .sprache-schalter button {
+  min-width: 44px;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 6px;
+  background: 0 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.investmentrechner .sprache-schalter button.active { background: var(--flaeche-aktiv); color: var(--auf-aktiv); }
+.investmentrechner .sprache-schalter button:disabled { cursor: default; }
+.investmentrechner .sprache-schalter button:disabled:not(.active) { opacity: 0.55; }
+/* Upload der Objektunterlagen oben in „Objekt & Kaufpreis“, seit dem 23.10.2026. */
+.investmentrechner .unterlagen-upload { display: grid; gap: 10px; margin-bottom: 18px; }
 .investmentrechner .view-toggle {
   border: 1px solid var(--line);
   background: var(--flaeche);
@@ -2392,7 +2462,7 @@
   font-size: 0.52rem;
 }
 .investmentrechner .document-expose-summary {
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 3mm;
   margin-top: 7mm;
   display: grid;
@@ -4748,4 +4818,25 @@
     border-left: 1px solid var(--line);
     min-height: calc(100dvh - 7rem);
   }
+}
+
+/* Unterlagen ohne Energieausweis, seit dem 23.10.2026: Rücklage und Sanierungen nebeneinander. */
+.investmentrechner .document-insights.ohne-energie,
+.investmentrechner .documents-page > .document-insights.ohne-energie.compact {
+  grid-template-columns: 1fr 1fr;
+}
+.investmentrechner .document-insights.ohne-energie .renovation-insight {
+  grid-column: auto;
+}
+/* Ende einer Zinsbindung in den Jahrestabellen, seit dem 23.10.2026. */
+.investmentrechner .zinsbindung-zeile td {
+  background: var(--flaeche-leise);
+}
+.investmentrechner .zinsbindung-ende {
+  display: block;
+  color: var(--gold);
+  font-size: 0.68em;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: normal;
 }

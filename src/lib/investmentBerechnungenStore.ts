@@ -26,7 +26,9 @@ import { leereUnterlagenDaten, type UnterlagenDaten } from "@/lib/investmentrech
 import { herkunftAusJson, type Herkunft } from "@/lib/investmentrechner/herkunft";
 import {
   ausgewiesenerKaufpreis,
+  berechneInvestment,
   EINGABE_VERSION,
+  mitEigenkapital,
   monateErstesJahr,
   standardEingabe,
   type Bankunterlagenposten,
@@ -134,13 +136,6 @@ export function eingabeAusJson(roh: unknown): InvestmentEingabe {
   if (!roh || typeof roh !== "object") return ergebnis;
   const daten = roh as Record<string, unknown>;
   /*
-    Ein Stand ohne Finanzierungsnebenkosten stammt von vor dem 25.09.2026 und
-    wurde ohne sie gerechnet. Er bekommt 0 statt des Standards, sonst
-    verschöbe sich eine schon gezeigte Berechnung beim bloßen Öffnen. Wird er
-    wieder gespeichert, steht der Satz ausdrücklich darin.
-  */
-  ergebnis.financingCostRate = 0;
-  /*
     Frühere Feldnamen der eigenständigen Artefaktfassung des Rechners
     (bis 22.10.2026): `garageMiete` und `garagePreis`. Ein dort gespeicherter
     Stand liest sich damit genauso; gilt nur, wenn das neue Feld fehlt.
@@ -161,31 +156,18 @@ export function eingabeAusJson(roh: unknown): InvestmentEingabe {
       || (typeof vorlage === "string" && typeof wert === "string");
     if (passt) (ergebnis as unknown as Record<string, unknown>)[schluessel] = wert;
   }
-  // Listen seit dem 11.10.2026: Sondertilgungen und die Unterlagen fürs Bankgespräch.
-  ergebnis.specialRepayments = Array.isArray(daten.specialRepayments)
-    ? daten.specialRepayments
-        .map((e) => ({ jahr: zahl((e as Record<string, unknown>)?.jahr), betrag: zahl((e as Record<string, unknown>)?.betrag) }))
-        .filter((e) => e.jahr > 0 && e.betrag > 0)
-    : [];
-  // Weitere Anschlussfinanzierungen, seit dem 22.10.2026.
-  ergebnis.seniorFurtherFollowUps = Array.isArray(daten.seniorFurtherFollowUps)
-    ? daten.seniorFurtherFollowUps
-        .map((e) => {
-          const z = (e ?? {}) as Record<string, unknown>;
-          return { nachJahren: zahl(z.nachJahren), zinsProzent: zahl(z.zinsProzent), tilgungProzent: zahl(z.tilgungProzent), kosten: zahl(z.kosten) };
-        })
-        .filter((e) => e.nachJahren >= 1)
-    : [];
   // Auswahlfelder nur mit bekannten Werten, sonst der Standard.
   const tilgungsarten = ["annuitaet", "volltilgung", "endfaellig"];
   if (!tilgungsarten.includes(ergebnis.seniorRepaymentType)) ergebnis.seniorRepaymentType = standardEingabe.seniorRepaymentType;
   if (!tilgungsarten.includes(ergebnis.secondRepaymentType)) ergebnis.secondRepaymentType = standardEingabe.secondRepaymentType;
   if (ergebnis.rehabScenario !== "durchVerkaeufer") ergebnis.rehabScenario = "nachKauf";
+  if (ergebnis.seniorLoanMode !== "euro") ergebnis.seniorLoanMode = "percent";
+  if (ergebnis.juniorLoanMode !== "percent") ergebnis.juniorLoanMode = "euro";
   const haushalt = (daten.haushalt ?? {}) as Record<string, unknown>;
   const vermoegen = (daten.vermoegen ?? {}) as Record<string, unknown>;
   ergebnis.haushalt = { einkuenfte: postenAusJson(haushalt.einkuenfte), ausgaben: postenAusJson(haushalt.ausgaben) };
   ergebnis.vermoegen = { werte: postenAusJson(vermoegen.werte), verbindlichkeiten: postenAusJson(vermoegen.verbindlichkeiten) };
-  return aufGesamtkaufpreis(ergebnis, daten.eingabeVersion);
+  return aufGesamtkaufpreis(ergebnis, daten.eingabeVersion, daten);
 }
 
 function postenAusJson(roh: unknown): Bankunterlagenposten[] {
@@ -216,7 +198,12 @@ function postenAusJson(roh: unknown): Bankunterlagenposten[] {
  * bekommt bei jedem Öffnen dieselbe Umrechnung, und das Ergebnis ist immer
  * dasselbe.
  */
-export function aufGesamtkaufpreis(eingabe: InvestmentEingabe, gespeicherteVersion: unknown): InvestmentEingabe {
+export function aufGesamtkaufpreis(
+  eingabe: InvestmentEingabe,
+  gespeicherteVersion: unknown,
+  /** Der gespeicherte Stand im Rohformat, für Felder, die es heute nicht mehr gibt (Version 5). */
+  roh: Record<string, unknown> = {},
+): InvestmentEingabe {
   const version =
     typeof gespeicherteVersion === "number" && Number.isFinite(gespeicherteVersion) ? gespeicherteVersion : 1;
   /*
@@ -230,7 +217,57 @@ export function aufGesamtkaufpreis(eingabe: InvestmentEingabe, gespeicherteVersi
     ? eingabe
     : { ...eingabe, purchasePrice: eingabe.purchasePrice + Math.max(0, eingabe.furniturePrice) };
   ergebnis = mitGetrenntemHausgeld(ergebnis, version);
+  ergebnis = mitNeuerFinanzierung(ergebnis, version, roh);
   return { ...ergebnis, eingabeVersion: EINGABE_VERSION };
+}
+
+/**
+ * Version 5 (23.10.2026, Christian): Die Finanzierung wird eingegeben, das
+ * Eigenkapital ist der Rest. Bis Version 4 war es umgekehrt: Eigenkapital
+ * (`equity`, ungeteilt der Betrag des Kunden) und Nachrang
+ * (`juniorLoanAmount`) waren eingetragen, KfW und zweites Bankdarlehen auf den
+ * Bedarf gedeckelt, das Bankdarlehen der Rest.
+ *
+ * Ein alter Stand bekommt deshalb genau die Darlehen, mit denen er gerechnet
+ * hat: das Bankdarlehen als Euro-Betrag aus derselben Rechnung wie damals,
+ * Nachrang in Euro, gedeckelte KfW- und Zweitdarlehen mit dem gedeckelten
+ * Betrag. Das Eigenkapital ergibt sich daraus wieder als dieselbe Zahl.
+ *
+ * Entfallene Felder (Finanzierungsnebenkosten, Anschlusszins, neue Tilgung,
+ * Umschuldungskosten, weitere Anschlussfinanzierungen, Sondertilgungen,
+ * Verkaufskosten, zvE-Entwicklung) liest `eingabeAusJson` gar nicht erst;
+ * sie rechnen nicht weiter. Die Rücklage im Hausgeld ist dasselbe Feld wie
+ * die frühere „Zuführung“ in Miete & Entwicklung und bleibt mit ihrem Wert
+ * stehen; sie folgt in alten Ständen nicht mehr von selbst der Fläche.
+ */
+export function mitNeuerFinanzierung(
+  eingabe: InvestmentEingabe,
+  version: number,
+  roh: Record<string, unknown>,
+): InvestmentEingabe {
+  if (version >= 5) return eingabe;
+  const alt = (feld: string) => Math.max(0, zahl(roh[feld]));
+  const nachrang = alt("juniorLoanAmount");
+  const neu: InvestmentEingabe = {
+    ...eingabe,
+    monthlyReserveContributionAuto: false,
+    juniorLoanMode: "euro",
+    juniorLoanValue: nachrang,
+    seniorLoanMode: "euro",
+    seniorLoanValue: 0,
+  };
+  // Kaufpreis und Kaufnebenkosten wie heute gerechnet; sie hängen nicht an der Finanzierung.
+  const r = berechneInvestment({ ...neu, kfwEnabled: false, secondLoanAmount: 0, juniorLoanValue: 0 });
+  const anteil = r.anteil;
+  if (!(anteil > 0)) return neu;
+  // Die frühere Deckelung von KfW und zweitem Darlehen auf den Bedarf, damit dieselben Beträge rechnen.
+  const bedarf = Math.max(0, r.totalInvestment - alt("equity") - nachrang * anteil);
+  const kfw = eingabe.kfwEnabled ? Math.min(Math.max(0, eingabe.kfwLoanAmount) * anteil, bedarf) : 0;
+  const zweites = Math.min(Math.max(0, eingabe.secondLoanAmount) * anteil, bedarf - kfw);
+  return mitEigenkapital(
+    { ...neu, ...(eingabe.kfwEnabled ? { kfwLoanAmount: kfw / anteil } : {}), secondLoanAmount: zweites / anteil },
+    alt("equity"),
+  );
 }
 
 /**
@@ -256,14 +293,14 @@ export function mitGetrenntemHausgeld(eingabe: InvestmentEingabe, version: numbe
   };
 }
 
-function knkAusJson(roh: unknown): Kaufnebenkostenauswahl {
+export function knkAusJson(roh: unknown): Kaufnebenkostenauswahl {
   if (!roh || typeof roh !== "object") return standardKaufnebenkostenauswahl;
   const daten = roh as Record<string, unknown>;
   const weg = daten.weg === "manuell" ? "manuell" : "bundesland";
   return { weg, bundesland: typeof daten.bundesland === "string" ? daten.bundesland : "" };
 }
 
-function unterlagenAusJson(roh: unknown): UnterlagenDaten | null {
+export function unterlagenAusJson(roh: unknown): UnterlagenDaten | null {
   if (!roh || typeof roh !== "object") return null;
   const daten = roh as Record<string, unknown>;
   const ergebnis: UnterlagenDaten = { ...leereUnterlagenDaten };
@@ -339,7 +376,7 @@ export function kennzahlenAus(eingabe: InvestmentEingabe, ergebnis: InvestmentEr
     // Zeilen haben hier Kaufpreis plus Möbel gespeichert, also dieselbe Zahl.
     // Beim All-inclusive-Modell samt Aufschlag, passend zur Bruttorendite daneben.
     kaufpreis: ausgewiesenerKaufpreis(eingabe, ergebnis),
-    eigenkapital: eingabe.equity,
+    eigenkapital: ergebnis.eigenkapital,
     // Seit dem 22.10.2026 je Monat ab dem Übergang, nicht je zwölftel Jahr.
     cashflowMonatNachSteuern: erstesJahr ? erstesJahr.cashflowAfterTax / monateErstesJahr(ergebnis) : 0,
     bruttorendite: ergebnis.grossYield,

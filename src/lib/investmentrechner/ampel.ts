@@ -86,15 +86,15 @@ export interface Ampelzeile {
 
 /** Alle fünf Kennzahlen mit Wert und Farbe, in fester Reihenfolge. */
 export function ampel(
-  input: Pick<InvestmentEingabe, "equity">,
-  result: Pick<InvestmentErgebnis, "grossYield" | "netYield" | "years" | "vermoegensaufbauMonat">,
+  input: Partial<InvestmentEingabe>,
+  result: Pick<InvestmentErgebnis, "grossYield" | "netYield" | "years" | "vermoegensaufbauMonat" | "eigenkapital">,
   schwellen: Record<Ampelkennzahl, Ampelschwelle> = AMPEL_SCHWELLEN,
 ): Ampelzeile[] {
   const erstes = result.years[0];
   const werte: Record<Ampelkennzahl, number | null> = {
     bruttorendite: result.grossYield,
     nettorendite: result.netYield,
-    eigenkapitalrendite: eigenkapitalrendite(input, result).rendite,
+    eigenkapitalrendite: eigenkapitalrendite(result).rendite,
     cashflowOperativ: erstes ? erstes.cashflowBeforeTax / monateErstesJahr(result) : null,
     cashflowNachSteuern: erstes ? erstes.cashflowAfterTax / monateErstesJahr(result) : null,
   };

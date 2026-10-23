@@ -123,7 +123,7 @@ export function altersvorsorge(eingabe: InvestmentEingabe): Altersvorsorge | Alt
         }
       : null;
 
-  const eigenkapital = Math.max(0, eingabe.equity);
+  const eigenkapital = ergebnis.eigenkapital;
   const zuzahlungen = vorRente.cumulativeEigenanteil;
 
   return {

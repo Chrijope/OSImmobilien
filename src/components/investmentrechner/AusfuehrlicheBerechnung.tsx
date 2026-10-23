@@ -33,12 +33,12 @@ import "./ausfuehrlicheBerechnung.css";
  * des Rechners und lag nicht im Repository. Am 22.10.2026 aus der
  * veröffentlichten Fassung übernommen, sprachlich geprüft, ins Englische
  * übersetzt (Sprache der rechten Seite, siehe RechnerSprache.tsx) und an den
- * Umbau des Rechenkerns angeglichen: monatliche Darlehen, Anschluss und
- * Umschuldung, Tilgungsarten, § 7b mit Obergrenzen, AfA nach dem
- * Begünstigungszeitraum, Erwerbsmonat, Möbel bis zum Restbuchwert, Wohnung
- * und Stellplatz getrennt, beide Sanierungsfälle mit 15-Prozent-Grenze,
- * Hausgeld in ganzer Höhe, interner Zinsfuß, Verkaufskosten und Grenzen des
- * Modells.
+ * Umbau des Rechenkerns angeglichen: monatliche Darlehen, Zinsbindung,
+ * Tilgungsarten, § 7b mit Obergrenzen, AfA nach dem Begünstigungszeitraum,
+ * Erwerbsmonat, Möbel bis zum Restbuchwert, Wohnung und Stellplatz getrennt,
+ * beide Sanierungsfälle mit 15-Prozent-Grenze, Hausgeld in ganzer Höhe,
+ * interner Zinsfuß und Grenzen des Modells. Seit dem 23.10.2026 ohne
+ * Anschlussfinanzierung, Finanzierungsnebenkosten und Verkaufskosten.
  *
  * Gerechnet wird hier nichts Neues. Alle Zahlen kommen aus dem Ergebnis des
  * Rechenkerns, nur Monatswerte und Summen werden daraus gebildet.
@@ -79,8 +79,8 @@ const tonKlasse = (wert: number) => (wert < -0.005 ? "ba-neg" : "ba-pos");
 
 /** Abschreibungen eines Jahres zusammen: Gebäude, Sonder-AfA, Möbel. */
 const afaGesamt = (j: Jahreswert) => j.buildingDepreciation + j.specialDepreciation + j.furnitureDepreciation;
-/** Sofort abziehbare Werbungskosten: Finanzierung im ersten Jahr, Umschuldung, Erhaltungsaufwand. */
-const werbungskosten = (j: Jahreswert) => j.financingCostDeduction + (j.umschuldungskosten ?? 0) + j.rehabDeduction;
+/** Sofort abziehbare Werbungskosten: der Erhaltungsaufwand. */
+const werbungskosten = (j: Jahreswert) => j.rehabDeduction;
 /** Laufende Kosten, wie sie im steuerlichen Ergebnis stehen: der Rest bis zum Ergebnis. */
 const laufendeKosten = (j: Jahreswert) => j.effectiveRent - j.interest - afaGesamt(j) - werbungskosten(j) - j.taxableResult;
 
@@ -101,8 +101,7 @@ export function ausfuehrlicheWerte(input: InvestmentEingabe, result: InvestmentE
   const erstes = jahre[0];
   const letztes = jahre[jahre.length - 1];
   const ersteMonate = monateErstesJahr(result);
-  const ekr = eigenkapitalrendite(input, result);
-  const anteil = result.anteil > 0 ? result.anteil : 1;
+  const ekr = eigenkapitalrendite(result);
 
   const saetze: ["grunderwerbsteuer" | "notar" | "grundbuch" | "makler" | "sonstiges", number][] = [
     ["grunderwerbsteuer", input.transferTaxRate],
@@ -118,7 +117,7 @@ export function ausfuehrlicheWerte(input: InvestmentEingabe, result: InvestmentE
 
   // Erste Monatsrate: bei Bank und zweitem Darlehen aus dem Plan, sonst der Schnitt des ersten Jahres.
   const ersteRate = (art: "bank" | "bank2", betrag: number) =>
-    bankplan({ ...bankplanParameter(input, art, betrag, anteil), jahre: 1, startMonat: input.acquisitionMonth }).ersteRate;
+    bankplan({ ...bankplanParameter(input, art, betrag), jahre: 1, startMonat: input.acquisitionMonth }).ersteRate;
   const schnittErstesJahr = (art: "kfw" | "nachrang") => (erstes?.darlehen?.[art]?.payment ?? 0) / ersteMonate;
   const darlehen: Darlehenszeile[] = [];
   if (result.seniorLoanAmount > 0) {
@@ -154,7 +153,7 @@ export function ausfuehrlicheWerte(input: InvestmentEingabe, result: InvestmentE
       zinsbindung: input.kfwFixedRateYears || null,
     });
   }
-  const nachrang = result.totalDebt - result.seniorLoanAmount - result.kfwLoanAmount - result.secondLoanAmount;
+  const nachrang = result.juniorLoanAmount;
   if (nachrang > 0.005) {
     darlehen.push({
       art: "nachrang",
@@ -163,7 +162,7 @@ export function ausfuehrlicheWerte(input: InvestmentEingabe, result: InvestmentE
       zins: input.juniorInterestRate,
       tilgung: { art: "annuitaet", satz: input.juniorRepaymentRate, laufzeit: 0, anlauf: 0 },
       rateMonat: schnittErstesJahr("nachrang"),
-      zinsbindung: null,
+      zinsbindung: input.juniorFixedRateYears || null,
     });
   }
   const darlehenSumme = darlehen.reduce((s, d) => s + d.betrag, 0);
@@ -176,7 +175,7 @@ export function ausfuehrlicheWerte(input: InvestmentEingabe, result: InvestmentE
         miete: jeMonat(erstes.effectiveRent),
         steuer: jeMonat(erstes.taxEffect),
         rate: jeMonat(erstes.debtService),
-        kosten: jeMonat(erstes.operatingCosts + erstes.reserveContribution + (erstes.umschuldungskosten ?? 0)),
+        kosten: jeMonat(erstes.operatingCosts + erstes.reserveContribution),
         vorSteuer: jeMonat(erstes.cashflowBeforeTax),
         nachSteuer: jeMonat(erstes.cashflowAfterTax),
       }
@@ -185,8 +184,8 @@ export function ausfuehrlicheWerte(input: InvestmentEingabe, result: InvestmentE
   /*
     Stichjahre 10, 20 und 30: eine eigene Rechnung über 30 Jahre mit denselben
     Annahmen. Erlös bei Verkauf ist, seit der Codex-Nachprüfung vom 22.10.2026,
-    Immobilienwert minus Restschuld minus Verkaufskosten, genau wie im
-    internen Zinsfuß. Vorher stand dort Wertzuwachs plus Tilgung; das ließ das
+    Immobilienwert minus Restschuld, genau wie im internen Zinsfuß (seit dem
+    23.10.2026 ohne Verkaufskosten). Vorher stand dort Wertzuwachs plus Tilgung; das ließ das
     eingesetzte Eigenkapital weg (300.000 Kaufpreis, 60.000 Eigenkapital,
     keine Wertsteigerung: 44.174,94 statt 104.174,94 Euro).
 
@@ -194,10 +193,8 @@ export function ausfuehrlicheWerte(input: InvestmentEingabe, result: InvestmentE
     EStG abgelaufen ist, hängt am Datum des Kaufvertrags; die Rechnung nennt
     sie deshalb nur unter diesem Vorbehalt.
   */
-  const verkaufskostenSatz = Math.max(0, input.saleCostRate || 0) / 100;
   const lang = berechneInvestment({ ...input, forecastYears: 30 });
-  const verkaufskosten = (wert: number) => wert * verkaufskostenSatz;
-  const erloes = (j: Jahreswert) => j.propertyValue - j.remainingDebt - verkaufskosten(j.propertyValue);
+  const erloes = (j: Jahreswert) => j.propertyValue - j.remainingDebt;
   const heute = lang.years[0] ? lang.years[0].propertyValue - lang.years[0].wertzuwachs : ausgewiesenerKaufpreis(input, result);
   const monateBis = (index: number) => index * 12 + ersteMonate;
   const stichjahre = [
@@ -206,8 +203,7 @@ export function ausfuehrlicheWerte(input: InvestmentEingabe, result: InvestmentE
       monateSeitKauf: 0,
       immobilienwert: heute,
       restschuld: lang.totalDebt,
-      verkaufskosten: verkaufskosten(heute),
-      erloes: heute - lang.totalDebt - verkaufskosten(heute),
+      erloes: heute - lang.totalDebt,
       mieteMonat: monat?.miete ?? 0,
       nachSteuerMonat: monat?.nachSteuer ?? 0,
     },
@@ -220,7 +216,6 @@ export function ausfuehrlicheWerte(input: InvestmentEingabe, result: InvestmentE
           monateSeitKauf: monateBis(n - 1),
           immobilienwert: j.propertyValue,
           restschuld: j.remainingDebt,
-          verkaufskosten: verkaufskosten(j.propertyValue),
           erloes: erloes(j),
           mieteMonat: j.effectiveRent / 12,
           nachSteuerMonat: j.cashflowAfterTax / 12,
@@ -848,25 +843,10 @@ function Dokument({ input, result, photos, werte, erstelltVon }: { input: Invest
             "Alle Darlehen rechnen monatlich: Monatszins ist Restschuld mal Sollzins durch 12, die Rate wird am Monatsende gezahlt.",
             "All loans are calculated monthly: monthly interest is remaining debt times the nominal rate divided by 12, the instalment is paid at the end of the month.",
           )}
-          {input.seniorFollowUpRate > 0 || input.seniorFollowUpRepaymentRate > 0
-            ? en
-              ? ` After ${input.seniorFixedRateYears} years follow-up financing${input.seniorFollowUpRate > 0 ? ` at ${prozent(input.seniorFollowUpRate)}` : ""}${input.seniorFollowUpRepaymentRate > 0 ? ` with ${prozent(input.seniorFollowUpRepaymentRate)} repayment` : ""}.`
-              : ` Nach ${input.seniorFixedRateYears} Jahren Anschlussfinanzierung${input.seniorFollowUpRate > 0 ? ` zu ${prozent(input.seniorFollowUpRate)}` : ""}${input.seniorFollowUpRepaymentRate > 0 ? ` mit ${prozent(input.seniorFollowUpRepaymentRate)} Tilgung` : ""}.`
-            : ""}
-          {(input.seniorFurtherFollowUps ?? [])
-            .filter((a) => a.nachJahren >= 1)
-            .map((a) =>
-              en
-                ? ` After ${a.nachJahren} years again${a.zinsProzent > 0 ? ` at ${prozent(a.zinsProzent)}` : ""}${a.tilgungProzent > 0 ? ` with ${prozent(a.tilgungProzent)} repayment` : ""}.`
-                : ` Nach ${a.nachJahren} Jahren erneut${a.zinsProzent > 0 ? ` zu ${prozent(a.zinsProzent)}` : ""}${a.tilgungProzent > 0 ? ` mit ${prozent(a.tilgungProzent)} Tilgung` : ""}.`,
-            )
-            .join("")}
-          {result.umschuldungskostenGesamt > 0
-            ? t(
-                ` Umschuldungskosten im Zeitraum: ${euro(result.umschuldungskostenGesamt)}, als Werbungskosten abgezogen.`,
-                ` Refinancing costs in the period: ${euro(result.umschuldungskostenGesamt)}, deducted as income-related expenses.`,
-              )
-            : ""}
+          {t(
+            " Nach dem Ende der Zinsbindung rechnet das Modell mit demselben Zins und derselben Rate weiter. Der Ø-Zins ist der Mischzins aller Darlehen, gewichtet mit ihrem Betrag.",
+            " After the fixed-rate period ends, the model continues with the same rate and the same instalment. The average rate is the blended rate of all loans, weighted by amount.",
+          )}
         </p>
       </Seite>
 
@@ -959,7 +939,7 @@ function Dokument({ input, result, photos, werte, erstelltVon }: { input: Invest
                 "Die Vermögensrendite ist eine Modellkennzahl: Vermögensaufbau je Jahr geteilt durch Eigenkapital plus zwölf Monate Zuzahlung, wie in der Analyse. Der interne Zinsfuß ist die Verzinsung des eingesetzten Geldes nach Steuer, mit einem Verkauf am Ende",
                 "The wealth return is a model figure: wealth building per year divided by equity plus twelve months of top-up payments, as in the analysis. The internal rate of return is the return on the money invested after tax, with a sale at the end",
               )}
-              {input.saleCostRate > 0 ? t(` abzüglich ${prozent(input.saleCostRate, 1)} Verkaufskosten`, ` less ${prozent(input.saleCostRate, 1)} selling costs`) : ""}.
+.
             </p>
           </div>
         </div>
@@ -975,8 +955,8 @@ function Dokument({ input, result, photos, werte, erstelltVon }: { input: Invest
         </p>
         <div className="ba-label ba-abstand-gross">
           {t(
-            "Erlös bei Verkauf: Immobilienwert minus Restschuld minus Verkaufskosten",
-            "Proceeds on sale: property value minus remaining debt minus selling costs",
+            "Erlös bei Verkauf: Immobilienwert minus Restschuld",
+            "Proceeds on sale: property value minus remaining debt",
           )}
         </div>
         <table className="ba-tab ba-stich">
@@ -995,12 +975,6 @@ function Dokument({ input, result, photos, werte, erstelltVon }: { input: Invest
               <td>{t("Restschuld", "Remaining debt")}</td>
               {werte.stichjahre.map((s) => <td key={s.jahre}>{mitZeichen(-s.restschuld)}</td>)}
             </tr>
-            {input.saleCostRate > 0 && (
-              <tr>
-                <td>{t("Verkaufskosten", "Selling costs")} ({prozent(input.saleCostRate, 1)})</td>
-                {werte.stichjahre.map((s) => <td key={s.jahre}>{mitZeichen(-s.verkaufskosten)}</td>)}
-              </tr>
-            )}
           </tbody>
           <tfoot>
             <tr>
@@ -1173,8 +1147,8 @@ function Dokument({ input, result, photos, werte, erstelltVon }: { input: Invest
         </table>
         <p className="ba-klein ba-abstand">
           {t(
-            "Werbungskosten: Finanzierungsnebenkosten im ersten Jahr, Umschuldungskosten und Erhaltungsaufwand. AfA gesamt: Gebäude, Sonder-AfA und Möbel; die Möbel werden nur bis zu ihrem Restbuchwert abgeschrieben.",
-            "Income-related expenses: financing costs in the first year, refinancing costs and maintenance expenses. Total depreciation: building, special depreciation and furniture; furniture is depreciated only up to its residual book value.",
+            "Werbungskosten: der sofort abziehbare Erhaltungsaufwand. AfA gesamt: Gebäude, Sonder-AfA und Möbel; die Möbel werden nur bis zu ihrem Restbuchwert abgeschrieben.",
+            "Income-related expenses: the immediately deductible maintenance expenses. Total depreciation: building, special depreciation and furniture; furniture is depreciated only up to its residual book value.",
           )}
           {result.sonderAfa.beantragt
             ? ` ${result.sonderAfa.zulaessig ? t("Sonder-AfA nach § 7b", "Special depreciation under Sec. 7b") : t("Keine Sonder-AfA nach § 7b", "No special depreciation under Sec. 7b")}${en ? "." : `: ${result.sonderAfa.hinweis}`}`
@@ -1226,7 +1200,7 @@ function Dokument({ input, result, photos, werte, erstelltVon }: { input: Invest
                 `Steuer nach dem Tarif 2026 (§ 32a EStG), jeweils mit Solidaritätszuschlag${input.churchTaxRate ? " und Kirchensteuer" : ""}.`,
                 `Tax under the 2026 tariff (Sec. 32a EStG), including solidarity surcharge${input.churchTaxRate ? " and church tax" : ""}.`,
               )}{" "}
-          {t(`Das Einkommen wächst mit ${prozent(input.annualTaxableIncomeGrowth, 1)} im Jahr.`, `Income grows by ${prozent(input.annualTaxableIncomeGrowth, 1)} a year.`)}
+          {t("Das zu versteuernde Einkommen bleibt über alle Jahre gleich.", "Taxable income stays the same in every year.")}
         </p>
       </Seite>
 
@@ -1242,7 +1216,7 @@ function Dokument({ input, result, photos, werte, erstelltVon }: { input: Invest
           <Tabelle
             zeilen={[
               [t("Mieteinnahmen", "Rental income"), euro(erstes.effectiveRent)],
-              [t("Werbungskosten (Finanzierung, Erhaltung)", "Income-related expenses (financing, maintenance)"), mitZeichen(-werbungskosten(erstes))],
+              [t("Werbungskosten (Erhaltungsaufwand)", "Income-related expenses (maintenance)"), mitZeichen(-werbungskosten(erstes))],
               [t("Absetzung für Abnutzung", "Depreciation"), mitZeichen(-afaGesamt(erstes))],
               [t("Laufende Kosten", "Running costs"), mitZeichen(-laufendeKosten(erstes))],
               [t("Schuldzinsen", "Loan interest"), mitZeichen(-erstes.interest)],

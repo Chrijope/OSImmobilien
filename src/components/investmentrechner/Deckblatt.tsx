@@ -150,7 +150,6 @@ export function DeckblattAufEinenBlick({ input, result, photos, documentData, sp
   if (input.area > 0) eckdaten.push({ label: t.deckblatt.wohnflaeche, wert: `${formatZahl(input.area, sprache, 3)} m²` });
   if (input.rooms > 0) eckdaten.push({ label: t.deckblatt.zimmer, wert: formatZahl(input.rooms, sprache, 3) });
   if (input.constructionYear > 0) eckdaten.push({ label: t.deckblatt.baujahr, wert: String(input.constructionYear) });
-  if (documentData.energyClass) eckdaten.push({ label: t.deckblatt.energieklasse, wert: documentData.energyClass });
   eckdaten.push({ label: d.kaltmiete, wert: euro(result.effectiveAnnualRent / 12) });
   eckdaten.push({ label: d.bruttorendite, wert: formatProzent(result.grossYield, sprache) });
 
@@ -215,7 +214,7 @@ export function ErgebnisAufEinenBlick({ input, result, sprache, mitAmpel = false
   const kreditrate =
     result.kfwLoanAmount > 0 || (result.secondLoanAmount ?? 0) > 0
       ? d.kreditrateMischzins(formatProzent(result.mischzins, sprache))
-      : input.juniorLoanAmount > 0
+      : result.juniorLoanAmount > 0
         ? d.kreditrateOhneSaetze
         : d.kreditrate(prozentZahl(input.seniorInterestRate), prozentZahl(input.seniorRepaymentRate));
   const sprung = result.rateSprung;
@@ -407,7 +406,6 @@ export function DeckblattJahrFuerJahr({ input, result, photos, documentData, spr
     input.area > 0 ? `${formatZahl(input.area, sprache, 3)} m²` : "",
     input.rooms > 0 ? d.zimmerAnzahl(formatZahl(input.rooms, sprache, 3)) : "",
     input.constructionYear > 0 ? d.baujahrText(input.constructionYear) : "",
-    documentData.energyClass ? d.energieklasseText(documentData.energyClass) : "",
   ]
     .filter(Boolean)
     .join(" · ");

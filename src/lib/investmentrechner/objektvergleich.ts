@@ -29,7 +29,6 @@ export const GEMEINSAME_FELDER: readonly (keyof InvestmentEingabe)[] = [
   "jointAssessment",
   "taxableIncomeCustomer",
   "taxableIncomeSpouse",
-  "annualTaxableIncomeGrowth",
   "churchTaxRate",
   "includeSolidaritySurcharge",
   "investmentShare",
@@ -251,8 +250,8 @@ export function vergleicheObjekte(a: Vergleichsobjekt, b: Vergleichsobjekt): Ver
       bezeichnung: "Eingesetztes Eigenkapital",
       einheit: "euro",
       richtung: "ohneWertung",
-      wertA: Math.max(0, a.eingabe.equity),
-      wertB: Math.max(0, b.eingabe.equity),
+      wertA: a.ergebnis.eigenkapital,
+      wertB: b.ergebnis.eigenkapital,
     },
     {
       gruppe: "Kauf und Finanzierung",
