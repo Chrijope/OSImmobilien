@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { Cashflowleiste } from "./Felder";
-import { berechneInvestment, standardEingabe } from "@/lib/investmentrechner/rechenkern";
+import { berechneInvestment, mitEigenkapital, standardEingabe } from "@/lib/investmentrechner/rechenkern";
 import { formatEuro, formatEuroCent } from "@/lib/investmentrechner/formatierer";
 
 /**
@@ -46,7 +46,9 @@ const UEBERSCHUSS = {
   brokerRate: 0,
 };
 
-function leisteMit(eingabe: typeof FALL) {
+/** `equity`: seit dem 23.10.2026 der Rest der Finanzierung, das Bankdarlehen wird passend gesetzt. */
+function leisteMit({ equity, ...roh }: typeof FALL) {
+  const eingabe = mitEigenkapital(roh, equity);
   const result = berechneInvestment(eingabe);
   const ansicht = render(<Cashflowleiste input={eingabe} jahr={result.years[0]} result={result} />);
   return { result, container: ansicht.container };

@@ -22,7 +22,9 @@ const OHNE: InvestmentEingabe = {
   clientName: "Musterkunde",
   taxableIncomeCustomer: 80000,
   purchasePrice: 405000,
-  equity: 20250,
+  // Bank 100 % des Kaufpreises, das Eigenkapital trägt die Kaufnebenkosten von 20.250 €.
+  seniorLoanMode: "percent",
+  seniorLoanValue: 100,
   seniorInterestRate: 3.8,
   seniorRepaymentRate: 2,
   monthlyColdRent: 1350,
@@ -31,6 +33,9 @@ const OHNE: InvestmentEingabe = {
 
 const MIT: InvestmentEingabe = {
   ...OHNE,
+  // Seit dem 23.10.2026 tragen Bank und KfW zusammen den Kaufpreis, jeder Betrag eingetragen.
+  seniorLoanMode: "euro",
+  seniorLoanValue: 255000,
   kfwEnabled: true,
   kfwProgram: "KfW 297/298 Klimafreundlicher Neubau",
   kfwLoanAmount: 150000,
@@ -83,23 +88,25 @@ describe("Eingabe unter Finanzierung", () => {
     const vorschlaege = Array.from(programm.querySelectorAll("option")).map((o) => o.textContent);
     expect(vorschlaege).toContain("KfW 297/298 Klimafreundlicher Neubau");
     expect(vorschlaege).toContain("KfW 261 Sanierung");
-    expect(screen.getByText(/Mischzins 3,17\s%/)).toBeInTheDocument();
+    expect(screen.getByTestId("mischzins").textContent).toMatch(/^3,17\s%$/);
     expect(screen.getByText(/Ab Jahr 4 \(2029\) steigt die Rate auf 1\.839,44\s€/)).toBeInTheDocument();
-    expect(screen.getByText(/minus Eigenkapital, Nachrang und KfW-Darlehen/)).toBeInTheDocument();
+    // Das Eigenkapital ist der Rest: 425.250 € Gesamtbedarf minus 405.000 € Darlehen.
+    expect(screen.getByTestId("eigenkapital-rest").textContent).toMatch(/20\.250\s€.*Gesamtbedarf 425\.250\s€ minus Darlehen 405\.000\s€/);
   });
 
-  it("warnt bei zu hohem Betrag und zu vielen tilgungsfreien Jahren", () => {
+  it("warnt bei Überfinanzierung und zu vielen tilgungsfreien Jahren", () => {
     finanzierung({ ...MIT, kfwLoanAmount: 600000, kfwGracePeriodYears: 8 });
-    expect(screen.getByText(/höher als der Finanzierungsbedarf von 405\.000\s€/)).toBeInTheDocument();
+    expect(screen.getByTestId("hinweis-ueberfinanzierung").textContent).toMatch(/Die Darlehen liegen 429\.750\s€ über Kaufpreis und Kaufnebenkosten/);
     expect(screen.getByText(/höchstens 5 betragen\. Gerechnet wird mit 5/)).toBeInTheDocument();
   });
 });
 
 describe("Berechnung und PDF", () => {
-  it("nennt ohne KfW weder KfW noch Mischzins", () => {
+  it("nennt ohne KfW keine KfW, den Mischzins aller Darlehen seit dem 23.10.2026 aber immer", () => {
     for (const deckblatt of ["blick", "jahre"] as const) {
       const text = berechnung(OHNE, "de", deckblatt);
-      expect(text).not.toMatch(/KfW|Mischzins/);
+      expect(text).not.toMatch(/KfW/);
+      expect(text).toContain("Mischzins aller Darlehen");
     }
   });
 
@@ -167,7 +174,8 @@ describe("Analyse", () => {
     ).container.textContent ?? "";
 
   it("zeigt die Darlehenstabelle nur mit KfW", () => {
-    expect(analyse(OHNE)).not.toMatch(/Darlehen je Jahr|Mischzins/);
+    // Der Mischzins steht seit dem 23.10.2026 immer da, die Tabelle je Darlehen nur mit KfW.
+    expect(analyse(OHNE)).not.toMatch(/Darlehen je Jahr/);
     const text = analyse(MIT);
     expect(text).toContain("Darlehen je Jahr: Rate, Zinsen, Tilgung und Restschuld");
     expect(text).toMatch(/steigt die Rate von 1\.495,00\s€ auf 1\.839,44\s€/);

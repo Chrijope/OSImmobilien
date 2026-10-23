@@ -129,11 +129,13 @@ describe("Interner Zinsfuß", () => {
     expect(kacheln).not.toMatch(/Zinsfu|Rendite auf dein eingesetztes Geld/);
   });
 
-  it("bleibt im Glossar und im Objektvergleich, mit Verkaufskosten in der Formel", () => {
+  it("bleibt im Glossar und im Objektvergleich, seit dem 23.10.2026 ohne Verkaufskosten in der Formel", () => {
     const objekt = { eingabe: EINGABE, ergebnis: berechneInvestment(EINGABE) };
     const zeile = vergleicheObjekte(objekt, objekt).find((z) => z.bezeichnung === "Interner Zinsfuß (IRR) p. a.");
     expect(zeile?.wertA).toBe(objekt.ergebnis.irr);
-    expect(KENNZAHL_TEXTE_DE.glossar.eintraege.irr.formel).toContain("Verkaufskosten");
+    expect(KENNZAHL_TEXTE_DE.glossar.eintraege.irr.formel).not.toContain("Verkaufskosten");
+    expect(KENNZAHL_TEXTE_DE.glossar.eintraege.irr.formel).toContain("Immobilie minus Restschuld");
+    expect(KENNZAHL_TEXTE_DE.glossar.eintraege.darlehen.bedeutung).toMatch(/Nach dem Ende der Zinsbindung rechnet das Modell mit demselben Zins und derselben Rate weiter/);
   });
 });
 

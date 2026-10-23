@@ -340,7 +340,7 @@ export const KENNZAHL_TEXTE_DE: KennzahlTexte = {
       darlehen: {
         titel: "Darlehen, Eigenkapital und Zinsbindung",
         bedeutung:
-          "Eingetragen wird, wie finanziert wird: das Bankdarlehen in Prozent des Kaufpreises oder in Euro, dazu bei Bedarf Nachrangdarlehen, zweites Bankdarlehen und KfW-Darlehen. Das Eigenkapital ist der Rest. Jedes Darlehen rechnet mit seinem eigenen Zins; der Mischzins fasst sie zusammen. Nach dem Ende der Zinsbindung rechnet das Modell mit demselben Zins und derselben Rate weiter, die Jahresübersicht zeigt, wann welche Zinsbindung endet.",
+          "Eingetragen wird, wie finanziert wird: das Bankdarlehen in Prozent des Kaufpreises oder in Euro, dazu bei Bedarf Nachrangdarlehen, zweites Bankdarlehen oder ein Förderdarlehen. Das Eigenkapital ist der Rest. Jedes Darlehen rechnet mit seinem eigenen Zins; der Mischzins fasst sie zusammen. Nach dem Ende der Zinsbindung rechnet das Modell mit demselben Zins und derselben Rate weiter, die Jahresübersicht zeigt, wann welche Zinsbindung endet.",
         formel:
           "Bankdarlehen = Prozentsatz × Kaufpreis (beim All-inclusive-Modell samt Kaufnebenkosten) oder der Euro-Betrag; Eigenkapital = Gesamtkosten − alle Darlehen, mindestens 0; Mischzins = Summe (Darlehen × Sollzins) ÷ Summe der Darlehen",
       },
@@ -651,7 +651,7 @@ export const KENNZAHL_TEXTE_EN: KennzahlTexte = {
       darlehen: {
         titel: "Loans, equity and fixed-rate period",
         bedeutung:
-          "You enter how the purchase is financed: the bank loan as a percentage of the purchase price or in euros, plus a subordinated loan, a second bank loan and a KfW loan if needed. Equity is the rest. Each loan uses its own rate; the blended rate sums them up. After the fixed-rate period ends, the model continues with the same rate and the same instalment; the annual overview shows when each fixed-rate period ends.",
+          "You enter how the purchase is financed: the bank loan as a percentage of the purchase price or in euros, plus a subordinated loan, a second bank loan or a development loan if needed. Equity is the rest. Each loan uses its own rate; the blended rate sums them up. After the fixed-rate period ends, the model continues with the same rate and the same instalment; the annual overview shows when each fixed-rate period ends.",
         formel:
           "Bank loan = percentage × purchase price (all-inclusive: including incidental purchase costs) or the euro amount; equity = total costs − all loans, at least 0; blended rate = sum (loan × borrowing rate) ÷ sum of loans",
       },

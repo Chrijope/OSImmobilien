@@ -1,5 +1,5 @@
 import { StrictMode } from "react";
-import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { standardEingabe } from "@/lib/investmentrechner/rechenkern";
@@ -78,7 +78,7 @@ describe("Fotos aus der Objektanlage im Bereich „Bilder“", () => {
     expect(screen.queryByTestId("foto-vorbelegung")).not.toBeInTheDocument();
   });
 
-  it("holt entfernte Fotos nicht von selbst zurück, erst „Auf Objektdaten zurücksetzen“", async () => {
+  it("holt entfernte Fotos nicht von selbst zurück, erst „Zurücksetzen“", async () => {
     laden.mockResolvedValue([EINS, ZWEI]);
     zeige();
     await waitFor(() => expect(fotosInDerPdf()).toHaveLength(2));
@@ -86,7 +86,8 @@ describe("Fotos aus der Objektanlage im Bereich „Bilder“", () => {
     fireEvent.click(screen.getByRole("button", { name: "Objektfoto 1 entfernen" }));
     expect(fotosImBereich()).toEqual([ZWEI]);
 
-    fireEvent.click(screen.getByRole("button", { name: /Auf Objektdaten zurücksetzen/ }));
+    fireEvent.click(screen.getByTestId("rechner-zuruecksetzen"));
+    fireEvent.click(within(await screen.findByRole("alertdialog")).getByRole("button", { name: "Zurücksetzen" }));
     await waitFor(() => expect(fotosInDerPdf()).toEqual([EINS, ZWEI]));
     // Die Fotos kommen aus dem Zwischenspeicher, nicht aus einem zweiten Download.
     expect(laden).toHaveBeenCalledTimes(1);

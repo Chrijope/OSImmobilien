@@ -52,7 +52,7 @@ describe("Automatische Übernahme im geöffneten Rechner", () => {
     laden.mockResolvedValue({ documents: [], antwort });
     render(renderRechner());
     await waitFor(() => expect(screen.queryByText("Objektunterlagen werden automatisch ausgelesen …")).not.toBeInTheDocument());
-    fireEvent.click(screen.getByRole("button", { name: /Objektunterlagen/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Objekt & Kaufpreis/ }));
     expect(screen.getByText("Automatisch übernommen, laut Beleg.pdf, Seite 2.")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Zurücknehmen/ }));
     // Danach steht der Wert davor wieder da, und die Unterlage erscheint als nicht ausgewählte Abweichung.
@@ -70,7 +70,7 @@ describe("Automatische Übernahme im geöffneten Rechner", () => {
     // Längere Fristen: Unter Last der ganzen Suite braucht die zweite Auslesung mehr als eine Sekunde.
     await waitFor(() => expect(laden).toHaveBeenCalledTimes(2), { timeout: 5000 });
     await waitFor(() => expect(screen.queryByText("Objektunterlagen werden automatisch ausgelesen …")).not.toBeInTheDocument(), { timeout: 5000 });
-    fireEvent.click(screen.getByRole("button", { name: /Objektunterlagen/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Objekt & Kaufpreis/ }));
     expect(await screen.findByTestId("ki-abweichung-area", {}, { timeout: 5000 })).toHaveTextContent("laut Beleg.pdf, Seite 3: 70 m²");
     expect(screen.getByText("Automatisch übernommen, laut Beleg.pdf, Seite 2.")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Zurücknehmen/ }));
@@ -86,7 +86,7 @@ describe("Automatische Übernahme im geöffneten Rechner", () => {
       erstellt_von: null, erstellt_am: "2026-09-28T08:00:00Z", geaendert_am: "2026-09-28T08:00:00Z",
     } as unknown as import("@/lib/investmentBerechnungenStore").InvestmentBerechnung;
     render(<StrictMode><TooltipProvider><InvestmentrechnerInhalt start={{ berechnung }} /></TooltipProvider></StrictMode>);
-    fireEvent.click(screen.getByRole("button", { name: /Objektunterlagen/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Objekt & Kaufpreis/ }));
     expect(screen.getByText("Automatisch übernommen, laut Beleg.pdf, Seite 2.")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Zurücknehmen/ }));
     fireEvent.click(screen.getByRole("button", { name: /Objekt & Kaufpreis/ }));
@@ -98,7 +98,7 @@ describe("Automatische Übernahme im geöffneten Rechner", () => {
     render(renderRechner());
     await waitFor(() => expect(screen.queryByText("Objektunterlagen werden automatisch ausgelesen …")).not.toBeInTheDocument());
     fireEvent.click(screen.getByRole("button", { name: /Objekt zum Vergleich/ }));
-    fireEvent.click(screen.getByRole("button", { name: /Objektunterlagen/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Objekt & Kaufpreis/ }));
     expect(screen.queryByRole("button", { name: /Zurücknehmen/ })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Objekt & Kaufpreis/ }));
     // Der Wert selbst ist mitgekommen.

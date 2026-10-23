@@ -64,7 +64,7 @@ describe("Kaufpreisdetails in der Analyse", () => {
     // Die Möbel stecken im Kaufpreis und werden nicht noch einmal addiert.
     // Aufgeteilt wird nur der Kaufpreis ohne Möbel: 242.000 zu 20 und 80 %.
     // Seit dem 30.09.2026 laufen die Nebenkosten auch nur auf diese 242.000.
-    // Finanzierungsnebenkosten 0,2 % auf das Darlehen von 262.100.
+    // Finanzierungsnebenkosten gibt es seit dem 23.10.2026 nicht mehr.
     expect(analyseZeilen).toEqual([
       ["Gesamtkaufpreis (inkl. Möbel/Inventar)", "250.000 €"],
       ["davon Kaufpreis Immobilie", "242.000 €"],
@@ -75,16 +75,14 @@ describe("Kaufpreisdetails in der Analyse", () => {
       ["Notar 1,00 % auf 242.000 €", "2.420 €"],
       ["Grundbuch 0,50 % auf 242.000 €", "1.210 €"],
       ["Kaufnebenkosten (5,00 % auf 242.000 €)", "12.100 €"],
-      ["Finanzierungsnebenkosten", "524 €"],
-      ["Gesamtkosten", "262.624 €"],
+      ["Gesamtkosten", "262.100 €"],
     ]);
   });
 
-  it("lässt die Zeile der Finanzierungsnebenkosten weg, wenn der Satz 0 ist", () => {
+  it("zeigt keine Zeile Finanzierungsnebenkosten mehr (seit dem 23.10.2026)", () => {
     const { analyseZeilen, berechnungZeilen } = beideAnsichten({
       ...basisEingabe,
       purchasePrice: 250000,
-      financingCostRate: 0,
     });
     expect(analyseZeilen).toEqual(berechnungZeilen);
     expect(analyseZeilen.map(([label]) => label)).not.toContain("Finanzierungsnebenkosten");
@@ -95,7 +93,7 @@ describe("Kaufpreisdetails in der Analyse", () => {
     const { analyseZeilen, berechnungZeilen } = beideAnsichten({ ...basisEingabe, purchasePrice: 250000 });
     expect(analyseZeilen).toEqual(berechnungZeilen);
     expect(analyseZeilen.map(([label]) => label)).not.toContain("davon Möbel/Inventar");
-    expect(analyseZeilen[analyseZeilen.length - 1]).toEqual(["Gesamtkosten", "263.025 €"]);
+    expect(analyseZeilen[analyseZeilen.length - 1]).toEqual(["Gesamtkosten", "262.500 €"]);
   });
 
   it("zeigt bei 50 Prozent Anteil alle Zeilen einheitlich zur Hälfte", () => {
@@ -118,8 +116,7 @@ describe("Kaufpreisdetails in der Analyse", () => {
       ["Notar 1,00 % auf 121.000 €", "1.210 €"],
       ["Grundbuch 0,50 % auf 121.000 €", "605 €"],
       ["Kaufnebenkosten (5,00 % auf 121.000 €)", "6.050 €"],
-      ["Finanzierungsnebenkosten", "262 €"],
-      ["Gesamtkosten", "131.312 €"],
+      ["Gesamtkosten", "131.050 €"],
     ]);
   });
 
@@ -146,8 +143,7 @@ describe("Kaufpreisdetails in der Analyse", () => {
       ["Notar 1,00 % auf 260.000 €", "2.600 €"],
       ["Grundbuch 0,50 % auf 260.000 €", "1.300 €"],
       ["Kaufnebenkosten (5,00 % auf 260.000 €)", "13.000 €"],
-      ["Finanzierungsnebenkosten", "600 €"],
-      ["Gesamtkosten", "313.600 €"],
+      ["Gesamtkosten", "313.000 €"],
     ]);
     const result = berechneInvestment(eingabe);
     const analyse = render(
@@ -184,8 +180,7 @@ describe("Kaufpreisdetails in der Analyse", () => {
       ["Notar 1,00 % auf 265.000 €", "2.650 €"],
       ["Grundbuch 0,50 % auf 265.000 €", "1.325 €"],
       ["Kaufnebenkosten (5,00 % auf 265.000 €)", "13.250 €"],
-      ["Finanzierungsnebenkosten", "600 €"],
-      ["Gesamtkosten", "313.850 €"],
+      ["Gesamtkosten", "313.250 €"],
     ]);
     const result = berechneInvestment(eingabe);
     const analyse = render(

@@ -105,7 +105,7 @@ describe("Druck der Berechnung", () => {
     const text = container.textContent ?? "";
     for (const ueberschrift of [
       "Personal investment calculation",
-      "Energy, reserves & renovations",
+      "Reserves & renovations",
       "Tax position before purchase",
       "Wealth development",
       "Cash flow & equity",

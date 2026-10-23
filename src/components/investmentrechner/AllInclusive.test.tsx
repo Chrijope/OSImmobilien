@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { berechneInvestment, standardEingabe, type InvestmentEingabe } from "@/lib/investmentrechner/rechenkern";
 import { standardKaufnebenkostenauswahl } from "@/lib/investmentrechner/kaufnebenkostenAuswahl";
 import { leereUnterlagenDaten } from "@/lib/investmentrechner/unterlagenAuslesen";
-import { EIGENKAPITAL_REGEL, type Herkunft } from "@/lib/investmentrechner/herkunft";
+import type { Herkunft } from "@/lib/investmentrechner/herkunft";
 import { EingabeObjekt } from "./Eingabebereiche";
 import { ExposeDokument } from "./ExposeDokument";
 import { Analyse } from "./Analyse";
@@ -24,11 +24,11 @@ const NORMAL: InvestmentEingabe = {
   clientName: "Musterkunde",
   taxableIncomeCustomer: 70000,
   purchasePrice: 200000,
-  equity: 10000,
+  // Bank 100 % des Kaufpreises (Standard), das Eigenkapital trägt die 10.000 € Nebenkosten.
   monthlyColdRent: 700,
   monthlyOperatingCosts: 40,
 };
-const ALL_IN: InvestmentEingabe = { ...NORMAL, allInclusive: true, equity: 0 };
+const ALL_IN: InvestmentEingabe = { ...NORMAL, allInclusive: true };
 
 const zeige = (inhalt: React.ReactNode) => render(<TooltipProvider>{inhalt}</TooltipProvider>);
 
@@ -50,26 +50,15 @@ function objekt(eingabe: InvestmentEingabe, aendere = vi.fn(), herkunft?: Herkun
 
 const schalter = () => screen.getByRole("checkbox", { name: /All-inclusive \(Kaufnebenkosten im Kaufpreis enthalten\)/ });
 
-// So setzt die Objektvorbelegung die Herkunft des Eigenkapitals (objektVorbelegung.ts).
-const AUS_DER_REGEL: Herkunft = {
-  equity: { quelle: "objekt", text: `Aus der Objektanlage, ${EIGENKAPITAL_REGEL} (5,00 %)` },
-};
-
 describe("Schalter bei den Kaufnebenkosten", () => {
-  it("setzt ein Eigenkapital aus der Vorbelegung nach der Regel beim Einschalten mit auf 0", () => {
-    const aendere = objekt(NORMAL, vi.fn(), AUS_DER_REGEL);
-    fireEvent.click(schalter());
-    expect(aendere).toHaveBeenCalledWith({ allInclusive: true, equity: 0 });
-  });
-
-  it("lässt ein von Hand oder vom Kunden eingetragenes Eigenkapital stehen, auch in Höhe der Nebenkosten", () => {
-    // 10.000 € sind genau die Kaufnebenkosten, die Herkunft entscheidet.
+  it("schaltet nur das Modell, das Eigenkapital folgt als Rest der Finanzierung (seit dem 23.10.2026)", () => {
+    expect(berechneInvestment(NORMAL).eigenkapital).toBeCloseTo(10000, 6);
+    // 100 % vom Kaufpreis all-inclusive finanziert auch die Nebenkosten.
+    expect(berechneInvestment(ALL_IN).eigenkapital).toBeCloseTo(0, 6);
     const faelle: (Herkunft | undefined)[] = [
       undefined,
-      { equity: { quelle: "eigen", text: "" } },
-      { equity: { quelle: "selbstauskunft", text: "Aus der Selbstauskunft vom 01.10.2026" } },
-      { equity: { quelle: "unterlagen", text: "Aus den Unterlagen" } },
-      { equity: { quelle: "objekt", text: "Aus der Objektanlage" } },
+      { seniorLoanValue: { quelle: "eigen", text: "" } },
+      { purchasePrice: { quelle: "objekt", text: "Aus der Objektanlage" } },
     ];
     for (const herkunft of faelle) {
       const aendere = vi.fn();
@@ -94,7 +83,7 @@ describe("Schalter bei den Kaufnebenkosten", () => {
   });
 
   it("schreibt beim Ausschalten nichts zurück", () => {
-    const aendere = objekt(ALL_IN, vi.fn(), AUS_DER_REGEL);
+    const aendere = objekt(ALL_IN, vi.fn());
     fireEvent.click(schalter());
     expect(aendere).toHaveBeenCalledWith({ allInclusive: false });
   });

@@ -48,14 +48,14 @@ describe("Darstellung", () => {
     zeige(<InvestmentrechnerInhalt />);
     expect(screen.getByRole("heading", { level: 1, name: "Investmentkalkulation" })).toBeInTheDocument();
     expect(screen.getByText("Neue Investmentkalkulation")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Neu starten/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Zurücksetzen/ })).toBeInTheDocument();
   });
 
   it("lässt im Reiter die Überschrift weg und zeigt die vorbelegten Zahlen", () => {
     zeige(<InvestmentrechnerInhalt vorbelegung={vorbelegung} mitUeberschrift={false} />);
     expect(screen.queryByRole("heading", { level: 1, name: "Investmentkalkulation" })).not.toBeInTheDocument();
     expect(screen.getAllByText("Musterwohnanlage, WE 7").length).toBeGreaterThan(0);
-    expect(screen.getByRole("button", { name: /Auf Objektdaten zurücksetzen/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Zurücksetzen/ })).toBeInTheDocument();
   });
 });
 

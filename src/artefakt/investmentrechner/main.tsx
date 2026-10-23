@@ -96,6 +96,7 @@ function App() {
       <InvestmentrechnerInhalt
         vorbelegung={{ eingabe: start, knk: standardKaufnebenkostenauswahl }}
         vorschau={{}}
+        leerZuruecksetzen
         erstelltVon={name}
       />
       <Toaster />

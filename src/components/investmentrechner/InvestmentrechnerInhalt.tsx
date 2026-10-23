@@ -387,6 +387,13 @@ export interface InvestmentrechnerInhaltProps {
   dokumentSprache?: FormatSprache;
   /** Name auf dem Titelblatt der ausführlichen Berechnung („Erstellt von …“). */
   erstelltVon?: string;
+  /**
+   * „Zurücksetzen“ leert alles statt auf die Vorbelegung zurückzugehen, seit
+   * dem 23.10.2026. Für die Artefaktfassung, deren Vorbelegung nur
+   * Beispielzahlen fürs erste Öffnen sind. Ohne Angabe: zurück auf die
+   * Vorbelegung, auf der Einheitenseite also auf die Daten der Einheit.
+   */
+  leerZuruecksetzen?: boolean;
 }
 
 /**
@@ -412,6 +419,7 @@ export function InvestmentrechnerInhalt({
   vorschau,
   dokumentSprache,
   erstelltVon = "",
+  leerZuruecksetzen = false,
 }: InvestmentrechnerInhaltProps = {}) {
   // Die fixierte Eingabemaske reicht bis zum Fensterrand, siehe useMaskeBisUnten.
   const maskeRef = useRef<HTMLElement>(null);
@@ -755,7 +763,7 @@ export function InvestmentrechnerInhalt({
     fotosVorbelegt.current = false;
     setFotoStand("still");
     setBilderVersuch(v => v + 1);
-    setObjekte([startZustand(vorbelegung?.quellen ? vorbelegung : undefined)]);
+    setObjekte([startZustand(leerZuruecksetzen ? undefined : vorbelegung)]);
     setKundeId(start?.kundeId ?? null);
     setInvestmentId(start?.investmentId ?? null);
     setBerechnungId(null);
@@ -773,8 +781,8 @@ export function InvestmentrechnerInhalt({
   const zuruecksetzen = async () => {
     const ja = await confirmDialog({
       title: "Berechnung zurücksetzen?",
-      description: vorbelegung?.quellen
-        ? "Alle Eingaben gehen zurück auf die Daten dieser Einheit. Am Investment gespeicherte Berechnungen bleiben erhalten."
+      description: vorbelegung && !leerZuruecksetzen
+        ? "Alle Eingaben gehen zurück auf die Objektdaten. Am Investment gespeicherte Berechnungen bleiben erhalten."
         : "Alle Eingaben werden geleert, für eine neue Berechnung. Am Investment gespeicherte Berechnungen bleiben erhalten.",
       confirmText: "Zurücksetzen",
       cancelText: "Abbrechen",

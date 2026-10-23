@@ -33,9 +33,10 @@ const eingabe: InvestmentEingabe = {
 describe("Sprache der rechten Seite", () => {
   it("ohne Kunde: sichtbare Wahl, Englisch übersetzt die Vorschau, die Eingabemaske bleibt Deutsch", () => {
     const { container } = zeige(<InvestmentrechnerInhalt vorbelegung={{ eingabe, knk: { weg: "bundesland", bundesland: "bayern" } }} />);
-    const wahl = within(screen.getByTestId("sprache-wahl")).getByRole("combobox");
+    // Seit dem 23.10.2026 ein Umschalter DE/EN „Sprache für Kunde und PDF“.
+    const wahl = within(screen.getByTestId("sprache-wahl")).getByRole("radio", { name: "EN" });
     expect(container.querySelector(".result-panel")?.textContent).toContain("Kaufpreisdetails");
-    fireEvent.change(wahl, { target: { value: "en" } });
+    fireEvent.click(wahl);
     const rechts = container.querySelector(".result-panel")!;
     expect(rechts.getAttribute("lang")).toBe("en");
     expect(rechts.textContent).toContain("Purchase price details");
