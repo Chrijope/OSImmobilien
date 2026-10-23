@@ -23,7 +23,6 @@ const ZAHLT_DRAUF: InvestmentEingabe = {
   furniturePrice: 8000,
   monthlyColdRent: 900,
   monthlyOperatingCosts: 50,
-  equity: 12500,
 };
 
 const BEKOMMT_RAUS: InvestmentEingabe = { ...ZAHLT_DRAUF, monthlyColdRent: 1400 };

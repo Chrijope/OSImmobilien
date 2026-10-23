@@ -26,7 +26,6 @@ const EINGABE: InvestmentEingabe = {
   furniturePrice: 8000,
   monthlyColdRent: 900,
   monthlyOperatingCosts: 50,
-  equity: 12500,
 };
 
 /** Alle Blätter eines Textobjekts mit Pfad; Funktionen werden mit Beispielwerten aufgerufen. */

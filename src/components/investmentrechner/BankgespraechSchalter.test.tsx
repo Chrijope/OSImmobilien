@@ -14,7 +14,7 @@ import { InvestmentrechnerInhalt } from "./InvestmentrechnerInhalt";
  */
 
 const zeige = (inhalt: React.ReactNode) => render(<TooltipProvider>{inhalt}</TooltipProvider>);
-const eingabe: InvestmentEingabe = { ...standardEingabe, purchasePrice: 300000, monthlyColdRent: 1000, equity: 20000 };
+const eingabe: InvestmentEingabe = { ...standardEingabe, purchasePrice: 300000, monthlyColdRent: 1000 };
 const knk = { weg: "bundesland" as const, bundesland: "bayern" };
 const sa = (netto: string, kredit = true) => ({
   einkommen: { netto },

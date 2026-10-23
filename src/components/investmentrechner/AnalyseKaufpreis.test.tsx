@@ -129,7 +129,6 @@ describe("Kaufpreisdetails in der Analyse", () => {
       notaryRate: 1,
       landRegisterRate: 0.5,
       buildingShare: 80,
-      equity: 13000,
     };
     const { analyseZeilen, berechnungZeilen } = beideAnsichten(eingabe);
     expect(analyseZeilen).toEqual(berechnungZeilen);
@@ -165,7 +164,6 @@ describe("Kaufpreisdetails in der Analyse", () => {
       notaryRate: 1,
       landRegisterRate: 0.5,
       buildingShare: 80,
-      equity: 13250,
     };
     const { analyseZeilen, berechnungZeilen } = beideAnsichten(eingabe);
     expect(analyseZeilen).toEqual(berechnungZeilen);

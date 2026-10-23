@@ -19,7 +19,6 @@ const KUNDE: InvestmentEingabe = {
   propertyTitle: "Musterhaus, WE 3",
   address: "Beispielweg 1, 90000 Musterstadt",
   purchasePrice: 250_000,
-  equity: 15_000,
   monthlyColdRent: 850,
   monthlyOperatingCosts: 60,
   monthlyReserveContribution: 25,

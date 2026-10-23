@@ -26,7 +26,6 @@ const EINGABE: InvestmentEingabe = {
   furniturePrice: 8000,
   monthlyColdRent: 900,
   monthlyOperatingCosts: 50,
-  equity: 12500,
 };
 
 /** Die Einträge eines gerenderten Glossars als Schlüssel, Titel und Formel. */

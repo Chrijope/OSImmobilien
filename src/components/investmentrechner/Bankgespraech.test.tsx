@@ -15,7 +15,6 @@ describe("Karte Bankgespräch in der Analyse", () => {
       monthlyOperatingCosts: 60,
       taxableIncomeCustomer: 80_000,
       area: 60,
-      equity: 20_000,
     };
     const analyse = render(
       <TooltipProvider>

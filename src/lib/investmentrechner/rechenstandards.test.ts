@@ -12,7 +12,6 @@ const BEISPIEL: InvestmentEingabe = {
   taxableIncomeCustomer: 48_000,
   constructionYear: 1990,
   area: 60,
-  equity: 20_000,
   forecastYears: 10,
 };
 

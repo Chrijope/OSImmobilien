@@ -63,7 +63,6 @@ function objekt(over: Partial<InvestmentEingabe> = {}): BerechnungPdfObjekt {
     purchasePrice: 300000,
     furniturePrice: 10000,
     rehabExpense: 20000,
-    equity: 30000,
     monthlyColdRent: 1000,
     monthlyOperatingCosts: 50,
     ...over,
@@ -77,7 +76,6 @@ const gross: Partial<InvestmentEingabe> = {
   purchasePrice: 98765432,
   monthlyColdRent: 412345,
   taxableIncomeCustomer: 12345678,
-  equity: 1234567,
   juniorLoanAmount: 5000000,
 };
 

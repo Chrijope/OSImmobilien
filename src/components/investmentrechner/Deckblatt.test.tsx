@@ -40,7 +40,6 @@ const ZAHLT_ZU: InvestmentEingabe = {
   monthlyOperatingCosts: 120,
   monthlyReserveContribution: 47,
   taxableIncomeCustomer: 67900,
-  equity: 18850,
   forecastYears: 10,
 };
 
@@ -57,7 +56,7 @@ function seiten(eingabe: InvestmentEingabe, deckblatt: DeckblattVariante, sprach
       result={berechneInvestment(eingabe)}
       photos={[]}
       documents={[]}
-      documentData={{ ...leereUnterlagenDaten, energyClass: "B" }}
+      documentData={leereUnterlagenDaten}
       sprache={sprache}
       deckblatt={deckblatt}
     />,

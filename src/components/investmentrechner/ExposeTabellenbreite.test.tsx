@@ -51,7 +51,6 @@ function exposeObjekt(): ExposeObjekt {
     purchasePrice: 1850000,
     monthlyColdRent: 6400,
     monthlyOperatingCosts: 780,
-    equity: 260000,
     furniturePrice: 45000,
     rehabExpense: 120000,
   };
