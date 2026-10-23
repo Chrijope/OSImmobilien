@@ -404,7 +404,7 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
         onChange={(an) => aendere({ allInclusive: an })}
         hint={
           input.allInclusive
-            ? "Kaufpreis um die Kaufnebenkosten erhöht, keine gesonderten Kaufnebenkosten"
+            ? "Kaufnebenkosten stecken im Kaufpreis"
             : "Kaufnebenkosten werden gesondert ausgewiesen"
         }
         tooltip="Beim All-inclusive-Modell wird der Kaufpreis um die Kaufnebenkosten erhöht, dafür fallen keine gesonderten Kaufnebenkosten an. Der Aufschlag wird aus den Sätzen unten auf dieselbe Basis gerechnet wie sonst die Kaufnebenkosten. Darlehen, Gesamtkosten und Steuer bleiben dadurch gleich; der Immobilienwert für die Wertentwicklung bleibt der Kaufpreis ohne Aufschlag. Im Exposé steht der Kaufpreis als „Kaufpreis all-inclusive“ und die Kaufnebenkosten als „im Kaufpreis enthalten“."

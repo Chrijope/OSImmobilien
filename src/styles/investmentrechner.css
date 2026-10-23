@@ -498,6 +498,13 @@
   gap: 15px;
   animation: 0.22s both enter;
   display: grid;
+  /*
+    Eine Spalte, die sich nie nach dem Inhalt richtet, seit dem 23.10.2026.
+    Vorher wuchs die automatische Spalte mit dem breitesten Kind: Beim
+    All-inclusive-Modell war das die längere Zeile „Kaufnebenkosten gesamt“,
+    und alle Felder des Bereichs wurden um rund 18 Pixel breiter.
+  */
+  grid-template-columns: minmax(0, 1fr);
 }
 @keyframes enter {
   0% {
@@ -720,7 +727,9 @@
   display: flex;
 }
 .investmentrechner .calculated-line strong {
-  white-space: nowrap;
+  /* Darf umbrechen: Eine lange Zeile („im Kaufpreis enthalten · … auf …“) machte sonst die Spalte breiter. */
+  white-space: normal;
+  text-align: right;
 }
 /*
  * Kaufnebenkosten: Umschaltung zwischen Bundesland und eigener Eingabe, dazu
