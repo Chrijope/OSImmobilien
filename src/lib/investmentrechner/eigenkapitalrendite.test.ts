@@ -147,4 +147,27 @@ describe("Gegenfall zu den Kaufnebenkosten, mit derselben Regel", () => {
     const eingabe = { ...A, transferTaxRate: 0, notaryRate: 0, landRegisterRate: 0 };
     expect(eigenkapitalrenditeNebenkosten(eingabe, berechneInvestment(eingabe))).toBeNull();
   });
+
+  it("rechnet bei Überfinanzierung mit selbst gezahlten Nebenkosten (Codex-Prüfung vom 23.10.2026)", () => {
+    // 100.000 € Kaufpreis, 10.000 € Nebenkosten, 120.000 € Bankdarlehen: Eigenkapital 0, 10.000 € zu viel.
+    const ueber: InvestmentEingabe = {
+      ...BEISPIEL,
+      purchasePrice: 100_000,
+      rehabExpense: 0,
+      furniturePrice: 0,
+      transferTaxRate: 10,
+      notaryRate: 0,
+      landRegisterRate: 0,
+      seniorLoanMode: "euro",
+      seniorLoanValue: 120_000,
+    };
+    const r = berechneInvestment(ueber);
+    expect(r.totalInvestment).toBeCloseTo(110_000, 6);
+    expect(r.eigenkapital).toBe(0);
+    const n = eigenkapitalrenditeNebenkosten(ueber, r)!;
+    expect(n.selbstGezahlt).toBe(false);
+    // Gegenfall: Das Eigenkapital trägt die 10.000 €, die Bank finanziert nur noch 100.000 €.
+    expect(n.vergleich.eigenkapital).toBeCloseTo(10_000, 6);
+    expect(berechneInvestment({ ...ueber, seniorLoanValue: 100_000 }).monthlyDebtService - r.monthlyDebtService).toBeCloseTo(n.rateDifferenzMonat, 6);
+  });
 });

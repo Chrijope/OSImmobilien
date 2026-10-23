@@ -499,7 +499,8 @@ export function InvestmentrechnerInhalt({
   const [automatischeAntwort, setAutomatischeAntwort] = useState<import("@/lib/investmentrechner/unterlagenKiFelder").KiAntwort | null>(null);
   const [quellenStatus, setQuellenStatus] = useState<{ laedt: boolean; hinweise: string[]; fertig: boolean }>({ laedt: false, hinweise: [], fertig: false });
   const [quellenVersuch, setQuellenVersuch] = useState(0);
-  const unterlagenManuell = useRef(false);
+  // Aus dem Entwurf: von Hand geänderte Unterlagenangaben bleiben nach dem Neuladen geschützt.
+  const unterlagenManuell = useRef(entwurf?.unterlagenManuell ?? false);
   const automatischeAnfrage = useRef<{ key: string; promise: ReturnType<typeof leseObjektUnterlagen> } | null>(null);
   useLiveVersion(["objekte", "wohnungen", "objekt_dokumente", "wohnungs_dokumente"]);
   const aktuelleVorbelegung = vorbelegung ?? vorbelegungAusInvestment(investmentId);
@@ -708,6 +709,7 @@ export function InvestmentrechnerInhalt({
         berechnungId,
         berechnungName,
         aktivIndex: sicherIndex,
+        unterlagenManuell: unterlagenManuell.current,
       },
       mitBildern,
     );

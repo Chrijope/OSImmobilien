@@ -2044,8 +2044,15 @@ export function eigenkapitalrenditeNebenkosten(
   const eigenkapital = Math.max(0, result.eigenkapital);
   // Ein halber Cent Spielraum: 13.250 € Eigenkapital gegen 13.249,999… € Nebenkosten aus der Prozentrechnung.
   const selbstGezahlt = eigenkapital >= kaufnebenkosten - 0.005;
-  // Mehr Bank um die Nebenkosten, oder weniger Bank, bis das Eigenkapital die Nebenkosten trägt. Euro für das ganze Objekt.
-  const bankNeu = result.seniorLoanAmount + (selbstGezahlt ? kaufnebenkosten : -(kaufnebenkosten - eigenkapital));
+  /*
+    Das Bankdarlehen des Gegenfalls aus dem Ziel-Eigenkapital: Gesamtkosten
+    minus Ziel-Eigenkapital minus übrige Darlehen. Nicht vom heutigen, auf 0
+    begrenzten Eigenkapital aus gerechnet, sonst bliebe es bei einer
+    Überfinanzierung auch im Gegenfall 0 (Codex-Prüfung vom 23.10.2026).
+  */
+  const zielEigenkapital = selbstGezahlt ? Math.max(0, eigenkapital - kaufnebenkosten) : kaufnebenkosten;
+  const uebrigeDarlehen = result.totalDebt - result.seniorLoanAmount;
+  const bankNeu = result.totalInvestment - zielEigenkapital - uebrigeDarlehen;
   const vergleichEingabe: InvestmentEingabe = {
     ...input,
     seniorLoanMode: "euro",

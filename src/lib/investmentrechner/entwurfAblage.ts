@@ -35,6 +35,12 @@ export interface Rechnerentwurf {
   berechnungId: string | null;
   berechnungName: string;
   aktivIndex: number;
+  /**
+   * Die Unterlagenangaben wurden von Hand geändert. Dann überschreiben
+   * Vorbelegung und automatische Auslesung sie nach dem Neuladen nicht
+   * (Codex-Prüfung vom 23.10.2026).
+   */
+  unterlagenManuell?: boolean;
 }
 
 /** Ein Schlüssel je Zusammenhang, damit die Wohnung A nicht den Entwurf von Wohnung B öffnet. */
@@ -78,6 +84,7 @@ export function entwurfLaden(kontext: string): Rechnerentwurf | null {
       berechnungId: text(daten.berechnungId),
       berechnungName: typeof daten.berechnungName === "string" ? daten.berechnungName : "",
       aktivIndex: Number.isInteger(aktiv) && aktiv >= 0 && aktiv < objekte.length ? aktiv : 0,
+      unterlagenManuell: daten.unterlagenManuell === true,
     };
   } catch {
     return null;

@@ -4,6 +4,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { setzeSpeicherAttrappe } from "@/test/speicherAttrappe";
 import { entwurfLaden } from "@/lib/investmentrechner/entwurfAblage";
 import { InvestmentrechnerInhalt } from "./InvestmentrechnerInhalt";
+import { standardEingabe } from "@/lib/investmentrechner/rechenkern";
+import { standardKaufnebenkostenauswahl } from "@/lib/investmentrechner/kaufnebenkostenAuswahl";
+import { leereUnterlagenDaten } from "@/lib/investmentrechner/unterlagenAuslesen";
 
 /*
  * Autospeichern, Zurücksetzen und die Rücklagenvorgabe im geöffneten Rechner,
@@ -72,5 +75,30 @@ describe("Kopfbereich", () => {
     expect(within(optionen).getByText("Deckblatt")).toBeInTheDocument();
     expect(within(optionen).getByText(/Sprache für Kunde und PDF/)).toBeInTheDocument();
     expect(within(optionen).getByRole("radio", { name: "DE" })).toHaveAttribute("aria-checked", "true");
+  });
+});
+
+describe("Von Hand geänderte Unterlagenangaben im Entwurf", () => {
+  beforeEach(() => {
+    setzeSpeicherAttrappe();
+  });
+
+  it("überschreibt die Vorbelegung nach dem Neuladen nicht (Codex-Prüfung vom 23.10.2026)", () => {
+    const vorbelegung = {
+      eingabe: { ...standardEingabe, purchasePrice: 200_000 },
+      knk: standardKaufnebenkostenauswahl,
+      unterlagen: { ...leereUnterlagenDaten, reserveAsOf: "31.12.2024" },
+    };
+    const mitVorbelegung = () =>
+      render(<TooltipProvider><InvestmentrechnerInhalt vorbelegung={vorbelegung} mitUeberschrift={false} /></TooltipProvider>);
+    const erste = mitVorbelegung();
+    fireEvent.click(screen.getByRole("button", { name: /Objektunterlagen/ }));
+    expect(feld(/^Stand der Rücklage/).value).toBe("31.12.2024");
+    fireEvent.change(feld(/^Stand der Rücklage/), { target: { value: "30.06.2026" } });
+    erste.unmount();
+
+    mitVorbelegung();
+    fireEvent.click(screen.getByRole("button", { name: /Objektunterlagen/ }));
+    expect(feld(/^Stand der Rücklage/).value).toBe("30.06.2026");
   });
 });
