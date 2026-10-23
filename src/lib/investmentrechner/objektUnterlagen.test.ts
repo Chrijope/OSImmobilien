@@ -85,15 +85,17 @@ describe("automatische Objektunterlagen", () => {
     expect(a.felder.rooms?.wert).toBe(3);
     expect(a.hinweise[0]).toContain("Widersprüchliche");
   });
-  it("übernimmt Energie- und Rücklagendaten auch aus der Scan-Auslesung, ohne gepflegte Daten zu überschreiben", () => {
-    const a = antwort({ energyClass: feld("B"), energyValue: feld(65), reserveUnitShare: feld(1200), renovations: feld("2024 · Dach\n2025 · Fenster") });
-    const { daten, hinweise } = automatischeUnterlagenwerte(a, { ...leereUnterlagenDaten, energyClass: "C" });
-    expect(daten.energyClass).toBe("C"); expect(daten.energyValue).toBe(65);
+  it("übernimmt Rücklagendaten auch aus der Scan-Auslesung, ohne gepflegte Daten zu überschreiben, und lässt Energiefelder still weg", () => {
+    const a = antwort({ energyClass: feld("B"), energyValue: feld(65), reserveUnitShare: feld(1200), reserveAsOf: feld("31.12.2025"), renovations: feld("2024 · Dach\n2025 · Fenster") });
+    const { daten, hinweise } = automatischeUnterlagenwerte(a, { ...leereUnterlagenDaten, reserveAsOf: "30.06.2025" });
+    expect(daten).not.toHaveProperty("energyClass");
+    expect(daten).not.toHaveProperty("energyValue");
+    expect(daten.reserveAsOf).toBe("30.06.2025");
     expect(daten.reserveUnitShare).toBe(1200); expect(daten.renovations).toHaveLength(2);
     expect(hinweise).toHaveLength(1);
   });
-  it("löscht beim Hinzufügen oder Entfernen einer Datei keine bestehenden Energieangaben", () => {
-    expect(ergaenzeUnterlagen({ ...leereUnterlagenDaten, energyClass: "A+" }, leereUnterlagenDaten).energyClass).toBe("A+");
+  it("löscht beim Hinzufügen oder Entfernen einer Datei keine bestehenden Angaben", () => {
+    expect(ergaenzeUnterlagen({ ...leereUnterlagenDaten, reserveAsOf: "31.12.2025" }, leereUnterlagenDaten).reserveAsOf).toBe("31.12.2025");
   });
   it("meldet nicht erreichbare Dateien, statt einen leeren Erfolg vorzutäuschen", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 403 }));

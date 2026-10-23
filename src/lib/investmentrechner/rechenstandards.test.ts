@@ -80,14 +80,16 @@ describe("stresstest", () => {
     expect(BEISPIEL).toEqual(kopie);
   });
 
-  it("ohne Anschlusszins zählt der Zins von heute plus ein Punkt", () => {
+  it("rechnet einen Punkt mehr Zins auf die Restschuld zu Beginn von Jahr 11 (seit dem 23.10.2026 ohne Anschlusszins)", () => {
     const eingabe = { ...BEISPIEL, seniorInterestRate: 4, seniorFixedRateYears: 10 };
-    const mitAnschluss = { ...eingabe, seniorFollowUpRate: 5 };
     const a = stresstest(eingabe, berechneInvestment(eingabe))[1];
-    const b = berechneInvestment({ ...mitAnschluss, forecastYears: 11 }).years[10];
-    const basis = berechneInvestment({ ...eingabe, seniorFollowUpRate: 4, forecastYears: 11 }).years[10];
-    expect(a.stress.vorSteuer).toBeCloseTo(-b.cashflowBeforeTax / 12, 6);
-    expect(a.basis.vorSteuer).toBeCloseTo(-basis.cashflowBeforeTax / 12, 6);
+    const lang = berechneInvestment({ ...eingabe, forecastYears: 11 });
+    const mehrzins = lang.years[9].remainingDebt * 0.01;
+    expect(a.basis.vorSteuer).toBeCloseTo(-lang.years[10].cashflowBeforeTax / 12, 6);
+    expect(a.stress.vorSteuer - a.basis.vorSteuer).toBeCloseTo(mehrzins / 12, 6);
+    // Die Steuer gibt einen Teil zurück: Nach Steuer steigt die Belastung weniger.
+    expect(a.stress.nachSteuer - a.basis.nachSteuer).toBeLessThan(mehrzins / 12);
+    expect(a.stress.nachSteuer - a.basis.nachSteuer).toBeGreaterThan(0);
   });
 });
 

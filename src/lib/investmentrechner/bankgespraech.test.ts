@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { berechneInvestment, eigenkapitalrendite, standardEingabe, type InvestmentEingabe } from "./rechenkern";
+import { berechneInvestment, eigenkapitalrendite, mitEigenkapital, standardEingabe, type InvestmentEingabe } from "./rechenkern";
 import {
   bankuebersicht,
   cashflowNachSteuerBeiZins,
@@ -10,7 +10,7 @@ import {
 } from "./bankgespraech";
 
 // Christians Standardbeispiel aus eigenkapitalrendite.test.ts.
-const BEISPIEL: InvestmentEingabe = {
+const BEISPIEL: InvestmentEingabe = mitEigenkapital({
   ...standardEingabe,
   purchasePrice: 300_000,
   rehabExpense: 20_000,
@@ -20,9 +20,9 @@ const BEISPIEL: InvestmentEingabe = {
   monthlyReserveContribution: 40,
   taxableIncomeCustomer: 80_000,
   area: 60,
-  equity: 20_000,
+  // Eigenkapital 20.000 €, das Bankdarlehen trägt den Rest.
   forecastYears: 10,
-};
+}, 20_000);
 
 describe("cashflowNachSteuerBeiZins", () => {
   it("trifft bei den gerechneten Zinsen genau den Cashflow nach Steuer", () => {
@@ -72,7 +72,7 @@ describe("zinsrisiko", () => {
   });
 
   it("ist null ohne Darlehen", () => {
-    const bar = { ...BEISPIEL, equity: 400_000 };
+    const bar = mitEigenkapital(BEISPIEL, 400_000);
     expect(zinsrisiko(bar, berechneInvestment(bar), 0)).toBeNull();
   });
 });
@@ -80,8 +80,8 @@ describe("zinsrisiko", () => {
 describe("eigenkapitalrenditeOhneWertsteigerung", () => {
   it("ist die Formel mit Vermögensaufbau ohne Wertzuwachs", () => {
     const ergebnis = berechneInvestment(BEISPIEL);
-    const mit = eigenkapitalrendite(BEISPIEL, ergebnis);
-    const ohne = eigenkapitalrenditeOhneWertsteigerung(BEISPIEL, ergebnis);
+    const mit = eigenkapitalrendite(ergebnis);
+    const ohne = eigenkapitalrenditeOhneWertsteigerung(ergebnis);
     const zuwachs = ergebnis.years[9].wertzuwachs;
     expect(zuwachs).toBeGreaterThan(0);
     expect(ohne.vermoegensaufbau).toBeCloseTo(mit.vermoegensaufbau - zuwachs, 6);
@@ -92,7 +92,7 @@ describe("eigenkapitalrenditeOhneWertsteigerung", () => {
   it("ist gleich, ohne Wertsteigerung in der Eingabe", () => {
     const eingabe = { ...BEISPIEL, annualValueGrowth: 0 };
     const ergebnis = berechneInvestment(eingabe);
-    expect(eigenkapitalrenditeOhneWertsteigerung(eingabe, ergebnis).rendite).toBeCloseTo(eigenkapitalrendite(eingabe, ergebnis).rendite!, 12);
+    expect(eigenkapitalrenditeOhneWertsteigerung(ergebnis).rendite).toBeCloseTo(eigenkapitalrendite(ergebnis).rendite!, 12);
   });
 });
 

@@ -151,15 +151,13 @@ describe("Bankgespräch-PDF (11.10.2026)", () => {
   it("enthält Investitionsübersicht, Darlehensverlauf, Haushaltsrechnung und Vermögensaufstellung, nichts über dem Rand", async () => {
     const { input, result } = objekt({
       seniorFixedRateYears: 5,
-      seniorFollowUpRate: 5.5,
-      specialRepayments: [{ jahr: 2028, betrag: 5000 }],
       secondLoanAmount: 30000,
       haushalt: { einkuenfte: [{ bezeichnung: "Nettoeinkommen Person 1", betrag: 4000 }], ausgaben: [{ bezeichnung: "Lebenshaltung", betrag: 1500 }] },
       vermoegen: { werte: [{ bezeichnung: "Depot", betrag: 20000, verpfaendet: true }], verbindlichkeiten: [] },
     });
     const doc = await erzeugeBankgespraechPdf(input, result);
     const texte = mitschnitt.texte.map((t) => t.text);
-    for (const titel of ["Investitionsübersicht", "Darlehensverlauf", "Haushaltsrechnung", "Vermögensaufstellung", "Zweites Bankdarlehen", "davon Sondertilgung"]) {
+    for (const titel of ["Investitionsübersicht", "Darlehensverlauf", "Haushaltsrechnung", "Vermögensaufstellung", "Zweites Bankdarlehen", "(Zinsbindung endet)", "derselbe Zins, dieselbe Rate"]) {
       expect(texte.some((t) => t.includes(titel)), titel).toBe(true);
     }
     expect(mitschnitt.texte.filter((t) => t.seite > 1 && (t.links < BERECHNUNG_PDF_RAND - TOLERANZ || t.rechts > SEITE_B - BERECHNUNG_PDF_RAND + TOLERANZ))).toEqual([]);

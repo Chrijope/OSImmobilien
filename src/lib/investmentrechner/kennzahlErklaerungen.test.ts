@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import golden from "./rechenkern.golden.json";
-import { berechneInvestment, type InvestmentEingabe } from "./rechenkern";
+import { berechneInvestment, mitEigenkapital, type InvestmentEingabe } from "./rechenkern";
 import { rechenweg, rechenwege, werteAus, type Rechenweg, type RechenwegSchluessel } from "./kennzahlErklaerungen";
 import { KENNZAHL_TEXTE } from "./kennzahlTexte";
 
@@ -47,15 +47,16 @@ const referenz: InvestmentEingabe = {
   monthlyColdRent: 900,
   monthlyOperatingCosts: 50,
   vacancyRate: 0,
-  // In Höhe der Kaufnebenkosten (seit dem 30.09.2026 5 % auf 242.000 ohne Möbel), das Darlehen bleibt 250.000.
-  equity: 12100,
+  // Bank 100 % des Kaufpreises, das Eigenkapital trägt die Kaufnebenkosten (5 % auf 242.000 ohne Möbel).
+  seniorLoanMode: "percent",
+  seniorLoanValue: 100,
 };
 
 /** Varianten, die jeden Zweig der Rechenwege einmal durchlaufen. */
 const varianten: [string, InvestmentEingabe][] = [
   ["Referenzbeispiel", referenz],
   ["positiver Cashflow", { ...referenz, monthlyColdRent: 1400 }],
-  ["Nachrang, Leerstand, Rücklage", { ...referenz, juniorLoanAmount: 20000, vacancyRate: 2, maintenanceReserve: 3000 }],
+  ["Nachrang, Leerstand, Rücklage", { ...referenz, juniorLoanMode: "euro", juniorLoanValue: 20000, vacancyRate: 2, maintenanceReserve: 3000 }],
   ["Anteil 50 Prozent", { ...referenz, investmentShare: 50 }],
   // Seit dem Investagon-Abgleich vom 25.09.2026: Die Zuführung zur Rücklage zählt im Cashflow und in der Nettorendite.
   ["Zuführung Rücklage", { ...referenz, monthlyReserveContribution: 90 }],
@@ -63,7 +64,7 @@ const varianten: [string, InvestmentEingabe][] = [
   ["Erhaltungsaufwand abziehen", { ...referenz, rehabExpense: 20000, rehabMode: "expense", rehabDistributionYears: 2 }],
   ["Erhaltungsaufwand aktivieren", { ...referenz, rehabExpense: 20000, rehabMode: "capitalize" }],
   ["Wertverlust", { ...referenz, annualValueGrowth: -1 }],
-  ["Vollfinanzierung", { ...referenz, equity: 0 }],
+  ["Vollfinanzierung", mitEigenkapital(referenz, 0)],
   ["Zeitraum 20 Jahre", { ...referenz, forecastYears: 20 }],
   ["ein Jahr", { ...referenz, forecastYears: 1 }],
   ["Standardfall der Golden-Datei", basis],
@@ -144,8 +145,8 @@ describe("Die Zeilen am Referenzbeispiel", () => {
 
   it("Nettorendite: Klammer um die Differenz, geteilt durch die Gesamtkosten", () => {
     expect(text("nettorendite")).toBe(
-      // Gesamtkosten 262.600 €: 262.100 € plus 0,2 % Finanzierungsnebenkosten auf 250.000 € Darlehen.
-      "(Jahresmiete 10.800 € − nicht umlagefähige Kosten 600 €) ÷ Gesamtkosten 262.600 € = 3,88 %",
+      // Gesamtkosten 262.100 €, seit dem 23.10.2026 ohne Finanzierungsnebenkosten.
+      "(Jahresmiete 10.800 € − nicht umlagefähige Kosten 600 €) ÷ Gesamtkosten 262.100 € = 3,89 %",
     );
   });
 
@@ -169,7 +170,7 @@ describe("Die Zeilen am Referenzbeispiel", () => {
     // Stand zu Beginn seit dem 30.09.2026 genau 0 (Möbel ohne Nebenkosten), das Glied entfällt dann.
     expect(text("vermoegensaufbau")).toMatch(/^Immobilie minus Restschuld 2035 [\d.]+ € ÷ 120 Monate [=≈] [\d.,]+ €$/);
     // Mit 400 € mehr Eigenkapital steht der Anfangsstand wieder als Glied da.
-    const mehr = { ...referenz, equity: 12500 };
+    const mehr = mitEigenkapital(referenz, 12500);
     expect(glatt(rechenwege(mehr, berechneInvestment(mehr)).vermoegensaufbau?.text ?? "")).toMatch(
       /^\(Immobilie minus Restschuld 2035 [\d.]+ € − Stand zu Beginn 400 €\) ÷ 120 Monate [=≈] [\d.,]+ €$/,
     );

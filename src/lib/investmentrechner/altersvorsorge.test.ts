@@ -1,13 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { altersvorsorge, type Altersvorsorge } from "./altersvorsorge";
-import { berechneInvestment, standardEingabe, type InvestmentEingabe } from "./rechenkern";
+import { berechneInvestment, mitEigenkapital, standardEingabe, type InvestmentEingabe } from "./rechenkern";
 
 // Christians Beispiel: 35 Jahre, Rente mit 67, Kaufpreis 250.000 €.
-const beispiel: InvestmentEingabe = {
+const beispiel: InvestmentEingabe = mitEigenkapital({
   ...standardEingabe,
   clientName: "Beispiel",
   purchasePrice: 250_000,
-  equity: 15_000,
   monthlyColdRent: 850,
   monthlyOperatingCosts: 60,
   monthlyReserveContribution: 25,
@@ -20,7 +19,7 @@ const beispiel: InvestmentEingabe = {
   clientAge: 35,
   retirementAge: 67,
   inflationRate: 2,
-};
+}, 15_000);
 
 function ok(eingabe: InvestmentEingabe): Altersvorsorge {
   const ergebnis = altersvorsorge(eingabe);
@@ -100,7 +99,7 @@ describe("Altersvorsorge", () => {
   });
 
   it("ohne Darlehen ist die Wohnung von Anfang an schuldenfrei", () => {
-    const a = ok({ ...beispiel, equity: 300_000 });
+    const a = ok(mitEigenkapital(beispiel, 300_000));
     expect(a.darlehenStart).toBe(0);
     expect(a.schuldenfrei).toEqual({ jahr: 2026, alter: 35 });
   });

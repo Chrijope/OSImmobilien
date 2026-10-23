@@ -33,6 +33,11 @@ import { berechneInvestment, standardEingabe, type InvestmentEingabe } from "./r
  *    RUECKLAGENZUFUEHRUNG_ABZIEHBAR). Unser steuerliches Ergebnis liegt
  *    dadurch je Jahr um 1.080 Euro höher, die Ersparnis um 453,60 Euro
  *    niedriger.
+ *
+ * 3. Keine Finanzierungsnebenkosten, seit dem 23.10.2026 (Christian).
+ *    Investagon setzt 0,2 Prozent der Darlehen an (646,02 Euro) und zieht sie
+ *    im ersten Jahr ab; der Rechner kennt sie nicht mehr. Darlehen, Rate und
+ *    Cashflow vor Steuern bleiben gleich.
  */
 
 /** Die Investagon-Eingaben für Einheit 6b. */
@@ -52,9 +57,10 @@ const SIGMUNDSTRASSE_6B: InvestmentEingabe = {
   landRegisterRate: 0.5,
   brokerRate: 0,
   otherPurchaseCostRate: 0,
-  // Kaufpreis plus 5 % Nebenkosten auf 323.900 ist 375.095; mit diesem
-  // Eigenkapital bleibt genau das Darlehen von Investagon, 90 % des Kaufpreises.
-  equity: 375095 - 323010,
+  // Das Darlehen von Investagon: 90 % des Kaufpreises. Das Eigenkapital ist der
+  // Rest von Kaufpreis plus 5 % Nebenkosten auf 323.900, also 375.095 − 323.010.
+  seniorLoanMode: "percent",
+  seniorLoanValue: 90,
   seniorInterestRate: 4,
   seniorRepaymentRate: 2,
   monthlyColdRent: 1650,
@@ -65,7 +71,6 @@ const SIGMUNDSTRASSE_6B: InvestmentEingabe = {
   annualValueGrowth: 1.5,
   startYear: 2026,
   forecastYears: 15,
-  financingCostRate: 0.2,
   taxCalculationMode: "manual",
   marginalTaxRate: 42,
   // Seit dem 22.10.2026 mit Einkommen: Ohne Steuerlast erstattet der feste Satz nichts mehr. Investagon setzt die Steuerlast voraus.
@@ -86,9 +91,9 @@ describe("Abgleich mit Investagon: Sigmundstraße 2, Einheit 6b", () => {
     expect(Math.round(r.monthlyDebtService * 12)).toBe(19381);
   });
 
-  it("hat dieselben Finanzierungsnebenkosten", () => {
-    expect(r.finanzierungsnebenkosten).toBeCloseTo(646.02, 6);
-    expect(r.years[0].financingCostDeduction).toBeCloseTo(646.02, 6);
+  it("rechnet ohne Finanzierungsnebenkosten, das Eigenkapital ist der Rest (Abweichung 3)", () => {
+    expect(r.totalInvestment).toBeCloseTo(375095, 6);
+    expect(r.eigenkapital).toBeCloseTo(375095 - 323010, 6);
   });
 
   it("teilt den Kaufpreis wie Investagon in Grund und Gebäude", () => {
@@ -119,7 +124,7 @@ describe("Abgleich mit Investagon: Sigmundstraße 2, Einheit 6b", () => {
     for (const j of r.years) {
       expect(j.taxEffect, `Jahr ${j.year}`).toBeCloseTo(-j.taxableResult * 0.42, 6);
     }
-    // Im ersten Jahr ein Verlust durch Erhaltungsaufwand und Finanzierungsnebenkosten, also eine Ersparnis.
+    // Im ersten Jahr ein Verlust durch den Erhaltungsaufwand, also eine Ersparnis.
     expect(r.years[0].taxableResult).toBeLessThan(0);
     expect(r.years[0].taxEffect).toBeGreaterThan(0);
   });

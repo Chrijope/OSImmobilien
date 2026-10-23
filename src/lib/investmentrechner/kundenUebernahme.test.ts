@@ -87,7 +87,7 @@ describe("Übernahme mit Selbstauskunft", () => {
       "Jahresbrutto Kunde",
       "Steuerklasse",
       "Veranlagung / Einkommensteuertarif",
-      "zvE Kunde",
+      "Zu versteuerndes Einkommen",
     ]);
     expect(u.posten[0].wert).toContain("90.000");
     expect(u.posten[2].wert).toContain("Grundtabelle");
@@ -238,7 +238,7 @@ describe("zvE aus der Selbstauskunft", () => {
     const u = kundenUebernahmeAus(mitZvE(false), undefined);
     expect(u.aenderung.taxableIncomeCustomer).toBe(71_500);
     expect(u.felder).toContain("taxableIncomeCustomer");
-    expect(u.posten.find((p) => p.feld === "zvE Kunde")?.hinweis).toBe("Laut Selbstauskunft");
+    expect(u.posten.find((p) => p.feld === "Zu versteuerndes Einkommen")?.hinweis).toBe("Laut Selbstauskunft");
     expect(u.hinweis.text).toMatch(/^Aus der Selbstauskunft/);
     expect(u.aenderung.taxableIncomeSpouse).toBeUndefined();
   });
@@ -250,12 +250,12 @@ describe("zvE aus der Selbstauskunft", () => {
     // Sonst addierte der Rechner einen alten Partnerwert zum gemeinsamen zvE.
     expect(u.aenderung.taxableIncomeSpouse).toBe(0);
     expect(u.felder).toContain("taxableIncomeSpouse");
-    expect(u.posten.find((p) => p.feld === "zvE Kunde")?.hinweis).toMatch(/Gemeinsames zvE.*Splitting/);
+    expect(u.posten.find((p) => p.feld === "Zu versteuerndes Einkommen")?.hinweis).toMatch(/Gemeinsames zu versteuerndes Einkommen.*Splitting/);
   });
 
   it("kennzeichnet die Schätzung, solange die Selbstauskunft kein zvE nennt", () => {
     const u = kundenUebernahmeAus(kontext(), undefined);
-    expect(u.posten.find((p) => p.feld === "zvE Kunde")?.hinweis).toMatch(/Geschätzt aus dem Jahresbrutto/);
+    expect(u.posten.find((p) => p.feld === "Zu versteuerndes Einkommen")?.hinweis).toMatch(/Geschätzt aus dem Jahresbrutto/);
   });
 });
 

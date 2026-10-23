@@ -14,7 +14,7 @@ describe("Unterlagen-Auslesung des Investmentrechners", () => {
     expect(parseDeutscheZahl("abc")).toBe(0);
   });
 
-  it("erkennt Energieausweis, Rücklage und Sanierungen aus einem Beispieltext", () => {
+  it("erkennt Rücklage und Sanierungen aus einem Beispieltext, den Energieausweis seit dem 23.10.2026 nicht mehr", () => {
     const text = [
       "Energieausweis für Wohngebäude. Energieeffizienzklasse: C.",
       "Endenergiebedarf: 92,5 kWh/(m²·a). Verbrauchsausweis. Wesentlicher Energieträger: Erdgas.",
@@ -24,11 +24,8 @@ describe("Unterlagen-Auslesung des Investmentrechners", () => {
       "2021 wurde die Heizung erneuert. 2019 Dach und Fassade saniert.",
     ].join(" ");
     const ergebnis = unterlagenAuslesen(text);
-    expect(ergebnis.energyClass).toBe("C");
-    expect(ergebnis.energyValue).toBe(92.5);
-    expect(ergebnis.certificateType).toBe("Verbrauchsausweis");
-    expect(ergebnis.energyCarrier).toBe("Erdgas");
-    expect(ergebnis.certificateValidUntil).toBe("31.12.2030");
+    expect(ergebnis).not.toHaveProperty("energyClass");
+    expect(ergebnis).not.toHaveProperty("energyValue");
     expect(ergebnis.reserveAmount).toBe(48500);
     expect(ergebnis.reserveUnitShare).toBe(1940);
     expect(ergebnis.reserveAsOf).toBe("31.12.2025");
@@ -46,7 +43,8 @@ describe("Unterlagen-Auslesung des Investmentrechners", () => {
     ).toBe(true);
     const jahre = ergebnis.renovations.map((eintrag) => Number(eintrag.slice(0, 4)));
     expect([...jahre].sort((a, b) => b - a)).toEqual(jahre);
-    expect(ergebnis.matchedFields).toBe(9);
+    // Rücklage, Anteil, Stichtag und Sanierungen; die fünf Energiefelder zählen nicht mehr.
+    expect(ergebnis.matchedFields).toBe(4);
   });
 
   it("ignoriert Jahreszahlen ohne Sanierungsbegriff im Umfeld", () => {

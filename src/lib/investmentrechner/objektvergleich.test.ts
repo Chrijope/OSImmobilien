@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { berechneInvestment, standardEingabe, type InvestmentEingabe } from "./rechenkern";
+import { berechneInvestment, mitEigenkapital, standardEingabe, type InvestmentEingabe } from "./rechenkern";
 import {
   GEMEINSAME_FELDER,
   einordnung,
@@ -16,8 +16,10 @@ import {
  * jeweilige Fall es braucht.
  */
 
-function objekt(aenderung: Partial<InvestmentEingabe>): Vergleichsobjekt {
-  const eingabe: InvestmentEingabe = { ...standardEingabe, ...aenderung };
+/** `equity`: seit dem 23.10.2026 kein Eingabefeld mehr; das Bankdarlehen wird so gesetzt, dass es übrig bleibt. */
+function objekt({ equity, ...aenderung }: Partial<InvestmentEingabe> & { equity?: number }): Vergleichsobjekt {
+  const roh: InvestmentEingabe = { ...standardEingabe, ...aenderung };
+  const eingabe = equity === undefined ? roh : mitEigenkapital(roh, equity);
   return { eingabe, ergebnis: berechneInvestment(eingabe) };
 }
 

@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import type { ObjektData, ObjektWohnung } from "@/lib/objekteStore";
 import { berechneInvestment, standardEingabe } from "@/lib/investmentrechner/rechenkern";
 import { stellplatzmieteTrennen, vorbelegungAusEinheit } from "@/lib/investmentrechner/objektVorbelegung";
-import { eigenkapitalNachRegel } from "@/lib/investmentrechner/herkunft";
 
 /**
  * Die Feldzuordnung des Reiters „Investmentrechner" auf der Einheitenseite.
@@ -143,45 +142,43 @@ describe("Vorbelegung aus Objekt und Einheit", () => {
   });
 
   it("meldet nur die Felder des Kunden als offen", () => {
-    expect(feldnamen(v.luecken)).toEqual(["Kundenname", "zvE Kunde"]);
+    expect(feldnamen(v.luecken)).toEqual(["Kundenname", "Zu versteuerndes Einkommen"]);
     expect(v.luecken.every((l) => l.quelle === "kunde")).toBe(true);
     // Kundenzahlen bleiben leer, sie stehen nicht am Objekt.
     expect(v.eingabe.clientName).toBe("");
     expect(v.eingabe.taxableIncomeCustomer).toBe(0);
   });
 
-  it("belegt das Eigenkapital in Höhe der Kaufnebenkosten vor (Christian, 23.09.2026)", () => {
+  it("finanziert den Kaufpreis über die Bank, das Eigenkapital trägt die Kaufnebenkosten (seit dem 23.10.2026 als Rest)", () => {
     const satz = v.eingabe.transferTaxRate + v.eingabe.notaryRate + v.eingabe.landRegisterRate
       + v.eingabe.brokerRate + v.eingabe.otherPurchaseCostRate;
     expect(satz).toBeGreaterThan(0);
-    // Seit dem 30.09.2026 auf den Kaufpreis ohne Erhaltungsaufwand, genau wie im Rechenkern.
+    expect(v.eingabe.seniorLoanMode).toBe("percent");
+    expect(v.eingabe.seniorLoanValue).toBe(100);
+    // Die Kaufnebenkosten laufen ohne Erhaltungsaufwand, genau wie im Rechenkern.
     expect(v.eingabe.rehabExpense).toBeGreaterThan(0);
-    const basis = v.eingabe.purchasePrice - v.eingabe.rehabExpense;
-    expect(v.eingabe.equity).toBe(Math.round((basis * satz) / 100));
-    expect(v.eingabe.equity).toBe(Math.round(berechneInvestment(v.eingabe).purchaseCosts));
-    expect(v.uebernommen.find((u) => u.feld === "Eigenkapital")?.woher).toMatch(/Kaufnebenkosten.*ohne Erhaltungsaufwand/);
+    const r = berechneInvestment(v.eingabe);
+    expect(r.eigenkapital).toBeCloseTo(((v.eingabe.purchasePrice - v.eingabe.rehabExpense) * satz) / 100, 6);
+    expect(r.eigenkapital).toBeCloseTo(r.purchaseCosts, 6);
+    expect(v.annahmen.find((a) => a.feld === "Bankdarlehen")?.wert).toMatch(/100 %.*Eigenkapital in Höhe der Kaufnebenkosten/);
   });
 
   it("zählt auf, was übernommen wurde", () => {
     expect(feldnamen(v.uebernommen)).toEqual([
       "Objektbezeichnung", "Adresse", "Objekttyp", "Kaufpreis", "davon Stellplatz/Garage", "Wohnfläche", "Zimmer",
-      "Baujahr", "Kaufnebenkosten", "Eigenkapital", "Stellplatz-/Garagenmiete p. M.", "Kaltmiete p. M.", "Hausgeld gesamt p. M.", "Nicht umlagefähige Kosten p. M.",
+      "Baujahr", "Kaufnebenkosten", "Stellplatz-/Garagenmiete p. M.", "Kaltmiete p. M.", "Hausgeld gesamt p. M.", "Nicht umlagefähige Kosten p. M.",
       "Gebäudeanteil", "Lineare AfA p. a.", "davon Erhaltungsaufwand",
-      "Verteilung des Aufwands", "Energieausweis", "Anteil der Einheit an der Rücklage",
+      "Verteilung des Aufwands", "Anteil der Einheit an der Rücklage",
       "Letzte Sanierungen",
     ]);
   });
 
-  it("übernimmt die Objektunterlagen, ohne sie in die Rechnung einzubauen", () => {
+  it("übernimmt die Objektunterlagen ohne Energieausweis, ohne sie in die Rechnung einzubauen", () => {
     expect(v.unterlagen).toMatchObject({
-      energyClass: "D",
-      energyValue: 121,
-      certificateType: "Verbrauchsausweis",
-      energyCarrier: "Gas",
-      certificateValidUntil: "31.12.2030",
       reserveUnitShare: 3200,
       renovations: ["2024 · Heizung"],
     });
+    expect(v.unterlagen).not.toHaveProperty("energyClass");
   });
 
   it("nennt die Vorgaben, die nicht am Objekt hängen", () => {
@@ -201,7 +198,7 @@ describe("Vorbelegung ohne gepflegte Daten", () => {
     expect(feldnamen(v.luecken)).toEqual([
       "Kaufpreis", "Wohnfläche", "Zimmer", "Baujahr", "Bundesland des Objekts",
       "Kaltmiete p. M.", "Nicht umlagefähige Kosten p. M.", "Gebäudeanteil", "Lineare AfA p. a.",
-      "Energieeffizienzklasse", "Kundenname", "zvE Kunde", "Eigenkapital",
+      "Kundenname", "Zu versteuerndes Einkommen",
     ]);
   });
 
@@ -323,23 +320,15 @@ describe("Rückfall auf die Investagon-Rohdaten", () => {
     expect(vorbelegungAusEinheit(beides, w, heute).eingabe.constructionYear).toBe(1962);
   });
 
-  it("nimmt die Energieeffizienzklasse aus den Merkmalen der Einheit, wenn das Objekt keine nennt", () => {
+  it("übernimmt den Energieausweis seit dem 23.10.2026 nicht mehr und meldet ihn nicht als Lücke", () => {
     const einheit = {
       ...leer.wohnungen[0],
       investagonRaw: { tags: ["5. Energieeffizienzklasse: c"], energy_certificate_type: "demand_certificate" },
     } as ObjektWohnung;
     const v = vorbelegungAusEinheit(leer, einheit, heute);
-    expect(v.unterlagen.energyClass).toBe("C");
-    expect(v.unterlagen.certificateType).toBe("Bedarfsausweis");
-    expect(v.uebernommen.find((u) => u.feld === "Energieausweis")).toMatchObject({ wert: "C", woher: "Investagon-Daten der Einheit" });
+    expect(v.unterlagen).not.toHaveProperty("energyClass");
+    expect(feldnamen(v.uebernommen)).not.toContain("Energieausweis");
     expect(feldnamen(v.luecken)).not.toContain("Energieeffizienzklasse");
-  });
-
-  it("übernimmt aus den Rohdaten nichts, was keine Effizienzklasse ist", () => {
-    const einheit = { ...leer.wohnungen[0], investagonRaw: { tags: ["Energieeffizienzklasse: wird ermittelt"] } } as ObjektWohnung;
-    const v = vorbelegungAusEinheit(leer, einheit, heute);
-    expect(v.unterlagen.energyClass).toBe("");
-    expect(feldnamen(v.luecken)).toContain("Energieeffizienzklasse");
   });
 });
 
@@ -453,27 +442,22 @@ describe("Rechenwerte aus Investagon: Sigmundstraße 2, Einheit 6b", () => {
     expect(v.eingabe.furnitureDepreciationYears).toBe(10);
     expect(v.herkunft.monthlyReserveContribution?.quelle).toBe("objekt");
     expect(feldnamen(v.uebernommen)).toEqual(
-      expect.arrayContaining(["Zuführung Instandhaltungsrücklage p. M.", "Nutzungsdauer Möbel"]),
+      expect.arrayContaining(["davon Instandhaltungsrücklage p. M.", "Nutzungsdauer Möbel"]),
     );
   });
 
-  it("nimmt den Finanzierungssatz der Einheit, sonst den Standard als benannte Annahme", () => {
-    const ohne = vorbelegungAusEinheit(nachher, einheitNachher, heute);
-    expect(ohne.eingabe.financingCostRate).toBe(0.2);
-    expect(feldnamen(ohne.annahmen)).toContain("Finanzierungsnebenkosten");
-
+  it("übernimmt seit dem 23.10.2026 keinen Finanzierungsnebenkostensatz mehr", () => {
     const mitSatz = { ...einheitNachher, finanzierungsnebenkostenSatz: 0.3 } as ObjektWohnung;
     const mit = vorbelegungAusEinheit(nachher, mitSatz, heute);
-    expect(mit.eingabe.financingCostRate).toBe(0.3);
+    expect(mit.eingabe).not.toHaveProperty("financingCostRate");
     expect(feldnamen(mit.annahmen)).not.toContain("Finanzierungsnebenkosten");
-    expect(feldnamen(mit.uebernommen)).toContain("Finanzierungsnebenkosten");
+    expect(feldnamen(mit.uebernommen)).not.toContain("Finanzierungsnebenkosten");
   });
 
   it("lässt ohne Investagon-Werte die bisherigen Rückfälle stehen", () => {
     const v = vorbelegungAusEinheit(objekt, w, heute);
     expect(v.eingabe.monthlyReserveContribution).toBe(0);
     expect(v.eingabe.furnitureDepreciationYears).toBe(standardEingabe.furnitureDepreciationYears);
-    expect(v.eingabe.financingCostRate).toBe(standardEingabe.financingCostRate);
   });
 });
 
@@ -498,12 +482,10 @@ describe("KfW-Programm aus Investagon, seit dem 07.10.2026", () => {
 describe("Vorbelegung im All-inclusive-Modell (09.10.2026)", () => {
   const v = vorbelegungAusEinheit(objekt, w, heute, { allInclusive: true });
 
-  it("schlägt 0 Eigenkapital vor, weil die Kaufnebenkosten im Kaufpreis stecken", () => {
+  it("rechnet mit 0 Eigenkapital, weil die Bank den Kaufpreis samt Kaufnebenkosten finanziert", () => {
     expect(v.eingabe.allInclusive).toBe(true);
-    expect(v.eingabe.equity).toBe(0);
-    const eintrag = v.uebernommen.find((u) => u.feld === "Eigenkapital");
-    expect(eintrag?.wert).toMatch(/^0\s€$/);
-    expect(eintrag?.woher).toMatch(/All-inclusive.*im Kaufpreis enthalten/);
+    expect(berechneInvestment(v.eingabe).eigenkapital).toBeCloseTo(0, 6);
+    expect(v.annahmen.find((a) => a.feld === "Bankdarlehen")?.wert).toMatch(/All-inclusive/);
   });
 
   it("meldet kein fehlendes Eigenkapital", () => {
@@ -516,17 +498,6 @@ describe("Vorbelegung im All-inclusive-Modell (09.10.2026)", () => {
   it("bleibt ohne die Option beim normalen Modell", () => {
     const normal = vorbelegungAusEinheit(objekt, w, heute);
     expect(normal.eingabe.allInclusive).toBe(false);
-    expect(normal.eingabe.equity).toBeGreaterThan(0);
-  });
-
-  it("kennzeichnet das Eigenkapital nach der Regel, damit der Schalter es erkennt", () => {
-    // Mit Erhaltungsaufwand (ausführlicher Satz) und ohne (kurzer Satz).
-    expect(eigenkapitalNachRegel(vorbelegungAusEinheit(objekt, w, heute).herkunft)).toBe(true);
-    const ohneAufwand = { ...objekt, sanierungskosten: 0 } as ObjektData;
-    const kurz = vorbelegungAusEinheit(ohneAufwand, { ...w, sanierungAnteilProzent: 0 }, heute);
-    expect(kurz.eingabe.rehabExpense).toBe(0);
-    expect(eigenkapitalNachRegel(kurz.herkunft)).toBe(true);
-    expect(eigenkapitalNachRegel({ equity: { quelle: "eigen", text: "" } })).toBe(false);
-    expect(eigenkapitalNachRegel(undefined)).toBe(false);
+    expect(berechneInvestment(normal.eingabe).eigenkapital).toBeGreaterThan(0);
   });
 });
