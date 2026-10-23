@@ -1132,6 +1132,9 @@
 */
 .investmentrechner .result-header {
   display: grid;
+  /* Volle Breite in jeder Ansicht; sonst richtet sich die Spalte nach dem
+     Inhalt und unter „Ausführlich“ (ohne Deckblatt-Wahl) rückt die Sprachwahl zur Mitte. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
   align-items: stretch;
 }
@@ -1162,7 +1165,8 @@
   border-top: 1px solid var(--line);
 }
 .investmentrechner .result-optionen .deckblatt-wahl { margin-bottom: 0; flex: 1 1 360px; }
-.investmentrechner .sprache-wahl { display: grid; gap: 6px; justify-items: start; }
+/* Immer rechts, auch wenn die Deckblatt-Wahl ausgeblendet ist (Ausführlich, Vergleich). */
+.investmentrechner .sprache-wahl { display: grid; gap: 6px; justify-items: start; margin-left: auto; }
 .investmentrechner .sprache-wahl > span {
   display: inline-flex;
   align-items: center;

@@ -32,6 +32,8 @@
 .ba-leiste { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
 .ba-leiste p { margin: 0; font-size: 13px; color: hsl(var(--muted-foreground)); max-width: 60ch; }
 .expose-scale > .ba-dokument { zoom: var(--expose-zoom, 1); }
+/* In der Vorschau mittig wie die Seiten unter „Berechnung“ (Christian, 23.10.2026). */
+.expose-scale .ba-seite { margin: 0 auto; }
 .ba-dokument { display: grid; gap: 16px; }
 .ba-druck { position: fixed; left: -10000px; top: 0; width: 210mm; pointer-events: none; }
 .ba-druck .ba-dokument { gap: 0; }
