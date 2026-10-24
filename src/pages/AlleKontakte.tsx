@@ -3,6 +3,7 @@ import { nurLesendKundendaten } from "@/lib/nurLesend";
 import { useLiveVersion } from "@/hooks/useLiveData";
 import { useCacheReady } from "@/hooks/useCacheReady";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { istNieKontaktiert, istOhneNaechstenSchritt, type LiegengebliebenPruefung } from "@/lib/liegengeblieben";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { NaechsterSchritt } from "@/components/kunden/NaechsterSchritt";
 import { NeuerTabLink } from "@/components/kunden/NeuerTabLink";
@@ -205,6 +206,8 @@ export default function AlleKontakte() {
   const [nurWartezeitAbgelaufen, setNurWartezeitAbgelaufen] = useState(false);
   const [nurInWartezeit, setNurInWartezeit] = useState(false);
   const [nurNieKontaktiert, setNurNieKontaktiert] = useState(false);
+  // Ansicht „Ohne nächsten Schritt“ (24.10.2026), Gegenstück zur Kachel auf der Startseite.
+  const [nurOhneSchritt, setNurOhneSchritt] = useState(false);
   const [nurMitTermin, setNurMitTermin] = useState(false);
   const [beraterFilter, setBeraterFilter] = useState<string>("-");
   const [showArchived, setShowArchived] = useState(false);
@@ -282,6 +285,7 @@ export default function AlleKontakte() {
 
   function clearPresetFlags() {
     setNurNieKontaktiert(false);
+    setNurOhneSchritt(false);
     setNurInWartezeit(false);
     setNurWartezeitAbgelaufen(false);
     setNurMitTermin(false);
@@ -293,6 +297,7 @@ export default function AlleKontakte() {
     setOhneFollowUp(false);
     setOhneTermin(false);
     if (preset === "neu") setNurNieKontaktiert(true);
+    else if (preset === "ohne_schritt") setNurOhneSchritt(true);
     else if (preset === "wartezeit") setNurInWartezeit(true);
     else if (preset === "anrufbar") setNurWartezeitAbgelaufen(true);
     else if (preset === "termin") setNurMitTermin(true);
@@ -420,17 +425,13 @@ export default function AlleKontakte() {
     if (ohneTermin) {
       result = result.filter((k) => !hasFutureTermin(k));
     }
+    // Dieselbe Regel wie die Kacheln auf der Startseite (liegengeblieben.ts).
+    const pruefung: LiegengebliebenPruefung = { hatTermin: hasFutureTermin, inWartezeit: isInWaitingPeriod, stufe: getEffectivePipelineStufe };
     if (nurNieKontaktiert) {
-      result = result.filter((k) => {
-        const meta: any = (k as any).meta || {};
-        const attempts = Number(meta.nichtErreichtCount || (k as any).nichtErreichtCount || 0);
-        return (
-          attempts === 0 &&
-          !hasFutureTermin(k) &&
-          !isInWaitingPeriod(k) &&
-          getEffectivePipelineStufe(k) === "neuer_lead"
-        );
-      });
+      result = result.filter((k) => istNieKontaktiert(k, pruefung));
+    }
+    if (nurOhneSchritt) {
+      result = result.filter((k) => istOhneNaechstenSchritt(k, pruefung));
     }
     if (nurInWartezeit) {
       result = result.filter((k) => isInWaitingPeriod(k));
@@ -465,7 +466,7 @@ export default function AlleKontakte() {
       const bVal = wert(b);
       return sortDir === "asc" ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
     });
-  }, [baseKontakte, search, sortField, sortDir, filterKategorie, stufenFilter, ohneFollowUp, ohneTermin, futureFuKundeIds, heute, nurNieKontaktiert, nurInWartezeit, nurWartezeitAbgelaufen, nurMitTermin, mitZukunftstermin]);
+  }, [baseKontakte, search, sortField, sortDir, filterKategorie, stufenFilter, ohneFollowUp, ohneTermin, futureFuKundeIds, heute, nurNieKontaktiert, nurOhneSchritt, nurInWartezeit, nurWartezeitAbgelaufen, nurMitTermin, mitZukunftstermin]);
 
   const stufenCounts = useMemo(() => {
     const map: Record<string, number> = {};
@@ -505,6 +506,8 @@ export default function AlleKontakte() {
    */
   const aktivesPreset = nurNieKontaktiert
     ? "neu"
+    : nurOhneSchritt
+      ? "ohne_schritt"
     : nurInWartezeit
       ? "wartezeit"
       : nurWartezeitAbgelaufen

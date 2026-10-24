@@ -44,7 +44,8 @@ import { getDaysSinceUpdate } from "@/lib/inactivityThresholds";
 import { STUFEN_ERKLAERUNG } from "@/lib/stufenErklaerung";
 import { bewertePipelineKachel } from "@/lib/pipelineAmpel";
 import { kontaktQuellen, setterTerminName } from "@/lib/kontaktTermine";
-import { getAufgabenFuerKunde } from "@/lib/aufgabenStore";
+import { addAufgabe, getAufgabenFuerKunde } from "@/lib/aufgabenStore";
+import { wiedervorlageInTagen } from "@/lib/anrufProtokoll";
 import { hatGeplantenTermin, naechsterKontakt, zuZeitpunkt, type KontaktEingabe } from "@/lib/naechsterKontakt";
 import { useUser } from "@/contexts/UserContext";
 import { getUserSetting } from "@/lib/userSettingsCache";
@@ -816,6 +817,11 @@ export default function Pipeline() {
     bgUhrzeit?: string;
     /** Gewählter Verlustgrund, wenn nach "Verloren" verschoben wird. */
     verlustGrundId?: string;
+    /**
+     * „Wann geht es weiter?“ (24.10.2026): Wiedervorlage in so vielen Tagen,
+     * angelegt erst, wenn die Stufe gespeichert ist. Leer heißt: keine.
+     */
+    wiedervorlageTage?: number;
   };
   const [moveConfirm, setMoveConfirm] = useState<MoveDialogState | null>(null);
 
@@ -885,7 +891,21 @@ export default function Pipeline() {
         return;
       }
 
-      toast({ title: "Stufe aktualisiert ✓", description: `${state.kundeName}: ${state.fromLabel} → ${state.toLabel}` });
+      if (state.wiedervorlageTage) {
+        const v = wiedervorlageInTagen(state.wiedervorlageTage);
+        await addAufgabe({
+          kontaktId: kundeId,
+          investmentId,
+          typ: "aufgabe",
+          prioritaet: "mittel",
+          titel: `Nächster Schritt nach „${state.toLabel}“: ${state.kundeName}`,
+          beschreibung: `Wiedervorlage nach dem Wechsel von „${state.fromLabel}“ auf „${state.toLabel}“.`,
+          faelligAm: v.datum,
+          uhrzeit: v.uhrzeit,
+          erstelltVonName: user.name,
+        });
+      }
+      toast({ title: "Stufe aktualisiert ✓", description: `${state.kundeName}: ${state.fromLabel} → ${state.toLabel}${state.wiedervorlageTage ? ", Wiedervorlage angelegt" : ""}` });
     } catch (e) {
       toast({ title: "Fehler beim Verschieben", variant: "destructive" });
     }
@@ -1553,6 +1573,20 @@ export default function Pipeline() {
                   </div>
                 </AlertDialogDescription>
               </AlertDialogHeader>
+              {!["verloren", "abrechnung", "abgeschlossen"].includes(moveConfirm.to) && (
+                <div className="space-y-2 rounded-md border p-3" data-testid="pipeline-wann-weiter">
+                  <p className="text-sm font-medium">Wann geht es weiter?</p>
+                  <div className="flex flex-wrap gap-2">
+                    {([[1, "Morgen"], [3, "In 3 Tagen"], [7, "In 1 Woche"]] as const).map(([tage, label]) => (
+                      <Button key={tage} type="button" size="sm" variant={moveConfirm.wiedervorlageTage === tage ? "default" : "outline"} aria-pressed={moveConfirm.wiedervorlageTage === tage}
+                        onClick={() => setMoveConfirm({ ...moveConfirm, wiedervorlageTage: moveConfirm.wiedervorlageTage === tage ? undefined : tage })}>
+                        {label}
+                      </Button>
+                    ))}
+                  </div>
+                  <p className="text-xs text-muted-foreground">Legt eine Aufgabe an dich an. Ohne Auswahl bleibt es beim Stufenwechsel; der Kontakt erscheint dann unter „Ohne nächsten Schritt“.</p>
+                </div>
+              )}
               <AlertDialogFooter>
                 <AlertDialogCancel>Abbrechen</AlertDialogCancel>
                 <AlertDialogAction onClick={proceedConfirm}>Weiter</AlertDialogAction>

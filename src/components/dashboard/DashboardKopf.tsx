@@ -15,7 +15,7 @@ import { Kennzahl } from "@/components/ui/kennzahl";
 import {
   Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
-import { ArrowDownRight, ArrowRight, ArrowUpRight, CalendarDays, Users, Inbox, BellRing, ListChecks, PhoneCall, Euro, Bookmark, Stamp, Hourglass, TrendingUp, type LucideIcon } from "lucide-react";
+import { ArrowDownRight, ArrowRight, ArrowUpRight, CalendarDays, Users, Inbox, BellRing, ListChecks, PhoneCall, Euro, CircleAlert, UserPlus, Bookmark, Stamp, Hourglass, TrendingUp, type LucideIcon } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 import { getKontakte } from "@/lib/kundenStore";
 import { formatDatumFlexibel } from "@/lib/datumsformate";
@@ -32,6 +32,11 @@ import { getAufgaben } from "@/lib/aufgabenStore";
 import { liegtInZukunft } from "@/lib/faelligkeit";
 import { kontaktKaufpreis, investmentKaufpreis } from "@/lib/objektDatenPflicht";
 import { tarnName, unscharfKlasse } from "@/lib/vorfuehrmodus";
+import { istNieKontaktiert, istOhneNaechstenSchritt, type LiegengebliebenPruefung } from "@/lib/liegengeblieben";
+import { kontaktQuellen } from "@/lib/kontaktTermine";
+import { hatGeplantenTermin } from "@/lib/naechsterKontakt";
+import { getEffectivePipelineStufe } from "@/lib/kontaktPipeline";
+import { istInWartezeit } from "@/lib/kontaktversuchSchedule";
 import {
   berechneDashboardKpis,
   zeitraumGrenzen,
@@ -62,6 +67,8 @@ const euro = (v: number) =>
 const KACHEL_AKZENT: Record<string, { icon: LucideIcon; chip: string; linie: string }> = {
   "Offene Follow-Ups": { icon: BellRing, chip: "bg-blue-100 text-blue-700 dark:bg-blue-400/15 dark:text-blue-300", linie: "border-t-blue-500" },
   "Offene Aufgaben": { icon: ListChecks, chip: "bg-orange-100 text-orange-700 dark:bg-orange-400/15 dark:text-orange-300", linie: "border-t-orange-500" },
+  "Ohne nächsten Schritt": { icon: CircleAlert, chip: "bg-red-100 text-red-700 dark:bg-red-400/15 dark:text-red-300", linie: "border-t-red-500" },
+  "Neu, noch kein Kontakt": { icon: UserPlus, chip: "bg-sky-100 text-sky-700 dark:bg-sky-400/15 dark:text-sky-300", linie: "border-t-sky-500" },
   "Anrufe und Termine": { icon: PhoneCall, chip: "bg-emerald-100 text-emerald-700 dark:bg-emerald-400/15 dark:text-emerald-300", linie: "border-t-emerald-500" },
   "Umsatz beurkundet": { icon: Euro, chip: "bg-emerald-100 text-emerald-700 dark:bg-emerald-400/15 dark:text-emerald-300", linie: "border-t-emerald-500" },
   "Offene Reservierungen": { icon: Bookmark, chip: "bg-blue-100 text-blue-700 dark:bg-blue-400/15 dark:text-blue-300", linie: "border-t-blue-500" },
@@ -221,6 +228,37 @@ export function DashboardKopf() {
    * oeffnet deshalb die Liste der Kunden dahinter, jede Zeile fuehrt in die
    * Kundenakte.
    */
+  /*
+   * Liegengebliebenes (24.10.2026): Kontakte ohne geplanten nächsten Schritt
+   * und neue Leads ohne ersten Kontakt, im gewählten Umfang. Dieselbe Regel
+   * wie die Ansichten in „Alle Kontakte“ (liegengeblieben.ts). Der Klick zeigt
+   * die Kunden dahinter, damit Zahl und Liste immer übereinstimmen.
+   */
+  const liegen = useMemo(() => {
+    const teamIds = teamMitgliederIds(authUser?.id);
+    const kontakte = getKontakte().filter((k) => {
+      if (sicht === "firma") return true;
+      const eigen = kontaktBelongsToUser(k, { userName: user.name, userId: authUser?.id });
+      if (sicht === "eigen") return eigen;
+      const zustaendig = k.zustaendig_id || (k as { zustaendigId?: string }).zustaendigId;
+      return eigen || (!!zustaendig && teamIds.has(zustaendig));
+    });
+    const jetzt = Date.now();
+    const pruefung: LiegengebliebenPruefung = {
+      hatTermin: (k) => { try { return hatGeplantenTermin(kontaktQuellen(k), jetzt); } catch { return true; } },
+      inWartezeit: (k) => istInWartezeit(k.verstecktBis),
+      stufe: getEffectivePipelineStufe,
+    };
+    const ohneSchritt: KpiEintrag[] = [];
+    const neu: KpiEintrag[] = [];
+    for (const k of kontakte) {
+      if (istNieKontaktiert(k, pruefung)) neu.push({ kontaktId: k.id });
+      else if (istOhneNaechstenSchritt(k, pruefung)) ohneSchritt.push({ kontaktId: k.id });
+    }
+    return { ohneSchritt, neu };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sicht, user.name, authUser?.id, liveVersion, inboxTick]);
+
   const [detail, setDetail] = useState<{ titel: string; zusatz?: string; eintraege: KpiEintrag[]; erklaerung?: string } | null>(null);
 
   /** Notartermine liegen als ISO oder als TT.MM.JJJJ vor, beides soll lesbar sein. */
@@ -417,6 +455,31 @@ export function DashboardKopf() {
       ziel: punkte.sonstigeOffen > 0 ? `/inbox?umfang=${sicht}&art=termine` : undefined,
       zielText: "In der Inbox erledigen",
     },
+    {
+      bereich: "heute",
+      label: "Ohne nächsten Schritt",
+      wert: String(liegen.ohneSchritt.length),
+      zusatz: liegen.ohneSchritt.length > 0 ? "kein Termin, keine Aufgabe, kein Follow-Up" : "alle haben einen nächsten Schritt",
+      ton: liegen.ohneSchritt.length > 0 ? "warn" : "gut",
+      eintraege: liegen.ohneSchritt,
+      detailZusatz: "Kontakte ohne geplanten nächsten Schritt. Im Profil einen Termin, eine Aufgabe oder ein Follow-Up anlegen.",
+      erklaerung:
+        "Zählt Kontakte, bei denen in der Zukunft weder ein Termin noch eine Aufgabe noch ein Follow-Up geplant ist " +
+        "und die auch nicht in der Wartezeit nach „nicht erreicht“ stehen. Verlorene und archivierte zählen nicht, " +
+        "neue Leads ohne ersten Kontakt stehen in der Kachel daneben. In „Alle Kontakte“ als Ansicht „Ohne nächsten Schritt“.",
+    },
+    {
+      bereich: "heute",
+      label: "Neu, noch kein Kontakt",
+      wert: String(liegen.neu.length),
+      zusatz: liegen.neu.length > 0 ? "noch nie angerufen" : "alle neuen Leads sind kontaktiert",
+      ton: liegen.neu.length > 0 ? "warn" : "gut",
+      eintraege: liegen.neu,
+      detailZusatz: "Neue Leads ohne Kontaktversuch und ohne Termin.",
+      erklaerung:
+        "Zählt Kontakte in der Stufe Neuer Lead ohne Kontaktversuch, ohne Termin und ohne Wartezeit. " +
+        "Dieselbe Regel wie die Ansicht „Neu / kein Kontakt“ in „Alle Kontakte“.",
+    },
   ];
 
   const renderKachel = (k: typeof kacheln[number]) => {
@@ -524,7 +587,7 @@ export function DashboardKopf() {
             <Inbox className="h-4 w-4" aria-hidden="true" />Inbox öffnen<ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-5 gap-3">
           {kacheln.filter((k) => k.bereich === "heute").map(renderKachel)}
         </div>
       </section>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { gespraechFandStatt, wiedervorlageVorschlag, zusammenfassungIstPflicht } from "./anrufProtokoll";
+import { gespraechFandStatt, naechsterSchrittIstPflicht, wiedervorlageInTagen, wiedervorlageVorschlag, zusammenfassungIstPflicht } from "./anrufProtokoll";
 
 describe("Zusammenfassung im Anruf-Protokoll", () => {
   it("ist Pflicht, sobald ein Gespräch stattfand", () => {
@@ -40,5 +40,21 @@ describe("Fälligkeit der Wiedervorlage nach einem Anruf", () => {
 
   it("fällt nach dem letzten Versuch der Staffel auf morgen 10:00 zurück", () => {
     expect(wiedervorlageVorschlag("nicht_erreicht", 14, jetzt)).toEqual({ datum: "2026-09-27", uhrzeit: "10:00" });
+  });
+});
+
+describe("naechsterSchrittIstPflicht", () => {
+  it("nur bei Erreicht und Mailbox", () => {
+    expect(naechsterSchrittIstPflicht("erreicht")).toBe(true);
+    expect(naechsterSchrittIstPflicht("mailbox")).toBe(true);
+    for (const e of ["", "nicht_erreicht", "erstgespraech_vereinbart", "beratungsgespraech_vereinbart", "kein_interesse", "daten_falsch"]) {
+      expect(naechsterSchrittIstPflicht(e)).toBe(false);
+    }
+  });
+});
+
+describe("wiedervorlageInTagen", () => {
+  it("rechnet Tage vor und setzt 10:00", () => {
+    expect(wiedervorlageInTagen(3, new Date(2026, 9, 30, 15, 12))).toEqual({ datum: "2026-11-02", uhrzeit: "10:00" });
   });
 });

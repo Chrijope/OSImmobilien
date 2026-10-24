@@ -83,3 +83,25 @@ export function wiedervorlageVorschlag(
   }
   return alsFelder(morgenZehnUhr(jetzt));
 }
+
+/**
+ * Muss nach diesem Ergebnis feststehen, wann es weitergeht (seit 24.10.2026)?
+ *
+ * Am 24.10.2026 hatten rund zwei Drittel der offenen Vorgänge keinen
+ * nächsten Schritt. Deshalb fragt der Dialog bei „Erreicht“ und „Mailbox“
+ * nach: Dort entsteht sonst nichts, was den Kunden wieder hochholt. Bei
+ * „Nicht erreicht“ läuft die Wartezeit von selbst, bei vereinbarten Terminen
+ * ist der Termin der nächste Schritt, „Kein Interesse“ und „Daten falsch“
+ * brauchen keinen.
+ */
+export function naechsterSchrittIstPflicht(ergebnis: string): boolean {
+  return ergebnis === "erreicht" || ergebnis === "mailbox";
+}
+
+/** Wiedervorlage in `tage` Tagen um 10:00 Uhr, lokale Zeit. */
+export function wiedervorlageInTagen(tage: number, jetzt: Date = new Date()): TerminVorschlag {
+  const d = new Date(jetzt);
+  d.setDate(d.getDate() + tage);
+  d.setHours(10, 0, 0, 0);
+  return alsFelder(d);
+}

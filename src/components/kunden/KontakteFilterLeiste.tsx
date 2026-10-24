@@ -76,6 +76,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 export const PRESET_OPTIONEN = [
   { key: "alle", label: "Alle", kurz: "Alle" },
   { key: "neu", label: "🆕 Neu / kein Kontakt", kurz: "🆕 Neu" },
+  { key: "ohne_schritt", label: "⚠️ Ohne nächsten Schritt", kurz: "⚠️ Ohne Schritt" },
   { key: "wartezeit", label: "📵 Nicht erreicht (Wartezeit)", kurz: "📵 Nicht erreicht" },
   { key: "anrufbar", label: "⏰ Jetzt anrufbar", kurz: "⏰ Anrufbar" },
   { key: "termin", label: "📅 Termin geplant", kurz: "📅 Termin" },

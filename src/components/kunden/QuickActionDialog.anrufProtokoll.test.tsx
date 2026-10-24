@@ -114,12 +114,15 @@ describe('Zusammenfassung', () => {
     expect(m.aktivitaet).not.toHaveBeenCalled();
 
     zusammenfassung('Will Unterlagen bis Montag schicken');
+    // Seit 24.10.2026 muss bei „Erreicht“ feststehen, wann es weitergeht.
+    fireEvent.click(screen.getByRole('button', { name: 'Morgen' }));
     speichern();
     await waitFor(() => expect(m.ergebnis).toHaveBeenCalledTimes(1));
     expect(m.aktivitaet).toHaveBeenCalledWith(expect.objectContaining({
       art: 'anruf_protokoll', ergebnis: 'erreicht',
       beschreibung: 'Anruf mit Testkunde: Will Unterlagen bis Montag schicken',
     }));
+    expect(m.aufgabe).toHaveBeenCalledTimes(1);
   });
 
   it('bleibt bei „Nicht erreicht“ freiwillig und stößt die Abläufe an', async () => {
@@ -130,6 +133,25 @@ describe('Zusammenfassung', () => {
     expect(m.aktivitaet).toHaveBeenCalledWith(expect.objectContaining({ beschreibung: 'Anruf mit Testkunde: Nicht erreicht' }));
     expect(m.aufgabe).not.toHaveBeenCalled();
     expect(m.close).toHaveBeenCalled();
+  });
+});
+
+describe('Wann geht es weiter?', () => {
+  it('verlangt bei „Erreicht“ eine Wiedervorlage oder einen Grund und vermerkt den Grund', async () => {
+    await anzeigen({ ergebnis: 'erreicht' });
+    zusammenfassung('Kunde überlegt noch');
+    speichern();
+    await waitFor(() => expect(m.toast).toHaveBeenCalledWith(expect.objectContaining({ title: 'Wann geht es weiter?' })));
+    expect(m.aktivitaet).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Bewusst ohne' }));
+    speichern();
+    expect(m.aktivitaet).not.toHaveBeenCalled();
+    fireEvent.change(screen.getByLabelText('Grund ohne nächsten Schritt'), { target: { value: 'Kunde meldet sich selbst' } });
+    speichern();
+    await waitFor(() => expect(m.ergebnis).toHaveBeenCalledTimes(1));
+    expect(m.aktivitaet).toHaveBeenCalledWith(expect.objectContaining({ details: 'Bewusst ohne nächsten Schritt: Kunde meldet sich selbst' }));
+    expect(m.aufgabe).not.toHaveBeenCalled();
   });
 });
 

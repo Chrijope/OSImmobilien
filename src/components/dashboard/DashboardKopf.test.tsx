@@ -12,7 +12,7 @@ const state = vi.hoisted(() => ({
 vi.mock("@/contexts/UserContext", () => ({ useUser: () => ({ user: { role: state.role, name: "Christian Test" }, authUser: { id: "u1" } }) }));
 vi.mock("@/hooks/useLiveData", () => ({ useLiveVersion: () => 0 }));
 vi.mock("@/lib/kundenStore", () => ({ getKontakte: () => [{ id: "k1", vorname: "Anna", nachname: "Weber" }] }));
-vi.mock("@/lib/investmentsStore", () => ({ getInvestments: () => [] }));
+vi.mock("@/lib/investmentsStore", () => ({ getInvestments: () => [], getInvestmentsByKontakt: () => [] }));
 vi.mock("@/lib/kontaktOwnership", () => ({ kontaktBelongsToUser: () => true }));
 vi.mock("@/lib/datenSicht", () => ({ istFuehrungskraft: () => state.wide, teamMitgliederIds: () => new Set() }));
 vi.mock("@/lib/zielplanungStore", () => ({ loadZielplanung: () => ({ verkaufsvolumen: [] }) }));

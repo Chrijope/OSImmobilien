@@ -36,7 +36,7 @@ import { NUR_POPUP_OVERLAY } from "@/lib/popupOverlay";
 import { confirmDialog } from "@/lib/confirm";
 import { TERMINE_AKTUALISIERT_EVENT } from "@/lib/terminAnzeige";
 import { istTerminInZukunft, heuteIso, TERMIN_ZUKUNFT_MELDUNG } from "@/lib/kontaktPipeline";
-import { gespraechFandStatt as fandGespraechStatt, wiedervorlageVorschlag, zusammenfassungIstPflicht } from "@/lib/anrufProtokoll";
+import { gespraechFandStatt as fandGespraechStatt, naechsterSchrittIstPflicht, wiedervorlageInTagen, wiedervorlageVorschlag, zusammenfassungIstPflicht } from "@/lib/anrufProtokoll";
 import { cacheGetById } from "@/lib/dataCache";
 
 export interface AnrufProtokollResult {
@@ -476,6 +476,9 @@ export function QuickActionDialog({
   // Hat der Nutzer die Fälligkeit selbst gesetzt? Dann überschreibt der
   // Vorschlag zum Ergebnis sie nicht mehr.
   const followupTerminManuell = useRef(false);
+  // „Wann geht es weiter?“ (24.10.2026): bewusst ohne nächsten Schritt, mit Grund.
+  const [ohneNaechstenSchritt, setOhneNaechstenSchritt] = useState(false);
+  const [ohneSchrittGrund, setOhneSchrittGrund] = useState("");
 
   // ── Auto-Draft: speichert Eingaben in localStorage, damit sie bei Tab-Wechsel,
   // Reload oder versehentlichem Schließen nicht verloren gehen.
@@ -1027,6 +1030,14 @@ export function QuickActionDialog({
           toast({ title: "Bitte kurz zusammenfassen, was besprochen wurde", variant: "destructive" });
           return;
         }
+        if (naechsterSchrittIstPflicht(ergebnis) && !followupTaskOpen && !(ohneNaechstenSchritt && ohneSchrittGrund.trim())) {
+          toast({
+            title: "Wann geht es weiter?",
+            description: ohneNaechstenSchritt ? "Bitte kurz den Grund nennen, warum es keinen nächsten Schritt gibt." : "Bitte eine Wiedervorlage wählen oder „Bewusst ohne“ mit Grund.",
+            variant: "destructive",
+          });
+          return;
+        }
         if (ergebnis === "beratungsgespraech_vereinbart" && !bgViaBuchungskalender) {
           toast({
             title: "Bitte Buchungskalender-Hinweis bestätigen",
@@ -1055,7 +1066,10 @@ export function QuickActionDialog({
           beschreibung: beschreibung.trim()
             ? `Anruf mit ${kundeName}: ${beschreibung.trim()}`
             : `Anruf mit ${kundeName}: ${ERGEBNIS_TEXT[ergebnis] || ergebnis}`,
-          details: details.trim() || undefined,
+          details: [
+            details.trim(),
+            naechsterSchrittIstPflicht(ergebnis) && !followupTaskOpen && ohneNaechstenSchritt ? `Bewusst ohne nächsten Schritt: ${ohneSchrittGrund.trim()}` : "",
+          ].filter(Boolean).join("\n") || undefined,
           // Ohne Gespräch keine Dauer, damit in der Historie keine leere
           // oder alte Angabe steht.
           dauer: gespraechFandStatt ? dauer.trim() : "",
@@ -1120,6 +1134,7 @@ export function QuickActionDialog({
     setFollowupTaskOpen(false);
     setFollowupTitel(""); setFollowupBeschreibung("");
     followupTerminManuell.current = false;
+    setOhneNaechstenSchritt(false); setOhneSchrittGrund("");
 
     reset({ clearDraft: true });
     onSaved();
@@ -1919,6 +1934,30 @@ export function QuickActionDialog({
           {/* ── Gemeinsame Folge-Aufgabe (bei allen Aktionen außer der reinen Aufgabe) ── */}
           {art !== "aufgabe" && (
             <div className="border-t pt-4">
+              {art === "anruf_protokoll" && naechsterSchrittIstPflicht(ergebnis) && !followupTaskOpen && (
+                <div className="mb-3 space-y-2 rounded-lg border-2 border-primary/40 p-3" data-testid="wann-weiter">
+                  <p className="text-sm font-medium">Wann geht es weiter? *</p>
+                  <div className="flex flex-wrap gap-2">
+                    {([[1, "Morgen"], [3, "In 3 Tagen"], [7, "In 1 Woche"]] as const).map(([tage, label]) => (
+                      <Button key={tage} type="button" size="sm" variant="outline" onClick={() => {
+                        const v = wiedervorlageInTagen(tage);
+                        followupTerminManuell.current = true;
+                        setFollowupFaellig(v.datum);
+                        setFollowupUhrzeit(v.uhrzeit);
+                        if (!followupTitel) setFollowupTitel(ergebnis === "mailbox" ? `Nochmal anrufen: ${kundeName}` : `Rückruf: ${kundeName}`);
+                        setOhneNaechstenSchritt(false);
+                        setFollowupTaskOpen(true);
+                      }}>{label}</Button>
+                    ))}
+                    <Button type="button" size="sm" variant={ohneNaechstenSchritt ? "secondary" : "ghost"} aria-pressed={ohneNaechstenSchritt} onClick={() => setOhneNaechstenSchritt((v) => !v)}>
+                      Bewusst ohne
+                    </Button>
+                  </div>
+                  {ohneNaechstenSchritt && (
+                    <Input aria-label="Grund ohne nächsten Schritt" value={ohneSchrittGrund} onChange={(e) => setOhneSchrittGrund(e.target.value)} placeholder="Kurzer Grund, z. B. Kunde meldet sich selbst" />
+                  )}
+                </div>
+              )}
               {!followupTaskOpen ? (
                 <Button
                   type="button"
