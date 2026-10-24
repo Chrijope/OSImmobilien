@@ -51,6 +51,10 @@ vi.mock("@/lib/userSettingsCache", () => ({
   setUserSetting: () => undefined,
 }));
 vi.mock("@/lib/objekteImages", () => ({ resolveImageUrl: (u: string) => u }));
+// „Für Kunde“ liest Kontakte und Investments; hier gibt es keine.
+vi.mock("@/lib/kundenStore", () => ({ getKontakte: () => [] }));
+vi.mock("@/lib/investmentsStore", () => ({ getInvestments: () => [] }));
+vi.mock("@/lib/objekteFuerKunde", () => ({ kundenMitRahmen: () => [], passendeJeObjekt: () => new Map() }));
 vi.mock("@/components/objekte/PortfolioKacheln", () => ({ PortfolioKacheln: () => <div /> }));
 vi.mock("@/components/objekte/InvestagonImportDialog", () => ({ InvestagonImportDialog: () => <div /> }));
 vi.mock("@/components/objekte/LotseUnterlagenDialog", () => ({ LotseUnterlagenDialog: () => <div /> }));

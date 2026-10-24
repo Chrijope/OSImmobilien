@@ -1,6 +1,15 @@
-import { useState, useEffect, useMemo, lazy, Suspense } from "react";
+import { useState, useEffect, useMemo, useRef, lazy, Suspense } from "react";
 import { useLiveVersion } from "@/hooks/useLiveData";
 import { useCacheReady } from "@/hooks/useCacheReady";
+import { ladeObjekteFilter, speichereObjekteFilter } from "@/lib/objekteFilter";
+import { kundenMitRahmen, passendeJeObjekt } from "@/lib/objekteFuerKunde";
+import { AFA_ART_LABEL, anlegerFilterAktiv, objektErfuelltAnlegerFilter, type AfaArt } from "@/lib/objektAnlegerFilter";
+import { siehtEmpfehlungen } from "@/lib/einheitEmpfehlung";
+import { getKontakte } from "@/lib/kundenStore";
+import { getInvestments } from "@/lib/investmentsStore";
+import { kontaktBelongsToUser } from "@/lib/kontaktOwnership";
+import { istFuehrungskraft } from "@/lib/datenSicht";
+import { Switch } from "@/components/ui/switch";
 import { useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader } from "@/components/PageHeader";
@@ -213,12 +222,76 @@ export default function Objekte() {
   const [fGrMax, setFGrMax] = useState<string>("");
   const [fBjMin, setFBjMin] = useState<string>("");
   const [fBjMax, setFBjMax] = useState<string>("");
+  // Anlegerfilter (24.10.2026): Eigenaufwand, AfA-Art, sofort reservierbar.
+  const [fAufwandBis, setFAufwandBis] = useState<string>("");
+  const [fAfaArten, setFAfaArten] = useState<string>("");
+  const [fNurReservierbar, setFNurReservierbar] = useState(false);
   const resetFilters = () => {
     setFAdresse(""); setFBauzustand("alle"); setFAnlageklasse("alle"); setFObjStatus("alle");
     setFKpMin(""); setFKpMax(""); setFBrMin(""); setFBrMax("");
     setFGrMin(""); setFGrMax(""); setFBjMin(""); setFBjMax("");
+    setFAufwandBis(""); setFAfaArten(""); setFNurReservierbar(false);
+  };
+  /*
+   * Filter je Nutzer merken (24.10.2026). Erst lesen, wenn die Einstellungen
+   * geladen sind, und erst danach speichern: sonst überschriebe der leere
+   * Anfangszustand die gemerkte Auswahl, bevor sie überhaupt da ist.
+   */
+  const einstellungenBereit = useCacheReady(["user_settings"]);
+  const filterGeladen = useRef(false);
+  useEffect(() => {
+    if (!einstellungenBereit || filterGeladen.current) return;
+    filterGeladen.current = true;
+    const f = ladeObjekteFilter();
+    setFilter(f.suche); setFAdresse(f.adresse); setFBauzustand(f.bauzustand);
+    setFAnlageklasse(f.anlageklasse); setFObjStatus(f.objStatus);
+    setFKpMin(f.kpMin); setFKpMax(f.kpMax); setFBrMin(f.brMin); setFBrMax(f.brMax);
+    setFGrMin(f.grMin); setFGrMax(f.grMax); setFBjMin(f.bjMin); setFBjMax(f.bjMax);
+    setShowMore(f.mehrOffen);
+    setFAufwandBis(f.aufwandBis); setFAfaArten(f.afaArten); setFNurReservierbar(f.nurReservierbar);
+  }, [einstellungenBereit]);
+  useEffect(() => {
+    if (!filterGeladen.current) return;
+    speichereObjekteFilter({
+      suche: filter, adresse: fAdresse, bauzustand: fBauzustand, anlageklasse: fAnlageklasse,
+      objStatus: fObjStatus, kpMin: fKpMin, kpMax: fKpMax, brMin: fBrMin, brMax: fBrMax,
+      grMin: fGrMin, grMax: fGrMax, bjMin: fBjMin, bjMax: fBjMax, mehrOffen: showMore,
+      aufwandBis: fAufwandBis, afaArten: fAfaArten, nurReservierbar: fNurReservierbar,
+    });
+  }, [filter, fAdresse, fBauzustand, fAnlageklasse, fObjStatus, fKpMin, fKpMax, fBrMin, fBrMax, fGrMin, fGrMax, fBjMin, fBjMax, showMore, fAufwandBis, fAfaArten, fNurReservierbar]);
+  const anlegerFilter = useMemo(() => {
+    const bis = parseFloat(fAufwandBis.replace(",", "."));
+    return {
+      aufwandBis: Number.isFinite(bis) ? bis : null,
+      afaArten: new Set(fAfaArten.split(",").filter((a): a is AfaArt => a in AFA_ART_LABEL)),
+      nurReservierbar: fNurReservierbar,
+    };
+  }, [fAufwandBis, fAfaArten, fNurReservierbar]);
+  const afaArtUmschalten = (art: AfaArt) => {
+    const s = new Set(anlegerFilter.afaArten);
+    if (s.has(art)) s.delete(art); else s.add(art);
+    setFAfaArten([...s].join(","));
   };
   const { objekte, loading } = useObjekte();
+  /*
+   * „Für Kunde“ (24.10.2026): dieselbe Passung zum Finanzierungsrahmen wie im
+   * Kundenprofil, hier von der Objektseite aus. Bewusst nicht gemerkt, damit
+   * niemand später unbemerkt eine auf einen alten Kunden gefilterte Liste sieht.
+   */
+  const darfFuerKunde = siehtEmpfehlungen(user.role);
+  const kundenDatenBereit = useCacheReady(["kontakte", "investments"]);
+  const [fKunde, setFKunde] = useState<string>("keiner");
+  const [fNurPassend, setFNurPassend] = useState(false);
+  const kundenAuswahl = useMemo(() => {
+    if (!darfFuerKunde || !kundenDatenBereit) return [];
+    const alle = istFuehrungskraft(user.role);
+    const kontakte = getKontakte().filter((k) => alle || kontaktBelongsToUser(k, { userName: user.name, userId: authUser?.id }));
+    return kundenMitRahmen(kontakte, getInvestments());
+  }, [darfFuerKunde, kundenDatenBereit, user.role, user.name, authUser?.id]);
+  const gewaehlterKunde = kundenAuswahl.find((k) => k.investmentId === fKunde) || null;
+  const passung = useMemo(() => gewaehlterKunde
+    ? passendeJeObjekt(objekte, { nutzer: { rolle: user.role, benutzerId: authUser?.id, name: user.name }, kundeId: gewaehlterKunde.kundeId, rahmen: gewaehlterKunde.rahmen })
+    : null, [gewaehlterKunde, objekte, user.role, user.name, authUser?.id]);
   const wohnungenReady = useCacheReady(["wohnungen"]);
   const [expandedObjs, setExpandedObjs] = useState<Set<string>>(new Set());
   const toggleExpanded = (id: string) => {
@@ -261,6 +334,7 @@ export default function Objekte() {
     // Exklusivpartner über die Kennung, der Name nur als Rückfall (05.10.2026).
     if (!canEdit(user.role) && !objektExklusivSichtbar(o, { rolle: user.role, benutzerId: authUser?.id, name: user.name })) return false;
     if (filter && !o.titel.toLowerCase().includes(filter.toLowerCase()) && !o.ort.toLowerCase().includes(filter.toLowerCase())) return false;
+    if (passung && fNurPassend && !((passung.get(o.id) || 0) > 0)) return false;
     // Erweiterte Filter
     if (fAdresse.trim()) {
       const q = fAdresse.trim().toLowerCase();
@@ -289,6 +363,7 @@ export default function Objekte() {
     const bjMax = fBjMax ? parseInt(fBjMax) : null;
     if (bjMin !== null && baujahr > 0 && baujahr < bjMin) return false;
     if (bjMax !== null && baujahr > 0 && baujahr > bjMax) return false;
+    if (anlegerFilterAktiv(anlegerFilter) && !objektErfuelltAnlegerFilter(o, anlegerFilter)) return false;
     return true;
   }).sort((a, b) => {
     /*
@@ -628,6 +703,11 @@ export default function Objekte() {
         )}
          <div className={viewMode === "list" ? "p-4 space-y-1 flex-1 min-w-0" : "p-4 space-y-2 flex flex-col flex-1"}>
            <h3 className={`font-bold text-sm leading-tight line-clamp-2 ${viewMode === "grid" ? "min-h-[2.5rem]" : ""}`}>{obj.titel}</h3>
+           {passung && gewaehlterKunde && (
+             (passung.get(obj.id) || 0) > 0
+               ? <Badge className="w-fit text-[10px]">{passung.get(obj.id)} passend für {gewaehlterKunde.name}</Badge>
+               : <span className="text-[11px] text-muted-foreground">nichts im Rahmen von {gewaehlterKunde.name}</span>
+           )}
            {wohnungenReady && (stats.preisVon > 0 || stats.preisBis > 0) ? (
              <p className={`font-bold text-sm leading-tight text-foreground ${viewMode === "grid" ? "min-h-[1.25rem]" : ""}`}>
               {fmt(stats.preisVon)}{stats.preisBis !== stats.preisVon ? ` – ${fmt(stats.preisBis)}` : ""}
@@ -1038,6 +1118,25 @@ export default function Objekte() {
                 </SelectContent>
               </Select>
             </div>
+            {darfFuerKunde && (
+              <div className="min-w-[200px]">
+                <label className="text-[10px] uppercase tracking-wide text-muted-foreground">Für Kunde</label>
+                <Select value={fKunde} onValueChange={(v) => { setFKunde(v); if (v === "keiner") setFNurPassend(false); }}>
+                  <SelectTrigger className="h-[40px] sm:h-9" aria-label="Für Kunde"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="keiner">Kein Kunde</SelectItem>
+                    {kundenAuswahl.map((k) => (
+                      <SelectItem key={k.investmentId} value={k.investmentId}>{k.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            {gewaehlterKunde && (
+              <label className="flex h-[40px] items-center gap-2 text-sm sm:h-9">
+                <Switch checked={fNurPassend} onCheckedChange={setFNurPassend} aria-label="Nur passende" />Nur passende
+              </label>
+            )}
             <Button variant="outline" size="sm" className="h-[40px] sm:h-9" onClick={() => setShowMore(v => !v)}>
               {showMore ? "Weniger" : "Mehr"}
             </Button>
@@ -1086,6 +1185,26 @@ export default function Objekte() {
                   </Select>
                 </div>
               )}
+              <div>
+                <label className="text-[10px] uppercase tracking-wide text-muted-foreground" htmlFor="filter-aufwand">Eigenaufwand je Monat bis (€)</label>
+                <Input id="filter-aufwand" value={fAufwandBis} onChange={(e) => setFAufwandBis(e.target.value)} inputMode="numeric" placeholder="z.B. 200" className="h-[40px] sm:h-9" />
+              </div>
+              <div className="col-span-2">
+                <span className="text-[10px] uppercase tracking-wide text-muted-foreground">AfA-Art</span>
+                <div className="flex flex-wrap gap-1 pt-1">
+                  {(Object.keys(AFA_ART_LABEL) as AfaArt[]).map((art) => (
+                    <Button key={art} type="button" size="sm" variant={anlegerFilter.afaArten.has(art) ? "default" : "outline"} className="h-[40px] sm:h-8" aria-pressed={anlegerFilter.afaArten.has(art)} onClick={() => afaArtUmschalten(art)}>
+                      {AFA_ART_LABEL[art]}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+              <label className="flex items-center gap-2 self-end pb-2 text-sm">
+                <Switch checked={fNurReservierbar} onCheckedChange={setFNurReservierbar} aria-label="Nur sofort reservierbar" />Nur sofort reservierbar
+              </label>
+              <p className="col-span-2 text-[11px] text-muted-foreground md:col-span-4">
+                Eigenaufwand nach Steuer im ersten Jahr, gerechnet mit den Standardannahmen des Investmentrechners. Für einen bestimmten Kunden zählt seine eigene Rechnung im Profil.
+              </p>
             </div>
           )}
         </Card>
