@@ -565,3 +565,7 @@ verify_jwt = true
 
 [functions.zapier-bewerber-webhook]
 verify_jwt = false
+
+# Video-Studio (Marketing): Avatar-Videos ueber Higgsfield, nur Admin/Inhaber.
+[functions.video-studio]
+verify_jwt = true
