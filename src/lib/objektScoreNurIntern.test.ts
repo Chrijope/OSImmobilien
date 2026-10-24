@@ -54,6 +54,10 @@ const ERLAUBT = [
   // Die alte Verwaltungs- und Wohnungsansicht, die der Vertriebspartner sieht (04.10.2026).
   "src/pages/ObjektDetail.tsx",
   "src/pages/WohnungDetail.tsx",
+  // Seit 24.10.2026: Eigenaufwand und AfA-Art aus der Vorbelegung der Einheit, kein Score (Filter auf /objekte).
+  "src/lib/objektAnlegerFilter.ts",
+  // Seit 24.10.2026: Glocke an den Partner mit den Namen passender Kunden, kein Score, nichts an Kunden.
+  "src/hooks/useNeueEinheitGlocke.ts",
 ].sort();
 
 describe("Objektscore nur intern", () => {

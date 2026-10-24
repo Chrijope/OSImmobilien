@@ -1,6 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { sendeVorlage } from '../_shared/transactional-versand.ts'
 import { automatikSchutz } from '../_shared/automatik-schutz.ts'
+import { baueNachfrageGlocken, nachfrageTage, schreibweisen as tagSchreibweisen } from '../_shared/termin-nachfrage.ts'
 import {
   alteErinnerungVerschickt,
   checklistenTerminErinnern,
@@ -34,6 +35,10 @@ import {
  * Annahme, send-erstgespraech-reminders kuemmere sich darum; fuer die steht
  * aber kein Zeitplan in den Migrationen. Wie doppelte Mails ausgeschlossen
  * sind, steht in `_shared/termin-checkliste.ts`.
+ *
+ * Seit dem 24.10.2026 zusätzlich die Glocke „Wie lief der Termin?“ an den
+ * Zuständigen, am Morgen nach einem Termin ohne eingetragenes Ergebnis. Regeln
+ * in `_shared/termin-nachfrage.ts`. Ein Fehler dort hält die Mails nicht auf.
  */
 
 const corsHeaders = {
@@ -201,6 +206,52 @@ function saubereAnrede(anrede: string | null | undefined): string {
   return ''
 }
 
+/**
+ * Die Glocken „Wie lief der Termin?“ für gestern und vorgestern anlegen.
+ * Gibt zurück, wie viele neu entstanden sind.
+ */
+// deno-lint-ignore no-explicit-any
+async function sendeTerminNachfragen(supabase: any, jetzt: Date): Promise<number> {
+  const tage = nachfrageTage(jetzt)
+  if (tage.length === 0) return 0
+  const { data: termine, error } = await supabase
+    .from('aktivitaeten')
+    .select('id, kunde_id, beschreibung, faellig_am, uhrzeit, erledigt_am')
+    .eq('art', 'meeting')
+    .is('erledigt_am', null)
+    .in('faellig_am', [...new Set(tage.flatMap(tagSchreibweisen))])
+  if (error) throw error
+  if (!termine?.length) return 0
+
+  const ids = termine.map((t: { id: string }) => t.id)
+  const { data: buchungen, error: buchungsFehler } = await supabase
+    .from('buchungen').select('aktivitaet_id, status').in('aktivitaet_id', ids)
+  if (buchungsFehler) throw buchungsFehler
+  const kundenIds = [...new Set(termine.map((t: { kunde_id: string | null }) => t.kunde_id).filter(Boolean))]
+  const { data: kontaktZeilen, error: kontaktFehler } = await supabase
+    .from('kontakte').select('id, vorname, nachname, zustaendig_id').in('id', kundenIds)
+  if (kontaktFehler) throw kontaktFehler
+
+  const glocken = baueNachfrageGlocken({
+    termine,
+    buchungsStatus: new Map((buchungen || []).map((b: { aktivitaet_id: string; status: string }) => [b.aktivitaet_id, b.status])),
+    kontakte: new Map((kontaktZeilen || []).map((k: { id: string; vorname?: string; nachname?: string; zustaendig_id?: string | null }) =>
+      [k.id, { zustaendigId: k.zustaendig_id || null, name: `${k.vorname || ''} ${k.nachname || ''}`.trim() || 'Kunde' }])),
+    tage,
+  })
+
+  let neu = 0
+  for (const glocke of glocken) {
+    // Einzeln, damit eine schon vorhandene Glocke (23505, Sperrindex) die
+    // übrigen nicht mitreißt. Jeder Lauf am selben Tag trifft dieselbe Sperre.
+    const { error: einfuegeFehler } = await supabase.from('benachrichtigungen').insert(glocke)
+    if (einfuegeFehler?.code === '23505') continue
+    if (einfuegeFehler) { console.error('[termin-erinnerungen] Nachfrage-Glocke nicht angelegt', einfuegeFehler); continue }
+    neu++
+  }
+  return neu
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders })
 
@@ -225,6 +276,15 @@ Deno.serve(async (req) => {
   const basisAdresse = (Deno.env.get('APP_BASE_URL') || 'https://osimmobilien.netlify.app').trim()
 
   const supabase = createClient(supabaseUrl, serviceKey)
+
+  // Vor den Mails und getrennt von ihnen: Scheitert die Nachfrage, gehen die
+  // Erinnerungen an die Kunden trotzdem hinaus.
+  let nachfragen = 0
+  try {
+    nachfragen = await sendeTerminNachfragen(supabase, new Date())
+  } catch (fehler) {
+    console.error('[termin-erinnerungen] Nachfrage nach dem Termin fehlgeschlagen', fehler)
+  }
 
   try {
     const jetzt = new Date()
@@ -558,7 +618,7 @@ Deno.serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ ok: true, geprueft: (termine || []).length, gesendet, uebersprungen, fehlgeschlagen }),
+      JSON.stringify({ ok: true, geprueft: (termine || []).length, gesendet, uebersprungen, fehlgeschlagen, nachfragen }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     )
   } catch (fehler) {

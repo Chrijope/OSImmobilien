@@ -9,7 +9,7 @@
  * mindestens eine Einheit im Angebot alle gesetzten Filter erfüllt.
  */
 import { berechneInvestment, type InvestmentEingabe } from "./investmentrechner/rechenkern";
-import { einheitScoreBasis } from "./objektScoreDaten";
+import { einheitScoreBasis } from "@/lib/objektScoreDaten";
 import type { ObjektData, ObjektWohnung } from "./objekteStore";
 
 export type AfaArt = "linear" | "degressiv" | "gutachten" | "7b";

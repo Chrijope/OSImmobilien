@@ -11,6 +11,7 @@ import { useInvestmentInboxTriggers } from "@/hooks/useInvestmentInboxTriggers";
 import { useFollowUpInboxEscalation } from "@/hooks/useFollowUpInboxEscalation";
 import { useKontaktversuchInboxReminder } from "@/hooks/useKontaktversuchInboxReminder";
 import { useStagnationInboxNudges } from "@/hooks/useStagnationInboxNudges";
+import { useNeueEinheitGlocke } from "@/hooks/useNeueEinheitGlocke";
 import { useWarteraumBenachrichtigung } from "@/hooks/useWarteraumBenachrichtigung";
 import { useRealtimeChannelMonitor } from "@/hooks/useRealtimeChannelMonitor";
 import { useRoutenTabellen } from "@/hooks/useRoutenTabellen";
@@ -62,6 +63,7 @@ export function AppShell() {
   useFollowUpInboxEscalation(user.name, authUser?.id);
   useKontaktversuchInboxReminder(user.name, authUser?.id);
   useStagnationInboxNudges(user.name, authUser?.id);
+  useNeueEinheitGlocke(user.role, authUser?.id);
   useWarteraumBenachrichtigung(user.role, authUser?.id);
   useRealtimeChannelMonitor();
   // Laden je Route: bei jedem Seitenwechsel die Tabellen der neuen Seite holen.

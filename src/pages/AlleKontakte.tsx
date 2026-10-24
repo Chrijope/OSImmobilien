@@ -245,12 +245,15 @@ export default function AlleKontakte() {
       if (typeof stored.filterKategorie === "string") setFilterKategorie(stored.filterKategorie);
       if (typeof stored.showArchived === "boolean") setShowArchived(stored.showArchived);
     }
+    // Erst die Ansicht, dann die Stufen: `applyPreset` leert die Stufen, und
+    // ein Link wie ?preset=ohne_schritt&stufen=erstgespraech_geplant soll
+    // beides behalten (Aufräumliste, 24.10.2026).
+    const preset = searchParams.get("preset");
+    if (preset) applyPreset(preset);
     const stufeParam = searchParams.get("stufen") || searchParams.get("stufe");
     if (stufeParam) {
       setStufenFilter(stufeParam.split(",").map((s) => s.trim()).filter(Boolean));
     }
-    const preset = searchParams.get("preset");
-    if (preset) applyPreset(preset);
   }, [settingsLoaded, settings, searchParams]);
 
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
