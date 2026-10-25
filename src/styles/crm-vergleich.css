@@ -1,0 +1,5 @@
+/* Nur von der lokalen DEV-Vergleichsroute geladen. */
+.studio-vorschau{--leisten-hoehe:92px;display:flex;flex-direction:column;min-height:100vh}
+.studio-vergleich{min-height:92px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 22px;background:#12362a;color:#fff;position:relative;z-index:60;flex-wrap:wrap}
+.studio-vergleich strong{font-size:13px}.studio-vergleich small{display:block;font-size:10px;color:#c3ddcf;margin-top:5px}.studio-vergleich nav{display:flex;gap:6px;flex-wrap:wrap}.studio-vergleich a,.studio-vergleich button{padding:9px 11px;border:1px solid #ffffff36;border-radius:10px;font-size:12px}.studio-vergleich a[aria-current=page]{background:#fff;color:#12362a}.studio-vergleich button{background:#deeee4;color:#12362a}.studio-vergleich a:focus-visible,.studio-vergleich button:focus-visible{outline:2px solid #a7d7c5;outline-offset:3px}
+@media(max-width:1000px){.studio-vorschau{--leisten-hoehe:150px}.studio-vergleich{min-height:150px}}

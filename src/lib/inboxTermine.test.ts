@@ -112,3 +112,7 @@ describe("Termine für die Inbox", () => {
     expect(t.uhrzeit).toBe("—");
   });
 });
+
+it("entdoppelt verknüpfte Meetings auch bei abweichendem Titel", () => {
+  expect(sammle([basis()], [{meetingAktivitaetId:"a1",kontaktId:"k1",titel:"Anderer Titel",faelligAm:"2026-08-10"}])).toEqual([]);
+});

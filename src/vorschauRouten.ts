@@ -99,3 +99,8 @@ export const VorschauKundenprofilLinks = import.meta.env.DEV
 export const VorschauBeratungDruck = import.meta.env.DEV
   ? lazy(() => import("./pages/VorschauBeratungDruck"))
   : null;
+
+/** Originale CRM-Ansichten zum lokalen Designvergleich, ohne Anmeldung. */
+export const VorschauCrm = import.meta.env.DEV
+  ? lazy(() => import("./pages/VorschauCrm"))
+  : null;

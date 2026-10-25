@@ -170,3 +170,14 @@ describe("Vorschau-Route Druckansicht Beratungspräsentation", () => {
     expect(app).toMatch(/\{VorschauBeratungDruck && <Route path="\/vorschau\/beratung-druck"/);
   });
 });
+
+describe("CRM-Designvergleich", () => {
+  afterEach(() => { vi.unstubAllEnvs(); vi.resetModules(); });
+  it("ist ausschließlich lokal verfügbar", async () => {
+    vi.stubEnv("DEV", false);
+    expect((await import("./vorschauRouten")).VorschauCrm).toBeNull();
+    vi.resetModules();
+    vi.stubEnv("DEV", true);
+    expect((await import("./vorschauRouten")).VorschauCrm).not.toBeNull();
+  });
+});

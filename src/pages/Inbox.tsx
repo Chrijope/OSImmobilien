@@ -1,3 +1,5 @@
+import { alsDatumsString, heuteAlsString } from "@/lib/faelligkeit";
+import { leseInboxVorgaenge, mappeAufgaben, namenDerBewerber, type InboxVorgang } from "@/lib/inboxVorgaenge";
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { DashboardLayout } from "@/components/DashboardLayout";
@@ -8,19 +10,18 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Phone, Monitor, Clock, User, CheckCircle2, CalendarDays, Target, Eye } from "lucide-react";
 import { AlertTriangle, Play } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
-import { addAktivitaet, getAlleTermine } from "@/lib/aktivitaetenStore";
+import { addAktivitaet } from "@/lib/aktivitaetenStore";
 import { getInboxTasks, removeInboxTask, type InboxTask } from "@/lib/aktivitaetenStore";
-import { sammleInboxTermine, type InboxTermin } from "@/lib/inboxTermine";
+import { type InboxTermin } from "@/lib/inboxTermine";
 import { erledigeAufgabe, getAufgaben, getMeineAufgaben, oeffneAufgabe } from "@/lib/aufgabenStore";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/contexts/UserContext";
 import { markInboxTaskDone, unmarkInboxTaskDone, getDoneInboxIds, isTaskOverdue, toDateString, getTodayDateString } from "@/lib/inboxCountStore";
-import { getFollowUps, completeFollowUp, uncompleteFollowUp } from "@/lib/followUpStore";
+import { completeFollowUp, uncompleteFollowUp } from "@/lib/followUpStore";
 import { getBewerber, updateBewerber } from "@/lib/bewerbungStore";
-import { bewerberErinnerungen, istBewerberErinnerungId } from "@/lib/bewerberErinnerungen";
+import { istBewerberErinnerungId } from "@/lib/bewerberErinnerungen";
 import { siehtBewerberMeldungen } from "@/lib/bewerberRechte";
 import { getKontakte } from "@/lib/kundenStore";
-import { getInvestments } from "@/lib/investmentsStore";
 import { kontaktBelongsToUser } from "@/lib/kontaktOwnership";
 import { format, isToday, startOfWeek, endOfWeek, isWithinInterval } from "date-fns";
 import { de } from "date-fns/locale";
@@ -44,21 +45,7 @@ import { hinweisDialog } from "@/lib/confirm";
 import { tarnName } from "@/lib/vorfuehrmodus";
 import { ART_ZU_FILTER, FILTER_MAP, InboxFilterAuswahl } from "@/components/inbox/InboxFilterAuswahl";
 
-type DemoAufgabe = {
-  id: string;
-  titel: string;
-  beschreibung: string;
-  prioritaet: "niedrig" | "mittel" | "hoch" | "dringend";
-  typ: "anruf" | "meeting" | "follow_up" | "aufgabe" | "deadline";
-  faellig_am: string;
-  uhrzeit: string;
-  kundeId: string;
-  kundeName: string;
-  /** Gesetzt, wenn jemand anderes die Aufgabe gestellt hat. */
-  vonWem?: string;
-  /** Die Aufgabe hängt an einem Bewerber, kundeId ist dann die Bewerbungs-ID. */
-  bewerber?: boolean;
-};
+type DemoAufgabe = InboxVorgang;
 
 const now = new Date();
 
@@ -69,94 +56,6 @@ const TYP_ICONS: Record<string, typeof Phone> = {
 const TYP_LABELS: Record<string, string> = {
   anruf: "Anruf", meeting: "Meeting", follow_up: "Follow-Up", aufgabe: "Aufgabe", deadline: "Deadline",
 };
-
-// Parst TT.MM.JJJJ → ISO String (oder gibt Input zurück, wenn schon ISO)
-function parseGermanDateToISO(d: string): string {
-  if (!d) return "";
-  const m = d.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
-  if (m) {
-    const [_, dd, mm, yyyy] = m;
-    return new Date(+yyyy, +mm - 1, +dd).toISOString();
-  }
-  return d;
-}
-
-// Manuelle Follow-Ups (bw-) und Rückrufe aus der Bedenkzeit (bz-), beide aus
-// derselben Ableitung in bewerberErinnerungen.ts.
-function getBewerberFollowUps(): DemoAufgabe[] {
-  try {
-    return getBewerber()
-      .flatMap(bewerberErinnerungen)
-      .map(e => ({
-        id: e.id,
-        titel: e.titel,
-        beschreibung: e.beschreibung,
-        prioritaet: "mittel" as const,
-        typ: "follow_up" as const,
-        faellig_am: parseGermanDateToISO(e.faelligAm),
-        uhrzeit: e.uhrzeit || "—",
-        kundeId: e.bewerberId,
-        kundeName: e.name,
-      }));
-  } catch {
-    return [];
-  }
-}
-
-/**
- * Aufgaben aus der Tabelle `aufgaben` in das Anzeigeformat der Inbox bringen.
- *
- * Diese Aufgaben hängen am Kunden und tragen einen Empfänger. Sie sind damit
- * die einzige Quelle, die eine Zuweisung überhaupt abbilden kann. Die alte
- * persönliche Liste bleibt vorerst daneben bestehen, damit nichts verschwindet.
- *
- * Eine Aufgabe kann statt am Kunden auch an einem Bewerber hängen, etwa die
- * HR-Aufgabe nach der Vertragsunterschrift. Dann zeigt die Karte den
- * Bewerbernamen und führt in die Bewerberakte statt zu "Ohne Kunde".
- */
-function mappeAufgaben(
-  rohe: ReturnType<typeof getMeineAufgaben>,
-  namenJeKunde: Map<string, string>,
-  namenJeBewerber: Map<string, string>,
-  eigeneId?: string,
-): DemoAufgabe[] {
-  return rohe.map((a) => {
-    const basis = {
-      id: `ag-${a.id}`,
-      titel: a.titel,
-      beschreibung: a.beschreibung || "",
-      prioritaet: a.prioritaet,
-      typ: a.typ,
-      faellig_am: a.faelligAm || "",
-      uhrzeit: a.uhrzeit || "—",
-      vonWem: a.benutzerId && eigeneId && a.benutzerId !== eigeneId ? (a as any).erstelltVonName || "einem Kollegen" : undefined,
-    };
-    if (a.bewerbungId) {
-      return {
-        ...basis,
-        kundeId: a.bewerbungId,
-        kundeName: namenJeBewerber.get(a.bewerbungId) || "Bewerber",
-        bewerber: true,
-      };
-    }
-    return {
-      ...basis,
-      kundeId: a.kontaktId || "",
-      kundeName: (a.kontaktId && namenJeKunde.get(a.kontaktId)) || "Ohne Kunde",
-    };
-  });
-}
-
-/** Bewerbungs-ID zu Anzeigename, aus dem Zwischenspeicher. */
-function namenDerBewerber(): Map<string, string> {
-  const m = new Map<string, string>();
-  try {
-    getBewerber().forEach((b) => {
-      m.set(b.id, [b.vorname, b.nachname].filter(Boolean).join(" ").trim() || "Bewerber");
-    });
-  } catch { /* ignore */ }
-  return m;
-}
 
 function getGreeting(): string {
   const h = new Date().getHours();
@@ -207,6 +106,7 @@ const Inbox = () => {
   const [suchParameter] = useSearchParams();
   const parameterUmfang = suchParameter.get("umfang");
   const parameterArt = suchParameter.get("art");
+  const parameterFaellig = suchParameter.get("faellig");
   // Eine einzelne Aufgabe, auf die eine Glocke zeigt, etwa die Anfrage zum
   // Empfehlungsprogramm aus dem Kundenportal. Sie wird hervorgehoben.
   const parameterAufgabe = suchParameter.get("aufgabe");
@@ -304,137 +204,25 @@ const Inbox = () => {
     erledigt: (DemoAufgabe & { erledigtAm: string })[];
     termine: InboxTermin[];
   } => {
-    // Bewusst hier gelesen und nicht ausserhalb: Diese Funktion laeuft auch aus
-    // einem aelteren Rendern heraus, eine Liste von damals waere veraltet.
     const doneIds = [...getDoneInboxIds(), ...lokalErledigt.current];
-    // Namen der Bewerber für Aufgaben, die an einer Bewerbung hängen. Aus
-    // demselben Grund frisch gelesen wie doneIds.
-    const namenJeBewerber = namenDerBewerber();
-    const sourceTasks: InboxTask[] = isViewingOther ? (remoteTasks || []) : getInboxTasks();
-    const storedTasks: DemoAufgabe[] = sourceTasks.map(t => ({
-      id: t.id,
-      titel: t.titel,
-      beschreibung: t.beschreibung,
-      prioritaet: t.prioritaet,
-      typ: t.typ,
-      faellig_am: t.faellig_am,
-      uhrzeit: t.uhrzeit,
-      kundeId: t.kundeId,
-      kundeName: t.kundeName,
-    }));
-
-    // Aufgaben aus der Tabelle: eigene und die, die mir jemand zugewiesen hat.
-    // In der fremden Ansicht die des betrachteten Nutzers.
     const sammelSicht = viewUserId === "all" || viewUserId === "team";
-    const zielId = isViewingOther && !sammelSicht ? viewUserId : authUser?.id;
-
-    // In der Teamsicht zählen nur Aufgaben, die jemand aus der eigenen
-    // Downline abarbeiten soll.
-    const downlineIds = new Set(
-      getJuniorsForRecruiter(authUser?.id || "").map(j => j.userId),
-    );
-
-    const aufgabenTasks: DemoAufgabe[] = sammelSicht && isViewingOther
-      ? mappeAufgaben(
-          getAufgaben().filter(a => {
-            if (a.status === "erledigt" || a.status === "abgesagt") return false;
-            if (viewUserId === "all") return true;
-            const zustaendig = a.zugewiesenAn || a.benutzerId;
-            return !!zustaendig && downlineIds.has(zustaendig);
-          }),
-          namenJeKunde,
-          namenJeBewerber,
-          authUser?.id,
-        )
-      : mappeAufgaben(getMeineAufgaben(zielId), namenJeKunde, namenJeBewerber, authUser?.id);
-
-    // Follow-Ups: in der eigenen Sicht die eigenen Kunden, in der Sammelsicht
-    // je nach Umfang das Team oder alle.
-    const followUpTasks: DemoAufgabe[] = isViewingOther && !sammelSicht
-      ? []
-      : getFollowUps()
-          .filter(f => {
-            if (f.status === "erledigt") return false;
-            if (!sammelSicht) return ownedKundeIds.has(f.kundeId);
-            if (viewUserId === "all") return true;
-            const kunde = getKontakte().find(k => k.id === f.kundeId);
-            const z = kunde ? (kunde.zustaendig_id || (kunde as any).zustaendigId) : undefined;
-            return !!z && downlineIds.has(z);
-          })
-          .map(f => ({
-            id: `fu-${f.id}`,
-            titel: f.titel,
-            beschreibung: f.beschreibung,
-            prioritaet: f.prioritaet === "hoch" ? "hoch" : f.prioritaet === "niedrig" ? "niedrig" : "mittel",
-            typ: "follow_up" as const,
-            faellig_am: f.faelligAm,
-            uhrzeit: "—",
-            kundeId: f.kundeId,
-            kundeName: f.kundeName,
-          }));
-
-    // Bewerber-Follow-Ups gehören HR. Alle anderen Rollen, auch Admin und
-    // Inhaber, sehen sie nicht mehr, siehe siehtBewerberMeldungen().
-    const bewerberFollowUps: DemoAufgabe[] = (isViewingOther || !darfBewerberSehen) ? [] : getBewerberFollowUps();
-    let allOpen = [...storedTasks, ...aufgabenTasks, ...followUpTasks, ...bewerberFollowUps];
-
-    // Finanzierungspartner: nur Aufgaben zu Kunden, die ihn betreffen.
-    // Seit 11.10.2026 zählt jedes Investment: Steht eines in Reservierung
-    // oder Finanzierung, gehören die Aufgaben des Kunden dazu. Vorher zählte
-    // nur die Kontaktstufe, und die Aufgaben eines zweiten Investments fielen
-    // weg, sobald ein anderes weiter war.
-    if (!isViewingOther && (user.role || "").toLowerCase() === "finanzierungspartner") {
-      const FIN_STAGES = new Set(["reservierung", "finanzierung", "bankgutachter", "besichtigung"]);
-      const finKunden = new Set<string>();
-      try {
-        getInvestments().forEach((inv) => {
-          if (FIN_STAGES.has(String(inv.pipelineStufe || "").toLowerCase())) finKunden.add(inv.kontaktId);
-        });
-      } catch { /* ignore */ }
-      allOpen = allOpen.filter(t => finKunden.has(t.kundeId || ""));
+    const namenJeBewerber = namenDerBewerber();
+    // Die Einzelansicht eines Kollegen bleibt eine explizite Remote-Abfrage.
+    if (isViewingOther && !sammelSicht) {
+      return {
+        offen: [...(remoteTasks || []), ...mappeAufgaben(getMeineAufgaben(viewUserId),namenJeKunde,namenJeBewerber,authUser?.id)],
+        erledigt: [], termine: [],
+      };
     }
-
-    const offen = isViewingOther ? allOpen : allOpen.filter(t => !doneIds.includes(t.id));
-
-    // Erledigte: die abgehakten aus der alten Liste plus die geschlossenen
-    // Aufgaben aus der Tabelle.
-    const erledigteAusTabelle = isViewingOther
-      ? []
-      : mappeAufgaben(
-          getAufgaben().filter(
-            a =>
-              a.status === "erledigt" &&
-              (a.zugewiesenAn ? a.zugewiesenAn === authUser?.id : a.benutzerId === authUser?.id),
-          ),
-          namenJeKunde,
-          namenJeBewerber,
-          authUser?.id,
-        ).map(t => ({ ...t, erledigtAm: new Date().toISOString() }));
-
-    const erledigt = isViewingOther
-      ? []
-      : [
-          ...storedTasks.filter(t => doneIds.includes(t.id)).map(t => ({ ...t, erledigtAm: new Date().toISOString() })),
-          ...erledigteAusTabelle,
-        ];
-
-    // Termine kommen direkt aus den Aktivitäten. Sie hängen nicht an einer
-    // Aufgabe und erscheinen deshalb auch dann, wenn sie über den
-    // Buchungslink entstanden sind. Die fremde Ansicht bleibt aussen vor: Sie
-    // zeigt die Aufgaben eines Kollegen, und welche Kontakte der sehen darf,
-    // rechnet diese Seite nicht aus.
-    const termine = isViewingOther
-      ? []
-      : sammleInboxTermine({
-          aktivitaeten: getAlleTermine(),
-          erlaubteKundeIds: ownedKundeIds,
-          namenJeKunde,
-          // Die Aufgaben aller Status, damit ein abgehaktes Meeting nicht als
-          // Termin zurückkommt.
-          aufgaben: getAufgaben(),
-        });
-
-    return { offen, erledigt, termine };
+    const gemeinsam = leseInboxVorgaenge({userId:authUser?.id,userName:user.name,role:user.role,
+      sicht:viewUserId === "all" ? "firma" : viewUserId === "team" ? "team" : "eigen",erledigteIds:[...lokalErledigt.current]});
+    const erledigt = isViewingOther ? [] : [
+      ...getInboxTasks().filter(t => doneIds.includes(t.id)).map(t => ({...t,erledigtAm:new Date().toISOString()})),
+      ...mappeAufgaben(getAufgaben().filter(a => a.status === "erledigt" &&
+        (a.zugewiesenAn ? a.zugewiesenAn === authUser?.id : a.benutzerId === authUser?.id)),namenJeKunde,namenJeBewerber,authUser?.id)
+        .map(t => ({...t,erledigtAm:new Date().toISOString()})),
+    ];
+    return {...gemeinsam,erledigt};
   };
 
   const { offen: initialOpen, erledigt: initialDone, termine: initialTermine } = sammleOffene();
@@ -458,10 +246,10 @@ const Inbox = () => {
       // Die Kachel auf dem Dashboard zählt alle offenen Punkte, nicht nur die
       // von heute. Bliebe die Inbox auf "Heute" stehen, käme man aus einer
       // Kachel mit sechs Einträgen in eine leere Liste.
-      setViewMode("alle");
+      setViewMode(parameterFaellig === "heute" ? "heute" : "alle");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parameterUmfang, parameterArt, darfFremdeInboxSehen]);
+  }, [parameterUmfang, parameterArt, parameterFaellig, darfFremdeInboxSehen]);
 
   // Re-sync wenn Quelle wechselt (Admin-Filter)
   useEffect(() => {
@@ -509,7 +297,7 @@ const Inbox = () => {
   const weekEnd = endOfWeek(now, { weekStartsOn: 1 });
 
   const heuteAufgaben = useMemo(
-    () => aufgaben.filter((a) => isToday(new Date(a.faellig_am))),
+    () => aufgaben.filter((a) => !alsDatumsString(a.faellig_am) || alsDatumsString(a.faellig_am) === heuteAlsString()),
     [aufgaben]
   );
 

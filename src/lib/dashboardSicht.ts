@@ -56,7 +56,7 @@ export function useDashboardFilter(weiteSicht: boolean): {
   setzeZeitraum: (z: Zeitraum) => void;
   setzeSicht: (s: Sicht) => void;
 } {
-  const vorgabeSicht: Sicht = weiteSicht ? "firma" : "eigen";
+  const vorgabeSicht: Sicht = "eigen";
   const [zeitraum, setZ] = useState<Zeitraum>("monat");
   const [sicht, setS] = useState<Sicht>(vorgabeSicht);
 

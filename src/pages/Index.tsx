@@ -268,7 +268,7 @@ const Index = () => {
   const tagesGlaubenssatz = glaubenssatzDesTages(now);
 
   const GreetingHero = ({ subtitle }: { subtitle?: string }) => (
-    <header className="relative mb-6 overflow-hidden rounded-3xl border border-primary/10 bg-gradient-to-br from-card via-card to-accent/40 p-5 shadow-sm md:p-7">
+    <header data-studio="dashboard-begruessung" className="relative mb-6 overflow-hidden rounded-3xl border border-primary/10 bg-gradient-to-br from-card via-card to-accent/40 p-5 shadow-sm md:p-7">
       <div className="pointer-events-none absolute -right-12 -top-20 h-60 w-60 rounded-full bg-primary/5 blur-3xl" aria-hidden="true" />
       <div className="relative flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">

@@ -30,7 +30,7 @@ export function starteAnruf(telefon: string | undefined | null): void {
  * Wo im CRM auf die Nummer geklickt wurde. Steht im Verlauf, damit später
  * nachvollziehbar ist, aus welcher Ansicht heraus gewählt wurde.
  */
-export type AnrufQuelle = "Kundenprofil" | "Alle Kontakte" | "Powerdialer" | "Schnellaktion";
+export type AnrufQuelle = "Kundenprofil" | "Alle Kontakte" | "Powerdialer" | "Schnellaktion" | "Dashboard";
 
 /** Ein zweiter Klick innerhalb dieser Zeit legt keinen zweiten Eintrag an. */
 export const ANRUF_VERMERK_SPERRE_MS = 60_000;

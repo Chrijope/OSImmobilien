@@ -1,0 +1,8 @@
+/* Ruhige Login-Bühne im dunklen CI-Grün. */
+@media screen {
+  [data-studio="login"] [data-studio="login-buehne"] {
+    background: linear-gradient(155deg,#123e30 0%,#175640 65%,#208463 100%) !important;
+  }
+  [data-studio="login"] :is(.login-raster,.login-licht-a,.login-licht-b) { animation:none !important; }
+  [data-studio="login"] .login-raster { opacity:.25; }
+}

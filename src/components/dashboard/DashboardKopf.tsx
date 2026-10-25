@@ -1,3 +1,4 @@
+import { HeuteZuTun } from "./HeuteZuTun";
 /**
  * Filterleiste und Kennzahlen ganz oben auf dem Dashboard.
  *
@@ -7,7 +8,7 @@
  *
  * Die Auswahl wird gespeichert, damit sie den nächsten Besuch überlebt.
  */
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -25,11 +26,6 @@ import { istFuehrungskraft, teamMitgliederIds } from "@/lib/datenSicht";
 import { loadZielplanung } from "@/lib/zielplanungStore";
 import { useLiveVersion } from "@/hooks/useLiveData";
 import { useDashboardFilter } from "@/lib/dashboardSicht";
-import { zaehleEigeneInboxKacheln } from "@/lib/inboxKpiCounts";
-import { sammleOffenePunkte, zaehleOffenePunkte } from "@/lib/offenePunkte";
-import { getFollowUps } from "@/lib/followUpStore";
-import { getAufgaben } from "@/lib/aufgabenStore";
-import { liegtInZukunft } from "@/lib/faelligkeit";
 import { kontaktKaufpreis, investmentKaufpreis } from "@/lib/objektDatenPflicht";
 import { tarnName, unscharfKlasse } from "@/lib/vorfuehrmodus";
 import { istNieKontaktiert, istOhneNaechstenSchritt, type LiegengebliebenPruefung } from "@/lib/liegengeblieben";
@@ -88,20 +84,6 @@ export function DashboardKopf() {
 
   const { zeitraum, sicht, setzeZeitraum: waehleZeitraum, setzeSicht: waehleSicht } =
     useDashboardFilter(weiteSicht);
-  const [inboxTick, setInboxTick] = useState(0);
-
-  useEffect(() => {
-    const refresh = () => setInboxTick((v) => v + 1);
-    window.addEventListener("inbox-updated", refresh);
-    window.addEventListener("inbox-count-updated", refresh);
-    window.addEventListener("followups-updated", refresh);
-    return () => {
-      window.removeEventListener("inbox-updated", refresh);
-      window.removeEventListener("inbox-count-updated", refresh);
-      window.removeEventListener("followups-updated", refresh);
-    };
-  }, []);
-
   const kpis = useMemo(() => {
     const { von, bis } = zeitraumGrenzen(zeitraum);
 
@@ -155,70 +137,6 @@ export function DashboardKopf() {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [zeitraum, sicht, user.name, authUser?.id, liveVersion]);
-
-  // In der eigenen Sicht wird exakt die eigene Inbox gezählt, mit derselben
-  // Funktion und denselben Kästchen wie dort. Nur so stimmen die Zahlen auf
-  // beiden Seiten überein.
-  //
-  // Team- und Firmensicht kann die Inbox nicht abbilden, sie kennt nur die
-  // eigene Liste. Dafür greift die gemeinsame Auswertung über alle Kunden im
-  // gewählten Umfang.
-  const punkte = useMemo(() => {
-    if (sicht === "eigen") {
-      return zaehleEigeneInboxKacheln({
-        userName: user.name,
-        userId: authUser?.id,
-        role: user.role,
-        // Auf dem Dashboard zählt nur, was heute ansteht oder überfällig ist.
-        nurFaellig: true,
-      });
-    }
-
-    const alleKontakte = getKontakte();
-    const meineKundenIds = new Set(
-      alleKontakte
-        .filter((k) => kontaktBelongsToUser(k, { userName: user.name, userId: authUser?.id }))
-        .map((k) => k.id),
-    );
-    const teamIds = teamMitgliederIds(authUser?.id);
-    const teamKundenIds = new Set(
-      alleKontakte
-        .filter((k) => {
-          const z = k.zustaendig_id || (k as { zustaendigId?: string }).zustaendigId;
-          return !!z && teamIds.has(z);
-        })
-        .map((k) => k.id),
-    );
-
-    return zaehleOffenePunkte(
-      sammleOffenePunkte({
-        followUps: getFollowUps().map((f) => ({
-          id: f.id,
-          kundeId: f.kundeId,
-          kundeName: f.kundeName,
-          titel: f.titel,
-          faelligAm: f.faelligAm,
-          status: f.status,
-        })),
-        aufgaben: getAufgaben().map((a) => ({
-          id: a.id,
-          kontaktId: a.kontaktId,
-          typ: a.typ,
-          titel: a.titel,
-          faelligAm: a.faelligAm,
-          uhrzeit: a.uhrzeit,
-          status: a.status,
-          zugewiesenAn: a.zugewiesenAn,
-          benutzerId: a.benutzerId,
-        })),
-        meineKundenIds,
-        teamKundenIds,
-        sicht,
-        userId: authUser?.id,
-      }).filter((p) => !liegtInZukunft(p.faelligAm)),
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sicht, user.name, user.role, authUser?.id, liveVersion, inboxTick]);
 
   /*
    * Was hinter einer Zahl steckt.
@@ -316,7 +234,7 @@ export function DashboardKopf() {
   }, [sicht, zeitraum, liveVersion]);
 
   const kacheln: Array<{
-    bereich: "heute" | "fortschritt";
+    bereich: "heute" | "fortschritt" | "hinweise";
     label: string;
     wert: string;
     zusatz?: string;
@@ -417,46 +335,7 @@ export function DashboardKopf() {
           : undefined,
     },
     {
-      bereich: "heute",
-      label: "Offene Follow-Ups",
-      wert: String(punkte.followUpsOffen),
-      zusatz:
-        punkte.followUpsUeberfaellig > 0
-          ? `davon ${punkte.followUpsUeberfaellig} überfällig`
-          : "keiner überfällig",
-      ton: punkte.followUpsUeberfaellig > 0 ? "warn" : "gut",
-      ziel: punkte.followUpsOffen > 0 ? `/inbox?umfang=${sicht}&art=follow_up` : undefined,
-      zielText: "In der Inbox erledigen",
-    },
-    {
-      bereich: "heute",
-      label: "Offene Aufgaben",
-      wert: String(punkte.aufgabenOffen),
-      zusatz:
-        punkte.aufgabenUeberfaellig > 0
-          ? `davon ${punkte.aufgabenUeberfaellig} überfällig`
-          : "keine überfällig",
-      ton: punkte.aufgabenUeberfaellig > 0 ? "warn" : "gut",
-      ziel: punkte.aufgabenOffen > 0 ? `/inbox?umfang=${sicht}&art=aufgabe` : undefined,
-      zielText: "In der Inbox erledigen",
-    },
-    {
-      // Anrufe, Meetings und Deadlines sind in der Inbox eigene Filter. Sie
-      // gehören weder zu den Follow-Ups noch zu den Aufgaben, dürfen aber auch
-      // nicht unter den Tisch fallen.
-      bereich: "heute",
-      label: "Anrufe und Termine",
-      wert: String(punkte.sonstigeOffen),
-      zusatz:
-        punkte.sonstigeUeberfaellig > 0
-          ? `davon ${punkte.sonstigeUeberfaellig} überfällig`
-          : "keine überfällig",
-      ton: punkte.sonstigeUeberfaellig > 0 ? "warn" : "gut",
-      ziel: punkte.sonstigeOffen > 0 ? `/inbox?umfang=${sicht}&art=termine` : undefined,
-      zielText: "In der Inbox erledigen",
-    },
-    {
-      bereich: "heute",
+      bereich: "hinweise",
       label: "Ohne nächsten Schritt",
       wert: String(liegen.ohneSchritt.length),
       zusatz: liegen.ohneSchritt.length > 0 ? "kein Termin, keine Aufgabe, kein Follow-Up" : "alle haben einen nächsten Schritt",
@@ -469,7 +348,7 @@ export function DashboardKopf() {
         "neue Leads ohne ersten Kontakt stehen in der Kachel daneben. In „Alle Kontakte“ als Ansicht „Ohne nächsten Schritt“.",
     },
     {
-      bereich: "heute",
+      bereich: "hinweise",
       label: "Neu, noch kein Kontakt",
       wert: String(liegen.neu.length),
       zusatz: liegen.neu.length > 0 ? "noch nie angerufen" : "alle neuen Leads sind kontaktiert",
@@ -554,7 +433,7 @@ export function DashboardKopf() {
   };
 
   return (
-    <div className="space-y-6">
+    <div data-studio="dashboard-kopf" className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-muted-foreground">Dein Überblick</p>
         {/*
@@ -576,21 +455,7 @@ export function DashboardKopf() {
         )}
       </div>
 
-      <section aria-labelledby="dashboard-heute-title" className="rounded-2xl border-l-[5px] border-l-[#CCAC05] bg-gradient-to-br from-[#12362A] to-[#1B5A45] p-4 text-white md:p-6">
-        <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h2 id="dashboard-heute-title" className="text-xl font-semibold tracking-tight">Heute im Fokus</h2>
-            <p className="mt-1 text-sm text-white/75">Heute fällig und überfällig · {SICHT_LABEL[sicht]}</p>
-          </div>
-          {/* Hauptaktion des Dashboards, deshalb Marken-Orange. */}
-          <Link to={`/inbox?umfang=${sicht}`} className="btn-brand inline-flex min-h-10 items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2">
-            <Inbox className="h-4 w-4" aria-hidden="true" />Inbox öffnen<ArrowRight className="h-4 w-4" aria-hidden="true" />
-          </Link>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-5 gap-3">
-          {kacheln.filter((k) => k.bereich === "heute").map(renderKachel)}
-        </div>
-      </section>
+      <HeuteZuTun sicht={sicht} />
 
       {/*
         Fortschritt und Kennzahlen zeigen Vertriebszahlen: Abschluesse,
@@ -622,6 +487,10 @@ export function DashboardKopf() {
         </div>
       </section>
       )}
+
+      <section aria-label="Kontakte im Blick behalten" className="grid gap-3 sm:grid-cols-2 col-span-full">
+        {kacheln.filter(k => k.bereich === "hinweise").map(renderKachel)}
+      </section>
 
       {/*
         Die Liste hinter einer Kennzahl.

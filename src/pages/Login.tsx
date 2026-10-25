@@ -1,3 +1,4 @@
+import "@/styles/login-glas.css";
 import { supabase } from "@/integrations/supabase/client";
 
 import { useNavigate, Navigate } from "react-router-dom";
@@ -542,7 +543,7 @@ const Login = () => {
   );
 
   return (
-    <div data-lg="seite" className="min-h-screen w-full bg-white flex">
+    <div data-lg="seite" data-studio="login" className="min-h-screen w-full bg-white flex">
       {/*
         Die Bewegung der Bühne steht hier als eigener Stilblock und nicht in
         src/index.css, weil sie nur auf dieser einen Seite vorkommt. Animiert
@@ -564,7 +565,7 @@ const Login = () => {
       `}</style>
 
       {/* Linke Spalte: das Formular auf Weiß, ohne Karte und ohne Logo. */}
-      <div className="relative flex w-full flex-col items-center px-6 py-12 sm:px-10 lg:w-1/2 lg:px-14">
+      <div data-login="formular" className="relative flex w-full flex-col items-center px-6 py-12 sm:px-10 lg:w-1/2 lg:px-14">
         {/*
           Sprachumschalter, dezent oben rechts in der Formularspalte und auf
           Handy wie Desktop sichtbar. Er aendert nur die Anzeige dieser Seite
@@ -574,7 +575,7 @@ const Login = () => {
         <div className="absolute right-3 top-3 sm:right-5 sm:top-5">
           <LanguageToggle className="text-muted-foreground" />
         </div>
-        <div className={`my-auto w-full ${zugangsWeg ? "max-w-[440px]" : "max-w-[400px]"}`}>
+        <div data-studio="login-karte" className={`my-auto w-full ${zugangsWeg ? "max-w-[440px]" : "max-w-[400px]"}`}>
           {/*
             Marke nur auf schmalen Fenstern. Ab lg traegt sie die Buehne rechts,
             darunter faellt die Buehne weg und die Seite waere sonst voellig
@@ -614,6 +615,7 @@ const Login = () => {
         sonst rutschten die Vertrauensmerkmale unter die Kante.
       */}
       <div
+        data-studio="login-buehne"
         className="relative hidden overflow-hidden px-14 text-white lg:flex lg:w-1/2 lg:flex-col lg:justify-center lg:sticky lg:top-0 lg:h-screen lg:self-start"
         style={{
           background:
@@ -662,7 +664,7 @@ const Login = () => {
           <img src={LOGO_DUNKEL_URL} alt="OS Real Estate GmbH" className="h-9 w-auto object-contain" />
         </div>
 
-        <div className="relative z-10 max-w-[430px]">
+        <div data-login="botschaft" className="relative z-10 max-w-[430px]">
           {/* Helles Blau statt --primary. Das Markenblau ist auf dieser
               dunklen Fläche zu kontrastarm. Der Wert ist derselbe, den
               pdfBranding als accentLight und index.css in .beratung-dark
@@ -679,7 +681,7 @@ const Login = () => {
         </div>
 
         {/* Vertrauensmerkmale. Bewusst nur Belegbares, siehe Bericht. */}
-        <div className="absolute bottom-14 left-14 right-14 z-10 flex flex-wrap gap-x-8 gap-y-4 border-t border-white/15 pt-4">
+        <div data-login="vertrauen" className="absolute bottom-14 left-14 right-14 z-10 flex flex-wrap gap-x-8 gap-y-4 border-t border-white/15 pt-4">
           <div className="text-[12px] text-white/60">
             <span className="mb-0.5 block text-[13.5px] font-semibold text-white">{t("auth.login.buehne.verschluesselt_titel")}</span>
             {t("auth.login.buehne.verschluesselt_text")}

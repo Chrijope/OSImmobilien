@@ -22,6 +22,7 @@ export const FILTER_NAMEN = Object.keys(FILTER_MAP);
 
 /** Übersetzt den Parameter aus dem Dashboard in den Namen des Filters. */
 export const ART_ZU_FILTER: Record<string, string> = {
+  alle: "Alle",
   follow_up: "Follow-Ups",
   aufgabe: "Aufgaben",
   termine: "Anrufe & Termine",

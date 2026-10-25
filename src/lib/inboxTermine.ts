@@ -34,6 +34,7 @@ export interface TerminAktivitaet {
 
 /** Was von einer Aufgabe gebraucht wird, um die Doppelung zu erkennen. */
 export interface TerminAufgabe {
+  meetingAktivitaetId?: string;
   kontaktId?: string;
   titel?: string;
   faelligAm?: string;
@@ -109,6 +110,7 @@ export function sammleInboxTermine({
   aufgaben?: TerminAufgabe[];
   jetzt?: number;
 }): InboxTermin[] {
+  const verknuepfteMeetings = new Set(aufgaben.map(a => a.meetingAktivitaetId).filter(Boolean));
   const alsAufgabeVorhanden = new Set(
     aufgaben.map((a) => paarSchluessel(a.kontaktId, a.titel, a.faelligAm)),
   );
@@ -117,6 +119,7 @@ export function sammleInboxTermine({
 
   for (const a of aktivitaeten) {
     if (a.art !== "meeting") continue;
+    if (verknuepfteMeetings.has(a.id)) continue;
     if (a.erledigtAm) continue;
     if (!a.faelligAm) continue;
     if (!erlaubteKundeIds.has(a.kundeId)) continue;

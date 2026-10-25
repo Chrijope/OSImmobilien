@@ -17,10 +17,7 @@ vi.mock("@/lib/kontaktOwnership", () => ({ kontaktBelongsToUser: () => true }));
 vi.mock("@/lib/datenSicht", () => ({ istFuehrungskraft: () => state.wide, teamMitgliederIds: () => new Set() }));
 vi.mock("@/lib/zielplanungStore", () => ({ loadZielplanung: () => ({ verkaufsvolumen: [] }) }));
 vi.mock("@/lib/dashboardSicht", () => ({ useDashboardFilter: () => ({ zeitraum: "monat", sicht: "eigen", setzeZeitraum: state.period, setzeSicht: state.scope }) }));
-vi.mock("@/lib/inboxKpiCounts", () => ({ zaehleEigeneInboxKacheln: () => ({ followUpsOffen: state.empty ? 0 : 3, followUpsUeberfaellig: state.empty ? 0 : 1, aufgabenOffen: 2, aufgabenUeberfaellig: 0, sonstigeOffen: 4, sonstigeUeberfaellig: 0 }) }));
-vi.mock("@/lib/offenePunkte", () => ({ sammleOffenePunkte: () => [], zaehleOffenePunkte: () => ({}) }));
-vi.mock("@/lib/followUpStore", () => ({ getFollowUps: () => [] }));
-vi.mock("@/lib/aufgabenStore", () => ({ getAufgaben: () => [] }));
+vi.mock("./HeuteZuTun", () => ({ HeuteZuTun: () => <section aria-label="Heute zu tun">Gemeinsame Vorgangsliste</section> }));
 vi.mock("@/lib/objektDatenPflicht", () => ({ kontaktKaufpreis: () => 840000 }));
 vi.mock("@/lib/vorfuehrmodus", () => ({ tarnName: (s: string) => s, unscharfKlasse: (s: string) => s }));
 vi.mock("@/lib/dashboardKpis", () => ({
@@ -37,15 +34,15 @@ beforeEach(() => { state.wide = false; state.empty = false; state.role = "vertri
 const arbeit = ["Offene Follow-Ups", "Offene Aufgaben", "Anrufe und Termine"];
 const fortschritt = ["Umsatz beurkundet", "Offene Reservierungen", "Notartermine", "In Bearbeitung", "Conversion"];
 describe("Dashboard-Kennzahlen und Aktionen", () => {
-  it("behält alle acht Kennzahlen, ihre Werte und Erläuterungen in den passenden Gruppen", () => {
+  it("behält Fortschrittskennzahlen neben der gemeinsamen Vorgangsliste", () => {
     const { container } = mount();
-    const heute = screen.getByRole("region", { name: "Heute im Fokus" });
+    const heute = screen.getByRole("region", { name: "Heute zu tun" });
     const zahlen = screen.getByRole("region", { name: "Fortschritt & Kennzahlen" });
-    arbeit.forEach((label) => expect(within(heute).getByText(label)).toBeVisible());
+    expect(within(heute).getByText("Gemeinsame Vorgangsliste")).toBeVisible();
     fortschritt.forEach((label) => expect(within(zahlen).getByText(label)).toBeVisible());
-    [...arbeit, ...fortschritt].forEach((label) => expect(screen.getAllByText(label)).toHaveLength(1));
+    fortschritt.forEach((label) => expect(screen.getAllByText(label)).toHaveLength(1));
     ["840 T€", "70 % vom Ziel (1,2 Mio €)", "2 / 3", "12", "dazu 3 unbearbeitete Leads", "25 %", "Erstgespräch bis Reservierung · Haus: 25 %"].forEach((value) => expect(within(zahlen).getByText(value)).toBeVisible());
-    expect(within(heute).getByText("davon 1 überfällig")).toBeVisible();
+
     if (process.env.DASHBOARD_QA_HTML) writeFileSync(process.env.DASHBOARD_QA_HTML, container.innerHTML);
   });
   it("öffnet weiterhin die Nachweise und von dort die Kundenakte", () => {
@@ -55,11 +52,6 @@ describe("Dashboard-Kennzahlen und Aktionen", () => {
     expect(within(dialog).getByText("Anna Weber")).toBeVisible();
     fireEvent.click(within(dialog).getByRole("button", { name: /Anna Weber/ }));
     expect(screen.getByTestId("location")).toHaveTextContent("/kunden/k1");
-  });
-  it.each([[0, "follow_up"], [1, "aufgabe"], [2, "termine"]])("öffnet für Arbeitskarte %s den bisherigen Inbox-Filter", (index, art) => {
-    mount();
-    fireEvent.click(screen.getAllByRole("button", { name: "In der Inbox erledigen" })[index]);
-    expect(screen.getByTestId("location")).toHaveTextContent(`/inbox?umfang=eigen&art=${art}`);
   });
   it("behält Zeitfilter und begrenzt die Datensicht auf berechtigte Rollen", () => {
     const { unmount } = mount();
@@ -75,8 +67,7 @@ describe("Dashboard-Kennzahlen und Aktionen", () => {
     state.empty = true; mount();
     expect(screen.getByText("Umsatz beurkundet")).toBeVisible();
     expect(screen.queryByRole("button", { name: /Umsatz beurkundet/ })).not.toBeInTheDocument();
-    expect(screen.getByText("keiner überfällig")).toBeVisible();
-    expect(screen.getAllByRole("button", { name: "In der Inbox erledigen" })).toHaveLength(2);
+    expect(screen.getByRole("region", { name: "Heute zu tun" })).toBeVisible();
   });
   it.each([["Kontakt anlegen", "/kontakte"], ["Alle Kontakte", "/alle-kontakte"], ["Teampartner anlegen", "/teampartner"], ["Vertriebsakademie", "/vertriebsakademie"]])("behält den Schnellzugriff %s", (label, route) => {
     state.role = "admin";

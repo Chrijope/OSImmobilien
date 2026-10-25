@@ -1,0 +1,225 @@
+/*
+ * Freigegebene CRM-Gestaltung, 25.10.2026. Aktivierung in main.tsx.
+ * Der Entwicklungsmodus erlaubt den Vergleich mit ?oberflaeche=bestand.
+ *
+ * Bestehende Komponenten, Inhalte, Zustände und Bedeutungsfarben bleiben
+ * erhalten. Das Dashboard bekommt eine kompaktere, responsive Gewichtung.
+ * Die vorhandenen Liquid-Glass-Regeln übernehmen weiterhin die Sonderfälle
+ * für Warnungen, Dialoge, mobile Geräte und reduzierte Transparenz.
+ *
+ * Nur Bildschirm: Exportkopien schalten data-glas auf "an" um; damit greift
+ * diese Schicht auch beim html2canvas-Export nicht, obwohl sie geladen ist.
+ */
+@media screen {
+  [data-crm-design="studio"][data-glas="liquid"] {
+    --lg-grund: 150 19% 91%;
+    --lg-deckkraft: .91;
+    --lg-deckkraft-leiste: .86;
+    --lg-deckkraft-einlage: .94;
+    --lg-deckkraft-schwebend: .98;
+    --lg-radius: 24px;
+    --lg-radius-einlage: 18px;
+    --lg-kante: hsl(0 0% 100% / .96);
+    --lg-kante-oben: hsl(0 0% 100%);
+    --lg-kante-unten: hsl(155 25% 70% / .35);
+    --lg-haarlinie: hsl(157 35% 29% / .13);
+    --lg-glanz-oben: hsl(0 0% 100% / .50);
+    --lg-innen:
+      inset 0 1px 0 hsl(0 0% 100%),
+      inset 0 -1px 0 hsl(157 35% 29% / .08);
+    --lg-schatten:
+      0 0 0 .5px hsl(157 35% 29% / .10),
+      0 2px 3px hsl(160 50% 14% / .04),
+      0 12px 26px -15px hsl(160 50% 14% / .28),
+      0 30px 48px -30px hsl(157 40% 30% / .24);
+    --lg-schatten-hoch:
+      0 0 0 1px hsl(157 40% 35% / .17),
+      0 6px 12px -6px hsl(160 50% 14% / .14),
+      0 22px 42px -20px hsl(157 40% 25% / .30);
+    --studio-innen-schatten: inset 0 1px 0 hsl(0 0% 100%),
+      0 0 0 .5px hsl(157 30% 25% / .10),
+      0 5px 12px -7px hsl(160 50% 14% / .22);
+    --studio-einlage: hsl(154 24% 91% / .80);
+  }
+
+  /* Dunkle Flächen brauchen eigene Lichtkanten statt weißer Schatten. */
+  [data-crm-design="studio"][data-glas="liquid"].dark {
+    --lg-grund: 158 44% 8%;
+    --lg-deckkraft: .90;
+    --lg-deckkraft-leiste: .92;
+    --lg-deckkraft-einlage: .94;
+    --lg-kante: hsl(158 38% 75% / .15);
+    --lg-kante-oben: hsl(158 38% 75% / .23);
+    --lg-kante-unten: hsl(0 0% 0% / .3);
+    --lg-haarlinie: hsl(0 0% 0% / .45);
+    --lg-glanz-oben: hsl(158 38% 75% / .04);
+    --lg-innen: inset 0 1px 0 hsl(158 38% 75% / .15), inset 0 -1px 0 hsl(0 0% 0% / .25);
+    --lg-schatten: 0 2px 5px hsl(0 0% 0% / .18), 0 18px 36px -18px hsl(0 0% 0% / .6);
+    --lg-schatten-hoch: 0 0 0 1px hsl(158 38% 75% / .2), 0 22px 42px -18px hsl(0 0% 0% / .65);
+    --studio-innen-schatten: inset 0 1px 0 hsl(158 38% 75% / .12), 0 5px 14px -7px hsl(0 0% 0% / .5);
+    --studio-einlage: hsl(158 25% 12% / .85);
+  }
+
+  /* Ein ruhiger Hintergrund macht die Kanten im Arbeitsalltag erkennbar. */
+  [data-crm-design="studio"][data-glas="liquid"] .lg-grund-wolken {
+    animation: none;
+    background:
+      radial-gradient(ellipse at 90% 8%, hsl(158 38% 75% / .40), transparent 52%),
+      radial-gradient(ellipse at 12% 86%, hsl(158 38% 75% / .24), transparent 48%);
+  }
+
+  /* Innere Arbeitskarten behalten ihre Farbbedeutung und eigene Verläufe. */
+  [data-crm-design="studio"][data-glas="liquid"] :is([data-ui="card"], [data-ui="dialog"], [data-ui="sheet"]) [data-ui="card"] {
+    box-shadow: var(--studio-innen-schatten);
+  }
+
+  /* Das Profil hat drei vorhandene Ebenen: Person, Arbeitsbereich, Verlauf. */
+  [data-crm-design="studio"][data-glas="liquid"] .kundenprofil-arbeitskarte {
+    background-color: hsl(var(--lg-glas) / .48);
+  }
+  [data-crm-design="studio"][data-glas="liquid"] .kundenprofil-navigation {
+    border-bottom-color: hsl(var(--primary) / .15);
+  }
+  [data-crm-design="studio"][data-glas="liquid"] .kundenprofil-felder > div {
+    border-bottom-color: hsl(var(--foreground) / .09);
+  }
+  [data-crm-design="studio"][data-glas="liquid"] .kundenprofil-abschnitte > [data-ui="card"] {
+    box-shadow: var(--lg-innen), var(--lg-schatten);
+  }
+
+  /* Gleiche Menüpunkte, Zähler und Gruppen, aber lesbarere aktive Flächen. */
+  [data-crm-design="studio"][data-glas="liquid"] [data-sidebar="menu-button"] {
+    border-radius: 11px;
+  }
+  [data-crm-design="studio"][data-glas="liquid"] [data-sidebar].sidebar-aktiv {
+    box-shadow: inset 0 1px 0 hsl(0 0% 100% / .25), 0 5px 12px -5px hsl(157 60% 21% / .4);
+  }
+  [data-crm-design="studio"][data-glas="liquid"] [data-lg="kopfbereich"] > header {
+    border-color: var(--lg-kante);
+    box-shadow: var(--lg-innen), var(--lg-schatten);
+  }
+
+  /* Weniger Pillen: Felder und Reiter bilden deutlich erkennbare Gruppen. */
+  [data-crm-design="studio"][data-glas="liquid"] [role="tablist"] {
+    border-radius: 13px;
+    background-color: var(--studio-einlage);
+    box-shadow: inset 0 1px 3px hsl(var(--foreground) / .06);
+  }
+  [data-crm-design="studio"][data-glas="liquid"] [role="tab"] {
+    border-radius: 10px;
+    transition-property: color, background-color, box-shadow;
+  }
+  [data-crm-design="studio"][data-glas="liquid"] [role="tab"][data-state="active"] {
+    box-shadow: var(--studio-innen-schatten);
+  }
+  [data-crm-design="studio"][data-glas="liquid"] [data-ui="field"] {
+    border-radius: 10px;
+    border-color: hsl(var(--foreground) / .19);
+    box-shadow: inset 0 1px 2px hsl(var(--foreground) / .035), 0 1px 0 hsl(var(--lg-glas) / .5);
+  }
+  [data-crm-design="studio"][data-glas="liquid"] [data-ui="field"]:focus-visible {
+    border-color: hsl(var(--ring));
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+  [data-crm-design="studio"][data-glas="liquid"] table thead tr {
+    background-color: var(--studio-einlage);
+    border-bottom-color: hsl(var(--foreground) / .16);
+  }
+  [data-crm-design="studio"][data-glas="liquid"] table tbody tr {
+    border-bottom-color: hsl(var(--foreground) / .09);
+  }
+
+  @media (max-width: 639px) {
+    [data-crm-design="studio"][data-glas="liquid"] {
+      --lg-radius: 18px;
+      --lg-radius-einlage: 14px;
+    }
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    [data-crm-design="studio"][data-glas="liquid"] .kundenprofil-arbeitskarte {
+      background-color: hsl(var(--lg-glas));
+    }
+  }
+}
+
+/* Zweite Entwurfsrunde: Priorität durch Flächen, nicht durch Weglassen. */
+@media screen {
+  [data-crm-design="studio"][data-glas="liquid"] [data-studio="dashboard-begruessung"] {
+    background: linear-gradient(125deg, hsl(var(--lg-glas) / .96), hsl(var(--accent) / .75));
+    border-color: var(--lg-kante);
+    border-radius: 26px;
+    box-shadow: var(--lg-innen), var(--lg-schatten);
+  }
+  [data-crm-design="studio"][data-glas="liquid"] [data-studio="dashboard-begruessung"] blockquote {
+    color: hsl(var(--muted-foreground));
+  }
+  [data-crm-design="studio"][data-glas="liquid"] section[aria-labelledby="dashboard-heute-title"] {
+    background: linear-gradient(120deg, hsl(var(--accent)), hsl(var(--lg-glas) / .8));
+    border-color: hsl(var(--primary) / .22);
+    border-radius: 24px;
+    box-shadow: var(--lg-innen), var(--lg-schatten);
+  }
+  [data-crm-design="studio"][data-glas="liquid"] section[aria-labelledby="dashboard-fortschritt-title"] {
+    padding: 22px;
+    background: hsl(var(--lg-glas) / .4);
+    border: 1px solid var(--lg-kante);
+    border-radius: 24px;
+  }
+  [data-crm-design="studio"][data-glas="liquid"] nav[aria-label="Dashboard-Bereiche"] {
+    background: hsl(var(--lg-glas) / .65);
+    border-color: var(--lg-kante);
+    border-radius: 20px;
+  }
+  [data-crm-design="studio"][data-glas="liquid"] nav[aria-label="Dashboard-Bereiche"] a {
+    background: hsl(var(--lg-glas) / .8);
+    border-color: hsl(var(--foreground) / .1);
+    box-shadow: var(--studio-innen-schatten);
+  }
+  [data-crm-design="studio"][data-glas="liquid"] [id^="naechste-schritte-"] {
+    background: linear-gradient(130deg, hsl(var(--accent)), hsl(var(--lg-glas) / .92));
+    border-color: hsl(var(--primary) / .4);
+    box-shadow: var(--lg-innen), var(--lg-schatten);
+  }
+  [data-crm-design="studio"][data-glas="liquid"] [id^="card-ueberblick-"] {
+    background: linear-gradient(150deg, hsl(var(--lg-glas) / .98), hsl(var(--accent) / .7));
+    box-shadow: var(--lg-innen), var(--lg-schatten);
+  }
+  [data-crm-design="studio"][data-glas="liquid"] .kundenprofil-navigation button {
+    border-radius: 10px;
+  }
+  [data-crm-design="studio"][data-glas="liquid"] .kundenprofil-navigation button.bg-primary\/10 {
+    box-shadow: inset 0 -2px 0 hsl(var(--primary)), var(--studio-innen-schatten);
+  }
+}
+
+/* Arbeitsübersicht: kompakter Einstieg, dunkler Fokusbereich, große Kennzahlen. */
+@media screen {
+  [data-crm-design="studio"][data-glas="liquid"] [data-studio="dashboard-begruessung"] {
+    padding:20px 24px;background:transparent;border-color:transparent;box-shadow:none;margin-bottom:16px;
+  }
+  [data-crm-design="studio"][data-glas="liquid"] [data-studio="dashboard-begruessung"] h1 { font-size:30px; }
+  [data-crm-design="studio"][data-glas="liquid"] [data-studio="dashboard-begruessung"] > div:last-child { margin-top:12px;padding:10px 14px;background:#ffffff70; }
+  [data-crm-design="studio"][data-glas="liquid"] #dashboard-aktionen h2 { font-size:14px;margin-bottom:8px; }
+  [data-crm-design="studio"][data-glas="liquid"] [data-studio="dashboard-kopf"] { display:grid;gap:16px; }
+  [data-crm-design="studio"][data-glas="liquid"] [data-studio="dashboard-kopf"] > * { margin-top:0;min-width:0; }
+  [data-crm-design="studio"][data-glas="liquid"] section[aria-labelledby="dashboard-heute-title"] {
+    background:linear-gradient(135deg,#123e30,#20664d);color:#fff;border:1px solid #ffffff50;border-radius:26px;padding:24px;box-shadow:0 20px 35px -22px #123e3099,inset 0 1px #ffffff40;
+  }
+  [data-crm-design="studio"][data-glas="liquid"] section[aria-labelledby="dashboard-heute-title"] > div:first-child .text-muted-foreground { color:#c0dacb; }
+  [data-crm-design="studio"][data-glas="liquid"] section[aria-labelledby="dashboard-heute-title"] > .grid { grid-template-columns:1fr;gap:10px; }
+  [data-crm-design="studio"][data-glas="liquid"] section[aria-labelledby="dashboard-heute-title"] [data-ui="kennzahl"] { display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:12px; }
+  [data-crm-design="studio"][data-glas="liquid"] section[aria-labelledby="dashboard-heute-title"] [data-ui="kennzahl-wert"] { grid-column:2;grid-row:1 / span 2;font-size:34px;margin:0; }
+  [data-crm-design="studio"][data-glas="liquid"] section[aria-labelledby="dashboard-heute-title"] [data-ui="kennzahl-zusatz"] { margin-top:4px; }
+  [data-crm-design="studio"][data-glas="liquid"] section[aria-labelledby="dashboard-fortschritt-title"] { padding:24px;background:#ffffff85; }
+  [data-crm-design="studio"][data-glas="liquid"] section[aria-labelledby="dashboard-fortschritt-title"] > .grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  [data-crm-design="studio"][data-glas="liquid"] section[aria-labelledby="dashboard-fortschritt-title"] > .grid > :first-child { grid-column:1 / -1;background:linear-gradient(120deg,#e2f2e9,#ffffff) !important; }
+  [data-crm-design="studio"][data-glas="liquid"] section[aria-labelledby="dashboard-fortschritt-title"] [data-ui="kennzahl-wert"] { font-size:36px; }
+  @media(min-width:1150px) {
+    [data-crm-design="studio"][data-glas="liquid"] [data-studio="dashboard-kopf"] { grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);align-items:start; }
+    [data-crm-design="studio"][data-glas="liquid"] [data-studio="dashboard-kopf"] > div:first-child { grid-column:1 / -1; }
+  }
+  @media(max-width:600px) {
+    [data-crm-design="studio"][data-glas="liquid"] section[aria-labelledby="dashboard-fortschritt-title"] > .grid { grid-template-columns:1fr; }
+  }
+}

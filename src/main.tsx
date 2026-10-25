@@ -70,6 +70,7 @@ import "./styles/design-glas.css";
   siehe `lib/designSchalter.ts`. Ohne das Merkmal ist diese Datei wirkungslos.
 */
 import "./styles/design-liquid.css";
+import "./styles/design-studio.css";
 import "./i18n";
 import { runLocalStorageMigration } from "./lib/localStorageMigration";
 import { wendeDesignAn } from "./lib/designSchalter";
@@ -79,6 +80,22 @@ import { EinbettungsHinweis } from "./components/EinbettungsHinweis";
 
 runLocalStorageMigration();
 wendeDesignAn();
+
+// Lokaler Gestaltungsvergleich auf den unveränderten CRM-Komponenten.
+// Freigegebene Gestaltung; der lokale Vergleich bleibt im Entwicklungsmodus.
+document.documentElement.dataset.crmDesign = "studio";
+if (import.meta.env.DEV) {
+  const wunsch = new URLSearchParams(window.location.search).get("oberflaeche");
+  let studio = wunsch === "studio";
+  try {
+    if (wunsch === "studio" || wunsch === "bestand") {
+      sessionStorage.setItem("osimmobilien.studio-vorschau", wunsch);
+    }
+    studio = sessionStorage.getItem("osimmobilien.studio-vorschau") === "studio";
+  } catch { /* Ohne Sitzungsspeicher gilt die Wahl aus der Adresse. */ }
+  if (studio) document.documentElement.dataset.crmDesign = "studio";
+  else if (wunsch === "bestand") delete document.documentElement.dataset.crmDesign;
+}
 
 // Schutz gegen Einbetten in fremde Seiten. Lovable sendet keine Header wie
 // X-Frame-Options, deshalb wird hier vor dem ersten Zeichnen geprüft. Die
