@@ -175,7 +175,7 @@ export function DashboardKopf() {
     }
     return { ohneSchritt, neu };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sicht, user.name, authUser?.id, liveVersion, inboxTick]);
+  }, [sicht, user.name, authUser?.id, liveVersion]);
 
   const [detail, setDetail] = useState<{ titel: string; zusatz?: string; eintraege: KpiEintrag[]; erklaerung?: string } | null>(null);
 
