@@ -120,6 +120,8 @@ export const ROUTEN_TABELLEN: Record<string, readonly string[]> = {
   // was der Kunde bekommt.
   "/immobilie/:token": [],
   "/immobilie/:token/wohnung/:weId": [],
+  // Der Vergleichslink lädt alles über `kunden-vergleich` (25.10.2026).
+  "/vergleich/:token": [],
   "/objekte/:id/kundenansicht": [],
   "/objekte/:id/einheiten/:weId/kundenansicht": [],
   "/impressum": [],

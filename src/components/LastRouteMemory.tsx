@@ -28,6 +28,8 @@ const EXCLUDED_PREFIXES = [
   "/kundenansicht/",
   /* Der Kundenlink zur Objektübersicht (Kundenansicht, 23.09.2026). */
   "/immobilie/",
+  /* Der Vergleichslink (25.10.2026). */
+  "/vergleich/",
   /* Bewusst als Praefix: Er schliesst auch die beiden Fenster des
      Bewerber-Videocalls aus (/closing-moderation und
      /closing-praesentation-entwurf). Sie gehen als eigener Tab auf und

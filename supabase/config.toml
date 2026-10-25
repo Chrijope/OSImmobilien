@@ -427,6 +427,11 @@ verify_jwt = true
 [functions.get-expose]
 verify_jwt = true
 
+# Vergleichslink (25.10.2026): POST legt an (Anmeldung wird in der Function geprueft),
+# GET liefert die Uebersicht zum Schluessel wie get-expose.
+[functions.kunden-vergleich]
+verify_jwt = true
+
 [functions.get-objektvorstellung]
 verify_jwt = true
 

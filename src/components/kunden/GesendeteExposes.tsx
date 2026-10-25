@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import { ChevronRight, Copy, ExternalLink, Loader2, Send, Undo2 } from "lucide-react";
+import { ChevronRight, Copy, ExternalLink, Loader2, Send, Undo2, Columns3 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { erstelleVergleich, istVergleichbar, VERGLEICH_MAX, VERGLEICH_MIN } from "@/lib/kundenVergleich";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
@@ -89,6 +91,9 @@ export function GesendeteExposes({ kontaktId, investmentId, kundeName, anfangsOf
   const [laedt, setLaedt] = useState(true);
   const [fehler, setFehler] = useState("");
   const [beschaeftigt, setBeschaeftigt] = useState<string | null>(null);
+  // Vergleichslink (25.10.2026): zwei bis drei aktive Einheiten-Exposés bündeln.
+  const [vergleich, setVergleich] = useState<Set<string>>(new Set());
+  const [vergleichLaeuft, setVergleichLaeuft] = useState(false);
   const rolle = useOptionalUser()?.user?.role;
   const darfUebersichtSenden = siehtAdminOnlyNavigation(rolle);
 
@@ -195,6 +200,26 @@ export function GesendeteExposes({ kontaktId, investmentId, kundeName, anfangsOf
     await laden();
   };
 
+  const vergleichUmschalten = (id: string) => setVergleich((s) => {
+    const n = new Set(s);
+    if (n.has(id)) n.delete(id);
+    else if (n.size < VERGLEICH_MAX) n.add(id);
+    return n;
+  });
+
+  const vergleichErstellen = async () => {
+    setVergleichLaeuft(true);
+    const erg = await erstelleVergleich({ kontaktId, investmentId, exposeIds: [...vergleich] });
+    setVergleichLaeuft(false);
+    if (!erg.ok || !erg.link) {
+      toast({ title: "Kein Vergleichslink erzeugt", description: erg.fehler || "Bitte erneut versuchen.", variant: "destructive" });
+      return;
+    }
+    setVergleich(new Set());
+    await inZwischenablage(erg.link, erg.gueltigBis);
+  };
+  const vergleichbare = eintraege.filter((e) => istVergleichbar(e));
+
   // Der Abbruch steht nach allen Hooks, React verlangt in jedem Durchlauf dieselben.
   if (laedt || (eintraege.length === 0 && !fehler)) return null;
 
@@ -226,6 +251,14 @@ export function GesendeteExposes({ kontaktId, investmentId, kundeName, anfangsOf
               // schmalen Spalte, dort drückten die Knöpfe den Text sonst auf null.
               // Der Text will mindestens 16rem, sonst rutschen die Knöpfe darunter.
               <li key={e.id} className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2.5" data-testid="gesendetes-expose">
+                {vergleichbare.length >= VERGLEICH_MIN && istVergleichbar(e) && (
+                  <Checkbox
+                    checked={vergleich.has(e.id)}
+                    disabled={!vergleich.has(e.id) && vergleich.size >= VERGLEICH_MAX}
+                    onCheckedChange={() => vergleichUmschalten(e.id)}
+                    aria-label={`${exposeBezeichnungAusCache(e.objekt_id, wohnungDesLinks(e))} für den Vergleich wählen`}
+                  />
+                )}
                 <div className="min-w-0 flex-[1_1_16rem]" data-testid="gesendetes-expose-text">
                   <span className="flex flex-wrap items-center gap-2">
                     <ArtMarke e={e} />
@@ -269,6 +302,17 @@ export function GesendeteExposes({ kontaktId, investmentId, kundeName, anfangsOf
             );
           })}
         </ul>
+      )}
+      {offen && !fehler && vergleichbare.length >= VERGLEICH_MIN && (
+        <div className="flex flex-wrap items-center gap-2" data-testid="vergleich-erstellen">
+          <Button size="sm" variant="outline" className={KNOPF} disabled={vergleich.size < VERGLEICH_MIN || vergleichLaeuft} onClick={() => void vergleichErstellen()}>
+            {vergleichLaeuft ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Columns3 className="h-3.5 w-3.5" />}
+            Vergleichslink erstellen{vergleich.size ? ` (${vergleich.size})` : ""}
+          </Button>
+          <span className="text-[11px] text-muted-foreground">
+            {VERGLEICH_MIN} bis {VERGLEICH_MAX} aktive Exposés anhaken. Der Kunde sieht sie nebeneinander; der Link gilt so lange wie das früheste.
+          </span>
+        </div>
       )}
     </div>
   );

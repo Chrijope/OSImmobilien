@@ -381,6 +381,7 @@ const OEFFENTLICHE_PFADE = [
   "/expose",
   "/objektvorstellung",
   "/immobilie",
+  "/vergleich",
   "/impressum",
   "/datenschutz",
   "/objekt-akquise",

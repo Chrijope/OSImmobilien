@@ -257,6 +257,7 @@ const KundenansichtWohnung = lazyRoute(() => import("./pages/KundenansichtWohnun
 const ExposePublic = lazyRoute(() => import("./pages/ExposePublic"));
 // Die Kundenansicht („Objektübersicht“): öffentlich über den Kundenlink, intern als Vorschau.
 const KundenansichtPublic = lazyRoute(() => import("./pages/KundenansichtPublic"));
+const VergleichPublic = lazyRoute(() => import("./pages/VergleichPublic"));
 const KundenansichtVorschau = lazyRoute(() => import("./pages/KundenansichtVorschau"));
 const ExposePublicV2 = lazyRoute(() => import("./pages/ExposePublicV2"));
 const ObjektvorstellungPublic = lazyRoute(() => import("./pages/ObjektvorstellungPublic"));
@@ -548,6 +549,8 @@ const App = () => (
                     Kopfzeile: Die Seite wird im Termin dem Kunden gezeigt. */}
                 <Route path="/immobilie/:token" element={<KundenansichtPublic />} />
                 <Route path="/immobilie/:token/wohnung/:weId" element={<KundenansichtPublic />} />
+                {/* Vergleichslink mit zwei bis drei Exposés (25.10.2026), ebenfalls ohne AppShell. */}
+                <Route path="/vergleich/:token" element={<VergleichPublic />} />
                 <Route path="/objekte/:id/kundenansicht" element={<PraesentationGuard><KundenansichtVorschau /></PraesentationGuard>} />
                 <Route path="/objekte/:id/einheiten/:weId/kundenansicht" element={<PraesentationGuard><KundenansichtVorschau /></PraesentationGuard>} />
                 {/* Das interne Exposé (Einheit und ganzes Objekt), seit dem

@@ -32,7 +32,7 @@ import { KontaktTypBadge } from "@/components/kunden/KontaktTypBadge";
 import { getEffectivePipelineStufe, calculateLogicalPipelineStufe, buildPipelineKarten, getInvestmentStufenFuerKunde, PIPELINE_STUFEN, buildBucketEntries, type PipelineStufe } from "@/lib/kontaktPipeline";
 import { stufenFilterLabel, kontaktGanzVerloren, darfVorruecken, PIPELINE_SPALTEN, spaltenStufe } from "@/lib/pipelineStufen";
 import { sichtfenster } from "@/lib/pipelineSichtfenster";
-import { getInboxTasks } from "@/lib/aktivitaetenStore";
+import { addAktivitaet, getInboxTasks } from "@/lib/aktivitaetenStore";
 import { getFollowUps } from "@/lib/followUpStore";
 // Die Schwellen stehen an einer Stelle. Die Pipeline hatte lange eine eigene
 // Kopie, in der Beratungsgespräch, die NoShow-Stufen und Selbstauskunft
@@ -904,6 +904,15 @@ export default function Pipeline() {
           uhrzeit: v.uhrzeit,
           erstelltVonName: user.name,
         });
+      } else if (!["verloren", "abrechnung", "abgeschlossen"].includes(state.to)) {
+        // Bewusst ohne Wiedervorlage: im Verlauf vermerkt, damit es später nachvollziehbar bleibt.
+        addAktivitaet({
+          kundeId,
+          art: "notiz",
+          beschreibung: `Stufe von „${state.fromLabel}“ auf „${state.toLabel}“ gesetzt, ohne nächsten Schritt.`,
+          von: user.name,
+          erledigtAm: new Date().toISOString(),
+        });
       }
       toast({ title: "Stufe aktualisiert ✓", description: `${state.kundeName}: ${state.fromLabel} → ${state.toLabel}${state.wiedervorlageTage ? ", Wiedervorlage angelegt" : ""}` });
     } catch (e) {
@@ -1584,7 +1593,7 @@ export default function Pipeline() {
                       </Button>
                     ))}
                   </div>
-                  <p className="text-xs text-muted-foreground">Legt eine Aufgabe an dich an. Ohne Auswahl bleibt es beim Stufenwechsel; der Kontakt erscheint dann unter „Ohne nächsten Schritt“.</p>
+                  <p className="text-xs text-muted-foreground">Legt eine Aufgabe an dich an. Ohne Auswahl steht ein Vermerk im Verlauf, und der Kontakt erscheint unter „Ohne nächsten Schritt“.</p>
                 </div>
               )}
               <AlertDialogFooter>
