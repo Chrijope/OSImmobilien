@@ -120,7 +120,7 @@ export default function VorschauCrm() {
         <AppSidebar />
         <div data-lg="spalte" className="relative flex-1 min-w-0 flex flex-col">
           <Kopfbereich><HeaderBar /></Kopfbereich>
-          <main className="flex-1 px-3 py-6">
+          <main className="flex-1 px-3 py-6 max-md:pb-[calc(5.5rem+env(safe-area-inset-bottom))]">
             <Routes>
               <Route index element={<Index />} />
               <Route path="kunden/:id" element={<KundenDetail />} />

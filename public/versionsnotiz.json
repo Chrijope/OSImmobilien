@@ -2880,5 +2880,23 @@
     "zielrollen": [
       "alle"
     ]
+  },
+  {
+    "nr": 141,
+    "datum": "2026-10-26",
+    "art": "neu",
+    "titel": "Tableiste am Handy",
+    "kurztext": "Am Handy erreichst du deine wichtigsten Bereiche jetzt über eine Leiste unten, wie bei Apps auf dem iPhone.",
+    "wasHeisstDasFuerDich": [
+      "Im Vertrieb: Start, Kontakte, Pipeline und Aufgaben.",
+      "In der Führung: Start, Kontakte, Objekte und Inbox.",
+      "„Mehr“ öffnet das komplette Menü wie bisher.",
+      "Am Schreibtisch ändert sich nichts."
+    ],
+    "soFindestDuEs": "Am Handy unten am Bildschirmrand",
+    "kritisch": false,
+    "zielrollen": [
+      "alle"
+    ]
   }
 ]

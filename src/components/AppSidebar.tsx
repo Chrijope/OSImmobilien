@@ -33,6 +33,8 @@ import { siehtBewerberMeldungen } from "@/lib/bewerberRechte";
 import { notifyUser } from "@/lib/bellNotifications";
 import { darfJetztErinnern, merkeErinnerung } from "@/lib/inboxErinnerungTakt";
 import { useSidebarCounts } from "@/hooks/useSidebarCounts";
+import { TabLeiste } from "@/components/TabLeiste";
+import { tableisteEintraege } from "@/lib/tableiste";
 import { getNewObjekteCount, initObjekteSeenIfNeeded } from "@/lib/objekteStore";
 import { supabase } from "@/integrations/supabase/client";
 import { getKontakte } from "@/lib/kundenStore";
@@ -871,7 +873,15 @@ export function AppSidebar() {
     });
   const showFavoritesBlock = !isMobile && !collapsed && favoriteItems.length > 0;
 
+  // Tableiste am Handy (B1): aus genau den Einträgen, die diese Leiste zeigt.
+  const tabNavKontext = { rolle: user.role ?? "", customPermissions, identitaet: { email: authUser?.email, userId: authUser?.id } };
+  const tabEintraege = isMobile
+    ? tableisteEintraege(gruppenMitZaehler.flatMap((gruppe) => gruppe.items).filter((item) => darfNavEintrag(item, tabNavKontext) && !entwurfGesperrt(item, user.role)), user.role ?? "")
+    : [];
+
   return (
+    <>
+    {isMobile && tabEintraege.length > 0 && <TabLeiste eintraege={tabEintraege} />}
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
        <div className="hidden md:flex h-28 items-center justify-center px-2 py-2 border-b border-sidebar-border">
           {!collapsed ? (
@@ -893,5 +903,6 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarRoleSelector />
     </Sidebar>
+    </>
   );
 }

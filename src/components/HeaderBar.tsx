@@ -981,7 +981,7 @@ export function HeaderBar() {
                               <Icon className="h-4 w-4" />
                             </button>
                           </TooltipTrigger>
-                          <TooltipContent side="bottom" className="z-[80]">{label}</TooltipContent>
+                          <TooltipContent side="bottom" className="z-[75]">{label}</TooltipContent>
                         </Tooltip>
                       ))}
                     </div>
