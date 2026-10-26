@@ -16,6 +16,7 @@ import Index from "./Index";
 import KundenDetail from "./KundenDetail";
 import Objekte from "./Objekte";
 import Inbox from "./Inbox";
+import AlleKontakte from "./AlleKontakte";
 import { heuteAlsString } from "@/lib/faelligkeit";
 
 /* DEV-only: Originalansichten, eigener Beispieldatensatz, kein Schreibzugriff.
@@ -126,6 +127,7 @@ export default function VorschauCrm() {
               <Route path="kunden/:id" element={<KundenDetail />} />
               <Route path="objekte" element={<Objekte />} />
               <Route path="inbox" element={<Inbox />} />
+              <Route path="kontakte" element={<AlleKontakte />} />
             </Routes>
           </main>
           {/* Wie im echten Rahmen (DashboardLayout): Tastenkürzel (A8). */}

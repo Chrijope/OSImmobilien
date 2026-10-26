@@ -43,6 +43,9 @@ import {
 } from "@/lib/focusQueueStore";
 import { hinweisDialog } from "@/lib/confirm";
 import { tarnName } from "@/lib/vorfuehrmodus";
+import { KontaktKompakt } from "@/components/kunden/KontaktKompakt";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useListenTastatur } from "@/hooks/useListenTastatur";
 import { ART_ZU_FILTER, FILTER_MAP, InboxFilterAuswahl } from "@/components/inbox/InboxFilterAuswahl";
 
 type DemoAufgabe = InboxVorgang;
@@ -234,6 +237,33 @@ const Inbox = () => {
   const [viewMode, setViewMode] = useState<"heute" | "woche" | "alle" | "erledigt">("heute");
   const { toast } = useToast();
   const navigate = useNavigate();
+  /*
+   * Liste und Detail nebeneinander ab 768 px (B3, 26.10.2026), wie eine
+   * NavigationSplitView: Klick oder ↑ ↓ wählt, rechts steht der Kontakt
+   * kompakt, „Profil öffnen“ oder Doppelklick führt ins Profil. Am Handy
+   * öffnet ein Klick weiter direkt das Profil.
+   */
+  const geteilt = !useIsMobile();
+  const [auswahl, setAuswahl] = useState<{ kundeId: string; eintrag: string } | null>(null);
+  const auswahlKunde = auswahl?.kundeId ?? null;
+  const listenTastatur = useListenTastatur();
+  const oeffne = (kundeId: string, bewerber: boolean, eintrag: string) => {
+    if (bewerber) navigate(`/bewerberprozess?openBewerber=${kundeId}`);
+    else if (geteilt) setAuswahl({ kundeId, eintrag });
+    else navigate(`/kunden/${kundeId}`);
+  };
+  const zeile = (kundeId: string, bewerber: boolean, eintrag: string) =>
+    geteilt && !bewerber
+      ? {
+          "data-listenzeile": "",
+          tabIndex: 0,
+          "aria-selected": auswahl?.eintrag === eintrag,
+          onFocus: (e: React.FocusEvent<HTMLElement>) => { if (e.target === e.currentTarget) setAuswahl({ kundeId, eintrag }); },
+          onDoubleClick: () => navigate(`/kunden/${kundeId}`),
+          // ↵ auf der gewählten Zeile öffnet das Profil, ↑ ↓ wählen (useListenTastatur).
+          onKeyDown: (e: React.KeyboardEvent<HTMLElement>) => { if (e.key === "Enter" && e.target === e.currentTarget) navigate(`/kunden/${kundeId}`); },
+        }
+      : {};
 
   useEffect(() => {
     if (parameterUmfang && darfFremdeInboxSehen) {
@@ -363,6 +393,12 @@ const Inbox = () => {
   }, [termine, activeFilter, viewMode]);
 
   const filteredOverdue = useMemo(() => applyFilter(overdueAufgaben), [overdueAufgaben, activeFilter]);
+  // Liste und Detail: ohne Auswahl gleich den ersten Eintrag zeigen, damit rechts nichts leer steht.
+  useEffect(() => {
+    if (!geteilt || auswahl) return;
+    const erster = [...filteredOverdue, ...filteredOpen].find((x) => !(x.bewerber || istBewerberErinnerungId(x.id)));
+    if (erster) setAuswahl({ kundeId: erster.kundeId, eintrag: erster.id });
+  }, [geteilt, auswahl, filteredOverdue, filteredOpen]);
   const filteredErledigt = useMemo(() => applyFilter(erledigteAufgaben), [erledigteAufgaben, activeFilter]);
 
   const handleComplete = async (task: DemoAufgabe) => {
@@ -462,12 +498,13 @@ const Inbox = () => {
       <Card
         key={a.id}
         id={`inbox-${a.id}`}
-        className={`p-4 flex items-center gap-4 ${overdue ? "border-destructive/60 bg-destructive/5" : ""} ${a.id === zielKarte ? "ring-2 ring-primary" : ""}`}
+        {...zeile(a.kundeId, isBewerber, a.id)}
+        className={`p-4 flex items-center gap-4 outline-none focus-visible:ring-2 focus-visible:ring-ring ${overdue ? "border-destructive/60 bg-destructive/5" : ""} ${a.id === zielKarte ? "ring-2 ring-primary" : ""} ${geteilt && auswahl?.eintrag === a.id && !isBewerber ? "ring-2 ring-primary/50" : ""}`}
       >
         <Checkbox className="mt-0.5" onCheckedChange={() => handleComplete(a)} />
         <div
           className="flex-1 min-w-0 cursor-pointer"
-          onClick={() => navigate(isBewerber ? `/bewerberprozess?openBewerber=${a.kundeId}` : `/kunden/${a.kundeId}`)}
+          onClick={() => oeffne(a.kundeId, isBewerber, a.id)}
         >
           <div className="flex items-center gap-2">
             <p className={`text-sm font-medium ${overdue ? "text-destructive" : "text-foreground"}`}>{a.titel}</p>
@@ -511,11 +548,11 @@ const Inbox = () => {
     const heute = isToday(new Date(t.zeitpunkt));
 
     return (
-      <Card key={t.id} className="p-4 flex items-center gap-4">
+      <Card key={t.id} {...zeile(t.kundeId, false, t.id)} className={`p-4 flex items-center gap-4 outline-none focus-visible:ring-2 focus-visible:ring-ring ${geteilt && auswahl?.eintrag === t.id ? "ring-2 ring-primary/50" : ""}`}>
         <div className="h-9 w-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
           <Icon className="h-4 w-4" />
         </div>
-        <div className="flex-1 min-w-0 cursor-pointer" onClick={() => navigate(`/kunden/${t.kundeId}`)}>
+        <div className="flex-1 min-w-0 cursor-pointer" onClick={() => oeffne(t.kundeId, false, t.id)}>
           <div className="flex items-center gap-2">
             <p className="text-sm font-medium text-foreground">{t.titel}</p>
             <Badge variant="secondary" className="text-bildunterschrift">
@@ -706,6 +743,8 @@ const Inbox = () => {
           <InboxFilterAuswahl wert={activeFilter} onWert={setActiveFilter} />
         </div>
 
+        <div className={geteilt ? "grid grid-cols-[minmax(0,1fr)_340px] items-start gap-4" : ""}>
+        <div className="min-w-0 space-y-6" onKeyDown={geteilt ? listenTastatur.onKeyDown : undefined}>
         {/* Open tasks (nicht im Erledigt-Modus) */}
         {viewMode !== "erledigt" && (
           <>
@@ -808,6 +847,13 @@ const Inbox = () => {
             )}
           </div>
         )}
+        </div>
+        {geteilt && (
+          <aside aria-label="Ausgewählter Kontakt" className="sticky top-4">
+            <KontaktKompakt kontaktId={auswahlKunde} />
+          </aside>
+        )}
+        </div>
       </div>
     </DashboardLayout>
   );

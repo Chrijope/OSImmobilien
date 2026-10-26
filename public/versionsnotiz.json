@@ -2898,5 +2898,22 @@
     "zielrollen": [
       "alle"
     ]
+  },
+  {
+    "nr": 142,
+    "datum": "2026-10-26",
+    "art": "geaendert",
+    "titel": "Inbox: Liste und Kontakt nebeneinander",
+    "kurztext": "Auf Tablet und Rechner steht in der Inbox rechts neben der Liste jetzt der Kontakt zum gewählten Eintrag, kompakt mit Telefon, E-Mail und nächstem Schritt.",
+    "wasHeisstDasFuerDich": [
+      "Ein Klick auf einen Eintrag zeigt rechts den Kontakt, ohne die Inbox zu verlassen.",
+      "Mit ↑ und ↓ gehst du durch die Einträge, ↵ oder Doppelklick öffnet das Profil.",
+      "Am Handy öffnet ein Tipp wie bisher direkt das Profil."
+    ],
+    "soFindestDuEs": "Inbox",
+    "kritisch": false,
+    "zielrollen": [
+      "alle"
+    ]
   }
 ]
