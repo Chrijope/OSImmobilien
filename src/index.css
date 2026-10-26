@@ -3173,3 +3173,39 @@
 [data-sidebar].sidebar-aktiv:hover {
   color: hsl(var(--primary));
 }
+
+/*
+ * Federkurve (A3, 26.10.2026): eine gedämpfte Feder wie SwiftUI `.snappy`,
+ * knapp 4 % Überschwingen, ohne Bibliothek. Die Stützpunkte sind in
+ * gleichen Zeitabständen aus der Federgleichung gerechnet (Dämpfung 0,716).
+ * Browser ohne `linear()` behalten `ease-out`. Eingesetzt wird sie über das
+ * Kennzeichen `data-feder` an Dialog, Blatt, Popover, Menü und Tableiste.
+ */
+:root {
+  --feder: cubic-bezier(0, 0, 0.2, 1);
+  --feder-dauer: 380ms;
+}
+@supports (animation-timing-function: linear(0, 1)) {
+  :root {
+    --feder: linear(0, 0.0416, 0.1426, 0.2738, 0.4141, 0.5493, 0.6709, 0.7743, 0.858, 0.9226, 0.97, 1.0026, 1.0233, 1.0348, 1.0394, 1.0393, 1.0362, 1.0314, 1.0259, 1.0204, 1.0153, 1.0108, 1.0071, 1.0042, 1);
+  }
+}
+@media screen {
+  [data-feder][data-state="open"] {
+    animation-timing-function: var(--feder);
+    animation-duration: var(--feder-dauer);
+  }
+}
+/* Bewegung reduzieren: nur einblenden, nicht skalieren und nicht schieben. */
+@media (prefers-reduced-motion: reduce) {
+  [data-feder] {
+    --tw-enter-scale: 1;
+    --tw-enter-translate-x: 0;
+    --tw-enter-translate-y: 0;
+    --tw-exit-scale: 1;
+    --tw-exit-translate-x: 0;
+    --tw-exit-translate-y: 0;
+    animation-timing-function: linear;
+    animation-duration: 150ms;
+  }
+}

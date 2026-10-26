@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Bell, Moon, Sun, Settings, MessageSquare, CheckSquare, Calendar, Trophy, GitBranch, Monitor, GraduationCap, ChevronRight, SlidersHorizontal, AtSign, LogOut, ShieldCheck, ShieldOff, Info, User, ArrowLeft } from "lucide-react";
+import { Bell, Moon, Sun, SunMoon, Settings, MessageSquare, CheckSquare, Calendar, Trophy, GitBranch, Monitor, GraduationCap, ChevronRight, SlidersHorizontal, AtSign, LogOut, ShieldCheck, ShieldOff, Info, User, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { TestModeHeaderBadge } from "@/components/TestModeBadge";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -148,7 +148,7 @@ function nameOderErsatz(name: unknown): string {
 }
 
 export function HeaderBar() {
-  const { user, darkMode, toggleDarkMode, logout, authUser } = useUser();
+  const { user, darkMode, toggleDarkMode, farbschema, setzeFarbschema, logout, authUser } = useUser();
   const navigate = useNavigate();
   const roleConfig = ROLES.find((r) => r.id === user.role);
   const [activeFilter, setActiveFilter] = useState<NotificationCategory>("alle");
@@ -891,13 +891,27 @@ export function HeaderBar() {
         </Dialog>
 
         {/* Dark/Light Mode - hidden on small mobile */}
-        <Button variant="ghost" size="icon" aria-label="Heller Modus" onClick={toggleDarkMode} className="hidden sm:inline-flex">
+        <Button variant="ghost" size="icon" aria-label={darkMode ? "Heller Modus" : "Dunkler Modus"} onClick={toggleDarkMode} className="hidden sm:inline-flex">
           {darkMode ? (
             <Sun className="h-5 w-5 text-muted-foreground" />
           ) : (
             <Moon className="h-5 w-5 text-muted-foreground" />
           )}
         </Button>
+        {/* Automatisch (A6, 26.10.2026): folgt dem Gerät, gemerkt je Gerät. */}
+        {setzeFarbschema && (
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Hell und Dunkel automatisch wie das Gerät"
+            title="Automatisch wie das Gerät"
+            aria-pressed={farbschema === "auto"}
+            onClick={() => setzeFarbschema("auto")}
+            className={`hidden sm:inline-flex ${farbschema === "auto" ? "bg-accent" : ""}`}
+          >
+            <SunMoon className={`h-5 w-5 ${farbschema === "auto" ? "text-primary" : "text-muted-foreground"}`} />
+          </Button>
+        )}
 
         {/* Vorfuehrmodus: nur Inhaber und Admin, der Schalter blendet sich fuer
             alle anderen selbst aus. Er steht in der Kopfzeile, weil der Modus

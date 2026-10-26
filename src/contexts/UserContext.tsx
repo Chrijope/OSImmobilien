@@ -15,6 +15,7 @@ import { rollenVarianteVonProfil } from "@/lib/rollenLabel";
 import type { Session, User } from "@supabase/supabase-js";
 import { seedTestDemoData, clearTestDemoData } from "@/lib/testDemoSeed";
 import { clearPersistedSupabaseSession } from "@/lib/sessionSecurity";
+import { GERAET_DUNKEL_ABFRAGE, istDunkel, ladeFarbschema, merkeFarbschema, type Farbschema } from "@/lib/farbschema";
 
 interface UserContextType {
   user: UserProfile;
@@ -22,6 +23,12 @@ interface UserContextType {
   darkMode: boolean;
   /** Ist das neue Aussehen eingeschaltet? Gilt je Nutzer. */
   toggleDarkMode: () => void;
+  /**
+   * Hell, Dunkel oder Automatisch (A6, 26.10.2026). Optional, weil die lokalen
+   * Vorschauen und das Artefakt einen eigenen, kleineren Kontext setzen.
+   */
+  farbschema?: Farbschema;
+  setzeFarbschema?: (schema: Farbschema) => void;
   isLoggedIn: boolean;
   login: (email: string, password: string) => Promise<{ error?: string }>;
   logout: () => Promise<void>;
@@ -56,7 +63,36 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<UserProfile>(DEFAULT_PROFILE);
-  const [darkMode, setDarkMode] = useState(false);
+  const [farbschema, setFarbschema] = useState<Farbschema>(() => ladeFarbschema());
+  const [geraetDunkel, setGeraetDunkel] = useState<boolean>(() => {
+    try { return window.matchMedia?.(GERAET_DUNKEL_ABFRAGE).matches ?? false; } catch { return false; }
+  });
+  const darkMode = istDunkel(farbschema, geraetDunkel);
+  // Bei „Automatisch“ dem Gerät folgen, auch wenn es während der Arbeit umschaltet.
+  useEffect(() => {
+    let abfrage: MediaQueryList | undefined;
+    try { abfrage = window.matchMedia?.(GERAET_DUNKEL_ABFRAGE); } catch { abfrage = undefined; }
+    if (!abfrage) return;
+    const aendern = (e: MediaQueryListEvent) => setGeraetDunkel(e.matches);
+    // Zusätzlich beim Zurückkehren in den Tab nachsehen: Wechselt das Gerät,
+    // während der Tab im Hintergrund liegt, kommt nicht überall ein Ereignis an.
+    const nachsehen = () => { if (document.visibilityState === "visible") setGeraetDunkel(abfrage!.matches); };
+    abfrage.addEventListener?.("change", aendern);
+    document.addEventListener("visibilitychange", nachsehen);
+    window.addEventListener("focus", nachsehen);
+    return () => {
+      abfrage?.removeEventListener?.("change", aendern);
+      document.removeEventListener("visibilitychange", nachsehen);
+      window.removeEventListener("focus", nachsehen);
+    };
+  }, []);
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", darkMode);
+  }, [darkMode]);
+  const setzeFarbschema = (schema: Farbschema) => {
+    setFarbschema(schema);
+    merkeFarbschema(schema);
+  };
   const demoMode = false;
 
   const trackLoginSession = async (userId: string) => {
@@ -463,13 +499,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     setUser(DEFAULT_PROFILE);
   };
 
-  const toggleDarkMode = () => {
-    setDarkMode((prev) => {
-      const next = !prev;
-      document.documentElement.classList.toggle("dark", next);
-      return next;
-    });
-  };
+  // Mond und Sonne wie bisher: schaltet fest auf das Gegenteil des Sichtbaren.
+  const toggleDarkMode = () => setzeFarbschema(darkMode ? "hell" : "dunkel");
 
   return (
     <UserContext.Provider
@@ -478,6 +509,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         setRole,
         darkMode,
         toggleDarkMode,
+        farbschema,
+        setzeFarbschema,
         isLoggedIn,
         login,
         logout,

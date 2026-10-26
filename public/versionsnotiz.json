@@ -2747,5 +2747,38 @@
     ],
     "soFindestDuEs": "Kundenprofil, linke Spalte.",
     "kritisch": false
+  },
+  {
+    "nr": 133,
+    "datum": "2026-10-26",
+    "art": "neu",
+    "titel": "Hell, Dunkel oder Automatisch",
+    "kurztext": "Neben Mond und Sonne in der Kopfleiste gibt es jetzt „Automatisch“. Das CRM folgt dann der Einstellung deines Geräts.",
+    "wasHeisstDasFuerDich": [
+      "Deine Wahl bleibt jetzt auch nach dem Neuladen erhalten.",
+      "Gemerkt wird je Gerät: Am Handy kann es anders sein als am Schreibtisch.",
+      "Mit „Automatisch“ wird das CRM abends dunkel, wenn dein Gerät das auch tut."
+    ],
+    "soFindestDuEs": "Kopfleiste oben rechts, neben dem Mond",
+    "kritisch": false,
+    "zielrollen": [
+      "alle"
+    ]
+  },
+  {
+    "nr": 134,
+    "datum": "2026-10-26",
+    "art": "geaendert",
+    "titel": "Ruhigere Bewegungen in Dialogen und Menüs",
+    "kurztext": "Dialoge, Seitenfenster, Menüs und Auswahlfelder öffnen jetzt mit einer weichen Federbewegung.",
+    "wasHeisstDasFuerDich": [
+      "Fenster gleiten sanft auf und kommen schneller zur Ruhe.",
+      "Hast du an deinem Gerät „Bewegung reduzieren“ eingeschaltet, blenden sie nur noch ein."
+    ],
+    "soFindestDuEs": "Überall, wo sich ein Dialog oder Menü öffnet",
+    "kritisch": false,
+    "zielrollen": [
+      "alle"
+    ]
   }
 ]

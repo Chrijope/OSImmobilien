@@ -45,6 +45,7 @@ const AlertDialogContent = React.forwardRef<
     <AlertDialogOverlay className={overlayClassName} />
     <AlertDialogPrimitive.Content
       ref={ref}
+      data-feder=""
       // Haken fuer Liquid Glass (styles/design-liquid.css), ohne Wirkung sonst.
       data-ui="dialog"
       className={cn(
