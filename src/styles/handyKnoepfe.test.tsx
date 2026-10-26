@@ -55,6 +55,8 @@ function regel(beschreibung: string, passt: (r: { selektor: string; rumpf: strin
 }
 
 const tapRegel = regel("40-Pixel-Regel", (r) => r.rumpf.includes("min-height: 40px") && r.selektor.includes('a[role="button"]'));
+const fingerRegel = regel("44-Punkt-Regel für Finger", (r) => r.rumpf.includes("min-height: 44px") && r.selektor.includes('a[role="button"]'));
+const trefferRegel = regel("Trefferfläche runder Knöpfe", (r) => r.rumpf.includes("inset: -8px"));
 const pillenRegel = regel("Pillen-Regel", (r) => r.rumpf.includes("padding-left: 0.85rem"));
 const kartenRegel = regel("Karten-Regel", (r) => r.selektor.startsWith(".bg-card button"));
 const auswahlRegel = regel("Kästchen-Regel", (r) => r.rumpf.includes("aspect-ratio: 1 / 1") && r.selektor.includes('[role="checkbox"]'));
@@ -123,6 +125,25 @@ describe("Knopf-Regeln der Handy-Schicht", () => {
       expect(knopf.matches(pillenRegel)).toBe(false);
       expect(knopf.matches(kartenRegel)).toBe(false);
     });
+  });
+
+  it("gibt Fingern 44 Punkt, ohne runde Symbolknöpfe oval zu machen (A2)", () => {
+    const ort = inKarte(
+      <>
+        <Button>Speichern</Button>
+        <Button size="icon" className="h-8 w-8 rounded-full" aria-label="Weiter">+</Button>
+        <button type="button" data-no-min className="px-3">Leiste</button>
+      </>,
+    );
+    const [normal, rund, leiste] = Array.from(ort.querySelectorAll("button"));
+    // Zweck: normale Knöpfe 44, wie die 40-Pixel-Regel mit Maus.
+    expect(normal.matches(fingerRegel)).toBe(normal.matches(tapRegel));
+    expect(normal.matches(fingerRegel)).toBe(true);
+    // Der runde Knopf wird nicht höher, bekommt aber die unsichtbare Fläche.
+    expect(rund.matches(fingerRegel)).toBe(false);
+    expect(rund.matches(trefferRegel.replace(/::after$/, ""))).toBe(true);
+    // Leisten mit eigenem Maß bleiben unberührt.
+    expect(leiste.matches(fingerRegel)).toBe(false);
   });
 
   it("drückt das große Foto der Galerie nicht auf 32 Pixel", () => {

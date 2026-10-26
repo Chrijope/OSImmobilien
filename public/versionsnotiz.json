@@ -2780,5 +2780,38 @@
     "zielrollen": [
       "alle"
     ]
+  },
+  {
+    "nr": 135,
+    "datum": "2026-10-26",
+    "art": "geaendert",
+    "titel": "Größere Tippflächen am Handy",
+    "kurztext": "Am Handy sind Knöpfe jetzt mindestens 44 Punkt hoch, wie bei Apple empfohlen. Runde Symbolknöpfe sehen gleich aus, reagieren aber auf eine größere Fläche.",
+    "wasHeisstDasFuerDich": [
+      "Du triffst Knöpfe mit dem Finger sicherer.",
+      "Am Schreibtisch mit Maus ändert sich nichts."
+    ],
+    "soFindestDuEs": "Überall im CRM am Handy",
+    "kritisch": false,
+    "zielrollen": [
+      "alle"
+    ]
+  },
+  {
+    "nr": 136,
+    "datum": "2026-10-26",
+    "art": "geaendert",
+    "titel": "Dialoge am Handy als Blatt von unten",
+    "kurztext": "Am Handy öffnen Dialoge jetzt als Blatt vom unteren Rand, mit einem Griff oben, wie du es von iOS kennst.",
+    "wasHeisstDasFuerDich": [
+      "Formulare liegen in Reichweite deines Daumens.",
+      "Die Bildschirmtastatur verdeckt den unteren Rand nicht mehr.",
+      "Am Schreibtisch bleiben Dialoge mittig wie bisher."
+    ],
+    "soFindestDuEs": "Zum Beispiel im Kundenprofil über Notiz, Aufgabe oder Anruf",
+    "kritisch": false,
+    "zielrollen": [
+      "alle"
+    ]
   }
 ]

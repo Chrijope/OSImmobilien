@@ -1526,7 +1526,8 @@
 
 /* Mobile dialog/popover adjustments */
 @media (max-width: 639px) {
-  [role="dialog"] {
+  /* Ohne die zentralen Dialoge: Das Blatt rechnet in dvh (A4). */
+  [role="dialog"]:not([data-ui="dialog"]) {
     max-width: calc(100vw - 1rem) !important;
     max-height: 90vh !important;
   }
@@ -1980,6 +1981,29 @@
   [role="button"],
   a[role="button"] { min-height: 40px; }
 
+  /* 5a) Finger statt Maus (A2, 26.10.2026): 44 Punkt wie bei Apple. Derselbe
+     Selektor wie oben, nur die Höhe größer; mit Maus am schmalen Fenster
+     bleibt es bei 40 px. Leisten, die selbst Maß nehmen, tragen data-no-min. */
+  @media (pointer: coarse) {
+    button:not([role="checkbox"]):not([role="radio"]):not([role="switch"]):not([data-no-min]):where(:not(
+      [class^="min-h-"], [class*=" min-h-"],
+      .rounded-full:is([class^="h-"], [class*=" h-"]):is([class^="w-"], [class*=" w-"])
+    )),
+    [role="button"]:not([data-no-min]),
+    a[role="button"]:not([data-no-min]) { min-height: 44px; }
+
+    /* Runde Symbolknöpfe bleiben rund und sichtbar so groß wie bisher. Die
+       Trefferfläche wächst unsichtbar um 8 px nach allen Seiten. */
+    button.rounded-full:is([class^="h-"], [class*=" h-"]):is([class^="w-"], [class*=" w-"]):not(.absolute):not(.fixed):not(.sticky) {
+      position: relative;
+    }
+    button.rounded-full:is([class^="h-"], [class*=" h-"]):is([class^="w-"], [class*=" w-"])::after {
+      content: "";
+      position: absolute;
+      inset: -8px;
+    }
+  }
+
   /* Kästchen und Auswahlkreise bleiben quadratisch und werden neben einer
      langen Beschriftung nicht gestaucht. Nur die kleinen Radix-Bedienelemente,
      erkennbar an data-state: Eigene Auswahlkarten mit role="radio" oder
@@ -2014,8 +2038,10 @@
   /* 7) Bilder / Medien nie breiter als der Viewport */
   img, video, iframe, svg { max-width: 100%; height: auto; }
 
-  /* 8) Dialoge / Sheets bündig zum Bildschirmrand mit Safe-Area */
-  [role="dialog"] {
+  /* 8) Dialoge / Sheets bündig zum Bildschirmrand mit Safe-Area. Die zentralen
+     Dialoge (data-ui="dialog") sind am Handy seit A4 ein Blatt über die volle
+     Breite (ui/blattHandy.tsx) und nehmen hier nicht teil. */
+  [role="dialog"]:not([data-ui="dialog"]) {
     max-width: calc(100vw - 0.75rem) !important;
     margin-left: auto; margin-right: auto;
     padding-left: max(1rem, env(safe-area-inset-left)) !important;

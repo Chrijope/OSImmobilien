@@ -3,6 +3,7 @@ import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import { BLATT_AM_HANDY } from "./blattHandy";
 
 const AlertDialog = AlertDialogPrimitive.Root;
 
@@ -57,6 +58,7 @@ const AlertDialogContent = React.forwardRef<
         // so Text und Knoepfe rechts aus dem Dialog (Eintrag entfernen,
         // 28.09.2026). Mit fester Spalte bricht der Text um.
         "fixed left-[50%] top-[50%] z-50 grid grid-cols-[minmax(0,1fr)] w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 max-h-[90vh] overflow-y-auto data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg",
+        BLATT_AM_HANDY,
         className,
       )}
       {...props}

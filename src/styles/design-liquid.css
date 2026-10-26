@@ -682,6 +682,11 @@
   box-shadow: var(--lg-innen), var(--lg-schatten-schwebend);
 }
 [data-glas="liquid"] [data-ui="dialog"]:is(.bg-card, .bg-background, .bg-popover) { border-radius: 22px; }
+/* Am Handy ist der Dialog ein Blatt von unten (A4, ui/blattHandy.tsx): oben
+   rund, unten bündig mit dem Rand. Die feste Ecke oben würde das sonst brechen. */
+@media (max-width: 639px) {
+  [data-glas="liquid"] [data-ui="dialog"]:is(.bg-card, .bg-background, .bg-popover) { border-radius: 24px 24px 0 0; }
+}
 [data-glas="liquid"] [data-radix-popper-content-wrapper] > :is(.bg-popover, .bg-background, .bg-card) { border-radius: 16px; }
 [data-glas="liquid"] :is(.toaster [data-sonner-toast], [data-ui="toast"]:not(.destructive)) { border-radius: 16px; }
 
