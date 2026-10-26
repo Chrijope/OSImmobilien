@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef, lazy, Suspense } from "react";
 import { useLiveVersion } from "@/hooks/useLiveData";
 import { useCacheReady } from "@/hooks/useCacheReady";
 import { ladeObjekteFilter, speichereObjekteFilter } from "@/lib/objekteFilter";
+import { ListenPlatzhalter } from "@/components/ui/listen-platzhalter";
 import { kundenMitRahmen, passendeJeObjekt } from "@/lib/objekteFuerKunde";
 import { AFA_ART_LABEL, anlegerFilterAktiv, objektErfuelltAnlegerFilter, type AfaArt } from "@/lib/objektAnlegerFilter";
 import { siehtEmpfehlungen } from "@/lib/einheitEmpfehlung";
@@ -1328,7 +1329,7 @@ export default function Objekte() {
               );
             })}
             {filtered.length === 0 && !loading && <div className="text-center py-20 text-muted-foreground">Keine Objekte gefunden.</div>}
-            {loading && <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>}
+            {loading && <ListenPlatzhalter form={viewMode === "grid" ? "kacheln" : "zeilen"} />}
           </div>
         )}
       </div>

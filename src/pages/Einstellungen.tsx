@@ -17,7 +17,7 @@ import { useUser } from "@/contexts/UserContext";
 import { rollenLabel } from "@/lib/rollenLabel";
 import { berufsbezeichnung } from "@/lib/berufsbezeichnung";
 import { eigeneBerufsbezeichnung } from "@/lib/beraterProfil";
-import { Save, Upload, Plus, Trash2, CheckCircle, Clock, XCircle, FileText, Mail, Camera, CalendarCheck, ExternalLink, Info, Send, Loader2, Monitor, LogOut, Pencil, RefreshCw, AlertCircle, GraduationCap } from "lucide-react";
+import { Save, Upload, Plus, Trash2, CheckCircle, Clock, XCircle, FileText, Mail, Camera, CalendarCheck, ExternalLink, Info, Send, Loader2, Monitor, LogOut, Pencil, RefreshCw, AlertCircle, GraduationCap, Sun, Moon, SunMoon } from "lucide-react";
 import { useNavigate, useSearchParams, Navigate } from "react-router-dom";
 import { PageHeader } from "@/components/PageHeader";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -110,7 +110,7 @@ const defaultSettings: EinstellungenData = {
 
 
 const Einstellungen = () => {
-  const { user, authUser, loading: userLoading } = useUser();
+  const { user, authUser, loading: userLoading, farbschema, setzeFarbschema } = useUser();
   const role = user.role as string;
   // Kunden bekommen ein eigenes, portal-natives Einstellungs-Layout.
   // Wichtig: erst nach Laden des Profils umleiten, sonst flackert kurz die Kunden-Ansicht
@@ -1070,6 +1070,31 @@ const Einstellungen = () => {
 
           {/* Profil */}
           <TabsContent value="profil" className="space-y-6">
+            {/* Darstellung (26.10.2026): Hell, Dunkel, Automatisch, vorher in der Kopfleiste. Wirkt sofort, gilt je Gerät. */}
+            {setzeFarbschema && (
+              <Section title="Darstellung" desc="Hell, Dunkel oder Automatisch wie dein Gerät. Gilt für dieses Gerät und wirkt sofort, ohne Speichern.">
+                <div role="radiogroup" aria-label="Darstellung" className="inline-flex flex-wrap gap-1 rounded-xl border bg-muted/40 p-1">
+                  {([
+                    { wert: "hell", label: "Hell", Icon: Sun },
+                    { wert: "dunkel", label: "Dunkel", Icon: Moon },
+                    { wert: "auto", label: "Automatisch", Icon: SunMoon },
+                  ] as const).map(({ wert, label, Icon }) => (
+                    <Button
+                      key={wert}
+                      type="button"
+                      role="radio"
+                      aria-checked={farbschema === wert}
+                      variant={farbschema === wert ? "default" : "ghost"}
+                      size="sm"
+                      className="gap-2"
+                      onClick={() => setzeFarbschema(wert)}
+                    >
+                      <Icon className="h-4 w-4" /> {label}
+                    </Button>
+                  ))}
+                </div>
+              </Section>
+            )}
             <Section title="Profilbild *" desc={isTippgeber ? "Lade ein Foto von dir hoch. Empfohlen: quadratisches Foto, gut ausgeleuchtet." : "Lade ein Foto von dir hoch. Es erscheint auf deiner Vertriebspartner-Microseite, im Online-Exposé und in der Investment-Analyse. Empfohlen: quadratisches Foto, gut ausgeleuchtet."}>
               <div className="flex items-center gap-5">
                 <div className="relative" data-pflicht="avatar">

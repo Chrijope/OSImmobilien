@@ -2753,13 +2753,13 @@
     "datum": "2026-10-26",
     "art": "neu",
     "titel": "Hell, Dunkel oder Automatisch",
-    "kurztext": "Neben Mond und Sonne in der Kopfleiste gibt es jetzt „Automatisch“. Das CRM folgt dann der Einstellung deines Geräts.",
+    "kurztext": "In den Einstellungen wählst du jetzt Hell, Dunkel oder Automatisch. Mit Automatisch folgt das CRM der Einstellung deines Geräts.",
     "wasHeisstDasFuerDich": [
-      "Deine Wahl bleibt jetzt auch nach dem Neuladen erhalten.",
+      "Deine Wahl bleibt auch nach dem Neuladen erhalten.",
       "Gemerkt wird je Gerät: Am Handy kann es anders sein als am Schreibtisch.",
-      "Mit „Automatisch“ wird das CRM abends dunkel, wenn dein Gerät das auch tut."
+      "Der Mond oben in der Kopfleiste ist dafür weggefallen, die Leiste ist ruhiger."
     ],
-    "soFindestDuEs": "Kopfleiste oben rechts, neben dem Mond",
+    "soFindestDuEs": "Einstellungen, Profil, ganz oben unter Darstellung",
     "kritisch": false,
     "zielrollen": [
       "alle"
@@ -2809,6 +2809,38 @@
       "Am Schreibtisch bleiben Dialoge mittig wie bisher."
     ],
     "soFindestDuEs": "Zum Beispiel im Kundenprofil über Notiz, Aufgabe oder Anruf",
+    "kritisch": false,
+    "zielrollen": [
+      "alle"
+    ]
+  },
+  {
+    "nr": 137,
+    "datum": "2026-10-26",
+    "art": "geaendert",
+    "titel": "Rückmeldungen einheitlich oben in der Mitte",
+    "kurztext": "Alle kurzen Rückmeldungen wie „Gespeichert“ erscheinen jetzt einheitlich als Kapsel oben in der Mitte.",
+    "wasHeisstDasFuerDich": [
+      "Meldungen sehen überall gleich aus und überdecken sich nicht mehr.",
+      "Wo es passt, kannst du direkt „Rückgängig“ wählen, zum Beispiel nach dem Erledigen einer Aufgabe."
+    ],
+    "soFindestDuEs": "Überall, wo das CRM dir etwas bestätigt",
+    "kritisch": false,
+    "zielrollen": [
+      "alle"
+    ]
+  },
+  {
+    "nr": 138,
+    "datum": "2026-10-26",
+    "art": "geaendert",
+    "titel": "Ruhigeres Laden der Objektliste",
+    "kurztext": "Statt eines großen Kreisels zeigt die Objektliste beim Laden Platzhalter in der Form der Kacheln.",
+    "wasHeisstDasFuerDich": [
+      "Die Seite springt beim Laden nicht mehr.",
+      "Du siehst sofort, wo gleich die Objekte stehen."
+    ],
+    "soFindestDuEs": "Objekte",
     "kritisch": false,
     "zielrollen": [
       "alle"

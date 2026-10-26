@@ -1,24 +1,6 @@
-import { useToast } from "@/hooks/use-toast";
-import { Toast, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport } from "@/components/ui/toast";
-
-export function Toaster() {
-  const { toasts } = useToast();
-
-  return (
-    <ToastProvider>
-      {toasts.map(function ({ id, title, description, action, ...props }) {
-        return (
-          <Toast key={id} {...props}>
-            <div className="grid gap-1">
-              {title && <ToastTitle>{title}</ToastTitle>}
-              {description && <ToastDescription>{description}</ToastDescription>}
-            </div>
-            {action}
-            <ToastClose />
-          </Toast>
-        );
-      })}
-      <ToastViewport />
-    </ToastProvider>
-  );
-}
+/*
+ * Seit A5 (26.10.2026) gibt es nur noch Sonner. Diese Datei bleibt, damit
+ * bestehende Einbindungen (und Tests, die `<Toaster />` rendern) weiter die
+ * Meldungen zeigen. In der App hängt die Ausgabe genau einmal, in App.tsx.
+ */
+export { Toaster } from "@/components/ui/sonner";

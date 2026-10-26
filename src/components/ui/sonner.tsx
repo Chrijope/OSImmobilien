@@ -1,14 +1,22 @@
-import { useTheme } from "next-themes";
 import { Toaster as Sonner, toast } from "sonner";
+import { useOptionalUser } from "@/contexts/UserContext";
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
 
+/*
+ * Die einzige Ausgabe für Rückmeldungen (A5, 26.10.2026): eine Glaskapsel
+ * oben in der Mitte, wie Hinweise unter iOS. Hell und Dunkel folgen dem CRM
+ * (`darkMode` aus dem UserContext), nicht der Systemeinstellung; vorher hing
+ * das an `next-themes`, das hier nie eingerichtet war. Das Glas selbst setzt
+ * `styles/design-liquid.css`, Abschnitt 7.
+ */
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme();
+  const dunkel = useOptionalUser()?.darkMode ?? false;
 
   return (
     <Sonner
-      theme={theme as ToasterProps["theme"]}
+      theme={dunkel ? "dark" : "light"}
+      position="top-center"
       className="toaster group"
       toastOptions={{
         classNames: {
